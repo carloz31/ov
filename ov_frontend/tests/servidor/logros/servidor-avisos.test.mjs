@@ -189,7 +189,7 @@ test('cola automática solo en mapas, pausada por actividad y guía; la campana 
   const ui = f.app.load('src/store/studentUiStore.ts')
   ui.updateStudentUi((s) => ({
     ...s,
-    introsSeen: { ...s.introsSeen, missions: true, central: true },
+    introsSeen: { ...s.introsSeen, missions: true, central: true, 'profile-general': true },
     cityArrivalSeen: true,
     checkInPromptDismissedOn: f.app.load('src/features/adventure/lib/checkIn.ts').localDateKey(new Date()),
   }))
@@ -260,6 +260,10 @@ test('un overlay pausa también el cierre del lote y solo se marca después de c
 
 test('la campana puede solicitar el lote desde su menú, pero espera a que el menú se cierre', async () => {
   const f = await iniciar()
+  f.app.load('src/store/studentUiStore.ts').updateStudentUi((s) => ({
+    ...s,
+    introsSeen: { ...s.introsSeen, 'profile-general': true },
+  }))
   const queue = f.app.mount(
     f.app.load('src/features/adventure/components/overlays/OverlayQueue.tsx').OverlayQueue,
     { view: 'profile-general', activityOpen: false, children: null },

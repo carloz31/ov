@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router'
 import { useAdventure } from '@/store/adventureStore'
 import { useJourney } from '@/store/journeyStore'
 
-import { cityArrivalSteps, guideSteps } from '@/data/content/guideTexts'
+import { cityArrivalSteps, sectionIntros } from '@/data/content/guideTexts'
 import { updateStudentUi, useStudentUi } from '@/store/studentUiStore'
 import type { StudentView } from '@/lib/studentViews'
 
@@ -107,7 +107,7 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     active?.kind === 'guide'
       ? active.steps
       : active?.kind === 'intro'
-        ? guideSteps[active.view]
+        ? sectionIntros[active.view]
         : active?.kind === 'arrival'
           ? cityArrivalSteps
           : null

@@ -31,8 +31,7 @@ export const guideSteps: Record<StudentView, string[]> = {
     'Este es nuestro cuaderno. Solo tú puedes leerlo: ni tu orientadora ni tu familia ven lo que escribes.',
     'Puedes contarme algo cuando quieras, o responder las cartas que te dejo después de cada actividad.',
     'Cada día te dejo también una pregunta nueva. Ábrela cuando quieras; si un día no la respondes, no pasa nada.',
-    'Cada conversación hace crecer nuestra amistad, hasta tres por día. La amistad nunca se pierde, aunque pasen días sin escribir.',
-    'Cuando nuestra amistad crece, recupero un recuerdo de mi viaje y te lo cuento.',
+    'Cada conversación hace crecer nuestra amistad, hasta tres por día, y nunca se pierde aunque pasen días sin escribir. Cuando crece, recupero un recuerdo de mi viaje y te lo cuento.',
   ],
   'journal-signals': [
     'Este historial reúne únicamente tus señales. Puedes registrar o cambiar la señal de hoy y elegir un punto para consultar su fecha y valor. Tus entradas privadas permanecen en «Mi diario».',
@@ -78,7 +77,6 @@ export const guideSteps: Record<StudentView, string[]> = {
     'No hace falta estar de acuerdo en todo. Respondan desde su propia mirada y usen la guía cuando encuentren un momento tranquilo para escucharse.',
   ],
   missions: [
-    '¡Hola! Soy Lumi. Yo también llegué a este mundo sin saber muy bien hacia dónde ir. Dicen que este camino despeja las dudas de quienes lo recorren.',
     'Cada punto del mapa es una misión. La que brilla es la que te recomiendo ahora. Las que muestran un signo de pregunta aún no están disponibles.',
     'A la izquierda está tu panel: tu siguiente paso, cómo te sientes hoy y los accesos a tu diario, tu familia y todo lo que vas reuniendo. Puedes plegarlo cuando quieras.',
     'Al final del camino está la ciudad, donde podrás elegir tus actividades y ayudar a sus habitantes. Arriba puedes cambiar entre el camino y la ciudad.',
@@ -88,6 +86,84 @@ export const guideSteps: Record<StudentView, string[]> = {
     'Bienvenido a la ciudad. Aquí tú decides el orden: cada llamado de sus habitantes es una oportunidad para descubrir cómo se complementan distintas profesiones.',
     'Puedes entrar a Investigaciones desde tu panel para conocer una ocupación de cerca, o pasar por el molino a conversar con Mara.',
     'Cada vez que ayudas, tu afinidad con la ciudad crece. La ves en tu panel.',
+  ],
+}
+
+// Presentación de primera vez: para qué sirve cada sección, no cómo se usa (HU-019).
+// La ayuda del botón está en guideSteps. Los textos marcados son DATO DE PRUEBA.
+export const sectionIntros: Record<StudentView, string[]> = {
+  missions: [
+    '¡Hola! Soy Lumi. Yo también llegué a este mundo sin saber muy bien hacia dónde ir. Dicen que este camino despeja las dudas de quienes lo recorren.',
+    'Cada misión te ayuda a conocerte un poco más: lo que te interesa, lo que se te da bien y lo que valoras.',
+  ],
+  central: [
+    'Bienvenido a la ciudad. Aquí tú decides el orden: cada llamado de sus habitantes es una oportunidad para descubrir cómo se complementan distintas profesiones.',
+  ],
+  // DATO DE PRUEBA
+  activities: [
+    'Aquí ves de un vistazo todo tu recorrido: lo que ya hiciste y lo que te espera, para retomar donde lo dejaste.',
+  ],
+  // DATO DE PRUEBA
+  community: [
+    'Tu salón y tu Crew te acompañan en el viaje. Descubrir junto a otros te muestra caminos que quizá no habías imaginado.',
+  ],
+  // DATO DE PRUEBA
+  conversations: [
+    'En familia, las conversaciones ayudan a que quienes te quieren conozcan lo que estás descubriendo, y a que tú escuches su mirada.',
+  ],
+  // DATO DE PRUEBA
+  'journal-signals': [
+    'Tu señal muestra cómo te has sentido día a día. Mirarla con calma te ayuda a notar qué te da energía y qué te pesa.',
+  ],
+  journal: [
+    'Este es nuestro cuaderno. Solo tú puedes leerlo: ni tu orientadora ni tu familia ven lo que escribes.',
+    // DATO DE PRUEBA
+    'Escribir lo que piensas y sientes te ayuda a ordenar tus ideas y a reconocer lo que de verdad te importa.',
+  ],
+  // DATO DE PRUEBA
+  research: [
+    'Investigar es conocer una ocupación desde dentro, escuchando a alguien que vive de ella. Así comparas lo que imaginas con lo que realmente es.',
+  ],
+  // DATO DE PRUEBA
+  'research-guide': [
+    'Tu guion te prepara para la entrevista: llegar con buenas preguntas hace que la conversación te deje más respuestas.',
+  ],
+  // DATO DE PRUEBA
+  investigations: [
+    'Las investigaciones de tu salón y de otros viajeros te dejan conocer ocupaciones que todavía no has explorado tú.',
+  ],
+  resources: [
+    'Esta es tu mochila. Aquí se guarda lo que reúnes en el camino.',
+    // DATO DE PRUEBA
+    'Tenerlo todo junto te ayuda a volver a lo que descubriste cuando tengas que decidir.',
+  ],
+  // DATO DE PRUEBA
+  'catalog-professions': [
+    'El atlas de profesiones te muestra el mundo del trabajo más allá de lo que ya conoces, para que encuentres opciones nuevas.',
+  ],
+  // DATO DE PRUEBA
+  'catalog-careers': [
+    'Conocer las carreras te ayuda a ver qué formación lleva a cada profesión y cuál se parece más a lo que buscas.',
+  ],
+  // DATO DE PRUEBA
+  'catalog-institutions': [
+    'Conocer las instituciones te ayuda a imaginar dónde podrías estudiar y qué tipo de experiencia te gustaría vivir.',
+  ],
+  // DATO DE PRUEBA
+  'catalog-detail': [
+    'Cada página del atlas reúne lo esencial de una opción, para que la conozcas a fondo antes de guardarla en tus planes.',
+  ],
+  // DATO DE PRUEBA
+  'profile-general': [
+    'Tu perfil reúne todo lo que vas descubriendo de ti, para que veas cuánto has avanzado y hacia dónde te gustaría ir.',
+  ],
+  // DATO DE PRUEBA
+  'profile-helena': [
+    'El libro de Helena traduce lo que haces en el viaje en pistas sobre ti: tus intereses, tus fortalezas y lo que valoras.',
+  ],
+  // DATO DE PRUEBA
+  'profile-decisions': [
+    'Tus planes convierten lo que descubres en caminos concretos, para que decidas con más claridad y sin prisa.',
   ],
 }
 

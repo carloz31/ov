@@ -519,6 +519,11 @@ test('student routes have no sidebar and modules have a return button and header
     '/student/catalog/institutions',
     '/student/profile',
     '/student/profile/decisions',
+    '/student/activities',
+    '/student/investigations',
+    '/student/research/guion',
+    '/student/profile/helena',
+    '/student/catalog/professions/psychologist',
   ]
   for (const route of routes) {
     const html = render(route)
@@ -807,9 +812,9 @@ test('student overlay queue prioritizes real city arrival, section introductions
   assert.equal(getNextOverlay({ ...args, arrivalDismissed: true }).kind, 'intro')
   ui.cityArrivalSeen = true
   for (const view of studentViews) {
-    if (isDiscoveryView(view)) { assert.equal(getNextOverlay({ ...args, view }), null); continue }
     assert.equal(getNextOverlay({ ...args, view }).view, view)
     ui.introsSeen[view] = true
+    if (isDiscoveryView(view)) { assert.equal(getNextOverlay({ ...args, view }), null); continue }
     assert.equal(getNextOverlay({ ...args, view }).kind, 'check-in')
   }
   assert.equal(getNextOverlay(args).day, '2026-10-03')
@@ -820,6 +825,19 @@ test('student overlay queue prioritizes real city arrival, section introductions
   ui.checkInPromptDismissedOn = undefined
   assert.equal(getNextOverlay(args), null)
   assert.equal(getNextOverlay({ ...args, activityOpen: true }), null)
+})
+
+test('every student section has its purpose introduction and a help guide of one to four steps', () => {
+  const { guideSteps, sectionIntros, passportGuideSteps } = load(path.resolve('src/data/content/guideTexts.ts'))
+  const { studentViews } = load(path.resolve('src/lib/studentViews.ts'))
+  const inRange = (steps) => Array.isArray(steps) && steps.length >= 1 && steps.length <= 4 && steps.every((step) => step.trim())
+  for (const view of studentViews) {
+    assert.ok(inRange(guideSteps[view]), `ayuda ${view}`)
+    assert.ok(inRange(sectionIntros[view]), `presentación ${view}`)
+    assert.notDeepEqual(sectionIntros[view], guideSteps[view], view)
+  }
+  assert.ok(inRange(passportGuideSteps))
+  assert.deepEqual(Object.keys(sectionIntros).sort(), [...studentViews].sort())
 })
 
 test('student daily signal uses Lima dates and replaces the original registration without changing private entries', () => {
@@ -999,8 +1017,9 @@ test('mounted overlay queue opens from effects, remembers introductions and resu
   assert.equal(draw('resources', true).lumi.open, false)
   assert.equal(ui.introsSeen.resources, undefined)
   draw('resources', false)
-  assert.equal(draw('resources').lumi.open, false)
+  assert.equal(draw('resources').lumi.open, true)
   draw('resources').lumi.onClose()
+  assert.equal(ui.introsSeen.resources, true)
   draw('resources')
   assert.equal(draw('resources').lumi.open, false)
   adventure = { ...adventure, completedMissionIds: fieldMissions.map(mission => mission.id) }

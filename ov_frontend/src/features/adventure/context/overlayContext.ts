@@ -25,10 +25,12 @@ export function getNextOverlay({
   arrivalDismissed?: boolean
   now?: Date
 }): AutomaticOverlay | null {
-  // Discovery pages open unobstructed; their help is available from the header.
-  if (activityOpen || isDiscoveryView(view)) return null
-  if (isCityUnlocked(adventure) && !ui.cityArrivalSeen && !arrivalDismissed) return { kind: 'arrival' }
+  if (activityOpen) return null
+  // Discovery pages only present their purpose once; arrival and the daily signal wait for the maps.
+  const discovery = isDiscoveryView(view)
+  if (!discovery && isCityUnlocked(adventure) && !ui.cityArrivalSeen && !arrivalDismissed) return { kind: 'arrival' }
   if (!ui.introsSeen[view]) return { kind: 'intro', view }
+  if (discovery) return null
   const day = localDateKey(now)
   if (!getTodayCheckIn(adventure, now) && ui.checkInPromptDismissedOn !== day)
     return { kind: 'check-in', day }
