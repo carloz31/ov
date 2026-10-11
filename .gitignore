@@ -1,0 +1,6 @@
+.env
+.env.local
+*.db
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/worktrees/

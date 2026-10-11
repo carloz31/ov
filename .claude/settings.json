@@ -1,0 +1,33 @@
+{
+  "model": "opusplan",
+  "permissions": {
+    "allow": [
+      "Bash(uv run pytest:*)",
+      "Bash(uv run python -m pytest:*)",
+      "Bash(uv run alembic:*)",
+      "Bash(uv run python -m datos.cargar:*)",
+      "Bash(uv run python scripts/exportar_fixtures_front.py:*)",
+      "Bash(uv sync:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run:*)",
+      "Bash(npm ci)",
+      "Bash(node --test:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git switch:*)",
+      "Bash(git mv:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Read(./**/.env)",
+      "Read(./**/.env.local)",
+      "Read(./**/docs/historico/**)",
+      "Read(./**/node_modules/**)",
+      "Read(./**/package-lock.json)",
+      "Read(./**/uv.lock)"
+    ]
+  }
+}

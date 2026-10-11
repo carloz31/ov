@@ -15,3 +15,26 @@ Sirve para no cerrar caminos a lo que viene, no para adelantarlo: solo se implem
 - Cada iteración carga el material de sus actividades. El contenido narrativo vive en los JSON del front (`ov_frontend/docs/contenidos-actividades.md`), así que cargar material solo toca el backend para agregar actividades, ítems o reglas.
 - Los datos de prueba se marcan `DATO DE PRUEBA` para encontrarlos y reemplazarlos al cargar el material definitivo.
 - El último 15–20 % del calendario se reserva para revisar y completar el material.
+
+## Lotes
+
+Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. Orden sugerido: 2A primero (todo lo demás depende de la sesión); después, los lotes sin flecha de dependencia pueden ir en cualquier orden. Los marcados con **M** cambian el modelo: no corras dos lotes **M** en paralelo.
+
+| Lote | Tema | HU | Antes de empezar | Estado |
+|---|---|---|---|---|
+| 2A | Inicio y cierre de sesión **M** | 001, 020 | Decidir el mecanismo (sesión por cookie o token) y si las credenciales vienen precargadas. | Pendiente |
+| 2B | Actividades de registro **M** | 006, 007, 008, 009, 010 | Tras 2A. Ya existe el evaluador (`docs/sistema/registro.md`). | Pendiente |
+| 2C | Comprobaciones, misiones adicionales y batalla | 005, 012, 016, 017 | Tras 2A. Mockup o descripción de la batalla. | Pendiente |
+| 2D | Ayuda contextual | 018, 019 | Textos de ayuda por pantalla (pueden ser `DATO DE PRUEBA`). | Pendiente |
+| 3A | Diario, pregunta del día y amistad con Lumi | 028–034 | El backend ya existe; es sobre todo conexión de vistas. | Pendiente |
+| 3B | Check-in de seguridad | 035, 036 | El backend ya existe. | Pendiente |
+| 3C | Perfil y vista explicada de resultados | 023, 024 | — | Pendiente |
+| 3D | Catálogos, favoritos y testimonios **M** | 026 (favoritos), 037–042 | Fuente de datos de instituciones. | Pendiente |
+| 3E | Planes de carrera **M** | 043–050 | Tras 3D. | Pendiente |
+| 4A | Casos y colección de ocupaciones | 003, 051–056 | El backend ya existe. | Pendiente |
+| 4B | Entrevistas y coautoría | 057–062 | El backend ya existe. | Pendiente |
+| 4C | Reacciones, destacados y Leyendas **M** | 063–065 | Tras 4B. Regla para ser Leyenda. | Pendiente |
+| 4D | Conversaciones y cartas con la familia | 066–072 | El backend ya existe. | Pendiente |
+| 5A | Logros en el perfil, perfil social, diploma y avance del apoderado | 076–080 | — | Pendiente |
+| 5B | Portal de la orientadora: seguimiento individual | 081–089 | Tras 2A (rol orientadora). Regla de alertas (088). | Pendiente |
+| 5C | Portal de la orientadora: vista del salón | 090–093 | Tras 5B. | Pendiente |
