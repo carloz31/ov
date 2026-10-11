@@ -1,0 +1,16 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "pad-02-info",
+      "tipo": "COMPLETA_ACTIVIDAD"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "FAMILIA",
+      "tipo": "COMPLETA_BLOQUE"
+    }
+  ],
+  "nuevos_desbloqueos": [],
+  "resultados_generados": []
+}

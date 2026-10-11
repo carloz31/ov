@@ -1,0 +1,214 @@
+.sx-question-memory {
+  display: flex;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #d7dceb;
+  border-radius: 14px;
+  background: #eef1fb;
+  color: #303c72;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.sx-question-memory > svg {
+  flex-shrink: 0;
+}
+.sx-question-memory blockquote {
+  margin: 6px 0;
+  font-style: italic;
+}
+.sx-question-memory p {
+  margin: 0;
+}
+.sx-question-memory.is-compact {
+  margin: 5px 0 10px;
+  padding: 9px;
+  font-size: 12px;
+}
+.sx-memory-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: underline;
+  padding: 4px;
+}
+.sx-root mark {
+  background: #fff1b8;
+  color: #303c72;
+  border-radius: 3px;
+}
+.sx-memory-dialog {
+  color: #263354;
+  background: white;
+  max-height: 85dvh;
+  overflow: auto;
+  width: calc(100% - 32px);
+  max-width: 560px;
+}
+.sx-memory-full {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.sx-memory-dialog label {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+.sx-memory-dialog select,
+.sx-memory-dialog input:not([type='checkbox']) {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #bfc7df;
+  border-radius: 8px;
+}
+.sx-node-additional .sx-node-circle {
+  width: 124px;
+  height: 124px;
+  background: #3f4ba8;
+  border: 6px solid white;
+  position: relative;
+}
+.sx-node-additional.sx-node-completed .sx-node-circle {
+  background: var(--success);
+}
+.sx-extra-star {
+  position: absolute;
+  right: -6px;
+  top: -8px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: #ffd666;
+  background: #3a3220;
+  border: 4px solid #f2c66d;
+  border-radius: 50%;
+}
+.sx-extra-star svg {
+  width: 28px;
+  height: 28px;
+}
+.sx-node-additional .sx-node-label {
+  color: #283453;
+  background: white;
+}
+.sx-node-additional .sx-node-label small {
+  display: block;
+  padding: 4px 7px;
+  border: 2px solid #f1d48a;
+  border-radius: 8px;
+  background: #fff8e6;
+  font-size: 22px;
+  color: #5a3b00;
+}
+.sx-node-additional.sx-node-available:not(.sx-extra-reveal) .sx-node-circle {
+  animation: sx-extra-halo 2s infinite;
+}
+.sx-use-notice {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #f1d48a;
+  border-radius: 10px;
+  background: #fff8e6;
+  color: #5a3b00;
+  font-size: 14px;
+}
+.sx-use-notice > svg {
+  flex-shrink: 0;
+}
+.sx-question-memory.is-neutral {
+  background: #f4f5f8;
+  color: #2b3044;
+  border-color: #e3e6ee;
+  font-size: 15px;
+}
+.sx-question-loading .sx-lumi-medallion {
+  animation: sx-extra-star 1s infinite alternate;
+}
+@keyframes sx-extra-halo {
+  50% {
+    box-shadow: 0 0 0 14px #e5bc5633;
+  }
+}
+.sx-extra-reveal .sx-node-circle {
+  animation: sx-extra-pop 0.4s 0.5s both;
+}
+.sx-extra-reveal .sx-node-circle::before {
+  border: 4px solid #e5bc56;
+  animation: sx-extra-ring 0.5s 0.5s both;
+}
+.sx-node-additional .sx-node-badge {
+  top: auto;
+  bottom: -4px;
+}
+@keyframes sx-extra-ring {
+  from {
+    inset: -4px;
+    opacity: 1;
+  }
+  to {
+    inset: -55px;
+    opacity: 0;
+  }
+}
+.sx-extra-reveal .sx-node-label {
+  animation: sx-extra-label 0.3s 0.9s both;
+}
+.sx-extra-reveal .sx-extra-star {
+  animation: sx-extra-star 1.3s 1s infinite alternate;
+}
+.sx-extra-path-reveal {
+  stroke-dasharray: 1;
+  animation: sx-extra-draw 1.4s 1.15s both;
+}
+@keyframes sx-extra-pop {
+  from {
+    opacity: 0;
+    scale: 0.4;
+    box-shadow: 0 0 0 35px #e5bc5680;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    box-shadow: 0 0 0 0 #e5bc5600;
+  }
+}
+@keyframes sx-extra-label {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes sx-extra-star {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.15;
+  }
+}
+@keyframes sx-extra-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-node-additional .sx-node-circle,
+  .sx-question-loading .sx-lumi-medallion,
+  .sx-extra-reveal .sx-node-circle::before,
+  .sx-extra-reveal .sx-node-circle,
+  .sx-extra-reveal .sx-node-label,
+  .sx-extra-reveal .sx-extra-star,
+  .sx-extra-path-reveal {
+    animation: none;
+  }
+}

@@ -1,0 +1,44 @@
+/* Comfortable targets in the student headers and map controls. */
+.sx-root :is(.sx-module-header, .sx-map-header) :is(.sx-icon-button, .sx-user-menu),
+.sx-root .sx-map-controls .sx-icon-button,
+.sx-root .sx-zoom-controls .sx-icon-button,
+.sx-root .sx-zone-switch button,
+.sx-root .sx-mobile-panel-open,
+.sx-root.sx-mobile-panel > button,
+.sx-root.sx-j-delete-dialog > button,
+.sx-root .sx-panel-link {
+  min-width: 44px;
+  min-height: 44px;
+}
+.sx-root .sx-zoom-controls input[type='range'] {
+  min-height: 44px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-root :is(.sx-next-target, .sx-strip-next, .sx-available-dot[data-recommended='true']) {
+    animation: none;
+  }
+  .sx-root .sx-quick-links a:hover,
+  .sx-root .sx-next-step:hover {
+    transform: none;
+  }
+}
+
+.sx-root .sx-player-response-instruction {
+  margin: 0 0 20px;
+  color: var(--sx-night-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.sx-root .sx-question-options .sx-player-option {
+  justify-content: flex-start;
+}
+.sx-root .sx-question-options .sx-option-marker {
+  flex-shrink: 0;
+  width: 16px;
+  margin-right: 0;
+}
+.sx-root .sx-question-option-text {
+  min-width: 0;
+  text-align: left;
+}

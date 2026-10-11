@@ -1,0 +1,22 @@
+[
+  {
+    "codigo": "ficha-mitos",
+    "estado": "BLOQUEADA",
+    "titulo": "Ficha: Mitos y realidades del futuro profesional"
+  },
+  {
+    "codigo": "first-steps",
+    "estado": "BLOQUEADA",
+    "titulo": "Tres pistas para comenzar el viaje"
+  },
+  {
+    "codigo": "rec-ponteencarrera",
+    "estado": "BLOQUEADA",
+    "titulo": "Ponte en Carrera: compara carreras e instituciones"
+  },
+  {
+    "codigo": "rec-unesco-stem",
+    "estado": "BLOQUEADA",
+    "titulo": "Ciencia sin etiquetas"
+  }
+]

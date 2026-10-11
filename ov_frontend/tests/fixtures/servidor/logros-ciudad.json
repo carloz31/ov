@@ -1,0 +1,101 @@
+{
+  "insignias": [
+    {
+      "codigo": "I1",
+      "descripcion": "Te animaste a comenzar sin necesitar todas las respuestas.",
+      "estado": "OBTENIDA",
+      "nombre": "La primera chispa",
+      "requisito": "Completa la introducción de tu viaje."
+    },
+    {
+      "codigo": "???",
+      "descripcion": null,
+      "estado": "BLOQUEADA",
+      "nombre": "Logro oculto",
+      "requisito": null
+    },
+    {
+      "codigo": "I2",
+      "descripcion": "Reuniste señales sobre tus gustos, fortalezas y preguntas.",
+      "estado": "OBTENIDA",
+      "nombre": "Coleccionista de pistas",
+      "requisito": "Completa tres Misiones de Campo."
+    },
+    {
+      "codigo": "I3",
+      "descripcion": "Tus descubrimientos abrieron la puerta a nuevos escenarios.",
+      "estado": "OBTENIDA",
+      "nombre": "La llave de la ciudad",
+      "requisito": "Completa todas las Misiones de Campo."
+    },
+    {
+      "codigo": "I4",
+      "descripcion": "Invitaste a alguien a mirar el camino contigo.",
+      "estado": "BLOQUEADA",
+      "nombre": "Una invitación abre caminos",
+      "requisito": "Invita a un compañero a tu Crew."
+    },
+    {
+      "codigo": "I5",
+      "descripcion": "Formaste un equipo para acompañar la exploración.",
+      "estado": "BLOQUEADA",
+      "nombre": "Nadie viaja solo",
+      "requisito": "Forma un Crew con un compañero que acepte tu invitación."
+    },
+    {
+      "codigo": "I6",
+      "descripcion": "Convertiste una conversación familiar en una nueva pista.",
+      "estado": "BLOQUEADA",
+      "nombre": "Una mesa para conversar",
+      "requisito": "Completen la primera conversación en familia."
+    },
+    {
+      "codigo": "I7",
+      "descripcion": "Usaste tus talentos para responder a un reto real.",
+      "estado": "BLOQUEADA",
+      "nombre": "Aquí para ayudar",
+      "requisito": "Resuelve tu primer caso."
+    },
+    {
+      "codigo": "I8",
+      "descripcion": "Investigaste una profesión y compartiste lo aprendido.",
+      "estado": "BLOQUEADA",
+      "nombre": "Historias que inspiran",
+      "requisito": "Publica una misión de investigación."
+    },
+    {
+      "codigo": "I9",
+      "descripcion": "Completaste todos los retos y construiste tu propia lectura de la ciudad.",
+      "estado": "BLOQUEADA",
+      "nombre": "Una ciudad que sonríe",
+      "requisito": "Resuelve todos los llamados de la Central de casos."
+    }
+  ],
+  "niveles": [
+    {
+      "estado": "OBTENIDO",
+      "numero": 1,
+      "titulo": "Observador del horizonte"
+    },
+    {
+      "estado": "OBTENIDO",
+      "numero": 2,
+      "titulo": "Recolector de pistas"
+    },
+    {
+      "estado": "OBTENIDO",
+      "numero": 3,
+      "titulo": "Cartógrafo de posibilidades"
+    },
+    {
+      "estado": "BLOQUEADO",
+      "numero": 4,
+      "titulo": "Explorador de la ciudad"
+    },
+    {
+      "estado": "BLOQUEADO",
+      "numero": 5,
+      "titulo": "Autor de su rumbo"
+    }
+  ]
+}

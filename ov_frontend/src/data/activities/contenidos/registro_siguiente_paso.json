@@ -1,0 +1,55 @@
+{
+  "id": "mission-next-step",
+  "codigo": "MIS-08",
+  "tipo": "registro",
+  "titulo": "Elegir mi siguiente paso",
+  "subtitulo": "Una reflexión que podrás revisar más adelante",
+  "bloque": 1,
+  "orden": 8,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "Cruce de caminos",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
+  "nodos": [
+    {
+      "id": "mission-next-step-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "No necesitas llegar a una conclusión. Registra lo que piensas hoy y podrás volver a modificarlo durante el recorrido."
+    },
+    {
+      "id": "mission-next-step-entry",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "premisa": "¿Qué pequeño paso quieres intentar primero para seguir explorando?",
+      "ayuda": "Elige una acción posible y concreta. Puede ser una pregunta, una conversación o una experiencia breve.",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 12,
+        "maxCaracteres": 800
+      },
+      "obligatoria": true,
+      "visibilidad": "solo_estudiante"
+    },
+    {
+      "id": "mission-next-step-close",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Tu respuesta quedó guardada. Es una pista de este momento, no una conclusión definitiva."
+    }
+  ],
+  "promptDiario": "Al volver a leer tu respuesta de “Elegir mi siguiente paso”, ¿qué idea te gustaría seguir pensando?",
+  "mapa": {
+    "x": 835,
+    "y": 555,
+    "etiqueta": "Registro · A tu ritmo",
+    "icono": "registro"
+  }
+}

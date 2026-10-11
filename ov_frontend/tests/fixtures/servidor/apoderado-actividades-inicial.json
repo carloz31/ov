@@ -1,0 +1,31 @@
+[
+  {
+    "actividades": [
+      {
+        "codigo": "pad-01-rol",
+        "contenido": "pad_01_acompanar",
+        "estado": "DISPONIBLE",
+        "orden": 1,
+        "tipo": "INFORMATIVA",
+        "titulo": "Acompañar sin decidir por él o ella",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "pad-02-info",
+        "contenido": "pad_02_informacion",
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "tipo": "INFORMATIVA",
+        "titulo": "Conversar con información de hoy",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "codigo": "FAMILIA",
+    "espacio": "PORTAL_FAMILIA",
+    "estado": "DISPONIBLE",
+    "nombre": "Actividades para familias",
+    "numero": 1
+  }
+]

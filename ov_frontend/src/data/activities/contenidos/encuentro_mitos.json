@@ -1,0 +1,583 @@
+{
+  "id": "enc-mitos",
+  "codigo": "ENC-MITOS",
+  "tipo": "encuentro",
+  "titulo": "La plaza de los rumores",
+  "subtitulo": "Mitos y realidades del futuro profesional",
+  "bloque": 1,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": [
+    "mission-welcome"
+  ],
+  "ubicacion": "Plaza de los rumores",
+  "duracionEstimadaMin": 15,
+  "personajeIds": [
+    "aurelio",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué es un mito vocacional, conoce la realidad detrás de cuatro mitos frecuentes y puede aplicar tres preguntas para revisar críticamente cualquier creencia sobre estudios y trabajo.",
+  "nodos": [
+    {
+      "id": "e01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Para llegar al río tenemos que cruzar la plaza. Escucha... siempre hay alguien gritando algo."
+    },
+    {
+      "id": "e02",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "expresion": "neutral",
+      "texto": "¡Atención, atención! ¡El que no va a la universidad no llega a nada! ¡Lo que te gusta no da de comer!"
+    },
+    {
+      "id": "e03",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "expresion": "dudoso",
+      "texto": "...Ay, disculpa. Soy Aurelio, el pregonero. Llevo años repitiendo lo que escucho en el mercado. Pero ayer una chica me preguntó \"¿y eso quién lo comprobó?\"... y no supe qué decirle."
+    },
+    {
+      "id": "e04",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "e04a",
+          "texto": "¿Nunca revisaste si era cierto?",
+          "reaccion": [
+            {
+              "id": "e04ar",
+              "tipo": "dialogo",
+              "hablanteId": "aurelio",
+              "texto": "Nunca. Si todos lo decían, pensé que era verdad. ¿Me ayudas a revisar mis pregones?"
+            }
+          ]
+        },
+        {
+          "id": "e04b",
+          "texto": "Yo también he escuchado esas frases.",
+          "reaccion": [
+            {
+              "id": "e04br",
+              "tipo": "dialogo",
+              "hablanteId": "aurelio",
+              "texto": "¿Verdad que se escuchan en todos lados? Justamente por eso quiero saber cuáles son ciertas. ¿Me ayudas?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Claro que sí. Pero primero, veamos qué es exactamente lo que hay que revisar."
+    },
+    {
+      "id": "e06",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "¿Qué es un mito vocacional?",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un mito vocacional es una frase general sobre los estudios, el trabajo o el éxito que se repite tanto que parece un hecho, aunque nadie la haya comprobado o aunque no aplique a todas las personas."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "¿De dónde vienen?",
+          "items": [
+            "Experiencias de otras personas en otra época: lo que le pasó a alguien hace 20 años no necesariamente pasa hoy.",
+            "Miedo: las familias quieren protegernos y a veces repiten lo que les da seguridad.",
+            "Estereotipos: ideas sobre qué es \"para\" ciertas personas según su género, su origen o su nivel económico.",
+            "Información incompleta o desactualizada: el mercado laboral y la oferta educativa cambian constantemente."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "El problema de un mito no es solo que pueda ser falso: es que puede hacerte descartar opciones antes de conocerlas."
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Tres preguntas para revisar una creencia",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "No necesitas ser experto para revisar una frase. Basta con hacerle tres preguntas antes de aceptarla."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "1. ¿Quién lo dice y desde qué experiencia?",
+              "texto": "¿Es alguien que conoce ese campo de primera mano, o lo escuchó de otros? Una experiencia personal es valiosa, pero es una sola."
+            },
+            {
+              "titulo": "2. ¿Qué evidencia hay a favor y en contra?",
+              "texto": "¿Hay datos, estudios o casos que la respalden? ¿Conoces casos que la contradigan?"
+            },
+            {
+              "titulo": "3. ¿Aplica a mi caso y a la situación de hoy?",
+              "texto": "Aunque algo haya sido cierto para alguien, puede no serlo para ti, en tu ciudad y en este momento."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Revisar una creencia no significa rechazarla: significa decidir con información."
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "tipo": "pregunta",
+      "hablanteId": "aurelio",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Mi vecino dice que \"la carrera de turismo ya no tiene trabajo\", porque a su hermano le fue mal cuando se graduó hace 18 años. ¿Qué pregunta revela mejor el problema de esa frase?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "¿Quién lo dice y desde qué experiencia?",
+          "correcta": false,
+          "retroalimentacion": "Sirve, pero lo más llamativo aquí es otra cosa: el tiempo que ha pasado."
+        },
+        {
+          "id": "b",
+          "texto": "¿Aplica a mi caso y a la situación de hoy?",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Lo que pasó hace 18 años no dice mucho del mercado actual."
+        },
+        {
+          "id": "c",
+          "texto": "Ninguna: si le pasó a su hermano, es cierto.",
+          "correcta": false,
+          "retroalimentacion": "Una experiencia es real, pero es un solo caso y de otra época."
+        }
+      ],
+      "explicacion": "La experiencia del hermano es real, pero ocurrió en otro momento. Para saber si hoy hay trabajo en turismo hay que buscar información actual, por ejemplo en Ponte en Carrera.",
+      "pistas": [
+        {
+          "id": "e08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en un número de la historia: 18 años. ¿Qué pregunta tiene que ver con el tiempo?"
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "expresion": "contento",
+      "texto": "¡Ya entiendo el truco! Entonces revisemos mis pregones uno por uno. El primero lo grito todas las mañanas..."
+    },
+    {
+      "id": "e10",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "aurelio",
+      "titulo": "Pregón 1: \"Si no vas a la universidad, no llegas a nada\"",
+      "bloques": [
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Lo que dice el mito",
+            "texto": "La universidad es el único camino hacia un buen trabajo. Lo técnico es \"de segunda\"."
+          },
+          "derecha": {
+            "titulo": "Lo que muestra la realidad",
+            "texto": "Hay varias rutas válidas: universitaria, técnica, formación en oficios y emprendimiento. Cada una sirve para objetivos distintos."
+          }
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Lo que conviene saber",
+          "items": [
+            "Las carreras técnicas suelen ser más cortas (alrededor de 3 años) y muy orientadas a la práctica, lo que permite empezar a trabajar antes.",
+            "Los ingresos y la empleabilidad dependen mucho de la carrera específica y de la institución, no solo de si es universitaria o técnica. Una carrera técnica demandada puede tener mejores condiciones que una universitaria saturada.",
+            "Elegir una ruta técnica no cierra la puerta a la universidad: muchas personas continúan estudiando después. Si te interesa, pregunta a la institución por convalidaciones.",
+            "El rechazo a lo técnico suele venir de su reputación social, no de datos."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "En Ponte en Carrera puedes comparar carreras universitarias y técnicas, y ver información de ingresos de sus egresados por institución."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ponte en Carrera — Ministerio de Trabajo y Promoción del Empleo / MINEDU",
+          "url": "https://www.ponteencarrera.pe"
+        }
+      ],
+      "recursoIds": [
+        "rec-ponteencarrera"
+      ]
+    },
+    {
+      "id": "e11",
+      "tipo": "pregunta",
+      "hablanteId": "aurelio",
+      "formato": "verdadero_falso",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Verdadero o falso: si eliges una carrera técnica, renuncias para siempre a estudiar en la universidad.",
+      "opciones": [
+        {
+          "id": "v",
+          "texto": "Verdadero",
+          "correcta": false,
+          "retroalimentacion": "No es así. La ruta técnica no cierra otras rutas."
+        },
+        {
+          "id": "f",
+          "texto": "Falso",
+          "correcta": true,
+          "retroalimentacion": "Correcto. Muchas personas continúan estudiando después."
+        }
+      ],
+      "explicacion": "Es posible estudiar una carrera universitaria después de una técnica. En algunos casos, incluso se pueden convalidar cursos.",
+      "pistas": [
+        {
+          "id": "e11p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Revisa la tercera idea de la lista que nos mostró Aurelio."
+        }
+      ]
+    },
+    {
+      "id": "e12",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "Uno menos. El siguiente lo aprendí de mi abuelo... y ahora me da un poco de vergüenza."
+    },
+    {
+      "id": "e13",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "aurelio",
+      "titulo": "Pregón 2: \"Hay trabajos de hombres y trabajos de mujeres\"",
+      "bloques": [
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Lo que dice el mito",
+            "texto": "La mecánica o la ingeniería son \"de hombres\"; la enfermería o la educación inicial son \"de mujeres\"."
+          },
+          "derecha": {
+            "titulo": "Lo que muestra la realidad",
+            "texto": "Ninguna profesión exige un sexo para ejercerla. Lo que se necesita son habilidades, conocimientos e interés, y eso se desarrolla."
+          }
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Lo que conviene saber",
+          "items": [
+            "Que en algunas carreras estudien más hombres o más mujeres se explica por estereotipos y por cómo nos crían, no por diferencias de capacidad.",
+            "Los estereotipos actúan desde la infancia: influyen en qué nos creemos capaces de hacer y en qué nos animan a probar.",
+            "Esto afecta a todos: también hay hombres que descartan enfermería, psicología o educación por miedo a lo que digan."
+          ]
+        },
+        {
+          "tipo": "reflexion",
+          "texto": "Cuando descartas una opción, pregúntate: ¿la descarto porque no me interesa o porque me dijeron que \"no es para mí\"?"
+        },
+        {
+          "tipo": "fuente",
+          "texto": "UNESCO (2017). Descifrar el código: la educación de las niñas y las mujeres en ciencias, tecnología, ingeniería y matemáticas (STEM)."
+        }
+      ],
+      "recursoIds": [
+        "rec-unesco-stem"
+      ]
+    },
+    {
+      "id": "e14",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "El tercero es el que más escucho en las casas..."
+    },
+    {
+      "id": "e15",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "aurelio",
+      "titulo": "Pregón 3: \"Si estudias lo que te gusta, no vas a ganar bien\"",
+      "bloques": [
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Lo que dice el mito",
+            "texto": "Hay que elegir entre lo que te gusta y lo que paga. Seguir tu interés es un lujo."
+          },
+          "derecha": {
+            "titulo": "Lo que muestra la realidad",
+            "texto": "No es una elección entre dos extremos. Lo más sensato es combinar tu interés con información real sobre ingresos y empleabilidad."
+          }
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Lo que conviene saber",
+          "items": [
+            "Los ingresos varían mucho dentro de una misma carrera: dependen de la institución, la especialización, la experiencia y el desempeño.",
+            "La investigación sobre intereses vocacionales muestra que estudiar algo acorde con tus intereses se asocia con mejor rendimiento y con mayor probabilidad de terminar los estudios.",
+            "Elegir solo por el sueldo, sin interés, aumenta el riesgo de abandonar la carrera, y una carrera que no terminas no genera ese sueldo.",
+            "Ojo: tampoco es sensato ignorar el dinero. El contexto económico de tu familia es un dato real que merece considerarse."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La pregunta útil no es \"¿lo que me gusta o lo que paga?\", sino \"¿qué opciones que me interesan tienen buenas condiciones, y dónde?\"."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Nye, C. D., Su, R., Rounds, J. y Drasgow, F. (2012). Vocational interests and performance: A quantitative summary of over 60 years of research. Perspectives on Psychological Science."
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "tipo": "pregunta",
+      "hablanteId": "aurelio",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Entonces, ¿cuál es la forma más informada de tener en cuenta el dinero al elegir?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Elegir la carrera con el sueldo promedio más alto, aunque no me interese.",
+          "correcta": false,
+          "retroalimentacion": "Sin interés aumenta el riesgo de no terminar, y ese sueldo nunca llega."
+        },
+        {
+          "id": "b",
+          "texto": "Ignorar el dinero y elegir solo por lo que me gusta.",
+          "correcta": false,
+          "retroalimentacion": "El interés importa mucho, pero las condiciones económicas también son un dato real."
+        },
+        {
+          "id": "c",
+          "texto": "Entre las opciones que me interesan, comparar ingresos y empleabilidad por carrera e institución.",
+          "correcta": true,
+          "retroalimentacion": "Así es: interés e información juntos."
+        }
+      ],
+      "explicacion": "Combinar interés con datos concretos permite elegir algo que puedas sostener y que tenga buenas perspectivas. Ponte en Carrera es un buen punto de partida.",
+      "pistas": [
+        {
+          "id": "e16p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Recuerda la idea clave: no es uno u otro."
+        }
+      ]
+    },
+    {
+      "id": "e17",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "expresion": "dudoso",
+      "texto": "Y el último... este lo gritaba para que los jóvenes se tomaran en serio su decisión. Pero creo que los asustaba."
+    },
+    {
+      "id": "e18",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "aurelio",
+      "titulo": "Pregón 4: \"La carrera que elijas definirá toda tu vida\"",
+      "bloques": [
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Lo que dice el mito",
+            "texto": "Si te equivocas ahora, te equivocaste para siempre. Hay una única respuesta correcta y tienes que acertarla."
+          },
+          "derecha": {
+            "titulo": "Lo que muestra la realidad",
+            "texto": "Las trayectorias profesionales rara vez son una línea recta. Elegir es un primer paso importante, no una sentencia."
+          }
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Lo que conviene saber",
+          "items": [
+            "Muchas personas se especializan, cambian de campo o combinan áreas a lo largo de su vida laboral.",
+            "Lo que aprendes en una carrera (comunicarte, resolver problemas, trabajar en equipo) te sirve también en otras: son habilidades transferibles.",
+            "Cambiar de rumbo no es fracasar: suele ser el resultado de conocerte mejor.",
+            "Aun así, informarte bien ahora te ahorra tiempo, dinero y esfuerzo. Por eso vale la pena este proceso."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Es normal sentir presión o miedo frente a esta decisión. No necesitas la respuesta perfecta: necesitas una decisión informada y hecha por ti."
+        }
+      ],
+      "recursoIds": [
+        "rec-video-mitos"
+      ]
+    },
+    {
+      "id": "e19",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Repasemos. ¿Cuáles de estas frases son mitos, según lo que aprendimos? (Marca todas las que correspondan.)",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "\"La enfermería no es una carrera para hombres.\"",
+          "correcta": true,
+          "retroalimentacion": "Es un mito: ninguna profesión exige un sexo.",
+          "tambienEra": "un mito"
+        },
+        {
+          "id": "b",
+          "texto": "\"Los ingresos varían según la carrera y la institución.\"",
+          "correcta": false,
+          "retroalimentacion": "Esto es un dato, no un mito."
+        },
+        {
+          "id": "c",
+          "texto": "\"Si te equivocas de carrera, tu vida está arruinada.\"",
+          "correcta": true,
+          "retroalimentacion": "Es un mito: las trayectorias cambian.",
+          "tambienEra": "un mito"
+        },
+        {
+          "id": "d",
+          "texto": "\"Lo técnico es para los que no pueden ir a la universidad.\"",
+          "correcta": true,
+          "retroalimentacion": "Es un mito: son rutas distintas, no de primera y segunda.",
+          "tambienEra": "un mito"
+        }
+      ],
+      "explicacion": "Tres de las cuatro eran mitos. La frase sobre los ingresos es información que puedes verificar y usar para decidir.",
+      "pistas": [
+        {
+          "id": "e19p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Hay más de un mito. Busca la frase que se puede comprobar con datos."
+        }
+      ]
+    },
+    {
+      "id": "e20",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Lo que te llevas de la plaza",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "Un mito vocacional es una frase general que se repite como si fuera un hecho.",
+            "Para revisarlo: ¿quién lo dice?, ¿qué evidencia hay?, ¿aplica a mí y a hoy?",
+            "Hay varias rutas válidas: universitaria, técnica, oficios, emprendimiento.",
+            "Ninguna profesión es de hombres o de mujeres.",
+            "Interés e información económica van juntos, no se oponen.",
+            "Tu primera elección es un paso, no una sentencia."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Esta ficha se guardó en tu sección Recursos."
+        }
+      ],
+      "recursoIds": [
+        "ficha-mitos"
+      ]
+    },
+    {
+      "id": "e21",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "Una última cosa. Mi sobrina Lucía quiere estudiar mecánica automotriz en un instituto. Pero en casa le dicen que eso no es para mujeres y que mejor vaya a la universidad. Me pidió consejo... ¿qué le digo?"
+    },
+    {
+      "id": "e22",
+      "tipo": "pregunta",
+      "hablanteId": "aurelio",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Cuál de estos consejos usa mejor lo que aprendimos hoy?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "\"Hazle caso a tu familia: ellos saben más.\"",
+          "correcta": false,
+          "retroalimentacion": "La familia importa, pero aquí repite dos pregones sin revisarlos."
+        },
+        {
+          "id": "b",
+          "texto": "\"Esas frases son mitos: ninguna profesión es de hombres o de mujeres, y lo técnico no es de segunda. Revisa qué institutos están licenciados, cómo les va a sus egresados y conversa con tu familia con esos datos.\"",
+          "correcta": true,
+          "retroalimentacion": "Exacto: identifica los mitos y propone buscar información para conversar."
+        },
+        {
+          "id": "c",
+          "texto": "\"Ignora a tu familia y haz lo que quieras.\"",
+          "correcta": false,
+          "retroalimentacion": "Defiende su interés, pero no la ayuda a revisar los mitos ni a conversar con su familia."
+        }
+      ],
+      "explicacion": "Lucía está escuchando dos pregones a la vez: \"hay trabajos de hombres y de mujeres\" y \"si no vas a la universidad, no llegas a nada\". Un buen consejo los nombra, propone buscar información y no rompe la conversación con su familia.",
+      "pistas": [
+        {
+          "id": "e22p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Busca el consejo que nombra los mitos y propone buscar información."
+        }
+      ]
+    },
+    {
+      "id": "e23",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "expresion": "contento",
+      "texto": "Eso le voy a decir. Y desde mañana cambio mis pregones: voy a gritar preguntas en vez de frases hechas. Toma, esto es para ti: lo encontré hace años bajo la fuente."
+    },
+    {
+      "id": "e24",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "¡Una pieza de la llave! Oye... Aurelio tenía sus pregones. Seguro tú también has escuchado frases así en tu casa o en el colegio. En la siguiente misión las revisamos juntos."
+    }
+  ],
+  "recompensa": {
+    "afinidad": 1,
+    "piezaLlave": "pieza-plaza",
+    "recursoIds": [
+      "ficha-mitos"
+    ],
+    "mensajeFin": "Obtuviste: Diente de la llave · Plaza · Ficha guardada en Recursos"
+  },
+  "siguienteSugerida": "act-07",
+  "promptDiario": "¿Cuál de estas frases has escuchado más cerca de ti? ¿Qué sentiste al revisarla?",
+  "mapa": {
+    "x": 400,
+    "y": 140,
+    "etiqueta": "Informativa · A tu ritmo",
+    "icono": "informativa"
+  }
+}

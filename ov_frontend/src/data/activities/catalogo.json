@@ -1,0 +1,220 @@
+{
+  "personajes": [
+    {
+      "id": "companero",
+      "nombre": "[Nombre del compañero]",
+      "rol": "companero",
+      "descripcion": "Guía del estudiante en la búsqueda de la llave. Da pistas en los retos, hace el puente entre lo aprendido y la vida del estudiante. Tono cercano, nunca evalúa.",
+      "avatarUrl": "/img/personajes/companero.png",
+      "expresiones": {
+        "neutral": "/img/personajes/companero_neutral.png",
+        "animado": "/img/personajes/companero_animado.png",
+        "pensativo": "/img/personajes/companero_pensativo.png"
+      }
+    },
+    {
+      "id": "mara",
+      "nombre": "Mara",
+      "rol": "npc",
+      "descripcion": "Trabaja en el molino y conversa con medio pueblo. Primera voz del test de intereses. Reacciones siempre neutras.",
+      "ubicacion": "Molino",
+      "avatarUrl": "/img/personajes/mara.png",
+      "expresiones": {
+        "neutral": "/img/personajes/mara_neutral.png",
+        "sonrie": "/img/personajes/mara_sonrie.png"
+      }
+    },
+    {
+      "id": "elena",
+      "nombre": "Elena",
+      "rol": "npc",
+      "descripcion": "Vive cerca del río. Revela el resultado del test de intereses al completar las 14 interacciones.",
+      "ubicacion": "Río",
+      "avatarUrl": "/img/personajes/elena.png"
+    },
+    {
+      "id": "aurelio",
+      "nombre": "Aurelio",
+      "rol": "npc",
+      "descripcion": "Pregonero de la plaza. Durante años repitió frases que escuchaba sin revisarlas. Encarna los mitos vocacionales, pero no es ridiculizado: es alguien que quiere aprender a distinguir.",
+      "ubicacion": "Plaza de los rumores",
+      "avatarUrl": "/img/personajes/aurelio.png",
+      "expresiones": {
+        "neutral": "/img/personajes/aurelio_neutral.png",
+        "dudoso": "/img/personajes/aurelio_dudoso.png",
+        "contento": "/img/personajes/aurelio_contento.png"
+      }
+    },
+    {
+      "id": "orientacion",
+      "nombre": "Equipo de orientación",
+      "rol": "narrador",
+      "descripcion": "Voz neutra de las actividades del apoderado. No tiene avatar ni personalidad: el front la muestra como nota o pista en texto, sin diálogo ni efecto de escritura.",
+      "avatarUrl": ""
+    }
+  ],
+  "piezasLlave": [
+    {
+      "id": "pieza-plaza",
+      "nombre": "Diente de la llave · Plaza",
+      "descripcion": "Se obtiene al ayudar a Aurelio a revisar sus pregones."
+    }
+  ],
+  "recursos": [
+    {
+      "id": "ficha-mitos",
+      "titulo": "Ficha: Mitos y realidades del futuro profesional",
+      "tipo": "ficha",
+      "guardableEnRecursos": true,
+      "fuente": "Plan de orientación vocacional (ACT-07) + fuentes indicadas",
+      "contenido": "## Mitos y realidades del futuro profesional\n\n**Qué es un mito vocacional:** una frase general sobre estudios o trabajo que se repite tanto que parece un hecho, aunque no se haya comprobado ni aplique a todos.\n\n**Las 3 preguntas para revisar una creencia**\n1. ¿Quién lo dice y desde qué experiencia?\n2. ¿Qué evidencia hay a favor y en contra?\n3. ¿Aplica a mi caso y a la situación de hoy?\n\n| Mito | Realidad |\n|---|---|\n| Solo la universidad lleva al éxito | Existen rutas universitarias, técnicas, de oficios y de emprendimiento. Los ingresos y la empleabilidad dependen de la carrera, la institución y la persona, no solo del tipo de estudio. |\n| Hay trabajos de hombres y de mujeres | Ninguna profesión exige un sexo para ejercerla. Las diferencias en quién la estudia vienen de estereotipos, no de capacidad. |\n| Lo que te gusta no paga | Los ingresos varían mucho dentro de una misma carrera. El interés se asocia con mejor rendimiento y con terminar los estudios. Lo sensato es combinar interés e información. |\n| La carrera define toda tu vida | Las trayectorias suelen cambiar: especializaciones, cambios de campo, combinaciones. Elegir es un primer paso importante, no una sentencia. |\n\n**Dónde consultar datos reales:** Ponte en Carrera (plataforma del Estado peruano) permite comparar carreras e instituciones, incluyendo información de ingresos de egresados."
+    },
+    {
+      "id": "rec-ponteencarrera",
+      "titulo": "Ponte en Carrera: compara carreras e instituciones",
+      "tipo": "enlace",
+      "url": "https://www.ponteencarrera.pe",
+      "guardableEnRecursos": true,
+      "fuente": "MTPE / MINEDU"
+    },
+    {
+      "id": "rec-unesco-stem",
+      "titulo": "UNESCO (2017). Descifrar el código: la educación de las niñas y las mujeres en STEM",
+      "tipo": "lectura",
+      "guardableEnRecursos": true,
+      "fuente": "UNESCO"
+    },
+    {
+      "id": "rec-video-mitos",
+      "titulo": "[Video corto sugerido: testimonios que rompen mitos — por producir o seleccionar]",
+      "tipo": "video",
+      "guardableEnRecursos": true
+    },
+    {
+      "id": "ficha-pad-rol",
+      "titulo": "Ficha: Acompañar sin decidir por él o ella",
+      "tipo": "ficha",
+      "guardableEnRecursos": true,
+      "fuente": "Programa de orientación vocacional (ACT-P01) y fuentes indicadas",
+      "contenido": "## Acompañar sin decidir por él o ella\n\n**Por qué importa:** la familia es una de las influencias más fuertes en la elección de estudios y trabajo de los adolescentes.\n\n**De dónde vienen nuestras expectativas:** de nuestra propia historia, del miedo a que pasen necesidades, de lo que se dice en el entorno y de información de otra época. Tenerlas es natural; lo importante es distinguir cuáles son nuestras y cuáles son de nuestro hijo.\n\n| Forma de influencia | Cómo se ve |\n|---|---|\n| Apoyo | Escuchar, interesarse, ofrecer información y experiencias, aceptar las dudas. |\n| Interferencia | Decidir por él, descalificar sus opciones, presionar. |\n| Desconexión | No involucrarse: \"tú verás\". |\n\n**Frases que abren:** \"¿Qué te atrae de esa opción?\", \"Busquemos juntos cómo es ese trabajo\", \"Es normal tener dudas\", \"Cuenta conmigo para pensarlo\".\n\n**Cinco acciones:** escuchar primero, preguntar con curiosidad, separar sus deseos de los de su hijo, ofrecer experiencias y mostrar confianza.\n\n**Recuerde:** la duda es parte del proceso. Si la angustia es muy intensa o dura semanas, converse con la psicóloga del colegio."
+    },
+    {
+      "id": "ficha-pad-info",
+      "titulo": "Ficha: Conversar con información de hoy",
+      "tipo": "ficha",
+      "guardableEnRecursos": true,
+      "fuente": "Programa de orientación vocacional (ACT-P02) y fuentes indicadas",
+      "contenido": "## Conversar con información de hoy\n\n| Ruta | Dónde | Duración referencial |\n|---|---|---|\n| Universitaria | Universidades | En general 5 años |\n| Técnica | Institutos y escuelas de educación superior | En general de 2 a 3 años en institutos |\n| Fuerzas Armadas y Policía | Escuelas de oficiales y suboficiales | Variable |\n\n**Antes de elegir una institución:**\n1. Que esté licenciada (universidades: SUNEDU; institutos y escuelas: Ministerio de Educación).\n2. Que la carrera esté autorizada.\n3. Qué pasa con sus egresados (Ponte en Carrera).\n4. Cuánto cuesta en total.\n\n**Una pregunta mejor que \"¿da plata?\":** ¿cuánto ganan, en qué trabajan y cuánto tardan en conseguir empleo quienes estudian esa carrera en esa institución?\n\n**Costo real:** admisión + matrícula + pensiones de toda la carrera + materiales + transporte o vivienda.\n\n**Financiamiento:** instituciones públicas, Beca 18 (PRONABEC), becas de las propias instituciones y créditos educativos.\n\n**Resultados de los cuestionarios:** son una fotografía del momento para conversar, no un diagnóstico ni una orden. Para interpretarlos a fondo, acuda a la orientadora del colegio."
+    }
+  ],
+  "instrumentos": [
+    {
+      "id": "tip",
+      "nombre": "Test de Intereses Profesionales",
+      "version": "1.0",
+      "visibilidad": "estudiante_orientadora_padres",
+      "items": [
+        {
+          "id": "tip-001",
+          "codigo": "[N° original]",
+          "texto": "¿Aceptarías trabajar escribiendo artículos en la sección económica de un diario?",
+          "formato": {
+            "tipo": "si_no",
+            "etiquetas": {
+              "si": "Sí",
+              "no": "No"
+            }
+          }
+        },
+        {
+          "id": "tip-002",
+          "codigo": "[N° original]",
+          "texto": "¿Te ofrecerías para organizar la despedida de soltero de uno de tus amigos?",
+          "formato": {
+            "tipo": "si_no",
+            "etiquetas": {
+              "si": "Sí",
+              "no": "No"
+            }
+          }
+        },
+        {
+          "id": "tip-003",
+          "codigo": "[N° original]",
+          "texto": "¿Te gustaría dirigir/crear un proyecto de urbanización en tu provincia?",
+          "formato": {
+            "tipo": "si_no",
+            "etiquetas": {
+              "si": "Sí",
+              "no": "No"
+            }
+          }
+        },
+        {
+          "id": "tip-004",
+          "codigo": "[N° original]",
+          "texto": "¿A una frustración siempre opones un pensamiento positivo?",
+          "formato": {
+            "tipo": "si_no",
+            "etiquetas": {
+              "si": "Sí",
+              "no": "No"
+            }
+          }
+        },
+        {
+          "id": "tip-005",
+          "codigo": "[N° original]",
+          "texto": "¿Te dedicarías a socorrer a personas accidentadas o atacadas por asaltantes?",
+          "formato": {
+            "tipo": "si_no",
+            "etiquetas": {
+              "si": "Sí",
+              "no": "No"
+            }
+          }
+        },
+        {
+          "id": "tip-006",
+          "codigo": "[N° original]",
+          "texto": "¿Cuando eras chico, te interesaba saber cómo estaban construidos tus juguetes?",
+          "formato": {
+            "tipo": "si_no",
+            "etiquetas": {
+              "si": "Sí",
+              "no": "No"
+            }
+          }
+        },
+        {
+          "id": "tip-007",
+          "codigo": "[N° original]",
+          "texto": "¿Te interesan más los misterios de la naturaleza que los secretos de la tecnología?",
+          "formato": {
+            "tipo": "si_no",
+            "etiquetas": {
+              "si": "Sí",
+              "no": "No"
+            }
+          }
+        }
+      ],
+      "clave": {
+        "_nota": "Completar con la clave oficial del instrumento. Aquí solo se muestra la forma.",
+        "dimensiones": [
+          {
+            "id": "[dim-id]",
+            "nombre": "[Nombre de la escala]"
+          }
+        ],
+        "asignacion": [
+          {
+            "itemId": "tip-001",
+            "dimensionId": "[dim-id]",
+            "valorQueSuma": "si"
+          }
+        ]
+      }
+    }
+  ]
+}

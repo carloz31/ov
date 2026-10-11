@@ -1,0 +1,43 @@
+{
+  "id": "act-tip-final",
+  "tipo": "instrumento",
+  "titulo": "Las pistas que hablan de ti",
+  "bloque": 2,
+  "orden": 15,
+  "obligatoria": true,
+  "requisitos": [
+    "act-tip-01",
+    "act-tip-02",
+    "act-tip-03",
+    "act-tip-04",
+    "act-tip-05",
+    "act-tip-06",
+    "act-tip-07",
+    "act-tip-08",
+    "act-tip-09",
+    "act-tip-10",
+    "act-tip-11",
+    "act-tip-12",
+    "act-tip-13",
+    "act-tip-14"
+  ],
+  "ubicacion": "Río",
+  "duracionEstimadaMin": 5,
+  "personajeIds": [
+    "elena"
+  ],
+  "nodos": [
+    {
+      "id": "tip-resultado",
+      "tipo": "resultado",
+      "hablanteId": "elena",
+      "instrumentoId": "tip"
+    }
+  ],
+  "mapa": {
+    "x": 1030,
+    "y": 610,
+    "etiqueta": "Encuentro con Elena",
+    "icono": "informativa"
+  }
+}

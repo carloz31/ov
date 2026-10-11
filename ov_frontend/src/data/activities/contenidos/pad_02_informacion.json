@@ -1,0 +1,438 @@
+{
+  "id": "pad-02-info",
+  "codigo": "ACT-P02",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "Conversar con información de hoy",
+  "subtitulo": "Rutas de estudio, instituciones, trabajo, costos y resultados de su hijo",
+  "bloque": 6,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": ["pad-01-rol"],
+  "duracionEstimadaMin": 14,
+  "personajeIds": ["orientacion"],
+  "objetivoAprendizaje": "Al terminar, el apoderado conoce las principales rutas de formación después del colegio, sabe cómo verificar que una institución esté autorizada, sabe dónde consultar información actual sobre empleo, ingresos y becas, y entiende cómo interpretar los resultados de los cuestionarios de su hijo sin convertirlos en una etiqueta.",
+  "nodos": [
+    {
+      "id": "p2-01",
+      "tipo": "diapositiva",
+      "etiqueta": "Para empezar",
+      "titulo": "El mundo que conocimos cambió",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Muchas decisiones familiares se toman con ideas que fueron ciertas hace veinte años: qué carreras \"tienen futuro\", qué instituciones son buenas o cuánto se gana en cada trabajo. Desde entonces han aparecido nuevas carreras, otras se han saturado y la oferta de institutos y universidades ha cambiado mucho."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "No necesita saberlo todo para acompañar. Necesita saber dónde buscar información confiable y actual."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "En esta actividad verá:",
+          "items": [
+            "Las rutas de estudio que existen después del colegio.",
+            "Cómo saber si una institución es confiable.",
+            "Mejores preguntas sobre trabajo, ingresos y costos.",
+            "Cómo leer los resultados de los cuestionarios de su hijo."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p2-02",
+      "tipo": "diapositiva",
+      "etiqueta": "Información",
+      "titulo": "Las rutas posibles después del colegio",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "No existe una sola ruta \"buena\". Cada una sirve para objetivos distintos y tiene tiempos y costos diferentes."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": ["Ruta", "Dónde se estudia", "Duración referencial", "Qué se obtiene"],
+          "filas": [
+            [
+              "Universitaria",
+              "Universidades públicas y privadas",
+              "En general 5 años (algunas carreras, más)",
+              "Grado de bachiller y título profesional"
+            ],
+            [
+              "Técnica",
+              "Institutos y escuelas de educación superior",
+              "En general de 2 a 3 años en institutos",
+              "Título de técnico o profesional técnico"
+            ],
+            [
+              "Fuerzas Armadas y Policía",
+              "Escuelas de oficiales y de suboficiales",
+              "Variable según la escuela",
+              "Formación y carrera dentro de la institución"
+            ]
+          ],
+          "nota": "Las duraciones son referenciales: confirme siempre en la institución. También existen centros de formación en oficios (CETPRO) y el camino del emprendimiento."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Lo que conviene saber",
+          "items": [
+            "Una carrera técnica permite empezar a trabajar antes y suele ser muy práctica.",
+            "Elegir lo técnico no cierra la puerta a la universidad: en muchos casos se puede continuar estudios y pedir convalidación de cursos, según cada institución.",
+            "Los ingresos dependen sobre todo de la carrera específica y de la institución, no solo de si es universitaria o técnica."
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ley N.° 30220, Ley Universitaria, y Ley N.° 30512, Ley de Institutos y Escuelas de Educación Superior."
+        }
+      ]
+    },
+    {
+      "id": "p2-03",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "verdadero_falso",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Verdadero o falso: si su hijo estudia una carrera técnica, ya no podrá estudiar en la universidad más adelante.",
+      "opciones": [
+        {
+          "id": "v",
+          "texto": "Verdadero",
+          "correcta": false,
+          "retroalimentacion": "No es así. La ruta técnica no cierra otras rutas."
+        },
+        {
+          "id": "f",
+          "texto": "Falso",
+          "correcta": true,
+          "retroalimentacion": "Correcto. Puede continuar estudiando después."
+        }
+      ],
+      "explicacion": "Muchas personas estudian una carrera técnica, empiezan a trabajar y luego continúan en la universidad. Las condiciones de convalidación se consultan en cada institución.",
+      "pistas": [
+        {
+          "id": "p2-03p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Revise la segunda idea de \"Lo que conviene saber\"."
+        }
+      ],
+      "transicion": "Listo, ya conoce las rutas de estudio. Ahora, compruebe cómo se pueden combinar."
+    },
+    {
+      "id": "p2-04",
+      "tipo": "diapositiva",
+      "etiqueta": "Información",
+      "titulo": "¿Cómo saber si una institución es confiable?",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un local bonito o una pensión baja no garantizan una buena formación. Antes de decidir, conviene revisar cuatro cosas."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Que esté licenciada",
+              "texto": "Las universidades las licencia la SUNEDU. Los institutos y escuelas de educación superior, el Ministerio de Educación. La lista es pública en sus páginas web."
+            },
+            {
+              "titulo": "Que la carrera esté autorizada",
+              "texto": "No basta con que la institución esté licenciada: la carrera específica también debe estar en su oferta autorizada."
+            },
+            {
+              "titulo": "Qué pasa con sus egresados",
+              "texto": "En Ponte en Carrera puede comparar carreras e instituciones y ver información sobre el empleo e ingresos de sus egresados."
+            },
+            {
+              "titulo": "Cuánto cuesta en total",
+              "texto": "Pregunte por todos los pagos: admisión, matrícula, pensiones durante toda la carrera, materiales y trámites de titulación."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "alerta",
+          "texto": "Desconfíe de ofertas que prometen títulos muy rápidos, sin examen de admisión o \"garantizados\". Verifique siempre el licenciamiento."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ponte en Carrera, plataforma del Estado peruano.",
+          "url": "https://www.ponteencarrera.pe"
+        }
+      ],
+      "recursoIds": ["rec-ponteencarrera"],
+      "transicion": "Listo, ya revisó cómo combinar las rutas. Ahora, vea cómo reconocer una institución confiable."
+    },
+    {
+      "id": "p2-05",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "La familia de Jorge encontró un instituto cerca de casa con una pensión muy baja, que ofrece la carrera de enfermería técnica. ¿Qué conviene revisar primero?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que el instituto esté licenciado por el Ministerio de Educación y que la carrera esté autorizada.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Es lo primero, porque de eso depende la validez del título."
+        },
+        {
+          "id": "b",
+          "texto": "Que tenga buenas instalaciones y publicidad.",
+          "correcta": false,
+          "retroalimentacion": "Puede importar, pero no dice nada sobre la validez del título."
+        },
+        {
+          "id": "c",
+          "texto": "Nada: si está cerca y es barato, es la mejor opción.",
+          "correcta": false,
+          "retroalimentacion": "La cercanía y el precio son importantes, pero no reemplazan la verificación."
+        }
+      ],
+      "explicacion": "La cercanía y el costo son razones válidas para elegir, siempre que antes se haya verificado el licenciamiento de la institución y la autorización de la carrera.",
+      "pistas": [
+        {
+          "id": "p2-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Recuerde el primer paso de la lista anterior."
+        }
+      ]
+    },
+    {
+      "id": "p2-06",
+      "tipo": "diapositiva",
+      "etiqueta": "Información",
+      "titulo": "Trabajo e ingresos: hacer mejores preguntas",
+      "bloques": [
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "La pregunta de siempre",
+            "texto": "\"¿Esa carrera da plata?\""
+          },
+          "derecha": {
+            "titulo": "Una pregunta más útil",
+            "texto": "\"¿Cuánto ganan, en qué trabajan y cuánto tardan en conseguir empleo quienes estudian esa carrera en esa institución?\""
+          }
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Lo que conviene saber",
+          "items": [
+            "Los ingresos varían mucho dentro de una misma carrera: según la institución, la región, la especialización y la experiencia.",
+            "Una carrera con buenos sueldos promedio no sirve si su hijo la abandona por falta de interés.",
+            "Estudiar algo acorde a los propios intereses se asocia con mejor rendimiento y con más probabilidad de terminar los estudios.",
+            "El dinero sí importa: lo sensato es buscar, entre las opciones que le interesan, las que tienen mejores condiciones."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "En la Guía de carreras de esta plataforma puede revisar ingresos referenciales por familia de carreras y por departamento."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Nye, C., Su, R., Rounds, J. y Drasgow, F. (2012). Vocational interests and performance: A quantitative summary of over 60 years of research. Perspectives on Psychological Science, 7(4)."
+        }
+      ]
+    },
+    {
+      "id": "p2-07",
+      "tipo": "diapositiva",
+      "etiqueta": "Información",
+      "titulo": "Costos y financiamiento: planificar con tiempo",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Hablar de dinero en casa no es quitarle ilusión a su hijo: es darle información para decidir. Lo mejor es hacerlo con anticipación y con números concretos."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Para calcular el costo real, sume:",
+          "items": [
+            "Admisión y matrícula.",
+            "Pensión mensual multiplicada por toda la duración de la carrera.",
+            "Materiales, uniformes o equipos que pida la carrera.",
+            "Transporte o, si debe mudarse, vivienda y alimentación."
+          ]
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Formas de financiar los estudios:",
+          "items": [
+            "Instituciones públicas, que no cobran pensión.",
+            "Becas del Estado, como Beca 18 del PRONABEC, para estudiantes con buen rendimiento y recursos limitados.",
+            "Becas, descuentos y escalas de pago de las propias instituciones.",
+            "Créditos educativos, que conviene revisar con cuidado antes de firmar."
+          ]
+        },
+        {
+          "tipo": "reflexion",
+          "texto": "¿Ya conversaron en casa sobre cuánto pueden invertir en sus estudios y qué alternativas tendrían?"
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Programa Nacional de Becas y Crédito Educativo (PRONABEC).",
+          "url": "https://www.pronabec.gob.pe"
+        }
+      ]
+    },
+    {
+      "id": "p2-08",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "La familia de Ana quiere estimar cuánto costaría su carrera de cinco años en una universidad privada. ¿Qué deberían incluir? (Marque todas las que correspondan.)",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "La pensión de un solo mes.",
+          "correcta": false,
+          "retroalimentacion": "Se necesita la pensión de toda la carrera, no la de un mes."
+        },
+        {
+          "id": "b",
+          "texto": "Las pensiones de los cinco años.",
+          "correcta": true,
+          "retroalimentacion": "Sí: es la parte más grande del costo."
+        },
+        {
+          "id": "c",
+          "texto": "Matrícula y materiales.",
+          "correcta": true,
+          "retroalimentacion": "Sí: suelen olvidarse y suman bastante."
+        },
+        {
+          "id": "d",
+          "texto": "El transporte diario.",
+          "correcta": true,
+          "retroalimentacion": "Sí: durante cinco años es un gasto importante."
+        }
+      ],
+      "explicacion": "El costo real de una carrera es la suma de todos los pagos durante toda su duración, más los gastos de transporte o vivienda. Con ese número pueden comparar opciones y buscar becas a tiempo.",
+      "pistas": [
+        {
+          "id": "p2-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Hay tres opciones correctas. Piense en la duración completa de la carrera."
+        }
+      ],
+      "transicion": "Listo, ya revisó los costos de estudiar. Ahora, compruebe qué gastos debe considerar."
+    },
+    {
+      "id": "p2-09",
+      "tipo": "diapositiva",
+      "etiqueta": "Para acompañar",
+      "titulo": "Los resultados de los cuestionarios de su hijo",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Al terminar su ruta podrá ver algunos resultados de los cuestionarios que su hijo respondió en la plataforma. Son una herramienta valiosa para conversar, siempre que se lean de la manera correcta."
+        },
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Lo que no son",
+            "texto": "Un diagnóstico, una calificación ni una orden sobre qué carrera estudiar."
+          },
+          "derecha": {
+            "titulo": "Lo que sí son",
+            "texto": "Una fotografía de sus intereses y habilidades en este momento, que puede cambiar y que sirve para abrir preguntas."
+          }
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Al revisarlos con su hijo:",
+          "items": [
+            "Pregúntele si se reconoce en el resultado y qué le sorprendió.",
+            "Evite etiquetas como \"entonces tú eres de letras\" o \"eso no es para ti\".",
+            "Use las ocupaciones sugeridas como ideas para explorar, no como una lista cerrada.",
+            "Para una interpretación más profunda, la orientadora del colegio es quien mejor puede ayudarles."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "El resultado es un punto de partida para conversar, no la respuesta final."
+        }
+      ]
+    },
+    {
+      "id": "p2-10",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "El cuestionario de intereses de Mateo muestra afinidad con actividades artísticas, pero él dice que quiere estudiar ingeniería. ¿Qué es lo más adecuado?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Decirle que el cuestionario muestra que se equivocó de carrera.",
+          "correcta": false,
+          "retroalimentacion": "El cuestionario no decide por él: es una herramienta para explorar."
+        },
+        {
+          "id": "b",
+          "texto": "Preguntarle qué le atrae de cada cosa y explorar juntos opciones que combinen ambas, con apoyo de la orientadora si lo necesitan.",
+          "correcta": true,
+          "retroalimentacion": "Así es. El resultado abre una conversación, no la cierra."
+        },
+        {
+          "id": "c",
+          "texto": "Ignorar el resultado, porque Mateo ya tiene clara su decisión.",
+          "correcta": false,
+          "retroalimentacion": "El resultado puede aportar información útil aunque no coincida con su idea."
+        }
+      ],
+      "explicacion": "Que el resultado no coincida con lo que su hijo quiere es una oportunidad para conversar. Muchas ocupaciones combinan intereses distintos, como el diseño, la arquitectura o la ingeniería de producto.",
+      "pistas": [
+        {
+          "id": "p2-10p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Recuerde: el resultado es un punto de partida para conversar."
+        }
+      ]
+    },
+    {
+      "id": "p2-11",
+      "tipo": "diapositiva",
+      "etiqueta": "Resumen",
+      "titulo": "Lo que se lleva de esta actividad",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "Hay varias rutas válidas: universitaria, técnica, Fuerzas Armadas y Policía, oficios y emprendimiento.",
+            "Antes de elegir, verifique el licenciamiento de la institución y la autorización de la carrera.",
+            "Pregunte por empleo e ingresos de egresados de esa carrera en esa institución, no solo \"si da plata\".",
+            "Calcule el costo total y busque becas con tiempo.",
+            "Los resultados de los cuestionarios son una fotografía para conversar, no una etiqueta."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Lo que aprendió en estas actividades le servirá en las conversaciones guiadas con su hijo."
+        }
+      ],
+      "recursoIds": ["ficha-pad-info"],
+      "transicion": "Listo, ya revisó cómo conversar con información. Ahora, repase las ideas que se lleva."
+    }
+  ],
+  "recompensa": {
+    "recursoIds": ["ficha-pad-info"],
+    "mensajeFin": "Completó la actividad. La ficha \"Conversar con información de hoy\" quedó guardada en su material de consulta."
+  }
+}

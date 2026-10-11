@@ -1,0 +1,106 @@
+{
+  "id": "mission-welcome",
+  "codigo": "MIS-01",
+  "tipo": "encuentro",
+  "titulo": "El inicio del viaje",
+  "subtitulo": "Una sesión informativa para aprender a explorar",
+  "bloque": 1,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El campamento",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "companero"
+  ],
+  "objetivoAprendizaje": "Comprender que explorar implica observar, preguntar y probar sin exigir una decisión inmediata.",
+  "nodos": [
+    {
+      "id": "welcome-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Explorar tu futuro no consiste en adivinar una respuesta perfecta. Consiste en observarte, hacer preguntas y probar posibilidades. Yo iré contigo, paso a paso."
+    },
+    {
+      "id": "welcome-02",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Tres pistas para empezar",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Observa",
+              "texto": "Mira qué actividades disfrutas, cuáles te cuestan y cuáles despiertan tu curiosidad."
+            },
+            {
+              "titulo": "Conversa",
+              "texto": "Escucha a personas que recorren caminos distintos y pregunta cómo es realmente su experiencia."
+            },
+            {
+              "titulo": "Prueba",
+              "texto": "Una experiencia pequeña puede enseñarte más que intentar decidir todo hoy."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Tu siguiente paso puede ser pequeño y cambiar con lo que aprendas."
+        }
+      ]
+    },
+    {
+      "id": "welcome-03",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "enunciado": "A Sol le gusta dibujar, pero aún no sabe si quiere convertirlo en una profesión. ¿Qué acción le permitiría explorar sin obligarse a decidir ahora?",
+      "opciones": [
+        {
+          "id": "esperar",
+          "texto": "Esperar hasta tener una respuesta completamente segura",
+          "correcta": false,
+          "retroalimentacion": "Esperar una certeza total puede impedirle conocer nuevas posibilidades."
+        },
+        {
+          "id": "explorar",
+          "texto": "Conversar con alguien que use el dibujo en su trabajo y probar un proyecto pequeño",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Combina información y experiencia sin exigir una decisión inmediata."
+        },
+        {
+          "id": "decidir",
+          "texto": "Elegir hoy la carrera que parece más relacionada",
+          "correcta": false,
+          "retroalimentacion": "Todavía puede explorar antes de convertirlo en una decisión."
+        }
+      ],
+      "explicacion": "Explorar permite reunir información y experiencias antes de tomar una decisión.",
+      "bloqueante": true,
+      "pistas": [
+        {
+          "id": "welcome-pista",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Busca la opción que permita aprender algo nuevo sin convertirlo todavía en una decisión final."
+        }
+      ],
+      "alAgotarPistas": "revelar_y_continuar"
+    },
+    {
+      "id": "welcome-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Ya sabes cómo recorreremos este camino: observar, conversar y probar. No necesitas conocer el destino para comenzar."
+    }
+  ],
+  "promptDiario": "¿Qué posibilidad te gustaría explorar sin tener que decidir todavía?",
+  "mapa": {
+    "x": 130,
+    "y": 140,
+    "etiqueta": "Informativa · 4 min",
+    "icono": "informativa"
+  }
+}

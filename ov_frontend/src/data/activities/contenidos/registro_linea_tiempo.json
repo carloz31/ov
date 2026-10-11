@@ -1,0 +1,346 @@
+{
+  "id": "act-06",
+  "codigo": "ACT-06",
+  "tipo": "registro",
+  "titulo": "Mi mapa de ruta",
+  "subtitulo": "Línea de tiempo y metas tentativas",
+  "bloque": 1,
+  "orden": 7,
+  "obligatoria": true,
+  "requisitos": [
+    "mission-compass"
+  ],
+  "duracionEstimadaMin": 20,
+  "personajeIds": [
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "matriz",
+    "estilo": "linea_tiempo",
+    "columnas": [
+      {
+        "id": "anio1",
+        "etiqueta": "1 año después del colegio",
+        "subtitulo": "Lo más cercano"
+      },
+      {
+        "id": "anio3",
+        "etiqueta": "A los 3 años"
+      },
+      {
+        "id": "anio5",
+        "etiqueta": "A los 5 años"
+      }
+    ],
+    "filas": [
+      {
+        "id": "meta",
+        "etiqueta": "¿Dónde me veo?",
+        "icono": "📍"
+      },
+      {
+        "id": "necesito",
+        "etiqueta": "¿Qué necesito?",
+        "icono": "🧰"
+      },
+      {
+        "id": "obstaculos",
+        "etiqueta": "¿Qué me podría frenar?",
+        "icono": "🚧"
+      },
+      {
+        "id": "cuento",
+        "etiqueta": "¿Con qué cuento hoy?",
+        "icono": "✅"
+      }
+    ],
+    "consignasFuera": [
+      "g-identidad"
+    ],
+    "alternativa": {
+      "nodoId": "g-archivo",
+      "reemplazaSlots": true,
+      "textoBoton": "Prefiero subir mi línea de tiempo hecha a mano"
+    }
+  },
+  "nodos": [
+    {
+      "id": "g01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Antes de seguir el camino, hagamos un mapa de hacia dónde podrías ir."
+    },
+    {
+      "id": "g02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "No te pido certezas. Esto se escribe con lápiz, no con tinta: al final del viaje lo vamos a revisar y seguro cambiará."
+    },
+    {
+      "id": "g03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "g03a",
+          "texto": "Tengo una idea más o menos clara",
+          "reaccion": [
+            {
+              "id": "g03ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Genial, entonces vamos a darle forma."
+            }
+          ]
+        },
+        {
+          "id": "g03b",
+          "texto": "No tengo idea de qué poner",
+          "reaccion": [
+            {
+              "id": "g03br",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Es normal, a mucha gente le pasa. Escribe lo que imaginas hoy, aunque sea una posibilidad entre varias."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "g-anio1-meta",
+      "tipo": "consigna",
+      "slot": "anio1.meta",
+      "etiqueta": "¿Dónde me veo?",
+      "premisa": "1 año después del colegio: ¿Dónde te ves y qué estás haciendo en este momento de tu vida?",
+      "ayuda": "Puede ser estudiando, trabajando, ambas cosas, viviendo en otro lugar... No tiene que ser seguro.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "placeholder": "Ej.: Estudiando el primer ciclo de algo relacionado con la salud"
+    },
+    {
+      "id": "g-anio3-meta",
+      "tipo": "consigna",
+      "slot": "anio3.meta",
+      "etiqueta": "¿Dónde me veo?",
+      "premisa": "A los 3 años: ¿Dónde te ves y qué estás haciendo en este momento de tu vida?",
+      "ayuda": "Puede ser estudiando, trabajando, ambas cosas, viviendo en otro lugar... No tiene que ser seguro.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "placeholder": "Ej.: A mitad de mis estudios y haciendo prácticas"
+    },
+    {
+      "id": "g-anio5-meta",
+      "tipo": "consigna",
+      "slot": "anio5.meta",
+      "etiqueta": "¿Dónde me veo?",
+      "premisa": "A los 5 años: ¿Dónde te ves y qué estás haciendo en este momento de tu vida?",
+      "ayuda": "Puede ser estudiando, trabajando, ambas cosas, viviendo en otro lugar... No tiene que ser seguro.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "placeholder": "Ej.: Trabajando en lo que estudié"
+    },
+    {
+      "id": "g-anio1-necesito",
+      "tipo": "consigna",
+      "slot": "anio1.necesito",
+      "etiqueta": "¿Qué necesito?",
+      "premisa": "1 año después del colegio: ¿Qué necesitas para llegar ahí? Habilidades, información, dinero, apoyo.",
+      "ayuda": "Piensa en cosas concretas: aprobar un examen de admisión, ahorrar, saber qué instituto elegir, que alguien te apoye.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-anio3-necesito",
+      "tipo": "consigna",
+      "slot": "anio3.necesito",
+      "etiqueta": "¿Qué necesito?",
+      "premisa": "A los 3 años: ¿Qué necesitas para llegar ahí? Habilidades, información, dinero, apoyo.",
+      "ayuda": "Piensa en cosas concretas: aprobar un examen de admisión, ahorrar, saber qué instituto elegir, que alguien te apoye.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-anio5-necesito",
+      "tipo": "consigna",
+      "slot": "anio5.necesito",
+      "etiqueta": "¿Qué necesito?",
+      "premisa": "A los 5 años: ¿Qué necesitas para llegar ahí? Habilidades, información, dinero, apoyo.",
+      "ayuda": "Piensa en cosas concretas: aprobar un examen de admisión, ahorrar, saber qué instituto elegir, que alguien te apoye.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-anio1-obstaculos",
+      "tipo": "consigna",
+      "slot": "anio1.obstaculos",
+      "etiqueta": "¿Qué me podría frenar?",
+      "premisa": "1 año después del colegio: ¿Qué obstáculos podrías encontrar?",
+      "ayuda": "Pueden ser económicos, personales o del entorno. Nombrarlos no los hace más grandes: te ayuda a prepararte.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-anio3-obstaculos",
+      "tipo": "consigna",
+      "slot": "anio3.obstaculos",
+      "etiqueta": "¿Qué me podría frenar?",
+      "premisa": "A los 3 años: ¿Qué obstáculos podrías encontrar?",
+      "ayuda": "Pueden ser económicos, personales o del entorno. Nombrarlos no los hace más grandes: te ayuda a prepararte.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-anio5-obstaculos",
+      "tipo": "consigna",
+      "slot": "anio5.obstaculos",
+      "etiqueta": "¿Qué me podría frenar?",
+      "premisa": "A los 5 años: ¿Qué obstáculos podrías encontrar?",
+      "ayuda": "Pueden ser económicos, personales o del entorno. Nombrarlos no los hace más grandes: te ayuda a prepararte.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-anio1-cuento",
+      "tipo": "consigna",
+      "slot": "anio1.cuento",
+      "etiqueta": "¿Con qué cuento hoy?",
+      "premisa": "1 año después del colegio: ¿Qué tienes hoy que te acerca a esa meta?",
+      "ayuda": "Cursos en los que te va bien, personas que te apoyan, algo que ya sabes hacer, tus ganas.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-anio3-cuento",
+      "tipo": "consigna",
+      "slot": "anio3.cuento",
+      "etiqueta": "¿Con qué cuento hoy?",
+      "premisa": "A los 3 años: ¿Qué tienes hoy que te acerca a esa meta?",
+      "ayuda": "Cursos en los que te va bien, personas que te apoyan, algo que ya sabes hacer, tus ganas.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-anio5-cuento",
+      "tipo": "consigna",
+      "slot": "anio5.cuento",
+      "etiqueta": "¿Con qué cuento hoy?",
+      "premisa": "A los 5 años: ¿Qué tienes hoy que te acerca a esa meta?",
+      "ayuda": "Cursos en los que te va bien, personas que te apoyan, algo que ya sabes hacer, tus ganas.",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 15,
+        "maxCaracteres": 300
+      },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-identidad",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "etiqueta": "Quién quiero ser",
+      "premisa": "Más allá de lo que quieres hacer o tener: ¿qué tipo de persona quieres ser en estos cinco años?",
+      "ayuda": "Piensa en cómo quieres tratar a los demás, qué valores quieres mantener, cómo quieres que te recuerden.",
+      "placeholder": "Quiero ser alguien que...",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 40,
+        "maxCaracteres": 500
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g-archivo",
+      "tipo": "consigna",
+      "etiqueta": "Mi línea de tiempo a mano",
+      "premisa": "Si prefieres dibujar tu línea de tiempo en papel, súbela aquí. Debe incluir dónde te ves en 1, 3 y 5 años, y qué necesitas y qué te podría frenar el primer año.",
+      "entregable": {
+        "tipo": "archivo",
+        "formatos": [
+          "jpg",
+          "png",
+          "pdf"
+        ],
+        "maxArchivos": 3,
+        "maxMB": 10
+      },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "g90",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Listo, ya tenemos un mapa. Guárdalo bien: en el tramo final lo vamos a sacar de nuevo para ver cuánto cambió."
+    }
+  ],
+  "recompensa": {
+    "afinidad": 1,
+    "mensajeFin": "Mapa de ruta guardado · Afinidad con la aldea +1"
+  },
+  "promptDiario": "¿Qué sentiste al imaginarte dentro de cinco años?",
+  "mapa": {
+    "x": 400,
+    "y": 550,
+    "etiqueta": "Registro · 5 min",
+    "icono": "registro"
+  }
+}

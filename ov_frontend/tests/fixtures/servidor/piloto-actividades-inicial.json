@@ -1,0 +1,230 @@
+[
+  {
+    "actividades": [
+      {
+        "codigo": "mission-welcome",
+        "contenido": "mision_bienvenida",
+        "estado": "DISPONIBLE",
+        "orden": 1,
+        "tipo": "INFORMATIVA",
+        "titulo": "El inicio del viaje",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "enc-mitos",
+        "contenido": "encuentro_mitos",
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "tipo": "INFORMATIVA",
+        "titulo": "La plaza de los rumores",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-07",
+        "contenido": "registro_mis_pregones",
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "tipo": "REGISTRO",
+        "titulo": "Mis propios pregones",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "mission-story",
+        "contenido": "registro_huellas",
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "tipo": "REGISTRO",
+        "titulo": "Las huellas que traigo",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "mission-compass",
+        "contenido": "mision_brujula",
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mi brújula personal",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "codigo": "CAMINO",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "DISPONIBLE",
+    "nombre": "El camino",
+    "numero": 1
+  },
+  {
+    "actividades": [
+      {
+        "codigo": "act-tip-01",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Una vuelta por el molino",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-02",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 2 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-03",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 3 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-04",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 4 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-05",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 5 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-06",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 6,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 6 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-07",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 7,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 7 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-08",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 8,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 8 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-09",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 9,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 9 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-10",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 10,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 10 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-11",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 11,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 11 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-12",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 12,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 12 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-13",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 13,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 13 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-14",
+        "contenido": "instrumento_mara",
+        "estado": "BLOQUEADA",
+        "orden": 14,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mara: interacción 14 de 14",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "act-tip-final",
+        "contenido": "encuentro_resultado_elena",
+        "estado": "BLOQUEADA",
+        "orden": 15,
+        "tipo": "INFORMATIVA",
+        "titulo": "Las pistas que hablan de ti",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "codigo": "cdd-sin-contenido",
+        "contenido": "sin_contenido_prueba",
+        "estado": "BLOQUEADA",
+        "orden": 16,
+        "tipo": "INFORMATIVA",
+        "titulo": "Actividad de prueba sin contenido",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "codigo": "CIUDAD",
+    "espacio": "CIUDAD",
+    "estado": "BLOQUEADA",
+    "nombre": "La ciudad",
+    "numero": 2
+  }
+]

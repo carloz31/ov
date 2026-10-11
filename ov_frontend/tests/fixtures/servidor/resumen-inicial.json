@@ -1,0 +1,11 @@
+{
+  "cuenta": {
+    "codigo": "est-ana",
+    "nombre": "Ana",
+    "rol": "ESTUDIANTE"
+  },
+  "nivel_actual": {
+    "numero": 1,
+    "titulo": "Observador del horizonte"
+  }
+}

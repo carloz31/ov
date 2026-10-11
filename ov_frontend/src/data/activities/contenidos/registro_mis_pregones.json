@@ -1,0 +1,91 @@
+{
+  "id": "act-07",
+  "codigo": "ACT-07",
+  "tipo": "registro",
+  "audiencia": "estudiante",
+  "titulo": "Mis propios pregones",
+  "subtitulo": "Revisa una creencia que has escuchado sobre tu futuro",
+  "bloque": 1,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": [
+    "enc-mitos"
+  ],
+  "ubicacion": "Fuente de la plaza",
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
+  "nodos": [
+    {
+      "id": "r07-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Aurelio revisó sus pregones. Ahora te toca a ti: piensa en una frase sobre los estudios o el trabajo que hayas escuchado cerca de ti y revisémosla con las tres preguntas."
+    },
+    {
+      "id": "r07-frase",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "premisa": "¿Qué frase sobre estudios, trabajo o éxito has escuchado en tu casa, en el colegio o entre tus amigos? ¿Quién la dice?",
+      "ayuda": "Puede ser sobre un tipo de carrera, sobre el dinero, sobre lo que \"es para ti\" o sobre lo que pasa si te equivocas.",
+      "placeholder": "La frase que más escucho es...",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 30,
+        "maxCaracteres": 400
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "r07-revision",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "premisa": "Revisa esa frase con las tres preguntas: ¿quién lo dice y desde qué experiencia?, ¿qué evidencia hay a favor y en contra?, ¿aplica a tu caso y a la situación de hoy?",
+      "ayuda": "No necesitas datos exactos: basta con que pienses en casos que conoces o en lo que viste en la plaza.",
+      "placeholder": "Quien lo dice...",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 80,
+        "maxCaracteres": 800
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "r07-postura",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "premisa": "Después de revisarla, ¿qué piensas tú de esa frase? ¿Ha influido en las opciones que consideras o descartas?",
+      "ayuda": "Puedes estar de acuerdo, en desacuerdo o en parte. Lo importante es que expliques por qué.",
+      "placeholder": "Yo creo que...",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 60,
+        "maxCaracteres": 800
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "r07-cierre",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Listo. Revisar una creencia no significa rechazarla: significa decidir con información. Puedes volver a esta reflexión cuando quieras."
+    }
+  ],
+  "recompensa": {
+    "afinidad": 1
+  },
+  "promptDiario": "¿Hay alguna opción que descartaste por una frase que escuchaste y que ahora te gustaría volver a mirar?",
+  "mapa": {
+    "x": 495,
+    "y": 210,
+    "etiqueta": "Registro · 10 min",
+    "icono": "registro"
+  }
+}

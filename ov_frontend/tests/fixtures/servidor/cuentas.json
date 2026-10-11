@@ -1,0 +1,17 @@
+[
+  {
+    "codigo": "apo-rosa",
+    "nombre": "Rosa",
+    "rol": "APODERADO"
+  },
+  {
+    "codigo": "est-ana",
+    "nombre": "Ana",
+    "rol": "ESTUDIANTE"
+  },
+  {
+    "codigo": "est-luis",
+    "nombre": "Luis",
+    "rol": "ESTUDIANTE"
+  }
+]

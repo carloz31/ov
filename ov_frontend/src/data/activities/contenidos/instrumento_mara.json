@@ -1,0 +1,294 @@
+{
+  "id": "act-tip-01",
+  "codigo": "TIP-01",
+  "tipo": "instrumento",
+  "titulo": "Una vuelta por el molino",
+  "subtitulo": "Interacción 1 de 14 · Test de intereses",
+  "bloque": 2,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "Molino",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "mara"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "m01",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "expresion": "sonrie",
+      "texto": "¡Hola! No creo haberte visto antes por aquí. Soy Mara. ¿Recién estás conociendo la aldea?"
+    },
+    {
+      "id": "m02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "m02a",
+          "texto": "Sí, recién llego"
+        },
+        {
+          "id": "m02b",
+          "texto": "Estoy dando una vuelta"
+        }
+      ]
+    },
+    {
+      "id": "m03",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Ah, qué bien. Yo paso casi todo el día por esta zona, así que termino conversando con medio pueblo. Ven, acompáñame un rato mientras ordeno esto."
+    },
+    {
+      "id": "m04",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "¿Sabes? Tengo un primo que escribe para un diario, en la sección de economía. Cada vez que nos vemos me cuenta en qué anda."
+    },
+    {
+      "id": "m05",
+      "tipo": "item",
+      "instrumentoId": "tip",
+      "itemId": "tip-001",
+      "hablanteId": "mara",
+      "etiqueta": "Para conocerte mejor:",
+      "reacciones": {
+        "si": [
+          {
+            "id": "m05s",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Ya veo, así que ese trabajo sí lo aceptarías."
+          }
+        ],
+        "no": [
+          {
+            "id": "m05n",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Ya veo, así que ese trabajo no lo aceptarías."
+          }
+        ]
+      }
+    },
+    {
+      "id": "m06",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Por cierto, ese mismo primo se casa pronto. Anda toda la familia organizando cosas para la boda."
+    },
+    {
+      "id": "m07",
+      "tipo": "item",
+      "instrumentoId": "tip",
+      "itemId": "tip-002",
+      "hablanteId": "mara",
+      "etiqueta": "Para conocerte mejor:",
+      "reacciones": {
+        "si": [
+          {
+            "id": "m07s",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Anotado, así que tú sí te ofrecerías."
+          }
+        ],
+        "no": [
+          {
+            "id": "m07n",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Anotado, así que tú no te ofrecerías."
+          }
+        ]
+      }
+    },
+    {
+      "id": "m08",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Fíjate que el otro día, en la plaza, unas personas conversaban sobre proyectos de urbanización. Se quedaron hablando un buen rato."
+    },
+    {
+      "id": "m09",
+      "tipo": "item",
+      "instrumentoId": "tip",
+      "itemId": "tip-003",
+      "hablanteId": "mara",
+      "etiqueta": "Para conocerte mejor:",
+      "reacciones": {
+        "si": [
+          {
+            "id": "m09s",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Entiendo, así que algo así sí te gustaría."
+          }
+        ],
+        "no": [
+          {
+            "id": "m09n",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Entiendo, así que algo así no te gustaría."
+          }
+        ]
+      }
+    },
+    {
+      "id": "m10",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Esta semana tuve un par de días pesados en el molino. Me puse a pensar en cómo cada quien enfrenta esos momentos."
+    },
+    {
+      "id": "m11",
+      "tipo": "item",
+      "instrumentoId": "tip",
+      "itemId": "tip-004",
+      "hablanteId": "mara",
+      "etiqueta": "Para conocerte mejor:",
+      "reacciones": {
+        "si": [
+          {
+            "id": "m11s",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Ya veo, así que eso es lo que sueles hacer."
+          }
+        ],
+        "no": [
+          {
+            "id": "m11n",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Ya veo, así que no siempre lo haces."
+          }
+        ]
+      }
+    },
+    {
+      "id": "m12",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Hace poco escuché a unas personas conversar sobre quienes trabajan atendiendo emergencias."
+    },
+    {
+      "id": "m13",
+      "tipo": "item",
+      "instrumentoId": "tip",
+      "itemId": "tip-005",
+      "hablanteId": "mara",
+      "etiqueta": "Para conocerte mejor:",
+      "reacciones": {
+        "si": [
+          {
+            "id": "m13s",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Entiendo, así que a eso sí te dedicarías."
+          }
+        ],
+        "no": [
+          {
+            "id": "m13n",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Entiendo, así que a eso no te dedicarías."
+          }
+        ]
+      }
+    },
+    {
+      "id": "m14",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Ayer le compré unos juguetes a mi hijo. Fíjate que cada niño juega con sus cosas de una manera distinta."
+    },
+    {
+      "id": "m15",
+      "tipo": "item",
+      "instrumentoId": "tip",
+      "itemId": "tip-006",
+      "hablanteId": "mara",
+      "etiqueta": "Para conocerte mejor:",
+      "reacciones": {
+        "si": [
+          {
+            "id": "m15s",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Anotado, así que eso sí te interesaba."
+          }
+        ],
+        "no": [
+          {
+            "id": "m15n",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Anotado, así que eso no te interesaba."
+          }
+        ]
+      }
+    },
+    {
+      "id": "m16",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Una última cosa. Hace unos días escuché a dos personas conversar sobre todo lo que todavía no entendemos, tanto de la naturaleza como de la tecnología."
+    },
+    {
+      "id": "m17",
+      "tipo": "item",
+      "instrumentoId": "tip",
+      "itemId": "tip-007",
+      "hablanteId": "mara",
+      "etiqueta": "Para conocerte mejor:",
+      "reacciones": {
+        "si": [
+          {
+            "id": "m17s",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Ya veo, así que la naturaleza es la que más te interesa."
+          }
+        ],
+        "no": [
+          {
+            "id": "m17n",
+            "tipo": "dialogo",
+            "hablanteId": "mara",
+            "texto": "Ya veo, así que la naturaleza no es la que más te interesa."
+          }
+        ]
+      }
+    },
+    {
+      "id": "m18",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "expresion": "sonrie",
+      "texto": "Oye, qué buena conversación. Seguro te vas a cruzar con más gente mientras sigas por la aldea."
+    },
+    {
+      "id": "m19",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Hay alguien a quien todos terminan mencionando: Elena. Vive cerca del río. Dicen que tiene una forma particular de entender a las personas y de ayudarlas a notar cosas de sí mismas que a veces pasan por alto."
+    }
+  ],
+  "recompensa": {
+    "afinidad": 1,
+    "mensajeFin": "Fin de la interacción · Afinidad con la aldea +1"
+  },
+  "siguienteSugerida": "act-tip-02",
+  "mapa": {
+    "x": 875,
+    "y": 530,
+    "icono": "test"
+  }
+}

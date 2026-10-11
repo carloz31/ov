@@ -1,0 +1,55 @@
+{
+  "id": "mission-story",
+  "codigo": "MIS-02",
+  "tipo": "registro",
+  "titulo": "Las huellas que traigo",
+  "subtitulo": "Una reflexión que podrás revisar más adelante",
+  "bloque": 1,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "Bosque de recuerdos",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
+  "nodos": [
+    {
+      "id": "mission-story-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "No necesitas llegar a una conclusión. Registra lo que piensas hoy y podrás volver a modificarlo durante el recorrido."
+    },
+    {
+      "id": "mission-story-entry",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "premisa": "¿Qué experiencia de tu historia te enseñó algo sobre ti?",
+      "ayuda": "Cuenta qué ocurrió y qué descubriste sobre tu manera de aprender, crear, ayudar o resolver problemas.",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto",
+        "minCaracteres": 12,
+        "maxCaracteres": 800
+      },
+      "obligatoria": true,
+      "visibilidad": "solo_estudiante"
+    },
+    {
+      "id": "mission-story-close",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Tu respuesta quedó guardada. Es una pista de este momento, no una conclusión definitiva."
+    }
+  ],
+  "promptDiario": "Al volver a leer tu respuesta de “Las huellas que traigo”, ¿qué idea te gustaría seguir pensando?",
+  "mapa": {
+    "x": 590,
+    "y": 290,
+    "etiqueta": "Registro · A tu ritmo",
+    "icono": "registro"
+  }
+}

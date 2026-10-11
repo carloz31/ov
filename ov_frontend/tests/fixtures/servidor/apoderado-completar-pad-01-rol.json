@@ -1,0 +1,30 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "pad-01-rol",
+      "tipo": "COMPLETA_ACTIVIDAD"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "pad-01-rol",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "pad-02-info",
+        "nombre": "Conversar con información de hoy"
+      },
+      "regla": "R-pad-02-info",
+      "tipo_objetivo": "ACTIVIDAD"
+    }
+  ],
+  "resultados_generados": []
+}

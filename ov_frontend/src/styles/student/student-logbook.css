@@ -1,0 +1,338 @@
+
+/* Second specification: the map's traveler logbook. */
+.sx-root {
+  --sx-amb-backpack: var(--success);
+  --sx-amb-journal: var(--warning);
+}
+.sx-root .sx-adventure-panel,
+.sx-root.sx-mobile-panel {
+  background: color-mix(in srgb, var(--sx-night) 92%, transparent);
+  color: var(--sx-night-text);
+  border: 1px solid var(--sx-night-border);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-float);
+}
+.sx-root .sx-adventure-panel {
+  border-left: 0;
+  border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+}
+.sx-root .sx-adventure-panel[data-collapsed='true'] {
+  transform: translateX(-232px);
+}
+.sx-root .sx-adventure-panel[data-collapsed='true'] .sx-panel-scroll {
+  visibility: hidden;
+}
+.sx-root .sx-panel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+.sx-root .sx-panel-traveler {
+  padding: 12px;
+  border: 1px solid var(--sx-night-border);
+  border-radius: 18px;
+  background: var(--sx-night-raised);
+}
+.sx-root .sx-panel-avatar {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  background: var(--sx-gold);
+  color: var(--sx-parchment-ink);
+  border: 3px solid var(--sx-parchment);
+}
+.sx-root .sx-panel-user > div {
+  flex: 1;
+}
+.sx-root .sx-panel-user > div > span {
+  color: var(--sx-night-muted);
+}
+.sx-root .sx-panel-user strong {
+  font-size: 17px;
+  font-weight: 800;
+}
+.sx-root .sx-panel-level {
+  margin: 12px 0 0;
+  color: var(--sx-night-text);
+}
+.sx-root .sx-level-medallion {
+  background: var(--primary);
+  border-color: var(--sx-parchment);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--foreground) 35%, transparent);
+}
+.sx-root .sx-level-rank strong {
+  font-size: 14px;
+}
+.sx-root .sx-level-rank small {
+  order: -1;
+  color: var(--sx-gold);
+  font-size: 12px;
+}
+.sx-root .sx-panel-progress {
+  flex-direction: row;
+  text-align: left;
+  gap: 12px;
+}
+.sx-root .sx-progress-ring {
+  width: 92px;
+  height: 92px;
+  flex-shrink: 0;
+}
+.sx-root .sx-progress-ring strong {
+  font-size: 20px;
+  font-weight: 800;
+}
+.sx-root .sx-panel-progress h2 {
+  text-align: left;
+  color: var(--sx-night-text);
+  font-size: 14px;
+  font-weight: 800;
+}
+.sx-root .sx-panel-progress p {
+  color: var(--sx-night-muted);
+  font-size: 12px;
+}
+.sx-root .sx-panel-zone {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+  padding: 3px 8px;
+  font-size: 12px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+}
+.sx-root .sx-zone-central .sx-panel-zone {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.sx-root .sx-panel-section {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.sx-root .sx-next-step {
+  border: 2px solid var(--sx-gold);
+  border-radius: 16px;
+  background: var(--sx-parchment);
+  color: var(--sx-parchment-ink);
+  box-shadow: 0 5px 0 var(--sx-gold-deep);
+  padding: 12px;
+}
+.sx-root .sx-next-step:hover {
+  background: var(--sx-parchment);
+  transform: translateY(-2px);
+}
+.sx-root .sx-next-label {
+  color: var(--sx-gold-deep);
+  font-size: 12px;
+}
+.sx-root .sx-next-target {
+  color: var(--sx-parchment-ink);
+  background: var(--sx-gold);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  padding: 9px;
+  animation: sx-panel-target-pulse 2.2s ease-in-out infinite;
+}
+.sx-root .sx-next-step strong {
+  font-size: 16px;
+  display: block;
+  margin-top: 8px;
+}
+.sx-root .sx-panel-return {
+  display: block;
+  background: none;
+  margin: 6px 0 0;
+  padding: 0;
+  font-size: 12px;
+}
+.sx-root .sx-signal-card {
+  border: 1px solid var(--sx-night-border);
+  border-radius: 16px;
+  padding: 12px;
+  background: var(--sx-night-raised);
+}
+.sx-root .sx-panel-signal {
+  background: none;
+  border: 0;
+  color: var(--sx-night-text);
+}
+.sx-root .sx-panel-signal strong {
+  font-size: 22px;
+}
+.sx-root .sx-panel-subtitle {
+  color: var(--sx-night-muted);
+}
+.sx-root .sx-signal-segments {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  margin: 12px 0;
+}
+.sx-root .sx-signal-segments span {
+  height: 8px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 0.14);
+}
+.sx-root .sx-signal-segments span[data-filled='true'] {
+  background: var(--sx-gold);
+}
+.sx-root .sx-signal-edit {
+  min-height: 44px;
+  box-shadow: 0 3px 0 var(--primary-hover);
+}
+.sx-root .sx-signal-history {
+  min-height: 44px;
+  color: color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment));
+}
+.sx-root .sx-quick-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.sx-root .sx-quick-links a {
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  height: 76px;
+  padding: 6px 2px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.06);
+  border-radius: 14px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+.sx-root .sx-quick-links a:hover {
+  background: rgb(255 255 255 / 0.1);
+  transform: translateY(-2px);
+}
+.sx-root .sx-quick-links a > svg:first-child {
+  padding: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: color-mix(in srgb, currentColor 20%, transparent);
+}
+.sx-root .sx-quick-links a:nth-child(1) > svg {
+  color: color-mix(in srgb, var(--sx-amb-profile) 55%, white);
+}
+.sx-root .sx-quick-links a:nth-child(2) > svg {
+  color: color-mix(in srgb, var(--sx-amb-journal) 80%, white);
+}
+.sx-root .sx-quick-links a:nth-child(3) > svg {
+  color: var(--accent);
+}
+.sx-root .sx-quick-links a:nth-child(4) > svg {
+  color: color-mix(in srgb, var(--sx-amb-backpack) 55%, white);
+}
+.sx-root .sx-quick-links a:nth-child(5) > svg {
+  color: var(--sx-amb-research);
+}
+.sx-root .sx-quick-links a:nth-child(6) > svg {
+  color: var(--sx-amb-atlas);
+}
+.sx-root .sx-quick-links .sx-quick-lock {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  color: var(--sx-night-muted);
+}
+.sx-root .sx-panel-count {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.sx-root .sx-available-list button {
+  min-height: 44px;
+  gap: 10px;
+  background: rgb(255 255 255 / 0.04);
+  padding: 8px;
+}
+.sx-root .sx-available-list button:hover {
+  background: rgb(255 255 255 / 0.1);
+}
+.sx-root .sx-available-list strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+.sx-root .sx-available-list small {
+  font-size: 11px;
+  color: var(--sx-night-muted);
+}
+.sx-root .sx-available-dot {
+  order: -1;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  animation: none;
+}
+.sx-root .sx-available-dot[data-recommended='true'] {
+  animation: sx-recommended-pulse 2.2s ease-in-out infinite;
+}
+.sx-root .sx-panel-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment));
+}
+.sx-root .sx-panel-toggle {
+  width: 44px;
+  right: -16px;
+  background: var(--sx-night-raised);
+  color: var(--sx-night-text);
+  border-color: var(--sx-night-border);
+}
+.sx-root .sx-adventure-panel[data-collapsed='true'] .sx-panel-toggle {
+  top: auto;
+  bottom: 16px;
+  right: 6px;
+  transform: none;
+  border-radius: 12px;
+}
+.sx-root .sx-panel-strip {
+  position: absolute;
+  top: 16px;
+  right: 0;
+  width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  font-size: 13px;
+}
+.sx-root .sx-panel-strip a {
+  display: grid;
+  min-height: 44px;
+  min-width: 44px;
+  place-items: center;
+}
+.sx-root .sx-panel-strip .sx-panel-avatar {
+  width: 40px;
+  height: 40px;
+}
+.sx-root .sx-strip-next {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: var(--sx-gold);
+  color: var(--sx-parchment-ink);
+  border-radius: 50%;
+  animation: sx-panel-target-pulse 2.2s ease-in-out infinite;
+}
+.sx-root .sx-panel-content :is(a, button):focus-visible,
+.sx-root .sx-panel-strip :is(a, button):focus-visible {
+  outline: 3px solid var(--sx-gold);
+  outline-offset: 3px;
+}
+@keyframes sx-panel-target-pulse {
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--sx-gold) 22%, transparent);
+  }
+}

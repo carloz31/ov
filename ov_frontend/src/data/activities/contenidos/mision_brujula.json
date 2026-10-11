@@ -1,0 +1,70 @@
+{
+  "id": "mission-compass",
+  "codigo": "MIS-05",
+  "tipo": "instrumento",
+  "titulo": "Mi brújula personal",
+  "subtitulo": "Test breve para reconocer tus señales actuales",
+  "bloque": 1,
+  "orden": 5,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "Valle del descubrimiento",
+  "duracionEstimadaMin": 6,
+  "personajeIds": [
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "compass-00",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Te haré una pregunta a la vez. No hay respuestas buenas o malas: son una fotografía de este momento y pueden cambiar."
+    },
+    {
+      "id": "compass-1",
+      "tipo": "item",
+      "instrumentoId": "brujula-personal",
+      "itemId": "brujula-interes",
+      "hablanteId": "companero",
+      "etiqueta": "Para conocerte mejor:"
+    },
+    {
+      "id": "compass-2",
+      "tipo": "item",
+      "instrumentoId": "brujula-personal",
+      "itemId": "brujula-aprendizaje",
+      "hablanteId": "companero",
+      "etiqueta": "Para conocerte mejor:"
+    },
+    {
+      "id": "compass-3",
+      "tipo": "item",
+      "instrumentoId": "brujula-personal",
+      "itemId": "brujula-apoyo",
+      "hablanteId": "companero",
+      "etiqueta": "Puedes elegir no responder:"
+    },
+    {
+      "id": "compass-4",
+      "tipo": "item",
+      "instrumentoId": "brujula-personal",
+      "itemId": "brujula-preparacion",
+      "hablanteId": "companero",
+      "etiqueta": "Para conocerte mejor:"
+    },
+    {
+      "id": "compass-99",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Tu brújula ya tiene sus primeras señales. Podrás volver a revisarlas y cambiarlas cuando descubras algo nuevo."
+    }
+  ],
+  "promptDiario": "¿Qué respuesta de tu brújula te gustaría seguir explorando?",
+  "mapa": {
+    "x": 130,
+    "y": 485,
+    "etiqueta": "Test · 6 min",
+    "icono": "test"
+  }
+}

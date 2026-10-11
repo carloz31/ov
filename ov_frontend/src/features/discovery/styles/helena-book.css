@@ -1,0 +1,205 @@
+.sx-d-helena-book {
+  max-width: 1200px;
+  margin: auto;
+  .sx-d-helena-card {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 26px;
+    border-width: 1px;
+    border-radius: 20px;
+    box-shadow: none;
+    min-height: 570px;
+  }
+  .sx-d-helena-card > .sx-d-eyebrow {
+    margin: 0 0 10px;
+  }
+  .sx-d-helena-card > h2 {
+    margin-bottom: 10px;
+  }
+  .sx-d-helena-subtitle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    font-size: 14px;
+  }
+  .sx-d-tag {
+    line-height: 1.5;
+  }
+  .sx-d-demo {
+    font-size: 13px;
+    font-weight: 650;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .sx-d-helena-ready {
+    border: 2px solid var(--sx-gold);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--sx-gold) 17%, transparent);
+  }
+  .sx-d-helena-sealed {
+    border: 2px dashed color-mix(in srgb, var(--primary) 45%, var(--sx-parchment-edge));
+  }
+  .sx-d-helena-box {
+    margin-top: 18px;
+    padding: 18px;
+    border: 1px solid var(--sx-parchment-edge);
+    border-radius: 17px;
+    background: var(--card);
+    text-align: center;
+  }
+  .sx-d-helena-box p {
+    margin: 16px 0 0;
+  }
+  .sx-d-helena-mystery {
+    background: color-mix(in srgb, var(--foreground) 4%, var(--sx-parchment));
+  }
+  .sx-d-helena-mystery .sx-d-fog {
+    height: 96px;
+    margin: 0;
+  }
+  .sx-d-helena-ready-box {
+    padding: 26px 18px;
+  }
+  .sx-d-helena-ready-box .sx-d-seal {
+    width: 92px;
+    height: 92px;
+    background: var(--sx-gold);
+    color: var(--sx-parchment-ink);
+    border-color: var(--sx-gold-deep);
+  }
+  .sx-d-helena-summary {
+    margin-top: 18px;
+  }
+  .sx-d-helena-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    color: var(--sx-gold-deep);
+  }
+  .sx-d-helena-summary .sx-d-helena-label {
+    margin: 0 0 16px;
+  }
+  .sx-d-helena-dimension {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .sx-d-helena-dimension > div {
+    min-width: 0;
+  }
+  .sx-d-helena-dimension strong {
+    display: block;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 800;
+  }
+  .sx-d-helena-dimension p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .sx-d-helena-marker {
+    display: grid;
+    place-items: center;
+    flex: 0 0 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-weight: 800;
+  }
+  .sx-d-helena-marker svg {
+    width: 17px;
+    height: 17px;
+  }
+  .sx-d-helena-summary .sx-d-helena-closure {
+    margin: 18px 0 0;
+    font-size: 14px;
+  }
+  .sx-d-helena-flat {
+    border: 1px dashed var(--sx-gold);
+    border-radius: 16px;
+    background: var(--card);
+    padding: 18px;
+  }
+  .sx-d-helena-flat h3 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 800;
+  }
+  .sx-d-helena-flat .sx-d-helena-closure {
+    margin-top: 12px;
+  }
+  .sx-d-helena-contents {
+    margin: 18px 0 0;
+  }
+  .sx-d-helena-contents h3 {
+    font-size: 13px;
+    font-weight: 750;
+  }
+  .sx-d-helena-contents ul {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+  }
+  .sx-d-helena-contents li {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 5px 0;
+  }
+  .sx-d-helena-contents svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--sx-gold-deep);
+  }
+  .sx-d-helena-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-top: auto;
+    padding-top: 20px;
+  }
+  .sx-d-helena-actions .sx-d-action {
+    margin-top: 0;
+  }
+  .sx-d-helena-actions > a:not(.sx-d-action) {
+    font-size: 13px;
+    font-weight: 750;
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .sx-d-helena-actions svg {
+    width: 17px;
+    height: 17px;
+  }
+  .sx-d-helena-requirement {
+    font-size: 14px;
+  }
+  .sx-d-trail {
+    margin: 18px 0 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sx-d-helena-book .sx-d-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 767px) {
+  .sx-d-helena-book .sx-d-helena-card {
+    min-height: 0;
+    padding: 24px;
+  }
+  .sx-d-helena-book .sx-d-helena-actions {
+    padding-top: 28px;
+  }
+}

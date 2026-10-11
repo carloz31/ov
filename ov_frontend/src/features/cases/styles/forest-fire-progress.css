@@ -1,0 +1,67 @@
+.ff-case-progress {
+  padding: 18px;
+  border: 1px solid #cbd7ef;
+  background: #eff4ff;
+  color: #364966;
+  border-radius: 16px;
+  margin: 20px 0;
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+.ff-case-progress p {
+  margin: 0;
+}
+.ff-case-progress p + p {
+  margin-top: 12px;
+}
+.ff-case-progress.is-in-progress {
+  background: #fff4ec;
+  border-color: #f2c4a3;
+  color: #7d4c2e;
+}
+.ff-case-progress.is-passed {
+  background: #ecfdf3;
+  border-color: #a7dfbd;
+  color: #245c3c;
+}
+.ff-case-progress-track {
+  height: 12px;
+  position: relative;
+  background: #dde4ed;
+  border-radius: 99px;
+  margin: 16px 0 12px;
+}
+.ff-case-progress-track span {
+  height: 100%;
+  display: block;
+  background: #e2725b;
+  border-radius: 99px;
+}
+.is-passed .ff-case-progress-track span {
+  background: linear-gradient(90deg, #5b8def, #f2c66d);
+}
+.ff-case-progress-track i {
+  position: absolute;
+  width: 2px;
+  top: -4px;
+  bottom: -4px;
+  background: #715b35;
+}
+.ff-case-progress small {
+  display: block;
+  margin-bottom: 14px;
+}
+.sx-root .sx-drawer-badge[data-status='Superado'],
+.ff-map-badge[data-status='Superado'] {
+  background: #d5f5e0;
+  color: #245c3c;
+}
+.sx-root .sx-drawer-badge[data-status='En progreso'],
+.ff-map-badge[data-status='En progreso'] {
+  background: #fff0e2;
+  color: #8b4b2d;
+}
+.ff-map-badge[data-status='Disponible'] {
+  background: #e4edff;
+  color: #3f51b5;
+}

@@ -1,0 +1,86 @@
+.adventure-page {
+  background: #f6f5eb;
+  color: #304b3d;
+}
+.adventure-hero {
+  background: radial-gradient(ellipse at 85% 10%, #68815b 0%, transparent 50%), #294f40;
+}
+.adventure-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: #6a7d5c;
+}
+.adventure-card {
+  border: 1px solid #dedfce;
+  border-radius: 1.5rem;
+  background: #fffdf7;
+  box-shadow: 0 6px 20px #3c503308;
+}
+.adventure-input {
+  display: block;
+  width: 100%;
+  border: 1px solid #d8ddce;
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: white;
+  font-size: 0.875rem;
+  color: #304b3d;
+}
+.adventure-input:focus {
+  outline: 2px solid #648366;
+  outline-offset: 2px;
+}
+.adventure-map {
+  background: #dbe5c8;
+}
+.mission-player-scroll {
+  background:
+    radial-gradient(circle at 12% 14%, rgb(255 255 255 / 72%) 0 7rem, transparent 7.1rem),
+    radial-gradient(circle at 91% 86%, rgb(205 224 197 / 70%) 0 12rem, transparent 12.1rem),
+    linear-gradient(145deg, #eef3e9, #e7eee2 48%, #f6f2df);
+}
+.mission-player-scenery {
+  background:
+    radial-gradient(circle at 18% 30%, rgb(255 255 255 / 72%) 0 1.6rem, transparent 1.7rem),
+    radial-gradient(circle at 23% 28%, rgb(255 255 255 / 55%) 0 2.8rem, transparent 2.9rem),
+    radial-gradient(circle at 82% 40%, rgb(255 255 255 / 50%) 0 2.5rem, transparent 2.6rem),
+    linear-gradient(180deg, #b9d5cb 0%, #dbe7ce 70%, transparent 100%);
+}
+.mission-player-scenery::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 5rem;
+  background: linear-gradient(165deg, transparent 46%, #a8c3a2 47% 64%, #7eaa91 65%);
+  content: '';
+  opacity: 0.5;
+}
+.mission-speech-bubble {
+  position: relative;
+}
+@media (min-width: 640px) {
+  .mission-speech-bubble::before {
+    position: absolute;
+    bottom: 2rem;
+    left: -0.7rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-bottom: 1px solid #d8dece;
+    border-left: 1px solid #d8dece;
+    background: #fffdf8;
+    content: '';
+    transform: rotate(45deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .adventure-map * {
+    transition: none !important;
+  }
+  .mission-player-scroll * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
