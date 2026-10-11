@@ -25,7 +25,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | 2A | Inicio y cierre de sesión **M** | 001, 020 | Decidir el mecanismo (sesión por cookie o token) y si las credenciales vienen precargadas. | Pendiente |
 | 2B | Actividades de registro **M** | 006, 007, 008, 009, 010 | Tras 2A. Ya existe el evaluador (`docs/sistema/registro.md`). | Pendiente |
 | 2C | Comprobaciones, misiones adicionales y batalla | 005, 012, 016, 017 | Tras 2A. Mockup o descripción de la batalla. | Pendiente |
-| 2D | Ayuda contextual | 018, 019 | Textos de ayuda por pantalla (pueden ser `DATO DE PRUEBA`). | Pendiente |
+| 2D | Ayuda contextual | 018, 019 | Textos de ayuda por pantalla (pueden ser `DATO DE PRUEBA`). | Implementado |
 | 3A | Diario, pregunta del día y amistad con Lumi | 028–034 | El backend ya existe; es sobre todo conexión de vistas. | Pendiente |
 | 3B | Check-in de seguridad | 035, 036 | El backend ya existe. | Pendiente |
 | 3C | Perfil y vista explicada de resultados | 023, 024 | — | Pendiente |

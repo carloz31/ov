@@ -47,7 +47,7 @@ El backend no interpreta el contenido narrativo.
 | Nodos de las actividades (JSON con metadatos de mapa), registro por clave y catálogo local | `data/activities/contenidos/<clave>.json`, `data/activities/contenidos.ts`, `data/activities/content.ts`. Formato: `docs/contenidos-actividades.md`. |
 | Personajes, recursos e instrumentos del reproductor | `data/activities/catalogo.json`; brújula en `data/activities/standardActivities.ts` (`compassInstrument`) |
 | Configuración del piloto de reflexión | `data/activities/reflectionConfig.ts` |
-| Personajes y textos de guía | `data/content/characters.ts`, `data/content/guideTexts.ts` |
+| Personajes y textos de guía | `data/content/characters.ts`, `data/content/guideTexts.ts`: `sectionIntros` (presentación de primera vez de cada sección del estudiante: su propósito, 1 o 2 pasos), `guideSteps` (ayuda del botón «Abrir guía»: cómo se usa, 1 a 4 pasos) y `parentGuides` (guía de cada pantalla principal del apoderado, con `GuideDialogue`). Varios textos son `DATO DE PRUEBA`. |
 | Recuerdos de Lumi | `features/journal/data/lumiMemories.ts` |
 | Desafíos | `data/content/challenges.ts` |
 | Geometría y puntos del mapa | `features/adventure/lib/` (`geometry`, `caminoPoints`, `ciudadPoints`, `pointDetails`, `missionSync`, `mapPoints`) |
@@ -95,7 +95,7 @@ Todas en `localStorage`, salvo donde se indica. No se cambian sin una migración
 | `ov.student-exploration.v1` | `store/explorationStore.ts` | intereses y hojas de decisión |
 | `ov.student-reflections.v1` | `store/reflectionStore.ts` | respuestas y evaluaciones del piloto |
 | `ov.student-followups.v1` | `features/activities/store/followUpStore.ts` | preguntas de seguimiento |
-| `ov.student-ui.v1` | `store/studentUiStore.ts` | guías vistas, desbloqueos vistos, preferencias |
+| `ov.student-ui.v1` | `store/studentUiStore.ts` | guías vistas (`introsSeen`: presentación de primera vez por sección; pasará al servidor con 2A), desbloqueos vistos, preferencias |
 | `ov.parent-missions.v1` | `store/parentJourneyStore.ts` | nodo, intentos y elecciones por cuenta del apoderado; en api, estado proyectado del servidor |
 | `ov.staff.priorities.v1` (`sessionStorage`) | `features/counselor/store/prioritySettings.ts` | prioridades de la orientadora |
 | `ov.staff.selected-salon.v1` (`sessionStorage`) | `features/counselor/hooks/useSelectedSalon.ts` | salón elegido |
