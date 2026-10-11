@@ -2,6 +2,8 @@ import { Building2, ChartNoAxesColumnIncreasing, GraduationCap, WalletCards } fr
 import { PageHeader } from '@/components/common/PageHeader'
 import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
+import { GuideDialogue } from '@/components/common/GuideDialogue'
+import { parentGuides } from '@/data/content/guideTexts'
 import { careerGuide } from '@/features/parent/data/parentPortal'
 
 const icons = [Building2, GraduationCap, ChartNoAxesColumnIncreasing, WalletCards]
@@ -42,6 +44,7 @@ function ParentCareerGuideView() {
         <strong>Una recomendación:</strong> empieza por los intereses y experiencias que generan curiosidad.
         Los datos de empleabilidad ayudan a evaluar una opción, pero no reemplazan el autoconocimiento.
       </Card>
+      <GuideDialogue audience="parent" text={parentGuides.careers} />
     </div>
   )
 }

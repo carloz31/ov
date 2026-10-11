@@ -8,3 +8,5 @@
 - Se adapta la prueba de la cola de novedades de `adventure-rendering.test.mjs`, que exigía que las vistas de descubrimiento no tuvieran presentación (autorizado por la spec 2D).
 - Se conserva `isDiscoveryView` (cambia lo dicho en la spec): las vistas de descubrimiento ganan solo la presentación; la llegada a la ciudad y la señal del día siguen esperando a los mapas, como antes.
 - Por la misma razón se adaptan tres pruebas que suponían que `resources` y `profile-general` no tenían presentación: la del montaje de la cola en `adventure-rendering.test.mjs` (ahora comprueba que la presentación aparece una vez y queda en `introsSeen`) y dos de `servidor-avisos.test.mjs` (marcan la presentación de `profile-general` como vista en su preparación).
+- La prueba de la ayuda del apoderado va en `tests/local/aventura/adventure-rendering.test.mjs` y no en `portales/`: ahí está el renderizado de rutas completas que ya usan las demás pruebas de `/parent`.
+- En el detalle de cuestionario del apoderado, la guía aparece también cuando el resultado está bloqueado o no disponible.

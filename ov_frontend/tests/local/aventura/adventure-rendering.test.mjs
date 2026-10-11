@@ -2532,6 +2532,25 @@ test('family home unites own route and shared child summary with no private stud
   assert.doesNotMatch(html,/Último avance|Hitos del proceso|Intereses destacados|Próximo hito|Conversación sugerida|Último acceso|Avance prioritario|Seguridad y diario|role="tab"/)
 })
 
+test('every main family screen offers the closed parent guide and activities keep their own narrative', () => {
+  const complete = { parentJourney: completedParentJourney() }
+  const { parentGuides } = load(path.resolve('src/data/content/guideTexts.ts'))
+  for (const [route, patch] of [
+    ['/parent/overview', {}],
+    ['/parent/activities', {}],
+    ['/parent/conversations', {}],
+    ['/parent/careers', {}],
+    ['/parent/children/ejemplo-07/questionnaires/interests', complete],
+    ['/parent/children/ejemplo-07/questionnaires/interests', {}],
+  ]) {
+    const html = render(route, patch)
+    assert.equal(html.match(/aria-label="Abrir guía"/g)?.length, 1, route)
+    assert.doesNotMatch(html, /role="dialog"/, route)
+  }
+  for (const text of Object.values(parentGuides)) assert.ok(text.trim())
+  assert.doesNotMatch(render('/parent/activities/pad-01-rol'), /aria-label="Abrir guía"/)
+})
+
 test('family detail reuses complete results but never reveals favorites or plans', () => {
   const complete = {parentJourney: completedParentJourney()}
   const interests = render('/parent/children/ejemplo-07/questionnaires/interests',complete)

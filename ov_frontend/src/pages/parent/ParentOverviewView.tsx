@@ -3,6 +3,8 @@ import { ParentConversationNotice } from '@/features/parent/components/ParentCon
 import { ParentChildrenSummary } from '@/features/parent/components/ParentChildrenSummary'
 import { useParentOverview } from '@/features/parent/hooks/useParentOverview'
 
+import { GuideDialogue } from '@/components/common/GuideDialogue'
+import { parentGuides } from '@/data/content/guideTexts'
 import { parentProfile } from '@/features/parent/data/parentPortal'
 import { parentMotivation } from '@/features/parent/data/parentMotivation'
 import '@/features/parent/styles/parent-activities.css'
@@ -24,6 +26,7 @@ function ParentOverviewView() {
         <ParentConversationNotice model={model} />
         <ParentRouteSummary model={model} />
       </div>
+      <GuideDialogue audience="parent" text={parentGuides.overview} />
     </main>
   )
 }

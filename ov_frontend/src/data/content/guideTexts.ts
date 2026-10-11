@@ -167,6 +167,19 @@ export const sectionIntros: Record<StudentView, string[]> = {
   ],
 }
 
+// Guías del portal del apoderado (HU-018): qué se puede hacer en cada pantalla.
+// DATO DE PRUEBA: textos provisionales hasta cargar el material definitivo.
+export const parentGuides = {
+  overview:
+    'Aquí ves cómo avanza tu hijo o hija en su recorrido y qué conversaciones tienen pendientes. Cuando completes tus actividades, podrás abrir los resultados que comparte contigo.',
+  activities:
+    'Estas actividades te ayudan a acompañar el proceso. Ábrelas en orden: puedes pausarlas y retomarlas cuando quieras, y repasar las que ya completaste.',
+  careers:
+    'Esta guía reúne información para investigar en familia. Úsala para comparar alternativas y preparar preguntas, sin buscar una respuesta definitiva.',
+  questionnaire:
+    'Este es el resultado de un cuestionario que tu hijo o hija completó. Describe sus intereses o fortalezas, no lo que debe elegir: úsalo para conversar juntos.',
+}
+
 export const passportGuideSteps = [
   'Este es tu pasaporte. Cada sello cuenta una parte de tu viaje.',
   'Arriba ves tu título de viajero y qué te falta para el siguiente.',

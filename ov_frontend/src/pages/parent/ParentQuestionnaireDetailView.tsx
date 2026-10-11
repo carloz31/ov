@@ -4,6 +4,8 @@ import { Link, useParams } from 'react-router'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { StaffEntityHeader } from '@/components/staff/StaffEntityHeader'
+import { GuideDialogue } from '@/components/common/GuideDialogue'
+import { parentGuides } from '@/data/content/guideTexts'
 import { studentProfiles, questionnaires } from '@/data/demo/studentProfiles'
 import { displayDate } from '@/features/student-tracking/lib/selectors'
 import { QuestionnaireDetailContent } from '@/features/student-tracking/components/QuestionnaireDetailContent'
@@ -53,6 +55,7 @@ export function ParentQuestionnaireDetailView() {
         <Button asChild variant="outline" className="min-h-11">
           <Link to={back}>Volver a Inicio</Link>
         </Button>
+        <GuideDialogue audience="parent" text={parentGuides.questionnaire} />
       </main>
     )
   }
@@ -76,6 +79,7 @@ export function ParentQuestionnaireDetailView() {
         result={application?.result}
         audience="parent"
       />
+      <GuideDialogue audience="parent" text={parentGuides.questionnaire} />
     </main>
   )
 }

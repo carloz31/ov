@@ -7,6 +7,8 @@ import { ParentActivityCard } from '@/features/parent/components/ParentActivityC
 import { ParentResourceDialog } from '@/features/parent/components/ParentResourceDialog'
 import { parentRoute } from '@/features/parent/lib/selectors'
 import { parentChildren } from '@/features/parent/data/parentPortal'
+import { GuideDialogue } from '@/components/common/GuideDialogue'
+import { parentGuides } from '@/data/content/guideTexts'
 import { useParentPortalContext } from '@/features/parent/context/parentPortalContext'
 
 function ParentActivitiesView() {
@@ -59,6 +61,7 @@ function ParentActivitiesView() {
           if (!open) setResources([])
         }}
       />
+      <GuideDialogue audience="parent" text={parentGuides.activities} />
     </div>
   )
 }
