@@ -1,0 +1,81 @@
+"""Recorridos y consultas de plataforma, sin fixtures de base."""
+
+from soporte_dominios import consultar_dominios
+
+from sqlalchemy import select
+
+from app.models.base import Base
+
+
+FECHA = '2026-10-07T10:00:00'
+CAMINO = ('mission-welcome', 'enc-mitos', 'act-07', 'mission-story', 'mission-future',
+          'mission-compass', 'act-06', 'mission-expectations', 'mission-next-step')
+MARA = tuple(f'act-tip-{n:02}' for n in range(1, 15))
+
+BLOQUE_FAMILIA = {
+    'codigo': 'FAMILIA', 'nombre': 'Actividades para familias', 'numero': 1,
+    'espacio': 'PORTAL_FAMILIA', 'estado': 'DISPONIBLE',
+    'actividades': [
+        {'codigo': 'pad-01-rol', 'titulo': 'Acompañar sin decidir por él o ella',
+         'tipo': 'INFORMATIVA', 'orden': 1, 'contenido': 'pad_01_acompanar',
+         'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'DISPONIBLE'},
+        {'codigo': 'pad-02-info', 'titulo': 'Conversar con información de hoy',
+         'tipo': 'INFORMATIVA', 'orden': 2, 'contenido': 'pad_02_informacion',
+         'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'BLOQUEADA'},
+    ],
+}
+
+
+def pedir(cliente, metodo, ruta, datos=None, esperado=200):
+    respuesta = cliente.request(metodo, ruta, json=datos)
+    assert respuesta.status_code == esperado, respuesta.text
+    return respuesta.json()
+
+
+def completar(cliente, codigo, cuenta='est-ana', esperado=200):
+    return pedir(cliente, 'POST', '/acciones/completar-actividad',
+                 {'cuenta': cuenta, 'actividad': codigo, 'fecha_hora': FECHA}, esperado)
+
+
+def avanzar_camino(cliente, hasta=None, cuenta='est-ana'):
+    ultimo = len(CAMINO) if hasta is None else CAMINO.index(hasta) + 1
+    for codigo in CAMINO[:ultimo]:
+        respuesta = completar(cliente, codigo, cuenta)
+    return respuesta
+
+
+def responder(cliente, actividad, cuenta='est-ana', opcion=None, inicio=0, fin=None):
+    items = pedir(cliente, 'GET', f'/actividades/{actividad}/items')[inicio:fin]
+    opciones = {'I': 5, 'R': 4, 'A': 3, 'S': 1, 'E': 1, 'C': 1}
+    return pedir(cliente, 'POST', '/acciones/responder-items', {
+        'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
+        'respuestas': [{'item': item['codigo'], 'opcion': opcion if opcion is not None else opciones[item['dimension']]}
+                       for item in items],
+    })
+
+
+def estado(cliente, cuenta='est-ana'):
+    return consultar_dominios(cliente, cuenta)
+
+
+def actividades(cliente, cuenta='est-ana'):
+    return {actividad['codigo']: actividad['estado'] for bloque in estado(cliente, cuenta)['bloques']
+            for actividad in bloque['actividades']}
+
+
+def progreso(cliente, tipo, codigo):
+    return pedir(cliente, 'GET', f'/cuentas/est-ana/progreso/{tipo}/{codigo}')
+
+
+def eventos(cliente, cuenta='est-ana'):
+    return pedir(cliente, 'GET', f'/cuentas/{cuenta}/eventos')
+
+
+def reglas(respuesta):
+    return {nuevo['regla'] for nuevo in respuesta['nuevos_desbloqueos']}
+
+
+def filas_base(aplicacion):
+    with aplicacion.state.fabrica_sesiones() as sesion:
+        return {tabla.name: sesion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
+                for tabla in Base.metadata.sorted_tables}
