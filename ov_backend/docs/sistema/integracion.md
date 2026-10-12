@@ -79,15 +79,15 @@ El portal del apoderado tiene su propia sesión en `ov_frontend/src/store/servid
 **`ruta`** (`datos/ruta.py`, `DATO DE PRUEBA`) sobre **`fijos`** (`datos/fijos.py`). Es el único conjunto. `fijos` lleva lo que tendrá la plataforma sea cual sea la ruta: el RIASEC `TEST-RIASEC` (60 ítems, escala `ESC-LIKERT5`, aplicación `APL-RIASEC`) y las ocupaciones y carreras del catálogo del front con sus puntajes O*NET. `ruta` lleva lo mínimo para probar cada mecánica, en tuplas que interpreta el cargador:
 
 - cuentas `est-ana`, `est-luis`, `est-beto` y `apo-rosa` (vínculo `VIN-ANA`);
-- bloques `T0` (`t-inicio`, `t-cierre-inicio`), `T1` (`t-expectativas`, REGISTRO), `CIUDAD` (`t-mision-intereses`, con los 60 ítems; `t-caso`, CASO) y `FAMILIA` del apoderado (`t-apo-1`, `t-apo-carta`);
+- bloques `T0` (`t-inicio`, `t-cierre-inicio`), `T1` (`t-expectativas`, REGISTRO), `CIUDAD` (`t-mision-intereses` y `t-mision-intereses-2`, con 30 ítems RIASEC cada una; `t-caso`, CASO) y `FAMILIA` del apoderado (`t-apo-1`, `t-apo-carta`);
 - ficha `t-ficha`; conversaciones `t-conv-1` y `t-conv-2`; insignias `t-ins-1` y `t-ins-oculta`; niveles 1 y 2;
-- reglas: T0 en secuencia; cerrar T0 abre T1, el nivel 2 y las conversaciones del estudiante; `t-expectativas` abre la Ciudad; `t-mision-intereses` abre `t-caso`; `t-inicio` da `t-ficha` y `t-ins-1`.
+- reglas: T0 en secuencia; cerrar T0 abre T1, el nivel 2 y las conversaciones del estudiante; `t-expectativas` abre la Ciudad; `t-mision-intereses` abre `t-mision-intereses-2`, que abre `t-caso`; el resultado se calcula al completar la segunda; `t-inicio` da `t-ficha` y `t-ins-1`.
 
 El contenido de cada actividad es su código con guiones bajos (`t_inicio`) y todavía no existe en el front: lo agrega el lote F que conecte cada tramo. Cada lote B extiende `ruta` con las filas de su tramo (ver `docs/plan-iteraciones.md`).
 
 ## Fixtures de contrato
 
-`scripts/exportar_fixtures_front.py --destino <ov_frontend>/tests/fixtures/servidor` crea una base temporal con `ruta`, recorre la ruta corta y escribe 16 JSON en `ruta/` con prefijo `ruta-`: `cuentas`; `resumen-inicial`; `actividades` al inicio, con T1 abierto y con la Ciudad abierta; `fichas` y `logros` al inicio y al final; `completar-t-inicio` y `completar-t-cierre-inicio`; `items-t-mision-intereses`; `resultado-riasec`; `desbloqueos-no-vistos`, y `apoderado-actividades` inicial y final. Ninguna prueba del front los usa todavía; los fixtures de la raíz de `tests/fixtures/servidor/` quedan congelados hasta su lote F. Si cambia una respuesta del contrato, se regeneran en la misma tarea; nunca se editan a mano.
+`scripts/exportar_fixtures_front.py --destino <ov_frontend>/tests/fixtures/servidor` crea una base temporal con `ruta`, recorre la ruta corta y escribe 16 JSON en `ruta/` con prefijo `ruta-`: `cuentas`; `resumen-inicial`; `actividades` al inicio, con T1 abierto y con la Ciudad abierta; `fichas` y `logros` al inicio y al final; `completar-t-inicio` y `completar-t-cierre-inicio`; `items-t-mision-intereses` (la primera misión); `resultado-riasec`; `desbloqueos-no-vistos`, y `apoderado-actividades` inicial y final. Ninguna prueba del front los usa todavía; los fixtures de la raíz de `tests/fixtures/servidor/` quedan congelados hasta su lote F. Si cambia una respuesta del contrato, se regeneran en la misma tarea; nunca se editan a mano.
 
 ## Reinicio de datos de prueba
 

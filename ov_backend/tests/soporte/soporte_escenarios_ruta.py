@@ -1,13 +1,13 @@
 """Verificadores de la ruta mínima, compartidos entre SQLite y PostgreSQL."""
 
-from soporte_ruta import INTERESES, actividades, avanzar, completar, estado, pedir, reglas, responder
+from soporte_ruta import INTERESES, INTERESES_FINAL, actividades, avanzar, completar, estado, pedir, reglas, responder
 
 
 def verificar_p01_estado_inicial(cliente):
     inicial = estado(cliente)
     estados = actividades(cliente)
     assert estados['t-inicio'] == 'DISPONIBLE'
-    assert all(estados[c] == 'BLOQUEADA' for c in ('t-cierre-inicio', 't-expectativas', INTERESES, 't-caso'))
+    assert all(estados[c] == 'BLOQUEADA' for c in ('t-cierre-inicio', 't-expectativas', INTERESES, INTERESES_FINAL, 't-caso'))
     assert {b['codigo']: b['estado'] for b in inicial['bloques']} == {
         'T0': 'DISPONIBLE', 'T1': 'BLOQUEADA', 'CIUDAD': 'BLOQUEADA'}
     assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [('t-ficha', 'BLOQUEADA')]
@@ -42,13 +42,18 @@ def verificar_p07_llegada_a_la_ciudad(cliente):
     ]
     assert reglas(respuesta) == {'R-CIUDAD'}
     estados = actividades(cliente)
-    assert estados[INTERESES] == 'DISPONIBLE' and estados['t-caso'] == 'BLOQUEADA'
+    assert estados[INTERESES] == 'DISPONIBLE'
+    assert estados[INTERESES_FINAL] == estados['t-caso'] == 'BLOQUEADA'
 
 
 def verificar_p10_resultado(cliente):
     avanzar(cliente)
     responder(cliente, INTERESES)
-    respuesta = completar(cliente, INTERESES)
+    primera = completar(cliente, INTERESES)
+    assert primera['resultados_generados'] == []
+    assert reglas(primera) == {'R-t-mision-intereses-2'}
+    responder(cliente, INTERESES_FINAL)
+    respuesta = completar(cliente, INTERESES_FINAL)
     assert respuesta['resultados_generados'] == [{'instrumento': 'TEST-RIASEC', 'aplicacion': 'APL-RIASEC'}]
     assert reglas(respuesta) == {'R-t-caso'}
     resultado = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')

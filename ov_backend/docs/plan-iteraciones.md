@@ -44,7 +44,7 @@ Cuentas:
 | `t-valores` | R | T1 | B02 | Elección ordenada, un ítem sin criterios y uno solo con LONGITUD. B11: abre el campo «motivo». |
 | `t-adicional` | I | T1 | B03 | Misión adicional que se abre con REGISTRO_ADECUADO de `t-expectativas`. |
 | `t-eco` | R | T1 | B05 | Referencias ELECCION y TEXTO; elección por referencia. |
-| `t-mision-intereses` | Q | CIUDAD | B00 | RIASEC (60 ítems). B06: revelar y perfil plano. |
+| `t-mision-intereses`, `t-mision-intereses-2` | Q | CIUDAD | B00 | RIASEC en dos misiones de 30 ítems; el resultado espera a las dos. B06: revelar y perfil plano. |
 | `t-contraste` | R | CIUDAD | B06 | Se abre con REVELA_RESULTADO; referencias RESULTADO y COINCIDENCIAS. |
 | `t-partida`, `t-llegada` | Q | T0, T2 | B07 | Partida y llegada por dimensión, con zonas. |
 | `t-lee-cuestionario` | I | T1 | B07 | Una informativa con referencia RESPUESTA_CUESTIONARIO. |

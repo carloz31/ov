@@ -2,7 +2,7 @@
 
 import pytest
 from soporte_datos_aprobados import ENUNCIADOS_RIASEC, OCUPACIONES_APROBADAS
-from soporte_ruta import INTERESES, avanzar, filas_base, pedir
+from soporte_ruta import MISIONES_INTERESES, avanzar, filas_base, pedir
 from sqlalchemy import func, select, text
 from app import models as modelos
 from app.main import crear_aplicacion
@@ -16,11 +16,11 @@ from datos.ocupaciones import leer_ocupaciones, validar_distribucion_items
 
 
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
-    esperados = {'cuenta': 4, 'vinculo_familiar': 1, 'bloque': 4, 'actividad': 7,
-        'ficha': 1, 'conversacion': 2, 'insignia': 2, 'nivel': 2, 'regla_desbloqueo': 11,
-        'condicion_desbloqueo': 11,
+    esperados = {'cuenta': 4, 'vinculo_familiar': 1, 'bloque': 4, 'actividad': 8,
+        'ficha': 1, 'conversacion': 2, 'insignia': 2, 'nivel': 2, 'regla_desbloqueo': 12,
+        'condicion_desbloqueo': 12,
         'instrumento': 1, 'escala_respuesta': 1, 'opcion_escala': 5, 'dimension': 6,
-        'item_instrumento': 60, 'actividad_item': 60, 'aplicacion': 1, 'aplicacion_actividad': 1,
+        'item_instrumento': 60, 'actividad_item': 60, 'aplicacion': 1, 'aplicacion_actividad': 2,
         'ocupacion': 36, 'puntaje_ocupacion': 216, 'familia_carrera': 6, 'carrera': 6,
         'carrera_ocupacion': 23}
     assert len(Base.metadata.tables) == 44
@@ -42,8 +42,11 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
 def test_riasec_enunciados_y_distribucion_exactos(sesion, cliente):
     validar_distribucion_items(sesion)
     enunciados = ENUNCIADOS_RIASEC
-    todos = pedir(cliente, 'GET', f'/actividades/{INTERESES}/items')
-    assert [i['orden'] for i in todos] == list(range(1, 61))
+    todos = []
+    for actividad in MISIONES_INTERESES:
+        items = pedir(cliente, 'GET', f'/actividades/{actividad}/items')
+        assert [i['orden'] for i in items] == list(range(1, 31))
+        todos.extend(items)
     assert [i['numero'] for i in todos] == list(range(1, 61))
     assert [i['codigo'] for i in todos] == [f'RIASEC-{n:02}' for n in range(1, 61)]
     assert [i['dimension'] for i in todos] == list('RRIIAASSEECC' * 5)

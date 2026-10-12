@@ -5,7 +5,7 @@ recorrido con su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
-from soporte_ruta import INTERESES, actividades, completar, estado, filas_base, pedir, reglas, responder
+from soporte_ruta import INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, filas_base, pedir, reglas, responder
 
 
 def siguiente(cliente, cuenta='est-ana'):
@@ -71,16 +71,21 @@ def test_llegada_a_la_ciudad(cliente):
 def test_hu021_cuestionario_incompleto_retomar_y_resultado(cliente, aplicacion):
     escenarios.verificar_p07_llegada_a_la_ciudad(cliente)
     respuesta = responder(cliente, INTERESES, fin=3)
-    assert respuesta['progreso'] == {'estado': 'EN_CURSO', 'respondidos': 3, 'total': 60}
+    assert respuesta['progreso'] == {'estado': 'EN_CURSO', 'respondidos': 3, 'total': 30}
     antes = filas_base(aplicacion)
     faltantes = completar(cliente, INTERESES, esperado=409)['detail']['items_faltantes']
-    assert faltantes == [f'RIASEC-{n:02}' for n in range(4, 61)]
+    assert faltantes == [f'RIASEC-{n:02}' for n in range(4, 31)]
     assert filas_base(aplicacion) == antes
     assert siguiente(cliente) == INTERESES
     guardadas = pedir(cliente, 'GET', f'/cuentas/est-ana/actividades/{INTERESES}/respuestas')['respuestas']
     assert [(r['item'], r['opcion']['orden']) for r in guardadas] == [('RIASEC-01', 4), ('RIASEC-02', 4), ('RIASEC-03', 5)]
     responder(cliente, INTERESES, inicio=3)
-    respuesta = completar(cliente, INTERESES)
+    primera = completar(cliente, INTERESES)
+    assert primera['resultados_generados'] == []
+    pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', esperado=409)
+    assert siguiente(cliente) == INTERESES_FINAL
+    responder(cliente, INTERESES_FINAL)
+    respuesta = completar(cliente, INTERESES_FINAL)
     assert respuesta['resultados_generados'] == [{'instrumento': 'TEST-RIASEC', 'aplicacion': 'APL-RIASEC'}]
     assert reglas(respuesta) == {'R-t-caso'}
     resultado = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
@@ -95,8 +100,9 @@ def test_resultado_con_coincidencias_y_carreras(cliente):
 def test_perfil_plano(cliente):
     for codigo in ('t-inicio', 't-cierre-inicio', 't-expectativas'):
         completar(cliente, codigo, cuenta='est-luis')
-    responder(cliente, INTERESES, cuenta='est-luis', opcion=3)
-    completar(cliente, INTERESES, cuenta='est-luis')
+    for mision in MISIONES_INTERESES:
+        responder(cliente, mision, cuenta='est-luis', opcion=3)
+        completar(cliente, mision, cuenta='est-luis')
     resultado = pedir(cliente, 'GET', '/cuentas/est-luis/instrumentos/TEST-RIASEC/resultado')
     assert resultado['perfil_plano'] is True
     assert resultado['coincidencias'] == resultado['carreras_recomendadas'] == []

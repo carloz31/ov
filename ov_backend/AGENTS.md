@@ -92,7 +92,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 - Errores: `detail: {"mensaje": ...}`. 404 si no existe la cuenta, la referencia o el objetivo, o si es de otra audiencia; 409 si la acción no está permitida en el estado actual (con `progreso` del objetivo bloqueado o `items_faltantes` cuando aplica); 422 si la entrada es inválida; 403 solo para el progreso de una insignia oculta no obtenida.
 - Fechas: las acciones aceptan `fecha_hora` opcional; se guarda sin zona, conservando la hora local. Sin fecha, se usa la hora de Lima (UTC−05:00). Todos los eventos de una petición comparten la misma fecha.
 - Listas ordenadas por código (contenido, reglas), número (niveles, bloques) u orden (actividades, ítems); eventos y desbloqueos por fecha descendente. Los GET nunca escriben.
-- Consultas: definiciones en la caché (`core/definiciones.py`), lecturas agrupadas por cuenta (`core/contexto.py`), escrituras en lote y ninguna consulta dentro de bucles. Las pruebas de presupuesto exigen que el número de consultas no crezca con el tamaño del catálogo.
+- Consultas: definiciones en la caché (`core/definiciones.py`), lecturas agrupadas por cuenta (`core/contexto.py`), escrituras en lote y ninguna consulta dentro de bucles. Las pruebas de presupuesto exigen que el número de consultas no crezca con el tamaño del catálogo: cada una agrega sus propias filas (`actividades_extra`, `aplicaciones_extra`, `agregar_ocupaciones`…) y compara pocas contra muchas, sin depender del tamaño de `ruta`. Los límites no se recalibran a la baja.
 
 ## Secretos y servicios externos
 

@@ -14,7 +14,7 @@ if __package__ in (None, ''):
 # DATO DE PRUEBA: fecha y respuestas explícitas para reproducir los momentos de la ruta corta.
 FECHA = '2026-10-07T10:00:00'
 OPCIONES = {'I': 5, 'R': 4, 'A': 3, 'S': 1, 'E': 1, 'C': 1}
-INTERESES = 't-mision-intereses'
+MISIONES_INTERESES = ('t-mision-intereses', 't-mision-intereses-2')
 CARPETA = 'ruta'
 PREFIJO = 'ruta-'
 
@@ -50,13 +50,15 @@ def _recorrer(cliente):
     marcados = _pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')
     if marcados['marcados'] != len(avisos) or _pedir(cliente, 'GET', ruta_avisos) != []:
         raise RuntimeError('El marcado no vació los desbloqueos no vistos')
-    items = _pedir(cliente, 'GET', f'/actividades/{INTERESES}/items')
-    fixtures[f'items-{INTERESES}'] = items
-    _pedir(cliente, 'POST', '/acciones/responder-items', {
-        'cuenta': 'est-ana', 'actividad': INTERESES, 'fecha_hora': FECHA,
-        'respuestas': [{'item': item['codigo'], 'opcion': OPCIONES[item['dimension']]} for item in items],
-    })
-    _completar(cliente, INTERESES)
+    for mision in MISIONES_INTERESES:
+        items = _pedir(cliente, 'GET', f'/actividades/{mision}/items')
+        if mision == MISIONES_INTERESES[0]:
+            fixtures[f'items-{mision}'] = items
+        _pedir(cliente, 'POST', '/acciones/responder-items', {
+            'cuenta': 'est-ana', 'actividad': mision, 'fecha_hora': FECHA,
+            'respuestas': [{'item': item['codigo'], 'opcion': OPCIONES[item['dimension']]} for item in items],
+        })
+        _completar(cliente, mision)
     fixtures['resultado-riasec'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
     fixtures.update(_consultas_dominio(cliente, 'final', ('fichas', 'logros')))
     return fixtures

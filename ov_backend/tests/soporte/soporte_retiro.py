@@ -8,7 +8,7 @@ from app import models as m
 from app.main import crear_aplicacion
 from soporte_bases import copiar_plantilla
 from soporte_consultas import ContadorConsultas
-from soporte_ruta import FECHA, INTERESES, avanzar, completar, pedir, responder
+from soporte_ruta import FECHA, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, avanzar, completar, pedir, responder
 
 
 FECHA_BD = datetime.fromisoformat(FECHA)
@@ -64,14 +64,16 @@ def datos_respuestas(cliente, actividad=INTERESES, opcion=3, cuenta='est-ana', c
 
 def ciclo(cliente, cuenta='est-ana', opcion=None, abrir=True):
     preparar_ultimo(cliente, cuenta, opcion, abrir)
-    return completar(cliente, INTERESES, cuenta=cuenta)
+    return completar(cliente, INTERESES_FINAL, cuenta=cuenta)
 
 
 def preparar_ultimo(cliente, cuenta='est-ana', opcion=None, abrir=True):
-    """Deja respondidos los 60 ítems de la misión de intereses, sin completarla."""
+    """Completa la primera misión de intereses y deja respondida la última, sin completarla."""
     if abrir:
         avanzar(cliente, cuenta=cuenta)
     responder(cliente, INTERESES, cuenta=cuenta, opcion=opcion)
+    completar(cliente, INTERESES, cuenta=cuenta)
+    responder(cliente, INTERESES_FINAL, cuenta=cuenta, opcion=opcion)
 
 
 def resultado(cliente, instrumento='TEST-RIASEC', cuenta='est-ana', seleccion=''):
@@ -87,13 +89,26 @@ def reiniciar(cliente, instrumento='TEST-RIASEC', cuenta='est-ana', seleccion=No
 
 def aplicaciones_extra(sesion, cantidad):
     instrumento = buscar(sesion, m.Instrumento, 'TEST-RIASEC')
-    actividades = [buscar(sesion, m.Actividad, INTERESES).id]
+    actividades = [buscar(sesion, m.Actividad, c).id for c in MISIONES_INTERESES]
     for n in range(cantidad):
         nueva = m.Aplicacion(codigo=f'APL-PRUEBA-{n}', nombre='DATO DE PRUEBA',
                             instrumento_id=instrumento.id)
         sesion.add(nueva)
         sesion.flush()
         sesion.add_all([m.AplicacionActividad(aplicacion_id=nueva.id, actividad_id=a) for a in actividades])
+
+
+def actividades_extra(sesion, cantidad, bloque='CIUDAD'):
+    """Agrega actividades informativas, cada una con su regla, para medir pocas contra muchas."""
+    destino = buscar(sesion, m.Bloque, bloque)
+    inicio = buscar(sesion, m.Actividad, 't-inicio')
+    for n in range(cantidad):
+        actividad = m.Actividad(codigo=f'act-extra-{n}', titulo='DATO DE PRUEBA', tipo='INFORMATIVA',
+                                contenido='prueba', orden=100 + n, bloque_id=destino.id)
+        sesion.add(actividad)
+        sesion.flush()
+        regla(sesion, f'R-act-extra-{n}', 'ACTIVIDAD', actividad.id,
+              [condicion('COMPLETA_ACTIVIDAD', referencia=inicio.id)])
 
 
 def instrumento_minimo(sesion, tipo='DESTACADAS', descripciones=None):

@@ -13,10 +13,8 @@ def cargar_catalogo_corrupto(sesion, variante):
     if variante == 'faltante':
         sesion.execute(delete(m.ActividadItem).where(m.ActividadItem.item_id == item.id))
     elif variante == 'repetido':
-        caso = buscar(sesion, m.Actividad, 't-caso')
-        sesion.add(m.AplicacionActividad(aplicacion_id=buscar(sesion, m.Aplicacion, 'APL-RIASEC').id,
-                                         actividad_id=caso.id))
-        sesion.add(m.ActividadItem(actividad_id=caso.id, item_id=item.id, orden=99))
+        sesion.add(m.ActividadItem(actividad_id=buscar(sesion, m.Actividad, 't-mision-intereses-2').id,
+                                  item_id=item.id, orden=99))
     elif variante == 'ajeno':
         instrumento_minimo(sesion)
         ajeno = buscar(sesion, m.ItemInstrumento, 'ITEM-PRUEBA-1')

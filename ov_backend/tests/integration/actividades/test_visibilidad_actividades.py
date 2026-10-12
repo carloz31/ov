@@ -2,7 +2,7 @@
 
 from sqlalchemy import update
 from app import models as m
-from soporte_ruta import INTERESES, avanzar, completar, pedir, responder
+from soporte_ruta import MISIONES_INTERESES, avanzar, completar, pedir, responder
 
 
 def caso(cliente):
@@ -19,7 +19,8 @@ def test_al_desbloquear_se_envia_oculta_hasta_su_regla(cliente, aplicacion):
     assert oculto['estado'] == 'BLOQUEADA' and oculto['visible'] is False
     avanzar(cliente)
     assert caso(cliente)['visible'] is False
-    responder(cliente, INTERESES)
-    completar(cliente, INTERESES)
+    for mision in MISIONES_INTERESES:
+        responder(cliente, mision)
+        completar(cliente, mision)
     visible = caso(cliente)
     assert visible['estado'] == 'DISPONIBLE' and visible['visible'] is True

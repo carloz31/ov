@@ -31,15 +31,18 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None),
                ('t-cierre-inicio', 'T0', 'Cierre del inicio', 'INFORMATIVA', None),
                ('t-expectativas', 'T1', 'Registro de expectativas', 'REGISTRO', None),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None),
+               ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 60),
                ('t-apo-1', 'FAMILIA', 'Primera actividad del apoderado', 'INFORMATIVA', None),
                ('t-apo-carta', 'FAMILIA', 'Carta del apoderado', 'INFORMATIVA', None))
 
-# (actividad, instrumento, primer ítem, último ítem)
-ITEMS_ACTIVIDADES = (('t-mision-intereses', 'TEST-RIASEC', 1, 60),)
+# (actividad, instrumento, primer ítem, último ítem). El RIASEC va en dos misiones para probar que el
+# resultado espera a todas las de su aplicación.
+ITEMS_ACTIVIDADES = (('t-mision-intereses', 'TEST-RIASEC', 1, 30),
+                     ('t-mision-intereses-2', 'TEST-RIASEC', 31, 60))
 
 # (aplicación, actividad)
-APLICACIONES_ACTIVIDADES = (('APL-RIASEC', 't-mision-intereses'),)
+APLICACIONES_ACTIVIDADES = (('APL-RIASEC', 't-mision-intereses'), ('APL-RIASEC', 't-mision-intereses-2'))
 
 # (código, título, contenido)
 FICHAS = (('t-ficha', 'Ficha de prueba', 'Ficha que otorga t-inicio.'),)
@@ -61,7 +64,9 @@ REGLAS = (
     ('R-t-cierre-inicio', 'ACTIVIDAD', 't-cierre-inicio', (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-T1', 'BLOQUE', 'T1', (('COMPLETA_BLOQUE', 'T0', 'EVENTOS', 1),)),
     ('R-CIUDAD', 'BLOQUE', 'CIUDAD', (('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1),)),
-    ('R-t-caso', 'ACTIVIDAD', 't-caso', (('COMPLETA_ACTIVIDAD', 't-mision-intereses', 'EVENTOS', 1),)),
+    ('R-t-mision-intereses-2', 'ACTIVIDAD', 't-mision-intereses-2',
+     (('COMPLETA_ACTIVIDAD', 't-mision-intereses', 'EVENTOS', 1),)),
+    ('R-t-caso', 'ACTIVIDAD', 't-caso', (('COMPLETA_ACTIVIDAD', 't-mision-intereses-2', 'EVENTOS', 1),)),
     ('R-t-ficha', 'FICHA', 't-ficha', (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-t-ins-1', 'INSIGNIA', 't-ins-1', (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-t-ins-oculta', 'INSIGNIA', 't-ins-oculta', (('VENCE_DESAFIO_INTACTO', None, 'EVENTOS', 1),)),

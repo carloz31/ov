@@ -1,24 +1,25 @@
 """R17, R20 y R22: edición, historia y reinicio selectivo."""
 
 from soporte_datos_ports import preparar_respuesta_ajena
-from soporte_ruta import INTERESES, actividades, avanzar, completar, filas_base, pedir, responder
+from soporte_ruta import INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, avanzar, completar, filas_base, pedir, responder
 from soporte_retiro import ciclo, reiniciar, resultado
 
 
 def test_r17_editar_hasta_resultado_y_repetir_sin_recalcular(cliente, aplicacion):
     avanzar(cliente)
     responder(cliente, INTERESES)
-    responder(cliente, INTERESES, opcion=1)
-    assert actividades(cliente)[INTERESES] == 'EN_CURSO'
-    assert all(r['opcion']['orden'] == 1 for r in pedir(cliente, 'GET', f'/cuentas/est-ana/actividades/{INTERESES}/respuestas')['respuestas'])
-    responder(cliente, INTERESES)
     completar(cliente, INTERESES)
+    responder(cliente, INTERESES, opcion=1)
+    assert actividades(cliente)[INTERESES] == 'COMPLETADA'
+    assert all(r['opcion']['orden'] == 1 for r in pedir(cliente, 'GET', f'/cuentas/est-ana/actividades/{INTERESES}/respuestas')['respuestas'])
+    responder(cliente, INTERESES_FINAL)
+    completar(cliente, INTERESES_FINAL)
     obtenido = resultado(cliente)
     antes = filas_base(aplicacion)
     datos = {'cuenta': 'est-ana', 'actividad': INTERESES, 'respuestas': [{'item': 'RIASEC-01', 'opcion': 5}]}
     pedir(cliente, 'POST', '/acciones/responder-items', datos, 409)
     assert filas_base(aplicacion) == antes
-    assert completar(cliente, INTERESES)['resultados_generados'] == []
+    assert completar(cliente, INTERESES_FINAL)['resultados_generados'] == []
     assert resultado(cliente) == obtenido
     assert filas_base(aplicacion)['resultado_instrumento'] == antes['resultado_instrumento']
 
@@ -37,7 +38,7 @@ def test_r20_ciclos_planos_historial_vigentes_y_otra_cuenta(cliente, aplicacion)
         if n < 2:
             reinicio = reiniciar(cliente)
             assert reinicio['resultado_anulado'] is not None
-            assert reinicio['actividades_reiniciadas'] == [INTERESES]
+            assert reinicio['actividades_reiniciadas'] == list(MISIONES_INTERESES)
             pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', esperado=409)
             ciclo(cliente, opcion=3, abrir=False)
 
@@ -55,4 +56,4 @@ def test_r22_reinicio_parcial_conserva_respuesta_ajena_y_no_abre(cliente, aplica
     assert despues['progreso_actividad'] == antes['progreso_actividad']
     assert len(despues['respuesta_item']) == 1 and despues['respuesta_item'][0] == antes['respuesta_item'][-1]
     assert actividades(cliente) == estados
-    assert actividades(cliente)['t-caso'] == 'BLOQUEADA'
+    assert actividades(cliente)[INTERESES_FINAL] == 'BLOQUEADA'

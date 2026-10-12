@@ -3,13 +3,13 @@
 from soporte_datos_ports import agregar_ocupaciones
 from sqlalchemy import select
 from app import models as m
-from soporte_ruta import INTERESES, avanzar, pedir
-from soporte_retiro import ciclo, datos_respuestas, medir, preparar_ultimo
+from soporte_ruta import INTERESES_FINAL, avanzar, pedir
+from soporte_retiro import actividades_extra, ciclo, datos_respuestas, medir, preparar_ultimo
 
 
 def test_r12_uno_o_todos_insertar_y_reemplazar_con_identidad(tmp_path, base_aislada):
     conteos = []
-    for cantidad in (1, 5):
+    for cantidad in (1, 30):
         with base_aislada(tmp_path, f'lote-{cantidad}') as (aplicacion, cliente):
             avanzar(cliente)
             datos = datos_respuestas(cliente, cantidad=cantidad)
@@ -38,22 +38,28 @@ def test_r30_calculo_constante_con_cien_ocupaciones(tmp_path, base_aislada):
                     agregar_ocupaciones(sesion, extra)
             preparar_ultimo(cliente)
             _, contador = medir(cliente, aplicacion, 'POST', '/acciones/completar-actividad',
-                {'cuenta': 'est-ana', 'actividad': INTERESES}, limite=20)
+                {'cuenta': 'est-ana', 'actividad': INTERESES_FINAL}, limite=20)
             lecturas = [e.sentencia for e in contador.ejecuciones if e.sentencia.startswith('SELECT') and 'JOIN puntaje_ocupacion' in e.sentencia]
             assert len(lecturas) == 1
             conteos.append(contador.cantidad)
     assert conteos[0] == conteos[1]
 
 
-def test_r31_presupuestos_de_consultas_y_reinicio(cliente, aplicacion):
+def test_r31_presupuestos_de_consultas_y_reinicio(tmp_path, base_aislada):
     rutas = ['/instrumentos', '/actividades/t-mision-intereses/items', '/cuentas/est-ana/instrumentos',
              '/cuentas/est-ana/actividades/t-mision-intereses/respuestas']
-    for ruta in rutas:
-        medir(cliente, aplicacion, 'GET', ruta)
-    medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', esperado=409)
-    ciclo(cliente)
-    for ruta in rutas + ['/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado',
-                         '/cuentas/est-ana/instrumentos/TEST-RIASEC/historial']:
-        medir(cliente, aplicacion, 'GET', ruta)
-    medir(cliente, aplicacion, 'POST', '/acciones/reiniciar-instrumento',
-        {'cuenta': 'est-ana', 'instrumento': 'TEST-RIASEC'}, limite=12)
+    conteos = []
+    for extra in (0, 100):
+        with base_aislada(tmp_path, f'presupuesto-{extra}') as (aplicacion, cliente):
+            with aplicacion.state.fabrica_sesiones.begin() as sesion:
+                actividades_extra(sesion, extra)
+            cantidades = [medir(cliente, aplicacion, 'GET', ruta)[1].cantidad for ruta in rutas]
+            cantidades.append(medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado',
+                                    esperado=409)[1].cantidad)
+            ciclo(cliente)
+            cantidades += [medir(cliente, aplicacion, 'GET', ruta)[1].cantidad for ruta in rutas + [
+                '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', '/cuentas/est-ana/instrumentos/TEST-RIASEC/historial']]
+            cantidades.append(medir(cliente, aplicacion, 'POST', '/acciones/reiniciar-instrumento',
+                {'cuenta': 'est-ana', 'instrumento': 'TEST-RIASEC'}, limite=12)[1].cantidad)
+            conteos.append(cantidades)
+    assert conteos[0] == conteos[1]

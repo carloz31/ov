@@ -10,7 +10,9 @@ from app.models.base import Base
 FECHA = '2026-10-07T10:00:00'
 # DATO DE PRUEBA: el recorrido de `datos/ruta.py` que abre la Ciudad.
 RECORRIDO = ('t-inicio', 't-cierre-inicio', 't-expectativas')
-INTERESES = 't-mision-intereses'
+# El RIASEC va en dos misiones de 30 ítems; el resultado se calcula al completar la última.
+MISIONES_INTERESES = ('t-mision-intereses', 't-mision-intereses-2')
+INTERESES, INTERESES_FINAL = MISIONES_INTERESES
 
 BLOQUE_FAMILIA = {
     'codigo': 'FAMILIA', 'nombre': 'Actividades para familias', 'numero': 1,

@@ -60,10 +60,20 @@
         "visible": true
       },
       {
+        "codigo": "t-mision-intereses-2",
+        "contenido": "t_mision_intereses_2",
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Misión de intereses, segunda parte",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
         "codigo": "t-caso",
         "contenido": "t_caso",
         "estado": "BLOQUEADA",
-        "orden": 2,
+        "orden": 3,
         "tipo": "CASO",
         "titulo": "Caso de prueba",
         "visibilidad": "SIEMPRE",
