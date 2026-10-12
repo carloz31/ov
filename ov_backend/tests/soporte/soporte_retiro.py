@@ -122,7 +122,7 @@ def instrumento_minimo(sesion, tipo='DESTACADAS', descripciones=None):
         sesion.add(item)
         sesion.flush()
         items.append(item)
-    bloque = buscar(sesion, m.Bloque, 'T1')
+    bloque = buscar(sesion, m.Bloque, 'T0')
     momentos = ('ENTRADA', 'SALIDA') if tipo == 'COMPARACION' else ('UNICA',)
     codigos = []
     for n, momento in enumerate(momentos):

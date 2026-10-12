@@ -1,7 +1,7 @@
 """R13 y R23: lotes y reinicios inválidos sin escrituras."""
 
 from soporte_ruta import avanzar, filas_base, pedir, responder
-from soporte_retiro import aplicaciones_extra, datos_respuestas, medir
+from soporte_retiro import aplicaciones_extra, datos_respuestas, instrumento_minimo, medir
 
 
 def test_r13_lote_mixto_se_valida_antes_de_escribir(tmp_path, base_aislada):
@@ -9,11 +9,13 @@ def test_r13_lote_mixto_se_valida_antes_de_escribir(tmp_path, base_aislada):
         for fallo in ('item', 'opcion'):
             with base_aislada(tmp_path, f'mixto-{existente}-{fallo}') as (aplicacion, cliente):
                 avanzar(cliente)
+                with aplicacion.state.fabrica_sesiones.begin() as sesion:
+                    instrumento_minimo(sesion)
                 if existente:
-                    responder(cliente, 'act-tip-01')
+                    responder(cliente, 't-mision-intereses')
                 datos = datos_respuestas(cliente, opcion=5)
                 if fallo == 'item':
-                    datos['respuestas'][-1]['item'] = 'RIASEC-06'
+                    datos['respuestas'][-1]['item'] = 'ITEM-PRUEBA-1'
                 else:
                     datos['respuestas'][-1]['opcion'] = 999
                 antes = filas_base(aplicacion)

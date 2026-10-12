@@ -14,14 +14,14 @@ from sqlalchemy.schema import CreateSchema, DropSchema
 from app.database import crear_motor_bd
 from app.main import crear_aplicacion
 from datos.cargar import preparar_base
-import soporte_escenarios_plataforma as escenarios
+import soporte_escenarios_ruta as escenarios
 
 
 pytestmark = pytest.mark.postgres
 
 
 @pytest.mark.skipif(not os.environ.get('TEST_POSTGRES_URL'), reason='Falta TEST_POSTGRES_URL')
-@pytest.mark.parametrize('escenario', ['p01_estado_inicial', 'p02_primer_paso',
+@pytest.mark.parametrize('escenario', ['p01_estado_inicial', 'p02_primer_paso', 'p03_cierre_de_t0',
                                       'p07_llegada_a_la_ciudad', 'p10_resultado'])
 def test_postgresql_por_http(monkeypatch, escenario):
     url_original = make_url(os.environ['TEST_POSTGRES_URL'])
@@ -40,7 +40,7 @@ def test_postgresql_por_http(monkeypatch, escenario):
         monkeypatch.setenv('ENTORNO', 'desarrollo')
         configuracion = Config(str(Path(__file__).resolve().parents[3] / 'alembic.ini'))
         command.upgrade(configuracion, 'head')
-        preparar_base(url_texto, 'plataforma')
+        preparar_base(url_texto, 'ruta')
         with TestClient(crear_aplicacion(url_texto)) as cliente:
             getattr(escenarios, f'verificar_{escenario}')(cliente)
     finally:

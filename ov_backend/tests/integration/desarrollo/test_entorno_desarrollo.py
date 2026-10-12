@@ -7,7 +7,7 @@ from sqlalchemy import select
 from app.database import crear_motor_bd
 from app.main import crear_aplicacion
 from app.models import Base
-from datos import plataforma
+from datos import ruta as conjunto_ruta
 
 
 def test_r16_entornos_aislados_sin_rutas_retiradas_ni_lecturas(tmp_path, monkeypatch):
@@ -17,7 +17,7 @@ def test_r16_entornos_aislados_sin_rutas_retiradas_ni_lecturas(tmp_path, monkeyp
     motor.dispose()
     def prohibido(*args, **kwargs):
         pytest.fail('El arranque no siembra ni lee archivos de datos')
-    monkeypatch.setattr(plataforma, 'cargar', prohibido)
+    monkeypatch.setattr(conjunto_ruta, 'cargar', prohibido)
     leer = Path.read_text
     def leer_solo_configuracion(ruta, *args, **kwargs):
         if 'datos' in ruta.parts or 'static' in ruta.parts:

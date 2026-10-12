@@ -4,10 +4,10 @@ from soporte_ruta import pedir, progreso
 
 
 def test_r07_progreso_oculto_antes_y_despues(cliente):
-    respuesta = cliente.get('/cuentas/est-ana/progreso/INSIGNIA/I10')
+    respuesta = cliente.get('/cuentas/est-ana/progreso/INSIGNIA/t-ins-oculta')
     assert respuesta.status_code == 403
-    assert 'I10' not in respuesta.text and 'VENCE_DESAFIO_INTACTO' not in respuesta.text
+    assert 't-ins-oculta' not in respuesta.text and 'VENCE_DESAFIO_INTACTO' not in respuesta.text
     pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'VENCE_DESAFIO_INTACTO'})
-    obtenido = progreso(cliente, 'INSIGNIA', 'I10')
+    obtenido = progreso(cliente, 'INSIGNIA', 't-ins-oculta')
     assert obtenido['disponible'] is True and obtenido['reglas'][0]['cumplida'] is True
     assert obtenido['reglas'][0]['condiciones'][0]['actual'] == 1

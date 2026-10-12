@@ -1,9 +1,9 @@
-"""Preparaciones mínimas para ports sobre plataforma; DATO DE PRUEBA."""
+"""Preparaciones mínimas para ports sobre la ruta; DATO DE PRUEBA."""
 
 from datetime import timedelta
 from sqlalchemy import select
 from app import models as m
-from soporte_ruta import MARA
+from soporte_ruta import INTERESES
 from soporte_retiro import FECHA_BD, buscar, condicion, instrumento_minimo, regla
 
 
@@ -34,7 +34,7 @@ def preparar_respuesta_ajena(sesion):
     ana = buscar(sesion, m.Cuenta, 'est-ana')
     progreso = sesion.scalar(select(m.ProgresoActividad).where(
         m.ProgresoActividad.cuenta_id == ana.id,
-        m.ProgresoActividad.actividad_id == buscar(sesion, m.Actividad, MARA[0]).id))
+        m.ProgresoActividad.actividad_id == buscar(sesion, m.Actividad, INTERESES).id))
     item = buscar(sesion, m.ItemInstrumento, 'ITEM-PRUEBA-1')
     opcion = sesion.scalar(select(m.OpcionEscala).where(m.OpcionEscala.escala_id == item.escala_id, m.OpcionEscala.orden == 1))
     sesion.add(m.RespuestaItem(progreso_id=progreso.id, item_id=item.id, opcion_id=opcion.id,
@@ -87,7 +87,7 @@ def agregar_autores(sesion, cantidad, autores):
 
 
 def preparar_casos(sesion):
-    bloque = buscar(sesion, m.Bloque, 'CAMINO')
+    bloque = buscar(sesion, m.Bloque, 'T0')
     for minimo in (0, 70, 100):
         sesion.add(m.Actividad(codigo=f'caso-prueba-{minimo}', titulo='DATO DE PRUEBA',
             contenido='prueba', tipo='CASO', puntaje_minimo=minimo, orden=100+minimo, bloque_id=bloque.id))
@@ -96,3 +96,12 @@ def preparar_casos(sesion):
 def preparar_validacion(sesion):
     instrumento_minimo(sesion)
     sesion.add(m.Conversacion(codigo='conv-prueba', titulo='DATO DE PRUEBA', tema='DATO DE PRUEBA'))
+
+
+def insignia_por_evento(sesion, codigo, evento):
+    """La ruta no premia todos los eventos; la prueba crea la insignia que necesita."""
+    insignia = m.Insignia(codigo=codigo, nombre='DATO DE PRUEBA', descripcion='DATO DE PRUEBA',
+                          requisito='DATO DE PRUEBA', es_oculta=False, audiencia='ESTUDIANTE')
+    sesion.add(insignia)
+    sesion.flush()
+    regla(sesion, f'R-{codigo}', 'INSIGNIA', insignia.id, [condicion(evento)])

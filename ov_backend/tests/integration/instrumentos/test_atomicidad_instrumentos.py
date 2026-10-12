@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from app import models as m
 from app.services import actividades as servicio_actividades
 from app.services.instrumentos import resultados as servicio_resultados
-from soporte_ruta import MARA, avanzar, completar, filas_base, pedir, responder
+from soporte_ruta import INTERESES, avanzar, completar, filas_base, pedir, responder
 from soporte_retiro import ciclo, preparar_ultimo
 
 
@@ -20,7 +20,7 @@ def test_r18_fallo_despues_de_guardar_resultado_revierte_toda_accion(cliente, ap
         assert sesion.scalar(select(m.Coincidencia.resultado_id)) is not None
         raise IntegrityError('DATO DE PRUEBA', {}, RuntimeError('fallo después de guardar'))
     monkeypatch.setattr(servicio_resultados, 'guardar_resultados', fallar)
-    completar(cliente, MARA[-1], esperado=409)
+    completar(cliente, INTERESES, esperado=409)
     assert filas_base(aplicacion) == antes
 
 
@@ -36,7 +36,7 @@ def test_r24_reinicio_parcial_y_completo_revierte_despues_del_evento(tmp_path, m
                 ciclo(cliente)
             else:
                 avanzar(cliente)
-                responder(cliente, MARA[0])
+                responder(cliente, INTERESES)
             antes = filas_base(aplicacion)
             with monkeypatch.context() as parche:
                 parche.setattr(servicio_actividades, 'responder_con_eventos', fallar)

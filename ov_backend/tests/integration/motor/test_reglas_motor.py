@@ -84,7 +84,7 @@ def test_r04_condiciones_concesion_y_bloque_son_independientes(cliente, aplicaci
         ana = buscar(sesion, m.Cuenta, 'est-ana')
         assert sesion.scalar(select(m.Desbloqueo).join(m.ReglaDesbloqueo).where(
             m.Desbloqueo.cuenta_id == ana.id, m.ReglaDesbloqueo.codigo == 'R-PRUEBA-BLOQUE')) is not None
-        motor.registrar_eventos(sesion, ana, [('COMPLETA_BLOQUE', buscar(sesion, m.Bloque, 'CAMINO').id)], FECHA_BD)
+        motor.registrar_eventos(sesion, ana, [('COMPLETA_ACTIVIDAD', buscar(sesion, m.Actividad, 't-expectativas').id)], FECHA_BD)
     assert actividades(cliente)['act-prueba-bloque'] == 'DISPONIBLE'
 
 
@@ -94,7 +94,7 @@ def test_r06_alternativas_audiencias_y_cuentas(sesion):
     luis = buscar(sesion, m.Cuenta, 'est-luis')
     regla(sesion, 'R-PRUEBA-ALT-A', 'CONVERSACIONES', None, [condicion('INGRESO')])
     regla(sesion, 'R-PRUEBA-ALT-B', 'CONVERSACIONES', None, [condicion('PUBLICA_ENTREVISTA')])
-    actividad = buscar(sesion, m.Actividad, 'enc-mitos')
+    actividad = buscar(sesion, m.Actividad, 't-cierre-inicio')
     regla(sesion, 'R-PRUEBA-AUDIENCIA', 'ACTIVIDAD', actividad.id, [condicion('INGRESO')])
     for cuenta in (estudiante, apoderado):
         assert not motor.objetivo_disponible(sesion, cuenta, m.TipoObjetivo.CONVERSACIONES, None)

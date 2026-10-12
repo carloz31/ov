@@ -5,7 +5,7 @@ from sqlalchemy import event
 from sqlalchemy.exc import IntegrityError
 from app.models import Base
 from app.services.desarrollo import TABLAS_DE_ESTADO
-from datos import cargar, plataforma
+from datos import cargar, ruta
 from soporte_estado_desarrollo import llenar_estado
 from soporte_ruta import filas_base, pedir
 
@@ -19,8 +19,8 @@ def test_r15_reinicio_completo_idempotente_y_atomico(cliente, aplicacion, monkey
     cache = motor.cache_definiciones.actual
     def prohibido(*args, **kwargs):
         pytest.fail('El reinicio no puede cargar catálogos ni recrear tablas')
-    monkeypatch.setattr(plataforma, 'cargar', prohibido)
-    monkeypatch.setitem(cargar.CONJUNTOS, 'plataforma', prohibido)
+    monkeypatch.setattr(ruta, 'cargar', prohibido)
+    monkeypatch.setitem(cargar.CONJUNTOS, 'ruta', prohibido)
     monkeypatch.setattr(Base.metadata, 'create_all', prohibido)
     monkeypatch.setattr(Base.metadata, 'drop_all', prohibido)
     def fallar(conexion, cursor, sentencia, parametros, contexto, varios):

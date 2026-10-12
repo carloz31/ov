@@ -102,7 +102,7 @@ def test_upgrade_repetible_downgrade_y_nuevo_upgrade(base_migrada):
     assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
 
 
-@pytest.mark.parametrize('conjunto', ['plataforma'])
+@pytest.mark.parametrize('conjunto', ['ruta'])
 def test_carga_vaciado_y_reinicio_conservan_revision(base_migrada, conjunto):
     url, configuracion, motor = base_migrada
     preparar_base(url, conjunto)
@@ -261,11 +261,11 @@ def test_migracion_0003_admite_familia_conserva_datos_y_rechaza_otros_espacios(t
 
 def test_downgrade_0003_con_familia_falla_sin_perder_catalogo_ni_estado(base_migrada):
     url, configuracion, motor = base_migrada
-    preparar_base(url, 'plataforma')
+    preparar_base(url, 'ruta')
     aplicacion = crear_aplicacion(url)
     try:
         with TestClient(aplicacion) as cliente:
-            for actividad in ('pad-01-rol', 'pad-02-info'):
+            for actividad in ('t-apo-1', 't-apo-carta'):
                 assert cliente.post('/acciones/completar-actividad', json={
                     'cuenta': 'apo-rosa', 'actividad': actividad,
                 }).status_code == 200

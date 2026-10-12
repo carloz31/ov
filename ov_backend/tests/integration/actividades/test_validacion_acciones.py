@@ -7,16 +7,16 @@ from soporte_ruta import avanzar, filas_base, pedir
 def test_r40_rechazos_de_acciones_y_consultas_sin_efectos(cliente, aplicacion):
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         preparar_validacion(sesion)
-    avanzar(cliente)
+    avanzar(cliente, 't-cierre-inicio')
     entradas = [
-        ('/acciones/resolver-caso', {'cuenta': 'est-ana', 'actividad': 'mission-welcome', 'puntaje': 70}, 409),
-        ('/acciones/responder-items', {'cuenta': 'est-ana', 'actividad': 'mission-welcome', 'respuestas': [{'item': 'RIASEC-01', 'opcion': 3}]}, 409),
-        ('/acciones/responder-items', {'cuenta': 'apo-rosa', 'actividad': 'act-tip-01', 'respuestas': [{'item': 'RIASEC-01', 'opcion': 3}]}, 404),
-        ('/acciones/completar-actividad', {'cuenta': 'apo-rosa', 'actividad': 'act-tip-01'}, 404),
+        ('/acciones/resolver-caso', {'cuenta': 'est-ana', 'actividad': 't-inicio', 'puntaje': 70}, 409),
+        ('/acciones/responder-items', {'cuenta': 'est-ana', 'actividad': 't-inicio', 'respuestas': [{'item': 'RIASEC-01', 'opcion': 3}]}, 409),
+        ('/acciones/responder-items', {'cuenta': 'apo-rosa', 'actividad': 't-mision-intereses', 'respuestas': [{'item': 'RIASEC-01', 'opcion': 3}]}, 404),
+        ('/acciones/completar-actividad', {'cuenta': 'apo-rosa', 'actividad': 't-mision-intereses'}, 404),
         ('/acciones/escribir-carta', {'cuenta': 'est-luis', 'texto': 'DATO DE PRUEBA'}, 409),
         ('/acciones/escribir-entrada', {'cuenta': 'apo-rosa', 'origen': 'LIBRE', 'texto': 'DATO DE PRUEBA'}, 409),
         ('/acciones/completar-conversacion', {'cuenta': 'est-luis', 'conversacion': 'conv-prueba'}, 409),
-        ('/acciones/completar-actividad', {'cuenta': 'apo-rosa', 'actividad': 'mission-welcome'}, 409),
+        ('/acciones/completar-actividad', {'cuenta': 'apo-rosa', 'actividad': 't-inicio'}, 409),
         ('/acciones/publicar-entrevista', {'autores': ['apo-rosa'], 'resumen': 'DATO DE PRUEBA'}, 409),
         ('/acciones/check-in', {'cuenta': 'apo-rosa', 'nivel_seguridad': 3}, 409),
     ]
@@ -26,7 +26,7 @@ def test_r40_rechazos_de_acciones_y_consultas_sin_efectos(cliente, aplicacion):
         ('/cuentas/est-ana/instrumentos/TEST-RIASEC/comparacion', 404)]
     for cuenta in ('no-existe', 'apo-rosa'):
         consultas += [(f'/cuentas/{cuenta}/{ruta}', 404) for ruta in ('instrumentos',
-            'actividades/act-tip-01/respuestas', 'instrumentos/TEST-RIASEC/resultado',
+            'actividades/t-mision-intereses/respuestas', 'instrumentos/TEST-RIASEC/resultado',
             'instrumentos/TEST-RIASEC/historial', 'instrumentos/TEST-RIASEC/comparacion')]
     for ruta, datos, esperado in entradas:
         antes = filas_base(aplicacion)

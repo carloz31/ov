@@ -14,5 +14,5 @@ def test_r32_fallo_despues_de_conceder_revierte_completar(cliente, aplicacion, m
         raise RuntimeError('DATO DE PRUEBA: después de conceder')
     monkeypatch.setattr(servicio_actividades, 'responder_con_eventos', fallar)
     with pytest.raises(RuntimeError, match='después de conceder'):
-        completar(cliente, 'mission-welcome')
+        completar(cliente, 't-inicio')
     assert filas_base(aplicacion) == antes

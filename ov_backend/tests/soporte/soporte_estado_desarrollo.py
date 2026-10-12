@@ -11,7 +11,7 @@ def llenar_estado(aplicacion):
     fecha = datetime(2026, 10, 8, 10)
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         cuenta = sesion.scalar(select(modelos.Cuenta).where(modelos.Cuenta.codigo == 'est-ana'))
-        actividad = sesion.scalar(select(modelos.Actividad).where(modelos.Actividad.codigo == 'mission-welcome'))
+        actividad = sesion.scalar(select(modelos.Actividad).where(modelos.Actividad.codigo == 't-inicio'))
         vinculo = sesion.scalar(select(modelos.VinculoFamiliar))
         conversacion = modelos.Conversacion(codigo='conv-prueba', titulo='DATO DE PRUEBA', tema='DATO DE PRUEBA')
         sesion.add(conversacion)

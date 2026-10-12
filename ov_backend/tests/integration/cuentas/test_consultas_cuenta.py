@@ -24,8 +24,8 @@ def test_r10_gets_sin_efectos_ni_ids_e_historial_ordenado(cliente, aplicacion):
         agregar_eventos(sesion, luis, [('ESCRIBE_CARTA', None, FECHA_BD + timedelta(days=4))])
     antes = filas_base(aplicacion)
     rutas = ['/cuentas'] + [f'/cuentas/est-ana/{r}' for r in RUTAS_DOMINIO] + [
-        '/cuentas/est-ana/eventos', '/instrumentos', '/actividades/act-tip-01/items',
-        '/cuentas/est-ana/actividades/act-tip-01/respuestas', '/cuentas/est-ana/instrumentos',
+        '/cuentas/est-ana/eventos', '/instrumentos', '/actividades/t-mision-intereses/items',
+        '/cuentas/est-ana/actividades/t-mision-intereses/respuestas', '/cuentas/est-ana/instrumentos',
         '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', '/cuentas/est-ana/instrumentos/TEST-RIASEC/historial']
     for ruta in rutas:
         sin_ids(pedir(cliente, 'GET', ruta))

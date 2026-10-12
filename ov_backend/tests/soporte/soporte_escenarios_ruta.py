@@ -1,18 +1,19 @@
-"""Verificadores de escenarios compartidos entre SQLite y PostgreSQL."""
+"""Verificadores de la ruta mínima, compartidos entre SQLite y PostgreSQL."""
 
-from soporte_ruta import CAMINO, MARA, actividades, avanzar, completar, estado, pedir, reglas, responder
+from soporte_ruta import INTERESES, actividades, avanzar, completar, estado, pedir, reglas, responder
 
 
 def verificar_p01_estado_inicial(cliente):
     inicial = estado(cliente)
     estados = actividades(cliente)
-    assert estados['mission-welcome'] == 'DISPONIBLE'
-    assert all(estados[c] == 'BLOQUEADA' for c in CAMINO[1:] + MARA + ('act-tip-final',))
-    assert {b['codigo']: b['estado'] for b in inicial['bloques']} == {'CAMINO': 'DISPONIBLE', 'CIUDAD': 'BLOQUEADA'}
-    assert len(inicial['fichas']) == 4 and all(f['estado'] == 'BLOQUEADA' for f in inicial['fichas'])
-    visibles = {i['codigo']: i for i in inicial['insignias'] if i['codigo'] != '???'}
-    assert set(visibles) == {f'I{n}' for n in range(1, 10)}
-    assert all(i['estado'] == 'BLOQUEADA' and i['requisito'] for i in visibles.values())
+    assert estados['t-inicio'] == 'DISPONIBLE'
+    assert all(estados[c] == 'BLOQUEADA' for c in ('t-cierre-inicio', 't-expectativas', INTERESES, 't-caso'))
+    assert {b['codigo']: b['estado'] for b in inicial['bloques']} == {
+        'T0': 'DISPONIBLE', 'T1': 'BLOQUEADA', 'CIUDAD': 'BLOQUEADA'}
+    assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [('t-ficha', 'BLOQUEADA')]
+    visibles = [i for i in inicial['insignias'] if i['codigo'] != '???']
+    assert [(i['codigo'], i['estado']) for i in visibles] == [('t-ins-1', 'BLOQUEADA')]
+    assert visibles[0]['requisito']
     oculto, = [i for i in inicial['insignias'] if i['codigo'] == '???']
     assert oculto['estado'] == 'BLOQUEADA' and oculto['requisito'] is None
     assert inicial['conversaciones']['estado'] == 'BLOQUEADA'
@@ -21,30 +22,35 @@ def verificar_p01_estado_inicial(cliente):
 
 
 def verificar_p02_primer_paso(cliente):
-    assert reglas(completar(cliente, 'mission-welcome')) == {'R-enc-mitos', 'R-first-steps', 'R-I1'}
+    assert reglas(completar(cliente, 't-inicio')) == {'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1'}
+
+
+def verificar_p03_cierre_de_t0(cliente):
+    respuesta = avanzar(cliente, 't-cierre-inicio')
+    assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [
+        ('COMPLETA_ACTIVIDAD', 't-cierre-inicio'), ('COMPLETA_BLOQUE', 'T0'),
+    ]
+    assert reglas(respuesta) == {'R-T1', 'R-NIV-2', 'R-FAM-ESTUDIANTE'}
+    assert actividades(cliente)['t-expectativas'] == 'DISPONIBLE'
+    assert estado(cliente)['nivel_actual']['numero'] == 2
 
 
 def verificar_p07_llegada_a_la_ciudad(cliente):
     respuesta = avanzar(cliente)
     assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [
-        ('COMPLETA_ACTIVIDAD', 'mission-next-step'), ('COMPLETA_BLOQUE', 'CAMINO'),
+        ('COMPLETA_ACTIVIDAD', 't-expectativas'), ('COMPLETA_BLOQUE', 'T1'),
     ]
-    assert reglas(respuesta) == {'R-ciudad', 'R-I3', 'R-NIV-3', 'R-FAM-ESTUDIANTE'}
+    assert reglas(respuesta) == {'R-CIUDAD'}
     estados = actividades(cliente)
-    assert estados['act-tip-01'] == 'DISPONIBLE'
-    assert all(estados[c] == 'BLOQUEADA' for c in MARA[1:] + ('act-tip-final',))
-    assert estado(cliente)['nivel_actual']['numero'] == 3
+    assert estados[INTERESES] == 'DISPONIBLE' and estados['t-caso'] == 'BLOQUEADA'
 
 
 def verificar_p10_resultado(cliente):
     avanzar(cliente)
-    for actividad in MARA:
-        responder(cliente, actividad)
-        respuesta = completar(cliente, actividad)
-        if actividad != 'act-tip-14':
-            assert respuesta['resultados_generados'] == []
+    responder(cliente, INTERESES)
+    respuesta = completar(cliente, INTERESES)
     assert respuesta['resultados_generados'] == [{'instrumento': 'TEST-RIASEC', 'aplicacion': 'APL-RIASEC'}]
-    assert reglas(respuesta) == {'R-act-tip-final'}
+    assert reglas(respuesta) == {'R-t-caso'}
     resultado = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
     assert {d['codigo']: d['porcentaje'] for d in resultado['dimensiones']} == {'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0}
     assert resultado['codigo_interes'] == {'codigo': 'IRA', 'hay_empate': False}

@@ -1,4 +1,4 @@
-"""R01: conteos generales sobre plataforma."""
+"""R01: conteos generales sobre la ruta."""
 
 from datetime import timedelta
 from app import models as m
@@ -8,7 +8,7 @@ from soporte_retiro import FECHA_BD, agregar_eventos, buscar
 
 def test_r01_conteos_filtran_cuenta_tipo_referencia_y_fecha(sesion):
     ana, luis = [buscar(sesion, m.Cuenta, c) for c in ('est-ana', 'est-luis')]
-    ids = [buscar(sesion, m.Actividad, c).id for c in ('mission-welcome', 'enc-mitos', 'act-07')]
+    ids = [buscar(sesion, m.Actividad, c).id for c in ('t-inicio', 't-cierre-inicio', 't-expectativas')]
     agregar_eventos(sesion, ana, [('COMPLETA_ACTIVIDAD', ids[n], FECHA_BD + timedelta(days=n, hours=h))
         for n, h in ((0, 0), (0, 1), (1, 0), (1, 1), (2, 0))]
         + [('SUPERA_CASO', ids[0], FECHA_BD + timedelta(days=3))])

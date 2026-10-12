@@ -1,6 +1,6 @@
 """R19: varias aplicaciones por actividad, selección y coste constante."""
 
-from soporte_ruta import MARA, pedir
+from soporte_ruta import INTERESES, pedir
 from soporte_retiro import aplicaciones_extra, medir, preparar_ultimo, resultado
 
 
@@ -12,7 +12,7 @@ def test_r19_resultados_por_aplicacion_y_sql_constante(tmp_path, base_aislada):
                 aplicaciones_extra(sesion, extra)
             preparar_ultimo(cliente)
             salida, contador = medir(cliente, aplicacion, 'POST', '/acciones/completar-actividad',
-                {'cuenta': 'est-ana', 'actividad': MARA[-1]}, limite=20)
+                {'cuenta': 'est-ana', 'actividad': INTERESES}, limite=20)
             assert {r['aplicacion'] for r in salida['resultados_generados']} == {'APL-RIASEC'} | {f'APL-PRUEBA-{n}' for n in range(extra)}
             pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', esperado=422)
             for codigo in ('APL-RIASEC', *(f'APL-PRUEBA-{n}' for n in range(extra))):

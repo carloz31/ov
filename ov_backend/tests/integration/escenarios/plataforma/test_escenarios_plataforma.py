@@ -59,21 +59,21 @@ def test_p07_llegada_a_la_ciudad(cliente):
 
 def test_p08_cuestionario_incompleto(cliente, aplicacion):
     avanzar(cliente)
-    respuesta = responder(cliente, 'act-tip-01', fin=3)
+    respuesta = responder(cliente, 't-mision-intereses', fin=3)
     assert respuesta['progreso'] == {'estado': 'EN_CURSO', 'respondidos': 3, 'total': 5}
     antes = filas_base(aplicacion)
-    assert completar(cliente, 'act-tip-01', esperado=409)['detail']['items_faltantes'] == ['RIASEC-04', 'RIASEC-05']
+    assert completar(cliente, 't-mision-intereses', esperado=409)['detail']['items_faltantes'] == ['RIASEC-04', 'RIASEC-05']
     assert filas_base(aplicacion) == antes
-    assert actividades(cliente)['act-tip-01'] == 'EN_CURSO'
+    assert actividades(cliente)['t-mision-intereses'] == 'EN_CURSO'
 
 
 def test_p09_retomar(cliente):
     avanzar(cliente)
-    responder(cliente, 'act-tip-01', fin=3)
-    guardadas = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/act-tip-01/respuestas')['respuestas']
+    responder(cliente, 't-mision-intereses', fin=3)
+    guardadas = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-mision-intereses/respuestas')['respuestas']
     assert [(r['item'], r['opcion']['orden']) for r in guardadas] == [('RIASEC-01', 4), ('RIASEC-02', 4), ('RIASEC-03', 5)]
-    responder(cliente, 'act-tip-01', inicio=3)
-    respuesta = completar(cliente, 'act-tip-01')
+    responder(cliente, 't-mision-intereses', inicio=3)
+    respuesta = completar(cliente, 't-mision-intereses')
     assert reglas(respuesta) == {'R-act-tip-02'} and respuesta['resultados_generados'] == []
 
 

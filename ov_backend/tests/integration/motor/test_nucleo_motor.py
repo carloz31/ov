@@ -14,9 +14,9 @@ FECHA = datetime(2026, 10, 1, 10)
 
 
 @pytest.fixture
-def sesion(url_base_plataforma):
+def sesion(url_base_ruta):
     """Pruebas del núcleo con SQLAlchemy, sin aplicación ni routers."""
-    motor_bd = crear_motor_bd(url_base_plataforma)
+    motor_bd = crear_motor_bd(url_base_ruta)
     try:
         with Session(motor_bd) as sesion:
             yield sesion

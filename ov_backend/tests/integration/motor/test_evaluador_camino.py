@@ -33,20 +33,32 @@ def test_evaluador_exige_regla_y_sin_camino_es_falso(sesion):
     assert misiones_camino_sin_inicio(sesion, cuenta) is False
 
 
+def _armar_camino(sesion):
+    """DATO DE PRUEBA: `ruta` no tiene bloque CAMINO; el evaluador lo exige por código."""
+    bloque = modelos.Bloque(codigo='CAMINO', numero=9, nombre='DATO DE PRUEBA', espacio='MISIONES_CAMPO',
+                            audiencia='ESTUDIANTE')
+    sesion.add(bloque)
+    sesion.flush()
+    sesion.add_all(modelos.Actividad(codigo=f'cam-{n}', titulo='DATO DE PRUEBA', tipo='INFORMATIVA',
+                                     contenido='prueba', orden=n, bloque_id=bloque.id) for n in range(1, 6))
+    sesion.commit()
+
+
 def test_evaluador_filtra_repeticiones_cuentas_ciudad_y_memoiza_por_umbral(sesion, aplicacion):
+    _armar_camino(sesion)
     cuentas = {c.codigo: c for c in sesion.scalars(select(modelos.Cuenta))}
     actividades_por_codigo = {a.codigo: a for a in sesion.scalars(select(modelos.Actividad))}
     ana, luis = cuentas['est-ana'], cuentas['est-luis']
     # DATO DE PRUEBA: eventos crudos para aislar el predicado del evaluador.
-    referencias = ['mission-welcome', 'enc-mitos', 'enc-mitos', 'enc-mitos', 'act-07', 'act-tip-01']
+    referencias = ['cam-1', 'cam-2', 'cam-2', 'cam-2', 'cam-3', 't-mision-intereses']
     filas = [{'cuenta_id': ana.id, 'tipo': modelos.TipoEventoUso.COMPLETA_ACTIVIDAD,
               'id_referencia': actividades_por_codigo[c].id, 'fecha_hora': datetime.fromisoformat(FECHA)} for c in referencias]
     filas += [{'cuenta_id': luis.id, 'tipo': modelos.TipoEventoUso.COMPLETA_ACTIVIDAD,
-               'id_referencia': actividades_por_codigo['mission-story'].id, 'fecha_hora': datetime.fromisoformat(FECHA)},
+               'id_referencia': actividades_por_codigo['cam-4'].id, 'fecha_hora': datetime.fromisoformat(FECHA)},
               {'cuenta_id': ana.id, 'tipo': modelos.TipoEventoUso.COMPLETA_ACTIVIDAD,
                'id_referencia': None, 'fecha_hora': datetime.fromisoformat(FECHA)},
               {'cuenta_id': ana.id, 'tipo': modelos.TipoEventoUso.INGRESO,
-               'id_referencia': actividades_por_codigo['mission-future'].id, 'fecha_hora': datetime.fromisoformat(FECHA)}]
+               'id_referencia': actividades_por_codigo['cam-5'].id, 'fecha_hora': datetime.fromisoformat(FECHA)}]
     sesion.execute(insert(modelos.EventoUso), filas)
     datos = ContextoConsultas(sesion)
     sesion.info['contexto_consultas'] = datos
@@ -65,6 +77,6 @@ def test_evaluador_filtra_repeticiones_cuentas_ciudad_y_memoiza_por_umbral(sesio
         assert evaluar_regla(sesion, ana, regla(2)).cumple is True
     assert contador.cantidad == 0
     assert datos.especiales[ana.id] == {('misiones_camino_sin_inicio', 2): True, ('misiones_camino_sin_inicio', 3): False}
-    registrar_eventos(sesion, ana, [(modelos.TipoEventoUso.COMPLETA_ACTIVIDAD, actividades_por_codigo['mission-story'].id)],
+    registrar_eventos(sesion, ana, [(modelos.TipoEventoUso.COMPLETA_ACTIVIDAD, actividades_por_codigo['cam-4'].id)],
                       datetime.fromisoformat(FECHA))
     assert evaluar_regla(sesion, ana, regla(3)).cumple is True

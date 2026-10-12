@@ -121,7 +121,7 @@ def test_actividad_al_desbloquear_cambia_de_visible_con_la_accion(sesion, client
     assert recibida['estado'] == 'DISPONIBLE' and recibida['visible'] is True
 
 
-@pytest.mark.parametrize('codigo', ['enc-mitos', 'act-tip-01'], ids=['actividad_bloqueada', 'bloque_bloqueado'])
+@pytest.mark.parametrize('codigo', ['enc-mitos', 't-mision-intereses'], ids=['actividad_bloqueada', 'bloque_bloqueado'])
 def test_bloqueo_prevalece_sobre_progreso(sesion, cliente, codigo):
     ana = sesion.scalar(select(Cuenta).where(Cuenta.codigo == 'est-ana'))
     actividad = sesion.scalar(select(Actividad).where(Actividad.codigo == codigo))
@@ -133,7 +133,7 @@ def test_bloqueo_prevalece_sobre_progreso(sesion, cliente, codigo):
 
 def test_cuestionario_en_curso_y_lecturas_aisladas_por_cuenta(cliente):
     avanzar(cliente)
-    responder(cliente, 'act-tip-01', fin=3)
+    responder(cliente, 't-mision-intereses', fin=3)
     assert consultar(cliente, 'actividades')[1]['actividades'][0]['estado'] == 'EN_CURSO'
     for ruta in RUTAS:
         luis = consultar(cliente, ruta, 'est-luis')

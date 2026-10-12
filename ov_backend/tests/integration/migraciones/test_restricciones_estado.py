@@ -62,7 +62,7 @@ def test_entradas_libres_intentos_y_eventos_pueden_repetirse(sesion):
                                        texto="Libre", fecha_hora=FECHA))
         sesion.add(modelos.EventoUso(cuenta_id=1, tipo=modelos.TipoEventoUso.COMPLETA_ACTIVIDAD,
                                      id_referencia=1, fecha_hora=FECHA))
-    progreso = modelos.ProgresoActividad(cuenta_id=1, actividad_id=15, estado=modelos.EstadoProgreso.COMPLETADA)
+    progreso = modelos.ProgresoActividad(cuenta_id=1, actividad_id=sesion.scalar(select(modelos.Actividad.id).where(modelos.Actividad.codigo == 't-caso')), estado=modelos.EstadoProgreso.COMPLETADA)
     sesion.add(progreso)
     sesion.flush()
     for puntaje in (50, 85, 95):

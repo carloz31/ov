@@ -17,31 +17,21 @@ from datos.cargar import preparar_base
 def plantillas_bd(tmp_path_factory):
     carpeta = tmp_path_factory.mktemp('plantillas')
     plantillas = {}
-    for conjunto in ('plataforma', 'piloto'):
-        ruta = carpeta / f'plantilla-{conjunto}.db'
-        preparar_base(f'sqlite:///{ruta.as_posix()}', conjunto, crear_tablas=True)
-        plantillas[conjunto] = ruta
+    for conjunto in ('ruta',):
+        archivo = carpeta / f'plantilla-{conjunto}.db'
+        preparar_base(f'sqlite:///{archivo.as_posix()}', conjunto, crear_tablas=True)
+        plantillas[conjunto] = archivo
     return plantillas
 
 
 @pytest.fixture
-def url_base_plataforma(plantillas_bd, tmp_path):
-    return copiar_plantilla(plantillas_bd['plataforma'], tmp_path / 'plataforma.db')
+def url_base_ruta(plantillas_bd, tmp_path):
+    return copiar_plantilla(plantillas_bd['ruta'], tmp_path / 'ruta.db')
 
 
 @pytest.fixture
-def aplicacion(url_base_plataforma):
-    aplicacion = crear_aplicacion(url_base_plataforma)
-    try:
-        yield aplicacion
-    finally:
-        aplicacion.state.motor_bd.dispose()
-
-
-@pytest.fixture
-def aplicacion_piloto(plantillas_bd, tmp_path):
-    url = copiar_plantilla(plantillas_bd['piloto'], tmp_path / 'piloto.db')
-    aplicacion = crear_aplicacion(url)
+def aplicacion(url_base_ruta):
+    aplicacion = crear_aplicacion(url_base_ruta)
     try:
         yield aplicacion
     finally:
@@ -50,7 +40,7 @@ def aplicacion_piloto(plantillas_bd, tmp_path):
 
 @pytest.fixture
 def base_aislada(plantillas_bd):
-    return partial(abrir_base_aislada, plantilla=plantillas_bd['plataforma'])
+    return partial(abrir_base_aislada, plantilla=plantillas_bd['ruta'])
 
 
 @pytest.fixture

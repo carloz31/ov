@@ -21,6 +21,7 @@ def test_lista_cuentas_con_codigos_publicos(cliente):
     assert respuesta.json() == [
         {"codigo": "apo-rosa", "nombre": "Rosa", "rol": "APODERADO"},
         {"codigo": "est-ana", "nombre": "Ana", "rol": "ESTUDIANTE"},
+        {"codigo": "est-beto", "nombre": "Beto", "rol": "ESTUDIANTE"},
         {"codigo": "est-luis", "nombre": "Luis", "rol": "ESTUDIANTE"},
     ]
 
