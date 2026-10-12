@@ -1,6 +1,6 @@
 # Motor de desbloqueos
 
-Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, y las reglas convierten esos eventos en desbloqueos. Código: `app/services/motor/`, `app/services/actividades.py`, `app/services/cuentas.py` y servicios de cada dominio. Datos: `datos/plataforma.py`.
+Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, y las reglas convierten esos eventos en desbloqueos. Código: `app/services/motor/`, `app/services/actividades.py`, `app/services/cuentas.py` y servicios de cada dominio. Datos: `datos/ruta.py`.
 
 ## Modelo
 

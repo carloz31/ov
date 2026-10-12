@@ -34,7 +34,7 @@ app/                    solo la aplicación; no lee archivos de datos
     instrumentos/       cálculo, consultas y resultados
     registro/           registro con evaluador de respuestas
   core/                 parámetros, caché de definiciones y contexto de consultas
-datos/                  lo que llena la base: plataforma.py, piloto.py, ocupaciones.py (Excel O*NET), cargar.py
+datos/                  lo que llena la base: fijos.py, ruta.py, ocupaciones.py (Excel O*NET), cargar.py
 migrations/             migraciones de Alembic
 scripts/                herramientas manuales (exportador de fixtures)
 tests/                  pruebas (ver «Pruebas»)
@@ -46,7 +46,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 | Si agregas… | Va en… |
 |---|---|
 | Una consulta para una vista | `GET /cuentas/{c}/<dominio>` en `app/api/<dominio>.py`, con su esquema y servicio del mismo nombre. No agregues campos de otro dominio a una respuesta para ahorrar una petición. |
-| Una actividad | `datos/<conjunto>.py`, con `contenido` (la clave de su JSON en el front) y `visibilidad`. Si es del apoderado, en un bloque de audiencia `APODERADO` y espacio `PORTAL_FAMILIA`. |
+| Una actividad | `datos/ruta.py`, con `contenido` (la clave de su JSON en el front) y `visibilidad`. Si es del apoderado, en un bloque de audiencia `APODERADO` y espacio `PORTAL_FAMILIA`. |
 | Un endpoint | `app/api/<grupo>.py`. Solo valida, llama a un servicio y devuelve. |
 | Lógica de negocio | `app/services/<dominio>.py`, o `app/services/<dominio>/` si el dominio ya es carpeta. |
 | Una tabla o columna | `app/models/<dominio>.py` **y** su migración en `migrations/versions/`, en el mismo commit. |
@@ -54,7 +54,8 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 | Un cuerpo de entrada o respuesta | `app/schemas/<dominio>.py`. |
 | Un umbral o constante de método | `app/core/parametros.py`. |
 | Una variable de entorno | `app/config.py` y `.env.example`. |
-| Datos de prueba o catálogo | `datos/plataforma.py` o `datos/piloto.py`. Nunca en `app/`. |
+| Lo que tendrá la plataforma sea cual sea la ruta (RIASEC, catálogo O*NET; luego secciones, listas, temáticas…) | `datos/fijos.py`, sin `DATO DE PRUEBA`. Nunca en `app/`. |
+| Datos de prueba de una mecánica | `datos/ruta.py`, en tuplas declarativas que interpreta el cargador, con códigos `t-...`. Nunca en `app/`. |
 | Una tabla de estado de las cuentas | Además, en `TABLAS_DE_ESTADO` de `app/services/desarrollo.py`, para que el reinicio la vacíe (una prueba exige clasificar toda tabla como catálogo o estado). |
 | Un dominio nuevo (favoritos, planes…) | Un archivo en `services/`, `schemas/` y, si tiene tablas, `models/`. Un archivo pasa a carpeta solo cuando ya no cabe en uno. |
 
@@ -77,8 +78,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 
 | Conjunto | Para qué |
 |---|---|
-| `plataforma` (`datos/plataforma.py`) | Datos alineados con el front, para la integración. Sus códigos son los ids del front. |
-| `piloto` (`datos/piloto.py`) | Variante pequeña de `plataforma` para probar visibilidad y contenido faltante. |
+| `ruta` (`datos/ruta.py` + `datos/fijos.py`) | Ruta mínima de prueba: lo justo para demostrar cada mecánica (`docs/plan-iteraciones.md`, «Ruta mínima de prueba»). Todo lo de `ruta.py` es `DATO DE PRUEBA`; `fijos.py` se carga en todo conjunto. |
 
 - La aplicación no sabe qué conjunto tiene la base. Se carga con `uv run python -m datos.cargar <conjunto>` (`--vaciar` para reemplazarlo). El cargador valida que `contenido` use solo `[a-z0-9_]`.
 - `POST /desarrollo/reiniciar`, solo con `ENTORNO=desarrollo`, borra el estado de las cuentas y conserva el catálogo.
@@ -106,9 +106,9 @@ Python 3.14, FastAPI, Pydantic v2, SQLAlchemy 2.0, Alembic, SQLite (desarrollo y
 
 - Instalar: `uv sync` (con PostgreSQL: `uv sync --extra postgres`)
 - Esquema: `uv run alembic upgrade head`
-- Datos: `uv run python -m datos.cargar plataforma` (o `piloto`)
+- Datos: `uv run python -m datos.cargar ruta`
 - Levantar: `uv run uvicorn app.main:app --reload`
-- Fixtures para el front: `uv run python scripts/exportar_fixtures_front.py --destino <carpeta de ov_frontend>/tests/fixtures/servidor`
+- Fixtures para el front: `uv run python scripts/exportar_fixtures_front.py --destino <carpeta de ov_frontend>/tests/fixtures/servidor` (escribe `ruta/ruta-*.json`)
 
 ## Pruebas
 
@@ -121,11 +121,11 @@ tests/
     conftest.py      plantillas SQLite por sesión y proceso; cada prueba copia la suya
     actividades/ cuentas/ desarrollo/ fichas/ instrumentos/ logros/ motor/
     datos/ migraciones/ contrato/
-    escenarios/plataforma/ escenarios/piloto/
+    escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
 ```
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.
-- Las pruebas nuevas usan los fixtures de plantilla (`aplicacion` con `plataforma`, `aplicacion_piloto`, `cliente`, `sesion`). Solo las pruebas de carga, migraciones y atomicidad de la carga preparan bases propias.
+- Las pruebas nuevas usan los fixtures de plantilla (`aplicacion` con `ruta`, `cliente`, `sesion`, `base_aislada`) y las ayudas de `soporte_ruta.py`. Solo las pruebas de carga, migraciones y atomicidad de la carga preparan bases propias.
 - Solo se crean carpetas con pruebas. Los nombres `test_*.py` son únicos en todo `tests/` (`--import-mode=importlib`).
 
 | Si cambias… | Corre primero |

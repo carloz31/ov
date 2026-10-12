@@ -9,7 +9,7 @@ Un cambio de modelo se hace completo y en un solo commit:
 2. **Modelo:** edita `ov_backend/app/models/`. Respeta la `naming_convention` de `Base`, `snake_case` en español y enumerados en MAYÚSCULAS. Los índices parciales llevan `sqlite_where` y `postgresql_where`.
 3. **Migración:** desde `ov_backend/`, `uv run alembic revision --autogenerate -m "<qué>"`. Revísala a mano (renombres que Alembic ve como borrar+crear, `render_as_batch`, valores por defecto para filas existentes). Nunca edites una migración ya integrada en `main`.
 4. **Un solo head:** `uv run alembic heads` debe mostrar uno.
-5. **Datos:** actualiza `datos/plataforma.py` y `datos/piloto.py` si la tabla tiene datos sembrados.
+5. **Datos:** actualiza `datos/fijos.py` y `datos/ruta.py` si la tabla tiene datos sembrados.
 6. **Documento vigente:** actualiza el de `docs/sistema/` que describe ese dominio (solo la parte que cambió).
 7. **Esquemas y servicios** del dominio, y sus pruebas.
 8. **Si cambia una respuesta que consume el front:** sigue «Contrato» del `AGENTS.md` raíz (tipos, `services/api`, adaptadores, fixtures regenerados, pruebas del front).

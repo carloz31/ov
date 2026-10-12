@@ -114,7 +114,7 @@ tests/
   local/        actividades/, aventura/, casos/, perfil/, portales/   (modo local)
   servidor/     actividades/, mapa/, instrumentos/, logros/, perfil/  (modo api, con fixtures)
   despliegue/
-  fixtures/servidor/   generados por ov_backend; no se editan a mano
+  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) aún no la usa ninguna prueba
   soporte/             ayudantes compartidos
 ```
 

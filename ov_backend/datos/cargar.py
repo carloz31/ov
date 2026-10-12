@@ -10,10 +10,10 @@ from sqlalchemy.orm import Session
 from app.config import cargar_configuracion
 from app.database import comprobar_tablas, crear_motor_bd
 from app.models import Actividad, Base
-from datos import piloto, plataforma, ruta
+from datos import ruta
 
 
-CONJUNTOS = {'ruta': ruta.cargar, 'plataforma': plataforma.cargar, 'piloto': piloto.cargar}
+CONJUNTOS = {'ruta': ruta.cargar}
 TABLAS_PRINCIPALES = (
     'cuenta', 'actividad', 'regla_desbloqueo', 'item_instrumento', 'ocupacion', 'item_registro',
 )

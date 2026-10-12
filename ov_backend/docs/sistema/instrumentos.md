@@ -1,6 +1,6 @@
 # Instrumentos, resultados y recomendación
 
-Cuestionarios repartidos en actividades, cálculo de resultados y recomendación de ocupaciones y carreras. Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar). Parámetros: `app/core/parametros.py`. Datos: `datos/plataforma.py` y `datos/ocupaciones.py`.
+Cuestionarios repartidos en actividades, cálculo de resultados y recomendación de ocupaciones y carreras. Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar). Parámetros: `app/core/parametros.py`. Datos: `datos/fijos.py` (RIASEC, ocupaciones y carreras), `datos/ocupaciones.py` y, para unir ítems y actividades, `datos/ruta.py`.
 
 ## Modelo
 

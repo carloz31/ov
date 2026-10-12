@@ -64,7 +64,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 
 | Lote | Tema | HU | M | Tras | Termina con |
 |---|---|---|---|---|---|
-| B00 | Cambio a `ruta` | Ninguna nueva; comprueba 004, 011, 013–015, 021, 073, 074 | — | — | Toda la batería en verde solo con `ruta`; `plataforma` y `piloto` retirados |
+| B00 | Cambio a `ruta` · **Implementado** | Ninguna nueva; comprueba 004, 011, 013–015, 021, 073, 074 | — | — | Toda la batería en verde solo con `ruta`; `plataforma` y `piloto` retirados |
 | B01 | Secciones, mensajes de bloqueo y salón | 002, 025 | M | B00 | Lo bloqueado responde con su mensaje; las secciones se abren y permiten registrar |
 | B02 | Registros: modelo, listas y borradores | 006, 010 | M | B01 | Borradores con elección validada; ítems, criterios y listas cargados desde `datos/` |
 | B03 | Registros: entrega y seguimiento | 007, 016 | — | B02 | Entrega con seguimiento, omisión y fallo del LLM; la misión adicional aparece solo si todo quedó adecuado |
@@ -85,7 +85,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 
 ### Qué hace cada lote
 
-**B00 · Cambio a `ruta`**
+**B00 · Cambio a `ruta`** (Implementado)
 - **Hace:**
   - Crea `datos/fijos.py`, con RIASEC y el catálogo O*NET.
   - Crea `datos/ruta.py`, con las filas marcadas B00 en la tabla de la ruta mínima.

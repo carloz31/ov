@@ -69,7 +69,7 @@ def obtener_sesion(peticion: Request) -> Iterator[Session]:
 
 MENSAJE_SIN_ESQUEMA = (
     'La base no tiene el esquema. Ejecuta `uv run alembic upgrade head` '
-    'y carga datos con `uv run python -m datos.cargar plataforma`.'
+    'y carga datos con `uv run python -m datos.cargar ruta`.'
 )
 
 

@@ -30,7 +30,7 @@ No leas `docs/historico/` salvo que el usuario lo pida. Si algo de ahí contradi
 
 El modelo sigue vivo. La única fuente de verdad es `ov_backend/app/models/` con sus migraciones; los documentos describen la intención, y si chocan con el código, gana el código.
 
-- Todo cambio de modelo es un cambio completo, en el mismo commit: modelo, migración autogenerada y revisada a mano, `datos/` (plataforma y piloto), documento vigente de `docs/sistema/`, esquemas y pruebas afectadas y, si cambia una respuesta que consume el front, todo lo que pide «Contrato».
+- Todo cambio de modelo es un cambio completo, en el mismo commit: modelo, migración autogenerada y revisada a mano, `datos/` (`fijos.py` y `ruta.py`), documento vigente de `docs/sistema/`, esquemas y pruebas afectadas y, si cambia una respuesta que consume el front, todo lo que pide «Contrato».
 - Un cambio de modelo que la spec no pide es una decisión de diseño: detente y propónlo antes de hacerlo. Si se aprueba, anótalo en `decisiones.md` (qué cambió y por qué).
 - Nunca edites a mano una migración ya integrada en `main`; crea otra. Compactar migraciones (rehacer `0001`) solo si el usuario lo pide.
 - Dos ramas que cambian el modelo a la vez crean dos `head` de Alembic. Antes de integrar, `uv run alembic heads` debe mostrar uno solo; si hay dos, rebasa y regenera la migración sobre la última.

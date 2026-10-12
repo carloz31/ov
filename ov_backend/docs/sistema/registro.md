@@ -2,7 +2,7 @@
 
 Actividades de registro cuyas respuestas evalúa un LLM (Gemini) para pedir, como máximo, dos preguntas de seguimiento. Código: `app/services/registro/` y `app/api/registro.py`. Parámetros: `VERSION_PROMPT_REGISTRO`, `MAXIMO_SEGUIMIENTOS_POR_ITEM` (2), modelo, temperatura y tiempo máximo en `app/core/parametros.py`.
 
-Estado actual: el backend implementa todo lo de este documento, pero el conjunto `plataforma` todavía no tiene ítems de registro; el front responde los registros con su lógica local y solo informa la finalización. La integración llega con la iteración 2.
+Estado actual: el backend implementa todo lo de este documento, pero el conjunto `ruta` todavía no tiene ítems de registro (llegan en B02); el front responde los registros con su lógica local y solo informa la finalización. La integración llega con la iteración 2.
 
 ## Configuración
 
