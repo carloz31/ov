@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from app import models as m
 from app.services import actividades as servicio_actividades
 from app.services.instrumentos import resultados as servicio_resultados
-from soporte_plataforma import MARA, avanzar_camino, completar, filas_base, pedir, responder
+from soporte_ruta import MARA, avanzar, completar, filas_base, pedir, responder
 from soporte_retiro import ciclo, preparar_ultimo
 
 
@@ -35,7 +35,7 @@ def test_r24_reinicio_parcial_y_completo_revierte_despues_del_evento(tmp_path, m
             if completo:
                 ciclo(cliente)
             else:
-                avanzar_camino(cliente)
+                avanzar(cliente)
                 responder(cliente, MARA[0])
             antes = filas_base(aplicacion)
             with monkeypatch.context() as parche:

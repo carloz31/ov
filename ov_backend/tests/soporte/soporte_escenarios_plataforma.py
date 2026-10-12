@@ -1,6 +1,6 @@
 """Verificadores de escenarios compartidos entre SQLite y PostgreSQL."""
 
-from soporte_plataforma import CAMINO, MARA, actividades, avanzar_camino, completar, estado, pedir, reglas, responder
+from soporte_ruta import CAMINO, MARA, actividades, avanzar, completar, estado, pedir, reglas, responder
 
 
 def verificar_p01_estado_inicial(cliente):
@@ -25,7 +25,7 @@ def verificar_p02_primer_paso(cliente):
 
 
 def verificar_p07_llegada_a_la_ciudad(cliente):
-    respuesta = avanzar_camino(cliente)
+    respuesta = avanzar(cliente)
     assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [
         ('COMPLETA_ACTIVIDAD', 'mission-next-step'), ('COMPLETA_BLOQUE', 'CAMINO'),
     ]
@@ -37,7 +37,7 @@ def verificar_p07_llegada_a_la_ciudad(cliente):
 
 
 def verificar_p10_resultado(cliente):
-    avanzar_camino(cliente)
+    avanzar(cliente)
     for actividad in MARA:
         responder(cliente, actividad)
         respuesta = completar(cliente, actividad)

@@ -3,7 +3,7 @@
 from soporte_datos_ports import agregar_ocupaciones
 from sqlalchemy import select
 from app import models as m
-from soporte_plataforma import MARA, avanzar_camino, pedir
+from soporte_ruta import MARA, avanzar, pedir
 from soporte_retiro import ciclo, datos_respuestas, medir, preparar_ultimo
 
 
@@ -11,7 +11,7 @@ def test_r12_uno_o_todos_insertar_y_reemplazar_con_identidad(tmp_path, base_aisl
     conteos = []
     for cantidad in (1, 5):
         with base_aislada(tmp_path, f'lote-{cantidad}') as (aplicacion, cliente):
-            avanzar_camino(cliente)
+            avanzar(cliente)
             datos = datos_respuestas(cliente, cantidad=cantidad)
             _, nuevas = medir(cliente, aplicacion, 'POST', '/acciones/responder-items', datos)
             with aplicacion.state.fabrica_sesiones() as sesion:

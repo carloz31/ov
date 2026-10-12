@@ -1,7 +1,7 @@
 """R08: explicaciones públicas de reglas genéricas."""
 
 from soporte_datos_ports import preparar_explicaciones
-from soporte_plataforma import pedir, progreso
+from soporte_ruta import pedir, progreso
 
 
 def test_r08_explicaciones_compuestas_alternativas_y_sin_reglas(cliente, aplicacion):

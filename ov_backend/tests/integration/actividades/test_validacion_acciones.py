@@ -1,13 +1,13 @@
 """R40: tipo, audiencia, vínculo y referencias, sin efectos."""
 
 from soporte_datos_ports import preparar_validacion
-from soporte_plataforma import avanzar_camino, filas_base, pedir
+from soporte_ruta import avanzar, filas_base, pedir
 
 
 def test_r40_rechazos_de_acciones_y_consultas_sin_efectos(cliente, aplicacion):
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         preparar_validacion(sesion)
-    avanzar_camino(cliente)
+    avanzar(cliente)
     entradas = [
         ('/acciones/resolver-caso', {'cuenta': 'est-ana', 'actividad': 'mission-welcome', 'puntaje': 70}, 409),
         ('/acciones/responder-items', {'cuenta': 'est-ana', 'actividad': 'mission-welcome', 'respuestas': [{'item': 'RIASEC-01', 'opcion': 3}]}, 409),

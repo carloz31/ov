@@ -8,8 +8,8 @@ from datos.cargar import preparar_base
 
 @pytest.fixture
 def aplicacion(tmp_path):
-    url = f"sqlite:///{(tmp_path / 'carga-plataforma.db').as_posix()}"
-    preparar_base(url, 'plataforma', crear_tablas=True)
+    url = f"sqlite:///{(tmp_path / 'carga-ruta.db').as_posix()}"
+    preparar_base(url, 'ruta', crear_tablas=True)
     aplicacion = crear_aplicacion(url)
     try:
         yield aplicacion

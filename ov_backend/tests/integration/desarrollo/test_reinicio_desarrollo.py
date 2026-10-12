@@ -7,7 +7,7 @@ from app.models import Base
 from app.services.desarrollo import TABLAS_DE_ESTADO
 from datos import cargar, plataforma
 from soporte_estado_desarrollo import llenar_estado
-from soporte_plataforma import filas_base, pedir
+from soporte_ruta import filas_base, pedir
 
 
 def test_r15_reinicio_completo_idempotente_y_atomico(cliente, aplicacion, monkeypatch):

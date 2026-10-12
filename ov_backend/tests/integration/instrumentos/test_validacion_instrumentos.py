@@ -1,6 +1,6 @@
 """R13 y R23: lotes y reinicios inválidos sin escrituras."""
 
-from soporte_plataforma import avanzar_camino, filas_base, pedir, responder
+from soporte_ruta import avanzar, filas_base, pedir, responder
 from soporte_retiro import aplicaciones_extra, datos_respuestas, medir
 
 
@@ -8,7 +8,7 @@ def test_r13_lote_mixto_se_valida_antes_de_escribir(tmp_path, base_aislada):
     for existente in (False, True):
         for fallo in ('item', 'opcion'):
             with base_aislada(tmp_path, f'mixto-{existente}-{fallo}') as (aplicacion, cliente):
-                avanzar_camino(cliente)
+                avanzar(cliente)
                 if existente:
                     responder(cliente, 'act-tip-01')
                 datos = datos_respuestas(cliente, opcion=5)

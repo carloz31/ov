@@ -1,7 +1,7 @@
 """R39: descripciones aprobadas en catálogo, destacadas e historial."""
 
 from soporte_descripciones import DESCRIPCIONES_INTELIGENCIAS
-from soporte_plataforma import pedir
+from soporte_ruta import pedir
 from soporte_retiro import contestar_minimo, instrumento_minimo, resultado
 
 

@@ -6,7 +6,7 @@ from sqlalchemy import select
 from app import models as m
 from app.services.motor import reglas as motor
 from app.services.motor.evaluadores import EVALUADORES
-from soporte_plataforma import actividades, filas_base, pedir
+from soporte_ruta import actividades, filas_base, pedir
 from soporte_retiro import FECHA_BD, agregar_eventos, buscar, condicion, regla
 
 

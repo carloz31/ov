@@ -8,7 +8,7 @@ from app import models as m
 from app.main import crear_aplicacion
 from soporte_bases import copiar_plantilla
 from soporte_consultas import ContadorConsultas
-from soporte_plataforma import FECHA, MARA, avanzar_camino, completar, pedir, responder
+from soporte_ruta import FECHA, INTERESES, avanzar, completar, pedir, responder
 
 
 FECHA_BD = datetime.fromisoformat(FECHA)
@@ -56,25 +56,22 @@ def base_aislada(tmp_path, nombre, *, plantilla):
         yield aplicacion, cliente
 
 
-def datos_respuestas(cliente, actividad=MARA[0], opcion=3, cuenta='est-ana', cantidad=None):
+def datos_respuestas(cliente, actividad=INTERESES, opcion=3, cuenta='est-ana', cantidad=None):
     items = pedir(cliente, 'GET', f'/actividades/{actividad}/items')[:cantidad]
     return {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
             'respuestas': [{'item': i['codigo'], 'opcion': opcion} for i in items]}
 
 
-def ciclo(cliente, cuenta='est-ana', opcion=None, hasta=None, abrir=True):
+def ciclo(cliente, cuenta='est-ana', opcion=None, abrir=True):
+    preparar_ultimo(cliente, cuenta, opcion, abrir)
+    return completar(cliente, INTERESES, cuenta=cuenta)
+
+
+def preparar_ultimo(cliente, cuenta='est-ana', opcion=None, abrir=True):
+    """Deja respondidos los 60 ítems de la misión de intereses, sin completarla."""
     if abrir:
-        avanzar_camino(cliente, cuenta=cuenta)
-    recorrido = MARA if hasta is None else MARA[:hasta]
-    for actividad in recorrido:
-        responder(cliente, actividad, cuenta=cuenta, opcion=opcion)
-        salida = completar(cliente, actividad, cuenta=cuenta)
-    return salida
-
-
-def preparar_ultimo(cliente, cuenta='est-ana', opcion=None):
-    ciclo(cliente, cuenta, opcion, hasta=13)
-    responder(cliente, MARA[-1], cuenta=cuenta, opcion=opcion)
+        avanzar(cliente, cuenta=cuenta)
+    responder(cliente, INTERESES, cuenta=cuenta, opcion=opcion)
 
 
 def resultado(cliente, instrumento='TEST-RIASEC', cuenta='est-ana', seleccion=''):
@@ -90,7 +87,7 @@ def reiniciar(cliente, instrumento='TEST-RIASEC', cuenta='est-ana', seleccion=No
 
 def aplicaciones_extra(sesion, cantidad):
     instrumento = buscar(sesion, m.Instrumento, 'TEST-RIASEC')
-    actividades = [buscar(sesion, m.Actividad, codigo).id for codigo in MARA]
+    actividades = [buscar(sesion, m.Actividad, INTERESES).id]
     for n in range(cantidad):
         nueva = m.Aplicacion(codigo=f'APL-PRUEBA-{n}', nombre='DATO DE PRUEBA',
                             instrumento_id=instrumento.id)
@@ -125,7 +122,7 @@ def instrumento_minimo(sesion, tipo='DESTACADAS', descripciones=None):
         sesion.add(item)
         sesion.flush()
         items.append(item)
-    bloque = buscar(sesion, m.Bloque, 'CAMINO')
+    bloque = buscar(sesion, m.Bloque, 'T1')
     momentos = ('ENTRADA', 'SALIDA') if tipo == 'COMPARACION' else ('UNICA',)
     codigos = []
     for n, momento in enumerate(momentos):

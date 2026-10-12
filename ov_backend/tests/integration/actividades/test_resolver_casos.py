@@ -3,7 +3,7 @@
 from soporte_datos_ports import preparar_casos
 from sqlalchemy import select
 from app import models as m
-from soporte_plataforma import filas_base, pedir
+from soporte_ruta import filas_base, pedir
 
 
 def test_r35_intentos_extremos_umbral_y_superacion_unica(cliente, aplicacion):

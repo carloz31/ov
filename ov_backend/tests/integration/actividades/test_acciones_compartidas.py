@@ -4,14 +4,14 @@ from soporte_datos_ports import agregar_autores
 from soporte_datos_ports import preparar_conversacion
 import pytest
 from app.services import comun
-from soporte_plataforma import avanzar_camino, filas_base, pedir
+from soporte_ruta import avanzar, filas_base, pedir
 from soporte_retiro import medir
 
 
 def test_r33_conversacion_actor_disponible_repeticion_y_rollback(cliente, aplicacion, monkeypatch):
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         preparar_conversacion(sesion)
-    avanzar_camino(cliente)
+    avanzar(cliente)
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')['estado'] == 'BLOQUEADA'
     datos = {'cuenta': 'est-ana', 'conversacion': 'conv-prueba'}
     antes = filas_base(aplicacion)

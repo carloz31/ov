@@ -5,7 +5,7 @@ from sqlalchemy import select
 from app.main import crear_aplicacion
 from app.models import Base, EventoUso, ProgresoActividad
 from datos.cargar import preparar_base
-from soporte_plataforma import completar, pedir, responder
+from soporte_ruta import completar, pedir, responder
 
 
 CAMINO = ('mission-welcome', 'enc-mitos', 'act-07', 'mission-story', 'mission-compass')

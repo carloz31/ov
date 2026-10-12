@@ -1,6 +1,6 @@
 """R29: el código opcional de ocupación se conserva en todas las consultas."""
 
-from soporte_plataforma import pedir
+from soporte_ruta import pedir
 from soporte_retiro import buscar, ciclo, reiniciar, resultado
 from app import models as m
 

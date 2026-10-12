@@ -1,7 +1,7 @@
 """R14: cachés independientes y recarga exclusivamente tras commit."""
 
 from app import models as m
-from soporte_plataforma import pedir
+from soporte_ruta import pedir
 from soporte_retiro import condicion, regla
 
 

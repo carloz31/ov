@@ -1,6 +1,6 @@
 """Estado cuentas."""
 
-from soporte_plataforma import FECHA, eventos, pedir
+from soporte_ruta import FECHA, eventos, pedir
 from sqlalchemy import func, select
 from app import models as modelos
 

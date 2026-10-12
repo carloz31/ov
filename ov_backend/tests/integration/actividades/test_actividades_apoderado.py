@@ -4,7 +4,7 @@ from copy import deepcopy
 
 import pytest
 from fastapi.testclient import TestClient
-from soporte_plataforma import BLOQUE_FAMILIA, FECHA, completar, estado, eventos, pedir
+from soporte_ruta import BLOQUE_FAMILIA, FECHA, completar, estado, eventos, pedir
 
 
 @pytest.fixture(params=['aplicacion', 'aplicacion_piloto'], ids=['plataforma', 'piloto'])

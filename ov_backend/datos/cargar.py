@@ -10,10 +10,10 @@ from sqlalchemy.orm import Session
 from app.config import cargar_configuracion
 from app.database import comprobar_tablas, crear_motor_bd
 from app.models import Actividad, Base
-from datos import piloto, plataforma
+from datos import piloto, plataforma, ruta
 
 
-CONJUNTOS = {'plataforma': plataforma.cargar, 'piloto': piloto.cargar}
+CONJUNTOS = {'ruta': ruta.cargar, 'plataforma': plataforma.cargar, 'piloto': piloto.cargar}
 TABLAS_PRINCIPALES = (
     'cuenta', 'actividad', 'regla_desbloqueo', 'item_instrumento', 'ocupacion', 'item_registro',
 )
@@ -33,7 +33,7 @@ def preparar_base(
     url: str, conjunto: str, *, crear_tablas: bool = False, vaciar: bool = False,
 ) -> dict[str, int]:
     if conjunto not in CONJUNTOS:
-        raise ValueError('El conjunto debe ser plataforma o piloto')
+        raise ValueError(f'El conjunto debe ser uno de: {", ".join(CONJUNTOS)}')
     motor = crear_motor_bd(url)
     try:
         if crear_tablas:

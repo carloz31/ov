@@ -1,12 +1,12 @@
 """R17, R20 y R22: edición, historia y reinicio selectivo."""
 
 from soporte_datos_ports import preparar_respuesta_ajena
-from soporte_plataforma import MARA, actividades, avanzar_camino, completar, filas_base, pedir, responder
+from soporte_ruta import MARA, actividades, avanzar, completar, filas_base, pedir, responder
 from soporte_retiro import ciclo, reiniciar, resultado
 
 
 def test_r17_editar_hasta_resultado_y_repetir_sin_recalcular(cliente, aplicacion):
-    avanzar_camino(cliente)
+    avanzar(cliente)
     responder(cliente, MARA[0])
     completar(cliente, MARA[0])
     responder(cliente, MARA[0], opcion=1)
@@ -45,7 +45,7 @@ def test_r20_ciclos_planos_historial_vigentes_y_otra_cuenta(cliente, aplicacion)
 
 
 def test_r22_reinicio_parcial_conserva_respuesta_ajena_y_no_abre(cliente, aplicacion):
-    avanzar_camino(cliente)
+    avanzar(cliente)
     responder(cliente, MARA[0], fin=2)
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         preparar_respuesta_ajena(sesion)

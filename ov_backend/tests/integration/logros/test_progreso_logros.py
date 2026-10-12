@@ -1,6 +1,6 @@
 """R07: una insignia oculta no filtra su explicación."""
 
-from soporte_plataforma import pedir, progreso
+from soporte_ruta import pedir, progreso
 
 
 def test_r07_progreso_oculto_antes_y_despues(cliente):

@@ -3,8 +3,8 @@
 import soporte_escenarios_plataforma as escenarios
 
 
-from soporte_plataforma import (
-    CAMINO, FECHA, MARA, actividades, avanzar_camino, completar, estado,
+from soporte_ruta import (
+    CAMINO, FECHA, MARA, actividades, avanzar, completar, estado,
     eventos, filas_base, pedir, progreso, reglas, responder,
 )
 
@@ -36,7 +36,7 @@ def test_p04_informativa_con_fichas(cliente):
 
 
 def test_p05_repetir_no_suma(cliente):
-    avanzar_camino(cliente, 'enc-mitos')
+    avanzar(cliente, 'enc-mitos')
     antes = len(eventos(cliente))
     for _ in range(3):
         respuesta = completar(cliente, 'enc-mitos')
@@ -48,7 +48,7 @@ def test_p05_repetir_no_suma(cliente):
 
 
 def test_p06_un_evento_varios_desbloqueos(cliente):
-    avanzar_camino(cliente, 'act-07')
+    avanzar(cliente, 'act-07')
     assert reglas(completar(cliente, 'mission-story')) == {'R-mission-future', 'R-I2', 'R-NIV-2'}
     assert estado(cliente)['nivel_actual']['numero'] == 2
 
@@ -58,7 +58,7 @@ def test_p07_llegada_a_la_ciudad(cliente):
 
 
 def test_p08_cuestionario_incompleto(cliente, aplicacion):
-    avanzar_camino(cliente)
+    avanzar(cliente)
     respuesta = responder(cliente, 'act-tip-01', fin=3)
     assert respuesta['progreso'] == {'estado': 'EN_CURSO', 'respondidos': 3, 'total': 5}
     antes = filas_base(aplicacion)
@@ -68,7 +68,7 @@ def test_p08_cuestionario_incompleto(cliente, aplicacion):
 
 
 def test_p09_retomar(cliente):
-    avanzar_camino(cliente)
+    avanzar(cliente)
     responder(cliente, 'act-tip-01', fin=3)
     guardadas = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/act-tip-01/respuestas')['respuestas']
     assert [(r['item'], r['opcion']['orden']) for r in guardadas] == [('RIASEC-01', 4), ('RIASEC-02', 4), ('RIASEC-03', 5)]
@@ -82,7 +82,7 @@ def test_p10_resultado(cliente):
 
 
 def test_p11_perfil_plano(cliente):
-    avanzar_camino(cliente, cuenta='est-luis')
+    avanzar(cliente, cuenta='est-luis')
     for actividad in MARA:
         responder(cliente, actividad, cuenta='est-luis', opcion=3)
         completar(cliente, actividad, cuenta='est-luis')
@@ -92,7 +92,7 @@ def test_p11_perfil_plano(cliente):
 
 
 def test_p12_avisos(cliente):
-    avanzar_camino(cliente)
+    avanzar(cliente)
     ruta = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
     no_vistos = pedir(cliente, 'GET', ruta)
     assert no_vistos and all(d['visto'] is False for d in no_vistos)

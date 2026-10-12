@@ -2,7 +2,7 @@
 
 import pytest
 from app.services import actividades as servicio_actividades
-from soporte_plataforma import completar, filas_base
+from soporte_ruta import completar, filas_base
 
 
 def test_r32_fallo_despues_de_conceder_revierte_completar(cliente, aplicacion, monkeypatch):

@@ -1,4 +1,4 @@
-"""Recorridos y consultas de plataforma, sin fixtures de base."""
+"""Recorridos y consultas de la ruta mínima, sin fixtures de base."""
 
 from soporte_dominios import consultar_dominios
 
@@ -8,19 +8,19 @@ from app.models.base import Base
 
 
 FECHA = '2026-10-07T10:00:00'
-CAMINO = ('mission-welcome', 'enc-mitos', 'act-07', 'mission-story', 'mission-future',
-          'mission-compass', 'act-06', 'mission-expectations', 'mission-next-step')
-MARA = tuple(f'act-tip-{n:02}' for n in range(1, 15))
+# DATO DE PRUEBA: el recorrido de `datos/ruta.py` que abre la Ciudad.
+RECORRIDO = ('t-inicio', 't-cierre-inicio', 't-expectativas')
+INTERESES = 't-mision-intereses'
 
 BLOQUE_FAMILIA = {
     'codigo': 'FAMILIA', 'nombre': 'Actividades para familias', 'numero': 1,
     'espacio': 'PORTAL_FAMILIA', 'estado': 'DISPONIBLE',
     'actividades': [
-        {'codigo': 'pad-01-rol', 'titulo': 'Acompañar sin decidir por él o ella',
-         'tipo': 'INFORMATIVA', 'orden': 1, 'contenido': 'pad_01_acompanar',
+        {'codigo': 't-apo-1', 'titulo': 'Primera actividad del apoderado',
+         'tipo': 'INFORMATIVA', 'orden': 1, 'contenido': 't_apo_1',
          'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'DISPONIBLE'},
-        {'codigo': 'pad-02-info', 'titulo': 'Conversar con información de hoy',
-         'tipo': 'INFORMATIVA', 'orden': 2, 'contenido': 'pad_02_informacion',
+        {'codigo': 't-apo-carta', 'titulo': 'Carta del apoderado',
+         'tipo': 'INFORMATIVA', 'orden': 2, 'contenido': 't_apo_carta',
          'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'BLOQUEADA'},
     ],
 }
@@ -37,9 +37,10 @@ def completar(cliente, codigo, cuenta='est-ana', esperado=200):
                  {'cuenta': cuenta, 'actividad': codigo, 'fecha_hora': FECHA}, esperado)
 
 
-def avanzar_camino(cliente, hasta=None, cuenta='est-ana'):
-    ultimo = len(CAMINO) if hasta is None else CAMINO.index(hasta) + 1
-    for codigo in CAMINO[:ultimo]:
+def avanzar(cliente, hasta=None, cuenta='est-ana'):
+    """Completa el recorrido hasta `hasta` (incluida); sin `hasta`, deja abierta la Ciudad."""
+    ultimo = len(RECORRIDO) if hasta is None else RECORRIDO.index(hasta) + 1
+    for codigo in RECORRIDO[:ultimo]:
         respuesta = completar(cliente, codigo, cuenta)
     return respuesta
 

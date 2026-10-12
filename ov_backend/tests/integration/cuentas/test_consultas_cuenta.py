@@ -4,7 +4,7 @@ from soporte_datos_ports import preparar_preguntas_respondidas
 from datetime import timedelta
 from app import models as m
 from soporte_dominios import RUTAS_DOMINIO
-from soporte_plataforma import filas_base, pedir
+from soporte_ruta import filas_base, pedir
 from soporte_retiro import FECHA_BD, agregar_eventos, buscar, ciclo, sin_ids
 
 

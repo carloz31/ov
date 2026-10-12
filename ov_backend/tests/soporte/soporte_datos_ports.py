@@ -3,7 +3,7 @@
 from datetime import timedelta
 from sqlalchemy import select
 from app import models as m
-from soporte_plataforma import MARA
+from soporte_ruta import MARA
 from soporte_retiro import FECHA_BD, buscar, condicion, instrumento_minimo, regla
 
 

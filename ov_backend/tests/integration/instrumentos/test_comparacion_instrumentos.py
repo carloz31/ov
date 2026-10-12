@@ -1,7 +1,7 @@
 """R27–R28: comparación por momentos y reinicio de salida."""
 
 from app import models as m
-from soporte_plataforma import filas_base, pedir
+from soporte_ruta import filas_base, pedir
 from soporte_retiro import buscar, contestar_minimo, instrumento_minimo, reiniciar
 
 

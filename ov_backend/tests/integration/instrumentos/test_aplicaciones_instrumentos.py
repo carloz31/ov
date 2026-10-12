@@ -1,6 +1,6 @@
 """R19: varias aplicaciones por actividad, selección y coste constante."""
 
-from soporte_plataforma import MARA, pedir
+from soporte_ruta import MARA, pedir
 from soporte_retiro import aplicaciones_extra, medir, preparar_ultimo, resultado
 
 

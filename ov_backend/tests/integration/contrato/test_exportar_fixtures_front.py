@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 from pydantic import TypeAdapter
 from scripts import exportar_fixtures_front as exportador
-from soporte_plataforma import BLOQUE_FAMILIA
+from soporte_ruta import BLOQUE_FAMILIA
 
 from app import main as principal
 from app.schemas.acciones import RespuestaCompletarActividad

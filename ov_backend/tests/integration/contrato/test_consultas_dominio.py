@@ -7,7 +7,7 @@ from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActivi
 from datos.plataforma import (
     ACTIVIDADES_CAMINO, ACTIVIDADES_CIUDAD, CONTENIDOS_ACTIVIDADES, FICHAS, INSIGNIAS, NIVELES,
 )
-from soporte_plataforma import BLOQUE_FAMILIA, CAMINO, avanzar_camino, completar, pedir, responder
+from soporte_ruta import BLOQUE_FAMILIA, CAMINO, avanzar, completar, pedir, responder
 
 
 RUTAS = ('resumen', 'actividades', 'fichas', 'logros', 'testimonios', 'diario/preguntas', 'conversaciones')
@@ -66,7 +66,7 @@ def esperado(ruta, completo):
 @pytest.mark.parametrize('completo', [False, True], ids=['inicio', 'camino_completo'])
 def test_contrato_y_valores_plataforma(cliente, ruta, completo):
     if completo:
-        avanzar_camino(cliente)
+        avanzar(cliente)
     assert consultar(cliente, ruta) == esperado(ruta, completo)
 
 
@@ -132,7 +132,7 @@ def test_bloqueo_prevalece_sobre_progreso(sesion, cliente, codigo):
 
 
 def test_cuestionario_en_curso_y_lecturas_aisladas_por_cuenta(cliente):
-    avanzar_camino(cliente)
+    avanzar(cliente)
     responder(cliente, 'act-tip-01', fin=3)
     assert consultar(cliente, 'actividades')[1]['actividades'][0]['estado'] == 'EN_CURSO'
     for ruta in RUTAS:

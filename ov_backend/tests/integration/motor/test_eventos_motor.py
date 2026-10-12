@@ -1,6 +1,6 @@
 """R36: eventos crudos evalúan sin crear registros de dominio."""
 
-from soporte_plataforma import filas_base, pedir
+from soporte_ruta import filas_base, pedir
 
 
 def test_r36_eventos_crudos_no_escriben_progreso_ni_entrevista(cliente, aplicacion):
