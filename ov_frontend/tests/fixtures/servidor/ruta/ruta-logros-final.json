@@ -1,0 +1,30 @@
+{
+  "insignias": [
+    {
+      "codigo": "t-ins-1",
+      "descripcion": "Completaste t-inicio.",
+      "estado": "OBTENIDA",
+      "nombre": "Insignia de prueba",
+      "requisito": "Completa t-inicio."
+    },
+    {
+      "codigo": "???",
+      "descripcion": null,
+      "estado": "BLOQUEADA",
+      "nombre": "Logro oculto",
+      "requisito": null
+    }
+  ],
+  "niveles": [
+    {
+      "estado": "OBTENIDO",
+      "numero": 1,
+      "titulo": "Nivel 1 de prueba"
+    },
+    {
+      "estado": "OBTENIDO",
+      "numero": 2,
+      "titulo": "Nivel 2 de prueba"
+    }
+  ]
+}

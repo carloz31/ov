@@ -1,0 +1,79 @@
+[
+  {
+    "actividades": [
+      {
+        "codigo": "t-inicio",
+        "contenido": "t_inicio",
+        "estado": "COMPLETADA",
+        "orden": 1,
+        "tipo": "INFORMATIVA",
+        "titulo": "Inicio de prueba",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "t-cierre-inicio",
+        "contenido": "t_cierre_inicio",
+        "estado": "COMPLETADA",
+        "orden": 2,
+        "tipo": "INFORMATIVA",
+        "titulo": "Cierre del inicio",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "codigo": "T0",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "DISPONIBLE",
+    "nombre": "Inicio",
+    "numero": 1
+  },
+  {
+    "actividades": [
+      {
+        "codigo": "t-expectativas",
+        "contenido": "t_expectativas",
+        "estado": "COMPLETADA",
+        "orden": 1,
+        "tipo": "REGISTRO",
+        "titulo": "Registro de expectativas",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "codigo": "T1",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "DISPONIBLE",
+    "nombre": "Camino",
+    "numero": 2
+  },
+  {
+    "actividades": [
+      {
+        "codigo": "t-mision-intereses",
+        "contenido": "t_mision_intereses",
+        "estado": "DISPONIBLE",
+        "orden": 1,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Misión de intereses",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "t-caso",
+        "contenido": "t_caso",
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "tipo": "CASO",
+        "titulo": "Caso de prueba",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "codigo": "CIUDAD",
+    "espacio": "CIUDAD",
+    "estado": "DISPONIBLE",
+    "nombre": "La ciudad",
+    "numero": 3
+  }
+]

@@ -1,0 +1,71 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-cierre-inicio",
+      "tipo": "COMPLETA_ACTIVIDAD"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "T0",
+      "tipo": "COMPLETA_BLOQUE"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "T0",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_BLOQUE"
+        }
+      ],
+      "objetivo": {
+        "codigo": "-",
+        "nombre": "Conversaciones"
+      },
+      "regla": "R-FAM-ESTUDIANTE",
+      "tipo_objetivo": "CONVERSACIONES"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "T0",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_BLOQUE"
+        }
+      ],
+      "objetivo": {
+        "codigo": "N2",
+        "nombre": "Nivel 2 de prueba"
+      },
+      "regla": "R-NIV-2",
+      "tipo_objetivo": "NIVEL"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "T0",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_BLOQUE"
+        }
+      ],
+      "objetivo": {
+        "codigo": "T1",
+        "nombre": "Camino"
+      },
+      "regla": "R-T1",
+      "tipo_objetivo": "BLOQUE"
+    }
+  ],
+  "resultados_generados": []
+}

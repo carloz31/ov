@@ -1,0 +1,2402 @@
+[
+  {
+    "codigo": "RIASEC-01",
+    "dimension": "R",
+    "enunciado": "Reparar una bicicleta o un electrodoméstico.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 1,
+    "orden": 1
+  },
+  {
+    "codigo": "RIASEC-02",
+    "dimension": "R",
+    "enunciado": "Armar muebles siguiendo un plano.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 2,
+    "orden": 2
+  },
+  {
+    "codigo": "RIASEC-03",
+    "dimension": "I",
+    "enunciado": "Hacer experimentos en un laboratorio.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 3,
+    "orden": 3
+  },
+  {
+    "codigo": "RIASEC-04",
+    "dimension": "I",
+    "enunciado": "Investigar por qué ocurre un fenómeno natural.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 4,
+    "orden": 4
+  },
+  {
+    "codigo": "RIASEC-05",
+    "dimension": "A",
+    "enunciado": "Dibujar o pintar.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 5,
+    "orden": 5
+  },
+  {
+    "codigo": "RIASEC-06",
+    "dimension": "A",
+    "enunciado": "Escribir cuentos, poemas o guiones.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 6,
+    "orden": 6
+  },
+  {
+    "codigo": "RIASEC-07",
+    "dimension": "S",
+    "enunciado": "Enseñar algo a un niño o a un compañero.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 7,
+    "orden": 7
+  },
+  {
+    "codigo": "RIASEC-08",
+    "dimension": "S",
+    "enunciado": "Escuchar y aconsejar a alguien que tiene un problema.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 8,
+    "orden": 8
+  },
+  {
+    "codigo": "RIASEC-09",
+    "dimension": "E",
+    "enunciado": "Vender un producto o una idea.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 9,
+    "orden": 9
+  },
+  {
+    "codigo": "RIASEC-10",
+    "dimension": "E",
+    "enunciado": "Liderar un equipo para cumplir una meta.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 10,
+    "orden": 10
+  },
+  {
+    "codigo": "RIASEC-11",
+    "dimension": "C",
+    "enunciado": "Ordenar y clasificar documentos.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 11,
+    "orden": 11
+  },
+  {
+    "codigo": "RIASEC-12",
+    "dimension": "C",
+    "enunciado": "Llevar las cuentas de ingresos y gastos.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 12,
+    "orden": 12
+  },
+  {
+    "codigo": "RIASEC-13",
+    "dimension": "R",
+    "enunciado": "Cultivar un huerto o cuidar plantas.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 13,
+    "orden": 13
+  },
+  {
+    "codigo": "RIASEC-14",
+    "dimension": "R",
+    "enunciado": "Manejar maquinaria o herramientas eléctricas.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 14,
+    "orden": 14
+  },
+  {
+    "codigo": "RIASEC-15",
+    "dimension": "I",
+    "enunciado": "Resolver problemas de matemáticas o de lógica.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 15,
+    "orden": 15
+  },
+  {
+    "codigo": "RIASEC-16",
+    "dimension": "I",
+    "enunciado": "Analizar datos para encontrar patrones.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 16,
+    "orden": 16
+  },
+  {
+    "codigo": "RIASEC-17",
+    "dimension": "A",
+    "enunciado": "Tocar un instrumento o componer música.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 17,
+    "orden": 17
+  },
+  {
+    "codigo": "RIASEC-18",
+    "dimension": "A",
+    "enunciado": "Actuar en una obra de teatro.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 18,
+    "orden": 18
+  },
+  {
+    "codigo": "RIASEC-19",
+    "dimension": "S",
+    "enunciado": "Cuidar a personas enfermas o mayores.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 19,
+    "orden": 19
+  },
+  {
+    "codigo": "RIASEC-20",
+    "dimension": "S",
+    "enunciado": "Organizar actividades para ayudar a la comunidad.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 20,
+    "orden": 20
+  },
+  {
+    "codigo": "RIASEC-21",
+    "dimension": "E",
+    "enunciado": "Iniciar un negocio propio.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 21,
+    "orden": 21
+  },
+  {
+    "codigo": "RIASEC-22",
+    "dimension": "E",
+    "enunciado": "Convencer a otros en un debate.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 22,
+    "orden": 22
+  },
+  {
+    "codigo": "RIASEC-23",
+    "dimension": "C",
+    "enunciado": "Registrar datos en una hoja de cálculo.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 23,
+    "orden": 23
+  },
+  {
+    "codigo": "RIASEC-24",
+    "dimension": "C",
+    "enunciado": "Revisar un texto para corregir errores.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 24,
+    "orden": 24
+  },
+  {
+    "codigo": "RIASEC-25",
+    "dimension": "R",
+    "enunciado": "Instalar el cableado eléctrico de una casa.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 25,
+    "orden": 25
+  },
+  {
+    "codigo": "RIASEC-26",
+    "dimension": "R",
+    "enunciado": "Construir una maqueta o una estructura de madera.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 26,
+    "orden": 26
+  },
+  {
+    "codigo": "RIASEC-27",
+    "dimension": "I",
+    "enunciado": "Leer sobre descubrimientos científicos.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 27,
+    "orden": 27
+  },
+  {
+    "codigo": "RIASEC-28",
+    "dimension": "I",
+    "enunciado": "Estudiar cómo funciona el cuerpo humano.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 28,
+    "orden": 28
+  },
+  {
+    "codigo": "RIASEC-29",
+    "dimension": "A",
+    "enunciado": "Diseñar un afiche o la portada de una revista.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 29,
+    "orden": 29
+  },
+  {
+    "codigo": "RIASEC-30",
+    "dimension": "A",
+    "enunciado": "Tomar fotografías o grabar videos creativos.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 30,
+    "orden": 30
+  },
+  {
+    "codigo": "RIASEC-31",
+    "dimension": "S",
+    "enunciado": "Trabajar como voluntario en una campaña.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 31,
+    "orden": 31
+  },
+  {
+    "codigo": "RIASEC-32",
+    "dimension": "S",
+    "enunciado": "Explicar un tema difícil a un grupo.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 32,
+    "orden": 32
+  },
+  {
+    "codigo": "RIASEC-33",
+    "dimension": "E",
+    "enunciado": "Organizar un evento y conseguir auspiciadores.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 33,
+    "orden": 33
+  },
+  {
+    "codigo": "RIASEC-34",
+    "dimension": "E",
+    "enunciado": "Negociar un acuerdo o un precio.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 34,
+    "orden": 34
+  },
+  {
+    "codigo": "RIASEC-35",
+    "dimension": "C",
+    "enunciado": "Seguir un procedimiento paso a paso.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 35,
+    "orden": 35
+  },
+  {
+    "codigo": "RIASEC-36",
+    "dimension": "C",
+    "enunciado": "Organizar un inventario de materiales.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 36,
+    "orden": 36
+  },
+  {
+    "codigo": "RIASEC-37",
+    "dimension": "R",
+    "enunciado": "Cuidar animales en una granja o un refugio.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 37,
+    "orden": 37
+  },
+  {
+    "codigo": "RIASEC-38",
+    "dimension": "R",
+    "enunciado": "Trabajar al aire libre, en el campo o en una obra.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 38,
+    "orden": 38
+  },
+  {
+    "codigo": "RIASEC-39",
+    "dimension": "I",
+    "enunciado": "Observar el cielo y aprender sobre los planetas.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 39,
+    "orden": 39
+  },
+  {
+    "codigo": "RIASEC-40",
+    "dimension": "I",
+    "enunciado": "Investigar las causas de una enfermedad.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 40,
+    "orden": 40
+  },
+  {
+    "codigo": "RIASEC-41",
+    "dimension": "A",
+    "enunciado": "Decorar un espacio con un estilo propio.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 41,
+    "orden": 41
+  },
+  {
+    "codigo": "RIASEC-42",
+    "dimension": "A",
+    "enunciado": "Bailar o crear una coreografía.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 42,
+    "orden": 42
+  },
+  {
+    "codigo": "RIASEC-43",
+    "dimension": "S",
+    "enunciado": "Mediar en una discusión entre amigos.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 43,
+    "orden": 43
+  },
+  {
+    "codigo": "RIASEC-44",
+    "dimension": "S",
+    "enunciado": "Acompañar a alguien en su primer día en un lugar nuevo.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 44,
+    "orden": 44
+  },
+  {
+    "codigo": "RIASEC-45",
+    "dimension": "E",
+    "enunciado": "Representar a tu salón ante la dirección.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 45,
+    "orden": 45
+  },
+  {
+    "codigo": "RIASEC-46",
+    "dimension": "E",
+    "enunciado": "Planificar cómo hacer crecer un emprendimiento.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 46,
+    "orden": 46
+  },
+  {
+    "codigo": "RIASEC-47",
+    "dimension": "C",
+    "enunciado": "Preparar un horario o un calendario de actividades.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 47,
+    "orden": 47
+  },
+  {
+    "codigo": "RIASEC-48",
+    "dimension": "C",
+    "enunciado": "Archivar información para encontrarla rápido.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 48,
+    "orden": 48
+  },
+  {
+    "codigo": "RIASEC-49",
+    "dimension": "R",
+    "enunciado": "Pintar o reparar paredes y techos.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 49,
+    "orden": 49
+  },
+  {
+    "codigo": "RIASEC-50",
+    "dimension": "R",
+    "enunciado": "Ensamblar las piezas de una computadora.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 50,
+    "orden": 50
+  },
+  {
+    "codigo": "RIASEC-51",
+    "dimension": "I",
+    "enunciado": "Programar una solución para un problema.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 51,
+    "orden": 51
+  },
+  {
+    "codigo": "RIASEC-52",
+    "dimension": "I",
+    "enunciado": "Comparar información de distintas fuentes antes de concluir.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 52,
+    "orden": 52
+  },
+  {
+    "codigo": "RIASEC-53",
+    "dimension": "A",
+    "enunciado": "Diseñar ropa o accesorios.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 53,
+    "orden": 53
+  },
+  {
+    "codigo": "RIASEC-54",
+    "dimension": "A",
+    "enunciado": "Inventar personajes para una historia o un videojuego.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 54,
+    "orden": 54
+  },
+  {
+    "codigo": "RIASEC-55",
+    "dimension": "S",
+    "enunciado": "Orientar a otros estudiantes sobre sus estudios.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 55,
+    "orden": 55
+  },
+  {
+    "codigo": "RIASEC-56",
+    "dimension": "S",
+    "enunciado": "Atender a personas que llegan buscando ayuda.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 56,
+    "orden": 56
+  },
+  {
+    "codigo": "RIASEC-57",
+    "dimension": "E",
+    "enunciado": "Dirigir una reunión y tomar decisiones.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 57,
+    "orden": 57
+  },
+  {
+    "codigo": "RIASEC-58",
+    "dimension": "E",
+    "enunciado": "Promocionar una actividad en redes sociales.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 58,
+    "orden": 58
+  },
+  {
+    "codigo": "RIASEC-59",
+    "dimension": "C",
+    "enunciado": "Verificar que una factura esté correcta.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 59,
+    "orden": 59
+  },
+  {
+    "codigo": "RIASEC-60",
+    "dimension": "C",
+    "enunciado": "Mantener al día una base de datos.",
+    "escala": {
+      "codigo": "ESC-LIKERT5",
+      "nombre": "Preferencia en cinco opciones",
+      "opciones": [
+        {
+          "etiqueta": "Me disgusta mucho",
+          "orden": 1,
+          "puntaje": 0.0
+        },
+        {
+          "etiqueta": "Me disgusta",
+          "orden": 2,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "No estoy seguro",
+          "orden": 3,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Me gusta",
+          "orden": 4,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Me gusta mucho",
+          "orden": 5,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-RIASEC",
+    "inverso": false,
+    "numero": 60,
+    "orden": 60
+  }
+]

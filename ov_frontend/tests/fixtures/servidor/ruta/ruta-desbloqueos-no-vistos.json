@@ -1,0 +1,72 @@
+[
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "CIUDAD",
+      "nombre": "La ciudad"
+    },
+    "regla": "R-CIUDAD",
+    "tipo_objetivo": "BLOQUE",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "T1",
+      "nombre": "Camino"
+    },
+    "regla": "R-T1",
+    "tipo_objetivo": "BLOQUE",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "N2",
+      "nombre": "Nivel 2 de prueba"
+    },
+    "regla": "R-NIV-2",
+    "tipo_objetivo": "NIVEL",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "-",
+      "nombre": "Conversaciones"
+    },
+    "regla": "R-FAM-ESTUDIANTE",
+    "tipo_objetivo": "CONVERSACIONES",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "t-ins-1",
+      "nombre": "Insignia de prueba"
+    },
+    "regla": "R-t-ins-1",
+    "tipo_objetivo": "INSIGNIA",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "t-ficha",
+      "nombre": "Ficha de prueba"
+    },
+    "regla": "R-t-ficha",
+    "tipo_objetivo": "FICHA",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "t-cierre-inicio",
+      "nombre": "Cierre del inicio"
+    },
+    "regla": "R-t-cierre-inicio",
+    "tipo_objetivo": "ACTIVIDAD",
+    "visto": false
+  }
+]

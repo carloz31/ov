@@ -4,10 +4,17 @@ import pytest
 from sqlalchemy import select
 
 from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActividad, Visibilidad
-from datos.plataforma import (
-    ACTIVIDADES_CAMINO, ACTIVIDADES_CIUDAD, CONTENIDOS_ACTIVIDADES, FICHAS, INSIGNIAS, NIVELES,
-)
-from soporte_ruta import BLOQUE_FAMILIA, CAMINO, avanzar, completar, pedir, responder
+from datos.ruta import ACTIVIDADES, BLOQUES, FICHAS, INSIGNIAS, NIVELES, contenido
+from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
+
+
+# Estados de cada actividad del estudiante, al inicio y con la Ciudad abierta.
+ESTADOS = {
+    False: {'t-inicio': 'DISPONIBLE', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
+            't-mision-intereses': 'BLOQUEADA', 't-caso': 'BLOQUEADA'},
+    True: {'t-inicio': 'COMPLETADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
+           't-mision-intereses': 'DISPONIBLE', 't-caso': 'BLOQUEADA'},
+}
 
 
 RUTAS = ('resumen', 'actividades', 'fichas', 'logros', 'testimonios', 'diario/preguntas', 'conversaciones')
@@ -19,29 +26,21 @@ def consultar(cliente, ruta, cuenta='est-ana'):
 
 def esperado(ruta, completo):
     if ruta == 'resumen':
-        numero = 3 if completo else 1
+        numero = 2 if completo else 1
         return {'cuenta': {'codigo': 'est-ana', 'nombre': 'Ana', 'rol': 'ESTUDIANTE'},
                 'nivel_actual': {'numero': numero, 'titulo': NIVELES[numero - 1][1]}}
     if ruta == 'actividades':
-        bloques = []
-        for codigo, nombre, numero, espacio, catalogo in (
-            ('CAMINO', 'El camino', 1, 'MISIONES_CAMPO', ACTIVIDADES_CAMINO),
-            ('CIUDAD', 'La ciudad', 2, 'CIUDAD', ACTIVIDADES_CIUDAD),
-        ):
-            estados = (['COMPLETADA'] * 9 if completo else ['DISPONIBLE'] + ['BLOQUEADA'] * 8) if codigo == 'CAMINO' else (
-                ['DISPONIBLE'] + ['BLOQUEADA'] * 14 if completo else ['BLOQUEADA'] * 15
-            )
-            bloques.append({
-                'codigo': codigo, 'nombre': nombre, 'numero': numero, 'espacio': espacio,
-                'estado': 'DISPONIBLE' if codigo == 'CAMINO' or completo else 'BLOQUEADA',
-                'actividades': [
-                    {'codigo': actividad, 'titulo': titulo, 'tipo': tipo, 'orden': orden,
-                     'contenido': CONTENIDOS_ACTIVIDADES[actividad], 'visibilidad': 'SIEMPRE',
-                     'visible': True, 'estado': estado}
-                    for orden, ((actividad, titulo, tipo), estado) in enumerate(zip(catalogo, estados, strict=True), 1)
-                ],
-            })
-        return bloques
+        return [{
+            'codigo': bloque, 'nombre': nombre, 'numero': numero, 'espacio': espacio,
+            'estado': 'DISPONIBLE' if bloque == 'T0' or completo else 'BLOQUEADA',
+            'actividades': [
+                {'codigo': actividad, 'titulo': titulo, 'tipo': tipo, 'orden': orden,
+                 'contenido': contenido(actividad), 'visibilidad': 'SIEMPRE', 'visible': True,
+                 'estado': ESTADOS[completo][actividad]}
+                for orden, (actividad, _, titulo, tipo, _) in enumerate(
+                    (fila for fila in ACTIVIDADES if fila[1] == bloque), 1)
+            ],
+        } for bloque, numero, nombre, espacio, audiencia in BLOQUES if audiencia == 'ESTUDIANTE']
     if ruta == 'fichas':
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'DISPONIBLE' if completo else 'BLOQUEADA'}
                 for codigo, titulo, _ in sorted(FICHAS)]
@@ -51,10 +50,10 @@ def esperado(ruta, completo):
             insignias.append(
                 {'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA'}
                 if oculta else {'codigo': codigo, 'nombre': nombre, 'descripcion': descripcion,
-                                'requisito': requisito, 'estado': 'OBTENIDA' if completo and codigo in ('I1', 'I2', 'I3') else 'BLOQUEADA'}
+                                'requisito': requisito, 'estado': 'OBTENIDA' if completo and codigo == 't-ins-1' else 'BLOQUEADA'}
             )
         return {'insignias': insignias, 'niveles': [
-            {'numero': numero, 'titulo': titulo, 'estado': 'OBTENIDO' if numero <= (3 if completo else 1) else 'BLOQUEADO'}
+            {'numero': numero, 'titulo': titulo, 'estado': 'OBTENIDO' if numero <= (2 if completo else 1) else 'BLOQUEADO'}
             for numero, titulo in NIVELES
         ]}
     if ruta == 'conversaciones':
@@ -63,8 +62,8 @@ def esperado(ruta, completo):
 
 
 @pytest.mark.parametrize('ruta', RUTAS)
-@pytest.mark.parametrize('completo', [False, True], ids=['inicio', 'camino_completo'])
-def test_contrato_y_valores_plataforma(cliente, ruta, completo):
+@pytest.mark.parametrize('completo', [False, True], ids=['inicio', 'ciudad_abierta'])
+def test_contrato_y_valores_ruta(cliente, ruta, completo):
     if completo:
         avanzar(cliente)
     assert consultar(cliente, ruta) == esperado(ruta, completo)
@@ -95,15 +94,15 @@ def test_apoderado_sin_listas_estudiantiles(cliente, ruta):
 @pytest.mark.parametrize('visibilidad', list(Visibilidad))
 @pytest.mark.parametrize('estado', ['BLOQUEADA', 'DISPONIBLE', 'EN_CURSO', 'COMPLETADA'])
 def test_visibilidad_no_oculta_filas_ni_titulos(sesion, cliente, visibilidad, estado):
-    codigo = 'enc-mitos' if estado == 'BLOQUEADA' else 'mission-welcome'
+    codigo = 't-cierre-inicio' if estado == 'BLOQUEADA' else 't-inicio'
     actividad = sesion.scalar(select(Actividad).where(Actividad.codigo == codigo))
-    actividad.visibilidad = visibilidad  # DATO DE PRUEBA: variante temporal, sin cambiar plataforma.
+    actividad.visibilidad = visibilidad  # DATO DE PRUEBA: variante temporal, sin cambiar la ruta.
     if estado in ('EN_CURSO', 'COMPLETADA'):
         ana = sesion.scalar(select(Cuenta).where(Cuenta.codigo == 'est-ana'))
         sesion.add(ProgresoActividad(cuenta_id=ana.id, actividad_id=actividad.id, estado=EstadoProgreso(estado)))
     sesion.commit()
     actividades = consultar(cliente, 'actividades')[0]['actividades']
-    assert len(actividades) == 9
+    assert len(actividades) == 2
     recibida = next(fila for fila in actividades if fila['codigo'] == codigo)
     assert recibida['titulo'] == actividad.titulo
     assert recibida['estado'] == estado
@@ -112,16 +111,16 @@ def test_visibilidad_no_oculta_filas_ni_titulos(sesion, cliente, visibilidad, es
 
 
 def test_actividad_al_desbloquear_cambia_de_visible_con_la_accion(sesion, cliente):
-    actividad = sesion.scalar(select(Actividad).where(Actividad.codigo == 'enc-mitos'))
+    actividad = sesion.scalar(select(Actividad).where(Actividad.codigo == 't-cierre-inicio'))
     actividad.visibilidad = Visibilidad.AL_DESBLOQUEAR  # DATO DE PRUEBA.
     sesion.commit()
     assert consultar(cliente, 'actividades')[0]['actividades'][1]['visible'] is False
-    completar(cliente, 'mission-welcome')
+    completar(cliente, 't-inicio')
     recibida = consultar(cliente, 'actividades')[0]['actividades'][1]
     assert recibida['estado'] == 'DISPONIBLE' and recibida['visible'] is True
 
 
-@pytest.mark.parametrize('codigo', ['enc-mitos', 't-mision-intereses'], ids=['actividad_bloqueada', 'bloque_bloqueado'])
+@pytest.mark.parametrize('codigo', ['t-cierre-inicio', 't-mision-intereses'], ids=['actividad_bloqueada', 'bloque_bloqueado'])
 def test_bloqueo_prevalece_sobre_progreso(sesion, cliente, codigo):
     ana = sesion.scalar(select(Cuenta).where(Cuenta.codigo == 'est-ana'))
     actividad = sesion.scalar(select(Actividad).where(Actividad.codigo == codigo))
@@ -134,7 +133,7 @@ def test_bloqueo_prevalece_sobre_progreso(sesion, cliente, codigo):
 def test_cuestionario_en_curso_y_lecturas_aisladas_por_cuenta(cliente):
     avanzar(cliente)
     responder(cliente, 't-mision-intereses', fin=3)
-    assert consultar(cliente, 'actividades')[1]['actividades'][0]['estado'] == 'EN_CURSO'
+    assert consultar(cliente, 'actividades')[2]['actividades'][0]['estado'] == 'EN_CURSO'
     for ruta in RUTAS:
         luis = consultar(cliente, ruta, 'est-luis')
         if ruta == 'resumen':
@@ -149,15 +148,15 @@ def test_orden_por_numero_y_codigo_y_por_orden_y_codigo(sesion, cliente):
     # DATO DE PRUEBA: el empate y el orden inverso distinguen ambas claves de ordenación.
     ciudad = sesion.scalar(select(Bloque).where(Bloque.codigo == 'CIUDAD'))
     ciudad.numero = 0
-    welcome = sesion.scalar(select(Actividad).where(Actividad.codigo == 'mission-welcome'))
-    welcome.orden = 2
+    inicio = sesion.scalar(select(Actividad).where(Actividad.codigo == 't-inicio'))
+    inicio.orden = 2
     sesion.commit()
     bloques = consultar(cliente, 'actividades')
-    assert [b['codigo'] for b in bloques] == ['CIUDAD', 'CAMINO']
-    assert [a['codigo'] for a in bloques[1]['actividades'][:2]] == ['enc-mitos', 'mission-welcome']
-    ciudad.numero = 1
+    assert [b['codigo'] for b in bloques] == ['CIUDAD', 'T0', 'T1']
+    assert [a['codigo'] for a in bloques[1]['actividades']] == ['t-cierre-inicio', 't-inicio']
+    ciudad.numero = 2
     sesion.commit()
-    assert [b['codigo'] for b in consultar(cliente, 'actividades')] == ['CAMINO', 'CIUDAD']
+    assert [b['codigo'] for b in consultar(cliente, 'actividades')] == ['T0', 'CIUDAD', 'T1']
 
 
 def test_insignia_oculta_solo_se_revela_al_obtenerse(cliente):
@@ -166,5 +165,5 @@ def test_insignia_oculta_solo_se_revela_al_obtenerse(cliente):
     pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'VENCE_DESAFIO_INTACTO'})
     insignias = consultar(cliente, 'logros')['insignias']
     assert not any(i['codigo'] == '???' for i in insignias)
-    revelada = next(i for i in insignias if i['codigo'] == 'I10')
+    revelada = next(i for i in insignias if i['codigo'] == 't-ins-oculta')
     assert revelada['estado'] == 'OBTENIDA' and revelada['descripcion'] and revelada['requisito']

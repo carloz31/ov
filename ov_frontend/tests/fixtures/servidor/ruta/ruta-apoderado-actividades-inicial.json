@@ -1,0 +1,31 @@
+[
+  {
+    "actividades": [
+      {
+        "codigo": "t-apo-1",
+        "contenido": "t_apo_1",
+        "estado": "DISPONIBLE",
+        "orden": 1,
+        "tipo": "INFORMATIVA",
+        "titulo": "Primera actividad del apoderado",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "codigo": "t-apo-carta",
+        "contenido": "t_apo_carta",
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "tipo": "INFORMATIVA",
+        "titulo": "Carta del apoderado",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "codigo": "FAMILIA",
+    "espacio": "PORTAL_FAMILIA",
+    "estado": "DISPONIBLE",
+    "nombre": "Actividades para familias",
+    "numero": 1
+  }
+]
