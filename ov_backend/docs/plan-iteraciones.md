@@ -70,7 +70,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B03 | Registros: entrega y seguimiento · **Implementado** | 007, 016 | M | B02 | Entrega con seguimiento, omisión y fallo del LLM; la misión adicional aparece solo si todo quedó adecuado |
 | B04 | Registros: respuesta consolidada y edición · **Implementado** | 008 | M | B03 | Consulta de la consolidada y de lo que se puede ampliar, con pista; la edición es un nuevo intento con seguimiento |
 | B05 | Referencias y eco · **Implementado** | 009 | M | B04 | Citas literales; lo poco desarrollado sale como «por desarrollar» |
-| B06 | Revelar resultados y libro de Helena | 022–024, 027, 095 | M | B05 | Revelar calcula y abre el registro de contraste; reinicio con perfil plano |
+| B06 | Revelar resultados y libro de Helena · **Implementado** | 022–024, 027, 095 | M | B05 | Revelar calcula y abre el registro de contraste; reinicio con perfil plano |
 | B07 | Partida y llegada, temáticas y prioritarios | 094 | M | B06 | Comparación por dimensión; T2 se abre con los instrumentos prioritarios revelados |
 | B08 | Batallas, casos y testimonios | 017, 041, 051–056 | M | B05 | Batalla con reintento; el caso libera testimonios y colección |
 | B09 | Diario, pregunta del día y check-in | 028–033, 035, 036, 075 | M | B07 | Entradas fijas y personalizadas, también con fallo del LLM |
@@ -168,7 +168,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Una elección por referencia solo acepta los códigos que esa referencia devuelve.
 - **Comprueba:** regla 5; paso 9; RNF-20.
 
-**B06 · Revelar resultados y libro de Helena (M)**
+**B06 · Revelar resultados y libro de Helena (M) · Implementado**
 - **Modelo:** la acción y el evento `REVELA_RESULTADO`; el cálculo pasa de completar la última misión a revelar.
 - **Hace:** agrega el reinicio con perfil plano y su tope.
 - **Pruebas:**
