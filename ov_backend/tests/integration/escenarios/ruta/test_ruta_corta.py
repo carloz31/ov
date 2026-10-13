@@ -129,7 +129,7 @@ def test_hu007_hu016_entrega_con_seguimiento_y_mision_adicional(cliente):
         else:
             cierre = pedir(cliente, 'POST', '/acciones/registro/continuar-sin-responder',
                            {**accion, 'item': 't-exp-ruta'})
-            assert cierre['items_por_ampliar'] == ['t-exp-ruta']
+            assert [i['item'] for i in cierre['items_por_ampliar']] == ['t-exp-ruta']
             assert actividades(cliente, cuenta)['t-expectativas'] == 'COMPLETADA'
             assert actividades(cliente, cuenta)['t-adicional'] == 'BLOQUEADA'
 

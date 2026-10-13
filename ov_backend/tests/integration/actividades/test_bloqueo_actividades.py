@@ -46,8 +46,7 @@ def test_opcional_no_impide_cerrar_el_bloque_y_la_ciudad_se_abre_a_mitad_de_t1(c
     respuesta = completar(cliente, 't-expectativas')
     assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [
         ('COMPLETA_ACTIVIDAD', 't-expectativas'), ('COMPLETA_BLOQUE', 'T1'),
-        # B03: al cerrar el registro, una respuesta reflexiva por ítem y REGISTRO_ADECUADO.
-        ('RESPUESTA_REFLEXIVA', None), ('RESPUESTA_REFLEXIVA', None), ('RESPUESTA_REFLEXIVA', None),
+        # B04: todo adecuado al inicio da REGISTRO_ADECUADO, pero ninguna respuesta reflexiva.
         ('REGISTRO_ADECUADO', 't-expectativas'),
     ]
     opcional = actividad(cliente, 't-opcional')

@@ -28,4 +28,4 @@ def consultar_items(sesion, actividad):
 @usar_contexto
 def consultar_registro(sesion, cuenta, actividad):
     cuenta, actividad, items = validar_registro(sesion, actividad, cuenta)
-    return RegistroConsultado(**registro_publico(leer_registro(sesion, cuenta, actividad), items))
+    return RegistroConsultado(**registro_publico(leer_registro(sesion, cuenta, actividad), items, consolidada=True))

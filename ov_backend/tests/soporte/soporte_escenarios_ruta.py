@@ -44,8 +44,7 @@ def verificar_p07_llegada_a_la_ciudad(cliente):
     respuesta = avanzar(cliente)
     assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [
         ('COMPLETA_ACTIVIDAD', 't-expectativas'), ('COMPLETA_BLOQUE', 'T1'),
-        # B03: al cerrar el registro, una respuesta reflexiva por ítem y REGISTRO_ADECUADO.
-        ('RESPUESTA_REFLEXIVA', None), ('RESPUESTA_REFLEXIVA', None), ('RESPUESTA_REFLEXIVA', None),
+        # B04: todo adecuado al inicio da REGISTRO_ADECUADO, pero ninguna respuesta reflexiva.
         ('REGISTRO_ADECUADO', 't-expectativas'),
     ]
     # La Ciudad se abre a mitad de T1: la opcional t-opcional sigue pendiente y no impide cerrar el bloque.

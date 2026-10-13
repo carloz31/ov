@@ -37,6 +37,15 @@ class ResponderSeguimientoEntrada(TextoRegistroEntrada):
     pass
 
 
+class ItemEdicion(BaseModel):
+    item: str
+    texto: str
+
+
+class EditarRegistroEntrada(CompletarActividadEntrada):
+    items: list[ItemEdicion]
+
+
 
 
 class EstadoItemRegistro(BaseModel):
@@ -86,16 +95,24 @@ class ItemRegistroPublico(BaseModel):
 
 class RespuestaRegistroPublica(EstadoItemRegistro):
     opciones_elegidas: list[OpcionElegida]
+    # Conversación del intento vigente: su texto base y sus turnos.
     conversacion: list[MensajeRegistro]
+    # Solo en la consulta y con el registro cerrado: la respuesta final.
+    texto_consolidado: str | None = None
+
+
+class ItemPorAmpliar(BaseModel):
+    item: str
+    pista: str
 
 
 class RegistroConsultado(BaseModel):
     posicion: str | None
     estado: EstadoProgreso | None
     respuestas: list[RespuestaRegistroPublica]
+    # Solo con el registro cerrado: ítems que quedaron poco desarrollados y la pregunta que los ampliaría.
+    items_por_ampliar: list[ItemPorAmpliar] | None = None
 
 
 class RespuestaRegistroAccion(RegistroConsultado, RespuestaAccion):
-    """Estado del registro tras entregar, responder u omitir; nunca lleva clasificaciones."""
-    # Solo en la respuesta que cierra el registro: ítems que quedaron poco desarrollados.
-    items_por_ampliar: list[str] | None = None
+    """Estado del registro tras entregar, responder, omitir o editar; nunca lleva clasificaciones."""

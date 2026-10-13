@@ -47,6 +47,14 @@ def omitir(cliente, item, cuenta='est-ana', esperado=200):
                  {**accion(cuenta), 'item': item}, esperado)
 
 
+def por_ampliar(respuesta):
+    return [i['item'] for i in respuesta['items_por_ampliar']]
+
+
+def reflexivas(respuesta):
+    return eventos(respuesta).count(('RESPUESTA_REFLEXIVA', None))
+
+
 def pendiente(respuesta):
     """(ítem, orden, pregunta) de la pregunta abierta, o None si no hay."""
     for r in respuesta['respuestas']:
@@ -84,7 +92,8 @@ def test_todo_adecuado_completa_el_registro_y_abre_la_mision_adicional(cliente, 
     assert respuesta['estado'] == 'COMPLETADA' and respuesta['items_por_ampliar'] == []
     assert {r['estado'] for r in respuesta['respuestas']} == {'FINAL'}
     assert eventos(respuesta)[:2] == [('COMPLETA_ACTIVIDAD', 't-expectativas'), ('COMPLETA_BLOQUE', 'T1')]
-    assert eventos(respuesta).count(('RESPUESTA_REFLEXIVA', None)) == 3
+    # B04: ser adecuada al inicio no es una respuesta reflexiva.
+    assert reflexivas(respuesta) == 0
     assert eventos(respuesta)[-1] == ('REGISTRO_ADECUADO', 't-expectativas')
     assert 'R-t-adicional' in {d['regla'] for d in respuesta['nuevos_desbloqueos']}
     assert evaluador(aplicacion).llamadas_entrega == 1 and evaluador(aplicacion).llamadas_seguimiento == 0
@@ -134,8 +143,10 @@ def test_la_pregunta_se_repite_en_el_mismo_item_y_nunca_hay_una_tercera(cliente,
     segunda = responder(cliente, 't-exp-ruta', 'Porque sí [vaga]')
     assert pendiente(segunda)[:2] == ('t-exp-ruta', 2)
     cierre = responder(cliente, 't-exp-ruta', 'Sigo sin saber [vaga]')
+    # Ampliar sin quedar adecuada no es una respuesta reflexiva.
+    assert reflexivas(segunda) == reflexivas(cierre) == 0
     assert pendiente(cierre) is None and cierre['estado'] == 'COMPLETADA'
-    assert cierre['items_por_ampliar'] == ['t-exp-ruta', 't-exp-espera']
+    assert por_ampliar(cierre) == ['t-exp-ruta', 't-exp-espera']
     assert ('REGISTRO_ADECUADO', 't-expectativas') not in eventos(cierre)
     assert sesion.scalar(select(m.TurnoSeguimiento.id).join(m.RespuestaRegistro).join(m.ItemRegistro).where(
         m.ItemRegistro.codigo == 't-exp-espera')) is None
@@ -154,11 +165,15 @@ def test_si_el_item_queda_adecuado_la_pregunta_pasa_al_siguiente_por_orden(clien
     item, orden, pregunta = pendiente(segunda)
     # `[falta:RAZON]` deja faltando solo C2, así que la base es la repregunta de RAZON.
     assert (item, orden, pregunta) == ('t-exp-espera', 1, 'Sobre lo que contaste: ¿Por qué lo piensas así?')
+    # Responder un turno que deja adecuada la respuesta la vuelve reflexiva, aunque el registro siga abierto.
+    assert eventos(segunda) == [('RESPUESTA_REFLEXIVA', None)]
     cierre = responder(cliente, 't-exp-espera', 'Porque me quieren')
+    assert reflexivas(cierre) == 1
     assert cierre['estado'] == 'COMPLETADA' and cierre['items_por_ampliar'] == []
     assert ('REGISTRO_ADECUADO', 't-expectativas') in eventos(cierre)
     respuesta, evaluaciones = respuestas_bd(sesion, 't-exp-ruta')
     assert respuesta.clasificacion_inicial == 'POCO_DESARROLLADA' and respuesta.ampliada
+    assert respuesta.reflexiva_registrada
     assert evaluaciones[-1].clasificacion == 'ADECUADA'
     assert respuesta.texto_consolidado == f'{CORTO} [vaga]\n\nPorque me gusta la práctica'
 
@@ -190,7 +205,7 @@ def test_omitir_cierra_sin_registro_adecuado_y_deja_el_turno_sin_respuesta(clien
     pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
           {**accion(), 'item': 't-exp-ruta', 'texto': 'A medias', 'opciones': []})
     cierre = omitir(cliente, 't-exp-ruta')
-    assert cierre['estado'] == 'COMPLETADA' and cierre['items_por_ampliar'] == ['t-exp-ruta']
+    assert cierre['estado'] == 'COMPLETADA' and por_ampliar(cierre) == ['t-exp-ruta']
     assert ('REGISTRO_ADECUADO', 't-expectativas') not in eventos(cierre)
     assert ('COMPLETA_ACTIVIDAD', 't-expectativas') in eventos(cierre)
     ruta = next(r for r in cierre['respuestas'] if r['item'] == 't-exp-ruta')
@@ -211,7 +226,7 @@ def test_llm_caido_con_items_cortos_solo_dos_reciben_la_generica(cliente, aplica
     assert pendiente(segunda) == ('t-exp-apoyo', 1, '¿Podrías contarme un poco más?')
     assert evaluador(aplicacion).llamadas_seguimiento == 0
     cierre = omitir(cliente, 't-exp-apoyo')
-    assert cierre['items_por_ampliar'] == ['t-exp-apoyo', 't-exp-espera']
+    assert por_ampliar(cierre) == ['t-exp-apoyo', 't-exp-espera']
     assert ('REGISTRO_ADECUADO', 't-expectativas') not in eventos(cierre)
     respuesta, evaluaciones = respuestas_bd(sesion, 't-exp-ruta')
     assert evaluaciones[-1].clasificacion == 'NO_EVALUADA'

@@ -1,21 +1,24 @@
-"""Registro con entrega y seguimiento (B03); lectura y escritura separadas de la evaluación."""
+"""Registro con entrega, seguimiento y edición; lectura y escritura separadas de la evaluación.
+
+Cada edición es un nuevo intento (B04): el mismo flujo de la entrega, con su propio tope de preguntas.
+"""
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import insert, select, update
+from sqlalchemy import exists, insert, select, update
 
 from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import MAXIMO_SEGUIMIENTOS_POR_REGISTRO
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, Bloque, Cuenta, EstadoProgreso, EvaluacionRespuesta, ProgresoActividad,
+    Actividad, Bloque, Cuenta, EstadoProgreso, EvaluacionRespuesta, EventoUso, ProgresoActividad,
     RespuestaRegistro, Rol, TipoEventoUso, TipoObjetivo, TurnoSeguimiento,
 )
 from app.models.enums import ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion
 from app.schemas.registro import (
-    EstadoItemRegistro, MensajePreguntaRegistro, MensajeRespuestaRegistro, OpcionElegida, RespuestaRegistroAccion,
-    RespuestaRegistroPublica,
+    EstadoItemRegistro, ItemPorAmpliar, MensajePreguntaRegistro, MensajeRespuestaRegistro, OpcionElegida,
+    RespuestaRegistroAccion, RespuestaRegistroPublica,
 )
 from app.services.actividades import completar_progreso
 from app.services.comun import (
@@ -69,6 +72,7 @@ def textos_elegidos(sesion, item, elegidas):
 @dataclass(frozen=True, slots=True)
 class TurnoLeido:
     id: int
+    intento: int
     orden: int
     pregunta: str
     criterios_objetivo: tuple[str, ...]
@@ -97,8 +101,24 @@ class RegistroLeido:
         return any(r.clasificacion_inicial is not None for r in self.respuestas.values())
 
     @property
-    def total_turnos(self):
-        return sum(len(turnos) for turnos in self.turnos.values())
+    def intento_vigente(self):
+        return max((r.intento for r in self.respuestas.values()), default=1)
+
+    @property
+    def pendiente(self):
+        return any(r.estado == EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO for r in self.respuestas.values())
+
+    @property
+    def cerrado(self):
+        return (self.progreso is not None and self.progreso.estado == EstadoProgreso.COMPLETADA
+                and not self.pendiente)
+
+    def turnos_vigentes(self, respuesta):
+        """Turnos del intento en que se respondió por última vez; los anteriores no se muestran."""
+        return tuple(t for t in self.turnos.get(respuesta.id, ()) if t.intento == respuesta.intento)
+
+    def turnos_del_intento(self, intento):
+        return sum(1 for turnos in self.turnos.values() for t in turnos if t.intento == intento)
 
     def ultima_evaluacion(self, respuesta):
         evaluaciones = self.evaluaciones.get(respuesta.id, ())
@@ -108,6 +128,12 @@ class RegistroLeido:
         ultima = self.ultima_evaluacion(respuesta)
         return ultima.clasificacion if ultima is not None else None
 
+    def por_ampliar(self, items):
+        """Ítems que quedaron poco desarrollados, con la pregunta de su evaluación vigente como pista."""
+        return [ItemPorAmpliar(item=item.codigo, pista=self.ultima_evaluacion(self.respuestas[item.id]).pregunta)
+                for item in items if item.id in self.respuestas and self.clasificacion_vigente(
+                    self.respuestas[item.id]) == ClasificacionRespuesta.POCO_DESARROLLADA]
+
 
 def leer_registro(sesion, cuenta, actividad):
     # Una lectura para progreso, respuestas y turnos, y otra para las evaluaciones. Relee las filas
@@ -116,7 +142,7 @@ def leer_registro(sesion, cuenta, actividad):
         RespuestaRegistro, RespuestaRegistro.progreso_id == ProgresoActividad.id).outerjoin(
         TurnoSeguimiento, TurnoSeguimiento.respuesta_id == RespuestaRegistro.id).where(
         ProgresoActividad.cuenta_id == cuenta.id, ProgresoActividad.actividad_id == actividad.id,
-    ).order_by(TurnoSeguimiento.orden).execution_options(populate_existing=True)).all()
+    ).order_by(TurnoSeguimiento.intento, TurnoSeguimiento.orden).execution_options(populate_existing=True)).all()
     respuestas, turnos = {}, {}
     for _, respuesta, turno in filas:
         if respuesta is None:
@@ -124,7 +150,7 @@ def leer_registro(sesion, cuenta, actividad):
         respuestas[respuesta.item_registro_id] = respuesta
         if turno is not None:
             turnos.setdefault(respuesta.id, {})[turno.id] = TurnoLeido(
-                turno.id, turno.orden, turno.pregunta, tuple(turno.criterios_objetivo), turno.respuesta,
+                turno.id, turno.intento, turno.orden, turno.pregunta, tuple(turno.criterios_objetivo), turno.respuesta,
                 turno.respondido_en)
     evaluaciones = {}
     if respuestas:
@@ -150,15 +176,22 @@ def conversacion_publica(texto_inicial, turnos):
     return mensajes
 
 
-def registro_publico(registro, items):
-    progreso, respuestas = registro.progreso, registro.respuestas
+def respuesta_publica(registro, item, consolidada):
+    respuesta = registro.respuestas[item.id]
+    # La consolidada es la respuesta final: solo la consulta la muestra, y con el registro cerrado.
+    final = dict(texto_consolidado=respuesta.texto_consolidado) if consolidada and registro.cerrado else {}
+    return RespuestaRegistroPublica(item=item.codigo, estado=respuesta.estado,
+        opciones_elegidas=respuesta.opciones_elegidas,
+        conversacion=conversacion_publica(respuesta.texto_inicial, registro.turnos_vigentes(respuesta)), **final)
+
+
+def registro_publico(registro, items, consolidada=False):
+    progreso = registro.progreso
+    cierre = dict(items_por_ampliar=registro.por_ampliar(items)) if registro.cerrado else {}
     return dict(posicion=progreso.posicion if progreso is not None else None,
                 estado=progreso.estado if progreso is not None else None,
-                respuestas=[RespuestaRegistroPublica(item=item.codigo, estado=respuestas[item.id].estado,
-                    opciones_elegidas=respuestas[item.id].opciones_elegidas,
-                    conversacion=conversacion_publica(respuestas[item.id].texto_inicial,
-                                                      registro.turnos.get(respuestas[item.id].id, ())))
-                    for item in items if item.id in respuestas])
+                respuestas=[respuesta_publica(registro, item, consolidada) for item in items if item.id in registro.respuestas],
+                **cierre)
 
 
 def crear_progreso(sesion, cuenta, actividad):
@@ -233,7 +266,7 @@ def guardar_borrador(sesion, entrada):
             valores.update(texto_inicial=entrada.texto, opciones_elegidas=elegidas)
         comprobar_cambio(sesion, respuesta, valores)
         if pendiente:
-            turno = turno_pendiente(registro.turnos.get(respuesta.id, ()))
+            turno = turno_pendiente(registro.turnos_vigentes(respuesta))
             sesion.execute(update(TurnoSeguimiento.__table__).where(TurnoSeguimiento.id == turno.id)
                            .values(respuesta=entrada.texto))
     return EstadoItemRegistro(item=item.codigo, estado=estado)
@@ -300,7 +333,7 @@ def persistir_entrega(sesion, entrada, lectura, evaluaciones):
             actualizada_en=marca_actualizacion(respuesta.actualizada_en), clasificacion_inicial=evaluacion.clasificacion,
             texto_consolidado=respuesta.texto_inicial, opciones_elegidas=lectura.elecciones[item.codigo]))
         insertar_evaluacion(sesion, respuesta.id, 1, evaluacion, fecha)
-    return avanzar(sesion, cuenta, actividad, items, fecha)
+    return avanzar(sesion, cuenta, actividad, items, fecha, intento=1)
 
 
 def entregar(fabrica_sesiones, entrada, evaluador, **opciones_evaluacion):
@@ -313,45 +346,53 @@ def entregar(fabrica_sesiones, entrada, evaluador, **opciones_evaluacion):
 
 # --- Seguimiento ----------------------------------------------------------------------------
 
-def avanzar(sesion, cuenta, actividad, items, fecha):
-    """Abre la siguiente pregunta o cierra el registro.
+def avanzar(sesion, cuenta, actividad, items, fecha, *, intento, eventos=()):
+    """Abre la siguiente pregunta del intento o cierra el registro.
 
-    La pregunta va al primer ítem, por orden, que sigue poco desarrollado y tiene turnos libres:
-    así se repite en el mismo ítem mientras siga así y, si no, pasa al siguiente.
+    Solo preguntan los ítems respondidos en este intento (en una edición, los editados). La pregunta va al
+    primero, por orden, que sigue poco desarrollado y tiene turnos libres: así se repite en el mismo ítem
+    mientras siga así y, si no, pasa al siguiente. `eventos` son los ya ganados en esta acción.
     """
     registro = leer_registro(sesion, cuenta, actividad)
-    if registro.total_turnos < MAXIMO_SEGUIMIENTOS_POR_REGISTRO:
+    if registro.turnos_del_intento(intento) < MAXIMO_SEGUIMIENTOS_POR_REGISTRO:
         for item in items:
             respuesta = registro.respuestas.get(item.id)
-            if (respuesta is None or registro.clasificacion_vigente(respuesta) != ClasificacionRespuesta.POCO_DESARROLLADA
-                    or len(registro.turnos.get(respuesta.id, ())) >= MAXIMO_SEGUIMIENTOS_POR_REGISTRO):
+            if (respuesta is None or respuesta.intento != intento
+                    or registro.clasificacion_vigente(respuesta) != ClasificacionRespuesta.POCO_DESARROLLADA
+                    or len(registro.turnos_vigentes(respuesta)) >= MAXIMO_SEGUIMIENTOS_POR_REGISTRO):
                 continue
             ultima = registro.ultima_evaluacion(respuesta)
             sesion.execute(update(RespuestaRegistro.__table__).where(RespuestaRegistro.id == respuesta.id).values(
                 estado=EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO,
                 actualizada_en=marca_actualizacion(respuesta.actualizada_en)))
-            sesion.execute(insert(TurnoSeguimiento.__table__), dict(respuesta_id=respuesta.id,
-                orden=len(registro.turnos.get(respuesta.id, ())) + 1, pregunta=ultima.pregunta,
+            sesion.execute(insert(TurnoSeguimiento.__table__), dict(respuesta_id=respuesta.id, intento=intento,
+                orden=len(registro.turnos_vigentes(respuesta)) + 1, pregunta=ultima.pregunta,
                 criterios_objetivo=list(ultima.criterios_faltantes), creado_en=fecha))
+            ganados = responder_con_eventos(sesion, cuenta, list(eventos), fecha)
             return RespuestaRegistroAccion(**registro_publico(leer_registro(sesion, cuenta, actividad), items),
-                                           eventos_registrados=[], nuevos_desbloqueos=[])
-    return cerrar(sesion, cuenta, actividad, items, registro, fecha)
+                                           eventos_registrados=ganados.eventos_registrados,
+                                           nuevos_desbloqueos=ganados.nuevos_desbloqueos)
+    return cerrar(sesion, cuenta, actividad, items, registro, fecha, intento=intento, eventos=eventos)
 
 
-def cerrar(sesion, cuenta, actividad, items, registro, fecha):
-    _, eventos = completar_progreso(sesion, cuenta, actividad)
-    evaluadas = [registro.respuestas[item.id] for item in items if item.id in registro.respuestas
-                 and registro.respuestas[item.id].clasificacion_inicial is not None]
-    eventos += [(TipoEventoUso.RESPUESTA_REFLEXIVA, None) for respuesta in evaluadas
-                if respuesta.clasificacion_inicial == ClasificacionRespuesta.ADECUADA or respuesta.ampliada]
-    por_ampliar = [item.codigo for item in items if item.id in registro.respuestas and registro.clasificacion_vigente(
-        registro.respuestas[item.id]) == ClasificacionRespuesta.POCO_DESARROLLADA]
-    if not por_ampliar:
+def registro_adecuado_emitido(sesion, cuenta, actividad):
+    return sesion.scalar(select(exists().where(
+        EventoUso.cuenta_id == cuenta.id, EventoUso.tipo == TipoEventoUso.REGISTRO_ADECUADO,
+        EventoUso.id_referencia == actividad.id)))
+
+
+def cerrar(sesion, cuenta, actividad, items, registro, fecha, *, intento, eventos=()):
+    """Cierra el intento. Solo la entrega completa la actividad; REGISTRO_ADECUADO, una vez por cuenta."""
+    eventos = list(eventos)
+    if intento == 1:
+        _, completa = completar_progreso(sesion, cuenta, actividad)
+        eventos = completa + eventos
+    if not registro.por_ampliar(items) and not registro_adecuado_emitido(sesion, cuenta, actividad):
         eventos.append((TipoEventoUso.REGISTRO_ADECUADO, actividad.id))
     respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
     return RespuestaRegistroAccion(**registro_publico(leer_registro(sesion, cuenta, actividad), items),
                                    eventos_registrados=respuesta.eventos_registrados,
-                                   nuevos_desbloqueos=respuesta.nuevos_desbloqueos, items_por_ampliar=por_ampliar)
+                                   nuevos_desbloqueos=respuesta.nuevos_desbloqueos)
 
 
 @dataclass(frozen=True, slots=True)
@@ -369,7 +410,7 @@ def pendiente_de(registro, item):
     respuesta = registro.respuestas.get(item.id)
     if respuesta is None or respuesta.estado != EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO:
         raise ErrorAccion("Este ítem no tiene una pregunta de seguimiento pendiente")
-    turnos = registro.turnos.get(respuesta.id, ())
+    turnos = registro.turnos_vigentes(respuesta)
     return respuesta, turnos, turno_pendiente(turnos)
 
 
@@ -384,8 +425,7 @@ def preparar_seguimiento(sesion, entrada):
     criterios = criterios_de(sesion, item)
     conversacion = tuple(TurnoEvaluacion(t.pregunta, entrada.texto if t.id == turno.id else t.respuesta)
                          for t in turnos)
-    otras = tuple(RespuestaOtroItem(otro.consigna, registro.respuestas[otro.id].texto_consolidado
-                                    or registro.respuestas[otro.id].texto_inicial)
+    otras = tuple(RespuestaOtroItem(otro.consigna, registro.respuestas[otro.id].texto_consolidado)
                   for otro in items if otro.id != item.id and otro.id in registro.respuestas
                   and registro.respuestas[otro.id].clasificacion_inicial is not None)
     ultima = registro.ultima_evaluacion(respuesta)
@@ -405,10 +445,16 @@ def persistir_seguimiento(sesion, entrada, lectura, evaluacion):
     fecha = fecha_accion(entrada)
     sesion.execute(update(TurnoSeguimiento.__table__).where(TurnoSeguimiento.id == turno.id)
                    .values(respuesta=entrada.texto, respondido_en=fecha))
+    # Respuesta reflexiva: pasó de poco desarrollada a adecuada gracias a un turno; una vez por respuesta.
+    reflexiva = (not respuesta.reflexiva_registrada
+                 and registro.clasificacion_vigente(respuesta) == ClasificacionRespuesta.POCO_DESARROLLADA
+                 and evaluacion.clasificacion == ClasificacionRespuesta.ADECUADA)
     comprobar_cambio(sesion, respuesta, dict(estado=EstadoRespuestaRegistro.FINAL, ampliada=True,
-        texto_consolidado=evaluacion.consolidada, actualizada_en=marca_actualizacion(respuesta.actualizada_en)))
+        texto_consolidado=evaluacion.consolidada, actualizada_en=marca_actualizacion(respuesta.actualizada_en),
+        reflexiva_registrada=respuesta.reflexiva_registrada or reflexiva))
     insertar_evaluacion(sesion, respuesta.id, len(registro.evaluaciones.get(respuesta.id, ())) + 1, evaluacion, fecha)
-    return avanzar(sesion, cuenta, actividad, items, fecha)
+    return avanzar(sesion, cuenta, actividad, items, fecha, intento=respuesta.intento,
+                   eventos=[(TipoEventoUso.RESPUESTA_REFLEXIVA, None)] if reflexiva else ())
 
 
 def responder_seguimiento(fabrica_sesiones, entrada, evaluador, **opciones_evaluacion):
@@ -431,4 +477,5 @@ def continuar_sin_responder(sesion, entrada):
                                             actualizada_en=marca_actualizacion(respuesta.actualizada_en)))
     if turno.respuesta is not None:
         sesion.execute(update(TurnoSeguimiento.__table__).where(TurnoSeguimiento.id == turno.id).values(respuesta=None))
-    return cerrar(sesion, cuenta, actividad, items, leer_registro(sesion, cuenta, actividad), fecha_accion(entrada))
+    return cerrar(sesion, cuenta, actividad, items, leer_registro(sesion, cuenta, actividad), fecha_accion(entrada),
+                  intento=respuesta.intento)
