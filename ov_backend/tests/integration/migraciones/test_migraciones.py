@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 51
+    assert len(Base.metadata.tables) == 53
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,14 +129,14 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 53
+    assert sql.count('CREATE TABLE ') == 55
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
     assert 'json_type(' not in sql and 'PRAGMA' not in sql
     assert "WHERE origen = 'GUIADA'" in sql
     assert 'WHERE anulado_en IS NULL' in sql
-    assert sql.count('BOOLEAN DEFAULT false') == 10
+    assert sql.count('BOOLEAN DEFAULT false') == 12
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:
         ddl = str(CreateTable(tabla).compile(dialect=dialecto))
@@ -282,8 +282,8 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
                           for tabla in Base.metadata.sorted_tables}
         with pytest.raises(RuntimeError, match='referencias a resultados'):
             command.downgrade(configuracion, '0002')
-        # B07: 0010 baja sin problema antes de que 0009 se detenga; sus tablas ya no están.
-        posteriores = {'tematica', 'actividad_tematica'}
+        # B07: 0011 y 0010 bajan sin problema antes de que 0009 se detenga; sus tablas ya no están.
+        posteriores = {'tematica', 'actividad_tematica', 'salon_instrumento', 'salon_actividad_prioritaria'}
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) - posteriores | {'alembic_version'}
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0009'

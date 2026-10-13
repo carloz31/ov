@@ -28,6 +28,13 @@ ORIENTADORAS_SALONES = (('ori-carmen', '5A', True),)
 # (código, estudiante, apoderado, parentesco)
 VINCULOS = (('VIN-ANA', 'est-ana', 'apo-rosa', 'madre'),)
 
+# Configuración del salón (B07; la orientadora la editará en B14). (salón, instrumento, prioritario, visible al
+# apoderado): un cuestionario prioritario es requisito de T2. El de partida y llegada (COMPARACION) es obligatorio
+# por diseño y no admite la marca de prioritario.
+SALON_INSTRUMENTOS = (('5A', 'TEST-RIASEC', True, False),)
+# (salón, actividad de registro): registros que la orientadora ve destacados en el perfil.
+SALON_ACTIVIDADES_PRIORITARIAS = (('5A', 't-expectativas'),)
+
 # (código, número, nombre, espacio, audiencia)
 BLOQUES = (('T0', 1, 'Inicio', 'MISIONES_CAMPO', 'ESTUDIANTE'),
            ('T1', 2, 'Camino', 'MISIONES_CAMPO', 'ESTUDIANTE'),
@@ -143,8 +150,9 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-T1', 'BLOQUE', 'T1', 'Termina el bloque de inicio para abrir el camino.',
      (('COMPLETA_BLOQUE', 'T0', 'EVENTOS', 1),)),
-    ('R-T2', 'BLOQUE', 'T2', 'Termina el camino y revela tu punto de partida para abrir la decisión.',
-     (('COMPLETA_BLOQUE', 'T1', 'EVENTOS', 1), ('REVELA_RESULTADO', 'APL-PARTIDA', 'EVENTOS', 1))),
+    ('R-T2', 'BLOQUE', 'T2',
+     'Termina el camino y revela tu punto de partida y los cuestionarios prioritarios de tu salón para abrir la decisión.',
+     (('COMPLETA_BLOQUE', 'T1', 'EVENTOS', 1), ('REVELA_RESULTADO', None, 'EVENTOS', 1))),
     ('R-t-adicional', 'ACTIVIDAD', 't-adicional', 'Desarrolla todas tus respuestas del registro de expectativas.',
      (('REGISTRO_ADECUADO', 't-expectativas', 'EVENTOS', 1),)),
     ('R-t-eco', 'ACTIVIDAD', 't-eco', 'Completa el registro de expectativas para retomarlo.',
@@ -183,6 +191,10 @@ REGLAS = (
     ('R-SEC-CONVERSACIONES', 'SECCION', 'CONVERSACIONES', 'Completa tus actividades para conversar en familia.',
      (('COMPLETA_BLOQUE', 'FAMILIA', 'EVENTOS', 1),)),
 )
+
+
+# Reglas con evaluador especial (`app/services/motor/evaluadores.py`): {regla: evaluador}.
+EVALUADORES_REGLAS = {'R-T2': 'instrumentos_prioritarios'}
 
 
 def contenido(codigo: str) -> str:
@@ -224,7 +236,8 @@ def _cargar_estructura(sesion):
             descripcion=propiedades.get('descripcion'))
     sesion.add_all(actividades.values())
     sesion.flush()
-    return {'BLOQUE': bloques, 'ACTIVIDAD': actividades, 'FICHA': fichas, 'INSIGNIA': insignias, 'NIVEL': niveles}
+    return {'BLOQUE': bloques, 'ACTIVIDAD': actividades, 'FICHA': fichas, 'INSIGNIA': insignias, 'NIVEL': niveles,
+            'SALON': salones}
 
 
 def _unir_instrumentos(sesion, actividades, base: fijos.Fijos):
@@ -366,6 +379,24 @@ def _insertar_en_orden(sesion, items, referencias):
             raise ValueError('Las referencias y las elecciones por referencia forman un ciclo')
 
 
+def _cargar_salones(sesion, salones, actividades):
+    instrumentos = {i.codigo: i for i in sesion.scalars(select(modelos.Instrumento))}
+    for salon, instrumento, prioritario, _ in SALON_INSTRUMENTOS:
+        if salon not in salones or instrumento not in instrumentos:
+            raise ValueError(f'La configuración de {salon} apunta a un salón o instrumento inexistente: {instrumento}')
+        if prioritario and instrumentos[instrumento].tipo_resultado == modelos.TipoResultado.COMPARACION:
+            raise ValueError(f'{instrumento} es obligatorio por diseño y no admite la marca de prioritario')
+    for salon, actividad in SALON_ACTIVIDADES_PRIORITARIAS:
+        if salon not in salones or actividad not in actividades:
+            raise ValueError(f'El prioritario de {salon} apunta a un salón o actividad inexistente: {actividad}')
+        if actividades[actividad].tipo != modelos.TipoActividad.REGISTRO:
+            raise ValueError(f'El prioritario {actividad} de {salon} no es una actividad de registro')
+    sesion.add_all(modelos.SalonInstrumento(salon_id=salones[s].id, instrumento_id=instrumentos[i].id,
+                                            es_prioritario=p, visible_apoderado=v) for s, i, p, v in SALON_INSTRUMENTOS)
+    sesion.add_all(modelos.SalonActividadPrioritaria(salon_id=salones[s].id, actividad_id=actividades[a].id)
+                   for s, a in SALON_ACTIVIDADES_PRIORITARIAS)
+
+
 def _cargar_reglas(sesion, objetivos):
     referencias = {'COMPLETA_ACTIVIDAD': objetivos['ACTIVIDAD'], 'COMPLETA_BLOQUE': objetivos['BLOQUE'],
                    'REGISTRO_ADECUADO': objetivos['ACTIVIDAD'], 'REVELA_RESULTADO': objetivos['APLICACION']}
@@ -374,7 +405,8 @@ def _cargar_reglas(sesion, objetivos):
         if not mensaje.strip():
             raise ValueError(f'La regla {codigo} no tiene mensaje de bloqueo')
         regla = modelos.ReglaDesbloqueo(codigo=codigo, nombre=f'Desbloquear {objetivo}', mensaje_bloqueo=mensaje,
-            tipo_objetivo=modelos.TipoObjetivo(tipo), id_objetivo=objetivos[tipo][objetivo].id)
+            tipo_objetivo=modelos.TipoObjetivo(tipo), id_objetivo=objetivos[tipo][objetivo].id,
+            evaluador_especial=EVALUADORES_REGLAS.get(codigo))
         regla.condiciones = [modelos.CondicionDesbloqueo(tipo_evento=modelos.TipoEventoUso(evento),
             id_referencia=None if referencia is None else referencias[evento][referencia].id,
             tipo_conteo=modelos.TipoConteo(conteo), cantidad_minima=cantidad)
@@ -389,6 +421,7 @@ def cargar(sesion: Session) -> None:
     _unir_instrumentos(sesion, objetivos['ACTIVIDAD'], base)
     _unir_tematicas(sesion, objetivos['ACTIVIDAD'], base)
     _cargar_registros(sesion, objetivos['ACTIVIDAD'], base)
+    _cargar_salones(sesion, objetivos.pop('SALON'), objetivos['ACTIVIDAD'])
     _cargar_reglas(sesion, objetivos)
     sesion.flush()
     validar_distribucion_items(sesion)

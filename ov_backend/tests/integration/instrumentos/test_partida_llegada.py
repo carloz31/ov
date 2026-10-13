@@ -2,7 +2,7 @@
 
 import json
 
-from soporte_ruta import FECHA, avanzar, completar, pedir, responder, revelar
+from soporte_ruta import FECHA, MISIONES_INTERESES, avanzar, completar, pedir, responder, revelar
 
 
 INSTRUMENTO = 'TEST-PARTIDA-LLEGADA'
@@ -28,9 +28,14 @@ def sin_numeros(datos):
 
 
 def abrir_llegada(cliente):
-    """Partida toda en «Bastante de acuerdo» (3, la de `completar`); T1 cerrado con t-expectativas (temáticas A y B)."""
+    """Partida toda en «Bastante de acuerdo» (3, la de `completar`); T1 cerrado con t-expectativas (A y B) y la misión de intereses (B) completada."""
     avanzar(cliente)
     revelar(cliente, instrumento=INSTRUMENTO, aplicacion='APL-PARTIDA')
+    # B07 · F3: el 5A tiene el RIASEC como prioritario, requisito de T2.
+    for mision in MISIONES_INTERESES:
+        responder(cliente, mision)
+        completar(cliente, mision)
+    revelar(cliente)
 
 
 def test_partida_se_revela_con_zonas_en_palabras(cliente):
@@ -75,7 +80,7 @@ def test_comparacion_por_dimension_con_items_y_actividades_de_la_tematica(client
     assert (comparacion['partida'], comparacion['llegada']) == ('APL-PARTIDA', 'APL-LLEGADA')
     assert [(d['codigo'], d['tematica'], d['zona_partida'], d['zona_llegada'], d['actividades_completadas'])
             for d in comparacion['dimensiones']] == [
-        ('AUTO-A', 'A', 'EN_CAMINO', 'EN_CAMINO', 1), ('AUTO-B', 'B', 'EN_CAMINO', 'FUERTE', 1),
+        ('AUTO-A', 'A', 'EN_CAMINO', 'EN_CAMINO', 1), ('AUTO-B', 'B', 'EN_CAMINO', 'FUERTE', 2),
         ('AUTO-C', 'C', 'EN_CAMINO', 'FUERTE', 0), ('AUTO-D', 'D', 'EN_CAMINO', 'FUERTE', 0),
         ('AUTO-E', 'E', 'EN_CAMINO', 'FUERTE', 0)]
     assert [len(d['items']) for d in comparacion['dimensiones']] == [4, 4, 4, 4, 3]

@@ -49,6 +49,17 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
 
 - `carreras_de_3_familias`: los eventos VISTA_CARRERA apuntan a carreras de al menos `parametro` familias distintas.
 - `misiones_camino_sin_inicio`: la cuenta completó al menos `parametro` actividades distintas del bloque CAMINO, sin contar la de orden 1.
+- `instrumentos_prioritarios` (sin parámetro, B07): la cuenta debe tener resultado vigente (revelado) en dos casos:
+  - la aplicación ENTRADA (la partida) de todo instrumento COMPARACION;
+  - todas las aplicaciones de cada instrumento que `salon_instrumento` marca `es_prioritario` en su salón.
+
+  Un COMPARACION marcado como prioritario se ignora: la partida es obligatoria por diseño y la llegada ocurre después. Sin salón o sin prioritarios, solo exige la partida. Hace una consulta a los resultados vigentes y lee la configuración de la caché de definiciones.
+
+**Configuración del salón** (B07; la orientadora la editará en B14):
+- `salon_actividad_prioritaria`: los registros que ella ve destacados en el perfil.
+- `salon_instrumento`: por cuestionario, `es_prioritario` (requisito de T2, la «decisión») y `visible_apoderado`.
+
+Son catálogo, como las temáticas. La carga rechaza un COMPARACION prioritario y una actividad prioritaria que no sea de registro.
 
 Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
 

@@ -1,9 +1,13 @@
 from collections.abc import Callable
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
-from app.models import Actividad, Bloque, Carrera, Cuenta, ReglaDesbloqueo, TipoEventoUso
+from app.models import (
+    Actividad, Aplicacion, Bloque, Carrera, Cuenta, Instrumento, MomentoAplicacion, ReglaDesbloqueo,
+    ResultadoInstrumento, SalonInstrumento, TipoEventoUso, TipoResultado,
+)
 
 
 @usar_contexto
@@ -50,7 +54,31 @@ def misiones_camino_sin_inicio(sesion: Session, cuenta: Cuenta) -> bool:
     return len(completadas) >= minimo
 
 
+@usar_contexto
+def instrumentos_prioritarios(sesion: Session, cuenta: Cuenta) -> bool:
+    """B07: la partida (ENTRADA de todo COMPARACION) y los cuestionarios prioritarios del salón, revelados.
+
+    La partida es obligatoria por diseño; la marca de prioritario no aplica a un COMPARACION. Un prioritario
+    cuenta como revelado con resultado vigente en todas sus aplicaciones."""
+    definiciones = contexto(sesion).definiciones
+    instrumentos = {i.id: i for i in definiciones.listar(Instrumento)}
+    prioritarios = {fila.instrumento_id for fila in definiciones.listar(SalonInstrumento)
+                    if fila.salon_id == cuenta.salon_id and fila.es_prioritario
+                    and instrumentos[fila.instrumento_id].tipo_resultado != TipoResultado.COMPARACION}
+    requeridas = {aplicacion.id for aplicacion in definiciones.listar(Aplicacion)
+                  if aplicacion.instrumento_id in prioritarios
+                  or (instrumentos[aplicacion.instrumento_id].tipo_resultado == TipoResultado.COMPARACION
+                      and aplicacion.momento == MomentoAplicacion.ENTRADA)}
+    if not requeridas:
+        return True
+    vigentes = set(sesion.scalars(select(ResultadoInstrumento.aplicacion_id).where(
+        ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.anulado_en.is_(None),
+        ResultadoInstrumento.aplicacion_id.in_(requeridas))))
+    return requeridas <= vigentes
+
+
 EVALUADORES: dict[str, Callable[[Session, Cuenta], bool]] = {
     "carreras_de_3_familias": carreras_de_3_familias,
     "misiones_camino_sin_inicio": misiones_camino_sin_inicio,
+    "instrumentos_prioritarios": instrumentos_prioritarios,
 }

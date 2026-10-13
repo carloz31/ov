@@ -20,3 +20,10 @@
   - `/comparacion` reemplaza su respuesta por ítem: queda por dimensión, con ítems que traen la etiqueta elegida en cada momento y `cambio`, y sin números, según lo indicó el usuario.
   - La comparación exige las dos aplicaciones **reveladas**, no solo completas.
 - **Pruebas r27 y r28 adaptadas:** el instrumento mínimo de COMPARACION no tiene dimensiones, así que no se revela, y su comparación responde 409. La comparación completa se prueba con `TEST-PARTIDA-LLEGADA` en `test_partida_llegada.py`.
+- **Modelo (F3):** se agregan `salon_actividad_prioritaria` y `salon_instrumento` (con `es_prioritario` y `visible_apoderado`), migración 0011, según el plan aprobado. Son catálogo y quedan en la caché de definiciones.
+- **Evaluador `instrumentos_prioritarios`:** exige la partida revelada y los prioritarios del salón revelados en todas sus aplicaciones. Ignora un COMPARACION marcado como prioritario, según lo indicó el usuario, y la carga lo rechaza.
+- **Evaluador en la carga:** el evaluador de cada regla de `ruta` va en `EVALUADORES_REGLAS = {regla: evaluador}`, para no cambiar la forma de las tuplas de `REGLAS`, que leen otras pruebas.
+- **Pruebas adaptadas (F3):**
+  - conteos de tablas y de `BOOLEAN DEFAULT false`;
+  - las tablas posteriores a 0009 en la prueba de downgrade;
+  - `test_partida_llegada`, que ahora revela el RIASEC prioritario del 5A antes de abrir T2.

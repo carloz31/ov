@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, Text, UniqueConstraint, true
+from sqlalchemy import ForeignKey, Text, UniqueConstraint, false, true
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, enumerado
@@ -22,6 +22,22 @@ class Cuenta(Base):
     correo: Mapped[str | None] = mapped_column(unique=True)
     contrasena_hash: Mapped[str | None]
     activa: Mapped[bool] = mapped_column(default=True, server_default=true())
+
+
+class SalonActividadPrioritaria(Base):
+    """Registro que la orientadora marca para su salón, para verlo destacado en el perfil (B07; se configura en B14)."""
+    __tablename__ = "salon_actividad_prioritaria"
+    salon_id: Mapped[int] = mapped_column(ForeignKey("salon.id"), primary_key=True)
+    actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"), primary_key=True)
+
+
+class SalonInstrumento(Base):
+    """Configuración de un cuestionario en el salón: prioritario (requisito de T2) y visible al apoderado."""
+    __tablename__ = "salon_instrumento"
+    salon_id: Mapped[int] = mapped_column(ForeignKey("salon.id"), primary_key=True)
+    instrumento_id: Mapped[int] = mapped_column(ForeignKey("instrumento.id"), primary_key=True)
+    es_prioritario: Mapped[bool] = mapped_column(default=False, server_default=false())
+    visible_apoderado: Mapped[bool] = mapped_column(default=False, server_default=false())
 
 
 class OrientadoraSalon(Base):

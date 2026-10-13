@@ -15,7 +15,7 @@ _MODELOS_POR_MODULO = {
         'Base',
     ),
     'app.models.cuentas': (
-        'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar',
+        'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
     ),
     'app.models.contenido': (
         'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
@@ -60,7 +60,8 @@ __all__ = [
     'Base', 'Rol', 'Espacio', 'Audiencia', 'TipoActividad', 'Visibilidad', 'EstadoProgreso',
     'TipoEventoUso', 'NivelAjuste', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
-    'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'Bloque',
+    'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
+    'SalonInstrumento', 'Bloque',
     'Actividad', 'Tematica', 'ActividadTematica', 'Seccion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
     'ProgresoActividad', 'ResultadoCaso', 'EntradaDiario', 'CheckIn', 'Entrevista',

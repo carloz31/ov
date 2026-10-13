@@ -19,7 +19,7 @@ TABLAS_ESTADO = {
 def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
     inspector = inspect(aplicacion.state.motor_bd)
     esperadas = {
-        "salon", "cuenta", "orientadora_salon", "vinculo_familiar", "bloque", "actividad", "tematica", "actividad_tematica", "seccion", "ficha",
+        "salon", "salon_instrumento", "salon_actividad_prioritaria", "cuenta", "orientadora_salon", "vinculo_familiar", "bloque", "actividad", "tematica", "actividad_tematica", "seccion", "ficha",
         "testimonio",
         "pregunta_diario", "conversacion", "insignia", "nivel", "familia_carrera",
         "carrera", "regla_desbloqueo", "condicion_desbloqueo",
@@ -31,7 +31,7 @@ def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
         "lista_opciones", "opcion_lista", "item_registro", "criterio_completitud", "referencia",
     }
     assert set(inspector.get_table_names()) == esperadas
-    assert len(esperadas) == 51
+    assert len(esperadas) == 53
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]
