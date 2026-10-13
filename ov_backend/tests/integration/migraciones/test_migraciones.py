@@ -265,8 +265,8 @@ def test_migracion_0003_admite_familia_conserva_datos_y_rechaza_otros_espacios(t
         motor.dispose()
 
 
-# B05: la ruta tiene un ítem con elección por referencia, así que el primer downgrade que falla es el de 0008
-# (antes, desde B03, era el de 0005 por REGISTRO_ADECUADO).
+# B06: la ruta tiene referencias a una aplicación, así que el primer downgrade que falla es el de 0009
+# (antes, desde B05, era el de 0008 por la elección por referencia, y desde B03, el de 0005).
 def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(base_migrada):
     url, configuracion, motor = base_migrada
     preparar_base(url, 'ruta')
@@ -280,11 +280,11 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         with motor.connect() as conexion:
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).mappings().all()
                           for tabla in Base.metadata.sorted_tables}
-        with pytest.raises(RuntimeError, match='elección por referencia'):
+        with pytest.raises(RuntimeError, match='referencias a resultados'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0008'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0009'
             for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]

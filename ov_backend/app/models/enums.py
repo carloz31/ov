@@ -53,6 +53,7 @@ class TipoEventoUso(StrEnum):
     FORMA_CREW = "FORMA_CREW"
     VENCE_DESAFIO_INTACTO = "VENCE_DESAFIO_INTACTO"
     REGISTRO_ADECUADO = "REGISTRO_ADECUADO"
+    REVELA_RESULTADO = "REVELA_RESULTADO"
 
 
 class NivelAjuste(StrEnum):
@@ -123,6 +124,8 @@ class TipoReferencia(StrEnum):
     """Catálogo cerrado de lo que una actividad o una pregunta de diario lee de la cuenta (RNF-20)."""
     ELECCION = "ELECCION"
     TEXTO = "TEXTO"
+    RESULTADO = "RESULTADO"
+    COINCIDENCIAS = "COINCIDENCIAS"
 
 
 class EstadoReferencia(StrEnum):

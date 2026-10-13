@@ -78,6 +78,7 @@ def test_items_listas_y_criterios_cargados(tmp_path):
                                    .outerjoin(m.ListaOpciones, m.ListaOpciones.id == m.ItemRegistro.lista_id)
                                    .order_by(m.Actividad.codigo, m.ItemRegistro.orden)).all()
             assert items == [
+                ('t-contraste', 't-con-contraste', 1, None, None),
                 ('t-eco', 't-eco-ruta', 1, None, None),
                 ('t-eco', 't-eco-espera', 2, None, None),
                 ('t-expectativas', 't-exp-ruta', 1, 'RUTAS_DESPUES_COLEGIO', True),

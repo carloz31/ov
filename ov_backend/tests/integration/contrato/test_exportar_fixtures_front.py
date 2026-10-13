@@ -146,7 +146,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     ciudad = next(b for b in datos['actividades-ciudad'] if b['codigo'] == 'CIUDAD')
     assert ciudad['estado'] == 'DISPONIBLE'
     assert [(a['codigo'], a['estado']) for a in ciudad['actividades']] == [
-        ('t-mision-intereses', 'DISPONIBLE'), ('t-mision-intereses-2', 'BLOQUEADA'), ('t-caso', 'BLOQUEADA')]
+        ('t-mision-intereses', 'DISPONIBLE'), ('t-mision-intereses-2', 'BLOQUEADA'), ('t-caso', 'BLOQUEADA'),
+        ('t-contraste', 'BLOQUEADA')]
     assert next(b for b in datos['actividades-inicial'] if b['codigo'] == 'CIUDAD')['bloqueo'][0]['mensaje']
     items = datos['items-t-mision-intereses']
     assert [i['codigo'] for i in items] == [f'RIASEC-{n:02}' for n in range(1, 31)]

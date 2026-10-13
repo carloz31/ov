@@ -46,6 +46,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 60, 10),
+               ('t-contraste', 'CIUDAD', 'Registro de contraste de intereses', 'REGISTRO', None, 10),
                ('t-apo-1', 'FAMILIA', 'Primera actividad del apoderado', 'INFORMATIVA', None, 10),
                ('t-apo-carta', 'FAMILIA', 'Carta del apoderado', 'INFORMATIVA', None, 10))
 
@@ -91,13 +92,19 @@ ITEMS_REGISTRO = (
      ('ref', 't-ref-rutas', 1, 1, False), (('C1', 'RAZON', 'Por qué esa ruta le atrae más'),)),
     ('t-eco', 't-eco-espera', 'Lo que esperan', 'Antes escribiste lo que esperan de ti. ¿Sigues pensando lo mismo?',
      None, ()),
+    ('t-contraste', 't-con-contraste', 'Contraste',
+     '¿En qué se parece tu resultado a lo que pensabas de ti? ¿En qué se diferencia?', None,
+     (('C1', 'CONTRASTE', 'Compara el resultado con lo que pensaba antes'),)),
 )
 
-# Referencias: (código, (tipo de dueño, dueño), tipo, ítem fuente). Dueño: ('ACTIVIDAD', código) o
+# Referencias: (código, (tipo de dueño, dueño), tipo, fuente). Dueño: ('ACTIVIDAD', código) o
 # ('PREGUNTA_DIARIO', código). El tipo es uno de `TipoReferencia`; ELECCION y TEXTO leen un ítem de registro
-# de otra actividad.
+# de otra actividad, y RESULTADO y COINCIDENCIAS, el resultado revelado de una aplicación.
 REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera'),
-               ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-exp-ruta'))
+               ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-exp-ruta'),
+               ('t-ref-resultado', ('ACTIVIDAD', 't-contraste'), 'RESULTADO', 'APL-RIASEC'),
+               ('t-ref-coincidencias', ('ACTIVIDAD', 't-contraste'), 'COINCIDENCIAS', 'APL-RIASEC'))
+FUENTE_APLICACION = ('RESULTADO', 'COINCIDENCIAS')
 
 # Lo que cambia los valores por defecto de un ítem (obligatorio, sin longitud mínima).
 PROPIEDADES_ITEMS = {'t-val-breve': {'min_caracteres': 40}}
@@ -138,6 +145,8 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-mision-intereses', 'EVENTOS', 1),)),
     ('R-t-caso', 'ACTIVIDAD', 't-caso', 'Completa las dos misiones de intereses.',
      (('COMPLETA_ACTIVIDAD', 't-mision-intereses-2', 'EVENTOS', 1),)),
+    ('R-t-contraste', 'ACTIVIDAD', 't-contraste', 'Revela tu resultado de intereses para contrastarlo.',
+     (('REVELA_RESULTADO', 'APL-RIASEC', 'EVENTOS', 1),)),
     ('R-t-ficha', 'FICHA', 't-ficha', 'Completa el inicio para obtener esta ficha.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-t-ficha-apo', 'FICHA', 't-ficha-apo', 'Completa tu primera actividad para obtener esta ficha.',
@@ -259,7 +268,7 @@ def _cargar_registros(sesion, actividades, base: fijos.Fijos):
             repregunta_generica=REPREGUNTA_GENERICA, lista_id=None if lista is None else cargadas[lista].id,
             eleccion_minima=minima, eleccion_maxima=maxima, eleccion_ordenada=ordenada, permite_otra=otra)
         items[codigo] = (item, criterios, referencia)
-    referencias = _validar_referencias(sesion, actividades, items)
+    referencias = _validar_referencias(sesion, actividades, items, base)
     _insertar_en_orden(sesion, items, referencias)
     sesion.add_all(modelos.CriterioCompletitud(item_registro_id=item.id, codigo=c, tipo=modelos.TipoCriterio(tipo),
                                                descripcion=d, repregunta=fijos.REPREGUNTAS_CRITERIO[tipo], orden=orden)
@@ -267,8 +276,11 @@ def _cargar_registros(sesion, actividades, base: fijos.Fijos):
                    for orden, (c, tipo, d) in enumerate(criterios, start=1))
 
 
-def _validar_referencias(sesion, actividades, items):
-    """Valida `REFERENCIAS` y las elecciones por referencia; devuelve {código: (referencia, ítem fuente)}."""
+def _validar_referencias(sesion, actividades, items, base: fijos.Fijos):
+    """Valida `REFERENCIAS` y las elecciones por referencia; devuelve {código: (referencia, ítem fuente)}.
+
+    Las referencias que leen una aplicación llevan ya su `aplicacion_id` y no tienen ítem fuente (None)."""
+    instrumentos = {i.id: i for i in sesion.scalars(select(modelos.Instrumento))}
     preguntas = {p.codigo: p for p in sesion.scalars(select(modelos.PreguntaDiario))}
     referencias = {}
     for codigo, (tipo_dueno, dueno), tipo, fuente in REFERENCIAS:
@@ -280,6 +292,15 @@ def _validar_referencias(sesion, actividades, items):
             dueno_id = dict(pregunta_diario_id=preguntas[dueno].id)
         else:
             raise ValueError(f'La referencia {codigo} tiene un dueño inexistente: {tipo_dueno} {dueno}')
+        if tipo in FUENTE_APLICACION:
+            aplicacion = base.aplicaciones.get(fuente)
+            if aplicacion is None:
+                raise ValueError(f'La referencia {codigo} lee la aplicación inexistente {fuente}')
+            if instrumentos[aplicacion.instrumento_id].tipo_resultado == modelos.TipoResultado.COMPARACION:
+                raise ValueError(f'La referencia {codigo} lee {fuente}, que no genera resultado')
+            referencias[codigo] = (modelos.Referencia(codigo=codigo, tipo=modelos.TipoReferencia(tipo),
+                                                      aplicacion_id=aplicacion.id, **dueno_id), None)
+            continue
         if fuente not in items:
             raise ValueError(f'La referencia {codigo} lee el ítem inexistente {fuente}')
         item_fuente = items[fuente][0]
@@ -317,7 +338,8 @@ def _insertar_en_orden(sesion, items, referencias):
         listas = [codigo for codigo, (_, fuente) in referencias_pendientes.items() if fuente not in items_pendientes]
         for codigo in listas:
             referencia, fuente = referencias_pendientes.pop(codigo)
-            referencia.item_registro_id = items[fuente][0].id
+            if fuente is not None:
+                referencia.item_registro_id = items[fuente][0].id
             sesion.add(referencia)
         sesion.flush()
         if not listos and not listas:
@@ -326,7 +348,7 @@ def _insertar_en_orden(sesion, items, referencias):
 
 def _cargar_reglas(sesion, objetivos):
     referencias = {'COMPLETA_ACTIVIDAD': objetivos['ACTIVIDAD'], 'COMPLETA_BLOQUE': objetivos['BLOQUE'],
-                   'REGISTRO_ADECUADO': objetivos['ACTIVIDAD']}
+                   'REGISTRO_ADECUADO': objetivos['ACTIVIDAD'], 'REVELA_RESULTADO': objetivos['APLICACION']}
     reglas = []
     for codigo, tipo, objetivo, mensaje, condiciones in REGLAS:
         if not mensaje.strip():
@@ -343,7 +365,7 @@ def _cargar_reglas(sesion, objetivos):
 
 def cargar(sesion: Session) -> None:
     base = fijos.cargar(sesion)
-    objetivos = {**_cargar_estructura(sesion), 'SECCION': base.secciones}
+    objetivos = {**_cargar_estructura(sesion), 'SECCION': base.secciones, 'APLICACION': base.aplicaciones}
     _unir_instrumentos(sesion, objetivos['ACTIVIDAD'], base)
     _cargar_registros(sesion, objetivos['ACTIVIDAD'], base)
     _cargar_reglas(sesion, objetivos)

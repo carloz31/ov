@@ -13,10 +13,10 @@ from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 ESTADOS = {
     False: {'t-inicio': 'DISPONIBLE', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
             't-opcional': 'BLOQUEADA', 't-valores': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
-            't-caso': 'BLOQUEADA', 't-adicional': 'BLOQUEADA', 't-eco': 'BLOQUEADA'},
+            't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'BLOQUEADA', 't-eco': 'BLOQUEADA'},
     True: {'t-inicio': 'COMPLETADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
            't-opcional': 'DISPONIBLE', 't-valores': 'DISPONIBLE', 't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA',
-           't-caso': 'BLOQUEADA', 't-adicional': 'DISPONIBLE', 't-eco': 'DISPONIBLE'},
+           't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'DISPONIBLE', 't-eco': 'DISPONIBLE'},
 }
 # Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).
 SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']

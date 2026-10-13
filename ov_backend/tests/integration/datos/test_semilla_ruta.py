@@ -17,13 +17,13 @@ from datos.ocupaciones import leer_ocupaciones, validar_distribucion_items
 
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     esperados = {'salon': 2, 'cuenta': 5, 'orientadora_salon': 1, 'vinculo_familiar': 1, 'bloque': 4,
-        'actividad': 12, 'seccion': 6, 'ficha': 2, 'conversacion': 2, 'insignia': 2, 'nivel': 2,
-        'regla_desbloqueo': 20, 'condicion_desbloqueo': 20,
+        'actividad': 13, 'seccion': 6, 'ficha': 2, 'conversacion': 2, 'insignia': 2, 'nivel': 2,
+        'regla_desbloqueo': 21, 'condicion_desbloqueo': 21,
         'instrumento': 1, 'escala_respuesta': 1, 'opcion_escala': 5, 'dimension': 6,
         'item_instrumento': 60, 'actividad_item': 60, 'aplicacion': 1, 'aplicacion_actividad': 2,
         'ocupacion': 36, 'puntaje_ocupacion': 216, 'familia_carrera': 6, 'carrera': 6,
-        'carrera_ocupacion': 23, 'lista_opciones': 4, 'opcion_lista': 18, 'item_registro': 8,
-        'criterio_completitud': 6, 'referencia': 2}
+        'carrera_ocupacion': 23, 'lista_opciones': 4, 'opcion_lista': 18, 'item_registro': 9,
+        'criterio_completitud': 7, 'referencia': 4}
     assert len(Base.metadata.tables) == 49
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
