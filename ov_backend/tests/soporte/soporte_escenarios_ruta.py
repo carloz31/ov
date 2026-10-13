@@ -48,7 +48,8 @@ def verificar_p07_llegada_a_la_ciudad(cliente):
         ('REGISTRO_ADECUADO', 't-expectativas'),
     ]
     # La Ciudad se abre a mitad de T1: la opcional t-opcional sigue pendiente y no impide cerrar el bloque.
-    assert reglas(respuesta) == {'R-CIUDAD', 'R-t-opcional', 'R-SEC-FAMILIA', 'R-t-adicional'}
+    # B05: también se abre t-eco, que retoma las respuestas de t-expectativas.
+    assert reglas(respuesta) == {'R-CIUDAD', 'R-t-opcional', 'R-SEC-FAMILIA', 'R-t-adicional', 'R-t-eco'}
     assert estado(cliente)['secciones']['FAMILIA'] == 'DISPONIBLE'
     estados = actividades(cliente)
     assert estados['t-opcional'] == 'DISPONIBLE'

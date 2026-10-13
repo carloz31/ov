@@ -11,6 +11,7 @@ Documentos vigentes (lee los que toque la tarea):
 | `docs/sistema/motor.md` | Eventos, reglas, disponibilidad, acciones y progreso. |
 | `docs/sistema/instrumentos.md` | Cuestionarios, cálculo de resultados, coincidencias O*NET y carreras. |
 | `docs/sistema/registro.md` | Respuestas de registro, preguntas de seguimiento y evaluador (Gemini o falso). |
+| `docs/sistema/referencias.md` | Referencias: catálogo de tipos, resolución por cuenta y elección por referencia. |
 | `docs/sistema/integracion.md` | Contrato con el front, conjuntos de datos, fixtures y reinicio. |
 | `docs/specs/` | La spec en curso. |
 | `docs/decisiones.md` | Decisiones de la spec en curso. |

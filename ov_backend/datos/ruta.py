@@ -5,6 +5,7 @@ Cada lote agrega filas en este formato; el cargador las interpreta sin lógica a
 La transacción pertenece al llamador; este módulo no confirma ni migra.
 """
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models as modelos
@@ -41,6 +42,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-opcional', 'T1', 'Actividad opcional', 'INFORMATIVA', None, 5),
                ('t-valores', 'T1', 'Registro de valores', 'REGISTRO', None, 10),
                ('t-adicional', 'T1', 'Misión adicional', 'INFORMATIVA', None, 5),
+               ('t-eco', 'T1', 'Registro que retoma respuestas', 'REGISTRO', None, 10),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 60, 10),
@@ -51,6 +53,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
 PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
                               'descripcion': 'Actividad opcional que aparece al desbloquearse.'},
                't-valores': {'requerida': False},
+               't-eco': {'requerida': False},
                't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
                                'descripcion': 'Misión adicional que aparece si el registro quedó adecuado.'}}
 
@@ -70,7 +73,8 @@ LISTAS = (('t-lista-apoyos', 'Quién te apoya', (('FAMILIA', 'Mi familia'), ('DO
                                           ('LIBERTAD', 'Tener libertad'))))
 
 # (actividad, código, nombre, consigna, elección, criterios). El orden es el de la tupla dentro de cada
-# actividad. Elección: None o (lista, mínima, máxima, ordenada, permite «otra»). Criterio: (código, tipo,
+# actividad. Elección: None, (lista, mínima, máxima, ordenada, permite «otra») o, por referencia,
+# ('ref', referencia ELECCION de la misma actividad, mínima, máxima, ordenada). Criterio: (código, tipo,
 # descripción); la repregunta sale de `fijos.REPREGUNTAS_CRITERIO`.
 ITEMS_REGISTRO = (
     ('t-expectativas', 't-exp-ruta', 'Ruta', '¿Qué te gustaría hacer al terminar el colegio y por qué?',
@@ -83,7 +87,17 @@ ITEMS_REGISTRO = (
      ('t-lista-valores', 3, 3, True, False), (('C1', 'RAZON', 'Por qué el primero es el más importante'),)),
     ('t-valores', 't-val-libre', 'Libre', 'Escribe lo que quieras sobre tus valores.', None, ()),
     ('t-valores', 't-val-breve', 'Breve', 'Describe un momento en que actuaste según tus valores.', None, ()),
+    ('t-eco', 't-eco-ruta', 'Ruta elegida', 'De las rutas que elegiste, ¿cuál te atrae más y por qué?',
+     ('ref', 't-ref-rutas', 1, 1, False), (('C1', 'RAZON', 'Por qué esa ruta le atrae más'),)),
+    ('t-eco', 't-eco-espera', 'Lo que esperan', 'Antes escribiste lo que esperan de ti. ¿Sigues pensando lo mismo?',
+     None, ()),
 )
+
+# Referencias: (código, (tipo de dueño, dueño), tipo, ítem fuente). Dueño: ('ACTIVIDAD', código) o
+# ('PREGUNTA_DIARIO', código). El tipo es uno de `TipoReferencia`; ELECCION y TEXTO leen un ítem de registro
+# de otra actividad.
+REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera'),
+               ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-exp-ruta'))
 
 # Lo que cambia los valores por defecto de un ítem (obligatorio, sin longitud mínima).
 PROPIEDADES_ITEMS = {'t-val-breve': {'min_caracteres': 40}}
@@ -114,6 +128,8 @@ REGLAS = (
      (('COMPLETA_BLOQUE', 'T0', 'EVENTOS', 1),)),
     ('R-t-adicional', 'ACTIVIDAD', 't-adicional', 'Desarrolla todas tus respuestas del registro de expectativas.',
      (('REGISTRO_ADECUADO', 't-expectativas', 'EVENTOS', 1),)),
+    ('R-t-eco', 'ACTIVIDAD', 't-eco', 'Completa el registro de expectativas para retomarlo.',
+     (('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1),)),
     ('R-t-opcional', 'ACTIVIDAD', 't-opcional', 'Completa el registro de expectativas.',
      (('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1),)),
     ('R-CIUDAD', 'BLOQUE', 'CIUDAD', 'Completa el registro de expectativas para llegar a la ciudad.',
@@ -201,7 +217,7 @@ def _unir_instrumentos(sesion, actividades, base: fijos.Fijos):
 
 
 def _validar_eleccion(codigo, eleccion, listas):
-    if eleccion is None:
+    if eleccion is None or eleccion[0] == POR_REFERENCIA:
         return
     lista, minima, maxima, _, permite_otra = eleccion
     if lista not in listas:
@@ -211,11 +227,14 @@ def _validar_eleccion(codigo, eleccion, listas):
         raise ValueError(f'El ítem {codigo} tiene una elección mínima o máxima incoherente')
 
 
+POR_REFERENCIA = 'ref'
+
+
 def _cargar_registros(sesion, actividades, base: fijos.Fijos):
     listas = {codigo: (codigo, nombre, opciones) for codigo, nombre, opciones in (*fijos.LISTAS_COMUNES, *LISTAS)}
     cargadas = {**base.listas, **fijos.cargar_listas(sesion, LISTAS, comun=False)}
     ordenes, vistos = {}, set()
-    items = []
+    items = {}
     for actividad, codigo, nombre, consigna, eleccion, criterios in ITEMS_REGISTRO:
         if codigo in vistos:
             raise ValueError(f'El ítem {codigo} aparece en dos actividades')
@@ -226,7 +245,12 @@ def _cargar_registros(sesion, actividades, base: fijos.Fijos):
         if ordenes[actividad] > MAXIMO_ITEMS_REGISTRO:
             raise ValueError(f'El registro {actividad} tiene más de {MAXIMO_ITEMS_REGISTRO} ítems')
         _validar_eleccion(codigo, eleccion, listas)
-        lista, minima, maxima, ordenada, otra = eleccion or (None, None, None, False, False)
+        referencia = None
+        if eleccion is not None and eleccion[0] == POR_REFERENCIA:
+            lista, otra = None, False
+            _, referencia, minima, maxima, ordenada = eleccion
+        else:
+            lista, minima, maxima, ordenada, otra = eleccion or (None, None, None, False, False)
         propiedades = PROPIEDADES_ITEMS.get(codigo, {})
         item = modelos.ItemRegistro(
             codigo=codigo, actividad_id=actividades[actividad].id, orden=ordenes[actividad], nombre=nombre,
@@ -234,12 +258,70 @@ def _cargar_registros(sesion, actividades, base: fijos.Fijos):
             obligatorio=propiedades.get('obligatorio', True),
             repregunta_generica=REPREGUNTA_GENERICA, lista_id=None if lista is None else cargadas[lista].id,
             eleccion_minima=minima, eleccion_maxima=maxima, eleccion_ordenada=ordenada, permite_otra=otra)
-        items.append((item, criterios))
-    sesion.add_all(item for item, _ in items)
-    sesion.flush()
+        items[codigo] = (item, criterios, referencia)
+    referencias = _validar_referencias(sesion, actividades, items)
+    _insertar_en_orden(sesion, items, referencias)
     sesion.add_all(modelos.CriterioCompletitud(item_registro_id=item.id, codigo=c, tipo=modelos.TipoCriterio(tipo),
                                                descripcion=d, repregunta=fijos.REPREGUNTAS_CRITERIO[tipo], orden=orden)
-                   for item, criterios in items for orden, (c, tipo, d) in enumerate(criterios, start=1))
+                   for item, criterios, _ in items.values()
+                   for orden, (c, tipo, d) in enumerate(criterios, start=1))
+
+
+def _validar_referencias(sesion, actividades, items):
+    """Valida `REFERENCIAS` y las elecciones por referencia; devuelve {código: (referencia, ítem fuente)}."""
+    preguntas = {p.codigo: p for p in sesion.scalars(select(modelos.PreguntaDiario))}
+    referencias = {}
+    for codigo, (tipo_dueno, dueno), tipo, fuente in REFERENCIAS:
+        if tipo not in modelos.TipoReferencia.__members__:
+            raise ValueError(f'La referencia {codigo} tiene el tipo {tipo}, fuera del catálogo')
+        if tipo_dueno == 'ACTIVIDAD' and dueno in actividades:
+            dueno_id = dict(actividad_id=actividades[dueno].id)
+        elif tipo_dueno == 'PREGUNTA_DIARIO' and dueno in preguntas:
+            dueno_id = dict(pregunta_diario_id=preguntas[dueno].id)
+        else:
+            raise ValueError(f'La referencia {codigo} tiene un dueño inexistente: {tipo_dueno} {dueno}')
+        if fuente not in items:
+            raise ValueError(f'La referencia {codigo} lee el ítem inexistente {fuente}')
+        item_fuente = items[fuente][0]
+        if item_fuente.actividad_id == dueno_id.get('actividad_id'):
+            raise ValueError(f'La referencia {codigo} lee un ítem de su propia actividad')
+        if tipo == 'ELECCION' and item_fuente.lista_id is None:
+            raise ValueError(f'La referencia {codigo} lee la elección de {fuente}, que no tiene lista')
+        referencias[codigo] = (modelos.Referencia(codigo=codigo, tipo=modelos.TipoReferencia(tipo), **dueno_id),
+                               fuente)
+    for codigo, (item, _, referencia) in items.items():
+        if referencia is None:
+            continue
+        if (referencia not in referencias or referencias[referencia][0].tipo != modelos.TipoReferencia.ELECCION
+                or referencias[referencia][0].actividad_id != item.actividad_id):
+            raise ValueError(f'El ítem {codigo} elige por {referencia}, que no es una ELECCION de su actividad')
+        fuente = items[referencias[referencia][1]][0]
+        if item.eleccion_minima > fuente.eleccion_minima or item.eleccion_maxima > fuente.eleccion_maxima:
+            raise ValueError(f'El ítem {codigo} pide una elección mínima o máxima mayor que la de su fuente')
+    return referencias
+
+
+def _insertar_en_orden(sesion, items, referencias):
+    """Ítems y referencias se leen entre sí: cada ronda inserta lo que ya tiene a quién apuntar."""
+    items_pendientes = dict(items)
+    referencias_pendientes = dict(referencias)
+    while items_pendientes or referencias_pendientes:
+        listos = [codigo for codigo, (_, _, referencia) in items_pendientes.items()
+                  if referencia is None or referencia not in referencias_pendientes]
+        for codigo in listos:
+            item, _, referencia = items_pendientes.pop(codigo)
+            if referencia is not None:
+                item.referencia_id = referencias[referencia][0].id
+            sesion.add(item)
+        sesion.flush()
+        listas = [codigo for codigo, (_, fuente) in referencias_pendientes.items() if fuente not in items_pendientes]
+        for codigo in listas:
+            referencia, fuente = referencias_pendientes.pop(codigo)
+            referencia.item_registro_id = items[fuente][0].id
+            sesion.add(referencia)
+        sesion.flush()
+        if not listos and not listas:
+            raise ValueError('Las referencias y las elecciones por referencia forman un ciclo')
 
 
 def _cargar_reglas(sesion, objetivos):

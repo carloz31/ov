@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import CheckConstraint, ForeignKeyConstraint, MetaData, UniqueConstraint, inspect, select, text
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.schema import CreateIndex, CreateTable
+from sqlalchemy.schema import AddConstraint, CreateIndex, CreateTable
 from app import database
 from app.main import crear_aplicacion
 from app.models import Base
@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 48
+    assert len(Base.metadata.tables) == 49
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,7 +129,7 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 50
+    assert sql.count('CREATE TABLE ') == 51
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -143,8 +143,11 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
         assert 'json_type(' not in ddl
         for restriccion in tabla.constraints:
             assert restriccion.name is not None
-            # PostgreSQL trunca determinísticamente los nombres que exceden su límite.
-            assert dialecto.identifier_preparer.format_constraint(restriccion) in ddl
+            # PostgreSQL trunca determinísticamente los nombres que exceden su límite. Las FK con `use_alter`
+            # (el ciclo entre `item_registro` y `referencia`) se crean aparte, con ALTER TABLE.
+            ddl_restriccion = (str(AddConstraint(restriccion).compile(dialect=dialecto))
+                               if getattr(restriccion, 'use_alter', False) else ddl)
+            assert dialecto.identifier_preparer.format_constraint(restriccion) in ddl_restriccion
         for indice in tabla.indexes:
             ddl_indice = str(CreateIndex(indice).compile(dialect=dialecto))
             condicion = indice.dialect_options['sqlite'].get('where')
@@ -262,8 +265,8 @@ def test_migracion_0003_admite_familia_conserva_datos_y_rechaza_otros_espacios(t
         motor.dispose()
 
 
-# B03: la ruta tiene una condición REGISTRO_ADECUADO (y desde B02, ítems con elección), así que el primer
-# downgrade que falla es el de 0005.
+# B05: la ruta tiene un ítem con elección por referencia, así que el primer downgrade que falla es el de 0008
+# (antes, desde B03, era el de 0005 por REGISTRO_ADECUADO).
 def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(base_migrada):
     url, configuracion, motor = base_migrada
     preparar_base(url, 'ruta')
@@ -277,11 +280,11 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         with motor.connect() as conexion:
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).mappings().all()
                           for tabla in Base.metadata.sorted_tables}
-        with pytest.raises(RuntimeError, match='REGISTRO_ADECUADO'):
+        with pytest.raises(RuntimeError, match='elección por referencia'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0005'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0008'
             for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]

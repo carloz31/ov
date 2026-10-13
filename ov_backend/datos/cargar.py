@@ -3,13 +3,13 @@
 import argparse
 import re
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.config import cargar_configuracion
 from app.database import comprobar_tablas, crear_motor_bd
-from app.models import Actividad, Base
+from app.models import Actividad, Base, ItemRegistro
 from datos import ruta
 
 
@@ -29,6 +29,12 @@ def validar_contenidos_actividades(sesion: Session) -> None:
             raise ValueError(f'Contenido inválido en la actividad {codigo}: usa minúsculas, dígitos y _.')
 
 
+def romper_ciclos(sesion):
+    """`item_registro` y `referencia` se apuntan entre sí: sin la elección por referencia, se borran en orden."""
+    sesion.execute(update(ItemRegistro).where(ItemRegistro.referencia_id.is_not(None)).values(
+        referencia_id=None, eleccion_minima=None, eleccion_maxima=None, eleccion_ordenada=False))
+
+
 def preparar_base(
     url: str, conjunto: str, *, crear_tablas: bool = False, vaciar: bool = False,
 ) -> dict[str, int]:
@@ -44,6 +50,7 @@ def preparar_base(
             raise RuntimeError(MENSAJE_SIN_ESQUEMA_CARGA) from None
         with Session(motor) as sesion, sesion.begin():
             if vaciar:
+                romper_ciclos(sesion)
                 for tabla in reversed(Base.metadata.sorted_tables):
                     sesion.execute(delete(tabla))
             elif any(sesion.execute(select(tabla).limit(1)).first() is not None

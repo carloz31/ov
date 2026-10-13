@@ -94,6 +94,20 @@
         "titulo": "Misión adicional",
         "visibilidad": "AL_DESBLOQUEAR",
         "visible": true
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-eco",
+        "contenido": "t_eco",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "DISPONIBLE",
+        "orden": 5,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Registro que retoma respuestas",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": null,

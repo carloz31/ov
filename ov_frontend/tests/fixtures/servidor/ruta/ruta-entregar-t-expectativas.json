@@ -85,6 +85,24 @@
         }
       ],
       "objetivo": {
+        "codigo": "t-eco",
+        "nombre": "Registro que retoma respuestas"
+      },
+      "regla": "R-t-eco",
+      "tipo_objetivo": "ACTIVIDAD"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-expectativas",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
         "codigo": "t-opcional",
         "nombre": "Actividad opcional"
       },

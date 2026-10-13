@@ -11,6 +11,7 @@ CATALOGO = {
     'escala_respuesta', 'opcion_escala', 'item_instrumento', 'actividad_item',
     'aplicacion', 'aplicacion_actividad', 'ocupacion', 'puntaje_ocupacion',
     'carrera_ocupacion', 'lista_opciones', 'opcion_lista', 'item_registro', 'criterio_completitud',
+    'referencia',
 }
 
 

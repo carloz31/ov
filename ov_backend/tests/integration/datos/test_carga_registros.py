@@ -10,6 +10,7 @@ from datos import cargar, ruta
 
 
 # DATO DE PRUEBA: variantes que el cargador debe rechazar.
+SIN_BREVE = tuple(i for i in ruta.ITEMS_REGISTRO if i[1] != 't-val-breve')
 ITEM_EXTRA = ('t-expectativas', 't-exp-extra', 'Extra', 'Consigna extra.', None, ())
 REPETIDO = ('t-valores', 't-exp-ruta', 'Repetido', 'Consigna repetida.', None, ())
 EN_INFORMATIVA = ('t-inicio', 't-ini-item', 'Ítem', 'Consigna.', None, ())
@@ -18,11 +19,37 @@ INCOHERENTE = ('t-valores', 't-val-extra', 'Extra', 'Consigna.', ('t-lista-apoyo
 VARIANTES = (
     ('ITEMS_REGISTRO', (*ruta.ITEMS_REGISTRO, ITEM_EXTRA), 'más de 3 ítems'),
     ('ITEMS_REGISTRO', (*ruta.ITEMS_REGISTRO, REPETIDO), 'aparece en dos actividades'),
-    ('ITEMS_REGISTRO', (*ruta.ITEMS_REGISTRO[:-1], EN_INFORMATIVA), 'que no es de registro'),
-    ('ITEMS_REGISTRO', (*ruta.ITEMS_REGISTRO[:-1], LISTA_INEXISTENTE), 'lista inexistente'),
-    ('ITEMS_REGISTRO', (*ruta.ITEMS_REGISTRO[:-1], INCOHERENTE), 'incoherente'),
+    ('ITEMS_REGISTRO', (*SIN_BREVE, EN_INFORMATIVA), 'que no es de registro'),
+    ('ITEMS_REGISTRO', (*SIN_BREVE, LISTA_INEXISTENTE), 'lista inexistente'),
+    ('ITEMS_REGISTRO', (*SIN_BREVE, INCOHERENTE), 'incoherente'),
     ('LISTAS', (*ruta.LISTAS, ('t-lista-otra', 'Otra', (('OTRA', 'Otra'),))), 'código reservado OTRA'),
 )
+
+
+def _eco(eleccion):
+    """`ruta.ITEMS_REGISTRO` con otra elección en `t-eco-ruta`."""
+    return tuple((a, c, n, t, eleccion, k) if c == 't-eco-ruta' else (a, c, n, t, e, k)
+                 for a, c, n, t, e, k in ruta.ITEMS_REGISTRO)
+
+
+# DATO DE PRUEBA: referencias y elecciones por referencia que el cargador debe rechazar.
+REF_ESPERA = ('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera')
+VARIANTES_REFERENCIAS = (
+    ('REFERENCIAS', (('t-ref-plan', ('ACTIVIDAD', 't-eco'), 'PLANES', 't-exp-ruta'),), 'fuera del catálogo'),
+    ('REFERENCIAS', (REF_ESPERA, ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-exp-espera')),
+     'no tiene lista'),
+    ('REFERENCIAS', (REF_ESPERA, ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-eco-ruta')),
+     'su propia actividad'),
+    ('REFERENCIAS', (REF_ESPERA, ('t-ref-rutas', ('ACTIVIDAD', 't-nula'), 'ELECCION', 't-exp-ruta')),
+     'dueño inexistente'),
+    ('REFERENCIAS', (REF_ESPERA, ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-exp-nulo')),
+     'ítem inexistente'),
+    ('ITEMS_REGISTRO', _eco(('ref', 't-ref-espera', 1, 1, False)), 'no es una ELECCION de su actividad'),
+    ('ITEMS_REGISTRO', _eco(('ref', 't-ref-nula', 1, 1, False)), 'no es una ELECCION de su actividad'),
+    ('ITEMS_REGISTRO', _eco(('ref', 't-ref-rutas', 2, 2, False)), 'mayor que la de su fuente'),
+    ('ITEMS_REGISTRO', _eco(('ref', 't-ref-rutas', 1, 3, False)), 'mayor que la de su fuente'),
+)
+VARIANTES = VARIANTES + VARIANTES_REFERENCIAS
 
 
 @pytest.mark.parametrize(('atributo', 'valor', 'mensaje'), VARIANTES)
@@ -51,6 +78,8 @@ def test_items_listas_y_criterios_cargados(tmp_path):
                                    .outerjoin(m.ListaOpciones, m.ListaOpciones.id == m.ItemRegistro.lista_id)
                                    .order_by(m.Actividad.codigo, m.ItemRegistro.orden)).all()
             assert items == [
+                ('t-eco', 't-eco-ruta', 1, None, None),
+                ('t-eco', 't-eco-espera', 2, None, None),
                 ('t-expectativas', 't-exp-ruta', 1, 'RUTAS_DESPUES_COLEGIO', True),
                 ('t-expectativas', 't-exp-apoyo', 2, 't-lista-apoyos', False),
                 ('t-expectativas', 't-exp-espera', 3, None, None),
@@ -66,5 +95,15 @@ def test_items_listas_y_criterios_cargados(tmp_path):
             espera, breve = (sesion.scalar(select(m.ItemRegistro).where(m.ItemRegistro.codigo == c))
                              for c in ('t-exp-espera', 't-val-breve'))
             assert espera.min_caracteres is None and breve.min_caracteres == 40
+            referencias = sesion.execute(select(m.Referencia.codigo, m.Referencia.tipo, m.Actividad.codigo,
+                                                m.ItemRegistro.codigo)
+                                         .join(m.Actividad, m.Actividad.id == m.Referencia.actividad_id)
+                                         .join(m.ItemRegistro, m.ItemRegistro.id == m.Referencia.item_registro_id)
+                                         .order_by(m.Referencia.codigo)).all()
+            assert referencias == [('t-ref-espera', m.TipoReferencia.TEXTO, 't-eco', 't-exp-espera'),
+                                   ('t-ref-rutas', m.TipoReferencia.ELECCION, 't-eco', 't-exp-ruta')]
+            eco = sesion.scalar(select(m.ItemRegistro).where(m.ItemRegistro.codigo == 't-eco-ruta'))
+            assert eco.lista_id is None and eco.permite_otra is False
+            assert sesion.get(m.Referencia, eco.referencia_id).codigo == 't-ref-rutas'
     finally:
         motor.dispose()

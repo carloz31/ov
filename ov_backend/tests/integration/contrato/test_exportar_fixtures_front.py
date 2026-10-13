@@ -154,7 +154,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     avisos = datos['desbloqueos-no-vistos']
     assert {d['regla'] for d in avisos} == {
         'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD', 'R-t-opcional',
-        'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA', 'R-t-adicional'}
+        'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA', 'R-t-adicional',
+        'R-t-eco'}
     assert all(d['visto'] is False and d['fecha_hora'] == exportador.FECHA for d in avisos)
     assert [(f['codigo'], f['estado']) for f in datos['fichas-inicial']] == [('t-ficha', 'BLOQUEADA')]
     assert [(f['codigo'], f['estado']) for f in datos['fichas-final']] == [('t-ficha', 'DISPONIBLE')]

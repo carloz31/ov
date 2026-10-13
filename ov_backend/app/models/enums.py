@@ -117,3 +117,15 @@ class TipoCriterio(StrEnum):
     RAZON = "RAZON"
     ACCION = "ACCION"
     CONTRASTE = "CONTRASTE"
+
+
+class TipoReferencia(StrEnum):
+    """Catálogo cerrado de lo que una actividad o una pregunta de diario lee de la cuenta (RNF-20)."""
+    ELECCION = "ELECCION"
+    TEXTO = "TEXTO"
+
+
+class EstadoReferencia(StrEnum):
+    DISPONIBLE = "DISPONIBLE"
+    POR_DESARROLLAR = "POR_DESARROLLAR"
+    SIN_DATO = "SIN_DATO"

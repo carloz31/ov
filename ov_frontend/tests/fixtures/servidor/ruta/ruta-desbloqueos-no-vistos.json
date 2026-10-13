@@ -12,6 +12,16 @@
   {
     "fecha_hora": "2026-10-07T10:00:00",
     "objetivo": {
+      "codigo": "t-eco",
+      "nombre": "Registro que retoma respuestas"
+    },
+    "regla": "R-t-eco",
+    "tipo_objetivo": "ACTIVIDAD",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
       "codigo": "t-adicional",
       "nombre": "Misión adicional"
     },

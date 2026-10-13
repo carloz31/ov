@@ -33,10 +33,11 @@ class ItemRegistro(Base):
         UniqueConstraint("actividad_id", "orden"),
         CheckConstraint("min_caracteres IS NULL OR min_caracteres >= 1", name="min_caracteres_valido"),
         CheckConstraint(
-            "(lista_id IS NULL AND eleccion_minima IS NULL AND eleccion_maxima IS NULL"
-            " AND eleccion_ordenada = false AND permite_otra = false)"
-            " OR (lista_id IS NOT NULL AND eleccion_minima >= 0 AND eleccion_maxima >= 1"
-            " AND eleccion_maxima >= eleccion_minima)",
+            "(lista_id IS NULL AND referencia_id IS NULL AND eleccion_minima IS NULL"
+            " AND eleccion_maxima IS NULL AND eleccion_ordenada = false AND permite_otra = false)"
+            " OR ((lista_id IS NULL) <> (referencia_id IS NULL) AND eleccion_minima >= 0"
+            " AND eleccion_maxima >= 1 AND eleccion_maxima >= eleccion_minima"
+            " AND (referencia_id IS NULL OR permite_otra = false))",
             name="eleccion_valida"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -49,6 +50,10 @@ class ItemRegistro(Base):
     obligatorio: Mapped[bool]
     repregunta_generica: Mapped[str] = mapped_column(Text)
     lista_id: Mapped[int | None] = mapped_column(ForeignKey("lista_opciones.id"))
+    # Elección por referencia: las opciones son las que esa referencia ELECCION devuelve a la cuenta.
+    # Cierra un ciclo con `referencia.item_registro_id`; por eso la FK se crea aparte.
+    referencia_id: Mapped[int | None] = mapped_column(ForeignKey(
+        "referencia.id", use_alter=True, name="fk_item_registro_referencia_id_referencia"))
     eleccion_minima: Mapped[int | None]
     eleccion_maxima: Mapped[int | None]
     eleccion_ordenada: Mapped[bool] = mapped_column(default=False, server_default=false())

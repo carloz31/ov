@@ -126,6 +126,36 @@
         "titulo": "Misión adicional",
         "visibilidad": "AL_DESBLOQUEAR",
         "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa el registro de expectativas para retomarlo.",
+            "regla": "R-t-eco"
+          }
+        ],
+        "codigo": "t-eco",
+        "contenido": "t_eco",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Registro que retoma respuestas",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": null,
