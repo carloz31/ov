@@ -28,12 +28,19 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 - Cuerpo: `cuenta`, `actividad`, `respuestas: [{item, opcion}]` (opción por su `orden`).
 - Lote no vacío, sin ítems repetidos, opciones enteras de la escala del ítem: si no, 422. Un ítem que la actividad no presenta: 409. Actividad no disponible: 409 con su progreso. Apoderado: 404.
 - Se valida todo el lote antes de escribir. La primera respuesta crea el progreso en EN_CURSO; reemplazar una respuesta conserva su fila y `creada_en`.
-- Las respuestas quedan **fijas** (409) si alguna aplicación de la actividad tiene resultado vigente; en COMPARACION, cuando la actividad está COMPLETADA.
+- Las respuestas quedan **fijas** (409) si alguna aplicación de la actividad tiene resultado vigente (es decir, desde que se revela); en COMPARACION, cuando la actividad está COMPLETADA. Antes de revelar se pueden cambiar.
 - No registra eventos.
 
-## Completar y calcular
+## Completar y revelar — `POST /acciones/revelar-resultado`
 
-`completar-actividad` exige todos los ítems de la actividad respondidos (si no, 409 con `items_faltantes`). Después de los eventos y desbloqueos, en la misma transacción: para cada aplicación de la actividad, si todas sus actividades están COMPLETADA, el instrumento tiene dimensiones y no hay resultado vigente, se calcula el resultado y se informa en `resultados_generados`. Si el cálculo falla, se revierte toda la acción. Repetir una actividad con respuestas fijas registra COMPLETA_ACTIVIDAD pero no recalcula.
+`completar-actividad` exige todos los ítems de la actividad respondidos (si no, 409 con `items_faltantes`) y **no calcula**. El resultado se calcula al revelarlo (HU-027): hasta entonces nadie lo ve.
+
+- Cuerpo: `cuenta`, `instrumento`, `aplicacion` (obligatoria si hay más de una: si falta, 422) y `fecha_hora` opcional.
+- 404 si la cuenta no es de estudiante o no existe el instrumento o la aplicación. 409 si el instrumento no genera resultado (COMPARACION o sin dimensiones), si falta completar alguna actividad de la aplicación (con `items_faltantes` = esas actividades) o si ya hay resultado vigente («Resultado ya revelado»).
+- En una transacción: calcula y guarda el resultado y registra REVELA_RESULTADO con la aplicación como referencia. Si el cálculo falla, se revierte todo.
+- Respuesta: `cuenta`, `instrumento`, `aplicacion`, `perfil_plano`, `eventos_registrados` y `nuevos_desbloqueos`.
+- Cada instrumento cierra con un registro de contraste que se abre con REVELA_RESULTADO y cita el resultado (referencias RESULTADO y COINCIDENCIAS, `referencias.md`).
+- Repetir una actividad con respuestas fijas registra COMPLETA_ACTIVIDAD y no recalcula.
 
 **Cálculo** (`calculo.py`):
 
@@ -58,7 +65,10 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 
 ## Reiniciar — `POST /acciones/reiniciar-instrumento`
 
-Recibe `cuenta`, `instrumento` y `aplicacion` (obligatoria si hay más de una: si falta, 422). En una transacción: anula el resultado vigente, borra las respuestas del instrumento en los progresos de la aplicación, pasa esos progresos a EN_CURSO y registra REINICIA_INSTRUMENTO. No revoca desbloqueos ni borra eventos ni resultados anteriores. Sin respuestas ni resultado vigente: 409 «Nada que reiniciar».
+Volver a hacer el test cuando el resultado no distingue ningún tipo (HU-095). Recibe `cuenta`, `instrumento` y `aplicacion` (obligatoria si hay más de una: si falta, 422).
+
+- Solo procede con un resultado vigente con `perfil_plano` (si no, 409) y si la cuenta no agotó `MAXIMO_REINICIOS_PERFIL_PLANO` en esa aplicación, contado con sus resultados anulados con perfil plano (si no, 409 «Ya usaste el reinicio de este cuestionario»).
+- En una transacción: anula el resultado vigente, borra las respuestas del instrumento en los progresos de la aplicación, pasa esos progresos a EN_CURSO y registra REINICIA_INSTRUMENTO. No revoca desbloqueos ni borra eventos ni resultados anteriores. Para tener un resultado nuevo hay que completar y revelar otra vez.
 
 ## Consultas (GET)
 
@@ -67,8 +77,8 @@ Recibe `cuenta`, `instrumento` y `aplicacion` (obligatoria si hay más de una: s
 | `/instrumentos` | Instrumentos con dimensiones (con descripción), escalas, aplicaciones y actividades. |
 | `/actividades/{a}/items` | Ítems de la actividad en orden, con las opciones de su escala. No exige cuenta ni disponibilidad. |
 | `/cuentas/{c}/actividades/{a}/respuestas` | Respuestas actuales de la cuenta en esa actividad. |
-| `/cuentas/{c}/instrumentos` | Por instrumento y aplicación: NO_INICIADO, EN_PROGRESO o COMPLETADO; actividades e ítems respondidos sobre el total; si hay resultado vigente. |
-| `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=` | Resultado vigente: dimensiones (con `descripcion`), y según el tipo, `codigo_interes`, `coincidencias`, `carreras_recomendadas` o `dimensiones_destacadas`. Sin vigente: 409 con el avance. |
+| `/cuentas/{c}/instrumentos` | Por instrumento y aplicación: NO_INICIADO, EN_PROGRESO o COMPLETADO (todas sus actividades completadas, se haya revelado o no); actividades e ítems respondidos sobre el total; `hay_resultado_vigente` (revelado). COMPLETADO sin resultado vigente es «listo para revelar». |
+| `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=` | Resultado vigente (vistas resumida y explicada, HU-022 y HU-023): dimensiones (con `descripcion`), y según el tipo, `codigo_interes`, `coincidencias`, `carreras_recomendadas` o `dimensiones_destacadas`. Sin vigente (no revelado o reiniciado): 409 con el avance. |
 | `/cuentas/{c}/instrumentos/{i}/historial` | Todos los resultados, incluidos los anulados, del más reciente al más antiguo. |
 | `/cuentas/{c}/instrumentos/{i}/comparacion` | Comparación de entrada y salida. Instrumento de otro tipo: 404. Sin las dos aplicaciones completas: 409. |
 
@@ -76,7 +86,7 @@ Las consultas con cuenta responden 404 a un apoderado. El resultado se arma con 
 
 ## Invariantes
 
-1. A lo sumo un resultado vigente por cuenta y aplicación, y solo con todas sus actividades COMPLETADA.
+1. A lo sumo un resultado vigente por cuenta y aplicación, y solo con todas sus actividades COMPLETADA y revelado.
 2. Mientras hay resultado vigente, sus respuestas no cambian.
 3. Reiniciar solo anula; nunca borra resultados, eventos ni desbloqueos.
 4. Las respuestas de una cuenta nunca afectan a otra.

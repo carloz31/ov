@@ -2,6 +2,24 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-13 · B06 · Revelar resultados y libro de Helena
+
+- **Dato:**
+  - `completar-actividad` ya no calcula ni devuelve `resultados_generados` (el front lo lee en `NodeRenderer.tsx` y en `src/types/servidor.ts`);
+  - `POST /acciones/revelar-resultado` (`cuenta`, `instrumento`, `aplicacion?`), que calcula el resultado y responde `perfil_plano`, eventos (REVELA_RESULTADO) y desbloqueos; 409 si faltan misiones (`items_faltantes`) o si ya se reveló;
+  - en `GET /cuentas/{c}/instrumentos`, COMPLETADO con `hay_resultado_vigente: false` significa «listo para revelar»;
+  - `POST /acciones/reiniciar-instrumento` solo procede con perfil plano revelado, y una vez por cuenta y aplicación;
+  - la actividad `t-contraste` (registro en CIUDAD, se abre al revelar), sin contenido en el front, y sus referencias RESULTADO (dimensiones del código de interés) y COINCIDENCIAS (ocupaciones), con `opciones: []` si el perfil es plano.
+- **Dónde se mostraría:**
+  - en el libro de Helena: un botón «Revelar» cuando el cuestionario está COMPLETADO y sin resultado, y las vistas resumida y explicada después;
+  - con perfil plano, una invitación a repetir el test y el botón que llama al reinicio (solo si aún no se usó);
+  - en `t-contraste`, la zona de eco con el código de interés y las ocupaciones citadas.
+- **Opciones:**
+  - conectar revelar y el reinicio en el lote F de instrumentos y quitar `resultados_generados` de `servidor.ts` y `NodeRenderer.tsx`;
+  - crear `t_contraste.json` o mapearla a la actividad real de contraste cuando se cargue la ruta.
+- **Si no se muestra:** en modo `api` el resultado nunca se calcula (el front espera `resultados_generados` al completar), `t-contraste` no se abre y el perfil plano no se puede repetir.
+- **Estado:** pendiente del lote F de instrumentos; no se toca la interfaz en B06.
+
 ## 2026-10-13 · B05 · Referencias y eco
 
 - **Dato:**

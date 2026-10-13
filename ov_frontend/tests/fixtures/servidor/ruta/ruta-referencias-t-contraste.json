@@ -1,0 +1,70 @@
+{
+  "referencias": [
+    {
+      "codigo": "t-ref-coincidencias",
+      "estado": "DISPONIBLE",
+      "opciones": [
+        {
+          "codigo": "geologist",
+          "texto": "Geólogo/a"
+        },
+        {
+          "codigo": "agricultural-engineer",
+          "texto": "Ingeniero/a agrónomo/a"
+        },
+        {
+          "codigo": "meteorologist",
+          "texto": "Meteorólogo/a"
+        },
+        {
+          "codigo": "biologist",
+          "texto": "Biólogo/a"
+        },
+        {
+          "codigo": "veterinarian",
+          "texto": "Veterinario/a"
+        },
+        {
+          "codigo": "civil-engineer",
+          "texto": "Ingeniero/a civil"
+        },
+        {
+          "codigo": "environmental-engineer",
+          "texto": "Ingeniero/a medioambiental"
+        },
+        {
+          "codigo": "data-analyst",
+          "texto": "Analista de datos"
+        },
+        {
+          "codigo": "architect",
+          "texto": "Arquitecto/a"
+        },
+        {
+          "codigo": "machinery-operator",
+          "texto": "Operador/a de maquinaria"
+        }
+      ],
+      "tipo": "COINCIDENCIAS"
+    },
+    {
+      "codigo": "t-ref-resultado",
+      "estado": "DISPONIBLE",
+      "opciones": [
+        {
+          "codigo": "I",
+          "texto": "Investigativa"
+        },
+        {
+          "codigo": "R",
+          "texto": "Realista"
+        },
+        {
+          "codigo": "A",
+          "texto": "Artística"
+        }
+      ],
+      "tipo": "RESULTADO"
+    }
+  ]
+}

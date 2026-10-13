@@ -31,6 +31,7 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | ESCRIBE_CARTA | vínculo familiar |
 | COMPLETA_CONVERSACION | conversación |
 | REINICIA_INSTRUMENTO | instrumento |
+| REVELA_RESULTADO | aplicación (el resultado es por cuenta y aplicación; ver `instrumentos.md`) |
 
 ## Reglas
 
@@ -101,7 +102,7 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | Acción (POST) | Valida | Efecto y eventos |
 |---|---|---|
 | `/acciones/ingresar` | — | INGRESO |
-| `/acciones/completar-actividad` | Actividad disponible y no CASO. Si tiene ítems de instrumento, todos respondidos; si tiene ítems de registro obligatorios, todos en FINAL (si no, 409 con `items_faltantes`, sin eventos). | Progreso a COMPLETADA. COMPLETA_ACTIVIDAD en **cada** finalización, también al repetir. COMPLETA_BLOQUE la primera vez que se completan todas las actividades del bloque. Puede generar resultados de instrumentos (`resultados_generados`). |
+| `/acciones/completar-actividad` | Actividad disponible y no CASO. Si tiene ítems de instrumento, todos respondidos; si tiene ítems de registro obligatorios, todos en FINAL (si no, 409 con `items_faltantes`, sin eventos). | Progreso a COMPLETADA. COMPLETA_ACTIVIDAD en **cada** finalización, también al repetir. COMPLETA_BLOQUE la primera vez que se completan todas las actividades del bloque. No calcula resultados de instrumentos: eso ocurre al revelar. |
 | `/acciones/resolver-caso` | Actividad CASO disponible; puntaje 0–100 | Guarda el intento y completa la actividad. SUPERA_CASO la primera vez que el puntaje ≥ `puntaje_minimo`. |
 | `/acciones/responder-registro` | Clasificación ADECUADA o POCO_DESARROLLADA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
 | `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; GUIADA exige pregunta disponible y no respondida; LIBRE sin pregunta | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
@@ -112,7 +113,7 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/completar-conversacion` | Sección CONVERSACIONES del apoderado del vínculo, marque quien marque | Marca la conversación del vínculo; COMPLETA_CONVERSACION en las dos cuentas, solo la primera vez. |
 | `/eventos` (depuración) | Solo que existan cuenta y referencia | Registra un evento crudo y evalúa reglas, sin validaciones de dominio ni cambios de estado. |
 
-Las acciones de instrumentos (`responder-items`, `reiniciar-instrumento`) están en `instrumentos.md`, y las de registro, en `registro.md`.
+Las acciones de instrumentos (`responder-items`, `revelar-resultado`, `reiniciar-instrumento`) están en `instrumentos.md`, y las de registro, en `registro.md`.
 
 Un objetivo bloqueado responde 409 con `detail.mensaje` = el mensaje de bloqueo de su primera regla (por código; el del bloque si la actividad está bloqueada por él) y `detail.progreso`. Leer el contenido de una sección bloqueada también responde 409 con su mensaje.
 

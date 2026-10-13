@@ -192,6 +192,36 @@
         "titulo": "Caso de prueba",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "APL-RIASEC",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "REVELA_RESULTADO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Revela tu resultado de intereses para contrastarlo.",
+            "regla": "R-t-contraste"
+          }
+        ],
+        "codigo": "t-contraste",
+        "contenido": "t_contraste",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Registro de contraste de intereses",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": null,

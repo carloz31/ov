@@ -256,6 +256,36 @@
         "titulo": "Caso de prueba",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa el registro de expectativas para llegar a la ciudad.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "t-contraste",
+        "contenido": "t_contraste",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Registro de contraste de intereses",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": [
