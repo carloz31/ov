@@ -1,0 +1,55 @@
+{
+  "carreras": [
+    {
+      "codigo": "environmental-engineering",
+      "es_favorita": false,
+      "familia": {
+        "codigo": "family-environmental-engineering",
+        "nombre": "Ingeniería y ambiente"
+      },
+      "nombre": "Ingeniería Ambiental",
+      "riasec": [
+        "I",
+        "R"
+      ]
+    },
+    {
+      "codigo": "journalism",
+      "es_favorita": false,
+      "familia": {
+        "codigo": "family-journalism",
+        "nombre": "Comunicación"
+      },
+      "nombre": "Periodismo",
+      "riasec": [
+        "A",
+        "E",
+        "S"
+      ]
+    },
+    {
+      "codigo": "psychology",
+      "es_favorita": false,
+      "familia": {
+        "codigo": "family-psychology",
+        "nombre": "Ciencias sociales y salud"
+      },
+      "nombre": "Psicología",
+      "riasec": [
+        "S",
+        "I",
+        "A"
+      ]
+    }
+  ],
+  "codigo": "t-uni",
+  "descripcion": "Universidad de prueba con varias facultades.",
+  "es_favorita": false,
+  "nombre": "Universidad Nacional de Prueba",
+  "pagina_web": "https://example.test/universidad",
+  "tipo": "UNIVERSIDAD",
+  "ubicacion": {
+    "codigo": "t-lima",
+    "nombre": "Lima de prueba"
+  }
+}

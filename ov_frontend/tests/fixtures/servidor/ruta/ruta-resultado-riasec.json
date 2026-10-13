@@ -4,6 +4,7 @@
   "carreras_recomendadas": [
     {
       "codigo": "civil-engineering",
+      "es_favorita": true,
       "familia": "family-civil-engineering",
       "nombre": "Ingeniería Civil",
       "via": [
@@ -12,6 +13,7 @@
           "codigo": "geologist",
           "codigo_onet": "19-2042.00",
           "correlacion": 0.826325,
+          "es_favorita": true,
           "posicion": 1,
           "titulo": "Geólogo/a"
         },
@@ -20,6 +22,7 @@
           "codigo": "civil-engineer",
           "codigo_onet": "17-2051.00",
           "correlacion": 0.615342,
+          "es_favorita": false,
           "posicion": 6,
           "titulo": "Ingeniero/a civil"
         },
@@ -28,6 +31,7 @@
           "codigo": "architect",
           "codigo_onet": "17-1011.00",
           "correlacion": 0.448109,
+          "es_favorita": false,
           "posicion": 9,
           "titulo": "Arquitecto/a"
         },
@@ -36,6 +40,7 @@
           "codigo": "machinery-operator",
           "codigo_onet": "47-2073.00",
           "correlacion": 0.433994,
+          "es_favorita": false,
           "posicion": 10,
           "titulo": "Operador/a de maquinaria"
         }
@@ -43,6 +48,7 @@
     },
     {
       "codigo": "environmental-engineering",
+      "es_favorita": false,
       "familia": "family-environmental-engineering",
       "nombre": "Ingeniería Ambiental",
       "via": [
@@ -51,6 +57,7 @@
           "codigo": "geologist",
           "codigo_onet": "19-2042.00",
           "correlacion": 0.826325,
+          "es_favorita": true,
           "posicion": 1,
           "titulo": "Geólogo/a"
         },
@@ -59,6 +66,7 @@
           "codigo": "agricultural-engineer",
           "codigo_onet": "17-2021.00",
           "correlacion": 0.791529,
+          "es_favorita": false,
           "posicion": 2,
           "titulo": "Ingeniero/a agrónomo/a"
         },
@@ -67,6 +75,7 @@
           "codigo": "environmental-engineer",
           "codigo_onet": "17-2081.00",
           "correlacion": 0.611065,
+          "es_favorita": false,
           "posicion": 7,
           "titulo": "Ingeniero/a medioambiental"
         },
@@ -75,6 +84,7 @@
           "codigo": "data-analyst",
           "codigo_onet": "15-2051.00",
           "correlacion": 0.452457,
+          "es_favorita": false,
           "posicion": 8,
           "titulo": "Analista de datos"
         }
@@ -82,6 +92,7 @@
     },
     {
       "codigo": "veterinary-medicine",
+      "es_favorita": false,
       "familia": "family-veterinary-medicine",
       "nombre": "Medicina Veterinaria",
       "via": [
@@ -90,6 +101,7 @@
           "codigo": "agricultural-engineer",
           "codigo_onet": "17-2021.00",
           "correlacion": 0.791529,
+          "es_favorita": false,
           "posicion": 2,
           "titulo": "Ingeniero/a agrónomo/a"
         },
@@ -98,6 +110,7 @@
           "codigo": "biologist",
           "codigo_onet": "19-1029.04",
           "correlacion": 0.660533,
+          "es_favorita": false,
           "posicion": 4,
           "titulo": "Biólogo/a"
         },
@@ -106,6 +119,7 @@
           "codigo": "veterinarian",
           "codigo_onet": "29-1131.00",
           "correlacion": 0.625955,
+          "es_favorita": false,
           "posicion": 5,
           "titulo": "Veterinario/a"
         }
@@ -122,6 +136,7 @@
       "codigo": "geologist",
       "codigo_onet": "19-2042.00",
       "correlacion": 0.826325,
+      "es_favorita": true,
       "posicion": 1,
       "titulo": "Geólogo/a"
     },
@@ -130,6 +145,7 @@
       "codigo": "agricultural-engineer",
       "codigo_onet": "17-2021.00",
       "correlacion": 0.791529,
+      "es_favorita": false,
       "posicion": 2,
       "titulo": "Ingeniero/a agrónomo/a"
     },
@@ -138,6 +154,7 @@
       "codigo": "meteorologist",
       "codigo_onet": "19-2021.00",
       "correlacion": 0.729229,
+      "es_favorita": false,
       "posicion": 3,
       "titulo": "Meteorólogo/a"
     },
@@ -146,6 +163,7 @@
       "codigo": "biologist",
       "codigo_onet": "19-1029.04",
       "correlacion": 0.660533,
+      "es_favorita": false,
       "posicion": 4,
       "titulo": "Biólogo/a"
     },
@@ -154,6 +172,7 @@
       "codigo": "veterinarian",
       "codigo_onet": "29-1131.00",
       "correlacion": 0.625955,
+      "es_favorita": false,
       "posicion": 5,
       "titulo": "Veterinario/a"
     },
@@ -162,6 +181,7 @@
       "codigo": "civil-engineer",
       "codigo_onet": "17-2051.00",
       "correlacion": 0.615342,
+      "es_favorita": false,
       "posicion": 6,
       "titulo": "Ingeniero/a civil"
     },
@@ -170,6 +190,7 @@
       "codigo": "environmental-engineer",
       "codigo_onet": "17-2081.00",
       "correlacion": 0.611065,
+      "es_favorita": false,
       "posicion": 7,
       "titulo": "Ingeniero/a medioambiental"
     },
@@ -178,6 +199,7 @@
       "codigo": "data-analyst",
       "codigo_onet": "15-2051.00",
       "correlacion": 0.452457,
+      "es_favorita": false,
       "posicion": 8,
       "titulo": "Analista de datos"
     },
@@ -186,6 +208,7 @@
       "codigo": "architect",
       "codigo_onet": "17-1011.00",
       "correlacion": 0.448109,
+      "es_favorita": false,
       "posicion": 9,
       "titulo": "Arquitecto/a"
     },
@@ -194,6 +217,7 @@
       "codigo": "machinery-operator",
       "codigo_onet": "47-2073.00",
       "correlacion": 0.433994,
+      "es_favorita": false,
       "posicion": 10,
       "titulo": "Operador/a de maquinaria"
     }

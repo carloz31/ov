@@ -8,11 +8,25 @@
       "requisito": "Completa t-inicio."
     },
     {
-      "codigo": "t-ins-batalla",
-      "descripcion": "Venciste la batalla de prueba.",
-      "estado": "OBTENIDA",
-      "nombre": "Insignia de batalla",
-      "requisito": "Vence la batalla de prueba."
+      "codigo": "???",
+      "descripcion": null,
+      "estado": "BLOQUEADA",
+      "nombre": "Logro oculto",
+      "requisito": null
+    },
+    {
+      "codigo": "???",
+      "descripcion": null,
+      "estado": "BLOQUEADA",
+      "nombre": "Logro oculto",
+      "requisito": null
+    },
+    {
+      "codigo": "???",
+      "descripcion": null,
+      "estado": "BLOQUEADA",
+      "nombre": "Logro oculto",
+      "requisito": null
     },
     {
       "codigo": "???",

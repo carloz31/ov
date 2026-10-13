@@ -1,0 +1,78 @@
+[
+  {
+    "codigo": "civil-engineering",
+    "es_favorita": false,
+    "familia": {
+      "codigo": "family-civil-engineering",
+      "nombre": "Ingeniería e infraestructura"
+    },
+    "nombre": "Ingeniería Civil",
+    "riasec": [
+      "R",
+      "I"
+    ]
+  },
+  {
+    "codigo": "environmental-engineering",
+    "es_favorita": false,
+    "familia": {
+      "codigo": "family-environmental-engineering",
+      "nombre": "Ingeniería y ambiente"
+    },
+    "nombre": "Ingeniería Ambiental",
+    "riasec": [
+      "I",
+      "R"
+    ]
+  },
+  {
+    "codigo": "journalism",
+    "es_favorita": false,
+    "familia": {
+      "codigo": "family-journalism",
+      "nombre": "Comunicación"
+    },
+    "nombre": "Periodismo",
+    "riasec": [
+      "A",
+      "E",
+      "S"
+    ]
+  },
+  {
+    "codigo": "nursing",
+    "es_favorita": false,
+    "familia": {
+      "codigo": "family-nursing",
+      "nombre": "Salud"
+    },
+    "nombre": "Enfermería",
+    "riasec": [
+      "S"
+    ]
+  },
+  {
+    "codigo": "psychology",
+    "es_favorita": false,
+    "familia": {
+      "codigo": "family-psychology",
+      "nombre": "Ciencias sociales y salud"
+    },
+    "nombre": "Psicología",
+    "riasec": [
+      "S",
+      "I",
+      "A"
+    ]
+  },
+  {
+    "codigo": "veterinary-medicine",
+    "es_favorita": false,
+    "familia": {
+      "codigo": "family-veterinary-medicine",
+      "nombre": "Salud y ciencias naturales"
+    },
+    "nombre": "Medicina Veterinaria",
+    "riasec": []
+  }
+]

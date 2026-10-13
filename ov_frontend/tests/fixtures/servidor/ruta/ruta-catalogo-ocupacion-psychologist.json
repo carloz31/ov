@@ -1,0 +1,39 @@
+{
+  "carreras": [
+    {
+      "codigo": "psychology",
+      "es_favorita": false,
+      "familia": {
+        "codigo": "family-psychology",
+        "nombre": "Ciencias sociales y salud"
+      },
+      "nombre": "Psicología",
+      "riasec": [
+        "S",
+        "I",
+        "A"
+      ]
+    }
+  ],
+  "codigo": "psychologist",
+  "codigo_onet": "19-3033.00",
+  "conocimientos": [
+    "Psicología",
+    "Terapia y orientación"
+  ],
+  "descripcion": "Escucha, evalúa necesidades emocionales y diseña estrategias de acompañamiento.",
+  "es_favorita": false,
+  "habilidades": [
+    "Escucha activa",
+    "Contención emocional",
+    "Evaluación",
+    "Empatía"
+  ],
+  "lugares_trabajo": "Centros de salud, colegios, organizaciones, empresas y consulta privada.",
+  "riasec": [
+    "S",
+    "I",
+    "C"
+  ],
+  "titulo": "Psicólogo/a"
+}

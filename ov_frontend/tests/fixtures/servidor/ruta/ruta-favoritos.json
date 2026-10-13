@@ -1,0 +1,41 @@
+{
+  "carreras": [
+    {
+      "codigo": "civil-engineering",
+      "es_favorita": true,
+      "familia": {
+        "codigo": "family-civil-engineering",
+        "nombre": "Ingeniería e infraestructura"
+      },
+      "nombre": "Ingeniería Civil",
+      "riasec": [
+        "R",
+        "I"
+      ]
+    }
+  ],
+  "instituciones": [
+    {
+      "codigo": "t-uni",
+      "es_favorita": true,
+      "nombre": "Universidad Nacional de Prueba",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "t-lima",
+        "nombre": "Lima de prueba"
+      }
+    }
+  ],
+  "ocupaciones": [
+    {
+      "codigo": "geologist",
+      "codigo_onet": "19-2042.00",
+      "es_favorita": true,
+      "riasec": [
+        "I",
+        "R"
+      ],
+      "titulo": "Geólogo/a"
+    }
+  ]
+}

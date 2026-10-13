@@ -1,0 +1,94 @@
+{
+  "codigo": "psychology",
+  "descripcion": "Comprende el comportamiento humano y acompaña procesos de bienestar y desarrollo.",
+  "duracion": "5 años aproximadamente",
+  "es_favorita": false,
+  "familia": {
+    "codigo": "family-psychology",
+    "nombre": "Ciencias sociales y salud"
+  },
+  "ingreso": {
+    "anio": 2025,
+    "fuente": "Fuente de prueba",
+    "promedio_mensual": 3200,
+    "rangos": [
+      {
+        "maximo": 2000,
+        "minimo": 0,
+        "porcentaje": 30.0
+      },
+      {
+        "maximo": 4000,
+        "minimo": 2000,
+        "porcentaje": 50.0
+      },
+      {
+        "maximo": null,
+        "minimo": 4000,
+        "porcentaje": 20.0
+      }
+    ]
+  },
+  "instituciones": [
+    {
+      "codigo": "t-uni",
+      "es_favorita": false,
+      "nombre": "Universidad Nacional de Prueba",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "t-lima",
+        "nombre": "Lima de prueba"
+      }
+    }
+  ],
+  "nombre": "Psicología",
+  "ocupaciones": [
+    {
+      "codigo": "psychologist",
+      "codigo_onet": "19-3033.00",
+      "es_favorita": false,
+      "riasec": [
+        "S",
+        "I",
+        "C"
+      ],
+      "titulo": "Psicólogo/a"
+    },
+    {
+      "codigo": "social-worker",
+      "codigo_onet": "21-1021.00",
+      "es_favorita": false,
+      "riasec": [
+        "S",
+        "C"
+      ],
+      "titulo": "Trabajador/a social"
+    },
+    {
+      "codigo": "sociologist",
+      "codigo_onet": "19-3041.00",
+      "es_favorita": false,
+      "riasec": [
+        "I",
+        "S"
+      ],
+      "titulo": "Sociólogo/a"
+    },
+    {
+      "codigo": "teacher",
+      "codigo_onet": "25-2031.00",
+      "es_favorita": false,
+      "riasec": [
+        "S",
+        "A",
+        "C"
+      ],
+      "titulo": "Docente"
+    }
+  ],
+  "riasec": [
+    "S",
+    "I",
+    "A"
+  ]
+}

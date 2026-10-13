@@ -114,6 +114,22 @@ def _recorrer(cliente):
     fixtures['resolver-batalla-victoria'] = _pedir(cliente, 'POST', '/acciones/resolver-batalla', {
         **batalla, 'victoria': True, 'aciertos': 3, 'preguntas': 4})
     fixtures['batallas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/batallas')
+    # B10: catálogo, vistas y favoritos. Una ocupación fuera del tipo de la carrera vista abre t-explorar, y los
+    # favoritos marcados aquí aparecen con `es_favorita` en el resultado RIASEC.
+    catalogo = '/cuentas/est-ana/catalogo'
+    fixtures['catalogo-carreras'] = _pedir(cliente, 'GET', f'{catalogo}/carreras')
+    fixtures['catalogo-carrera-psychology'] = _pedir(cliente, 'GET', f'{catalogo}/carreras/psychology')
+    fixtures['catalogo-ocupaciones-riasec'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones?riasec=SI')
+    fixtures['catalogo-ocupacion-psychologist'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones/psychologist')
+    fixtures['catalogo-instituciones'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones')
+    fixtures['catalogo-institucion-t-uni'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones/t-uni')
+    _pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': 'nursing', 'fecha_hora': FECHA})
+    fixtures['ver-ocupacion'] = _pedir(cliente, 'POST', '/acciones/ver-ocupacion', {
+        'cuenta': 'est-ana', 'ocupacion': 'civil-engineer', 'fecha_hora': FECHA})
+    for tipo, codigo in (('CARRERA', 'civil-engineering'), ('OCUPACION', 'geologist'), ('INSTITUCION', 't-uni')):
+        fixtures['marcar-favorito'] = _pedir(cliente, 'POST', '/acciones/marcar-favorito', {
+            'cuenta': 'est-ana', 'tipo': tipo, 'codigo': codigo, 'fecha_hora': FECHA})
+    fixtures['favoritos'] = _pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')
     for mision in MISIONES_INTERESES:
         items = _pedir(cliente, 'GET', f'/actividades/{mision}/items')
         if mision == MISIONES_INTERESES[0]:

@@ -150,6 +150,73 @@
         "titulo": "Batalla de prueba",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-batalla",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "SUPERA_BATALLA"
+              },
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "VISTA_CARRERA"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "vista_fuera_del_perfil"
+            },
+            "mensaje": "Vence la batalla y mira una carrera u ocupación distinta de tu perfil para explorar.",
+            "regla": "R-t-explorar-carrera"
+          },
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-batalla",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "SUPERA_BATALLA"
+              },
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "VISTA_OCUPACION"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "vista_fuera_del_perfil"
+            },
+            "mensaje": "Vence la batalla y mira una carrera u ocupación distinta de tu perfil para explorar.",
+            "regla": "R-t-explorar-ocupacion"
+          }
+        ],
+        "codigo": "t-explorar",
+        "contenido": "t_explorar",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 8,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Registro de exploración",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": null,

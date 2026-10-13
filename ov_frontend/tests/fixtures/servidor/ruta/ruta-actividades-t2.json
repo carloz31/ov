@@ -150,6 +150,20 @@
         "titulo": "Batalla de prueba",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-explorar",
+        "contenido": "t_explorar",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "DISPONIBLE",
+        "orden": 8,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Registro de exploración",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": null,

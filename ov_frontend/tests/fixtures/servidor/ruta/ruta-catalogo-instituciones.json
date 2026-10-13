@@ -1,0 +1,22 @@
+[
+  {
+    "codigo": "t-ffaa",
+    "es_favorita": false,
+    "nombre": "Escuela de Oficiales de Prueba",
+    "tipo": "FFAA_POLICIA",
+    "ubicacion": {
+      "codigo": "t-cusco",
+      "nombre": "Cusco de prueba"
+    }
+  },
+  {
+    "codigo": "t-uni",
+    "es_favorita": false,
+    "nombre": "Universidad Nacional de Prueba",
+    "tipo": "UNIVERSIDAD",
+    "ubicacion": {
+      "codigo": "t-lima",
+      "nombre": "Lima de prueba"
+    }
+  }
+]

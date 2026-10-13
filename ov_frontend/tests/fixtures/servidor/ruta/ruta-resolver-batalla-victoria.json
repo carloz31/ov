@@ -11,24 +11,5 @@
       "tipo": "SUPERA_BATALLA"
     }
   ],
-  "nuevos_desbloqueos": [
-    {
-      "condiciones": [
-        {
-          "actual": 1,
-          "cumplida": true,
-          "referencia": "t-batalla",
-          "requerido": 1,
-          "tipo_conteo": "EVENTOS",
-          "tipo_evento": "SUPERA_BATALLA"
-        }
-      ],
-      "objetivo": {
-        "codigo": "t-ins-batalla",
-        "nombre": "Insignia de batalla"
-      },
-      "regla": "R-t-ins-batalla",
-      "tipo_objetivo": "INSIGNIA"
-    }
-  ]
+  "nuevos_desbloqueos": []
 }

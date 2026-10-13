@@ -16,6 +16,10 @@ from app.schemas.referencias import ReferenciasConsultadas
 from app.schemas.acciones import RespuestaAccion, RespuestaResolverCaso, RespuestaRevelarResultado
 from app.schemas.batallas import BatallaCuenta
 from app.schemas.casos import CasoCuenta, OcupacionColeccion
+from app.schemas.catalogo import (
+    CarreraDetalle, CarreraResumen, InstitucionDetalle, InstitucionResumen, OcupacionDetalle, OcupacionResumen,
+)
+from app.schemas.favoritos import FavoritosCuenta
 from app.schemas.testimonios import TestimonioEstado
 from app.schemas.cuentas import CuentaResumen, DesbloqueoLegible, ResumenCuenta
 from app.schemas.actividades import BloqueActividades
@@ -39,6 +43,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'items-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
     'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'resolver-batalla-derrota',
     'resolver-batalla-victoria', 'batallas', 'resolver-caso', 'casos', 'coleccion',
+    'catalogo-carreras', 'catalogo-carrera-psychology', 'catalogo-ocupaciones-riasec', 'catalogo-ocupacion-psychologist',
+    'catalogo-instituciones', 'catalogo-institucion-t-uni', 'ver-ocupacion', 'marcar-favorito', 'favoritos',
 )}
 
 
@@ -187,6 +193,22 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert {c['codigo'] for c in resultado['carreras_recomendadas']} == {
         'environmental-engineering', 'civil-engineering', 'veterinary-medicine',
     }
+    # B10 · HU-026: los favoritos marcados antes de revelar se indican en el resultado.
+    assert [c['codigo'] for c in resultado['coincidencias'] if c['es_favorita']] == ['geologist']
+    assert [c['codigo'] for c in resultado['carreras_recomendadas'] if c['es_favorita']] == ['civil-engineering']
+    # B10: catálogo, vistas y favoritos.
+    TypeAdapter(list[CarreraResumen]).validate_python(datos['catalogo-carreras'])
+    TypeAdapter(list[OcupacionResumen]).validate_python(datos['catalogo-ocupaciones-riasec'])
+    TypeAdapter(list[InstitucionResumen]).validate_python(datos['catalogo-instituciones'])
+    assert CarreraDetalle.model_validate(datos['catalogo-carrera-psychology']).ingreso.promedio_mensual == 3200
+    assert OcupacionDetalle.model_validate(datos['catalogo-ocupacion-psychologist']).conocimientos
+    assert InstitucionDetalle.model_validate(datos['catalogo-institucion-t-uni']).pagina_web
+    assert all('SI' in ''.join(o['riasec']) for o in datos['catalogo-ocupaciones-riasec'])
+    assert {d['regla'] for d in datos['ver-ocupacion']['nuevos_desbloqueos']} == {'R-t-explorar-ocupacion'}
+    assert [e['tipo'] for e in datos['marcar-favorito']['eventos_registrados']] == ['MARCA_FAVORITO']
+    favoritos = FavoritosCuenta.model_validate(datos['favoritos'])
+    assert ([c.codigo for c in favoritos.carreras], [o.codigo for o in favoritos.ocupaciones],
+            [i.codigo for i in favoritos.instituciones]) == (['civil-engineering'], ['geologist'], ['t-uni'])
     avisos = datos['desbloqueos-no-vistos']
     assert {d['regla'] for d in avisos} == {
         'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD', 'R-t-opcional',

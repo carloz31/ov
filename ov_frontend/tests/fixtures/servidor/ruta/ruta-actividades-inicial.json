@@ -278,6 +278,36 @@
         "titulo": "Batalla de prueba",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "T0",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Termina el bloque de inicio para abrir el camino.",
+            "regla": "R-T1"
+          }
+        ],
+        "codigo": "t-explorar",
+        "contenido": "t_explorar",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 8,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Registro de exploración",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": [
