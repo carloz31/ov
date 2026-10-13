@@ -4,7 +4,7 @@ from app.dependencies import SesionBD, ejecutar_accion
 from app.schemas.acciones import (
     AccionCuenta, CheckInEntrada, CompletarActividadEntrada, CompletarConversacionEntrada,
     EscribirCartaEntrada, EscribirEntradaEntrada, EventoEntrada, PublicarEntrevistaEntrada,
-    ReiniciarInstrumentoEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
+    ReiniciarInstrumentoEntrada, ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
     ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados,
     RespuestaReiniciarInstrumento, RespuestaRevelarResultado, RevelarResultadoEntrada, VerCarreraEntrada,
 )
@@ -47,6 +47,11 @@ def reiniciar_instrumento(entrada: ReiniciarInstrumentoEntrada, sesion: SesionBD
 @router.post("/acciones/resolver-caso", response_model=RespuestaAccion, response_model_exclude_unset=True)
 def resolver_caso(entrada: ResolverCasoEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_actividades.resolver_caso(sesion, entrada))
+
+
+@router.post("/acciones/resolver-batalla", response_model=RespuestaAccion, response_model_exclude_unset=True)
+def resolver_batalla(entrada: ResolverBatallaEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: servicio_actividades.resolver_batalla(sesion, entrada))
 
 
 @router.post("/acciones/responder-registro", response_model=RespuestaAccion, response_model_exclude_unset=True)

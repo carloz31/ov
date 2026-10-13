@@ -7,12 +7,12 @@ from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, AplicacionActividad, Bloque, Cuenta, Dimension, EstadoProgreso,
     EstadoRespuestaRegistro, Instrumento, ItemInstrumento, OpcionEscala, ProgresoActividad, RespuestaItem,
-    RespuestaRegistro, ResultadoCaso, ResultadoInstrumento, Rol, TipoActividad, TipoEventoUso,
+    RespuestaRegistro, ResultadoBatalla, ResultadoCaso, ResultadoInstrumento, Rol, TipoActividad, TipoEventoUso,
     TipoObjetivo, TipoResultado, Visibilidad,
 )
 from app.schemas.acciones import (
     CompletarActividadEntrada, ProgresoRespuestas, ReiniciarInstrumentoEntrada,
-    ResolverCasoEntrada, ResponderItemsEntrada, RespuestaAccion,
+    ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada, RespuestaAccion,
     RespuestaItemGuardada, RespuestaItemsGuardados, RespuestaReiniciarInstrumento,
     RespuestaRevelarResultado, ResultadoAnulado, RevelarResultadoEntrada,
 )
@@ -54,6 +54,17 @@ def items_de_actividad(sesion: Session, actividad: Actividad) -> list[ItemInstru
     presentaciones = sorted((fila for fila in definiciones.listar(ActividadItem) if fila.actividad_id == actividad.id),
                             key=lambda fila: (fila.orden, definiciones.obtener(ItemInstrumento, fila.item_id).numero))
     return [definiciones.obtener(ItemInstrumento, fila.item_id) for fila in presentaciones]
+
+
+@usar_contexto
+def iniciar_progreso(sesion: Session, cuenta: Cuenta, actividad: Actividad) -> ProgresoActividad:
+    progresos = contexto(sesion).progresos_de(cuenta.id)
+    if actividad.id not in progresos:
+        progresos[actividad.id] = ProgresoActividad(cuenta_id=cuenta.id, actividad_id=actividad.id,
+                                                    estado=EstadoProgreso.EN_CURSO)
+        sesion.add(progresos[actividad.id])
+        sesion.flush()
+    return progresos[actividad.id]
 
 
 @usar_contexto
@@ -138,6 +149,8 @@ def completar_actividad(sesion: Session, entrada: CompletarActividadEntrada) -> 
     exigir_disponible(sesion, cuenta, TipoObjetivo.ACTIVIDAD, actividad)
     if actividad.tipo == TipoActividad.CASO:
         raise ErrorAccion("Los casos deben completarse mediante resolver-caso")
+    if actividad.tipo == TipoActividad.BATALLA:
+        raise ErrorAccion("Las batallas deben completarse mediante resolver-batalla")
     if items:
         progreso = progreso_de_actividad(sesion, cuenta, actividad)
         respondidos = set() if progreso is None else set(sesion.scalars(select(RespuestaItem.item_id).where(
@@ -257,6 +270,37 @@ def resolver_caso(sesion: Session, entrada: ResolverCasoEntrada) -> RespuestaAcc
     ):
         eventos.append((TipoEventoUso.SUPERA_CASO, actividad.id))
     return responder_con_eventos(sesion, cuenta, eventos, fecha)
+
+
+@usar_contexto
+def resolver_batalla(sesion: Session, entrada: ResolverBatallaEntrada) -> RespuestaAccion:
+    cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
+    actividad = buscar_por_codigo(sesion, Actividad, entrada.actividad)
+    exigir_disponible(sesion, cuenta, TipoObjetivo.ACTIVIDAD, actividad)
+    if actividad.tipo != TipoActividad.BATALLA:
+        raise ErrorAccion("La actividad debe ser de tipo BATALLA")
+    fecha = fecha_accion(entrada)
+    eventos = []
+    # Solo la primera victoria completa y abre el siguiente paso; los intentos posteriores son repaso.
+    if entrada.victoria and not existe_evento(sesion, cuenta, TipoEventoUso.SUPERA_BATALLA, actividad.id):
+        progreso, eventos = completar_progreso(sesion, cuenta, actividad)
+        eventos.append((TipoEventoUso.SUPERA_BATALLA, actividad.id))
+        if entrada.aciertos == entrada.preguntas:
+            eventos.append((TipoEventoUso.VENCE_DESAFIO_INTACTO, None))
+    else:
+        progreso = iniciar_progreso(sesion, cuenta, actividad)
+    sesion.add(ResultadoBatalla(progreso_id=progreso.id, victoria=entrada.victoria, aciertos=entrada.aciertos,
+                                preguntas=entrada.preguntas, fecha_hora=fecha))
+    return responder_con_eventos(sesion, cuenta, eventos, fecha)
+
+
+@usar_contexto
+def estado_actividad(sesion: Session, cuenta: Cuenta, actividad: Actividad) -> str:
+    """BLOQUEADA, DISPONIBLE, EN_CURSO o COMPLETADA, como en la consulta de actividades."""
+    disponible = (objetivo_disponible(sesion, cuenta, TipoObjetivo.BLOQUE, actividad.bloque_id)
+                  and objetivo_disponible(sesion, cuenta, TipoObjetivo.ACTIVIDAD, actividad.id))
+    progreso = contexto(sesion).progresos_de(cuenta.id).get(actividad.id)
+    return "BLOQUEADA" if not disponible else (progreso.estado.value if progreso else "DISPONIBLE")
 
 
 @usar_contexto

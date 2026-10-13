@@ -63,6 +63,18 @@ class RespuestaItemsGuardados(BaseModel):
     progreso: ProgresoRespuestas
 
 
+class ResolverBatallaEntrada(CompletarActividadEntrada):
+    victoria: bool
+    aciertos: int = Field(ge=0, strict=True)
+    preguntas: int = Field(ge=1, strict=True)
+
+    @model_validator(mode="after")
+    def validar_aciertos(self):
+        if self.aciertos > self.preguntas:
+            raise ValueError("Los aciertos no pueden superar las preguntas respondidas")
+        return self
+
+
 class ResolverCasoEntrada(CompletarActividadEntrada):
     puntaje: float = Field(ge=0, le=100, allow_inf_nan=False)
 
