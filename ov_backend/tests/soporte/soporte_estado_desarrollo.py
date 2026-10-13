@@ -22,9 +22,7 @@ def llenar_estado(aplicacion):
             modelos.Dimension.instrumento_id == aplicacion_instrumento.instrumento_id))
         item = sesion.scalar(select(modelos.ItemInstrumento))
         opcion = sesion.scalar(select(modelos.OpcionEscala).where(modelos.OpcionEscala.escala_id == item.escala_id))
-        item_registro = modelos.ItemRegistro(codigo='registro-prueba', nombre='DATO DE PRUEBA', consigna='DATO DE PRUEBA', min_caracteres=1, obligatorio=True, repregunta_generica='DATO DE PRUEBA')
-        sesion.add(item_registro)
-        sesion.flush()
+        item_registro = sesion.scalar(select(modelos.ItemRegistro).limit(1))
         ocupacion = sesion.scalar(select(modelos.Ocupacion))
         if ocupacion is None:
             ocupacion = modelos.Ocupacion(codigo_onet='PRUEBA-REINICIO', titulo='DATO DE PRUEBA')
@@ -50,7 +48,7 @@ def llenar_estado(aplicacion):
             modelos.ResultadoDimension(resultado_id=resultado.id, dimension_id=dimension.id, puntaje=1, puntaje_maximo=5, porcentaje=20),
             modelos.Coincidencia(resultado_id=resultado.id, ocupacion_id=ocupacion.id, posicion=1, correlacion=0.9, ajuste='BEST_FIT'),
             modelos.TurnoSeguimiento(respuesta_id=respuesta.id, orden=1, pregunta='DATO DE PRUEBA', criterios_objetivo=['C1'], creado_en=fecha),
-            modelos.EvaluacionRespuesta(respuesta_id=respuesta.id, numero=1, origen='RESPALDO_LONGITUD', clasificacion='VAGA',
+            modelos.EvaluacionRespuesta(respuesta_id=respuesta.id, numero=1, origen='RESPALDO_LONGITUD', clasificacion='POCO_DESARROLLADA',
                 criterios_faltantes=['C1'], texto_evaluado='DATO DE PRUEBA', fecha_hora=fecha),
         ])
 

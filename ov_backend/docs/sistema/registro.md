@@ -2,7 +2,7 @@
 
 Actividades de registro cuyas respuestas evalúa un LLM (Gemini) para pedir, como máximo, dos preguntas de seguimiento. Código: `app/services/registro/` y `app/api/registro.py`. Parámetros: `VERSION_PROMPT_REGISTRO`, `MAXIMO_SEGUIMIENTOS_POR_ITEM` (2), modelo, temperatura y tiempo máximo en `app/core/parametros.py`.
 
-Estado actual: el backend implementa todo lo de este documento, pero el conjunto `ruta` todavía no tiene ítems de registro (llegan en B02); el front responde los registros con su lógica local y solo informa la finalización. La integración llega con la iteración 2.
+Estado actual: el backend implementa todo lo de este documento y `ruta` tiene los registros `t-expectativas` y `t-valores`; el front responde los registros con su lógica local y solo informa la finalización. La integración llega con la iteración 2.
 
 ## Configuración
 
@@ -17,10 +17,11 @@ Estado actual: el backend implementa todo lo de este documento, pero el conjunto
 
 | Tabla | Qué guarda |
 |---|---|
-| `item_registro` | `codigo`, `nombre`, `consigna`, `min_caracteres`, `obligatorio`, `repregunta_generica` (catálogo, en caché). |
-| `criterio_completitud` | Criterios del ítem con `codigo` (C1, C2…), `descripcion` y `orden`. |
-| `actividad_item_registro` | Ítems de cada actividad y su orden. |
-| `respuesta_registro` | Por progreso e ítem: `texto_inicial`, `estado` (BORRADOR, PENDIENTE_SEGUIMIENTO o FINAL), `clasificacion_inicial` (inmutable), `ampliada`. |
+| `lista_opciones` | `codigo`, `nombre` y `comun`. Las comunes están en `datos/fijos.py` y se comparan entre actividades; las propias, en la ruta. |
+| `opcion_lista` | Opciones de una lista: `codigo`, `texto` y `orden`. `OTRA` es un código reservado que ninguna lista usa. |
+| `item_registro` | `codigo`, `actividad_id` y `orden` (un ítem pertenece a una sola actividad; hasta `MAXIMO_ITEMS_REGISTRO` = 3 por actividad, que valida el cargador), `nombre`, `consigna`, `obligatorio`, `nucleo`, `repregunta_generica` y `min_caracteres` (longitud mínima del ítem; si es nula, el respaldo usa `MIN_CARACTERES_RESPALDO`). Elección: `lista_id`, `eleccion_minima`, `eleccion_maxima`, `eleccion_ordenada` y `permite_otra`; sin lista no hay elección (CHECK). Catálogo, en caché. |
+| `criterio_completitud` | Criterios del ítem con `codigo` (C1, C2…), `tipo` (EJEMPLO, RAZON, ACCION o CONTRASTE), `descripcion`, `repregunta` (la del tipo en `fijos.REPREGUNTAS_CRITERIO`, salvo que el criterio traiga la suya) y `orden`. La longitud no es un tipo de criterio. |
+| `respuesta_registro` | Por progreso e ítem: `texto_inicial`, `opciones_elegidas` (arreglo JSON de `{codigo, texto?}`, en el orden elegido), `texto_consolidado` (se llena en B04), `estado` (BORRADOR, PENDIENTE_SEGUIMIENTO o FINAL), `clasificacion_inicial` (inmutable), `ampliada`. |
 | `turno_seguimiento` | Hasta dos por respuesta: pregunta, `criterios_objetivo`, respuesta o borrador, `respondido_en`. |
 | `evaluacion_respuesta` | Cada evaluación, sin modificarse nunca: origen (LLM o RESPALDO_LONGITUD), clasificación, criterios faltantes, pregunta, `requiere_atencion`, modelo, versión del prompt, latencia, error y `texto_evaluado`. |
 
@@ -54,9 +55,9 @@ La respuesta al estudiante (`item`, `estado`, `conversacion`, eventos y desbloqu
 
 1. Texto vacío: 422.
 2. Siempre se llama primero al evaluador, sea cual sea la longitud. Al responder un turno, evalúa la conversación completa del ítem.
-3. ADECUADA → FINAL. VAGA con turnos disponibles → nuevo turno con la pregunta generada y los criterios que faltan. VAGA sin turnos → FINAL. `requiere_atencion` → FINAL, sin más preguntas; se guarda la marca y el estudiante no ve nada distinto.
+3. ADECUADA → FINAL. POCO_DESARROLLADA con turnos disponibles → nuevo turno con la pregunta generada y los criterios que faltan. POCO_DESARROLLADA sin turnos → FINAL. `requiere_atencion` → FINAL, sin más preguntas; se guarda la marca y el estudiante no ve nada distinto.
 4. **Respaldo por longitud**, si el evaluador falla, tarda demasiado o devuelve algo inválido (se registra con origen RESPALDO_LONGITUD y el error):
-   - texto inicial con menos de `min_caracteres`: VAGA y un turno con `repregunta_generica`; su respuesta pasa a FINAL sin evaluar;
+   - texto inicial con menos de `min_caracteres`: POCO_DESARROLLADA y un turno con `repregunta_generica`; su respuesta pasa a FINAL sin evaluar;
    - texto inicial que alcanza el mínimo: NO_EVALUADA y FINAL;
    - respuesta a un turno: FINAL.
 
@@ -65,8 +66,8 @@ La respuesta al estudiante (`item`, `estado`, `conversacion`, eventos y desbloqu
 
 **Evaluadores** (`evaluacion.py`, protocolo `EvaluadorRespuestas`, sin SQLAlchemy ni FastAPI):
 
-- `EvaluadorGemini` (`gemini.py`): salida JSON estructurada, temperatura 0.2, razonamiento mínimo, tiempo máximo configurado. Valida el esquema, que los códigos de criterio existan y que los faltantes sean un subconjunto de los que faltaban. VAGA exige pregunta y faltantes; ADECUADA, faltantes vacíos. Si no se cumple, se trata como fallo.
-- `EvaluadorFalso`: determinista, por marcas en el texto más reciente: sin marca, ADECUADA; `[vaga]`; `[falta:C2]`; `[atencion]`; `[falla]` (lanza error). Lo usan todas las pruebas.
+- `EvaluadorGemini` (`gemini.py`): salida JSON estructurada, temperatura 0.2, razonamiento mínimo, tiempo máximo configurado. Valida el esquema, que los códigos de criterio existan y que los faltantes sean un subconjunto de los que faltaban. POCO_DESARROLLADA exige pregunta y faltantes; ADECUADA, faltantes vacíos. Si no se cumple, se trata como fallo.
+- `EvaluadorFalso`: determinista, por marcas en el texto más reciente: sin marca, ADECUADA; `[vaga]` (POCO_DESARROLLADA); `[falta:C2]`; `[atencion]`; `[falla]` (lanza error). Lo usan todas las pruebas.
 
 **Contexto que recibe:** título de la actividad, consigna y criterios del ítem, criterios que faltaban, la conversación del ítem y las respuestas FINAL de los demás ítems de la actividad. Nunca nombres, códigos de cuenta ni otros datos que identifiquen al estudiante.
 

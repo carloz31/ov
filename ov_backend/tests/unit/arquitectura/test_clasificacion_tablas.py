@@ -10,7 +10,7 @@ CATALOGO = {
     'regla_desbloqueo', 'condicion_desbloqueo', 'instrumento', 'dimension',
     'escala_respuesta', 'opcion_escala', 'item_instrumento', 'actividad_item',
     'aplicacion', 'aplicacion_actividad', 'ocupacion', 'puntaje_ocupacion',
-    'carrera_ocupacion', 'item_registro', 'criterio_completitud', 'actividad_item_registro',
+    'carrera_ocupacion', 'lista_opciones', 'opcion_lista', 'item_registro', 'criterio_completitud',
 }
 
 

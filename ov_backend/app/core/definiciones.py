@@ -18,7 +18,7 @@ MODELOS_FIJOS = (
     modelos.CondicionDesbloqueo, modelos.Instrumento, modelos.Dimension,
     modelos.EscalaRespuesta, modelos.OpcionEscala, modelos.ItemInstrumento,
     modelos.ActividadItem, modelos.Aplicacion, modelos.AplicacionActividad,
-    modelos.ItemRegistro, modelos.CriterioCompletitud, modelos.ActividadItemRegistro,
+    modelos.ListaOpciones, modelos.OpcionLista, modelos.ItemRegistro, modelos.CriterioCompletitud,
 )
 
 
@@ -54,13 +54,16 @@ class Definiciones:
             (fila.item_registro_id, fila.codigo) if modelo is modelos.CriterioCompletitud else fila.codigo: fila
             for fila in registros if hasattr(fila, 'codigo')})
                                          for modelo, registros in self.tablas.items()})
-        criterios, items_registro = {}, {}
+        criterios, items_registro, opciones = {}, {}, {}
         for criterio in sorted(self.listar(modelos.CriterioCompletitud), key=lambda fila: (fila.orden, fila.codigo)):
             criterios.setdefault(criterio.item_registro_id, []).append(criterio)
-        for relacion in sorted(self.listar(modelos.ActividadItemRegistro), key=lambda fila: (fila.orden, fila.item_registro_id)):
-            items_registro.setdefault(relacion.actividad_id, []).append(self.obtener(modelos.ItemRegistro, relacion.item_registro_id))
+        for item in sorted(self.listar(modelos.ItemRegistro), key=lambda fila: (fila.orden, fila.id)):
+            items_registro.setdefault(item.actividad_id, []).append(item)
+        for opcion in sorted(self.listar(modelos.OpcionLista), key=lambda fila: fila.orden):
+            opciones.setdefault(opcion.lista_id, []).append(opcion)
         self.criterios_por_item_registro = MappingProxyType({clave: tuple(valor) for clave, valor in criterios.items()})
         self.items_registro_por_actividad = MappingProxyType({clave: tuple(valor) for clave, valor in items_registro.items()})
+        self.opciones_por_lista = MappingProxyType({clave: tuple(valor) for clave, valor in opciones.items()})
         objetivos, eventos = {}, {}
         for regla in sorted(self.listar(modelos.ReglaDesbloqueo), key=lambda regla: regla.codigo):
             objetivos.setdefault((regla.tipo_objetivo, regla.id_objetivo), []).append(regla)

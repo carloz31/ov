@@ -22,7 +22,7 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | Evento | Referencia |
 |---|---|
 | INGRESO, RESPUESTA_REFLEXIVA, INVITA_A_CREW, FORMA_CREW, VENCE_DESAFIO_INTACTO | nula |
-| COMPLETA_ACTIVIDAD, SUPERA_CASO | actividad |
+| COMPLETA_ACTIVIDAD, SUPERA_CASO, REGISTRO_ADECUADO | actividad (REGISTRO_ADECUADO: el registro que quedó con todo adecuado; se emite desde B03) |
 | COMPLETA_BLOQUE | bloque |
 | ESCRIBE_ENTRADA_DIARIO, ESCRIBE_ENTRADA_LIBRE | entrada de diario (se expone como `null`: no tiene código público) |
 | REGISTRA_CHECK_IN | check-in (se expone como `null`) |
@@ -103,7 +103,7 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/ingresar` | — | INGRESO |
 | `/acciones/completar-actividad` | Actividad disponible y no CASO. Si tiene ítems de instrumento, todos respondidos; si tiene ítems de registro obligatorios, todos en FINAL (si no, 409 con `items_faltantes`, sin eventos). | Progreso a COMPLETADA. COMPLETA_ACTIVIDAD en **cada** finalización, también al repetir. COMPLETA_BLOQUE la primera vez que se completan todas las actividades del bloque. Puede generar resultados de instrumentos (`resultados_generados`). |
 | `/acciones/resolver-caso` | Actividad CASO disponible; puntaje 0–100 | Guarda el intento y completa la actividad. SUPERA_CASO la primera vez que el puntaje ≥ `puntaje_minimo`. |
-| `/acciones/responder-registro` | Clasificación ADECUADA o VAGA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
+| `/acciones/responder-registro` | Clasificación ADECUADA o POCO_DESARROLLADA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
 | `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; GUIADA exige pregunta disponible y no respondida; LIBRE sin pregunta | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
 | `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día; nivel 1–5 | REGISTRA_CHECK_IN |
 | `/acciones/ver-carrera` | — | VISTA_CARRERA |

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import and_, insert, select, update
 
 from app.core.contexto import contexto, usar_contexto
-from app.core.parametros import MAXIMO_SEGUIMIENTOS_POR_ITEM
+from app.core.parametros import MAXIMO_SEGUIMIENTOS_POR_ITEM, MIN_CARACTERES_RESPALDO
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, Bloque, Cuenta, EstadoProgreso, EvaluacionRespuesta, ProgresoActividad,
@@ -220,7 +220,8 @@ def preparar_envio(sesion, entrada, seguimiento=False):
         respuesta.actualizada_en if respuesta is not None else None,
         ContextoEvaluacion(actividad.titulo, item.consigna,
             tuple(CriterioEvaluacion(c.codigo, c.descripcion) for c in criterios), anteriores, conversacion, faltantes),
-        item.min_caracteres, item.repregunta_generica, seguimiento, orden, requiere_evaluacion)
+        MIN_CARACTERES_RESPALDO if item.min_caracteres is None else item.min_caracteres,
+        item.repregunta_generica, seguimiento, orden, requiere_evaluacion)
 
 
 @usar_contexto
@@ -236,7 +237,7 @@ def persistir_envio(sesion, entrada, lectura, evaluacion):
     fecha = fecha_accion(entrada)
     turnos = registro.turnos.get(respuesta.id, ()) if respuesta is not None else ()
     edicion = lectura.estado == EstadoRespuestaRegistro.FINAL
-    pendiente = (not edicion and evaluacion is not None and evaluacion.clasificacion == ClasificacionRespuesta.VAGA
+    pendiente = (not edicion and evaluacion is not None and evaluacion.clasificacion == ClasificacionRespuesta.POCO_DESARROLLADA
                  and not evaluacion.requiere_atencion and len(turnos) < MAXIMO_SEGUIMIENTOS_POR_ITEM)
     estado = EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO if pendiente else EstadoRespuestaRegistro.FINAL
     valores = dict(estado=estado, actualizada_en=marca_actualizacion(lectura.actualizada_en))

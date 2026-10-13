@@ -26,6 +26,13 @@ def _pedir(cliente, metodo, ruta, datos=None):
     return respuesta.json()
 
 
+def _responder_registro(cliente, actividad, cuenta='est-ana'):
+    for item in _pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro'):
+        _pedir(cliente, 'POST', '/acciones/registro/enviar', {
+            'cuenta': cuenta, 'actividad': actividad, 'item': item['codigo'], 'fecha_hora': FECHA,
+            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'})
+
+
 def _completar(cliente, actividad, cuenta='est-ana'):
     return _pedir(cliente, 'POST', '/acciones/completar-actividad', {
         'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
@@ -43,6 +50,7 @@ def _recorrer(cliente):
     fixtures['completar-t-cierre-inicio'] = _completar(cliente, 't-cierre-inicio')
     fixtures['actividades-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     fixtures['secciones-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/secciones')
+    _responder_registro(cliente, 't-expectativas')
     _completar(cliente, 't-expectativas')
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     ruta_avisos = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'

@@ -10,7 +10,7 @@ from google.genai import errors, types
 from app.config import Configuracion
 from app.services.registro.evaluacion import ContextoEvaluacion, ConversacionEvaluacion, CriterioEvaluacion, RespuestaAnterior, TurnoEvaluacion, evaluar_respuesta
 from app.services.registro.gemini import EvaluadorGemini, razonamiento_minimo
-from app.services.registro.prompt import PROMPT_REGISTRO_V2
+from app.services.registro.prompt import PROMPT_REGISTRO_V3
 from soporte_red import impedir_red
 
 
@@ -32,7 +32,7 @@ CONTEXTO = ContextoEvaluacion(
 ADECUADA = dict(clasificacion='ADECUADA', criterios_faltantes=[], pregunta=None, requiere_atencion=False)
 
 
-VAGA = dict(clasificacion='VAGA', criterios_faltantes=['C2'], pregunta='¿Cuándo lo practicarías?', requiere_atencion=False)
+VAGA = dict(clasificacion='POCO_DESARROLLADA', criterios_faltantes=['C2'], pregunta='¿Cuándo lo practicarías?', requiere_atencion=False)
 
 
 def respuesta_sdk(datos=ADECUADA):
@@ -91,7 +91,7 @@ def test_peticion_salida_estructurada_contexto_exclusivo_y_latencia():
                                                   'conversacion': {'texto_inicial': CONTEXTO.respuestas_anteriores[0].conversacion.texto_inicial, 'turnos': []}}]
         assert CLAVE_SIMULADA not in llamada['contents']
         configuracion = llamada['config']
-        assert configuracion.system_instruction == PROMPT_REGISTRO_V2
+        assert configuracion.system_instruction == PROMPT_REGISTRO_V3
         assert configuracion.temperature == 0.2
         assert configuracion.response_mime_type == 'application/json'
         assert configuracion.response_json_schema['required'] == list(ADECUADA)
@@ -128,9 +128,9 @@ def test_texto_corto_llega_a_gemini_simulado_antes_de_decidir_respaldo(fallo):
     assert len(cliente.llamadas) == 1
     assert json.loads(cliente.llamadas[0]['contents'])['conversacion']['texto_inicial'] == 'Asertividad'
     assert resultado.origen == ('RESPALDO_LONGITUD' if fallo else 'LLM')
-    assert resultado.clasificacion == ('VAGA' if fallo else 'ADECUADA')
+    assert resultado.clasificacion == ('POCO_DESARROLLADA' if fallo else 'ADECUADA')
     assert resultado.pregunta == ('Cuéntame más' if fallo else None)
-    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v2'
+    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v3'
     assert CLAVE_SIMULADA not in (resultado.error or '')
 
 
@@ -162,7 +162,7 @@ def test_respuestas_validas_y_metadatos(datos):
     assert resultado.criterios_faltantes == tuple(datos['criterios_faltantes'])
     assert resultado.requiere_atencion is datos['requiere_atencion']
     assert resultado.modelo == CONFIGURACION.modelo
-    assert resultado.version_prompt == 'v2'
+    assert resultado.version_prompt == 'v3'
     assert resultado.latencia_ms >= 0
 
 
@@ -312,7 +312,7 @@ def test_sdk_con_transporte_simulado_envia_inicial_y_ambos_turnos_con_esquema_v2
             pensamiento = configuracion['thinkingConfig']
             # ProtoJSON admite el nombre original y su equivalente lowerCamelCase.
             assert pensamiento.get('thinkingLevel', pensamiento.get('thinking_level')) == 'MINIMAL'
-            assert llamadas[-1]['systemInstruction']['parts'][0]['text'] == PROMPT_REGISTRO_V2
+            assert llamadas[-1]['systemInstruction']['parts'][0]['text'] == PROMPT_REGISTRO_V3
             assert CLAVE_SIMULADA not in json.dumps(llamadas[-1])
             datos = json.loads(llamadas[-1]['contents'][0]['parts'][0]['text'])
             assert datos['conversacion'] == json.loads(resultado.texto_evaluado)

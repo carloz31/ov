@@ -52,6 +52,7 @@ class TipoEventoUso(StrEnum):
     INVITA_A_CREW = "INVITA_A_CREW"
     FORMA_CREW = "FORMA_CREW"
     VENCE_DESAFIO_INTACTO = "VENCE_DESAFIO_INTACTO"
+    REGISTRO_ADECUADO = "REGISTRO_ADECUADO"
 
 
 class NivelAjuste(StrEnum):
@@ -96,7 +97,7 @@ class OrigenEntrada(StrEnum):
 
 class ClasificacionRespuesta(StrEnum):
     ADECUADA = "ADECUADA"
-    VAGA = "VAGA"
+    POCO_DESARROLLADA = "POCO_DESARROLLADA"
     NO_EVALUADA = "NO_EVALUADA"
 
 
@@ -109,3 +110,10 @@ class EstadoRespuestaRegistro(StrEnum):
 class OrigenEvaluacion(StrEnum):
     LLM = "LLM"
     RESPALDO_LONGITUD = "RESPALDO_LONGITUD"
+
+
+class TipoCriterio(StrEnum):
+    EJEMPLO = "EJEMPLO"
+    RAZON = "RAZON"
+    ACCION = "ACCION"
+    CONTRASTE = "CONTRASTE"

@@ -28,10 +28,10 @@ def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
         "instrumento", "dimension", "escala_respuesta", "opcion_escala", "item_instrumento",
         "actividad_item", "aplicacion", "aplicacion_actividad", "ocupacion", "puntaje_ocupacion",
         "carrera_ocupacion",
-        "item_registro", "criterio_completitud", "actividad_item_registro",
+        "lista_opciones", "opcion_lista", "item_registro", "criterio_completitud",
     }
     assert set(inspector.get_table_names()) == esperadas
-    assert len(esperadas) == 47
+    assert len(esperadas) == 48
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]

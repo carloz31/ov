@@ -66,6 +66,20 @@
         "titulo": "Actividad opcional",
         "visibilidad": "AL_DESBLOQUEAR",
         "visible": true
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-valores",
+        "contenido": "t_valores",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "DISPONIBLE",
+        "orden": 3,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Registro de valores",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": null,

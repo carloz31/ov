@@ -5,7 +5,7 @@ from importlib import import_module
 from app.models.enums import (
     Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso, NivelAjuste,
     TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
-    ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion,
+    ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion, TipoCriterio,
 )
 
 
@@ -35,7 +35,7 @@ _MODELOS_POR_MODULO = {
         'Coincidencia',
     ),
     'app.models.registro': (
-        'ItemRegistro', 'CriterioCompletitud', 'ActividadItemRegistro', 'RespuestaRegistro',
+        'ListaOpciones', 'OpcionLista', 'ItemRegistro', 'CriterioCompletitud', 'RespuestaRegistro',
         'TurnoSeguimiento', 'EvaluacionRespuesta',
     ),
 }
@@ -56,7 +56,7 @@ __all__ = [
     'Base', 'Rol', 'Espacio', 'Audiencia', 'TipoActividad', 'Visibilidad', 'EstadoProgreso',
     'TipoEventoUso', 'NivelAjuste', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
-    'OrigenEvaluacion', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'Bloque',
+    'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'Bloque',
     'Actividad', 'Seccion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
     'ProgresoActividad', 'ResultadoCaso', 'EntradaDiario', 'CheckIn', 'Entrevista',
@@ -64,6 +64,6 @@ __all__ = [
     'CondicionDesbloqueo', 'Desbloqueo', 'Instrumento', 'Dimension', 'EscalaRespuesta',
     'OpcionEscala', 'ItemInstrumento', 'ActividadItem', 'Aplicacion', 'AplicacionActividad',
     'Ocupacion', 'PuntajeOcupacion', 'CarreraOcupacion', 'RespuestaItem', 'ResultadoInstrumento',
-    'ResultadoDimension', 'Coincidencia', 'ItemRegistro', 'CriterioCompletitud',
-    'ActividadItemRegistro', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
+    'ResultadoDimension', 'Coincidencia', 'ListaOpciones', 'OpcionLista', 'ItemRegistro',
+    'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
 ]

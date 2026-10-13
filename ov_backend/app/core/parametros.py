@@ -24,8 +24,11 @@ OPCION_ONET_MAXIMA = 5
 PUNTAJE_ONET_MINIMO = 0
 
 # Registro §3 y §6: valores iniciales; el adaptador leerá el timeout del entorno.
-VERSION_PROMPT_REGISTRO = "v2"
+VERSION_PROMPT_REGISTRO = "v3"
+# Respaldo por longitud de un ítem sin `min_caracteres`. Provisional (B02).
+MIN_CARACTERES_RESPALDO = 40
 MAXIMO_SEGUIMIENTOS_POR_ITEM = 2
+MAXIMO_ITEMS_REGISTRO = 3
 TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
 MODELO_GEMINI_REGISTRO = "gemini-3.1-flash-lite"
 TEMPERATURA_REGISTRO = 0.2

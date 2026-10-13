@@ -54,7 +54,7 @@ class ItemRegistroPublico(BaseModel):
     codigo: str
     nombre: str
     consigna: str
-    min_caracteres: int
+    min_caracteres: int | None
     obligatorio: bool
 
 

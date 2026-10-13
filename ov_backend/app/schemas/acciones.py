@@ -63,7 +63,7 @@ class ResolverCasoEntrada(CompletarActividadEntrada):
 
 
 class ResponderRegistroEntrada(AccionCuenta):
-    clasificacion: Literal["ADECUADA", "VAGA"]
+    clasificacion: Literal["ADECUADA", "POCO_DESARROLLADA"]
     ampliada: bool
 
 

@@ -18,7 +18,7 @@ from app.core.parametros import TEMPERATURA_REGISTRO
 from app.services.registro.evaluacion import (
     ContextoEvaluacion, ErrorResultadoEvaluacion, ResultadoEvaluacion, validar_resultado,
 )
-from app.services.registro.prompt import PROMPT_REGISTRO_V2
+from app.services.registro.prompt import PROMPT_REGISTRO_V3
 
 
 class ErrorClienteGemini(RuntimeError):
@@ -98,7 +98,7 @@ class EvaluadorGemini:
                 model=self.configuracion.modelo,
                 contents=json.dumps(asdict(contexto), ensure_ascii=False),
                 config=types.GenerateContentConfig(
-                    system_instruction=PROMPT_REGISTRO_V2,
+                    system_instruction=PROMPT_REGISTRO_V3,
                     temperature=TEMPERATURA_REGISTRO, candidate_count=1,
                     response_mime_type='application/json',
                     response_json_schema=ResultadoEvaluacion.model_json_schema(),

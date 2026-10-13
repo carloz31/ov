@@ -87,13 +87,13 @@ def test_contexto_solo_contiene_campos_de_la_especificacion(contexto):
 
 
 def test_constantes_de_registro_centralizadas():
-    assert VERSION_PROMPT_REGISTRO == "v2"
+    assert VERSION_PROMPT_REGISTRO == "v3"
     assert MAXIMO_SEGUIMIENTOS_POR_ITEM == 2
 
 
 @pytest.mark.parametrize("texto,clasificacion,atencion", [
     ("Una respuesta completa", "ADECUADA", False),
-    ("Una respuesta [vaga]", "VAGA", False),
+    ("Una respuesta [vaga]", "POCO_DESARROLLADA", False),
     ("Una respuesta [atencion]", "ADECUADA", True),
     ("Una respuesta [vaga] [atencion]", "ADECUADA", True),
 ])
@@ -105,8 +105,8 @@ def test_evaluador_falso_determinista_y_contextos(contexto, texto, clasificacion
     assert primero == segundo
     assert primero.clasificacion == clasificacion
     assert primero.requiere_atencion is atencion
-    assert primero.criterios_faltantes == (["C1", "C2"] if clasificacion == "VAGA" else [])
-    assert primero.pregunta == ("¿Podrías contarme más sobre C1, C2?" if clasificacion == "VAGA" else None)
+    assert primero.criterios_faltantes == (["C1", "C2"] if clasificacion == "POCO_DESARROLLADA" else [])
+    assert primero.pregunta == ("¿Podrías contarme más sobre C1, C2?" if clasificacion == "POCO_DESARROLLADA" else None)
     assert evaluador.contextos == [contexto, contexto]
 
 
@@ -129,18 +129,18 @@ def test_texto_vacio_rechazado_sin_evaluar(contexto, texto):
 
 @pytest.mark.parametrize("texto,clasificacion,atencion", [
     ("Asertividad", "ADECUADA", False), ("  Asertividad  ", "ADECUADA", False),
-    ("[vaga]", "VAGA", False), ("[atencion]", "ADECUADA", True),
+    ("[vaga]", "POCO_DESARROLLADA", False), ("[atencion]", "ADECUADA", True),
 ])
 def test_texto_corto_llama_evaluador_primero_r4_y_r5c(contexto, texto, clasificacion, atencion):
     evaluador = EvaluadorFalso()
     procesada = evaluar_respuesta(con_texto(contexto, texto), 40, "Pregunta genérica del ítem", evaluador)
     assert procesada.origen == OrigenEvaluacion.LLM
     assert procesada.clasificacion == clasificacion
-    assert procesada.criterios_faltantes == (("C1", "C2") if clasificacion == "VAGA" else ())
-    assert procesada.pregunta == ("¿Podrías contarme más sobre C1, C2?" if clasificacion == "VAGA" else None)
+    assert procesada.criterios_faltantes == (("C1", "C2") if clasificacion == "POCO_DESARROLLADA" else ())
+    assert procesada.pregunta == ("¿Podrías contarme más sobre C1, C2?" if clasificacion == "POCO_DESARROLLADA" else None)
     assert procesada.requiere_atencion is atencion
     assert procesada.texto_evaluado == serializar_conversacion(con_texto(contexto, texto).conversacion)
-    assert procesada.version_prompt == "v2" and procesada.latencia_ms >= 0 and procesada.error is None
+    assert procesada.version_prompt == "v3" and procesada.latencia_ms >= 0 and procesada.error is None
     assert evaluador.contextos == [con_texto(contexto, texto)]
 
 
@@ -151,7 +151,7 @@ def test_limites_exactos_solo_deciden_respaldo_y_respetan_espacios(contexto, min
     evaluador = EvaluadorDePrueba(error=RuntimeError("dato sensible simulado")) if fallo else EvaluadorFalso()
     procesada = evaluar_respuesta(con_texto(contexto, texto), minimo, "Cuéntame más", evaluador)
     assert procesada.origen == (OrigenEvaluacion.RESPALDO_LONGITUD if fallo else OrigenEvaluacion.LLM)
-    esperada = ("VAGA" if longitud < minimo else "NO_EVALUADA") if fallo else "ADECUADA"
+    esperada = ("POCO_DESARROLLADA" if longitud < minimo else "NO_EVALUADA") if fallo else "ADECUADA"
     assert procesada.clasificacion == esperada
     assert procesada.criterios_faltantes == (("C1", "C2") if fallo and longitud < minimo else ())
     assert procesada.pregunta == ("Cuéntame más" if fallo and longitud < minimo else None)
@@ -183,12 +183,12 @@ def test_resultado_exige_todos_los_campos(campo):
 
 @pytest.mark.parametrize("datos", [
     datos_resultado(criterios_faltantes=["C1"]),
-    datos_resultado(clasificacion="VAGA", criterios_faltantes=["C9"], pregunta="Cuéntame más"),
-    datos_resultado(clasificacion="VAGA", criterios_faltantes=["C1"], pregunta=None),
-    datos_resultado(clasificacion="VAGA", criterios_faltantes=["C1"], pregunta=""),
-    datos_resultado(clasificacion="VAGA", criterios_faltantes=["C1"], pregunta=" \n\t"),
-    datos_resultado(clasificacion="VAGA", pregunta="Cuéntame más"),
-    datos_resultado(clasificacion="VAGA", criterios_faltantes=["C2", "C2"], pregunta="Cuéntame más"),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C9"], pregunta="Cuéntame más"),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C1"], pregunta=None),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C1"], pregunta=""),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C1"], pregunta=" \n\t"),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", pregunta="Cuéntame más"),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C2", "C2"], pregunta="Cuéntame más"),
 ])
 def test_consistencia_y_criterios_del_item(contexto, datos):
     with pytest.raises(ErrorResultadoEvaluacion):
@@ -196,12 +196,12 @@ def test_consistencia_y_criterios_del_item(contexto, datos):
 
 
 def test_vaga_con_atencion_admite_pregunta_nula_segun_consistencia(contexto):
-    resultado = ResultadoEvaluacion(**datos_resultado(clasificacion="VAGA", criterios_faltantes=["C1"], requiere_atencion=True))
+    resultado = ResultadoEvaluacion(**datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C1"], requiere_atencion=True))
     assert validar_resultado(resultado, contexto).requiere_atencion is True
 
 
 def test_criterios_conservan_orden_del_evaluador(contexto):
-    resultado = ResultadoEvaluacion(**datos_resultado(clasificacion="VAGA", criterios_faltantes=["C2", "C1"], pregunta="Cuéntame más"))
+    resultado = ResultadoEvaluacion(**datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C2", "C1"], pregunta="Cuéntame más"))
     assert validar_resultado(resultado, contexto).criterios_faltantes == ["C2", "C1"]
 
 
@@ -230,7 +230,7 @@ def test_llm_adecuada_conserva_contexto_y_metadatos(contexto, monkeypatch):
     assert procesada.clasificacion == ClasificacionRespuesta.ADECUADA
     assert procesada.criterios_faltantes == () and procesada.pregunta is None
     assert procesada.requiere_atencion is False and procesada.error is None
-    assert procesada.modelo == "modelo_simulado" and procesada.version_prompt == "v2"
+    assert procesada.modelo == "modelo_simulado" and procesada.version_prompt == "v3"
     assert procesada.latencia_ms == 125 and procesada.texto_evaluado == serializar_conversacion(contexto.conversacion)
     assert evaluador.contextos == [contexto]
     assert evaluador.contextos[0].respuestas_anteriores == contexto.respuestas_anteriores
@@ -238,7 +238,7 @@ def test_llm_adecuada_conserva_contexto_y_metadatos(contexto, monkeypatch):
 
 def test_llm_vaga_registra_la_pregunta_del_falso(contexto):
     procesada = evaluar_respuesta(con_texto(contexto, contexto.conversacion.texto_actual + " [vaga]"), 40, "Repregunta mínima", EvaluadorFalso())
-    assert procesada.origen == OrigenEvaluacion.LLM and procesada.clasificacion == ClasificacionRespuesta.VAGA
+    assert procesada.origen == OrigenEvaluacion.LLM and procesada.clasificacion == ClasificacionRespuesta.POCO_DESARROLLADA
     assert procesada.criterios_faltantes == ("C1", "C2")
     assert procesada.pregunta == "¿Podrías contarme más sobre C1, C2?"
 
@@ -253,8 +253,8 @@ def test_atencion_no_tiene_pregunta_en_el_falso(contexto):
 
 @pytest.mark.parametrize("resultado", [None, {}, "JSON incorrecto",
     datos_resultado(clasificacion="NO_EVALUADA"), datos_resultado(criterios_faltantes=["C1"]),
-    datos_resultado(clasificacion="VAGA", criterios_faltantes=["C9"], pregunta="Cuéntame más"),
-    datos_resultado(clasificacion="VAGA", pregunta=None),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C9"], pregunta="Cuéntame más"),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", pregunta=None),
 ])
 def test_resultado_invalido_se_convierte_en_fallo(contexto, resultado):
     evaluador = EvaluadorDePrueba(resultado=resultado)
@@ -272,14 +272,14 @@ def test_resultado_invalido_se_convierte_en_fallo(contexto, resultado):
 ])
 def test_falso_faltantes_explicitos_y_pregunta_por_codigos(contexto, texto, codigos):
     resultado = validar_resultado(EvaluadorFalso().evaluar(con_texto(contexto, texto)), contexto)
-    assert resultado.clasificacion == "VAGA" and resultado.criterios_faltantes == codigos
+    assert resultado.clasificacion == "POCO_DESARROLLADA" and resultado.criterios_faltantes == codigos
     assert resultado.pregunta == f"¿Podrías contarme más sobre {', '.join(codigos)}?"
 
 
 @pytest.mark.parametrize("numero", [1, 2])
 @pytest.mark.parametrize("texto,clasificacion,atencion", [
-    ("El jueves", "ADECUADA", False), ("[vaga]", "VAGA", False),
-    ("[falta:C2]", "VAGA", False), ("[atencion]", "ADECUADA", True),
+    ("El jueves", "ADECUADA", False), ("[vaga]", "POCO_DESARROLLADA", False),
+    ("[falta:C2]", "POCO_DESARROLLADA", False), ("[atencion]", "ADECUADA", True),
 ])
 def test_falso_solo_decide_por_ultimo_turno_y_faltantes_previos(contexto, numero, texto, clasificacion, atencion):
     contexto = con_seguimiento(contexto, texto, numero)
@@ -287,8 +287,8 @@ def test_falso_solo_decide_por_ultimo_turno_y_faltantes_previos(contexto, numero
     procesada = evaluar_respuesta(contexto, 40, "Genérica", evaluador)
     assert procesada.origen == "LLM" and procesada.clasificacion == clasificacion
     assert procesada.requiere_atencion is atencion
-    assert procesada.criterios_faltantes == (("C2",) if clasificacion == "VAGA" else ())
-    assert procesada.pregunta == ("¿Podrías contarme más sobre C2?" if clasificacion == "VAGA" else None)
+    assert procesada.criterios_faltantes == (("C2",) if clasificacion == "POCO_DESARROLLADA" else ())
+    assert procesada.pregunta == ("¿Podrías contarme más sobre C2?" if clasificacion == "POCO_DESARROLLADA" else None)
     assert evaluador.contextos == [contexto]
 
 
@@ -305,7 +305,7 @@ def test_ultimo_turno_vacio_rechazado_aunque_haya_respuestas_previas(contexto, t
 @pytest.mark.parametrize("codigos", [["C1"], ["C1", "C2"]])
 def test_no_admite_criterios_ya_cumplidos(contexto, codigos):
     contexto = con_seguimiento(contexto, "Todavía [vaga]")
-    resultado = ResultadoEvaluacion(**datos_resultado(clasificacion="VAGA", criterios_faltantes=codigos, pregunta="Cuéntame más"))
+    resultado = ResultadoEvaluacion(**datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=codigos, pregunta="Cuéntame más"))
     with pytest.raises(ErrorResultadoEvaluacion, match="ya cumplidos"):
         validar_resultado(resultado, contexto)
     procesada = evaluar_respuesta(contexto, 40, "Genérica", EvaluadorDePrueba(resultado))
@@ -315,14 +315,14 @@ def test_no_admite_criterios_ya_cumplidos(contexto, codigos):
 @pytest.mark.parametrize("texto", ["[falta:C9]", "[falta:]"])
 def test_marca_falso_invalida_aplica_respaldo_en_vez_de_aceptar(contexto, texto):
     procesada = evaluar_respuesta(con_texto(contexto, texto), 40, "Genérica", EvaluadorFalso())
-    assert procesada.origen == "RESPALDO_LONGITUD" and procesada.clasificacion == "VAGA"
+    assert procesada.origen == "RESPALDO_LONGITUD" and procesada.clasificacion == "POCO_DESARROLLADA"
     assert procesada.pregunta == "Genérica" and procesada.criterios_faltantes == ("C1", "C2")
     assert "consistencia" in procesada.error
 
 
 @pytest.mark.parametrize("resultado", [None, {},
-    datos_resultado(clasificacion="VAGA", criterios_faltantes=["C9"], pregunta="Cuéntame más"),
-    datos_resultado(clasificacion="VAGA", criterios_faltantes=["C1", "C1"], pregunta="Cuéntame más"),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C9"], pregunta="Cuéntame más"),
+    datos_resultado(clasificacion="POCO_DESARROLLADA", criterios_faltantes=["C1", "C1"], pregunta="Cuéntame más"),
 ])
 @pytest.mark.parametrize("numero", [0, 1, 2])
 def test_resultado_invalido_con_texto_corto_respalda_solo_el_inicial(contexto, resultado, numero):
@@ -330,7 +330,7 @@ def test_resultado_invalido_con_texto_corto_respalda_solo_el_inicial(contexto, r
     evaluador = EvaluadorDePrueba(resultado)
     procesada = evaluar_respuesta(contexto, 40, "Genérica", evaluador)
     assert procesada.origen == "RESPALDO_LONGITUD"
-    assert procesada.clasificacion == ("NO_EVALUADA" if numero else "VAGA")
+    assert procesada.clasificacion == ("NO_EVALUADA" if numero else "POCO_DESARROLLADA")
     assert procesada.pregunta == (None if numero else "Genérica")
     assert procesada.criterios_faltantes == (() if numero else ("C1", "C2"))
     assert "consistencia" in procesada.error and evaluador.contextos == [contexto]
@@ -364,12 +364,12 @@ def test_fallos_guardan_error_seguro_y_no_reintentan(contexto, error, esperado, 
     procesada = evaluar_respuesta(contexto, 40, "Cuéntame más", evaluador, modelo="modelo_simulado")
     corto_inicial = numero == 0 and longitud < 40
     assert procesada.origen == OrigenEvaluacion.RESPALDO_LONGITUD
-    assert procesada.clasificacion == ("VAGA" if corto_inicial else "NO_EVALUADA")
+    assert procesada.clasificacion == ("POCO_DESARROLLADA" if corto_inicial else "NO_EVALUADA")
     assert procesada.error == esperado and "dato sensible simulado" not in str(procesada)
     assert procesada.requiere_atencion is False
     assert procesada.pregunta == ("Cuéntame más" if corto_inicial else None)
     assert procesada.criterios_faltantes == (("C1", "C2") if corto_inicial else ())
-    assert procesada.modelo == "modelo_simulado" and procesada.version_prompt == "v2"
+    assert procesada.modelo == "modelo_simulado" and procesada.version_prompt == "v3"
     assert procesada.latencia_ms >= 0
     assert evaluador.contextos == [contexto]
 
@@ -395,7 +395,7 @@ def test_tiempo_maximo_exacto_sin_esperas_reales(contexto, monkeypatch, duracion
         corto_inicial = numero == 0 and longitud < 40
         assert procesada.error == "Se agotó el tiempo máximo de evaluación"
         assert procesada.pregunta == ("Cuéntame más" if corto_inicial else None)
-        assert procesada.clasificacion == ("VAGA" if corto_inicial else "NO_EVALUADA")
+        assert procesada.clasificacion == ("POCO_DESARROLLADA" if corto_inicial else "NO_EVALUADA")
 
 
 @pytest.mark.parametrize("minimo", [-1, 1.5, True])

@@ -1,4 +1,5 @@
-"""Lo fijo de la plataforma, sea cual sea la ruta: secciones, RIASEC y el catálogo O*NET.
+"""Lo fijo de la plataforma, sea cual sea la ruta: secciones, listas comunes, repreguntas por tipo
+de criterio, RIASEC y el catálogo O*NET.
 
 Se carga en todo conjunto. La transacción pertenece al llamador; este módulo no confirma ni migra.
 """
@@ -17,6 +18,28 @@ from datos.ocupaciones import RUTA_OCUPACIONES, leer_ocupaciones
 SECCIONES = (('CATALOGO', 'Catálogo', 'ESTUDIANTE'), ('CHECK_IN', 'Check-in', 'ESTUDIANTE'),
              ('DIARIO', 'Diario', 'ESTUDIANTE'), ('FAMILIA', 'Familia', 'ESTUDIANTE'),
              ('PLANES', 'Planes', 'ESTUDIANTE'), ('CONVERSACIONES', 'Conversaciones', 'APODERADO'))
+
+# Código reservado para la opción «otra»; ninguna lista puede usarlo.
+CODIGO_OTRA = 'OTRA'
+
+# (código, nombre, ((código, texto), ...)). Listas comunes: se comparan entre actividades y tarjetas.
+# Textos provisionales hasta la carga real (B02).
+LISTAS_COMUNES = (
+    ('RUTAS_DESPUES_COLEGIO', 'Rutas después del colegio',
+     (('UNIVERSIDAD', 'Estudiar en una universidad'), ('INSTITUTO', 'Estudiar en un instituto'),
+      ('TRABAJAR', 'Trabajar'), ('EMPRENDER', 'Emprender un negocio'), ('AUN_NO_SE', 'Aún no lo sé'))),
+    ('DIFICULTADES', 'Dificultades',
+     (('ECONOMICAS', 'Económicas'), ('ACADEMICAS', 'Académicas'), ('FAMILIARES', 'Familiares'),
+      ('INFORMACION', 'Falta de información'), ('DISTANCIA', 'Distancia'))),
+)
+
+# Repregunta de cada tipo de criterio; el criterio la hereda si no trae la suya. Provisional (B02).
+REPREGUNTAS_CRITERIO = {
+    'EJEMPLO': '¿Podrías darme un ejemplo concreto?',
+    'RAZON': '¿Por qué lo piensas así?',
+    'ACCION': '¿Qué podrías hacer al respecto?',
+    'CONTRASTE': '¿En qué se diferencia de lo que pensabas antes?',
+}
 
 # Los 60 enunciados de §4.3.7, sin texto narrativo del front.
 ENUNCIADOS_RIASEC = {'R': ('Reparar una bicicleta o un electrodoméstico.',
@@ -151,6 +174,7 @@ class Fijos:
     aplicaciones: dict[str, modelos.Aplicacion]
     items: dict[str, dict[int, modelos.ItemInstrumento]]
     secciones: dict[str, modelos.Seccion]
+    listas: dict[str, modelos.ListaOpciones]
 
 
 def _leer_catalogo_seleccionado():
@@ -214,10 +238,29 @@ def _cargar_secciones(sesion):
     return secciones
 
 
+def cargar_listas(sesion, listas, comun):
+    """Carga listas de opciones; la ruta usa la misma función para sus listas propias."""
+    cargadas = {}
+    for codigo, nombre, opciones in listas:
+        codigos = [codigo_opcion for codigo_opcion, _ in opciones]
+        if CODIGO_OTRA in codigos:
+            raise ValueError(f'La lista {codigo} usa el código reservado {CODIGO_OTRA}')
+        if not codigos or len(codigos) != len(set(codigos)):
+            raise ValueError(f'La lista {codigo} debe tener opciones con códigos distintos')
+        cargadas[codigo] = modelos.ListaOpciones(codigo=codigo, nombre=nombre, comun=comun)
+    sesion.add_all(cargadas.values())
+    sesion.flush()
+    sesion.add_all(modelos.OpcionLista(lista_id=cargadas[codigo].id, codigo=c, texto=t, orden=orden)
+                   for codigo, _, opciones in listas for orden, (c, t) in enumerate(opciones, start=1))
+    return cargadas
+
+
 def cargar(sesion: Session) -> Fijos:
     secciones = _cargar_secciones(sesion)
+    listas = cargar_listas(sesion, LISTAS_COMUNES, comun=True)
     archivo = _leer_catalogo_seleccionado()
     dimensiones, aplicacion, items = _cargar_riasec(sesion)
     _cargar_catalogo(sesion, archivo, dimensiones)
     sesion.flush()
-    return Fijos(aplicaciones={aplicacion.codigo: aplicacion}, items={'TEST-RIASEC': items}, secciones=secciones)
+    return Fijos(aplicaciones={aplicacion.codigo: aplicacion}, items={'TEST-RIASEC': items}, secciones=secciones,
+                 listas=listas)

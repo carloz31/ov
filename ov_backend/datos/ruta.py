@@ -8,6 +8,7 @@ La transacción pertenece al llamador; este módulo no confirma ni migra.
 from sqlalchemy.orm import Session
 
 from app import models as modelos
+from app.core.parametros import MAXIMO_ITEMS_REGISTRO
 from datos import fijos
 from datos.ocupaciones import validar_distribucion_items
 
@@ -38,6 +39,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-cierre-inicio', 'T0', 'Cierre del inicio', 'INFORMATIVA', None, 5),
                ('t-expectativas', 'T1', 'Registro de expectativas', 'REGISTRO', None, 15),
                ('t-opcional', 'T1', 'Actividad opcional', 'INFORMATIVA', None, 5),
+               ('t-valores', 'T1', 'Registro de valores', 'REGISTRO', None, 10),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 60, 10),
@@ -46,7 +48,8 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
 
 # Lo que cambia los valores por defecto (requerida, visibilidad SIEMPRE, sin descripción).
 PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
-                              'descripcion': 'Actividad opcional que aparece al desbloquearse.'}}
+                              'descripcion': 'Actividad opcional que aparece al desbloquearse.'},
+               't-valores': {'requerida': False}}
 
 # (actividad, instrumento, primer ítem, último ítem). El RIASEC va en dos misiones para probar que el
 # resultado espera a todas las de su aplicación.
@@ -55,6 +58,33 @@ ITEMS_ACTIVIDADES = (('t-mision-intereses', 'TEST-RIASEC', 1, 30),
 
 # (aplicación, actividad)
 APLICACIONES_ACTIVIDADES = (('APL-RIASEC', 't-mision-intereses'), ('APL-RIASEC', 't-mision-intereses-2'))
+
+# Listas propias de una actividad: (código, nombre, ((código, texto), ...)).
+LISTAS = (('t-lista-apoyos', 'Quién te apoya', (('FAMILIA', 'Mi familia'), ('DOCENTES', 'Mis docentes'),
+                                                ('AMIGOS', 'Mis amigos'))),
+          ('t-lista-valores', 'Valores', (('SERVIR', 'Servir a otros'), ('CREAR', 'Crear cosas nuevas'),
+                                          ('ESTABILIDAD', 'Tener estabilidad'), ('RECONOCIMIENTO', 'Ser reconocido'),
+                                          ('LIBERTAD', 'Tener libertad'))))
+
+# (actividad, código, nombre, consigna, elección, criterios). El orden es el de la tupla dentro de cada
+# actividad. Elección: None o (lista, mínima, máxima, ordenada, permite «otra»). Criterio: (código, tipo,
+# descripción); la repregunta sale de `fijos.REPREGUNTAS_CRITERIO`.
+ITEMS_REGISTRO = (
+    ('t-expectativas', 't-exp-ruta', 'Ruta', '¿Qué te gustaría hacer al terminar el colegio y por qué?',
+     ('RUTAS_DESPUES_COLEGIO', 1, 2, False, True), (('C1', 'RAZON', 'Por qué elige esa ruta'),)),
+    ('t-expectativas', 't-exp-apoyo', 'Apoyo', '¿Quién te apoya en esta decisión? Cuenta un ejemplo.',
+     ('t-lista-apoyos', 1, 1, False, False), (('C1', 'EJEMPLO', 'Un ejemplo concreto de apoyo'),)),
+    ('t-expectativas', 't-exp-espera', 'Expectativas', '¿Qué esperan de ti las personas cercanas?', None,
+     (('C1', 'EJEMPLO', 'Una expectativa concreta'), ('C2', 'RAZON', 'Por qué cree que la tienen'))),
+    ('t-valores', 't-val-orden', 'Valores', 'Ordena los tres valores más importantes para ti y explica el primero.',
+     ('t-lista-valores', 3, 3, True, False), (('C1', 'RAZON', 'Por qué el primero es el más importante'),)),
+    ('t-valores', 't-val-libre', 'Libre', 'Escribe lo que quieras sobre tus valores.', None, ()),
+    ('t-valores', 't-val-breve', 'Breve', 'Describe un momento en que actuaste según tus valores.', None, ()),
+)
+
+# Lo que cambia los valores por defecto de un ítem (obligatorio, no núcleo, sin longitud mínima).
+PROPIEDADES_ITEMS = {'t-exp-espera': {'nucleo': True}, 't-val-breve': {'min_caracteres': 40}}
+REPREGUNTA_GENERICA = '¿Podrías contarme un poco más?'
 
 # (código, título, contenido, audiencia)
 FICHAS = (('t-ficha', 'Ficha de prueba', 'Ficha que otorga t-inicio.', 'ESTUDIANTE'),
@@ -165,8 +195,51 @@ def _unir_instrumentos(sesion, actividades, base: fijos.Fijos):
                    for orden, numero in enumerate(range(inicio, fin + 1), start=1))
 
 
+def _validar_eleccion(codigo, eleccion, listas):
+    if eleccion is None:
+        return
+    lista, minima, maxima, _, permite_otra = eleccion
+    if lista not in listas:
+        raise ValueError(f'El ítem {codigo} usa la lista inexistente {lista}')
+    disponibles = len(listas[lista][2]) + (1 if permite_otra else 0)
+    if not 0 <= minima <= maxima or not 1 <= maxima <= disponibles:
+        raise ValueError(f'El ítem {codigo} tiene una elección mínima o máxima incoherente')
+
+
+def _cargar_registros(sesion, actividades, base: fijos.Fijos):
+    listas = {codigo: (codigo, nombre, opciones) for codigo, nombre, opciones in (*fijos.LISTAS_COMUNES, *LISTAS)}
+    cargadas = {**base.listas, **fijos.cargar_listas(sesion, LISTAS, comun=False)}
+    ordenes, vistos = {}, set()
+    items = []
+    for actividad, codigo, nombre, consigna, eleccion, criterios in ITEMS_REGISTRO:
+        if codigo in vistos:
+            raise ValueError(f'El ítem {codigo} aparece en dos actividades')
+        vistos.add(codigo)
+        if actividades[actividad].tipo != modelos.TipoActividad.REGISTRO:
+            raise ValueError(f'El ítem {codigo} está en {actividad}, que no es de registro')
+        ordenes[actividad] = ordenes.get(actividad, 0) + 1
+        if ordenes[actividad] > MAXIMO_ITEMS_REGISTRO:
+            raise ValueError(f'El registro {actividad} tiene más de {MAXIMO_ITEMS_REGISTRO} ítems')
+        _validar_eleccion(codigo, eleccion, listas)
+        lista, minima, maxima, ordenada, otra = eleccion or (None, None, None, False, False)
+        propiedades = PROPIEDADES_ITEMS.get(codigo, {})
+        item = modelos.ItemRegistro(
+            codigo=codigo, actividad_id=actividades[actividad].id, orden=ordenes[actividad], nombre=nombre,
+            consigna=consigna, min_caracteres=propiedades.get('min_caracteres'),
+            obligatorio=propiedades.get('obligatorio', True), nucleo=propiedades.get('nucleo', False),
+            repregunta_generica=REPREGUNTA_GENERICA, lista_id=None if lista is None else cargadas[lista].id,
+            eleccion_minima=minima, eleccion_maxima=maxima, eleccion_ordenada=ordenada, permite_otra=otra)
+        items.append((item, criterios))
+    sesion.add_all(item for item, _ in items)
+    sesion.flush()
+    sesion.add_all(modelos.CriterioCompletitud(item_registro_id=item.id, codigo=c, tipo=modelos.TipoCriterio(tipo),
+                                               descripcion=d, repregunta=fijos.REPREGUNTAS_CRITERIO[tipo], orden=orden)
+                   for item, criterios in items for orden, (c, tipo, d) in enumerate(criterios, start=1))
+
+
 def _cargar_reglas(sesion, objetivos):
-    referencias = {'COMPLETA_ACTIVIDAD': objetivos['ACTIVIDAD'], 'COMPLETA_BLOQUE': objetivos['BLOQUE']}
+    referencias = {'COMPLETA_ACTIVIDAD': objetivos['ACTIVIDAD'], 'COMPLETA_BLOQUE': objetivos['BLOQUE'],
+                   'REGISTRO_ADECUADO': objetivos['ACTIVIDAD']}
     reglas = []
     for codigo, tipo, objetivo, mensaje, condiciones in REGLAS:
         if not mensaje.strip():
@@ -185,6 +258,7 @@ def cargar(sesion: Session) -> None:
     base = fijos.cargar(sesion)
     objetivos = {**_cargar_estructura(sesion), 'SECCION': base.secciones}
     _unir_instrumentos(sesion, objetivos['ACTIVIDAD'], base)
+    _cargar_registros(sesion, objetivos['ACTIVIDAD'], base)
     _cargar_reglas(sesion, objetivos)
     sesion.flush()
     validar_distribucion_items(sesion)

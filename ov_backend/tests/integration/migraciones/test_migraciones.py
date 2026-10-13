@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 47
+    assert len(Base.metadata.tables) == 48
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,14 +129,14 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 48
+    assert sql.count('CREATE TABLE ') == 50
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
     assert 'json_type(' not in sql and 'PRAGMA' not in sql
     assert "WHERE origen = 'GUIADA'" in sql
     assert 'WHERE anulado_en IS NULL' in sql
-    assert sql.count('BOOLEAN DEFAULT false') == 6
+    assert sql.count('BOOLEAN DEFAULT false') == 9
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:
         ddl = str(CreateTable(tabla).compile(dialect=dialecto))
@@ -174,7 +174,9 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
         anteriores.reflect(motor)
         with motor.connect() as conexion:
             filas_antes = {nombre: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
-                           for nombre, tabla in anteriores.tables.items() if nombre != 'alembic_version'}
+                           for nombre, tabla in anteriores.tables.items()
+                           # 0005 retira actividad_item_registro; sus filas pasan a item_registro.
+                           if nombre not in {'alembic_version', 'actividad_item_registro'}}
         command.upgrade(configuracion, 'head')
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == (
@@ -260,8 +262,8 @@ def test_migracion_0003_admite_familia_conserva_datos_y_rechaza_otros_espacios(t
         motor.dispose()
 
 
-# B01: la ruta tiene orientadora y secciones, así que el primer downgrade que falla es el de 0004.
-def test_downgrade_0004_con_orientadora_falla_sin_perder_catalogo_ni_estado(base_migrada):
+# B02: la ruta tiene ítems con elección, así que el primer downgrade que falla es el de 0005.
+def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(base_migrada):
     url, configuracion, motor = base_migrada
     preparar_base(url, 'ruta')
     aplicacion = crear_aplicacion(url)
@@ -274,11 +276,11 @@ def test_downgrade_0004_con_orientadora_falla_sin_perder_catalogo_ni_estado(base
         with motor.connect() as conexion:
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
                           for tabla in Base.metadata.sorted_tables}
-        with pytest.raises(RuntimeError, match='existen cuentas ORIENTADORA'):
+        with pytest.raises(RuntimeError, match='hay ítems con elección'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0004'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0005'
             for tabla in Base.metadata.sorted_tables:
                 assert conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all() == anteriores[tabla.name]
             assert conexion.execute(text('PRAGMA foreign_key_check')).all() == []
@@ -318,5 +320,57 @@ def test_migracion_0004_convierte_conversaciones_en_seccion_y_vuelve_sin_ella(tm
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0003'
             assert 'seccion' not in inspect(motor).get_table_names()
+    finally:
+        motor.dispose()
+
+
+def test_migracion_0005_conserva_filas_de_registro_y_renombra_la_clasificacion(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "registro.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    motor = database.crear_motor_bd(url)
+    try:
+        command.upgrade(configuracion, '0004')
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: un ítem en su actividad, con criterio, respuesta y evaluación VAGA anteriores a 0005.
+            for sql in (
+                "INSERT INTO bloque (id, codigo, numero, nombre, espacio, audiencia) "
+                "VALUES (1, 'B1', 1, 'Prueba', 'MISIONES_CAMPO', 'ESTUDIANTE')",
+                "INSERT INTO actividad (id, codigo, titulo, tipo, contenido, orden, bloque_id, visibilidad) "
+                "VALUES (1, 'A1', 'Registro', 'REGISTRO', 'a1', 1, 1, 'SIEMPRE')",
+                "INSERT INTO cuenta (id, codigo, nombre, rol) VALUES (1, 'C1', 'Cuenta', 'ESTUDIANTE')",
+                "INSERT INTO item_registro (id, codigo, nombre, consigna, min_caracteres, obligatorio, "
+                "repregunta_generica) VALUES (1, 'I1', 'Ítem', 'Consigna', 20, 1, 'Cuéntame más')",
+                "INSERT INTO actividad_item_registro (actividad_id, item_registro_id, orden) VALUES (1, 1, 2)",
+                "INSERT INTO criterio_completitud (id, item_registro_id, codigo, descripcion, orden) "
+                "VALUES (1, 1, 'C1', 'Un ejemplo', 1)",
+                "INSERT INTO progreso_actividad (id, cuenta_id, actividad_id, estado) VALUES (1, 1, 1, 'EN_CURSO')",
+                "INSERT INTO respuesta_registro (id, progreso_id, item_registro_id, texto_inicial, estado, "
+                "clasificacion_inicial, ampliada, creada_en, actualizada_en) "
+                "VALUES (1, 1, 1, 'Texto', 'FINAL', 'VAGA', 0, '2026-10-01', '2026-10-01')",
+                "INSERT INTO evaluacion_respuesta (id, respuesta_id, numero, origen, clasificacion, "
+                "criterios_faltantes, requiere_atencion, texto_evaluado, fecha_hora) "
+                "VALUES (1, 1, 1, 'LLM', 'VAGA', '[\"C1\"]', 0, 'Texto', '2026-10-01')",
+            ):
+                conexion.execute(text(sql))
+        command.upgrade(configuracion, '0005')
+        with motor.connect() as conexion:
+            assert conexion.execute(text(
+                'SELECT codigo, actividad_id, orden, min_caracteres, nucleo, lista_id FROM item_registro'
+            )).all() == [('I1', 1, 2, 20, False, None)]
+            assert conexion.execute(text('SELECT tipo, repregunta FROM criterio_completitud')).all() == [
+                ('EJEMPLO', 'Cuéntame más')]
+            assert conexion.execute(text(
+                'SELECT texto_inicial, clasificacion_inicial, opciones_elegidas, texto_consolidado FROM respuesta_registro'
+            )).all() == [('Texto', 'POCO_DESARROLLADA', '[]', None)]
+            assert conexion.execute(text('SELECT clasificacion FROM evaluacion_respuesta')).all() == [
+                ('POCO_DESARROLLADA',)]
+            assert 'actividad_item_registro' not in inspect(motor).get_table_names()
+        with pytest.raises(IntegrityError), motor.begin() as conexion:
+            conexion.execute(text("UPDATE respuesta_registro SET clasificacion_inicial = 'VAGA'"))
+        command.downgrade(configuracion, '0004')
+        with motor.connect() as conexion:
+            assert conexion.execute(text('SELECT * FROM actividad_item_registro')).all() == [(1, 1, 2)]
+            assert conexion.execute(text('SELECT clasificacion FROM evaluacion_respuesta')).all() == [('VAGA',)]
     finally:
         motor.dispose()

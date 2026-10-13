@@ -12,10 +12,10 @@ from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 # Estados de cada actividad del estudiante, al inicio y con la Ciudad abierta.
 ESTADOS = {
     False: {'t-inicio': 'DISPONIBLE', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
-            't-opcional': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
+            't-opcional': 'BLOQUEADA', 't-valores': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
             't-caso': 'BLOQUEADA'},
     True: {'t-inicio': 'COMPLETADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
-           't-opcional': 'DISPONIBLE', 't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA',
+           't-opcional': 'DISPONIBLE', 't-valores': 'DISPONIBLE', 't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA',
            't-caso': 'BLOQUEADA'},
 }
 # Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).

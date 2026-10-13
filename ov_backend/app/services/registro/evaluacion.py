@@ -58,7 +58,7 @@ class ContextoEvaluacion:
 class ResultadoEvaluacion(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
 
-    clasificacion: Literal["ADECUADA", "VAGA"]
+    clasificacion: Literal["ADECUADA", "POCO_DESARROLLADA"]
     criterios_faltantes: list[str]
     pregunta: str | None
     requiere_atencion: bool
@@ -108,7 +108,7 @@ class EvaluadorFalso:
                 codigo.strip() for marca in marcas for codigo in marca.split(',') if codigo.strip()
             ))
         return ResultadoEvaluacion(
-            clasificacion="VAGA" if vaga else "ADECUADA",
+            clasificacion="POCO_DESARROLLADA" if vaga else "ADECUADA",
             criterios_faltantes=faltantes if vaga else [],
             pregunta=f"¿Podrías contarme más sobre {', '.join(faltantes)}?" if vaga else None,
             requiere_atencion=atencion,
@@ -131,10 +131,10 @@ def validar_resultado(resultado: ResultadoEvaluacion, contexto: ContextoEvaluaci
         raise ErrorResultadoEvaluacion("Los criterios faltantes no pueden repetirse")
     if validado.clasificacion == "ADECUADA" and validado.criterios_faltantes:
         raise ErrorResultadoEvaluacion("Una respuesta adecuada no puede tener criterios faltantes")
-    if validado.clasificacion == "VAGA" and not validado.requiere_atencion and (
+    if validado.clasificacion == "POCO_DESARROLLADA" and not validado.requiere_atencion and (
         not validado.criterios_faltantes or validado.pregunta is None or not validado.pregunta.strip()
     ):
-        raise ErrorResultadoEvaluacion("Una respuesta vaga requiere criterios y una pregunta no vacíos")
+        raise ErrorResultadoEvaluacion("Una respuesta poco desarrollada requiere criterios y una pregunta no vacíos")
     return validado
 
 
@@ -176,7 +176,7 @@ def evaluar_respuesta(
             raise ValueError("La repregunta genérica no puede estar vacía")
         return EvaluacionProcesada(
             origen=OrigenEvaluacion.RESPALDO_LONGITUD,
-            clasificacion=ClasificacionRespuesta.VAGA if corto else ClasificacionRespuesta.NO_EVALUADA,
+            clasificacion=ClasificacionRespuesta.POCO_DESARROLLADA if corto else ClasificacionRespuesta.NO_EVALUADA,
             criterios_faltantes=tuple(criterio.codigo for criterio in contexto.criterios) if corto else (),
             pregunta=repregunta_generica if corto else None, requiere_atencion=False,
             modelo=modelo, version_prompt=version_prompt, latencia_ms=latencia_ms,

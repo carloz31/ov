@@ -13,6 +13,8 @@ RECORRIDO = ('t-inicio', 't-cierre-inicio', 't-expectativas')
 # El RIASEC va en dos misiones de 30 ítems; el resultado se calcula al completar la última.
 MISIONES_INTERESES = ('t-mision-intereses', 't-mision-intereses-2')
 INTERESES, INTERESES_FINAL = MISIONES_INTERESES
+# DATO DE PRUEBA: las actividades de registro de la ruta; completarlas exige enviar sus ítems.
+REGISTROS = ('t-expectativas', 't-valores')
 
 BLOQUE_FAMILIA = {
     'codigo': 'FAMILIA', 'nombre': 'Actividades para familias', 'numero': 1,
@@ -41,7 +43,17 @@ def pedir(cliente, metodo, ruta, datos=None, esperado=200):
     return respuesta.json()
 
 
+def responder_registro(cliente, actividad, cuenta='est-ana'):
+    """Envía cada ítem de un registro con un texto adecuado para el evaluador falso."""
+    for item in pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro'):
+        pedir(cliente, 'POST', '/acciones/registro/enviar', {
+            'cuenta': cuenta, 'actividad': actividad, 'item': item['codigo'], 'fecha_hora': FECHA,
+            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'})
+
+
 def completar(cliente, codigo, cuenta='est-ana', esperado=200):
+    if esperado == 200 and codigo in REGISTROS:
+        responder_registro(cliente, codigo, cuenta)
     return pedir(cliente, 'POST', '/acciones/completar-actividad',
                  {'cuenta': cuenta, 'actividad': codigo, 'fecha_hora': FECHA}, esperado)
 
