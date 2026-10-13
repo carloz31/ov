@@ -13,6 +13,7 @@ Contrato vigente entre los dos repos. Lo usan los agentes de ambos. Las reglas g
 | Estado del estudiante: progreso, eventos, desbloqueos, respuestas a ítems, resultados | Base de datos. El front solo guarda una copia de presentación. |
 | Estado del apoderado: disponibilidad, completitud de actividades y eventos | Base de datos. Nodo actual, intentos de práctica y elecciones quedan en el front por cuenta. |
 | Contenido narrativo de cada actividad (nodos JSON) | Front (`src/data/activities/contenidos/`) |
+| Batallas y casos: preguntas, vidas, problemas, presupuesto, pistas por problema y cálculo del puntaje | Front. El servidor guarda cada intento (victoria y aciertos; puntaje y ocupaciones bien asignadas), la colección y los tipos RIASEC de cada caso. |
 | Textos de registros, borradores, respuestas de la brújula, intentos de comprobaciones, favoritos, planes | Front (local). Pasan al servidor en iteraciones siguientes. |
 | Detalle del catálogo (descripciones, ingresos, instituciones, duración de carreras) | Front (`src/data/catalog/`) |
 

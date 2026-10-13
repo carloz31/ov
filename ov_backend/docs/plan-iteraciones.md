@@ -72,7 +72,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B05 | Referencias y eco · **Implementado** | 009 | M | B04 | Citas literales; lo poco desarrollado sale como «por desarrollar» |
 | B06 | Revelar resultados y libro de Helena · **Implementado** | 022–024, 027, 095 | M | B05 | Revelar calcula y abre el registro de contraste; reinicio con perfil plano |
 | B07 | Partida y llegada, temáticas y prioritarios · **Implementado** | 094 | M | B06 | Comparación por dimensión; T2 se abre con los instrumentos prioritarios revelados |
-| B08 | Batallas, casos y testimonios | 017, 041, 051–056 | M | B05 | Batalla con reintento; el caso libera testimonios y colección |
+| B08 | Batallas, casos y testimonios · **Implementado** | 017, 041, 051–056 | M | B05 | Batalla con reintento; el caso libera testimonios y colección |
 | B09 | Diario, pregunta del día y check-in | 028–033, 035, 036, 075 | M | B07 | Entradas fijas y personalizadas, también con fallo del LLM |
 | B10 | Catálogo, instituciones y favoritos | 026, 037–040 | M | B06 | `t-explorar` bloqueado hasta tener favoritos diversos |
 | B11 | Planes de carrera | 043–048, 050, 097–099 | M | B07, B08, B10 | Campos que se habilitan, presupuesto y requisitos de comparar y proyecto |
