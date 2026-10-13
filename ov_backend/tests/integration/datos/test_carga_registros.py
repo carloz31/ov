@@ -63,8 +63,8 @@ def test_items_listas_y_criterios_cargados(tmp_path):
                                        .order_by(m.CriterioCompletitud.orden)).all()
             assert [tipo for tipo, _ in criterios] == [m.TipoCriterio.EJEMPLO, m.TipoCriterio.RAZON]
             assert all(repregunta.strip() for _, repregunta in criterios)
-            nucleo, breve = (sesion.scalar(select(m.ItemRegistro).where(m.ItemRegistro.codigo == c))
+            espera, breve = (sesion.scalar(select(m.ItemRegistro).where(m.ItemRegistro.codigo == c))
                              for c in ('t-exp-espera', 't-val-breve'))
-            assert nucleo.nucleo and nucleo.min_caracteres is None and breve.min_caracteres == 40
+            assert espera.min_caracteres is None and breve.min_caracteres == 40
     finally:
         motor.dispose()

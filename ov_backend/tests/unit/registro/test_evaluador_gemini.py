@@ -127,7 +127,7 @@ def test_texto_corto_llega_a_gemini_simulado_antes_de_decidir_respaldo(fallo):
     resultado = procesar(cliente, contexto)
     assert len(cliente.llamadas) == 1
     assert json.loads(cliente.llamadas[0]['contents'])['conversacion']['texto_inicial'] == 'Asertividad'
-    assert resultado.origen == ('RESPALDO_LONGITUD' if fallo else 'LLM')
+    assert resultado.origen == ('EXTENSION_MINIMA' if fallo else 'LLM')
     assert resultado.clasificacion == ('POCO_DESARROLLADA' if fallo else 'ADECUADA')
     assert resultado.pregunta == ('Cuéntame más' if fallo else None)
     assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v3'
@@ -175,7 +175,7 @@ def test_respuestas_validas_y_metadatos(datos):
 def test_resultados_invalidos_se_convierten_en_fallo(datos):
     cliente = ClienteSimulado(respuesta_sdk(datos))
     resultado = procesar(cliente)
-    assert resultado.origen == 'RESPALDO_LONGITUD'
+    assert resultado.origen == 'EXTENSION_MINIMA'
     assert resultado.clasificacion == 'NO_EVALUADA'
     assert resultado.pregunta is None
     assert 'esquema' in resultado.error
@@ -190,7 +190,7 @@ def test_resultados_invalidos_se_convierten_en_fallo(datos):
     types.GenerateContentResponse(candidates=[types.Candidate(content=types.Content(parts=[types.Part(text=json.dumps(ADECUADA), thought=True)]))]),
 ])
 def test_salida_ausente_bloqueada_o_malformada(respuesta):
-    assert procesar(ClienteSimulado(respuesta)).origen == 'RESPALDO_LONGITUD'
+    assert procesar(ClienteSimulado(respuesta)).origen == 'EXTENSION_MINIMA'
 
 
 @pytest.mark.parametrize('error,timeout', [
@@ -202,7 +202,7 @@ def test_salida_ausente_bloqueada_o_malformada(respuesta):
 def test_fallos_timeout_sin_reintentar_ni_filtrar_secretos(error, timeout, caplog):
     cliente = ClienteSimulado(error=error)
     resultado = procesar(cliente)
-    assert resultado.origen == 'RESPALDO_LONGITUD'
+    assert resultado.origen == 'EXTENSION_MINIMA'
     assert ('tiempo máximo' in resultado.error) is timeout
     assert CLAVE_SIMULADA not in resultado.error + caplog.text
     assert len(cliente.llamadas) == 1
@@ -249,7 +249,7 @@ def test_sdk_real_con_transporte_simulado_no_reintenta_429(monkeypatch):
     adaptador = EvaluadorGemini(replace(CONFIGURACION, timeout_segundos=1.25))
     try:
         resultado = evaluar_respuesta(CONTEXTO, 40, 'Más', adaptador)
-        assert resultado.origen == 'RESPALDO_LONGITUD'
+        assert resultado.origen == 'EXTENSION_MINIMA'
         assert len(llamadas) == 1
         assert CLAVE_SIMULADA not in resultado.error
     finally:
@@ -277,7 +277,7 @@ def test_adaptador_rechaza_criterios_ya_cumplidos_en_el_seguimiento(faltantes):
         CONTEXTO.conversacion.texto_inicial, (TurnoEvaluacion('¿Cuándo?', 'En el siguiente trabajo.'),)))
     cliente = ClienteSimulado(respuesta_sdk({**VAGA, 'criterios_faltantes': faltantes}))
     resultado = procesar(cliente, contexto)
-    assert len(cliente.llamadas) == 1 and resultado.origen == 'RESPALDO_LONGITUD'
+    assert len(cliente.llamadas) == 1 and resultado.origen == 'EXTENSION_MINIMA'
     assert resultado.clasificacion == 'NO_EVALUADA' and resultado.pregunta is None
     assert CLAVE_SIMULADA not in resultado.error
 

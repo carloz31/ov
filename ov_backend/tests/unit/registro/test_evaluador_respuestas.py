@@ -150,7 +150,7 @@ def test_limites_exactos_solo_deciden_respaldo_y_respetan_espacios(contexto, min
     texto = " \t" + "á" * longitud + "\n "
     evaluador = EvaluadorDePrueba(error=RuntimeError("dato sensible simulado")) if fallo else EvaluadorFalso()
     procesada = evaluar_respuesta(con_texto(contexto, texto), minimo, "Cuéntame más", evaluador)
-    assert procesada.origen == (OrigenEvaluacion.RESPALDO_LONGITUD if fallo else OrigenEvaluacion.LLM)
+    assert procesada.origen == (OrigenEvaluacion.EXTENSION_MINIMA if fallo else OrigenEvaluacion.LLM)
     esperada = ("POCO_DESARROLLADA" if longitud < minimo else "NO_EVALUADA") if fallo else "ADECUADA"
     assert procesada.clasificacion == esperada
     assert procesada.criterios_faltantes == (("C1", "C2") if fallo and longitud < minimo else ())
@@ -215,7 +215,7 @@ def test_resultado_previamente_mutado_se_valida_otra_vez(contexto):
 def test_resultado_construido_sin_validar_no_filtra_valores_ni_emite_avisos(contexto, recwarn):
     resultado = ResultadoEvaluacion.model_construct(**datos_resultado(clasificacion="dato sensible simulado"))
     procesada = evaluar_respuesta(contexto, 40, "Cuéntame más", EvaluadorDePrueba(resultado=resultado))
-    assert procesada.origen == OrigenEvaluacion.RESPALDO_LONGITUD
+    assert procesada.origen == OrigenEvaluacion.EXTENSION_MINIMA
     assert procesada.clasificacion == ClasificacionRespuesta.NO_EVALUADA
     assert "dato sensible simulado" not in str(procesada)
     assert list(recwarn) == []
@@ -259,7 +259,7 @@ def test_atencion_no_tiene_pregunta_en_el_falso(contexto):
 def test_resultado_invalido_se_convierte_en_fallo(contexto, resultado):
     evaluador = EvaluadorDePrueba(resultado=resultado)
     procesada = evaluar_respuesta(contexto, 40, "Cuéntame más", evaluador)
-    assert procesada.origen == OrigenEvaluacion.RESPALDO_LONGITUD
+    assert procesada.origen == OrigenEvaluacion.EXTENSION_MINIMA
     assert procesada.clasificacion == ClasificacionRespuesta.NO_EVALUADA
     assert procesada.pregunta is None and procesada.criterios_faltantes == ()
     assert procesada.error == "El resultado del evaluador no cumple el esquema o las reglas de consistencia"
@@ -309,13 +309,13 @@ def test_no_admite_criterios_ya_cumplidos(contexto, codigos):
     with pytest.raises(ErrorResultadoEvaluacion, match="ya cumplidos"):
         validar_resultado(resultado, contexto)
     procesada = evaluar_respuesta(contexto, 40, "Genérica", EvaluadorDePrueba(resultado))
-    assert procesada.origen == "RESPALDO_LONGITUD" and procesada.clasificacion == "NO_EVALUADA"
+    assert procesada.origen == "EXTENSION_MINIMA" and procesada.clasificacion == "NO_EVALUADA"
 
 
 @pytest.mark.parametrize("texto", ["[falta:C9]", "[falta:]"])
 def test_marca_falso_invalida_aplica_respaldo_en_vez_de_aceptar(contexto, texto):
     procesada = evaluar_respuesta(con_texto(contexto, texto), 40, "Genérica", EvaluadorFalso())
-    assert procesada.origen == "RESPALDO_LONGITUD" and procesada.clasificacion == "POCO_DESARROLLADA"
+    assert procesada.origen == "EXTENSION_MINIMA" and procesada.clasificacion == "POCO_DESARROLLADA"
     assert procesada.pregunta == "Genérica" and procesada.criterios_faltantes == ("C1", "C2")
     assert "consistencia" in procesada.error
 
@@ -329,7 +329,7 @@ def test_resultado_invalido_con_texto_corto_respalda_solo_el_inicial(contexto, r
     contexto = con_seguimiento(contexto, "Corta", numero) if numero else con_texto(contexto, "Corta")
     evaluador = EvaluadorDePrueba(resultado)
     procesada = evaluar_respuesta(contexto, 40, "Genérica", evaluador)
-    assert procesada.origen == "RESPALDO_LONGITUD"
+    assert procesada.origen == "EXTENSION_MINIMA"
     assert procesada.clasificacion == ("NO_EVALUADA" if numero else "POCO_DESARROLLADA")
     assert procesada.pregunta == (None if numero else "Genérica")
     assert procesada.criterios_faltantes == (() if numero else ("C1", "C2"))
@@ -363,7 +363,7 @@ def test_fallos_guardan_error_seguro_y_no_reintentan(contexto, error, esperado, 
     evaluador = EvaluadorDePrueba(error=error)
     procesada = evaluar_respuesta(contexto, 40, "Cuéntame más", evaluador, modelo="modelo_simulado")
     corto_inicial = numero == 0 and longitud < 40
-    assert procesada.origen == OrigenEvaluacion.RESPALDO_LONGITUD
+    assert procesada.origen == OrigenEvaluacion.EXTENSION_MINIMA
     assert procesada.clasificacion == ("POCO_DESARROLLADA" if corto_inicial else "NO_EVALUADA")
     assert procesada.error == esperado and "dato sensible simulado" not in str(procesada)
     assert procesada.requiere_atencion is False
@@ -377,7 +377,7 @@ def test_fallos_guardan_error_seguro_y_no_reintentan(contexto, error, esperado, 
 def test_marcador_falla_procesado_no_propaga_excepcion(contexto):
     procesada = evaluar_respuesta(con_texto(contexto, contexto.conversacion.texto_actual + " [falla]"), 40, "Cuéntame más", EvaluadorFalso())
     assert procesada.clasificacion == ClasificacionRespuesta.NO_EVALUADA
-    assert procesada.origen == OrigenEvaluacion.RESPALDO_LONGITUD and procesada.error == "Falló el evaluador de respuestas"
+    assert procesada.origen == OrigenEvaluacion.EXTENSION_MINIMA and procesada.error == "Falló el evaluador de respuestas"
 
 
 @pytest.mark.parametrize("duracion,fallo", [(7.999, False), (8.0, False), (8.001, True)])
@@ -388,7 +388,7 @@ def test_tiempo_maximo_exacto_sin_esperas_reales(contexto, monkeypatch, duracion
     monkeypatch.setattr(evaluacion, "perf_counter", lambda: next(tiempos))
     evaluador = EvaluadorFalso()
     procesada = evaluar_respuesta(contexto, 40, "Cuéntame más", evaluador)
-    assert procesada.origen == (OrigenEvaluacion.RESPALDO_LONGITUD if fallo else OrigenEvaluacion.LLM)
+    assert procesada.origen == (OrigenEvaluacion.EXTENSION_MINIMA if fallo else OrigenEvaluacion.LLM)
     assert procesada.latencia_ms == round(duracion * 1000)
     assert len(evaluador.contextos) == 1
     if fallo:

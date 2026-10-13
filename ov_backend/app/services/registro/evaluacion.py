@@ -175,7 +175,7 @@ def evaluar_respuesta(
         if corto and not repregunta_generica.strip():
             raise ValueError("La repregunta genérica no puede estar vacía")
         return EvaluacionProcesada(
-            origen=OrigenEvaluacion.RESPALDO_LONGITUD,
+            origen=OrigenEvaluacion.EXTENSION_MINIMA,
             clasificacion=ClasificacionRespuesta.POCO_DESARROLLADA if corto else ClasificacionRespuesta.NO_EVALUADA,
             criterios_faltantes=tuple(criterio.codigo for criterio in contexto.criterios) if corto else (),
             pregunta=repregunta_generica if corto else None, requiere_atencion=False,

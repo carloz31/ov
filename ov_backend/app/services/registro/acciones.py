@@ -213,7 +213,7 @@ def preparar_envio(sesion, entrada, seguimiento=False):
             if entrada.orden is not None:
                 raise ErrorAccion("El orden solo se indica al editar una respuesta finalizada", estado_http=422)
             turno = turno_pendiente(turnos)
-            requiere_evaluacion = registro.origenes_iniciales.get(respuesta.id) != OrigenEvaluacion.RESPALDO_LONGITUD
+            requiere_evaluacion = registro.origenes_iniciales.get(respuesta.id) != OrigenEvaluacion.EXTENSION_MINIMA
         else:
             raise ErrorAccion("Solo se puede responder un seguimiento pendiente o editar un turno finalizado")
         orden, faltantes = turno.orden, turno.criterios_objetivo

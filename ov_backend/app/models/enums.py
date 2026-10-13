@@ -109,7 +109,7 @@ class EstadoRespuestaRegistro(StrEnum):
 
 class OrigenEvaluacion(StrEnum):
     LLM = "LLM"
-    RESPALDO_LONGITUD = "RESPALDO_LONGITUD"
+    EXTENSION_MINIMA = "EXTENSION_MINIMA"
 
 
 class TipoCriterio(StrEnum):

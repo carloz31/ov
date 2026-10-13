@@ -82,8 +82,8 @@ ITEMS_REGISTRO = (
     ('t-valores', 't-val-breve', 'Breve', 'Describe un momento en que actuaste según tus valores.', None, ()),
 )
 
-# Lo que cambia los valores por defecto de un ítem (obligatorio, no núcleo, sin longitud mínima).
-PROPIEDADES_ITEMS = {'t-exp-espera': {'nucleo': True}, 't-val-breve': {'min_caracteres': 40}}
+# Lo que cambia los valores por defecto de un ítem (obligatorio, sin longitud mínima).
+PROPIEDADES_ITEMS = {'t-val-breve': {'min_caracteres': 40}}
 REPREGUNTA_GENERICA = '¿Podrías contarme un poco más?'
 
 # (código, título, contenido, audiencia)
@@ -226,7 +226,7 @@ def _cargar_registros(sesion, actividades, base: fijos.Fijos):
         item = modelos.ItemRegistro(
             codigo=codigo, actividad_id=actividades[actividad].id, orden=ordenes[actividad], nombre=nombre,
             consigna=consigna, min_caracteres=propiedades.get('min_caracteres'),
-            obligatorio=propiedades.get('obligatorio', True), nucleo=propiedades.get('nucleo', False),
+            obligatorio=propiedades.get('obligatorio', True),
             repregunta_generica=REPREGUNTA_GENERICA, lista_id=None if lista is None else cargadas[lista].id,
             eleccion_minima=minima, eleccion_maxima=maxima, eleccion_ordenada=ordenada, permite_otra=otra)
         items.append((item, criterios))

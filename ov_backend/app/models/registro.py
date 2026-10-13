@@ -47,7 +47,6 @@ class ItemRegistro(Base):
     consigna: Mapped[str] = mapped_column(Text)
     min_caracteres: Mapped[int | None]
     obligatorio: Mapped[bool]
-    nucleo: Mapped[bool] = mapped_column(default=False, server_default=false())
     repregunta_generica: Mapped[str] = mapped_column(Text)
     lista_id: Mapped[int | None] = mapped_column(ForeignKey("lista_opciones.id"))
     eleccion_minima: Mapped[int | None]

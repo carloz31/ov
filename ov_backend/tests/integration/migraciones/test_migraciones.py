@@ -374,3 +374,44 @@ def test_migracion_0005_conserva_filas_de_registro_y_renombra_la_clasificacion(t
             assert conexion.execute(text('SELECT clasificacion FROM evaluacion_respuesta')).all() == [('VAGA',)]
     finally:
         motor.dispose()
+
+
+def test_migracion_0006_quita_nucleo_y_renombra_el_origen_conservando_filas(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "origen.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    motor = database.crear_motor_bd(url)
+    try:
+        command.upgrade(configuracion, '0005')
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: un ítem núcleo con respuesta y evaluación de respaldo anteriores a 0006.
+            for sql in (
+                "INSERT INTO bloque (id, codigo, numero, nombre, espacio, audiencia) "
+                "VALUES (1, 'B1', 1, 'Prueba', 'MISIONES_CAMPO', 'ESTUDIANTE')",
+                "INSERT INTO actividad (id, codigo, titulo, tipo, contenido, orden, bloque_id, visibilidad) "
+                "VALUES (1, 'A1', 'Registro', 'REGISTRO', 'a1', 1, 1, 'SIEMPRE')",
+                "INSERT INTO cuenta (id, codigo, nombre, rol) VALUES (1, 'C1', 'Cuenta', 'ESTUDIANTE')",
+                "INSERT INTO item_registro (id, codigo, actividad_id, orden, nombre, consigna, obligatorio, nucleo, "
+                "repregunta_generica) VALUES (1, 'I1', 1, 1, 'Ítem', 'Consigna', 1, 1, 'Cuéntame más')",
+                "INSERT INTO progreso_actividad (id, cuenta_id, actividad_id, estado) VALUES (1, 1, 1, 'EN_CURSO')",
+                "INSERT INTO respuesta_registro (id, progreso_id, item_registro_id, texto_inicial, opciones_elegidas, "
+                "estado, clasificacion_inicial, ampliada, creada_en, actualizada_en) "
+                "VALUES (1, 1, 1, 'Texto', '[]', 'FINAL', 'NO_EVALUADA', 0, '2026-10-01', '2026-10-01')",
+                "INSERT INTO evaluacion_respuesta (id, respuesta_id, numero, origen, clasificacion, "
+                "criterios_faltantes, requiere_atencion, texto_evaluado, fecha_hora) "
+                "VALUES (1, 1, 1, 'RESPALDO_LONGITUD', 'NO_EVALUADA', '[]', 0, 'Texto', '2026-10-01')",
+            ):
+                conexion.execute(text(sql))
+        command.upgrade(configuracion, '0006')
+        with motor.connect() as conexion:
+            assert 'nucleo' not in {c['name'] for c in inspect(motor).get_columns('item_registro')}
+            assert conexion.execute(text('SELECT codigo FROM item_registro')).all() == [('I1',)]
+            assert conexion.execute(text('SELECT origen FROM evaluacion_respuesta')).all() == [('EXTENSION_MINIMA',)]
+        with pytest.raises(IntegrityError), motor.begin() as conexion:
+            conexion.execute(text("UPDATE evaluacion_respuesta SET origen = 'RESPALDO_LONGITUD'"))
+        command.downgrade(configuracion, '0005')
+        with motor.connect() as conexion:
+            assert conexion.execute(text('SELECT codigo, nucleo FROM item_registro')).all() == [('I1', False)]
+            assert conexion.execute(text('SELECT origen FROM evaluacion_respuesta')).all() == [('RESPALDO_LONGITUD',)]
+    finally:
+        motor.dispose()

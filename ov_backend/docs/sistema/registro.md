@@ -19,13 +19,13 @@ Estado actual: el backend implementa todo lo de este documento y `ruta` tiene lo
 |---|---|
 | `lista_opciones` | `codigo`, `nombre` y `comun`. Las comunes están en `datos/fijos.py` y se comparan entre actividades; las propias, en la ruta. |
 | `opcion_lista` | Opciones de una lista: `codigo`, `texto` y `orden`. `OTRA` es un código reservado que ninguna lista usa. |
-| `item_registro` | `codigo`, `actividad_id` y `orden` (un ítem pertenece a una sola actividad; hasta `MAXIMO_ITEMS_REGISTRO` = 3 por actividad, que valida el cargador), `nombre`, `consigna`, `obligatorio`, `nucleo`, `repregunta_generica` y `min_caracteres` (longitud mínima del ítem; si es nula, el respaldo usa `MIN_CARACTERES_RESPALDO`). Elección: `lista_id`, `eleccion_minima`, `eleccion_maxima`, `eleccion_ordenada` y `permite_otra`; sin lista no hay elección (CHECK). Catálogo, en caché. |
+| `item_registro` | `codigo`, `actividad_id` y `orden` (un ítem pertenece a una sola actividad; hasta `MAXIMO_ITEMS_REGISTRO` = 3 por actividad, que valida el cargador), `nombre`, `consigna`, `obligatorio`, `repregunta_generica` y `min_caracteres` (longitud mínima del ítem; si es nula, el respaldo usa `MIN_CARACTERES_RESPALDO`). Elección: `lista_id`, `eleccion_minima`, `eleccion_maxima`, `eleccion_ordenada` y `permite_otra`; sin lista no hay elección (CHECK). Catálogo, en caché. |
 | `criterio_completitud` | Criterios del ítem con `codigo` (C1, C2…), `tipo` (EJEMPLO, RAZON, ACCION o CONTRASTE), `descripcion`, `repregunta` (la del tipo en `fijos.REPREGUNTAS_CRITERIO`, salvo que el criterio traiga la suya) y `orden`. La longitud no es un tipo de criterio. |
 | `respuesta_registro` | Por progreso e ítem: `texto_inicial`, `opciones_elegidas` (arreglo JSON de `{codigo, texto?}`, en el orden elegido), `texto_consolidado` (se llena en B04), `estado` (BORRADOR, PENDIENTE_SEGUIMIENTO o FINAL), `clasificacion_inicial` (inmutable), `ampliada`. |
 | `turno_seguimiento` | Hasta dos por respuesta: pregunta, `criterios_objetivo`, respuesta o borrador, `respondido_en`. |
-| `evaluacion_respuesta` | Cada evaluación, sin modificarse nunca: origen (LLM o RESPALDO_LONGITUD), clasificación, criterios faltantes, pregunta, `requiere_atencion`, modelo, versión del prompt, latencia, error y `texto_evaluado`. |
+| `evaluacion_respuesta` | Cada evaluación, sin modificarse nunca: origen (LLM o EXTENSION_MINIMA: toda evaluación resuelta en código, sin LLM), clasificación, criterios faltantes, pregunta, `requiere_atencion`, modelo, versión del prompt, latencia, error y `texto_evaluado`. |
 
-Las listas comunes y las repreguntas por tipo de `datos/fijos.py` son textos provisionales hasta la carga real. La migración `0005` llevó cada ítem a su actividad (si estaba en varias, conserva la de menor id), dio a los criterios anteriores el tipo EJEMPLO y la repregunta genérica de su ítem, y renombró VAGA a POCO_DESARROLLADA; su downgrade se niega si hay eventos o condiciones REGISTRO_ADECUADO o ítems con elección.
+Las listas comunes y las repreguntas por tipo de `datos/fijos.py` son textos provisionales hasta la carga real. La migración `0005` llevó cada ítem a su actividad (si estaba en varias, conserva la de menor id), dio a los criterios anteriores el tipo EJEMPLO y la repregunta genérica de su ítem, y renombró VAGA a POCO_DESARROLLADA; su downgrade se niega si hay eventos o condiciones REGISTRO_ADECUADO o ítems con elección. La `0006` quitó `nucleo` de `item_registro` y renombró el origen RESPALDO_LONGITUD a EXTENSION_MINIMA.
 
 ## Estados de una respuesta
 
@@ -60,7 +60,7 @@ La respuesta al estudiante (`item`, `estado`, `conversacion`, eventos y desbloqu
 1. Texto vacío: 422.
 2. Siempre se llama primero al evaluador, sea cual sea la longitud. Al responder un turno, evalúa la conversación completa del ítem.
 3. ADECUADA → FINAL. POCO_DESARROLLADA con turnos disponibles → nuevo turno con la pregunta generada y los criterios que faltan. POCO_DESARROLLADA sin turnos → FINAL. `requiere_atencion` → FINAL, sin más preguntas; se guarda la marca y el estudiante no ve nada distinto.
-4. **Respaldo por longitud**, si el evaluador falla, tarda demasiado o devuelve algo inválido (se registra con origen RESPALDO_LONGITUD y el error):
+4. **Respaldo por longitud**, si el evaluador falla, tarda demasiado o devuelve algo inválido (se registra con origen EXTENSION_MINIMA y el error):
    - texto inicial con menos de `min_caracteres`: POCO_DESARROLLADA y un turno con `repregunta_generica`; su respuesta pasa a FINAL sin evaluar;
    - texto inicial que alcanza el mínimo: NO_EVALUADA y FINAL;
    - respuesta a un turno: FINAL.
@@ -89,7 +89,7 @@ La llamada al LLM nunca ocurre dentro de una transacción ni con una conexión t
 
 | Ruta | Devuelve |
 |---|---|
-| `/actividades/{a}/items-registro` | Ítems en orden, con consigna, `min_caracteres` (puede ser nulo), obligatoriedad y `eleccion` (`null` o lista, `comun`, mínima, máxima, `ordenada`, `permite_otra` y opciones). Sin criterios ni núcleo. |
+| `/actividades/{a}/items-registro` | Ítems en orden, con consigna, `min_caracteres` (puede ser nulo), obligatoriedad y `eleccion` (`null` o lista, `comun`, mínima, máxima, `ordenada`, `permite_otra` y opciones). Sin criterios. |
 | `/cuentas/{c}/actividades/{a}/registro` | Posición, estado del progreso y, por ítem, estado, `opciones_elegidas` y conversación (incluidos los borradores). |
 
 Apoderados y cuentas o actividades inexistentes: 404. Completar una actividad de registro exige todos sus ítems obligatorios en FINAL (`motor.md`).
