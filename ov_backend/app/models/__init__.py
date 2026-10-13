@@ -18,13 +18,13 @@ _MODELOS_POR_MODULO = {
         'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
     ),
     'app.models.contenido': (
-        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
+        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
         'Insignia',
         'Nivel', 'FamiliaCarrera', 'Carrera',
     ),
     'app.models.progreso': (
-        'ProgresoActividad', 'ResultadoCaso', 'EntradaDiario', 'CheckIn', 'Entrevista',
-        'EntrevistaAutor', 'ConversacionVinculo',
+        'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn',
+        'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo',
     ),
     'app.models.motor': (
         'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo',
@@ -62,9 +62,9 @@ __all__ = [
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
     'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
     'SalonInstrumento', 'Bloque',
-    'Actividad', 'Tematica', 'ActividadTematica', 'Seccion', 'Ficha', 'Testimonio',
+    'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'Seccion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
-    'ProgresoActividad', 'ResultadoCaso', 'EntradaDiario', 'CheckIn', 'Entrevista',
+    'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn', 'Entrevista',
     'EntrevistaAutor', 'ConversacionVinculo', 'EventoUso', 'ReglaDesbloqueo',
     'CondicionDesbloqueo', 'Desbloqueo', 'Instrumento', 'Dimension', 'EscalaRespuesta',
     'OpcionEscala', 'ItemInstrumento', 'ActividadItem', 'Aplicacion', 'AplicacionActividad',

@@ -7,8 +7,8 @@ Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, 
 | Grupo | Tablas |
 |---|---|
 | Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash`, `activa`), `salon`, `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
-| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO o CASO; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` solo en CASO), `seccion` (audiencia), `ficha` (audiencia), `testimonio`, `pregunta_diario`, `conversacion`, `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
-| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `entrada_diario`, `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo` |
+| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` solo en CASO), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado), `pregunta_diario`, `conversacion`, `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
+| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` (cada intento: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `entrada_diario`, `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo` |
 | Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo`, `desbloqueo` (único por cuenta y regla; `visto`) |
 
 `id_objetivo` de una regla e `id_referencia` de un evento o condición son referencias polimórficas sin FK; los cargadores resuelven códigos a ids. `id_objetivo` nunca es nulo.
@@ -22,7 +22,7 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | Evento | Referencia |
 |---|---|
 | INGRESO, RESPUESTA_REFLEXIVA, INVITA_A_CREW, FORMA_CREW, VENCE_DESAFIO_INTACTO | nula |
-| COMPLETA_ACTIVIDAD, SUPERA_CASO, REGISTRO_ADECUADO | actividad (REGISTRO_ADECUADO: el registro que se cerró sin ítems poco desarrollados; ver `registro.md`) |
+| COMPLETA_ACTIVIDAD, SUPERA_CASO, SUPERA_BATALLA, REGISTRO_ADECUADO | actividad (REGISTRO_ADECUADO: el registro que se cerró sin ítems poco desarrollados; ver `registro.md`) |
 | COMPLETA_BLOQUE | bloque |
 | ESCRIBE_ENTRADA_DIARIO, ESCRIBE_ENTRADA_LIBRE | entrada de diario (se expone como `null`: no tiene código público) |
 | REGISTRA_CHECK_IN | check-in (se expone como `null`) |
@@ -32,6 +32,7 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | COMPLETA_CONVERSACION | conversación |
 | REINICIA_INSTRUMENTO | instrumento |
 | REVELA_RESULTADO | aplicación (el resultado es por cuenta y aplicación; ver `instrumentos.md`) |
+| VISTA_TESTIMONIO | testimonio |
 
 ## Reglas
 

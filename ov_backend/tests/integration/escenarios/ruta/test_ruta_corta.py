@@ -36,7 +36,7 @@ def test_hu004_013_015_informativa_con_ficha_y_retroalimentacion(cliente):
     assert respuesta['eventos_registrados'] == [
         {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-inicio', 'fecha_hora': '2026-10-07T10:00:00'}]
     assert {(d['tipo_objetivo'], d['objetivo']['codigo']) for d in respuesta['nuevos_desbloqueos']} == {
-        ('ACTIVIDAD', 't-cierre-inicio'), ('FICHA', 't-ficha'), ('INSIGNIA', 't-ins-1'),
+        ('ACTIVIDAD', 't-cierre-inicio'), ('ACTIVIDAD', 't-batalla'), ('FICHA', 't-ficha'), ('INSIGNIA', 't-ins-1'),
         ('SECCION', 'DIARIO'), ('SECCION', 'CATALOGO'), ('SECCION', 'PLANES')}
     assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [
         ('t-ficha', 'DISPONIBLE')]
@@ -241,9 +241,9 @@ def test_hu073_avisos_de_desbloqueo(cliente):
     completar(cliente, 't-inicio')
     no_vistos = pedir(cliente, 'GET', ruta)
     assert {d['regla'] for d in no_vistos} == {
-        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES'}
+        'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES'}
     assert all(d['visto'] is False for d in no_vistos)
-    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 6
+    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 7
     assert pedir(cliente, 'GET', ruta) == []
     completar(cliente, 't-partida')
     completar(cliente, 't-cierre-inicio')
@@ -252,7 +252,7 @@ def test_hu073_avisos_de_desbloqueo(cliente):
 
 def test_hu074_logros_obtenidos_y_condiciones(cliente):
     logros = pedir(cliente, 'GET', '/cuentas/est-ana/logros')
-    visible, oculto = logros['insignias']
+    visible, _, oculto = logros['insignias']
     assert (visible['codigo'], visible['estado'], visible['requisito']) == ('t-ins-1', 'BLOQUEADA', 'Completa t-inicio.')
     assert (oculto['codigo'], oculto['requisito']) == ('???', None)
     condicion, = pedir(cliente, 'GET', '/cuentas/est-ana/progreso/INSIGNIA/t-ins-1')['reglas'][0]['condiciones']

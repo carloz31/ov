@@ -28,6 +28,32 @@ class ResultadoCaso(Base):
     fecha_hora: Mapped[datetime] = mapped_column(DateTime)
 
 
+class ResultadoBatalla(Base):
+    """Cada intento de una batalla (B08); el primero es el que cuenta para la métrica de conocimiento."""
+    __tablename__ = "resultado_batalla"
+    __table_args__ = (
+        CheckConstraint("preguntas >= 1", name="preguntas_valida"),
+        CheckConstraint("aciertos BETWEEN 0 AND preguntas", name="aciertos_validos"),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    progreso_id: Mapped[int] = mapped_column(ForeignKey("progreso_actividad.id"))
+    victoria: Mapped[bool]
+    aciertos: Mapped[int]
+    preguntas: Mapped[int]
+    fecha_hora: Mapped[datetime] = mapped_column(DateTime)
+
+
+class ColeccionOcupacion(Base):
+    """Ocupaciones cuyo ícono la cuenta obtuvo al superar un caso (B08)."""
+    __tablename__ = "coleccion_ocupacion"
+    __table_args__ = (UniqueConstraint("cuenta_id", "ocupacion_id"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
+    ocupacion_id: Mapped[int] = mapped_column(ForeignKey("ocupacion.id"))
+    actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"))
+    obtenida_en: Mapped[datetime] = mapped_column(DateTime)
+
+
 class EntradaDiario(Base):
     __tablename__ = "entrada_diario"
     __table_args__ = (

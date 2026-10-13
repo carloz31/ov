@@ -1,4 +1,4 @@
-"""Filas sintéticas para comprobar el reinicio de las 16 tablas; DATO DE PRUEBA."""
+"""Filas sintéticas para comprobar el reinicio de las 18 tablas; DATO DE PRUEBA."""
 
 from datetime import datetime
 from sqlalchemy import select
@@ -38,6 +38,9 @@ def llenar_estado(aplicacion):
         sesion.flush()
         sesion.add_all([
             modelos.ResultadoCaso(progreso_id=progreso.id, puntaje=85, fecha_hora=fecha),
+            modelos.ResultadoBatalla(progreso_id=progreso.id, victoria=False, aciertos=1, preguntas=3, fecha_hora=fecha),
+            modelos.ColeccionOcupacion(cuenta_id=cuenta.id, ocupacion_id=ocupacion.id, actividad_id=actividad.id,
+                                       obtenida_en=fecha),
             modelos.EntradaDiario(cuenta_id=cuenta.id, origen='LIBRE', texto='DATO DE PRUEBA', fecha_hora=fecha),
             modelos.CheckIn(cuenta_id=cuenta.id, fecha=fecha.date(), nivel_seguridad=3),
             modelos.EntrevistaAutor(entrevista_id=entrevista.id, cuenta_id=cuenta.id),

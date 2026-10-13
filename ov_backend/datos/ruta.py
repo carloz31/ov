@@ -53,6 +53,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-adicional', 'T1', 'Misión adicional', 'INFORMATIVA', None, 5),
                ('t-eco', 'T1', 'Registro que retoma respuestas', 'REGISTRO', None, 10),
                ('t-lee-cuestionario', 'T1', 'Lectura de tu punto de partida', 'INFORMATIVA', None, 5),
+               ('t-batalla', 'T1', 'Batalla de prueba', 'BATALLA', None, 10),
                ('t-llegada', 'T2', 'Punto de llegada', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
@@ -67,6 +68,7 @@ PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR
                't-valores': {'requerida': False},
                't-eco': {'requerida': False},
                't-lee-cuestionario': {'requerida': False},
+               't-batalla': {'requerida': False},
                't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
                                'descripcion': 'Misión adicional que aparece si el registro quedó adecuado.'}}
 
@@ -84,6 +86,9 @@ APLICACIONES_ACTIVIDADES = (('APL-RIASEC', 't-mision-intereses'), ('APL-RIASEC',
 # (actividad, temáticas). Solo las necesarias para contar actividades completadas por dimensión (B07).
 TEMATICAS_ACTIVIDADES = (('t-expectativas', ('A', 'B')), ('t-valores', ('B',)), ('t-eco', ('A',)),
                          ('t-mision-intereses', ('B',)), ('t-caso', ('C',)))
+
+# (caso, dimensiones RIASEC). Solo las actividades CASO llevan dimensiones; un caso puede tener varias (B08).
+DIMENSIONES_ACTIVIDADES = (('t-caso', ('R', 'S')),)
 
 # Listas propias de una actividad: (código, nombre, ((código, texto), ...)).
 LISTAS = (('t-lista-apoyos', 'Quién te apoya', (('FAMILIA', 'Mi familia'), ('DOCENTES', 'Mis docentes'),
@@ -136,6 +141,11 @@ REPREGUNTA_GENERICA = '¿Podrías contarme un poco más?'
 FICHAS = (('t-ficha', 'Ficha de prueba', 'Ficha que otorga t-inicio.', 'ESTUDIANTE'),
           ('t-ficha-apo', 'Ficha del apoderado', 'Ficha que otorga t-apo-1.', 'APODERADO'))
 
+# (código, título, descripción, enlace, pista). La pista se muestra mientras el testimonio está bloqueado (B08).
+TESTIMONIOS = (('t-testimonio-1', 'Testimonio de prueba 1', 'Trayectoria de prueba 1.', 'https://example.test/t1',
+                'Resuelve el caso de prueba para conocer este testimonio.'),
+               ('t-testimonio-2', 'Testimonio de prueba 2', 'Trayectoria de prueba 2.', 'https://example.test/t2', None))
+
 # (código, título, tema)
 CONVERSACIONES = (('t-conv-1', 'Primera conversación', 'Tema de prueba 1.'),
                   ('t-conv-2', 'Segunda conversación', 'Tema de prueba 2.'))
@@ -143,7 +153,10 @@ CONVERSACIONES = (('t-conv-1', 'Primera conversación', 'Tema de prueba 1.'),
 # (código, nombre, descripción, requisito, oculta)
 INSIGNIAS = (('t-ins-1', 'Insignia de prueba', 'Completaste t-inicio.', 'Completa t-inicio.', False),
              ('t-ins-oculta', 'Insignia oculta', 'Venciste sin perder destellos.',
-              'Vence al enemigo sin perder destellos.', True))
+              'Vence al enemigo sin perder destellos.', True),
+             # Provisional hasta B10, que reemplaza esta regla por la que abre t-explorar.
+             ('t-ins-batalla', 'Insignia de batalla', 'Venciste la batalla de prueba.', 'Vence la batalla de prueba.',
+              False))
 
 # (número, título)
 NIVELES = ((1, 'Nivel 1 de prueba'), (2, 'Nivel 2 de prueba'))
@@ -172,11 +185,19 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-mision-intereses-2', 'EVENTOS', 1),)),
     ('R-t-contraste', 'ACTIVIDAD', 't-contraste', 'Revela tu resultado de intereses para contrastarlo.',
      (('REVELA_RESULTADO', 'APL-RIASEC', 'EVENTOS', 1),)),
+    ('R-t-batalla', 'ACTIVIDAD', 't-batalla', 'Completa el inicio y repasa su ficha para enfrentar la batalla.',
+     (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
+    ('R-t-testimonio-1', 'TESTIMONIO', 't-testimonio-1', 'Supera el caso de prueba para conocer este testimonio.',
+     (('SUPERA_CASO', 't-caso', 'EVENTOS', 1),)),
+    ('R-t-testimonio-2', 'TESTIMONIO', 't-testimonio-2', 'Supera el caso de prueba para conocer este testimonio.',
+     (('SUPERA_CASO', 't-caso', 'EVENTOS', 1),)),
     ('R-t-ficha', 'FICHA', 't-ficha', 'Completa el inicio para obtener esta ficha.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-t-ficha-apo', 'FICHA', 't-ficha-apo', 'Completa tu primera actividad para obtener esta ficha.',
      (('COMPLETA_ACTIVIDAD', 't-apo-1', 'EVENTOS', 1),)),
     ('R-t-ins-1', 'INSIGNIA', 't-ins-1', 'Completa el inicio.', (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
+    ('R-t-ins-batalla', 'INSIGNIA', 't-ins-batalla', 'Vence la batalla de prueba.',
+     (('SUPERA_BATALLA', 't-batalla', 'EVENTOS', 1),)),
     ('R-t-ins-oculta', 'INSIGNIA', 't-ins-oculta', 'Logro oculto.',
      (('VENCE_DESAFIO_INTACTO', None, 'EVENTOS', 1),)),
     ('R-NIV-2', 'NIVEL', 2, 'Termina el bloque de inicio para subir de nivel.',
@@ -217,11 +238,13 @@ def _cargar_estructura(sesion):
                                 audiencia=modelos.Audiencia(a)) for c, num, n, e, a in BLOQUES}
     fichas = {c: modelos.Ficha(codigo=c, titulo=t, contenido=texto, audiencia=modelos.Audiencia(a))
               for c, t, texto, a in FICHAS}
+    testimonios = {c: modelos.Testimonio(codigo=c, titulo=t, descripcion=d, enlace=e, pista=p)
+                   for c, t, d, e, p in TESTIMONIOS}
     conversaciones = [modelos.Conversacion(codigo=c, titulo=t, tema=tema) for c, t, tema in CONVERSACIONES]
     insignias = {c: modelos.Insignia(codigo=c, nombre=n, descripcion=d, requisito=r, es_oculta=o,
                                    audiencia=modelos.Audiencia.ESTUDIANTE) for c, n, d, r, o in INSIGNIAS}
     niveles = {num: modelos.Nivel(numero=num, titulo=t) for num, t in NIVELES}
-    sesion.add_all([*cuentas.values(), *bloques.values(), *fichas.values(), *conversaciones,
+    sesion.add_all([*cuentas.values(), *bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones,
                     *insignias.values(), *niveles.values()])
     sesion.flush()
     sesion.add_all(modelos.VinculoFamiliar(codigo=c, estudiante_id=cuentas[e].id, apoderado_id=cuentas[a].id,
@@ -241,8 +264,8 @@ def _cargar_estructura(sesion):
             descripcion=propiedades.get('descripcion'))
     sesion.add_all(actividades.values())
     sesion.flush()
-    return {'BLOQUE': bloques, 'ACTIVIDAD': actividades, 'FICHA': fichas, 'INSIGNIA': insignias, 'NIVEL': niveles,
-            'SALON': salones}
+    return {'BLOQUE': bloques, 'ACTIVIDAD': actividades, 'FICHA': fichas, 'TESTIMONIO': testimonios,
+            'INSIGNIA': insignias, 'NIVEL': niveles, 'SALON': salones}
 
 
 def _unir_instrumentos(sesion, actividades, base: fijos.Fijos):
@@ -261,6 +284,17 @@ def _unir_tematicas(sesion, actividades, base: fijos.Fijos):
             raise ValueError(f'Las temáticas de {actividad} apuntan a una actividad o temática inexistente')
     sesion.add_all(modelos.ActividadTematica(actividad_id=actividades[a].id, tematica_id=base.tematicas[t].id)
                    for a, tematicas in TEMATICAS_ACTIVIDADES for t in tematicas)
+
+
+def _unir_dimensiones(sesion, actividades):
+    dimensiones = {d.codigo: d for d in sesion.scalars(select(modelos.Dimension))}
+    for actividad, codigos in DIMENSIONES_ACTIVIDADES:
+        if actividad not in actividades or any(d not in dimensiones for d in codigos):
+            raise ValueError(f'Las dimensiones de {actividad} apuntan a una actividad o dimensión inexistente')
+        if actividades[actividad].tipo != modelos.TipoActividad.CASO:
+            raise ValueError(f'{actividad} no es un caso y no admite dimensiones')
+    sesion.add_all(modelos.ActividadDimension(actividad_id=actividades[a].id, dimension_id=dimensiones[d].id)
+                   for a, codigos in DIMENSIONES_ACTIVIDADES for d in codigos)
 
 
 def _validar_eleccion(codigo, eleccion, listas):
@@ -416,7 +450,8 @@ def _cargar_salones(sesion, salones, actividades):
 
 def _cargar_reglas(sesion, objetivos):
     referencias = {'COMPLETA_ACTIVIDAD': objetivos['ACTIVIDAD'], 'COMPLETA_BLOQUE': objetivos['BLOQUE'],
-                   'REGISTRO_ADECUADO': objetivos['ACTIVIDAD'], 'REVELA_RESULTADO': objetivos['APLICACION']}
+                   'REGISTRO_ADECUADO': objetivos['ACTIVIDAD'], 'REVELA_RESULTADO': objetivos['APLICACION'],
+                   'SUPERA_CASO': objetivos['ACTIVIDAD'], 'SUPERA_BATALLA': objetivos['ACTIVIDAD']}
     reglas = []
     for codigo, tipo, objetivo, mensaje, condiciones in REGLAS:
         if not mensaje.strip():
@@ -437,6 +472,7 @@ def cargar(sesion: Session) -> None:
     objetivos = {**_cargar_estructura(sesion), 'SECCION': base.secciones, 'APLICACION': base.aplicaciones}
     _unir_instrumentos(sesion, objetivos['ACTIVIDAD'], base)
     _unir_tematicas(sesion, objetivos['ACTIVIDAD'], base)
+    _unir_dimensiones(sesion, objetivos['ACTIVIDAD'])
     _cargar_registros(sesion, objetivos['ACTIVIDAD'], base)
     _cargar_salones(sesion, objetivos.pop('SALON'), objetivos['ACTIVIDAD'])
     _cargar_reglas(sesion, objetivos)

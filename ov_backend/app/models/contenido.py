@@ -57,6 +57,13 @@ class ActividadTematica(Base):
     tematica_id: Mapped[int] = mapped_column(ForeignKey("tematica.id"), primary_key=True)
 
 
+class ActividadDimension(Base):
+    """Tipos RIASEC de un caso (B08). Solo las actividades CASO las tienen; lo valida el cargador."""
+    __tablename__ = "actividad_dimension"
+    actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"), primary_key=True)
+    dimension_id: Mapped[int] = mapped_column(ForeignKey("dimension.id"), primary_key=True)
+
+
 class Seccion(Base):
     __tablename__ = "seccion"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -83,6 +90,7 @@ class Testimonio(Base):
     titulo: Mapped[str]
     descripcion: Mapped[str] = mapped_column(Text)
     enlace: Mapped[str]
+    pista: Mapped[str | None] = mapped_column(Text)
 
 
 class PreguntaDiario(Base):

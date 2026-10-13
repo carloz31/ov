@@ -12,18 +12,20 @@ def verificar_p01_estado_inicial(cliente):
         'T0': 'DISPONIBLE', 'T1': 'BLOQUEADA', 'T2': 'BLOQUEADA', 'CIUDAD': 'BLOQUEADA'}
     assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [('t-ficha', 'BLOQUEADA')]
     visibles = [i for i in inicial['insignias'] if i['codigo'] != '???']
-    assert [(i['codigo'], i['estado']) for i in visibles] == [('t-ins-1', 'BLOQUEADA')]
+    assert [(i['codigo'], i['estado']) for i in visibles] == [('t-ins-1', 'BLOQUEADA'), ('t-ins-batalla', 'BLOQUEADA')]
     assert visibles[0]['requisito']
     oculto, = [i for i in inicial['insignias'] if i['codigo'] == '???']
     assert oculto['estado'] == 'BLOQUEADA' and oculto['requisito'] is None
     assert inicial['secciones'] == dict.fromkeys(('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'PLANES'), 'BLOQUEADA')
     assert inicial['nivel_actual']['numero'] == 1
-    assert inicial['testimonios'] == [] and inicial['preguntas_diario'] is None
+    assert [(t['codigo'], t['estado']) for t in inicial['testimonios']] == [
+        ('t-testimonio-1', 'BLOQUEADA'), ('t-testimonio-2', 'BLOQUEADA')]
+    assert inicial['preguntas_diario'] is None
 
 
 def verificar_p02_primer_paso(cliente):
     assert reglas(completar(cliente, 't-inicio')) == {
-        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES'}
+        'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES'}
     assert estado(cliente)['secciones'] == {
         'CATALOGO': 'DISPONIBLE', 'CHECK_IN': 'BLOQUEADA', 'DIARIO': 'DISPONIBLE', 'FAMILIA': 'BLOQUEADA',
         'PLANES': 'DISPONIBLE'}

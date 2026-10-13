@@ -22,6 +22,8 @@ MODELOS_REFERENCIA = {
     TipoEventoUso.COMPLETA_ACTIVIDAD: Actividad,
     TipoEventoUso.COMPLETA_BLOQUE: Bloque,
     TipoEventoUso.SUPERA_CASO: Actividad,
+    TipoEventoUso.SUPERA_BATALLA: Actividad,
+    TipoEventoUso.VISTA_TESTIMONIO: Testimonio,
     TipoEventoUso.REGISTRO_ADECUADO: Actividad,
     TipoEventoUso.VISTA_CARRERA: Carrera,
     TipoEventoUso.PUBLICA_ENTREVISTA: Entrevista,
