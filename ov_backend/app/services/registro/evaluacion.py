@@ -1,7 +1,13 @@
-"""Evaluación de completitud de §6; sin base de datos, routers ni configuración de red."""
+"""Evaluación de registros (B03); sin base de datos, routers ni configuración de red.
+
+Una llamada al entregar el registro (todos los ítems con criterios) y una por cada respuesta a
+una pregunta de seguimiento (reevalúa el ítem y lo consolida). Lo que no pasa por el LLM se
+resuelve en código con origen EXTENSION_MINIMA.
+"""
 
 import json
 import re
+import unicodedata
 from dataclasses import asdict, dataclass
 from math import isfinite
 from time import perf_counter
@@ -9,14 +15,19 @@ from typing import Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from app.core.parametros import TIEMPO_MAXIMO_EVALUACION_SEGUNDOS, VERSION_PROMPT_REGISTRO
+from app.core.parametros import (
+    FACTOR_MAXIMO_CONSOLIDADA, MAXIMO_CARACTERES_PREGUNTA, MIN_CARACTERES_RESPALDO, PALABRAS_EVALUATIVAS,
+    TIEMPO_MAXIMO_EVALUACION_SEGUNDOS, VERSION_PROMPT_REGISTRO,
+)
 from app.models.enums import ClasificacionRespuesta, OrigenEvaluacion
 
 
 @dataclass(frozen=True, slots=True)
 class CriterioEvaluacion:
     codigo: str
+    tipo: str
     descripcion: str
+    repregunta: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -26,50 +37,64 @@ class TurnoEvaluacion:
 
 
 @dataclass(frozen=True, slots=True)
-class ConversacionEvaluacion:
-    texto_inicial: str
-    turnos: tuple[TurnoEvaluacion, ...] = ()
-
-    @property
-    def texto_actual(self) -> str | None:
-        return self.turnos[-1].respuesta if self.turnos else self.texto_inicial
-
-
-def serializar_conversacion(conversacion: ConversacionEvaluacion) -> str:
-    return json.dumps(asdict(conversacion), ensure_ascii=False)
-
-
-@dataclass(frozen=True, slots=True)
-class RespuestaAnterior:
+class ItemEntrega:
+    item: str
     consigna: str
-    conversacion: ConversacionEvaluacion
+    criterios: tuple[CriterioEvaluacion, ...]
+    opciones_elegidas: tuple[str, ...]
+    texto: str
 
 
 @dataclass(frozen=True, slots=True)
-class ContextoEvaluacion:
+class ContextoEntrega:
+    titulo_actividad: str
+    items: tuple[ItemEntrega, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class RespuestaOtroItem:
+    consigna: str
+    texto: str
+
+
+@dataclass(frozen=True, slots=True)
+class ContextoSeguimiento:
     titulo_actividad: str
     consigna: str
     criterios: tuple[CriterioEvaluacion, ...]
-    respuestas_anteriores: tuple[RespuestaAnterior, ...]
-    conversacion: ConversacionEvaluacion
     criterios_faltantes_previos: tuple[str, ...]
+    opciones_elegidas: tuple[str, ...]
+    texto_inicial: str
+    turnos: tuple[TurnoEvaluacion, ...]
+    otras_respuestas: tuple[RespuestaOtroItem, ...]
 
 
-class ResultadoEvaluacion(BaseModel):
+class _Estricto(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
 
+
+class ResultadoItemEntrega(_Estricto):
+    item: str
     clasificacion: Literal["ADECUADA", "POCO_DESARROLLADA"]
     criterios_faltantes: list[str]
     pregunta: str | None
-    requiere_atencion: bool
+
+
+class ResultadoEntrega(_Estricto):
+    items: list[ResultadoItemEntrega]
+
+
+class ResultadoSeguimiento(_Estricto):
+    clasificacion: Literal["ADECUADA", "POCO_DESARROLLADA"]
+    criterios_faltantes: list[str]
+    pregunta: str | None
+    consolidada: str
 
 
 class EvaluadorRespuestas(Protocol):
-    def evaluar(self, contexto: ContextoEvaluacion) -> ResultadoEvaluacion: ...
+    def evaluar_entrega(self, contexto: ContextoEntrega) -> ResultadoEntrega: ...
 
-
-class ErrorTextoVacio(ValueError):
-    """La acción traducirá este rechazo de entrada a HTTP 422."""
+    def evaluar_seguimiento(self, contexto: ContextoSeguimiento) -> ResultadoSeguimiento: ...
 
 
 class ErrorResultadoEvaluacion(ValueError):
@@ -82,83 +107,128 @@ class EvaluacionProcesada:
     clasificacion: ClasificacionRespuesta
     criterios_faltantes: tuple[str, ...]
     pregunta: str | None
-    requiere_atencion: bool
     modelo: str | None
     version_prompt: str | None
     latencia_ms: int | None
     error: str | None
     texto_evaluado: str
+    consolidada: str | None = None
 
 
-class EvaluadorFalso:
-    def __init__(self):
-        self.contextos: list[ContextoEvaluacion] = []
-
-    def evaluar(self, contexto: ContextoEvaluacion) -> ResultadoEvaluacion:
-        self.contextos.append(contexto)
-        texto = contexto.conversacion.texto_actual
-        if "[falla]" in texto:
-            raise RuntimeError("Fallo simulado del evaluador")
-        atencion = "[atencion]" in texto
-        marcas = re.findall(r"\[falta:([^\]]*)\]", texto)
-        vaga = bool(marcas or "[vaga]" in texto) and not atencion
-        faltantes = list(contexto.criterios_faltantes_previos)
-        if marcas:
-            faltantes = list(dict.fromkeys(
-                codigo.strip() for marca in marcas for codigo in marca.split(',') if codigo.strip()
-            ))
-        return ResultadoEvaluacion(
-            clasificacion="POCO_DESARROLLADA" if vaga else "ADECUADA",
-            criterios_faltantes=faltantes if vaga else [],
-            pregunta=f"¿Podrías contarme más sobre {', '.join(faltantes)}?" if vaga else None,
-            requiere_atencion=atencion,
-        )
+@dataclass(frozen=True, slots=True)
+class ItemPorEvaluar:
+    """Lo que la acción sabe de un ítem; `criterios` vacío significa que se evalúa en código."""
+    codigo: str
+    consigna: str
+    criterios: tuple[CriterioEvaluacion, ...]
+    opciones_elegidas: tuple[str, ...]
+    texto: str
+    min_caracteres: int | None
+    repregunta_generica: str
 
 
-def validar_resultado(resultado: ResultadoEvaluacion, contexto: ContextoEvaluacion) -> ResultadoEvaluacion:
+# --- Textos ---------------------------------------------------------------------------------
+
+def sin_tildes(texto: str) -> str:
+    return ''.join(c for c in unicodedata.normalize('NFD', texto.lower()) if unicodedata.category(c) != 'Mn')
+
+
+def pregunta_valida(pregunta) -> bool:
+    if not isinstance(pregunta, str):
+        return False
+    pregunta = pregunta.strip()
+    if not pregunta or len(pregunta) > MAXIMO_CARACTERES_PREGUNTA:
+        return False
+    if pregunta.count('?') != 1 or not pregunta.endswith('?'):
+        return False
+    if re.search(r'\bC\d+\b', pregunta):
+        return False
+    normal = sin_tildes(pregunta)
+    return not any(sin_tildes(palabra) in normal for palabra in PALABRAS_EVALUATIVAS)
+
+
+def repregunta_base(criterios, faltantes) -> str:
+    """La repregunta del primer criterio faltante, por orden de criterio."""
+    return next(c.repregunta for c in criterios if c.codigo in faltantes)
+
+
+def pregunta_o_base(pregunta, criterios, faltantes) -> str:
+    return pregunta.strip() if pregunta_valida(pregunta) else repregunta_base(criterios, faltantes)
+
+
+def concatenar(texto_inicial: str, turnos) -> str:
+    partes = [texto_inicial.strip()] + [t.respuesta.strip() for t in turnos if t.respuesta and t.respuesta.strip()]
+    return '\n\n'.join(partes)
+
+
+def consolidada_o_concatenacion(consolidada, texto_inicial: str, turnos) -> str:
+    concatenacion = concatenar(texto_inicial, turnos)
+    if isinstance(consolidada, str) and consolidada.strip() and (
+            len(consolidada.strip()) <= FACTOR_MAXIMO_CONSOLIDADA * len(concatenacion)):
+        return consolidada.strip()
+    return concatenacion
+
+
+def serializar_conversacion(texto_inicial: str, turnos=()) -> str:
+    return json.dumps({'texto_inicial': texto_inicial, 'turnos': [asdict(t) for t in turnos]}, ensure_ascii=False)
+
+
+# --- Validación -----------------------------------------------------------------------------
+
+def _validar_faltantes(clasificacion, faltantes, codigos, previos):
+    if len(faltantes) != len(set(faltantes)):
+        raise ErrorResultadoEvaluacion("Los criterios faltantes no pueden repetirse")
+    if any(codigo not in codigos for codigo in faltantes):
+        raise ErrorResultadoEvaluacion("Los criterios faltantes no pertenecen al ítem")
+    if not set(faltantes).issubset(previos):
+        raise ErrorResultadoEvaluacion("No pueden faltar criterios ya cumplidos")
+    if clasificacion == "ADECUADA" and faltantes:
+        raise ErrorResultadoEvaluacion("Una respuesta adecuada no puede tener criterios faltantes")
+    if clasificacion == "POCO_DESARROLLADA" and not faltantes:
+        raise ErrorResultadoEvaluacion("Una respuesta poco desarrollada requiere criterios faltantes")
+
+
+def _revalidar(modelo, resultado):
     # Validar también instancias construidas sin validación o listas mutadas.
-    datos = resultado.model_dump(warnings=False) if isinstance(resultado, ResultadoEvaluacion) else resultado
+    datos = resultado.model_dump(warnings=False) if isinstance(resultado, BaseModel) else resultado
     try:
-        validado = ResultadoEvaluacion.model_validate(datos)
+        return modelo.model_validate(datos)
     except ValidationError:
         raise ErrorResultadoEvaluacion("El resultado no cumple el esquema de evaluación") from None
-    codigos = {criterio.codigo for criterio in contexto.criterios}
-    if any(codigo not in codigos for codigo in validado.criterios_faltantes):
-        raise ErrorResultadoEvaluacion("Los criterios faltantes no pertenecen al ítem")
-    if not set(validado.criterios_faltantes).issubset(contexto.criterios_faltantes_previos):
-        raise ErrorResultadoEvaluacion("No pueden faltar criterios ya cumplidos")
-    if len(validado.criterios_faltantes) != len(set(validado.criterios_faltantes)):
-        raise ErrorResultadoEvaluacion("Los criterios faltantes no pueden repetirse")
-    if validado.clasificacion == "ADECUADA" and validado.criterios_faltantes:
-        raise ErrorResultadoEvaluacion("Una respuesta adecuada no puede tener criterios faltantes")
-    if validado.clasificacion == "POCO_DESARROLLADA" and not validado.requiere_atencion and (
-        not validado.criterios_faltantes or validado.pregunta is None or not validado.pregunta.strip()
-    ):
-        raise ErrorResultadoEvaluacion("Una respuesta poco desarrollada requiere criterios y una pregunta no vacíos")
+
+
+def validar_entrega(resultado, contexto: ContextoEntrega) -> ResultadoEntrega:
+    validado = _revalidar(ResultadoEntrega, resultado)
+    enviados = {item.item: item for item in contexto.items}
+    recibidos = [r.item for r in validado.items]
+    if len(recibidos) != len(set(recibidos)) or set(recibidos) != set(enviados):
+        raise ErrorResultadoEvaluacion("El resultado no corresponde a los ítems enviados")
+    for r in validado.items:
+        codigos = {c.codigo for c in enviados[r.item].criterios}
+        _validar_faltantes(r.clasificacion, r.criterios_faltantes, codigos, codigos)
     return validado
 
 
-def evaluar_respuesta(
-    contexto: ContextoEvaluacion, min_caracteres: int, repregunta_generica: str, evaluador: EvaluadorRespuestas,
-    *, modelo: str | None = None, version_prompt: str = VERSION_PROMPT_REGISTRO,
-    tiempo_maximo_segundos: float = TIEMPO_MAXIMO_EVALUACION_SEGUNDOS,
-) -> EvaluacionProcesada:
-    """Procesa un envío; la acción guardará el resultado y decidirá su estado.
+def validar_seguimiento(resultado, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
+    validado = _revalidar(ResultadoSeguimiento, resultado)
+    _validar_faltantes(validado.clasificacion, validado.criterios_faltantes,
+                       {c.codigo for c in contexto.criterios}, set(contexto.criterios_faltantes_previos))
+    return validado
 
-    El adaptador debe limitar la espera de su llamada. Aquí se capturan timeouts
-    y también se descarta un resultado que llega después del tiempo máximo.
-    """
-    if contexto.conversacion.texto_actual is None or not contexto.conversacion.texto_actual.strip():
-        raise ErrorTextoVacio("El texto de la respuesta no puede estar vacío")
-    if type(min_caracteres) is not int or min_caracteres < 0:
-        raise ValueError("El mínimo de caracteres debe ser un entero no negativo")
+
+# --- Procesamiento --------------------------------------------------------------------------
+
+def _validar_parametros(tiempo_maximo_segundos):
     if isinstance(tiempo_maximo_segundos, bool) or not isfinite(tiempo_maximo_segundos) or tiempo_maximo_segundos <= 0:
         raise ValueError("El tiempo máximo de evaluación debe ser positivo y finito")
-    texto_evaluado = serializar_conversacion(contexto.conversacion)
+
+
+def _llamar(funcion, validar, contexto, tiempo_maximo_segundos):
+    """Devuelve (resultado o None, error o None, latencia_ms)."""
     inicio = perf_counter()
     resultado, error = None, None
     try:
-        resultado = validar_resultado(evaluador.evaluar(contexto), contexto)
+        resultado = validar(funcion(contexto), contexto)
     except TimeoutError:
         error = "Se agotó el tiempo máximo de evaluación"
     except (ErrorResultadoEvaluacion, ValidationError):
@@ -167,24 +237,152 @@ def evaluar_respuesta(
         # Nunca persistir el mensaje de una excepción externa: podría incluir secretos.
         error = "Falló el evaluador de respuestas"
     duracion = perf_counter() - inicio
-    latencia_ms = max(0, round(duracion * 1000))
     if duracion > tiempo_maximo_segundos:
         error = "Se agotó el tiempo máximo de evaluación"
+    return (None if error else resultado), error, max(0, round(duracion * 1000))
+
+
+def _en_codigo(clasificacion, pregunta, texto_evaluado, *, faltantes=(), error=None, latencia_ms=None,
+               modelo=None, version_prompt=None, consolidada=None):
+    return EvaluacionProcesada(OrigenEvaluacion.EXTENSION_MINIMA, clasificacion, tuple(faltantes), pregunta,
+                               modelo, version_prompt, latencia_ms, error, texto_evaluado, consolidada)
+
+
+def evaluar_por_extension(texto: str, min_caracteres: int | None, repregunta_generica: str, texto_evaluado: str,
+                          consolidada=None) -> EvaluacionProcesada:
+    """Ítem sin criterios: la extensión mínima, si la tiene, es su único criterio."""
+    if min_caracteres is not None and len(texto.strip()) < min_caracteres:
+        return _en_codigo(ClasificacionRespuesta.POCO_DESARROLLADA, repregunta_generica, texto_evaluado,
+                          consolidada=consolidada)
+    return _en_codigo(ClasificacionRespuesta.ADECUADA, None, texto_evaluado, consolidada=consolidada)
+
+
+def procesar_entrega(titulo_actividad: str, items: tuple[ItemPorEvaluar, ...], evaluador: EvaluadorRespuestas, *,
+                     modelo: str | None = None, version_prompt: str = VERSION_PROMPT_REGISTRO,
+                     tiempo_maximo_segundos: float = TIEMPO_MAXIMO_EVALUACION_SEGUNDOS,
+                     ) -> dict[str, EvaluacionProcesada]:
+    """Evalúa todos los ítems entregados con una sola llamada al evaluador."""
+    _validar_parametros(tiempo_maximo_segundos)
+    evaluaciones = {}
+    con_criterios = tuple(item for item in items if item.criterios)
+    for item in items:
+        if not item.criterios:
+            evaluaciones[item.codigo] = evaluar_por_extension(
+                item.texto, item.min_caracteres, item.repregunta_generica, serializar_conversacion(item.texto))
+    if not con_criterios:
+        return evaluaciones
+    contexto = ContextoEntrega(titulo_actividad, tuple(
+        ItemEntrega(i.codigo, i.consigna, i.criterios, i.opciones_elegidas, i.texto) for i in con_criterios))
+    resultado, error, latencia_ms = _llamar(evaluador.evaluar_entrega, validar_entrega, contexto, tiempo_maximo_segundos)
+    por_item = {r.item: r for r in resultado.items} if resultado is not None else {}
+    for item in con_criterios:
+        texto_evaluado = serializar_conversacion(item.texto)
+        if error is not None:
+            minimo = MIN_CARACTERES_RESPALDO if item.min_caracteres is None else item.min_caracteres
+            corto = len(item.texto.strip()) < minimo
+            evaluaciones[item.codigo] = _en_codigo(
+                ClasificacionRespuesta.POCO_DESARROLLADA if corto else ClasificacionRespuesta.NO_EVALUADA,
+                item.repregunta_generica if corto else None, texto_evaluado,
+                faltantes=tuple(c.codigo for c in item.criterios) if corto else (), error=error,
+                latencia_ms=latencia_ms, modelo=modelo, version_prompt=version_prompt)
+            continue
+        r = por_item[item.codigo]
+        poco = r.clasificacion == "POCO_DESARROLLADA"
+        evaluaciones[item.codigo] = EvaluacionProcesada(
+            OrigenEvaluacion.LLM, ClasificacionRespuesta(r.clasificacion), tuple(r.criterios_faltantes),
+            pregunta_o_base(r.pregunta, item.criterios, r.criterios_faltantes) if poco else None,
+            modelo, version_prompt, latencia_ms, None, texto_evaluado)
+    return evaluaciones
+
+
+def procesar_seguimiento(titulo_actividad: str, item: ItemPorEvaluar, turnos: tuple[TurnoEvaluacion, ...],
+                         criterios_faltantes_previos: tuple[str, ...], otras_respuestas: tuple[RespuestaOtroItem, ...],
+                         evaluador: EvaluadorRespuestas, *, pregunta_generica: bool, modelo: str | None = None,
+                         version_prompt: str = VERSION_PROMPT_REGISTRO,
+                         tiempo_maximo_segundos: float = TIEMPO_MAXIMO_EVALUACION_SEGUNDOS) -> EvaluacionProcesada:
+    """Reevalúa un ítem tras responder su pregunta y devuelve también la consolidada.
+
+    `item.texto` es el texto inicial y `turnos` incluye la respuesta recién escrita.
+    """
+    _validar_parametros(tiempo_maximo_segundos)
+    texto_evaluado = serializar_conversacion(item.texto, turnos)
+    concatenacion = concatenar(item.texto, turnos)
+    if not item.criterios:
+        return evaluar_por_extension(concatenacion, item.min_caracteres, item.repregunta_generica, texto_evaluado,
+                                     consolidada=concatenacion)
+    if pregunta_generica:
+        return _en_codigo(ClasificacionRespuesta.NO_EVALUADA, None, texto_evaluado, consolidada=concatenacion)
+    contexto = ContextoSeguimiento(titulo_actividad, item.consigna, item.criterios, criterios_faltantes_previos,
+                                   item.opciones_elegidas, item.texto, turnos, otras_respuestas)
+    resultado, error, latencia_ms = _llamar(evaluador.evaluar_seguimiento, validar_seguimiento, contexto,
+                                            tiempo_maximo_segundos)
     if error is not None:
-        corto = not contexto.conversacion.turnos and len(contexto.conversacion.texto_inicial.strip()) < min_caracteres
-        if corto and not repregunta_generica.strip():
-            raise ValueError("La repregunta genérica no puede estar vacía")
-        return EvaluacionProcesada(
-            origen=OrigenEvaluacion.EXTENSION_MINIMA,
-            clasificacion=ClasificacionRespuesta.POCO_DESARROLLADA if corto else ClasificacionRespuesta.NO_EVALUADA,
-            criterios_faltantes=tuple(criterio.codigo for criterio in contexto.criterios) if corto else (),
-            pregunta=repregunta_generica if corto else None, requiere_atencion=False,
-            modelo=modelo, version_prompt=version_prompt, latencia_ms=latencia_ms,
-            error=error, texto_evaluado=texto_evaluado,
-        )
+        return _en_codigo(ClasificacionRespuesta.NO_EVALUADA, None, texto_evaluado, error=error,
+                          latencia_ms=latencia_ms, modelo=modelo, version_prompt=version_prompt,
+                          consolidada=concatenacion)
+    poco = resultado.clasificacion == "POCO_DESARROLLADA"
     return EvaluacionProcesada(
-        origen=OrigenEvaluacion.LLM, clasificacion=ClasificacionRespuesta(resultado.clasificacion),
-        criterios_faltantes=tuple(resultado.criterios_faltantes), pregunta=resultado.pregunta,
-        requiere_atencion=resultado.requiere_atencion, modelo=modelo, version_prompt=version_prompt,
-        latencia_ms=latencia_ms, error=None, texto_evaluado=texto_evaluado,
-    )
+        OrigenEvaluacion.LLM, ClasificacionRespuesta(resultado.clasificacion), tuple(resultado.criterios_faltantes),
+        pregunta_o_base(resultado.pregunta, item.criterios, resultado.criterios_faltantes) if poco else None,
+        modelo, version_prompt, latencia_ms, None, texto_evaluado,
+        consolidada_o_concatenacion(resultado.consolidada, item.texto, turnos))
+
+
+# --- Evaluador falso ------------------------------------------------------------------------
+
+class EvaluadorFalso:
+    """Determinista, por marcas en el texto más reciente de cada ítem.
+
+    Sin marca: ADECUADA. `[vaga]`: faltan los criterios que faltaban. `[falta:C2]` o `[falta:RAZON]`:
+    faltan esos códigos o los criterios de ese tipo. `[falla]`: lanza error (toda la llamada).
+    `[pregunta-invalida]`: pregunta con código y sin «?». `[consolidada-invalida]`: consolidada demasiado larga.
+    """
+
+    def __init__(self):
+        self.contextos: list = []
+        self.llamadas_entrega = 0
+        self.llamadas_seguimiento = 0
+
+    @staticmethod
+    def _clasificar(texto, criterios, previos):
+        marcas = re.findall(r"\[falta:([^\]]*)\]", texto)
+        if not marcas and "[vaga]" not in texto:
+            return "ADECUADA", [], None
+        faltantes = list(previos)
+        if marcas:
+            por_tipo = {}
+            for criterio in criterios:
+                por_tipo.setdefault(criterio.tipo, []).append(criterio.codigo)
+            tokens = [t.strip() for marca in marcas for t in marca.split(',') if t.strip()]
+            faltantes = list(dict.fromkeys(c for t in tokens for c in por_tipo.get(t, [t])))
+        if "[pregunta-invalida]" in texto:
+            return "POCO_DESARROLLADA", faltantes, f"Falta {', '.join(faltantes)}"
+        base = next((c.repregunta for c in criterios if c.codigo in faltantes), "¿Podrías contarme más?")
+        return "POCO_DESARROLLADA", faltantes, f"Sobre lo que contaste: {base}"
+
+    def evaluar_entrega(self, contexto: ContextoEntrega) -> ResultadoEntrega:
+        self.llamadas_entrega += 1
+        self.contextos.append(contexto)
+        if any("[falla]" in item.texto for item in contexto.items):
+            raise RuntimeError("Fallo simulado del evaluador")
+        resultados = []
+        for item in contexto.items:
+            clasificacion, faltantes, pregunta = self._clasificar(
+                item.texto, item.criterios, [c.codigo for c in item.criterios])
+            resultados.append(ResultadoItemEntrega(item=item.item, clasificacion=clasificacion,
+                                                   criterios_faltantes=faltantes, pregunta=pregunta))
+        return ResultadoEntrega(items=resultados)
+
+    def evaluar_seguimiento(self, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
+        self.llamadas_seguimiento += 1
+        self.contextos.append(contexto)
+        texto = contexto.turnos[-1].respuesta or ""
+        if "[falla]" in texto:
+            raise RuntimeError("Fallo simulado del evaluador")
+        clasificacion, faltantes, pregunta = self._clasificar(
+            texto, contexto.criterios, contexto.criterios_faltantes_previos)
+        consolidada = concatenar(contexto.texto_inicial, contexto.turnos)
+        if "[consolidada-invalida]" in texto:
+            consolidada = consolidada * 3
+        return ResultadoSeguimiento(clasificacion=clasificacion, criterios_faltantes=faltantes,
+                                    pregunta=pregunta, consolidada=consolidada)

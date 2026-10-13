@@ -24,14 +24,20 @@ OPCION_ONET_MAXIMA = 5
 PUNTAJE_ONET_MINIMO = 0
 
 # Registro §3 y §6: valores iniciales; el adaptador leerá el timeout del entorno.
-VERSION_PROMPT_REGISTRO = "v3"
+VERSION_PROMPT_REGISTRO = "v4"
 # Respaldo por longitud de un ítem sin `min_caracteres`. Provisional (B02).
 MIN_CARACTERES_RESPALDO = 40
-MAXIMO_SEGUIMIENTOS_POR_ITEM = 2
+# B03: preguntas de seguimiento por registro, no por ítem.
+MAXIMO_SEGUIMIENTOS_POR_REGISTRO = 2
 MAXIMO_ITEMS_REGISTRO = 3
 TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
-MODELO_GEMINI_REGISTRO = "gemini-3.1-flash-lite"
+MODELO_LLM_REGISTRO = "gemini-3.8-flash"
 TEMPERATURA_REGISTRO = 0.2
+# B03: validación de la pregunta redactada por el LLM; se compara en minúsculas y sin tildes.
+MAXIMO_CARACTERES_PREGUNTA = 200
+PALABRAS_EVALUATIVAS = ("adecuad", "poco desarrollad", "criterio", "incomplet", "insuficient")
+# B03: la consolidada no puede superar este factor del largo de lo escrito.
+FACTOR_MAXIMO_CONSOLIDADA = 1.5
 PAUSA_CASOS_GEMINI_SEGUNDOS = 5
 
 

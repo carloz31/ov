@@ -5,8 +5,8 @@ from app.database import es_bloqueo_temporal
 from app.dependencies import SesionBD, ejecutar_accion
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.schemas.registro import (
-    AccionItemRegistroEntrada, BorradorRegistroEntrada, EnvioRegistroEntrada, EstadoItemRegistro,
-    ItemRegistroPublico, RegistroConsultado, ResponderSeguimientoEntrada, RespuestaEnvioRegistro,
+    AccionItemRegistroEntrada, BorradorRegistroEntrada, EntregarRegistroEntrada, EstadoItemRegistro,
+    ItemRegistroPublico, RegistroConsultado, ResponderSeguimientoEntrada, RespuestaRegistroAccion,
 )
 from app.services.registro import acciones as acciones_registro, consultas as consultas_registro
 
@@ -21,31 +21,29 @@ def guardar_borrador(entrada: BorradorRegistroEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: acciones_registro.guardar_borrador(sesion, entrada))
 
 
-@router.post('/acciones/registro/enviar', response_model=RespuestaEnvioRegistro, response_model_exclude_unset=True)
-def enviar(entrada: EnvioRegistroEntrada, peticion: Request):
-    return ejecutar_envio(entrada, peticion)
+@router.post('/acciones/registro/entregar', response_model=RespuestaRegistroAccion, response_model_exclude_unset=True)
+def entregar(entrada: EntregarRegistroEntrada, peticion: Request):
+    return ejecutar_evaluacion(acciones_registro.entregar, entrada, peticion)
 
 
-@router.post('/acciones/registro/responder-seguimiento', response_model=RespuestaEnvioRegistro,
+@router.post('/acciones/registro/responder-seguimiento', response_model=RespuestaRegistroAccion,
              response_model_exclude_unset=True)
 def responder_seguimiento(entrada: ResponderSeguimientoEntrada, peticion: Request):
-    return ejecutar_envio(entrada, peticion, seguimiento=True)
+    return ejecutar_evaluacion(acciones_registro.responder_seguimiento, entrada, peticion)
 
 
-def ejecutar_envio(entrada, peticion, seguimiento=False):
+def ejecutar_evaluacion(accion, entrada, peticion):
     # No usa la dependencia de sesión: el núcleo abre y cierra cada fase por separado.
     try:
         configuracion = peticion.app.state.configuracion_registro
-        return acciones_registro.enviar(peticion.app.state.fabrica_sesiones, entrada,
-            peticion.app.state.evaluador_respuestas,
-            seguimiento=seguimiento,
-            modelo=configuracion.modelo if configuracion.evaluador == 'gemini' else None,
-            tiempo_maximo_segundos=configuracion.timeout_segundos)
+        return accion(peticion.app.state.fabrica_sesiones, entrada, peticion.app.state.evaluador_respuestas,
+                      modelo=configuracion.modelo if configuracion.evaluador == 'gemini' else None,
+                      tiempo_maximo_segundos=configuracion.timeout_segundos)
     except ErrorAccion as error:
-        raise traducir_error_accion(error, incluir_items_faltantes=False) from error
+        raise traducir_error_accion(error) from error
     except IntegrityError as error:
         raise HTTPException(status_code=409, detail={
-            'mensaje': 'El envío entra en conflicto con el estado actual de la cuenta',
+            'mensaje': 'La acción entra en conflicto con el estado actual del registro',
         }) from error
     except OperationalError as error:
         # SQLite puede rechazar un escritor simultáneo antes de comprobar la condición.
@@ -56,7 +54,7 @@ def ejecutar_envio(entrada, peticion, seguimiento=False):
         raise
 
 
-@router.post('/acciones/registro/continuar-sin-responder', response_model=RespuestaEnvioRegistro,
+@router.post('/acciones/registro/continuar-sin-responder', response_model=RespuestaRegistroAccion,
              response_model_exclude_unset=True)
 def continuar_sin_responder(entrada: AccionItemRegistroEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: acciones_registro.continuar_sin_responder(sesion, entrada))

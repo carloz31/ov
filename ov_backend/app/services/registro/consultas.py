@@ -3,10 +3,8 @@
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import ListaOpciones
-from app.schemas.registro import (
-    EleccionPublica, ItemRegistroPublico, OpcionListaPublica, RegistroConsultado, RespuestaRegistroPublica,
-)
-from app.services.registro.acciones import conversacion_publica, leer_registro, opciones_de, validar_registro
+from app.schemas.registro import EleccionPublica, ItemRegistroPublico, OpcionListaPublica, RegistroConsultado
+from app.services.registro.acciones import leer_registro, opciones_de, registro_publico, validar_registro
 
 
 def eleccion_publica(sesion, item):
@@ -30,12 +28,4 @@ def consultar_items(sesion, actividad):
 @usar_contexto
 def consultar_registro(sesion, cuenta, actividad):
     cuenta, actividad, items = validar_registro(sesion, actividad, cuenta)
-    registro = leer_registro(sesion, cuenta, actividad)
-    progreso, respuestas = registro.progreso, registro.respuestas
-    return RegistroConsultado(posicion=progreso.posicion if progreso is not None else None,
-        estado=progreso.estado if progreso is not None else None,
-        respuestas=[RespuestaRegistroPublica(item=item.codigo, estado=respuestas[item.id].estado,
-            opciones_elegidas=respuestas[item.id].opciones_elegidas,
-            conversacion=conversacion_publica(respuestas[item.id].texto_inicial,
-                registro.turnos.get(respuestas[item.id].id, ())))
-            for item in items if item.id in respuestas])
+    return RegistroConsultado(**registro_publico(leer_registro(sesion, cuenta, actividad), items))

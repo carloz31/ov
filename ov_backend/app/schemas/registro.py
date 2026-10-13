@@ -24,16 +24,17 @@ class OpcionElegida(BaseModel):
     texto: str | None = None
 
 
-class EnvioRegistroEntrada(TextoRegistroEntrada):
+class BorradorRegistroEntrada(TextoRegistroEntrada):
     opciones: list[OpcionElegida] = []
-
-
-class BorradorRegistroEntrada(EnvioRegistroEntrada):
     posicion: str | None = None
 
 
+class EntregarRegistroEntrada(CompletarActividadEntrada):
+    pass
+
+
 class ResponderSeguimientoEntrada(TextoRegistroEntrada):
-    orden: Annotated[int, Field(strict=True, ge=1, le=2)] | None = None
+    pass
 
 
 
@@ -57,10 +58,6 @@ class MensajePreguntaRegistro(BaseModel):
 
 
 MensajeRegistro = Annotated[MensajeRespuestaRegistro | MensajePreguntaRegistro, Field(discriminator='tipo')]
-
-
-class RespuestaEnvioRegistro(EstadoItemRegistro, RespuestaAccion):
-    conversacion: list[MensajeRegistro]
 
 
 class OpcionListaPublica(BaseModel):
@@ -96,3 +93,9 @@ class RegistroConsultado(BaseModel):
     posicion: str | None
     estado: EstadoProgreso | None
     respuestas: list[RespuestaRegistroPublica]
+
+
+class RespuestaRegistroAccion(RegistroConsultado, RespuestaAccion):
+    """Estado del registro tras entregar, responder u omitir; nunca lleva clasificaciones."""
+    # Solo en la respuesta que cierra el registro: ítems que quedaron poco desarrollados.
+    items_por_ampliar: list[str] | None = None

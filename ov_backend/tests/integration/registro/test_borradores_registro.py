@@ -42,13 +42,16 @@ def test_borrador_no_exige_el_minimo_pero_si_lo_demas(cliente):
 
 def test_borrador_en_seguimiento_no_acepta_eleccion(cliente):
     avanzar(cliente, 't-cierre-inicio')
-    pedir(cliente, 'POST', '/acciones/registro/enviar', {
-        'cuenta': 'est-ana', 'actividad': 't-expectativas', 'item': 't-exp-ruta', 'fecha_hora': FECHA,
-        'texto': 'DATO DE PRUEBA [vaga]', 'opciones': [{'codigo': 'UNIVERSIDAD'}]})
+    borrador(cliente, 't-exp-ruta', 'DATO DE PRUEBA [vaga]', [{'codigo': 'UNIVERSIDAD'}])
+    borrador(cliente, 't-exp-apoyo', 'DATO DE PRUEBA', [{'codigo': 'FAMILIA'}])
+    borrador(cliente, 't-exp-espera', 'DATO DE PRUEBA')
+    pedir(cliente, 'POST', '/acciones/registro/entregar',
+          {'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA})
     assert registro(cliente)['respuestas'][0]['estado'] == 'PENDIENTE_SEGUIMIENTO'
     borrador(cliente, 't-exp-ruta', 'Respuesta al seguimiento', [{'codigo': 'TRABAJAR'}], esperado=422)
     borrador(cliente, 't-exp-ruta', 'Respuesta al seguimiento')
-    respuesta, = registro(cliente)['respuestas']
+    borrador(cliente, 't-exp-apoyo', 'Cambio tras entregar', esperado=409)
+    respuesta = registro(cliente)['respuestas'][0]
     assert respuesta['opciones_elegidas'] == [{'codigo': 'UNIVERSIDAD'}]
     assert respuesta['conversacion'][-1] == {
         'tipo': 'respuesta', 'orden': 1, 'texto': 'Respuesta al seguimiento', 'borrador': True}

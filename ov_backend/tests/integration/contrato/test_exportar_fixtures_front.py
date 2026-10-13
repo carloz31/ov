@@ -19,7 +19,7 @@ from app.schemas.comun import ContenidoEstado
 from app.schemas.logros import LogrosCuenta
 from app.schemas.secciones import SeccionEstado
 from app.schemas.instrumentos import ItemPublico, ResultadoPublico
-from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado
+from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
 
 
 SCRIPT = Path(exportador.__file__).resolve()
@@ -30,6 +30,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'desbloqueos-no-vistos', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
     'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
+    'entregar-t-expectativas',
 )}
 
 
@@ -101,6 +102,11 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     EstadoItemRegistro.model_validate(datos['borrador-t-expectativas'])
     borrador = RegistroConsultado.model_validate(datos['registro-t-expectativas-borrador'])
     assert borrador.posicion == 't-exp-ruta' and borrador.respuestas[0].estado == 'BORRADOR'
+    # B03: entregar todo adecuado cierra el registro y abre la misión adicional, sin clasificaciones.
+    entrega = RespuestaRegistroAccion.model_validate(datos['entregar-t-expectativas'])
+    assert entrega.estado == 'COMPLETADA' and entrega.items_por_ampliar == []
+    assert 'R-t-adicional' in {d.regla for d in entrega.nuevos_desbloqueos}
+    assert 'clasificacion' not in json.dumps(datos['entregar-t-expectativas'])
     inicial = estados(datos['actividades-inicial'])
     assert inicial['t-inicio'] == 'DISPONIBLE'
     assert all(e == 'BLOQUEADA' for c, e in inicial.items() if c != 't-inicio')
@@ -142,7 +148,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     avisos = datos['desbloqueos-no-vistos']
     assert {d['regla'] for d in avisos} == {
         'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD', 'R-t-opcional',
-        'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA'}
+        'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA', 'R-t-adicional'}
     assert all(d['visto'] is False and d['fecha_hora'] == exportador.FECHA for d in avisos)
     assert [(f['codigo'], f['estado']) for f in datos['fichas-inicial']] == [('t-ficha', 'BLOQUEADA')]
     assert [(f['codigo'], f['estado']) for f in datos['fichas-final']] == [('t-ficha', 'DISPONIBLE')]

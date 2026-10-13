@@ -1,4 +1,7 @@
-"""HU-006: la elección de un ítem se valida al enviar y se guarda con el texto."""
+"""HU-006: la elección de un ítem se valida al guardarla (el mínimo, al entregar) y se guarda con el texto.
+
+B03: `enviar` se retiró; la elección se guarda con el borrador y se entrega con el registro.
+"""
 
 import pytest
 from soporte_ruta import FECHA, avanzar, pedir
@@ -7,10 +10,15 @@ from soporte_ruta import FECHA, avanzar, pedir
 TEXTO = 'DATO DE PRUEBA: una respuesta con su ejemplo y su razón.'
 
 
-def enviar(cliente, item, opciones, actividad='t-expectativas', esperado=200):
-    return pedir(cliente, 'POST', '/acciones/registro/enviar', {
+def guardar(cliente, item, opciones, actividad='t-expectativas', esperado=200):
+    return pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
         'cuenta': 'est-ana', 'actividad': actividad, 'item': item, 'fecha_hora': FECHA,
         'texto': TEXTO, 'opciones': opciones}, esperado)
+
+
+def entregar(cliente, actividad='t-expectativas', esperado=200):
+    return pedir(cliente, 'POST', '/acciones/registro/entregar',
+                 {'cuenta': 'est-ana', 'actividad': actividad, 'fecha_hora': FECHA}, esperado)
 
 
 def elegidas(cliente, item, actividad='t-expectativas'):
@@ -19,7 +27,6 @@ def elegidas(cliente, item, actividad='t-expectativas'):
 
 
 @pytest.mark.parametrize(('item', 'opciones', 'mensaje'), [
-    ('t-exp-ruta', [], 'al menos 1'),
     ('t-exp-ruta', [{'codigo': 'UNIVERSIDAD'}, {'codigo': 'INSTITUTO'}, {'codigo': 'TRABAJAR'}], 'como máximo 2'),
     ('t-exp-ruta', [{'codigo': 'FAMILIA'}], 'no pertenece'),
     ('t-exp-ruta', [{'codigo': 'UNIVERSIDAD'}, {'codigo': 'UNIVERSIDAD'}], 'dos veces'),
@@ -31,28 +38,32 @@ def elegidas(cliente, item, actividad='t-expectativas'):
 ])
 def test_eleccion_invalida_responde_422_sin_escribir(cliente, item, opciones, mensaje):
     avanzar(cliente, 't-cierre-inicio')
-    respuesta = enviar(cliente, item, opciones, esperado=422)
+    respuesta = guardar(cliente, item, opciones, esperado=422)
     assert mensaje in respuesta['detail']['mensaje']
     assert pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')['respuestas'] == []
 
 
+def test_entregar_sin_el_minimo_responde_422_sin_evaluar(cliente):
+    avanzar(cliente, 't-cierre-inicio')
+    guardar(cliente, 't-exp-ruta', [])
+    guardar(cliente, 't-exp-apoyo', [{'codigo': 'FAMILIA'}])
+    guardar(cliente, 't-exp-espera', [])
+    assert 'al menos 1' in entregar(cliente, esperado=422)['detail']['mensaje']
+    assert {r['estado'] for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')[
+        'respuestas']} == {'BORRADOR'}
+
+
 def test_otra_con_texto_y_eleccion_no_ordenada_en_el_orden_de_la_lista(cliente):
     avanzar(cliente, 't-cierre-inicio')
-    enviar(cliente, 't-exp-ruta', [{'codigo': 'OTRA', 'texto': 'Viajar un año'}, {'codigo': 'TRABAJAR'}])
+    guardar(cliente, 't-exp-ruta', [{'codigo': 'OTRA', 'texto': 'Viajar un año'}, {'codigo': 'TRABAJAR'}])
     assert elegidas(cliente, 't-exp-ruta') == [{'codigo': 'TRABAJAR'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]
 
 
-def test_eleccion_ordenada_conserva_el_orden_elegido(cliente):
+def test_eleccion_ordenada_conserva_el_orden_elegido_al_entregar(cliente):
     avanzar(cliente, 't-cierre-inicio')
     orden = [{'codigo': 'LIBERTAD'}, {'codigo': 'SERVIR'}, {'codigo': 'CREAR'}]
-    enviar(cliente, 't-val-orden', orden, actividad='t-valores')
+    guardar(cliente, 't-val-orden', orden, actividad='t-valores')
+    guardar(cliente, 't-val-libre', [], actividad='t-valores')
+    guardar(cliente, 't-val-breve', [], actividad='t-valores')
+    assert entregar(cliente, 't-valores')['estado'] == 'COMPLETADA'
     assert elegidas(cliente, 't-val-orden', 't-valores') == orden
-
-
-def test_editar_en_final_reemplaza_la_eleccion(cliente):
-    avanzar(cliente, 't-cierre-inicio')
-    assert enviar(cliente, 't-exp-apoyo', [{'codigo': 'FAMILIA'}])['estado'] == 'FINAL'
-    enviar(cliente, 't-exp-apoyo', [{'codigo': 'AMIGOS'}])
-    assert elegidas(cliente, 't-exp-apoyo') == [{'codigo': 'AMIGOS'}]
-    enviar(cliente, 't-exp-apoyo', [], esperado=422)
-    assert elegidas(cliente, 't-exp-apoyo') == [{'codigo': 'AMIGOS'}]

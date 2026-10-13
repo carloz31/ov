@@ -1,4 +1,4 @@
-"""Evaluador gemini."""
+"""Evaluador Gemini (B03): entrega y seguimiento con cliente simulado, sin red."""
 
 import json
 import logging
@@ -8,31 +8,26 @@ import pytest
 from google import genai
 from google.genai import errors, types
 from app.config import Configuracion
-from app.services.registro.evaluacion import ContextoEvaluacion, ConversacionEvaluacion, CriterioEvaluacion, RespuestaAnterior, TurnoEvaluacion, evaluar_respuesta
+from app.services.registro.evaluacion import (
+    CriterioEvaluacion, ItemPorEvaluar, RespuestaOtroItem, TurnoEvaluacion, procesar_entrega, procesar_seguimiento,
+)
 from app.services.registro.gemini import EvaluadorGemini, razonamiento_minimo
-from app.services.registro.prompt import PROMPT_REGISTRO_V3
+from app.services.registro.prompt import PROMPT_ENTREGA_V4, PROMPT_SEGUIMIENTO_V4
 from soporte_red import impedir_red
 
 
 CLAVE_SIMULADA = 'clave-sintetica-solo-pruebas'
-
-
 CONFIGURACION = Configuracion(evaluador='gemini', clave=CLAVE_SIMULADA)
-
-
-CONTEXTO = ContextoEvaluacion(
-    'Mi plan para fortalecer una habilidad', '¿Qué harás para practicarla?',
-    (CriterioEvaluacion('C1', 'Acción concreta'), CriterioEvaluacion('C2', 'Situación concreta')),
-    (RespuestaAnterior('¿Qué habilidad?', ConversacionEvaluacion('Asertividad en los trabajos grupales')),),
-    ConversacionEvaluacion('En el trabajo de Comunicación del jueves voy a decir mi opinión al menos una vez.'),
-    ('C1', 'C2'),
-)
-
-
-ADECUADA = dict(clasificacion='ADECUADA', criterios_faltantes=[], pregunta=None, requiere_atencion=False)
-
-
-VAGA = dict(clasificacion='POCO_DESARROLLADA', criterios_faltantes=['C2'], pregunta='¿Cuándo lo practicarías?', requiere_atencion=False)
+CRITERIOS = (CriterioEvaluacion('C1', 'ACCION', 'Acción concreta', '¿Qué podrías hacer al respecto?'),
+             CriterioEvaluacion('C2', 'EJEMPLO', 'Situación concreta', '¿Podrías darme un ejemplo concreto?'))
+ITEM = ItemPorEvaluar('I1', '¿Qué harás para practicarla?', CRITERIOS, ('Asertividad',),
+                      'En el trabajo de Comunicación del jueves voy a decir mi opinión al menos una vez.', 40,
+                      'Cuéntame más')
+ADECUADA = {'items': [{'item': 'I1', 'clasificacion': 'ADECUADA', 'criterios_faltantes': [], 'pregunta': None}]}
+VAGA = {'items': [{'item': 'I1', 'clasificacion': 'POCO_DESARROLLADA', 'criterios_faltantes': ['C2'],
+                   'pregunta': '¿En qué trabajo de Comunicación lo harías?'}]}
+SEGUIMIENTO = {'clasificacion': 'ADECUADA', 'criterios_faltantes': [], 'pregunta': None,
+               'consolidada': 'Voy a decir mi opinión el jueves en Comunicación.'}
 
 
 def respuesta_sdk(datos=ADECUADA):
@@ -63,84 +58,73 @@ class ClienteSimulado:
         self.cierres += 1
 
 
-def procesar(cliente, contexto=CONTEXTO, configuracion=CONFIGURACION):
+def entregar(cliente, configuracion=CONFIGURACION, item=ITEM):
     adaptador = EvaluadorGemini(configuracion, cliente=cliente)
     try:
-        resultado = evaluar_respuesta(contexto, 40, 'Cuéntame más', adaptador,
-                                      modelo=configuracion.modelo, tiempo_maximo_segundos=configuracion.timeout_segundos)
+        resultado = procesar_entrega('Mi plan', (item,), adaptador, modelo=configuracion.modelo,
+                                     tiempo_maximo_segundos=configuracion.timeout_segundos)['I1']
         assert adaptador.latencia_ms is not None
         return resultado
     finally:
         adaptador.cerrar()
 
 
-def test_peticion_salida_estructurada_contexto_exclusivo_y_latencia():
+def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
     cliente = ClienteSimulado()
-    adaptador = EvaluadorGemini(CONFIGURACION, cliente=cliente)
-    try:
-        assert adaptador.latencia_ms is None
-        resultado = adaptador.evaluar(CONTEXTO)
-        assert resultado.model_dump() == ADECUADA
-        assert adaptador.latencia_ms >= 0
-        assert len(cliente.llamadas) == 1
-        llamada = cliente.llamadas[0]
-        datos = json.loads(llamada['contents'])
-        assert set(datos) == {'titulo_actividad', 'consigna', 'criterios', 'respuestas_anteriores', 'conversacion', 'criterios_faltantes_previos'}
-        assert datos['criterios'] == [{'codigo': c.codigo, 'descripcion': c.descripcion} for c in CONTEXTO.criterios]
-        assert datos['respuestas_anteriores'] == [{'consigna': CONTEXTO.respuestas_anteriores[0].consigna,
-                                                  'conversacion': {'texto_inicial': CONTEXTO.respuestas_anteriores[0].conversacion.texto_inicial, 'turnos': []}}]
-        assert CLAVE_SIMULADA not in llamada['contents']
-        configuracion = llamada['config']
-        assert configuracion.system_instruction == PROMPT_REGISTRO_V3
-        assert configuracion.temperature == 0.2
-        assert configuracion.response_mime_type == 'application/json'
-        assert configuracion.response_json_schema['required'] == list(ADECUADA)
-        assert configuracion.response_json_schema['additionalProperties'] is False
-        assert configuracion.thinking_config.thinking_level == 'MINIMAL'
-        assert configuracion.automatic_function_calling.disable is True
-    finally:
-        adaptador.cerrar()
+    resultado = entregar(cliente)
+    assert resultado.origen == 'LLM' and resultado.clasificacion == 'ADECUADA'
+    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v4'
+    llamada, = cliente.llamadas
+    datos = json.loads(llamada['contents'])
+    assert set(datos) == {'titulo_actividad', 'items'}
+    assert datos['items'][0]['opciones_elegidas'] == ['Asertividad']
+    assert datos['items'][0]['criterios'][0] == {'codigo': 'C1', 'tipo': 'ACCION', 'descripcion': 'Acción concreta',
+                                                 'repregunta': '¿Qué podrías hacer al respecto?'}
+    assert CLAVE_SIMULADA not in llamada['contents']
+    configuracion = llamada['config']
+    assert configuracion.system_instruction == PROMPT_ENTREGA_V4
+    assert configuracion.temperature == 0.2 and configuracion.response_mime_type == 'application/json'
+    assert 'items' in configuracion.response_json_schema['required']
+    assert configuracion.thinking_config.thinking_level == 'LOW'
+    assert configuracion.automatic_function_calling.disable is True
     assert cliente.cierres == 0  # El cliente inyectado pertenece al llamador.
 
 
-def test_conversacion_enviada_y_auditada_coinciden_con_cliente_simulado():
-    contexto = replace(CONTEXTO, conversacion=ConversacionEvaluacion("Voy a dar mi opinión.", (
-        TurnoEvaluacion("¿Cuándo?", "El jueves en Comunicación."),
-    )), criterios_faltantes_previos=('C2',), respuestas_anteriores=(RespuestaAnterior(
-        '¿Qué habilidad y por qué?', ConversacionEvaluacion('Asertividad', (
-            TurnoEvaluacion('¿Por qué?', 'Me cuesta dar mi opinión.'),
-        ))),))
-    cliente = ClienteSimulado()
-    resultado = procesar(cliente, contexto)
-    contenido = json.loads(cliente.llamadas[0]['contents'])
-    assert contenido['conversacion'] == json.loads(resultado.texto_evaluado)
-    assert contenido['criterios_faltantes_previos'] == ['C2']
-    assert contenido['respuestas_anteriores'][0]['conversacion']['turnos'] == [
-        {'pregunta': '¿Por qué?', 'respuesta': 'Me cuesta dar mi opinión.'}]
-    assert len(cliente.llamadas) == 1 and resultado.clasificacion == 'ADECUADA'
+def test_modelo_por_defecto_es_gemini_3_8_flash():
+    assert CONFIGURACION.modelo == 'gemini-3.8-flash'
 
 
-@pytest.mark.parametrize('fallo', [False, True])
-def test_texto_corto_llega_a_gemini_simulado_antes_de_decidir_respaldo(fallo):
-    contexto = replace(CONTEXTO, conversacion=ConversacionEvaluacion('Asertividad'))
-    cliente = ClienteSimulado(error=httpx.ReadTimeout(CLAVE_SIMULADA) if fallo else None)
-    resultado = procesar(cliente, contexto)
-    assert len(cliente.llamadas) == 1
-    assert json.loads(cliente.llamadas[0]['contents'])['conversacion']['texto_inicial'] == 'Asertividad'
-    assert resultado.origen == ('EXTENSION_MINIMA' if fallo else 'LLM')
-    assert resultado.clasificacion == ('POCO_DESARROLLADA' if fallo else 'ADECUADA')
-    assert resultado.pregunta == ('Cuéntame más' if fallo else None)
-    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v3'
-    assert CLAVE_SIMULADA not in (resultado.error or '')
+def test_entrega_poco_desarrollada_usa_la_pregunta_redactada():
+    resultado = entregar(ClienteSimulado(respuesta_sdk(VAGA)))
+    assert resultado.criterios_faltantes == ('C2',)
+    assert resultado.pregunta == '¿En qué trabajo de Comunicación lo harías?'
+
+
+def test_seguimiento_consolida_con_su_instruccion():
+    cliente = ClienteSimulado(respuesta_sdk(SEGUIMIENTO))
+    adaptador = EvaluadorGemini(CONFIGURACION, cliente=cliente)
+    try:
+        resultado = procesar_seguimiento('Mi plan', ITEM, (TurnoEvaluacion('¿Cuándo?', 'El jueves'),), ('C2',),
+                                         (RespuestaOtroItem('¿Qué habilidad?', 'Asertividad'),), adaptador,
+                                         pregunta_generica=False)
+    finally:
+        adaptador.cerrar()
+    assert resultado.origen == 'LLM' and resultado.consolidada == SEGUIMIENTO['consolidada']
+    llamada, = cliente.llamadas
+    assert llamada['config'].system_instruction == PROMPT_SEGUIMIENTO_V4
+    datos = json.loads(llamada['contents'])
+    assert datos['turnos'] == [{'pregunta': '¿Cuándo?', 'respuesta': 'El jueves'}]
+    assert datos['criterios_faltantes_previos'] == ['C2']
+    assert 'consolidada' in llamada['config'].response_json_schema['required']
 
 
 @pytest.mark.parametrize('modelo,campo,valor', [
+    ('gemini-3.8-flash', 'thinking_level', 'LOW'),
+    ('models/gemini-3.8-flash', 'thinking_level', 'LOW'),
     ('gemini-3.1-flash-lite', 'thinking_level', 'MINIMAL'),
-    ('models/gemini-3.1-flash-lite-preview', 'thinking_level', 'MINIMAL'),
     ('gemini-3-flash-preview', 'thinking_level', 'MINIMAL'),
     ('gemini-3.1-pro-preview', 'thinking_level', 'LOW'),
     ('gemini-2.5-flash', 'thinking_budget', 0),
-    ('gemini-2.5-flash-lite', 'thinking_budget', 0),
     ('gemini-2.5-pro', 'thinking_budget', 128),
 ])
 def test_razonamiento_minimo_compatible(modelo, campo, valor):
@@ -150,36 +134,21 @@ def test_razonamiento_minimo_compatible(modelo, campo, valor):
 def test_modelo_desconocido_sin_supuestos_ni_descubrimiento():
     assert razonamiento_minimo('modelo-desconocido') is None
     cliente = ClienteSimulado()
-    procesar(cliente, configuracion=replace(CONFIGURACION, modelo='modelo-desconocido'))
+    entregar(cliente, replace(CONFIGURACION, modelo='modelo-desconocido'))
     assert cliente.llamadas[0]['config'].thinking_config is None
 
 
-@pytest.mark.parametrize('datos', [ADECUADA, VAGA, {**ADECUADA, 'requiere_atencion': True}])
-def test_respuestas_validas_y_metadatos(datos):
-    resultado = procesar(ClienteSimulado(respuesta_sdk(datos)))
-    assert resultado.origen == 'LLM'
-    assert resultado.clasificacion == datos['clasificacion']
-    assert resultado.criterios_faltantes == tuple(datos['criterios_faltantes'])
-    assert resultado.requiere_atencion is datos['requiere_atencion']
-    assert resultado.modelo == CONFIGURACION.modelo
-    assert resultado.version_prompt == 'v3'
-    assert resultado.latencia_ms >= 0
-
-
 @pytest.mark.parametrize('datos', [
-    {}, {**ADECUADA, 'clasificacion': 'NO_EVALUADA'}, {**ADECUADA, 'requiere_atencion': 'false'},
-    {**ADECUADA, 'extra': CLAVE_SIMULADA}, {**ADECUADA, 'criterios_faltantes': ['C1']},
-    {**VAGA, 'criterios_faltantes': ['inexistente']}, {**VAGA, 'pregunta': None},
-    {**VAGA, 'pregunta': '   '}, {**ADECUADA, 'pregunta': 9},
+    {}, {'items': []}, {'items': [{**ADECUADA['items'][0], 'clasificacion': 'NO_EVALUADA'}]},
+    {'items': [{**ADECUADA['items'][0], 'extra': CLAVE_SIMULADA}]},
+    {'items': [{**ADECUADA['items'][0], 'criterios_faltantes': ['C1']}]},
+    {'items': [{**VAGA['items'][0], 'criterios_faltantes': ['inexistente']}]},
 ])
 def test_resultados_invalidos_se_convierten_en_fallo(datos):
     cliente = ClienteSimulado(respuesta_sdk(datos))
-    resultado = procesar(cliente)
-    assert resultado.origen == 'EXTENSION_MINIMA'
-    assert resultado.clasificacion == 'NO_EVALUADA'
-    assert resultado.pregunta is None
-    assert 'esquema' in resultado.error
-    assert CLAVE_SIMULADA not in resultado.error
+    resultado = entregar(cliente)
+    assert resultado.origen == 'EXTENSION_MINIMA' and resultado.clasificacion == 'NO_EVALUADA'
+    assert 'esquema' in resultado.error and CLAVE_SIMULADA not in resultado.error
     assert len(cliente.llamadas) == 1
 
 
@@ -187,10 +156,11 @@ def test_resultados_invalidos_se_convierten_en_fallo(datos):
     types.GenerateContentResponse(),
     types.GenerateContentResponse(candidates=[types.Candidate()]),
     types.GenerateContentResponse(candidates=[types.Candidate(content=types.Content(parts=[types.Part(text='no JSON')]))]),
-    types.GenerateContentResponse(candidates=[types.Candidate(content=types.Content(parts=[types.Part(text=json.dumps(ADECUADA), thought=True)]))]),
+    types.GenerateContentResponse(candidates=[types.Candidate(content=types.Content(parts=[
+        types.Part(text=json.dumps(ADECUADA), thought=True)]))]),
 ])
 def test_salida_ausente_bloqueada_o_malformada(respuesta):
-    assert procesar(ClienteSimulado(respuesta)).origen == 'EXTENSION_MINIMA'
+    assert entregar(ClienteSimulado(respuesta)).origen == 'EXTENSION_MINIMA'
 
 
 @pytest.mark.parametrize('error,timeout', [
@@ -201,8 +171,8 @@ def test_salida_ausente_bloqueada_o_malformada(respuesta):
 ])
 def test_fallos_timeout_sin_reintentar_ni_filtrar_secretos(error, timeout, caplog):
     cliente = ClienteSimulado(error=error)
-    resultado = procesar(cliente)
-    assert resultado.origen == 'EXTENSION_MINIMA'
+    resultado = entregar(cliente, item=replace(ITEM, texto='Corto'))
+    assert resultado.origen == 'EXTENSION_MINIMA' and resultado.pregunta == 'Cuéntame más'
     assert ('tiempo máximo' in resultado.error) is timeout
     assert CLAVE_SIMULADA not in resultado.error + caplog.text
     assert len(cliente.llamadas) == 1
@@ -212,9 +182,8 @@ def test_error_directo_del_adaptador_sin_causa_externa():
     adaptador = EvaluadorGemini(CONFIGURACION, cliente=ClienteSimulado(error=RuntimeError(CLAVE_SIMULADA)))
     try:
         with pytest.raises(RuntimeError) as error:
-            adaptador.evaluar(CONTEXTO)
-        assert error.value.__suppress_context__ is True
-        assert error.value.__cause__ is None
+            adaptador.evaluar_entrega(None)
+        assert error.value.__suppress_context__ is True and error.value.__cause__ is None
         assert CLAVE_SIMULADA not in str(error.value)
     finally:
         adaptador.cerrar()
@@ -226,9 +195,8 @@ def test_log_externo_con_clave_y_traceback_se_sanea(caplog):
             raise RuntimeError(CLAVE_SIMULADA)
         except RuntimeError:
             logging.getLogger('google.genai').exception('Falló %s', CLAVE_SIMULADA)
-    procesar(ClienteSimulado(observar=observar))
-    assert 'omitido' in caplog.text
-    assert CLAVE_SIMULADA not in caplog.text
+    entregar(ClienteSimulado(observar=observar))
+    assert 'omitido' in caplog.text and CLAVE_SIMULADA not in caplog.text
 
 
 def test_sdk_real_con_transporte_simulado_no_reintenta_429(monkeypatch):
@@ -248,13 +216,40 @@ def test_sdk_real_con_transporte_simulado_no_reintenta_429(monkeypatch):
     monkeypatch.setattr(genai, 'Client', crear)
     adaptador = EvaluadorGemini(replace(CONFIGURACION, timeout_segundos=1.25))
     try:
-        resultado = evaluar_respuesta(CONTEXTO, 40, 'Más', adaptador)
-        assert resultado.origen == 'EXTENSION_MINIMA'
-        assert len(llamadas) == 1
+        resultado = procesar_entrega('Mi plan', (ITEM,), adaptador)['I1']
+        assert resultado.origen == 'EXTENSION_MINIMA' and len(llamadas) == 1
         assert CLAVE_SIMULADA not in resultado.error
     finally:
         adaptador.cerrar()
         cliente_http.close()
+
+
+def test_sdk_con_transporte_simulado_envia_esquema_y_razonamiento(monkeypatch):
+    llamadas = []
+    constructor = genai.Client
+    def transporte(peticion):
+        llamadas.append(json.loads(peticion.content))
+        return httpx.Response(200, json={'candidates': [{
+            'content': {'role': 'model', 'parts': [{'text': json.dumps(VAGA)}]}, 'finishReason': 'STOP'}]})
+    cliente_http = httpx.Client(transport=httpx.MockTransport(transporte))
+    def crear(**argumentos):
+        argumentos['http_options'].httpx_client = cliente_http
+        return constructor(**argumentos)
+    monkeypatch.setattr(genai, 'Client', crear)
+    adaptador = EvaluadorGemini(CONFIGURACION)
+    try:
+        resultado = procesar_entrega('Mi plan', (ITEM,), adaptador)['I1']
+    finally:
+        adaptador.cerrar()
+        cliente_http.close()
+    assert resultado.origen == 'LLM' and resultado.criterios_faltantes == ('C2',)
+    configuracion = llamadas[0]['generationConfig']
+    assert configuracion['temperature'] == 0.2 and configuracion['candidateCount'] == 1
+    pensamiento = configuracion['thinkingConfig']
+    # ProtoJSON admite el nombre original y su equivalente lowerCamelCase.
+    assert pensamiento.get('thinkingLevel', pensamiento.get('thinking_level')) == 'LOW'
+    assert llamadas[0]['systemInstruction']['parts'][0]['text'] == PROMPT_ENTREGA_V4
+    assert CLAVE_SIMULADA not in json.dumps(llamadas[0])
 
 
 def test_cliente_propio_se_cierra_y_error_inicial_saneado(monkeypatch):
@@ -269,61 +264,3 @@ def test_cliente_propio_se_cierra_y_error_inicial_saneado(monkeypatch):
     with pytest.raises(RuntimeError, match='No se pudo inicializar') as error:
         EvaluadorGemini(CONFIGURACION)
     assert CLAVE_SIMULADA not in str(error.value)
-
-
-@pytest.mark.parametrize('faltantes', [['C1'], ['C1', 'C2']])
-def test_adaptador_rechaza_criterios_ya_cumplidos_en_el_seguimiento(faltantes):
-    contexto = replace(CONTEXTO, criterios_faltantes_previos=('C2',), conversacion=ConversacionEvaluacion(
-        CONTEXTO.conversacion.texto_inicial, (TurnoEvaluacion('¿Cuándo?', 'En el siguiente trabajo.'),)))
-    cliente = ClienteSimulado(respuesta_sdk({**VAGA, 'criterios_faltantes': faltantes}))
-    resultado = procesar(cliente, contexto)
-    assert len(cliente.llamadas) == 1 and resultado.origen == 'EXTENSION_MINIMA'
-    assert resultado.clasificacion == 'NO_EVALUADA' and resultado.pregunta is None
-    assert CLAVE_SIMULADA not in resultado.error
-
-
-def test_sdk_con_transporte_simulado_envia_inicial_y_ambos_turnos_con_esquema_v2(monkeypatch):
-    llamadas = []
-    salidas = [VAGA, VAGA, ADECUADA]
-    constructor = genai.Client
-    def transporte(peticion):
-        llamada = json.loads(peticion.content)
-        llamadas.append(llamada)
-        return httpx.Response(200, json={'candidates': [{
-            'content': {'role': 'model', 'parts': [{'text': json.dumps(salidas[len(llamadas) - 1])}]},
-            'finishReason': 'STOP'}]})
-    cliente_http = httpx.Client(transport=httpx.MockTransport(transporte))
-    def crear(**argumentos):
-        assert argumentos['http_options'].retry_options.attempts == 1
-        argumentos['http_options'].httpx_client = cliente_http
-        return constructor(**argumentos)
-    monkeypatch.setattr(genai, 'Client', crear)
-    adaptador = EvaluadorGemini(CONFIGURACION)
-    contexto = replace(CONTEXTO, respuestas_anteriores=(RespuestaAnterior('¿Qué habilidad?', ConversacionEvaluacion(
-        'Comunicación', (TurnoEvaluacion('¿En qué situación?', 'En grupos.'), TurnoEvaluacion('¿Por qué?', None)))),))
-    try:
-        for orden in range(3):
-            resultado = evaluar_respuesta(contexto, 40, 'Cuéntame más', adaptador)
-            assert resultado.origen == 'LLM'
-            configuracion = llamadas[-1]['generationConfig']
-            assert configuracion['temperature'] == 0.2 and configuracion['candidateCount'] == 1
-            assert configuracion['responseMimeType'] == 'application/json'
-            assert configuracion['responseJsonSchema']['required'] == list(ADECUADA)
-            pensamiento = configuracion['thinkingConfig']
-            # ProtoJSON admite el nombre original y su equivalente lowerCamelCase.
-            assert pensamiento.get('thinkingLevel', pensamiento.get('thinking_level')) == 'MINIMAL'
-            assert llamadas[-1]['systemInstruction']['parts'][0]['text'] == PROMPT_REGISTRO_V3
-            assert CLAVE_SIMULADA not in json.dumps(llamadas[-1])
-            datos = json.loads(llamadas[-1]['contents'][0]['parts'][0]['text'])
-            assert datos['conversacion'] == json.loads(resultado.texto_evaluado)
-            assert len(datos['conversacion']['turnos']) == orden
-            assert datos['criterios_faltantes_previos'] == (['C1', 'C2'] if orden == 0 else ['C2'])
-            assert datos['respuestas_anteriores'][0]['conversacion']['turnos'][-1]['respuesta'] is None
-            if orden < 2:
-                contexto = replace(contexto, criterios_faltantes_previos=resultado.criterios_faltantes,
-                    conversacion=ConversacionEvaluacion(contexto.conversacion.texto_inicial,
-                        contexto.conversacion.turnos + (TurnoEvaluacion(resultado.pregunta, f'Respuesta del turno {orden + 1}'),)))
-        assert len(llamadas) == 3 and resultado.clasificacion == 'ADECUADA'
-    finally:
-        adaptador.cerrar()
-        cliente_http.close()

@@ -40,6 +40,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-expectativas', 'T1', 'Registro de expectativas', 'REGISTRO', None, 15),
                ('t-opcional', 'T1', 'Actividad opcional', 'INFORMATIVA', None, 5),
                ('t-valores', 'T1', 'Registro de valores', 'REGISTRO', None, 10),
+               ('t-adicional', 'T1', 'Misión adicional', 'INFORMATIVA', None, 5),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 60, 10),
@@ -49,7 +50,9 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
 # Lo que cambia los valores por defecto (requerida, visibilidad SIEMPRE, sin descripción).
 PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
                               'descripcion': 'Actividad opcional que aparece al desbloquearse.'},
-               't-valores': {'requerida': False}}
+               't-valores': {'requerida': False},
+               't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
+                               'descripcion': 'Misión adicional que aparece si el registro quedó adecuado.'}}
 
 # (actividad, instrumento, primer ítem, último ítem). El RIASEC va en dos misiones para probar que el
 # resultado espera a todas las de su aplicación.
@@ -109,6 +112,8 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-T1', 'BLOQUE', 'T1', 'Termina el bloque de inicio para abrir el camino.',
      (('COMPLETA_BLOQUE', 'T0', 'EVENTOS', 1),)),
+    ('R-t-adicional', 'ACTIVIDAD', 't-adicional', 'Desarrolla todas tus respuestas del registro de expectativas.',
+     (('REGISTRO_ADECUADO', 't-expectativas', 'EVENTOS', 1),)),
     ('R-t-opcional', 'ACTIVIDAD', 't-opcional', 'Completa el registro de expectativas.',
      (('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1),)),
     ('R-CIUDAD', 'BLOQUE', 'CIUDAD', 'Completa el registro de expectativas para llegar a la ciudad.',

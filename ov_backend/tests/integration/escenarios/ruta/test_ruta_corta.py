@@ -82,15 +82,18 @@ def test_hu006_hu010_registro_con_eleccion_borrador_y_retomar(cliente):
     assert retomado['respuestas'][0]['opciones_elegidas'] == [
         {'codigo': 'INSTITUTO'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]
     completar(cliente, 't-expectativas', esperado=409)
-    pedir(cliente, 'POST', '/acciones/registro/enviar', {
-        **accion, 'item': 't-exp-apoyo', 'texto': 'DATO DE PRUEBA: mi mamá', 'opciones': []}, esperado=422)
     textos = {'t-exp-ruta': 'DATO DE PRUEBA: estudiar en un instituto porque me gusta la práctica',
               't-exp-apoyo': 'DATO DE PRUEBA: mi familia, por ejemplo mi mamá', 't-exp-espera': 'DATO DE PRUEBA'}
-    opciones = {'t-exp-ruta': [{'codigo': 'INSTITUTO'}], 't-exp-apoyo': [{'codigo': 'FAMILIA'}], 't-exp-espera': []}
+    opciones = {'t-exp-ruta': [{'codigo': 'INSTITUTO'}], 't-exp-apoyo': [], 't-exp-espera': []}
     for item, texto in textos.items():
-        assert pedir(cliente, 'POST', '/acciones/registro/enviar', {
-            **accion, 'item': item, 'texto': texto, 'opciones': opciones[item]})['estado'] == 'FINAL'
-    respuesta = pedir(cliente, 'POST', '/acciones/completar-actividad', accion)
+        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
+              {**accion, 'item': item, 'texto': texto, 'opciones': opciones[item]})
+    # La elección mínima se exige al entregar (B03 reemplaza el envío por ítem).
+    pedir(cliente, 'POST', '/acciones/registro/entregar', accion, esperado=422)
+    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
+          {**accion, 'item': 't-exp-apoyo', 'texto': textos['t-exp-apoyo'], 'opciones': [{'codigo': 'FAMILIA'}]})
+    respuesta = pedir(cliente, 'POST', '/acciones/registro/entregar', accion)
+    assert {r['estado'] for r in respuesta['respuestas']} == {'FINAL'}
     assert ('COMPLETA_ACTIVIDAD', 't-expectativas') in [
         (e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']]
 

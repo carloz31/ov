@@ -13,7 +13,7 @@ RECORRIDO = ('t-inicio', 't-cierre-inicio', 't-expectativas')
 # El RIASEC va en dos misiones de 30 ítems; el resultado se calcula al completar la última.
 MISIONES_INTERESES = ('t-mision-intereses', 't-mision-intereses-2')
 INTERESES, INTERESES_FINAL = MISIONES_INTERESES
-# DATO DE PRUEBA: las actividades de registro de la ruta; completarlas exige enviar sus ítems.
+# DATO DE PRUEBA: las actividades de registro de la ruta; se completan al entregarlas.
 REGISTROS = ('t-expectativas', 't-valores')
 
 BLOQUE_FAMILIA = {
@@ -50,17 +50,22 @@ def eleccion_minima(item):
 
 
 def responder_registro(cliente, actividad, cuenta='est-ana'):
-    """Envía cada ítem de un registro con un texto adecuado para el evaluador falso."""
+    """Guarda cada ítem con un texto adecuado para el evaluador falso y entrega el registro (B03)."""
     for item in pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro'):
-        pedir(cliente, 'POST', '/acciones/registro/enviar', {
+        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
             'cuenta': cuenta, 'actividad': actividad, 'item': item['codigo'], 'fecha_hora': FECHA,
             'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.',
             'opciones': eleccion_minima(item)})
+    return pedir(cliente, 'POST', '/acciones/registro/entregar',
+                 {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA})
 
 
 def completar(cliente, codigo, cuenta='est-ana', esperado=200):
+    """Completa una actividad; un registro se completa al entregarlo todo adecuado."""
     if esperado == 200 and codigo in REGISTROS:
-        responder_registro(cliente, codigo, cuenta)
+        registro = pedir(cliente, 'GET', f'/cuentas/{cuenta}/actividades/{codigo}/registro')
+        if registro['estado'] != 'COMPLETADA':
+            return responder_registro(cliente, codigo, cuenta)
     return pedir(cliente, 'POST', '/acciones/completar-actividad',
                  {'cuenta': cuenta, 'actividad': codigo, 'fecha_hora': FECHA}, esperado)
 

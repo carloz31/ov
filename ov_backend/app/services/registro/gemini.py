@@ -16,9 +16,10 @@ from pydantic import ValidationError
 from app.config import Configuracion, ErrorConfiguracionRegistro
 from app.core.parametros import TEMPERATURA_REGISTRO
 from app.services.registro.evaluacion import (
-    ContextoEvaluacion, ErrorResultadoEvaluacion, ResultadoEvaluacion, validar_resultado,
+    ContextoEntrega, ContextoSeguimiento, ErrorResultadoEvaluacion, ResultadoEntrega, ResultadoSeguimiento,
+    validar_entrega, validar_seguimiento,
 )
-from app.services.registro.prompt import PROMPT_REGISTRO_V3
+from app.services.registro.prompt import PROMPT_ENTREGA_V4, PROMPT_SEGUIMIENTO_V4
 
 
 class ErrorClienteGemini(RuntimeError):
@@ -44,7 +45,8 @@ def razonamiento_minimo(modelo):
     nombre = modelo.removeprefix('models/')
     if nombre in ('gemini-3.1-flash-lite', 'gemini-3.1-flash-lite-preview', 'gemini-3-flash-preview'):
         return types.ThinkingConfig(thinking_level='minimal')
-    if nombre in ('gemini-3.1-pro-preview', 'gemini-3-pro-preview'):
+    # gemini-3.8-flash no admite `minimal` ni apagar el razonamiento: `low` es su mínimo.
+    if nombre in ('gemini-3.8-flash', 'gemini-3.1-pro-preview', 'gemini-3-pro-preview'):
         return types.ThinkingConfig(thinking_level='low')
     if nombre in ('gemini-2.5-flash', 'gemini-2.5-flash-lite'):
         return types.ThinkingConfig(thinking_budget=0)
@@ -81,10 +83,16 @@ class EvaluadorGemini:
             self._quitar_filtros()
             raise ErrorClienteGemini('No se pudo inicializar el cliente Gemini') from None
 
-    def evaluar(self, contexto: ContextoEvaluacion) -> ResultadoEvaluacion:
+    def evaluar_entrega(self, contexto: ContextoEntrega) -> ResultadoEntrega:
+        return self._medir(contexto, PROMPT_ENTREGA_V4, ResultadoEntrega, validar_entrega)
+
+    def evaluar_seguimiento(self, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
+        return self._medir(contexto, PROMPT_SEGUIMIENTO_V4, ResultadoSeguimiento, validar_seguimiento)
+
+    def _medir(self, contexto, instruccion, esquema, validar):
         inicio = perf_counter()
         try:
-            return self._evaluar(contexto)
+            return self._evaluar(contexto, instruccion, esquema, validar)
         finally:
             self._metricas.latencia_ms = max(0, round((perf_counter() - inicio) * 1000))
 
@@ -92,16 +100,16 @@ class EvaluadorGemini:
     def latencia_ms(self):
         return getattr(self._metricas, 'latencia_ms', None)
 
-    def _evaluar(self, contexto: ContextoEvaluacion) -> ResultadoEvaluacion:
+    def _evaluar(self, contexto, instruccion, esquema, validar):
         try:
             respuesta = self._cliente.models.generate_content(
                 model=self.configuracion.modelo,
                 contents=json.dumps(asdict(contexto), ensure_ascii=False),
                 config=types.GenerateContentConfig(
-                    system_instruction=PROMPT_REGISTRO_V3,
+                    system_instruction=instruccion,
                     temperature=TEMPERATURA_REGISTRO, candidate_count=1,
                     response_mime_type='application/json',
-                    response_json_schema=ResultadoEvaluacion.model_json_schema(),
+                    response_json_schema=esquema.model_json_schema(),
                     thinking_config=razonamiento_minimo(self.configuracion.modelo),
                     automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
                 ),
@@ -110,8 +118,7 @@ class EvaluadorGemini:
             candidatos = respuesta.candidates or []
             partes = candidatos[0].content.parts if candidatos and candidatos[0].content else []
             texto = ''.join(parte.text for parte in (partes or []) if parte.text and not parte.thought)
-            resultado = ResultadoEvaluacion.model_validate_json(texto)
-            return validar_resultado(resultado, contexto)
+            return validar(esquema.model_validate_json(texto), contexto)
         except (TimeoutError, httpx.TimeoutException):
             raise TimeoutError('Se agotó el tiempo máximo de evaluación') from None
         except errors.APIError as error:

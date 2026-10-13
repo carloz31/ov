@@ -33,10 +33,12 @@ def eleccion_minima(item):
 
 def _responder_registro(cliente, actividad, cuenta='est-ana'):
     for item in _pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro'):
-        _pedir(cliente, 'POST', '/acciones/registro/enviar', {
+        _pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
             'cuenta': cuenta, 'actividad': actividad, 'item': item['codigo'], 'fecha_hora': FECHA,
             'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.',
             'opciones': eleccion_minima(item)})
+    return _pedir(cliente, 'POST', '/acciones/registro/entregar',
+                  {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA})
 
 
 def _completar(cliente, actividad, cuenta='est-ana'):
@@ -63,8 +65,7 @@ def _recorrer(cliente):
         'opciones': [{'codigo': 'INSTITUTO'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]})
     fixtures['registro-t-expectativas-borrador'] = _pedir(
         cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
-    _responder_registro(cliente, 't-expectativas')
-    _completar(cliente, 't-expectativas')
+    fixtures['entregar-t-expectativas'] = _responder_registro(cliente, 't-expectativas')
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     ruta_avisos = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
     avisos = _pedir(cliente, 'GET', ruta_avisos)

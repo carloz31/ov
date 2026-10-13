@@ -22,6 +22,7 @@ MODELOS_REFERENCIA = {
     TipoEventoUso.COMPLETA_ACTIVIDAD: Actividad,
     TipoEventoUso.COMPLETA_BLOQUE: Bloque,
     TipoEventoUso.SUPERA_CASO: Actividad,
+    TipoEventoUso.REGISTRO_ADECUADO: Actividad,
     TipoEventoUso.VISTA_CARRERA: Carrera,
     TipoEventoUso.PUBLICA_ENTREVISTA: Entrevista,
     TipoEventoUso.ESCRIBE_CARTA: VinculoFamiliar,

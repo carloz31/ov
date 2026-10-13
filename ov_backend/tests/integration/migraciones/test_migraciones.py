@@ -262,7 +262,8 @@ def test_migracion_0003_admite_familia_conserva_datos_y_rechaza_otros_espacios(t
         motor.dispose()
 
 
-# B02: la ruta tiene ítems con elección, así que el primer downgrade que falla es el de 0005.
+# B03: la ruta tiene una condición REGISTRO_ADECUADO (y desde B02, ítems con elección), así que el primer
+# downgrade que falla es el de 0005.
 def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(base_migrada):
     url, configuracion, motor = base_migrada
     preparar_base(url, 'ruta')
@@ -276,7 +277,7 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         with motor.connect() as conexion:
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
                           for tabla in Base.metadata.sorted_tables}
-        with pytest.raises(RuntimeError, match='hay ítems con elección'):
+        with pytest.raises(RuntimeError, match='REGISTRO_ADECUADO'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:

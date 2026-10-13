@@ -10,7 +10,7 @@ from dotenv import dotenv_values
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import ArgumentError
 
-from app.core.parametros import MODELO_GEMINI_REGISTRO, TIEMPO_MAXIMO_EVALUACION_SEGUNDOS
+from app.core.parametros import MODELO_LLM_REGISTRO, TIEMPO_MAXIMO_EVALUACION_SEGUNDOS
 
 
 RAIZ_PROYECTO = Path(__file__).resolve().parents[1]
@@ -26,7 +26,7 @@ class Configuracion:
     url_bd: str = f'sqlite:///{(RAIZ_PROYECTO / "ov.db").as_posix()}'
     entorno: str = 'desarrollo'
     evaluador: str = 'falso'
-    modelo: str = MODELO_GEMINI_REGISTRO
+    modelo: str = MODELO_LLM_REGISTRO
     timeout_segundos: float = TIEMPO_MAXIMO_EVALUACION_SEGUNDOS
     clave: str | None = field(default=None, repr=False)
 
@@ -45,7 +45,7 @@ def cargar_configuracion(
     proveedor = (leer('EVALUADOR', 'falso') or '').strip().lower()
     if proveedor not in ('falso', 'gemini'):
         raise ErrorConfiguracionRegistro('EVALUADOR debe ser falso o gemini')
-    modelo = (leer('GEMINI_MODELO', MODELO_GEMINI_REGISTRO) or '').strip()
+    modelo = (leer('GEMINI_MODELO', MODELO_LLM_REGISTRO) or '').strip()
     if not modelo:
         raise ErrorConfiguracionRegistro('GEMINI_MODELO no puede estar vacío')
     try:
