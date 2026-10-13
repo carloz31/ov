@@ -1,0 +1,56 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-caso",
+      "tipo": "COMPLETA_ACTIVIDAD"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-caso",
+      "tipo": "SUPERA_CASO"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-caso",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "SUPERA_CASO"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-testimonio-1",
+        "nombre": "Testimonio de prueba 1"
+      },
+      "regla": "R-t-testimonio-1",
+      "tipo_objetivo": "TESTIMONIO"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-caso",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "SUPERA_CASO"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-testimonio-2",
+        "nombre": "Testimonio de prueba 2"
+      },
+      "regla": "R-t-testimonio-2",
+      "tipo_objetivo": "TESTIMONIO"
+    }
+  ],
+  "ocupaciones_nuevas": [
+    "firefighter",
+    "paramedic"
+  ]
+}

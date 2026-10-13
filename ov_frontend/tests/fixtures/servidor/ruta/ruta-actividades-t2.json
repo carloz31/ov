@@ -136,6 +136,20 @@
         "titulo": "Lectura de tu punto de partida",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-batalla",
+        "contenido": "t_batalla",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "COMPLETADA",
+        "orden": 7,
+        "requerida": false,
+        "tipo": "BATALLA",
+        "titulo": "Batalla de prueba",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": null,
@@ -205,7 +219,7 @@
         "contenido": "t_caso",
         "descripcion": null,
         "duracion_estimada_min": 10,
-        "estado": "DISPONIBLE",
+        "estado": "COMPLETADA",
         "orden": 3,
         "requerida": true,
         "tipo": "CASO",

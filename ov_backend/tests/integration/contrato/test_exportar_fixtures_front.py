@@ -13,7 +13,10 @@ from soporte_ruta import BLOQUE_FAMILIA
 
 from app import main as principal
 from app.schemas.referencias import ReferenciasConsultadas
-from app.schemas.acciones import RespuestaAccion, RespuestaRevelarResultado
+from app.schemas.acciones import RespuestaAccion, RespuestaResolverCaso, RespuestaRevelarResultado
+from app.schemas.batallas import BatallaCuenta
+from app.schemas.casos import CasoCuenta, OcupacionColeccion
+from app.schemas.testimonios import TestimonioEstado
 from app.schemas.cuentas import CuentaResumen, DesbloqueoLegible, ResumenCuenta
 from app.schemas.actividades import BloqueActividades
 from app.schemas.comun import ContenidoEstado
@@ -34,7 +37,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
     'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-contraste',
     'items-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
-    'comparacion-partida-llegada',
+    'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'resolver-batalla-derrota',
+    'resolver-batalla-victoria', 'batallas', 'resolver-caso', 'casos', 'coleccion',
 )}
 
 
@@ -192,6 +196,25 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert [(f['codigo'], f['estado']) for f in datos['fichas-inicial']] == [('t-ficha', 'BLOQUEADA')]
     assert [(f['codigo'], f['estado']) for f in datos['fichas-final']] == [('t-ficha', 'DISPONIBLE')]
     assert [n['estado'] for n in datos['logros-final']['niveles']] == ['OBTENIDO', 'OBTENIDO']
+    # B08: batalla con reintento, caso superado, colección y testimonios.
+    for nombre in ('resolver-batalla-derrota', 'resolver-batalla-victoria'):
+        RespuestaAccion.model_validate(datos[nombre])
+    assert datos['resolver-batalla-derrota']['eventos_registrados'] == []
+    assert {d['regla'] for d in datos['resolver-batalla-victoria']['nuevos_desbloqueos']} == {'R-t-ins-batalla'}
+    batalla, = TypeAdapter(list[BatallaCuenta]).validate_python(datos['batallas'])
+    assert (batalla.estado, batalla.intentos, batalla.primer_intento.victoria) == ('COMPLETADA', 2, False)
+    superado = RespuestaResolverCaso.model_validate(datos['resolver-caso'])
+    assert superado.ocupaciones_nuevas == ['firefighter', 'paramedic']
+    assert {d.regla for d in superado.nuevos_desbloqueos} == {'R-t-testimonio-1', 'R-t-testimonio-2'}
+    caso, = TypeAdapter(list[CasoCuenta]).validate_python(datos['casos'])
+    assert (caso.dimensiones, caso.estado, caso.intentos, caso.superado) == (['R', 'S'], 'COMPLETADA', 2, True)
+    assert [o.ocupacion for o in TypeAdapter(list[OcupacionColeccion]).validate_python(datos['coleccion'])] == [
+        'firefighter', 'paramedic']
+    inicial = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-inicial'])
+    assert [(t.estado, t.pista is not None, t.enlace) for t in inicial] == [('BLOQUEADA', True, None),
+                                                                            ('BLOQUEADA', False, None)]
+    final = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-final'])
+    assert [(t.estado, t.visto, t.pista) for t in final] == [('DISPONIBLE', True, None), ('DISPONIBLE', False, None)]
     # Regenera sobre archivos existentes sin tocar otros archivos del destino.
     conservar = destino / 'ruta' / 'conservar.txt'
     conservar.write_text('Conservar', encoding='utf-8')

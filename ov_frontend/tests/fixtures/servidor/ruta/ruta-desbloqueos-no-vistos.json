@@ -112,6 +112,16 @@
   {
     "fecha_hora": "2026-10-07T10:00:00",
     "objetivo": {
+      "codigo": "t-batalla",
+      "nombre": "Batalla de prueba"
+    },
+    "regla": "R-t-batalla",
+    "tipo_objetivo": "ACTIVIDAD",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
       "codigo": "PLANES",
       "nombre": "Planes"
     },

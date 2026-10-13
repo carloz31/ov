@@ -1,0 +1,20 @@
+[
+  {
+    "codigo": "t-testimonio-1",
+    "descripcion": "Trayectoria de prueba 1.",
+    "enlace": "https://example.test/t1",
+    "estado": "DISPONIBLE",
+    "pista": null,
+    "titulo": "Testimonio de prueba 1",
+    "visto": true
+  },
+  {
+    "codigo": "t-testimonio-2",
+    "descripcion": "Trayectoria de prueba 2.",
+    "enlace": "https://example.test/t2",
+    "estado": "DISPONIBLE",
+    "pista": null,
+    "titulo": "Testimonio de prueba 2",
+    "visto": false
+  }
+]

@@ -8,6 +8,13 @@
       "requisito": "Completa t-inicio."
     },
     {
+      "codigo": "t-ins-batalla",
+      "descripcion": "Venciste la batalla de prueba.",
+      "estado": "BLOQUEADA",
+      "nombre": "Insignia de batalla",
+      "requisito": "Vence la batalla de prueba."
+    },
+    {
       "codigo": "???",
       "descripcion": null,
       "estado": "BLOQUEADA",

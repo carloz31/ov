@@ -79,7 +79,7 @@
       "zona_partida": "EN_CAMINO"
     },
     {
-      "actividades_completadas": 0,
+      "actividades_completadas": 1,
       "codigo": "AUTO-C",
       "descripcion": "Qué tanto conoces las carreras, los caminos y lo que piden.",
       "items": [

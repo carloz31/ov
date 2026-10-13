@@ -1,7 +1,7 @@
 """Ruta corta: recorre la ruta mínima con las peticiones del front, sin `/eventos`.
 
 B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010; B03, las HU 007
-y 016; B07, la HU 094. Cada lote
+y 016; B07, la HU 094; B08, las HU 017, 041 y 051 a 056. Cada lote
 extiende este recorrido con su tramo.
 """
 
@@ -324,3 +324,35 @@ def test_hu094_partida_llegada_prioritarios_y_apertura_de_t2(cliente):
         ('A', 'EN_CAMINO', 'EN_CAMINO'), ('B', 'EN_CAMINO', 'FUERTE'), ('C', 'EN_CAMINO', 'FUERTE'),
         ('D', 'EN_CAMINO', 'FUERTE'), ('E', 'EN_CAMINO', 'FUERTE')]
     assert all(i['cambio'] for d in comparacion['dimensiones'] for i in d['items'])
+
+
+def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
+    avanzar(cliente)
+    batalla = {'cuenta': 'est-ana', 'actividad': 't-batalla', 'fecha_hora': FECHA}
+    perdida = pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': False, 'aciertos': 1,
+                                                                    'preguntas': 4})
+    assert perdida['nuevos_desbloqueos'] == [] and actividades(cliente)['t-batalla'] == 'EN_CURSO'
+    ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': True, 'aciertos': 3,
+                                                                   'preguntas': 4})
+    assert reglas(ganada) == {'R-t-ins-batalla'}
+    fila, = pedir(cliente, 'GET', '/cuentas/est-ana/batallas')
+    assert (fila['estado'], fila['intentos'], fila['primer_intento']['victoria']) == ('COMPLETADA', 2, False)
+
+    testimonios = estado(cliente)['testimonios']
+    assert testimonios[0]['pista'] and all(t['estado'] == 'BLOQUEADA' for t in testimonios)
+    caso, = pedir(cliente, 'GET', '/cuentas/est-ana/casos')
+    assert (caso['dimensiones'], caso['estado']) == (['R', 'S'], 'BLOQUEADA')
+    for mision in MISIONES_INTERESES:
+        responder(cliente, mision)
+        completar(cliente, mision)
+    datos_caso = {'cuenta': 'est-ana', 'actividad': 't-caso', 'fecha_hora': FECHA}
+    fallido = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 40,
+                                                                 'ocupaciones': ['firefighter']})
+    assert fallido['ocupaciones_nuevas'] == [] and actividades(cliente)['t-caso'] == 'EN_CURSO'
+    superado = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 80,
+                                                                  'ocupaciones': ['firefighter', 'paramedic']})
+    assert reglas(superado) == {'R-t-testimonio-1', 'R-t-testimonio-2'}
+    assert [o['ocupacion'] for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == ['firefighter', 'paramedic']
+    pedir(cliente, 'POST', '/acciones/ver-testimonio', {'cuenta': 'est-ana', 'testimonio': 't-testimonio-1'})
+    assert [(t['estado'], t['visto']) for t in estado(cliente)['testimonios']] == [
+        ('DISPONIBLE', True), ('DISPONIBLE', False)]

@@ -1,0 +1,15 @@
+[
+  {
+    "actividad": "t-batalla",
+    "estado": "COMPLETADA",
+    "intentos": 2,
+    "primer_intento": {
+      "aciertos": 1,
+      "fecha_hora": "2026-10-07T10:00:00",
+      "preguntas": 4,
+      "victoria": false
+    },
+    "superada": true,
+    "titulo": "Batalla de prueba"
+  }
+]

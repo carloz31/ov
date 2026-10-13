@@ -1,0 +1,15 @@
+[
+  {
+    "actividad": "t-caso",
+    "dimensiones": [
+      "R",
+      "S"
+    ],
+    "estado": "COMPLETADA",
+    "intentos": 2,
+    "mejor_puntaje": 80.0,
+    "superado": true,
+    "titulo": "Caso de prueba",
+    "ultimo_puntaje": 80.0
+  }
+]

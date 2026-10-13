@@ -63,7 +63,8 @@ def _consultas_dominio(cliente, momento, rutas):
 
 def _recorrer(cliente):
     fixtures = {'cuentas': _pedir(cliente, 'GET', '/cuentas')}
-    fixtures.update(_consultas_dominio(cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros', 'secciones')))
+    fixtures.update(_consultas_dominio(
+        cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros', 'secciones', 'testimonios')))
     fixtures['completar-t-inicio'] = _completar(cliente, 't-inicio')
     # B07: el punto de partida está en T0, antes de su cierre; se revela y se cita en t-lee-cuestionario.
     fixtures['items-t-partida'] = _responder_partida(cliente, 't-partida', 3)
@@ -106,6 +107,13 @@ def _recorrer(cliente):
     marcados = _pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')
     if marcados['marcados'] != len(avisos) or _pedir(cliente, 'GET', ruta_avisos) != []:
         raise RuntimeError('El marcado no vació los desbloqueos no vistos')
+    # B08: la batalla se pierde, se repasa y se gana; solo la victoria la completa.
+    batalla = {'cuenta': 'est-ana', 'actividad': 't-batalla', 'fecha_hora': FECHA}
+    fixtures['resolver-batalla-derrota'] = _pedir(cliente, 'POST', '/acciones/resolver-batalla', {
+        **batalla, 'victoria': False, 'aciertos': 1, 'preguntas': 4})
+    fixtures['resolver-batalla-victoria'] = _pedir(cliente, 'POST', '/acciones/resolver-batalla', {
+        **batalla, 'victoria': True, 'aciertos': 3, 'preguntas': 4})
+    fixtures['batallas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/batallas')
     for mision in MISIONES_INTERESES:
         items = _pedir(cliente, 'GET', f'/actividades/{mision}/items')
         if mision == MISIONES_INTERESES[0]:
@@ -120,6 +128,16 @@ def _recorrer(cliente):
     })
     fixtures['resultado-riasec'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
     fixtures['referencias-t-contraste'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')
+    # B08: el caso falla, se reintenta y se supera; superarlo abre los testimonios y llena la colección.
+    caso = {'cuenta': 'est-ana', 'actividad': 't-caso', 'fecha_hora': FECHA}
+    _pedir(cliente, 'POST', '/acciones/resolver-caso', {**caso, 'puntaje': 40, 'ocupaciones': ['firefighter']})
+    fixtures['resolver-caso'] = _pedir(cliente, 'POST', '/acciones/resolver-caso', {
+        **caso, 'puntaje': 80, 'ocupaciones': ['firefighter', 'paramedic']})
+    fixtures['casos'] = _pedir(cliente, 'GET', '/cuentas/est-ana/casos')
+    fixtures['coleccion'] = _pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')
+    _pedir(cliente, 'POST', '/acciones/ver-testimonio',
+           {'cuenta': 'est-ana', 'testimonio': 't-testimonio-1', 'fecha_hora': FECHA})
+    fixtures['testimonios-final'] = _pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')
     # B07: con la partida y el RIASEC prioritario del 5A revelados, T2 está abierto; la llegada se compara.
     fixtures['actividades-t2'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     _responder_partida(cliente, 't-llegada', 4)

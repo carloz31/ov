@@ -73,6 +73,24 @@
         }
       ],
       "objetivo": {
+        "codigo": "t-batalla",
+        "nombre": "Batalla de prueba"
+      },
+      "regla": "R-t-batalla",
+      "tipo_objetivo": "ACTIVIDAD"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-inicio",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
         "codigo": "t-cierre-inicio",
         "nombre": "Cierre del inicio"
       },

@@ -2,6 +2,24 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-13 · B08 · Batallas, casos y testimonios
+
+- **Dato:**
+  - el tipo de actividad `BATALLA` y `POST /acciones/resolver-batalla` (`victoria`, `aciertos`, `preguntas`): guarda cada intento, solo la primera victoria completa (SUPERA_BATALLA y, sin errores, VENCE_DESAFIO_INTACTO); `completar-actividad` rechaza las batallas con 409. `GET /cuentas/{c}/batallas` trae intentos, si se superó y el primer intento. La actividad `t-batalla` (T1, opcional) no tiene contenido en el front;
+  - `resolver-caso` ya no completa el caso si el puntaje no llega a `puntaje_minimo` (queda EN_CURSO); acepta `ocupaciones` (las bien asignadas) y responde `ocupaciones_nuevas`. Hoy `forestFireCaseOutcome.ts` desbloquea la colección en local;
+  - `GET /cuentas/{c}/casos` (tipos RIASEC en `dimensiones`, intentos, último y mejor puntaje) y `GET /cuentas/{c}/coleccion` (ocupaciones obtenidas al superar casos);
+  - `GET /cuentas/{c}/testimonios` cambió de forma (`TestimonioEstado`: `visto`, `pista` si está bloqueado, `descripcion` y `enlace` si está disponible) y `POST /acciones/ver-testimonio` registra VISTA_TESTIMONIO la primera vez.
+- **Dónde se mostraría:**
+  - en el reproductor de desafíos (`useChallengePlayer`, `recordBattle`): enviar cada intento al terminar y leer el estado del servidor en vez de `challengeResults`;
+  - en la central de casos: el tipo RIASEC de cada caso, el resultado del último intento y la colección de íconos;
+  - en una vista de testimonios (no existe): los disponibles con su enlace y los bloqueados con su pista.
+- **Opciones:**
+  - conectar batallas y casos en el lote F de actividades, agregando los tipos a `servidor.ts` y un archivo por router en `src/services/api/`;
+  - crear `t_batalla.json` o mapear `t-batalla` a un desafío real al cargar la ruta;
+  - crear la vista de testimonios cuando la spec de su lote F la autorice.
+- **Si no se muestra:** en modo `api`, una batalla nunca se completa por `completar-actividad`, un caso fallido ya no aparece completado y los testimonios solo se ven en local.
+- **Estado:** pendiente de los lotes F; no se toca la interfaz en B08.
+
 ## 2026-10-13 · B07 · Partida y llegada, temáticas y prioritarios
 
 - **Dato:**

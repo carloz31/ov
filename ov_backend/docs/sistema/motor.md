@@ -114,8 +114,10 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | Acción (POST) | Valida | Efecto y eventos |
 |---|---|---|
 | `/acciones/ingresar` | — | INGRESO |
-| `/acciones/completar-actividad` | Actividad disponible y no CASO. Si tiene ítems de instrumento, todos respondidos; si tiene ítems de registro obligatorios, todos en FINAL (si no, 409 con `items_faltantes`, sin eventos). | Progreso a COMPLETADA. COMPLETA_ACTIVIDAD en **cada** finalización, también al repetir. COMPLETA_BLOQUE la primera vez que se completan todas las actividades del bloque. No calcula resultados de instrumentos: eso ocurre al revelar. |
-| `/acciones/resolver-caso` | Actividad CASO disponible; puntaje 0–100 | Guarda el intento y completa la actividad. SUPERA_CASO la primera vez que el puntaje ≥ `puntaje_minimo`. |
+| `/acciones/completar-actividad` | Actividad disponible y no CASO ni BATALLA. Si tiene ítems de instrumento, todos respondidos; si tiene ítems de registro obligatorios, todos en FINAL (si no, 409 con `items_faltantes`, sin eventos). | Progreso a COMPLETADA. COMPLETA_ACTIVIDAD en **cada** finalización, también al repetir. COMPLETA_BLOQUE la primera vez que se completan todas las actividades del bloque. No calcula resultados de instrumentos: eso ocurre al revelar. |
+| `/acciones/resolver-caso` | Actividad CASO disponible; puntaje 0–100; `ocupaciones` (códigos de las bien asignadas) existentes, si no 422 | Guarda el intento. Con puntaje ≥ `puntaje_minimo`: completa la actividad (COMPLETA_ACTIVIDAD), SUPERA_CASO la primera vez y agrega a `coleccion_ocupacion` las ocupaciones que la cuenta no tenía (`ocupaciones_nuevas` en la respuesta). Con menos, queda EN_CURSO, sin eventos. |
+| `/acciones/resolver-batalla` | Actividad BATALLA disponible; `victoria`, `aciertos` ≤ `preguntas` (≥ 1) | Guarda cada intento en `resultado_batalla`. La primera victoria completa la actividad (COMPLETA_ACTIVIDAD) y registra SUPERA_BATALLA, y VENCE_DESAFIO_INTACTO si acertó todas. Perder deja la batalla EN_CURSO; los intentos posteriores a la victoria son repaso, sin eventos. El primer intento es el que cuenta para la métrica de conocimiento. |
+| `/acciones/ver-testimonio` | Solo estudiante; testimonio disponible (si no, 409 con su mensaje) | VISTA_TESTIMONIO solo la primera vez. |
 | `/acciones/responder-registro` | Clasificación ADECUADA o POCO_DESARROLLADA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
 | `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; GUIADA exige pregunta disponible y no respondida; LIBRE sin pregunta | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
 | `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día; nivel 1–5 | REGISTRA_CHECK_IN |
@@ -147,7 +149,7 @@ Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logro
 1. Nunca hay dos desbloqueos para la misma cuenta y regla, y ninguno se elimina.
 2. Una actividad bloqueada no se puede completar: 409 sin eventos.
 3. Una cuenta nunca ve objetivos de otra audiencia.
-4. COMPLETA_BLOQUE, SUPERA_CASO, ESCRIBE_CARTA y COMPLETA_CONVERSACION se registran solo la primera vez por referencia y cuenta; COMPLETA_ACTIVIDAD, en cada finalización.
+4. COMPLETA_BLOQUE, SUPERA_CASO, SUPERA_BATALLA, VENCE_DESAFIO_INTACTO, VISTA_TESTIMONIO, ESCRIBE_CARTA y COMPLETA_CONVERSACION se registran solo la primera vez por referencia y cuenta; COMPLETA_ACTIVIDAD, en cada finalización.
 5. Repetir una actividad no cambia su estado COMPLETADA.
 6. Un check-in por día y una entrada GUIADA por pregunta.
 7. El nivel actual nunca baja.
