@@ -74,7 +74,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B07 | Partida y llegada, temáticas y prioritarios · **Implementado** | 094 | M | B06 | Comparación por dimensión; T2 se abre con los instrumentos prioritarios revelados |
 | B08 | Batallas, casos y testimonios · **Implementado** | 017, 041, 051–056 | M | B05 | Batalla con reintento; el caso libera testimonios y colección |
 | B09 | Diario, pregunta del día y check-in | 028–033, 035, 036, 075 | M | B07 | Entradas fijas y personalizadas, también con fallo del LLM |
-| B10 | Catálogo, instituciones y favoritos | 026, 037–040 | M | B06 | `t-explorar` bloqueado hasta tener favoritos diversos |
+| B10 | Catálogo, instituciones y favoritos · **Implementado** | 026, 037–040 | M | B06 | `t-explorar` bloqueado hasta tener favoritos diversos |
 | B11 | Planes de carrera | 043–048, 050, 097–099 | M | B07, B08, B10 | Campos que se habilitan, presupuesto y requisitos de comparar y proyecto |
 | B12 | Familia: ruta del apoderado, conversaciones y cartas | 066–071, 078–080 | M | B09, B11 | Conversaciones que se abren una por una; cartas al completar todas |
 | B13 | Investigaciones y entrevistas | 057–065, 100, 101 | M | B10 | Investigación completa, con aliados, reacciones y Leyenda |
@@ -222,7 +222,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Un check-in por día, con su evolución.
 - **Comprueba:** reglas 3, 4 y 5 (el diario va en una sola dirección); reglas de las entradas personalizadas.
 
-**B10 · Catálogo, instituciones y favoritos (M)**
+**B10 · Catálogo, instituciones y favoritos (M)** (Implementado)
 - **Modelo:**
   - campos de `Carrera` y de `Ocupacion`;
   - `IngresoCarrera`, `RangoIngreso` y `HighPoint`;

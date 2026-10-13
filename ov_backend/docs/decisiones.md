@@ -1,16 +1,3 @@
 # Decisiones de la spec en curso
 
-<!-- Spec en curso: B10 · Catálogo, instituciones y favoritos (docs/specs/B10.md). -->
-
-- **Modelo F1 (migración 0014).** Se agregan `high_point`, `tipo_carrera`, `ubicacion`, `institucion`, `institucion_carrera`, `ingreso_carrera` y `rango_ingreso`. `Carrera` y `Ocupacion` suman detalle, `codigo_riasec` y `busqueda`, y `TipoEventoUso` suma VISTA_OCUPACION y VISTA_INSTITUCION. Lo pide la spec, para HU-037 a HU-039.
-- **`busqueda` se calcula en el modelo.** Se calcula como valor por defecto del modelo (`busqueda_de`, en `app/models/base.py`), con `sin_tildes`, así que también la reciben las filas creadas en pruebas. La migración rellena las filas existentes con la misma función. El proyecto no usa `unaccent`.
-- **Relaciones de solo lectura en el catálogo.** `Carrera`, `Ocupacion`, `Institucion` e `IngresoCarrera` ganan relaciones `viewonly` con `lazy="raise"`, para cargar los detalles con `selectinload`. Así, un acceso perezoso falla en vez de multiplicar consultas. No cambian el esquema.
-- **`services/carreras.py` se integra en `services/catalogo.py`.** `ver_carrera` ahora exige la sección CATALOGO, como pide la spec.
-- **Pruebas de migración adaptadas por el cambio de modelo.** Se ajustan los conteos de tablas (56 a 63; 58 a 65 sentencias CREATE), la clasificación catálogo/estado y las tablas esperadas. La prueba de downgrade ahora espera que 0014 baje antes de que 0013 se detenga por las batallas.
-- **Textos de ocupaciones copiados del front.** `fijos.py` copia de `src/data/catalog/` del front la descripción (`typicalWork`), los lugares (`workplaces`) y las habilidades (`skills`). Las ocupaciones cuyo texto en el front es «por completar» quedan sin detalle; cuando el catálogo base y el adicional repiten una ocupación, se toma la versión con texto real.
-- **Modelo F2 (migración 0015).** Se agrega la tabla de estado `favorito` (`tipo` + `id_referencia`, sin clave foránea, como `evento_uso`) y el evento MARCA_FAVORITO, para HU-040. Las pruebas de conteo de tablas, de clasificación y de reinicio la incluyen.
-- **Favoritos leídos en el contexto.** `ContextoConsultas.favoritos_de` lee los favoritos de la cuenta una vez por petición, y lo usan el catálogo y el resultado RIASEC (`es_favorita`, HU-026).
-- **`vistas_diversas` con tres nombres.** Se registra en `EVALUADORES` mediante `functools.partial`, que fija clase y atributo, y el umbral sale de `parametro_evaluador` (nulo = todos los grupos). No cambia `regla_desbloqueo`. `carreras_de_3_familias` solo lo usaba su prueba de motor, que ahora usa `carreras_familias_distintas`.
-- **`t-explorar` se abre con dos reglas alternativas.** `R-t-explorar-carrera` (SUPERA_BATALLA + VISTA_CARRERA) y `R-t-explorar-ocupacion` (SUPERA_BATALLA + VISTA_OCUPACION), ambas con `vista_fuera_del_perfil`, porque una regla exige todas sus condiciones. Revelar el resultado no reevalúa estas reglas: lo hace la siguiente vista o batalla.
-- **`EVALUADORES_REGLAS` lleva el parámetro.** Pasa a `{regla: (evaluador, parámetro)}`, para declarar los umbrales de los logros.
-- **Pruebas adaptadas por el retiro de `t-ins-batalla`.** Lo autoriza la spec: vencer la batalla ya no da insignias (batallas, escenario, contrato del exportador). Las listas de insignias ocultas, actividades de T1, ítems de registro y conteos de la semilla suman `t-explorar` y los tres logros ocultos. La prueba de downgrade ahora se detiene en 0014, porque las reglas de `ruta` cuentan vistas de ocupaciones e instituciones.
+<!-- Spec en curso: ninguna. -->
