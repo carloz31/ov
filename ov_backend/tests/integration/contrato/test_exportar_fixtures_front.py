@@ -30,7 +30,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'desbloqueos-no-vistos', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
     'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
-    'entregar-t-expectativas',
+    'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
 )}
 
 
@@ -107,6 +107,12 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert entrega.estado == 'COMPLETADA' and entrega.items_por_ampliar == []
     assert 'R-t-adicional' in {d.regla for d in entrega.nuevos_desbloqueos}
     assert 'clasificacion' not in json.dumps(datos['entregar-t-expectativas'])
+    # B04: el registro cerrado trae la consolidada y lo que se puede ampliar; editar abre un intento.
+    cerrado = RegistroConsultado.model_validate(datos['registro-t-expectativas-cerrado'])
+    assert cerrado.items_por_ampliar == [] and all(r.texto_consolidado for r in cerrado.respuestas)
+    edicion = RespuestaRegistroAccion.model_validate(datos['editar-t-expectativas'])
+    assert [r.estado for r in edicion.respuestas if r.item == 't-exp-ruta'] == ['PENDIENTE_SEGUIMIENTO']
+    assert 'clasificacion' not in json.dumps(datos['editar-t-expectativas'])
     inicial = estados(datos['actividades-inicial'])
     assert inicial['t-inicio'] == 'DISPONIBLE'
     assert all(e == 'BLOQUEADA' for c, e in inicial.items() if c != 't-inicio')

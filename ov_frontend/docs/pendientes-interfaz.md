@@ -2,6 +2,19 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-13 · B04 · Respuesta consolidada y edición de registros
+
+- **Dato:**
+  - en `GET /cuentas/{c}/actividades/{a}/registro` con el registro cerrado: `texto_consolidado` por ítem e `items_por_ampliar` como `{item, pista}` (antes, al cerrar, era una lista de códigos);
+  - `POST /acciones/registro/editar` con `items: [{item, texto}]`, que abre un nuevo intento con seguimiento;
+  - la conversación muestra solo los turnos del intento vigente.
+- **Dónde se mostraría:**
+  - una consulta del registro entregado con la respuesta consolidada de cada ítem y, en los que se pueden ampliar, su pista y un botón «Editar»;
+  - la edición reutiliza la misma interfaz de seguimiento con Lumi que la entrega (pregunta pendiente, «Responder», «Continuar sin responder»).
+- **Opciones:** construir la consulta y el botón de editar en el lote F de registros; mantener la lógica local hasta entonces.
+- **Si no se muestra:** en modo `api` el estudiante no puede consultar ni editar lo que entregó; la misión adicional solo se abre si todo quedó adecuado en la entrega.
+- **Estado:** pendiente del lote F de registros; no se toca la interfaz en B04.
+
 ## 2026-10-13 · B03 · Entrega y seguimiento de registros
 
 - **Dato:**

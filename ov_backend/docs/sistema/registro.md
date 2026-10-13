@@ -1,6 +1,6 @@
 # Registro con preguntas de seguimiento
 
-Actividades de registro cuyas respuestas evalúa un LLM (Gemini) para pedir, como máximo, dos preguntas de seguimiento. Código: `app/services/registro/` y `app/api/registro.py`. Parámetros: `VERSION_PROMPT_REGISTRO`, `MAXIMO_SEGUIMIENTOS_POR_REGISTRO` (2), `MODELO_LLM_REGISTRO`, temperatura, tiempo máximo y validaciones de la pregunta y la consolidada en `app/core/parametros.py`.
+Actividades de registro cuyas respuestas evalúa un LLM (Gemini) para pedir, como máximo, dos preguntas de seguimiento por intento. Tras cerrar, el estudiante consulta la respuesta consolidada y lo que puede ampliar, y edita (HU-008). Código: `app/services/registro/` y `app/api/registro.py`. Parámetros: `VERSION_PROMPT_REGISTRO`, `MAXIMO_SEGUIMIENTOS_POR_REGISTRO` (2), `MODELO_LLM_REGISTRO`, temperatura, tiempo máximo y validaciones de la pregunta y la consolidada en `app/core/parametros.py`.
 
 Estado actual: el backend implementa todo lo de este documento y `ruta` tiene los registros `t-expectativas` y `t-valores`; el front responde los registros con su lógica local y solo informa la finalización. La integración llega con la iteración 2.
 
@@ -36,9 +36,10 @@ PENDIENTE_SEGUIMIENTO --guardar borrador--> igual (borrador de la respuesta al t
 PENDIENTE_SEGUIMIENTO --responder seguimiento--> FINAL (y se abre la siguiente pregunta o se cierra el registro)
 PENDIENTE_SEGUIMIENTO --continuar sin responder--> FINAL (se cierra el registro)
 FINAL --siguiente pregunta, mientras el registro sigue abierto--> PENDIENTE_SEGUIMIENTO
+FINAL (registro cerrado) --editar con texto distinto--> FINAL en un nuevo intento, salvo el que recibe la pregunta
 ```
 
-Después de entregar no hay edición (llega con HU-008 en B04).
+**Intentos.** La entrega es el intento 1; cada edición abre el siguiente (el máximo `intento` de las respuestas más uno) solo para los ítems cuyo texto cambió. `texto_inicial` pasa a ser el texto editado, `clasificacion_inicial` no cambia y los turnos de intentos anteriores se conservan, pero ya no se muestran. El historial de textos queda en `evaluacion_respuesta.texto_evaluado`.
 
 ## Acciones (POST)
 
@@ -49,22 +50,23 @@ Todas exigen actividad disponible y cuenta de estudiante (apoderado u orientador
 | `/acciones/registro/guardar-borrador` | `item`, `texto`, `opciones`, `posicion?` | Sin evaluar. Antes de entregar, guarda `texto_inicial` y `opciones` (sin exigir la mínima). Después, solo el borrador de la pregunta pendiente (con `opciones`, 422); en otro caso, 409. Con `posicion`, la guarda en el progreso para retomar. |
 | `/acciones/registro/entregar` | — | Evalúa todo el registro. Si falta texto en un obligatorio, 409 con `items_faltantes`; si no se alcanza la elección mínima, 422; si ya está entregado, 409. |
 | `/acciones/registro/responder-seguimiento` | `item`, `texto` | Responde la pregunta pendiente de ese ítem; la reevalúa y consolida. |
-| `/acciones/registro/continuar-sin-responder` | `item` | El turno queda sin respuesta (la marca de la omisión) y el registro se cierra. |
+| `/acciones/registro/continuar-sin-responder` | `item` | El turno queda sin respuesta (la marca de la omisión) y el intento se cierra. |
+| `/acciones/registro/editar` | `items: [{item, texto}]` | Reentrega los ítems cuyo texto cambió (los idénticos a su `texto_consolidado` se ignoran): una evaluación como la de la entrega y luego el seguimiento del intento. Solo texto: la elección no se edita. Exige el registro cerrado y sin pregunta pendiente (409). Lista vacía, ítem repetido, ajeno o no entregado, texto vacío o ningún cambio: 422. Sin límite de ediciones. |
 
-Las tres últimas devuelven el registro (como el GET: `posicion`, `estado` del progreso y `respuestas` con estado, opciones y conversación) más `eventos_registrados` y `nuevos_desbloqueos`; la que cierra agrega `items_por_ampliar` (los ítems que quedaron POCO_DESARROLLADA). Ninguna respuesta incluye la clasificación, los criterios, la consolidada ni `requiere_atencion`. REGISTRO_ADECUADO sí aparece en `eventos_registrados`, como todo evento: es una señal del registro completo, no la clasificación de un ítem.
+Las cuatro últimas devuelven el registro (como el GET: `posicion`, `estado` del progreso y `respuestas` con estado, opciones y conversación) más `eventos_registrados` y `nuevos_desbloqueos`; la que cierra agrega `items_por_ampliar` (`{item, pista}`, ver «Consultas»). Ninguna respuesta de una acción incluye la clasificación, los criterios, la consolidada ni `requiere_atencion`. REGISTRO_ADECUADO sí aparece en `eventos_registrados`, como todo evento: es una señal del registro completo, no la clasificación de un ítem.
 
 **Elección** (`eleccion.py`, sin base de datos): `opciones` es una lista de `{codigo, texto?}`. Responde 422 si el ítem no tiene lista y llegan opciones, si una opción es ajena o se repite, si llega `OTRA` sin `permite_otra` o sin texto, si una opción que no es `OTRA` trae texto, si se supera la máxima o, solo al entregar, si no se alcanza la mínima. La elección no ordenada se guarda en el orden de la lista; la ordenada, en el orden elegido.
 
 ## Seguimiento
 
-- Como máximo `MAXIMO_SEGUIMIENTOS_POR_REGISTRO` (2) preguntas por registro.
-- La pregunta va al primer ítem, por orden, cuya clasificación vigente (la de su última evaluación) es POCO_DESARROLLADA. Tras cada respuesta, si ese ítem sigue así, se le vuelve a preguntar; si no, pasa al siguiente por orden.
-- Sin a quién preguntar, o con las dos preguntas hechas, el registro **se cierra**:
+- Como máximo `MAXIMO_SEGUIMIENTOS_POR_REGISTRO` (2) preguntas por intento.
+- Solo preguntan los ítems respondidos en ese intento (en una edición, los editados). La pregunta va al primero, por orden, cuya clasificación vigente (la de su última evaluación) es POCO_DESARROLLADA. Tras cada respuesta, si ese ítem sigue así, se le vuelve a preguntar; si no, pasa al siguiente por orden.
+- **RESPUESTA_REFLEXIVA:** cuando una respuesta pasa de POCO_DESARROLLADA a ADECUADA al evaluar la respuesta a un turno, en esa misma acción y una sola vez por respuesta (`reflexiva_registrada`), en cualquier intento. No la da ser adecuada al inicio, ampliar sin quedar adecuada ni editar a adecuada sin seguimiento.
+- Sin a quién preguntar, o con las dos preguntas hechas, el intento **se cierra**:
   - todas las respuestas en FINAL;
-  - progreso COMPLETADA con COMPLETA_ACTIVIDAD y COMPLETA_BLOQUE si corresponde (`completar_progreso`);
-  - una RESPUESTA_REFLEXIVA por respuesta adecuada al inicio o `ampliada`;
-  - REGISTRO_ADECUADO (referencia: la actividad) si ningún ítem quedó POCO_DESARROLLADA (NO_EVALUADA no lo impide).
-- `texto_consolidado`: al entregar, el texto inicial; tras cada respuesta, la consolidada.
+  - solo en el intento 1, progreso COMPLETADA con COMPLETA_ACTIVIDAD y COMPLETA_BLOQUE si corresponde (`completar_progreso`);
+  - REGISTRO_ADECUADO (referencia: la actividad) si ningún ítem quedó POCO_DESARROLLADA (NO_EVALUADA no lo impide), una sola vez por cuenta y actividad. Los eventos no se deshacen: editar a poco desarrollada no vuelve a bloquear la misión adicional.
+- `texto_consolidado` es la única respuesta final (la que se cita y se muestra): al entregar o editar, el texto escrito; tras cada respuesta a un turno, la consolidada.
 
 ## Evaluación
 
@@ -115,6 +117,6 @@ La llamada al LLM nunca ocurre dentro de una transacción ni con una conexión t
 | Ruta | Devuelve |
 |---|---|
 | `/actividades/{a}/items-registro` | Ítems en orden, con consigna, `min_caracteres` (puede ser nulo), obligatoriedad y `eleccion` (`null` o lista, `comun`, mínima, máxima, `ordenada`, `permite_otra` y opciones). Sin criterios. |
-| `/cuentas/{c}/actividades/{a}/registro` | Posición, estado del progreso y, por ítem, estado, `opciones_elegidas` y conversación (incluidos los borradores). |
+| `/cuentas/{c}/actividades/{a}/registro` | Posición, estado del progreso y, por ítem, estado, `opciones_elegidas` y conversación del intento vigente (incluidos los borradores). Con el registro cerrado (progreso COMPLETADA y nada pendiente), además `texto_consolidado` por ítem e `items_por_ampliar`: los ítems con POCO_DESARROLLADA vigente, cada uno con `pista`, la pregunta de su evaluación vigente (la omitida, la siguiente que devolvió `evaluar_seguimiento` al agotar las preguntas o la de la edición; inválida, la base o la genérica). |
 
 Apoderados y cuentas o actividades inexistentes: 404. Completar una actividad de registro exige todos sus ítems obligatorios en FINAL (`motor.md`).

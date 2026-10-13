@@ -66,6 +66,14 @@ def _recorrer(cliente):
     fixtures['registro-t-expectativas-borrador'] = _pedir(
         cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
     fixtures['entregar-t-expectativas'] = _responder_registro(cliente, 't-expectativas')
+    fixtures['registro-t-expectativas-cerrado'] = _pedir(
+        cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
+    # B04: editar abre un intento con su pregunta de seguimiento ([vaga] la pide en el evaluador falso).
+    accion_registro = {'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA}
+    fixtures['editar-t-expectativas'] = _pedir(cliente, 'POST', '/acciones/registro/editar', {
+        **accion_registro, 'items': [{'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: ahora quiero viajar [vaga]'}]})
+    _pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
+        **accion_registro, 'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: porque quiero conocer otras culturas'})
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     ruta_avisos = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
     avisos = _pedir(cliente, 'GET', ruta_avisos)

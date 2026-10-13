@@ -13,21 +13,6 @@
     },
     {
       "fecha_hora": "2026-10-07T10:00:00",
-      "referencia": null,
-      "tipo": "RESPUESTA_REFLEXIVA"
-    },
-    {
-      "fecha_hora": "2026-10-07T10:00:00",
-      "referencia": null,
-      "tipo": "RESPUESTA_REFLEXIVA"
-    },
-    {
-      "fecha_hora": "2026-10-07T10:00:00",
-      "referencia": null,
-      "tipo": "RESPUESTA_REFLEXIVA"
-    },
-    {
-      "fecha_hora": "2026-10-07T10:00:00",
       "referencia": "t-expectativas",
       "tipo": "REGISTRO_ADECUADO"
     }

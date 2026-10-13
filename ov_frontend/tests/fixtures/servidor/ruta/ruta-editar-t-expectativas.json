@@ -1,0 +1,54 @@
+{
+  "estado": "COMPLETADA",
+  "eventos_registrados": [],
+  "nuevos_desbloqueos": [],
+  "posicion": "t-exp-ruta",
+  "respuestas": [
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: ahora quiero viajar [vaga]",
+          "tipo": "respuesta"
+        },
+        {
+          "orden": 1,
+          "texto": "Sobre lo que contaste: ¿Por qué lo piensas así?",
+          "tipo": "pregunta"
+        }
+      ],
+      "estado": "PENDIENTE_SEGUIMIENTO",
+      "item": "t-exp-ruta",
+      "opciones_elegidas": [
+        {
+          "codigo": "UNIVERSIDAD"
+        }
+      ]
+    },
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-exp-apoyo",
+      "opciones_elegidas": [
+        {
+          "codigo": "FAMILIA"
+        }
+      ]
+    },
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-exp-espera",
+      "opciones_elegidas": []
+    }
+  ]
+}

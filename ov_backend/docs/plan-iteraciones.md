@@ -68,7 +68,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B01 | Secciones, mensajes de bloqueo y salón · **Implementado** | 002, 025 | M | B00 | Lo bloqueado responde con su mensaje; las secciones se abren y permiten registrar |
 | B02 | Registros: modelo, listas y borradores · **Implementado** | 006, 010 | M | B01 | Borradores con elección validada; ítems, criterios y listas cargados desde `datos/` |
 | B03 | Registros: entrega y seguimiento · **Implementado** | 007, 016 | M | B02 | Entrega con seguimiento, omisión y fallo del LLM; la misión adicional aparece solo si todo quedó adecuado |
-| B04 | Registros: respuesta consolidada y edición | 008 | — | B03 | Consulta de la consolidada y de lo que se puede ampliar; la edición se evalúa una vez |
+| B04 | Registros: respuesta consolidada y edición · **Implementado** | 008 | M | B03 | Consulta de la consolidada y de lo que se puede ampliar, con pista; la edición es un nuevo intento con seguimiento |
 | B05 | Referencias y eco | 009 | M | B04 | Citas literales; lo poco desarrollado sale como «por desarrollar» |
 | B06 | Revelar resultados y libro de Helena | 022–024, 027, 095 | M | B05 | Revelar calcula y abre el registro de contraste; reinicio con perfil plano |
 | B07 | Partida y llegada, temáticas y prioritarios | 094 | M | B06 | Comparación por dimensión; T2 se abre con los instrumentos prioritarios revelados |
@@ -148,11 +148,12 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Cada cuenta actúa solo sobre sí misma.
   - La orientadora actúa solo sobre su salón.
 
-**B04 · Registros: respuesta consolidada y edición**
+**B04 · Registros: respuesta consolidada y edición (M) · Implementado**
+- **Modelo:** `intento` en respuestas y turnos (la edición es un nuevo intento con seguimiento) y `reflexiva_registrada`.
 - **Hace:** HU-008: consultar la respuesta consolidada, ver qué se puede ampliar y editar. La consolidación ya ocurre en B03, tras cada respuesta a un turno.
 - **Pruebas:**
   - La consulta devuelve la respuesta consolidada y qué ítems se pueden ampliar.
-  - Editar evalúa una vez, sin seguimiento, y conserva `texto_inicial`. Si queda adecuada, quita la marca y abre la misión adicional.
+  - Editar es un nuevo intento: una evaluación de los ítems cambiados y su seguimiento (tope de dos por intento). Si todo queda adecuado, quita la marca y abre la misión adicional. REGISTRO_ADECUADO y RESPUESTA_REFLEXIVA, una vez cada uno.
 - **Script manual con Gemini:** sobre `t-expectativas`; se corre solo si lo pide el usuario.
 - **Comprueba:** paso 7.
 
