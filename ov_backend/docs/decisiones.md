@@ -10,3 +10,5 @@
 - Las respuestas de un cuestionario siguen editables hasta revelar: se fijan con el resultado vigente, como antes.
 - Revelar responde 409 con `items_faltantes` = las actividades de la aplicación sin completar (se reutiliza el campo de error existente).
 - Pruebas adaptadas a revelar explícito (autorizado por la spec): `ciclo` revela, y las que leían `resultados_generados` o esperaban el resultado al completar revelan ahora.
+- El tope de reinicios (`MAXIMO_REINICIOS_PERFIL_PLANO`) se cuenta con los resultados anulados con perfil plano de esa cuenta y aplicación; no hace falta un contador nuevo. `resultado_anulado` pasa a ser obligatorio en la respuesta del reinicio, porque ya no hay reinicio sin resultado.
+- Pruebas adaptadas al reinicio restringido (autorizado por la spec): los reinicios parciales, de COMPARACION o de perfiles no planos pasan a esperar 409; las que necesitaban un historial anulado usan un perfil plano.

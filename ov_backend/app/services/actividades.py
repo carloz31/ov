@@ -1,7 +1,8 @@
-from sqlalchemy import bindparam, delete, insert, select, update
+from sqlalchemy import bindparam, delete, func, insert, select, update
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
+from app.core.parametros import MAXIMO_REINICIOS_PERFIL_PLANO
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, AplicacionActividad, Bloque, Cuenta, Dimension, EstadoProgreso,
@@ -217,15 +218,18 @@ def reiniciar_instrumento(sesion: Session, entrada: ReiniciarInstrumentoEntrada)
         RespuestaItem.item_id.in_(select(ItemInstrumento.id).where(ItemInstrumento.instrumento_id == instrumento.id)),
     )
     resultado = resultado_vigente(sesion, cuenta, aplicacion)
-    tiene_respuestas = sesion.scalar(select(RespuestaItem.id).where(*filtro_respuestas).limit(1)) is not None
-    if resultado is None and not tiene_respuestas:
-        raise ErrorAccion("Nada que reiniciar")
+    if resultado is None or not resultado.perfil_plano:
+        raise ErrorAccion("Solo se puede reiniciar un resultado revelado con perfil plano")
+    reinicios = sesion.scalar(select(func.count()).select_from(ResultadoInstrumento).where(
+        ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.aplicacion_id == aplicacion.id,
+        ResultadoInstrumento.anulado_en.is_not(None), ResultadoInstrumento.perfil_plano,
+    ))
+    if reinicios >= MAXIMO_REINICIOS_PERFIL_PLANO:
+        raise ErrorAccion("Ya usaste el reinicio de este cuestionario")
     fecha = fecha_accion(entrada)
-    anulado = None
-    if resultado is not None:
-        resultado.anulado_en = fecha
-        anulado = ResultadoAnulado(instrumento=instrumento.codigo, aplicacion=aplicacion.codigo,
-                                  calculado_en=resultado.calculado_en, anulado_en=fecha)
+    resultado.anulado_en = fecha
+    anulado = ResultadoAnulado(instrumento=instrumento.codigo, aplicacion=aplicacion.codigo,
+                              calculado_en=resultado.calculado_en, anulado_en=fecha)
     sesion.execute(delete(RespuestaItem).where(*filtro_respuestas))
     for progreso in progresos:
         progreso.estado = EstadoProgreso.EN_CURSO

@@ -141,7 +141,7 @@ class RespuestaReiniciarInstrumento(RespuestaAccion):
     cuenta: str
     instrumento: str
     aplicacion: str
-    resultado_anulado: ResultadoAnulado | None
+    resultado_anulado: ResultadoAnulado
     actividades_reiniciadas: list[str]
 
 

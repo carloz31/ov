@@ -31,18 +31,22 @@ def test_r20_ciclos_planos_historial_vigentes_y_otra_cuenta(cliente, aplicacion)
     ajeno = resultado(cliente, cuenta='est-luis')
     ciclo(cliente, opcion=3)
     grants = filas_base(aplicacion)['desbloqueo']
-    for n in range(3):
+    # B06: el perfil plano se reinicia una sola vez (MAXIMO_REINICIOS_PERFIL_PLANO).
+    for n in range(2):
         historial = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/historial')
         assert len(historial) == n+1 and sum(r['anulado_en'] is None for r in historial) == 1
         assert all(r['perfil_plano'] and r['coincidencias'] == [] for r in historial)
         assert resultado(cliente, cuenta='est-luis') == ajeno
-        assert filas_base(aplicacion)['desbloqueo'] == grants
-        if n < 2:
+        if n == 0:
             reinicio = reiniciar(cliente)
             assert reinicio['resultado_anulado'] is not None
             assert reinicio['actividades_reiniciadas'] == list(MISIONES_INTERESES)
             pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', esperado=409)
             ciclo(cliente, opcion=3, abrir=False)
+    assert filas_base(aplicacion)['desbloqueo'] == grants
+    antes = filas_base(aplicacion)
+    reiniciar(cliente, esperado=409)
+    assert filas_base(aplicacion) == antes
 
 
 def test_r22_reinicio_parcial_conserva_respuesta_ajena_y_no_abre(cliente, aplicacion):
@@ -52,10 +56,8 @@ def test_r22_reinicio_parcial_conserva_respuesta_ajena_y_no_abre(cliente, aplica
         preparar_respuesta_ajena(sesion)
     antes = filas_base(aplicacion)
     estados = actividades(cliente)
-    reinicio = reiniciar(cliente)
-    assert reinicio['resultado_anulado'] is None and reinicio['actividades_reiniciadas'] == [INTERESES]
-    despues = filas_base(aplicacion)
-    assert despues['progreso_actividad'] == antes['progreso_actividad']
-    assert len(despues['respuesta_item']) == 1 and despues['respuesta_item'][0] == antes['respuesta_item'][-1]
+    # B06: sin resultado revelado con perfil plano no hay reinicio, ni siquiera parcial.
+    reiniciar(cliente, esperado=409)
+    assert filas_base(aplicacion) == antes
     assert actividades(cliente) == estados
     assert actividades(cliente)[INTERESES_FINAL] == 'BLOQUEADA'

@@ -30,6 +30,8 @@ MIN_CARACTERES_RESPALDO = 40
 # B03: preguntas de seguimiento por registro, no por ítem.
 MAXIMO_SEGUIMIENTOS_POR_REGISTRO = 2
 MAXIMO_ITEMS_REGISTRO = 3
+# Reinicios del test de intereses por cuenta y aplicación, solo con perfil plano (HU-095).
+MAXIMO_REINICIOS_PERFIL_PLANO = 1
 TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
 MODELO_LLM_REGISTRO = "gemini-3.8-flash"
 TEMPERATURA_REGISTRO = 0.2

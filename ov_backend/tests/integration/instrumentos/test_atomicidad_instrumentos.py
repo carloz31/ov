@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from app import models as m
 from app.services import actividades as servicio_actividades
 from app.services.instrumentos import resultados as servicio_resultados
-from soporte_ruta import INTERESES, INTERESES_FINAL, avanzar, completar, filas_base, pedir, responder, revelar
+from soporte_ruta import INTERESES_FINAL, completar, filas_base, pedir, revelar
 from soporte_retiro import ciclo, preparar_ultimo
 
 
@@ -31,16 +31,13 @@ def test_r24_reinicio_parcial_y_completo_revierte_despues_del_evento(tmp_path, m
         salida = original(sesion, cuenta, eventos, fecha)
         assert salida.eventos_registrados[0].tipo == 'REINICIA_INSTRUMENTO'
         raise IntegrityError('DATO DE PRUEBA', {}, RuntimeError('fallo después del evento'))
-    for completo in (False, True):
-        with base_aislada(tmp_path, f'reinicio-{completo}') as (aplicacion, cliente):
-            if completo:
-                ciclo(cliente)
-            else:
-                avanzar(cliente)
-                responder(cliente, INTERESES)
+    # B06: solo se reinicia un perfil plano revelado.
+    for cuenta in ('est-ana', 'est-luis'):
+        with base_aislada(tmp_path, f'reinicio-{cuenta}') as (aplicacion, cliente):
+            ciclo(cliente, cuenta=cuenta, opcion=3)
             antes = filas_base(aplicacion)
             with monkeypatch.context() as parche:
                 parche.setattr(servicio_actividades, 'responder_con_eventos', fallar)
                 pedir(cliente, 'POST', '/acciones/reiniciar-instrumento',
-                    {'cuenta': 'est-ana', 'instrumento': 'TEST-RIASEC'}, 409)
+                    {'cuenta': cuenta, 'instrumento': 'TEST-RIASEC'}, 409)
             assert filas_base(aplicacion) == antes

@@ -5,7 +5,7 @@ from soporte_retiro import ciclo, medir, reiniciar, resultado
 
 
 def test_r21_historial_detallado_ordenado_y_coste_constante(cliente, aplicacion):
-    ciclo(cliente)
+    ciclo(cliente, opcion=3)
     original = resultado(cliente)
     reiniciar(cliente)
     ruta = '/cuentas/est-ana/instrumentos/TEST-RIASEC/historial'

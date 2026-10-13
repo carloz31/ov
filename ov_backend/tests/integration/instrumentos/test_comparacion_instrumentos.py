@@ -30,8 +30,9 @@ def test_r28_reiniciar_salida_conserva_entrada_y_exige_seleccion(cliente, aplica
         contestar_minimo(cliente, actividad)
     antes = pedir(cliente, 'GET', f'/cuentas/est-ana/actividades/{entrada}/respuestas')
     reiniciar(cliente, instrumento='TEST-PRUEBA', esperado=422)
-    reinicio = reiniciar(cliente, instrumento='TEST-PRUEBA', seleccion='APL-PRUEBA-SALIDA')
-    assert reinicio['resultado_anulado'] is None and reinicio['actividades_reiniciadas'] == [salida]
+    # B06: una COMPARACION no tiene perfil plano, así que no se reinicia.
+    base = filas_base(aplicacion)
+    reiniciar(cliente, instrumento='TEST-PRUEBA', seleccion='APL-PRUEBA-SALIDA', esperado=409)
+    assert filas_base(aplicacion) == base
     assert pedir(cliente, 'GET', f'/cuentas/est-ana/actividades/{entrada}/respuestas') == antes
-    assert pedir(cliente, 'GET', f'/cuentas/est-ana/actividades/{salida}/respuestas')['respuestas'] == []
-    pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-PRUEBA/comparacion', esperado=409)
+    pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-PRUEBA/comparacion')

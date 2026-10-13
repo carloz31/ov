@@ -57,7 +57,7 @@ def test_r31_presupuestos_de_consultas_y_reinicio(tmp_path, base_aislada):
             cantidades = [medir(cliente, aplicacion, 'GET', ruta)[1].cantidad for ruta in rutas]
             cantidades.append(medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado',
                                     esperado=409)[1].cantidad)
-            ciclo(cliente)
+            ciclo(cliente, opcion=3)
             cantidades += [medir(cliente, aplicacion, 'GET', ruta)[1].cantidad for ruta in rutas + [
                 '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', '/cuentas/est-ana/instrumentos/TEST-RIASEC/historial']]
             cantidades.append(medir(cliente, aplicacion, 'POST', '/acciones/reiniciar-instrumento',
