@@ -43,12 +43,19 @@ def pedir(cliente, metodo, ruta, datos=None, esperado=200):
     return respuesta.json()
 
 
+def eleccion_minima(item):
+    """Las primeras opciones de la lista, tantas como pide el mínimo del ítem."""
+    eleccion = item['eleccion']
+    return [] if eleccion is None else [{'codigo': o['codigo']} for o in eleccion['opciones'][:eleccion['minima']]]
+
+
 def responder_registro(cliente, actividad, cuenta='est-ana'):
     """Envía cada ítem de un registro con un texto adecuado para el evaluador falso."""
     for item in pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro'):
         pedir(cliente, 'POST', '/acciones/registro/enviar', {
             'cuenta': cuenta, 'actividad': actividad, 'item': item['codigo'], 'fecha_hora': FECHA,
-            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'})
+            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.',
+            'opciones': eleccion_minima(item)})
 
 
 def completar(cliente, codigo, cuenta='est-ana', esperado=200):

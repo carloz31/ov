@@ -11,3 +11,5 @@
 - `t-valores` no tiene regla: está disponible al abrirse T1.
 - `soporte_estado_desarrollo` usa un ítem sembrado de la ruta en vez de crear uno suelto, porque ahora todo ítem necesita actividad.
 - `t-valores` es opcional (`requerida: False`): si fuera requerida, T1 dejaría de cerrarse al completar `t-expectativas` y cambiaría lo que ya prueba la ruta (B00–B01).
+- `guardar-borrador` acepta `posicion` y la escribe en `ProgresoActividad.posicion`, que existía pero nadie escribía; es la forma más simple de retomar «desde donde la dejé» (HU-010).
+- Las opciones elegidas no entran todavía al contexto del evaluador; RNF-13 lo pide, pero la evaluación cambia en B03.

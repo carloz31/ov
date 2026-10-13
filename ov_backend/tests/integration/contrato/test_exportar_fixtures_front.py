@@ -19,6 +19,7 @@ from app.schemas.comun import ContenidoEstado
 from app.schemas.logros import LogrosCuenta
 from app.schemas.secciones import SeccionEstado
 from app.schemas.instrumentos import ItemPublico, ResultadoPublico
+from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado
 
 
 SCRIPT = Path(exportador.__file__).resolve()
@@ -28,6 +29,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'completar-t-inicio', 'completar-t-cierre-inicio', 'items-t-mision-intereses', 'resultado-riasec',
     'desbloqueos-no-vistos', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
     'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
+    'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
 )}
 
 
@@ -95,6 +97,10 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     TypeAdapter(list[ItemPublico]).validate_python(datos['items-t-mision-intereses'])
     TypeAdapter(list[DesbloqueoLegible]).validate_python(datos['desbloqueos-no-vistos'])
     ResultadoPublico.model_validate(datos['resultado-riasec'])
+    TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-expectativas'])
+    EstadoItemRegistro.model_validate(datos['borrador-t-expectativas'])
+    borrador = RegistroConsultado.model_validate(datos['registro-t-expectativas-borrador'])
+    assert borrador.posicion == 't-exp-ruta' and borrador.respuestas[0].estado == 'BORRADOR'
     inicial = estados(datos['actividades-inicial'])
     assert inicial['t-inicio'] == 'DISPONIBLE'
     assert all(e == 'BLOQUEADA' for c, e in inicial.items() if c != 't-inicio')

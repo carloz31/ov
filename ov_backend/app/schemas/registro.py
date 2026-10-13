@@ -19,6 +19,19 @@ class TextoRegistroEntrada(AccionItemRegistroEntrada):
     texto: str
 
 
+class OpcionElegida(BaseModel):
+    codigo: str
+    texto: str | None = None
+
+
+class EnvioRegistroEntrada(TextoRegistroEntrada):
+    opciones: list[OpcionElegida] = []
+
+
+class BorradorRegistroEntrada(EnvioRegistroEntrada):
+    posicion: str | None = None
+
+
 class ResponderSeguimientoEntrada(TextoRegistroEntrada):
     orden: Annotated[int, Field(strict=True, ge=1, le=2)] | None = None
 
@@ -50,15 +63,32 @@ class RespuestaEnvioRegistro(EstadoItemRegistro, RespuestaAccion):
     conversacion: list[MensajeRegistro]
 
 
+class OpcionListaPublica(BaseModel):
+    codigo: str
+    texto: str
+
+
+class EleccionPublica(BaseModel):
+    lista: str
+    comun: bool
+    minima: int
+    maxima: int
+    ordenada: bool
+    permite_otra: bool
+    opciones: list[OpcionListaPublica]
+
+
 class ItemRegistroPublico(BaseModel):
     codigo: str
     nombre: str
     consigna: str
     min_caracteres: int | None
     obligatorio: bool
+    eleccion: EleccionPublica | None
 
 
 class RespuestaRegistroPublica(EstadoItemRegistro):
+    opciones_elegidas: list[OpcionElegida]
     conversacion: list[MensajeRegistro]
 
 

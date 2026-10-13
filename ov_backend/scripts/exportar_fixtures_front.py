@@ -26,11 +26,17 @@ def _pedir(cliente, metodo, ruta, datos=None):
     return respuesta.json()
 
 
+def eleccion_minima(item):
+    eleccion = item['eleccion']
+    return [] if eleccion is None else [{'codigo': o['codigo']} for o in eleccion['opciones'][:eleccion['minima']]]
+
+
 def _responder_registro(cliente, actividad, cuenta='est-ana'):
     for item in _pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro'):
         _pedir(cliente, 'POST', '/acciones/registro/enviar', {
             'cuenta': cuenta, 'actividad': actividad, 'item': item['codigo'], 'fecha_hora': FECHA,
-            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'})
+            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.',
+            'opciones': eleccion_minima(item)})
 
 
 def _completar(cliente, actividad, cuenta='est-ana'):
@@ -50,6 +56,13 @@ def _recorrer(cliente):
     fixtures['completar-t-cierre-inicio'] = _completar(cliente, 't-cierre-inicio')
     fixtures['actividades-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     fixtures['secciones-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/secciones')
+    fixtures['items-registro-t-expectativas'] = _pedir(cliente, 'GET', '/actividades/t-expectativas/items-registro')
+    fixtures['borrador-t-expectativas'] = _pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
+        'cuenta': 'est-ana', 'actividad': 't-expectativas', 'item': 't-exp-ruta', 'fecha_hora': FECHA,
+        'texto': 'DATO DE PRUEBA: borrador a medias', 'posicion': 't-exp-ruta',
+        'opciones': [{'codigo': 'INSTITUTO'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]})
+    fixtures['registro-t-expectativas-borrador'] = _pedir(
+        cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
     _responder_registro(cliente, 't-expectativas')
     _completar(cliente, 't-expectativas')
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')

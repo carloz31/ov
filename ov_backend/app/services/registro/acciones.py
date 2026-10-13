@@ -20,6 +20,7 @@ from app.schemas.registro import (
 from app.services.comun import (
     buscar_por_codigo, exigir_disponible, fecha_accion, responder_con_eventos,
 )
+from app.services.registro.eleccion import invalida, validar_eleccion
 from app.services.registro.evaluacion import (
     ContextoEvaluacion, ConversacionEvaluacion, CriterioEvaluacion, RespuestaAnterior,
     TurnoEvaluacion, evaluar_respuesta,
@@ -47,6 +48,10 @@ def validar_item(items, codigo):
     if item is None:
         raise ErrorAccion("El ítem no pertenece a esta actividad")
     return item
+
+
+def opciones_de(sesion, item):
+    return contexto(sesion).definiciones.opciones_por_lista.get(item.lista_id, ())
 
 
 @dataclass(frozen=True, slots=True)
@@ -142,18 +147,25 @@ def guardar_borrador(sesion, entrada):
     respuesta = registro.respuestas.get(item.id)
     if respuesta is not None and respuesta.estado == EstadoRespuestaRegistro.FINAL:
         raise ErrorAccion("La respuesta está finalizada; usa enviar o responder seguimiento para editarla")
+    pendiente = respuesta is not None and respuesta.estado == EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO
+    if pendiente and entrada.opciones:
+        raise invalida("La elección se guarda con la respuesta inicial, no con el seguimiento")
+    elegidas = None if pendiente else validar_eleccion(item, opciones_de(sesion, item), entrada.opciones, False)
     marca = marca_actualizacion(respuesta.actualizada_en if respuesta is not None else None)
+    progreso = registro.progreso or crear_progreso(sesion, cuenta, actividad)
+    if entrada.posicion is not None:
+        sesion.execute(update(ProgresoActividad.__table__).where(ProgresoActividad.id == progreso.id)
+                       .values(posicion=entrada.posicion))
     if respuesta is None:
-        progreso = registro.progreso or crear_progreso(sesion, cuenta, actividad)
         sesion.execute(insert(RespuestaRegistro.__table__), dict(progreso_id=progreso.id, item_registro_id=item.id,
-            texto_inicial=entrada.texto, estado=EstadoRespuestaRegistro.BORRADOR, creada_en=fecha_accion(entrada),
-            actualizada_en=marca, ampliada=False))
+            texto_inicial=entrada.texto, opciones_elegidas=elegidas, estado=EstadoRespuestaRegistro.BORRADOR,
+            creada_en=fecha_accion(entrada), actualizada_en=marca, ampliada=False))
         estado = EstadoRespuestaRegistro.BORRADOR
     else:
         estado = respuesta.estado
         valores = dict(actualizada_en=marca)
         if estado == EstadoRespuestaRegistro.BORRADOR:
-            valores['texto_inicial'] = entrada.texto
+            valores.update(texto_inicial=entrada.texto, opciones_elegidas=elegidas)
         comprobar_cambio(sesion, respuesta, valores)
         if estado == EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO:
             turno = turno_pendiente(registro.turnos.get(respuesta.id, ()))
@@ -173,6 +185,7 @@ class LecturaEnvio:
     seguimiento: bool
     orden: int | None
     requiere_evaluacion: bool
+    opciones: list[dict] | None
 
 
 @usar_contexto
@@ -185,7 +198,7 @@ def preparar_envio(sesion, entrada, seguimiento=False):
     respuesta = registro.respuestas.get(item.id)
     estado = respuesta.estado if respuesta is not None else None
     turnos = registro.turnos.get(respuesta.id, ()) if respuesta is not None else ()
-    orden = None
+    orden, opciones = None, None
     requiere_evaluacion = estado != EstadoRespuestaRegistro.FINAL
     criterios = contexto(sesion).definiciones.criterios_por_item_registro.get(item.id, ())
     faltantes = tuple(c.codigo for c in criterios)
@@ -210,6 +223,7 @@ def preparar_envio(sesion, entrada, seguimiento=False):
     else:
         if estado == EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO:
             raise ErrorAccion("Responde la pregunta pendiente con responder seguimiento")
+        opciones = validar_eleccion(item, opciones_de(sesion, item), entrada.opciones, True)
         conversacion = conversacion_evaluable(entrada.texto, turnos)
     anteriores = tuple(RespuestaAnterior(otro.consigna,
         conversacion_evaluable(registro.respuestas[otro.id].texto_inicial,
@@ -221,7 +235,7 @@ def preparar_envio(sesion, entrada, seguimiento=False):
         ContextoEvaluacion(actividad.titulo, item.consigna,
             tuple(CriterioEvaluacion(c.codigo, c.descripcion) for c in criterios), anteriores, conversacion, faltantes),
         MIN_CARACTERES_RESPALDO if item.min_caracteres is None else item.min_caracteres,
-        item.repregunta_generica, seguimiento, orden, requiere_evaluacion)
+        item.repregunta_generica, seguimiento, orden, requiere_evaluacion, opciones)
 
 
 @usar_contexto
@@ -242,7 +256,7 @@ def persistir_envio(sesion, entrada, lectura, evaluacion):
     estado = EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO if pendiente else EstadoRespuestaRegistro.FINAL
     valores = dict(estado=estado, actualizada_en=marca_actualizacion(lectura.actualizada_en))
     if not lectura.seguimiento:
-        valores['texto_inicial'] = entrada.texto
+        valores.update(texto_inicial=entrada.texto, opciones_elegidas=lectura.opciones)
         if not edicion:
             valores['clasificacion_inicial'] = evaluacion.clasificacion
     elif not edicion:

@@ -1,11 +1,11 @@
 """Ruta corta: recorre la ruta mínima con las peticiones del front, sin `/eventos`.
 
-B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074. Cada lote extiende este
-recorrido con su tramo.
+B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010. Cada lote
+extiende este recorrido con su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
-from soporte_ruta import INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, filas_base, pedir, reglas, responder
+from soporte_ruta import FECHA, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, filas_base, pedir, reglas, responder
 
 
 def siguiente(cliente, cuenta='est-ana'):
@@ -65,6 +65,34 @@ def test_hu014_repetir_informativa_no_suma(cliente):
 def test_cierre_de_t0_abre_t1_y_sube_de_nivel(cliente):
     escenarios.verificar_p03_cierre_de_t0(cliente)
     assert siguiente(cliente) == 't-expectativas'
+
+
+def test_hu006_hu010_registro_con_eleccion_borrador_y_retomar(cliente):
+    escenarios.verificar_p03_cierre_de_t0(cliente)
+    items = pedir(cliente, 'GET', '/actividades/t-expectativas/items-registro')
+    assert [item['eleccion'] and item['eleccion']['lista'] for item in items] == [
+        'RUTAS_DESPUES_COLEGIO', 't-lista-apoyos', None]
+    accion = {'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA}
+    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
+        **accion, 'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: quiero estudiar', 'posicion': 't-exp-ruta',
+        'opciones': [{'codigo': 'INSTITUTO'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]})
+    # Otra sesión: el borrador se retoma desde el servidor, con su posición y su elección.
+    retomado = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
+    assert retomado['posicion'] == 't-exp-ruta'
+    assert retomado['respuestas'][0]['opciones_elegidas'] == [
+        {'codigo': 'INSTITUTO'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]
+    completar(cliente, 't-expectativas', esperado=409)
+    pedir(cliente, 'POST', '/acciones/registro/enviar', {
+        **accion, 'item': 't-exp-apoyo', 'texto': 'DATO DE PRUEBA: mi mamá', 'opciones': []}, esperado=422)
+    textos = {'t-exp-ruta': 'DATO DE PRUEBA: estudiar en un instituto porque me gusta la práctica',
+              't-exp-apoyo': 'DATO DE PRUEBA: mi familia, por ejemplo mi mamá', 't-exp-espera': 'DATO DE PRUEBA'}
+    opciones = {'t-exp-ruta': [{'codigo': 'INSTITUTO'}], 't-exp-apoyo': [{'codigo': 'FAMILIA'}], 't-exp-espera': []}
+    for item, texto in textos.items():
+        assert pedir(cliente, 'POST', '/acciones/registro/enviar', {
+            **accion, 'item': item, 'texto': texto, 'opciones': opciones[item]})['estado'] == 'FINAL'
+    respuesta = pedir(cliente, 'POST', '/acciones/completar-actividad', accion)
+    assert ('COMPLETA_ACTIVIDAD', 't-expectativas') in [
+        (e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']]
 
 
 def test_llegada_a_la_ciudad(cliente):

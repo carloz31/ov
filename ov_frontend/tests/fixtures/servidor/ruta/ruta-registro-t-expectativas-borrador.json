@@ -1,0 +1,25 @@
+{
+  "estado": "EN_CURSO",
+  "posicion": "t-exp-ruta",
+  "respuestas": [
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: borrador a medias",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "BORRADOR",
+      "item": "t-exp-ruta",
+      "opciones_elegidas": [
+        {
+          "codigo": "INSTITUTO"
+        },
+        {
+          "codigo": "OTRA",
+          "texto": "Viajar un año"
+        }
+      ]
+    }
+  ]
+}

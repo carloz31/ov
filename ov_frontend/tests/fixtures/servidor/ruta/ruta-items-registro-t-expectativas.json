@@ -1,0 +1,76 @@
+[
+  {
+    "codigo": "t-exp-ruta",
+    "consigna": "¿Qué te gustaría hacer al terminar el colegio y por qué?",
+    "eleccion": {
+      "comun": true,
+      "lista": "RUTAS_DESPUES_COLEGIO",
+      "maxima": 2,
+      "minima": 1,
+      "opciones": [
+        {
+          "codigo": "UNIVERSIDAD",
+          "texto": "Estudiar en una universidad"
+        },
+        {
+          "codigo": "INSTITUTO",
+          "texto": "Estudiar en un instituto"
+        },
+        {
+          "codigo": "TRABAJAR",
+          "texto": "Trabajar"
+        },
+        {
+          "codigo": "EMPRENDER",
+          "texto": "Emprender un negocio"
+        },
+        {
+          "codigo": "AUN_NO_SE",
+          "texto": "Aún no lo sé"
+        }
+      ],
+      "ordenada": false,
+      "permite_otra": true
+    },
+    "min_caracteres": null,
+    "nombre": "Ruta",
+    "obligatorio": true
+  },
+  {
+    "codigo": "t-exp-apoyo",
+    "consigna": "¿Quién te apoya en esta decisión? Cuenta un ejemplo.",
+    "eleccion": {
+      "comun": false,
+      "lista": "t-lista-apoyos",
+      "maxima": 1,
+      "minima": 1,
+      "opciones": [
+        {
+          "codigo": "FAMILIA",
+          "texto": "Mi familia"
+        },
+        {
+          "codigo": "DOCENTES",
+          "texto": "Mis docentes"
+        },
+        {
+          "codigo": "AMIGOS",
+          "texto": "Mis amigos"
+        }
+      ],
+      "ordenada": false,
+      "permite_otra": false
+    },
+    "min_caracteres": null,
+    "nombre": "Apoyo",
+    "obligatorio": true
+  },
+  {
+    "codigo": "t-exp-espera",
+    "consigna": "¿Qué esperan de ti las personas cercanas?",
+    "eleccion": null,
+    "min_caracteres": null,
+    "nombre": "Expectativas",
+    "obligatorio": true
+  }
+]

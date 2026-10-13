@@ -5,9 +5,8 @@ from app.database import es_bloqueo_temporal
 from app.dependencies import SesionBD, ejecutar_accion
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.schemas.registro import (
-    AccionItemRegistroEntrada, EstadoItemRegistro,
-    ItemRegistroPublico, RegistroConsultado, ResponderSeguimientoEntrada,
-    RespuestaEnvioRegistro, TextoRegistroEntrada,
+    AccionItemRegistroEntrada, BorradorRegistroEntrada, EnvioRegistroEntrada, EstadoItemRegistro,
+    ItemRegistroPublico, RegistroConsultado, ResponderSeguimientoEntrada, RespuestaEnvioRegistro,
 )
 from app.services.registro import acciones as acciones_registro, consultas as consultas_registro
 
@@ -18,12 +17,12 @@ router = APIRouter(tags=['Registro'])
 
 
 @router.post('/acciones/registro/guardar-borrador', response_model=EstadoItemRegistro)
-def guardar_borrador(entrada: TextoRegistroEntrada, sesion: SesionBD):
+def guardar_borrador(entrada: BorradorRegistroEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: acciones_registro.guardar_borrador(sesion, entrada))
 
 
 @router.post('/acciones/registro/enviar', response_model=RespuestaEnvioRegistro, response_model_exclude_unset=True)
-def enviar(entrada: TextoRegistroEntrada, peticion: Request):
+def enviar(entrada: EnvioRegistroEntrada, peticion: Request):
     return ejecutar_envio(entrada, peticion)
 
 

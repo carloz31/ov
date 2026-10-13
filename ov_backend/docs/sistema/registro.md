@@ -42,10 +42,12 @@ Todas exigen actividad disponible, cuenta de estudiante e ítem de la actividad.
 
 | Ruta | Efecto |
 |---|---|
-| `/acciones/registro/guardar-borrador` | Sin evaluar. En BORRADOR o sin respuesta, guarda `texto_inicial`; en PENDIENTE_SEGUIMIENTO, el borrador del turno; en FINAL, 409. |
-| `/acciones/registro/enviar` | Guarda `texto_inicial`, lo evalúa y fija `clasificacion_inicial`. En FINAL, reemplaza el texto sin evaluar (edición). |
+| `/acciones/registro/guardar-borrador` | Sin evaluar. En BORRADOR o sin respuesta, guarda `texto_inicial` y `opciones`; en PENDIENTE_SEGUIMIENTO, el borrador del turno (con `opciones`, 422); en FINAL, 409. Con `posicion`, la guarda en el progreso para retomar. |
+| `/acciones/registro/enviar` | Guarda `texto_inicial` y `opciones`, lo evalúa y fija `clasificacion_inicial`. En FINAL, reemplaza texto y elección sin evaluar (edición). |
 | `/acciones/registro/responder-seguimiento` | Guarda la respuesta del turno, marca `ampliada` y evalúa la conversación. Si el turno era la repregunta genérica, no evalúa: pasa a FINAL. En FINAL y con `orden`, edita ese turno sin evaluar. |
 | `/acciones/registro/continuar-sin-responder` | Pasa a FINAL; el turno queda sin respuesta. |
+
+**Elección** (`eleccion.py`, sin base de datos): `opciones` es una lista de `{codigo, texto?}`. Responde 422 si el ítem no tiene lista y llegan opciones, si una opción es ajena o se repite, si llega `OTRA` sin `permite_otra` o sin texto, si una opción que no es `OTRA` trae texto, si se supera la máxima o, solo al enviar, si no se alcanza la mínima. La elección no ordenada se guarda en el orden de la lista; la ordenada, en el orden elegido. La evaluación todavía no recibe las opciones (B03).
 
 **RESPUESTA_REFLEXIVA** se registra una sola vez por respuesta, al pasar a FINAL, si `clasificacion_inicial` es ADECUADA o `ampliada` es verdadero.
 
@@ -85,7 +87,7 @@ La llamada al LLM nunca ocurre dentro de una transacción ni con una conexión t
 
 | Ruta | Devuelve |
 |---|---|
-| `/actividades/{a}/items-registro` | Ítems en orden, con consigna, mínimo y obligatoriedad. Sin criterios. |
-| `/cuentas/{c}/actividades/{a}/registro` | Posición, estado del progreso y, por ítem, estado y conversación (incluidos los borradores). |
+| `/actividades/{a}/items-registro` | Ítems en orden, con consigna, `min_caracteres` (puede ser nulo), obligatoriedad y `eleccion` (`null` o lista, `comun`, mínima, máxima, `ordenada`, `permite_otra` y opciones). Sin criterios ni núcleo. |
+| `/cuentas/{c}/actividades/{a}/registro` | Posición, estado del progreso y, por ítem, estado, `opciones_elegidas` y conversación (incluidos los borradores). |
 
 Apoderados y cuentas o actividades inexistentes: 404. Completar una actividad de registro exige todos sus ítems obligatorios en FINAL (`motor.md`).
