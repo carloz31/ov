@@ -5,7 +5,7 @@ from functools import wraps
 from sqlalchemy import distinct, func, literal, select, union_all
 
 from app.core.definiciones import obtener_definiciones
-from app.models import Desbloqueo, EventoUso, ProgresoActividad, TipoConteo
+from app.models import Desbloqueo, EventoUso, Favorito, ProgresoActividad, TipoConteo
 
 
 class ContextoConsultas:
@@ -16,6 +16,7 @@ class ContextoConsultas:
         self.desbloqueos = {}
         self.progresos = {}
         self.especiales = {}
+        self.favoritos = {}
 
     def cargar_conteos(self, cuentas):
         faltantes = set(cuentas) - self.conteos.keys()
@@ -63,6 +64,13 @@ class ContextoConsultas:
                 select(ProgresoActividad).where(ProgresoActividad.cuenta_id == cuenta_id),
             )}
         return self.progresos[cuenta_id]
+
+    def favoritos_de(self, cuenta_id):
+        """{(tipo, id_referencia)} de los favoritos de la cuenta (B10)."""
+        if cuenta_id not in self.favoritos:
+            self.favoritos[cuenta_id] = set(self.sesion.execute(select(Favorito.tipo, Favorito.id_referencia).where(
+                Favorito.cuenta_id == cuenta_id)).tuples())
+        return self.favoritos[cuenta_id]
 
     def invalidar_eventos(self, cuenta_id):
         self.conteos.pop(cuenta_id, None)

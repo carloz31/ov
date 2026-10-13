@@ -122,6 +122,7 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; GUIADA exige pregunta disponible y no respondida; LIBRE sin pregunta | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
 | `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día; nivel 1–5 | REGISTRA_CHECK_IN |
 | `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
+| `/acciones/marcar-favorito` | Sección CATALOGO abierta; aún no es favorito | MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan) |
 | `/acciones/publicar-entrevista` | Autores: lista no vacía, sin repetidos, todos estudiantes | PUBLICA_ENTREVISTA en cada autor. Código `ENT-<uuid>`. |
 | `/acciones/escribir-carta` | La cuenta pertenece a un vínculo activo; el estudiante, con la sección FAMILIA | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
 | `/acciones/completar-conversacion` | Sección CONVERSACIONES del apoderado del vínculo, marque quien marque | Marca la conversación del vínculo; COMPLETA_CONVERSACION en las dos cuentas, solo la primera vez. |

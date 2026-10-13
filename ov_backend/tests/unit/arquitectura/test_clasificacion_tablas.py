@@ -20,7 +20,7 @@ ESTADO = {
     'progreso_actividad', 'resultado_caso', 'resultado_batalla', 'coleccion_ocupacion', 'entrada_diario', 'check_in', 'entrevista',
     'entrevista_autor', 'conversacion_vinculo', 'evento_uso', 'desbloqueo',
     'respuesta_item', 'resultado_instrumento', 'resultado_dimension', 'coincidencia',
-    'respuesta_registro', 'turno_seguimiento', 'evaluacion_respuesta',
+    'respuesta_registro', 'turno_seguimiento', 'evaluacion_respuesta', 'favorito',
 }
 
 

@@ -6,7 +6,7 @@ from app.models.enums import (
     Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso, NivelAjuste,
     TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
     ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion, TipoCriterio,
-    TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion,
+    TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion, TipoFavorito,
 )
 
 
@@ -24,7 +24,7 @@ _MODELOS_POR_MODULO = {
     ),
     'app.models.progreso': (
         'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn',
-        'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo',
+        'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito',
     ),
     'app.models.motor': (
         'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo',
@@ -77,4 +77,5 @@ __all__ = [
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
     'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera', 'RangoIngreso',
+    'TipoFavorito', 'Favorito',
 ]

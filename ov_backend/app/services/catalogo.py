@@ -6,11 +6,11 @@ Todo exige la sección CATALOGO abierta."""
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.core.contexto import usar_contexto
+from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
 from app.models import (
-    Carrera, Cuenta, FamiliaCarrera, IngresoCarrera, Institucion, Ocupacion, TipoEventoUso, TipoInstitucion,
-    Ubicacion,
+    Carrera, Cuenta, FamiliaCarrera, IngresoCarrera, Institucion, Ocupacion, TipoEventoUso, TipoFavorito,
+    TipoInstitucion, Ubicacion,
 )
 from app.models.base import sin_tildes
 from app.schemas.acciones import (
@@ -69,20 +69,23 @@ def _riasec(codigo: str | None) -> list[str]:
     return list(codigo or '')
 
 
-def resumen_carrera(carrera: Carrera) -> CarreraResumen:
+def resumen_carrera(carrera: Carrera, favoritos: set) -> CarreraResumen:
     return CarreraResumen(codigo=carrera.codigo, nombre=carrera.nombre, riasec=_riasec(carrera.codigo_riasec),
-                          familia=FamiliaPublica(codigo=carrera.familia.codigo, nombre=carrera.familia.nombre))
+                          familia=FamiliaPublica(codigo=carrera.familia.codigo, nombre=carrera.familia.nombre),
+                          es_favorita=(TipoFavorito.CARRERA, carrera.id) in favoritos)
 
 
-def resumen_ocupacion(ocupacion: Ocupacion) -> OcupacionResumen:
+def resumen_ocupacion(ocupacion: Ocupacion, favoritos: set) -> OcupacionResumen:
     return OcupacionResumen(codigo=ocupacion.codigo, codigo_onet=ocupacion.codigo_onet, titulo=ocupacion.titulo,
-                            riasec=_riasec(ocupacion.codigo_riasec))
+                            riasec=_riasec(ocupacion.codigo_riasec),
+                            es_favorita=(TipoFavorito.OCUPACION, ocupacion.id) in favoritos)
 
 
-def resumen_institucion(institucion: Institucion) -> InstitucionResumen:
+def resumen_institucion(institucion: Institucion, favoritos: set) -> InstitucionResumen:
     return InstitucionResumen(codigo=institucion.codigo, nombre=institucion.nombre, tipo=institucion.tipo,
                               ubicacion=UbicacionPublica(codigo=institucion.ubicacion.codigo,
-                                                         nombre=institucion.ubicacion.nombre))
+                                                         nombre=institucion.ubicacion.nombre),
+                              es_favorita=(TipoFavorito.INSTITUCION, institucion.id) in favoritos)
 
 
 def _ingreso(ingreso: IngresoCarrera | None) -> IngresoPublico | None:
@@ -103,18 +106,20 @@ def _no_encontrado(clase: str):
 def buscar_carreras(sesion: Session, cuenta: Cuenta, buscar: str | None, familia: str | None,
                     riasec: str | None) -> list[CarreraResumen]:
     exigir_catalogo(sesion, cuenta)
+    favoritos = contexto(sesion).favoritos_de(cuenta.id)
     letras = letras_riasec(riasec)
     consulta = select(Carrera).join(FamiliaCarrera, FamiliaCarrera.id == Carrera.familia_id).where(*_filtros(
         _contiene(Carrera.busqueda, buscar),
         None if familia is None else FamiliaCarrera.codigo == familia,
         None if letras is None else Carrera.codigo_riasec.like(f'%{letras}%'),
     )).options(selectinload(Carrera.familia)).order_by(Carrera.codigo)
-    return [resumen_carrera(carrera) for carrera in sesion.scalars(consulta)]
+    return [resumen_carrera(carrera, favoritos) for carrera in sesion.scalars(consulta)]
 
 
 @usar_contexto
 def detalle_carrera(sesion: Session, cuenta: Cuenta, codigo: str) -> CarreraDetalle:
     exigir_catalogo(sesion, cuenta)
+    favoritos = contexto(sesion).favoritos_de(cuenta.id)
     carrera = sesion.scalar(select(Carrera).where(Carrera.codigo == codigo).options(
         selectinload(Carrera.familia), selectinload(Carrera.ocupaciones),
         selectinload(Carrera.instituciones).selectinload(Institucion.ubicacion),
@@ -122,40 +127,44 @@ def detalle_carrera(sesion: Session, cuenta: Cuenta, codigo: str) -> CarreraDeta
     if carrera is None:
         raise _no_encontrado('Carrera')
     return CarreraDetalle(
-        **resumen_carrera(carrera).model_dump(), descripcion=carrera.descripcion, duracion=carrera.duracion,
-        ocupaciones=[resumen_ocupacion(o) for o in carrera.ocupaciones if o.codigo is not None],
-        instituciones=[resumen_institucion(i) for i in carrera.instituciones], ingreso=_ingreso(carrera.ingreso))
+        **resumen_carrera(carrera, favoritos).model_dump(), descripcion=carrera.descripcion,
+        duracion=carrera.duracion, ingreso=_ingreso(carrera.ingreso),
+        ocupaciones=[resumen_ocupacion(o, favoritos) for o in carrera.ocupaciones if o.codigo is not None],
+        instituciones=[resumen_institucion(i, favoritos) for i in carrera.instituciones])
 
 
 @usar_contexto
 def buscar_ocupaciones(sesion: Session, cuenta: Cuenta, buscar: str | None,
                        riasec: str | None) -> list[OcupacionResumen]:
     exigir_catalogo(sesion, cuenta)
+    favoritos = contexto(sesion).favoritos_de(cuenta.id)
     letras = letras_riasec(riasec)
     consulta = select(Ocupacion).where(Ocupacion.codigo.is_not(None), *_filtros(
         _contiene(Ocupacion.busqueda, buscar),
         None if letras is None else Ocupacion.codigo_riasec.like(f'%{letras}%'),
     )).order_by(Ocupacion.codigo)
-    return [resumen_ocupacion(ocupacion) for ocupacion in sesion.scalars(consulta)]
+    return [resumen_ocupacion(ocupacion, favoritos) for ocupacion in sesion.scalars(consulta)]
 
 
 @usar_contexto
 def detalle_ocupacion(sesion: Session, cuenta: Cuenta, codigo: str) -> OcupacionDetalle:
     exigir_catalogo(sesion, cuenta)
+    favoritos = contexto(sesion).favoritos_de(cuenta.id)
     ocupacion = sesion.scalar(select(Ocupacion).where(Ocupacion.codigo == codigo).options(
         selectinload(Ocupacion.carreras).selectinload(Carrera.familia)))
     if ocupacion is None:
         raise _no_encontrado('Ocupación')
     return OcupacionDetalle(
-        **resumen_ocupacion(ocupacion).model_dump(), descripcion=ocupacion.descripcion,
+        **resumen_ocupacion(ocupacion, favoritos).model_dump(), descripcion=ocupacion.descripcion,
         lugares_trabajo=ocupacion.lugares_trabajo, conocimientos=ocupacion.conocimientos,
-        habilidades=ocupacion.habilidades, carreras=[resumen_carrera(c) for c in ocupacion.carreras])
+        habilidades=ocupacion.habilidades, carreras=[resumen_carrera(c, favoritos) for c in ocupacion.carreras])
 
 
 @usar_contexto
 def buscar_instituciones(sesion: Session, cuenta: Cuenta, buscar: str | None, tipo: str | None,
                          ubicacion: str | None) -> list[InstitucionResumen]:
     exigir_catalogo(sesion, cuenta)
+    favoritos = contexto(sesion).favoritos_de(cuenta.id)
     if tipo is not None and tipo not in TipoInstitucion.__members__:
         raise ErrorAccion(f'Tipo de institución inválido; se espera uno de: {", ".join(TipoInstitucion)}',
                           estado_http=422)
@@ -164,19 +173,20 @@ def buscar_instituciones(sesion: Session, cuenta: Cuenta, buscar: str | None, ti
         None if tipo is None else Institucion.tipo == TipoInstitucion(tipo),
         None if ubicacion is None else Ubicacion.codigo == ubicacion,
     )).options(selectinload(Institucion.ubicacion)).order_by(Institucion.codigo)
-    return [resumen_institucion(institucion) for institucion in sesion.scalars(consulta)]
+    return [resumen_institucion(institucion, favoritos) for institucion in sesion.scalars(consulta)]
 
 
 @usar_contexto
 def detalle_institucion(sesion: Session, cuenta: Cuenta, codigo: str) -> InstitucionDetalle:
     exigir_catalogo(sesion, cuenta)
+    favoritos = contexto(sesion).favoritos_de(cuenta.id)
     institucion = sesion.scalar(select(Institucion).where(Institucion.codigo == codigo).options(
         selectinload(Institucion.ubicacion), selectinload(Institucion.carreras).selectinload(Carrera.familia)))
     if institucion is None:
         raise _no_encontrado('Institución')
     return InstitucionDetalle(
-        **resumen_institucion(institucion).model_dump(), descripcion=institucion.descripcion,
-        pagina_web=institucion.pagina_web, carreras=[resumen_carrera(c) for c in institucion.carreras])
+        **resumen_institucion(institucion, favoritos).model_dump(), descripcion=institucion.descripcion,
+        pagina_web=institucion.pagina_web, carreras=[resumen_carrera(c, favoritos) for c in institucion.carreras])
 
 
 # --- Vistas («qué exploré») ------------------------------------------------------------------

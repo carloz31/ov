@@ -18,6 +18,7 @@ Cuestionarios repartidos en actividades, cálculo de resultados y recomendación
 | `carrera`, `tipo_carrera` | Carrera con familia, `descripcion`, `duracion`, `codigo_riasec` y `busqueda`; de 0 a 3 letras RIASEC cargadas por carrera, con la misma estructura que `high_point`. |
 | `carrera_ocupacion` | Ocupaciones a las que conduce cada carrera. |
 | `ubicacion`, `institucion`, `institucion_carrera` | Instituciones (`tipo` UNIVERSIDAD, INSTITUTO o FFAA_POLICIA, ubicación, página web) y las carreras que ofrecen. |
+| `favorito` | Estado: carrera, ocupación o institución (`tipo` + `id_referencia`) que marca la cuenta, única por cuenta, tipo y referencia. |
 | `ingreso_carrera`, `rango_ingreso` | Ingreso mensual promedio de una carrera (fuente y año) y su distribución por tramos (`maximo` nulo = tramo abierto). |
 | `respuesta_item` | Respuesta por progreso de actividad e ítem (única). |
 | `resultado_instrumento`, `resultado_dimension`, `coincidencia` | Resultado calculado, con `anulado_en` y `perfil_plano`. A lo sumo uno vigente por cuenta y aplicación; los anulados quedan como historial. |
@@ -66,6 +67,7 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 
 - Código de interés: las 3 dimensiones de mayor puntaje, con el orden de las dimensiones como desempate. `hay_empate` si la tercera y la cuarta empatan.
 - Carreras recomendadas: las vinculadas a alguna de las 10 ocupaciones, ordenadas por su mejor posición (y código); cada una con `via`, las ocupaciones que la vinculan.
+- `es_favorita` en cada coincidencia y carrera recomendada (HU-026): si está entre los favoritos de la cuenta. Se lee al consultar, no se guarda en el resultado.
 - Dimensiones destacadas (DESTACADAS): las de mayor proporción exacta `puntaje / máximo` (no el porcentaje redondeado); si empatan, todas, en el orden del instrumento.
 
 **Partida y llegada (COMPARACION):**
@@ -110,7 +112,18 @@ Código: `app/services/catalogo.py`. Se lee de la base, no de la caché, con `se
 
 - `buscar`: subcadena sobre `busqueda`, sin mayúsculas ni tildes; `%`, `_` y `\` se buscan literalmente.
 - `riasec`: de 1 a 3 letras distintas (acepta minúsculas). Coincide si `codigo_riasec` las contiene seguidas y en ese orden: `RI` encuentra RI, RIS y ARI, pero no IR ni RSI. Una letra inválida, repetida o más de 3 → 422, y lo que no tiene código no coincide nunca.
+- Cada resumen trae `es_favorita`.
 - `familia` y `ubicacion` filtran por código; un `tipo` fuera de `TipoInstitucion` → 422. Un código inexistente en el detalle → 404.
+
+## Favoritos (HU-040)
+
+Código: `app/services/favoritos.py`. Exigen la sección CATALOGO, como el catálogo. Ninguna regla ni logro depende de los favoritos.
+
+| Ruta | Qué hace |
+|---|---|
+| `POST /acciones/marcar-favorito` `{cuenta, tipo, codigo, fecha_hora?}` | `tipo` es CARRERA, OCUPACION o INSTITUCION. Registra MARCA_FAVORITO (sin referencia). Si ya es favorito, 409; si el código no existe, 404. |
+| `POST /acciones/desmarcar-favorito` `{cuenta, tipo, codigo}` | Lo quita sin registrar eventos. Si no era favorito, 409. |
+| `GET /cuentas/{c}/favoritos` | `{carreras[], ocupaciones[], instituciones[]}` con los resúmenes del catálogo, del más reciente al más antiguo. |
 
 ## Invariantes
 

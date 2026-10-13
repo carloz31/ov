@@ -19,6 +19,7 @@ class CarreraResumen(BaseModel):
     familia: FamiliaPublica
     riasec: list[str]
     """De 0 a 3 letras, en orden de posición."""
+    es_favorita: bool
 
 
 class OcupacionResumen(BaseModel):
@@ -27,6 +28,7 @@ class OcupacionResumen(BaseModel):
     titulo: str
     riasec: list[str]
     """De 1 a 3 letras (high points), en orden de posición."""
+    es_favorita: bool
 
 
 class InstitucionResumen(BaseModel):
@@ -34,6 +36,7 @@ class InstitucionResumen(BaseModel):
     nombre: str
     tipo: TipoInstitucion
     ubicacion: UbicacionPublica
+    es_favorita: bool
 
 
 class RangoIngresoPublico(BaseModel):

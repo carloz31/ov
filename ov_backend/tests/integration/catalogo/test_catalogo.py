@@ -43,7 +43,8 @@ def test_hu037_busca_carreras_por_nombre_familia_y_letras(abierto):
     assert codigos(todas) == ['civil-engineering', 'environmental-engineering', 'journalism', 'nursing',
                               'psychology', 'veterinary-medicine']
     assert todas[0] == {'codigo': 'civil-engineering', 'nombre': 'Ingeniería Civil', 'riasec': ['R', 'I'],
-                        'familia': {'codigo': 'family-civil-engineering', 'nombre': 'Ingeniería e infraestructura'}}
+                        'familia': {'codigo': 'family-civil-engineering', 'nombre': 'Ingeniería e infraestructura'},
+                        'es_favorita': False}
     assert todas[-1]['riasec'] == []
     for texto in ('INGENIERIA', 'ingeniería', ' Ingenier '):
         assert codigos(pedir(abierto, 'GET', f'{BASE}/carreras?buscar={texto}')) == [
@@ -84,8 +85,8 @@ def test_hu037_detalle_de_carrera(abierto):
     assert detalle['riasec'] == ['S', 'I', 'A']
     assert codigos(detalle['ocupaciones']) == ['psychologist', 'social-worker', 'sociologist', 'teacher']
     assert detalle['instituciones'] == [{'codigo': 't-uni', 'nombre': 'Universidad Nacional de Prueba',
-                                         'tipo': 'UNIVERSIDAD', 'ubicacion': {'codigo': 't-lima',
-                                                                              'nombre': 'Lima de prueba'}}]
+                                         'tipo': 'UNIVERSIDAD', 'es_favorita': False,
+                                         'ubicacion': {'codigo': 't-lima', 'nombre': 'Lima de prueba'}}]
     assert detalle['ingreso'] == {'promedio_mensual': 3200, 'fuente': 'Fuente de prueba', 'anio': 2025, 'rangos': [
         {'minimo': 0, 'maximo': 2000, 'porcentaje': 30.0}, {'minimo': 2000, 'maximo': 4000, 'porcentaje': 50.0},
         {'minimo': 4000, 'maximo': None, 'porcentaje': 20.0}]}
@@ -105,12 +106,14 @@ def test_hu038_busca_ocupaciones_y_consulta_su_detalle(abierto, sesion):
     detalle = pedir(abierto, 'GET', f'{BASE}/ocupaciones/psychologist')
     assert detalle == {
         'codigo': 'psychologist', 'codigo_onet': '19-3033.00', 'titulo': 'Psicólogo/a', 'riasec': ['S', 'I', 'C'],
+        'es_favorita': False,
         'descripcion': 'Escucha, evalúa necesidades emocionales y diseña estrategias de acompañamiento.',
         'lugares_trabajo': 'Centros de salud, colegios, organizaciones, empresas y consulta privada.',
         'conocimientos': ['Psicología', 'Terapia y orientación'],
         'habilidades': ['Escucha activa', 'Contención emocional', 'Evaluación', 'Empatía'],
         'carreras': [{'codigo': 'psychology', 'nombre': 'Psicología', 'riasec': ['S', 'I', 'A'],
-                      'familia': {'codigo': 'family-psychology', 'nombre': 'Ciencias sociales y salud'}}]}
+                      'familia': {'codigo': 'family-psychology', 'nombre': 'Ciencias sociales y salud'},
+                      'es_favorita': False}]}
     sin_texto = pedir(abierto, 'GET', f'{BASE}/ocupaciones/firefighter')
     assert (sin_texto['descripcion'], sin_texto['conocimientos'], sin_texto['habilidades']) == (None, [], [])
     pedir(abierto, 'GET', f'{BASE}/ocupaciones/no-existe', esperado=404)

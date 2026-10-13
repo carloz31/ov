@@ -6,7 +6,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, enumerado
-from app.models.enums import EstadoProgreso, OrigenEntrada
+from app.models.enums import EstadoProgreso, OrigenEntrada, TipoFavorito
 
 
 class ProgresoActividad(Base):
@@ -110,3 +110,14 @@ class ConversacionVinculo(Base):
     conversacion_id: Mapped[int] = mapped_column(ForeignKey("conversacion.id"))
     conversado: Mapped[bool] = mapped_column(default=False, server_default=false())
     conversado_en: Mapped[datetime | None] = mapped_column(DateTime)
+
+
+class Favorito(Base):
+    """Carrera, ocupación o institución que el estudiante marca (B10). `id_referencia` apunta a la tabla de `tipo`."""
+    __tablename__ = "favorito"
+    __table_args__ = (UniqueConstraint("cuenta_id", "tipo", "id_referencia"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
+    tipo: Mapped[TipoFavorito] = mapped_column(enumerado(TipoFavorito))
+    id_referencia: Mapped[int]
+    fecha_hora: Mapped[datetime] = mapped_column(DateTime)

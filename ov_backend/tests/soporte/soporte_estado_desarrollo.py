@@ -1,4 +1,4 @@
-"""Filas sintéticas para comprobar el reinicio de las 18 tablas; DATO DE PRUEBA."""
+"""Filas sintéticas para comprobar el reinicio de las 19 tablas; DATO DE PRUEBA."""
 
 from datetime import datetime
 from sqlalchemy import select
@@ -53,6 +53,7 @@ def llenar_estado(aplicacion):
             modelos.TurnoSeguimiento(respuesta_id=respuesta.id, orden=1, pregunta='DATO DE PRUEBA', criterios_objetivo=['C1'], creado_en=fecha),
             modelos.EvaluacionRespuesta(respuesta_id=respuesta.id, numero=1, origen='EXTENSION_MINIMA', clasificacion='POCO_DESARROLLADA',
                 criterios_faltantes=['C1'], texto_evaluado='DATO DE PRUEBA', fecha_hora=fecha),
+            modelos.Favorito(cuenta_id=cuenta.id, tipo='OCUPACION', id_referencia=ocupacion.id, fecha_hora=fecha),
         ])
 
 

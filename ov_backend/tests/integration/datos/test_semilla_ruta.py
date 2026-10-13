@@ -27,7 +27,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         'actividad_tematica': 6, 'actividad_dimension': 2, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 72, 'tipo_carrera': 11, 'ubicacion': 2, 'institucion': 2, 'institucion_carrera': 5,
         'ingreso_carrera': 2, 'rango_ingreso': 5}
-    assert len(Base.metadata.tables) == 63
+    assert len(Base.metadata.tables) == 64
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA'}

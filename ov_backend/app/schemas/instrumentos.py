@@ -122,12 +122,14 @@ class CoincidenciaPublica(BaseModel):
     titulo: str
     correlacion: float
     ajuste: NivelAjuste
+    es_favorita: bool
 
 
 class CarreraRecomendada(BaseModel):
     codigo: str
     nombre: str
     familia: str
+    es_favorita: bool
     via: list[CoincidenciaPublica]
 
 

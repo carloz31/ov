@@ -14,7 +14,7 @@ from app.models import (
     CarreraOcupacion, Coincidencia, Cuenta, Dimension, EscalaRespuesta, EstadoProgreso,
     FamiliaCarrera, Instrumento, ItemInstrumento, MomentoAplicacion, Ocupacion, OpcionEscala,
     ProgresoActividad, RespuestaItem, ResultadoDimension, ResultadoInstrumento, Rol, Tematica, ActividadTematica,
-    TipoResultado,
+    TipoFavorito, TipoResultado,
 )
 from app.schemas.instrumentos import (
     ActividadPublica, AplicacionPublica, AvanceAplicacion, AvanceInstrumento, CarreraRecomendada,
@@ -250,14 +250,17 @@ def representar_resultado(sesion: Session, resultado: ResultadoInstrumento, hist
     if instrumento.tipo_resultado == TipoResultado.COINCIDENCIAS:
         codigo = calcular_codigo_interes([r.puntaje for d, r in filas], [d.codigo for d, r in filas])
         datos["codigo_interes"] = CodigoInteresPublico(codigo=codigo.codigo, hay_empate=codigo.hay_empate)
+        # B10 · HU-026: cada ocupación afín y carrera recomendada indica si está entre los favoritos.
+        favoritos = contexto(sesion).favoritos_de(resultado.cuenta_id)
         por_ocupacion = {o.id: CoincidenciaPublica(posicion=c.posicion, codigo=o.codigo, codigo_onet=o.codigo_onet,
-            titulo=o.titulo, correlacion=round(c.correlacion, DECIMALES_CORRELACION), ajuste=c.ajuste) for c, o in afines}
+            titulo=o.titulo, correlacion=round(c.correlacion, DECIMALES_CORRELACION), ajuste=c.ajuste,
+            es_favorita=(TipoFavorito.OCUPACION, o.id) in favoritos) for c, o in afines}
         datos["coincidencias"] = list(por_ocupacion.values())
         carreras = {}
         for carrera, familia, ocupacion_id in relaciones_carreras:
             if carrera.id not in carreras:
                 carreras[carrera.id] = CarreraRecomendada(codigo=carrera.codigo, nombre=carrera.nombre,
-                                                         familia=familia.codigo, via=[])
+                    familia=familia.codigo, es_favorita=(TipoFavorito.CARRERA, carrera.id) in favoritos, via=[])
             carreras[carrera.id].via.append(por_ocupacion[ocupacion_id])
         for carrera in carreras.values():
             carrera.via.sort(key=lambda via: via.posicion)
