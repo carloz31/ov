@@ -61,7 +61,7 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
 
 Son catálogo, como las temáticas. La carga rechaza un COMPARACION prioritario y una actividad prioritaria que no sea de registro.
 
-Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
+Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. En `datos/ruta.py`, el evaluador de una regla se declara en `EVALUADORES_REGLAS = {regla: evaluador}`. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
 
 ## Evaluación
 

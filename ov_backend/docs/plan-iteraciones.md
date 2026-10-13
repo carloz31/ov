@@ -71,7 +71,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B04 | Registros: respuesta consolidada y edición · **Implementado** | 008 | M | B03 | Consulta de la consolidada y de lo que se puede ampliar, con pista; la edición es un nuevo intento con seguimiento |
 | B05 | Referencias y eco · **Implementado** | 009 | M | B04 | Citas literales; lo poco desarrollado sale como «por desarrollar» |
 | B06 | Revelar resultados y libro de Helena · **Implementado** | 022–024, 027, 095 | M | B05 | Revelar calcula y abre el registro de contraste; reinicio con perfil plano |
-| B07 | Partida y llegada, temáticas y prioritarios | 094 | M | B06 | Comparación por dimensión; T2 se abre con los instrumentos prioritarios revelados |
+| B07 | Partida y llegada, temáticas y prioritarios · **Implementado** | 094 | M | B06 | Comparación por dimensión; T2 se abre con los instrumentos prioritarios revelados |
 | B08 | Batallas, casos y testimonios | 017, 041, 051–056 | M | B05 | Batalla con reintento; el caso libera testimonios y colección |
 | B09 | Diario, pregunta del día y check-in | 028–033, 035, 036, 075 | M | B07 | Entradas fijas y personalizadas, también con fallo del LLM |
 | B10 | Catálogo, instituciones y favoritos | 026, 037–040 | M | B06 | `t-explorar` bloqueado hasta tener favoritos diversos |
@@ -180,7 +180,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - El reinicio solo procede con perfil plano, y una vez.
 - **Comprueba:** sección 5; regla 6 (cada instrumento cierra con un contraste).
 
-**B07 · Partida y llegada, temáticas y prioritarios (M)**
+**B07 · Partida y llegada, temáticas y prioritarios (M) · Implementado**
 - **Modelo:**
   - dimensiones y resultado por aplicación en COMPARACION;
   - `Tematica` y temáticas por actividad;
@@ -286,7 +286,8 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 - **Pruebas:**
   - Solo ve sus salones.
   - Registros con la respuesta consolidada, la etiqueta y el seguimiento a pedido.
-  - Configurar prioritarios y visibilidad.
+  - Configurar prioritarios y visibilidad. Un instrumento COMPARACION (partida y llegada) no muestra ni acepta la marca de prioritario: es obligatorio por diseño.
+  - Detalle numérico de partida y llegada (puntaje y diferencia por ítem y por dimensión) en un endpoint propio de la orientadora, dentro de su vista de resultados del estudiante; el estudiante solo recibe zonas y textos.
   - Cada alerta aparece con su condición y desaparece al resolverse.
   - Nunca ve el contenido del diario.
 - **Comprueba:** sección 13 (capas 2 y 3; alertas separadas de los temas para conversar).
