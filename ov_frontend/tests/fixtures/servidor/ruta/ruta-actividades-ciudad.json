@@ -2,26 +2,35 @@
   {
     "actividades": [
       {
+        "bloqueo": null,
         "codigo": "t-inicio",
         "contenido": "t_inicio",
+        "descripcion": null,
+        "duracion_estimada_min": 5,
         "estado": "COMPLETADA",
         "orden": 1,
+        "requerida": true,
         "tipo": "INFORMATIVA",
         "titulo": "Inicio de prueba",
         "visibilidad": "SIEMPRE",
         "visible": true
       },
       {
+        "bloqueo": null,
         "codigo": "t-cierre-inicio",
         "contenido": "t_cierre_inicio",
+        "descripcion": null,
+        "duracion_estimada_min": 5,
         "estado": "COMPLETADA",
         "orden": 2,
+        "requerida": true,
         "tipo": "INFORMATIVA",
         "titulo": "Cierre del inicio",
         "visibilidad": "SIEMPRE",
         "visible": true
       }
     ],
+    "bloqueo": null,
     "codigo": "T0",
     "espacio": "MISIONES_CAMPO",
     "estado": "DISPONIBLE",
@@ -31,16 +40,35 @@
   {
     "actividades": [
       {
+        "bloqueo": null,
         "codigo": "t-expectativas",
         "contenido": "t_expectativas",
+        "descripcion": null,
+        "duracion_estimada_min": 15,
         "estado": "COMPLETADA",
         "orden": 1,
+        "requerida": true,
         "tipo": "REGISTRO",
         "titulo": "Registro de expectativas",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-opcional",
+        "contenido": "t_opcional",
+        "descripcion": "Actividad opcional que aparece al desbloquearse.",
+        "duracion_estimada_min": 5,
+        "estado": "DISPONIBLE",
+        "orden": 2,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Actividad opcional",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": true
       }
     ],
+    "bloqueo": null,
     "codigo": "T1",
     "espacio": "MISIONES_CAMPO",
     "estado": "DISPONIBLE",
@@ -50,36 +78,81 @@
   {
     "actividades": [
       {
+        "bloqueo": null,
         "codigo": "t-mision-intereses",
         "contenido": "t_mision_intereses",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
         "estado": "DISPONIBLE",
         "orden": 1,
+        "requerida": true,
         "tipo": "CUESTIONARIO",
         "titulo": "Misión de intereses",
         "visibilidad": "SIEMPRE",
         "visible": true
       },
       {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-mision-intereses",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la primera misión de intereses.",
+            "regla": "R-t-mision-intereses-2"
+          }
+        ],
         "codigo": "t-mision-intereses-2",
         "contenido": "t_mision_intereses_2",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
         "estado": "BLOQUEADA",
         "orden": 2,
+        "requerida": true,
         "tipo": "CUESTIONARIO",
         "titulo": "Misión de intereses, segunda parte",
         "visibilidad": "SIEMPRE",
         "visible": true
       },
       {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-mision-intereses-2",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa las dos misiones de intereses.",
+            "regla": "R-t-caso"
+          }
+        ],
         "codigo": "t-caso",
         "contenido": "t_caso",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
         "estado": "BLOQUEADA",
         "orden": 3,
+        "requerida": true,
         "tipo": "CASO",
         "titulo": "Caso de prueba",
         "visibilidad": "SIEMPRE",
         "visible": true
       }
     ],
+    "bloqueo": null,
     "codigo": "CIUDAD",
     "espacio": "CIUDAD",
     "estado": "DISPONIBLE",

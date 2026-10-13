@@ -4,6 +4,7 @@ from enum import StrEnum
 class Rol(StrEnum):
     ESTUDIANTE = "ESTUDIANTE"
     APODERADO = "APODERADO"
+    ORIENTADORA = "ORIENTADORA"
 
 
 class Espacio(StrEnum):
@@ -77,7 +78,7 @@ class TipoObjetivo(StrEnum):
     FICHA = "FICHA"
     TESTIMONIO = "TESTIMONIO"
     PREGUNTA_DIARIO = "PREGUNTA_DIARIO"
-    CONVERSACIONES = "CONVERSACIONES"
+    SECCION = "SECCION"
     INSIGNIA = "INSIGNIA"
     NIVEL = "NIVEL"
 

@@ -92,16 +92,25 @@ def test_r06_alternativas_audiencias_y_cuentas(sesion):
     estudiante = buscar(sesion, m.Cuenta, 'est-ana')
     apoderado = buscar(sesion, m.Cuenta, 'apo-rosa')
     luis = buscar(sesion, m.Cuenta, 'est-luis')
-    regla(sesion, 'R-PRUEBA-ALT-A', 'CONVERSACIONES', None, [condicion('INGRESO')])
-    regla(sesion, 'R-PRUEBA-ALT-B', 'CONVERSACIONES', None, [condicion('PUBLICA_ENTREVISTA')])
+    # DATO DE PRUEBA: una sección por audiencia; la del estudiante tiene dos alternativas.
+    secciones = {audiencia: m.Seccion(codigo=f'SEC-PRUEBA-{audiencia}', nombre='DATO DE PRUEBA', audiencia=audiencia)
+                 for audiencia in ('ESTUDIANTE', 'APODERADO')}
+    sesion.add_all(secciones.values())
+    sesion.flush()
+    regla(sesion, 'R-PRUEBA-ALT-A', 'SECCION', secciones['ESTUDIANTE'].id, [condicion('INGRESO')])
+    regla(sesion, 'R-PRUEBA-ALT-B', 'SECCION', secciones['ESTUDIANTE'].id, [condicion('PUBLICA_ENTREVISTA')])
+    regla(sesion, 'R-PRUEBA-APO', 'SECCION', secciones['APODERADO'].id, [condicion('INGRESO')])
     actividad = buscar(sesion, m.Actividad, 't-cierre-inicio')
     regla(sesion, 'R-PRUEBA-AUDIENCIA', 'ACTIVIDAD', actividad.id, [condicion('INGRESO')])
-    for cuenta in (estudiante, apoderado):
-        assert not motor.objetivo_disponible(sesion, cuenta, m.TipoObjetivo.CONVERSACIONES, None)
+    for cuenta, audiencia in ((estudiante, 'ESTUDIANTE'), (apoderado, 'APODERADO')):
+        propia = secciones[audiencia].id
+        assert not motor.objetivo_disponible(sesion, cuenta, m.TipoObjetivo.SECCION, propia)
         nuevos = motor.registrar_eventos(sesion, cuenta, [('INGRESO', None)], FECHA_BD)
         codigos = {n.regla for n in nuevos}
-        assert 'R-PRUEBA-ALT-A' in codigos and 'R-PRUEBA-ALT-B' not in codigos
+        assert ('R-PRUEBA-ALT-A' in codigos) == (cuenta == estudiante) and 'R-PRUEBA-ALT-B' not in codigos
+        assert ('R-PRUEBA-APO' in codigos) == (cuenta == apoderado)
         assert ('R-PRUEBA-AUDIENCIA' in codigos) == (cuenta == estudiante)
-        assert motor.objetivo_disponible(sesion, cuenta, m.TipoObjetivo.CONVERSACIONES, None)
-    assert not motor.objetivo_disponible(sesion, luis, m.TipoObjetivo.CONVERSACIONES, None)
+        assert motor.objetivo_disponible(sesion, cuenta, m.TipoObjetivo.SECCION, propia)
+    assert not motor.objetivo_disponible(sesion, apoderado, m.TipoObjetivo.SECCION, secciones['ESTUDIANTE'].id)
+    assert not motor.objetivo_disponible(sesion, luis, m.TipoObjetivo.SECCION, secciones['ESTUDIANTE'].id)
     assert 'R-PRUEBA-ALT-B' in {n.regla for n in motor.registrar_eventos(sesion, luis, [('PUBLICA_ENTREVISTA', None)], FECHA_BD)}

@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from app.models import Espacio, TipoActividad, Visibilidad
 from app.schemas.comun import EstadoDisponibilidad
+from app.schemas.motor import MotivoBloqueo
 
 
 class ActividadCuenta(BaseModel):
@@ -15,6 +16,10 @@ class ActividadCuenta(BaseModel):
     visibilidad: Visibilidad
     visible: bool
     estado: Literal["BLOQUEADA", "DISPONIBLE", "EN_CURSO", "COMPLETADA"]
+    requerida: bool
+    duracion_estimada_min: int | None
+    descripcion: str | None
+    bloqueo: list[MotivoBloqueo] | None
 
 
 class BloqueActividades(BaseModel):
@@ -23,4 +28,5 @@ class BloqueActividades(BaseModel):
     numero: int
     espacio: Espacio
     estado: EstadoDisponibilidad
+    bloqueo: list[MotivoBloqueo] | None
     actividades: list[ActividadCuenta]

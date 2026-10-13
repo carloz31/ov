@@ -1,0 +1,112 @@
+[
+  {
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "t-inicio",
+            "requerido": 1,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_ACTIVIDAD"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa el inicio para abrir el catálogo.",
+        "regla": "R-SEC-CATALOGO"
+      }
+    ],
+    "codigo": "CATALOGO",
+    "estado": "BLOQUEADA",
+    "nombre": "Catálogo"
+  },
+  {
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "t-cierre-inicio",
+            "requerido": 1,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_ACTIVIDAD"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa el cierre del inicio para hacer tu check-in.",
+        "regla": "R-SEC-CHECK_IN"
+      }
+    ],
+    "codigo": "CHECK_IN",
+    "estado": "BLOQUEADA",
+    "nombre": "Check-in"
+  },
+  {
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "t-inicio",
+            "requerido": 1,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_ACTIVIDAD"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa el inicio para abrir tu diario.",
+        "regla": "R-SEC-DIARIO"
+      }
+    ],
+    "codigo": "DIARIO",
+    "estado": "BLOQUEADA",
+    "nombre": "Diario"
+  },
+  {
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "t-expectativas",
+            "requerido": 1,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_ACTIVIDAD"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa el registro de expectativas para abrir la sección Familia.",
+        "regla": "R-SEC-FAMILIA"
+      }
+    ],
+    "codigo": "FAMILIA",
+    "estado": "BLOQUEADA",
+    "nombre": "Familia"
+  },
+  {
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "t-inicio",
+            "requerido": 1,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_ACTIVIDAD"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa el inicio para abrir tus planes.",
+        "regla": "R-SEC-PLANES"
+      }
+    ],
+    "codigo": "PLANES",
+    "estado": "BLOQUEADA",
+    "nombre": "Planes"
+  }
+]

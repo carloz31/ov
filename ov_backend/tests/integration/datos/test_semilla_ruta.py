@@ -16,14 +16,14 @@ from datos.ocupaciones import leer_ocupaciones, validar_distribucion_items
 
 
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
-    esperados = {'cuenta': 4, 'vinculo_familiar': 1, 'bloque': 4, 'actividad': 8,
-        'ficha': 1, 'conversacion': 2, 'insignia': 2, 'nivel': 2, 'regla_desbloqueo': 12,
-        'condicion_desbloqueo': 12,
+    esperados = {'salon': 2, 'cuenta': 5, 'orientadora_salon': 1, 'vinculo_familiar': 1, 'bloque': 4,
+        'actividad': 9, 'seccion': 6, 'ficha': 2, 'conversacion': 2, 'insignia': 2, 'nivel': 2,
+        'regla_desbloqueo': 18, 'condicion_desbloqueo': 18,
         'instrumento': 1, 'escala_respuesta': 1, 'opcion_escala': 5, 'dimension': 6,
         'item_instrumento': 60, 'actividad_item': 60, 'aplicacion': 1, 'aplicacion_actividad': 2,
         'ocupacion': 36, 'puntaje_ocupacion': 216, 'familia_carrera': 6, 'carrera': 6,
         'carrera_ocupacion': 23}
-    assert len(Base.metadata.tables) == 44
+    assert len(Base.metadata.tables) == 47
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'CIUDAD', 'FAMILIA'}

@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, ForeignKey, Text, text
+from sqlalchemy import CheckConstraint, ForeignKey, Text, text, true
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, enumerado
@@ -36,6 +36,17 @@ class Actividad(Base):
     orden: Mapped[int]
     bloque_id: Mapped[int] = mapped_column(ForeignKey("bloque.id"))
     puntaje_minimo: Mapped[float | None]
+    requerida: Mapped[bool] = mapped_column(default=True, server_default=true())
+    duracion_estimada_min: Mapped[int | None]
+    descripcion: Mapped[str | None] = mapped_column(Text)
+
+
+class Seccion(Base):
+    __tablename__ = "seccion"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
+    nombre: Mapped[str]
+    audiencia: Mapped[Audiencia] = mapped_column(enumerado(Audiencia))
 
 
 class Ficha(Base):
@@ -44,6 +55,9 @@ class Ficha(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     titulo: Mapped[str]
     contenido: Mapped[str] = mapped_column(Text)
+    audiencia: Mapped[Audiencia] = mapped_column(
+        enumerado(Audiencia), default=Audiencia.ESTUDIANTE, server_default=text("'ESTUDIANTE'"),
+    )
 
 
 class Testimonio(Base):

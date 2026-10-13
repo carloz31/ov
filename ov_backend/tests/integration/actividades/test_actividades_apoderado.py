@@ -7,6 +7,9 @@ from fastapi.testclient import TestClient
 from soporte_ruta import BLOQUE_FAMILIA, FECHA, completar, estado, eventos, pedir
 
 
+PROPIAS = {'R-t-apo-carta', 'R-t-ficha-apo', 'R-SEC-CONVERSACIONES'}
+
+
 @pytest.fixture
 def cliente_apoderado(aplicacion):
     with TestClient(aplicacion) as cliente:
@@ -41,12 +44,13 @@ def test_primera_desbloquea_solo_la_segunda(cliente_apoderado):
         {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-apo-1', 'fecha_hora': FECHA},
     ]
     assert [(d['regla'], d['tipo_objetivo'], d['objetivo']['codigo']) for d in respuesta['nuevos_desbloqueos']] == [
-        ('R-t-apo-carta', 'ACTIVIDAD', 't-apo-carta'),
+        ('R-t-apo-carta', 'ACTIVIDAD', 't-apo-carta'), ('R-t-ficha-apo', 'FICHA', 't-ficha-apo'),
     ]
     assert respuesta['resultados_generados'] == []
     esperado = deepcopy(BLOQUE_FAMILIA)
     esperado['actividades'][0]['estado'] = 'COMPLETADA'
     esperado['actividades'][1]['estado'] = 'DISPONIBLE'
+    esperado['actividades'][1]['bloqueo'] = None
     assert actividades(cliente) == [esperado]
 
 
@@ -58,7 +62,9 @@ def test_segunda_completa_familia_sin_nuevos_desbloqueos(cliente_apoderado):
         {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-apo-carta', 'fecha_hora': FECHA},
         {'tipo': 'COMPLETA_BLOQUE', 'referencia': 'FAMILIA', 'fecha_hora': FECHA},
     ]
-    assert respuesta['nuevos_desbloqueos'] == respuesta['resultados_generados'] == []
+    # B01: cerrar la ruta del apoderado abre su sección CONVERSACIONES.
+    assert [d['regla'] for d in respuesta['nuevos_desbloqueos']] == ['R-SEC-CONVERSACIONES']
+    assert respuesta['resultados_generados'] == []
     assert [a['estado'] for a in actividades(cliente)[0]['actividades']] == ['COMPLETADA', 'COMPLETADA']
 
 
@@ -87,16 +93,18 @@ def test_otras_audiencias_se_rechazan_sin_efectos(cliente_apoderado):
         assert eventos(cliente, cuenta) == []
 
 
-def test_completar_no_otorga_logros_niveles_fichas_ni_afecta_al_estudiante(cliente_apoderado):
+# B01: el apoderado recibe sus propias fichas y secciones, nunca logros ni niveles.
+def test_completar_no_otorga_logros_ni_niveles_ni_afecta_al_estudiante(cliente_apoderado):
     cliente = cliente_apoderado
     estudiante = estado(cliente)
     for codigo in ('t-apo-1', 't-apo-carta', 't-apo-1', 't-apo-carta'):
         respuesta = completar(cliente, codigo, 'apo-rosa')
-        assert {d['regla'] for d in respuesta['nuevos_desbloqueos']} <= {'R-t-apo-carta'}
+        assert {d['regla'] for d in respuesta['nuevos_desbloqueos']} <= PROPIAS
         assert respuesta['resultados_generados'] == []
         rosa = estado(cliente, 'apo-rosa')
         assert rosa['nivel_actual'] is None
-        assert rosa['niveles'] == rosa['insignias'] == rosa['fichas'] == []
+        assert rosa['niveles'] == rosa['insignias'] == []
+        assert [(f['codigo'], f['estado']) for f in rosa['fichas']] == [('t-ficha-apo', 'DISPONIBLE')]
         assert estado(cliente) == estudiante
     assert eventos(cliente) == []
-    assert {d['regla'] for d in pedir(cliente, 'GET', '/cuentas/apo-rosa/desbloqueos')} == {'R-t-apo-carta'}
+    assert {d['regla'] for d in pedir(cliente, 'GET', '/cuentas/apo-rosa/desbloqueos')} == PROPIAS

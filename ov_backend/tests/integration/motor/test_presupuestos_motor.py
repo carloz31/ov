@@ -9,6 +9,9 @@ from soporte_retiro import FECHA_BD, actividades_extra, agregar_eventos, buscar,
 
 def test_r11_presupuestos_con_cien_actividades_cien_reglas_y_quinientos_eventos(cliente, aplicacion, monkeypatch):
     rutas = [f'/cuentas/est-ana/{r}' for r in RUTAS_DOMINIO] + ['/cuentas/est-ana/progreso/BLOQUE/CIUDAD']
+    # B01: t-inicio abre DIARIO para que su lectura responda 200.
+    medir(cliente, aplicacion, 'POST', '/acciones/completar-actividad', {'cuenta': 'est-ana', 'actividad': 't-inicio'},
+          limite=15)
     basales = [medir(cliente, aplicacion, 'GET', r, limite=8 if '/progreso/' in r else 10)[1].cantidad for r in rutas]
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         ana = buscar(sesion, m.Cuenta, 'est-ana')

@@ -179,3 +179,35 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Opciones:** diferenciar carga de acceso denegado en el hook y conservar la ruta hasta resolverla usando los componentes existentes; cargar los datos antes de evaluar la guarda de la ruta; mantener por ahora la entrada desde el libro.
 - **Consecuencia actual:** no se pierde el resultado ni su revelación, pero la recarga abandona el detalle y exige volver a entrar desde el libro.
 - **Estado:** pendiente de corrección, detectado en F5. No se elimina la guarda ni se agrega un estado visual durante esta fase de verificación. El scroll del detalle funciona entrando desde el libro.
+
+## 2026-10-13 · B01 · Motivo de bloqueo de bloques y actividades
+
+- **Dato:** `BloqueActividades.bloqueo` y `ActividadCuenta.bloqueo` (motivos con `mensaje` y `condiciones_faltantes`), `GET /cuentas/{c}/actividades`; también `detail.mensaje` de los 409.
+- **Dónde se mostraría:** candado del mapa, lista de actividades del estudiante y del apoderado.
+- **Opciones:** mostrar el `mensaje` junto al candado; mostrar además la condición que falta; conservar los textos actuales del front.
+- **Si no se muestra:** lo bloqueado sigue con los textos locales del front; el servidor ya explica qué falta.
+- **Estado:** pendiente (lote F).
+
+## 2026-10-13 · B01 · Requerida, duración y descripción de actividades
+
+- **Dato:** `ActividadCuenta.requerida`, `duracion_estimada_min` y `descripcion`, `GET /cuentas/{c}/actividades`.
+- **Dónde se mostraría:** tarjeta o punto de cada actividad en el mapa y en el panel.
+- **Opciones:** etiqueta «opcional» y duración en la tarjeta; solo excluir opcionales del progreso del bloque; no mostrarlas todavía.
+- **Si no se muestra:** las opcionales cuentan en el progreso del front aunque el servidor no las exige para cerrar el bloque.
+- **Estado:** pendiente (lote F).
+
+## 2026-10-13 · B01 · Secciones del perfil
+
+- **Dato:** `GET /cuentas/{c}/secciones` y `/secciones/{codigo}` (`SeccionEstado` con `estado` y `bloqueo`): DIARIO, CHECK_IN, CATALOGO, PLANES y FAMILIA del estudiante; CONVERSACIONES del apoderado. La lectura del diario responde 409 con DIARIO bloqueada.
+- **Dónde se mostraría:** menú y perfil del estudiante (accesos a diario, check-in, catálogo, planes y familia) y portal del apoderado (conversaciones).
+- **Opciones:** candado con mensaje en cada acceso; ocultar las secciones bloqueadas; mantener los accesos actuales hasta su lote F.
+- **Si no se muestra:** el front no sabe qué secciones están abiertas; en modo api, escribir sin la sección abierta recibe 409.
+- **Estado:** pendiente (lote F).
+
+## 2026-10-13 · B01 · Fichas del apoderado
+
+- **Dato:** `GET /cuentas/{c}/fichas` para un apoderado devuelve sus fichas (audiencia APODERADO); antes devolvía `[]`.
+- **Dónde se mostraría:** portal del apoderado (no tiene vista de fichas).
+- **Opciones:** una sección de recursos en el portal; mostrarlas dentro de cada actividad; no mostrarlas todavía.
+- **Si no se muestra:** las fichas del apoderado se obtienen sin que se vean.
+- **Estado:** pendiente (lote F).

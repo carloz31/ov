@@ -7,11 +7,13 @@ from app.models import Base
 from app.services.desarrollo import TABLAS_DE_ESTADO
 from datos import cargar, ruta
 from soporte_estado_desarrollo import llenar_estado
-from soporte_ruta import filas_base, pedir
+from soporte_ruta import avanzar, filas_base, pedir
 
 
 def test_r15_reinicio_completo_idempotente_y_atomico(cliente, aplicacion, monkeypatch):
     llenar_estado(aplicacion)
+    # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
+    avanzar(cliente)
     pedir(cliente, 'POST', '/acciones/escribir-carta', {'cuenta': 'est-ana', 'texto': 'DATO DE PRUEBA'})
     antes = filas_base(aplicacion)
     assert all(antes[nombre] for nombre in TABLAS_DE_ESTADO)

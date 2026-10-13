@@ -6,12 +6,14 @@ Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, 
 
 | Grupo | Tablas |
 |---|---|
-| Cuentas | `cuenta` (rol ESTUDIANTE o APODERADO), `vinculo_familiar` (estudiante, apoderado y sus cartas) |
-| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO o CASO; `orden`, `contenido`, `visibilidad`, `puntaje_minimo` solo en CASO), `ficha`, `testimonio`, `pregunta_diario`, `conversacion`, `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
+| Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash`, `activa`), `salon`, `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
+| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO o CASO; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` solo en CASO), `seccion` (audiencia), `ficha` (audiencia), `testimonio`, `pregunta_diario`, `conversacion`, `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
 | Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `entrada_diario`, `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo` |
-| Motor | `evento_uso`, `regla_desbloqueo`, `condicion_desbloqueo`, `desbloqueo` (único por cuenta y regla; `visto`) |
+| Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo`, `desbloqueo` (único por cuenta y regla; `visto`) |
 
-`id_objetivo` de una regla e `id_referencia` de un evento o condición son referencias polimórficas sin FK; los cargadores resuelven códigos a ids. `id_objetivo` es nulo solo para CONVERSACIONES, que es una sección y no un objeto.
+`id_objetivo` de una regla e `id_referencia` de un evento o condición son referencias polimórficas sin FK; los cargadores resuelven códigos a ids. `id_objetivo` nunca es nulo.
+
+**Secciones.** Partes del perfil que se abren con reglas como cualquier objetivo (`SECCION`). Las fijas están en `datos/fijos.py`: DIARIO, CHECK_IN, CATALOGO, PLANES y FAMILIA del estudiante, y CONVERSACIONES del apoderado. Cada ruta decide con sus reglas cuándo se abre cada una. La migración `0004` convirtió las reglas del antiguo objetivo CONVERSACIONES en reglas de esa sección.
 
 El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La migración `0003` amplía el `CHECK` de `bloque.espacio` para admitirlo en SQLite y PostgreSQL; su downgrade falla si todavía existen bloques con ese espacio y conserva los datos.
 
@@ -64,21 +66,29 @@ Si una acción registra eventos en varias cuentas (coautoría de entrevista, con
 
 Un objetivo está disponible para una cuenta si:
 
-1. **Audiencia:** corresponde a su rol. Si no, no aparece en sus consultas (y su progreso responde 404).
+1. **Audiencia:** corresponde a su rol. Si no, no aparece en sus consultas (y su progreso responde 404). La orientadora no tiene audiencia: ningún objetivo le corresponde.
 2. **Bloque contenedor:** si es una actividad, su bloque está disponible. Se comprueba al consultar, no al desbloquear.
 3. **Reglas:** ninguna regla apunta a él, o la cuenta tiene el desbloqueo de al menos una.
 
 | Objetivo | Audiencia |
 |---|---|
-| BLOQUE | `bloque.audiencia` |
+| BLOQUE, INSIGNIA, FICHA, SECCION | la `audiencia` de su fila |
 | ACTIVIDAD | la de su bloque |
-| INSIGNIA | `insignia.audiencia` |
-| FICHA, TESTIMONIO, PREGUNTA_DIARIO, NIVEL | solo ESTUDIANTE |
-| CONVERSACIONES | ambos roles |
+| TESTIMONIO, PREGUNTA_DIARIO, NIVEL | solo ESTUDIANTE |
 
 Al desbloquearse un bloque, sus actividades sin regla propia quedan disponibles; las que tienen regla siguen bloqueadas hasta cumplirla. Un objetivo sin reglas está disponible desde el inicio: por eso todo logro que aún no se puede ganar necesita una regla.
 
 **Estado de una actividad:** BLOQUEADA si ella o su bloque no están disponibles (prevalece sobre cualquier progreso); si no, COMPLETADA, EN_CURSO o DISPONIBLE según su progreso.
+
+**Requeridas y opcionales:** una actividad con `requerida` falso se puede completar, pero no cuenta para COMPLETA_BLOQUE.
+
+**Motivo de bloqueo** (`motivos_bloqueo`, `services/motor/reglas.py`): para un objetivo bloqueado de la audiencia de la cuenta, una entrada por regla (son alternativas) con `regla`, `mensaje` (su `mensaje_bloqueo`), `condiciones_faltantes` (solo las no cumplidas) y, si tiene, `evaluador_especial`. Una actividad con su bloque bloqueado devuelve los motivos del bloque (regla 2). Disponible u otra audiencia: `null`.
+
+**Sujeto de una condición (diseño; se implementa en B12).** Hoy toda condición cuenta eventos de la cuenta evaluada. Para objetivos del apoderado que dependen del progreso del hijo:
+- `CondicionDesbloqueo.sujeto`: PROPIA (por defecto) o ESTUDIANTE_VINCULADO.
+- Al evaluar una regla para un apoderado, las condiciones ESTUDIANTE_VINCULADO cuentan los eventos de los estudiantes de sus vínculos `es_activo` (con varios, basta uno), desde el mismo contexto agrupado por cuenta.
+- Cuando un estudiante registra eventos, `registrar_eventos` evalúa también, para cada apoderado de sus vínculos activos, las reglas de audiencia APODERADO con alguna condición ESTUDIANTE_VINCULADO del tipo registrado. El desbloqueo se guarda en el apoderado en la misma transacción y no aparece en la respuesta del estudiante.
+- El desbloqueo es permanente aunque el vínculo deje de estar activo. No hay sujeto inverso.
 
 **Nivel actual:** el de mayor `numero` disponible. El nivel 1 no tiene reglas. Las reglas de cada nivel repiten las condiciones del anterior, así que el nivel nunca baja ni se salta. Para un apoderado es `null`.
 
@@ -94,23 +104,25 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/completar-actividad` | Actividad disponible y no CASO. Si tiene ítems de instrumento, todos respondidos; si tiene ítems de registro obligatorios, todos en FINAL (si no, 409 con `items_faltantes`, sin eventos). | Progreso a COMPLETADA. COMPLETA_ACTIVIDAD en **cada** finalización, también al repetir. COMPLETA_BLOQUE la primera vez que se completan todas las actividades del bloque. Puede generar resultados de instrumentos (`resultados_generados`). |
 | `/acciones/resolver-caso` | Actividad CASO disponible; puntaje 0–100 | Guarda el intento y completa la actividad. SUPERA_CASO la primera vez que el puntaje ≥ `puntaje_minimo`. |
 | `/acciones/responder-registro` | Clasificación ADECUADA o VAGA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
-| `/acciones/escribir-entrada` | Solo estudiante; GUIADA exige pregunta disponible y no respondida; LIBRE sin pregunta | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
-| `/acciones/check-in` | Solo estudiante; uno por día; nivel 1–5 | REGISTRA_CHECK_IN |
+| `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; GUIADA exige pregunta disponible y no respondida; LIBRE sin pregunta | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
+| `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día; nivel 1–5 | REGISTRA_CHECK_IN |
 | `/acciones/ver-carrera` | — | VISTA_CARRERA |
 | `/acciones/publicar-entrevista` | Autores: lista no vacía, sin repetidos, todos estudiantes | PUBLICA_ENTREVISTA en cada autor. Código `ENT-<uuid>`. |
-| `/acciones/escribir-carta` | La cuenta pertenece a un vínculo | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
-| `/acciones/completar-conversacion` | CONVERSACIONES disponible para quien marca | Marca la conversación del vínculo; COMPLETA_CONVERSACION en las dos cuentas, solo la primera vez. |
+| `/acciones/escribir-carta` | La cuenta pertenece a un vínculo activo; el estudiante, con la sección FAMILIA | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
+| `/acciones/completar-conversacion` | Sección CONVERSACIONES del apoderado del vínculo, marque quien marque | Marca la conversación del vínculo; COMPLETA_CONVERSACION en las dos cuentas, solo la primera vez. |
 | `/eventos` (depuración) | Solo que existan cuenta y referencia | Registra un evento crudo y evalúa reglas, sin validaciones de dominio ni cambios de estado. |
 
 Las acciones de instrumentos (`responder-items`, `reiniciar-instrumento`) están en `instrumentos.md`, y las de registro, en `registro.md`.
+
+Un objetivo bloqueado responde 409 con `detail.mensaje` = el mensaje de bloqueo de su primera regla (por código; el del bloque si la actividad está bloqueada por él) y `detail.progreso`. Leer el contenido de una sección bloqueada también responde 409 con su mensaje.
 
 ## Consultas del motor
 
 | GET | Devuelve |
 |---|---|
-| `/reglas` | Todas las reglas, legibles, por código. No evalúa. |
+| `/reglas` | Todas las reglas, legibles, por código, con su `mensaje_bloqueo`. No evalúa. |
 | `/cuentas` | Cuentas. |
-| `/cuentas/{c}/progreso/{tipo}/{codigo}` | Cada regla del objetivo con el avance de cada condición (`actual`, `requerido`, `cumplida`) y del evaluador. Niveles con código `N1`…`N5`; CONVERSACIONES con `-`. Insignia oculta no obtenida: 403. Tipo inválido: 422. |
+| `/cuentas/{c}/progreso/{tipo}/{codigo}` | Cada regla del objetivo con su `mensaje_bloqueo` y el avance de cada condición (`actual`, `requerido`, `cumplida`) y del evaluador. Niveles con código `N1`…`N5`. Insignia oculta no obtenida: 403. Tipo inválido: 422. |
 | `/cuentas/{c}/eventos` | Línea de tiempo, del más reciente al más antiguo. |
 | `/cuentas/{c}/desbloqueos?solo_no_vistos=true` | Desbloqueos con fecha y objetivo. |
 | POST `/cuentas/{c}/desbloqueos/marcar-vistos` | Marca los pendientes; devuelve `{"marcados": n}`. |

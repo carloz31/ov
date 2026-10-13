@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
-from app.models import Audiencia, Cuenta, Insignia, Nivel, Rol, TipoObjetivo
+from app.models import Cuenta, Insignia, Nivel, Rol, TipoObjetivo
 from app.schemas.logros import InsigniaEstado, LogrosCuenta, NivelEstado
 from app.services.motor.reglas import objetivo_disponible
 
@@ -11,7 +11,7 @@ def logros_cuenta(sesion: Session, cuenta: Cuenta) -> LogrosCuenta:
     datos = contexto(sesion)
     insignias = []
     for insignia in sorted((insignia for insignia in datos.definiciones.listar(Insignia)
-                           if insignia.audiencia == Audiencia(cuenta.rol.value)), key=lambda insignia: insignia.codigo):
+                           if insignia.audiencia == cuenta.rol.value), key=lambda insignia: insignia.codigo):
         obtenida = objetivo_disponible(sesion, cuenta, TipoObjetivo.INSIGNIA, insignia.id)
         oculta = insignia.es_oculta and not obtenida
         insignias.append(InsigniaEstado(

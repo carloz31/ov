@@ -9,10 +9,13 @@ from soporte_ruta import INTERESES, INTERESES_FINAL, MISIONES_INTERESES, activid
 
 
 def siguiente(cliente, cuenta='est-ana'):
-    """HU-011: la siguiente actividad es la primera disponible del recorrido, por bloque y orden."""
+    """HU-011: la siguiente actividad es la primera requerida disponible del recorrido, por bloque y orden.
+
+    B01: las opcionales (`requerida` falso) no se proponen como siguiente.
+    """
     for bloque in pedir(cliente, 'GET', f'/cuentas/{cuenta}/actividades'):
         for actividad in bloque['actividades']:
-            if actividad['estado'] in ('DISPONIBLE', 'EN_CURSO'):
+            if actividad['requerida'] and actividad['estado'] in ('DISPONIBLE', 'EN_CURSO'):
                 return actividad['codigo']
     return None
 
@@ -32,7 +35,8 @@ def test_hu004_013_015_informativa_con_ficha_y_retroalimentacion(cliente):
     assert respuesta['eventos_registrados'] == [
         {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-inicio', 'fecha_hora': '2026-10-07T10:00:00'}]
     assert {(d['tipo_objetivo'], d['objetivo']['codigo']) for d in respuesta['nuevos_desbloqueos']} == {
-        ('ACTIVIDAD', 't-cierre-inicio'), ('FICHA', 't-ficha'), ('INSIGNIA', 't-ins-1')}
+        ('ACTIVIDAD', 't-cierre-inicio'), ('FICHA', 't-ficha'), ('INSIGNIA', 't-ins-1'),
+        ('SECCION', 'DIARIO'), ('SECCION', 'CATALOGO'), ('SECCION', 'PLANES')}
     assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [
         ('t-ficha', 'DISPONIBLE')]
     assert siguiente(cliente) == 't-cierre-inicio'
@@ -112,12 +116,13 @@ def test_hu073_avisos_de_desbloqueo(cliente):
     ruta = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
     completar(cliente, 't-inicio')
     no_vistos = pedir(cliente, 'GET', ruta)
-    assert {d['regla'] for d in no_vistos} == {'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1'}
+    assert {d['regla'] for d in no_vistos} == {
+        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES'}
     assert all(d['visto'] is False for d in no_vistos)
-    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 3
+    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 6
     assert pedir(cliente, 'GET', ruta) == []
     completar(cliente, 't-cierre-inicio')
-    assert {d['regla'] for d in pedir(cliente, 'GET', ruta)} == {'R-T1', 'R-NIV-2', 'R-FAM-ESTUDIANTE'}
+    assert {d['regla'] for d in pedir(cliente, 'GET', ruta)} == {'R-T1', 'R-NIV-2', 'R-SEC-CHECK_IN'}
 
 
 def test_hu074_logros_obtenidos_y_condiciones(cliente):
@@ -150,10 +155,14 @@ def test_hu004_ruta_del_apoderado(cliente):
     familia, = rosa['bloques']
     assert [(a['codigo'], a['estado']) for a in familia['actividades']] == [
         ('t-apo-1', 'DISPONIBLE'), ('t-apo-carta', 'BLOQUEADA')]
-    assert rosa['fichas'] == rosa['insignias'] == [] and rosa['nivel_actual'] is None
+    assert [(f['codigo'], f['estado']) for f in rosa['fichas']] == [('t-ficha-apo', 'BLOQUEADA')]
+    assert rosa['insignias'] == [] and rosa['nivel_actual'] is None
+    assert rosa['secciones'] == {'CONVERSACIONES': 'BLOQUEADA'} and rosa['preguntas_diario'] == []
     assert siguiente(cliente, 'apo-rosa') == 't-apo-1'
-    assert reglas(completar(cliente, 't-apo-1', 'apo-rosa')) == {'R-t-apo-carta'}
+    assert reglas(completar(cliente, 't-apo-1', 'apo-rosa')) == {'R-t-apo-carta', 'R-t-ficha-apo'}
     respuesta = completar(cliente, 't-apo-carta', 'apo-rosa')
     assert respuesta['eventos_registrados'][-1]['tipo'] == 'COMPLETA_BLOQUE'
+    assert reglas(respuesta) == {'R-SEC-CONVERSACIONES'}
+    assert estado(cliente, 'apo-rosa')['secciones'] == {'CONVERSACIONES': 'DISPONIBLE'}
     assert siguiente(cliente, 'apo-rosa') is None
     assert actividades(cliente)['t-inicio'] == 'DISPONIBLE'

@@ -7,7 +7,7 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.definiciones import MODELOS_FIJOS
 from app.models import (
     Actividad, Bloque, Carrera, Conversacion, Entrevista, Ficha, Insignia, Instrumento, Nivel,
-    PreguntaDiario, ReglaDesbloqueo, Testimonio, TipoEventoUso, TipoObjetivo, VinculoFamiliar,
+    PreguntaDiario, ReglaDesbloqueo, Seccion, Testimonio, TipoEventoUso, TipoObjetivo, VinculoFamiliar,
 )
 from app.schemas.motor import ObjetivoLegible
 
@@ -16,7 +16,7 @@ MODELOS_OBJETIVO = {
     TipoObjetivo.BLOQUE: Bloque, TipoObjetivo.ACTIVIDAD: Actividad,
     TipoObjetivo.FICHA: Ficha, TipoObjetivo.TESTIMONIO: Testimonio,
     TipoObjetivo.PREGUNTA_DIARIO: PreguntaDiario, TipoObjetivo.INSIGNIA: Insignia,
-    TipoObjetivo.NIVEL: Nivel,
+    TipoObjetivo.NIVEL: Nivel, TipoObjetivo.SECCION: Seccion,
 }
 MODELOS_REFERENCIA = {
     TipoEventoUso.COMPLETA_ACTIVIDAD: Actividad,
@@ -50,15 +50,13 @@ def precargar_referencias(sesion: Session, referencias):
 
 @usar_contexto
 def objetivo_legible(sesion: Session, regla: ReglaDesbloqueo) -> ObjetivoLegible:
-    if regla.tipo_objetivo == TipoObjetivo.CONVERSACIONES:
-        return ObjetivoLegible(codigo="-", nombre="Conversaciones")
     objetivo = contexto(sesion).definiciones.obtener(MODELOS_OBJETIVO[regla.tipo_objetivo], regla.id_objetivo)
     if objetivo is None:
         raise ValueError(f"Objetivo inexistente en {regla.codigo}")
     if regla.tipo_objetivo == TipoObjetivo.NIVEL:
         return ObjetivoLegible(codigo=f"N{objetivo.numero}", nombre=objetivo.titulo)
     nombre = (
-        objetivo.nombre if regla.tipo_objetivo in (TipoObjetivo.BLOQUE, TipoObjetivo.INSIGNIA) else
+        objetivo.nombre if regla.tipo_objetivo in (TipoObjetivo.BLOQUE, TipoObjetivo.INSIGNIA, TipoObjetivo.SECCION) else
         objetivo.pregunta if regla.tipo_objetivo == TipoObjetivo.PREGUNTA_DIARIO else objetivo.titulo
     )
     return ObjetivoLegible(codigo=objetivo.codigo, nombre=nombre)

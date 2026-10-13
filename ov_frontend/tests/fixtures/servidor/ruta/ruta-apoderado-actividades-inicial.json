@@ -2,26 +2,51 @@
   {
     "actividades": [
       {
+        "bloqueo": null,
         "codigo": "t-apo-1",
         "contenido": "t_apo_1",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
         "estado": "DISPONIBLE",
         "orden": 1,
+        "requerida": true,
         "tipo": "INFORMATIVA",
         "titulo": "Primera actividad del apoderado",
         "visibilidad": "SIEMPRE",
         "visible": true
       },
       {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-apo-1",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la primera actividad.",
+            "regla": "R-t-apo-carta"
+          }
+        ],
         "codigo": "t-apo-carta",
         "contenido": "t_apo_carta",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
         "estado": "BLOQUEADA",
         "orden": 2,
+        "requerida": true,
         "tipo": "INFORMATIVA",
         "titulo": "Carta del apoderado",
         "visibilidad": "SIEMPRE",
         "visible": true
       }
     ],
+    "bloqueo": null,
     "codigo": "FAMILIA",
     "espacio": "PORTAL_FAMILIA",
     "estado": "DISPONIBLE",

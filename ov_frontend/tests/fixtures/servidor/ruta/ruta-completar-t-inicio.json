@@ -19,6 +19,60 @@
         }
       ],
       "objetivo": {
+        "codigo": "CATALOGO",
+        "nombre": "Catálogo"
+      },
+      "regla": "R-SEC-CATALOGO",
+      "tipo_objetivo": "SECCION"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-inicio",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "DIARIO",
+        "nombre": "Diario"
+      },
+      "regla": "R-SEC-DIARIO",
+      "tipo_objetivo": "SECCION"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-inicio",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "PLANES",
+        "nombre": "Planes"
+      },
+      "regla": "R-SEC-PLANES",
+      "tipo_objetivo": "SECCION"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-inicio",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
         "codigo": "t-cierre-inicio",
         "nombre": "Cierre del inicio"
       },

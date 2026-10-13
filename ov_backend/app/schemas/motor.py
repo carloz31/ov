@@ -18,6 +18,7 @@ class CondicionLegible(BaseModel):
 class ReglaLegible(BaseModel):
     regla: str
     nombre: str
+    mensaje_bloqueo: str
     tipo_objetivo: TipoObjetivo
     objetivo: ObjetivoLegible
     condiciones: list[CondicionLegible]
@@ -41,6 +42,14 @@ class ResultadoEvaluador(BaseModel):
 class ResultadoRegla(BaseModel):
     cumple: bool
     condiciones: list[ProgresoCondicion]
+    evaluador_especial: ResultadoEvaluador | None = None
+
+
+class MotivoBloqueo(BaseModel):
+    """Una regla del objetivo (son alternativas) con las condiciones que aún no se cumplen."""
+    regla: str
+    mensaje: str
+    condiciones_faltantes: list[ProgresoCondicion]
     evaluador_especial: ResultadoEvaluador | None = None
 
 

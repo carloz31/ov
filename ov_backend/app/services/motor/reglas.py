@@ -10,11 +10,17 @@ from app.models import (
     Actividad, Bloque, CondicionDesbloqueo, Cuenta, Desbloqueo, EventoUso, Nivel, ReglaDesbloqueo,
     Rol, TipoConteo, TipoEventoUso, TipoObjetivo,
 )
-from app.schemas.motor import DesbloqueoNuevo, ProgresoCondicion, ResultadoEvaluador, ResultadoRegla
+from app.schemas.motor import (
+    DesbloqueoNuevo, MotivoBloqueo, ProgresoCondicion, ResultadoEvaluador, ResultadoRegla,
+)
 from app.services.motor.evaluadores import EVALUADORES
 from app.services.motor.referencias import (
     MODELOS_OBJETIVO, objetivo_legible, precargar_referencias, referencia_legible,
 )
+
+
+# Objetivos cuya audiencia está en su propia fila; el resto (salvo ACTIVIDAD) es solo del estudiante.
+AUDIENCIA_POR_FILA = (TipoObjetivo.BLOQUE, TipoObjetivo.INSIGNIA, TipoObjetivo.FICHA, TipoObjetivo.SECCION)
 
 
 @usar_contexto
@@ -64,17 +70,17 @@ def evaluar_regla(sesion: Session, cuenta: Cuenta, regla: ReglaDesbloqueo) -> Re
 def objetivo_corresponde_a_cuenta(
     sesion: Session, cuenta: Cuenta, tipo_objetivo: TipoObjetivo, id_objetivo: int | None,
 ) -> bool:
-    if tipo_objetivo == TipoObjetivo.CONVERSACIONES:
-        return id_objetivo is None
+    if cuenta.rol == Rol.ORIENTADORA:
+        return False
     definiciones = contexto(sesion).definiciones
     objetivo = definiciones.obtener(MODELOS_OBJETIVO[tipo_objetivo], id_objetivo)
     if objetivo is None:
         return False
     if tipo_objetivo == TipoObjetivo.ACTIVIDAD:
         bloque = definiciones.obtener(Bloque, objetivo.bloque_id)
-        return bloque.audiencia.value == cuenta.rol.value
-    if tipo_objetivo in (TipoObjetivo.BLOQUE, TipoObjetivo.INSIGNIA):
-        return objetivo.audiencia.value == cuenta.rol.value
+        return bloque.audiencia == cuenta.rol.value
+    if tipo_objetivo in AUDIENCIA_POR_FILA:
+        return objetivo.audiencia == cuenta.rol.value
     return cuenta.rol == Rol.ESTUDIANTE
 
 
@@ -91,6 +97,37 @@ def objetivo_disponible(
             return False
     reglas = datos.definiciones.reglas_objetivo.get((tipo_objetivo, id_objetivo), ())
     return not reglas or any(regla.id in datos.obtenidas(cuenta.id) for regla in reglas)
+
+
+@usar_contexto
+def motivos_bloqueo(
+    sesion: Session, cuenta: Cuenta, tipo_objetivo: TipoObjetivo, id_objetivo: int,
+) -> list[MotivoBloqueo] | None:
+    """Qué falta para abrir un objetivo; `None` si está disponible o no corresponde a la cuenta.
+
+    Una actividad cuyo bloque está bloqueado muestra los motivos del bloque (regla 2 de disponibilidad).
+    """
+    if not objetivo_corresponde_a_cuenta(sesion, cuenta, tipo_objetivo, id_objetivo) or objetivo_disponible(
+        sesion, cuenta, tipo_objetivo, id_objetivo,
+    ):
+        return None
+    datos = contexto(sesion)
+    if tipo_objetivo == TipoObjetivo.ACTIVIDAD:
+        bloque_id = datos.definiciones.obtener(Actividad, id_objetivo).bloque_id
+        if not objetivo_disponible(sesion, cuenta, TipoObjetivo.BLOQUE, bloque_id):
+            return motivos_bloqueo(sesion, cuenta, TipoObjetivo.BLOQUE, bloque_id)
+    reglas = datos.definiciones.reglas_objetivo.get((tipo_objetivo, id_objetivo), ())
+    precargar_referencias(sesion, [(condicion.tipo_evento, condicion.id_referencia)
+                                  for regla in reglas for condicion in regla.condiciones])
+    motivos = []
+    for regla in reglas:
+        resultado = evaluar_regla(sesion, cuenta, regla)
+        campos = {"regla": regla.codigo, "mensaje": regla.mensaje_bloqueo,
+                  "condiciones_faltantes": [condicion for condicion in resultado.condiciones if not condicion.cumplida]}
+        if resultado.evaluador_especial is not None:
+            campos["evaluador_especial"] = resultado.evaluador_especial
+        motivos.append(MotivoBloqueo(**campos))
+    return motivos
 
 
 @usar_contexto

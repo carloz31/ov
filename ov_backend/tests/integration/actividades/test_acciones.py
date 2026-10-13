@@ -5,6 +5,7 @@ from sqlalchemy import func, select
 
 from app import models as modelos
 from app.services import comun as acciones
+from soporte_ruta import avanzar
 
 
 FECHA = "2026-10-01T10:00:00"
@@ -69,6 +70,8 @@ def test_referencias_inexistentes_responden_404(cliente, sesion, nombre, cuerpo)
 
 
 def test_carta_se_actualiza_sin_repetir_evento(cliente, sesion):
+    # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
+    avanzar(cliente)
     primera = post(cliente, "escribir-carta", cuenta="est-ana", texto="")
     segunda = post(cliente, "escribir-carta", cuenta="est-ana", texto="Texto actualizado")
     assert len(primera["eventos_registrados"]) == 1
@@ -76,10 +79,13 @@ def test_carta_se_actualiza_sin_repetir_evento(cliente, sesion):
     vinculo = sesion.scalar(select(modelos.VinculoFamiliar))
     assert vinculo.carta_estudiante == "Texto actualizado"
     assert vinculo.carta_apoderado is None
-    assert contar(sesion, modelos.EventoUso) == 1
+    assert sesion.scalar(select(func.count()).select_from(modelos.EventoUso).where(
+        modelos.EventoUso.tipo == modelos.TipoEventoUso.ESCRIBE_CARTA)) == 1
 
 
 def test_fecha_con_zona_conserva_calendario_simulado(cliente):
+    # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
+    avanzar(cliente)
     primero = post(cliente, "check-in", cuenta="est-ana", nivel_seguridad=1, fecha_hora="2026-10-01T00:01:00+14:00")
     assert primero["eventos_registrados"][0]["fecha_hora"] == "2026-10-01T00:01:00"
     assert cliente.post("/acciones/check-in", json={"cuenta": "est-ana", "nivel_seguridad": 5,

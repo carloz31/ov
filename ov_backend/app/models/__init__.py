@@ -14,10 +14,11 @@ _MODELOS_POR_MODULO = {
         'Base',
     ),
     'app.models.cuentas': (
-        'Cuenta', 'VinculoFamiliar',
+        'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar',
     ),
     'app.models.contenido': (
-        'Bloque', 'Actividad', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion', 'Insignia',
+        'Bloque', 'Actividad', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
+        'Insignia',
         'Nivel', 'FamiliaCarrera', 'Carrera',
     ),
     'app.models.progreso': (
@@ -55,7 +56,8 @@ __all__ = [
     'Base', 'Rol', 'Espacio', 'Audiencia', 'TipoActividad', 'Visibilidad', 'EstadoProgreso',
     'TipoEventoUso', 'NivelAjuste', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
-    'OrigenEvaluacion', 'Cuenta', 'VinculoFamiliar', 'Bloque', 'Actividad', 'Ficha', 'Testimonio',
+    'OrigenEvaluacion', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'Bloque',
+    'Actividad', 'Seccion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
     'ProgresoActividad', 'ResultadoCaso', 'EntradaDiario', 'CheckIn', 'Entrevista',
     'EntrevistaAutor', 'ConversacionVinculo', 'EventoUso', 'ReglaDesbloqueo',

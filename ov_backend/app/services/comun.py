@@ -12,7 +12,9 @@ from app.schemas.comun import ContenidoEstado
 from app.schemas.cuentas import EventoLegible
 from app.schemas.motor import DesbloqueoNuevo
 from app.services.motor.referencias import referencia_legible
-from app.services.motor.reglas import objetivo_disponible, registrar_eventos
+from app.services.motor.reglas import (
+    motivos_bloqueo, objetivo_corresponde_a_cuenta, objetivo_disponible, registrar_eventos,
+)
 
 
 def fecha_accion(entrada: FechaAccion) -> datetime:
@@ -35,18 +37,19 @@ def exigir_estudiante(cuenta: Cuenta) -> None:
         raise ErrorAccion("Esta acción solo está permitida para estudiantes")
 
 
-def exigir_disponible(sesion: Session, cuenta: Cuenta, tipo: TipoObjetivo, entidad=None) -> None:
+def exigir_disponible(sesion: Session, cuenta: Cuenta, tipo: TipoObjetivo, entidad) -> None:
     from app.services.cuentas import progreso_objetivo
 
-    identificador = None if entidad is None else entidad.id
-    if objetivo_disponible(sesion, cuenta, tipo, identificador):
+    if objetivo_disponible(sesion, cuenta, tipo, entidad.id):
         return
-    codigo = "-" if entidad is None else entidad.codigo
     try:
-        progreso = progreso_objetivo(sesion, cuenta, tipo, codigo)
+        progreso = progreso_objetivo(sesion, cuenta, tipo, entidad.codigo)
     except (LookupError, PermissionError):
         progreso = None
-    raise ErrorAccion("El objetivo no está disponible para esta cuenta", progreso=progreso)
+    motivos = motivos_bloqueo(sesion, cuenta, tipo, entidad.id)
+    # El mensaje es el de la primera regla por código; sin reglas que mostrar, el genérico.
+    mensaje = motivos[0].mensaje if motivos else "El objetivo no está disponible para esta cuenta"
+    raise ErrorAccion(mensaje, progreso=progreso)
 
 
 @usar_contexto
@@ -105,4 +108,5 @@ def estado_contenido(sesion: Session, cuenta: Cuenta, modelo, tipo: TipoObjetivo
     return [ContenidoEstado(
         codigo=contenido.codigo, titulo=contenido.titulo,
         estado="DISPONIBLE" if objetivo_disponible(sesion, cuenta, tipo, contenido.id) else "BLOQUEADA",
-    ) for contenido in sorted(contexto(sesion).definiciones.listar(modelo), key=lambda contenido: contenido.codigo)]
+    ) for contenido in sorted(contexto(sesion).definiciones.listar(modelo), key=lambda contenido: contenido.codigo)
+        if objetivo_corresponde_a_cuenta(sesion, cuenta, tipo, contenido.id)]

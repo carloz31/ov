@@ -6,7 +6,7 @@ Contrato vigente entre los dos repos. Lo usan los agentes de ambos. Las reglas g
 
 | Dato | Dueño |
 |---|---|
-| Cuentas, bloques, actividades (código, título, tipo, orden, `contenido`, `visibilidad`), reglas | Base de datos |
+| Cuentas, salones, bloques, actividades (código, título, tipo, orden, `contenido`, `visibilidad`, `requerida`, duración, descripción), secciones, reglas y sus mensajes de bloqueo | Base de datos |
 | Fichas, insignias y niveles (código, nombre, requisito, oculta) | Base de datos. La presentación (íconos, imágenes, cuerpo de la ficha) está en el front, buscada por código. |
 | Instrumento RIASEC (ítems, enunciados, escala, dimensiones con descripción, aplicación) | Base de datos |
 | Ocupaciones y carreras del universo de recomendación, con sus puntajes O*NET | Base de datos |
@@ -31,21 +31,24 @@ Contrato vigente entre los dos repos. Lo usan los agentes de ambos. Las reglas g
 
 ## Consultas por dominio
 
-Todas son GET, reciben el código de la cuenta y responden 404 «Cuenta no encontrada» si no existe. Para un apoderado, las listas propias del estudiante salen vacías.
+Todas son GET, reciben el código de la cuenta y responden 404 «Cuenta no encontrada» si no existe. Para un apoderado, las listas propias del estudiante salen vacías; para una orientadora, todas. Leer el contenido de una sección bloqueada responde 409 con su mensaje de bloqueo.
 
 | Ruta | Respuesta | El front la pide |
 |---|---|---|
 | `/cuentas/{c}/resumen` | `ResumenCuenta`: `cuenta` y `nivel_actual` | Al ingresar (menú y panel) |
 | `/cuentas/{c}/actividades` | `list[BloqueActividades]` | Al ingresar (mapa y panel del estudiante; inicio y actividades del apoderado) |
-| `/cuentas/{c}/fichas` | `list[ContenidoEstado]` | Al abrir la mochila o un recurso |
+| `/cuentas/{c}/fichas` | `list[ContenidoEstado]`, las de la audiencia de la cuenta | Al abrir la mochila o un recurso |
+| `/cuentas/{c}/secciones` | `list[SeccionEstado]`: `codigo`, `nombre`, `estado`, `bloqueo` | Todavía no |
+| `/cuentas/{c}/secciones/{codigo}` | `SeccionEstado`; 404 si no existe o es de otra audiencia | Todavía no |
 | `/cuentas/{c}/logros` | `LogrosCuenta`: `insignias` y `niveles` | Al abrir el perfil, el pasaporte o una insignia |
 | `/cuentas/{c}/testimonios` | `list[ContenidoEstado]` | Todavía no (sin vista) |
-| `/cuentas/{c}/diario/preguntas` | `list[PreguntaDiarioEstado]` | Todavía no |
-| `/cuentas/{c}/conversaciones` | `ConversacionesEstado` | Todavía no |
+| `/cuentas/{c}/diario/preguntas` | `list[PreguntaDiarioEstado]`; 409 con DIARIO bloqueada | Todavía no |
 
 Además usa `/cuentas`, `/cuentas/{c}/progreso/...`, `/cuentas/{c}/desbloqueos` (no vistos y marcar vistos), las acciones `ingresar`, `completar-actividad` y `responder-items`, y las consultas de instrumentos (ítems, respuestas, avance y resultado). Todas están descritas en `motor.md` e `instrumentos.md`.
 
-**`BloqueActividades`:** bloques por `numero` y `codigo`; actividades por `orden` y `codigo`. Cada actividad trae `codigo`, `titulo`, `tipo`, `orden`, `contenido`, `visibilidad`, `visible` y `estado` (BLOQUEADA, DISPONIBLE, EN_CURSO o COMPLETADA).
+**`BloqueActividades`:** bloques por `numero` y `codigo`, con `estado` y `bloqueo`; actividades por `orden` y `codigo`. Cada actividad trae `codigo`, `titulo`, `tipo`, `orden`, `contenido`, `visibilidad`, `visible`, `estado` (BLOQUEADA, DISPONIBLE, EN_CURSO o COMPLETADA), `requerida`, `duracion_estimada_min`, `descripcion` y `bloqueo`.
+
+**`bloqueo`:** `null` si no está bloqueado; si no, una entrada por regla alternativa con `regla`, `mensaje` y `condiciones_faltantes` (`motor.md`, «Motivo de bloqueo»). Una actividad bloqueada por su bloque trae los motivos del bloque.
 
 **Visibilidad:**
 
@@ -78,16 +81,16 @@ El portal del apoderado tiene su propia sesión en `ov_frontend/src/store/servid
 
 **`ruta`** (`datos/ruta.py`, `DATO DE PRUEBA`) sobre **`fijos`** (`datos/fijos.py`). Es el único conjunto. `fijos` lleva lo que tendrá la plataforma sea cual sea la ruta: el RIASEC `TEST-RIASEC` (60 ítems, escala `ESC-LIKERT5`, aplicación `APL-RIASEC`) y las ocupaciones y carreras del catálogo del front con sus puntajes O*NET. `ruta` lleva lo mínimo para probar cada mecánica, en tuplas que interpreta el cargador:
 
-- cuentas `est-ana`, `est-luis`, `est-beto` y `apo-rosa` (vínculo `VIN-ANA`);
-- bloques `T0` (`t-inicio`, `t-cierre-inicio`), `T1` (`t-expectativas`, REGISTRO), `CIUDAD` (`t-mision-intereses` y `t-mision-intereses-2`, con 30 ítems RIASEC cada una; `t-caso`, CASO) y `FAMILIA` del apoderado (`t-apo-1`, `t-apo-carta`);
-- ficha `t-ficha`; conversaciones `t-conv-1` y `t-conv-2`; insignias `t-ins-1` y `t-ins-oculta`; niveles 1 y 2;
-- reglas: T0 en secuencia; cerrar T0 abre T1, el nivel 2 y las conversaciones del estudiante; `t-expectativas` abre la Ciudad; `t-mision-intereses` abre `t-mision-intereses-2`, que abre `t-caso`; el resultado se calcula al completar la segunda; `t-inicio` da `t-ficha` y `t-ins-1`.
+- salones `5A` y `5B`; cuentas `est-ana` y `est-luis` (5A), `est-beto` (5B), `apo-rosa` (vínculo `VIN-ANA`, madre) y `ori-carmen` (orientadora principal del 5A);
+- bloques `T0` (`t-inicio`, `t-cierre-inicio`), `T1` (`t-expectativas`, REGISTRO; `t-opcional`, opcional y `AL_DESBLOQUEAR`), `CIUDAD` (`t-mision-intereses` y `t-mision-intereses-2`, con 30 ítems RIASEC cada una; `t-caso`, CASO) y `FAMILIA` del apoderado (`t-apo-1`, `t-apo-carta`);
+- fichas `t-ficha` y `t-ficha-apo` (del apoderado); conversaciones `t-conv-1` y `t-conv-2`; insignias `t-ins-1` y `t-ins-oculta`; niveles 1 y 2;
+- reglas, todas con mensaje de bloqueo: T0 en secuencia; `t-inicio` da `t-ficha`, `t-ins-1` y abre DIARIO, CATALOGO y PLANES; cerrar T0 abre T1, el nivel 2 y CHECK_IN; `t-expectativas` abre la Ciudad, `t-opcional` y FAMILIA; `t-mision-intereses` abre `t-mision-intereses-2`, que abre `t-caso`; el resultado se calcula al completar la segunda; `t-apo-1` abre `t-apo-carta` y da `t-ficha-apo`; cerrar FAMILIA abre la sección CONVERSACIONES del apoderado.
 
 El contenido de cada actividad es su código con guiones bajos (`t_inicio`) y todavía no existe en el front: lo agrega el lote F que conecte cada tramo. Cada lote B extiende `ruta` con las filas de su tramo (ver `docs/plan-iteraciones.md`).
 
 ## Fixtures de contrato
 
-`scripts/exportar_fixtures_front.py --destino <ov_frontend>/tests/fixtures/servidor` crea una base temporal con `ruta`, recorre la ruta corta y escribe 16 JSON en `ruta/` con prefijo `ruta-`: `cuentas`; `resumen-inicial`; `actividades` al inicio, con T1 abierto y con la Ciudad abierta; `fichas` y `logros` al inicio y al final; `completar-t-inicio` y `completar-t-cierre-inicio`; `items-t-mision-intereses` (la primera misión); `resultado-riasec`; `desbloqueos-no-vistos`, y `apoderado-actividades` inicial y final. Ninguna prueba del front los usa todavía; los fixtures de la raíz de `tests/fixtures/servidor/` quedan congelados hasta su lote F. Si cambia una respuesta del contrato, se regeneran en la misma tarea; nunca se editan a mano.
+`scripts/exportar_fixtures_front.py --destino <ov_frontend>/tests/fixtures/servidor` crea una base temporal con `ruta`, recorre la ruta corta y escribe 20 JSON en `ruta/` con prefijo `ruta-`: `cuentas`; `resumen-inicial`; `actividades` al inicio, con T1 abierto y con la Ciudad abierta; `secciones` al inicio y con T1 abierto; `fichas` y `logros` al inicio y al final; `completar-t-inicio` y `completar-t-cierre-inicio`; `items-t-mision-intereses` (la primera misión); `resultado-riasec`; `desbloqueos-no-vistos`, y `apoderado-actividades` y `apoderado-secciones` inicial y final. Ninguna prueba del front los usa todavía; los fixtures de la raíz de `tests/fixtures/servidor/` quedan congelados hasta su lote F. Si cambia una respuesta del contrato, se regeneran en la misma tarea; nunca se editan a mano.
 
 ## Reinicio de datos de prueba
 

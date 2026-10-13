@@ -16,14 +16,21 @@ INTERESES, INTERESES_FINAL = MISIONES_INTERESES
 
 BLOQUE_FAMILIA = {
     'codigo': 'FAMILIA', 'nombre': 'Actividades para familias', 'numero': 1,
-    'espacio': 'PORTAL_FAMILIA', 'estado': 'DISPONIBLE',
+    'espacio': 'PORTAL_FAMILIA', 'estado': 'DISPONIBLE', 'bloqueo': None,
     'actividades': [
         {'codigo': 't-apo-1', 'titulo': 'Primera actividad del apoderado',
          'tipo': 'INFORMATIVA', 'orden': 1, 'contenido': 't_apo_1',
-         'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'DISPONIBLE'},
+         'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'DISPONIBLE',
+         'requerida': True, 'duracion_estimada_min': 10, 'descripcion': None, 'bloqueo': None},
         {'codigo': 't-apo-carta', 'titulo': 'Carta del apoderado',
          'tipo': 'INFORMATIVA', 'orden': 2, 'contenido': 't_apo_carta',
-         'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'BLOQUEADA'},
+         'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'BLOQUEADA',
+         'requerida': True, 'duracion_estimada_min': 10, 'descripcion': None,
+         'bloqueo': [{'regla': 'R-t-apo-carta', 'mensaje': 'Completa la primera actividad.',
+                      'condiciones_faltantes': [{'tipo_evento': 'COMPLETA_ACTIVIDAD', 'referencia': 't-apo-1',
+                                                 'tipo_conteo': 'EVENTOS', 'actual': 0, 'requerido': 1,
+                                                 'cumplida': False}],
+                      'evaluador_especial': None}]},
     ],
 }
 

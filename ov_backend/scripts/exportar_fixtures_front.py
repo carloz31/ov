@@ -38,10 +38,11 @@ def _consultas_dominio(cliente, momento, rutas):
 
 def _recorrer(cliente):
     fixtures = {'cuentas': _pedir(cliente, 'GET', '/cuentas')}
-    fixtures.update(_consultas_dominio(cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros')))
+    fixtures.update(_consultas_dominio(cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros', 'secciones')))
     fixtures['completar-t-inicio'] = _completar(cliente, 't-inicio')
     fixtures['completar-t-cierre-inicio'] = _completar(cliente, 't-cierre-inicio')
     fixtures['actividades-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
+    fixtures['secciones-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/secciones')
     _completar(cliente, 't-expectativas')
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     ruta_avisos = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
@@ -65,11 +66,13 @@ def _recorrer(cliente):
 
 
 def _recorrer_apoderado(cliente):
-    ruta = '/cuentas/apo-rosa/actividades'
-    fixtures = {'apoderado-actividades-inicial': _pedir(cliente, 'GET', ruta)}
+    ruta, secciones = '/cuentas/apo-rosa/actividades', '/cuentas/apo-rosa/secciones'
+    fixtures = {'apoderado-actividades-inicial': _pedir(cliente, 'GET', ruta),
+                'apoderado-secciones-inicial': _pedir(cliente, 'GET', secciones)}
     for actividad in ('t-apo-1', 't-apo-carta'):
         _completar(cliente, actividad, 'apo-rosa')
     fixtures['apoderado-actividades-final'] = _pedir(cliente, 'GET', ruta)
+    fixtures['apoderado-secciones-final'] = _pedir(cliente, 'GET', secciones)
     return fixtures
 
 

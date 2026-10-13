@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, UniqueConstraint, false
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Text, UniqueConstraint, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, enumerado
@@ -19,18 +19,12 @@ class EventoUso(Base):
 
 class ReglaDesbloqueo(Base):
     __tablename__ = "regla_desbloqueo"
-    __table_args__ = (
-        CheckConstraint(
-            "(tipo_objetivo = 'CONVERSACIONES' AND id_objetivo IS NULL) OR "
-            "(tipo_objetivo != 'CONVERSACIONES' AND id_objetivo IS NOT NULL)",
-            name="objetivo_segun_tipo",
-        ),
-    )
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
+    mensaje_bloqueo: Mapped[str] = mapped_column(Text)
     tipo_objetivo: Mapped[TipoObjetivo] = mapped_column(enumerado(TipoObjetivo))
-    id_objetivo: Mapped[int | None]
+    id_objetivo: Mapped[int]
     evaluador_especial: Mapped[str | None]
     parametro_evaluador: Mapped[int | None] = mapped_column(default=None)
     condiciones: Mapped[list["CondicionDesbloqueo"]] = relationship(

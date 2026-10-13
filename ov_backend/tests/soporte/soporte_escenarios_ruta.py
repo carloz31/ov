@@ -16,13 +16,17 @@ def verificar_p01_estado_inicial(cliente):
     assert visibles[0]['requisito']
     oculto, = [i for i in inicial['insignias'] if i['codigo'] == '???']
     assert oculto['estado'] == 'BLOQUEADA' and oculto['requisito'] is None
-    assert inicial['conversaciones']['estado'] == 'BLOQUEADA'
+    assert inicial['secciones'] == dict.fromkeys(('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'PLANES'), 'BLOQUEADA')
     assert inicial['nivel_actual']['numero'] == 1
-    assert inicial['testimonios'] == inicial['preguntas_diario'] == []
+    assert inicial['testimonios'] == [] and inicial['preguntas_diario'] is None
 
 
 def verificar_p02_primer_paso(cliente):
-    assert reglas(completar(cliente, 't-inicio')) == {'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1'}
+    assert reglas(completar(cliente, 't-inicio')) == {
+        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES'}
+    assert estado(cliente)['secciones'] == {
+        'CATALOGO': 'DISPONIBLE', 'CHECK_IN': 'BLOQUEADA', 'DIARIO': 'DISPONIBLE', 'FAMILIA': 'BLOQUEADA',
+        'PLANES': 'DISPONIBLE'}
 
 
 def verificar_p03_cierre_de_t0(cliente):
@@ -30,7 +34,8 @@ def verificar_p03_cierre_de_t0(cliente):
     assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [
         ('COMPLETA_ACTIVIDAD', 't-cierre-inicio'), ('COMPLETA_BLOQUE', 'T0'),
     ]
-    assert reglas(respuesta) == {'R-T1', 'R-NIV-2', 'R-FAM-ESTUDIANTE'}
+    assert reglas(respuesta) == {'R-T1', 'R-NIV-2', 'R-SEC-CHECK_IN'}
+    assert estado(cliente)['secciones']['CHECK_IN'] == 'DISPONIBLE'
     assert actividades(cliente)['t-expectativas'] == 'DISPONIBLE'
     assert estado(cliente)['nivel_actual']['numero'] == 2
 
@@ -40,8 +45,11 @@ def verificar_p07_llegada_a_la_ciudad(cliente):
     assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [
         ('COMPLETA_ACTIVIDAD', 't-expectativas'), ('COMPLETA_BLOQUE', 'T1'),
     ]
-    assert reglas(respuesta) == {'R-CIUDAD'}
+    # La Ciudad se abre a mitad de T1: la opcional t-opcional sigue pendiente y no impide cerrar el bloque.
+    assert reglas(respuesta) == {'R-CIUDAD', 'R-t-opcional', 'R-SEC-FAMILIA'}
+    assert estado(cliente)['secciones']['FAMILIA'] == 'DISPONIBLE'
     estados = actividades(cliente)
+    assert estados['t-opcional'] == 'DISPONIBLE'
     assert estados[INTERESES] == 'DISPONIBLE'
     assert estados[INTERESES_FINAL] == estados['t-caso'] == 'BLOQUEADA'
 

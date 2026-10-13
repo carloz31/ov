@@ -4,13 +4,15 @@ from soporte_datos_ports import preparar_preguntas_respondidas
 from datetime import timedelta
 from app import models as m
 from soporte_dominios import RUTAS_DOMINIO
-from soporte_ruta import filas_base, pedir
+from soporte_ruta import completar, filas_base, pedir
 from soporte_retiro import FECHA_BD, agregar_eventos, buscar, ciclo, sin_ids
 
 
 def test_r09_pregunta_respondida_por_cuenta_sin_confundir_libres(cliente, aplicacion):
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         preparar_preguntas_respondidas(sesion)
+    for cuenta in ('est-ana', 'est-luis'):
+        completar(cliente, 't-inicio', cuenta)  # B01: abre DIARIO.
     for cuenta, esperados in [('est-ana', [True, False]), ('est-luis', [False, True])]:
         preguntas = pedir(cliente, 'GET', f'/cuentas/{cuenta}/diario/preguntas')
         assert [p['respondida'] for p in preguntas] == esperados

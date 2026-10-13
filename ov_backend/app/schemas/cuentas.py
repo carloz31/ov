@@ -31,6 +31,7 @@ class ObjetivoProgreso(BaseModel):
 
 class ProgresoRegla(BaseModel):
     regla: str
+    mensaje_bloqueo: str
     cumplida: bool
     condiciones: list[ProgresoCondicion]
     evaluador_especial: ResultadoEvaluador | None = None

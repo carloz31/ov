@@ -17,6 +17,7 @@ from app.schemas.cuentas import CuentaResumen, DesbloqueoLegible, ResumenCuenta
 from app.schemas.actividades import BloqueActividades
 from app.schemas.comun import ContenidoEstado
 from app.schemas.logros import LogrosCuenta
+from app.schemas.secciones import SeccionEstado
 from app.schemas.instrumentos import ItemPublico, ResultadoPublico
 
 
@@ -26,6 +27,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'fichas-inicial', 'fichas-final', 'logros-inicial', 'logros-final',
     'completar-t-inicio', 'completar-t-cierre-inicio', 'items-t-mision-intereses', 'resultado-riasec',
     'desbloqueos-no-vistos', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
+    'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
 )}
 
 
@@ -99,15 +101,24 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert datos['resumen-inicial']['nivel_actual']['numero'] == 1
     assert any(i['codigo'] == '???' for i in datos['logros-inicial']['insignias'])
     assert {d['regla'] for d in datos['completar-t-inicio']['nuevos_desbloqueos']} == {
-        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1'}
+        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES'}
     cierre = datos['completar-t-cierre-inicio']
-    assert {d['regla'] for d in cierre['nuevos_desbloqueos']} == {'R-T1', 'R-NIV-2', 'R-FAM-ESTUDIANTE'}
+    assert {d['regla'] for d in cierre['nuevos_desbloqueos']} == {'R-T1', 'R-NIV-2', 'R-SEC-CHECK_IN'}
+    for nombre in ('secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final'):
+        TypeAdapter(list[SeccionEstado]).validate_python(datos[nombre])
+    assert all(s['estado'] == 'BLOQUEADA' and s['bloqueo'] for s in datos['secciones-inicial'])
+    assert {s['codigo']: s['estado'] for s in datos['secciones-t1']} == {
+        'CATALOGO': 'DISPONIBLE', 'CHECK_IN': 'DISPONIBLE', 'DIARIO': 'DISPONIBLE', 'FAMILIA': 'BLOQUEADA',
+        'PLANES': 'DISPONIBLE'}
+    assert [(s['codigo'], s['estado']) for s in datos['apoderado-secciones-inicial']] == [('CONVERSACIONES', 'BLOQUEADA')]
+    assert [(s['codigo'], s['estado']) for s in datos['apoderado-secciones-final']] == [('CONVERSACIONES', 'DISPONIBLE')]
     assert cierre['eventos_registrados'][-1]['referencia'] == 'T0'
     assert estados(datos['actividades-t1'])['t-expectativas'] == 'DISPONIBLE'
     ciudad = next(b for b in datos['actividades-ciudad'] if b['codigo'] == 'CIUDAD')
     assert ciudad['estado'] == 'DISPONIBLE'
     assert [(a['codigo'], a['estado']) for a in ciudad['actividades']] == [
         ('t-mision-intereses', 'DISPONIBLE'), ('t-mision-intereses-2', 'BLOQUEADA'), ('t-caso', 'BLOQUEADA')]
+    assert next(b for b in datos['actividades-inicial'] if b['codigo'] == 'CIUDAD')['bloqueo'][0]['mensaje']
     items = datos['items-t-mision-intereses']
     assert [i['codigo'] for i in items] == [f'RIASEC-{n:02}' for n in range(1, 31)]
     assert len(items[0]['escala']['opciones']) == 5
@@ -124,7 +135,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     }
     avisos = datos['desbloqueos-no-vistos']
     assert {d['regla'] for d in avisos} == {
-        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-FAM-ESTUDIANTE', 'R-CIUDAD'}
+        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD', 'R-t-opcional',
+        'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA'}
     assert all(d['visto'] is False and d['fecha_hora'] == exportador.FECHA for d in avisos)
     assert [(f['codigo'], f['estado']) for f in datos['fichas-inicial']] == [('t-ficha', 'BLOQUEADA')]
     assert [(f['codigo'], f['estado']) for f in datos['fichas-final']] == [('t-ficha', 'DISPONIBLE')]
@@ -159,12 +171,13 @@ def test_fixtures_de_cuentas_y_apoderado(tmp_path):
     cuentas = TypeAdapter(list[CuentaResumen]).validate_python(datos['cuentas'])
     assert [(c.codigo, c.rol) for c in cuentas] == [
         ('apo-rosa', 'APODERADO'), ('est-ana', 'ESTUDIANTE'), ('est-beto', 'ESTUDIANTE'), ('est-luis', 'ESTUDIANTE'),
+        ('ori-carmen', 'ORIENTADORA'),
     ]
     for momento in ('inicial', 'final'):
         TypeAdapter(list[BloqueActividades]).validate_python(datos[f'apoderado-actividades-{momento}'])
     assert datos['apoderado-actividades-inicial'] == [BLOQUE_FAMILIA]
     bloque, = datos['apoderado-actividades-final']
-    assert bloque['actividades'] == [{**a, 'estado': 'COMPLETADA'} for a in BLOQUE_FAMILIA['actividades']]
+    assert bloque['actividades'] == [{**a, 'estado': 'COMPLETADA', 'bloqueo': None} for a in BLOQUE_FAMILIA['actividades']]
 
 
 @pytest.mark.parametrize('evaluador_previo', [None, 'gemini'])

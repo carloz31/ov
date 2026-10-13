@@ -14,8 +14,8 @@ def test_r08_explicaciones_compuestas_alternativas_y_sin_reglas(cliente, aplicac
     assert explicacion['cumplida'] is False
     libre = progreso(cliente, 'FICHA', 'ficha-libre')
     assert libre['reglas'] == [] and libre['disponible'] is True
-    for cuenta, actual in (('est-ana', 1), ('apo-rosa', 0)):
-        alternativas = pedir(cliente, 'GET', f'/cuentas/{cuenta}/progreso/CONVERSACIONES/-')['reglas']
+    for cuenta, actual in (('est-ana', 1), ('est-luis', 0)):
+        alternativas = pedir(cliente, 'GET', f'/cuentas/{cuenta}/progreso/SECCION/SEC-PRUEBA')['reglas']
         por_codigo = {r['regla']: r for r in alternativas}
         assert por_codigo['R-PRUEBA-OR-A']['condiciones'][0]['actual'] == actual
         assert por_codigo['R-PRUEBA-OR-B']['condiciones'][0]['actual'] == 0

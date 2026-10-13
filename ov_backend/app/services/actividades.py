@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, ActividadItem, AplicacionActividad, Audiencia, Bloque, Cuenta, EstadoProgreso,
+    Actividad, ActividadItem, AplicacionActividad, Bloque, Cuenta, EstadoProgreso,
     EstadoRespuestaRegistro, Instrumento, ItemInstrumento, OpcionEscala, ProgresoActividad, RespuestaItem,
     RespuestaRegistro, ResultadoCaso, ResultadoInstrumento, Rol, TipoActividad, TipoEventoUso,
     TipoObjetivo, TipoResultado, Visibilidad,
@@ -21,7 +21,7 @@ from app.services.comun import (
 )
 from app.services.instrumentos.consultas import actividades_de_aplicacion, seleccionar_aplicacion
 from app.services.instrumentos.resultados import generar_resultados_al_completar
-from app.services.motor.reglas import objetivo_disponible
+from app.services.motor.reglas import motivos_bloqueo, objetivo_disponible
 
 
 @usar_contexto
@@ -38,7 +38,9 @@ def completar_progreso(sesion: Session, cuenta: Cuenta, actividad: Actividad):
         progreso.estado = EstadoProgreso.COMPLETADA
     sesion.flush()
     eventos = [(TipoEventoUso.COMPLETA_ACTIVIDAD, actividad.id)]
-    actividades = [otra for otra in datos.definiciones.listar(Actividad) if otra.bloque_id == actividad.bloque_id]
+    # Las actividades opcionales no cuentan para cerrar el bloque.
+    actividades = [otra for otra in datos.definiciones.listar(Actividad)
+                   if otra.bloque_id == actividad.bloque_id and otra.requerida]
     completo = all(otra.id in progresos and progresos[otra.id].estado == EstadoProgreso.COMPLETADA for otra in actividades)
     if completo and not existe_evento(sesion, cuenta, TipoEventoUso.COMPLETA_BLOQUE, actividad.bloque_id):
         eventos.append((TipoEventoUso.COMPLETA_BLOQUE, actividad.bloque_id))
@@ -232,7 +234,7 @@ def listar_bloques_cuenta(sesion: Session, cuenta: Cuenta) -> list[BloqueActivid
     progresos = {identificador: progreso.estado for identificador, progreso in datos.progresos_de(cuenta.id).items()}
     bloques = []
     for bloque in sorted((bloque for bloque in datos.definiciones.listar(Bloque)
-                         if bloque.audiencia == Audiencia(cuenta.rol.value)), key=lambda bloque: (bloque.numero, bloque.codigo)):
+                         if bloque.audiencia == cuenta.rol.value), key=lambda bloque: (bloque.numero, bloque.codigo)):
         bloque_disponible = objetivo_disponible(sesion, cuenta, TipoObjetivo.BLOQUE, bloque.id)
         actividades = []
         for actividad in sorted((actividad for actividad in datos.definiciones.listar(Actividad)
@@ -247,9 +249,14 @@ def listar_bloques_cuenta(sesion: Session, cuenta: Cuenta) -> list[BloqueActivid
                 codigo=actividad.codigo, titulo=actividad.titulo, tipo=actividad.tipo, orden=actividad.orden,
                 contenido=actividad.contenido, visibilidad=actividad.visibilidad,
                 visible=actividad.visibilidad == Visibilidad.SIEMPRE or estado != "BLOQUEADA", estado=estado,
+                requerida=actividad.requerida, duracion_estimada_min=actividad.duracion_estimada_min,
+                descripcion=actividad.descripcion,
+                bloqueo=None if disponible else motivos_bloqueo(sesion, cuenta, TipoObjetivo.ACTIVIDAD, actividad.id),
             ))
         bloques.append(BloqueActividades(
             codigo=bloque.codigo, nombre=bloque.nombre, numero=bloque.numero, espacio=bloque.espacio,
-            estado="DISPONIBLE" if bloque_disponible else "BLOQUEADA", actividades=actividades,
+            estado="DISPONIBLE" if bloque_disponible else "BLOQUEADA",
+            bloqueo=None if bloque_disponible else motivos_bloqueo(sesion, cuenta, TipoObjetivo.BLOQUE, bloque.id),
+            actividades=actividades,
         ))
     return bloques

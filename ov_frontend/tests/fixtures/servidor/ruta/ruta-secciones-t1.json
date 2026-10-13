@@ -1,0 +1,48 @@
+[
+  {
+    "bloqueo": null,
+    "codigo": "CATALOGO",
+    "estado": "DISPONIBLE",
+    "nombre": "Catálogo"
+  },
+  {
+    "bloqueo": null,
+    "codigo": "CHECK_IN",
+    "estado": "DISPONIBLE",
+    "nombre": "Check-in"
+  },
+  {
+    "bloqueo": null,
+    "codigo": "DIARIO",
+    "estado": "DISPONIBLE",
+    "nombre": "Diario"
+  },
+  {
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "t-expectativas",
+            "requerido": 1,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_ACTIVIDAD"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa el registro de expectativas para abrir la sección Familia.",
+        "regla": "R-SEC-FAMILIA"
+      }
+    ],
+    "codigo": "FAMILIA",
+    "estado": "BLOQUEADA",
+    "nombre": "Familia"
+  },
+  {
+    "bloqueo": null,
+    "codigo": "PLANES",
+    "estado": "DISPONIBLE",
+    "nombre": "Planes"
+  }
+]

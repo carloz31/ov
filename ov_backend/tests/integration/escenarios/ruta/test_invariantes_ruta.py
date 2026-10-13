@@ -20,7 +20,12 @@ def test_ruta_marcada_y_fijos_sin_marca():
 def test_codigos_nombran_la_mecanica():
     codigos = [c for c, *_ in ruta.ACTIVIDADES + ruta.FICHAS + ruta.CONVERSACIONES + ruta.INSIGNIAS]
     assert all(c.startswith('t-') for c in codigos)
-    assert {c for c, *_ in ruta.CUENTAS} == {'est-ana', 'est-luis', 'est-beto', 'apo-rosa'}
+    assert {c for c, *_ in ruta.CUENTAS} == {'est-ana', 'est-luis', 'est-beto', 'apo-rosa', 'ori-carmen'}
+
+
+def test_toda_regla_tiene_mensaje_de_bloqueo(sesion):
+    assert all(mensaje.strip() for _, _, _, mensaje, _ in ruta.REGLAS)
+    assert all(regla.mensaje_bloqueo.strip() for regla in sesion.scalars(select(modelos.ReglaDesbloqueo)))
 
 
 def test_desbloqueos_y_nivel_no_retroceden(cliente, aplicacion):

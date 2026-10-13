@@ -35,7 +35,8 @@ def listar_reglas(sesion: Session) -> list[ReglaLegible]:
                 tipo_conteo=condicion.tipo_conteo, cantidad_minima=condicion.cantidad_minima,
             ))
         resultado.append(ReglaLegible(
-            regla=regla.codigo, nombre=regla.nombre, tipo_objetivo=regla.tipo_objetivo,
+            regla=regla.codigo, nombre=regla.nombre, mensaje_bloqueo=regla.mensaje_bloqueo,
+            tipo_objetivo=regla.tipo_objetivo,
             objetivo=objetivo_legible(sesion, regla), condiciones=condiciones,
             evaluador_especial=regla.evaluador_especial,
         ))
@@ -57,11 +58,7 @@ def resumen_cuenta(sesion: Session, cuenta: Cuenta) -> ResumenCuenta:
 
 
 @usar_contexto
-def id_objetivo_por_codigo(sesion: Session, tipo: TipoObjetivo, codigo: str) -> int | None:
-    if tipo == TipoObjetivo.CONVERSACIONES:
-        if codigo == "-":
-            return None
-        raise LookupError("Objetivo no encontrado")
+def id_objetivo_por_codigo(sesion: Session, tipo: TipoObjetivo, codigo: str) -> int:
     definiciones = contexto(sesion).definiciones
     modelo = MODELOS_OBJETIVO[tipo]
     if tipo == TipoObjetivo.NIVEL:
@@ -94,7 +91,8 @@ def progreso_objetivo(
                                   for condicion in regla.condiciones])
     for regla in contexto(sesion).definiciones.reglas_objetivo.get((tipo, identificador), ()):
         resultado = evaluar_regla(sesion, cuenta, regla)
-        campos = {"regla": regla.codigo, "cumplida": resultado.cumple, "condiciones": resultado.condiciones}
+        campos = {"regla": regla.codigo, "mensaje_bloqueo": regla.mensaje_bloqueo, "cumplida": resultado.cumple,
+                  "condiciones": resultado.condiciones}
         if resultado.evaluador_especial is not None:
             campos["evaluador_especial"] = resultado.evaluador_especial
         reglas.append(ProgresoRegla(**campos))

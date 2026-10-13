@@ -13,7 +13,7 @@ def test_carga_conteos_recarga_rechazada_y_vaciado(tmp_path, conjunto):
     url = f'sqlite:///{(tmp_path / "carga.db").as_posix()}'
     conteos = carga.preparar_base(url, conjunto, crear_tablas=True)
     assert set(conteos) == set(carga.TABLAS_PRINCIPALES)
-    assert conteos['cuenta'] == 4 and conteos['actividad'] > 0
+    assert conteos['cuenta'] == 5 and conteos['actividad'] > 0
     motor = crear_motor_bd(url)
     try:
         antes = filas(motor)
@@ -78,7 +78,7 @@ def test_cli_sin_esquema_y_carga_tras_migracion(tmp_path, monkeypatch, capsys):
     command.upgrade(Config(str(Path(__file__).resolve().parents[3] / 'alembic.ini')), 'head')
     assert carga.main(['ruta']) == 0
     salida = capsys.readouterr().out
-    assert 'cuenta: 4' in salida and 'ocupacion: 36' in salida
+    assert 'cuenta: 5' in salida and 'ocupacion: 36' in salida
     with pytest.raises(SystemExit) as error:
         carga.main(['ruta'])
     assert error.value.code == 1

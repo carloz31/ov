@@ -21,7 +21,7 @@ def buscar(sesion, modelo, codigo):
 
 
 def regla(sesion, codigo, tipo, objetivo, condiciones, especial=None, parametro=None):
-    nueva = m.ReglaDesbloqueo(codigo=codigo, nombre='DATO DE PRUEBA', tipo_objetivo=tipo,
+    nueva = m.ReglaDesbloqueo(codigo=codigo, nombre='DATO DE PRUEBA', mensaje_bloqueo='DATO DE PRUEBA', tipo_objetivo=tipo,
         id_objetivo=objetivo, evaluador_especial=especial, parametro_evaluador=parametro,
         condiciones=[m.CondicionDesbloqueo(tipo_evento=evento, cantidad_minima=cantidad,
             id_referencia=referencia, tipo_conteo=conteo)

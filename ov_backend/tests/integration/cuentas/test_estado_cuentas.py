@@ -1,6 +1,6 @@
 """Estado cuentas."""
 
-from soporte_ruta import FECHA, eventos, pedir
+from soporte_ruta import FECHA, avanzar, eventos, pedir
 from sqlalchemy import func, select
 from app import models as modelos
 
@@ -10,6 +10,8 @@ def test_check_in_y_diario_aislados_por_cuenta(cliente, sesion):
     sesion.add(modelos.PreguntaDiario(codigo='pregunta-prueba', pregunta='DATO DE PRUEBA'))
     sesion.commit()
     for cuenta in ('est-ana', 'est-luis'):
+        # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
+        avanzar(cliente, cuenta=cuenta)
         cuerpo = {'cuenta': cuenta, 'nivel_seguridad': 3, 'fecha_hora': FECHA}
         pedir(cliente, 'POST', '/acciones/check-in', cuerpo)
         pedir(cliente, 'POST', '/acciones/check-in', cuerpo, esperado=409)
@@ -32,6 +34,8 @@ def test_check_in_y_diario_aislados_por_cuenta(cliente, sesion):
 
 
 def test_carta_se_registra_solo_la_primera_vez_por_cuenta(cliente):
+    # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
+    avanzar(cliente)
     for cuenta in ('est-ana', 'apo-rosa'):
         for texto in ('Primera carta', 'Carta editada'):
             pedir(cliente, 'POST', '/acciones/escribir-carta',

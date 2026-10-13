@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 44
+    assert len(Base.metadata.tables) == 47
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,7 +129,7 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 45
+    assert sql.count('CREATE TABLE ') == 48
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -241,13 +241,14 @@ def test_migracion_0003_admite_familia_conserva_datos_y_rechaza_otros_espacios(t
                                       "VALUES (1, 'prueba', 'Prueba', 'INFORMATIVA', 1, 1, 'prueba')"))
                 conexion.execute(text("INSERT INTO progreso_actividad (cuenta_id, actividad_id, estado) "
                                       "VALUES (1, 1, 'COMPLETADA')"))
-                anteriores = {nombre: conexion.execute(select(Base.metadata.tables[nombre])).all()
+                # SQL literal: el modelo vigente tiene columnas posteriores a 0003.
+                anteriores = {nombre: conexion.execute(text(f'SELECT * FROM {nombre}')).all()
                               for nombre in ('cuenta', 'bloque', 'actividad', 'progreso_actividad')}
-        command.upgrade(configuracion, 'head')
+        command.upgrade(configuracion, '0003')
         with motor.begin() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0003'
             for nombre, filas in anteriores.items():
-                assert conexion.execute(select(Base.metadata.tables[nombre])).all() == filas
+                assert conexion.execute(text(f'SELECT * FROM {nombre}')).all() == filas
             conexion.execute(text("INSERT INTO bloque (codigo, numero, nombre, espacio, audiencia) "
                                   "VALUES ('familia-prueba', 1, 'DATO DE PRUEBA', 'PORTAL_FAMILIA', 'APODERADO')"))
         with pytest.raises(IntegrityError), motor.begin() as conexion:
@@ -259,7 +260,8 @@ def test_migracion_0003_admite_familia_conserva_datos_y_rechaza_otros_espacios(t
         motor.dispose()
 
 
-def test_downgrade_0003_con_familia_falla_sin_perder_catalogo_ni_estado(base_migrada):
+# B01: la ruta tiene orientadora y secciones, así que el primer downgrade que falla es el de 0004.
+def test_downgrade_0004_con_orientadora_falla_sin_perder_catalogo_ni_estado(base_migrada):
     url, configuracion, motor = base_migrada
     preparar_base(url, 'ruta')
     aplicacion = crear_aplicacion(url)
@@ -272,13 +274,49 @@ def test_downgrade_0003_con_familia_falla_sin_perder_catalogo_ni_estado(base_mig
         with motor.connect() as conexion:
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
                           for tabla in Base.metadata.sorted_tables}
-        with pytest.raises(RuntimeError, match='existen bloques PORTAL_FAMILIA'):
+        with pytest.raises(RuntimeError, match='existen cuentas ORIENTADORA'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0003'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0004'
             for tabla in Base.metadata.sorted_tables:
                 assert conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all() == anteriores[tabla.name]
             assert conexion.execute(text('PRAGMA foreign_key_check')).all() == []
     finally:
         aplicacion.state.motor_bd.dispose()
+
+
+def test_migracion_0004_convierte_conversaciones_en_seccion_y_vuelve_sin_ella(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "secciones.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    motor = database.crear_motor_bd(url)
+    try:
+        command.upgrade(configuracion, '0003')
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: una regla de CONVERSACIONES y otra de bloque anteriores a 0004.
+            conexion.execute(text("INSERT INTO bloque (id, codigo, numero, nombre, espacio, audiencia) "
+                                  "VALUES (1, 'B1', 1, 'Prueba', 'CIUDAD', 'ESTUDIANTE')"))
+            conexion.execute(text("INSERT INTO regla_desbloqueo (id, codigo, nombre, tipo_objetivo, id_objetivo) "
+                                  "VALUES (1, 'R-A', 'Regla A', 'CONVERSACIONES', NULL), "
+                                  "(2, 'R-B', 'Regla B', 'BLOQUE', 1)"))
+        command.upgrade(configuracion, '0004')
+        with motor.begin() as conexion:
+            filas = conexion.execute(text("SELECT r.codigo, r.mensaje_bloqueo, r.tipo_objetivo, s.codigo, s.audiencia "
+                                          "FROM regla_desbloqueo r LEFT JOIN seccion s ON s.id = r.id_objetivo "
+                                          "AND r.tipo_objetivo = 'SECCION' ORDER BY r.codigo")).all()
+            assert filas == [('R-A', 'Regla A', 'SECCION', 'CONVERSACIONES', 'APODERADO'),
+                             ('R-B', 'Regla B', 'BLOQUE', None, None)]
+        with pytest.raises(IntegrityError), motor.begin() as conexion:
+            conexion.execute(text("INSERT INTO regla_desbloqueo (codigo, nombre, mensaje_bloqueo, tipo_objetivo, "
+                                  "id_objetivo) VALUES ('R-C', 'C', 'C', 'CONVERSACIONES', 1)"))
+        with pytest.raises(RuntimeError, match='existen reglas de SECCION'):
+            command.downgrade(configuracion, '0003')
+        with motor.begin() as conexion:
+            conexion.execute(text("DELETE FROM regla_desbloqueo WHERE tipo_objetivo = 'SECCION'"))
+        command.downgrade(configuracion, '0003')
+        with motor.connect() as conexion:
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0003'
+            assert 'seccion' not in inspect(motor).get_table_names()
+    finally:
+        motor.dispose()

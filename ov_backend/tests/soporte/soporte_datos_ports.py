@@ -14,8 +14,11 @@ def preparar_explicaciones(sesion):
     sesion.flush()
     regla(sesion, 'R-PRUEBA-EXPLICAR', 'FICHA', ficha.id,
         [condicion('INGRESO', 2), condicion('COMPLETA_ACTIVIDAD')], 'misiones_camino_sin_inicio', 2)
-    regla(sesion, 'R-PRUEBA-OR-A', 'CONVERSACIONES', None, [condicion('INGRESO', 2)])
-    regla(sesion, 'R-PRUEBA-OR-B', 'CONVERSACIONES', None, [condicion('ESCRIBE_CARTA')])
+    seccion = m.Seccion(codigo='SEC-PRUEBA', nombre='DATO DE PRUEBA', audiencia='ESTUDIANTE')
+    sesion.add(seccion)
+    sesion.flush()
+    regla(sesion, 'R-PRUEBA-OR-A', 'SECCION', seccion.id, [condicion('INGRESO', 2)])
+    regla(sesion, 'R-PRUEBA-OR-B', 'SECCION', seccion.id, [condicion('ESCRIBE_CARTA')])
 
 
 def preparar_preguntas_respondidas(sesion):

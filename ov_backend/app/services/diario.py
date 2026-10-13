@@ -14,6 +14,7 @@ from app.services.comun import (
     buscar_por_codigo, exigir_disponible, exigir_estudiante, fecha_accion, responder_con_eventos,
 )
 from app.services.motor.reglas import objetivo_disponible
+from app.services.secciones import exigir_seccion
 
 
 @usar_contexto
@@ -29,6 +30,7 @@ def responder_registro(sesion: Session, entrada: ResponderRegistroEntrada) -> Re
 def escribir_entrada(sesion: Session, entrada: EscribirEntradaEntrada) -> RespuestaAccion:
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
     exigir_estudiante(cuenta)
+    exigir_seccion(sesion, cuenta, "DIARIO")
     pregunta = None
     if entrada.origen == OrigenEntrada.GUIADA:
         pregunta = buscar_por_codigo(sesion, PreguntaDiario, entrada.pregunta)
@@ -54,6 +56,7 @@ def escribir_entrada(sesion: Session, entrada: EscribirEntradaEntrada) -> Respue
 def registrar_check_in(sesion: Session, entrada: CheckInEntrada) -> RespuestaAccion:
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
     exigir_estudiante(cuenta)
+    exigir_seccion(sesion, cuenta, "CHECK_IN")
     fecha = fecha_accion(entrada)
     if sesion.scalar(select(CheckIn.id).where(
         CheckIn.cuenta_id == cuenta.id, CheckIn.fecha == fecha.date(),
@@ -69,6 +72,7 @@ def registrar_check_in(sesion: Session, entrada: CheckInEntrada) -> RespuestaAcc
 def listar_preguntas_cuenta(sesion: Session, cuenta: Cuenta) -> list[PreguntaDiarioEstado]:
     if cuenta.rol != Rol.ESTUDIANTE:
         return []
+    exigir_seccion(sesion, cuenta, "DIARIO")
     datos = contexto(sesion)
     respondidas = set(sesion.scalars(select(EntradaDiario.pregunta_id).where(
         EntradaDiario.cuenta_id == cuenta.id, EntradaDiario.origen == OrigenEntrada.GUIADA,

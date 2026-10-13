@@ -7,18 +7,17 @@ from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
 from app.models import (
     Conversacion, ConversacionVinculo, Cuenta, Entrevista, EntrevistaAutor, Rol, TipoEventoUso,
-    TipoObjetivo, VinculoFamiliar,
+    VinculoFamiliar,
 )
 from app.schemas.acciones import (
     CompletarConversacionEntrada, EscribirCartaEntrada, PublicarEntrevistaEntrada, RespuestaAccion,
     RespuestaAgrupada,
 )
-from app.schemas.comunidad import ConversacionesEstado
 from app.services.comun import (
-    buscar_por_codigo, exigir_disponible, exigir_estudiante, existe_evento, fecha_accion,
+    buscar_por_codigo, exigir_estudiante, existe_evento, fecha_accion,
     responder_con_eventos, responder_varias_cuentas,
 )
-from app.services.motor.reglas import objetivo_disponible
+from app.services.secciones import exigir_seccion
 
 
 @usar_contexto
@@ -43,7 +42,8 @@ def vinculo_de_cuenta(sesion: Session, cuenta: Cuenta) -> VinculoFamiliar:
     filtro = VinculoFamiliar.estudiante_id == cuenta.id if cuenta.rol == Rol.ESTUDIANTE else (
         VinculoFamiliar.apoderado_id == cuenta.id
     )
-    vinculo = sesion.scalar(select(VinculoFamiliar).where(filtro).order_by(VinculoFamiliar.codigo).limit(1))
+    vinculo = sesion.scalar(select(VinculoFamiliar).where(filtro, VinculoFamiliar.es_activo.is_(True)).order_by(
+        VinculoFamiliar.codigo).limit(1))
     if vinculo is None:
         raise ErrorAccion("La cuenta no pertenece a un vínculo familiar")
     return vinculo
@@ -53,6 +53,8 @@ def vinculo_de_cuenta(sesion: Session, cuenta: Cuenta) -> VinculoFamiliar:
 def escribir_carta(sesion: Session, entrada: EscribirCartaEntrada) -> RespuestaAccion:
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
     vinculo = vinculo_de_cuenta(sesion, cuenta)
+    if cuenta.rol == Rol.ESTUDIANTE:
+        exigir_seccion(sesion, cuenta, "FAMILIA")
     columna = "carta_estudiante" if cuenta.rol == Rol.ESTUDIANTE else "carta_apoderado"
     primera = getattr(vinculo, columna) is None and not existe_evento(
         sesion, cuenta, TipoEventoUso.ESCRIBE_CARTA, vinculo.id,
@@ -68,10 +70,11 @@ def completar_conversacion(sesion: Session, entrada: CompletarConversacionEntrad
     conversacion = buscar_por_codigo(sesion, Conversacion, entrada.conversacion)
     vinculo = vinculo_de_cuenta(sesion, cuenta)
     contexto(sesion).cargar_desbloqueos([vinculo.estudiante_id, vinculo.apoderado_id])
-    exigir_disponible(sesion, cuenta, TipoObjetivo.CONVERSACIONES)
     ids_cuentas = (vinculo.estudiante_id, vinculo.apoderado_id)
     por_id = {otra.id: otra for otra in sesion.scalars(select(Cuenta).where(Cuenta.id.in_(ids_cuentas)))}
     cuentas = [por_id[identificador] for identificador in ids_cuentas]
+    # La sección es del apoderado del vínculo, marque quien marque.
+    exigir_seccion(sesion, por_id[vinculo.apoderado_id], "CONVERSACIONES")
     contexto(sesion).cargar_desbloqueos(ids_cuentas)
     registro = sesion.scalar(select(ConversacionVinculo).where(
         ConversacionVinculo.vinculo_id == vinculo.id, ConversacionVinculo.conversacion_id == conversacion.id,
@@ -93,10 +96,3 @@ def completar_conversacion(sesion: Session, entrada: CompletarConversacionEntrad
     }
     return responder_varias_cuentas(sesion, cuentas, eventos_por_cuenta, fecha)
 
-
-@usar_contexto
-def estado_conversaciones(sesion: Session, cuenta: Cuenta) -> ConversacionesEstado:
-    return ConversacionesEstado(
-        estado="DISPONIBLE" if objetivo_disponible(sesion, cuenta, TipoObjetivo.CONVERSACIONES, None)
-        else "BLOQUEADA",
-    )

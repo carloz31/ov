@@ -75,8 +75,7 @@ def test_evaluador_verdadero_no_reemplaza_condiciones(sesion, monkeypatch):
 def test_objetivos_inexistentes_no_estan_disponibles(sesion, tipo):
     ana = buscar(sesion, modelos.Cuenta, "est-ana")
     assert not motor.objetivo_disponible(sesion, ana, tipo, 99999)
-    if tipo != modelos.TipoObjetivo.CONVERSACIONES:
-        assert not motor.objetivo_disponible(sesion, ana, tipo, None)
+    assert not motor.objetivo_disponible(sesion, ana, tipo, None)
 
 
 def test_regla_sin_condiciones_es_configuracion_invalida(sesion):

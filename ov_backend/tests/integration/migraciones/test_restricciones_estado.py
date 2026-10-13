@@ -19,7 +19,8 @@ TABLAS_ESTADO = {
 def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
     inspector = inspect(aplicacion.state.motor_bd)
     esperadas = {
-        "cuenta", "vinculo_familiar", "bloque", "actividad", "ficha", "testimonio",
+        "salon", "cuenta", "orientadora_salon", "vinculo_familiar", "bloque", "actividad", "seccion", "ficha",
+        "testimonio",
         "pregunta_diario", "conversacion", "insignia", "nivel", "familia_carrera",
         "carrera", "regla_desbloqueo", "condicion_desbloqueo",
     } | TABLAS_ESTADO
@@ -30,7 +31,7 @@ def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
         "item_registro", "criterio_completitud", "actividad_item_registro",
     }
     assert set(inspector.get_table_names()) == esperadas
-    assert len(esperadas) == 44
+    assert len(esperadas) == 47
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]
@@ -79,10 +80,10 @@ def test_entradas_libres_intentos_y_eventos_pueden_repetirse(sesion):
     (modelos.CheckIn, {"cuenta_id": 1, "fecha": date(2026, 10, 1), "nivel_seguridad": 6}),
     (modelos.EntradaDiario, {"cuenta_id": 1, "origen": modelos.OrigenEntrada.GUIADA,
                            "texto": "Sin pregunta", "fecha_hora": FECHA}),
-    (modelos.ReglaDesbloqueo, {"codigo": "R-INVALIDA", "nombre": "Inválida",
+    (modelos.ReglaDesbloqueo, {"codigo": "R-INVALIDA", "nombre": "Inválida", "mensaje_bloqueo": "Falta.",
                              "tipo_objetivo": modelos.TipoObjetivo.ACTIVIDAD}),
     (modelos.ReglaDesbloqueo, {"codigo": "R-INVALIDA", "nombre": "Inválida",
-                             "tipo_objetivo": modelos.TipoObjetivo.CONVERSACIONES, "id_objetivo": 1}),
+                             "tipo_objetivo": modelos.TipoObjetivo.SECCION, "id_objetivo": 1}),
 ])
 def test_restricciones_rechazan_datos_invalidos(sesion, modelo, datos):
     with pytest.raises(IntegrityError):

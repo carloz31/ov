@@ -8,7 +8,7 @@ from sqlalchemy import select
 from app.database import crear_motor_bd
 from app.models import Actividad, Visibilidad
 from datos import cargar as carga
-from datos.ruta import ACTIVIDADES
+from datos.ruta import ACTIVIDADES, PROPIEDADES
 
 
 @pytest.mark.parametrize('conjunto', ['ruta'])
@@ -20,7 +20,8 @@ def test_claves_y_visibilidad_de_los_conjuntos(tmp_path, conjunto):
         with motor.connect() as conexion:
             filas = conexion.execute(select(Actividad.codigo, Actividad.contenido, Actividad.visibilidad)).all()
         assert all(re.fullmatch(r'[a-z0-9_]+', contenido) for _, contenido, _ in filas)
-        assert all(visibilidad == Visibilidad.SIEMPRE for _, _, visibilidad in filas)
+        assert {codigo: visibilidad for codigo, _, visibilidad in filas} == {
+            codigo: Visibilidad(PROPIEDADES.get(codigo, {}).get('visibilidad', 'SIEMPRE')) for codigo, *_ in ACTIVIDADES}
         assert {codigo: contenido for codigo, contenido, _ in filas} == {
             codigo: codigo.replace('-', '_') for codigo, *_ in ACTIVIDADES}
     finally:

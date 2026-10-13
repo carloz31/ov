@@ -1,27 +1,46 @@
-"""Contrato de las siete consultas por dominio."""
+"""Contrato de las consultas por dominio."""
 
 import pytest
 from sqlalchemy import select
 
 from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActividad, Visibilidad
-from datos.ruta import ACTIVIDADES, BLOQUES, FICHAS, INSIGNIAS, NIVELES, contenido
+from datos.fijos import SECCIONES
+from datos.ruta import ACTIVIDADES, BLOQUES, FICHAS, INSIGNIAS, NIVELES, PROPIEDADES, REGLAS, contenido
 from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 
 
 # Estados de cada actividad del estudiante, al inicio y con la Ciudad abierta.
 ESTADOS = {
     False: {'t-inicio': 'DISPONIBLE', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
-            't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA', 't-caso': 'BLOQUEADA'},
+            't-opcional': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
+            't-caso': 'BLOQUEADA'},
     True: {'t-inicio': 'COMPLETADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
-           't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA', 't-caso': 'BLOQUEADA'},
+           't-opcional': 'DISPONIBLE', 't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA',
+           't-caso': 'BLOQUEADA'},
 }
+# Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).
+SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']
+MENSAJES = {objetivo: mensaje for _, tipo, objetivo, mensaje, _ in REGLAS if tipo == 'SECCION'}
 
 
-RUTAS = ('resumen', 'actividades', 'fichas', 'logros', 'testimonios', 'diario/preguntas', 'conversaciones')
+RUTAS = ('resumen', 'actividades', 'fichas', 'logros', 'testimonios', 'diario/preguntas', 'secciones')
 
 
 def consultar(cliente, ruta, cuenta='est-ana'):
-    return pedir(cliente, 'GET', f'/cuentas/{cuenta}/{ruta}')
+    respuesta = cliente.get(f'/cuentas/{cuenta}/{ruta}')
+    if ruta == 'diario/preguntas' and respuesta.status_code == 409:
+        return respuesta.json()['detail']['mensaje']
+    assert respuesta.status_code == 200, respuesta.text
+    datos = respuesta.json()
+    if ruta == 'actividades':
+        # `bloqueo` se comprueba aparte (test_bloqueo_actividades.py); aquí, solo que acompaña a BLOQUEADA.
+        for bloque in datos:
+            assert (bloque.pop('bloqueo') is None) == (bloque['estado'] == 'DISPONIBLE')
+            for actividad in bloque['actividades']:
+                assert (actividad.pop('bloqueo') is None) == (actividad['estado'] != 'BLOQUEADA')
+    if ruta == 'secciones':
+        return [(seccion['codigo'], seccion['estado'], seccion['bloqueo'] is None) for seccion in datos]
+    return datos
 
 
 def esperado(ruta, completo):
@@ -35,15 +54,20 @@ def esperado(ruta, completo):
             'estado': 'DISPONIBLE' if bloque == 'T0' or completo else 'BLOQUEADA',
             'actividades': [
                 {'codigo': actividad, 'titulo': titulo, 'tipo': tipo, 'orden': orden,
-                 'contenido': contenido(actividad), 'visibilidad': 'SIEMPRE', 'visible': True,
-                 'estado': ESTADOS[completo][actividad]}
-                for orden, (actividad, _, titulo, tipo, _) in enumerate(
+                 'contenido': contenido(actividad),
+                 'visibilidad': PROPIEDADES.get(actividad, {}).get('visibilidad', 'SIEMPRE'),
+                 'visible': 'visibilidad' not in PROPIEDADES.get(actividad, {}) or ESTADOS[completo][actividad] != 'BLOQUEADA',
+                 'estado': ESTADOS[completo][actividad],
+                 'requerida': PROPIEDADES.get(actividad, {}).get('requerida', True),
+                 'duracion_estimada_min': duracion,
+                 'descripcion': PROPIEDADES.get(actividad, {}).get('descripcion')}
+                for orden, (actividad, _, titulo, tipo, _, duracion) in enumerate(
                     (fila for fila in ACTIVIDADES if fila[1] == bloque), 1)
             ],
         } for bloque, numero, nombre, espacio, audiencia in BLOQUES if audiencia == 'ESTUDIANTE']
     if ruta == 'fichas':
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'DISPONIBLE' if completo else 'BLOQUEADA'}
-                for codigo, titulo, _ in sorted(FICHAS)]
+                for codigo, titulo, _, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
     if ruta == 'logros':
         insignias = []
         for codigo, nombre, descripcion, requisito, oculta in sorted(INSIGNIAS):
@@ -56,8 +80,10 @@ def esperado(ruta, completo):
             {'numero': numero, 'titulo': titulo, 'estado': 'OBTENIDO' if numero <= (2 if completo else 1) else 'BLOQUEADO'}
             for numero, titulo in NIVELES
         ]}
-    if ruta == 'conversaciones':
-        return {'estado': 'DISPONIBLE' if completo else 'BLOQUEADA'}
+    if ruta == 'secciones':
+        return [(codigo, 'DISPONIBLE' if completo else 'BLOQUEADA', completo) for codigo in SECCIONES_ESTUDIANTE]
+    if ruta == 'diario/preguntas' and not completo:
+        return MENSAJES['DIARIO']
     return []
 
 
@@ -83,10 +109,14 @@ def test_apoderado_sin_listas_estudiantiles(cliente, ruta):
         assert respuesta == {'cuenta': {'codigo': 'apo-rosa', 'nombre': 'Rosa', 'rol': 'APODERADO'}, 'nivel_actual': None}
     elif ruta == 'logros':
         assert respuesta == {'insignias': [], 'niveles': []}
-    elif ruta == 'conversaciones':
-        assert respuesta == {'estado': 'BLOQUEADA'}
+    elif ruta == 'secciones':
+        assert respuesta == [('CONVERSACIONES', 'BLOQUEADA', False)]
+    elif ruta == 'fichas':
+        assert respuesta == [{'codigo': 't-ficha-apo', 'titulo': 'Ficha del apoderado', 'estado': 'BLOQUEADA'}]
     elif ruta == 'actividades':
-        assert respuesta == [BLOQUE_FAMILIA]
+        assert respuesta == [{**{clave: valor for clave, valor in BLOQUE_FAMILIA.items() if clave != 'bloqueo'},
+                              'actividades': [{clave: valor for clave, valor in actividad.items() if clave != 'bloqueo'}
+                                              for actividad in BLOQUE_FAMILIA['actividades']]}]
     else:
         assert respuesta == []
 

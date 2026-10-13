@@ -4,6 +4,7 @@ from collections import Counter
 from sqlalchemy import select
 
 from app import models as modelos
+from soporte_ruta import avanzar
 
 
 FECHA = "2026-10-01T10:00:00"
@@ -33,6 +34,8 @@ def filas(aplicacion, modelo):
 def test_check_in_unico_por_dia_con_aislamiento_entre_estudiantes(cliente, aplicacion):
     # Invariante 8: la unicidad es por cuenta y fecha, no global.
     for cuenta in ("est-ana", "est-luis"):
+        # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
+        avanzar(cliente, cuenta=cuenta)
         accion(cliente, "check-in", cuenta, nivel_seguridad=3)
         antes = filas(aplicacion, modelos.CheckIn), filas(aplicacion, modelos.EventoUso)
         duplicado = cliente.post("/acciones/check-in", json={

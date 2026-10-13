@@ -4,7 +4,7 @@ from soporte_datos_ports import agregar_autores
 from soporte_datos_ports import insignia_por_evento, preparar_conversacion
 import pytest
 from app.services import comun
-from soporte_ruta import avanzar, filas_base, pedir
+from soporte_ruta import avanzar, completar, filas_base, pedir
 from soporte_retiro import medir
 
 
@@ -13,8 +13,13 @@ def test_r33_conversacion_actor_disponible_repeticion_y_rollback(cliente, aplica
         preparar_conversacion(sesion)
         insignia_por_evento(sesion, 'ins-prueba-conversacion', 'COMPLETA_CONVERSACION')
     avanzar(cliente)
-    assert pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')['estado'] == 'BLOQUEADA'
+    assert pedir(cliente, 'GET', '/cuentas/apo-rosa/secciones/CONVERSACIONES')['estado'] == 'BLOQUEADA'
     datos = {'cuenta': 'est-ana', 'conversacion': 'conv-prueba'}
+    # B01: la sección CONVERSACIONES es del apoderado; mientras no termine su ruta, nadie marca.
+    rechazo = pedir(cliente, 'POST', '/acciones/completar-conversacion', datos, 409)
+    assert rechazo['detail']['mensaje'] == 'Completa tus actividades para conversar en familia.'
+    for actividad in ('t-apo-1', 't-apo-carta'):
+        completar(cliente, actividad, 'apo-rosa')
     antes = filas_base(aplicacion)
     original = comun.registrar_eventos
     def fallar(sesion, cuenta, eventos, fecha):
@@ -36,7 +41,8 @@ def test_r33_conversacion_actor_disponible_repeticion_y_rollback(cliente, aplica
     repetida = pedir(cliente, 'POST', '/acciones/completar-conversacion', datos)
     assert all(r['eventos_registrados'] == r['nuevos_desbloqueos'] == [] for r in repetida['por_cuenta'].values())
     assert filas_base(aplicacion) == primera
-    pedir(cliente, 'POST', '/acciones/completar-conversacion', {**datos, 'cuenta': 'apo-rosa'}, 409)
+    repetida = pedir(cliente, 'POST', '/acciones/completar-conversacion', {**datos, 'cuenta': 'apo-rosa'})
+    assert all(r['eventos_registrados'] == r['nuevos_desbloqueos'] == [] for r in repetida['por_cuenta'].values())
     assert filas_base(aplicacion) == primera
 
 

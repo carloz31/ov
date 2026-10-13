@@ -24,29 +24,29 @@
         }
       ],
       "objetivo": {
-        "codigo": "-",
-        "nombre": "Conversaciones"
+        "codigo": "N2",
+        "nombre": "Nivel 2 de prueba"
       },
-      "regla": "R-FAM-ESTUDIANTE",
-      "tipo_objetivo": "CONVERSACIONES"
+      "regla": "R-NIV-2",
+      "tipo_objetivo": "NIVEL"
     },
     {
       "condiciones": [
         {
           "actual": 1,
           "cumplida": true,
-          "referencia": "T0",
+          "referencia": "t-cierre-inicio",
           "requerido": 1,
           "tipo_conteo": "EVENTOS",
-          "tipo_evento": "COMPLETA_BLOQUE"
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
         }
       ],
       "objetivo": {
-        "codigo": "N2",
-        "nombre": "Nivel 2 de prueba"
+        "codigo": "CHECK_IN",
+        "nombre": "Check-in"
       },
-      "regla": "R-NIV-2",
-      "tipo_objetivo": "NIVEL"
+      "regla": "R-SEC-CHECK_IN",
+      "tipo_objetivo": "SECCION"
     },
     {
       "condiciones": [

@@ -1,4 +1,4 @@
-"""Lo fijo de la plataforma, sea cual sea la ruta: RIASEC y el catálogo O*NET.
+"""Lo fijo de la plataforma, sea cual sea la ruta: secciones, RIASEC y el catálogo O*NET.
 
 Se carga en todo conjunto. La transacción pertenece al llamador; este módulo no confirma ni migra.
 """
@@ -12,6 +12,11 @@ from app import models as modelos
 from app.core.parametros import DESCRIPCIONES_RIASEC, DIMENSIONES_RIASEC, transformar_opcion_onet
 from datos.ocupaciones import RUTA_OCUPACIONES, leer_ocupaciones
 
+
+# (código, nombre, audiencia). Cada ruta decide con sus reglas cuándo se abre cada sección.
+SECCIONES = (('CATALOGO', 'Catálogo', 'ESTUDIANTE'), ('CHECK_IN', 'Check-in', 'ESTUDIANTE'),
+             ('DIARIO', 'Diario', 'ESTUDIANTE'), ('FAMILIA', 'Familia', 'ESTUDIANTE'),
+             ('PLANES', 'Planes', 'ESTUDIANTE'), ('CONVERSACIONES', 'Conversaciones', 'APODERADO'))
 
 # Los 60 enunciados de §4.3.7, sin texto narrativo del front.
 ENUNCIADOS_RIASEC = {'R': ('Reparar una bicicleta o un electrodoméstico.',
@@ -142,9 +147,10 @@ OPCIONES_LIKERT = ('Me disgusta mucho', 'Me disgusta', 'No estoy seguro', 'Me gu
 
 @dataclass(frozen=True)
 class Fijos:
-    """Lo que la ruta necesita de lo fijo para unir actividades e instrumentos."""
+    """Lo que la ruta necesita de lo fijo para unir actividades, instrumentos y reglas."""
     aplicaciones: dict[str, modelos.Aplicacion]
     items: dict[str, dict[int, modelos.ItemInstrumento]]
+    secciones: dict[str, modelos.Seccion]
 
 
 def _leer_catalogo_seleccionado():
@@ -201,9 +207,17 @@ def _cargar_catalogo(sesion, archivo, dimensiones):
     ])
 
 
+def _cargar_secciones(sesion):
+    secciones = {c: modelos.Seccion(codigo=c, nombre=n, audiencia=modelos.Audiencia(a)) for c, n, a in SECCIONES}
+    sesion.add_all(secciones.values())
+    sesion.flush()
+    return secciones
+
+
 def cargar(sesion: Session) -> Fijos:
+    secciones = _cargar_secciones(sesion)
     archivo = _leer_catalogo_seleccionado()
     dimensiones, aplicacion, items = _cargar_riasec(sesion)
     _cargar_catalogo(sesion, archivo, dimensiones)
     sesion.flush()
-    return Fijos(aplicaciones={aplicacion.codigo: aplicacion}, items={'TEST-RIASEC': items})
+    return Fijos(aplicaciones={aplicacion.codigo: aplicacion}, items={'TEST-RIASEC': items}, secciones=secciones)

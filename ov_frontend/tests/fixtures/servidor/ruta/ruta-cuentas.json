@@ -18,5 +18,10 @@
     "codigo": "est-luis",
     "nombre": "Luis",
     "rol": "ESTUDIANTE"
+  },
+  {
+    "codigo": "ori-carmen",
+    "nombre": "Carmen",
+    "rol": "ORIENTADORA"
   }
 ]

@@ -23,6 +23,7 @@ def test_lista_cuentas_con_codigos_publicos(cliente):
         {"codigo": "est-ana", "nombre": "Ana", "rol": "ESTUDIANTE"},
         {"codigo": "est-beto", "nombre": "Beto", "rol": "ESTUDIANTE"},
         {"codigo": "est-luis", "nombre": "Luis", "rol": "ESTUDIANTE"},
+        {"codigo": "ori-carmen", "nombre": "Carmen", "rol": "ORIENTADORA"},
     ]
 
 

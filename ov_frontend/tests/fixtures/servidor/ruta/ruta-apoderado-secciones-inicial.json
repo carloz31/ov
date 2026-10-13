@@ -1,0 +1,24 @@
+[
+  {
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "FAMILIA",
+            "requerido": 1,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_BLOQUE"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa tus actividades para conversar en familia.",
+        "regla": "R-SEC-CONVERSACIONES"
+      }
+    ],
+    "codigo": "CONVERSACIONES",
+    "estado": "BLOQUEADA",
+    "nombre": "Conversaciones"
+  }
+]

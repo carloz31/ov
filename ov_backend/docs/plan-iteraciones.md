@@ -54,7 +54,7 @@ Cuentas:
 | `t-comparar` | R | T2 | B11 | Se abre con `planes_listos_para_comparar`; abre los campos restantes. |
 | `t-proyecto` | R | T2 | B11 | Se abre con `acciones_plan_a`; cierra T2. |
 | `t-investigador`, `t-investigador-cierre` | I | CIUDAD | B13 | Sección INVESTIGACIONES; el cierre se abre con PUBLICA_ENTREVISTA. |
-| `t-apo-1`, `t-apo-carta` | I | FAMILIA | B00 | Ruta del apoderado. B12: carta y diploma. |
+| `t-apo-1`, `t-apo-carta` | I | FAMILIA | B00 | Ruta del apoderado. B01: `t-apo-1` da la ficha `t-ficha-apo`; cerrar FAMILIA abre la sección CONVERSACIONES. B12: carta y diploma. |
 | `t-conv-1`, `t-conv-2` | Conversación | — | B00 | B12: `t-conv-1` con `t-expectativas` + carta; `t-conv-2` con `t-contraste`; entrada de diario al conversar. |
 | `t-ins-1`, `t-ins-oculta`, niveles 1 y 2 | Logros | — | B00 | Progreso de logros, insignia oculta y nivel. |
 
@@ -65,7 +65,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | Lote | Tema | HU | M | Tras | Termina con |
 |---|---|---|---|---|---|
 | B00 | Cambio a `ruta` · **Implementado** | Ninguna nueva; comprueba 004, 011, 013–015, 021, 073, 074 | — | — | Toda la batería en verde solo con `ruta`; `plataforma` y `piloto` retirados |
-| B01 | Secciones, mensajes de bloqueo y salón | 002, 025 | M | B00 | Lo bloqueado responde con su mensaje; las secciones se abren y permiten registrar |
+| B01 | Secciones, mensajes de bloqueo y salón · **Implementado** | 002, 025 | M | B00 | Lo bloqueado responde con su mensaje; las secciones se abren y permiten registrar |
 | B02 | Registros: modelo, listas y borradores | 006, 010 | M | B01 | Borradores con elección validada; ítems, criterios y listas cargados desde `datos/` |
 | B03 | Registros: entrega y seguimiento | 007, 016 | — | B02 | Entrega con seguimiento, omisión y fallo del LLM; la misión adicional aparece solo si todo quedó adecuado |
 | B04 | Registros: respuesta consolidada y edición | 008 | — | B03 | Consolidación al cerrar; la edición se evalúa una vez |
@@ -95,7 +95,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Actualiza `AGENTS.md` (estructura, datos y contrato) y `docs/sistema/integracion.md`.
 - **Comprueba:** que el comportamiento actual no cambia.
 
-**B01 · Secciones, mensajes de bloqueo y salón (M)**
+**B01 · Secciones, mensajes de bloqueo y salón (M)** (Implementado)
 - **Modelo:**
   - `Seccion` y `TipoObjetivo.SECCION`;
   - `ReglaDesbloqueo.mensaje_bloqueo`;
