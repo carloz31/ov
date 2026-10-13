@@ -7,10 +7,10 @@ from app.schemas.acciones import (
     ReiniciarInstrumentoEntrada, ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
     ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados, RespuestaResolverCaso,
     RespuestaReiniciarInstrumento, RespuestaRevelarResultado, RevelarResultadoEntrada, VerCarreraEntrada,
-    VerTestimonioEntrada,
+    VerInstitucionEntrada, VerOcupacionEntrada, VerTestimonioEntrada,
 )
 from app.services import (
-    actividades as servicio_actividades, carreras as servicio_carreras,
+    actividades as servicio_actividades, catalogo as servicio_catalogo,
     comunidad as servicio_comunidad, diario as servicio_diario, eventos as servicio_eventos,
     testimonios as servicio_testimonios,
 )
@@ -73,7 +73,17 @@ def registrar_check_in(entrada: CheckInEntrada, sesion: SesionBD):
 
 @router.post("/acciones/ver-carrera", response_model=RespuestaAccion, response_model_exclude_unset=True)
 def ver_carrera(entrada: VerCarreraEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: servicio_carreras.ver_carrera(sesion, entrada))
+    return ejecutar_accion(sesion, lambda: servicio_catalogo.ver_carrera(sesion, entrada))
+
+
+@router.post("/acciones/ver-ocupacion", response_model=RespuestaAccion, response_model_exclude_unset=True)
+def ver_ocupacion(entrada: VerOcupacionEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: servicio_catalogo.ver_ocupacion(sesion, entrada))
+
+
+@router.post("/acciones/ver-institucion", response_model=RespuestaAccion, response_model_exclude_unset=True)
+def ver_institucion(entrada: VerInstitucionEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: servicio_catalogo.ver_institucion(sesion, entrada))
 
 
 @router.post("/acciones/publicar-entrevista", response_model=RespuestaAgrupada, response_model_exclude_unset=True)

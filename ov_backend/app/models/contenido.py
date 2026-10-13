@@ -1,7 +1,7 @@
 from sqlalchemy import CheckConstraint, ForeignKey, Text, text, true
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, enumerado
+from app.models.base import Base, busqueda_de, enumerado
 from app.models.enums import Audiencia, Espacio, TipoActividad, Visibilidad
 
 
@@ -139,3 +139,15 @@ class Carrera(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
     familia_id: Mapped[int] = mapped_column(ForeignKey("familia_carrera.id"))
+    descripcion: Mapped[str | None] = mapped_column(Text, default=None)
+    duracion: Mapped[str | None] = mapped_column(default=None)
+    # Letras de `tipo_carrera` en orden de posición («RIS»); lo calcula el cargador.
+    codigo_riasec: Mapped[str | None] = mapped_column(default=None)
+    busqueda: Mapped[str] = mapped_column(default=busqueda_de("nombre"))
+    # Relaciones de solo lectura para las consultas del catálogo (B10); se cargan con `selectinload`.
+    familia: Mapped[FamiliaCarrera] = relationship(viewonly=True, lazy="raise")
+    ocupaciones: Mapped[list["Ocupacion"]] = relationship(
+        secondary="carrera_ocupacion", viewonly=True, lazy="raise", order_by="Ocupacion.codigo")
+    instituciones: Mapped[list["Institucion"]] = relationship(
+        secondary="institucion_carrera", viewonly=True, lazy="raise", order_by="Institucion.codigo")
+    ingreso: Mapped["IngresoCarrera | None"] = relationship(viewonly=True, lazy="raise")

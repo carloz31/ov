@@ -108,6 +108,14 @@ class VerCarreraEntrada(AccionCuenta):
     carrera: str
 
 
+class VerOcupacionEntrada(AccionCuenta):
+    ocupacion: str
+
+
+class VerInstitucionEntrada(AccionCuenta):
+    institucion: str
+
+
 class VerTestimonioEntrada(AccionCuenta):
     testimonio: str
 

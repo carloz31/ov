@@ -1,14 +1,15 @@
 from datetime import datetime
 
 from sqlalchemy import (
-    CheckConstraint, DateTime, ForeignKey, Index, Text, UniqueConstraint, false, text,
+    JSON, CheckConstraint, DateTime, ForeignKey, Index, Text, UniqueConstraint, column, false, text,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.parametros import (
     CORRELACION_MINIMA, LIMITE_COINCIDENCIAS, UMBRAL_BEST_FIT, UMBRAL_GREAT_FIT,
 )
-from app.models.base import Base, enumerado
+from app.database import TipoJSON
+from app.models.base import Base, busqueda_de, enumerado
 from app.models.enums import MomentoAplicacion, NivelAjuste, TipoResultado
 
 
@@ -86,10 +87,25 @@ class AplicacionActividad(Base):
 
 class Ocupacion(Base):
     __tablename__ = "ocupacion"
+    __table_args__ = (
+        CheckConstraint(TipoJSON(column("habilidades")) == 'array', name="habilidades_lista"),
+        CheckConstraint(TipoJSON(column("conocimientos")) == 'array', name="conocimientos_lista"),
+    )
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str | None] = mapped_column(unique=True)
     codigo_onet: Mapped[str] = mapped_column(unique=True)
     titulo: Mapped[str]
+    descripcion: Mapped[str | None] = mapped_column(Text, default=None)
+    lugares_trabajo: Mapped[str | None] = mapped_column(Text, default=None)
+    habilidades: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list,
+                                                   server_default=text("'[]'"))
+    conocimientos: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list,
+                                                     server_default=text("'[]'"))
+    # Letras de `high_point` en orden de posición («RIS»); lo calcula el cargador.
+    codigo_riasec: Mapped[str | None] = mapped_column(default=None)
+    busqueda: Mapped[str] = mapped_column(default=busqueda_de("titulo"))
+    carreras: Mapped[list["Carrera"]] = relationship(
+        secondary="carrera_ocupacion", viewonly=True, lazy="raise", order_by="Carrera.codigo")
 
 
 class PuntajeOcupacion(Base):

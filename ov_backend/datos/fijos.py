@@ -198,6 +198,124 @@ CARRERAS = (('environmental-engineering',
   ('psychologist', 'teacher', 'sociologist', 'social-worker')))
 
 
+# (carrera, descripción, duración), copiados de `careerCatalog` del front.
+DETALLE_CARRERAS = (
+    ('environmental-engineering',
+     'Diseña soluciones para prevenir, medir y reducir impactos sobre el ambiente.', '5 años aproximadamente'),
+    ('journalism',
+     'Investiga hechos, contrasta fuentes y comunica información de interés público.', '5 años aproximadamente'),
+    ('nursing',
+     'Brinda cuidados integrales y acompaña a las personas en prevención, atención y recuperación.',
+     '5 años aproximadamente'),
+    ('civil-engineering',
+     'Planifica, construye y evalúa infraestructura segura para las comunidades.', '5 años aproximadamente'),
+    ('veterinary-medicine',
+     'Protege la salud y el bienestar de animales domésticos, productivos y silvestres.', '5 años aproximadamente'),
+    ('psychology',
+     'Comprende el comportamiento humano y acompaña procesos de bienestar y desarrollo.', '5 años aproximadamente'),
+)
+
+# (ocupación, qué hacen, lugares de trabajo, habilidades), copiados del catálogo del front
+# (`typicalWork`, `workplaces`, `skills`). Las ocupaciones con el texto por completar no aparecen.
+DETALLE_OCUPACIONES = (
+    ('sound-technician',
+     'Realiza montajes, pruebas de sonido, operación en vivo y solución de fallas.',
+     'Eventos, teatros, estudios, medios y empresas audiovisuales.',
+     ('Diagnóstico técnico', 'Escucha crítica', 'Trabajo bajo presión')),
+    ('electrician',
+     'Mide voltajes, instala circuitos y localiza fallas eléctricas.',
+     'Construcción, industria, mantenimiento, eventos y servicios técnicos.',
+     ('Precisión', 'Seguridad', 'Diagnóstico')),
+    ('event-coordinator',
+     'Planifica cronogramas, coordina proveedores y gestiona contingencias.',
+     'Convenciones, festivales, agencias, centros culturales y empresas.',
+     ('Organización', 'Negociación', 'Toma de decisiones')),
+    ('translator',
+     'Traduce conversaciones, textos o contenidos preservando su significado.',
+     'Eventos, empresas, editoriales, instituciones y trabajo independiente.',
+     ('Idiomas', 'Escucha', 'Precisión cultural')),
+    ('community-manager',
+     'Planifica publicaciones, conversa con audiencias y analiza respuestas digitales.',
+     'Marcas, agencias, medios, instituciones y proyectos independientes.',
+     ('Redacción', 'Estrategia digital', 'Empatía')),
+    ('graphic-designer',
+     'Diseña identidades, piezas informativas, interfaces y materiales impresos o digitales.',
+     'Agencias, editoriales, empresas, estudios y trabajo independiente.',
+     ('Comunicación visual', 'Creatividad', 'Síntesis')),
+    ('event-assistant',
+     'Apoya acreditaciones, orientación, montaje y coordinación cotidiana.',
+     'Ferias, convenciones, congresos, festivales y centros de eventos.',
+     ('Servicio', 'Adaptabilidad', 'Comunicación')),
+    ('security-guard',
+     'Vigila espacios, controla accesos y aplica protocolos de seguridad.',
+     'Eventos, comercios, instituciones, empresas y espacios públicos.',
+     ('Observación', 'Calma', 'Respuesta rápida')),
+    ('paramedic',
+     'Responde a emergencias, brinda primeros cuidados y coordina traslados.',
+     'Ambulancias, hospitales, eventos, industrias y equipos de respuesta.',
+     ('Evaluación rápida', 'Calma', 'Atención prehospitalaria')),
+    ('photographer',
+     'Planifica tomas, registra eventos y selecciona o edita imágenes.',
+     'Medios, estudios, eventos, agencias y trabajo independiente.',
+     ('Observación', 'Narrativa visual', 'Técnica fotográfica')),
+    ('lawyer',
+     'Analiza casos, asesora personas y redacta o revisa acuerdos.',
+     'Estudios jurídicos, empresas, instituciones y consultoría.',
+     ('Argumentación', 'Lectura detallada', 'Negociación')),
+    ('cook',
+     'Planifica preparaciones, controla insumos y produce alimentos de forma segura.',
+     'Restaurantes, hoteles, servicios de catering, eventos y emprendimientos.',
+     ('Organización', 'Técnica culinaria', 'Higiene')),
+    ('illustrator',
+     'Investiga referencias, desarrolla bocetos y crea piezas visuales finales.',
+     'Editoriales, estudios de videojuegos, agencias y trabajo independiente.',
+     ('Dibujo', 'Narrativa visual', 'Creatividad')),
+    ('psychologist',
+     'Escucha, evalúa necesidades emocionales y diseña estrategias de acompañamiento.',
+     'Centros de salud, colegios, organizaciones, empresas y consulta privada.',
+     ('Escucha activa', 'Contención emocional', 'Evaluación', 'Empatía')),
+    ('logistics-coordinator',
+     'Controla inventarios, coordina transporte y resuelve necesidades de abastecimiento.',
+     'Empresas, almacenes, organizaciones humanitarias, hospitales y operaciones públicas.',
+     ('Organización', 'Inventarios', 'Coordinación', 'Resolución de problemas')),
+    ('teacher',
+     'Planifica clases, facilita aprendizajes y acompaña el desarrollo de estudiantes.',
+     'Colegios, institutos, organizaciones sociales y proyectos educativos.',
+     ('Comunicación', 'Planificación', 'Facilitación', 'Creatividad')),
+    ('architect',
+     'Diseña proyectos, desarrolla planos y coordina soluciones espaciales y constructivas.',
+     'Estudios, constructoras, municipalidades, consultorías y trabajo independiente.',
+     ('Diseño espacial', 'Planificación', 'Representación visual', 'Coordinación')),
+    ('geologist',
+     'Realiza trabajo de campo, analiza suelos y rocas y elabora mapas de riesgo.',
+     'Consultoras, minería, obras públicas, investigación y gestión de riesgos.',
+     ('Trabajo de campo', 'Análisis del terreno', 'Cartografía', 'Gestión de riesgos')),
+    ('agricultural-engineer',
+     'Evalúa cultivos, asesora productores y diseña mejoras para el manejo agrícola.',
+     'Campos, cooperativas, empresas agrícolas, instituciones públicas y consultorías.',
+     ('Manejo de suelos', 'Producción agrícola', 'Asesoría técnica', 'Planificación')),
+    ('public-administrator',
+     'Diseña programas, gestiona presupuestos y coordina servicios para la ciudadanía.',
+     'Municipalidades, ministerios, gobiernos regionales y organizaciones públicas.',
+     ('Gestión de proyectos', 'Coordinación institucional', 'Presupuesto', 'Servicio público')),
+    ('sociologist',
+     'Realiza investigaciones, analiza información social y propone intervenciones comunitarias.',
+     'Universidades, instituciones públicas, consultoras y organizaciones sociales.',
+     ('Investigación social', 'Análisis', 'Entrevistas', 'Trabajo comunitario')),
+    ('data-analyst',
+     'Limpia información, crea visualizaciones y comunica hallazgos a equipos de decisión.',
+     'Empresas, instituciones públicas, centros de investigación y organizaciones.',
+     ('Análisis', 'Visualización de datos', 'Pensamiento crítico', 'Comunicación')),
+    ('urban-planner',
+     'Analiza territorios, diseña planes urbanos y coordina propuestas con comunidades e instituciones.',
+     'Municipalidades, consultoras, universidades y organismos de planificación.',
+     ('Planificación territorial', 'Cartografía', 'Participación ciudadana', 'Análisis urbano')),
+    ('documentary-filmmaker',
+     'Investiga temas, realiza entrevistas y produce relatos audiovisuales de no ficción.',
+     'Productoras, medios, organizaciones culturales y proyectos independientes.',
+     ('Investigación', 'Entrevistas', 'Narrativa audiovisual', 'Edición')),
+)
+
 PATRON_RIASEC = 'RRIIAASSEECC'
 OPCIONES_LIKERT = ('Me disgusta mucho', 'Me disgusta', 'No estoy seguro', 'Me gusta', 'Me gusta mucho')
 
@@ -288,7 +406,15 @@ def _cargar_catalogo(sesion, archivo, dimensiones):
     familias = {c: modelos.FamiliaCarrera(codigo=f'family-{c}', nombre=f) for c, _, f, _ in CARRERAS}
     sesion.add_all([*ocupaciones.values(), *familias.values()])
     sesion.flush()
-    carreras = {c: modelos.Carrera(codigo=c, nombre=n, familia_id=familias[c].id) for c, n, _, _ in CARRERAS}
+    detalle_carreras = {c: (d, duracion) for c, d, duracion in DETALLE_CARRERAS}
+    detalle_ocupaciones = {c: (d, lugares, habilidades) for c, d, lugares, habilidades in DETALLE_OCUPACIONES}
+    for codigo, (descripcion, lugares, habilidades) in detalle_ocupaciones.items():
+        ocupaciones[codigo].descripcion = descripcion
+        ocupaciones[codigo].lugares_trabajo = lugares
+        ocupaciones[codigo].habilidades = list(habilidades)
+    carreras = {c: modelos.Carrera(codigo=c, nombre=n, familia_id=familias[c].id,
+                                   descripcion=detalle_carreras[c][0], duracion=detalle_carreras[c][1])
+                for c, n, _, _ in CARRERAS}
     sesion.add_all(carreras.values())
     sesion.flush()
     sesion.execute(insert(modelos.PuntajeOcupacion), [

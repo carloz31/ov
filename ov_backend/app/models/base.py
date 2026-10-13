@@ -1,3 +1,4 @@
+import unicodedata
 from enum import StrEnum
 
 from sqlalchemy import Enum, MetaData
@@ -19,3 +20,13 @@ def enumerado(clase: type[StrEnum]) -> Enum:
         clase, native_enum=False, create_constraint=True, validate_strings=True,
         values_callable=lambda valores: [valor.value for valor in valores],
     )
+
+
+def sin_tildes(texto: str) -> str:
+    """Minúsculas sin tildes: criterio de comparación de textos y de la columna `busqueda` del catálogo."""
+    return ''.join(c for c in unicodedata.normalize('NFD', texto.lower()) if unicodedata.category(c) != 'Mn')
+
+
+def busqueda_de(campo: str):
+    """Valor por defecto de `busqueda`: el `campo` de la misma fila, normalizado con `sin_tildes`."""
+    return lambda contexto: sin_tildes(contexto.get_current_parameters()[campo])

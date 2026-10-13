@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 56
+    assert len(Base.metadata.tables) == 63
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,7 +129,7 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 58
+    assert sql.count('CREATE TABLE ') == 65
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -281,12 +281,17 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).mappings().all()
                           for tabla in Base.metadata.sorted_tables}
         # B08: `ruta` tiene una batalla, así que 0013 se detiene antes de bajar nada.
+        # B10: 0014 sí baja (no hay vistas de ocupaciones ni instituciones) y retira el catálogo nuevo.
         with pytest.raises(RuntimeError, match='hay batallas'):
             command.downgrade(configuracion, '0002')
-        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
+        tablas_0014 = {'high_point', 'tipo_carrera', 'ubicacion', 'institucion', 'institucion_carrera',
+                       'ingreso_carrera', 'rango_ingreso'}
+        assert set(inspect(motor).get_table_names()) == (set(Base.metadata.tables) - tablas_0014) | {'alembic_version'}
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0013'
             for tabla in Base.metadata.sorted_tables:
+                if tabla.name in tablas_0014:
+                    continue
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]
                 assert conexion.execute(select(*columnas).order_by(*tabla.primary_key.columns)).mappings().all() == [

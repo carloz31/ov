@@ -6,7 +6,7 @@ from app.models.enums import (
     Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso, NivelAjuste,
     TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
     ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion, TipoCriterio,
-    TipoReferencia, EstadoReferencia, ZonaDimension,
+    TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion,
 )
 
 
@@ -42,6 +42,10 @@ _MODELOS_POR_MODULO = {
     'app.models.referencias': (
         'Referencia',
     ),
+    'app.models.catalogo': (
+        'HighPoint', 'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera',
+        'RangoIngreso',
+    ),
 }
 
 
@@ -71,5 +75,6 @@ __all__ = [
     'Ocupacion', 'PuntajeOcupacion', 'CarreraOcupacion', 'RespuestaItem', 'ResultadoInstrumento',
     'ResultadoDimension', 'Coincidencia', 'ListaOpciones', 'OpcionLista', 'ItemRegistro',
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
-    'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension',
+    'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
+    'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera', 'RangoIngreso',
 ]

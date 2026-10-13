@@ -90,6 +90,81 @@ TEMATICAS_ACTIVIDADES = (('t-expectativas', ('A', 'B')), ('t-valores', ('B',)), 
 # (caso, dimensiones RIASEC). Solo las actividades CASO llevan dimensiones; un caso puede tener varias (B08).
 DIMENSIONES_ACTIVIDADES = (('t-caso', ('R', 'S')),)
 
+# --- Catálogo (B10) ---
+# Letras RIASEC por posición, como las traerá la carga real: (ocupación, posición, letra). De 1 a 3 por ocupación
+# con `codigo`, en posiciones consecutivas desde 1; la posición 1 es el tipo principal. Ficticias.
+HIGH_POINTS = (
+    ('sound-technician', 1, 'R'),
+    ('electrician', 1, 'R'), ('electrician', 2, 'C'),
+    ('event-coordinator', 1, 'E'), ('event-coordinator', 2, 'C'), ('event-coordinator', 3, 'S'),
+    ('translator', 1, 'C'),
+    ('community-manager', 1, 'E'), ('community-manager', 2, 'A'),
+    ('graphic-designer', 1, 'A'), ('graphic-designer', 2, 'C'), ('graphic-designer', 3, 'E'),
+    ('event-assistant', 1, 'C'),
+    ('security-guard', 1, 'R'), ('security-guard', 2, 'C'),
+    ('paramedic', 1, 'S'), ('paramedic', 2, 'R'), ('paramedic', 3, 'I'),
+    ('photographer', 1, 'R'),
+    ('lawyer', 1, 'E'), ('lawyer', 2, 'C'),
+    ('cook', 1, 'R'), ('cook', 2, 'C'), ('cook', 3, 'E'),
+    ('illustrator', 1, 'A'),
+    ('firefighter', 1, 'R'), ('firefighter', 2, 'C'),
+    ('meteorologist', 1, 'I'), ('meteorologist', 2, 'R'), ('meteorologist', 3, 'C'),
+    ('municipal-police', 1, 'R'),
+    ('medical-specialist', 1, 'I'), ('medical-specialist', 2, 'S'),
+    ('veterinarian', 1, 'R'), ('veterinarian', 2, 'I'), ('veterinarian', 3, 'C'),
+    ('biologist', 1, 'I'),
+    ('environmental-engineer', 1, 'I'), ('environmental-engineer', 2, 'R'),
+    ('civil-engineer', 1, 'R'), ('civil-engineer', 2, 'I'), ('civil-engineer', 3, 'C'),
+    ('machinery-operator', 1, 'R'),
+    ('social-worker', 1, 'S'), ('social-worker', 2, 'C'),
+    ('psychologist', 1, 'S'), ('psychologist', 2, 'I'), ('psychologist', 3, 'C'),
+    ('logistics-coordinator', 1, 'C'),
+    ('journalist', 1, 'A'), ('journalist', 2, 'I'),
+    ('teacher', 1, 'S'), ('teacher', 2, 'A'), ('teacher', 3, 'C'),
+    ('architect', 1, 'R'),
+    ('geologist', 1, 'I'), ('geologist', 2, 'R'),
+    ('agricultural-engineer', 1, 'R'), ('agricultural-engineer', 2, 'I'), ('agricultural-engineer', 3, 'C'),
+    ('public-administrator', 1, 'E'),
+    ('sociologist', 1, 'I'), ('sociologist', 2, 'S'),
+    ('data-analyst', 1, 'I'), ('data-analyst', 2, 'C'), ('data-analyst', 3, 'A'),
+    ('urban-planner', 1, 'I'),
+    ('documentary-filmmaker', 1, 'A'), ('documentary-filmmaker', 2, 'E'),
+    ('nurse', 1, 'S'), ('nurse', 2, 'C'), ('nurse', 3, 'I'),
+)
+
+# Tipos RIASEC de carrera: (carrera, posición, letra). De 0 a 3 por carrera; veterinary-medicine queda sin tipos.
+TIPOS_CARRERA = (
+    ('environmental-engineering', 1, 'I'), ('environmental-engineering', 2, 'R'),
+    ('journalism', 1, 'A'), ('journalism', 2, 'E'), ('journalism', 3, 'S'),
+    ('nursing', 1, 'S'),
+    ('civil-engineering', 1, 'R'), ('civil-engineering', 2, 'I'),
+    ('psychology', 1, 'S'), ('psychology', 2, 'I'), ('psychology', 3, 'A'),
+)
+
+# (código, nombre)
+UBICACIONES = (('t-lima', 'Lima de prueba'), ('t-cusco', 'Cusco de prueba'))
+
+# (código, nombre, tipo, ubicación, descripción, página web, carreras que ofrece)
+INSTITUCIONES = (
+    ('t-uni', 'Universidad Nacional de Prueba', 'UNIVERSIDAD', 't-lima', 'Universidad de prueba con varias facultades.',
+     'https://example.test/universidad', ('environmental-engineering', 'journalism', 'psychology')),
+    ('t-ffaa', 'Escuela de Oficiales de Prueba', 'FFAA_POLICIA', 't-cusco',
+     'Escuela de formación de oficiales de prueba.', 'https://example.test/escuela',
+     ('civil-engineering', 'nursing')),
+)
+
+# (carrera, promedio mensual, fuente, año, ((mínimo, máximo o None, porcentaje), ...))
+INGRESOS = (
+    ('psychology', 3200, 'Fuente de prueba', 2025, ((0, 2000, 30), (2000, 4000, 50), (4000, None, 20))),
+    ('civil-engineering', 4500, 'Fuente de prueba', 2025, ((0, 3000, 25), (3000, None, 75))),
+)
+
+# (ocupación, conocimientos). El front no los tiene.
+CONOCIMIENTOS_OCUPACIONES = (
+    ('psychologist', ('Psicología', 'Terapia y orientación')),
+    ('civil-engineer', ('Ingeniería y tecnología', 'Construcción')),
+)
+
 # Listas propias de una actividad: (código, nombre, ((código, texto), ...)).
 LISTAS = (('t-lista-apoyos', 'Quién te apoya', (('FAMILIA', 'Mi familia'), ('DOCENTES', 'Mis docentes'),
                                                 ('AMIGOS', 'Mis amigos'))),
@@ -467,12 +542,71 @@ def _cargar_reglas(sesion, objetivos):
     sesion.add_all(reglas)
 
 
+def _letras(filas, duenos, dimensiones, modelo, columna):
+    """Valida filas (dueño, posición, letra) y devuelve las filas del modelo y el código de cada dueño («RIS»)."""
+    por_dueno = {}
+    for dueno, posicion, letra in filas:
+        if dueno not in duenos:
+            raise ValueError(f'Letras RIASEC de {dueno}, que no existe o no tiene código')
+        if letra not in dimensiones:
+            raise ValueError(f'Letra RIASEC inválida en {dueno}: {letra}')
+        if posicion in por_dueno.setdefault(dueno, {}):
+            raise ValueError(f'Posición repetida en las letras de {dueno}: {posicion}')
+        por_dueno[dueno][posicion] = letra
+    codigos = {}
+    for dueno, posiciones in por_dueno.items():
+        if sorted(posiciones) != list(range(1, len(posiciones) + 1)) or len(posiciones) > 3:
+            raise ValueError(f'Las letras de {dueno} deben ocupar posiciones consecutivas desde 1, hasta 3')
+        letras = [posiciones[p] for p in sorted(posiciones)]
+        if len(set(letras)) != len(letras):
+            raise ValueError(f'Letra repetida en {dueno}')
+        codigos[dueno] = ''.join(letras)
+    return [modelo(**{columna: duenos[d].id}, posicion=p, dimension_id=dimensiones[letra].id)
+            for d, p, letra in filas], codigos
+
+
+def _cargar_catalogo(sesion):
+    dimensiones = {d.codigo: d for d in sesion.scalars(select(modelos.Dimension).join(modelos.Instrumento).where(
+        modelos.Instrumento.codigo == 'TEST-RIASEC'))}
+    ocupaciones = {o.codigo: o for o in sesion.scalars(select(modelos.Ocupacion).where(
+        modelos.Ocupacion.codigo.is_not(None)))}
+    carreras = {c.codigo: c for c in sesion.scalars(select(modelos.Carrera))}
+    high_points, codigos = _letras(HIGH_POINTS, ocupaciones, dimensiones, modelos.HighPoint, 'ocupacion_id')
+    faltantes = sorted(set(ocupaciones) - set(codigos))
+    if faltantes:
+        raise ValueError(f'Ocupaciones con código sin high points: {", ".join(faltantes)}')
+    for codigo, letras in codigos.items():
+        ocupaciones[codigo].codigo_riasec = letras
+    tipos, codigos = _letras(TIPOS_CARRERA, carreras, dimensiones, modelos.TipoCarrera, 'carrera_id')
+    for codigo, letras in codigos.items():
+        carreras[codigo].codigo_riasec = letras
+    for codigo, conocimientos in CONOCIMIENTOS_OCUPACIONES:
+        ocupaciones[codigo].conocimientos = list(conocimientos)
+    ubicaciones = {c: modelos.Ubicacion(codigo=c, nombre=n) for c, n in UBICACIONES}
+    sesion.add_all([*high_points, *tipos, *ubicaciones.values()])
+    sesion.flush()
+    instituciones = {c: modelos.Institucion(codigo=c, nombre=n, tipo=modelos.TipoInstitucion(t),
+                                            ubicacion_id=ubicaciones[u].id, descripcion=d, pagina_web=w)
+                     for c, n, t, u, d, w, _ in INSTITUCIONES}
+    ingresos = {c: modelos.IngresoCarrera(carrera_id=carreras[c].id, promedio_mensual=p, fuente=f, anio=a)
+                for c, p, f, a, _ in INGRESOS}
+    sesion.add_all([*instituciones.values(), *ingresos.values()])
+    sesion.flush()
+    sesion.add_all(modelos.InstitucionCarrera(institucion_id=instituciones[i].id, carrera_id=carreras[c].id)
+                   for i, *_, ofrecidas in INSTITUCIONES for c in ofrecidas)
+    sesion.add_all(modelos.RangoIngreso(ingreso_carrera_id=ingresos[c].id, posicion=posicion, minimo=minimo,
+                                        maximo=maximo, porcentaje=porcentaje)
+                   for c, *_, rangos in INGRESOS
+                   for posicion, (minimo, maximo, porcentaje) in enumerate(rangos, start=1))
+
+
 def cargar(sesion: Session) -> None:
     base = fijos.cargar(sesion)
     objetivos = {**_cargar_estructura(sesion), 'SECCION': base.secciones, 'APLICACION': base.aplicaciones}
     _unir_instrumentos(sesion, objetivos['ACTIVIDAD'], base)
     _unir_tematicas(sesion, objetivos['ACTIVIDAD'], base)
     _unir_dimensiones(sesion, objetivos['ACTIVIDAD'])
+    _cargar_catalogo(sesion)
     _cargar_registros(sesion, objetivos['ACTIVIDAD'], base)
     _cargar_salones(sesion, objetivos.pop('SALON'), objetivos['ACTIVIDAD'])
     _cargar_reglas(sesion, objetivos)

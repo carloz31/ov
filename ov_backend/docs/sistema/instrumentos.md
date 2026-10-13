@@ -13,14 +13,20 @@ Cuestionarios repartidos en actividades, cálculo de resultados y recomendación
 | `item_instrumento` | `numero`, `enunciado`, dimensión, escala e `inverso`. |
 | `actividad_item` | Qué ítems presenta cada actividad y en qué orden. |
 | `aplicacion`, `aplicacion_actividad` | Una aplicación del instrumento (`momento` UNICA, ENTRADA o SALIDA) y sus actividades. |
-| `ocupacion`, `puntaje_ocupacion` | Catálogo O*NET (código, título, `codigo` del front y seis puntajes RIASEC). |
+| `ocupacion`, `puntaje_ocupacion` | Catálogo O*NET (código, título, `codigo` del front y seis puntajes RIASEC, que solo usa el test). Detalle: `descripcion`, `lugares_trabajo`, `habilidades` y `conocimientos` (listas JSON), `codigo_riasec` y `busqueda`. |
+| `high_point` | De 1 a 3 letras RIASEC por ocupación (`posicion` 1–3), cargadas, no calculadas desde los puntajes. La posición 1 es su tipo principal. |
+| `carrera`, `tipo_carrera` | Carrera con familia, `descripcion`, `duracion`, `codigo_riasec` y `busqueda`; de 0 a 3 letras RIASEC cargadas por carrera, con la misma estructura que `high_point`. |
 | `carrera_ocupacion` | Ocupaciones a las que conduce cada carrera. |
+| `ubicacion`, `institucion`, `institucion_carrera` | Instituciones (`tipo` UNIVERSIDAD, INSTITUTO o FFAA_POLICIA, ubicación, página web) y las carreras que ofrecen. |
+| `ingreso_carrera`, `rango_ingreso` | Ingreso mensual promedio de una carrera (fuente y año) y su distribución por tramos (`maximo` nulo = tramo abierto). |
 | `respuesta_item` | Respuesta por progreso de actividad e ítem (única). |
 | `resultado_instrumento`, `resultado_dimension`, `coincidencia` | Resultado calculado, con `anulado_en` y `perfil_plano`. A lo sumo uno vigente por cuenta y aplicación; los anulados quedan como historial. |
 
 Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente una actividad; la carga lo valida (`validar_distribucion_items`).
 
 **Catálogo O*NET.** `datos/ocupaciones.py` lee `datos/archivos/Career_Interest_RIASEC_Clean.xlsx` (columnas `code, title, R, I, A, S, E, C`) solo al cargar la base. Encabezado distinto, valores no numéricos o códigos repetidos detienen la carga. La aplicación nunca lee el Excel.
+
+**Letras RIASEC del catálogo.** Al cargar, se valida que las posiciones de `high_point` y `tipo_carrera` sean consecutivas desde 1, sin letras repetidas. `codigo_riasec` se calcula con las letras en orden de posición («RIS»). `busqueda` es el nombre o título en minúsculas y sin tildes (`sin_tildes`, en `app/models/base.py`), y el modelo la calcula al insertar.
 
 **Escala RIASEC.** `ESC-LIKERT5`: la opción 1–5 que marca el estudiante vale 0–4 (transformación O*NET, aplicada solo al sembrar). El cálculo usa siempre los puntajes guardados en `opcion_escala`.
 
@@ -88,6 +94,23 @@ Volver a hacer el test cuando el resultado no distingue ningún tipo (HU-095). R
 | `/cuentas/{c}/instrumentos/{i}/comparacion` | HU-094. `{instrumento, partida, llegada, dimensiones}`. Cada dimensión, en orden, trae `codigo`, `nombre`, `descripcion`, `tematica`, `zona_partida`, `zona_llegada`, `actividades_completadas` (cuántas actividades de su temática tiene COMPLETADA la cuenta) e `items`. Cada ítem trae `item`, `enunciado`, `partida` y `llegada` (la etiqueta elegida) y `cambio` (bool; un cambio hacia una opción menor no se distingue). Sin números. La aplicación ENTRADA y la SALIDA se eligen por `momento`, nunca por código. Instrumento de otro tipo: 404. Sin las dos reveladas: 409 con el avance de ambas. |
 
 Las consultas con cuenta responden 404 a un apoderado. El resultado se arma con lo guardado, sin recalcular.
+
+## Catálogo — `GET /cuentas/{c}/catalogo/...`
+
+Código: `app/services/catalogo.py`. Se lee de la base, no de la caché, con `selectinload` y un número fijo de consultas por petición. Todas las rutas, incluidas `ver-carrera`, `ver-ocupacion` y `ver-institucion`, exigen la sección CATALOGO: si está cerrada responden 409 con su mensaje, y una cuenta de otra audiencia recibe 404.
+
+| Ruta | Respuesta |
+|---|---|
+| `carreras?buscar=&familia=&riasec=` | `[{codigo, nombre, familia{codigo, nombre}, riasec[0–3]}]`, por código |
+| `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `ocupaciones[]`, `instituciones[]` e `ingreso{promedio_mensual, fuente, anio, rangos[]}` (o `null`) |
+| `ocupaciones?buscar=&riasec=` | `[{codigo, codigo_onet, titulo, riasec[1–3]}]`, solo las ocupaciones con `codigo` |
+| `ocupaciones/{codigo}` | Lo anterior más `descripcion`, `lugares_trabajo`, `conocimientos`, `habilidades` y `carreras[]` |
+| `instituciones?buscar=&tipo=&ubicacion=` | `[{codigo, nombre, tipo, ubicacion{codigo, nombre}}]` |
+| `instituciones/{codigo}` | Lo anterior más `descripcion`, `pagina_web` y `carreras[]` |
+
+- `buscar`: subcadena sobre `busqueda`, sin mayúsculas ni tildes; `%`, `_` y `\` se buscan literalmente.
+- `riasec`: de 1 a 3 letras distintas (acepta minúsculas). Coincide si `codigo_riasec` las contiene seguidas y en ese orden: `RI` encuentra RI, RIS y ARI, pero no IR ni RSI. Una letra inválida, repetida o más de 3 → 422, y lo que no tiene código no coincide nunca.
+- `familia` y `ubicacion` filtran por código; un `tipo` fuera de `TipoInstitucion` → 422. Un código inexistente en el detalle → 404.
 
 ## Invariantes
 
