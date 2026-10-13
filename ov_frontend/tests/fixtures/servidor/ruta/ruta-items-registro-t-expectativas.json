@@ -30,7 +30,8 @@
         }
       ],
       "ordenada": false,
-      "permite_otra": true
+      "permite_otra": true,
+      "referencia": null
     },
     "min_caracteres": null,
     "nombre": "Ruta",
@@ -59,7 +60,8 @@
         }
       ],
       "ordenada": false,
-      "permite_otra": false
+      "permite_otra": false,
+      "referencia": null
     },
     "min_caracteres": null,
     "nombre": "Apoyo",

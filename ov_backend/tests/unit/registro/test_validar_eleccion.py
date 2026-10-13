@@ -13,7 +13,7 @@ OPCIONES = tuple(SimpleNamespace(codigo=c) for c in ('A', 'B', 'C'))
 
 
 def item(**cambios):
-    return SimpleNamespace(**{'lista_id': 1, 'eleccion_minima': 1, 'eleccion_maxima': 2,
+    return SimpleNamespace(**{'lista_id': 1, 'referencia_id': None, 'eleccion_minima': 1, 'eleccion_maxima': 2,
                               'eleccion_ordenada': False, 'permite_otra': True, **cambios})
 
 

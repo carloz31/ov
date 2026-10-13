@@ -75,7 +75,9 @@ class OpcionListaPublica(BaseModel):
 
 
 class EleccionPublica(BaseModel):
-    lista: str
+    """Con `referencia`, `lista` es nula y `opciones` va vacía: se leen en la consulta de referencias."""
+    lista: str | None
+    referencia: str | None
     comun: bool
     minima: int
     maxima: int

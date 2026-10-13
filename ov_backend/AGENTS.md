@@ -138,6 +138,8 @@ tests/
 | `app/main.py`, `config.py`, `database.py`, `dependencies.py`, `exceptions.py`, `app/core/*` | `tests/unit` y `tests/integration/escenarios` |
 | Una respuesta que consume el front | `tests/integration/contrato`, regenerar fixtures y `npm run test:servidor` en ov_frontend |
 
+PostgreSQL (opcional, marca `postgres`): con el extra instalado (`uv sync --extra postgres`) y `TEST_POSTGRES_URL` en `.env` (formato `postgresql+psycopg://…`, hacia una base vacía solo para pruebas), corre `uv run --env-file .env python -m pytest -m postgres -q`. Las pruebas crean un esquema temporal en esa base y lo borran al terminar. No pegues la URL en documentos, logs ni commits.
+
 Ejemplo: `uv run pytest tests/integration/instrumentos -q`. En Windows, si falla el lanzador, usa `uv run python -m pytest`. Los temporales de pytest van en `.pytest_tmp/` (`--basetemp` fijo en `pyproject.toml`, ignorado por git; el temporal del sistema da `PermissionError` en Windows). Logs fuera del repo.
 
 ## Reglas compartidas

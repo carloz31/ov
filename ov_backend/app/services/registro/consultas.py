@@ -2,17 +2,23 @@
 
 
 from app.core.contexto import contexto, usar_contexto
-from app.models import ListaOpciones
+from app.models import ListaOpciones, Referencia
 from app.schemas.registro import EleccionPublica, ItemRegistroPublico, OpcionListaPublica, RegistroConsultado
 from app.services.registro.acciones import leer_registro, opciones_de, registro_publico, validar_registro
 
 
 def eleccion_publica(sesion, item):
+    definiciones = contexto(sesion).definiciones
+    comunes = dict(minima=item.eleccion_minima, maxima=item.eleccion_maxima, ordenada=item.eleccion_ordenada,
+                   permite_otra=item.permite_otra)
+    if item.referencia_id is not None:
+        # Las opciones dependen de la cuenta: se leen en la consulta de referencias.
+        referencia = definiciones.obtener(Referencia, item.referencia_id)
+        return EleccionPublica(lista=None, referencia=referencia.codigo, comun=False, opciones=[], **comunes)
     if item.lista_id is None:
         return None
-    lista = contexto(sesion).definiciones.obtener(ListaOpciones, item.lista_id)
-    return EleccionPublica(lista=lista.codigo, comun=lista.comun, minima=item.eleccion_minima,
-        maxima=item.eleccion_maxima, ordenada=item.eleccion_ordenada, permite_otra=item.permite_otra,
+    lista = definiciones.obtener(ListaOpciones, item.lista_id)
+    return EleccionPublica(lista=lista.codigo, referencia=None, comun=lista.comun, **comunes,
         opciones=[OpcionListaPublica(codigo=o.codigo, texto=o.texto) for o in opciones_de(sesion, item)])
 
 

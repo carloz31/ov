@@ -55,7 +55,7 @@ Todas exigen actividad disponible y cuenta de estudiante (apoderado u orientador
 
 Las cuatro últimas devuelven el registro (como el GET: `posicion`, `estado` del progreso y `respuestas` con estado, opciones y conversación) más `eventos_registrados` y `nuevos_desbloqueos`; la que cierra agrega `items_por_ampliar` (`{item, pista}`, ver «Consultas»). Ninguna respuesta de una acción incluye la clasificación, los criterios, la consolidada ni `requiere_atencion`. REGISTRO_ADECUADO sí aparece en `eventos_registrados`, como todo evento: es una señal del registro completo, no la clasificación de un ítem.
 
-**Elección** (`eleccion.py`, sin base de datos): `opciones` es una lista de `{codigo, texto?}`. Responde 422 si el ítem no tiene lista y llegan opciones, si una opción es ajena o se repite, si llega `OTRA` sin `permite_otra` o sin texto, si una opción que no es `OTRA` trae texto, si se supera la máxima o, solo al entregar, si no se alcanza la mínima. La elección no ordenada se guarda en el orden de la lista; la ordenada, en el orden elegido.
+**Elección** (`eleccion.py`, sin base de datos): `opciones` es una lista de `{codigo, texto?}`. Las opciones válidas son las de la lista o, en la elección por referencia, las que esa referencia ELECCION devuelve a la cuenta (incluida la OTRA de la fuente, que se elige sin texto); sin dato, ninguna. Responde 422 si el ítem no tiene lista y llegan opciones, si una opción es ajena o se repite, si llega `OTRA` sin `permite_otra` o sin texto, si una opción que no es `OTRA` trae texto, si se supera la máxima o, solo al entregar, si no se alcanza la mínima. La elección no ordenada se guarda en el orden de la lista; la ordenada, en el orden elegido.
 
 ## Seguimiento
 
@@ -116,7 +116,7 @@ La llamada al LLM nunca ocurre dentro de una transacción ni con una conexión t
 
 | Ruta | Devuelve |
 |---|---|
-| `/actividades/{a}/items-registro` | Ítems en orden, con consigna, `min_caracteres` (puede ser nulo), obligatoriedad y `eleccion` (`null` o lista, `comun`, mínima, máxima, `ordenada`, `permite_otra` y opciones). Sin criterios. |
+| `/actividades/{a}/items-registro` | Ítems en orden, con consigna, `min_caracteres` (puede ser nulo), obligatoriedad y `eleccion` (`null` o lista, `referencia`, `comun`, mínima, máxima, `ordenada`, `permite_otra` y opciones; con elección por referencia, `lista` es nula y `opciones` va vacía: se leen según `referencias.md`). Sin criterios. |
 | `/cuentas/{c}/actividades/{a}/registro` | Posición, estado del progreso y, por ítem, estado, `opciones_elegidas` y conversación del intento vigente (incluidos los borradores). Con el registro cerrado (progreso COMPLETADA y nada pendiente), además `texto_consolidado` por ítem e `items_por_ampliar`: los ítems con POCO_DESARROLLADA vigente, cada uno con `pista`, la pregunta de su evaluación vigente (la omitida, la siguiente que devolvió `evaluar_seguimiento` al agotar las preguntas o la de la edición; inválida, la base o la genérica). |
 
 Apoderados y cuentas o actividades inexistentes: 404. Completar una actividad de registro exige todos sus ítems obligatorios en FINAL (`motor.md`).
