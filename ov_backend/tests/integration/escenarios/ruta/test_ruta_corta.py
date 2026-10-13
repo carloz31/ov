@@ -132,6 +132,18 @@ def test_hu007_hu016_entrega_con_seguimiento_y_mision_adicional(cliente):
             assert [i['item'] for i in cierre['items_por_ampliar']] == ['t-exp-ruta']
             assert actividades(cliente, cuenta)['t-expectativas'] == 'COMPLETADA'
             assert actividades(cliente, cuenta)['t-adicional'] == 'BLOQUEADA'
+            # B04 (HU-008): Luis consulta la consolidada, edita lo que puede ampliar y responde la pregunta.
+            registro = pedir(cliente, 'GET', f'/cuentas/{cuenta}/actividades/t-expectativas/registro')
+            assert {r['item']: r['texto_consolidado'] for r in registro['respuestas']} == textos
+            assert [i['item'] for i in registro['items_por_ampliar']] == ['t-exp-ruta']
+            edicion = pedir(cliente, 'POST', '/acciones/registro/editar', {**accion, 'items': [
+                {'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: quiero estudiar en un instituto [vaga]'}]})
+            ruta = next(r for r in edicion['respuestas'] if r['item'] == 't-exp-ruta')
+            assert ruta['estado'] == 'PENDIENTE_SEGUIMIENTO'
+            cierre = pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento',
+                           {**accion, 'item': 't-exp-ruta', 'texto': 'Porque quiero trabajar pronto'})
+            assert cierre['items_por_ampliar'] == []
+            assert actividades(cliente, cuenta)['t-adicional'] == 'DISPONIBLE'
 
 
 def test_llegada_a_la_ciudad(cliente):

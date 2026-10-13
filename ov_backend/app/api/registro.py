@@ -5,8 +5,8 @@ from app.database import es_bloqueo_temporal
 from app.dependencies import SesionBD, ejecutar_accion
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.schemas.registro import (
-    AccionItemRegistroEntrada, BorradorRegistroEntrada, EntregarRegistroEntrada, EstadoItemRegistro,
-    ItemRegistroPublico, RegistroConsultado, ResponderSeguimientoEntrada, RespuestaRegistroAccion,
+    AccionItemRegistroEntrada, BorradorRegistroEntrada, EditarRegistroEntrada, EntregarRegistroEntrada,
+    EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, ResponderSeguimientoEntrada, RespuestaRegistroAccion,
 )
 from app.services.registro import acciones as acciones_registro, consultas as consultas_registro
 
@@ -30,6 +30,11 @@ def entregar(entrada: EntregarRegistroEntrada, peticion: Request):
              response_model_exclude_unset=True)
 def responder_seguimiento(entrada: ResponderSeguimientoEntrada, peticion: Request):
     return ejecutar_evaluacion(acciones_registro.responder_seguimiento, entrada, peticion)
+
+
+@router.post('/acciones/registro/editar', response_model=RespuestaRegistroAccion, response_model_exclude_unset=True)
+def editar(entrada: EditarRegistroEntrada, peticion: Request):
+    return ejecutar_evaluacion(acciones_registro.editar, entrada, peticion)
 
 
 def ejecutar_evaluacion(accion, entrada, peticion):

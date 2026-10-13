@@ -190,7 +190,8 @@ def registro_publico(registro, items, consolidada=False):
     cierre = dict(items_por_ampliar=registro.por_ampliar(items)) if registro.cerrado else {}
     return dict(posicion=progreso.posicion if progreso is not None else None,
                 estado=progreso.estado if progreso is not None else None,
-                respuestas=[respuesta_publica(registro, item, consolidada) for item in items if item.id in registro.respuestas],
+                respuestas=[respuesta_publica(registro, item, consolidada)
+                            for item in items if item.id in registro.respuestas],
                 **cierre)
 
 
@@ -272,14 +273,21 @@ def guardar_borrador(sesion, entrada):
     return EstadoItemRegistro(item=item.codigo, estado=estado)
 
 
-# --- Entregar -------------------------------------------------------------------------------
+# --- Entregar y editar ----------------------------------------------------------------------
 
 @dataclass(frozen=True, slots=True)
 class LecturaEntrega:
+    """Lo que se evalúa en un intento: la entrega (1) o una edición (2 en adelante)."""
     titulo: str
     items: tuple[ItemPorEvaluar, ...]
     elecciones: dict[str, list[dict]]
     version: dict
+    intento: int = 1
+
+
+def item_por_evaluar(sesion, item, elegidas, texto):
+    return ItemPorEvaluar(item.codigo, item.consigna, criterios_de(sesion, item),
+                          textos_elegidos(sesion, item, elegidas), texto, item.min_caracteres, item.repregunta_generica)
 
 
 @usar_contexto
@@ -302,10 +310,47 @@ def preparar_entrega(sesion, entrada):
         elegidas = validar_eleccion(item, opciones_de(sesion, item),
                                     [OpcionElegida(**e) for e in respuesta.opciones_elegidas or ()], True)
         elecciones[item.codigo] = elegidas
-        por_evaluar.append(ItemPorEvaluar(item.codigo, item.consigna, criterios_de(sesion, item),
-            textos_elegidos(sesion, item, elegidas), respuesta.texto_inicial, item.min_caracteres,
-            item.repregunta_generica))
+        por_evaluar.append(item_por_evaluar(sesion, item, elegidas, respuesta.texto_inicial))
     return LecturaEntrega(actividad.titulo, tuple(por_evaluar), elecciones, version(registro))
+
+
+def exigir_cerrado(registro):
+    if not registro.cerrado:
+        raise ErrorAccion("Solo se edita un registro cerrado y sin preguntas pendientes")
+
+
+@usar_contexto
+def preparar_edicion(sesion, entrada):
+    """Un nuevo intento con los ítems cuyo texto cambió; la elección no se edita."""
+    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
+    if not entrada.items:
+        raise invalida("Indica al menos un ítem para editar")
+    codigos = [edicion.item for edicion in entrada.items]
+    if len(codigos) != len(set(codigos)):
+        raise invalida("Un ítem no puede editarse dos veces en la misma petición")
+    if any(not edicion.texto.strip() for edicion in entrada.items):
+        raise invalida("La respuesta no puede estar vacía")
+    por_codigo = {item.codigo: item for item in items}
+    if any(codigo not in por_codigo for codigo in codigos):
+        raise invalida("El ítem no pertenece a esta actividad")
+    registro = leer_registro(sesion, cuenta, actividad)
+    exigir_cerrado(registro)
+    por_evaluar, elecciones = [], {}
+    for item in items:
+        edicion = next((e for e in entrada.items if e.item == item.codigo), None)
+        if edicion is None:
+            continue
+        respuesta = registro.respuestas.get(item.id)
+        if respuesta is None or respuesta.clasificacion_inicial is None:
+            raise invalida("Solo se edita un ítem entregado")
+        if edicion.texto == respuesta.texto_consolidado:
+            continue  # Sin cambios: no abre intento ni va al evaluador.
+        elecciones[item.codigo] = respuesta.opciones_elegidas
+        por_evaluar.append(item_por_evaluar(sesion, item, respuesta.opciones_elegidas, edicion.texto))
+    if not por_evaluar:
+        raise invalida("La edición no tiene cambios")
+    return LecturaEntrega(actividad.titulo, tuple(por_evaluar), elecciones, version(registro),
+                          registro.intento_vigente + 1)
 
 
 def insertar_evaluacion(sesion, respuesta_id, numero, evaluacion, fecha):
@@ -319,29 +364,43 @@ def insertar_evaluacion(sesion, respuesta_id, numero, evaluacion, fecha):
 
 @usar_contexto
 def persistir_entrega(sesion, entrada, lectura, evaluaciones):
+    """Guarda el intento: el texto escrito es su base y, hasta el primer turno, la respuesta final."""
     cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
     registro = leer_registro(sesion, cuenta, actividad)
     exigir_sin_cambios(registro, lectura.version)
-    exigir_abierto(registro)
+    if lectura.intento == 1:
+        exigir_abierto(registro)
+    else:
+        exigir_cerrado(registro)
     fecha = fecha_accion(entrada)
+    textos = {i.codigo: i.texto for i in lectura.items}
     for item in items:
         evaluacion = evaluaciones.get(item.codigo)
         if evaluacion is None:
             continue
         respuesta = registro.respuestas[item.id]
-        comprobar_cambio(sesion, respuesta, dict(estado=EstadoRespuestaRegistro.FINAL,
-            actualizada_en=marca_actualizacion(respuesta.actualizada_en), clasificacion_inicial=evaluacion.clasificacion,
-            texto_consolidado=respuesta.texto_inicial, opciones_elegidas=lectura.elecciones[item.codigo]))
-        insertar_evaluacion(sesion, respuesta.id, 1, evaluacion, fecha)
-    return avanzar(sesion, cuenta, actividad, items, fecha, intento=1)
+        valores = dict(estado=EstadoRespuestaRegistro.FINAL,
+                       actualizada_en=marca_actualizacion(respuesta.actualizada_en), intento=lectura.intento, texto_inicial=textos[item.codigo],
+                       texto_consolidado=textos[item.codigo], opciones_elegidas=lectura.elecciones[item.codigo])
+        if lectura.intento == 1:
+            valores['clasificacion_inicial'] = evaluacion.clasificacion
+        comprobar_cambio(sesion, respuesta, valores)
+        insertar_evaluacion(sesion, respuesta.id, len(registro.evaluaciones.get(respuesta.id, ())) + 1, evaluacion,
+                            fecha)
+    return avanzar(sesion, cuenta, actividad, items, fecha, intento=lectura.intento)
 
 
-def entregar(fabrica_sesiones, entrada, evaluador, **opciones_evaluacion):
+def entregar(fabrica_sesiones, entrada, evaluador, preparar=preparar_entrega, **opciones_evaluacion):
     with fabrica_sesiones.begin() as sesion:
-        lectura = preparar_entrega(sesion, entrada)
+        lectura = preparar(sesion, entrada)
     evaluaciones = procesar_entrega(lectura.titulo, lectura.items, evaluador, **opciones_evaluacion)
     with fabrica_sesiones.begin() as sesion:
         return persistir_entrega(sesion, entrada, lectura, evaluaciones)
+
+
+def editar(fabrica_sesiones, entrada, evaluador, **opciones_evaluacion):
+    """Editar es reentregar los ítems cambiados: una evaluación y luego el seguimiento del intento."""
+    return entregar(fabrica_sesiones, entrada, evaluador, preparar=preparar_edicion, **opciones_evaluacion)
 
 
 # --- Seguimiento ----------------------------------------------------------------------------

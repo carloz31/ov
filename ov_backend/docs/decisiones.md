@@ -11,3 +11,9 @@
 - `items_por_ampliar` pasa de lista de códigos a `{item, pista}`; la pista es la pregunta de la evaluación vigente. Aparece en el GET y en la respuesta de toda acción mientras el registro esté cerrado (progreso COMPLETADA y nada pendiente). Se adaptaron las pruebas de B03 que comparaban códigos.
 - `texto_consolidado` solo sale en el GET (con el registro cerrado); las respuestas de las acciones siguen sin la consolidada, como en B03.
 - REGISTRO_ADECUADO se emite al cerrar cualquier intento si ningún ítem queda POCO_DESARROLLADA y la cuenta no tiene ya ese evento para la actividad.
+- La edición es un nuevo intento con seguimiento: `POST /acciones/registro/editar` con `items: [{item, texto}]` reentrega los ítems cambiados (una llamada `evaluar_entrega`, mismo respaldo) y sigue el flujo de B03 solo sobre ellos, con su propio tope de dos preguntas. Reutiliza `entregar` y `persistir_entrega` parametrizados por intento; al cerrar no completa de nuevo la actividad.
+- La elección no se edita: solo el texto.
+- Un ítem con texto idéntico a su `texto_consolidado` se ignora (no abre intento ni va al LLM); si ningún ítem cambió, 422.
+- Solo se muestran los turnos del intento vigente de cada respuesta; los anteriores se conservan.
+- Editar a poco desarrollada una respuesta que estaba adecuada la devuelve a `items_por_ampliar` (deja de citarse cuando llegue B05) sin revocar `t-adicional`: los eventos no se deshacen.
+- Sin límite de ediciones por ahora.
