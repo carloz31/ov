@@ -50,6 +50,8 @@ Además usa `/cuentas`, `/cuentas/{c}/progreso/...`, `/cuentas/{c}/desbloqueos` 
 
 **`bloqueo`:** `null` si no está bloqueado; si no, una entrada por regla alternativa con `regla`, `mensaje` y `condiciones_faltantes` (`motor.md`, «Motivo de bloqueo»). Una actividad bloqueada por su bloque trae los motivos del bloque.
 
+**Opcionales:** una actividad con `requerida` falso no se propone como «siguiente» (HU-011) y no cuenta para cerrar su bloque.
+
 **Visibilidad:**
 
 - `SIEMPRE`: se ve aunque esté bloqueada. `AL_DESBLOQUEAR`: solo aparece cuando deja de estar bloqueada. `visible = visibilidad == SIEMPRE or estado != BLOQUEADA`. Las actividades no visibles también se envían, con su título.
