@@ -18,6 +18,28 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | ELECCION | Las opciones elegidas en un ítem de registro con lista | B05 |
 | TEXTO | La respuesta consolidada de un ítem de registro | B05 |
 
+## Resolución (`app/services/referencias.py`)
+
+`resolver(sesion, cuenta, referencias)` lee, en dos consultas, las respuestas de los ítems fuente de esa cuenta y la clasificación de su última evaluación. Devuelve por referencia un `estado` y, solo si está DISPONIBLE, `texto` u `opciones`. Nunca devuelve la clasificación.
+
+| Tipo | DISPONIBLE | POR_DESARROLLAR | SIN_DATO |
+|---|---|---|---|
+| ELECCION | Desde la primera entrega del ítem fuente (`clasificacion_inicial` no nula), sea cual sea su estado o su clasificación. `opciones`: `[{codigo, texto}]` en el orden guardado; el texto es el de la lista o, en OTRA, el escrito. | — | Sin respuesta, en borrador o sin entregar. |
+| TEXTO | Si la última evaluación no es POCO_DESARROLLADA (incluye NO_EVALUADA por un fallo). `texto`: `texto_consolidado`. | Si la última evaluación es POCO_DESARROLLADA, también mientras espera una respuesta de seguimiento. | Sin respuesta, en borrador o nunca evaluada (p. ej., un ítem opcional entregado sin texto). |
+
+**Reglas:**
+- La elección no se edita (`registro.md`). Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
+- Durante una edición, la pregunta de seguimiento queda solo en el ítem preguntado, que sale POR_DESARROLLAR. Los demás ítems editados ya se citan con su texto nuevo, y los no editados conservan su consolidada.
+- Los textos de una referencia TEXTO nunca van al evaluador: son respuestas de otra actividad (RNF-13).
+
+## Consulta (GET)
+
+| Ruta | Devuelve |
+|---|---|
+| `/cuentas/{c}/actividades/{a}/referencias` | `{"referencias": [{codigo, tipo, estado, texto?, opciones?}]}`, ordenadas por código. No exige que la actividad esté disponible. Cuenta que no es de estudiante, actividad inexistente o de otra audiencia: 404. |
+
+**Aislamiento:** la consulta solo lee datos de `{c}`. Todavía no hay autenticación (llega en B17). Cuando exista, deberá exigir que `{c}` sea la cuenta autenticada, con su prueba.
+
 ## Carga (`datos/ruta.py`)
 
 `REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, ítem fuente)`. En `ITEMS_REGISTRO`, la elección por referencia es `('ref', referencia, mínima, máxima, ordenada)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.api import (
     acciones, actividades, cuentas, desarrollo, diario, fichas, instrumentos, logros,
-    registro, secciones, testimonios,
+    referencias, registro, secciones, testimonios,
 )
 
 
@@ -18,6 +18,7 @@ def crear_router(entorno: str) -> APIRouter:
     router.include_router(acciones.router)
     router.include_router(instrumentos.router)
     router.include_router(registro.router)
+    router.include_router(referencias.router)
     if entorno == 'desarrollo':
         router.include_router(desarrollo.router)
     return router

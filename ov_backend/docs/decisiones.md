@@ -15,3 +15,5 @@
   - las variantes del cargador quitan `t-val-breve` por código y no por posición.
 - **Ítem opcional entregado sin texto:** no se evalúa ni recibe `clasificacion_inicial`, así que sus referencias salen SIN_DATO.
 - **Comprobado antes de F2:** los ítems sin criterios (EXTENSION_MINIMA) y el respaldo guardan su fila en `evaluacion_respuesta`, y `clasificacion_inicial` se llena en los tres caminos. La regla de resolución no cambia.
+- **Consulta sin autenticación:** `GET /cuentas/{c}/actividades/{a}/referencias` solo lee datos de `{c}`. Exigir que `{c}` sea la cuenta autenticada, con su prueba, queda pendiente para B17 (Acceso).
+- **Presentación de la consulta:** `texto` y `opciones` se omiten (`exclude_unset`) salvo en DISPONIBLE. La consulta no exige que la actividad esté disponible, igual que el GET de registro.
