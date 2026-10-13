@@ -22,12 +22,14 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 
 ## Resolución (`app/services/referencias.py`)
 
-`resolver(sesion, cuenta, referencias)` lee, en dos consultas, las respuestas de los ítems fuente de esa cuenta y la clasificación de su última evaluación. Devuelve por referencia un `estado` y, solo si está DISPONIBLE, `texto` u `opciones`. Nunca devuelve la clasificación.
+`resolver(sesion, cuenta, referencias)` lee, en dos consultas, las respuestas de los ítems fuente de esa cuenta y la clasificación de su última evaluación, y en lecturas agrupadas, los resultados vigentes de las aplicaciones fuente con `representar_resultado`. Devuelve por referencia un `estado` y, solo si está DISPONIBLE, `texto` u `opciones`. Nunca devuelve la clasificación.
 
 | Tipo | DISPONIBLE | POR_DESARROLLAR | SIN_DATO |
 |---|---|---|---|
 | ELECCION | Desde la primera entrega del ítem fuente (`clasificacion_inicial` no nula), sea cual sea su estado o su clasificación. `opciones`: `[{codigo, texto}]` en el orden guardado; el texto es el de la lista o, en OTRA, el escrito. | — | Sin respuesta, en borrador o sin entregar. |
 | TEXTO | Si la última evaluación no es POCO_DESARROLLADA (incluye NO_EVALUADA por un fallo). `texto`: `texto_consolidado`. | Si la última evaluación es POCO_DESARROLLADA, también mientras espera una respuesta de seguimiento. | Sin respuesta, en borrador o nunca evaluada (p. ej., un ítem opcional entregado sin texto). |
+| RESULTADO | Con resultado vigente (revelado) de la aplicación fuente. `opciones`: `[{codigo, texto}]` de las dimensiones del código de interés (COINCIDENCIAS) o de las destacadas (DESTACADAS), con el nombre de la dimensión. Con perfil plano, `[]`. | — | Sin revelar, o tras reiniciar. |
+| COINCIDENCIAS | Igual que RESULTADO. `opciones`: las ocupaciones por posición, con `codigo` (o `codigo_onet` si no tiene) y su título. Con perfil plano, `[]`. | — | Igual que RESULTADO. |
 
 **Reglas:**
 - La elección no se edita (`registro.md`). Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.

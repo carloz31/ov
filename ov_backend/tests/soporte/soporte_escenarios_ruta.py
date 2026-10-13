@@ -82,3 +82,8 @@ def verificar_p10_resultado(cliente):
     carreras = resultado['carreras_recomendadas']
     assert {c['codigo'] for c in carreras} == {'environmental-engineering', 'civil-engineering', 'veterinary-medicine'}
     assert all(c['via'] and all(v in coincidencias for v in c['via']) for c in carreras)
+    # B06: revelar abre t-contraste, que cita el resultado y las coincidencias.
+    assert actividades(cliente)['t-contraste'] == 'DISPONIBLE'
+    citas = {r['codigo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')['referencias']}
+    assert [o['codigo'] for o in citas['t-ref-resultado']['opciones']] == ['I', 'R', 'A']
+    assert citas['t-ref-coincidencias']['opciones'][0]['codigo'] == 'geologist'

@@ -32,7 +32,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
     'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
-    'items-registro-t-eco', 'referencias-t-eco',
+    'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-contraste',
 )}
 
 
@@ -126,6 +126,10 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         ('t-ref-espera', 'POR_DESARROLLAR'), ('t-ref-rutas', 'DISPONIBLE')]
     assert referencias.referencias[0].texto is None and referencias.referencias[1].opciones
     assert 'clasificacion' not in json.dumps(datos['referencias-t-eco'])
+    contraste = ReferenciasConsultadas.model_validate(datos['referencias-t-contraste'])
+    assert [(r.codigo, r.tipo, r.estado) for r in contraste.referencias] == [
+        ('t-ref-coincidencias', 'COINCIDENCIAS', 'DISPONIBLE'), ('t-ref-resultado', 'RESULTADO', 'DISPONIBLE')]
+    assert all(r.opciones for r in contraste.referencias)
     inicial = estados(datos['actividades-inicial'])
     assert inicial['t-inicio'] == 'DISPONIBLE'
     assert all(e == 'BLOQUEADA' for c, e in inicial.items() if c != 't-inicio')

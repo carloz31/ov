@@ -3,20 +3,24 @@
 ELECCION: disponible desde la primera entrega del ítem fuente, sea cual sea su clasificación; la elección no se
 edita y lo que puede quedar poco desarrollado es la justificación, no la decisión.
 TEXTO: según la clasificación de la última evaluación del ítem fuente; la poco desarrollada no se cita.
+RESULTADO y COINCIDENCIAS: el resultado vigente (revelado) de la aplicación fuente; con perfil plano, sin opciones.
 """
 
 from sqlalchemy import select
 
 from app.core.contexto import contexto, usar_contexto
+from app.core.parametros import LONGITUD_CODIGO_INTERES
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, Bloque, Cuenta, EvaluacionRespuesta, ItemRegistro, ProgresoActividad, RespuestaRegistro, Rol,
+    Actividad, Bloque, Cuenta, EvaluacionRespuesta, ItemRegistro, ProgresoActividad, RespuestaRegistro,
+    ResultadoInstrumento, Rol,
 )
 from app.models.enums import (
     ClasificacionRespuesta, EstadoReferencia, EstadoRespuestaRegistro, TipoReferencia,
 )
 from app.schemas.referencias import OpcionReferida, ReferenciaResuelta, ReferenciasConsultadas
 from app.services.comun import buscar_por_codigo
+from app.services.instrumentos.consultas import cargar_representaciones, representar_resultado
 
 
 CODIGO_OTRA = 'OTRA'
@@ -46,13 +50,47 @@ def _opciones(sesion, item, elegidas):
             for e in elegidas or ()]
 
 
+def _leer_resultados(sesion, cuenta, aplicaciones):
+    """Resultado vigente de cada aplicación fuente, solo de esta cuenta, ya representado."""
+    if not aplicaciones:
+        return {}
+    resultados = list(sesion.scalars(select(ResultadoInstrumento).where(
+        ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.aplicacion_id.in_(aplicaciones),
+        ResultadoInstrumento.anulado_en.is_(None))))
+    cargar_representaciones(sesion, resultados)
+    return {r.aplicacion_id: representar_resultado(sesion, r) for r in resultados}
+
+
+def _opciones_de_resultado(tipo, resultado):
+    if resultado.perfil_plano:
+        return []
+    if tipo == TipoReferencia.COINCIDENCIAS:
+        return [OpcionReferida(codigo=c.codigo or c.codigo_onet, texto=c.titulo) for c in resultado.coincidencias or ()]
+    if resultado.dimensiones_destacadas is not None:
+        dimensiones = resultado.dimensiones_destacadas
+    else:
+        # Código de interés: las de mayor puntaje, con el orden del instrumento como desempate.
+        dimensiones = [d for _, d in sorted(enumerate(resultado.dimensiones),
+                                            key=lambda par: (-par[1].puntaje, par[0]))][:LONGITUD_CODIGO_INTERES]
+    return [OpcionReferida(codigo=d.codigo, texto=d.nombre) for d in dimensiones]
+
+
 def resolver(sesion, cuenta, referencias):
     """{código: ReferenciaResuelta} para `referencias` (filas del catálogo), con datos de `cuenta`."""
     definiciones = contexto(sesion).definiciones
-    respuestas, vigentes = _leer_fuentes(sesion, cuenta, {r.item_registro_id for r in referencias})
+    de_registro = [r for r in referencias if r.aplicacion_id is None]
+    respuestas, vigentes = _leer_fuentes(sesion, cuenta, {r.item_registro_id for r in de_registro})
+    resultados = _leer_resultados(sesion, cuenta, {r.aplicacion_id for r in referencias if r.aplicacion_id is not None})
     resueltas = {}
     for referencia in referencias:
         base = dict(codigo=referencia.codigo, tipo=referencia.tipo)
+        if referencia.aplicacion_id is not None:
+            resultado = resultados.get(referencia.aplicacion_id)
+            resueltas[referencia.codigo] = (
+                ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO) if resultado is None else
+                ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE,
+                                   opciones=_opciones_de_resultado(referencia.tipo, resultado)))
+            continue
         respuesta = respuestas.get(referencia.item_registro_id)
         if respuesta is None or respuesta.estado == EstadoRespuestaRegistro.BORRADOR:
             resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO)

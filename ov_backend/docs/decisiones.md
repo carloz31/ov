@@ -12,3 +12,5 @@
 - Pruebas adaptadas a revelar explícito (autorizado por la spec): `ciclo` revela, y las que leían `resultados_generados` o esperaban el resultado al completar revelan ahora.
 - El tope de reinicios (`MAXIMO_REINICIOS_PERFIL_PLANO`) se cuenta con los resultados anulados con perfil plano de esa cuenta y aplicación; no hace falta un contador nuevo. `resultado_anulado` pasa a ser obligatorio en la respuesta del reinicio, porque ya no hay reinicio sin resultado.
 - Pruebas adaptadas al reinicio restringido (autorizado por la spec): los reinicios parciales, de COMPARACION o de perfiles no planos pasan a esperar 409; las que necesitaban un historial anulado usan un perfil plano.
+- RESULTADO y COINCIDENCIAS se resuelven con `representar_resultado` (la misma representación que la consulta del resultado), así la cita y la vista no pueden divergir. Con perfil plano salen DISPONIBLE con `opciones: []`, decidido con el usuario en el plan.
+- Fixtures nuevos: `ruta-revelar-riasec` y `ruta-referencias-t-contraste`.

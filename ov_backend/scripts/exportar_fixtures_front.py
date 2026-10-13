@@ -101,6 +101,7 @@ def _recorrer(cliente):
         'cuenta': 'est-ana', 'instrumento': 'TEST-RIASEC', 'fecha_hora': FECHA,
     })
     fixtures['resultado-riasec'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
+    fixtures['referencias-t-contraste'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')
     fixtures.update(_consultas_dominio(cliente, 'final', ('fichas', 'logros')))
     return fixtures
 

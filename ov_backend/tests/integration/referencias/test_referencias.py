@@ -1,4 +1,4 @@
-"""HU-009 y RNF-20: referencias ELECCION y TEXTO resueltas por cuenta (B05).
+"""HU-009 y RNF-20: referencias resueltas por cuenta: ELECCION y TEXTO (B05), RESULTADO y COINCIDENCIAS (B06).
 
 Los textos son DATO DE PRUEBA; las marcas (`[vaga]`, `[falla]`) las interpreta el evaluador falso.
 """
@@ -7,8 +7,9 @@ import pytest
 from sqlalchemy import select
 
 from app import models as m
-from soporte_retiro import medir
-from soporte_ruta import FECHA, avanzar, pedir, responder_registro
+from soporte_datos_ports import agregar_ocupaciones
+from soporte_retiro import ciclo, medir, preparar_ultimo, reiniciar, resultado
+from soporte_ruta import FECHA, INTERESES_FINAL, avanzar, completar, pedir, responder_registro, revelar
 
 
 ADECUADO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'
@@ -194,3 +195,58 @@ def test_presupuesto_de_referencias_no_crece_con_su_numero(cliente, aplicacion):
     for _ in range(2):
         assert medir(cliente, aplicacion, 'GET', ruta)[1].cantidad == basal
     assert len(referencias(cliente)) == 62
+
+
+# --- RESULTADO y COINCIDENCIAS (B06) --------------------------------------------------------
+
+def contraste(cliente, cuenta='est-ana'):
+    return referencias(cliente, cuenta, actividad='t-contraste')
+
+
+def test_resultado_y_coincidencias_solo_despues_de_revelar(cliente):
+    preparar_ultimo(cliente)
+    completar(cliente, INTERESES_FINAL)
+    vacias = {'t-ref-coincidencias': 'SIN_DATO', 't-ref-resultado': 'SIN_DATO'}
+    assert {c: r['estado'] for c, r in contraste(cliente).items()} == vacias
+    assert all('opciones' not in r for r in contraste(cliente).values())
+    revelar(cliente)
+    obtenido = resultado(cliente)
+    citadas = contraste(cliente)
+    assert citadas['t-ref-resultado'] == {
+        'codigo': 't-ref-resultado', 'tipo': 'RESULTADO', 'estado': 'DISPONIBLE',
+        'opciones': [{'codigo': d['codigo'], 'texto': d['nombre']} for codigo in 'IRA'
+                     for d in obtenido['dimensiones'] if d['codigo'] == codigo]}
+    assert citadas['t-ref-coincidencias']['estado'] == 'DISPONIBLE'
+    assert citadas['t-ref-coincidencias']['opciones'] == [
+        {'codigo': c['codigo'], 'texto': c['titulo']} for c in obtenido['coincidencias']]
+    assert len(citadas['t-ref-coincidencias']['opciones']) == 10
+
+
+def test_perfil_plano_disponible_sin_opciones_y_tras_reiniciar_sin_dato(cliente):
+    ciclo(cliente, opcion=3)
+    assert {c: (r['estado'], r['opciones']) for c, r in contraste(cliente).items()} == {
+        't-ref-coincidencias': ('DISPONIBLE', []), 't-ref-resultado': ('DISPONIBLE', [])}
+    reiniciar(cliente)
+    assert {r['estado'] for r in contraste(cliente).values()} == {'SIN_DATO'}
+
+
+def test_resultado_de_otra_cuenta_nunca_se_cita(cliente):
+    ciclo(cliente)
+    assert {r['estado'] for r in contraste(cliente).values()} == {'DISPONIBLE'}
+    for cuenta in ('est-luis', 'est-beto'):
+        assert {r['estado'] for r in contraste(cliente, cuenta).values()} == {'SIN_DATO'}
+    ciclo(cliente, cuenta='est-luis', opcion=3)
+    assert contraste(cliente, 'est-luis')['t-ref-resultado']['opciones'] == []
+    assert contraste(cliente)['t-ref-resultado']['opciones']
+
+
+def test_presupuesto_de_contraste_no_crece_con_las_ocupaciones(tmp_path, base_aislada):
+    conteos = []
+    for extra in (0, 100):
+        with base_aislada(tmp_path, f'contraste-{extra}') as (aplicacion, cliente):
+            if extra:
+                with aplicacion.state.fabrica_sesiones.begin() as sesion:
+                    agregar_ocupaciones(sesion, extra)
+            ciclo(cliente)
+            conteos.append(medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')[1].cantidad)
+    assert conteos[0] == conteos[1]
