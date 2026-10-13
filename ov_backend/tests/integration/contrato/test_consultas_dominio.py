@@ -14,11 +14,11 @@ ESTADOS = {
     False: {'t-inicio': 'DISPONIBLE', 't-partida': 'DISPONIBLE', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
             't-opcional': 'BLOQUEADA', 't-valores': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
             't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'BLOQUEADA', 't-eco': 'BLOQUEADA',
-            't-lee-cuestionario': 'BLOQUEADA', 't-batalla': 'BLOQUEADA'},
+            't-lee-cuestionario': 'BLOQUEADA', 't-batalla': 'BLOQUEADA', 't-explorar': 'BLOQUEADA'},
     True: {'t-inicio': 'COMPLETADA', 't-partida': 'COMPLETADA', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
            't-opcional': 'DISPONIBLE', 't-valores': 'DISPONIBLE', 't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA',
            't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'DISPONIBLE', 't-eco': 'DISPONIBLE',
-           't-lee-cuestionario': 'DISPONIBLE', 't-batalla': 'DISPONIBLE'},
+           't-lee-cuestionario': 'DISPONIBLE', 't-batalla': 'DISPONIBLE', 't-explorar': 'BLOQUEADA'},
 }
 # Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).
 SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']
@@ -198,9 +198,10 @@ def test_orden_por_numero_y_codigo_y_por_orden_y_codigo(sesion, cliente):
 
 def test_insignia_oculta_solo_se_revela_al_obtenerse(cliente):
     ocultas = [i for i in consultar(cliente, 'logros')['insignias'] if i['codigo'] == '???']
-    assert ocultas == [{'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA'}]
+    # B10: además de t-ins-oculta, tres logros ocultos por vistas diversas del catálogo.
+    assert ocultas == [{'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA'}] * 4
     pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'VENCE_DESAFIO_INTACTO'})
     insignias = consultar(cliente, 'logros')['insignias']
-    assert not any(i['codigo'] == '???' for i in insignias)
+    assert len([i for i in insignias if i['codigo'] == '???']) == 3
     revelada = next(i for i in insignias if i['codigo'] == 't-ins-oculta')
     assert revelada['estado'] == 'OBTENIDA' and revelada['descripcion'] and revelada['requisito']

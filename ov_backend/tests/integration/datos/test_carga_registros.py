@@ -103,6 +103,7 @@ def test_items_listas_y_criterios_cargados(tmp_path):
                 ('t-expectativas', 't-exp-ruta', 1, 'RUTAS_DESPUES_COLEGIO', True),
                 ('t-expectativas', 't-exp-apoyo', 2, 't-lista-apoyos', False),
                 ('t-expectativas', 't-exp-espera', 3, None, None),
+                ('t-explorar', 't-explorar-sorpresa', 1, None, None),
                 ('t-valores', 't-val-orden', 1, 't-lista-valores', False),
                 ('t-valores', 't-val-libre', 2, None, None),
                 ('t-valores', 't-val-breve', 3, None, None),

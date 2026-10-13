@@ -48,7 +48,11 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
 
 **Evaluadores especiales** (`app/services/motor/evaluadores.py`, registro `EVALUADORES`). Reciben sesión y cuenta y leen su umbral de `regla_desbloqueo.parametro_evaluador`, no de `cantidad_minima`:
 
-- `carreras_de_3_familias`: los eventos VISTA_CARRERA apuntan a carreras de al menos `parametro` familias distintas.
+- `vistas_diversas(clase, atributo)` (B10): cuenta los elementos **distintos** vistos (las referencias de sus eventos de vista, no los eventos) y los agrupa por atributo. Se cumple con al menos `parametro` grupos; con `parametro` nulo, exige todos los grupos disponibles en el catálogo cargado. Se registra con tres nombres:
+  - `carreras_familias_distintas`: VISTA_CARRERA por familia (familias con al menos una carrera);
+  - `ocupaciones_high_point_distinto`: VISTA_OCUPACION por la letra en posición 1 de `high_point`;
+  - `instituciones_tipos_distintos`: VISTA_INSTITUCION por tipo (tipos con al menos una institución).
+- `vista_fuera_del_perfil` (sin parámetro, B10): mira el tipo principal (posición 1 de `tipo_carrera` o `high_point`) de las carreras y ocupaciones vistas; las que no tienen tipo no cuentan. Con un resultado RIASEC vigente y sin perfil plano, basta un tipo principal distinto de la primera letra del código de interés. Sin resultado o con perfil plano, hacen falta dos tipos principales distintos.
 - `misiones_camino_sin_inicio`: la cuenta completó al menos `parametro` actividades distintas del bloque CAMINO, sin contar la de orden 1.
 - `instrumentos_prioritarios` (sin parámetro, B07): la cuenta debe tener resultado vigente (revelado) en dos casos:
   - la aplicación ENTRADA (la partida) de todo instrumento COMPARACION;
@@ -62,7 +66,7 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
 
 Son catálogo, como las temáticas. La carga rechaza un COMPARACION prioritario y una actividad prioritaria que no sea de registro.
 
-Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. En `datos/ruta.py`, el evaluador de una regla se declara en `EVALUADORES_REGLAS = {regla: evaluador}`. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
+Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. En `datos/ruta.py`, el evaluador de una regla se declara en `EVALUADORES_REGLAS = {regla: (evaluador, parámetro)}`. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
 
 ## Evaluación
 

@@ -200,7 +200,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     for nombre in ('resolver-batalla-derrota', 'resolver-batalla-victoria'):
         RespuestaAccion.model_validate(datos[nombre])
     assert datos['resolver-batalla-derrota']['eventos_registrados'] == []
-    assert {d['regla'] for d in datos['resolver-batalla-victoria']['nuevos_desbloqueos']} == {'R-t-ins-batalla'}
+    assert datos['resolver-batalla-victoria']['nuevos_desbloqueos'] == []
     batalla, = TypeAdapter(list[BatallaCuenta]).validate_python(datos['batallas'])
     assert (batalla.estado, batalla.intentos, batalla.primer_intento.victoria) == ('COMPLETADA', 2, False)
     superado = RespuestaResolverCaso.model_validate(datos['resolver-caso'])

@@ -1,37 +1,113 @@
 from collections.abc import Callable
+from functools import partial
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import (
-    Actividad, Aplicacion, Bloque, Carrera, Cuenta, Instrumento, MomentoAplicacion, ReglaDesbloqueo,
-    ResultadoInstrumento, SalonInstrumento, TipoEventoUso, TipoResultado,
+    Actividad, Aplicacion, Bloque, Carrera, Cuenta, Dimension, HighPoint, Institucion, Instrumento,
+    MomentoAplicacion, ResultadoDimension, ResultadoInstrumento, SalonInstrumento, TipoCarrera, TipoEventoUso,
+    TipoResultado,
 )
+from app.services.instrumentos.calculo import calcular_codigo_interes
+
+
+def _vistos(datos, cuenta: Cuenta, evento: TipoEventoUso) -> set[int]:
+    """Elementos distintos vistos (no eventos): las referencias de sus eventos de vista."""
+    datos.cargar_conteos([cuenta.id])
+    return {referencia for tipo, referencia in datos.conteos[cuenta.id] if tipo == evento and referencia is not None}
+
+
+def _grupos_carrera_familia(sesion: Session, vistos: set[int] | None) -> set:
+    carreras = contexto(sesion).definiciones.listar(Carrera)
+    return {c.familia_id for c in carreras if vistos is None or c.id in vistos}
+
+
+def _grupos_ocupacion_high_point(sesion: Session, vistos: set[int] | None) -> set:
+    consulta = select(HighPoint.dimension_id).where(HighPoint.posicion == 1).distinct()
+    if vistos is not None:
+        consulta = consulta.where(HighPoint.ocupacion_id.in_(vistos))
+    return set(sesion.scalars(consulta))
+
+
+def _grupos_institucion_tipo(sesion: Session, vistos: set[int] | None) -> set:
+    consulta = select(Institucion.tipo).distinct()
+    if vistos is not None:
+        consulta = consulta.where(Institucion.id.in_(vistos))
+    return set(sesion.scalars(consulta))
+
+
+# clase: (evento de vista, agrupador por atributo). El agrupador con `None` devuelve todos los grupos del catálogo.
+CLASES_VISTAS = {
+    ('CARRERA', 'familia'): (TipoEventoUso.VISTA_CARRERA, _grupos_carrera_familia),
+    ('OCUPACION', 'high_point'): (TipoEventoUso.VISTA_OCUPACION, _grupos_ocupacion_high_point),
+    ('INSTITUCION', 'tipo'): (TipoEventoUso.VISTA_INSTITUCION, _grupos_institucion_tipo),
+}
 
 
 @usar_contexto
-def carreras_de_3_familias(sesion: Session, cuenta: Cuenta) -> bool:
+def vistas_diversas(sesion: Session, cuenta: Cuenta, clase: str, atributo: str) -> bool:
+    """B10: elementos distintos vistos de `clase`, agrupados por `atributo`; se cumple con al menos `umbral` grupos.
+
+    El umbral es `parametro_evaluador`; nulo exige todos los grupos disponibles en el catálogo cargado."""
     datos = contexto(sesion)
     regla = getattr(datos, 'regla_en_evaluacion', None)
     if regla is None:
-        # Compatibilidad para llamadas directas al evaluador de la semilla.
-        reglas = [regla for regla in datos.definiciones.listar(ReglaDesbloqueo)
-                  if regla.evaluador_especial == carreras_de_3_familias.__name__]
-        if len(reglas) != 1:
-            raise ValueError("Debe indicar la regla para evaluar las familias")
-        regla = reglas[0]
-    minimo = regla.parametro_evaluador
-    if minimo is None or minimo < 1:
-        raise ValueError("El evaluador de familias requiere un parámetro entero positivo")
-    datos.cargar_conteos([cuenta.id])
-    familias = set()
-    for tipo, referencia in datos.conteos[cuenta.id]:
-        if tipo == TipoEventoUso.VISTA_CARRERA and referencia is not None:
-            carrera = datos.definiciones.obtener(Carrera, referencia)
-            if carrera is not None:
-                familias.add(carrera.familia_id)
-    return len(familias) >= minimo
+        raise ValueError('Debe indicar la regla para evaluar las vistas')
+    umbral = regla.parametro_evaluador
+    if umbral is not None and (isinstance(umbral, bool) or not isinstance(umbral, int) or umbral < 1):
+        raise ValueError('El evaluador de vistas requiere un parámetro entero positivo o nulo')
+    evento, agrupar = CLASES_VISTAS[clase, atributo]
+    vistos = _vistos(datos, cuenta, evento)
+    if not vistos:
+        return False
+    grupos = agrupar(sesion, vistos)
+    if umbral is None:
+        disponibles = agrupar(sesion, None)
+        return bool(disponibles) and disponibles <= grupos
+    return len(grupos) >= umbral
+
+
+def _letra_principal_resultado(sesion: Session, cuenta: Cuenta) -> str | None:
+    """Primera letra del código de interés del resultado RIASEC vigente; sin resultado o con perfil plano, None."""
+    definiciones = contexto(sesion).definiciones
+    instrumentos = {i.id for i in definiciones.listar(Instrumento) if i.tipo_resultado == TipoResultado.COINCIDENCIAS}
+    aplicaciones = [a.id for a in definiciones.listar(Aplicacion) if a.instrumento_id in instrumentos]
+    filas = sesion.execute(select(ResultadoInstrumento.id, ResultadoInstrumento.perfil_plano, Dimension.codigo,
+                                  ResultadoDimension.puntaje).join(
+        ResultadoDimension, ResultadoDimension.resultado_id == ResultadoInstrumento.id).join(
+        Dimension, Dimension.id == ResultadoDimension.dimension_id).where(
+        ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.anulado_en.is_(None),
+        ResultadoInstrumento.aplicacion_id.in_(aplicaciones)).order_by(
+        ResultadoInstrumento.calculado_en.desc(), ResultadoInstrumento.id.desc(), Dimension.orden)).all()
+    if not filas or filas[0].perfil_plano:
+        return None
+    vigente = [fila for fila in filas if fila.id == filas[0].id]
+    codigo = calcular_codigo_interes([fila.puntaje for fila in vigente], [fila.codigo for fila in vigente])
+    return codigo.codigo[0]
+
+
+@usar_contexto
+def vista_fuera_del_perfil(sesion: Session, cuenta: Cuenta) -> bool:
+    """B10 · `t-explorar` (sin parámetro). Mira el tipo principal (posición 1) de las carreras y ocupaciones vistas.
+
+    Con resultado RIASEC vigente, basta una vista de tipo principal distinto de la primera letra del código de
+    interés; sin resultado o con perfil plano, hacen falta vistas de al menos dos tipos principales distintos."""
+    datos = contexto(sesion)
+    carreras = _vistos(datos, cuenta, TipoEventoUso.VISTA_CARRERA)
+    ocupaciones = _vistos(datos, cuenta, TipoEventoUso.VISTA_OCUPACION)
+    if not carreras and not ocupaciones:
+        return False
+    principales = set(sesion.scalars(select(Dimension.codigo).join(
+        TipoCarrera, TipoCarrera.dimension_id == Dimension.id).where(
+        TipoCarrera.posicion == 1, TipoCarrera.carrera_id.in_(carreras)).union(select(Dimension.codigo).join(
+            HighPoint, HighPoint.dimension_id == Dimension.id).where(
+            HighPoint.posicion == 1, HighPoint.ocupacion_id.in_(ocupaciones)))))
+    letra = _letra_principal_resultado(sesion, cuenta)
+    if letra is None:
+        return len(principales) >= 2
+    return bool(principales - {letra})
 
 
 @usar_contexto
@@ -78,7 +154,10 @@ def instrumentos_prioritarios(sesion: Session, cuenta: Cuenta) -> bool:
 
 
 EVALUADORES: dict[str, Callable[[Session, Cuenta], bool]] = {
-    "carreras_de_3_familias": carreras_de_3_familias,
+    "carreras_familias_distintas": partial(vistas_diversas, clase='CARRERA', atributo='familia'),
+    "ocupaciones_high_point_distinto": partial(vistas_diversas, clase='OCUPACION', atributo='high_point'),
+    "instituciones_tipos_distintos": partial(vistas_diversas, clase='INSTITUCION', atributo='tipo'),
+    "vista_fuera_del_perfil": vista_fuera_del_perfil,
     "misiones_camino_sin_inicio": misiones_camino_sin_inicio,
     "instrumentos_prioritarios": instrumentos_prioritarios,
 }

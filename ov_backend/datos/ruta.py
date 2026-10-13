@@ -54,6 +54,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-eco', 'T1', 'Registro que retoma respuestas', 'REGISTRO', None, 10),
                ('t-lee-cuestionario', 'T1', 'Lectura de tu punto de partida', 'INFORMATIVA', None, 5),
                ('t-batalla', 'T1', 'Batalla de prueba', 'BATALLA', None, 10),
+               ('t-explorar', 'T1', 'Registro de exploración', 'REGISTRO', None, 10),
                ('t-llegada', 'T2', 'Punto de llegada', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
@@ -69,6 +70,7 @@ PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR
                't-eco': {'requerida': False},
                't-lee-cuestionario': {'requerida': False},
                't-batalla': {'requerida': False},
+               't-explorar': {'requerida': False},
                't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
                                'descripcion': 'Misión adicional que aparece si el registro quedó adecuado.'}}
 
@@ -194,6 +196,8 @@ ITEMS_REGISTRO = (
     ('t-contraste', 't-con-contraste', 'Contraste',
      '¿En qué se parece tu resultado a lo que pensabas de ti? ¿En qué se diferencia?', None,
      (('C1', 'CONTRASTE', 'Compara el resultado con lo que pensaba antes'),)),
+    ('t-explorar', 't-explorar-sorpresa', 'Lo inesperado', '¿Qué opción fuera de tu perfil te llamó la atención y por qué?',
+     None, (('C1', 'RAZON', 'Por qué le llamó la atención'),)),
 )
 
 # Referencias: (código, (tipo de dueño, dueño), tipo, fuente). Dueño: ('ACTIVIDAD', código) o
@@ -229,9 +233,13 @@ CONVERSACIONES = (('t-conv-1', 'Primera conversación', 'Tema de prueba 1.'),
 INSIGNIAS = (('t-ins-1', 'Insignia de prueba', 'Completaste t-inicio.', 'Completa t-inicio.', False),
              ('t-ins-oculta', 'Insignia oculta', 'Venciste sin perder destellos.',
               'Vence al enemigo sin perder destellos.', True),
-             # Provisional hasta B10, que reemplaza esta regla por la que abre t-explorar.
-             ('t-ins-batalla', 'Insignia de batalla', 'Venciste la batalla de prueba.', 'Vence la batalla de prueba.',
-              False))
+             # B10: logros ocultos por vistas diversas del catálogo.
+             ('t-ins-familias', 'Exploradora de familias', 'Viste carreras de dos familias distintas.',
+              'Mira carreras de familias distintas.', True),
+             ('t-ins-letras', 'Exploradora de intereses', 'Viste ocupaciones de dos tipos principales distintos.',
+              'Mira ocupaciones de tipos distintos.', True),
+             ('t-ins-instituciones', 'Exploradora de instituciones', 'Viste instituciones de todos los tipos.',
+              'Mira instituciones de todos los tipos.', True))
 
 # (número, título)
 NIVELES = ((1, 'Nivel 1 de prueba'), (2, 'Nivel 2 de prueba'))
@@ -262,6 +270,12 @@ REGLAS = (
      (('REVELA_RESULTADO', 'APL-RIASEC', 'EVENTOS', 1),)),
     ('R-t-batalla', 'ACTIVIDAD', 't-batalla', 'Completa el inicio y repasa su ficha para enfrentar la batalla.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
+    ('R-t-explorar-carrera', 'ACTIVIDAD', 't-explorar',
+     'Vence la batalla y mira una carrera u ocupación distinta de tu perfil para explorar.',
+     (('SUPERA_BATALLA', 't-batalla', 'EVENTOS', 1), ('VISTA_CARRERA', None, 'EVENTOS', 1))),
+    ('R-t-explorar-ocupacion', 'ACTIVIDAD', 't-explorar',
+     'Vence la batalla y mira una carrera u ocupación distinta de tu perfil para explorar.',
+     (('SUPERA_BATALLA', 't-batalla', 'EVENTOS', 1), ('VISTA_OCUPACION', None, 'EVENTOS', 1))),
     ('R-t-testimonio-1', 'TESTIMONIO', 't-testimonio-1', 'Supera el caso de prueba para conocer este testimonio.',
      (('SUPERA_CASO', 't-caso', 'EVENTOS', 1),)),
     ('R-t-testimonio-2', 'TESTIMONIO', 't-testimonio-2', 'Supera el caso de prueba para conocer este testimonio.',
@@ -271,8 +285,10 @@ REGLAS = (
     ('R-t-ficha-apo', 'FICHA', 't-ficha-apo', 'Completa tu primera actividad para obtener esta ficha.',
      (('COMPLETA_ACTIVIDAD', 't-apo-1', 'EVENTOS', 1),)),
     ('R-t-ins-1', 'INSIGNIA', 't-ins-1', 'Completa el inicio.', (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
-    ('R-t-ins-batalla', 'INSIGNIA', 't-ins-batalla', 'Vence la batalla de prueba.',
-     (('SUPERA_BATALLA', 't-batalla', 'EVENTOS', 1),)),
+    ('R-t-ins-familias', 'INSIGNIA', 't-ins-familias', 'Logro oculto.', (('VISTA_CARRERA', None, 'EVENTOS', 1),)),
+    ('R-t-ins-letras', 'INSIGNIA', 't-ins-letras', 'Logro oculto.', (('VISTA_OCUPACION', None, 'EVENTOS', 1),)),
+    ('R-t-ins-instituciones', 'INSIGNIA', 't-ins-instituciones', 'Logro oculto.',
+     (('VISTA_INSTITUCION', None, 'EVENTOS', 1),)),
     ('R-t-ins-oculta', 'INSIGNIA', 't-ins-oculta', 'Logro oculto.',
      (('VENCE_DESAFIO_INTACTO', None, 'EVENTOS', 1),)),
     ('R-NIV-2', 'NIVEL', 2, 'Termina el bloque de inicio para subir de nivel.',
@@ -294,8 +310,14 @@ REGLAS = (
 )
 
 
-# Reglas con evaluador especial (`app/services/motor/evaluadores.py`): {regla: evaluador}.
-EVALUADORES_REGLAS = {'R-T2': 'instrumentos_prioritarios'}
+# Reglas con evaluador especial (`app/services/motor/evaluadores.py`): {regla: (evaluador, parámetro)}.
+# El parámetro es el umbral del evaluador; en `vistas_diversas`, nulo exige todos los grupos del catálogo.
+EVALUADORES_REGLAS = {'R-T2': ('instrumentos_prioritarios', None),
+                      'R-t-explorar-carrera': ('vista_fuera_del_perfil', None),
+                      'R-t-explorar-ocupacion': ('vista_fuera_del_perfil', None),
+                      'R-t-ins-familias': ('carreras_familias_distintas', 2),
+                      'R-t-ins-letras': ('ocupaciones_high_point_distinto', 2),
+                      'R-t-ins-instituciones': ('instituciones_tipos_distintos', None)}
 
 
 def contenido(codigo: str) -> str:
@@ -533,7 +555,8 @@ def _cargar_reglas(sesion, objetivos):
             raise ValueError(f'La regla {codigo} no tiene mensaje de bloqueo')
         regla = modelos.ReglaDesbloqueo(codigo=codigo, nombre=f'Desbloquear {objetivo}', mensaje_bloqueo=mensaje,
             tipo_objetivo=modelos.TipoObjetivo(tipo), id_objetivo=objetivos[tipo][objetivo].id,
-            evaluador_especial=EVALUADORES_REGLAS.get(codigo))
+            evaluador_especial=EVALUADORES_REGLAS.get(codigo, (None, None))[0],
+            parametro_evaluador=EVALUADORES_REGLAS.get(codigo, (None, None))[1])
         regla.condiciones = [modelos.CondicionDesbloqueo(tipo_evento=modelos.TipoEventoUso(evento),
             id_referencia=None if referencia is None else referencias[evento][referencia].id,
             tipo_conteo=modelos.TipoConteo(conteo), cantidad_minima=cantidad)

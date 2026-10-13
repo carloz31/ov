@@ -12,10 +12,10 @@ def verificar_p01_estado_inicial(cliente):
         'T0': 'DISPONIBLE', 'T1': 'BLOQUEADA', 'T2': 'BLOQUEADA', 'CIUDAD': 'BLOQUEADA'}
     assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [('t-ficha', 'BLOQUEADA')]
     visibles = [i for i in inicial['insignias'] if i['codigo'] != '???']
-    assert [(i['codigo'], i['estado']) for i in visibles] == [('t-ins-1', 'BLOQUEADA'), ('t-ins-batalla', 'BLOQUEADA')]
+    assert [(i['codigo'], i['estado']) for i in visibles] == [('t-ins-1', 'BLOQUEADA')]
     assert visibles[0]['requisito']
-    oculto, = [i for i in inicial['insignias'] if i['codigo'] == '???']
-    assert oculto['estado'] == 'BLOQUEADA' and oculto['requisito'] is None
+    ocultos = [i for i in inicial['insignias'] if i['codigo'] == '???']
+    assert len(ocultos) == 4 and all(o['estado'] == 'BLOQUEADA' and o['requisito'] is None for o in ocultos)
     assert inicial['secciones'] == dict.fromkeys(('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'PLANES'), 'BLOQUEADA')
     assert inicial['nivel_actual']['numero'] == 1
     assert [(t['codigo'], t['estado']) for t in inicial['testimonios']] == [

@@ -17,13 +17,13 @@ from datos.ocupaciones import leer_ocupaciones, validar_distribucion_items
 
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     esperados = {'salon': 2, 'cuenta': 5, 'orientadora_salon': 1, 'vinculo_familiar': 1, 'bloque': 5,
-        'actividad': 17, 'seccion': 6, 'ficha': 2, 'testimonio': 2, 'conversacion': 2, 'insignia': 3, 'nivel': 2,
-        'regla_desbloqueo': 26, 'condicion_desbloqueo': 27,
+        'actividad': 18, 'seccion': 6, 'ficha': 2, 'testimonio': 2, 'conversacion': 2, 'insignia': 5, 'nivel': 2,
+        'regla_desbloqueo': 30, 'condicion_desbloqueo': 33,
         'instrumento': 2, 'escala_respuesta': 2, 'opcion_escala': 9, 'dimension': 11,
         'item_instrumento': 79, 'actividad_item': 98, 'aplicacion': 3, 'aplicacion_actividad': 4,
         'ocupacion': 36, 'puntaje_ocupacion': 216, 'familia_carrera': 6, 'carrera': 6,
-        'carrera_ocupacion': 23, 'lista_opciones': 4, 'opcion_lista': 18, 'item_registro': 9,
-        'criterio_completitud': 7, 'referencia': 5, 'tematica': 5,
+        'carrera_ocupacion': 23, 'lista_opciones': 4, 'opcion_lista': 18, 'item_registro': 10,
+        'criterio_completitud': 8, 'referencia': 5, 'tematica': 5,
         'actividad_tematica': 6, 'actividad_dimension': 2, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 72, 'tipo_carrera': 11, 'ubicacion': 2, 'institucion': 2, 'institucion_carrera': 5,
         'ingreso_carrera': 2, 'rango_ingreso': 5}

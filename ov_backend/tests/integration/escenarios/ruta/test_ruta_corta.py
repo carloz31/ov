@@ -252,7 +252,8 @@ def test_hu073_avisos_de_desbloqueo(cliente):
 
 def test_hu074_logros_obtenidos_y_condiciones(cliente):
     logros = pedir(cliente, 'GET', '/cuentas/est-ana/logros')
-    visible, _, oculto = logros['insignias']
+    visible = next(i for i in logros['insignias'] if i['codigo'] == 't-ins-1')
+    oculto = next(i for i in logros['insignias'] if i['codigo'] == '???')
     assert (visible['codigo'], visible['estado'], visible['requisito']) == ('t-ins-1', 'BLOQUEADA', 'Completa t-inicio.')
     assert (oculto['codigo'], oculto['requisito']) == ('???', None)
     condicion, = pedir(cliente, 'GET', '/cuentas/est-ana/progreso/INSIGNIA/t-ins-1')['reglas'][0]['condiciones']
@@ -334,7 +335,18 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
     assert perdida['nuevos_desbloqueos'] == [] and actividades(cliente)['t-batalla'] == 'EN_CURSO'
     ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': True, 'aciertos': 3,
                                                                    'preguntas': 4})
-    assert reglas(ganada) == {'R-t-ins-batalla'}
+    assert reglas(ganada) == set()
+    # B10: catálogo, vistas y favoritos. Sin resultado RIASEC, t-explorar pide vistas de dos tipos principales.
+    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras?riasec=s')] == [
+        'journalism', 'nursing', 'psychology']
+    pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': 'nursing', 'fecha_hora': FECHA})
+    assert actividades(cliente)['t-explorar'] == 'BLOQUEADA'
+    vista = pedir(cliente, 'POST', '/acciones/ver-ocupacion', {'cuenta': 'est-ana', 'ocupacion': 'civil-engineer',
+                                                                'fecha_hora': FECHA})
+    assert reglas(vista) == {'R-t-explorar-ocupacion'} and actividades(cliente)['t-explorar'] == 'DISPONIBLE'
+    pedir(cliente, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': 'nursing',
+                                                          'fecha_hora': FECHA})
+    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')['carreras']] == ['nursing']
     fila, = pedir(cliente, 'GET', '/cuentas/est-ana/batallas')
     assert (fila['estado'], fila['intentos'], fila['primer_intento']['victoria']) == ('COMPLETADA', 2, False)
 

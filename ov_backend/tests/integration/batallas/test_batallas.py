@@ -43,7 +43,8 @@ def test_hu017_perder_reintentar_y_ganar_una_sola_vez(cliente, aplicacion):
 
     ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, 3, 4))
     assert tipos(ganada) == ['COMPLETA_ACTIVIDAD', 'SUPERA_BATALLA']
-    assert reglas(ganada) == {'R-t-ins-batalla'}
+    # B10: vencer ya no da insignia; t-explorar espera además una vista fuera del perfil.
+    assert reglas(ganada) == set()
     repaso = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, 4, 4))
     assert repaso == {'eventos_registrados': [], 'nuevos_desbloqueos': []}
     pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(False, 0, 2))
@@ -61,7 +62,7 @@ def test_victoria_intacta_abre_la_insignia_oculta(cliente):
     avanzar(cliente, 't-cierre-inicio')
     ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, 3, 3))
     assert tipos(ganada) == ['COMPLETA_ACTIVIDAD', 'SUPERA_BATALLA', 'VENCE_DESAFIO_INTACTO']
-    assert reglas(ganada) == {'R-t-ins-batalla', 'R-t-ins-oculta'}
+    assert reglas(ganada) == {'R-t-ins-oculta'}
     assert batalla(cliente)['primer_intento']['victoria'] is True
 
 

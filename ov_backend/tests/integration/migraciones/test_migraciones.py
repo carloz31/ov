@@ -281,16 +281,15 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).mappings().all()
                           for tabla in Base.metadata.sorted_tables}
         # B08: `ruta` tiene una batalla, así que 0013 se detiene antes de bajar nada.
-        # B10: 0015 y 0014 sí bajan (no hay favoritos ni vistas de ocupaciones o instituciones).
-        with pytest.raises(RuntimeError, match='hay batallas'):
+        # B10: 0015 baja (no hay favoritos), pero 0014 se detiene: las reglas de `ruta` cuentan vistas de ocupaciones
+        # e instituciones.
+        with pytest.raises(RuntimeError, match='hay eventos de vistas'):
             command.downgrade(configuracion, '0002')
-        tablas_0014 = {'high_point', 'tipo_carrera', 'ubicacion', 'institucion', 'institucion_carrera',
-                       'ingreso_carrera', 'rango_ingreso', 'favorito'}
-        assert set(inspect(motor).get_table_names()) == (set(Base.metadata.tables) - tablas_0014) | {'alembic_version'}
+        assert set(inspect(motor).get_table_names()) == (set(Base.metadata.tables) - {'favorito'}) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0013'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0014'
             for tabla in Base.metadata.sorted_tables:
-                if tabla.name in tablas_0014:
+                if tabla.name == 'favorito':
                     continue
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]
