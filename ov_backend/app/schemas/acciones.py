@@ -77,6 +77,8 @@ class ResolverBatallaEntrada(CompletarActividadEntrada):
 
 class ResolverCasoEntrada(CompletarActividadEntrada):
     puntaje: float = Field(ge=0, le=100, allow_inf_nan=False)
+    # Códigos de las ocupaciones bien asignadas; entran a la colección solo si el caso se supera.
+    ocupaciones: list[str] = []
 
 
 class ResponderRegistroEntrada(AccionCuenta):
@@ -133,6 +135,10 @@ class EventoEntrada(AccionCuenta):
 class RespuestaAccion(BaseModel):
     eventos_registrados: list[EventoLegible]
     nuevos_desbloqueos: list[DesbloqueoNuevo]
+
+
+class RespuestaResolverCaso(RespuestaAccion):
+    ocupaciones_nuevas: list[str]
 
 
 class RespuestaRevelarResultado(RespuestaAccion):

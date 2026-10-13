@@ -150,7 +150,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert datos['resumen-inicial']['nivel_actual']['numero'] == 1
     assert any(i['codigo'] == '???' for i in datos['logros-inicial']['insignias'])
     assert {d['regla'] for d in datos['completar-t-inicio']['nuevos_desbloqueos']} == {
-        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES'}
+        'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES'}
     cierre = datos['completar-t-cierre-inicio']
     assert {d['regla'] for d in cierre['nuevos_desbloqueos']} == {'R-T1', 'R-NIV-2', 'R-SEC-CHECK_IN'}
     for nombre in ('secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final'):
@@ -185,7 +185,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     }
     avisos = datos['desbloqueos-no-vistos']
     assert {d['regla'] for d in avisos} == {
-        'R-t-cierre-inicio', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD', 'R-t-opcional',
+        'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD', 'R-t-opcional',
         'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA', 'R-t-adicional',
         'R-t-eco'}
     assert all(d['visto'] is False and d['fecha_hora'] == exportador.FECHA for d in avisos)

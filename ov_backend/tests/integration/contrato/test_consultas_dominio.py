@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActividad, Visibilidad
 from datos.fijos import SECCIONES
-from datos.ruta import ACTIVIDADES, BLOQUES, FICHAS, INSIGNIAS, NIVELES, PROPIEDADES, REGLAS, contenido
+from datos.ruta import ACTIVIDADES, BLOQUES, FICHAS, INSIGNIAS, NIVELES, PROPIEDADES, REGLAS, TESTIMONIOS, contenido
 from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 
 
@@ -14,11 +14,11 @@ ESTADOS = {
     False: {'t-inicio': 'DISPONIBLE', 't-partida': 'DISPONIBLE', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
             't-opcional': 'BLOQUEADA', 't-valores': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
             't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'BLOQUEADA', 't-eco': 'BLOQUEADA',
-            't-lee-cuestionario': 'BLOQUEADA'},
+            't-lee-cuestionario': 'BLOQUEADA', 't-batalla': 'BLOQUEADA'},
     True: {'t-inicio': 'COMPLETADA', 't-partida': 'COMPLETADA', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
            't-opcional': 'DISPONIBLE', 't-valores': 'DISPONIBLE', 't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA',
            't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'DISPONIBLE', 't-eco': 'DISPONIBLE',
-           't-lee-cuestionario': 'DISPONIBLE'},
+           't-lee-cuestionario': 'DISPONIBLE', 't-batalla': 'DISPONIBLE'},
 }
 # Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).
 SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']
@@ -82,6 +82,10 @@ def esperado(ruta, completo):
             {'numero': numero, 'titulo': titulo, 'estado': 'OBTENIDO' if numero <= (2 if completo else 1) else 'BLOQUEADO'}
             for numero, titulo in NIVELES
         ]}
+    if ruta == 'testimonios':
+        # Se abren al superar el caso, que en este recorrido sigue sin resolverse.
+        return [{'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA'}
+                for codigo, titulo, _, _, _ in sorted(TESTIMONIOS)]
     if ruta == 'secciones':
         return [(codigo, 'DISPONIBLE' if completo else 'BLOQUEADA', completo) for codigo in SECCIONES_ESTUDIANTE]
     if ruta == 'diario/preguntas' and not completo:

@@ -5,7 +5,7 @@ from app.schemas.acciones import (
     AccionCuenta, CheckInEntrada, CompletarActividadEntrada, CompletarConversacionEntrada,
     EscribirCartaEntrada, EscribirEntradaEntrada, EventoEntrada, PublicarEntrevistaEntrada,
     ReiniciarInstrumentoEntrada, ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
-    ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados,
+    ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados, RespuestaResolverCaso,
     RespuestaReiniciarInstrumento, RespuestaRevelarResultado, RevelarResultadoEntrada, VerCarreraEntrada,
 )
 from app.services import (
@@ -44,7 +44,7 @@ def reiniciar_instrumento(entrada: ReiniciarInstrumentoEntrada, sesion: SesionBD
     return ejecutar_accion(sesion, lambda: servicio_actividades.reiniciar_instrumento(sesion, entrada))
 
 
-@router.post("/acciones/resolver-caso", response_model=RespuestaAccion, response_model_exclude_unset=True)
+@router.post("/acciones/resolver-caso", response_model=RespuestaResolverCaso, response_model_exclude_unset=True)
 def resolver_caso(entrada: ResolverCasoEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_actividades.resolver_caso(sesion, entrada))
 

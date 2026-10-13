@@ -5,15 +5,15 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import MAXIMO_REINICIOS_PERFIL_PLANO
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, ActividadItem, AplicacionActividad, Bloque, Cuenta, Dimension, EstadoProgreso,
-    EstadoRespuestaRegistro, Instrumento, ItemInstrumento, OpcionEscala, ProgresoActividad, RespuestaItem,
+    Actividad, ActividadItem, AplicacionActividad, Bloque, ColeccionOcupacion, Cuenta, Dimension, EstadoProgreso,
+    EstadoRespuestaRegistro, Instrumento, ItemInstrumento, Ocupacion, OpcionEscala, ProgresoActividad, RespuestaItem,
     RespuestaRegistro, ResultadoBatalla, ResultadoCaso, ResultadoInstrumento, Rol, TipoActividad, TipoEventoUso,
     TipoObjetivo, TipoResultado, Visibilidad,
 )
 from app.schemas.acciones import (
     CompletarActividadEntrada, ProgresoRespuestas, ReiniciarInstrumentoEntrada,
     ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada, RespuestaAccion,
-    RespuestaItemGuardada, RespuestaItemsGuardados, RespuestaReiniciarInstrumento,
+    RespuestaItemGuardada, RespuestaItemsGuardados, RespuestaResolverCaso, RespuestaReiniciarInstrumento,
     RespuestaRevelarResultado, ResultadoAnulado, RevelarResultadoEntrada,
 )
 from app.schemas.actividades import ActividadCuenta, BloqueActividades
@@ -256,20 +256,36 @@ def reiniciar_instrumento(sesion: Session, entrada: ReiniciarInstrumentoEntrada)
 
 
 @usar_contexto
-def resolver_caso(sesion: Session, entrada: ResolverCasoEntrada) -> RespuestaAccion:
+def resolver_caso(sesion: Session, entrada: ResolverCasoEntrada) -> RespuestaResolverCaso:
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
     actividad = buscar_por_codigo(sesion, Actividad, entrada.actividad)
     exigir_disponible(sesion, cuenta, TipoObjetivo.ACTIVIDAD, actividad)
     if actividad.tipo != TipoActividad.CASO:
         raise ErrorAccion("La actividad debe ser de tipo CASO")
+    codigos = list(dict.fromkeys(entrada.ocupaciones))
+    ocupaciones = {ocupacion.codigo: ocupacion for ocupacion in sesion.scalars(
+        select(Ocupacion).where(Ocupacion.codigo.in_(codigos)))} if codigos else {}
+    desconocidas = [codigo for codigo in codigos if codigo not in ocupaciones]
+    if desconocidas:
+        raise ErrorAccion(f"Ocupaciones inexistentes: {', '.join(desconocidas)}", estado_http=422)
     fecha = fecha_accion(entrada)
-    progreso, eventos = completar_progreso(sesion, cuenta, actividad)
+    nuevas = []
+    # Fallar guarda el intento sin completar el caso; solo superarlo libera testimonios y colección.
+    if entrada.puntaje >= actividad.puntaje_minimo:
+        progreso, eventos = completar_progreso(sesion, cuenta, actividad)
+        if not existe_evento(sesion, cuenta, TipoEventoUso.SUPERA_CASO, actividad.id):
+            eventos.append((TipoEventoUso.SUPERA_CASO, actividad.id))
+        obtenidas = set(sesion.scalars(select(ColeccionOcupacion.ocupacion_id).where(
+            ColeccionOcupacion.cuenta_id == cuenta.id)))
+        nuevas = [codigo for codigo in codigos if ocupaciones[codigo].id not in obtenidas]
+        sesion.add_all(ColeccionOcupacion(cuenta_id=cuenta.id, ocupacion_id=ocupaciones[codigo].id,
+                                          actividad_id=actividad.id, obtenida_en=fecha) for codigo in nuevas)
+    else:
+        progreso, eventos = iniciar_progreso(sesion, cuenta, actividad), []
     sesion.add(ResultadoCaso(progreso_id=progreso.id, puntaje=entrada.puntaje, fecha_hora=fecha))
-    if entrada.puntaje >= actividad.puntaje_minimo and not existe_evento(
-        sesion, cuenta, TipoEventoUso.SUPERA_CASO, actividad.id,
-    ):
-        eventos.append((TipoEventoUso.SUPERA_CASO, actividad.id))
-    return responder_con_eventos(sesion, cuenta, eventos, fecha)
+    respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
+    return RespuestaResolverCaso(eventos_registrados=respuesta.eventos_registrados,
+                                 nuevos_desbloqueos=respuesta.nuevos_desbloqueos, ocupaciones_nuevas=nuevas)
 
 
 @usar_contexto

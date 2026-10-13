@@ -19,7 +19,7 @@ MODELOS_FIJOS = (
     modelos.EscalaRespuesta, modelos.OpcionEscala, modelos.ItemInstrumento,
     modelos.ActividadItem, modelos.Aplicacion, modelos.AplicacionActividad,
     modelos.ListaOpciones, modelos.OpcionLista, modelos.ItemRegistro, modelos.CriterioCompletitud,
-    modelos.Referencia, modelos.Tematica, modelos.ActividadTematica, modelos.SalonInstrumento,
+    modelos.Referencia, modelos.Tematica, modelos.ActividadTematica, modelos.ActividadDimension, modelos.SalonInstrumento,
     modelos.SalonActividadPrioritaria,
 )
 
