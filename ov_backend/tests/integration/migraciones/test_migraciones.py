@@ -136,7 +136,7 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     assert 'json_type(' not in sql and 'PRAGMA' not in sql
     assert "WHERE origen = 'GUIADA'" in sql
     assert 'WHERE anulado_en IS NULL' in sql
-    assert sql.count('BOOLEAN DEFAULT false') == 9
+    assert sql.count('BOOLEAN DEFAULT false') == 10
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:
         ddl = str(CreateTable(tabla).compile(dialect=dialecto))
@@ -275,7 +275,7 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
                     'cuenta': 'apo-rosa', 'actividad': actividad,
                 }).status_code == 200
         with motor.connect() as conexion:
-            anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
+            anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).mappings().all()
                           for tabla in Base.metadata.sorted_tables}
         with pytest.raises(RuntimeError, match='REGISTRO_ADECUADO'):
             command.downgrade(configuracion, '0002')
@@ -283,7 +283,10 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0005'
             for tabla in Base.metadata.sorted_tables:
-                assert conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all() == anteriores[tabla.name]
+                # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
+                columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]
+                assert conexion.execute(select(*columnas).order_by(*tabla.primary_key.columns)).mappings().all() == [
+                    {c.name: fila[c.name] for c in columnas} for fila in anteriores[tabla.name]]
             assert conexion.execute(text('PRAGMA foreign_key_check')).all() == []
     finally:
         aplicacion.state.motor_bd.dispose()
@@ -414,5 +417,73 @@ def test_migracion_0006_quita_nucleo_y_renombra_el_origen_conservando_filas(tmp_
         with motor.connect() as conexion:
             assert conexion.execute(text('SELECT codigo, nucleo FROM item_registro')).all() == [('I1', False)]
             assert conexion.execute(text('SELECT origen FROM evaluacion_respuesta')).all() == [('RESPALDO_LONGITUD',)]
+    finally:
+        motor.dispose()
+
+
+def test_migracion_0007_agrega_intentos_e_inicializa_la_marca_reflexiva(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "intentos.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    motor = database.crear_motor_bd(url)
+    try:
+        command.upgrade(configuracion, '0006')
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: tres respuestas con turno; solo la 1 pasó de poco desarrollada a adecuada.
+            sqls = [
+                "INSERT INTO bloque (id, codigo, numero, nombre, espacio, audiencia) "
+                "VALUES (1, 'B1', 1, 'Prueba', 'MISIONES_CAMPO', 'ESTUDIANTE')",
+                "INSERT INTO actividad (id, codigo, titulo, tipo, contenido, orden, bloque_id, visibilidad) "
+                "VALUES (1, 'A1', 'Registro', 'REGISTRO', 'a1', 1, 1, 'SIEMPRE')",
+                "INSERT INTO cuenta (id, codigo, nombre, rol) VALUES (1, 'C1', 'Cuenta', 'ESTUDIANTE')",
+                "INSERT INTO progreso_actividad (id, cuenta_id, actividad_id, estado) VALUES (1, 1, 1, 'COMPLETADA')",
+            ]
+            clasificaciones = {1: ('POCO_DESARROLLADA', 'ADECUADA'), 2: ('ADECUADA', None),
+                               3: ('POCO_DESARROLLADA', 'POCO_DESARROLLADA')}
+            for numero, (inicial, siguiente) in clasificaciones.items():
+                sqls += [
+                    f"INSERT INTO item_registro (id, codigo, actividad_id, orden, nombre, consigna, obligatorio, "
+                    f"repregunta_generica) VALUES ({numero}, 'I{numero}', 1, {numero}, 'Ítem', 'Consigna', 1, '¿Más?')",
+                    f"INSERT INTO respuesta_registro (id, progreso_id, item_registro_id, texto_inicial, "
+                    f"opciones_elegidas, estado, clasificacion_inicial, ampliada, creada_en, actualizada_en) "
+                    f"VALUES ({numero}, 1, {numero}, 'Texto', '[]', 'FINAL', '{inicial}', "
+                    f"{1 if siguiente else 0}, '2026-10-01', '2026-10-01')",
+                    f"INSERT INTO evaluacion_respuesta (respuesta_id, numero, origen, clasificacion, "
+                    f"criterios_faltantes, requiere_atencion, texto_evaluado, fecha_hora) "
+                    f"VALUES ({numero}, 1, 'LLM', '{inicial}', '[]', 0, 'Texto', '2026-10-01')",
+                ]
+                if siguiente:
+                    sqls += [
+                        f"INSERT INTO turno_seguimiento (respuesta_id, orden, pregunta, criterios_objetivo, "
+                        f"respuesta, respondido_en, creado_en) "
+                        f"VALUES ({numero}, 1, '¿Más?', '[]', 'Más', '2026-10-01', '2026-10-01')",
+                        f"INSERT INTO evaluacion_respuesta (respuesta_id, numero, origen, clasificacion, "
+                        f"criterios_faltantes, requiere_atencion, texto_evaluado, fecha_hora) "
+                        f"VALUES ({numero}, 2, 'LLM', '{siguiente}', '[]', 0, 'Texto', '2026-10-01')",
+                    ]
+            for sql in sqls:
+                conexion.execute(text(sql))
+        command.upgrade(configuracion, '0007')
+        with motor.connect() as conexion:
+            assert conexion.execute(text(
+                'SELECT id, intento, reflexiva_registrada FROM respuesta_registro ORDER BY id')).all() == [
+                (1, 1, True), (2, 1, False), (3, 1, False)]
+            assert conexion.execute(text('SELECT intento FROM turno_seguimiento')).scalars().all() == [1, 1]
+        with motor.begin() as conexion:
+            # La única es por intento: el mismo orden cabe en un intento nuevo.
+            conexion.execute(text(
+                "INSERT INTO turno_seguimiento (respuesta_id, intento, orden, pregunta, criterios_objetivo, creado_en) "
+                "VALUES (1, 2, 1, '¿Más?', '[]', '2026-10-02')"))
+            conexion.execute(text('UPDATE respuesta_registro SET intento = 2 WHERE id = 1'))
+        with pytest.raises(RuntimeError, match='editados'):
+            command.downgrade(configuracion, '0006')
+        with motor.begin() as conexion:
+            conexion.execute(text('DELETE FROM turno_seguimiento WHERE intento = 2'))
+            conexion.execute(text('UPDATE respuesta_registro SET intento = 1'))
+        command.downgrade(configuracion, '0006')
+        with motor.connect() as conexion:
+            assert 'intento' not in {c['name'] for c in inspect(motor).get_columns('turno_seguimiento')}
+            assert conexion.execute(text('SELECT COUNT(*) FROM turno_seguimiento')).scalar() == 2
+            assert conexion.execute(text('SELECT COUNT(*) FROM respuesta_registro')).scalar() == 3
     finally:
         motor.dispose()

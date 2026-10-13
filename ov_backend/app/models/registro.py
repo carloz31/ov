@@ -83,6 +83,9 @@ class RespuestaRegistro(Base):
     estado: Mapped[EstadoRespuestaRegistro] = mapped_column(enumerado(EstadoRespuestaRegistro))
     clasificacion_inicial: Mapped[ClasificacionRespuesta | None] = mapped_column(enumerado(ClasificacionRespuesta))
     ampliada: Mapped[bool] = mapped_column(default=False, server_default=false())
+    # 1 = entrega; 2 en adelante = ediciones. `texto_inicial` es el texto base de este intento.
+    intento: Mapped[int] = mapped_column(default=1, server_default=text("1"))
+    reflexiva_registrada: Mapped[bool] = mapped_column(default=False, server_default=false())
     creada_en: Mapped[datetime] = mapped_column(DateTime)
     actualizada_en: Mapped[datetime] = mapped_column(DateTime)
 
@@ -90,12 +93,13 @@ class RespuestaRegistro(Base):
 class TurnoSeguimiento(Base):
     __tablename__ = "turno_seguimiento"
     __table_args__ = (
-        UniqueConstraint("respuesta_id", "orden"),
+        UniqueConstraint("respuesta_id", "intento", "orden"),
         CheckConstraint("orden IN (1, 2)", name="orden_seguimiento_valido"),
         CheckConstraint(TipoJSON(column("criterios_objetivo")) == 'array', name="criterios_objetivo_lista"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     respuesta_id: Mapped[int] = mapped_column(ForeignKey("respuesta_registro.id"))
+    intento: Mapped[int] = mapped_column(default=1, server_default=text("1"))
     orden: Mapped[int]
     pregunta: Mapped[str] = mapped_column(Text)
     criterios_objetivo: Mapped[list[str]] = mapped_column(JSON(none_as_null=True))
