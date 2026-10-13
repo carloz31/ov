@@ -1,0 +1,154 @@
+{
+  "estado": "COMPLETADA",
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-expectativas",
+      "tipo": "COMPLETA_ACTIVIDAD"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "T1",
+      "tipo": "COMPLETA_BLOQUE"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": null,
+      "tipo": "RESPUESTA_REFLEXIVA"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": null,
+      "tipo": "RESPUESTA_REFLEXIVA"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": null,
+      "tipo": "RESPUESTA_REFLEXIVA"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-expectativas",
+      "tipo": "REGISTRO_ADECUADO"
+    }
+  ],
+  "items_por_ampliar": [],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-expectativas",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "CIUDAD",
+        "nombre": "La ciudad"
+      },
+      "regla": "R-CIUDAD",
+      "tipo_objetivo": "BLOQUE"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-expectativas",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "FAMILIA",
+        "nombre": "Familia"
+      },
+      "regla": "R-SEC-FAMILIA",
+      "tipo_objetivo": "SECCION"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-expectativas",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "REGISTRO_ADECUADO"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-adicional",
+        "nombre": "Misión adicional"
+      },
+      "regla": "R-t-adicional",
+      "tipo_objetivo": "ACTIVIDAD"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-expectativas",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-opcional",
+        "nombre": "Actividad opcional"
+      },
+      "regla": "R-t-opcional",
+      "tipo_objetivo": "ACTIVIDAD"
+    }
+  ],
+  "posicion": "t-exp-ruta",
+  "respuestas": [
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-exp-ruta",
+      "opciones_elegidas": [
+        {
+          "codigo": "UNIVERSIDAD"
+        }
+      ]
+    },
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-exp-apoyo",
+      "opciones_elegidas": [
+        {
+          "codigo": "FAMILIA"
+        }
+      ]
+    },
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-exp-espera",
+      "opciones_elegidas": []
+    }
+  ]
+}

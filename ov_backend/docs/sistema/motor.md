@@ -22,7 +22,7 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | Evento | Referencia |
 |---|---|
 | INGRESO, RESPUESTA_REFLEXIVA, INVITA_A_CREW, FORMA_CREW, VENCE_DESAFIO_INTACTO | nula |
-| COMPLETA_ACTIVIDAD, SUPERA_CASO, REGISTRO_ADECUADO | actividad (REGISTRO_ADECUADO: el registro que quedó con todo adecuado; se emite desde B03) |
+| COMPLETA_ACTIVIDAD, SUPERA_CASO, REGISTRO_ADECUADO | actividad (REGISTRO_ADECUADO: el registro que se cerró sin ítems poco desarrollados; ver `registro.md`) |
 | COMPLETA_BLOQUE | bloque |
 | ESCRIBE_ENTRADA_DIARIO, ESCRIBE_ENTRADA_LIBRE | entrada de diario (se expone como `null`: no tiene código público) |
 | REGISTRA_CHECK_IN | check-in (se expone como `null`) |

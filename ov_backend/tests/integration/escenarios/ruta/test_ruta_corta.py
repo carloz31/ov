@@ -1,11 +1,12 @@
 """Ruta corta: recorre la ruta mínima con las peticiones del front, sin `/eventos`.
 
-B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010. Cada lote
+B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010; B03, las HU 007
+y 016. Cada lote
 extiende este recorrido con su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
-from soporte_ruta import FECHA, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, filas_base, pedir, reglas, responder
+from soporte_ruta import FECHA, avanzar, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, filas_base, pedir, reglas, responder
 
 
 def siguiente(cliente, cuenta='est-ana'):
@@ -96,6 +97,41 @@ def test_hu006_hu010_registro_con_eleccion_borrador_y_retomar(cliente):
     assert {r['estado'] for r in respuesta['respuestas']} == {'FINAL'}
     assert ('COMPLETA_ACTIVIDAD', 't-expectativas') in [
         (e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']]
+
+
+def test_hu007_hu016_entrega_con_seguimiento_y_mision_adicional(cliente):
+    """B03: Ana responde la pregunta y ve la misión adicional; Luis omite y no la ve."""
+    textos = {'t-exp-ruta': 'DATO DE PRUEBA: quiero estudiar [vaga]',
+              't-exp-apoyo': 'DATO DE PRUEBA: mi familia, por ejemplo mi mamá me acompaña a las ferias',
+              't-exp-espera': 'DATO DE PRUEBA: esperan que termine el colegio porque confían en mí'}
+    opciones = {'t-exp-ruta': [{'codigo': 'INSTITUTO'}], 't-exp-apoyo': [{'codigo': 'FAMILIA'}], 't-exp-espera': []}
+    for cuenta in ('est-ana', 'est-luis'):
+        avanzar(cliente, 't-cierre-inicio', cuenta)
+        accion = {'cuenta': cuenta, 'actividad': 't-expectativas', 'fecha_hora': FECHA}
+        for item, texto in textos.items():
+            pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
+                  {**accion, 'item': item, 'texto': texto, 'opciones': opciones[item]})
+        entrega = pedir(cliente, 'POST', '/acciones/registro/entregar', accion)
+        assert entrega['estado'] == 'EN_CURSO'
+        ruta = next(r for r in entrega['respuestas'] if r['item'] == 't-exp-ruta')
+        assert ruta['estado'] == 'PENDIENTE_SEGUIMIENTO' and ruta['conversacion'][-1]['tipo'] == 'pregunta'
+        assert 'clasificacion' not in str(entrega)
+        if cuenta == 'est-ana':
+            cierre = pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento',
+                           {**accion, 'item': 't-exp-ruta', 'texto': 'Porque me gusta aprender haciendo'})
+            assert cierre['items_por_ampliar'] == []
+            assert ('REGISTRO_ADECUADO', 't-expectativas') in [
+                (e['tipo'], e['referencia']) for e in cierre['eventos_registrados']]
+            assert actividades(cliente)['t-adicional'] == 'DISPONIBLE'
+            assert siguiente(cliente) == INTERESES  # La misión adicional es opcional.
+            completar(cliente, 't-adicional')
+            assert actividades(cliente)['t-adicional'] == 'COMPLETADA'
+        else:
+            cierre = pedir(cliente, 'POST', '/acciones/registro/continuar-sin-responder',
+                           {**accion, 'item': 't-exp-ruta'})
+            assert cierre['items_por_ampliar'] == ['t-exp-ruta']
+            assert actividades(cliente, cuenta)['t-expectativas'] == 'COMPLETADA'
+            assert actividades(cliente, cuenta)['t-adicional'] == 'BLOQUEADA'
 
 
 def test_llegada_a_la_ciudad(cliente):

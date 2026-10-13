@@ -144,6 +144,36 @@
         "titulo": "Registro de valores",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "T0",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Termina el bloque de inicio para abrir el camino.",
+            "regla": "R-T1"
+          }
+        ],
+        "codigo": "t-adicional",
+        "contenido": "t_adicional",
+        "descripcion": "Misión adicional que aparece si el registro quedó adecuado.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Misión adicional",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
       }
     ],
     "bloqueo": [

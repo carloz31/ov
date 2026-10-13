@@ -2,6 +2,24 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-13 · B03 · Entrega y seguimiento de registros
+
+- **Dato:**
+  - `POST /acciones/registro/entregar`, que reemplaza a `enviar` (retirado);
+  - las respuestas de `entregar`, `responder-seguimiento` y `continuar-sin-responder`: el registro completo más eventos y desbloqueos;
+  - `items_por_ampliar` al cerrar;
+  - la actividad `t-adicional` (misión adicional, `AL_DESBLOQUEAR`), que no tiene contenido en el front.
+- **Dónde se mostraría:**
+  - el reproductor de registros: un botón «Entregar» al final, y la pregunta de seguimiento del ítem pendiente con «Responder» y «Continuar sin responder»;
+  - al cerrar, el aviso «podrías profundizar en…» con los ítems de `items_por_ampliar`, sin mostrar la clasificación;
+  - en el mapa de T1, la misión adicional.
+- **Opciones:**
+  - conectar el reproductor a la entrega y el seguimiento en el lote F de registros;
+  - crear `t_adicional.json` o mapear la misión adicional a un contenido real cuando se cargue la ruta;
+  - mantener la lógica local hasta entonces.
+- **Si no se muestra:** en modo `api` el front sigue con sus preguntas de seguimiento locales y solo informa la finalización. La misión adicional se descarta porque no tiene contenido.
+- **Estado:** pendiente del lote F de registros; no se toca la interfaz en B03.
+
 ## 2026-10-13 · B02 · Elección y borradores de registro
 
 - **Dato:** `eleccion` de `GET /actividades/{a}/items-registro`; `opciones_elegidas` y `posicion` de `GET /cuentas/{c}/actividades/{a}/registro`; `opciones` y `posicion` de `guardar-borrador` y `enviar`.

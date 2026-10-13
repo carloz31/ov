@@ -80,6 +80,20 @@
         "titulo": "Registro de valores",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-adicional",
+        "contenido": "t_adicional",
+        "descripcion": "Misión adicional que aparece si el registro quedó adecuado.",
+        "duracion_estimada_min": 5,
+        "estado": "DISPONIBLE",
+        "orden": 4,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Misión adicional",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": true
       }
     ],
     "bloqueo": null,

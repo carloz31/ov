@@ -96,6 +96,36 @@
         "titulo": "Registro de valores",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "REGISTRO_ADECUADO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Desarrolla todas tus respuestas del registro de expectativas.",
+            "regla": "R-t-adicional"
+          }
+        ],
+        "codigo": "t-adicional",
+        "contenido": "t_adicional",
+        "descripcion": "Misión adicional que aparece si el registro quedó adecuado.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Misión adicional",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
       }
     ],
     "bloqueo": null,

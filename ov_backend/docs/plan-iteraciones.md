@@ -39,7 +39,7 @@ Cuentas:
 |---|---|---|---|---|
 | `t-inicio` | I | T0 | B00 | Ficha `t-ficha`. B01: abre las secciones DIARIO, CATALOGO y PLANES. B09: abre la entrada fija. B11: abre los campos básicos de la tarjeta. |
 | `t-cierre-inicio` | I | T0 | B00 | Cierra T0 (COMPLETA_BLOQUE abre T1). B01: abre CHECK_IN. |
-| `t-expectativas` | R | T1 | B00 | Abre CIUDAD a mitad de bloque. B01: abre FAMILIA. B02: un ítem de lista común con «otra», uno de lista propia y uno de texto núcleo. B09: abre la entrada personalizada. |
+| `t-expectativas` | R | T1 | B00 | Abre CIUDAD a mitad de bloque. B01: abre FAMILIA. B02: un ítem de lista común con «otra», uno de lista propia y uno de texto. B09: abre la entrada personalizada. |
 | `t-opcional` | I | T1 | B01 | Opcional y `AL_DESBLOQUEAR`. |
 | `t-valores` | R | T1 | B02 | Elección ordenada, un ítem sin criterios y uno solo con LONGITUD. B11: abre el campo «motivo». |
 | `t-adicional` | I | T1 | B03 | Misión adicional que se abre con REGISTRO_ADECUADO de `t-expectativas`. |
@@ -67,8 +67,8 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B00 | Cambio a `ruta` · **Implementado** | Ninguna nueva; comprueba 004, 011, 013–015, 021, 073, 074 | — | — | Toda la batería en verde solo con `ruta`; `plataforma` y `piloto` retirados |
 | B01 | Secciones, mensajes de bloqueo y salón · **Implementado** | 002, 025 | M | B00 | Lo bloqueado responde con su mensaje; las secciones se abren y permiten registrar |
 | B02 | Registros: modelo, listas y borradores · **Implementado** | 006, 010 | M | B01 | Borradores con elección validada; ítems, criterios y listas cargados desde `datos/` |
-| B03 | Registros: entrega y seguimiento | 007, 016 | — | B02 | Entrega con seguimiento, omisión y fallo del LLM; la misión adicional aparece solo si todo quedó adecuado |
-| B04 | Registros: respuesta consolidada y edición | 008 | — | B03 | Consolidación al cerrar; la edición se evalúa una vez |
+| B03 | Registros: entrega y seguimiento · **Implementado** | 007, 016 | M | B02 | Entrega con seguimiento, omisión y fallo del LLM; la misión adicional aparece solo si todo quedó adecuado |
+| B04 | Registros: respuesta consolidada y edición | 008 | — | B03 | Consulta de la consolidada y de lo que se puede ampliar; la edición se evalúa una vez |
 | B05 | Referencias y eco | 009 | M | B04 | Citas literales; lo poco desarrollado sale como «por desarrollar» |
 | B06 | Revelar resultados y libro de Helena | 022–024, 027, 095 | M | B05 | Revelar calcula y abre el registro de contraste; reinicio con perfil plano |
 | B07 | Partida y llegada, temáticas y prioritarios | 094 | M | B06 | Comparación por dimensión; T2 se abre con los instrumentos prioritarios revelados |
@@ -128,25 +128,29 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - La migración conserva las filas.
 - **Comprueba:** regla 7; paso 1 del seguimiento; una sola fuente.
 
-**B03 · Registros: entrega y seguimiento**
+**B03 · Registros: entrega y seguimiento (M) · Implementado**
+- **Modelo:** se quita `item_registro.nucleo` y el origen `RESPALDO_LONGITUD` pasa a `EXTENSION_MINIMA`.
 - **Hace:**
-  - Agrega la acción `entregar` al nivel del registro, que reemplaza la evaluación por ítem.
-  - Lleva el seguimiento a dos por registro, dando prioridad al núcleo.
-  - Repregunta fija con encuadre y fragmento literal.
+  - Agrega la acción `entregar` al nivel del registro, que reemplaza la evaluación por ítem (`enviar` se retira).
+  - Hace una sola llamada al LLM al entregar, con los ítems que tienen criterios; los demás se evalúan en código.
+  - Pone como máximo dos preguntas por registro, por orden de ítem: se repite en el mismo ítem mientras siga poco desarrollado.
+  - La pregunta la redacta el LLM a partir de la repregunta base del primer criterio faltante; si es inválida, se usa la base.
+  - Cada respuesta a un turno reevalúa y consolida el ítem (concatenación como respaldo).
   - El evaluador falso aprende marcas por tipo de criterio.
 - **Pruebas:**
   - Todo adecuado completa el registro y abre `t-adicional`.
-  - Prioridad: núcleo, luego más faltantes, luego el primero.
-  - Un ítem puede recibir las dos repreguntas; nunca hay una tercera.
-  - Omitir cierra con la marca y sin misión adicional.
-  - Un fragmento que no es literal va sin cita.
+  - Una sola llamada al entregar; los ítems sin criterios no llegan al LLM.
+  - La segunda pregunta va al mismo ítem si sigue poco desarrollado, o al siguiente; nunca hay una tercera.
+  - Omitir cierra sin misión adicional; `items_por_ampliar` aparece al cerrar.
   - Con el LLM caído, una respuesta corta recibe la genérica y una larga queda sin evaluar.
   - El estudiante nunca recibe la clasificación.
 - **Comprueba:** pasos 2 a 6 y 8 del seguimiento.
+  - Cada cuenta actúa solo sobre sí misma.
+  - La orientadora actúa solo sobre su salón.
 
 **B04 · Registros: respuesta consolidada y edición**
+- **Hace:** HU-008: consultar la respuesta consolidada, ver qué se puede ampliar y editar. La consolidación ya ocurre en B03, tras cada respuesta a un turno.
 - **Pruebas:**
-  - La respuesta se consolida al cerrar; si falla el LLM, se concatena.
   - La consulta devuelve la respuesta consolidada y qué ítems se pueden ampliar.
   - Editar evalúa una vez, sin seguimiento, y conserva `texto_inicial`. Si queda adecuada, quita la marca y abre la misión adicional.
 - **Script manual con Gemini:** sobre `t-expectativas`; se corre solo si lo pide el usuario.
