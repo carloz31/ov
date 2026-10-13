@@ -7,10 +7,12 @@ from app.schemas.acciones import (
     ReiniciarInstrumentoEntrada, ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
     ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados, RespuestaResolverCaso,
     RespuestaReiniciarInstrumento, RespuestaRevelarResultado, RevelarResultadoEntrada, VerCarreraEntrada,
+    VerTestimonioEntrada,
 )
 from app.services import (
     actividades as servicio_actividades, carreras as servicio_carreras,
     comunidad as servicio_comunidad, diario as servicio_diario, eventos as servicio_eventos,
+    testimonios as servicio_testimonios,
 )
 
 
@@ -92,3 +94,8 @@ def completar_conversacion(entrada: CompletarConversacionEntrada, sesion: Sesion
 @router.post("/eventos", response_model=RespuestaAccion, response_model_exclude_unset=True, tags=["Depuración"])
 def registrar_evento(entrada: EventoEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_eventos.registrar_evento_crudo(sesion, entrada))
+
+
+@router.post("/acciones/ver-testimonio", response_model=RespuestaAccion, response_model_exclude_unset=True)
+def ver_testimonio(entrada: VerTestimonioEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: servicio_testimonios.ver_testimonio(sesion, entrada))

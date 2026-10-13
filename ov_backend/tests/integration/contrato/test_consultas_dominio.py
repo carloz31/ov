@@ -84,8 +84,9 @@ def esperado(ruta, completo):
         ]}
     if ruta == 'testimonios':
         # Se abren al superar el caso, que en este recorrido sigue sin resolverse.
-        return [{'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA'}
-                for codigo, titulo, _, _, _ in sorted(TESTIMONIOS)]
+        return [{'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'visto': False, 'pista': pista,
+                 'descripcion': None, 'enlace': None}
+                for codigo, titulo, _, _, pista in sorted(TESTIMONIOS)]
     if ruta == 'secciones':
         return [(codigo, 'DISPONIBLE' if completo else 'BLOQUEADA', completo) for codigo in SECCIONES_ESTUDIANTE]
     if ruta == 'diario/preguntas' and not completo:

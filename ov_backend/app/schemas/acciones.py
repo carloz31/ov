@@ -108,6 +108,10 @@ class VerCarreraEntrada(AccionCuenta):
     carrera: str
 
 
+class VerTestimonioEntrada(AccionCuenta):
+    testimonio: str
+
+
 class PublicarEntrevistaEntrada(FechaAccion):
     autores: list[str] = Field(min_length=1)
     resumen: str
