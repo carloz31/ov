@@ -55,6 +55,12 @@ def _recorrer(cliente):
     fixtures = {'cuentas': _pedir(cliente, 'GET', '/cuentas')}
     fixtures.update(_consultas_dominio(cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros', 'secciones')))
     fixtures['completar-t-inicio'] = _completar(cliente, 't-inicio')
+    # B07: el punto de partida está en T0, antes de su cierre.
+    _pedir(cliente, 'POST', '/acciones/responder-items', {
+        'cuenta': 'est-ana', 'actividad': 't-partida', 'fecha_hora': FECHA,
+        'respuestas': [{'item': item['codigo'], 'opcion': 3}
+                       for item in _pedir(cliente, 'GET', '/actividades/t-partida/items')]})
+    _completar(cliente, 't-partida')
     fixtures['completar-t-cierre-inicio'] = _completar(cliente, 't-cierre-inicio')
     fixtures['actividades-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     fixtures['secciones-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/secciones')

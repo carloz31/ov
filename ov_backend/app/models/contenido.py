@@ -41,6 +41,22 @@ class Actividad(Base):
     descripcion: Mapped[str | None] = mapped_column(Text)
 
 
+class Tematica(Base):
+    """Una de las cinco dimensiones del cuestionario de partida y llegada, compartida por actividades."""
+    __tablename__ = "tematica"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
+    nombre: Mapped[str]
+    descripcion: Mapped[str] = mapped_column(Text)
+    orden: Mapped[int]
+
+
+class ActividadTematica(Base):
+    __tablename__ = "actividad_tematica"
+    actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"), primary_key=True)
+    tematica_id: Mapped[int] = mapped_column(ForeignKey("tematica.id"), primary_key=True)
+
+
 class Seccion(Base):
     __tablename__ = "seccion"
     id: Mapped[int] = mapped_column(primary_key=True)

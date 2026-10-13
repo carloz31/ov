@@ -5,7 +5,7 @@ from soporte_retiro import preparar_ultimo, resultado
 
 
 def avance(cliente, cuenta='est-ana'):
-    instrumento, = pedir(cliente, 'GET', f'/cuentas/{cuenta}/instrumentos')
+    instrumento, = [i for i in pedir(cliente, 'GET', f'/cuentas/{cuenta}/instrumentos') if i['instrumento'] == 'TEST-RIASEC']
     aplicacion, = instrumento['aplicaciones']
     return aplicacion['estado'], aplicacion['hay_resultado_vigente']
 

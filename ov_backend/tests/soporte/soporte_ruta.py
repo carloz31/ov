@@ -9,7 +9,9 @@ from app.models.base import Base
 
 FECHA = '2026-10-07T10:00:00'
 # DATO DE PRUEBA: el recorrido de `datos/ruta.py` que abre la Ciudad.
-RECORRIDO = ('t-inicio', 't-cierre-inicio', 't-expectativas')
+RECORRIDO = ('t-inicio', 't-partida', 't-cierre-inicio', 't-expectativas')
+# DATO DE PRUEBA: los cuestionarios de partida y llegada (B07); `completar` responde sus 19 ítems.
+PARTIDA_LLEGADA = ('t-partida', 't-llegada')
 # El RIASEC va en dos misiones de 30 ítems; el resultado se calcula al completar la última.
 MISIONES_INTERESES = ('t-mision-intereses', 't-mision-intereses-2')
 INTERESES, INTERESES_FINAL = MISIONES_INTERESES
@@ -62,6 +64,9 @@ def responder_registro(cliente, actividad, cuenta='est-ana'):
 
 def completar(cliente, codigo, cuenta='est-ana', esperado=200):
     """Completa una actividad; un registro se completa al entregarlo todo adecuado."""
+    if esperado == 200 and codigo in PARTIDA_LLEGADA and not pedir(
+            cliente, 'GET', f'/cuentas/{cuenta}/actividades/{codigo}/respuestas')['respuestas']:
+        responder(cliente, codigo, cuenta, opcion=3)
     if esperado == 200 and codigo in REGISTROS:
         registro = pedir(cliente, 'GET', f'/cuentas/{cuenta}/actividades/{codigo}/registro')
         if registro['estado'] != 'COMPLETADA':

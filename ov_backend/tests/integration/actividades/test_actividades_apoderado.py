@@ -23,7 +23,7 @@ def actividades(cliente, cuenta='apo-rosa'):
 def test_familia_inicial_visible_y_separada_del_estudiante(cliente_apoderado):
     cliente = cliente_apoderado
     assert actividades(cliente) == [BLOQUE_FAMILIA]
-    assert [b['codigo'] for b in actividades(cliente, 'est-ana')] == ['T0', 'T1', 'CIUDAD']
+    assert [b['codigo'] for b in actividades(cliente, 'est-ana')] == ['T0', 'T1', 'T2', 'CIUDAD']
     assert eventos(cliente, 'apo-rosa') == []
 
 

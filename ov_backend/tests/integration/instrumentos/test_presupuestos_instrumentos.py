@@ -15,13 +15,15 @@ def test_r12_uno_o_todos_insertar_y_reemplazar_con_identidad(tmp_path, base_aisl
             datos = datos_respuestas(cliente, cantidad=cantidad)
             _, nuevas = medir(cliente, aplicacion, 'POST', '/acciones/responder-items', datos)
             with aplicacion.state.fabrica_sesiones() as sesion:
-                antes = {r.item_id: (r.id, r.creada_en, r.actualizada_en) for r in sesion.scalars(select(m.RespuestaItem))}
+                antes = {r.item_id: (r.id, r.creada_en, r.actualizada_en) for r in sesion.scalars(select(m.RespuestaItem).join(m.ItemInstrumento).where(
+                    m.ItemInstrumento.codigo.like('RIASEC-%')))}
             datos['fecha_hora'] = '2026-10-08T10:00:00'
             for respuesta in datos['respuestas']:
                 respuesta['opcion'] = 5
             _, existentes = medir(cliente, aplicacion, 'POST', '/acciones/responder-items', datos)
             with aplicacion.state.fabrica_sesiones() as sesion:
-                despues = {r.item_id: (r.id, r.creada_en, r.actualizada_en) for r in sesion.scalars(select(m.RespuestaItem))}
+                despues = {r.item_id: (r.id, r.creada_en, r.actualizada_en) for r in sesion.scalars(select(m.RespuestaItem).join(m.ItemInstrumento).where(
+                    m.ItemInstrumento.codigo.like('RIASEC-%')))}
             assert len(antes) == len(despues) == cantidad
             assert all(despues[i][:2] == valor[:2] and despues[i][2] > valor[2] for i, valor in antes.items())
             assert all(r['opcion']['orden'] == 5 for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-mision-intereses/respuestas')['respuestas'])

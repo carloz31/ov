@@ -1,5 +1,5 @@
 """Lo fijo de la plataforma, sea cual sea la ruta: secciones, listas comunes, repreguntas por tipo
-de criterio, RIASEC y el catálogo O*NET.
+de criterio, temáticas, RIASEC, el catálogo O*NET y el cuestionario de partida y llegada.
 
 Se carga en todo conjunto. La transacción pertenece al llamador; este módulo no confirma ni migra.
 """
@@ -40,6 +40,40 @@ REPREGUNTAS_CRITERIO = {
     'ACCION': '¿Qué podrías hacer al respecto?',
     'CONTRASTE': '¿En qué se diferencia de lo que pensabas antes?',
 }
+
+# (código, nombre, descripción). Las cinco dimensiones del cuestionario de partida y llegada (B07).
+TEMATICAS = (
+    ('A', 'Claridad', 'Qué tan claro tienes lo que quieres hacer después del colegio.'),
+    ('B', 'Conocimiento de mí', 'Qué tanto reconoces tus intereses, habilidades y valores.'),
+    ('C', 'Conocimiento de las opciones', 'Qué tanto conoces las carreras, los caminos y lo que piden.'),
+    ('D', 'Decisión propia', 'Qué tanto sientes que la decisión es tuya y no de otros.'),
+    ('E', 'Confianza', 'Qué tan seguro te sientes de poder tomar y sostener tu decisión.'),
+)
+
+# Cuestionario de punto de partida (ENTRADA) y de llegada (SALIDA): las mismas afirmaciones en cinco
+# dimensiones, una por temática. Provisional hasta la carga real (B07): (temática, enunciado, inverso).
+OPCIONES_ACUERDO = ('Nada de acuerdo', 'Poco de acuerdo', 'Bastante de acuerdo', 'Muy de acuerdo')
+ENUNCIADOS_PARTIDA_LLEGADA = (
+    ('A', 'Sé qué quiero hacer cuando termine el colegio.', False),
+    ('A', 'Puedo explicar con mis palabras qué camino me atrae.', False),
+    ('A', 'Tengo una o dos opciones que me interesan más que las demás.', False),
+    ('A', 'Me siento perdido cuando pienso en lo que viene después del colegio.', True),
+    ('B', 'Conozco las actividades que más disfruto.', False),
+    ('B', 'Sé en qué soy bueno.', False),
+    ('B', 'Sé qué es importante para mí en un trabajo.', False),
+    ('B', 'Reconozco qué cosas no me gustaría hacer.', False),
+    ('C', 'Conozco varias carreras o caminos que podría seguir.', False),
+    ('C', 'Sé qué se estudia en las carreras que me interesan.', False),
+    ('C', 'Sé dónde puedo estudiar lo que me interesa.', False),
+    ('C', 'Conozco cuánto cuesta y cuánto dura lo que me interesa estudiar.', False),
+    ('D', 'La decisión sobre mi futuro la tomo yo.', False),
+    ('D', 'Puedo conversar con mi familia sobre lo que quiero.', False),
+    ('D', 'Elijo pensando en lo que quiero y no solo en lo que otros esperan.', False),
+    ('D', 'Busco información por mi cuenta antes de decidir.', False),
+    ('E', 'Me siento capaz de tomar una buena decisión.', False),
+    ('E', 'Si algo no sale como espero, sé que puedo buscar otro camino.', False),
+    ('E', 'Confío en que podré lograr lo que me proponga.', False),
+)
 
 # Los 60 enunciados de §4.3.7, sin texto narrativo del front.
 ENUNCIADOS_RIASEC = {'R': ('Reparar una bicicleta o un electrodoméstico.',
@@ -175,6 +209,7 @@ class Fijos:
     items: dict[str, dict[int, modelos.ItemInstrumento]]
     secciones: dict[str, modelos.Seccion]
     listas: dict[str, modelos.ListaOpciones]
+    tematicas: dict[str, modelos.Tematica]
 
 
 def _leer_catalogo_seleccionado():
@@ -211,6 +246,41 @@ def _cargar_riasec(sesion):
     sesion.add_all(items.values())
     sesion.flush()
     return dimensiones, aplicacion, items
+
+
+def _cargar_tematicas(sesion):
+    tematicas = {c: modelos.Tematica(codigo=c, nombre=n, descripcion=d, orden=orden)
+                 for orden, (c, n, d) in enumerate(TEMATICAS, start=1)}
+    sesion.add_all(tematicas.values())
+    sesion.flush()
+    return tematicas
+
+
+def _cargar_partida_llegada(sesion, tematicas):
+    instrumento = modelos.Instrumento(codigo='TEST-PARTIDA-LLEGADA', nombre='Punto de partida y de llegada',
+        descripcion='Las mismas afirmaciones al inicio y al cierre, para ver cuánto cambiaste.',
+        tipo_resultado=modelos.TipoResultado.COMPARACION)
+    escala = modelos.EscalaRespuesta(codigo='ESC-ACUERDO4', nombre='Acuerdo en cuatro opciones')
+    sesion.add_all([instrumento, escala])
+    sesion.flush()
+    sesion.add_all(modelos.OpcionEscala(escala_id=escala.id, orden=n, etiqueta=etiqueta, puntaje=n)
+                   for n, etiqueta in enumerate(OPCIONES_ACUERDO, start=1))
+    dimensiones = {c: modelos.Dimension(codigo=f'AUTO-{c}', nombre=t.nombre, descripcion=t.descripcion,
+                                        instrumento_id=instrumento.id, orden=t.orden, tematica_id=t.id)
+                   for c, t in tematicas.items()}
+    aplicaciones = [modelos.Aplicacion(codigo='APL-PARTIDA', nombre='Punto de partida', instrumento_id=instrumento.id,
+                                       momento=modelos.MomentoAplicacion.ENTRADA),
+                    modelos.Aplicacion(codigo='APL-LLEGADA', nombre='Punto de llegada', instrumento_id=instrumento.id,
+                                       momento=modelos.MomentoAplicacion.SALIDA)]
+    sesion.add_all([*dimensiones.values(), *aplicaciones])
+    sesion.flush()
+    items = {numero: modelos.ItemInstrumento(codigo=f'AUTO-{numero:02}', numero=numero, enunciado=enunciado,
+                                             instrumento_id=instrumento.id, dimension_id=dimensiones[tematica].id,
+                                             escala_id=escala.id, inverso=inverso)
+             for numero, (tematica, enunciado, inverso) in enumerate(ENUNCIADOS_PARTIDA_LLEGADA, start=1)}
+    sesion.add_all(items.values())
+    sesion.flush()
+    return aplicaciones, items
 
 
 def _cargar_catalogo(sesion, archivo, dimensiones):
@@ -259,8 +329,11 @@ def cargar(sesion: Session) -> Fijos:
     secciones = _cargar_secciones(sesion)
     listas = cargar_listas(sesion, LISTAS_COMUNES, comun=True)
     archivo = _leer_catalogo_seleccionado()
+    tematicas = _cargar_tematicas(sesion)
     dimensiones, aplicacion, items = _cargar_riasec(sesion)
     _cargar_catalogo(sesion, archivo, dimensiones)
+    comparacion, items_comparacion = _cargar_partida_llegada(sesion, tematicas)
     sesion.flush()
-    return Fijos(aplicaciones={aplicacion.codigo: aplicacion}, items={'TEST-RIASEC': items}, secciones=secciones,
-                 listas=listas)
+    return Fijos(aplicaciones={a.codigo: a for a in (aplicacion, *comparacion)},
+                 items={'TEST-RIASEC': items, 'TEST-PARTIDA-LLEGADA': items_comparacion}, secciones=secciones,
+                 listas=listas, tematicas=tematicas)

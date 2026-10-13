@@ -31,18 +31,21 @@ VINCULOS = (('VIN-ANA', 'est-ana', 'apo-rosa', 'madre'),)
 # (código, número, nombre, espacio, audiencia)
 BLOQUES = (('T0', 1, 'Inicio', 'MISIONES_CAMPO', 'ESTUDIANTE'),
            ('T1', 2, 'Camino', 'MISIONES_CAMPO', 'ESTUDIANTE'),
-           ('CIUDAD', 3, 'La ciudad', 'CIUDAD', 'ESTUDIANTE'),
+           ('T2', 3, 'Decisión', 'MISIONES_CAMPO', 'ESTUDIANTE'),
+           ('CIUDAD', 4, 'La ciudad', 'CIUDAD', 'ESTUDIANTE'),
            ('FAMILIA', 1, 'Actividades para familias', 'PORTAL_FAMILIA', 'APODERADO'))
 
 # (código, bloque, título, tipo, puntaje mínimo, duración estimada en minutos). El orden es el de la
 # tupla dentro de cada bloque y el contenido es el código con guiones bajos.
 ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
+               ('t-partida', 'T0', 'Punto de partida', 'CUESTIONARIO', None, 10),
                ('t-cierre-inicio', 'T0', 'Cierre del inicio', 'INFORMATIVA', None, 5),
                ('t-expectativas', 'T1', 'Registro de expectativas', 'REGISTRO', None, 15),
                ('t-opcional', 'T1', 'Actividad opcional', 'INFORMATIVA', None, 5),
                ('t-valores', 'T1', 'Registro de valores', 'REGISTRO', None, 10),
                ('t-adicional', 'T1', 'Misión adicional', 'INFORMATIVA', None, 5),
                ('t-eco', 'T1', 'Registro que retoma respuestas', 'REGISTRO', None, 10),
+               ('t-llegada', 'T2', 'Punto de llegada', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 60, 10),
@@ -61,10 +64,17 @@ PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR
 # (actividad, instrumento, primer ítem, último ítem). El RIASEC va en dos misiones para probar que el
 # resultado espera a todas las de su aplicación.
 ITEMS_ACTIVIDADES = (('t-mision-intereses', 'TEST-RIASEC', 1, 30),
-                     ('t-mision-intereses-2', 'TEST-RIASEC', 31, 60))
+                     ('t-mision-intereses-2', 'TEST-RIASEC', 31, 60),
+                     ('t-partida', 'TEST-PARTIDA-LLEGADA', 1, 19),
+                     ('t-llegada', 'TEST-PARTIDA-LLEGADA', 1, 19))
 
 # (aplicación, actividad)
-APLICACIONES_ACTIVIDADES = (('APL-RIASEC', 't-mision-intereses'), ('APL-RIASEC', 't-mision-intereses-2'))
+APLICACIONES_ACTIVIDADES = (('APL-RIASEC', 't-mision-intereses'), ('APL-RIASEC', 't-mision-intereses-2'),
+                            ('APL-PARTIDA', 't-partida'), ('APL-LLEGADA', 't-llegada'))
+
+# (actividad, temáticas). Solo las necesarias para contar actividades completadas por dimensión (B07).
+TEMATICAS_ACTIVIDADES = (('t-expectativas', ('A', 'B')), ('t-valores', ('B',)), ('t-eco', ('A',)),
+                         ('t-mision-intereses', ('B',)), ('t-caso', ('C',)))
 
 # Listas propias de una actividad: (código, nombre, ((código, texto), ...)).
 LISTAS = (('t-lista-apoyos', 'Quién te apoya', (('FAMILIA', 'Mi familia'), ('DOCENTES', 'Mis docentes'),
@@ -133,6 +143,8 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-T1', 'BLOQUE', 'T1', 'Termina el bloque de inicio para abrir el camino.',
      (('COMPLETA_BLOQUE', 'T0', 'EVENTOS', 1),)),
+    ('R-T2', 'BLOQUE', 'T2', 'Termina el camino y revela tu punto de partida para abrir la decisión.',
+     (('COMPLETA_BLOQUE', 'T1', 'EVENTOS', 1), ('REVELA_RESULTADO', 'APL-PARTIDA', 'EVENTOS', 1))),
     ('R-t-adicional', 'ACTIVIDAD', 't-adicional', 'Desarrolla todas tus respuestas del registro de expectativas.',
      (('REGISTRO_ADECUADO', 't-expectativas', 'EVENTOS', 1),)),
     ('R-t-eco', 'ACTIVIDAD', 't-eco', 'Completa el registro de expectativas para retomarlo.',
@@ -223,6 +235,14 @@ def _unir_instrumentos(sesion, actividades, base: fijos.Fijos):
                                          orden=orden)
                    for c, i, inicio, fin in ITEMS_ACTIVIDADES
                    for orden, numero in enumerate(range(inicio, fin + 1), start=1))
+
+
+def _unir_tematicas(sesion, actividades, base: fijos.Fijos):
+    for actividad, tematicas in TEMATICAS_ACTIVIDADES:
+        if actividad not in actividades or any(t not in base.tematicas for t in tematicas):
+            raise ValueError(f'Las temáticas de {actividad} apuntan a una actividad o temática inexistente')
+    sesion.add_all(modelos.ActividadTematica(actividad_id=actividades[a].id, tematica_id=base.tematicas[t].id)
+                   for a, tematicas in TEMATICAS_ACTIVIDADES for t in tematicas)
 
 
 def _validar_eleccion(codigo, eleccion, listas):
@@ -367,6 +387,7 @@ def cargar(sesion: Session) -> None:
     base = fijos.cargar(sesion)
     objetivos = {**_cargar_estructura(sesion), 'SECCION': base.secciones, 'APLICACION': base.aplicaciones}
     _unir_instrumentos(sesion, objetivos['ACTIVIDAD'], base)
+    _unir_tematicas(sesion, objetivos['ACTIVIDAD'], base)
     _cargar_registros(sesion, objetivos['ACTIVIDAD'], base)
     _cargar_reglas(sesion, objetivos)
     sesion.flush()

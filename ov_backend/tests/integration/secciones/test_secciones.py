@@ -3,7 +3,7 @@
 import pytest
 from app import models as modelos
 from soporte_retiro import buscar, condicion, medir, regla
-from soporte_ruta import FECHA, avanzar, completar, eventos, filas_base, pedir
+from soporte_ruta import FECHA, RECORRIDO, avanzar, completar, eventos, filas_base, pedir
 
 
 SECCIONES_ESTUDIANTE = ('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'PLANES')
@@ -16,7 +16,7 @@ def secciones(cliente, cuenta='est-ana'):
 def test_secciones_que_se_abren_en_cada_paso(cliente):
     assert secciones(cliente) == dict.fromkeys(SECCIONES_ESTUDIANTE, 'BLOQUEADA')
     abiertas = []
-    for actividad, nuevas in (('t-inicio', ('CATALOGO', 'DIARIO', 'PLANES')), ('t-cierre-inicio', ('CHECK_IN',)),
+    for actividad, nuevas in (('t-inicio', ('CATALOGO', 'DIARIO', 'PLANES')), ('t-partida', ()), ('t-cierre-inicio', ('CHECK_IN',)),
                               ('t-expectativas', ('FAMILIA',))):
         completar(cliente, actividad)
         abiertas += nuevas
@@ -71,7 +71,7 @@ def test_escribir_sin_la_seccion_abierta_responde_409_sin_efectos(cliente, aplic
     accion, cuerpo, abre = ACCIONES[seccion]
     datos = {'cuenta': 'est-ana', 'fecha_hora': FECHA, **cuerpo}
     # Se avanza hasta la actividad anterior a la que abre la sección.
-    anteriores = ('t-inicio', 't-cierre-inicio', 't-expectativas')
+    anteriores = RECORRIDO
     for actividad in anteriores[:anteriores.index(abre)]:
         completar(cliente, actividad)
     antes = filas_base(aplicacion)

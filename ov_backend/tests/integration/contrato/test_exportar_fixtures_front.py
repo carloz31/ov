@@ -131,8 +131,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         ('t-ref-coincidencias', 'COINCIDENCIAS', 'DISPONIBLE'), ('t-ref-resultado', 'RESULTADO', 'DISPONIBLE')]
     assert all(r.opciones for r in contraste.referencias)
     inicial = estados(datos['actividades-inicial'])
-    assert inicial['t-inicio'] == 'DISPONIBLE'
-    assert all(e == 'BLOQUEADA' for c, e in inicial.items() if c != 't-inicio')
+    assert inicial['t-inicio'] == inicial['t-partida'] == 'DISPONIBLE'
+    assert all(e == 'BLOQUEADA' for c, e in inicial.items() if c not in ('t-inicio', 't-partida'))
     assert datos['resumen-inicial']['nivel_actual']['numero'] == 1
     assert any(i['codigo'] == '???' for i in datos['logros-inicial']['insignias'])
     assert {d['regla'] for d in datos['completar-t-inicio']['nuevos_desbloqueos']} == {

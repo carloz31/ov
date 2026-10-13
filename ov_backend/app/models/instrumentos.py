@@ -29,6 +29,7 @@ class Dimension(Base):
     nombre: Mapped[str]
     descripcion: Mapped[str] = mapped_column(Text)
     orden: Mapped[int]
+    tematica_id: Mapped[int | None] = mapped_column(ForeignKey("tematica.id"))
 
 
 class EscalaRespuesta(Base):

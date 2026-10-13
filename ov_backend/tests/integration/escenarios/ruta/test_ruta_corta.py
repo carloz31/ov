@@ -40,7 +40,7 @@ def test_hu004_013_015_informativa_con_ficha_y_retroalimentacion(cliente):
         ('SECCION', 'DIARIO'), ('SECCION', 'CATALOGO'), ('SECCION', 'PLANES')}
     assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [
         ('t-ficha', 'DISPONIBLE')]
-    assert siguiente(cliente) == 't-cierre-inicio'
+    assert siguiente(cliente) == 't-partida'
 
 
 def test_saltarse_la_ruta_responde_409_sin_escribir(cliente, aplicacion):
@@ -225,7 +225,7 @@ def test_resultado_con_coincidencias_y_carreras(cliente):
 
 
 def test_perfil_plano(cliente):
-    for codigo in ('t-inicio', 't-cierre-inicio', 't-expectativas'):
+    for codigo in ('t-inicio', 't-partida', 't-cierre-inicio', 't-expectativas'):
         completar(cliente, codigo, cuenta='est-luis')
     for mision in MISIONES_INTERESES:
         responder(cliente, mision, cuenta='est-luis', opcion=3)
@@ -245,6 +245,7 @@ def test_hu073_avisos_de_desbloqueo(cliente):
     assert all(d['visto'] is False for d in no_vistos)
     assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 6
     assert pedir(cliente, 'GET', ruta) == []
+    completar(cliente, 't-partida')
     completar(cliente, 't-cierre-inicio')
     assert {d['regla'] for d in pedir(cliente, 'GET', ruta)} == {'R-T1', 'R-NIV-2', 'R-SEC-CHECK_IN'}
 
@@ -258,6 +259,7 @@ def test_hu074_logros_obtenidos_y_condiciones(cliente):
     assert (condicion['referencia'], condicion['actual'], condicion['requerido']) == ('t-inicio', 0, 1)
     assert cliente.get('/cuentas/est-ana/progreso/INSIGNIA/t-ins-oculta').status_code == 403
     completar(cliente, 't-inicio')
+    completar(cliente, 't-partida')
     completar(cliente, 't-cierre-inicio')
     logros = pedir(cliente, 'GET', '/cuentas/est-ana/logros')
     assert logros['insignias'][0]['estado'] == 'OBTENIDA'

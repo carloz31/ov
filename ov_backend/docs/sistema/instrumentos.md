@@ -1,13 +1,14 @@
 # Instrumentos, resultados y recomendación
 
-Cuestionarios repartidos en actividades, cálculo de resultados y recomendación de ocupaciones y carreras. Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar). Parámetros: `app/core/parametros.py`. Datos: `datos/fijos.py` (RIASEC, ocupaciones y carreras), `datos/ocupaciones.py` y, para unir ítems y actividades, `datos/ruta.py`.
+Cuestionarios repartidos en actividades, cálculo de resultados y recomendación de ocupaciones y carreras. Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar). Parámetros: `app/core/parametros.py`. Datos: `datos/fijos.py` (temáticas, RIASEC, ocupaciones, carreras y el cuestionario de partida y llegada), `datos/ocupaciones.py` y, para unir ítems y actividades, `datos/ruta.py`.
 
 ## Modelo
 
 | Tabla | Qué guarda |
 |---|---|
 | `instrumento` | `tipo_resultado`: COINCIDENCIAS (RIASEC), DESTACADAS (inteligencias, habilidades sociales) o COMPARACION (autopercepción). |
-| `dimension` | Dimensiones con `orden` y `descripcion` (la que ve el estudiante). Un instrumento de COMPARACION no tiene dimensiones. |
+| `dimension` | Dimensiones con `orden`, `descripcion` (la que ve el estudiante) y, en el cuestionario de partida y llegada, su `tematica_id`. |
+| `tematica`, `actividad_tematica` | Las cinco temáticas (A–E) del cuestionario de partida y llegada, y las actividades asociadas a cada una. |
 | `escala_respuesta`, `opcion_escala` | Opciones con `orden`, `etiqueta` y `puntaje`. |
 | `item_instrumento` | `numero`, `enunciado`, dimensión, escala e `inverso`. |
 | `actividad_item` | Qué ítems presenta cada actividad y en qué orden. |

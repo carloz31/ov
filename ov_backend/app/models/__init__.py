@@ -18,7 +18,7 @@ _MODELOS_POR_MODULO = {
         'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar',
     ),
     'app.models.contenido': (
-        'Bloque', 'Actividad', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
+        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
         'Insignia',
         'Nivel', 'FamiliaCarrera', 'Carrera',
     ),
@@ -61,7 +61,7 @@ __all__ = [
     'TipoEventoUso', 'NivelAjuste', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
     'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'Bloque',
-    'Actividad', 'Seccion', 'Ficha', 'Testimonio',
+    'Actividad', 'Tematica', 'ActividadTematica', 'Seccion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
     'ProgresoActividad', 'ResultadoCaso', 'EntradaDiario', 'CheckIn', 'Entrevista',
     'EntrevistaAutor', 'ConversacionVinculo', 'EventoUso', 'ReglaDesbloqueo',

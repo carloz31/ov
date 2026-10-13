@@ -41,7 +41,7 @@ def test_listado_trae_requerida_duracion_y_descripcion(cliente):
 
 
 def test_opcional_no_impide_cerrar_el_bloque_y_la_ciudad_se_abre_a_mitad_de_t1(cliente):
-    for codigo in ('t-inicio', 't-cierre-inicio'):
+    for codigo in ('t-inicio', 't-partida', 't-cierre-inicio'):
         completar(cliente, codigo)
     respuesta = completar(cliente, 't-expectativas')
     assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [

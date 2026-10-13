@@ -11,10 +11,10 @@ from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 
 # Estados de cada actividad del estudiante, al inicio y con la Ciudad abierta.
 ESTADOS = {
-    False: {'t-inicio': 'DISPONIBLE', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
+    False: {'t-inicio': 'DISPONIBLE', 't-partida': 'DISPONIBLE', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
             't-opcional': 'BLOQUEADA', 't-valores': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
             't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'BLOQUEADA', 't-eco': 'BLOQUEADA'},
-    True: {'t-inicio': 'COMPLETADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
+    True: {'t-inicio': 'COMPLETADA', 't-partida': 'COMPLETADA', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
            't-opcional': 'DISPONIBLE', 't-valores': 'DISPONIBLE', 't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA',
            't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'DISPONIBLE', 't-eco': 'DISPONIBLE'},
 }
@@ -51,7 +51,7 @@ def esperado(ruta, completo):
     if ruta == 'actividades':
         return [{
             'codigo': bloque, 'nombre': nombre, 'numero': numero, 'espacio': espacio,
-            'estado': 'DISPONIBLE' if bloque == 'T0' or completo else 'BLOQUEADA',
+            'estado': 'DISPONIBLE' if bloque == 'T0' or completo and bloque != 'T2' else 'BLOQUEADA',
             'actividades': [
                 {'codigo': actividad, 'titulo': titulo, 'tipo': tipo, 'orden': orden,
                  'contenido': contenido(actividad),
@@ -132,7 +132,7 @@ def test_visibilidad_no_oculta_filas_ni_titulos(sesion, cliente, visibilidad, es
         sesion.add(ProgresoActividad(cuenta_id=ana.id, actividad_id=actividad.id, estado=EstadoProgreso(estado)))
     sesion.commit()
     actividades = consultar(cliente, 'actividades')[0]['actividades']
-    assert len(actividades) == 2
+    assert len(actividades) == 3
     recibida = next(fila for fila in actividades if fila['codigo'] == codigo)
     assert recibida['titulo'] == actividad.titulo
     assert recibida['estado'] == estado
@@ -144,9 +144,9 @@ def test_actividad_al_desbloquear_cambia_de_visible_con_la_accion(sesion, client
     actividad = sesion.scalar(select(Actividad).where(Actividad.codigo == 't-cierre-inicio'))
     actividad.visibilidad = Visibilidad.AL_DESBLOQUEAR  # DATO DE PRUEBA.
     sesion.commit()
-    assert consultar(cliente, 'actividades')[0]['actividades'][1]['visible'] is False
+    assert consultar(cliente, 'actividades')[0]['actividades'][2]['visible'] is False
     completar(cliente, 't-inicio')
-    recibida = consultar(cliente, 'actividades')[0]['actividades'][1]
+    recibida = consultar(cliente, 'actividades')[0]['actividades'][2]
     assert recibida['estado'] == 'DISPONIBLE' and recibida['visible'] is True
 
 
@@ -163,7 +163,7 @@ def test_bloqueo_prevalece_sobre_progreso(sesion, cliente, codigo):
 def test_cuestionario_en_curso_y_lecturas_aisladas_por_cuenta(cliente):
     avanzar(cliente)
     responder(cliente, 't-mision-intereses', fin=3)
-    assert consultar(cliente, 'actividades')[2]['actividades'][0]['estado'] == 'EN_CURSO'
+    assert consultar(cliente, 'actividades')[3]['actividades'][0]['estado'] == 'EN_CURSO'
     for ruta in RUTAS:
         luis = consultar(cliente, ruta, 'est-luis')
         if ruta == 'resumen':
@@ -179,14 +179,14 @@ def test_orden_por_numero_y_codigo_y_por_orden_y_codigo(sesion, cliente):
     ciudad = sesion.scalar(select(Bloque).where(Bloque.codigo == 'CIUDAD'))
     ciudad.numero = 0
     inicio = sesion.scalar(select(Actividad).where(Actividad.codigo == 't-inicio'))
-    inicio.orden = 2
+    inicio.orden = 3
     sesion.commit()
     bloques = consultar(cliente, 'actividades')
-    assert [b['codigo'] for b in bloques] == ['CIUDAD', 'T0', 'T1']
-    assert [a['codigo'] for a in bloques[1]['actividades']] == ['t-cierre-inicio', 't-inicio']
+    assert [b['codigo'] for b in bloques] == ['CIUDAD', 'T0', 'T1', 'T2']
+    assert [a['codigo'] for a in bloques[1]['actividades']] == ['t-partida', 't-cierre-inicio', 't-inicio']
     ciudad.numero = 2
     sesion.commit()
-    assert [b['codigo'] for b in consultar(cliente, 'actividades')] == ['T0', 'CIUDAD', 'T1']
+    assert [b['codigo'] for b in consultar(cliente, 'actividades')] == ['T0', 'CIUDAD', 'T1', 'T2']
 
 
 def test_insignia_oculta_solo_se_revela_al_obtenerse(cliente):
