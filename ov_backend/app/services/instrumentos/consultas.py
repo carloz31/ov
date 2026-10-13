@@ -1,5 +1,7 @@
 """Consultas de instrumentos: derivan vistas sin modificar respuestas ni resultados."""
 
+from collections import Counter
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -11,18 +13,29 @@ from app.models import (
     Actividad, ActividadItem, Aplicacion, AplicacionActividad, Audiencia, Bloque, Carrera,
     CarreraOcupacion, Coincidencia, Cuenta, Dimension, EscalaRespuesta, EstadoProgreso,
     FamiliaCarrera, Instrumento, ItemInstrumento, MomentoAplicacion, Ocupacion, OpcionEscala,
-    ProgresoActividad, RespuestaItem, ResultadoDimension, ResultadoInstrumento, Rol, TipoResultado,
+    ProgresoActividad, RespuestaItem, ResultadoDimension, ResultadoInstrumento, Rol, Tematica, ActividadTematica,
+    TipoResultado,
 )
 from app.schemas.instrumentos import (
     ActividadPublica, AplicacionPublica, AvanceAplicacion, AvanceInstrumento, CarreraRecomendada,
-    CodigoInteresPublico, CoincidenciaPublica, ComparacionAutopercepcion, ComparacionItem,
+    CodigoInteresPublico, CoincidenciaPublica, ComparacionAutopercepcion, ComparacionDimension, ComparacionItem,
     ConteoAvance, ConteoItems, DimensionPublica, DimensionResultado, EscalaPublica,
     InstrumentoPublico, ItemPublico, OpcionPublica, RespuestaPublica, RespuestasActividad,
     ResultadoHistorico, ResultadoPublico,
 )
 from app.services.instrumentos.calculo import (
-    DimensionCalculada, calcular_codigo_interes, calcular_dimensiones_destacadas,
+    DimensionCalculada, calcular_codigo_interes, calcular_dimensiones_destacadas, calcular_zona,
 )
+
+
+def items_por_dimension(definiciones, instrumento: Instrumento) -> Counter:
+    return Counter(item.dimension_id for item in definiciones.listar(ItemInstrumento)
+                   if item.instrumento_id == instrumento.id)
+
+
+def codigo_tematica(definiciones, dimension) -> str | None:
+    tematica = definiciones.obtener(Tematica, dimension.tematica_id) if dimension.tematica_id is not None else None
+    return None if tematica is None else tematica.codigo
 
 
 @usar_contexto
@@ -218,9 +231,17 @@ def representar_resultado(sesion: Session, resultado: ResultadoInstrumento, hist
     instrumento = definiciones.obtener(Instrumento, aplicacion.instrumento_id)
     cargar_representaciones(sesion, [resultado])
     filas, afines, relaciones_carreras = contexto(sesion).representaciones[resultado.id]
+    if instrumento.tipo_resultado == TipoResultado.COMPARACION:
+        # B07: el estudiante recibe la zona en palabras, nunca los números.
+        cantidades = items_por_dimension(definiciones, instrumento)
+        dimensiones = [DimensionResultado(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion, puntaje=None,
+            puntaje_maximo=None, porcentaje=None, zona=calcular_zona(r.puntaje, cantidades[d.id]),
+            tematica=codigo_tematica(definiciones, d)) for d, r in filas]
+    else:
+        dimensiones = [DimensionResultado(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
+            puntaje=r.puntaje, puntaje_maximo=r.puntaje_maximo, porcentaje=r.porcentaje) for d, r in filas]
     datos = dict(instrumento=instrumento.codigo, aplicacion=aplicacion.codigo, calculado_en=resultado.calculado_en,
-        perfil_plano=resultado.perfil_plano, dimensiones=[DimensionResultado(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
-            puntaje=r.puntaje, puntaje_maximo=r.puntaje_maximo, porcentaje=r.porcentaje) for d, r in filas])
+        perfil_plano=resultado.perfil_plano, dimensiones=dimensiones)
     if instrumento.tipo_resultado == TipoResultado.DESTACADAS:
         destacadas = calcular_dimensiones_destacadas([
             DimensionCalculada(d.codigo, r.puntaje, r.puntaje_maximo, r.porcentaje) for d, r in filas
@@ -267,6 +288,7 @@ def historial_resultados(sesion: Session, cuenta: Cuenta, instrumento: Instrumen
 
 @usar_contexto
 def comparacion_autopercepcion(sesion: Session, cuenta: Cuenta, instrumento: Instrumento) -> ComparacionAutopercepcion:
+    """HU-094: partida y llegada dimensión por dimensión, en palabras; exige las dos reveladas."""
     if instrumento.tipo_resultado != TipoResultado.COMPARACION:
         raise LookupError("Este instrumento no admite comparación")
     aplicaciones = aplicaciones_de_instrumento(sesion, instrumento)
@@ -276,22 +298,40 @@ def comparacion_autopercepcion(sesion: Session, cuenta: Cuenta, instrumento: Ins
         raise ValueError("La comparación requiere una aplicación de entrada y una de salida")
     entrada, salida = entradas[0], salidas[0]
     avances = [avance_aplicacion(sesion, cuenta, a) for a in (entrada, salida)]
-    if any(avance.estado != "COMPLETADO" for avance in avances):
-        raise ConsultaPendiente("Falta completar ambas aplicaciones de autopercepción", avances)
-    aplicaciones = (entrada, salida)
-    actividades = [{actividad.id for actividad in actividades_de_aplicacion(sesion, aplicacion)} for aplicacion in aplicaciones]
-    respuestas_por_actividad = sesion.execute(select(ProgresoActividad.actividad_id, ItemInstrumento.codigo, OpcionEscala).select_from(
+    if not all(avance.hay_resultado_vigente for avance in avances):
+        raise ConsultaPendiente("Revela tu punto de partida y tu punto de llegada para compararlos", avances)
+    definiciones = contexto(sesion).definiciones
+    puntajes = {(aplicacion_id, dimension_id): puntaje for aplicacion_id, dimension_id, puntaje in sesion.execute(
+        select(ResultadoInstrumento.aplicacion_id, ResultadoDimension.dimension_id, ResultadoDimension.puntaje).join(
+            ResultadoDimension, ResultadoDimension.resultado_id == ResultadoInstrumento.id,
+        ).where(ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.anulado_en.is_(None),
+                ResultadoInstrumento.aplicacion_id.in_((entrada.id, salida.id))))}
+    actividades = [{actividad.id for actividad in actividades_de_aplicacion(sesion, aplicacion)} for aplicacion in (entrada, salida)]
+    respuestas_por_actividad = sesion.execute(select(ProgresoActividad.actividad_id, ItemInstrumento.codigo, OpcionEscala.etiqueta).select_from(
         RespuestaItem,
     ).join(ProgresoActividad).join(ItemInstrumento, ItemInstrumento.id == RespuestaItem.item_id).join(
         ActividadItem, (ActividadItem.item_id == ItemInstrumento.id) & (ActividadItem.actividad_id == ProgresoActividad.actividad_id),
     ).join(OpcionEscala, OpcionEscala.id == RespuestaItem.opcion_id).where(
         ProgresoActividad.cuenta_id == cuenta.id, ProgresoActividad.actividad_id.in_(set.union(*actividades)),
     )).all()
-    respuestas = [{codigo: opcion_publica(opcion) for actividad_id, codigo, opcion in respuestas_por_actividad if actividad_id in ids}
-                  for ids in actividades]
-    items = sorted((item for item in contexto(sesion).definiciones.listar(ItemInstrumento)
-                    if item.instrumento_id == instrumento.id), key=lambda item: item.numero)
-    return ComparacionAutopercepcion(instrumento=instrumento.codigo, entrada=entrada.codigo, salida=salida.codigo,
-        items=[ComparacionItem(item=i.codigo, enunciado=i.enunciado, entrada=respuestas[0][i.codigo],
-            salida=respuestas[1][i.codigo],
-            diferencia=respuestas[1][i.codigo].puntaje - respuestas[0][i.codigo].puntaje) for i in items])
+    partida, llegada = ({codigo: etiqueta for actividad_id, codigo, etiqueta in respuestas_por_actividad if actividad_id in ids}
+                        for ids in actividades)
+    completadas = {identificador for identificador, progreso in contexto(sesion).progresos_de(cuenta.id).items()
+                   if progreso.estado == EstadoProgreso.COMPLETADA}
+    por_tematica = Counter(fila.tematica_id for fila in definiciones.listar(ActividadTematica)
+                           if fila.actividad_id in completadas)
+    cantidades = items_por_dimension(definiciones, instrumento)
+    items = sorted((item for item in definiciones.listar(ItemInstrumento) if item.instrumento_id == instrumento.id),
+                   key=lambda item: item.numero)
+    dimensiones = sorted((d for d in definiciones.listar(Dimension) if d.instrumento_id == instrumento.id),
+                         key=lambda d: (d.orden, d.codigo))
+    return ComparacionAutopercepcion(instrumento=instrumento.codigo, partida=entrada.codigo, llegada=salida.codigo,
+        dimensiones=[ComparacionDimension(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
+            tematica=codigo_tematica(definiciones, d),
+            zona_partida=calcular_zona(puntajes[entrada.id, d.id], cantidades[d.id]),
+            zona_llegada=calcular_zona(puntajes[salida.id, d.id], cantidades[d.id]),
+            actividades_completadas=por_tematica[d.tematica_id] if d.tematica_id is not None else 0,
+            items=[ComparacionItem(item=i.codigo, enunciado=i.enunciado, partida=partida[i.codigo],
+                                   llegada=llegada[i.codigo], cambio=partida[i.codigo] != llegada[i.codigo])
+                   for i in items if i.dimension_id == d.id])
+            for d in dimensiones])

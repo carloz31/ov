@@ -89,7 +89,7 @@ def responder_items(sesion: Session, entrada: ResponderItemsEntrada) -> Respuest
         if progreso is not None and progreso.estado == EstadoProgreso.COMPLETADA and (
             item.instrumento_id in instrumentos_comparacion
         ):
-            raise ErrorAccion("Las respuestas están fijas: la actividad sin dimensiones está completada")
+            raise ErrorAccion("Las respuestas están fijas: el cuestionario de partida o llegada está completado")
         opcion = opciones.get((item.escala_id, respuesta.opcion))
         if opcion is None:
             raise ErrorAccion(f"La opción {respuesta.opcion} no pertenece a la escala de {item.codigo}", estado_http=422)
@@ -185,8 +185,7 @@ def revelar_resultado(sesion: Session, entrada: RevelarResultadoEntrada) -> Resp
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
     instrumento, aplicacion = instrumento_y_aplicacion(sesion, cuenta, entrada.instrumento, entrada.aplicacion)
     definiciones = contexto(sesion).definiciones
-    if (instrumento.tipo_resultado == TipoResultado.COMPARACION
-            or not any(d.instrumento_id == instrumento.id for d in definiciones.listar(Dimension))):
+    if not any(d.instrumento_id == instrumento.id for d in definiciones.listar(Dimension)):
         raise ErrorAccion("Este instrumento no genera un resultado que revelar")
     progresos = contexto(sesion).progresos_de(cuenta.id)
     faltantes = [actividad.codigo for actividad in actividades_de_aplicacion(sesion, aplicacion)

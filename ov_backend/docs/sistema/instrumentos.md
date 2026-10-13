@@ -37,7 +37,7 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 `completar-actividad` exige todos los ítems de la actividad respondidos (si no, 409 con `items_faltantes`) y **no calcula**. El resultado se calcula al revelarlo (HU-027): hasta entonces nadie lo ve.
 
 - Cuerpo: `cuenta`, `instrumento`, `aplicacion` (obligatoria si hay más de una: si falta, 422) y `fecha_hora` opcional.
-- 404 si la cuenta no es de estudiante o no existe el instrumento o la aplicación. 409 si el instrumento no genera resultado (COMPARACION o sin dimensiones), si falta completar alguna actividad de la aplicación (con `items_faltantes` = esas actividades) o si ya hay resultado vigente («Resultado ya revelado»).
+- 404 si la cuenta no es de estudiante o no existe el instrumento o la aplicación. 409 si el instrumento no tiene dimensiones, si falta completar alguna actividad de la aplicación (con `items_faltantes` = esas actividades) o si ya hay resultado vigente («Resultado ya revelado»).
 - En una transacción: calcula y guarda el resultado y registra REVELA_RESULTADO con la aplicación como referencia. Si el cálculo falla, se revierte todo.
 - Respuesta: `cuenta`, `instrumento`, `aplicacion`, `perfil_plano`, `eventos_registrados` y `nuevos_desbloqueos`.
 - Cada instrumento cierra con un registro de contraste que se abre con REVELA_RESULTADO y cita el resultado (referencias RESULTADO y COINCIDENCIAS, `referencias.md`).
@@ -62,7 +62,11 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 - Carreras recomendadas: las vinculadas a alguna de las 10 ocupaciones, ordenadas por su mejor posición (y código); cada una con `via`, las ocupaciones que la vinculan.
 - Dimensiones destacadas (DESTACADAS): las de mayor proporción exacta `puntaje / máximo` (no el porcentaje redondeado); si empatan, todas, en el orden del instrumento.
 
-**Comparación (COMPARACION):** con las aplicaciones ENTRADA y SALIDA completas (elegidas por `momento`, nunca por código), devuelve por ítem la opción y el puntaje de cada una y la diferencia salida − entrada. No genera resultado.
+**Partida y llegada (COMPARACION):**
+- Cada aplicación (ENTRADA = partida, SALIDA = llegada) se revela por separado y guarda sus dimensiones, sin perfil plano. El reinicio responde 409.
+- **Zona** de una dimensión: el promedio de sus ítems (puntaje ÷ número de ítems, con los inversos aplicados). Es FUERTE si es ≥ `UMBRAL_ZONA_FUERTE` (3,5), EN_CAMINO si es ≥ `UMBRAL_ZONA_EN_CAMINO` (2,5) y POR_TRABAJAR en otro caso.
+- El estudiante recibe solo zonas y textos, nunca puntajes. El detalle numérico es de la orientadora y llega con su vista de resultados (B14).
+- La partida es obligatoria y la marca de prioritario no aplica a este tipo (`motor.md`).
 
 ## Reiniciar — `POST /acciones/reiniciar-instrumento`
 
@@ -79,9 +83,9 @@ Volver a hacer el test cuando el resultado no distingue ningún tipo (HU-095). R
 | `/actividades/{a}/items` | Ítems de la actividad en orden, con las opciones de su escala. No exige cuenta ni disponibilidad. |
 | `/cuentas/{c}/actividades/{a}/respuestas` | Respuestas actuales de la cuenta en esa actividad. |
 | `/cuentas/{c}/instrumentos` | Por instrumento y aplicación: NO_INICIADO, EN_PROGRESO o COMPLETADO (todas sus actividades completadas, se haya revelado o no); actividades e ítems respondidos sobre el total; `hay_resultado_vigente` (revelado). COMPLETADO sin resultado vigente es «listo para revelar». |
-| `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=` | Resultado vigente (vistas resumida y explicada, HU-022 y HU-023): dimensiones (con `descripcion`), y según el tipo, `codigo_interes`, `coincidencias`, `carreras_recomendadas` o `dimensiones_destacadas`. Sin vigente (no revelado o reiniciado): 409 con el avance. |
+| `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=` | Resultado vigente (vistas resumida y explicada, HU-022 y HU-023): dimensiones (con `descripcion`; en COMPARACION, con `zona` y `tematica` y los números en `null`), y según el tipo, `codigo_interes`, `coincidencias`, `carreras_recomendadas` o `dimensiones_destacadas`. Sin vigente (no revelado o reiniciado): 409 con el avance. |
 | `/cuentas/{c}/instrumentos/{i}/historial` | Todos los resultados, incluidos los anulados, del más reciente al más antiguo. |
-| `/cuentas/{c}/instrumentos/{i}/comparacion` | Comparación de entrada y salida. Instrumento de otro tipo: 404. Sin las dos aplicaciones completas: 409. |
+| `/cuentas/{c}/instrumentos/{i}/comparacion` | HU-094. `{instrumento, partida, llegada, dimensiones}`. Cada dimensión, en orden, trae `codigo`, `nombre`, `descripcion`, `tematica`, `zona_partida`, `zona_llegada`, `actividades_completadas` (cuántas actividades de su temática tiene COMPLETADA la cuenta) e `items`. Cada ítem trae `item`, `enunciado`, `partida` y `llegada` (la etiqueta elegida) y `cambio` (bool; un cambio hacia una opción menor no se distingue). Sin números. La aplicación ENTRADA y la SALIDA se eligen por `momento`, nunca por código. Instrumento de otro tipo: 404. Sin las dos reveladas: 409 con el avance de ambas. |
 
 Las consultas con cuenta responden 404 a un apoderado. El resultado se arma con lo guardado, sin recalcular.
 

@@ -9,11 +9,12 @@ from typing import Literal
 
 from app.core.parametros import (
     CORRELACION_MINIMA, DECIMALES_PORCENTAJE, FACTOR_PORCENTAJE, LIMITE_COINCIDENCIAS,
-    LONGITUD_CODIGO_INTERES, UMBRAL_BEST_FIT, UMBRAL_GREAT_FIT,
+    LONGITUD_CODIGO_INTERES, UMBRAL_BEST_FIT, UMBRAL_GREAT_FIT, UMBRAL_ZONA_EN_CAMINO, UMBRAL_ZONA_FUERTE,
 )
 
 
 AjusteCalculado = Literal["BEST_FIT", "GREAT_FIT", "GOOD_FIT"]
+ZonaCalculada = Literal["FUERTE", "EN_CAMINO", "POR_TRABAJAR"]
 
 
 def orden_canonico_riasec():
@@ -73,6 +74,18 @@ def calcular_puntaje_item(puntaje: float, minimo: float, maximo: float, inverso:
     if minimo > maximo or not minimo <= puntaje <= maximo:
         raise ValueError("El puntaje debe pertenecer a los límites de la escala")
     return maximo + minimo - puntaje if inverso else puntaje
+
+
+def calcular_zona(puntaje: float, cantidad_items: int) -> ZonaCalculada:
+    """Zona de una dimensión de partida o llegada según el promedio de sus ítems (inversos ya aplicados)."""
+    if not isfinite(puntaje) or isinstance(cantidad_items, bool) or not isinstance(cantidad_items, int) or cantidad_items < 1:
+        raise ValueError("La zona requiere un puntaje finito y al menos un ítem")
+    promedio = puntaje / cantidad_items
+    if promedio >= UMBRAL_ZONA_FUERTE:
+        return "FUERTE"
+    if promedio >= UMBRAL_ZONA_EN_CAMINO:
+        return "EN_CAMINO"
+    return "POR_TRABAJAR"
 
 
 def calcular_porcentaje(puntaje: float, puntaje_maximo: float) -> float:

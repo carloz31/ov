@@ -6,7 +6,7 @@ from app.models.enums import (
     Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso, NivelAjuste,
     TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
     ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion, TipoCriterio,
-    TipoReferencia, EstadoReferencia,
+    TipoReferencia, EstadoReferencia, ZonaDimension,
 )
 
 
@@ -70,5 +70,5 @@ __all__ = [
     'Ocupacion', 'PuntajeOcupacion', 'CarreraOcupacion', 'RespuestaItem', 'ResultadoInstrumento',
     'ResultadoDimension', 'Coincidencia', 'ListaOpciones', 'OpcionLista', 'ItemRegistro',
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
-    'TipoReferencia', 'EstadoReferencia', 'Referencia',
+    'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension',
 ]

@@ -10,6 +10,10 @@ UMBRAL_GREAT_FIT = 0.608
 CORRELACION_MINIMA = 0
 LIMITE_COINCIDENCIAS = 10
 
+# B07: zona de una dimensión de partida o llegada según su promedio (inclusivo). Provisional.
+UMBRAL_ZONA_FUERTE = 3.5
+UMBRAL_ZONA_EN_CAMINO = 2.5
+
 # §5.6: longitud del código de interés y corte para detectar empates.
 LONGITUD_CODIGO_INTERES = 3
 

@@ -5,7 +5,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from app.models import MomentoAplicacion, NivelAjuste, TipoResultado
+from app.models import MomentoAplicacion, NivelAjuste, TipoResultado, ZonaDimension
 
 
 class OpcionPublica(BaseModel):
@@ -99,12 +99,15 @@ class AvanceInstrumento(BaseModel):
 
 
 class DimensionResultado(BaseModel):
+    """En COMPARACION, el estudiante recibe solo la zona y la temática: los números van en null (B07)."""
     codigo: str
     nombre: str
     descripcion: str
-    puntaje: float
-    puntaje_maximo: float
-    porcentaje: float
+    puntaje: float | None
+    puntaje_maximo: float | None
+    porcentaje: float | None
+    zona: ZonaDimension | None = None
+    tematica: str | None = None
 
 
 class CodigoInteresPublico(BaseModel):
@@ -145,15 +148,27 @@ class ResultadoHistorico(ResultadoPublico):
 
 
 class ComparacionItem(BaseModel):
+    """Texto de la opción elegida en cada momento; sin puntajes (HU-094)."""
     item: str
     enunciado: str
-    entrada: OpcionPublica
-    salida: OpcionPublica
-    diferencia: float
+    partida: str
+    llegada: str
+    cambio: bool
+
+
+class ComparacionDimension(BaseModel):
+    codigo: str
+    nombre: str
+    descripcion: str
+    tematica: str | None
+    zona_partida: ZonaDimension
+    zona_llegada: ZonaDimension
+    actividades_completadas: int
+    items: list[ComparacionItem]
 
 
 class ComparacionAutopercepcion(BaseModel):
     instrumento: str
-    entrada: str
-    salida: str
-    items: list[ComparacionItem]
+    partida: str
+    llegada: str
+    dimensiones: list[ComparacionDimension]

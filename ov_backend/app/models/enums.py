@@ -68,6 +68,13 @@ class TipoResultado(StrEnum):
     COMPARACION = "COMPARACION"
 
 
+class ZonaDimension(StrEnum):
+    """Lectura en palabras del promedio de una dimensión de partida o llegada (B07)."""
+    FUERTE = "FUERTE"
+    EN_CAMINO = "EN_CAMINO"
+    POR_TRABAJAR = "POR_TRABAJAR"
+
+
 class MomentoAplicacion(StrEnum):
     UNICA = "UNICA"
     ENTRADA = "ENTRADA"

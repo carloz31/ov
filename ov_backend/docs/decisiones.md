@@ -15,3 +15,8 @@
   - `RECORRIDO` y `completar` de `soporte_ruta.py`;
   - el exportador de fixtures, que ahora completa `t-partida`;
   - en las pruebas de instrumentos que suponían un solo instrumento, se filtra `TEST-RIASEC`.
+- **Resultado de COMPARACION (F2):**
+  - `DimensionResultado` admite `puntaje`, `puntaje_maximo` y `porcentaje` en `null` y suma `zona` y `tematica`, que en los demás tipos van en `null`.
+  - `/comparacion` reemplaza su respuesta por ítem: queda por dimensión, con ítems que traen la etiqueta elegida en cada momento y `cambio`, y sin números, según lo indicó el usuario.
+  - La comparación exige las dos aplicaciones **reveladas**, no solo completas.
+- **Pruebas r27 y r28 adaptadas:** el instrumento mínimo de COMPARACION no tiene dimensiones, así que no se revela, y su comparación responde 409. La comparación completa se prueba con `TEST-PARTIDA-LLEGADA` en `test_partida_llegada.py`.
