@@ -1,0 +1,14 @@
+{
+  "aplicacion": "APL-PARTIDA",
+  "cuenta": "est-ana",
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "APL-PARTIDA",
+      "tipo": "REVELA_RESULTADO"
+    }
+  ],
+  "instrumento": "TEST-PARTIDA-LLEGADA",
+  "nuevos_desbloqueos": [],
+  "perfil_plano": false
+}

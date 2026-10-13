@@ -15,6 +15,36 @@
         {
           "actual": 1,
           "cumplida": true,
+          "referencia": "T1",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_BLOQUE"
+        },
+        {
+          "actual": 2,
+          "cumplida": true,
+          "referencia": null,
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "REVELA_RESULTADO"
+        }
+      ],
+      "evaluador_especial": {
+        "cumplido": true,
+        "nombre": "instrumentos_prioritarios"
+      },
+      "objetivo": {
+        "codigo": "T2",
+        "nombre": "Decisión"
+      },
+      "regla": "R-T2",
+      "tipo_objetivo": "BLOQUE"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
           "referencia": "APL-RIASEC",
           "requerido": 1,
           "tipo_conteo": "EVENTOS",

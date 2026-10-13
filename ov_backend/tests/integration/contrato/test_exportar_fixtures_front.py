@@ -19,7 +19,7 @@ from app.schemas.actividades import BloqueActividades
 from app.schemas.comun import ContenidoEstado
 from app.schemas.logros import LogrosCuenta
 from app.schemas.secciones import SeccionEstado
-from app.schemas.instrumentos import ItemPublico, ResultadoPublico
+from app.schemas.instrumentos import ComparacionAutopercepcion, ItemPublico, ResultadoPublico
 from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
 
 
@@ -33,6 +33,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
     'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
     'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-contraste',
+    'items-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
+    'comparacion-partida-llegada',
 )}
 
 
@@ -101,7 +103,19 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     TypeAdapter(list[DesbloqueoLegible]).validate_python(datos['desbloqueos-no-vistos'])
     ResultadoPublico.model_validate(datos['resultado-riasec'])
     revelado = RespuestaRevelarResultado.model_validate(datos['revelar-riasec'])
-    assert [d.regla for d in revelado.nuevos_desbloqueos] == ['R-t-contraste']
+    # B07: con la partida revelada y T1 cerrado, revelar el RIASEC prioritario del 5A también abre T2.
+    assert sorted(d.regla for d in revelado.nuevos_desbloqueos) == ['R-T2', 'R-t-contraste']
+    TypeAdapter(list[ItemPublico]).validate_python(datos['items-t-partida'])
+    assert RespuestaRevelarResultado.model_validate(datos['revelar-partida']).nuevos_desbloqueos == []
+    partida = ResultadoPublico.model_validate(datos['resultado-partida'])
+    assert {d.zona for d in partida.dimensiones} == {'EN_CAMINO'}
+    assert all(d.puntaje is None and d.porcentaje is None for d in partida.dimensiones)
+    cita, = ReferenciasConsultadas.model_validate(datos['referencias-t-lee-cuestionario']).referencias
+    assert (cita.tipo, cita.estado, cita.texto) == ('RESPUESTA_CUESTIONARIO', 'DISPONIBLE', 'Bastante de acuerdo')
+    assert estados(datos['actividades-t2'])['t-llegada'] == 'DISPONIBLE'
+    comparacion = ComparacionAutopercepcion.model_validate(datos['comparacion-partida-llegada'])
+    assert [(d.zona_partida, d.zona_llegada) for d in comparacion.dimensiones][1:] == [('EN_CAMINO', 'FUERTE')] * 4
+    assert 'puntaje' not in json.dumps(datos['comparacion-partida-llegada'])
     TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-expectativas'])
     EstadoItemRegistro.model_validate(datos['borrador-t-expectativas'])
     borrador = RegistroConsultado.model_validate(datos['registro-t-expectativas-borrador'])

@@ -1,0 +1,58 @@
+{
+  "aplicacion": "APL-PARTIDA",
+  "calculado_en": "2026-10-07T10:00:00",
+  "dimensiones": [
+    {
+      "codigo": "AUTO-A",
+      "descripcion": "Qué tan claro tienes lo que quieres hacer después del colegio.",
+      "nombre": "Claridad",
+      "porcentaje": null,
+      "puntaje": null,
+      "puntaje_maximo": null,
+      "tematica": "A",
+      "zona": "EN_CAMINO"
+    },
+    {
+      "codigo": "AUTO-B",
+      "descripcion": "Qué tanto reconoces tus intereses, habilidades y valores.",
+      "nombre": "Conocimiento de mí",
+      "porcentaje": null,
+      "puntaje": null,
+      "puntaje_maximo": null,
+      "tematica": "B",
+      "zona": "EN_CAMINO"
+    },
+    {
+      "codigo": "AUTO-C",
+      "descripcion": "Qué tanto conoces las carreras, los caminos y lo que piden.",
+      "nombre": "Conocimiento de las opciones",
+      "porcentaje": null,
+      "puntaje": null,
+      "puntaje_maximo": null,
+      "tematica": "C",
+      "zona": "EN_CAMINO"
+    },
+    {
+      "codigo": "AUTO-D",
+      "descripcion": "Qué tanto sientes que la decisión es tuya y no de otros.",
+      "nombre": "Decisión propia",
+      "porcentaje": null,
+      "puntaje": null,
+      "puntaje_maximo": null,
+      "tematica": "D",
+      "zona": "EN_CAMINO"
+    },
+    {
+      "codigo": "AUTO-E",
+      "descripcion": "Qué tan seguro te sientes de poder tomar y sostener tu decisión.",
+      "nombre": "Confianza",
+      "porcentaje": null,
+      "puntaje": null,
+      "puntaje_maximo": null,
+      "tematica": "E",
+      "zona": "EN_CAMINO"
+    }
+  ],
+  "instrumento": "TEST-PARTIDA-LLEGADA",
+  "perfil_plano": false
+}

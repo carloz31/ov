@@ -1,0 +1,10 @@
+{
+  "referencias": [
+    {
+      "codigo": "t-ref-cuestionario",
+      "estado": "DISPONIBLE",
+      "texto": "Bastante de acuerdo",
+      "tipo": "RESPUESTA_CUESTIONARIO"
+    }
+  ]
+}

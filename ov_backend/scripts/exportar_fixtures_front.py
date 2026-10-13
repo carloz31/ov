@@ -15,6 +15,7 @@ if __package__ in (None, ''):
 FECHA = '2026-10-07T10:00:00'
 OPCIONES = {'I': 5, 'R': 4, 'A': 3, 'S': 1, 'E': 1, 'C': 1}
 MISIONES_INTERESES = ('t-mision-intereses', 't-mision-intereses-2')
+PARTIDA_LLEGADA = 'TEST-PARTIDA-LLEGADA'
 CARPETA = 'ruta'
 PREFIJO = 'ruta-'
 
@@ -47,6 +48,15 @@ def _completar(cliente, actividad, cuenta='est-ana'):
     })
 
 
+def _responder_partida(cliente, actividad, opcion):
+    items = _pedir(cliente, 'GET', f'/actividades/{actividad}/items')
+    _pedir(cliente, 'POST', '/acciones/responder-items', {
+        'cuenta': 'est-ana', 'actividad': actividad, 'fecha_hora': FECHA,
+        'respuestas': [{'item': item['codigo'], 'opcion': opcion} for item in items]})
+    _completar(cliente, actividad)
+    return items
+
+
 def _consultas_dominio(cliente, momento, rutas):
     return {f'{ruta}-{momento}': _pedir(cliente, 'GET', f'/cuentas/est-ana/{ruta}') for ruta in rutas}
 
@@ -55,12 +65,14 @@ def _recorrer(cliente):
     fixtures = {'cuentas': _pedir(cliente, 'GET', '/cuentas')}
     fixtures.update(_consultas_dominio(cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros', 'secciones')))
     fixtures['completar-t-inicio'] = _completar(cliente, 't-inicio')
-    # B07: el punto de partida está en T0, antes de su cierre.
-    _pedir(cliente, 'POST', '/acciones/responder-items', {
-        'cuenta': 'est-ana', 'actividad': 't-partida', 'fecha_hora': FECHA,
-        'respuestas': [{'item': item['codigo'], 'opcion': 3}
-                       for item in _pedir(cliente, 'GET', '/actividades/t-partida/items')]})
-    _completar(cliente, 't-partida')
+    # B07: el punto de partida está en T0, antes de su cierre; se revela y se cita en t-lee-cuestionario.
+    fixtures['items-t-partida'] = _responder_partida(cliente, 't-partida', 3)
+    fixtures['revelar-partida'] = _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
+        'cuenta': 'est-ana', 'instrumento': PARTIDA_LLEGADA, 'aplicacion': 'APL-PARTIDA', 'fecha_hora': FECHA})
+    fixtures['resultado-partida'] = _pedir(
+        cliente, 'GET', f'/cuentas/est-ana/instrumentos/{PARTIDA_LLEGADA}/resultado?aplicacion=APL-PARTIDA')
+    fixtures['referencias-t-lee-cuestionario'] = _pedir(
+        cliente, 'GET', '/cuentas/est-ana/actividades/t-lee-cuestionario/referencias')
     fixtures['completar-t-cierre-inicio'] = _completar(cliente, 't-cierre-inicio')
     fixtures['actividades-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     fixtures['secciones-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/secciones')
@@ -108,6 +120,13 @@ def _recorrer(cliente):
     })
     fixtures['resultado-riasec'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
     fixtures['referencias-t-contraste'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')
+    # B07: con la partida y el RIASEC prioritario del 5A revelados, T2 está abierto; la llegada se compara.
+    fixtures['actividades-t2'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
+    _responder_partida(cliente, 't-llegada', 4)
+    _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
+        'cuenta': 'est-ana', 'instrumento': PARTIDA_LLEGADA, 'aplicacion': 'APL-LLEGADA', 'fecha_hora': FECHA})
+    fixtures['comparacion-partida-llegada'] = _pedir(
+        cliente, 'GET', f'/cuentas/est-ana/instrumentos/{PARTIDA_LLEGADA}/comparacion')
     fixtures.update(_consultas_dominio(cliente, 'final', ('fichas', 'logros')))
     return fixtures
 

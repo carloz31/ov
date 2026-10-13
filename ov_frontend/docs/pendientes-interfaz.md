@@ -2,6 +2,24 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-13 · B07 · Partida y llegada, temáticas y prioritarios
+
+- **Dato:**
+  - el cuestionario `TEST-PARTIDA-LLEGADA` (actividades `t-partida` en T0 y `t-llegada` en T2, sin contenido en el front), que se revela por aplicación (`APL-PARTIDA`, `APL-LLEGADA`) con `POST /acciones/revelar-resultado`;
+  - en `GET /cuentas/{c}/instrumentos/{i}/resultado`, cada dimensión trae ahora `zona` (FUERTE, EN_CAMINO, POR_TRABAJAR) y `tematica`. En COMPARACION, `puntaje`, `puntaje_maximo` y `porcentaje` llegan en `null`, pero `src/types/servidor.ts` los declara `number`;
+  - `GET /cuentas/{c}/instrumentos/{i}/comparacion` (HU-094) cambió de forma: por dimensión, la zona de partida y la de llegada, `actividades_completadas` de su temática e `items` con la etiqueta elegida en cada momento y `cambio`, sin números;
+  - el bloque T2 «Decisión», que se abre con T1 cerrado, la partida revelada y los cuestionarios prioritarios del salón revelados, y muestra ese mensaje de bloqueo;
+  - la actividad `t-lee-cuestionario` (T1, opcional), sin contenido en el front, y su referencia RESPUESTA_CUESTIONARIO (`texto`: la etiqueta elegida en `AUTO-01` de la partida).
+- **Dónde se mostraría:**
+  - en el libro de Helena: las zonas de partida en palabras al revelarla y, al cierre, la comparación dimensión por dimensión, con los ítems que cambiaron primero y los que se mantuvieron plegados. Un cambio a una opción menor no se marca como negativo;
+  - en el mapa, T2 bloqueado con su mensaje;
+  - en `t-lee-cuestionario`, la cita de la respuesta.
+- **Opciones:**
+  - en el lote F de instrumentos: hacer opcionales los números de `DimensionResultado` en `servidor.ts`, agregar `zona` y `tematica` y el tipo de la comparación nueva, y conectar revelar partida y llegada;
+  - crear `t_partida.json`, `t_llegada.json` y `t_lee_cuestionario.json`, o mapearlas a las actividades reales al cargar la ruta.
+- **Si no se muestra:** en modo `api`, T2 nunca se abre si la partida no se revela, y el front que suponga números en las dimensiones de COMPARACION recibe `null`.
+- **Estado:** pendiente del lote F de instrumentos; no se toca la interfaz en B07.
+
 ## 2026-10-13 · B06 · Revelar resultados y libro de Helena
 
 - **Dato:**

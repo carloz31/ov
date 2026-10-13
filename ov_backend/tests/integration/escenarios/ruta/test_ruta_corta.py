@@ -1,7 +1,7 @@
 """Ruta corta: recorre la ruta mínima con las peticiones del front, sin `/eventos`.
 
 B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010; B03, las HU 007
-y 016. Cada lote
+y 016; B07, la HU 094. Cada lote
 extiende este recorrido con su tramo.
 """
 
@@ -292,3 +292,35 @@ def test_hu004_ruta_del_apoderado(cliente):
     assert estado(cliente, 'apo-rosa')['secciones'] == {'CONVERSACIONES': 'DISPONIBLE'}
     assert siguiente(cliente, 'apo-rosa') is None
     assert actividades(cliente)['t-inicio'] == 'DISPONIBLE'
+
+
+def test_hu094_partida_llegada_prioritarios_y_apertura_de_t2(cliente):
+    """B07: la partida se revela en palabras y se cita; T2 espera los prioritarios del 5A; la llegada se compara."""
+    instrumento = 'TEST-PARTIDA-LLEGADA'
+    completar(cliente, 't-inicio')
+    assert siguiente(cliente) == 't-partida'
+    responder(cliente, 't-partida', opcion=3)
+    completar(cliente, 't-partida')
+    revelar(cliente, instrumento=instrumento, aplicacion='APL-PARTIDA')
+    partida = pedir(cliente, 'GET', f'/cuentas/est-ana/instrumentos/{instrumento}/resultado?aplicacion=APL-PARTIDA')
+    assert {d['zona'] for d in partida['dimensiones']} == {'EN_CAMINO'}
+    assert all(d['puntaje'] is None for d in partida['dimensiones'])
+    avanzar(cliente)
+    cita, = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-lee-cuestionario/referencias')['referencias']
+    assert (cita['estado'], cita['texto']) == ('DISPONIBLE', 'Bastante de acuerdo')
+    completar(cliente, 't-lee-cuestionario')
+    t2 = next(b for b in pedir(cliente, 'GET', '/cuentas/est-ana/actividades') if b['codigo'] == 'T2')
+    assert t2['estado'] == 'BLOQUEADA' and t2['bloqueo'][0]['regla'] == 'R-T2'
+    for mision in MISIONES_INTERESES:
+        responder(cliente, mision)
+        completar(cliente, mision)
+    assert 'R-T2' in reglas(revelar(cliente))
+    assert siguiente(cliente) == 't-llegada'
+    responder(cliente, 't-llegada', opcion=4)
+    completar(cliente, 't-llegada')
+    revelar(cliente, instrumento=instrumento, aplicacion='APL-LLEGADA')
+    comparacion = pedir(cliente, 'GET', f'/cuentas/est-ana/instrumentos/{instrumento}/comparacion')
+    assert [(d['tematica'], d['zona_partida'], d['zona_llegada']) for d in comparacion['dimensiones']] == [
+        ('A', 'EN_CAMINO', 'EN_CAMINO'), ('B', 'EN_CAMINO', 'FUERTE'), ('C', 'EN_CAMINO', 'FUERTE'),
+        ('D', 'EN_CAMINO', 'FUERTE'), ('E', 'EN_CAMINO', 'FUERTE')]
+    assert all(i['cambio'] for d in comparacion['dimensiones'] for i in d['items'])

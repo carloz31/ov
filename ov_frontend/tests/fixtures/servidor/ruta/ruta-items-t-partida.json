@@ -1,0 +1,667 @@
+[
+  {
+    "codigo": "AUTO-01",
+    "dimension": "AUTO-A",
+    "enunciado": "Sé qué quiero hacer cuando termine el colegio.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 1,
+    "orden": 1
+  },
+  {
+    "codigo": "AUTO-02",
+    "dimension": "AUTO-A",
+    "enunciado": "Puedo explicar con mis palabras qué camino me atrae.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 2,
+    "orden": 2
+  },
+  {
+    "codigo": "AUTO-03",
+    "dimension": "AUTO-A",
+    "enunciado": "Tengo una o dos opciones que me interesan más que las demás.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 3,
+    "orden": 3
+  },
+  {
+    "codigo": "AUTO-04",
+    "dimension": "AUTO-A",
+    "enunciado": "Me siento perdido cuando pienso en lo que viene después del colegio.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": true,
+    "numero": 4,
+    "orden": 4
+  },
+  {
+    "codigo": "AUTO-05",
+    "dimension": "AUTO-B",
+    "enunciado": "Conozco las actividades que más disfruto.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 5,
+    "orden": 5
+  },
+  {
+    "codigo": "AUTO-06",
+    "dimension": "AUTO-B",
+    "enunciado": "Sé en qué soy bueno.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 6,
+    "orden": 6
+  },
+  {
+    "codigo": "AUTO-07",
+    "dimension": "AUTO-B",
+    "enunciado": "Sé qué es importante para mí en un trabajo.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 7,
+    "orden": 7
+  },
+  {
+    "codigo": "AUTO-08",
+    "dimension": "AUTO-B",
+    "enunciado": "Reconozco qué cosas no me gustaría hacer.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 8,
+    "orden": 8
+  },
+  {
+    "codigo": "AUTO-09",
+    "dimension": "AUTO-C",
+    "enunciado": "Conozco varias carreras o caminos que podría seguir.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 9,
+    "orden": 9
+  },
+  {
+    "codigo": "AUTO-10",
+    "dimension": "AUTO-C",
+    "enunciado": "Sé qué se estudia en las carreras que me interesan.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 10,
+    "orden": 10
+  },
+  {
+    "codigo": "AUTO-11",
+    "dimension": "AUTO-C",
+    "enunciado": "Sé dónde puedo estudiar lo que me interesa.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 11,
+    "orden": 11
+  },
+  {
+    "codigo": "AUTO-12",
+    "dimension": "AUTO-C",
+    "enunciado": "Conozco cuánto cuesta y cuánto dura lo que me interesa estudiar.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 12,
+    "orden": 12
+  },
+  {
+    "codigo": "AUTO-13",
+    "dimension": "AUTO-D",
+    "enunciado": "La decisión sobre mi futuro la tomo yo.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 13,
+    "orden": 13
+  },
+  {
+    "codigo": "AUTO-14",
+    "dimension": "AUTO-D",
+    "enunciado": "Puedo conversar con mi familia sobre lo que quiero.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 14,
+    "orden": 14
+  },
+  {
+    "codigo": "AUTO-15",
+    "dimension": "AUTO-D",
+    "enunciado": "Elijo pensando en lo que quiero y no solo en lo que otros esperan.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 15,
+    "orden": 15
+  },
+  {
+    "codigo": "AUTO-16",
+    "dimension": "AUTO-D",
+    "enunciado": "Busco información por mi cuenta antes de decidir.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 16,
+    "orden": 16
+  },
+  {
+    "codigo": "AUTO-17",
+    "dimension": "AUTO-E",
+    "enunciado": "Me siento capaz de tomar una buena decisión.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 17,
+    "orden": 17
+  },
+  {
+    "codigo": "AUTO-18",
+    "dimension": "AUTO-E",
+    "enunciado": "Si algo no sale como espero, sé que puedo buscar otro camino.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 18,
+    "orden": 18
+  },
+  {
+    "codigo": "AUTO-19",
+    "dimension": "AUTO-E",
+    "enunciado": "Confío en que podré lograr lo que me proponga.",
+    "escala": {
+      "codigo": "ESC-ACUERDO4",
+      "nombre": "Acuerdo en cuatro opciones",
+      "opciones": [
+        {
+          "etiqueta": "Nada de acuerdo",
+          "orden": 1,
+          "puntaje": 1.0
+        },
+        {
+          "etiqueta": "Poco de acuerdo",
+          "orden": 2,
+          "puntaje": 2.0
+        },
+        {
+          "etiqueta": "Bastante de acuerdo",
+          "orden": 3,
+          "puntaje": 3.0
+        },
+        {
+          "etiqueta": "Muy de acuerdo",
+          "orden": 4,
+          "puntaje": 4.0
+        }
+      ]
+    },
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "inverso": false,
+    "numero": 19,
+    "orden": 19
+  }
+]

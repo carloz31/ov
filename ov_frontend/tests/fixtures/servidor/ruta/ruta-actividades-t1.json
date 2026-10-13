@@ -17,12 +17,26 @@
       },
       {
         "bloqueo": null,
+        "codigo": "t-partida",
+        "contenido": "t_partida",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "COMPLETADA",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Punto de partida",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": null,
         "codigo": "t-cierre-inicio",
         "contenido": "t_cierre_inicio",
         "descripcion": null,
         "duracion_estimada_min": 5,
         "estado": "COMPLETADA",
-        "orden": 2,
+        "orden": 3,
         "requerida": true,
         "tipo": "INFORMATIVA",
         "titulo": "Cierre del inicio",
@@ -156,6 +170,20 @@
         "titulo": "Registro que retoma respuestas",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-lee-cuestionario",
+        "contenido": "t_lee_cuestionario",
+        "descripcion": null,
+        "duracion_estimada_min": 5,
+        "estado": "DISPONIBLE",
+        "orden": 6,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Lectura de tu punto de partida",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": null,
@@ -164,6 +192,68 @@
     "estado": "DISPONIBLE",
     "nombre": "Camino",
     "numero": 2
+  },
+  {
+    "actividades": [
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "T1",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "instrumentos_prioritarios"
+            },
+            "mensaje": "Termina el camino y revela tu punto de partida y los cuestionarios prioritarios de tu salón para abrir la decisión.",
+            "regla": "R-T2"
+          }
+        ],
+        "codigo": "t-llegada",
+        "contenido": "t_llegada",
+        "descripcion": null,
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "requerida": true,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Punto de llegada",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "T1",
+            "requerido": 1,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_BLOQUE"
+          }
+        ],
+        "evaluador_especial": {
+          "cumplido": false,
+          "nombre": "instrumentos_prioritarios"
+        },
+        "mensaje": "Termina el camino y revela tu punto de partida y los cuestionarios prioritarios de tu salón para abrir la decisión.",
+        "regla": "R-T2"
+      }
+    ],
+    "codigo": "T2",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "BLOQUEADA",
+    "nombre": "Decisión",
+    "numero": 3
   },
   {
     "actividades": [
@@ -309,6 +399,6 @@
     "espacio": "CIUDAD",
     "estado": "BLOQUEADA",
     "nombre": "La ciudad",
-    "numero": 3
+    "numero": 4
   }
 ]
