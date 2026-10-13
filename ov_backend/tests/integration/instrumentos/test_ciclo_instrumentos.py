@@ -1,7 +1,7 @@
 """R17, R20 y R22: edición, historia y reinicio selectivo."""
 
 from soporte_datos_ports import preparar_respuesta_ajena
-from soporte_ruta import INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, avanzar, completar, filas_base, pedir, responder
+from soporte_ruta import INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, avanzar, completar, filas_base, pedir, responder, revelar
 from soporte_retiro import ciclo, reiniciar, resultado
 
 
@@ -14,12 +14,14 @@ def test_r17_editar_hasta_resultado_y_repetir_sin_recalcular(cliente, aplicacion
     assert all(r['opcion']['orden'] == 1 for r in pedir(cliente, 'GET', f'/cuentas/est-ana/actividades/{INTERESES}/respuestas')['respuestas'])
     responder(cliente, INTERESES_FINAL)
     completar(cliente, INTERESES_FINAL)
+    revelar(cliente)
     obtenido = resultado(cliente)
     antes = filas_base(aplicacion)
     datos = {'cuenta': 'est-ana', 'actividad': INTERESES, 'respuestas': [{'item': 'RIASEC-01', 'opcion': 5}]}
     pedir(cliente, 'POST', '/acciones/responder-items', datos, 409)
     assert filas_base(aplicacion) == antes
-    assert completar(cliente, INTERESES_FINAL)['resultados_generados'] == []
+    assert [e['tipo'] for e in completar(cliente, INTERESES_FINAL)['eventos_registrados']] == ['COMPLETA_ACTIVIDAD']
+    revelar(cliente, esperado=409)
     assert resultado(cliente) == obtenido
     assert filas_base(aplicacion)['resultado_instrumento'] == antes['resultado_instrumento']
 

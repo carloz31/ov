@@ -97,6 +97,9 @@ def _recorrer(cliente):
             'respuestas': [{'item': item['codigo'], 'opcion': OPCIONES[item['dimension']]} for item in items],
         })
         _completar(cliente, mision)
+    fixtures['revelar-riasec'] = _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
+        'cuenta': 'est-ana', 'instrumento': 'TEST-RIASEC', 'fecha_hora': FECHA,
+    })
     fixtures['resultado-riasec'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
     fixtures.update(_consultas_dominio(cliente, 'final', ('fichas', 'logros')))
     return fixtures

@@ -5,7 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.core.parametros import DESCRIPCIONES_RIASEC
-from soporte_ruta import MISIONES_INTERESES, avanzar
+from soporte_ruta import MISIONES_INTERESES, avanzar, revelar
 
 
 def completar_cuestionario(cliente, actividades):
@@ -31,6 +31,7 @@ def test_resultado_riasec_incluye_las_seis_descripciones_reales(request, fixture
         avanzar(cliente)
         actividades = MISIONES_INTERESES
         completar_cuestionario(cliente, actividades)
+        revelar(cliente)
         respuesta = cliente.get('/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
         assert respuesta.status_code == 200, respuesta.text
         dimensiones = respuesta.json()['dimensiones']

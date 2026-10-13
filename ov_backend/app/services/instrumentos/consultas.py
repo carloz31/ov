@@ -152,9 +152,7 @@ def avance_aplicacion(sesion: Session, cuenta: Cuenta, aplicacion: Aplicacion) -
                    and datos.definiciones.obtener(ItemInstrumento, fila.item_id).instrumento_id == aplicacion.instrumento_id]
     respondidos = sum((fila.actividad_id, fila.item_id) in respuestas for fila in total_items)
     vigente = aplicacion.id in vigentes
-    instrumento = datos.definiciones.obtener(Instrumento, aplicacion.instrumento_id)
-    completo = not faltantes if instrumento.tipo_resultado == TipoResultado.COMPARACION else vigente
-    estado = "COMPLETADO" if completo else "EN_PROGRESO" if progresos else "NO_INICIADO"
+    estado = "COMPLETADO" if not faltantes else "EN_PROGRESO" if progresos else "NO_INICIADO"
     return AvanceAplicacion(aplicacion=aplicacion.codigo, estado=estado,
         actividades=ConteoAvance(completadas=len(actividades) - len(faltantes), total=len(actividades), faltantes=faltantes),
         items=ConteoItems(respondidos=respondidos, total=len(total_items)), hay_resultado_vigente=vigente)

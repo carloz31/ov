@@ -13,7 +13,7 @@ from soporte_ruta import BLOQUE_FAMILIA
 
 from app import main as principal
 from app.schemas.referencias import ReferenciasConsultadas
-from app.schemas.acciones import RespuestaCompletarActividad
+from app.schemas.acciones import RespuestaAccion, RespuestaRevelarResultado
 from app.schemas.cuentas import CuentaResumen, DesbloqueoLegible, ResumenCuenta
 from app.schemas.actividades import BloqueActividades
 from app.schemas.comun import ContenidoEstado
@@ -27,7 +27,7 @@ SCRIPT = Path(exportador.__file__).resolve()
 NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'cuentas', 'resumen-inicial', 'actividades-inicial', 'actividades-t1', 'actividades-ciudad',
     'fichas-inicial', 'fichas-final', 'logros-inicial', 'logros-final',
-    'completar-t-inicio', 'completar-t-cierre-inicio', 'items-t-mision-intereses', 'resultado-riasec',
+    'completar-t-inicio', 'completar-t-cierre-inicio', 'items-t-mision-intereses', 'revelar-riasec', 'resultado-riasec',
     'desbloqueos-no-vistos', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
     'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
@@ -96,10 +96,12 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         TypeAdapter(list[ContenidoEstado]).validate_python(datos[f'fichas-{momento}'])
         LogrosCuenta.model_validate(datos[f'logros-{momento}'])
     for nombre in ('completar-t-inicio', 'completar-t-cierre-inicio'):
-        RespuestaCompletarActividad.model_validate(datos[nombre])
+        RespuestaAccion.model_validate(datos[nombre])
     TypeAdapter(list[ItemPublico]).validate_python(datos['items-t-mision-intereses'])
     TypeAdapter(list[DesbloqueoLegible]).validate_python(datos['desbloqueos-no-vistos'])
     ResultadoPublico.model_validate(datos['resultado-riasec'])
+    revelado = RespuestaRevelarResultado.model_validate(datos['revelar-riasec'])
+    assert [d.regla for d in revelado.nuevos_desbloqueos] == ['R-t-contraste']
     TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-expectativas'])
     EstadoItemRegistro.model_validate(datos['borrador-t-expectativas'])
     borrador = RegistroConsultado.model_validate(datos['registro-t-expectativas-borrador'])

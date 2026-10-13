@@ -25,6 +25,11 @@ class ReiniciarInstrumentoEntrada(AccionCuenta):
     aplicacion: str | None = None
 
 
+class RevelarResultadoEntrada(AccionCuenta):
+    instrumento: str
+    aplicacion: str | None = None
+
+
 class RespuestaItemEntrada(BaseModel):
     item: str
     opcion: int = Field(ge=1, strict=True)
@@ -118,13 +123,11 @@ class RespuestaAccion(BaseModel):
     nuevos_desbloqueos: list[DesbloqueoNuevo]
 
 
-class ResultadoGenerado(BaseModel):
+class RespuestaRevelarResultado(RespuestaAccion):
+    cuenta: str
     instrumento: str
     aplicacion: str
-
-
-class RespuestaCompletarActividad(RespuestaAccion):
-    resultados_generados: list[ResultadoGenerado]
+    perfil_plano: bool
 
 
 class ResultadoAnulado(BaseModel):

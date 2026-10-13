@@ -1,6 +1,6 @@
 """Verificadores de la ruta mínima, compartidos entre SQLite y PostgreSQL."""
 
-from soporte_ruta import INTERESES, INTERESES_FINAL, actividades, avanzar, completar, estado, pedir, reglas, responder
+from soporte_ruta import INTERESES, INTERESES_FINAL, actividades, avanzar, completar, estado, pedir, reglas, responder, revelar
 
 
 def verificar_p01_estado_inicial(cliente):
@@ -61,12 +61,16 @@ def verificar_p10_resultado(cliente):
     avanzar(cliente)
     responder(cliente, INTERESES)
     primera = completar(cliente, INTERESES)
-    assert primera['resultados_generados'] == []
     assert reglas(primera) == {'R-t-mision-intereses-2'}
     responder(cliente, INTERESES_FINAL)
     respuesta = completar(cliente, INTERESES_FINAL)
-    assert respuesta['resultados_generados'] == [{'instrumento': 'TEST-RIASEC', 'aplicacion': 'APL-RIASEC'}]
     assert reglas(respuesta) == {'R-t-caso'}
+    pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', esperado=409)
+    revelado = revelar(cliente)
+    assert revelado['perfil_plano'] is False
+    assert [e['tipo'] for e in revelado['eventos_registrados']] == ['REVELA_RESULTADO']
+    assert revelado['eventos_registrados'][0]['referencia'] == 'APL-RIASEC'
+    assert reglas(revelado) == {'R-t-contraste'}
     resultado = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
     assert {d['codigo']: d['porcentaje'] for d in resultado['dimensiones']} == {'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0}
     assert resultado['codigo_interes'] == {'codigo': 'IRA', 'hay_empate': False}

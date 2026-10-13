@@ -5,12 +5,13 @@ from sqlalchemy.exc import IntegrityError
 from app import models as m
 from app.services import actividades as servicio_actividades
 from app.services.instrumentos import resultados as servicio_resultados
-from soporte_ruta import INTERESES, INTERESES_FINAL, avanzar, completar, filas_base, pedir, responder
+from soporte_ruta import INTERESES, INTERESES_FINAL, avanzar, completar, filas_base, pedir, responder, revelar
 from soporte_retiro import ciclo, preparar_ultimo
 
 
 def test_r18_fallo_despues_de_guardar_resultado_revierte_toda_accion(cliente, aplicacion, monkeypatch):
     preparar_ultimo(cliente)
+    completar(cliente, INTERESES_FINAL)
     antes = filas_base(aplicacion)
     original = servicio_resultados.guardar_resultados
     def fallar(sesion, calculos):
@@ -20,7 +21,7 @@ def test_r18_fallo_despues_de_guardar_resultado_revierte_toda_accion(cliente, ap
         assert sesion.scalar(select(m.Coincidencia.resultado_id)) is not None
         raise IntegrityError('DATO DE PRUEBA', {}, RuntimeError('fallo después de guardar'))
     monkeypatch.setattr(servicio_resultados, 'guardar_resultados', fallar)
-    completar(cliente, INTERESES_FINAL, esperado=409)
+    revelar(cliente, esperado=409)
     assert filas_base(aplicacion) == antes
 
 

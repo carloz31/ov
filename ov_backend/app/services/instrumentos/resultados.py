@@ -9,11 +9,10 @@ from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import (
-    Actividad, ActividadItem, Aplicacion, AplicacionActividad, Coincidencia, Cuenta, Dimension,
+    ActividadItem, Aplicacion, AplicacionActividad, Coincidencia, Cuenta, Dimension,
     EstadoProgreso, Instrumento, ItemInstrumento, Ocupacion, OpcionEscala, ProgresoActividad,
     PuntajeOcupacion, RespuestaItem, ResultadoDimension, ResultadoInstrumento, TipoResultado,
 )
-from app.schemas.acciones import ResultadoGenerado
 from app.services.instrumentos.calculo import (
     ItemParaCalculo, PerfilOcupacion, calcular_coincidencias, calcular_dimension,
 )
@@ -67,10 +66,7 @@ def calcular_resultado(sesion: Session, cuenta: Cuenta, aplicacion: Aplicacion, 
     dimensiones = sorted((dimension for dimension in definiciones.listar(Dimension)
                           if dimension.instrumento_id == instrumento.id), key=lambda dimension: (dimension.orden, dimension.codigo))
     esperados = {item.id for item in definiciones.listar(ItemInstrumento) if item.instrumento_id == instrumento.id}
-    filas = sesion.info.get('filas_resultados_calculo')
-    if filas is None:
-        filas = cargar_respuestas_calculo(sesion, cuenta, [aplicacion.id])
-    filas = [(item, opcion) for aplicacion_id, item, opcion in filas if aplicacion_id == aplicacion.id]
+    filas = [(item, opcion) for _, item, opcion in cargar_respuestas_calculo(sesion, cuenta, [aplicacion.id])]
     if not esperados or Counter(item.id for item, _ in filas) != Counter({item: 1 for item in esperados}):
         raise ValueError(f"Las respuestas de {aplicacion.codigo} no cubren exactamente los ítems del instrumento")
     limites = {}
@@ -121,56 +117,11 @@ def guardar_resultados(sesion, calculos):
 
 
 @usar_contexto
-def generar_resultado(sesion: Session, cuenta: Cuenta, aplicacion: Aplicacion, fecha: datetime) -> None:
-    calculo = calcular_resultado(sesion, cuenta, aplicacion, fecha)
-    lote = sesion.info.get('lote_resultados_calculo')
-    if lote is None:
-        guardar_resultados(sesion, [calculo])
-    else:
-        lote.append(calculo)
-
-
-@usar_contexto
-def generar_resultados_al_completar(
-    sesion: Session, cuenta: Cuenta, actividad: Actividad, fecha: datetime,
-) -> list[ResultadoGenerado]:
-    definiciones = contexto(sesion).definiciones
-    ids_aplicaciones = {fila.aplicacion_id for fila in definiciones.listar(AplicacionActividad)
-                       if fila.actividad_id == actividad.id}
-    aplicaciones = sorted((aplicacion for aplicacion in definiciones.listar(Aplicacion)
-                           if aplicacion.id in ids_aplicaciones), key=lambda aplicacion: aplicacion.codigo)
-    if not aplicaciones:
-        return []
-    vigentes = set(sesion.scalars(select(ResultadoInstrumento.aplicacion_id).where(
-        ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.anulado_en.is_(None),
-    )))
-    con_dimensiones = {dimension.instrumento_id for dimension in definiciones.listar(Dimension)}
-    completadas = {identificador for identificador, progreso in contexto(sesion).progresos_de(cuenta.id).items()
-                   if progreso.estado == EstadoProgreso.COMPLETADA}
-    pendientes = []
-    for aplicacion in aplicaciones:
-        actividades = {fila.actividad_id for fila in definiciones.listar(AplicacionActividad) if fila.aplicacion_id == aplicacion.id}
-        instrumento = definiciones.obtener(Instrumento, aplicacion.instrumento_id)
-        if (instrumento.tipo_resultado != TipoResultado.COMPARACION and aplicacion.instrumento_id in con_dimensiones
-                and aplicacion.id not in vigentes and actividades <= completadas):
-            pendientes.append(aplicacion)
-    if not pendientes:
-        return []
-    sesion.info['perfiles_ocupaciones_calculo'] = {}
-    sesion.info['filas_resultados_calculo'] = cargar_respuestas_calculo(sesion, cuenta, [aplicacion.id for aplicacion in pendientes])
-    if len(pendientes) > 1:
-        sesion.info['lote_resultados_calculo'] = []
+def generar_resultado(sesion: Session, cuenta: Cuenta, aplicacion: Aplicacion, fecha: datetime) -> bool:
+    """Calcula y guarda el resultado de la aplicación (al revelar); devuelve si es perfil plano."""
     try:
-        generados = []
-        for aplicacion in pendientes:
-            generar_resultado(sesion, cuenta, aplicacion, fecha)
-            instrumento = definiciones.obtener(Instrumento, aplicacion.instrumento_id)
-            generados.append(ResultadoGenerado(instrumento=instrumento.codigo, aplicacion=aplicacion.codigo))
-        if 'lote_resultados_calculo' in sesion.info:
-            guardar_resultados(sesion, sesion.info['lote_resultados_calculo'])
-        return generados
+        calculo = calcular_resultado(sesion, cuenta, aplicacion, fecha)
+        guardar_resultados(sesion, [calculo])
     finally:
-        sesion.info.pop('filas_resultados_calculo', None)
-        sesion.info.pop('lote_resultados_calculo', None)
         sesion.info.pop('perfiles_ocupaciones_calculo', None)
-        sesion.info.pop('ids_ocupaciones_calculo', None)
+    return calculo[0]['perfil_plano']

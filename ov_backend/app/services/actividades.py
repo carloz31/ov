@@ -4,23 +4,23 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, ActividadItem, AplicacionActividad, Bloque, Cuenta, EstadoProgreso,
+    Actividad, ActividadItem, AplicacionActividad, Bloque, Cuenta, Dimension, EstadoProgreso,
     EstadoRespuestaRegistro, Instrumento, ItemInstrumento, OpcionEscala, ProgresoActividad, RespuestaItem,
     RespuestaRegistro, ResultadoCaso, ResultadoInstrumento, Rol, TipoActividad, TipoEventoUso,
     TipoObjetivo, TipoResultado, Visibilidad,
 )
 from app.schemas.acciones import (
     CompletarActividadEntrada, ProgresoRespuestas, ReiniciarInstrumentoEntrada,
-    ResolverCasoEntrada, ResponderItemsEntrada, RespuestaAccion, RespuestaCompletarActividad,
+    ResolverCasoEntrada, ResponderItemsEntrada, RespuestaAccion,
     RespuestaItemGuardada, RespuestaItemsGuardados, RespuestaReiniciarInstrumento,
-    ResultadoAnulado,
+    RespuestaRevelarResultado, ResultadoAnulado, RevelarResultadoEntrada,
 )
 from app.schemas.actividades import ActividadCuenta, BloqueActividades
 from app.services.comun import (
     buscar_por_codigo, exigir_disponible, existe_evento, fecha_accion, responder_con_eventos,
 )
 from app.services.instrumentos.consultas import actividades_de_aplicacion, seleccionar_aplicacion
-from app.services.instrumentos.resultados import generar_resultados_al_completar
+from app.services.instrumentos.resultados import generar_resultado
 from app.services.motor.reglas import motivos_bloqueo, objetivo_disponible
 
 
@@ -126,7 +126,7 @@ def responder_items(sesion: Session, entrada: ResponderItemsEntrada) -> Respuest
 
 
 @usar_contexto
-def completar_actividad(sesion: Session, entrada: CompletarActividadEntrada) -> RespuestaCompletarActividad:
+def completar_actividad(sesion: Session, entrada: CompletarActividadEntrada) -> RespuestaAccion:
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
     actividad = buscar_por_codigo(sesion, Actividad, entrada.actividad)
     items = items_de_actividad(sesion, actividad)
@@ -157,25 +157,56 @@ def completar_actividad(sesion: Session, entrada: CompletarActividadEntrada) -> 
             raise ErrorAccion("Faltan ítems de registro por finalizar", items_faltantes=faltantes)
     fecha = fecha_accion(entrada)
     _, eventos = completar_progreso(sesion, cuenta, actividad)
-    respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
-    generados = generar_resultados_al_completar(sesion, cuenta, actividad, fecha)
-    return RespuestaCompletarActividad(eventos_registrados=respuesta.eventos_registrados,
-                                      nuevos_desbloqueos=respuesta.nuevos_desbloqueos,
-                                      resultados_generados=generados)
+    return responder_con_eventos(sesion, cuenta, eventos, fecha)
+
+
+def instrumento_y_aplicacion(sesion: Session, cuenta: Cuenta, codigo_instrumento: str, codigo_aplicacion: str | None):
+    if cuenta.rol != Rol.ESTUDIANTE:
+        raise ErrorAccion("Instrumentos no encontrados para esta cuenta", estado_http=404)
+    instrumento = buscar_por_codigo(sesion, Instrumento, codigo_instrumento)
+    try:
+        return instrumento, seleccionar_aplicacion(sesion, instrumento, codigo_aplicacion)
+    except LookupError as error:
+        raise ErrorAccion(str(error), estado_http=404) from error
+    except ValueError as error:
+        raise ErrorAccion(str(error), estado_http=422) from error
+
+
+def resultado_vigente(sesion: Session, cuenta: Cuenta, aplicacion) -> ResultadoInstrumento | None:
+    return sesion.scalar(select(ResultadoInstrumento).where(
+        ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.aplicacion_id == aplicacion.id,
+        ResultadoInstrumento.anulado_en.is_(None),
+    ))
+
+
+@usar_contexto
+def revelar_resultado(sesion: Session, entrada: RevelarResultadoEntrada) -> RespuestaRevelarResultado:
+    cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
+    instrumento, aplicacion = instrumento_y_aplicacion(sesion, cuenta, entrada.instrumento, entrada.aplicacion)
+    definiciones = contexto(sesion).definiciones
+    if (instrumento.tipo_resultado == TipoResultado.COMPARACION
+            or not any(d.instrumento_id == instrumento.id for d in definiciones.listar(Dimension))):
+        raise ErrorAccion("Este instrumento no genera un resultado que revelar")
+    progresos = contexto(sesion).progresos_de(cuenta.id)
+    faltantes = [actividad.codigo for actividad in actividades_de_aplicacion(sesion, aplicacion)
+                 if actividad.id not in progresos or progresos[actividad.id].estado != EstadoProgreso.COMPLETADA]
+    if faltantes:
+        raise ErrorAccion("Completa todas las misiones para revelar", items_faltantes=faltantes)
+    if resultado_vigente(sesion, cuenta, aplicacion) is not None:
+        raise ErrorAccion("Resultado ya revelado")
+    fecha = fecha_accion(entrada)
+    perfil_plano = generar_resultado(sesion, cuenta, aplicacion, fecha)
+    respuesta = responder_con_eventos(sesion, cuenta, [(TipoEventoUso.REVELA_RESULTADO, aplicacion.id)], fecha)
+    return RespuestaRevelarResultado(
+        cuenta=cuenta.codigo, instrumento=instrumento.codigo, aplicacion=aplicacion.codigo, perfil_plano=perfil_plano,
+        eventos_registrados=respuesta.eventos_registrados, nuevos_desbloqueos=respuesta.nuevos_desbloqueos,
+    )
 
 
 @usar_contexto
 def reiniciar_instrumento(sesion: Session, entrada: ReiniciarInstrumentoEntrada) -> RespuestaReiniciarInstrumento:
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
-    if cuenta.rol != Rol.ESTUDIANTE:
-        raise ErrorAccion("Instrumentos no encontrados para esta cuenta", estado_http=404)
-    instrumento = buscar_por_codigo(sesion, Instrumento, entrada.instrumento)
-    try:
-        aplicacion = seleccionar_aplicacion(sesion, instrumento, entrada.aplicacion)
-    except LookupError as error:
-        raise ErrorAccion(str(error), estado_http=404) from error
-    except ValueError as error:
-        raise ErrorAccion(str(error), estado_http=422) from error
+    instrumento, aplicacion = instrumento_y_aplicacion(sesion, cuenta, entrada.instrumento, entrada.aplicacion)
     actividades = actividades_de_aplicacion(sesion, aplicacion)
     progresos = list(sesion.scalars(select(ProgresoActividad).where(
         ProgresoActividad.cuenta_id == cuenta.id,
@@ -185,10 +216,7 @@ def reiniciar_instrumento(sesion: Session, entrada: ReiniciarInstrumentoEntrada)
         RespuestaItem.progreso_id.in_([progreso.id for progreso in progresos]),
         RespuestaItem.item_id.in_(select(ItemInstrumento.id).where(ItemInstrumento.instrumento_id == instrumento.id)),
     )
-    resultado = sesion.scalar(select(ResultadoInstrumento).where(
-        ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.aplicacion_id == aplicacion.id,
-        ResultadoInstrumento.anulado_en.is_(None),
-    ))
+    resultado = resultado_vigente(sesion, cuenta, aplicacion)
     tiene_respuestas = sesion.scalar(select(RespuestaItem.id).where(*filtro_respuestas).limit(1)) is not None
     if resultado is None and not tiene_respuestas:
         raise ErrorAccion("Nada que reiniciar")

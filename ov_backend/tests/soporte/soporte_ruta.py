@@ -70,6 +70,13 @@ def completar(cliente, codigo, cuenta='est-ana', esperado=200):
                  {'cuenta': cuenta, 'actividad': codigo, 'fecha_hora': FECHA}, esperado)
 
 
+def revelar(cliente, instrumento='TEST-RIASEC', cuenta='est-ana', aplicacion=None, esperado=200):
+    datos = {'cuenta': cuenta, 'instrumento': instrumento, 'fecha_hora': FECHA}
+    if aplicacion is not None:
+        datos['aplicacion'] = aplicacion
+    return pedir(cliente, 'POST', '/acciones/revelar-resultado', datos, esperado)
+
+
 def avanzar(cliente, hasta=None, cuenta='est-ana'):
     """Completa el recorrido hasta `hasta` (incluida); sin `hasta`, deja abierta la Ciudad."""
     ultimo = len(RECORRIDO) if hasta is None else RECORRIDO.index(hasta) + 1

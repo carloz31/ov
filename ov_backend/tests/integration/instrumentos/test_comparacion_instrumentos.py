@@ -1,7 +1,7 @@
 """R27–R28: comparación por momentos y reinicio de salida."""
 
 from app import models as m
-from soporte_ruta import filas_base, pedir
+from soporte_ruta import filas_base, pedir, revelar
 from soporte_retiro import buscar, contestar_minimo, instrumento_minimo, reiniciar
 
 
@@ -11,7 +11,8 @@ def test_r27_comparacion_generica_sin_resultado_y_momentos_requeridos(cliente, a
     ruta = '/cuentas/est-ana/instrumentos/TEST-PRUEBA/comparacion'
     pedir(cliente, 'GET', ruta, esperado=409)
     for actividad, opciones in [(entrada, [1, 2, 3]), (salida, [4, 3, 5])]:
-        assert contestar_minimo(cliente, actividad, opciones)['resultados_generados'] == []
+        contestar_minimo(cliente, actividad, opciones)
+    revelar(cliente, instrumento='TEST-PRUEBA', aplicacion='APL-PRUEBA-SALIDA', esperado=409)
     comparacion = pedir(cliente, 'GET', ruta)
     assert comparacion['entrada'] == 'APL-PRUEBA-ENTRADA' and comparacion['salida'] == 'APL-PRUEBA-SALIDA'
     assert [i['diferencia'] for i in comparacion['items']] == [3, 1, 2]

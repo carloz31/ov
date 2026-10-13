@@ -8,7 +8,7 @@ from app import models as m
 from app.main import crear_aplicacion
 from soporte_bases import copiar_plantilla
 from soporte_consultas import ContadorConsultas
-from soporte_ruta import FECHA, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, avanzar, completar, pedir, responder
+from soporte_ruta import FECHA, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, avanzar, completar, pedir, responder, revelar
 
 
 FECHA_BD = datetime.fromisoformat(FECHA)
@@ -62,9 +62,11 @@ def datos_respuestas(cliente, actividad=INTERESES, opcion=3, cuenta='est-ana', c
             'respuestas': [{'item': i['codigo'], 'opcion': opcion} for i in items]}
 
 
-def ciclo(cliente, cuenta='est-ana', opcion=None, abrir=True):
+def ciclo(cliente, cuenta='est-ana', opcion=None, abrir=True, instrumento='TEST-RIASEC'):
+    """Completa las dos misiones de intereses y revela; devuelve la respuesta de revelar."""
     preparar_ultimo(cliente, cuenta, opcion, abrir)
-    return completar(cliente, INTERESES_FINAL, cuenta=cuenta)
+    completar(cliente, INTERESES_FINAL, cuenta=cuenta)
+    return revelar(cliente, instrumento=instrumento, cuenta=cuenta)
 
 
 def preparar_ultimo(cliente, cuenta='est-ana', opcion=None, abrir=True):

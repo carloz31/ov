@@ -6,7 +6,7 @@ extiende este recorrido con su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
-from soporte_ruta import FECHA, avanzar, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, filas_base, pedir, reglas, responder
+from soporte_ruta import FECHA, avanzar, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, filas_base, pedir, reglas, responder, revelar
 
 
 def siguiente(cliente, cuenta='est-ana'):
@@ -207,14 +207,14 @@ def test_hu021_cuestionario_incompleto_retomar_y_resultado(cliente, aplicacion):
     guardadas = pedir(cliente, 'GET', f'/cuentas/est-ana/actividades/{INTERESES}/respuestas')['respuestas']
     assert [(r['item'], r['opcion']['orden']) for r in guardadas] == [('RIASEC-01', 4), ('RIASEC-02', 4), ('RIASEC-03', 5)]
     responder(cliente, INTERESES, inicio=3)
-    primera = completar(cliente, INTERESES)
-    assert primera['resultados_generados'] == []
+    completar(cliente, INTERESES)
     pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', esperado=409)
     assert siguiente(cliente) == INTERESES_FINAL
     responder(cliente, INTERESES_FINAL)
     respuesta = completar(cliente, INTERESES_FINAL)
-    assert respuesta['resultados_generados'] == [{'instrumento': 'TEST-RIASEC', 'aplicacion': 'APL-RIASEC'}]
     assert reglas(respuesta) == {'R-t-caso'}
+    pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado', esperado=409)
+    assert reglas(revelar(cliente)) == {'R-t-contraste'}
     resultado = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
     assert resultado['codigo_interes'] == {'codigo': 'IRA', 'hay_empate': False}
     assert siguiente(cliente) == 't-caso'
@@ -230,6 +230,7 @@ def test_perfil_plano(cliente):
     for mision in MISIONES_INTERESES:
         responder(cliente, mision, cuenta='est-luis', opcion=3)
         completar(cliente, mision, cuenta='est-luis')
+    assert revelar(cliente, cuenta='est-luis')['perfil_plano'] is True
     resultado = pedir(cliente, 'GET', '/cuentas/est-luis/instrumentos/TEST-RIASEC/resultado')
     assert resultado['perfil_plano'] is True
     assert resultado['coincidencias'] == resultado['carreras_recomendadas'] == []

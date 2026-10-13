@@ -1,7 +1,7 @@
 """R39: descripciones aprobadas en catálogo, destacadas e historial."""
 
 from soporte_descripciones import DESCRIPCIONES_INTELIGENCIAS
-from soporte_ruta import pedir
+from soporte_ruta import pedir, revelar
 from soporte_retiro import contestar_minimo, instrumento_minimo, resultado
 
 
@@ -11,6 +11,7 @@ def test_r39_textos_aprobados_se_propagan_a_resultados(cliente, aplicacion):
     catalogo = next(i for i in pedir(cliente, 'GET', '/instrumentos') if i['codigo'] == 'TEST-PRUEBA')
     assert {d['codigo']: d['descripcion'] for d in catalogo['dimensiones']} == DESCRIPCIONES_INTELIGENCIAS
     contestar_minimo(cliente, actividad, [5, 1, 5, 5, 5, 5, 5])
+    revelar(cliente, instrumento='TEST-PRUEBA')
     obtenido = resultado(cliente, instrumento='TEST-PRUEBA')
     assert {d['codigo']: d['descripcion'] for d in obtenido['dimensiones']} == DESCRIPCIONES_INTELIGENCIAS
     assert obtenido['dimensiones_destacadas'] == obtenido['dimensiones']

@@ -5,8 +5,8 @@ from app.schemas.acciones import (
     AccionCuenta, CheckInEntrada, CompletarActividadEntrada, CompletarConversacionEntrada,
     EscribirCartaEntrada, EscribirEntradaEntrada, EventoEntrada, PublicarEntrevistaEntrada,
     ReiniciarInstrumentoEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
-    ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaCompletarActividad,
-    RespuestaItemsGuardados, RespuestaReiniciarInstrumento, VerCarreraEntrada,
+    ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados,
+    RespuestaReiniciarInstrumento, RespuestaRevelarResultado, RevelarResultadoEntrada, VerCarreraEntrada,
 )
 from app.services import (
     actividades as servicio_actividades, carreras as servicio_carreras,
@@ -22,7 +22,7 @@ def ingresar(entrada: AccionCuenta, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_eventos.ingresar(sesion, entrada))
 
 
-@router.post("/acciones/completar-actividad", response_model=RespuestaCompletarActividad, response_model_exclude_unset=True)
+@router.post("/acciones/completar-actividad", response_model=RespuestaAccion, response_model_exclude_unset=True)
 def completar_actividad(entrada: CompletarActividadEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_actividades.completar_actividad(sesion, entrada))
 
@@ -30,6 +30,12 @@ def completar_actividad(entrada: CompletarActividadEntrada, sesion: SesionBD):
 @router.post("/acciones/responder-items", response_model=RespuestaItemsGuardados)
 def responder_items(entrada: ResponderItemsEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_actividades.responder_items(sesion, entrada))
+
+
+@router.post("/acciones/revelar-resultado", response_model=RespuestaRevelarResultado,
+             response_model_exclude_unset=True)
+def revelar_resultado(entrada: RevelarResultadoEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: servicio_actividades.revelar_resultado(sesion, entrada))
 
 
 @router.post("/acciones/reiniciar-instrumento", response_model=RespuestaReiniciarInstrumento,

@@ -3,7 +3,7 @@
 from soporte_datos_ports import agregar_ocupaciones
 from sqlalchemy import select
 from app import models as m
-from soporte_ruta import INTERESES_FINAL, avanzar, pedir
+from soporte_ruta import INTERESES_FINAL, avanzar, completar, pedir
 from soporte_retiro import actividades_extra, ciclo, datos_respuestas, medir, preparar_ultimo
 
 
@@ -37,8 +37,9 @@ def test_r30_calculo_constante_con_cien_ocupaciones(tmp_path, base_aislada):
                 with aplicacion.state.fabrica_sesiones.begin() as sesion:
                     agregar_ocupaciones(sesion, extra)
             preparar_ultimo(cliente)
-            _, contador = medir(cliente, aplicacion, 'POST', '/acciones/completar-actividad',
-                {'cuenta': 'est-ana', 'actividad': INTERESES_FINAL}, limite=20)
+            completar(cliente, INTERESES_FINAL)
+            _, contador = medir(cliente, aplicacion, 'POST', '/acciones/revelar-resultado',
+                {'cuenta': 'est-ana', 'instrumento': 'TEST-RIASEC'}, limite=20)
             lecturas = [e.sentencia for e in contador.ejecuciones if e.sentencia.startswith('SELECT') and 'JOIN puntaje_ocupacion' in e.sentencia]
             assert len(lecturas) == 1
             conteos.append(contador.cantidad)

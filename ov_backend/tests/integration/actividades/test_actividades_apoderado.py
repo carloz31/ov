@@ -46,7 +46,6 @@ def test_primera_desbloquea_solo_la_segunda(cliente_apoderado):
     assert [(d['regla'], d['tipo_objetivo'], d['objetivo']['codigo']) for d in respuesta['nuevos_desbloqueos']] == [
         ('R-t-apo-carta', 'ACTIVIDAD', 't-apo-carta'), ('R-t-ficha-apo', 'FICHA', 't-ficha-apo'),
     ]
-    assert respuesta['resultados_generados'] == []
     esperado = deepcopy(BLOQUE_FAMILIA)
     esperado['actividades'][0]['estado'] = 'COMPLETADA'
     esperado['actividades'][1]['estado'] = 'DISPONIBLE'
@@ -64,7 +63,6 @@ def test_segunda_completa_familia_sin_nuevos_desbloqueos(cliente_apoderado):
     ]
     # B01: cerrar la ruta del apoderado abre su sección CONVERSACIONES.
     assert [d['regla'] for d in respuesta['nuevos_desbloqueos']] == ['R-SEC-CONVERSACIONES']
-    assert respuesta['resultados_generados'] == []
     assert [a['estado'] for a in actividades(cliente)[0]['actividades']] == ['COMPLETADA', 'COMPLETADA']
 
 
@@ -100,7 +98,6 @@ def test_completar_no_otorga_logros_ni_niveles_ni_afecta_al_estudiante(cliente_a
     for codigo in ('t-apo-1', 't-apo-carta', 't-apo-1', 't-apo-carta'):
         respuesta = completar(cliente, codigo, 'apo-rosa')
         assert {d['regla'] for d in respuesta['nuevos_desbloqueos']} <= PROPIAS
-        assert respuesta['resultados_generados'] == []
         rosa = estado(cliente, 'apo-rosa')
         assert rosa['nivel_actual'] is None
         assert rosa['niveles'] == rosa['insignias'] == []
