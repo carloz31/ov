@@ -12,6 +12,7 @@ from scripts import exportar_fixtures_front as exportador
 from soporte_ruta import BLOQUE_FAMILIA
 
 from app import main as principal
+from app.schemas.referencias import ReferenciasConsultadas
 from app.schemas.acciones import RespuestaCompletarActividad
 from app.schemas.cuentas import CuentaResumen, DesbloqueoLegible, ResumenCuenta
 from app.schemas.actividades import BloqueActividades
@@ -31,6 +32,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
     'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
+    'items-registro-t-eco', 'referencias-t-eco',
 )}
 
 
@@ -113,6 +115,15 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     edicion = RespuestaRegistroAccion.model_validate(datos['editar-t-expectativas'])
     assert [r.estado for r in edicion.respuestas if r.item == 't-exp-ruta'] == ['PENDIENTE_SEGUIMIENTO']
     assert 'clasificacion' not in json.dumps(datos['editar-t-expectativas'])
+    # B05: t-eco elige por referencia y cita; con t-exp-espera poco desarrollada, sale «por desarrollar».
+    ruta_eco, espera_eco = TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-eco'])
+    assert ruta_eco.eleccion.referencia == 't-ref-rutas' and ruta_eco.eleccion.opciones == []
+    assert espera_eco.eleccion is None
+    referencias = ReferenciasConsultadas.model_validate(datos['referencias-t-eco'])
+    assert [(r.codigo, r.estado) for r in referencias.referencias] == [
+        ('t-ref-espera', 'POR_DESARROLLAR'), ('t-ref-rutas', 'DISPONIBLE')]
+    assert referencias.referencias[0].texto is None and referencias.referencias[1].opciones
+    assert 'clasificacion' not in json.dumps(datos['referencias-t-eco'])
     inicial = estados(datos['actividades-inicial'])
     assert inicial['t-inicio'] == 'DISPONIBLE'
     assert all(e == 'BLOQUEADA' for c, e in inicial.items() if c != 't-inicio')

@@ -69,7 +69,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B02 | Registros: modelo, listas y borradores · **Implementado** | 006, 010 | M | B01 | Borradores con elección validada; ítems, criterios y listas cargados desde `datos/` |
 | B03 | Registros: entrega y seguimiento · **Implementado** | 007, 016 | M | B02 | Entrega con seguimiento, omisión y fallo del LLM; la misión adicional aparece solo si todo quedó adecuado |
 | B04 | Registros: respuesta consolidada y edición · **Implementado** | 008 | M | B03 | Consulta de la consolidada y de lo que se puede ampliar, con pista; la edición es un nuevo intento con seguimiento |
-| B05 | Referencias y eco | 009 | M | B04 | Citas literales; lo poco desarrollado sale como «por desarrollar» |
+| B05 | Referencias y eco · **Implementado** | 009 | M | B04 | Citas literales; lo poco desarrollado sale como «por desarrollar» |
 | B06 | Revelar resultados y libro de Helena | 022–024, 027, 095 | M | B05 | Revelar calcula y abre el registro de contraste; reinicio con perfil plano |
 | B07 | Partida y llegada, temáticas y prioritarios | 094 | M | B06 | Comparación por dimensión; T2 se abre con los instrumentos prioritarios revelados |
 | B08 | Batallas, casos y testimonios | 017, 041, 051–056 | M | B05 | Batalla con reintento; el caso libera testimonios y colección |
@@ -157,7 +157,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 - **Script manual con Gemini:** sobre `t-expectativas`; se corre solo si lo pide el usuario.
 - **Comprueba:** paso 7.
 
-**B05 · Referencias y eco (M)**
+**B05 · Referencias y eco (M) · Implementado**
 - **Modelo:** `Referencia`, que pertenece a una actividad o a una pregunta de diario, y la consulta que la resuelve.
 - **Pruebas:**
   - Se cita la respuesta consolidada.

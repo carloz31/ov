@@ -1,0 +1,27 @@
+[
+  {
+    "codigo": "t-eco-ruta",
+    "consigna": "De las rutas que elegiste, ¿cuál te atrae más y por qué?",
+    "eleccion": {
+      "comun": false,
+      "lista": null,
+      "maxima": 1,
+      "minima": 1,
+      "opciones": [],
+      "ordenada": false,
+      "permite_otra": false,
+      "referencia": "t-ref-rutas"
+    },
+    "min_caracteres": null,
+    "nombre": "Ruta elegida",
+    "obligatorio": true
+  },
+  {
+    "codigo": "t-eco-espera",
+    "consigna": "Antes escribiste lo que esperan de ti. ¿Sigues pensando lo mismo?",
+    "eleccion": null,
+    "min_caracteres": null,
+    "nombre": "Lo que esperan",
+    "obligatorio": true
+  }
+]

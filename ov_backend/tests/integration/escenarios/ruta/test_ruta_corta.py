@@ -146,6 +146,50 @@ def test_hu007_hu016_entrega_con_seguimiento_y_mision_adicional(cliente):
             assert actividades(cliente, cuenta)['t-adicional'] == 'DISPONIBLE'
 
 
+def test_hu009_eco_cita_lo_desarrollado_y_elige_por_referencia(cliente):
+    """B05: t-eco retoma t-expectativas; lo poco desarrollado sale «por desarrollar» hasta que se amplía."""
+    avanzar(cliente, 't-cierre-inicio')
+    assert actividades(cliente)['t-eco'] == 'BLOQUEADA'
+    accion = {'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA}
+    otra = {'codigo': 'OTRA', 'texto': 'DATO DE PRUEBA: aprender un oficio'}
+    for item, texto, opciones in (
+            ('t-exp-ruta', 'DATO DE PRUEBA: quiero estudiar porque me gusta crear', [{'codigo': 'INSTITUTO'}, otra]),
+            ('t-exp-apoyo', 'DATO DE PRUEBA: mi familia, por ejemplo mi tío', [{'codigo': 'FAMILIA'}]),
+            ('t-exp-espera', 'DATO DE PRUEBA: algo [vaga]', [])):
+        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
+              {**accion, 'item': item, 'texto': texto, 'opciones': opciones})
+    pedir(cliente, 'POST', '/acciones/registro/entregar', accion)
+    pedir(cliente, 'POST', '/acciones/registro/continuar-sin-responder', {**accion, 'item': 't-exp-espera'})
+    assert actividades(cliente)['t-eco'] == 'DISPONIBLE'
+
+    # El front lee los ítems (la elección dice de qué referencia salen sus opciones) y las referencias.
+    ruta_eco, _ = pedir(cliente, 'GET', '/actividades/t-eco/items-registro')
+    assert ruta_eco['eleccion']['referencia'] == 't-ref-rutas' and ruta_eco['eleccion']['opciones'] == []
+    resueltas = {r['codigo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')[
+        'referencias']}
+    assert resueltas['t-ref-espera']['estado'] == 'POR_DESARROLLAR' and 'texto' not in resueltas['t-ref-espera']
+    assert resueltas['t-ref-rutas']['opciones'] == [{'codigo': 'INSTITUTO', 'texto': 'Estudiar en un instituto'}, otra]
+
+    # Ampliar lo poco desarrollado (HU-008) hace que se cite literalmente.
+    ampliada = 'DATO DE PRUEBA: esperan que estudie, por ejemplo mi mamá, porque ella no pudo'
+    pedir(cliente, 'POST', '/acciones/registro/editar',
+          {**accion, 'items': [{'item': 't-exp-espera', 'texto': ampliada}]})
+    espera = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')['referencias'][0]
+    assert espera == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'DISPONIBLE', 'texto': ampliada}
+
+    eco = {'cuenta': 'est-ana', 'actividad': 't-eco', 'fecha_hora': FECHA}
+    texto = 'DATO DE PRUEBA: el oficio, porque quiero empezar a trabajar pronto'
+    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
+          {**eco, 'item': 't-eco-ruta', 'texto': texto, 'opciones': [{'codigo': 'UNIVERSIDAD'}]}, 422)
+    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
+          {**eco, 'item': 't-eco-ruta', 'texto': texto, 'opciones': [{'codigo': 'OTRA'}]})
+    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
+          {**eco, 'item': 't-eco-espera', 'texto': 'DATO DE PRUEBA: sí, lo sigo pensando', 'opciones': []})
+    entrega = pedir(cliente, 'POST', '/acciones/registro/entregar', eco)
+    assert entrega['estado'] == 'COMPLETADA'
+    assert actividades(cliente)['t-eco'] == 'COMPLETADA'
+
+
 def test_llegada_a_la_ciudad(cliente):
     escenarios.verificar_p07_llegada_a_la_ciudad(cliente)
     assert siguiente(cliente) == INTERESES

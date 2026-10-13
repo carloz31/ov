@@ -31,7 +31,7 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 - La elección no se edita (`registro.md`). Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
 - Durante una edición, la pregunta de seguimiento queda solo en el ítem preguntado, que sale POR_DESARROLLAR. Los demás ítems editados ya se citan con su texto nuevo, y los no editados conservan su consolidada.
 - Los textos de una referencia TEXTO nunca van al evaluador: son respuestas de otra actividad (RNF-13).
-- **Elección por referencia:** al guardar, entregar, editar o responder un seguimiento, las opciones válidas son las de la referencia resuelta para la cuenta. Se guarda `{codigo}` y el evaluador recibe el texto de cada opción elegida, incluido el de la OTRA de la fuente.
+- **Elección por referencia:** al guardar, entregar, editar o responder un seguimiento, las opciones válidas son las de la referencia resuelta para la cuenta. Se guarda `{codigo}`. El evaluador recibe el texto de cada opción elegida como «opción elegida» del propio ítem, que RNF-13 permite enviar. Si se elige la OTRA de la fuente, va al evaluador el texto que el estudiante escribió en el ítem fuente, también como opción elegida y no como cita. Ningún otro texto de la fuente va al evaluador.
 
 ## Consulta (GET)
 

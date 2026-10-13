@@ -2,6 +2,24 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-13 · B05 · Referencias y eco
+
+- **Dato:**
+  - `GET /cuentas/{c}/actividades/{a}/referencias`: por referencia, `codigo`, `tipo` (ELECCION o TEXTO), `estado` (DISPONIBLE, POR_DESARROLLAR o SIN_DATO) y, solo si está disponible, `texto` (cita literal de la consolidada) u `opciones` (`[{codigo, texto}]`, lo elegido antes);
+  - `eleccion.referencia` en `GET /actividades/{a}/items-registro`: en un ítem que elige por referencia, `lista` es nula y `opciones` va vacía, y las opciones salen de esa referencia;
+  - la actividad `t-eco` (registro en T1, opcional), que no tiene contenido en el front.
+- **Dónde se mostraría:**
+  - en la zona de eco de un ítem que retoma una respuesta: la cita literal, con DISPONIBLE;
+  - **el aviso de «por desarrollar»**, con POR_DESARROLLAR: en lugar de la cita, un aviso de Lumi en esa misma zona (p. ej., «Esta respuesta aún está por desarrollar; puedes ampliarla en “Lo que esperan de mí”»), con enlace a la consulta y edición del registro de origen (pendiente B04). Nunca muestra la clasificación;
+  - con SIN_DATO, la zona de eco se oculta;
+  - en un ítem que elige por referencia, las opciones de la referencia ELECCION en lugar de una lista, sin «otra» propia.
+- **Opciones:**
+  - conectar los nodos de consigna del reproductor a `referencias` en el lote F de registros, con la clave de la referencia en el JSON de contenido;
+  - crear `t_eco.json` o mapear `t-eco` a una actividad real cuando se cargue la ruta;
+  - definir el texto definitivo del aviso «por desarrollar».
+- **Si no se muestra:** en modo `api` las actividades no retoman lo escrito antes y `t-eco` se descarta por no tener contenido.
+- **Estado:** pendiente del lote F de registros; no se toca la interfaz en B05.
+
 ## 2026-10-13 · B04 · Respuesta consolidada y edición de registros
 
 - **Dato:**

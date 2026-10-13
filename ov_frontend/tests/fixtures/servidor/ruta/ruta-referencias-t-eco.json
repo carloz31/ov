@@ -1,0 +1,20 @@
+{
+  "referencias": [
+    {
+      "codigo": "t-ref-espera",
+      "estado": "POR_DESARROLLAR",
+      "tipo": "TEXTO"
+    },
+    {
+      "codigo": "t-ref-rutas",
+      "estado": "DISPONIBLE",
+      "opciones": [
+        {
+          "codigo": "UNIVERSIDAD",
+          "texto": "Estudiar en una universidad"
+        }
+      ],
+      "tipo": "ELECCION"
+    }
+  ]
+}

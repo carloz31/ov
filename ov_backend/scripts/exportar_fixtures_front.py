@@ -74,6 +74,13 @@ def _recorrer(cliente):
         **accion_registro, 'items': [{'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: ahora quiero viajar [vaga]'}]})
     _pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
         **accion_registro, 'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: porque quiero conocer otras culturas'})
+    # B05: con t-exp-espera poco desarrollada (edición pendiente), t-eco la ve «por desarrollar» y la elección, lista.
+    fixtures['items-registro-t-eco'] = _pedir(cliente, 'GET', '/actividades/t-eco/items-registro')
+    _pedir(cliente, 'POST', '/acciones/registro/editar', {
+        **accion_registro, 'items': [{'item': 't-exp-espera', 'texto': 'DATO DE PRUEBA: no lo sé [vaga]'}]})
+    fixtures['referencias-t-eco'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
+    _pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
+        **accion_registro, 'item': 't-exp-espera', 'texto': 'DATO DE PRUEBA: esperan que estudie, porque confían en mí'})
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     ruta_avisos = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
     avisos = _pedir(cliente, 'GET', ruta_avisos)

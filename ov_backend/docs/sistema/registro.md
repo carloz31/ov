@@ -2,7 +2,7 @@
 
 Actividades de registro cuyas respuestas evalúa un LLM (Gemini) para pedir, como máximo, dos preguntas de seguimiento por intento. Tras cerrar, el estudiante consulta la respuesta consolidada y lo que puede ampliar, y edita (HU-008). Código: `app/services/registro/` y `app/api/registro.py`. Parámetros: `VERSION_PROMPT_REGISTRO`, `MAXIMO_SEGUIMIENTOS_POR_REGISTRO` (2), `MODELO_LLM_REGISTRO`, temperatura, tiempo máximo y validaciones de la pregunta y la consolidada en `app/core/parametros.py`.
 
-Estado actual: el backend implementa todo lo de este documento y `ruta` tiene los registros `t-expectativas` y `t-valores`; el front responde los registros con su lógica local y solo informa la finalización. La integración llega con la iteración 2.
+Estado actual: el backend implementa todo lo de este documento y `ruta` tiene los registros `t-expectativas`, `t-valores` y `t-eco` (este, con elección por referencia; `referencias.md`); el front responde los registros con su lógica local y solo informa la finalización. La integración llega con la iteración 2.
 
 ## Configuración
 
