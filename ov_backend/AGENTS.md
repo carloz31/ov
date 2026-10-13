@@ -54,7 +54,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 | Un cuerpo de entrada o respuesta | `app/schemas/<dominio>.py`. |
 | Un umbral o constante de método | `app/core/parametros.py`. |
 | Una variable de entorno | `app/config.py` y `.env.example`. |
-| Lo que tendrá la plataforma sea cual sea la ruta (RIASEC, catálogo O*NET; luego secciones, listas, temáticas…) | `datos/fijos.py`, sin `DATO DE PRUEBA`. Nunca en `app/`. |
+| Lo que tendrá la plataforma sea cual sea la ruta (secciones, listas comunes, repreguntas por tipo de criterio, RIASEC, catálogo O*NET; luego temáticas…) | `datos/fijos.py`, sin `DATO DE PRUEBA`. Nunca en `app/`. |
 | Datos de prueba de una mecánica | `datos/ruta.py`, en tuplas declarativas que interpreta el cargador, con códigos `t-...`. Nunca en `app/`. |
 | Una tabla de estado de las cuentas | Además, en `TABLAS_DE_ESTADO` de `app/services/desarrollo.py`, para que el reinicio la vacíe (una prueba exige clasificar toda tabla como catálogo o estado). |
 | Un dominio nuevo (favoritos, planes…) | Un archivo en `services/`, `schemas/` y, si tiene tablas, `models/`. Un archivo pasa a carpeta solo cuando ya no cabe en uno. |
@@ -119,7 +119,7 @@ tests/
   unit/              arquitectura, configuracion, instrumentos, motor, registro
   integration/
     conftest.py      plantillas SQLite por sesión y proceso; cada prueba copia la suya
-    actividades/ cuentas/ desarrollo/ fichas/ instrumentos/ logros/ motor/ secciones/
+    actividades/ cuentas/ desarrollo/ fichas/ instrumentos/ logros/ motor/ registro/ secciones/
     datos/ migraciones/ contrato/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
 ```

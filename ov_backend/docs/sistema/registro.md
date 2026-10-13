@@ -25,6 +25,8 @@ Estado actual: el backend implementa todo lo de este documento y `ruta` tiene lo
 | `turno_seguimiento` | Hasta dos por respuesta: pregunta, `criterios_objetivo`, respuesta o borrador, `respondido_en`. |
 | `evaluacion_respuesta` | Cada evaluación, sin modificarse nunca: origen (LLM o RESPALDO_LONGITUD), clasificación, criterios faltantes, pregunta, `requiere_atencion`, modelo, versión del prompt, latencia, error y `texto_evaluado`. |
 
+Las listas comunes y las repreguntas por tipo de `datos/fijos.py` son textos provisionales hasta la carga real. La migración `0005` llevó cada ítem a su actividad (si estaba en varias, conserva la de menor id), dio a los criterios anteriores el tipo EJEMPLO y la repregunta genérica de su ítem, y renombró VAGA a POCO_DESARROLLADA; su downgrade se niega si hay eventos o condiciones REGISTRO_ADECUADO o ítems con elección.
+
 ## Estados de una respuesta
 
 ```

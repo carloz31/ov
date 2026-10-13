@@ -66,7 +66,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 |---|---|---|---|---|---|
 | B00 | Cambio a `ruta` · **Implementado** | Ninguna nueva; comprueba 004, 011, 013–015, 021, 073, 074 | — | — | Toda la batería en verde solo con `ruta`; `plataforma` y `piloto` retirados |
 | B01 | Secciones, mensajes de bloqueo y salón · **Implementado** | 002, 025 | M | B00 | Lo bloqueado responde con su mensaje; las secciones se abren y permiten registrar |
-| B02 | Registros: modelo, listas y borradores | 006, 010 | M | B01 | Borradores con elección validada; ítems, criterios y listas cargados desde `datos/` |
+| B02 | Registros: modelo, listas y borradores · **Implementado** | 006, 010 | M | B01 | Borradores con elección validada; ítems, criterios y listas cargados desde `datos/` |
 | B03 | Registros: entrega y seguimiento | 007, 016 | — | B02 | Entrega con seguimiento, omisión y fallo del LLM; la misión adicional aparece solo si todo quedó adecuado |
 | B04 | Registros: respuesta consolidada y edición | 008 | — | B03 | Consolidación al cerrar; la edición se evalúa una vez |
 | B05 | Referencias y eco | 009 | M | B04 | Citas literales; lo poco desarrollado sale como «por desarrollar» |
@@ -111,7 +111,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - El listado trae requerida u opcional y la duración.
 - **Comprueba:** regla 2; secciones que se abren; ciudad a mitad de bloque; requeridas y opcionales.
 
-**B02 · Registros: modelo, listas y borradores (M)**
+**B02 · Registros: modelo, listas y borradores (M)** (Implementado)
 - **Modelo:**
   - `POCO_DESARROLLADA`, con migración de los valores guardados;
   - `texto_consolidado` y `opciones_elegidas`;
