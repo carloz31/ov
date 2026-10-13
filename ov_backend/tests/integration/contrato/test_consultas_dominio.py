@@ -13,10 +13,12 @@ from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 ESTADOS = {
     False: {'t-inicio': 'DISPONIBLE', 't-partida': 'DISPONIBLE', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
             't-opcional': 'BLOQUEADA', 't-valores': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
-            't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'BLOQUEADA', 't-eco': 'BLOQUEADA'},
+            't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'BLOQUEADA', 't-eco': 'BLOQUEADA',
+            't-lee-cuestionario': 'BLOQUEADA'},
     True: {'t-inicio': 'COMPLETADA', 't-partida': 'COMPLETADA', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
            't-opcional': 'DISPONIBLE', 't-valores': 'DISPONIBLE', 't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA',
-           't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'DISPONIBLE', 't-eco': 'DISPONIBLE'},
+           't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'DISPONIBLE', 't-eco': 'DISPONIBLE',
+           't-lee-cuestionario': 'DISPONIBLE'},
 }
 # Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).
 SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']

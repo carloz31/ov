@@ -133,6 +133,7 @@ class TipoReferencia(StrEnum):
     TEXTO = "TEXTO"
     RESULTADO = "RESULTADO"
     COINCIDENCIAS = "COINCIDENCIAS"
+    RESPUESTA_CUESTIONARIO = "RESPUESTA_CUESTIONARIO"
 
 
 class EstadoReferencia(StrEnum):

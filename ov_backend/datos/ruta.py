@@ -52,6 +52,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-valores', 'T1', 'Registro de valores', 'REGISTRO', None, 10),
                ('t-adicional', 'T1', 'Misión adicional', 'INFORMATIVA', None, 5),
                ('t-eco', 'T1', 'Registro que retoma respuestas', 'REGISTRO', None, 10),
+               ('t-lee-cuestionario', 'T1', 'Lectura de tu punto de partida', 'INFORMATIVA', None, 5),
                ('t-llegada', 'T2', 'Punto de llegada', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
@@ -65,6 +66,7 @@ PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR
                               'descripcion': 'Actividad opcional que aparece al desbloquearse.'},
                't-valores': {'requerida': False},
                't-eco': {'requerida': False},
+               't-lee-cuestionario': {'requerida': False},
                't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
                                'descripcion': 'Misión adicional que aparece si el registro quedó adecuado.'}}
 
@@ -116,11 +118,14 @@ ITEMS_REGISTRO = (
 
 # Referencias: (código, (tipo de dueño, dueño), tipo, fuente). Dueño: ('ACTIVIDAD', código) o
 # ('PREGUNTA_DIARIO', código). El tipo es uno de `TipoReferencia`; ELECCION y TEXTO leen un ítem de registro
-# de otra actividad, y RESULTADO y COINCIDENCIAS, el resultado revelado de una aplicación.
+# de otra actividad; RESULTADO y COINCIDENCIAS, el resultado revelado de una aplicación, y RESPUESTA_CUESTIONARIO,
+# la respuesta a un ítem de instrumento en una aplicación: (aplicación, ítem).
 REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera'),
                ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-exp-ruta'),
                ('t-ref-resultado', ('ACTIVIDAD', 't-contraste'), 'RESULTADO', 'APL-RIASEC'),
-               ('t-ref-coincidencias', ('ACTIVIDAD', 't-contraste'), 'COINCIDENCIAS', 'APL-RIASEC'))
+               ('t-ref-coincidencias', ('ACTIVIDAD', 't-contraste'), 'COINCIDENCIAS', 'APL-RIASEC'),
+               ('t-ref-cuestionario', ('ACTIVIDAD', 't-lee-cuestionario'), 'RESPUESTA_CUESTIONARIO',
+                ('APL-PARTIDA', 'AUTO-01')))
 FUENTE_APLICACION = ('RESULTADO', 'COINCIDENCIAS')
 
 # Lo que cambia los valores por defecto de un ítem (obligatorio, sin longitud mínima).
@@ -314,6 +319,9 @@ def _validar_referencias(sesion, actividades, items, base: fijos.Fijos):
 
     Las referencias que leen una aplicación llevan ya su `aplicacion_id` y no tienen ítem fuente (None)."""
     instrumentos = {i.id: i for i in sesion.scalars(select(modelos.Instrumento))}
+    items_instrumento = {i.codigo: i for i in sesion.scalars(select(modelos.ItemInstrumento))}
+    presentados = set(sesion.execute(select(modelos.AplicacionActividad.aplicacion_id, modelos.ActividadItem.item_id).join(
+        modelos.ActividadItem, modelos.ActividadItem.actividad_id == modelos.AplicacionActividad.actividad_id)))
     preguntas = {p.codigo: p for p in sesion.scalars(select(modelos.PreguntaDiario))}
     referencias = {}
     for codigo, (tipo_dueno, dueno), tipo, fuente in REFERENCIAS:
@@ -325,6 +333,15 @@ def _validar_referencias(sesion, actividades, items, base: fijos.Fijos):
             dueno_id = dict(pregunta_diario_id=preguntas[dueno].id)
         else:
             raise ValueError(f'La referencia {codigo} tiene un dueño inexistente: {tipo_dueno} {dueno}')
+        if tipo == 'RESPUESTA_CUESTIONARIO':
+            codigo_aplicacion, codigo_item = fuente
+            aplicacion, item = base.aplicaciones.get(codigo_aplicacion), items_instrumento.get(codigo_item)
+            if aplicacion is None or item is None or (aplicacion.id, item.id) not in presentados:
+                raise ValueError(f'La referencia {codigo} lee un ítem que la aplicación {codigo_aplicacion} no presenta')
+            referencias[codigo] = (modelos.Referencia(codigo=codigo, tipo=modelos.TipoReferencia(tipo),
+                                                      aplicacion_id=aplicacion.id, item_instrumento_id=item.id,
+                                                      **dueno_id), None)
+            continue
         if tipo in FUENTE_APLICACION:
             aplicacion = base.aplicaciones.get(fuente)
             if aplicacion is None:

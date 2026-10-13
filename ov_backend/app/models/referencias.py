@@ -12,8 +12,10 @@ class Referencia(Base):
         CheckConstraint("(actividad_id IS NULL) <> (pregunta_diario_id IS NULL)", name="un_dueno"),
         CheckConstraint("tipo NOT IN ('ELECCION', 'TEXTO') OR item_registro_id IS NOT NULL",
                         name="fuente_registro"),
-        CheckConstraint("(tipo IN ('RESULTADO', 'COINCIDENCIAS')) = (aplicacion_id IS NOT NULL)",
+        CheckConstraint("(tipo IN ('RESULTADO', 'COINCIDENCIAS', 'RESPUESTA_CUESTIONARIO')) = (aplicacion_id IS NOT NULL)",
                         name="fuente_aplicacion"),
+        CheckConstraint("(tipo = 'RESPUESTA_CUESTIONARIO') = (item_instrumento_id IS NOT NULL)",
+                        name="fuente_cuestionario"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
@@ -22,3 +24,4 @@ class Referencia(Base):
     pregunta_diario_id: Mapped[int | None] = mapped_column(ForeignKey("pregunta_diario.id"))
     item_registro_id: Mapped[int | None] = mapped_column(ForeignKey("item_registro.id"))
     aplicacion_id: Mapped[int | None] = mapped_column(ForeignKey("aplicacion.id"))
+    item_instrumento_id: Mapped[int | None] = mapped_column(ForeignKey("item_instrumento.id"))

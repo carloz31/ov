@@ -6,7 +6,7 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 
 | Tabla | Qué guarda |
 |---|---|
-| `referencia` | `codigo`, `tipo` (`TipoReferencia`), dueño: `actividad_id` **o** `pregunta_diario_id` (CHECK: exactamente uno), y fuente: `item_registro_id`, obligatoria en ELECCION y TEXTO (CHECK `fuente_registro`), o `aplicacion_id`, obligatoria en RESULTADO y COINCIDENCIAS y nula en los demás (CHECK `fuente_aplicacion`). Catálogo, en la caché de definiciones (`referencias_por_actividad`). |
+| `referencia` | `codigo`, `tipo` (`TipoReferencia`), dueño: `actividad_id` **o** `pregunta_diario_id` (CHECK: exactamente uno), y fuente: `item_registro_id`, obligatoria en ELECCION y TEXTO (CHECK `fuente_registro`), o `aplicacion_id`, obligatoria en RESULTADO, COINCIDENCIAS y RESPUESTA_CUESTIONARIO y nula en los demás (CHECK `fuente_aplicacion`), más `item_instrumento_id`, obligatorio solo en RESPUESTA_CUESTIONARIO (CHECK `fuente_cuestionario`). Catálogo, en la caché de definiciones (`referencias_por_actividad`). |
 | `item_registro.referencia_id` | Elección por referencia: las opciones del ítem son las que esa referencia ELECCION devuelve a la cuenta (`registro.md`). |
 
 `referencia.item_registro_id` e `item_registro.referencia_id` forman un ciclo de claves foráneas. La de `item_registro` lleva `use_alter` y se crea aparte. El vaciado de `datos.cargar` quita primero la elección por referencia de los ítems, porque los CHECK impiden dejar nula cualquiera de las dos claves, y luego borra en orden.
@@ -19,10 +19,11 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | TEXTO | La respuesta consolidada de un ítem de registro | B05 |
 | RESULTADO | El resultado revelado de una aplicación: código de interés o dimensiones destacadas | B06 |
 | COINCIDENCIAS | Las ocupaciones afines del resultado revelado de una aplicación | B06 |
+| RESPUESTA_CUESTIONARIO | La opción elegida en un ítem de instrumento dentro de una aplicación (p. ej., el punto de partida) | B07 |
 
 ## Resolución (`app/services/referencias.py`)
 
-`resolver(sesion, cuenta, referencias)` lee, en dos consultas, las respuestas de los ítems fuente de esa cuenta y la clasificación de su última evaluación, y en lecturas agrupadas, los resultados vigentes de las aplicaciones fuente con `representar_resultado`. Devuelve por referencia un `estado` y, solo si está DISPONIBLE, `texto` u `opciones`. Nunca devuelve la clasificación.
+`resolver(sesion, cuenta, referencias)` lee, en dos consultas, las respuestas de los ítems fuente de esa cuenta y la clasificación de su última evaluación, y en lecturas agrupadas, los resultados vigentes de las aplicaciones fuente con `representar_resultado`, y en una más, las respuestas de cuestionario citadas. Devuelve por referencia un `estado` y, solo si está DISPONIBLE, `texto` u `opciones`. Nunca devuelve la clasificación.
 
 | Tipo | DISPONIBLE | POR_DESARROLLAR | SIN_DATO |
 |---|---|---|---|
@@ -30,6 +31,7 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | TEXTO | Si la última evaluación no es POCO_DESARROLLADA (incluye NO_EVALUADA por un fallo). `texto`: `texto_consolidado`. | Si la última evaluación es POCO_DESARROLLADA, también mientras espera una respuesta de seguimiento. | Sin respuesta, en borrador o nunca evaluada (p. ej., un ítem opcional entregado sin texto). |
 | RESULTADO | Con resultado vigente (revelado) de la aplicación fuente. `opciones`: `[{codigo, texto}]` de las dimensiones del código de interés (COINCIDENCIAS) o de las destacadas (DESTACADAS), con el nombre de la dimensión. Con perfil plano, `[]`. | — | Sin revelar, o tras reiniciar. |
 | COINCIDENCIAS | Igual que RESULTADO. `opciones`: las ocupaciones por posición, con `codigo` (o `codigo_onet` si no tiene) y su título. Con perfil plano, `[]`. | — | Igual que RESULTADO. |
+| RESPUESTA_CUESTIONARIO | La actividad de la aplicación fuente que presenta el ítem está COMPLETADA (la respuesta ya no cambia). `texto`: la etiqueta de la opción, sin puntaje. | — | Sin respuesta o con la actividad sin completar. |
 
 **Reglas:**
 - La elección no se edita (`registro.md`). Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
@@ -47,11 +49,12 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 
 ## Carga (`datos/ruta.py`)
 
-`REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, fuente)`; la fuente es un ítem de registro en ELECCION y TEXTO, y un código de aplicación en RESULTADO y COINCIDENCIAS. En `ITEMS_REGISTRO`, la elección por referencia es `('ref', referencia, mínima, máxima, ordenada)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:
+`REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, fuente)`; la fuente es un ítem de registro en ELECCION y TEXTO, un código de aplicación en RESULTADO y COINCIDENCIAS, y `(aplicación, ítem)` en RESPUESTA_CUESTIONARIO. En `ITEMS_REGISTRO`, la elección por referencia es `('ref', referencia, mínima, máxima, ordenada)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:
 - un tipo fuera del catálogo;
 - un dueño inexistente;
 - una fuente inexistente o de la propia actividad dueña;
-- una aplicación de un instrumento de COMPARACION, que no genera resultado;
+- en RESULTADO o COINCIDENCIAS, una aplicación de un instrumento de COMPARACION;
+- en RESPUESTA_CUESTIONARIO, un ítem que la aplicación no presenta;
 - una ELECCION cuya fuente no tiene lista;
 - una elección por referencia que no apunta a una ELECCION de su propia actividad;
 - una mínima o máxima mayor que la de la fuente;

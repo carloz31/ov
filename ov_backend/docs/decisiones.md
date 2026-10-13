@@ -27,3 +27,6 @@
   - conteos de tablas y de `BOOLEAN DEFAULT false`;
   - las tablas posteriores a 0009 en la prueba de downgrade;
   - `test_partida_llegada`, que ahora revela el RIASEC prioritario del 5A antes de abrir T2.
+- **Modelo (F4):** se agregan `TipoReferencia.RESPUESTA_CUESTIONARIO`, `referencia.item_instrumento_id` y el CHECK `fuente_cuestionario`, y se amplía `fuente_aplicacion` (migración 0012, escrita a mano porque el autogenerado no ve los CHECK). Lo exige `t-lee-cuestionario`, aprobado en la spec.
+- **Disponibilidad de RESPUESTA_CUESTIONARIO:** la cita aparece cuando la actividad fuente está COMPLETADA (en COMPARACION, las respuestas quedan fijas desde ahí) y muestra la etiqueta, sin número.
+- **Downgrade:** como `ruta` tiene una RESPUESTA_CUESTIONARIO, ahora es la 0012 la que detiene el downgrade, sin bajar nada. La prueba se adaptó.

@@ -280,14 +280,13 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         with motor.connect() as conexion:
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).mappings().all()
                           for tabla in Base.metadata.sorted_tables}
-        with pytest.raises(RuntimeError, match='referencias a resultados'):
+        # B07: `ruta` lee una respuesta de cuestionario, así que 0012 se detiene antes de bajar nada.
+        with pytest.raises(RuntimeError, match='referencias a respuestas de cuestionario'):
             command.downgrade(configuracion, '0002')
-        # B07: 0011 y 0010 bajan sin problema antes de que 0009 se detenga; sus tablas ya no están.
-        posteriores = {'tematica', 'actividad_tematica', 'salon_instrumento', 'salon_actividad_prioritaria'}
-        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) - posteriores | {'alembic_version'}
+        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0009'
-            for tabla in (t for t in Base.metadata.sorted_tables if t.name not in posteriores):
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0012'
+            for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]
                 assert conexion.execute(select(*columnas).order_by(*tabla.primary_key.columns)).mappings().all() == [

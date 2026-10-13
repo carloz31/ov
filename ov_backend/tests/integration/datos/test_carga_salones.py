@@ -1,4 +1,4 @@
-"""B07: temáticas y configuración del salón al cargar; la carga fallida no deja filas."""
+"""B07: temáticas, configuración del salón y referencias a cuestionarios al cargar; la carga fallida no deja filas."""
 
 import pytest
 from sqlalchemy import select
@@ -16,6 +16,10 @@ VARIANTES = (
     ('SALON_ACTIVIDADES_PRIORITARIAS', (('5A', 't-inicio'),), 'no es una actividad de registro'),
     ('SALON_ACTIVIDADES_PRIORITARIAS', (('5A', 't-nula'),), 'salón o actividad inexistente'),
     ('TEMATICAS_ACTIVIDADES', (('t-inicio', ('Z',)),), 'temática inexistente'),
+    ('REFERENCIAS', (*ruta.REFERENCIAS, ('t-ref-mal', ('ACTIVIDAD', 't-eco'), 'RESPUESTA_CUESTIONARIO',
+                                         ('APL-RIASEC', 'AUTO-01'))), 'que la aplicación APL-RIASEC no presenta'),
+    ('REFERENCIAS', (*ruta.REFERENCIAS, ('t-ref-mal', ('ACTIVIDAD', 't-eco'), 'RESPUESTA_CUESTIONARIO',
+                                         ('APL-PARTIDA', 'AUTO-99'))), 'que la aplicación APL-PARTIDA no presenta'),
 )
 
 

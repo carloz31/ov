@@ -4,6 +4,7 @@ ELECCION: disponible desde la primera entrega del ítem fuente, sea cual sea su 
 edita y lo que puede quedar poco desarrollado es la justificación, no la decisión.
 TEXTO: según la clasificación de la última evaluación del ítem fuente; la poco desarrollada no se cita.
 RESULTADO y COINCIDENCIAS: el resultado vigente (revelado) de la aplicación fuente; con perfil plano, sin opciones.
+RESPUESTA_CUESTIONARIO: la etiqueta elegida en un ítem de la aplicación fuente, cuando su actividad está completada.
 """
 
 from sqlalchemy import select
@@ -12,8 +13,8 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import LONGITUD_CODIGO_INTERES
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, Bloque, Cuenta, EvaluacionRespuesta, ItemRegistro, ProgresoActividad, RespuestaRegistro,
-    ResultadoInstrumento, Rol,
+    Actividad, ActividadItem, AplicacionActividad, Bloque, Cuenta, EstadoProgreso, EvaluacionRespuesta, ItemRegistro,
+    OpcionEscala, ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol,
 )
 from app.models.enums import (
     ClasificacionRespuesta, EstadoReferencia, EstadoRespuestaRegistro, TipoReferencia,
@@ -61,6 +62,23 @@ def _leer_resultados(sesion, cuenta, aplicaciones):
     return {r.aplicacion_id: representar_resultado(sesion, r) for r in resultados}
 
 
+def _leer_respuestas_cuestionario(sesion, cuenta, referencias):
+    """Etiqueta elegida por (aplicación, ítem), solo en actividades COMPLETADA de esta cuenta: una lectura."""
+    if not referencias:
+        return {}
+    filas = sesion.execute(select(AplicacionActividad.aplicacion_id, RespuestaItem.item_id, OpcionEscala.etiqueta).select_from(
+        AplicacionActividad).join(
+        ProgresoActividad, (ProgresoActividad.actividad_id == AplicacionActividad.actividad_id)
+        & (ProgresoActividad.cuenta_id == cuenta.id) & (ProgresoActividad.estado == EstadoProgreso.COMPLETADA)).join(
+        RespuestaItem, RespuestaItem.progreso_id == ProgresoActividad.id).join(
+        ActividadItem, (ActividadItem.actividad_id == ProgresoActividad.actividad_id)
+        & (ActividadItem.item_id == RespuestaItem.item_id)).join(
+        OpcionEscala, OpcionEscala.id == RespuestaItem.opcion_id).where(
+        AplicacionActividad.aplicacion_id.in_({r.aplicacion_id for r in referencias}),
+        RespuestaItem.item_id.in_({r.item_instrumento_id for r in referencias})))
+    return {(aplicacion_id, item_id): etiqueta for aplicacion_id, item_id, etiqueta in filas}
+
+
 def _opciones_de_resultado(tipo, resultado):
     if resultado.perfil_plano:
         return []
@@ -80,10 +98,19 @@ def resolver(sesion, cuenta, referencias):
     definiciones = contexto(sesion).definiciones
     de_registro = [r for r in referencias if r.aplicacion_id is None]
     respuestas, vigentes = _leer_fuentes(sesion, cuenta, {r.item_registro_id for r in de_registro})
-    resultados = _leer_resultados(sesion, cuenta, {r.aplicacion_id for r in referencias if r.aplicacion_id is not None})
+    de_cuestionario = [r for r in referencias if r.tipo == TipoReferencia.RESPUESTA_CUESTIONARIO]
+    respuestas_cuestionario = _leer_respuestas_cuestionario(sesion, cuenta, de_cuestionario)
+    resultados = _leer_resultados(sesion, cuenta, {r.aplicacion_id for r in referencias
+                                                   if r.aplicacion_id is not None and r not in de_cuestionario})
     resueltas = {}
     for referencia in referencias:
         base = dict(codigo=referencia.codigo, tipo=referencia.tipo)
+        if referencia.tipo == TipoReferencia.RESPUESTA_CUESTIONARIO:
+            etiqueta = respuestas_cuestionario.get((referencia.aplicacion_id, referencia.item_instrumento_id))
+            resueltas[referencia.codigo] = (
+                ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO) if etiqueta is None else
+                ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, texto=etiqueta))
+            continue
         if referencia.aplicacion_id is not None:
             resultado = resultados.get(referencia.aplicacion_id)
             resueltas[referencia.codigo] = (
