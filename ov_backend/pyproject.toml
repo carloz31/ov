@@ -23,7 +23,7 @@ postgres = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--import-mode=importlib"
+addopts = "--import-mode=importlib --basetemp=.pytest_tmp"
 pythonpath = [".", "tests/soporte"]
 markers = ["postgres: pruebas opcionales contra TEST_POSTGRES_URL"]
 

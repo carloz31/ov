@@ -137,7 +137,7 @@ tests/
 | `app/main.py`, `config.py`, `database.py`, `dependencies.py`, `exceptions.py`, `app/core/*` | `tests/unit` y `tests/integration/escenarios` |
 | Una respuesta que consume el front | `tests/integration/contrato`, regenerar fixtures y `npm run test:servidor` en ov_frontend |
 
-Ejemplo: `uv run pytest tests/integration/instrumentos -q`. En Windows, si falla el lanzador, usa `uv run python -m pytest`. Temporales y logs fuera del repo (por ejemplo, `--basetemp="$env:TEMP/ov-pruebas" -p no:cacheprovider`).
+Ejemplo: `uv run pytest tests/integration/instrumentos -q`. En Windows, si falla el lanzador, usa `uv run python -m pytest`. Los temporales de pytest van en `.pytest_tmp/` (`--basetemp` fijo en `pyproject.toml`, ignorado por git; el temporal del sistema da `PermissionError` en Windows). Logs fuera del repo.
 
 ## Reglas compartidas
 
