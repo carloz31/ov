@@ -446,8 +446,7 @@ def avanzar(sesion, cuenta, actividad, items, fecha, *, intento, eventos=()):
                 criterios_objetivo=list(ultima.criterios_faltantes), creado_en=fecha))
             ganados = responder_con_eventos(sesion, cuenta, list(eventos), fecha)
             return RespuestaRegistroAccion(**registro_publico(leer_registro(sesion, cuenta, actividad), items),
-                                           eventos_registrados=ganados.eventos_registrados,
-                                           nuevos_desbloqueos=ganados.nuevos_desbloqueos)
+                                           **ganados.campos())
     return cerrar(sesion, cuenta, actividad, items, registro, fecha, intento=intento, eventos=eventos)
 
 
@@ -467,8 +466,7 @@ def cerrar(sesion, cuenta, actividad, items, registro, fecha, *, intento, evento
         eventos.append((TipoEventoUso.REGISTRO_ADECUADO, actividad.id))
     respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
     return RespuestaRegistroAccion(**registro_publico(leer_registro(sesion, cuenta, actividad), items),
-                                   eventos_registrados=respuesta.eventos_registrados,
-                                   nuevos_desbloqueos=respuesta.nuevos_desbloqueos)
+                                   **respuesta.campos())
 
 
 @dataclass(frozen=True, slots=True)

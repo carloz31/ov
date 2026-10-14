@@ -8,6 +8,6 @@ from app.services import logros as servicio_logros
 router = APIRouter(tags=["Consultas"])
 
 
-@router.get("/cuentas/{cuenta}/logros", response_model=LogrosCuenta)
+@router.get("/cuentas/{cuenta}/logros", response_model=LogrosCuenta, response_model_exclude_unset=True)
 def consultar_logros(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
     return servicio_logros.logros_cuenta(sesion, cuenta_consultada)

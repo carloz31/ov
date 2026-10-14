@@ -22,14 +22,20 @@ def preparar_explicaciones(sesion):
 
 
 def preparar_preguntas_respondidas(sesion):
-    preguntas = [m.PreguntaDiario(codigo=f'pregunta-prueba-{n}', pregunta='DATO DE PRUEBA') for n in range(2)]
+    preguntas = [m.PreguntaDiario(codigo=f'pregunta-prueba-{n}', nombre='DATO DE PRUEBA', pregunta='DATO DE PRUEBA',
+                                  uso='DESBLOQUEABLE') for n in range(2)]
     sesion.add_all(preguntas)
     sesion.flush()
     for cuenta, pregunta in [('est-ana', preguntas[0]), ('est-luis', preguntas[1])]:
-        sesion.add(m.EntradaDiario(cuenta_id=buscar(sesion, m.Cuenta, cuenta).id,
-            origen='GUIADA', pregunta_id=pregunta.id, texto='DATO DE PRUEBA', fecha_hora=FECHA_BD))
-    sesion.add(m.EntradaDiario(cuenta_id=buscar(sesion, m.Cuenta, 'est-ana').id,
-        origen='LIBRE', texto='DATO DE PRUEBA', fecha_hora=FECHA_BD))
+        cuenta_id = buscar(sesion, m.Cuenta, cuenta).id
+        recomendacion = m.Recomendacion(cuenta_id=cuenta_id, pregunta_diario_id=pregunta.id, tipo='DESBLOQUEADA',
+                                        texto='DATO DE PRUEBA', origen='FIJA', creada_en=FECHA_BD)
+        sesion.add(recomendacion)
+        sesion.flush()
+        sesion.add(m.EntradaDiario(cuenta_id=cuenta_id, origen='GUIADA', recomendacion_id=recomendacion.id, numero=1,
+                                   texto='DATO DE PRUEBA', fecha_hora=FECHA_BD))
+    sesion.add(m.EntradaDiario(cuenta_id=buscar(sesion, m.Cuenta, 'est-ana').id, origen='LIBRE', numero=2,
+                               numero_libre=1, texto='DATO DE PRUEBA', fecha_hora=FECHA_BD))
 
 
 def preparar_respuesta_ajena(sesion):

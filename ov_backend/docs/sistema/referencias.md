@@ -6,7 +6,7 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 
 | Tabla | Qué guarda |
 |---|---|
-| `referencia` | `codigo`, `tipo` (`TipoReferencia`), dueño: `actividad_id` **o** `pregunta_diario_id` (CHECK: exactamente uno), y fuente: `item_registro_id`, obligatoria en ELECCION y TEXTO (CHECK `fuente_registro`), o `aplicacion_id`, obligatoria en RESULTADO, COINCIDENCIAS y RESPUESTA_CUESTIONARIO y nula en los demás (CHECK `fuente_aplicacion`), más `item_instrumento_id`, obligatorio solo en RESPUESTA_CUESTIONARIO (CHECK `fuente_cuestionario`). Catálogo, en la caché de definiciones (`referencias_por_actividad`). |
+| `referencia` | `codigo`, `tipo` (`TipoReferencia`), dueño: `actividad_id` **o** `pregunta_diario_id` (CHECK: exactamente uno), y fuente: `item_registro_id`, obligatoria en ELECCION y TEXTO (CHECK `fuente_registro`), o `aplicacion_id`, obligatoria en RESULTADO, COINCIDENCIAS y RESPUESTA_CUESTIONARIO y nula en los demás (CHECK `fuente_aplicacion`), más `item_instrumento_id`, obligatorio solo en RESPUESTA_CUESTIONARIO (CHECK `fuente_cuestionario`). FAVORITOS no tiene fuente (CHECK `favoritos_sin_fuente`). Catálogo, en la caché de definiciones (`referencias_por_actividad` y `referencias_por_pregunta`). |
 | `item_registro.referencia_id` | Elección por referencia: las opciones del ítem son las que esa referencia ELECCION devuelve a la cuenta (`registro.md`). |
 
 `referencia.item_registro_id` e `item_registro.referencia_id` forman un ciclo de claves foráneas. La de `item_registro` lleva `use_alter` y se crea aparte. El vaciado de `datos.cargar` quita primero la elección por referencia de los ítems, porque los CHECK impiden dejar nula cualquiera de las dos claves, y luego borra en orden.
@@ -20,6 +20,9 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | RESULTADO | El resultado revelado de una aplicación: código de interés o dimensiones destacadas | B06 |
 | COINCIDENCIAS | Las ocupaciones afines del resultado revelado de una aplicación | B06 |
 | RESPUESTA_CUESTIONARIO | La opción elegida en un ítem de instrumento dentro de una aplicación (p. ej., el punto de partida) | B07 |
+| FAVORITOS | Las carreras, ocupaciones e instituciones marcadas como favoritas (sin fuente) | B09 |
+
+Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola dirección (`motor.md`, «Diario»).
 
 ## Resolución (`app/services/referencias.py`)
 
@@ -32,6 +35,7 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | RESULTADO | Con resultado vigente (revelado) de la aplicación fuente. `opciones`: `[{codigo, texto}]` de las dimensiones del código de interés (COINCIDENCIAS) o de las destacadas (DESTACADAS), con el nombre de la dimensión. Con perfil plano, `[]`. | — | Sin revelar, o tras reiniciar. |
 | COINCIDENCIAS | Igual que RESULTADO. `opciones`: las ocupaciones por posición, con `codigo` (o `codigo_onet` si no tiene) y su título. Con perfil plano, `[]`. | — | Igual que RESULTADO. |
 | RESPUESTA_CUESTIONARIO | La actividad de la aplicación fuente que presenta el ítem está COMPLETADA (la respuesta ya no cambia). `texto`: la etiqueta de la opción, sin puntaje. | — | Sin respuesta o con la actividad sin completar. |
+| FAVORITOS | Con al menos un favorito. `opciones`: `[{codigo, texto}]` del más reciente al más antiguo; carreras e instituciones por `codigo` y `nombre`, ocupaciones por `codigo_onet` y `titulo`. | — | Sin favoritos. |
 
 **Reglas:**
 - La elección no se edita (`registro.md`). Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
@@ -49,9 +53,10 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 
 ## Carga (`datos/ruta.py`)
 
-`REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, fuente)`; la fuente es un ítem de registro en ELECCION y TEXTO, un código de aplicación en RESULTADO y COINCIDENCIAS, y `(aplicación, ítem)` en RESPUESTA_CUESTIONARIO. En `ITEMS_REGISTRO`, la elección por referencia es `('ref', referencia, mínima, máxima, ordenada)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:
+`REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, fuente)`; la fuente es un ítem de registro en ELECCION y TEXTO, un código de aplicación en RESULTADO y COINCIDENCIAS, `(aplicación, ítem)` en RESPUESTA_CUESTIONARIO y `None` en FAVORITOS. Una pregunta de diario solo es dueña si es personalizada. En `ITEMS_REGISTRO`, la elección por referencia es `('ref', referencia, mínima, máxima, ordenada)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:
 - un tipo fuera del catálogo;
-- un dueño inexistente;
+- un dueño inexistente, o una pregunta de diario no personalizada;
+- una fuente en FAVORITOS;
 - una fuente inexistente o de la propia actividad dueña;
 - en RESULTADO o COINCIDENCIAS, una aplicación de un instrumento de COMPARACION;
 - en RESPUESTA_CUESTIONARIO, un ítem que la aplicación no presenta;

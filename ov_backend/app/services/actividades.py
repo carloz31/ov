@@ -212,7 +212,7 @@ def revelar_resultado(sesion: Session, entrada: RevelarResultadoEntrada) -> Resp
     respuesta = responder_con_eventos(sesion, cuenta, [(TipoEventoUso.REVELA_RESULTADO, aplicacion.id)], fecha)
     return RespuestaRevelarResultado(
         cuenta=cuenta.codigo, instrumento=instrumento.codigo, aplicacion=aplicacion.codigo, perfil_plano=perfil_plano,
-        eventos_registrados=respuesta.eventos_registrados, nuevos_desbloqueos=respuesta.nuevos_desbloqueos,
+        **respuesta.campos(),
     )
 
 
@@ -251,7 +251,7 @@ def reiniciar_instrumento(sesion: Session, entrada: ReiniciarInstrumentoEntrada)
     return RespuestaReiniciarInstrumento(
         cuenta=cuenta.codigo, instrumento=instrumento.codigo, aplicacion=aplicacion.codigo, resultado_anulado=anulado,
         actividades_reiniciadas=[actividad.codigo for actividad in actividades if actividad.id in ids_reiniciados],
-        eventos_registrados=respuesta.eventos_registrados, nuevos_desbloqueos=respuesta.nuevos_desbloqueos,
+        **respuesta.campos(),
     )
 
 
@@ -284,8 +284,7 @@ def resolver_caso(sesion: Session, entrada: ResolverCasoEntrada) -> RespuestaRes
         progreso, eventos = iniciar_progreso(sesion, cuenta, actividad), []
     sesion.add(ResultadoCaso(progreso_id=progreso.id, puntaje=entrada.puntaje, fecha_hora=fecha))
     respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
-    return RespuestaResolverCaso(eventos_registrados=respuesta.eventos_registrados,
-                                 nuevos_desbloqueos=respuesta.nuevos_desbloqueos, ocupaciones_nuevas=nuevas)
+    return RespuestaResolverCaso(**respuesta.campos(), ocupaciones_nuevas=nuevas)
 
 
 @usar_contexto

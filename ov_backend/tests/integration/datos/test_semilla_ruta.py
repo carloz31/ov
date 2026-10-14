@@ -18,16 +18,16 @@ from datos.ocupaciones import leer_ocupaciones, validar_distribucion_items
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     esperados = {'salon': 2, 'cuenta': 5, 'orientadora_salon': 1, 'vinculo_familiar': 1, 'bloque': 5,
         'actividad': 18, 'seccion': 6, 'ficha': 2, 'testimonio': 2, 'conversacion': 2, 'insignia': 5, 'nivel': 2,
-        'regla_desbloqueo': 30, 'condicion_desbloqueo': 33,
+        'regla_desbloqueo': 32, 'condicion_desbloqueo': 35, 'pregunta_diario': 7,
         'instrumento': 2, 'escala_respuesta': 2, 'opcion_escala': 9, 'dimension': 11,
         'item_instrumento': 79, 'actividad_item': 98, 'aplicacion': 3, 'aplicacion_actividad': 4,
         'ocupacion': 36, 'puntaje_ocupacion': 216, 'familia_carrera': 6, 'carrera': 6,
         'carrera_ocupacion': 23, 'lista_opciones': 4, 'opcion_lista': 18, 'item_registro': 10,
-        'criterio_completitud': 8, 'referencia': 5, 'tematica': 5,
+        'criterio_completitud': 8, 'referencia': 7, 'tematica': 5,
         'actividad_tematica': 6, 'actividad_dimension': 2, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 72, 'tipo_carrera': 11, 'ubicacion': 2, 'institucion': 2, 'institucion_carrera': 5,
         'ingreso_carrera': 2, 'rango_ingreso': 5}
-    assert len(Base.metadata.tables) == 64
+    assert len(Base.metadata.tables) == 66
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA'}

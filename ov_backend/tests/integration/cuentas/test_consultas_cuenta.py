@@ -15,7 +15,8 @@ def test_r09_pregunta_respondida_por_cuenta_sin_confundir_libres(cliente, aplica
         completar(cliente, 't-inicio', cuenta)  # B01: abre DIARIO.
     for cuenta, esperados in [('est-ana', [True, False]), ('est-luis', [False, True])]:
         preguntas = pedir(cliente, 'GET', f'/cuentas/{cuenta}/diario/preguntas')
-        assert [p['respondida'] for p in preguntas] == esperados
+        # B09: la ruta agrega sus propias preguntas desbloqueables; aquí solo cuentan las de prueba.
+        assert [p['respondida'] for p in preguntas if p['codigo'].startswith('pregunta-prueba')] == esperados
 
 
 def test_r10_gets_sin_efectos_ni_ids_e_historial_ordenado(cliente, aplicacion):

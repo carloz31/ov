@@ -119,6 +119,22 @@ class TipoConteo(StrEnum):
 class OrigenEntrada(StrEnum):
     GUIADA = "GUIADA"
     LIBRE = "LIBRE"
+    RECOMENDACION_DIA = "RECOMENDACION_DIA"
+
+
+class UsoPreguntaDiario(StrEnum):
+    DESBLOQUEABLE = "DESBLOQUEABLE"
+    DIARIA = "DIARIA"
+
+
+class TipoRecomendacion(StrEnum):
+    DESBLOQUEADA = "DESBLOQUEADA"
+    DIARIA = "DIARIA"
+
+
+class OrigenRedaccion(StrEnum):
+    FIJA = "FIJA"
+    LLM = "LLM"
 
 
 class ClasificacionRespuesta(StrEnum):
@@ -152,6 +168,7 @@ class TipoReferencia(StrEnum):
     RESULTADO = "RESULTADO"
     COINCIDENCIAS = "COINCIDENCIAS"
     RESPUESTA_CUESTIONARIO = "RESPUESTA_CUESTIONARIO"
+    FAVORITOS = "FAVORITOS"
 
 
 class EstadoReferencia(StrEnum):

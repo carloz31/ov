@@ -51,7 +51,11 @@ def verificar_p07_llegada_a_la_ciudad(cliente):
     ]
     # La Ciudad se abre a mitad de T1: la opcional t-opcional sigue pendiente y no impide cerrar el bloque.
     # B05: también se abre t-eco, que retoma las respuestas de t-expectativas.
-    assert reglas(respuesta) == {'R-CIUDAD', 'R-t-opcional', 'R-SEC-FAMILIA', 'R-t-adicional', 'R-t-eco'}
+    # B09: también deja en el diario la pregunta personalizada, por redactar.
+    assert reglas(respuesta) == {'R-CIUDAD', 'R-t-opcional', 'R-SEC-FAMILIA', 'R-t-adicional', 'R-t-eco',
+                                 'R-t-diario-personal'}
+    assert respuesta['entradas_desbloqueadas'] == [{'codigo': 't-diario-personal', 'nombre': 'Lo que espero',
+                                                    'personalizada': True, 'texto': None}]
     assert estado(cliente)['secciones']['FAMILIA'] == 'DISPONIBLE'
     estados = actividades(cliente)
     assert estados['t-opcional'] == 'DISPONIBLE'

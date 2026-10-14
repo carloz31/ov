@@ -63,8 +63,8 @@ def objetivo_legible(sesion: Session, regla: ReglaDesbloqueo) -> ObjetivoLegible
     if regla.tipo_objetivo == TipoObjetivo.NIVEL:
         return ObjetivoLegible(codigo=f"N{objetivo.numero}", nombre=objetivo.titulo)
     nombre = (
-        objetivo.nombre if regla.tipo_objetivo in (TipoObjetivo.BLOQUE, TipoObjetivo.INSIGNIA, TipoObjetivo.SECCION) else
-        objetivo.pregunta if regla.tipo_objetivo == TipoObjetivo.PREGUNTA_DIARIO else objetivo.titulo
+        objetivo.nombre if regla.tipo_objetivo in (TipoObjetivo.BLOQUE, TipoObjetivo.INSIGNIA, TipoObjetivo.SECCION,
+                                                   TipoObjetivo.PREGUNTA_DIARIO) else objetivo.titulo
     )
     return ObjetivoLegible(codigo=objetivo.codigo, nombre=nombre)
 

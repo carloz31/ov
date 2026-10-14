@@ -14,7 +14,7 @@ def test_r40_rechazos_de_acciones_y_consultas_sin_efectos(cliente, aplicacion):
         ('/acciones/responder-items', {'cuenta': 'apo-rosa', 'actividad': 't-mision-intereses', 'respuestas': [{'item': 'RIASEC-01', 'opcion': 3}]}, 404),
         ('/acciones/completar-actividad', {'cuenta': 'apo-rosa', 'actividad': 't-mision-intereses'}, 404),
         ('/acciones/escribir-carta', {'cuenta': 'est-luis', 'texto': 'DATO DE PRUEBA'}, 409),
-        ('/acciones/escribir-entrada', {'cuenta': 'apo-rosa', 'origen': 'LIBRE', 'texto': 'DATO DE PRUEBA'}, 409),
+        ('/acciones/escribir-entrada', {'cuenta': 'apo-rosa', 'texto': 'DATO DE PRUEBA'}, 409),
         ('/acciones/completar-conversacion', {'cuenta': 'est-luis', 'conversacion': 'conv-prueba'}, 409),
         ('/acciones/completar-actividad', {'cuenta': 'apo-rosa', 'actividad': 't-inicio'}, 409),
         ('/acciones/publicar-entrevista', {'autores': ['apo-rosa'], 'resumen': 'DATO DE PRUEBA'}, 409),

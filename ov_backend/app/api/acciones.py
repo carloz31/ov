@@ -2,8 +2,8 @@ from fastapi import APIRouter
 
 from app.dependencies import SesionBD, ejecutar_accion
 from app.schemas.acciones import (
-    AccionCuenta, CheckInEntrada, CompletarActividadEntrada, CompletarConversacionEntrada,
-    EscribirCartaEntrada, EscribirEntradaEntrada, EventoEntrada, PublicarEntrevistaEntrada,
+    AccionCuenta, BorrarEntradaEntrada, CheckInEntrada, CompletarActividadEntrada, CompletarConversacionEntrada,
+    EditarEntradaEntrada, EscribirCartaEntrada, EscribirEntradaEntrada, EventoEntrada, PublicarEntrevistaEntrada,
     ReiniciarInstrumentoEntrada, ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
     ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados, RespuestaResolverCaso,
     RespuestaReiniciarInstrumento, RespuestaRevelarResultado, RevelarResultadoEntrada, VerCarreraEntrada,
@@ -11,9 +11,9 @@ from app.schemas.acciones import (
 )
 from app.services import (
     actividades as servicio_actividades, catalogo as servicio_catalogo,
-    comunidad as servicio_comunidad, diario as servicio_diario, eventos as servicio_eventos,
-    testimonios as servicio_testimonios,
+    comunidad as servicio_comunidad, eventos as servicio_eventos, testimonios as servicio_testimonios,
 )
+from app.services.diario import acciones as servicio_diario
 
 
 router = APIRouter(tags=["Acciones"])
@@ -64,6 +64,16 @@ def responder_registro(entrada: ResponderRegistroEntrada, sesion: SesionBD):
 @router.post("/acciones/escribir-entrada", response_model=RespuestaAccion, response_model_exclude_unset=True)
 def escribir_entrada(entrada: EscribirEntradaEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_diario.escribir_entrada(sesion, entrada))
+
+
+@router.post("/acciones/editar-entrada", response_model=RespuestaAccion, response_model_exclude_unset=True)
+def editar_entrada(entrada: EditarEntradaEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: servicio_diario.editar_entrada(sesion, entrada))
+
+
+@router.post("/acciones/borrar-entrada", response_model=RespuestaAccion, response_model_exclude_unset=True)
+def borrar_entrada(entrada: BorrarEntradaEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: servicio_diario.borrar_entrada(sesion, entrada))
 
 
 @router.post("/acciones/check-in", response_model=RespuestaAccion, response_model_exclude_unset=True)

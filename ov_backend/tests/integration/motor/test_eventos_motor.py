@@ -11,4 +11,4 @@ def test_r36_eventos_crudos_no_escriben_progreso_ni_entrevista(cliente, aplicaci
     desafio = pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'VENCE_DESAFIO_INTACTO'})
     assert 'R-t-ins-oculta' in {d['regla'] for d in desafio['nuevos_desbloqueos']}
     despues = filas_base(aplicacion)
-    assert all(despues[nombre] == filas for nombre, filas in antes.items() if nombre not in {'evento_uso', 'desbloqueo'})
+    assert all(despues[nombre] == filas for nombre, filas in antes.items() if nombre not in {'evento_uso', 'desbloqueo', 'recomendacion'})

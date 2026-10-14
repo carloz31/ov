@@ -6,21 +6,18 @@ from app import models as modelos
 
 
 def test_check_in_y_diario_aislados_por_cuenta(cliente, sesion):
-    # DATO DE PRUEBA: la semilla no define preguntas; esta permite probar el invariante GUIADA.
-    sesion.add(modelos.PreguntaDiario(codigo='pregunta-prueba', pregunta='DATO DE PRUEBA'))
-    sesion.commit()
+    # B09: `t-inicio` deja en el diario la pregunta fija `t-diario-fija`; se responde una sola vez.
     for cuenta in ('est-ana', 'est-luis'):
         # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
         avanzar(cliente, cuenta=cuenta)
         cuerpo = {'cuenta': cuenta, 'nivel_seguridad': 3, 'fecha_hora': FECHA}
         pedir(cliente, 'POST', '/acciones/check-in', cuerpo)
         pedir(cliente, 'POST', '/acciones/check-in', cuerpo, esperado=409)
-        guiada = {'cuenta': cuenta, 'origen': 'GUIADA', 'pregunta': 'pregunta-prueba',
-                  'texto': 'DATO DE PRUEBA', 'fecha_hora': FECHA}
+        guiada = {'cuenta': cuenta, 'pregunta': 't-diario-fija', 'texto': 'DATO DE PRUEBA', 'fecha_hora': FECHA}
         pedir(cliente, 'POST', '/acciones/escribir-entrada', guiada)
         pedir(cliente, 'POST', '/acciones/escribir-entrada', guiada, esperado=409)
         for _ in range(2):
-            pedir(cliente, 'POST', '/acciones/escribir-entrada', {'cuenta': cuenta, 'origen': 'LIBRE', 'texto': 'DATO DE PRUEBA', 'fecha_hora': FECHA})
+            pedir(cliente, 'POST', '/acciones/escribir-entrada', {'cuenta': cuenta, 'texto': 'DATO DE PRUEBA', 'fecha_hora': FECHA})
         historial = eventos(cliente, cuenta)
         assert sum(e['tipo'] == 'REGISTRA_CHECK_IN' for e in historial) == 1
         assert sum(e['tipo'] == 'ESCRIBE_ENTRADA_LIBRE' for e in historial) == 2

@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 64
+    assert len(Base.metadata.tables) == 66
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,14 +129,15 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 66
+    assert sql.count('CREATE TABLE ') == 68
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
     assert 'json_type(' not in sql and 'PRAGMA' not in sql
     assert "WHERE origen = 'GUIADA'" in sql
+    assert "WHERE tipo = 'DIARIA'" in sql and "WHERE tipo = 'DESBLOQUEADA'" in sql
     assert 'WHERE anulado_en IS NULL' in sql
-    assert sql.count('BOOLEAN DEFAULT false') == 12
+    assert sql.count('BOOLEAN DEFAULT false') == 13
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:
         ddl = str(CreateTable(tabla).compile(dialect=dialecto))
@@ -178,8 +179,9 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
         with motor.connect() as conexion:
             filas_antes = {nombre: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
                            for nombre, tabla in anteriores.tables.items()
-                           # 0005 retira actividad_item_registro; sus filas pasan a item_registro.
-                           if nombre not in {'alembic_version', 'actividad_item_registro'}}
+                           # 0005 retira actividad_item_registro; sus filas pasan a item_registro. 0016 cambia
+                           # `pregunta_id` de entrada_diario por `recomendacion_id` (aquí sin filas).
+                           if nombre not in {'alembic_version', 'actividad_item_registro', 'entrada_diario'}}
         command.upgrade(configuracion, 'head')
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == (
@@ -281,16 +283,14 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).mappings().all()
                           for tabla in Base.metadata.sorted_tables}
         # B08: `ruta` tiene una batalla, así que 0013 se detiene antes de bajar nada.
-        # B10: 0015 baja (no hay favoritos), pero 0014 se detiene: las reglas de `ruta` cuentan vistas de ocupaciones
-        # e instituciones.
-        with pytest.raises(RuntimeError, match='hay eventos de vistas'):
+        # B10: 0015 bajaba (no hay favoritos) y 0014 se detenía por las vistas. B09: 0016 se detiene antes, porque
+        # `ruta` tiene una pregunta de diario que lee los favoritos.
+        with pytest.raises(RuntimeError, match='hay referencias a favoritos'):
             command.downgrade(configuracion, '0002')
-        assert set(inspect(motor).get_table_names()) == (set(Base.metadata.tables) - {'favorito'}) | {'alembic_version'}
+        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0014'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0016'
             for tabla in Base.metadata.sorted_tables:
-                if tabla.name == 'favorito':
-                    continue
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]
                 assert conexion.execute(select(*columnas).order_by(*tabla.primary_key.columns)).mappings().all() == [

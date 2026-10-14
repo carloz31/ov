@@ -1,8 +1,8 @@
-from sqlalchemy import CheckConstraint, ForeignKey, Text, text, true
+from sqlalchemy import CheckConstraint, ForeignKey, Text, false, text, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, busqueda_de, enumerado
-from app.models.enums import Audiencia, Espacio, TipoActividad, Visibilidad
+from app.models.enums import Audiencia, Espacio, TipoActividad, UsoPreguntaDiario, Visibilidad
 
 
 class Bloque(Base):
@@ -94,10 +94,21 @@ class Testimonio(Base):
 
 
 class PreguntaDiario(Base):
+    """Pregunta base del diario: DESBLOQUEABLE (la abre una regla) o DIARIA (entra al sorteo de la pregunta del día).
+
+    `dimension_id` clasifica las DIARIA para el sorteo; no se muestra ni va al LLM.
+    """
     __tablename__ = "pregunta_diario"
+    __table_args__ = (
+        CheckConstraint("uso = 'DIARIA' OR dimension_id IS NULL", name="dimension_solo_diaria"),
+    )
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
+    nombre: Mapped[str]
     pregunta: Mapped[str] = mapped_column(Text)
+    personalizada: Mapped[bool] = mapped_column(default=False, server_default=false())
+    uso: Mapped[UsoPreguntaDiario] = mapped_column(enumerado(UsoPreguntaDiario))
+    dimension_id: Mapped[int | None] = mapped_column(ForeignKey("dimension.id"))
 
 
 class Conversacion(Base):

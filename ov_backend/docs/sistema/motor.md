@@ -7,8 +7,8 @@ Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, 
 | Grupo | Tablas |
 |---|---|
 | Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash`, `activa`), `salon`, `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
-| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` solo en CASO), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado), `pregunta_diario`, `conversacion`, `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
-| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` (cada intento: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `entrada_diario`, `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo` |
+| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` solo en CASO), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado), `pregunta_diario` (ver «Diario»), `conversacion`, `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
+| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` (cada intento: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo` |
 | Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo`, `desbloqueo` (único por cuenta y regla; `visto`) |
 
 `id_objetivo` de una regla e `id_referencia` de un evento o condición son referencias polimórficas sin FK; los cargadores resuelven códigos a ids. `id_objetivo` nunca es nulo.
@@ -123,7 +123,9 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/resolver-batalla` | Actividad BATALLA disponible; `victoria`, `aciertos` ≤ `preguntas` (≥ 1) | Guarda cada intento en `resultado_batalla`. La primera victoria completa la actividad (COMPLETA_ACTIVIDAD) y registra SUPERA_BATALLA, y VENCE_DESAFIO_INTACTO si acertó todas. Perder deja la batalla EN_CURSO; los intentos posteriores a la victoria son repaso, sin eventos. El primer intento es el que cuenta para la métrica de conocimiento. |
 | `/acciones/ver-testimonio` | Solo estudiante; testimonio disponible (si no, 409 con su mensaje) | VISTA_TESTIMONIO solo la primera vez. |
 | `/acciones/responder-registro` | Clasificación ADECUADA o POCO_DESARROLLADA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
-| `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; GUIADA exige pregunta disponible y no respondida; LIBRE sin pregunta | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
+| `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; `titulo` opcional y `texto`; `pregunta` (código) o `del_dia`, no ambos; sin ninguno es LIBRE. Con pregunta: su recomendación existe, ya tiene texto y no tiene entrada; la del día, además, vigente (si no, 409). | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
+| `/acciones/editar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404); sin límite de tiempo ni sección | Cambia `texto` y, si se envía, `titulo`; fija `actualizada_en`. Sin eventos. |
+| `/acciones/borrar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404) | Borrado físico; la recomendación que respondía queda sin responder. Sin eventos. |
 | `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día; nivel 1–5 | REGISTRA_CHECK_IN |
 | `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
 | `/acciones/marcar-favorito` | Sección CATALOGO abierta; aún no es favorito | MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan) |
@@ -156,5 +158,26 @@ Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logro
 3. Una cuenta nunca ve objetivos de otra audiencia.
 4. COMPLETA_BLOQUE, SUPERA_CASO, SUPERA_BATALLA, VENCE_DESAFIO_INTACTO, VISTA_TESTIMONIO, ESCRIBE_CARTA y COMPLETA_CONVERSACION se registran solo la primera vez por referencia y cuenta; COMPLETA_ACTIVIDAD, en cada finalización.
 5. Repetir una actividad no cambia su estado COMPLETADA.
-6. Un check-in por día y una entrada GUIADA por pregunta.
+6. Un check-in por día y una entrada por recomendación (desbloqueada o del día).
 7. El nivel actual nunca baja.
+
+## Diario
+
+El registro recoge lo que el estudiante piensa o decide, y lo ve la orientadora. El diario recoge lo que siente y es privado: solo lo lee, edita y borra su autor; otros roles, a lo sumo, verán conteos de entradas existentes. Ninguna actividad es de diario ni escribe en él: las actividades desbloquean preguntas. Va en **una sola dirección**: nada lee del diario (no hay tipo de referencia a entradas, su texto nunca va al LLM y no alimenta indicadores salvo conteos). Código: `app/services/diario/`.
+
+| Tabla | Qué guarda |
+|---|---|
+| `pregunta_diario` (catálogo) | `codigo`, `nombre` (corto), `pregunta` (base), `personalizada`, `uso` DESBLOQUEABLE (la abre una regla `PREGUNTA_DIARIO`) o DIARIA (entra al sorteo de la pregunta del día), `dimension_id` (dimensión de partida y llegada; solo DIARIA, CHECK `dimension_solo_diaria`; no se muestra ni va al LLM). Sus referencias, solo si es personalizada (las valida el cargador). |
+| `recomendacion` | Pregunta recibida por una cuenta: `tipo` DESBLOQUEADA o DIARIA, `contexto` (referencias resueltas al crearla), `texto` (nulo = por redactar; una vez guardado no cambia) con su `origen` FIJA o LLM, `fecha` (solo DIARIA), `creada_en`. Única por cuenta y pregunta (DESBLOQUEADA) o por cuenta y fecha (DIARIA), con índices parciales. |
+| `entrada_diario` | `origen` LIBRE, GUIADA (responde una desbloqueada) o RECOMENDACION_DIA; `recomendacion_id` (única; nula solo en LIBRE), `numero` y `numero_libre` (solo LIBRE), `titulo`, `texto`, `fecha_hora`, `actualizada_en`. |
+| `contador_diario` | Últimos `numero` y `numero_libre` de la cuenta: borrar no libera números. |
+
+**Desbloqueadas.** Cuando una regla desbloquea una pregunta, en la misma transacción y sin LLM se crea su recomendación: la fija, con su texto (FIJA); la personalizada, con el `contexto` de ese momento y sin texto. Si ninguna referencia tiene dato, se guarda la base (FIJA). La respuesta de la acción trae `entradas_desbloqueadas` (`codigo`, `nombre`, `personalizada`, `texto`, nulo si está por redactar). `POST /acciones/diario/abrir-pregunta` la redacta una sola vez con el contexto guardado, no con los datos actuales.
+
+**Pregunta del día.** `POST /acciones/diario/pregunta-del-dia` devuelve la vigente (`fecha + VIGENCIA_PREGUNTA_DIA_DIAS > hoy`) o crea una: sortea una dimensión con peso `(máximo de la escala − promedio) + PESO_BASE_DIMENSION`, según el resultado vigente más reciente de partida o llegada (sin resultado, pesos iguales; las DIARIA sin dimensión pesan la base), y dentro de ella una DIARIA con todas sus referencias resueltas y fuera de las últimas `N_SIN_REPETIR_DIARIA`; si la dimensión no tiene ninguna, sortea entre las demás. Semilla `(cuenta, fecha)`. Sin tareas programadas; las vencidas quedan en la base y no se muestran ni se responden.
+
+**Redacción.** Ver `registro.md`, «Asistente del diario».
+
+**Amistad con el asistente.** Puntos = por cada día, las escrituras (eventos ESCRIBE_ENTRADA_DIARIO) hasta `TOPE_ENTRADAS_AMISTAD_DIA`; nivel según `UMBRALES_AMISTAD`. Se cuenta sobre eventos, no sobre entradas: editar o borrar no la bajan.
+
+**Invariantes del diario.** Solo el autor lee, edita y borra sus entradas; ningún tipo de referencia lee `entrada_diario`; los contextos enviados al LLM nunca incluyen texto de entradas; la amistad nunca baja; `numero` y `numero_libre` no cambian ni se reutilizan.

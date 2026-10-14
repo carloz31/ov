@@ -5,7 +5,9 @@ from sqlalchemy import select
 
 from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActividad, Visibilidad
 from datos.fijos import SECCIONES
-from datos.ruta import ACTIVIDADES, BLOQUES, FICHAS, INSIGNIAS, NIVELES, PROPIEDADES, REGLAS, TESTIMONIOS, contenido
+from datos.ruta import (
+    ACTIVIDADES, BLOQUES, FICHAS, INSIGNIAS, NIVELES, PREGUNTAS_DIARIO, PROPIEDADES, REGLAS, TESTIMONIOS, contenido,
+)
 from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 
 
@@ -81,7 +83,7 @@ def esperado(ruta, completo):
         return {'insignias': insignias, 'niveles': [
             {'numero': numero, 'titulo': titulo, 'estado': 'OBTENIDO' if numero <= (2 if completo else 1) else 'BLOQUEADO'}
             for numero, titulo in NIVELES
-        ]}
+        ], 'afinidad': 0.0}
     if ruta == 'testimonios':
         # Se abren al superar el caso, que en este recorrido sigue sin resolverse.
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'visto': False, 'pista': pista,
@@ -89,8 +91,13 @@ def esperado(ruta, completo):
                 for codigo, titulo, _, _, pista in sorted(TESTIMONIOS)]
     if ruta == 'secciones':
         return [(codigo, 'DISPONIBLE' if completo else 'BLOQUEADA', completo) for codigo in SECCIONES_ESTUDIANTE]
-    if ruta == 'diario/preguntas' and not completo:
-        return MENSAJES['DIARIO']
+    if ruta == 'diario/preguntas':
+        if not completo:
+            return MENSAJES['DIARIO']
+        # B09: el recorrido abre las dos desbloqueables; la personalizada queda por redactar hasta abrirla.
+        return [{'codigo': codigo, 'nombre': nombre, 'estado': 'DISPONIBLE', 'personalizada': personalizada,
+                 'redactada': not personalizada, 'respondida': False}
+                for codigo, nombre, _, uso, personalizada, _ in sorted(PREGUNTAS_DIARIO) if uso == 'DESBLOQUEABLE']
     return []
 
 

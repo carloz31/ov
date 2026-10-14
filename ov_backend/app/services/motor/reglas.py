@@ -157,7 +157,7 @@ def registrar_eventos(
     precargar_referencias(sesion, [(condicion.tipo_evento, condicion.id_referencia)
                                   for regla in candidatas.values() if regla.id not in obtenidas
                                   for condicion in regla.condiciones])
-    nuevas_filas, nuevos = [], []
+    nuevas_filas, nuevos, preguntas = [], [], []
     for regla in sorted(candidatas.values(), key=lambda regla: regla.codigo):
         if regla.id in obtenidas or not objetivo_corresponde_a_cuenta(sesion, cuenta, regla.tipo_objetivo, regla.id_objetivo):
             continue
@@ -165,6 +165,8 @@ def registrar_eventos(
         if resultado.cumple:
             nuevas_filas.append(dict(cuenta_id=cuenta.id, regla_id=regla.id, fecha_hora=fecha_hora, visto=False))
             obtenidas.add(regla.id)
+            if regla.tipo_objetivo == TipoObjetivo.PREGUNTA_DIARIO:
+                preguntas.append(regla.id_objetivo)
             nuevos.append(DesbloqueoNuevo(
                 regla=regla.codigo, tipo_objetivo=regla.tipo_objetivo,
                 objetivo=objetivo_legible(sesion, regla), condiciones=resultado.condiciones,
@@ -176,6 +178,10 @@ def registrar_eventos(
             sesion.execute(insert(Desbloqueo.__table__), nuevas_filas)
         else:
             pendientes.extend(nuevas_filas)
+    if preguntas:
+        # La pregunta desbloqueada llega al diario en la misma transacción (B09).
+        from app.services.diario.acciones import crear_desbloqueadas
+        crear_desbloqueadas(sesion, cuenta, preguntas, fecha_hora)
     sesion.flush()
     return nuevos
 

@@ -60,7 +60,7 @@ def test_orientadora_no_tiene_secciones(cliente):
 
 
 ACCIONES = {
-    'DIARIO': ('escribir-entrada', {'origen': 'LIBRE', 'texto': 'DATO DE PRUEBA'}, 't-inicio'),
+    'DIARIO': ('escribir-entrada', {'texto': 'DATO DE PRUEBA'}, 't-inicio'),
     'CHECK_IN': ('check-in', {'nivel_seguridad': 3}, 't-cierre-inicio'),
     'FAMILIA': ('escribir-carta', {'texto': 'DATO DE PRUEBA'}, 't-expectativas'),
 }
@@ -103,7 +103,9 @@ def test_leer_el_diario_bloqueado_responde_409_con_su_mensaje(cliente):
     assert respuesta.json()['detail']['mensaje'] == 'Completa el inicio para abrir tu diario.'
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/diario/preguntas') == []
     completar(cliente, 't-inicio')
-    assert pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas') == []
+    # B09: `t-inicio` deja en el diario la pregunta fija; la personalizada sigue bloqueada.
+    assert [(p['codigo'], p['estado'], p['redactada']) for p in pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')] == [
+        ('t-diario-fija', 'DISPONIBLE', True), ('t-diario-personal', 'BLOQUEADA', False)]
 
 
 def test_presupuesto_de_secciones_no_crece_con_el_catalogo(cliente, aplicacion):

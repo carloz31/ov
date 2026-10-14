@@ -6,10 +6,13 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto, usar_contexto
 from app.core.definiciones import MODELOS_FIJOS
 from app.exceptions import ErrorAccion
-from app.models import Cuenta, Desbloqueo, EventoUso, Rol, TipoEventoUso, TipoObjetivo
+from app.models import (
+    Cuenta, Desbloqueo, EventoUso, PreguntaDiario, Recomendacion, Rol, TipoEventoUso, TipoObjetivo, TipoRecomendacion,
+)
 from app.schemas.acciones import FechaAccion, RespuestaAccion, RespuestaAgrupada
 from app.schemas.comun import ContenidoEstado
 from app.schemas.cuentas import EventoLegible
+from app.schemas.diario import EntradaDesbloqueada
 from app.schemas.motor import DesbloqueoNuevo
 from app.services.motor.referencias import referencia_legible
 from app.services.motor.reglas import (
@@ -67,12 +70,27 @@ def responder_con_eventos(
     nuevos = [nuevo if nuevo.evaluador_especial is not None else DesbloqueoNuevo.model_validate(
         nuevo.model_dump(exclude={"evaluador_especial"}),
     ) for nuevo in nuevos]
-    return RespuestaAccion(
+    respuesta = RespuestaAccion(
         eventos_registrados=[EventoLegible(
             tipo=tipo, referencia=referencia_legible(sesion, tipo, referencia), fecha_hora=fecha,
         ) for tipo, referencia in eventos],
         nuevos_desbloqueos=nuevos,
     )
+    preguntas = [nuevo.objetivo.codigo for nuevo in nuevos if nuevo.tipo_objetivo == TipoObjetivo.PREGUNTA_DIARIO]
+    if preguntas:
+        respuesta.entradas_desbloqueadas = entradas_desbloqueadas(sesion, cuenta, preguntas)
+    return respuesta
+
+
+def entradas_desbloqueadas(sesion: Session, cuenta: Cuenta, codigos: list[str]) -> list[EntradaDesbloqueada]:
+    definiciones = contexto(sesion).definiciones
+    preguntas = {definiciones.por_codigo(PreguntaDiario, codigo).id: codigo for codigo in codigos}
+    textos = dict(sesion.execute(select(Recomendacion.pregunta_diario_id, Recomendacion.texto).where(
+        Recomendacion.cuenta_id == cuenta.id, Recomendacion.tipo == TipoRecomendacion.DESBLOQUEADA,
+        Recomendacion.pregunta_diario_id.in_(preguntas))).all())
+    return [EntradaDesbloqueada(codigo=pregunta.codigo, nombre=pregunta.nombre, personalizada=pregunta.personalizada,
+                                texto=textos.get(pregunta_id))
+            for pregunta_id in preguntas for pregunta in (definiciones.obtener(PreguntaDiario, pregunta_id),)]
 
 
 @usar_contexto

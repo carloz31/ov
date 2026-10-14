@@ -46,6 +46,18 @@ PALABRAS_EVALUATIVAS = ("adecuad", "poco desarrollad", "criterio", "incomplet", 
 FACTOR_MAXIMO_CONSOLIDADA = 1.5
 PAUSA_CASOS_GEMINI_SEGUNDOS = 5
 
+# B09 · Diario. Cambiar el prompt de personalización exige subir `VERSION_PROMPT_DIARIO`.
+VERSION_PROMPT_DIARIO = "v1"
+# Días que una pregunta del día sigue vigente desde su fecha (provisional).
+VIGENCIA_PREGUNTA_DIA_DIAS = 1
+# Sorteo de la pregunta del día: peso = (máximo de la escala − promedio) + base; las DIARIA sin dimensión pesan la base.
+PESO_BASE_DIMENSION = 0.5
+# Preguntas del día recientes que no se repiten (provisional).
+N_SIN_REPETIR_DIARIA = 3
+# Amistad con el asistente: escrituras que cuentan por día y puntos para alcanzar cada nivel (provisionales).
+TOPE_ENTRADAS_AMISTAD_DIA = 3
+UMBRALES_AMISTAD = (1, 5, 12, 25, 45)
+
 
 def transformar_opcion_onet(orden):
     return orden - OPCION_ONET_MINIMA + PUNTAJE_ONET_MINIMO

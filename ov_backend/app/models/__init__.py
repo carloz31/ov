@@ -7,6 +7,7 @@ from app.models.enums import (
     TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
     ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion, TipoCriterio,
     TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion, TipoFavorito,
+    UsoPreguntaDiario, TipoRecomendacion, OrigenRedaccion,
 )
 
 
@@ -23,8 +24,8 @@ _MODELOS_POR_MODULO = {
         'Nivel', 'FamiliaCarrera', 'Carrera',
     ),
     'app.models.progreso': (
-        'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn',
-        'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito',
+        'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'ColeccionOcupacion', 'Recomendacion', 'EntradaDiario', 'ContadorDiario',
+        'CheckIn', 'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito',
     ),
     'app.models.motor': (
         'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo',
@@ -77,5 +78,6 @@ __all__ = [
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
     'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera', 'RangoIngreso',
-    'TipoFavorito', 'Favorito',
+    'TipoFavorito', 'Favorito', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
+    'ContadorDiario',
 ]

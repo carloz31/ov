@@ -5,6 +5,7 @@ edita y lo que puede quedar poco desarrollado es la justificación, no la decisi
 TEXTO: según la clasificación de la última evaluación del ítem fuente; la poco desarrollada no se cita.
 RESULTADO y COINCIDENCIAS: el resultado vigente (revelado) de la aplicación fuente; con perfil plano, sin opciones.
 RESPUESTA_CUESTIONARIO: la etiqueta elegida en un ítem de la aplicación fuente, cuando su actividad está completada.
+FAVORITOS: las carreras, ocupaciones e instituciones marcadas, de la más reciente a la más antigua.
 """
 
 from sqlalchemy import select
@@ -13,8 +14,9 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import LONGITUD_CODIGO_INTERES
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, ActividadItem, AplicacionActividad, Bloque, Cuenta, EstadoProgreso, EvaluacionRespuesta, ItemRegistro,
-    OpcionEscala, ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol,
+    Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, EstadoProgreso, EvaluacionRespuesta,
+    Favorito, Institucion, ItemRegistro, Ocupacion, OpcionEscala, ProgresoActividad, RespuestaItem, RespuestaRegistro,
+    ResultadoInstrumento, Rol, TipoFavorito,
 )
 from app.models.enums import (
     ClasificacionRespuesta, EstadoReferencia, EstadoRespuestaRegistro, TipoReferencia,
@@ -93,18 +95,42 @@ def _opciones_de_resultado(tipo, resultado):
     return [OpcionReferida(codigo=d.codigo, texto=d.nombre) for d in dimensiones]
 
 
+def _leer_favoritos(sesion, cuenta):
+    filas = sesion.execute(select(Favorito.tipo, Favorito.id_referencia).where(Favorito.cuenta_id == cuenta.id).order_by(
+        Favorito.fecha_hora.desc(), Favorito.id.desc())).all()
+    por_tipo = {}
+    for tipo, referencia in filas:
+        por_tipo.setdefault(tipo, []).append(referencia)
+    columnas = {TipoFavorito.CARRERA: (Carrera, Carrera.codigo, Carrera.nombre),
+                TipoFavorito.OCUPACION: (Ocupacion, Ocupacion.codigo_onet, Ocupacion.titulo),
+                TipoFavorito.INSTITUCION: (Institucion, Institucion.codigo, Institucion.nombre)}
+    nombres = {}
+    for tipo, ids in por_tipo.items():
+        modelo, codigo, texto = columnas[tipo]
+        nombres.update({(tipo, i): OpcionReferida(codigo=c, texto=t)
+                        for i, c, t in sesion.execute(select(modelo.id, codigo, texto).where(modelo.id.in_(ids)))})
+    return [nombres[tipo, referencia] for tipo, referencia in filas if (tipo, referencia) in nombres]
+
+
 def resolver(sesion, cuenta, referencias):
     """{código: ReferenciaResuelta} para `referencias` (filas del catálogo), con datos de `cuenta`."""
     definiciones = contexto(sesion).definiciones
-    de_registro = [r for r in referencias if r.aplicacion_id is None]
+    de_registro = [r for r in referencias if r.item_registro_id is not None]
     respuestas, vigentes = _leer_fuentes(sesion, cuenta, {r.item_registro_id for r in de_registro})
     de_cuestionario = [r for r in referencias if r.tipo == TipoReferencia.RESPUESTA_CUESTIONARIO]
     respuestas_cuestionario = _leer_respuestas_cuestionario(sesion, cuenta, de_cuestionario)
     resultados = _leer_resultados(sesion, cuenta, {r.aplicacion_id for r in referencias
                                                    if r.aplicacion_id is not None and r not in de_cuestionario})
+    favoritos = (_leer_favoritos(sesion, cuenta) if any(r.tipo == TipoReferencia.FAVORITOS for r in referencias)
+                 else [])
     resueltas = {}
     for referencia in referencias:
         base = dict(codigo=referencia.codigo, tipo=referencia.tipo)
+        if referencia.tipo == TipoReferencia.FAVORITOS:
+            resueltas[referencia.codigo] = (
+                ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, opciones=favoritos) if favoritos else
+                ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO))
+            continue
         if referencia.tipo == TipoReferencia.RESPUESTA_CUESTIONARIO:
             etiqueta = respuestas_cuestionario.get((referencia.aplicacion_id, referencia.item_instrumento_id))
             resueltas[referencia.codigo] = (

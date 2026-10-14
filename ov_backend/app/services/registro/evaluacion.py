@@ -342,6 +342,10 @@ class EvaluadorFalso:
         self.contextos: list = []
         self.llamadas_entrega = 0
         self.llamadas_seguimiento = 0
+        # Diario (B09): `falla_diario` simula un fallo del LLM al personalizar.
+        self.contextos_diario: list = []
+        self.llamadas_diario = 0
+        self.falla_diario = False
 
     @staticmethod
     def _clasificar(texto, criterios, previos):
@@ -386,3 +390,13 @@ class EvaluadorFalso:
             consolidada = consolidada * 3
         return ResultadoSeguimiento(clasificacion=clasificacion, criterios_faltantes=faltantes,
                                     pregunta=pregunta, consolidada=consolidada)
+
+    def personalizar_entrada(self, contexto) -> dict:
+        """Retoma el primer dato del contexto delante de la pregunta base."""
+        self.llamadas_diario += 1
+        self.contextos_diario.append(contexto)
+        if self.falla_diario:
+            raise RuntimeError("Fallo simulado del asistente del diario")
+        dato = contexto.datos[0]
+        cita = (dato.texto or ', '.join(dato.opciones)).replace('?', '').strip()[:60]
+        return {"pregunta": f"Sobre «{cita}»: {contexto.pregunta_base}"}

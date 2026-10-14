@@ -209,8 +209,11 @@ REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera')
                ('t-ref-resultado', ('ACTIVIDAD', 't-contraste'), 'RESULTADO', 'APL-RIASEC'),
                ('t-ref-coincidencias', ('ACTIVIDAD', 't-contraste'), 'COINCIDENCIAS', 'APL-RIASEC'),
                ('t-ref-cuestionario', ('ACTIVIDAD', 't-lee-cuestionario'), 'RESPUESTA_CUESTIONARIO',
-                ('APL-PARTIDA', 'AUTO-01')))
+                ('APL-PARTIDA', 'AUTO-01')),
+               ('t-ref-diario-espera', ('PREGUNTA_DIARIO', 't-diario-personal'), 'TEXTO', 't-exp-espera'),
+               ('t-ref-diario-favoritos', ('PREGUNTA_DIARIO', 't-dia-favoritos'), 'FAVORITOS', None))
 FUENTE_APLICACION = ('RESULTADO', 'COINCIDENCIAS')
+SIN_FUENTE = ('FAVORITOS',)
 
 # Lo que cambia los valores por defecto de un ítem (obligatorio, sin longitud mínima).
 PROPIEDADES_ITEMS = {'t-val-breve': {'min_caracteres': 40}}
@@ -243,6 +246,20 @@ INSIGNIAS = (('t-ins-1', 'Insignia de prueba', 'Completaste t-inicio.', 'Complet
 
 # (número, título)
 NIVELES = ((1, 'Nivel 1 de prueba'), (2, 'Nivel 2 de prueba'))
+
+# Preguntas del diario: (código, nombre, pregunta base, uso, personalizada, dimensión). Las DESBLOQUEABLE las
+# abre una regla; las DIARIA entran al sorteo de la pregunta del día por la dimensión del cuestionario de
+# partida y llegada (o sin dimensión). Las personalizadas declaran sus referencias en `REFERENCIAS`.
+PREGUNTAS_DIARIO = (
+    ('t-diario-fija', 'Mi primer paso', '¿Qué te gustaría descubrir de ti en este camino?', 'DESBLOQUEABLE', False, None),
+    ('t-diario-personal', 'Lo que espero', '¿Cómo te sientes con lo que esperas de este camino?', 'DESBLOQUEABLE',
+     True, None),
+    ('t-dia-claridad-1', 'Lo que tengo claro', '¿Qué tienes hoy un poco más claro que ayer?', 'DIARIA', False, 'AUTO-A'),
+    ('t-dia-claridad-2', 'Una duda', '¿Qué duda te gustaría resolver esta semana?', 'DIARIA', False, 'AUTO-A'),
+    ('t-dia-mi-1', 'Algo de mí', '¿Qué hiciste hoy que disfrutaste de verdad?', 'DIARIA', False, 'AUTO-B'),
+    ('t-dia-favoritos', 'Mis favoritos', '¿Qué te atrae de lo que marcaste como favorito?', 'DIARIA', True, 'AUTO-B'),
+    ('t-dia-libre', 'Un momento', '¿Qué momento de hoy quieres recordar?', 'DIARIA', False, None),
+)
 
 # (código, tipo de objetivo, objetivo, mensaje de bloqueo, condiciones); cada condición:
 # (evento, referencia, conteo, mínimo).
@@ -305,6 +322,11 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-cierre-inicio', 'EVENTOS', 1),)),
     ('R-SEC-FAMILIA', 'SECCION', 'FAMILIA', 'Completa el registro de expectativas para abrir la sección Familia.',
      (('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1),)),
+    ('R-t-diario-fija', 'PREGUNTA_DIARIO', 't-diario-fija', 'Completa el inicio para recibir esta pregunta.',
+     (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
+    ('R-t-diario-personal', 'PREGUNTA_DIARIO', 't-diario-personal',
+     'Completa el registro de expectativas para recibir esta pregunta.',
+     (('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1),)),
     ('R-SEC-CONVERSACIONES', 'SECCION', 'CONVERSACIONES', 'Completa tus actividades para conversar en familia.',
      (('COMPLETA_BLOQUE', 'FAMILIA', 'EVENTOS', 1),)),
 )
@@ -341,8 +363,9 @@ def _cargar_estructura(sesion):
     insignias = {c: modelos.Insignia(codigo=c, nombre=n, descripcion=d, requisito=r, es_oculta=o,
                                    audiencia=modelos.Audiencia.ESTUDIANTE) for c, n, d, r, o in INSIGNIAS}
     niveles = {num: modelos.Nivel(numero=num, titulo=t) for num, t in NIVELES}
+    preguntas = _preguntas_diario(sesion)
     sesion.add_all([*cuentas.values(), *bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones,
-                    *insignias.values(), *niveles.values()])
+                    *insignias.values(), *niveles.values(), *preguntas.values()])
     sesion.flush()
     sesion.add_all(modelos.VinculoFamiliar(codigo=c, estudiante_id=cuentas[e].id, apoderado_id=cuentas[a].id,
                                            parentesco=p) for c, e, a, p in VINCULOS)
@@ -362,7 +385,21 @@ def _cargar_estructura(sesion):
     sesion.add_all(actividades.values())
     sesion.flush()
     return {'BLOQUE': bloques, 'ACTIVIDAD': actividades, 'FICHA': fichas, 'TESTIMONIO': testimonios,
-            'INSIGNIA': insignias, 'NIVEL': niveles, 'SALON': salones}
+            'INSIGNIA': insignias, 'NIVEL': niveles, 'PREGUNTA_DIARIO': preguntas, 'SALON': salones}
+
+
+def _preguntas_diario(sesion):
+    dimensiones = {d.codigo: d for d in sesion.scalars(select(modelos.Dimension))}
+    preguntas = {}
+    for codigo, nombre, pregunta, uso, personalizada, dimension in PREGUNTAS_DIARIO:
+        if not nombre.strip():
+            raise ValueError(f'La pregunta de diario {codigo} no tiene nombre')
+        if dimension is not None and (uso != 'DIARIA' or dimension not in dimensiones):
+            raise ValueError(f'La pregunta de diario {codigo} tiene una dimensión que no corresponde: {dimension}')
+        preguntas[codigo] = modelos.PreguntaDiario(
+            codigo=codigo, nombre=nombre, pregunta=pregunta, uso=modelos.UsoPreguntaDiario(uso),
+            personalizada=personalizada, dimension_id=None if dimension is None else dimensiones[dimension].id)
+    return preguntas
 
 
 def _unir_instrumentos(sesion, actividades, base: fijos.Fijos):
@@ -464,6 +501,14 @@ def _validar_referencias(sesion, actividades, items, base: fijos.Fijos):
             dueno_id = dict(pregunta_diario_id=preguntas[dueno].id)
         else:
             raise ValueError(f'La referencia {codigo} tiene un dueño inexistente: {tipo_dueno} {dueno}')
+        if tipo_dueno == 'PREGUNTA_DIARIO' and not preguntas[dueno].personalizada:
+            raise ValueError(f'La referencia {codigo} pertenece a {dueno}, que no es personalizada')
+        if tipo in SIN_FUENTE:
+            if fuente is not None:
+                raise ValueError(f'La referencia {codigo} es {tipo} y no lleva fuente')
+            referencias[codigo] = (modelos.Referencia(codigo=codigo, tipo=modelos.TipoReferencia(tipo), **dueno_id),
+                                   None)
+            continue
         if tipo == 'RESPUESTA_CUESTIONARIO':
             codigo_aplicacion, codigo_item = fuente
             aplicacion, item = base.aplicaciones.get(codigo_aplicacion), items_instrumento.get(codigo_item)

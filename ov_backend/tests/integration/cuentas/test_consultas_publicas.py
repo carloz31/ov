@@ -35,7 +35,7 @@ def test_validacion_de_tipo_y_filtro(cliente):
 
 def test_eventos_diario_y_check_in_no_exponen_ids(sesion, cliente):
     ana = buscar(sesion, modelos.Cuenta, "est-ana")
-    entrada = modelos.EntradaDiario(cuenta_id=ana.id, origen=modelos.OrigenEntrada.LIBRE,
+    entrada = modelos.EntradaDiario(cuenta_id=ana.id, origen=modelos.OrigenEntrada.LIBRE, numero=1, numero_libre=1,
                                    texto="Una entrada", fecha_hora=FECHA)
     check_in = modelos.CheckIn(cuenta_id=ana.id, fecha=FECHA.date(), nivel_seguridad=3)
     sesion.add_all([entrada, check_in])

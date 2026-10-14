@@ -1,12 +1,12 @@
 from datetime import date, datetime
 
 from sqlalchemy import (
-    CheckConstraint, Date, DateTime, ForeignKey, Index, Text, UniqueConstraint, false, text,
+    JSON, CheckConstraint, Date, DateTime, ForeignKey, Index, Text, UniqueConstraint, false, text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, enumerado
-from app.models.enums import EstadoProgreso, OrigenEntrada, TipoFavorito
+from app.models.enums import EstadoProgreso, OrigenEntrada, OrigenRedaccion, TipoFavorito, TipoRecomendacion
 
 
 class ProgresoActividad(Base):
@@ -54,26 +54,65 @@ class ColeccionOcupacion(Base):
     obtenida_en: Mapped[datetime] = mapped_column(DateTime)
 
 
-class EntradaDiario(Base):
-    __tablename__ = "entrada_diario"
+class Recomendacion(Base):
+    """Pregunta del diario recibida por una cuenta: desbloqueada por una regla o sorteada como pregunta del día.
+
+    `contexto` son las referencias resueltas al crearla; `texto` nulo = por redactar, y una vez guardado no cambia.
+    """
+    __tablename__ = "recomendacion"
     __table_args__ = (
         Index(
-            "entrada_guiada_unica", "cuenta_id", "pregunta_id", unique=True,
-            sqlite_where=text("origen = 'GUIADA'"),
-            postgresql_where=text("origen = 'GUIADA'"),
+            "recomendacion_desbloqueada_unica", "cuenta_id", "pregunta_diario_id", unique=True,
+            sqlite_where=text("tipo = 'DESBLOQUEADA'"),
+            postgresql_where=text("tipo = 'DESBLOQUEADA'"),
         ),
+        Index(
+            "recomendacion_diaria_unica", "cuenta_id", "fecha", unique=True,
+            sqlite_where=text("tipo = 'DIARIA'"),
+            postgresql_where=text("tipo = 'DIARIA'"),
+        ),
+        CheckConstraint("(tipo = 'DIARIA') = (fecha IS NOT NULL)", name="fecha_solo_diaria"),
+        CheckConstraint("(texto IS NULL) = (origen IS NULL)", name="texto_con_origen"),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
+    pregunta_diario_id: Mapped[int] = mapped_column(ForeignKey("pregunta_diario.id"))
+    tipo: Mapped[TipoRecomendacion] = mapped_column(enumerado(TipoRecomendacion))
+    contexto: Mapped[list | None] = mapped_column(JSON(none_as_null=True))
+    texto: Mapped[str | None] = mapped_column(Text)
+    origen: Mapped[OrigenRedaccion | None] = mapped_column(enumerado(OrigenRedaccion))
+    fecha: Mapped[date | None] = mapped_column(Date)
+    creada_en: Mapped[datetime] = mapped_column(DateTime)
+
+
+class EntradaDiario(Base):
+    """Entrada privada del diario. `numero` y `numero_libre` salen de `ContadorDiario` y no se reutilizan."""
+    __tablename__ = "entrada_diario"
+    __table_args__ = (
+        UniqueConstraint("cuenta_id", "numero"),
         CheckConstraint(
-            "(origen = 'GUIADA' AND pregunta_id IS NOT NULL) OR "
-            "(origen = 'LIBRE' AND pregunta_id IS NULL)",
-            name="pregunta_segun_origen",
+            "(origen = 'LIBRE') = (recomendacion_id IS NULL) AND (origen = 'LIBRE') = (numero_libre IS NOT NULL)",
+            name="recomendacion_segun_origen",
         ),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
     origen: Mapped[OrigenEntrada] = mapped_column(enumerado(OrigenEntrada))
-    pregunta_id: Mapped[int | None] = mapped_column(ForeignKey("pregunta_diario.id"))
+    recomendacion_id: Mapped[int | None] = mapped_column(ForeignKey("recomendacion.id"), unique=True)
+    numero: Mapped[int]
+    numero_libre: Mapped[int | None]
+    titulo: Mapped[str | None] = mapped_column(Text)
     texto: Mapped[str] = mapped_column(Text)
     fecha_hora: Mapped[datetime] = mapped_column(DateTime)
+    actualizada_en: Mapped[datetime | None] = mapped_column(DateTime)
+
+
+class ContadorDiario(Base):
+    """Últimos números de entrada usados por la cuenta: borrar una entrada no libera su número."""
+    __tablename__ = "contador_diario"
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"), primary_key=True)
+    ultimo_numero: Mapped[int]
+    ultimo_libre: Mapped[int]
 
 
 class CheckIn(Base):

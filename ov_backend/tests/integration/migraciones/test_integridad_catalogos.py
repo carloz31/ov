@@ -31,8 +31,8 @@ def test_r38_integridad_catalogos_relaciones_respuestas_y_defaults(cliente, apli
         guiada = sesion.scalar(select(m.EntradaDiario).where(m.EntradaDiario.origen == 'GUIADA'))
         with pytest.raises(IntegrityError):
             with sesion.begin_nested():
-                sesion.add(m.EntradaDiario(cuenta_id=guiada.cuenta_id, pregunta_id=guiada.pregunta_id,
-                    origen='GUIADA', texto='DATO DE PRUEBA', fecha_hora=FECHA_BD))
+                sesion.add(m.EntradaDiario(cuenta_id=guiada.cuenta_id, recomendacion_id=guiada.recomendacion_id,
+                    numero=guiada.numero + 1, origen='GUIADA', texto='DATO DE PRUEBA', fecha_hora=FECHA_BD))
                 sesion.flush()
         item = sesion.scalar(select(m.ItemInstrumento))
         with pytest.raises(IntegrityError):
@@ -59,7 +59,7 @@ def test_r38_integridad_catalogos_relaciones_respuestas_y_defaults(cliente, apli
         assert desbloqueo.visto is False and item.inverso is False
         assert sesion.scalar(select(m.Actividad)).visibilidad == 'SIEMPRE'
     inspector = inspect(aplicacion.state.motor_bd)
-    assert len(inspector.get_table_names()) == 64
+    assert len(inspector.get_table_names()) == 66
     columnas = {c['name']: c for c in inspector.get_columns('ocupacion')}
     assert set(columnas) == {'id', 'codigo', 'codigo_onet', 'titulo', 'descripcion', 'lugares_trabajo', 'habilidades',
                             'conocimientos', 'codigo_riasec', 'busqueda'} and columnas['codigo']['nullable'] is True

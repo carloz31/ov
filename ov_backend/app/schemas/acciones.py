@@ -3,8 +3,9 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
-from app.models import EstadoProgreso, OrigenEntrada, TipoEventoUso
+from app.models import EstadoProgreso, TipoEventoUso
 from app.schemas.cuentas import EventoLegible
+from app.schemas.diario import EntradaDesbloqueada
 from app.schemas.motor import DesbloqueoNuevo
 
 
@@ -87,17 +88,32 @@ class ResponderRegistroEntrada(AccionCuenta):
 
 
 class EscribirEntradaEntrada(AccionCuenta):
-    origen: OrigenEntrada
+    """Sin `pregunta` ni `del_dia`, la entrada es libre."""
+    titulo: str | None = None
+    texto: str = Field(min_length=1)
     pregunta: str | None = None
-    texto: str
+    del_dia: bool = False
 
     @model_validator(mode="after")
     def validar_pregunta(self):
-        if self.origen == OrigenEntrada.GUIADA and self.pregunta is None:
-            raise ValueError("Una entrada GUIADA requiere pregunta")
-        if self.origen == OrigenEntrada.LIBRE and self.pregunta is not None:
-            raise ValueError("Una entrada LIBRE no admite pregunta")
+        if self.pregunta is not None and self.del_dia:
+            raise ValueError("Una entrada responde una pregunta desbloqueada o la del día, no ambas")
         return self
+
+
+class EditarEntradaEntrada(AccionCuenta):
+    """`titulo` solo cambia si se envía (nulo lo quita)."""
+    numero: int
+    titulo: str | None = None
+    texto: str = Field(min_length=1)
+
+
+class BorrarEntradaEntrada(AccionCuenta):
+    numero: int
+
+
+class AbrirPreguntaEntrada(AccionCuenta):
+    codigo: str
 
 
 class CheckInEntrada(AccionCuenta):
@@ -145,8 +161,17 @@ class EventoEntrada(AccionCuenta):
 
 
 class RespuestaAccion(BaseModel):
+    """`entradas_desbloqueadas` solo aparece si la acción dejó preguntas en el diario."""
     eventos_registrados: list[EventoLegible]
     nuevos_desbloqueos: list[DesbloqueoNuevo]
+    entradas_desbloqueadas: list[EntradaDesbloqueada] = []
+
+    def campos(self) -> dict:
+        """Los campos de la acción, para heredarlos en una respuesta más amplia sin fijar los omitidos."""
+        campos = dict(eventos_registrados=self.eventos_registrados, nuevos_desbloqueos=self.nuevos_desbloqueos)
+        if 'entradas_desbloqueadas' in self.model_fields_set:
+            campos['entradas_desbloqueadas'] = self.entradas_desbloqueadas
+        return campos
 
 
 class RespuestaResolverCaso(RespuestaAccion):

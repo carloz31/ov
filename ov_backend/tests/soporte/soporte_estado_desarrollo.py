@@ -23,6 +23,7 @@ def llenar_estado(aplicacion):
         item = sesion.scalar(select(modelos.ItemInstrumento))
         opcion = sesion.scalar(select(modelos.OpcionEscala).where(modelos.OpcionEscala.escala_id == item.escala_id))
         item_registro = sesion.scalar(select(modelos.ItemRegistro).limit(1))
+        pregunta = sesion.scalar(select(modelos.PreguntaDiario))
         ocupacion = sesion.scalar(select(modelos.Ocupacion))
         if ocupacion is None:
             ocupacion = modelos.Ocupacion(codigo_onet='PRUEBA-REINICIO', titulo='DATO DE PRUEBA')
@@ -41,7 +42,11 @@ def llenar_estado(aplicacion):
             modelos.ResultadoBatalla(progreso_id=progreso.id, victoria=False, aciertos=1, preguntas=3, fecha_hora=fecha),
             modelos.ColeccionOcupacion(cuenta_id=cuenta.id, ocupacion_id=ocupacion.id, actividad_id=actividad.id,
                                        obtenida_en=fecha),
-            modelos.EntradaDiario(cuenta_id=cuenta.id, origen='LIBRE', texto='DATO DE PRUEBA', fecha_hora=fecha),
+            modelos.EntradaDiario(cuenta_id=cuenta.id, origen='LIBRE', numero=1, numero_libre=1, texto='DATO DE PRUEBA',
+                                  fecha_hora=fecha),
+            modelos.ContadorDiario(cuenta_id=cuenta.id, ultimo_numero=1, ultimo_libre=1),
+            modelos.Recomendacion(cuenta_id=cuenta.id, pregunta_diario_id=pregunta.id, tipo='DIARIA', texto='DATO DE PRUEBA',
+                                  origen='FIJA', fecha=fecha.date(), creada_en=fecha),
             modelos.CheckIn(cuenta_id=cuenta.id, fecha=fecha.date(), nivel_seguridad=3),
             modelos.EntrevistaAutor(entrevista_id=entrevista.id, cuenta_id=cuenta.id),
             modelos.ConversacionVinculo(vinculo_id=vinculo.id, conversacion_id=conversacion.id, conversado=True),

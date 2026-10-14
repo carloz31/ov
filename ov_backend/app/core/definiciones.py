@@ -66,11 +66,14 @@ class Definiciones:
         self.criterios_por_item_registro = MappingProxyType({clave: tuple(valor) for clave, valor in criterios.items()})
         self.items_registro_por_actividad = MappingProxyType({clave: tuple(valor) for clave, valor in items_registro.items()})
         self.opciones_por_lista = MappingProxyType({clave: tuple(valor) for clave, valor in opciones.items()})
-        referencias = {}
+        referencias, de_preguntas = {}, {}
         for referencia in sorted(self.listar(modelos.Referencia), key=lambda fila: fila.codigo):
             if referencia.actividad_id is not None:
                 referencias.setdefault(referencia.actividad_id, []).append(referencia)
+            else:
+                de_preguntas.setdefault(referencia.pregunta_diario_id, []).append(referencia)
         self.referencias_por_actividad = MappingProxyType({clave: tuple(valor) for clave, valor in referencias.items()})
+        self.referencias_por_pregunta = MappingProxyType({clave: tuple(valor) for clave, valor in de_preguntas.items()})
         objetivos, eventos = {}, {}
         for regla in sorted(self.listar(modelos.ReglaDesbloqueo), key=lambda regla: regla.codigo):
             objetivos.setdefault((regla.tipo_objetivo, regla.id_objetivo), []).append(regla)

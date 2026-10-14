@@ -15,6 +15,7 @@ from pydantic import ValidationError
 
 from app.config import Configuracion, ErrorConfiguracionRegistro
 from app.core.parametros import TEMPERATURA_REGISTRO
+from app.services.diario.asistente import PROMPT_DIARIO_V1, PreguntaPersonalizada, validar_personalizacion
 from app.services.registro.evaluacion import (
     ContextoEntrega, ContextoSeguimiento, ErrorResultadoEvaluacion, ResultadoEntrega, ResultadoSeguimiento,
     validar_entrega, validar_seguimiento,
@@ -88,6 +89,9 @@ class EvaluadorGemini:
 
     def evaluar_seguimiento(self, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
         return self._medir(contexto, PROMPT_SEGUIMIENTO_V4, ResultadoSeguimiento, validar_seguimiento)
+
+    def personalizar_entrada(self, contexto):
+        return self._medir(contexto, PROMPT_DIARIO_V1, PreguntaPersonalizada, validar_personalizacion)
 
     def _medir(self, contexto, instruccion, esquema, validar):
         inicio = perf_counter()

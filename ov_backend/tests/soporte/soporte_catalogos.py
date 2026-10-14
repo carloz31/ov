@@ -29,9 +29,16 @@ def cargar_catalogo_corrupto(sesion, variante):
 def completar_catalogos_vacios(sesion):
     sesion.add_all([
         m.Testimonio(codigo='testimonio-prueba', titulo='DATO DE PRUEBA', descripcion='DATO DE PRUEBA', enlace='https://example.invalid'),
-        m.PreguntaDiario(codigo='pregunta-prueba', pregunta='DATO DE PRUEBA'),
+        m.PreguntaDiario(codigo='pregunta-prueba', nombre='DATO DE PRUEBA', pregunta='DATO DE PRUEBA',
+                         uso='DESBLOQUEABLE'),
     ])
     sesion.flush()
-    sesion.add(m.EntradaDiario(cuenta_id=buscar(sesion, m.Cuenta, 'est-ana').id, origen='GUIADA',
-        pregunta_id=buscar(sesion, m.PreguntaDiario, 'pregunta-prueba').id, texto='DATO DE PRUEBA', fecha_hora=FECHA_BD))
+    ana = buscar(sesion, m.Cuenta, 'est-ana').id
+    recomendacion = m.Recomendacion(cuenta_id=ana, pregunta_diario_id=buscar(sesion, m.PreguntaDiario, 'pregunta-prueba').id,
+        tipo='DESBLOQUEADA', texto='DATO DE PRUEBA', origen='FIJA', creada_en=FECHA_BD)
+    sesion.add(recomendacion)
+    sesion.flush()
+    # numero 2: `llenar_estado` ya dejó la entrada 1 de Ana.
+    sesion.add(m.EntradaDiario(cuenta_id=ana, origen='GUIADA', recomendacion_id=recomendacion.id, numero=2,
+        texto='DATO DE PRUEBA', fecha_hora=FECHA_BD))
     sesion.add_all([m.Ocupacion(codigo_onet=f'PRUEBA-NULO-{n}', titulo='DATO DE PRUEBA') for n in (1, 2)])
