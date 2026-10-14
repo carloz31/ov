@@ -1,4 +1,12 @@
 {
+  "entradas_desbloqueadas": [
+    {
+      "codigo": "t-diario-personal",
+      "nombre": "Lo que espero",
+      "personalizada": true,
+      "texto": null
+    }
+  ],
   "estado": "COMPLETADA",
   "eventos_registrados": [
     {
@@ -72,6 +80,24 @@
       },
       "regla": "R-t-adicional",
       "tipo_objetivo": "ACTIVIDAD"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-expectativas",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-diario-personal",
+        "nombre": "Lo que espero"
+      },
+      "regla": "R-t-diario-personal",
+      "tipo_objetivo": "PREGUNTA_DIARIO"
     },
     {
       "condiciones": [

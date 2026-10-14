@@ -2,6 +2,27 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-14 · B09 · Diario, pregunta del día, check-in y avance
+
+- **Dato:**
+  - `entradas_desbloqueadas` en la respuesta de la acción que deja una pregunta en el diario (`codigo`, `nombre`, `personalizada`, `texto`; nulo si está por redactar) y `POST /acciones/diario/abrir-pregunta`, que la redacta una vez (`codigo`, `nombre`, `texto`, `respondida`);
+  - `POST /acciones/diario/pregunta-del-dia` (`nombre`, `texto`, `fecha`, `respondida`) y `escribir-entrada` con `del_dia`;
+  - `escribir-entrada` cambió: `titulo` opcional y `pregunta` o `del_dia` (sin `origen`); `POST /acciones/editar-entrada` y `POST /acciones/borrar-entrada` por `numero`;
+  - `GET /cuentas/{c}/diario/entradas` (`titulo_mostrado`, «Entrada libre N»), `GET /cuentas/{c}/diario/amistad` (`puntos`, `nivel`, `siguiente_en`) y `GET /cuentas/{c}/diario/preguntas` con `nombre`, `personalizada` y `redactada`;
+  - `GET /cuentas/{c}/check-ins` (`dias_registrados` y la serie por fecha);
+  - `GET /cuentas/{c}/tematicas` (avance por temática) y `afinidad` en `logros`.
+- **Dónde se mostraría:**
+  - en la pantalla de cierre de una actividad: «Lumi te dejó una pregunta en tu diario: {nombre}» (no existe);
+  - al abrir una pregunta personalizada: «Lumi está escribiendo…» mientras llega el texto (no existe);
+  - en el diario: títulos de las entradas, editar y borrar, la pregunta del día y la amistad con Lumi;
+  - en el perfil o el pasaporte: la evolución de check-ins, el avance por temática y la afinidad.
+- **Opciones:**
+  - conectar el diario en su lote F, agregando los tipos a `servidor.ts` y `services/api/diario.ts`, y crear la pantalla de cierre y el estado «escribiendo» cuando la spec los autorice;
+  - mostrar solo lo que ya tiene vista (lista de preguntas y entradas) y dejar amistad, pregunta del día, evolución y afinidad para una spec de perfil;
+  - mantener el diario local hasta diseñar las vistas nuevas.
+- **Si no se muestra:** en modo `api` el diario no ve las preguntas personalizadas ni la del día, la amistad no sube en pantalla y la evolución de check-ins y el avance por temática solo existen en el servidor.
+- **Estado:** pendiente de los lotes F; no se toca la interfaz en B09.
+
 ## 2026-10-13 · B08 · Batallas, casos y testimonios
 
 - **Dato:**

@@ -1,4 +1,12 @@
 {
+  "entradas_desbloqueadas": [
+    {
+      "codigo": "t-diario-fija",
+      "nombre": "Mi primer paso",
+      "personalizada": false,
+      "texto": "¿Qué te gustaría descubrir de ti en este camino?"
+    }
+  ],
   "eventos_registrados": [
     {
       "fecha_hora": "2026-10-07T10:00:00",
@@ -96,6 +104,24 @@
       },
       "regla": "R-t-cierre-inicio",
       "tipo_objetivo": "ACTIVIDAD"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-inicio",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-diario-fija",
+        "nombre": "Mi primer paso"
+      },
+      "regla": "R-t-diario-fija",
+      "tipo_objetivo": "PREGUNTA_DIARIO"
     },
     {
       "condiciones": [

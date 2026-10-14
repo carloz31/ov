@@ -22,6 +22,16 @@
   {
     "fecha_hora": "2026-10-07T10:00:00",
     "objetivo": {
+      "codigo": "t-diario-personal",
+      "nombre": "Lo que espero"
+    },
+    "regla": "R-t-diario-personal",
+    "tipo_objetivo": "PREGUNTA_DIARIO",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
       "codigo": "t-adicional",
       "nombre": "Misión adicional"
     },
@@ -97,6 +107,16 @@
     },
     "regla": "R-t-ficha",
     "tipo_objetivo": "FICHA",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "t-diario-fija",
+      "nombre": "Mi primer paso"
+    },
+    "regla": "R-t-diario-fija",
+    "tipo_objetivo": "PREGUNTA_DIARIO",
     "visto": false
   },
   {

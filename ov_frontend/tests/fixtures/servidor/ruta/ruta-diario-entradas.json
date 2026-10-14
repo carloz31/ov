@@ -1,0 +1,42 @@
+[
+  {
+    "actualizada_en": "2026-10-07T10:00:00",
+    "fecha_hora": "2026-10-07T10:00:00",
+    "numero": 4,
+    "origen": "LIBRE",
+    "pregunta": null,
+    "texto": "DATO DE PRUEBA: una entrada libre, corregida",
+    "titulo": "Mi tarde",
+    "titulo_mostrado": "Mi tarde"
+  },
+  {
+    "actualizada_en": null,
+    "fecha_hora": "2026-10-07T10:00:00",
+    "numero": 3,
+    "origen": "RECOMENDACION_DIA",
+    "pregunta": "¿Qué momento de hoy quieres recordar?",
+    "texto": "DATO DE PRUEBA: hoy",
+    "titulo": null,
+    "titulo_mostrado": "¿Qué momento de hoy quieres recordar?"
+  },
+  {
+    "actualizada_en": null,
+    "fecha_hora": "2026-10-07T10:00:00",
+    "numero": 2,
+    "origen": "GUIADA",
+    "pregunta": "Sobre «DATO DE PRUEBA: una respuesta completa con su ejemplo y su r»: ¿Cómo te sientes con lo que esperas de este camino?",
+    "texto": "DATO DE PRUEBA: tranquila",
+    "titulo": "Lo que siento",
+    "titulo_mostrado": "Lo que siento"
+  },
+  {
+    "actualizada_en": null,
+    "fecha_hora": "2026-10-07T10:00:00",
+    "numero": 1,
+    "origen": "GUIADA",
+    "pregunta": "¿Qué te gustaría descubrir de ti en este camino?",
+    "texto": "DATO DE PRUEBA: quiero descubrir qué me apasiona",
+    "titulo": null,
+    "titulo_mostrado": "¿Qué te gustaría descubrir de ti en este camino?"
+  }
+]

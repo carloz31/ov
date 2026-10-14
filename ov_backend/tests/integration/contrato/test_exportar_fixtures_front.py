@@ -16,6 +16,10 @@ from app.schemas.referencias import ReferenciasConsultadas
 from app.schemas.acciones import RespuestaAccion, RespuestaResolverCaso, RespuestaRevelarResultado
 from app.schemas.batallas import BatallaCuenta
 from app.schemas.casos import CasoCuenta, OcupacionColeccion
+from app.schemas.diario import (
+    AmistadAsistente, CheckInsCuenta, EntradaDiarioPublica, PreguntaAbierta, PreguntaDelDia, PreguntaDiarioEstado,
+)
+from app.schemas.tematicas import AvanceTematica
 from app.schemas.catalogo import (
     CarreraDetalle, CarreraResumen, InstitucionDetalle, InstitucionResumen, OcupacionDetalle, OcupacionResumen,
 )
@@ -45,6 +49,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'resolver-batalla-victoria', 'batallas', 'resolver-caso', 'casos', 'coleccion',
     'catalogo-carreras', 'catalogo-carrera-psychology', 'catalogo-ocupaciones-riasec', 'catalogo-ocupacion-psychologist',
     'catalogo-instituciones', 'catalogo-institucion-t-uni', 'ver-ocupacion', 'marcar-favorito', 'favoritos',
+    'diario-preguntas', 'abrir-pregunta-personal', 'pregunta-del-dia', 'escribir-entrada-fija', 'escribir-entrada-libre',
+    'editar-entrada', 'diario-entradas', 'diario-amistad', 'check-ins', 'tematicas',
 )}
 
 
@@ -211,6 +217,19 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     favoritos = FavoritosCuenta.model_validate(datos['favoritos'])
     assert ([c.codigo for c in favoritos.carreras], [o.codigo for o in favoritos.ocupaciones],
             [i.codigo for i in favoritos.instituciones]) == (['civil-engineering'], ['geologist'], ['t-uni'])
+    # B09: diario, check-ins y temáticas.
+    preguntas = TypeAdapter(list[PreguntaDiarioEstado]).validate_python(datos['diario-preguntas'])
+    assert [(p.codigo, p.redactada) for p in preguntas] == [('t-diario-fija', True), ('t-diario-personal', False)]
+    assert datos['entregar-t-expectativas']['entradas_desbloqueadas'][0]['texto'] is None
+    assert PreguntaAbierta.model_validate(datos['abrir-pregunta-personal']).texto.startswith('Sobre «')
+    PreguntaDelDia.model_validate(datos['pregunta-del-dia'])
+    entradas = TypeAdapter(list[EntradaDiarioPublica]).validate_python(datos['diario-entradas'])
+    assert sorted((e.numero, e.origen, e.titulo_mostrado) for e in entradas)[3] == (4, 'LIBRE', 'Mi tarde')
+    assert [e.numero for e in entradas if e.numero == 5] == []
+    assert AmistadAsistente.model_validate(datos['diario-amistad']).puntos == 3
+    assert CheckInsCuenta.model_validate(datos['check-ins']).dias_registrados == 2
+    assert any(t.completadas for t in TypeAdapter(list[AvanceTematica]).validate_python(datos['tematicas']))
+    assert 'afinidad' in datos['logros-final']
     avisos = datos['desbloqueos-no-vistos']
     assert {d['regla'] for d in avisos} == {
         'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD', 'R-t-opcional',

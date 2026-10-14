@@ -1,0 +1,37 @@
+[
+  {
+    "codigo": "A",
+    "completadas": 1,
+    "nombre": "Claridad",
+    "porcentaje": 50.0,
+    "total": 2
+  },
+  {
+    "codigo": "B",
+    "completadas": 1,
+    "nombre": "Conocimiento de mí",
+    "porcentaje": 33.33,
+    "total": 3
+  },
+  {
+    "codigo": "C",
+    "completadas": 0,
+    "nombre": "Conocimiento de las opciones",
+    "porcentaje": 0.0,
+    "total": 1
+  },
+  {
+    "codigo": "D",
+    "completadas": 0,
+    "nombre": "Decisión propia",
+    "porcentaje": 0.0,
+    "total": 0
+  },
+  {
+    "codigo": "E",
+    "completadas": 0,
+    "nombre": "Confianza",
+    "porcentaje": 0.0,
+    "total": 0
+  }
+]

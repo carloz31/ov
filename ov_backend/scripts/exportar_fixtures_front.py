@@ -101,6 +101,30 @@ def _recorrer(cliente):
     _pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
         **accion_registro, 'item': 't-exp-espera', 'texto': 'DATO DE PRUEBA: esperan que estudie, porque confían en mí'})
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
+    # B09: diario. t-inicio dejó la pregunta fija y t-expectativas la personalizada, que se redacta al abrirla.
+    diario = {'cuenta': 'est-ana', 'fecha_hora': FECHA}
+    fixtures['diario-preguntas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')
+    fixtures['abrir-pregunta-personal'] = _pedir(cliente, 'POST', '/acciones/diario/abrir-pregunta',
+                                                 {**diario, 'codigo': 't-diario-personal'})
+    fixtures['pregunta-del-dia'] = _pedir(cliente, 'POST', '/acciones/diario/pregunta-del-dia', diario)
+    fixtures['escribir-entrada-fija'] = _pedir(cliente, 'POST', '/acciones/escribir-entrada', {
+        **diario, 'pregunta': 't-diario-fija', 'texto': 'DATO DE PRUEBA: quiero descubrir qué me apasiona'})
+    _pedir(cliente, 'POST', '/acciones/escribir-entrada', {
+        **diario, 'pregunta': 't-diario-personal', 'titulo': 'Lo que siento', 'texto': 'DATO DE PRUEBA: tranquila'})
+    _pedir(cliente, 'POST', '/acciones/escribir-entrada', {**diario, 'del_dia': True, 'texto': 'DATO DE PRUEBA: hoy'})
+    fixtures['escribir-entrada-libre'] = _pedir(cliente, 'POST', '/acciones/escribir-entrada', {
+        **diario, 'texto': 'DATO DE PRUEBA: una entrada libre'})
+    fixtures['editar-entrada'] = _pedir(cliente, 'POST', '/acciones/editar-entrada', {
+        **diario, 'numero': 4, 'titulo': 'Mi tarde', 'texto': 'DATO DE PRUEBA: una entrada libre, corregida'})
+    _pedir(cliente, 'POST', '/acciones/escribir-entrada', {**diario, 'texto': 'DATO DE PRUEBA: para borrar'})
+    _pedir(cliente, 'POST', '/acciones/borrar-entrada', {**diario, 'numero': 5})
+    fixtures['diario-entradas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/entradas')
+    fixtures['diario-amistad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/amistad')
+    for dia, nivel in ((6, 2), (7, 3)):
+        _pedir(cliente, 'POST', '/acciones/check-in',
+               {'cuenta': 'est-ana', 'nivel_seguridad': nivel, 'fecha_hora': f'2026-10-0{dia}T08:00:00'})
+    fixtures['check-ins'] = _pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')
+    fixtures['tematicas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/tematicas')
     ruta_avisos = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
     avisos = _pedir(cliente, 'GET', ruta_avisos)
     fixtures['desbloqueos-no-vistos'] = avisos

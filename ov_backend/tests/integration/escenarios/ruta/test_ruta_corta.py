@@ -1,7 +1,7 @@
 """Ruta corta: recorre la ruta mínima con las peticiones del front, sin `/eventos`.
 
 B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010; B03, las HU 007
-y 016; B07, la HU 094; B08, las HU 017, 041 y 051 a 056. Cada lote
+y 016; B07, la HU 094; B08, las HU 017, 041 y 051 a 056; B09, las HU 028 a 033, 035, 036 y 075. Cada lote
 extiende este recorrido con su tramo.
 """
 
@@ -369,3 +369,31 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
     pedir(cliente, 'POST', '/acciones/ver-testimonio', {'cuenta': 'est-ana', 'testimonio': 't-testimonio-1'})
     assert [(t['estado'], t['visto']) for t in estado(cliente)['testimonios']] == [
         ('DISPONIBLE', True), ('DISPONIBLE', False)]
+
+
+def test_hu028_036_075_diario_check_in_y_avance(cliente):
+    escribir = lambda **datos: pedir(cliente, 'POST', '/acciones/escribir-entrada',
+                                     {'cuenta': 'est-ana', 'fecha_hora': FECHA, **datos})
+    inicio = completar(cliente, 't-inicio')
+    assert [(e['codigo'], e['texto'] is not None) for e in inicio['entradas_desbloqueadas']] == [('t-diario-fija', True)]
+    escribir(pregunta='t-diario-fija', texto='DATO DE PRUEBA: lo que quiero descubrir')
+    escribir(texto='DATO DE PRUEBA: una entrada libre')
+    avanzar(cliente, 't-cierre-inicio')
+    pedir(cliente, 'POST', '/acciones/check-in', {'cuenta': 'est-ana', 'nivel_seguridad': 3, 'fecha_hora': FECHA})
+    assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')['dias_registrados'] == 1
+    expectativas = avanzar(cliente)
+    assert [(e['codigo'], e['texto']) for e in expectativas['entradas_desbloqueadas']] == [('t-diario-personal', None)]
+    abierta = pedir(cliente, 'POST', '/acciones/diario/abrir-pregunta', {'cuenta': 'est-ana', 'codigo': 't-diario-personal'})
+    assert abierta['texto'].startswith('Sobre «') and abierta['respondida'] is False
+    escribir(pregunta='t-diario-personal', texto='DATO DE PRUEBA: tranquila')
+    del_dia = pedir(cliente, 'POST', '/acciones/diario/pregunta-del-dia', {'cuenta': 'est-ana', 'fecha_hora': FECHA})
+    escribir(del_dia=True, texto='DATO DE PRUEBA: hoy')
+    entradas = pedir(cliente, 'GET', '/cuentas/est-ana/diario/entradas')
+    assert sorted(e['titulo_mostrado'] for e in entradas) == sorted(
+        [abierta['texto'], del_dia['texto'], '¿Qué te gustaría descubrir de ti en este camino?', 'Entrada libre 1'])
+    pedir(cliente, 'POST', '/acciones/editar-entrada', {'cuenta': 'est-ana', 'numero': 2, 'titulo': 'Mi día', 'texto': 'Editada'})
+    assert pedir(cliente, 'GET', '/cuentas/est-ana/diario/amistad')['puntos'] == 3
+    avance = {t['codigo']: t['completadas'] for t in pedir(cliente, 'GET', '/cuentas/est-ana/tematicas')}
+    assert avance['A'] >= 1 and avance['B'] >= 1
+    assert pedir(cliente, 'GET', '/cuentas/est-ana/logros')['afinidad'] == 0.0
+
