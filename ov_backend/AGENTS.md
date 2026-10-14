@@ -8,9 +8,9 @@ Documentos vigentes (lee los que toque la tarea):
 
 | Documento | Qué define |
 |---|---|
-| `docs/sistema/motor.md` | Eventos, reglas, disponibilidad, acciones y progreso. |
+| `docs/sistema/motor.md` | Eventos, reglas, disponibilidad, acciones, progreso y diario. |
 | `docs/sistema/instrumentos.md` | Cuestionarios, cálculo de resultados, coincidencias O*NET y carreras. |
-| `docs/sistema/registro.md` | Respuestas de registro, preguntas de seguimiento y evaluador (Gemini o falso). |
+| `docs/sistema/registro.md` | Respuestas de registro, preguntas de seguimiento, evaluador (Gemini o falso) y asistente del diario. |
 | `docs/sistema/referencias.md` | Referencias: catálogo de tipos, resolución por cuenta y elección por referencia. |
 | `docs/sistema/integracion.md` | Contrato con el front, conjuntos de datos, fixtures y reinicio. |
 | `docs/specs/` | La spec en curso. |
@@ -118,11 +118,11 @@ Python 3.14, FastAPI, Pydantic v2, SQLAlchemy 2.0, Alembic, SQLite (desarrollo y
 tests/
   conftest.py        solo autouse sin base (evaluador falso)
   soporte/           ayudas compartidas; ninguna prueba importa un test_*.py
-  unit/              arquitectura, configuracion, instrumentos, motor, registro
+  unit/              arquitectura, configuracion, diario, instrumentos, motor, registro
   integration/
     conftest.py      plantillas SQLite por sesión y proceso; cada prueba copia la suya
-    actividades/ batallas/ casos/ catalogo/ cuentas/ desarrollo/ favoritos/ fichas/ instrumentos/ logros/ motor/
-    referencias/ registro/ secciones/ testimonios/
+    actividades/ batallas/ casos/ catalogo/ cuentas/ desarrollo/ diario/ favoritos/ fichas/ instrumentos/ logros/
+    motor/ referencias/ registro/ secciones/ tematicas/ testimonios/
     datos/ migraciones/ contrato/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
 ```
