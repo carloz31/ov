@@ -12,3 +12,4 @@
 - **Una DIARIA personalizada entra al sorteo solo si todas sus referencias tienen dato.** Si con las exclusiones no queda ninguna, se vuelve a sortear sin la de «no repetir»; si tampoco hay, 409.
 - **Lectura de entradas, amistad y preguntas exige la sección DIARIO** (como la lectura de preguntas); editar y borrar no.
 - **El asistente del diario reutiliza el evaluador del registro** (`personalizar_entrada` en el falso y en Gemini) y su `timeout_segundos`.
+- **`/tematicas` y la afinidad quedaron en el commit de F1** (el código entró junto con el router); F3 agrega sus pruebas, las del asistente y la pregunta del día.
