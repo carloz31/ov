@@ -6,6 +6,8 @@ TEXTO: según la clasificación de la última evaluación del ítem fuente; la p
 RESULTADO y COINCIDENCIAS: el resultado vigente (revelado) de la aplicación fuente; con perfil plano, sin opciones.
 RESPUESTA_CUESTIONARIO: la etiqueta elegida en un ítem de la aplicación fuente, cuando su actividad está completada.
 FAVORITOS: las carreras, ocupaciones e instituciones marcadas, de la más reciente a la más antigua.
+PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL (B11): los planes por prioridad, el plan A (carrera, relato y
+motivos), los pasos del plan A y la carrera de la opción inicial.
 """
 
 from sqlalchemy import select
@@ -15,8 +17,8 @@ from app.core.parametros import LONGITUD_CODIGO_INTERES
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, EstadoProgreso, EvaluacionRespuesta,
-    Favorito, Institucion, ItemRegistro, Ocupacion, OpcionEscala, ProgresoActividad, RespuestaItem, RespuestaRegistro,
-    ResultadoInstrumento, Rol, TipoFavorito,
+    Favorito, Institucion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
+    ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol, TarjetaCarrera, TipoFavorito,
 )
 from app.models.enums import (
     ClasificacionRespuesta, EstadoReferencia, EstadoRespuestaRegistro, TipoReferencia,
@@ -112,6 +114,43 @@ def _leer_favoritos(sesion, cuenta):
     return [nombres[tipo, referencia] for tipo, referencia in filas if (tipo, referencia) in nombres]
 
 
+DE_PLANES = (TipoReferencia.PLANES, TipoReferencia.PLAN, TipoReferencia.PASOS_PLAN_A, TipoReferencia.OPCION_INICIAL)
+
+
+def _leer_planes(sesion, cuenta, tipos):
+    """Datos de las referencias de planes por tipo, solo de esta cuenta; un tipo sin dato no aparece."""
+    definiciones = contexto(sesion).definiciones
+    planes = sesion.execute(select(TarjetaCarrera, Carrera.codigo, Carrera.nombre).join(
+        Carrera, Carrera.id == TarjetaCarrera.carrera_id).where(TarjetaCarrera.cuenta_id == cuenta.id).order_by(
+        TarjetaCarrera.prioridad)).all()
+
+    def opcion(opcion_id, texto_otro=None, texto=None):
+        if opcion_id is None:
+            return OpcionReferida(codigo=CODIGO_OTRA, texto=texto_otro)
+        fila = definiciones.obtener(OpcionLista, opcion_id)
+        return OpcionReferida(codigo=fila.codigo, texto=texto or fila.texto)
+
+    datos = {}
+    if planes:
+        datos[TipoReferencia.PLANES] = dict(opciones=[OpcionReferida(codigo=c, texto=n) for _, c, n in planes])
+        plan_a, _, nombre_a = planes[0]
+        if TipoReferencia.PLAN in tipos:
+            motivos = sesion.scalars(select(MotivoTarjeta).where(MotivoTarjeta.tarjeta_id == plan_a.id).order_by(
+                MotivoTarjeta.posicion))
+            datos[TipoReferencia.PLAN] = dict(texto=nombre_a, cita=plan_a.relato,
+                                              opciones=[opcion(m.opcion_id, m.texto_otro) for m in motivos])
+        if TipoReferencia.PASOS_PLAN_A in tipos:
+            pasos = sesion.scalars(select(PasoTarjeta).where(PasoTarjeta.tarjeta_id == plan_a.id).order_by(
+                PasoTarjeta.posicion)).all()
+            if pasos:
+                datos[TipoReferencia.PASOS_PLAN_A] = dict(
+                    opciones=[opcion(p.tipo_opcion_id, texto=p.texto) for p in pasos])
+    if TipoReferencia.OPCION_INICIAL in tipos and cuenta.opcion_inicial_id is not None:
+        datos[TipoReferencia.OPCION_INICIAL] = dict(texto=sesion.scalar(select(Carrera.nombre).where(
+            Carrera.id == cuenta.opcion_inicial_id)))
+    return datos
+
+
 def resolver(sesion, cuenta, referencias):
     """{código: ReferenciaResuelta} para `referencias` (filas del catálogo), con datos de `cuenta`."""
     definiciones = contexto(sesion).definiciones
@@ -123,9 +162,16 @@ def resolver(sesion, cuenta, referencias):
                                                    if r.aplicacion_id is not None and r not in de_cuestionario})
     favoritos = (_leer_favoritos(sesion, cuenta) if any(r.tipo == TipoReferencia.FAVORITOS for r in referencias)
                  else [])
+    tipos_planes = {r.tipo for r in referencias if r.tipo in DE_PLANES}
+    planes = _leer_planes(sesion, cuenta, tipos_planes) if tipos_planes else {}
     resueltas = {}
     for referencia in referencias:
         base = dict(codigo=referencia.codigo, tipo=referencia.tipo)
+        if referencia.tipo in DE_PLANES:
+            resueltas[referencia.codigo] = (
+                ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, **planes[referencia.tipo])
+                if referencia.tipo in planes else ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO))
+            continue
         if referencia.tipo == TipoReferencia.FAVORITOS:
             resueltas[referencia.codigo] = (
                 ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, opciones=favoritos) if favoritos else

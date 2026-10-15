@@ -190,12 +190,31 @@
         "visible": true
       },
       {
-        "bloqueo": null,
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "ACTUALIZA_PLAN"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "planes_listos_para_comparar"
+            },
+            "mensaje": "Completa por qué y qué tan real es en al menos dos planes para compararlos.",
+            "regla": "R-t-comparar"
+          }
+        ],
         "codigo": "t-comparar",
         "contenido": "t_comparar",
         "descripcion": null,
         "duracion_estimada_min": 15,
-        "estado": "DISPONIBLE",
+        "estado": "BLOQUEADA",
         "orden": 2,
         "requerida": true,
         "tipo": "REGISTRO",
@@ -204,12 +223,31 @@
         "visible": true
       },
       {
-        "bloqueo": null,
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "ACTUALIZA_PLAN"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "pasos_plan_a"
+            },
+            "mensaje": "Registra al menos un paso en tu plan A para armar tu proyecto.",
+            "regla": "R-t-proyecto"
+          }
+        ],
         "codigo": "t-proyecto",
         "contenido": "t_proyecto",
         "descripcion": null,
         "duracion_estimada_min": 15,
-        "estado": "DISPONIBLE",
+        "estado": "BLOQUEADA",
         "orden": 3,
         "requerida": true,
         "tipo": "REGISTRO",

@@ -1,14 +1,14 @@
 from collections.abc import Callable
 from functools import partial
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import (
     Actividad, Aplicacion, Bloque, Carrera, Cuenta, Dimension, HighPoint, Institucion, Instrumento,
-    MomentoAplicacion, ResultadoDimension, ResultadoInstrumento, SalonInstrumento, TipoCarrera, TipoEventoUso,
-    TipoResultado,
+    MomentoAplicacion, PasoTarjeta, ResultadoDimension, ResultadoInstrumento, SalonInstrumento, TipoCarrera, TipoEventoUso,
+    TarjetaCarrera, TipoResultado,
 )
 from app.services.instrumentos.calculo import calcular_codigo_interes
 
@@ -153,6 +153,35 @@ def instrumentos_prioritarios(sesion: Session, cuenta: Cuenta) -> bool:
     return requeridas <= vigentes
 
 
+def _parametro_positivo(datos, descripcion: str) -> int:
+    regla = getattr(datos, 'regla_en_evaluacion', None)
+    if regla is None:
+        raise ValueError(f'Debe indicar la regla para evaluar {descripcion}')
+    minimo = regla.parametro_evaluador
+    if not isinstance(minimo, int) or isinstance(minimo, bool) or minimo < 1:
+        raise ValueError(f'El evaluador de {descripcion} requiere un parámetro entero positivo')
+    return minimo
+
+
+@usar_contexto
+def planes_listos_para_comparar(sesion: Session, cuenta: Cuenta) -> bool:
+    """B11 · `t-comparar`: al menos `parametro` planes con todas sus secciones `para_comparar` en LISTA."""
+    # Importación diferida: el dominio de planes usa el motor para saber qué secciones están abiertas.
+    from app.services.planes.consultas import contar_listos_para_comparar
+    minimo = _parametro_positivo(contexto(sesion), 'planes listos para comparar')
+    return contar_listos_para_comparar(sesion, cuenta) >= minimo
+
+
+@usar_contexto
+def pasos_plan_a(sesion: Session, cuenta: Cuenta) -> bool:
+    """B11 · `t-proyecto`: el plan A tiene al menos `parametro` pasos, en cualquier estado."""
+    minimo = _parametro_positivo(contexto(sesion), 'pasos del plan A')
+    pasos = sesion.scalar(select(func.count(PasoTarjeta.id)).join(
+        TarjetaCarrera, TarjetaCarrera.id == PasoTarjeta.tarjeta_id).where(
+        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.prioridad == 1))
+    return pasos >= minimo
+
+
 EVALUADORES: dict[str, Callable[[Session, Cuenta], bool]] = {
     "carreras_familias_distintas": partial(vistas_diversas, clase='CARRERA', atributo='familia'),
     "ocupaciones_high_point_distinto": partial(vistas_diversas, clase='OCUPACION', atributo='high_point'),
@@ -160,4 +189,6 @@ EVALUADORES: dict[str, Callable[[Session, Cuenta], bool]] = {
     "vista_fuera_del_perfil": vista_fuera_del_perfil,
     "misiones_camino_sin_inicio": misiones_camino_sin_inicio,
     "instrumentos_prioritarios": instrumentos_prioritarios,
+    "planes_listos_para_comparar": planes_listos_para_comparar,
+    "pasos_plan_a": pasos_plan_a,
 }

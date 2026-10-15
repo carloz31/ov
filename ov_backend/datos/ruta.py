@@ -224,7 +224,11 @@ REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera')
                ('t-ref-cuestionario', ('ACTIVIDAD', 't-lee-cuestionario'), 'RESPUESTA_CUESTIONARIO',
                 ('APL-PARTIDA', 'AUTO-01')),
                ('t-ref-diario-espera', ('PREGUNTA_DIARIO', 't-diario-personal'), 'TEXTO', 't-exp-espera'),
-               ('t-ref-diario-favoritos', ('PREGUNTA_DIARIO', 't-dia-favoritos'), 'FAVORITOS', None))
+               ('t-ref-diario-favoritos', ('PREGUNTA_DIARIO', 't-dia-favoritos'), 'FAVORITOS', None),
+               ('t-ref-planes', ('ACTIVIDAD', 't-comparar'), 'PLANES', None),
+               ('t-ref-plan-a', ('ACTIVIDAD', 't-proyecto'), 'PLAN', None),
+               ('t-ref-pasos-plan-a', ('ACTIVIDAD', 't-proyecto'), 'PASOS_PLAN_A', None),
+               ('t-ref-opcion-inicial', ('ACTIVIDAD', 't-proyecto'), 'OPCION_INICIAL', None))
 FUENTE_APLICACION = ('RESULTADO', 'COINCIDENCIAS')
 SIN_FUENTE = ('FAVORITOS', 'PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL')
 
@@ -353,6 +357,12 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-explorar', 'EVENTOS', 1),)),
     ('R-PLAN-PASOS', 'SECCION_PLAN', 'PASOS', 'Completa la comparación de tus planes para definir tus pasos.',
      (('COMPLETA_ACTIVIDAD', 't-comparar', 'EVENTOS', 1),)),
+    # B11: comparar pide dos planes con «por qué» y «qué tan real es» listos; el proyecto, pasos en el plan A.
+    ('R-t-comparar', 'ACTIVIDAD', 't-comparar',
+     'Completa por qué y qué tan real es en al menos dos planes para compararlos.',
+     (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
+    ('R-t-proyecto', 'ACTIVIDAD', 't-proyecto', 'Registra al menos un paso en tu plan A para armar tu proyecto.',
+     (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
 )
 
 
@@ -363,7 +373,9 @@ EVALUADORES_REGLAS = {'R-T2': ('instrumentos_prioritarios', None),
                       'R-t-explorar-ocupacion': ('vista_fuera_del_perfil', None),
                       'R-t-ins-familias': ('carreras_familias_distintas', 2),
                       'R-t-ins-letras': ('ocupaciones_high_point_distinto', 2),
-                      'R-t-ins-instituciones': ('instituciones_tipos_distintos', None)}
+                      'R-t-ins-instituciones': ('instituciones_tipos_distintos', None),
+                      'R-t-comparar': ('planes_listos_para_comparar', 2),
+                      'R-t-proyecto': ('pasos_plan_a', 1)}
 
 
 def contenido(codigo: str) -> str:

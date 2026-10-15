@@ -35,3 +35,9 @@
 - Cada intento de llamada cuenta para el tope por plan, aunque falle.
 - El evaluador falso sugiere un paso por novedad y entiende marcas en el texto (`[falla]`, `[malformado]`, `[tipo-invalido]`, `[largo]`, `[tres]`, `[sin-pasos]`, `[ajeno]`) para probar la validación.
 - Pendiente: el cliente de Gemini sigue en `services/registro/` aunque ya lo usan el diario y los planes; no se mueve en este lote.
+
+## Motor y referencias (fase 4)
+
+- `planes_listos_para_comparar` importa el dominio de planes dentro de la función: los planes usan el motor para saber qué secciones están abiertas, y la importación diferida evita el ciclo (como `registrar_eventos` con el diario).
+- Las reglas de `t-comparar` y `t-proyecto` se reevalúan con ACTUALIZA_PLAN; crear o eliminar un plan no cumple ninguna por sí solo, porque crear deja la tarjeta vacía y eliminar no agrega pasos ni secciones listas.
+- PLAN cita los motivos como opciones; un motivo «Otro» sale con el código `OTRA` y su texto, como la elección. PASOS_PLAN_A da el código del tipo de paso y su texto, por posición. `cita` es opcional en la respuesta y solo aparece en PLAN.

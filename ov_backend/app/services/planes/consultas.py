@@ -171,7 +171,7 @@ def estado_seccion(codigo: str, abierta: bool, tarjeta, datos: DatosPlanes) -> s
 
 
 @usar_contexto
-def planes_listos_para_comparar(sesion: Session, cuenta: Cuenta) -> int:
+def contar_listos_para_comparar(sesion: Session, cuenta: Cuenta) -> int:
     """Cuántos planes tienen en LISTA todas las secciones `para_comparar`."""
     abiertas = secciones_abiertas(sesion, cuenta)
     para_comparar = [s.codigo for s in contexto(sesion).definiciones.listar(SeccionTarjeta) if s.para_comparar]
