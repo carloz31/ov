@@ -7,7 +7,7 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.definiciones import MODELOS_FIJOS
 from app.models import (
     Actividad, Aplicacion, Bloque, Carrera, Conversacion, Entrevista, Ficha, Insignia, Institucion, Instrumento,
-    Nivel, Ocupacion, PreguntaDiario, ReglaDesbloqueo, Seccion, Testimonio, TipoEventoUso, TipoObjetivo,
+    Nivel, Ocupacion, PreguntaDiario, ReglaDesbloqueo, Seccion, SeccionTarjeta, Testimonio, TipoEventoUso, TipoObjetivo,
     VinculoFamiliar,
 )
 from app.schemas.motor import ObjetivoLegible
@@ -17,7 +17,7 @@ MODELOS_OBJETIVO = {
     TipoObjetivo.BLOQUE: Bloque, TipoObjetivo.ACTIVIDAD: Actividad,
     TipoObjetivo.FICHA: Ficha, TipoObjetivo.TESTIMONIO: Testimonio,
     TipoObjetivo.PREGUNTA_DIARIO: PreguntaDiario, TipoObjetivo.INSIGNIA: Insignia,
-    TipoObjetivo.NIVEL: Nivel, TipoObjetivo.SECCION: Seccion,
+    TipoObjetivo.NIVEL: Nivel, TipoObjetivo.SECCION: Seccion, TipoObjetivo.SECCION_PLAN: SeccionTarjeta,
 }
 MODELOS_REFERENCIA = {
     TipoEventoUso.COMPLETA_ACTIVIDAD: Actividad,
@@ -34,6 +34,9 @@ MODELOS_REFERENCIA = {
     TipoEventoUso.COMPLETA_CONVERSACION: Conversacion,
     TipoEventoUso.REINICIA_INSTRUMENTO: Instrumento,
     TipoEventoUso.REVELA_RESULTADO: Aplicacion,
+    TipoEventoUso.CREA_PLAN: Carrera,
+    TipoEventoUso.ACTUALIZA_PLAN: Carrera,
+    TipoEventoUso.ELIMINA_PLAN: Carrera,
 }
 
 
@@ -64,7 +67,7 @@ def objetivo_legible(sesion: Session, regla: ReglaDesbloqueo) -> ObjetivoLegible
         return ObjetivoLegible(codigo=f"N{objetivo.numero}", nombre=objetivo.titulo)
     nombre = (
         objetivo.nombre if regla.tipo_objetivo in (TipoObjetivo.BLOQUE, TipoObjetivo.INSIGNIA, TipoObjetivo.SECCION,
-                                                   TipoObjetivo.PREGUNTA_DIARIO) else objetivo.titulo
+                                                   TipoObjetivo.PREGUNTA_DIARIO, TipoObjetivo.SECCION_PLAN) else objetivo.titulo
     )
     return ObjetivoLegible(codigo=objetivo.codigo, nombre=nombre)
 

@@ -4,7 +4,7 @@ from sqlalchemy import CheckConstraint, ForeignKey, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, busqueda_de, enumerado
-from app.models.enums import TipoInstitucion
+from app.models.enums import GestionInstitucion, TipoInstitucion
 
 
 class HighPoint(Base):
@@ -45,6 +45,7 @@ class Institucion(Base):
     nombre: Mapped[str]
     busqueda: Mapped[str] = mapped_column(default=busqueda_de("nombre"))
     tipo: Mapped[TipoInstitucion] = mapped_column(enumerado(TipoInstitucion))
+    gestion: Mapped[GestionInstitucion | None] = mapped_column(enumerado(GestionInstitucion), default=None)
     descripcion: Mapped[str | None] = mapped_column(Text, default=None)
     pagina_web: Mapped[str | None] = mapped_column(default=None)
     ubicacion_id: Mapped[int] = mapped_column(ForeignKey("ubicacion.id"))
@@ -55,8 +56,11 @@ class Institucion(Base):
 
 class InstitucionCarrera(Base):
     __tablename__ = "institucion_carrera"
+    __table_args__ = (CheckConstraint("duracion_ciclos > 0", name="duracion_valida"),)
     institucion_id: Mapped[int] = mapped_column(ForeignKey("institucion.id"), primary_key=True)
     carrera_id: Mapped[int] = mapped_column(ForeignKey("carrera.id"), primary_key=True)
+    # Ciclos que dura la carrera en esa institución (B11); sin ella, el plan no calcula el total de la carrera.
+    duracion_ciclos: Mapped[int | None] = mapped_column(default=None)
 
 
 class IngresoCarrera(Base):

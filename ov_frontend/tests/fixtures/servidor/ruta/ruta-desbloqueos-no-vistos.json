@@ -168,5 +168,15 @@
     "regla": "R-SEC-CATALOGO",
     "tipo_objetivo": "SECCION",
     "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "POR_QUE",
+      "nombre": "Por qué"
+    },
+    "regla": "R-PLAN-POR_QUE",
+    "tipo_objetivo": "SECCION_PLAN",
+    "visto": false
   }
 ]

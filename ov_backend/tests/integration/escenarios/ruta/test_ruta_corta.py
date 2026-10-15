@@ -37,7 +37,8 @@ def test_hu004_013_015_informativa_con_ficha_y_retroalimentacion(cliente):
         {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-inicio', 'fecha_hora': '2026-10-07T10:00:00'}]
     assert {(d['tipo_objetivo'], d['objetivo']['codigo']) for d in respuesta['nuevos_desbloqueos']} == {
         ('ACTIVIDAD', 't-cierre-inicio'), ('ACTIVIDAD', 't-batalla'), ('FICHA', 't-ficha'), ('INSIGNIA', 't-ins-1'),
-        ('SECCION', 'DIARIO'), ('SECCION', 'CATALOGO'), ('SECCION', 'PLANES'), ('PREGUNTA_DIARIO', 't-diario-fija')}
+        ('SECCION', 'DIARIO'), ('SECCION', 'CATALOGO'), ('SECCION', 'PLANES'), ('PREGUNTA_DIARIO', 't-diario-fija'),
+        ('SECCION_PLAN', 'POR_QUE')}
     assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [
         ('t-ficha', 'DISPONIBLE')]
     assert siguiente(cliente) == 't-partida'
@@ -242,9 +243,9 @@ def test_hu073_avisos_de_desbloqueo(cliente):
     no_vistos = pedir(cliente, 'GET', ruta)
     assert {d['regla'] for d in no_vistos} == {
         'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES',
-        'R-t-diario-fija'}
+        'R-t-diario-fija', 'R-PLAN-POR_QUE'}
     assert all(d['visto'] is False for d in no_vistos)
-    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 8
+    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 9
     assert pedir(cliente, 'GET', ruta) == []
     completar(cliente, 't-partida')
     completar(cliente, 't-cierre-inicio')

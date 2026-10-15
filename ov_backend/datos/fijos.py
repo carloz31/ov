@@ -6,7 +6,7 @@ Se carga en todo conjunto. La transacción pertenece al llamador; este módulo n
 
 from dataclasses import dataclass
 
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 
 from app import models as modelos
@@ -31,7 +31,60 @@ LISTAS_COMUNES = (
     ('DIFICULTADES', 'Dificultades',
      (('ECONOMICAS', 'Económicas'), ('ACADEMICAS', 'Académicas'), ('FAMILIARES', 'Familiares'),
       ('INFORMACION', 'Falta de información'), ('DISTANCIA', 'Distancia'))),
+    # B11 · Tarjeta de carrera. VALORES es también la lista del registro 2.3.
+    ('VALORES', 'Valores',
+     (('ESTABILIDAD', 'Estabilidad'), ('INGRESOS', 'Ingresos'), ('AYUDAR', 'Ayudar a otros'), ('CREAR', 'Crear'),
+      ('AUTONOMIA', 'Autonomía'), ('RECONOCIMIENTO', 'Reconocimiento'), ('TIEMPO_FAMILIA', 'Tiempo para la familia'),
+      ('APRENDER', 'Aprender'), ('COMUNIDAD', 'Aportar a mi comunidad'))),
+    ('CAMINOS', 'Cómo llegaría a la carrera',
+     (('POSTULAR_DIRECTO', 'Postular directamente'), ('PREPARARME', 'Prepararme primero'),
+      ('ESTUDIAR_Y_TRABAJAR', 'Estudiar y trabajar'), ('TRABAJAR_PRIMERO', 'Trabajar primero y luego estudiar'),
+      ('TECNICA_PRIMERO', 'Empezar con una técnica y continuar'), ('TOMARME_TIEMPO', 'Tomarme un tiempo'))),
+    ('RUBROS_GASTO', 'Rubros de gasto',
+     (('PREPARACION', 'Preparación'), ('ADMISION', 'Admisión'), ('MATRICULA', 'Matrícula'), ('PENSION', 'Pensión'),
+      ('MATERIALES', 'Materiales'), ('TRANSPORTE', 'Transporte'), ('ALIMENTACION', 'Alimentación'),
+      ('VIVIENDA', 'Vivienda'))),
+    ('FINANCIAMIENTO', 'Cómo lo financiaría',
+     (('FAMILIA', 'Apoyo de mi familia'), ('TRABAJO', 'Mi propio trabajo'), ('BECA', 'Beca (Beca 18 u otra)'),
+      ('CREDITO', 'Crédito educativo'), ('AHORROS', 'Ahorros'), ('INSTITUCION', 'Apoyos de la institución'))),
+    # El código del tipo de paso es el que recibe y devuelve el LLM de sugerencias.
+    ('PASOS', 'Tipos de paso',
+     (('investigar', 'Investigar'), ('conversar', 'Conversar con alguien'), ('visitar', 'Visitar'),
+      ('curso', 'Llevar un curso'), ('practicar', 'Practicar'), ('otra', 'Otro'))),
+    ('DUDAS_SUGERIDAS', 'Dudas sugeridas',
+     (('POSTULANTES', '¿Cuántos postulan y cuántos ingresan?'),
+      ('CURSOS_DIFICILES', '¿Qué cursos son los más difíciles?'),
+      ('SUELDO_INICIAL', '¿Cuánto gana alguien que recién termina?'))),
+    # Las cinco preguntas de conocimiento (códigos de `PreguntaConocimiento`) y la duda que crea cada una al
+    # responder «más o menos» o «no»; `{carrera}` se reemplaza por el nombre. Textos de las preguntas provisionales.
+    ('PREGUNTAS_CONOCIMIENTO', 'Qué tanto conozco la carrera',
+     (('DIA_NORMAL', '¿Sabes cómo es un día normal de alguien de {carrera}?'),
+      ('DONDE_TRABAJAR', '¿Sabes dónde podrías trabajar si estudias {carrera}?'),
+      ('CURSOS', '¿Sabes qué cursos se llevan en {carrera}?'),
+      ('INGRESO', '¿Sabes cómo se ingresa a {carrera}?'),
+      ('CONOCE_ALGUIEN', '¿Conoces a alguien que estudie o trabaje en {carrera}?'))),
+    ('DUDAS_CONOCIMIENTO', 'Dudas de las preguntas de conocimiento',
+     (('DIA_NORMAL', '¿Cómo es un día normal de alguien de {carrera}?'),
+      ('DONDE_TRABAJAR', '¿Dónde podría trabajar si estudio {carrera}?'),
+      ('CURSOS', '¿Qué cursos se llevan en {carrera}?'),
+      ('INGRESO', '¿Cómo se ingresa a {carrera}?'),
+      ('CONOCE_ALGUIEN', '¿A quién podría preguntarle sobre {carrera}?'))),
 )
+
+# B11 · Secciones de la tarjeta de carrera: (código, nombre, ¿cuenta para «listo para comparar»?). Cada ruta
+# decide con reglas SECCION_PLAN cuándo se abre cada una.
+SECCIONES_TARJETA = (('POR_QUE', 'Por qué', True), ('CONOCIMIENTO', 'Qué tanto la conozco', False),
+                     ('REALIDAD', 'Qué tan real es', True), ('PASOS', 'Mis pasos', False))
+
+# Rubros que el front precarga en REALIDAD: (rubro, frecuencia recomendada, monto de referencia en soles,
+# en cero si la institución es pública, solo si el camino incluye prepararse). Alimentación y Vivienda no se
+# precargan: el estudiante los agrega a mano.
+REFERENCIAS_RUBROS = (('PREPARACION', 'UNICA', 1300, False, True), ('ADMISION', 'UNICA', 350, False, False),
+                      ('MATRICULA', 'POR_CICLO', 600, False, False), ('PENSION', 'MENSUAL', 1800, True, False),
+                      ('MATERIALES', 'POR_CICLO', 300, False, False), ('TRANSPORTE', 'MENSUAL', 150, False, False))
+
+# Caminos que incluyen prepararse antes de postular (precargan el rubro Preparación).
+CAMINOS_CON_PREPARACION = ('PREPARARME',)
 
 # Repregunta de cada tipo de criterio; el criterio la hereda si no trae la suya. Provisional (B02).
 REPREGUNTAS_CRITERIO = {
@@ -328,6 +381,7 @@ class Fijos:
     secciones: dict[str, modelos.Seccion]
     listas: dict[str, modelos.ListaOpciones]
     tematicas: dict[str, modelos.Tematica]
+    secciones_tarjeta: dict[str, modelos.SeccionTarjeta]
 
 
 def _leer_catalogo_seleccionado():
@@ -451,9 +505,40 @@ def cargar_listas(sesion, listas, comun):
     return cargadas
 
 
+def _cargar_tarjeta(sesion, listas):
+    """Secciones de la tarjeta y los datos de precarga de rubros y caminos (B11)."""
+    secciones = {c: modelos.SeccionTarjeta(codigo=c, nombre=n, orden=orden, para_comparar=p)
+                 for orden, (c, n, p) in enumerate(SECCIONES_TARJETA, start=1)}
+    sesion.add_all(secciones.values())
+    opciones_comunes = {codigo: opciones for codigo, _, opciones in LISTAS_COMUNES}
+    preguntas = {codigo for codigo, _ in opciones_comunes['PREGUNTAS_CONOCIMIENTO']}
+    dudas = {codigo for codigo, _ in opciones_comunes['DUDAS_CONOCIMIENTO']}
+    if preguntas != set(modelos.PreguntaConocimiento) or dudas != preguntas:
+        raise ValueError('Las preguntas y dudas de conocimiento deben usar los códigos de PreguntaConocimiento')
+    sesion.flush()
+    opciones = {(lista, codigo): opcion_id for lista, codigo, opcion_id in sesion.execute(
+        select(modelos.ListaOpciones.codigo, modelos.OpcionLista.codigo, modelos.OpcionLista.id).join(
+            modelos.OpcionLista, modelos.OpcionLista.lista_id == modelos.ListaOpciones.id).where(
+            modelos.ListaOpciones.id.in_([listas['RUBROS_GASTO'].id, listas['CAMINOS'].id])))}
+    for rubro, *_ in REFERENCIAS_RUBROS:
+        if ('RUBROS_GASTO', rubro) not in opciones:
+            raise ValueError(f'El rubro {rubro} no está en RUBROS_GASTO')
+    for camino in CAMINOS_CON_PREPARACION:
+        if ('CAMINOS', camino) not in opciones:
+            raise ValueError(f'El camino {camino} no está en CAMINOS')
+    sesion.add_all(modelos.ReferenciaRubro(
+        opcion_id=opciones['RUBROS_GASTO', rubro], frecuencia_recomendada=modelos.FrecuenciaGasto(frecuencia),
+        monto_referencia=monto, cero_si_publica=cero, solo_si_camino_prepara=prepara)
+        for rubro, frecuencia, monto, cero, prepara in REFERENCIAS_RUBROS)
+    sesion.add_all(modelos.ReferenciaCamino(opcion_id=opcion_id, incluye_preparacion=codigo in CAMINOS_CON_PREPARACION)
+                   for (lista, codigo), opcion_id in sorted(opciones.items()) if lista == 'CAMINOS')
+    return secciones
+
+
 def cargar(sesion: Session) -> Fijos:
     secciones = _cargar_secciones(sesion)
     listas = cargar_listas(sesion, LISTAS_COMUNES, comun=True)
+    secciones_tarjeta = _cargar_tarjeta(sesion, listas)
     archivo = _leer_catalogo_seleccionado()
     tematicas = _cargar_tematicas(sesion)
     dimensiones, aplicacion, items = _cargar_riasec(sesion)
@@ -462,4 +547,4 @@ def cargar(sesion: Session) -> Fijos:
     sesion.flush()
     return Fijos(aplicaciones={a.codigo: a for a in (aplicacion, *comparacion)},
                  items={'TEST-RIASEC': items, 'TEST-PARTIDA-LLEGADA': items_comparacion}, secciones=secciones,
-                 listas=listas, tematicas=tematicas)
+                 listas=listas, tematicas=tematicas, secciones_tarjeta=secciones_tarjeta)

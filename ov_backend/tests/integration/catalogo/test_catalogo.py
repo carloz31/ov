@@ -120,7 +120,7 @@ def test_hu038_busca_ocupaciones_y_consulta_su_detalle(abierto, sesion):
 
 
 def test_hu039_busca_instituciones_por_nombre_tipo_y_ubicacion(abierto):
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones')) == ['t-ffaa', 't-uni']
+    assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones')) == ['t-ffaa', 't-privada', 't-uni']
     assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones?buscar=universidad')) == ['t-uni']
     assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones?tipo=FFAA_POLICIA')) == ['t-ffaa']
     assert pedir(abierto, 'GET', f'{BASE}/instituciones?tipo=INSTITUTO') == []

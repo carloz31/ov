@@ -1,4 +1,4 @@
-"""Filas sintéticas para comprobar el reinicio de las 19 tablas; DATO DE PRUEBA."""
+"""Filas sintéticas para comprobar el reinicio de las tablas de estado; DATO DE PRUEBA."""
 
 from datetime import datetime
 from sqlalchemy import select
@@ -60,6 +60,41 @@ def llenar_estado(aplicacion):
                 criterios_faltantes=['C1'], texto_evaluado='DATO DE PRUEBA', fecha_hora=fecha),
             modelos.Favorito(cuenta_id=cuenta.id, tipo='OCUPACION', id_referencia=ocupacion.id, fecha_hora=fecha),
         ])
+        _llenar_planes(sesion, cuenta, fecha)
+
+
+def _llenar_planes(sesion, cuenta, fecha):
+    """B11: una tarjeta con una fila en cada tabla de planes y la opción inicial de la cuenta."""
+    carrera = sesion.scalar(select(modelos.Carrera))
+    opcion = sesion.scalar(select(modelos.OpcionLista))
+    cuenta.opcion_inicial_id = carrera.id
+    tarjeta = modelos.TarjetaCarrera(cuenta_id=cuenta.id, carrera_id=carrera.id, prioridad=1, creada_en=fecha,
+                                     actualizada_en=fecha)
+    sesion.add(tarjeta)
+    sesion.flush()
+    duda = modelos.DudaTarjeta(tarjeta_id=tarjeta.id, origen='PROPIA', texto='DATO DE PRUEBA', estado='ABIERTA',
+                               creada_en=fecha)
+    complicacion = modelos.ComplicacionTarjeta(tarjeta_id=tarjeta.id, texto_otro='DATO DE PRUEBA', creada_en=fecha)
+    sesion.add_all([duda, complicacion])
+    sesion.flush()
+    sugerencia = modelos.SugerenciaTarjeta(tarjeta_id=tarjeta.id, duda_id=duda.id, tipo_opcion_id=opcion.id,
+                                           texto='DATO DE PRUEBA', estado='ACEPTADA', generada_por='RESPALDO',
+                                           creada_en=fecha)
+    sesion.add(sugerencia)
+    sesion.flush()
+    paso = modelos.PasoTarjeta(tarjeta_id=tarjeta.id, posicion=1, tipo_opcion_id=opcion.id, texto='DATO DE PRUEBA',
+                               duda_id=duda.id, sugerencia_id=sugerencia.id, estado='HECHO', hallazgo='DATO DE PRUEBA',
+                               hecho_en=fecha)
+    sesion.add(paso)
+    sesion.flush()
+    duda.estado, duda.cerrada_por_paso_id = 'CERRADA', paso.id
+    sesion.add_all([
+        modelos.MotivoTarjeta(tarjeta_id=tarjeta.id, posicion=1, opcion_id=opcion.id),
+        modelos.ConocimientoTarjeta(tarjeta_id=tarjeta.id, pregunta='CURSOS', respuesta='NO'),
+        modelos.GastoTarjeta(tarjeta_id=tarjeta.id, posicion=1, rubro_otro='DATO DE PRUEBA', monto=10,
+                             frecuencia='UNICA'),
+        modelos.FinanciamientoTarjeta(tarjeta_id=tarjeta.id, posicion=1, texto_otro='DATO DE PRUEBA'),
+    ])
 
 
 def filas(motor):

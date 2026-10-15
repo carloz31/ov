@@ -22,6 +22,8 @@ class Cuenta(Base):
     correo: Mapped[str | None] = mapped_column(unique=True)
     contrasena_hash: Mapped[str | None]
     activa: Mapped[bool] = mapped_column(default=True, server_default=true())
+    # Carrera del primer plan registrado antes de completar el bloque de la opción inicial (B11); no cambia después.
+    opcion_inicial_id: Mapped[int | None] = mapped_column(ForeignKey("carrera.id"), default=None)
 
 
 class SalonActividadPrioritaria(Base):

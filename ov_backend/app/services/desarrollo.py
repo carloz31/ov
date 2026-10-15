@@ -1,7 +1,7 @@
-from sqlalchemy import delete
+from sqlalchemy import delete, update
 from sqlalchemy.orm import Session
 
-from app.models import Base
+from app.models import Base, Cuenta
 
 
 TABLAS_DE_ESTADO = (
@@ -10,6 +10,8 @@ TABLAS_DE_ESTADO = (
     'entrevista', 'entrevista_autor', 'conversacion_vinculo', 'evento_uso',
     'desbloqueo', 'respuesta_item', 'resultado_instrumento', 'resultado_dimension',
     'coincidencia', 'respuesta_registro', 'turno_seguimiento', 'evaluacion_respuesta', 'favorito',
+    'tarjeta_carrera', 'motivo_tarjeta', 'conocimiento_tarjeta', 'duda_tarjeta', 'gasto_tarjeta',
+    'financiamiento_tarjeta', 'complicacion_tarjeta', 'sugerencia_tarjeta', 'paso_tarjeta',
 )
 
 
@@ -18,3 +20,5 @@ def reiniciar_estado(sesion: Session) -> None:
     for tabla in reversed(Base.metadata.sorted_tables):
         if tabla.name in TABLAS_DE_ESTADO:
             sesion.execute(delete(tabla))
+    # La opción inicial es estado de la cuenta en una tabla de catálogo (B11).
+    sesion.execute(update(Cuenta).where(Cuenta.opcion_inicial_id.is_not(None)).values(opcion_inicial_id=None))

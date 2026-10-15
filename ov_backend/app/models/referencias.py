@@ -17,6 +17,8 @@ class Referencia(Base):
         CheckConstraint("(tipo = 'RESPUESTA_CUESTIONARIO') = (item_instrumento_id IS NOT NULL)",
                         name="fuente_cuestionario"),
         CheckConstraint("tipo <> 'FAVORITOS' OR item_registro_id IS NULL", name="favoritos_sin_fuente"),
+        CheckConstraint("tipo NOT IN ('PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL') OR item_registro_id IS NULL",
+                        name="planes_sin_fuente"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)

@@ -8,12 +8,14 @@ Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, 
 |---|---|
 | Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash`, `activa`), `salon`, `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
 | Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` solo en CASO), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado), `pregunta_diario` (ver «Diario»), `conversacion`, `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
-| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` (cada intento: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo` |
+| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` (cada intento: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo`, las tablas de la tarjeta de carrera y `cuenta.opcion_inicial_id` (B11; ver «Secciones de la tarjeta») |
 | Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo`, `desbloqueo` (único por cuenta y regla; `visto`) |
 
 `id_objetivo` de una regla e `id_referencia` de un evento o condición son referencias polimórficas sin FK; los cargadores resuelven códigos a ids. `id_objetivo` nunca es nulo.
 
 **Secciones.** Partes del perfil que se abren con reglas como cualquier objetivo (`SECCION`). Las fijas están en `datos/fijos.py`: DIARIO, CHECK_IN, CATALOGO, PLANES y FAMILIA del estudiante, y CONVERSACIONES del apoderado. Cada ruta decide con sus reglas cuándo se abre cada una. La migración `0004` convirtió las reglas del antiguo objetivo CONVERSACIONES en reglas de esa sección.
+
+**Secciones de la tarjeta (B11).** Cada tarjeta de carrera tiene cuatro secciones, fijas en `seccion_tarjeta` (`datos/fijos.py`): POR_QUE, CONOCIMIENTO, REALIDAD y PASOS (`para_comparar` en POR_QUE y REALIDAD). Se abren por cuenta, para todas sus tarjetas, con reglas del objetivo `SECCION_PLAN`, solo del estudiante; cada ruta decide con qué actividad. Los medidores, la carrera y la prioridad no son secciones. Las tablas de la tarjeta (`tarjeta_carrera` y sus motivos, conocimiento, dudas, gastos, financiamiento, complicaciones, sugerencias y pasos) son estado y las vacía el reinicio, que además pone `cuenta.opcion_inicial_id` en nulo.
 
 El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La migración `0003` amplía el `CHECK` de `bloque.espacio` para admitirlo en SQLite y PostgreSQL; su downgrade falla si todavía existen bloques con ese espacio y conserva los datos.
 
@@ -33,6 +35,7 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | REINICIA_INSTRUMENTO | instrumento |
 | REVELA_RESULTADO | aplicación (el resultado es por cuenta y aplicación; ver `instrumentos.md`) |
 | VISTA_TESTIMONIO | testimonio |
+| CREA_PLAN, ACTUALIZA_PLAN, ELIMINA_PLAN | carrera del plan (la tarjeta puede borrarse; la carrera no) |
 
 ## Reglas
 

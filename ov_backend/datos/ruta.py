@@ -56,6 +56,8 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-batalla', 'T1', 'Batalla de prueba', 'BATALLA', None, 10),
                ('t-explorar', 'T1', 'Registro de exploración', 'REGISTRO', None, 10),
                ('t-llegada', 'T2', 'Punto de llegada', 'CUESTIONARIO', None, 10),
+               ('t-comparar', 'T2', 'Registro para comparar tus planes', 'REGISTRO', None, 15),
+               ('t-proyecto', 'T2', 'Registro de tu proyecto', 'REGISTRO', None, 15),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 60, 10),
@@ -146,14 +148,21 @@ TIPOS_CARRERA = (
 # (código, nombre)
 UBICACIONES = (('t-lima', 'Lima de prueba'), ('t-cusco', 'Cusco de prueba'))
 
-# (código, nombre, tipo, ubicación, descripción, página web, carreras que ofrece)
+# (código, nombre, tipo, gestión o None, ubicación, descripción, página web, carreras que ofrece). B11: una pública
+# y una privada ofrecen la misma carrera, para la precarga de la pensión y el total de la carrera.
 INSTITUCIONES = (
-    ('t-uni', 'Universidad Nacional de Prueba', 'UNIVERSIDAD', 't-lima', 'Universidad de prueba con varias facultades.',
-     'https://example.test/universidad', ('environmental-engineering', 'journalism', 'psychology')),
-    ('t-ffaa', 'Escuela de Oficiales de Prueba', 'FFAA_POLICIA', 't-cusco',
+    ('t-uni', 'Universidad Nacional de Prueba', 'UNIVERSIDAD', 'PUBLICA', 't-lima',
+     'Universidad de prueba con varias facultades.', 'https://example.test/universidad',
+     ('environmental-engineering', 'journalism', 'psychology')),
+    ('t-ffaa', 'Escuela de Oficiales de Prueba', 'FFAA_POLICIA', 'PUBLICA', 't-cusco',
      'Escuela de formación de oficiales de prueba.', 'https://example.test/escuela',
      ('civil-engineering', 'nursing')),
+    ('t-privada', 'Escuela Superior Privada de Prueba', 'UNIVERSIDAD', 'PRIVADA', 't-lima',
+     'Casa de estudios privada de prueba.', 'https://example.test/privada', ('environmental-engineering',)),
 )
+
+# (institución, carrera, ciclos) que duran en esa institución; la de 11 ciclos prueba la duración impar (B11).
+DURACIONES_CICLOS = (('t-uni', 'environmental-engineering', 10), ('t-privada', 'environmental-engineering', 11))
 
 # (carrera, promedio mensual, fuente, año, ((mínimo, máximo o None, porcentaje), ...))
 INGRESOS = (
@@ -198,6 +207,10 @@ ITEMS_REGISTRO = (
      (('C1', 'CONTRASTE', 'Compara el resultado con lo que pensaba antes'),)),
     ('t-explorar', 't-explorar-sorpresa', 'Lo inesperado', '¿Qué opción fuera de tu perfil te llamó la atención y por qué?',
      None, (('C1', 'RAZON', 'Por qué le llamó la atención'),)),
+    ('t-comparar', 't-comparar-eleccion', 'Comparación', 'Compara tus planes: ¿cuál te convence más y por qué?',
+     None, (('C1', 'RAZON', 'Por qué ese plan le convence más'),)),
+    ('t-proyecto', 't-proyecto-paso', 'Mi proyecto', '¿Cuál de tus pasos vas a dar primero y qué esperas averiguar?',
+     None, (('C1', 'ACCION', 'Qué paso dará primero'),)),
 )
 
 # Referencias: (código, (tipo de dueño, dueño), tipo, fuente). Dueño: ('ACTIVIDAD', código) o
@@ -213,7 +226,7 @@ REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera')
                ('t-ref-diario-espera', ('PREGUNTA_DIARIO', 't-diario-personal'), 'TEXTO', 't-exp-espera'),
                ('t-ref-diario-favoritos', ('PREGUNTA_DIARIO', 't-dia-favoritos'), 'FAVORITOS', None))
 FUENTE_APLICACION = ('RESULTADO', 'COINCIDENCIAS')
-SIN_FUENTE = ('FAVORITOS',)
+SIN_FUENTE = ('FAVORITOS', 'PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL')
 
 # Lo que cambia los valores por defecto de un ítem (obligatorio, sin longitud mínima).
 PROPIEDADES_ITEMS = {'t-val-breve': {'min_caracteres': 40}}
@@ -329,6 +342,17 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1),)),
     ('R-SEC-CONVERSACIONES', 'SECCION', 'CONVERSACIONES', 'Completa tus actividades para conversar en familia.',
      (('COMPLETA_BLOQUE', 'FAMILIA', 'EVENTOS', 1),)),
+    # B11: las secciones de la tarjeta de carrera se abren a medida que avanza el camino.
+    ('R-PLAN-POR_QUE', 'SECCION_PLAN', 'POR_QUE', 'Completa el inicio para contar por qué elegiste esta carrera.',
+     (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
+    ('R-PLAN-CONOCIMIENTO', 'SECCION_PLAN', 'CONOCIMIENTO',
+     'Completa el registro de valores para revisar qué tanto conoces esta carrera.',
+     (('COMPLETA_ACTIVIDAD', 't-valores', 'EVENTOS', 1),)),
+    ('R-PLAN-REALIDAD', 'SECCION_PLAN', 'REALIDAD',
+     'Completa el registro de exploración para ver qué tan real es esta opción.',
+     (('COMPLETA_ACTIVIDAD', 't-explorar', 'EVENTOS', 1),)),
+    ('R-PLAN-PASOS', 'SECCION_PLAN', 'PASOS', 'Completa la comparación de tus planes para definir tus pasos.',
+     (('COMPLETA_ACTIVIDAD', 't-comparar', 'EVENTOS', 1),)),
 )
 
 
@@ -654,14 +678,23 @@ def _cargar_catalogo(sesion):
     sesion.add_all([*high_points, *tipos, *ubicaciones.values()])
     sesion.flush()
     instituciones = {c: modelos.Institucion(codigo=c, nombre=n, tipo=modelos.TipoInstitucion(t),
+                                            gestion=None if g is None else modelos.GestionInstitucion(g),
                                             ubicacion_id=ubicaciones[u].id, descripcion=d, pagina_web=w)
-                     for c, n, t, u, d, w, _ in INSTITUCIONES}
+                     for c, n, t, g, u, d, w, _ in INSTITUCIONES}
     ingresos = {c: modelos.IngresoCarrera(carrera_id=carreras[c].id, promedio_mensual=p, fuente=f, anio=a)
                 for c, p, f, a, _ in INGRESOS}
     sesion.add_all([*instituciones.values(), *ingresos.values()])
     sesion.flush()
-    sesion.add_all(modelos.InstitucionCarrera(institucion_id=instituciones[i].id, carrera_id=carreras[c].id)
-                   for i, *_, ofrecidas in INSTITUCIONES for c in ofrecidas)
+    ofrecidas = {(i, c) for i, *_, carreras_institucion in INSTITUCIONES for c in carreras_institucion}
+    duraciones = {(i, c): ciclos for i, c, ciclos in DURACIONES_CICLOS}
+    for (i, c), ciclos in duraciones.items():
+        if (i, c) not in ofrecidas:
+            raise ValueError(f'Duración de {c} en {i}, que no la ofrece')
+        if ciclos < 1:
+            raise ValueError(f'Duración inválida de {c} en {i}: {ciclos}')
+    sesion.add_all(modelos.InstitucionCarrera(institucion_id=instituciones[i].id, carrera_id=carreras[c].id,
+                                              duracion_ciclos=duraciones.get((i, c)))
+                   for i, c in sorted(ofrecidas))
     sesion.add_all(modelos.RangoIngreso(ingreso_carrera_id=ingresos[c].id, posicion=posicion, minimo=minimo,
                                         maximo=maximo, porcentaje=porcentaje)
                    for c, *_, rangos in INGRESOS
@@ -670,7 +703,8 @@ def _cargar_catalogo(sesion):
 
 def cargar(sesion: Session) -> None:
     base = fijos.cargar(sesion)
-    objetivos = {**_cargar_estructura(sesion), 'SECCION': base.secciones, 'APLICACION': base.aplicaciones}
+    objetivos = {**_cargar_estructura(sesion), 'SECCION': base.secciones, 'APLICACION': base.aplicaciones,
+                 'SECCION_PLAN': base.secciones_tarjeta}
     _unir_instrumentos(sesion, objetivos['ACTIVIDAD'], base)
     _unir_tematicas(sesion, objetivos['ACTIVIDAD'], base)
     _unir_dimensiones(sesion, objetivos['ACTIVIDAD'])

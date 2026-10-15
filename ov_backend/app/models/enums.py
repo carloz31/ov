@@ -60,12 +60,20 @@ class TipoEventoUso(StrEnum):
     VISTA_OCUPACION = "VISTA_OCUPACION"
     VISTA_INSTITUCION = "VISTA_INSTITUCION"
     MARCA_FAVORITO = "MARCA_FAVORITO"
+    CREA_PLAN = "CREA_PLAN"
+    ACTUALIZA_PLAN = "ACTUALIZA_PLAN"
+    ELIMINA_PLAN = "ELIMINA_PLAN"
 
 
 class TipoInstitucion(StrEnum):
     UNIVERSIDAD = "UNIVERSIDAD"
     INSTITUTO = "INSTITUTO"
     FFAA_POLICIA = "FFAA_POLICIA"
+
+
+class GestionInstitucion(StrEnum):
+    PUBLICA = "PUBLICA"
+    PRIVADA = "PRIVADA"
 
 
 class TipoFavorito(StrEnum):
@@ -108,6 +116,7 @@ class TipoObjetivo(StrEnum):
     SECCION = "SECCION"
     INSIGNIA = "INSIGNIA"
     NIVEL = "NIVEL"
+    SECCION_PLAN = "SECCION_PLAN"
 
 
 class TipoConteo(StrEnum):
@@ -169,9 +178,71 @@ class TipoReferencia(StrEnum):
     COINCIDENCIAS = "COINCIDENCIAS"
     RESPUESTA_CUESTIONARIO = "RESPUESTA_CUESTIONARIO"
     FAVORITOS = "FAVORITOS"
+    PLAN = "PLAN"
+    PLANES = "PLANES"
+    PASOS_PLAN_A = "PASOS_PLAN_A"
+    OPCION_INICIAL = "OPCION_INICIAL"
 
 
 class EstadoReferencia(StrEnum):
     DISPONIBLE = "DISPONIBLE"
     POR_DESARROLLAR = "POR_DESARROLLAR"
     SIN_DATO = "SIN_DATO"
+
+
+# --- Planes de carrera (B11) ---------------------------------------------------------------------
+
+class FrecuenciaGasto(StrEnum):
+    UNICA = "UNICA"
+    MENSUAL = "MENSUAL"
+    POR_CICLO = "POR_CICLO"
+    ANUAL = "ANUAL"
+
+
+class OrigenIdea(StrEnum):
+    MIA = "MIA"
+    FAMILIA = "FAMILIA"
+    CONOCIDO = "CONOCIDO"
+    TEST = "TEST"
+    PLATAFORMA = "PLATAFORMA"
+
+
+class PreguntaConocimiento(StrEnum):
+    DIA_NORMAL = "DIA_NORMAL"
+    DONDE_TRABAJAR = "DONDE_TRABAJAR"
+    CURSOS = "CURSOS"
+    INGRESO = "INGRESO"
+    CONOCE_ALGUIEN = "CONOCE_ALGUIEN"
+
+
+class RespuestaConocimiento(StrEnum):
+    SI = "SI"
+    MAS_O_MENOS = "MAS_O_MENOS"
+    NO = "NO"
+
+
+class OrigenDuda(StrEnum):
+    PREGUNTA = "PREGUNTA"
+    SUGERIDA = "SUGERIDA"
+    PROPIA = "PROPIA"
+
+
+class EstadoDuda(StrEnum):
+    ABIERTA = "ABIERTA"
+    CERRADA = "CERRADA"
+
+
+class EstadoSugerencia(StrEnum):
+    PENDIENTE = "PENDIENTE"
+    ACEPTADA = "ACEPTADA"
+    DESCARTADA = "DESCARTADA"
+
+
+class OrigenSugerencia(StrEnum):
+    LLM = "LLM"
+    RESPALDO = "RESPALDO"
+
+
+class EstadoPaso(StrEnum):
+    PENDIENTE = "PENDIENTE"
+    HECHO = "HECHO"

@@ -27,6 +27,24 @@
         }
       ],
       "objetivo": {
+        "codigo": "POR_QUE",
+        "nombre": "Por qué"
+      },
+      "regla": "R-PLAN-POR_QUE",
+      "tipo_objetivo": "SECCION_PLAN"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-inicio",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
         "codigo": "CATALOGO",
         "nombre": "Catálogo"
       },

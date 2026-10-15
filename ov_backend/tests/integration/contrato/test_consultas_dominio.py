@@ -13,11 +13,11 @@ from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 
 # Estados de cada actividad del estudiante, al inicio y con la Ciudad abierta.
 ESTADOS = {
-    False: {'t-inicio': 'DISPONIBLE', 't-partida': 'DISPONIBLE', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
+    False: {'t-inicio': 'DISPONIBLE', 't-partida': 'DISPONIBLE', 't-llegada': 'BLOQUEADA', 't-comparar': 'BLOQUEADA', 't-proyecto': 'BLOQUEADA', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
             't-opcional': 'BLOQUEADA', 't-valores': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
             't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'BLOQUEADA', 't-eco': 'BLOQUEADA',
             't-lee-cuestionario': 'BLOQUEADA', 't-batalla': 'BLOQUEADA', 't-explorar': 'BLOQUEADA'},
-    True: {'t-inicio': 'COMPLETADA', 't-partida': 'COMPLETADA', 't-llegada': 'BLOQUEADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
+    True: {'t-inicio': 'COMPLETADA', 't-partida': 'COMPLETADA', 't-llegada': 'BLOQUEADA', 't-comparar': 'BLOQUEADA', 't-proyecto': 'BLOQUEADA', 't-cierre-inicio': 'COMPLETADA', 't-expectativas': 'COMPLETADA',
            't-opcional': 'DISPONIBLE', 't-valores': 'DISPONIBLE', 't-mision-intereses': 'DISPONIBLE', 't-mision-intereses-2': 'BLOQUEADA',
            't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'DISPONIBLE', 't-eco': 'DISPONIBLE',
            't-lee-cuestionario': 'DISPONIBLE', 't-batalla': 'DISPONIBLE', 't-explorar': 'BLOQUEADA'},

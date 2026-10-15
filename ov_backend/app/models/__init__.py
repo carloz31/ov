@@ -7,7 +7,9 @@ from app.models.enums import (
     TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
     ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion, TipoCriterio,
     TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion, TipoFavorito,
-    UsoPreguntaDiario, TipoRecomendacion, OrigenRedaccion,
+    UsoPreguntaDiario, TipoRecomendacion, OrigenRedaccion, GestionInstitucion, FrecuenciaGasto, OrigenIdea,
+    PreguntaConocimiento, RespuestaConocimiento, OrigenDuda, EstadoDuda, EstadoSugerencia, OrigenSugerencia,
+    EstadoPaso,
 )
 
 
@@ -47,6 +49,11 @@ _MODELOS_POR_MODULO = {
         'HighPoint', 'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera',
         'RangoIngreso',
     ),
+    'app.models.planes': (
+        'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta',
+        'ConocimientoTarjeta', 'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta',
+        'SugerenciaTarjeta', 'PasoTarjeta',
+    ),
 }
 
 
@@ -79,5 +86,8 @@ __all__ = [
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
     'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera', 'RangoIngreso',
     'TipoFavorito', 'Favorito', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
-    'ContadorDiario',
+    'ContadorDiario', 'GestionInstitucion', 'FrecuenciaGasto', 'OrigenIdea', 'PreguntaConocimiento',
+    'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'EstadoPaso',
+    'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',
+    'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta', 'SugerenciaTarjeta', 'PasoTarjeta',
 ]

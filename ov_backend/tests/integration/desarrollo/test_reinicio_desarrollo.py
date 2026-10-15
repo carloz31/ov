@@ -17,6 +17,7 @@ def test_r15_reinicio_completo_idempotente_y_atomico(cliente, aplicacion, monkey
     pedir(cliente, 'POST', '/acciones/escribir-carta', {'cuenta': 'est-ana', 'texto': 'DATO DE PRUEBA'})
     antes = filas_base(aplicacion)
     assert all(antes[nombre] for nombre in TABLAS_DE_ESTADO)
+    assert any(fila.opcion_inicial_id is not None for fila in antes['cuenta'])
     motor = aplicacion.state.motor_bd
     cache = motor.cache_definiciones.actual
     def prohibido(*args, **kwargs):
@@ -38,5 +39,10 @@ def test_r15_reinicio_completo_idempotente_y_atomico(cliente, aplicacion, monkey
         assert pedir(cliente, 'POST', '/desarrollo/reiniciar') == {'mensaje': 'Datos de prueba reiniciados'}
         despues = filas_base(aplicacion)
         assert all(despues[nombre] == [] for nombre in TABLAS_DE_ESTADO)
-        assert all(despues[nombre] == filas for nombre, filas in antes.items() if nombre not in TABLAS_DE_ESTADO)
+        # B11: la opción inicial vive en `cuenta` y también se reinicia; el resto de la cuenta no cambia.
+        assert [fila.opcion_inicial_id for fila in despues['cuenta']] == [None] * len(despues['cuenta'])
+        assert [{**fila._asdict(), 'opcion_inicial_id': None} for fila in antes['cuenta']] == [
+            fila._asdict() for fila in despues['cuenta']]
+        assert all(despues[nombre] == filas for nombre, filas in antes.items()
+                   if nombre not in TABLAS_DE_ESTADO and nombre != 'cuenta')
         assert motor.cache_definiciones.actual is cache

@@ -10,6 +10,16 @@
     }
   },
   {
+    "codigo": "t-privada",
+    "es_favorita": false,
+    "nombre": "Escuela Superior Privada de Prueba",
+    "tipo": "UNIVERSIDAD",
+    "ubicacion": {
+      "codigo": "t-lima",
+      "nombre": "Lima de prueba"
+    }
+  },
+  {
     "codigo": "t-uni",
     "es_favorita": false,
     "nombre": "Universidad Nacional de Prueba",

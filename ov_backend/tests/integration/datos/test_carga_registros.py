@@ -35,7 +35,7 @@ def _eco(eleccion):
 # DATO DE PRUEBA: referencias y elecciones por referencia que el cargador debe rechazar.
 REF_ESPERA = ('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera')
 VARIANTES_REFERENCIAS = (
-    ('REFERENCIAS', (('t-ref-plan', ('ACTIVIDAD', 't-eco'), 'PLANES', 't-exp-ruta'),), 'fuera del catálogo'),
+    ('REFERENCIAS', (('t-ref-plan', ('ACTIVIDAD', 't-eco'), 'INEXISTENTE', 't-exp-ruta'),), 'fuera del catálogo'),
     ('REFERENCIAS', (REF_ESPERA, ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-exp-espera')),
      'no tiene lista'),
     ('REFERENCIAS', (REF_ESPERA, ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-eco-ruta')),
@@ -97,6 +97,7 @@ def test_items_listas_y_criterios_cargados(tmp_path):
                                    .outerjoin(m.ListaOpciones, m.ListaOpciones.id == m.ItemRegistro.lista_id)
                                    .order_by(m.Actividad.codigo, m.ItemRegistro.orden)).all()
             assert items == [
+                ('t-comparar', 't-comparar-eleccion', 1, None, None),
                 ('t-contraste', 't-con-contraste', 1, None, None),
                 ('t-eco', 't-eco-ruta', 1, None, None),
                 ('t-eco', 't-eco-espera', 2, None, None),
@@ -104,6 +105,7 @@ def test_items_listas_y_criterios_cargados(tmp_path):
                 ('t-expectativas', 't-exp-apoyo', 2, 't-lista-apoyos', False),
                 ('t-expectativas', 't-exp-espera', 3, None, None),
                 ('t-explorar', 't-explorar-sorpresa', 1, None, None),
+                ('t-proyecto', 't-proyecto-paso', 1, None, None),
                 ('t-valores', 't-val-orden', 1, 't-lista-valores', False),
                 ('t-valores', 't-val-libre', 2, None, None),
                 ('t-valores', 't-val-breve', 3, None, None),

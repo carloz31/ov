@@ -251,6 +251,54 @@
         "titulo": "Punto de llegada",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "instrumentos_prioritarios"
+            },
+            "mensaje": "Termina el camino y revela tu punto de partida y los cuestionarios prioritarios de tu salón para abrir la decisión.",
+            "regla": "R-T2"
+          }
+        ],
+        "codigo": "t-comparar",
+        "contenido": "t_comparar",
+        "descripcion": null,
+        "duracion_estimada_min": 15,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Registro para comparar tus planes",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "instrumentos_prioritarios"
+            },
+            "mensaje": "Termina el camino y revela tu punto de partida y los cuestionarios prioritarios de tu salón para abrir la decisión.",
+            "regla": "R-T2"
+          }
+        ],
+        "codigo": "t-proyecto",
+        "contenido": "t_proyecto",
+        "descripcion": null,
+        "duracion_estimada_min": 15,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Registro de tu proyecto",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": [

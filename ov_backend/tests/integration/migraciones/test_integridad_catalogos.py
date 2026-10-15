@@ -59,7 +59,7 @@ def test_r38_integridad_catalogos_relaciones_respuestas_y_defaults(cliente, apli
         assert desbloqueo.visto is False and item.inverso is False
         assert sesion.scalar(select(m.Actividad)).visibilidad == 'SIEMPRE'
     inspector = inspect(aplicacion.state.motor_bd)
-    assert len(inspector.get_table_names()) == 66
+    assert len(inspector.get_table_names()) == 78
     columnas = {c['name']: c for c in inspector.get_columns('ocupacion')}
     assert set(columnas) == {'id', 'codigo', 'codigo_onet', 'titulo', 'descripcion', 'lugares_trabajo', 'habilidades',
                             'conocimientos', 'codigo_riasec', 'busqueda'} and columnas['codigo']['nullable'] is True

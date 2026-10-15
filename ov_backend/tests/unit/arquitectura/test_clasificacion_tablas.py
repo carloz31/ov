@@ -12,7 +12,7 @@ CATALOGO = {
     'aplicacion', 'aplicacion_actividad', 'ocupacion', 'puntaje_ocupacion',
     'carrera_ocupacion', 'lista_opciones', 'opcion_lista', 'item_registro', 'criterio_completitud',
     'referencia', 'high_point', 'tipo_carrera', 'ubicacion', 'institucion', 'institucion_carrera',
-    'ingreso_carrera', 'rango_ingreso',
+    'ingreso_carrera', 'rango_ingreso', 'seccion_tarjeta', 'referencia_rubro', 'referencia_camino',
 }
 
 
@@ -22,6 +22,8 @@ ESTADO = {
     'entrevista_autor', 'conversacion_vinculo', 'evento_uso', 'desbloqueo',
     'respuesta_item', 'resultado_instrumento', 'resultado_dimension', 'coincidencia',
     'respuesta_registro', 'turno_seguimiento', 'evaluacion_respuesta', 'favorito',
+    'tarjeta_carrera', 'motivo_tarjeta', 'conocimiento_tarjeta', 'duda_tarjeta', 'gasto_tarjeta',
+    'financiamiento_tarjeta', 'complicacion_tarjeta', 'sugerencia_tarjeta', 'paso_tarjeta',
 }
 
 
