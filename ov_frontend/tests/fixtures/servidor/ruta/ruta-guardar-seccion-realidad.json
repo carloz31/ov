@@ -1,0 +1,33 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "journalism",
+      "tipo": "ACTUALIZA_PLAN"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 5,
+          "cumplida": true,
+          "referencia": null,
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "ACTUALIZA_PLAN"
+        }
+      ],
+      "evaluador_especial": {
+        "cumplido": true,
+        "nombre": "planes_listos_para_comparar"
+      },
+      "objetivo": {
+        "codigo": "t-comparar",
+        "nombre": "Registro para comparar tus planes"
+      },
+      "regla": "R-t-comparar",
+      "tipo_objetivo": "ACTIVIDAD"
+    }
+  ]
+}

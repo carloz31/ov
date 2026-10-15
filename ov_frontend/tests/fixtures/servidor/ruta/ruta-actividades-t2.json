@@ -87,7 +87,7 @@
         "contenido": "t_valores",
         "descripcion": null,
         "duracion_estimada_min": 10,
-        "estado": "DISPONIBLE",
+        "estado": "COMPLETADA",
         "orden": 3,
         "requerida": false,
         "tipo": "REGISTRO",
@@ -157,7 +157,7 @@
         "contenido": "t_explorar",
         "descripcion": null,
         "duracion_estimada_min": 10,
-        "estado": "DISPONIBLE",
+        "estado": "COMPLETADA",
         "orden": 8,
         "requerida": false,
         "tipo": "REGISTRO",
@@ -190,31 +190,12 @@
         "visible": true
       },
       {
-        "bloqueo": [
-          {
-            "condiciones_faltantes": [
-              {
-                "actual": 0,
-                "cumplida": false,
-                "referencia": null,
-                "requerido": 1,
-                "tipo_conteo": "EVENTOS",
-                "tipo_evento": "ACTUALIZA_PLAN"
-              }
-            ],
-            "evaluador_especial": {
-              "cumplido": false,
-              "nombre": "planes_listos_para_comparar"
-            },
-            "mensaje": "Completa por qué y qué tan real es en al menos dos planes para compararlos.",
-            "regla": "R-t-comparar"
-          }
-        ],
+        "bloqueo": null,
         "codigo": "t-comparar",
         "contenido": "t_comparar",
         "descripcion": null,
         "duracion_estimada_min": 15,
-        "estado": "BLOQUEADA",
+        "estado": "DISPONIBLE",
         "orden": 2,
         "requerida": true,
         "tipo": "REGISTRO",
@@ -225,16 +206,7 @@
       {
         "bloqueo": [
           {
-            "condiciones_faltantes": [
-              {
-                "actual": 0,
-                "cumplida": false,
-                "referencia": null,
-                "requerido": 1,
-                "tipo_conteo": "EVENTOS",
-                "tipo_evento": "ACTUALIZA_PLAN"
-              }
-            ],
+            "condiciones_faltantes": [],
             "evaluador_especial": {
               "cumplido": false,
               "nombre": "pasos_plan_a"

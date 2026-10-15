@@ -153,7 +153,7 @@ def test_opciones_de_la_tarjeta_para_la_precarga(cliente):
                                         'texto_duda': '¿Cómo es un día normal de alguien de {carrera}?'}
 
 
-def test_hu100_hu101_dudas_de_conocimiento_y_sugerencias_de_respaldo(cliente, respaldo):
+def test_hu109_hu110_dudas_de_conocimiento_y_sugerencias_de_respaldo(cliente, respaldo):
     abrir_planes(cliente)
     abrir_secciones(cliente, 'CONOCIMIENTO')
     crear(cliente, 'psychology')
@@ -189,7 +189,7 @@ def test_hu100_hu101_dudas_de_conocimiento_y_sugerencias_de_respaldo(cliente, re
                                                               {'numero': 3}]}, esperado=422)
 
 
-def test_hu045_hu101_complicaciones_con_su_sugerencia_de_respaldo(cliente, respaldo):
+def test_hu045_hu110_complicaciones_con_su_sugerencia_de_respaldo(cliente, respaldo):
     abrir_planes(cliente)
     abrir_secciones(cliente, 'REALIDAD')
     crear(cliente, 'psychology')

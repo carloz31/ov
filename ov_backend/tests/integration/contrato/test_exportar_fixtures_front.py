@@ -24,6 +24,7 @@ from app.schemas.catalogo import (
     CarreraDetalle, CarreraResumen, InstitucionDetalle, InstitucionResumen, OcupacionDetalle, OcupacionResumen,
 )
 from app.schemas.favoritos import FavoritosCuenta
+from app.schemas.planes import PlanesCuenta
 from app.schemas.testimonios import TestimonioEstado
 from app.schemas.cuentas import CuentaResumen, DesbloqueoLegible, ResumenCuenta
 from app.schemas.actividades import BloqueActividades
@@ -51,6 +52,9 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'catalogo-instituciones', 'catalogo-institucion-t-uni', 'ver-ocupacion', 'marcar-favorito', 'favoritos',
     'diario-preguntas', 'abrir-pregunta-personal', 'pregunta-del-dia', 'escribir-entrada-fija', 'escribir-entrada-libre',
     'editar-entrada', 'diario-entradas', 'diario-amistad', 'check-ins', 'tematicas',
+    'crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
+    'medidores-plan', 'referencias-t-comparar', 'guardar-seccion-pasos', 'paso-hecho', 'referencias-t-proyecto',
+    'planes',
 )}
 
 
@@ -258,6 +262,22 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
                                                                             ('BLOQUEADA', False, None)]
     final = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-final'])
     assert [(t.estado, t.visto, t.pista) for t in final] == [('DISPONIBLE', True, None), ('DISPONIBLE', False, None)]
+    # B11: planes con sus secciones, requisitos de comparar y proyecto, y referencias de planes.
+    for nombre in ('crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
+                   'medidores-plan', 'guardar-seccion-pasos', 'paso-hecho'):
+        RespuestaAccion.model_validate(datos[nombre])
+    assert {d['regla'] for d in datos['guardar-seccion-realidad']['nuevos_desbloqueos']} == {'R-t-comparar'}
+    assert {d['regla'] for d in datos['guardar-seccion-pasos']['nuevos_desbloqueos']} == {'R-t-proyecto'}
+    planes = PlanesCuenta.model_validate(datos['planes'])
+    assert [(p.prioridad, p.carrera.codigo, p.lista_para_comparar) for p in planes.planes] == [
+        ('A', 'psychology', True), ('B', 'journalism', True)]
+    assert [s.estado for s in planes.planes[0].secciones] == ['LISTA', 'LISTA', 'LISTA', 'LISTA']
+    assert planes.opcion_inicial.codigo == 'psychology' and planes.avisos == []
+    assert {s.generada_por for s in planes.planes[0].sugerencias} == {'LLM'}
+    comparar, = ReferenciasConsultadas.model_validate(datos['referencias-t-comparar']).referencias
+    assert [o.codigo for o in comparar.opciones] == ['psychology', 'journalism']
+    proyecto = {r.tipo: r for r in ReferenciasConsultadas.model_validate(datos['referencias-t-proyecto']).referencias}
+    assert proyecto['PLAN'].cita.startswith('DATO DE PRUEBA') and proyecto['OPCION_INICIAL'].texto == 'Psicología'
     # Regenera sobre archivos existentes sin tocar otros archivos del destino.
     conservar = destino / 'ruta' / 'conservar.txt'
     conservar.write_text('Conservar', encoding='utf-8')

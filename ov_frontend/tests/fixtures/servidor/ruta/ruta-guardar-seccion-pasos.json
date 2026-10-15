@@ -1,0 +1,33 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "psychology",
+      "tipo": "ACTUALIZA_PLAN"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 7,
+          "cumplida": true,
+          "referencia": null,
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "ACTUALIZA_PLAN"
+        }
+      ],
+      "evaluador_especial": {
+        "cumplido": true,
+        "nombre": "pasos_plan_a"
+      },
+      "objetivo": {
+        "codigo": "t-proyecto",
+        "nombre": "Registro de tu proyecto"
+      },
+      "regla": "R-t-proyecto",
+      "tipo_objetivo": "ACTIVIDAD"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "referencias": [
+    {
+      "codigo": "t-ref-opcion-inicial",
+      "estado": "DISPONIBLE",
+      "texto": "Psicología",
+      "tipo": "OPCION_INICIAL"
+    },
+    {
+      "codigo": "t-ref-pasos-plan-a",
+      "estado": "DISPONIBLE",
+      "opciones": [
+        {
+          "codigo": "investigar",
+          "texto": "Busca en Psicología: ¿Dónde podría trabajar si estudio Psicología?"
+        },
+        {
+          "codigo": "visitar",
+          "texto": "DATO DE PRUEBA: ir a la feria vocacional."
+        }
+      ],
+      "tipo": "PASOS_PLAN_A"
+    },
+    {
+      "cita": "DATO DE PRUEBA: un día expliqué un tema a mi primo y sentí que era lo mío.",
+      "codigo": "t-ref-plan-a",
+      "estado": "DISPONIBLE",
+      "opciones": [
+        {
+          "codigo": "AYUDAR",
+          "texto": "Ayudar a otros"
+        },
+        {
+          "codigo": "OTRA",
+          "texto": "Me gusta explicar"
+        }
+      ],
+      "texto": "Psicología",
+      "tipo": "PLAN"
+    }
+  ]
+}

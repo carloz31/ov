@@ -37,11 +37,11 @@ Cuentas:
 
 | Código | Tipo | Dónde | Desde | Qué prueba |
 |---|---|---|---|---|
-| `t-inicio` | I | T0 | B00 | Ficha `t-ficha`. B01: abre las secciones DIARIO, CATALOGO y PLANES. B09: abre la entrada fija. B11: abre los campos básicos de la tarjeta. |
+| `t-inicio` | I | T0 | B00 | Ficha `t-ficha`. B01: abre las secciones DIARIO, CATALOGO y PLANES. B09: abre la entrada fija. B11: abre la sección POR_QUE de la tarjeta. |
 | `t-cierre-inicio` | I | T0 | B00 | Cierra T0 (COMPLETA_BLOQUE abre T1). B01: abre CHECK_IN. |
 | `t-expectativas` | R | T1 | B00 | Abre CIUDAD a mitad de bloque. B01: abre FAMILIA. B02: un ítem de lista común con «otra», uno de lista propia y uno de texto. B09: abre la entrada personalizada. |
 | `t-opcional` | I | T1 | B01 | Opcional y `AL_DESBLOQUEAR`. |
-| `t-valores` | R | T1 | B02 | Elección ordenada, un ítem sin criterios y uno solo con LONGITUD. B11: abre el campo «motivo». |
+| `t-valores` | R | T1 | B02 | Elección ordenada, un ítem sin criterios y uno solo con LONGITUD. B11: abre la sección CONOCIMIENTO de la tarjeta. |
 | `t-adicional` | I | T1 | B03 | Misión adicional que se abre con REGISTRO_ADECUADO de `t-expectativas`. |
 | `t-eco` | R | T1 | B05 | Referencias ELECCION y TEXTO; elección por referencia. |
 | `t-mision-intereses`, `t-mision-intereses-2` | Q | CIUDAD | B00 | RIASEC en dos misiones de 30 ítems; el resultado espera a las dos. B06: revelar y perfil plano. |
@@ -50,9 +50,9 @@ Cuentas:
 | `t-lee-cuestionario` | I | T1 | B07 | Una informativa con referencia RESPUESTA_CUESTIONARIO. |
 | `t-batalla` | B | T1 | B08 | Perder y reintentar; SUPERA_BATALLA abre `t-explorar`. |
 | `t-caso` | CASO | CIUDAD | B00 | B08: tipo RIASEC, colección y dos testimonios (`t-testimonio-1` con pista). |
-| `t-explorar` | R | T1 | B10 | Se abre con `favoritos_diversos`. B11: abre los campos de trayecto y presupuesto. |
-| `t-comparar` | R | T2 | B11 | Se abre con `planes_listos_para_comparar`; abre los campos restantes. |
-| `t-proyecto` | R | T2 | B11 | Se abre con `acciones_plan_a`; cierra T2. |
+| `t-explorar` | R | T1 | B10 | Se abre con `favoritos_diversos`. B11: abre la sección REALIDAD de la tarjeta. |
+| `t-comparar` | R | T2 | B11 | Se abre con `planes_listos_para_comparar` (dos planes); cita PLANES y abre la sección PASOS. |
+| `t-proyecto` | R | T2 | B11 | Se abre con `pasos_plan_a` (un paso); cita PLAN, PASOS_PLAN_A y OPCION_INICIAL; cierra T2. |
 | `t-investigador`, `t-investigador-cierre` | I | CIUDAD | B13 | Sección INVESTIGACIONES; el cierre se abre con PUBLICA_ENTREVISTA. |
 | `t-apo-1`, `t-apo-carta` | I | FAMILIA | B00 | Ruta del apoderado. B01: `t-apo-1` da la ficha `t-ficha-apo`; cerrar FAMILIA abre la sección CONVERSACIONES. B12: carta y diploma. |
 | `t-conv-1`, `t-conv-2` | Conversación | — | B00 | B12: `t-conv-1` con `t-expectativas` + carta; `t-conv-2` con `t-contraste`; entrada de diario al conversar. |
@@ -75,7 +75,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B08 | Batallas, casos y testimonios · **Implementado** | 017, 041, 051–056 | M | B05 | Batalla con reintento; el caso libera testimonios y colección |
 | B09 | Diario, pregunta del día y check-in · **Implementado** | 028–033, 035, 036, 075 | M | B07 | Entradas fijas y personalizadas, también con fallo del LLM |
 | B10 | Catálogo, instituciones y favoritos · **Implementado** | 026, 037–040 | M | B06 | `t-explorar` bloqueado hasta tener favoritos diversos |
-| B11 | Planes de carrera | 043–048, 050, 097–099 | M | B07, B08, B10 | Campos que se habilitan, presupuesto y requisitos de comparar y proyecto |
+| B11 | Planes de carrera · **Implementado** | 043–048, 050, 097–099, 109, 110 | M | B07, B08, B10 | Secciones que se habilitan, presupuesto, dudas con pasos sugeridos y requisitos de comparar y proyecto |
 | B12 | Familia: ruta del apoderado, conversaciones y cartas | 066–071, 078–080 | M | B09, B11 | Conversaciones que se abren una por una; cartas al completar todas |
 | B13 | Investigaciones y entrevistas | 057–065, 100, 101 | M | B10 | Investigación completa, con aliados, reacciones y Leyenda |
 | B14 | Orientadora: seguimiento y configuración | 081–089 (108 si entra) | M | B07, B11, B12 | Sus estudiantes, sus registros, la configuración y las seis alertas |
@@ -237,22 +237,21 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Las vistas registran eventos para «qué exploré».
 - **Comprueba:** regla 6 (un interés fuera del perfil antes de decidir).
 
-**B11 · Planes de carrera (M)**
+**B11 · Planes de carrera (M)** (Implementado)
 - **Modelo:**
-  - `TarjetaCarrera`, `Presupuesto`, `GastoPresupuesto` y `AccionPreparacion`;
-  - `Cuenta.opcion_inicial_id`;
-  - `CampoTarjeta` y `TipoObjetivo.CAMPO_PLAN`;
-  - eventos `CREA_PLAN` y `ACTUALIZA_PLAN`;
-  - evaluadores `planes_listos_para_comparar` y `acciones_plan_a`.
+  - la tarjeta (`tarjeta_carrera`) con cuatro secciones (`seccion_tarjeta`: POR_QUE, CONOCIMIENTO, REALIDAD, PASOS), motivos, conocimiento, dudas, gastos, financiamiento, complicaciones, sugerencias y pasos;
+  - `referencia_rubro`, `referencia_camino`, `Institucion.gestion`, `InstitucionCarrera.duracion_ciclos` y `Cuenta.opcion_inicial_id`;
+  - listas comunes VALORES, CAMINOS, RUBROS_GASTO, FINANCIAMIENTO, PASOS, DUDAS_SUGERIDAS y las de conocimiento;
+  - `TipoObjetivo.SECCION_PLAN`; eventos `CREA_PLAN`, `ACTUALIZA_PLAN` y `ELIMINA_PLAN`;
+  - evaluadores `planes_listos_para_comparar` y `pasos_plan_a`; referencias PLAN, PLANES, PASOS_PLAN_A y OPCION_INICIAL.
 - **Pruebas:**
-  - El tope de tres planes.
-  - Llenar un campo bloqueado responde 409 indicando qué actividad lo habilita.
-  - La completitud se calcula sobre los campos habilitados.
-  - Aviso cuando dos planes son de la misma familia o del mismo tipo.
-  - La opción inicial solo se fija antes de completar T1.
-  - El total del presupuesto se calcula por frecuencia.
-  - Requisitos de `t-comparar` y `t-proyecto`.
-  - Se resuelven PLAN, PLANES, ACCIONES_PLAN_A y OPCION_INICIAL.
+  - El tope de tres planes, ordenar y eliminar sin huecos.
+  - Guardar una sección bloqueada responde 409 indicando qué actividad la abre, sin guardar nada.
+  - El estado de cada sección y «listo para comparar».
+  - Dudas que crea y cierra CONOCIMIENTO; sugerencias del LLM (evaluador falso) con validación, tope por plan y respaldo.
+  - Totales del primer año y de la carrera, también con duración impar.
+  - Aviso de misma familia; opción inicial antes de completar T1.
+  - Requisitos de `t-comparar` y `t-proyecto`; se resuelven las cuatro referencias.
   - Ninguna actividad escribe en los planes.
 - **Comprueba:** regla 1; la tarjeta que crece; opción inicial; requisitos de 4.5 y 5.1.
 
@@ -323,6 +322,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | `UMBRAL_ZONA_FUERTE`, `UMBRAL_ZONA_EN_CAMINO` | 3,5 y 2,5 (B07) |
 | `MAXIMO_REINICIOS_PERFIL_PLANO` | 1 (B06) |
 | `MAXIMO_PLANES`, `CICLOS_POR_ANIO` | 3 y 2 (B11) |
+| `MAXIMO_LLAMADAS_SUGERENCIAS_POR_PLAN`, `MAXIMO_PASOS_POR_DUDA`, `MAXIMO_CARACTERES_PASO` | 6, 2 y 140 (B11) |
 | `SEGURIDAD_BAJA_PROMEDIO`, `SEGURIDAD_BAJA_DIAS` | 2 y 14 (B14) |
 
 La alerta «sin favoritos» se evalúa solo después de completar la actividad que abre el catálogo.

@@ -1,12 +1,12 @@
 """Ruta corta: recorre la ruta mínima con las peticiones del front, sin `/eventos`.
 
 B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010; B03, las HU 007
-y 016; B07, la HU 094; B08, las HU 017, 041 y 051 a 056; B09, las HU 028 a 033, 035, 036 y 075. Cada lote
-extiende este recorrido con su tramo.
+y 016; B07, la HU 094; B08, las HU 017, 041 y 051 a 056; B09, las HU 028 a 033, 035, 036 y 075; B11, las HU 043
+a 048, 050, 097 a 099, 109 y 110. Cada lote extiende este recorrido con su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
-from soporte_ruta import FECHA, avanzar, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, filas_base, pedir, reglas, responder, revelar
+from soporte_ruta import FECHA, avanzar, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, eventos, filas_base, pedir, reglas, responder, responder_registro, revelar
 
 
 def siguiente(cliente, cuenta='est-ana'):
@@ -398,3 +398,67 @@ def test_hu028_036_075_diario_check_in_y_avance(cliente):
     assert avance['A'] >= 1 and avance['B'] >= 1
     assert pedir(cliente, 'GET', '/cuentas/est-ana/logros')['afinidad'] == 0.0
 
+
+def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
+    """B11: la tarjeta crece con el camino; comparar y proyecto esperan los planes; T2 se cierra con el proyecto."""
+    planes, guardar = '/cuentas/est-ana/planes', '/acciones/planes/guardar-seccion'
+    ana = {'cuenta': 'est-ana', 'fecha_hora': FECHA}
+
+    def seccion(carrera, codigo, datos, esperado=200):
+        return pedir(cliente, 'POST', guardar, {**ana, 'carrera': carrera, 'seccion': codigo, 'datos': datos}, esperado)
+
+    def plan(carrera):
+        return next(p for p in pedir(cliente, 'GET', planes)['planes'] if p['carrera']['codigo'] == carrera)
+
+    completar(cliente, 't-inicio')
+    # La opción inicial es el primer plan, registrado antes de terminar el camino.
+    for carrera in ('psychology', 'journalism'):
+        pedir(cliente, 'POST', '/acciones/planes/crear', {**ana, 'carrera': carrera})
+        seccion(carrera, 'POR_QUE', {'idea_origen': 'MIA', 'motivos': [{'opcion': 'AYUDAR'}],
+                                     'relato': 'DATO DE PRUEBA: un día expliqué un tema y sentí que era lo mío.'})
+    bloqueada = seccion('psychology', 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'}}, esperado=409)['detail']
+    assert bloqueada['mensaje'] == 'Completa el registro de valores para revisar qué tanto conoces esta carrera.'
+    assert [s['estado'] for s in plan('psychology')['secciones']] == ['LISTA', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA']
+    avanzar(cliente)
+    assert reglas(completar(cliente, 't-valores')) >= {'R-PLAN-CONOCIMIENTO'}
+    seccion('psychology', 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'},
+                                           'dudas': [{'origen': 'PROPIA', 'texto': '¿Hay trabajo en Lima?'}]})
+    assert [(s['origen']['duda'], s['generada_por']) for s in plan('psychology')['sugerencias']] == [
+        (1, 'LLM'), (2, 'LLM')]
+    # t-explorar abre REALIDAD; con dos planes listos para comparar se abre t-comparar.
+    batalla = {**ana, 'actividad': 't-batalla'}
+    pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': True, 'aciertos': 3, 'preguntas': 4})
+    pedir(cliente, 'POST', '/acciones/ver-carrera', {**ana, 'carrera': 'nursing'})
+    pedir(cliente, 'POST', '/acciones/ver-ocupacion', {**ana, 'ocupacion': 'civil-engineer'})
+    assert 'R-PLAN-REALIDAD' in reglas(responder_registro(cliente, 't-explorar'))
+    realidad = {'institucion': 't-uni', 'camino': {'opcion': 'POSTULAR_DIRECTO'},
+                'gastos': [{'rubro': 'MATRICULA', 'monto': 600, 'frecuencia': 'POR_CICLO'}],
+                'financiamiento': [{'opcion': 'BECA'}], 'complicaciones': [{'opcion': 'ECONOMICAS'}]}
+    assert 'R-t-comparar' not in reglas(seccion('psychology', 'REALIDAD', realidad))
+    assert 'R-t-comparar' in reglas(seccion('journalism', 'REALIDAD', {**realidad, 'complicaciones': []}))
+    assert plan('psychology')['total_primer_anio'] == 1200 and plan('psychology')['lista_para_comparar'] is True
+    # T2 se abre con la partida y el RIASEC revelados; comparar cita los planes y abre los pasos.
+    revelar(cliente, instrumento='TEST-PARTIDA-LLEGADA', aplicacion='APL-PARTIDA')
+    for mision in MISIONES_INTERESES:
+        responder(cliente, mision)
+        completar(cliente, mision)
+    assert 'R-T2' in reglas(revelar(cliente))
+    planes_citados, = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-comparar/referencias')['referencias']
+    assert [o['codigo'] for o in planes_citados['opciones']] == ['psychology', 'journalism']
+    assert 'R-PLAN-PASOS' in reglas(responder_registro(cliente, 't-comparar'))
+    pasos = seccion('psychology', 'PASOS', {'pasos': [{'sugerencia': 1}], 'sugerencias_descartadas': [2]})
+    assert 'R-t-proyecto' in reglas(pasos)
+    hecho = pedir(cliente, 'POST', '/acciones/planes/paso-hecho', {
+        **ana, 'carrera': 'psychology', 'paso': 1, 'hallazgo': 'DATO DE PRUEBA: estadística en segundo año.'})
+    assert hecho['eventos_registrados'][0]['tipo'] == 'ACTUALIZA_PLAN'
+    assert plan('psychology')['dudas'][0]['estado'] == 'CERRADA'
+    proyecto = {r['tipo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-proyecto/referencias')[
+        'referencias']}
+    assert (proyecto['PLAN']['texto'], proyecto['OPCION_INICIAL']['texto']) == ('Psicología', 'Psicología')
+    assert proyecto['PLAN']['cita'].startswith('DATO DE PRUEBA') and len(proyecto['PASOS_PLAN_A']['opciones']) == 1
+    # El proyecto cierra T2.
+    responder(cliente, 't-llegada', opcion=4)
+    completar(cliente, 't-llegada')
+    responder_registro(cliente, 't-proyecto')
+    assert any(e['tipo'] == 'COMPLETA_BLOQUE' and e['referencia'] == 'T2' for e in eventos(cliente))
+    assert pedir(cliente, 'GET', planes)['opcion_inicial']['codigo'] == 'psychology'

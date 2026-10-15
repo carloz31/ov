@@ -57,6 +57,8 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
   - `instituciones_tipos_distintos`: VISTA_INSTITUCION por tipo (tipos con al menos una institución).
 - `vista_fuera_del_perfil` (sin parámetro, B10): mira el tipo principal (posición 1 de `tipo_carrera` o `high_point`) de las carreras y ocupaciones vistas; las que no tienen tipo no cuentan. Con un resultado RIASEC vigente y sin perfil plano, basta un tipo principal distinto de la primera letra del código de interés. Sin resultado o con perfil plano, hacen falta dos tipos principales distintos.
 - `misiones_camino_sin_inicio`: la cuenta completó al menos `parametro` actividades distintas del bloque CAMINO, sin contar la de orden 1.
+- `planes_listos_para_comparar` (B11): al menos `parametro` planes con todas sus secciones `para_comparar` (POR_QUE y REALIDAD) en LISTA (`planes.md`). Importa el dominio de planes dentro de la función, porque los planes usan el motor para saber qué secciones están abiertas.
+- `pasos_plan_a` (B11): el plan A (prioridad 1) tiene al menos `parametro` pasos, en cualquier estado.
 - `instrumentos_prioritarios` (sin parámetro, B07): la cuenta debe tener resultado vigente (revelado) en dos casos:
   - la aplicación ENTRADA (la partida) de todo instrumento COMPARACION;
   - todas las aplicaciones de cada instrumento que `salon_instrumento` marca `es_prioritario` en su salón.

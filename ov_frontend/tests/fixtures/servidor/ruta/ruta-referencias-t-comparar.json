@@ -1,0 +1,19 @@
+{
+  "referencias": [
+    {
+      "codigo": "t-ref-planes",
+      "estado": "DISPONIBLE",
+      "opciones": [
+        {
+          "codigo": "psychology",
+          "texto": "Psicología"
+        },
+        {
+          "codigo": "journalism",
+          "texto": "Periodismo"
+        }
+      ],
+      "tipo": "PLANES"
+    }
+  ]
+}

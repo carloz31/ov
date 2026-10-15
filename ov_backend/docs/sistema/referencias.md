@@ -6,7 +6,7 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 
 | Tabla | Qué guarda |
 |---|---|
-| `referencia` | `codigo`, `tipo` (`TipoReferencia`), dueño: `actividad_id` **o** `pregunta_diario_id` (CHECK: exactamente uno), y fuente: `item_registro_id`, obligatoria en ELECCION y TEXTO (CHECK `fuente_registro`), o `aplicacion_id`, obligatoria en RESULTADO, COINCIDENCIAS y RESPUESTA_CUESTIONARIO y nula en los demás (CHECK `fuente_aplicacion`), más `item_instrumento_id`, obligatorio solo en RESPUESTA_CUESTIONARIO (CHECK `fuente_cuestionario`). FAVORITOS no tiene fuente (CHECK `favoritos_sin_fuente`). Catálogo, en la caché de definiciones (`referencias_por_actividad` y `referencias_por_pregunta`). |
+| `referencia` | `codigo`, `tipo` (`TipoReferencia`), dueño: `actividad_id` **o** `pregunta_diario_id` (CHECK: exactamente uno), y fuente: `item_registro_id`, obligatoria en ELECCION y TEXTO (CHECK `fuente_registro`), o `aplicacion_id`, obligatoria en RESULTADO, COINCIDENCIAS y RESPUESTA_CUESTIONARIO y nula en los demás (CHECK `fuente_aplicacion`), más `item_instrumento_id`, obligatorio solo en RESPUESTA_CUESTIONARIO (CHECK `fuente_cuestionario`). FAVORITOS no tiene fuente (CHECK `favoritos_sin_fuente`), ni PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL (CHECK `planes_sin_fuente`). Catálogo, en la caché de definiciones (`referencias_por_actividad` y `referencias_por_pregunta`). |
 | `item_registro.referencia_id` | Elección por referencia: las opciones del ítem son las que esa referencia ELECCION devuelve a la cuenta (`registro.md`). |
 
 `referencia.item_registro_id` e `item_registro.referencia_id` forman un ciclo de claves foráneas. La de `item_registro` lleva `use_alter` y se crea aparte. El vaciado de `datos.cargar` quita primero la elección por referencia de los ítems, porque los CHECK impiden dejar nula cualquiera de las dos claves, y luego borra en orden.
@@ -21,6 +21,10 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | COINCIDENCIAS | Las ocupaciones afines del resultado revelado de una aplicación | B06 |
 | RESPUESTA_CUESTIONARIO | La opción elegida en un ítem de instrumento dentro de una aplicación (p. ej., el punto de partida) | B07 |
 | FAVORITOS | Las carreras, ocupaciones e instituciones marcadas como favoritas (sin fuente) | B09 |
+| PLANES | Los planes de carrera por prioridad (sin fuente) | B11 |
+| PLAN | El plan A: su carrera, su relato y sus motivos (sin fuente) | B11 |
+| PASOS_PLAN_A | Los pasos del plan A (sin fuente) | B11 |
+| OPCION_INICIAL | La carrera de la opción inicial (sin fuente) | B11 |
 
 Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola dirección (`motor.md`, «Diario»).
 
@@ -36,6 +40,10 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 | COINCIDENCIAS | Igual que RESULTADO. `opciones`: las ocupaciones por posición, con `codigo` (o `codigo_onet` si no tiene) y su título. Con perfil plano, `[]`. | — | Igual que RESULTADO. |
 | RESPUESTA_CUESTIONARIO | La actividad de la aplicación fuente que presenta el ítem está COMPLETADA (la respuesta ya no cambia). `texto`: la etiqueta de la opción, sin puntaje. | — | Sin respuesta o con la actividad sin completar. |
 | FAVORITOS | Con al menos un favorito. `opciones`: `[{codigo, texto}]` del más reciente al más antiguo; carreras e instituciones por `codigo` y `nombre`, ocupaciones por `codigo_onet` y `titulo`. | — | Sin favoritos. |
+| PLANES | Con al menos un plan. `opciones`: `[{codigo, texto}]` de las carreras por prioridad. | — | Sin planes. |
+| PLAN | Con al menos un plan. `texto`: la carrera del plan A; `cita`: su relato (nulo si no lo escribió); `opciones`: sus motivos por posición, con el código de VALORES o `OTRA` y el texto escrito. | — | Sin planes. |
+| PASOS_PLAN_A | El plan A tiene pasos. `opciones`: `[{codigo, texto}]` por posición, con el código del tipo de paso. | — | Sin planes o sin pasos. |
+| OPCION_INICIAL | La cuenta tiene opción inicial. `texto`: el nombre de la carrera. | — | Sin opción inicial. |
 
 **Reglas:**
 - La elección no se edita (`registro.md`). Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
@@ -47,7 +55,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 
 | Ruta | Devuelve |
 |---|---|
-| `/cuentas/{c}/actividades/{a}/referencias` | `{"referencias": [{codigo, tipo, estado, texto?, opciones?}]}`, ordenadas por código. No exige que la actividad esté disponible. Cuenta que no es de estudiante, actividad inexistente o de otra audiencia: 404. |
+| `/cuentas/{c}/actividades/{a}/referencias` | `{"referencias": [{codigo, tipo, estado, texto?, opciones?, cita?}]}`, ordenadas por código; `cita` solo en PLAN. No exige que la actividad esté disponible. Cuenta que no es de estudiante, actividad inexistente o de otra audiencia: 404. |
 
 **Aislamiento:** la consulta solo lee datos de `{c}`. Todavía no hay autenticación (llega en B17). Cuando exista, deberá exigir que `{c}` sea la cuenta autenticada, con su prueba.
 
@@ -56,7 +64,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 `REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, fuente)`; la fuente es un ítem de registro en ELECCION y TEXTO, un código de aplicación en RESULTADO y COINCIDENCIAS, `(aplicación, ítem)` en RESPUESTA_CUESTIONARIO y `None` en FAVORITOS. Una pregunta de diario solo es dueña si es personalizada. En `ITEMS_REGISTRO`, la elección por referencia es `('ref', referencia, mínima, máxima, ordenada)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:
 - un tipo fuera del catálogo;
 - un dueño inexistente, o una pregunta de diario no personalizada;
-- una fuente en FAVORITOS;
+- una fuente en FAVORITOS, PLANES, PLAN, PASOS_PLAN_A u OPCION_INICIAL;
 - una fuente inexistente o de la propia actividad dueña;
 - en RESULTADO o COINCIDENCIAS, una aplicación de un instrumento de COMPARACION;
 - en RESPUESTA_CUESTIONARIO, un ítem que la aplicación no presenta;

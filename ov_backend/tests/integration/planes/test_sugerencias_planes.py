@@ -1,4 +1,4 @@
-"""B11 · HU-101: pasos sugeridos por el LLM (evaluador falso), su validación, el respaldo y el tope por plan."""
+"""B11 · HU-110: pasos sugeridos por el LLM (evaluador falso), su validación, el respaldo y el tope por plan."""
 
 from dataclasses import asdict
 

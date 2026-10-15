@@ -12,6 +12,7 @@ Documentos vigentes (lee los que toque la tarea):
 | `docs/sistema/instrumentos.md` | Cuestionarios, cálculo de resultados, coincidencias O*NET y carreras. |
 | `docs/sistema/registro.md` | Respuestas de registro, preguntas de seguimiento, evaluador (Gemini o falso) y asistente del diario. |
 | `docs/sistema/referencias.md` | Referencias: catálogo de tipos, resolución por cuenta y elección por referencia. |
+| `docs/sistema/planes.md` | Planes de carrera: tarjeta, secciones, totales, acciones y sugerencias de pasos con LLM. |
 | `docs/sistema/integracion.md` | Contrato con el front, conjuntos de datos, fixtures y reinicio. |
 | `docs/specs/` | La spec en curso. |
 | `docs/decisiones.md` | Decisiones de la spec en curso. |
@@ -34,6 +35,7 @@ app/                    solo la aplicación; no lee archivos de datos
     motor/              núcleo de desbloqueos
     instrumentos/       cálculo, consultas y resultados
     registro/           registro con evaluador de respuestas
+    planes/             planes de carrera: consultas, acciones y sugerencias
   core/                 parámetros, caché de definiciones y contexto de consultas
 datos/                  lo que llena la base: fijos.py, ruta.py, ocupaciones.py (Excel O*NET), cargar.py
 migrations/             migraciones de Alembic
@@ -58,7 +60,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 | Lo que tendrá la plataforma sea cual sea la ruta (secciones, listas comunes, repreguntas por tipo de criterio, temáticas, RIASEC, catálogo O*NET, cuestionario de partida y llegada…) | `datos/fijos.py`, sin `DATO DE PRUEBA`. Nunca en `app/`. |
 | Datos de prueba de una mecánica | `datos/ruta.py`, en tuplas declarativas que interpreta el cargador, con códigos `t-...`. Nunca en `app/`. |
 | Una tabla de estado de las cuentas | Además, en `TABLAS_DE_ESTADO` de `app/services/desarrollo.py`, para que el reinicio la vacíe (una prueba exige clasificar toda tabla como catálogo o estado). |
-| Un dominio nuevo (favoritos, planes…) | Un archivo en `services/`, `schemas/` y, si tiene tablas, `models/`. Un archivo pasa a carpeta solo cuando ya no cabe en uno. |
+| Un dominio nuevo (favoritos, planes…) | Un archivo en `services/`, `schemas/` y, si tiene tablas, `models/`. Un archivo pasa a carpeta solo cuando ya no cabe en uno; un dominio que ya nace grande (planes: consulta, cuatro guardados con efectos y sugerencias) puede nacer como carpeta. |
 
 ### Dependencias entre capas
 
@@ -118,11 +120,11 @@ Python 3.14, FastAPI, Pydantic v2, SQLAlchemy 2.0, Alembic, SQLite (desarrollo y
 tests/
   conftest.py        solo autouse sin base (evaluador falso)
   soporte/           ayudas compartidas; ninguna prueba importa un test_*.py
-  unit/              arquitectura, configuracion, diario, instrumentos, motor, registro
+  unit/              arquitectura, configuracion, diario, instrumentos, motor, planes, registro
   integration/
     conftest.py      plantillas SQLite por sesión y proceso; cada prueba copia la suya
     actividades/ batallas/ casos/ catalogo/ cuentas/ desarrollo/ diario/ favoritos/ fichas/ instrumentos/ logros/
-    motor/ referencias/ registro/ secciones/ tematicas/ testimonios/
+    motor/ planes/ referencias/ registro/ secciones/ tematicas/ testimonios/
     datos/ migraciones/ contrato/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
 ```

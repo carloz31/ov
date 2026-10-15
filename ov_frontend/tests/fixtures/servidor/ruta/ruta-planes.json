@@ -1,0 +1,685 @@
+{
+  "avisos": [],
+  "maximo_planes": 3,
+  "opcion_inicial": {
+    "codigo": "psychology",
+    "es_favorita": false,
+    "familia": {
+      "codigo": "family-psychology",
+      "nombre": "Ciencias sociales y salud"
+    },
+    "nombre": "Psicología",
+    "riasec": [
+      "S",
+      "I",
+      "A"
+    ]
+  },
+  "opciones": {
+    "caminos": [
+      {
+        "codigo": "POSTULAR_DIRECTO",
+        "incluye_preparacion": false,
+        "texto": "Postular directamente"
+      },
+      {
+        "codigo": "PREPARARME",
+        "incluye_preparacion": true,
+        "texto": "Prepararme primero"
+      },
+      {
+        "codigo": "ESTUDIAR_Y_TRABAJAR",
+        "incluye_preparacion": false,
+        "texto": "Estudiar y trabajar"
+      },
+      {
+        "codigo": "TRABAJAR_PRIMERO",
+        "incluye_preparacion": false,
+        "texto": "Trabajar primero y luego estudiar"
+      },
+      {
+        "codigo": "TECNICA_PRIMERO",
+        "incluye_preparacion": false,
+        "texto": "Empezar con una técnica y continuar"
+      },
+      {
+        "codigo": "TOMARME_TIEMPO",
+        "incluye_preparacion": false,
+        "texto": "Tomarme un tiempo"
+      }
+    ],
+    "dificultades": [
+      {
+        "codigo": "ECONOMICAS",
+        "texto": "Económicas"
+      },
+      {
+        "codigo": "ACADEMICAS",
+        "texto": "Académicas"
+      },
+      {
+        "codigo": "FAMILIARES",
+        "texto": "Familiares"
+      },
+      {
+        "codigo": "INFORMACION",
+        "texto": "Falta de información"
+      },
+      {
+        "codigo": "DISTANCIA",
+        "texto": "Distancia"
+      }
+    ],
+    "dudas_sugeridas": [
+      {
+        "codigo": "POSTULANTES",
+        "texto": "¿Cuántos postulan y cuántos ingresan?"
+      },
+      {
+        "codigo": "CURSOS_DIFICILES",
+        "texto": "¿Qué cursos son los más difíciles?"
+      },
+      {
+        "codigo": "SUELDO_INICIAL",
+        "texto": "¿Cuánto gana alguien que recién termina?"
+      }
+    ],
+    "financiamiento": [
+      {
+        "codigo": "FAMILIA",
+        "texto": "Apoyo de mi familia"
+      },
+      {
+        "codigo": "TRABAJO",
+        "texto": "Mi propio trabajo"
+      },
+      {
+        "codigo": "BECA",
+        "texto": "Beca (Beca 18 u otra)"
+      },
+      {
+        "codigo": "CREDITO",
+        "texto": "Crédito educativo"
+      },
+      {
+        "codigo": "AHORROS",
+        "texto": "Ahorros"
+      },
+      {
+        "codigo": "INSTITUCION",
+        "texto": "Apoyos de la institución"
+      }
+    ],
+    "pasos": [
+      {
+        "codigo": "investigar",
+        "texto": "Investigar"
+      },
+      {
+        "codigo": "conversar",
+        "texto": "Conversar con alguien"
+      },
+      {
+        "codigo": "visitar",
+        "texto": "Visitar"
+      },
+      {
+        "codigo": "curso",
+        "texto": "Llevar un curso"
+      },
+      {
+        "codigo": "practicar",
+        "texto": "Practicar"
+      },
+      {
+        "codigo": "otra",
+        "texto": "Otro"
+      }
+    ],
+    "preguntas": [
+      {
+        "codigo": "DIA_NORMAL",
+        "texto": "¿Sabes cómo es un día normal de alguien de {carrera}?",
+        "texto_duda": "¿Cómo es un día normal de alguien de {carrera}?"
+      },
+      {
+        "codigo": "DONDE_TRABAJAR",
+        "texto": "¿Sabes dónde podrías trabajar si estudias {carrera}?",
+        "texto_duda": "¿Dónde podría trabajar si estudio {carrera}?"
+      },
+      {
+        "codigo": "CURSOS",
+        "texto": "¿Sabes qué cursos se llevan en {carrera}?",
+        "texto_duda": "¿Qué cursos se llevan en {carrera}?"
+      },
+      {
+        "codigo": "INGRESO",
+        "texto": "¿Sabes cómo se ingresa a {carrera}?",
+        "texto_duda": "¿Cómo se ingresa a {carrera}?"
+      },
+      {
+        "codigo": "CONOCE_ALGUIEN",
+        "texto": "¿Conoces a alguien que estudie o trabaje en {carrera}?",
+        "texto_duda": "¿A quién podría preguntarle sobre {carrera}?"
+      }
+    ],
+    "rubros": [
+      {
+        "cero_si_publica": false,
+        "codigo": "PREPARACION",
+        "frecuencia_recomendada": "UNICA",
+        "monto_referencia": 1300,
+        "solo_si_camino_prepara": true,
+        "texto": "Preparación"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "ADMISION",
+        "frecuencia_recomendada": "UNICA",
+        "monto_referencia": 350,
+        "solo_si_camino_prepara": false,
+        "texto": "Admisión"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "MATRICULA",
+        "frecuencia_recomendada": "POR_CICLO",
+        "monto_referencia": 600,
+        "solo_si_camino_prepara": false,
+        "texto": "Matrícula"
+      },
+      {
+        "cero_si_publica": true,
+        "codigo": "PENSION",
+        "frecuencia_recomendada": "MENSUAL",
+        "monto_referencia": 1800,
+        "solo_si_camino_prepara": false,
+        "texto": "Pensión"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "MATERIALES",
+        "frecuencia_recomendada": "POR_CICLO",
+        "monto_referencia": 300,
+        "solo_si_camino_prepara": false,
+        "texto": "Materiales"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "TRANSPORTE",
+        "frecuencia_recomendada": "MENSUAL",
+        "monto_referencia": 150,
+        "solo_si_camino_prepara": false,
+        "texto": "Transporte"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "ALIMENTACION",
+        "frecuencia_recomendada": null,
+        "monto_referencia": null,
+        "solo_si_camino_prepara": false,
+        "texto": "Alimentación"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "VIVIENDA",
+        "frecuencia_recomendada": null,
+        "monto_referencia": null,
+        "solo_si_camino_prepara": false,
+        "texto": "Vivienda"
+      }
+    ],
+    "valores": [
+      {
+        "codigo": "ESTABILIDAD",
+        "texto": "Estabilidad"
+      },
+      {
+        "codigo": "INGRESOS",
+        "texto": "Ingresos"
+      },
+      {
+        "codigo": "AYUDAR",
+        "texto": "Ayudar a otros"
+      },
+      {
+        "codigo": "CREAR",
+        "texto": "Crear"
+      },
+      {
+        "codigo": "AUTONOMIA",
+        "texto": "Autonomía"
+      },
+      {
+        "codigo": "RECONOCIMIENTO",
+        "texto": "Reconocimiento"
+      },
+      {
+        "codigo": "TIEMPO_FAMILIA",
+        "texto": "Tiempo para la familia"
+      },
+      {
+        "codigo": "APRENDER",
+        "texto": "Aprender"
+      },
+      {
+        "codigo": "COMUNIDAD",
+        "texto": "Aportar a mi comunidad"
+      }
+    ]
+  },
+  "planes": [
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "camino": {
+        "opcion": "PREPARARME",
+        "otro": null
+      },
+      "carrera": {
+        "codigo": "psychology",
+        "es_favorita": false,
+        "familia": {
+          "codigo": "family-psychology",
+          "nombre": "Ciencias sociales y salud"
+        },
+        "nombre": "Psicología",
+        "riasec": [
+          "S",
+          "I",
+          "A"
+        ]
+      },
+      "complicaciones": [
+        {
+          "numero": 1,
+          "opcion": "ECONOMICAS",
+          "otro": null
+        }
+      ],
+      "conocimiento": {
+        "CONOCE_ALGUIEN": "SI",
+        "CURSOS": "NO",
+        "DIA_NORMAL": "SI",
+        "DONDE_TRABAJAR": "MAS_O_MENOS",
+        "INGRESO": "SI"
+      },
+      "dudas": [
+        {
+          "estado": "CERRADA",
+          "hallazgo": "DATO DE PRUEBA: hay estadística.",
+          "numero": 1,
+          "opcion": null,
+          "origen": "PREGUNTA",
+          "pregunta": "DONDE_TRABAJAR",
+          "texto": "¿Dónde podría trabajar si estudio Psicología?"
+        },
+        {
+          "estado": "ABIERTA",
+          "hallazgo": null,
+          "numero": 2,
+          "opcion": null,
+          "origen": "PREGUNTA",
+          "pregunta": "CURSOS",
+          "texto": "¿Qué cursos se llevan en Psicología?"
+        },
+        {
+          "estado": "ABIERTA",
+          "hallazgo": null,
+          "numero": 3,
+          "opcion": "POSTULANTES",
+          "origen": "SUGERIDA",
+          "pregunta": null,
+          "texto": "¿Cuántos postulan y cuántos ingresan?"
+        },
+        {
+          "estado": "ABIERTA",
+          "hallazgo": null,
+          "numero": 4,
+          "opcion": null,
+          "origen": "PROPIA",
+          "pregunta": null,
+          "texto": "DATO DE PRUEBA: ¿hay trabajo en Lima?"
+        }
+      ],
+      "financiamiento": [
+        {
+          "opcion": "FAMILIA",
+          "otro": null
+        },
+        {
+          "opcion": null,
+          "otro": "Trabajo de verano"
+        }
+      ],
+      "gastos": [
+        {
+          "frecuencia": "UNICA",
+          "monto": 1300,
+          "otro": null,
+          "rubro": "PREPARACION"
+        },
+        {
+          "frecuencia": "MENSUAL",
+          "monto": 0,
+          "otro": null,
+          "rubro": "PENSION"
+        },
+        {
+          "frecuencia": "POR_CICLO",
+          "monto": 600,
+          "otro": null,
+          "rubro": "MATRICULA"
+        }
+      ],
+      "idea_origen": "MIA",
+      "institucion": {
+        "codigo": "t-uni",
+        "es_favorita": true,
+        "gestion": "PUBLICA",
+        "nombre": "Universidad Nacional de Prueba",
+        "tipo": "UNIVERSIDAD",
+        "ubicacion": {
+          "codigo": "t-lima",
+          "nombre": "Lima de prueba"
+        }
+      },
+      "lista_para_comparar": true,
+      "medidores": {
+        "capacidad": 2,
+        "entusiasmo": 3,
+        "recursos": 2
+      },
+      "motivos": [
+        {
+          "opcion": "AYUDAR",
+          "otro": null,
+          "posicion": 1
+        },
+        {
+          "opcion": null,
+          "otro": "Me gusta explicar",
+          "posicion": 2
+        }
+      ],
+      "pasos": [
+        {
+          "estado": "HECHO",
+          "hallazgo": "DATO DE PRUEBA: hay estadística.",
+          "numero": 1,
+          "origen": {
+            "complicacion": null,
+            "duda": 1,
+            "sugerencia": 1
+          },
+          "texto": "Busca en Psicología: ¿Dónde podría trabajar si estudio Psicología?",
+          "tipo": "investigar"
+        },
+        {
+          "estado": "PENDIENTE",
+          "hallazgo": null,
+          "numero": 2,
+          "origen": {
+            "complicacion": null,
+            "duda": null,
+            "sugerencia": null
+          },
+          "texto": "DATO DE PRUEBA: ir a la feria vocacional.",
+          "tipo": "visitar"
+        }
+      ],
+      "prioridad": "A",
+      "relato": "DATO DE PRUEBA: un día expliqué un tema a mi primo y sentí que era lo mío.",
+      "secciones": [
+        {
+          "bloqueo": null,
+          "codigo": "POR_QUE",
+          "estado": "LISTA",
+          "guardada_en": "2026-10-07T10:00:00",
+          "nombre": "Por qué"
+        },
+        {
+          "bloqueo": null,
+          "codigo": "CONOCIMIENTO",
+          "estado": "LISTA",
+          "guardada_en": "2026-10-07T10:00:00",
+          "nombre": "Qué tanto la conozco"
+        },
+        {
+          "bloqueo": null,
+          "codigo": "REALIDAD",
+          "estado": "LISTA",
+          "guardada_en": "2026-10-07T10:00:00",
+          "nombre": "Qué tan real es"
+        },
+        {
+          "bloqueo": null,
+          "codigo": "PASOS",
+          "estado": "LISTA",
+          "guardada_en": "2026-10-07T10:00:00",
+          "nombre": "Mis pasos"
+        }
+      ],
+      "sugerencias": [
+        {
+          "estado": "ACEPTADA",
+          "generada_por": "LLM",
+          "numero": 1,
+          "origen": {
+            "complicacion": null,
+            "duda": 1,
+            "texto": "¿Dónde podría trabajar si estudio Psicología?"
+          },
+          "texto": "Busca en Psicología: ¿Dónde podría trabajar si estudio Psicología?",
+          "tipo": "investigar"
+        },
+        {
+          "estado": "DESCARTADA",
+          "generada_por": "LLM",
+          "numero": 2,
+          "origen": {
+            "complicacion": null,
+            "duda": 2,
+            "texto": "¿Qué cursos se llevan en Psicología?"
+          },
+          "texto": "Busca en Psicología: ¿Qué cursos se llevan en Psicología?",
+          "tipo": "investigar"
+        },
+        {
+          "estado": "PENDIENTE",
+          "generada_por": "LLM",
+          "numero": 3,
+          "origen": {
+            "complicacion": null,
+            "duda": 3,
+            "texto": "¿Cuántos postulan y cuántos ingresan?"
+          },
+          "texto": "Busca en Psicología: ¿Cuántos postulan y cuántos ingresan?",
+          "tipo": "investigar"
+        },
+        {
+          "estado": "PENDIENTE",
+          "generada_por": "LLM",
+          "numero": 4,
+          "origen": {
+            "complicacion": null,
+            "duda": 4,
+            "texto": "DATO DE PRUEBA: ¿hay trabajo en Lima?"
+          },
+          "texto": "Busca en Psicología: DATO DE PRUEBA: ¿hay trabajo en Lima?",
+          "tipo": "investigar"
+        },
+        {
+          "estado": "PENDIENTE",
+          "generada_por": "LLM",
+          "numero": 5,
+          "origen": {
+            "complicacion": 1,
+            "duda": null,
+            "texto": "Económicas"
+          },
+          "texto": "Conversa en casa sobre: Económicas",
+          "tipo": "conversar"
+        }
+      ],
+      "total_carrera": null,
+      "total_primer_anio": 2500,
+      "totales_por_frecuencia": {
+        "ANUAL": 0,
+        "MENSUAL": 0,
+        "POR_CICLO": 600,
+        "UNICA": 1300
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "camino": {
+        "opcion": "PREPARARME",
+        "otro": null
+      },
+      "carrera": {
+        "codigo": "journalism",
+        "es_favorita": false,
+        "familia": {
+          "codigo": "family-journalism",
+          "nombre": "Comunicación"
+        },
+        "nombre": "Periodismo",
+        "riasec": [
+          "A",
+          "E",
+          "S"
+        ]
+      },
+      "complicaciones": [
+        {
+          "numero": 1,
+          "opcion": "ECONOMICAS",
+          "otro": null
+        }
+      ],
+      "conocimiento": {
+        "CONOCE_ALGUIEN": null,
+        "CURSOS": null,
+        "DIA_NORMAL": null,
+        "DONDE_TRABAJAR": null,
+        "INGRESO": null
+      },
+      "dudas": [],
+      "financiamiento": [
+        {
+          "opcion": "FAMILIA",
+          "otro": null
+        },
+        {
+          "opcion": null,
+          "otro": "Trabajo de verano"
+        }
+      ],
+      "gastos": [
+        {
+          "frecuencia": "UNICA",
+          "monto": 1300,
+          "otro": null,
+          "rubro": "PREPARACION"
+        },
+        {
+          "frecuencia": "MENSUAL",
+          "monto": 0,
+          "otro": null,
+          "rubro": "PENSION"
+        },
+        {
+          "frecuencia": "POR_CICLO",
+          "monto": 600,
+          "otro": null,
+          "rubro": "MATRICULA"
+        }
+      ],
+      "idea_origen": "MIA",
+      "institucion": {
+        "codigo": "t-uni",
+        "es_favorita": true,
+        "gestion": "PUBLICA",
+        "nombre": "Universidad Nacional de Prueba",
+        "tipo": "UNIVERSIDAD",
+        "ubicacion": {
+          "codigo": "t-lima",
+          "nombre": "Lima de prueba"
+        }
+      },
+      "lista_para_comparar": true,
+      "medidores": {
+        "capacidad": null,
+        "entusiasmo": null,
+        "recursos": null
+      },
+      "motivos": [
+        {
+          "opcion": "AYUDAR",
+          "otro": null,
+          "posicion": 1
+        },
+        {
+          "opcion": null,
+          "otro": "Me gusta explicar",
+          "posicion": 2
+        }
+      ],
+      "pasos": [],
+      "prioridad": "B",
+      "relato": "DATO DE PRUEBA: un día expliqué un tema a mi primo y sentí que era lo mío.",
+      "secciones": [
+        {
+          "bloqueo": null,
+          "codigo": "POR_QUE",
+          "estado": "LISTA",
+          "guardada_en": "2026-10-07T10:00:00",
+          "nombre": "Por qué"
+        },
+        {
+          "bloqueo": null,
+          "codigo": "CONOCIMIENTO",
+          "estado": "POR_EMPEZAR",
+          "guardada_en": null,
+          "nombre": "Qué tanto la conozco"
+        },
+        {
+          "bloqueo": null,
+          "codigo": "REALIDAD",
+          "estado": "LISTA",
+          "guardada_en": "2026-10-07T10:00:00",
+          "nombre": "Qué tan real es"
+        },
+        {
+          "bloqueo": null,
+          "codigo": "PASOS",
+          "estado": "POR_EMPEZAR",
+          "guardada_en": null,
+          "nombre": "Mis pasos"
+        }
+      ],
+      "sugerencias": [
+        {
+          "estado": "PENDIENTE",
+          "generada_por": "LLM",
+          "numero": 1,
+          "origen": {
+            "complicacion": 1,
+            "duda": null,
+            "texto": "Económicas"
+          },
+          "texto": "Conversa en casa sobre: Económicas",
+          "tipo": "conversar"
+        }
+      ],
+      "total_carrera": null,
+      "total_primer_anio": 2500,
+      "totales_por_frecuencia": {
+        "ANUAL": 0,
+        "MENSUAL": 0,
+        "POR_CICLO": 600,
+        "UNICA": 1300
+      }
+    }
+  ]
+}

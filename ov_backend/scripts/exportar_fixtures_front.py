@@ -57,6 +57,11 @@ def _responder_partida(cliente, actividad, opcion):
     return items
 
 
+def _guardar_seccion(cliente, carrera, seccion, datos):
+    return _pedir(cliente, 'POST', '/acciones/planes/guardar-seccion', {
+        'cuenta': 'est-ana', 'carrera': carrera, 'seccion': seccion, 'datos': datos, 'fecha_hora': FECHA})
+
+
 def _consultas_dominio(cliente, momento, rutas):
     return {f'{ruta}-{momento}': _pedir(cliente, 'GET', f'/cuentas/est-ana/{ruta}') for ruta in rutas}
 
@@ -66,6 +71,13 @@ def _recorrer(cliente):
     fixtures.update(_consultas_dominio(
         cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros', 'secciones', 'testimonios')))
     fixtures['completar-t-inicio'] = _completar(cliente, 't-inicio')
+    # B11: dos planes antes de cerrar el camino; el primero queda como opción inicial. t-inicio abre POR_QUE.
+    for carrera in ('psychology', 'journalism'):
+        fixtures['crear-plan'] = _pedir(cliente, 'POST', '/acciones/planes/crear', {
+            'cuenta': 'est-ana', 'carrera': carrera, 'fecha_hora': FECHA})
+        fixtures['guardar-seccion-por-que'] = _guardar_seccion(cliente, carrera, 'POR_QUE', {
+            'idea_origen': 'MIA', 'motivos': [{'opcion': 'AYUDAR'}, {'otro': 'Me gusta explicar'}],
+            'relato': 'DATO DE PRUEBA: un día expliqué un tema a mi primo y sentí que era lo mío.'})
     # B07: el punto de partida está en T0, antes de su cierre; se revela y se cita en t-lee-cuestionario.
     fixtures['items-t-partida'] = _responder_partida(cliente, 't-partida', 3)
     fixtures['revelar-partida'] = _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
@@ -154,6 +166,26 @@ def _recorrer(cliente):
         fixtures['marcar-favorito'] = _pedir(cliente, 'POST', '/acciones/marcar-favorito', {
             'cuenta': 'est-ana', 'tipo': tipo, 'codigo': codigo, 'fecha_hora': FECHA})
     fixtures['favoritos'] = _pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')
+    # B11: t-valores abre CONOCIMIENTO (dudas con sugerencias del evaluador falso) y t-explorar, REALIDAD. Con dos
+    # planes listos para comparar se abre t-comparar.
+    _responder_registro(cliente, 't-valores')
+    fixtures['guardar-seccion-conocimiento'] = _guardar_seccion(cliente, 'psychology', 'CONOCIMIENTO', {
+        'respuestas': {'DIA_NORMAL': 'SI', 'DONDE_TRABAJAR': 'MAS_O_MENOS', 'CURSOS': 'NO', 'INGRESO': 'SI',
+                       'CONOCE_ALGUIEN': 'SI'},
+        'dudas': [{'origen': 'SUGERIDA', 'opcion': 'POSTULANTES'},
+                  {'origen': 'PROPIA', 'texto': 'DATO DE PRUEBA: ¿hay trabajo en Lima?'}]})
+    _responder_registro(cliente, 't-explorar')
+    for carrera in ('psychology', 'journalism'):
+        fixtures['guardar-seccion-realidad'] = _guardar_seccion(cliente, carrera, 'REALIDAD', {
+            'institucion': 't-uni', 'camino': {'opcion': 'PREPARARME'},
+            'gastos': [{'rubro': 'PREPARACION', 'monto': 1300, 'frecuencia': 'UNICA'},
+                       {'rubro': 'PENSION', 'monto': 0, 'frecuencia': 'MENSUAL'},
+                       {'rubro': 'MATRICULA', 'monto': 600, 'frecuencia': 'POR_CICLO'}],
+            'financiamiento': [{'opcion': 'FAMILIA'}, {'otro': 'Trabajo de verano'}],
+            'complicaciones': [{'opcion': 'ECONOMICAS'}]})
+    fixtures['medidores-plan'] = _pedir(cliente, 'POST', '/acciones/planes/medidores', {
+        'cuenta': 'est-ana', 'carrera': 'psychology', 'entusiasmo': 3, 'capacidad': 2, 'recursos': 2,
+        'fecha_hora': FECHA})
     for mision in MISIONES_INTERESES:
         items = _pedir(cliente, 'GET', f'/actividades/{mision}/items')
         if mision == MISIONES_INTERESES[0]:
@@ -180,6 +212,17 @@ def _recorrer(cliente):
     fixtures['testimonios-final'] = _pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')
     # B07: con la partida y el RIASEC prioritario del 5A revelados, T2 está abierto; la llegada se compara.
     fixtures['actividades-t2'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
+    # B11: comparar cita los planes y abre PASOS; un paso en el plan A abre t-proyecto, que cita el plan A.
+    fixtures['referencias-t-comparar'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-comparar/referencias')
+    _responder_registro(cliente, 't-comparar')
+    fixtures['guardar-seccion-pasos'] = _guardar_seccion(cliente, 'psychology', 'PASOS', {
+        'pasos': [{'sugerencia': 1}, {'tipo': 'visitar', 'texto': 'DATO DE PRUEBA: ir a la feria vocacional.'}],
+        'sugerencias_descartadas': [2]})
+    fixtures['paso-hecho'] = _pedir(cliente, 'POST', '/acciones/planes/paso-hecho', {
+        'cuenta': 'est-ana', 'carrera': 'psychology', 'paso': 1, 'hallazgo': 'DATO DE PRUEBA: hay estadística.',
+        'fecha_hora': FECHA})
+    fixtures['referencias-t-proyecto'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-proyecto/referencias')
+    fixtures['planes'] = _pedir(cliente, 'GET', '/cuentas/est-ana/planes')
     _responder_partida(cliente, 't-llegada', 4)
     _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
         'cuenta': 'est-ana', 'instrumento': PARTIDA_LLEGADA, 'aplicacion': 'APL-LLEGADA', 'fecha_hora': FECHA})

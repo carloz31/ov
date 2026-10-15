@@ -1,4 +1,4 @@
-"""Pasos sugeridos para las dudas y complicaciones nuevas de una tarjeta (B11 · HU-101).
+"""Pasos sugeridos para las dudas y complicaciones nuevas de una tarjeta (B11 · HU-110).
 
 Se generan solo al guardar CONOCIMIENTO o REALIDAD con novedades: una llamada al LLM por guardado con todas
 ellas, hasta MAXIMO_LLAMADAS_SUGERENCIAS_POR_PLAN por plan. La llamada va entre dos transacciones, como en el

@@ -49,11 +49,11 @@ Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), p
 | HU-041 | E07 · Catálogos, testimonios y favoritos | Estudiante | consultar los testimonios disponibles | conocer trayectorias reales de estudio y de trabajo |
 | HU-042 | E07 · Catálogos, testimonios y favoritos | Estudiante | ir a una carrera u ocupación que aún no he visitado mediante la opción "Llévame a un lugar inesperado" | descubrir opciones fuera de mi alcance inicial |
 | HU-043 | E08 · Plan de carrera | Estudiante | crear un plan para una carrera que quiero considerar, hasta un máximo de tres | convertir ese interés en una opción que pueda fundamentar |
-| HU-044 | E08 · Plan de carrera | Estudiante | registrar en una tarjeta de carrera mi motivo principal y mi motivación, el trayecto que seguiría y mis listas de fortalezas, debilidades, oportunidades y obstáculos frente a esa carrera | fundamentar esa opción con mis propias razones |
-| HU-045 | E08 · Plan de carrera | Estudiante | estimar en una tarjeta de carrera el presupuesto de estudiarla en una institución que la ofrece, con cada gasto (rubro, monto y frecuencia), y cómo lo financiaría | saber cuánto me costaría estudiarla |
-| HU-046 | E08 · Plan de carrera | Estudiante | registrar en una tarjeta de carrera las acciones con las que me preparo para esa carrera, con su tipo y su fecha | contar con pasos concretos hacia esa opción |
+| HU-044 | E08 · Plan de carrera | Estudiante | registrar en una tarjeta de carrera de quién fue la idea, los motivos por los que la elijo y qué viví que me hizo pensar en ella | fundamentar esa opción con mis propias razones |
+| HU-045 | E08 · Plan de carrera | Estudiante | definir en una tarjeta de carrera dónde la estudiaría, cómo llegaría a ella, cuánto me costaría el primer año (cada gasto con rubro, monto y frecuencia), cómo lo financiaría y qué podría complicarlo | saber qué tan real es esa opción |
+| HU-046 | E08 · Plan de carrera | Estudiante | registrar en una tarjeta de carrera los pasos con los que averiguo o me preparo para esa carrera, con su tipo, marcarlos como hechos y anotar qué averigüé | pasar de las dudas a acciones concretas |
 | HU-047 | E08 · Plan de carrera | Estudiante | ordenar mis planes como A, B y C | distinguir mi opción principal de mis alternativas |
-| HU-048 | E08 · Plan de carrera | Estudiante | consultar la completitud de mis planes de carrera | saber qué secciones me falta desarrollar |
+| HU-048 | E08 · Plan de carrera | Estudiante | consultar el estado de cada sección de mis planes de carrera (bloqueada, por empezar, en proceso, lista) y cuáles están listos para comparar | saber qué me falta desarrollar |
 | HU-049 | E08 · Plan de carrera | Estudiante | recibir una sugerencia para revisar mis planes de carrera al completar un cuestionario de autoconocimiento, un caso o una actividad de comprobación, o al publicar una entrevista | contrastar mis opciones con lo que descubro |
 | HU-050 | E08 · Plan de carrera | Estudiante | eliminar un plan de carrera | descartar las opciones que ya no considero |
 | HU-051 | E09 · Central de casos | Estudiante | consultar los casos disponibles y los problemas que plantea cada uno | elegir cuál resolver |
@@ -90,7 +90,7 @@ Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), p
 | HU-083 | E13 · Seguimiento de estudiantes | Orientadora | consultar la clasificación que el sistema asignó a las respuestas de registro de un estudiante, con su respuesta consolidada y, si las pido, sus preguntas de seguimiento | conocer la profundidad de sus reflexiones |
 | HU-084 | E13 · Seguimiento de estudiantes | Orientadora | comparar las respuestas de un estudiante en los cuestionarios de entrada y de salida | valorar el efecto del proceso en él |
 | HU-085 | E13 · Seguimiento de estudiantes | Orientadora | consultar las carreras y ocupaciones favoritas de un estudiante junto con su coincidencia con el resultado del test de intereses | valorar si sus opciones son coherentes con su perfil |
-| HU-086 | E13 · Seguimiento de estudiantes | Orientadora | consultar el contenido y la completitud de las tarjetas de carrera de un estudiante | conocer cómo fundamenta cada una de sus opciones |
+| HU-086 | E13 · Seguimiento de estudiantes | Orientadora | consultar el contenido de las tarjetas de carrera de un estudiante: de quién fue la idea, el estado de cada sección, las dudas abiertas y cerradas, las complicaciones y las sugerencias aceptadas | conocer cómo fundamenta cada una de sus opciones |
 | HU-087 | E13 · Seguimiento de estudiantes | Orientadora | consultar la evolución de los check-ins de seguridad de un estudiante | detectar cambios en su certeza frente a la decisión |
 | HU-088 | E13 · Seguimiento de estudiantes | Orientadora | consultar las alertas de mis estudiantes, que el sistema genera en cuanto uno de ellos cumple una condición de alerta | identificar a tiempo a quién intervenir y por qué |
 | HU-089 | E13 · Seguimiento de estudiantes | Orientadora | configurar para mi salón los registros y cuestionarios prioritarios y qué cuestionarios puede ver el apoderado | concentrar mi revisión y definir qué cuestionarios exige la ruta |
@@ -101,9 +101,9 @@ Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), p
 | HU-094 | E04 · Cuestionarios y resultados | Estudiante | comparar en el libro de Helena mi punto de partida con mi punto de llegada, dimensión por dimensión | ver cuánto cambié durante el proceso |
 | HU-095 | E04 · Cuestionarios y resultados | Estudiante | volver a realizar las misiones del test de intereses cuando mi resultado no distingue ningún tipo de interés | obtener un resultado que me oriente |
 | HU-096 | E04 · Cuestionarios y resultados | Estudiante | recibir un aviso y una pausa cuando respondo un cuestionario demasiado rápido | que mi resultado refleje lo que realmente pienso |
-| HU-097 | E08 · Plan de carrera | Estudiante | valorar en cada plan de carrera cuánto me entusiasma, qué tan capaz me siento y si tengo cómo lograrlo | comparar mis planes más allá de los datos |
-| HU-098 | E08 · Plan de carrera | Estudiante | recibir un aviso cuando dos de mis planes de carrera pertenecen a la misma área | considerar una alternativa en otra área |
-| HU-099 | E08 · Plan de carrera | Estudiante | consultar qué campos de mis tarjetas de carrera se habilitarán y con qué actividad | saber cómo completar mis planes |
+| HU-097 | E08 · Plan de carrera | Estudiante | valorar en cada plan de carrera, en una escala de 1 a 3 (poco, algo, mucho), cuánto me entusiasma, qué tan capaz me siento y si tengo cómo lograrlo | comparar mis planes más allá de los datos |
+| HU-098 | E08 · Plan de carrera | Estudiante | recibir un aviso cuando dos de mis planes de carrera pertenecen a la misma familia de carreras | considerar una alternativa en otra área |
+| HU-099 | E08 · Plan de carrera | Estudiante | consultar qué secciones de mis tarjetas de carrera se habilitarán y con qué actividad | saber cómo completar mis planes |
 | HU-100 | E10 · Entrevistas | Estudiante | registrar lo que pienso hoy de la ocupación que voy a investigar: qué hace en un día, qué se necesita para ejercerla y una duda | comparar después con lo que aprenda en la entrevista |
 | HU-101 | E10 · Entrevistas | Estudiante | registrar, después de publicar mi entrevista, qué cambió en lo que pensaba de la ocupación y si sube o baja en mi lista | darme cuenta de lo que aprendí |
 | HU-102 | E15 · Informe de viaje | Estudiante | consultar mi bitácora de viaje, que se completa con lo que hago en el recorrido | ver cómo se va armando mi proceso |
@@ -113,6 +113,8 @@ Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), p
 | HU-106 | E15 · Informe de viaje | Estudiante, Orientadora | imprimir o exportar a PDF el informe de viaje | llevarlo a la conversación de orientación fuera de la plataforma |
 | HU-107 | E14 · Indicadores del salón | Orientadora | consultar la seguridad promedio y las alertas más frecuentes de un salón | decidir a qué estudiantes mirar primero |
 | HU-108 | E13 · Seguimiento de estudiantes | Orientadora | registrar notas privadas sobre un estudiante | recordar lo conversado con él y cerrar el ciclo de orientación |
+| HU-109 | E08 · Plan de carrera | Estudiante | responder en una tarjeta de carrera qué tanto conozco de ella (su día a día, dónde trabajaría, qué cursos, cómo se ingresa, si conozco a alguien) y anotar mis dudas | saber qué me falta averiguar |
+| HU-110 | E08 · Plan de carrera | Estudiante | recibir pasos sugeridos a partir de mis dudas y de lo que podría complicar mi plan, y aceptarlos, editarlos o descartarlos (con un paso de respaldo si el servicio de LLM no responde) | saber cómo resolverlos |
 
 ## Requisitos no funcionales
 
@@ -136,7 +138,7 @@ Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), p
 | RNF-16 | Mantenibilidad | El sistema debe representar todas las actividades, sean informativas, de registro o de cuestionario, mediante una misma estructura compuesta por una secuencia de momentos, como un texto, un video o un ítem. |
 | RNF-17 | Mantenibilidad | El sistema debe permitir modificar las actividades y los instrumentos mediante archivos de configuración, sin modificar el código fuente. |
 | RNF-18 | Mantenibilidad | El sistema debe permitir modificar los criterios de completitud de los ítems, las listas de opciones, los mensajes de retroalimentación y de bloqueo, las preguntas del diario, las reglas de desbloqueo, las condiciones de los logros, los requisitos de los niveles, las reglas y redacciones de los temas para conversar y los umbrales de las alertas mediante archivos de configuración, sin modificar el código fuente. |
-| RNF-19 | Mantenibilidad | El sistema debe determinar los desbloqueos de bloques, actividades, secciones, campos de las tarjetas de carrera, preguntas del diario, fichas, testimonios, conversaciones, logros y niveles mediante un mismo mecanismo de reglas evaluadas sobre el registro de eventos de uso. |
+| RNF-19 | Mantenibilidad | El sistema debe determinar los desbloqueos de bloques, actividades, secciones, secciones de las tarjetas de carrera, preguntas del diario, fichas, testimonios, conversaciones, logros y niveles mediante un mismo mecanismo de reglas evaluadas sobre el registro de eventos de uso. |
 | RNF-20 | Seguridad | El sistema debe resolver los datos del estudiante que muestra o usa una actividad o una entrada de diario únicamente a partir de un catálogo cerrado de tipos de referencia, cada uno limitado a los datos de la propia cuenta. |
 
 ## Glosario
@@ -187,10 +189,16 @@ Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), p
 | Amistad con el asistente | Indicador que aumenta conforme el estudiante registra entradas en su diario. Nunca disminuye. |
 | Check-in de seguridad | Valoración diaria del estudiante, en una escala de 1 a 5, de su seguridad frente a la decisión vocacional. |
 | Favorito | Carrera, ocupación o institución que el estudiante marca para seguir explorándola. |
-| Tarjeta de carrera | Desarrollo de una carrera por el estudiante: motivo principal y motivación, trayecto previsto, listas de fortalezas, debilidades, oportunidades y obstáculos, presupuesto, acciones de preparación, medidores y prioridad. Hay una por carrera y hasta tres. Sus campos se habilitan a medida que avanza el camino. |
-| Medidores del plan | Tres valoraciones del estudiante sobre cada tarjeta de carrera: cuánto le entusiasma, qué tan capaz se siente y si tiene cómo lograrlo. |
+| Tarjeta de carrera | Desarrollo de una carrera por el estudiante en cuatro secciones (por qué, qué tanto la conoce, qué tan real es y sus pasos), más medidores y prioridad (A, B o C). Hay una por carrera y hasta tres. Sus secciones se habilitan a medida que avanza el camino. |
+| Medidores del plan | Tres valoraciones del estudiante sobre cada tarjeta de carrera, de 1 a 3 (poco, algo, mucho): cuánto le entusiasma, qué tan capaz se siente y si tiene cómo lograrlo. |
 | Opción inicial | Carrera del primer plan que registra el estudiante antes de completar el Bloque 1. Si no registra ninguno, el informe dice «sin opción inicial». |
-| Presupuesto | Estimación del costo de estudiar la carrera de una tarjeta en una institución que la ofrece: cada gasto con su rubro (matrícula, pensión, materiales, transporte, vivienda u otros), su monto y su frecuencia, y cómo se financiaría. |
+| Presupuesto | Estimación del costo de estudiar la carrera de una tarjeta en una institución que la ofrece: cada gasto con su rubro (preparación, admisión, matrícula, pensión, materiales, transporte, alimentación, vivienda u otro), su monto y su frecuencia, con el total del primer año y, si la institución indica la duración, el de toda la carrera; y cómo se financiaría. |
+| Sección de tarjeta | Parte de una tarjeta de carrera que se guarda entera de una vez: por qué (idea de origen, motivos y relato), qué tanto la conoce (cinco preguntas y dudas), qué tan real es (institución, camino, gastos, financiamiento y complicaciones) y sus pasos. Su estado es bloqueada, por empezar, en proceso o lista. |
+| Listo para comparar | Plan de carrera con las secciones «por qué» y «qué tan real es» listas. |
+| Duda | Lo que el estudiante no sabe de una carrera: la que deja una pregunta de conocimiento respondida «más o menos» o «no», una sugerida o una propia. Se cierra al responder «sí» o con un paso hecho. |
+| Complicación | Algo que podría dificultar llegar a una carrera, de la lista de dificultades u otro. |
+| Sugerencia de paso | Paso que el sistema propone para una duda o una complicación nueva, redactado por el LLM o, si no responde, de respaldo. El estudiante lo acepta (y puede editarlo) o lo descarta. |
+| Hallazgo | Lo que el estudiante anota al marcar un paso como hecho; cierra la duda de la que salió el paso. |
 | Caso | Actividad libre en la que el estudiante asigna ocupaciones a los problemas de unos personajes sin exceder un presupuesto. |
 | Ícono de ocupación | Distintivo de una ocupación que se desbloquea al asignarla correctamente en un caso superado. |
 | Testimonio | Relato de una trayectoria real de estudio o de trabajo, que se desbloquea al resolver un caso. Mientras está bloqueado muestra solo su pista. |
