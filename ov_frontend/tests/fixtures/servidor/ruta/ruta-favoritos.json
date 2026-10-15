@@ -18,6 +18,7 @@
     {
       "codigo": "t-uni",
       "es_favorita": true,
+      "gestion": "PUBLICA",
       "nombre": "Universidad Nacional de Prueba",
       "tipo": "UNIVERSIDAD",
       "ubicacion": {

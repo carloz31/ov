@@ -18,3 +18,12 @@
 - `ruta` agrega `t-privada` (UNIVERSIDAD, PRIVADA), con un nombre sin «universidad» para no alterar la búsqueda por nombre del catálogo; el listado completo de instituciones de `test_catalogo.py` se adaptó. `t-uni` y `t-ffaa` quedan como PUBLICA.
 - `t-comparar` y `t-proyecto` entran en la fase 1 porque la regla de la sección PASOS depende de `t-comparar`; sus reglas con evaluador y sus referencias entran en la fase 4, con los evaluadores. Mientras tanto, se abren con T2.
 - Las aserciones que enumeran los desbloqueos de `t-inicio`, los ítems cargados y los estados de actividades de T2 se adaptaron a las filas nuevas de la spec.
+
+## Servicio y API (fase 2)
+
+- Dudas, complicaciones, sugerencias y pasos se exponen por `numero` por tarjeta (contadores `ultimo_numero_*` en la tarjeta), no por id interno, para cumplir la convención de códigos legibles de la API. Aprobado por el usuario; va en la migración 0017.
+- `tarjeta_carrera.prioridad` tiene CHECK `>= 1` (no `BETWEEN 1 AND 3`) y el único `(cuenta, prioridad)`: ordenar pasa por prioridades temporales mayores que `MAXIMO_PLANES`, porque ni SQLite ni PostgreSQL difieren el único. El tope lo garantiza el servicio.
+- `tarjeta_carrera.llamadas_sugerencias` cuenta las llamadas al LLM de sugerencias de cada plan: el tope por plan no puede contarse con las sugerencias, que se borran con su duda o complicación.
+- `InstitucionResumen` expone `gestion` (lo pide la spec para la precarga del front); la aserción del detalle de carrera de `test_catalogo.py` se adaptó.
+- La duda de una pregunta que se cerró al responder «sí» (sin paso) se reabre si la respuesta vuelve a ser «más o menos» o «no»; no recibe sugerencias nuevas porque no es nueva.
+- En PASOS, un paso conservado por `numero` puede cambiar de tipo y texto solo si está pendiente; los hechos no se editan.

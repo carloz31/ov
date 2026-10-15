@@ -89,10 +89,15 @@ def upgrade() -> None:
     sa.Column('guardada_conocimiento_en', sa.DateTime(), nullable=True),
     sa.Column('guardada_realidad_en', sa.DateTime(), nullable=True),
     sa.Column('guardada_pasos_en', sa.DateTime(), nullable=True),
+    sa.Column('ultimo_numero_duda', sa.Integer(), server_default=sa.text('0'), nullable=False),
+    sa.Column('ultimo_numero_complicacion', sa.Integer(), server_default=sa.text('0'), nullable=False),
+    sa.Column('ultimo_numero_sugerencia', sa.Integer(), server_default=sa.text('0'), nullable=False),
+    sa.Column('ultimo_numero_paso', sa.Integer(), server_default=sa.text('0'), nullable=False),
+    sa.Column('llamadas_sugerencias', sa.Integer(), server_default=sa.text('0'), nullable=False),
     sa.CheckConstraint('camino_opcion_id IS NULL OR camino_otro IS NULL', name=op.f('ck_tarjeta_carrera_un_camino')),
     sa.CheckConstraint('capacidad BETWEEN 1 AND 3', name=op.f('ck_tarjeta_carrera_capacidad_valida')),
     sa.CheckConstraint('entusiasmo BETWEEN 1 AND 3', name=op.f('ck_tarjeta_carrera_entusiasmo_valido')),
-    sa.CheckConstraint('prioridad BETWEEN 1 AND 3', name=op.f('ck_tarjeta_carrera_prioridad_valida')),
+    sa.CheckConstraint('prioridad >= 1', name=op.f('ck_tarjeta_carrera_prioridad_valida')),
     sa.CheckConstraint('recursos BETWEEN 1 AND 3', name=op.f('ck_tarjeta_carrera_recursos_valido')),
     sa.ForeignKeyConstraint(['camino_opcion_id'], ['opcion_lista.id'], name=op.f('fk_tarjeta_carrera_camino_opcion_id_opcion_lista')),
     sa.ForeignKeyConstraint(['carrera_id'], ['carrera.id'], name=op.f('fk_tarjeta_carrera_carrera_id_carrera')),
@@ -105,13 +110,15 @@ def upgrade() -> None:
     op.create_table('complicacion_tarjeta',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('tarjeta_id', sa.Integer(), nullable=False),
+    sa.Column('numero', sa.Integer(), nullable=False),
     sa.Column('opcion_id', sa.Integer(), nullable=True),
     sa.Column('texto_otro', sa.Text(), nullable=True),
     sa.Column('creada_en', sa.DateTime(), nullable=False),
     sa.CheckConstraint('(opcion_id IS NULL) <> (texto_otro IS NULL)', name=op.f('ck_complicacion_tarjeta_opcion_u_otro')),
     sa.ForeignKeyConstraint(['opcion_id'], ['opcion_lista.id'], name=op.f('fk_complicacion_tarjeta_opcion_id_opcion_lista')),
     sa.ForeignKeyConstraint(['tarjeta_id'], ['tarjeta_carrera.id'], name=op.f('fk_complicacion_tarjeta_tarjeta_id_tarjeta_carrera'), ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_complicacion_tarjeta'))
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_complicacion_tarjeta')),
+    sa.UniqueConstraint('tarjeta_id', 'numero', name='uq_complicacion_tarjeta_numero')
     )
     op.create_table('conocimiento_tarjeta',
     sa.Column('tarjeta_id', sa.Integer(), nullable=False),
@@ -123,6 +130,7 @@ def upgrade() -> None:
     op.create_table('duda_tarjeta',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('tarjeta_id', sa.Integer(), nullable=False),
+    sa.Column('numero', sa.Integer(), nullable=False),
     sa.Column('origen', sa.Enum('PREGUNTA', 'SUGERIDA', 'PROPIA', name='origenduda', native_enum=False, create_constraint=True), nullable=False),
     sa.Column('pregunta', sa.Enum('DIA_NORMAL', 'DONDE_TRABAJAR', 'CURSOS', 'INGRESO', 'CONOCE_ALGUIEN', name='preguntaconocimiento', native_enum=False, create_constraint=True), nullable=True),
     sa.Column('opcion_id', sa.Integer(), nullable=True),
@@ -135,7 +143,8 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['opcion_id'], ['opcion_lista.id'], name=op.f('fk_duda_tarjeta_opcion_id_opcion_lista')),
     sa.ForeignKeyConstraint(['tarjeta_id'], ['tarjeta_carrera.id'], name=op.f('fk_duda_tarjeta_tarjeta_id_tarjeta_carrera'), ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_duda_tarjeta')),
-    sa.UniqueConstraint('tarjeta_id', 'pregunta', name='uq_duda_tarjeta_pregunta')
+    sa.UniqueConstraint('tarjeta_id', 'pregunta', name='uq_duda_tarjeta_pregunta'),
+    sa.UniqueConstraint('tarjeta_id', 'numero', name='uq_duda_tarjeta_numero')
     )
     op.create_table('financiamiento_tarjeta',
     sa.Column('tarjeta_id', sa.Integer(), nullable=False),
@@ -173,6 +182,7 @@ def upgrade() -> None:
     op.create_table('sugerencia_tarjeta',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('tarjeta_id', sa.Integer(), nullable=False),
+    sa.Column('numero', sa.Integer(), nullable=False),
     sa.Column('duda_id', sa.Integer(), nullable=True),
     sa.Column('complicacion_id', sa.Integer(), nullable=True),
     sa.Column('tipo_opcion_id', sa.Integer(), nullable=False),
@@ -185,11 +195,13 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['duda_id'], ['duda_tarjeta.id'], name=op.f('fk_sugerencia_tarjeta_duda_id_duda_tarjeta'), ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['tarjeta_id'], ['tarjeta_carrera.id'], name=op.f('fk_sugerencia_tarjeta_tarjeta_id_tarjeta_carrera'), ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['tipo_opcion_id'], ['opcion_lista.id'], name=op.f('fk_sugerencia_tarjeta_tipo_opcion_id_opcion_lista')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_sugerencia_tarjeta'))
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_sugerencia_tarjeta')),
+    sa.UniqueConstraint('tarjeta_id', 'numero', name='uq_sugerencia_tarjeta_numero')
     )
     op.create_table('paso_tarjeta',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('tarjeta_id', sa.Integer(), nullable=False),
+    sa.Column('numero', sa.Integer(), nullable=False),
     sa.Column('posicion', sa.Integer(), nullable=False),
     sa.Column('tipo_opcion_id', sa.Integer(), nullable=False),
     sa.Column('texto', sa.Text(), nullable=False),
@@ -204,7 +216,8 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['sugerencia_id'], ['sugerencia_tarjeta.id'], name=op.f('fk_paso_tarjeta_sugerencia_id_sugerencia_tarjeta'), ondelete='SET NULL'),
     sa.ForeignKeyConstraint(['tarjeta_id'], ['tarjeta_carrera.id'], name=op.f('fk_paso_tarjeta_tarjeta_id_tarjeta_carrera'), ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['tipo_opcion_id'], ['opcion_lista.id'], name=op.f('fk_paso_tarjeta_tipo_opcion_id_opcion_lista')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_paso_tarjeta'))
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_paso_tarjeta')),
+    sa.UniqueConstraint('tarjeta_id', 'numero', name='uq_paso_tarjeta_numero')
     )
     with op.batch_alter_table('cuenta', schema=None) as batch_op:
         batch_op.add_column(sa.Column('opcion_inicial_id', sa.Integer(), nullable=True))

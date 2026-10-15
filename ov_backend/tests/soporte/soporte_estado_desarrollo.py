@@ -72,17 +72,17 @@ def _llenar_planes(sesion, cuenta, fecha):
                                      actualizada_en=fecha)
     sesion.add(tarjeta)
     sesion.flush()
-    duda = modelos.DudaTarjeta(tarjeta_id=tarjeta.id, origen='PROPIA', texto='DATO DE PRUEBA', estado='ABIERTA',
+    duda = modelos.DudaTarjeta(tarjeta_id=tarjeta.id, numero=1, origen='PROPIA', texto='DATO DE PRUEBA', estado='ABIERTA',
                                creada_en=fecha)
-    complicacion = modelos.ComplicacionTarjeta(tarjeta_id=tarjeta.id, texto_otro='DATO DE PRUEBA', creada_en=fecha)
+    complicacion = modelos.ComplicacionTarjeta(tarjeta_id=tarjeta.id, numero=1, texto_otro='DATO DE PRUEBA', creada_en=fecha)
     sesion.add_all([duda, complicacion])
     sesion.flush()
-    sugerencia = modelos.SugerenciaTarjeta(tarjeta_id=tarjeta.id, duda_id=duda.id, tipo_opcion_id=opcion.id,
+    sugerencia = modelos.SugerenciaTarjeta(tarjeta_id=tarjeta.id, numero=1, duda_id=duda.id, tipo_opcion_id=opcion.id,
                                            texto='DATO DE PRUEBA', estado='ACEPTADA', generada_por='RESPALDO',
                                            creada_en=fecha)
     sesion.add(sugerencia)
     sesion.flush()
-    paso = modelos.PasoTarjeta(tarjeta_id=tarjeta.id, posicion=1, tipo_opcion_id=opcion.id, texto='DATO DE PRUEBA',
+    paso = modelos.PasoTarjeta(tarjeta_id=tarjeta.id, numero=1, posicion=1, tipo_opcion_id=opcion.id, texto='DATO DE PRUEBA',
                                duda_id=duda.id, sugerencia_id=sugerencia.id, estado='HECHO', hallazgo='DATO DE PRUEBA',
                                hecho_en=fecha)
     sesion.add(paso)

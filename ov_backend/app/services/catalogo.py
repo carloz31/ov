@@ -83,6 +83,7 @@ def resumen_ocupacion(ocupacion: Ocupacion, favoritos: set) -> OcupacionResumen:
 
 def resumen_institucion(institucion: Institucion, favoritos: set) -> InstitucionResumen:
     return InstitucionResumen(codigo=institucion.codigo, nombre=institucion.nombre, tipo=institucion.tipo,
+                              gestion=institucion.gestion,
                               ubicacion=UbicacionPublica(codigo=institucion.ubicacion.codigo,
                                                          nombre=institucion.ubicacion.nombre),
                               es_favorita=(TipoFavorito.INSTITUCION, institucion.id) in favoritos)

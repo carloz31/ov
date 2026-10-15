@@ -5,7 +5,7 @@ cada una admite «Otro» con texto: exactamente uno de los dos está presente.""
 
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Text, UniqueConstraint, false
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Text, UniqueConstraint, false, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, enumerado
@@ -56,7 +56,7 @@ class TarjetaCarrera(Base):
     __table_args__ = (
         UniqueConstraint("cuenta_id", "carrera_id", name="uq_tarjeta_carrera_carrera"),
         UniqueConstraint("cuenta_id", "prioridad", name="uq_tarjeta_carrera_prioridad"),
-        CheckConstraint("prioridad BETWEEN 1 AND 3", name="prioridad_valida"),
+        CheckConstraint("prioridad >= 1", name="prioridad_valida"),
         CheckConstraint("camino_opcion_id IS NULL OR camino_otro IS NULL", name="un_camino"),
         CheckConstraint("entusiasmo BETWEEN 1 AND 3", name="entusiasmo_valido"),
         CheckConstraint("capacidad BETWEEN 1 AND 3", name="capacidad_valida"),
@@ -80,6 +80,13 @@ class TarjetaCarrera(Base):
     guardada_conocimiento_en: Mapped[datetime | None] = mapped_column(DateTime, default=None)
     guardada_realidad_en: Mapped[datetime | None] = mapped_column(DateTime, default=None)
     guardada_pasos_en: Mapped[datetime | None] = mapped_column(DateTime, default=None)
+    # Último `numero` dado en cada secuencia de la tarjeta; los números no se reutilizan aunque se borren filas.
+    ultimo_numero_duda: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    ultimo_numero_complicacion: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    ultimo_numero_sugerencia: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    ultimo_numero_paso: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    # Llamadas al LLM de sugerencias hechas para esta tarjeta; el tope es MAXIMO_LLAMADAS_SUGERENCIAS_POR_PLAN.
+    llamadas_sugerencias: Mapped[int] = mapped_column(default=0, server_default=text("0"))
 
 
 class MotivoTarjeta(Base):
@@ -105,11 +112,13 @@ class DudaTarjeta(Base):
     __table_args__ = (
         # `pregunta` solo existe con origen PREGUNTA, así que el único equivale a un índice parcial.
         UniqueConstraint("tarjeta_id", "pregunta", name="uq_duda_tarjeta_pregunta"),
+        UniqueConstraint("tarjeta_id", "numero", name="uq_duda_tarjeta_numero"),
         CheckConstraint("(origen = 'PREGUNTA') = (pregunta IS NOT NULL)", name="pregunta_segun_origen"),
         CheckConstraint("(origen = 'SUGERIDA') = (opcion_id IS NOT NULL)", name="opcion_segun_origen"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     tarjeta_id: Mapped[int] = mapped_column(ForeignKey("tarjeta_carrera.id", ondelete="CASCADE"))
+    numero: Mapped[int]
     origen: Mapped[OrigenDuda] = mapped_column(enumerado(OrigenDuda))
     pregunta: Mapped[PreguntaConocimiento | None] = mapped_column(enumerado(PreguntaConocimiento))
     opcion_id: Mapped[int | None] = mapped_column(ForeignKey("opcion_lista.id"))
@@ -144,9 +153,11 @@ class FinanciamientoTarjeta(Base):
 
 class ComplicacionTarjeta(Base):
     __tablename__ = "complicacion_tarjeta"
-    __table_args__ = (_opcion_u_otro("opcion_id", "texto_otro"),)
+    __table_args__ = (_opcion_u_otro("opcion_id", "texto_otro"),
+                      UniqueConstraint("tarjeta_id", "numero", name="uq_complicacion_tarjeta_numero"))
     id: Mapped[int] = mapped_column(primary_key=True)
     tarjeta_id: Mapped[int] = mapped_column(ForeignKey("tarjeta_carrera.id", ondelete="CASCADE"))
+    numero: Mapped[int]
     opcion_id: Mapped[int | None] = mapped_column(ForeignKey("opcion_lista.id"))
     texto_otro: Mapped[str | None] = mapped_column(Text)
     creada_en: Mapped[datetime] = mapped_column(DateTime)
@@ -155,9 +166,11 @@ class ComplicacionTarjeta(Base):
 class SugerenciaTarjeta(Base):
     """Paso sugerido para una duda o una complicación; se borra con ella, en cualquier estado."""
     __tablename__ = "sugerencia_tarjeta"
-    __table_args__ = (CheckConstraint("(duda_id IS NULL) <> (complicacion_id IS NULL)", name="un_origen"),)
+    __table_args__ = (CheckConstraint("(duda_id IS NULL) <> (complicacion_id IS NULL)", name="un_origen"),
+                      UniqueConstraint("tarjeta_id", "numero", name="uq_sugerencia_tarjeta_numero"))
     id: Mapped[int] = mapped_column(primary_key=True)
     tarjeta_id: Mapped[int] = mapped_column(ForeignKey("tarjeta_carrera.id", ondelete="CASCADE"))
+    numero: Mapped[int]
     duda_id: Mapped[int | None] = mapped_column(ForeignKey("duda_tarjeta.id", ondelete="CASCADE"))
     complicacion_id: Mapped[int | None] = mapped_column(ForeignKey("complicacion_tarjeta.id", ondelete="CASCADE"))
     tipo_opcion_id: Mapped[int] = mapped_column(ForeignKey("opcion_lista.id"))
@@ -170,8 +183,10 @@ class SugerenciaTarjeta(Base):
 class PasoTarjeta(Base):
     """Paso del estudiante; si se borra su duda, complicación o sugerencia, conserva texto, tipo y estado."""
     __tablename__ = "paso_tarjeta"
+    __table_args__ = (UniqueConstraint("tarjeta_id", "numero", name="uq_paso_tarjeta_numero"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     tarjeta_id: Mapped[int] = mapped_column(ForeignKey("tarjeta_carrera.id", ondelete="CASCADE"))
+    numero: Mapped[int]
     posicion: Mapped[int]
     tipo_opcion_id: Mapped[int] = mapped_column(ForeignKey("opcion_lista.id"))
     texto: Mapped[str] = mapped_column(Text)

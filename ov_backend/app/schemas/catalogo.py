@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from app.models.enums import TipoInstitucion
+from app.models.enums import GestionInstitucion, TipoInstitucion
 
 
 class FamiliaPublica(BaseModel):
@@ -35,6 +35,8 @@ class InstitucionResumen(BaseModel):
     codigo: str
     nombre: str
     tipo: TipoInstitucion
+    gestion: GestionInstitucion | None
+    """Pública o privada (B11); nula si no se conoce."""
     ubicacion: UbicacionPublica
     es_favorita: bool
 

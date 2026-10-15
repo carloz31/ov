@@ -77,3 +77,14 @@ DESCRIPCIONES_RIASEC: dict[str, str] = {
     "E": "Te atrae liderar, convencer, organizar proyectos y tomar decisiones.",
     "C": "Te atrae ordenar información, seguir procedimientos claros y trabajar con datos de forma precisa.",
 }
+
+# B11 · Planes de carrera.
+MAXIMO_PLANES = 3
+CICLOS_POR_ANIO = 2
+# Bloque MISIONES_CAMPO del estudiante con este número: la opción inicial se fija antes de completarlo.
+NUMERO_BLOQUE_OPCION_INICIAL = 2
+# Mínimo del relato para que POR_QUE quede lista; no se muestra al estudiante.
+MINIMO_CARACTERES_RELATO = MIN_CARACTERES_RESPALDO
+MAXIMO_LLAMADAS_SUGERENCIAS_POR_PLAN = 6
+MAXIMO_PASOS_POR_DUDA = 2
+MAXIMO_CARACTERES_PASO = 140

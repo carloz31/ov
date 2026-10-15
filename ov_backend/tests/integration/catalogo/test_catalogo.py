@@ -85,7 +85,7 @@ def test_hu037_detalle_de_carrera(abierto):
     assert detalle['riasec'] == ['S', 'I', 'A']
     assert codigos(detalle['ocupaciones']) == ['psychologist', 'social-worker', 'sociologist', 'teacher']
     assert detalle['instituciones'] == [{'codigo': 't-uni', 'nombre': 'Universidad Nacional de Prueba',
-                                         'tipo': 'UNIVERSIDAD', 'es_favorita': False,
+                                         'tipo': 'UNIVERSIDAD', 'gestion': 'PUBLICA', 'es_favorita': False,
                                          'ubicacion': {'codigo': 't-lima', 'nombre': 'Lima de prueba'}}]
     assert detalle['ingreso'] == {'promedio_mensual': 3200, 'fuente': 'Fuente de prueba', 'anio': 2025, 'rangos': [
         {'minimo': 0, 'maximo': 2000, 'porcentaje': 30.0}, {'minimo': 2000, 'maximo': 4000, 'porcentaje': 50.0},

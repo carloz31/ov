@@ -2,6 +2,18 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-15 · B11 · Planes de carrera
+
+- **Dato:**
+  - `GET /cuentas/{c}/planes`: hasta tres tarjetas por prioridad (A, B, C) con sus cuatro secciones (POR_QUE, CONOCIMIENTO, REALIDAD, PASOS), el estado de cada una (`BLOQUEADA`, `POR_EMPEZAR`, `EN_PROCESO`, `LISTA`, con el motivo de bloqueo que nombra la actividad que la abre), `lista_para_comparar`, dudas, gastos con `totales_por_frecuencia`, `total_primer_anio` y `total_carrera`, financiamiento, complicaciones, sugerencias, pasos, medidores (1–3), `avisos` de misma familia, `opcion_inicial` y `opciones` (las listas de la tarjeta);
+  - `POST /acciones/planes/crear`, `guardar-seccion`, `medidores`, `paso-hecho`, `ordenar` y `eliminar`. Dudas, complicaciones, sugerencias y pasos se identifican por `numero` dentro de la tarjeta;
+  - `gestion` (PUBLICA, PRIVADA o nula) en `InstitucionResumen` del catálogo.
+- **Precarga de gastos (responsabilidad del front):** el backend no inserta gastos ni devuelve una propuesta. Con `opciones.rubros` (`frecuencia_recomendada`, `monto_referencia`, `cero_si_publica`, `solo_si_camino_prepara`), `opciones.caminos` (`incluye_preparacion`) y la `gestion` de la institución elegida, el front arma en vivo los gastos precargados: Pensión en 0 si la institución es pública (con su monto de referencia si no tiene gestión), Preparación solo si el camino incluye prepararse, y Alimentación y Vivienda a mano. Al guardar REALIDAD envía los gastos que el estudiante dejó.
+- **Dónde se mostraría:** la sección Planes del estudiante (tarjeta por secciones, medidores, orden A/B/C, aviso de misma familia) y el detalle de institución del catálogo (pública o privada).
+- **Opciones:** conectar Planes en su lote F con la tarjeta v4; mantener los planes locales actuales (`DecisionSheet`), que no coinciden con este modelo, hasta diseñar la vista.
+- **Si no se muestra:** en modo `api` los planes, la opción inicial y los requisitos de `t-comparar` y `t-proyecto` existen solo en el servidor.
+- **Estado:** pendiente del lote F de planes; no se toca la interfaz en B11.
+
 ## 2026-10-14 · B09 · Diario, pregunta del día, check-in y avance
 
 - **Dato:**

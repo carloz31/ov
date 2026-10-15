@@ -45,6 +45,7 @@
   "codigo": "t-uni",
   "descripcion": "Universidad de prueba con varias facultades.",
   "es_favorita": false,
+  "gestion": "PUBLICA",
   "nombre": "Universidad Nacional de Prueba",
   "pagina_web": "https://example.test/universidad",
   "tipo": "UNIVERSIDAD",
