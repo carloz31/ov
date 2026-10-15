@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Request
+from sqlalchemy.exc import IntegrityError
 
 from app.dependencies import CuentaConsultada, SesionBD, ejecutar_accion
 from app.exceptions import ErrorAccion, traducir_error_accion
@@ -27,8 +28,18 @@ def crear_plan(entrada: PlanEntrada, sesion: SesionBD):
 
 
 @router.post("/acciones/planes/guardar-seccion", response_model=RespuestaAccion, response_model_exclude_unset=True)
-def guardar_seccion(entrada: GuardarSeccionEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: acciones_planes.guardar_seccion(sesion, entrada))
+def guardar_seccion(entrada: GuardarSeccionEntrada, peticion: Request):
+    # No usa la dependencia de sesión: las sugerencias van entre dos transacciones, como en el registro.
+    try:
+        return acciones_planes.guardar_seccion(
+            peticion.app.state.fabrica_sesiones, entrada, peticion.app.state.evaluador_respuestas,
+            tiempo_maximo_segundos=peticion.app.state.configuracion_registro.timeout_segundos)
+    except ErrorAccion as error:
+        raise traducir_error_accion(error) from error
+    except IntegrityError as error:
+        raise HTTPException(status_code=409, detail={
+            "mensaje": "La acción entra en conflicto con el estado actual de la cuenta",
+        }) from error
 
 
 @router.post("/acciones/planes/medidores", response_model=RespuestaAccion, response_model_exclude_unset=True)

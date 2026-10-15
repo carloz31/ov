@@ -21,7 +21,7 @@ from app.schemas.planes import (
 )
 from app.services.comun import buscar_por_codigo, exigir_disponible, existe_evento, fecha_accion, responder_con_eventos
 from app.services.planes.consultas import GUARDADA, exigir_planes, opcion_por_codigo, texto_duda_pregunta
-from app.services.planes.sugerencias import generar_sugerencias, siguiente_numero
+from app.services.planes.sugerencias import COMPLICACIONES, DUDAS, Novedades, siguiente_numero, sugerir
 
 
 def _invalido(mensaje: str) -> ErrorAccion:
@@ -221,8 +221,7 @@ def _guardar_conocimiento(sesion, tarjeta, carrera, datos, fecha):
                            opcion_id=opcion, texto=texto, estado=EstadoDuda.ABIERTA, creada_en=fecha)
                for origen, opcion, texto in nuevas_libres]
     sesion.add_all(nuevas)
-    sesion.flush()
-    generar_sugerencias(sesion, tarjeta, carrera, dudas=nuevas, fecha=fecha)
+    return nuevas
 
 
 def _guardar_realidad(sesion, tarjeta, carrera, datos, fecha):
@@ -260,8 +259,7 @@ def _guardar_realidad(sesion, tarjeta, carrera, datos, fecha):
                                   opcion_id=opcion, texto_otro=otro, creada_en=fecha)
               for opcion, otro in nuevas_elegidas]
     sesion.add_all(nuevas)
-    sesion.flush()
-    generar_sugerencias(sesion, tarjeta, carrera, complicaciones=nuevas, fecha=fecha)
+    return nuevas
 
 
 def _guardar_pasos(sesion, tarjeta, carrera, datos, fecha):
@@ -314,14 +312,28 @@ GUARDAR = {'POR_QUE': _guardar_por_que, 'CONOCIMIENTO': _guardar_conocimiento, '
 
 
 @usar_contexto
-def guardar_seccion(sesion: Session, entrada: GuardarSeccionEntrada) -> RespuestaAccion:
-    """Reemplaza la sección entera; sus efectos (dudas, sugerencias, cierres) ocurren solo aquí."""
+def _guardar_seccion(sesion: Session, entrada: GuardarSeccionEntrada) -> tuple[RespuestaAccion, Novedades | None]:
     cuenta = _cuenta(sesion, entrada)
     tarjeta, carrera = _plan(sesion, cuenta, entrada.carrera)
     exigir_disponible(sesion, cuenta, TipoObjetivo.SECCION_PLAN,
                       contexto(sesion).definiciones.por_codigo(SeccionTarjeta, entrada.seccion))
     fecha = fecha_accion(entrada)
-    GUARDAR[entrada.seccion](sesion, tarjeta, carrera, entrada.datos, fecha)
+    nuevas = GUARDAR[entrada.seccion](sesion, tarjeta, carrera, entrada.datos, fecha)
     setattr(tarjeta, GUARDADA[entrada.seccion], fecha)
     tarjeta.actualizada_en = fecha
-    return _responder(sesion, cuenta, TipoEventoUso.ACTUALIZA_PLAN, carrera, fecha)
+    respuesta = _responder(sesion, cuenta, TipoEventoUso.ACTUALIZA_PLAN, carrera, fecha)
+    novedades = None if not nuevas else Novedades(
+        tarjeta_id=tarjeta.id, tipo=DUDAS if entrada.seccion == 'CONOCIMIENTO' else COMPLICACIONES,
+        numeros=tuple(fila.numero for fila in nuevas), fecha=fecha)
+    return respuesta, novedades
+
+
+def guardar_seccion(fabrica_sesiones, entrada: GuardarSeccionEntrada, evaluador, *,
+                    tiempo_maximo_segundos: float) -> RespuestaAccion:
+    """Reemplaza la sección entera; sus efectos (dudas, cierres) ocurren solo aquí. Las dudas o complicaciones
+    nuevas reciben sus pasos sugeridos después de confirmar el guardado, fuera de su transacción."""
+    with fabrica_sesiones.begin() as sesion:
+        respuesta, novedades = _guardar_seccion(sesion, entrada)
+    if novedades is not None:
+        sugerir(fabrica_sesiones, novedades, evaluador, tiempo_maximo_segundos=tiempo_maximo_segundos)
+    return respuesta

@@ -27,3 +27,11 @@
 - `InstitucionResumen` expone `gestion` (lo pide la spec para la precarga del front); la aserción del detalle de carrera de `test_catalogo.py` se adaptó.
 - La duda de una pregunta que se cerró al responder «sí» (sin paso) se reabre si la respuesta vuelve a ser «más o menos» o «no»; no recibe sugerencias nuevas porque no es nueva.
 - En PASOS, un paso conservado por `numero` puede cambiar de tipo y texto solo si está pendiente; los hechos no se editan.
+
+## Sugerencias con LLM (fase 3)
+
+- `guardar-seccion` va en dos transacciones, como el registro y el diario: la primera guarda la sección y sus dudas o complicaciones (con el evento); la llamada al LLM queda fuera de toda transacción, y la segunda guarda las sugerencias (del LLM o de respaldo) solo de las novedades que siguen existiendo sin sugerencias. Si esa segunda falla, la sección queda guardada sin sugerencias.
+- Prompt: el texto de `B11-sugerencias-prompt.md` §3, con la carrera, la institución (nombre, gestión, ciudad) y el total del primer año en la instrucción. Las dudas, complicaciones, camino y financiamiento van solo en el JSON de la petición (RNF-14: el texto del estudiante es dato, no instrucción); el prompt lo dice. Sin institución, la regla de la página de admisión nombra «las universidades o institutos que le interesen».
+- Cada intento de llamada cuenta para el tope por plan, aunque falle.
+- El evaluador falso sugiere un paso por novedad y entiende marcas en el texto (`[falla]`, `[malformado]`, `[tipo-invalido]`, `[largo]`, `[tres]`, `[sin-pasos]`, `[ajeno]`) para probar la validación.
+- Pendiente: el cliente de Gemini sigue en `services/registro/` aunque ya lo usan el diario y los planes; no se mueve en este lote.

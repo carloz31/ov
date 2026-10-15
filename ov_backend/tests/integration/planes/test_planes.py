@@ -1,5 +1,6 @@
 """B11 · Planes de carrera: tarjetas, secciones, totales, dudas, sugerencias de respaldo, pasos, orden y avisos."""
 
+import pytest
 from sqlalchemy import select
 
 from app import models as m
@@ -8,6 +9,12 @@ from soporte_planes import (
 )
 from soporte_retiro import buscar, medir
 from soporte_ruta import pedir
+
+
+@pytest.fixture
+def respaldo(aplicacion):
+    """Sin LLM: cada duda o complicación nueva recibe su paso de respaldo."""
+    aplicacion.state.evaluador_respuestas.falla_sugerencias = True
 
 
 def test_hu043_hasta_tres_planes_sin_repetir_carrera(cliente):
@@ -146,7 +153,7 @@ def test_opciones_de_la_tarjeta_para_la_precarga(cliente):
                                         'texto_duda': '¿Cómo es un día normal de alguien de {carrera}?'}
 
 
-def test_hu100_hu101_dudas_de_conocimiento_y_sugerencias_de_respaldo(cliente):
+def test_hu100_hu101_dudas_de_conocimiento_y_sugerencias_de_respaldo(cliente, respaldo):
     abrir_planes(cliente)
     abrir_secciones(cliente, 'CONOCIMIENTO')
     crear(cliente, 'psychology')
@@ -182,7 +189,7 @@ def test_hu100_hu101_dudas_de_conocimiento_y_sugerencias_de_respaldo(cliente):
                                                               {'numero': 3}]}, esperado=422)
 
 
-def test_hu045_hu101_complicaciones_con_su_sugerencia(cliente):
+def test_hu045_hu101_complicaciones_con_su_sugerencia_de_respaldo(cliente, respaldo):
     abrir_planes(cliente)
     abrir_secciones(cliente, 'REALIDAD')
     crear(cliente, 'psychology')
@@ -231,7 +238,7 @@ def test_hu046_pasos_sugerencias_y_paso_hecho(cliente):
     guardar(cliente, 'psychology', 'PASOS', {'pasos': [{'sugerencia': 2}]}, esperado=422)
 
 
-def test_borrar_una_duda_borra_sus_sugerencias_y_conserva_sus_pasos(cliente, sesion):
+def test_borrar_una_duda_borra_sus_sugerencias_y_conserva_sus_pasos(cliente, sesion, respaldo):
     abrir_planes(cliente)
     abrir_secciones(cliente, 'CONOCIMIENTO', 'PASOS')
     crear(cliente, 'psychology')

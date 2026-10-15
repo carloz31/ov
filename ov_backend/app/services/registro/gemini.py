@@ -16,6 +16,7 @@ from pydantic import ValidationError
 from app.config import Configuracion, ErrorConfiguracionRegistro
 from app.core.parametros import TEMPERATURA_REGISTRO
 from app.services.diario.asistente import PROMPT_DIARIO_V1, PreguntaPersonalizada, validar_personalizacion
+from app.services.planes.sugerencias import RespuestaSugerencias, prompt_sugerencias
 from app.services.registro.evaluacion import (
     ContextoEntrega, ContextoSeguimiento, ErrorResultadoEvaluacion, ResultadoEntrega, ResultadoSeguimiento,
     validar_entrega, validar_seguimiento,
@@ -92,6 +93,11 @@ class EvaluadorGemini:
 
     def personalizar_entrada(self, contexto):
         return self._medir(contexto, PROMPT_DIARIO_V1, PreguntaPersonalizada, validar_personalizacion)
+
+    def sugerir_pasos(self, contexto):
+        # El servicio filtra los pasos (tipos, números, longitud); aquí solo se exige el esquema.
+        return self._medir(contexto, prompt_sugerencias(contexto), RespuestaSugerencias,
+                           lambda resultado, _contexto: resultado)
 
     def _medir(self, contexto, instruccion, esquema, validar):
         inicio = perf_counter()
