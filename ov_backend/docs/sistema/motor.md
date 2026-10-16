@@ -197,6 +197,7 @@ Conversaciones guiadas entre el estudiante y su apoderado, con una carta de cada
 - **Marcar** (`completar-conversacion`): cualquiera de los dos, solo con ambas respuestas (si no, 409). Basta una marca (`conversada_en`, `conversada_por`); marcar de nuevo no cambia nada. COMPLETA_CONVERSACION va solo al estudiante y le abre su pregunta del diario.
 - **Estado** para quien consulta: `sin_responder`, `esperando_al_otro` (solo yo respondí; también si el hijo aún no la habilitó), `te_toca`, `por_conversar` o `conversada`. La respuesta del otro, las `preguntas_guia` y el `mensaje_diferencias` se ven solo con las dos respuestas.
 - **Pregunta:** cada rol ve la suya; con `pregunta_apoderado` nula, el apoderado responde la del estudiante.
+- **Sin avisos:** no hay notificaciones entre cuentas. El apoderado no recibe aviso cuando el hijo habilita una conversación (HU-067), y si el apoderado marca, el estudiante ve su nueva pregunta del diario solo al consultarlo. Quedan para las notificaciones asíncronas.
 
 ## Ruta del apoderado
 
