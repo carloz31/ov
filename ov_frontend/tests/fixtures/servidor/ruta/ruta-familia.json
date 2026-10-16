@@ -1,0 +1,24 @@
+{
+  "avance": {
+    "completadas": 2,
+    "porcentaje": 100.0,
+    "total": 2
+  },
+  "diploma": {
+    "obtenido": true,
+    "obtenido_en": "2026-10-07T10:00:00"
+  },
+  "estudiante": {
+    "avance": {
+      "completadas": 9,
+      "porcentaje": 81.82,
+      "total": 11
+    },
+    "codigo": "est-ana",
+    "nivel_actual": {
+      "numero": 2,
+      "titulo": "Nivel 2 de prueba"
+    },
+    "nombre": "Ana"
+  }
+}

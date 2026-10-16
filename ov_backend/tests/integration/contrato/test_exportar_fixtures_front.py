@@ -23,6 +23,8 @@ from app.schemas.tematicas import AvanceTematica
 from app.schemas.catalogo import (
     CarreraDetalle, CarreraResumen, InstitucionDetalle, InstitucionResumen, OcupacionDetalle, OcupacionResumen,
 )
+from app.schemas.conversaciones import ConversacionesCuenta
+from app.schemas.familia import FamiliaApoderado
 from app.schemas.favoritos import FavoritosCuenta
 from app.schemas.planes import PlanesCuenta
 from app.schemas.testimonios import TestimonioEstado
@@ -54,7 +56,9 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'editar-entrada', 'diario-entradas', 'diario-amistad', 'check-ins', 'tematicas',
     'crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
     'medidores-plan', 'referencias-t-comparar', 'guardar-seccion-pasos', 'paso-hecho', 'referencias-t-proyecto',
-    'planes',
+    'planes', 'familia', 'familia-resultados', 'conversaciones-sin-carta', 'escribir-carta-est-ana',
+    'escribir-carta-apo-rosa', 'responder-conversacion', 'conversaciones-te-toca', 'conversaciones-por-conversar',
+    'completar-conversacion', 'conversaciones-final',
 )}
 
 
@@ -279,6 +283,24 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert [o.codigo for o in comparar.opciones] == ['psychology', 'journalism']
     proyecto = {r.tipo: r for r in ReferenciasConsultadas.model_validate(datos['referencias-t-proyecto']).referencias}
     assert proyecto['PLAN'].cita.startswith('DATO DE PRUEBA') and proyecto['OPCION_INICIAL'].texto == 'Psicología'
+    # B12: ruta del apoderado, resultados del hijo, conversaciones y cartas.
+    familia = FamiliaApoderado.model_validate(datos['familia'])
+    assert familia.diploma.obtenido and familia.avance.porcentaje == 100.0 and familia.estudiante.codigo == 'est-ana'
+    assert [r['instrumento'] for r in datos['familia-resultados']] == ['TEST-RIASEC']
+    assert ConversacionesCuenta.model_validate(datos['conversaciones-sin-carta']).carta_pendiente
+    assert {d['regla'] for d in datos['escribir-carta-est-ana']['nuevos_desbloqueos']} == {'R-t-conv-1'}
+    RespuestaAccion.model_validate(datos['responder-conversacion'])
+    te_toca = ConversacionesCuenta.model_validate(datos['conversaciones-te-toca'])
+    assert [(c.codigo, c.estado, c.respuesta_otro) for c in te_toca.conversaciones] == [
+        ('t-conv-1', 'te_toca', None), ('t-conv-2', 'sin_responder', None)]
+    por_conversar, = ConversacionesCuenta.model_validate(datos['conversaciones-por-conversar']).conversaciones
+    assert por_conversar.estado == 'por_conversar' and por_conversar.preguntas_guia
+    marca = datos['completar-conversacion']['por_cuenta']
+    assert [e['tipo'] for e in marca['est-ana']['eventos_registrados']] == ['COMPLETA_CONVERSACION']
+    assert marca['apo-rosa']['eventos_registrados'] == []
+    final = ConversacionesCuenta.model_validate(datos['conversaciones-final'])
+    assert (final.completadas, final.total, final.carta_recibida) == (2, 2, 'DATO DE PRUEBA: carta de apo-rosa.')
+    assert {c.estado for c in final.conversaciones} == {'conversada'}
     # Regenera sobre archivos existentes sin tocar otros archivos del destino.
     conservar = destino / 'ruta' / 'conservar.txt'
     conservar.write_text('Conservar', encoding='utf-8')

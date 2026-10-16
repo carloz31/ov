@@ -2,6 +2,18 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-15 · B12 · Familia: conversaciones, cartas y ruta del apoderado
+
+- **Dato:**
+  - `GET /cuentas/{c}/conversaciones` (estudiante y apoderado): `carta_pendiente`, `completadas`, `total`, `carta_propia`, `carta_recibida` (solo con todas conversadas) y, por conversación disponible, `codigo`, `titulo`, `pregunta` de su rol, `estado` (`sin_responder`, `esperando_al_otro`, `te_toca`, `por_conversar`, `conversada`), `mi_respuesta`, `conversada_en` y, con las dos respuestas, `respuesta_otro`, `preguntas_guia` y `mensaje_diferencias`;
+  - `POST /acciones/responder-conversacion` (nueva) y `completar-conversacion` (exige las dos respuestas; el evento va solo al estudiante); `escribir-carta` exige ahora la sección de cada rol y se cierra al entregarse;
+  - `GET /cuentas/{c}/familia` (apoderado): `avance`, `diploma {obtenido, obtenido_en}` y `estudiante {codigo, nombre, avance, nivel_actual}`;
+  - `GET /cuentas/{c}/familia/resultados` (apoderado con su ruta completa): resultados vigentes del hijo en los cuestionarios visibles al apoderado.
+- **Dónde se mostraría:** sección Familia del estudiante (carta y conversaciones), portal del apoderado (conversaciones, carta, diploma, avance y resultados del hijo). Hoy el diploma del apoderado se calcula en el front con el estado remoto de sus actividades.
+- **Opciones:** conectar familia en su lote F con estas consultas; mientras tanto, el portal del apoderado sigue con sus actividades y su diploma actuales.
+- **Si no se muestra:** en modo `api` las conversaciones, las cartas y los resultados visibles al apoderado existen solo en el servidor. El aviso al apoderado cuando el hijo habilita una conversación (HU-067) queda fuera de B12.
+- **Estado:** pendiente del lote F de familia; no se toca la interfaz en B12.
+
 ## 2026-10-15 · B11 · Planes de carrera
 
 - **Dato:**

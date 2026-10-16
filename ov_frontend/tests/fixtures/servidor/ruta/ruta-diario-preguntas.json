@@ -14,5 +14,13 @@
     "personalizada": true,
     "redactada": false,
     "respondida": false
+  },
+  {
+    "codigo": "t-diario-tras-conversar",
+    "estado": "BLOQUEADA",
+    "nombre": "Lo que conversamos",
+    "personalizada": false,
+    "redactada": false,
+    "respondida": false
   }
 ]

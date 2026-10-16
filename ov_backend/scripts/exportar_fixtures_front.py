@@ -240,6 +240,30 @@ def _recorrer_apoderado(cliente):
         _completar(cliente, actividad, 'apo-rosa')
     fixtures['apoderado-actividades-final'] = _pedir(cliente, 'GET', ruta)
     fixtures['apoderado-secciones-final'] = _pedir(cliente, 'GET', secciones)
+    # B12: avance, diploma e hijo; resultados visibles del hijo; conversaciones y cartas hasta la entrega.
+    fixtures['familia'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')
+    fixtures['familia-resultados'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados')
+    fixtures['conversaciones-sin-carta'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')
+    for cuenta in ('est-ana', 'apo-rosa'):
+        fixtures[f'escribir-carta-{cuenta}'] = _pedir(cliente, 'POST', '/acciones/escribir-carta', {
+            'cuenta': cuenta, 'texto': f'DATO DE PRUEBA: carta de {cuenta}.', 'fecha_hora': FECHA})
+    conversacion = {'conversacion': 't-conv-1', 'fecha_hora': FECHA}
+    fixtures['responder-conversacion'] = _pedir(cliente, 'POST', '/acciones/responder-conversacion', {
+        **conversacion, 'cuenta': 'est-ana', 'texto': 'DATO DE PRUEBA: quiero estudiar psicología.'})
+    fixtures['conversaciones-te-toca'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')
+    _pedir(cliente, 'POST', '/acciones/responder-conversacion', {
+        **conversacion, 'cuenta': 'apo-rosa', 'texto': 'DATO DE PRUEBA: que elija lo que le guste.'})
+    fixtures['conversaciones-por-conversar'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
+    fixtures['completar-conversacion'] = _pedir(cliente, 'POST', '/acciones/completar-conversacion', {
+        **conversacion, 'cuenta': 'apo-rosa'})
+    # t-contraste habilita al estudiante la segunda conversación.
+    _responder_registro(cliente, 't-contraste')
+    conversacion['conversacion'] = 't-conv-2'
+    for cuenta in ('est-ana', 'apo-rosa'):
+        _pedir(cliente, 'POST', '/acciones/responder-conversacion', {
+            **conversacion, 'cuenta': cuenta, 'texto': 'DATO DE PRUEBA: lo que dijo el resultado.'})
+    _pedir(cliente, 'POST', '/acciones/completar-conversacion', {**conversacion, 'cuenta': 'est-ana'})
+    fixtures['conversaciones-final'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
     return fixtures
 
 

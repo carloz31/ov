@@ -2,7 +2,8 @@
 
 B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010; B03, las HU 007
 y 016; B07, la HU 094; B08, las HU 017, 041 y 051 a 056; B09, las HU 028 a 033, 035, 036 y 075; B11, las HU 043
-a 048, 050, 097 a 099, 109 y 110. Cada lote extiende este recorrido con su tramo.
+a 048, 050, 097 a 099, 109 y 110; B12, las HU 066, 068 a 071 y 078 a 080. Cada lote extiende este recorrido con
+su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
@@ -462,3 +463,56 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
     responder_registro(cliente, 't-proyecto')
     assert any(e['tipo'] == 'COMPLETA_BLOQUE' and e['referencia'] == 'T2' for e in eventos(cliente))
     assert pedir(cliente, 'GET', planes)['opcion_inicial']['codigo'] == 'psychology'
+
+
+def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):
+    # B12: la ruta del apoderado da su diploma; las cartas habilitan las conversaciones de cada uno.
+    avanzar(cliente)
+    for actividad in ('t-apo-1', 't-apo-carta'):
+        completar(cliente, actividad, 'apo-rosa')
+    familia = pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')
+    assert familia['diploma']['obtenido'] is True and familia['avance']['porcentaje'] == 100.0
+    assert familia['estudiante']['codigo'] == 'est-ana' and familia['estudiante']['avance']['completadas'] == 4
+    assert pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados') == []
+    assert pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')['carta_pendiente'] is True
+
+    def carta(cuenta):
+        return pedir(cliente, 'POST', '/acciones/escribir-carta',
+                     {'cuenta': cuenta, 'texto': f'DATO DE PRUEBA: carta de {cuenta}.', 'fecha_hora': FECHA})
+
+    def responder_conversacion(cuenta, conversacion):
+        return pedir(cliente, 'POST', '/acciones/responder-conversacion', {
+            'cuenta': cuenta, 'conversacion': conversacion, 'texto': 'DATO DE PRUEBA: mi respuesta.',
+            'fecha_hora': FECHA})
+
+    def marcar(cuenta, conversacion):
+        return pedir(cliente, 'POST', '/acciones/completar-conversacion',
+                     {'cuenta': cuenta, 'conversacion': conversacion, 'fecha_hora': FECHA})
+
+    def vista(cuenta):
+        return pedir(cliente, 'GET', f'/cuentas/{cuenta}/conversaciones')
+
+    assert reglas(carta('est-ana')) == {'R-t-conv-1'}
+    carta('apo-rosa')
+    assert [c['codigo'] for c in vista('est-ana')['conversaciones']] == ['t-conv-1']
+    assert [c['estado'] for c in vista('apo-rosa')['conversaciones']] == ['sin_responder', 'sin_responder']
+    responder_conversacion('apo-rosa', 't-conv-2')
+    responder_conversacion('est-ana', 't-conv-1')
+    assert [c['estado'] for c in vista('apo-rosa')['conversaciones']] == ['te_toca', 'esperando_al_otro']
+    responder_conversacion('apo-rosa', 't-conv-1')
+    respuesta = marcar('apo-rosa', 't-conv-1')['por_cuenta']['est-ana']
+    assert [e['codigo'] for e in respuesta['entradas_desbloqueadas']] == ['t-diario-tras-conversar']
+    assert vista('est-ana')['carta_recibida'] is None
+    # Revelar el RIASEC y contrastarlo habilita la segunda; el hijo responde la que su madre ya respondió.
+    for actividad in (INTERESES, INTERESES_FINAL):
+        responder(cliente, actividad)
+        completar(cliente, actividad)
+    revelar(cliente)
+    responder_registro(cliente, 't-contraste')
+    assert vista('est-ana')['conversaciones'][1]['estado'] == 'te_toca'
+    responder_conversacion('est-ana', 't-conv-2')
+    marcar('est-ana', 't-conv-2')
+    final = vista('est-ana')
+    assert (final['completadas'], final['carta_recibida']) == (2, 'DATO DE PRUEBA: carta de apo-rosa.')
+    assert vista('apo-rosa')['carta_recibida'] == 'DATO DE PRUEBA: carta de est-ana.'
+    assert [r['instrumento'] for r in pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados')] == ['TEST-RIASEC']

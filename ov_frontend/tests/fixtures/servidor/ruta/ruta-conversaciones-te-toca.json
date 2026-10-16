@@ -1,0 +1,31 @@
+{
+  "carta_pendiente": false,
+  "carta_propia": "DATO DE PRUEBA: carta de apo-rosa.",
+  "carta_recibida": null,
+  "completadas": 0,
+  "conversaciones": [
+    {
+      "codigo": "t-conv-1",
+      "conversada_en": null,
+      "estado": "te_toca",
+      "mensaje_diferencias": null,
+      "mi_respuesta": null,
+      "pregunta": "¿Qué espera usted del futuro de su hijo después del colegio?",
+      "preguntas_guia": null,
+      "respuesta_otro": null,
+      "titulo": "Primera conversación"
+    },
+    {
+      "codigo": "t-conv-2",
+      "conversada_en": null,
+      "estado": "sin_responder",
+      "mensaje_diferencias": null,
+      "mi_respuesta": null,
+      "pregunta": "¿Qué te dijo tu resultado de intereses sobre ti?",
+      "preguntas_guia": null,
+      "respuesta_otro": null,
+      "titulo": "Segunda conversación"
+    }
+  ],
+  "total": 2
+}

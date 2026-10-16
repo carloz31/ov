@@ -1,0 +1,37 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "VIN-ANA",
+      "tipo": "ESCRIBE_CARTA"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": null,
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "ESCRIBE_CARTA"
+        },
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-expectativas",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-conv-1",
+        "nombre": "Primera conversación"
+      },
+      "regla": "R-t-conv-1",
+      "tipo_objetivo": "CONVERSACION"
+    }
+  ]
+}
