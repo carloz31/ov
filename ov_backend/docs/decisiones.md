@@ -10,3 +10,6 @@
 - **Dominio `conversaciones`:** cartas, respuestas, marca y consulta pasan de `services/comunidad.py` y `api/acciones.py` a `services/conversaciones.py` y `api/conversaciones.py`, con sus esquemas; las rutas no cambian.
 - **Pruebas adaptadas (autorizadas por la spec):** la de acciones compartidas (`test_r33`) responde ambos antes de marcar y espera el evento solo en el estudiante; la de carta por cuenta abre antes la ruta del apoderado; la de sección del apoderado comprueba ahora que su carta exige CONVERSACIONES.
 - **Texto vacío** en `responder-conversacion`: 422 (también solo espacios). La carta conserva su validación anterior.
+- **Avance de una ruta:** requeridas completadas de los bloques de la audiencia de la cuenta (para el estudiante incluye la Ciudad). Se reutilizará en B14.
+- **Diploma:** todos los bloques de la audiencia con COMPLETA_BLOQUE; su fecha es la del último. «Ruta completa» para ver resultados del hijo es tener el diploma.
+- **Resultados del hijo:** `GET /cuentas/{c}/familia/resultados`, lista de `ResultadoPublico` (la forma del estudiante) por instrumento y aplicación; un visible sin resultado revelado no aparece.

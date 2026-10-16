@@ -197,3 +197,12 @@ Conversaciones guiadas entre el estudiante y su apoderado, con una carta de cada
 - **Marcar** (`completar-conversacion`): cualquiera de los dos, solo con ambas respuestas (si no, 409). Basta una marca (`conversada_en`, `conversada_por`); marcar de nuevo no cambia nada. COMPLETA_CONVERSACION va solo al estudiante y le abre su pregunta del diario.
 - **Estado** para quien consulta: `sin_responder`, `esperando_al_otro` (solo yo respondí; también si el hijo aún no la habilitó), `te_toca`, `por_conversar` o `conversada`. La respuesta del otro, las `preguntas_guia` y el `mensaje_diferencias` se ven solo con las dos respuestas.
 - **Pregunta:** cada rol ve la suya; con `pregunta_apoderado` nula, el apoderado responde la del estudiante.
+
+## Ruta del apoderado
+
+Código: `app/services/familia.py`. Solo para cuentas APODERADO; otras, 404.
+
+- **Avance** (`avance_ruta`, común a ambos roles): actividades requeridas COMPLETADAS sobre las requeridas de los bloques de la audiencia de la cuenta; las opcionales no cuentan.
+- **Diploma:** se obtiene al completar todos los bloques de su audiencia (COMPLETA_BLOQUE de cada uno); `obtenido_en` es la fecha del último.
+- **Hijo:** el estudiante del vínculo activo, con su avance y su nivel actual.
+- **Resultados del hijo:** solo con el diploma (si no, 409) y vínculo activo (si no, 409); los resultados vigentes del hijo en los cuestionarios que `salon_instrumento` marca `visible_apoderado` en su salón, con la misma forma que la consulta de resultado del estudiante.
