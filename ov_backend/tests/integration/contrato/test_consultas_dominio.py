@@ -95,8 +95,10 @@ def esperado(ruta, completo):
         if not completo:
             return MENSAJES['DIARIO']
         # B09: el recorrido abre las dos desbloqueables; la personalizada queda por redactar hasta abrirla.
-        return [{'codigo': codigo, 'nombre': nombre, 'estado': 'DISPONIBLE', 'personalizada': personalizada,
-                 'redactada': not personalizada, 'respondida': False}
+        # B12: la de después de conversar sigue bloqueada.
+        return [{'codigo': codigo, 'nombre': nombre, 'personalizada': personalizada, 'respondida': False,
+                 **({'estado': 'BLOQUEADA', 'redactada': False} if codigo == 't-diario-tras-conversar'
+                    else {'estado': 'DISPONIBLE', 'redactada': not personalizada})}
                 for codigo, nombre, _, uso, personalizada, _ in sorted(PREGUNTAS_DIARIO) if uso == 'DESBLOQUEABLE']
     return []
 

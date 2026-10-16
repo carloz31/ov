@@ -13,7 +13,9 @@ def llenar_estado(aplicacion):
         cuenta = sesion.scalar(select(modelos.Cuenta).where(modelos.Cuenta.codigo == 'est-ana'))
         actividad = sesion.scalar(select(modelos.Actividad).where(modelos.Actividad.codigo == 't-inicio'))
         vinculo = sesion.scalar(select(modelos.VinculoFamiliar))
-        conversacion = modelos.Conversacion(codigo='conv-prueba', titulo='DATO DE PRUEBA', tema='DATO DE PRUEBA')
+        conversacion = modelos.Conversacion(codigo='conv-prueba', orden=99, titulo='DATO DE PRUEBA',
+                                            pregunta_estudiante='DATO DE PRUEBA', preguntas_guia=[],
+                                            mensaje_diferencias='DATO DE PRUEBA')
         sesion.add(conversacion)
         sesion.flush()
         regla = sesion.scalar(select(modelos.ReglaDesbloqueo))
@@ -49,7 +51,7 @@ def llenar_estado(aplicacion):
                                   origen='FIJA', fecha=fecha.date(), creada_en=fecha),
             modelos.CheckIn(cuenta_id=cuenta.id, fecha=fecha.date(), nivel_seguridad=3),
             modelos.EntrevistaAutor(entrevista_id=entrevista.id, cuenta_id=cuenta.id),
-            modelos.ConversacionVinculo(vinculo_id=vinculo.id, conversacion_id=conversacion.id, conversado=True),
+            modelos.ConversacionVinculo(vinculo_id=vinculo.id, conversacion_id=conversacion.id, conversada_en=fecha),
             modelos.EventoUso(cuenta_id=cuenta.id, tipo='INGRESO', fecha_hora=fecha),
             modelos.Desbloqueo(cuenta_id=cuenta.id, regla_id=regla.id, fecha_hora=fecha),
             modelos.RespuestaItem(progreso_id=progreso.id, item_id=item.id, opcion_id=opcion.id, creada_en=fecha, actualizada_en=fecha),

@@ -46,7 +46,9 @@ def test_r38_integridad_catalogos_relaciones_respuestas_y_defaults(cliente, apli
                 sesion.add(m.Ocupacion(codigo=ocupacion.codigo, codigo_onet='PRUEBA-UNICO', titulo='DATO DE PRUEBA'))
                 sesion.flush()
         assert len(list(sesion.scalars(select(m.Ocupacion).where(m.Ocupacion.codigo.is_(None))))) == 2
-        conversacion = m.Conversacion(codigo='conv-default', titulo='DATO DE PRUEBA', tema='DATO DE PRUEBA')
+        conversacion = m.Conversacion(codigo='conv-default', orden=98, titulo='DATO DE PRUEBA',
+                                      pregunta_estudiante='DATO DE PRUEBA', preguntas_guia=[],
+                                      mensaje_diferencias='DATO DE PRUEBA')
         sesion.add(conversacion)
         sesion.flush()
         vinculo = sesion.scalar(select(m.VinculoFamiliar))
@@ -55,7 +57,7 @@ def test_r38_integridad_catalogos_relaciones_respuestas_y_defaults(cliente, apli
             regla_id=sesion.scalar(select(m.ReglaDesbloqueo.id)), fecha_hora=FECHA_BD)
         sesion.add_all([registro, desbloqueo])
         sesion.flush()
-        assert registro.conversado is False and registro.conversado_en is None
+        assert registro.conversada_en is None and registro.respuesta_estudiante is None
         assert desbloqueo.visto is False and item.inverso is False
         assert sesion.scalar(select(m.Actividad)).visibilidad == 'SIEMPRE'
     inspector = inspect(aplicacion.state.motor_bd)

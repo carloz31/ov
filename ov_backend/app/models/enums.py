@@ -117,6 +117,7 @@ class TipoObjetivo(StrEnum):
     INSIGNIA = "INSIGNIA"
     NIVEL = "NIVEL"
     SECCION_PLAN = "SECCION_PLAN"
+    CONVERSACION = "CONVERSACION"
 
 
 class TipoConteo(StrEnum):

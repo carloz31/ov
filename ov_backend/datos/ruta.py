@@ -31,7 +31,7 @@ VINCULOS = (('VIN-ANA', 'est-ana', 'apo-rosa', 'madre'),)
 # Configuración del salón (B07; la orientadora la editará en B14). (salón, instrumento, prioritario, visible al
 # apoderado): un cuestionario prioritario es requisito de T2. El de partida y llegada (COMPARACION) es obligatorio
 # por diseño y no admite la marca de prioritario.
-SALON_INSTRUMENTOS = (('5A', 'TEST-RIASEC', True, False),)
+SALON_INSTRUMENTOS = (('5A', 'TEST-RIASEC', True, True),)
 # (salón, actividad de registro): registros que la orientadora ve destacados en el perfil.
 SALON_ACTIVIDADES_PRIORITARIAS = (('5A', 't-expectativas'),)
 
@@ -245,9 +245,17 @@ TESTIMONIOS = (('t-testimonio-1', 'Testimonio de prueba 1', 'Trayectoria de prue
                 'Resuelve el caso de prueba para conocer este testimonio.'),
                ('t-testimonio-2', 'Testimonio de prueba 2', 'Trayectoria de prueba 2.', 'https://example.test/t2', None))
 
-# (código, título, tema)
-CONVERSACIONES = (('t-conv-1', 'Primera conversación', 'Tema de prueba 1.'),
-                  ('t-conv-2', 'Segunda conversación', 'Tema de prueba 2.'))
+# (código, orden, título, pregunta del estudiante, pregunta del apoderado (None: la misma), preguntas guía,
+# mensaje de diferencias). El estudiante las habilita con reglas CONVERSACION; el apoderado, todas tras su carta.
+CONVERSACIONES = (
+    ('t-conv-1', 1, 'Primera conversación', '¿Qué esperas tú de tu futuro después del colegio?',
+     '¿Qué espera usted del futuro de su hijo después del colegio?',
+     ('¿En qué coinciden sus respuestas?', '¿Qué les sorprendió de la respuesta del otro?'),
+     'Si sus respuestas son distintas, conversen sobre qué hay detrás de cada una.'),
+    ('t-conv-2', 2, 'Segunda conversación', '¿Qué te dijo tu resultado de intereses sobre ti?', None,
+     ('¿Qué parte del resultado les pareció más acertada?',),
+     'Si ven el resultado de forma distinta, cuenten un ejemplo que lo explique.'),
+)
 
 # (código, nombre, descripción, requisito, oculta)
 INSIGNIAS = (('t-ins-1', 'Insignia de prueba', 'Completaste t-inicio.', 'Completa t-inicio.', False),
@@ -271,6 +279,8 @@ PREGUNTAS_DIARIO = (
     ('t-diario-fija', 'Mi primer paso', '¿Qué te gustaría descubrir de ti en este camino?', 'DESBLOQUEABLE', False, None),
     ('t-diario-personal', 'Lo que espero', '¿Cómo te sientes con lo que esperas de este camino?', 'DESBLOQUEABLE',
      True, None),
+    ('t-diario-tras-conversar', 'Lo que conversamos', '¿Qué te llevas de la conversación con tu familia?',
+     'DESBLOQUEABLE', False, None),
     ('t-dia-claridad-1', 'Lo que tengo claro', '¿Qué tienes hoy un poco más claro que ayer?', 'DIARIA', False, 'AUTO-A'),
     ('t-dia-claridad-2', 'Una duda', '¿Qué duda te gustaría resolver esta semana?', 'DIARIA', False, 'AUTO-A'),
     ('t-dia-mi-1', 'Algo de mí', '¿Qué hiciste hoy que disfrutaste de verdad?', 'DIARIA', False, 'AUTO-B'),
@@ -344,6 +354,13 @@ REGLAS = (
     ('R-t-diario-personal', 'PREGUNTA_DIARIO', 't-diario-personal',
      'Completa el registro de expectativas para recibir esta pregunta.',
      (('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1),)),
+    # B12: la carta del estudiante y una actividad habilitan cada conversación; conversada, da una pregunta del diario.
+    ('R-t-conv-1', 'CONVERSACION', 't-conv-1', 'Escribe tu carta y completa el registro de expectativas para conversar.',
+     (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1))),
+    ('R-t-conv-2', 'CONVERSACION', 't-conv-2', 'Escribe tu carta y contrasta tu resultado de intereses para conversar.',
+     (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 't-contraste', 'EVENTOS', 1))),
+    ('R-t-diario-tras-conversar', 'PREGUNTA_DIARIO', 't-diario-tras-conversar',
+     'Conversa en familia para recibir esta pregunta.', (('COMPLETA_CONVERSACION', 't-conv-1', 'EVENTOS', 1),)),
     ('R-SEC-CONVERSACIONES', 'SECCION', 'CONVERSACIONES', 'Completa tus actividades para conversar en familia.',
      (('COMPLETA_BLOQUE', 'FAMILIA', 'EVENTOS', 1),)),
     # B11: las secciones de la tarjeta de carrera se abren a medida que avanza el camino.
@@ -395,12 +412,14 @@ def _cargar_estructura(sesion):
               for c, t, texto, a in FICHAS}
     testimonios = {c: modelos.Testimonio(codigo=c, titulo=t, descripcion=d, enlace=e, pista=p)
                    for c, t, d, e, p in TESTIMONIOS}
-    conversaciones = [modelos.Conversacion(codigo=c, titulo=t, tema=tema) for c, t, tema in CONVERSACIONES]
+    conversaciones = {c: modelos.Conversacion(codigo=c, orden=o, titulo=t, pregunta_estudiante=pe,
+                                             pregunta_apoderado=pa, preguntas_guia=list(guia), mensaje_diferencias=m)
+                      for c, o, t, pe, pa, guia, m in CONVERSACIONES}
     insignias = {c: modelos.Insignia(codigo=c, nombre=n, descripcion=d, requisito=r, es_oculta=o,
                                    audiencia=modelos.Audiencia.ESTUDIANTE) for c, n, d, r, o in INSIGNIAS}
     niveles = {num: modelos.Nivel(numero=num, titulo=t) for num, t in NIVELES}
     preguntas = _preguntas_diario(sesion)
-    sesion.add_all([*cuentas.values(), *bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones,
+    sesion.add_all([*cuentas.values(), *bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones.values(),
                     *insignias.values(), *niveles.values(), *preguntas.values()])
     sesion.flush()
     sesion.add_all(modelos.VinculoFamiliar(codigo=c, estudiante_id=cuentas[e].id, apoderado_id=cuentas[a].id,
@@ -421,6 +440,7 @@ def _cargar_estructura(sesion):
     sesion.add_all(actividades.values())
     sesion.flush()
     return {'BLOQUE': bloques, 'ACTIVIDAD': actividades, 'FICHA': fichas, 'TESTIMONIO': testimonios,
+            'CONVERSACION': conversaciones,
             'INSIGNIA': insignias, 'NIVEL': niveles, 'PREGUNTA_DIARIO': preguntas, 'SALON': salones}
 
 
@@ -629,7 +649,8 @@ def _cargar_salones(sesion, salones, actividades):
 def _cargar_reglas(sesion, objetivos):
     referencias = {'COMPLETA_ACTIVIDAD': objetivos['ACTIVIDAD'], 'COMPLETA_BLOQUE': objetivos['BLOQUE'],
                    'REGISTRO_ADECUADO': objetivos['ACTIVIDAD'], 'REVELA_RESULTADO': objetivos['APLICACION'],
-                   'SUPERA_CASO': objetivos['ACTIVIDAD'], 'SUPERA_BATALLA': objetivos['ACTIVIDAD']}
+                   'SUPERA_CASO': objetivos['ACTIVIDAD'], 'SUPERA_BATALLA': objetivos['ACTIVIDAD'],
+                   'COMPLETA_CONVERSACION': objetivos['CONVERSACION']}
     reglas = []
     for codigo, tipo, objetivo, mensaje, condiciones in REGLAS:
         if not mensaje.strip():

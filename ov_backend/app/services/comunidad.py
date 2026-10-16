@@ -79,14 +79,14 @@ def completar_conversacion(sesion: Session, entrada: CompletarConversacionEntrad
     registro = sesion.scalar(select(ConversacionVinculo).where(
         ConversacionVinculo.vinculo_id == vinculo.id, ConversacionVinculo.conversacion_id == conversacion.id,
     ))
-    primera = registro is None or not registro.conversado
+    primera = registro is None or registro.conversada_en is None
     fecha = fecha_accion(entrada)
     if primera:
         if registro is None:
             registro = ConversacionVinculo(vinculo_id=vinculo.id, conversacion_id=conversacion.id)
             sesion.add(registro)
-        registro.conversado = True
-        registro.conversado_en = fecha
+        registro.conversada_en = fecha
+        registro.conversada_por = cuenta.id
     if primera:
         contexto(sesion).cargar_conteos(ids_cuentas)
     eventos_por_cuenta = {

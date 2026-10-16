@@ -85,7 +85,8 @@ def agregar_ocupaciones(sesion, extra):
 
 
 def preparar_conversacion(sesion):
-    sesion.add(m.Conversacion(codigo='conv-prueba', titulo='DATO DE PRUEBA', tema='DATO DE PRUEBA'))
+    sesion.add(m.Conversacion(codigo='conv-prueba', orden=99, titulo='DATO DE PRUEBA', pregunta_estudiante='DATO DE PRUEBA',
+                              preguntas_guia=[], mensaje_diferencias='DATO DE PRUEBA'))
 
 
 def agregar_autores(sesion, cantidad, autores):
@@ -104,7 +105,8 @@ def preparar_casos(sesion):
 
 def preparar_validacion(sesion):
     instrumento_minimo(sesion)
-    sesion.add(m.Conversacion(codigo='conv-prueba', titulo='DATO DE PRUEBA', tema='DATO DE PRUEBA'))
+    sesion.add(m.Conversacion(codigo='conv-prueba', orden=99, titulo='DATO DE PRUEBA', pregunta_estudiante='DATO DE PRUEBA',
+                              preguntas_guia=[], mensaje_diferencias='DATO DE PRUEBA'))
 
 
 def insignia_por_evento(sesion, codigo, evento):

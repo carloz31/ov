@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, ForeignKey, Text, false, text, true
+from sqlalchemy import JSON, CheckConstraint, ForeignKey, Text, false, text, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, busqueda_de, enumerado
@@ -115,8 +115,13 @@ class Conversacion(Base):
     __tablename__ = "conversacion"
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
+    orden: Mapped[int] = mapped_column(unique=True)
     titulo: Mapped[str]
-    tema: Mapped[str] = mapped_column(Text)
+    pregunta_estudiante: Mapped[str] = mapped_column(Text)
+    # Nula: el apoderado responde la misma pregunta que el estudiante.
+    pregunta_apoderado: Mapped[str | None] = mapped_column(Text)
+    preguntas_guia: Mapped[list[str]] = mapped_column(JSON)
+    mensaje_diferencias: Mapped[str] = mapped_column(Text)
 
 
 class Insignia(Base):

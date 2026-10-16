@@ -47,7 +47,7 @@ def test_tematicas_y_prioritarios_cargados(sesion):
                                           m.SalonInstrumento.visible_apoderado).select_from(m.SalonInstrumento).join(
         m.Salon, m.Salon.id == m.SalonInstrumento.salon_id).join(
         m.Instrumento, m.Instrumento.id == m.SalonInstrumento.instrumento_id)).all()
-    assert configuracion == [('5A', 'TEST-RIASEC', True, False)]
+    assert configuracion == [('5A', 'TEST-RIASEC', True, True)]
     assert sesion.execute(select(m.Salon.codigo, m.Actividad.codigo).select_from(m.SalonActividadPrioritaria).join(
         m.Salon, m.Salon.id == m.SalonActividadPrioritaria.salon_id).join(
         m.Actividad, m.Actividad.id == m.SalonActividadPrioritaria.actividad_id)).all() == [('5A', 't-expectativas')]

@@ -36,7 +36,7 @@ def test_la_fija_llega_con_texto_en_la_respuesta_de_completar_y_se_responde_una_
                        'titulo_mostrado': '¿Qué te gustaría descubrir de ti en este camino?',
                        'pregunta': '¿Qué te gustaría descubrir de ti en este camino?',
                        'texto': 'Quiero saber qué me gusta.', 'fecha_hora': FECHA, 'actualizada_en': None}
-    [fija, _] = pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')
+    [fija, *_] = pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')
     assert fija['respondida'] is True
 
 

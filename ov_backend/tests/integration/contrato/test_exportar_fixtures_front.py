@@ -223,7 +223,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
             [i.codigo for i in favoritos.instituciones]) == (['civil-engineering'], ['geologist'], ['t-uni'])
     # B09: diario, check-ins y temáticas.
     preguntas = TypeAdapter(list[PreguntaDiarioEstado]).validate_python(datos['diario-preguntas'])
-    assert [(p.codigo, p.redactada) for p in preguntas] == [('t-diario-fija', True), ('t-diario-personal', False)]
+    assert [(p.codigo, p.redactada) for p in preguntas] == [('t-diario-fija', True), ('t-diario-personal', False),
+                                                            ('t-diario-tras-conversar', False)]
     assert datos['entregar-t-expectativas']['entradas_desbloqueadas'][0]['texto'] is None
     assert PreguntaAbierta.model_validate(datos['abrir-pregunta-personal']).texto.startswith('Sobre «')
     PreguntaDelDia.model_validate(datos['pregunta-del-dia'])

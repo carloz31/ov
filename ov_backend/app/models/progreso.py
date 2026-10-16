@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 from sqlalchemy import (
-    JSON, CheckConstraint, Date, DateTime, ForeignKey, Index, Text, UniqueConstraint, false, text,
+    JSON, CheckConstraint, Date, DateTime, ForeignKey, Index, Text, UniqueConstraint, text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -147,8 +147,13 @@ class ConversacionVinculo(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     vinculo_id: Mapped[int] = mapped_column(ForeignKey("vinculo_familiar.id"))
     conversacion_id: Mapped[int] = mapped_column(ForeignKey("conversacion.id"))
-    conversado: Mapped[bool] = mapped_column(default=False, server_default=false())
-    conversado_en: Mapped[datetime | None] = mapped_column(DateTime)
+    respuesta_estudiante: Mapped[str | None] = mapped_column(Text)
+    respondida_estudiante_en: Mapped[datetime | None] = mapped_column(DateTime)
+    respuesta_apoderado: Mapped[str | None] = mapped_column(Text)
+    respondida_apoderado_en: Mapped[datetime | None] = mapped_column(DateTime)
+    # Conversada = `conversada_en` no nulo; basta la marca de uno de los dos.
+    conversada_en: Mapped[datetime | None] = mapped_column(DateTime)
+    conversada_por: Mapped[int | None] = mapped_column(ForeignKey("cuenta.id"))
 
 
 class Favorito(Base):

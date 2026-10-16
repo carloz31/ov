@@ -105,7 +105,8 @@ def test_leer_el_diario_bloqueado_responde_409_con_su_mensaje(cliente):
     completar(cliente, 't-inicio')
     # B09: `t-inicio` deja en el diario la pregunta fija; la personalizada sigue bloqueada.
     assert [(p['codigo'], p['estado'], p['redactada']) for p in pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')] == [
-        ('t-diario-fija', 'DISPONIBLE', True), ('t-diario-personal', 'BLOQUEADA', False)]
+        ('t-diario-fija', 'DISPONIBLE', True), ('t-diario-personal', 'BLOQUEADA', False),
+        ('t-diario-tras-conversar', 'BLOQUEADA', False)]
 
 
 def test_presupuesto_de_secciones_no_crece_con_el_catalogo(cliente, aplicacion):

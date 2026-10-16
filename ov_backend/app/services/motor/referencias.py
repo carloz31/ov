@@ -18,6 +18,7 @@ MODELOS_OBJETIVO = {
     TipoObjetivo.FICHA: Ficha, TipoObjetivo.TESTIMONIO: Testimonio,
     TipoObjetivo.PREGUNTA_DIARIO: PreguntaDiario, TipoObjetivo.INSIGNIA: Insignia,
     TipoObjetivo.NIVEL: Nivel, TipoObjetivo.SECCION: Seccion, TipoObjetivo.SECCION_PLAN: SeccionTarjeta,
+    TipoObjetivo.CONVERSACION: Conversacion,
 }
 MODELOS_REFERENCIA = {
     TipoEventoUso.COMPLETA_ACTIVIDAD: Actividad,

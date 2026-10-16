@@ -180,8 +180,10 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
             filas_antes = {nombre: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
                            for nombre, tabla in anteriores.tables.items()
                            # 0005 retira actividad_item_registro; sus filas pasan a item_registro. 0016 cambia
-                           # `pregunta_id` de entrada_diario por `recomendacion_id` (aquí sin filas).
-                           if nombre not in {'alembic_version', 'actividad_item_registro', 'entrada_diario'}}
+                           # `pregunta_id` de entrada_diario por `recomendacion_id` (aquí sin filas). 0018 cambia
+                           # las columnas de las conversaciones (aquí sin filas).
+                           if nombre not in {'alembic_version', 'actividad_item_registro', 'entrada_diario',
+                                             'conversacion', 'conversacion_vinculo'}}
         command.upgrade(configuracion, 'head')
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == (
@@ -285,12 +287,13 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # B08: `ruta` tiene una batalla, así que 0013 se detiene antes de bajar nada.
         # B10: 0015 bajaba (no hay favoritos) y 0014 se detenía por las vistas. B09: 0016 se detiene antes, porque
         # `ruta` tiene una pregunta de diario que lee los favoritos. B11: 0017 se detiene antes, porque `ruta` tiene
-        # reglas que abren las secciones de la tarjeta de carrera.
-        with pytest.raises(RuntimeError, match='hay eventos, reglas o referencias de planes'):
+        # reglas que abren las secciones de la tarjeta de carrera. B12: 0018 se detiene antes, porque `ruta` tiene
+        # reglas que habilitan conversaciones.
+        with pytest.raises(RuntimeError, match='hay reglas o respuestas de conversaciones'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0017'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0018'
             for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]
@@ -494,5 +497,42 @@ def test_migracion_0007_agrega_intentos_e_inicializa_la_marca_reflexiva(tmp_path
             assert 'intento' not in {c['name'] for c in inspect(motor).get_columns('turno_seguimiento')}
             assert conexion.execute(text('SELECT COUNT(*) FROM turno_seguimiento')).scalar() == 2
             assert conexion.execute(text('SELECT COUNT(*) FROM respuesta_registro')).scalar() == 3
+    finally:
+        motor.dispose()
+
+
+def test_migracion_0018_pasa_el_tema_a_pregunta_y_conserva_lo_conversado(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "conversaciones.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    motor = database.crear_motor_bd(url)
+    try:
+        command.upgrade(configuracion, '0017')
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: dos conversaciones de 0017, una ya conversada con fecha y otra sin ella.
+            for sql in (
+                "INSERT INTO cuenta (id, codigo, nombre, rol) VALUES (1, 'E1', 'E', 'ESTUDIANTE'), "
+                "(2, 'A1', 'A', 'APODERADO')",
+                "INSERT INTO vinculo_familiar (id, codigo, estudiante_id, apoderado_id) VALUES (1, 'V1', 1, 2)",
+                "INSERT INTO conversacion (id, codigo, titulo, tema) VALUES (1, 'C1', 'Una', 'Tema 1'), "
+                "(2, 'C2', 'Dos', 'Tema 2')",
+                "INSERT INTO conversacion_vinculo (vinculo_id, conversacion_id, conversado, conversado_en) "
+                "VALUES (1, 1, 1, '2026-10-01 10:00:00'), (1, 2, 1, NULL)",
+            ):
+                conexion.execute(text(sql))
+        command.upgrade(configuracion, '0018')
+        with motor.connect() as conexion:
+            assert conexion.execute(text("SELECT codigo, orden, pregunta_estudiante, pregunta_apoderado, "
+                                         "preguntas_guia FROM conversacion ORDER BY id")).all() == [
+                ('C1', 1, 'Tema 1', None, '[]'), ('C2', 2, 'Tema 2', None, '[]')]
+            fechas = conexion.execute(text("SELECT conversada_en FROM conversacion_vinculo ORDER BY id")).scalars().all()
+            assert fechas[0] == '2026-10-01 10:00:00.000000' or str(fechas[0]).startswith('2026-10-01 10:00:00')
+            assert fechas[1] is not None
+        command.downgrade(configuracion, '0017')
+        with motor.connect() as conexion:
+            assert conexion.execute(text("SELECT tema FROM conversacion ORDER BY id")).scalars().all() == [
+                'Tema 1', 'Tema 2']
+            assert conexion.execute(text("SELECT conversado FROM conversacion_vinculo ORDER BY id")).scalars().all() == [
+                1, 1]
     finally:
         motor.dispose()

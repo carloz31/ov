@@ -7,7 +7,7 @@ Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, 
 | Grupo | Tablas |
 |---|---|
 | Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash`, `activa`), `salon`, `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
-| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` solo en CASO), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado), `pregunta_diario` (ver «Diario»), `conversacion`, `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
+| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` solo en CASO), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado), `pregunta_diario` (ver «Diario»), `conversacion` (`orden`, preguntas de cada rol, `preguntas_guia`, `mensaje_diferencias`; ver «Conversaciones»), `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
 | Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` (cada intento: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo`, las tablas de la tarjeta de carrera y `cuenta.opcion_inicial_id` (B11; ver «Secciones de la tarjeta») |
 | Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo`, `desbloqueo` (único por cuenta y regla; `visto`) |
 
@@ -96,7 +96,7 @@ Un objetivo está disponible para una cuenta si:
 |---|---|
 | BLOQUE, INSIGNIA, FICHA, SECCION | la `audiencia` de su fila |
 | ACTIVIDAD | la de su bloque |
-| TESTIMONIO, PREGUNTA_DIARIO, NIVEL | solo ESTUDIANTE |
+| TESTIMONIO, PREGUNTA_DIARIO, NIVEL, CONVERSACION | solo ESTUDIANTE |
 
 Al desbloquearse un bloque, sus actividades sin regla propia quedan disponibles; las que tienen regla siguen bloqueadas hasta cumplirla. Un objetivo sin reglas está disponible desde el inicio: por eso todo logro que aún no se puede ganar necesita una regla.
 
@@ -106,11 +106,7 @@ Al desbloquearse un bloque, sus actividades sin regla propia quedan disponibles;
 
 **Motivo de bloqueo** (`motivos_bloqueo`, `services/motor/reglas.py`): para un objetivo bloqueado de la audiencia de la cuenta, una entrada por regla (son alternativas) con `regla`, `mensaje` (su `mensaje_bloqueo`), `condiciones_faltantes` (solo las no cumplidas) y, si tiene, `evaluador_especial`. Una actividad con su bloque bloqueado devuelve los motivos del bloque (regla 2). Disponible u otra audiencia: `null`.
 
-**Sujeto de una condición (diseño; se implementa en B12).** Hoy toda condición cuenta eventos de la cuenta evaluada. Para objetivos del apoderado que dependen del progreso del hijo:
-- `CondicionDesbloqueo.sujeto`: PROPIA (por defecto) o ESTUDIANTE_VINCULADO.
-- Al evaluar una regla para un apoderado, las condiciones ESTUDIANTE_VINCULADO cuentan los eventos de los estudiantes de sus vínculos `es_activo` (con varios, basta uno), desde el mismo contexto agrupado por cuenta.
-- Cuando un estudiante registra eventos, `registrar_eventos` evalúa también, para cada apoderado de sus vínculos activos, las reglas de audiencia APODERADO con alguna condición ESTUDIANTE_VINCULADO del tipo registrado. El desbloqueo se guarda en el apoderado en la misma transacción y no aparece en la respuesta del estudiante.
-- El desbloqueo es permanente aunque el vínculo deje de estar activo. No hay sujeto inverso.
+Toda condición cuenta eventos de la cuenta evaluada: ningún objetivo del apoderado depende de eventos del hijo.
 
 **Nivel actual:** el de mayor `numero` disponible. El nivel 1 no tiene reglas. Las reglas de cada nivel repiten las condiciones del anterior, así que el nivel nunca baja ni se salta. Para un apoderado es `null`.
 
