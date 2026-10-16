@@ -2,8 +2,8 @@ from fastapi import APIRouter
 
 from app.dependencies import SesionBD, ejecutar_accion
 from app.schemas.acciones import (
-    AccionCuenta, BorrarEntradaEntrada, CheckInEntrada, CompletarActividadEntrada, CompletarConversacionEntrada,
-    EditarEntradaEntrada, EscribirCartaEntrada, EscribirEntradaEntrada, EventoEntrada, PublicarEntrevistaEntrada,
+    AccionCuenta, BorrarEntradaEntrada, CheckInEntrada, CompletarActividadEntrada,
+    EditarEntradaEntrada, EscribirEntradaEntrada, EventoEntrada, PublicarEntrevistaEntrada,
     ReiniciarInstrumentoEntrada, ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
     ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados, RespuestaResolverCaso,
     RespuestaReiniciarInstrumento, RespuestaRevelarResultado, RevelarResultadoEntrada, VerCarreraEntrada,
@@ -100,15 +100,6 @@ def ver_institucion(entrada: VerInstitucionEntrada, sesion: SesionBD):
 def publicar_entrevista(entrada: PublicarEntrevistaEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_comunidad.publicar_entrevista(sesion, entrada))
 
-
-@router.post("/acciones/escribir-carta", response_model=RespuestaAccion, response_model_exclude_unset=True)
-def escribir_carta(entrada: EscribirCartaEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: servicio_comunidad.escribir_carta(sesion, entrada))
-
-
-@router.post("/acciones/completar-conversacion", response_model=RespuestaAgrupada, response_model_exclude_unset=True)
-def completar_conversacion(entrada: CompletarConversacionEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: servicio_comunidad.completar_conversacion(sesion, entrada))
 
 
 @router.post("/eventos", response_model=RespuestaAccion, response_model_exclude_unset=True, tags=["Depuración"])

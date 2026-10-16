@@ -15,11 +15,14 @@ def test_r33_conversacion_actor_disponible_repeticion_y_rollback(cliente, aplica
     avanzar(cliente)
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/secciones/CONVERSACIONES')['estado'] == 'BLOQUEADA'
     datos = {'cuenta': 'est-ana', 'conversacion': 'conv-prueba'}
-    # B01: la sección CONVERSACIONES es del apoderado; mientras no termine su ruta, nadie marca.
+    # B12: se marca solo con las dos respuestas; cada uno responde tras su sección y su carta.
     rechazo = pedir(cliente, 'POST', '/acciones/completar-conversacion', datos, 409)
-    assert rechazo['detail']['mensaje'] == 'Completa tus actividades para conversar en familia.'
+    assert rechazo['detail']['mensaje'] == 'Los dos deben responder la pregunta antes de marcar la conversación'
     for actividad in ('t-apo-1', 't-apo-carta'):
         completar(cliente, actividad, 'apo-rosa')
+    for cuenta in ('est-ana', 'apo-rosa'):
+        pedir(cliente, 'POST', '/acciones/escribir-carta', {'cuenta': cuenta, 'texto': 'DATO DE PRUEBA'})
+        pedir(cliente, 'POST', '/acciones/responder-conversacion', {**datos, 'cuenta': cuenta, 'texto': 'DATO DE PRUEBA'})
     antes = filas_base(aplicacion)
     original = comun.registrar_eventos
     def fallar(sesion, cuenta, eventos, fecha):
@@ -34,7 +37,9 @@ def test_r33_conversacion_actor_disponible_repeticion_y_rollback(cliente, aplica
     assert filas_base(aplicacion) == antes
     respuesta, contador = medir(cliente, aplicacion, 'POST', '/acciones/completar-conversacion', datos, limite=12)
     assert set(respuesta['por_cuenta']) == {'est-ana', 'apo-rosa'}
-    assert all([e['tipo'] for e in r['eventos_registrados']] == ['COMPLETA_CONVERSACION'] for r in respuesta['por_cuenta'].values())
+    # B12: el evento es solo del estudiante.
+    assert [e['tipo'] for e in respuesta['por_cuenta']['est-ana']['eventos_registrados']] == ['COMPLETA_CONVERSACION']
+    assert respuesta['por_cuenta']['apo-rosa']['eventos_registrados'] == []
     assert 'R-ins-prueba-conversacion' in {d['regla'] for d in respuesta['por_cuenta']['est-ana']['nuevos_desbloqueos']}
     assert respuesta['por_cuenta']['apo-rosa']['nuevos_desbloqueos'] == []
     primera = filas_base(aplicacion)

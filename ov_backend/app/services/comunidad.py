@@ -3,21 +3,11 @@ from uuid import uuid4
 from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 
-from app.core.contexto import contexto, usar_contexto
+from app.core.contexto import usar_contexto
 from app.exceptions import ErrorAccion
-from app.models import (
-    Conversacion, ConversacionVinculo, Cuenta, Entrevista, EntrevistaAutor, Rol, TipoEventoUso,
-    VinculoFamiliar,
-)
-from app.schemas.acciones import (
-    CompletarConversacionEntrada, EscribirCartaEntrada, PublicarEntrevistaEntrada, RespuestaAccion,
-    RespuestaAgrupada,
-)
-from app.services.comun import (
-    buscar_por_codigo, exigir_estudiante, existe_evento, fecha_accion,
-    responder_con_eventos, responder_varias_cuentas,
-)
-from app.services.secciones import exigir_seccion
+from app.models import Cuenta, Entrevista, EntrevistaAutor, TipoEventoUso
+from app.schemas.acciones import PublicarEntrevistaEntrada, RespuestaAgrupada
+from app.services.comun import exigir_estudiante, fecha_accion, responder_varias_cuentas
 
 
 @usar_contexto
@@ -36,63 +26,4 @@ def publicar_entrevista(sesion: Session, entrada: PublicarEntrevistaEntrada) -> 
     return responder_varias_cuentas(sesion, cuentas, {
         cuenta.id: [(TipoEventoUso.PUBLICA_ENTREVISTA, entrevista.id)] for cuenta in cuentas
     }, fecha)
-
-
-def vinculo_de_cuenta(sesion: Session, cuenta: Cuenta) -> VinculoFamiliar:
-    filtro = VinculoFamiliar.estudiante_id == cuenta.id if cuenta.rol == Rol.ESTUDIANTE else (
-        VinculoFamiliar.apoderado_id == cuenta.id
-    )
-    vinculo = sesion.scalar(select(VinculoFamiliar).where(filtro, VinculoFamiliar.es_activo.is_(True)).order_by(
-        VinculoFamiliar.codigo).limit(1))
-    if vinculo is None:
-        raise ErrorAccion("La cuenta no pertenece a un vínculo familiar")
-    return vinculo
-
-
-@usar_contexto
-def escribir_carta(sesion: Session, entrada: EscribirCartaEntrada) -> RespuestaAccion:
-    cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
-    vinculo = vinculo_de_cuenta(sesion, cuenta)
-    if cuenta.rol == Rol.ESTUDIANTE:
-        exigir_seccion(sesion, cuenta, "FAMILIA")
-    columna = "carta_estudiante" if cuenta.rol == Rol.ESTUDIANTE else "carta_apoderado"
-    primera = getattr(vinculo, columna) is None and not existe_evento(
-        sesion, cuenta, TipoEventoUso.ESCRIBE_CARTA, vinculo.id,
-    )
-    setattr(vinculo, columna, entrada.texto)
-    eventos = [(TipoEventoUso.ESCRIBE_CARTA, vinculo.id)] if primera else []
-    return responder_con_eventos(sesion, cuenta, eventos, fecha_accion(entrada))
-
-
-@usar_contexto
-def completar_conversacion(sesion: Session, entrada: CompletarConversacionEntrada) -> RespuestaAgrupada:
-    cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
-    conversacion = buscar_por_codigo(sesion, Conversacion, entrada.conversacion)
-    vinculo = vinculo_de_cuenta(sesion, cuenta)
-    contexto(sesion).cargar_desbloqueos([vinculo.estudiante_id, vinculo.apoderado_id])
-    ids_cuentas = (vinculo.estudiante_id, vinculo.apoderado_id)
-    por_id = {otra.id: otra for otra in sesion.scalars(select(Cuenta).where(Cuenta.id.in_(ids_cuentas)))}
-    cuentas = [por_id[identificador] for identificador in ids_cuentas]
-    # La sección es del apoderado del vínculo, marque quien marque.
-    exigir_seccion(sesion, por_id[vinculo.apoderado_id], "CONVERSACIONES")
-    contexto(sesion).cargar_desbloqueos(ids_cuentas)
-    registro = sesion.scalar(select(ConversacionVinculo).where(
-        ConversacionVinculo.vinculo_id == vinculo.id, ConversacionVinculo.conversacion_id == conversacion.id,
-    ))
-    primera = registro is None or registro.conversada_en is None
-    fecha = fecha_accion(entrada)
-    if primera:
-        if registro is None:
-            registro = ConversacionVinculo(vinculo_id=vinculo.id, conversacion_id=conversacion.id)
-            sesion.add(registro)
-        registro.conversada_en = fecha
-        registro.conversada_por = cuenta.id
-    if primera:
-        contexto(sesion).cargar_conteos(ids_cuentas)
-    eventos_por_cuenta = {
-        otra.id: [(TipoEventoUso.COMPLETA_CONVERSACION, conversacion.id)] if primera and not existe_evento(
-            sesion, otra, TipoEventoUso.COMPLETA_CONVERSACION, conversacion.id,
-        ) else [] for otra in cuentas
-    }
-    return responder_varias_cuentas(sesion, cuentas, eventos_por_cuenta, fecha)
 

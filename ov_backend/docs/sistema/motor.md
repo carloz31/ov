@@ -131,8 +131,9 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
 | `/acciones/marcar-favorito` | Sección CATALOGO abierta; aún no es favorito | MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan) |
 | `/acciones/publicar-entrevista` | Autores: lista no vacía, sin repetidos, todos estudiantes | PUBLICA_ENTREVISTA en cada autor. Código `ENT-<uuid>`. |
-| `/acciones/escribir-carta` | La cuenta pertenece a un vínculo activo; el estudiante, con la sección FAMILIA | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
-| `/acciones/completar-conversacion` | Sección CONVERSACIONES del apoderado del vínculo, marque quien marque | Marca la conversación del vínculo; COMPLETA_CONVERSACION en las dos cuentas, solo la primera vez. |
+| `/acciones/escribir-carta` | Sección de su rol (ver «Conversaciones») y vínculo activo; la carta aún no entregada | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
+| `/acciones/responder-conversacion` | Ver «Conversaciones» | Guarda la respuesta de su rol. Sin eventos. |
+| `/acciones/completar-conversacion` | Ver «Conversaciones» | Marca la conversación del vínculo; COMPLETA_CONVERSACION solo en el estudiante, la primera vez. |
 | `/eventos` (depuración) | Solo que existan cuenta y referencia | Registra un evento crudo y evalúa reglas, sin validaciones de dominio ni cambios de estado. |
 
 Las acciones de instrumentos (`responder-items`, `revelar-resultado`, `reiniciar-instrumento`) están en `instrumentos.md`, y las de registro, en `registro.md`.
@@ -184,3 +185,15 @@ El registro recoge lo que el estudiante piensa o decide, y lo ve la orientadora.
 **Amistad con el asistente.** Puntos = por cada día, las escrituras (eventos ESCRIBE_ENTRADA_DIARIO) hasta `TOPE_ENTRADAS_AMISTAD_DIA`; nivel según `UMBRALES_AMISTAD`. Se cuenta sobre eventos, no sobre entradas: editar o borrar no la bajan.
 
 **Invariantes del diario.** Solo el autor lee, edita y borra sus entradas; ningún tipo de referencia lee `entrada_diario`; los contextos enviados al LLM nunca incluyen texto de entradas; la amistad nunca baja; `numero` y `numero_libre` no cambian ni se reutilizan.
+
+## Conversaciones
+
+Conversaciones guiadas entre el estudiante y su apoderado, con una carta de cada uno (B12). Código: `app/services/conversaciones.py`. El estado es del vínculo activo de la cuenta (`conversacion_vinculo` y las cartas de `vinculo_familiar`).
+
+- **Acceso:** el estudiante, con la sección FAMILIA; el apoderado, con CONVERSACIONES (su ruta completa). Sin la sección, 409 con su mensaje; sin vínculo activo, 409; la orientadora, 404.
+- **Carta:** cada uno escribe la suya y la puede editar hasta la entrega (todas las conversaciones del catálogo conversadas); después, 409. La carta del otro solo se lee entregada.
+- **Disponibilidad:** sin carta propia, ninguna. Con ella, el apoderado tiene todas; el estudiante, las que le abren sus reglas `CONVERSACION` (cada una pide ESCRIBE_CARTA y su condición).
+- **Responder** (`responder-conversacion`, texto libre, sin LLM): solo una conversación disponible para quien responde (si no, 409 con su mensaje). El apoderado puede responder aunque el hijo aún no la tenga. La propia respuesta se edita mientras el otro no haya respondido; después, 409.
+- **Marcar** (`completar-conversacion`): cualquiera de los dos, solo con ambas respuestas (si no, 409). Basta una marca (`conversada_en`, `conversada_por`); marcar de nuevo no cambia nada. COMPLETA_CONVERSACION va solo al estudiante y le abre su pregunta del diario.
+- **Estado** para quien consulta: `sin_responder`, `esperando_al_otro` (solo yo respondí; también si el hijo aún no la habilitó), `te_toca`, `por_conversar` o `conversada`. La respuesta del otro, las `preguntas_guia` y el `mensaje_diferencias` se ven solo con las dos respuestas.
+- **Pregunta:** cada rol ve la suya; con `pregunta_apoderado` nula, el apoderado responde la del estudiante.

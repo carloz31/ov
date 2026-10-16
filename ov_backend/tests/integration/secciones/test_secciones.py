@@ -85,16 +85,17 @@ def test_escribir_sin_la_seccion_abierta_responde_409_sin_efectos(cliente, aplic
     assert pedir(cliente, 'POST', f'/acciones/{accion}', datos)['eventos_registrados']
 
 
-def test_conversacion_exige_la_seccion_del_apoderado(cliente):
+def test_carta_del_apoderado_exige_su_seccion(cliente):
+    # B12: la carta del apoderado, como la del estudiante, exige la sección de su rol.
     avanzar(cliente)
-    datos = {'cuenta': 'est-ana', 'conversacion': 't-conv-1', 'fecha_hora': FECHA}
-    rechazo = pedir(cliente, 'POST', '/acciones/completar-conversacion', datos, 409)['detail']
+    datos = {'cuenta': 'apo-rosa', 'texto': 'DATO DE PRUEBA', 'fecha_hora': FECHA}
+    rechazo = pedir(cliente, 'POST', '/acciones/escribir-carta', datos, 409)['detail']
     assert rechazo['mensaje'] == 'Completa tus actividades para conversar en familia.'
-    assert not any(e['tipo'] == 'COMPLETA_CONVERSACION' for e in eventos(cliente))
+    assert not any(e['tipo'] == 'ESCRIBE_CARTA' for e in eventos(cliente, 'apo-rosa'))
     for actividad in ('t-apo-1', 't-apo-carta'):
         completar(cliente, actividad, 'apo-rosa')
-    respuesta = pedir(cliente, 'POST', '/acciones/completar-conversacion', datos)
-    assert set(respuesta['por_cuenta']) == {'est-ana', 'apo-rosa'}
+    respuesta = pedir(cliente, 'POST', '/acciones/escribir-carta', datos)
+    assert [e['tipo'] for e in respuesta['eventos_registrados']] == ['ESCRIBE_CARTA']
 
 
 def test_leer_el_diario_bloqueado_responde_409_con_su_mensaje(cliente):
