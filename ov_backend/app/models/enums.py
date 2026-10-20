@@ -7,6 +7,11 @@ class Rol(StrEnum):
     ORIENTADORA = "ORIENTADORA"
 
 
+class OrigenSesion(StrEnum):
+    """Cómo se emitió un token (B17). Solo viaja en el token; GOOGLE se agregará con su ingreso."""
+    CONTRASENA = "CONTRASENA"
+
+
 class Espacio(StrEnum):
     MISIONES_CAMPO = "MISIONES_CAMPO"
     CIUDAD = "CIUDAD"

@@ -30,7 +30,8 @@ def test_urls_sin_ruta_relativa_se_conservan(url, tmp_path):
 
 def test_ruta_absoluta_y_precedencia_env(tmp_path, monkeypatch):
     archivo = tmp_path / '.env'
-    archivo.write_text('DATABASE_URL=sqlite:///desde_archivo.db\nENTORNO=produccion\nEVALUADOR=falso\n', encoding='utf-8')
+    archivo.write_text('DATABASE_URL=sqlite:///desde_archivo.db\nENTORNO=produccion\nEVALUADOR=falso\n'
+                       f'JWT_SECRETO={"x" * 32}\n', encoding='utf-8')
     ruta = tmp_path / 'desde_proceso.db'
     monkeypatch.setenv('DATABASE_URL', f'sqlite:///{ruta.as_posix()}')
     configuracion = cargar_configuracion(ruta_env=archivo)
@@ -46,6 +47,9 @@ def test_ruta_absoluta_y_precedencia_env(tmp_path, monkeypatch):
     ({'DATABASE_URL': 'valor-secreto-invalido'}, 'DATABASE_URL no es una URL válida'),
     ({'ENTORNO': ''}, 'ENTORNO debe ser desarrollo o produccion'),
     ({'ENTORNO': 'otro'}, 'ENTORNO debe ser desarrollo o produccion'),
+    ({'ENTORNO': 'produccion'}, 'JWT_SECRETO es obligatorio en produccion y debe tener al menos 32 caracteres'),
+    ({'ENTORNO': 'produccion', 'JWT_SECRETO': 'corto'},
+     'JWT_SECRETO es obligatorio en produccion y debe tener al menos 32 caracteres'),
 ])
 def test_configuracion_invalida_sin_filtrar_valores(variables, mensaje, tmp_path):
     with pytest.raises(ValueError) as error:

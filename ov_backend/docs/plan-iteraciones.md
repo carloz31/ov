@@ -81,7 +81,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B14 | Orientadora: seguimiento y configuración | 081–089 (108 si entra) | M | B07, B11, B12 | Sus estudiantes, sus registros, la configuración y las seis alertas |
 | B15 | Informe de viaje y temas para conversar | 034, 102–105 | — | B11–B13 | Bitácora desde el primer día; las siete reglas de temas; endgame |
 | B16 | Orientadora: vista del salón | 090–093, 107 | — | B14 | Capa 1 del panel |
-| B17 | Acceso | 001 | — | B01 | Inicio y cierre de sesión con credenciales precargadas |
+| B17 | Acceso | 001 | M | B01 | Inicio y cierre de sesión con credenciales precargadas |
 
 ### Qué hace cada lote
 
@@ -308,7 +308,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 - **Pruebas:**
   - Inicio y cierre de sesión.
   - Cada cuenta actúa solo sobre sí misma.
-  - La orientadora actúa solo sobre su salón.
+  - La política de salón de la orientadora queda probada en pruebas unitarias para B14 (en B17 no tiene rutas de estudiantes).
 
 ## Constantes provisionales
 

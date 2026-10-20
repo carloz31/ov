@@ -15,6 +15,9 @@ from app.core.parametros import MODELO_LLM_REGISTRO, TIEMPO_MAXIMO_EVALUACION_SE
 
 RAIZ_PROYECTO = Path(__file__).resolve().parents[1]
 RUTA_ENV = Path(__file__).resolve().parent.parent / '.env'
+# Solo para desarrollo y pruebas; en producción JWT_SECRETO es obligatorio.
+JWT_SECRETO_DESARROLLO = 'secreto-de-desarrollo-no-usar-en-produccion'
+LARGO_MINIMO_JWT_SECRETO = 32
 
 
 class ErrorConfiguracionRegistro(RuntimeError):
@@ -29,6 +32,7 @@ class Configuracion:
     modelo: str = MODELO_LLM_REGISTRO
     timeout_segundos: float = TIEMPO_MAXIMO_EVALUACION_SEGUNDOS
     clave: str | None = field(default=None, repr=False)
+    jwt_secreto: str = field(default=JWT_SECRETO_DESARROLLO, repr=False)
 
 
 def cargar_configuracion(
@@ -60,6 +64,9 @@ def cargar_configuracion(
     ambiente = leer('ENTORNO', 'desarrollo')
     if ambiente not in ('desarrollo', 'produccion'):
         raise ValueError('ENTORNO debe ser desarrollo o produccion')
+    jwt_secreto = (leer('JWT_SECRETO', '') or '').strip()
+    if ambiente == 'produccion' and len(jwt_secreto) < LARGO_MINIMO_JWT_SECRETO:
+        raise ValueError(f'JWT_SECRETO es obligatorio en produccion y debe tener al menos {LARGO_MINIMO_JWT_SECRETO} caracteres')
     url_bd = leer('DATABASE_URL', 'sqlite:///ov.db')
     if not url_bd or not url_bd.strip():
         raise ValueError('DATABASE_URL no puede estar vacía')
@@ -72,7 +79,8 @@ def cargar_configuracion(
         if not ruta.is_absolute():
             ruta = RAIZ_PROYECTO / ruta
         url_bd = url.set(database=ruta.as_posix()).render_as_string(hide_password=False)
-    return Configuracion(url_bd, ambiente, proveedor, modelo, timeout, clave)
+    return Configuracion(url_bd, ambiente, proveedor, modelo, timeout, clave,
+                         jwt_secreto or JWT_SECRETO_DESARROLLO)
 
 
 def crear_evaluador_registro(configuracion: Configuracion):

@@ -27,6 +27,7 @@ def test_r16_entornos_aislados_sin_rutas_retiradas_ni_lecturas(tmp_path, monkeyp
     monkeypatch.setenv('ENTORNO', 'desarrollo')
     desarrollo = crear_aplicacion(url)
     monkeypatch.setenv('ENTORNO', 'produccion')
+    monkeypatch.setenv('JWT_SECRETO', 'x' * 32)
     produccion = crear_aplicacion(url)
     for aplicacion, esperado in ((desarrollo, 200), (produccion, 404)):
         with TestClient(aplicacion) as cliente:

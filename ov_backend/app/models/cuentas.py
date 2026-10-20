@@ -1,4 +1,6 @@
-from sqlalchemy import ForeignKey, Text, UniqueConstraint, false, true
+from datetime import datetime
+
+from sqlalchemy import ForeignKey, Text, UniqueConstraint, false, text, true
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, enumerado
@@ -22,6 +24,9 @@ class Cuenta(Base):
     correo: Mapped[str | None] = mapped_column(unique=True)
     contrasena_hash: Mapped[str | None]
     activa: Mapped[bool] = mapped_column(default=True, server_default=true())
+    # B17: ingresos fallidos seguidos y fin del bloqueo temporal.
+    intentos_fallidos: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    bloqueada_hasta: Mapped[datetime | None] = mapped_column(default=None)
     # Carrera del primer plan registrado antes de completar el bloque de la opción inicial (B11); no cambia después.
     opcion_inicial_id: Mapped[int | None] = mapped_column(ForeignKey("carrera.id"), default=None)
 

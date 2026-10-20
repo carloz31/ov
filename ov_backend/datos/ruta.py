@@ -5,6 +5,9 @@ Cada lote agrega filas en este formato; el cargador las interpreta sin lógica a
 La transacción pertenece al llamador; este módulo no confirma ni migra.
 """
 
+from functools import cache
+
+from argon2 import PasswordHasher
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -14,13 +17,26 @@ from datos import fijos
 from datos.ocupaciones import validar_distribucion_items
 
 
+# Mismos parámetros por defecto que `app/services/acceso.py`; datos/ no importa services/.
+_HASHER = PasswordHasher()
+
+
+@cache
+def _hash(contrasena: str) -> str:
+    # Uno por contraseña y proceso: recargar deja las mismas filas y no repite el costo de Argon2id.
+    return _HASHER.hash(contrasena)
+
+
 # (código, nombre)
 SALONES = (('5A', 'Quinto A'), ('5B', 'Quinto B'))
 
-# (código, nombre, rol, salón)
-CUENTAS = (('est-ana', 'Ana', 'ESTUDIANTE', '5A'), ('est-luis', 'Luis', 'ESTUDIANTE', '5A'),
-           ('est-beto', 'Beto', 'ESTUDIANTE', '5B'), ('apo-rosa', 'Rosa', 'APODERADO', None),
-           ('ori-carmen', 'Carmen', 'ORIENTADORA', None))
+# (código, nombre, rol, salón, correo, contraseña). B17: credenciales de prueba, iguales a las de
+# `datos/usuarios_prueba.txt` y a los usuarios del modo local del front. Los correos usan example.com (reservado).
+CUENTAS = (('est-ana', 'Ana', 'ESTUDIANTE', '5A', 'ana.estudiante@example.com', 'Ana2026!'),
+           ('est-luis', 'Luis', 'ESTUDIANTE', '5A', 'luis.estudiante@example.com', 'Luis2026!'),
+           ('est-beto', 'Beto', 'ESTUDIANTE', '5B', 'beto.estudiante@example.com', 'Beto2026!'),
+           ('apo-rosa', 'Rosa', 'APODERADO', None, 'rosa.apoderada@example.com', 'Rosa2026!'),
+           ('ori-carmen', 'Carmen', 'ORIENTADORA', None, 'carmen.orientadora@example.com', 'Carmen2026!'))
 
 # (orientadora, salón, es principal)
 ORIENTADORAS_SALONES = (('ori-carmen', '5A', True),)
@@ -404,8 +420,9 @@ def _cargar_estructura(sesion):
     sesion.add_all(salones.values())
     sesion.flush()
     cuentas = {c: modelos.Cuenta(codigo=c, nombre=n, rol=modelos.Rol(r),
-                                 salon_id=None if salon is None else salones[salon].id)
-               for c, n, r, salon in CUENTAS}
+                                 salon_id=None if salon is None else salones[salon].id,
+                                 correo=correo.strip().lower(), contrasena_hash=_hash(contrasena))
+               for c, n, r, salon, correo, contrasena in CUENTAS}
     bloques = {c: modelos.Bloque(codigo=c, numero=num, nombre=n, espacio=modelos.Espacio(e),
                                 audiencia=modelos.Audiencia(a)) for c, num, n, e, a in BLOQUES}
     fichas = {c: modelos.Ficha(codigo=c, titulo=t, contenido=texto, audiencia=modelos.Audiencia(a))
