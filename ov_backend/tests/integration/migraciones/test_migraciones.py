@@ -137,7 +137,9 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     assert "WHERE origen = 'GUIADA'" in sql
     assert "WHERE tipo = 'DIARIA'" in sql and "WHERE tipo = 'DESBLOQUEADA'" in sql
     assert 'WHERE anulado_en IS NULL' in sql
-    assert sql.count('BOOLEAN DEFAULT false') == 13
+    # B17: 15 desde que 0017 usa sa.false(); un booleano con DEFAULT 0 no se crea en PostgreSQL.
+    assert sql.count('BOOLEAN DEFAULT false') == 15
+    assert 'BOOLEAN DEFAULT 0' not in sql and 'BOOLEAN DEFAULT 1' not in sql
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:
         ddl = str(CreateTable(tabla).compile(dialect=dialecto))

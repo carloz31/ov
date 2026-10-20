@@ -64,8 +64,8 @@ def upgrade() -> None:
     sa.Column('opcion_id', sa.Integer(), nullable=False),
     sa.Column('frecuencia_recomendada', sa.Enum('UNICA', 'MENSUAL', 'POR_CICLO', 'ANUAL', name='frecuenciagasto', native_enum=False, create_constraint=True), nullable=False),
     sa.Column('monto_referencia', sa.Integer(), nullable=False),
-    sa.Column('cero_si_publica', sa.Boolean(), server_default=sa.text('0'), nullable=False),
-    sa.Column('solo_si_camino_prepara', sa.Boolean(), server_default=sa.text('0'), nullable=False),
+    sa.Column('cero_si_publica', sa.Boolean(), server_default=sa.false(), nullable=False),
+    sa.Column('solo_si_camino_prepara', sa.Boolean(), server_default=sa.false(), nullable=False),
     sa.CheckConstraint('monto_referencia >= 0', name=op.f('ck_referencia_rubro_monto_valido')),
     sa.ForeignKeyConstraint(['opcion_id'], ['opcion_lista.id'], name=op.f('fk_referencia_rubro_opcion_id_opcion_lista')),
     sa.PrimaryKeyConstraint('opcion_id', name=op.f('pk_referencia_rubro'))

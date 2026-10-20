@@ -75,6 +75,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 - La URL viene de `DATABASE_URL` (por defecto `sqlite:///ov.db`, relativa a la raíz). La aplicación funciona igual con SQLite y PostgreSQL.
 - Nada de SQL específico de un motor fuera de `app/database.py`. Los índices parciales llevan `sqlite_where` y `postgresql_where`. No reemplaces `func.date` por `CAST(... AS DATE)`: en SQLite devuelve el año.
 - El esquema lo gestiona Alembic (`render_as_batch` para SQLite; nombres de restricciones por la `naming_convention` de `Base`). La aplicación nunca llama a `create_all` ni siembra datos: si falta el esquema, no arranca y pide `alembic upgrade head`. Solo las pruebas y el exportador de fixtures usan `create_all`, sobre bases temporales, mediante `datos.cargar`.
+- Los valores por defecto de servidor de columnas booleanas usan `sa.true()`/`sa.false()` (`true()`/`false()` en el modelo), nunca `sa.text('0')`: PostgreSQL rechaza un entero como defecto de un booleano. Revisa esto en cada migración autogenerada.
 - Todo cambio en `app/models/` lleva su migración (`uv run alembic revision --autogenerate -m "..."`), revisada a mano, en el mismo commit. `tests/integration/migraciones/test_migraciones.py` debe seguir en verde.
 
 ## Datos
