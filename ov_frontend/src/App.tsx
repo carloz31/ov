@@ -1,11 +1,11 @@
 import { AppRoutes } from '@/routes/AppRoutes'
-import { DemoAccessGate } from '@/features/auth/components/DemoAccessGate'
+import { GuardaAcceso } from '@/routes/GuardaAcceso'
 
 function App() {
   return (
-    <DemoAccessGate>
+    <GuardaAcceso>
       <AppRoutes />
-    </DemoAccessGate>
+    </GuardaAcceso>
   )
 }
 

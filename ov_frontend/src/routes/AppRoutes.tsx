@@ -1,5 +1,5 @@
 import { LoginRoute } from '@/pages/auth/LoginRoute'
-import { RoleSelectionRoute } from '@/pages/auth/RoleSelectionRoute'
+import { PortalDeCuenta } from './PortalDeCuenta'
 import { SoloLocal } from './SoloLocal'
 import { Navigate, Route, Routes } from 'react-router'
 import { CounselorDashboardView } from '@/pages/counselor/CounselorDashboardView'
@@ -50,7 +50,7 @@ function AppRoutes() {
     <Routes>
       <Route element={<LoginRoute />} path="/" />
       <Route element={<LoginRoute />} path={appPaths.login} />
-      <Route element={<RoleSelectionRoute />} path={appPaths.roleSelection} />
+      <Route element={<PortalDeCuenta />} path={appPaths.roleSelection} />
       <Route
         element={
           <StudentThemeScope>

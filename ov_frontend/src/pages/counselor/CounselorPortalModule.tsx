@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { AppShell, type AppNavigationGroup } from '@/components/layout/AppShell'
 import { appPaths } from '@/routes/paths'
+import { cerrarSesion } from '@/store/accesoStore'
 import { CounselorPortalProvider } from '@/features/counselor/store/CounselorPortalState'
 import { counselorProfile } from '@/features/counselor/data/counselorPortal'
 import type { CounselorView } from '@/features/counselor/types'
@@ -61,7 +62,10 @@ function CounselorPortalModule() {
         audience="counselor"
         activeItemId={view}
         navigationGroups={navigationGroups}
-        onLogout={() => navigate(appPaths.home)}
+        onLogout={() => {
+        cerrarSesion()
+        navigate(appPaths.login, { replace: true })
+      }}
         onOpenProfile={() => navigate(appPaths.counselor.settings)}
         title={labels[view]}
         userName={counselorProfile.name}

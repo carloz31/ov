@@ -8,7 +8,7 @@
 - **Guardia y transacción:** el guardia carga el actor en la sesión de la petición; al terminar hace `sesion.rollback()` (para que `ejecutar_accion` pueda abrir `sesion.begin()`) y guarda en `request.state` solo `id`, `codigo` y `rol`.
 - **Intentos fallidos:** el intento se confirma con commit y el 401 se responde después de cerrar la transacción; si no, el rollback borraría el intento y el bloqueo nunca ocurriría.
 - **Usuarios del modo local** en `src/data/demo/usuariosPrueba.ts`: `store/` no puede importar `features/`.
-- **Línea de error del login:** `<p role="alert">` con la clase del aviso existente del login (`.ov-login-demo`); sin estilo nuevo.
+- **Línea de error del login:** el mismo marcado del aviso existente del login (`div.ov-login-demo` con ícono y `<p>`), con `role="alert"`; sin estilo nuevo. Ahí aparece también «Tu sesión terminó».
 - **`configurarAcceso`** en `cliente.ts`, llamado desde `main.tsx` como `configurarServidor` (que vive en `config/env.ts`).
 - **Modelo (M):** `cuenta.intentos_fallidos` (0) y `cuenta.bloqueada_hasta` (nulo), migración `0019`, para el bloqueo de 5 intentos durante 15 minutos. `OrigenSesion` solo viaja en el token.
 - **Hash en `datos/`:** `ruta.py` usa `argon2.PasswordHasher()` directo (mismos parámetros por defecto que `services/acceso.py`), porque `datos/` solo importa `app.models` y `app.core.parametros`.
@@ -22,3 +22,6 @@
 - **Presupuestos:** el guardia lee la cuenta del actor (+1 consulta, porque tras el rollback no se reutiliza la fila). Subieron de 10 a 11 la consulta del catálogo (`test_catalogo.py`) y el detalle de carrera en `test_favoritos.py`.
 - **Pruebas adaptadas:** `test_entorno_desarrollo.py` (`GET /cuentas` responde 404 en producción) y `test_exportar_fixtures_front.py` (los fixtures `ruta-sesion-*`).
 - **Fixtures de sesión:** el exportador ingresa de verdad con cada rol y usa sus tokens; en `ruta-sesion-*` el token y `expira_en` llevan valores fijos (`TOKEN-DE-PRUEBA`) para regenerarse idénticos.
+- **Guardas en `App.tsx`:** `routes/GuardaAcceso.tsx` envuelve `AppRoutes` (como hacía `DemoAccessGate`) y decide el portal por el prefijo de la ruta; así `AppRoutes` sigue siendo solo la tabla y las pruebas que lo renderizan no cambian. `routes/` no lee `store/`: usa `features/auth/hooks/useAcceso.ts`.
+- **Selector de rol eliminado** con su CSS (`.ov-access-sign-out`) y `features/auth/types.ts`; `/profiles` redirige con `routes/PortalDeCuenta.tsx`. Los botones de salir importan `cerrarSesion` de `store/accesoStore.ts`.
+- **Pruebas del front adaptadas:** en `tests/local/aventura/adventure-rendering.test.mjs` la prueba del login usa los textos nuevos y se quitaron las de `demoAccess` y `DemoAccessGate`, que pasan a `tests/local/portales/acceso.test.mjs`.

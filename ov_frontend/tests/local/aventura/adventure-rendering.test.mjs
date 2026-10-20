@@ -3657,26 +3657,31 @@ test('memory navigation opens the journal home from its editor and does not cons
 })
 
 
-test('shared login accepts arbitrary credentials, toggles visibility and waits before exposing profiles', () => {
+test('shared login asks for the test users, shows server errors and waits while entering', () => {
+  // B17: sin selector de rol; el aviso de demostración solo en modo local y los errores bajo el formulario.
   for (const route of ['/', '/login']) {
     const html = render(route)
     assert.match(html, /Ingresa a la plataforma/)
-    assert.match(html, /Acceso de demostración/)
+    assert.match(html, /Modo de demostración:<\/strong> ingresa con uno de los usuarios de prueba\./)
+    assert.doesNotMatch(html, /Acceso de demostración/)
+    assert.match(html, /type="email"/)
+    assert.match(html, /placeholder="tu\.correo@gmail\.com"/)
     assert.match(html, /autocomplete="username"/i)
     assert.match(html, /autocomplete="current-password"/i)
     assert.doesNotMatch(html, /¿Qué perfil quieres ver\?/)
+    assert.doesNotMatch(html, /role="alert"/)
   }
-  let entered = 0
+  const entered = []
   const login = immersivePlayerHarness('src/features/auth/components/LoginScreen')
-  const props = { onEnter() { entered++ } }
+  const props = { onEnter(usuario, contrasena) { entered.push([usuario, contrasena]) } }
   try {
     let tree = login.draw(props)
     const input = (tree, name) => login.find(tree, element => element.type === 'input' && element.props.name === name)
     const form = tree => login.find(tree, element => element.type === 'form')
     const submit = () => form(tree).props.onSubmit({ preventDefault() {} })
-    submit(); assert.equal(entered, 0)
-    input(tree, 'username').props.onChange({ target: { value: 'cualquier usuario + 123' } })
-    tree = login.draw(props); submit(); assert.equal(entered, 0)
+    submit(); assert.equal(entered.length, 0)
+    input(tree, 'username').props.onChange({ target: { value: 'ana.estudiante@example.com' } })
+    tree = login.draw(props); submit(); assert.equal(entered.length, 0)
     input(tree, 'password').props.onChange({ target: { value: 'x' } })
     tree = login.draw(props)
     assert.equal(input(tree, 'password').props.type, 'password')
@@ -3686,65 +3691,17 @@ test('shared login accepts arbitrary credentials, toggles visibility and waits b
     assert.equal(input(tree, 'password').props.value, 'x')
     login.find(tree, element => element.props['aria-label'] === 'Ocultar contraseña').props.onClick()
     tree = login.draw(props); submit()
-    assert.equal(entered, 1)
+    assert.deepEqual(entered, [['ana.estudiante@example.com', 'x']])
     assert.equal(input(tree, 'password').props.type, 'password')
+    tree = login.draw({ ...props, enviando: true, error: 'Usuario o contraseña incorrectos' })
+    const boton = login.find(tree, element => element.type === 'button' && element.props.type === 'submit')
+    assert.equal(boton.props.disabled, true)
+    assert.match(JSON.stringify(boton.props.children), /Ingresando…/)
+    submit(); assert.equal(entered.length, 1)
+    const alerta = login.find(tree, element => element.props.role === 'alert')
+    assert.equal(alerta.props.className, 'ov-login-demo')
+    assert.match(JSON.stringify(alerta.props.children), /Usuario o contraseña incorrectos/)
   } finally { login.dispose() }
-})
-
-test('demo access persists only its session flag, reloads and signs out without storing credentials', () => {
-  const source = readFileSync('src/features/auth/lib/demoAccess.ts', 'utf8')
-  const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText
-  const values = new Map()
-  let denied = false
-  const storage = {
-    getItem(key) { if (denied) throw Error('storage unavailable'); return values.get(key) ?? null },
-    setItem(key, value) { if (denied) throw Error('storage unavailable'); values.set(key, value) },
-    removeItem(key) { if (denied) throw Error('storage unavailable'); values.delete(key) },
-  }
-  const fresh = () => {
-    const exported = {}
-    const isolated = vm.createContext({ window: { sessionStorage: storage } })
-    vm.runInContext(`(function(require,exports){${js}\n})`, isolated)(name => {
-      assert.equal(name, 'react')
-      return { useSyncExternalStore: (_subscribe, snapshot) => snapshot() }
-    }, exported)
-    return exported
-  }
-  const access = fresh()
-  assert.equal(access.useDemoAccess(), false)
-  access.startDemoAccess()
-  assert.deepEqual([...values], [['ov.demo-access.v1', '1']])
-  const reloaded = fresh()
-  assert.equal(reloaded.useDemoAccess(), true)
-  reloaded.endDemoAccess()
-  assert.equal(reloaded.useDemoAccess(), false)
-  assert.equal(fresh().useDemoAccess(), false)
-  values.set('ov.demo-access.v1', 'invalid'); assert.equal(fresh().useDemoAccess(), false)
-  denied = true
-  const unavailable = fresh()
-  unavailable.startDemoAccess(); assert.equal(unavailable.useDemoAccess(), true)
-  unavailable.endDemoAccess(); assert.equal(unavailable.useDemoAccess(), false)
-})
-
-test('shared access gate requires login before profiles and all three portals', () => {
-  let pathname = '/profiles', active = false
-  const gate = immersivePlayerHarness('src/features/auth/components/DemoAccessGate', {
-    'react-router': { ...nativeRequire('react-router'), useLocation: () => ({ pathname }) },
-    '../lib/demoAccess': { useDemoAccess: () => active },
-  })
-  const children = React.createElement('span', {}, 'Contenido de la plataforma')
-  try {
-    for (const route of ['/profiles', '/student/missions', '/parent/overview', '/counselor/home']) {
-      pathname = route
-      const denied = gate.draw({ children })
-      assert.equal(denied.props.to, '/login')
-      assert.equal(denied.props.replace, true)
-      active = true; assert.equal(gate.draw({ children }), children); active = false
-    }
-    for (const route of ['/', '/login']) {
-      pathname = route; assert.equal(gate.draw({ children }), children)
-    }
-  } finally { gate.dispose() }
 })
 
 test('daily journal question hides its prompt until opened, recognizes today and labels legacy answers', () => {

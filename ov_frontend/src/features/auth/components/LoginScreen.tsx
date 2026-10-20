@@ -12,7 +12,14 @@ import {
 } from 'lucide-react'
 import '../styles/access.css'
 
-export function LoginScreen({ onEnter }: { onEnter: (usuario: string) => void }) {
+type LoginScreenProps = {
+  onEnter: (usuario: string, contrasena: string) => void
+  error?: string | null
+  enviando?: boolean
+  mostrarAvisoDemo?: boolean
+}
+
+export function LoginScreen({ onEnter, error = null, enviando = false, mostrarAvisoDemo = false }: LoginScreenProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [visible, setVisible] = useState(false)
@@ -86,7 +93,7 @@ export function LoginScreen({ onEnter }: { onEnter: (usuario: string) => void })
           <form
             onSubmit={(event) => {
               event.preventDefault()
-              if (username && password) onEnter(username)
+              if (username && password && !enviando) onEnter(username, password)
             }}
           >
             <div className="ov-login-input-group">
@@ -95,9 +102,9 @@ export function LoginScreen({ onEnter }: { onEnter: (usuario: string) => void })
                 <input
                   id="ov-login-username"
                   name="username"
-                  type="text"
+                  type="email"
                   autoComplete="username"
-                  placeholder="Tu usuario"
+                  placeholder="tu.correo@gmail.com"
                   required
                   value={username}
                   onChange={(event) => setUsername(event.target.value)}
@@ -129,16 +136,29 @@ export function LoginScreen({ onEnter }: { onEnter: (usuario: string) => void })
                 </button>
               </div>
             </div>
-            <button type="submit" className="ov-login-submit" data-ready={Boolean(username && password)}>
-              Ingresar <ArrowRight size={20} aria-hidden="true" />
+            <button
+              type="submit"
+              className="ov-login-submit"
+              data-ready={Boolean(username && password)}
+              disabled={enviando}
+            >
+              {enviando ? 'Ingresando…' : 'Ingresar'} <ArrowRight size={20} aria-hidden="true" />
             </button>
           </form>
-          <div className="ov-login-demo">
-            <Info size={18} aria-hidden="true" />
-            <p>
-              <strong>Acceso de demostración.</strong> Puedes usar cualquier usuario y contraseña.
-            </p>
-          </div>
+          {error && (
+            <div className="ov-login-demo" role="alert">
+              <Info size={18} aria-hidden="true" />
+              <p>{error}</p>
+            </div>
+          )}
+          {mostrarAvisoDemo && (
+            <div className="ov-login-demo">
+              <Info size={18} aria-hidden="true" />
+              <p>
+                <strong>Modo de demostración:</strong> ingresa con uno de los usuarios de prueba.
+              </p>
+            </div>
+          )}
           <p className="ov-login-footer">¿No tienes tu usuario o lo olvidaste? Comunícate con tu colegio.</p>
         </section>
       </div>

@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
 import { appPaths } from '@/routes/paths'
+import { cerrarSesion } from '@/store/accesoStore'
 
 export function StudentUserMenu() {
   const { nombre, navigate, confirmar, setConfirmar, ocupado, error, reiniciar, iniciales, puedeReiniciar } = useStudentAccount()
@@ -23,7 +24,12 @@ export function StudentUserMenu() {
           <DropdownMenuItem onSelect={() => navigate(appPaths.student.profile)}>
             <UserRound size={16} /> Mi perfil
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => navigate(appPaths.home)}>
+          <DropdownMenuItem
+            onSelect={() => {
+              cerrarSesion()
+              navigate(appPaths.login, { replace: true })
+            }}
+          >
             <LogOut size={16} /> Cerrar sesión
           </DropdownMenuItem>
           {puedeReiniciar && (

@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router'
 import { AppShell, type AppNavigationGroup } from '@/components/layout/AppShell'
 import { ThemeProvider } from '@/components/common/ThemeScope'
 import { appPaths } from '@/routes/paths'
+import { cerrarSesion } from '@/store/accesoStore'
 import { parentProfile } from '@/features/parent/data/parentPortal'
 import type { ParentPortalContext } from '@/features/parent/context/parentPortalContext'
 import { useParentActivities } from '@/features/parent/hooks/useParentActivities'
@@ -64,7 +65,10 @@ function ParentPortalModule() {
       audience="parent"
       activeItemId={routeState.activeItemId}
       navigationGroups={navigationGroups}
-      onLogout={() => navigate(appPaths.home)}
+      onLogout={() => {
+        cerrarSesion()
+        navigate(appPaths.login, { replace: true })
+      }}
       onOpenProfile={() => navigate(appPaths.parent.overview)}
       title={routeState.title}
       userName={parentProfile.name}

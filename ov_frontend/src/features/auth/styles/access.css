@@ -250,26 +250,6 @@
 .ov-login.theme-staff .ov-login-field input:focus-visible {
   outline: none;
 }
-.ov-access-sign-out {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 10px 16px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--card);
-  color: var(--foreground);
-  font-size: 13px;
-  font-weight: 600;
-}
-.ov-access-sign-out:focus-visible {
-  outline: 3px solid var(--ring);
-  outline-offset: 3px;
-}
 @media (900px <= width <= 1200px) {
   .ov-login-shell {
     grid-template-columns: minmax(0, 1fr) 440px;

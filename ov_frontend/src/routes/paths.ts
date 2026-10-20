@@ -66,4 +66,20 @@ const appPaths = {
   },
 } as const
 
-export { appPaths }
+type RolPortal = 'ESTUDIANTE' | 'APODERADO' | 'ORIENTADORA'
+
+// B17: cada rol entra a su portal; la raíz de cada portal redirige a su inicio.
+const portalPorRol: Record<RolPortal, string> = {
+  ESTUDIANTE: appPaths.student.missions,
+  APODERADO: appPaths.parent.root,
+  ORIENTADORA: appPaths.counselor.root,
+}
+
+const raizPorRol: Record<RolPortal, string> = {
+  ESTUDIANTE: appPaths.student.root,
+  APODERADO: appPaths.parent.root,
+  ORIENTADORA: appPaths.counselor.root,
+}
+
+export { appPaths, portalPorRol, raizPorRol }
+export type { RolPortal }

@@ -1,21 +1,33 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { useDemoAccess, startDemoAccess } from '@/features/auth/lib/demoAccess'
-import { appPaths } from '@/routes/paths'
 import { modoApi } from '@/config/env'
-import { guardarUsuarioIngreso } from '@/store/servidor/cuenta'
-import { prepararIngreso } from '@/store/servidor/operaciones'
+import { portalPorRol } from '@/routes/paths'
+import { iniciarSesionLocal, useAvisoSesion, useSesionAcceso } from '@/store/accesoStore'
 
 export function useLogin() {
   const navigate = useNavigate()
-  const active = useDemoAccess()
-  function enter(usuario: string) {
-    if (modoApi) {
-      guardarUsuarioIngreso(usuario)
-      prepararIngreso()
+  const sesion = useSesionAcceso()
+  const aviso = useAvisoSesion()
+  const [error, setError] = useState<string | null>(null)
+  const [enviando, setEnviando] = useState(false)
+  async function enter(usuario: string, contrasena: string) {
+    if (enviando) return
+    setEnviando(true)
+    setError(null)
+    const resultado = iniciarSesionLocal(usuario, contrasena)
+    setEnviando(false)
+    if (!resultado.ok) {
+      setError(resultado.mensaje)
+      return
     }
-    startDemoAccess()
-    navigate(appPaths.roleSelection, { replace: true })
+    navigate(portalPorRol[resultado.cuenta.rol], { replace: true })
   }
-  return { active, enter }
+  return {
+    cuenta: sesion?.cuenta ?? null,
+    enter,
+    error: error ?? aviso,
+    enviando,
+    mostrarAvisoDemo: !modoApi,
+  }
 }
