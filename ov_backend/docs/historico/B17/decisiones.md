@@ -1,0 +1,29 @@
+# Decisiones de la spec en curso
+
+<!-- Spec en curso: B17 · Acceso. -->
+
+- **Orientadora en B17:** prevalece la spec sobre `plan-iteraciones.md`; `es_de_su_salon` solo se prueba en unitarias y la cobertura exige 404 de ori-carmen sobre est-ana. Se ajustó la línea del plan.
+- **Rutas sin cuenta objetivo** (`GET /reglas`, `GET /instrumentos`, `GET /actividades/{a}/items`, `GET /actividades/{a}/items-registro`): exigen token válido, sin política de objetivo.
+- **`fecha_hora` solo en desarrollo:** un `ContextVar` en `app/core/` prohibido por defecto; el guardia lo habilita solo con `ENTORNO=desarrollo` y `fecha_accion()` lo lee. Evita tocar sus 40 llamadas.
+- **Guardia y transacción:** el guardia carga el actor en la sesión de la petición; al terminar hace `sesion.rollback()` (para que `ejecutar_accion` pueda abrir `sesion.begin()`) y guarda en `request.state` solo `id`, `codigo` y `rol`.
+- **Intentos fallidos:** el intento se confirma con commit y el 401 se responde después de cerrar la transacción; si no, el rollback borraría el intento y el bloqueo nunca ocurriría.
+- **Usuarios del modo local** en `src/data/demo/usuariosPrueba.ts`: `store/` no puede importar `features/`.
+- **Línea de error del login:** el mismo marcado del aviso existente del login (`div.ov-login-demo` con ícono y `<p>`), con `role="alert"`; sin estilo nuevo. Ahí aparece también «Tu sesión terminó».
+- **`configurarAcceso`** en `cliente.ts`, llamado desde `main.tsx` como `configurarServidor` (que vive en `config/env.ts`).
+- **Modelo (M):** `cuenta.intentos_fallidos` (0) y `cuenta.bloqueada_hasta` (nulo), migración `0019`, para el bloqueo de 5 intentos durante 15 minutos. `OrigenSesion` solo viaja en el token.
+- **Hash en `datos/`:** `ruta.py` usa `argon2.PasswordHasher()` directo (mismos parámetros por defecto que `services/acceso.py`), porque `datos/` solo importa `app.models` y `app.core.parametros`.
+- **`JWT_SECRETO` en producción:** se adaptaron `tests/unit/configuracion/test_configuracion.py` y `tests/integration/desarrollo/test_entorno_desarrollo.py`, que creaban configuración de producción sin secreto (lo exige la spec).
+- **FastAPI instalado es 0.142.2** (la spec dice 0.150): se comprobó con pruebas que el guardia del router corre antes de validar el cuerpo (401 con cuerpo inválido) y que la política declarada por ruta llega al guardia.
+- **Cobertura de rutas por `openapi`:** FastAPI 0.142 incluye los routers de forma diferida (`aplicacion.routes` no los aplana); la prueba recorre `aplicacion.openapi()['paths']`.
+- **Política por ruta:** decorador `politica_acceso(...)` en `dependencies.py`; el guardia lo lee del endpoint de la ruta. Sin declarar, solo la propia. En B17 ninguna ruta lo usa.
+- **Errores del guardia:** 401 `{"mensaje": "Tu sesión terminó. Vuelve a ingresar."}` con `WWW-Authenticate: Bearer`; 404 `{"detail": "Cuenta no encontrada"}`, el mismo cuerpo que ya daba `obtener_cuenta` (no cambia el contrato).
+- **Router de desarrollo:** `/desarrollo/reiniciar`, `POST /eventos` y `GET /cuentas` quedan fuera del guardia y habilitan `fecha_hora` con su propia dependencia.
+- **Cliente de pruebas:** `ClienteConToken` (`tests/soporte/soporte_acceso.py`) firma el token de la cuenta de la ruta, de `cuenta` o del primer autor; si esa cuenta no existe, usa est-ana, y el guardia responde 404 como antes. Reemplaza a `TestClient` donde las pruebas lo creaban directamente.
+- **Presupuestos:** el guardia lee la cuenta del actor (+1 consulta, porque tras el rollback no se reutiliza la fila). Subieron de 10 a 11 la consulta del catálogo (`test_catalogo.py`) y el detalle de carrera en `test_favoritos.py`.
+- **Pruebas adaptadas:** `test_entorno_desarrollo.py` (`GET /cuentas` responde 404 en producción) y `test_exportar_fixtures_front.py` (los fixtures `ruta-sesion-*`).
+- **Fixtures de sesión:** el exportador ingresa de verdad con cada rol y usa sus tokens; en `ruta-sesion-*` el token y `expira_en` llevan valores fijos (`TOKEN-DE-PRUEBA`) para regenerarse idénticos.
+- **Guardas en `App.tsx`:** `routes/GuardaAcceso.tsx` envuelve `AppRoutes` (como hacía `DemoAccessGate`) y decide el portal por el prefijo de la ruta; así `AppRoutes` sigue siendo solo la tabla y las pruebas que lo renderizan no cambian. `routes/` no lee `store/`: usa `features/auth/hooks/useAcceso.ts`.
+- **Selector de rol eliminado** con su CSS (`.ov-access-sign-out`) y `features/auth/types.ts`; `/profiles` redirige con `routes/PortalDeCuenta.tsx`. Los botones de salir importan `cerrarSesion` de `store/accesoStore.ts`.
+- **Pruebas del front adaptadas:** en `tests/local/aventura/adventure-rendering.test.mjs` la prueba del login usa los textos nuevos y se quitaron las de `demoAccess` y `DemoAccessGate`, que pasan a `tests/local/portales/acceso.test.mjs`.
+- **Modo api en el front:** `store/servidor/cuenta.ts` queda como selector de la sesión (`cuentaActiva`, `cuentaApoderado`); sin sesión del rol, el ingreso responde 401 sin pedir nada. `main.tsx` conecta el cliente con `conectarAccesoApi()` (pasa por `services/api/sesion.ts`, porque `cliente.ts` solo se importa dentro de `services/api/`). Sin token, las opciones de `fetch` quedan como antes.
+- **Pruebas de servidor del front adaptadas:** `tests/soporte/servidor-ayudas.mjs` inicia por defecto la sesión de est-ana (`ingresarComo`) y registra las cabeceras; `apoderado-ayudas.mjs`, la de apo-rosa. En `servidor-apoderado`, `servidor-flujo`, `servidor-secciones`, `servidor-servicios`, `servidor-avisos`, `servidor-mara` y `servidor-mara-ayudas` se quitaron `GET /cuentas`, `guardarUsuarioIngreso` y `seleccionarCuenta`, y los conteos de peticiones o de claves locales cuentan la sesión.

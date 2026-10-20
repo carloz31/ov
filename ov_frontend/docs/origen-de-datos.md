@@ -86,8 +86,7 @@ Todas en `localStorage`, salvo donde se indica. No se cambian sin una migración
 
 | Clave | Almacén | Contenido |
 |---|---|---|
-| `ov.demo-access.v1` (`sessionStorage`) | `features/auth/lib/demoAccess.ts` | sesión de demostración |
-| `ov.cuenta-servidor.v1` (`sessionStorage`) | `store/servidor/cuenta.ts` | usuario ingresado compartido y cuenta activa del estudiante en api; la cuenta del apoderado solo vive en memoria |
+| `ov.acceso.v1` | `store/accesoStore.ts` | sesión `{token, expira_en, cuenta}`. En modo local, `token` es nulo y la cuenta sale de los usuarios de prueba (`data/demo/usuariosPrueba.ts`). En api, la cuenta activa del estudiante y la del apoderado salen de aquí. Reemplazó en B17 a `ov.demo-access.v1` y `ov.cuenta-servidor.v1` (`sessionStorage`) sin migración: eran claves de sesión y basta volver a ingresar. |
 | `ov.missions.v2` / `ov.missions.v2.api` | `store/journeyStore.ts` | progreso, intentos, entregas y borradores |
 | `ov.mission-files` (IndexedDB) | `store/journeyStore.ts` | archivos adjuntos |
 | `ov.student-adventure.v1` / `ov.student-adventure.v1.api` | `store/adventureStore.ts` | aventura, diario, casos, investigación, conversaciones |

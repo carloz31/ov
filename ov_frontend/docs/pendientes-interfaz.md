@@ -2,6 +2,17 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-19 · B17 · Hijos y salones de la sesión
+
+- **Dato:** `GET /sesion` entrega `hijos` (apoderado: `codigo`, `nombre`, `salon` y `parentesco` de sus vínculos activos) y `salones` (orientadora: `codigo`, `nombre` y `es_principal`). Llegan a `store/accesoStore.ts` (`datosSesion()`), pero ninguna vista los pinta.
+- **Dónde se mostraría:** la lista de hijos del portal del apoderado (hoy son datos de demostración en `features/parent/data/parentPortal.ts`) y el selector de salón de la orientadora (hoy `ov.staff.selected-salon.v1` sobre salones de demostración).
+- **Opciones:**
+  - conectar la lista de hijos en el lote F de familia y los salones en B14 y B16;
+  - mostrar solo el nombre del hijo en la cabecera del portal del apoderado;
+  - no mostrarlos hasta tener las rutas propias de la orientadora.
+- **Si no se muestra:** el portal del apoderado sigue mostrando hijos de demostración en modo `api`, aunque sus actividades sí son de la cuenta con sesión.
+- **Estado:** pendiente; B17 no toca esas vistas.
+
 ## 2026-10-15 · B12 · Familia: conversaciones, cartas y ruta del apoderado
 
 - **Dato:**

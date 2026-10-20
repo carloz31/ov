@@ -87,6 +87,8 @@ src/
 - Si una tarea mueve un dato entre servidor, contenido, catálogo o demostración, actualiza `docs/origen-de-datos.md` en la misma tarea. Cuando un dato pase al servidor, cambian el hook del dominio y `store/servidor/`; las vistas no deberían cambiar.
 - No cambies claves ni formatos de `localStorage`, `sessionStorage` o IndexedDB sin una migración que conserve lo guardado (claves en `docs/origen-de-datos.md`).
 - Para la red basta `fetch`. El proxy de desarrollo `/api` apunta a `http://127.0.0.1:8000`.
+- **Sesión (B17):** la sesión vive en `store/accesoStore.ts` (`ov.acceso.v1`, `localStorage`). La cuenta activa en api sale de ahí, nunca de una lista de cuentas. `cliente.ts` no guarda estado: `main.tsx` le entrega el token y qué hacer ante un 401 con `conectarAccesoApi()`. Las guardas por portal están en `routes/GuardaAcceso.tsx`. En modo local se ingresa con los usuarios de `data/demo/usuariosPrueba.ts` y nunca se llama al servidor.
+- **Seguridad del token:** como el token está en `localStorage`, no se usa HTML crudo (`dangerouslySetInnerHTML`) ni se cargan scripts de terceros.
 
 ## Interfaz
 
@@ -112,9 +114,9 @@ Un agente conecta datos a la interfaz que ya existe; no diseña interfaz nueva p
 ```text
 tests/
   local/        actividades/, aventura/, casos/, perfil/, portales/   (modo local)
-  servidor/     actividades/, mapa/, instrumentos/, logros/, perfil/  (modo api, con fixtures)
+  servidor/     acceso/, actividades/, mapa/, instrumentos/, logros/, perfil/  (modo api, con fixtures)
   despliegue/
-  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) aún no la usa ninguna prueba
+  fixtures/servidor/   generados por ov_backend; no se editan a mano; de ruta/ (ruta-*) solo tests/servidor/acceso usa ruta-sesion-*
   soporte/             ayudantes compartidos
 ```
 
@@ -131,6 +133,7 @@ tests/
 | `features/discovery/` | `tests/servidor/instrumentos`, `tests/servidor/perfil` y `tests/servidor/logros` |
 | `features/cases/` | `tests/local/casos` |
 | `features/parent/`, `features/counselor/`, `features/student-tracking/`, `pages/parent/`, `pages/counselor/` | `tests/local/portales` y `tests/local/perfil` |
+| `features/auth/`, `pages/auth/`, `store/accesoStore.ts`, `routes/GuardaAcceso.tsx`, `data/demo/usuariosPrueba.ts` | `tests/local/portales`, `tests/local/aventura` y `tests/servidor/acceso` |
 | `lib/explorationAssets.ts` o recursos de `public/` | `npm run test:despliegue` |
 
 ## Reglas compartidas

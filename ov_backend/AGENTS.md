@@ -26,7 +26,7 @@ app/                    solo la aplicación; no lee archivos de datos
   main.py               crear_aplicacion(): configuración, lifespan, routers
   config.py             Configuracion y cargar_configuracion()
   database.py           motor, sesiones y todo lo que depende del dialecto
-  dependencies.py       dependencias compartidas (SesionBD, ejecutar_accion, cuenta)
+  dependencies.py       dependencias compartidas (SesionBD, ejecutar_accion, cuenta, guardia de acceso y ActorActual)
   exceptions.py         excepciones de dominio y su traducción a HTTP
   api/                  rutas, un archivo por grupo; sin lógica de negocio
   models/               tablas SQLAlchemy por dominio; __init__ reexporta todo
@@ -50,7 +50,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 |---|---|
 | Una consulta para una vista | `GET /cuentas/{c}/<dominio>` en `app/api/<dominio>.py`, con su esquema y servicio del mismo nombre. No agregues campos de otro dominio a una respuesta para ahorrar una petición. |
 | Una actividad | `datos/ruta.py`, con `contenido` (la clave de su JSON en el front) y `visibilidad`. Si es del apoderado, en un bloque de audiencia `APODERADO` y espacio `PORTAL_FAMILIA`. |
-| Un endpoint | `app/api/<grupo>.py`. Solo valida, llama a un servicio y devuelve. |
+| Un endpoint | `app/api/<grupo>.py`. Solo valida, llama a un servicio y devuelve. Queda tras el guardia de acceso (`router.py`); si debe servir a otra cuenta además de la propia, decláralo con `@politica_acceso(...)` (`app/dependencies.py`), con una función de `app/services/acceso.py`. |
 | Lógica de negocio | `app/services/<dominio>.py`, o `app/services/<dominio>/` si el dominio ya es carpeta. |
 | Una tabla o columna | `app/models/<dominio>.py` **y** su migración en `migrations/versions/`, en el mismo commit. |
 | Un enumerado | `app/models/enums.py`. |
@@ -92,8 +92,8 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 - Carpetas estándar en inglés (`api`, `models`, `schemas`, `services`, `core`); módulos, código, tablas, columnas y funciones en español y `snake_case`. Sin sufijos como `_service` o `_repo`. Enumerados en MAYÚSCULAS.
 - La API expone códigos legibles (`act-tip-01`, `est-ana`), nunca ids internos.
 - Cada acción (`POST /acciones/*`) ocurre en una sola transacción, abierta por `ejecutar_accion`; los servicios solo hacen `flush`. Si algo falla, se revierten estado, eventos, desbloqueos y resultados.
-- Errores: `detail: {"mensaje": ...}`. 404 si no existe la cuenta, la referencia o el objetivo, o si es de otra audiencia; 409 si la acción no está permitida en el estado actual (con `progreso` del objetivo bloqueado o `items_faltantes` cuando aplica); 422 si la entrada es inválida; 403 solo para el progreso de una insignia oculta no obtenida.
-- Fechas: las acciones aceptan `fecha_hora` opcional; se guarda sin zona, conservando la hora local. Sin fecha, se usa la hora de Lima (UTC−05:00). Todos los eventos de una petición comparten la misma fecha.
+- Errores: `detail: {"mensaje": ...}`. 404 si no existe la cuenta, la referencia o el objetivo, si es de otra audiencia o si la cuenta no es la del token; 409 si la acción no está permitida en el estado actual (con `progreso` del objetivo bloqueado o `items_faltantes` cuando aplica); 422 si la entrada es inválida; 403 para el progreso de una insignia oculta no obtenida y para ingresar con una cuenta inactiva; 401 sin token válido y 429 por bloqueo de ingreso (B17).
+- Fechas: las acciones aceptan `fecha_hora` opcional, solo con `ENTORNO=desarrollo` (fuera de él se ignora; B17); se guarda sin zona, conservando la hora local. Sin fecha, se usa la hora de Lima (UTC−05:00). Todos los eventos de una petición comparten la misma fecha.
 - Listas ordenadas por código (contenido, reglas), número (niveles, bloques) u orden (actividades, ítems); eventos y desbloqueos por fecha descendente. Los GET nunca escriben.
 - Catálogo (carreras, ocupaciones, instituciones): se lee de la base, no de la caché, con relaciones `viewonly` y `lazy="raise"` cargadas con `selectinload`; las búsquedas sin tildes usan la columna `busqueda` (`sin_tildes`, `app/models/base.py`).
 - Consultas: definiciones en la caché (`core/definiciones.py`), lecturas agrupadas por cuenta (`core/contexto.py`), escrituras en lote y ninguna consulta dentro de bucles. Las pruebas de presupuesto exigen que el número de consultas no crezca con el tamaño del catálogo: cada una agrega sus propias filas (`actividades_extra`, `aplicaciones_extra`, `agregar_ocupaciones`…) y compara pocas contra muchas, sin depender del tamaño de `ruta`. Los límites no se recalibran a la baja.
@@ -101,6 +101,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 ## Secretos y servicios externos
 
 - La clave de Gemini se lee de `.env`, que nunca se versiona. No la escribas en código, logs, respuestas, errores ni documentación.
+- `JWT_SECRETO` (firma de los tokens) también va en `.env`. Es obligatorio en `ENTORNO=produccion`, con al menos 32 caracteres; en desarrollo y pruebas, si falta, se usa uno fijo. Las contraseñas se guardan con Argon2id (`argon2-cffi`); las de prueba están en `datos/usuarios_prueba.txt`, que coincide con `datos/ruta.py`.
 - `EVALUADOR=falso` (por defecto) o `EVALUADOR=gemini`. Las pruebas usan siempre el evaluador falso y nunca acceden a la red (salvo las de marca `postgres`, que se omiten sin `TEST_POSTGRES_URL`).
 - No ejecutes nada que llame a la API real de Gemini salvo que el usuario lo pida explícitamente.
 
@@ -120,10 +121,10 @@ Python 3.14, FastAPI, Pydantic v2, SQLAlchemy 2.0, Alembic, SQLite (desarrollo y
 tests/
   conftest.py        solo autouse sin base (evaluador falso)
   soporte/           ayudas compartidas; ninguna prueba importa un test_*.py
-  unit/              arquitectura, configuracion, diario, instrumentos, motor, planes, registro
+  unit/              acceso, arquitectura, configuracion, diario, instrumentos, motor, planes, registro
   integration/
     conftest.py      plantillas SQLite por sesión y proceso; cada prueba copia la suya
-    actividades/ batallas/ casos/ catalogo/ cuentas/ desarrollo/ diario/ favoritos/ fichas/ instrumentos/ logros/
+    acceso/ actividades/ batallas/ casos/ catalogo/ cuentas/ desarrollo/ diario/ favoritos/ fichas/ instrumentos/ logros/
     motor/ planes/ referencias/ registro/ secciones/ tematicas/ testimonios/
     datos/ migraciones/ contrato/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
@@ -131,6 +132,7 @@ tests/
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.
 - Las pruebas nuevas usan los fixtures de plantilla (`aplicacion` con `ruta`, `cliente`, `sesion`, `base_aislada`) y las ayudas de `soporte_ruta.py`. Solo las pruebas de carga, migraciones y atomicidad de la carga preparan bases propias.
+- `cliente` es un `ClienteConToken` (`soporte_acceso.py`): firma con `emitir_token` el token de la cuenta que nombra la petición (la ruta, `cuenta` o el primer autor; est-ana si no nombra ninguna o si no existe), así que el guardia real corre en todas las pruebas. Las pruebas de rechazo usan `cliente_sin_token`. Quien cree su propio cliente usa `ClienteConToken` en vez de `TestClient`. `tests/integration/acceso/test_cobertura_rutas.py` recorre todas las rutas publicadas (401 sin token, 404 sobre otra cuenta).
 - Solo se crean carpetas con pruebas. Los nombres `test_*.py` son únicos en todo `tests/` (`--import-mode=importlib`).
 
 | Si cambias… | Corre primero |
