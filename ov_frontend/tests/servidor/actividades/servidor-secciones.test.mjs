@@ -87,7 +87,8 @@ test('ingreso confirma el POST antes de cargar y pide las tres consultas en para
   const ingreso = app.load('src/store/servidor/operaciones.ts').ingresar()
   await esperar()
   view.render()
-  assert.equal(app.requests.length, 2)
+  // B17: solo el POST de ingreso; la cuenta sale de la sesión, sin GET /cuentas.
+  assert.equal(app.requests.length, 1)
   assert.equal(almacen.obtenerEstadoServidor().consultasHabilitadas, false)
   post.resolver({ body: { eventos_registrados: [], nuevos_desbloqueos: [] } })
   await esperar()
@@ -272,7 +273,7 @@ for (const mismaCuenta of [false, true])
     await primera
     const tardia = almacen.reintentarSeccion('resumen')
     await esperar()
-    if (!mismaCuenta) app.load('src/store/servidor/cuenta.ts').guardarUsuarioIngreso('est-luis')
+    if (!mismaCuenta) app.ingresarComo('est-luis')
     acciones.prepararIngreso()
     servidorInicial(app)
     assert.equal((await acciones.ingresar()).tipo, 'ok')

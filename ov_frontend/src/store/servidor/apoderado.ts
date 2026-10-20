@@ -1,11 +1,10 @@
 import { useSyncExternalStore } from 'react'
 import { modoApi } from '@/config/env'
-import { listarCuentas } from '@/services/api/cuentas'
 import { ingresar, completarActividad } from '@/services/api/acciones'
 import { obtenerActividades } from '@/services/api/actividades'
 import { proyectarJourney } from '@/lib/servidor/adaptadores'
 import { hidratarParentJourney } from '../parentJourneyStore'
-import { usuarioIngreso } from './cuenta'
+import { cuentaApoderado } from './cuenta'
 import type { Seccion } from './sesion'
 import type {
   BloqueActividades,
@@ -78,28 +77,16 @@ export function ingresarApoderado(): Promise<RespuestaServidor<RespuestaAccion>>
       if (sesion !== revisionSesion) return cambioSesion()
       if (!ingresoRegistrado) {
         publicar({ error: null })
-        const cuentas = await listarCuentas()
-        if (sesion !== revisionSesion) return cambioSesion()
-        if (cuentas.tipo !== 'ok') {
-          publicar({ error: cuentas })
-          return cuentas
-        }
-        const apoderados = cuentas.datos
-          .filter((c) => c.rol === 'APODERADO')
-          .sort((a, b) => a.codigo.localeCompare(b.codigo))
-        const cuenta = apoderados.find((c) => c.codigo === usuarioIngreso()) ?? apoderados[0]
+        // B17: la cuenta del apoderado sale de la sesión.
+        const cuenta = cuentaApoderado()
         if (!cuenta) {
-          const error: ErrorServidor = {
-            tipo: 'http',
-            estado: 404,
-            detalle: 'No hay cuentas de apoderado disponibles.',
-          }
+          const error: ErrorServidor = { tipo: 'http', estado: 401, detalle: 'No hay una sesión de apoderado.' }
           publicar({ error })
           return error
         }
-        publicar({ cuenta: cuenta.codigo })
-        const respuesta = await ingresar(cuenta.codigo)
-        if (sesion !== revisionSesion || estado.cuenta !== cuenta.codigo) return cambioSesion()
+        publicar({ cuenta })
+        const respuesta = await ingresar(cuenta)
+        if (sesion !== revisionSesion || estado.cuenta !== cuenta) return cambioSesion()
         if (respuesta.tipo !== 'ok') {
           publicar({ error: respuesta })
           return respuesta

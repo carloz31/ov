@@ -2,7 +2,7 @@ import * as apiCuentas from '@/services/api/cuentas'
 import * as apiAcciones from '@/services/api/acciones'
 import * as apiDesarrollo from '@/services/api/desarrollo'
 import { desarrollo, modoApi } from '@/config/env'
-import { cuentaActiva, seleccionarCuenta } from './cuenta'
+import { cuentaActiva } from './cuenta'
 import { limpiarEstadoApoderado } from './apoderado'
 import {
   informarErrorServidor,
@@ -51,13 +51,12 @@ export function ingresar(): Promise<RespuestaServidor<RespuestaAccion>> {
   })
   const pendiente = (async () => {
     if (!ingresoRegistrado) {
-      const cuentas = await apiCuentas.listarCuentas()
-      if (turno !== revisionIngreso) return cambioDeCuenta()
-      if (cuentas.tipo !== 'ok') {
-        informarErrorServidor(cuentas)
-        return cuentas
+      const cuenta = cuentaActiva()
+      if (!cuenta) {
+        const sinSesion: ErrorServidor = { tipo: 'http', estado: 401, detalle: 'No hay una sesión de estudiante.' }
+        informarErrorServidor(sinSesion)
+        return sinSesion
       }
-      const cuenta = seleccionarCuenta(cuentas.datos)
       prepararAlmacenesApi(cuenta)
       const respuesta = await apiAcciones.ingresar(cuenta)
       if (turno !== revisionIngreso) return cambioDeCuenta()

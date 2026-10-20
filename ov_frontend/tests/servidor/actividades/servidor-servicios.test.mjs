@@ -59,13 +59,6 @@ const casos = [
   })),
   {
     modulo: 'cuentas',
-    funcion: 'listarCuentas',
-    argumentos: [],
-    ruta: '/cuentas',
-    datos: [estado.cuenta],
-  },
-  {
-    modulo: 'cuentas',
     funcion: 'obtenerResumen',
     argumentos: [cuenta],
     ruta: `/cuentas/${cuentaUrl}/resumen`,

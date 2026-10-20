@@ -1,6 +1,5 @@
 import { enviar, obtener } from './cliente'
 import type {
-  CuentaResumen,
   DesbloqueoLegible,
   DesbloqueosMarcados,
   ResumenCuenta,
@@ -8,10 +7,6 @@ import type {
   RespuestaServidor,
   TipoObjetivo,
 } from '@/types/servidor'
-
-export function listarCuentas(): Promise<RespuestaServidor<CuentaResumen[]>> {
-  return obtener('/cuentas')
-}
 
 export function obtenerResumen(cuenta: string): Promise<RespuestaServidor<ResumenCuenta>> {
   return obtener(`/cuentas/${encodeURIComponent(cuenta)}/resumen`)

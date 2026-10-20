@@ -1,6 +1,22 @@
 import { urlApi } from '@/config/env'
 import type { DetalleError, RespuestaServidor } from '@/types/servidor'
 
+// B17: cliente.ts no guarda estado de sesión; main.tsx le entrega cómo leer el token y qué hacer ante un 401.
+type Acceso = { obtenerToken: () => string | null; alVencer: () => void }
+let acceso: Acceso = { obtenerToken: () => null, alVencer: () => {} }
+const rutaIngreso = '/sesion/ingresar'
+
+export function configurarAcceso(siguiente: Acceso) {
+  acceso = siguiente
+}
+
+// Sin token, las opciones quedan como antes de B17 (GET sin opciones y DELETE sin cabeceras).
+function conToken(opciones: RequestInit | undefined): RequestInit | undefined {
+  const token = acceso.obtenerToken()
+  if (!token) return opciones
+  return { ...opciones, headers: { ...(opciones?.headers as Record<string, string>), Authorization: `Bearer ${token}` } }
+}
+
 async function solicitar<T>(
   metodo: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   ruta: string,
@@ -10,19 +26,22 @@ async function solicitar<T>(
   try {
     respuesta = await fetch(
       `${urlApi}${ruta}`,
-      metodo === 'GET'
-        ? undefined
-        : metodo === 'DELETE'
-          ? { method: 'DELETE' }
-          : {
-              method: metodo,
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(cuerpo),
-            },
+      conToken(
+        metodo === 'GET'
+          ? undefined
+          : metodo === 'DELETE'
+            ? { method: 'DELETE' }
+            : {
+                method: metodo,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cuerpo),
+              },
+      ),
     )
   } catch {
     return { tipo: 'sin_conexion' }
   }
+  if (respuesta.status === 401 && ruta !== rutaIngreso) acceso.alVencer()
   if (respuesta.status === 204) return { tipo: 'ok', datos: undefined as T }
   let datos: unknown
   try {

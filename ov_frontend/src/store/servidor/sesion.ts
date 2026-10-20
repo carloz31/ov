@@ -81,8 +81,8 @@ export const suscribirServidor = (oyente: () => void) => {
   }
 }
 export const useEstadoServidor = () => useSyncExternalStore(suscribirServidor, obtenerEstadoServidor)
-export function prepararAlmacenesApi(cuenta = cuentaActiva() ?? 'est-ana') {
-  if (!modoApi) return
+export function prepararAlmacenesApi(cuenta = cuentaActiva()) {
+  if (!modoApi || !cuenta) return
   configurarJourneyServidor(cuenta)
   configurarAdventureServidor(cuenta, () => ciudadDisponible(almacen.actividades.datos))
 }

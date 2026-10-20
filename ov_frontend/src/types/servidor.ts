@@ -12,6 +12,17 @@ export type EstadoActividad = 'BLOQUEADA' | 'DISPONIBLE' | 'EN_CURSO' | 'COMPLET
 export type EstadoDisponibilidad = 'DISPONIBLE' | 'BLOQUEADA'
 export type RolCuenta = 'ESTUDIANTE' | 'APODERADO' | 'ORIENTADORA'
 export type CuentaResumen = { codigo: string; nombre: string; rol: RolCuenta }
+// B17 · app/schemas/sesion.py
+export type IngresoEntrada = { usuario: string; contrasena: string }
+export type IngresoRespuesta = { token: string; expira_en: string; cuenta: CuentaResumen }
+export type HijoSesion = { codigo: string; nombre: string; salon: string | null; parentesco: string | null }
+export type SalonSesion = { codigo: string; nombre: string; es_principal: boolean }
+export type SesionRespuesta = {
+  cuenta: CuentaResumen
+  expira_en: string
+  hijos: HijoSesion[]
+  salones: SalonSesion[]
+}
 export type NivelActual = { numero: number; titulo: string }
 export type DesbloqueosMarcados = { marcados: number }
 export type ActividadEstado = { codigo: string; titulo: string; estado: EstadoActividad }

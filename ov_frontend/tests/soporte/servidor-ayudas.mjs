@@ -12,11 +12,20 @@ export const copia = (value) => JSON.parse(JSON.stringify(value))
 export const esperar = async () => {
   for (let i = 0; i < 15; i++) await new Promise((resolve) => setImmediate(resolve))
 }
+// B17: cuentas de la ruta mínima para iniciar la sesión de prueba (ov.acceso.v1) sin pasar por el login.
+const CUENTAS_SESION = {
+  'est-ana': { codigo: 'est-ana', nombre: 'Ana', rol: 'ESTUDIANTE' },
+  'est-luis': { codigo: 'est-luis', nombre: 'Luis', rol: 'ESTUDIANTE' },
+  'apo-rosa': { codigo: 'apo-rosa', nombre: 'Rosa', rol: 'APODERADO' },
+  'ori-carmen': { codigo: 'ori-carmen', nombre: 'Carmen', rol: 'ORIENTADORA' },
+}
+export const TOKEN_PRUEBA = 'TOKEN-DE-PRUEBA'
 export function fixtureServidor({
   api = true,
   desarrollo = true,
   guardado = {},
   ruta = '/student/missions',
+  cuenta = 'est-ana',
 } = {}) {
   const cache = new Map(),
     local = new Map(Object.entries(guardado)),
@@ -69,6 +78,14 @@ export function fixtureServidor({
       return fn()
     },
   }
+  const almacenLocal = {
+    getItem: (key) => local.get(key) ?? null,
+    setItem(key, value) {
+      if (fallarGuardado) throw Error('Sin espacio')
+      local.set(key, value)
+    },
+    removeItem: (key) => local.delete(key),
+  }
   const context = vm.createContext({
     console,
     Date,
@@ -99,6 +116,7 @@ export function fixtureServidor({
       clearInterval,
       matchMedia: () => ({ matches: false, addEventListener() {}, removeEventListener() {} }),
       location: { reload() {} },
+      localStorage: almacenLocal,
     },
     document: {
       visibilityState: 'visible',
@@ -107,14 +125,7 @@ export function fixtureServidor({
       addEventListener() {},
       removeEventListener() {},
     },
-    localStorage: {
-      getItem: (key) => local.get(key) ?? null,
-      setItem(key, value) {
-        if (fallarGuardado) throw Error('Sin espacio')
-        local.set(key, value)
-      },
-      removeItem: (key) => local.delete(key),
-    },
+    localStorage: almacenLocal,
     sessionStorage: {
       getItem: (key) => sesion.get(key) ?? null,
       setItem: (key, value) => sesion.set(key, value),
@@ -124,6 +135,7 @@ export function fixtureServidor({
       const request = {
         url,
         method: options?.method ?? 'GET',
+        headers: options?.headers ?? {},
         body: options?.body ? JSON.parse(options.body) : undefined,
       }
       requests.push(request)
@@ -201,7 +213,16 @@ export function fixtureServidor({
   }
   const config = load('src/config/env.ts')
   config.configurarServidor({ VITE_DATOS: api ? 'api' : 'local', VITE_API_URL: '/api', DEV: desarrollo })
+  // Como main.tsx en modo api: el cliente lee el token de la sesión y avisa los 401.
+  if (api) load('src/store/accesoStore.ts').conectarAccesoApi()
+  function ingresarComo(codigo) {
+    load('src/store/accesoStore.ts').guardarSesion(
+      codigo ? { token: TOKEN_PRUEBA, expira_en: '2026-10-08T15:00:00Z', cuenta: CUENTAS_SESION[codigo] } : null,
+    )
+  }
+  if (api && cuenta) ingresarComo(cuenta)
   return {
+    ingresarComo,
     load,
     config,
     local,
@@ -260,14 +281,6 @@ export function elementos(tree, predicate) {
 export function servidorInicial(app) {
   const inicial = escenarioServidor('inicial')
   app.fetch((request) => {
-    if (request.url === '/api/cuentas')
-      return {
-        body: [
-          inicial.cuenta,
-          { codigo: 'est-luis', nombre: 'Luis', rol: 'ESTUDIANTE' },
-          { codigo: 'apo-rosa', nombre: 'Rosa', rol: 'APODERADO' },
-        ],
-      }
     if (request.url === '/api/acciones/ingresar')
       return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
     if (esConsultaDominio(request))

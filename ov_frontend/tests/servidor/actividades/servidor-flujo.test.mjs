@@ -73,25 +73,29 @@ test('el cliente distingue 409, red y errores HTTP sin perder el detalle', async
   app.fetch(() => ({ status: 404, body: { detail: 'No existe' } }))
   assert.equal((await obtener('/cuentas')).estado, 404)
 })
-test('el ingreso deduplica el montaje, elige solo estudiantes y no marca avisos vistos', async () => {
-  for (const [usuario, esperado] of [
-    ['est-luis', 'est-luis'],
-    ['apo-rosa', 'est-ana'],
-    ['cualquier-usuario', 'est-ana'],
-  ]) {
-    const app = fixtureServidor()
+test('el ingreso deduplica el montaje, usa la cuenta de estudiante de la sesión y no marca avisos vistos', async () => {
+  // B17: la cuenta sale de ov.acceso.v1 y cada petición lleva el token.
+  for (const usuario of ['est-luis', 'est-ana']) {
+    const app = fixtureServidor({ cuenta: usuario })
     servidorInicial(app)
-    app.load('src/store/servidor/cuenta.ts').guardarUsuarioIngreso(usuario)
     const acciones = app.load('src/store/servidor/operaciones.ts')
     await Promise.all([acciones.ingresar(), acciones.ingresar()])
-    assert.equal(app.requests.filter((r) => r.url === '/api/acciones/ingresar').length, 1)
-    assert.equal(app.load('src/store/servidor/cuenta.ts').cuentaActiva(), esperado)
-    assert.equal(JSON.parse(app.sesion.get('ov.cuenta-servidor.v1')).codigo, esperado)
+    const posts = app.requests.filter((r) => r.url === '/api/acciones/ingresar')
+    assert.equal(posts.length, 1)
+    assert.equal(posts[0].body.cuenta, usuario)
+    assert.ok(app.requests.every((r) => r.headers.Authorization === 'Bearer TOKEN-DE-PRUEBA'))
+    assert.equal(app.requests.some((r) => r.url === '/api/cuentas'), false)
+    assert.equal(app.load('src/store/servidor/cuenta.ts').cuentaActiva(), usuario)
     assert.equal(
       app.requests.some((r) => r.url.includes('marcar-vistos')),
       false,
     )
   }
+  const apoderado = fixtureServidor({ cuenta: 'apo-rosa' })
+  servidorInicial(apoderado)
+  const respuesta = await apoderado.load('src/store/servidor/operaciones.ts').ingresar()
+  assert.equal(respuesta.estado, 401)
+  assert.deepEqual(apoderado.requests, [])
 })
 
 test('el ingreso confirmado conserva sus avisos si falla la consulta y reintenta sin otro POST', async () => {
@@ -128,21 +132,27 @@ test('un ingreso anterior no cambia la cuenta nueva cuando llega tarde', async (
   app.fetch(
     () =>
       new Promise((resolve) => {
-        liberar = () => resolve({ body: [escenarioServidor('inicial').cuenta] })
+        liberar = () => resolve({ body: { eventos_registrados: [], nuevos_desbloqueos: [] } })
       }),
   )
   const acciones = app.load('src/store/servidor/operaciones.ts'),
     cuenta = app.load('src/store/servidor/cuenta.ts')
   const anterior = acciones.ingresar()
-  cuenta.guardarUsuarioIngreso('est-luis')
+  await esperar()
+  // B17: el POST de Ana ya salió (antes se esperaba GET /cuentas); el cambio de sesión lo deja sin efecto.
+  app.ingresarComo('est-luis')
   acciones.prepararIngreso()
+  const pendienteAnterior = liberar
   servidorInicial(app)
   assert.equal((await acciones.ingresar()).tipo, 'ok')
-  liberar()
+  pendienteAnterior()
   assert.equal((await anterior).tipo, 'http')
   assert.equal(cuenta.cuentaActiva(), 'est-luis')
   assert.equal(cargarAlmacen(app).obtenerEstadoServidor().resumen.datos.cuenta.codigo, 'est-luis')
-  assert.equal(app.requests.filter((r) => r.url === '/api/acciones/ingresar').length, 1)
+  assert.deepEqual(
+    app.requests.filter((r) => r.url === '/api/acciones/ingresar').map((r) => r.body.cuenta),
+    ['est-ana', 'est-luis'],
+  )
 })
 
 test('un ingreso sin servidor expone error y reintenta sin crear estado ficticio', async () => {
@@ -162,13 +172,12 @@ test('las copias API separan cuentas, conservan borradores y nunca mezclan clave
   const journey = app.load('src/store/journeyStore.ts'),
     adventure = app.load('src/store/adventureStore.ts')
   journey.updateJourney((s) => ({ ...s, drafts: { texto: 'Borrador de Ana' } }))
-  const cuenta = app.load('src/store/servidor/cuenta.ts')
-  cuenta.guardarUsuarioIngreso('est-luis')
+  app.ingresarComo('est-luis')
   acciones.prepararIngreso()
   await acciones.ingresar()
   assert.equal(journey.getJourneySnapshot().drafts.texto, undefined)
   journey.updateJourney((s) => ({ ...s, drafts: { texto: 'Borrador de Luis' } }))
-  cuenta.guardarUsuarioIngreso('est-ana')
+  app.ingresarComo('est-ana')
   acciones.prepararIngreso()
   await acciones.ingresar()
   assert.equal(journey.getJourneySnapshot().drafts.texto, 'Borrador de Ana')

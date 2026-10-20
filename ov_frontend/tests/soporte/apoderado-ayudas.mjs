@@ -10,7 +10,7 @@ const nativeRequire = createRequire(import.meta.url)
 
 // Entorno específico del portal: los demás tests de servidor conservan sus áreas protegidas.
 export function fixtureApoderado(opciones = {}) {
-  const app = fixtureServidor(opciones)
+  const app = fixtureServidor({ cuenta: 'apo-rosa', ...opciones })
   const cache = new Map()
   let activo = null,
     activityId = 'pad-01-rol'

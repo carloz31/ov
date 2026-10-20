@@ -3,10 +3,9 @@ import test from 'node:test'
 import { copia, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 import { fixtureApoderado } from '../../soporte/apoderado-ayudas.mjs'
 
-function fixture(usuario = '', cuentas = jsonServidor('cuentas'), opciones = {}) {
+function fixture(usuario = 'apo-rosa', cuentas = jsonServidor('cuentas'), opciones = {}) {
   const app = opciones.portal ? fixtureApoderado(opciones) : fixtureServidor(opciones)
-  const cuenta = app.load('src/store/servidor/cuenta.ts')
-  cuenta.guardarUsuarioIngreso(usuario)
+  app.ingresarComo(usuario || null)
   const alumno = app.load('src/store/servidor/sesion.ts')
   const estadoAlumno = alumno.obtenerEstadoServidor()
   const localAlumno = app.load('src/store/journeyStore.ts').getJourneySnapshot()
@@ -30,62 +29,43 @@ function fixture(usuario = '', cuentas = jsonServidor('cuentas'), opciones = {})
   return { ...app, store, persistencia, contenidos, alumno, estadoAlumno, localAlumno, aventuraAlumno }
 }
 
-for (const usuario of ['apo-rosa', 'est-ana', '']) {
-  test(`el ingreso con usuario ${usuario || 'vacío'} selecciona al apoderado sin tocar al estudiante`, async () => {
+test('el ingreso usa la cuenta de apoderado de la sesión sin tocar al estudiante', async () => {
+  // B17: la cuenta sale de ov.acceso.v1; ya no se pide GET /cuentas.
+  const app = fixture('apo-rosa')
+  const primero = app.store.ingresarApoderado()
+  assert.equal(app.store.ingresarApoderado(), primero)
+  assert.equal((await primero).tipo, 'ok')
+  assert.equal(app.store.obtenerEstadoApoderado().cuenta, 'apo-rosa')
+  assert.equal((await app.store.ingresarApoderado()).tipo, 'ok')
+  assert.deepEqual(
+    app.requests.map((r) => [r.method, r.url]),
+    [
+      ['POST', '/api/acciones/ingresar'],
+      ['GET', '/api/cuentas/apo-rosa/actividades'],
+    ],
+  )
+  assert.equal(app.requests[0].body.cuenta, 'apo-rosa')
+  assert.equal(app.requests[0].headers.Authorization, 'Bearer TOKEN-DE-PRUEBA')
+  assert.equal(app.alumno.obtenerEstadoServidor(), app.estadoAlumno)
+  assert.equal(app.load('src/store/journeyStore.ts').getJourneySnapshot(), app.localAlumno)
+  assert.equal(app.load('src/store/adventureStore.ts').useAdventure(), app.aventuraAlumno)
+  assert.equal(app.load('src/store/servidor/cuenta.ts').cuentaActiva(), null)
+  assert.deepEqual([...app.local.keys()].sort(), ['ov.acceso.v1', 'ov.parent-missions.v1'])
+})
+
+for (const usuario of ['est-ana', '']) {
+  test(`sin sesión de apoderado (${usuario || 'sin sesión'}) se informa error sin ingresar ni pedir actividades`, async () => {
     const app = fixture(usuario)
-    const primero = app.store.ingresarApoderado()
-    assert.equal(app.store.ingresarApoderado(), primero)
-    assert.equal((await primero).tipo, 'ok')
-    assert.equal(app.store.obtenerEstadoApoderado().cuenta, 'apo-rosa')
-    assert.equal((await app.store.ingresarApoderado()).tipo, 'ok')
-    assert.deepEqual(
-      app.requests.map((r) => [r.method, r.url]),
-      [
-        ['GET', '/api/cuentas'],
-        ['POST', '/api/acciones/ingresar'],
-        ['GET', '/api/cuentas/apo-rosa/actividades'],
-      ],
-    )
-    assert.equal(app.requests[1].body.cuenta, 'apo-rosa')
+    const respuesta = await app.store.ingresarApoderado()
+    assert.equal(respuesta.tipo, 'http')
+    assert.equal(respuesta.estado, 401)
+    assert.equal(app.store.obtenerEstadoApoderado().error, respuesta)
+    assert.equal(app.store.obtenerEstadoApoderado().cuenta, null)
+    assert.deepEqual(app.requests, [])
     assert.equal(app.alumno.obtenerEstadoServidor(), app.estadoAlumno)
-    assert.equal(app.load('src/store/journeyStore.ts').getJourneySnapshot(), app.localAlumno)
-    assert.equal(app.load('src/store/adventureStore.ts').useAdventure(), app.aventuraAlumno)
-    assert.equal(app.load('src/store/servidor/cuenta.ts').cuentaActiva(), null)
-    assert.deepEqual([...app.local.keys()], ['ov.parent-missions.v1'])
-    assert.deepEqual(JSON.parse(app.sesion.get('ov.cuenta-servidor.v1')), { usuario, codigo: null })
+    assert.deepEqual([...app.local.keys()], usuario ? ['ov.acceso.v1'] : [])
   })
 }
-
-test('la selección usa primero el usuario y, en su ausencia, el menor código de apoderado', async () => {
-  // DATO DE PRUEBA: otra cuenta para verificar orden y coincidencia sin depender de plataforma.
-  const cuentas = [{ codigo: 'apo-zeta', nombre: 'Zeta', rol: 'APODERADO' }, ...jsonServidor('cuentas')]
-  for (const [usuario, esperado] of [
-    ['apo-zeta', 'apo-zeta'],
-    ['otro', 'apo-rosa'],
-  ]) {
-    const app = fixture(usuario, cuentas)
-    await app.store.ingresarApoderado()
-    assert.equal(app.store.obtenerEstadoApoderado().cuenta, esperado)
-  }
-})
-
-test('sin cuentas de apoderado se informa error sin ingresar ni pedir actividades', async () => {
-  const app = fixture(
-    '',
-    jsonServidor('cuentas').filter((c) => c.rol === 'ESTUDIANTE'),
-  )
-  const respuesta = await app.store.ingresarApoderado()
-  assert.equal(respuesta.tipo, 'http')
-  assert.equal(respuesta.estado, 404)
-  assert.equal(app.store.obtenerEstadoApoderado().error, respuesta)
-  assert.equal(app.store.obtenerEstadoApoderado().cuenta, null)
-  assert.deepEqual(
-    app.requests.map((r) => r.url),
-    ['/api/cuentas'],
-  )
-  assert.equal(app.alumno.obtenerEstadoServidor(), app.estadoAlumno)
-  assert.equal(app.local.size, 0)
-})
 
 test('la lista toma estructura y disponibilidad del servidor y conserva exactamente los nodos JSON', () => {
   const app = fixture()
@@ -228,7 +208,7 @@ test('un 409 conserva progreso, comparte la promesa y permite reintentar despué
   assert.equal(app.requests.filter((r) => r.url.includes('completar-actividad')).length, 2)
 })
 
-for (const ruta of ['/api/cuentas', '/api/acciones/ingresar', '/api/cuentas/apo-rosa/actividades']) {
+for (const ruta of ['/api/acciones/ingresar', '/api/cuentas/apo-rosa/actividades']) {
   test(`se descarta la respuesta tardía de ${ruta} al limpiar la sesión`, async () => {
     const app = fixture()
     let resolver
@@ -250,16 +230,13 @@ for (const ruta of ['/api/cuentas', '/api/acciones/ingresar', '/api/cuentas/apo-
     app.store.limpiarEstadoApoderado()
     const limpio = app.store.obtenerEstadoApoderado()
     resolver({
-      body:
-        ruta === '/api/cuentas'
-          ? jsonServidor('cuentas')
-          : ruta.endsWith('/actividades')
-            ? jsonServidor('apoderado-actividades-inicial')
-            : { eventos_registrados: [], nuevos_desbloqueos: [] },
+      body: ruta.endsWith('/actividades')
+        ? jsonServidor('apoderado-actividades-inicial')
+        : { eventos_registrados: [], nuevos_desbloqueos: [] },
     })
     assert.equal((await pendiente).estado, 409)
     assert.equal(app.store.obtenerEstadoApoderado(), limpio)
-    assert.equal(app.local.size, 0)
+    assert.deepEqual([...app.local.keys()], ['ov.acceso.v1'])
   })
 }
 
@@ -410,7 +387,8 @@ test('el hook api carga la lista sin usar el progreso de apo-prototipo', async (
   assert.equal(cargado.available(cargado.activities[0]), true)
   assert.equal(cargado.available(cargado.activities[1]), false)
   assert.equal(app.alumno.obtenerEstadoServidor(), app.estadoAlumno)
-  assert.equal(app.requests.length, 3)
+  // B17: ingreso y actividades; la cuenta sale de la sesión, sin GET /cuentas.
+  assert.equal(app.requests.length, 2)
   mounted.unmount()
 })
 
@@ -732,5 +710,5 @@ test('sin conexión, el hook expone el error y una lista vacía sin usar el cat�
   assert.equal(source.error.tipo, 'sin_conexion')
   assert.deepEqual(copia(source.activities), [])
   assert.deepEqual(copia(source.completedIds), [])
-  assert.equal(app.local.size, 0)
+  assert.deepEqual([...app.local.keys()], ['ov.acceso.v1'])
 })

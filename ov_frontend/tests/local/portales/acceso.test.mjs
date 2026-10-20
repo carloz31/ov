@@ -33,7 +33,12 @@ function crearEntorno() {
     },
   }
   const cache = new Map()
-  const contexto = vm.createContext({ console, JSON, window: { localStorage } })
+  const contexto = vm.createContext({
+    console,
+    JSON,
+    window: { localStorage, addEventListener() {}, removeEventListener() {} },
+    localStorage,
+  })
   function cargar(archivo) {
     if (cache.has(archivo)) return cache.get(archivo)
     const exports = {}

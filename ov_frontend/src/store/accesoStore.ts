@@ -1,7 +1,9 @@
 import { useSyncExternalStore } from 'react'
 
+import { modoApi } from '@/config/env'
 import { usuariosPrueba } from '@/data/demo/usuariosPrueba'
-import type { CuentaResumen } from '@/types/servidor'
+import * as apiSesion from '@/services/api/sesion'
+import type { CuentaResumen, ErrorServidor, HijoSesion, SalonSesion } from '@/types/servidor'
 
 // B17: una sola clave en localStorage; en un equipo propio la sesión sobrevive a cerrar la pestaña.
 // Reemplaza a ov.demo-access.v1 y ov.cuenta-servidor.v1 (sessionStorage) sin migrarlas: basta volver a ingresar.
@@ -36,6 +38,8 @@ function leerGuardada(): SesionAcceso | null {
 
 let sesion = leerGuardada()
 let aviso: string | null = null
+// GET /sesion: llegan al almacén pero ninguna vista los pinta todavía (docs/pendientes-interfaz.md).
+let datos: { hijos: HijoSesion[]; salones: SalonSesion[] } = { hijos: [], salones: [] }
 const oyentes = new Set<() => void>()
 
 function avisar() {
@@ -63,6 +67,7 @@ export function guardarSesion(siguiente: SesionAcceso | null) {
 export const sesionActual = () => sesion
 export const tokenActual = () => sesion?.token ?? null
 export const avisoSesion = () => aviso
+export const datosSesion = () => datos
 
 export function iniciarSesionLocal(usuario: string, contrasena: string): ResultadoIngreso {
   const correo = usuario.trim().toLowerCase()
@@ -73,14 +78,47 @@ export function iniciarSesionLocal(usuario: string, contrasena: string): Resulta
   return { ok: true, cuenta: encontrado.cuenta }
 }
 
+/** Modo api: el servidor valida las credenciales y entrega el token. Devuelve el error, si lo hubo. */
+export async function iniciarSesionServidor(usuario: string, contrasena: string): Promise<ErrorServidor | null> {
+  const respuesta = await apiSesion.ingresarSesion({ usuario, contrasena })
+  if (respuesta.tipo !== 'ok') return respuesta
+  aviso = null
+  datos = { hijos: [], salones: [] }
+  const { token, expira_en, cuenta } = respuesta.datos
+  guardarSesion({ token, expira_en, cuenta })
+  return null
+}
+
+/** Al cargar (y tras ingresar), valida el token guardado con GET /sesion; un 401 llega a `terminarSesion`. */
+export async function validarSesionGuardada() {
+  if (!modoApi || !sesion) return
+  if (!sesion.token) {
+    guardarSesion(null)
+    return
+  }
+  const token = sesion.token
+  const respuesta = await apiSesion.consultarSesion()
+  if (respuesta.tipo !== 'ok' || sesion?.token !== token) return
+  datos = { hijos: respuesta.datos.hijos, salones: respuesta.datos.salones }
+  guardarSesion({ token, expira_en: respuesta.datos.expira_en, cuenta: respuesta.datos.cuenta })
+}
+
+/** main.tsx: el cliente HTTP lee el token de aquí y avisa los 401. */
+export function conectarAccesoApi() {
+  apiSesion.configurarSesionApi({ obtenerToken: tokenActual, alVencer: terminarSesion })
+}
+
 export function cerrarSesion() {
   aviso = null
+  datos = { hijos: [], salones: [] }
   guardarSesion(null)
 }
 
 /** El servidor rechazó el token (401): se limpia la sesión y el login lo explica. */
 export function terminarSesion() {
+  if (!sesion) return
   aviso = mensajeSesionTerminada
+  datos = { hijos: [], salones: [] }
   guardarSesion(null)
 }
 

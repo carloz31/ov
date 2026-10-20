@@ -3,7 +3,28 @@ import { useNavigate } from 'react-router'
 
 import { modoApi } from '@/config/env'
 import { portalPorRol } from '@/routes/paths'
-import { iniciarSesionLocal, useAvisoSesion, useSesionAcceso } from '@/store/accesoStore'
+import {
+  iniciarSesionLocal,
+  iniciarSesionServidor,
+  sesionActual,
+  useAvisoSesion,
+  useSesionAcceso,
+  validarSesionGuardada,
+} from '@/store/accesoStore'
+import { prepararIngreso } from '@/store/servidor/operaciones'
+import { mensajeErrorServidor, prepararAlmacenesApi } from '@/store/servidor/sesion'
+
+async function ingresar(usuario: string, contrasena: string) {
+  if (!modoApi) return iniciarSesionLocal(usuario, contrasena)
+  const error = await iniciarSesionServidor(usuario, contrasena)
+  const cuenta = sesionActual()?.cuenta
+  if (error || !cuenta) return { ok: false as const, mensaje: mensajeErrorServidor(error) }
+  // Los almacenes del servidor empiezan limpios para la cuenta que acaba de ingresar.
+  prepararIngreso()
+  prepararAlmacenesApi()
+  void validarSesionGuardada()
+  return { ok: true as const, cuenta }
+}
 
 export function useLogin() {
   const navigate = useNavigate()
@@ -15,7 +36,7 @@ export function useLogin() {
     if (enviando) return
     setEnviando(true)
     setError(null)
-    const resultado = iniciarSesionLocal(usuario, contrasena)
+    const resultado = await ingresar(usuario, contrasena)
     setEnviando(false)
     if (!resultado.ok) {
       setError(resultado.mensaje)

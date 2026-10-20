@@ -63,8 +63,7 @@ export async function iniciarMara({ cantidad = 0, completada = false, resultado 
     throw Error(`Solicitud no configurada: ${req.url}`)
   }
   app.fetch(servidor)
-  const cuenta = app.load('src/store/servidor/cuenta.ts')
-  cuenta.seleccionarCuenta([estado.cuenta])
+  app.ingresarComo(estado.cuenta.codigo)
   const almacen = cargarAlmacen(app)
   // DATO DE PRUEBA: ingreso ya confirmado para aislar reproducción y consultas.
   almacen.publicar({ consultasHabilitadas: true })

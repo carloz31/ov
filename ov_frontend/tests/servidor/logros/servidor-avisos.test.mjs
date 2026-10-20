@@ -19,7 +19,7 @@ async function iniciar() {
     throw Error(r.url)
   }
   app.fetch(servidor)
-  app.load('src/store/servidor/cuenta.ts').seleccionarCuenta([estado.cuenta])
+  app.ingresarComo(estado.cuenta.codigo)
   const store = cargarAlmacen(app),
     acciones = app.load('src/store/servidor/operaciones.ts')
   // DATO DE PRUEBA: ingreso confirmado antes de las pruebas de avisos.
@@ -174,9 +174,7 @@ test('el marcado tardío de la cuenta anterior no deja recibos ni borra el nuevo
   await esperar()
   f.store.limpiarEstadoServidor()
   // DATO DE PRUEBA: cambio de cuenta durante el POST en curso.
-  f.app
-    .load('src/store/servidor/cuenta.ts')
-    .seleccionarCuenta([{ codigo: 'est-luis', nombre: 'Luis', rol: 'ESTUDIANTE' }])
+  f.app.ingresarComo('est-luis')
   resolver({ body: { marcados: 12 } })
   assert.equal((await marcado).tipo, 'http')
   assert.equal(f.store.obtenerEstadoServidor().marcadoAvisos, null)

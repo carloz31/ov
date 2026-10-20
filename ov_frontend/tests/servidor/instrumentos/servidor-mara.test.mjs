@@ -222,7 +222,7 @@ test('las consultas de la cuenta anterior se descartan cuando cambia el estudian
   )
   const pendiente = f.almacen.consultarRespuestas('act-tip-01')
   f.app.load('src/store/servidor/operaciones.ts').prepararIngreso()
-  f.app.load('src/store/servidor/cuenta.ts').guardarUsuarioIngreso('est-luis')
+  f.app.ingresarComo('est-luis')
   resolver()
   assert.equal((await pendiente).tipo, 'http')
   assert.equal(f.almacen.obtenerEstadoServidor().resultadoRiasec, null)
