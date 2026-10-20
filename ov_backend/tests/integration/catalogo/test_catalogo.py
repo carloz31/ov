@@ -168,5 +168,6 @@ def test_presupuesto_de_consultas_del_catalogo(tmp_path, base_aislada):
             with aplicacion.state.fabrica_sesiones.begin() as sesion:
                 catalogo_extra(sesion, extra)
             completar(cliente, 't-inicio')
-            conteos.append([medir(cliente, aplicacion, 'GET', ruta)[1].cantidad for ruta in RUTAS_CONSULTA])
+            # B17: +1 por la cuenta del actor que carga el guardia.
+            conteos.append([medir(cliente, aplicacion, 'GET', ruta, limite=11)[1].cantidad for ruta in RUTAS_CONSULTA])
     assert conteos[0] == conteos[1]

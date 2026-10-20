@@ -4,7 +4,9 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import sys
+from urllib.parse import urlsplit
 from tempfile import TemporaryDirectory
 
 if __package__ in (None, ''):
@@ -18,6 +20,47 @@ MISIONES_INTERESES = ('t-mision-intereses', 't-mision-intereses-2')
 PARTIDA_LLEGADA = 'TEST-PARTIDA-LLEGADA'
 CARPETA = 'ruta'
 PREFIJO = 'ruta-'
+# DATO DE PRUEBA (B17): el token y su vencimiento cambian en cada ingreso; los fixtures llevan valores fijos para
+# regenerarse idénticos. El recorrido usa los tokens reales.
+TOKEN_FIJO = 'TOKEN-DE-PRUEBA'
+EXPIRA_FIJA = '2026-10-08T15:00:00Z'
+ROLES_SESION = (('est-ana', 'estudiante'), ('apo-rosa', 'apoderado'), ('ori-carmen', 'orientadora'))
+_CUENTA_EN_RUTA = re.compile(r'^/cuentas/([^/]+)')
+
+
+class _ClienteConSesion:
+    """Envía cada petición con el token real de la cuenta que nombra (ruta o cuerpo), como el front de cada rol."""
+
+    def __init__(self, cliente):
+        self.cliente = cliente
+        self.tokens = {}
+
+    def request(self, metodo, ruta, json=None, cuenta=None):
+        if cuenta is None:
+            coincidencia = _CUENTA_EN_RUTA.match(urlsplit(ruta).path)
+            cuenta = (coincidencia.group(1) if coincidencia
+                      else json.get('cuenta', 'est-ana') if isinstance(json, dict) else 'est-ana')
+        cabeceras = {'Authorization': f'Bearer {self.tokens[cuenta]}'} if cuenta in self.tokens else {}
+        return self.cliente.request(metodo, ruta, json=json, headers=cabeceras)
+
+
+def _ingresar(cliente):
+    """B17: ingreso real de cada rol con sus credenciales de prueba, y la consulta de la sesión."""
+    from datos.ruta import CUENTAS
+    credenciales = {codigo: (correo, contrasena) for codigo, _, _, _, correo, contrasena in CUENTAS}
+    fixtures = {}
+    for codigo, rol in ROLES_SESION:
+        correo, contrasena = credenciales[codigo]
+        ingreso = _pedir(cliente, 'POST', '/sesion/ingresar', {'usuario': correo, 'contrasena': contrasena})
+        cliente.tokens[codigo] = ingreso['token']
+        fixtures[f'sesion-ingresar-{rol}'] = {**ingreso, 'token': TOKEN_FIJO, 'expira_en': EXPIRA_FIJA}
+        sesion = cliente.request('GET', '/sesion', cuenta=codigo).json()
+        fixtures[f'sesion-{rol}'] = {**sesion, 'expira_en': EXPIRA_FIJA}
+    error = cliente.request('POST', '/sesion/ingresar', {'usuario': credenciales['est-ana'][0], 'contrasena': 'otra'})
+    if error.status_code != 401:
+        raise RuntimeError(f'El ingreso con contraseña errada respondió {error.status_code}')
+    fixtures['sesion-error'] = error.json()
+    return fixtures
 
 
 def _pedir(cliente, metodo, ruta, datos=None):
@@ -285,8 +328,10 @@ def exportar_fixtures(destino: Path) -> list[Path]:
             preparar_base(url, 'ruta', crear_tablas=True)
             aplicacion = crear_aplicacion(url)
             try:
-                with TestClient(aplicacion) as cliente:
-                    fixtures = _recorrer(cliente)
+                with TestClient(aplicacion) as cliente_http:
+                    cliente = _ClienteConSesion(cliente_http)
+                    fixtures = _ingresar(cliente)
+                    fixtures.update(_recorrer(cliente))
                     fixtures.update(_recorrer_apoderado(cliente))
             finally:
                 aplicacion.state.motor_bd.dispose()

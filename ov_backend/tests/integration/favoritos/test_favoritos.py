@@ -93,7 +93,8 @@ def test_presupuesto_de_consultas_de_favoritos(tmp_path, base_aislada):
             pedir(cliente, 'POST', '/acciones/marcar-favorito', favorito('INSTITUCION', 't-uni'))
             conteos.append([
                 medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/favoritos')[1].cantidad,
-                medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/catalogo/carreras/psychology')[1].cantidad,
+                # B17: +1 por la cuenta del actor que carga el guardia.
+                medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/catalogo/carreras/psychology', limite=11)[1].cantidad,
                 medir(cliente, aplicacion, 'POST', '/acciones/marcar-favorito',
                       favorito('INSTITUCION', 't-ffaa'), limite=14)[1].cantidad,
             ])

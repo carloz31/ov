@@ -2,7 +2,7 @@
 
 
 import pytest
-from fastapi.testclient import TestClient
+from soporte_acceso import ClienteConToken as TestClient
 
 from app.core.parametros import DESCRIPCIONES_RIASEC
 from soporte_ruta import MISIONES_INTERESES, avanzar, revelar

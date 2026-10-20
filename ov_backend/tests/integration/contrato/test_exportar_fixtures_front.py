@@ -59,6 +59,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'planes', 'familia', 'familia-resultados', 'conversaciones-sin-carta', 'escribir-carta-est-ana',
     'escribir-carta-apo-rosa', 'responder-conversacion', 'conversaciones-te-toca', 'conversaciones-por-conversar',
     'completar-conversacion', 'conversaciones-final',
+    'sesion-ingresar-estudiante', 'sesion-ingresar-apoderado', 'sesion-ingresar-orientadora',
+    'sesion-estudiante', 'sesion-apoderado', 'sesion-orientadora', 'sesion-error',
 )}
 
 
@@ -367,3 +369,17 @@ def test_cli_exporta_los_fixtures_de_ruta(tmp_path):
     assert f'Exportados {len(NOMBRES)} fixtures' in resultado.stdout
     assert {ruta.name for ruta in (destino / 'ruta').glob('*.json')} == NOMBRES
     assert list(destino.glob('*.json')) == []
+
+
+def test_fixtures_de_sesion(tmp_path):
+    """B17: ingreso y sesión de cada rol con token y vencimiento fijos; el error de credenciales."""
+    from app.schemas.sesion import IngresoRespuesta, SesionRespuesta
+    datos = leer(exportador.exportar_fixtures(tmp_path / 'servidor'))
+    for codigo, rol in exportador.ROLES_SESION:
+        ingreso = IngresoRespuesta.model_validate(datos[f'sesion-ingresar-{rol}'])
+        assert ingreso.token == exportador.TOKEN_FIJO and ingreso.cuenta.codigo == codigo
+        sesion = SesionRespuesta.model_validate(datos[f'sesion-{rol}'])
+        assert sesion.cuenta.codigo == codigo
+    assert [h.codigo for h in SesionRespuesta.model_validate(datos['sesion-apoderado']).hijos] == ['est-ana']
+    assert [s.codigo for s in SesionRespuesta.model_validate(datos['sesion-orientadora']).salones] == ['5A']
+    assert datos['sesion-error'] == {'detail': {'mensaje': 'Usuario o contraseña incorrectos'}}

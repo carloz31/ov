@@ -2,7 +2,7 @@
 
 from contextlib import contextmanager
 from datetime import datetime
-from fastapi.testclient import TestClient
+from soporte_acceso import ClienteConToken as TestClient
 from sqlalchemy import select
 from app import models as m
 from app.main import crear_aplicacion

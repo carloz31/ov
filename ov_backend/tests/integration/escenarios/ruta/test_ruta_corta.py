@@ -2,8 +2,8 @@
 
 B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010; B03, las HU 007
 y 016; B07, la HU 094; B08, las HU 017, 041 y 051 a 056; B09, las HU 028 a 033, 035, 036 y 075; B11, las HU 043
-a 048, 050, 097 a 099, 109 y 110; B12, las HU 066, 068 a 071 y 078 a 080. Cada lote extiende este recorrido con
-su tramo.
+a 048, 050, 097 a 099, 109 y 110; B12, las HU 066, 068 a 071 y 078 a 080; B17, la HU 001 (el recorrido empieza con
+el ingreso real, como el front). Cada lote extiende este recorrido con su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
@@ -24,6 +24,17 @@ def siguiente(cliente, cuenta='est-ana'):
 
 def historial(cliente):
     return pedir(cliente, 'GET', '/cuentas/est-ana/desbloqueos')
+
+
+def test_hu001_ingreso_real_como_el_front(cliente_sin_token):
+    ingreso = cliente_sin_token.post('/sesion/ingresar', json={
+        'usuario': 'ana.estudiante@example.com', 'contrasena': 'Ana2026!'})
+    assert ingreso.status_code == 200, ingreso.text
+    assert ingreso.json()['cuenta'] == {'codigo': 'est-ana', 'nombre': 'Ana', 'rol': 'ESTUDIANTE'}
+    cabecera = {'Authorization': f"Bearer {ingreso.json()['token']}"}
+    assert cliente_sin_token.get('/sesion', headers=cabecera).json()['cuenta']['codigo'] == 'est-ana'
+    assert cliente_sin_token.post('/acciones/ingresar', headers=cabecera, json={'cuenta': 'est-ana'}).status_code == 200
+    assert cliente_sin_token.get('/cuentas/est-ana/resumen').status_code == 401
 
 
 def test_estado_inicial(cliente):

@@ -3,7 +3,7 @@
 from copy import deepcopy
 
 import pytest
-from fastapi.testclient import TestClient
+from soporte_acceso import ClienteConToken as TestClient
 from soporte_ruta import BLOQUE_FAMILIA, FECHA, completar, estado, eventos, pedir
 
 

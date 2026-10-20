@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from app.dependencies import SesionBD, ejecutar_accion
 from app.schemas.acciones import (
     AccionCuenta, BorrarEntradaEntrada, CheckInEntrada, CompletarActividadEntrada,
-    EditarEntradaEntrada, EscribirEntradaEntrada, EventoEntrada, PublicarEntrevistaEntrada,
+    EditarEntradaEntrada, EscribirEntradaEntrada, PublicarEntrevistaEntrada,
     ReiniciarInstrumentoEntrada, ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
     ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados, RespuestaResolverCaso,
     RespuestaReiniciarInstrumento, RespuestaRevelarResultado, RevelarResultadoEntrada, VerCarreraEntrada,
@@ -99,12 +99,6 @@ def ver_institucion(entrada: VerInstitucionEntrada, sesion: SesionBD):
 @router.post("/acciones/publicar-entrevista", response_model=RespuestaAgrupada, response_model_exclude_unset=True)
 def publicar_entrevista(entrada: PublicarEntrevistaEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_comunidad.publicar_entrevista(sesion, entrada))
-
-
-
-@router.post("/eventos", response_model=RespuestaAccion, response_model_exclude_unset=True, tags=["Depuración"])
-def registrar_evento(entrada: EventoEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: servicio_eventos.registrar_evento_crudo(sesion, entrada))
 
 
 @router.post("/acciones/ver-testimonio", response_model=RespuestaAccion, response_model_exclude_unset=True)

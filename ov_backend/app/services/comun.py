@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 
-from app.core.contexto import contexto, usar_contexto
+from app.core.contexto import contexto, fecha_cliente_permitida, usar_contexto
 from app.core.definiciones import MODELOS_FIJOS
 from app.exceptions import ErrorAccion
 from app.models import (
@@ -21,7 +21,8 @@ from app.services.motor.reglas import (
 
 
 def fecha_accion(entrada: FechaAccion) -> datetime:
-    fecha = entrada.fecha_hora or datetime.now(timezone(timedelta(hours=-5)))
+    # B17: fuera de desarrollo se ignora la fecha del cliente y se usa la del servidor.
+    fecha = (fecha_cliente_permitida.get() and entrada.fecha_hora) or datetime.now(timezone(timedelta(hours=-5)))
     # Se conserva el calendario simulado, como en los conteos de la fase 2.
     return fecha.replace(tzinfo=None)
 

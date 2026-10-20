@@ -1,0 +1,9 @@
+{
+  "cuenta": {
+    "codigo": "ori-carmen",
+    "nombre": "Carmen",
+    "rol": "ORIENTADORA"
+  },
+  "expira_en": "2026-10-08T15:00:00Z",
+  "token": "TOKEN-DE-PRUEBA"
+}

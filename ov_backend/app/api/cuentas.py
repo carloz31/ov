@@ -3,13 +3,13 @@ from fastapi import APIRouter, HTTPException
 from app.dependencies import CuentaConsultada, SesionBD
 from app.models import TipoObjetivo
 from app.schemas.cuentas import (
-    CuentaResumen, DesbloqueoLegible, DesbloqueosMarcados, EventoLegible,
+    DesbloqueoLegible, DesbloqueosMarcados, EventoLegible,
     ProgresoObjetivo, ResumenCuenta,
 )
 from app.schemas.motor import ReglaLegible
 from app.services import cuentas as servicio_cuentas
 from app.services.cuentas import (
-    listar_cuentas, listar_desbloqueos, listar_eventos, listar_reglas,
+    listar_desbloqueos, listar_eventos, listar_reglas,
     marcar_desbloqueos_vistos, progreso_objetivo,
 )
 
@@ -20,11 +20,6 @@ router = APIRouter(tags=["Consultas"])
 @router.get("/reglas", response_model=list[ReglaLegible])
 def consultar_reglas(sesion: SesionBD):
     return listar_reglas(sesion)
-
-
-@router.get("/cuentas", response_model=list[CuentaResumen])
-def consultar_cuentas(sesion: SesionBD):
-    return listar_cuentas(sesion)
 
 
 @router.get("/cuentas/{cuenta}/resumen", response_model=ResumenCuenta)

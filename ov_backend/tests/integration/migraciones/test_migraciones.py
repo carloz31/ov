@@ -8,7 +8,7 @@ from alembic.autogenerate import compare_metadata
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.script import ScriptDirectory
-from fastapi.testclient import TestClient
+from soporte_acceso import ClienteConToken as TestClient
 from sqlalchemy import CheckConstraint, ForeignKeyConstraint, MetaData, UniqueConstraint, inspect, select, text
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.exc import IntegrityError

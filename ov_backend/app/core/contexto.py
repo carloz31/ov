@@ -1,11 +1,17 @@
 """Datos de una petición o llamada al núcleo; nunca sobreviven a la operación."""
 
+from contextvars import ContextVar
 from functools import wraps
 
 from sqlalchemy import distinct, func, literal, select, union_all
 
 from app.core.definiciones import obtener_definiciones
 from app.models import Desbloqueo, EventoUso, Favorito, ProgresoActividad, TipoConteo
+
+
+# B17: la `fecha_hora` del cliente solo se acepta con ENTORNO=desarrollo. Prohibida por defecto; el guardia de
+# acceso (y el router de desarrollo) la habilitan en cada petición.
+fecha_cliente_permitida: ContextVar[bool] = ContextVar('fecha_cliente_permitida', default=False)
 
 
 class ContextoConsultas:

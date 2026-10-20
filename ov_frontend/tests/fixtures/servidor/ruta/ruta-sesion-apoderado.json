@@ -1,0 +1,17 @@
+{
+  "cuenta": {
+    "codigo": "apo-rosa",
+    "nombre": "Rosa",
+    "rol": "APODERADO"
+  },
+  "expira_en": "2026-10-08T15:00:00Z",
+  "hijos": [
+    {
+      "codigo": "est-ana",
+      "nombre": "Ana",
+      "parentesco": "madre",
+      "salon": "5A"
+    }
+  ],
+  "salones": []
+}

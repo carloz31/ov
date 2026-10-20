@@ -39,7 +39,8 @@ def test_r16_entornos_aislados_sin_rutas_retiradas_ni_lecturas(tmp_path, monkeyp
             assert cliente.post('/demo/reiniciar').status_code == 404
             assert cliente.post('/acciones/guardar-posicion', json={}).status_code == 404
             assert cliente.post('/desarrollo/reiniciar').status_code == esperado
-            assert cliente.get('/cuentas').json() == []
+            # B17: GET /cuentas solo existe en desarrollo.
+            assert cliente.get('/cuentas').json() == ([] if esperado == 200 else {'detail': 'Not Found'})
             with aplicacion.state.motor_bd.connect() as conexion:
                 assert all(conexion.execute(select(tabla)).first() is None for tabla in Base.metadata.sorted_tables)
             assert aplicacion.title == 'Plataforma de orientación vocacional'

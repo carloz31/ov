@@ -13,3 +13,12 @@
 - **Modelo (M):** `cuenta.intentos_fallidos` (0) y `cuenta.bloqueada_hasta` (nulo), migración `0019`, para el bloqueo de 5 intentos durante 15 minutos. `OrigenSesion` solo viaja en el token.
 - **Hash en `datos/`:** `ruta.py` usa `argon2.PasswordHasher()` directo (mismos parámetros por defecto que `services/acceso.py`), porque `datos/` solo importa `app.models` y `app.core.parametros`.
 - **`JWT_SECRETO` en producción:** se adaptaron `tests/unit/configuracion/test_configuracion.py` y `tests/integration/desarrollo/test_entorno_desarrollo.py`, que creaban configuración de producción sin secreto (lo exige la spec).
+- **FastAPI instalado es 0.142.2** (la spec dice 0.150): se comprobó con pruebas que el guardia del router corre antes de validar el cuerpo (401 con cuerpo inválido) y que la política declarada por ruta llega al guardia.
+- **Cobertura de rutas por `openapi`:** FastAPI 0.142 incluye los routers de forma diferida (`aplicacion.routes` no los aplana); la prueba recorre `aplicacion.openapi()['paths']`.
+- **Política por ruta:** decorador `politica_acceso(...)` en `dependencies.py`; el guardia lo lee del endpoint de la ruta. Sin declarar, solo la propia. En B17 ninguna ruta lo usa.
+- **Errores del guardia:** 401 `{"mensaje": "Tu sesión terminó. Vuelve a ingresar."}` con `WWW-Authenticate: Bearer`; 404 `{"detail": "Cuenta no encontrada"}`, el mismo cuerpo que ya daba `obtener_cuenta` (no cambia el contrato).
+- **Router de desarrollo:** `/desarrollo/reiniciar`, `POST /eventos` y `GET /cuentas` quedan fuera del guardia y habilitan `fecha_hora` con su propia dependencia.
+- **Cliente de pruebas:** `ClienteConToken` (`tests/soporte/soporte_acceso.py`) firma el token de la cuenta de la ruta, de `cuenta` o del primer autor; si esa cuenta no existe, usa est-ana, y el guardia responde 404 como antes. Reemplaza a `TestClient` donde las pruebas lo creaban directamente.
+- **Presupuestos:** el guardia lee la cuenta del actor (+1 consulta, porque tras el rollback no se reutiliza la fila). Subieron de 10 a 11 la consulta del catálogo (`test_catalogo.py`) y el detalle de carrera en `test_favoritos.py`.
+- **Pruebas adaptadas:** `test_entorno_desarrollo.py` (`GET /cuentas` responde 404 en producción) y `test_exportar_fixtures_front.py` (los fixtures `ruta-sesion-*`).
+- **Fixtures de sesión:** el exportador ingresa de verdad con cada rol y usa sus tokens; en `ruta-sesion-*` el token y `expira_en` llevan valores fijos (`TOKEN-DE-PRUEBA`) para regenerarse idénticos.

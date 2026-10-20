@@ -4,6 +4,7 @@ from functools import partial
 
 import pytest
 from fastapi.testclient import TestClient
+from soporte_acceso import ClienteConToken
 from soporte_bases import copiar_plantilla
 from soporte_consultas import MedidorPeticiones
 from soporte_fixtures import contador_consultas
@@ -45,6 +46,12 @@ def base_aislada(plantillas_bd):
 
 @pytest.fixture
 def cliente(aplicacion):
+    with ClienteConToken(aplicacion) as cliente:
+        yield cliente
+
+
+@pytest.fixture
+def cliente_sin_token(aplicacion):
     with TestClient(aplicacion) as cliente:
         yield cliente
 
