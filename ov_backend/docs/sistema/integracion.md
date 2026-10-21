@@ -42,7 +42,7 @@ Contrato vigente entre los dos repos. Lo usan los agentes de ambos. Las reglas g
 
 ## Modos del front
 
-- `VITE_DATOS=local` (por defecto): el front funciona solo, con sus datos y cálculos de demostración.
+- `VITE_DATOS=local` (por defecto): el front funciona solo, con sus datos y cálculos de demostración. Está congelado desde F00: lo nuevo de los lotes F solo existe en `api`.
 - `VITE_DATOS=api`: usa el servidor. `prototypeAllUnlocked`, `studentDemoEnabled` y `pendingContent` no afectan la disponibilidad. En desarrollo, el proxy de Vite envía `/api` a `http://127.0.0.1:8000`, sin CORS.
 
 ## Consultas por dominio

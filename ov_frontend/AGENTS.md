@@ -83,7 +83,7 @@ src/
 
 ## Origen de los datos
 
-- `VITE_DATOS=local` (por defecto) debe comportarse exactamente como antes. En `VITE_DATOS=api`, `prototypeAllUnlocked`, `studentDemoEnabled` y `pendingContent` no afectan la disponibilidad.
+- `VITE_DATOS=local` (por defecto) está congelado desde F00: debe comportarse exactamente como antes y no recibe funciones nuevas. Lo que agrega un lote F existe solo en `api`; el hook del dominio expone una bandera con nombre del dominio (`puedeEditarRegistro`) y en local la vista se comporta como antes. `tests/local/` no se amplía; solo debe seguir pasando. En `VITE_DATOS=api`, `prototypeAllUnlocked`, `studentDemoEnabled` y `pendingContent` no afectan la disponibilidad.
 - Si una tarea mueve un dato entre servidor, contenido, catálogo o demostración, actualiza `docs/origen-de-datos.md` en la misma tarea. Cuando un dato pase al servidor, cambian el hook del dominio y `store/servidor/`; las vistas no deberían cambiar.
 - No cambies claves ni formatos de `localStorage`, `sessionStorage` o IndexedDB sin una migración que conserve lo guardado (claves en `docs/origen-de-datos.md`).
 - Para la red basta `fetch`. El proxy de desarrollo `/api` apunta a `http://127.0.0.1:8000`.

@@ -56,7 +56,7 @@ Las tablas de impacto de cada `AGENTS.md` indican qué carpetas corresponden a c
 - La base del backend es la única fuente de disponibilidad, progreso, respuestas de cuestionario, resultados, fichas obtenidas, insignias y nivel.
 - En modo `VITE_DATOS=api`, el front nunca decide si algo está disponible, completado u obtenido: lo lee del servidor. Si el servidor no responde, lo dice; no inventa un estado.
 - El contenido narrativo de las actividades (nodos JSON) está en el front. El backend guarda estructura y estado, y no interpreta ese contenido.
-- El modo `local` del front debe seguir funcionando igual.
+- El modo `local` del front está congelado: conserva lo que hace hoy y no recibe funciones nuevas (ver `ov_frontend/AGENTS.md`).
 
 ## Contrato
 

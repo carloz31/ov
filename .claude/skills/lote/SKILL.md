@@ -9,7 +9,7 @@ Lote a trabajar: $ARGUMENTS
 
 ## 1. Preparar (sin escribir código)
 
-1. Lee en `ov_backend/docs/plan-iteraciones.md` la sección «Enfoque», la fila del lote en «Lotes», su apartado en «Qué hace cada lote» y las filas de «Ruta mínima de prueba» marcadas con el lote. Nada más del plan.
+1. Lee en `ov_backend/docs/plan-iteraciones.md` la sección «Enfoque», la fila del lote en «Lotes» (o en «Lotes F»), su apartado en «Qué hace cada lote» (o «Qué hace cada lote F», más «Punto de partida» y «Reglas propias de los lotes F») y las filas de «Ruta mínima de prueba» marcadas con el lote. Nada más del plan.
    Lee en `ov_backend/docs/requisitos.md` solo las filas de las HU del lote (y los RNF o términos que nombren).
 2. Si `ov_backend/docs/specs/` tiene una spec en curso de otro lote, detente y avisa.
 3. Crea la rama `lote/$ARGUMENTS` desde `main`.
@@ -24,6 +24,8 @@ El plan es corto y concreto:
 - **Backend:** endpoints (método, ruta, respuesta), servicios y pruebas nuevas.
 - **Datos:** qué entra en `datos/fijos.py` y qué en `datos/ruta.py` (solo lo mínimo para probar la mecánica, marcado `DATO DE PRUEBA`).
 - **Frontend:** solo en los lotes F. En los lotes B no se toca el front: se exportan los fixtures `ruta-*`.
+- **Pantallas (lotes F):** por cada vista que cambia, qué elementos, textos y componentes reutiliza (boceto si es nueva); qué entradas de `ov_frontend/docs/pendientes-interfaz.md` cierra; qué `t_*.json` crea. Lo nuevo solo en modo `api` (local congelado).
+- **Ajustes al backend (lotes F):** lo que la interfaz necesita y el backend no entrega. Si cambia el modelo, el lote es **M** y sigue `/cambio-modelo`.
 - **Fases**, en orden, cada una cerrable con pruebas en verde.
 - **Preguntas abiertas**, si las hay (máximo 3).
 
