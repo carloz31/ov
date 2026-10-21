@@ -14,6 +14,7 @@ import type {
   ErrorServidor,
   RespuestaServidor,
   ResultadoPublico,
+  SeccionEstado,
 } from '@/types/servidor'
 
 export type Seccion<T> = {
@@ -26,6 +27,8 @@ export type DatosSecciones = {
   actividades: BloqueActividades[]
   fichas: ContenidoEstado[]
   logros: LogrosCuenta
+  // GET /cuentas/{c}/secciones: diario, check-in, catálogo, planes y familia (F00).
+  secciones: SeccionEstado[]
 }
 export type NombreSeccion = keyof DatosSecciones
 export type AlmacenServidor = { [N in NombreSeccion]: Seccion<DatosSecciones[N]> } & {
@@ -51,6 +54,7 @@ const inicial = (): AlmacenServidor => ({
   actividades: vacia(),
   fichas: vacia(),
   logros: vacia(),
+  secciones: vacia(),
   cargando: false,
   error: null,
   consultasHabilitadas: false,

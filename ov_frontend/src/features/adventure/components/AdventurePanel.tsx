@@ -1,4 +1,6 @@
 import { useTravelerLevel } from '../hooks/useTravelerLevel'
+import { useSeccionesAcceso, type AccesoSeccion } from '../hooks/useSeccionesAcceso'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import {
   Backpack,
@@ -16,12 +18,35 @@ import {
   Target,
   TrendingUp,
 } from 'lucide-react'
-import { canAccessFamilyConversations } from '@/store/adventureStore'
 import type { AdventureState } from '@/types/adventure'
 import { appPaths } from '@/routes/paths'
 import { getReturnGreeting, type StudentMapPoint } from '../lib/mapPoints'
 import { getListedActivities, studentActivitiesPath } from '../lib/navigation'
 import { getTodayCheckIn, useCheckInDay } from '../lib/checkIn'
+
+// Acceso rápido a una sección: cerrada, lleva candado y, en api, Lumi explica qué falta.
+function AccesoRapido({ to, acceso, children }: { to: string; acceso: AccesoSeccion; children: ReactNode }) {
+  return (
+    <Link
+      to={to}
+      title={acceso.bloqueada ? acceso.mensaje : undefined}
+      onClick={
+        acceso.explicar
+          ? (event) => {
+              event.preventDefault()
+              acceso.explicar?.()
+            }
+          : undefined
+      }
+    >
+      {children}
+      {acceso.bloqueada && <LockKeyhole className="sx-quick-lock" size={12} aria-hidden="true" />}
+    </Link>
+  )
+}
+const textoOculto = (acceso: AccesoSeccion) =>
+  acceso.bloqueada && <small className="sr-only">{acceso.mensaje}</small>
+
 export function AdventurePanel({
   adventure,
   points,
@@ -42,6 +67,8 @@ export function AdventurePanel({
   const greeting = getReturnGreeting(adventure, recommended)
   useCheckInDay()
   const signal = getTodayCheckIn(adventure)
+  const seccion = useSeccionesAcceso(adventure)
+  const checkIn = seccion('CHECK_IN')
   const percentage = Math.min(100, Math.max(0, progress.value))
   const zonaCiudad =
     progress.label === 'Afinidad con la ciudad' || progress.label === 'Recorrido por la ciudad'
@@ -157,9 +184,16 @@ export function AdventurePanel({
           ))}
         </div>
         <div className="sx-signal-actions">
-          <button type="button" className="sx-signal-edit" onClick={onCheckIn}>
+          <button
+            type="button"
+            className="sx-signal-edit"
+            title={checkIn.bloqueada ? checkIn.mensaje : undefined}
+            onClick={checkIn.explicar ?? onCheckIn}
+          >
             <PenLine size={14} aria-hidden="true" />
             {signal ? 'Cambiar' : 'Registrar mi señal'}
+            {textoOculto(checkIn)}
+            {checkIn.bloqueada && <LockKeyhole className="sx-quick-lock" size={12} aria-hidden="true" />}
           </button>
           <Link className="sx-signal-history" to={appPaths.student.signals}>
             <TrendingUp size={14} aria-hidden="true" />
@@ -174,25 +208,20 @@ export function AdventurePanel({
             <FolderHeart size={18} />
             <span>Mi perfil</span>
           </Link>
-          <Link to={appPaths.student.journal}>
+          <AccesoRapido to={appPaths.student.journal} acceso={seccion('DIARIO')}>
             <BookOpen size={18} />
-            <span>Mi diario</span>
-          </Link>
-          <Link
-            to={appPaths.student.conversations}
-            title={!canAccessFamilyConversations(adventure) ? 'Se abre al llegar a la ciudad' : undefined}
-          >
+            <span>
+              Mi diario
+              {textoOculto(seccion('DIARIO'))}
+            </span>
+          </AccesoRapido>
+          <AccesoRapido to={appPaths.student.conversations} acceso={seccion('FAMILIA')}>
             <HeartHandshake size={18} />
             <span>
               En familia
-              {!canAccessFamilyConversations(adventure) && (
-                <small className="sr-only">Se abre al llegar a la ciudad</small>
-              )}
+              {textoOculto(seccion('FAMILIA'))}
             </span>
-            {!canAccessFamilyConversations(adventure) && (
-              <LockKeyhole className="sx-quick-lock" size={12} aria-hidden="true" />
-            )}
-          </Link>
+          </AccesoRapido>
           <Link to={appPaths.student.resources}>
             <Backpack size={18} />
             <span>Recursos</span>
@@ -201,10 +230,13 @@ export function AdventurePanel({
             <Search size={18} />
             <span>Investigaciones</span>
           </Link>
-          <Link to={appPaths.student.catalog.professions}>
+          <AccesoRapido to={appPaths.student.catalog.professions} acceso={seccion('CATALOGO')}>
             <LibraryBig size={18} />
-            <span>Información</span>
-          </Link>
+            <span>
+              Información
+              {textoOculto(seccion('CATALOGO'))}
+            </span>
+          </AccesoRapido>
         </nav>
       </section>
       <section className="sx-panel-section">

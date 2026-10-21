@@ -4,6 +4,7 @@ import { obtenerResumen } from '@/services/api/cuentas'
 import { obtenerActividades } from '@/services/api/actividades'
 import { obtenerFichas } from '@/services/api/fichas'
 import { obtenerLogros } from '@/services/api/logros'
+import { obtenerSecciones } from '@/services/api/secciones'
 import { hidratarJourneyServidor } from '../journeyStore'
 import { hidratarAdventureServidor } from '../adventureStore'
 import { baseRoute } from '@/data/activities/reflectionConfig'
@@ -26,9 +27,10 @@ const consultas = {
   actividades: obtenerActividades,
   fichas: obtenerFichas,
   logros: obtenerLogros,
+  secciones: obtenerSecciones,
 }
-const revisiones = { resumen: 0, actividades: 0, fichas: 0, logros: 0 }
-const consumidores = { resumen: 0, actividades: 0, fichas: 0, logros: 0 }
+const revisiones = { resumen: 0, actividades: 0, fichas: 0, logros: 0, secciones: 0 }
+const consumidores = { resumen: 0, actividades: 0, fichas: 0, logros: 0, secciones: 0 }
 const pendientes = new Map<
   NombreSeccion,
   { sesion: number; cuenta: string; revision: number; promesa: Promise<RespuestaServidor<unknown>> }
@@ -107,6 +109,7 @@ export function seccionesPorDesbloqueos(desbloqueos: DesbloqueoNuevo[]): NombreS
     if (d.tipo_objetivo === 'FICHA') nombres.add('fichas')
     if (d.tipo_objetivo === 'INSIGNIA' || d.tipo_objetivo === 'NIVEL') nombres.add('logros')
     if (d.tipo_objetivo === 'NIVEL') nombres.add('resumen')
+    if (d.tipo_objetivo === 'SECCION') nombres.add('secciones')
   }
   return [...nombres]
 }
@@ -138,6 +141,7 @@ export const useResumenServidor = (activo = true) => useSeccion('resumen', activ
 export const useActividadesServidor = (activo = true) => useSeccion('actividades', activo)
 export const useFichasServidor = (activo = true) => useSeccion('fichas', activo)
 export const useLogrosServidor = (activo = true) => useSeccion('logros', activo)
+export const useSeccionesServidor = (activo = true) => useSeccion('secciones', activo)
 
 export function errorSeccionesActivas() {
   return (

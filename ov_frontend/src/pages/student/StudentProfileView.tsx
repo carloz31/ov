@@ -1,6 +1,7 @@
 import { useStudentProfile } from '@/features/discovery/hooks/useStudentProfile'
 import { Link } from 'react-router'
-import { Eye, Heart, Sparkles } from 'lucide-react'
+import { Eye, Heart, LockKeyhole, Sparkles } from 'lucide-react'
+import { useSeccionesAcceso } from '@/features/adventure/hooks/useSeccionesAcceso'
 import { appPaths } from '@/routes/paths'
 import { discoveryPaths } from '@/routes/discoveryPaths'
 import { DiscoveryStage } from '@/features/discovery/components/DiscoveryStage'
@@ -25,6 +26,7 @@ export function StudentProfileView() {
     plans,
     extraFavorites,
   } = useStudentProfile()
+  const planes = useSeccionesAcceso()('PLANES')
   return (
     <DiscoveryStage ambient="profile">
       <Parchment className="sx-d-dark">
@@ -158,8 +160,26 @@ export function StudentProfileView() {
           {extraFavorites > 0 && plans.length < 3 && (
             <p>Tienes {extraFavorites} carreras favoritas que aún no son un plan.</p>
           )}
-          <Link className="sx-d-action" to={appPaths.student.decisions}>
+          <Link
+            className="sx-d-action"
+            to={appPaths.student.decisions}
+            title={planes.bloqueada ? planes.mensaje : undefined}
+            onClick={
+              planes.explicar
+                ? (event) => {
+                    event.preventDefault()
+                    planes.explicar?.()
+                  }
+                : undefined
+            }
+          >
             Ver mis planes y favoritos
+            {planes.bloqueada && (
+              <>
+                <small className="sr-only">{planes.mensaje}</small>
+                <LockKeyhole className="sx-quick-lock" size={12} aria-hidden="true" />
+              </>
+            )}
           </Link>
         </Parchment>
       </div>

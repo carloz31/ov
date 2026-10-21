@@ -316,9 +316,10 @@ export function escenarioRuta(etapa) {
     bloques: jsonServidor('ruta/ruta-actividades-' + etapa),
     fichas: jsonServidor('ruta/ruta-fichas-' + final),
     ...jsonServidor('ruta/ruta-logros-' + final),
+    secciones: jsonServidor('ruta/ruta-secciones-' + (etapa === 'inicial' ? 'inicial' : 't1')),
   }
 }
-export const esConsultaDominio = (r) => /\/(resumen|actividades|fichas|logros)$/.test(r.url)
+export const esConsultaDominio = (r) => /\/(resumen|actividades|fichas|logros|secciones)$/.test(r.url)
 export function respuestaDominio(r, escenario) {
   switch (r.url.split('/').at(-1)) {
     case 'resumen':
@@ -329,6 +330,8 @@ export function respuestaDominio(r, escenario) {
       return { body: escenario.fichas }
     case 'logros':
       return { body: { insignias: escenario.insignias, niveles: escenario.niveles } }
+    case 'secciones':
+      return { body: escenario.secciones ?? [] }
     default:
       throw Error('Consulta de dominio inesperada: ' + r.url)
   }

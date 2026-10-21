@@ -16,3 +16,7 @@
   - Mara, sus fichas y su cierre (`servidor-cierre`, `servidor-servicios`, la secuencia de `servidor-mapa` y el test de Mara de `servidor-adaptadores`), hasta F03;
   - el portal del apoderado (`servidor-apoderado`): `t-apo-1` no tiene contenido en el front, hasta F08;
   - el catálogo de insignias de `servidor-logros`: compara códigos I1–I10 con su contenido local, y `ruta` solo tiene `t-ins-1`.
+- **Secciones en el almacén.** `secciones` es un dominio más de `store/servidor` (GET `/cuentas/{c}/secciones`). Se pide al montar el panel o una vista protegida, y un desbloqueo `SECCION` la vence. Mientras no llega, los accesos se muestran abiertos, como hoy; escribir con la sección cerrada sigue respondiendo 409.
+- **`useSeccionesAcceso`** se elige al cargar el módulo según el modo (`modoApi ? api : local`). Local no usa hooks y conserva el candado de «En familia» con «Se abre al llegar a la ciudad».
+- **Entrada por URL.** `SeccionProtegida` envuelve en `AppRoutes` el diario, el catálogo (listas y detalles), los planes y las conversaciones. El título de la tarjeta es el `nombre` de la sección del servidor; en FAMILIA se conserva «Un espacio para conversar en familia». La tarjeta subió a `components/student/SeccionBloqueada.tsx`, y las dos vistas de conversaciones la usan con su texto local de siempre.
+- **Check-in y enlace de planes.** El candado `sx-quick-lock` se muestra en línea, porque su posición absoluta solo existe dentro de los accesos rápidos. No se agregó CSS.

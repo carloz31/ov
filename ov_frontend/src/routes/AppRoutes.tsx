@@ -1,6 +1,7 @@
 import { LoginRoute } from '@/pages/auth/LoginRoute'
 import { PortalDeCuenta } from './PortalDeCuenta'
 import { SoloLocal } from './SoloLocal'
+import { SeccionProtegida } from '@/features/adventure/components/SeccionProtegida'
 import { Navigate, Route, Routes } from 'react-router'
 import { CounselorDashboardView } from '@/pages/counselor/CounselorDashboardView'
 import { CounselorPortalModule } from '@/pages/counselor/CounselorPortalModule'
@@ -80,7 +81,14 @@ function AppRoutes() {
             }
             path="research/guion"
           />
-          <Route element={<StudentJournalView />} path="journal" />
+          <Route
+            element={
+              <SeccionProtegida seccion="DIARIO">
+                <StudentJournalView />
+              </SeccionProtegida>
+            }
+            path="journal"
+          />
           <Route element={<StudentSignalsView />} path="journal/signal" />
           <Route
             element={
@@ -102,23 +110,74 @@ function AppRoutes() {
           <Route element={<Navigate replace to={appPaths.student.passport} />} path="achievements" />
           <Route
             element={
-              <SoloLocal>
-                <StudentFamilyConversationsView />
-              </SoloLocal>
+              <SeccionProtegida seccion="FAMILIA" titulo="Un espacio para conversar en familia">
+                <SoloLocal>
+                  <StudentFamilyConversationsView />
+                </SoloLocal>
+              </SeccionProtegida>
             }
             path="conversations"
           />
-          <Route element={<StudentCatalogView section="professions" />} path="catalog/professions" />
-          <Route element={<StudentCatalogView section="careers" />} path="catalog/careers" />
-          <Route element={<StudentCatalogView section="institutions" />} path="catalog/institutions" />
+          <Route
+            element={
+              <SeccionProtegida seccion="CATALOGO">
+                <StudentCatalogView section="professions" />
+              </SeccionProtegida>
+            }
+            path="catalog/professions"
+          />
+          <Route
+            element={
+              <SeccionProtegida seccion="CATALOGO">
+                <StudentCatalogView section="careers" />
+              </SeccionProtegida>
+            }
+            path="catalog/careers"
+          />
+          <Route
+            element={
+              <SeccionProtegida seccion="CATALOGO">
+                <StudentCatalogView section="institutions" />
+              </SeccionProtegida>
+            }
+            path="catalog/institutions"
+          />
           <Route element={<StudentResourcesView />} path="testimonials" />
-          <Route element={<CareerDetailView />} path="catalog/careers/:careerId" />
-          <Route element={<OccupationDetailView />} path="catalog/professions/:occupationId" />
-          <Route element={<InstitutionDetailView />} path="catalog/institutions/:institutionId" />
+          <Route
+            element={
+              <SeccionProtegida seccion="CATALOGO">
+                <CareerDetailView />
+              </SeccionProtegida>
+            }
+            path="catalog/careers/:careerId"
+          />
+          <Route
+            element={
+              <SeccionProtegida seccion="CATALOGO">
+                <OccupationDetailView />
+              </SeccionProtegida>
+            }
+            path="catalog/professions/:occupationId"
+          />
+          <Route
+            element={
+              <SeccionProtegida seccion="CATALOGO">
+                <InstitutionDetailView />
+              </SeccionProtegida>
+            }
+            path="catalog/institutions/:institutionId"
+          />
           <Route element={<ProfileRoute />} path="profile" />
           <Route element={<HelenaBookView />} path="profile/helena" />
           <Route element={<HelenaResultView />} path="profile/helena/:pagina" />
-          <Route element={<StudentPlansView />} path="profile/decisions" />
+          <Route
+            element={
+              <SeccionProtegida seccion="PLANES">
+                <StudentPlansView />
+              </SeccionProtegida>
+            }
+            path="profile/decisions"
+          />
           <Route element={<Navigate replace to={appPaths.student.exploration} />} path="*" />
         </Route>
         <Route

@@ -1,6 +1,7 @@
 import { usePersonalFamilyConversations } from '@/features/family-conversations/hooks/usePersonalFamilyConversations'
 
-import { HeartHandshake, LockKeyhole, MessageCircleHeart } from 'lucide-react'
+import { HeartHandshake, MessageCircleHeart } from 'lucide-react'
+import { SeccionBloqueada } from '@/components/student/SeccionBloqueada'
 
 import { GuideDialogue } from '@/components/common/GuideDialogue'
 import { Badge } from '@/components/ui/Badge'
@@ -38,16 +39,10 @@ function FamilyConversationsView({ audience = 'student' }: { audience?: Conversa
   } = usePersonalFamilyConversations(audience)
   if (!canAccessFamilyConversations(state)) {
     return (
-      <div className="p-5 sm:p-8">
-        <section className="mx-auto max-w-2xl rounded-3xl border bg-card p-8">
-          <LockKeyhole className="mb-4 size-10 text-primary" />
-          <h1 className="text-2xl font-bold">Un espacio para conversar en familia</h1>
-          <p className="my-4 text-sm leading-7 text-muted-foreground">
-            Todos los temas estarán disponibles cuando el estudiante complete el cierre del Bloque 5. Después
-            podrán recorrerlos a su ritmo, sin fechas límite.
-          </p>
-        </section>
-      </div>
+      <SeccionBloqueada
+        titulo="Un espacio para conversar en familia"
+        mensaje="Todos los temas estarán disponibles cuando el estudiante complete el cierre del Bloque 5. Después podrán recorrerlos a su ritmo, sin fechas límite."
+      />
     )
   }
 
