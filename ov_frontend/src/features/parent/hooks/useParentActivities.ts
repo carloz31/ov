@@ -5,6 +5,7 @@ import { parentAccountId, useParentJourney } from '@/store/parentJourneyStore'
 import { ingresarApoderado, useEstadoApoderado } from '@/store/servidor/apoderado'
 import { avisarContenidoFaltante } from '@/store/servidor/contenidos'
 import { actividadesApoderado, completadasApoderado, disponiblesApoderado } from '@/lib/servidor/contenidos'
+import { mensajeBloqueo } from '@/lib/servidor/adaptadores'
 import { completedParentActivities, parentActivityAvailable } from '../lib/missionLogic'
 import type { Actividad, JourneyState } from '@/types/activities'
 import type { ErrorServidor } from '@/types/servidor'
@@ -15,6 +16,8 @@ export type ParentActivitiesSource = {
   journey: JourneyState
   completedIds: string[]
   available: (activity: Actividad) => boolean
+  // Solo api: el mensaje del servidor para una actividad bloqueada.
+  motivoBloqueo: (activity: Actividad) => string | undefined
   loading: boolean
   error: ErrorServidor | null
   serverCompletion: boolean
@@ -47,6 +50,7 @@ export function useParentActivities(): ParentActivitiesSource {
     available: modoApi
       ? (activity) => disponibles.has(activity.id)
       : (activity) => parentActivityAvailable(activity, journey),
+    motivoBloqueo: (activity) => (modoApi ? mensajeBloqueo(bloques, activity.id) : undefined),
     loading: modoApi && (!almacen.cuenta || almacen.actividades.estado !== 'listo'),
     error: modoApi ? (almacen.error ?? almacen.actividades.error) : null,
     serverCompletion: modoApi,

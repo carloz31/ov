@@ -5,10 +5,11 @@ import { useParentPortalContext } from '@/features/parent/context/parentPortalCo
 function ParentActivityView() {
   const { activityId } = useParams()
   const [params] = useSearchParams()
-  const { activities, available, journey: state, loading } = useParentPortalContext()
+  const { activities, available, motivoBloqueo, journey: state, loading } = useParentPortalContext()
   const activity = activities.find((item) => item.id === activityId)
   if (loading) return null
-  if (!activity || !available(activity)) return <ActivityUnavailable locked={!!activity} />
+  if (!activity || !available(activity))
+    return <ActivityUnavailable locked={!!activity} mensaje={activity && motivoBloqueo(activity)} />
   return (
     <ParentActivitySession
       key={`${activity.id}/${params.get('repasar') ?? ''}`}

@@ -66,7 +66,6 @@ export function MapScreenLayout({
     selected,
     details,
     mostrarMisionesAdicionales,
-    reintentarRequisito,
     closePoint,
     selectPoint,
     action,
@@ -197,7 +196,6 @@ export function MapScreenLayout({
         onClose={closePoint}
         onAction={action}
         onJournal={journal}
-        onRetryRequirement={reintentarRequisito}
         onFallbackFocus={() => {
           if (mobile) mobilePanelButton.current?.focus()
           else canvas.current?.focusNode(returnPoint.current)

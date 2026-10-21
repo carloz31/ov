@@ -175,3 +175,52 @@ test('resolver por contenido usa los nodos del JSON de la ruta con el código y 
     assert.deepEqual(copia(resuelta.nodos), contenidoPorClave(codigo.replaceAll('-', '_')).nodos)
   }
 })
+
+test('el drawer muestra el mensaje de bloqueo del servidor, sin consultar el progreso', () => {
+  const m = mapa('ruta/ruta-actividades-inicial')
+  const { getPointDetails } = m.app.load('src/features/adventure/lib/pointDetails.ts')
+  const detalle = (codigo) =>
+    getPointDetails(
+      m.camino().find((p) => p.specActivityId === codigo),
+      {},
+      {},
+    )
+  assert.equal(detalle('t-cierre-inicio').requirement, 'Completa el inicio para continuar.')
+  const bloqueT1 = m.bloques[1]
+  assert.equal(detalle('t-expectativas').requirement, bloqueT1.actividades[0].bloqueo[0].mensaje)
+  // Sin motivo propio, la actividad usa el de su bloque.
+  bloqueT1.actividades[0].bloqueo = null
+  bloqueT1.bloqueo[0].mensaje = 'DATO DE PRUEBA: motivo del bloque'
+  m.sesion.publicar({ actividades: { datos: m.bloques, estado: 'listo', error: null } })
+  assert.equal(detalle('t-expectativas').requirement, 'DATO DE PRUEBA: motivo del bloque')
+  assert.equal(detalle('t-inicio').requirement, undefined)
+  assert.equal(
+    m.app.requests.some((r) => r.url.includes('/progreso/')),
+    false,
+  )
+})
+
+test('una opcional lleva su insignia, su duración del servidor y no cuenta para el tramo', () => {
+  const m = mapa('ruta/ruta-actividades-ciudad')
+  const { getPointDetails } = m.app.load('src/features/adventure/lib/pointDetails.ts')
+  const camino = m.camino()
+  const opcional = camino.find((p) => p.specActivityId === 't-opcional')
+  assert.equal(opcional.opcional, true)
+  assert.equal(camino.find((p) => p.specActivityId === 't-expectativas').opcional, undefined)
+  const detalle = getPointDetails(opcional, {}, {})
+  assert.deepEqual(
+    [detalle.opcional, detalle.meta, detalle.description],
+    [true, '5 min', 'Actividad opcional que aparece al desbloquearse.'],
+  )
+  assert.equal(getPointDetails(camino[0], {}, {}).opcional, false)
+  // La descripción nula del servidor cae en la del contenido.
+  const { contenidoPorClave } = m.app.load('src/data/activities/contenidos.ts')
+  assert.equal(getPointDetails(camino[0], {}, {}).description, contenidoPorClave('t_inicio').subtitulo)
+  const { BlockSign } = m.app.load('src/features/adventure/components/BlockSign.tsx')
+  // T1 tiene opcionales pendientes, pero su única requerida (t-expectativas) está completada:
+  // lleva el mismo ícono que T0 (todo completo) y no el de T2 (pendiente).
+  const icono = (numero) =>
+    BlockSign({ points: camino }).props.children.find((s) => s.key === String(numero)).props.children[0].type
+  assert.equal(icono(2), icono(1))
+  assert.notEqual(icono(2), icono(3))
+})

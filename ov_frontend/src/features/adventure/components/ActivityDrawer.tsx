@@ -24,7 +24,6 @@ export function ActivityDrawer({
   onAction,
   onJournal,
   onFallbackFocus,
-  onRetryRequirement,
   renderCaseProgress,
   renderJournal,
 }: {
@@ -34,7 +33,6 @@ export function ActivityDrawer({
   onAction: (details: PointDetails) => void
   onJournal: (details: PointDetails) => void
   onFallbackFocus?: () => void
-  onRetryRequirement?: () => void
   renderCaseProgress?: (adventure: AdventureState) => ReactNode
   renderJournal?: (journal: NonNullable<PointDetails['journal']>, onOpen: () => void) => ReactNode
 }) {
@@ -105,6 +103,11 @@ export function ActivityDrawer({
                     <span className="sx-drawer-badge" data-status={details.badge}>
                       {details.badge}
                     </span>
+                    {details.opcional && (
+                      <span className="sx-drawer-badge" data-status="Opcional">
+                        Opcional
+                      </span>
+                    )}
                     <span>
                       <Clock size={14} />
                       {details.meta}
@@ -120,11 +123,6 @@ export function ActivityDrawer({
                   <p className="sx-drawer-requirement">
                     <LockKeyhole size={18} />
                     {details.requirement}
-                    {onRetryRequirement && (
-                      <button type="button" className="sx-secondary-button" onClick={onRetryRequirement}>
-                        Reintentar requisito
-                      </button>
-                    )}
                   </p>
                 )}
                 {details.caseProgress && renderCaseProgress?.(adventure)}

@@ -1515,6 +1515,10 @@ body:has([data-student-experience] .sx-shell) {
   background: var(--success-soft);
   color: var(--success);
 }
+.sx-root .sx-drawer-badge[data-status='Opcional'] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
 .sx-root .sx-drawer-badge[data-status='Bloqueada'] {
   background: var(--muted);
   color: var(--muted-foreground);

@@ -36,12 +36,14 @@ test('los adaptadores solo importan tipos y usan el contrato real de los fixture
   assert.equal(adaptadores.siguienteActividad(ciudad.bloques, 'CIUDAD').codigo, 't-mision-intereses')
   assert.equal(adaptadores.ciudadDisponible(inicial.bloques), false)
   assert.equal(adaptadores.ciudadDisponible(ciudad.bloques), true)
-  // Como el servidor, el avance cuenta solo las requeridas: T0 (3), t-expectativas y T2 (3).
-  assert.deepEqual(copia(adaptadores.progresoCamino(ciudad.bloques)), {
-    completadas: 4,
-    total: 7,
-    porcentaje: (4 / 7) * 100,
-  })
+  // El bloqueo lo explica el servidor: el de la actividad o, si no trae, el de su bloque.
+  assert.equal(adaptadores.mensajeBloqueo(inicial.bloques, 't-cierre-inicio'), 'Completa el inicio para continuar.')
+  assert.equal(
+    adaptadores.mensajeBloqueo(inicial.bloques, 't-llegada'),
+    inicial.bloques[2].actividades[0].bloqueo?.[0]?.mensaje ?? inicial.bloques[2].bloqueo[0].mensaje,
+  )
+  assert.equal(adaptadores.mensajeBloqueo(inicial.bloques, 'CIUDAD'), inicial.bloques[3].bloqueo[0].mensaje)
+  assert.equal(adaptadores.mensajeBloqueo(inicial.bloques, 't-inicio'), undefined)
 })
 test('las fichas solo están obtenidas si la BD lo indica y Mara usa su interacción pendiente', () => {
   assert.equal(adaptadores.fichaDisponible(escenarioServidor('inicial').fichas, 'first-steps'), false)

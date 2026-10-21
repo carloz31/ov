@@ -23,6 +23,8 @@ export type StudentMapPoint = {
   secuencia?: ActividadCuenta[]
   actionEnabled: boolean
   additional?: boolean
+  // Solo api: el servidor no la exige para cerrar el tramo.
+  opcional?: boolean
   originId?: string
   revealing?: boolean
   revealQueued?: boolean

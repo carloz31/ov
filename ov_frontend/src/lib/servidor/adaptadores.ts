@@ -171,16 +171,10 @@ export function siguienteActividad(bloques: BloqueActividades[] | null, bloque =
     .flatMap((b) => b.actividades)
     .find((a) => a.estado === 'DISPONIBLE' || a.estado === 'EN_CURSO')
 }
-export function progresoCamino(bloques: BloqueActividades[] | null) {
-  const actividades = bloquesZona(bloques, 'CAMINO')
-    .flatMap((b) => b.actividades)
-    .filter((a) => a.requerida !== false)
-  const completadas = actividades.filter((a) => a.estado === 'COMPLETADA').length
-  return {
-    completadas,
-    total: actividades.length,
-    porcentaje: actividades.length ? (completadas / actividades.length) * 100 : 0,
-  }
+// El mensaje del servidor para lo bloqueado: el de la actividad o, si no trae, el de su bloque.
+export function mensajeBloqueo(bloques: BloqueActividades[] | null, codigo: string) {
+  const bloque = bloques?.find((b) => b.codigo === codigo || b.actividades.some((a) => a.codigo === codigo))
+  return (bloque?.actividades.find((a) => a.codigo === codigo)?.bloqueo ?? bloque?.bloqueo)?.[0]?.mensaje
 }
 export function interaccionMara(bloques: BloqueActividades[] | null) {
   const actividades =

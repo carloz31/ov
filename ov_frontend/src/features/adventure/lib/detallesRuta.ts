@@ -1,5 +1,6 @@
 import { contenidoPorClave } from '@/data/activities/contenidos.ts'
-import type { ActividadCuenta } from '@/types/servidor'
+import { mensajeBloqueo } from '@/lib/servidor/adaptadores'
+import type { ActividadCuenta, BloqueActividades } from '@/types/servidor'
 import type { PointDetails } from './pointDetails'
 import type { StudentMapPoint } from './mapPoints'
 
@@ -16,8 +17,9 @@ export function detallesRuta(
   point: StudentMapPoint,
   actividad: ActividadCuenta,
   badge: string,
-  region: string,
+  bloques: BloqueActividades[] | null,
 ): PointDetails | undefined {
+  const region = bloques?.find((b) => b.actividades.some((a) => a.codigo === actividad.codigo))?.nombre ?? ''
   const contenido = contenidoPorClave(actividad.contenido)
   if (!contenido) return undefined
   // Un contenido sin nodos solo da la posición: su lote F lo completa.
@@ -27,10 +29,11 @@ export function detallesRuta(
     title: point.title,
     region: contenido.ubicacion ?? region,
     badge: pendiente ? 'Contenido pendiente' : badge,
+    opcional: !actividad.requerida,
     meta: `${actividad.duracion_estimada_min ?? contenido.duracionEstimadaMin} min`,
     type: tipo,
     description: actividad.descripcion ?? contenido.subtitulo ?? '',
-    requirement: point.status === 'locked' ? 'Consultando el requisito en el servidor…' : undefined,
+    requirement: point.status === 'locked' ? mensajeBloqueo(bloques, actividad.codigo) : undefined,
     actionLabel: pendiente
       ? 'Contenido pendiente'
       : point.status === 'locked'

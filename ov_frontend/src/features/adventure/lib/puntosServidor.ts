@@ -64,6 +64,7 @@ export function puntosServidor(
         actionEnabled:
           actividad.contenido !== 'encuentro_resultado_elena' || actividad.estado !== 'BLOQUEADA',
         ...(grupo.length > 1 ? { secuencia: grupo } : {}),
+        ...(actividad.requerida === false ? { opcional: true } : {}),
       },
     ]
   })

@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion'
-import { consultarItems, consultarProgreso } from '@/store/servidor/consultas'
-import { textoRequisito } from '@/lib/servidor/adaptadores'
-import { actividadServidor } from '@/lib/servidor/adaptadores'
+import { consultarItems } from '@/store/servidor/consultas'
 import type { JourneyState } from '@/types/activities'
 import { canAccessCity } from '@/store/adventureStore'
 import type { AdventureState } from '@/types/adventure'
@@ -28,13 +26,8 @@ export function useMapScreen({
   selectedId?: string
 }) {
   const servidor = useEstadoServidor()
-  const [detalleServidor, setDetalleServidor] = useState<{
-    clave: string
-    requirement?: string
-    description?: string
-    error?: boolean
-  }>()
-  const [intentoRequisito, setIntentoRequisito] = useState(0)
+  // El requisito ya llega en `bloqueo`; solo Mara consulta sus ítems para describir el encuentro.
+  const [detalleServidor, setDetalleServidor] = useState<{ clave: string; description?: string }>()
   const cityOpen = canAccessCity(adventure)
   const locked = zone === 'central' && !cityOpen
   const recommended = getRecommendedPoint(points)
@@ -51,40 +44,14 @@ export function useMapScreen({
   const selectedStatus = selected?.status
   const selectedZone = selected?.zone
   useEffect(() => {
-    if (!modoApi || !selectedPointId) return
+    if (!modoApi || selectedPointId !== 'mara-test' || !selectedActivityId) return
     let vigente = true
-    const consultaRequisito =
-      selectedStatus === 'locked' &&
-      (selectedPointId === 'city' ||
-        !!actividadServidor(servidor.actividades.datos, selectedActivityId ?? ''))
-    setDetalleServidor({
-      clave: claveDetalle,
-      ...(consultaRequisito ? { requirement: 'Consultando el requisito en el servidor…' } : {}),
-    })
+    setDetalleServidor({ clave: claveDetalle })
     void (async () => {
-      const [requirement, items] = await Promise.all([
-        consultaRequisito
-          ? consultarProgreso(
-              selectedPointId === 'city' ? 'BLOQUE' : 'ACTIVIDAD',
-              selectedPointId === 'city' ? 'CIUDAD' : (selectedActivityId ?? ''),
-            )
-          : undefined,
-        selectedPointId === 'mara-test' && selectedActivityId
-          ? consultarItems(selectedActivityId)
-          : undefined,
-      ])
+      const items = await consultarItems(selectedActivityId)
       if (!vigente) return
       setDetalleServidor({
         clave: claveDetalle,
-        ...(requirement
-          ? {
-              requirement:
-                requirement.tipo === 'ok'
-                  ? textoRequisito(requirement.datos, servidor.actividades.datos)
-                  : mensajeErrorServidor(requirement),
-              error: requirement.tipo !== 'ok',
-            }
-          : {}),
         ...(items
           ? {
               description:
@@ -105,7 +72,6 @@ export function useMapScreen({
     selectedActivityId,
     selectedStatus,
     selectedZone,
-    intentoRequisito,
   ])
 
   return {
@@ -118,9 +84,5 @@ export function useMapScreen({
     selectedPointId,
     accionDisponible: (detail: PointDetails) => !(detail.disabled || (modoApi && servidor.error)),
     mostrarMisionesAdicionales: zone === 'missions' && !modoApi,
-    reintentarRequisito:
-      modoApi && detalleServidor?.clave === claveDetalle && detalleServidor.error
-        ? () => setIntentoRequisito((i) => i + 1)
-        : undefined,
   }
 }

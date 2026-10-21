@@ -219,7 +219,10 @@ export function AdventurePanel({
                 <button type="button" key={point.id} onClick={() => onSelect(point.id)}>
                   <span>
                     <strong>{point.title}</strong>
-                    <small>{point.subtitle}</small>
+                    <small>
+                      {point.subtitle}
+                      {point.opcional && ' · opcional'}
+                    </small>
                   </span>
                   <span
                     className="sx-available-dot"

@@ -1,7 +1,7 @@
 import type { JourneyState } from '@/types/activities'
 import { modoApi } from '@/config/env'
 import { obtenerEstadoServidor } from '@/store/servidor/sesion'
-import { actividadServidor } from '@/lib/servidor/adaptadores'
+import { actividadServidor, mensajeBloqueo } from '@/lib/servidor/adaptadores'
 import { detallesRuta } from './detallesRuta'
 import { idPuntoContenido } from './puntosServidor'
 import { activityById } from '@/data/activities/content'
@@ -25,6 +25,8 @@ export type PointDetails = {
   title: string
   region: string
   badge: string
+  // Segunda insignia «Opcional» (solo api): la actividad no cuenta para cerrar el tramo.
+  opcional?: boolean
   meta: string
   type: string
   description: string
@@ -44,7 +46,8 @@ export function getPointDetails(
   journey: JourneyState,
 ): PointDetails {
   if (modoApi) {
-    const actividad = actividadServidor(obtenerEstadoServidor().actividades.datos, point.specActivityId ?? '')
+    const bloques = obtenerEstadoServidor().actividades.datos
+    const actividad = actividadServidor(bloques, point.specActivityId ?? '')
     const enCurso = actividad?.estado === 'EN_CURSO'
     const badge =
       point.status === 'completed'
@@ -64,7 +67,7 @@ export function getPointDetails(
         meta: getMissionMeta(mission),
         type: getActivityType(mission),
         description: mission.description,
-        requirement: point.status === 'locked' ? 'Consultando el requisito en el servidor…' : undefined,
+        requirement: point.status === 'locked' ? mensajeBloqueo(bloques, point.specActivityId ?? '') : undefined,
         actionLabel:
           point.status === 'locked'
             ? 'Actividad bloqueada'
@@ -79,13 +82,8 @@ export function getPointDetails(
         activityId: point.specActivityId,
         revision: point.status === 'completed',
       }
-    const bloque = obtenerEstadoServidor().actividades.datos?.find((b) =>
-      b.actividades.some((a) => a.codigo === actividad?.codigo),
-    )
     const ruta =
-      actividad && idPresentacion === actividad.codigo
-        ? detallesRuta(point, actividad, badge, bloque?.nombre ?? '')
-        : undefined
+      actividad && idPresentacion === actividad.codigo ? detallesRuta(point, actividad, badge, bloques) : undefined
     if (ruta) return ruta
     if (point.id === 'city')
       return {
@@ -95,7 +93,7 @@ export function getPointDetails(
         meta: 'Ciudad',
         type: 'Ciudad',
         description: 'La ciudad te espera al final del camino.',
-        requirement: point.status === 'locked' ? 'Consultando el requisito en el servidor…' : undefined,
+        requirement: point.status === 'locked' ? mensajeBloqueo(bloques, 'CIUDAD') : undefined,
         actionLabel: 'Ir a la ciudad',
         disabled: point.status === 'locked',
         href: appPaths.student.exploration,
@@ -110,7 +108,7 @@ export function getPointDetails(
         meta: `Interacción ${numero} de ${secuencia.length}`,
         type: 'Test',
         description: 'Conversa con Mara. No hay respuestas correctas o incorrectas.',
-        requirement: point.status === 'locked' ? 'Consultando el requisito en el servidor…' : undefined,
+        requirement: point.status === 'locked' ? mensajeBloqueo(bloques, point.specActivityId ?? '') : undefined,
         actionLabel:
           point.status === 'locked'
             ? 'Encuentro bloqueado'

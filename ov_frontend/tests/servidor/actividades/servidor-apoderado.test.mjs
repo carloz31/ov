@@ -572,6 +572,32 @@ test('el enlace directo espera la carga y después muestra el candado del servid
   assert.equal(mounted.render().props.activity.id, 'pad-01-rol')
 })
 
+test('el candado del apoderado lleva el mensaje de bloqueo del servidor', async () => {
+  const app = fixture('apo-rosa', undefined, { portal: true })
+  // DATO DE PRUEBA: motivo de bloqueo con el contrato de MotivoBloqueo (los fixtures de plataforma no lo traen).
+  const mensaje = 'Completa la actividad anterior para abrir esta.'
+  app.fetch((request) => {
+    if (request.url === '/api/acciones/ingresar')
+      return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
+    if (!request.url.endsWith('/actividades')) throw Error(`Petición inesperada: ${request.url}`)
+    const bloques = jsonServidor('apoderado-actividades-inicial')
+    bloques
+      .flatMap((b) => b.actividades)
+      .find((a) => a.codigo === 'pad-02-info').bloqueo = [
+      { regla: 'R-pad-02', mensaje, condiciones_faltantes: [], evaluador_especial: null },
+    ]
+    return { body: bloques }
+  })
+  app.setActivityId('pad-02-info')
+  const { ParentActivityView } = app.load('src/pages/parent/ParentActivityView.tsx')
+  const mounted = app.mount(ParentActivityView)
+  mounted.render()
+  await esperar()
+  assert.deepEqual([mounted.render().props.locked, mounted.render().props.mensaje], [true, mensaje])
+  const { ActivityUnavailable } = app.load('src/features/parent/components/ActivityUnavailable.tsx')
+  assert.match(JSON.stringify(copia(ActivityUnavailable({ locked: true, mensaje }))), new RegExp(mensaje))
+})
+
 test('la ruta y el diploma se completan con el servidor aunque no haya nodos locales recorridos', async () => {
   const app = fixture('apo-rosa', undefined, { portal: true })
   app.fetch((r) => ({

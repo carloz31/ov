@@ -56,7 +56,6 @@ export function useMapInteraction({
     selectedPointId,
     accionDisponible,
     mostrarMisionesAdicionales,
-    reintentarRequisito,
   } = useMapScreen({ zone, points, adventure, journey, selectedId })
   useEffect(() => {
     if (selectedPointId) {
@@ -125,7 +124,6 @@ export function useMapInteraction({
     selected,
     details,
     mostrarMisionesAdicionales,
-    reintentarRequisito,
     closePoint,
     selectPoint,
     action,
