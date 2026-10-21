@@ -26,7 +26,7 @@ export function ParentQuestionnaireDetailView() {
     mainRef.current?.scrollIntoView({ block: 'start' })
   }, [childId, questionnaireId])
   const settings = usePrioritySettings()
-  const { completedActivityIds, activities, available } = useParentPortalContext()
+  const { completedActivityIds, activities, available, familia } = useParentPortalContext()
   const child = parentChildren.find((item) => item.id === childId)
   const student = child && studentProfiles.find((item) => item.id === child.id)
   const definition = questionnaires.find(
@@ -35,8 +35,17 @@ export function ParentQuestionnaireDetailView() {
   const route = parentRoute(activities, parentChildren, completedActivityIds, available)
   const application = student?.questionnaires.find((item) => item.questionnaireId === definition?.id)
   const back = parentHomeUrl(child?.id ?? parentChildren[0]?.id ?? '')
-  if (!child || !student || !definition || !route.complete || !completeFamilyResult(application)) {
-    const locked = !!(child && definition && !route.complete)
+  // En api los resultados del hijo llegan en F08: el detalle solo muestra el aviso, con su nombre real.
+  const hijo = familia ? familia.estudiante?.nombre : student?.nombres
+  if (
+    familia ||
+    !child ||
+    !student ||
+    !definition ||
+    !route.complete ||
+    !completeFamilyResult(application)
+  ) {
+    const locked = familia ? !!familia.estudiante : !!(child && definition && !route.complete)
     return (
       <main className="space-y-5 p-5 sm:p-8">
         <h1 className="text-2xl font-bold">
@@ -44,7 +53,7 @@ export function ParentQuestionnaireDetailView() {
         </h1>
         <p className="text-muted-foreground">
           {locked
-            ? `Podrás ver los resultados de ${student?.nombres} cuando completes tus actividades.`
+            ? `Podrás ver los resultados de ${hijo} cuando completes tus actividades.`
             : 'Este resultado no está disponible para esta cuenta.'}
         </p>
         {locked && (

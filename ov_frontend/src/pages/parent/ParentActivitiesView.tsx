@@ -6,6 +6,7 @@ import { appPaths } from '@/routes/paths'
 import { ParentActivityCard } from '@/features/parent/components/ParentActivityCard'
 import { ParentResourceDialog } from '@/features/parent/components/ParentResourceDialog'
 import { parentRoute } from '@/features/parent/lib/selectors'
+import { avanceConFamilia } from '@/features/parent/lib/familia'
 import { parentChildren } from '@/features/parent/data/parentPortal'
 import { GuideDialogue } from '@/components/common/GuideDialogue'
 import { parentGuides } from '@/data/content/guideTexts'
@@ -13,9 +14,12 @@ import { useParentPortalContext } from '@/features/parent/context/parentPortalCo
 
 function ParentActivitiesView() {
   const navigate = useNavigate()
-  const { completedActivityIds, activities, available, journey: state } = useParentPortalContext()
+  const { completedActivityIds, activities, available, familia, journey: state } = useParentPortalContext()
   const [resources, setResources] = useState<string[]>([])
-  const route = parentRoute(activities, parentChildren, completedActivityIds, available)
+  const route = avanceConFamilia(
+    parentRoute(activities, parentChildren, completedActivityIds, available),
+    familia,
+  )
   const percentage = Math.round(route.percent)
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6 lg:p-8">

@@ -3,12 +3,10 @@
   "id": "t-partida",
   "tipo": "instrumento",
   "titulo": "Punto de partida",
-  "subtitulo": "Cuestionario de partida",
   "bloque": 1,
   "orden": 2,
   "obligatoria": true,
   "requisitos": [],
-  "ubicacion": "El campamento",
   "duracionEstimadaMin": 10,
   "personajeIds": [
     "companero"
@@ -38,7 +36,6 @@
   "mapa": {
     "x": 260,
     "y": 260,
-    "etiqueta": "Test · 10 min",
     "icono": "test"
   },
   "presentacion": "narrativa"

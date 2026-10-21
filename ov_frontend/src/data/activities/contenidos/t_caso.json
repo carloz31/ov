@@ -3,12 +3,10 @@
   "id": "t-caso",
   "tipo": "encuentro",
   "titulo": "Caso",
-  "subtitulo": "Contenido pendiente de su lote F",
   "bloque": 4,
   "orden": 3,
   "obligatoria": true,
   "requisitos": [],
-  "ubicacion": "La ciudad",
   "duracionEstimadaMin": 10,
   "personajeIds": [
     "companero"
@@ -17,7 +15,6 @@
   "mapa": {
     "x": 800,
     "y": 250,
-    "etiqueta": "Caso · 10 min",
     "icono": "informativa"
   }
 }

@@ -12,6 +12,7 @@ import {
 } from '@/features/parent/lib/selectors'
 import { activities, questionnaires, studentProfiles } from '@/data/demo/studentProfiles'
 import { generalProgress } from '@/features/student-tracking/lib/selectors'
+import { avanceConFamilia, nombreHijo } from '@/features/parent/lib/familia'
 
 import { usePrioritySettings } from '@/features/counselor/hooks/usePrioritySettings'
 import { canAccessFamilyConversations, useAdventure } from '@/store/adventureStore'
@@ -24,7 +25,12 @@ export function useParentOverview() {
   useEffect(() => {
     mainRef.current?.scrollIntoView({ block: 'start' })
   }, [])
-  const { completedActivityIds, activities: parentRouteActivities, available } = useParentPortalContext()
+  const {
+    completedActivityIds,
+    activities: parentRouteActivities,
+    available,
+    familia,
+  } = useParentPortalContext()
   const state = useAdventure()
   const settings = usePrioritySettings()
   const [params, setParams] = useSearchParams()
@@ -36,7 +42,10 @@ export function useParentOverview() {
       setParams(next, { replace: true })
     }
   }, [child, params, setParams])
-  const route = parentRoute(parentRouteActivities, parentChildren, completedActivityIds, available)
+  const route = avanceConFamilia(
+    parentRoute(parentRouteActivities, parentChildren, completedActivityIds, available),
+    familia,
+  )
   const requestedDiploma = params.get('diploma') === '1'
   useEffect(() => {
     if (!requestedDiploma || !route.complete) return
@@ -68,5 +77,9 @@ export function useParentOverview() {
     conversation,
     student,
     progress,
+    // Solo api: el hijo y el avance del servidor; las vistas dejan los datos de demostración.
+    familia,
+    nombreHijo: nombreHijo(familia, student?.nombres),
+    variosHijos: !familia && parentChildren.length > 1,
   }
 }

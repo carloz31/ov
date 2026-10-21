@@ -212,9 +212,11 @@ test('una opcional lleva su insignia, su duración del servidor y no cuenta para
     [true, '5 min', 'Actividad opcional que aparece al desbloquearse.'],
   )
   assert.equal(getPointDetails(camino[0], {}, {}).opcional, false)
-  // La descripción nula del servidor cae en la del contenido.
-  const { contenidoPorClave } = m.app.load('src/data/activities/contenidos.ts')
-  assert.equal(getPointDetails(camino[0], {}, {}).description, contenidoPorClave('t_inicio').subtitulo)
+  // La presentación sale solo del servidor; si llega nula, no se inventa otra.
+  assert.equal(getPointDetails(camino[0], {}, {}).description, m.bloques[0].actividades[0].descripcion)
+  m.bloques[0].actividades[0].descripcion = null
+  m.sesion.publicar({ actividades: { datos: m.bloques, estado: 'listo', error: null } })
+  assert.equal(getPointDetails(m.camino()[0], {}, {}).description, '')
   const { BlockSign } = m.app.load('src/features/adventure/components/BlockSign.tsx')
   // T1 tiene opcionales pendientes, pero su única requerida (t-expectativas) está completada:
   // lleva el mismo ícono que T0 (todo completo) y no el de T2 (pendiente).
@@ -262,4 +264,26 @@ test('la Ciudad cerrada se explica desde el selector: sin llave en el mapa y con
     })
     .render()
   assert.equal(estado.ciudadBloqueo, undefined)
+})
+
+test('en api el drawer, el panel, los tramos y el reproductor toman sus textos del servidor', () => {
+  const m = mapa('ruta/ruta-actividades-t1')
+  const { getPointDetails } = m.app.load('src/features/adventure/lib/pointDetails.ts')
+  const { actividadPorContenido } = m.app.load('src/lib/servidor/contenidos.ts')
+  const valores = m.camino().find((p) => p.specActivityId === 't-valores')
+  assert.equal(valores.subtitle, 'Registro · 10 min')
+  assert.equal(valores.bloqueNombre, m.bloques[1].nombre)
+  const detalle = getPointDetails(valores, {}, {})
+  assert.deepEqual([detalle.region, detalle.meta], [m.bloques[1].nombre, '10 min'])
+  // Sin duración del servidor, no se muestra tiempo.
+  m.bloques[1].actividades.find((a) => a.codigo === 't-valores').duracion_estimada_min = null
+  m.sesion.publicar({ actividades: { datos: m.bloques, estado: 'listo', error: null } })
+  const sinTiempo = m.camino().find((p) => p.specActivityId === 't-valores')
+  assert.equal(sinTiempo.subtitle, 'Registro')
+  assert.equal(getPointDetails(sinTiempo, {}, {}).meta, '')
+  const { BlockSign } = m.app.load('src/features/adventure/components/BlockSign.tsx')
+  const letreros = BlockSign({ points: m.camino() }).props.children.map((s) => s.props.children[1])
+  assert.deepEqual(copia(letreros), m.bloques.filter((b) => b.espacio === 'MISIONES_CAMPO').map((b) => b.nombre))
+  const inicio = actividadPorContenido(m.bloques, 't-inicio')
+  assert.deepEqual([inicio.titulo, inicio.ubicacion], [m.bloques[0].actividades[0].titulo, m.bloques[0].nombre])
 })

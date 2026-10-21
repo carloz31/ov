@@ -1,5 +1,6 @@
 """B01 · HU-002: lo bloqueado dice por qué; requeridas, opcionales y duración en el listado."""
 
+from datos.ruta import DESCRIPCIONES
 from soporte_retiro import actividades_extra, medir
 from soporte_ruta import completar, pedir
 
@@ -34,7 +35,8 @@ def test_actividad_de_bloque_bloqueado_muestra_el_mensaje_del_bloque(cliente):
 
 def test_listado_trae_requerida_duracion_y_descripcion(cliente):
     inicio = actividad(cliente, 't-inicio')
-    assert (inicio['requerida'], inicio['duracion_estimada_min'], inicio['descripcion']) == (True, 5, None)
+    assert (inicio['requerida'], inicio['duracion_estimada_min']) == (True, 5)
+    assert inicio['descripcion'] == DESCRIPCIONES['t-inicio']
     opcional = actividad(cliente, 't-opcional')
     assert (opcional['requerida'], opcional['visibilidad'], opcional['visible']) == (False, 'AL_DESBLOQUEAR', False)
     assert opcional['descripcion'] and opcional['duracion_estimada_min'] == 5

@@ -3,12 +3,10 @@
   "id": "t-comparar",
   "tipo": "registro",
   "titulo": "Comparar planes",
-  "subtitulo": "Contenido pendiente de su lote F",
   "bloque": 3,
   "orden": 2,
   "obligatoria": true,
   "requisitos": [],
-  "ubicacion": "El camino",
   "duracionEstimadaMin": 15,
   "personajeIds": [
     "companero"
@@ -17,7 +15,6 @@
   "mapa": {
     "x": 960,
     "y": 350,
-    "etiqueta": "Registro · 15 min",
     "icono": "registro"
   }
 }

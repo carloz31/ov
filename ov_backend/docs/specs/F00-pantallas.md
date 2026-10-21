@@ -9,7 +9,7 @@ Criterio general: cambios ligeros sobre las vistas actuales, reutilizando sus co
 - **Drawer del estudiante** (`ActivityDrawer`): la caja `sx-drawer-requirement` muestra `bloqueo[0].mensaje` de la actividad (o del bloque, si la actividad no trae `bloqueo`), tal cual llega. No se listan `condiciones_faltantes`.
 - Se retira la consulta a `GET /cuentas/{c}/progreso/...` para armar ese texto, y el texto «Consultando el requisito en el servidor…»: el `bloqueo` ya viene en `GET /cuentas/{c}/actividades`.
 - `textoRequisito` deja de construir textos propios en api (incluido «Completa todas las misiones del camino (X de 9)»).
-- **Apoderado:** `ParentActivityCard` conserva la etiqueta «Bloqueada»; `ActivityUnavailable` («Actividad bloqueada») agrega debajo del título el mismo `mensaje`, en un párrafo con el estilo de texto secundario que ya usa la vista.
+- **Apoderado:** `ParentActivityCard` conserva la etiqueta «Bloqueada»; `ActivityUnavailable` («Actividad bloqueada») muestra bajo el título solo el `mensaje` del servidor; «Complete la actividad anterior para continuar.» queda como respaldo cuando no llega ninguno (ajuste del 21 oct 2026).
 
 ## 2. Actividad opcional, duración y descripción (drawer y panel)
 
@@ -51,7 +51,7 @@ Un componente por familia de portales, en `components/student/` y `components/st
 
 **Apoderado y orientadora** (sobria, colores del portal, pantalla completa):
 - *Cargando:* ícono de carga, «Cargando» / «Un momento, estamos trayendo tu información.» Al ingresar al portal y en la carga inicial de sus vistas (cierra el pendiente AP-F3 de carga y error: ya no se ve «0 de 0 actividades»).
-- *Error:* «No pudimos cargar la información», `mensajeErrorServidor`, «Reintentar» (primario) y «Volver al inicio».
+- *Error:* «No pudimos cargar la información», `mensajeErrorServidor`, «Reintentar» (primario) y «Volver a ingresar», que cierra la sesión y lleva al login, como en la del estudiante (ajuste del 21 oct 2026).
 
 **Sesión vencida (401):** vuelve al login con el aviso «Tu sesión terminó. Vuelve a ingresar.» (el mensaje del servidor).
 

@@ -60,7 +60,10 @@ function ParentPortalModule() {
             estado={source.pantallaCarga.estado}
             mensaje={source.pantallaCarga.mensaje}
             onReintentar={source.reintentarCarga}
-            onVolver={() => navigate(appPaths.parent.overview)}
+            onVolver={() => {
+              cerrarSesion()
+              navigate(appPaths.login, { replace: true })
+            }}
           />
         </div>
       </ThemeProvider>

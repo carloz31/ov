@@ -29,3 +29,21 @@
   - `t_apo_1.json` es una informativa mínima.
   - `t_apo_carta.json` no tiene nodos: `disponiblesApoderado` excluye los contenidos sin nodos, así que la carta se muestra con «Bloqueada» (el estado que ya existe para lo no disponible) y no se inicia hasta F08.
   - `tests/local/actividades/contenidos` pasa a 33 archivos.
+- **Descripción solo del servidor (decidido por el usuario).**
+  - `datos/ruta.py` tiene `DESCRIPCIONES` para todas las actividades (`DATO DE PRUEBA`) y `PROPIEDADES` ya no lleva `descripcion`.
+  - Pruebas adaptadas: `test_bloqueo_actividades`, `test_consultas_dominio` y `BLOQUE_FAMILIA` de `soporte_ruta` esperan esos textos; los fixtures `ruta-*` se regeneraron.
+  - En el front, el drawer de `ruta` y la tarjeta del apoderado (`subtitulo` en `actividadesApoderado`) muestran `descripcion` tal cual, o nada si llega nula, y los `t_*.json` ya no traen `subtitulo`.
+- **Familia del apoderado.**
+  - `familia` vive en `store/servidor/apoderado.ts`, no en el almacén del estudiante: así lo pide el `AGENTS.md` del front.
+  - Se pide al ingresar, junto con las actividades, y forma parte de la carga inicial del portal (`PantallaCargaPortal`). Vence al completar una actividad.
+  - `avanceConFamilia` reemplaza el avance calculado en el front por el del servidor en el inicio, en «Mis actividades», en el cierre de actividad y en el detalle de cuestionario. En api, ese detalle muestra solo el aviso hasta F08.
+  - Las iniciales del hijo salen de su nombre (`inicialesHijo`).
+- **`PantallaCargaPortal`:** «Volver a ingresar» cierra la sesión y lleva al login (decidido por el usuario; antes era «Volver al inicio»).
+- **`ActivityUnavailable`:** con `mensaje` del servidor muestra solo ese texto; sin él, «Complete la actividad anterior para continuar.».
+- **Textos del mapa solo del servidor (decidido por el usuario).** En api, del JSON solo se usan los nodos y la posición del mapa:
+  - la etiqueta del punto es «tipo · duración» (`etiquetaActividad`); sin duración, solo el tipo;
+  - la región del drawer es el `nombre` del bloque, y el tiempo, `duracion_estimada_min`, que se oculta si llega nulo;
+  - los letreros de tramo (`BlockSign`) usan `bloqueNombre`; en local siguen como «Tramo N»;
+  - `actividadPorContenido` pone el título, el bloque (`ubicacion`) y la duración del servidor, que leen el encabezado del reproductor y el cierre.
+- **Descripciones en `DESCRIPCIONES`.** Van en un diccionario aparte en lugar de `PROPIEDADES`, para no mezclar el texto con los valores por defecto. El cargador lo lee igual.
+- **Campos de los `t_*.json`.** Se quitaron `subtitulo`, `ubicacion` y `mapa.etiqueta`. Se conservan los que exige el tipo `Actividad` (`id`, `tipo`, `titulo`, `bloque`, `orden`, `obligatoria`, `requisitos`, `duracionEstimadaMin`, `personajeIds` y `nodos`), aunque en api el título, el bloque y la duración se reemplazan por los del servidor.

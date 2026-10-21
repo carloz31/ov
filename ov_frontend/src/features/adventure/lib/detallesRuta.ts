@@ -3,16 +3,10 @@ import { mensajeBloqueo } from '@/lib/servidor/adaptadores'
 import type { ActividadCuenta, BloqueActividades } from '@/types/servidor'
 import type { PointDetails } from './pointDetails'
 import type { StudentMapPoint } from './mapPoints'
+import { duracionActividad, tipoActividad } from './etiquetaActividad'
 
-const tipos: Record<ActividadCuenta['tipo'], string> = {
-  INFORMATIVA: 'Informativa',
-  REGISTRO: 'Registro',
-  CUESTIONARIO: 'Test',
-  CASO: 'Caso',
-  BATALLA: 'Batalla',
-}
-
-// Actividades del servidor sin marcador propio del front: los textos salen del servidor y del contenido.
+// Actividades del servidor sin marcador propio del front: todo lo que se muestra sale del servidor;
+// del contenido solo cuenta si tiene nodos.
 export function detallesRuta(
   point: StudentMapPoint,
   actividad: ActividadCuenta,
@@ -24,15 +18,16 @@ export function detallesRuta(
   if (!contenido) return undefined
   // Un contenido sin nodos solo da la posición: su lote F lo completa.
   const pendiente = !contenido.nodos.length && point.status === 'available'
-  const tipo = tipos[actividad.tipo]
+  const tipo = tipoActividad(actividad)
   return {
     title: point.title,
-    region: contenido.ubicacion ?? region,
+    region,
     badge: pendiente ? 'Contenido pendiente' : badge,
     opcional: !actividad.requerida,
-    meta: `${actividad.duracion_estimada_min ?? contenido.duracionEstimadaMin} min`,
+    meta: duracionActividad(actividad),
     type: tipo,
-    description: actividad.descripcion ?? contenido.subtitulo ?? '',
+    // La presentación de la actividad la da el servidor; el contenido no la repite.
+    description: actividad.descripcion ?? '',
     requirement: point.status === 'locked' ? mensajeBloqueo(bloques, actividad.codigo) : undefined,
     actionLabel: pendiente
       ? 'Contenido pendiente'

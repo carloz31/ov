@@ -20,6 +20,8 @@ export type StudentMapPoint = {
   zone: 'camino' | 'ciudad'
   specActivityId?: string
   bloque?: number
+  // Solo api: el nombre del bloque del servidor para el letrero del tramo.
+  bloqueNombre?: string
   secuencia?: ActividadCuenta[]
   actionEnabled: boolean
   additional?: boolean

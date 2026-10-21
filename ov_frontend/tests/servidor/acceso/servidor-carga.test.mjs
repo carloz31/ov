@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import { copia, esperar, fixtureServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 import { fixtureApoderado } from '../../soporte/apoderado-ayudas.mjs'
 
 // F00: pantallas de carga y error, y nombre real de la sesión.
@@ -50,6 +50,7 @@ test('el portal del apoderado muestra carga y error iniciales y el nombre de la 
       if (falla) throw Error('DATO DE PRUEBA: sin conexión')
       return { body: [] }
     }
+    if (r.url.endsWith('/familia')) return { body: jsonServidor('ruta/ruta-familia') }
     throw Error(`Solicitud no configurada: ${r.url}`)
   })
   const { useParentActivities } = app.load('src/features/parent/hooks/useParentActivities.ts')
@@ -70,9 +71,35 @@ test('el portal del apoderado muestra carga y error iniciales y el nombre de la 
     JSON.stringify(copia(PantallaCargaPortal({ estado: 'cargando', onReintentar() {}, onVolver() {} }))),
     /Un momento, estamos trayendo tu información\./,
   )
+  assert.match(
+    JSON.stringify(copia(PantallaCargaPortal({ estado: 'error', mensaje: 'x', onReintentar() {}, onVolver() {} }))),
+    /Volver a ingresar/,
+  )
 })
 
 test('las iniciales del panel salen del nombre de la cuenta', () => {
   const app = fixtureServidor()
   assert.equal(app.load('src/features/adventure/hooks/useTravelerLevel.ts').inicialesViajero('Ana'), 'AN')
+})
+
+test('el resumen del apoderado en api usa GET /familia: hijo, avances y solo el aviso de resultados', () => {
+  const app = fixtureApoderado({ portal: true })
+  const familia = jsonServidor('ruta/ruta-familia')
+  const { ParentChildServerSummary } = app.load('src/features/parent/components/ParentChildServerSummary.tsx')
+  const texto = (e) => JSON.stringify(copia(e))
+  const tree = ParentChildServerSummary({ familia })
+  const cabecera = tree.props.children[1]
+  assert.deepEqual([cabecera.props.title, cabecera.props.initials, cabecera.props.details], ['Ana', 'AN', undefined])
+  const [hijo, diploma] = cabecera.props.metrics.props.children
+  assert.deepEqual([hijo.props.label, hijo.props.detail], ['Avance de Ana', '9 de 11 actividades'])
+  assert.deepEqual([diploma.props.label, diploma.props.detail], ['Su avance hacia el diploma', '2 de 2 actividades'])
+  assert.match(texto(tree), /Podrás ver los resultados de Ana cuando completes tus actividades\./)
+  assert.doesNotMatch(texto(tree), /Cuestionarios que se compartirán|Salón/)
+  assert.match(texto(ParentChildServerSummary({ familia: { ...familia, estudiante: null } })), /Todavía no tienes un hijo vinculado\./)
+  const { avanceConFamilia, nombreHijo } = app.load('src/features/parent/lib/familia.ts')
+  const local = { completed: 0, total: 5, percent: 0, complete: false, next: 'x' }
+  assert.deepEqual(copia(avanceConFamilia(local, familia)), { completed: 2, total: 2, percent: 100, complete: true, next: 'x' })
+  assert.equal(avanceConFamilia(local, null), local)
+  assert.equal(nombreHijo(familia, 'Gabriela'), 'Ana')
+  assert.equal(nombreHijo(null, 'Gabriela'), 'Gabriela')
 })

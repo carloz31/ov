@@ -33,7 +33,7 @@ export function PantallaCargaPortal({
               Reintentar
             </Button>
             <Button className="min-h-11" variant="outline" onClick={onVolver}>
-              Volver al inicio
+              Volver a ingresar
             </Button>
           </div>
         )}

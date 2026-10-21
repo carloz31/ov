@@ -3,12 +3,10 @@
   "id": "t-eco",
   "tipo": "registro",
   "titulo": "Eco de mis respuestas",
-  "subtitulo": "Contenido pendiente de su lote F",
   "bloque": 2,
   "orden": 5,
   "obligatoria": true,
   "requisitos": [],
-  "ubicacion": "El camino",
   "duracionEstimadaMin": 10,
   "personajeIds": [
     "companero"
@@ -17,7 +15,6 @@
   "mapa": {
     "x": 670,
     "y": 320,
-    "etiqueta": "Registro · 10 min",
     "icono": "registro"
   }
 }

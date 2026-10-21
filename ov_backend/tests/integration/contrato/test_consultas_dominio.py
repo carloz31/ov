@@ -6,7 +6,7 @@ from sqlalchemy import select
 from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActividad, Visibilidad
 from datos.fijos import SECCIONES
 from datos.ruta import (
-    ACTIVIDADES, BLOQUES, FICHAS, INSIGNIAS, NIVELES, PREGUNTAS_DIARIO, PROPIEDADES, REGLAS, TESTIMONIOS, contenido,
+    ACTIVIDADES, BLOQUES, DESCRIPCIONES, FICHAS, INSIGNIAS, NIVELES, PREGUNTAS_DIARIO, PROPIEDADES, REGLAS, TESTIMONIOS, contenido,
 )
 from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 
@@ -64,7 +64,7 @@ def esperado(ruta, completo):
                  'estado': ESTADOS[completo][actividad],
                  'requerida': PROPIEDADES.get(actividad, {}).get('requerida', True),
                  'duracion_estimada_min': duracion,
-                 'descripcion': PROPIEDADES.get(actividad, {}).get('descripcion')}
+                 'descripcion': DESCRIPCIONES.get(actividad)}
                 for orden, (actividad, _, titulo, tipo, _, duracion) in enumerate(
                     (fila for fila in ACTIVIDADES if fila[1] == bloque), 1)
             ],

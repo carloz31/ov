@@ -5,6 +5,7 @@ import { avisarContenidoFaltante } from '@/store/servidor/contenidos'
 import type { ActividadCuenta, BloqueActividades } from '@/types/servidor'
 import type { StudentMapPoint } from './mapPoints'
 import { iconosMapa } from './iconosMapa'
+import { etiquetaActividad } from './etiquetaActividad'
 
 // Identidad de los marcadores ya existentes; la lista y el orden vienen del servidor.
 export function idPuntoContenido(clave: string, codigo: string) {
@@ -55,11 +56,12 @@ export function puntosServidor(
         subtitle:
           grupo.length > 1
             ? `Test · Interacción ${grupo.indexOf(actividad) + 1} de ${grupo.length}`
-            : (mapa.etiqueta ?? ''),
+            : etiquetaActividad(actividad),
         icon: iconosMapa[mapa.icono],
         status: estadoPunto(actividad),
         zone,
         bloque: bloque.numero,
+        bloqueNombre: bloque.nombre,
         specActivityId: actividad.codigo,
         actionEnabled:
           actividad.contenido !== 'encuentro_resultado_elena' || actividad.estado !== 'BLOQUEADA',

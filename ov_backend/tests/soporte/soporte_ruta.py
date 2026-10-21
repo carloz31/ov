@@ -5,6 +5,7 @@ from soporte_dominios import consultar_dominios
 from sqlalchemy import select
 
 from app.models.base import Base
+from datos.ruta import DESCRIPCIONES
 
 
 FECHA = '2026-10-07T10:00:00'
@@ -25,11 +26,11 @@ BLOQUE_FAMILIA = {
         {'codigo': 't-apo-1', 'titulo': 'Primera actividad del apoderado',
          'tipo': 'INFORMATIVA', 'orden': 1, 'contenido': 't_apo_1',
          'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'DISPONIBLE',
-         'requerida': True, 'duracion_estimada_min': 10, 'descripcion': None, 'bloqueo': None},
+         'requerida': True, 'duracion_estimada_min': 10, 'descripcion': DESCRIPCIONES['t-apo-1'], 'bloqueo': None},
         {'codigo': 't-apo-carta', 'titulo': 'Carta del apoderado',
          'tipo': 'INFORMATIVA', 'orden': 2, 'contenido': 't_apo_carta',
          'visibilidad': 'SIEMPRE', 'visible': True, 'estado': 'BLOQUEADA',
-         'requerida': True, 'duracion_estimada_min': 10, 'descripcion': None,
+         'requerida': True, 'duracion_estimada_min': 10, 'descripcion': DESCRIPCIONES['t-apo-carta'],
          'bloqueo': [{'regla': 'R-t-apo-carta', 'mensaje': 'Completa la primera actividad.',
                       'condiciones_faltantes': [{'tipo_evento': 'COMPLETA_ACTIVIDAD', 'referencia': 't-apo-1',
                                                  'tipo_conteo': 'EVENTOS', 'actual': 0, 'requerido': 1,

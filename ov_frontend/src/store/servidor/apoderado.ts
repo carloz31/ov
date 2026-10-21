@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react'
 import { modoApi } from '@/config/env'
 import { ingresar, completarActividad } from '@/services/api/acciones'
 import { obtenerActividades } from '@/services/api/actividades'
+import { obtenerFamilia } from '@/services/api/familia'
 import { proyectarJourney } from '@/lib/servidor/adaptadores'
 import { hidratarParentJourney } from '../parentJourneyStore'
 import { cuentaApoderado } from './cuenta'
@@ -9,6 +10,7 @@ import type { Seccion } from './sesion'
 import type {
   BloqueActividades,
   ErrorServidor,
+  FamiliaApoderado,
   RespuestaAccion,
   RespuestaCompletarActividad,
   RespuestaServidor,
@@ -17,18 +19,23 @@ import type {
 type AlmacenApoderado = {
   cuenta: string | null
   actividades: Seccion<BloqueActividades[]>
+  // GET /cuentas/{c}/familia: avance propio, diploma y el hijo vinculado (F00).
+  familia: Seccion<FamiliaApoderado>
   error: ErrorServidor | null
   enviando: string | null
 }
 const inicial = (): AlmacenApoderado => ({
   cuenta: null,
   actividades: { datos: null, estado: 'sin_cargar', error: null },
+  familia: { datos: null, estado: 'sin_cargar', error: null },
   error: null,
   enviando: null,
 })
 let estado = inicial()
 let revisionSesion = 0
 let revisionActividades = 0
+let revisionFamilia = 0
+let consultaFamilia: { revision: number; promesa: Promise<RespuestaServidor<FamiliaApoderado>> } | null = null
 let inicio: Promise<RespuestaServidor<RespuestaAccion>> | null = null
 let ingresoRegistrado: RespuestaAccion | null = null
 let consulta: { revision: number; promesa: Promise<RespuestaServidor<BloqueActividades[]>> } | null = null
@@ -60,6 +67,8 @@ export const useEstadoApoderado = () => useSyncExternalStore(suscribir, obtenerE
 export function limpiarEstadoApoderado() {
   revisionSesion++
   revisionActividades++
+  revisionFamilia++
+  consultaFamilia = null
   inicio = null
   ingresoRegistrado = null
   consulta = null
@@ -93,9 +102,13 @@ export function ingresarApoderado(): Promise<RespuestaServidor<RespuestaAccion>>
         }
         ingresoRegistrado = respuesta.datos
       }
-      const actividades = await asegurarActividadesApoderado()
+      const [actividades, familia] = await Promise.all([
+        asegurarActividadesApoderado(),
+        asegurarFamiliaApoderado(),
+      ])
       if (sesion !== revisionSesion) return cambioSesion()
-      return actividades.tipo === 'ok' ? { tipo: 'ok', datos: ingresoRegistrado! } : actividades
+      if (actividades.tipo !== 'ok') return actividades
+      return familia.tipo === 'ok' ? { tipo: 'ok', datos: ingresoRegistrado! } : familia
     })
     .finally(() => {
       if (inicio === pendiente) inicio = null
@@ -110,7 +123,47 @@ export function reintentarApoderado() {
     revisionActividades++
     publicar({ actividades: { ...estado.actividades, estado: 'vencido', error: null } })
   }
+  if (estado.familia.estado === 'error') vencerFamilia()
   return ingresarApoderado()
+}
+
+function vencerFamilia() {
+  revisionFamilia++
+  publicar({ familia: { ...estado.familia, estado: 'vencido', error: null } })
+}
+
+export function asegurarFamiliaApoderado(): Promise<RespuestaServidor<FamiliaApoderado>> {
+  const cuenta = estado.cuenta,
+    sesion = revisionSesion,
+    revision = revisionFamilia
+  if (!modoApi || !cuenta || !ingresoRegistrado) return Promise.resolve(sinCuenta())
+  if (consultaFamilia?.revision === revision) return consultaFamilia.promesa
+  const seccion = estado.familia
+  if (seccion.estado === 'listo') return Promise.resolve({ tipo: 'ok', datos: seccion.datos! })
+  if (seccion.estado === 'error') return Promise.resolve(seccion.error!)
+  const tarea = {
+    revision,
+    promesa: Promise.resolve()
+      .then(async (): Promise<RespuestaServidor<FamiliaApoderado>> => {
+        if (sesion !== revisionSesion || cuenta !== estado.cuenta) return cambioSesion()
+        const respuesta = await obtenerFamilia(cuenta)
+        if (sesion !== revisionSesion || cuenta !== estado.cuenta) return cambioSesion()
+        if (revision !== revisionFamilia) return asegurarFamiliaApoderado()
+        publicar({
+          familia:
+            respuesta.tipo === 'ok'
+              ? { datos: respuesta.datos, estado: 'listo', error: null }
+              : { ...estado.familia, estado: 'error', error: respuesta },
+        })
+        return respuesta
+      })
+      .finally(() => {
+        if (consultaFamilia === tarea) consultaFamilia = null
+      }),
+  }
+  consultaFamilia = tarea
+  publicar({ familia: { ...seccion, estado: 'cargando', error: null } })
+  return tarea.promesa
 }
 
 export function asegurarActividadesApoderado(): Promise<RespuestaServidor<BloqueActividades[]>> {
@@ -169,7 +222,9 @@ export function completarActividadApoderado(
       if (respuesta.tipo !== 'ok') return respuesta
       revisionActividades++
       publicar({ actividades: { ...estado.actividades, estado: 'vencido', error: null } })
-      await asegurarActividadesApoderado()
+      // El avance de la familia cambia con cada actividad completada.
+      vencerFamilia()
+      await Promise.all([asegurarActividadesApoderado(), asegurarFamiliaApoderado()])
       if (sesion !== revisionSesion || cuenta !== estado.cuenta) return cambioSesion()
       return respuesta
     })

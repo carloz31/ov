@@ -9,7 +9,7 @@ import { actividadesApoderado, completadasApoderado, disponiblesApoderado } from
 import { mensajeBloqueo } from '@/lib/servidor/adaptadores'
 import { completedParentActivities, parentActivityAvailable } from '../lib/missionLogic'
 import type { Actividad, JourneyState } from '@/types/activities'
-import type { ErrorServidor } from '@/types/servidor'
+import type { ErrorServidor, FamiliaApoderado } from '@/types/servidor'
 
 export type ParentActivitiesSource = {
   activities: Actividad[]
@@ -24,6 +24,8 @@ export type ParentActivitiesSource = {
   // Solo api: la carga inicial del portal (sin actividades todavía) y su reintento.
   pantallaCarga: { estado: 'cargando' | 'error'; mensaje: string } | null
   reintentarCarga: () => void
+  // Solo api: GET /cuentas/{c}/familia (avance propio y el hijo vinculado). En local, null.
+  familia: FamiliaApoderado | null
   serverCompletion: boolean
 }
 
@@ -44,6 +46,7 @@ export function useParentActivities(): ParentActivitiesSource {
       if (actividad) avisarContenidoFaltante(codigo, actividad.contenido)
     }
   }, [bloques, contenido])
+  const errorCarga = almacen.error ?? almacen.actividades.error ?? almacen.familia.error
   return {
     activities: modoApi ? contenido.actividades : parentActivities,
     accountId,
@@ -58,11 +61,12 @@ export function useParentActivities(): ParentActivitiesSource {
     loading: modoApi && (!almacen.cuenta || almacen.actividades.estado !== 'listo'),
     error: modoApi ? (almacen.error ?? almacen.actividades.error) : null,
     pantallaCarga:
-      modoApi && !bloques
-        ? almacen.error || almacen.actividades.error
-          ? { estado: 'error', mensaje: mensajeErrorServidor(almacen.error ?? almacen.actividades.error) }
+      modoApi && (!bloques || !almacen.familia.datos)
+        ? errorCarga
+          ? { estado: 'error', mensaje: mensajeErrorServidor(errorCarga) }
           : { estado: 'cargando', mensaje: '' }
         : null,
+    familia: modoApi ? almacen.familia.datos : null,
     reintentarCarga: () => void reintentarApoderado(),
     serverCompletion: modoApi,
   }

@@ -11,7 +11,7 @@ import { parentChildren, conversationChildId } from '@/features/parent/data/pare
 import { parentMotivation } from '@/features/parent/data/parentMotivation'
 
 export function ParentConversationNotice({ model }: { model: ReturnType<typeof useParentOverview> }) {
-  const { conversation, student } = model
+  const { conversation, nombreHijo, variosHijos } = model
   return (
     <Card
       className={`parent-conversation-notice flex min-w-0 flex-col gap-5 p-5 sm:p-6 ${conversation.available && conversation.pending ? 'staff-alert-card' : ''}`}
@@ -28,7 +28,7 @@ export function ParentConversationNotice({ model }: { model: ReturnType<typeof u
             {conversation.completed} {conversation.completed === 1 ? 'conversada' : 'conversadas'},{' '}
             {conversation.pending} {conversation.pending === 1 ? 'pendiente' : 'pendientes'}
           </p>
-          {parentChildren.length > 1 &&
+          {variosHijos &&
             parentChildren.map((item) => (
               <p key={item.id} className="text-sm">
                 Con {item.name.split(' ')[0]}:{' '}
@@ -62,7 +62,7 @@ export function ParentConversationNotice({ model }: { model: ReturnType<typeof u
         </>
       ) : (
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Las conversaciones se habilitarán a medida que {student?.nombres ?? 'tu hijo'} avance en su
+          Las conversaciones se habilitarán a medida que {nombreHijo ?? 'tu hijo'} avance en su
           recorrido.
         </p>
       )}

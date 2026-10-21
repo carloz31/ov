@@ -220,3 +220,13 @@ export type BloqueActividades = Omit<BloqueEstado, 'actividades'> & {
 }
 export type NivelEstado = NivelActual & { estado: 'BLOQUEADO' | 'OBTENIDO' }
 export type LogrosCuenta = { insignias: InsigniaEstado[]; niveles: NivelEstado[] }
+// app/schemas/familia.py · GET /cuentas/{c}/familia (B12)
+export type AvanceRuta = { completadas: number; total: number; porcentaje: number }
+export type Diploma = { obtenido: boolean; obtenido_en: string | null }
+export type EstudianteVinculado = {
+  codigo: string
+  nombre: string
+  avance: AvanceRuta
+  nivel_actual: NivelActual | null
+}
+export type FamiliaApoderado = { avance: AvanceRuta; diploma: Diploma; estudiante: EstudianteVinculado | null }

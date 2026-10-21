@@ -3,6 +3,16 @@ import test from 'node:test'
 import { copia, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 import { fixtureApoderado } from '../../soporte/apoderado-ayudas.mjs'
 
+// DATO DE PRUEBA: la familia que acompaña a los fixtures de plataforma, con el avance de su etapa.
+function familiaDe(etapa) {
+  const actividades = jsonServidor(`apoderado-actividades-${etapa}`).flatMap((b) => b.actividades)
+  const completadas = actividades.filter((a) => a.estado === 'COMPLETADA').length
+  const total = actividades.length
+  return {
+    ...jsonServidor('ruta/ruta-familia'),
+    avance: { completadas, total, porcentaje: total ? (completadas / total) * 100 : 0 },
+  }
+}
 function fixture(usuario = 'apo-rosa', cuentas = jsonServidor('cuentas'), opciones = {}) {
   const app = opciones.portal ? fixtureApoderado(opciones) : fixtureServidor(opciones)
   app.ingresarComo(usuario || null)
@@ -14,7 +24,17 @@ function fixture(usuario = 'apo-rosa', cuentas = jsonServidor('cuentas'), opcion
   const persistencia = app.load('src/store/parentJourneyStore.ts')
   const contenidos = app.load('src/lib/servidor/contenidos.ts')
   let etapa = 'inicial'
-  app.fetch((request) => {
+  // F00: el portal también pide la familia; responde con la etapa que dejó el último completar confirmado.
+  const fetchBase = app.fetch
+  const fetch = (handler) =>
+    fetchBase(async (request) => {
+      if (request.url.endsWith('/familia')) return { body: familiaDe(etapa) }
+      const respuesta = await handler(request)
+      if (request.url === '/api/acciones/completar-actividad' && !respuesta?.status)
+        etapa = request.body.actividad === 'pad-01-rol' ? 'pad-01' : 'final'
+      return respuesta
+    })
+  fetch((request) => {
     if (request.url === '/api/cuentas') return { body: cuentas }
     if (request.url === '/api/acciones/ingresar')
       return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
@@ -26,7 +46,13 @@ function fixture(usuario = 'apo-rosa', cuentas = jsonServidor('cuentas'), opcion
     if (request.url === '/api/desarrollo/reiniciar') return { body: { mensaje: 'Reiniciado' } }
     throw Error(`Petición inesperada: ${request.url}`)
   })
-  return { ...app, store, persistencia, contenidos, alumno, estadoAlumno, localAlumno, aventuraAlumno }
+  return {
+    ...app,
+    fetch,
+    fijarEtapa: (nueva) => {
+      etapa = nueva
+    },
+    store, persistencia, contenidos, alumno, estadoAlumno, localAlumno, aventuraAlumno }
 }
 
 test('el ingreso usa la cuenta de apoderado de la sesión sin tocar al estudiante', async () => {
@@ -42,6 +68,8 @@ test('el ingreso usa la cuenta de apoderado de la sesión sin tocar al estudiant
     [
       ['POST', '/api/acciones/ingresar'],
       ['GET', '/api/cuentas/apo-rosa/actividades'],
+      // F00: la familia forma parte de la carga inicial del portal.
+      ['GET', '/api/cuentas/apo-rosa/familia'],
     ],
   )
   assert.equal(app.requests[0].body.cuenta, 'apo-rosa')
@@ -169,9 +197,14 @@ test('completar refresca el servidor y conserva nodo, intentos, elecciones y la 
   assert.deepEqual(copia(bloques), jsonServidor('apoderado-actividades-pad-01'))
   assert.deepEqual([...app.contenidos.disponiblesApoderado(bloques)], ['pad-01-rol', 'pad-02-info'])
   assert.deepEqual(copia(app.contenidos.completadasApoderado(bloques)), ['pad-01-rol'])
+  // F00: tras completar se refrescan las actividades y la familia.
   assert.deepEqual(
-    app.requests.slice(-2).map((r) => r.url),
-    ['/api/acciones/completar-actividad', '/api/cuentas/apo-rosa/actividades'],
+    app.requests.slice(-3).map((r) => r.url),
+    [
+      '/api/acciones/completar-actividad',
+      '/api/cuentas/apo-rosa/actividades',
+      '/api/cuentas/apo-rosa/familia',
+    ],
   )
   assert.equal(app.store.obtenerEstadoApoderado().enviando, null)
   const recarga = fixtureServidor({ guardado: Object.fromEntries(app.local) }).load(
@@ -387,8 +420,8 @@ test('el hook api carga la lista sin usar el progreso de apo-prototipo', async (
   assert.equal(cargado.available(cargado.activities[0]), true)
   assert.equal(cargado.available(cargado.activities[1]), false)
   assert.equal(app.alumno.obtenerEstadoServidor(), app.estadoAlumno)
-  // B17: ingreso y actividades; la cuenta sale de la sesión, sin GET /cuentas.
-  assert.equal(app.requests.length, 2)
+  // B17: ingreso y actividades (F00: y familia); la cuenta sale de la sesión, sin GET /cuentas.
+  assert.equal(app.requests.length, 3)
   mounted.unmount()
 })
 
@@ -457,12 +490,14 @@ test('la pantalla final espera el POST y la consulta; durante el envío no dupli
   const { useParentActivitySession } = app.load('src/features/parent/hooks/useParentActivitySession.ts')
   const mounted = app.mount(useParentActivitySession, activity, false)
   let resolverPost, resolverGet
-  app.fetch(
-    (r) =>
-      new Promise((resolve) => {
-        if (r.method === 'POST') resolverPost = resolve
-        else resolverGet = resolve
-      }),
+  // F00: la familia se refresca aparte y responde de inmediato; la espera es la de las actividades.
+  app.fetch((r) =>
+    r.url.endsWith('/familia')
+      ? { body: jsonServidor('ruta/ruta-familia') }
+      : new Promise((resolve) => {
+          if (r.method === 'POST') resolverPost = resolve
+          else resolverGet = resolve
+        }),
   )
   const pendiente = mounted.render().advance()
   mounted.render().advance()
@@ -524,9 +559,11 @@ test('al remontar tras la carga se recupera el final confirmado y se celebra sin
   app.fetch((r) =>
     r.method === 'POST'
       ? { body: jsonServidor('apoderado-completar-pad-01-rol') }
-      : new Promise((resolve) => {
-          resolverGet = resolve
-        }),
+      : r.url.endsWith('/familia')
+        ? { body: jsonServidor('ruta/ruta-familia') }
+        : new Promise((resolve) => {
+            resolverGet = resolve
+          }),
   )
   const { useParentActivitySession } = app.load('src/features/parent/hooks/useParentActivitySession.ts')
   const anterior = app.mount(useParentActivitySession, activity, false)
@@ -579,6 +616,7 @@ test('el candado del apoderado lleva el mensaje de bloqueo del servidor', async 
   app.fetch((request) => {
     if (request.url === '/api/acciones/ingresar')
       return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
+    if (request.url.endsWith('/familia')) return { body: jsonServidor('ruta/ruta-familia') }
     if (!request.url.endsWith('/actividades')) throw Error(`Petición inesperada: ${request.url}`)
     const bloques = jsonServidor('apoderado-actividades-inicial')
     bloques
@@ -595,7 +633,11 @@ test('el candado del apoderado lleva el mensaje de bloqueo del servidor', async 
   await esperar()
   assert.deepEqual([mounted.render().props.locked, mounted.render().props.mensaje], [true, mensaje])
   const { ActivityUnavailable } = app.load('src/features/parent/components/ActivityUnavailable.tsx')
-  assert.match(JSON.stringify(copia(ActivityUnavailable({ locked: true, mensaje }))), new RegExp(mensaje))
+  const tarjeta = JSON.stringify(copia(ActivityUnavailable({ locked: true, mensaje })))
+  assert.match(tarjeta, new RegExp(mensaje))
+  // Con mensaje del servidor no se repite el texto de respaldo.
+  assert.doesNotMatch(tarjeta, /Complete la actividad anterior/)
+  assert.match(JSON.stringify(copia(ActivityUnavailable({ locked: true }))), /Complete la actividad anterior/)
 })
 
 test('la ruta y el diploma se completan con el servidor aunque no haya nodos locales recorridos', async () => {
@@ -608,6 +650,7 @@ test('la ruta y el diploma se completan con el servidor aunque no haya nodos loc
           ? jsonServidor('apoderado-actividades-final')
           : { eventos_registrados: [], nuevos_desbloqueos: [] },
   }))
+  app.fijarEtapa('final')
   await app.store.ingresarApoderado()
   const { useParentActivities } = app.load('src/features/parent/hooks/useParentActivities.ts')
   const source = useParentActivities()
@@ -748,6 +791,12 @@ test('ruta lista las dos actividades del apoderado y la carta sin nodos no se pu
   const lista = contenidos.actividadesApoderado(inicial)
   assert.deepEqual(copia(lista.actividades.map((a) => a.id)), ['t-apo-1', 't-apo-carta'])
   assert.deepEqual(copia(lista.sinContenido), [])
+  // La presentación de cada tarjeta es la descripción del servidor.
+  assert.deepEqual(
+    copia(lista.actividades.map((a) => a.subtitulo)),
+    inicial[0].actividades.map((a) => a.descripcion),
+  )
+  assert.ok(lista.actividades.every((a) => a.subtitulo))
   assert.deepEqual([...contenidos.disponiblesApoderado(inicial)], ['t-apo-1'])
   assert.equal(mensajeBloqueo(inicial, 't-apo-carta'), 'Completa la primera actividad.')
   // DATO DE PRUEBA: la carta ya abierta por el servidor tras completar t-apo-1.

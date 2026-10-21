@@ -8,6 +8,7 @@ import { useParentActivities } from './useParentActivities'
 import { completarActividadApoderado, obtenerEstadoApoderado } from '@/store/servidor/apoderado'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { parentRoute } from '@/features/parent/lib/selectors'
+import { avanceConFamilia } from '@/features/parent/lib/familia'
 import {
   advanceParentActivity,
   nextParentPendingNode,
@@ -27,6 +28,7 @@ export function useParentActivitySession(activity: Actividad, review: boolean) {
     journey: state,
     completedIds,
     serverCompletion,
+    familia,
   } = useParentActivities()
   const disponible = available(activity)
   const opciones = { disponible, servidor: serverCompletion }
@@ -70,7 +72,7 @@ export function useParentActivitySession(activity: Actividad, review: boolean) {
   const selected =
     node?.tipo === 'eleccion' ? node.opciones.find((option) => option.id === optionId) : undefined
   const summary = node?.tipo === 'diapositiva' && node.etiqueta?.toLowerCase() === 'resumen'
-  const route = parentRoute(activities, [], completedIds, available)
+  const route = avanceConFamilia(parentRoute(activities, [], completedIds, available), familia)
   const summaryResources =
     node?.tipo === 'diapositiva'
       ? catalog.recursos.filter((resource) => node.recursoIds?.includes(resource.id))

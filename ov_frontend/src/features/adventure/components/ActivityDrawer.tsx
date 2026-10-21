@@ -108,10 +108,12 @@ export function ActivityDrawer({
                         Opcional
                       </span>
                     )}
-                    <span>
-                      <Clock size={14} />
-                      {details.meta}
-                    </span>
+                    {details.meta && (
+                      <span>
+                        <Clock size={14} />
+                        {details.meta}
+                      </span>
+                    )}
                   </div>
                   <DrawerTitle className="sx-drawer-title">{details.title}</DrawerTitle>
                   <DrawerDescription className="sx-drawer-description">

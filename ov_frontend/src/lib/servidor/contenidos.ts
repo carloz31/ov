@@ -8,13 +8,21 @@ export function actividadPorContenido(
   bloques: BloqueActividades[] | null,
   codigo: string,
 ): Actividad | undefined {
-  const actividad = bloques?.flatMap((b) => b.actividades).find((a) => a.codigo === codigo)
+  const bloque = bloques?.find((b) => b.actividades.some((a) => a.codigo === codigo))
+  const actividad = bloque?.actividades.find((a) => a.codigo === codigo)
   const contenido = actividad && contenidoPorClave(actividad.contenido)
   // Sin nodos, el contenido solo ubica el punto en el mapa: no hay actividad que abrir.
   if (!actividad || !contenido?.nodos.length) return undefined
   const { mapa: _mapa, ...narrativa } = contenido
   // Conserva los ajustes narrativos que ya usa el reproductor local.
-  return { ...configureStudentActivities([narrativa])[0], id: actividad.codigo, titulo: actividad.titulo }
+  // El encabezado del reproductor y el cierre muestran el título y el bloque del servidor.
+  return {
+    ...configureStudentActivities([narrativa])[0],
+    id: actividad.codigo,
+    titulo: actividad.titulo,
+    ubicacion: bloque!.nombre,
+    duracionEstimadaMin: actividad.duracion_estimada_min ?? narrativa.duracionEstimadaMin,
+  }
 }
 
 // Cuestionario cuyo contenido trae un nodo `item` con itemId "plantilla": ese nodo se repite
@@ -77,6 +85,8 @@ export function actividadesApoderado(bloques: BloqueActividades[] | null) {
       ...narrativa,
       id: actividad.codigo,
       titulo: actividad.titulo,
+      // La presentación que muestran la tarjeta y el cierre es la del servidor.
+      subtitulo: actividad.descripcion ?? undefined,
       orden: indice + 1,
       requisitos: [],
     })

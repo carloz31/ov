@@ -3,12 +3,10 @@
   "id": "t-adicional",
   "tipo": "encuentro",
   "titulo": "Misión adicional",
-  "subtitulo": "Contenido pendiente de su lote F",
   "bloque": 2,
   "orden": 4,
   "obligatoria": true,
   "requisitos": [],
-  "ubicacion": "El camino",
   "duracionEstimadaMin": 5,
   "personajeIds": [
     "companero"
@@ -17,7 +15,6 @@
   "mapa": {
     "x": 590,
     "y": 420,
-    "etiqueta": "Informativa · 5 min",
     "icono": "informativa"
   }
 }

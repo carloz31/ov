@@ -3,12 +3,10 @@
   "id": "t-batalla",
   "tipo": "instrumento",
   "titulo": "Batalla",
-  "subtitulo": "Contenido pendiente de su lote F",
   "bloque": 2,
   "orden": 7,
   "obligatoria": true,
   "requisitos": [],
-  "ubicacion": "El camino",
   "duracionEstimadaMin": 10,
   "personajeIds": [
     "companero"
@@ -17,7 +15,6 @@
   "mapa": {
     "x": 670,
     "y": 550,
-    "etiqueta": "Batalla · 10 min",
     "icono": "test"
   }
 }

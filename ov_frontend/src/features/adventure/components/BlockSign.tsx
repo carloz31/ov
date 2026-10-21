@@ -20,7 +20,7 @@ export function BlockSign({ points, mapSize }: { points: StudentMapPoint[]; mapS
             style={{ left: position.x - 120, top: position.y - 156 }}
           >
             <Icon size={22} aria-hidden="true" />
-            Tramo {block}
+            {missions[0]?.bloqueNombre ?? `Tramo ${block}`}
           </span>
         )
       })}

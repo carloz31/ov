@@ -81,16 +81,39 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-apo-1', 'FAMILIA', 'Primera actividad del apoderado', 'INFORMATIVA', None, 10),
                ('t-apo-carta', 'FAMILIA', 'Carta del apoderado', 'INFORMATIVA', None, 10))
 
-# Lo que cambia los valores por defecto (requerida, visibilidad SIEMPRE, sin descripción).
-PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
-                              'descripcion': 'Actividad opcional que aparece al desbloquearse.'},
+# Lo que cambia los valores por defecto (requerida, visibilidad SIEMPRE).
+PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-valores': {'requerida': False},
                't-eco': {'requerida': False},
                't-lee-cuestionario': {'requerida': False},
                't-batalla': {'requerida': False},
                't-explorar': {'requerida': False},
-               't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR',
-                               'descripcion': 'Misión adicional que aparece si el registro quedó adecuado.'}}
+               't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'}}
+
+# Texto de presentación de cada actividad (`descripcion`): el front lo muestra tal cual en el mapa y en
+# el portal del apoderado. DATO DE PRUEBA, como toda la ruta.
+DESCRIPCIONES = {
+    't-inicio': 'Conoce cómo se recorre el camino y qué te espera en cada tramo.',
+    't-partida': 'Cuéntanos cómo te sientes hoy frente a tu futuro; no hay respuestas correctas.',
+    't-cierre-inicio': 'Cierra el inicio y abre el camino.',
+    't-expectativas': 'Escribe qué esperas descubrir en este camino.',
+    't-opcional': 'Actividad opcional que aparece al desbloquearse.',
+    't-valores': 'Elige y ordena lo que más valoras.',
+    't-adicional': 'Misión adicional que aparece si el registro quedó adecuado.',
+    't-eco': 'Vuelve a tus respuestas y mira cómo han cambiado.',
+    't-lee-cuestionario': 'Lee lo que respondiste en tu punto de partida.',
+    't-batalla': 'Pon a prueba lo que sabes; puedes reintentar.',
+    't-explorar': 'Explora carreras distintas entre tus favoritas.',
+    't-llegada': 'Responde de nuevo para ver cuánto avanzaste desde el punto de partida.',
+    't-comparar': 'Compara tus planes de carrera.',
+    't-proyecto': 'Escribe tu proyecto con tu plan y tus próximos pasos.',
+    't-mision-intereses': 'Descubre qué actividades te interesan.',
+    't-mision-intereses-2': 'Sigue descubriendo tus intereses.',
+    't-caso': 'Ayuda a resolver un caso de la ciudad.',
+    't-contraste': 'Contrasta tu resultado de intereses con lo que esperabas.',
+    't-apo-1': 'Conozca cómo acompañar a su hijo en este proceso.',
+    't-apo-carta': 'Escriba una carta para su hijo.',
+}
 
 # (actividad, instrumento, primer ítem, último ítem). El RIASEC va en dos misiones para probar que el
 # resultado espera a todas las de su aplicación.
@@ -453,7 +476,7 @@ def _cargar_estructura(sesion):
             orden=ordenes[bloque], bloque_id=bloques[bloque].id, puntaje_minimo=puntaje,
             duracion_estimada_min=duracion, requerida=propiedades.get('requerida', True),
             visibilidad=modelos.Visibilidad(propiedades.get('visibilidad', 'SIEMPRE')),
-            descripcion=propiedades.get('descripcion'))
+            descripcion=DESCRIPCIONES.get(codigo))
     sesion.add_all(actividades.values())
     sesion.flush()
     return {'BLOQUE': bloques, 'ACTIVIDAD': actividades, 'FICHA': fichas, 'TESTIMONIO': testimonios,
