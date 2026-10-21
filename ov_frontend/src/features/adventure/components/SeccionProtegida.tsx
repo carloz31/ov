@@ -13,6 +13,6 @@ export function SeccionProtegida({
   children: ReactNode
 }) {
   const acceso = useSeccionesAcceso()(seccion)
-  if (!acceso.explicar) return children
+  if (!acceso.pasos) return children
   return <SeccionBloqueada titulo={titulo ?? acceso.nombre ?? ''} mensaje={acceso.mensaje ?? ''} />
 }

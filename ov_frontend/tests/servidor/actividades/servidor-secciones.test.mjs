@@ -60,7 +60,7 @@ function servidorAccion(app, tipos = [], etapa = 't1') {
   })
 }
 
-test('ingreso confirma el POST antes de cargar y pide las tres consultas en paralelo, sin fichas ni logros', async () => {
+test('ingreso confirma el POST antes de cargar y pide sus consultas en paralelo (con las secciones), sin fichas ni logros', async () => {
   const app = fixtureServidor(),
     almacen = cargarAlmacen(app)
   const post = diferida(),
@@ -97,6 +97,8 @@ test('ingreso confirma el POST antes de cargar y pide las tres consultas en para
     '/api/cuentas/est-ana/actividades',
     '/api/cuentas/est-ana/desbloqueos?solo_no_vistos=true',
     '/api/cuentas/est-ana/resumen',
+    // F00: las secciones del perfil se ven siempre en el panel y llegan con el ingreso.
+    '/api/cuentas/est-ana/secciones',
   ])
   for (const { pendiente, respuesta } of consultas.values()) pendiente.resolver(respuesta)
   assert.equal((await ingreso).tipo, 'ok')

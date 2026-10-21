@@ -23,7 +23,9 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
   publicar({ cargando: true, error: null })
   if (desbloqueos === undefined) vencerErroresActivos()
   vencerSeccion('actividades')
-  const nombres = desbloqueos === undefined ? (['resumen'] as const) : seccionesPorDesbloqueos(desbloqueos)
+  // F00: las secciones del perfil se ven siempre (accesos del panel): van con el ingreso, como el resumen.
+  const nombres =
+    desbloqueos === undefined ? (['resumen', 'secciones'] as const) : seccionesPorDesbloqueos(desbloqueos)
   nombres.forEach(vencerSeccion)
   const pedidos: Promise<RespuestaServidor<unknown>>[] = [asegurarSeccion('actividades'), consultarNoVistos()]
   if (
@@ -32,6 +34,12 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
     obtenerEstadoServidor().resumen.estado !== 'listo'
   )
     pedidos.push(asegurarSeccion('resumen'))
+  if (obtenerEstadoServidor().secciones.estado === 'error') vencerSeccion('secciones')
+  if (
+    (nombres as readonly string[]).includes('secciones') ||
+    obtenerEstadoServidor().secciones.estado !== 'listo'
+  )
+    pedidos.push(asegurarSeccion('secciones'))
   pedidos.push(...cargarVencidasMontadas())
   const respuestas = await Promise.all(pedidos)
   if (!vigente()) return cambioCuenta()

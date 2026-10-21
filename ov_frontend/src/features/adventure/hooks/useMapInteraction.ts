@@ -10,7 +10,7 @@ import { type MapCanvasHandle } from '@/features/adventure/components/MapCanvas'
 import { type PointDetails } from '@/features/adventure/lib/pointDetails'
 import { type StudentMapPoint, type StudentZone } from '@/features/adventure/lib/mapPoints'
 import { initialScale } from '@/features/adventure/lib/geometry'
-import { sectionIntros } from '@/data/content/guideTexts'
+import { pasosBloqueo } from '@/data/content/guideTexts'
 export function useMapInteraction({
   zone,
   points,
@@ -65,14 +65,14 @@ export function useMapInteraction({
   const explicarCiudad =
     ciudadBloqueo === undefined
       ? undefined
-      : () => openGuide([...sectionIntros.central, `La ciudad todavía no abre sus puertas. ${ciudadBloqueo}`])
+      : () => openGuide(pasosBloqueo('CIUDAD', ciudadBloqueo))
   // Entrada directa a la Ciudad cerrada (api): vuelve al Camino y Lumi explica qué falta, una sola vez.
   const ciudadExplicada = useRef(false)
   useEffect(() => {
     if (zone !== 'central' || !locked || ciudadBloqueo === undefined || ciudadExplicada.current) return
     ciudadExplicada.current = true
     navigate(appPaths.student.missions, { replace: true })
-    openGuide([...sectionIntros.central, `La ciudad todavía no abre sus puertas. ${ciudadBloqueo}`])
+    openGuide(pasosBloqueo('CIUDAD', ciudadBloqueo))
   }, [zone, locked, ciudadBloqueo, navigate, openGuide])
   useEffect(() => {
     if (selectedPointId) {

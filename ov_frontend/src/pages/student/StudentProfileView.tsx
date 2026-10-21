@@ -2,6 +2,7 @@ import { useStudentProfile } from '@/features/discovery/hooks/useStudentProfile'
 import { Link } from 'react-router'
 import { Eye, Heart, LockKeyhole, Sparkles } from 'lucide-react'
 import { useSeccionesAcceso } from '@/features/adventure/hooks/useSeccionesAcceso'
+import { useStudentOverlays } from '@/features/adventure/context/overlayContext'
 import { appPaths } from '@/routes/paths'
 import { discoveryPaths } from '@/routes/discoveryPaths'
 import { DiscoveryStage } from '@/features/discovery/components/DiscoveryStage'
@@ -27,6 +28,7 @@ export function StudentProfileView() {
     extraFavorites,
   } = useStudentProfile()
   const planes = useSeccionesAcceso()('PLANES')
+  const { openGuide } = useStudentOverlays()
   return (
     <DiscoveryStage ambient="profile">
       <Parchment className="sx-d-dark">
@@ -165,10 +167,10 @@ export function StudentProfileView() {
             to={appPaths.student.decisions}
             title={planes.bloqueada ? planes.mensaje : undefined}
             onClick={
-              planes.explicar
+              planes.pasos
                 ? (event) => {
                     event.preventDefault()
-                    planes.explicar?.()
+                    openGuide(planes.pasos!)
                   }
                 : undefined
             }

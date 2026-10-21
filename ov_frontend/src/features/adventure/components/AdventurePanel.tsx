@@ -25,16 +25,27 @@ import { getListedActivities, studentActivitiesPath } from '../lib/navigation'
 import { getTodayCheckIn, useCheckInDay } from '../lib/checkIn'
 
 // Acceso rápido a una sección: cerrada, lleva candado y, en api, Lumi explica qué falta.
-function AccesoRapido({ to, acceso, children }: { to: string; acceso: AccesoSeccion; children: ReactNode }) {
+function AccesoRapido({
+  to,
+  acceso,
+  onGuide,
+  children,
+}: {
+  to: string
+  acceso: AccesoSeccion
+  onGuide?: (pasos: string[]) => void
+  children: ReactNode
+}) {
+  const pasos = acceso.pasos
   return (
     <Link
       to={to}
       title={acceso.bloqueada ? acceso.mensaje : undefined}
       onClick={
-        acceso.explicar
+        pasos && onGuide
           ? (event) => {
               event.preventDefault()
-              acceso.explicar?.()
+              onGuide(pasos)
             }
           : undefined
       }
@@ -54,6 +65,7 @@ export function AdventurePanel({
   progress,
   onSelect,
   onCheckIn,
+  onGuide,
 }: {
   adventure: AdventureState
   points: StudentMapPoint[]
@@ -61,6 +73,8 @@ export function AdventurePanel({
   progress: { label: string; value: number }
   onSelect: (id: string) => void
   onCheckIn: () => void
+  // Ayuda de Lumi para un acceso cerrado (api).
+  onGuide?: (pasos: string[]) => void
 }) {
   const { level, nombre, iniciales, progresoCiudad } = useTravelerLevel(adventure)
   const visible = getListedActivities(points, false).slice(0, 4)
@@ -188,7 +202,7 @@ export function AdventurePanel({
             type="button"
             className="sx-signal-edit"
             title={checkIn.bloqueada ? checkIn.mensaje : undefined}
-            onClick={checkIn.explicar ?? onCheckIn}
+            onClick={checkIn.pasos ? () => onGuide?.(checkIn.pasos!) : onCheckIn}
           >
             <PenLine size={14} aria-hidden="true" />
             {signal ? 'Cambiar' : 'Registrar mi señal'}
@@ -208,14 +222,14 @@ export function AdventurePanel({
             <FolderHeart size={18} />
             <span>Mi perfil</span>
           </Link>
-          <AccesoRapido to={appPaths.student.journal} acceso={seccion('DIARIO')}>
+          <AccesoRapido to={appPaths.student.journal} acceso={seccion('DIARIO')} onGuide={onGuide}>
             <BookOpen size={18} />
             <span>
               Mi diario
               {textoOculto(seccion('DIARIO'))}
             </span>
           </AccesoRapido>
-          <AccesoRapido to={appPaths.student.conversations} acceso={seccion('FAMILIA')}>
+          <AccesoRapido to={appPaths.student.conversations} acceso={seccion('FAMILIA')} onGuide={onGuide}>
             <HeartHandshake size={18} />
             <span>
               En familia
@@ -230,7 +244,7 @@ export function AdventurePanel({
             <Search size={18} />
             <span>Investigaciones</span>
           </Link>
-          <AccesoRapido to={appPaths.student.catalog.professions} acceso={seccion('CATALOGO')}>
+          <AccesoRapido to={appPaths.student.catalog.professions} acceso={seccion('CATALOGO')} onGuide={onGuide}>
             <LibraryBig size={18} />
             <span>
               Información

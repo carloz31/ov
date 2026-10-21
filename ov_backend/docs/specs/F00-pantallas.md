@@ -26,15 +26,26 @@ El drawer conserva todo lo que muestra hoy: insignia de estado, tiempo, título,
 
 - **Accesos con sección** (`AdventurePanel`): Mi diario (DIARIO), Información (CATALOGO), En familia (FAMILIA), el botón de la señal «Registrar mi señal / Cambiar» (CHECK_IN) y el enlace «Ver mis planes y favoritos» del perfil (PLANES). Su estado sale de `GET /cuentas/{c}/secciones`.
 - **Bloqueada:** el acceso lleva el candado pequeño que ya usa «En familia» (`sx-quick-lock`, texto `sr-only` y `title` con el `mensaje`). Al pulsarlo no navega: abre la ayuda de Lumi con `openGuide(pasos)` (el mismo `LumiDialogue` del botón de ayuda, sin botones nuevos):
-  1. si la vista tiene presentación en `sectionIntros` (p. ej. `journal`, `conversations`), sus pasos;
-  2. un paso final: «Todavía no puedes entrar.» seguido del `mensaje` del servidor.
+  1. un paso de adelanto propio de lo bloqueado (`textosBloqueo` en `guideTexts.ts`, por código de sección); no se usan `sectionIntros` ni `guideSteps`, que son para la sección abierta;
+  2. la frase final de ese código seguida del `mensaje` del servidor. El requisito siempre viene del servidor.
+
+  | Código | Adelanto | Frase final |
+  |---|---|---|
+  | DIARIO | Pronto tendrás un cuaderno solo para ti, donde podrás contarme lo que piensas y sientes en este viaje. | Todavía no puedes abrirlo. |
+  | CHECK_IN | Muy pronto podrás contarme cada día cómo te sientes. Así, juntos, notaremos qué te da energía. | Todavía no puedes registrarla. |
+  | CATALOGO | Aquí se guarda un atlas de profesiones, carreras e instituciones. Te servirá para explorar lo que te llame la atención. | Todavía no puedes consultarlo. |
+  | PLANES | Más adelante podrás armar tus planes de carrera y ver qué tan preparados están. | Todavía no puedes empezarlos. |
+  | FAMILIA | Este será un espacio para conversar con tu familia sobre lo que vas descubriendo. | Todavía no se abre. |
+  | CIUDAD | Más adelante en tu recorrido se abre la ciudad. Allí sus habitantes necesitan ayuda, y tú decides a quién ayudar primero. | Todavía no abre sus puertas. |
+
+  (Ajuste del 21 oct 2026.)
 - **Entrada directa por URL** a una sección bloqueada: la vista muestra la tarjeta de bloqueo que ya existe en `FamilyConversationsView` (candado, título de la sección, `mensaje` del servidor). En FAMILIA reemplaza el texto actual («…cierre del Bloque 5…»). Diario, catálogo y planes reutilizan esa tarjeta (subirla a `components/student/` si la usan dos dominios).
 - Investigaciones y Recursos no cambian (su sección llega en B13 o no existe).
 
 ## 4. Ciudad bloqueada: desde el selector
 
 - Se **quita** el punto «La llave de la ciudad» del mapa del Camino (`caminoPoints`, modo api).
-- **Selector Camino/Ciudad** (`ZoneSwitch`): con la Ciudad bloqueada, pulsar «Ciudad» abre la ayuda de Lumi con `openGuide`: los pasos de `sectionIntros.central` y un paso final «La ciudad todavía no abre sus puertas.» + el `mensaje` del bloque CIUDAD. El tooltip del selector muestra ese mismo `mensaje` (hoy: «Completa el camino para abrir la ciudad»).
+- **Selector Camino/Ciudad** (`ZoneSwitch`): con la Ciudad bloqueada, pulsar «Ciudad» abre la ayuda de Lumi con los `textosBloqueo` de CIUDAD (adelanto y «Todavía no abre sus puertas.» + el `mensaje` del bloque CIUDAD). El tooltip del selector muestra ese mismo `mensaje` (hoy: «Completa el camino para abrir la ciudad»).
 - **Entrada directa a `/student/exploration` con la Ciudad bloqueada:** redirige al Camino y abre la misma ayuda. `CityLocked` deja de usarse en api; su barra «Camino hacia la ciudad» se retira.
 - `guideSteps.missions` dice «Al final del camino está la ciudad…»: se cambia por «En el camino se abre la ciudad, donde podrás elegir tus actividades y ayudar a sus habitantes. Arriba puedes cambiar entre el camino y la ciudad.»
 

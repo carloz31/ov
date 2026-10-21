@@ -22,12 +22,9 @@ async function iniciar(etapa = 'inicial') {
     throw Error(`Solicitud no configurada: ${r.url}`)
   })
   assert.equal((await app.load('src/store/servidor/operaciones.ts').ingresar()).tipo, 'ok')
-  const guias = []
-  const { StudentOverlayContext } = app.load('src/features/adventure/context/overlayContext.ts')
-  StudentOverlayContext._currentValue = { ...StudentOverlayContext._currentValue, openGuide: (p) => guias.push(p) }
-  return { app, escenario, guias }
+  return { app, escenario, guias: [] }
 }
-function montarPanel(app) {
+function montarPanel(app, guias) {
   const { AdventurePanel } = app.load('src/features/adventure/components/AdventurePanel.tsx')
   const adventure = app.load('src/store/adventureStore.ts').useAdventure()
   const checkIns = []
@@ -37,6 +34,7 @@ function montarPanel(app) {
     progress: { label: 'Nivel de recorrido', value: 0 },
     onSelect() {},
     onCheckIn: () => checkIns.push(true),
+    onGuide: (pasos) => guias.push(pasos),
   })
   return { panel, checkIns }
 }
@@ -45,9 +43,11 @@ const accesos = (tree) =>
     elementos(tree, (e) => e.type?.name === 'AccesoRapido').map((e) => [e.props.to, e.props.acceso]),
   )
 
-test('el panel pide las secciones al abrirse y cierra con candado y Lumi lo que el servidor bloquea', async () => {
+test('el ingreso trae las secciones y el panel cierra con candado y Lumi lo que el servidor bloquea', async () => {
   const { app, escenario, guias } = await iniciar()
-  const { panel, checkIns } = montarPanel(app)
+  // Los accesos se ven siempre: las secciones llegan con el ingreso, una sola vez.
+  assert.equal(app.requests.filter((r) => r.url.endsWith('/secciones')).length, 1)
+  const { panel, checkIns } = montarPanel(app, guias)
   panel.render()
   await esperar()
   assert.equal(app.requests.filter((r) => r.url.endsWith('/secciones')).length, 1)
@@ -60,31 +60,34 @@ test('el panel pide las secciones al abrirse y cierra con candado y Lumi lo que 
   assert.equal(lista[appPaths.student.catalog.professions].bloqueada, true)
   assert.equal(lista[appPaths.student.conversations].bloqueada, true)
   const enlace = elementos(tree, (e) => e.type?.name === 'AccesoRapido' && e.props.to === appPaths.student.journal)[0]
-  const { sectionIntros } = app.load('src/data/content/guideTexts.ts')
+  const { textosBloqueo } = app.load('src/data/content/guideTexts.ts')
   let evitado = false
-  // El acceso cerrado no navega: Lumi presenta la sección y explica qué falta.
+  // El acceso cerrado no navega: Lumi adelanta qué será la sección y el servidor dice qué falta.
   enlace.type(enlace.props).props.onClick({ preventDefault: () => (evitado = true) })
   assert.equal(evitado, true)
-  assert.deepEqual(copia(guias.at(-1)), [...sectionIntros.journal, `Todavía no puedes entrar. ${mensajeDiario}`])
+  assert.deepEqual(copia(guias.at(-1)), [
+    textosBloqueo.DIARIO.adelanto,
+    `${textosBloqueo.DIARIO.final} ${mensajeDiario}`,
+  ])
   // El check-in cerrado tampoco abre el registro de la señal.
   const boton = elementos(tree, (e) => e.type === 'button' && e.props.className === 'sx-signal-edit')[0]
   assert.equal(boton.props.title, escenario.secciones.find((s) => s.codigo === 'CHECK_IN').bloqueo[0].mensaje)
   boton.props.onClick()
   assert.equal(checkIns.length, 0)
-  assert.match(guias.at(-1).at(-1), /^Todavía no puedes entrar\. /)
+  assert.match(guias.at(-1).at(-1), /^Todavía no puedes registrarla\. /)
   panel.unmount()
 })
 
 test('con las secciones abiertas los accesos navegan como siempre y solo Familia sigue cerrada', async () => {
   const { app, guias } = await iniciar('t1')
-  const { panel, checkIns } = montarPanel(app)
+  const { panel, checkIns } = montarPanel(app, guias)
   panel.render()
   await esperar()
   const tree = panel.render()
   const { appPaths } = app.load('src/routes/paths.ts')
   const lista = accesos(tree)
   assert.equal(lista[appPaths.student.journal].bloqueada, false)
-  assert.equal(lista[appPaths.student.journal].explicar, undefined)
+  assert.equal(lista[appPaths.student.journal].pasos, undefined)
   assert.equal(lista[appPaths.student.conversations].bloqueada, true)
   elementos(tree, (e) => e.type === 'button' && e.props.className === 'sx-signal-edit')[0].props.onClick()
   assert.equal(checkIns.length, 1)
@@ -124,4 +127,23 @@ test('un desbloqueo de sección vence la consulta de secciones', async () => {
   await almacen.asegurarSeccion('secciones')
   assert.deepEqual(copia(almacen.seccionesPorDesbloqueos([{ tipo_objetivo: 'SECCION' }])), ['secciones'])
   assert.deepEqual(copia(almacen.seccionesPorDesbloqueos([{ tipo_objetivo: 'ACTIVIDAD' }])), [])
+})
+
+test('el modo se decide al llamar al hook, aunque se importe antes de configurar api', async () => {
+  // Como en el navegador: el módulo se carga en modo local y main.tsx configura api después.
+  const app = fixtureServidor({ api: false })
+  const { useSeccionesAcceso } = app.load('src/features/adventure/hooks/useSeccionesAcceso.ts')
+  const sesion = app.load('src/store/servidor/sesion.ts')
+  const local = app.mount(useSeccionesAcceso, undefined).render()
+  assert.equal(local('DIARIO').bloqueada, false)
+  app.load('src/config/env.ts').configurarServidor({ VITE_DATOS: 'api', VITE_API_URL: '/api', DEV: true })
+  const secciones = escenarioRuta('inicial').secciones
+  sesion.publicar({ secciones: { datos: secciones, estado: 'listo', error: null } })
+  const api = app.mount(useSeccionesAcceso, undefined).render()
+  const diario = api('DIARIO')
+  assert.deepEqual(
+    [diario.bloqueada, diario.mensaje],
+    [true, secciones.find((s) => s.codigo === 'DIARIO').bloqueo[0].mensaje],
+  )
+  assert.ok(diario.pasos.length === 2)
 })

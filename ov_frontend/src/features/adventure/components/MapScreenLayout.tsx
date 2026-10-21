@@ -81,6 +81,7 @@ export function MapScreenLayout({
       points={points}
       recommended={recommended}
       progress={progress}
+      onGuide={openGuide}
       onCheckIn={() => {
         setMobilePanelOpen(false)
         openCheckIn(mobile ? () => mobilePanelButton.current?.focus() : undefined)

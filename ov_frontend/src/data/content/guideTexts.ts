@@ -9,6 +9,44 @@ export const cityArrivalSteps = [
 export const familyDetailGuide =
   'Las respuestas tienen el mismo valor. La guía sirve para escucharse y encontrar preguntas que quieran seguir explorando juntos.'
 
+// F00 (solo api): lo que dice Lumi al pulsar algo cerrado. Un paso de adelanto y una frase final a la que
+// se agrega el `mensaje` del servidor: el requisito siempre viene del servidor, nunca de estos textos.
+export const textosBloqueo = {
+  CIUDAD: {
+    adelanto:
+      'Más adelante en tu recorrido se abre la ciudad. Allí sus habitantes necesitan ayuda, y tú decides a quién ayudar primero.',
+    final: 'Todavía no abre sus puertas.',
+  },
+  DIARIO: {
+    adelanto:
+      'Pronto tendrás un cuaderno solo para ti, donde podrás contarme lo que piensas y sientes en este viaje.',
+    final: 'Todavía no puedes abrirlo.',
+  },
+  CHECK_IN: {
+    adelanto:
+      'Muy pronto podrás contarme cada día cómo te sientes. Así, juntos, notaremos qué te da energía.',
+    final: 'Todavía no puedes registrarla.',
+  },
+  CATALOGO: {
+    adelanto:
+      'Aquí se guarda un atlas de profesiones, carreras e instituciones. Te servirá para explorar lo que te llame la atención.',
+    final: 'Todavía no puedes consultarlo.',
+  },
+  PLANES: {
+    adelanto: 'Más adelante podrás armar tus planes de carrera y ver qué tan preparados están.',
+    final: 'Todavía no puedes empezarlos.',
+  },
+  FAMILIA: {
+    adelanto: 'Este será un espacio para conversar con tu familia sobre lo que vas descubriendo.',
+    final: 'Todavía no se abre.',
+  },
+}
+export type CodigoBloqueo = keyof typeof textosBloqueo
+export const pasosBloqueo = (codigo: CodigoBloqueo, mensaje: string) => [
+  textosBloqueo[codigo].adelanto,
+  `${textosBloqueo[codigo].final} ${mensaje}`.trim(),
+]
+
 // F00 (solo api): en la ruta la ciudad se abre a mitad del camino, no al final.
 export const guiaCaminoApi = [
   'Cada punto del mapa es una misión. La que brilla es la que te recomiendo ahora. Las que muestran un signo de pregunta aún no están disponibles.',

@@ -16,13 +16,19 @@
   - Mara, sus fichas y su cierre (`servidor-cierre`, `servidor-servicios`, la secuencia de `servidor-mapa` y el test de Mara de `servidor-adaptadores`), hasta F03;
   - el portal del apoderado (`servidor-apoderado`): `t-apo-1` no tiene contenido en el front, hasta F08;
   - el catálogo de insignias de `servidor-logros`: compara códigos I1–I10 con su contenido local, y `ruta` solo tiene `t-ins-1`.
-- **Secciones en el almacén.** `secciones` es un dominio más de `store/servidor` (GET `/cuentas/{c}/secciones`). Se pide al montar el panel o una vista protegida, y un desbloqueo `SECCION` la vence. Mientras no llega, los accesos se muestran abiertos, como hoy; escribir con la sección cerrada sigue respondiendo 409.
-- **`useSeccionesAcceso`** se elige al cargar el módulo según el modo (`modoApi ? api : local`). Local no usa hooks y conserva el candado de «En familia» con «Se abre al llegar a la ciudad».
+- **Secciones en el almacén.** `secciones` es un dominio más de `store/servidor` (GET `/cuentas/{c}/secciones`). Como los accesos del panel se ven siempre, se pide al ingresar, junto con el resumen y las actividades (`refrescar`), y otra vez con un desbloqueo `SECCION`. Mientras no llega, los accesos se muestran abiertos; escribir con la sección cerrada sigue respondiendo 409.
+- **`useSeccionesAcceso` decide el modo al llamarse** (corrección pedida por el usuario).
+  - Antes se elegía al cargar el módulo, antes de que `main.tsx` configurara api, y en el navegador quedaba siempre local.
+  - Ahora es un solo hook que usa siempre `useEstadoServidor` y ramifica adentro; no tiene efectos ni contexto, para que el arnés de `tests/local` lo soporte.
+  - Devuelve los `pasos` de Lumi. El panel los abre con la prop `onGuide`, que le pasa `MapScreenLayout`, y el perfil con `useStudentOverlays`.
+  - No había otra elección de este tipo con `modoApi`.
+  - Local conserva el candado de «En familia» con «Se abre al llegar a la ciudad».
+- **`textosBloqueo` para lo cerrado** (pedido por el usuario). Lumi usa un adelanto propio y una frase final por código (CIUDAD y las cinco secciones) seguida del `mensaje` del servidor, no `sectionIntros` ni `guideSteps`.
 - **Entrada por URL.** `SeccionProtegida` envuelve en `AppRoutes` el diario, el catálogo (listas y detalles), los planes y las conversaciones. El título de la tarjeta es el `nombre` de la sección del servidor; en FAMILIA se conserva «Un espacio para conversar en familia». La tarjeta subió a `components/student/SeccionBloqueada.tsx`, y las dos vistas de conversaciones la usan con su texto local de siempre.
 - **Check-in y enlace de planes.** El candado `sx-quick-lock` se muestra en línea, porque su posición absoluta solo existe dentro de los accesos rápidos. No se agregó CSS.
-- **Ciudad en api.** Sin punto de llave: el selector Camino/Ciudad muestra el mensaje del bloque CIUDAD (`ciudadBloqueo`, con `ciudadDisponible` del servidor) y abre la ayuda de Lumi. `CityLocked` solo se muestra en local. La ayuda del Camino en api usa `guiaCaminoApi`, porque `guideSteps.missions` local queda congelado.
+- **Ciudad en api.** Sin punto de llave: el selector Camino/Ciudad muestra el mensaje del bloque CIUDAD (`ciudadBloqueo`, con `ciudadDisponible` del servidor) y abre la ayuda de Lumi con `textosBloqueo.CIUDAD`. `CityLocked` solo se muestra en local. La ayuda del Camino en api usa `guiaCaminoApi`, porque `guideSteps.missions` local queda congelado.
 - **Pantallas de carga.** `components/student/PantallaCarga` reemplaza la espera y el error del ingreso (`StudentShell`) y del reproductor de Mara. «Volver a ingresar» cierra la sesión y la guarda vuelve al login. Diario, catálogo, planes y familia todavía no cargan nada propio del servidor: la variante `enSeccion` la conecta el lote F de cada sección.
-- **Prueba adaptada:** `servidor-mara` busca el reintento en `PantallaCarga`, que reemplaza a «No pudimos abrir el encuentro».
+- **Pruebas adaptadas:** `servidor-secciones` espera también GET `/secciones` en el ingreso, y `servidor-mara` busca el reintento en `PantallaCarga`, que reemplaza a «No pudimos abrir el encuentro».
 - **Portal del apoderado.** `PantallaCargaPortal` se muestra solo mientras no hay actividades (carga inicial o su error); las recargas posteriores conservan la vista. `reintentarApoderado` vence las actividades fallidas y repite el ingreso. `PantallaCargaPortal` se conecta en la orientadora en F10, porque hoy su portal no carga nada del servidor.
 - **Nombres reales.** El apoderado usa el nombre de la sesión (`useParentProfile`); el parentesco sigue siendo de demostración hasta F08. Las iniciales del estudiante en el panel salen del nombre de la cuenta (`inicialesViajero`).
 - **Contenidos del apoderado (aprobado por el usuario).**
