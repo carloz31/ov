@@ -314,7 +314,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 
 Conexión del frontend, lote por lote. Se trabajan con `/lote F00`, igual que los B.
 
-Sección «Lotes F» de `ov_backend/docs/plan-iteraciones.md`. Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendientes.
+Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendientes.
 
 ### Punto de partida (por qué no es solo conectar)
 
