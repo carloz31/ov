@@ -16,6 +16,10 @@ async function iniciarPartida({ ruta = '/student/missions' } = {}) {
   const app = fixtureServidor({ ruta }),
     estado = escenarioRuta('inicial'),
     items = jsonServidor('ruta/ruta-items-t-partida')
+  // DATO DE PRUEBA: t-inicio completada abre t-partida (T0 en orden).
+  const t0 = estado.bloques[0].actividades
+  Object.assign(t0[0], { estado: 'COMPLETADA' })
+  Object.assign(t0[1], { estado: 'DISPONIBLE', bloqueo: null })
   const respuestas = new Map()
   const servidor = (req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)

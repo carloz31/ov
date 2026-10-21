@@ -171,12 +171,12 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         ('t-ref-coincidencias', 'COINCIDENCIAS', 'DISPONIBLE'), ('t-ref-resultado', 'RESULTADO', 'DISPONIBLE')]
     assert all(r.opciones for r in contraste.referencias)
     inicial = estados(datos['actividades-inicial'])
-    assert inicial['t-inicio'] == inicial['t-partida'] == 'DISPONIBLE'
-    assert all(e == 'BLOQUEADA' for c, e in inicial.items() if c not in ('t-inicio', 't-partida'))
+    assert inicial['t-inicio'] == 'DISPONIBLE'
+    assert all(e == 'BLOQUEADA' for c, e in inicial.items() if c != 't-inicio')
     assert datos['resumen-inicial']['nivel_actual']['numero'] == 1
     assert any(i['codigo'] == '???' for i in datos['logros-inicial']['insignias'])
     assert {d['regla'] for d in datos['completar-t-inicio']['nuevos_desbloqueos']} == {
-        'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES',
+        'R-t-partida', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES',
         'R-t-diario-fija', 'R-PLAN-POR_QUE'}
     assert [e['codigo'] for e in datos['completar-t-inicio']['entradas_desbloqueadas']] == ['t-diario-fija']
     cierre = datos['completar-t-cierre-inicio']
@@ -243,7 +243,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert 'afinidad' in datos['logros-final']
     avisos = datos['desbloqueos-no-vistos']
     assert {d['regla'] for d in avisos} == {
-        'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD', 'R-t-opcional',
+        'R-t-partida', 'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD',
+        'R-t-opcional',
         'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA', 'R-t-adicional',
         'R-t-eco', 'R-t-diario-fija', 'R-t-diario-personal', 'R-PLAN-POR_QUE'}
     assert all(d['visto'] is False and d['fecha_hora'] == exportador.FECHA for d in avisos)

@@ -53,3 +53,7 @@
   - `actividadPorContenido` pone el título, el bloque (`ubicacion`) y la duración del servidor, que leen el encabezado del reproductor y el cierre.
 - **Descripciones en `DESCRIPCIONES`.** Van en un diccionario aparte en lugar de `PROPIEDADES`, para no mezclar el texto con los valores por defecto. El cargador lo lee igual.
 - **Campos de los `t_*.json`.** Se quitaron `subtitulo`, `ubicacion` y `mapa.etiqueta`. Se conservan los que exige el tipo `Actividad` (`id`, `tipo`, `titulo`, `bloque`, `orden`, `obligatoria`, `requisitos`, `duracionEstimadaMin`, `personajeIds` y `nodos`), aunque en api el título, el bloque y la duración se reemplazan por los del servidor.
+- **T0 en orden** (pedido por el usuario). `ruta.py` agrega `R-t-partida` («Completa el inicio para continuar.», pide `t-inicio`), y `R-t-cierre-inicio` ahora pide `t-partida` («Completa tu punto de partida para continuar.»). Al empezar, solo `t-inicio` está disponible.
+  - Pruebas adaptadas con aprobación del usuario: las de escenario (`test_ruta_corta`, `soporte_escenarios_ruta`), `test_bloqueo_actividades`, `test_consultas_dominio`, `test_exportar_fixtures_front`, `test_eventos_motor` y `test_semilla_ruta` (42 reglas y 47 condiciones).
+  - En el front, `servidor-adaptadores` (completar `t-inicio` abre «Punto de partida»), `servidor-mapa` y `servidor-partida`; esta última abre `t-partida` con `t-inicio` completada.
+  - Los fixtures se regeneraron.

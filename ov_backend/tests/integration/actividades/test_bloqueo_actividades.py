@@ -16,8 +16,10 @@ def actividad(cliente, codigo, cuenta='est-ana'):
 def test_actividad_bloqueada_por_su_regla_muestra_su_mensaje(cliente):
     cierre = actividad(cliente, 't-cierre-inicio')
     motivo, = cierre['bloqueo']
-    assert (motivo['regla'], motivo['mensaje']) == ('R-t-cierre-inicio', 'Completa el inicio para continuar.')
-    assert [(c['referencia'], c['actual'], c['requerido']) for c in motivo['condiciones_faltantes']] == [('t-inicio', 0, 1)]
+    assert (motivo['regla'], motivo['mensaje']) == ('R-t-cierre-inicio', 'Completa tu punto de partida para continuar.')
+    assert [(c['referencia'], c['actual'], c['requerido']) for c in motivo['condiciones_faltantes']] == [('t-partida', 0, 1)]
+    partida, = actividad(cliente, 't-partida')['bloqueo']
+    assert (partida['regla'], partida['mensaje']) == ('R-t-partida', 'Completa el inicio para continuar.')
     assert actividad(cliente, 't-inicio')['bloqueo'] is None
 
 
@@ -73,4 +75,5 @@ def test_presupuesto_de_motivos_no_crece_con_actividades_bloqueadas(cliente, apl
         actividades_extra(sesion, 100, bloque='T0')
     bloques, despues = medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/actividades')
     assert despues.cantidad == antes.cantidad
-    assert sum(a['bloqueo'] is not None for a in bloques[0]['actividades']) == 101
+    # t-partida y t-cierre-inicio (T0 en orden) más las 100 agregadas.
+    assert sum(a['bloqueo'] is not None for a in bloques[0]['actividades']) == 102

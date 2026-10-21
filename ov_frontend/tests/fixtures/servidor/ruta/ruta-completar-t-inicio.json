@@ -117,24 +117,6 @@
         }
       ],
       "objetivo": {
-        "codigo": "t-cierre-inicio",
-        "nombre": "Cierre del inicio"
-      },
-      "regla": "R-t-cierre-inicio",
-      "tipo_objetivo": "ACTIVIDAD"
-    },
-    {
-      "condiciones": [
-        {
-          "actual": 1,
-          "cumplida": true,
-          "referencia": "t-inicio",
-          "requerido": 1,
-          "tipo_conteo": "EVENTOS",
-          "tipo_evento": "COMPLETA_ACTIVIDAD"
-        }
-      ],
-      "objetivo": {
         "codigo": "t-diario-fija",
         "nombre": "Mi primer paso"
       },
@@ -176,6 +158,24 @@
       },
       "regla": "R-t-ins-1",
       "tipo_objetivo": "INSIGNIA"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-inicio",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-partida",
+        "nombre": "Punto de partida"
+      },
+      "regla": "R-t-partida",
+      "tipo_objetivo": "ACTIVIDAD"
     }
   ]
 }

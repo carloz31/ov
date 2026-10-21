@@ -13,7 +13,7 @@ from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 
 # Estados de cada actividad del estudiante, al inicio y con la Ciudad abierta.
 ESTADOS = {
-    False: {'t-inicio': 'DISPONIBLE', 't-partida': 'DISPONIBLE', 't-llegada': 'BLOQUEADA', 't-comparar': 'BLOQUEADA', 't-proyecto': 'BLOQUEADA', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
+    False: {'t-inicio': 'DISPONIBLE', 't-partida': 'BLOQUEADA', 't-llegada': 'BLOQUEADA', 't-comparar': 'BLOQUEADA', 't-proyecto': 'BLOQUEADA', 't-cierre-inicio': 'BLOQUEADA', 't-expectativas': 'BLOQUEADA',
             't-opcional': 'BLOQUEADA', 't-valores': 'BLOQUEADA', 't-mision-intereses': 'BLOQUEADA', 't-mision-intereses-2': 'BLOQUEADA',
             't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'BLOQUEADA', 't-eco': 'BLOQUEADA',
             't-lee-cuestionario': 'BLOQUEADA', 't-batalla': 'BLOQUEADA', 't-explorar': 'BLOQUEADA'},
@@ -157,12 +157,13 @@ def test_visibilidad_no_oculta_filas_ni_titulos(sesion, cliente, visibilidad, es
 
 
 def test_actividad_al_desbloquear_cambia_de_visible_con_la_accion(sesion, cliente):
-    actividad = sesion.scalar(select(Actividad).where(Actividad.codigo == 't-cierre-inicio'))
+    # T0 en orden (F00): completar t-inicio abre t-partida.
+    actividad = sesion.scalar(select(Actividad).where(Actividad.codigo == 't-partida'))
     actividad.visibilidad = Visibilidad.AL_DESBLOQUEAR  # DATO DE PRUEBA.
     sesion.commit()
-    assert consultar(cliente, 'actividades')[0]['actividades'][2]['visible'] is False
+    assert consultar(cliente, 'actividades')[0]['actividades'][1]['visible'] is False
     completar(cliente, 't-inicio')
-    recibida = consultar(cliente, 'actividades')[0]['actividades'][2]
+    recibida = consultar(cliente, 'actividades')[0]['actividades'][1]
     assert recibida['estado'] == 'DISPONIBLE' and recibida['visible'] is True
 
 

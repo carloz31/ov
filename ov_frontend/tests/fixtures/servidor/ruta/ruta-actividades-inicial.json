@@ -16,20 +16,6 @@
         "visible": true
       },
       {
-        "bloqueo": null,
-        "codigo": "t-partida",
-        "contenido": "t_partida",
-        "descripcion": "Cuéntanos cómo te sientes hoy frente a tu futuro; no hay respuestas correctas.",
-        "duracion_estimada_min": 10,
-        "estado": "DISPONIBLE",
-        "orden": 2,
-        "requerida": true,
-        "tipo": "CUESTIONARIO",
-        "titulo": "Punto de partida",
-        "visibilidad": "SIEMPRE",
-        "visible": true
-      },
-      {
         "bloqueo": [
           {
             "condiciones_faltantes": [
@@ -44,6 +30,36 @@
             ],
             "evaluador_especial": null,
             "mensaje": "Completa el inicio para continuar.",
+            "regla": "R-t-partida"
+          }
+        ],
+        "codigo": "t-partida",
+        "contenido": "t_partida",
+        "descripcion": "Cuéntanos cómo te sientes hoy frente a tu futuro; no hay respuestas correctas.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Punto de partida",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-partida",
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa tu punto de partida para continuar.",
             "regla": "R-t-cierre-inicio"
           }
         ],

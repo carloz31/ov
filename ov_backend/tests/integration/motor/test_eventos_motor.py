@@ -6,7 +6,7 @@ from soporte_ruta import filas_base, pedir
 def test_r36_eventos_crudos_no_escriben_progreso_ni_entrevista(cliente, aplicacion):
     antes = filas_base(aplicacion)
     completar = pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-inicio'})
-    assert 'R-t-cierre-inicio' in {d['regla'] for d in completar['nuevos_desbloqueos']}
+    assert 'R-t-partida' in {d['regla'] for d in completar['nuevos_desbloqueos']}
     pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'PUBLICA_ENTREVISTA'})
     desafio = pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'VENCE_DESAFIO_INTACTO'})
     assert 'R-t-ins-oculta' in {d['regla'] for d in desafio['nuevos_desbloqueos']}

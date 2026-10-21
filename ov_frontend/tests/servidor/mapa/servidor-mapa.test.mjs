@@ -28,7 +28,7 @@ test('ruta dibuja T0, T1 y T2 en el orden del servidor, con su tramo y su estado
   const camino = m.camino()
   assert.deepEqual(posiciones(camino), [
     ['t-inicio', 1, 'available'],
-    ['t-partida', 1, 'available'],
+    ['t-partida', 1, 'locked'],
     ['t-cierre-inicio', 1, 'locked'],
     ['t-expectativas', 2, 'locked'],
     ['t-valores', 2, 'locked'],
@@ -184,7 +184,8 @@ test('el drawer muestra el mensaje de bloqueo del servidor, sin consultar el pro
       {},
       {},
     )
-  assert.equal(detalle('t-cierre-inicio').requirement, 'Completa el inicio para continuar.')
+  assert.equal(detalle('t-partida').requirement, 'Completa el inicio para continuar.')
+  assert.equal(detalle('t-cierre-inicio').requirement, 'Completa tu punto de partida para continuar.')
   const bloqueT1 = m.bloques[1]
   assert.equal(detalle('t-expectativas').requirement, bloqueT1.actividades[0].bloqueo[0].mensaje)
   // Sin motivo propio, la actividad usa el de su bloque.

@@ -6,8 +6,9 @@ from soporte_ruta import INTERESES, INTERESES_FINAL, actividades, avanzar, compl
 def verificar_p01_estado_inicial(cliente):
     inicial = estado(cliente)
     estados = actividades(cliente)
-    assert estados['t-inicio'] == estados['t-partida'] == 'DISPONIBLE'
-    assert all(estados[c] == 'BLOQUEADA' for c in ('t-cierre-inicio', 't-expectativas', INTERESES, INTERESES_FINAL, 't-caso'))
+    # T0 en orden (F00): solo t-inicio está libre al empezar.
+    assert estados['t-inicio'] == 'DISPONIBLE'
+    assert all(estados[c] == 'BLOQUEADA' for c in ('t-partida', 't-cierre-inicio', 't-expectativas', INTERESES, INTERESES_FINAL, 't-caso'))
     assert {b['codigo']: b['estado'] for b in inicial['bloques']} == {
         'T0': 'DISPONIBLE', 'T1': 'BLOQUEADA', 'T2': 'BLOQUEADA', 'CIUDAD': 'BLOQUEADA'}
     assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [('t-ficha', 'BLOQUEADA')]

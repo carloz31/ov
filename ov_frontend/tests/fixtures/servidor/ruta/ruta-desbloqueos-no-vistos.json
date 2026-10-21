@@ -92,6 +92,26 @@
   {
     "fecha_hora": "2026-10-07T10:00:00",
     "objetivo": {
+      "codigo": "t-cierre-inicio",
+      "nombre": "Cierre del inicio"
+    },
+    "regla": "R-t-cierre-inicio",
+    "tipo_objetivo": "ACTIVIDAD",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
+      "codigo": "t-partida",
+      "nombre": "Punto de partida"
+    },
+    "regla": "R-t-partida",
+    "tipo_objetivo": "ACTIVIDAD",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
       "codigo": "t-ins-1",
       "nombre": "Insignia de prueba"
     },
@@ -117,16 +137,6 @@
     },
     "regla": "R-t-diario-fija",
     "tipo_objetivo": "PREGUNTA_DIARIO",
-    "visto": false
-  },
-  {
-    "fecha_hora": "2026-10-07T10:00:00",
-    "objetivo": {
-      "codigo": "t-cierre-inicio",
-      "nombre": "Cierre del inicio"
-    },
-    "regla": "R-t-cierre-inicio",
-    "tipo_objetivo": "ACTIVIDAD",
     "visto": false
   },
   {

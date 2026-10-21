@@ -37,7 +37,12 @@ test('los adaptadores solo importan tipos y usan el contrato real de los fixture
   assert.equal(adaptadores.ciudadDisponible(inicial.bloques), false)
   assert.equal(adaptadores.ciudadDisponible(ciudad.bloques), true)
   // El bloqueo lo explica el servidor: el de la actividad o, si no trae, el de su bloque.
-  assert.equal(adaptadores.mensajeBloqueo(inicial.bloques, 't-cierre-inicio'), 'Completa el inicio para continuar.')
+  // T0 en orden: t-inicio → t-partida → t-cierre-inicio.
+  assert.equal(adaptadores.mensajeBloqueo(inicial.bloques, 't-partida'), 'Completa el inicio para continuar.')
+  assert.equal(
+    adaptadores.mensajeBloqueo(inicial.bloques, 't-cierre-inicio'),
+    'Completa tu punto de partida para continuar.',
+  )
   assert.equal(
     adaptadores.mensajeBloqueo(inicial.bloques, 't-llegada'),
     inicial.bloques[2].actividades[0].bloqueo?.[0]?.mensaje ?? inicial.bloques[2].bloqueo[0].mensaje,
@@ -96,7 +101,7 @@ test('la hidratación conserva respuestas y nodos y corrige finalizaciones obsol
 test('los cierres enumeran únicamente los desbloqueos del servidor, incluidos nivel y ciudad', () => {
   const inicio = adaptadores.textosDesbloqueos(jsonServidor('ruta/ruta-completar-t-inicio').nuevos_desbloqueos)
   assert.equal(inicio.length, 4)
-  assert.ok(inicio.some((d) => d.texto === 'Se abrió: Cierre del inicio'))
+  assert.ok(inicio.some((d) => d.texto === 'Se abrió: Punto de partida'))
   assert.ok(inicio.some((d) => d.tipo === 'FICHA' && d.codigo === 't-ficha'))
   assert.ok(inicio.some((d) => d.codigo === 't-ins-1'))
   assert.ok(!inicio.some((d) => d.tipo === 'SECCION' || d.tipo === 'SECCION_PLAN'))

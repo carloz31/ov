@@ -330,8 +330,11 @@ PREGUNTAS_DIARIO = (
 # (código, tipo de objetivo, objetivo, mensaje de bloqueo, condiciones); cada condición:
 # (evento, referencia, conteo, mínimo).
 REGLAS = (
-    ('R-t-cierre-inicio', 'ACTIVIDAD', 't-cierre-inicio', 'Completa el inicio para continuar.',
+    # T0 en orden: t-inicio → t-partida → t-cierre-inicio.
+    ('R-t-partida', 'ACTIVIDAD', 't-partida', 'Completa el inicio para continuar.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
+    ('R-t-cierre-inicio', 'ACTIVIDAD', 't-cierre-inicio', 'Completa tu punto de partida para continuar.',
+     (('COMPLETA_ACTIVIDAD', 't-partida', 'EVENTOS', 1),)),
     ('R-T1', 'BLOQUE', 'T1', 'Termina el bloque de inicio para abrir el camino.',
      (('COMPLETA_BLOQUE', 'T0', 'EVENTOS', 1),)),
     ('R-T2', 'BLOQUE', 'T2',
