@@ -62,7 +62,7 @@ export function AdventurePanel({
   onSelect: (id: string) => void
   onCheckIn: () => void
 }) {
-  const { level, nombre, progresoCiudad } = useTravelerLevel(adventure)
+  const { level, nombre, iniciales, progresoCiudad } = useTravelerLevel(adventure)
   const visible = getListedActivities(points, false).slice(0, 4)
   const greeting = getReturnGreeting(adventure, recommended)
   useCheckInDay()
@@ -78,7 +78,7 @@ export function AdventurePanel({
       <Link className="sx-panel-traveler" to={appPaths.student.profile}>
         <div className="sx-panel-user">
           <span className="sx-panel-avatar" aria-hidden="true">
-            AL
+            {iniciales}
           </span>
           <div>
             <span>¡Qué bueno verte!</span>

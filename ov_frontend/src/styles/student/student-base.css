@@ -1635,6 +1635,54 @@ body:has([data-student-experience] .sx-shell) {
   font-size: 14px;
   color: var(--muted-foreground);
 }
+/* F00: pantalla de carga y error (PantallaCarga), sobre la transición de zona. */
+.sx-root .sx-pantalla-carga {
+  animation: none;
+  padding: 24px;
+  text-align: center;
+}
+.sx-root .sx-pantalla-carga.is-seccion {
+  position: absolute;
+  z-index: 5;
+}
+.sx-root .sx-carga-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.sx-root .sx-carga-indicador {
+  display: flex;
+  gap: 6px;
+}
+.sx-root .sx-carga-indicador i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--primary);
+  animation: sx-carga-pulso 1.2s ease-in-out infinite;
+}
+.sx-root .sx-carga-indicador i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.sx-root .sx-carga-indicador i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes sx-carga-pulso {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-root .sx-carga-indicador i {
+    animation: none;
+    opacity: 0.7;
+  }
+}
 .sx-root .sx-player-host {
   flex: 1;
   min-height: 0;

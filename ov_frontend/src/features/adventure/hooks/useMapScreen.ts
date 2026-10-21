@@ -4,6 +4,7 @@ import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion
 import { consultarItems } from '@/store/servidor/consultas'
 import { ciudadDisponible, mensajeBloqueo } from '@/lib/servidor/adaptadores'
 import { guiaCaminoApi, guideSteps } from '@/data/content/guideTexts'
+import { inicialesViajero } from './useTravelerLevel'
 import type { JourneyState } from '@/types/activities'
 import { canAccessCity } from '@/store/adventureStore'
 import type { AdventureState } from '@/types/adventure'
@@ -93,5 +94,6 @@ export function useMapScreen({
         : undefined,
     mostrarCiudadBloqueada: locked && !modoApi,
     pasosAyuda: modoApi && zone === 'missions' ? guiaCaminoApi : guideSteps[zone],
+    iniciales: inicialesViajero(servidor.resumen.datos?.cuenta.nombre),
   }
 }

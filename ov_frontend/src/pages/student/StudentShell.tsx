@@ -3,6 +3,7 @@ import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { Outlet } from 'react-router'
 import { StudentModuleLayout } from '@/features/adventure/components/StudentModuleLayout'
 import { OverlayQueue } from '@/features/adventure/components/overlays/OverlayQueue'
+import { PantallaCarga } from '@/components/student/PantallaCarga'
 import '@/styles/student/adventure.css'
 import '@/styles/student/student-base.css'
 import '@/styles/student/student-logbook.css'
@@ -22,30 +23,22 @@ export function StudentShell() {
     cargando,
     reintentarIngreso,
     reintentarConsulta,
+    volverAIngresar,
   } = useServerSession()
 
   const outlet = <Outlet context={context} />
   if (esperandoIngreso)
     return (
       <div className="sx-root sx-shell">
-        <section className="sx-glass sx-player-card" aria-live="polite">
-          <h1>Tu aventura</h1>
-          {errorIngreso ? (
-            <>
-              <p role="alert">{mensajeErrorServidor(errorIngreso)}</p>
-              <button
-                className="sx-primary-button"
-                type="button"
-                disabled={cargando}
-                onClick={() => void reintentarIngreso()}
-              >
-                Reintentar
-              </button>
-            </>
-          ) : (
-            <p role="status">Consultando tu camino en el servidor…</p>
-          )}
-        </section>
+        <PantallaCarga
+          estado={errorIngreso ? 'error' : 'cargando'}
+          titulo="Preparando tu camino"
+          frase="Lumi está buscando el mapa…"
+          mensaje={mensajeErrorServidor(errorIngreso)}
+          ocupado={cargando}
+          onReintentar={() => void reintentarIngreso()}
+          volver={{ texto: 'Volver a ingresar', onClick: volverAIngresar }}
+        />
       </div>
     )
   return (

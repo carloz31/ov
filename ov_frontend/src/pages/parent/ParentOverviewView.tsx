@@ -5,13 +5,14 @@ import { useParentOverview } from '@/features/parent/hooks/useParentOverview'
 
 import { GuideDialogue } from '@/components/common/GuideDialogue'
 import { parentGuides } from '@/data/content/guideTexts'
-import { parentProfile } from '@/features/parent/data/parentPortal'
+import { useParentProfile } from '@/features/parent/hooks/useParentProfile'
 import { parentMotivation } from '@/features/parent/data/parentMotivation'
 import '@/features/parent/styles/parent-activities.css'
 
 function ParentOverviewView() {
   const model = useParentOverview()
   const { mainRef } = model
+  const parentProfile = useParentProfile()
   return (
     <main ref={mainRef} className="parent-overview min-w-0 space-y-4 p-4 sm:p-6 lg:p-8">
       <header className="space-y-2">

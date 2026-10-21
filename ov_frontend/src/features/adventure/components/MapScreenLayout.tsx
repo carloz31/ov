@@ -69,6 +69,7 @@ export function MapScreenLayout({
     explicarCiudad,
     mostrarCiudadBloqueada,
     pasosAyuda,
+    iniciales,
     closePoint,
     selectPoint,
     action,
@@ -133,6 +134,7 @@ export function MapScreenLayout({
         >
           {ui.panelCollapsed && (
             <CollapsedAdventurePanel
+              iniciales={iniciales}
               progress={progress.value}
               recommended={recommended}
               onSelect={(id) => (locked ? navigate(appPaths.student.missions) : selectPoint(id))}

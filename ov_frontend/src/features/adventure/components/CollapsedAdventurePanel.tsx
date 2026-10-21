@@ -6,7 +6,9 @@ export function CollapsedAdventurePanel({
   progress,
   recommended,
   onSelect,
+  iniciales = 'AL',
 }: {
+  iniciales?: string
   progress: number
   recommended?: StudentMapPoint
   onSelect: (id: string) => void
@@ -14,7 +16,7 @@ export function CollapsedAdventurePanel({
   return (
     <div className="sx-panel-strip">
       <Link to={appPaths.student.profile} aria-label="Mi perfil">
-        <span className="sx-panel-avatar">AL</span>
+        <span className="sx-panel-avatar">{iniciales}</span>
       </Link>
       <strong aria-label="Avance de la zona">{Math.round(Math.min(100, Math.max(0, progress)))}%</strong>
       {recommended && (

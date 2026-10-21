@@ -15,6 +15,7 @@ import { consultarItems, consultarRespuestas } from '@/store/servidor/consultas'
 import type { Actividad } from '@/types/activities'
 import type { ItemPublico, RespuestaPublica } from '@/types/servidor'
 import { StudentActivityPlayer } from './StudentActivityPlayer'
+import { PantallaCarga } from '@/components/student/PantallaCarga'
 
 export type InstrumentoServidor = {
   items: ItemPublico[]
@@ -112,26 +113,17 @@ export function MaraInteractionPlayer({
   }, [codigo, revision, intento, cuenta])
   if (!carga || error)
     return (
-      <section className="sx-glass sx-player-card" aria-live="polite">
-        <h1>{error ? 'No pudimos abrir el encuentro' : 'Preparando el encuentro…'}</h1>
-        {error && (
-          <>
-            <p role="alert">{error}</p>
-            <button
-              className="sx-primary-button"
-              onClick={() => {
-                setError('')
-                setIntento((i) => i + 1)
-              }}
-            >
-              Reintentar
-            </button>
-          </>
-        )}
-        <button className="sx-secondary-button" onClick={onClose}>
-          Volver a la ciudad
-        </button>
-      </section>
+      <PantallaCarga
+        estado={error ? 'error' : 'cargando'}
+        titulo="Preparando la actividad"
+        frase="Lumi está acomodando todo…"
+        mensaje={error}
+        onReintentar={() => {
+          setError('')
+          setIntento((i) => i + 1)
+        }}
+        volver={{ texto: 'Volver al mapa', onClick: onClose }}
+      />
     )
   return (
     <StudentActivityPlayer

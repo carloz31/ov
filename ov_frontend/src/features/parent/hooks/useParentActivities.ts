@@ -2,7 +2,8 @@ import { useEffect, useMemo } from 'react'
 import { modoApi } from '@/config/env'
 import { parentActivities } from '@/data/activities/content'
 import { parentAccountId, useParentJourney } from '@/store/parentJourneyStore'
-import { ingresarApoderado, useEstadoApoderado } from '@/store/servidor/apoderado'
+import { ingresarApoderado, reintentarApoderado, useEstadoApoderado } from '@/store/servidor/apoderado'
+import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { avisarContenidoFaltante } from '@/store/servidor/contenidos'
 import { actividadesApoderado, completadasApoderado, disponiblesApoderado } from '@/lib/servidor/contenidos'
 import { mensajeBloqueo } from '@/lib/servidor/adaptadores'
@@ -20,6 +21,9 @@ export type ParentActivitiesSource = {
   motivoBloqueo: (activity: Actividad) => string | undefined
   loading: boolean
   error: ErrorServidor | null
+  // Solo api: la carga inicial del portal (sin actividades todavía) y su reintento.
+  pantallaCarga: { estado: 'cargando' | 'error'; mensaje: string } | null
+  reintentarCarga: () => void
   serverCompletion: boolean
 }
 
@@ -53,6 +57,13 @@ export function useParentActivities(): ParentActivitiesSource {
     motivoBloqueo: (activity) => (modoApi ? mensajeBloqueo(bloques, activity.id) : undefined),
     loading: modoApi && (!almacen.cuenta || almacen.actividades.estado !== 'listo'),
     error: modoApi ? (almacen.error ?? almacen.actividades.error) : null,
+    pantallaCarga:
+      modoApi && !bloques
+        ? almacen.error || almacen.actividades.error
+          ? { estado: 'error', mensaje: mensajeErrorServidor(almacen.error ?? almacen.actividades.error) }
+          : { estado: 'cargando', mensaje: '' }
+        : null,
+    reintentarCarga: () => void reintentarApoderado(),
     serverCompletion: modoApi,
   }
 }

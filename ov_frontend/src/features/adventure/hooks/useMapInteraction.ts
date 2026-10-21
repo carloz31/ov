@@ -60,6 +60,7 @@ export function useMapInteraction({
     ciudadBloqueo,
     mostrarCiudadBloqueada,
     pasosAyuda,
+    iniciales,
   } = useMapScreen({ zone, points, adventure, journey, selectedId })
   const explicarCiudad =
     ciudadBloqueo === undefined
@@ -144,6 +145,7 @@ export function useMapInteraction({
     explicarCiudad,
     mostrarCiudadBloqueada,
     pasosAyuda,
+    iniciales,
     closePoint,
     selectPoint,
     action,

@@ -104,6 +104,15 @@ export function ingresarApoderado(): Promise<RespuestaServidor<RespuestaAccion>>
   return pendiente
 }
 
+// Reintento de la carga inicial del portal: vuelve a pedir lo que falló (ingreso o actividades).
+export function reintentarApoderado() {
+  if (estado.actividades.estado === 'error') {
+    revisionActividades++
+    publicar({ actividades: { ...estado.actividades, estado: 'vencido', error: null } })
+  }
+  return ingresarApoderado()
+}
+
 export function asegurarActividadesApoderado(): Promise<RespuestaServidor<BloqueActividades[]>> {
   const cuenta = estado.cuenta,
     sesion = revisionSesion,

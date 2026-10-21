@@ -207,7 +207,11 @@ test('la carga de Mara consulta ítems y respuestas y ofrece reintento sin susti
   )
   failed.render()
   await esperar()
-  assert.ok(botonEn(failed.render(), 'Reintentar'))
+  // F00: el fallo se muestra en la pantalla de carga, con su reintento y la vuelta al mapa.
+  const pantalla = elementos(failed.render(), (e) => e.type?.name === 'PantallaCarga')[0]
+  assert.equal(pantalla.props.estado, 'error')
+  assert.equal(typeof pantalla.props.onReintentar, 'function')
+  assert.equal(pantalla.props.volver.texto, 'Volver al mapa')
 })
 
 test('las consultas de la cuenta anterior se descartan cuando cambia el estudiante', async () => {

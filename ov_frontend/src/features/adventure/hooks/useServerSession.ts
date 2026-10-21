@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { modoApi } from '@/config/env'
 import { ingresar } from '@/store/servidor/operaciones'
 import { useEstadoServidor } from '@/store/servidor/sesion'
+import { cerrarSesion } from '@/store/accesoStore'
 import { refrescar } from '@/store/servidor/refresco'
 import { useLocation } from 'react-router'
 import { useJourney } from '@/store/journeyStore'
@@ -71,5 +72,7 @@ export function useServerSession() {
     cargando: servidor.cargando,
     reintentarIngreso: ingresar,
     reintentarConsulta: refrescar,
+    // Si el ingreso falla, la sesión se cierra y la guarda vuelve al login.
+    volverAIngresar: cerrarSesion,
   }
 }
