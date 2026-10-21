@@ -306,7 +306,8 @@ test('el mapa y los enlaces directos no usan límites de demo ni abren TIP o des
     adventure = app.load('src/store/adventureStore.ts'),
     mapa = loadMapPoints(app.load)
   const puntos = mapa.getCaminoPoints(adventure.useAdventure(), journey.getJourneySnapshot())
-  assert.equal(puntos.length, 12)
+  // F00: las opcionales no se ven hasta desbloquearse; quedan las 7 requeridas.
+  assert.equal(puntos.length, 7)
   assert.equal(
     puntos.find((p) => p.specActivityId === 't-expectativas').subtitle.includes('pendiente'),
     false,

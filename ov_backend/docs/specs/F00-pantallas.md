@@ -16,6 +16,11 @@ Criterio general: cambios ligeros sobre las vistas actuales, reutilizando sus co
 El drawer conserva todo lo que muestra hoy: insignia de estado, tiempo, título, descripción, tipo de actividad y la entrada de diario sugerida con su enlace. Solo cambia:
 
 - **Opcional:** si `requerida` es `false`, una segunda insignia «Opcional» junto a la de estado, con la misma clase `sx-drawer-badge` (nuevo `data-status="Opcional"` con el color de acento suave). Las misiones adicionales conservan su insignia actual.
+- **Opcionales en el mapa (ajuste del 21 oct 2026):**
+  - todas son `AL_DESBLOQUEAR` en `ruta`: aparecen al desbloquearse;
+  - el camino principal (`MapPath`) une solo las requeridas, en orden y cruzando bloques;
+  - cada opcional se dibuja como hoy las misiones adicionales de local (`additional`, `originId`, `revealing`, `revealQueued`, `sx-node-additional`), con línea propia desde `mapa.origen` del contenido: punteada mientras está pendiente y verde al completarse;
+  - las que llegan en los desbloqueos de una acción se revelan una por una al volver al Camino, con la animación existente (punto y línea). La marca vive solo en memoria: tras recargar aparecen sin animación.
 - **Tiempo:** `{duracion_estimada_min} min` del servidor; si viene nulo, el texto actual de `getMissionMeta`.
 - **Descripción:** `descripcion` del servidor; si viene nula, la del JSON de contenido, como hoy.
 - **Lista «Actividades disponibles» del panel:** el subtítulo agrega « · opcional» cuando corresponde.

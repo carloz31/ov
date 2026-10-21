@@ -108,7 +108,7 @@
         "requerida": false,
         "tipo": "REGISTRO",
         "titulo": "Registro de valores",
-        "visibilidad": "SIEMPRE",
+        "visibilidad": "AL_DESBLOQUEAR",
         "visible": true
       },
       {
@@ -168,8 +168,8 @@
         "requerida": false,
         "tipo": "REGISTRO",
         "titulo": "Registro que retoma respuestas",
-        "visibilidad": "SIEMPRE",
-        "visible": true
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
       },
       {
         "bloqueo": null,
@@ -182,7 +182,7 @@
         "requerida": false,
         "tipo": "INFORMATIVA",
         "titulo": "Lectura de tu punto de partida",
-        "visibilidad": "SIEMPRE",
+        "visibilidad": "AL_DESBLOQUEAR",
         "visible": true
       },
       {
@@ -196,7 +196,7 @@
         "requerida": false,
         "tipo": "BATALLA",
         "titulo": "Batalla de prueba",
-        "visibilidad": "SIEMPRE",
+        "visibilidad": "AL_DESBLOQUEAR",
         "visible": true
       },
       {
@@ -263,8 +263,8 @@
         "requerida": false,
         "tipo": "REGISTRO",
         "titulo": "Registro de exploración",
-        "visibilidad": "SIEMPRE",
-        "visible": true
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
       }
     ],
     "bloqueo": null,

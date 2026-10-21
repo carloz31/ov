@@ -13,8 +13,9 @@
   ],
   "nodos": [],
   "mapa": {
-    "x": 360,
-    "y": 420,
-    "icono": "registro"
+    "x": 330,
+    "y": 50,
+    "icono": "registro",
+    "origen": "t-cierre-inicio"
   }
 }

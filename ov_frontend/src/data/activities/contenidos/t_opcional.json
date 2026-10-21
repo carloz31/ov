@@ -20,8 +20,9 @@
     }
   ],
   "mapa": {
-    "x": 590,
-    "y": 200,
-    "icono": "informativa"
+    "x": 640,
+    "y": 420,
+    "icono": "informativa",
+    "origen": "t-expectativas"
   }
 }

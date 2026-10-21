@@ -15,7 +15,9 @@ Toda actividad, de cualquier rol, es el mismo objeto: metadatos, una lista orden
 - `audiencia`: `estudiante` (inmersivo, por defecto) o `apoderado` (sobrio). El apoderado solo admite `encuentro`.
 - `presentacion` (solo instrumentos): `narrativa` dibuja todos los nodos; `directa`, solo `item` y `resultado`.
 - `plantilla` (solo registros): `secuencial` (una consigna tras otra) o `matriz` (celdas `columna.fila`; sirve para línea de tiempo o FODA).
-- `mapa` (opcional): `{ x, y, etiqueta, icono }` para dibujar la actividad como punto del mapa. Sin `mapa`, no se dibuja.
+- `mapa` (opcional): `{ x, y, icono, origen? }` para dibujar la actividad como punto del mapa. Sin `mapa`, no se dibuja.
+  - `origen`: código de la actividad desde la que sale la línea propia de una opcional. En api, una opcional con `origen` se dibuja fuera del camino principal, como las misiones adicionales: con línea punteada mientras está pendiente y verde al completarse. Sin `origen`, queda en el camino.
+  - `etiqueta`: solo la usan los contenidos de `plataforma`. En api, la etiqueta del punto se arma con el tipo y la duración del servidor.
 
 ## Metadatos
 

@@ -13,8 +13,9 @@
   ],
   "nodos": [],
   "mapa": {
-    "x": 800,
-    "y": 450,
-    "icono": "registro"
+    "x": 700,
+    "y": 110,
+    "icono": "registro",
+    "origen": "t-batalla"
   }
 }

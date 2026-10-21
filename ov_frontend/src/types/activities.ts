@@ -249,6 +249,8 @@ export interface ContenidoActividad extends Actividad {
     y: number
     etiqueta?: string
     icono: 'informativa' | 'test' | 'registro'
+    // Opcionales (api): código de la actividad desde la que sale su línea propia en el mapa.
+    origen?: string
   }
 }
 

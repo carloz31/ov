@@ -42,6 +42,8 @@ export type AlmacenServidor = { [N in NombreSeccion]: Seccion<DatosSecciones[N]>
   procesandoAvisos: boolean
   marcadoAvisos: string[] | null
   fechasInsignias: Record<string, string>
+  // F00: actividades desbloqueadas por una acción que el mapa revela una por una. Solo en memoria.
+  porRevelar: string[]
   resultadoRiasec: ResultadoPublico | null
   estadoResultado: 'sin_cargar' | 'cargando' | 'pendiente' | 'listo' | 'error'
   errorResultado: ErrorServidor | null
@@ -65,6 +67,7 @@ const inicial = (): AlmacenServidor => ({
   procesandoAvisos: false,
   marcadoAvisos: null,
   fechasInsignias: {},
+  porRevelar: [],
   resultadoRiasec: null,
   estadoResultado: 'sin_cargar',
   errorResultado: null,

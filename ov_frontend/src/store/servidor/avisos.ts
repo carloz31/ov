@@ -7,7 +7,16 @@ import type { DesbloqueoNuevo } from '@/types/servidor'
 export function incorporarDesbloqueos(desbloqueos: DesbloqueoNuevo[]) {
   const todos = new Map(obtenerEstadoServidor().desbloqueosAccion.map((d) => [claveDesbloqueo(d), d]))
   desbloqueos.forEach((d) => todos.set(claveDesbloqueo(d), d))
-  publicar({ desbloqueosAccion: [...todos.values()] })
+  const porRevelar = obtenerEstadoServidor().porRevelar
+  const nuevas = desbloqueos
+    .filter((d) => d.tipo_objetivo === 'ACTIVIDAD' && !porRevelar.includes(d.objetivo.codigo))
+    .map((d) => d.objetivo.codigo)
+  publicar({ desbloqueosAccion: [...todos.values()], porRevelar: [...porRevelar, ...nuevas] })
+}
+// El mapa ya reveló (o no dibuja) estas actividades.
+export function quitarPorRevelar(quitar: (codigo: string) => boolean) {
+  const porRevelar = obtenerEstadoServidor().porRevelar
+  if (porRevelar.some(quitar)) publicar({ porRevelar: porRevelar.filter((c) => !quitar(c)) })
 }
 export function avisosPendientes() {
   return avisosServidor([

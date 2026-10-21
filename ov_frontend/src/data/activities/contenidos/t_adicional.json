@@ -13,8 +13,9 @@
   ],
   "nodos": [],
   "mapa": {
-    "x": 590,
-    "y": 420,
-    "icono": "informativa"
+    "x": 390,
+    "y": 430,
+    "icono": "informativa",
+    "origen": "t-expectativas"
   }
 }

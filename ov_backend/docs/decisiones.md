@@ -58,3 +58,11 @@
   - En el front, `servidor-adaptadores` (completar `t-inicio` abre «Punto de partida»), `servidor-mapa` y `servidor-partida`; esta última abre `t-partida` con `t-inicio` completada.
   - Los fixtures se regeneraron.
 - **«Volver al mapa» del cierre (corrección).** En api lleva al Camino si la actividad es de un bloque MISIONES_CAMPO y a la Ciudad si no. Antes iba siempre a la Ciudad, y con la Ciudad cerrada se abría la ayuda de Lumi. Local no cambia.
+- **Opcionales fuera de la ruta (ajuste 14, aprobado por el usuario).**
+  - `ruta.py` da `AL_DESBLOQUEAR` a todas las opcionales; se regeneraron los fixtures.
+  - Los JSON de las opcionales llevan `mapa.origen` (`t-valores`, `t-lee-cuestionario` y `t-batalla` salen de `t-cierre-inicio`; `t-opcional`, `t-eco` y `t-adicional`, de `t-expectativas`; `t-explorar`, de `t-batalla`), con posiciones provisionales cerca de su origen. El campo está documentado en `docs/contenidos-actividades.md`.
+  - En api, `puntosServidor` marca como `additional` a las opcionales con origen, y `MapPath` ya une solo el resto, sin cambios.
+  - `incorporarDesbloqueos` encola en memoria (`porRevelar`, en el almacén del servidor) las actividades desbloqueadas; `useRevelarOpcionales` las revela de a una en el Camino con los tiempos de `AdditionalReveal` (2,7 s, o 0 con movimiento reducido) y descarta lo que no se dibuja como opcional.
+  - Sin el aviso «Nueva misión adicional» de local, que el ajuste no pide.
+  - El nodo conserva el texto «Misión adicional» de `MapNode`, porque no se agregan estados visuales.
+  - Pruebas adaptadas: `servidor-mapa` y `servidor-flujo` ya no esperan opcionales visibles al inicio.

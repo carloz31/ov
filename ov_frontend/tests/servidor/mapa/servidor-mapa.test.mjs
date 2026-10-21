@@ -30,12 +30,8 @@ test('ruta dibuja T0, T1 y T2 en el orden del servidor, con su tramo y su estado
     ['t-inicio', 1, 'available'],
     ['t-partida', 1, 'locked'],
     ['t-cierre-inicio', 1, 'locked'],
+    // Las opcionales se ven solo al desbloquearse.
     ['t-expectativas', 2, 'locked'],
-    ['t-valores', 2, 'locked'],
-    ['t-eco', 2, 'locked'],
-    ['t-lee-cuestionario', 2, 'locked'],
-    ['t-batalla', 2, 'locked'],
-    ['t-explorar', 2, 'locked'],
     ['t-llegada', 3, 'locked'],
     ['t-comparar', 3, 'locked'],
     ['t-proyecto', 3, 'locked'],
@@ -287,4 +283,54 @@ test('en api el drawer, el panel, los tramos y el reproductor toman sus textos d
   assert.deepEqual(copia(letreros), m.bloques.filter((b) => b.espacio === 'MISIONES_CAMPO').map((b) => b.nombre))
   const inicio = actividadPorContenido(m.bloques, 't-inicio')
   assert.deepEqual([inicio.titulo, inicio.ubicacion], [m.bloques[0].actividades[0].titulo, m.bloques[0].nombre])
+})
+
+test('las opcionales van fuera del camino, con línea desde su origen, y se revelan una por una', () => {
+  const m = mapa('ruta/ruta-actividades-t1')
+  const camino = m.camino()
+  const opcionales = camino.filter((p) => p.additional)
+  assert.deepEqual(
+    copia(opcionales.map((p) => [p.specActivityId, p.originId, p.opcional])),
+    [
+      ['t-valores', 't-cierre-inicio', true],
+      ['t-lee-cuestionario', 't-cierre-inicio', true],
+      ['t-batalla', 't-cierre-inicio', true],
+    ],
+  )
+  // El camino principal une solo las requeridas, en orden y cruzando bloques.
+  const { MapPath } = m.app.load('src/features/adventure/components/MapPath.tsx')
+  const lineas = MapPath({ points: camino }).props.children
+  assert.deepEqual(
+    copia(lineas[0].map((l) => l.key)),
+    ['t-inicio-t-partida', 't-partida-t-cierre-inicio', 't-cierre-inicio-t-expectativas', 't-expectativas-t-llegada', 't-llegada-t-comparar', 't-comparar-t-proyecto'],
+  )
+  assert.equal(lineas[1].filter(Boolean).length, 3)
+  // Los desbloqueos de una acción quedan en memoria y se revelan uno por uno.
+  const avisos = m.app.load('src/store/servidor/avisos.ts')
+  avisos.incorporarDesbloqueos(
+    jsonServidor('ruta/ruta-completar-t-cierre-inicio')
+      .nuevos_desbloqueos.concat(
+        ['t-valores', 't-lee-cuestionario', 't-batalla', 't-partida'].map((codigo) => ({
+          regla: `DATO DE PRUEBA ${codigo}`,
+          tipo_objetivo: 'ACTIVIDAD',
+          objetivo: { codigo, nombre: codigo },
+          condiciones: [],
+        })),
+      ),
+  )
+  const estado = (codigo) => {
+    const p = m.camino().find((x) => x.specActivityId === codigo)
+    return p.revealing ? 'revela' : p.revealQueued ? 'espera' : 'visible'
+  }
+  assert.deepEqual(
+    ['t-valores', 't-lee-cuestionario', 't-batalla'].map(estado),
+    ['revela', 'espera', 'espera'],
+  )
+  avisos.quitarPorRevelar((c) => c === 't-valores')
+  assert.deepEqual(['t-valores', 't-lee-cuestionario', 't-batalla'].map(estado), ['visible', 'revela', 'espera'])
+  // Una requerida no se anima: el Camino la descarta de la cola.
+  avisos.quitarPorRevelar((c) => !['t-lee-cuestionario', 't-batalla'].includes(c))
+  assert.deepEqual(copia(m.sesion.obtenerEstadoServidor().porRevelar), ['t-lee-cuestionario', 't-batalla'])
+  m.sesion.limpiarEstadoServidor()
+  assert.deepEqual(copia(m.sesion.obtenerEstadoServidor().porRevelar), [])
 })

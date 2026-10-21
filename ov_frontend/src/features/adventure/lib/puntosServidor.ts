@@ -2,6 +2,7 @@ import { contenidoPorClave } from '@/data/activities/contenidos.ts'
 import { baseRoute } from '@/data/activities/reflectionConfig'
 import { bloquesZona, estadoPunto } from '@/lib/servidor/adaptadores'
 import { avisarContenidoFaltante } from '@/store/servidor/contenidos'
+import { obtenerEstadoServidor } from '@/store/servidor/sesion'
 import type { ActividadCuenta, BloqueActividades } from '@/types/servidor'
 import type { StudentMapPoint } from './mapPoints'
 import { iconosMapa } from './iconosMapa'
@@ -34,7 +35,7 @@ export function puntosServidor(
       else grupos.push({ bloque, actividades: [actividad] })
     }
   const ids = new Set<string>()
-  return grupos.flatMap(({ bloque, actividades: grupo }) => {
+  const puntos = grupos.flatMap(({ bloque, actividades: grupo }): StudentMapPoint[] => {
     const contenido = contenidoPorClave(grupo[0].contenido)
     if (!contenido) {
       grupo.forEach((a) => avisarContenidoFaltante(a.codigo, a.contenido))
@@ -67,7 +68,18 @@ export function puntosServidor(
           actividad.contenido !== 'encuentro_resultado_elena' || actividad.estado !== 'BLOQUEADA',
         ...(grupo.length > 1 ? { secuencia: grupo } : {}),
         ...(actividad.requerida === false ? { opcional: true } : {}),
+        // Una opcional con origen va fuera del camino, con línea propia, como las misiones adicionales.
+        ...(actividad.requerida === false && mapa.origen ? { additional: true, originId: mapa.origen } : {}),
       },
     ]
   })
+  // Lo recién desbloqueado se revela una por una: la primera se anima y las demás esperan ocultas.
+  const cola = obtenerEstadoServidor().porRevelar.filter((codigo) =>
+    puntos.some((p) => p.additional && p.specActivityId === codigo),
+  )
+  return puntos.map((p) =>
+    p.additional && cola.includes(p.specActivityId ?? '')
+      ? { ...p, ...(cola[0] === p.specActivityId ? { revealing: true } : { revealQueued: true }) }
+      : p,
+  )
 }

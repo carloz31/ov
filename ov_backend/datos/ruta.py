@@ -83,11 +83,12 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
 
 # Lo que cambia los valores por defecto (requerida, visibilidad SIEMPRE).
 PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
-               't-valores': {'requerida': False},
-               't-eco': {'requerida': False},
-               't-lee-cuestionario': {'requerida': False},
-               't-batalla': {'requerida': False},
-               't-explorar': {'requerida': False},
+               # Las opcionales aparecen en el mapa cuando se desbloquean (F00).
+               't-valores': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+               't-eco': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+               't-lee-cuestionario': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+               't-batalla': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+               't-explorar': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'}}
 
 # Texto de presentación de cada actividad (`descripcion`): el front lo muestra tal cual en el mapa y en

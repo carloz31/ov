@@ -11,6 +11,7 @@ import { type PointDetails } from '@/features/adventure/lib/pointDetails'
 import { type StudentMapPoint, type StudentZone } from '@/features/adventure/lib/mapPoints'
 import { initialScale } from '@/features/adventure/lib/geometry'
 import { pasosBloqueo } from '@/data/content/guideTexts'
+import { useRevelarOpcionales } from './useRevelarOpcionales'
 export function useMapInteraction({
   zone,
   points,
@@ -62,6 +63,12 @@ export function useMapInteraction({
     pasosAyuda,
     iniciales,
   } = useMapScreen({ zone, points, adventure, journey, selectedId })
+  useRevelarOpcionales({
+    zone,
+    points,
+    enabled: !announcementBlocked && !selectedId && !mobilePanelOpen,
+    onFrame: frameAdditional,
+  })
   const explicarCiudad =
     ciudadBloqueo === undefined
       ? undefined
