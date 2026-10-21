@@ -16,6 +16,7 @@
     "x": 390,
     "y": 430,
     "icono": "informativa",
-    "origen": "t-expectativas"
+    "origen": "t-expectativas",
+    "adicional": true
   }
 }

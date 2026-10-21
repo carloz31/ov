@@ -334,3 +334,19 @@ test('las opcionales van fuera del camino, con línea desde su origen, y se reve
   m.sesion.limpiarEstadoServidor()
   assert.deepEqual(copia(m.sesion.obtenerEstadoServidor().porRevelar), [])
 })
+
+test('el nodo de una opcional dice «Opcional» y el de la misión adicional conserva su texto', () => {
+  const m = mapa('ruta/ruta-actividades-ciudad')
+  const { MapNode } = m.app.load('src/features/adventure/components/MapNode.tsx')
+  const nodo = (codigo) => {
+    const point = m.camino().find((p) => p.specActivityId === codigo)
+    const tree = MapNode({ point, onSelect() {}, onFocus() {} })
+    return [tree.props['aria-label'], JSON.stringify(copia(tree))]
+  }
+  const [etiquetaOpcional, opcional] = nodo('t-opcional')
+  assert.match(etiquetaOpcional, /, opcional/)
+  assert.match(opcional, /"children":"Opcional"/)
+  const [etiquetaAdicional, adicional] = nodo('t-adicional')
+  assert.match(etiquetaAdicional, /, misión adicional/)
+  assert.match(adicional, /"children":"Misión adicional"/)
+})

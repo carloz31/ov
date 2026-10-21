@@ -64,5 +64,5 @@
   - En api, `puntosServidor` marca como `additional` a las opcionales con origen, y `MapPath` ya une solo el resto, sin cambios.
   - `incorporarDesbloqueos` encola en memoria (`porRevelar`, en el almacén del servidor) las actividades desbloqueadas; `useRevelarOpcionales` las revela de a una en el Camino con los tiempos de `AdditionalReveal` (2,7 s, o 0 con movimiento reducido) y descarta lo que no se dibuja como opcional.
   - Sin el aviso «Nueva misión adicional» de local, que el ajuste no pide.
-  - El nodo conserva el texto «Misión adicional» de `MapNode`, porque no se agregan estados visuales.
+  - Texto del nodo (decidido por el usuario): en api, una opcional dice «Opcional» en el texto pequeño y en el `aria-label` (`etiquetaNodo`); `t-adicional` conserva «Misión adicional» con `mapa.adicional` en su JSON. Local no cambia.
   - Pruebas adaptadas: `servidor-mapa` y `servidor-flujo` ya no esperan opcionales visibles al inicio.

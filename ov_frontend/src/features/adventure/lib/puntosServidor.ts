@@ -69,7 +69,9 @@ export function puntosServidor(
         ...(grupo.length > 1 ? { secuencia: grupo } : {}),
         ...(actividad.requerida === false ? { opcional: true } : {}),
         // Una opcional con origen va fuera del camino, con línea propia, como las misiones adicionales.
-        ...(actividad.requerida === false && mapa.origen ? { additional: true, originId: mapa.origen } : {}),
+        ...(actividad.requerida === false && mapa.origen
+          ? { additional: true, originId: mapa.origen, ...(mapa.adicional ? {} : { etiquetaNodo: 'Opcional' }) }
+          : {}),
       },
     ]
   })

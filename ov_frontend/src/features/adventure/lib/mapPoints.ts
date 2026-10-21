@@ -25,6 +25,8 @@ export type StudentMapPoint = {
   secuencia?: ActividadCuenta[]
   actionEnabled: boolean
   additional?: boolean
+  // Solo api: texto del nodo fuera del camino; sin él, «Misión adicional».
+  etiquetaNodo?: string
   // Solo api: el servidor no la exige para cerrar el tramo.
   opcional?: boolean
   originId?: string

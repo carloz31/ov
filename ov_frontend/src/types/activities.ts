@@ -251,6 +251,8 @@ export interface ContenidoActividad extends Actividad {
     icono: 'informativa' | 'test' | 'registro'
     // Opcionales (api): código de la actividad desde la que sale su línea propia en el mapa.
     origen?: string
+    // Con origen: es una misión adicional y no una opcional (el nodo dice «Misión adicional»).
+    adicional?: boolean
   }
 }
 
