@@ -1,7 +1,6 @@
 import type { JourneyState } from '@/types/activities'
 import { modoApi } from '@/config/env'
 import { obtenerEstadoServidor } from '@/store/servidor/sesion'
-import { ciudadDisponible } from '@/lib/servidor/adaptadores'
 import { activityById } from '@/data/activities/content'
 import { Feather, KeyRound, type LucideIcon } from 'lucide-react'
 import { fieldMissions, type FieldMission } from '@/data/content/adventure'
@@ -56,20 +55,8 @@ export function getNextCaminoActivity(points: StudentMapPoint[]) {
 export function getCaminoPoints(adventure: AdventureState, journey: JourneyState): StudentMapPoint[] {
   if (modoApi) {
     const estado = obtenerEstadoServidor().actividades.datos
-    return [
-      ...puntosServidor(estado, 'CAMINO', 'camino'),
-      {
-        id: 'city',
-        title: 'La llave de la ciudad',
-        subtitle: ciudadDisponible(estado) ? 'Entrar a la ciudad' : 'Destino al completar el camino',
-        x: 950,
-        y: 480,
-        icon: KeyRound,
-        zone: 'camino',
-        status: ciudadDisponible(estado) ? 'available' : 'locked',
-        actionEnabled: true,
-      },
-    ]
+    // En api la Ciudad se abre desde el selector Camino/Ciudad, sin punto de llave en el mapa.
+    return puntosServidor(estado, 'CAMINO', 'camino')
   }
   return [
     ...orderedMissions.map((mission, index): StudentMapPoint => ({

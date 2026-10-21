@@ -8,7 +8,6 @@ import { appPaths } from '@/routes/paths'
 import { StudentUserMenu } from './StudentUserMenu'
 import { StudentBrand } from '@/components/student/StudentBrand'
 import { NoveltiesMenu } from './overlays/NoveltiesMenu'
-import { guideSteps } from '@/data/content/guideTexts'
 import { updateStudentUi } from '@/store/studentUiStore'
 import { ActivityDrawer } from './ActivityDrawer'
 import { AdventurePanel } from './AdventurePanel'
@@ -66,6 +65,10 @@ export function MapScreenLayout({
     selected,
     details,
     mostrarMisionesAdicionales,
+    ciudadBloqueo,
+    explicarCiudad,
+    mostrarCiudadBloqueada,
+    pasosAyuda,
     closePoint,
     selectPoint,
     action,
@@ -115,7 +118,7 @@ export function MapScreenLayout({
             zone === 'missions' ? '/images/adventure/journey-map.png' : '/images/adventure/city-map.png'
           }
         />
-        {locked && <CityLocked adventure={adventure} />}
+        {mostrarCiudadBloqueada && <CityLocked adventure={adventure} />}
         {mostrarMisionesAdicionales &&
           renderAdditional?.({
             onFrame: frameAdditional,
@@ -152,11 +155,13 @@ export function MapScreenLayout({
         <ZoneSwitch
           zone={zone}
           cityOpen={cityOpen}
-          onCityLocked={() =>
-            zone === 'missions' ? selectPoint('city') : navigate(appPaths.student.missions)
+          lockedHint={ciudadBloqueo}
+          onCityLocked={
+            explicarCiudad ??
+            (() => (zone === 'missions' ? selectPoint('city') : navigate(appPaths.student.missions)))
           }
         />
-        <MapControls onHelp={() => openGuide(guideSteps[zone])} />
+        <MapControls onHelp={() => openGuide(pasosAyuda)} />
         <ZoomControls
           scale={scale}
           minimumScale={minimumScale}

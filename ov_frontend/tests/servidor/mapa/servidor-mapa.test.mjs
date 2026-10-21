@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { copia, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, elementos, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
 function mapa(fixture, desarrollo = true) {
   const app = fixtureServidor({ desarrollo })
@@ -39,7 +39,6 @@ test('ruta dibuja T0, T1 y T2 en el orden del servidor, con su tramo y su estado
     ['t-llegada', 3, 'locked'],
     ['t-comparar', 3, 'locked'],
     ['t-proyecto', 3, 'locked'],
-    ['city', null, 'locked'],
   ])
   const { contenidoPorClave } = m.app.load('src/data/activities/contenidos.ts')
   const inicio = camino[0]
@@ -223,4 +222,44 @@ test('una opcional lleva su insignia, su duración del servidor y no cuenta para
     BlockSign({ points: camino }).props.children.find((s) => s.key === String(numero)).props.children[0].type
   assert.equal(icono(2), icono(1))
   assert.notEqual(icono(2), icono(3))
+})
+
+test('la Ciudad cerrada se explica desde el selector: sin llave en el mapa y con el mensaje del bloque', async () => {
+  const m = mapa('ruta/ruta-actividades-t1')
+  assert.equal(m.camino().some((p) => p.id === 'city'), false)
+  const mensaje = m.bloques.find((b) => b.codigo === 'CIUDAD').bloqueo[0].mensaje
+  const { useMapScreen } = m.app.load('src/features/adventure/hooks/useMapScreen.ts')
+  const adventure = m.app.load('src/store/adventureStore.ts').useAdventure()
+  const pantalla = (zone, points) =>
+    m.app.mount(useMapScreen, { zone, points, adventure, journey: {} }).render()
+  const camino = pantalla('missions', m.camino())
+  assert.deepEqual([camino.ciudadBloqueo, camino.mostrarCiudadBloqueada], [mensaje, false])
+  assert.match(camino.pasosAyuda.join(' '), /En el camino se abre la ciudad/)
+  assert.doesNotMatch(camino.pasosAyuda.join(' '), /Al final del camino/)
+  const ciudad = pantalla('central', m.ciudad())
+  assert.equal(ciudad.mostrarCiudadBloqueada, false)
+  const { ZoneSwitch } = m.app.load('src/features/adventure/components/ZoneSwitch.tsx')
+  let explicada = 0
+  const selector = m.app.mount(ZoneSwitch, {
+    zone: 'missions',
+    cityOpen: false,
+    lockedHint: mensaje,
+    onCityLocked: () => explicada++,
+  })
+  const tree = selector.render()
+  assert.equal(elementos(tree, (e) => e.props?.children === mensaje).length, 1)
+  elementos(tree, (e) => e.type === 'button' && e.props.className === 'sx-zone-city')[0].props.onClick()
+  assert.equal(explicada, 1)
+  // Con la Ciudad abierta no hay mensaje que mostrar.
+  const abierta = mapa('ruta/ruta-actividades-ciudad')
+  const { useMapScreen: usar } = abierta.app.load('src/features/adventure/hooks/useMapScreen.ts')
+  const estado = abierta.app
+    .mount(usar, {
+      zone: 'missions',
+      points: abierta.camino(),
+      adventure: abierta.app.load('src/store/adventureStore.ts').useAdventure(),
+      journey: {},
+    })
+    .render()
+  assert.equal(estado.ciudadBloqueo, undefined)
 })

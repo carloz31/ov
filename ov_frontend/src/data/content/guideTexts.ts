@@ -9,6 +9,14 @@ export const cityArrivalSteps = [
 export const familyDetailGuide =
   'Las respuestas tienen el mismo valor. La guía sirve para escucharse y encontrar preguntas que quieran seguir explorando juntos.'
 
+// F00 (solo api): en la ruta la ciudad se abre a mitad del camino, no al final.
+export const guiaCaminoApi = [
+  'Cada punto del mapa es una misión. La que brilla es la que te recomiendo ahora. Las que muestran un signo de pregunta aún no están disponibles.',
+  'A la izquierda está tu panel: tu siguiente paso, cómo te sientes hoy y los accesos a tu diario, tu familia y todo lo que vas reuniendo. Puedes plegarlo cuando quieras.',
+  'En el camino se abre la ciudad, donde podrás elegir tus actividades y ayudar a sus habitantes. Arriba puedes cambiar entre el camino y la ciudad.',
+  'Si en algún momento no sabes qué hacer, toca el botón de ayuda y vendré.',
+]
+
 export const guideSteps: Record<StudentView, string[]> = {
   'catalog-detail': [
     'Esta es la página del atlas. Guárdala en favoritos para tenerla a mano cuando armes tus planes.',

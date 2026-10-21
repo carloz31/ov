@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { consultarItems } from '@/store/servidor/consultas'
+import { ciudadDisponible, mensajeBloqueo } from '@/lib/servidor/adaptadores'
+import { guiaCaminoApi, guideSteps } from '@/data/content/guideTexts'
 import type { JourneyState } from '@/types/activities'
 import { canAccessCity } from '@/store/adventureStore'
 import type { AdventureState } from '@/types/adventure'
@@ -84,5 +86,12 @@ export function useMapScreen({
     selectedPointId,
     accionDisponible: (detail: PointDetails) => !(detail.disabled || (modoApi && servidor.error)),
     mostrarMisionesAdicionales: zone === 'missions' && !modoApi,
+    // Solo api: la Ciudad cerrada se explica desde el selector, con el mensaje del bloque CIUDAD.
+    ciudadBloqueo:
+      modoApi && !ciudadDisponible(servidor.actividades.datos)
+        ? (mensajeBloqueo(servidor.actividades.datos, 'CIUDAD') ?? '')
+        : undefined,
+    mostrarCiudadBloqueada: locked && !modoApi,
+    pasosAyuda: modoApi && zone === 'missions' ? guiaCaminoApi : guideSteps[zone],
   }
 }

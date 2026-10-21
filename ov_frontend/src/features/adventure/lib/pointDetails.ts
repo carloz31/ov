@@ -85,19 +85,6 @@ export function getPointDetails(
     const ruta =
       actividad && idPresentacion === actividad.codigo ? detallesRuta(point, actividad, badge, bloques) : undefined
     if (ruta) return ruta
-    if (point.id === 'city')
-      return {
-        title: point.title,
-        region: 'Meta del recorrido',
-        badge,
-        meta: 'Ciudad',
-        type: 'Ciudad',
-        description: 'La ciudad te espera al final del camino.',
-        requirement: point.status === 'locked' ? mensajeBloqueo(bloques, 'CIUDAD') : undefined,
-        actionLabel: 'Ir a la ciudad',
-        disabled: point.status === 'locked',
-        href: appPaths.student.exploration,
-      }
     if (point.id === 'mara-test') {
       const secuencia = point.secuencia ?? []
       const numero = Math.max(1, secuencia.findIndex((a) => a.codigo === point.specActivityId) + 1)
