@@ -116,3 +116,14 @@ test('t-partida usa los ítems y la escala del servidor entre los diálogos del 
   assert.equal(post.body.actividad, 't-partida')
   player.unmount()
 })
+
+test('al terminar, «Volver al mapa» lleva al mapa de la actividad y no a la Ciudad cerrada', async () => {
+  const { app } = await iniciarPartida()
+  const { useActivityFinish } = app.load('src/features/activities/hooks/useActivityFinish.ts')
+  const { appPaths } = app.load('src/routes/paths.ts')
+  const volver = (id) => app.mount(useActivityFinish, { id, titulo: 'DATO DE PRUEBA', nodos: [] }).render()
+  volver('t-inicio').volverAlMapa()
+  assert.equal(app.navigations.at(-1), appPaths.student.missions)
+  volver('t-mision-intereses').volverAlMapa()
+  assert.equal(app.navigations.at(-1), appPaths.student.exploration)
+})

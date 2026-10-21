@@ -57,3 +57,4 @@
   - Pruebas adaptadas con aprobación del usuario: las de escenario (`test_ruta_corta`, `soporte_escenarios_ruta`), `test_bloqueo_actividades`, `test_consultas_dominio`, `test_exportar_fixtures_front`, `test_eventos_motor` y `test_semilla_ruta` (42 reglas y 47 condiciones).
   - En el front, `servidor-adaptadores` (completar `t-inicio` abre «Punto de partida»), `servidor-mapa` y `servidor-partida`; esta última abre `t-partida` con `t-inicio` completada.
   - Los fixtures se regeneraron.
+- **«Volver al mapa» del cierre (corrección).** En api lleva al Camino si la actividad es de un bloque MISIONES_CAMPO y a la Ciudad si no. Antes iba siempre a la Ciudad, y con la Ciudad cerrada se abría la ayuda de Lumi. Local no cambia.
