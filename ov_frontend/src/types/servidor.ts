@@ -8,6 +8,9 @@ export type TipoObjetivo =
   | 'CONVERSACIONES'
   | 'TESTIMONIO'
   | 'PREGUNTA_DIARIO'
+  | 'SECCION'
+  | 'SECCION_PLAN'
+  | 'CONVERSACION'
 export type EstadoActividad = 'BLOQUEADA' | 'DISPONIBLE' | 'EN_CURSO' | 'COMPLETADA'
 export type EstadoDisponibilidad = 'DISPONIBLE' | 'BLOQUEADA'
 export type RolCuenta = 'ESTUDIANTE' | 'APODERADO' | 'ORIENTADORA'
@@ -82,12 +85,27 @@ export type DesbloqueoLegible = {
   fecha_hora: string
   visto: boolean
 }
+// app/schemas/diario.py
+export type EntradaDesbloqueada = { codigo: string; nombre: string; personalizada: boolean; texto: string | null }
 export type RespuestaAccion = {
   eventos_registrados: { tipo: TipoEventoUso; referencia: string | null; fecha_hora: string }[]
   nuevos_desbloqueos: DesbloqueoNuevo[]
+  entradas_desbloqueadas?: EntradaDesbloqueada[]
 }
-export type RespuestaCompletarActividad = RespuestaAccion & {
-  resultados_generados: { instrumento: string; aplicacion: string }[]
+export type RespuestaCompletarActividad = RespuestaAccion
+// app/schemas/motor.py
+export type MotivoBloqueo = {
+  regla: string
+  mensaje: string
+  condiciones_faltantes: ProgresoCondicion[]
+  evaluador_especial?: ResultadoEvaluador | null
+}
+// app/schemas/secciones.py
+export type SeccionEstado = {
+  codigo: string
+  nombre: string
+  estado: EstadoDisponibilidad
+  bloqueo: MotivoBloqueo[] | null
 }
 export type ProgresoObjetivo = {
   objetivo: { tipo: TipoObjetivo; codigo: string }
@@ -148,9 +166,12 @@ export type DimensionResultado = {
   codigo: string
   nombre: string
   descripcion: string
-  puntaje: number
-  puntaje_maximo: number
-  porcentaje: number
+  // En COMPARACION los números llegan en null (B07).
+  puntaje: number | null
+  puntaje_maximo: number | null
+  porcentaje: number | null
+  zona?: 'FUERTE' | 'EN_CAMINO' | 'POR_TRABAJAR' | null
+  tematica?: string | null
 }
 export type CoincidenciaPublica = {
   posicion: number
@@ -159,12 +180,14 @@ export type CoincidenciaPublica = {
   titulo: string
   correlacion: number
   ajuste: 'BEST_FIT' | 'GREAT_FIT' | 'GOOD_FIT'
+  es_favorita: boolean
 }
 export type CarreraRecomendada = {
   codigo: string
   nombre: string
   familia: string
   via: CoincidenciaPublica[]
+  es_favorita: boolean
 }
 export type ResultadoPublico = {
   instrumento: string
@@ -180,14 +203,19 @@ export type ResultadoPublico = {
 
 export type ResumenCuenta = { cuenta: CuentaResumen; nivel_actual: NivelActual | null }
 export type ActividadCuenta = ActividadEstado & {
-  tipo: 'INFORMATIVA' | 'REGISTRO' | 'CUESTIONARIO' | 'CASO'
+  tipo: 'INFORMATIVA' | 'REGISTRO' | 'CUESTIONARIO' | 'CASO' | 'BATALLA'
   orden: number
   contenido: string
   visibilidad: 'SIEMPRE' | 'AL_DESBLOQUEAR'
   visible: boolean
+  requerida: boolean
+  duracion_estimada_min: number | null
+  descripcion: string | null
+  bloqueo: MotivoBloqueo[] | null
 }
 export type BloqueActividades = Omit<BloqueEstado, 'actividades'> & {
   numero: number
+  bloqueo: MotivoBloqueo[] | null
   actividades: ActividadCuenta[]
 }
 export type NivelEstado = NivelActual & { estado: 'BLOQUEADO' | 'OBTENIDO' }

@@ -1,0 +1,23 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-lee-cuestionario",
+  "tipo": "encuentro",
+  "titulo": "Lo que respondí",
+  "subtitulo": "Contenido pendiente de su lote F",
+  "bloque": 2,
+  "orden": 6,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El camino",
+  "duracionEstimadaMin": 5,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "mapa": {
+    "x": 480,
+    "y": 530,
+    "etiqueta": "Informativa · 5 min",
+    "icono": "informativa"
+  }
+}

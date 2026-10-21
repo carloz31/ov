@@ -1,0 +1,30 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-opcional",
+  "tipo": "encuentro",
+  "titulo": "Actividad opcional",
+  "subtitulo": "Informativa opcional de prueba",
+  "bloque": 2,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El camino",
+  "duracionEstimadaMin": 5,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-opcional-1",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esta actividad es opcional: no cuenta para cerrar el tramo."
+    }
+  ],
+  "mapa": {
+    "x": 590,
+    "y": 200,
+    "etiqueta": "Informativa · 5 min",
+    "icono": "informativa"
+  }
+}

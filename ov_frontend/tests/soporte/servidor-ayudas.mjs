@@ -278,8 +278,7 @@ export function elementos(tree, predicate) {
   visit(tree)
   return encontrados
 }
-export function servidorInicial(app) {
-  const inicial = escenarioServidor('inicial')
+export function servidorInicial(app, inicial = escenarioRuta('inicial')) {
   app.fetch((request) => {
     if (request.url === '/api/acciones/ingresar')
       return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
@@ -306,6 +305,17 @@ export function escenarioServidor(etapa) {
     bloques: jsonServidor('actividades-' + etapa),
     fichas: jsonServidor('fichas-' + etapa),
     ...logros,
+  }
+}
+// F00: escenario de la ruta mínima (ruta-*). Las actividades tienen etapas inicial, t1, t2 y ciudad;
+// fichas y logros, inicial y final.
+export function escenarioRuta(etapa) {
+  const final = etapa === 'inicial' ? 'inicial' : 'final'
+  return {
+    ...jsonServidor('ruta/ruta-resumen-inicial'),
+    bloques: jsonServidor('ruta/ruta-actividades-' + etapa),
+    fichas: jsonServidor('ruta/ruta-fichas-' + final),
+    ...jsonServidor('ruta/ruta-logros-' + final),
   }
 }
 export const esConsultaDominio = (r) => /\/(resumen|actividades|fichas|logros)$/.test(r.url)

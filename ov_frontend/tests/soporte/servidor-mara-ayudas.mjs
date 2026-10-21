@@ -58,7 +58,7 @@ export async function iniciarMara({ cantidad = 0, completada = false, resultado 
     }
     if (req.url.endsWith('/completar-actividad')) {
       actividad.estado = 'COMPLETADA'
-      return { body: { eventos_registrados: [], nuevos_desbloqueos: [], resultados_generados: [] } }
+      return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
     }
     throw Error(`Solicitud no configurada: ${req.url}`)
   }

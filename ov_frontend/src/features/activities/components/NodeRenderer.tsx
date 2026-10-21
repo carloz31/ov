@@ -65,7 +65,6 @@ export function NodeRenderer({
       activity={activity}
       yaCompletada={yaCompletada}
       desbloqueosServidor={cierreServidor?.nuevos_desbloqueos}
-      resultadosGenerados={cierreServidor?.resultados_generados}
     />
   ) : matrix ? (
     <MatrixNode

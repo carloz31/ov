@@ -1,0 +1,23 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-contraste",
+  "tipo": "registro",
+  "titulo": "Contraste",
+  "subtitulo": "Contenido pendiente de su lote F",
+  "bloque": 4,
+  "orden": 4,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "La ciudad",
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "mapa": {
+    "x": 900,
+    "y": 450,
+    "etiqueta": "Registro · 10 min",
+    "icono": "registro"
+  }
+}

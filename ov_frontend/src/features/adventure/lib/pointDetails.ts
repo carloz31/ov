@@ -2,6 +2,7 @@ import type { JourneyState } from '@/types/activities'
 import { modoApi } from '@/config/env'
 import { obtenerEstadoServidor } from '@/store/servidor/sesion'
 import { actividadServidor } from '@/lib/servidor/adaptadores'
+import { detallesRuta } from './detallesRuta'
 import { idPuntoContenido } from './puntosServidor'
 import { activityById } from '@/data/activities/content'
 import { getForestFireCaseStatus } from '@/features/cases/lib/forestFireCaseLogic'
@@ -78,6 +79,14 @@ export function getPointDetails(
         activityId: point.specActivityId,
         revision: point.status === 'completed',
       }
+    const bloque = obtenerEstadoServidor().actividades.datos?.find((b) =>
+      b.actividades.some((a) => a.codigo === actividad?.codigo),
+    )
+    const ruta =
+      actividad && idPresentacion === actividad.codigo
+        ? detallesRuta(point, actividad, badge, bloque?.nombre ?? '')
+        : undefined
+    if (ruta) return ruta
     if (point.id === 'city')
       return {
         title: point.title,

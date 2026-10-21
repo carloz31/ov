@@ -21,106 +21,116 @@ function mapa(fixture, desarrollo = true) {
   }
 }
 
-for (const etapa of ['inicial', 'ciudad'])
-  test(`plataforma conserva los puntos actuales: ${etapa}`, () => {
-    const m = mapa(`actividades-${etapa}`)
-    const { fieldMissions, cityCases } = m.app.load('src/data/content/adventure.ts')
-    const { baseRoute } = m.app.load('src/data/activities/reflectionConfig.ts')
-    const { getActivityType, getMissionMeta, getMissionIcon } = m.app.load(
-      'src/features/adventure/lib/caminoPoints.ts',
-    )
-    const { estadoPunto } = m.app.load('src/lib/servidor/adaptadores.ts')
-    const camino = m.camino()
-    assert.equal(camino.length, 10)
-    const actividades = m.bloques[0].actividades
-    for (const [i, [id, codigo]] of baseRoute.entries()) {
-      const mission = fieldMissions.find((a) => a.id === id)
-      assert.deepEqual(copia({ ...camino[i], icon: undefined }), {
-        id,
-        title: mission.title,
-        x: mission.x,
-        y: mission.y,
-        subtitle: `${getActivityType(mission)} · ${getMissionMeta(mission)}`,
-        zone: 'camino',
-        bloque: 1,
-        specActivityId: codigo,
-        status: estadoPunto(actividades.find((a) => a.codigo === codigo)),
-        actionEnabled: true,
-      })
-      assert.equal(camino[i].icon, getMissionIcon(mission))
-    }
-    assert.equal(camino.at(-1).status, etapa === 'ciudad' ? 'available' : 'locked')
-    const ciudad = m.ciudad()
-    const mara = ciudad.find((a) => a.id === 'mara-test'),
-      elena = ciudad.find((a) => a.id === 'elena-result')
-    assert.deepEqual(
-      [mara.title, mara.x, mara.y, mara.subtitle, mara.status, mara.specActivityId],
-      [
-        'Una vuelta por el molino',
-        875,
-        530,
-        'Test · Interacción 1 de 14',
-        etapa === 'ciudad' ? 'available' : 'locked',
-        'act-tip-01',
-      ],
-    )
-    assert.deepEqual(
-      [elena.title, elena.x, elena.y, elena.subtitle, elena.status, elena.actionEnabled],
-      ['Las pistas que hablan de ti', 1030, 610, 'Encuentro con Elena', 'locked', false],
-    )
-    const iconos = m.app.load('src/features/adventure/lib/iconosMapa.ts').iconosMapa
-    assert.equal(mara.icon, iconos.test)
-    assert.equal(elena.icon, iconos.informativa)
-    assert.ok(
-      ciudad
-        .filter((a) => cityCases.some((c) => c.id === a.id))
-        .every((a) => !a.actionEnabled && a.status === 'locked'),
-    )
-  })
+const posiciones = (puntos) => copia(puntos.map((p) => [p.specActivityId ?? p.id, p.bloque, p.status]))
 
-test('piloto dibuja cinco actividades, abre Ciudad al segundo paso y revela Elena al final', () => {
-  for (const etapa of ['inicial', 'ciudad', 'final']) {
-    const m = mapa(`piloto-actividades-${etapa}`, false)
-    const camino = m.camino(),
-      ciudad = m.ciudad()
-    assert.equal(camino.length, 6)
-    assert.equal(camino.at(-1).status, etapa === 'inicial' ? 'locked' : 'available')
-    assert.equal(
-      ciudad.some((a) => a.id === 'elena-result'),
-      etapa === 'final',
-    )
-    assert.equal(
-      ciudad.some((a) => a.specActivityId === 'cdd-sin-contenido'),
-      false,
-    )
-    assert.ok(ciudad.every((a) => !a.additional && !a.revealing && !a.revealQueued))
+test('ruta dibuja T0, T1 y T2 en el orden del servidor, con su tramo y su estado', () => {
+  const m = mapa('ruta/ruta-actividades-inicial')
+  const camino = m.camino()
+  assert.deepEqual(posiciones(camino), [
+    ['t-inicio', 1, 'available'],
+    ['t-partida', 1, 'available'],
+    ['t-cierre-inicio', 1, 'locked'],
+    ['t-expectativas', 2, 'locked'],
+    ['t-valores', 2, 'locked'],
+    ['t-eco', 2, 'locked'],
+    ['t-lee-cuestionario', 2, 'locked'],
+    ['t-batalla', 2, 'locked'],
+    ['t-explorar', 2, 'locked'],
+    ['t-llegada', 3, 'locked'],
+    ['t-comparar', 3, 'locked'],
+    ['t-proyecto', 3, 'locked'],
+    ['city', null, 'locked'],
+  ])
+  const { contenidoPorClave } = m.app.load('src/data/activities/contenidos.ts')
+  const inicio = camino[0]
+  assert.deepEqual([inicio.title, inicio.x, inicio.y, inicio.subtitle], [
+    'Inicio de prueba',
+    contenidoPorClave('t_inicio').mapa.x,
+    contenidoPorClave('t_inicio').mapa.y,
+    'Informativa · 5 min',
+  ])
+  assert.ok(m.ciudad().filter((p) => p.specActivityId?.startsWith('t-')).every((p) => p.status === 'locked'))
+  assert.equal(m.siguiente(camino).id, 't-inicio')
+  assert.ok(m.siguiente(camino).nodos.length > 0)
+})
+
+test('lo que se abre al desbloquear aparece solo cuando el servidor lo hace visible', () => {
+  const visibles = (etapa) => mapa(`ruta/ruta-actividades-${etapa}`).camino().map((p) => p.specActivityId)
+  assert.equal(visibles('t1').includes('t-opcional'), false)
+  assert.equal(visibles('ciudad').includes('t-opcional'), true)
+  assert.equal(visibles('ciudad').includes('t-adicional'), true)
+  const ciudad = mapa('ruta/ruta-actividades-ciudad').ciudad()
+  assert.equal(ciudad.find((p) => p.specActivityId === 't-mision-intereses').status, 'available')
+})
+
+test('el avance del camino cuenta solo las actividades requeridas, como el servidor', () => {
+  for (const [etapa, completadas] of [
+    ['inicial', 0],
+    ['t1', 3],
+    ['ciudad', 4],
+  ]) {
+    const m = mapa(`ruta/ruta-actividades-${etapa}`)
     const progreso = m.app.load('src/lib/servidor/contenidos.ts').progresoBloque(m.bloques)
-    assert.equal(progreso.total, 5)
-    assert.equal(progreso.completadas, etapa === 'inicial' ? 0 : 2)
+    assert.deepEqual([progreso.completadas, progreso.total], [completadas, 7])
     assert.equal(m.general.getZoneProgress('missions', {}, {}).value, progreso.porcentaje)
   }
+  const m = mapa('ruta/ruta-actividades-t2')
+  assert.equal(m.app.load('src/lib/servidor/contenidos.ts').progresoBloque(m.bloques, 'CIUDAD').completadas, 3)
+})
+
+test('un contenido sin nodos ubica el punto, pero no abre actividad', () => {
+  const m = mapa('ruta/ruta-actividades-t1')
+  const { getPointDetails } = m.app.load('src/features/adventure/lib/pointDetails.ts')
+  const { actividadPorContenido } = m.app.load('src/lib/servidor/contenidos.ts')
+  const expectativas = m.camino().find((p) => p.specActivityId === 't-expectativas')
+  assert.equal(expectativas.status, 'available')
+  const detalle = getPointDetails(expectativas, {}, {})
+  assert.deepEqual(
+    [detalle.badge, detalle.actionLabel, detalle.disabled, detalle.meta, detalle.type],
+    ['Contenido pendiente', 'Contenido pendiente', true, '15 min', 'Registro'],
+  )
+  assert.equal(actividadPorContenido(m.bloques, 't-expectativas'), undefined)
+  const inicio = getPointDetails(
+    m.camino().find((p) => p.specActivityId === 't-inicio'),
+    {},
+    {},
+  )
+  assert.deepEqual(
+    [inicio.badge, inicio.actionLabel, inicio.disabled, inicio.type],
+    ['Completada', 'Volver a realizar esta misión', false, 'Informativa'],
+  )
 })
 
 test('una actividad sin contenido avisa una vez por sesión en desarrollo y nunca en producción', () => {
   const original = console.warn,
     avisos = []
   console.warn = (texto) => avisos.push(texto)
+  const sinContenido = (m) => {
+    m.bloques[3].actividades[0].contenido = 'sin_contenido_prueba'
+    m.sesion.publicar({ actividades: { datos: m.bloques, estado: 'listo', error: null } })
+    return m
+  }
   try {
-    const m = mapa('piloto-actividades-ciudad')
+    const m = sinContenido(mapa('ruta/ruta-actividades-ciudad'))
     m.ciudad()
     m.ciudad()
-    assert.deepEqual(avisos, ['Actividad sin contenido: cdd-sin-contenido → sin_contenido_prueba'])
+    assert.deepEqual(avisos, ['Actividad sin contenido: t-mision-intereses → sin_contenido_prueba'])
+    assert.equal(
+      m.ciudad().some((p) => p.specActivityId === 't-mision-intereses'),
+      false,
+    )
     m.sesion.limpiarEstadoServidor()
     m.sesion.publicar({ actividades: { datos: m.bloques, estado: 'listo', error: null } })
     m.ciudad()
     assert.equal(avisos.length, 2)
-    mapa('piloto-actividades-ciudad', false).ciudad()
+    sinContenido(mapa('ruta/ruta-actividades-ciudad', false)).ciudad()
     assert.equal(avisos.length, 2)
   } finally {
     console.warn = original
   }
 })
 
+// Hasta F03, la secuencia de Mara se prueba con los fixtures de plataforma.
 test('orden remoto, códigos nuevos, visibilidad y secuencias dirigen puntos y siguiente actividad', () => {
   const m = mapa('actividades-ciudad')
   const camino = m.bloques[0]
@@ -148,19 +158,20 @@ test('orden remoto, códigos nuevos, visibilidad y secuencias dirigen puntos y s
 })
 
 test('contenido sin posición no se dibuja ni participa del progreso', () => {
-  const m = mapa('actividades-inicial')
+  const m = mapa('ruta/ruta-actividades-inicial')
   m.bloques[0].actividades[0].contenido = 'pad_01_acompanar'
-  assert.equal(m.camino().length, 9)
-  assert.equal(m.app.load('src/lib/servidor/contenidos.ts').progresoBloque(m.bloques).total, 8)
+  assert.equal(m.camino().some((p) => p.specActivityId === 't-inicio'), false)
+  assert.equal(m.app.load('src/lib/servidor/contenidos.ts').progresoBloque(m.bloques).total, 6)
 })
 
-test('resolver por contenido conserva los nodos y textos que ya reproduce plataforma', () => {
-  const m = mapa('actividades-inicial')
-  const { activityById } = m.app.load('src/data/activities/content.ts')
+test('resolver por contenido usa los nodos del JSON de la ruta con el código y el título del servidor', () => {
+  const m = mapa('ruta/ruta-actividades-inicial')
   const { actividadPorContenido } = m.app.load('src/lib/servidor/contenidos.ts')
-  for (const actividad of m.bloques[0].actividades) {
-    const resuelta = actividadPorContenido(m.bloques, actividad.codigo)
-    assert.equal(resuelta.id, actividad.codigo)
-    assert.deepEqual(copia(resuelta.nodos), copia(activityById(actividad.codigo).nodos))
+  const { contenidoPorClave } = m.app.load('src/data/activities/contenidos.ts')
+  for (const codigo of ['t-inicio', 't-partida', 't-cierre-inicio']) {
+    const resuelta = actividadPorContenido(m.bloques, codigo)
+    assert.equal(resuelta.id, codigo)
+    assert.equal(resuelta.titulo, m.bloques[0].actividades.find((a) => a.codigo === codigo).titulo)
+    assert.deepEqual(copia(resuelta.nodos), contenidoPorClave(codigo.replaceAll('-', '_')).nodos)
   }
 })

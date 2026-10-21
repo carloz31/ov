@@ -1,7 +1,8 @@
 import { contenidoPorClave } from '@/data/activities/contenidos.ts'
 import { configureStudentActivities } from '@/data/activities/reflectionConfig'
 import type { Actividad } from '@/types/activities'
-import type { BloqueActividades } from '@/types/servidor'
+import type { BloqueActividades, ItemPublico } from '@/types/servidor'
+import { bloquesZona } from './adaptadores'
 
 export function actividadPorContenido(
   bloques: BloqueActividades[] | null,
@@ -9,19 +10,46 @@ export function actividadPorContenido(
 ): Actividad | undefined {
   const actividad = bloques?.flatMap((b) => b.actividades).find((a) => a.codigo === codigo)
   const contenido = actividad && contenidoPorClave(actividad.contenido)
-  if (!actividad || !contenido) return undefined
+  // Sin nodos, el contenido solo ubica el punto en el mapa: no hay actividad que abrir.
+  if (!actividad || !contenido?.nodos.length) return undefined
   const { mapa: _mapa, ...narrativa } = contenido
   // Conserva los ajustes narrativos que ya usa el reproductor local.
   return { ...configureStudentActivities([narrativa])[0], id: actividad.codigo, titulo: actividad.titulo }
 }
 
+// Cuestionario cuyo contenido trae un nodo `item` con itemId "plantilla": ese nodo se repite
+// con los ítems del servidor, en su orden, entre los diálogos de entrada y de cierre del contenido.
+export const plantillaCuestionario = (contenido: Actividad) =>
+  contenido.nodos.find((n) => n.tipo === 'item' && n.itemId === 'plantilla')
+export function cuestionarioServidor(contenido: Actividad, items: ItemPublico[]): Actividad {
+  return {
+    ...contenido,
+    nodos: contenido.nodos.flatMap((nodo) =>
+      nodo.tipo === 'item' && nodo.itemId === 'plantilla'
+        ? [...items]
+            .sort((a, b) => a.orden - b.orden)
+            .map((item) => ({
+              ...nodo,
+              id: `${contenido.id}-${item.codigo}`,
+              instrumentoId: item.instrumento,
+              itemId: item.codigo,
+            }))
+        : [nodo],
+    ),
+  }
+}
+
 export function progresoBloque(bloques: BloqueActividades[] | null, codigo = 'CAMINO') {
-  const actividades =
-    bloques
-      ?.find((b) => b.codigo === codigo)
-      ?.actividades.filter(
-        (a) => a.visible && a.visibilidad === 'SIEMPRE' && !!contenidoPorClave(a.contenido)?.mapa,
-      ) ?? []
+  // Como el servidor, el avance cuenta solo las actividades requeridas.
+  const actividades = bloquesZona(bloques, codigo)
+    .flatMap((b) => b.actividades)
+    .filter(
+      (a) =>
+        a.visible &&
+        a.visibilidad === 'SIEMPRE' &&
+        a.requerida !== false &&
+        !!contenidoPorClave(a.contenido)?.mapa,
+    )
   const completadas = actividades.filter((a) => a.estado === 'COMPLETADA').length
   return {
     completadas,

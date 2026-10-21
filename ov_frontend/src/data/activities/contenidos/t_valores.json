@@ -1,0 +1,23 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-valores",
+  "tipo": "registro",
+  "titulo": "Mis valores",
+  "subtitulo": "Contenido pendiente de su lote F",
+  "bloque": 2,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El camino",
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "mapa": {
+    "x": 360,
+    "y": 420,
+    "etiqueta": "Registro · 10 min",
+    "icono": "registro"
+  }
+}

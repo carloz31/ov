@@ -1,0 +1,30 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-cierre-inicio",
+  "tipo": "encuentro",
+  "titulo": "Cierre del inicio",
+  "subtitulo": "Informativa de prueba que cierra el inicio",
+  "bloque": 1,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El campamento",
+  "duracionEstimadaMin": 5,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-cierre-inicio-1",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Terminaste el inicio. Ahora se abre el camino."
+    }
+  ],
+  "mapa": {
+    "x": 400,
+    "y": 140,
+    "etiqueta": "Informativa · 5 min",
+    "icono": "informativa"
+  }
+}

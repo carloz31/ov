@@ -1,5 +1,5 @@
 import { esConsultaDominio, respuestaDominio } from '../../soporte/servidor-ayudas.mjs'
-import { cargarAlmacen, escenarioServidor } from '../../soporte/servidor-ayudas.mjs'
+import { cargarAlmacen, escenarioRuta } from '../../soporte/servidor-ayudas.mjs'
 import { loadMapPoints } from '../../soporte/refactor-map.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -12,6 +12,14 @@ import {
   elementos,
 } from '../../soporte/servidor-ayudas.mjs'
 
+// F00: la actividad informativa de la ruta mínima, resuelta por su contenido.
+const actividadRuta = (app, codigo = 't-inicio') =>
+  app
+    .load('src/lib/servidor/contenidos.ts')
+    .actividadPorContenido(
+      app.load('src/store/servidor/sesion.ts').obtenerEstadoServidor().actividades.datos,
+      codigo,
+    )
 async function iniciar(options) {
   const app = fixtureServidor(options)
   servidorInicial(app)
@@ -21,7 +29,7 @@ async function iniciar(options) {
 }
 function ultimoDialogo(app) {
   const store = app.load('src/store/journeyStore.ts')
-  const activity = app.load('src/data/activities/content.ts').activityById('mission-welcome')
+  const activity = actividadRuta(app)
   // DATO DE PRUEBA: comprobación aprobada del contenido real antes del último diálogo.
   store.updateJourney((s) => ({
     ...s,
@@ -100,9 +108,9 @@ test('el ingreso deduplica el montaje, usa la cuenta de estudiante de la sesión
 
 test('el ingreso confirmado conserva sus avisos si falla la consulta y reintenta sin otro POST', async () => {
   const app = fixtureServidor()
-  const recibo = jsonServidor('completar-mission-welcome')
+  const recibo = jsonServidor('ruta/ruta-completar-t-inicio')
   // DATO DE PRUEBA: desbloqueos durante el ingreso y desconexión posterior.
-  const inicial = escenarioServidor('inicial')
+  const inicial = escenarioRuta('inicial')
   let falla = true
   app.fetch((r) => {
     if (r.url === '/api/cuentas') return { body: [inicial.cuenta] }
@@ -117,7 +125,7 @@ test('el ingreso confirmado conserva sus avisos si falla la consulta y reintenta
   const acciones = app.load('src/store/servidor/operaciones.ts')
   const almacen = cargarAlmacen(app)
   assert.equal((await acciones.ingresar()).tipo, 'http')
-  assert.ok(almacen.avisosPendientes().some((a) => a.title === 'La primera chispa'))
+  assert.ok(almacen.avisosPendientes().some((a) => a.title === 'Insignia de prueba'))
   falla = false
   assert.equal((await acciones.ingresar()).tipo, 'ok')
   assert.equal(app.requests.filter((r) => r.url === '/api/acciones/ingresar').length, 1)
@@ -197,24 +205,24 @@ test('move informa $fin una sola vez ante doble clic, espera el refresco y muest
   app.fetch(async (r) => {
     if (r.url === '/api/acciones/completar-actividad') {
       await bloqueo
-      return { body: jsonServidor('completar-mission-welcome') }
+      return { body: jsonServidor('ruta/ruta-completar-t-inicio') }
     }
-    if (esConsultaDominio(r)) return respuestaDominio(r, escenarioServidor('ciudad'))
-    if (r.url.includes('/desbloqueos?')) return { body: jsonServidor('desbloqueos-no-vistos') }
+    if (esConsultaDominio(r)) return respuestaDominio(r, escenarioRuta('t1'))
+    if (r.url.includes('/desbloqueos?')) return { body: jsonServidor('ruta/ruta-desbloqueos-no-vistos') }
     throw Error('Solicitud inesperada')
   })
   const { player, continuar, store } = ultimoDialogo(app)
   continuar()
   continuar()
   assert.equal(app.requests.filter((r) => r.url === '/api/acciones/completar-actividad').length, 1)
-  assert.notEqual(store.getJourneySnapshot().progress['mission-welcome'].estado, 'completada')
+  assert.notEqual(store.getJourneySnapshot().progress['t-inicio'].estado, 'completada')
   assert.equal(elementos(player.render(), (e) => e.type?.name === 'FinishScreen').length, 0)
   liberar()
   await esperar()
   const cierre = elementos(player.render(), (e) => e.type?.name === 'FinishScreen')[0]
   assert.ok(cierre)
-  assert.equal(cierre.props.desbloqueosServidor.length, 3)
-  assert.equal(store.getJourneySnapshot().progress['mission-welcome'].estado, 'completada')
+  assert.equal(cierre.props.desbloqueosServidor.length, 9)
+  assert.equal(store.getJourneySnapshot().progress['t-inicio'].estado, 'completada')
   player.unmount()
 })
 test('un POST confirmado con refresco fallido reintenta solo la consulta', async () => {
@@ -222,8 +230,8 @@ test('un POST confirmado con refresco fallido reintenta solo la consulta', async
   let conConexion = false
   app.fetch((r) => {
     if (r.url === '/api/acciones/completar-actividad')
-      return { body: jsonServidor('completar-mission-welcome') }
-    if (esConsultaDominio(r) && conConexion) return respuestaDominio(r, escenarioServidor('ciudad'))
+      return { body: jsonServidor('ruta/ruta-completar-t-inicio') }
+    if (esConsultaDominio(r) && conConexion) return respuestaDominio(r, escenarioRuta('t1'))
     if (r.url.includes('/desbloqueos?')) return { body: [] }
     throw Error('Sin conexión')
   })
@@ -261,7 +269,7 @@ test('409 y desconexión no completan ni muestran FinishScreen y permiten reinte
     await esperar()
     const tree = player.render()
     assert.equal(elementos(tree, (e) => e.type?.name === 'FinishScreen').length, 0)
-    assert.notEqual(store.getJourneySnapshot().progress['mission-welcome'].estado, 'completada')
+    assert.notEqual(store.getJourneySnapshot().progress['t-inicio'].estado, 'completada')
     assert.ok(elementos(tree, (e) => e.props.role === 'alert').length)
     assert.ok(
       elementos(tree, (e) => e.type === 'button' && String(e.props.children).includes('Reintentar')).length,
@@ -276,17 +284,17 @@ test('repetir una informativa llega nuevamente al servidor sin fabricar logros',
     if (r.url === '/api/acciones/completar-actividad')
       return {
         body: {
-          ...jsonServidor('completar-mission-welcome'),
+          ...jsonServidor('ruta/ruta-completar-t-inicio'),
           nuevos_desbloqueos: completadas++
             ? []
-            : jsonServidor('completar-mission-welcome').nuevos_desbloqueos,
+            : jsonServidor('ruta/ruta-completar-t-inicio').nuevos_desbloqueos,
         },
       }
-    if (esConsultaDominio(r)) return respuestaDominio(r, escenarioServidor('ciudad'))
+    if (esConsultaDominio(r)) return respuestaDominio(r, escenarioRuta('t1'))
     if (r.url.includes('/desbloqueos?')) return { body: [] }
   })
-  assert.equal((await acciones.completarActividad('mission-welcome')).datos.nuevos_desbloqueos.length, 3)
-  assert.equal((await acciones.completarActividad('mission-welcome')).datos.nuevos_desbloqueos.length, 0)
+  assert.equal((await acciones.completarActividad('t-inicio')).datos.nuevos_desbloqueos.length, 9)
+  assert.equal((await acciones.completarActividad('t-inicio')).datos.nuevos_desbloqueos.length, 0)
   assert.equal(completadas, 2)
   const store = app.load('src/store/journeyStore.ts')
   assert.equal(store.getJourneySnapshot().resources.length, 0)
@@ -298,14 +306,15 @@ test('el mapa y los enlaces directos no usan límites de demo ni abren TIP o des
     adventure = app.load('src/store/adventureStore.ts'),
     mapa = loadMapPoints(app.load)
   const puntos = mapa.getCaminoPoints(adventure.useAdventure(), journey.getJourneySnapshot())
-  assert.equal(puntos.length, 10)
+  assert.equal(puntos.length, 13)
   assert.equal(
-    puntos.find((p) => p.specActivityId === 'mission-expectations').subtitle.includes('pendiente'),
+    puntos.find((p) => p.specActivityId === 't-expectativas').subtitle.includes('pendiente'),
     false,
   )
-  assert.equal(mapa.getRecommendedPoint(puntos).specActivityId, 'mission-welcome')
+  assert.equal(mapa.getRecommendedPoint(puntos).specActivityId, 't-inicio')
   const city = mapa.getCiudadPoints(adventure.useAdventure(), journey.getJourneySnapshot())
-  assert.ok(city.filter((p) => p.id !== 'mara-test').every((p) => p.status === 'locked' && !p.actionEnabled))
+  assert.ok(city.every((p) => p.status === 'locked'))
+  assert.ok(city.filter((p) => !p.specActivityId?.startsWith('t-')).every((p) => !p.actionEnabled))
   const { CiudadScreen } = app.load('src/pages/student/CiudadScreen.tsx')
   const mounted = app.mount(CiudadScreen, {}),
     tree = mounted.render()
@@ -327,27 +336,27 @@ test('hidratar sin espacio corrige el estado obsoleto y conserva el borrador y e
     drafts: { prueba: 'DATO DE PRUEBA: texto pendiente' },
     progress: {
       ...s.progress,
-      'mission-welcome': {
-        ...s.progress['mission-welcome'],
+      't-inicio': {
+        ...s.progress['t-inicio'],
         estado: 'completada',
-        nodoActualId: 'welcome-02',
+        nodoActualId: 't-inicio-slide',
       },
     },
   }))
   app.failWrites(true)
   await cargarAlmacen(app).refrescar()
-  assert.equal(store.getJourneySnapshot().progress['mission-welcome'].estado, 'no_iniciada')
-  assert.equal(store.getJourneySnapshot().progress['mission-welcome'].nodoActualId, 'welcome-02')
+  assert.equal(store.getJourneySnapshot().progress['t-inicio'].estado, 'no_iniciada')
+  assert.equal(store.getJourneySnapshot().progress['t-inicio'].nodoActualId, 't-inicio-slide')
   assert.equal(store.getJourneySnapshot().drafts.prueba, 'DATO DE PRUEBA: texto pendiente')
 })
 
 test('leer una ficha y pasar una diapositiva no las obtiene ni finaliza en API', async () => {
   const { app } = await iniciar()
   const store = app.load('src/store/journeyStore.ts')
-  const activity = app.load('src/data/activities/content.ts').activityById('mission-welcome')
+  const activity = actividadRuta(app)
   store.updateJourney((s) => ({
     ...s,
-    progress: { ...s.progress, [activity.id]: { ...s.progress[activity.id], nodoActualId: 'welcome-02' } },
+    progress: { ...s.progress, [activity.id]: { ...s.progress[activity.id], nodoActualId: 't-inicio-slide' } },
   }))
   const player = app.mount(
     app.load('src/features/activities/components/StudentActivityPlayer.tsx').StudentActivityPlayer,
@@ -375,14 +384,14 @@ test('leer una ficha y pasar una diapositiva no las obtiene ni finaliza en API',
 })
 
 test('recuperar un cierre confirmado no crea otro evento y una URL bloqueada no abre el reproductor', async () => {
-  const { app } = await iniciar({ ruta: '/student/missions?actividad=mission-story' })
+  const { app } = await iniciar({ ruta: '/student/missions?actividad=t-cierre-inicio' })
   const screen = app.mount(app.load('src/pages/student/CaminoScreen.tsx').CaminoScreen, {})
   assert.equal(elementos(screen.render(), (e) => e.type?.name === 'StudentActivityPlayer').length, 0)
   assert.equal(app.query.has('actividad'), false)
   screen.unmount()
-  app.fetch((r) => (esConsultaDominio(r) ? respuestaDominio(r, escenarioServidor('ciudad')) : { body: [] }))
+  app.fetch((r) => (esConsultaDominio(r) ? respuestaDominio(r, escenarioRuta('t1')) : { body: [] }))
   await cargarAlmacen(app).refrescar()
-  const activity = app.load('src/data/activities/content.ts').activityById('mission-welcome')
+  const activity = actividadRuta(app)
   const player = app.mount(
     app.load('src/features/activities/components/StudentActivityPlayer.tsx').StudentActivityPlayer,
     { activity, onClose() {} },

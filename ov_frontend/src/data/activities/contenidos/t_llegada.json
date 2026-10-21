@@ -1,0 +1,23 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-llegada",
+  "tipo": "instrumento",
+  "titulo": "Punto de llegada",
+  "subtitulo": "Contenido pendiente de su lote F",
+  "bloque": 3,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El camino",
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "mapa": {
+    "x": 850,
+    "y": 250,
+    "etiqueta": "Test · 10 min",
+    "icono": "test"
+  }
+}

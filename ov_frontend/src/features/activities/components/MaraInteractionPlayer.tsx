@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
-import { actividadPorContenido } from '@/lib/servidor/contenidos'
+import {
+  actividadPorContenido,
+  cuestionarioServidor,
+  plantillaCuestionario,
+} from '@/lib/servidor/contenidos'
 import {
   construirInteraccionMara,
   inicioInteraccionMara,
@@ -22,10 +26,12 @@ export type InstrumentoServidor = {
 export function MaraInteractionPlayer({
   codigo,
   revision = false,
+  imageUrl = '/images/background/afueras.png',
   onClose,
 }: {
   codigo: string
   revision?: boolean
+  imageUrl?: string
   onClose: () => void
 }) {
   const servidor = useEstadoServidor()
@@ -38,15 +44,17 @@ export function MaraInteractionPlayer({
     void (async () => {
       const actividad = actividadServidor(obtenerEstadoServidor().actividades.datos, codigo)
       if (!actividad || actividad.estado === 'BLOQUEADA') return
-      const resultado = await cargarResultadoRiasec()
+      const contenido = actividadPorContenido(obtenerEstadoServidor().actividades.datos, codigo)
+      if (!contenido) return
+      // Solo los encuentros RIASEC dependen de su resultado; los cuestionarios con plantilla, no.
+      const plantilla = !!plantillaCuestionario(contenido)
+      const resultado = plantilla ? { tipo: 'ok' as const, datos: null } : await cargarResultadoRiasec()
       if (!vigente) return
       if (resultado.tipo !== 'ok') {
         setError(mensajeErrorServidor(resultado))
         return
       }
       const revisar = revision || actividad.estado === 'COMPLETADA'
-      const contenido = actividadPorContenido(obtenerEstadoServidor().actividades.datos, codigo)
-      if (!contenido) return
       if (contenido.nodos.some((n) => n.tipo === 'resultado')) {
         if (!resultado.datos) {
           setError('El resultado todavía no está disponible.')
@@ -83,11 +91,9 @@ export function MaraInteractionPlayer({
         return
       }
       const saludo = contenido.nodos.find((n) => n.tipo === 'dialogo')
-      const activity = construirInteraccionMara(
-        actividad,
-        items.datos,
-        saludo?.tipo === 'dialogo' ? saludo.texto : '',
-      )
+      const activity = plantilla
+        ? cuestionarioServidor(contenido, items.datos)
+        : construirInteraccionMara(actividad, items.datos, saludo?.tipo === 'dialogo' ? saludo.texto : '')
       setCarga({
         activity,
         instrumento: {
@@ -132,7 +138,7 @@ export function MaraInteractionPlayer({
       key={`${cuenta}/${codigo}/${revision}`}
       activity={carga.activity}
       instrumentoServidor={carga.instrumento}
-      imageUrl="/images/background/afueras.png"
+      imageUrl={imageUrl}
       onClose={onClose}
     />
   )

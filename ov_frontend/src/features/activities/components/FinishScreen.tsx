@@ -13,15 +13,13 @@ export function FinishScreen({
   onClose,
   yaCompletada = false,
   desbloqueosServidor,
-  resultadosGenerados,
 }: {
   activity: Actividad
   onClose?: () => void
   yaCompletada?: boolean
   desbloqueosServidor?: DesbloqueoNuevo[]
-  resultadosGenerados?: { instrumento: string; aplicacion: string }[]
 }) {
-  const { resumen, abrirLibro, escribirDiario, volverAlMapa } = useActivityFinish(
+  const { resumen, escribirDiario, volverAlMapa } = useActivityFinish(
     activity,
     desbloqueosServidor,
     yaCompletada,
@@ -48,15 +46,6 @@ export function FinishScreen({
               orientación las prepare.
             </p>
           )}
-          {activity.id === 'act-tip-14' &&
-            resultadosGenerados?.some((r) => r.instrumento === 'TEST-RIASEC') && (
-              <section className="sx-finish-elena">
-                <h3>Elena tiene algo que mostrarte</h3>
-                <button className="sx-secondary-button" onClick={abrirLibro}>
-                  Abrir el libro de Helena
-                </button>
-              </section>
-            )}
         </div>
         {mochila && <FinishBackpackSection resumen={resumen} />}
         {resumen.diario.visible && activity.promptDiario && (

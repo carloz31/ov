@@ -141,15 +141,17 @@ export function textoRequisitoInsignia(
   const requisito =
     logros?.insignias.find((i) => i.codigo === codigo)?.requisito ?? 'El requisito sigue pendiente.'
   if (progreso.reglas.some((r) => r.evaluador_especial)) {
-    const completadas =
-      bloques
-        ?.find((b) => b.codigo === 'CAMINO')
-        ?.actividades.filter((a) => a.codigo !== 'mission-welcome' && a.estado === 'COMPLETADA').length ?? 0
+    const completadas = bloquesZona(bloques, 'CAMINO')
+      .flatMap((b) => b.actividades)
+      .filter((a) => a.codigo !== 'mission-welcome' && a.estado === 'COMPLETADA').length
     return `${requisito} · ${Math.min(3, completadas)} de 3 misiones.`
   }
   return requisito
 }
 
+// El Camino son los bloques de MISIONES_CAMPO (T0, T1, T2); 'CAMINO' los nombra juntos.
+export const bloquesZona = (bloques: BloqueActividades[] | null, codigo: string) =>
+  bloques?.filter((b) => (codigo === 'CAMINO' ? b.espacio === 'MISIONES_CAMPO' : b.codigo === codigo)) ?? []
 export const actividadServidor = (
   bloques: BloqueActividades[] | null,
   codigo: string,
@@ -165,12 +167,14 @@ export const estadoPunto = (actividad?: ActividadEstado): 'locked' | 'available'
       ? 'available'
       : 'locked'
 export function siguienteActividad(bloques: BloqueActividades[] | null, bloque = 'CAMINO') {
-  return bloques
-    ?.find((b) => b.codigo === bloque)
-    ?.actividades.find((a) => a.estado === 'DISPONIBLE' || a.estado === 'EN_CURSO')
+  return bloquesZona(bloques, bloque)
+    .flatMap((b) => b.actividades)
+    .find((a) => a.estado === 'DISPONIBLE' || a.estado === 'EN_CURSO')
 }
 export function progresoCamino(bloques: BloqueActividades[] | null) {
-  const actividades = bloques?.find((b) => b.codigo === 'CAMINO')?.actividades ?? []
+  const actividades = bloquesZona(bloques, 'CAMINO')
+    .flatMap((b) => b.actividades)
+    .filter((a) => a.requerida !== false)
   const completadas = actividades.filter((a) => a.estado === 'COMPLETADA').length
   return {
     completadas,
@@ -223,9 +227,6 @@ export function misionesCompletadas(
     .map(([id]) => id)
 }
 export function textoRequisito(progreso: ProgresoObjetivo, bloques: BloqueActividades[] | null) {
-  if (progreso.objetivo.tipo === 'BLOQUE' && progreso.objetivo.codigo === 'CIUDAD') {
-    return `Completa todas las misiones del camino (${progresoCamino(bloques).completadas} de 9).`
-  }
   const condicion = progreso.reglas
     .filter((r) => !r.cumplida)
     .flatMap((r) => r.condiciones)
@@ -344,7 +345,7 @@ export function resultadoHelenaCompleto(r: ResultadoPublico, tipo: TipoResultado
   const adaptar = (d: ResultadoPublico['dimensiones'][number]) => ({
     code: d.codigo,
     name: d.nombre,
-    score: d.porcentaje,
+    score: d.porcentaje ?? 0,
     description: d.descripcion,
   })
   return {

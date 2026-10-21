@@ -11,7 +11,7 @@ const actividades = fixture => jsonServidor(fixture).flatMap(bloque => bloque.ac
 
 test('cada JSON de contenido está registrado explícitamente y cada clave tiene su archivo', () => {
   const archivos = readdirSync(carpeta).sort()
-  assert.equal(archivos.length, 13)
+  assert.equal(archivos.length, 31)
   assert.deepEqual(archivos, Object.keys(contenidos).map(clave => `${clave}.json`).sort())
   const fuente = readFileSync('src/data/activities/contenidos.ts', 'utf8')
   const imports = [...fuente.matchAll(/from '\.\/contenidos\/([^']+)\.json'/g)].map(match => match[1]).sort()

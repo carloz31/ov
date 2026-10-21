@@ -226,7 +226,8 @@ test('entrada bloqueada a Ciudad consulta al abrir y reintenta con el conteo rem
   botonEn(view.render(), 'Reintentar requisito').props.onClick()
   view.render()
   await esperar()
-  assert.match(texto(view.render()), /9 de 9/)
+  // F00: el front ya no arma el conteo del camino; el texto sale del progreso recibido.
+  assert.match(texto(view.render()), /aún está pendiente/)
   view.unmount()
   assert.equal(f.app.requests.filter((r) => r.method === 'POST').length, 0)
 })

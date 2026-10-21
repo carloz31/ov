@@ -105,7 +105,7 @@ export function useInstrumentResponses({
                 )
                 setRespuestasApi({ ...respuestasConfirmadas.current })
               }
-              await cargarResultadoRiasec()
+              if (instrumentoServidor.items[0]?.instrumento === 'TEST-RIASEC') await cargarResultadoRiasec()
               if (!montado.current) return
             }
             setErrorServidor(textoBloqueo(respuesta.detalle, obtenerEstadoServidor().actividades.datos))

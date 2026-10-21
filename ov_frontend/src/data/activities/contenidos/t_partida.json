@@ -1,0 +1,45 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-partida",
+  "tipo": "instrumento",
+  "titulo": "Punto de partida",
+  "subtitulo": "Cuestionario de partida",
+  "bloque": 1,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El campamento",
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-partida-entrada",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Antes de empezar, cuéntame cómo te sientes hoy frente a tu futuro."
+    },
+    {
+      "id": "t-partida-item",
+      "tipo": "item",
+      "instrumentoId": "TEST-PARTIDA-LLEGADA",
+      "itemId": "plantilla",
+      "hablanteId": "companero",
+      "etiqueta": "Para conocerte mejor:"
+    },
+    {
+      "id": "t-partida-cierre",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Gracias. Volveremos a estas preguntas al final del camino."
+    }
+  ],
+  "mapa": {
+    "x": 260,
+    "y": 260,
+    "etiqueta": "Test · 10 min",
+    "icono": "test"
+  },
+  "presentacion": "narrativa"
+}

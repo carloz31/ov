@@ -1,13 +1,13 @@
 import { esConsultaDominio, respuestaDominio } from '../../soporte/servidor-ayudas.mjs'
-import { cargarAlmacen, escenarioServidor } from '../../soporte/servidor-ayudas.mjs'
+import { cargarAlmacen, escenarioRuta } from '../../soporte/servidor-ayudas.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { fixtureServidor, jsonServidor, esperar, elementos } from '../../soporte/servidor-ayudas.mjs'
 
 async function iniciar() {
   const app = fixtureServidor(),
-    estado = escenarioServidor('inicial')
-  let pendientes = jsonServidor('desbloqueos-no-vistos')
+    estado = escenarioRuta('inicial')
+  let pendientes = jsonServidor('ruta/ruta-desbloqueos-no-vistos')
   const servidor = (r) => {
     if (esConsultaDominio(r)) return respuestaDominio(r, estado)
     if (r.url.includes('/desbloqueos?')) return { body: pendientes }
@@ -42,7 +42,7 @@ function mostrarTodo(f) {
 test('mapea solo los cuatro tipos del servidor y deduplica por regla, tipo y código', async () => {
   const f = await iniciar(),
     adaptadores = f.app.load('src/lib/servidor/adaptadores.ts')
-  const noVistos = jsonServidor('desbloqueos-no-vistos')
+  const noVistos = jsonServidor('ruta/ruta-desbloqueos-no-vistos')
   const avisos = adaptadores.avisosServidor([...noVistos, ...noVistos])
   assert.ok(avisos.some((a) => a.kind === 'ciudad'))
   assert.ok(avisos.some((a) => a.kind === 'nivel'))
@@ -128,16 +128,16 @@ test('POST confirmado y GET fallido se recuperan con consultas sin repetir el ma
 
 test('los nuevos desbloqueos confirmados sobreviven a un refresco fallido', async () => {
   const f = await iniciar(),
-    recibo = jsonServidor('completar-mission-welcome')
+    recibo = jsonServidor('ruta/ruta-completar-t-inicio')
   f.app.fetch((r) =>
     r.url.endsWith('/completar-actividad')
       ? { body: recibo }
       : { status: 500, body: 'DATO DE PRUEBA: consulta fallida' },
   )
-  const respuesta = await f.acciones.completarActividad('mission-welcome')
+  const respuesta = await f.acciones.completarActividad('t-inicio')
   assert.equal(respuesta.tipo, 'guardado_sin_refrescar')
   assert.ok(f.store.obtenerEstadoServidor().desbloqueosAccion.length)
-  assert.ok(f.store.avisosPendientes().some((a) => a.title === 'La primera chispa'))
+  assert.ok(f.store.avisosPendientes().some((a) => a.title === 'Insignia de prueba'))
 })
 
 test('recargar antes del marcado vuelve a presentar el lote; cambiar de cuenta descarta respuestas tardías', async () => {
@@ -154,7 +154,7 @@ test('recargar antes del marcado vuelve a presentar el lote; cambiar de cuenta d
   )
   const consulta = f.store.consultarNoVistos()
   f.store.limpiarEstadoServidor()
-  resolver({ body: jsonServidor('desbloqueos-no-vistos') })
+  resolver({ body: jsonServidor('ruta/ruta-desbloqueos-no-vistos') })
   assert.equal((await consulta).tipo, 'http')
   assert.equal(f.store.avisosPendientes().length, 0)
 })

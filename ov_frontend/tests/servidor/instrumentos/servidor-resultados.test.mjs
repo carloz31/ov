@@ -149,11 +149,9 @@ test('al fallar la consulta del resultado después del POST 14 se reintenta solo
   const tree = Finish({
     activity: { ...f.activity, id: 'act-tip-14' },
     onClose() {},
-    resultadosGenerados: segunda.datos.resultados_generados,
   })
-  assert.match(texto(tree), /Elena tiene algo que mostrarte/)
-  botonEn(tree, 'Abrir el libro').props.onClick()
-  assert.equal(f.app.navigations.at(-1), '/student/profile/helena')
+  // F00: sin resultados_generados el cierre no anuncia el libro; el aviso vuelve con Revelar (F03).
+  assert.doesNotMatch(texto(tree), /Elena tiene algo que mostrarte/)
   assert.equal(
     f.app.requests.some((r) => r.url.includes('marcar-vistos')),
     false,

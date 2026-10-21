@@ -1,0 +1,23 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-explorar",
+  "tipo": "registro",
+  "titulo": "Explorar carreras",
+  "subtitulo": "Contenido pendiente de su lote F",
+  "bloque": 2,
+  "orden": 8,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El camino",
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "mapa": {
+    "x": 800,
+    "y": 450,
+    "etiqueta": "Registro · 10 min",
+    "icono": "registro"
+  }
+}

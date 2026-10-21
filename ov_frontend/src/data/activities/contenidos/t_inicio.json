@@ -1,0 +1,57 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-inicio",
+  "tipo": "encuentro",
+  "titulo": "Inicio",
+  "subtitulo": "Informativa de prueba que abre el camino",
+  "bloque": 1,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El campamento",
+  "duracionEstimadaMin": 5,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-inicio-1",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Bienvenida o bienvenido. Este es el inicio del camino de prueba."
+    },
+    {
+      "id": "t-inicio-slide",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Cómo se recorre el camino",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Avanza",
+              "texto": "Cada punto del mapa es una actividad."
+            },
+            {
+              "titulo": "Revisa",
+              "texto": "Lo bloqueado te dice qué falta para abrirlo."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t-inicio-2",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Al terminar, se abrirán tu diario, el catálogo y tus planes."
+    }
+  ],
+  "mapa": {
+    "x": 130,
+    "y": 140,
+    "etiqueta": "Informativa · 5 min",
+    "icono": "informativa"
+  }
+}

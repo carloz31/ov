@@ -234,7 +234,8 @@ test('la mochila local selecciona el testimonio del enlace y conserva sus candad
   assert.equal(app.requests.length, 0)
 })
 
-test('el cierre API usa solo el recibo y conserva las acciones de diario, libro y mapa', async () => {
+// F00: el aviso del libro dependía de resultados_generados, que el servidor ya no envía (vuelve en F03).
+test('el cierre API usa solo el recibo y conserva las acciones de diario y mapa', async () => {
   const f = await iniciarMara()
   const activity = { ...f.activity, id: 'act-tip-14', promptDiario: '¿Qué descubriste?' }
   const hook = f.app.load('src/features/activities/hooks/useActivityFinish.ts').useActivityFinish
@@ -251,15 +252,16 @@ test('el cierre API usa solo el recibo y conserva las acciones de diario, libro 
   let cerrado = false
   const tree = Finish({
     activity,
-    resultadosGenerados: recibo.resultados_generados,
     onClose() {
       cerrado = true
       assert.equal(f.app.navigations.at(-1), '/student/exploration')
     },
   })
   const botones = elementos(tree, (e) => e.type === 'button')
-  botones.find((b) => String(b.props.children).includes('Abrir el libro')).props.onClick()
-  assert.equal(f.app.navigations.at(-1), '/student/profile/helena')
+  assert.equal(
+    botones.some((b) => String(b.props.children).includes('Abrir el libro')),
+    false,
+  )
   botones.at(-1).props.onClick()
   assert.equal(cerrado, true)
 })

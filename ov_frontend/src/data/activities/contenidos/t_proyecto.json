@@ -1,0 +1,23 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-proyecto",
+  "tipo": "registro",
+  "titulo": "Mi proyecto",
+  "subtitulo": "Contenido pendiente de su lote F",
+  "bloque": 3,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El camino",
+  "duracionEstimadaMin": 15,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "mapa": {
+    "x": 1030,
+    "y": 480,
+    "etiqueta": "Registro · 15 min",
+    "icono": "registro"
+  }
+}

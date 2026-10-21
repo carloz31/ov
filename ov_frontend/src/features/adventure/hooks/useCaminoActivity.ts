@@ -1,9 +1,11 @@
 import { modoApi } from '@/config/env'
 import { activityById } from '@/data/activities/content'
-import { actividadPorContenido } from '@/lib/servidor/contenidos'
+import { actividadPorContenido, plantillaCuestionario } from '@/lib/servidor/contenidos'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 
 export function useCaminoActivity(codigo: string) {
   const servidor = useEstadoServidor()
-  return modoApi ? actividadPorContenido(servidor.actividades.datos, codigo) : activityById(codigo)
+  const activity = modoApi ? actividadPorContenido(servidor.actividades.datos, codigo) : activityById(codigo)
+  // Un cuestionario del servidor se responde con el reproductor de encuentros, como en la ciudad.
+  return { activity, cuestionario: modoApi && !!activity && !!plantillaCuestionario(activity) }
 }

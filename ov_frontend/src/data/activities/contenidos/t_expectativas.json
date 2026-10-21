@@ -1,0 +1,23 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-expectativas",
+  "tipo": "registro",
+  "titulo": "Mis expectativas",
+  "subtitulo": "Contenido pendiente de su lote F",
+  "bloque": 2,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "El camino",
+  "duracionEstimadaMin": 15,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "mapa": {
+    "x": 495,
+    "y": 300,
+    "etiqueta": "Registro · 15 min",
+    "icono": "registro"
+  }
+}

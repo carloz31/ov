@@ -4,7 +4,7 @@ import {
   fixtureServidor,
   servidorInicial,
   cargarAlmacen,
-  escenarioServidor,
+  escenarioRuta,
   esConsultaDominio,
   respuestaDominio,
   jsonServidor,
@@ -35,13 +35,13 @@ const desbloqueos = (...tipos) =>
     tipo_objetivo,
     objetivo: { codigo: 'prueba', nombre: 'DATO DE PRUEBA' },
   }))
-function servidorAccion(app, tipos = [], etapa = 'ciudad') {
-  const escenario = escenarioServidor(etapa)
+function servidorAccion(app, tipos = [], etapa = 't1') {
+  const escenario = escenarioRuta(etapa)
   app.fetch((r) => {
     if (r.url.endsWith('/completar-actividad'))
       return {
         body: {
-          ...jsonServidor('completar-mission-welcome'),
+          ...jsonServidor('ruta/ruta-completar-t-inicio'),
           nuevos_desbloqueos: desbloqueos(...tipos),
         },
       }
@@ -65,7 +65,7 @@ test('ingreso confirma el POST antes de cargar y pide las tres consultas en para
     almacen = cargarAlmacen(app)
   const post = diferida(),
     consultas = new Map(),
-    escenario = escenarioServidor('inicial')
+    escenario = escenarioRuta('inicial')
   app.fetch((r) => {
     if (r.url === '/api/cuentas') return { body: [escenario.cuenta] }
     if (r.method === 'POST') return post.promesa
@@ -120,7 +120,7 @@ test('una sección reutiliza la misma promesa, incluso al publicar cargando, y c
   assert.equal(reentrada, primera)
   await esperar()
   assert.equal(cantidad(app, 'fichas'), 1)
-  pendiente.resolver({ body: jsonServidor('fichas-inicial') })
+  pendiente.resolver({ body: jsonServidor('ruta/ruta-fichas-inicial') })
   assert.equal((await primera).tipo, 'ok')
   const datos = almacen.obtenerEstadoServidor().fichas.datos
   assert.equal((await almacen.asegurarSeccion('fichas')).datos, datos)
@@ -178,7 +178,7 @@ for (const [tipo, vencidas] of [
       const desmontar = montada ? ['fichas', 'logros'].map((n) => almacen.montarSeccion(n)) : []
       const antes = app.requests.length
       servidorAccion(app, [tipo])
-      assert.equal((await acciones.completarActividad('mission-welcome')).tipo, 'ok')
+      assert.equal((await acciones.completarActividad('t-inicio')).tipo, 'ok')
       await esperar()
       const pedidos = app.requests.slice(antes)
       assert.equal(pedidos.filter((r) => r.method === 'POST').length, 1)
@@ -230,13 +230,13 @@ test('invalidar durante una consulta descarta su respuesta y comparte la consult
   almacen.vencerSeccion('fichas')
   const segunda = almacen.asegurarSeccion('fichas')
   await esperar()
-  antigua.resolver({ body: jsonServidor('fichas-inicial') })
+  antigua.resolver({ body: jsonServidor('ruta/ruta-fichas-inicial') })
   await esperar()
   assert.equal(almacen.obtenerEstadoServidor().fichas.datos, null)
-  nueva.resolver({ body: jsonServidor('fichas-ciudad') })
+  nueva.resolver({ body: jsonServidor('ruta/ruta-fichas-final') })
   assert.equal((await primera).tipo, 'ok')
   assert.equal((await segunda).tipo, 'ok')
-  assert.deepEqual(copia(almacen.obtenerEstadoServidor().fichas.datos), jsonServidor('fichas-ciudad'))
+  assert.deepEqual(copia(almacen.obtenerEstadoServidor().fichas.datos), jsonServidor('ruta/ruta-fichas-final'))
   assert.equal(numero, 2)
 })
 
@@ -329,7 +329,7 @@ test('un recurso cerrado sigue montado sin mantener cargas activas de fichas', a
   player.setResourceOpen(false)
   view.render()
   servidorAccion(app, ['FICHA'])
-  await acciones.completarActividad('mission-welcome')
+  await acciones.completarActividad('t-inicio')
   await esperar()
   assert.equal(cantidad(app, 'fichas'), 1)
   assert.equal(almacen.obtenerEstadoServidor().fichas.estado, 'vencido')
