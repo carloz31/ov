@@ -1,4 +1,4 @@
-# DATO DE PRUEBA: usuarios de la ruta mínima (B17). Sirven en modo api (datos/ruta.py) y en modo local del front.
+# DATO DE PRUEBA: usuarios de la ruta mínima. Sirven en modo api (datos/ruta.py) y en modo local del front.
 # Los correos usan example.com, dominio reservado: ningún correo real recibe nada.
 # cuenta | rol | usuario (correo) | contraseña
 est-ana | ESTUDIANTE | ana.estudiante@example.com | Ana2026!
