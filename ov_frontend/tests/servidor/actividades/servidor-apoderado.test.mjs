@@ -738,3 +738,24 @@ test('sin conexión, el hook expone el error y una lista vacía sin usar el cat�
   assert.deepEqual(copia(source.completedIds), [])
   assert.deepEqual([...app.local.keys()], ['ov.acceso.v1'])
 })
+
+// F00: la ruta mínima del apoderado. t_apo_carta no tiene nodos: se lista, pero no se inicia hasta F08.
+test('ruta lista las dos actividades del apoderado y la carta sin nodos no se puede iniciar', () => {
+  const app = fixtureServidor({ cuenta: 'apo-rosa' })
+  const contenidos = app.load('src/lib/servidor/contenidos.ts')
+  const { mensajeBloqueo } = app.load('src/lib/servidor/adaptadores.ts')
+  const inicial = jsonServidor('ruta/ruta-apoderado-actividades-inicial')
+  const lista = contenidos.actividadesApoderado(inicial)
+  assert.deepEqual(copia(lista.actividades.map((a) => a.id)), ['t-apo-1', 't-apo-carta'])
+  assert.deepEqual(copia(lista.sinContenido), [])
+  assert.deepEqual([...contenidos.disponiblesApoderado(inicial)], ['t-apo-1'])
+  assert.equal(mensajeBloqueo(inicial, 't-apo-carta'), 'Completa la primera actividad.')
+  // DATO DE PRUEBA: la carta ya abierta por el servidor tras completar t-apo-1.
+  const abierta = copia(inicial)
+  abierta[0].actividades[0].estado = 'COMPLETADA'
+  abierta[0].actividades[1].estado = 'DISPONIBLE'
+  abierta[0].actividades[1].bloqueo = null
+  // t-apo-1 completada sigue disponible para repasar; la carta abierta, no.
+  assert.deepEqual([...contenidos.disponiblesApoderado(abierta)], ['t-apo-1'])
+  assert.deepEqual(copia(contenidos.completadasApoderado(abierta)), ['t-apo-1'])
+})

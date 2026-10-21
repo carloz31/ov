@@ -26,6 +26,8 @@ import tExplorar from './contenidos/t_explorar.json'
 import tLlegada from './contenidos/t_llegada.json'
 import tComparar from './contenidos/t_comparar.json'
 import tProyecto from './contenidos/t_proyecto.json'
+import tApo1 from './contenidos/t_apo_1.json'
+import tApoCarta from './contenidos/t_apo_carta.json'
 import tMisionIntereses from './contenidos/t_mision_intereses.json'
 import tMisionIntereses2 from './contenidos/t_mision_intereses_2.json'
 import tCaso from './contenidos/t_caso.json'
@@ -60,6 +62,8 @@ export const contenidos: Record<string, ContenidoActividad> = {
   t_llegada: tLlegada,
   t_comparar: tComparar,
   t_proyecto: tProyecto,
+  t_apo_1: tApo1,
+  t_apo_carta: tApoCarta,
   t_mision_intereses: tMisionIntereses,
   t_mision_intereses_2: tMisionIntereses2,
   t_caso: tCaso,

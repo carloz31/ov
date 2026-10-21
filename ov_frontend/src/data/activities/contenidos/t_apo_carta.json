@@ -1,0 +1,17 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-apo-carta",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "Carta para su hijo",
+  "subtitulo": "Contenido pendiente de F08: escritura de la carta",
+  "bloque": 1,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": [],
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "orientacion"
+  ],
+  "nodos": []
+}

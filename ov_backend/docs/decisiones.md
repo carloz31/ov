@@ -25,3 +25,7 @@
 - **Prueba adaptada:** `servidor-mara` busca el reintento en `PantallaCarga`, que reemplaza a «No pudimos abrir el encuentro».
 - **Portal del apoderado.** `PantallaCargaPortal` se muestra solo mientras no hay actividades (carga inicial o su error); las recargas posteriores conservan la vista. `reintentarApoderado` vence las actividades fallidas y repite el ingreso. `PantallaCargaPortal` se conecta en la orientadora en F10, porque hoy su portal no carga nada del servidor.
 - **Nombres reales.** El apoderado usa el nombre de la sesión (`useParentProfile`); el parentesco sigue siendo de demostración hasta F08. Las iniciales del estudiante en el panel salen del nombre de la cuenta (`inicialesViajero`).
+- **Contenidos del apoderado (aprobado por el usuario).**
+  - `t_apo_1.json` es una informativa mínima.
+  - `t_apo_carta.json` no tiene nodos: `disponiblesApoderado` excluye los contenidos sin nodos, así que la carta se muestra con «Bloqueada» (el estado que ya existe para lo no disponible) y no se inicia hasta F08.
+  - `tests/local/actividades/contenidos` pasa a 33 archivos.

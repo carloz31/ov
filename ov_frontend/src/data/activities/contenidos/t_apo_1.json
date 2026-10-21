@@ -1,0 +1,30 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-apo-1",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "Primera actividad del apoderado",
+  "subtitulo": "Informativa de prueba del portal familiar",
+  "bloque": 1,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": [],
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "orientacion"
+  ],
+  "nodos": [
+    {
+      "id": "t-apo-1-01",
+      "tipo": "diapositiva",
+      "etiqueta": "Para empezar",
+      "titulo": "Acompañar el camino",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Actividad de prueba del portal familiar. Al terminarla se abre la carta para su hijo."
+        }
+      ]
+    }
+  ]
+}

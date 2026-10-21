@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-21 · F00 · Carta del apoderado (`t_apo_carta`)
+
+- **Dato:** `t-apo-carta` en `GET /cuentas/{c}/actividades` del apoderado (bloque FAMILIA), con su `bloqueo` mientras falta `t-apo-1`.
+- **Dónde se mostraría:** lista «Mis actividades» del portal y su reproductor; en F08 se completa escribiendo la carta.
+- **Opciones:** conectar la escritura de la carta (B12) en F08; mostrarla como informativa hasta entonces; ocultarla.
+- **Si no se muestra:** F00 la lista con `t_apo_carta.json` sin nodos (`DATO DE PRUEBA`). Bloqueada, la tarjeta dice «Bloqueada» y la entrada por URL muestra el mensaje del servidor. Abierta, el portal la sigue tratando como no disponible y no se puede iniciar: así FAMILIA no se cierra sin la carta.
+- **Estado:** pendiente de F08.
+
 ## 2026-10-19 · B17 · Hijos y salones de la sesión
 
 - **Dato:** `GET /sesion` entrega `hijos` (apoderado: `codigo`, `nombre`, `salon` y `parentesco` de sus vínculos activos) y `salones` (orientadora: `codigo`, `nombre` y `es_principal`). Llegan a `store/accesoStore.ts` (`datosSesion()`), pero ninguna vista los pinta.
