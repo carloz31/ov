@@ -326,7 +326,8 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 
 ### Reglas propias de los lotes F
 
-- **Pantallas antes que código.** El plan de cada lote F lleva una sección **«Pantallas»**: por vista, qué cambia (elementos, textos, componentes que reutiliza) y, si es nueva, un boceto. Lo aprobado en el plan queda autorizado; lo que no esté ahí sigue la regla de `pendientes-interfaz.md`.
+- **Mostrar lo que tiene el backend, con cambios ligeros.** Cada lote F muestra todo lo que el backend ya entrega para su tramo, adaptando ligeramente las vistas actuales y reutilizando sus componentes. No se rediseña: la revisión estética de las pantallas se hace al final, aparte.
+- **Pantallas antes que código.** Si existe `docs/specs/<lote>-pantallas.md` (insumo preparado con el usuario), el plan parte de él y no decide pantallas fuera de él. En todo caso, el plan de cada lote F lleva una sección **«Pantallas»**: por vista, qué cambia (elementos, textos, componentes que reutiliza) y, si es nueva, un boceto. Lo aprobado en el plan queda autorizado; lo que no esté ahí sigue la regla de `pendientes-interfaz.md`.
 - **El backend se puede ajustar, pero declarado.** Si una pantalla necesita un dato que no existe (un campo, una lectura), el plan lo lista en **«Ajustes al backend»**. Si toca el modelo, el lote se marca **M** y sigue `/cambio-modelo` (migración, `ruta`, escenario, fixtures). Nunca dos **M** a la vez, tampoco con B13–B16.
 - **Contenidos de prueba.** Los `t_*.json` son mínimos: lo justo para recorrer la mecánica. El contenido real se carga después con la numeración de la ruta base.
 - **Pruebas.** Cada lote mueve su área de `tests/servidor/` a los `ruta-*` y, si cambia el contrato, regenera los fixtures en la misma tarea. Al cerrar F08 se retiran los fixtures de la raíz.

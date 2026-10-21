@@ -1,0 +1,69 @@
+# F00 · Pantallas (insumo para `/lote F00`)
+
+Decidido por el usuario el 20 oct 2026. El plan de F00 parte de este documento: su sección «Pantallas» lo repite y no agrega otras pantallas. Todo lo que sigue aplica solo en modo `api` (local congelado); en local cada vista queda como hoy.
+
+Criterio general: cambios ligeros sobre las vistas actuales, reutilizando sus componentes y estilos. La revisión estética se hace al final, no en este lote.
+
+## 1. Actividad bloqueada (drawer del mapa y portal del apoderado)
+
+- **Drawer del estudiante** (`ActivityDrawer`): la caja `sx-drawer-requirement` muestra `bloqueo[0].mensaje` de la actividad (o del bloque, si la actividad no trae `bloqueo`), tal cual llega. No se listan `condiciones_faltantes`.
+- Se retira la consulta a `GET /cuentas/{c}/progreso/...` para armar ese texto, y el texto «Consultando el requisito en el servidor…»: el `bloqueo` ya viene en `GET /cuentas/{c}/actividades`.
+- `textoRequisito` deja de construir textos propios en api (incluido «Completa todas las misiones del camino (X de 9)»).
+- **Apoderado:** `ParentActivityCard` conserva la etiqueta «Bloqueada»; `ActivityUnavailable` («Actividad bloqueada») agrega debajo del título el mismo `mensaje`, en un párrafo con el estilo de texto secundario que ya usa la vista.
+
+## 2. Actividad opcional, duración y descripción (drawer y panel)
+
+El drawer conserva todo lo que muestra hoy: insignia de estado, tiempo, título, descripción, tipo de actividad y la entrada de diario sugerida con su enlace. Solo cambia:
+
+- **Opcional:** si `requerida` es `false`, una segunda insignia «Opcional» junto a la de estado, con la misma clase `sx-drawer-badge` (nuevo `data-status="Opcional"` con el color de acento suave). Las misiones adicionales conservan su insignia actual.
+- **Tiempo:** `{duracion_estimada_min} min` del servidor; si viene nulo, el texto actual de `getMissionMeta`.
+- **Descripción:** `descripcion` del servidor; si viene nula, la del JSON de contenido, como hoy.
+- **Lista «Actividades disponibles» del panel:** el subtítulo agrega « · opcional» cuando corresponde.
+- **Avance del tramo** (`BlockSign`, panel y progreso del bloque): cuenta solo las actividades `requerida`, como el servidor.
+- La entrada de diario sugerida no cambia en F00 (se conecta al servidor en F05).
+
+## 3. Sección bloqueada: la explica Lumi
+
+- **Accesos con sección** (`AdventurePanel`): Mi diario (DIARIO), Información (CATALOGO), En familia (FAMILIA), el botón de la señal «Registrar mi señal / Cambiar» (CHECK_IN) y el enlace «Ver mis planes y favoritos» del perfil (PLANES). Su estado sale de `GET /cuentas/{c}/secciones`.
+- **Bloqueada:** el acceso lleva el candado pequeño que ya usa «En familia» (`sx-quick-lock`, texto `sr-only` y `title` con el `mensaje`). Al pulsarlo no navega: abre la ayuda de Lumi con `openGuide(pasos)` (el mismo `LumiDialogue` del botón de ayuda, sin botones nuevos):
+  1. si la vista tiene presentación en `sectionIntros` (p. ej. `journal`, `conversations`), sus pasos;
+  2. un paso final: «Todavía no puedes entrar.» seguido del `mensaje` del servidor.
+- **Entrada directa por URL** a una sección bloqueada: la vista muestra la tarjeta de bloqueo que ya existe en `FamilyConversationsView` (candado, título de la sección, `mensaje` del servidor). En FAMILIA reemplaza el texto actual («…cierre del Bloque 5…»). Diario, catálogo y planes reutilizan esa tarjeta (subirla a `components/student/` si la usan dos dominios).
+- Investigaciones y Recursos no cambian (su sección llega en B13 o no existe).
+
+## 4. Ciudad bloqueada: desde el selector
+
+- Se **quita** el punto «La llave de la ciudad» del mapa del Camino (`caminoPoints`, modo api).
+- **Selector Camino/Ciudad** (`ZoneSwitch`): con la Ciudad bloqueada, pulsar «Ciudad» abre la ayuda de Lumi con `openGuide`: los pasos de `sectionIntros.central` y un paso final «La ciudad todavía no abre sus puertas.» + el `mensaje` del bloque CIUDAD. El tooltip del selector muestra ese mismo `mensaje` (hoy: «Completa el camino para abrir la ciudad»).
+- **Entrada directa a `/student/exploration` con la Ciudad bloqueada:** redirige al Camino y abre la misma ayuda. `CityLocked` deja de usarse en api; su barra «Camino hacia la ciudad» se retira.
+- `guideSteps.missions` dice «Al final del camino está la ciudad…»: se cambia por «En el camino se abre la ciudad, donde podrás elegir tus actividades y ayudar a sus habitantes. Arriba puedes cambiar entre el camino y la ciudad.»
+
+## 5. Pantallas de carga y error
+
+Un componente por familia de portales, en `components/student/` y `components/staff/`, sin lógica de dominio (recibe estado, textos y acciones).
+
+**Estudiante** (estilo de `ZoneTransition`: pantalla completa, fondo de la zona, avatar de Lumi):
+- *Cargando:* título y frase; indicador animado que respeta `prefers-reduced-motion`. Solo aparece si la espera pasa de ~300 ms.
+  - Ingreso a la sesión: «Preparando tu camino» / «Lumi está buscando el mapa…» (reemplaza «Consultando tu camino en el servidor…» de `StudentShell`).
+  - Abrir una actividad (todo reproductor que carga datos del servidor, incluido Mara): «Preparando la actividad» / «Lumi está acomodando todo…» (reemplaza «Preparando el encuentro…»).
+- *Error:* la misma pantalla con «Algo se cruzó en el camino», el texto de `mensajeErrorServidor`, y los botones «Reintentar» (primario) y «Volver al mapa» (en la sesión, en lugar de «Volver al mapa»: «Volver a ingresar»).
+- *Secciones* (diario, catálogo, planes, perfil, familia): la misma pantalla, pero dentro del área de la sección (no tapa el panel).
+
+**Apoderado y orientadora** (sobria, colores del portal, pantalla completa):
+- *Cargando:* ícono de carga, «Cargando» / «Un momento, estamos trayendo tu información.» Al ingresar al portal y en la carga inicial de sus vistas (cierra el pendiente AP-F3 de carga y error: ya no se ve «0 de 0 actividades»).
+- *Error:* «No pudimos cargar la información», `mensajeErrorServidor`, «Reintentar» (primario) y «Volver al inicio».
+
+**Sesión vencida (401):** vuelve al login con el aviso «Tu sesión terminó. Vuelve a ingresar.» (el mensaje del servidor).
+
+## 6. Sin cambio visual
+
+- Nombre del estudiante y del apoderado: el de la sesión, en los lugares donde hoy se muestra uno de demostración (cierra AP-F3 «Nombre del apoderado»).
+- Puntos `t_*` del mapa: posiciones provisionales en el JSON de contenido; se reubican al cargar la ruta real.
+
+## Pendientes que cierra
+
+B01 «Motivo de bloqueo», B01 «Requerida, duración y descripción», B01 «Secciones del perfil», B3 «Texto de la llave», AP-F3 «Carga y error del portal», AP-F3 «Nombre del apoderado». Los demás quedan para su lote.
+
+## Ajustes al backend
+
+Ninguno previsto. Si el plan encuentra que una vista necesita un dato que no llega, se detiene y lo propone.

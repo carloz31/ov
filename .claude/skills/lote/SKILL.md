@@ -24,7 +24,7 @@ El plan es corto y concreto:
 - **Backend:** endpoints (método, ruta, respuesta), servicios y pruebas nuevas.
 - **Datos:** qué entra en `datos/fijos.py` y qué en `datos/ruta.py` (solo lo mínimo para probar la mecánica, marcado `DATO DE PRUEBA`).
 - **Frontend:** solo en los lotes F. En los lotes B no se toca el front: se exportan los fixtures `ruta-*`.
-- **Pantallas (lotes F):** por cada vista que cambia, qué elementos, textos y componentes reutiliza (boceto si es nueva); qué entradas de `ov_frontend/docs/pendientes-interfaz.md` cierra; qué `t_*.json` crea. Lo nuevo solo en modo `api` (local congelado).
+- **Pantallas (lotes F):** si existe `ov_backend/docs/specs/$ARGUMENTS-pantallas.md`, se parte de él y no se deciden pantallas fuera de él. Por cada vista que cambia, qué elementos, textos y componentes reutiliza (boceto si es nueva); qué entradas de `ov_frontend/docs/pendientes-interfaz.md` cierra; qué `t_*.json` crea. Lo nuevo solo en modo `api` (local congelado).
 - **Ajustes al backend (lotes F):** lo que la interfaz necesita y el backend no entrega. Si cambia el modelo, el lote es **M** y sigue `/cambio-modelo`.
 - **Fases**, en orden, cada una cerrable con pruebas en verde.
 - **Preguntas abiertas**, si las hay (máximo 3).
