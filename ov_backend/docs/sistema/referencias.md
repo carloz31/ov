@@ -55,7 +55,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 
 | Ruta | Devuelve |
 |---|---|
-| `/cuentas/{c}/actividades/{a}/referencias` | `{"referencias": [{codigo, tipo, estado, texto?, opciones?, cita?}]}`, ordenadas por código; `cita` solo en PLAN. No exige que la actividad esté disponible. Cuenta que no es de estudiante, actividad inexistente o de otra audiencia: 404. |
+| `/cuentas/{c}/actividades/{a}/referencias` | `{"referencias": [{codigo, tipo, estado, actividad?, texto?, opciones?, cita?}]}`, ordenadas por código; `cita` solo en PLAN. `actividad` (F02) solo en ELECCION y TEXTO, en todo estado: el código de la actividad del ítem fuente, para que el front nombre de dónde sale la cita. No exige que la actividad esté disponible. Cuenta que no es de estudiante, actividad inexistente o de otra audiencia: 404. |
 
 **Aislamiento:** la consulta solo lee datos de `{c}`. Todavía no hay autenticación (llega en B17). Cuando exista, deberá exigir que `{c}` sea la cuenta autenticada, con su prueba.
 

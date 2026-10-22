@@ -167,6 +167,10 @@ def resolver(sesion, cuenta, referencias):
     resueltas = {}
     for referencia in referencias:
         base = dict(codigo=referencia.codigo, tipo=referencia.tipo)
+        if referencia.item_registro_id is not None:
+            # ELECCION y TEXTO: la actividad del ítem fuente, en todo estado (F02: el aviso la nombra).
+            fuente = definiciones.obtener(ItemRegistro, referencia.item_registro_id)
+            base['actividad'] = definiciones.obtener(Actividad, fuente.actividad_id).codigo
         if referencia.tipo in DE_PLANES:
             resueltas[referencia.codigo] = (
                 ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, **planes[referencia.tipo])

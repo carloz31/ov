@@ -49,8 +49,9 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
     'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
     'items-registro-t-valores', 'borrador-t-valores', 'entregar-t-valores-seguimiento', 'registro-t-valores-pendiente',
-    'responder-seguimiento-t-valores', 'continuar-sin-responder-t-valores',
-    'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-contraste',
+    'responder-seguimiento-t-valores', 'continuar-sin-responder-t-valores', 'registro-t-valores-por-ampliar',
+    'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-eco-sin-dato', 'referencias-t-eco-disponible',
+    'referencias-t-contraste',
     'items-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
     'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'preguntas-batalla',
     'resolver-batalla-derrota',
@@ -183,6 +184,15 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         ('t-ref-espera', 'POR_DESARROLLAR'), ('t-ref-rutas', 'DISPONIBLE')]
     assert referencias.referencias[0].texto is None and referencias.referencias[1].opciones
     assert 'clasificacion' not in json.dumps(datos['referencias-t-eco'])
+    # F02: sin entregar, sin dato; ya ampliada, la cita; ELECCION y TEXTO nombran su actividad en todo estado.
+    for nombre, esperados in (('referencias-t-eco-sin-dato', ['SIN_DATO', 'SIN_DATO']),
+                            ('referencias-t-eco-disponible', ['DISPONIBLE', 'DISPONIBLE'])):
+        resueltas = ReferenciasConsultadas.model_validate(datos[nombre]).referencias
+        assert [r.estado for r in resueltas] == esperados
+        assert all(r.actividad == 't-expectativas' for r in resueltas)
+    assert all(r.actividad == 't-expectativas' for r in referencias.referencias)
+    por_ampliar = RegistroConsultado.model_validate(datos['registro-t-valores-por-ampliar'])
+    assert por_ampliar.estado == 'COMPLETADA' and [p.item for p in por_ampliar.items_por_ampliar] == ['t-val-orden']
     contraste = ReferenciasConsultadas.model_validate(datos['referencias-t-contraste'])
     assert [(r.codigo, r.tipo, r.estado) for r in contraste.referencias] == [
         ('t-ref-coincidencias', 'COINCIDENCIAS', 'DISPONIBLE'), ('t-ref-resultado', 'RESULTADO', 'DISPONIBLE')]

@@ -19,6 +19,8 @@ class ReferenciaResuelta(BaseModel):
     opciones: list[OpcionReferida] | None = None
     cita: str | None = None
     """PLAN (B11): el relato del plan A, si lo escribió."""
+    actividad: str | None = None
+    """ELECCION y TEXTO (F02): código de la actividad del ítem fuente, en todo estado."""
 
 
 class ReferenciasConsultadas(BaseModel):

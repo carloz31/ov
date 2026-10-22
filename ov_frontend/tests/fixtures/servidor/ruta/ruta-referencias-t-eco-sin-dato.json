@@ -1,0 +1,16 @@
+{
+  "referencias": [
+    {
+      "actividad": "t-expectativas",
+      "codigo": "t-ref-espera",
+      "estado": "SIN_DATO",
+      "tipo": "TEXTO"
+    },
+    {
+      "actividad": "t-expectativas",
+      "codigo": "t-ref-rutas",
+      "estado": "SIN_DATO",
+      "tipo": "ELECCION"
+    }
+  ]
+}

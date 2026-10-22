@@ -107,6 +107,9 @@ def _registro_con_seguimiento(cliente):
         **accion, 'item': 't-val-orden', 'texto': 'DATO DE PRUEBA: porque sí [vaga]'})
     fixtures['continuar-sin-responder-t-valores'] = _pedir(
         cliente, 'POST', '/acciones/registro/continuar-sin-responder', {**accion, 'item': 't-val-orden'})
+    # F02: la consulta del registro cerrado con un ítem por ampliar.
+    fixtures['registro-t-valores-por-ampliar'] = _pedir(
+        cliente, 'GET', '/cuentas/est-ana/actividades/t-valores/registro')
     return fixtures
 
 
@@ -164,6 +167,8 @@ def _recorrer(cliente):
         'opciones': [{'codigo': 'INSTITUTO'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]})
     fixtures['registro-t-expectativas-borrador'] = _pedir(
         cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
+    # F02: sin entregar, t-eco no tiene qué citar.
+    fixtures['referencias-t-eco-sin-dato'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
     fixtures['entregar-t-expectativas'] = _responder_registro(cliente, 't-expectativas')
     fixtures['registro-t-expectativas-cerrado'] = _pedir(
         cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
@@ -180,6 +185,8 @@ def _recorrer(cliente):
     fixtures['referencias-t-eco'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
     _pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
         **accion_registro, 'item': 't-exp-espera', 'texto': 'DATO DE PRUEBA: esperan que estudie, porque confían en mí'})
+    fixtures['referencias-t-eco-disponible'] = _pedir(
+        cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     # B09: diario. t-inicio dejó la pregunta fija y t-expectativas la personalizada, que se redacta al abrirla.
     diario = {'cuenta': 'est-ana', 'fecha_hora': FECHA}

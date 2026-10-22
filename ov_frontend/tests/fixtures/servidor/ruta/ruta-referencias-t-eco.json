@@ -1,11 +1,13 @@
 {
   "referencias": [
     {
+      "actividad": "t-expectativas",
       "codigo": "t-ref-espera",
       "estado": "POR_DESARROLLAR",
       "tipo": "TEXTO"
     },
     {
+      "actividad": "t-expectativas",
       "codigo": "t-ref-rutas",
       "estado": "DISPONIBLE",
       "opciones": [

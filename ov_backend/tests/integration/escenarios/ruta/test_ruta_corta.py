@@ -188,7 +188,8 @@ def test_hu009_eco_cita_lo_desarrollado_y_elige_por_referencia(cliente):
     pedir(cliente, 'POST', '/acciones/registro/editar',
           {**accion, 'items': [{'item': 't-exp-espera', 'texto': ampliada}]})
     espera = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')['referencias'][0]
-    assert espera == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'DISPONIBLE', 'texto': ampliada}
+    assert espera == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
+                      'texto': ampliada}
 
     eco = {'cuenta': 'est-ana', 'actividad': 't-eco', 'fecha_hora': FECHA}
     texto = 'DATO DE PRUEBA: el oficio, porque quiero empezar a trabajar pronto'

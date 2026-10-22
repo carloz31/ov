@@ -284,6 +284,31 @@ export type RegistroConsultado = {
   items_por_ampliar?: ItemPorAmpliar[] | null
 }
 export type RespuestaRegistroAccion = RegistroConsultado & RespuestaAccion
+export type ItemEdicion = { item: string; texto: string }
+// app/schemas/referencias.py (B05; F02: `actividad` de origen en ELECCION y TEXTO)
+export type TipoReferencia =
+  | 'ELECCION'
+  | 'TEXTO'
+  | 'RESULTADO'
+  | 'COINCIDENCIAS'
+  | 'RESPUESTA_CUESTIONARIO'
+  | 'FAVORITOS'
+  | 'PLANES'
+  | 'PLAN'
+  | 'PASOS_PLAN_A'
+  | 'OPCION_INICIAL'
+export type EstadoReferencia = 'DISPONIBLE' | 'POR_DESARROLLAR' | 'SIN_DATO'
+export type OpcionReferida = { codigo: string; texto: string }
+export type ReferenciaResuelta = {
+  codigo: string
+  tipo: TipoReferencia
+  estado: EstadoReferencia
+  actividad?: string | null
+  texto?: string | null
+  opciones?: OpcionReferida[] | null
+  cita?: string | null
+}
+export type ReferenciasConsultadas = { referencias: ReferenciaResuelta[] }
 // app/schemas/batallas.py, casos.py y testimonios.py (B08; F04)
 export type IntentoBatalla = { victoria: boolean; aciertos: number; preguntas: number; fecha_hora: string }
 export type BatallaCuenta = {

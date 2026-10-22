@@ -74,7 +74,7 @@ def test_sin_respuesta_o_en_borrador_no_hay_dato(cliente):
     guardar(cliente)
     resueltas = referencias(cliente)
     assert {c: r['estado'] for c, r in resueltas.items()} == {'t-ref-espera': 'SIN_DATO', 't-ref-rutas': 'SIN_DATO'}
-    assert all(set(r) == {'codigo', 'tipo', 'estado'} for r in resueltas.values())
+    assert all(set(r) == {'codigo', 'tipo', 'estado', 'actividad'} for r in resueltas.values())
 
 
 # --- TEXTO ----------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ def test_se_cita_la_consolidada_tras_un_seguimiento(cliente):
     pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento',
           {**accion(), 'item': 't-exp-espera', 'texto': AMPLIADO})
     espera = referencias(cliente)['t-ref-espera']
-    assert espera == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'DISPONIBLE',
+    assert espera == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
                       'texto': consolidada(cliente, 't-exp-espera')}
     assert AMPLIADO in espera['texto']
 
@@ -95,7 +95,8 @@ def test_poco_desarrollada_sale_por_desarrollar_y_se_cita_al_ampliarla(cliente):
     assert estados(cliente) == {'t-ref-espera': 'POR_DESARROLLAR', 't-ref-rutas': 'DISPONIBLE'}
     omitir(cliente, 't-exp-espera')
     resueltas = referencias(cliente)
-    assert resueltas['t-ref-espera'] == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'POR_DESARROLLAR'}
+    assert resueltas['t-ref-espera'] == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'POR_DESARROLLAR',
+                                         'actividad': 't-expectativas'}
     # La elección no depende de lo desarrollado de la justificación.
     assert resueltas['t-ref-rutas']['opciones'] == RUTA_ELEGIDA
     editar(cliente, t_exp_espera=AMPLIADO)
@@ -127,7 +128,8 @@ def test_lo_que_quedo_sin_evaluar_por_un_fallo_se_cita(cliente):
     texto = 'DATO DE PRUEBA: una respuesta larga que el evaluador no pudo leer. [falla]'
     entregar(cliente, t_exp_ruta=texto, t_exp_apoyo=texto, t_exp_espera=texto)
     assert referencias(cliente)['t-ref-espera'] == {'codigo': 't-ref-espera', 'tipo': 'TEXTO',
-                                                    'estado': 'DISPONIBLE', 'texto': texto}
+                                                    'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
+                                                    'texto': texto}
 
 
 def test_item_sin_criterios_se_cita_y_su_extension_minima_decide(cliente, aplicacion):
@@ -151,8 +153,25 @@ def test_eleccion_cita_lo_elegido_con_su_texto_y_la_opcion_otra(cliente):
     otra = {'codigo': 'OTRA', 'texto': 'DATO DE PRUEBA: trabajar en el taller familiar'}
     entregar(cliente, opciones={'t-exp-ruta': [{'codigo': 'UNIVERSIDAD'}, otra]})
     assert referencias(cliente)['t-ref-rutas'] == {
-        'codigo': 't-ref-rutas', 'tipo': 'ELECCION', 'estado': 'DISPONIBLE',
+        'codigo': 't-ref-rutas', 'tipo': 'ELECCION', 'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
         'opciones': [{'codigo': 'UNIVERSIDAD', 'texto': 'Estudiar en una universidad'}, otra]}
+
+
+# --- Actividad de origen (F02) -------------------------------------------------------------
+
+def test_eleccion_y_texto_nombran_su_actividad_en_todo_estado(cliente):
+    def actividades():
+        return {c: r.get('actividad') for c, r in referencias(cliente).items()}
+    origen = {'t-ref-espera': 't-expectativas', 't-ref-rutas': 't-expectativas'}
+    assert actividades() == origen  # SIN_DATO
+    entregar(cliente, t_exp_espera='DATO DE PRUEBA [vaga]')
+    assert estados(cliente)['t-ref-espera'] == 'POR_DESARROLLAR'
+    assert actividades() == origen
+
+
+def test_otros_tipos_no_llevan_actividad(cliente):
+    for actividad in ('t-contraste', 't-comparar', 't-proyecto', 't-lee-cuestionario'):
+        assert all('actividad' not in r for r in referencias(cliente, actividad=actividad).values())
 
 
 # --- Aislamiento ----------------------------------------------------------------------------

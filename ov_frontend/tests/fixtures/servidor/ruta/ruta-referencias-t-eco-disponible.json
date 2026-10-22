@@ -1,0 +1,23 @@
+{
+  "referencias": [
+    {
+      "actividad": "t-expectativas",
+      "codigo": "t-ref-espera",
+      "estado": "DISPONIBLE",
+      "texto": "DATO DE PRUEBA: no lo sé [vaga]\n\nDATO DE PRUEBA: esperan que estudie, porque confían en mí",
+      "tipo": "TEXTO"
+    },
+    {
+      "actividad": "t-expectativas",
+      "codigo": "t-ref-rutas",
+      "estado": "DISPONIBLE",
+      "opciones": [
+        {
+          "codigo": "UNIVERSIDAD",
+          "texto": "Estudiar en una universidad"
+        }
+      ],
+      "tipo": "ELECCION"
+    }
+  ]
+}
