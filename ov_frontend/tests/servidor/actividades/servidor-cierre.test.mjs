@@ -217,7 +217,7 @@ test('las secciones usan enlaces semánticos, límites, diario accesible e insig
   assert.match(medallas, /<small>Subiste de nivel<\/small>/)
 })
 
-test('«Se abrió para ti» enlaza cada sección y la zona, y la fila de actividades no tiene enlace', () => {
+test('«Se abrió para ti» enlaza cada sección y la zona; las filas de planes y de actividades no tienen enlace', () => {
   const { app, resumir } = preparar()
   const r = resumir([
     desbloqueo('SECCION', 'CATALOGO', 'Catálogo'),
@@ -244,7 +244,8 @@ test('«Se abrió para ti» enlaza cada sección y la zona, y la fila de activid
     filas[0],
     /<a href="\/student\/catalog\/professions"[^>]*>Catálogo<\/a>, Check-in y <a href="\/student\/profile\/decisions"[^>]*>Planes<\/a>/,
   )
-  assert.match(filas[1], /Nueva sección en tus planes: Por qué.*href="\/student\/profile\/decisions"[^>]*>Ir</)
+  assert.match(filas[1], /Nueva sección en tus planes: Por qué/)
+  assert.doesNotMatch(filas[1], /<a /)
   assert.match(filas[2], /La ciudad te espera.*href="\/student\/exploration"/)
   assert.match(filas[3], /2 actividades nuevas en el mapa/)
   assert.doesNotMatch(filas[3], /<a /)

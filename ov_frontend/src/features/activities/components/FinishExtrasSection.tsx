@@ -19,9 +19,9 @@ const rutasSeccion: Record<string, string> = {
   PLANES: appPaths.student.decisions,
   FAMILIA: appPaths.student.conversations,
 }
-// Las actividades nuevas no llevan enlace: «Volver al mapa» ya cumple esa función.
+// Las actividades nuevas no llevan enlace: «Volver al mapa» ya cumple esa función. La sección de
+// planes tampoco: el usuario la quiere como fila informativa.
 function enlace(e: ExtraCierre) {
-  if (e.tipo === 'SECCION_PLAN') return appPaths.student.decisions
   if (e.tipo === 'BLOQUE') return e.codigo === 'CIUDAD' ? appPaths.student.exploration : appPaths.student.missions
   if (e.tipo === 'CONVERSACIONES') return appPaths.student.conversations
   return undefined
