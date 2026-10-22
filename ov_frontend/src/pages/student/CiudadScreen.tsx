@@ -11,8 +11,18 @@ import { RegistroServidorPlayer } from '@/features/activities/components/Registr
 import { FichasBatalla } from '@/features/activities/components/FichasBatalla'
 import '@/styles/student/journey.css'
 export function CiudadScreen() {
-  const { adventure, journey, params, setParams, interaccion, challenge, desafioServidor, activity, registro } =
-    useCityAccess()
+  const {
+    adventure,
+    journey,
+    params,
+    setParams,
+    interaccion,
+    challenge,
+    desafioServidor,
+    activity,
+    registro,
+    revision,
+  } = useCityAccess()
   if (interaccion)
     return (
       <div className="sx-player-host">
@@ -51,6 +61,7 @@ export function CiudadScreen() {
           activity={activity}
           imageUrl="/images/background/afueras.png"
           direct={params.get('modo') === 'directa'}
+          edit={revision}
           onClose={() => setParams({})}
         />
       </div>

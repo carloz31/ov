@@ -73,11 +73,11 @@ test('con perfil plano o tras el reinicio, t-contraste se abre sin cita', async 
   }
 })
 
-async function abrirLectura(referencias) {
+async function abrirLectura(referencias, { edit, completada } = {}) {
   const app = fixtureServidor(),
     estado = escenarioRuta('t1')
   const lee = estado.bloques.flatMap((b) => b.actividades).find((a) => a.codigo === 't-lee-cuestionario')
-  Object.assign(lee, { estado: 'DISPONIBLE', visible: true, bloqueo: null })
+  Object.assign(lee, { estado: completada ? 'COMPLETADA' : 'DISPONIBLE', visible: true, bloqueo: null })
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
     if (req.url.includes('/desbloqueos?')) return { body: [] }
@@ -90,12 +90,14 @@ async function abrirLectura(referencias) {
   const { conEcoEncuentro, actividadPorContenido } = app.load('src/lib/servidor/contenidos.ts')
   assert.ok(conEcoEncuentro(actividadPorContenido(estado.bloques, 't-lee-cuestionario')))
   const Cargador = app.load('src/features/activities/components/EncuentroServidorPlayer.tsx').EncuentroServidorPlayer
-  const cargador = app.mount(Cargador, { codigo: 't-lee-cuestionario', onClose() {} })
+  const cargador = app.mount(Cargador, { codigo: 't-lee-cuestionario', edit, onClose() {} })
   cargador.render()
   await esperar()
   const hijo = elementos(cargador.render(), (e) => e.type?.name === 'StudentActivityPlayer')[0]
   assert.ok(hijo, 'el cargador abre el reproductor')
-  return { app, actividad: hijo.props.activity }
+  // El arnés comparte los hooks entre montajes: el cargador se desmonta antes de montar el reproductor.
+  cargador.unmount()
+  return { app, actividad: hijo.props.activity, hijo }
 }
 
 test('t-lee-cuestionario pide sus referencias y su diálogo dice la respuesta de la partida', async () => {
@@ -130,4 +132,19 @@ test('en la Ciudad, t-contraste se abre con el reproductor de registros del serv
   const registro = elementos(pantalla.render(), (e) => e.type?.name === 'RegistroServidorPlayer')[0]
   assert.equal(registro?.props.codigo, 't-contraste')
   pantalla.unmount()
+})
+
+test('reintentar t-lee-cuestionario completada la recorre desde el primer diálogo, con «Anterior»', async () => {
+  const { app, hijo } = await abrirLectura(LEE, { edit: true, completada: true })
+  assert.equal(hijo.props.edit, true)
+  const { StudentActivityPlayer } = app.load('src/features/activities/components/StudentActivityPlayer.tsx')
+  const player = app.mount(StudentActivityPlayer, hijo.props)
+  const caja = () => elementos(player.render(), (e) => e.type?.name === 'DialogueBox')[0]
+  assert.equal(caja().props.text, 'Al empezar el camino respondiste unas preguntas sobre tu futuro.')
+  caja().props.onContinue()
+  await esperar()
+  assert.equal(typeof caja().props.onAnterior, 'function')
+  caja().props.onAnterior()
+  await esperar()
+  assert.equal(caja().props.text, 'Al empezar el camino respondiste unas preguntas sobre tu futuro.')
 })

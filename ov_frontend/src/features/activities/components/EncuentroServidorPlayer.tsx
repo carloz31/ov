@@ -10,10 +10,13 @@ import { PantallaCarga } from '@/components/student/PantallaCarga'
 export function EncuentroServidorPlayer({
   codigo,
   imageUrl,
+  edit = false,
   onClose,
 }: {
   codigo: string
   imageUrl?: string
+  // Al reintentar una completada se recorre desde el principio, con «Anterior» (ajuste de F03).
+  edit?: boolean
   onClose: () => void
 }) {
   const servidor = useEstadoServidor()
@@ -53,5 +56,13 @@ export function EncuentroServidorPlayer({
         volver={{ texto: 'Volver al mapa', onClick: onClose }}
       />
     )
-  return <StudentActivityPlayer key={`${cuenta}/${codigo}`} activity={activity} imageUrl={imageUrl} onClose={onClose} />
+  return (
+    <StudentActivityPlayer
+      key={`${cuenta}/${codigo}`}
+      activity={activity}
+      imageUrl={imageUrl}
+      edit={edit}
+      onClose={onClose}
+    />
+  )
 }

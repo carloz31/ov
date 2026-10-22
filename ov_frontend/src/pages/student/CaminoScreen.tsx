@@ -66,6 +66,7 @@ export function CaminoScreen() {
           key={activity.id}
           codigo={activity.id}
           imageUrl="/images/background/forest.png"
+          edit={params.get('revision') === '1'}
           onClose={() => setParams({})}
         />
       </div>
