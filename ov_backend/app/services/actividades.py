@@ -14,7 +14,8 @@ from app.models import (
 from app.schemas.acciones import (
     CompletarActividadEntrada, ProgresoRespuestas, ReiniciarInstrumentoEntrada,
     ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada, RespuestaAccion,
-    RespuestaItemGuardada, RespuestaItemsGuardados, RespuestaResolverCaso, RespuestaReiniciarInstrumento,
+    RespuestaItemGuardada, RespuestaItemsGuardados, RespuestaResolverBatalla, RespuestaResolverCaso,
+    RespuestaReiniciarInstrumento,
     RespuestaRevelarResultado, ResultadoAnulado, RevelarResultadoEntrada,
 )
 from app.schemas.actividades import ActividadCuenta, BloqueActividades
@@ -289,32 +290,54 @@ def resolver_caso(sesion: Session, entrada: ResolverCasoEntrada) -> RespuestaRes
 
 
 @usar_contexto
-def resolver_batalla(sesion: Session, entrada: ResolverBatallaEntrada) -> RespuestaAccion:
+def resolver_batalla(sesion: Session, entrada: ResolverBatallaEntrada) -> RespuestaResolverBatalla:
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
     actividad = buscar_por_codigo(sesion, Actividad, entrada.actividad)
     exigir_disponible(sesion, cuenta, TipoObjetivo.ACTIVIDAD, actividad)
     if actividad.tipo != TipoActividad.BATALLA:
         raise ErrorAccion("La actividad debe ser de tipo BATALLA")
     respondidas = _respuestas_batalla(sesion, actividad, entrada)
+    victoria, destellos = _recorrer_intento(actividad, [correcta for _, _, correcta in respondidas])
     aciertos, preguntas = sum(correcta for _, _, correcta in respondidas), len(respondidas)
     fecha = fecha_accion(entrada)
     eventos = []
-    # Solo la primera victoria completa y abre el siguiente paso; los intentos posteriores son repaso.
-    if entrada.victoria and not existe_evento(sesion, cuenta, TipoEventoUso.SUPERA_BATALLA, actividad.id):
+    # Solo la primera victoria completa y abre el siguiente paso; los intentos posteriores son práctica.
+    practica = existe_evento(sesion, cuenta, TipoEventoUso.SUPERA_BATALLA, actividad.id)
+    if victoria and not practica:
         progreso, eventos = completar_progreso(sesion, cuenta, actividad)
         eventos.append((TipoEventoUso.SUPERA_BATALLA, actividad.id))
-        if aciertos == preguntas:
+        if destellos == actividad.destellos:
             eventos.append((TipoEventoUso.VENCE_DESAFIO_INTACTO, None))
     else:
         progreso = iniciar_progreso(sesion, cuenta, actividad)
-    resultado = ResultadoBatalla(progreso_id=progreso.id, victoria=entrada.victoria, aciertos=aciertos,
+    resultado = ResultadoBatalla(progreso_id=progreso.id, victoria=victoria, aciertos=aciertos,
                                  preguntas=preguntas, fecha_hora=fecha)
     sesion.add(resultado)
     sesion.flush()
-    sesion.add_all(RespuestaBatalla(resultado_batalla_id=resultado.id, pregunta_batalla_id=pregunta.id,
-                                    opcion=opcion, correcta=correcta)
-                   for pregunta, opcion, correcta in respondidas)
-    return responder_con_eventos(sesion, cuenta, eventos, fecha)
+    # Las respuestas del intento, en una sola escritura.
+    sesion.execute(insert(RespuestaBatalla), [
+        {'resultado_batalla_id': resultado.id, 'pregunta_batalla_id': pregunta.id, 'opcion': opcion,
+         'correcta': correcta}
+        for pregunta, opcion, correcta in respondidas])
+    respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
+    return RespuestaResolverBatalla(**respuesta.campos(), victoria=victoria, practica=practica, aciertos=aciertos,
+                                    preguntas=preguntas, destellos_restantes=destellos)
+
+
+def _recorrer_intento(actividad: Actividad, aciertos: list[bool]) -> tuple[bool, int]:
+    """(victoria, destellos restantes). Cada acierto quita una vida al enemigo y cada error, un destello; el
+    intento debe terminar justo en la última respuesta (422 si no termina o si sobran respuestas)."""
+    vidas, destellos = actividad.vidas_enemigo, actividad.destellos
+    for numero, acierto in enumerate(aciertos, start=1):
+        if acierto:
+            vidas -= 1
+        else:
+            destellos -= 1
+        if vidas == 0 or destellos == 0:
+            if numero < len(aciertos):
+                raise ErrorAccion("Hay respuestas después del final del intento", estado_http=422)
+            return vidas == 0, destellos
+    raise ErrorAccion("El intento no terminó: faltan respuestas", estado_http=422)
 
 
 def _respuestas_batalla(sesion: Session, actividad: Actividad, entrada: ResolverBatallaEntrada):

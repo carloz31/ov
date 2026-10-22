@@ -14,8 +14,7 @@ def ver(cliente, clase, codigo, cuenta='est-ana'):
 
 def vencer(cliente):
     return pedir(cliente, 'POST', '/acciones/resolver-batalla', {'cuenta': 'est-ana', 'actividad': 't-batalla',
-                                                                 'victoria': True,
-                                                                 'respuestas': respuestas_batalla(3, 4)})
+                                                                 'respuestas': respuestas_batalla(True, 1)})
 
 
 def test_sin_resultado_hacen_falta_vistas_de_dos_tipos(cliente):

@@ -2,7 +2,7 @@ import * as apiBatallas from '@/services/api/batallas'
 import * as apiAcciones from '@/services/api/acciones'
 import { consultarCuenta } from './sesion'
 import { accionConRefresco } from './refresco'
-import type { RespuestaAccion, RespuestaBatallaEntrada } from '@/types/servidor'
+import type { RespuestaBatallaEntrada, RespuestaResolverBatalla } from '@/types/servidor'
 
 export function consultarBatallas() {
   return consultarCuenta(apiBatallas.obtenerBatallas)
@@ -11,16 +11,12 @@ export function consultarBatallas() {
 export function consultarPreguntasBatalla(actividad: string) {
   return consultarCuenta((cuenta) => apiBatallas.obtenerPreguntasBatalla(cuenta, actividad))
 }
-// Cada intento se guarda con sus respuestas; el servidor cuenta los aciertos. La primera victoria completa
-// la batalla y trae sus desbloqueos.
+// Cada intento se guarda con sus respuestas; el servidor decide la victoria y la devuelve con los aciertos
+// y los destellos restantes. La primera victoria completa la batalla y trae sus desbloqueos.
 export function resolverBatalla(
   actividad: string,
-  victoria: boolean,
   respuestas: RespuestaBatallaEntrada[],
-  confirmada?: RespuestaAccion,
+  confirmada?: RespuestaResolverBatalla,
 ) {
-  return accionConRefresco(
-    (cuenta) => apiAcciones.resolverBatalla({ cuenta, actividad, victoria, respuestas }),
-    confirmada,
-  )
+  return accionConRefresco((cuenta) => apiAcciones.resolverBatalla({ cuenta, actividad, respuestas }), confirmada)
 }

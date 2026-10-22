@@ -1,9 +1,10 @@
 import { useChallengePlayer } from '@/features/activities/hooks/useChallengePlayer'
-import { BookOpen, Check, LockKeyhole, Star } from 'lucide-react'
+import { LockKeyhole, Star } from 'lucide-react'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { RewardCard } from '@/features/activities/components/RewardCard'
 import { CheckOption } from '@/features/activities/components/CheckOption'
 import { CierreBatalla } from './CierreBatalla'
+import { IntroDesafio } from './IntroDesafio'
 export function ChallengeStage({
   model,
   onClose,
@@ -21,11 +22,10 @@ export function ChallengeStage({
     setBattle,
     setResourcesOpen,
     title,
-    requirements,
-    puedeIniciar,
     muestraRecompensas,
     cierreServidor,
-    etiquetaRepasoAntes,
+    vidasEnemigo,
+    destellos,
     sheets,
     question,
     hit,
@@ -48,14 +48,14 @@ export function ChallengeStage({
             role="progressbar"
             aria-label={`Vida de ${c.nombre}`}
             aria-valuemin={0}
-            aria-valuemax={c.vidasEnemigo}
+            aria-valuemax={vidasEnemigo}
             aria-valuenow={battle.enemyLife}
           >
-            {Array.from({ length: c.vidasEnemigo }, (_, i) => (
+            {Array.from({ length: vidasEnemigo }, (_, i) => (
               <span key={i} data-filled={i < battle.enemyLife} />
             ))}
             <span className="sr-only">
-              {battle.enemyLife} de {c.vidasEnemigo} vidas
+              {battle.enemyLife} de {vidasEnemigo} vidas
             </span>
           </div>
         )}
@@ -75,7 +75,7 @@ export function ChallengeStage({
               stage === 'result' && victory
                 ? undefined
                 : battle
-                  ? 0.4 + (0.6 * battle.enemyLife) / c.vidasEnemigo
+                  ? 0.4 + (0.6 * battle.enemyLife) / vidasEnemigo
                   : 1,
           }}
         />
@@ -86,66 +86,17 @@ export function ChallengeStage({
         )}
       </div>
       {stage === 'intro' ? (
-        <section className="sx-scene-panel sx-check-panel sx-challenge-panel">
-          <LumiMedallion />
-          <h1 ref={title} tabIndex={-1}>
-            {c.titulo}
-          </h1>
-          <p>{c.presentacionEnemigo}</p>
-          <div className="sx-challenge-rules">
-            <span>
-              {c.nombre}: {c.vidasEnemigo} de vida
-            </span>
-            <span>Tú: {c.vidasEstudiante} destellos</span>
-            <span>Cada pregunta: {c.opcionesPorPregunta} opciones</span>
-          </div>
-          <ul>
-            <li>Cada acierto le quita una vida al enemigo.</li>
-            <li>Cada error te quita un destello.</li>
-            <li>Lee con calma. No hay límite de tiempo.</li>
-          </ul>
-          <ul className="sx-challenge-requirements">
-            {requirements.map((r) => (
-              <li key={`${r.tipo}-${r.id}`}>
-                {r.completed ? (
-                  <Check size={18} aria-hidden="true" />
-                ) : (
-                  <LockKeyhole size={18} aria-hidden="true" />
-                )}
-                {r.completed
-                  ? r.tipo === 'ficha'
-                    ? `Habilitado por leer la ficha «${r.titulo}»`
-                    : `Habilitado por completar «${r.titulo}»`
-                  : `Pendiente: ${r.titulo}`}
-              </li>
-            ))}
-          </ul>
-          <div className="sx-player-actions">
-            <button
-              type="button"
-              className="sx-primary-button"
-              disabled={!puedeIniciar}
-              onClick={start}
-            >
-              Enfrentar a {c.nombre}
-            </button>
-            {sheets.length > 0 && (
-              <button type="button" className="sx-secondary-button" onClick={() => setResourcesOpen(true)}>
-                <BookOpen size={18} />
-                {etiquetaRepasoAntes}
-              </button>
-            )}
-          </div>
-        </section>
+        // Sin hooks propios: se llama como función para que su marcado quede en línea, como antes de separarla.
+        IntroDesafio({ model })
       ) : stage === 'battle' && battle && question ? (
         <section className="sx-scene-panel sx-check-panel sx-challenge-panel">
           <div className="sx-battle-question-header">
             <p className="sx-player-eyebrow">PREGUNTA {battle.index + 1}</p>
             <div
               className="sx-battle-sparks"
-              aria-label={`Destellos restantes: ${battle.sparks} de ${c.vidasEstudiante}`}
+              aria-label={`Destellos restantes: ${battle.sparks} de ${destellos}`}
             >
-              {Array.from({ length: c.vidasEstudiante }, (_, i) => (
+              {Array.from({ length: destellos }, (_, i) => (
                 <Star
                   key={`${i}-${battle.answered}`}
                   size={24}
@@ -243,14 +194,14 @@ export function ChallengeStage({
                   </span>
                   <span>Te quedaron {battle.sparks} destellos</span>
                 </div>
-                {muestraRecompensas && !practice.current && battle.sparks === c.vidasEstudiante && c.logroOculto && (
+                {muestraRecompensas && !practice.current && battle.sparks === destellos && c.logroOculto && (
                   <RewardCard kind="badge" title={c.logroOculto.nombre} />
                 )}
                 {muestraRecompensas && !practice.current && (
                   <RewardCard
                     kind={c.recompensa.recursoIds?.length ? 'sheet' : 'object'}
                     title={c.recompensa.titulo}
-                    index={!practice.current && battle.sparks === c.vidasEstudiante && c.logroOculto ? 1 : 0}
+                    index={!practice.current && battle.sparks === destellos && c.logroOculto ? 1 : 0}
                     onOpen={c.recompensa.recursoIds?.length ? () => setResourcesOpen(true) : undefined}
                   />
                 )}
@@ -267,7 +218,7 @@ export function ChallengeStage({
                   {c.nombre} resistió esta vez.
                 </h1>
                 <p>
-                  Le quitaste {battle.hits} de sus {c.vidasEnemigo} vidas. Repasa la ficha y volvamos con más
+                  Le quitaste {battle.hits} de sus {vidasEnemigo} vidas. Repasa la ficha y volvamos con más
                   luz: en el próximo intento habrá preguntas nuevas.
                 </p>
                 <p>No pierdes nada de lo que ya lograste en tu recorrido.</p>

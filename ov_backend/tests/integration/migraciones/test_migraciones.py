@@ -291,11 +291,12 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # `ruta` tiene una pregunta de diario que lee los favoritos. B11: 0017 se detiene antes, porque `ruta` tiene
         # reglas que abren las secciones de la tarjeta de carrera. B12: 0018 se detiene antes, porque `ruta` tiene
         # reglas que habilitan conversaciones. F04b: 0020 se detiene antes, porque `ruta` tiene preguntas de batalla.
-        with pytest.raises(RuntimeError, match='hay preguntas de batalla'):
+        # F04c: 0021 se detiene antes, porque `t-batalla` tiene vidas y destellos configurados.
+        with pytest.raises(RuntimeError, match='hay batallas con vidas o destellos configurados'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0020'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0021'
             for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]

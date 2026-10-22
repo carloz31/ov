@@ -4,7 +4,13 @@ import { catalog } from '@/data/activities/content'
 import { useJourney, updateJourney, useJourneyError } from '@/store/journeyStore'
 import { consultarBatallas, consultarPreguntasBatalla, resolverBatalla } from '@/store/servidor/batallas'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
-import { batallaDesdePreguntas, fichasDeRepaso, ordenFichasRepaso, respuestaBatalla } from '../lib/batallaServidor'
+import {
+  batallaDesdePreguntas,
+  fichasDeRepaso,
+  ordenFichasRepaso,
+  respuestaBatalla,
+  type ConfiguracionBatalla,
+} from '../lib/batallaServidor'
 import {
   answerBattle,
   canStartChallenge,
@@ -13,7 +19,7 @@ import {
   startBattle,
 } from '@/lib/challenges'
 import type { Battle, Challenge } from '@/types/challenges'
-import type { ContenidoEstado, DesbloqueoNuevo, RespuestaBatallaEntrada } from '@/types/servidor'
+import type { ContenidoEstado, RespuestaBatallaEntrada, RespuestaResolverBatalla } from '@/types/servidor'
 // F04: con `servidor`, la batalla del servidor que muestra este desafío: cada intento se envía, la
 // práctica la decide el servidor y se repasan las fichas que la cuenta ya tiene.
 export type DesafioServidor = { actividad: string }
@@ -28,17 +34,27 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
   // F04b: las fichas de la batalla se derivan de sus preguntas; se repasan las que la cuenta ya tiene.
   const [fichasBatalla, setFichasBatalla] = useState<ContenidoEstado[]>([])
   const respuestas = useRef<RespuestaBatallaEntrada[]>([])
-  // El cierre en api: si el intento era práctica (la batalla ya estaba superada) y lo que desbloqueó.
-  const [practicaIntento, setPracticaIntento] = useState(false)
-  const [desbloqueos, setDesbloqueos] = useState<DesbloqueoNuevo[]>([])
+  // F04c: vidas y destellos son de la batalla del servidor; el cierre sale de su respuesta al intento.
+  const [configuracion, setConfiguracion] = useState<ConfiguracionBatalla>()
+  const [errorLectura, setErrorLectura] = useState(false)
+  const [resultado, setResultado] = useState<RespuestaResolverBatalla>()
+  const [enviandoIntento, setEnviandoIntento] = useState(false)
+  const [errorIntento, setErrorIntento] = useState('')
   useEffect(() => {
     if (!conServidor) return
     let vigente = true
     void consultarBatallas().then((respuesta) => {
-      if (!vigente || respuesta.tipo !== 'ok') return
-      const propia = respuesta.datos.find((b) => b.actividad === servidor!.actividad)
-      practice.current = !!propia?.superada
-      setFichasBatalla(propia?.fichas ?? [])
+      if (!vigente) return
+      const propia = respuesta.tipo === 'ok' ? respuesta.datos.find((b) => b.actividad === servidor!.actividad) : undefined
+      if (!propia) {
+        setErrorLectura(true)
+        return setErrorEnvio(
+          respuesta.tipo === 'ok' ? 'No se encontró la batalla en el servidor.' : mensajeErrorServidor(respuesta),
+        )
+      }
+      practice.current = propia.superada
+      setFichasBatalla(propia.fichas)
+      setConfiguracion({ vidasEnemigo: propia.vidas_enemigo, destellos: propia.destellos })
     })
     return () => {
       vigente = false
@@ -52,7 +68,12 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
   const closeButton = useRef<HTMLButtonElement>(null)
   // En api, la disponibilidad ya la decidió el servidor: no se listan los requisitos locales.
   const requirements = conServidor ? [] : challengeRequirements(c, state)
-  const puedeIniciar = conServidor || canStartChallenge(c, state)
+  const puedeIniciar = conServidor ? !!configuracion : canStartChallenge(c, state)
+  const estadoBatalla: 'lista' | 'cargando' | 'error' = !conServidor || configuracion
+    ? 'lista'
+    : errorLectura
+      ? 'error'
+      : 'cargando'
   const disponibles = conServidor
     ? fichasDeRepaso(fichasBatalla, (codigo) => catalog.recursos.some((r) => r.id === codigo)).map((f) => f.codigo)
     : c.requisitos.filter((r) => r.tipo === 'ficha').map((r) => r.id)
@@ -78,11 +99,11 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
       const preguntas = await consultarPreguntasBatalla(servidor!.actividad)
       setEnviando(false)
       if (preguntas.tipo !== 'ok') return setErrorEnvio(mensajeErrorServidor(preguntas))
-      const nueva = batallaDesdePreguntas(c, preguntas.datos)
+      const nueva = batallaDesdePreguntas(configuracion!, preguntas.datos)
       if (!nueva) return setErrorEnvio('La batalla no tiene preguntas suficientes para un intento.')
       respuestas.current = []
-      setDesbloqueos([])
-      setPracticaIntento(practice.current)
+      setResultado(undefined)
+      setErrorIntento('')
       setBattle(nueva)
       setStage('battle')
       return
@@ -98,23 +119,26 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
   async function answer(id: string) {
     if (!battle || battle.selected || enviando) return
     const next = answerBattle(battle, id)
-    if (next.finished && conServidor) {
-      // Cada intento se guarda con sus respuestas, también la práctica; la primera victoria trae sus desbloqueos.
-      const enviadas = [...respuestas.current, respuestaBatalla(battle.questions[battle.index].id, id)]
-      setEnviando(true)
-      setErrorEnvio('')
-      const respuesta = await resolverBatalla(servidor!.actividad, next.enemyLife === 0, enviadas)
-      setEnviando(false)
-      if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar')
-        return setErrorEnvio(mensajeErrorServidor(respuesta))
-      respuestas.current = enviadas
-      setDesbloqueos(respuesta.datos.nuevos_desbloqueos)
-      // Superada, los intentos siguientes son práctica.
-      if (next.enemyLife === 0) practice.current = true
-    } else if (conServidor) {
+    if (conServidor) {
+      // La batalla se anima con el cálculo local; al terminar, el intento se envía con todas sus respuestas.
       respuestas.current = [...respuestas.current, respuestaBatalla(battle.questions[battle.index].id, id)]
+      setBattle(next)
+      if (next.finished) void enviarIntento()
+      return
     } else if (next.finished && !practice.current && !updateJourney((s) => recordBattle(c, next, s))) return
     setBattle(next)
+  }
+  // Envía las respuestas guardadas; «Reintentar» reenvía las mismas, sin repetir la batalla.
+  async function enviarIntento() {
+    setEnviandoIntento(true)
+    setErrorIntento('')
+    const respuesta = await resolverBatalla(servidor!.actividad, respuestas.current)
+    setEnviandoIntento(false)
+    if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar')
+      return setErrorIntento(mensajeErrorServidor(respuesta))
+    setResultado(respuesta.datos)
+    // Superada, los intentos siguientes son práctica.
+    if (respuesta.datos.victoria) practice.current = true
   }
   const responseTitle = hit
     ? `¡Golpe de luz! ${c.nombre} pierde fuerza.`
@@ -141,8 +165,13 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
     muestraRecompensas: !conServidor,
     // F04b (api): cierres propios, repaso con pestañas y salida al mapa de la actividad.
     cierreServidor: conServidor,
-    practicaIntento,
-    desbloqueos,
+    estadoBatalla,
+    vidasEnemigo: conServidor ? (configuracion?.vidasEnemigo ?? 0) : c.vidasEnemigo,
+    destellos: conServidor ? (configuracion?.destellos ?? 0) : c.vidasEstudiante,
+    resultado,
+    enviandoIntento,
+    errorIntento,
+    reintentarIntento: () => void enviarIntento(),
     repasoConPestanas: conServidor,
     etiquetaRepaso: plural ? 'Repasar las fichas' : 'Repasar la ficha',
     etiquetaRepasoAntes: plural ? 'Repasar las fichas antes' : 'Repasar la ficha antes',

@@ -286,7 +286,7 @@ FICHAS = (('t-ficha', 'Ficha de prueba', 'Ficha que otorga t-inicio.', 'ESTUDIAN
           ('t-ficha-apo', 'Ficha del apoderado', 'Ficha que otorga t-apo-1.', 'APODERADO'))
 
 # (código, batalla, ficha, enunciado, opciones, índice de la correcta, explicación). Pool de cada batalla:
-# cada intento toma PREGUNTAS_POR_INTENTO al azar. Las 10 primeras vienen de desafio-rumor del front (F04b);
+# cada intento toma sus preguntas por intento (CONFIGURACION_BATALLAS) al azar. Las 10 primeras vienen de desafio-rumor del front (F04b);
 # las fichas de la batalla se derivan de estas preguntas.
 PREGUNTAS_BATALLA = (
     ('t-batalla-p01', 't-batalla', 't-ficha', '¿Qué convierte una frase en un mito vocacional?',
@@ -343,9 +343,10 @@ PREGUNTAS_BATALLA = (
       'Eliges otra al azar'), 1,
      'Una afirmación general se contrasta con datos actuales antes de decidir.'),
 )
-# Preguntas que salen en cada intento de una BATALLA. Con 5 vidas del enemigo y 3 destellos (desafio-rumor),
-# 7 asegura que todo intento termine; el pool debe tener al menos el doble.
-PREGUNTAS_POR_INTENTO = {'t-batalla': 7}
+# (vidas del enemigo, destellos, preguntas por intento) de cada BATALLA (F04c). Las preguntas por intento
+# deben alcanzar para terminar (vidas + destellos - 1) y el pool debe tener al menos el doble. Las vidas y
+# los destellos de t-batalla son los de desafio-rumor.
+CONFIGURACION_BATALLAS = {'t-batalla': (5, 3, 7)}
 
 # (código, título, descripción, enlace, pista). La pista se muestra mientras el testimonio está bloqueado (B08).
 TESTIMONIOS = (('t-testimonio-1', 'Testimonio de prueba 1', 'Trayectoria de prueba 1.', 'https://example.test/t1',
@@ -544,10 +545,13 @@ def _cargar_estructura(sesion):
     for codigo, bloque, titulo, tipo, puntaje, duracion in ACTIVIDADES:
         ordenes[bloque] = ordenes.get(bloque, 0) + 1
         propiedades = PROPIEDADES.get(codigo, {})
+        if tipo == 'BATALLA' and codigo not in CONFIGURACION_BATALLAS:
+            raise ValueError(f'La batalla {codigo} no tiene vidas, destellos ni preguntas por intento')
         actividades[codigo] = modelos.Actividad(
             codigo=codigo, titulo=titulo, tipo=modelos.TipoActividad(tipo), contenido=contenido(codigo),
             orden=ordenes[bloque], bloque_id=bloques[bloque].id, puntaje_minimo=puntaje,
-            preguntas_por_intento=PREGUNTAS_POR_INTENTO.get(codigo),
+            **dict(zip(('vidas_enemigo', 'destellos', 'preguntas_por_intento'),
+                       CONFIGURACION_BATALLAS.get(codigo, (None, None, None)))),
             duracion_estimada_min=duracion, requerida=propiedades.get('requerida', True),
             visibilidad=modelos.Visibilidad(propiedades.get('visibilidad', 'SIEMPRE')),
             descripcion=DESCRIPCIONES.get(codigo))
@@ -614,8 +618,12 @@ def _cargar_preguntas_batalla(sesion, actividades, fichas):
     for actividad in actividades.values():
         if actividad.tipo != modelos.TipoActividad.BATALLA:
             continue
+        if actividad.preguntas_por_intento < actividad.vidas_enemigo + actividad.destellos - 1:
+            raise ValueError(f'Las {actividad.preguntas_por_intento} preguntas por intento de {actividad.codigo} '
+                             f'no alcanzan para terminar con {actividad.vidas_enemigo} vidas y '
+                             f'{actividad.destellos} destellos')
         pool = sum(1 for pregunta in PREGUNTAS_BATALLA if pregunta[1] == actividad.codigo)
-        if not actividad.preguntas_por_intento or pool < 2 * actividad.preguntas_por_intento:
+        if pool < 2 * actividad.preguntas_por_intento:
             raise ValueError(f'El pool de {actividad.codigo} ({pool}) debe ser al menos el doble de sus '
                              f'preguntas por intento ({actividad.preguntas_por_intento})')
     sesion.add_all(modelos.PreguntaBatalla(

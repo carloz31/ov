@@ -30,18 +30,29 @@ function cierre(cambios = {}) {
   const { CierreBatalla } = app.load('src/features/activities/components/challenges/CierreBatalla.tsx')
   const c = challenges.find((x) => x.id === 'desafio-rumor')
   const llamadas = []
+  const base = {
+    eventos_registrados: [],
+    nuevos_desbloqueos: [],
+    victoria: true,
+    practica: false,
+    aciertos: 5,
+    preguntas: 6,
+    destellos_restantes: 2,
+  }
   const model = {
     c,
-    battle: { questions: [], index: 0, enemyLife: 0, sparks: 2, hits: 5, answered: 6, finished: true },
-    victory: true,
-    practicaIntento: false,
-    desbloqueos: [],
+    enviandoIntento: false,
+    errorIntento: '',
+    reintentarIntento: () => llamadas.push(['reintentar']),
+    vidasEnemigo: 5,
     title: { current: null },
     sheets: ['t-ficha-2', 't-ficha'],
     setResourcesOpen: (v) => llamadas.push(['repaso', v]),
     start: () => llamadas.push(['intentar']),
     etiquetaRepaso: 'Repasar las fichas',
     ...cambios,
+    // F04c: el cierre sale de la respuesta del servidor, no del cálculo local.
+    resultado: cambios.resultado === null ? undefined : { ...base, ...(cambios.resultado ?? {}) },
   }
   return { arbol: CierreBatalla({ model, onClose: () => llamadas.push(['cerrar']) }), llamadas }
 }
@@ -49,7 +60,7 @@ const botones = (arbol) => elementos(arbol, (e) => e.type === 'button')
 
 test('la victoria muestra la espada, sus desbloqueos y «Continuar», sin respuestas correctas', () => {
   const desbloqueos = jsonServidor('ruta/ruta-completar-t-inicio').nuevos_desbloqueos
-  const { arbol, llamadas } = cierre({ desbloqueos })
+  const { arbol, llamadas } = cierre({ resultado: { nuevos_desbloqueos: desbloqueos } })
   const t = texto(arbol)
   assert.ok(t.includes('Desafío superado') && t.includes('¡Disipaste a El Rumor!'))
   assert.ok(t.includes('5 aciertos de 6 preguntas') && t.includes('Te quedaron 2 destellos'))
@@ -64,14 +75,15 @@ test('la victoria muestra la espada, sus desbloqueos y «Continuar», sin respue
 
 test('la práctica tiene el emblema en gris y no muestra desbloqueos', () => {
   const desbloqueos = jsonServidor('ruta/ruta-completar-t-inicio').nuevos_desbloqueos
-  const { arbol } = cierre({ practicaIntento: true, desbloqueos })
+  const { arbol } = cierre({ resultado: { practica: true, nuevos_desbloqueos: desbloqueos } })
   assert.ok(texto(arbol).includes('Práctica completada'))
   assert.equal(elementos(arbol, (e) => String(e.props?.className).includes('is-muted')).length, 1)
   assert.equal(elementos(arbol, (e) => /^Finish/.test(e.type?.name ?? '')).length, 0)
 })
 
 test('la derrota repasa primero y después reintenta; sin fichas, solo reintenta', () => {
-  const { arbol, llamadas } = cierre({ victory: false, battle: { questions: [], index: 0, enemyLife: 2, sparks: 0, hits: 3, answered: 6, finished: true } })
+  const { arbol, llamadas } = cierre({ resultado: { victoria: false, aciertos: 3, preguntas: 6, destellos_restantes: 0 } })
+  assert.ok(texto(arbol).includes('Le quitaste 3 de sus 5 vidas'))
   assert.deepEqual(copia(botones(arbol).map(texto)), ['Repasar las fichas', 'Intentar de nuevo'])
   assert.ok(!texto(arbol).includes('Volver a la ciudad'))
   botones(arbol).forEach((b) => b.props.onClick())
@@ -79,7 +91,7 @@ test('la derrota repasa primero y después reintenta; sin fichas, solo reintenta
   // El emblema es el personaje, intacto.
   const [img] = elementos(arbol, (e) => e.type === 'img')
   assert.ok(img.props.src)
-  const sinFichas = cierre({ victory: false, sheets: [] })
+  const sinFichas = cierre({ resultado: { victoria: false }, sheets: [] })
   const unico = botones(sinFichas.arbol)
   assert.deepEqual(copia(unico.map(texto)), ['Intentar de nuevo'])
   assert.ok(unico[0].props.className.includes('sx-primary-button'))
@@ -99,4 +111,16 @@ test('el drawer y el repaso ofrecen solo las fichas disponibles con contenido', 
   ]
   assert.deepEqual(copia(fichasDeRepaso(mezcla, conContenido).map((f) => f.codigo)), ['t-ficha-2'])
   assert.deepEqual(copia(fichasDeRepaso([], conContenido)), [])
+})
+
+test('mientras se envía el intento, un estado de carga; si falla, el error con «Reintentar»', () => {
+  const enviando = cierre({ resultado: null, enviandoIntento: true })
+  assert.equal(texto(enviando.arbol), 'Guardando tu intento…')
+  assert.equal(elementos(enviando.arbol, (e) => e.props?.role === 'status').length, 1)
+  const fallido = cierre({ resultado: null, errorIntento: 'No se pudo conectar con el servidor. Vuelve a intentarlo.' })
+  assert.equal(elementos(fallido.arbol, (e) => e.props?.role === 'alert').length, 1)
+  const [reintentar] = botones(fallido.arbol)
+  assert.equal(texto(reintentar), 'Reintentar')
+  reintentar.props.onClick()
+  assert.deepEqual(fallido.llamadas, [['reintentar']])
 })

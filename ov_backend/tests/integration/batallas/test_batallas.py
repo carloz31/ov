@@ -1,5 +1,6 @@
 """B08 · HU-017: batallas con reintento; solo la primera victoria abre el siguiente paso. F04b: las preguntas
-salen del pool del servidor y el intento guarda sus respuestas. DATO DE PRUEBA."""
+salen del pool del servidor y el intento guarda sus respuestas. F04c: el servidor decide la victoria con las
+vidas y los destellos de la batalla. DATO DE PRUEBA."""
 
 from collections import Counter
 
@@ -16,9 +17,12 @@ FICHAS = [{'codigo': 't-ficha', 'titulo': 'Ficha de prueba', 'estado': 'DISPONIB
           {'codigo': 't-ficha-2', 'titulo': 'Segunda ficha de prueba', 'estado': 'DISPONIBLE'}]
 
 
-def intento(victoria, aciertos, preguntas, cuenta='est-ana'):
-    return {'cuenta': cuenta, 'actividad': 't-batalla', 'victoria': victoria,
-            'respuestas': respuestas_batalla(aciertos, preguntas)}
+def intento(victoria, otros=0, cuenta='est-ana'):
+    return {'cuenta': cuenta, 'actividad': 't-batalla', 'respuestas': respuestas_batalla(victoria, otros)}
+
+
+def resultado(respuesta):
+    return {clave: respuesta[clave] for clave in ('victoria', 'practica', 'aciertos', 'preguntas', 'destellos_restantes')}
 
 
 def tipos(respuesta):
@@ -32,7 +36,7 @@ def batalla(cliente, cuenta='est-ana'):
 
 def test_hu017_perder_reintentar_y_ganar_una_sola_vez(cliente, aplicacion):
     antes = filas_base(aplicacion)
-    bloqueada = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, 3, 3), 409)
+    bloqueada = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True), 409)
     # T1 todavía está cerrado: manda el mensaje de su bloque.
     assert bloqueada['detail']['mensaje'] == 'Termina el bloque de inicio para abrir el camino.'
     assert filas_base(aplicacion) == antes
@@ -40,11 +44,13 @@ def test_hu017_perder_reintentar_y_ganar_una_sola_vez(cliente, aplicacion):
     avanzar(cliente, 't-cierre-inicio')
     assert batalla(cliente) == {'actividad': 't-batalla', 'titulo': 'Batalla de prueba', 'estado': 'DISPONIBLE',
                                 'intentos': 0, 'superada': False, 'primer_intento': None,
-                                'preguntas_por_intento': 7, 'fichas': FICHAS}
+                                'preguntas_por_intento': 7, 'vidas_enemigo': 5, 'destellos': 3, 'fichas': FICHAS}
 
+    # Un acierto y tres errores: el tercer error agota los destellos.
     perdida = pedir(cliente, 'POST', '/acciones/resolver-batalla',
-                    {**intento(False, 1, 4), 'fecha_hora': '2026-10-08T10:00:00'})
-    assert perdida == {'eventos_registrados': [], 'nuevos_desbloqueos': []}
+                    {**intento(False, 1), 'fecha_hora': '2026-10-08T10:00:00'})
+    assert perdida == {'eventos_registrados': [], 'nuevos_desbloqueos': [], 'victoria': False, 'practica': False,
+                       'aciertos': 1, 'preguntas': 4, 'destellos_restantes': 0}
     fila = batalla(cliente)
     assert (fila['estado'], fila['intentos'], fila['superada']) == ('EN_CURSO', 1, False)
     # Aciertos y preguntas los cuenta el servidor a partir de las respuestas.
@@ -52,13 +58,17 @@ def test_hu017_perder_reintentar_y_ganar_una_sola_vez(cliente, aplicacion):
                                       'fecha_hora': '2026-10-08T10:00:00'}
     pedir(cliente, 'POST', '/acciones/completar-actividad', {'cuenta': 'est-ana', 'actividad': 't-batalla'}, 409)
 
-    ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, 3, 4))
+    ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, 1))
     assert tipos(ganada) == ['COMPLETA_ACTIVIDAD', 'SUPERA_BATALLA']
+    assert resultado(ganada) == {'victoria': True, 'practica': False, 'aciertos': 5, 'preguntas': 6,
+                                 'destellos_restantes': 2}
     # B10: vencer ya no da insignia; t-explorar espera además una vista fuera del perfil.
     assert reglas(ganada) == set()
-    repaso = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, 4, 4))
-    assert repaso == {'eventos_registrados': [], 'nuevos_desbloqueos': []}
-    pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(False, 0, 2))
+    repaso = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True))
+    assert (repaso['eventos_registrados'], repaso['nuevos_desbloqueos']) == ([], [])
+    assert (repaso['victoria'], repaso['practica']) == (True, True)
+    derrota = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(False))
+    assert (derrota['victoria'], derrota['practica'], derrota['preguntas']) == (False, True, 3)
 
     fila = batalla(cliente)
     assert (fila['estado'], fila['intentos'], fila['superada']) == ('COMPLETADA', 4, True)
@@ -67,15 +77,17 @@ def test_hu017_perder_reintentar_y_ganar_una_sola_vez(cliente, aplicacion):
         assert len(sesion.scalars(select(m.ResultadoBatalla)).all()) == 4
         assert sesion.scalar(select(m.ProgresoActividad.estado).join(m.Actividad).where(
             m.Actividad.codigo == 't-batalla')) == m.EstadoProgreso.COMPLETADA
-        # Cada intento guarda sus respuestas: 4 + 4 + 4 + 2, con los aciertos marcados.
+        # Cada intento guarda sus respuestas: 4 + 6 + 5 + 3, con los aciertos marcados.
         guardadas = sesion.scalars(select(m.RespuestaBatalla)).all()
-        assert len(guardadas) == 14 and sum(r.correcta for r in guardadas) == 1 + 3 + 4
+        assert len(guardadas) == 18 and sum(r.correcta for r in guardadas) == 1 + 5 + 5 + 0
 
 
 def test_victoria_intacta_abre_la_insignia_oculta(cliente):
     avanzar(cliente, 't-cierre-inicio')
-    ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, 3, 3))
+    # Cinco aciertos seguidos: vence con todos los destellos.
+    ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True))
     assert tipos(ganada) == ['COMPLETA_ACTIVIDAD', 'SUPERA_BATALLA', 'VENCE_DESAFIO_INTACTO']
+    assert ganada['destellos_restantes'] == 3
     assert reglas(ganada) == {'R-t-ins-oculta'}
     assert batalla(cliente)['primer_intento']['victoria'] is True
 
@@ -83,8 +95,12 @@ def test_victoria_intacta_abre_la_insignia_oculta(cliente):
 def test_entradas_invalidas_no_dejan_filas(cliente, aplicacion):
     avanzar(cliente, 't-cierre-inicio')
     antes = filas_base(aplicacion)
-    base = intento(True, 1, 2)
+    base = intento(True, 1)
     primera = base['respuestas'][0]
+    # El intento debe terminar justo en la última respuesta: ni incompleto ni con respuestas de más.
+    pedir(cliente, 'POST', '/acciones/resolver-batalla', {**base, 'respuestas': base['respuestas'][:-1]}, 422)
+    sexta = {'pregunta': PREGUNTAS_BATALLA[5][0], 'opcion': PREGUNTAS_BATALLA[5][5]}
+    pedir(cliente, 'POST', '/acciones/resolver-batalla', {**base, 'respuestas': respuestas_batalla(True) + [sexta]}, 422)
     pedir(cliente, 'POST', '/acciones/resolver-batalla', {**base, 'respuestas': []}, 422)
     pedir(cliente, 'POST', '/acciones/resolver-batalla', {**base, 'respuestas': [primera, primera]}, 422)
     pedir(cliente, 'POST', '/acciones/resolver-batalla',
@@ -94,7 +110,7 @@ def test_entradas_invalidas_no_dejan_filas(cliente, aplicacion):
     pedir(cliente, 'POST', '/acciones/resolver-batalla', {**base, 'respuestas': [{**primera, 'opcion': -1}]}, 422)
     pedir(cliente, 'POST', '/acciones/resolver-batalla', {**base, 'actividad': 't-inicio'}, 409)
     pedir(cliente, 'POST', '/acciones/resolver-batalla', {**base, 'actividad': 't-nula'}, 404)
-    pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, 1, 1, cuenta='nadie'), 404)
+    pedir(cliente, 'POST', '/acciones/resolver-batalla', intento(True, cuenta='nadie'), 404)
     assert filas_base(aplicacion) == antes
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/batallas') == []
 
@@ -136,7 +152,8 @@ def batallas_extra(sesion, cantidad):
     ficha = buscar(sesion, m.Ficha, 't-ficha')
     for n in range(cantidad):
         actividad = m.Actividad(codigo=f'bat-extra-{n}', titulo='DATO DE PRUEBA', tipo='BATALLA', contenido='prueba',
-                                orden=100 + n, bloque_id=destino.id, requerida=False, preguntas_por_intento=1)
+                                orden=100 + n, bloque_id=destino.id, requerida=False, preguntas_por_intento=1,
+                                vidas_enemigo=1, destellos=1)
         sesion.add(actividad)
         sesion.flush()
         sesion.add(m.PreguntaBatalla(codigo=f'bat-extra-{n}-p1', actividad_id=actividad.id, ficha_id=ficha.id,
@@ -157,7 +174,7 @@ def test_presupuesto_de_consultas_de_batallas(tmp_path, base_aislada):
                           medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/batallas/t-batalla/preguntas')[1].cantidad]
             for victoria in (False, True):
                 cantidades.append(medir(cliente, aplicacion, 'POST', '/acciones/resolver-batalla',
-                                        intento(victoria, 2, 3), limite=14)[1].cantidad)
+                                        intento(victoria, 2), limite=14)[1].cantidad)
             cantidades.append(medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/batallas')[1].cantidad)
             conteos.append(cantidades)
     assert conteos[0] == conteos[1]

@@ -294,6 +294,9 @@ export type BatallaCuenta = {
   superada: boolean
   primer_intento: IntentoBatalla | null
   preguntas_por_intento: number
+  // F04c: vidas del enemigo y destellos del estudiante en cada intento.
+  vidas_enemigo: number
+  destellos: number
   // F04b: las fichas de sus preguntas, en el orden de su primera pregunta.
   fichas: ContenidoEstado[]
 }
@@ -329,11 +332,18 @@ export type TestimonioEstado = {
   descripcion: string | null
   enlace: string | null
 }
+// F04c: las respuestas en el orden en que se dieron; el servidor decide la victoria.
 export type ResolverBatallaEntrada = {
   cuenta: string
   actividad: string
-  victoria: boolean
   respuestas: RespuestaBatallaEntrada[]
+}
+export type RespuestaResolverBatalla = RespuestaAccion & {
+  victoria: boolean
+  practica: boolean
+  aciertos: number
+  preguntas: number
+  destellos_restantes: number
 }
 export type ResolverCasoEntrada = { cuenta: string; actividad: string; puntaje: number; ocupaciones: string[] }
 export type RespuestaResolverCaso = RespuestaAccion & { ocupaciones_nuevas: string[] }

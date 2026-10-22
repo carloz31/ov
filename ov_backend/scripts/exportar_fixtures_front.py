@@ -218,16 +218,18 @@ def _recorrer(cliente):
     preguntas = _pedir(cliente, 'GET', '/cuentas/est-ana/batallas/t-batalla/preguntas')
     fixtures['preguntas-batalla'] = preguntas
 
-    def responder(aciertos, total):
+    def responder(aciertos):
+        # F04c: el intento termina en su última respuesta; el servidor decide la victoria.
         return [{'pregunta': p['codigo'],
-                 'opcion': p['correcta'] if n < aciertos else next(
+                 'opcion': p['correcta'] if acierta else next(
                      o['indice'] for o in p['opciones'] if o['indice'] != p['correcta'])}
-                for n, p in enumerate(preguntas[:total])]
+                for acierta, p in zip(aciertos, preguntas)]
     batalla = {'cuenta': 'est-ana', 'actividad': 't-batalla', 'fecha_hora': FECHA}
+    # Derrota: un acierto y tres errores. Victoria: un error y cinco aciertos.
     fixtures['resolver-batalla-derrota'] = _pedir(cliente, 'POST', '/acciones/resolver-batalla', {
-        **batalla, 'victoria': False, 'respuestas': responder(1, 4)})
+        **batalla, 'respuestas': responder([True, False, False, False])})
     fixtures['resolver-batalla-victoria'] = _pedir(cliente, 'POST', '/acciones/resolver-batalla', {
-        **batalla, 'victoria': True, 'respuestas': responder(3, 4)})
+        **batalla, 'respuestas': responder([False, True, True, True, True, True])})
     fixtures['batallas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/batallas')
     # B10: catálogo, vistas y favoritos. Una ocupación fuera del tipo de la carrera vista abre t-explorar, y los
     # favoritos marcados aquí aparecen con `es_favorita` en el resultado RIASEC.

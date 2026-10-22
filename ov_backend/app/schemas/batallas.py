@@ -22,6 +22,9 @@ class BatallaCuenta(BaseModel):
     # El primer intento es el que cuenta para la métrica de conocimiento.
     primer_intento: IntentoBatalla | None
     preguntas_por_intento: int
+    # Vidas del enemigo y destellos del estudiante en cada intento (F04c).
+    vidas_enemigo: int
+    destellos: int
     # Las fichas de las que salen sus preguntas, en el orden de su primera pregunta (F04b).
     fichas: list[ContenidoEstado]
 

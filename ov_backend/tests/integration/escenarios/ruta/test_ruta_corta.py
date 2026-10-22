@@ -351,13 +351,16 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
         return [{'pregunta': p['codigo'], 'opcion': next(o['indice'] for o in p['opciones'] if o['indice'] != p['correcta'])}
                 for p in lista]
     perdida = pedir(cliente, 'POST', '/acciones/resolver-batalla',
-                    {**batalla, 'victoria': False, 'respuestas': fallar(preguntas[:3])})
+                    {**batalla, 'respuestas': fallar(preguntas[:3])})
     assert perdida['nuevos_desbloqueos'] == [] and actividades(cliente)['t-batalla'] == 'EN_CURSO'
     preguntas = pedir(cliente, 'GET', '/cuentas/est-ana/batallas/t-batalla/preguntas')
-    # Cinco aciertos y un error: vence sin quedar intacta.
-    acertadas = [{'pregunta': p['codigo'], 'opcion': p['correcta']} for p in preguntas[:5]] + fallar(preguntas[5:6])
-    ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': True, 'respuestas': acertadas})
+    # Un error y cinco aciertos: el último acierto deja al enemigo sin vidas; vence sin quedar intacta.
+    acertadas = fallar(preguntas[:1]) + [{'pregunta': p['codigo'], 'opcion': p['correcta']} for p in preguntas[1:6]]
+    ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'respuestas': acertadas})
     assert reglas(ganada) == set()
+    # F04c: el servidor decide el resultado del intento.
+    assert (ganada['victoria'], ganada['practica'], ganada['aciertos'], ganada['destellos_restantes']) == (True, False, 5, 2)
+    assert perdida['victoria'] is False and perdida['destellos_restantes'] == 0
     # B10: catálogo, vistas y favoritos. Sin resultado RIASEC, t-explorar pide vistas de dos tipos principales.
     assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras?riasec=s')] == [
         'journalism', 'nursing', 'psychology']
@@ -447,8 +450,7 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
         (1, 'LLM'), (2, 'LLM')]
     # t-explorar abre REALIDAD; con dos planes listos para comparar se abre t-comparar.
     batalla = {**ana, 'actividad': 't-batalla'}
-    pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': True,
-                                                          'respuestas': respuestas_batalla(3, 4)})
+    pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'respuestas': respuestas_batalla(True, 1)})
     pedir(cliente, 'POST', '/acciones/ver-carrera', {**ana, 'carrera': 'nursing'})
     pedir(cliente, 'POST', '/acciones/ver-ocupacion', {**ana, 'ocupacion': 'civil-engineer'})
     assert 'R-PLAN-REALIDAD' in reglas(responder_registro(cliente, 't-explorar'))

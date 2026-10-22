@@ -71,8 +71,7 @@ class RespuestaBatallaEntrada(BaseModel):
 
 
 class ResolverBatallaEntrada(CompletarActividadEntrada):
-    """Los destellos están en el front, que decide `victoria`; aciertos y preguntas salen de `respuestas`."""
-    victoria: bool
+    """Las respuestas del intento, en el orden en que se dieron; el servidor decide la victoria (F04c)."""
     respuestas: list[RespuestaBatallaEntrada] = Field(min_length=1)
 
 
@@ -172,6 +171,16 @@ class RespuestaAccion(BaseModel):
         if 'entradas_desbloqueadas' in self.model_fields_set:
             campos['entradas_desbloqueadas'] = self.entradas_desbloqueadas
         return campos
+
+
+class RespuestaResolverBatalla(RespuestaAccion):
+    """El resultado del intento según el servidor: con él se arma el cierre."""
+    victoria: bool
+    # La batalla ya estaba superada antes de este intento.
+    practica: bool
+    aciertos: int
+    preguntas: int
+    destellos_restantes: int
 
 
 class RespuestaResolverCaso(RespuestaAccion):

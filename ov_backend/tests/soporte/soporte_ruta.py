@@ -5,7 +5,7 @@ from soporte_dominios import consultar_dominios
 from sqlalchemy import select
 
 from app.models.base import Base
-from datos.ruta import DESCRIPCIONES, PREGUNTAS_BATALLA
+from datos.ruta import CONFIGURACION_BATALLAS, DESCRIPCIONES, PREGUNTAS_BATALLA
 
 
 FECHA = '2026-10-07T10:00:00'
@@ -128,8 +128,11 @@ def filas_base(aplicacion):
                 for tabla in Base.metadata.sorted_tables}
 
 
-def respuestas_batalla(aciertos, preguntas, batalla='t-batalla'):
-    """Respuestas a las primeras `preguntas` del pool (F04b): las `aciertos` primeras correctas y el resto no."""
-    pool = [p for p in PREGUNTAS_BATALLA if p[1] == batalla][:preguntas]
-    return [{'pregunta': codigo, 'opcion': correcta if n < aciertos else (correcta + 1) % len(opciones)}
-            for n, (codigo, _, _, _, opciones, correcta, _) in enumerate(pool)]
+def respuestas_batalla(victoria, otros=0, batalla='t-batalla'):
+    """Un intento completo de t-batalla (5 vidas, 3 destellos; F04c), en orden. Victoria: `otros` errores y
+    después los 5 aciertos. Derrota: `otros` aciertos (menos de 5) y después los 3 errores."""
+    vidas, destellos, _ = CONFIGURACION_BATALLAS[batalla]
+    secuencia = ([False] * otros + [True] * vidas) if victoria else ([True] * otros + [False] * destellos)
+    pool = [p for p in PREGUNTAS_BATALLA if p[1] == batalla]
+    return [{'pregunta': codigo, 'opcion': correcta if acierta else (correcta + 1) % len(opciones)}
+            for acierta, (codigo, _, _, _, opciones, correcta, _) in zip(secuencia, pool)]

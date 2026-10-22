@@ -50,6 +50,7 @@ test('la consulta de batallas trae intentos, preguntas por intento y fichas', as
   assert.equal(batalla.superada, true)
   assert.equal(batalla.primer_intento.victoria, false)
   assert.equal(batalla.preguntas_por_intento, 7)
+  assert.deepEqual([batalla.vidas_enemigo, batalla.destellos], [5, 3])
   assert.deepEqual(copia(batalla.fichas.map((f) => f.codigo)), ['t-ficha', 't-ficha-2'])
 })
 
@@ -67,39 +68,37 @@ test('cada intento pide preguntas nuevas, sin caché', async () => {
   assert.ok(preguntas.every((p) => p.opciones.some((o) => o.indice === p.correcta) && p.ficha.codigo))
 })
 
-test('perder y ganar envían cada intento con sus respuestas y refrescan el camino', async () => {
+test('perder y ganar envían cada intento con sus respuestas; el servidor decide el resultado', async () => {
   const { app, store, ganar } = await preparar()
   const fallidas = preguntas.slice(0, 3).map((p) => ({
     pregunta: p.codigo,
     opcion: p.opciones.find((o) => o.indice !== p.correcta).indice,
   }))
-  const perdida = await store.resolverBatalla('t-batalla', false, fallidas)
+  const perdida = await store.resolverBatalla('t-batalla', fallidas)
   assert.equal(perdida.tipo, 'ok')
   assert.deepEqual(copia(perdida.datos.eventos_registrados), [])
+  assert.deepEqual([perdida.datos.victoria, perdida.datos.destellos_restantes], [false, 0])
   ganar()
   const antes = app.requests.length
   const acertadas = preguntas.slice(0, 5).map((p) => ({ pregunta: p.codigo, opcion: p.correcta }))
-  const ganada = await store.resolverBatalla('t-batalla', true, acertadas)
+  const ganada = await store.resolverBatalla('t-batalla', acertadas)
   assert.equal(ganada.tipo, 'ok')
   const envio = app.requests.slice(antes).find((r) => r.url.endsWith('/resolver-batalla'))
-  assert.deepEqual(copia(envio.body), {
-    cuenta: 'est-ana',
-    actividad: 't-batalla',
-    victoria: true,
-    respuestas: acertadas,
-  })
+  // F04c: el cuerpo lleva solo las respuestas; la victoria la decide el servidor.
+  assert.deepEqual(copia(envio.body), { cuenta: 'est-ana', actividad: 't-batalla', respuestas: acertadas })
+  assert.deepEqual([ganada.datos.victoria, ganada.datos.practica], [true, false])
   assert.ok(ganada.datos.eventos_registrados.some((e) => e.tipo === 'SUPERA_BATALLA'))
   assert.ok(app.requests.slice(antes).some((r) => r.url.endsWith('/actividades')))
 })
 
-test('las preguntas del servidor se convierten en la batalla del desafío', () => {
+test('las preguntas del servidor se convierten en la batalla, con sus vidas y destellos', () => {
   const app = fixtureServidor()
   const { batallaDesdePreguntas, respuestaBatalla } = app.load('src/features/activities/lib/batallaServidor.ts')
-  const { challenges } = app.load('src/data/content/challenges.ts')
-  const desafio = challenges.find((c) => c.id === 'desafio-rumor')
-  const batalla = batallaDesdePreguntas(desafio, preguntas)
+  const [config] = batallas
+  const configuracion = { vidasEnemigo: config.vidas_enemigo, destellos: config.destellos }
+  const batalla = batallaDesdePreguntas(configuracion, preguntas)
   assert.equal(batalla.questions.length, 7)
-  assert.deepEqual([batalla.enemyLife, batalla.sparks, batalla.answered], [desafio.vidasEnemigo, desafio.vidasEstudiante, 0])
+  assert.deepEqual([batalla.enemyLife, batalla.sparks, batalla.answered], [5, 3, 0])
   const [primera] = batalla.questions
   assert.equal(primera.id, preguntas[0].codigo)
   assert.equal(primera.correcta, String(preguntas[0].correcta))
@@ -109,5 +108,5 @@ test('las preguntas del servidor se convierten en la batalla del desafío', () =
     opcion: preguntas[0].correcta,
   })
   // Sin preguntas suficientes para que un intento termine, no hay batalla.
-  assert.equal(batallaDesdePreguntas(desafio, preguntas.slice(0, 6)), undefined)
+  assert.equal(batallaDesdePreguntas(configuracion, preguntas.slice(0, 6)), undefined)
 })

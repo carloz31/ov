@@ -4,6 +4,7 @@ import type {
   RespuestaCompletarActividad,
   RespuestaItemEntrada,
   RespuestaItemsGuardados,
+  RespuestaResolverBatalla,
   RespuestaResolverCaso,
   RespuestaServidor,
   ResolverBatallaEntrada,
@@ -29,7 +30,9 @@ export function responderItems(
   return enviar('/acciones/responder-items', { cuenta, actividad, respuestas })
 }
 
-export function resolverBatalla(entrada: ResolverBatallaEntrada): Promise<RespuestaServidor<RespuestaAccion>> {
+export function resolverBatalla(
+  entrada: ResolverBatallaEntrada,
+): Promise<RespuestaServidor<RespuestaResolverBatalla>> {
   return enviar('/acciones/resolver-batalla', entrada)
 }
 

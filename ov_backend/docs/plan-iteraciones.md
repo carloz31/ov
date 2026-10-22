@@ -48,7 +48,7 @@ Cuentas:
 | `t-contraste` | R | CIUDAD | B06 | Se abre con REVELA_RESULTADO; referencias RESULTADO y COINCIDENCIAS. |
 | `t-partida`, `t-llegada` | Q | T0, T2 | B07 | Partida y llegada por dimensión, con zonas. |
 | `t-lee-cuestionario` | I | T1 | B07 | Una informativa con referencia RESPUESTA_CUESTIONARIO. |
-| `t-batalla` | B | T1 | B08 | Perder y reintentar; SUPERA_BATALLA abre `t-explorar`. F04b: pool de 14 preguntas de `t-ficha` y `t-ficha-2`, 7 por intento. |
+| `t-batalla` | B | T1 | B08 | Perder y reintentar; SUPERA_BATALLA abre `t-explorar`. F04b: pool de 14 preguntas de `t-ficha` y `t-ficha-2`, 7 por intento. F04c: 5 vidas y 3 destellos; el servidor decide la victoria. |
 | `t-caso` | CASO | CIUDAD | B00 | B08: tipo RIASEC, colección y dos testimonios (`t-testimonio-1` con pista). |
 | `t-explorar` | R | T1 | B10 | Se abre con `favoritos_diversos`. B11: abre la sección REALIDAD de la tarjeta. |
 | `t-comparar` | R | T2 | B11 | Se abre con `planes_listos_para_comparar` (dos planes); cita PLANES y abre la sección PASOS. |

@@ -51,6 +51,7 @@ def listar_batallas_cuenta(sesion: Session, cuenta: Cuenta) -> list[BatallaCuent
                 victoria=primero.victoria, aciertos=primero.aciertos, preguntas=primero.preguntas,
                 fecha_hora=primero.fecha_hora),
             preguntas_por_intento=actividad.preguntas_por_intento,
+            vidas_enemigo=actividad.vidas_enemigo, destellos=actividad.destellos,
             fichas=[_estado_ficha(sesion, cuenta, definiciones.obtener(Ficha, ficha_id))
                     for ficha_id in fichas.get(actividad.id, [])],
         ))

@@ -1,10 +1,14 @@
-import type { Battle, Challenge } from '@/types/challenges'
+import type { Battle } from '@/types/challenges'
 import type { ContenidoEstado, PreguntaIntento, RespuestaBatallaEntrada } from '@/types/servidor'
 
-// F04b: las preguntas de un intento vienen del servidor; el desafío del front pone vidas y destellos.
+// F04b: las preguntas de un intento vienen del servidor; F04c: también las vidas y los destellos.
 // Un intento debe poder terminar: hacen falta al menos vidas del enemigo + destellos − 1 preguntas.
-export function batallaDesdePreguntas(c: Challenge, preguntas: PreguntaIntento[]): Battle | undefined {
-  if (preguntas.length < c.vidasEnemigo + c.vidasEstudiante - 1) return undefined
+export type ConfiguracionBatalla = { vidasEnemigo: number; destellos: number }
+export function batallaDesdePreguntas(
+  config: ConfiguracionBatalla,
+  preguntas: PreguntaIntento[],
+): Battle | undefined {
+  if (preguntas.length < config.vidasEnemigo + config.destellos - 1) return undefined
   return {
     questions: preguntas.map((p) => ({
       id: p.codigo,
@@ -16,8 +20,8 @@ export function batallaDesdePreguntas(c: Challenge, preguntas: PreguntaIntento[]
       ficha: p.ficha,
     })),
     index: 0,
-    enemyLife: c.vidasEnemigo,
-    sparks: c.vidasEstudiante,
+    enemyLife: config.vidasEnemigo,
+    sparks: config.destellos,
     hits: 0,
     answered: 0,
     finished: false,

@@ -1,6 +1,7 @@
 [
   {
     "actividad": "t-batalla",
+    "destellos": 3,
     "estado": "COMPLETADA",
     "fichas": [
       {
@@ -23,6 +24,7 @@
       "victoria": false
     },
     "superada": true,
-    "titulo": "Batalla de prueba"
+    "titulo": "Batalla de prueba",
+    "vidas_enemigo": 5
   }
 ]

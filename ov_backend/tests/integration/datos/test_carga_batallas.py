@@ -1,4 +1,5 @@
-"""F04b: el pool de preguntas de cada batalla, con su ficha; la carga fallida no deja filas."""
+"""F04b: el pool de preguntas de cada batalla, con su ficha; F04c: vidas y destellos. La carga fallida no
+deja filas."""
 
 import pytest
 from sqlalchemy import func, select
@@ -25,7 +26,10 @@ VARIANTES = (
     ('PREGUNTAS_BATALLA', variante(correcta=4), 'al menos tres opciones y una correcta'),
     ('PREGUNTAS_BATALLA', variante(enunciado=' '), 'texto vacío'),
     # El pool debe ser al menos el doble de las preguntas por intento.
-    ('PREGUNTAS_POR_INTENTO', {'t-batalla': 8}, 'al menos el doble'),
+    ('CONFIGURACION_BATALLAS', {'t-batalla': (5, 3, 8)}, 'al menos el doble'),
+    # F04c: las preguntas por intento deben alcanzar para terminar (vidas + destellos - 1).
+    ('CONFIGURACION_BATALLAS', {'t-batalla': (5, 3, 6)}, 'no alcanzan para terminar'),
+    ('CONFIGURACION_BATALLAS', {}, 'no tiene vidas, destellos ni preguntas por intento'),
     ('PREGUNTAS_BATALLA', ruta.PREGUNTAS_BATALLA[:13], 'al menos el doble'),
 )
 
@@ -46,7 +50,7 @@ def test_carga_rechaza_preguntas_invalidas_sin_dejar_filas(tmp_path, monkeypatch
 
 def test_pool_de_la_batalla_cargado(sesion):
     batalla = sesion.scalar(select(m.Actividad).where(m.Actividad.codigo == 't-batalla'))
-    assert batalla.preguntas_por_intento == 7
+    assert (batalla.vidas_enemigo, batalla.destellos, batalla.preguntas_por_intento) == (5, 3, 7)
     pool = sesion.scalar(select(func.count()).select_from(m.PreguntaBatalla)
                          .where(m.PreguntaBatalla.actividad_id == batalla.id))
     assert pool == 14 >= 2 * batalla.preguntas_por_intento

@@ -13,7 +13,9 @@ from soporte_ruta import BLOQUE_FAMILIA
 
 from app import main as principal
 from app.schemas.referencias import ReferenciasConsultadas
-from app.schemas.acciones import RespuestaAccion, RespuestaResolverCaso, RespuestaRevelarResultado
+from app.schemas.acciones import (
+    RespuestaAccion, RespuestaResolverBatalla, RespuestaResolverCaso, RespuestaRevelarResultado,
+)
 from app.schemas.batallas import BatallaCuenta, PreguntaIntento
 from app.schemas.casos import CasoCuenta, OcupacionColeccion
 from app.schemas.diario import (
@@ -269,8 +271,10 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         ('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE')]
     assert [n['estado'] for n in datos['logros-final']['niveles']] == ['OBTENIDO', 'OBTENIDO']
     # B08: batalla con reintento, caso superado, colección y testimonios.
-    for nombre in ('resolver-batalla-derrota', 'resolver-batalla-victoria'):
-        RespuestaAccion.model_validate(datos[nombre])
+    derrota, victoria = (RespuestaResolverBatalla.model_validate(datos[nombre])
+                         for nombre in ('resolver-batalla-derrota', 'resolver-batalla-victoria'))
+    assert (derrota.victoria, derrota.aciertos, derrota.preguntas, derrota.destellos_restantes) == (False, 1, 4, 0)
+    assert (victoria.victoria, victoria.practica, victoria.aciertos, victoria.destellos_restantes) == (True, False, 5, 2)
     assert datos['resolver-batalla-derrota']['eventos_registrados'] == []
     assert datos['resolver-batalla-victoria']['nuevos_desbloqueos'] == []
     batalla, = TypeAdapter(list[BatallaCuenta]).validate_python(datos['batallas'])
@@ -280,6 +284,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     # F04b: las preguntas del intento, con semilla fija.
     preguntas = TypeAdapter(list[PreguntaIntento]).validate_python(datos['preguntas-batalla'])
     assert len(preguntas) == batalla.preguntas_por_intento == 7
+    assert (batalla.vidas_enemigo, batalla.destellos) == (5, 3)
     superado = RespuestaResolverCaso.model_validate(datos['resolver-caso'])
     assert superado.ocupaciones_nuevas == ['firefighter', 'paramedic']
     assert {d.regla for d in superado.nuevos_desbloqueos} == {'R-t-testimonio-1', 'R-t-testimonio-2'}

@@ -30,6 +30,11 @@ class Actividad(Base):
             "(tipo != 'BATALLA' AND preguntas_por_intento IS NULL)",
             name="preguntas_por_intento_solo_batalla",
         ),
+        CheckConstraint(
+            "(tipo = 'BATALLA' AND vidas_enemigo >= 1 AND destellos >= 1) OR "
+            "(tipo != 'BATALLA' AND vidas_enemigo IS NULL AND destellos IS NULL)",
+            name="vidas_solo_batalla",
+        ),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
@@ -44,6 +49,9 @@ class Actividad(Base):
     puntaje_minimo: Mapped[float | None]
     # Configuración de una BATALLA: cuántas preguntas de su pool salen en cada intento (F04b).
     preguntas_por_intento: Mapped[int | None]
+    # Vidas del enemigo y destellos del estudiante en cada intento (F04c): el servidor decide la victoria.
+    vidas_enemigo: Mapped[int | None]
+    destellos: Mapped[int | None]
     requerida: Mapped[bool] = mapped_column(default=True, server_default=true())
     duracion_estimada_min: Mapped[int | None]
     descripcion: Mapped[str | None] = mapped_column(Text)
