@@ -3,6 +3,7 @@
 import type {
   AvanceAplicacion,
   AvanceInstrumento,
+  InstrumentoPublico,
   MotivoBloqueo,
   ResultadoHistorico,
   ResultadoPublico,
@@ -74,4 +75,33 @@ export const ZONAS_EN_PALABRAS: Record<ZonaDimension, string> = {
 }
 export function zonaEnPalabras(zona: ZonaDimension | null | undefined) {
   return zona ? ZONAS_EN_PALABRAS[zona] : ''
+}
+
+// F03 (HU-022, HU-023): un resultado del hijo para el apoderado, con los textos del servidor. Las protagonistas
+// son el código de interés (COINCIDENCIAS) o las destacadas (DESTACADAS); con perfil plano, ninguna.
+export type ResultadoFamilia = {
+  instrumento: string
+  nombre: string
+  descripcion: string
+  perfilPlano: boolean
+  protagonistas: { codigo: string; nombre: string }[]
+  dimensiones: { codigo: string; nombre: string; descripcion: string }[]
+}
+export function resultadoFamilia(resultado: ResultadoPublico, catalogo: InstrumentoPublico[]): ResultadoFamilia {
+  const instrumento = catalogo.find((i) => i.codigo === resultado.instrumento)
+  const dimensiones = resultado.dimensiones.map(({ codigo, nombre, descripcion }) => ({ codigo, nombre, descripcion }))
+  const codigos = resultado.codigo_interes?.codigo.split('') ?? []
+  const protagonistas = resultado.perfil_plano
+    ? []
+    : resultado.dimensiones_destacadas
+      ? resultado.dimensiones_destacadas.map(({ codigo, nombre }) => ({ codigo, nombre }))
+      : dimensiones.filter((d) => codigos.includes(d.codigo)).sort((a, b) => codigos.indexOf(a.codigo) - codigos.indexOf(b.codigo))
+  return {
+    instrumento: resultado.instrumento,
+    nombre: instrumento?.nombre ?? resultado.instrumento,
+    descripcion: instrumento?.descripcion ?? '',
+    perfilPlano: resultado.perfil_plano,
+    protagonistas: protagonistas.map(({ codigo, nombre }) => ({ codigo, nombre })),
+    dimensiones,
+  }
 }

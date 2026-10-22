@@ -2,12 +2,18 @@ import { obtener } from './cliente'
 import type {
   AvanceInstrumento,
   ComparacionAutopercepcion,
+  InstrumentoPublico,
   ItemPublico,
   RespuestasActividad,
   RespuestaServidor,
   ResultadoHistorico,
   ResultadoPublico,
 } from '@/types/servidor'
+
+// F03: catálogo de instrumentos (nombre, descripción, dimensiones); no depende de la cuenta.
+export function obtenerCatalogo(): Promise<RespuestaServidor<InstrumentoPublico[]>> {
+  return obtener('/instrumentos')
+}
 
 export function obtenerItems(actividad: string): Promise<RespuestaServidor<ItemPublico[]>> {
   return obtener(`/actividades/${encodeURIComponent(actividad)}/items`)

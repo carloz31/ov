@@ -37,7 +37,8 @@ from app.schemas.comun import ContenidoEstado
 from app.schemas.logros import LogrosCuenta
 from app.schemas.secciones import SeccionEstado
 from app.schemas.instrumentos import (
-    AvanceInstrumento, ComparacionAutopercepcion, ItemPublico, ResultadoHistorico, ResultadoPublico,
+    AvanceInstrumento, ComparacionAutopercepcion, InstrumentoPublico, ItemPublico, ResultadoHistorico,
+    ResultadoPublico,
 )
 from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
 
@@ -76,7 +77,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'items-t-mision-intereses-2', 'items-t-llegada', 'revelar-llegada', 'resultado-llegada',
     'revelar-riasec-plano', 'resultado-riasec-plano', 'historial-riasec-plano', 'historial-riasec',
     'reiniciar-riasec', 'referencias-t-contraste-plano', 'referencias-t-contraste-reiniciado',
-    'familia-resultados-sin-diploma', 'items-registro-t-contraste',
+    'familia-resultados-sin-diploma', 'items-registro-t-contraste', 'instrumentos',
 )}
 
 
@@ -184,6 +185,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert {r.estado for r in ReferenciasConsultadas.model_validate(
         datos['referencias-t-contraste-reiniciado']).referencias} == {'SIN_DATO'}
     assert datos['familia-resultados-sin-diploma']['detail']['mensaje']
+    assert {i.codigo for i in TypeAdapter(list[InstrumentoPublico]).validate_python(datos['instrumentos'])} >= {
+        'TEST-RIASEC', 'TEST-PARTIDA-LLEGADA'}
     TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-expectativas'])
     EstadoItemRegistro.model_validate(datos['borrador-t-expectativas'])
     borrador = RegistroConsultado.model_validate(datos['registro-t-expectativas-borrador'])

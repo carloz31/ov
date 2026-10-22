@@ -20,7 +20,8 @@ import { ParentChildServerSummary } from './ParentChildServerSummary'
 
 export function ParentChildrenSummary({ model }: { model: ReturnType<typeof useParentOverview> }) {
   const { params, setParams, child, route, shared, student, progress } = model
-  if (model.familia) return <ParentChildServerSummary familia={model.familia} />
+  if (model.familia)
+    return <ParentChildServerSummary familia={model.familia} resultados={model.resultadosHijo} />
   return (
     <section className="space-y-5" aria-labelledby="family-children">
       <div className="flex flex-wrap items-center justify-between gap-4">

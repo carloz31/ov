@@ -2,7 +2,8 @@ import { useSyncExternalStore } from 'react'
 import { modoApi } from '@/config/env'
 import { ingresar, completarActividad } from '@/services/api/acciones'
 import { obtenerActividades } from '@/services/api/actividades'
-import { obtenerFamilia } from '@/services/api/familia'
+import { obtenerFamilia, obtenerResultadosHijo } from '@/services/api/familia'
+import { obtenerCatalogo } from '@/services/api/instrumentos'
 import { proyectarJourney } from '@/lib/servidor/adaptadores'
 import { hidratarParentJourney } from '../parentJourneyStore'
 import { cuentaApoderado } from './cuenta'
@@ -237,4 +238,15 @@ export function completarActividadApoderado(
   envio = pendiente
   publicar({ enviando: codigo })
   return pendiente
+}
+
+// F03 (HU-022, HU-023): resultados vigentes del hijo visibles al apoderado, con el catálogo para sus nombres.
+// Se piden al abrir la vista que los muestra; sin diploma, el servidor responde 409 con su mensaje.
+export async function consultarResultadosHijo() {
+  const cuenta = estado.cuenta
+  if (!modoApi || !cuenta) return sinCuenta()
+  const [resultados, catalogo] = await Promise.all([obtenerResultadosHijo(cuenta), obtenerCatalogo()])
+  if (resultados.tipo !== 'ok') return resultados
+  if (catalogo.tipo !== 'ok') return catalogo
+  return { tipo: 'ok' as const, datos: { resultados: resultados.datos, catalogo: catalogo.datos } }
 }

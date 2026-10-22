@@ -13,6 +13,7 @@ import {
 import { activities, questionnaires, studentProfiles } from '@/data/demo/studentProfiles'
 import { generalProgress } from '@/features/student-tracking/lib/selectors'
 import { avanceConFamilia, nombreHijo } from '@/features/parent/lib/familia'
+import { useResultadosHijo } from './useResultadosHijo'
 
 import { usePrioritySettings } from '@/features/counselor/hooks/usePrioritySettings'
 import { canAccessFamilyConversations, useAdventure } from '@/store/adventureStore'
@@ -64,7 +65,10 @@ export function useParentOverview() {
   )
   const student = studentProfiles.find((s) => s.id === child?.id)
   const progress = student ? generalProgress(student, activities) : null
+  // F03: en api, los resultados del hijo (con el diploma obtenido).
+  const resultadosHijo = useResultadosHijo(familia)
   return {
+    resultadosHijo,
     mainRef,
     diplomaRef,
     highlightDiploma,

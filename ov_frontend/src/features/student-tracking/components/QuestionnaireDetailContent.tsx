@@ -9,18 +9,21 @@ import { DimensionCards } from '@/features/student-tracking/components/Dimension
 import type { QuestionnaireDefinition, QuestionnaireResult, StudentProfile } from '@/types/studentProfile'
 import { QuestionnaireBars } from '@/features/student-tracking/components/QuestionnaireBars'
 import { InterestDetails } from '@/features/student-tracking/components/InterestDetails'
+import type { ResultadoFamilia } from '@/lib/servidor/adaptadoresInstrumentos'
 
-export function QuestionnaireDetailContent({
-  student,
-  definition,
-  result,
-  audience = 'counselor',
-}: {
-  student: StudentProfile
-  definition: QuestionnaireDefinition
-  result?: QuestionnaireResult
-  audience?: 'counselor' | 'parent'
-}) {
+export function QuestionnaireDetailContent(
+  props:
+    | {
+        student: StudentProfile
+        definition: QuestionnaireDefinition
+        result?: QuestionnaireResult
+        audience?: 'counselor' | 'parent'
+      }
+    // F03: el apoderado en api ve el resultado del servidor, con sus textos y sin puntajes.
+    | { servidor: ResultadoFamilia; nombre: string },
+) {
+  if ('servidor' in props) return <ResultadoServidor resultado={props.servidor} nombre={props.nombre} />
+  const { student, definition, result, audience = 'counselor' } = props
   return (
     <div className="space-y-5">
       <Panel title="Qué mide este cuestionario">
@@ -80,6 +83,38 @@ export function QuestionnaireDetailContent({
       ) : (
         <EmptyMessage unavailable>Aún no completa este cuestionario.</EmptyMessage>
       )}
+    </div>
+  )
+}
+
+function ResultadoServidor({ resultado, nombre }: { resultado: ResultadoFamilia; nombre: string }) {
+  return (
+    <div className="space-y-5">
+      <Panel title="Qué mide este cuestionario">
+        <p>{resultado.descripcion}</p>
+      </Panel>
+      <Panel title="Cómo leer este resultado">
+        <p className="text-muted-foreground">
+          {`Estos resultados son exploratorios. Sirven para conversar con ${nombre} sobre lo que le gusta y en lo que destaca, no para decidir qué debe estudiar.`}
+        </p>
+      </Panel>
+      <Panel title="Resultado por dimensión">
+        <p>
+          {resultado.perfilPlano
+            ? 'Sus respuestas no distinguen un tipo de interés.'
+            : resultado.protagonistas.map((d) => d.nombre).join(' · ')}
+        </p>
+      </Panel>
+      <Panel title="Qué significa cada dimensión">
+        <ul className="space-y-3">
+          {resultado.dimensiones.map((d) => (
+            <li key={d.codigo}>
+              <strong>{d.nombre}</strong>
+              <p>{d.descripcion}</p>
+            </li>
+          ))}
+        </ul>
+      </Panel>
     </div>
   )
 }

@@ -12,6 +12,8 @@ import { QuestionnaireDetailContent } from '@/features/student-tracking/componen
 import { usePrioritySettings } from '@/features/counselor/hooks/usePrioritySettings'
 import { parentChildren } from '@/features/parent/data/parentPortal'
 import { useParentPortalContext } from '@/features/parent/context/parentPortalContext'
+import { useResultadosHijo } from '@/features/parent/hooks/useResultadosHijo'
+import { inicialesHijo } from '@/features/parent/lib/familia'
 import {
   completeFamilyResult,
   familySharedIds,
@@ -35,7 +37,40 @@ export function ParentQuestionnaireDetailView() {
   const route = parentRoute(activities, parentChildren, completedActivityIds, available)
   const application = student?.questionnaires.find((item) => item.questionnaireId === definition?.id)
   const back = parentHomeUrl(child?.id ?? parentChildren[0]?.id ?? '')
-  // En api los resultados del hijo llegan en F08: el detalle solo muestra el aviso, con su nombre real.
+  // F03: en api, con el diploma, el resultado del hijo sale del servidor.
+  const resultadosHijo = useResultadosHijo(familia)
+  const resultadoServidor = resultadosHijo.resultados?.find((r) => r.instrumento === questionnaireId)
+  if (familia?.estudiante && resultadosHijo.habilitado && (!resultadosHijo.resultados || resultadoServidor))
+    return (
+      <main ref={mainRef} className="min-w-0 space-y-6 break-words p-4 sm:p-6 lg:p-8" aria-busy={!resultadoServidor}>
+        <Button asChild variant="link" className="min-h-11 px-0">
+          <Link to={parentHomeUrl(familia.estudiante.codigo)}>
+            <ArrowLeft aria-hidden />
+            Volver
+          </Link>
+        </Button>
+        {resultadosHijo.error && (
+          <div role="alert" className="space-y-3">
+            <p>{resultadosHijo.error}</p>
+            <Button variant="outline" className="min-h-11" onClick={resultadosHijo.reintentar}>
+              Reintentar
+            </Button>
+          </div>
+        )}
+        {resultadoServidor && (
+          <>
+            <StaffEntityHeader
+              title={resultadoServidor.nombre}
+              initials={inicialesHijo(familia.estudiante.nombre)}
+              details={<p>{familia.estudiante.nombre}</p>}
+            />
+            <QuestionnaireDetailContent servidor={resultadoServidor} nombre={familia.estudiante.nombre} />
+          </>
+        )}
+        <GuideDialogue audience="parent" text={parentGuides.questionnaire} />
+      </main>
+    )
+  // En api, sin diploma, el detalle solo muestra el aviso, con el nombre real del hijo.
   const hijo = familia ? familia.estudiante?.nombre : student?.nombres
   if (
     familia ||
@@ -45,7 +80,10 @@ export function ParentQuestionnaireDetailView() {
     !route.complete ||
     !completeFamilyResult(application)
   ) {
-    const locked = familia ? !!familia.estudiante : !!(child && definition && !route.complete)
+    // F03: con el diploma, un cuestionario que el servidor no entrega ya no espera actividades.
+    const locked = familia
+      ? !!familia.estudiante && !familia.diploma.obtenido
+      : !!(child && definition && !route.complete)
     return (
       <main className="space-y-5 p-5 sm:p-8">
         <h1 className="text-2xl font-bold">

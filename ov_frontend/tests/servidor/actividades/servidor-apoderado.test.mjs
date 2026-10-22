@@ -648,7 +648,10 @@ test('la ruta y el diploma se completan con el servidor aunque no haya nodos loc
         ? jsonServidor('cuentas')
         : r.url.endsWith('/actividades')
           ? jsonServidor('apoderado-actividades-final')
-          : { eventos_registrados: [], nuevos_desbloqueos: [] },
+          : // F03: con el diploma, el portal pide los resultados del hijo y el catálogo de instrumentos.
+            r.url.endsWith('/familia/resultados') || r.url === '/api/instrumentos'
+            ? []
+            : { eventos_registrados: [], nuevos_desbloqueos: [] },
   }))
   app.fijarEtapa('final')
   await app.store.ingresarApoderado()

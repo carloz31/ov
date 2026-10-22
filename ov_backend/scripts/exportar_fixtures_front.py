@@ -142,6 +142,8 @@ def _recorrer(cliente):
     fixtures.update(_consultas_dominio(
         cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros', 'secciones', 'testimonios')))
     fixtures['avance-instrumentos-inicial'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
+    # F03: catálogo con nombre y descripción de cada cuestionario (vista del apoderado).
+    fixtures['instrumentos'] = _pedir(cliente, 'GET', '/instrumentos')
     fixtures['completar-t-inicio'] = _completar(cliente, 't-inicio')
     # B11: dos planes antes de cerrar el camino; el primero queda como opción inicial. t-inicio abre POR_QUE.
     for carrera in ('psychology', 'journalism'):

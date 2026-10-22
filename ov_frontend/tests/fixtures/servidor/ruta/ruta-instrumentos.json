@@ -1,0 +1,190 @@
+[
+  {
+    "aplicaciones": [
+      {
+        "actividades": [
+          {
+            "codigo": "t-llegada",
+            "orden": 1,
+            "titulo": "Punto de llegada"
+          }
+        ],
+        "codigo": "APL-LLEGADA",
+        "momento": "SALIDA",
+        "nombre": "Punto de llegada"
+      },
+      {
+        "actividades": [
+          {
+            "codigo": "t-partida",
+            "orden": 2,
+            "titulo": "Punto de partida"
+          }
+        ],
+        "codigo": "APL-PARTIDA",
+        "momento": "ENTRADA",
+        "nombre": "Punto de partida"
+      }
+    ],
+    "codigo": "TEST-PARTIDA-LLEGADA",
+    "descripcion": "Las mismas afirmaciones al inicio y al cierre, para ver cuánto cambiaste.",
+    "dimensiones": [
+      {
+        "codigo": "AUTO-A",
+        "descripcion": "Qué tan claro tienes lo que quieres hacer después del colegio.",
+        "nombre": "Claridad",
+        "orden": 1
+      },
+      {
+        "codigo": "AUTO-B",
+        "descripcion": "Qué tanto reconoces tus intereses, habilidades y valores.",
+        "nombre": "Conocimiento de mí",
+        "orden": 2
+      },
+      {
+        "codigo": "AUTO-C",
+        "descripcion": "Qué tanto conoces las carreras, los caminos y lo que piden.",
+        "nombre": "Conocimiento de las opciones",
+        "orden": 3
+      },
+      {
+        "codigo": "AUTO-D",
+        "descripcion": "Qué tanto sientes que la decisión es tuya y no de otros.",
+        "nombre": "Decisión propia",
+        "orden": 4
+      },
+      {
+        "codigo": "AUTO-E",
+        "descripcion": "Qué tan seguro te sientes de poder tomar y sostener tu decisión.",
+        "nombre": "Confianza",
+        "orden": 5
+      }
+    ],
+    "escalas": [
+      {
+        "codigo": "ESC-ACUERDO4",
+        "nombre": "Acuerdo en cuatro opciones",
+        "opciones": [
+          {
+            "etiqueta": "Nada de acuerdo",
+            "orden": 1,
+            "puntaje": 1.0
+          },
+          {
+            "etiqueta": "Poco de acuerdo",
+            "orden": 2,
+            "puntaje": 2.0
+          },
+          {
+            "etiqueta": "Bastante de acuerdo",
+            "orden": 3,
+            "puntaje": 3.0
+          },
+          {
+            "etiqueta": "Muy de acuerdo",
+            "orden": 4,
+            "puntaje": 4.0
+          }
+        ]
+      }
+    ],
+    "nombre": "Punto de partida y de llegada",
+    "tipo_resultado": "COMPARACION"
+  },
+  {
+    "aplicaciones": [
+      {
+        "actividades": [
+          {
+            "codigo": "t-mision-intereses",
+            "orden": 1,
+            "titulo": "Misión de intereses"
+          },
+          {
+            "codigo": "t-mision-intereses-2",
+            "orden": 2,
+            "titulo": "Misión de intereses, segunda parte"
+          }
+        ],
+        "codigo": "APL-RIASEC",
+        "momento": "UNICA",
+        "nombre": "Intereses"
+      }
+    ],
+    "codigo": "TEST-RIASEC",
+    "descripcion": "Versión de prueba para la iteración 1.",
+    "dimensiones": [
+      {
+        "codigo": "R",
+        "descripcion": "Te atraen las actividades prácticas: trabajar con las manos, usar herramientas o máquinas y estar al aire libre.",
+        "nombre": "Realista",
+        "orden": 1
+      },
+      {
+        "codigo": "I",
+        "descripcion": "Te atrae observar, preguntar y analizar para entender cómo y por qué funcionan las cosas.",
+        "nombre": "Investigativa",
+        "orden": 2
+      },
+      {
+        "codigo": "A",
+        "descripcion": "Te atrae crear, imaginar y expresarte con libertad, sin reglas rígidas.",
+        "nombre": "Artística",
+        "orden": 3
+      },
+      {
+        "codigo": "S",
+        "descripcion": "Te atrae ayudar, enseñar, cuidar o acompañar a otras personas.",
+        "nombre": "Social",
+        "orden": 4
+      },
+      {
+        "codigo": "E",
+        "descripcion": "Te atrae liderar, convencer, organizar proyectos y tomar decisiones.",
+        "nombre": "Emprendedora",
+        "orden": 5
+      },
+      {
+        "codigo": "C",
+        "descripcion": "Te atrae ordenar información, seguir procedimientos claros y trabajar con datos de forma precisa.",
+        "nombre": "Convencional",
+        "orden": 6
+      }
+    ],
+    "escalas": [
+      {
+        "codigo": "ESC-LIKERT5",
+        "nombre": "Preferencia en cinco opciones",
+        "opciones": [
+          {
+            "etiqueta": "Me disgusta mucho",
+            "orden": 1,
+            "puntaje": 0.0
+          },
+          {
+            "etiqueta": "Me disgusta",
+            "orden": 2,
+            "puntaje": 1.0
+          },
+          {
+            "etiqueta": "No estoy seguro",
+            "orden": 3,
+            "puntaje": 2.0
+          },
+          {
+            "etiqueta": "Me gusta",
+            "orden": 4,
+            "puntaje": 3.0
+          },
+          {
+            "etiqueta": "Me gusta mucho",
+            "orden": 5,
+            "puntaje": 4.0
+          }
+        ]
+      }
+    ],
+    "nombre": "Test de intereses (RIASEC)",
+    "tipo_resultado": "COINCIDENCIAS"
+  }
+]
