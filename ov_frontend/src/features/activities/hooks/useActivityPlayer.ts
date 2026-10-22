@@ -126,7 +126,11 @@ export function useActivityPlayer({
   useEffect(() => {
     pageRef.current?.scrollIntoView({ block: 'start' })
     setResourceOpen(false)
-  }, [nodeId])
+    // El foco de cada paso va al botón principal (Enter avanza), nunca a «Anterior».
+    pageRef.current
+      ?.querySelector<HTMLElement>('.sx-player-stage .sx-primary-button')
+      ?.focus({ preventScroll: true })
+  }, [nodeId, reactions])
   useEffect(() => {
     if (modoApi || node?.tipo !== 'diapositiva') return
     const sheets = (node.recursoIds ?? []).filter((id) =>
@@ -169,6 +173,8 @@ export function useActivityPlayer({
     node?.tipo !== 'pregunta' &&
     previo.tipo !== 'pregunta' &&
     !(activity.tipo === 'registro' && (yaCompletada || edit)) &&
+    // Tras la última consigna el registro ya está entregado: sus pasos posteriores no retroceden.
+    !(activity.tipo === 'registro' && index > nodes.findLastIndex((n) => n.tipo === 'consigna')) &&
     !(activity.tipo === 'instrumento' && yaCompletada) &&
     !(instrumentoServidor && (soloLectura || revisionInstrumento))
       ? previo

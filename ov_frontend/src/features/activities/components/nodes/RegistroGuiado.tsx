@@ -48,7 +48,7 @@ export function RegistroGuiado({
           {error}
         </p>
       )}
-      <div className="sx-player-actions">
+      <div className="sx-player-actions sx-step-footer">
         {onAnterior && <PasoAnterior disabled={ocupado} onClick={onAnterior} />}
         <button type="submit" className="sx-primary-button" disabled={ocupado}>
           {ocupado ? 'Guardando…' : ultimo ? 'Entregar' : 'Guardar y continuar'}

@@ -19,3 +19,13 @@
 - **Registros en api:** «Anterior» guarda lo escrito como borrador sin validar (`guardar-borrador`, `posicion` = nodo al que se vuelve, aunque sea el diálogo de entrada; una «Otra» vacía se omite). En local, lo escrito ya queda en `journey.drafts`. Sin «Anterior» con el registro entregado.
 - **Cuestionarios:** sin ajustes al backend: `responder-items` ya reemplaza una respuesta guardada. Sin «Anterior» en revisión o completados.
 - **Sin «Anterior» junto a una pregunta con retroalimentación** (ni en ella ni en el paso que la sigue), **ni en batallas, ni en el portal del apoderado**: anotado en `pendientes-interfaz.md`.
+
+## Ajuste al cierre: pie de paso y casos de retroceso
+
+- **Pie único:** el par «Anterior» (secundario) + principal va alineado a la derecha en informativas, registros y cuestionarios (`.sx-step-actions`/`.sx-step-footer`). En el cuestionario, «Mantener mi respuesta y continuar» pasa a ser el principal (índigo). El pie de las informativas pierde la franja oscura: mismo fondo de la tarjeta y separador fino.
+- **Móvil:** el par en una fila 1fr / 2fr con el principal siempre en la segunda columna; si «Anterior» no cabe (contenedor de 320 px o menos), queda solo la flecha, con `aria-label="Anterior"`.
+- **Foco:** al cargar cada paso (y cada reacción) el foco va al botón principal del paso, nunca a «Anterior».
+- **Registros entregados en local:** sin «Anterior» en los pasos posteriores a la última consigna. En api, tras la entrega, el reproductor muestra el seguimiento y luego el fin, sin «Anterior».
+- **Conservación del estado:** sin guardado automático. En api, cada «Guardar y continuar» y cada «Anterior» guardan el borrador y el reproductor lo refleja; al volver, el podio y la encrucijada se muestran como quedaron. En local, lo escrito sigue en los borradores del navegador. Los cuestionarios reemplazan la respuesta, así que el resultado usa la última.
+- **Sin confirmación de cambio de rama:** no hay ramas (las elecciones solo agregan reacciones), así que no hay una rama abandonada con datos que confirmar.
+- **Accesibilidad:** las fichas del podio llevan `aria-label` con su nombre, como las tarjetas de la encrucijada.

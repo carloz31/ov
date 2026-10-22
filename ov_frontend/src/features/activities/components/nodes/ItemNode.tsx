@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import type { NodoItem, RespuestaItem } from '@/types/activities'
 import { DialogueBox } from '../DialogueBox'
-import { AccionesConAnterior } from '../AccionesConAnterior'
+import { PasoAnterior } from '../PasoAnterior'
 
 export function ItemNode({
   node,
@@ -27,7 +27,7 @@ export function ItemNode({
   onAnterior?: () => void
 }) {
   const mantener = existing && (
-    <button type="button" className="sx-secondary-button" disabled={busy} onClick={onContinue}>
+    <button type="button" className="sx-primary-button" disabled={busy} onClick={onContinue}>
       {readOnly ? 'Continuar la revisión' : 'Mantener mi respuesta y continuar'} <ArrowRight size={18} />
     </button>
   )
@@ -55,7 +55,12 @@ export function ItemNode({
       <p className="sx-player-note">
         No hay respuestas correctas o incorrectas. Elige lo que se parezca a ti.
       </p>
-      {onAnterior ? <AccionesConAnterior onAnterior={onAnterior}>{mantener}</AccionesConAnterior> : mantener}
+      {(mantener || onAnterior) && (
+        <div className="sx-step-footer">
+          {onAnterior && <PasoAnterior onClick={onAnterior} disabled={busy} />}
+          {mantener}
+        </div>
+      )}
     </>
   )
   return direct ? (

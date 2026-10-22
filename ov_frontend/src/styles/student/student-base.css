@@ -2726,11 +2726,54 @@ body:has([data-student-experience] .sx-shell) {
   font-size: 13px;
   font-weight: 700;
 }
-/* F01: «Anterior» a la izquierda del botón principal del paso. */
-.sx-root .sx-step-actions {
-  display: inline-flex;
+/* F01: pie de paso del reproductor. «Anterior» (secundario) a la izquierda del principal, el par a la
+   derecha en todos los pasos; en móvil, una fila 1fr / 2fr y el principal siempre en la segunda columna. */
+.sx-root .sx-step-actions,
+.sx-root .sx-step-footer {
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+}
+.sx-root .sx-step-actions {
+  display: inline-flex;
+  margin-left: auto;
+}
+.sx-root .sx-step-footer {
+  margin-top: 20px;
+}
+.sx-root.sx-player .sx-slide-card .sx-card-footer {
+  position: static;
+  margin-top: 24px;
+  padding: 16px 0 0;
+  border-top: 1px solid rgb(255 255 255 / 0.18);
+  background: transparent;
+}
+@media (max-width: 767px) {
+  .sx-root.sx-player .sx-step-actions,
+  .sx-root.sx-player .sx-step-footer {
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    width: 100%;
+    margin-left: 0;
+  }
+  .sx-root.sx-player :is(.sx-step-actions, .sx-step-footer) > button {
+    width: 100%;
+    min-width: 0;
+  }
+  .sx-root.sx-player :is(.sx-step-actions, .sx-step-footer) > :not(.sx-prev-button) {
+    grid-column: 2;
+  }
+  .sx-root.sx-player .sx-card-footer > .sx-primary-button,
+  .sx-root.sx-player .sx-dialogue-box footer > .sx-primary-button {
+    width: calc((100% - 8px) * 2 / 3);
+    margin-left: auto;
+  }
+}
+@container (max-width: 320px) {
+  .sx-root .sx-prev-label {
+    display: none;
+  }
 }

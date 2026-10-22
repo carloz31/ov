@@ -82,7 +82,13 @@
   color: var(--foreground);
   font-size: 14px;
   line-height: 1.25;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+@media (max-width: 767px) {
+  .sx-root .sx-podium-value strong {
+    font-size: 12px;
+  }
 }
 .sx-root .sx-podium-hint {
   margin: 0;

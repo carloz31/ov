@@ -86,7 +86,7 @@ export function RegistroConsignaNode({
           {aviso || error}
         </p>
       )}
-      <div className="sx-player-actions">
+      <div className="sx-player-actions sx-step-footer">
         {onAnterior && <PasoAnterior disabled={ocupado} onClick={() => onAnterior(text, selection)} />}
         <button type="submit" className="sx-primary-button" disabled={ocupado}>
           {ocupado ? 'Guardando…' : ultimo ? 'Entregar' : 'Guardar y continuar'}

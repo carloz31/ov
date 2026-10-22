@@ -262,7 +262,7 @@ export function SubmissionNode({
           {error}
         </p>
       )}
-      <div className="sx-player-actions">
+      <div className="sx-player-actions sx-step-footer">
         {onAnterior && <PasoAnterior onClick={onAnterior} disabled={busy} />}
         <button type="submit" className="sx-primary-button" disabled={busy}>
           {busy ? 'Guardando…' : existing ? 'Guardar nueva versión' : 'Guardar y continuar'}

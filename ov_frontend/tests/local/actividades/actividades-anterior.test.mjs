@@ -152,3 +152,75 @@ test('en un cuestionario local, «Anterior» vuelve al ítem con su opción marc
   assert.equal(item.props.existing.valor, valor)
   player.unmount()
 })
+
+test('en un registro local, los pasos posteriores a la entrega no tienen «Anterior»', () => {
+  const app = fixtureServidor({ api: false })
+  // DATO DE PRUEBA: registro mínimo ya entregado, retomado en el diálogo de cierre.
+  const activity = {
+    id: 'prueba-registro',
+    tipo: 'registro',
+    titulo: 'Prueba',
+    bloque: 1,
+    orden: 1,
+    obligatoria: false,
+    requisitos: [],
+    personajeIds: ['companero'],
+    nodos: [
+      { id: 'r1', tipo: 'dialogo', hablanteId: 'companero', texto: 'Hola' },
+      {
+        id: 'r2',
+        tipo: 'consigna',
+        premisa: '¿Qué piensas?',
+        entregable: { tipo: 'texto' },
+        obligatoria: true,
+        visibilidad: 'solo_estudiante',
+      },
+      { id: 'r3', tipo: 'dialogo', hablanteId: 'companero', texto: 'Gracias' },
+    ],
+  }
+  app.load('src/store/journeyStore.ts').updateJourney((s) => ({
+    ...s,
+    progress: { [activity.id]: { actividadId: activity.id, estado: 'en_curso', nodoActualId: 'r3' } },
+    submissions: [
+      {
+        id: 'e1',
+        estudianteId: 'est',
+        actividadId: activity.id,
+        nodoId: 'r2',
+        contenido: { tipo: 'texto', texto: 'Algo' },
+        version: 1,
+        enviadoEn: '2026-10-21T10:00:00',
+      },
+    ],
+  }))
+  const Reproductor = app.load(
+    'src/features/activities/components/StudentActivityPlayer.tsx',
+  ).StudentActivityPlayer
+  const player = app.mount(Reproductor, { activity, onClose() {} })
+  const tree = player.render()
+  assert.equal(de(tree, 'PlayerTopBar').props.index, 2)
+  assert.equal(de(tree, 'DialogueBox').props.onAnterior, undefined)
+  player.unmount()
+})
+
+test('en un cuestionario local, cambiar una respuesta al volver deja solo la última para el resultado', () => {
+  const { app, player } = abrir('act-tip-01')
+  const items = () => app.load('src/store/journeyStore.ts').getJourneySnapshot().items
+  while (!de(player.render(), 'ItemNode')) {
+    const tree = player.render()
+    const eleccion = de(tree, 'ChoiceNode')
+    if (eleccion) eleccion.props.onChoose(eleccion.props.node.opciones[0])
+    else de(tree, 'DialogueBox').props.onContinue()
+  }
+  let item = de(player.render(), 'ItemNode')
+  const [primera, segunda] = item.props.options.map((o) => o.value)
+  item.props.onAnswer(primera)
+  de(player.render(), 'DialogueBox').props.onAnterior()
+  item = de(player.render(), 'ItemNode')
+  assert.equal(item.props.existing.valor, primera)
+  item.props.onAnswer(segunda)
+  const respuestas = items().filter((r) => r.itemId === item.props.node.itemId)
+  assert.equal(respuestas.length, 1)
+  assert.equal(respuestas[0].valor, segunda)
+  player.unmount()
+})

@@ -111,6 +111,7 @@ export function RankingPodium({
                 type="button"
                 key={o.codigo}
                 className="sx-podium-chip"
+                aria-label={o.texto}
                 style={colocada ? { visibility: 'hidden' } : undefined}
                 aria-hidden={colocada || undefined}
                 tabIndex={colocada ? -1 : undefined}
