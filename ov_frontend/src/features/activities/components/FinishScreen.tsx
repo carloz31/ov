@@ -6,6 +6,7 @@ import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { FinishBackpackSection } from './FinishBackpackSection'
 import { FinishJournalSection } from './FinishJournalSection'
 import { FinishExtrasSection } from './FinishExtrasSection'
+import { FinishMedalsSection } from './FinishMedalsSection'
 import '../styles/finish.css'
 
 export function FinishScreen({
@@ -25,38 +26,47 @@ export function FinishScreen({
     yaCompletada,
   )
   const mochila = resumen.modo === 'recursos'
+  // Con mochila, la tarjeta tiene dos columnas; «Se abrió para ti» va a la derecha si la mochila es corta.
+  const novedades = mochila || resumen.modo === 'soloExtras'
+  const abierto = novedades && resumen.extras.length > 0 && <FinishExtrasSection extras={resumen.extras} />
   return (
     <div className="sx-card-stage">
       <section
         className={`sx-glass sx-player-card sx-finish-card sx-finish-summary case-scrollbar ${mochila ? 'has-backpack' : ''} ${resumen.totalRecursos >= 5 ? 'is-compact' : ''} ${resumen.modo === 'reintento' ? 'is-retry' : ''}`}
       >
-        <div className="sx-finish-intro">
-          <div className="sx-finish-avatar">
-            <LumiMedallion celebration />
-            <small>Lumi</small>
+        <div className="sx-finish-main">
+          <div className="sx-finish-intro">
+            <div className="sx-finish-avatar">
+              <LumiMedallion celebration />
+              <small>Lumi</small>
+            </div>
+            <h2>{resumen.titulo}</h2>
+            <p className="sx-finish-subtitle">{resumen.subtitulo}</p>
+            {!activity.recompensa?.mensajeFin?.startsWith('Obtuviste:') && activity.recompensa?.mensajeFin && (
+              <p>{activity.recompensa.mensajeFin}</p>
+            )}
+            {activity.id === 'act-tip-01' && (
+              <p className="sx-finish-note">
+                Has recorrido 1 de 14 encuentros. Las próximas voces de la aldea estarán disponibles cuando
+                orientación las prepare.
+              </p>
+            )}
           </div>
-          <h2>{resumen.titulo}</h2>
-          <p className="sx-finish-subtitle">{resumen.subtitulo}</p>
-          {!activity.recompensa?.mensajeFin?.startsWith('Obtuviste:') && activity.recompensa?.mensajeFin && (
-            <p>{activity.recompensa.mensajeFin}</p>
-          )}
-          {activity.id === 'act-tip-01' && (
-            <p className="sx-finish-note">
-              Has recorrido 1 de 14 encuentros. Las próximas voces de la aldea estarán disponibles cuando
-              orientación las prepare.
-            </p>
+          {novedades && resumen.medallas.length > 0 && <FinishMedalsSection medallas={resumen.medallas} />}
+          {!resumen.abiertoAlLado && abierto}
+          {resumen.diario.visible && activity.promptDiario && (
+            <FinishJournalSection
+              pregunta={activity.promptDiario}
+              nueva={resumen.diario.nueva}
+              onWrite={escribirDiario}
+            />
           )}
         </div>
-        {mochila && <FinishBackpackSection resumen={resumen} />}
-        {resumen.diario.visible && activity.promptDiario && (
-          <FinishJournalSection
-            pregunta={activity.promptDiario}
-            nueva={resumen.diario.nueva}
-            onWrite={escribirDiario}
-          />
-        )}
-        {(mochila || resumen.modo === 'soloExtras') && resumen.extras.length > 0 && (
-          <FinishExtrasSection extras={resumen.extras} tarjetas={!mochila} />
+        {mochila && (
+          <div className="sx-finish-side">
+            <FinishBackpackSection resumen={resumen} />
+            {resumen.abiertoAlLado && abierto}
+          </div>
         )}
         <footer className="sx-finish-footer">
           <button

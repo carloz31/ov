@@ -52,39 +52,49 @@ test('clasifica los ocho tipos y ordena los extras independientemente del recibo
     Array.from(resumen.testimonios, (t) => t.codigo),
     ['voz'],
   )
+  // Insignia y nivel salen de la lista: son medallas bajo el título.
   assert.deepEqual(
     Array.from(resumen.extras, (e) => e.tipo),
-    ['NIVEL', 'INSIGNIA', 'BLOQUE', 'ACTIVIDAD', 'CONVERSACIONES', 'pieza'],
+    ['BLOQUE', 'ACTIVIDAD', 'CONVERSACIONES', 'pieza'],
   )
   assert.deepEqual(
     Array.from(resumen.extras, (e) => e.texto),
     [
-      'Subiste a Cartógrafo de posibilidades',
-      'Nueva insignia: La llave de la ciudad',
       'La ciudad te espera',
-      'Se abrió: Las pistas que hablan de ti',
+      '1 actividad nueva en el mapa',
       'Conversaciones disponibles',
       'Pieza de llave: Molino · 2 de 4 para la ciudad',
     ],
   )
+  assert.deepEqual(copia(resumen.medallas.map((m) => [m.tipo, m.etiqueta, m.nombre])), [
+    ['INSIGNIA', 'Nueva insignia', 'La llave de la ciudad'],
+    ['NIVEL', 'Subiste de nivel', 'Cartógrafo de posibilidades'],
+  ])
   assert.equal(resumir([desbloqueo('BLOQUE', 'BOSQUE', 'Bosque')]).extras[0].texto, 'Nueva zona: Bosque')
 })
 
 test('las secciones abiertas tienen su texto en el cierre, como al cerrar t-valores (F01)', () => {
   const { resumir } = preparar()
   const valores = jsonServidor('ruta/ruta-continuar-sin-responder-t-valores').nuevos_desbloqueos
-  const r = resumir([...valores, desbloqueo('SECCION', 'DIARIO', 'Diario')])
+  const r = resumir([
+    ...valores,
+    desbloqueo('SECCION', 'CATALOGO', 'Catálogo'),
+    desbloqueo('SECCION', 'DIARIO', 'Diario'),
+    desbloqueo('SECCION', 'PLANES', 'Planes'),
+  ])
   assert.equal(r.modo, 'soloExtras')
+  // Todas las secciones del perfil en una sola fila; la sección de planes, en la suya.
   assert.deepEqual(copia(r.extras.map((e) => [e.tipo, e.texto])), [
-    ['SECCION', 'Se abrió: Diario'],
+    ['SECCIONES', 'Catálogo, Diario y Planes'],
     ['SECCION_PLAN', `Nueva sección en tus planes: ${valores[0].objetivo.nombre}`],
   ])
+  assert.equal(resumir([desbloqueo('SECCION', 'DIARIO', 'Diario')]).extras[0].texto, 'Diario')
 })
 
 test('agrupa dos actividades en un único extra', () => {
   const r = preparar().resumir([desbloqueo('ACTIVIDAD', 'a'), desbloqueo('ACTIVIDAD', 'b')])
   assert.equal(r.extras.length, 1)
-  assert.equal(r.extras[0].texto, '2 actividades nuevas')
+  assert.equal(r.extras[0].texto, '2 actividades nuevas en el mapa')
 })
 
 test('siete fichas dejan tres visibles y cuatro ocultas; cuatro se muestran completas', () => {
@@ -161,7 +171,8 @@ test('deduplica por tipo y código conservando objetivos de distintos tipos', ()
     ...ciudad(),
   ])
   assert.equal(r.totalRecursos, 2)
-  assert.equal(r.extras.length, 4)
+  assert.equal(r.extras.length, 2)
+  assert.equal(r.medallas.length, 2)
   assert.equal(r.fichas[0].nombre, 'igual')
 })
 
@@ -170,10 +181,8 @@ test('el título cambia al reunir cinco recursos y conserva el singular del subt
   const fichas = Array.from({ length: 4 }, (_, i) => desbloqueo('FICHA', `f-${i}`))
   assert.equal(resumir(fichas).titulo, 'Este hallazgo viaja contigo.')
   assert.equal(resumir([...fichas, desbloqueo('TESTIMONIO', 't')]).titulo, '¡Cuántos hallazgos juntos!')
-  assert.equal(
-    resumir(fichas.slice(0, 1)).subtitulo,
-    'Tu actividad quedó registrada. Guardamos 1 recurso nuevo en tu mochila.',
-  )
+  // La columna de la mochila ya muestra el conteo: el subtítulo no lo repite.
+  assert.equal(resumir(fichas.slice(0, 1)).subtitulo, 'Tu actividad quedó registrada.')
 })
 
 test('las secciones usan enlaces semánticos, límites, diario accesible e insignia al pasaporte', () => {
@@ -203,9 +212,56 @@ test('las secciones usan enlaces semánticos, límites, diario accesible e insig
     render('FinishJournalSection', { pregunta: '¿Qué aprendiste?', nueva: true, onWrite() {} }),
     /aria-label="Pregunta nueva"/,
   )
-  const extras = render('FinishExtrasSection', { extras: r.extras, tarjetas: true })
-  assert.match(extras, /href="\/student\/profile\?section=passport"/)
-  assert.match(extras, /<small>Nivel<\/small>/)
+  const medallas = render('FinishMedalsSection', { medallas: r.medallas })
+  assert.match(medallas, /href="\/student\/profile\?section=passport"/)
+  assert.match(medallas, /<small>Subiste de nivel<\/small>/)
+})
+
+test('«Se abrió para ti» enlaza cada sección y la zona, y la fila de actividades no tiene enlace', () => {
+  const { app, resumir } = preparar()
+  const r = resumir([
+    desbloqueo('SECCION', 'CATALOGO', 'Catálogo'),
+    desbloqueo('SECCION', 'CHECK_IN', 'Check-in'),
+    desbloqueo('SECCION', 'PLANES', 'Planes'),
+    desbloqueo('SECCION_PLAN', 'POR_QUE', 'Por qué'),
+    desbloqueo('BLOQUE', 'CIUDAD', 'La ciudad'),
+    desbloqueo('ACTIVIDAD', 'a'),
+    desbloqueo('ACTIVIDAD', 'b'),
+    desbloqueo('CONVERSACIONES', '-', 'Conversaciones'),
+  ])
+  const html = renderToStaticMarkup(
+    React.createElement(
+      MemoryRouter,
+      {},
+      React.createElement(app.load('src/features/activities/components/FinishExtrasSection.tsx').FinishExtrasSection, {
+        extras: r.extras,
+      }),
+    ),
+  )
+  const filas = html.split('<li>').slice(1)
+  assert.match(html, /<h3 id="finish-extras-title">Se abrió para ti<\/h3>/)
+  assert.match(
+    filas[0],
+    /<a href="\/student\/catalog\/professions"[^>]*>Catálogo<\/a>, Check-in y <a href="\/student\/profile\/decisions"[^>]*>Planes<\/a>/,
+  )
+  assert.match(filas[1], /Nueva sección en tus planes: Por qué.*href="\/student\/profile\/decisions"[^>]*>Ir</)
+  assert.match(filas[2], /La ciudad te espera.*href="\/student\/exploration"/)
+  assert.match(filas[3], /2 actividades nuevas en el mapa/)
+  assert.doesNotMatch(filas[3], /<a /)
+  assert.match(filas[4], /Conversaciones disponibles.*href="\/student\/conversations"/)
+})
+
+test('el número de recursos de la mochila decide en qué columna va «Se abrió para ti»', () => {
+  const { resumir } = preparar()
+  const fichas = (n) => Array.from({ length: n }, (_, i) => desbloqueo('FICHA', `f-${i}`))
+  const testimonios = (n) => Array.from({ length: n }, (_, i) => desbloqueo('TESTIMONIO', `t-${i}`))
+  assert.equal(resumir([...fichas(3), ...ciudad()]).abiertoAlLado, true)
+  assert.equal(resumir([...fichas(1), ...testimonios(1)]).abiertoAlLado, true)
+  assert.equal(resumir([...fichas(4)]).abiertoAlLado, false)
+  // Un testimonio con dos fichas ya ocupa demasiado alto aunque sean solo tres recursos.
+  assert.equal(resumir([...fichas(2), ...testimonios(1)]).abiertoAlLado, false)
+  // Sin mochila no hay columna derecha.
+  assert.equal(resumir(ciudad()).abiertoAlLado, false)
 })
 
 test('el cierre local muestra lo obtenido y un repaso no vuelve a ofrecerlo', () => {
