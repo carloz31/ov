@@ -8,7 +8,7 @@ export type RecursoCierre = {
   cita?: string
 }
 export type ExtraCierre = {
-  tipo: 'NIVEL' | 'INSIGNIA' | 'BLOQUE' | 'ACTIVIDAD' | 'CONVERSACIONES' | 'pieza'
+  tipo: 'NIVEL' | 'INSIGNIA' | 'BLOQUE' | 'ACTIVIDAD' | 'SECCION' | 'SECCION_PLAN' | 'CONVERSACIONES' | 'pieza'
   codigo: string
   texto: string
 }
@@ -55,7 +55,7 @@ export function resumirCierre(entrada: EntradaCierre): ResumenCierre {
   const testimonios = recursos('TESTIMONIO')
   const totalRecursos = fichas.length + testimonios.length
   const extras: ExtraCierre[] = []
-  const tipos = ['NIVEL', 'INSIGNIA', 'BLOQUE', 'ACTIVIDAD', 'CONVERSACIONES'] as const
+  const tipos = ['NIVEL', 'INSIGNIA', 'BLOQUE', 'ACTIVIDAD', 'SECCION', 'SECCION_PLAN', 'CONVERSACIONES'] as const
   for (const tipo of tipos) {
     const grupo = desbloqueos.filter((d) => d.tipo_objetivo === tipo)
     if (tipo === 'ACTIVIDAD' && grupo.length > 1) {
@@ -70,6 +70,8 @@ export function resumirCierre(entrada: EntradaCierre): ResumenCierre {
         INSIGNIA: `Nueva insignia: ${nombre}`,
         BLOQUE: codigo === 'CIUDAD' ? 'La ciudad te espera' : `Nueva zona: ${nombre}`,
         ACTIVIDAD: `Se abrió: ${nombre}`,
+        SECCION: `Se abrió: ${nombre}`,
+        SECCION_PLAN: `Nueva sección en tus planes: ${nombre}`,
         CONVERSACIONES: 'Conversaciones disponibles',
       }
       extras.push({ tipo, codigo, texto: textos[tipo] })

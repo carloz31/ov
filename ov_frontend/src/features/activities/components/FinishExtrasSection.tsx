@@ -1,4 +1,4 @@
-import { Award, Compass, KeyRound, Map, MessageCircle, TrendingUp } from 'lucide-react'
+import { Award, ClipboardList, Compass, KeyRound, LayoutGrid, Map, MessageCircle, TrendingUp } from 'lucide-react'
 import { Link } from 'react-router'
 import { appPaths } from '@/routes/paths'
 import type { ExtraCierre } from '../lib/finishSummary'
@@ -8,6 +8,8 @@ const iconos = {
   INSIGNIA: Award,
   BLOQUE: Map,
   ACTIVIDAD: Compass,
+  SECCION: LayoutGrid,
+  SECCION_PLAN: ClipboardList,
   CONVERSACIONES: MessageCircle,
   pieza: KeyRound,
 }
@@ -16,6 +18,8 @@ const rotulos = {
   INSIGNIA: 'Insignia',
   BLOQUE: 'Zona',
   ACTIVIDAD: 'Actividad',
+  SECCION: 'Sección',
+  SECCION_PLAN: 'Planes',
   CONVERSACIONES: 'Conversaciones',
   pieza: 'Pieza',
 }

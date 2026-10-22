@@ -70,6 +70,17 @@ test('clasifica los ocho tipos y ordena los extras independientemente del recibo
   assert.equal(resumir([desbloqueo('BLOQUE', 'BOSQUE', 'Bosque')]).extras[0].texto, 'Nueva zona: Bosque')
 })
 
+test('las secciones abiertas tienen su texto en el cierre, como al cerrar t-valores (F01)', () => {
+  const { resumir } = preparar()
+  const valores = jsonServidor('ruta/ruta-continuar-sin-responder-t-valores').nuevos_desbloqueos
+  const r = resumir([...valores, desbloqueo('SECCION', 'DIARIO', 'Diario')])
+  assert.equal(r.modo, 'soloExtras')
+  assert.deepEqual(copia(r.extras.map((e) => [e.tipo, e.texto])), [
+    ['SECCION', 'Se abrió: Diario'],
+    ['SECCION_PLAN', `Nueva sección en tus planes: ${valores[0].objetivo.nombre}`],
+  ])
+})
+
 test('agrupa dos actividades en un único extra', () => {
   const r = preparar().resumir([desbloqueo('ACTIVIDAD', 'a'), desbloqueo('ACTIVIDAD', 'b')])
   assert.equal(r.extras.length, 1)
