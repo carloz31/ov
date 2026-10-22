@@ -169,6 +169,7 @@ export interface NodoConsigna extends NodoBase {
   item?: ID // en api, código del ítem de registro del servidor que responde esta consigna (F01)
   podio?: ConfigPodio // en api, textos e íconos del podio de una elección «top N»
   eleccion?: ConfigEleccion // en api, textos e íconos de una elección guiada sin orden
+  eco?: ID // en api, código de la referencia TEXTO que se cita sobre esta consigna (F02)
 }
 
 // Podio de una elección ordenada «top N» (F01). Todo es opcional: sin él se usan textos genéricos.

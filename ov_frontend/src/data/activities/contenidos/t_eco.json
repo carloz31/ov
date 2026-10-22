@@ -11,7 +11,39 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-eco-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Volvamos a lo que me contaste en tus expectativas. ¿Sigue igual?"
+    },
+    {
+      "id": "t-eco-ruta",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "item": "t-eco-ruta"
+    },
+    {
+      "id": "t-eco-espera",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "item": "t-eco-espera",
+      "eco": "t-ref-espera"
+    }
+  ],
   "mapa": {
     "x": 520,
     "y": 480,

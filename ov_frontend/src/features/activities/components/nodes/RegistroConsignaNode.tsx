@@ -1,10 +1,11 @@
-import { useState, type ReactNode } from 'react'
+import { useState, type ComponentProps, type ReactNode } from 'react'
 import { Check } from 'lucide-react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
 import { pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
 import { CharacterAvatar } from '@/components/student/CharacterAvatar'
 import { RegistroOpciones } from './RegistroOpciones'
+import { RegistroEco } from './RegistroEco'
 import { PasoAnterior } from '../PasoAnterior'
 import '../../styles/registro-guiado.css'
 
@@ -20,6 +21,7 @@ export function RegistroConsignaNode({
   onAnterior,
   consulta,
   salida,
+  eco,
 }: {
   node: NodoConsigna
   item: ItemRegistroPublico
@@ -33,6 +35,8 @@ export function RegistroConsignaNode({
   // Consulta de un registro entregado (F02) y la salida de la pantalla de fin para su última consigna.
   consulta?: ConsultaRegistro
   salida?: ReactNode
+  // Lo que esta consigna retoma de otra actividad (F02); sin dato, no llega.
+  eco?: ComponentProps<typeof RegistroEco>['eco']
 }) {
   const [text, setText] = useState(inicial.texto)
   const [selection, setSelection] = useState(inicial.opciones)
@@ -70,6 +74,7 @@ export function RegistroConsignaNode({
     >
       {node.hablanteId && <CharacterAvatar id={node.hablanteId} size="sm" />}
       <p className="sx-submission-visibility">Visible para ti y tu orientadora. Se guarda en tu cuenta.</p>
+      {eco && <RegistroEco eco={eco} />}
       {eleccion ? (
         <>
           <p className="sx-submission-label">
@@ -122,6 +127,8 @@ function validar(item: ItemRegistroPublico, texto: string, seleccion: OpcionEleg
     return eleccion.minima === eleccion.maxima
       ? `Elige ${eleccion.minima} ${eleccion.minima === 1 ? 'opción' : 'opciones'}.`
       : `Elige al menos ${eleccion.minima} ${eleccion.minima === 1 ? 'opción' : 'opciones'}.`
-  if (seleccion.some((o) => o.codigo === 'OTRA' && !o.texto?.trim())) return 'Escribe cuál es tu otra opción.'
+  // La «otra» de una elección por referencia ya trae su texto de la fuente: se elige sin escribirla.
+  if (eleccion.permite_otra && seleccion.some((o) => o.codigo === 'OTRA' && !o.texto?.trim()))
+    return 'Escribe cuál es tu otra opción.'
   return ''
 }

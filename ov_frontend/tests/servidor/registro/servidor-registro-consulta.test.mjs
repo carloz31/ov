@@ -10,7 +10,12 @@ const consolidadaDe = (item) => porAmpliar.respuestas.find((r) => r.item === ite
 const NODOS = ['RegistroConsignaNode', 'RegistroPodioNode', 'RegistroEleccionNode']
 const consigna = (tree) => elementos(tree, (e) => NODOS.includes(e.type?.name))[0]
 // DATO DE PRUEBA: la respuesta de editar cuando la edición queda adecuada y cierra el intento.
-const edicionCerrada = { ...porAmpliar, items_por_ampliar: [], eventos_registrados: [], nuevos_desbloqueos: [] }
+const edicionCerrada = {
+  ...porAmpliar,
+  items_por_ampliar: [],
+  eventos_registrados: [],
+  nuevos_desbloqueos: [],
+}
 
 async function consultaValores(opciones = {}) {
   const { app, items } = await iniciar({ actividad: 't-valores', registro: porAmpliar, ...opciones })
@@ -22,7 +27,10 @@ async function recorrer(player, textos = {}) {
   for (;;) {
     const nodo = consigna(player.render())
     if (nodo.props.ultimo) return nodo
-    nodo.props.onGuardar(textos[nodo.props.item.codigo] ?? nodo.props.inicial.texto, nodo.props.inicial.opciones)
+    nodo.props.onGuardar(
+      textos[nodo.props.item.codigo] ?? nodo.props.inicial.texto,
+      nodo.props.inicial.opciones,
+    )
     await esperar()
   }
 }
@@ -106,7 +114,10 @@ test('con un texto cambiado, «Entregar cambios» envía solo ese ítem y sigue 
     actividad: 't-valores',
     items: [{ item: 't-val-orden', texto: nuevo }],
   })
-  assert.equal(app.requests.some((r) => r.url.endsWith('/guardar-borrador')), false)
+  assert.equal(
+    app.requests.some((r) => r.url.endsWith('/guardar-borrador')),
+    false,
+  )
   const seguimiento = elementos(player.render(), (e) => e.type?.name === 'RegistroSeguimiento')[0]
   assert.ok(seguimiento.props.porAmpliar)
   seguimiento.props.onContinuar()
@@ -135,7 +146,10 @@ test('volver a la consolidada deshace el cambio; «Anterior» conserva lo escrit
 test('un ítem no obligatorio sin responder se muestra con el texto vacío y sin poder editarse', async () => {
   // DATO DE PRUEBA: t-val-breve opcional y entregado sin texto.
   const registro = copia(porAmpliar)
-  Object.assign(registro.respuestas.find((r) => r.item === 't-val-breve'), { texto_consolidado: null })
+  Object.assign(
+    registro.respuestas.find((r) => r.item === 't-val-breve'),
+    { texto_consolidado: null },
+  )
   const { app, items } = await iniciar({ actividad: 't-valores', registro })
   items.find((i) => i.codigo === 't-val-breve').obligatorio = false
   const player = await abrir(app, 't-valores')
@@ -168,7 +182,10 @@ test('la elección guiada de t-expectativas se consulta con sus tarjetas, marcad
   const universidad = elementos(vista, (e) => e.key === 'UNIVERSIDAD')[0]
   assert.equal(universidad.props['aria-disabled'], true)
   universidad.props.onClick()
-  assert.equal(app.requests.some((r) => r.url.endsWith('/guardar-borrador')), false)
+  assert.equal(
+    app.requests.some((r) => r.url.endsWith('/guardar-borrador')),
+    false,
+  )
 })
 
 test('tras editar, el aviso de ítems por ampliar del drawer se actualiza al volver a abrirlo', async () => {
@@ -189,10 +206,7 @@ test('tras editar, el aviso de ítems por ampliar del drawer se actualiza al vol
     vista.unmount()
     return tree
   }
-  assert.deepEqual(
-    copia((await drawer()).props.filas.map((f) => f.item)),
-    ['t-val-orden'],
-  )
+  assert.deepEqual(copia((await drawer()).props.filas.map((f) => f.item)), ['t-val-orden'])
   const { editarRegistro } = app.load('src/store/servidor/registro.ts')
   await editarRegistro('t-valores', [{ item: 't-val-orden', texto: 'DATO DE PRUEBA: ampliado' }])
   vigente = { ...porAmpliar, items_por_ampliar: [] }

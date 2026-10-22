@@ -216,6 +216,7 @@ export function NodeRenderer({
               }
               consulta={registro.consultaDe(itemRegistro.codigo)}
               salida={<VolverAlMapa actividad={activity.id} />}
+              {...(Nodo === RegistroConsignaNode ? { eco: registro.ecoDe(node) } : {})}
             />
           )
         })()}

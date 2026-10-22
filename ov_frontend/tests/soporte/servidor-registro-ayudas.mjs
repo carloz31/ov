@@ -11,14 +11,23 @@ import {
 } from './servidor-ayudas.mjs'
 
 // F01: abre los registros de T1 con sus ítems y lo guardado en el servidor (pruebas de registro).
-// F02: `editar` es la respuesta de POST /acciones/registro/editar; `registro` puede ser una función, para que
-// la consulta cambie tras editar.
-export async function iniciar({ actividad = 't-expectativas', registro, ruta = '/student/missions', editar } = {}) {
+// F02: `referencias` responde GET …/referencias y `editar`, POST /acciones/registro/editar; `registro` puede
+// ser una función, para que la consulta cambie tras editar.
+export async function iniciar({
+  actividad = 't-expectativas',
+  registro,
+  ruta = '/student/missions',
+  editar,
+  referencias,
+} = {}) {
   const app = fixtureServidor({ ruta }),
     estado = escenarioRuta('t1')
   // DATO DE PRUEBA: t-valores disponible, como tras completar t-expectativas.
-  const valores = estado.bloques.flatMap((b) => b.actividades).find((a) => a.codigo === 't-valores')
-  Object.assign(valores, { estado: 'DISPONIBLE', visible: true, bloqueo: null })
+  // DATO DE PRUEBA (F02): t-eco también, como tras entregar t-expectativas.
+  for (const codigo of ['t-valores', 't-eco']) {
+    const actividad = estado.bloques.flatMap((b) => b.actividades).find((a) => a.codigo === codigo)
+    Object.assign(actividad, { estado: 'DISPONIBLE', visible: true, bloqueo: null })
+  }
   const items = jsonServidor(`ruta/ruta-items-registro-${actividad}`)
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
@@ -33,6 +42,7 @@ export async function iniciar({ actividad = 't-expectativas', registro, ruta = '
         },
       }
     if (req.url.endsWith('/registro/editar') && editar) return { body: editar }
+    if (req.url.endsWith('/referencias') && referencias) return { body: referencias }
     if (req.url.endsWith('/guardar-borrador')) return { body: { item: req.body.item, estado: 'BORRADOR' } }
     throw Error(`Solicitud no configurada: ${req.url}`)
   })

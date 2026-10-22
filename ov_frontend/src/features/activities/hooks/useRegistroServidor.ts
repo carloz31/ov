@@ -8,18 +8,25 @@ import {
   responderSeguimiento,
   type AccionRegistro,
 } from '@/store/servidor/registro'
-import { mensajeErrorServidor } from '@/store/servidor/sesion'
+import { mensajeErrorServidor, obtenerEstadoServidor } from '@/store/servidor/sesion'
+import { actividadServidor } from '@/lib/servidor/adaptadores'
 import type { Nodo } from '@/types/activities'
 import type {
   ItemRegistroPublico,
   OpcionElegida,
+  ReferenciaResuelta,
   RegistroConsultado,
   RespuestaRegistroAccion,
   RespuestaRegistroPublica,
 } from '@/types/servidor'
 import { anotarCambio, consolidada, consultaDe, edicionesDe, esConsulta } from '../lib/edicionRegistro'
 
-export type RegistroServidor = { items: ItemRegistroPublico[]; registro: RegistroConsultado }
+export type RegistroServidor = {
+  items: ItemRegistroPublico[]
+  registro: RegistroConsultado
+  // F02: lo que el registro retoma de la cuenta (elecciones por referencia y ecos).
+  referencias?: ReferenciaResuelta[]
+}
 export type TurnoRegistro = { orden: number; pregunta: string; respuesta?: string; omitida: boolean }
 
 // Lo escrito antes de entregar: el primer mensaje de la conversación y las opciones elegidas.
@@ -246,6 +253,14 @@ export function useRegistroServidor({
     },
     consultaDe: (item: string) => (consulta && registro ? consultaDe(registro, item, cambios) : undefined),
     puedeEditarRegistro: modoApi && consulta,
+    // Zona de eco de una consigna (F02): la referencia TEXTO que cita y el título de su actividad de origen.
+    ecoDe: (nodo: Nodo) => {
+      const codigo = nodo.tipo === 'consigna' ? nodo.eco : undefined
+      const referencia = codigo && registroServidor?.referencias?.find((r) => r.codigo === codigo)
+      if (!referencia || referencia.estado === 'SIN_DATO') return undefined
+      const origen = actividadServidor(obtenerEstadoServidor().actividades.datos, referencia.actividad ?? '')
+      return { estado: referencia.estado, texto: referencia.texto ?? '', titulo: origen?.titulo ?? '' }
+    },
     guardar,
     retroceder,
     reintentar: () => ultima.current?.(),

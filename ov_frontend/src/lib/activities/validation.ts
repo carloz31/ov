@@ -6,6 +6,9 @@ export function validateActivity(activity: Actividad) {
   if (activity.nodos.some((node) => !NODOS_PERMITIDOS[activity.tipo].includes(node.tipo)))
     throw new Error(`Nodos incompatibles en ${activity.id}`)
   for (const node of activity.nodos) {
+    // F02: el eco se pinta sobre la consigna que responde un ítem del servidor.
+    if (node.tipo === 'consigna' && node.eco && !node.item)
+      throw new Error(`La consigna ${activity.id}/${node.id} cita una referencia sin ítem`)
     if (node.tipo !== 'diapositiva') continue
     // F04d: el visor de la mochila abre un recurso a la vez; una diapositiva no puede traer más de uno.
     if ((node.recursoIds?.length ?? 0) > 1)
