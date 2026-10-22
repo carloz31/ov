@@ -65,7 +65,9 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
     const resultado = await cargarResultadoRiasec()
     if (!vigente()) return cambioCuenta()
     if (resultado.tipo !== 'ok') return resultado
-  } else publicar({ resultadoRiasec: null, estadoResultado: 'pendiente', errorResultado: null })
+  } else if (!obtenerEstadoServidor().instrumentos.resultados['APL-RIASEC'])
+    // F03: en `ruta` no hay act-tip-final; un resultado RIASEC ya leído por el libro se conserva.
+    publicar({ resultadoRiasec: null, estadoResultado: 'pendiente', errorResultado: null })
   return { tipo: 'ok', datos: null }
 }
 

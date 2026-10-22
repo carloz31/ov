@@ -5,7 +5,9 @@ import { ciudadDisponible } from '@/lib/servidor/adaptadores'
 import { modoApi } from '@/config/env'
 import { cuentaActiva } from './cuenta'
 import type {
+  AvanceInstrumento,
   BloqueActividades,
+  ComparacionAutopercepcion,
   ContenidoEstado,
   ResumenCuenta,
   LogrosCuenta,
@@ -13,6 +15,7 @@ import type {
   DesbloqueoNuevo,
   ErrorServidor,
   RespuestaServidor,
+  ResultadoHistorico,
   ResultadoPublico,
   SeccionEstado,
 } from '@/types/servidor'
@@ -31,6 +34,17 @@ export type DatosSecciones = {
   secciones: SeccionEstado[]
 }
 export type NombreSeccion = keyof DatosSecciones
+// F03: lo que lee el libro de Helena. Se pide al abrir el libro o su vista explicada.
+export type EstadoInstrumentos = {
+  estado: 'sin_cargar' | 'cargando' | 'listo' | 'error'
+  error: ErrorServidor | null
+  avance: AvanceInstrumento[] | null
+  // Resultado vigente por código de aplicación (solo las reveladas).
+  resultados: Record<string, ResultadoPublico>
+  comparacion: ComparacionAutopercepcion | null
+  // Historial de TEST-RIASEC, solo con perfil plano: dice si el reinicio ya se usó.
+  historialRiasec: ResultadoHistorico[] | null
+}
 export type AlmacenServidor = { [N in NombreSeccion]: Seccion<DatosSecciones[N]> } & {
   cargando: boolean
   error: ErrorServidor | null
@@ -47,6 +61,7 @@ export type AlmacenServidor = { [N in NombreSeccion]: Seccion<DatosSecciones[N]>
   resultadoRiasec: ResultadoPublico | null
   estadoResultado: 'sin_cargar' | 'cargando' | 'pendiente' | 'listo' | 'error'
   errorResultado: ErrorServidor | null
+  instrumentos: EstadoInstrumentos
 }
 function vacia<T>(): Seccion<T> {
   return { datos: null, estado: 'sin_cargar', error: null }
@@ -71,6 +86,14 @@ const inicial = (): AlmacenServidor => ({
   resultadoRiasec: null,
   estadoResultado: 'sin_cargar',
   errorResultado: null,
+  instrumentos: {
+    estado: 'sin_cargar',
+    error: null,
+    avance: null,
+    resultados: {},
+    comparacion: null,
+    historialRiasec: null,
+  },
 })
 let almacen = inicial()
 let revisionCuenta = 0

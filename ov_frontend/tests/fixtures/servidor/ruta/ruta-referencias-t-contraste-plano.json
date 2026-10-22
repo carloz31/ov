@@ -1,0 +1,16 @@
+{
+  "referencias": [
+    {
+      "codigo": "t-ref-coincidencias",
+      "estado": "DISPONIBLE",
+      "opciones": [],
+      "tipo": "COINCIDENCIAS"
+    },
+    {
+      "codigo": "t-ref-resultado",
+      "estado": "DISPONIBLE",
+      "opciones": [],
+      "tipo": "RESULTADO"
+    }
+  ]
+}

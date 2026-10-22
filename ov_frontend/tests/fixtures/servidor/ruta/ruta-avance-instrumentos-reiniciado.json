@@ -1,0 +1,59 @@
+[
+  {
+    "aplicaciones": [
+      {
+        "actividades": {
+          "completadas": 0,
+          "faltantes": [
+            "t-llegada"
+          ],
+          "total": 1
+        },
+        "aplicacion": "APL-LLEGADA",
+        "estado": "NO_INICIADO",
+        "hay_resultado_vigente": false,
+        "items": {
+          "respondidos": 0,
+          "total": 19
+        }
+      },
+      {
+        "actividades": {
+          "completadas": 1,
+          "faltantes": [],
+          "total": 1
+        },
+        "aplicacion": "APL-PARTIDA",
+        "estado": "COMPLETADO",
+        "hay_resultado_vigente": false,
+        "items": {
+          "respondidos": 19,
+          "total": 19
+        }
+      }
+    ],
+    "instrumento": "TEST-PARTIDA-LLEGADA"
+  },
+  {
+    "aplicaciones": [
+      {
+        "actividades": {
+          "completadas": 0,
+          "faltantes": [
+            "t-mision-intereses",
+            "t-mision-intereses-2"
+          ],
+          "total": 2
+        },
+        "aplicacion": "APL-RIASEC",
+        "estado": "EN_PROGRESO",
+        "hay_resultado_vigente": false,
+        "items": {
+          "respondidos": 0,
+          "total": 60
+        }
+      }
+    ],
+    "instrumento": "TEST-RIASEC"
+  }
+]

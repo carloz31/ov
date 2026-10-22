@@ -202,7 +202,28 @@ export type ResultadoPublico = {
   coincidencias?: CoincidenciaPublica[] | null
   carreras_recomendadas?: CarreraRecomendada[] | null
 }
-
+export type ResultadoHistorico = ResultadoPublico & { anulado_en: string | null }
+export type ZonaDimension = 'FUERTE' | 'EN_CAMINO' | 'POR_TRABAJAR'
+export type ComparacionItem = { item: string; enunciado: string; partida: string; llegada: string; cambio: boolean }
+export type ComparacionDimension = {
+  codigo: string
+  nombre: string
+  descripcion: string
+  tematica: string | null
+  zona_partida: ZonaDimension
+  zona_llegada: ZonaDimension
+  actividades_completadas: number
+  items: ComparacionItem[]
+}
+export type ComparacionAutopercepcion = { instrumento: string; partida: string; llegada: string } & {
+  dimensiones: ComparacionDimension[]
+}
+type AccionInstrumento = RespuestaAccion & { cuenta: string; instrumento: string; aplicacion: string }
+export type RespuestaRevelarResultado = AccionInstrumento & { perfil_plano: boolean }
+export type RespuestaReiniciarInstrumento = AccionInstrumento & {
+  resultado_anulado: { instrumento: string; aplicacion: string; calculado_en: string; anulado_en: string }
+  actividades_reiniciadas: string[]
+}
 export type ResumenCuenta = { cuenta: CuentaResumen; nivel_actual: NivelActual | null }
 export type ActividadCuenta = ActividadEstado & {
   tipo: 'INFORMATIVA' | 'REGISTRO' | 'CUESTIONARIO' | 'CASO' | 'BATALLA'

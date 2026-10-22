@@ -14,7 +14,8 @@ from soporte_ruta import BLOQUE_FAMILIA
 from app import main as principal
 from app.schemas.referencias import ReferenciasConsultadas
 from app.schemas.acciones import (
-    RespuestaAccion, RespuestaResolverBatalla, RespuestaResolverCaso, RespuestaRevelarResultado,
+    RespuestaAccion, RespuestaReiniciarInstrumento, RespuestaResolverBatalla, RespuestaResolverCaso,
+    RespuestaRevelarResultado,
 )
 from app.schemas.batallas import BatallaCuenta, PreguntaIntento
 from app.schemas.casos import CasoCuenta, OcupacionColeccion
@@ -35,7 +36,9 @@ from app.schemas.actividades import BloqueActividades
 from app.schemas.comun import ContenidoEstado
 from app.schemas.logros import LogrosCuenta
 from app.schemas.secciones import SeccionEstado
-from app.schemas.instrumentos import ComparacionAutopercepcion, ItemPublico, ResultadoPublico
+from app.schemas.instrumentos import (
+    AvanceInstrumento, ComparacionAutopercepcion, ItemPublico, ResultadoHistorico, ResultadoPublico,
+)
 from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
 
 
@@ -67,6 +70,13 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'completar-conversacion', 'conversaciones-final',
     'sesion-ingresar-estudiante', 'sesion-ingresar-apoderado', 'sesion-ingresar-orientadora',
     'sesion-estudiante', 'sesion-apoderado', 'sesion-orientadora', 'sesion-error',
+    # F03: avance para el libro de Helena, llegada, perfil plano con su reinicio y resultados sin diploma.
+    'avance-instrumentos-inicial', 'avance-instrumentos-partida-lista', 'avance-instrumentos-riasec-listo',
+    'avance-instrumentos-llegada-lista', 'avance-instrumentos-final', 'avance-instrumentos-reiniciado',
+    'items-t-mision-intereses-2', 'items-t-llegada', 'revelar-llegada', 'resultado-llegada',
+    'revelar-riasec-plano', 'resultado-riasec-plano', 'historial-riasec-plano', 'historial-riasec',
+    'reiniciar-riasec', 'referencias-t-contraste-plano', 'referencias-t-contraste-reiniciado',
+    'familia-resultados-sin-diploma',
 )}
 
 
@@ -148,6 +158,32 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     comparacion = ComparacionAutopercepcion.model_validate(datos['comparacion-partida-llegada'])
     assert [(d.zona_partida, d.zona_llegada) for d in comparacion.dimensiones][1:] == [('EN_CAMINO', 'FUERTE')] * 4
     assert 'puntaje' not in json.dumps(datos['comparacion-partida-llegada'])
+    # F03: el avance distingue «listo para revelar» (COMPLETADO sin resultado vigente).
+    def aplicacion(momento, codigo):
+        avance = TypeAdapter(list[AvanceInstrumento]).validate_python(datos[f'avance-instrumentos-{momento}'])
+        return next((a.estado, a.hay_resultado_vigente) for i in avance for a in i.aplicaciones
+                    if a.aplicacion == codigo)
+    assert aplicacion('inicial', 'APL-PARTIDA') == ('NO_INICIADO', False)
+    assert aplicacion('partida-lista', 'APL-PARTIDA') == ('COMPLETADO', False)
+    assert aplicacion('riasec-listo', 'APL-RIASEC') == ('COMPLETADO', False)
+    assert aplicacion('llegada-lista', 'APL-LLEGADA') == ('COMPLETADO', False)
+    assert aplicacion('final', 'APL-LLEGADA') == ('COMPLETADO', True)
+    assert aplicacion('reiniciado', 'APL-RIASEC') == ('EN_PROGRESO', False)
+    TypeAdapter(list[ItemPublico]).validate_python(datos['items-t-llegada'])
+    RespuestaRevelarResultado.model_validate(datos['revelar-llegada'])
+    assert {d.zona for d in ResultadoPublico.model_validate(datos['resultado-llegada']).dimensiones} >= {'FUERTE'}
+    assert RespuestaRevelarResultado.model_validate(datos['revelar-riasec-plano']).perfil_plano
+    assert ResultadoPublico.model_validate(datos['resultado-riasec-plano']).coincidencias == []
+    plano, = TypeAdapter(list[ResultadoHistorico]).validate_python(datos['historial-riasec-plano'])
+    assert plano.perfil_plano and plano.anulado_en is None
+    anulado, = TypeAdapter(list[ResultadoHistorico]).validate_python(datos['historial-riasec'])
+    assert anulado.perfil_plano and anulado.anulado_en is not None
+    RespuestaReiniciarInstrumento.model_validate(datos['reiniciar-riasec'])
+    assert {(r.estado, tuple(r.opciones or ())) for r in ReferenciasConsultadas.model_validate(
+        datos['referencias-t-contraste-plano']).referencias} == {('DISPONIBLE', ())}
+    assert {r.estado for r in ReferenciasConsultadas.model_validate(
+        datos['referencias-t-contraste-reiniciado']).referencias} == {'SIN_DATO'}
+    assert datos['familia-resultados-sin-diploma']['detail']['mensaje']
     TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-expectativas'])
     EstadoItemRegistro.model_validate(datos['borrador-t-expectativas'])
     borrador = RegistroConsultado.model_validate(datos['registro-t-expectativas-borrador'])

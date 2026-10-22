@@ -1,0 +1,62 @@
+{
+  "aplicacion": "APL-RIASEC",
+  "calculado_en": "2026-10-07T10:00:00",
+  "carreras_recomendadas": [],
+  "codigo_interes": {
+    "codigo": "RIA",
+    "hay_empate": true
+  },
+  "coincidencias": [],
+  "dimensiones": [
+    {
+      "codigo": "R",
+      "descripcion": "Te atraen las actividades prácticas: trabajar con las manos, usar herramientas o máquinas y estar al aire libre.",
+      "nombre": "Realista",
+      "porcentaje": 50.0,
+      "puntaje": 20.0,
+      "puntaje_maximo": 40.0
+    },
+    {
+      "codigo": "I",
+      "descripcion": "Te atrae observar, preguntar y analizar para entender cómo y por qué funcionan las cosas.",
+      "nombre": "Investigativa",
+      "porcentaje": 50.0,
+      "puntaje": 20.0,
+      "puntaje_maximo": 40.0
+    },
+    {
+      "codigo": "A",
+      "descripcion": "Te atrae crear, imaginar y expresarte con libertad, sin reglas rígidas.",
+      "nombre": "Artística",
+      "porcentaje": 50.0,
+      "puntaje": 20.0,
+      "puntaje_maximo": 40.0
+    },
+    {
+      "codigo": "S",
+      "descripcion": "Te atrae ayudar, enseñar, cuidar o acompañar a otras personas.",
+      "nombre": "Social",
+      "porcentaje": 50.0,
+      "puntaje": 20.0,
+      "puntaje_maximo": 40.0
+    },
+    {
+      "codigo": "E",
+      "descripcion": "Te atrae liderar, convencer, organizar proyectos y tomar decisiones.",
+      "nombre": "Emprendedora",
+      "porcentaje": 50.0,
+      "puntaje": 20.0,
+      "puntaje_maximo": 40.0
+    },
+    {
+      "codigo": "C",
+      "descripcion": "Te atrae ordenar información, seguir procedimientos claros y trabajar con datos de forma precisa.",
+      "nombre": "Convencional",
+      "porcentaje": 50.0,
+      "puntaje": 20.0,
+      "puntaje_maximo": 40.0
+    }
+  ],
+  "instrumento": "TEST-RIASEC",
+  "perfil_plano": true
+}

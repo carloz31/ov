@@ -1,9 +1,11 @@
 import { obtener } from './cliente'
 import type {
   AvanceInstrumento,
+  ComparacionAutopercepcion,
   ItemPublico,
   RespuestasActividad,
   RespuestaServidor,
+  ResultadoHistorico,
   ResultadoPublico,
 } from '@/types/servidor'
 
@@ -24,11 +26,28 @@ export function obtenerAvance(cuenta: string): Promise<RespuestaServidor<AvanceI
   return obtener(`/cuentas/${encodeURIComponent(cuenta)}/instrumentos`)
 }
 
+const rutaInstrumento = (cuenta: string, instrumento: string) =>
+  `/cuentas/${encodeURIComponent(cuenta)}/instrumentos/${encodeURIComponent(instrumento)}`
+
 export function obtenerResultado(
   cuenta: string,
   instrumento: string,
+  aplicacion?: string,
 ): Promise<RespuestaServidor<ResultadoPublico>> {
-  return obtener<ResultadoPublico>(
-    `/cuentas/${encodeURIComponent(cuenta)}/instrumentos/${encodeURIComponent(instrumento)}/resultado`,
-  )
+  const consulta = aplicacion ? `?aplicacion=${encodeURIComponent(aplicacion)}` : ''
+  return obtener<ResultadoPublico>(`${rutaInstrumento(cuenta, instrumento)}/resultado${consulta}`)
+}
+
+export function obtenerHistorial(
+  cuenta: string,
+  instrumento: string,
+): Promise<RespuestaServidor<ResultadoHistorico[]>> {
+  return obtener(`${rutaInstrumento(cuenta, instrumento)}/historial`)
+}
+
+export function obtenerComparacion(
+  cuenta: string,
+  instrumento: string,
+): Promise<RespuestaServidor<ComparacionAutopercepcion>> {
+  return obtener(`${rutaInstrumento(cuenta, instrumento)}/comparacion`)
 }

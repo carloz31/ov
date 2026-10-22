@@ -141,6 +141,7 @@ def _recorrer(cliente):
     fixtures = {'cuentas': _pedir(cliente, 'GET', '/cuentas')}
     fixtures.update(_consultas_dominio(
         cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros', 'secciones', 'testimonios')))
+    fixtures['avance-instrumentos-inicial'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     fixtures['completar-t-inicio'] = _completar(cliente, 't-inicio')
     # B11: dos planes antes de cerrar el camino; el primero queda como opción inicial. t-inicio abre POR_QUE.
     for carrera in ('psychology', 'journalism'):
@@ -151,6 +152,8 @@ def _recorrer(cliente):
             'relato': 'DATO DE PRUEBA: un día expliqué un tema a mi primo y sentí que era lo mío.'})
     # B07: el punto de partida está en T0, antes de su cierre; se revela y se cita en t-lee-cuestionario.
     fixtures['items-t-partida'] = _responder_partida(cliente, 't-partida', 3)
+    # F03: COMPLETADO sin resultado vigente es «listo para revelar».
+    fixtures['avance-instrumentos-partida-lista'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     fixtures['revelar-partida'] = _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
         'cuenta': 'est-ana', 'instrumento': PARTIDA_LLEGADA, 'aplicacion': 'APL-PARTIDA', 'fecha_hora': FECHA})
     fixtures['resultado-partida'] = _pedir(
@@ -276,13 +279,13 @@ def _recorrer(cliente):
         'fecha_hora': FECHA})
     for mision in MISIONES_INTERESES:
         items = _pedir(cliente, 'GET', f'/actividades/{mision}/items')
-        if mision == MISIONES_INTERESES[0]:
-            fixtures[f'items-{mision}'] = items
+        fixtures[f'items-{mision}'] = items
         _pedir(cliente, 'POST', '/acciones/responder-items', {
             'cuenta': 'est-ana', 'actividad': mision, 'fecha_hora': FECHA,
             'respuestas': [{'item': item['codigo'], 'opcion': OPCIONES[item['dimension']]} for item in items],
         })
         _completar(cliente, mision)
+    fixtures['avance-instrumentos-riasec-listo'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     fixtures['revelar-riasec'] = _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
         'cuenta': 'est-ana', 'instrumento': 'TEST-RIASEC', 'fecha_hora': FECHA,
     })
@@ -311,12 +314,51 @@ def _recorrer(cliente):
         'fecha_hora': FECHA})
     fixtures['referencias-t-proyecto'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-proyecto/referencias')
     fixtures['planes'] = _pedir(cliente, 'GET', '/cuentas/est-ana/planes')
-    _responder_partida(cliente, 't-llegada', 4)
-    _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
+    fixtures['items-t-llegada'] = _responder_partida(cliente, 't-llegada', 4)
+    fixtures['avance-instrumentos-llegada-lista'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
+    fixtures['revelar-llegada'] = _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
         'cuenta': 'est-ana', 'instrumento': PARTIDA_LLEGADA, 'aplicacion': 'APL-LLEGADA', 'fecha_hora': FECHA})
+    fixtures['resultado-llegada'] = _pedir(
+        cliente, 'GET', f'/cuentas/est-ana/instrumentos/{PARTIDA_LLEGADA}/resultado?aplicacion=APL-LLEGADA')
+    fixtures['avance-instrumentos-final'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     fixtures['comparacion-partida-llegada'] = _pedir(
         cliente, 'GET', f'/cuentas/est-ana/instrumentos/{PARTIDA_LLEGADA}/comparacion')
     fixtures.update(_consultas_dominio(cliente, 'final', ('fichas', 'logros')))
+    return fixtures
+
+
+def _recorrer_perfil_plano(cliente):
+    """F03 · HU-095: est-luis responde todo igual (perfil plano), revela, reinicia y ya no puede reiniciar."""
+    from datos.ruta import CUENTAS
+    correo, contrasena = next((c, k) for codigo, _, _, _, c, k in CUENTAS if codigo == 'est-luis')
+    cliente.tokens['est-luis'] = _pedir(
+        cliente, 'POST', '/sesion/ingresar', {'usuario': correo, 'contrasena': contrasena})['token']
+    luis = '/cuentas/est-luis'
+    _completar(cliente, 't-inicio', 'est-luis')
+    items = _pedir(cliente, 'GET', '/actividades/t-partida/items')
+    _pedir(cliente, 'POST', '/acciones/responder-items', {
+        'cuenta': 'est-luis', 'actividad': 't-partida', 'fecha_hora': FECHA,
+        'respuestas': [{'item': item['codigo'], 'opcion': 3} for item in items]})
+    for actividad in ('t-partida', 't-cierre-inicio'):
+        _completar(cliente, actividad, 'est-luis')
+    _responder_registro(cliente, 't-expectativas', 'est-luis')
+    for mision in MISIONES_INTERESES:
+        items = _pedir(cliente, 'GET', f'/actividades/{mision}/items')
+        _pedir(cliente, 'POST', '/acciones/responder-items', {
+            'cuenta': 'est-luis', 'actividad': mision, 'fecha_hora': FECHA,
+            'respuestas': [{'item': item['codigo'], 'opcion': 3} for item in items]})
+        _completar(cliente, mision, 'est-luis')
+    accion = {'cuenta': 'est-luis', 'instrumento': 'TEST-RIASEC', 'fecha_hora': FECHA}
+    fixtures = {'revelar-riasec-plano': _pedir(cliente, 'POST', '/acciones/revelar-resultado', accion)}
+    fixtures['resultado-riasec-plano'] = _pedir(cliente, 'GET', f'{luis}/instrumentos/TEST-RIASEC/resultado')
+    fixtures['historial-riasec-plano'] = _pedir(cliente, 'GET', f'{luis}/instrumentos/TEST-RIASEC/historial')
+    fixtures['referencias-t-contraste-plano'] = _pedir(cliente, 'GET', f'{luis}/actividades/t-contraste/referencias')
+    fixtures['reiniciar-riasec'] = _pedir(cliente, 'POST', '/acciones/reiniciar-instrumento', accion)
+    fixtures['referencias-t-contraste-reiniciado'] = _pedir(
+        cliente, 'GET', f'{luis}/actividades/t-contraste/referencias')
+    fixtures['avance-instrumentos-reiniciado'] = _pedir(cliente, 'GET', f'{luis}/instrumentos')
+    # Con el reinicio usado, el historial trae el resultado anulado con perfil plano.
+    fixtures['historial-riasec'] = _pedir(cliente, 'GET', f'{luis}/instrumentos/TEST-RIASEC/historial')
     return fixtures
 
 
@@ -324,6 +366,11 @@ def _recorrer_apoderado(cliente):
     ruta, secciones = '/cuentas/apo-rosa/actividades', '/cuentas/apo-rosa/secciones'
     fixtures = {'apoderado-actividades-inicial': _pedir(cliente, 'GET', ruta),
                 'apoderado-secciones-inicial': _pedir(cliente, 'GET', secciones)}
+    # F03: sin el diploma, los resultados del hijo responden 409 con su mensaje.
+    sin_diploma = cliente.request('GET', '/cuentas/apo-rosa/familia/resultados')
+    if sin_diploma.status_code != 409:
+        raise RuntimeError(f'Los resultados sin diploma respondieron {sin_diploma.status_code}')
+    fixtures['familia-resultados-sin-diploma'] = sin_diploma.json()
     for actividad in ('t-apo-1', 't-apo-carta'):
         _completar(cliente, actividad, 'apo-rosa')
     fixtures['apoderado-actividades-final'] = _pedir(cliente, 'GET', ruta)
@@ -377,6 +424,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
                     cliente = _ClienteConSesion(cliente_http)
                     fixtures = _ingresar(cliente)
                     fixtures.update(_recorrer(cliente))
+                    fixtures.update(_recorrer_perfil_plano(cliente))
                     fixtures.update(_recorrer_apoderado(cliente))
             finally:
                 aplicacion.state.motor_bd.dispose()

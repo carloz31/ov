@@ -9,7 +9,7 @@ from sqlalchemy import select
 from app import models as m
 from soporte_datos_ports import agregar_ocupaciones
 from soporte_retiro import ciclo, medir, preparar_ultimo, reiniciar, resultado
-from soporte_ruta import FECHA, INTERESES_FINAL, avanzar, completar, pedir, responder_registro, revelar
+from soporte_ruta import FECHA, INTERESES_FINAL, actividades, avanzar, completar, pedir, responder_registro, revelar
 
 
 ADECUADO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'
@@ -243,9 +243,13 @@ def test_resultado_y_coincidencias_solo_despues_de_revelar(cliente):
 
 def test_perfil_plano_disponible_sin_opciones_y_tras_reiniciar_sin_dato(cliente):
     ciclo(cliente, opcion=3)
+    # F03: revelar un perfil plano también abre t-contraste; el registro se hace sin cita.
+    assert actividades(cliente)['t-contraste'] == 'DISPONIBLE'
     assert {c: (r['estado'], r['opciones']) for c, r in contraste(cliente).items()} == {
         't-ref-coincidencias': ('DISPONIBLE', []), 't-ref-resultado': ('DISPONIBLE', [])}
     reiniciar(cliente)
+    # Los desbloqueos persisten tras el reinicio: t-contraste sigue abierto y su eco queda sin dato.
+    assert actividades(cliente)['t-contraste'] == 'DISPONIBLE'
     assert {r['estado'] for r in contraste(cliente).values()} == {'SIN_DATO'}
 
 

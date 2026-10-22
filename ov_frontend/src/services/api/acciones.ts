@@ -4,7 +4,9 @@ import type {
   RespuestaCompletarActividad,
   RespuestaItemEntrada,
   RespuestaItemsGuardados,
+  RespuestaReiniciarInstrumento,
   RespuestaResolverBatalla,
+  RespuestaRevelarResultado,
   RespuestaResolverCaso,
   RespuestaServidor,
   ResolverBatallaEntrada,
@@ -28,6 +30,22 @@ export function responderItems(
   respuestas: RespuestaItemEntrada[],
 ): Promise<RespuestaServidor<RespuestaItemsGuardados>> {
   return enviar('/acciones/responder-items', { cuenta, actividad, respuestas })
+}
+
+export function revelarResultado(
+  cuenta: string,
+  instrumento: string,
+  aplicacion: string,
+): Promise<RespuestaServidor<RespuestaRevelarResultado>> {
+  return enviar('/acciones/revelar-resultado', { cuenta, instrumento, aplicacion })
+}
+
+export function reiniciarInstrumento(
+  cuenta: string,
+  instrumento: string,
+  aplicacion: string,
+): Promise<RespuestaServidor<RespuestaReiniciarInstrumento>> {
+  return enviar('/acciones/reiniciar-instrumento', { cuenta, instrumento, aplicacion })
 }
 
 export function resolverBatalla(
