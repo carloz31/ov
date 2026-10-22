@@ -55,6 +55,7 @@ export function NodeRenderer({
     setErrorServidor,
     revisionInstrumento,
     itemOcupado,
+    itemAlElegir,
     itemSoloLectura,
     puedeTerminarEncuentro,
     registro,
@@ -182,6 +183,7 @@ export function NodeRenderer({
           : existingItemAnswer
       }
       busy={itemOcupado}
+      inmediato={itemAlElegir}
       readOnly={itemSoloLectura}
       direct={direct}
       onAnswer={itemResponse}

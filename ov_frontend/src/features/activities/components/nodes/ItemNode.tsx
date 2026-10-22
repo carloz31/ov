@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, LoaderCircle } from 'lucide-react'
 import type { NodoItem, RespuestaItem } from '@/types/activities'
 import { DialogueBox } from '../DialogueBox'
 import { PasoAnterior } from '../PasoAnterior'
@@ -18,6 +18,7 @@ export function ItemNode({
   onAnterior,
   busy = false,
   readOnly = false,
+  inmediato = false,
 }: {
   node: NodoItem
   text: string
@@ -25,6 +26,8 @@ export function ItemNode({
   existing?: Pick<RespuestaItem, 'valor'>
   busy?: boolean
   readOnly?: boolean
+  // Sin el lapso de avance: la opción se envía al pulsarla (api; el guardado se ve en la opción).
+  inmediato?: boolean
   direct: boolean
   onAnswer: (value: string | number) => void
   onContinue: () => void
@@ -42,7 +45,8 @@ export function ItemNode({
     if (busy || readOnly || esperando.current) return
     setElegida(valor)
     esperando.current = true
-    setTimeout(() => avanzar(valor), RETARDO_AVANCE_MS)
+    if (inmediato) avanzar(valor)
+    else setTimeout(() => avanzar(valor), RETARDO_AVANCE_MS)
   }
   const principal = readOnly
     ? existing && (
@@ -78,10 +82,15 @@ export function ItemNode({
             className={`sx-player-option ${elegida === option.value ? 'is-selected' : ''}`}
             aria-pressed={elegida === option.value}
             disabled={busy || readOnly}
+            aria-busy={busy && elegida === option.value}
             key={option.value}
             onClick={() => elegir(option.value)}
           >
             {option.text}
+            {/* Ajuste de F03: mientras el servidor guarda, el loader va en la opción elegida. */}
+            {busy && elegida === option.value && (
+              <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+            )}
           </button>
         ))}
       </div>

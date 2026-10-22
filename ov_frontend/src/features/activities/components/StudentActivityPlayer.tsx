@@ -66,11 +66,10 @@ export function StudentActivityPlayer({
           {storageError}
         </p>
       )}
-      {guardando && (
+      {/* Ajuste de F03: guardar una respuesta del test se indica en la opción elegida, no con este aviso. */}
+      {guardando && !respuestaPendiente.current && (
         <p className="sx-player-error" role="status">
-          {respuestaPendiente.current
-            ? 'Guardando la respuesta en el servidor…'
-            : 'Guardando la actividad en el servidor…'}
+          Guardando la actividad en el servidor…
         </p>
       )}
       {errorServidor && (

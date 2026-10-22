@@ -109,14 +109,10 @@ export function useInstrumentResponses({
               if (!montado.current) return
             }
             setErrorServidor(textoBloqueo(respuesta.detalle, obtenerEstadoServidor().actividades.datos))
-          } else
-            setErrorServidor(
-              respuesta.tipo === 'sin_conexion'
-                ? 'No se pudo guardar en el servidor'
-                : mensajeErrorServidor(respuesta),
-            )
+          } else setErrorServidor(mensajeErrorServidor(respuesta))
         } catch {
-          if (montado.current) setErrorServidor('No se pudo guardar en el servidor')
+          // Ajuste de F03: el error del test sale de mensajeErrorServidor; la elección se conserva para reintentar.
+          if (montado.current) setErrorServidor(mensajeErrorServidor({ tipo: 'sin_conexion' }))
         } finally {
           enviando.current = false
           if (montado.current) setGuardando(false)

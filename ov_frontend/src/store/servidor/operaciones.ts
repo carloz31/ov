@@ -161,6 +161,9 @@ export async function responderItems(
   if (cuenta !== cuentaActiva() || sesion !== sesionServidor())
     return { tipo: 'http', estado: 409, detalle: 'La cuenta activa cambió durante la acción.' }
   if (respuesta.tipo !== 'ok') return respuesta
+  // Ajuste de F03: responder no registra eventos; solo la primera respuesta cambia el estado de la
+  // actividad (EN_CURSO). Las demás pasan a la siguiente pregunta sin volver a leer el camino.
+  if (respuesta.datos.progreso.respondidos > 1) return respuesta
   const estado = await refrescar([])
   return estado.tipo === 'ok'
     ? respuesta

@@ -289,6 +289,8 @@ export function useActivityPlayer({
     setErrorServidor,
     revisionInstrumento,
     itemOcupado: modoApi && guardando,
+    // Ajuste de F03: en api la opción se envía al pulsarla; el loader de la opción indica el guardado.
+    itemAlElegir: modoApi && !!instrumentoServidor,
     itemSoloLectura: modoApi && soloLectura,
     puedeTerminarEncuentro: modoApi && !!instrumentoServidor,
     registro,
