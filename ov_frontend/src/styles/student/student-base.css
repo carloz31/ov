@@ -2742,6 +2742,9 @@ body:has([data-student-experience] .sx-shell) {
   font-size: 0.9rem;
 }
 .sx-root .sx-drawer-ficha {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   padding: 0;
   border: 0;
   background: none;

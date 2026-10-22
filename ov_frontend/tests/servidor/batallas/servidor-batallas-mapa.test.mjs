@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { copia, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, elementos, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
 // F04: batallas y casos se abren según su tipo, no según su bloque.
 function mapa(estados = {}) {
@@ -71,4 +71,27 @@ test('las fichas de la batalla salen del servidor y tienen contenido de prueba e
     assert.ok(recurso?.contenido, `${codigo} sin contenido en el catálogo`)
     assert.equal(recurso._dato_de_prueba, true)
   }
+})
+
+test('«Se alimenta de» lista todas las fichas y cada una lleva a la mochila (F04d)', async () => {
+  const app = fixtureServidor()
+  const sesion = app.load('src/store/servidor/sesion.ts')
+  const bloques = jsonServidor('ruta/ruta-actividades-ciudad')
+  sesion.publicar({ actividades: { datos: bloques, estado: 'listo', error: null }, consultasHabilitadas: true })
+  const [batalla] = jsonServidor('ruta/ruta-batallas')
+  const fichas = [{ ...batalla.fichas[0], estado: 'BLOQUEADA' }, batalla.fichas[1]]
+  app.fetch((r) => (r.url.endsWith('/batallas') ? { body: [{ ...batalla, fichas }] } : { body: [] }))
+  const vista = app.mount(app.load('src/features/activities/components/FichasBatalla.tsx').FichasBatalla, {
+    codigo: 't-batalla',
+  })
+  vista.render()
+  await esperar()
+  const enlaces = elementos(vista.render(), (e) => e.type?.displayName === 'Link' || e.type?.name === 'Link' || 'to' in (e.props ?? {}))
+  assert.deepEqual(copia(enlaces.map((e) => e.props.to)), [
+    '/student/resources?kind=sheet&ficha=t-ficha',
+    '/student/resources?kind=sheet&ficha=t-ficha-2',
+  ])
+  // La bloqueada lleva candado; la mochila mostrará cómo obtenerla.
+  assert.equal(elementos(enlaces[0], (e) => e.props?.['aria-label'] === 'Bloqueada').length, 1)
+  assert.equal(elementos(enlaces[1], (e) => e.props?.['aria-label'] === 'Bloqueada').length, 0)
 })
