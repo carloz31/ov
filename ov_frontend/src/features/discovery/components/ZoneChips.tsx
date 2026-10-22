@@ -18,7 +18,8 @@ export function ZoneChips({ partida, llegada }: { partida: ZonaDimension; llegad
   return (
     <span className="sx-d-pl-zones">
       {chip}
-      <ArrowRight className="sx-d-pl-arrow" aria-label="a" />
+      <ArrowRight className="sx-d-pl-arrow" aria-hidden="true" />
+      <span className="sr-only">ahora</span>
       <span className="sx-d-pl-chip sx-d-pl-chip-strong">{zonaEnPalabras(llegada)}</span>
     </span>
   )

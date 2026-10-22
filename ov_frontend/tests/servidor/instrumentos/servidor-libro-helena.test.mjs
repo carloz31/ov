@@ -124,7 +124,14 @@ test('romper el sello de la partida revela APL-PARTIDA y la página muestra sus 
   const { HelenaPageCard } = app.load('src/features/discovery/components/HelenaPageCard.tsx')
   const marcado = html(HelenaPageCard, { page: despues, model: useHelenaPages() })
   assert.match(marcado, /href="\/student\/profile\/helena\/partida-llegada"/)
-  assert.doesNotMatch(marcado, /puntaje|%|Revela tu punto de llegada|guia=1/)
+  // Ajuste de F03: estado «solo partida» de la tarjeta, sin letras A–E y con el bloque sellado de la llegada.
+  assert.match(marcado, /Página I · descifrada · falta la llegada/)
+  assert.match(marcado, /<li><strong>Claridad<\/strong><span class="sx-d-pl-zones"><span class="sx-d-pl-chip">En camino<\/span><\/span><\/li>/)
+  assert.match(marcado, /<strong>Tu punto de llegada<\/strong> se revela al final del camino, cuando vuelvas a responder\./)
+  assert.match(marcado, /Tus respuestas, parte por parte.*Qué significa cada zona/)
+  assert.match(marcado, />Ver resultado completo<svg/)
+  assert.match(marcado, /href="\/student\/profile\/helena\/partida-llegada\?guia=1"[^>]*>¿Qué significa cada zona\?/)
+  assert.doesNotMatch(marcado, /sx-d-helena-marker|puntaje|%|Revela tu punto de llegada|Se mantuvo/)
 })
 
 test('con la llegada lista aparece el segundo sello; con las dos reveladas, partida → llegada y la comparación', async () => {
@@ -142,7 +149,14 @@ test('con la llegada lista aparece el segundo sello; con las dos reveladas, part
   assert.deepEqual(copia(ambas.partidaLlegada.avanzaron), ['Conocimiento de mí', 'Conocimiento de las opciones'])
   assert.equal(ambas.partidaLlegada.dimensiones[1].zonaLlegada, 'FUERTE')
   const marcado = html(HelenaPageCard, { page: ambas, model: final.useHelenaPages() })
-  assert.match(marcado, /Ver comparación/)
+  // Ajuste de F03: estado completo; «Se mantuvo» con un solo chip, nunca «En camino → En camino».
+  assert.match(marcado, /Página I · descifrada<\/p>/)
+  assert.match(marcado, /Tu partida → tu llegada/)
+  assert.match(marcado, /<strong>Claridad<\/strong><span class="sx-d-pl-zones"><span class="sx-d-pl-kept">Se mantuvo<\/span><span class="sx-d-pl-chip">En camino<\/span><\/span>/)
+  assert.match(marcado, /Conocimiento de mí.*Por trabajar<\/span><svg[^]*?<span class="sx-d-pl-chip sx-d-pl-chip-strong">Fuerte/)
+  assert.match(marcado, /Avanzaste de zona en 2 de 5 partes\. Son zonas, no notas: muestran dónde estás hoy\./)
+  assert.match(marcado, /Qué cambió en cada respuesta.*Lo que trabajaste en cada parte del camino/)
+  assert.doesNotMatch(marcado, /Ver comparación|Tu punto de llegada<\/strong>|Revela tu punto de llegada/)
 })
 
 test('perfil plano: el reinicio sin usar ofrece repetir; usado, no hay botón', async () => {

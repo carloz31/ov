@@ -9,8 +9,7 @@ export function DimensionSummaryRow({ fila }: { fila: FilaResumenPagina }) {
       </span>
       <div>
         <strong>{fila.nombre}</strong>
-        {fila.zona && <span className="sx-d-helena-zone">{fila.zona}</span>}
-        {fila.descripcion && <p>{fila.descripcion}</p>}
+        <p>{fila.descripcion}</p>
       </div>
     </div>
   )

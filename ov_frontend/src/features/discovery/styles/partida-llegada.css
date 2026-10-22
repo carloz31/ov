@@ -143,3 +143,40 @@
 .sx-d-pl-items-partida .sx-d-pl-sign {
   opacity: 0.4;
 }
+
+/* Tarjeta de la página I. */
+.sx-d-pl-summary-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx-d-pl-summary-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+}
+.sx-d-pl-summary-list strong {
+  font-size: 15px;
+  font-weight: 800;
+}
+.sx-d-pl-sealed {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border: 1px dashed color-mix(in srgb, currentColor 40%, transparent);
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.sx-d-pl-sealed svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-top: 2px;
+}

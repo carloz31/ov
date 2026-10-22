@@ -6,8 +6,6 @@ export type FilaResumenPagina = {
   nombre: string
   descripcion: string
   marcador: 'letra' | 'inteligencia'
-  // F03: zona en palabras de partida y llegada («En camino → Zona fuerte»).
-  zona?: string
 }
 export type ContenidoPagina = {
   texto: string

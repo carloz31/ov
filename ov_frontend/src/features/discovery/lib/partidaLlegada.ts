@@ -96,3 +96,7 @@ export function modeloPartidaLlegada(
       .filter((c) => c.cantidad > 0),
   }
 }
+
+// Sin ninguna dimensión que suba, la síntesis no cuenta «0 de 5».
+export const TEXTO_SIN_AVANCE =
+  'Tus zonas se mantuvieron o ahora las ves distinto. Mira abajo qué cambió en tus respuestas.'

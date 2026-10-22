@@ -8,6 +8,7 @@ import { discoveryPaths } from '@/routes/discoveryPaths'
 import type { useHelenaPages } from '../hooks/useHelenaPages'
 import { HelenaPageSummary } from './HelenaPageSummary'
 import { HelenaPageContents } from './HelenaPageContents'
+import { PartidaLlegadaSummary } from './PartidaLlegadaSummary'
 
 type ModeloLibro = ReturnType<typeof useHelenaPages>
 
@@ -80,7 +81,11 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
               <Seal state="ready" large />
             </div>
           )}
-          <HelenaPageSummary resumen={page.resumen} plano={plano} />
+          {page.partidaLlegada ? (
+            <PartidaLlegadaSummary modelo={page.partidaLlegada} conSello={!!page.selloLlegada} />
+          ) : (
+            <HelenaPageSummary resumen={page.resumen} plano={plano} />
+          )}
           {page.resumen.contenidos.length > 0 && <HelenaPageContents contenidos={page.resumen.contenidos} />}
           {page.selloLlegada && (
             <div className="sx-d-helena-box sx-d-helena-ready-box">
@@ -133,11 +138,6 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
             </Link>
             <Link to={resultadoHref}>Ver resultado completo</Link>
           </>
-        ) : comparacion ? (
-          <Link className="sx-d-action sx-d-action-gold" to={resultadoHref}>
-            {page.conComparacion ? 'Ver comparación' : 'Ver resultado completo'}
-            <ChevronRight aria-hidden="true" />
-          </Link>
         ) : (
           <>
             <Link className="sx-d-action sx-d-action-gold" to={resultadoHref}>
@@ -145,7 +145,11 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
               <ChevronRight aria-hidden="true" />
             </Link>
             <Link to={`${resultadoHref}?guia=1`}>
-              {intereses ? '¿Qué significa cada letra?' : '¿Qué es cada inteligencia?'}
+              {intereses
+                ? '¿Qué significa cada letra?'
+                : comparacion
+                  ? '¿Qué significa cada zona?'
+                  : '¿Qué es cada inteligencia?'}
             </Link>
           </>
         )}

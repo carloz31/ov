@@ -19,10 +19,23 @@ import { resumenPagina } from '../lib/resultPage'
 import { carrerasResultado, ocupacionesResultado } from '../lib/resultCatalog'
 import { paginasLibroApi, type ExtrasPaginaApi } from '../lib/helenaPagesApi'
 import { modeloPartidaLlegada } from '../lib/partidaLlegada'
+import type { ContenidoPagina } from '../types'
 
 // F03: en api, el perfil plano invita a repetir las misiones (HU-095); con el reinicio usado, ya no.
 const TEXTO_PLANO_USADO = 'Tus respuestas no distinguen un tipo de interés.'
 const TEXTO_PLANO_API = `${TEXTO_PLANO_USADO} Puedes volver a hacer las misiones una vez.`
+
+// Ajuste de F03: «En tu resultado completo» de partida y llegada, según su estado.
+const CONTENIDOS_PARTIDA_LLEGADA: Record<'partida' | 'completo', ContenidoPagina[]> = {
+  partida: [
+    { texto: 'Tus respuestas, parte por parte', icono: 'perfil' },
+    { texto: 'Qué significa cada zona', icono: 'ideas' },
+  ],
+  completo: [
+    { texto: 'Qué cambió en cada respuesta', icono: 'perfil' },
+    { texto: 'Lo que trabajaste en cada parte del camino', icono: 'ideas' },
+  ],
+}
 
 export function useHelenaPages() {
   const journey = useJourney(),
@@ -151,8 +164,16 @@ export function useHelenaPages() {
             ? `Completa: ${p.faltante.titulo}`
             : ''
       const textoPlano = p.puedeReiniciar ? TEXTO_PLANO_API : TEXTO_PLANO_USADO
+      const partidaLlegada = comparacion && modoApi ? modeloPartidaLlegada(libro) : null
       const resumen = comparacion
-        ? { rotulo: '', filas: [], cierre: '', contenidos: [] }
+        ? {
+            rotulo: '',
+            filas: [],
+            cierre: '',
+            contenidos: partidaLlegada
+              ? CONTENIDOS_PARTIDA_LLEGADA[partidaLlegada.completo ? 'completo' : 'partida']
+              : [],
+          }
         : resumenPagina(
             { ...p, tipoResultado },
             p.result
@@ -171,7 +192,7 @@ export function useHelenaPages() {
         tipoResultado,
         activityHref: servidorPagina ? (p.faltante?.href ?? p.activityHref) : p.activityHref,
         etiquetaDemo: modoApi ? 'Disponible en una próxima iteración · ' : 'Demostración · ',
-        antetitulo: `Página ${p.numeral} · ${p.state === 'sealed' ? 'sellada' : p.state === 'ready' ? 'lista para revelar' : 'descifrada'}`,
+        antetitulo: `Página ${p.numeral} · ${p.state === 'sealed' ? 'sellada' : p.state === 'ready' ? 'lista para revelar' : 'descifrada'}${partidaLlegada && !partidaLlegada.completo ? ' · falta la llegada' : ''}`,
         avisoDemo: `${modoApi ? 'Disponible en una próxima iteración · ' : 'Demostración · '}${p.state === 'sealed' ? 'Este instrumento aún no está disponible.' : 'Este ejemplo no es tu resultado personal.'}`,
         textoSello: comparacion
           ? 'Helena terminó de leer tus respuestas. Rompe el sello para descubrir tu punto de partida.'
@@ -184,7 +205,7 @@ export function useHelenaPages() {
         textoPlano,
         resumen,
         // Ajuste de F03: la tarjeta de partida y llegada pinta sus zonas con este modelo.
-        partidaLlegada: comparacion && modoApi ? modeloPartidaLlegada(libro) : null,
+        partidaLlegada,
       }
     }),
   }
