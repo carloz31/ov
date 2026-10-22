@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { Dialog, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
+import { registrarFichaEnPantalla } from '@/store/visorRecursoStore'
 import { BackpackViewerFrame as DialogContent } from './BackpackViewerFrame'
 
 // Pop up de un contenido bloqueado (ficha o testimonio): cómo obtenerlo. Sin `onVolver`, no ofrece volver al
@@ -22,6 +24,8 @@ export function RequisitoRecurso({
   onClose: () => void
   onVolver?: () => void
 }) {
+  // Como el visor: mientras está abierto, los avisos automáticos de Lumi esperan.
+  useEffect(() => (abierto ? registrarFichaEnPantalla() : undefined), [abierto])
   return (
     <Dialog
       open={abierto}

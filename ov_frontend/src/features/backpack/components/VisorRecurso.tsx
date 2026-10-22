@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { Check, Star } from 'lucide-react'
+import { registrarFichaEnPantalla } from '@/store/visorRecursoStore'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
@@ -21,6 +23,9 @@ export function VisorRecurso({
   modo?: 'mochila' | 'repaso'
 }) {
   const { leida, marcarLeida, favorito, alternarFavorito } = useVisorRecurso(resource)
+  const abierto = Boolean(resource)
+  // Mientras está abierto, la ficha tiene prioridad sobre los avisos automáticos de Lumi.
+  useEffect(() => (abierto ? registrarFichaEnPantalla() : undefined), [abierto])
   return (
     <Dialog
       open={Boolean(resource)}

@@ -116,3 +116,36 @@ test('el visor muestra el contenido, la fuente, el enlace y el aviso de lo pendi
   assert.ok(texto(contenido(recursoDeFicha('sin-contenido', 'Ficha nueva'))).includes('estará disponible próximamente'))
   assert.equal(elementos(ficha, (e) => e.type?.name === 'ResourceContent').length, 1)
 })
+
+test('con una ficha abierta (o su requisito), el tutorial de Lumi espera y no se marca como visto (F04d)', async () => {
+  const app = fixtureServidor({ ruta: '/student/resources?kind=sheet&ficha=t-ficha' })
+  const ui = app.load('src/store/studentUiStore.ts')
+  const visor = app.load('src/store/visorRecursoStore.ts')
+  ui.updateStudentUi((s) => ({ ...s, introsSeen: { ...s.introsSeen, resources: false }, cityArrivalSeen: true }))
+  const { useNoveltyQueue } = app.load('src/features/adventure/hooks/useNoveltyQueue.ts')
+  const cola = app.mount((p) => useNoveltyQueue(p.view, p.activityOpen), { view: 'resources', activityOpen: false })
+  const render = () => cola.render()
+  const vista = () => ui.useStudentUi().introsSeen.resources ?? false
+  // La mochila abrió la ficha pedida por ?ficha=: el tutorial no se muestra.
+  const cerrarFicha = visor.registrarFichaEnPantalla()
+  render()
+  await esperar()
+  assert.equal(render().active, null)
+  assert.equal(vista(), false)
+  // Al cerrarla, el tutorial aparece; recién al cerrarlo queda visto.
+  cerrarFicha()
+  await esperar()
+  const conTutorial = render()
+  assert.deepEqual(copia(conTutorial.active), { kind: 'intro', view: 'resources' })
+  // El pop up de requisito también tiene prioridad.
+  const cerrarRequisito = visor.registrarFichaEnPantalla()
+  assert.equal(render().active, null)
+  cerrarRequisito()
+  await esperar()
+  assert.equal(vista(), false)
+  render().closeGuide()
+  await esperar()
+  assert.equal(render().active, null)
+  assert.equal(vista(), true)
+  cola.unmount()
+})

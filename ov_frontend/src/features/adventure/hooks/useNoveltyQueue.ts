@@ -10,6 +10,7 @@ import { useJourney } from '@/store/journeyStore'
 
 import { cityArrivalSteps, sectionIntros } from '@/data/content/guideTexts'
 import { updateStudentUi, useStudentUi } from '@/store/studentUiStore'
+import { useFichaEnPantalla } from '@/store/visorRecursoStore'
 import type { StudentView } from '@/lib/studentViews'
 
 import { localDateKey, useCheckInDay } from '@/features/adventure/lib/checkIn'
@@ -31,6 +32,9 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   const navigate = useNavigate()
   const today = useCheckInDay()
   const servidor = useEstadoServidor()
+  // F04d: con una ficha (o su requisito) abierta, p. ej. al entrar a la mochila con `?ficha=`, los avisos
+  // automáticos esperan a que se cierre; como no llegan a mostrarse, tampoco se marcan como vistos.
+  const fichaAbierta = useFichaEnPantalla()
   const [avisosManual, setAvisosManual] = useState(false)
   useEffect(() => {
     setAvisosManual(false)
@@ -68,7 +72,7 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     // Opening only after mounting keeps static route rendering free of dialogs.
     setAutomatic(getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed }))
   }, [adventure, ui, view, activityOpen, arrivalDismissed, today, nextKey])
-  const active = activityOpen ? null : (manual ?? automatic)
+  const active = activityOpen ? null : (manual ?? (fichaAbierta ? null : automatic))
   const announcementBlocked = activityOpen || overlayAbierto || !!active || !!next
   const context = useMemo(
     () => ({
