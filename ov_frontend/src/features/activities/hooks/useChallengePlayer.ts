@@ -174,7 +174,10 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
     errorIntento,
     reintentarIntento: () => void enviarIntento(),
     etiquetaRepaso: plural ? 'Repasar las fichas' : 'Repasar la ficha',
-    etiquetaRepasoAntes: plural ? 'Repasar las fichas antes' : 'Repasar la ficha antes',
+    // F04d: «Tu luz viene de»: todas las fichas de la batalla (api) o de sus requisitos (local).
+    fichasIntro: conServidor
+      ? fichasBatalla.map((f) => ({ codigo: f.codigo, titulo: f.titulo, bloqueada: f.estado === 'BLOQUEADA' }))
+      : c.requisitos.filter((r) => r.tipo === 'ficha').map((r) => ({ codigo: r.id, titulo: r.titulo })),
     salida: conServidor
       ? { titulo: '¿Quieres volver al mapa?', accion: 'Volver al mapa' }
       : { titulo: '¿Quieres volver a la ciudad?', accion: 'Volver a la ciudad' },

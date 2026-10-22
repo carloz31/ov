@@ -720,3 +720,47 @@
   font-size: 0.85rem;
   opacity: 0.8;
 }
+
+/* F04d: intro de la batalla. Reglas en una línea, chips de fichas y acción a la derecha. */
+.sx-root .sx-challenge-rule {
+  margin: 0;
+}
+.sx-root .sx-ficha-chips {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+.sx-root .sx-ficha-chips > span {
+  font-weight: 700;
+}
+.sx-root .sx-ficha-chips ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx-root .sx-ficha-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--sx-gold);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.sx-root .sx-ficha-chip:hover {
+  background: color-mix(in srgb, var(--sx-gold) 14%, transparent);
+}
+.sx-root .sx-player-actions.sx-actions-end {
+  justify-content: flex-end;
+}
+@media (max-width: 640px) {
+  .sx-root .sx-player-actions.sx-actions-end > button {
+    width: 100%;
+  }
+}

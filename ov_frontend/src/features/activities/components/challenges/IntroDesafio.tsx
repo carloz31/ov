@@ -1,6 +1,7 @@
-import { BookOpen, Check, LockKeyhole } from 'lucide-react'
+import { Check, LockKeyhole } from 'lucide-react'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { useChallengePlayer } from '@/features/activities/hooks/useChallengePlayer'
+import { ChipsFicha } from './ChipsFicha'
 
 // Presentación del desafío antes de la batalla. En api, vidas y destellos vienen del servidor: mientras no
 // llegan, un estado de carga en lugar de las reglas y la acción; si la lectura falla, solo el aviso de error
@@ -14,9 +15,7 @@ export function IntroDesafio({ model }: { model: ReturnType<typeof useChallengeP
     estadoBatalla,
     vidasEnemigo,
     destellos,
-    etiquetaRepasoAntes,
-    sheets,
-    repasar,
+    fichasIntro,
     start,
   } = model
   return (
@@ -37,13 +36,11 @@ export function IntroDesafio({ model }: { model: ReturnType<typeof useChallengeP
               {c.nombre}: {vidasEnemigo} de vida
             </span>
             <span>Tú: {destellos} destellos</span>
-            <span>Cada pregunta: {c.opcionesPorPregunta} opciones</span>
           </div>
-          <ul>
-            <li>Cada acierto le quita una vida al enemigo.</li>
-            <li>Cada error te quita un destello.</li>
-            <li>Lee con calma. No hay límite de tiempo.</li>
-          </ul>
+          <p className="sx-challenge-rule">
+            Cada acierto le quita una vida al enemigo y cada error te quita un destello. Sin límite de tiempo.
+          </p>
+          <ChipsFicha etiqueta="Tu luz viene de:" fichas={fichasIntro} />
           <ul className="sx-challenge-requirements">
             {requirements.map((r) => (
               <li key={`${r.tipo}-${r.id}`}>
@@ -60,16 +57,10 @@ export function IntroDesafio({ model }: { model: ReturnType<typeof useChallengeP
               </li>
             ))}
           </ul>
-          <div className="sx-player-actions">
+          <div className="sx-player-actions sx-actions-end">
             <button type="button" className="sx-primary-button" disabled={!puedeIniciar} onClick={start}>
               Enfrentar a {c.nombre}
             </button>
-            {sheets.length > 0 && (
-              <button type="button" className="sx-secondary-button" onClick={repasar}>
-                <BookOpen size={18} />
-                {etiquetaRepasoAntes}
-              </button>
-            )}
           </div>
         </>
       )}

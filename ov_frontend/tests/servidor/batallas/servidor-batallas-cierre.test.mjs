@@ -124,3 +124,44 @@ test('mientras se envía el intento, un estado de carga; si falla, el error con 
   reintentar.props.onClick()
   assert.deepEqual(fallido.llamadas, [['reintentar']])
 })
+
+test('la intro: dos estadísticas, reglas en una línea, «Tu luz viene de» y la acción a la derecha (F04d)', () => {
+  const app = fixtureServidor()
+  const { challenges } = app.load('src/data/content/challenges.ts')
+  const { IntroDesafio } = app.load('src/features/activities/components/challenges/IntroDesafio.tsx')
+  const c = challenges.find((x) => x.id === 'desafio-rumor')
+  const fichasIntro = [
+    { codigo: 't-ficha', titulo: 'Ficha de prueba', bloqueada: false },
+    { codigo: 't-ficha-2', titulo: 'Segunda ficha de prueba', bloqueada: true },
+  ]
+  const arbol = IntroDesafio({
+    model: { c, title: { current: null }, requirements: [], puedeIniciar: true, estadoBatalla: 'lista', vidasEnemigo: 5, destellos: 3, fichasIntro, start() {} },
+  })
+  const t = texto(arbol)
+  assert.ok(t.includes('El Rumor: 5 de vida') && t.includes('Tú: 3 destellos'))
+  assert.ok(!t.includes('Cada pregunta'))
+  assert.ok(t.includes('Cada acierto le quita una vida al enemigo y cada error te quita un destello. Sin límite de tiempo.'))
+  assert.ok(!t.includes('Repasar'))
+  const [chips] = elementos(arbol, (e) => e.type?.name === 'ChipsFicha')
+  assert.deepEqual([chips.props.etiqueta, copia(chips.props.fichas)], ['Tu luz viene de:', fichasIntro])
+  const [acciones] = elementos(arbol, (e) => String(e.props?.className).includes('sx-actions-end'))
+  assert.deepEqual(copia(botones(acciones).map(texto)), ['Enfrentar a El Rumor'])
+})
+
+test('cada chip abre su ficha en modo repaso; la bloqueada lleva candado', () => {
+  const app = fixtureServidor()
+  const { ChipsFicha } = app.load('src/features/activities/components/challenges/ChipsFicha.tsx')
+  const visor = app.load('src/store/visorRecursoStore.ts')
+  const arbol = ChipsFicha({
+    etiqueta: 'Tu luz viene de:',
+    fichas: [
+      { codigo: 't-ficha', titulo: 'Ficha de prueba' },
+      { codigo: 't-ficha-2', titulo: 'Segunda ficha de prueba', bloqueada: true },
+    ],
+  })
+  const chips = botones(arbol)
+  assert.equal(elementos(chips[1], (e) => e.props?.['aria-label'] === 'Bloqueada').length, 1)
+  chips[1].props.onClick()
+  assert.deepEqual(copia(visor.obtenerRecursoAbierto()), { codigo: 't-ficha-2', modo: 'repaso' })
+  assert.equal(ChipsFicha({ etiqueta: 'x', fichas: [] }), null)
+})
