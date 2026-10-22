@@ -2,6 +2,22 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-22 · F03 · Textos del front por decidir en instrumentos
+
+- **Dato:** textos que la interfaz de F03 necesita y el backend no entrega: las zonas en palabras («Zona fuerte», «En camino», «Por trabajar»); «Romper el sello», «Revela tu punto de llegada», «Ver comparación», «N respuestas se mantuvieron»; «Tu código de interés:», «Ocupaciones afines:», «Completa:», «Ir al libro de Helena», «Volver a hacer las misiones»; el aviso de perfil plano («Tus respuestas no distinguen un tipo de interés. Puedes volver a hacer las misiones una vez.»); el título, subtítulo, misterio y sello de la página «Tu punto de partida y llegada», y el párrafo de su vista explicada.
+- **Dónde se muestra:** libro de Helena y su vista explicada, consigna de `t-contraste`, aviso del punto bloqueado de T2.
+- **Opciones:** mantenerlos en el front; moverlos al backend (parámetros o catálogo de textos); ajustarlos en la revisión estética final.
+- **Si no se decide:** se usan los textos actuales.
+- **Estado:** pendiente de decisión del usuario.
+
+## 2026-10-22 · F03 · Ocupaciones y carreras del hijo para el apoderado
+
+- **Dato:** `GET /cuentas/{c}/familia/resultados` trae `coincidencias` y `carreras_recomendadas` del resultado RIASEC del hijo.
+- **Dónde se mostraría:** vista explicada del apoderado (`ParentQuestionnaireDetailView`), como en la demostración local («Cómo tomar estas recomendaciones»).
+- **Opciones:** listar las ocupaciones afines con su ajuste; listar también las carreras; dejarlas solo para la conversación con el estudiante.
+- **Si no se muestra:** el apoderado ve qué mide el cuestionario, el código de interés y cada dimensión con su descripción.
+- **Estado:** pendiente de decisión del usuario.
+
 ## 2026-10-22 · F04d · Video incrustado en el visor de recursos
 
 - **Dato:** los recursos de tipo video del catálogo (`rec-video-mitos`, en `encuentro_mitos`) y los enlaces de YouTube.
@@ -141,7 +157,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - en el lote F de instrumentos: hacer opcionales los números de `DimensionResultado` en `servidor.ts`, agregar `zona` y `tematica` y el tipo de la comparación nueva, y conectar revelar partida y llegada;
   - crear `t_partida.json`, `t_llegada.json` y `t_lee_cuestionario.json`, o mapearlas a las actividades reales al cargar la ruta.
 - **Si no se muestra:** en modo `api`, T2 nunca se abre si la partida no se revela, y el front que suponga números en las dimensiones de COMPARACION recibe `null`.
-- **Estado:** pendiente del lote F de instrumentos; no se toca la interfaz en B07.
+- **Estado:** resuelto en F03. El libro de Helena tiene en api la página I «Partida y llegada»: se revela con «Romper el sello» (`APL-PARTIDA`), muestra cada temática con su zona en palabras y, con la llegada completa, un segundo sello; con las dos reveladas, «partida → llegada» y la vista explicada `COMPARACION` (ítems que cambiaron primero, los demás plegados, sin marcar un cambio como negativo). T2 bloqueado muestra su mensaje y el enlace «Ir al libro de Helena». `t_partida`, `t_llegada` y `t_lee_cuestionario` (con la cita de la respuesta) tienen contenido.
 
 ## 2026-10-13 · B06 · Revelar resultados y libro de Helena
 
@@ -159,7 +175,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - conectar revelar y el reinicio en el lote F de instrumentos y quitar `resultados_generados` de `servidor.ts` y `NodeRenderer.tsx`;
   - crear `t_contraste.json` o mapearla a la actividad real de contraste cuando se cargue la ruta.
 - **Si no se muestra:** en modo `api` el resultado nunca se calcula (el front espera `resultados_generados` al completar), `t-contraste` no se abre y el perfil plano no se puede repetir.
-- **Estado:** pendiente del lote F de instrumentos; no se toca la interfaz en B06.
+- **Estado:** resuelto en F03. En api, la página de intereses (II) se revela con `revelar-resultado` cuando el avance está COMPLETADO sin resultado; con perfil plano invita a repetir las misiones y llama a `reiniciar-instrumento` si el historial no trae un reinicio usado. `t_mision_intereses`, `t_mision_intereses_2` y `t_contraste` (con la cita del código de interés y las ocupaciones) tienen contenido; `resultados_generados` ya no existía en el front.
 
 ## 2026-10-13 · B05 · Referencias y eco
 
@@ -214,7 +230,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** «Mis hijos», avance y resultados del hijo en el inicio y sus detalles.
 - **Opciones:** definir una consulta del dominio familiar y conectar las vistas actuales; integrar después selección y progreso de hijos en su iteración; conservar la demostración hasta disponer del contrato.
 - **Si no se muestra:** el portal sigue mostrando a Gabriela y su progreso de demostración; completar actividades del apoderado no convierte esos datos en resultados reales de `est-ana`.
-- **Estado:** resuelto en parte en F00: en api, el resumen usa `GET /cuentas/{c}/familia` (nombre, avance del hijo y avance propio); los resultados del hijo quedan para F08.
+- **Estado:** resuelto en F00 y F03: en api, el resumen usa `GET /cuentas/{c}/familia` (nombre, avance del hijo y avance propio) y, con el diploma, los resultados visibles del hijo (`familia/resultados`) con su vista explicada.
 
 ## 2026-10-09 · AP-F3 · Evento de bloque FAMILIA completado
 
@@ -365,7 +381,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde ocurre:** al recargar o abrir directamente `/student/profile/helena/intereses` en modo API, incluso con la página revelada. Reproducido dos veces contra la SQLite desechable de F5; la entrada mediante el enlace del libro funciona.
 - **Opciones:** diferenciar carga de acceso denegado en el hook y conservar la ruta hasta resolverla usando los componentes existentes; cargar los datos antes de evaluar la guarda de la ruta; mantener por ahora la entrada desde el libro.
 - **Consecuencia actual:** no se pierde el resultado ni su revelación, pero la recarga abandona el detalle y exige volver a entrar desde el libro.
-- **Estado:** pendiente de corrección, detectado en F5. No se elimina la guarda ni se agrega un estado visual durante esta fase de verificación. El scroll del detalle funciona entrando desde el libro.
+- **Estado:** resuelto en F03: la vista pide el libro al abrirse y, mientras lo lee (o con su error y «Reintentar»), no vuelve al libro.
 
 ## 2026-10-13 · B01 · Motivo de bloqueo de bloques y actividades
 

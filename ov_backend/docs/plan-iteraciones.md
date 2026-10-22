@@ -341,7 +341,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 | F00 | Base sobre `ruta` · **Implementado** | 002, 025 (y recomprueba 004, 011, 013–015, 021, 073, 074) | B17 | B01 (×3), B3 llave, B17 nombre | Candado con mensaje; etiqueta opcional y duración; accesos a secciones |
 | F01 | Registros: elección, borradores, entrega y seguimiento · **Implementado** | 006, 007, 010, 016 | F00 | B02, B03 | Reproductor de registro |
 | F02 | Registros: consulta, edición y eco · **Implementado** | 008, 009 | F01 | B04, B05 | Consulta del registro (nueva); zona de eco |
-| F03 | Instrumentos y libro de Helena | 022–024, 027, 094, 095 | F02 | B06, B07, F5 recarga | Libro: Revelar, perfil plano, comparación partida–llegada |
+| F03 | Instrumentos y libro de Helena · **Implementado** | 022–024, 027, 094, 095 | F02 | B06, B07, F5 recarga | Libro: Revelar, perfil plano, comparación partida–llegada |
 | F04 | Batallas, casos y testimonios · **Implementado** | 017, 041, 051–056 | F00 | B08, B2 testimonios, F3 testimonios, F4 íconos | Testimonios (vista nueva o en mochila); Central de Casos |
 | F05 | Diario, pregunta del día y check-in | 028–033, 035, 036, 075 | F01 | B09, B2 diario, F4 señal | Diario; cierre de actividad; pasaporte |
 | F06 | Catálogo y favoritos | 026, 037–040 | F03 | — | Catálogo y detalles |
@@ -382,11 +382,12 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Contenidos:** `t_eco`.
 - **Pantallas a decidir:** desde dónde se abre la consulta (repaso de la actividad completada, mochila, perfil); el texto definitivo del aviso «por desarrollar».
 
-#### F03 · Instrumentos y libro de Helena
+#### F03 · Instrumentos y libro de Helena · **Implementado**
 - **Hace:** botón «Revelar» cuando un instrumento está COMPLETADO sin resultado (`revelar-resultado`); invitación a repetir con perfil plano y su reinicio; partida y llegada con zonas en palabras; comparación por dimensión (ítems que cambiaron primero, los demás plegados; un cambio a menos no se marca negativo). T2 bloqueado con el mensaje de prioritarios. Corrige la recarga directa de `/profile/helena/:pagina`.
 - **Contenidos:** `t_mision_intereses` (reutiliza `instrumento_mara` o se mapea), `t_partida`, `t_llegada`, `t_contraste` (usa el eco de F02), `t_lee_cuestionario`.
 - **Pantallas a decidir:** el revelado (animación o directo); dónde vive la comparación (página del libro o vista propia).
 - **Ajustes al backend posibles:** si el libro necesita la fecha o el número de aplicación para la comparación, ya viene; no se prevé más.
+- **También (adelantado de F08):** resultados visibles del hijo para el apoderado (resumida en el resumen del hijo y explicada), con `familia/resultados` y el catálogo de instrumentos.
 
 #### F04 · Batallas, casos y testimonios · **Implementado**
 - **Hace:** el reproductor de desafíos envía cada intento (`resolver-batalla`) y lee `batallas`; el caso envía puntaje y ocupaciones, y un caso fallido ya no aparece completado; tipo RIASEC del caso, colección de íconos (y la insignia en las ocupaciones afines, pendiente F4); testimonios disponibles con enlace y bloqueados con pista (`ver-testimonio`).
@@ -420,7 +421,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 #### F08 · Familia
 - **Hace:**
   - Estudiante: sección Familia con su carta primero y después las conversaciones por estado (`sin_responder`, `esperando_al_otro`, `te_toca`, `por_conversar`, `conversada`); responder, ver la del otro con la guía y marcar conversada.
-  - Apoderado: hijos reales (`GET /sesion`), conversaciones con el mismo flujo, carta, diploma y avance desde `familia`, resultados visibles del hijo, sus fichas, avisos de carga y error del portal.
+  - Apoderado: hijos reales (`GET /sesion`), conversaciones con el mismo flujo, carta, diploma y avance desde `familia`, sus fichas, avisos de carga y error del portal.
 - **Contenidos:** `t_apo_1`, `t_apo_carta`.
 - **Pantallas a decidir:** reemplazo de la doble marca por responder → ver → conversar; dónde ve el apoderado sus fichas; aviso de carga y error del portal.
 - **Al cerrar:** se retiran los fixtures congelados de la raíz y los datos de demostración de hijos.

@@ -20,11 +20,12 @@ De dónde sale cada dato del front. Las rutas parten de `src/`. Si una tarea mue
 | `services/api/batallas.ts` | `obtenerBatallas` | `GET /cuentas/{c}/batallas` |
 | `services/api/casos.ts` | `obtenerCasos`, `obtenerColeccion` | `GET /cuentas/{c}/casos`, `/cuentas/{c}/coleccion` |
 | `services/api/testimonios.ts` | `obtenerTestimonios` | `GET /cuentas/{c}/testimonios` |
-| `services/api/instrumentos.ts` | `obtenerItems`, `obtenerRespuestas`, `obtenerAvance`, `obtenerResultado` | `GET /actividades/{a}/items`, `/cuentas/{c}/actividades/{a}/respuestas`, `/cuentas/{c}/instrumentos`, `/cuentas/{c}/instrumentos/{i}/resultado` |
+| `services/api/instrumentos.ts` | `obtenerCatalogo`, `obtenerItems`, `obtenerRespuestas`, `obtenerAvance`, `obtenerResultado`, `obtenerHistorial`, `obtenerComparacion` | `GET /instrumentos`, `/actividades/{a}/items`, `/cuentas/{c}/actividades/{a}/respuestas`, `/cuentas/{c}/instrumentos`, `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=`, `/historial`, `/comparacion` |
 | `services/api/secciones.ts` | `obtenerSecciones` | `GET /cuentas/{c}/secciones` |
 | `services/api/registro.ts` | `obtenerItemsRegistro`, `obtenerRegistro`, `enviarBorrador`, `enviarEntrega`, `enviarRespuestaSeguimiento`, `enviarContinuarSinResponder`, `enviarEdicion` | `GET /actividades/{a}/items-registro`, `/cuentas/{c}/actividades/{a}/registro`; `POST /acciones/registro/guardar-borrador`, `/entregar`, `/responder-seguimiento`, `/continuar-sin-responder`, `/editar` |
 | `services/api/referencias.ts` | `obtenerReferencias` | `GET /cuentas/{c}/actividades/{a}/referencias` |
-| `services/api/familia.ts` | `obtenerFamilia` | `GET /cuentas/{c}/familia` |
+| `services/api/familia.ts` | `obtenerFamilia`, `obtenerResultadosHijo` | `GET /cuentas/{c}/familia`, `/cuentas/{c}/familia/resultados` |
+| `services/api/acciones.ts` (F03) | `revelarResultado`, `reiniciarInstrumento` | `POST /acciones/revelar-resultado`, `/acciones/reiniciar-instrumento` |
 | `services/api/desarrollo.ts` | `reiniciar` | `POST /desarrollo/reiniciar` |
 
 Con eso el servidor decide: disponibilidad y finalización de actividades, acceso a la Ciudad, secciones del perfil abiertas (diario, check-in, catálogo, planes, familia), respuestas de Mara, resultado RIASEC (dimensiones con su descripción, código de interés, coincidencias y carreras), fichas obtenidas, insignias, nivel y avisos de desbloqueo.
@@ -59,11 +60,11 @@ Del JSON solo se usan los nodos y la posición. Lo que dice Lumi ante algo cerra
 - Las opcionales con origen van fuera del camino, como las misiones adicionales.
 - El modo local conserva su lista fija (`baseRoute`, `fieldMissions`).
 
-**Resultados (libro de Helena).** En modo api, dimensiones, código, empate, perfil plano, coincidencias y carreras vienen del resultado remoto; no se calculan afinidades. Se completan con presentación del front:
+**Resultados (libro de Helena).** En modo api, dimensiones, código, empate, perfil plano, coincidencias y carreras vienen del resultado remoto; no se calculan afinidades. F03: el estado de cada página (sellada, lista para revelar, descifrada) sale del avance de instrumentos (`store/servidor/instrumentos.ts`), el revelado y el reinicio son acciones del servidor, y partida y llegada muestran zonas y comparación sin puntajes. El reinicio usado se deduce del historial. Se completan con presentación del front:
 
 - Descripción de cada dimensión: del servidor. Ejemplos por dimensión (`ejemplosDimension`), fragmentos del resumen (`fragmentosResumen`) y descripciones del modo local (`descripcionesLocales`): `features/discovery/data/dimensionExamples.ts`.
 - Duración de una carrera: `data/catalog/careersAndInstitutions.ts` (`careerCatalog.duration`), cruzando por código; si no hay coincidencia, se omite.
-- Tipo de resultado por página: `features/discovery/data/resultPages.ts` (el almacén todavía no carga `GET /instrumentos`).
+- Tipo de resultado por página: `features/discovery/data/resultPages.ts`. Zonas en palabras: `lib/servidor/adaptadoresInstrumentos.ts`.
 - Familias: etiqueta local de `careerFamilies` por el mismo id; si no existe, el valor remoto.
 - Inteligencias: siempre la demostración `demoIntelligences` (`features/discovery/lib/helenaPages.ts`, `DATO DE PRUEBA`), con aviso de que no es personal. El instrumento real llega en su iteración.
 
@@ -128,7 +129,7 @@ Todas en `localStorage`, salvo donde se indica. No se cambian sin una migración
 | `ov.staff.priorities.v1` (`sessionStorage`) | `features/counselor/store/prioritySettings.ts` | prioridades de la orientadora |
 | `ov.staff.selected-salon.v1` (`sessionStorage`) | `features/counselor/hooks/useSelectedSalon.ts` | salón elegido |
 
-En api, las claves `.api` guardan `por_cuenta[codigo]` y no se mezclan con el modo local ni entre cuentas. `ov.student-discovery.v1` guarda además `profileBadgesApi[cuenta]` y `revealedPagesApi[cuenta][calculado_en]`: revelar una página o elegir insignias es una preferencia local, no completa nada en el servidor. El navegador conserva borradores, nodo actual, comprobaciones, adjuntos, respuestas de la brújula, favoritos y planes.
+En api, las claves `.api` guardan `por_cuenta[codigo]` y no se mezclan con el modo local ni entre cuentas. `ov.student-discovery.v1` guarda además `profileBadgesApi[cuenta]` y `revealedPagesApi[cuenta][calculado_en]`: elegir insignias o revelar una página de ejemplo (inteligencias) es una preferencia local; desde F03, partida, llegada e intereses se revelan en el servidor. El navegador conserva borradores, nodo actual, comprobaciones, adjuntos, respuestas de la brújula, favoritos y planes.
 
 El apoderado conserva el formato de `ov.parent-missions.v1`: `accounts[apo-prototipo]` para local y `accounts[codigo]` (por ejemplo, `apo-rosa`) para api. `proyectarJourney` conserva nodo, intentos y elecciones al hidratar esa cuenta, pero fija su estado desde el servidor. La lista y el diploma en api usan la completitud remota. En api, el nombre del apoderado sale de la sesión, y el hijo y su avance, de `familia`. El parentesco y los resultados del hijo siguen siendo demostración; sus pendientes están en `docs/pendientes-interfaz.md`.
 
