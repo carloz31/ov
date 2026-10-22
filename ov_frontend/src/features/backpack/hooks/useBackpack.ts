@@ -48,6 +48,11 @@ export function useBackpack() {
   const resources = getTravelResources(testimonios),
     selected = resources.find((r) => r.id === selectedId)
   const isUnlocked = (r: TravelResource) => isTravelResourceUnlocked(r, journey, adventure)
+  // F04d: `?ficha=<codigo>` de una ficha bloqueada abre su pop up de requisito, no el visor.
+  const solicitadaBloqueada = modoApi && !!selected && selected.kind === 'sheet' && !isUnlocked(selected)
+  useEffect(() => {
+    if (solicitadaBloqueada && fichaSolicitada) setRequisitoId(fichaSolicitada)
+  }, [solicitadaBloqueada, fichaSolicitada])
   const visible = resources.filter(
     (item) =>
       (!favoritesOnly || (isUnlocked(item) && adventure.bookmarks.includes(item.id))) &&

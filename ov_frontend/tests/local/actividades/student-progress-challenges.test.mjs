@@ -466,7 +466,8 @@ test('progress has step narration and star spark; finish removes duplicate rewar
   const finish = render(React.createElement(FinishScreen, { activity, onClose() {}, onResources() {} }))
   assert.doesNotMatch(finish, /Obtuviste:/)
   assert.match(finish, /Nuevo en tu mochila/)
-  assert.match(finish, /href="\/student\/resources\?ficha=ficha-mitos"/)
+  // F04d: la ficha obtenida se abre con el visor, encima del cierre.
+  assert.match(finish, /<button type="button" class="sx-finish-sheet">/)
   assert.match(finish, /Una pregunta para tu diario/)
   assert.equal((finish.match(/Volver al mapa<\/button>/g) ?? []).length, 1)
   assert.doesNotMatch(finish, /Seguir hacia|Revisar mis propias creencias|Lo que viene/)

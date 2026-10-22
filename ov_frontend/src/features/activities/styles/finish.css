@@ -389,3 +389,12 @@
     width: 18px;
   }
 }
+
+/* F04d: la ficha del cierre es un botón que abre el visor encima. */
+.sx-root button.sx-finish-sheet {
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}

@@ -1,6 +1,7 @@
 import { Backpack, ChevronRight, FileText } from 'lucide-react'
 import { Link } from 'react-router'
 import { appPaths } from '@/routes/paths'
+import { abrirRecurso } from '@/store/visorRecursoStore'
 import type { ResumenCierre } from '../lib/finishSummary'
 
 export function FinishBackpackSection({ resumen }: { resumen: ResumenCierre }) {
@@ -19,11 +20,13 @@ export function FinishBackpackSection({ resumen }: { resumen: ResumenCierre }) {
         <div>
           {mixto && <h4>{resumen.fichas.length} fichas</h4>}
           <div className="sx-finish-sheets">
+            {/* F04d: la ficha se abre encima del cierre, sin navegar, y el cierre sigue igual al cerrarla. */}
             {resumen.fichasVisibles.map((f) => (
-              <Link
+              <button
+                type="button"
                 className="sx-finish-sheet"
                 key={f.codigo}
-                to={`${resources}?${new URLSearchParams({ ficha: f.codigo })}`}
+                onClick={() => abrirRecurso(f.codigo, 'mochila')}
               >
                 <FileText size={22} />
                 <span>
@@ -31,7 +34,7 @@ export function FinishBackpackSection({ resumen }: { resumen: ResumenCierre }) {
                   <strong>{f.nombre}</strong>
                 </span>
                 <ChevronRight size={16} />
-              </Link>
+              </button>
             ))}
             {resumen.fichasOcultas > 0 && (
               <Link className="sx-finish-sheet sx-finish-more" to={`${resources}?kind=sheet`}>

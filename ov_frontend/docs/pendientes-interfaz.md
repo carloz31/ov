@@ -16,7 +16,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** en el reproductor de desafíos, antes de la batalla y tras perderla.
 - **Opciones:** crear el contenido de prueba de `t-ficha` en el catálogo de recursos; esperar a las fichas reales de la ruta base; apuntar `fichas` a una ficha que ya tenga contenido.
 - **Si no se muestra:** en api, «Repasar la ficha» no aparece, porque `t-ficha` no tiene contenido en el front. El resto de la batalla funciona.
-- **Estado:** resuelto en F04 con la primera opción: `t-ficha` tiene contenido de prueba en `catalogo.json` (`"_dato_de_prueba": true`), y en api «Repasar la ficha» la ofrece cuando el servidor la da. No aparece en la mochila, que solo lista fichas ligadas a actividades locales.
+- **Estado:** resuelto en F04 con la primera opción (`t-ficha` y, desde F04b, `t-ficha-2` tienen contenido de prueba en `catalogo.json`). Desde F04d aparecen en la mochila: en api, la mochila lista las fichas de la cuenta en el servidor, con el contenido del catálogo.
 
 ## 2026-10-22 · F01 · «Ampliar →» en los ítems por ampliar
 
@@ -323,7 +323,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** misma tarjeta de cierre al regresar desde la mochila.
 - **Opciones:** conservar temporalmente el recibo y origen en un estado del dominio; abrir el visor sobre la tarjeta sin abandonar el reproductor; volver al mapa y consultar el historial de desbloqueos.
 - **Si no se muestra:** las fichas permanecen obtenidas, pero regresar por el navegador no recupera el cierre con los desbloqueos de esa finalización. Reabrir la actividad completada muestra el modo repaso sin reutilizar recompensas anteriores.
-- **Estado:** pendiente solicitado expresamente en F5, punto 3. F3 conserva la navegación mediante enlaces que prescribe el anexo y no agrega persistencia ni un flujo de retorno.
+- **Estado:** resuelto en F04d con la segunda opción: las fichas del cierre se abren con el visor de la mochila encima de la tarjeta, sin desmontar el reproductor; al cerrarlas, el cierre sigue con sus desbloqueos.
 - **Verificación F5:** reproducido en navegador con shell real, en API contra SQLite desechable y en local. El historial vuelve a un cierre de repaso, sin el recibo original; las fichas obtenidas sí permanecen disponibles. No se implementa ninguna opción en esta fase de verificación.
 
 ## 2026-10-09 · Anexo F4 · Duración de las carreras

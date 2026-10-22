@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { copia, fixtureServidor } from '../../soporte/servidor-ayudas.mjs'
+import { cargarAlmacen, copia, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
 // F04d: el visor de la mochila es la única presentación de una ficha.
 const texto = (n) =>
@@ -51,4 +51,51 @@ test('los recursos del catálogo se abren por código, también los que no son f
   // Una ficha del servidor sin contenido en el front se abre con su título y el aviso de «próximamente».
   assert.deepEqual(copia(recursoDeFicha('sin-contenido', 'Ficha nueva')).title, 'Ficha nueva')
   assert.equal(recursoDeFicha('sin-contenido'), undefined)
+})
+
+test('en api, la mochila lista las fichas de la cuenta en el servidor, disponibles y bloqueadas', () => {
+  const app = fixtureServidor()
+  const sesion = app.load('src/store/servidor/sesion.ts')
+  const recursos = app.load('src/features/backpack/lib/travelerResources.ts')
+  const fichas = (etapa) => {
+    sesion.publicar({ fichas: { datos: jsonServidor(`ruta/ruta-fichas-${etapa}`), estado: 'listo', error: null } })
+    return recursos.getTravelResources([]).filter((r) => r.kind === 'sheet')
+  }
+  const inicial = fichas('inicial')
+  assert.deepEqual(copia(inicial.map((r) => [r.id, r.title])), [
+    ['t-ficha', 'Ficha de prueba'],
+    ['t-ficha-2', 'Segunda ficha de prueba'],
+  ])
+  assert.deepEqual(copia(inicial.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [false, false])
+  const final = fichas('final')
+  assert.deepEqual(copia(final.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [true, true])
+  // El contenido sale del catálogo del front, buscado por código.
+  assert.ok(final[0].content)
+})
+
+test('?ficha= de una ficha bloqueada abre su pop up de requisito; disponible, el visor', async () => {
+  const preparar = async (etapa) => {
+    const app = fixtureServidor({ ruta: '/student/resources?kind=sheet&ficha=t-ficha' })
+    app.fetch((r) => {
+      if (r.url.endsWith('/fichas')) return { body: jsonServidor(`ruta/ruta-fichas-${etapa}`) }
+      if (r.url.endsWith('/testimonios')) return { body: [] }
+      if (r.url.includes('/progreso/FICHA/t-ficha'))
+        return { body: { tipo: 'FICHA', codigo: 't-ficha', estado: 'BLOQUEADA', reglas: [] } }
+      return { body: [] }
+    })
+    const almacen = cargarAlmacen(app)
+    almacen.publicar({ consultasHabilitadas: true })
+    await almacen.asegurarSeccion('fichas')
+    const view = app.mount(app.load('src/features/backpack/hooks/useBackpack.ts').useBackpack, {})
+    view.render()
+    await esperar()
+    return view.render()
+  }
+  const bloqueada = await preparar('inicial')
+  assert.equal(bloqueada.requisitoId, 't-ficha')
+  assert.equal(bloqueada.isUnlocked(bloqueada.selected), false)
+  const disponible = await preparar('final')
+  assert.equal(disponible.requisitoId, null)
+  assert.equal(disponible.selected.id, 't-ficha')
+  assert.equal(disponible.isUnlocked(disponible.selected), true)
 })

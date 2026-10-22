@@ -124,13 +124,11 @@ export function getTravelResources(testimonios?: TestimonioEstado[] | null): Tra
       author: `${item.personName} · ${item.currentRole} · ${item.yearsExperience} años de experiencia`,
     })),
   ]
+  // F04d: en api, las fichas de la mochila son las de la cuenta en el servidor (título y estado), con el
+  // contenido del catálogo del front; aparecen en cuanto se desbloquean, sin «guardarlas».
   return modoApi
     ? [
-        ...resources.filter(
-          (resource) =>
-            resource.kind === 'sheet' &&
-            obtenerEstadoServidor().fichas.datos?.some((f) => f.codigo === resource.id),
-        ),
+        ...(obtenerEstadoServidor().fichas.datos ?? []).flatMap((f) => recursoDeFicha(f.codigo, f.titulo) ?? []),
         ...(testimonios ?? []).map(testimonioServidor),
       ]
     : resources
