@@ -24,7 +24,7 @@ export function CierreBatalla({
     vidasEnemigo,
     title,
     sheets,
-    setResourcesOpen,
+    repasar,
     start,
     etiquetaRepaso,
   } = model
@@ -63,7 +63,7 @@ export function CierreBatalla({
         <p>No pierdes nada de lo que ya lograste en tu recorrido.</p>
         <div className="sx-player-actions">
           {sheets.length > 0 && (
-            <button type="button" className="sx-primary-button" onClick={() => setResourcesOpen(true)}>
+            <button type="button" className="sx-primary-button" onClick={repasar}>
               <BookOpen size={18} aria-hidden="true" />
               {etiquetaRepaso}
             </button>

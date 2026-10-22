@@ -4,6 +4,7 @@ import { Outlet } from 'react-router'
 import { StudentModuleLayout } from '@/features/adventure/components/StudentModuleLayout'
 import { OverlayQueue } from '@/features/adventure/components/overlays/OverlayQueue'
 import { PantallaCarga } from '@/components/student/PantallaCarga'
+import { VisorRecursoHost } from '@/features/backpack/components/VisorRecursoHost'
 import '@/styles/student/adventure.css'
 import '@/styles/student/student-base.css'
 import '@/styles/student/student-logbook.css'
@@ -66,6 +67,8 @@ export function StudentShell() {
           </StudentModuleLayout>
         )}
       </OverlayQueue>
+      {/* F04d: el visor de fichas, encima de cualquier pantalla del portal y sin navegar. */}
+      <VisorRecursoHost />
     </div>
   )
 }

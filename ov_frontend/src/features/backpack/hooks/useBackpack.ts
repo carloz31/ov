@@ -1,13 +1,11 @@
 import { useFichasServidor } from '@/store/servidor/secciones'
 import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
-import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion'
-import { consultarProgreso } from '@/store/servidor/consultas'
 import { consultarTestimonios, verTestimonio as registrarVistaTestimonio } from '@/store/servidor/testimonios'
 import type { TestimonioEstado } from '@/types/servidor'
-import { textoRequisito } from '@/lib/servidor/adaptadores'
+import { useRequisitoRecurso } from './useRequisitoRecurso'
 import { useNavigate, useSearchParams } from 'react-router'
-import { updateJourney, useJourney } from '@/store/journeyStore'
+import { useJourney } from '@/store/journeyStore'
 import { updateAdventure, useAdventure } from '@/store/adventureStore'
 import { isTravelResourceUnlocked, type TravelResource } from '@/features/backpack/lib/travelerResources'
 import {
@@ -18,7 +16,6 @@ import { getCiudadPoints } from '@/features/adventure/lib/ciudadPoints'
 type KindFilter = 'all' | 'sheet' | 'testimonial'
 export function useBackpack() {
   useFichasServidor()
-  const servidor = useEstadoServidor()
   const adventure = useAdventure(),
     journey = useJourney(),
     navigate = useNavigate()
@@ -46,40 +43,8 @@ export function useBackpack() {
     }
   }, [])
   const [requisitoId, setRequisitoId] = useState<string | null>(null)
-  const [requisito, setRequisito] = useState('')
-  const [requisitoPendiente, setRequisitoPendiente] = useState(false)
-  const [errorRequisito, setErrorRequisito] = useState(false)
-  const [intentoRequisito, setIntentoRequisito] = useState(0)
-  // Lo bloqueado de un contenido concreto se explica en un pop up: la pista del testimonio, si la tiene;
-  // si no, el mensaje de bloqueo del servidor, como en las fichas.
   const testimonioRequisito = testimonios?.find((t) => t.codigo === requisitoId)
-  const tituloRequisito = testimonioRequisito ? 'Cómo conocer este testimonio' : 'Cómo obtener esta ficha'
-  useEffect(() => {
-    if (!modoApi || !requisitoId) return
-    if (testimonioRequisito?.pista) {
-      setRequisitoPendiente(false)
-      setErrorRequisito(false)
-      setRequisito(testimonioRequisito.pista)
-      return
-    }
-    let vigente = true
-    setRequisitoPendiente(true)
-    setErrorRequisito(false)
-    setRequisito('Consultando el requisito en el servidor…')
-    void consultarProgreso(testimonioRequisito ? 'TESTIMONIO' : 'FICHA', requisitoId).then((respuesta) => {
-      if (!vigente) return
-      setRequisito(
-        respuesta.tipo === 'ok'
-          ? textoRequisito(respuesta.datos, servidor.actividades.datos)
-          : mensajeErrorServidor(respuesta),
-      )
-      setRequisitoPendiente(false)
-      setErrorRequisito(respuesta.tipo !== 'ok')
-    })
-    return () => {
-      vigente = false
-    }
-  }, [requisitoId, servidor.actividades.datos, intentoRequisito, testimonioRequisito])
+  const requisito = useRequisitoRecurso(requisitoId, testimonioRequisito)
   const resources = getTravelResources(testimonios),
     selected = resources.find((r) => r.id === selectedId)
   const isUnlocked = (r: TravelResource) => isTravelResourceUnlocked(r, journey, adventure)
@@ -137,12 +102,7 @@ export function useBackpack() {
   function consultarRequisito(resource: TravelResource) {
     return modoApi ? setRequisitoId(resource.id) : navigate(resourceRequirement(resource).url)
   }
-  function marcarLeida(selected: TravelResource) {
-    return updateJourney((current) => ({
-      ...current,
-      readResourceIds: [...new Set([...(current.readResourceIds ?? current.resources), selected.id])],
-    }))
-  }
+
   return {
     adventure,
     journey,
@@ -157,12 +117,12 @@ export function useBackpack() {
     setSelectedId,
     requisitoId,
     setRequisitoId,
-    requisito,
-    requisitoPendiente,
-    errorRequisito,
-    setIntentoRequisito,
+    requisito: requisito.texto,
+    requisitoPendiente: requisito.pendiente,
+    errorRequisito: requisito.error,
+    reintentarRequisito: requisito.reintentar,
     mostrarRequisito: modoApi,
-    tituloRequisito,
+    tituloRequisito: requisito.titulo,
     // El bloque fijo de «más voces» es del modo local.
     muestraMasVoces: !modoApi,
     isUnlocked,
@@ -175,6 +135,5 @@ export function useBackpack() {
     openResource,
     clear,
     consultarRequisito,
-    marcarLeida,
   }
 }

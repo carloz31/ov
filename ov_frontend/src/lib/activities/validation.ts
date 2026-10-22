@@ -7,6 +7,9 @@ export function validateActivity(activity: Actividad) {
     throw new Error(`Nodos incompatibles en ${activity.id}`)
   for (const node of activity.nodos) {
     if (node.tipo !== 'diapositiva') continue
+    // F04d: el visor de la mochila abre un recurso a la vez; una diapositiva no puede traer más de uno.
+    if ((node.recursoIds?.length ?? 0) > 1)
+      throw new Error(`La diapositiva ${activity.id}/${node.id} trae más de un recurso`)
     for (const block of node.bloques) {
       if (
         block.tipo === 'tabla' &&

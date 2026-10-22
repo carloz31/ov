@@ -47,7 +47,7 @@ function cierre(cambios = {}) {
     vidasEnemigo: 5,
     title: { current: null },
     sheets: ['t-ficha-2', 't-ficha'],
-    setResourcesOpen: (v) => llamadas.push(['repaso', v]),
+    repasar: () => llamadas.push(['repaso', true]),
     start: () => llamadas.push(['intentar']),
     etiquetaRepaso: 'Repasar las fichas',
     ...cambios,

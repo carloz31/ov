@@ -4,7 +4,6 @@ import { ShieldCheck, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/Dialog'
 import { PlayerAmbient } from '../PlayerAmbient'
 import { PlayerSoundButton } from '../PlayerSoundButton'
-import { ResourceSheet } from '../ResourceSheet'
 import type { Challenge } from '@/types/challenges'
 import type { DesafioServidor } from '@/features/activities/hooks/useChallengePlayer'
 export function ChallengePlayer({
@@ -21,14 +20,10 @@ export function ChallengePlayer({
     practice,
     stage,
     battle,
-    resourcesOpen,
-    setResourcesOpen,
     exitOpen,
     setExitOpen,
     closeButton,
-    sheets,
     victory,
-    repasoConPestanas,
     salida,
   } = model
   return (
@@ -57,15 +52,6 @@ export function ChallengePlayer({
         <PlayerSoundButton />
       </header>
       <ChallengeStage model={model} onClose={onClose} />
-      {stage !== 'battle' && (
-        <ResourceSheet
-          open={resourcesOpen}
-          ids={stage === 'result' && victory && !repasoConPestanas ? (c.recompensa.recursoIds ?? []) : sheets}
-          pestanas={repasoConPestanas}
-          inicial={sheets[0]}
-          onClose={() => setResourcesOpen(false)}
-        />
-      )}
       <Dialog open={exitOpen} onOpenChange={setExitOpen}>
         <DialogContent
           className="sx-root sx-glass-dark sx-player-exit"

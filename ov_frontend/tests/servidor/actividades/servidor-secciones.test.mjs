@@ -310,32 +310,26 @@ test('reiniciar vacía las cuatro secciones y el nuevo ingreso no consulta ficha
   assert.ok(app.requests.slice(antes).every((r) => !/\/(fichas|logros)$/.test(r.url)))
 })
 
-test('un recurso cerrado sigue montado sin mantener cargas activas de fichas', async () => {
+test('el visor de recursos carga las fichas solo mientras está abierto (F04d)', async () => {
   const { app, acciones, almacen } = await iniciar()
-  const props = {
-    activity: app.load('src/data/activities/content.ts').activityById('mission-welcome'),
-    onClose() {},
-  }
-  const view = app.mount(
-    app.load('src/features/activities/hooks/useActivityPlayer.ts').useActivityPlayer,
-    props,
-  )
-  let player = view.render()
+  const visorStore = app.load('src/store/visorRecursoStore.ts')
+  const view = app.mount(app.load('src/features/backpack/hooks/useVisorRecursoHost.ts').useVisorRecursoHost, {})
+  let visor = view.render()
   await esperar()
   assert.equal(cantidad(app, 'fichas'), 0)
-  player.openResources(['first-steps'])
+  visorStore.abrirRecurso('first-steps')
   view.render()
   await esperar()
   assert.equal(cantidad(app, 'fichas'), 1)
-  player = view.render()
-  player.setResourceOpen(false)
+  visor = view.render()
+  visor.cerrar()
   view.render()
   servidorAccion(app, ['FICHA'])
   await acciones.completarActividad('t-inicio')
   await esperar()
   assert.equal(cantidad(app, 'fichas'), 1)
   assert.equal(almacen.obtenerEstadoServidor().fichas.estado, 'vencido')
-  view.render().openResources(['first-steps'])
+  visorStore.abrirRecurso('first-steps')
   view.render()
   await esperar()
   assert.equal(cantidad(app, 'fichas'), 2)

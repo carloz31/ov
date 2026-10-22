@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
+import { abrirRecurso } from '@/store/visorRecursoStore'
 import { catalog } from '@/data/activities/content'
 import { useJourney, updateJourney, useJourneyError } from '@/store/journeyStore'
 import { consultarBatallas, consultarPreguntasBatalla, resolverBatalla } from '@/store/servidor/batallas'
@@ -62,7 +63,6 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
   }, [conServidor, servidor?.actividad])
   const [stage, setStage] = useState<'intro' | 'battle' | 'result'>('intro')
   const [battle, setBattle] = useState<Battle>()
-  const [resourcesOpen, setResourcesOpen] = useState(false)
   const [exitOpen, setExitOpen] = useState(false)
   const title = useRef<HTMLHeadingElement>(null)
   const closeButton = useRef<HTMLButtonElement>(null)
@@ -91,7 +91,6 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
   }, [stage, battle?.answered])
   async function start() {
     if (!puedeIniciar || enviando) return
-    setResourcesOpen(false)
     if (conServidor) {
       // Cada intento pide preguntas nuevas: al azar del pool y con las opciones mezcladas.
       setEnviando(true)
@@ -153,8 +152,10 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
     setStage,
     battle,
     setBattle,
-    resourcesOpen,
-    setResourcesOpen,
+    // F04d: las fichas se abren con el visor de la mochila, encima de la batalla: en repaso, las de la
+    // batalla; la recompensa local, como en la mochila.
+    repasar: () => sheets[0] && abrirRecurso(sheets[0], 'repaso'),
+    abrirRecompensa: () => c.recompensa.recursoIds?.[0] && abrirRecurso(c.recompensa.recursoIds[0], 'mochila'),
     exitOpen,
     setExitOpen,
     title,
@@ -172,7 +173,6 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
     enviandoIntento,
     errorIntento,
     reintentarIntento: () => void enviarIntento(),
-    repasoConPestanas: conServidor,
     etiquetaRepaso: plural ? 'Repasar las fichas' : 'Repasar la ficha',
     etiquetaRepasoAntes: plural ? 'Repasar las fichas antes' : 'Repasar la ficha antes',
     salida: conServidor

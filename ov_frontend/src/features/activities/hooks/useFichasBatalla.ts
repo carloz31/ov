@@ -14,7 +14,6 @@ export function useFichasBatalla(codigo: string) {
   const actividad = modoApi ? actividadServidor(servidor.actividades.datos, codigo) : undefined
   const aplica = actividad?.tipo === 'BATALLA'
   const [fichas, setFichas] = useState<ContenidoEstado[]>([])
-  const [abierta, setAbierta] = useState<string | null>(null)
   useEffect(() => {
     if (!aplica) {
       setFichas([])
@@ -30,5 +29,5 @@ export function useFichasBatalla(codigo: string) {
       vigente = false
     }
   }, [codigo, aplica])
-  return { fichas, abierta, abrir: setAbierta, cerrar: () => setAbierta(null) }
+  return { fichas }
 }

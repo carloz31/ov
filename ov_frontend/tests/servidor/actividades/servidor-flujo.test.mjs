@@ -372,17 +372,19 @@ test('leer una ficha y pasar una diapositiva no las obtiene ni finaliza en API',
     false,
   )
   player.unmount()
-  const { ResourceSheet } = app.load('src/features/activities/components/ResourceSheet.tsx')
-  const sheet = app.mount(ResourceSheet, { open: true, ids: ['ficha-mitos'], onClose() {} })
+  // F04d: la ficha se lee en el visor de la mochila.
+  const { VisorRecurso } = app.load('src/features/backpack/components/VisorRecurso.tsx')
+  const { recursoDesdeCatalogo } = app.load('src/features/backpack/lib/travelerResources.ts')
+  const visor = app.mount(VisorRecurso, { resource: recursoDesdeCatalogo('ficha-mitos'), onClose() {} })
   const leer = elementos(
-    sheet.render(),
-    (e) => e.type === 'button' && String(e.props.children).includes('Leí la ficha'),
+    visor.render(),
+    (e) => e.type?.displayName !== 'Badge' && String(e.props?.children).includes('Leí la ficha'),
   )[0]
   assert.ok(leer)
   leer.props.onClick()
   assert.ok(store.getJourneySnapshot().readResourceIds.includes('ficha-mitos'))
   assert.equal(store.getJourneySnapshot().resources.length, 0)
-  sheet.unmount()
+  visor.unmount()
 })
 
 test('recuperar un cierre confirmado no crea otro evento y una URL bloqueada no abre el reproductor', async () => {

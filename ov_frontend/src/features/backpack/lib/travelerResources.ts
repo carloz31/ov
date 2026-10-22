@@ -56,6 +56,35 @@ const sheetDetails: Record<
   },
 }
 
+function desdeRecurso(resource: Recurso, requirement: TravelResource['requirement']): TravelResource {
+  const details = sheetDetails[resource.id]
+  return {
+    id: resource.id,
+    title: details?.title ?? resource.titulo,
+    kind: 'sheet',
+    icon: details?.icon ?? 'scroll',
+    summary: resource.resumen ?? details?.summary ?? 'Una ficha para seguir explorando tu camino.',
+    description:
+      resource.descripcion ??
+      details?.description ??
+      resource.resumen ??
+      'Revisa las pistas que reuniste durante esta actividad.',
+    requirement,
+    content: resource.contenido ?? details?.content,
+    url: resource.url,
+    fileFormat: resource.formatoArchivo,
+    source: resource.fuente,
+  }
+}
+// F04d: cualquier recurso del catálogo por su código, aunque no lo use una actividad local (las fichas de
+// `ruta`, los enlaces de una diapositiva). Con `titulo`, el del servidor.
+export function recursoDesdeCatalogo(codigo: string, titulo?: string): TravelResource | undefined {
+  const resource = catalog.recursos.find((r) => r.id === codigo)
+  if (!resource) return undefined
+  const recurso = desdeRecurso(resource, { anyCase: true })
+  return titulo ? { ...recurso, title: titulo } : recurso
+}
+
 export function getTravelResources(testimonios?: TestimonioEstado[] | null): TravelResource[] {
   const sheets = catalog.recursos
     .filter(
@@ -67,27 +96,7 @@ export function getTravelResources(testimonios?: TestimonioEstado[] | null): Tra
           item.recompensa?.recursoIds?.includes(resource.id) ||
           item.nodos.some((node) => node.tipo === 'diapositiva' && node.recursoIds?.includes(resource.id)),
       )
-      if (!activity) return []
-      const details = sheetDetails[resource.id]
-      return [
-        {
-          id: resource.id,
-          title: details?.title ?? resource.titulo,
-          kind: 'sheet',
-          icon: details?.icon ?? 'scroll',
-          summary: resource.resumen ?? details?.summary ?? 'Una ficha para seguir explorando tu camino.',
-          description:
-            resource.descripcion ??
-            details?.description ??
-            resource.resumen ??
-            'Revisa las pistas que reuniste durante esta actividad.',
-          requirement: { activityId: activity.id },
-          content: resource.contenido ?? details?.content,
-          url: resource.url,
-          fileFormat: resource.formatoArchivo,
-          source: resource.fuente,
-        },
-      ]
+      return activity ? [desdeRecurso(resource, { activityId: activity.id })] : []
     })
   const resources: TravelResource[] = [
     {
@@ -224,4 +233,13 @@ export function resourceFileUrl(raw: string | undefined) {
   } catch {
     return null
   }
+}
+// Una ficha del servidor sin contenido en el front se abre igual: el visor avisa que llegará pronto.
+export function recursoDeFicha(codigo: string, titulo?: string): TravelResource | undefined {
+  return (
+    recursoDesdeCatalogo(codigo, titulo) ??
+    (titulo
+      ? { id: codigo, title: titulo, kind: 'sheet', icon: 'scroll', summary: '', description: '', requirement: { anyCase: true } }
+      : undefined)
+  )
 }

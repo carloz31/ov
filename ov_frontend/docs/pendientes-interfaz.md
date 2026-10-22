@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-22 · F04d · Video incrustado en el visor de recursos
+
+- **Dato:** los recursos de tipo video del catálogo (`rec-video-mitos`, en `encuentro_mitos`) y los enlaces de YouTube.
+- **Dónde se mostraría:** dentro del visor de la mochila (`VisorRecurso`), que desde F04d es la única presentación de un recurso.
+- **Opciones:** incrustar el video en `ResourceContent` cuando el enlace es de YouTube, como hacía el drawer «Fichas para tu camino»; abrirlo solo con «Abrir fuente del recurso»; abrir tipos de recurso que hoy no se abren.
+- **Si no se muestra:** el video se abre con «Abrir fuente del recurso» si tiene enlace; sin enlace (como `rec-video-mitos`), el visor muestra el aviso de «próximamente». Nada que se abría deja de abrirse.
+- **Estado:** fuera de alcance de F04d por decisión del usuario.
+
 ## 2026-10-22 · F04 · Contenido de la ficha `t-ficha` para repasar antes de la batalla
 
 - **Dato:** `t_batalla.json` ofrece `t-ficha` para repasar («Repasar la ficha»), y el servidor la da al completar `t-inicio`.

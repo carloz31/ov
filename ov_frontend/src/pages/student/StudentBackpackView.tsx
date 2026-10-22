@@ -1,11 +1,7 @@
 import { BackpackHeader } from '@/features/backpack/components/BackpackHeader'
 import { useBackpack } from '@/features/backpack/hooks/useBackpack'
 import { appPaths } from '@/routes/paths'
-import { Check, Search, Sparkles, Star } from 'lucide-react'
-import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
-import { Dialog, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
-import { BackpackViewerFrame as DialogContent } from '@/features/backpack/components/BackpackViewerFrame'
+import { Search, Sparkles, Star } from 'lucide-react'
 import { DiscoveryStage } from '@/features/discovery/components/DiscoveryStage'
 import { Parchment } from '@/components/student/Parchment'
 
@@ -13,8 +9,8 @@ import '@/styles/student/journey.css'
 import '@/styles/student/resources.css'
 import '@/features/backpack/styles/backpack.css'
 import { BackpackCard } from '@/features/backpack/components/BackpackCard'
-import { ResourceContent } from '@/features/backpack/components/ResourceContent'
-const kindLabels = { sheet: 'Ficha', testimonial: 'Testimonio', interview: 'Entrevista' }
+import { VisorRecurso } from '@/features/backpack/components/VisorRecurso'
+import { RequisitoRecurso } from '@/features/backpack/components/RequisitoRecurso'
 const kinds = [
   { id: 'all', label: 'Todo' },
   { id: 'sheet', label: 'Fichas' },
@@ -25,7 +21,6 @@ function StudentBackpackView() {
   const model = useBackpack()
   const {
     adventure,
-    journey,
     navigate,
     kind,
     tabs,
@@ -40,7 +35,7 @@ function StudentBackpackView() {
     requisito,
     requisitoPendiente,
     errorRequisito,
-    setIntentoRequisito,
+    reintentarRequisito,
     mostrarRequisito,
     tituloRequisito,
     muestraMasVoces,
@@ -52,7 +47,6 @@ function StudentBackpackView() {
     openResource,
     clear,
     consultarRequisito,
-    marcarLeida,
   } = model
 
   return (
@@ -187,93 +181,24 @@ function StudentBackpackView() {
         <Star aria-hidden="true" size={18} />
         Las estrellas son tuyas: guarda lo que quieras encontrar rápido cuando armes tus planes.
       </p>
-      <Dialog
-        open={Boolean(selected && isUnlocked(selected) && !selected.servidor)}
-        onOpenChange={(open) => {
-          if (!open) setSelectedId(null)
-        }}
-      >
-        {selected && isUnlocked(selected) && !selected.servidor && (
-          <DialogContent className="resource-dialog max-w-4xl bg-[#fffdf7] p-0 md:p-0">
-            <DialogHeader className="mb-0 border-b border-[#e4e0cb] p-6 pr-16 sm:p-7 sm:pr-16">
-              <Badge className="mb-2 w-fit" variant="success">
-                <Check className="size-3" /> {kindLabels[selected.kind]}{' '}
-                {selected.kind === 'testimonial' ? 'desbloqueado' : 'desbloqueada'}
-              </Badge>
-              <DialogTitle className="text-[#304b3d]">{selected.title}</DialogTitle>
-              {selected.author && (
-                <p className="text-xs font-semibold text-[#7c805d]">
-                  {selected.kind === 'interview' ? 'Compartido por ' : ''}
-                  {selected.author}
-                </p>
-              )}
-              <DialogDescription>{selected.description}</DialogDescription>
-            </DialogHeader>
-            <div className="p-6 sm:p-7">
-              <ResourceContent resource={selected} />
-              {selected.kind === 'sheet' && selected.content && (
-                <Button
-                  variant="outline"
-                  disabled={(journey.readResourceIds ?? journey.resources).includes(selected.id)}
-                  onClick={() => marcarLeida(selected)}
-                >
-                  <Check size={18} />
-                  {(journey.readResourceIds ?? journey.resources).includes(selected.id)
-                    ? 'Ficha leída'
-                    : 'Leí la ficha'}
-                </Button>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e4e0cb] bg-[#f4f3e8] px-6 py-4">
-              <Button
-                variant="outline"
-                size="sm"
-                aria-pressed={adventure.bookmarks.includes(selected.id)}
-                onClick={() => toggleFavorite(selected.id)}
-              >
-                <Star
-                  className={adventure.bookmarks.includes(selected.id) ? 'fill-current text-[#aa7d26]' : ''}
-                />
-                {adventure.bookmarks.includes(selected.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-              </Button>
-              {selected.source && (
-                <p className="max-w-md text-xs leading-5 text-muted-foreground">Fuente: {selected.source}</p>
-              )}
-            </div>
-          </DialogContent>
-        )}
-      </Dialog>
+      <VisorRecurso
+        resource={selected && isUnlocked(selected) && !selected.servidor ? selected : undefined}
+        onClose={() => setSelectedId(null)}
+      />
       {mostrarRequisito && (
-        <Dialog
-          open={!!requisitoId}
-          onOpenChange={(open) => {
-            if (!open) setRequisitoId(null)
+        <RequisitoRecurso
+          abierto={!!requisitoId}
+          titulo={tituloRequisito}
+          texto={requisito}
+          pendiente={requisitoPendiente}
+          error={errorRequisito}
+          onReintentar={reintentarRequisito}
+          onClose={() => setRequisitoId(null)}
+          onVolver={() => {
+            setRequisitoId(null)
+            navigate(appPaths.student.missions)
           }}
-        >
-          <DialogContent className="resource-dialog max-w-xl">
-            <DialogHeader>
-              <DialogTitle>{tituloRequisito}</DialogTitle>
-              <DialogDescription>{requisito}</DialogDescription>
-            </DialogHeader>
-            {errorRequisito && (
-              <button className="sx-secondary-button" onClick={() => setIntentoRequisito((i) => i + 1)}>
-                Reintentar requisito
-              </button>
-            )}
-            {!requisitoPendiente && (
-              <button
-                type="button"
-                className="sx-primary-button"
-                onClick={() => {
-                  setRequisitoId(null)
-                  navigate(appPaths.student.missions)
-                }}
-              >
-                Volver al camino
-              </button>
-            )}
-          </DialogContent>
-        </Dialog>
+        />
       )}
     </DiscoveryStage>
   )

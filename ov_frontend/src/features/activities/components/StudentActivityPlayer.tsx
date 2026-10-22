@@ -5,7 +5,6 @@ import type { RegistroServidor } from '../hooks/useRegistroServidor'
 import type { Actividad } from '@/types/activities'
 import { PlayerAmbient } from './PlayerAmbient'
 import { PlayerTopBar } from './PlayerTopBar'
-import { ResourceSheet } from './ResourceSheet'
 export function StudentActivityPlayer({
   activity,
   imageUrl,
@@ -42,9 +41,6 @@ export function StudentActivityPlayer({
     advance,
     move,
     confirmacion,
-    resourceOpen,
-    resourceIds,
-    setResourceOpen,
   } = model
 
   return (
@@ -101,7 +97,6 @@ export function StudentActivityPlayer({
       <main className="sx-player-stage">
         <NodeRenderer model={model} activity={activity} edit={edit} direct={direct} />
       </main>
-      <ResourceSheet open={resourceOpen} ids={resourceIds} onClose={() => setResourceOpen(false)} />
     </div>
   )
 }

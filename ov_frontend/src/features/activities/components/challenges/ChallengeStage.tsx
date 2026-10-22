@@ -20,7 +20,8 @@ export function ChallengeStage({
     setStage,
     battle,
     setBattle,
-    setResourcesOpen,
+    repasar,
+    abrirRecompensa,
     title,
     muestraRecompensas,
     cierreServidor,
@@ -202,7 +203,7 @@ export function ChallengeStage({
                     kind={c.recompensa.recursoIds?.length ? 'sheet' : 'object'}
                     title={c.recompensa.titulo}
                     index={!practice.current && battle.sparks === destellos && c.logroOculto ? 1 : 0}
-                    onOpen={c.recompensa.recursoIds?.length ? () => setResourcesOpen(true) : undefined}
+                    onOpen={c.recompensa.recursoIds?.length ? abrirRecompensa : undefined}
                   />
                 )}
                 {practice.current && <p>Completaste una práctica. Tu recompensa ya viaja contigo.</p>}
@@ -227,7 +228,7 @@ export function ChallengeStage({
                     <button
                       type="button"
                       className="sx-primary-button"
-                      onClick={() => setResourcesOpen(true)}
+                      onClick={repasar}
                     >
                       Repasar la ficha
                     </button>

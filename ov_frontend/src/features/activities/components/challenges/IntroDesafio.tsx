@@ -16,7 +16,7 @@ export function IntroDesafio({ model }: { model: ReturnType<typeof useChallengeP
     destellos,
     etiquetaRepasoAntes,
     sheets,
-    setResourcesOpen,
+    repasar,
     start,
   } = model
   return (
@@ -65,7 +65,7 @@ export function IntroDesafio({ model }: { model: ReturnType<typeof useChallengeP
               Enfrentar a {c.nombre}
             </button>
             {sheets.length > 0 && (
-              <button type="button" className="sx-secondary-button" onClick={() => setResourcesOpen(true)}>
+              <button type="button" className="sx-secondary-button" onClick={repasar}>
                 <BookOpen size={18} />
                 {etiquetaRepasoAntes}
               </button>

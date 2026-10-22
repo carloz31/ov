@@ -1,4 +1,4 @@
-import { useFichasServidor } from '@/store/servidor/secciones'
+import { abrirRecurso } from '@/store/visorRecursoStore'
 import { useActivityCompletion } from './useActivityCompletion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
@@ -99,9 +99,6 @@ export function useActivityPlayer({
     }
   }, [])
   const [reactions, setReactions] = useState<NodoDialogo[]>([])
-  const [resourceOpen, setResourceOpen] = useState(false)
-  useFichasServidor(resourceOpen)
-  const [resourceIds, setResourceIds] = useState<string[]>([])
   const matrix = activity.plantilla?.tipo === 'matriz' && node?.tipo === 'consigna'
   const reaction = reactions[0]
   useEffect(() => {
@@ -125,7 +122,6 @@ export function useActivityPlayer({
   }, [activity.id, nodes])
   useEffect(() => {
     pageRef.current?.scrollIntoView({ block: 'start' })
-    setResourceOpen(false)
     // El foco de cada paso va al botón principal (Enter avanza), nunca a «Anterior»; en una pregunta, a la
     // opción elegida o a la primera.
     const stage = pageRef.current?.querySelector('.sx-player-stage')
@@ -251,8 +247,9 @@ export function useActivityPlayer({
   }
   const progress = node ? ((index + 1) / nodes.length) * 100 : 100
   function openResources(ids: string[]) {
-    setResourceIds(ids)
-    setResourceOpen(true)
+    // F04d: se abre con el visor de la mochila, encima del reproductor. Una diapositiva trae a lo más un
+    // recurso (lo valida `validateActivity`).
+    if (ids[0]) abrirRecurso(ids[0], 'mochila')
   }
   const previous = nodes[index - 1]
   const mode: 'sunrise' | 'night' =
@@ -289,9 +286,6 @@ export function useActivityPlayer({
     existingItemAnswer,
     setErrorServidor,
     revisionInstrumento,
-    resourceOpen,
-    resourceIds,
-    setResourceOpen,
     itemOcupado: modoApi && guardando,
     itemSoloLectura: modoApi && soloLectura,
     puedeTerminarEncuentro: modoApi && !!instrumentoServidor,
