@@ -9,7 +9,7 @@ export function HelenaPageSummary({ resumen, plano }: { resumen: ResumenPagina; 
       {resumen.filas.map((fila) => (
         <DimensionSummaryRow key={fila.codigo} fila={fila} />
       ))}
-      <p className="sx-d-helena-closure">{resumen.cierre}</p>
+      {resumen.cierre && <p className="sx-d-helena-closure">{resumen.cierre}</p>}
     </div>
   )
 }

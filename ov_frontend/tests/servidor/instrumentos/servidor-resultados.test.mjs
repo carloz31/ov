@@ -6,7 +6,7 @@ import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router'
 import { iniciarMara, botonEn } from '../../soporte/servidor-mara-ayudas.mjs'
-import { fixtureServidor, jsonServidor, copia, elementos, esperar } from '../../soporte/servidor-ayudas.mjs'
+import { fixtureServidor, jsonServidor, copia, elementos, esperar, libroServidor } from '../../soporte/servidor-ayudas.mjs'
 
 const texto = (node) =>
   Array.isArray(node)
@@ -224,8 +224,8 @@ test('el catálogo respeta posición y correlación e incluye códigos desconoci
 test('el libro resume las dimensiones remotas y anuncia contenidos, con enlaces al resultado y la guía', async () => {
   const resultado = jsonServidor('resultado-riasec'),
     f = await iniciarMara({ resultado })
-  const d = f.app.load('src/store/discoveryStore.ts')
-  d.revelarPaginaApi('est-ana', resultado.calculado_en, 'intereses')
+  // F03: intereses revelada en el servidor.
+  libroServidor(f.app, { 'APL-RIASEC': resultado })
   const Book = f.app.load('src/pages/student/HelenaBookView.tsx').HelenaBookView
   // F4b: render completo de los nuevos componentes; los puntajes/vías viven en el detalle.
   const marcado = renderToStaticMarkup(React.createElement(MemoryRouter, null, React.createElement(Book)))

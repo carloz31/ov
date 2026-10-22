@@ -1,4 +1,3 @@
-import { paginasReveladasApi } from '@/store/discoveryStore'
 import { modoApi } from '@/config/env'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import { cargarResultadoRiasec } from '@/store/servidor/resultado'
@@ -11,13 +10,8 @@ import type { StudentDiscoveryState } from '@/types/discovery'
 import type { CoincidenciaPublica } from '@/types/servidor'
 export function useCatalogAffinity(discovery: StudentDiscoveryState, soloAfines = false) {
   const servidor = useEstadoServidor()
-  const revelado =
-    modoApi &&
-    paginasReveladasApi(
-      discovery,
-      servidor.resumen.datos?.cuenta.codigo,
-      servidor.resultadoRiasec?.calculado_en,
-    ).includes('intereses')
+  // F03: el resultado RIASEC existe solo si se reveló en el servidor.
+  const revelado = modoApi && !!servidor.resultadoRiasec
   const afinidadApi = modoApi ? { resultado: servidor.resultadoRiasec, revelado } : undefined
   const coincidencias = modoApi && revelado ? coincidenciasRiasec(servidor.resultadoRiasec) : []
 

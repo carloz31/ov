@@ -15,6 +15,7 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
   const resultadoHref = discoveryPaths.helenaPage(page.id)
   const intereses = page.tipoResultado === 'COINCIDENCIAS'
   const plano = intereses && page.perfilPlano
+  const comparacion = page.tipoResultado === 'COMPARACION'
   return (
     <Parchment
       className={`sx-d-helena-card sx-d-helena-${page.state}${page.state === 'revealed' ? ' sx-d-revealed' : ''}`}
@@ -61,7 +62,7 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
                   </button>
                 </>
               ) : (
-                <p>{model.requisito}</p>
+                <p>{page.requisito}</p>
               )}
             </div>
           )}
@@ -70,6 +71,7 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
         <div className="sx-d-helena-box sx-d-helena-ready-box">
           <Seal state="ready" large />
           <p>{page.textoSello}</p>
+          {model.errorAccion && <p role="alert">{model.errorAccion}</p>}
         </div>
       ) : (
         <>
@@ -79,7 +81,21 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
             </div>
           )}
           <HelenaPageSummary resumen={page.resumen} plano={plano} />
-          <HelenaPageContents contenidos={page.resumen.contenidos} />
+          {page.resumen.contenidos.length > 0 && <HelenaPageContents contenidos={page.resumen.contenidos} />}
+          {page.selloLlegada && (
+            <div className="sx-d-helena-box sx-d-helena-ready-box">
+              <Seal state="ready" />
+              <button
+                type="button"
+                className="sx-d-action sx-d-action-gold"
+                disabled={model.revelando}
+                onClick={() => model.revelarPagina(page.id)}
+              >
+                Revela tu punto de llegada
+              </button>
+            </div>
+          )}
+          {model.errorAccion && (page.selloLlegada || plano) && <p role="alert">{model.errorAccion}</p>}
         </>
       )}
       <footer className="sx-d-helena-actions">
@@ -91,11 +107,25 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
           <button
             type="button"
             className="sx-d-action sx-d-action-gold"
-            disabled={page.revelacionBloqueada}
+            disabled={page.revelacionBloqueada || model.revelando}
             onClick={() => model.revelarPagina(page.id)}
           >
             Romper el sello
           </button>
+        ) : plano && page.reinicioApi ? (
+          <>
+            {page.puedeReiniciar && (
+              <button
+                type="button"
+                className="sx-d-action"
+                disabled={model.revelando}
+                onClick={model.reiniciarIntereses}
+              >
+                Volver a hacer las misiones
+              </button>
+            )}
+            <Link to={resultadoHref}>Ver resultado completo</Link>
+          </>
         ) : plano ? (
           <>
             <Link className="sx-d-action" to="/student/exploration?punto=mara-test">
@@ -103,6 +133,11 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
             </Link>
             <Link to={resultadoHref}>Ver resultado completo</Link>
           </>
+        ) : comparacion ? (
+          <Link className="sx-d-action sx-d-action-gold" to={resultadoHref}>
+            {page.conComparacion ? 'Ver comparación' : 'Ver resultado completo'}
+            <ChevronRight aria-hidden="true" />
+          </Link>
         ) : (
           <>
             <Link className="sx-d-action sx-d-action-gold" to={resultadoHref}>

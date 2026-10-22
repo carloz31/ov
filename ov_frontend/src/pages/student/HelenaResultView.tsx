@@ -13,12 +13,37 @@ import { RecommendedCareers } from '@/features/discovery/components/RecommendedC
 import { ResultNextSteps } from '@/features/discovery/components/ResultNextSteps'
 import { FlatProfileNotice } from '@/features/discovery/components/FlatProfileNotice'
 import { ResultNotes } from '@/features/discovery/components/ResultNotes'
+import { PartidaLlegadaResult } from '@/features/discovery/components/PartidaLlegadaResult'
 import '@/features/discovery/styles/result-page.css'
 
 export function HelenaResultView() {
   const { pagina } = useParams()
   const model = useResultPage(pagina)
   if (!model) return <Navigate replace to={discoveryPaths.helena} />
+  if (model.espera)
+    return (
+      <DiscoveryStage ambient="profile">
+        <div className="sx-d-result-page" aria-busy={!model.espera.error}>
+          {model.espera.error && (
+            <div className="sx-d-warning" role="alert">
+              <p>{model.espera.error}</p>
+              <button type="button" className="sx-d-action" onClick={model.espera.reintentar}>
+                Reintentar
+              </button>
+            </div>
+          )}
+        </div>
+      </DiscoveryStage>
+    )
+  if (model.comparacion)
+    return (
+      <DiscoveryStage ambient="profile">
+        <div className="sx-d-result-page">
+          <ResultHeader page={model.comparacion.page} tipo="COMPARACION" />
+          <PartidaLlegadaResult dimensiones={model.comparacion.dimensiones} />
+        </div>
+      </DiscoveryStage>
+    )
   const { resumen } = model
   return (
     <DiscoveryStage ambient="profile">
@@ -34,7 +59,28 @@ export function HelenaResultView() {
         )}
         <ResultOverview>
           {resumen.perfilPlano ? (
-            <FlatProfileNotice />
+            <FlatProfileNotice
+              reinicio={
+                model.reinicio && {
+                  texto: model.reinicio.texto,
+                  accion: (
+                    <>
+                      {model.reinicio.puede && (
+                        <button
+                          type="button"
+                          className="sx-d-action"
+                          disabled={model.reinicio.ocupado}
+                          onClick={model.reinicio.reiniciar}
+                        >
+                          Volver a hacer las misiones
+                        </button>
+                      )}
+                      {model.reinicio.error && <p role="alert">{model.reinicio.error}</p>}
+                    </>
+                  ),
+                }
+              }
+            />
           ) : resumen.tipoResultado === 'COINCIDENCIAS' ? (
             <InterestCode dimensiones={resumen.protagonistas} empate={resumen.hayEmpate} />
           ) : (

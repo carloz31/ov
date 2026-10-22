@@ -345,3 +345,19 @@ export function cargarAlmacen(app) {
     ),
   )
 }
+// F03: el libro de Helena leído del servidor, con las aplicaciones dadas reveladas (por código de
+// aplicación). El avance es el de `ruta` al final; sin `APL-RIASEC`, intereses queda lista para revelar.
+export function libroServidor(app, resultados = {}, { historialRiasec = null, comparacion = null } = {}) {
+  const avance = jsonServidor('ruta/ruta-avance-instrumentos-final').map((i) => ({
+    ...i,
+    aplicaciones: i.aplicaciones.map((a) => ({ ...a, hay_resultado_vigente: a.aplicacion in resultados })),
+  }))
+  const sesion = app.load('src/store/servidor/sesion.ts')
+  const riasec = resultados['APL-RIASEC'] ?? null
+  sesion.publicar({
+    resultadoRiasec: riasec,
+    estadoResultado: riasec ? 'listo' : 'pendiente',
+    instrumentos: { estado: 'listo', error: null, avance, resultados, comparacion, historialRiasec },
+  })
+  return avance
+}

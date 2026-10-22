@@ -13,6 +13,7 @@ import { carrerasResultado, ocupacionesResultado } from '../lib/resultCatalog'
 import { createPlanFromCareer, getOrderedPlans } from '../lib/plans'
 import { filtrarPorAjuste, ordenarCarreras, resumirResultado } from '../lib/resultPage'
 import { useHelenaPages } from './useHelenaPages'
+import { comparacionVista } from '../lib/helenaPagesApi'
 
 export function useResultPage(pagina: string | undefined, resultadoRecibido?: ResultadoPublico) {
   const libro = useHelenaPages()
@@ -34,6 +35,16 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
     (modoApi && configuracion?.tipoResultado === 'COINCIDENCIAS'
       ? (servidor.resultadoRiasec ?? undefined)
       : undefined)
+  // F03: al recargar la vista, mientras el libro se lee del servidor (o si falló), no se vuelve al libro.
+  if (modoApi && configuracion && page?.state !== 'revealed' && (libro.cargando || libro.errorConsulta))
+    return {
+      espera: { error: libro.errorConsulta, reintentar: () => libro.setIntento((i) => i + 1) },
+    } as const
+  // F03 (HU-094): partida y llegada tiene su propia vista, sin puntajes.
+  if (configuracion?.tipoResultado === 'COMPARACION')
+    return page?.state === 'revealed'
+      ? ({ comparacion: { page, dimensiones: comparacionVista(servidor.instrumentos) } } as const)
+      : null
   const resultado =
     remoto && configuracion ? resultadoHelenaCompleto(remoto, configuracion.tipoResultado) : page?.result
   if (!configuracion || page?.state !== 'revealed' || !resultado) return null
@@ -72,6 +83,16 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
     errorResultado: libro.errorResultado,
     errorConsulta: libro.errorConsulta,
     reintentar: () => libro.setIntento((i) => i + 1),
+    // F03 (HU-095): en api, el perfil plano se repite desde aquí.
+    reinicio: page.reinicioApi
+      ? {
+          texto: page.textoPlano,
+          puede: !!page.puedeReiniciar,
+          reiniciar: libro.reiniciarIntereses,
+          ocupado: libro.revelando,
+          error: libro.errorAccion,
+        }
+      : undefined,
     guia,
     setGuia,
     expandidas,

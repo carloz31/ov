@@ -3,6 +3,7 @@
 import type {
   AvanceAplicacion,
   AvanceInstrumento,
+  MotivoBloqueo,
   ResultadoHistorico,
   ResultadoPublico,
   ZonaDimension,
@@ -55,6 +56,14 @@ export function reinicioUsado(historial: ResultadoHistorico[] | null | undefined
   return (
     (historial ?? []).filter((r) => r.anulado_en !== null && r.perfil_plano).length >=
     MAXIMO_REINICIOS_PERFIL_PLANO
+  )
+}
+
+// F03: lo bloqueado espera un revelado (partida o cuestionarios prioritarios del salón, `R-T2`) si el
+// servidor informa el evaluador `instrumentos_prioritarios` sin cumplir.
+export function faltaRevelado(bloqueo: MotivoBloqueo[] | null | undefined) {
+  return !!bloqueo?.some(
+    (m) => m.evaluador_especial?.nombre === 'instrumentos_prioritarios' && !m.evaluador_especial.cumplido,
   )
 }
 

@@ -5,8 +5,10 @@ import { calculateResult } from '@/lib/activities/logic'
 import type { JourneyState } from '@/types/activities'
 import type { InstrumentPageId, StudentDiscoveryState } from '@/types/discovery'
 import { descripcionesLocales, descripcionesInteligenciasDemo } from '../data/dimensionExamples'
-export function getHelenaPagesApi(intereses: HelenaPage, reveladas: InstrumentPageId[]): HelenaPage[] {
-  // Se conservan los ejemplos de los otros instrumentos; sus misiones aún no existen en la API.
+export function getHelenaPagesApi(servidor: HelenaPage[], reveladas: InstrumentPageId[]): HelenaPage[] {
+  // Se conservan los ejemplos de los otros instrumentos; sus misiones aún no existen en la API. F03: van
+  // después de las páginas del servidor y su numeral sigue el orden del libro.
+  const numerales: HelenaPage['numeral'][] = ['I', 'II', 'III', 'IV']
   const ejemplos: HelenaPage[] = [
     {
       id: 'inteligencias',
@@ -32,7 +34,7 @@ export function getHelenaPagesApi(intereses: HelenaPage, reveladas: InstrumentPa
       demo: true,
     },
   ]
-  return [intereses, ...ejemplos]
+  return [...servidor, ...ejemplos].map((p, i) => ({ ...p, numeral: numerales[i] }))
 }
 export function getHelenaPageState(complete: boolean, revealed: boolean): HelenaPageState {
   return !complete ? 'sealed' : revealed ? 'revealed' : 'ready'

@@ -23,7 +23,9 @@ export function ResultHeader({
       <p>
         {tipo === 'COINCIDENCIAS'
           ? 'Helena leyó tus respuestas y encontró los tipos de actividad que más te llaman. No es un veredicto: es una pista para explorar ocupaciones y carreras que podrías no haber considerado.'
-          : 'No hay una sola forma de ser inteligente. Helena leyó tus respuestas y encontró las capacidades que más usas para aprender, crear y resolver. Todas se pueden desarrollar.'}
+          : tipo === 'COMPARACION'
+            ? 'Helena leyó cómo te sentías al empezar el camino y cómo te sientes al llegar. Son zonas, no notas: muestran dónde estás hoy.'
+            : 'No hay una sola forma de ser inteligente. Helena leyó tus respuestas y encontró las capacidades que más usas para aprender, crear y resolver. Todas se pueden desarrollar.'}
       </p>
       {page.demo && (
         <p className="sx-d-demo">

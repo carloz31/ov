@@ -3,7 +3,7 @@ import test from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter, Routes, Route } from 'react-router'
-import { copia, elementos, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, elementos, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
 import { iniciarMara } from '../../soporte/servidor-mara-ayudas.mjs'
 
 const codigos = (dimensiones) => Array.from(dimensiones, (d) => d.code)
@@ -15,8 +15,10 @@ function funciones(app = fixtureServidor()) {
 }
 async function preparar(resultado = jsonServidor('resultado-riasec'), pagina = 'intereses', ruta) {
   const f = await iniciarMara({ resultado, ruta })
-  await f.app.load('src/store/servidor/resultado.ts').cargarResultadoRiasec()
-  f.app.load('src/store/discoveryStore.ts').revelarPaginaApi('est-ana', resultado.calculado_en, pagina)
+  // F03: intereses se revela en el servidor; las páginas de ejemplo conservan su revelado local.
+  libroServidor(f.app, { 'APL-RIASEC': resultado })
+  if (pagina !== 'intereses')
+    f.app.load('src/store/discoveryStore.ts').revelarPaginaApi('est-ana', resultado.calculado_en, pagina)
   const { useResultPage } = f.app.load('src/features/discovery/hooks/useResultPage.ts')
   return {
     ...f,
@@ -366,6 +368,9 @@ test('sin resultado API no sustituye las sugerencias por el ejemplo local', asyn
   const f = await iniciarMara()
   const { useResultPage } = f.app.load('src/features/discovery/hooks/useResultPage.ts')
   f.app.load('src/store/discoveryStore.ts').updateDiscovery((s) => ({ ...s, revealedPages: ['intereses'] }))
+  // F03: mientras el libro se lee del servidor, la vista espera en lugar de volver al libro.
+  assert.ok(useResultPage('intereses').espera)
+  libroServidor(f.app)
   assert.equal(useResultPage('intereses'), null)
 })
 
@@ -545,14 +550,16 @@ test('F4b: perfil plano muestra el aviso exacto y solo anuncia el perfil', async
   assert.equal(page.resumen.rotulo, 'Tu código de interés')
   assert.equal(page.resumen.filas.length, 0)
   assert.equal(page.resumen.titulo, 'Tus respuestas no marcaron un interés por encima de otro')
+  // F03: en api, el perfil plano invita a repetir las misiones (una vez) en lugar de revisar a Mara.
   assert.equal(
     page.resumen.cierre,
-    'Respondiste de forma muy parecida a todos los tipos de actividad. Revisa tus encuentros con Mara pensando en lo que de verdad disfrutas.',
+    'Tus respuestas no distinguen un tipo de interés. Puedes volver a hacer las misiones una vez.',
   )
   assert.equal(page.resumen.contenidos.length, 1)
   const { HelenaPageCard } = f.app.load('src/features/discovery/components/HelenaPageCard.tsx')
   const marcado = html(HelenaPageCard, { page, model })
-  assert.match(marcado, /href="\/student\/exploration\?punto=mara-test"/)
+  assert.match(marcado, /Volver a hacer las misiones/)
+  assert.doesNotMatch(marcado, /mara-test/)
   assert.doesNotMatch(marcado, /ocupaciones afines|carreras que|guia=1/)
 })
 

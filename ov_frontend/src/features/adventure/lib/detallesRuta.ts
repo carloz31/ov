@@ -1,5 +1,7 @@
 import { contenidoPorClave } from '@/data/activities/contenidos.ts'
 import { mensajeBloqueo } from '@/lib/servidor/adaptadores'
+import { faltaRevelado } from '@/lib/servidor/adaptadoresInstrumentos'
+import { discoveryPaths } from '@/routes/discoveryPaths'
 import { appPaths } from '@/routes/paths'
 import type { ActividadCuenta, BloqueActividades } from '@/types/servidor'
 import type { PointDetails } from './pointDetails'
@@ -22,6 +24,8 @@ export function detallesRuta(
   const pendiente =
     !contenido.nodos.length && !contenido.desafio && !contenido.caso && point.status === 'available'
   const tipo = tipoActividad(actividad)
+  const bloqueo =
+    actividad.bloqueo ?? bloques?.find((b) => b.actividades.some((a) => a.codigo === actividad.codigo))?.bloqueo
   return {
     title: point.title,
     region,
@@ -32,6 +36,9 @@ export function detallesRuta(
     // La presentación de la actividad la da el servidor; el contenido no la repite.
     description: actividad.descripcion ?? '',
     requirement: point.status === 'locked' ? mensajeBloqueo(bloques, actividad.codigo) : undefined,
+    ...(point.status === 'locked' && faltaRevelado(bloqueo)
+      ? { requirementLink: { label: 'Ir al libro de Helena', href: discoveryPaths.helena } }
+      : {}),
     actionLabel: pendiente
       ? 'Contenido pendiente'
       : point.status === 'locked'

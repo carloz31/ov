@@ -31,6 +31,8 @@ export type PointDetails = {
   type: string
   description: string
   requirement?: string
+  // F03: enlace junto al requisito (T2 espera un revelado en el libro de Helena).
+  requirementLink?: { label: string; href: string }
   actionLabel: string
   disabled: boolean
   activityId?: string

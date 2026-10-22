@@ -1,4 +1,5 @@
-export type InstrumentPageId = 'intereses' | 'inteligencias' | 'habilidades'
+// F03: 'partida-llegada' existe solo en api.
+export type InstrumentPageId = 'partida-llegada' | 'intereses' | 'inteligencias' | 'habilidades'
 
 export type ResearchPublication = {
   interviewee: string

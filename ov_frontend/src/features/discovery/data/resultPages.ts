@@ -5,6 +5,7 @@ import type { TipoResultadoHelena } from '@/types/profile'
 export const resultPages: Partial<
   Record<InstrumentPageId, { instrumento: string; tipoResultado: TipoResultadoHelena }>
 > = {
+  'partida-llegada': { instrumento: 'TEST-PARTIDA-LLEGADA', tipoResultado: 'COMPARACION' },
   intereses: { instrumento: 'TEST-RIASEC', tipoResultado: 'COINCIDENCIAS' },
   inteligencias: { instrumento: 'TEST-INT', tipoResultado: 'DESTACADAS' },
 }

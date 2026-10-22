@@ -18,7 +18,7 @@ export function HelenaBookView() {
             <p>Lo que Helena va descubriendo de ti</p>
           </div>
           <div>
-            <strong>{pages.filter((p) => p.state === 'revealed').length} de 3 páginas descifradas</strong>
+            <strong>{pages.filter((p) => p.state === 'revealed').length} de {pages.length} páginas descifradas</strong>
             <div className="sx-d-seal-row">
               {pages.map((p) => (
                 <Seal key={p.id} state={p.state}>

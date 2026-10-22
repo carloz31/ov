@@ -4,6 +4,8 @@ import type { ResumenPagina, ResumenResultado } from '../types'
 export function resumenPagina(
   page: Pick<HelenaPage, 'state' | 'perfilPlano'> & { tipoResultado?: TipoResultadoHelena },
   resultado?: HelenaResult & { coincidencias?: unknown[] | null; carreras_recomendadas?: unknown[] | null },
+  // F03: en api, el perfil plano invita a repetir las misiones en lugar de revisar los encuentros con Mara.
+  opciones: { textoPlano?: string } = {},
 ): ResumenPagina {
   const vacio: ResumenPagina = { rotulo: '', filas: [], cierre: '', contenidos: [] }
   if (page.state !== 'revealed' || !page.tipoResultado || !resultado) return vacio
@@ -23,6 +25,7 @@ export function resumenPagina(
       filas: [],
       titulo: 'Tus respuestas no marcaron un interés por encima de otro',
       cierre:
+        opciones.textoPlano ??
         'Respondiste de forma muy parecida a todos los tipos de actividad. Revisa tus encuentros con Mara pensando en lo que de verdad disfrutas.',
       contenidos,
     }

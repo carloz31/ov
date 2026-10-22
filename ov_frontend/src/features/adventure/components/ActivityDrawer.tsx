@@ -135,6 +135,11 @@ export function ActivityDrawer({
                     {details.requirement}
                   </p>
                 )}
+                {details.requirementLink && (
+                  <Link className="sx-drawer-requirement-link" to={details.requirementLink.href}>
+                    {details.requirementLink.label}
+                  </Link>
+                )}
                 {details.caseProgress && renderCaseProgress?.(adventure)}
                 {details.journal && renderJournal?.(details.journal, () => onJournal(details))}
                 <button

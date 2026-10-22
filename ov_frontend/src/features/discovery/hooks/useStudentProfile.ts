@@ -1,15 +1,18 @@
+import { useEffect } from 'react'
 import { modoApi } from '@/config/env'
 import { useOccupationExplorationContext } from '@/context/occupationExplorationContext'
 import { getZoneProgress } from '@/features/adventure/lib/mapPoints'
-import { ciudadDisponible, insigniasServidor, paginaInteresesServidor } from '@/lib/servidor/adaptadores'
+import { ciudadDisponible, insigniasServidor } from '@/lib/servidor/adaptadores'
 import { progresoBloque } from '@/lib/servidor/contenidos'
 import { canAccessCity, getTravelerLevel, useAdventure } from '@/store/adventureStore'
 import { paginasReveladasApi, useDiscovery } from '@/store/discoveryStore'
 import { useJourney } from '@/store/journeyStore'
 import { useLogrosServidor } from '@/store/servidor/secciones'
 import { useEstadoServidor } from '@/store/servidor/sesion'
+import { cargarInstrumentos } from '@/store/servidor/instrumentos'
 import { getAchievementPresentations } from '../lib/achievements'
-import { getHelenaPages, getHelenaPagesApi } from '../lib/helenaPages'
+import { getHelenaPages } from '../lib/helenaPages'
+import { paginasLibroApi } from '../lib/helenaPagesApi'
 import { getProfileBadges, getStudentAchievementGroups } from '../lib/passport'
 import { getOrderedPlans } from '../lib/plans'
 
@@ -21,6 +24,10 @@ export function useStudentProfile() {
   useLogrosServidor()
   const servidor = useEstadoServidor()
   const cuenta = servidor.resumen.datos?.cuenta.codigo
+  // F03: las páginas del libro salen del avance de instrumentos, que se pide al abrir el perfil.
+  useEffect(() => {
+    if (modoApi) void cargarInstrumentos()
+  }, [cuenta])
   const nombre = modoApi ? (servidor.resumen.datos?.cuenta.nombre ?? 'Mi perfil') : 'Alex'
   const iniciales = modoApi
     ? nombre
@@ -56,13 +63,9 @@ export function useStudentProfile() {
     gruposApi ? { grupos: gruposApi, cuenta: cuenta ?? '' } : undefined,
   )
   const pages = modoApi
-    ? getHelenaPagesApi(
-        paginaInteresesServidor(
-          servidor.actividades.datos,
-          servidor.resultadoRiasec,
-          discovery,
-          cuenta ?? null,
-        ),
+    ? paginasLibroApi(
+        servidor.actividades.datos,
+        servidor.instrumentos,
         paginasReveladasApi(discovery, cuenta, servidor.resultadoRiasec?.calculado_en),
       )
     : getHelenaPages(journey, discovery)

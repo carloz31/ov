@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { copia, elementos, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, elementos, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
 import { iniciarMara } from '../../soporte/servidor-mara-ayudas.mjs'
 
 function prepararPerfil(app) {
@@ -10,25 +10,29 @@ function prepararPerfil(app) {
   return { contexto, perfil }
 }
 
-test('perfil API usa la página de intereses del servidor y su revelación por cuenta y resultado', async () => {
+test('perfil API lee las páginas del libro del servidor: partida y llegada primero, intereses revelada allí', async () => {
   const resultado = jsonServidor('resultado-riasec')
   const f = await iniciarMara({ resultado })
   await f.almacen.asegurarSeccion('logros')
   const { perfil } = prepararPerfil(f.app)
-  assert.equal(perfil().pages.length, 3)
-  assert.equal(perfil().pages[0].state, 'ready')
-  const discovery = f.app.load('src/store/discoveryStore.ts')
-  discovery.revelarPaginaApi('est-luis', resultado.calculado_en, 'intereses')
-  assert.equal(perfil().pages[0].state, 'ready')
-  discovery.revelarPaginaApi('est-ana', resultado.calculado_en, 'intereses')
+  // F03: el revelado local ya no cuenta; sin el libro leído, todo queda sellado.
+  f.app.load('src/store/discoveryStore.ts').revelarPaginaApi('est-ana', resultado.calculado_en, 'intereses')
+  assert.deepEqual(copia(perfil().pages.map((p) => [p.id, p.numeral, p.state])), [
+    ['partida-llegada', 'I', 'sealed'],
+    ['intereses', 'II', 'sealed'],
+    ['inteligencias', 'III', 'ready'],
+    ['habilidades', 'IV', 'sealed'],
+  ])
+  libroServidor(f.app, { 'APL-RIASEC': resultado })
   const p = perfil()
-  assert.equal(p.pages[0].state, 'revealed')
+  assert.equal(p.pages[1].state, 'revealed')
+  assert.equal(p.pages[0].state, 'ready')
   assert.deepEqual(
-    Array.from(p.pages[0].result.areas, (a) => a.code),
+    Array.from(p.pages[1].result.areas, (a) => a.code),
     ['I', 'R', 'A'],
   )
   assert.deepEqual(
-    Array.from(p.pages[0].result.areas, (a) => a.score),
+    Array.from(p.pages[1].result.areas, (a) => a.score),
     [100, 75, 50],
   )
   assert.equal(p.nombre, 'Ana')
@@ -39,7 +43,7 @@ test('perfil API usa la página de intereses del servidor y su revelación por c
   assert.equal(p.level.number, 3)
   assert.equal('ficha' in p, false)
   const pendiente = await iniciarMara()
-  assert.equal(prepararPerfil(pendiente.app).perfil().pages[0].state, 'sealed')
+  assert.equal(prepararPerfil(pendiente.app).perfil().pages[1].state, 'sealed')
 })
 
 test('insignias del perfil API proceden de logros remotos y respetan la selección de la cuenta', async () => {
