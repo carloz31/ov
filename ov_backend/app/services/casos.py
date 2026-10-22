@@ -37,6 +37,7 @@ def listar_casos_cuenta(sesion: Session, cuenta: Cuenta) -> list[CasoCuenta]:
             estado=estado_actividad(sesion, cuenta, caso), intentos=len(propios),
             superado=any(puntaje >= caso.puntaje_minimo for puntaje in propios),
             ultimo_puntaje=propios[-1] if propios else None, mejor_puntaje=max(propios, default=None),
+            puntaje_minimo=caso.puntaje_minimo,
         ))
     return respuesta
 

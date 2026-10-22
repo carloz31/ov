@@ -23,7 +23,8 @@ def fila_caso(cliente):
 def test_casos_traen_sus_tipos_riasec(cliente):
     assert fila_caso(cliente) == {
         'actividad': 't-caso', 'titulo': 'Caso de prueba', 'dimensiones': ['R', 'S'], 'estado': 'BLOQUEADA',
-        'intentos': 0, 'superado': False, 'ultimo_puntaje': None, 'mejor_puntaje': None}
+        'intentos': 0, 'superado': False, 'ultimo_puntaje': None, 'mejor_puntaje': None,
+        'puntaje_minimo': 60}
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/casos') == []
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/coleccion') == []
 

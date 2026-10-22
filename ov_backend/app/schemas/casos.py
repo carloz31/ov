@@ -14,6 +14,8 @@ class CasoCuenta(BaseModel):
     superado: bool
     ultimo_puntaje: float | None
     mejor_puntaje: float | None
+    # Umbral propio del caso: con un puntaje igual o mayor, el intento lo supera.
+    puntaje_minimo: float
 
 
 class OcupacionColeccion(BaseModel):
