@@ -4,6 +4,7 @@ import {
   cargarAlmacen,
   copia,
   escenarioRuta,
+  esperar,
   esConsultaDominio,
   fixtureServidor,
   jsonServidor,
@@ -109,4 +110,43 @@ test('las preguntas del servidor se convierten en la batalla, con sus vidas y de
   })
   // Sin preguntas suficientes para que un intento termine, no hay batalla.
   assert.equal(batallaDesdePreguntas(configuracion, preguntas.slice(0, 6)), undefined)
+})
+
+test('la primera victoria no convierte en práctica su propio intento; el siguiente sí (F04d)', async () => {
+  const app = fixtureServidor()
+  const [batalla] = batallas
+  app.fetch((req) => {
+    if (esConsultaDominio(req)) return respuestaDominio(req, escenarioRuta('t1'))
+    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.endsWith('/batallas')) return { body: [{ ...batalla, superada: false, intentos: 0 }] }
+    if (req.url.endsWith('/batallas/t-batalla/preguntas')) return { body: preguntas }
+    if (req.url.endsWith('/resolver-batalla')) return { body: victoria }
+    throw Error(`Solicitud no configurada: ${req.url}`)
+  })
+  const almacen = cargarAlmacen(app)
+  almacen.publicar({ consultasHabilitadas: true })
+  await almacen.refrescar()
+  const { challenges } = app.load('src/data/content/challenges.ts')
+  const { useChallengePlayer } = app.load('src/features/activities/hooks/useChallengePlayer.ts')
+  const challenge = challenges.find((c) => c.id === 'desafio-rumor')
+  const vista = app.mount(useChallengePlayer, { challenge, servidor: { actividad: 't-batalla' } })
+  vista.render()
+  await esperar()
+  await vista.render().start()
+  let m = vista.render()
+  for (let n = 0; !m.battle.finished; n++) {
+    await m.answer(m.question.correcta)
+    m = vista.render()
+    if (!m.battle.finished) m.setBattle({ ...m.battle, index: m.battle.index + 1, selected: undefined })
+    m = vista.render()
+    assert.ok(n < 7)
+  }
+  await esperar()
+  m = vista.render()
+  assert.deepEqual([m.resultado.victoria, m.resultado.practica], [true, false])
+  // El encabezado de este intento sigue sin «Práctica».
+  assert.equal(m.practice.current, false)
+  await m.start()
+  assert.equal(vista.render().practice.current, true)
+  vista.unmount()
 })

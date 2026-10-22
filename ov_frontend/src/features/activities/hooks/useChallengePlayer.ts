@@ -29,6 +29,8 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
   const conServidor = modoApi && !!servidor
   const error = conServidor ? errorEnvio : errorJourney
   const practice = useRef(!conServidor && state.progress[c.id]?.estado === 'completada')
+  // Superada en este intento: el siguiente ya es práctica, pero el encabezado de este intento no cambia.
+  const practicaSiguiente = useRef(false)
   // F04b: las fichas de la batalla se derivan de sus preguntas; se repasan las que la cuenta ya tiene.
   const [fichasBatalla, setFichasBatalla] = useState<ContenidoEstado[]>([])
   const respuestas = useRef<RespuestaBatallaEntrada[]>([])
@@ -92,6 +94,7 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
       const nueva = batallaDesdePreguntas(configuracion!, preguntas.datos)
       if (!nueva) return setErrorEnvio('La batalla no tiene preguntas suficientes para un intento.')
       respuestas.current = []
+      if (practicaSiguiente.current) practice.current = true
       setResultado(undefined)
       setErrorIntento('')
       setBattle(nueva)
@@ -128,7 +131,7 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
       return setErrorIntento(mensajeErrorServidor(respuesta))
     setResultado(respuesta.datos)
     // Superada, los intentos siguientes son práctica.
-    if (respuesta.datos.victoria) practice.current = true
+    if (respuesta.datos.victoria) practicaSiguiente.current = true
   }
   const responseTitle = hit
     ? `¡Golpe de luz! ${c.nombre} pierde fuerza.`
