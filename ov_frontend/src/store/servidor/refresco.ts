@@ -9,9 +9,15 @@ import {
   vencerSeccion,
   vencerErroresActivos,
 } from './secciones'
-import { consultarNoVistos, encolarPorRevelar } from './avisos'
+import { consultarNoVistos, encolarPorRevelar, incorporarDesbloqueos } from './avisos'
 import { cargarResultadoRiasec } from './resultado'
-import type { BloqueActividades, DesbloqueoNuevo, RespuestaServidor } from '@/types/servidor'
+import type {
+  BloqueActividades,
+  DesbloqueoNuevo,
+  ErrorServidor,
+  RespuestaAccion,
+  RespuestaServidor,
+} from '@/types/servidor'
 let revision = 0
 const visibles = (bloques: BloqueActividades[] | null) =>
   bloques?.flatMap((b) => b.actividades.filter((a) => a.visible).map((a) => a.codigo))
@@ -61,4 +67,25 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
     if (resultado.tipo !== 'ok') return resultado
   } else publicar({ resultadoRiasec: null, estadoResultado: 'pendiente', errorResultado: null })
   return { tipo: 'ok', datos: null }
+}
+
+export type AccionConRefresco<T extends RespuestaAccion> =
+  | RespuestaServidor<T>
+  | { tipo: 'guardado_sin_refrescar'; datos: T; error: ErrorServidor }
+// Una acción con eventos y desbloqueos refresca el camino como completar: toasts y revelado de opcionales.
+// Con `confirmada`, solo se reintenta el refresco de una acción que el servidor ya guardó.
+export async function accionConRefresco<T extends RespuestaAccion>(
+  accion: (cuenta: string) => Promise<RespuestaServidor<T>>,
+  confirmada?: T,
+): Promise<AccionConRefresco<T>> {
+  const cuenta = cuentaActiva()
+  const sesion = sesionServidor()
+  if (!modoApi || !cuenta) return { tipo: 'http', estado: 400, detalle: 'No hay una cuenta de servidor activa.' }
+  const respuesta: RespuestaServidor<T> = confirmada ? { tipo: 'ok', datos: confirmada } : await accion(cuenta)
+  if (respuesta.tipo !== 'ok') return respuesta
+  if (cuenta !== cuentaActiva() || sesion !== sesionServidor())
+    return { tipo: 'http', estado: 409, detalle: 'La cuenta activa cambió durante la acción.' }
+  incorporarDesbloqueos(respuesta.datos.nuevos_desbloqueos)
+  const estado = await refrescar(respuesta.datos.nuevos_desbloqueos)
+  return estado.tipo === 'ok' ? respuesta : { tipo: 'guardado_sin_refrescar', datos: respuesta.datos, error: estado }
 }

@@ -4,7 +4,10 @@ import type {
   RespuestaCompletarActividad,
   RespuestaItemEntrada,
   RespuestaItemsGuardados,
+  RespuestaResolverCaso,
   RespuestaServidor,
+  ResolverBatallaEntrada,
+  ResolverCasoEntrada,
 } from '@/types/servidor'
 
 export function ingresar(cuenta: string): Promise<RespuestaServidor<RespuestaAccion>> {
@@ -24,4 +27,16 @@ export function responderItems(
   respuestas: RespuestaItemEntrada[],
 ): Promise<RespuestaServidor<RespuestaItemsGuardados>> {
   return enviar('/acciones/responder-items', { cuenta, actividad, respuestas })
+}
+
+export function resolverBatalla(entrada: ResolverBatallaEntrada): Promise<RespuestaServidor<RespuestaAccion>> {
+  return enviar('/acciones/resolver-batalla', entrada)
+}
+
+export function resolverCaso(entrada: ResolverCasoEntrada): Promise<RespuestaServidor<RespuestaResolverCaso>> {
+  return enviar('/acciones/resolver-caso', entrada)
+}
+
+export function verTestimonio(cuenta: string, testimonio: string): Promise<RespuestaServidor<RespuestaAccion>> {
+  return enviar('/acciones/ver-testimonio', { cuenta, testimonio })
 }

@@ -55,6 +55,8 @@ export type TipoEventoUso =
   | 'VISTA_CARRERA'
   | 'PUBLICA_ENTREVISTA'
   | 'SUPERA_CASO'
+  | 'SUPERA_BATALLA'
+  | 'VISTA_TESTIMONIO'
   | 'ESCRIBE_CARTA'
   | 'COMPLETA_CONVERSACION'
   | 'REINICIA_INSTRUMENTO'
@@ -282,3 +284,43 @@ export type RegistroConsultado = {
   items_por_ampliar?: ItemPorAmpliar[] | null
 }
 export type RespuestaRegistroAccion = RegistroConsultado & RespuestaAccion
+// app/schemas/batallas.py, casos.py y testimonios.py (B08; F04)
+export type IntentoBatalla = { victoria: boolean; aciertos: number; preguntas: number; fecha_hora: string }
+export type BatallaCuenta = {
+  actividad: string
+  titulo: string
+  estado: EstadoActividad
+  intentos: number
+  superada: boolean
+  primer_intento: IntentoBatalla | null
+}
+export type CasoCuenta = {
+  actividad: string
+  titulo: string
+  dimensiones: string[]
+  estado: EstadoActividad
+  intentos: number
+  superado: boolean
+  ultimo_puntaje: number | null
+  mejor_puntaje: number | null
+  puntaje_minimo: number
+}
+export type OcupacionColeccion = { ocupacion: string; titulo: string; caso: string; obtenida_en: string }
+export type TestimonioEstado = {
+  codigo: string
+  titulo: string
+  estado: EstadoDisponibilidad
+  visto: boolean
+  pista: string | null
+  descripcion: string | null
+  enlace: string | null
+}
+export type ResolverBatallaEntrada = {
+  cuenta: string
+  actividad: string
+  victoria: boolean
+  aciertos: number
+  preguntas: number
+}
+export type ResolverCasoEntrada = { cuenta: string; actividad: string; puntaje: number; ocupaciones: string[] }
+export type RespuestaResolverCaso = RespuestaAccion & { ocupaciones_nuevas: string[] }
