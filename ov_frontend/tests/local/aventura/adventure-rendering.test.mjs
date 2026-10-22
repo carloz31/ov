@@ -1683,42 +1683,6 @@ test('immersive direct instrument resumes pending items and completes once witho
   journeyStore.updateJourney(() => journeyLogic.initialJourney())
 })
 
-test('immersive resources show their content, normalize YouTube and preserve saved backpack state', () => {
-  const file = path.resolve('src/features/activities/components/ResourceSheet.tsx')
-  const js = ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText
-  const resources = [
-    { id: 'sheet-test', titulo: 'Una ficha', tipo: 'ficha', contenido: '## Ideas\n\nUna **pista** para explorar.', fuente: 'Fuente de la ficha', guardableEnRecursos: true },
-    { id: 'video-test', titulo: 'Un video', tipo: 'video', url: 'https://youtu.be/ysz5S6PUM-U?t=30', guardableEnRecursos: true },
-    { id: 'link-test', titulo: 'Un enlace', tipo: 'enlace', url: 'https://example.com/resource', guardableEnRecursos: true },
-    { id: 'pending-test', titulo: 'Material pendiente', tipo: 'ficha', guardableEnRecursos: true },
-  ]
-  const pass = ({ children }) => children
-  const require = specifier => {
-    if (specifier === '@/components/ui/Sheet') return { Sheet: pass, SheetContent: pass, SheetDescription: pass, SheetTitle: pass }
-    if (specifier === '@/data/activities/content') return { catalog: { recursos: resources } }
-    if (!specifier.startsWith('.') && !specifier.startsWith('@/')) return nativeRequire(specifier)
-    const base = specifier.startsWith('@/') ? path.resolve('src', specifier.slice(2)) : path.resolve(path.dirname(file), specifier)
-    if (base === path.resolve('src/features/activities/hooks/useActivityResources')) return loadMovedHook(`${base}.ts`, require)
-    return load([`${base}.tsx`, `${base}.ts`].find(existsSync))
-  }
-  const exports = {}
-  vm.runInContext(`(function(require,exports){${js}\n})`, context)(require, exports)
-  const draw = id => renderToStaticMarkup(React.createElement(exports.ResourceSheet, { open: true, ids: [id], onClose() {} }))
-  journeyStore.updateJourney(() => journeyLogic.initialJourney())
-  assert.match(draw('sheet-test'), /Una <strong>pista<\/strong>/)
-  assert.match(draw('sheet-test'), /Fuente de la ficha/)
-  assert.match(draw('sheet-test'), /Guardar en Recursos/)
-  assert.match(draw('sheet-test'), /aria-expanded="true"/)
-  assert.match(draw('video-test'), /src="https:\/\/www.youtube-nocookie.com\/embed\/ysz5S6PUM-U"/)
-  assert.match(draw('link-test'), /href="https:\/\/example.com\/resource"/)
-  assert.match(draw('pending-test'), /Este material estará disponible cuando lo prepare orientación\./)
-  assert.doesNotMatch(draw('pending-test'), /Guardar en Recursos/)
-  journeyStore.updateJourney(current => ({ ...current, resources: ['sheet-test'] }))
-  assert.match(draw('sheet-test'), /En tu mochila/)
-  assert.doesNotMatch(draw('sheet-test'), /Guardar en Recursos/)
-  journeyStore.updateJourney(() => journeyLogic.initialJourney())
-})
-
 test('immersive finish shows saved sheets, narrative rewards and the prompted journal action', () => {
   const activity = journeyContent.activities.find(activity => activity.id === 'enc-mitos')
   const { FinishScreen } = load(path.resolve('src/features/activities/components/FinishScreen.tsx'))

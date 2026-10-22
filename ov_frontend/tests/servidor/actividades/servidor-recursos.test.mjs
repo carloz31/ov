@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { cargarAlmacen, copia, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import { cargarAlmacen, copia, elementos, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
 // F04d: el visor de la mochila es la única presentación de una ficha.
 const texto = (n) =>
@@ -98,4 +98,21 @@ test('?ficha= de una ficha bloqueada abre su pop up de requisito; disponible, el
   assert.equal(disponible.requisitoId, null)
   assert.equal(disponible.selected.id, 't-ficha')
   assert.equal(disponible.isUnlocked(disponible.selected), true)
+})
+
+test('el visor muestra el contenido, la fuente, el enlace y el aviso de lo pendiente (antes en el drawer de fichas)', () => {
+  const app = fixtureServidor()
+  const { VisorRecurso } = app.load('src/features/backpack/components/VisorRecurso.tsx')
+  const { recursoDesdeCatalogo, recursoDeFicha } = app.load('src/features/backpack/lib/travelerResources.ts')
+  const dibujar = (resource) => app.mount(VisorRecurso, { resource, onClose() {} }).render()
+  const ficha = dibujar(recursoDesdeCatalogo('ficha-mitos'))
+  assert.ok(texto(ficha).includes('Mitos y realidades del futuro profesional'))
+  assert.ok(texto(ficha).includes('Fuente:'))
+  // El contenido lo dibuja ResourceContent, el mismo de la mochila.
+  const { ResourceContent } = app.load('src/features/backpack/components/ResourceContent.tsx')
+  const contenido = (resource) => app.mount(ResourceContent, { resource }).render()
+  const enlace = contenido(recursoDesdeCatalogo('rec-ponteencarrera'))
+  assert.equal(elementos(enlace, (e) => e.type === 'a' && /ponteencarrera\.pe/.test(e.props.href)).length, 1)
+  assert.ok(texto(contenido(recursoDeFicha('sin-contenido', 'Ficha nueva'))).includes('estará disponible próximamente'))
+  assert.equal(elementos(ficha, (e) => e.type?.name === 'ResourceContent').length, 1)
 })

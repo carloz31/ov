@@ -659,12 +659,6 @@
     transition: none;
   }
 }
-.sx-root.sx-resource-sheet > button {
-  min-width: 44px;
-  min-height: 44px;
-  display: grid;
-  place-items: center;
-}
 .sx-root .sx-check-panel .sx-secondary-button {
   background: transparent;
   color: var(--est-texto);
@@ -725,23 +719,4 @@
   margin-top: 6px;
   font-size: 0.85rem;
   opacity: 0.8;
-}
-.sx-root .sx-resource-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 12px 0;
-}
-.sx-root .sx-resource-tabs button {
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--sx-gold);
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.sx-root .sx-resource-tabs button[aria-selected='true'] {
-  background: var(--sx-gold);
-  color: var(--background);
 }
