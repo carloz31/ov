@@ -202,3 +202,14 @@ test('al volver al podio desde el ítem siguiente, se muestra completo con su ex
   assert.deepEqual(copia(consigna(player.render()).props.inicial), { texto: 'Algo a medias', opciones: [] })
   player.unmount()
 })
+
+test('en api, la primera pregunta del cuestionario no tiene «Anterior» y solo la última lleva el cierre', async () => {
+  const { nodosItem, player } = await partida()
+  const segunda = de(player.render(), 'ItemNode')
+  assert.equal(segunda.props.ultima, false)
+  segunda.props.onAnterior()
+  const primera = de(player.render(), 'ItemNode')
+  assert.equal(primera.props.node.id, nodosItem[0].id)
+  assert.equal(primera.props.onAnterior, undefined)
+  player.unmount()
+})

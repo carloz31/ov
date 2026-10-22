@@ -2777,3 +2777,7 @@ body:has([data-student-experience] .sx-shell) {
     display: none;
   }
 }
+/* F01: en un paso sin botón principal (pregunta con avance automático), «Anterior» va a la izquierda. */
+.sx-root .sx-step-footer > .sx-prev-button:only-child {
+  margin-right: auto;
+}

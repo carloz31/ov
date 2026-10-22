@@ -29,3 +29,11 @@
 - **Conservación del estado:** sin guardado automático. En api, cada «Guardar y continuar» y cada «Anterior» guardan el borrador y el reproductor lo refleja; al volver, el podio y la encrucijada se muestran como quedaron. En local, lo escrito sigue en los borradores del navegador. Los cuestionarios reemplazan la respuesta, así que el resultado usa la última.
 - **Sin confirmación de cambio de rama:** no hay ramas (las elecciones solo agregan reacciones), así que no hay una rama abandonada con datos que confirmar.
 - **Accesibilidad:** las fichas del podio llevan `aria-label` con su nombre, como las tarjetas de la encrucijada.
+
+## Ajuste al cierre: preguntas de cuestionario con avance automático
+
+- **Avance:** tocar una opción la marca y avanza tras 275 ms; mientras tanto se ignoran otros toques (sin doble respuesta). Tocar la opción ya guardada avanza sin volver a responder (sin `responder-items`).
+- **Pregunta ya respondida:** la opción guardada se ve marcada y aparece «Siguiente →» como principal. Reemplaza a «Mantener mi respuesta y continuar»; en revisión sigue «Continuar la revisión».
+- **Última pregunta:** no avanza ni envía sola. El principal dice «Ver resultado» si después hay un nodo de resultado y, si no, «Terminar cuestionario» (texto nuevo: el cuestionario no tenía un botón de cierre propio).
+- **«Anterior»:** solo, sin principal, va a la izquierda del pie. No aparece en la primera pregunta de un cuestionario, aunque la preceda un diálogo.
+- **Foco:** al cargar una pregunta, va a la opción guardada o a la primera.

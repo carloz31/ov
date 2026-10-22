@@ -126,11 +126,15 @@ export function useActivityPlayer({
   useEffect(() => {
     pageRef.current?.scrollIntoView({ block: 'start' })
     setResourceOpen(false)
-    // El foco de cada paso va al botón principal (Enter avanza), nunca a «Anterior».
-    pageRef.current
-      ?.querySelector<HTMLElement>('.sx-player-stage .sx-primary-button')
-      ?.focus({ preventScroll: true })
-  }, [nodeId, reactions])
+    // El foco de cada paso va al botón principal (Enter avanza), nunca a «Anterior»; en una pregunta, a la
+    // opción elegida o a la primera.
+    const stage = pageRef.current?.querySelector('.sx-player-stage')
+    const foco =
+      stage?.querySelector<HTMLElement>('.sx-player-option[aria-pressed="true"]') ??
+      (node?.tipo === 'item' ? stage?.querySelector<HTMLElement>('.sx-player-option') : null) ??
+      stage?.querySelector<HTMLElement>('.sx-primary-button')
+    foco?.focus({ preventScroll: true })
+  }, [nodeId, reactions, node?.tipo])
   useEffect(() => {
     if (modoApi || node?.tipo !== 'diapositiva') return
     const sheets = (node.recursoIds ?? []).filter((id) =>
@@ -171,6 +175,8 @@ export function useActivityPlayer({
     (node || reaction) &&
     !matrix &&
     node?.tipo !== 'pregunta' &&
+    // La primera pregunta de un cuestionario no vuelve al diálogo de entrada.
+    !(node?.tipo === 'item' && index === nodes.findIndex((n) => n.tipo === 'item')) &&
     previo.tipo !== 'pregunta' &&
     !(activity.tipo === 'registro' && (yaCompletada || edit)) &&
     // Tras la última consigna el registro ya está entregado: sus pasos posteriores no retroceden.

@@ -1,7 +1,11 @@
+import { useRef, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import type { NodoItem, RespuestaItem } from '@/types/activities'
 import { DialogueBox } from '../DialogueBox'
 import { PasoAnterior } from '../PasoAnterior'
+
+// Tras tocar una opción, se marca y se avanza después de este lapso; mientras tanto se ignoran toques.
+const RETARDO_AVANCE_MS = 275
 
 export function ItemNode({
   node,
@@ -12,6 +16,8 @@ export function ItemNode({
   onAnswer,
   onContinue,
   onAnterior,
+  ultima = false,
+  cierre = 'Ver resultado',
   busy = false,
   readOnly = false,
 }: {
@@ -25,12 +31,46 @@ export function ItemNode({
   onAnswer: (value: string | number) => void
   onContinue: () => void
   onAnterior?: () => void
+  // Última pregunta del cuestionario: no avanza ni envía sola; lo hace el botón de cierre.
+  ultima?: boolean
+  cierre?: string
 }) {
-  const mantener = existing && (
-    <button type="button" className="sx-primary-button" disabled={busy} onClick={onContinue}>
-      {readOnly ? 'Continuar la revisión' : 'Mantener mi respuesta y continuar'} <ArrowRight size={18} />
-    </button>
-  )
+  const [elegida, setElegida] = useState(existing?.valor)
+  const esperando = useRef(false)
+  // Avanza: si la opción es la ya guardada, sin volver a responder.
+  function avanzar(valor: string | number | undefined) {
+    if (valor === undefined) return
+    if (valor === existing?.valor) onContinue()
+    else onAnswer(valor)
+  }
+  function elegir(valor: string | number) {
+    if (busy || readOnly || esperando.current) return
+    setElegida(valor)
+    if (ultima) return
+    esperando.current = true
+    setTimeout(() => avanzar(valor), RETARDO_AVANCE_MS)
+  }
+  const principal = readOnly
+    ? existing && (
+        <button type="button" className="sx-primary-button" disabled={busy} onClick={onContinue}>
+          Continuar la revisión <ArrowRight size={18} />
+        </button>
+      )
+    : elegida !== undefined &&
+      (ultima || existing) && (
+        <button
+          type="button"
+          className="sx-primary-button"
+          disabled={busy || esperando.current}
+          onClick={() => {
+            if (esperando.current) return
+            esperando.current = true
+            avanzar(elegida)
+          }}
+        >
+          {ultima ? cierre : 'Siguiente'} <ArrowRight size={18} />
+        </button>
+      )
   const panel = (
     <>
       {direct && <p className="sx-player-eyebrow">{node.etiqueta ?? 'Para conocerte mejor:'}</p>}
@@ -42,11 +82,11 @@ export function ItemNode({
         {options.map((option) => (
           <button
             type="button"
-            className={`sx-player-option ${existing?.valor === option.value ? 'is-selected' : ''}`}
-            aria-pressed={existing?.valor === option.value}
+            className={`sx-player-option ${elegida === option.value ? 'is-selected' : ''}`}
+            aria-pressed={elegida === option.value}
             disabled={busy || readOnly}
             key={option.value}
-            onClick={() => onAnswer(option.value)}
+            onClick={() => elegir(option.value)}
           >
             {option.text}
           </button>
@@ -55,10 +95,10 @@ export function ItemNode({
       <p className="sx-player-note">
         No hay respuestas correctas o incorrectas. Elige lo que se parezca a ti.
       </p>
-      {(mantener || onAnterior) && (
+      {(principal || onAnterior) && (
         <div className="sx-step-footer">
-          {onAnterior && <PasoAnterior onClick={onAnterior} disabled={busy} />}
-          {mantener}
+          {onAnterior && <PasoAnterior onClick={onAnterior} disabled={busy || esperando.current} />}
+          {principal}
         </div>
       )}
     </>

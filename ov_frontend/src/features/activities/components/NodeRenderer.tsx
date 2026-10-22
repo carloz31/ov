@@ -169,6 +169,10 @@ export function NodeRenderer({
       key={node.id}
       node={node}
       onAnterior={onAnterior}
+      ultima={index === nodes.findLastIndex((n) => n.tipo === 'item')}
+      cierre={
+        nodes.slice(index).some((n) => n.tipo === 'resultado') ? 'Ver resultado' : 'Terminar cuestionario'
+      }
       text={itemServidor?.enunciado ?? item?.texto ?? 'Este ítem aún no está disponible.'}
       options={
         itemServidor
