@@ -174,9 +174,12 @@ test('en un cuestionario a medias, «Anterior» vuelve al ítem con su opción y
   player.unmount()
 })
 
-test('un cuestionario en revisión (completado) no tiene «Anterior»', async () => {
+// Ajuste de F03: la re-entrada a un cuestionario completado se lee con «Anterior» y «Siguiente».
+test('un cuestionario en revisión (completado) se recorre con «Anterior», sin poder responder', async () => {
   const { player } = await partida({ soloLectura: true })
-  assert.equal(de(player.render(), 'ItemNode').props.onAnterior, undefined)
+  const item = de(player.render(), 'ItemNode')
+  assert.equal(typeof item.props.onAnterior, 'function')
+  assert.equal(item.props.readOnly, true)
   player.unmount()
 })
 

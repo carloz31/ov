@@ -50,13 +50,17 @@ export function useInstrumentResponses({
   const [respuestasApi, setRespuestasApi] = useState(respuestasConfirmadas.current)
   const [soloLectura, setSoloLectura] = useState(instrumentoServidor?.soloLectura ?? false)
   const [revisionInstrumento, setRevisionInstrumento] = useState(instrumentoServidor?.revision ?? false)
+  // Ajuste de F03: la re-entrada a un test completado es de lectura hasta «Cambiar mis respuestas», que solo
+  // se ofrece si el servidor admite cambios; tocar una opción en lectura no hace nada.
+  const [editando, setEditando] = useState(false)
+  const lecturaRevision = revisionInstrumento && !editando
   const respuestaPendiente = useRef<
     { item: string; valor: number; confirmada?: RespuestaItemsGuardados } | undefined
   >(undefined)
   function itemResponse(value: string | number) {
     if (node?.tipo !== 'item') return
     if (modoApi && instrumentoServidor) {
-      if (enviando.current || soloLectura) return
+      if (enviando.current || soloLectura || lecturaRevision) return
       const itemId = node.itemId,
         valor = Number(value)
       if (
@@ -182,6 +186,10 @@ export function useInstrumentResponses({
     respuestasApi,
     soloLectura,
     revisionInstrumento,
+    lectura: soloLectura || lecturaRevision,
+    cambiarRespuestas:
+      lecturaRevision && !soloLectura && instrumentoServidor?.puedeCambiar ? () => setEditando(true) : undefined,
+    respuestasFijas: lecturaRevision && !soloLectura && !instrumentoServidor?.puedeCambiar,
     respuestaPendiente,
     itemResponse,
     item,

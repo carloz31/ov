@@ -71,6 +71,9 @@ export function useActivityPlayer({
     respuestasConfirmadas,
     soloLectura,
     revisionInstrumento,
+    lectura,
+    cambiarRespuestas,
+    respuestasFijas,
     respuestaPendiente,
     itemResponse,
     item,
@@ -164,7 +167,7 @@ export function useActivityPlayer({
   // «Anterior» (F01): las elecciones solo agregan reacciones, así que el camino recorrido es el orden de
   // los nodos y el paso anterior es nodes[index - 1], también al retomar. No se retrocede hacia ni desde
   // una pregunta con retroalimentación, ni en un registro entregado (salvo en su consulta, F02) o un
-  // cuestionario completado.
+  // cuestionario local completado (en api, el completado se relee con «Anterior», ajuste de F03).
   const [alRetroceder, setAlRetroceder] = useState<string>()
   const previo = nodes[index - 1]
   const anterior =
@@ -179,8 +182,7 @@ export function useActivityPlayer({
     !(activity.tipo === 'registro' && (yaCompletada || edit) && !(modoApi && registroServidor)) &&
     // Tras la última consigna el registro ya está entregado: sus pasos posteriores no retroceden.
     !(activity.tipo === 'registro' && index > nodes.findLastIndex((n) => n.tipo === 'consigna')) &&
-    !(activity.tipo === 'instrumento' && yaCompletada) &&
-    !(instrumentoServidor && (soloLectura || revisionInstrumento))
+    !(activity.tipo === 'instrumento' && yaCompletada && !instrumentoServidor)
       ? previo
       : undefined
   function retroceder() {
@@ -291,7 +293,9 @@ export function useActivityPlayer({
     itemOcupado: modoApi && guardando,
     // Ajuste de F03: en api la opción se envía al pulsarla; el loader de la opción indica el guardado.
     itemAlElegir: modoApi && !!instrumentoServidor,
-    itemSoloLectura: modoApi && soloLectura,
+    itemSoloLectura: modoApi && lectura,
+    itemCambiar: modoApi ? cambiarRespuestas : undefined,
+    itemFijas: modoApi && respuestasFijas,
     puedeTerminarEncuentro: modoApi && !!instrumentoServidor,
     registro,
     // En un registro del servidor «Anterior» guarda el borrador antes de volver (useRegistroServidor).

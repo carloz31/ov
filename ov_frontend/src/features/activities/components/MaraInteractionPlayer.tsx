@@ -11,7 +11,13 @@ import {
 } from '@/lib/servidor/adaptadores'
 import { mensajeErrorServidor, obtenerEstadoServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { cargarResultadoRiasec } from '@/store/servidor/resultado'
-import { consultarItems, consultarRespuestas } from '@/store/servidor/consultas'
+import {
+  consultarAvanceInstrumentos,
+  consultarCatalogoInstrumentos,
+  consultarItems,
+  consultarRespuestas,
+} from '@/store/servidor/consultas'
+import { admiteCambios } from '@/lib/servidor/adaptadoresInstrumentos'
 import type { Actividad } from '@/types/activities'
 import type { ItemPublico, RespuestaPublica } from '@/types/servidor'
 import { StudentActivityPlayer } from './StudentActivityPlayer'
@@ -23,6 +29,8 @@ export type InstrumentoServidor = {
   nodoInicialId?: string
   revision: boolean
   soloLectura: boolean
+  // Ajuste de F03: al re-entrar a un completado, si el servidor todavía admite cambiar las respuestas.
+  puedeCambiar?: boolean
 }
 export function MaraInteractionPlayer({
   codigo,
@@ -79,14 +87,20 @@ export function MaraInteractionPlayer({
         })
         return
       }
-      const [items, respuestas] = await Promise.all([consultarItems(codigo), consultarRespuestas(codigo)])
+      const [items, respuestas, avance, catalogo] = await Promise.all([
+        consultarItems(codigo),
+        consultarRespuestas(codigo),
+        // Ajuste de F03: al re-entrar, el avance y el tipo del instrumento dicen si se admiten cambios.
+        revisar ? consultarAvanceInstrumentos() : null,
+        revisar ? consultarCatalogoInstrumentos() : null,
+      ])
       if (!vigente) return
-      if (items.tipo !== 'ok' || respuestas.tipo !== 'ok') {
-        setError(
-          mensajeErrorServidor(items.tipo !== 'ok' ? items : respuestas.tipo !== 'ok' ? respuestas : null),
-        )
+      const fallo = [items, respuestas, avance, catalogo].find((r) => r && r.tipo !== 'ok')
+      if (fallo && fallo.tipo !== 'ok') {
+        setError(mensajeErrorServidor(fallo))
         return
       }
+      if (items.tipo !== 'ok' || respuestas.tipo !== 'ok') return
       if (!items.datos.length) {
         setError('Esta interacción no tiene ítems disponibles.')
         return
@@ -103,6 +117,10 @@ export function MaraInteractionPlayer({
           nodoInicialId: inicioInteraccionMara(activity, respuestas.datos.respuestas, revisar),
           revision: revisar,
           soloLectura: !!resultado.datos,
+          puedeCambiar:
+            avance?.tipo === 'ok' &&
+            catalogo?.tipo === 'ok' &&
+            admiteCambios(items.datos[0]?.instrumento, avance.datos, catalogo.datos),
         },
       })
       setError('')

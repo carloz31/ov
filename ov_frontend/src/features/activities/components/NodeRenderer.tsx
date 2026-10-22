@@ -57,6 +57,8 @@ export function NodeRenderer({
     itemOcupado,
     itemAlElegir,
     itemSoloLectura,
+    itemCambiar,
+    itemFijas,
     puedeTerminarEncuentro,
     registro,
     onAnterior,
@@ -185,6 +187,8 @@ export function NodeRenderer({
       busy={itemOcupado}
       inmediato={itemAlElegir}
       readOnly={itemSoloLectura}
+      fijas={itemFijas}
+      onCambiar={itemCambiar}
       direct={direct}
       onAnswer={itemResponse}
       onContinue={() => {

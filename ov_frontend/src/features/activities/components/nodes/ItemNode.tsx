@@ -19,6 +19,8 @@ export function ItemNode({
   busy = false,
   readOnly = false,
   inmediato = false,
+  fijas = false,
+  onCambiar,
 }: {
   node: NodoItem
   text: string
@@ -28,6 +30,10 @@ export function ItemNode({
   readOnly?: boolean
   // Sin el lapso de avance: la opción se envía al pulsarla (api; el guardado se ve en la opción).
   inmediato?: boolean
+  // Ajuste de F03, al re-entrar a un test completado (api): sin cambios posibles, una línea lo explica;
+  // si se admiten, «Cambiar mis respuestas» pasa a edición.
+  fijas?: boolean
+  onCambiar?: () => void
   direct: boolean
   onAnswer: (value: string | number) => void
   onContinue: () => void
@@ -51,7 +57,7 @@ export function ItemNode({
   const principal = readOnly
     ? existing && (
         <button type="button" className="sx-primary-button" disabled={busy} onClick={onContinue}>
-          Continuar la revisión <ArrowRight size={18} />
+          Siguiente <ArrowRight size={18} />
         </button>
       )
     : existing && (
@@ -73,7 +79,11 @@ export function ItemNode({
       {direct && <p className="sx-player-eyebrow">{node.etiqueta ?? 'Para conocerte mejor:'}</p>}
       <h2>{text}</h2>
       <p className="sx-player-response-instruction">
-        {readOnly ? 'Tus respuestas están guardadas. Puedes revisarlas.' : 'Selecciona una respuesta.'}
+        {fijas
+          ? 'Tus respuestas ya quedaron fijas.'
+          : readOnly
+            ? 'Tus respuestas están guardadas. Puedes revisarlas.'
+            : 'Selecciona una respuesta.'}
       </p>
       <div className="sx-player-options">
         {options.map((option) => (
@@ -97,9 +107,14 @@ export function ItemNode({
       <p className="sx-player-note">
         No hay respuestas correctas o incorrectas. Elige lo que se parezca a ti.
       </p>
-      {(principal || onAnterior) && (
+      {(principal || onAnterior || onCambiar) && (
         <div className="sx-step-footer">
           {onAnterior && <PasoAnterior onClick={onAnterior} disabled={busy || esperando.current} />}
+          {onCambiar && (
+            <button type="button" className="sx-secondary-button" onClick={onCambiar}>
+              Cambiar mis respuestas
+            </button>
+          )}
           {principal}
         </div>
       )}

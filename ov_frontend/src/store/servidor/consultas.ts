@@ -14,3 +14,7 @@ export function consultarRespuestas(actividad: string) {
 export function consultarAvanceInstrumentos() {
   return consultarCuenta(apiInstrumentos.obtenerAvance)
 }
+// Ajuste de F03: el tipo de cada instrumento, para saber si un test completado admite cambios.
+export function consultarCatalogoInstrumentos() {
+  return apiInstrumentos.obtenerCatalogo()
+}

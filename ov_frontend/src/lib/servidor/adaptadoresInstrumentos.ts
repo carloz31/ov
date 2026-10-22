@@ -105,3 +105,16 @@ export function resultadoFamilia(resultado: ResultadoPublico, catalogo: Instrume
     dimensiones,
   }
 }
+
+// Ajuste de F03: un test completado admite cambios con la misma regla de `responder-items`: sin resultado
+// vigente en sus aplicaciones y si no es partida ni llegada (COMPARACION), cuyas respuestas quedan fijas al
+// completarse.
+export function admiteCambios(
+  instrumento: string | undefined,
+  avance: AvanceInstrumento[],
+  catalogo: InstrumentoPublico[],
+) {
+  const tipo = catalogo.find((i) => i.codigo === instrumento)?.tipo_resultado
+  if (!instrumento || !tipo || tipo === 'COMPARACION') return false
+  return !avance.find((i) => i.instrumento === instrumento)?.aplicaciones.some((a) => a.hay_resultado_vigente)
+}
