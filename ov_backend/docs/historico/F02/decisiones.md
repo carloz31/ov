@@ -14,3 +14,10 @@
 - **Validación del cargador:** la referencia de un ítem debe ser una ELECCION de su actividad sobre la misma lista, y su máximo y su «otra» deben admitir todo lo que pudo elegirse en la fuente, para que lo anterior llegue marcado.
 - **`t-eco-ruta`** pasa a «Tu ruta, hoy», de 1 a 2 rutas con «otra», y su consigna y criterio sirven si mantiene o cambia.
 - **Pruebas adaptadas:** `test_eleccion_referencia.py`, la carga de registros, el contrato del exportador y el escenario reflejan la regla nueva (autorizado por el usuario).
+
+## Ajuste posterior: consulta en modo lectura y elección editable (lote M)
+
+- **Modelo: `evaluacion_respuesta.opciones_evaluadas` (migración 0023).** La elección que vio cada evaluación, como `texto_evaluado` con el texto; las anteriores quedan con `[]`. Por qué: editar ya puede cambiar la elección y `respuesta_registro` solo guarda la vigente; sin esto se perdería qué elección justificó cada texto (lo leerá la orientadora, B14). El downgrade se detiene si hay historial.
+- **La elección se edita (cambia la decisión de B05).** `ItemEdicion` acepta `opciones`; se valida contra la lista como al entregar y, si cambia, el texto debe cambiar (422 «Si cambias tu elección, reescribe tu respuesta»). Sin `opciones`, se conserva.
+- **Consulta en modo lectura.** Elección marcada y texto como cita con «Modificar»; los cambios viven en memoria y se entregan juntos. La comparación de elecciones sin orden ignora el orden.
+- **Burbuja de Lumi en la consulta.** El eco y la pista van en una sola burbuja (primero el recuerdo, luego «Aquí podrías contar un poco más: {pista}»); sin ninguno, solo el avatar.
