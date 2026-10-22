@@ -239,14 +239,16 @@ test('la Ciudad cerrada se explica desde el selector: sin llave en el mapa y con
   assert.equal(ciudad.mostrarCiudadBloqueada, false)
   const { ZoneSwitch } = m.app.load('src/features/adventure/components/ZoneSwitch.tsx')
   let explicada = 0
+  // En api no hay tooltip: la Ciudad cerrada la explica Lumi al pulsar.
   const selector = m.app.mount(ZoneSwitch, {
     zone: 'missions',
     cityOpen: false,
-    lockedHint: mensaje,
+    showLockedHint: false,
     onCityLocked: () => explicada++,
   })
   const tree = selector.render()
-  assert.equal(elementos(tree, (e) => e.props?.children === mensaje).length, 1)
+  assert.equal(elementos(tree, (e) => typeof e.type !== 'string' && /Tooltip/.test(e.type?.name ?? '')).length, 0)
+  assert.equal(elementos(tree, (e) => e.props?.children === mensaje).length, 0)
   elementos(tree, (e) => e.type === 'button' && e.props.className === 'sx-zone-city')[0].props.onClick()
   assert.equal(explicada, 1)
   // Con la Ciudad abierta no hay mensaje que mostrar.

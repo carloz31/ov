@@ -59,7 +59,7 @@ El drawer conserva todo lo que muestra hoy: insignia de estado, tiempo, título,
 ## 4. Ciudad bloqueada: desde el selector
 
 - Se **quita** el punto «La llave de la ciudad» del mapa del Camino (`caminoPoints`, modo api).
-- **Selector Camino/Ciudad** (`ZoneSwitch`): con la Ciudad bloqueada, pulsar «Ciudad» abre la ayuda de Lumi con los `textosBloqueo` de CIUDAD (adelanto y «Todavía no abre sus puertas.» + el `mensaje` del bloque CIUDAD). El tooltip del selector muestra ese mismo `mensaje` (hoy: «Completa el camino para abrir la ciudad»).
+- **Selector Camino/Ciudad** (`ZoneSwitch`): con la Ciudad bloqueada, pulsar «Ciudad» abre la ayuda de Lumi con los `textosBloqueo` de CIUDAD (adelanto y «Todavía no abre sus puertas.» + el `mensaje` del bloque CIUDAD). En api el selector no tiene tooltip: el foco que vuelve al botón al cerrar la ayuda lo abría, y la ayuda ya explica qué falta (ajuste del 21 oct 2026). En local se conserva «Completa el camino para abrir la ciudad».
 - **Entrada directa a `/student/exploration` con la Ciudad bloqueada:** redirige al Camino y abre la misma ayuda. `CityLocked` deja de usarse en api; su barra «Camino hacia la ciudad» se retira.
 - `guideSteps.missions` dice «Al final del camino está la ciudad…»: se cambia por «En el camino se abre la ciudad, donde podrás elegir tus actividades y ayudar a sus habitantes. Arriba puedes cambiar entre el camino y la ciudad.»
 

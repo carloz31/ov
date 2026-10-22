@@ -7,12 +7,13 @@ import type { StudentZone } from '../lib/mapPoints'
 export function ZoneSwitch({
   zone,
   cityOpen,
-  lockedHint = 'Completa el camino para abrir la ciudad',
+  showLockedHint = true,
   onCityLocked,
 }: {
   zone: StudentZone
   cityOpen: boolean
-  lockedHint?: string
+  // En api la Ciudad cerrada la explica Lumi al pulsar: sin tooltip.
+  showLockedHint?: boolean
   onCityLocked: () => void
 }) {
   const navigate = useNavigate()
@@ -38,13 +39,13 @@ export function ZoneSwitch({
         <MapPinned size={18} />
         Camino
       </button>
-      {cityOpen ? (
+      {cityOpen || !showLockedHint ? (
         cityButton
       ) : (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>{cityButton}</TooltipTrigger>
-            <TooltipContent>{lockedHint}</TooltipContent>
+            <TooltipContent>Completa el camino para abrir la ciudad</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       )}

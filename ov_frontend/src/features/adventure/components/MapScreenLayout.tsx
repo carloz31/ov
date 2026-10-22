@@ -65,7 +65,6 @@ export function MapScreenLayout({
     selected,
     details,
     mostrarMisionesAdicionales,
-    ciudadBloqueo,
     explicarCiudad,
     mostrarCiudadBloqueada,
     pasosAyuda,
@@ -158,7 +157,7 @@ export function MapScreenLayout({
         <ZoneSwitch
           zone={zone}
           cityOpen={cityOpen}
-          lockedHint={ciudadBloqueo}
+          showLockedHint={!explicarCiudad}
           onCityLocked={
             explicarCiudad ??
             (() => (zone === 'missions' ? selectPoint('city') : navigate(appPaths.student.missions)))
