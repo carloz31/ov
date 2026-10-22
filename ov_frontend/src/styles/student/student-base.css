@@ -287,44 +287,90 @@ body:has([data-student-experience] .sx-shell) {
   color: var(--muted-foreground);
 }
 .sx-root.sx-badge-toast {
+  /* F00: toast compacto arriba a la derecha, debajo de la barra superior (48 px en el mapa, 56 en las secciones). */
   position: fixed;
   z-index: 40;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 72px;
+  right: 16px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  width: min(400px, calc(100vw - 32px));
-  padding: 20px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border-radius: 12px;
+  animation: sx-toast-entrada 200ms ease-out both;
 }
-.sx-root.sx-badge-toast > .sx-character {
+.sx-root .sx-toast-icon {
+  display: grid;
   flex-shrink: 0;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--sx-lumi-soft);
+  color: var(--accent-foreground);
 }
 .sx-root .sx-badge-copy {
   min-width: 0;
-  padding-right: 16px;
+  flex: 1;
+  padding-right: 24px;
 }
 .sx-root .sx-badge-copy .sx-badge-label {
-  margin: 0 0 4px;
+  margin: 0 0 2px;
   font-size: 12px;
   color: color-mix(in srgb, var(--sx-lumi) 40%, var(--foreground));
 }
-.sx-root.sx-badge-toast .sx-character-name {
-  color: color-mix(in srgb, var(--sx-lumi) 40%, var(--foreground));
-}
 .sx-root .sx-badge-copy h2 {
-  margin: 0 0 8px;
-  font-size: 16px;
+  margin: 0 0 2px;
+  font-size: 15px;
   font-weight: 700;
 }
 .sx-root .sx-badge-copy p {
-  margin: 0 0 12px;
-  font-size: 14px;
-  line-height: 1.5;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
-.sx-root .sx-badge-copy a,
+.sx-root .sx-badge-copy .sx-toast-linea {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sx-root .sx-badge-copy .sx-toast-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 12px;
+  font-size: 13px;
+}
+.sx-root .sx-badge-copy a:not(.sx-toast-action),
+.sx-root .sx-badge-copy .sx-notice-action {
+  font-size: 14px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--primary) 80%, var(--foreground));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@keyframes sx-toast-entrada {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+@media (max-width: 767px) {
+  .sx-root.sx-badge-toast {
+    /* Debajo de la barra y del selector Camino/Ciudad, a todo el ancho con margen de 16 px. */
+    top: 136px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-root.sx-badge-toast {
+    animation: none;
+  }
+}
 .sx-root .sx-badge-copy .sx-notice-action {
   font-size: 14px;
   font-weight: 600;

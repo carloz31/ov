@@ -80,6 +80,19 @@ Un componente por familia de portales, en `components/student/` y `components/st
 
 **Sesión vencida (401):** vuelve al login con el aviso «Tu sesión terminó. Vuelve a ingresar.» (el mensaje del servidor).
 
+## 5 bis. Avisos del estudiante como toasts (ajuste 16, 21 oct 2026)
+
+Aplica a `UnlockToast`, `BadgeToast` y el aviso de error de avisos, en api y en local. En local es solo visual: los avisos conservan sus textos, su orden y el momento en que aparecen.
+
+- **Posición:** fija arriba a la derecha, debajo de la barra superior del mapa y de las secciones. En pantallas angostas va arriba, a todo el ancho con margen de 16 px, debajo del selector Camino/Ciudad. Nunca tapa la barra superior ni el selector.
+- **Tarjeta compacta**, al estilo del toast de shadcn y sin dependencias nuevas (`components/student/AvisoToast` y el CSS de `sx-badge-toast`):
+  - un ícono pequeño del tipo de aviso: insignia `Award`, ficha `BookOpen`, nivel `TrendingUp`, ciudad `Building2` y error `TriangleAlert`;
+  - la etiqueta, el título en negrita y una línea de descripción;
+  - el enlace como botón pequeño (`sx-secondary-button`) y la X;
+  - sin el avatar de Lumi.
+- **Cola y tiempo:** se muestra un aviso a la vez. Cada uno se cierra a los 6 s o con la X, y entonces entra el siguiente. El tiempo se pausa con el puntero encima o el foco dentro, y el error espera a que se reintente.
+- **Movimiento:** entra deslizándose desde la derecha; sin animación con `prefers-reduced-motion`.
+
 ## 6. Sin cambio visual
 
 - Nombre del estudiante y del apoderado: el de la sesión, en los lugares donde hoy se muestra uno de demostración (cierra AP-F3 «Nombre del apoderado»).

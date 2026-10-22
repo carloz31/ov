@@ -74,3 +74,8 @@
   - `guiaCaminoApi[0]` tiene el texto nuevo.
   - El encuadre al revelar ya reutiliza `frameAdditional`.
   - Pruebas adaptadas: `servidor-mapa` y `servidor-flujo` ya no esperan opcionales visibles al inicio.
+- **Avisos como toasts (ajuste 16, aprobado por el usuario).**
+  - `components/student/AvisoToast` es el aviso común, con cierre a los 6 s y pausa con el puntero o el foco. `UnlockToast` y `BadgeToast` lo usan con sus textos de siempre, y el error de avisos usa el mismo marcado sin temporizador.
+  - El CSS de `sx-badge-toast` se reestiló: arriba a la derecha (`top` 72 px; en pantallas angostas 136 px, a todo el ancho con 16 px de margen), compacto y con deslizamiento de entrada.
+  - **Excepción al modo local congelado, aprobada por el usuario:** el estilo aplica también en local. Es solo visual y solo cambia la duración, de 7 s a 6. Se adaptaron las dos pruebas de `tests/local/aventura` que medían el temporizador de `BadgeToast`, y una de ellas suma la pausa.
+  - El aviso «Nueva misión adicional» de local (`AdditionalReveal`) comparte la clase `sx-badge-toast` y toma la nueva posición y tarjeta, pero conserva su marcado, su avatar y su tiempo.

@@ -2238,23 +2238,32 @@ test('badge queue waits behind arrival, introduction, check-in and manual help, 
   noveltyUi.updateStudentUi(() => noveltyUi.initialStudentUiState())
 })
 
-test('badge toast expires after seven seconds without reset on rerenders and cancels its timer when paused', async () => {
+// F00: el aviso es un toast común (AvisoToast) que se cierra a los 6 s y se pausa con el puntero o el foco.
+test('badge toast expires after six seconds without reset on rerenders and pauses while hovered', async () => {
   const badge = noveltyLogic.getEarnedBadges({ ...store.createInitialAdventure(), completedMissionIds: ['welcome'] })[0]
-  const clock = followUpClock(), toast = immersivePlayerHarness('src/features/adventure/components/overlays/BadgeToast')
+  const clock = followUpClock(), wrapper = immersivePlayerHarness('src/features/adventure/components/overlays/BadgeToast')
+  const toast = immersivePlayerHarness('src/components/student/AvisoToast')
   let dismissed = 0
   try {
-    const tree = toast.draw({ badge, onDismiss: () => dismissed++ })
+    const props = wrapper.draw({ badge, onDismiss: () => dismissed++ }).props
+    const tree = toast.draw(props)
     assert.equal(tree.props.role, 'status'); assert.equal(tree.props['aria-live'], 'polite')
     assert.ok(toast.text(tree).includes('Nueva insignia')); assert.ok(toast.text(tree).includes(badge.title)); assert.ok(toast.text(tree).includes(badge.message))
     assert.equal(toast.find(tree, element => element.props.to).props.to, '/student/profile?section=passport')
     assert.ok(toast.find(tree, element => element.props['aria-label'] === 'Cerrar aviso'))
-    await clock.tick(6999); assert.equal(dismissed, 0)
-    toast.draw({ badge, onDismiss: () => dismissed++ }); await clock.tick(1); assert.equal(dismissed, 1)
+    await clock.tick(5999); assert.equal(dismissed, 0)
+    toast.draw(props); await clock.tick(1); assert.equal(dismissed, 1)
     assert.equal(clock.pending, 0); toast.dispose()
-    const interrupted = immersivePlayerHarness('src/features/adventure/components/overlays/BadgeToast')
-    interrupted.draw({ badge, onDismiss: () => dismissed++ }); await clock.tick(3000); interrupted.dispose(); await clock.tick(4000)
-    assert.equal(dismissed, 1); assert.equal(clock.pending, 0)
-  } finally { toast.dispose(); clock.restore() }
+    const paused = immersivePlayerHarness('src/components/student/AvisoToast')
+    const hovered = paused.draw(props); await clock.tick(3000)
+    hovered.props.onMouseEnter(); paused.draw(props); await clock.tick(10000)
+    assert.equal(dismissed, 1)
+    hovered.props.onMouseLeave(); paused.draw(props); await clock.tick(6000)
+    assert.equal(dismissed, 2); paused.dispose()
+    const interrupted = immersivePlayerHarness('src/components/student/AvisoToast')
+    interrupted.draw(props); await clock.tick(3000); interrupted.dispose(); await clock.tick(4000)
+    assert.equal(dismissed, 2); assert.equal(clock.pending, 0)
+  } finally { wrapper.dispose(); toast.dispose(); clock.restore() }
 })
 
 test('overlay queue resumes earned badges after the player and presents them consecutively without duplication', async () => {
@@ -2271,8 +2280,9 @@ test('overlay queue resumes earned badges after the player and presents them con
   try {
     let tree = queue.draw(props); assert.equal(findBadge(tree), undefined)
     tree = queue.draw({ ...props, activityOpen: false }); assert.equal(findBadge(tree).props.badge.code, 'I1')
-    const first = immersivePlayerHarness('src/features/adventure/components/overlays/BadgeToast')
-    first.draw(findBadge(tree).props); await clock.tick(7000); first.dispose()
+    const wrapper = immersivePlayerHarness('src/features/adventure/components/overlays/BadgeToast')
+    const first = immersivePlayerHarness('src/components/student/AvisoToast')
+    first.draw(wrapper.draw(findBadge(tree).props).props); await clock.tick(6000); first.dispose(); wrapper.dispose()
     tree = queue.draw({ ...props, activityOpen: false }); assert.equal(findBadge(tree).props.badge.code, 'I2')
     findBadge(tree).props.onDismiss()
     tree = queue.draw({ ...props, activityOpen: false }); assert.equal(findBadge(tree), undefined)
