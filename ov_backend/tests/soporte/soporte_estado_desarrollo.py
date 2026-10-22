@@ -41,7 +41,8 @@ def llenar_estado(aplicacion):
         sesion.flush()
         sesion.add_all([
             modelos.ResultadoCaso(progreso_id=progreso.id, puntaje=85, fecha_hora=fecha),
-            modelos.ResultadoBatalla(progreso_id=progreso.id, victoria=False, aciertos=1, preguntas=3, fecha_hora=fecha),
+            batalla := modelos.ResultadoBatalla(progreso_id=progreso.id, victoria=False, aciertos=1, preguntas=3,
+                                                fecha_hora=fecha),
             modelos.ColeccionOcupacion(cuenta_id=cuenta.id, ocupacion_id=ocupacion.id, actividad_id=actividad.id,
                                        obtenida_en=fecha),
             modelos.EntradaDiario(cuenta_id=cuenta.id, origen='LIBRE', numero=1, numero_libre=1, texto='DATO DE PRUEBA',
@@ -62,6 +63,11 @@ def llenar_estado(aplicacion):
                 criterios_faltantes=['C1'], texto_evaluado='DATO DE PRUEBA', fecha_hora=fecha),
             modelos.Favorito(cuenta_id=cuenta.id, tipo='OCUPACION', id_referencia=ocupacion.id, fecha_hora=fecha),
         ])
+        sesion.flush()
+        # F04b: el intento guarda sus respuestas.
+        pregunta = sesion.scalar(select(modelos.PreguntaBatalla).order_by(modelos.PreguntaBatalla.codigo))
+        sesion.add(modelos.RespuestaBatalla(resultado_batalla_id=batalla.id, pregunta_batalla_id=pregunta.id,
+                                            opcion=pregunta.correcta, correcta=True))
         _llenar_planes(sesion, cuenta, fecha)
 
 

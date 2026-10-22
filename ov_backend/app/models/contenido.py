@@ -1,6 +1,7 @@
-from sqlalchemy import JSON, CheckConstraint, ForeignKey, Text, false, text, true
+from sqlalchemy import JSON, CheckConstraint, ForeignKey, Text, column, false, text, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.database import TipoJSON
 from app.models.base import Base, busqueda_de, enumerado
 from app.models.enums import Audiencia, Espacio, TipoActividad, UsoPreguntaDiario, Visibilidad
 
@@ -24,6 +25,11 @@ class Actividad(Base):
             "(tipo != 'CASO' AND puntaje_minimo IS NULL)",
             name="puntaje_minimo_solo_caso",
         ),
+        CheckConstraint(
+            "(tipo = 'BATALLA' AND preguntas_por_intento >= 1) OR "
+            "(tipo != 'BATALLA' AND preguntas_por_intento IS NULL)",
+            name="preguntas_por_intento_solo_batalla",
+        ),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
@@ -36,6 +42,8 @@ class Actividad(Base):
     orden: Mapped[int]
     bloque_id: Mapped[int] = mapped_column(ForeignKey("bloque.id"))
     puntaje_minimo: Mapped[float | None]
+    # Configuración de una BATALLA: cuántas preguntas de su pool salen en cada intento (F04b).
+    preguntas_por_intento: Mapped[int | None]
     requerida: Mapped[bool] = mapped_column(default=True, server_default=true())
     duracion_estimada_min: Mapped[int | None]
     descripcion: Mapped[str | None] = mapped_column(Text)
@@ -62,6 +70,24 @@ class ActividadDimension(Base):
     __tablename__ = "actividad_dimension"
     actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"), primary_key=True)
     dimension_id: Mapped[int] = mapped_column(ForeignKey("dimension.id"), primary_key=True)
+
+
+class PreguntaBatalla(Base):
+    """Pregunta del pool de una batalla (F04b). Cada una sale de una ficha; las fichas de la batalla
+    se derivan de sus preguntas. `correcta` es el índice de la opción correcta en `opciones`."""
+    __tablename__ = "pregunta_batalla"
+    __table_args__ = (
+        CheckConstraint(TipoJSON(column("opciones")) == 'array', name="opciones_lista"),
+        CheckConstraint("correcta >= 0", name="correcta_valida"),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
+    actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"))
+    ficha_id: Mapped[int] = mapped_column(ForeignKey("ficha.id"))
+    enunciado: Mapped[str] = mapped_column(Text)
+    opciones: Mapped[list[str]] = mapped_column(JSON)
+    correcta: Mapped[int]
+    explicacion: Mapped[str] = mapped_column(Text)
 
 
 class Seccion(Base):

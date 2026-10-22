@@ -21,12 +21,12 @@ _MODELOS_POR_MODULO = {
         'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
     ),
     'app.models.contenido': (
-        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
+        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
         'Insignia',
         'Nivel', 'FamiliaCarrera', 'Carrera',
     ),
     'app.models.progreso': (
-        'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'ColeccionOcupacion', 'Recomendacion', 'EntradaDiario', 'ContadorDiario',
+        'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'Recomendacion', 'EntradaDiario', 'ContadorDiario',
         'CheckIn', 'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito',
     ),
     'app.models.motor': (
@@ -74,9 +74,9 @@ __all__ = [
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
     'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
     'SalonInstrumento', 'Bloque',
-    'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'Seccion', 'Ficha', 'Testimonio',
+    'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
-    'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn', 'Entrevista',
+    'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn', 'Entrevista',
     'EntrevistaAutor', 'ConversacionVinculo', 'EventoUso', 'ReglaDesbloqueo',
     'CondicionDesbloqueo', 'Desbloqueo', 'Instrumento', 'Dimension', 'EscalaRespuesta',
     'OpcionEscala', 'ItemInstrumento', 'ActividadItem', 'Aplicacion', 'AplicacionActividad',

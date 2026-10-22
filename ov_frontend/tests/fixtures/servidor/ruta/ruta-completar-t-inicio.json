@@ -153,6 +153,24 @@
         }
       ],
       "objetivo": {
+        "codigo": "t-ficha-2",
+        "nombre": "Segunda ficha de prueba"
+      },
+      "regla": "R-t-ficha-2",
+      "tipo_objetivo": "FICHA"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-inicio",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
         "codigo": "t-ins-1",
         "nombre": "Insignia de prueba"
       },

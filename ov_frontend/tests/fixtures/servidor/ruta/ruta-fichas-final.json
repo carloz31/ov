@@ -3,5 +3,10 @@
     "codigo": "t-ficha",
     "estado": "DISPONIBLE",
     "titulo": "Ficha de prueba"
+  },
+  {
+    "codigo": "t-ficha-2",
+    "estado": "DISPONIBLE",
+    "titulo": "Segunda ficha de prueba"
   }
 ]

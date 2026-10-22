@@ -293,7 +293,21 @@ export type BatallaCuenta = {
   intentos: number
   superada: boolean
   primer_intento: IntentoBatalla | null
+  preguntas_por_intento: number
+  // F04b: las fichas de sus preguntas, en el orden de su primera pregunta.
+  fichas: ContenidoEstado[]
 }
+// F04b · GET /cuentas/{c}/batallas/{a}/preguntas: un intento, al azar del pool y con las opciones mezcladas.
+export type OpcionPregunta = { indice: number; texto: string }
+export type PreguntaIntento = {
+  codigo: string
+  enunciado: string
+  opciones: OpcionPregunta[]
+  correcta: number
+  explicacion: string
+  ficha: { codigo: string; titulo: string }
+}
+export type RespuestaBatallaEntrada = { pregunta: string; opcion: number }
 export type CasoCuenta = {
   actividad: string
   titulo: string
@@ -319,8 +333,7 @@ export type ResolverBatallaEntrada = {
   cuenta: string
   actividad: string
   victoria: boolean
-  aciertos: number
-  preguntas: number
+  respuestas: RespuestaBatallaEntrada[]
 }
 export type ResolverCasoEntrada = { cuenta: string; actividad: string; puntaje: number; ocupaciones: string[] }
 export type RespuestaResolverCaso = RespuestaAccion & { ocupaciones_nuevas: string[] }

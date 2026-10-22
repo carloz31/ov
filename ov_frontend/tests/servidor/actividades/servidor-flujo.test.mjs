@@ -221,7 +221,8 @@ test('move informa $fin una sola vez ante doble clic, espera el refresco y muest
   await esperar()
   const cierre = elementos(player.render(), (e) => e.type?.name === 'FinishScreen')[0]
   assert.ok(cierre)
-  assert.equal(cierre.props.desbloqueosServidor.length, 9)
+  // F04b: t-inicio también da t-ficha-2.
+  assert.equal(cierre.props.desbloqueosServidor.length, 10)
   assert.equal(store.getJourneySnapshot().progress['t-inicio'].estado, 'completada')
   player.unmount()
 })
@@ -293,7 +294,7 @@ test('repetir una informativa llega nuevamente al servidor sin fabricar logros',
     if (esConsultaDominio(r)) return respuestaDominio(r, escenarioRuta('t1'))
     if (r.url.includes('/desbloqueos?')) return { body: [] }
   })
-  assert.equal((await acciones.completarActividad('t-inicio')).datos.nuevos_desbloqueos.length, 9)
+  assert.equal((await acciones.completarActividad('t-inicio')).datos.nuevos_desbloqueos.length, 10)
   assert.equal((await acciones.completarActividad('t-inicio')).datos.nuevos_desbloqueos.length, 0)
   assert.equal(completadas, 2)
   const store = app.load('src/store/journeyStore.ts')

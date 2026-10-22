@@ -2,7 +2,20 @@
   {
     "actividad": "t-batalla",
     "estado": "COMPLETADA",
+    "fichas": [
+      {
+        "codigo": "t-ficha",
+        "estado": "DISPONIBLE",
+        "titulo": "Ficha de prueba"
+      },
+      {
+        "codigo": "t-ficha-2",
+        "estado": "DISPONIBLE",
+        "titulo": "Segunda ficha de prueba"
+      }
+    ],
     "intentos": 2,
+    "preguntas_por_intento": 7,
     "primer_intento": {
       "aciertos": 1,
       "fecha_hora": "2026-10-07T10:00:00",

@@ -43,6 +43,17 @@ class ResultadoBatalla(Base):
     fecha_hora: Mapped[datetime] = mapped_column(DateTime)
 
 
+class RespuestaBatalla(Base):
+    """Respuesta de un intento de batalla (F04b): la opción elegida, por su índice original."""
+    __tablename__ = "respuesta_batalla"
+    __table_args__ = (UniqueConstraint("resultado_batalla_id", "pregunta_batalla_id"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    resultado_batalla_id: Mapped[int] = mapped_column(ForeignKey("resultado_batalla.id"))
+    pregunta_batalla_id: Mapped[int] = mapped_column(ForeignKey("pregunta_batalla.id"))
+    opcion: Mapped[int]
+    correcta: Mapped[bool]
+
+
 class ColeccionOcupacion(Base):
     """Ocupaciones cuyo ícono la cuenta obtuvo al superar un caso (B08)."""
     __tablename__ = "coleccion_ocupacion"

@@ -5,6 +5,8 @@ export type ChallengeQuestion = {
   opciones: { id: string; texto: string }[]
   correcta: string
   explicacion: string
+  // F04b (api): la ficha de la que sale la pregunta.
+  ficha?: { codigo: string; titulo: string }
 }
 export type Challenge = Omit<Actividad, 'tipo' | 'requisitos'> & {
   tipo: 'desafio'

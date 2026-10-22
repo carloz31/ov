@@ -211,12 +211,23 @@ def _recorrer(cliente):
     marcados = _pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')
     if marcados['marcados'] != len(avisos) or _pedir(cliente, 'GET', ruta_avisos) != []:
         raise RuntimeError('El marcado no vació los desbloqueos no vistos')
-    # B08: la batalla se pierde, se repasa y se gana; solo la victoria la completa.
+    # B08: la batalla se pierde, se repasa y se gana; solo la victoria la completa. F04b: las preguntas del
+    # intento salen del servidor (con semilla fija, para que el fixture no cambie) y se responden con ellas.
+    from app.services import batallas as servicio_batallas
+    servicio_batallas.azar.seed(4)
+    preguntas = _pedir(cliente, 'GET', '/cuentas/est-ana/batallas/t-batalla/preguntas')
+    fixtures['preguntas-batalla'] = preguntas
+
+    def responder(aciertos, total):
+        return [{'pregunta': p['codigo'],
+                 'opcion': p['correcta'] if n < aciertos else next(
+                     o['indice'] for o in p['opciones'] if o['indice'] != p['correcta'])}
+                for n, p in enumerate(preguntas[:total])]
     batalla = {'cuenta': 'est-ana', 'actividad': 't-batalla', 'fecha_hora': FECHA}
     fixtures['resolver-batalla-derrota'] = _pedir(cliente, 'POST', '/acciones/resolver-batalla', {
-        **batalla, 'victoria': False, 'aciertos': 1, 'preguntas': 4})
+        **batalla, 'victoria': False, 'respuestas': responder(1, 4)})
     fixtures['resolver-batalla-victoria'] = _pedir(cliente, 'POST', '/acciones/resolver-batalla', {
-        **batalla, 'victoria': True, 'aciertos': 3, 'preguntas': 4})
+        **batalla, 'victoria': True, 'respuestas': responder(3, 4)})
     fixtures['batallas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/batallas')
     # B10: catálogo, vistas y favoritos. Una ocupación fuera del tipo de la carrera vista abre t-explorar, y los
     # favoritos marcados aquí aparecen con `es_favorita` en el resultado RIASEC.

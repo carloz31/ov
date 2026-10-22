@@ -122,6 +122,16 @@
   {
     "fecha_hora": "2026-10-07T10:00:00",
     "objetivo": {
+      "codigo": "t-ficha-2",
+      "nombre": "Segunda ficha de prueba"
+    },
+    "regla": "R-t-ficha-2",
+    "tipo_objetivo": "FICHA",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
       "codigo": "t-ficha",
       "nombre": "Ficha de prueba"
     },

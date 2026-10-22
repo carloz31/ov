@@ -282,7 +282,70 @@ REPREGUNTA_GENERICA = '¿Podrías contarme un poco más?'
 
 # (código, título, contenido, audiencia)
 FICHAS = (('t-ficha', 'Ficha de prueba', 'Ficha que otorga t-inicio.', 'ESTUDIANTE'),
+          ('t-ficha-2', 'Segunda ficha de prueba', 'Segunda ficha que otorga t-inicio (F04b).', 'ESTUDIANTE'),
           ('t-ficha-apo', 'Ficha del apoderado', 'Ficha que otorga t-apo-1.', 'APODERADO'))
+
+# (código, batalla, ficha, enunciado, opciones, índice de la correcta, explicación). Pool de cada batalla:
+# cada intento toma PREGUNTAS_POR_INTENTO al azar. Las 10 primeras vienen de desafio-rumor del front (F04b);
+# las fichas de la batalla se derivan de estas preguntas.
+PREGUNTAS_BATALLA = (
+    ('t-batalla-p01', 't-batalla', 't-ficha', '¿Qué convierte una frase en un mito vocacional?',
+     ('Repetirla sin comprobarla', 'Buscar evidencia', 'Comparar fuentes', 'Revisar su fecha'), 0,
+     'Que una frase se repita no demuestra que sea cierta ni que aplique a todas las personas.'),
+    ('t-batalla-p02', 't-batalla', 't-ficha-2', '¿Qué conviene revisar ante un consejo de hace veinte años?',
+     ('Cuántas veces se repitió', 'Si aplica a la situación de hoy', 'La popularidad del consejo',
+      'Solo quién lo contó'), 1,
+     'Una experiencia de otra época puede no describir el mercado laboral actual.'),
+    ('t-batalla-p03', 't-batalla', 't-ficha', '¿Qué rutas pueden conducir a un buen trabajo?',
+     ('Solo la universidad', 'Solo la formación técnica', 'Universidad, técnica, oficios y emprendimiento',
+      'Solo la ruta más popular'), 2,
+     'Existen distintas rutas válidas, según tus objetivos y las condiciones de cada formación.'),
+    ('t-batalla-p04', 't-batalla', 't-ficha', '¿Qué determina si puedes ejercer una profesión?',
+     ('Tu género', 'Los estereotipos', 'Lo que estudian tus amigos', 'Tus habilidades, conocimientos e interés'), 3,
+     'Las habilidades se desarrollan. Ninguna profesión exige un sexo para ejercerla.'),
+    ('t-batalla-p05', 't-batalla', 't-ficha-2', '¿Cómo considerar los ingresos al elegir?',
+     ('Combinar interés y datos de ingresos y empleabilidad', 'Ignorar tus intereses', 'Ignorar el dinero',
+      'Seguir el sueldo más alto sin investigar'), 0,
+     'Lo sensato es combinar tus intereses con información real sobre las condiciones de trabajo.'),
+    ('t-batalla-p06', 't-batalla', 't-ficha', '¿Qué significa elegir una carrera?',
+     ('Una sentencia para toda la vida', 'Un primer paso que puede evolucionar', 'Renunciar a aprender otras cosas',
+      'Acertar una única respuesta perfecta'), 1,
+     'Las trayectorias cambian: puedes especializarte, combinar áreas o cambiar de rumbo.'),
+    ('t-batalla-p07', 't-batalla', 't-ficha', '¿Qué conviene hacer antes de aceptar una creencia?',
+     ('Repetirla', 'Aceptar la más popular', 'Preguntar por la evidencia a favor y en contra',
+      'Buscar solo casos que la confirmen'), 2,
+     'Buscar evidencia y contraejemplos ayuda a decidir con información.'),
+    ('t-batalla-p08', 't-batalla', 't-ficha-2', '¿De qué pueden depender los ingresos dentro de una carrera?',
+     ('Solo del nombre de la carrera', 'Solo de su prestigio', 'Solo de su popularidad',
+      'De la institución, experiencia y especialización'), 3,
+     'Los ingresos varían dentro de una misma carrera y dependen de distintos factores.'),
+    ('t-batalla-p09', 't-batalla', 't-ficha-2', '¿Qué ocurre con las habilidades al cambiar de campo?',
+     ('Algunas se transfieren a otras áreas', 'Todas dejan de servir', 'Nunca pueden desarrollarse',
+      'Solo sirven en el primer empleo'), 0,
+     'Comunicarte, resolver problemas y trabajar en equipo puede servirte en otras áreas.'),
+    ('t-batalla-p10', 't-batalla', 't-ficha-2', '¿Qué demuestra la experiencia de una sola persona?',
+     ('Lo que pasará a todo el mundo', 'Un caso que conviene contrastar', 'Que no necesitas más información',
+      'Que el mercado nunca cambia'), 1,
+     'Una experiencia personal es valiosa, pero es un solo caso. Contrástala con otros datos.'),
+    ('t-batalla-p11', 't-batalla', 't-ficha', '¿Qué dice un estereotipo sobre una profesión?',
+     ('Una generalización que no aplica a todos', 'Un dato comprobado', 'Una regla del colegio',
+      'Un requisito legal'), 0,
+     'Un estereotipo generaliza: no describe a cada persona ni sus posibilidades.'),
+    ('t-batalla-p12', 't-batalla', 't-ficha', 'Si te gusta algo poco común, ¿qué conviene hacer?',
+     ('Abandonarlo', 'Explorar cómo se aplica en distintos trabajos', 'Esperar que alguien decida por ti',
+      'Elegir lo que eligen todos'), 1,
+     'Un interés poco común puede conectar con varias ocupaciones; vale la pena explorarlo.'),
+    ('t-batalla-p13', 't-batalla', 't-ficha-2', '¿Qué fuente es más confiable para conocer el empleo de una carrera?',
+     ('Un rumor en redes', 'Datos oficiales y actualizados', 'Un comentario aislado', 'Un anuncio publicitario'), 1,
+     'Las fuentes oficiales y actualizadas permiten comparar con más precisión.'),
+    ('t-batalla-p14', 't-batalla', 't-ficha-2', 'Si alguien dice que una carrera «no tiene futuro», ¿qué haces?',
+     ('La descartas de inmediato', 'Buscas datos actuales de empleabilidad', 'Preguntas solo a tus amigos',
+      'Eliges otra al azar'), 1,
+     'Una afirmación general se contrasta con datos actuales antes de decidir.'),
+)
+# Preguntas que salen en cada intento de una BATALLA. Con 5 vidas del enemigo y 3 destellos (desafio-rumor),
+# 7 asegura que todo intento termine; el pool debe tener al menos el doble.
+PREGUNTAS_POR_INTENTO = {'t-batalla': 7}
 
 # (código, título, descripción, enlace, pista). La pista se muestra mientras el testimonio está bloqueado (B08).
 TESTIMONIOS = (('t-testimonio-1', 'Testimonio de prueba 1', 'Trayectoria de prueba 1.', 'https://example.test/t1',
@@ -372,6 +435,8 @@ REGLAS = (
     ('R-t-testimonio-2', 'TESTIMONIO', 't-testimonio-2', 'Supera el caso de prueba para conocer este testimonio.',
      (('SUPERA_CASO', 't-caso', 'EVENTOS', 1),)),
     ('R-t-ficha', 'FICHA', 't-ficha', 'Completa el inicio para obtener esta ficha.',
+     (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
+    ('R-t-ficha-2', 'FICHA', 't-ficha-2', 'Completa el inicio para obtener esta ficha.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-t-ficha-apo', 'FICHA', 't-ficha-apo', 'Completa tu primera actividad para obtener esta ficha.',
      (('COMPLETA_ACTIVIDAD', 't-apo-1', 'EVENTOS', 1),)),
@@ -482,6 +547,7 @@ def _cargar_estructura(sesion):
         actividades[codigo] = modelos.Actividad(
             codigo=codigo, titulo=titulo, tipo=modelos.TipoActividad(tipo), contenido=contenido(codigo),
             orden=ordenes[bloque], bloque_id=bloques[bloque].id, puntaje_minimo=puntaje,
+            preguntas_por_intento=PREGUNTAS_POR_INTENTO.get(codigo),
             duracion_estimada_min=duracion, requerida=propiedades.get('requerida', True),
             visibilidad=modelos.Visibilidad(propiedades.get('visibilidad', 'SIEMPRE')),
             descripcion=DESCRIPCIONES.get(codigo))
@@ -533,6 +599,29 @@ def _unir_dimensiones(sesion, actividades):
             raise ValueError(f'{actividad} no es un caso y no admite dimensiones')
     sesion.add_all(modelos.ActividadDimension(actividad_id=actividades[a].id, dimension_id=dimensiones[d].id)
                    for a, codigos in DIMENSIONES_ACTIVIDADES for d in codigos)
+
+
+def _cargar_preguntas_batalla(sesion, actividades, fichas):
+    for codigo, batalla, ficha, enunciado, opciones, correcta, explicacion in PREGUNTAS_BATALLA:
+        if batalla not in actividades or actividades[batalla].tipo != modelos.TipoActividad.BATALLA:
+            raise ValueError(f'La pregunta {codigo} apunta a {batalla}, que no es una batalla')
+        if ficha not in fichas or fichas[ficha].audiencia != modelos.Audiencia.ESTUDIANTE:
+            raise ValueError(f'La pregunta {codigo} sale de {ficha}, que no es una ficha del estudiante')
+        if len(opciones) < 3 or not 0 <= correcta < len(opciones):
+            raise ValueError(f'La pregunta {codigo} necesita al menos tres opciones y una correcta entre ellas')
+        if not enunciado.strip() or not explicacion.strip() or any(not o.strip() for o in opciones):
+            raise ValueError(f'La pregunta {codigo} tiene un texto vacío')
+    for actividad in actividades.values():
+        if actividad.tipo != modelos.TipoActividad.BATALLA:
+            continue
+        pool = sum(1 for pregunta in PREGUNTAS_BATALLA if pregunta[1] == actividad.codigo)
+        if not actividad.preguntas_por_intento or pool < 2 * actividad.preguntas_por_intento:
+            raise ValueError(f'El pool de {actividad.codigo} ({pool}) debe ser al menos el doble de sus '
+                             f'preguntas por intento ({actividad.preguntas_por_intento})')
+    sesion.add_all(modelos.PreguntaBatalla(
+        codigo=codigo, actividad_id=actividades[batalla].id, ficha_id=fichas[ficha].id, enunciado=enunciado,
+        opciones=list(opciones), correcta=correcta, explicacion=explicacion)
+        for codigo, batalla, ficha, enunciado, opciones, correcta, explicacion in PREGUNTAS_BATALLA)
 
 
 def _validar_eleccion(codigo, eleccion, listas):
@@ -789,6 +878,7 @@ def cargar(sesion: Session) -> None:
     _unir_instrumentos(sesion, objetivos['ACTIVIDAD'], base)
     _unir_tematicas(sesion, objetivos['ACTIVIDAD'], base)
     _unir_dimensiones(sesion, objetivos['ACTIVIDAD'])
+    _cargar_preguntas_batalla(sesion, objetivos['ACTIVIDAD'], objetivos['FICHA'])
     _cargar_catalogo(sesion)
     _cargar_registros(sesion, objetivos['ACTIVIDAD'], base)
     _cargar_salones(sesion, objetivos.pop('SALON'), objetivos['ACTIVIDAD'])

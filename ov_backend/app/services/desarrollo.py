@@ -5,7 +5,7 @@ from app.models import Base, Cuenta
 
 
 TABLAS_DE_ESTADO = (
-    'progreso_actividad', 'resultado_caso', 'resultado_batalla', 'coleccion_ocupacion', 'recomendacion', 'entrada_diario',
+    'progreso_actividad', 'resultado_caso', 'resultado_batalla', 'respuesta_batalla', 'coleccion_ocupacion', 'recomendacion', 'entrada_diario',
     'contador_diario', 'check_in',
     'entrevista', 'entrevista_autor', 'conversacion_vinculo', 'evento_uso',
     'desbloqueo', 'respuesta_item', 'resultado_instrumento', 'resultado_dimension',

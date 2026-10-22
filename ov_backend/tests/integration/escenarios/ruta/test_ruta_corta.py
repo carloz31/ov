@@ -7,7 +7,7 @@ el ingreso real, como el front). Cada lote extiende este recorrido con su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
-from soporte_ruta import FECHA, avanzar, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, eventos, filas_base, pedir, reglas, responder, responder_registro, revelar
+from soporte_ruta import FECHA, avanzar, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, eventos, filas_base, pedir, reglas, responder, responder_registro, revelar, respuestas_batalla
 
 
 def siguiente(cliente, cuenta='est-ana'):
@@ -48,11 +48,11 @@ def test_hu004_013_015_informativa_con_ficha_y_retroalimentacion(cliente):
     assert respuesta['eventos_registrados'] == [
         {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-inicio', 'fecha_hora': '2026-10-07T10:00:00'}]
     assert {(d['tipo_objetivo'], d['objetivo']['codigo']) for d in respuesta['nuevos_desbloqueos']} == {
-        ('ACTIVIDAD', 't-partida'), ('ACTIVIDAD', 't-batalla'), ('FICHA', 't-ficha'), ('INSIGNIA', 't-ins-1'),
+        ('ACTIVIDAD', 't-partida'), ('ACTIVIDAD', 't-batalla'), ('FICHA', 't-ficha'), ('FICHA', 't-ficha-2'),
+        ('INSIGNIA', 't-ins-1'),
         ('SECCION', 'DIARIO'), ('SECCION', 'CATALOGO'), ('SECCION', 'PLANES'), ('PREGUNTA_DIARIO', 't-diario-fija'),
         ('SECCION_PLAN', 'POR_QUE')}
-    assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [
-        ('t-ficha', 'DISPONIBLE')]
+    assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE')]
     assert siguiente(cliente) == 't-partida'
 
 
@@ -254,10 +254,10 @@ def test_hu073_avisos_de_desbloqueo(cliente):
     completar(cliente, 't-inicio')
     no_vistos = pedir(cliente, 'GET', ruta)
     assert {d['regla'] for d in no_vistos} == {
-        'R-t-partida', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES',
+        'R-t-partida', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES',
         'R-t-diario-fija', 'R-PLAN-POR_QUE'}
     assert all(d['visto'] is False for d in no_vistos)
-    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 9
+    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 10
     assert pedir(cliente, 'GET', ruta) == []
     completar(cliente, 't-partida')
     completar(cliente, 't-cierre-inicio')
@@ -344,11 +344,19 @@ def test_hu094_partida_llegada_prioritarios_y_apertura_de_t2(cliente):
 def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
     avanzar(cliente)
     batalla = {'cuenta': 'est-ana', 'actividad': 't-batalla', 'fecha_hora': FECHA}
-    perdida = pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': False, 'aciertos': 1,
-                                                                    'preguntas': 4})
+    # F04b: como el front, pide las preguntas del intento y responde con ellas.
+    preguntas = pedir(cliente, 'GET', '/cuentas/est-ana/batallas/t-batalla/preguntas')
+    assert len(preguntas) == 7 and {p['ficha']['codigo'] for p in preguntas} <= {'t-ficha', 't-ficha-2'}
+    def fallar(lista):
+        return [{'pregunta': p['codigo'], 'opcion': next(o['indice'] for o in p['opciones'] if o['indice'] != p['correcta'])}
+                for p in lista]
+    perdida = pedir(cliente, 'POST', '/acciones/resolver-batalla',
+                    {**batalla, 'victoria': False, 'respuestas': fallar(preguntas[:3])})
     assert perdida['nuevos_desbloqueos'] == [] and actividades(cliente)['t-batalla'] == 'EN_CURSO'
-    ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': True, 'aciertos': 3,
-                                                                   'preguntas': 4})
+    preguntas = pedir(cliente, 'GET', '/cuentas/est-ana/batallas/t-batalla/preguntas')
+    # Cinco aciertos y un error: vence sin quedar intacta.
+    acertadas = [{'pregunta': p['codigo'], 'opcion': p['correcta']} for p in preguntas[:5]] + fallar(preguntas[5:6])
+    ganada = pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': True, 'respuestas': acertadas})
     assert reglas(ganada) == set()
     # B10: catálogo, vistas y favoritos. Sin resultado RIASEC, t-explorar pide vistas de dos tipos principales.
     assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras?riasec=s')] == [
@@ -439,7 +447,8 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
         (1, 'LLM'), (2, 'LLM')]
     # t-explorar abre REALIDAD; con dos planes listos para comparar se abre t-comparar.
     batalla = {**ana, 'actividad': 't-batalla'}
-    pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': True, 'aciertos': 3, 'preguntas': 4})
+    pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'victoria': True,
+                                                          'respuestas': respuestas_batalla(3, 4)})
     pedir(cliente, 'POST', '/acciones/ver-carrera', {**ana, 'carrera': 'nursing'})
     pedir(cliente, 'POST', '/acciones/ver-ocupacion', {**ana, 'ocupacion': 'civil-engineer'})
     assert 'R-PLAN-REALIDAD' in reglas(responder_registro(cliente, 't-explorar'))

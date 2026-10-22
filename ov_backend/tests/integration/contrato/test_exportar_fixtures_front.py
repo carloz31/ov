@@ -14,7 +14,7 @@ from soporte_ruta import BLOQUE_FAMILIA
 from app import main as principal
 from app.schemas.referencias import ReferenciasConsultadas
 from app.schemas.acciones import RespuestaAccion, RespuestaResolverCaso, RespuestaRevelarResultado
-from app.schemas.batallas import BatallaCuenta
+from app.schemas.batallas import BatallaCuenta, PreguntaIntento
 from app.schemas.casos import CasoCuenta, OcupacionColeccion
 from app.schemas.diario import (
     AmistadAsistente, CheckInsCuenta, EntradaDiarioPublica, PreguntaAbierta, PreguntaDelDia, PreguntaDiarioEstado,
@@ -50,7 +50,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'responder-seguimiento-t-valores', 'continuar-sin-responder-t-valores',
     'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-contraste',
     'items-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
-    'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'resolver-batalla-derrota',
+    'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'preguntas-batalla',
+    'resolver-batalla-derrota',
     'resolver-batalla-victoria', 'batallas', 'resolver-caso', 'casos', 'coleccion',
     'catalogo-carreras', 'catalogo-carrera-psychology', 'catalogo-ocupaciones-riasec', 'catalogo-ocupacion-psychologist',
     'catalogo-instituciones', 'catalogo-institucion-t-uni', 'ver-ocupacion', 'marcar-favorito', 'favoritos',
@@ -190,7 +191,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert datos['resumen-inicial']['nivel_actual']['numero'] == 1
     assert any(i['codigo'] == '???' for i in datos['logros-inicial']['insignias'])
     assert {d['regla'] for d in datos['completar-t-inicio']['nuevos_desbloqueos']} == {
-        'R-t-partida', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES',
+        'R-t-partida', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES',
         'R-t-diario-fija', 'R-PLAN-POR_QUE'}
     assert [e['codigo'] for e in datos['completar-t-inicio']['entradas_desbloqueadas']] == ['t-diario-fija']
     cierre = datos['completar-t-cierre-inicio']
@@ -257,13 +258,15 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert 'afinidad' in datos['logros-final']
     avisos = datos['desbloqueos-no-vistos']
     assert {d['regla'] for d in avisos} == {
-        'R-t-partida', 'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD',
+        'R-t-partida', 'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD',
         'R-t-opcional',
         'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA', 'R-t-adicional',
         'R-t-eco', 'R-t-diario-fija', 'R-t-diario-personal', 'R-PLAN-POR_QUE'}
     assert all(d['visto'] is False and d['fecha_hora'] == exportador.FECHA for d in avisos)
-    assert [(f['codigo'], f['estado']) for f in datos['fichas-inicial']] == [('t-ficha', 'BLOQUEADA')]
-    assert [(f['codigo'], f['estado']) for f in datos['fichas-final']] == [('t-ficha', 'DISPONIBLE')]
+    assert [(f['codigo'], f['estado']) for f in datos['fichas-inicial']] == [
+        ('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA')]
+    assert [(f['codigo'], f['estado']) for f in datos['fichas-final']] == [
+        ('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE')]
     assert [n['estado'] for n in datos['logros-final']['niveles']] == ['OBTENIDO', 'OBTENIDO']
     # B08: batalla con reintento, caso superado, colección y testimonios.
     for nombre in ('resolver-batalla-derrota', 'resolver-batalla-victoria'):
@@ -272,6 +275,11 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert datos['resolver-batalla-victoria']['nuevos_desbloqueos'] == []
     batalla, = TypeAdapter(list[BatallaCuenta]).validate_python(datos['batallas'])
     assert (batalla.estado, batalla.intentos, batalla.primer_intento.victoria) == ('COMPLETADA', 2, False)
+    assert (batalla.primer_intento.aciertos, batalla.primer_intento.preguntas) == (1, 4)
+    assert [(f.codigo, f.estado) for f in batalla.fichas] == [('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE')]
+    # F04b: las preguntas del intento, con semilla fija.
+    preguntas = TypeAdapter(list[PreguntaIntento]).validate_python(datos['preguntas-batalla'])
+    assert len(preguntas) == batalla.preguntas_por_intento == 7
     superado = RespuestaResolverCaso.model_validate(datos['resolver-caso'])
     assert superado.ocupaciones_nuevas == ['firefighter', 'paramedic']
     assert {d.regla for d in superado.nuevos_desbloqueos} == {'R-t-testimonio-1', 'R-t-testimonio-2'}

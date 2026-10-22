@@ -100,9 +100,11 @@ test('la hidratación conserva respuestas y nodos y corrige finalizaciones obsol
 })
 test('los cierres enumeran únicamente los desbloqueos del servidor, incluidos nivel y ciudad', () => {
   const inicio = adaptadores.textosDesbloqueos(jsonServidor('ruta/ruta-completar-t-inicio').nuevos_desbloqueos)
-  assert.equal(inicio.length, 4)
+  // F04b: t-inicio también da t-ficha-2.
+  assert.equal(inicio.length, 5)
   assert.ok(inicio.some((d) => d.texto === 'Se abrió: Punto de partida'))
   assert.ok(inicio.some((d) => d.tipo === 'FICHA' && d.codigo === 't-ficha'))
+  assert.ok(inicio.some((d) => d.tipo === 'FICHA' && d.codigo === 't-ficha-2'))
   assert.ok(inicio.some((d) => d.codigo === 't-ins-1'))
   assert.ok(!inicio.some((d) => d.tipo === 'SECCION' || d.tipo === 'SECCION_PLAN'))
   const cierre = adaptadores.textosDesbloqueos(

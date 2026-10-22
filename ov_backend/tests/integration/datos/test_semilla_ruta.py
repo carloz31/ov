@@ -17,18 +17,18 @@ from datos.ocupaciones import leer_ocupaciones, validar_distribucion_items
 
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     esperados = {'salon': 2, 'cuenta': 5, 'orientadora_salon': 1, 'vinculo_familiar': 1, 'bloque': 5,
-        'actividad': 20, 'seccion': 6, 'ficha': 2, 'testimonio': 2, 'conversacion': 2, 'insignia': 5, 'nivel': 2,
-        'regla_desbloqueo': 42, 'condicion_desbloqueo': 47, 'pregunta_diario': 8,
+        'actividad': 20, 'seccion': 6, 'ficha': 3, 'testimonio': 2, 'conversacion': 2, 'insignia': 5, 'nivel': 2,
+        'regla_desbloqueo': 43, 'condicion_desbloqueo': 48, 'pregunta_diario': 8,
         'instrumento': 2, 'escala_respuesta': 2, 'opcion_escala': 9, 'dimension': 11,
         'item_instrumento': 79, 'actividad_item': 98, 'aplicacion': 3, 'aplicacion_actividad': 4,
         'ocupacion': 36, 'puntaje_ocupacion': 216, 'familia_carrera': 6, 'carrera': 6,
         'carrera_ocupacion': 23, 'lista_opciones': 12, 'opcion_lista': 66, 'item_registro': 12,
         'criterio_completitud': 10, 'referencia': 11, 'tematica': 5,
-        'actividad_tematica': 6, 'actividad_dimension': 2, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
+        'actividad_tematica': 6, 'actividad_dimension': 2, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 72, 'tipo_carrera': 11, 'ubicacion': 2, 'institucion': 3, 'institucion_carrera': 6,
         'ingreso_carrera': 2, 'rango_ingreso': 5,
         'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6}
-    assert len(Base.metadata.tables) == 78
+    assert len(Base.metadata.tables) == 80
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA'}

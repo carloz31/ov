@@ -64,16 +64,16 @@ class RespuestaItemsGuardados(BaseModel):
     progreso: ProgresoRespuestas
 
 
-class ResolverBatallaEntrada(CompletarActividadEntrada):
-    victoria: bool
-    aciertos: int = Field(ge=0, strict=True)
-    preguntas: int = Field(ge=1, strict=True)
+class RespuestaBatallaEntrada(BaseModel):
+    pregunta: str
+    # Índice de la opción elegida (`OpcionPregunta.indice`).
+    opcion: int = Field(ge=0, strict=True)
 
-    @model_validator(mode="after")
-    def validar_aciertos(self):
-        if self.aciertos > self.preguntas:
-            raise ValueError("Los aciertos no pueden superar las preguntas respondidas")
-        return self
+
+class ResolverBatallaEntrada(CompletarActividadEntrada):
+    """Los destellos están en el front, que decide `victoria`; aciertos y preguntas salen de `respuestas`."""
+    victoria: bool
+    respuestas: list[RespuestaBatallaEntrada] = Field(min_length=1)
 
 
 class ResolverCasoEntrada(CompletarActividadEntrada):

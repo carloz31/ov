@@ -1,0 +1,198 @@
+[
+  {
+    "codigo": "t-batalla-p04",
+    "correcta": 3,
+    "enunciado": "¿Qué determina si puedes ejercer una profesión?",
+    "explicacion": "Las habilidades se desarrollan. Ninguna profesión exige un sexo para ejercerla.",
+    "ficha": {
+      "codigo": "t-ficha",
+      "titulo": "Ficha de prueba"
+    },
+    "opciones": [
+      {
+        "indice": 2,
+        "texto": "Lo que estudian tus amigos"
+      },
+      {
+        "indice": 1,
+        "texto": "Los estereotipos"
+      },
+      {
+        "indice": 3,
+        "texto": "Tus habilidades, conocimientos e interés"
+      },
+      {
+        "indice": 0,
+        "texto": "Tu género"
+      }
+    ]
+  },
+  {
+    "codigo": "t-batalla-p05",
+    "correcta": 0,
+    "enunciado": "¿Cómo considerar los ingresos al elegir?",
+    "explicacion": "Lo sensato es combinar tus intereses con información real sobre las condiciones de trabajo.",
+    "ficha": {
+      "codigo": "t-ficha-2",
+      "titulo": "Segunda ficha de prueba"
+    },
+    "opciones": [
+      {
+        "indice": 1,
+        "texto": "Ignorar tus intereses"
+      },
+      {
+        "indice": 3,
+        "texto": "Seguir el sueldo más alto sin investigar"
+      },
+      {
+        "indice": 0,
+        "texto": "Combinar interés y datos de ingresos y empleabilidad"
+      },
+      {
+        "indice": 2,
+        "texto": "Ignorar el dinero"
+      }
+    ]
+  },
+  {
+    "codigo": "t-batalla-p02",
+    "correcta": 1,
+    "enunciado": "¿Qué conviene revisar ante un consejo de hace veinte años?",
+    "explicacion": "Una experiencia de otra época puede no describir el mercado laboral actual.",
+    "ficha": {
+      "codigo": "t-ficha-2",
+      "titulo": "Segunda ficha de prueba"
+    },
+    "opciones": [
+      {
+        "indice": 3,
+        "texto": "Solo quién lo contó"
+      },
+      {
+        "indice": 0,
+        "texto": "Cuántas veces se repitió"
+      },
+      {
+        "indice": 1,
+        "texto": "Si aplica a la situación de hoy"
+      },
+      {
+        "indice": 2,
+        "texto": "La popularidad del consejo"
+      }
+    ]
+  },
+  {
+    "codigo": "t-batalla-p07",
+    "correcta": 2,
+    "enunciado": "¿Qué conviene hacer antes de aceptar una creencia?",
+    "explicacion": "Buscar evidencia y contraejemplos ayuda a decidir con información.",
+    "ficha": {
+      "codigo": "t-ficha",
+      "titulo": "Ficha de prueba"
+    },
+    "opciones": [
+      {
+        "indice": 2,
+        "texto": "Preguntar por la evidencia a favor y en contra"
+      },
+      {
+        "indice": 3,
+        "texto": "Buscar solo casos que la confirmen"
+      },
+      {
+        "indice": 1,
+        "texto": "Aceptar la más popular"
+      },
+      {
+        "indice": 0,
+        "texto": "Repetirla"
+      }
+    ]
+  },
+  {
+    "codigo": "t-batalla-p08",
+    "correcta": 3,
+    "enunciado": "¿De qué pueden depender los ingresos dentro de una carrera?",
+    "explicacion": "Los ingresos varían dentro de una misma carrera y dependen de distintos factores.",
+    "ficha": {
+      "codigo": "t-ficha-2",
+      "titulo": "Segunda ficha de prueba"
+    },
+    "opciones": [
+      {
+        "indice": 3,
+        "texto": "De la institución, experiencia y especialización"
+      },
+      {
+        "indice": 1,
+        "texto": "Solo de su prestigio"
+      },
+      {
+        "indice": 2,
+        "texto": "Solo de su popularidad"
+      },
+      {
+        "indice": 0,
+        "texto": "Solo del nombre de la carrera"
+      }
+    ]
+  },
+  {
+    "codigo": "t-batalla-p03",
+    "correcta": 2,
+    "enunciado": "¿Qué rutas pueden conducir a un buen trabajo?",
+    "explicacion": "Existen distintas rutas válidas, según tus objetivos y las condiciones de cada formación.",
+    "ficha": {
+      "codigo": "t-ficha",
+      "titulo": "Ficha de prueba"
+    },
+    "opciones": [
+      {
+        "indice": 1,
+        "texto": "Solo la formación técnica"
+      },
+      {
+        "indice": 3,
+        "texto": "Solo la ruta más popular"
+      },
+      {
+        "indice": 0,
+        "texto": "Solo la universidad"
+      },
+      {
+        "indice": 2,
+        "texto": "Universidad, técnica, oficios y emprendimiento"
+      }
+    ]
+  },
+  {
+    "codigo": "t-batalla-p12",
+    "correcta": 1,
+    "enunciado": "Si te gusta algo poco común, ¿qué conviene hacer?",
+    "explicacion": "Un interés poco común puede conectar con varias ocupaciones; vale la pena explorarlo.",
+    "ficha": {
+      "codigo": "t-ficha",
+      "titulo": "Ficha de prueba"
+    },
+    "opciones": [
+      {
+        "indice": 0,
+        "texto": "Abandonarlo"
+      },
+      {
+        "indice": 3,
+        "texto": "Elegir lo que eligen todos"
+      },
+      {
+        "indice": 1,
+        "texto": "Explorar cómo se aplica en distintos trabajos"
+      },
+      {
+        "indice": 2,
+        "texto": "Esperar que alguien decida por ti"
+      }
+    ]
+  }
+]

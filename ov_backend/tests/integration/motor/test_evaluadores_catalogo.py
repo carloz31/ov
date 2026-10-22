@@ -2,7 +2,7 @@
 
 from app import models as m
 from soporte_retiro import buscar, ciclo, resultado
-from soporte_ruta import actividades, avanzar, pedir, reglas
+from soporte_ruta import actividades, avanzar, pedir, reglas, respuestas_batalla
 
 
 EXPLORAR = {'R-t-explorar-carrera', 'R-t-explorar-ocupacion'}
@@ -14,7 +14,8 @@ def ver(cliente, clase, codigo, cuenta='est-ana'):
 
 def vencer(cliente):
     return pedir(cliente, 'POST', '/acciones/resolver-batalla', {'cuenta': 'est-ana', 'actividad': 't-batalla',
-                                                                 'victoria': True, 'aciertos': 3, 'preguntas': 4})
+                                                                 'victoria': True,
+                                                                 'respuestas': respuestas_batalla(3, 4)})
 
 
 def test_sin_resultado_hacen_falta_vistas_de_dos_tipos(cliente):

@@ -7,7 +7,8 @@ from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, AplicacionActividad, Bloque, ColeccionOcupacion, Cuenta, Dimension, EstadoProgreso,
     EstadoRespuestaRegistro, Instrumento, ItemInstrumento, Ocupacion, OpcionEscala, ProgresoActividad, RespuestaItem,
-    RespuestaRegistro, ResultadoBatalla, ResultadoCaso, ResultadoInstrumento, Rol, TipoActividad, TipoEventoUso,
+    PreguntaBatalla, RespuestaBatalla, RespuestaRegistro, ResultadoBatalla, ResultadoCaso, ResultadoInstrumento, Rol,
+    TipoActividad, TipoEventoUso,
     TipoObjetivo, TipoResultado, Visibilidad,
 )
 from app.schemas.acciones import (
@@ -294,19 +295,45 @@ def resolver_batalla(sesion: Session, entrada: ResolverBatallaEntrada) -> Respue
     exigir_disponible(sesion, cuenta, TipoObjetivo.ACTIVIDAD, actividad)
     if actividad.tipo != TipoActividad.BATALLA:
         raise ErrorAccion("La actividad debe ser de tipo BATALLA")
+    respondidas = _respuestas_batalla(sesion, actividad, entrada)
+    aciertos, preguntas = sum(correcta for _, _, correcta in respondidas), len(respondidas)
     fecha = fecha_accion(entrada)
     eventos = []
     # Solo la primera victoria completa y abre el siguiente paso; los intentos posteriores son repaso.
     if entrada.victoria and not existe_evento(sesion, cuenta, TipoEventoUso.SUPERA_BATALLA, actividad.id):
         progreso, eventos = completar_progreso(sesion, cuenta, actividad)
         eventos.append((TipoEventoUso.SUPERA_BATALLA, actividad.id))
-        if entrada.aciertos == entrada.preguntas:
+        if aciertos == preguntas:
             eventos.append((TipoEventoUso.VENCE_DESAFIO_INTACTO, None))
     else:
         progreso = iniciar_progreso(sesion, cuenta, actividad)
-    sesion.add(ResultadoBatalla(progreso_id=progreso.id, victoria=entrada.victoria, aciertos=entrada.aciertos,
-                                preguntas=entrada.preguntas, fecha_hora=fecha))
+    resultado = ResultadoBatalla(progreso_id=progreso.id, victoria=entrada.victoria, aciertos=aciertos,
+                                 preguntas=preguntas, fecha_hora=fecha)
+    sesion.add(resultado)
+    sesion.flush()
+    sesion.add_all(RespuestaBatalla(resultado_batalla_id=resultado.id, pregunta_batalla_id=pregunta.id,
+                                    opcion=opcion, correcta=correcta)
+                   for pregunta, opcion, correcta in respondidas)
     return responder_con_eventos(sesion, cuenta, eventos, fecha)
+
+
+def _respuestas_batalla(sesion: Session, actividad: Actividad, entrada: ResolverBatallaEntrada):
+    """(pregunta, opción, si acertó) por respuesta; 422 si no es de la batalla, se repite o no existe la opción."""
+    codigos = [respuesta.pregunta for respuesta in entrada.respuestas]
+    if len(set(codigos)) != len(codigos):
+        raise ErrorAccion("Una pregunta se respondió más de una vez", estado_http=422)
+    preguntas = {pregunta.codigo: pregunta for pregunta in sesion.scalars(select(PreguntaBatalla).where(
+        PreguntaBatalla.actividad_id == actividad.id, PreguntaBatalla.codigo.in_(codigos)))}
+    ajenas = [codigo for codigo in codigos if codigo not in preguntas]
+    if ajenas:
+        raise ErrorAccion(f"Preguntas que no son de esta batalla: {', '.join(ajenas)}", estado_http=422)
+    respondidas = []
+    for respuesta in entrada.respuestas:
+        pregunta = preguntas[respuesta.pregunta]
+        if respuesta.opcion >= len(pregunta.opciones):
+            raise ErrorAccion(f"La pregunta {pregunta.codigo} no tiene la opción {respuesta.opcion}", estado_http=422)
+        respondidas.append((pregunta, respuesta.opcion, respuesta.opcion == pregunta.correcta))
+    return respondidas
 
 
 @usar_contexto

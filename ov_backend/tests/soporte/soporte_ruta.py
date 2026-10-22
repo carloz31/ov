@@ -5,7 +5,7 @@ from soporte_dominios import consultar_dominios
 from sqlalchemy import select
 
 from app.models.base import Base
-from datos.ruta import DESCRIPCIONES
+from datos.ruta import DESCRIPCIONES, PREGUNTAS_BATALLA
 
 
 FECHA = '2026-10-07T10:00:00'
@@ -126,3 +126,10 @@ def filas_base(aplicacion):
     with aplicacion.state.fabrica_sesiones() as sesion:
         return {tabla.name: sesion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
                 for tabla in Base.metadata.sorted_tables}
+
+
+def respuestas_batalla(aciertos, preguntas, batalla='t-batalla'):
+    """Respuestas a las primeras `preguntas` del pool (F04b): las `aciertos` primeras correctas y el resto no."""
+    pool = [p for p in PREGUNTAS_BATALLA if p[1] == batalla][:preguntas]
+    return [{'pregunta': codigo, 'opcion': correcta if n < aciertos else (correcta + 1) % len(opciones)}
+            for n, (codigo, _, _, _, opciones, correcta, _) in enumerate(pool)]

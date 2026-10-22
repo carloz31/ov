@@ -3,5 +3,10 @@
     "codigo": "t-ficha",
     "estado": "BLOQUEADA",
     "titulo": "Ficha de prueba"
+  },
+  {
+    "codigo": "t-ficha-2",
+    "estado": "BLOQUEADA",
+    "titulo": "Segunda ficha de prueba"
   }
 ]

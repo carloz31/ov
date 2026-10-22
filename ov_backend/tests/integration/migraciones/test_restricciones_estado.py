@@ -9,7 +9,7 @@ from app import models as modelos
 
 FECHA = datetime(2026, 10, 1, 10)
 TABLAS_ESTADO = {
-    "progreso_actividad", "resultado_caso", "resultado_batalla", "coleccion_ocupacion", "recomendacion", "entrada_diario",
+    "progreso_actividad", "resultado_caso", "resultado_batalla", "respuesta_batalla", "coleccion_ocupacion", "recomendacion", "entrada_diario",
     "contador_diario", "check_in",
     "entrevista", "entrevista_autor", "conversacion_vinculo", "evento_uso", "desbloqueo",
     "respuesta_item", "resultado_instrumento", "resultado_dimension", "coincidencia",
@@ -22,7 +22,7 @@ TABLAS_ESTADO = {
 def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
     inspector = inspect(aplicacion.state.motor_bd)
     esperadas = {
-        "salon", "salon_instrumento", "salon_actividad_prioritaria", "cuenta", "orientadora_salon", "vinculo_familiar", "bloque", "actividad", "tematica", "actividad_tematica", "actividad_dimension", "seccion", "ficha",
+        "salon", "salon_instrumento", "salon_actividad_prioritaria", "cuenta", "orientadora_salon", "vinculo_familiar", "bloque", "actividad", "tematica", "actividad_tematica", "actividad_dimension", "pregunta_batalla", "seccion", "ficha",
         "testimonio",
         "pregunta_diario", "conversacion", "insignia", "nivel", "familia_carrera",
         "carrera", "regla_desbloqueo", "condicion_desbloqueo",
@@ -36,7 +36,7 @@ def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
         "rango_ingreso", "seccion_tarjeta", "referencia_rubro", "referencia_camino",
     }
     assert set(inspector.get_table_names()) == esperadas
-    assert len(esperadas) == 78
+    assert len(esperadas) == 80
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]
