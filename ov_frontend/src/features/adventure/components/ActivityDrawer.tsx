@@ -142,11 +142,6 @@ export function ActivityDrawer({
                   <Play size={18} />
                   {details.actionLabel}
                 </button>
-                {point.additional && (
-                  <button type="button" className="sx-secondary-button" onClick={onClose}>
-                    Más tarde
-                  </button>
-                )}
                 {!!details.reviewActivities?.length && (
                   <section>
                     <h3>Revisar mis encuentros</h3>
