@@ -1,5 +1,5 @@
 import type { Battle, Challenge } from '@/types/challenges'
-import type { PreguntaIntento, RespuestaBatallaEntrada } from '@/types/servidor'
+import type { ContenidoEstado, PreguntaIntento, RespuestaBatallaEntrada } from '@/types/servidor'
 
 // F04b: las preguntas de un intento vienen del servidor; el desafío del front pone vidas y destellos.
 // Un intento debe poder terminar: hacen falta al menos vidas del enemigo + destellos − 1 preguntas.
@@ -39,3 +39,7 @@ export function ordenFichasRepaso(fichas: string[], fallos: string[]): string[] 
     (a, b) => errores(b) - errores(a) || primero(a) - primero(b) || fichas.indexOf(a) - fichas.indexOf(b),
   )
 }
+
+// Las fichas de una batalla que se pueden repasar: las que la cuenta ya tiene y tienen contenido en el front.
+export const fichasDeRepaso = (fichas: ContenidoEstado[], conContenido: (codigo: string) => boolean) =>
+  fichas.filter((f) => f.estado === 'DISPONIBLE' && conContenido(f.codigo))

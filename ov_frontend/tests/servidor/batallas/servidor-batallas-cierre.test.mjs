@@ -84,3 +84,19 @@ test('la derrota repasa primero y después reintenta; sin fichas, solo reintenta
   assert.deepEqual(copia(unico.map(texto)), ['Intentar de nuevo'])
   assert.ok(unico[0].props.className.includes('sx-primary-button'))
 })
+
+test('el drawer y el repaso ofrecen solo las fichas disponibles con contenido', () => {
+  const app = fixtureServidor()
+  const { fichasDeRepaso } = app.load('src/features/activities/lib/batallaServidor.ts')
+  const [batalla] = jsonServidor('ruta/ruta-batallas')
+  const conContenido = (codigo) => codigo !== 'sin-contenido'
+  assert.deepEqual(copia(fichasDeRepaso(batalla.fichas, conContenido).map((f) => f.codigo)), ['t-ficha', 't-ficha-2'])
+  // Una ficha todavía no obtenida, o sin contenido en el front, no se ofrece.
+  const mezcla = [
+    { ...batalla.fichas[0], estado: 'BLOQUEADA' },
+    batalla.fichas[1],
+    { codigo: 'sin-contenido', titulo: 'Sin contenido', estado: 'DISPONIBLE' },
+  ]
+  assert.deepEqual(copia(fichasDeRepaso(mezcla, conContenido).map((f) => f.codigo)), ['t-ficha-2'])
+  assert.deepEqual(copia(fichasDeRepaso([], conContenido)), [])
+})

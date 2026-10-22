@@ -393,6 +393,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Contenidos:** `t_batalla` (mapeado a un desafío de `challenges.ts`), `t_caso` (mapeado al incendio forestal).
 - **Pantallas a decidir:** vista de testimonios (lista propia o dentro de la mochila, que ya tiene `?kind=testimonial`).
 - **Ajustes al backend posibles:** la relación caso → ocupaciones de la colección para mostrar el ícono en el resultado RIASEC (hoy no llega).
+- **F04b · Preguntas de batalla en el servidor (M) · Implementado:** pool de preguntas por batalla con su ficha, intentos al azar con opciones mezcladas, respuestas guardadas, fichas derivadas de las preguntas; drawer «Se alimenta de» y cierres de victoria, práctica y derrota.
 
 #### F05 · Diario, pregunta del día y check-in
 - **Hace:** diario desde el servidor (preguntas fijas y personalizadas, entradas con título opcional, editar y borrar, pregunta del día vigente, amistad con Lumi); aviso en el cierre de actividad cuando deja una pregunta; check-in al ingresar si no hay uno del día y su evolución; temáticas y afinidad en el pasaporte.

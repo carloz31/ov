@@ -27,6 +27,7 @@ export function ActivityDrawer({
   renderCaseProgress,
   renderJournal,
   renderPorAmpliar,
+  renderFichasBatalla,
 }: {
   point?: StudentMapPoint
   details?: PointDetails
@@ -38,6 +39,8 @@ export function ActivityDrawer({
   renderJournal?: (journal: NonNullable<PointDetails['journal']>, onOpen: () => void) => ReactNode
   // Lo que un registro completado quedó por ampliar (F01); lo decide el dominio de actividades.
   renderPorAmpliar?: (codigo: string) => ReactNode
+  // Las fichas de las que se alimenta una batalla (F04b); lo decide el dominio de actividades.
+  renderFichasBatalla?: (codigo: string) => ReactNode
 }) {
   const adventure = useAdventure()
   const theme = useThemeClass()
@@ -124,6 +127,7 @@ export function ActivityDrawer({
                   </DrawerDescription>
                 </DrawerHeader>
                 <span className="sx-drawer-type">{details.type}</span>
+                {point.specActivityId && renderFichasBatalla?.(point.specActivityId)}
                 {point.specActivityId && renderPorAmpliar?.(point.specActivityId)}
                 {details.requirement && (
                   <p className="sx-drawer-requirement">

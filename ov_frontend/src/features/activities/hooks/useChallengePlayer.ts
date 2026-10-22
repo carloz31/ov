@@ -4,7 +4,7 @@ import { catalog } from '@/data/activities/content'
 import { useJourney, updateJourney, useJourneyError } from '@/store/journeyStore'
 import { consultarBatallas, consultarPreguntasBatalla, resolverBatalla } from '@/store/servidor/batallas'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
-import { batallaDesdePreguntas, ordenFichasRepaso, respuestaBatalla } from '../lib/batallaServidor'
+import { batallaDesdePreguntas, fichasDeRepaso, ordenFichasRepaso, respuestaBatalla } from '../lib/batallaServidor'
 import {
   answerBattle,
   canStartChallenge,
@@ -54,9 +54,7 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
   const requirements = conServidor ? [] : challengeRequirements(c, state)
   const puedeIniciar = conServidor || canStartChallenge(c, state)
   const disponibles = conServidor
-    ? fichasBatalla
-        .filter((f) => f.estado === 'DISPONIBLE' && catalog.recursos.some((r) => r.id === f.codigo))
-        .map((f) => f.codigo)
+    ? fichasDeRepaso(fichasBatalla, (codigo) => catalog.recursos.some((r) => r.id === codigo)).map((f) => f.codigo)
     : c.requisitos.filter((r) => r.tipo === 'ficha').map((r) => r.id)
   // Tras perder, primero la ficha con más errores del intento; antes, la de su primera pregunta.
   const fallos = respuestas.current.flatMap((r) => {

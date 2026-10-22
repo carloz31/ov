@@ -2781,3 +2781,19 @@ body:has([data-student-experience] .sx-shell) {
 .sx-root .sx-step-footer > .sx-prev-button:only-child {
   margin-right: auto;
 }
+/* F04b: fichas de las que se alimenta una batalla, en su drawer. */
+.sx-root .sx-drawer-fichas {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.sx-root .sx-drawer-ficha {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
