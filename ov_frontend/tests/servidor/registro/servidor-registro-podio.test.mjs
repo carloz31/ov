@@ -120,8 +120,10 @@ function montarNodo(app, RegistroPodioNode, inicial, guardados = []) {
   })
 }
 const podioDe = (tree) => elementos(tree, (e) => e.type?.name === 'RankingPodium')[0]
-const explicacion = (tree) => elementos(tree, (e) => e.props?.className === 'sx-podium-explain')[0]
-const enviar = (tree) => elementos(tree, (e) => e.type === 'form')[0].props.onSubmit({ preventDefault() {} })
+// Las piezas comunes (marco y explicación) se leen por sus props: el arnés no las expande.
+const explicacion = (tree) => elementos(tree, (e) => e.type?.name === 'RegistroExplicacion')[0]
+const escribir = (tree, valor) => explicacion(tree).props.onTexto(valor)
+const enviar = (tree) => elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0].props.onEnviar()
 
 test('al completar aparece la explicación del primer lugar; quitar una ficha la oculta sin borrar el texto', () => {
   const { app, RegistroPodioNode } = cargar()
@@ -131,13 +133,16 @@ test('al completar aparece la explicación del primer lugar; quitar una ficha la
   podioDe(tree).props.onChange(['CREAR', 'LIBERTAD', 'ESTABILIDAD'])
   tree = vista.render()
   assert.ok(explicacion(tree))
-  assert.ok(texto(tree).includes('¿Por qué «Crear cosas nuevas» es lo más importante para ti?'))
-  elementos(tree, (e) => e.type === 'textarea')[0].props.onChange({ target: { value: 'Me gusta inventar' } })
+  assert.equal(
+    explicacion(tree).props.pregunta,
+    '¿Por qué «Crear cosas nuevas» es lo más importante para ti?',
+  )
+  escribir(tree, 'Me gusta inventar')
   podioDe(vista.render()).props.onChange([null, 'LIBERTAD', 'ESTABILIDAD'])
   tree = vista.render()
   assert.equal(explicacion(tree), undefined)
   podioDe(tree).props.onChange(['CREAR', 'LIBERTAD', 'ESTABILIDAD'])
-  assert.equal(elementos(vista.render(), (e) => e.type === 'textarea')[0].props.value, 'Me gusta inventar')
+  assert.equal(explicacion(vista.render()).props.texto, 'Me gusta inventar')
   vista.unmount()
 })
 
@@ -145,17 +150,15 @@ test('cambiar el primer lugar después de escribir avisa sin borrar; editar el t
   const { app, RegistroPodioNode } = cargar()
   const vista = montarNodo(app, RegistroPodioNode, { texto: '', opciones: [] })
   podioDe(vista.render()).props.onChange(['CREAR', 'LIBERTAD', 'ESTABILIDAD'])
-  elementos(vista.render(), (e) => e.type === 'textarea')[0].props.onChange({
-    target: { value: 'Me gusta inventar' },
-  })
-  const aviso = (tree) => elementos(tree, (e) => e.props?.className === 'sx-podium-warning')[0]
+  escribir(vista.render(), 'Me gusta inventar')
+  const aviso = (tree) => explicacion(tree).props.aviso
   assert.equal(aviso(vista.render()), undefined)
   podioDe(vista.render()).props.onChange(['LIBERTAD', 'CREAR', 'ESTABILIDAD'])
   let tree = vista.render()
-  assert.ok(aviso(tree))
-  assert.equal(elementos(tree, (e) => e.type === 'textarea')[0].props.value, 'Me gusta inventar')
-  assert.match(texto(tree).join(' '), /¿Por qué «Tener libertad»/)
-  elementos(tree, (e) => e.type === 'textarea')[0].props.onChange({ target: { value: 'Me gusta decidir' } })
+  assert.equal(aviso(tree), 'Cambiaste tu primer valor. Revisa si tu explicación sigue encajando.')
+  assert.equal(explicacion(tree).props.texto, 'Me gusta inventar')
+  assert.match(explicacion(tree).props.pregunta, /¿Por qué «Tener libertad»/)
+  escribir(tree, 'Me gusta decidir')
   assert.equal(aviso(vista.render()), undefined)
   vista.unmount()
 })
@@ -169,8 +172,8 @@ test('un registro guardado abre con el podio completo y la explicación con su t
   })
   const tree = vista.render()
   assert.deepEqual(copia(podioDe(tree).props.puestos), ['CREAR', 'LIBERTAD', 'ESTABILIDAD'])
-  assert.equal(elementos(tree, (e) => e.type === 'textarea')[0].props.value, guardado.conversacion[0].texto)
-  assert.equal(elementos(tree, (e) => e.props?.className === 'sx-podium-warning').length, 0)
+  assert.equal(explicacion(tree).props.texto, guardado.conversacion[0].texto)
+  assert.equal(explicacion(tree).props.aviso, undefined)
   vista.unmount()
 })
 
@@ -184,9 +187,9 @@ test('avanzar sin podio completo o sin texto muestra el error junto al control; 
   enviar(vista.render())
   let tree = vista.render()
   assert.equal(podioDe(tree).props.error, undefined)
-  assert.ok(elementos(explicacion(tree), (e) => e.props?.role === 'alert').length)
+  assert.equal(explicacion(tree).props.error, 'Escribe al menos 1 caracteres.')
   assert.equal(guardados.length, 0)
-  elementos(tree, (e) => e.type === 'textarea')[0].props.onChange({ target: { value: '  Crear me mueve  ' } })
+  escribir(tree, '  Crear me mueve  ')
   enviar(vista.render())
   // Igual que la elección ordenada anterior: opciones en orden, solo con código, y el texto recortado.
   assert.deepEqual(copia(guardados), [

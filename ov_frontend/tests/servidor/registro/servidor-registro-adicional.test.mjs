@@ -28,7 +28,10 @@ test('antes del registro adecuado la misión adicional no se puede abrir', async
   const app = await camino('t1')
   const { obtenerEstadoServidor } = app.load('src/store/servidor/sesion.ts')
   const bloques = obtenerEstadoServidor().actividades.datos
-  assert.equal(bloques.flatMap((b) => b.actividades).find((a) => a.codigo === 't-adicional').estado, 'BLOQUEADA')
+  assert.equal(
+    bloques.flatMap((b) => b.actividades).find((a) => a.codigo === 't-adicional').estado,
+    'BLOQUEADA',
+  )
 })
 
 test('con el registro adecuado, la misión adicional se abre con el reproductor de encuentros', async () => {

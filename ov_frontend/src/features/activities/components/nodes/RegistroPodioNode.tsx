@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Check } from 'lucide-react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
-import { InlineDialogue } from '../InlineDialogue'
 import { RankingPodium } from './RankingPodium'
+import { RegistroGuiado } from './RegistroGuiado'
+import { RegistroExplicacion } from './RegistroExplicacion'
 import { completo, faltan, mensajeLumi, preguntaPrimero, puestosDesde, seleccionDe } from '../../lib/podio'
+import { errorTexto } from '../../lib/eleccionGuiada'
 
 const PODIO_POR_DEFECTO = {
   etiquetaPrimero: 'Lo más importante',
@@ -43,18 +44,15 @@ export function RegistroPodioNode({
   // Primer lugar cuando se escribió por última vez: si cambia después, se avisa sin borrar el texto.
   const [primeroAlEscribir, setPrimeroAlEscribir] = useState(inicial.opciones[0]?.codigo)
   const [errores, setErrores] = useState<{ podio?: string; texto?: string }>({})
-  const lleno = completo(puestos)
   const primero = puestos[0]
   const textoPrimero = eleccion.opciones.find((o) => o.codigo === primero)?.texto ?? ''
-  const minimo = item.min_caracteres ?? (item.obligatorio ? 1 : 0)
   function submit() {
     const pendientes = faltan(puestos)
     const siguientes = {
       podio: pendientes
         ? `Completa tu podio: te ${pendientes === 1 ? `falta 1 ${config.unidad.singular}` : `faltan ${pendientes} ${config.unidad.plural}`}.`
         : undefined,
-      texto:
-        !pendientes && text.trim().length < minimo ? `Escribe al menos ${minimo} caracteres.` : undefined,
+      texto: pendientes ? undefined : errorTexto(item, text),
     }
     setErrores(siguientes)
     if (!siguientes.podio && !siguientes.texto)
@@ -64,24 +62,15 @@ export function RegistroPodioNode({
       )
   }
   return (
-    <form
-      className="sx-submission-form sx-podium-form"
-      onSubmit={(event) => {
-        event.preventDefault()
-        submit()
-      }}
+    <RegistroGuiado
+      hablanteId={node.hablanteId}
+      mensaje={mensajeLumi(puestos, config.unidad)}
+      consigna={item.consigna}
+      ultimo={ultimo}
+      ocupado={ocupado}
+      error={error}
+      onEnviar={submit}
     >
-      <InlineDialogue
-        speakerId={node.hablanteId ?? 'companero'}
-        text={mensajeLumi(puestos, config.unidad)}
-        light
-      />
-      <p className="sx-submission-label">
-        <span className="sx-submission-premise">{item.consigna}</span>
-        <span className="sx-submission-visibility">
-          Visible para ti y tu orientadora. Se guarda en tu cuenta.
-        </span>
-      </p>
       <RankingPodium
         opciones={eleccion.opciones}
         puestos={puestos}
@@ -93,44 +82,22 @@ export function RegistroPodioNode({
           if (completo(siguientes)) setErrores((e) => ({ ...e, podio: undefined }))
         }}
       />
-      {lleno && primero && (
-        <div className="sx-podium-explain">
-          <label className="sx-submission-label">
-            <span className="sx-submission-premise">{preguntaPrimero(config.pregunta, textoPrimero)}</span>
-            <textarea
-              className="sx-submission-textarea"
-              value={text}
-              placeholder="Escribe con tus palabras, no hay respuestas incorrectas"
-              onChange={(event) => {
-                setText(event.target.value)
-                setPrimeroAlEscribir(primero)
-              }}
-            />
-          </label>
-          {!!text.trim() && primero !== primeroAlEscribir && (
-            <p role="status" className="sx-podium-warning">
-              Cambiaste tu primer {node.podio?.unidad ? node.podio.unidad.singular : 'lugar'}. Revisa si tu
-              explicación sigue encajando.
-            </p>
-          )}
-          {errores.texto && (
-            <p role="alert" className="sx-submission-error">
-              {errores.texto}
-            </p>
-          )}
-        </div>
+      {completo(puestos) && primero && (
+        <RegistroExplicacion
+          pregunta={preguntaPrimero(config.pregunta, textoPrimero)}
+          texto={text}
+          aviso={
+            !!text.trim() && primero !== primeroAlEscribir
+              ? `Cambiaste tu primer ${node.podio?.unidad ? node.podio.unidad.singular : 'lugar'}. Revisa si tu explicación sigue encajando.`
+              : undefined
+          }
+          error={errores.texto}
+          onTexto={(texto) => {
+            setText(texto)
+            setPrimeroAlEscribir(primero)
+          }}
+        />
       )}
-      {error && (
-        <p role="alert" className="sx-submission-error">
-          {error}
-        </p>
-      )}
-      <div className="sx-player-actions">
-        <button type="submit" className="sx-primary-button" disabled={ocupado}>
-          {ocupado ? 'Guardando…' : ultimo ? 'Entregar' : 'Guardar y continuar'}
-          <Check size={18} />
-        </button>
-      </div>
-    </form>
+    </RegistroGuiado>
   )
 }

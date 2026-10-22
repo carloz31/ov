@@ -30,7 +30,11 @@ export function RegistroConsignaNode({
   function submit() {
     const mensaje = validar(item, text, selection)
     setAviso(mensaje)
-    if (!mensaje) onGuardar(text.trim(), selection.map((o) => (o.codigo === 'OTRA' ? { ...o, texto: o.texto?.trim() } : o)))
+    if (!mensaje)
+      onGuardar(
+        text.trim(),
+        selection.map((o) => (o.codigo === 'OTRA' ? { ...o, texto: o.texto?.trim() } : o)),
+      )
   }
   const premisa = <span className="sx-submission-premise">{item.consigna}</span>
   const campo = (
@@ -58,7 +62,12 @@ export function RegistroConsignaNode({
             {premisa}
             {node.ayuda && <span className="sx-submission-help">{node.ayuda}</span>}
           </p>
-          <RegistroOpciones nodo={node.id} eleccion={eleccion} selection={selection} onChange={setSelection} />
+          <RegistroOpciones
+            nodo={node.id}
+            eleccion={eleccion}
+            selection={selection}
+            onChange={setSelection}
+          />
           {campo}
         </>
       ) : (

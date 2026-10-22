@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { completo, faltan, quitar, colocar, intercambiar, type Puestos } from '../../lib/podio'
-import { iconoPodio } from '../../data/iconosPodio'
+import { iconoRegistro } from '../../data/iconosRegistro'
 import '../../styles/podium.css'
 
 // Podio genérico de «elegir y ordenar top N» (F01): N puestos, el primero más grande, y las opciones
@@ -56,7 +56,7 @@ export function RankingPodium({
     <div className="sx-podium-wrap">
       <ol className="sx-podium" style={{ gridTemplateColumns: `1.25fr repeat(${puestos.length - 1}, 1fr)` }}>
         {puestos.map((codigo, i) => {
-          const Icon = codigo ? iconoPodio(iconos?.[codigo]) : undefined
+          const Icon = codigo ? iconoRegistro(iconos?.[codigo]) : undefined
           const etiqueta = i === 0 ? etiquetaPrimero : `${i + 1}º lugar`
           return (
             <li key={i}>
@@ -104,7 +104,7 @@ export function RankingPodium({
       {!lleno && (
         <div className="sx-podium-chips">
           {opciones.map((o) => {
-            const Icon = iconoPodio(iconos?.[o.codigo])
+            const Icon = iconoRegistro(iconos?.[o.codigo])
             const colocada = puestos.includes(o.codigo)
             return (
               <button

@@ -24,13 +24,36 @@
       "hablanteId": "companero",
       "item": "t-exp-ruta",
       "premisa": "",
-      "placeholder": "Escribe por qué",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora",
-      "ayuda": "Elige una o dos rutas y cuéntame por qué."
+      "eleccion": {
+        "etiquetaElegida": "Tu ruta",
+        "exclusivas": [
+          "AUN_NO_SE"
+        ],
+        "iconos": {
+          "UNIVERSIDAD": "universidad",
+          "INSTITUTO": "instituto",
+          "TRABAJAR": "trabajo",
+          "EMPRENDER": "emprender",
+          "AUN_NO_SE": "duda",
+          "OTRA": "brujula"
+        },
+        "mensajes": {
+          "inicio": "Llegaste a una encrucijada. ¿Hacia dónde te gustaría ir? Puedes elegir una o dos rutas.",
+          "una": "Buena elección. Si quieres, puedes sumar una ruta más.",
+          "maximo": "Dos rutas en el mapa. Cuéntame qué te atrae de ellas.",
+          "bloqueada": "Ya elegiste dos rutas. Quita una para cambiar.",
+          "exclusiva": "Está bien no saberlo todavía. Para eso está este camino."
+        },
+        "pregunta": "¿Por qué te atrae {opciones}?",
+        "preguntaExclusiva": "¿Qué te hace dudar o qué te gustaría descubrir?",
+        "errorSeleccion": "Elige al menos una ruta.",
+        "errorOtra": "Escribe cuál es tu otra ruta."
+      }
     },
     {
       "id": "t-exp-apoyo",
@@ -38,13 +61,30 @@
       "hablanteId": "companero",
       "item": "t-exp-apoyo",
       "premisa": "",
-      "placeholder": "Cuenta un ejemplo",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora",
-      "ayuda": "Elige quién te apoya y cuenta un ejemplo."
+      "eleccion": {
+        "etiquetaElegida": "Te acompaña",
+        "iconos": {
+          "FAMILIA": "familia",
+          "DOCENTES": "escuela",
+          "AMIGOS": "amigos"
+        },
+        "mensajes": {
+          "inicio": "Nadie decide solo. ¿Quién te acompaña en esta decisión?",
+          "una": "Qué bueno contar con alguien. Cuéntame cómo te apoya."
+        },
+        "pregunta": "¿Cómo te apoya {opciones}? Cuenta un ejemplo.",
+        "preguntas": {
+          "FAMILIA": "¿Cómo te apoya tu familia? Cuenta un ejemplo.",
+          "DOCENTES": "¿Cómo te apoyan tus docentes? Cuenta un ejemplo.",
+          "AMIGOS": "¿Cómo te apoyan tus amigos? Cuenta un ejemplo."
+        },
+        "errorSeleccion": "Elige quién te apoya."
+      }
     },
     {
       "id": "t-exp-espera",

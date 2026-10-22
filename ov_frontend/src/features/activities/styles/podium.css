@@ -1,8 +1,4 @@
 /* F01: podio de «elegir y ordenar top N» en los registros. */
-.sx-root .sx-podium-form {
-  display: grid;
-  gap: 16px;
-}
 .sx-root .sx-podium-wrap {
   display: grid;
   gap: 10px;
@@ -127,18 +123,4 @@
 .sx-root :is(.sx-podium-slot, .sx-podium-chip):focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
-}
-.sx-root .sx-podium-explain {
-  display: grid;
-  gap: 8px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-.sx-root .sx-podium-warning {
-  margin: 0;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: var(--warning-soft);
-  color: var(--warning-text);
-  font-size: 13px;
 }

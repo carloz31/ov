@@ -168,6 +168,7 @@ export interface NodoConsigna extends NodoBase {
   slot?: string // ubicación en la plantilla: "col.fila"
   item?: ID // en api, código del ítem de registro del servidor que responde esta consigna (F01)
   podio?: ConfigPodio // en api, textos e íconos del podio de una elección «top N»
+  eleccion?: ConfigEleccion // en api, textos e íconos de una elección guiada sin orden
 }
 
 // Podio de una elección ordenada «top N» (F01). Todo es opcional: sin él se usan textos genéricos.
@@ -175,7 +176,21 @@ export interface ConfigPodio {
   etiquetaPrimero?: string // «Lo más importante»
   pregunta?: string // «¿Por qué «{opcion}» es lo más importante para ti?»
   unidad?: { singular: string; plural: string } // «valor» / «valores»
-  iconos?: Record<string, string> // código de opción → nombre en `data/iconosPodio.ts`
+  iconos?: Record<string, string> // código de opción → nombre en `data/iconosRegistro.ts`
+}
+
+// Elección guiada «elegir entre mínima y máxima sin orden + explicar» (F01). Los textos son propios de
+// cada ítem; sin ellos se usan textos genéricos.
+export interface ConfigEleccion {
+  etiquetaElegida?: string // «Tu ruta», «Te acompaña»; sin ella, la tarjeta elegida no lleva etiqueta
+  exclusivas?: string[] // códigos que quitan a las demás («AUN_NO_SE»)
+  iconos?: Record<string, string> // código de opción (también OTRA) → nombre en `data/iconosRegistro.ts`
+  mensajes?: { inicio?: string; una?: string; maximo?: string; bloqueada?: string; exclusiva?: string }
+  pregunta?: string // con {opciones}
+  preguntas?: Record<string, string> // pregunta propia de una opción elegida sola
+  preguntaExclusiva?: string
+  errorSeleccion?: string
+  errorOtra?: string
 }
 
 export type EspecEntregable =

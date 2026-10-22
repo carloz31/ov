@@ -13,7 +13,10 @@ export function RegistroOpciones({
   onChange: (next: OpcionElegida[]) => void
 }) {
   const unica = eleccion.maxima === 1
-  const opciones = [...eleccion.opciones, ...(eleccion.permite_otra ? [{ codigo: 'OTRA', texto: 'Otra' }] : [])]
+  const opciones = [
+    ...eleccion.opciones,
+    ...(eleccion.permite_otra ? [{ codigo: 'OTRA', texto: 'Otra' }] : []),
+  ]
   const otra = selection.find((o) => o.codigo === 'OTRA')
   function alternar(codigo: string) {
     const elegida = selection.some((o) => o.codigo === codigo)
@@ -23,7 +26,9 @@ export function RegistroOpciones({
   }
   return (
     <fieldset className="sx-submission-options">
-      <legend className="sr-only">{eleccion.ordenada ? `Elige y ordena ${eleccion.maxima}` : 'Elige tu respuesta'}</legend>
+      <legend className="sr-only">
+        {eleccion.ordenada ? `Elige y ordena ${eleccion.maxima}` : 'Elige tu respuesta'}
+      </legend>
       {opciones.map((opcion) => {
         const posicion = selection.findIndex((o) => o.codigo === opcion.codigo)
         return (
@@ -51,7 +56,9 @@ export function RegistroOpciones({
           placeholder="¿Cuál?"
           value={otra.texto ?? ''}
           onChange={(event) =>
-            onChange(selection.map((o) => (o.codigo === 'OTRA' ? { codigo: 'OTRA', texto: event.target.value } : o)))
+            onChange(
+              selection.map((o) => (o.codigo === 'OTRA' ? { codigo: 'OTRA', texto: event.target.value } : o)),
+            )
           }
         />
       )}

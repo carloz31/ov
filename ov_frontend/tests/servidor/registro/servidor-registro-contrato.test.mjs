@@ -46,16 +46,22 @@ test('las consultas de registro usan las rutas del backend y la cuenta activa', 
   const consultado = await registro.consultarRegistro('t-valores')
   assert.deepEqual(copia(items), { tipo: 'ok', datos: itemsValores })
   assert.equal(consultado.datos.respuestas[0].estado, 'PENDIENTE_SEGUIMIENTO')
-  assert.deepEqual(
-    copia(app.requests.slice(-2).map((r) => r.url)),
-    ['/api/actividades/t-valores/items-registro', '/api/cuentas/est-ana/actividades/t-valores/registro'],
-  )
+  assert.deepEqual(copia(app.requests.slice(-2).map((r) => r.url)), [
+    '/api/actividades/t-valores/items-registro',
+    '/api/cuentas/est-ana/actividades/t-valores/registro',
+  ])
 })
 
 test('el borrador envía texto, opciones en el orden elegido y la posición', async () => {
   const { app, registro } = await preparar()
   const opciones = [{ codigo: 'CREAR' }, { codigo: 'LIBERTAD' }, { codigo: 'ESTABILIDAD' }]
-  const respuesta = await registro.guardarBorradorRegistro('t-valores', 't-val-orden', 'Texto', opciones, 't-val-libre')
+  const respuesta = await registro.guardarBorradorRegistro(
+    't-valores',
+    't-val-orden',
+    'Texto',
+    opciones,
+    't-val-libre',
+  )
   assert.deepEqual(copia(respuesta), { tipo: 'ok', datos: { item: 't-val-orden', estado: 'BORRADOR' } })
   const req = app.requests.at(-1)
   assert.equal(req.url, '/api/acciones/registro/guardar-borrador')
@@ -112,14 +118,20 @@ test('registroServidor une cada consigna con su ítem y rechaza contenidos incom
   const contenido = {
     id: 't-valores',
     tipo: 'registro',
-    nodos: [{ id: 'hola', tipo: 'dialogo', hablanteId: 'companero', texto: 'Hola' }, ...itemsValores.map((i) => consigna(i.codigo))],
+    nodos: [
+      { id: 'hola', tipo: 'dialogo', hablanteId: 'companero', texto: 'Hola' },
+      ...itemsValores.map((i) => consigna(i.codigo)),
+    ],
   }
   const actividad = registroServidor(contenido, itemsValores)
   const nodo = actividad.nodos.find((n) => n.item === 't-val-orden')
   assert.equal(nodo.premisa, itemsValores[0].consigna)
   assert.equal(nodo.obligatoria, itemsValores[0].obligatorio)
   assert.equal(actividad.nodos[0].tipo, 'dialogo')
-  assert.equal(registroServidor({ ...contenido, nodos: contenido.nodos.slice(0, 2) }, itemsValores), undefined)
+  assert.equal(
+    registroServidor({ ...contenido, nodos: contenido.nodos.slice(0, 2) }, itemsValores),
+    undefined,
+  )
   assert.equal(
     registroServidor({ ...contenido, nodos: [...contenido.nodos, consigna('t-otro')] }, itemsValores),
     undefined,

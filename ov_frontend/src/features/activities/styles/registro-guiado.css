@@ -1,0 +1,121 @@
+/* F01: marco común de los registros guiados (podio y elección). */
+.sx-root .sx-guided-form {
+  display: grid;
+  gap: 16px;
+}
+.sx-root .sx-guided-explain {
+  display: grid;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.sx-root .sx-guided-warning {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--warning-soft);
+  color: var(--warning-text);
+  font-size: 13px;
+}
+/* Elección guiada: tarjetas que se alternan, sin casillas. */
+.sx-root .sx-choice-wrap {
+  display: grid;
+  gap: 8px;
+}
+.sx-root .sx-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+.sx-root .sx-choice-card {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 14px;
+  border: 1px solid var(--input);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+.sx-root .sx-choice-card:hover {
+  border-color: var(--primary);
+}
+.sx-root .sx-choice-card:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+.sx-root .sx-choice-card.is-selected {
+  border: 2px solid var(--primary);
+  padding: 11px 13px;
+  background: var(--primary-soft);
+}
+.sx-root .sx-choice-card.is-dimmed {
+  opacity: 0.45;
+}
+.sx-root .sx-choice-card.is-toggled {
+  animation: sx-choice-pop 150ms ease-out;
+}
+@keyframes sx-choice-pop {
+  from {
+    transform: scale(0.96);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-root .sx-choice-card.is-toggled {
+    animation: none;
+  }
+}
+.sx-root .sx-choice-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--muted);
+  color: var(--primary);
+}
+.sx-root .sx-choice-card.is-selected .sx-choice-icon {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.sx-root .sx-choice-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.sx-root .sx-choice-card.has-badge .sx-choice-name {
+  padding-right: 64px;
+}
+.sx-root .sx-choice-badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.sx-root .sx-choice-other {
+  display: grid;
+  gap: 4px;
+  flex-basis: 100%;
+}
+.sx-root .sx-choice-other input {
+  min-height: 40px;
+  padding: 8px 12px;
+}

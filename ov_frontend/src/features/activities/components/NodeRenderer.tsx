@@ -12,7 +12,9 @@ import { MatrixNode } from '@/features/activities/components/nodes/MatrixNode'
 import { ResultNode } from '@/features/activities/components/nodes/ResultNode'
 import { RegistroConsignaNode } from '@/features/activities/components/nodes/RegistroConsignaNode'
 import { RegistroPodioNode } from '@/features/activities/components/nodes/RegistroPodioNode'
+import { RegistroEleccionNode } from '@/features/activities/components/nodes/RegistroEleccionNode'
 import { esTopN } from '@/features/activities/lib/podio'
+import { esEleccionGuiada } from '@/features/activities/lib/eleccionGuiada'
 import { borradorRegistro, turnosRegistro } from '@/features/activities/hooks/useRegistroServidor'
 import { RegistroSeguimiento } from '@/features/activities/components/followup/RegistroSeguimiento'
 export function NodeRenderer({
@@ -187,29 +189,25 @@ export function NodeRenderer({
   ) : node.tipo === 'consigna' && itemRegistro ? (
     <div className="sx-card-stage">
       <section className="sx-glass sx-player-card sx-submission-card case-scrollbar">
-        {esTopN(itemRegistro) ? (
-          <RegistroPodioNode
-            key={node.id}
-            node={node}
-            item={itemRegistro}
-            inicial={borradorRegistro(registro.respuestaDe(itemRegistro.codigo))}
-            ultimo={registro.esUltimaConsigna(node.id)}
-            ocupado={!!registro.ocupado}
-            error={registro.error}
-            onGuardar={(texto, opciones) => void registro.guardar(node, texto, opciones)}
-          />
-        ) : (
-          <RegistroConsignaNode
-            key={node.id}
-            node={node}
-            item={itemRegistro}
-            inicial={borradorRegistro(registro.respuestaDe(itemRegistro.codigo))}
-            ultimo={registro.esUltimaConsigna(node.id)}
-            ocupado={!!registro.ocupado}
-            error={registro.error}
-            onGuardar={(texto, opciones) => void registro.guardar(node, texto, opciones)}
-          />
-        )}
+        {(() => {
+          const Nodo = esTopN(itemRegistro)
+            ? RegistroPodioNode
+            : esEleccionGuiada(itemRegistro)
+              ? RegistroEleccionNode
+              : RegistroConsignaNode
+          return (
+            <Nodo
+              key={node.id}
+              node={node}
+              item={itemRegistro}
+              inicial={borradorRegistro(registro.respuestaDe(itemRegistro.codigo))}
+              ultimo={registro.esUltimaConsigna(node.id)}
+              ocupado={!!registro.ocupado}
+              error={registro.error}
+              onGuardar={(texto, opciones) => void registro.guardar(node, texto, opciones)}
+            />
+          )
+        })()}
       </section>
     </div>
   ) : node.tipo === 'consigna' ? (
