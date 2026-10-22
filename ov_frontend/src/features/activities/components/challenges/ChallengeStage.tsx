@@ -151,27 +151,29 @@ export function ChallengeStage({
                   {responseTitle}
                 </h3>
                 <p>{question.explicacion}</p>
-                {/* F04b: solo texto; la ficha no se consulta durante el intento. */}
-                {question.ficha && <p className="sx-check-source">Sale de la ficha «{question.ficha.titulo}»</p>}
+                {/* F04d: de qué ficha sale, como texto: la ficha no se abre durante el intento. */}
+                {question.ficha && (
+                  <p className="sx-check-source">
+                    Sale de {question.ficha.titulo} <LockKeyhole size={14} aria-hidden="true" /> se abre al terminar
+                  </p>
+                )}
               </div>
             </div>
           )}
-          <p className="sx-battle-lock">
-            <LockKeyhole size={16} aria-hidden="true" />
-            Las fichas se abren al terminar el desafío
-          </p>
           {battle.selected && (
-            <button
-              type="button"
-              className="sx-primary-button"
-              onClick={() =>
-                battle.finished
-                  ? setStage('result')
-                  : setBattle({ ...battle, index: battle.index + 1, selected: undefined })
-              }
-            >
-              {battle.finished ? 'Ver resultado' : 'Siguiente pregunta'}
-            </button>
+            <div className="sx-player-actions sx-actions-end">
+              <button
+                type="button"
+                className="sx-primary-button"
+                onClick={() =>
+                  battle.finished
+                    ? setStage('result')
+                    : setBattle({ ...battle, index: battle.index + 1, selected: undefined })
+                }
+              >
+                {battle.finished ? 'Ver resultado' : 'Siguiente pregunta'}
+              </button>
+            </div>
           )}
         </section>
       ) : cierreServidor ? (

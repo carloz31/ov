@@ -165,3 +165,29 @@ test('cada chip abre su ficha en modo repaso; la bloqueada lleva candado', () =>
   assert.deepEqual(copia(visor.obtenerRecursoAbierto()), { codigo: 't-ficha-2', modo: 'repaso' })
   assert.equal(ChipsFicha({ etiqueta: 'x', fichas: [] }), null)
 })
+
+test('el feedback dice de qué ficha sale, sin enlace, y «Ver resultado» va a la derecha (F04d)', () => {
+  const app = fixtureServidor()
+  const { challenges } = app.load('src/data/content/challenges.ts')
+  const { ChallengeStage } = app.load('src/features/activities/components/challenges/ChallengeStage.tsx')
+  const c = challenges.find((x) => x.id === 'desafio-rumor')
+  const pregunta = {
+    id: 't-batalla-p01',
+    enunciado: '¿Qué convierte una frase en un mito vocacional?',
+    opciones: [{ id: '0', texto: 'Repetirla sin comprobarla' }, { id: '1', texto: 'Buscar evidencia' }],
+    correcta: '0',
+    explicacion: 'Que una frase se repita no demuestra que sea cierta.',
+    ficha: { codigo: 't-ficha', titulo: 'Ficha de prueba' },
+  }
+  const battle = { questions: [pregunta], index: 0, enemyLife: 0, sparks: 3, hits: 1, answered: 1, finished: true, selected: '0' }
+  const arbol = ChallengeStage({
+    model: { c, error: '', practice: { current: false }, stage: 'battle', setStage() {}, battle, setBattle() {}, title: { current: null }, muestraRecompensas: false, cierreServidor: true, vidasEnemigo: 5, destellos: 3, question: pregunta, hit: true, victory: true, answer() {}, responseTitle: '¡Golpe de luz!' },
+    onClose() {},
+  })
+  const [origen] = elementos(arbol, (e) => String(e.props?.className).includes('sx-check-source'))
+  assert.equal(texto(origen).replace(/\s+/g, ' ').trim(), 'Sale de Ficha de prueba se abre al terminar')
+  assert.equal(elementos(origen, (e) => e.type === 'button' || e.type === 'a' || 'onClick' in (e.props ?? {})).length, 0)
+  assert.ok(!texto(arbol).includes('Las fichas se abren al terminar el desafío'))
+  const [acciones] = elementos(arbol, (e) => String(e.props?.className).includes('sx-actions-end'))
+  assert.deepEqual(copia(botones(acciones).map(texto)), ['Ver resultado'])
+})

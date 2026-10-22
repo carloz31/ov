@@ -469,13 +469,6 @@
 .sx-root .sx-battle-sparks [data-lit='false'] {
   color: #85899a;
 }
-.sx-root .sx-battle-lock {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  color: var(--est-texto-suave);
-  font-size: 13px;
-}
 .sx-root .sx-challenge-pills {
   display: flex;
   justify-content: center;
@@ -716,6 +709,10 @@
   justify-content: center;
 }
 .sx-root .sx-check-source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
   margin-top: 6px;
   font-size: 0.85rem;
   opacity: 0.8;

@@ -489,7 +489,9 @@ test('battle UI prevents sheet access, confirms abandonment and resets after rem
   button(tree, 'Enfrentar a').props.onClick()
   tree = f.draw(ChallengePlayer, props)
   assert.equal(elements(tree, (n) => typeof n.type === 'function' && 'ids' in (n.props ?? {})).length, 0)
-  assert.ok(JSON.stringify(tree).includes('Las fichas se abren al terminar el desafío'))
+  // F04d: durante la batalla no hay forma de abrir una ficha (sin chips ni aviso suelto).
+  assert.ok(!JSON.stringify(tree).includes('sx-ficha-chip'))
+  assert.ok(!JSON.stringify(tree).includes('Las fichas se abren al terminar el desafío'))
   elements(
     tree,
     (n) => n.type === 'button' && n.props['aria-label'] === 'Salir del desafío',
