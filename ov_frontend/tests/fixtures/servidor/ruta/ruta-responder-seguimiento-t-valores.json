@@ -1,0 +1,67 @@
+{
+  "estado": "EN_CURSO",
+  "eventos_registrados": [],
+  "nuevos_desbloqueos": [],
+  "posicion": "t-val-breve",
+  "respuestas": [
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: crear me importa [vaga]",
+          "tipo": "respuesta"
+        },
+        {
+          "orden": 1,
+          "texto": "Sobre lo que contaste: ¿Por qué lo piensas así?",
+          "tipo": "pregunta"
+        },
+        {
+          "borrador": false,
+          "orden": 1,
+          "texto": "DATO DE PRUEBA: porque sí [vaga]",
+          "tipo": "respuesta"
+        },
+        {
+          "orden": 2,
+          "texto": "Sobre lo que contaste: ¿Por qué lo piensas así?",
+          "tipo": "pregunta"
+        }
+      ],
+      "estado": "PENDIENTE_SEGUIMIENTO",
+      "item": "t-val-orden",
+      "opciones_elegidas": [
+        {
+          "codigo": "CREAR"
+        },
+        {
+          "codigo": "LIBERTAD"
+        },
+        {
+          "codigo": "ESTABILIDAD"
+        }
+      ]
+    },
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-val-libre",
+      "opciones_elegidas": []
+    },
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-val-breve",
+      "opciones_elegidas": []
+    }
+  ]
+}

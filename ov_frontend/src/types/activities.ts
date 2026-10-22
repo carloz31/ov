@@ -166,6 +166,7 @@ export interface NodoConsigna extends NodoBase {
   obligatoria: boolean
   visibilidad: Visibilidad
   slot?: string // ubicación en la plantilla: "col.fila"
+  item?: ID // en api, código del ítem de registro del servidor que responde esta consigna (F01)
 }
 
 export type EspecEntregable =

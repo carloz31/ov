@@ -85,6 +85,31 @@ def _responder_registro(cliente, actividad, cuenta='est-ana'):
                   {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA})
 
 
+def _registro_con_seguimiento(cliente):
+    """F01: t-valores con elección ordenada, borradores con posición y las dos preguntas de seguimiento.
+
+    `[vaga]` pide la pregunta en el evaluador falso: se responde la primera (sigue vaga) y se omite la segunda,
+    así el cierre trae `items_por_ampliar`.
+    """
+    accion = {'cuenta': 'est-ana', 'actividad': 't-valores', 'fecha_hora': FECHA}
+    fixtures = {'items-registro-t-valores': _pedir(cliente, 'GET', '/actividades/t-valores/items-registro')}
+    fixtures['borrador-t-valores'] = _pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
+        **accion, 'item': 't-val-orden', 'texto': 'DATO DE PRUEBA: crear me importa [vaga]', 'posicion': 't-val-libre',
+        'opciones': [{'codigo': 'CREAR'}, {'codigo': 'LIBERTAD'}, {'codigo': 'ESTABILIDAD'}]})
+    for item, posicion in (('t-val-libre', 't-val-breve'), ('t-val-breve', 't-val-breve')):
+        _pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
+            **accion, 'item': item, 'posicion': posicion,
+            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'})
+    fixtures['entregar-t-valores-seguimiento'] = _pedir(cliente, 'POST', '/acciones/registro/entregar', accion)
+    fixtures['registro-t-valores-pendiente'] = _pedir(
+        cliente, 'GET', '/cuentas/est-ana/actividades/t-valores/registro')
+    fixtures['responder-seguimiento-t-valores'] = _pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
+        **accion, 'item': 't-val-orden', 'texto': 'DATO DE PRUEBA: porque sí [vaga]'})
+    fixtures['continuar-sin-responder-t-valores'] = _pedir(
+        cliente, 'POST', '/acciones/registro/continuar-sin-responder', {**accion, 'item': 't-val-orden'})
+    return fixtures
+
+
 def _completar(cliente, actividad, cuenta='est-ana'):
     return _pedir(cliente, 'POST', '/acciones/completar-actividad', {
         'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
@@ -211,7 +236,7 @@ def _recorrer(cliente):
     fixtures['favoritos'] = _pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')
     # B11: t-valores abre CONOCIMIENTO (dudas con sugerencias del evaluador falso) y t-explorar, REALIDAD. Con dos
     # planes listos para comparar se abre t-comparar.
-    _responder_registro(cliente, 't-valores')
+    fixtures.update(_registro_con_seguimiento(cliente))
     fixtures['guardar-seccion-conocimiento'] = _guardar_seccion(cliente, 'psychology', 'CONOCIMIENTO', {
         'respuestas': {'DIA_NORMAL': 'SI', 'DONDE_TRABAJAR': 'MAS_O_MENOS', 'CURSOS': 'NO', 'INGRESO': 'SI',
                        'CONOCE_ALGUIEN': 'SI'},

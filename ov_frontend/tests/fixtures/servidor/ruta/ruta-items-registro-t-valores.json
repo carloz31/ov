@@ -1,0 +1,56 @@
+[
+  {
+    "codigo": "t-val-orden",
+    "consigna": "Ordena los tres valores más importantes para ti y explica el primero.",
+    "eleccion": {
+      "comun": false,
+      "lista": "t-lista-valores",
+      "maxima": 3,
+      "minima": 3,
+      "opciones": [
+        {
+          "codigo": "SERVIR",
+          "texto": "Servir a otros"
+        },
+        {
+          "codigo": "CREAR",
+          "texto": "Crear cosas nuevas"
+        },
+        {
+          "codigo": "ESTABILIDAD",
+          "texto": "Tener estabilidad"
+        },
+        {
+          "codigo": "RECONOCIMIENTO",
+          "texto": "Ser reconocido"
+        },
+        {
+          "codigo": "LIBERTAD",
+          "texto": "Tener libertad"
+        }
+      ],
+      "ordenada": true,
+      "permite_otra": false,
+      "referencia": null
+    },
+    "min_caracteres": null,
+    "nombre": "Valores",
+    "obligatorio": true
+  },
+  {
+    "codigo": "t-val-libre",
+    "consigna": "Escribe lo que quieras sobre tus valores.",
+    "eleccion": null,
+    "min_caracteres": null,
+    "nombre": "Libre",
+    "obligatorio": true
+  },
+  {
+    "codigo": "t-val-breve",
+    "consigna": "Describe un momento en que actuaste según tus valores.",
+    "eleccion": null,
+    "min_caracteres": 40,
+    "nombre": "Breve",
+    "obligatorio": true
+  }
+]

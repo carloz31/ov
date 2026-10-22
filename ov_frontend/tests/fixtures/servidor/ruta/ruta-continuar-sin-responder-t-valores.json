@@ -1,0 +1,98 @@
+{
+  "estado": "COMPLETADA",
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-valores",
+      "tipo": "COMPLETA_ACTIVIDAD"
+    }
+  ],
+  "items_por_ampliar": [
+    {
+      "item": "t-val-orden",
+      "pista": "Sobre lo que contaste: ¿Por qué lo piensas así?"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-valores",
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "CONOCIMIENTO",
+        "nombre": "Qué tanto la conozco"
+      },
+      "regla": "R-PLAN-CONOCIMIENTO",
+      "tipo_objetivo": "SECCION_PLAN"
+    }
+  ],
+  "posicion": "t-val-breve",
+  "respuestas": [
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: crear me importa [vaga]",
+          "tipo": "respuesta"
+        },
+        {
+          "orden": 1,
+          "texto": "Sobre lo que contaste: ¿Por qué lo piensas así?",
+          "tipo": "pregunta"
+        },
+        {
+          "borrador": false,
+          "orden": 1,
+          "texto": "DATO DE PRUEBA: porque sí [vaga]",
+          "tipo": "respuesta"
+        },
+        {
+          "orden": 2,
+          "texto": "Sobre lo que contaste: ¿Por qué lo piensas así?",
+          "tipo": "pregunta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-val-orden",
+      "opciones_elegidas": [
+        {
+          "codigo": "CREAR"
+        },
+        {
+          "codigo": "LIBERTAD"
+        },
+        {
+          "codigo": "ESTABILIDAD"
+        }
+      ]
+    },
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-val-libre",
+      "opciones_elegidas": []
+    },
+    {
+      "conversacion": [
+        {
+          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+          "tipo": "respuesta"
+        }
+      ],
+      "estado": "FINAL",
+      "item": "t-val-breve",
+      "opciones_elegidas": []
+    }
+  ]
+}

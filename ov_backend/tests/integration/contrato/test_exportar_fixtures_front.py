@@ -46,6 +46,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
     'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
+    'items-registro-t-valores', 'borrador-t-valores', 'entregar-t-valores-seguimiento', 'registro-t-valores-pendiente',
+    'responder-seguimiento-t-valores', 'continuar-sin-responder-t-valores',
     'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-contraste',
     'items-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
     'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'resolver-batalla-derrota',
@@ -157,6 +159,18 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     edicion = RespuestaRegistroAccion.model_validate(datos['editar-t-expectativas'])
     assert [r.estado for r in edicion.respuestas if r.item == 't-exp-ruta'] == ['PENDIENTE_SEGUIMIENTO']
     assert 'clasificacion' not in json.dumps(datos['editar-t-expectativas'])
+    # F01: t-valores elige en orden y recibe dos preguntas; la segunda se omite y el cierre trae la pista.
+    orden = TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-valores'])[0]
+    assert orden.eleccion.ordenada and orden.eleccion.minima == orden.eleccion.maxima == 3
+    pendiente = RegistroConsultado.model_validate(datos['registro-t-valores-pendiente'])
+    assert [o.codigo for o in pendiente.respuestas[0].opciones_elegidas] == ['CREAR', 'LIBERTAD', 'ESTABILIDAD']
+    for nombre in ('entregar-t-valores-seguimiento', 'responder-seguimiento-t-valores'):
+        accion = RespuestaRegistroAccion.model_validate(datos[nombre])
+        assert accion.estado == 'EN_CURSO' and accion.respuestas[0].estado == 'PENDIENTE_SEGUIMIENTO'
+        assert accion.respuestas[0].conversacion[-1].tipo == 'pregunta'
+    cierre_valores = RespuestaRegistroAccion.model_validate(datos['continuar-sin-responder-t-valores'])
+    assert cierre_valores.estado == 'COMPLETADA' and [i.item for i in cierre_valores.items_por_ampliar] == ['t-val-orden']
+    assert 'clasificacion' not in json.dumps(datos['continuar-sin-responder-t-valores'])
     # B05: t-eco elige por referencia y cita; con t-exp-espera poco desarrollada, sale «por desarrollar».
     ruta_eco, espera_eco = TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-eco'])
     assert ruta_eco.eleccion.referencia == 't-ref-rutas' and ruta_eco.eleccion.opciones == []

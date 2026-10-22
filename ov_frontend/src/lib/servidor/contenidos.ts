@@ -1,7 +1,7 @@
 import { contenidoPorClave } from '@/data/activities/contenidos.ts'
 import { configureStudentActivities } from '@/data/activities/reflectionConfig'
 import type { Actividad } from '@/types/activities'
-import type { BloqueActividades, ItemPublico } from '@/types/servidor'
+import type { BloqueActividades, ItemPublico, ItemRegistroPublico } from '@/types/servidor'
 import { bloquesZona } from './adaptadores'
 
 export function actividadPorContenido(
@@ -44,6 +44,27 @@ export function cuestionarioServidor(contenido: Actividad, items: ItemPublico[])
             }))
         : [nodo],
     ),
+  }
+}
+
+// Registro del servidor: cada consigna con `item` responde ese ítem y muestra su consigna como premisa.
+// Si un ítem no tiene consigna, o una consigna apunta a un ítem que no existe, no hay actividad que abrir.
+export function registroServidor(contenido: Actividad, items: ItemRegistroPublico[]): Actividad | undefined {
+  const consignas = contenido.nodos.filter((n) => n.tipo === 'consigna')
+  const codigos = new Set(items.map((i) => i.codigo))
+  if (
+    consignas.some((n) => !n.item || !codigos.has(n.item)) ||
+    items.some((i) => !consignas.some((n) => n.item === i.codigo))
+  )
+    return undefined
+  return {
+    ...contenido,
+    nodos: contenido.nodos.map((nodo) => {
+      const item = nodo.tipo === 'consigna' ? items.find((i) => i.codigo === nodo.item) : undefined
+      return nodo.tipo === 'consigna' && item
+        ? { ...nodo, premisa: item.consigna, obligatoria: item.obligatorio, entregable: { tipo: 'texto' as const } }
+        : nodo
+    }),
   }
 }
 
