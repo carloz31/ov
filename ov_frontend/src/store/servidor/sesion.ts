@@ -14,6 +14,8 @@ import type {
   DesbloqueoLegible,
   DesbloqueoNuevo,
   ErrorServidor,
+  ItemPublico,
+  RespuestaPublica,
   RespuestaServidor,
   ResultadoHistorico,
   ResultadoPublico,
@@ -45,6 +47,14 @@ export type EstadoInstrumentos = {
   // Historial de TEST-RIASEC, solo con perfil plano: dice si el reinicio ya se usó.
   historialRiasec: ResultadoHistorico[] | null
 }
+// Ajuste de F03: ítems y respuestas de las actividades de APL-PARTIDA, para la vista con solo la partida. Se
+// piden al abrir esa vista; tienen su propio estado para que un fallo no oculte las zonas.
+export type EstadoRespuestasPartida = {
+  estado: 'sin_cargar' | 'cargando' | 'listo' | 'error'
+  error: ErrorServidor | null
+  items: ItemPublico[]
+  respuestas: RespuestaPublica[]
+}
 export type AlmacenServidor = { [N in NombreSeccion]: Seccion<DatosSecciones[N]> } & {
   cargando: boolean
   error: ErrorServidor | null
@@ -62,6 +72,7 @@ export type AlmacenServidor = { [N in NombreSeccion]: Seccion<DatosSecciones[N]>
   estadoResultado: 'sin_cargar' | 'cargando' | 'pendiente' | 'listo' | 'error'
   errorResultado: ErrorServidor | null
   instrumentos: EstadoInstrumentos
+  respuestasPartida: EstadoRespuestasPartida
 }
 function vacia<T>(): Seccion<T> {
   return { datos: null, estado: 'sin_cargar', error: null }
@@ -94,6 +105,7 @@ const inicial = (): AlmacenServidor => ({
     comparacion: null,
     historialRiasec: null,
   },
+  respuestasPartida: { estado: 'sin_cargar', error: null, items: [], respuestas: [] },
 })
 let almacen = inicial()
 let revisionCuenta = 0

@@ -18,6 +18,12 @@ FECHA = '2026-10-07T10:00:00'
 OPCIONES = {'I': 5, 'R': 4, 'A': 3, 'S': 1, 'E': 1, 'C': 1}
 MISIONES_INTERESES = ('t-mision-intereses', 't-mision-intereses-2')
 PARTIDA_LLEGADA = 'TEST-PARTIDA-LLEGADA'
+# DATO DE PRUEBA: opción de cada ítem por dimensión (en el orden de `/items`). A no cambia en
+# ningún ítem (cita de AUTO-01 en t-lee-cuestionario); B y C suben; D baja; E cambia un ítem sin cambiar de zona.
+OPCIONES_PARTIDA = {'AUTO-A': (3, 3, 3, 3), 'AUTO-B': (2, 2, 2, 2), 'AUTO-C': (2, 2, 2, 2),
+                    'AUTO-D': (4, 4, 4, 4), 'AUTO-E': (2, 2, 2)}
+OPCIONES_LLEGADA = {'AUTO-A': (3, 3, 3, 3), 'AUTO-B': (4, 4, 4, 4), 'AUTO-C': (3, 3, 2, 2),
+                    'AUTO-D': (3, 3, 3, 3), 'AUTO-E': (2, 2, 1)}
 CARPETA = 'ruta'
 PREFIJO = 'ruta-'
 # DATO DE PRUEBA (B17): el token y su vencimiento cambian en cada ingreso; los fixtures llevan valores fijos para
@@ -119,11 +125,17 @@ def _completar(cliente, actividad, cuenta='est-ana'):
     })
 
 
-def _responder_partida(cliente, actividad, opcion):
+def _responder_partida(cliente, actividad, opciones):
     items = _pedir(cliente, 'GET', f'/actividades/{actividad}/items')
+    vistos = {}
+
+    def opcion(item):
+        indice = vistos[item['dimension']] = vistos.get(item['dimension'], -1) + 1
+        return opciones[item['dimension']][indice]
+
     _pedir(cliente, 'POST', '/acciones/responder-items', {
         'cuenta': 'est-ana', 'actividad': actividad, 'fecha_hora': FECHA,
-        'respuestas': [{'item': item['codigo'], 'opcion': opcion} for item in items]})
+        'respuestas': [{'item': item['codigo'], 'opcion': opcion(item)} for item in items]})
     _completar(cliente, actividad)
     return items
 
@@ -153,7 +165,9 @@ def _recorrer(cliente):
             'idea_origen': 'MIA', 'motivos': [{'opcion': 'AYUDAR'}, {'otro': 'Me gusta explicar'}],
             'relato': 'DATO DE PRUEBA: un día expliqué un tema a mi primo y sentí que era lo mío.'})
     # B07: el punto de partida está en T0, antes de su cierre; se revela y se cita en t-lee-cuestionario.
-    fixtures['items-t-partida'] = _responder_partida(cliente, 't-partida', 3)
+    fixtures['items-t-partida'] = _responder_partida(cliente, 't-partida', OPCIONES_PARTIDA)
+    # Ajuste de F03: la vista con solo la partida muestra las respuestas ítem por ítem.
+    fixtures['respuestas-t-partida'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-partida/respuestas')
     # F03: COMPLETADO sin resultado vigente es «listo para revelar».
     fixtures['avance-instrumentos-partida-lista'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     fixtures['revelar-partida'] = _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
@@ -317,7 +331,7 @@ def _recorrer(cliente):
         'fecha_hora': FECHA})
     fixtures['referencias-t-proyecto'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-proyecto/referencias')
     fixtures['planes'] = _pedir(cliente, 'GET', '/cuentas/est-ana/planes')
-    fixtures['items-t-llegada'] = _responder_partida(cliente, 't-llegada', 4)
+    fixtures['items-t-llegada'] = _responder_partida(cliente, 't-llegada', OPCIONES_LLEGADA)
     fixtures['avance-instrumentos-llegada-lista'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     fixtures['revelar-llegada'] = _pedir(cliente, 'POST', '/acciones/revelar-resultado', {
         'cuenta': 'est-ana', 'instrumento': PARTIDA_LLEGADA, 'aplicacion': 'APL-LLEGADA', 'fecha_hora': FECHA})

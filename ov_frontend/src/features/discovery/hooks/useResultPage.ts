@@ -4,7 +4,8 @@ import { modoApi } from '@/config/env'
 import { resultadoHelenaCompleto } from '@/lib/servidor/adaptadores'
 import { useDiscovery } from '@/store/discoveryStore'
 import { useExploration, toggleCareerInterest, toggleOccupationInterest } from '@/store/explorationStore'
-import { useEstadoServidor } from '@/store/servidor/sesion'
+import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion'
+import { cargarRespuestasPartida } from '@/store/servidor/instrumentos'
 import type { InstrumentPageId } from '@/types/discovery'
 import type { ResultadoPublico } from '@/types/servidor'
 import { ejemplosDimension } from '../data/dimensionExamples'
@@ -13,7 +14,7 @@ import { carrerasResultado, ocupacionesResultado } from '../lib/resultCatalog'
 import { createPlanFromCareer, getOrderedPlans } from '../lib/plans'
 import { filtrarPorAjuste, ordenarCarreras, resumirResultado } from '../lib/resultPage'
 import { useHelenaPages } from './useHelenaPages'
-import { comparacionVista } from '../lib/helenaPagesApi'
+import { modeloPartidaLlegada } from '../lib/partidaLlegada'
 
 export function useResultPage(pagina: string | undefined, resultadoRecibido?: ResultadoPublico) {
   const libro = useHelenaPages()
@@ -30,6 +31,12 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
   const [seleccion, setSeleccion] = useState<string | null>(null)
   const configuracion = resultPages[pagina as InstrumentPageId]
   const page = libro.pages.find((p) => p.id === pagina)
+  // Ajuste de F03: con solo la partida revelada, sus respuestas ítem por ítem se piden al abrir la vista.
+  const soloPartida =
+    modoApi && configuracion?.tipoResultado === 'COMPARACION' && page?.state === 'revealed' && !page.conComparacion
+  useEffect(() => {
+    if (soloPartida) void cargarRespuestasPartida()
+  }, [soloPartida])
   const remoto =
     resultadoRecibido ??
     (modoApi && configuracion?.tipoResultado === 'COINCIDENCIAS'
@@ -41,10 +48,24 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
       espera: { error: libro.errorConsulta, reintentar: () => libro.setIntento((i) => i + 1) },
     } as const
   // F03 (HU-094): partida y llegada tiene su propia vista, sin puntajes.
-  if (configuracion?.tipoResultado === 'COMPARACION')
-    return page?.state === 'revealed'
-      ? ({ comparacion: { page, dimensiones: comparacionVista(servidor.instrumentos) } } as const)
+  if (configuracion?.tipoResultado === 'COMPARACION') {
+    const modelo = page?.state === 'revealed' ? modeloPartidaLlegada(servidor.instrumentos, servidor.respuestasPartida) : null
+    const respuestas = servidor.respuestasPartida
+    return page && modelo
+      ? ({
+          comparacion: {
+            page,
+            modelo,
+            // Solo partida: carga y error propios de la sección de ítems; las zonas se ven igual.
+            cargandoItems: !modelo.completo && respuestas.estado !== 'listo' && respuestas.estado !== 'error',
+            errorItems: modelo.completo ? '' : mensajeErrorServidor(respuestas.error),
+            reintentarItems: () => void cargarRespuestasPartida(true),
+            guia,
+            setGuia,
+          },
+        } as const)
       : null
+  }
   const resultado =
     remoto && configuracion ? resultadoHelenaCompleto(remoto, configuracion.tipoResultado) : page?.result
   if (!configuracion || page?.state !== 'revealed' || !resultado) return null

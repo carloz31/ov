@@ -1,0 +1,196 @@
+{
+  "actividad": "t-partida",
+  "cuenta": "est-ana",
+  "respuestas": [
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-01",
+      "opcion": {
+        "etiqueta": "Bastante de acuerdo",
+        "orden": 3,
+        "puntaje": 3.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-02",
+      "opcion": {
+        "etiqueta": "Bastante de acuerdo",
+        "orden": 3,
+        "puntaje": 3.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-03",
+      "opcion": {
+        "etiqueta": "Bastante de acuerdo",
+        "orden": 3,
+        "puntaje": 3.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-04",
+      "opcion": {
+        "etiqueta": "Bastante de acuerdo",
+        "orden": 3,
+        "puntaje": 3.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-05",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-06",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-07",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-08",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-09",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-10",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-11",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-12",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-13",
+      "opcion": {
+        "etiqueta": "Muy de acuerdo",
+        "orden": 4,
+        "puntaje": 4.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-14",
+      "opcion": {
+        "etiqueta": "Muy de acuerdo",
+        "orden": 4,
+        "puntaje": 4.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-15",
+      "opcion": {
+        "etiqueta": "Muy de acuerdo",
+        "orden": 4,
+        "puntaje": 4.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-16",
+      "opcion": {
+        "etiqueta": "Muy de acuerdo",
+        "orden": 4,
+        "puntaje": 4.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-17",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-18",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    },
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "creada_en": "2026-10-07T10:00:00",
+      "item": "AUTO-19",
+      "opcion": {
+        "etiqueta": "Poco de acuerdo",
+        "orden": 2,
+        "puntaje": 2.0
+      }
+    }
+  ]
+}

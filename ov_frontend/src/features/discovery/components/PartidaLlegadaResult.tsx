@@ -1,18 +1,16 @@
-import type { DimensionComparada } from '../lib/helenaPagesApi'
+import { zonaEnPalabras } from '@/lib/servidor/adaptadoresInstrumentos'
+import type { DimensionPartidaLlegada } from '../lib/partidaLlegada'
 
 // F03 (HU-094): partida y llegada por dimensión, sin puntajes. Los ítems que cambiaron van primero, con el
 // mismo estilo sea cual sea el sentido del cambio; los que se mantuvieron quedan plegados.
-export function PartidaLlegadaResult({ dimensiones }: { dimensiones: DimensionComparada[] }) {
+export function PartidaLlegadaResult({ dimensiones }: { dimensiones: DimensionPartidaLlegada[] }) {
   return (
     <section className="sx-d-result-comparison" aria-label="Partida y llegada por dimensión">
       {dimensiones.map((d) => (
         <article key={d.codigo} className="sx-d-helena-dimension">
-          <span className="sx-d-helena-marker" aria-hidden="true">
-            {d.tematica}
-          </span>
           <div>
             <h2>{d.nombre}</h2>
-            <strong className="sx-d-helena-zone">{d.zona}</strong>
+            <strong className="sx-d-helena-zone">{zonaEnPalabras(d.zonaPartida)}</strong>
             <p>{d.descripcion}</p>
             {d.cambiaron.length > 0 && (
               <ul>

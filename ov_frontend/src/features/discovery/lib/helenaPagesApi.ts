@@ -8,19 +8,16 @@ import {
   avanceAplicacion,
   estadoAplicacion,
   reinicioUsado,
-  zonaEnPalabras,
 } from '@/lib/servidor/adaptadoresInstrumentos'
 import type { HelenaPage } from '@/types/profile'
 import type {
   AvanceInstrumento,
-  ComparacionItem,
   BloqueActividades,
   ComparacionAutopercepcion,
   ResultadoHistorico,
   ResultadoPublico,
 } from '@/types/servidor'
 import type { InstrumentPageId } from '@/types/discovery'
-import type { ResumenPagina } from '../types'
 import { getHelenaPagesApi } from './helenaPages'
 
 export type LibroServidor = {
@@ -109,31 +106,6 @@ export function paginaInteresesApi(
   }
 }
 
-// Resumen de partida y llegada: una fila por dimensión (su temática) con la zona en palabras; con la
-// llegada revelada, «partida → llegada». Sin puntajes.
-export function resumenPartidaLlegada(libro: LibroServidor): ResumenPagina {
-  const partida = libro.resultados[APLICACION_PARTIDA.aplicacion]
-  const llegada = libro.resultados[APLICACION_LLEGADA.aplicacion]
-  if (!partida) return { rotulo: '', filas: [], cierre: '', contenidos: [] }
-  return {
-    rotulo: llegada ? 'Tu partida y tu llegada' : 'Tu punto de partida',
-    filas: partida.dimensiones.map((d) => {
-      const final = llegada?.dimensiones.find((l) => l.codigo === d.codigo)
-      return {
-        codigo: d.tematica ?? d.codigo,
-        nombre: d.nombre,
-        descripcion: '',
-        marcador: 'letra',
-        zona: final
-          ? `${zonaEnPalabras(d.zona)} → ${zonaEnPalabras(final.zona)}`
-          : zonaEnPalabras(d.zona),
-      }
-    }),
-    cierre: '',
-    contenidos: [],
-  }
-}
-
 // Las cuatro páginas del libro en api; las de ejemplo conservan su revelado local.
 export function paginasLibroApi(
   bloques: BloqueActividades[] | null,
@@ -143,33 +115,4 @@ export function paginasLibroApi(
   const servidor = [paginaPartidaLlegada(bloques, libro), paginaInteresesApi(bloques, libro)]
   const extras = (id: string) => servidor.find((p) => p.id === id)
   return getHelenaPagesApi(servidor, reveladasEjemplo).map((p) => ({ ...p, ...extras(p.id) }))
-}
-
-// Vista explicada de partida y llegada (HU-094): por dimensión, su temática y su zona (o «partida →
-// llegada»); con la comparación, primero los ítems que cambiaron y aparte los que se mantuvieron. Un cambio
-// nunca se marca como mejor o peor.
-export type DimensionComparada = {
-  codigo: string
-  nombre: string
-  descripcion: string
-  tematica: string
-  zona: string
-  cambiaron: ComparacionItem[]
-  mantenidos: ComparacionItem[]
-}
-export function comparacionVista(libro: LibroServidor): DimensionComparada[] {
-  const resumen = resumenPartidaLlegada(libro)
-  const partida = libro.resultados[APLICACION_PARTIDA.aplicacion]
-  return (partida?.dimensiones ?? []).map((d, i) => {
-    const items = libro.comparacion?.dimensiones.find((c) => c.codigo === d.codigo)?.items ?? []
-    return {
-      codigo: d.codigo,
-      nombre: d.nombre,
-      descripcion: d.descripcion,
-      tematica: d.tematica ?? d.codigo,
-      zona: resumen.filas[i]?.zona ?? '',
-      cambiaron: items.filter((item) => item.cambio),
-      mantenidos: items.filter((item) => !item.cambio),
-    }
-  })
 }

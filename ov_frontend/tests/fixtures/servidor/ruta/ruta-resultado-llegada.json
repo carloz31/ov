@@ -30,7 +30,7 @@
       "puntaje": null,
       "puntaje_maximo": null,
       "tematica": "C",
-      "zona": "FUERTE"
+      "zona": "EN_CAMINO"
     },
     {
       "codigo": "AUTO-D",
@@ -40,7 +40,7 @@
       "puntaje": null,
       "puntaje_maximo": null,
       "tematica": "D",
-      "zona": "FUERTE"
+      "zona": "EN_CAMINO"
     },
     {
       "codigo": "AUTO-E",
@@ -50,7 +50,7 @@
       "puntaje": null,
       "puntaje_maximo": null,
       "tematica": "E",
-      "zona": "FUERTE"
+      "zona": "POR_TRABAJAR"
     }
   ],
   "instrumento": "TEST-PARTIDA-LLEGADA",

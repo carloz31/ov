@@ -40,7 +40,7 @@ export function HelenaResultView() {
       <DiscoveryStage ambient="profile">
         <div className="sx-d-result-page">
           <ResultHeader page={model.comparacion.page} tipo="COMPARACION" />
-          <PartidaLlegadaResult dimensiones={model.comparacion.dimensiones} />
+          <PartidaLlegadaResult dimensiones={model.comparacion.modelo.dimensiones} />
         </div>
       </DiscoveryStage>
     )

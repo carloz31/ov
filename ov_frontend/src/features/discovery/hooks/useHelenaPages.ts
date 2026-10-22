@@ -17,7 +17,8 @@ import { APLICACION_RIASEC } from '@/lib/servidor/adaptadoresInstrumentos'
 import { resultPages } from '../data/resultPages'
 import { resumenPagina } from '../lib/resultPage'
 import { carrerasResultado, ocupacionesResultado } from '../lib/resultCatalog'
-import { paginasLibroApi, resumenPartidaLlegada, type ExtrasPaginaApi } from '../lib/helenaPagesApi'
+import { paginasLibroApi, type ExtrasPaginaApi } from '../lib/helenaPagesApi'
+import { modeloPartidaLlegada } from '../lib/partidaLlegada'
 
 // F03: en api, el perfil plano invita a repetir las misiones (HU-095); con el reinicio usado, ya no.
 const TEXTO_PLANO_USADO = 'Tus respuestas no distinguen un tipo de interés.'
@@ -151,7 +152,7 @@ export function useHelenaPages() {
             : ''
       const textoPlano = p.puedeReiniciar ? TEXTO_PLANO_API : TEXTO_PLANO_USADO
       const resumen = comparacion
-        ? resumenPartidaLlegada(libro)
+        ? { rotulo: '', filas: [], cierre: '', contenidos: [] }
         : resumenPagina(
             { ...p, tipoResultado },
             p.result
@@ -182,6 +183,8 @@ export function useHelenaPages() {
         reinicioApi: modoApi && coincidencias,
         textoPlano,
         resumen,
+        // Ajuste de F03: la tarjeta de partida y llegada pinta sus zonas con este modelo.
+        partidaLlegada: comparacion && modoApi ? modeloPartidaLlegada(libro) : null,
       }
     }),
   }

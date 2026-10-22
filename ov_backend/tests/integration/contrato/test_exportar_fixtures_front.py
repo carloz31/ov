@@ -37,8 +37,8 @@ from app.schemas.comun import ContenidoEstado
 from app.schemas.logros import LogrosCuenta
 from app.schemas.secciones import SeccionEstado
 from app.schemas.instrumentos import (
-    AvanceInstrumento, ComparacionAutopercepcion, InstrumentoPublico, ItemPublico, ResultadoHistorico,
-    ResultadoPublico,
+    AvanceInstrumento, ComparacionAutopercepcion, InstrumentoPublico, ItemPublico, RespuestasActividad,
+    ResultadoHistorico, ResultadoPublico,
 )
 from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
 
@@ -56,7 +56,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'responder-seguimiento-t-valores', 'continuar-sin-responder-t-valores', 'registro-t-valores-por-ampliar',
     'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-eco-sin-dato', 'referencias-t-eco-disponible',
     'referencias-t-contraste',
-    'items-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
+    'items-t-partida', 'respuestas-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
     'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'preguntas-batalla',
     'resolver-batalla-derrota',
     'resolver-batalla-victoria', 'batallas', 'resolver-caso', 'casos', 'coleccion',
@@ -151,13 +151,20 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     TypeAdapter(list[ItemPublico]).validate_python(datos['items-t-partida'])
     assert RespuestaRevelarResultado.model_validate(datos['revelar-partida']).nuevos_desbloqueos == []
     partida = ResultadoPublico.model_validate(datos['resultado-partida'])
-    assert {d.zona for d in partida.dimensiones} == {'EN_CAMINO'}
+    # Ajuste de F03: respuestas por dimensión, para una dimensión sin cambios (A) y otra que baja (D).
+    assert [d.zona for d in partida.dimensiones] == ['EN_CAMINO', 'POR_TRABAJAR', 'POR_TRABAJAR', 'FUERTE',
+                                                     'POR_TRABAJAR']
+    respuestas = RespuestasActividad.model_validate(datos['respuestas-t-partida']).respuestas
+    assert respuestas[0].item == 'AUTO-01' and respuestas[0].opcion.etiqueta == 'Bastante de acuerdo'
     assert all(d.puntaje is None and d.porcentaje is None for d in partida.dimensiones)
     cita, = ReferenciasConsultadas.model_validate(datos['referencias-t-lee-cuestionario']).referencias
     assert (cita.tipo, cita.estado, cita.texto) == ('RESPUESTA_CUESTIONARIO', 'DISPONIBLE', 'Bastante de acuerdo')
     assert estados(datos['actividades-t2'])['t-llegada'] == 'DISPONIBLE'
     comparacion = ComparacionAutopercepcion.model_validate(datos['comparacion-partida-llegada'])
-    assert [(d.zona_partida, d.zona_llegada) for d in comparacion.dimensiones][1:] == [('EN_CAMINO', 'FUERTE')] * 4
+    assert [(d.zona_partida, d.zona_llegada) for d in comparacion.dimensiones] == [
+        ('EN_CAMINO', 'EN_CAMINO'), ('POR_TRABAJAR', 'FUERTE'), ('POR_TRABAJAR', 'EN_CAMINO'),
+        ('FUERTE', 'EN_CAMINO'), ('POR_TRABAJAR', 'POR_TRABAJAR')]
+    assert not any(i.cambio for i in comparacion.dimensiones[0].items)
     assert 'puntaje' not in json.dumps(datos['comparacion-partida-llegada'])
     # F03: el avance distingue «listo para revelar» (COMPLETADO sin resultado vigente).
     def aplicacion(momento, codigo):

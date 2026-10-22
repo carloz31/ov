@@ -109,19 +109,20 @@ test('romper el sello de la partida revela APL-PARTIDA y la página muestra sus 
   })
   const despues = pagina(useHelenaPages(), 'partida-llegada')
   assert.equal(despues.state, 'revealed')
+  // Ajuste de F03: las zonas llegan como código; la tarjeta las pone en palabras.
+  assert.equal(despues.partidaLlegada.completo, false)
   assert.deepEqual(
-    copia(despues.resumen.filas.map((f) => [f.codigo, f.nombre, f.zona])),
+    copia(despues.partidaLlegada.dimensiones.map((d) => [d.nombre, d.zonaPartida, d.zonaLlegada ?? null])),
     [
-      ['A', 'Claridad', 'En camino'],
-      ['B', 'Conocimiento de mí', 'En camino'],
-      ['C', 'Conocimiento de las opciones', 'En camino'],
-      ['D', 'Decisión propia', 'En camino'],
-      ['E', 'Confianza', 'En camino'],
+      ['Claridad', 'EN_CAMINO', null],
+      ['Conocimiento de mí', 'POR_TRABAJAR', null],
+      ['Conocimiento de las opciones', 'POR_TRABAJAR', null],
+      ['Decisión propia', 'FUERTE', null],
+      ['Confianza', 'POR_TRABAJAR', null],
     ],
   )
   const { HelenaPageCard } = app.load('src/features/discovery/components/HelenaPageCard.tsx')
   const marcado = html(HelenaPageCard, { page: despues, model: useHelenaPages() })
-  assert.match(marcado, /En camino/)
   assert.match(marcado, /href="\/student\/profile\/helena\/partida-llegada"/)
   assert.doesNotMatch(marcado, /puntaje|%|Revela tu punto de llegada|guia=1/)
 })
@@ -137,7 +138,9 @@ test('con la llegada lista aparece el segundo sello; con las dos reveladas, part
   const ambas = pagina(final.useHelenaPages(), 'partida-llegada')
   assert.equal(ambas.selloLlegada, false)
   assert.equal(ambas.conComparacion, true)
-  assert.equal(ambas.resumen.filas[1].zona, 'En camino → Zona fuerte')
+  assert.equal(ambas.partidaLlegada.completo, true)
+  assert.deepEqual(copia(ambas.partidaLlegada.avanzaron), ['Conocimiento de mí', 'Conocimiento de las opciones'])
+  assert.equal(ambas.partidaLlegada.dimensiones[1].zonaLlegada, 'FUERTE')
   const marcado = html(HelenaPageCard, { page: ambas, model: final.useHelenaPages() })
   assert.match(marcado, /Ver comparación/)
 })
@@ -189,9 +192,7 @@ test('recarga directa: mientras se lee el libro, la vista espera; luego muestra 
   const espera = vistaRuta(HelenaResultView)
   assert.match(espera, /aria-busy="true"/)
   assert.doesNotMatch(espera, /Navigate|El libro de Helena<\/a>/)
-  // DATO DE PRUEBA: en `ruta` todo cambia de partida a llegada; un ítem que se mantuvo prueba el plegado.
-  const comparacion = copia(jsonServidor('ruta/ruta-comparacion-partida-llegada'))
-  Object.assign(comparacion.dimensiones[0].items[0], { cambio: false, llegada: comparacion.dimensiones[0].items[0].partida })
+  const comparacion = jsonServidor('ruta/ruta-comparacion-partida-llegada')
   libroServidor(
     app,
     {
@@ -203,10 +204,7 @@ test('recarga directa: mientras se lee el libro, la vista espera; luego muestra 
   const vista = vistaRuta(HelenaResultView)
   assert.match(vista, /Página I · descifrada/)
   assert.match(vista, /Claridad/)
-  assert.match(vista, /En camino → Zona fuerte/)
-  assert.match(vista, /<details><summary>1 respuesta se mantuvo<\/summary><ul><li><span>Sé qué quiero hacer/)
-  // Los que cambiaron van primero, con el mismo estilo sea cual sea el sentido del cambio.
-  assert.match(vista, /<span>Puedo explicar con mis palabras qué camino me atrae.<\/span> <strong>Bastante de acuerdo → Muy de acuerdo<\/strong>/)
+  assert.match(vista, /<details><summary>4 respuestas se mantuvieron<\/summary><ul><li><span>Sé qué quiero hacer/)
   assert.doesNotMatch(vista, /puntaje|porcentaje|%/)
 })
 

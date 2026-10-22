@@ -69,7 +69,7 @@ export function faltaRevelado(bloqueo: MotivoBloqueo[] | null | undefined) {
 }
 
 export const ZONAS_EN_PALABRAS: Record<ZonaDimension, string> = {
-  FUERTE: 'Zona fuerte',
+  FUERTE: 'Fuerte',
   EN_CAMINO: 'En camino',
   POR_TRABAJAR: 'Por trabajar',
 }

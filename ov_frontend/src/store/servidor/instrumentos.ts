@@ -105,6 +105,43 @@ async function consultarInstrumentos(): Promise<RespuestaServidor<null>> {
   return { tipo: 'ok', datos: null }
 }
 
+// Ajuste de F03: con solo la partida revelada, la vista explicada muestra las respuestas ítem por ítem. Las
+// actividades de APL-PARTIDA salen del catálogo; sus ítems y respuestas se piden en paralelo.
+export async function cargarRespuestasPartida(forzar = false): Promise<void> {
+  const actual = obtenerEstadoServidor().respuestasPartida
+  if (!modoApi || (!forzar && (actual.estado === 'listo' || actual.estado === 'cargando'))) return
+  const sesion = sesionServidor(),
+    cuenta = cuentaActiva()
+  const vigente = () => sesion === sesionServidor() && cuenta === cuentaActiva()
+  publicar({ respuestasPartida: { ...actual, estado: 'cargando', error: null } })
+  const fallo = (error: ErrorServidor) => {
+    if (vigente()) publicar({ respuestasPartida: { estado: 'error', error, items: [], respuestas: [] } })
+  }
+  const catalogo = await apiInstrumentos.obtenerCatalogo()
+  if (catalogo.tipo !== 'ok') return fallo(catalogo)
+  const actividades =
+    catalogo.datos
+      .find((i) => i.codigo === APLICACION_PARTIDA.instrumento)
+      ?.aplicaciones.find((a) => a.codigo === APLICACION_PARTIDA.aplicacion)
+      ?.actividades.toSorted((a, b) => a.orden - b.orden)
+      .map((a) => a.codigo) ?? []
+  const [items, respuestas] = await Promise.all([
+    Promise.all(actividades.map((a) => apiInstrumentos.obtenerItems(a))),
+    Promise.all(actividades.map((a) => consultarCuenta((c) => apiInstrumentos.obtenerRespuestas(c, a)))),
+  ])
+  const error = [...items, ...respuestas].find((r): r is ErrorServidor => r.tipo !== 'ok')
+  if (error) return fallo(error)
+  if (!vigente()) return
+  publicar({
+    respuestasPartida: {
+      estado: 'listo',
+      error: null,
+      items: items.flatMap((r) => (r.tipo === 'ok' ? r.datos : [])),
+      respuestas: respuestas.flatMap((r) => (r.tipo === 'ok' ? r.datos.respuestas : [])),
+    },
+  })
+}
+
 // HU-027: calcula y guarda el resultado; refresca el camino (abre t-contraste o T2) y lo que lee el libro.
 export async function revelarResultado(
   instrumento: string,

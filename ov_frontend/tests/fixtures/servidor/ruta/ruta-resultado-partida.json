@@ -20,7 +20,7 @@
       "puntaje": null,
       "puntaje_maximo": null,
       "tematica": "B",
-      "zona": "EN_CAMINO"
+      "zona": "POR_TRABAJAR"
     },
     {
       "codigo": "AUTO-C",
@@ -30,7 +30,7 @@
       "puntaje": null,
       "puntaje_maximo": null,
       "tematica": "C",
-      "zona": "EN_CAMINO"
+      "zona": "POR_TRABAJAR"
     },
     {
       "codigo": "AUTO-D",
@@ -40,7 +40,7 @@
       "puntaje": null,
       "puntaje_maximo": null,
       "tematica": "D",
-      "zona": "EN_CAMINO"
+      "zona": "FUERTE"
     },
     {
       "codigo": "AUTO-E",
@@ -50,7 +50,7 @@
       "puntaje": null,
       "puntaje_maximo": null,
       "tematica": "E",
-      "zona": "EN_CAMINO"
+      "zona": "POR_TRABAJAR"
     }
   ],
   "instrumento": "TEST-PARTIDA-LLEGADA",
