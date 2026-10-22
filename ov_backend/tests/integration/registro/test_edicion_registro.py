@@ -268,3 +268,50 @@ def test_otra_cuenta_no_ve_ni_edita_lo_ajeno(cliente):
     luis = consultar(cliente, cuenta='est-luis')
     assert luis['respuestas'] == [] and 'items_por_ampliar' not in luis
     editar(cliente, cuenta='est-luis', t_exp_ruta='Texto', esperado=409)
+
+
+# --- Editar la elección (F02) ---------------------------------------------------------------
+
+def editar_con(cliente, item, texto, opciones, esperado=200):
+    return pedir(cliente, 'POST', '/acciones/registro/editar',
+                 {**accion(), 'items': [{'item': item, 'texto': texto, 'opciones': opciones}]}, esperado)
+
+
+def evaluaciones_bd(sesion, item):
+    return sesion.execute(select(m.EvaluacionRespuesta.texto_evaluado, m.EvaluacionRespuesta.opciones_evaluadas)
+                          .join(m.RespuestaRegistro).join(m.ItemRegistro).where(m.ItemRegistro.codigo == item)
+                          .order_by(m.EvaluacionRespuesta.numero)).all()
+
+
+def test_editar_la_eleccion_la_cambia_y_el_historial_guarda_la_que_vio_cada_evaluacion(cliente, sesion, aplicacion):
+    entregar(cliente)
+    falso = evaluador(aplicacion)
+    antes = len(falso.contextos)
+    nueva = [{'codigo': 'UNIVERSIDAD'}, {'codigo': 'OTRA', 'texto': 'DATO DE PRUEBA: viajar un año'}]
+    edicion = editar_con(cliente, 't-exp-ruta', 'DATO DE PRUEBA: ahora quiero la universidad [vaga]', nueva)
+    assert next(r for r in edicion['respuestas'] if r['item'] == 't-exp-ruta')['opciones_elegidas'] == nueva
+    # Pasa por el seguimiento y el evaluador ve la elección nueva.
+    assert pendiente(edicion) == ('t-exp-ruta', 1)
+    assert falso.contextos[antes].items[0].opciones_elegidas == ('Estudiar en una universidad', 'DATO DE PRUEBA: viajar un año')
+    responder(cliente, 't-exp-ruta', 'Porque quiero investigar')
+    assert respuesta_bd(sesion, 't-exp-ruta').opciones_elegidas == nueva
+    assert [opciones for _, opciones in evaluaciones_bd(sesion, 't-exp-ruta')] == [
+        [{'codigo': 'INSTITUTO'}], nueva, nueva]
+    # La referencia ELECCION de t-eco cita la elección vigente.
+    eco = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')['referencias']
+    assert next(r for r in eco if r['codigo'] == 't-ref-rutas')['opciones'][0]['codigo'] == 'UNIVERSIDAD'
+
+
+def test_cambiar_la_eleccion_exige_reescribir_y_se_valida_contra_la_lista(cliente):
+    entregar(cliente)
+    original = consolidadas(consultar(cliente))['t-exp-ruta']
+    editar_con(cliente, 't-exp-ruta', original, [{'codigo': 'TRABAJAR'}], 422)
+    for opciones in ([], [{'codigo': 'NADA'}], [{'codigo': 'OTRA'}],
+                     [{'codigo': 'UNIVERSIDAD'}, {'codigo': 'INSTITUTO'}, {'codigo': 'TRABAJAR'}]):
+        editar_con(cliente, 't-exp-ruta', 'DATO DE PRUEBA: otro texto', opciones, 422)
+    editar_con(cliente, 't-exp-espera', 'DATO DE PRUEBA: otro texto', [{'codigo': 'UNIVERSIDAD'}], 422)
+    # La misma elección con el mismo texto no es un cambio; sin `opciones`, la elección se conserva.
+    editar_con(cliente, 't-exp-ruta', original, [{'codigo': 'INSTITUTO'}], 422)
+    edicion = editar(cliente, t_exp_ruta='DATO DE PRUEBA: solo cambio el texto')
+    assert next(r for r in edicion['respuestas'] if r['item'] == 't-exp-ruta')['opciones_elegidas'] == [
+        {'codigo': 'INSTITUTO'}]

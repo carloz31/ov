@@ -329,7 +329,8 @@ def exigir_cerrado(registro):
 
 @usar_contexto
 def preparar_edicion(sesion, entrada):
-    """Un nuevo intento con los ítems cuyo texto cambió; la elección no se edita."""
+    """Un nuevo intento con los ítems cuyo texto cambió. Desde F02 la elección también se edita: si cambia, el
+    texto debe cambiar con ella (la justificación se reescribe) y se evalúa con la elección nueva."""
     cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
     if not entrada.items:
         raise invalida("Indica al menos un ítem para editar")
@@ -352,24 +353,28 @@ def preparar_edicion(sesion, entrada):
         respuesta = registro.respuestas.get(item.id)
         if respuesta is None or respuesta.clasificacion_inicial is None:
             raise invalida("Solo se edita un ítem entregado")
+        elegidas = respuesta.opciones_elegidas if edicion.opciones is None else validar_eleccion(
+            item, opciones[item.id], edicion.opciones, True)
+        cambio_eleccion = elegidas != respuesta.opciones_elegidas
         if edicion.texto == respuesta.texto_consolidado:
+            if cambio_eleccion:
+                raise invalida("Si cambias tu elección, reescribe tu respuesta")
             continue  # Sin cambios: no abre intento ni va al evaluador.
-        elecciones[item.codigo] = respuesta.opciones_elegidas
-        por_evaluar.append(item_por_evaluar(sesion, item, opciones[item.id], respuesta.opciones_elegidas,
-                                            edicion.texto))
+        elecciones[item.codigo] = elegidas
+        por_evaluar.append(item_por_evaluar(sesion, item, opciones[item.id], elegidas, edicion.texto))
     if not por_evaluar:
         raise invalida("La edición no tiene cambios")
     return LecturaEntrega(actividad.titulo, tuple(por_evaluar), elecciones, version(registro),
                           registro.intento_vigente + 1)
 
 
-def insertar_evaluacion(sesion, respuesta_id, numero, evaluacion, fecha):
+def insertar_evaluacion(sesion, respuesta_id, numero, evaluacion, fecha, opciones):
     sesion.execute(insert(EvaluacionRespuesta.__table__), dict(respuesta_id=respuesta_id, numero=numero,
         origen=evaluacion.origen, clasificacion=evaluacion.clasificacion,
         criterios_faltantes=list(evaluacion.criterios_faltantes), pregunta_generada=evaluacion.pregunta,
         requiere_atencion=False, modelo=evaluacion.modelo, version_prompt=evaluacion.version_prompt,
         latencia_ms=evaluacion.latencia_ms, error=evaluacion.error, texto_evaluado=evaluacion.texto_evaluado,
-        fecha_hora=fecha))
+        opciones_evaluadas=list(opciones or ()), fecha_hora=fecha))
 
 
 @usar_contexto
@@ -396,7 +401,7 @@ def persistir_entrega(sesion, entrada, lectura, evaluaciones):
             valores['clasificacion_inicial'] = evaluacion.clasificacion
         comprobar_cambio(sesion, respuesta, valores)
         insertar_evaluacion(sesion, respuesta.id, len(registro.evaluaciones.get(respuesta.id, ())) + 1, evaluacion,
-                            fecha)
+                            fecha, lectura.elecciones[item.codigo])
     return avanzar(sesion, cuenta, actividad, items, fecha, intento=lectura.intento)
 
 
@@ -520,7 +525,8 @@ def persistir_seguimiento(sesion, entrada, lectura, evaluacion):
     comprobar_cambio(sesion, respuesta, dict(estado=EstadoRespuestaRegistro.FINAL, ampliada=True,
         texto_consolidado=evaluacion.consolidada, actualizada_en=marca_actualizacion(respuesta.actualizada_en),
         reflexiva_registrada=respuesta.reflexiva_registrada or reflexiva))
-    insertar_evaluacion(sesion, respuesta.id, len(registro.evaluaciones.get(respuesta.id, ())) + 1, evaluacion, fecha)
+    insertar_evaluacion(sesion, respuesta.id, len(registro.evaluaciones.get(respuesta.id, ())) + 1, evaluacion, fecha,
+                        respuesta.opciones_elegidas)
     return avanzar(sesion, cuenta, actividad, items, fecha, intento=respuesta.intento,
                    eventos=[(TipoEventoUso.RESPUESTA_REFLEXIVA, None)] if reflexiva else ())
 

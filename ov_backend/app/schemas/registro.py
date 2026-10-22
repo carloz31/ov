@@ -40,6 +40,8 @@ class ResponderSeguimientoEntrada(TextoRegistroEntrada):
 class ItemEdicion(BaseModel):
     item: str
     texto: str
+    # F02: la elección nueva; sin ella, se conserva la de la respuesta.
+    opciones: list[OpcionElegida] | None = None
 
 
 class EditarRegistroEntrada(CompletarActividadEntrada):

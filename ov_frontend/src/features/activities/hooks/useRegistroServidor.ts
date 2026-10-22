@@ -20,7 +20,14 @@ import type {
   RespuestaRegistroAccion,
   RespuestaRegistroPublica,
 } from '@/types/servidor'
-import { anotarCambio, consolidada, consultaDe, edicionesDe, esConsulta } from '../lib/edicionRegistro'
+import {
+  anotarCambio,
+  consolidada,
+  consultaDe,
+  edicionesDe,
+  esConsulta,
+  type CambioRegistro,
+} from '../lib/edicionRegistro'
 
 export type RegistroServidor = {
   items: ItemRegistroPublico[]
@@ -80,7 +87,7 @@ export function useRegistroServidor({
   const [registro, setRegistro] = useState(registroServidor?.registro)
   // F02: un registro ya cerrado se abre como consulta; los textos cambiados viven aquí hasta entregarlos.
   const [consulta] = useState(() => !!registroServidor && esConsulta(registroServidor.registro))
-  const [cambios, setCambios] = useState<Record<string, string>>({})
+  const [cambios, setCambios] = useState<Record<string, CambioRegistro>>({})
   const [cierre, setCierre] = useState<RespuestaRegistroAccion>()
   const [ocupado, setOcupado] = useState<'' | 'guardando' | 'evaluando'>('')
   const [error, setError] = useState('')
@@ -147,8 +154,10 @@ export function useRegistroServidor({
   }
 
   // En la consulta no hay borradores (el registro está cerrado): se anota el texto y se sigue.
-  function anotar(item: string, texto: string) {
-    const siguientes = registro ? anotarCambio(cambios, registro, item, texto) : cambios
+  function anotar(item: string, texto: string, opciones: OpcionElegida[]) {
+    const definido = registroServidor?.items.find((i) => i.codigo === item)
+    const siguientes =
+      registro && definido ? anotarCambio(cambios, registro, definido, texto, opciones) : cambios
     setCambios(siguientes)
     return siguientes
   }
@@ -156,7 +165,7 @@ export function useRegistroServidor({
   async function guardar(nodo: Nodo, texto: string, opciones: OpcionElegida[]) {
     if (nodo.tipo !== 'consigna' || !nodo.item || enCurso.current) return
     if (consulta) {
-      const siguientes = anotar(nodo.item, texto)
+      const siguientes = anotar(nodo.item, texto, opciones)
       if (nodo.id !== ultimaConsigna) avanzar(nodes[nodes.indexOf(nodo) + 1])
       else if (Object.keys(siguientes).length)
         await accion('editar', (previa) => editarRegistro(actividad, edicionesDe(siguientes), previa))
@@ -202,7 +211,7 @@ export function useRegistroServidor({
   async function retroceder(nodo: Nodo, texto: string, opciones: OpcionElegida[]) {
     if (nodo.tipo !== 'consigna' || !nodo.item || !anterior || enCurso.current) return
     if (consulta) {
-      anotar(nodo.item, texto)
+      anotar(nodo.item, texto, opciones)
       volver()
       return
     }
@@ -250,14 +259,17 @@ export function useRegistroServidor({
     inicialDe: (item: string) => {
       const respuesta = registro?.respuestas.find((r) => r.item === item)
       if (consulta)
-        return { texto: cambios[item] ?? consolidada(respuesta), opciones: respuesta?.opciones_elegidas ?? [] }
+        return (
+          cambios[item] ?? { texto: consolidada(respuesta), opciones: respuesta?.opciones_elegidas ?? [] }
+        )
       const definido = registroServidor?.items.find((i) => i.codigo === item)
       return respuesta || !definido
         ? borradorRegistro(respuesta)
         : { texto: '', opciones: anterioresDe(definido, registroServidor?.referencias ?? []) }
     },
     anterioresDe: (item: ItemRegistroPublico) => anterioresDe(item, registroServidor?.referencias ?? []),
-    consultaDe: (item: string) => (consulta && registro ? consultaDe(registro, item, cambios) : undefined),
+    consultaDe: (item: ItemRegistroPublico) =>
+      consulta && registro ? consultaDe(registro, item, cambios) : undefined,
     puedeEditarRegistro: modoApi && consulta,
     // Zona de eco de una consigna (F02): la referencia TEXTO que cita y el título de su actividad de origen.
     ecoDe: (nodo: Nodo) => {

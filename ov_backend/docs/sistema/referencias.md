@@ -46,7 +46,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 | OPCION_INICIAL | La cuenta tiene opción inicial. `texto`: el nombre de la carrera. | — | Sin opción inicial. |
 
 **Reglas:**
-- La elección no se edita (`registro.md`). Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
+- Desde F02 la elección se puede editar, y entonces la justificación se reescribe (`registro.md`); ELECCION cita siempre la elección vigente. Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
 - Durante una edición, la pregunta de seguimiento queda solo en el ítem preguntado, que sale POR_DESARROLLAR. Los demás ítems editados ya se citan con su texto nuevo, y los no editados conservan su consolidada.
 - Los textos de una referencia TEXTO nunca van al evaluador: son respuestas de otra actividad (RNF-13).
 - **Elección que retoma una anterior (F02):** las opciones válidas son las de la lista del ítem, como en cualquier elección; la referencia no las cambia. El front marca de entrada lo elegido la vez pasada (la ELECCION resuelta, con el texto de su OTRA) y el estudiante lo mantiene o lo cambia. Se guarda y se evalúa como cualquier elección: la OTRA lleva el texto escrito en este ítem. Ningún texto de la fuente va al evaluador.

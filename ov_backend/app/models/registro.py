@@ -117,6 +117,7 @@ class EvaluacionRespuesta(Base):
     __table_args__ = (
         CheckConstraint("numero >= 1 AND numero = CAST(numero AS INTEGER)", name="numero_evaluacion_valido"),
         CheckConstraint(TipoJSON(column("criterios_faltantes")) == 'array', name="criterios_faltantes_lista"),
+        CheckConstraint(TipoJSON(column("opciones_evaluadas")) == 'array', name="opciones_evaluadas_lista"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     respuesta_id: Mapped[int] = mapped_column(ForeignKey("respuesta_registro.id"))
@@ -131,4 +132,8 @@ class EvaluacionRespuesta(Base):
     latencia_ms: Mapped[int | None]
     error: Mapped[str | None] = mapped_column(Text)
     texto_evaluado: Mapped[str] = mapped_column(Text)
+    # F02: la elección que vio esta evaluación (`[{codigo, texto?}]`), porque editar puede cambiarla; con
+    # `texto_evaluado`, el historial completo de lo que el estudiante respondió.
+    opciones_evaluadas: Mapped[list[dict]] = mapped_column(JSON(none_as_null=True), default=list,
+                                                           server_default=text("'[]'"))
     fecha_hora: Mapped[datetime] = mapped_column(DateTime)

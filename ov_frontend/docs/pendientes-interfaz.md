@@ -190,7 +190,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - la edición reutiliza la misma interfaz de seguimiento con Lumi que la entrega (pregunta pendiente, «Responder», «Continuar sin responder»).
 - **Opciones:** construir la consulta y el botón de editar en el lote F de registros; mantener la lógica local hasta entonces.
 - **Si no se muestra:** en modo `api` el estudiante no puede consultar ni editar lo que entregó; la misión adicional solo se abre si todo quedó adecuado en la entrega.
-- **Estado:** resuelto en F02. «Ver o modificar mis respuestas» abre el mismo reproductor solo con las consignas, precargado con la consolidada, la elección (sin poder cambiarla) y la pista de los por ampliar; cambiar un texto y «Entregar cambios» edita con el seguimiento de F01.
+- **Estado:** resuelto en F02. «Ver o modificar mis respuestas» abre el mismo reproductor solo con las consignas, en modo lectura (elección marcada y texto como cita) con «Modificar»; la pista la dice Lumi. Cambiar el texto o la elección (que obliga a reescribir) y «Entregar cambios» edita con el seguimiento de F01.
 
 ## 2026-10-09 · AP-F3 · Carga y error del portal del apoderado
 

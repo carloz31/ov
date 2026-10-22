@@ -284,7 +284,7 @@ export type RegistroConsultado = {
   items_por_ampliar?: ItemPorAmpliar[] | null
 }
 export type RespuestaRegistroAccion = RegistroConsultado & RespuestaAccion
-export type ItemEdicion = { item: string; texto: string }
+export type ItemEdicion = { item: string; texto: string; opciones?: OpcionElegida[] | null }
 // app/schemas/referencias.py (B05; F02: `actividad` de origen en ELECCION y TEXTO)
 export type TipoReferencia =
   | 'ELECCION'

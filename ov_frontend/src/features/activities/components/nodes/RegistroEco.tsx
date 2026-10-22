@@ -1,18 +1,19 @@
-import { reflectionCopy } from '@/data/activities/reflectionConfig'
+import { CharacterAvatar } from '@/components/student/CharacterAvatar'
+import { burbujaRegistro, type EcoRegistro } from '../../lib/edicionRegistro'
 import { RegistroLumi } from './RegistroLumi'
 
-// Zona de eco de una consigna que retoma una respuesta (F02), con la burbuja de Lumi de los registros
-// guiados: el recuerdo con la cita literal o, si la respuesta de origen quedó corta, una invitación sin cita.
+// Lumi sobre una consigna de registro, con la burbuja de los registros guiados: el recuerdo del eco (F02)
+// y, en la consulta, la pista del ítem por ampliar, en una sola burbuja. Sin nada que decir, solo el avatar.
 export function RegistroEco({
   eco,
+  pista,
   hablanteId,
 }: {
-  eco: { estado: 'DISPONIBLE' | 'POR_DESARROLLAR'; texto: string; titulo: string }
+  eco?: EcoRegistro
+  pista?: string
   hablanteId?: string
 }) {
-  const texto =
-    eco.estado === 'POR_DESARROLLAR'
-      ? 'La vez pasada lo contaste en pocas palabras. Aquí puedes tomarte tu tiempo.'
-      : `${reflectionCopy.memory(eco.titulo)}: «${eco.texto}»`
-  return <RegistroLumi hablanteId={hablanteId} texto={texto} />
+  const texto = burbujaRegistro(eco, pista)
+  if (texto) return <RegistroLumi hablanteId={hablanteId} texto={texto} />
+  return hablanteId ? <CharacterAvatar id={hablanteId} size="sm" /> : null
 }

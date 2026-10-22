@@ -214,7 +214,7 @@ export function NodeRenderer({
               onAnterior={
                 onAnterior && ((texto, opciones) => void registro.retroceder(node, texto, opciones))
               }
-              consulta={registro.consultaDe(itemRegistro.codigo)}
+              consulta={registro.consultaDe(itemRegistro)}
               salida={<VolverAlMapa actividad={activity.id} />}
               {...(Nodo === RegistroConsignaNode ? { eco: registro.ecoDe(node) } : {})}
               {...(Nodo === RegistroEleccionNode ? { anteriores: registro.anterioresDe(itemRegistro) } : {})}

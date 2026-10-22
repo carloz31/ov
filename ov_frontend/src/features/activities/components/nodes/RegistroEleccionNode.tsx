@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
-import { pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
+import { burbujaRegistro, errorConsulta, pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
+import { RespuestaConsulta } from './RespuestaConsulta'
 import { ChoiceReveal } from './ChoiceReveal'
 import { RegistroGuiado } from './RegistroGuiado'
 import { RegistroExplicacion } from './RegistroExplicacion'
@@ -64,12 +65,18 @@ export function RegistroEleccionNode({
   const [errores, setErrores] = useState<{ seleccion?: string; otra?: string; texto?: string }>({})
   const otra = seleccion.find((o) => o.codigo === 'OTRA')
   const codigosAnteriores = anteriores.map((o) => o.codigo)
-  const pie = consulta && pieConsulta(consulta, ultimo, text)
+  // En la consulta (F02) se empieza leyendo; «Modificar» abre las tarjetas y la explicación de siempre.
+  const [modificando, setModificando] = useState(!consulta || consulta.cambiado)
+  const lectura = !!consulta && !modificando
+  const pie = consulta && pieConsulta(consulta, ultimo, modificando, text, seleccion)
   function submit() {
+    if (lectura) return onGuardar(text, seleccion)
     const siguientes = {
       seleccion: seleccion.length < Math.max(1, eleccion.minima) ? config.errorSeleccion : undefined,
       otra: otra && !otra.texto?.trim() ? config.errorOtra : undefined,
-      texto: seleccion.length ? errorTexto(item, text) : undefined,
+      texto: seleccion.length
+        ? errorTexto(item, text) || (consulta && errorConsulta(consulta, text, seleccion)) || undefined
+        : undefined,
     }
     setErrores(siguientes)
     if (!siguientes.seleccion && !siguientes.otra && !siguientes.texto)
@@ -81,13 +88,16 @@ export function RegistroEleccionNode({
   return (
     <RegistroGuiado
       hablanteId={node.hablanteId}
-      mensaje={mensajeEleccion(mensajes, seleccion, reglas, bloqueada, codigosAnteriores)}
+      mensaje={
+        consulta
+          ? burbujaRegistro(undefined, consulta.pista)
+          : mensajeEleccion(mensajes, seleccion, reglas, bloqueada, codigosAnteriores)
+      }
       consigna={item.consigna}
       ultimo={ultimo}
       ocupado={ocupado}
       error={error}
       onEnviar={submit}
-      pista={consulta?.pista}
       etiqueta={pie?.etiqueta}
       salida={pie?.salir ? salida : undefined}
       onAnterior={onAnterior && (() => onAnterior(text, seleccion))}
@@ -100,7 +110,7 @@ export function RegistroEleccionNode({
         iconos={config.iconos}
         error={errores.seleccion}
         errorOtra={errores.otra}
-        soloLectura={!!consulta}
+        soloLectura={lectura}
         anteriores={codigosAnteriores}
         etiquetaAnterior={config.etiquetaAnterior}
         onAlternar={(codigo) => {
@@ -114,14 +124,20 @@ export function RegistroEleccionNode({
           setBloqueada(false)
         }}
       />
-      {seleccion.length > 0 && (
-        <RegistroExplicacion
-          pregunta={preguntaEleccion(config, seleccion, opciones, reglas.exclusivas, codigosAnteriores)}
+      {lectura ? (
+        <RespuestaConsulta
           texto={text}
-          error={errores.texto}
-          disabled={consulta && !consulta.editable}
-          onTexto={setText}
+          onModificar={consulta?.editable ? () => setModificando(true) : undefined}
         />
+      ) : (
+        seleccion.length > 0 && (
+          <RegistroExplicacion
+            pregunta={preguntaEleccion(config, seleccion, opciones, reglas.exclusivas, codigosAnteriores)}
+            texto={text}
+            error={errores.texto}
+            onTexto={setText}
+          />
+        )
       )}
     </RegistroGuiado>
   )

@@ -1,11 +1,16 @@
-import { useState, type ComponentProps, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Check } from 'lucide-react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
-import { pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
-import { CharacterAvatar } from '@/components/student/CharacterAvatar'
+import {
+  errorConsulta,
+  pieConsulta,
+  type ConsultaRegistro,
+  type EcoRegistro,
+} from '../../lib/edicionRegistro'
 import { RegistroOpciones } from './RegistroOpciones'
 import { RegistroEco } from './RegistroEco'
+import { RespuestaConsulta } from './RespuestaConsulta'
 import { PasoAnterior } from '../PasoAnterior'
 import '../../styles/registro-guiado.css'
 
@@ -36,16 +41,20 @@ export function RegistroConsignaNode({
   consulta?: ConsultaRegistro
   salida?: ReactNode
   // Lo que esta consigna retoma de otra actividad (F02); sin dato, no llega.
-  eco?: ComponentProps<typeof RegistroEco>['eco']
+  eco?: EcoRegistro
 }) {
   const [text, setText] = useState(inicial.texto)
   const [selection, setSelection] = useState(inicial.opciones)
   const [aviso, setAviso] = useState('')
+  // En la consulta (F02) se empieza leyendo; «Modificar» abre el formulario de siempre.
+  const [modificando, setModificando] = useState(!consulta || consulta.cambiado)
+  const lectura = !!consulta && !modificando
   const eleccion = item.eleccion
-  const pie = consulta && pieConsulta(consulta, ultimo, text)
-  const pista = consulta?.pista && <small className="sx-registro-pista">{consulta.pista}</small>
+  const pie = consulta && pieConsulta(consulta, ultimo, modificando, text, selection)
   function submit() {
-    const mensaje = validar(item, text, selection)
+    const mensaje = lectura
+      ? ''
+      : validar(item, text, selection) || (consulta ? errorConsulta(consulta, text, selection) : '')
     setAviso(mensaje)
     if (!mensaje)
       onGuardar(
@@ -62,7 +71,12 @@ export function RegistroConsignaNode({
       </span>
     </>
   )
-  const campo = (
+  const campo = lectura ? (
+    <RespuestaConsulta
+      texto={text}
+      onModificar={consulta?.editable ? () => setModificando(true) : undefined}
+    />
+  ) : (
     <textarea
       className="sx-submission-textarea"
       value={text}
@@ -80,24 +94,19 @@ export function RegistroConsignaNode({
         submit()
       }}
     >
-      {eco ? (
-        <RegistroEco eco={eco} hablanteId={node.hablanteId} />
-      ) : (
-        node.hablanteId && <CharacterAvatar id={node.hablanteId} size="sm" />
-      )}
+      <RegistroEco eco={eco} pista={consulta?.pista} hablanteId={node.hablanteId} />
       {eleccion ? (
         <>
           <p className="sx-submission-label">
             {premisa}
             {node.ayuda && <span className="sx-submission-help">{node.ayuda}</span>}
           </p>
-          {pista}
           <RegistroOpciones
             nodo={node.id}
             eleccion={eleccion}
             selection={selection}
             onChange={setSelection}
-            soloLectura={!!consulta}
+            soloLectura={lectura}
           />
           {campo}
         </>
@@ -105,7 +114,6 @@ export function RegistroConsignaNode({
         <label className="sx-submission-label">
           {premisa}
           {node.ayuda && <span className="sx-submission-help">{node.ayuda}</span>}
-          {pista}
           {campo}
         </label>
       )}
