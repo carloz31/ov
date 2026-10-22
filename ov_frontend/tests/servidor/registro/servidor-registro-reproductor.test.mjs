@@ -151,3 +151,25 @@ test('un registro cerrado abre en el fin, sin consignas ni entrega', async () =>
   assert.equal(elementos(tree, (e) => e.type?.name === 'FinishScreen').length, 1)
   player.unmount()
 })
+
+test('t-valores se responde con el podio y envía el mismo borrador que la elección ordenada', async () => {
+  const { app } = await iniciar({ actividad: 't-valores' })
+  const player = await abrir(app, 't-valores')
+  elementos(player.render(), (e) => e.type?.name === 'DialogueBox')[0].props.onContinue()
+  const tree = player.render()
+  assert.equal(consigna(tree), undefined)
+  const podio = elementos(tree, (e) => e.type?.name === 'RegistroPodioNode')[0]
+  assert.equal(podio.props.node.id, 't-val-orden')
+  podio.props.onGuardar('Crear me mueve', [{ codigo: 'CREAR' }, { codigo: 'LIBERTAD' }, { codigo: 'ESTABILIDAD' }])
+  await esperar()
+  // Mismo cuerpo que generaba la lista numerada (y que exporta ruta-borrador-t-valores en el backend).
+  assert.deepEqual(copia(app.requests.find((r) => r.url.endsWith('/guardar-borrador')).body), {
+    cuenta: 'est-ana',
+    actividad: 't-valores',
+    item: 't-val-orden',
+    texto: 'Crear me mueve',
+    opciones: [{ codigo: 'CREAR' }, { codigo: 'LIBERTAD' }, { codigo: 'ESTABILIDAD' }],
+    posicion: 't-val-libre',
+  })
+  player.unmount()
+})

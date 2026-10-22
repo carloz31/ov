@@ -24,13 +24,26 @@
       "hablanteId": "companero",
       "item": "t-val-orden",
       "premisa": "",
-      "placeholder": "Explica el primero",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora",
-      "ayuda": "Marca tres en orden: el primero es el más importante."
+      "podio": {
+        "etiquetaPrimero": "Lo más importante",
+        "pregunta": "¿Por qué «{opcion}» es lo más importante para ti?",
+        "unidad": {
+          "singular": "valor",
+          "plural": "valores"
+        },
+        "iconos": {
+          "SERVIR": "ayudar",
+          "CREAR": "idea",
+          "ESTABILIDAD": "escudo",
+          "RECONOCIMIENTO": "medalla",
+          "LIBERTAD": "libertad"
+        }
+      }
     },
     {
       "id": "t-val-libre",

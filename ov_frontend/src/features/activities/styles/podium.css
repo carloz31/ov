@@ -1,0 +1,144 @@
+/* F01: podio de «elegir y ordenar top N» en los registros. */
+.sx-root .sx-podium-form {
+  display: grid;
+  gap: 16px;
+}
+.sx-root .sx-podium-wrap {
+  display: grid;
+  gap: 10px;
+}
+.sx-root .sx-podium {
+  display: grid;
+  gap: 10px;
+  align-items: end;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sx-root .sx-podium-slot {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 6px;
+  width: 100%;
+  min-height: 120px;
+  padding: 12px 8px;
+  border: 2px dashed var(--input);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--muted-foreground);
+  text-align: center;
+  cursor: default;
+}
+.sx-root .sx-podium-slot.is-first {
+  min-height: 148px;
+  padding-top: 18px;
+}
+.sx-root .sx-podium-slot.is-filled {
+  border: 2px solid var(--primary);
+  background: var(--primary-soft);
+  color: var(--foreground);
+  cursor: pointer;
+}
+.sx-root .sx-podium-slot.is-new {
+  animation: sx-podium-pop 150ms ease-out;
+}
+@keyframes sx-podium-pop {
+  from {
+    transform: scale(0.92);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-root .sx-podium-slot.is-new {
+    animation: none;
+  }
+}
+.sx-root .sx-podium-number {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-weight: 700;
+  font-size: 14px;
+}
+.sx-root .sx-podium-slot.is-filled .sx-podium-number {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.sx-root .sx-podium-slot small {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.sx-root .sx-podium-value {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  color: var(--primary);
+}
+.sx-root .sx-podium-value strong {
+  color: var(--foreground);
+  font-size: 14px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.sx-root .sx-podium-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+@media (max-width: 600px), (pointer: coarse) {
+  .sx-root .sx-podium-drag-hint {
+    display: none;
+  }
+}
+.sx-root .sx-podium-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+.sx-root .sx-podium-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid var(--input);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.sx-root .sx-podium-chip:hover {
+  border-color: var(--primary);
+}
+.sx-root .sx-podium-chip > svg {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+.sx-root :is(.sx-podium-slot, .sx-podium-chip):focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+.sx-root .sx-podium-explain {
+  display: grid;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.sx-root .sx-podium-warning {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--warning-soft);
+  color: var(--warning-text);
+  font-size: 13px;
+}

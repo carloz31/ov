@@ -167,6 +167,15 @@ export interface NodoConsigna extends NodoBase {
   visibilidad: Visibilidad
   slot?: string // ubicación en la plantilla: "col.fila"
   item?: ID // en api, código del ítem de registro del servidor que responde esta consigna (F01)
+  podio?: ConfigPodio // en api, textos e íconos del podio de una elección «top N»
+}
+
+// Podio de una elección ordenada «top N» (F01). Todo es opcional: sin él se usan textos genéricos.
+export interface ConfigPodio {
+  etiquetaPrimero?: string // «Lo más importante»
+  pregunta?: string // «¿Por qué «{opcion}» es lo más importante para ti?»
+  unidad?: { singular: string; plural: string } // «valor» / «valores»
+  iconos?: Record<string, string> // código de opción → nombre en `data/iconosPodio.ts`
 }
 
 export type EspecEntregable =
