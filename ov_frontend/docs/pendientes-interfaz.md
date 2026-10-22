@@ -8,7 +8,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** en el reproductor de desafíos, antes de la batalla y tras perderla.
 - **Opciones:** crear el contenido de prueba de `t-ficha` en el catálogo de recursos; esperar a las fichas reales de la ruta base; apuntar `fichas` a una ficha que ya tenga contenido.
 - **Si no se muestra:** en api, «Repasar la ficha» no aparece, porque `t-ficha` no tiene contenido en el front. El resto de la batalla funciona.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** resuelto en F04 con la primera opción: `t-ficha` tiene contenido de prueba en `catalogo.json` (`"_dato_de_prueba": true`), y en api «Repasar la ficha» la ofrece cuando el servidor la da. No aparece en la mochila, que solo lista fichas ligadas a actividades locales.
 
 ## 2026-10-22 · F01 · «Ampliar →» en los ítems por ampliar
 

@@ -55,3 +55,18 @@ test('la Ciudad no repite el marcador fijo del desafío ni del caso que represen
   assert.equal(ids.includes('desafio-rumor'), false)
   assert.ok(ids.includes('neighborhood-radio'))
 })
+
+test('las fichas para repasar de la batalla tienen contenido y el servidor las da', () => {
+  const app = fixtureServidor()
+  const { catalog } = app.load('src/data/activities/content.ts')
+  const { contenidoPorClave } = app.load('src/data/activities/contenidos.ts')
+  const { fichaDisponible } = app.load('src/lib/servidor/adaptadores.ts')
+  const fichas = contenidoPorClave('t_batalla').fichas
+  assert.deepEqual(copia(fichas), ['t-ficha'])
+  for (const id of fichas) {
+    const recurso = catalog.recursos.find((r) => r.id === id)
+    assert.ok(recurso?.contenido, `${id} sin contenido en el catálogo`)
+    assert.equal(recurso._dato_de_prueba, true)
+    assert.equal(fichaDisponible(jsonServidor('ruta/ruta-fichas-final'), id), true)
+  }
+})
