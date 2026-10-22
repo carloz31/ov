@@ -104,6 +104,13 @@ export function BackpackCard({
             </>
           )}
         </>
+      ) : resource.servidor ? (
+        <TestimonioServidor
+          resource={resource}
+          unlocked={unlocked}
+          onOpen={onOpen}
+          onRequirement={onRequirement}
+        />
       ) : unlocked ? (
         <>
           <div className="sx-b-author">
@@ -149,5 +156,40 @@ export function BackpackCard({
         </>
       )}
     </article>
+  )
+}
+
+// F04: testimonio del servidor. Disponible: título, descripción y enlace. Bloqueado: candado y título;
+// al pulsarlo, el pop up con la pista.
+function TestimonioServidor({
+  resource,
+  unlocked,
+  onOpen,
+  onRequirement,
+}: {
+  resource: TravelResource
+  unlocked: boolean
+  onOpen: () => void
+  onRequirement: () => void
+}) {
+  return unlocked ? (
+    <>
+      <h3>{resource.title}</h3>
+      <p>{resource.summary}</p>
+      <button type="button" className="sx-d-action sx-d-action-gold" onClick={onOpen}>
+        <Play aria-hidden="true" size={18} />
+        Ver testimonio
+        <span className="sr-only"> (abre otra pestaña)</span>
+      </button>
+    </>
+  ) : (
+    <button type="button" className="sx-b-voice-locked" onClick={onRequirement}>
+      <span className="sx-b-voice-mist" aria-hidden="true">
+        <span className="sx-b-silhouette" />
+        <LockKeyhole size={56} />
+      </span>
+      <h3>{resource.title}</h3>
+      <span className="sr-only">Bloqueado. Ver cómo conocer este testimonio.</span>
+    </button>
   )
 }

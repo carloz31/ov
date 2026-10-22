@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-22 · F04 · Contenido de la ficha `t-ficha` para repasar antes de la batalla
+
+- **Dato:** `t_batalla.json` ofrece `t-ficha` para repasar («Repasar la ficha»), y el servidor la da al completar `t-inicio`.
+- **Dónde se mostraría:** en el reproductor de desafíos, antes de la batalla y tras perderla.
+- **Opciones:** crear el contenido de prueba de `t-ficha` en el catálogo de recursos; esperar a las fichas reales de la ruta base; apuntar `fichas` a una ficha que ya tenga contenido.
+- **Si no se muestra:** en api, «Repasar la ficha» no aparece, porque `t-ficha` no tiene contenido en el front. El resto de la batalla funciona.
+- **Estado:** pendiente de decisión del usuario.
+
 ## 2026-10-22 · F01 · «Ampliar →» en los ítems por ampliar
 
 - **Dato:** `items_por_ampliar` del registro cerrado (`GET /cuentas/{c}/actividades/{a}/registro`) y la edición de un ítem entregado (`POST /acciones/registro/editar`).
@@ -107,7 +115,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - crear `t_batalla.json` o mapear `t-batalla` a un desafío real al cargar la ruta;
   - crear la vista de testimonios cuando la spec de su lote F la autorice.
 - **Si no se muestra:** en modo `api`, una batalla nunca se completa por `completar-actividad`, un caso fallido ya no aparece completado y los testimonios solo se ven en local.
-- **Estado:** pendiente de los lotes F; no se toca la interfaz en B08.
+- **Estado:** resuelto en F04: el reproductor de desafíos envía cada intento y se abre por el tipo de la actividad (`t_batalla` apunta a `desafio-rumor`); la Central de Casos envía puntaje y ocupaciones, decide «superado» con `puntaje_minimo` y muestra el tipo RIASEC en el reporte; la colección se lee en el catálogo y el detalle de ocupación; los testimonios van en la pestaña de la mochila.
 
 ## 2026-10-13 · B07 · Partida y llegada, temáticas y prioritarios
 
@@ -258,7 +266,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   2. Ofrecerlos desde el detalle de una profesión.
   3. Mantenerlos fuera de la interfaz hasta la iteración 4.
 - **Si no se muestra:** la consulta conserva el dato en la API al retirar `/estado`; el front no la solicita ni agrega sus tipos o servicios en esta fase (§4 de la spec de actividades por dominio).
-- **Estado:** pendiente. B2 solo registra el dato; no implementa ninguna opción.
+- **Estado:** resuelto en F04 con la opción 1: la pestaña «Testimonios» de la mochila lista los del servidor.
 
 ## 2026-10-08 · B2 · Preguntas del diario del servidor
 
@@ -299,7 +307,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** tarjeta de testimonio dentro de «Nuevo en tu mochila» y visor seleccionado mediante `?kind=testimonial&ficha={codigo}`.
 - **Opciones:** completar el catálogo narrativo con metadatos y contenido para esos códigos; definir una respuesta de lectura de testimonios con persona/rol/cita en su iteración; conservar solo el nombre en el cierre hasta disponer de contenido e integración remota.
 - **Si no se muestra:** el cierre presenta el nombre real y su enlace, sin atribuciones o citas inventadas. La selección local funciona cuando el testimonio existe, con sus candados actuales. En API la mochila conserva solo las fichas remotas de esta iteración: un testimonio sin integración no abre un visor de contenido, aunque su enlace ya incluye el código y filtro correctos.
-- **Estado:** se aplica el fallback expresamente autorizado en F3 (línea 143: «Si no existe, solo el nombre. No se inventa una cita.»). La integración y el contenido de testimonios quedan pendientes; ninguna opción adicional se implementa.
+- **Estado:** resuelto en F04: en api la tarjeta muestra título, descripción y «Ver testimonio» (enlace en otra pestaña); persona, rol y cita no se muestran porque el backend no los tiene. El enlace del cierre abre la pestaña de testimonios.
 
 ## 2026-10-09 · Anexo F3 · Conservar el cierre al volver de una ficha
 
@@ -341,7 +349,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** insignia bajo las letras de cada tarjeta de ocupación afín.
 - **Opciones:** definir la relación y el estado de obtención en el contrato de casos en su iteración; aprobar un catálogo explícito de relaciones y leer su estado remoto; mantener la omisión actual.
 - **Si no se muestra:** la tarjeta conserva afinidad, letras y acciones, sin afirmar que el estudiante obtuvo una recompensa que no está confirmada.
-- **Estado:** omitido por instrucción expresa del usuario para esta corrección de F4. Permanece pendiente de datos y decisión de integración futura; no se calcula desde demostraciones ni desde favoritos.
+- **Estado:** resuelto en F04: `GET /cuentas/{c}/coleccion` entrega la ocupación y el caso; en api, el contador de obtenidos y la marca «Ícono obtenido» de las tarjetas del catálogo (también con el filtro de afines) y la etiqueta del detalle leen la colección.
 
 ## 2026-10-09 · Anexo F5 · Recarga directa del resultado API
 

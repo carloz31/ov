@@ -52,3 +52,20 @@ test('consultar y ver un testimonio usan las rutas del backend', async () => {
     ['/api/acciones/ver-testimonio', { cuenta: 'est-ana', testimonio: 't-testimonio-2' }],
   ])
 })
+
+test('en la mochila, los testimonios del servidor se ven disponibles o bloqueados, sin autor', () => {
+  const app = fixtureServidor()
+  const sesion = app.load('src/store/servidor/sesion.ts')
+  sesion.publicar({ fichas: { datos: jsonServidor('ruta/ruta-fichas-final'), estado: 'listo', error: null } })
+  const recursos = app.load('src/features/backpack/lib/travelerResources.ts')
+  const mezcla = [final[0], inicial.find((t) => t.codigo === 't-testimonio-2')]
+  const voces = recursos.getTravelResources(mezcla).filter((r) => r.kind === 'testimonial')
+  assert.deepEqual(
+    copia(voces.map((r) => [r.id, r.title, r.url ?? null, r.author ?? null, r.servidor])),
+    [
+      ['t-testimonio-1', final[0].titulo, final[0].enlace, null, { disponible: true, pista: null }],
+      ['t-testimonio-2', mezcla[1].titulo, null, null, { disponible: false, pista: null }],
+    ],
+  )
+  assert.deepEqual(copia(voces.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [true, false])
+})

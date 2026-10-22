@@ -342,7 +342,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 | F01 | Registros: elección, borradores, entrega y seguimiento · **Implementado** | 006, 007, 010, 016 | F00 | B02, B03 | Reproductor de registro |
 | F02 | Registros: consulta, edición y eco | 008, 009 | F01 | B04, B05 | Consulta del registro (nueva); zona de eco |
 | F03 | Instrumentos y libro de Helena | 022–024, 027, 094, 095 | F02 | B06, B07, F5 recarga | Libro: Revelar, perfil plano, comparación partida–llegada |
-| F04 | Batallas, casos y testimonios | 017, 041, 051–056 | F00 | B08, B2 testimonios, F3 testimonios, F4 íconos | Testimonios (vista nueva o en mochila); Central de Casos |
+| F04 | Batallas, casos y testimonios · **Implementado** | 017, 041, 051–056 | F00 | B08, B2 testimonios, F3 testimonios, F4 íconos | Testimonios (vista nueva o en mochila); Central de Casos |
 | F05 | Diario, pregunta del día y check-in | 028–033, 035, 036, 075 | F01 | B09, B2 diario, F4 señal | Diario; cierre de actividad; pasaporte |
 | F06 | Catálogo y favoritos | 026, 037–040 | F03 | — | Catálogo y detalles |
 | F07a | Planes: tarjeta, orden y primeras secciones | 043, 044, 047, 048, 050, 098, 099, 109 | F02, F06 | B11 (parte) | Mis planes: lista A/B/C, estados por sección, POR_QUE, CONOCIMIENTO con dudas |
@@ -388,7 +388,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Pantallas a decidir:** el revelado (animación o directo); dónde vive la comparación (página del libro o vista propia).
 - **Ajustes al backend posibles:** si el libro necesita la fecha o el número de aplicación para la comparación, ya viene; no se prevé más.
 
-#### F04 · Batallas, casos y testimonios
+#### F04 · Batallas, casos y testimonios · **Implementado**
 - **Hace:** el reproductor de desafíos envía cada intento (`resolver-batalla`) y lee `batallas`; el caso envía puntaje y ocupaciones, y un caso fallido ya no aparece completado; tipo RIASEC del caso, colección de íconos (y la insignia en las ocupaciones afines, pendiente F4); testimonios disponibles con enlace y bloqueados con pista (`ver-testimonio`).
 - **Contenidos:** `t_batalla` (mapeado a un desafío de `challenges.ts`), `t_caso` (mapeado al incendio forestal).
 - **Pantallas a decidir:** vista de testimonios (lista propia o dentro de la mochila, que ya tiene `?kind=testimonial`).

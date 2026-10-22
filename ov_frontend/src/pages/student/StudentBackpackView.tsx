@@ -42,6 +42,8 @@ function StudentBackpackView() {
     errorRequisito,
     setIntentoRequisito,
     mostrarRequisito,
+    tituloRequisito,
+    muestraMasVoces,
     isUnlocked,
     visible,
     cityPoints,
@@ -156,7 +158,7 @@ function StudentBackpackView() {
                         onRequirement={() => consultarRequisito(resource)}
                       />
                     ))}
-                    {type === 'testimonial' && !favoritesOnly && !query.trim() && (
+                    {type === 'testimonial' && muestraMasVoces && !favoritesOnly && !query.trim() && (
                       <div className="sx-b-more">
                         <Sparkles aria-hidden="true" />
                         <h3>Más voces se suman a la ciudad</h3>
@@ -186,12 +188,12 @@ function StudentBackpackView() {
         Las estrellas son tuyas: guarda lo que quieras encontrar rápido cuando armes tus planes.
       </p>
       <Dialog
-        open={Boolean(selected && isUnlocked(selected))}
+        open={Boolean(selected && isUnlocked(selected) && !selected.servidor)}
         onOpenChange={(open) => {
           if (!open) setSelectedId(null)
         }}
       >
-        {selected && isUnlocked(selected) && (
+        {selected && isUnlocked(selected) && !selected.servidor && (
           <DialogContent className="resource-dialog max-w-4xl bg-[#fffdf7] p-0 md:p-0">
             <DialogHeader className="mb-0 border-b border-[#e4e0cb] p-6 pr-16 sm:p-7 sm:pr-16">
               <Badge className="mb-2 w-fit" variant="success">
@@ -250,7 +252,7 @@ function StudentBackpackView() {
         >
           <DialogContent className="resource-dialog max-w-xl">
             <DialogHeader>
-              <DialogTitle>Cómo obtener esta ficha</DialogTitle>
+              <DialogTitle>{tituloRequisito}</DialogTitle>
               <DialogDescription>{requisito}</DialogDescription>
             </DialogHeader>
             {errorRequisito && (

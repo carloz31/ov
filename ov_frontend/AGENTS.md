@@ -50,7 +50,7 @@ src/
 | Una primitiva de interfaz | `components/ui/`. Usa la de shadcn antes de crear otra. |
 | Una llamada al backend | `services/api/<recurso>.ts`, agrupado como los routers del backend. GET → `obtener`, POST → `enviar`, PATCH → `actualizar`, DELETE → `eliminar`. Si el backend define un PUT, detente y avisa antes de agregar un método al cliente. |
 | Un tipo del contrato | `types/servidor.ts`, copiado tal cual del esquema Pydantic. |
-| Convertir una respuesta en datos para la vista | `lib/servidor/adaptadores.ts`. |
+| Convertir una respuesta en datos para la vista | `lib/servidor/adaptadores.ts` (casos, colección y testimonios: `lib/servidor/adaptadoresCasos.ts`). Ambos solo importan tipos. |
 | Estado que viene del servidor | `store/servidor/`. El del portal del apoderado, en `store/servidor/apoderado.ts`; no reutiliza el almacén del estudiante. |
 | Elegir entre dato del servidor y dato local | Un hook en `features/<dominio>/hooks/`. Nunca en una vista. |
 | Estado persistente de varios dominios | `store/<nombre>Store.ts`; de un dominio, `features/<dominio>/store/`. |
@@ -91,6 +91,8 @@ src/
 - **El modo se decide al llamar, nunca al cargar un módulo.** `main.tsx` configura `modoApi` después de importar los módulos: una elección como `const useX = modoApi ? a : b` queda siempre en local. Un hook que depende del modo usa siempre los mismos hooks internos y ramifica adentro. Los hooks que usan los componentes del arnés de `tests/local` no pueden usar efectos ni contexto en local.
 - **En api, los textos de una actividad salen del servidor (F00):** título, tipo, duración, descripción, nombre del bloque, `requerida` y el mensaje de bloqueo. Del JSON de contenido solo se usan los nodos y la posición del mapa (`x`, `y`, `icono`, `origen`). El texto de Lumi ante algo cerrado sale de `textosBloqueo`, seguido del mensaje del servidor.
 - **Excepciones al modo local congelado**, aprobadas por el usuario: solo cambios visuales que no alteran textos, orden ni momento. Hoy son tres: el botón «Anterior» del reproductor de actividades (F01, aprobado para ambos modos porque es navegación básica); los avisos del estudiante como toasts (`components/student/AvisoToast`, 6 s en lugar de 7) y, desde F01, la distribución de la pantalla de fin (medallas de insignia y nivel bajo el título, «Se abrió para ti» como filas con las secciones agrupadas, subtítulo sin el conteo de la mochila y columna adaptativa), que el usuario aprobó para ambos modos aunque cambia textos y orden.
+- **Apertura por tipo (F04):** una actividad se abre según su tipo, no según su bloque. En api, una BATALLA abre el reproductor de desafíos (camino o Ciudad) y un CASO, la Central de Casos, con el contenido que su JSON nombra (`desafio`, `caso`; ver `contenidos-actividades.md`).
+- **Bloqueos (F04):** lo bloqueado de una sección se explica con el diálogo de Lumi; lo bloqueado de un contenido concreto (una ficha, un testimonio), con un pop up con su detalle (el `Dialog` de requisito de la mochila).
 - **Seguridad del token:** como el token está en `localStorage`, no se usa HTML crudo (`dangerouslySetInnerHTML`) ni se cargan scripts de terceros.
 
 ## Interfaz
@@ -117,9 +119,9 @@ Un agente conecta datos a la interfaz que ya existe; no diseña interfaz nueva p
 ```text
 tests/
   local/        actividades/, aventura/, casos/, perfil/, portales/   (modo local)
-  servidor/     acceso/, actividades/, mapa/, instrumentos/, logros/, perfil/, registro/  (modo api, con fixtures)
+  servidor/     acceso/, actividades/, batallas/, casos/, mapa/, instrumentos/, logros/, perfil/, registro/, testimonios/  (modo api, con fixtures)
   despliegue/
-  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00) y registro (F01)
+  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00), registro (F01) y batallas, casos y testimonios (F04)
   soporte/             ayudantes compartidos
 ```
 
@@ -134,7 +136,7 @@ tests/
 | `features/activities/`, `lib/activities/`, `data/activities/` | `tests/local/actividades`, `tests/servidor/actividades` y `tests/servidor/registro` |
 | `features/adventure/` | `tests/local/aventura`, `tests/servidor/mapa` y `tests/servidor/logros` |
 | `features/discovery/` | `tests/servidor/instrumentos`, `tests/servidor/perfil` y `tests/servidor/logros` |
-| `features/cases/` | `tests/local/casos` |
+| `features/cases/` | `tests/local/casos` y `tests/servidor/casos` |
 | `features/parent/`, `features/counselor/`, `features/student-tracking/`, `pages/parent/`, `pages/counselor/` | `tests/local/portales` y `tests/local/perfil` |
 | `features/auth/`, `pages/auth/`, `store/accesoStore.ts`, `routes/GuardaAcceso.tsx`, `data/demo/usuariosPrueba.ts` | `tests/local/portales`, `tests/local/aventura` y `tests/servidor/acceso` |
 | `lib/explorationAssets.ts` o recursos de `public/` | `npm run test:despliegue` |

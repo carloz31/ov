@@ -8,6 +8,7 @@ import { appPaths } from '@/routes/paths'
 import { cityCases, resourceReading } from '@/data/content/adventure'
 import { professionalTestimonials } from '@/data/catalog/occupations'
 import type { AdventureState } from '@/types/adventure'
+import type { TestimonioEstado } from '@/types/servidor'
 
 export type TravelResource = {
   id: string
@@ -22,6 +23,8 @@ export type TravelResource = {
   fileFormat?: Recurso['formatoArchivo']
   source?: string
   author?: string
+  // Testimonio del servidor (F04): si está disponible y, bloqueado, su pista.
+  servidor?: { disponible: boolean; pista: string | null }
 }
 
 const sheetDetails: Record<
@@ -53,7 +56,7 @@ const sheetDetails: Record<
   },
 }
 
-export function getTravelResources(): TravelResource[] {
+export function getTravelResources(testimonios?: TestimonioEstado[] | null): TravelResource[] {
   const sheets = catalog.recursos
     .filter(
       (resource) => resource.guardableEnRecursos && resource.tipo !== 'video' && resource.tipo !== 'audio',
@@ -113,12 +116,29 @@ export function getTravelResources(): TravelResource[] {
     })),
   ]
   return modoApi
-    ? resources.filter(
-        (resource) =>
-          resource.kind === 'sheet' &&
-          obtenerEstadoServidor().fichas.datos?.some((f) => f.codigo === resource.id),
-      )
+    ? [
+        ...resources.filter(
+          (resource) =>
+            resource.kind === 'sheet' &&
+            obtenerEstadoServidor().fichas.datos?.some((f) => f.codigo === resource.id),
+        ),
+        ...(testimonios ?? []).map(testimonioServidor),
+      ]
     : resources
+}
+// F04: el servidor da título, descripción y enlace; no hay persona, rol ni cita.
+function testimonioServidor(t: TestimonioEstado): TravelResource {
+  return {
+    id: t.codigo,
+    title: t.titulo,
+    summary: t.descripcion ?? '',
+    description: t.descripcion ?? '',
+    kind: 'testimonial',
+    icon: 'quote',
+    requirement: { anyCase: true },
+    url: t.enlace ?? undefined,
+    servidor: { disponible: t.estado === 'DISPONIBLE', pista: t.pista },
+  }
 }
 
 export function isTravelResourceUnlocked(
@@ -127,7 +147,9 @@ export function isTravelResourceUnlocked(
   adventure: AdventureState,
 ) {
   if (modoApi)
-    return resource.kind === 'sheet' && fichaDisponible(obtenerEstadoServidor().fichas.datos, resource.id)
+    return resource.kind === 'sheet'
+      ? fichaDisponible(obtenerEstadoServidor().fichas.datos, resource.id)
+      : !!resource.servidor?.disponible
   if ('activityId' in resource.requirement)
     return journey.progress[resource.requirement.activityId]?.estado === 'completada'
   if ('caseId' in resource.requirement) return adventure.solvedCaseIds.includes(resource.requirement.caseId)

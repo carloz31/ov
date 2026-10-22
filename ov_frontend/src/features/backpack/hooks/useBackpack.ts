@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { consultarProgreso } from '@/store/servidor/consultas'
+import { consultarTestimonios, verTestimonio as registrarVistaTestimonio } from '@/store/servidor/testimonios'
+import type { TestimonioEstado } from '@/types/servidor'
 import { textoRequisito } from '@/lib/servidor/adaptadores'
 import { useNavigate, useSearchParams } from 'react-router'
 import { updateJourney, useJourney } from '@/store/journeyStore'
@@ -31,18 +33,40 @@ export function useBackpack() {
   useEffect(() => {
     setSelectedId(fichaSolicitada)
   }, [fichaSolicitada])
+  // F04: los testimonios se piden al abrir la mochila.
+  const [testimonios, setTestimonios] = useState<TestimonioEstado[] | null>(null)
+  useEffect(() => {
+    if (!modoApi) return
+    let vigente = true
+    void consultarTestimonios().then((respuesta) => {
+      if (vigente && respuesta.tipo === 'ok') setTestimonios(respuesta.datos)
+    })
+    return () => {
+      vigente = false
+    }
+  }, [])
   const [requisitoId, setRequisitoId] = useState<string | null>(null)
   const [requisito, setRequisito] = useState('')
   const [requisitoPendiente, setRequisitoPendiente] = useState(false)
   const [errorRequisito, setErrorRequisito] = useState(false)
   const [intentoRequisito, setIntentoRequisito] = useState(0)
+  // Lo bloqueado de un contenido concreto se explica en un pop up: la pista del testimonio, si la tiene;
+  // si no, el mensaje de bloqueo del servidor, como en las fichas.
+  const testimonioRequisito = testimonios?.find((t) => t.codigo === requisitoId)
+  const tituloRequisito = testimonioRequisito ? 'Cómo conocer este testimonio' : 'Cómo obtener esta ficha'
   useEffect(() => {
     if (!modoApi || !requisitoId) return
+    if (testimonioRequisito?.pista) {
+      setRequisitoPendiente(false)
+      setErrorRequisito(false)
+      setRequisito(testimonioRequisito.pista)
+      return
+    }
     let vigente = true
     setRequisitoPendiente(true)
     setErrorRequisito(false)
     setRequisito('Consultando el requisito en el servidor…')
-    void consultarProgreso('FICHA', requisitoId).then((respuesta) => {
+    void consultarProgreso(testimonioRequisito ? 'TESTIMONIO' : 'FICHA', requisitoId).then((respuesta) => {
       if (!vigente) return
       setRequisito(
         respuesta.tipo === 'ok'
@@ -55,8 +79,8 @@ export function useBackpack() {
     return () => {
       vigente = false
     }
-  }, [requisitoId, servidor.actividades.datos, intentoRequisito])
-  const resources = getTravelResources(),
+  }, [requisitoId, servidor.actividades.datos, intentoRequisito, testimonioRequisito])
+  const resources = getTravelResources(testimonios),
     selected = resources.find((r) => r.id === selectedId)
   const isUnlocked = (r: TravelResource) => isTravelResourceUnlocked(r, journey, adventure)
   const visible = resources.filter(
@@ -88,11 +112,21 @@ export function useBackpack() {
   }
   function openResource(resource: TravelResource) {
     if (!isUnlocked(resource)) return
+    if (resource.servidor) return verTestimonio(resource)
     setSelectedId(resource.id)
     updateAdventure((current) =>
       current.visits.includes(resource.id)
         ? current
         : { ...current, visits: [...current.visits, resource.id] },
+    )
+  }
+  // El enlace se abre en el mismo clic, para que el navegador no bloquee la pestaña; la vista se
+  // registra después, sin esperar la respuesta.
+  function verTestimonio(resource: TravelResource) {
+    if (resource.url) window.open(resource.url, '_blank', 'noopener,noreferrer')
+    void registrarVistaTestimonio(resource.id)
+    updateAdventure((current) =>
+      current.visits.includes(resource.id) ? current : { ...current, visits: [...current.visits, resource.id] },
     )
   }
   const clear = () => {
@@ -128,6 +162,9 @@ export function useBackpack() {
     errorRequisito,
     setIntentoRequisito,
     mostrarRequisito: modoApi,
+    tituloRequisito,
+    // El bloque fijo de «más voces» es del modo local.
+    muestraMasVoces: !modoApi,
     isUnlocked,
     visible,
     sheets,

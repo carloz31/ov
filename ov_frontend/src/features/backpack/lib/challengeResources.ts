@@ -5,9 +5,10 @@ import {
 } from '@/features/backpack/lib/travelerResources'
 import { modoApi } from '@/config/env'
 import { challenges, challengeRewards } from '@/data/content/challenges'
+import type { TestimonioEstado } from '@/types/servidor'
 
-export function getStudentTravelResources(): TravelResource[] {
-  if (modoApi) return getTravelResources()
+export function getStudentTravelResources(testimonios?: TestimonioEstado[] | null): TravelResource[] {
+  if (modoApi) return getTravelResources(testimonios)
   return [
     ...getTravelResources(),
     ...challengeRewards.flatMap((r): TravelResource[] => {

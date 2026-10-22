@@ -364,3 +364,21 @@
     transform: none;
   }
 }
+/* F04: testimonio bloqueado del servidor; toda la tarjeta abre el pop up con la pista. */
+.sx-b-voice-locked {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.sx-b-voice-locked:focus-visible {
+  outline: 2px solid var(--sx-gold);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
