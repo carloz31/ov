@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-21 · F01 · Secciones desbloqueadas en el cierre de actividad
+
+- **Dato:** `nuevos_desbloqueos` con `tipo_objetivo` `SECCION_PLAN` (p. ej. `CONOCIMIENTO` al cerrar `t-valores`) o `SECCION`, en la respuesta de la acción que cierra.
+- **Dónde se mostraría:** la pantalla de fin (`FinishScreen`, `features/activities/lib/finishSummary.ts`). Hoy cuentan como novedad («Sigues avanzando. … Esto es lo que desbloqueaste:») pero no tienen texto, así que la lista queda vacía.
+- **Opciones:** agregar un texto por tipo («Nueva sección en tus planes: {nombre}», «Se abrió: {nombre}»); no contarlos como novedad y usar el subtítulo sin lista; dejarlos para el lote de planes (F07a).
+- **Si no se muestra:** al cerrar `t-valores` en api, el cierre dice «Esto es lo que desbloqueaste:» sin elementos. Visto en la prueba manual de F01.
+- **Estado:** pendiente de decisión del usuario.
+
 ## 2026-10-21 · F00 · Carta del apoderado (`t_apo_carta`)
 
 - **Dato:** `t-apo-carta` en `GET /cuentas/{c}/actividades` del apoderado (bloque FAMILIA), con su `bloqueo` mientras falta `t-apo-1`.
