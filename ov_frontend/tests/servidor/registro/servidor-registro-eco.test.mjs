@@ -126,7 +126,7 @@ test('con la respuesta disponible, la consigna cita el texto y nombra la activid
   assert.equal(tree.type.name, 'RegistroLumi')
   assert.equal(tree.props.hablanteId, 'companero')
   assert.equal(
-    tree.props.texto,
+    tree.props.texto.props.children[0],
     `Lumi recuerda lo que escribiste en «${titulo}»: «${REFERENCIAS.disponible.referencias[0].texto}»`,
   )
   // La consigna no supone que haya cita, y el rótulo de visibilidad va bajo la pregunta.
@@ -154,7 +154,7 @@ test('por desarrollar, la consigna muestra el aviso sin cita ni enlace; sin dato
   const aviso = app.mount(RegistroEco, { eco: espera.props.eco }).render()
   assert.equal(aviso.type.name, 'RegistroLumi')
   assert.equal(
-    aviso.props.texto,
+    aviso.props.texto.props.children[0],
     'La vez pasada lo contaste en pocas palabras. Aquí puedes tomarte tu tiempo.',
   )
   assert.doesNotMatch(JSON.stringify(aviso), /Ver o modificar|POCO_DESARROLLADA|clasificacion/)

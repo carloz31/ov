@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
-import { burbujaRegistro, errorConsulta, pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
+import { errorConsulta, pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
+import { RegistroEco } from './RegistroEco'
 import { RespuestaConsulta } from './RespuestaConsulta'
 import { RankingPodium } from './RankingPodium'
 import { RegistroGuiado } from './RegistroGuiado'
@@ -78,7 +79,8 @@ export function RegistroPodioNode({
   return (
     <RegistroGuiado
       hablanteId={node.hablanteId}
-      mensaje={consulta ? burbujaRegistro(undefined, consulta.pista) : mensajeLumi(puestos, config.unidad)}
+      mensaje={mensajeLumi(puestos, config.unidad)}
+      lumi={consulta && <RegistroEco pista={consulta.pista} hablanteId={node.hablanteId ?? 'companero'} />}
       consigna={item.consigna}
       ultimo={ultimo}
       ocupado={ocupado}

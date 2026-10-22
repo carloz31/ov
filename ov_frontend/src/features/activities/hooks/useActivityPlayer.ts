@@ -163,7 +163,8 @@ export function useActivityPlayer({
   }
   // «Anterior» (F01): las elecciones solo agregan reacciones, así que el camino recorrido es el orden de
   // los nodos y el paso anterior es nodes[index - 1], también al retomar. No se retrocede hacia ni desde
-  // una pregunta con retroalimentación, ni en un registro entregado o un cuestionario completado.
+  // una pregunta con retroalimentación, ni en un registro entregado (salvo en su consulta, F02) o un
+  // cuestionario completado.
   const [alRetroceder, setAlRetroceder] = useState<string>()
   const previo = nodes[index - 1]
   const anterior =
@@ -174,7 +175,8 @@ export function useActivityPlayer({
     // La primera pregunta de un cuestionario no vuelve al diálogo de entrada.
     !(node?.tipo === 'item' && index === nodes.findIndex((n) => n.tipo === 'item')) &&
     previo.tipo !== 'pregunta' &&
-    !(activity.tipo === 'registro' && (yaCompletada || edit)) &&
+    // Un registro del servidor ya completado se consulta (F02): sus consignas sí retroceden.
+    !(activity.tipo === 'registro' && (yaCompletada || edit) && !(modoApi && registroServidor)) &&
     // Tras la última consigna el registro ya está entregado: sus pasos posteriores no retroceden.
     !(activity.tipo === 'registro' && index > nodes.findLastIndex((n) => n.tipo === 'consigna')) &&
     !(activity.tipo === 'instrumento' && yaCompletada) &&

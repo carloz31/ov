@@ -69,10 +69,14 @@ test('en lectura, el podio va marcado y fijo, el texto como cita con «Modificar
   assert.equal(ranking.props.soloLectura, true)
   assert.deepEqual(copia(ranking.props.puestos), ['CREAR', 'LIBERTAD', 'ESTABILIDAD'])
   const guiado = elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0]
-  // Una sola burbuja de Lumi con la pista, sin los mensajes del podio.
+  // Una sola burbuja de Lumi con la pista resaltada, en lugar de los mensajes del podio.
+  assert.equal(guiado.props.lumi.type.name, 'RegistroEco')
+  const burbuja = app.mount(guiado.props.lumi.type, guiado.props.lumi.props).render()
+  assert.equal(burbuja.type.name, 'RegistroLumi')
+  assert.ok(JSON.stringify(burbuja.props.texto).includes('Aquí podrías contar un poco más:'))
   assert.equal(
-    guiado.props.mensaje,
-    `Aquí podrías contar un poco más: ${porAmpliar.items_por_ampliar[0].pista}`,
+    elementos(burbuja.props.texto, (e) => e.type === 'strong')[0].props.children,
+    porAmpliar.items_por_ampliar[0].pista,
   )
   assert.equal(guiado.props.etiqueta, 'Continuar')
   assert.equal(guiado.props.salida, undefined)
@@ -202,7 +206,9 @@ test('la elección guiada de t-expectativas se consulta con sus tarjetas, marcad
   assert.equal(tarjetas.props.soloLectura, true)
   assert.deepEqual(copia(tarjetas.props.seleccion), [{ codigo: 'UNIVERSIDAD' }])
   // Sin pista, Lumi no habla en la consulta (ni con los mensajes de la elección guiada).
-  assert.equal(elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0].props.mensaje, undefined)
+  const guiado = elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0]
+  const sinPista = app.mount(guiado.props.lumi.type, guiado.props.lumi.props).render()
+  assert.equal(sinPista.type.name, 'CharacterAvatar')
   const vista = app.mount(tarjetas.type, tarjetas.props).render()
   const universidad = elementos(vista, (e) => e.key === 'UNIVERSIDAD')[0]
   assert.equal(universidad.props['aria-disabled'], true)
@@ -289,14 +295,44 @@ test('cambiar la elección exige reescribir y la edición envía la elección nu
   player.unmount()
 })
 
-test('el eco y la pista de un mismo ítem van en una sola burbuja: primero el recuerdo, luego la pista', () => {
-  const { burbujaRegistro } = fixtureServidor().load('src/features/activities/lib/edicionRegistro.ts')
+test('el eco y la pista de un mismo ítem van en una sola burbuja: primero el recuerdo, luego la pista en negrita', () => {
+  const app = fixtureServidor()
+  const { RegistroEco } = app.load('src/features/activities/components/nodes/RegistroEco.tsx')
   // DATO DE PRUEBA: un eco disponible y una pista.
   const eco = { estado: 'DISPONIBLE', texto: 'Que estudie', titulo: 'Mis expectativas' }
-  assert.equal(
-    burbujaRegistro(eco, '¿Por qué lo crees?'),
-    'Lumi recuerda lo que escribiste en «Mis expectativas»: «Que estudie» Aquí podrías contar un poco más: ¿Por qué lo crees?',
-  )
-  assert.equal(burbujaRegistro(undefined, '¿Por qué?'), 'Aquí podrías contar un poco más: ¿Por qué?')
-  assert.equal(burbujaRegistro(undefined, undefined), undefined)
+  const burbuja = app
+    .mount(RegistroEco, { eco, pista: '¿Por qué lo crees?', hablanteId: 'companero' })
+    .render()
+  assert.equal(burbuja.type.name, 'RegistroLumi')
+  const texto = JSON.stringify(burbuja.props.texto)
+  const recuerdo = texto.indexOf('Lumi recuerda lo que escribiste en «Mis expectativas»: «Que estudie»')
+  assert.ok(recuerdo >= 0 && recuerdo < texto.indexOf('Aquí podrías contar un poco más:'))
+  const negritas = elementos(burbuja.props.texto, (e) => e.type === 'strong')
+  assert.equal(negritas.length, 1)
+  assert.equal(negritas[0].props.children, '¿Por qué lo crees?')
+  const soloEco = app.mount(RegistroEco, { eco, hablanteId: 'companero' }).render()
+  assert.equal(elementos(soloEco.props.texto, (e) => e.type === 'strong').length, 0)
+  assert.equal(app.mount(RegistroEco, { hablanteId: 'companero' }).render().type.name, 'CharacterAvatar')
+})
+
+test('con la actividad completada, la consulta conserva «Anterior» desde la segunda consigna', async () => {
+  const { app } = await iniciar({ actividad: 't-valores', registro: porAmpliar })
+  // Como en la app: el registro que se consulta está COMPLETADA en el camino.
+  app
+    .load('src/store/servidor/sesion.ts')
+    .obtenerEstadoServidor()
+    .actividades.datos.flatMap((b) => b.actividades)
+    .find((a) => a.codigo === 't-valores').estado = 'COMPLETADA'
+  const player = await abrir(app, 't-valores')
+  let nodo = consigna(player.render())
+  assert.equal(nodo.props.onAnterior, undefined)
+  nodo.props.onGuardar(nodo.props.inicial.texto, nodo.props.inicial.opciones)
+  await esperar()
+  nodo = consigna(player.render())
+  assert.equal(nodo.props.node.id, 't-val-libre')
+  assert.equal(typeof nodo.props.onAnterior, 'function')
+  nodo.props.onAnterior(nodo.props.inicial.texto, [])
+  await esperar()
+  assert.equal(consigna(player.render()).props.node.id, 't-val-orden')
+  player.unmount()
 })

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { CharacterAvatar } from '@/components/student/CharacterAvatar'
 
 export function InlineDialogue({
@@ -6,7 +7,8 @@ export function InlineDialogue({
   light = false,
 }: {
   speakerId: string
-  text: string
+  // Texto o, en la consulta del registro (F02), texto con la pista resaltada.
+  text: ReactNode
   light?: boolean
 }) {
   return (

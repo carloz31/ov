@@ -10,6 +10,7 @@ import '../../styles/registro-guiado.css'
 export function RegistroGuiado({
   hablanteId,
   mensaje,
+  lumi,
   consigna,
   ultimo,
   ocupado,
@@ -23,6 +24,8 @@ export function RegistroGuiado({
   hablanteId?: string
   // Sin mensaje (en la consulta, un ítem sin pista), Lumi no habla: solo su avatar.
   mensaje?: string
+  // Consulta (F02): la burbuja de la consigna (pista resaltada) en lugar de los mensajes de la elección.
+  lumi?: ReactNode
   consigna: string
   ultimo: boolean
   ocupado: boolean
@@ -43,11 +46,12 @@ export function RegistroGuiado({
         onEnviar()
       }}
     >
-      {mensaje ? (
-        <RegistroLumi hablanteId={hablanteId} texto={mensaje} />
-      ) : (
-        <CharacterAvatar id={hablanteId ?? 'companero'} size="sm" />
-      )}
+      {lumi ??
+        (mensaje ? (
+          <RegistroLumi hablanteId={hablanteId} texto={mensaje} />
+        ) : (
+          <CharacterAvatar id={hablanteId ?? 'companero'} size="sm" />
+        ))}
       <p className="sx-submission-label">
         <span className="sx-submission-premise">{consigna}</span>
         <span className="sx-submission-visibility">
