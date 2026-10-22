@@ -63,6 +63,7 @@ export function puntosServidor(
         zone,
         bloque: bloque.numero,
         bloqueNombre: bloque.nombre,
+        presentacionServidor: true,
         specActivityId: actividad.codigo,
         actionEnabled:
           actividad.contenido !== 'encuentro_resultado_elena' || actividad.estado !== 'BLOQUEADA',
@@ -70,7 +71,7 @@ export function puntosServidor(
         ...(actividad.requerida === false ? { opcional: true } : {}),
         // Una opcional con origen va fuera del camino, con línea propia, como las misiones adicionales.
         ...(actividad.requerida === false && mapa.origen
-          ? { additional: true, originId: mapa.origen, ...(mapa.adicional ? {} : { etiquetaNodo: 'Opcional' }) }
+          ? { additional: true, originId: mapa.origen, ...(mapa.adicional ? { misionAdicional: true } : {}) }
           : {}),
       },
     ]

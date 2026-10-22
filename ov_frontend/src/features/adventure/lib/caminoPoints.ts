@@ -11,7 +11,7 @@ import { getReflections } from '@/store/reflectionStore'
 import { isWithinStudentDemo } from '@/config/studentDemoScope'
 import { specActivityByMission } from './missionSync'
 import { missionComplete } from './missionSync'
-import type { StudentMapPoint } from './mapPoints'
+import { recomendadaServidor, type StudentMapPoint } from './mapPoints'
 import { iconosMapa } from './iconosMapa'
 import { puntosServidor } from './puntosServidor'
 import { actividadPorContenido } from '@/lib/servidor/contenidos'
@@ -42,9 +42,9 @@ export const orderedMissions = [
 ]
 
 export function getNextCaminoActivity(points: StudentMapPoint[]) {
-  const next = points.find(
-    (point) => (modoApi || !point.additional) && point.id !== 'city' && point.status === 'available',
-  )
+  const next = modoApi
+    ? recomendadaServidor(points)
+    : points.find((point) => !point.additional && point.id !== 'city' && point.status === 'available')
   return (
     (modoApi
       ? actividadPorContenido(obtenerEstadoServidor().actividades.datos, next?.specActivityId ?? '')

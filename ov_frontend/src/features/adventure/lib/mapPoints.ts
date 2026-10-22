@@ -25,8 +25,10 @@ export type StudentMapPoint = {
   secuencia?: ActividadCuenta[]
   actionEnabled: boolean
   additional?: boolean
-  // Solo api: texto del nodo fuera del camino; sin él, «Misión adicional».
-  etiquetaNodo?: string
+  // Solo api: presentación del servidor (candado en lo bloqueado; opcionales con «?» y sin píldora).
+  presentacionServidor?: boolean
+  // Solo api: la opcional es una misión adicional (`mapa.adicional`), no una misión extra.
+  misionAdicional?: boolean
   // Solo api: el servidor no la exige para cerrar el tramo.
   opcional?: boolean
   originId?: string
@@ -60,7 +62,14 @@ export function getZoneProgress(zone: StudentZone, adventure: AdventureState, jo
       }
 }
 
+// En api la recomendada es siempre una requerida disponible; una opcional, solo si no queda ninguna.
+export const recomendadaServidor = (points: StudentMapPoint[]) => {
+  const disponible = (p: StudentMapPoint) => p.id !== 'city' && p.status === 'available'
+  return points.find((p) => disponible(p) && !p.opcional) ?? points.find(disponible)
+}
+
 export function getRecommendedPoint(points: StudentMapPoint[]) {
+  if (modoApi && points[0]?.zone === 'camino') return recomendadaServidor(points)
   if (points[0]?.zone === 'camino')
     return (
       points.find(

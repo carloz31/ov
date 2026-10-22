@@ -64,5 +64,13 @@
   - En api, `puntosServidor` marca como `additional` a las opcionales con origen, y `MapPath` ya une solo el resto, sin cambios.
   - `incorporarDesbloqueos` encola en memoria (`porRevelar`, en el almacén del servidor) las actividades desbloqueadas; `useRevelarOpcionales` las revela de a una en el Camino con los tiempos de `AdditionalReveal` (2,7 s, o 0 con movimiento reducido) y descarta lo que no se dibuja como opcional.
   - Sin el aviso «Nueva misión adicional» de local, que el ajuste no pide.
-  - Texto del nodo (decidido por el usuario): en api, una opcional dice «Opcional» en el texto pequeño y en el `aria-label` (`etiquetaNodo`); `t-adicional` conserva «Misión adicional» con `mapa.adicional` en su JSON. Local no cambia.
+  - Texto del nodo (ajuste 15, decidido por el usuario):
+    - en api la opcional no lleva píldora;
+    - su `aria-label` dice «, misión extra»; `t-adicional` (`mapa.adicional`, `misionAdicional`) conserva «, misión adicional».
+- **Opcionales como plus (ajuste 15).**
+  - `puntosServidor` marca `presentacionServidor`. Con eso, `MapNode` usa `LockKeyhole` en lo bloqueado y `CircleHelp` (sin relleno) en `sx-extra-star`, y quita la píldora. Local sigue con `CircleHelp` y `Star`.
+  - Tamaño: el nodo adicional mide 124 px y el requerido 140 px; no hizo falta CSS.
+  - La recomendada y el «Siguiente paso» usan `recomendadaServidor`: primero una requerida disponible.
+  - `guiaCaminoApi[0]` tiene el texto nuevo.
+  - El encuadre al revelar ya reutiliza `frameAdditional`.
   - Pruebas adaptadas: `servidor-mapa` y `servidor-flujo` ya no esperan opcionales visibles al inicio.

@@ -1,4 +1,4 @@
-import { Check, CircleHelp, Star } from 'lucide-react'
+import { Check, CircleHelp, LockKeyhole, Star } from 'lucide-react'
 import { mapPosition, type MapSize } from '../lib/geometry'
 import type { StudentMapPoint } from '../lib/mapPoints'
 
@@ -33,7 +33,11 @@ export function MapNode({
   mapSize?: MapSize
 }) {
   const position = mapPosition(point, mapSize)
-  const Icon = point.status === 'locked' ? CircleHelp : point.icon
+  // En api lo bloqueado lleva candado, y el «?» queda para las misiones extra (opcionales).
+  const servidor = point.presentacionServidor
+  const Icon = point.status === 'locked' ? (servidor ? LockKeyhole : CircleHelp) : point.icon
+  const Esquina = servidor ? CircleHelp : Star
+  const etiquetaExtra = servidor && !point.misionAdicional ? ', misión extra' : ', misión adicional'
   return (
     <button
       type="button"
@@ -44,13 +48,13 @@ export function MapNode({
       style={{ left: position.x, top: position.y }}
       onClick={() => onSelect(point.id)}
       onFocus={() => onFocus(point.id)}
-      aria-label={`${point.title}${point.additional ? `, ${(point.etiquetaNodo ?? 'Misión adicional').toLowerCase()}` : ''}${point.status === 'locked' ? ', bloqueado' : point.status === 'completed' ? ', completado' : ''}`}
+      aria-label={`${point.title}${point.additional ? etiquetaExtra : ''}${point.status === 'locked' ? ', bloqueado' : point.status === 'completed' ? ', completado' : ''}`}
     >
       <span className="sx-node-circle">
         <Icon size={56} aria-hidden="true" />
         {point.additional && (
           <span className="sx-extra-star">
-            <Star size={15} fill="currentColor" />
+            <Esquina size={15} fill={servidor ? 'none' : 'currentColor'} />
           </span>
         )}
         {point.status === 'completed' && (
@@ -65,7 +69,7 @@ export function MapNode({
             <span key={line}>{line}</span>
           ))}
         </strong>
-        {point.additional && <small>{point.etiquetaNodo ?? 'Misión adicional'}</small>}
+        {point.additional && !servidor && <small>Misión adicional</small>}
       </span>
     </button>
   )

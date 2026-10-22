@@ -335,18 +335,35 @@ test('las opcionales van fuera del camino, con línea desde su origen, y se reve
   assert.deepEqual(copia(m.sesion.obtenerEstadoServidor().porRevelar), [])
 })
 
-test('el nodo de una opcional dice «Opcional» y el de la misión adicional conserva su texto', () => {
+test('en api las opcionales llevan «?» sin píldora, lo bloqueado candado y la recomendada es una requerida', () => {
   const m = mapa('ruta/ruta-actividades-ciudad')
   const { MapNode } = m.app.load('src/features/adventure/components/MapNode.tsx')
   const nodo = (codigo) => {
     const point = m.camino().find((p) => p.specActivityId === codigo)
-    const tree = MapNode({ point, onSelect() {}, onFocus() {} })
-    return [tree.props['aria-label'], JSON.stringify(copia(tree))]
+    return MapNode({ point, onSelect() {}, onFocus() {} })
   }
-  const [etiquetaOpcional, opcional] = nodo('t-opcional')
-  assert.match(etiquetaOpcional, /, opcional/)
-  assert.match(opcional, /"children":"Opcional"/)
-  const [etiquetaAdicional, adicional] = nodo('t-adicional')
-  assert.match(etiquetaAdicional, /, misión adicional/)
-  assert.match(adicional, /"children":"Misión adicional"/)
+  const opcional = nodo('t-opcional')
+  assert.match(opcional.props['aria-label'], /, misión extra$/)
+  // Sin píldora: la etiqueta lleva solo el título.
+  const pildora = (n) => n.props.children[1].props.children[1]
+  assert.equal(pildora(opcional), false)
+  const circulo = opcional.props.children[0].props.children
+  const esquina = circulo[1].props.children
+  assert.equal(esquina.props.fill, 'none')
+  const adicional = nodo('t-adicional')
+  assert.match(adicional.props['aria-label'], /, misión adicional$/)
+  assert.equal(pildora(adicional), false)
+  // Lo bloqueado lleva candado, no el «?» de las misiones extra.
+  const bloqueado = nodo('t-llegada')
+  const icono = bloqueado.props.children[0].props.children[0].type
+  assert.notEqual(icono, esquina.type)
+  // La recomendada es una requerida disponible aunque haya opcionales disponibles antes.
+  const t1 = mapa('ruta/ruta-actividades-t1')
+  const camino = t1.camino()
+  assert.ok(camino.some((p) => p.opcional && p.status === 'available'))
+  assert.equal(t1.general.getRecommendedPoint(camino).specActivityId, 't-expectativas')
+  // Sin requeridas disponibles (la Ciudad abierta y T2 cerrado), la recomendada puede ser una opcional.
+  assert.equal(m.general.getRecommendedPoint(m.camino()).opcional, true)
+  const { guiaCaminoApi } = m.app.load('src/data/content/guideTexts.ts')
+  assert.match(guiaCaminoApi[0], /candado aún no están disponibles.*misiones extra que ganaste/)
 })

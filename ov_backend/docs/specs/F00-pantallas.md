@@ -20,7 +20,16 @@ El drawer conserva todo lo que muestra hoy: insignia de estado, tiempo, título,
   - todas son `AL_DESBLOQUEAR` en `ruta`: aparecen al desbloquearse;
   - el camino principal (`MapPath`) une solo las requeridas, en orden y cruzando bloques;
   - cada opcional se dibuja como hoy las misiones adicionales de local (`additional`, `originId`, `revealing`, `revealQueued`, `sx-node-additional`), con línea propia desde `mapa.origen` del contenido: punteada mientras está pendiente y verde al completarse;
-  - las que llegan en los desbloqueos de una acción se revelan una por una al volver al Camino, con la animación existente (punto y línea). La marca vive solo en memoria: tras recargar aparecen sin animación.
+  - las que llegan en los desbloqueos de una acción se revelan una por una al volver al Camino, con la animación existente (punto y línea), y el mapa se centra en cada una con el encuadre de las misiones adicionales (`frameAdditional`). La marca vive solo en memoria: tras recargar aparecen sin animación.
+- **Opcionales como plus con intriga (ajuste 15, 21 oct 2026):**
+  - conservan el color de misión adicional y la insignia de esquina `sx-extra-star`, que pasa a llevar `CircleHelp` («?») en lugar de `Star`;
+  - su etiqueta en el mapa lleva solo el título, sin píldora («Opcional» ni «Misión adicional»);
+  - el nodo no es más grande que el de una requerida (124 px frente a 140 px), así que no cambia el CSS;
+  - en api, los puntos bloqueados usan `LockKeyhole` en lugar de `CircleHelp`, y el ícono dentro del círculo sigue indicando el tipo de actividad;
+  - el `aria-label` dice «, misión extra» (`t-adicional` conserva «, misión adicional»);
+  - «Opcional» se sigue mostrando en el drawer y en «Actividades disponibles»;
+  - el punto que brilla es siempre una requerida disponible; una opcional solo si no queda ninguna;
+  - el primer paso de la ayuda del Camino (`guiaCaminoApi`) explica el candado y el «?».
 - **Tiempo:** `{duracion_estimada_min} min` del servidor; si viene nulo, el texto actual de `getMissionMeta`.
 - **Descripción:** `descripcion` del servidor; si viene nula, la del JSON de contenido, como hoy.
 - **Lista «Actividades disponibles» del panel:** el subtítulo agrega « · opcional» cuando corresponde.
