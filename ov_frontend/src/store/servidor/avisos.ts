@@ -13,6 +13,11 @@ export function incorporarDesbloqueos(desbloqueos: DesbloqueoNuevo[]) {
     .map((d) => d.objetivo.codigo)
   publicar({ desbloqueosAccion: [...todos.values()], porRevelar: [...porRevelar, ...nuevas] })
 }
+export function encolarPorRevelar(codigos: string[]) {
+  const porRevelar = obtenerEstadoServidor().porRevelar
+  const nuevas = codigos.filter((c) => !porRevelar.includes(c))
+  if (nuevas.length) publicar({ porRevelar: [...porRevelar, ...nuevas] })
+}
 // El mapa ya reveló (o no dibuja) estas actividades.
 export function quitarPorRevelar(quitar: (codigo: string) => boolean) {
   const porRevelar = obtenerEstadoServidor().porRevelar

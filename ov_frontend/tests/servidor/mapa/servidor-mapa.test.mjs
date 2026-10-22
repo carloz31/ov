@@ -367,3 +367,36 @@ test('en api las opcionales llevan «?» sin píldora, lo bloqueado candado y la
   const { guiaCaminoApi } = m.app.load('src/data/content/guideTexts.ts')
   assert.match(guiaCaminoApi[0], /candado aún no están disponibles.*misiones extra que ganaste/)
 })
+
+test('completar t-cierre-inicio encola para revelar las opcionales que su bloque vuelve visibles', async () => {
+  const { escenarioRuta, esConsultaDominio, respuestaDominio } = await import('../../soporte/servidor-ayudas.mjs')
+  const app = fixtureServidor()
+  let etapa = 'inicial'
+  app.fetch((r) => {
+    if (r.url === '/api/acciones/ingresar') return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
+    if (r.url === '/api/acciones/completar-actividad') {
+      etapa = 't1'
+      return { body: jsonServidor('ruta/ruta-completar-t-cierre-inicio') }
+    }
+    if (esConsultaDominio(r)) return respuestaDominio(r, escenarioRuta(etapa))
+    if (r.url.includes('/desbloqueos?')) return { body: [] }
+    throw Error(`Solicitud no configurada: ${r.url}`)
+  })
+  const acciones = app.load('src/store/servidor/operaciones.ts')
+  assert.equal((await acciones.ingresar()).tipo, 'ok')
+  const sesion = app.load('src/store/servidor/sesion.ts')
+  // El ingreso no anima nada: lo visible ya estaba.
+  assert.deepEqual(copia(sesion.obtenerEstadoServidor().porRevelar), [])
+  // El servidor solo informa NIVEL, SECCION y BLOQUE T1; las opcionales llegan al volverse visibles.
+  assert.equal((await acciones.completarActividad('t-cierre-inicio')).tipo, 'ok')
+  assert.deepEqual(copia(sesion.obtenerEstadoServidor().porRevelar), ['t-valores', 't-lee-cuestionario', 't-batalla'])
+  const camino = app.load('src/features/adventure/lib/caminoPoints.ts').getCaminoPoints({}, {})
+  assert.deepEqual(
+    copia(camino.filter((p) => p.additional).map((p) => [p.specActivityId, !!p.revealing, !!p.revealQueued])),
+    [
+      ['t-valores', true, false],
+      ['t-lee-cuestionario', false, true],
+      ['t-batalla', false, true],
+    ],
+  )
+})

@@ -9,10 +9,12 @@ import {
   vencerSeccion,
   vencerErroresActivos,
 } from './secciones'
-import { consultarNoVistos } from './avisos'
+import { consultarNoVistos, encolarPorRevelar } from './avisos'
 import { cargarResultadoRiasec } from './resultado'
-import type { DesbloqueoNuevo, RespuestaServidor } from '@/types/servidor'
+import type { BloqueActividades, DesbloqueoNuevo, RespuestaServidor } from '@/types/servidor'
 let revision = 0
+const visibles = (bloques: BloqueActividades[] | null) =>
+  bloques?.flatMap((b) => b.actividades.filter((a) => a.visible).map((a) => a.codigo))
 export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<RespuestaServidor<null>> {
   const sesion = sesionServidor(),
     cuenta = cuentaActiva(),
@@ -22,6 +24,8 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
   const vigente = () => sesion === sesionServidor() && cuenta === cuentaActiva() && turno === revision
   publicar({ cargando: true, error: null })
   if (desbloqueos === undefined) vencerErroresActivos()
+  // F00: lo que una acción vuelve visible (una opcional que se abre con su bloque) se revela en el mapa.
+  const visiblesAntes = visibles(obtenerEstadoServidor().actividades.datos)
   vencerSeccion('actividades')
   // F00: las secciones del perfil se ven siempre (accesos del panel): van con el ingreso, como el resumen.
   const nombres =
@@ -46,6 +50,10 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
   const error = respuestas.find((r) => r.tipo !== 'ok')
   publicar({ cargando: false, error: error ?? null })
   if (error) return error
+  if (desbloqueos !== undefined && visiblesAntes) {
+    const ahora = visibles(obtenerEstadoServidor().actividades.datos) ?? []
+    encolarPorRevelar(ahora.filter((codigo) => !visiblesAntes.includes(codigo)))
+  }
   const final = actividadServidor(obtenerEstadoServidor().actividades.datos, 'act-tip-final')
   if (final && final.estado !== 'BLOQUEADA') {
     const resultado = await cargarResultadoRiasec()

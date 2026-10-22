@@ -62,7 +62,7 @@
   - `ruta.py` da `AL_DESBLOQUEAR` a todas las opcionales; se regeneraron los fixtures.
   - Los JSON de las opcionales llevan `mapa.origen` (`t-valores`, `t-lee-cuestionario` y `t-batalla` salen de `t-cierre-inicio`; `t-opcional`, `t-eco` y `t-adicional`, de `t-expectativas`; `t-explorar`, de `t-batalla`), con posiciones provisionales cerca de su origen. El campo está documentado en `docs/contenidos-actividades.md`.
   - En api, `puntosServidor` marca como `additional` a las opcionales con origen, y `MapPath` ya une solo el resto, sin cambios.
-  - `incorporarDesbloqueos` encola en memoria (`porRevelar`, en el almacén del servidor) las actividades desbloqueadas; `useRevelarOpcionales` las revela de a una en el Camino con los tiempos de `AdditionalReveal` (2,7 s, o 0 con movimiento reducido) y descarta lo que no se dibuja como opcional.
+  - La cola en memoria (`porRevelar`, en el almacén del servidor) recibe las actividades desbloqueadas (`incorporarDesbloqueos`) y, tras una acción, las que el refresco vuelve visibles (`refrescar`). Lo segundo es una corrección: al completar `t-cierre-inicio` el servidor solo informa el BLOQUE T1, y sus opcionales no se animaban; `useRevelarOpcionales` las revela de a una en el Camino con los tiempos de `AdditionalReveal` (2,7 s, o 0 con movimiento reducido) y descarta lo que no se dibuja como opcional.
   - Sin el aviso «Nueva misión adicional» de local, que el ajuste no pide.
   - Texto del nodo (ajuste 15, decidido por el usuario):
     - en api la opcional no lleva píldora;
