@@ -395,6 +395,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Ajustes al backend posibles:** la relación caso → ocupaciones de la colección para mostrar el ícono en el resultado RIASEC (hoy no llega).
 - **F04b · Preguntas de batalla en el servidor (M) · Implementado:** pool de preguntas por batalla con su ficha, intentos al azar con opciones mezcladas, respuestas guardadas, fichas derivadas de las preguntas; drawer «Se alimenta de» y cierres de victoria, práctica y derrota.
 - **F04c · Vidas y destellos en el servidor (M) · Implementado:** la batalla configura vidas del enemigo y destellos; el servidor decide la victoria con las respuestas y el cierre sale de su respuesta.
+- **F04d · Ficha única y cierre de la batalla · Implementado:** el visor de la mochila es la única presentación de una ficha; la mochila lista las fichas del servidor; intro con «Tu luz viene de», feedback con su ficha y cierre con `fichas_repaso`.
 
 #### F05 · Diario, pregunta del día y check-in
 - **Hace:** diario desde el servidor (preguntas fijas y personalizadas, entradas con título opcional, editar y borrar, pregunta del día vigente, amistad con Lumi); aviso en el cierre de actividad cuando deja una pregunta; check-in al ingresar si no hay uno del día y su evolución; temáticas y afinidad en el pasaporte.
