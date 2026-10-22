@@ -12,18 +12,6 @@ const texto = (n) =>
         ? texto(n.props.children)
         : ''
 
-test('el repaso abre primero la ficha con más errores; si empatan, la del primer fallo', () => {
-  const app = fixtureServidor()
-  const { ordenFichasRepaso } = app.load('src/features/activities/lib/batallaServidor.ts')
-  const fichas = ['t-ficha', 't-ficha-2']
-  assert.deepEqual(copia(ordenFichasRepaso(fichas, ['t-ficha-2', 't-ficha', 't-ficha-2'])), ['t-ficha-2', 't-ficha'])
-  assert.deepEqual(copia(ordenFichasRepaso(fichas, ['t-ficha-2', 't-ficha'])), ['t-ficha-2', 't-ficha'])
-  assert.deepEqual(copia(ordenFichasRepaso(fichas, ['t-ficha', 't-ficha-2'])), ['t-ficha', 't-ficha-2'])
-  // Sin errores (la intro), el orden de la batalla: la de su primera pregunta.
-  assert.deepEqual(copia(ordenFichasRepaso(fichas, [])), fichas)
-  assert.deepEqual(copia(ordenFichasRepaso(['t-ficha'], ['t-ficha-2'])), ['t-ficha'])
-})
-
 function cierre(cambios = {}) {
   const app = fixtureServidor()
   const { challenges } = app.load('src/data/content/challenges.ts')
@@ -38,6 +26,7 @@ function cierre(cambios = {}) {
     aciertos: 5,
     preguntas: 6,
     destellos_restantes: 2,
+    fichas_repaso: [],
   }
   const model = {
     c,
@@ -46,10 +35,7 @@ function cierre(cambios = {}) {
     reintentarIntento: () => llamadas.push(['reintentar']),
     vidasEnemigo: 5,
     title: { current: null },
-    sheets: ['t-ficha-2', 't-ficha'],
-    repasar: () => llamadas.push(['repaso', true]),
     start: () => llamadas.push(['intentar']),
-    etiquetaRepaso: 'Repasar las fichas',
     ...cambios,
     // F04c: el cierre sale de la respuesta del servidor, no del cálculo local.
     resultado: cambios.resultado === null ? undefined : { ...base, ...(cambios.resultado ?? {}) },
@@ -81,36 +67,40 @@ test('la práctica tiene el emblema en gris y no muestra desbloqueos', () => {
   assert.equal(elementos(arbol, (e) => /^Finish/.test(e.type?.name ?? '')).length, 0)
 })
 
-test('la derrota repasa primero y después reintenta; sin fichas, solo reintenta', () => {
-  const { arbol, llamadas } = cierre({ resultado: { victoria: false, aciertos: 3, preguntas: 6, destellos_restantes: 0 } })
+const FICHAS_REPASO = [
+  { codigo: 't-ficha', titulo: 'Ficha de prueba' },
+  { codigo: 't-ficha-2', titulo: 'Segunda ficha de prueba' },
+]
+const chips = (arbol) => elementos(arbol, (e) => e.type?.name === 'ChipsFicha')
+
+test('la derrota muestra «Para la próxima, repasa» con las fichas del servidor y solo «Intentar de nuevo»', () => {
+  const { arbol, llamadas } = cierre({
+    resultado: { victoria: false, aciertos: 3, preguntas: 6, destellos_restantes: 0, fichas_repaso: FICHAS_REPASO },
+  })
   assert.ok(texto(arbol).includes('Le quitaste 3 de sus 5 vidas'))
-  assert.deepEqual(copia(botones(arbol).map(texto)), ['Repasar las fichas', 'Intentar de nuevo'])
-  assert.ok(!texto(arbol).includes('Volver a la ciudad'))
-  botones(arbol).forEach((b) => b.props.onClick())
-  assert.deepEqual(llamadas, [['repaso', true], ['intentar']])
+  const [repaso] = chips(arbol)
+  assert.deepEqual([repaso.props.etiqueta, copia(repaso.props.fichas)], ['Para la próxima, repasa:', FICHAS_REPASO])
+  assert.deepEqual(copia(botones(arbol).map(texto)), ['Intentar de nuevo'])
+  assert.ok(botones(arbol)[0].props.className.includes('sx-primary-button'))
+  assert.ok(!texto(arbol).includes('Volver a la ciudad') && !/correcta/i.test(texto(arbol)))
+  botones(arbol)[0].props.onClick()
+  assert.deepEqual(llamadas, [['intentar']])
   // El emblema es el personaje, intacto.
   const [img] = elementos(arbol, (e) => e.type === 'img')
   assert.ok(img.props.src)
-  const sinFichas = cierre({ resultado: { victoria: false }, sheets: [] })
-  const unico = botones(sinFichas.arbol)
-  assert.deepEqual(copia(unico.map(texto)), ['Intentar de nuevo'])
-  assert.ok(unico[0].props.className.includes('sx-primary-button'))
 })
 
-test('el drawer y el repaso ofrecen solo las fichas disponibles con contenido', () => {
-  const app = fixtureServidor()
-  const { fichasDeRepaso } = app.load('src/features/activities/lib/batallaServidor.ts')
-  const [batalla] = jsonServidor('ruta/ruta-batallas')
-  const conContenido = (codigo) => codigo !== 'sin-contenido'
-  assert.deepEqual(copia(fichasDeRepaso(batalla.fichas, conContenido).map((f) => f.codigo)), ['t-ficha', 't-ficha-2'])
-  // Una ficha todavía no obtenida, o sin contenido en el front, no se ofrece.
-  const mezcla = [
-    { ...batalla.fichas[0], estado: 'BLOQUEADA' },
-    batalla.fichas[1],
-    { codigo: 'sin-contenido', titulo: 'Sin contenido', estado: 'DISPONIBLE' },
-  ]
-  assert.deepEqual(copia(fichasDeRepaso(mezcla, conContenido).map((f) => f.codigo)), ['t-ficha-2'])
-  assert.deepEqual(copia(fichasDeRepaso([], conContenido)), [])
+test('la victoria muestra las fichas a repasar solo si falló alguna, con su texto en singular o plural', () => {
+  assert.equal(chips(cierre().arbol).length, 0)
+  assert.ok(!texto(cierre().arbol).includes('Ganaste, aunque'))
+  const una = cierre({ resultado: { fichas_repaso: FICHAS_REPASO.slice(0, 1) } }).arbol
+  assert.ok(texto(una).includes('Ganaste, aunque esta ficha aún te puede dar más luz.'))
+  assert.equal(chips(una).length, 1)
+  const dos = cierre({ resultado: { fichas_repaso: FICHAS_REPASO } }).arbol
+  assert.ok(texto(dos).includes('Ganaste, aunque estas fichas aún te pueden dar más luz.'))
+  // La práctica también, si tuvo fallos.
+  const practica = cierre({ resultado: { practica: true, fichas_repaso: FICHAS_REPASO.slice(0, 1) } }).arbol
+  assert.equal(chips(practica).length, 1)
 })
 
 test('mientras se envía el intento, un estado de carga; si falla, el error con «Reintentar»', () => {

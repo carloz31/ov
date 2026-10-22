@@ -4,6 +4,7 @@ from typing import Literal
 from pydantic import BaseModel, Field, model_validator
 
 from app.models import EstadoProgreso, TipoEventoUso
+from app.schemas.batallas import FichaPregunta
 from app.schemas.cuentas import EventoLegible
 from app.schemas.diario import EntradaDesbloqueada
 from app.schemas.motor import DesbloqueoNuevo
@@ -181,6 +182,9 @@ class RespuestaResolverBatalla(RespuestaAccion):
     aciertos: int
     preguntas: int
     destellos_restantes: int
+    # F04d: las fichas de las preguntas falladas en este intento, de más a menos fallos (empate: la de la
+    # primera pregunta fallada). Sin fallos, vacía.
+    fichas_repaso: list[FichaPregunta]
 
 
 class RespuestaResolverCaso(RespuestaAccion):

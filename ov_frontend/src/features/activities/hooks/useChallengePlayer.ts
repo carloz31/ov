@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { abrirRecurso } from '@/store/visorRecursoStore'
-import { catalog } from '@/data/activities/content'
 import { useJourney, updateJourney, useJourneyError } from '@/store/journeyStore'
 import { consultarBatallas, consultarPreguntasBatalla, resolverBatalla } from '@/store/servidor/batallas'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import {
   batallaDesdePreguntas,
-  fichasDeRepaso,
-  ordenFichasRepaso,
   respuestaBatalla,
   type ConfiguracionBatalla,
 } from '../lib/batallaServidor'
@@ -74,15 +71,9 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
     : errorLectura
       ? 'error'
       : 'cargando'
-  const disponibles = conServidor
-    ? fichasDeRepaso(fichasBatalla, (codigo) => catalog.recursos.some((r) => r.id === codigo)).map((f) => f.codigo)
-    : c.requisitos.filter((r) => r.tipo === 'ficha').map((r) => r.id)
-  // Tras perder, primero la ficha con más errores del intento; antes, la de su primera pregunta.
-  const fallos = respuestas.current.flatMap((r) => {
-    const pregunta = battle?.questions.find((q) => q.id === r.pregunta)
-    return pregunta?.ficha && String(r.opcion) !== pregunta.correcta ? [pregunta.ficha.codigo] : []
-  })
-  const sheets = conServidor && stage === 'result' ? ordenFichasRepaso(disponibles, fallos) : disponibles
+  // Local: las fichas de los requisitos del desafío. En api, el repaso del cierre sale del servidor
+  // (`fichas_repaso`, F04d).
+  const sheets = conServidor ? [] : c.requisitos.filter((r) => r.tipo === 'ficha').map((r) => r.id)
   const question = battle?.questions[battle.index]
   const hit = !!battle?.selected && battle.selected === question?.correcta
   const victory = battle?.enemyLife === 0
@@ -142,7 +133,6 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
   const responseTitle = hit
     ? `¡Golpe de luz! ${c.nombre} pierde fuerza.`
     : `${c.nombre} resiste. Pierdes un destello.`
-  const plural = conServidor && sheets.length > 1
   return {
     c,
     state,
@@ -173,7 +163,6 @@ export function useChallengePlayer({ challenge: c, servidor }: { challenge: Chal
     enviandoIntento,
     errorIntento,
     reintentarIntento: () => void enviarIntento(),
-    etiquetaRepaso: plural ? 'Repasar las fichas' : 'Repasar la ficha',
     // F04d: «Tu luz viene de»: todas las fichas de la batalla (api) o de sus requisitos (local).
     fichasIntro: conServidor
       ? fichasBatalla.map((f) => ({ codigo: f.codigo, titulo: f.titulo, bloqueada: f.estado === 'BLOQUEADA' }))

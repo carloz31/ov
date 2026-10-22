@@ -49,8 +49,11 @@ def test_hu017_perder_reintentar_y_ganar_una_sola_vez(cliente, aplicacion):
     # Un acierto y tres errores: el tercer error agota los destellos.
     perdida = pedir(cliente, 'POST', '/acciones/resolver-batalla',
                     {**intento(False, 1), 'fecha_hora': '2026-10-08T10:00:00'})
+    # F04d: las fallas fueron p02 (t-ficha-2), p03 y p04 (t-ficha): primero la de más fallos.
     assert perdida == {'eventos_registrados': [], 'nuevos_desbloqueos': [], 'victoria': False, 'practica': False,
-                       'aciertos': 1, 'preguntas': 4, 'destellos_restantes': 0}
+                       'aciertos': 1, 'preguntas': 4, 'destellos_restantes': 0,
+                       'fichas_repaso': [{'codigo': 't-ficha', 'titulo': 'Ficha de prueba'},
+                                         {'codigo': 't-ficha-2', 'titulo': 'Segunda ficha de prueba'}]}
     fila = batalla(cliente)
     assert (fila['estado'], fila['intentos'], fila['superada']) == ('EN_CURSO', 1, False)
     # Aciertos y preguntas los cuenta el servidor a partir de las respuestas.
@@ -178,3 +181,29 @@ def test_presupuesto_de_consultas_de_batallas(tmp_path, base_aislada):
             cantidades.append(medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/batallas')[1].cantidad)
             conteos.append(cantidades)
     assert conteos[0] == conteos[1]
+
+
+def respuesta(codigo, acierta):
+    _, opciones, correcta = POOL[codigo]
+    return {'pregunta': codigo, 'opcion': correcta if acierta else (correcta + 1) % len(opciones)}
+
+
+def repaso(cliente, secuencia):
+    """resolver-batalla con (pregunta, acierta) en orden; devuelve los códigos de `fichas_repaso`."""
+    cuerpo = {'cuenta': 'est-ana', 'actividad': 't-batalla',
+              'respuestas': [respuesta(codigo, acierta) for codigo, acierta in secuencia]}
+    return [f['codigo'] for f in pedir(cliente, 'POST', '/acciones/resolver-batalla', cuerpo)['fichas_repaso']]
+
+
+def test_fichas_repaso_de_las_preguntas_falladas(cliente):
+    avanzar(cliente, 't-cierre-inicio')
+    aciertos = [(c, True) for c in ('t-batalla-p05', 't-batalla-p06', 't-batalla-p07', 't-batalla-p08', 't-batalla-p09')]
+    # Sin fallos, la lista va vacía.
+    assert repaso(cliente, aciertos) == []
+    # Dos fallos de la misma ficha (p01 y p03, de t-ficha): una sola entrada.
+    assert repaso(cliente, [('t-batalla-p01', False), ('t-batalla-p03', False), *aciertos]) == ['t-ficha']
+    # Por cantidad de fallos: t-ficha (2) antes que t-ficha-2 (1), aunque t-ficha-2 se falló primero.
+    assert repaso(cliente, [('t-batalla-p02', False), ('t-batalla-p01', False), ('t-batalla-p03', False)]) == [
+        't-ficha', 't-ficha-2']
+    # Empate: primero la de la primera pregunta fallada.
+    assert repaso(cliente, [('t-batalla-p02', False), ('t-batalla-p01', False), *aciertos]) == ['t-ficha-2', 't-ficha']

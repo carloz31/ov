@@ -1,9 +1,10 @@
-import { BookOpen, Swords } from 'lucide-react'
+import { Swords } from 'lucide-react'
 import { useChallengePlayer } from '@/features/activities/hooks/useChallengePlayer'
 import { resumirCierre } from '../../lib/finishSummary'
 import { FinishMedalsSection } from '../FinishMedalsSection'
 import { FinishBackpackSection } from '../FinishBackpackSection'
 import { FinishExtrasSection } from '../FinishExtrasSection'
+import { ChipsFicha } from './ChipsFicha'
 
 // F04b (api): cierres de la batalla del servidor. Victoria con sus desbloqueos, práctica sin ellos y
 // derrota con el repaso como acción principal. Nunca muestra las respuestas correctas. F04c: el cierre sale de
@@ -23,10 +24,7 @@ export function CierreBatalla({
     reintentarIntento,
     vidasEnemigo,
     title,
-    sheets,
-    repasar,
     start,
-    etiquetaRepaso,
   } = model
   if (enviandoIntento)
     return (
@@ -61,18 +59,10 @@ export function CierreBatalla({
           el próximo intento habrá preguntas nuevas.
         </p>
         <p>No pierdes nada de lo que ya lograste en tu recorrido.</p>
+        {/* F04d: las fichas de las preguntas falladas, según el servidor; se sale con la X. */}
+        <ChipsFicha etiqueta="Para la próxima, repasa:" fichas={resultado.fichas_repaso} />
         <div className="sx-player-actions">
-          {sheets.length > 0 && (
-            <button type="button" className="sx-primary-button" onClick={repasar}>
-              <BookOpen size={18} aria-hidden="true" />
-              {etiquetaRepaso}
-            </button>
-          )}
-          <button
-            type="button"
-            className={sheets.length > 0 ? 'sx-secondary-button' : 'sx-primary-button'}
-            onClick={start}
-          >
+          <button type="button" className="sx-primary-button" onClick={start}>
             Intentar de nuevo
           </button>
         </div>
@@ -106,6 +96,16 @@ export function CierreBatalla({
         </span>
         <span>Te quedaron {resultado.destellos_restantes} destellos</span>
       </div>
+      {resultado.fichas_repaso.length > 0 && (
+        <>
+          <p>
+            {resultado.fichas_repaso.length > 1
+              ? 'Ganaste, aunque estas fichas aún te pueden dar más luz.'
+              : 'Ganaste, aunque esta ficha aún te puede dar más luz.'}
+          </p>
+          <ChipsFicha etiqueta="Para la próxima, repasa:" fichas={resultado.fichas_repaso} />
+        </>
+      )}
       {resumen && resumen.medallas.length > 0 && <FinishMedalsSection medallas={resumen.medallas} />}
       {resumen && resumen.totalRecursos > 0 && <FinishBackpackSection resumen={resumen} />}
       {resumen && resumen.extras.length > 0 && <FinishExtrasSection extras={resumen.extras} />}

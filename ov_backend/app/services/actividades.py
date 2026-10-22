@@ -7,7 +7,7 @@ from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, AplicacionActividad, Bloque, ColeccionOcupacion, Cuenta, Dimension, EstadoProgreso,
     EstadoRespuestaRegistro, Instrumento, ItemInstrumento, Ocupacion, OpcionEscala, ProgresoActividad, RespuestaItem,
-    PreguntaBatalla, RespuestaBatalla, RespuestaRegistro, ResultadoBatalla, ResultadoCaso, ResultadoInstrumento, Rol,
+    Ficha, PreguntaBatalla, RespuestaBatalla, RespuestaRegistro, ResultadoBatalla, ResultadoCaso, ResultadoInstrumento, Rol,
     TipoActividad, TipoEventoUso,
     TipoObjetivo, TipoResultado, Visibilidad,
 )
@@ -19,6 +19,7 @@ from app.schemas.acciones import (
     RespuestaRevelarResultado, ResultadoAnulado, RevelarResultadoEntrada,
 )
 from app.schemas.actividades import ActividadCuenta, BloqueActividades
+from app.schemas.batallas import FichaPregunta
 from app.services.comun import (
     buscar_por_codigo, exigir_disponible, existe_evento, fecha_accion, responder_con_eventos,
 )
@@ -321,7 +322,22 @@ def resolver_batalla(sesion: Session, entrada: ResolverBatallaEntrada) -> Respue
         for pregunta, opcion, correcta in respondidas])
     respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
     return RespuestaResolverBatalla(**respuesta.campos(), victoria=victoria, practica=practica, aciertos=aciertos,
-                                    preguntas=preguntas, destellos_restantes=destellos)
+                                    preguntas=preguntas, destellos_restantes=destellos,
+                                    fichas_repaso=_fichas_repaso(sesion, respondidas))
+
+
+def _fichas_repaso(sesion: Session, respondidas) -> list[FichaPregunta]:
+    """Fichas de las preguntas falladas, sin repetir: más fallos primero; si empatan, la del primer fallo."""
+    fallos, primero = {}, {}
+    for orden, (pregunta, _, correcta) in enumerate(respondidas):
+        if correcta:
+            continue
+        fallos[pregunta.ficha_id] = fallos.get(pregunta.ficha_id, 0) + 1
+        primero.setdefault(pregunta.ficha_id, orden)
+    definiciones = contexto(sesion).definiciones
+    return [FichaPregunta(codigo=ficha.codigo, titulo=ficha.titulo)
+            for ficha in (definiciones.obtener(Ficha, ficha_id)
+                          for ficha_id in sorted(fallos, key=lambda f: (-fallos[f], primero[f])))]
 
 
 def _recorrer_intento(actividad: Actividad, aciertos: list[bool]) -> tuple[bool, int]:

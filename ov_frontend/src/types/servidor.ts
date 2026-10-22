@@ -344,6 +344,8 @@ export type RespuestaResolverBatalla = RespuestaAccion & {
   aciertos: number
   preguntas: number
   destellos_restantes: number
+  // F04d: fichas de las preguntas falladas en el intento, de más a menos fallos.
+  fichas_repaso: { codigo: string; titulo: string }[]
 }
 export type ResolverCasoEntrada = { cuenta: string; actividad: string; puntaje: number; ocupaciones: string[] }
 export type RespuestaResolverCaso = RespuestaAccion & { ocupaciones_nuevas: string[] }

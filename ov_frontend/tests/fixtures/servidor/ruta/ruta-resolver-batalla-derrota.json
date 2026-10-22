@@ -2,6 +2,16 @@
   "aciertos": 1,
   "destellos_restantes": 0,
   "eventos_registrados": [],
+  "fichas_repaso": [
+    {
+      "codigo": "t-ficha-2",
+      "titulo": "Segunda ficha de prueba"
+    },
+    {
+      "codigo": "t-ficha",
+      "titulo": "Ficha de prueba"
+    }
+  ],
   "nuevos_desbloqueos": [],
   "practica": false,
   "preguntas": 4,

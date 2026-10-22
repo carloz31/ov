@@ -13,6 +13,12 @@
       "tipo": "SUPERA_BATALLA"
     }
   ],
+  "fichas_repaso": [
+    {
+      "codigo": "t-ficha",
+      "titulo": "Ficha de prueba"
+    }
+  ],
   "nuevos_desbloqueos": [],
   "practica": false,
   "preguntas": 6,
