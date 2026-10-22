@@ -1,0 +1,145 @@
+/* Ajuste de F03: zonas, mini camino y rejilla de ítems de partida y llegada (tarjeta y vista explicada). */
+.sx-d-pl-zones {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sx-d-pl-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.sx-d-pl-chip-strong {
+  background: var(--sx-night);
+  color: var(--sx-night-text);
+}
+.sx-d-pl-chip-outline {
+  background: transparent;
+  border-color: color-mix(in srgb, currentColor 45%, transparent);
+}
+.sx-d-pl-chip-pending {
+  background: transparent;
+  border: 1px dashed color-mix(in srgb, currentColor 40%, transparent);
+  opacity: 0.6;
+}
+.sx-d-pl-kept {
+  font-size: 13px;
+  opacity: 0.75;
+}
+.sx-d-pl-arrow {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+/* Mini camino: tres columnas iguales, paradas unidas por un tramo. */
+.sx-d-pl-path {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  --pl-off: color-mix(in srgb, var(--sx-night-muted) 55%, transparent);
+}
+.sx-d-pl-stop {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+}
+.sx-d-pl-stop::before,
+.sx-d-pl-stop::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  height: 3px;
+  width: 50%;
+  background: var(--pl-off);
+  transform: translateY(-50%);
+}
+.sx-d-pl-stop::before {
+  left: 0;
+}
+.sx-d-pl-stop::after {
+  right: 0;
+}
+.sx-d-pl-stop:first-child::before,
+.sx-d-pl-stop:last-child::after {
+  display: none;
+}
+.sx-d-pl-lit-left::before,
+.sx-d-pl-lit-right::after {
+  background: var(--sx-gold);
+}
+.sx-d-pl-dot {
+  position: relative;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pl-off);
+}
+.sx-d-pl-lit .sx-d-pl-dot {
+  background: var(--sx-gold);
+}
+.sx-d-pl-flags {
+  position: absolute;
+  z-index: 2;
+  bottom: 50%;
+  left: 50%;
+  display: flex;
+  gap: 1px;
+  transform: translateX(-4px);
+  color: var(--sx-gold);
+}
+.sx-d-pl-flag {
+  width: 18px;
+  height: 18px;
+}
+
+/* Rejilla de ítems: las mismas columnas en «cambiaron» y «se mantuvieron». */
+.sx-d-pl-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.sx-d-pl-items {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 150px 28px 150px;
+  min-width: 560px;
+  column-gap: 10px;
+}
+.sx-d-pl-items-head,
+.sx-d-pl-item {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
+  padding: 10px 0;
+}
+.sx-d-pl-items-head {
+  padding-top: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.sx-d-pl-item + .sx-d-pl-item {
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+}
+.sx-d-pl-item > span:first-child {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.sx-d-pl-sign {
+  text-align: center;
+  font-weight: 800;
+}
+.sx-d-pl-items-partida .sx-d-pl-sign {
+  opacity: 0.4;
+}
