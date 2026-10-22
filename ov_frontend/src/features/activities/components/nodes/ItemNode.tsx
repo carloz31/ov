@@ -16,8 +16,6 @@ export function ItemNode({
   onAnswer,
   onContinue,
   onAnterior,
-  ultima = false,
-  cierre = 'Ver resultado',
   busy = false,
   readOnly = false,
 }: {
@@ -31,9 +29,6 @@ export function ItemNode({
   onAnswer: (value: string | number) => void
   onContinue: () => void
   onAnterior?: () => void
-  // Última pregunta del cuestionario: no avanza ni envía sola; lo hace el botón de cierre.
-  ultima?: boolean
-  cierre?: string
 }) {
   const [elegida, setElegida] = useState(existing?.valor)
   const esperando = useRef(false)
@@ -46,7 +41,6 @@ export function ItemNode({
   function elegir(valor: string | number) {
     if (busy || readOnly || esperando.current) return
     setElegida(valor)
-    if (ultima) return
     esperando.current = true
     setTimeout(() => avanzar(valor), RETARDO_AVANCE_MS)
   }
@@ -56,8 +50,7 @@ export function ItemNode({
           Continuar la revisión <ArrowRight size={18} />
         </button>
       )
-    : elegida !== undefined &&
-      (ultima || existing) && (
+    : existing && (
         <button
           type="button"
           className="sx-primary-button"
@@ -68,7 +61,7 @@ export function ItemNode({
             avanzar(elegida)
           }}
         >
-          {ultima ? cierre : 'Siguiente'} <ArrowRight size={18} />
+          Siguiente <ArrowRight size={18} />
         </button>
       )
   const panel = (

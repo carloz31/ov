@@ -68,15 +68,12 @@ for (const api of [true, false]) {
     vista.unmount()
   })
 
-  test(`${modo}: la última pregunta no avanza ni envía sola; lo hace el botón de cierre`, async () => {
-    const { vista, llamadas, opcion, principal } = montar({ ultima: true, cierre: 'Ver resultado' })
+  test(`${modo}: una pregunta sin responder no tiene botón principal y avanza sola, también la última`, async () => {
+    const { vista, llamadas, opcion, principal } = montar()
     assert.equal(principal(), undefined)
     opcion(3).props.onClick()
+    assert.equal(principal(), undefined)
     await pausa(350)
-    assert.deepEqual(llamadas, { respuestas: [], continuar: 0 })
-    assert.equal(texto(principal()), 'Ver resultado')
-    principal().props.onClick()
-    principal()?.props.onClick()
     assert.deepEqual(llamadas, { respuestas: [3], continuar: 0 })
     vista.unmount()
   })

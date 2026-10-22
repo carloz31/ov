@@ -225,8 +225,8 @@ test('en un cuestionario local, cambiar una respuesta al volver deja solo la úl
   player.unmount()
 })
 
-test('en un cuestionario local, la primera pregunta no tiene «Anterior» y la última no avanza sola', () => {
-  const { activity, player } = abrir('act-tip-01')
+test('en un cuestionario local, la primera pregunta no tiene «Anterior»', () => {
+  const { player } = abrir('act-tip-01')
   while (!de(player.render(), 'ItemNode')) {
     const tree = player.render()
     const eleccion = de(tree, 'ChoiceNode')
@@ -235,8 +235,5 @@ test('en un cuestionario local, la primera pregunta no tiene «Anterior» y la �
   }
   const primera = de(player.render(), 'ItemNode')
   assert.equal(primera.props.onAnterior, undefined)
-  assert.equal(primera.props.ultima, false)
-  const ultimoItem = activity.nodos.findLast((n) => n.tipo === 'item')
-  assert.notEqual(primera.props.node.id, ultimoItem.id)
   player.unmount()
 })

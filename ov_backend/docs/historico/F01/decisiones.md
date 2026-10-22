@@ -34,6 +34,6 @@
 
 - **Avance:** tocar una opción la marca y avanza tras 275 ms; mientras tanto se ignoran otros toques (sin doble respuesta). Tocar la opción ya guardada avanza sin volver a responder (sin `responder-items`).
 - **Pregunta ya respondida:** la opción guardada se ve marcada y aparece «Siguiente →» como principal. Reemplaza a «Mantener mi respuesta y continuar»; en revisión sigue «Continuar la revisión».
-- **Última pregunta:** no avanza ni envía sola. El principal dice «Ver resultado» si después hay un nodo de resultado y, si no, «Terminar cuestionario» (texto nuevo: el cuestionario no tenía un botón de cierre propio).
+- **Última pregunta:** se comporta como las demás (se marca y avanza sola). El usuario descartó un botón de cierre propio («Ver resultado»/«Terminar cuestionario»): la revelación del resultado se hará desde otro lado.
 - **«Anterior»:** solo, sin principal, va a la izquierda del pie. No aparece en la primera pregunta de un cuestionario, aunque la preceda un diálogo.
 - **Foco:** al cargar una pregunta, va a la opción guardada o a la primera.
