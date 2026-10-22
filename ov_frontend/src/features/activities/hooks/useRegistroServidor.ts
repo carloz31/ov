@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
+import { modoApi } from '@/config/env'
 import {
   continuarSinResponder,
+  editarRegistro,
   entregarRegistro,
   guardarBorradorRegistro,
   responderSeguimiento,
@@ -15,6 +17,7 @@ import type {
   RespuestaRegistroAccion,
   RespuestaRegistroPublica,
 } from '@/types/servidor'
+import { anotarCambio, consolidada, consultaDe, edicionesDe, esConsulta } from '../lib/edicionRegistro'
 
 export type RegistroServidor = { items: ItemRegistroPublico[]; registro: RegistroConsultado }
 export type TurnoRegistro = { orden: number; pregunta: string; respuesta?: string; omitida: boolean }
@@ -67,6 +70,9 @@ export function useRegistroServidor({
   volver: () => void
 }) {
   const [registro, setRegistro] = useState(registroServidor?.registro)
+  // F02: un registro ya cerrado se abre como consulta; los textos cambiados viven aquí hasta entregarlos.
+  const [consulta] = useState(() => !!registroServidor && esConsulta(registroServidor.registro))
+  const [cambios, setCambios] = useState<Record<string, string>>({})
   const [cierre, setCierre] = useState<RespuestaRegistroAccion>()
   const [ocupado, setOcupado] = useState<'' | 'guardando' | 'evaluando'>('')
   const [error, setError] = useState('')
@@ -132,8 +138,22 @@ export function useRegistroServidor({
     )
   }
 
+  // En la consulta no hay borradores (el registro está cerrado): se anota el texto y se sigue.
+  function anotar(item: string, texto: string) {
+    const siguientes = registro ? anotarCambio(cambios, registro, item, texto) : cambios
+    setCambios(siguientes)
+    return siguientes
+  }
+
   async function guardar(nodo: Nodo, texto: string, opciones: OpcionElegida[]) {
     if (nodo.tipo !== 'consigna' || !nodo.item || enCurso.current) return
+    if (consulta) {
+      const siguientes = anotar(nodo.item, texto)
+      if (nodo.id !== ultimaConsigna) avanzar(nodes[nodes.indexOf(nodo) + 1])
+      else if (Object.keys(siguientes).length)
+        await accion('editar', (previa) => editarRegistro(actividad, edicionesDe(siguientes), previa))
+      return
+    }
     const ultimo = nodo.id === ultimaConsigna
     const siguiente = nodes[nodes.indexOf(nodo) + 1]
     enCurso.current = true
@@ -173,6 +193,11 @@ export function useRegistroServidor({
   // que se vuelve, y retrocede. Una «Otra» sin texto se omite: el servidor la rechaza.
   async function retroceder(nodo: Nodo, texto: string, opciones: OpcionElegida[]) {
     if (nodo.tipo !== 'consigna' || !nodo.item || !anterior || enCurso.current) return
+    if (consulta) {
+      anotar(nodo.item, texto)
+      volver()
+      return
+    }
     enCurso.current = true
     setOcupado('guardando')
     setError('')
@@ -212,6 +237,15 @@ export function useRegistroServidor({
       !!registroServidor && (!!pendiente || !!cierre || ocupado === 'evaluando' || !!confirmada.current),
     esUltimaConsigna: (id: string) => id === ultimaConsigna,
     respuestaDe: (item: string) => registro?.respuestas.find((r) => r.item === item),
+    // Lo que muestra una consigna al abrirla: el borrador o, en la consulta, el texto cambiado o la consolidada.
+    inicialDe: (item: string) => {
+      const respuesta = registro?.respuestas.find((r) => r.item === item)
+      return consulta
+        ? { texto: cambios[item] ?? consolidada(respuesta), opciones: respuesta?.opciones_elegidas ?? [] }
+        : borradorRegistro(respuesta)
+    },
+    consultaDe: (item: string) => (consulta && registro ? consultaDe(registro, item, cambios) : undefined),
+    puedeEditarRegistro: modoApi && consulta,
     guardar,
     retroceder,
     reintentar: () => ultima.current?.(),

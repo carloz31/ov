@@ -127,15 +127,6 @@ test('la elección ordenada numera las opciones en el orden elegido y no deja pa
   })
 })
 
-test('un registro cerrado abre en el fin, sin consignas ni entrega', async () => {
-  const { app } = await iniciar({ registro: jsonServidor('ruta/ruta-registro-t-expectativas-cerrado') })
-  const player = await abrir(app, 't-expectativas')
-  const tree = player.render()
-  assert.equal(consigna(tree), undefined)
-  assert.equal(elementos(tree, (e) => e.type?.name === 'FinishScreen').length, 1)
-  player.unmount()
-})
-
 test('t-valores se responde con el podio y envía el mismo borrador que la elección ordenada', async () => {
   const { app } = await iniciar({ actividad: 't-valores' })
   const player = await abrir(app, 't-valores')

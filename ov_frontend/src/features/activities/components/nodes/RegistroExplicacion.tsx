@@ -6,12 +6,14 @@ export function RegistroExplicacion({
   aviso,
   error,
   onTexto,
+  disabled,
 }: {
   pregunta: string
   texto: string
   aviso?: string
   error?: string
   onTexto: (texto: string) => void
+  disabled?: boolean
 }) {
   return (
     <div className="sx-guided-explain">
@@ -20,6 +22,7 @@ export function RegistroExplicacion({
         <textarea
           className="sx-submission-textarea"
           value={texto}
+          disabled={disabled}
           placeholder="Escribe con tus palabras, no hay respuestas incorrectas"
           onChange={(event) => onTexto(event.target.value)}
         />

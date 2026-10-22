@@ -11,7 +11,9 @@ import {
 } from './servidor-ayudas.mjs'
 
 // F01: abre los registros de T1 con sus ítems y lo guardado en el servidor (pruebas de registro).
-export async function iniciar({ actividad = 't-expectativas', registro, ruta = '/student/missions' } = {}) {
+// F02: `editar` es la respuesta de POST /acciones/registro/editar; `registro` puede ser una función, para que
+// la consulta cambie tras editar.
+export async function iniciar({ actividad = 't-expectativas', registro, ruta = '/student/missions', editar } = {}) {
   const app = fixtureServidor({ ruta }),
     estado = escenarioRuta('t1')
   // DATO DE PRUEBA: t-valores disponible, como tras completar t-expectativas.
@@ -23,7 +25,14 @@ export async function iniciar({ actividad = 't-expectativas', registro, ruta = '
     if (req.url.includes('/desbloqueos?')) return { body: [] }
     if (req.url.endsWith('/items-registro')) return { body: items }
     if (req.url.endsWith('/registro'))
-      return { body: registro ?? { posicion: null, estado: null, respuestas: [] } }
+      return {
+        body: (typeof registro === 'function' ? registro() : registro) ?? {
+          posicion: null,
+          estado: null,
+          respuestas: [],
+        },
+      }
+    if (req.url.endsWith('/registro/editar') && editar) return { body: editar }
     if (req.url.endsWith('/guardar-borrador')) return { body: { item: req.body.item, estado: 'BORRADOR' } }
     throw Error(`Solicitud no configurada: ${req.url}`)
   })

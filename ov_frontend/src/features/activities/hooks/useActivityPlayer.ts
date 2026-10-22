@@ -42,13 +42,13 @@ export function useActivityPlayer({
   const pageRef = useRef<HTMLDivElement>(null)
   const [nodeId, setNodeId] = useState(() => {
     if (modoApi && instrumentoServidor) return instrumentoServidor.nodoInicialId
-    // Registro: la pregunta pendiente se muestra sobre la última consigna; cerrado, va al fin;
-    // si no, retoma en la posición guardada.
+    // Registro: la pregunta pendiente se muestra sobre la última consigna; cerrado, se consulta desde la
+    // primera consigna (F02); si no, retoma en la posición guardada.
     if (modoApi && registroServidor) {
       const { registro } = registroServidor
       if (registro.respuestas.some((r) => r.estado === 'PENDIENTE_SEGUIMIENTO'))
         return nodes.findLast((n) => n.tipo === 'consigna')?.id
-      if (registro.estado === 'COMPLETADA') return undefined
+      if (registro.estado === 'COMPLETADA') return nodes[0]?.id
       return nodes.find((n) => n.id === registro.posicion)?.id ?? nodes[0]?.id
     }
     if (edit) return nodes[0]?.id

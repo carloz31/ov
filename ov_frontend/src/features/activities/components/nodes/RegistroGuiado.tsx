@@ -15,6 +15,9 @@ export function RegistroGuiado({
   error,
   onEnviar,
   onAnterior,
+  pista,
+  etiqueta,
+  salida,
   children,
 }: {
   hablanteId?: string
@@ -25,6 +28,11 @@ export function RegistroGuiado({
   error: string
   onEnviar: () => void
   onAnterior?: () => void
+  // Consulta de un registro entregado (F02): la pista del ítem, el texto del botón y, si no hay cambios en
+  // la última consigna, la salida de la pantalla de fin en lugar del botón.
+  pista?: string
+  etiqueta?: string
+  salida?: ReactNode
   children: ReactNode
 }) {
   return (
@@ -42,6 +50,7 @@ export function RegistroGuiado({
           Visible para ti y tu orientadora. Se guarda en tu cuenta.
         </span>
       </p>
+      {pista && <small className="sx-registro-pista">{pista}</small>}
       {children}
       {error && (
         <p role="alert" className="sx-submission-error">
@@ -50,10 +59,12 @@ export function RegistroGuiado({
       )}
       <div className="sx-player-actions sx-step-footer">
         {onAnterior && <PasoAnterior disabled={ocupado} onClick={onAnterior} />}
-        <button type="submit" className="sx-primary-button" disabled={ocupado}>
-          {ocupado ? 'Guardando…' : ultimo ? 'Entregar' : 'Guardar y continuar'}
-          <Check size={18} />
-        </button>
+        {salida ?? (
+          <button type="submit" className="sx-primary-button" disabled={ocupado}>
+            {ocupado ? 'Guardando…' : (etiqueta ?? (ultimo ? 'Entregar' : 'Guardar y continuar'))}
+            <Check size={18} />
+          </button>
+        )}
       </div>
     </form>
   )

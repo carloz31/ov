@@ -15,9 +15,10 @@ import { RegistroPodioNode } from '@/features/activities/components/nodes/Regist
 import { RegistroEleccionNode } from '@/features/activities/components/nodes/RegistroEleccionNode'
 import { esTopN } from '@/features/activities/lib/podio'
 import { esEleccionGuiada } from '@/features/activities/lib/eleccionGuiada'
-import { borradorRegistro, turnosRegistro } from '@/features/activities/hooks/useRegistroServidor'
+import { turnosRegistro } from '@/features/activities/hooks/useRegistroServidor'
 import { filasPorAmpliar } from '@/features/activities/lib/porAmpliar'
 import { RegistroSeguimiento } from '@/features/activities/components/followup/RegistroSeguimiento'
+import { VolverAlMapa } from './VolverAlMapa'
 export function NodeRenderer({
   model,
   activity,
@@ -205,7 +206,7 @@ export function NodeRenderer({
               key={node.id}
               node={node}
               item={itemRegistro}
-              inicial={borradorRegistro(registro.respuestaDe(itemRegistro.codigo))}
+              inicial={registro.inicialDe(itemRegistro.codigo)}
               ultimo={registro.esUltimaConsigna(node.id)}
               ocupado={!!registro.ocupado}
               error={registro.error}
@@ -213,6 +214,8 @@ export function NodeRenderer({
               onAnterior={
                 onAnterior && ((texto, opciones) => void registro.retroceder(node, texto, opciones))
               }
+              consulta={registro.consultaDe(itemRegistro.codigo)}
+              salida={<VolverAlMapa actividad={activity.id} />}
             />
           )
         })()}

@@ -13,6 +13,7 @@ export function RankingPodium({
   iconos,
   error,
   onChange,
+  soloLectura,
 }: {
   opciones: { codigo: string; texto: string }[]
   puestos: Puestos
@@ -20,6 +21,8 @@ export function RankingPodium({
   iconos?: Record<string, string>
   error?: string
   onChange: (puestos: Puestos) => void
+  // Consulta (F02): el podio se ve completo y no se cambia; sin la ayuda para cambiarlo.
+  soloLectura?: boolean
 }) {
   const [anuncio, setAnuncio] = useState('')
   const [nuevo, setNuevo] = useState<number>()
@@ -67,7 +70,8 @@ export function RankingPodium({
                   codigo ? `Puesto ${i + 1}: ${texto(codigo)}. Pulsa para quitar` : `Puesto ${i + 1}: vacío`
                 }
                 aria-disabled={!codigo}
-                draggable={!!codigo}
+                disabled={soloLectura}
+                draggable={!!codigo && !soloLectura}
                 onClick={() => devolver(i)}
                 onDragStart={(event) => {
                   arrastrado.current = i
@@ -92,10 +96,12 @@ export function RankingPodium({
           )
         })}
       </ol>
-      <p className="sx-podium-hint">
-        Toca un puesto para devolver la ficha
-        <span className="sx-podium-drag-hint"> · arrastra para intercambiar</span>
-      </p>
+      {!soloLectura && (
+        <p className="sx-podium-hint">
+          Toca un puesto para devolver la ficha
+          <span className="sx-podium-drag-hint"> · arrastra para intercambiar</span>
+        </p>
+      )}
       {error && (
         <p role="alert" className="sx-submission-error">
           {error}

@@ -184,3 +184,10 @@
   width: 100%;
   justify-content: center;
 }
+/* Consulta de un registro entregado (F02): la pista del ítem bajo la consigna, como en la lista por ampliar. */
+.sx-root .sx-registro-pista {
+  display: block;
+  font-size: 13px;
+  color: var(--muted-foreground);
+  line-height: 1.4;
+}

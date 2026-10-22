@@ -1,4 +1,3 @@
-import { Map } from 'lucide-react'
 import { useActivityFinish } from '../hooks/useActivityFinish'
 import type { DesbloqueoNuevo } from '@/types/servidor'
 import type { Actividad } from '@/types/activities'
@@ -7,6 +6,7 @@ import { FinishBackpackSection } from './FinishBackpackSection'
 import { FinishJournalSection } from './FinishJournalSection'
 import { FinishExtrasSection } from './FinishExtrasSection'
 import { FinishMedalsSection } from './FinishMedalsSection'
+import { VolverAlMapa } from './VolverAlMapa'
 import '../styles/finish.css'
 
 export function FinishScreen({
@@ -20,7 +20,7 @@ export function FinishScreen({
   yaCompletada?: boolean
   desbloqueosServidor?: DesbloqueoNuevo[]
 }) {
-  const { resumen, escribirDiario, volverAlMapa } = useActivityFinish(
+  const { resumen, escribirDiario } = useActivityFinish(
     activity,
     desbloqueosServidor,
     yaCompletada,
@@ -69,15 +69,7 @@ export function FinishScreen({
           </div>
         )}
         <footer className="sx-finish-footer">
-          <button
-            className="sx-primary-button"
-            onClick={() => {
-              volverAlMapa()
-              onClose?.()
-            }}
-          >
-            <Map size={18} /> Volver al mapa
-          </button>
+          <VolverAlMapa actividad={activity.id} onClose={onClose} />
         </footer>
       </section>
     </div>

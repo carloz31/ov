@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
+import { pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
 import { RankingPodium } from './RankingPodium'
 import { RegistroGuiado } from './RegistroGuiado'
 import { RegistroExplicacion } from './RegistroExplicacion'
@@ -24,6 +25,8 @@ export function RegistroPodioNode({
   error,
   onGuardar,
   onAnterior,
+  consulta,
+  salida,
 }: {
   node: NodoConsigna
   item: ItemRegistroPublico
@@ -34,6 +37,9 @@ export function RegistroPodioNode({
   onGuardar: (texto: string, opciones: OpcionElegida[]) => void
   // Vuelve a la consigna anterior guardando lo escrito como borrador, sin validar.
   onAnterior?: (texto: string, opciones: OpcionElegida[]) => void
+  // Consulta de un registro entregado (F02) y la salida de la pantalla de fin para su última consigna.
+  consulta?: ConsultaRegistro
+  salida?: ReactNode
 }) {
   const eleccion = item.eleccion!
   const config = { ...PODIO_POR_DEFECTO, ...node.podio }
@@ -49,6 +55,7 @@ export function RegistroPodioNode({
   const [errores, setErrores] = useState<{ podio?: string; texto?: string }>({})
   const primero = puestos[0]
   const textoPrimero = eleccion.opciones.find((o) => o.codigo === primero)?.texto ?? ''
+  const pie = consulta && pieConsulta(consulta, ultimo, text)
   function submit() {
     const pendientes = faltan(puestos)
     const siguientes = {
@@ -73,6 +80,9 @@ export function RegistroPodioNode({
       ocupado={ocupado}
       error={error}
       onEnviar={submit}
+      pista={consulta?.pista}
+      etiqueta={pie?.etiqueta}
+      salida={pie?.salir ? salida : undefined}
       onAnterior={
         onAnterior &&
         (() =>
@@ -88,6 +98,7 @@ export function RegistroPodioNode({
         etiquetaPrimero={config.etiquetaPrimero}
         iconos={config.iconos}
         error={errores.podio}
+        soloLectura={!!consulta}
         onChange={(siguientes) => {
           setPuestos(siguientes)
           if (completo(siguientes)) setErrores((e) => ({ ...e, podio: undefined }))
@@ -103,6 +114,7 @@ export function RegistroPodioNode({
               : undefined
           }
           error={errores.texto}
+          disabled={consulta && !consulta.editable}
           onTexto={(texto) => {
             setText(texto)
             setPrimeroAlEscribir(primero)

@@ -330,7 +330,9 @@ test('el cierre API usa solo el recibo y conserva las acciones de diario y mapa'
     botones.some((b) => String(b.props.children).includes('Abrir el libro')),
     false,
   )
-  botones.at(-1).props.onClick()
+  // F02: la salida es el componente compartido con la consulta del registro; su botón es el mismo.
+  const salida = elementos(tree, (e) => e.type?.name === 'VolverAlMapa')[0]
+  salida.type(salida.props).props.onClick()
   assert.equal(cerrado, true)
 })
 

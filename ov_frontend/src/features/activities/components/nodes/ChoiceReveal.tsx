@@ -17,6 +17,7 @@ export function ChoiceReveal({
   errorOtra,
   onAlternar,
   onTextoOtra,
+  soloLectura,
 }: {
   opciones: { codigo: string; texto: string }[]
   seleccion: OpcionElegida[]
@@ -27,11 +28,14 @@ export function ChoiceReveal({
   errorOtra?: string
   onAlternar: (codigo: string) => void
   onTextoOtra: (texto: string) => void
+  // Consulta (F02): lo elegido se ve marcado y no se cambia.
+  soloLectura?: boolean
 }) {
   const [tocada, setTocada] = useState<string>()
   const elegidas = seleccion.filter((o) => !reglas.exclusivas.includes(o.codigo)).length
   const lleno = reglas.maxima > 1 && elegidas >= reglas.maxima
   function alternar(codigo: string) {
+    if (soloLectura) return
     setTocada(codigo)
     onAlternar(codigo)
   }
@@ -47,6 +51,7 @@ export function ChoiceReveal({
               role="button"
               tabIndex={0}
               aria-pressed={!!elegida}
+              aria-disabled={soloLectura || undefined}
               aria-label={o.texto}
               className={`sx-choice-card ${elegida ? 'is-selected' : ''} ${lleno && !elegida ? 'is-dimmed' : ''} ${tocada === o.codigo ? 'is-toggled' : ''} ${elegida && etiquetaElegida ? 'has-badge' : ''}`}
               onClick={() => alternar(o.codigo)}
@@ -68,6 +73,7 @@ export function ChoiceReveal({
                     aria-label="¿Cuál?"
                     placeholder="¿Cuál?"
                     value={elegida.texto ?? ''}
+                    disabled={soloLectura}
                     onClick={(event) => event.stopPropagation()}
                     onKeyDown={(event) => event.stopPropagation()}
                     onChange={(event) => onTextoOtra(event.target.value)}

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
+import { pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
 import { ChoiceReveal } from './ChoiceReveal'
 import { RegistroGuiado } from './RegistroGuiado'
 import { RegistroExplicacion } from './RegistroExplicacion'
@@ -30,6 +31,8 @@ export function RegistroEleccionNode({
   error,
   onGuardar,
   onAnterior,
+  consulta,
+  salida,
 }: {
   node: NodoConsigna
   item: ItemRegistroPublico
@@ -40,6 +43,9 @@ export function RegistroEleccionNode({
   onGuardar: (texto: string, opciones: OpcionElegida[]) => void
   // Vuelve a la consigna anterior guardando lo escrito como borrador, sin validar.
   onAnterior?: (texto: string, opciones: OpcionElegida[]) => void
+  // Consulta de un registro entregado (F02) y la salida de la pantalla de fin para su última consigna.
+  consulta?: ConsultaRegistro
+  salida?: ReactNode
 }) {
   const eleccion = item.eleccion!
   const config = { ...ELECCION_POR_DEFECTO, ...node.eleccion }
@@ -54,6 +60,7 @@ export function RegistroEleccionNode({
   const [bloqueada, setBloqueada] = useState(false)
   const [errores, setErrores] = useState<{ seleccion?: string; otra?: string; texto?: string }>({})
   const otra = seleccion.find((o) => o.codigo === 'OTRA')
+  const pie = consulta && pieConsulta(consulta, ultimo, text)
   function submit() {
     const siguientes = {
       seleccion: seleccion.length < Math.max(1, eleccion.minima) ? config.errorSeleccion : undefined,
@@ -76,6 +83,9 @@ export function RegistroEleccionNode({
       ocupado={ocupado}
       error={error}
       onEnviar={submit}
+      pista={consulta?.pista}
+      etiqueta={pie?.etiqueta}
+      salida={pie?.salir ? salida : undefined}
       onAnterior={onAnterior && (() => onAnterior(text, seleccion))}
     >
       <ChoiceReveal
@@ -86,6 +96,7 @@ export function RegistroEleccionNode({
         iconos={config.iconos}
         error={errores.seleccion}
         errorOtra={errores.otra}
+        soloLectura={!!consulta}
         onAlternar={(codigo) => {
           const resultado = alternar(seleccion, codigo, reglas)
           setSeleccion(resultado.seleccion)
@@ -102,6 +113,7 @@ export function RegistroEleccionNode({
           pregunta={preguntaEleccion(config, seleccion, opciones, reglas.exclusivas)}
           texto={text}
           error={errores.texto}
+          disabled={consulta && !consulta.editable}
           onTexto={setText}
         />
       )}

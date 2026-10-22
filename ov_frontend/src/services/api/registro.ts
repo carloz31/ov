@@ -2,6 +2,7 @@ import { enviar, obtener } from './cliente'
 import type {
   BorradorRegistroEntrada,
   EstadoItemRegistro,
+  ItemEdicion,
   ItemRegistroPublico,
   RegistroConsultado,
   RespuestaRegistroAccion,
@@ -47,4 +48,12 @@ export function enviarContinuarSinResponder(
   item: string,
 ): Promise<RespuestaServidor<RespuestaRegistroAccion>> {
   return enviar('/acciones/registro/continuar-sin-responder', { cuenta, actividad, item })
+}
+
+export function enviarEdicion(
+  cuenta: string,
+  actividad: string,
+  items: ItemEdicion[],
+): Promise<RespuestaServidor<RespuestaRegistroAccion>> {
+  return enviar('/acciones/registro/editar', { cuenta, actividad, items })
 }

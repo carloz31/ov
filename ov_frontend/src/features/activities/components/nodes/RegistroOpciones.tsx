@@ -6,11 +6,14 @@ export function RegistroOpciones({
   eleccion,
   selection,
   onChange,
+  soloLectura,
 }: {
   nodo: string
   eleccion: EleccionPublica
   selection: OpcionElegida[]
   onChange: (next: OpcionElegida[]) => void
+  // Consulta (F02): lo elegido se ve marcado y no se cambia.
+  soloLectura?: boolean
 }) {
   const unica = eleccion.maxima === 1
   const opciones = [
@@ -25,7 +28,7 @@ export function RegistroOpciones({
     else if (selection.length < eleccion.maxima) onChange([...selection, { codigo }])
   }
   return (
-    <fieldset className="sx-submission-options">
+    <fieldset className="sx-submission-options" disabled={soloLectura}>
       <legend className="sr-only">
         {eleccion.ordenada ? `Elige y ordena ${eleccion.maxima}` : 'Elige tu respuesta'}
       </legend>

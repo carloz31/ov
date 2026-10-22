@@ -9,6 +9,7 @@ import { useJourney } from '@/store/journeyStore'
 import { additionalMissions } from '@/data/activities/reflectionConfig'
 import { appPaths } from '@/routes/paths'
 import { resumirCierre } from '../lib/finishSummary'
+import { useVolverAlMapa } from './useVolverAlMapa'
 
 export function useActivityFinish(
   activity: Actividad,
@@ -18,6 +19,7 @@ export function useActivityFinish(
   const state = useJourney()
   const servidor = useEstadoServidor()
   const navigate = useNavigate()
+  const volverAlMapa = useVolverAlMapa(activity.id)
   const completada = modoApi
     ? actividadServidor(servidor.actividades.datos, activity.id)?.estado === 'COMPLETADA'
     : state.progress[activity.id]?.estado === 'completada'
@@ -92,16 +94,6 @@ export function useActivityFinish(
           prompt: activity.promptDiario ?? '',
         })}`,
       ),
-    // En api se vuelve al mapa de la actividad: el Camino para sus bloques, la Ciudad para los suyos.
-    // (Ir siempre a la Ciudad, cerrada, abría la ayuda de «la ciudad todavía no abre sus puertas».)
-    volverAlMapa: () =>
-      navigate(
-        modoApi &&
-          servidor.actividades.datos?.some(
-            (b) => b.espacio === 'MISIONES_CAMPO' && b.actividades.some((a) => a.codigo === activity.id),
-          )
-          ? appPaths.student.missions
-          : appPaths.student.exploration,
-      ),
+    volverAlMapa,
   }
 }

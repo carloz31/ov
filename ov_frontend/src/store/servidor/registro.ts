@@ -2,7 +2,7 @@ import * as apiRegistro from '@/services/api/registro'
 import { consultarCuenta } from './sesion'
 import { accionConRefresco } from './refresco'
 import type { AccionConRefresco } from './refresco'
-import type { OpcionElegida, RespuestaRegistroAccion } from '@/types/servidor'
+import type { ItemEdicion, OpcionElegida, RespuestaRegistroAccion } from '@/types/servidor'
 
 export function consultarItemsRegistro(actividad: string) {
   return apiRegistro.obtenerItemsRegistro(actividad)
@@ -43,4 +43,8 @@ export function continuarSinResponder(actividad: string, item: string, confirmad
     (cuenta) => apiRegistro.enviarContinuarSinResponder(cuenta, actividad, item),
     confirmada,
   )
+}
+// F02: reentrega los ítems cuyo texto cambió; abre un intento con su seguimiento.
+export function editarRegistro(actividad: string, items: ItemEdicion[], confirmada?: RespuestaRegistroAccion) {
+  return accionRegistro((cuenta) => apiRegistro.enviarEdicion(cuenta, actividad, items), confirmada)
 }

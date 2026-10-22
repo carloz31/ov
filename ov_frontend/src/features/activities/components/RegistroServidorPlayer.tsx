@@ -4,6 +4,7 @@ import { mensajeErrorServidor, obtenerEstadoServidor, useEstadoServidor } from '
 import { consultarItemsRegistro, consultarRegistro } from '@/store/servidor/registro'
 import type { Actividad } from '@/types/activities'
 import type { RegistroServidor } from '../hooks/useRegistroServidor'
+import { actividadConsulta, esConsulta } from '../lib/edicionRegistro'
 import { StudentActivityPlayer } from './StudentActivityPlayer'
 import { PantallaCarga } from '@/components/student/PantallaCarga'
 
@@ -33,7 +34,9 @@ export function RegistroServidorPlayer({
         setError(mensajeErrorServidor(items.tipo !== 'ok' ? items : registro.tipo !== 'ok' ? registro : null))
         return
       }
-      const activity = registroServidor(contenido, items.datos)
+      const completo = registroServidor(contenido, items.datos)
+      // F02: un registro cerrado se consulta en el mismo reproductor, solo con sus consignas.
+      const activity = completo && esConsulta(registro.datos) ? actividadConsulta(completo) : completo
       if (!activity) {
         setError('Esta actividad no tiene todos sus ítems disponibles.')
         return

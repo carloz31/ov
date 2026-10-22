@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Check } from 'lucide-react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
+import { pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
 import { CharacterAvatar } from '@/components/student/CharacterAvatar'
 import { RegistroOpciones } from './RegistroOpciones'
 import { PasoAnterior } from '../PasoAnterior'
+import '../../styles/registro-guiado.css'
 
 // Consigna de un registro del servidor (F01): mismo formulario que SubmissionNode, con la elección del ítem.
 export function RegistroConsignaNode({
@@ -16,6 +18,8 @@ export function RegistroConsignaNode({
   error,
   onGuardar,
   onAnterior,
+  consulta,
+  salida,
 }: {
   node: NodoConsigna
   item: ItemRegistroPublico
@@ -26,11 +30,16 @@ export function RegistroConsignaNode({
   onGuardar: (texto: string, opciones: OpcionElegida[]) => void
   // Vuelve a la consigna anterior guardando lo escrito como borrador, sin validar.
   onAnterior?: (texto: string, opciones: OpcionElegida[]) => void
+  // Consulta de un registro entregado (F02) y la salida de la pantalla de fin para su última consigna.
+  consulta?: ConsultaRegistro
+  salida?: ReactNode
 }) {
   const [text, setText] = useState(inicial.texto)
   const [selection, setSelection] = useState(inicial.opciones)
   const [aviso, setAviso] = useState('')
   const eleccion = item.eleccion
+  const pie = consulta && pieConsulta(consulta, ultimo, text)
+  const pista = consulta?.pista && <small className="sx-registro-pista">{consulta.pista}</small>
   function submit() {
     const mensaje = validar(item, text, selection)
     setAviso(mensaje)
@@ -45,6 +54,7 @@ export function RegistroConsignaNode({
     <textarea
       className="sx-submission-textarea"
       value={text}
+      disabled={consulta && !consulta.editable}
       placeholder={node.placeholder}
       aria-label={eleccion ? item.nombre : undefined}
       onChange={(event) => setText(event.target.value)}
@@ -66,11 +76,13 @@ export function RegistroConsignaNode({
             {premisa}
             {node.ayuda && <span className="sx-submission-help">{node.ayuda}</span>}
           </p>
+          {pista}
           <RegistroOpciones
             nodo={node.id}
             eleccion={eleccion}
             selection={selection}
             onChange={setSelection}
+            soloLectura={!!consulta}
           />
           {campo}
         </>
@@ -78,6 +90,7 @@ export function RegistroConsignaNode({
         <label className="sx-submission-label">
           {premisa}
           {node.ayuda && <span className="sx-submission-help">{node.ayuda}</span>}
+          {pista}
           {campo}
         </label>
       )}
@@ -88,10 +101,14 @@ export function RegistroConsignaNode({
       )}
       <div className="sx-player-actions sx-step-footer">
         {onAnterior && <PasoAnterior disabled={ocupado} onClick={() => onAnterior(text, selection)} />}
-        <button type="submit" className="sx-primary-button" disabled={ocupado}>
-          {ocupado ? 'Guardando…' : ultimo ? 'Entregar' : 'Guardar y continuar'}
-          <Check size={18} />
-        </button>
+        {pie?.salir ? (
+          salida
+        ) : (
+          <button type="submit" className="sx-primary-button" disabled={ocupado}>
+            {ocupado ? 'Guardando…' : (pie?.etiqueta ?? (ultimo ? 'Entregar' : 'Guardar y continuar'))}
+            <Check size={18} />
+          </button>
+        )}
       </div>
     </form>
   )
