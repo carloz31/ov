@@ -1,5 +1,6 @@
 import { contenidoPorClave } from '@/data/activities/contenidos.ts'
 import { mensajeBloqueo } from '@/lib/servidor/adaptadores'
+import { appPaths } from '@/routes/paths'
 import type { ActividadCuenta, BloqueActividades } from '@/types/servidor'
 import type { PointDetails } from './pointDetails'
 import type { StudentMapPoint } from './mapPoints'
@@ -16,8 +17,10 @@ export function detallesRuta(
   const region = bloques?.find((b) => b.actividades.some((a) => a.codigo === actividad.codigo))?.nombre ?? ''
   const contenido = contenidoPorClave(actividad.contenido)
   if (!contenido) return undefined
-  // Un contenido sin nodos solo da la posición: su lote F lo completa.
-  const pendiente = !contenido.nodos.length && point.status === 'available'
+  // Un contenido sin nodos solo da la posición: su lote F lo completa. Batallas y casos apuntan a su
+  // desafío o caso del front (F04).
+  const pendiente =
+    !contenido.nodos.length && !contenido.desafio && !contenido.caso && point.status === 'available'
   const tipo = tipoActividad(actividad)
   return {
     title: point.title,
@@ -42,6 +45,8 @@ export function detallesRuta(
             : 'Iniciar actividad',
     disabled: pendiente || point.status === 'locked',
     activityId: point.specActivityId,
+    // Un caso se juega en la Central de Casos.
+    ...(actividad.tipo === 'CASO' && contenido.caso ? { href: appPaths.student.case(contenido.caso) } : {}),
     revision: point.status === 'completed',
   }
 }

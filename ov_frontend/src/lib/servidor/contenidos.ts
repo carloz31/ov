@@ -25,6 +25,32 @@ export function actividadPorContenido(
   }
 }
 
+// F04: BATALLA y CASO se abren según su tipo, no según su bloque. Basta que el servidor la muestre
+// y no la tenga bloqueada; no hace falta que la Ciudad esté abierta.
+export type ReproductorTipo =
+  | { tipo: 'desafio'; actividad: string; desafio: string; fichas: string[] }
+  | { tipo: 'caso'; actividad: string; caso: string }
+export function reproductorPorTipo(
+  bloques: BloqueActividades[] | null,
+  codigo: string,
+): ReproductorTipo | undefined {
+  const actividad = bloques?.flatMap((b) => b.actividades).find((a) => a.codigo === codigo)
+  const contenido = actividad && contenidoPorClave(actividad.contenido)
+  if (!actividad || !contenido || !actividad.visible || actividad.estado === 'BLOQUEADA') return undefined
+  if (actividad.tipo === 'BATALLA' && contenido.desafio)
+    return { tipo: 'desafio', actividad: codigo, desafio: contenido.desafio, fichas: contenido.fichas ?? [] }
+  if (actividad.tipo === 'CASO' && contenido.caso) return { tipo: 'caso', actividad: codigo, caso: contenido.caso }
+  return undefined
+}
+// Desafíos y casos del front que ya representa una actividad del servidor.
+export function referenciasServidor(bloques: BloqueActividades[] | null) {
+  const contenidos = (bloques ?? []).flatMap((b) => b.actividades).map((a) => contenidoPorClave(a.contenido))
+  return {
+    desafios: new Set(contenidos.flatMap((c) => c?.desafio ?? [])),
+    casos: new Set(contenidos.flatMap((c) => c?.caso ?? [])),
+  }
+}
+
 // Cuestionario cuyo contenido trae un nodo `item` con itemId "plantilla": ese nodo se repite
 // con los ítems del servidor, en su orden, entre los diálogos de entrada y de cierre del contenido.
 export const plantillaCuestionario = (contenido: Actividad) =>

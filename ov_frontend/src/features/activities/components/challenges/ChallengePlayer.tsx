@@ -6,8 +6,17 @@ import { PlayerAmbient } from '../PlayerAmbient'
 import { PlayerSoundButton } from '../PlayerSoundButton'
 import { ResourceSheet } from '../ResourceSheet'
 import type { Challenge } from '@/types/challenges'
-export function ChallengePlayer({ challenge: c, onClose }: { challenge: Challenge; onClose: () => void }) {
-  const model = useChallengePlayer({ challenge: c })
+import type { DesafioServidor } from '@/features/activities/hooks/useChallengePlayer'
+export function ChallengePlayer({
+  challenge: c,
+  servidor,
+  onClose,
+}: {
+  challenge: Challenge
+  servidor?: DesafioServidor
+  onClose: () => void
+}) {
+  const model = useChallengePlayer({ challenge: c, servidor })
   const {
     practice,
     stage,

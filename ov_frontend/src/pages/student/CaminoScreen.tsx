@@ -5,6 +5,8 @@ import { useEffect } from 'react'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import { useSearchParams } from 'react-router'
 import { useCaminoActivity } from '@/features/adventure/hooks/useCaminoActivity'
+import { useDesafioServidor } from '@/features/adventure/hooks/useDesafioServidor'
+import { ChallengePlayer } from '@/features/activities/components/challenges/ChallengePlayer'
 import { StudentActivityPlayer } from '@/features/activities/components/StudentActivityPlayer'
 import { MaraInteractionPlayer } from '@/features/activities/components/MaraInteractionPlayer'
 import { RegistroServidorPlayer } from '@/features/activities/components/RegistroServidorPlayer'
@@ -25,14 +27,24 @@ export function CaminoScreen() {
   const { activity, cuestionario, registro } = useCaminoActivity(params.get('actividad') ?? '')
   const requestedPoint = activity ? points.find((point) => point.specActivityId === activity.id) : undefined
   const allowed = !!activity && !!requestedPoint && requestedPoint.status !== 'locked'
+  const desafio = useDesafioServidor(params.get('actividad') ?? '')
   useEffect(() => {
-    if (!params.has('actividad') || allowed) return
+    if (!params.has('actividad') || allowed || desafio) return
     const next = new URLSearchParams(params)
     next.delete('actividad')
     next.delete('revision')
     if (requestedPoint) next.set('punto', requestedPoint.id)
     setParams(next, { replace: true })
-  }, [params, setParams, allowed, requestedPoint])
+  }, [params, setParams, allowed, requestedPoint, desafio])
+  if (desafio)
+    return (
+      <ChallengePlayer
+        key={desafio.servidor.actividad}
+        challenge={desafio.challenge}
+        servidor={desafio.servidor}
+        onClose={() => setParams({})}
+      />
+    )
   if (activity && allowed && cuestionario)
     return (
       <div className="sx-player-host">

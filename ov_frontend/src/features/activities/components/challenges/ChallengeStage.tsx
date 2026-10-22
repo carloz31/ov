@@ -3,7 +3,6 @@ import { BookOpen, Check, LockKeyhole, Star } from 'lucide-react'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { RewardCard } from '@/features/activities/components/RewardCard'
 import { CheckOption } from '@/features/activities/components/CheckOption'
-import { canStartChallenge } from '@/lib/challenges'
 export function ChallengeStage({
   model,
   onClose,
@@ -13,7 +12,6 @@ export function ChallengeStage({
 }) {
   const {
     c,
-    state,
     error,
     practice,
     stage,
@@ -23,6 +21,8 @@ export function ChallengeStage({
     setResourcesOpen,
     title,
     requirements,
+    puedeIniciar,
+    muestraRecompensas,
     sheets,
     question,
     hit,
@@ -121,7 +121,7 @@ export function ChallengeStage({
             <button
               type="button"
               className="sx-primary-button"
-              disabled={!canStartChallenge(c, state)}
+              disabled={!puedeIniciar}
               onClick={start}
             >
               Enfrentar a {c.nombre}
@@ -236,10 +236,10 @@ export function ChallengeStage({
                   </span>
                   <span>Te quedaron {battle.sparks} destellos</span>
                 </div>
-                {!practice.current && battle.sparks === c.vidasEstudiante && c.logroOculto && (
+                {muestraRecompensas && !practice.current && battle.sparks === c.vidasEstudiante && c.logroOculto && (
                   <RewardCard kind="badge" title={c.logroOculto.nombre} />
                 )}
-                {!practice.current && (
+                {muestraRecompensas && !practice.current && (
                   <RewardCard
                     kind={c.recompensa.recursoIds?.length ? 'sheet' : 'object'}
                     title={c.recompensa.titulo}

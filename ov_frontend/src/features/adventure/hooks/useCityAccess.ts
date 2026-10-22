@@ -6,6 +6,7 @@ import { actividadServidor, ciudadDisponible } from '@/lib/servidor/adaptadores'
 
 import { actividadPorContenido } from '@/lib/servidor/contenidos'
 import { idPuntoContenido } from '../lib/puntosServidor'
+import { useDesafioServidor } from './useDesafioServidor'
 import { challenges } from '@/data/content/challenges'
 
 import { activityById } from '@/data/activities/content'
@@ -31,8 +32,10 @@ export function useCityAccess() {
     actividadApi.visible &&
     actividadApi.estado !== 'BLOQUEADA' &&
     !!actividadPorContenido(servidor.actividades.datos, codigo)
+  // Una batalla se abre por su tipo, sin exigir que la Ciudad esté abierta (F04).
+  const desafio = useDesafioServidor(codigo)
   useEffect(() => {
-    if (!modoApi || !params.has('actividad') || permitido) return
+    if (!modoApi || !params.has('actividad') || permitido || desafio) return
     const next = new URLSearchParams(params)
     const codigo = params.get('actividad') ?? ''
     next.delete('actividad')
@@ -40,7 +43,7 @@ export function useCityAccess() {
     next.delete('modo')
     next.set('punto', actividadApi ? idPuntoContenido(actividadApi.contenido, codigo) : codigo)
     setParams(next, { replace: true })
-  }, [params, setParams, permitido, actividadApi])
+  }, [params, setParams, permitido, actividadApi, desafio])
 
   const challenge = challenges.find((c) => c.id === params.get('actividad'))
   const activity = activityById('act-tip-01')
@@ -53,7 +56,8 @@ export function useCityAccess() {
       modoApi && permitido && esEncuentro
         ? { codigo, clave: `${servidor.resumen.datos?.cuenta.codigo}/${codigo}/${params.get('revision')}` }
         : undefined,
-    challenge: !modoApi && canAccessCity(adventure) ? challenge : undefined,
+    challenge: modoApi ? desafio?.challenge : canAccessCity(adventure) ? challenge : undefined,
+    desafioServidor: desafio?.servidor,
     activity: modoApi
       ? permitido && !esEncuentro
         ? contenidoApi

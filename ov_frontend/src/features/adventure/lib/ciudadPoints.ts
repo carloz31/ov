@@ -8,10 +8,14 @@ import { cityCases } from '@/data/content/adventure'
 import type { AdventureState } from '@/types/adventure'
 import type { StudentMapPoint } from './mapPoints'
 import { puntosServidor } from './puntosServidor'
+import { referenciasServidor } from '@/lib/servidor/contenidos'
 export function getCiudadPoints(adventure: AdventureState, journey: JourneyState): StudentMapPoint[] {
   if (modoApi) {
+    // Los desafíos y casos que ya representa una actividad del servidor no repiten su marcador (F04).
+    const bloques = obtenerEstadoServidor().actividades.datos,
+      representados = referenciasServidor(bloques)
     return [
-      ...cityCases.map((c): StudentMapPoint => ({
+      ...cityCases.filter((c) => !representados.casos.has(c.id)).map((c): StudentMapPoint => ({
         id: c.id,
         title: c.title,
         x: c.x,
@@ -22,8 +26,8 @@ export function getCiudadPoints(adventure: AdventureState, journey: JourneyState
         status: 'locked',
         actionEnabled: false,
       })),
-      ...puntosServidor(obtenerEstadoServidor().actividades.datos, 'CIUDAD', 'ciudad'),
-      ...challenges.map((c, i): StudentMapPoint => ({
+      ...puntosServidor(bloques, 'CIUDAD', 'ciudad'),
+      ...challenges.filter((c) => !representados.desafios.has(c.id)).map((c, i): StudentMapPoint => ({
         id: c.id,
         title: c.titulo,
         subtitle: 'Disponible en una próxima iteración',

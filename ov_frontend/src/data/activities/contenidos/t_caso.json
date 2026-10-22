@@ -12,6 +12,7 @@
     "companero"
   ],
   "nodos": [],
+  "caso": "forest-fire",
   "mapa": {
     "x": 800,
     "y": 250,

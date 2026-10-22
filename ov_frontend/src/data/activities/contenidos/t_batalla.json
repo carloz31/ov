@@ -12,6 +12,10 @@
     "companero"
   ],
   "nodos": [],
+  "desafio": "desafio-rumor",
+  "fichas": [
+    "t-ficha"
+  ],
   "mapa": {
     "x": 570,
     "y": 160,

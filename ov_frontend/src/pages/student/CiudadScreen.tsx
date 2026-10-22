@@ -9,7 +9,8 @@ import { MapScreenLayout } from '@/features/adventure/components/MapScreenLayout
 import { RegistroPorAmpliar } from '@/features/activities/components/RegistroPorAmpliar'
 import '@/styles/student/journey.css'
 export function CiudadScreen() {
-  const { adventure, journey, params, setParams, interaccion, challenge, activity } = useCityAccess()
+  const { adventure, journey, params, setParams, interaccion, challenge, desafioServidor, activity } =
+    useCityAccess()
   if (interaccion)
     return (
       <div className="sx-player-host">
@@ -22,7 +23,14 @@ export function CiudadScreen() {
       </div>
     )
   if (challenge)
-    return <ChallengePlayer key={challenge.id} challenge={challenge} onClose={() => setParams({})} />
+    return (
+      <ChallengePlayer
+        key={challenge.id}
+        challenge={challenge}
+        servidor={desafioServidor}
+        onClose={() => setParams({})}
+      />
+    )
   if (activity)
     return (
       <div className="sx-player-host">
