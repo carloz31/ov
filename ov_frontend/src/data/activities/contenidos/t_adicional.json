@@ -11,7 +11,36 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-adicional-1",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Desarrollaste tus expectativas con detalle. Esta misión adicional es para ir un poco más allá."
+    },
+    {
+      "id": "t-adicional-2",
+      "tipo": "diapositiva",
+      "etiqueta": "Misión adicional",
+      "titulo": "Tus expectativas son un punto de partida",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Lo que esperas hoy puede cambiar mientras exploras. Volver a ellas te ayuda a notar qué se mantiene y qué se mueve."
+        },
+        {
+          "tipo": "reflexion",
+          "texto": "¿Qué expectativa te gustaría poner a prueba en este camino?"
+        }
+      ]
+    },
+    {
+      "id": "t-adicional-3",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Guárdala en mente: la retomaremos más adelante."
+    }
+  ],
   "mapa": {
     "x": 390,
     "y": 430,
