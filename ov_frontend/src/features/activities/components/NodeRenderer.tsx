@@ -11,7 +11,8 @@ import { SubmissionNode } from '@/features/activities/components/nodes/Submissio
 import { MatrixNode } from '@/features/activities/components/nodes/MatrixNode'
 import { ResultNode } from '@/features/activities/components/nodes/ResultNode'
 import { RegistroConsignaNode } from '@/features/activities/components/nodes/RegistroConsignaNode'
-import { borradorRegistro } from '@/features/activities/hooks/useRegistroServidor'
+import { borradorRegistro, turnosRegistro } from '@/features/activities/hooks/useRegistroServidor'
+import { RegistroSeguimiento } from '@/features/activities/components/followup/RegistroSeguimiento'
 export function NodeRenderer({
   model,
   activity,
@@ -56,6 +57,7 @@ export function NodeRenderer({
     node?.tipo === 'consigna' && registro.registroEnServidor
       ? registro.items.find((i) => i.codigo === node.item)
       : undefined
+  const { pendiente, cierre } = registro
   return reaction ? (
     <div className="sx-player-scene">
       <div className="sx-scene-space" />
@@ -66,6 +68,26 @@ export function NodeRenderer({
         hint="Escucha, a tu ritmo."
         onContinue={() => setReactions(reactions.slice(1))}
       />
+    </div>
+  ) : registro.enSeguimiento ? (
+    <div className="sx-card-stage">
+      <section className="sx-glass sx-player-card sx-submission-card case-scrollbar">
+        <RegistroSeguimiento
+          key={pendiente ? `${pendiente.item}-${pendiente.conversacion.length}` : 'cierre'}
+          item={pendiente?.item}
+          hilo={pendiente && turnosRegistro(pendiente)}
+          ocupado={registro.ocupado === 'evaluando'}
+          error={registro.error}
+          porAmpliar={(cierre && (cierre.items_por_ampliar ?? []))?.map((i) => ({
+            nombre: registro.items.find((item) => item.codigo === i.item)?.nombre ?? i.item,
+            pista: i.pista,
+          }))}
+          onResponder={(texto) => void registro.responder(texto)}
+          onOmitir={() => void registro.omitir()}
+          onReintentar={() => void registro.reintentar()}
+          onContinuar={registro.continuar}
+        />
+      </section>
     </div>
   ) : !node ? (
     <FinishScreen

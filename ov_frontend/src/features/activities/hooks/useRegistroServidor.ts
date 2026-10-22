@@ -167,6 +167,11 @@ export function useRegistroServidor({
     omitir: () =>
       pendiente &&
       accion(`omitir:${pendiente.item}`, (previa) => continuarSinResponder(actividad, pendiente.item, previa)),
-    continuar: () => cierre && terminar(cierre),
+    // «Continuar» deja el seguimiento y lleva al fin con los eventos de la acción que cerró.
+    continuar: () => {
+      if (!cierre) return
+      setCierre(undefined)
+      terminar(cierre)
+    },
   }
 }
