@@ -16,6 +16,7 @@ import {
   getTotalSatisfaction,
 } from '@/features/cases/lib/forestFireCaseLogic'
 import type { ForestFireAssignments } from '@/types/cases'
+import type { ResultadoCasoServidor } from '@/features/cases/hooks/useForestFireCase'
 
 import { SatisfactionBar } from '@/features/cases/components/SatisfactionBar'
 
@@ -27,6 +28,7 @@ export function FinalReportScreen({
   onFinish,
   extraReason,
   extraProfessionalId,
+  servidor,
 }: {
   assignments: ForestFireAssignments
   bestScore: number
@@ -35,10 +37,12 @@ export function FinalReportScreen({
   onFinish: () => void
   extraReason: string
   extraProfessionalId: string
+  // F04 (api): aprobado según el umbral del servidor; los testimonios llegan como avisos del servidor.
+  servidor?: ResultadoCasoServidor
 }) {
   const score = getTotalSatisfaction(assignments)
-  const passed = score >= FOREST_FIRE_PASS_SCORE
-  const testimonial = professionalTestimonials.find((t) => t.unlockCaseId === 'forest-fire')
+  const passed = servidor ? servidor.superado : score >= FOREST_FIRE_PASS_SCORE
+  const testimonial = servidor ? undefined : professionalTestimonials.find((t) => t.unlockCaseId === 'forest-fire')
   return (
     <section className="ff-content ff-report">
       <div className="ff-light ff-final-heading">
@@ -55,6 +59,12 @@ export function FinalReportScreen({
             ? `Reuniste un equipo que respondió a la mayoría de las necesidades.${score < FOREST_FIRE_MAX_SATISFACTION ? ` Algunas funciones quedaron sin cubrir: si quieres, intenta alcanzar los ${FOREST_FIRE_MAX_SATISFACTION} puntos.` : ''}`
             : 'Varias necesidades quedaron sin atender. Revisa las consecuencias de cada fase y vuelve con un nuevo equipo.'}
         </p>
+        {servidor && (
+          <>
+            <p>{servidor.puntaje}</p>
+            <p>{servidor.tipos}</p>
+          </>
+        )}
         <SatisfactionBar score={score} bestScore={bestScore} />
       </div>
       <div className="ff-phase-summaries">

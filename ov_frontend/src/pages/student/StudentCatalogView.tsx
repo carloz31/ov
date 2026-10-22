@@ -1,3 +1,4 @@
+import { useIconosObtenidos } from '@/features/discovery/hooks/useIconosObtenidos'
 import { useCatalogAffinity } from '@/features/discovery/hooks/useCatalogAffinity'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
@@ -38,8 +39,7 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
   const { coincidencias, coincidenciasAdicionales, ordenarOcupaciones, afinidadPara, textoAfinidad,
     errorAfinidad, perfilPlano, necesitaRevelar, reintentarAfinidad } = useCatalogAffinity(discovery, params.get('afines') === '1')
   const copy = sectionCopy[section]
-  const obtained = (id: string) =>
-    context.profiles.some((p) => p.occupationId === id && p.discoveryState !== 'unused')
+  const obtained = useIconosObtenidos()
   const obtainedCount = occupationDetails.filter((o) => obtained(o.id)).length
   const occupations = [
     ...occupationDetails.map((occupation) => ({

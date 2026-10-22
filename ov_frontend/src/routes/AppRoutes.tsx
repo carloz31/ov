@@ -180,22 +180,8 @@ function AppRoutes() {
           />
           <Route element={<Navigate replace to={appPaths.student.exploration} />} path="*" />
         </Route>
-        <Route
-          element={
-            <SoloLocal>
-              <ExplorationCaseIntroPage />
-            </SoloLocal>
-          }
-          path="cases/:caseId"
-        />
-        <Route
-          element={
-            <SoloLocal>
-              <ForestFireCasePage />
-            </SoloLocal>
-          }
-          path="cases/:caseId/play"
-        />
+        <Route element={<ExplorationCaseIntroPage />} path="cases/:caseId" />
+        <Route element={<ForestFireCasePage />} path="cases/:caseId/play" />
       </Route>
 
       <Route element={<ParentPortalModule />} path="/parent">

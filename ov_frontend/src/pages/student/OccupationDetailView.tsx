@@ -1,3 +1,4 @@
+import { useIconosObtenidos } from '@/features/discovery/hooks/useIconosObtenidos'
 import { useCatalogAffinity } from '@/features/discovery/hooks/useCatalogAffinity'
 import { Link, useParams } from 'react-router'
 import { Sparkles } from 'lucide-react'
@@ -28,6 +29,7 @@ export function OccupationDetailView() {
   const { afinidadPara, coincidenciaPara } = useCatalogAffinity(discovery)
   const occupation = getOccupation(occupationId)
   useCatalogVisit('occupation', occupation?.id)
+  const obtenida = useIconosObtenidos()
   if (!occupation)
     return (
       <DiscoveryStage ambient="atlas">
@@ -57,7 +59,7 @@ export function OccupationDetailView() {
               {occupation.name}
             </h1>
             <p>{occupation.highPoints.map((d) => dimensionNames[d]).join(' · ')}</p>
-            {profile && profile.discoveryState !== 'unused' && (
+            {obtenida(occupation.id) && (
               <span className="sx-d-tag">Ícono obtenido en la Central de Casos</span>
             )}
           </div>

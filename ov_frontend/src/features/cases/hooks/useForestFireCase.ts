@@ -1,12 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
-
+import { modoApi } from '@/config/env'
 import { forestFirePhases } from '@/data/content/forestFireCase'
+import { dimensionNames } from '@/features/discovery/lib/catalogDetails'
+import {
+  puntajeCaso,
+  superaCaso,
+  textoPuntajeCaso,
+  textoTiposCaso,
+} from '@/lib/servidor/adaptadoresCasos'
+import { consultarCasos, resolverCaso } from '@/store/servidor/casos'
+import { mensajeErrorServidor } from '@/store/servidor/sesion'
 
 import { finishForestFireAttempt } from '@/features/cases/lib/forestFireCaseOutcome'
 import { useAdventure, useAdventureStorageError } from '@/store/adventureStore'
 import { useExplorationError } from '@/store/explorationStore'
 import {
   FOREST_FIRE_BUDGET_LIMIT,
+  FOREST_FIRE_MAX_SATISFACTION,
+  getCorrectOccupationIds,
+  getTotalSatisfaction,
   SHOW_EXTRA_PROFESSIONAL,
   canOpenPhaseStep,
   createInitialAssignments,
@@ -16,7 +28,14 @@ import {
 
 type Screen =
   'phase-intro' | 'workspace' | 'result' | 'game-over' | 'report' | 'extra-question' | 'word-cloud'
-export function useForestFireCase() {
+// Resultado del intento según el servidor (F04): el umbral es el del caso.
+export type ResultadoCasoServidor = { superado: boolean; puntaje: string; tipos: string; mejor: number }
+// Con `actividad` (api), cada intento terminado se envía a resolver-caso.
+export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
+  const conServidor = modoApi && !!actividad
+  const [enviando, setEnviando] = useState(false)
+  const [errorEnvio, setErrorEnvio] = useState('')
+  const [resultadoServidor, setResultadoServidor] = useState<ResultadoCasoServidor>()
   const [phaseIndex, setPhaseIndex] = useState(0)
   // The separate case intro already introduces phase 1.
   const [screen, setScreen] = useState<Screen>('workspace')
@@ -80,18 +99,56 @@ export function useForestFireCase() {
     setNewIconIds([])
     setExtraProfessionalId('')
     setExtraReason('')
+    setErrorEnvio('')
+    setResultadoServidor(undefined)
     setScreen('phase-intro')
   }
-  function showReport() {
-    if (!finalized.current) {
+  // Envía el intento y lee el caso actualizado; sin respuesta válida, el intento no se da por cerrado.
+  async function enviarIntento(puntaje: number, ocupaciones: string[]) {
+    setEnviando(true)
+    setErrorEnvio('')
+    const respuesta = await resolverCaso(actividad!, puntaje, ocupaciones)
+    const casos = respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar' ? await consultarCasos() : null
+    setEnviando(false)
+    const caso = casos?.tipo === 'ok' ? casos.datos.find((c) => c.actividad === actividad) : undefined
+    if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar') {
+      setErrorEnvio(mensajeErrorServidor(respuesta))
+      return undefined
+    }
+    if (!caso) {
+      setErrorEnvio(casos && casos.tipo !== 'ok' ? mensajeErrorServidor(casos) : 'No se encontró el caso.')
+      return undefined
+    }
+    return { datos: respuesta.datos, caso }
+  }
+  async function showReport() {
+    if (enviando) return
+    if (!finalized.current && conServidor) {
+      const puntaje = puntajeCaso(getTotalSatisfaction(assignments), FOREST_FIRE_MAX_SATISFACTION)
+      const envio = await enviarIntento(puntaje, getCorrectOccupationIds(assignments))
+      if (!envio) return
+      finalized.current = true
+      setNewIconIds(envio.datos.ocupaciones_nuevas)
+      setResultadoServidor({
+        superado: superaCaso(puntaje, envio.caso),
+        puntaje: textoPuntajeCaso(puntaje, envio.caso),
+        tipos: textoTiposCaso(envio.caso, dimensionNames),
+        mejor: Math.round(((envio.caso.mejor_puntaje ?? 0) * FOREST_FIRE_MAX_SATISFACTION) / 100),
+      })
+    } else if (!finalized.current) {
       finalized.current = true
       setNewIconIds(finishForestFireAttempt(assignments).newIconIds)
     }
     setScreen('report')
   }
-  function advance() {
+  async function advance() {
     if (phaseIndex < forestFirePhases.length - 1) {
       if (remaining < 1) {
+        // El presupuesto agotado cuenta como intento fallido, con puntaje 0.
+        if (conServidor && !finalized.current) {
+          if (enviando || !(await enviarIntento(0, []))) return
+          finalized.current = true
+        }
         setScreen('game-over')
         return
       }
@@ -140,6 +197,9 @@ export function useForestFireCase() {
     restart,
     showReport,
     advance,
+    enviando,
+    errorEnvio,
+    resultadoServidor,
     complete,
     isStepComplete,
   }

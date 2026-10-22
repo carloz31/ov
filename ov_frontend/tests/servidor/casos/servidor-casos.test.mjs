@@ -101,3 +101,15 @@ test('resolver un caso envía puntaje y ocupaciones, incorpora sus desbloqueos y
     ),
   )
 })
+
+test('el caso del front se juega solo si su actividad CASO está abierta en el servidor', () => {
+  const app = fixtureServidor()
+  const bloques = jsonServidor('ruta/ruta-actividades-ciudad')
+  const contenidos = app.load('src/lib/servidor/contenidos.ts')
+  const tCaso = bloques.flatMap((b) => b.actividades).find((a) => a.codigo === 't-caso')
+  Object.assign(tCaso, { visible: true, estado: 'BLOQUEADA' })
+  assert.equal(contenidos.actividadDeCaso(bloques, 'forest-fire'), undefined)
+  tCaso.estado = 'EN_CURSO'
+  assert.equal(contenidos.actividadDeCaso(bloques, 'forest-fire'), 't-caso')
+  assert.equal(contenidos.actividadDeCaso(bloques, 'neighborhood-radio'), undefined)
+})

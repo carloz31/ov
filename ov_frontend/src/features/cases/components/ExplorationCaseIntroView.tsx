@@ -11,7 +11,15 @@ const situationNarrative =
 const roleNarrative = 'Tú has sido designado como coordinador de respuesta ante la emergencia.'
 const fullNarrative = `${situationNarrative}\n\n${roleNarrative}`
 
-function ExplorationCaseIntroView({ onClose, onStart }: { onClose: () => void; onStart: () => void }) {
+function ExplorationCaseIntroView({
+  intentos,
+  onClose,
+  onStart,
+}: {
+  intentos?: string | null
+  onClose: () => void
+  onStart: () => void
+}) {
   const [phase, setPhase] = useState<'briefing' | 'active-emergency'>('briefing')
   const [imageVisible, setImageVisible] = useState(false)
   const [panelVisible, setPanelVisible] = useState(false)
@@ -126,6 +134,7 @@ function ExplorationCaseIntroView({ onClose, onStart }: { onClose: () => void; o
                     Reporte inicial
                   </p>
                   <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Incendio forestal</h1>
+                  {intentos && <p className="mt-1 text-sm text-white/70">{intentos}</p>}
                 </div>
               </div>
 

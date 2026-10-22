@@ -15,13 +15,15 @@ import { StepActions } from '@/features/cases/components/StepActions'
 import { PhaseResultScreen } from '@/features/cases/components/PhaseResultScreen'
 import { FinalReportScreen } from '@/features/cases/components/FinalReportScreen'
 export function ForestFireCaseView({
+  actividad,
   onClose,
   onComplete,
 }: {
+  actividad?: string
   onClose: () => void
   onComplete?: () => void
 }) {
-  const model = useForestFireCase()
+  const model = useForestFireCase({ actividad })
   const {
     phaseIndex,
     screen,
@@ -50,6 +52,8 @@ export function ForestFireCaseView({
     restart,
     showReport,
     advance,
+    errorEnvio,
+    resultadoServidor,
     complete,
     isStepComplete,
   } = model
@@ -173,6 +177,11 @@ export function ForestFireCaseView({
             />
           </section>
         )}
+        {errorEnvio && (
+          <p className="ff-storage-warning" role="alert">
+            {errorEnvio}
+          </p>
+        )}
         {screen === 'result' && (
           <PhaseResultScreen
             phase={phase}
@@ -218,8 +227,9 @@ export function ForestFireCaseView({
         {screen === 'report' && (
           <FinalReportScreen
             assignments={assignments}
-            bestScore={adventure.caseBestScores['forest-fire'] ?? 0}
+            bestScore={resultadoServidor?.mejor ?? adventure.caseBestScores['forest-fire'] ?? 0}
             newIconIds={newIconIds}
+            servidor={resultadoServidor}
             onRestart={restart}
             onFinish={onComplete ?? onClose}
             extraReason={extraReason}

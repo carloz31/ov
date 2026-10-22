@@ -42,6 +42,13 @@ export function reproductorPorTipo(
   if (actividad.tipo === 'CASO' && contenido.caso) return { tipo: 'caso', actividad: codigo, caso: contenido.caso }
   return undefined
 }
+// Actividad CASO del servidor que juega el caso `caso` del front, si la cuenta puede abrirla.
+export function actividadDeCaso(bloques: BloqueActividades[] | null, caso: string) {
+  return (bloques ?? [])
+    .flatMap((b) => b.actividades)
+    .map((a) => reproductorPorTipo(bloques, a.codigo))
+    .find((r) => r?.tipo === 'caso' && r.caso === caso)?.actividad
+}
 // Desafíos y casos del front que ya representa una actividad del servidor.
 export function referenciasServidor(bloques: BloqueActividades[] | null) {
   const contenidos = (bloques ?? []).flatMap((b) => b.actividades).map((a) => contenidoPorClave(a.contenido))
