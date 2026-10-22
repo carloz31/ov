@@ -19,9 +19,9 @@ import { resumenPagina } from '../lib/resultPage'
 import { carrerasResultado, ocupacionesResultado } from '../lib/resultCatalog'
 import { paginasLibroApi, resumenPartidaLlegada, type ExtrasPaginaApi } from '../lib/helenaPagesApi'
 
-// F03: en api, el perfil plano invita a repetir las misiones (HU-095).
-const TEXTO_PLANO_API =
-  'Tus respuestas no distinguen un tipo de interés. Puedes volver a hacer las misiones una vez.'
+// F03: en api, el perfil plano invita a repetir las misiones (HU-095); con el reinicio usado, ya no.
+const TEXTO_PLANO_USADO = 'Tus respuestas no distinguen un tipo de interés.'
+const TEXTO_PLANO_API = `${TEXTO_PLANO_USADO} Puedes volver a hacer las misiones una vez.`
 
 export function useHelenaPages() {
   const journey = useJourney(),
@@ -149,6 +149,7 @@ export function useHelenaPages() {
           : p.faltante
             ? `Completa: ${p.faltante.titulo}`
             : ''
+      const textoPlano = p.puedeReiniciar ? TEXTO_PLANO_API : TEXTO_PLANO_USADO
       const resumen = comparacion
         ? resumenPartidaLlegada(libro)
         : resumenPagina(
@@ -162,7 +163,7 @@ export function useHelenaPages() {
                     : carrerasResultado(undefined, false, ocupaciones),
                 }
               : undefined,
-            modoApi ? { textoPlano: TEXTO_PLANO_API } : undefined,
+            modoApi ? { textoPlano } : undefined,
           )
       return {
         ...p,
@@ -179,7 +180,7 @@ export function useHelenaPages() {
         revelacionBloqueada: modoApi && (servidorPagina ? !p.aplicacionSello : !servidor.resultadoRiasec),
         // HU-095: solo en api, con perfil plano y el reinicio sin usar.
         reinicioApi: modoApi && coincidencias,
-        textoPlano: TEXTO_PLANO_API,
+        textoPlano,
         resumen,
       }
     }),

@@ -153,6 +153,7 @@ test('perfil plano: el reinicio sin usar ofrece repetir; usado, no hay botón', 
   libroServidor(app, { 'APL-RIASEC': plano }, { historialRiasec: jsonServidor('ruta/ruta-historial-riasec') })
   const usado = pagina(useHelenaPages(), 'intereses')
   assert.equal(usado.puedeReiniciar, false)
+  assert.equal(usado.resumen.cierre, 'Tus respuestas no distinguen un tipo de interés.')
   assert.doesNotMatch(html(HelenaPageCard, { page: usado, model: useHelenaPages() }), /Volver a hacer las misiones|mara-test/)
 })
 

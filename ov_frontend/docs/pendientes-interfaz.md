@@ -4,7 +4,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-10-22 · F03 · Textos del front por decidir en instrumentos
 
-- **Dato:** textos que la interfaz de F03 necesita y el backend no entrega: las zonas en palabras («Zona fuerte», «En camino», «Por trabajar»); «Romper el sello», «Revela tu punto de llegada», «Ver comparación», «N respuestas se mantuvieron»; «Tu código de interés:», «Ocupaciones afines:», «Completa:», «Ir al libro de Helena», «Volver a hacer las misiones»; el aviso de perfil plano («Tus respuestas no distinguen un tipo de interés. Puedes volver a hacer las misiones una vez.»); el título, subtítulo, misterio y sello de la página «Tu punto de partida y llegada», y el párrafo de su vista explicada.
+- **Dato:** textos que la interfaz de F03 necesita y el backend no entrega: las zonas en palabras («Zona fuerte», «En camino», «Por trabajar»); «Romper el sello», «Revela tu punto de llegada», «Ver comparación», «N respuestas se mantuvieron»; «Tu código de interés:», «Ocupaciones afines:», «Completa:», «Ir al libro de Helena», «Volver a hacer las misiones»; el aviso de perfil plano («Tus respuestas no distinguen un tipo de interés. Puedes volver a hacer las misiones una vez.», y solo la primera frase con el reinicio usado); el título, subtítulo, misterio y sello de la página «Tu punto de partida y llegada», y el párrafo de su vista explicada.
 - **Dónde se muestra:** libro de Helena y su vista explicada, consigna de `t-contraste`, aviso del punto bloqueado de T2.
 - **Opciones:** mantenerlos en el front; moverlos al backend (parámetros o catálogo de textos); ajustarlos en la revisión estética final.
 - **Si no se decide:** se usan los textos actuales.

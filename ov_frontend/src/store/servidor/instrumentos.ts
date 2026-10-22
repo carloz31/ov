@@ -29,6 +29,8 @@ import type {
 // plano. Se pide al abrir el libro de Helena o su vista explicada, y otra vez tras revelar o reiniciar.
 let revision = 0
 let consulta: { cuenta: string | null; sesion: number; promesa: Promise<RespuestaServidor<null>> } | null = null
+// La lectura más reciente: una anterior que queda superada (sin cambio de cuenta) responde con esta.
+let ultima: Promise<RespuestaServidor<null>> | null = null
 const publicarInstrumentos = (cambios: Partial<EstadoInstrumentos>) =>
   publicar({ instrumentos: { ...obtenerEstadoServidor().instrumentos, ...cambios } })
 
@@ -38,6 +40,7 @@ export function cargarInstrumentos(forzar = false): Promise<RespuestaServidor<nu
   if (!forzar && consulta?.cuenta === cuenta && consulta.sesion === sesion) return consulta.promesa
   const actual = { cuenta, sesion, promesa: consultarInstrumentos() }
   consulta = actual
+  ultima = actual.promesa
   void actual.promesa.finally(() => {
     if (consulta === actual) consulta = null
   })
@@ -49,10 +52,12 @@ async function consultarInstrumentos(): Promise<RespuestaServidor<null>> {
   const sesion = sesionServidor(),
     cuenta = cuentaActiva(),
     turno = ++revision
-  const vigente = () => turno === revision && sesion === sesionServidor() && cuenta === cuentaActiva()
+  const mismaCuenta = () => sesion === sesionServidor() && cuenta === cuentaActiva()
+  const vigente = () => turno === revision && mismaCuenta()
+  const descartada = () => (mismaCuenta() && ultima ? ultima : cambioCuenta())
   publicarInstrumentos({ estado: 'cargando', error: null })
-  const fallo = (error: ErrorServidor): RespuestaServidor<null> => {
-    if (!vigente()) return cambioCuenta()
+  const fallo = (error: ErrorServidor): RespuestaServidor<null> | Promise<RespuestaServidor<null>> => {
+    if (!vigente()) return descartada()
     publicarInstrumentos({ estado: 'error', error })
     return error
   }
@@ -81,7 +86,7 @@ async function consultarInstrumentos(): Promise<RespuestaServidor<null>> {
   ])
   if (comparacion && comparacion.tipo !== 'ok') return fallo(comparacion)
   if (historial && historial.tipo !== 'ok') return fallo(historial)
-  if (!vigente()) return cambioCuenta()
+  if (!vigente()) return descartada()
   const riasec = resultados[APLICACION_RIASEC.aplicacion] ?? null
   publicar({
     // El resultado RIASEC sigue en su lugar para el catálogo y el nodo de resultado.

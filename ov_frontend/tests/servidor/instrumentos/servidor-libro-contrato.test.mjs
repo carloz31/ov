@@ -165,3 +165,15 @@ test('el apoderado consulta los resultados del hijo con su propia cuenta', async
   assert.equal(respuesta.tipo, 'ok')
   assert.equal(app.requests.at(-1).url, '/api/cuentas/apo-rosa/familia/resultados')
 })
+
+test('una lectura superada por otra forzada responde con la más reciente, no con un cambio de cuenta', async () => {
+  const app = fixtureServidor()
+  servidorLibro(app)
+  const almacen = cargarAlmacen(app)
+  almacen.publicar({ consultasHabilitadas: true })
+  const store = app.load('src/store/servidor/instrumentos.ts')
+  // Como al revelar: el refresco del camino vuelve a pedir el libro mientras la acción lo fuerza.
+  const [primera, segunda] = await Promise.all([store.cargarInstrumentos(), store.cargarInstrumentos(true)])
+  assert.deepEqual(copia([primera.tipo, segunda.tipo]), ['ok', 'ok'])
+  assert.equal(almacen.obtenerEstadoServidor().instrumentos.estado, 'listo')
+})
