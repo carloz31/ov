@@ -24,7 +24,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** a la derecha de cada ítem por ampliar, en el cierre del registro y en el drawer de la actividad.
 - **Opciones:** abrir la edición de ese ítem en el reproductor; abrir la consulta del registro (F02) en ese ítem.
 - **Si no se muestra:** el cierre y el drawer nombran los ítems por ampliar sin enlace.
-- **Estado:** pendiente de F02 (edición del registro entregado).
+- **Estado:** resuelto en F02 sin enlace por ítem, por decisión del usuario: en el drawer basta el aviso de ítems por ampliar; se amplían desde «Ver o modificar mis respuestas», que abre la consulta del registro con la pista de cada ítem.
 
 ## 2026-10-21 · F01 · «Anterior» en batallas y junto a preguntas con retroalimentación
 
@@ -177,7 +177,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - crear `t_eco.json` o mapear `t-eco` a una actividad real cuando se cargue la ruta;
   - definir el texto definitivo del aviso «por desarrollar».
 - **Si no se muestra:** en modo `api` las actividades no retoman lo escrito antes y `t-eco` se descarta por no tener contenido.
-- **Estado:** pendiente del lote F de registros; no se toca la interfaz en B05.
+- **Estado:** resuelto en F02. La consigna con `eco` muestra la cita (DISPONIBLE), el aviso «Tu respuesta en «{registro de origen}» aún está por desarrollar. Puedes ampliarla desde ese registro, con «Ver o modificar mis respuestas».», sin enlace (POR_DESARROLLAR), o nada (SIN_DATO); el registro de origen sale de `actividad` de la referencia. La elección por referencia usa las casillas con lo elegido antes. `t_eco.json` tiene sus consignas.
 
 ## 2026-10-13 · B04 · Respuesta consolidada y edición de registros
 
@@ -190,7 +190,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - la edición reutiliza la misma interfaz de seguimiento con Lumi que la entrega (pregunta pendiente, «Responder», «Continuar sin responder»).
 - **Opciones:** construir la consulta y el botón de editar en el lote F de registros; mantener la lógica local hasta entonces.
 - **Si no se muestra:** en modo `api` el estudiante no puede consultar ni editar lo que entregó; la misión adicional solo se abre si todo quedó adecuado en la entrega.
-- **Estado:** pendiente del lote F de registros; no se toca la interfaz en B04.
+- **Estado:** resuelto en F02. «Ver o modificar mis respuestas» abre el mismo reproductor solo con las consignas, precargado con la consolidada, la elección (sin poder cambiarla) y la pista de los por ampliar; cambiar un texto y «Entregar cambios» edita con el seguimiento de F01.
 
 ## 2026-10-09 · AP-F3 · Carga y error del portal del apoderado
 

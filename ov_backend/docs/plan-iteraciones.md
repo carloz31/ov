@@ -340,7 +340,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 |---|---|---|---|---|---|
 | F00 | Base sobre `ruta` · **Implementado** | 002, 025 (y recomprueba 004, 011, 013–015, 021, 073, 074) | B17 | B01 (×3), B3 llave, B17 nombre | Candado con mensaje; etiqueta opcional y duración; accesos a secciones |
 | F01 | Registros: elección, borradores, entrega y seguimiento · **Implementado** | 006, 007, 010, 016 | F00 | B02, B03 | Reproductor de registro |
-| F02 | Registros: consulta, edición y eco | 008, 009 | F01 | B04, B05 | Consulta del registro (nueva); zona de eco |
+| F02 | Registros: consulta, edición y eco · **Implementado** | 008, 009 | F01 | B04, B05 | Consulta del registro (nueva); zona de eco |
 | F03 | Instrumentos y libro de Helena | 022–024, 027, 094, 095 | F02 | B06, B07, F5 recarga | Libro: Revelar, perfil plano, comparación partida–llegada |
 | F04 | Batallas, casos y testimonios · **Implementado** | 017, 041, 051–056 | F00 | B08, B2 testimonios, F3 testimonios, F4 íconos | Testimonios (vista nueva o en mochila); Central de Casos |
 | F05 | Diario, pregunta del día y check-in | 028–033, 035, 036, 075 | F01 | B09, B2 diario, F4 señal | Diario; cierre de actividad; pasaporte |
@@ -377,7 +377,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Pantallas a decidir:** cómo se ve una elección ordenada; dónde va «Entregar» (último nodo o barra fija); el «Lumi está pensando…» mientras evalúa el LLM (puede tardar unos segundos).
 - **Ajustes al backend posibles:** si el reproductor necesita saber qué nodo es cada ítem sin leer el JSON, un campo `orden` visible ya existe; no se prevé más.
 
-#### F02 · Registros: consulta, edición y eco
+#### F02 · Registros: consulta, edición y eco · **Implementado**
 - **Hace:** vista de consulta del registro entregado (consolidada por ítem, pista y «Editar» en los ampliables); la edición reutiliza la interfaz de seguimiento de F01. Zona de eco en los ítems con referencia: cita literal, aviso «por desarrollar» con enlace al registro de origen, oculta con SIN_DATO; elección por referencia.
 - **Contenidos:** `t_eco`.
 - **Pantallas a decidir:** desde dónde se abre la consulta (repaso de la actividad completada, mochila, perfil); el texto definitivo del aviso «por desarrollar».
