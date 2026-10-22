@@ -11,7 +11,28 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-mision-intereses-2-entrada",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Sigamos con más actividades. Responde con lo primero que sientas."
+    },
+    {
+      "id": "t-mision-intereses-2-item",
+      "tipo": "item",
+      "instrumentoId": "TEST-RIASEC",
+      "itemId": "plantilla",
+      "hablanteId": "companero",
+      "etiqueta": "¿Cuánto te gustaría hacer esto?"
+    },
+    {
+      "id": "t-mision-intereses-2-cierre",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Listo. Helena ya puede leer tus respuestas en su libro."
+    }
+  ],
   "mapa": {
     "x": 650,
     "y": 360,

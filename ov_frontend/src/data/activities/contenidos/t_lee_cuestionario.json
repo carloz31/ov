@@ -11,7 +11,27 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-lee-cuestionario-entrada",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Al empezar el camino respondiste unas preguntas sobre tu futuro."
+    },
+    {
+      "id": "t-lee-cuestionario-cita",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Sobre lo claro que tenías lo que quieres hacer, respondiste:",
+      "eco": "t-ref-cuestionario"
+    },
+    {
+      "id": "t-lee-cuestionario-cierre",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Guarda esa respuesta en mente: al final del camino volverás a ella."
+    }
+  ],
   "mapa": {
     "x": 470,
     "y": 40,

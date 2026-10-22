@@ -11,7 +11,30 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-contraste-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Helena reveló tu resultado de intereses. Pensemos juntos qué te dice."
+    },
+    {
+      "id": "t-con-contraste",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "item": "t-con-contraste",
+      "eco": [
+        "t-ref-resultado",
+        "t-ref-coincidencias"
+      ]
+    }
+  ],
   "mapa": {
     "x": 900,
     "y": 450,

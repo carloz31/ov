@@ -11,7 +11,28 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-llegada-entrada",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Volvamos a las preguntas del inicio. Responde cómo te sientes hoy."
+    },
+    {
+      "id": "t-llegada-item",
+      "tipo": "item",
+      "instrumentoId": "TEST-PARTIDA-LLEGADA",
+      "itemId": "plantilla",
+      "hablanteId": "companero",
+      "etiqueta": "Para ver cuánto avanzaste:"
+    },
+    {
+      "id": "t-llegada-cierre",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Gracias. En el libro de Helena podrás comparar tu partida con tu llegada."
+    }
+  ],
   "mapa": {
     "x": 850,
     "y": 250,

@@ -1,7 +1,8 @@
 import { contenidoPorClave } from '@/data/activities/contenidos.ts'
 import { configureStudentActivities } from '@/data/activities/reflectionConfig'
 import type { Actividad } from '@/types/activities'
-import type { BloqueActividades, ItemPublico, ItemRegistroPublico } from '@/types/servidor'
+import type { BloqueActividades, ItemPublico, ItemRegistroPublico, ReferenciaResuelta } from '@/types/servidor'
+import { citaReferencia } from './adaptadoresRegistro'
 import { bloquesZona } from './adaptadores'
 
 export function actividadPorContenido(
@@ -97,6 +98,21 @@ export function registroServidor(contenido: Actividad, items: ItemRegistroPublic
       return nodo.tipo === 'consigna' && item
         ? { ...nodo, premisa: item.consigna, obligatoria: item.obligatorio, entregable: { tipo: 'texto' as const } }
         : nodo
+    }),
+  }
+}
+
+// F03: un encuentro cuyos diálogos traen `eco` pide sus referencias antes de abrirse; cada diálogo dice su texto
+// seguido de la cita, o solo su texto si no hay dato.
+export const conEcoEncuentro = (contenido: Actividad) =>
+  contenido.tipo !== 'registro' && contenido.nodos.some((n) => n.tipo === 'dialogo' && !!n.eco)
+export function encuentroConEco(contenido: Actividad, referencias: ReferenciaResuelta[]): Actividad {
+  return {
+    ...contenido,
+    nodos: contenido.nodos.map((nodo) => {
+      if (nodo.tipo !== 'dialogo' || !nodo.eco) return nodo
+      const cita = citaReferencia(referencias.find((r) => r.codigo === nodo.eco))
+      return cita ? { ...nodo, texto: `${nodo.texto} ${cita}` } : nodo
     }),
   }
 }

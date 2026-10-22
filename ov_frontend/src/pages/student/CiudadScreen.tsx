@@ -7,10 +7,11 @@ import { StudentActivityPlayer } from '@/features/activities/components/StudentA
 import { getCiudadPoints } from '@/features/adventure/lib/ciudadPoints'
 import { MapScreenLayout } from '@/features/adventure/components/MapScreenLayout'
 import { RegistroPorAmpliar } from '@/features/activities/components/RegistroPorAmpliar'
+import { RegistroServidorPlayer } from '@/features/activities/components/RegistroServidorPlayer'
 import { FichasBatalla } from '@/features/activities/components/FichasBatalla'
 import '@/styles/student/journey.css'
 export function CiudadScreen() {
-  const { adventure, journey, params, setParams, interaccion, challenge, desafioServidor, activity } =
+  const { adventure, journey, params, setParams, interaccion, challenge, desafioServidor, activity, registro } =
     useCityAccess()
   if (interaccion)
     return (
@@ -19,6 +20,17 @@ export function CiudadScreen() {
           key={interaccion.clave}
           codigo={interaccion.codigo}
           revision={params.get('revision') === '1'}
+          onClose={() => setParams({})}
+        />
+      </div>
+    )
+  if (registro)
+    return (
+      <div className="sx-player-host">
+        <RegistroServidorPlayer
+          key={registro}
+          codigo={registro}
+          imageUrl="/images/background/afueras.png"
           onClose={() => setParams({})}
         />
       </div>

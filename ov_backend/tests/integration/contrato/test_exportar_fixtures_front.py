@@ -76,7 +76,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'items-t-mision-intereses-2', 'items-t-llegada', 'revelar-llegada', 'resultado-llegada',
     'revelar-riasec-plano', 'resultado-riasec-plano', 'historial-riasec-plano', 'historial-riasec',
     'reiniciar-riasec', 'referencias-t-contraste-plano', 'referencias-t-contraste-reiniciado',
-    'familia-resultados-sin-diploma',
+    'familia-resultados-sin-diploma', 'items-registro-t-contraste',
 )}
 
 

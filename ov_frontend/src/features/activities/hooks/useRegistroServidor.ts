@@ -10,7 +10,7 @@ import {
 } from '@/store/servidor/registro'
 import { mensajeErrorServidor, obtenerEstadoServidor } from '@/store/servidor/sesion'
 import { actividadServidor } from '@/lib/servidor/adaptadores'
-import { anterioresDe } from '@/lib/servidor/adaptadoresRegistro'
+import { anterioresDe, citaReferencia, codigosEco } from '@/lib/servidor/adaptadoresRegistro'
 import type { Nodo } from '@/types/activities'
 import type {
   ItemRegistroPublico,
@@ -27,6 +27,7 @@ import {
   edicionesDe,
   esConsulta,
   type CambioRegistro,
+  type EcoRegistro,
 } from '../lib/edicionRegistro'
 
 export type RegistroServidor = {
@@ -272,10 +273,19 @@ export function useRegistroServidor({
       consulta && registro ? consultaDe(registro, item, cambios) : undefined,
     puedeEditarRegistro: modoApi && consulta,
     // Zona de eco de una consigna (F02): la referencia TEXTO que cita y el título de su actividad de origen.
-    ecoDe: (nodo: Nodo) => {
-      const codigo = nodo.tipo === 'consigna' ? nodo.eco : undefined
-      const referencia = codigo && registroServidor?.referencias?.find((r) => r.codigo === codigo)
-      if (!referencia || referencia.estado === 'SIN_DATO') return undefined
+    // F03: las demás (un resultado revelado) se citan juntas con sus datos; sin dato, nada.
+    ecoDe: (nodo: Nodo): EcoRegistro | undefined => {
+      const codigos = nodo.tipo === 'consigna' ? codigosEco(nodo.eco) : []
+      // En el orden en que el contenido las nombra.
+      const referencias = codigos.flatMap(
+        (c) => registroServidor?.referencias?.find((r) => r.codigo === c) ?? [],
+      )
+      const referencia = referencias.find((r) => r.tipo === 'TEXTO')
+      if (!referencia) {
+        const citas = referencias.map(citaReferencia).filter((c): c is string => !!c)
+        return citas.length ? { estado: 'DISPONIBLE', texto: '', titulo: '', cita: citas.join('. ') } : undefined
+      }
+      if (referencia.estado === 'SIN_DATO') return undefined
       const origen = actividadServidor(obtenerEstadoServidor().actividades.datos, referencia.actividad ?? '')
       return { estado: referencia.estado, texto: referencia.texto ?? '', titulo: origen?.titulo ?? '' }
     },

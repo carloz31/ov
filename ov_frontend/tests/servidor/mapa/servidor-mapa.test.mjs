@@ -74,18 +74,19 @@ test('el avance del camino cuenta solo las actividades requeridas, como el servi
 })
 
 test('un contenido sin nodos ubica el punto, pero no abre actividad', () => {
-  const m = mapa('ruta/ruta-actividades-t1')
+  const m = mapa('ruta/ruta-actividades-t2')
   const { getPointDetails } = m.app.load('src/features/adventure/lib/pointDetails.ts')
   const { actividadPorContenido } = m.app.load('src/lib/servidor/contenidos.ts')
-  // F01 dio nodos a t-expectativas: el ejemplo de contenido sin nodos pasa a t-lee-cuestionario.
-  const pendiente = m.camino().find((p) => p.specActivityId === 't-lee-cuestionario')
+  // F03 dio nodos a t-lee-cuestionario: el ejemplo de contenido sin nodos pasa a t-comparar (T2).
+  const pendiente = m.camino().find((p) => p.specActivityId === 't-comparar')
   assert.equal(pendiente.status, 'available')
   const detalle = getPointDetails(pendiente, {}, {})
   assert.deepEqual(
     [detalle.badge, detalle.actionLabel, detalle.disabled, detalle.meta, detalle.type],
-    ['Contenido pendiente', 'Contenido pendiente', true, '5 min', 'Informativa'],
+    ['Contenido pendiente', 'Contenido pendiente', true, '15 min', 'Registro'],
   )
-  assert.equal(actividadPorContenido(m.bloques, 't-lee-cuestionario'), undefined)
+  assert.equal(actividadPorContenido(m.bloques, 't-comparar'), undefined)
+  assert.ok(actividadPorContenido(m.bloques, 't-lee-cuestionario'))
   assert.ok(actividadPorContenido(m.bloques, 't-expectativas'))
   const inicio = getPointDetails(
     m.camino().find((p) => p.specActivityId === 't-inicio'),

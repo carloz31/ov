@@ -124,13 +124,16 @@ export function pieConsulta(
 
 // Lo que dice Lumi en la burbuja de una consigna: el recuerdo del eco y, en la consulta, la pista del ítem por
 // ampliar (que se resalta), en una sola burbuja. Sin ninguno de los dos, Lumi no habla.
-export type EcoRegistro = { estado: 'DISPONIBLE' | 'POR_DESARROLLAR'; texto: string; titulo: string }
+// F03: `cita` es el recuerdo completo de un resultado (código de interés, ocupaciones), sin registro de origen.
+export type EcoRegistro = { estado: 'DISPONIBLE' | 'POR_DESARROLLAR'; texto: string; titulo: string; cita?: string }
 export const INTRO_PISTA = 'Aquí podrías contar un poco más:'
 export function burbujaRegistro(eco?: EcoRegistro, pista?: string) {
   const recuerdo = !eco
     ? undefined
-    : eco.estado === 'POR_DESARROLLAR'
-      ? 'La vez pasada lo contaste en pocas palabras. Aquí puedes tomarte tu tiempo.'
-      : `${reflectionCopy.memory(eco.titulo)}: «${eco.texto}»`
+    : eco.cita
+      ? eco.cita
+      : eco.estado === 'POR_DESARROLLAR'
+        ? 'La vez pasada lo contaste en pocas palabras. Aquí puedes tomarte tu tiempo.'
+        : `${reflectionCopy.memory(eco.titulo)}: «${eco.texto}»`
   return recuerdo || pista ? { recuerdo, pista: pista || undefined } : undefined
 }

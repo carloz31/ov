@@ -58,8 +58,10 @@ export function useCityAccess() {
         : undefined,
     challenge: modoApi ? desafio?.challenge : canAccessCity(adventure) ? challenge : undefined,
     desafioServidor: desafio?.servidor,
+    // F03: un registro del servidor en la Ciudad (t-contraste) se abre con sus ítems, como en el camino.
+    registro: modoApi && permitido && contenidoApi?.tipo === 'registro' ? codigo : undefined,
     activity: modoApi
-      ? permitido && !esEncuentro
+      ? permitido && !esEncuentro && contenidoApi?.tipo !== 'registro'
         ? contenidoApi
         : undefined
       : !modoApi && canAccessCity(adventure) && activity && params.get('actividad') === activity.id

@@ -11,7 +11,28 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-mision-intereses-entrada",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Veamos qué actividades te llaman la atención. No hay respuestas correctas."
+    },
+    {
+      "id": "t-mision-intereses-item",
+      "tipo": "item",
+      "instrumentoId": "TEST-RIASEC",
+      "itemId": "plantilla",
+      "hablanteId": "companero",
+      "etiqueta": "¿Cuánto te gustaría hacer esto?"
+    },
+    {
+      "id": "t-mision-intereses-cierre",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Buen comienzo. La segunda parte te espera en la Ciudad."
+    }
+  ],
   "mapa": {
     "x": 500,
     "y": 300,

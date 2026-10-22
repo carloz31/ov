@@ -102,6 +102,7 @@ export interface NodoDialogo extends NodoBase {
   hablanteId: ID
   texto: string
   expresion?: string
+  eco?: ID // en api, referencia que el diálogo cita tras su texto (F03)
 }
 
 /** Respuesta RPG del jugador. No se evalúa. Por defecto no se guarda. */
@@ -169,7 +170,7 @@ export interface NodoConsigna extends NodoBase {
   item?: ID // en api, código del ítem de registro del servidor que responde esta consigna (F01)
   podio?: ConfigPodio // en api, textos e íconos del podio de una elección «top N»
   eleccion?: ConfigEleccion // en api, textos e íconos de una elección guiada sin orden
-  eco?: ID // en api, código de la referencia TEXTO que se cita sobre esta consigna (F02)
+  eco?: ID | ID[] // en api, referencias que se citan sobre esta consigna (F02: TEXTO; F03: RESULTADO, COINCIDENCIAS)
 }
 
 // Podio de una elección ordenada «top N» (F01). Todo es opcional: sin él se usan textos genéricos.

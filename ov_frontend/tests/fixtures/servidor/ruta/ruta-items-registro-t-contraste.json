@@ -1,0 +1,10 @@
+[
+  {
+    "codigo": "t-con-contraste",
+    "consigna": "¿En qué se parece tu resultado a lo que pensabas de ti? ¿En qué se diferencia?",
+    "eleccion": null,
+    "min_caracteres": null,
+    "nombre": "Contraste",
+    "obligatorio": true
+  }
+]

@@ -291,6 +291,7 @@ def _recorrer(cliente):
     })
     fixtures['resultado-riasec'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
     fixtures['referencias-t-contraste'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')
+    fixtures['items-registro-t-contraste'] = _pedir(cliente, 'GET', '/actividades/t-contraste/items-registro')
     # B08: el caso falla, se reintenta y se supera; superarlo abre los testimonios y llena la colección.
     caso = {'cuenta': 'est-ana', 'actividad': 't-caso', 'fecha_hora': FECHA}
     _pedir(cliente, 'POST', '/acciones/resolver-caso', {**caso, 'puntaje': 40, 'ocupaciones': ['firefighter']})
