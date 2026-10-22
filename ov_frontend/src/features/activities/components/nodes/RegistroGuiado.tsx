@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Check } from 'lucide-react'
 import { RegistroLumi } from './RegistroLumi'
+import { PasoAnterior } from '../PasoAnterior'
 import '../../styles/registro-guiado.css'
 
 // Marco común de los registros guiados (podio y elección): Lumi, consigna con su leyenda, el contenido
@@ -13,6 +14,7 @@ export function RegistroGuiado({
   ocupado,
   error,
   onEnviar,
+  onAnterior,
   children,
 }: {
   hablanteId?: string
@@ -22,6 +24,7 @@ export function RegistroGuiado({
   ocupado: boolean
   error: string
   onEnviar: () => void
+  onAnterior?: () => void
   children: ReactNode
 }) {
   return (
@@ -46,6 +49,7 @@ export function RegistroGuiado({
         </p>
       )}
       <div className="sx-player-actions">
+        {onAnterior && <PasoAnterior disabled={ocupado} onClick={onAnterior} />}
         <button type="submit" className="sx-primary-button" disabled={ocupado}>
           {ocupado ? 'Guardando…' : ultimo ? 'Entregar' : 'Guardar y continuar'}
           <Check size={18} />

@@ -2726,3 +2726,11 @@ body:has([data-student-experience] .sx-shell) {
   font-size: 13px;
   font-weight: 700;
 }
+/* F01: «Anterior» a la izquierda del botón principal del paso. */
+.sx-root .sx-step-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}

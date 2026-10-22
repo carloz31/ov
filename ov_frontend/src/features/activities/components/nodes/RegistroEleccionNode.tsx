@@ -29,6 +29,7 @@ export function RegistroEleccionNode({
   ocupado,
   error,
   onGuardar,
+  onAnterior,
 }: {
   node: NodoConsigna
   item: ItemRegistroPublico
@@ -37,6 +38,8 @@ export function RegistroEleccionNode({
   ocupado: boolean
   error: string
   onGuardar: (texto: string, opciones: OpcionElegida[]) => void
+  // Vuelve a la consigna anterior guardando lo escrito como borrador, sin validar.
+  onAnterior?: (texto: string, opciones: OpcionElegida[]) => void
 }) {
   const eleccion = item.eleccion!
   const config = { ...ELECCION_POR_DEFECTO, ...node.eleccion }
@@ -73,6 +76,7 @@ export function RegistroEleccionNode({
       ocupado={ocupado}
       error={error}
       onEnviar={submit}
+      onAnterior={onAnterior && (() => onAnterior(text, seleccion))}
     >
       <ChoiceReveal
         opciones={opciones}

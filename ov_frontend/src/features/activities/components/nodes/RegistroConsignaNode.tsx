@@ -4,6 +4,7 @@ import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
 import { CharacterAvatar } from '@/components/student/CharacterAvatar'
 import { RegistroOpciones } from './RegistroOpciones'
+import { PasoAnterior } from '../PasoAnterior'
 
 // Consigna de un registro del servidor (F01): mismo formulario que SubmissionNode, con la elección del ítem.
 export function RegistroConsignaNode({
@@ -14,6 +15,7 @@ export function RegistroConsignaNode({
   ocupado,
   error,
   onGuardar,
+  onAnterior,
 }: {
   node: NodoConsigna
   item: ItemRegistroPublico
@@ -22,6 +24,8 @@ export function RegistroConsignaNode({
   ocupado: boolean
   error: string
   onGuardar: (texto: string, opciones: OpcionElegida[]) => void
+  // Vuelve a la consigna anterior guardando lo escrito como borrador, sin validar.
+  onAnterior?: (texto: string, opciones: OpcionElegida[]) => void
 }) {
   const [text, setText] = useState(inicial.texto)
   const [selection, setSelection] = useState(inicial.opciones)
@@ -83,6 +87,7 @@ export function RegistroConsignaNode({
         </p>
       )}
       <div className="sx-player-actions">
+        {onAnterior && <PasoAnterior disabled={ocupado} onClick={() => onAnterior(text, selection)} />}
         <button type="submit" className="sx-primary-button" disabled={ocupado}>
           {ocupado ? 'Guardando…' : ultimo ? 'Entregar' : 'Guardar y continuar'}
           <Check size={18} />

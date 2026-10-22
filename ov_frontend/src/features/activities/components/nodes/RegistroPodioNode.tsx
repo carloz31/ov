@@ -23,6 +23,7 @@ export function RegistroPodioNode({
   ocupado,
   error,
   onGuardar,
+  onAnterior,
 }: {
   node: NodoConsigna
   item: ItemRegistroPublico
@@ -31,6 +32,8 @@ export function RegistroPodioNode({
   ocupado: boolean
   error: string
   onGuardar: (texto: string, opciones: OpcionElegida[]) => void
+  // Vuelve a la consigna anterior guardando lo escrito como borrador, sin validar.
+  onAnterior?: (texto: string, opciones: OpcionElegida[]) => void
 }) {
   const eleccion = item.eleccion!
   const config = { ...PODIO_POR_DEFECTO, ...node.podio }
@@ -70,6 +73,14 @@ export function RegistroPodioNode({
       ocupado={ocupado}
       error={error}
       onEnviar={submit}
+      onAnterior={
+        onAnterior &&
+        (() =>
+          onAnterior(
+            text,
+            seleccionDe(puestos).map((codigo) => ({ codigo })),
+          ))
+      }
     >
       <RankingPodium
         opciones={eleccion.opciones}

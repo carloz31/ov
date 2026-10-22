@@ -1,15 +1,18 @@
 import { ArrowRight } from 'lucide-react'
 import type { NodoDialogo, NodoEleccion } from '@/types/activities'
 import { DialogueBox } from '../DialogueBox'
+import { PasoAnterior } from '../PasoAnterior'
 
 export function ChoiceNode({
   node,
   previous,
   onChoose,
+  onAnterior,
 }: {
   node: NodoEleccion
   previous?: NodoDialogo
   onChoose: (option: NodoEleccion['opciones'][number]) => void
+  onAnterior?: () => void
 }) {
   return (
     <div className="sx-player-scene">
@@ -32,6 +35,7 @@ export function ChoiceNode({
               </button>
             ))}
           </div>
+          {onAnterior && <PasoAnterior onClick={onAnterior} />}
         </section>
       </div>
       {previous && <DialogueBox speakerId={previous.hablanteId} text={previous.texto} typewriter={false} />}

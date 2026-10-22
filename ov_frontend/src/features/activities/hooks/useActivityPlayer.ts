@@ -157,12 +157,43 @@ export function useActivityPlayer({
   function move(...args: Parameters<typeof completion.move>) {
     return completion.move(...args)
   }
+  // «Anterior» (F01): las elecciones solo agregan reacciones, así que el camino recorrido es el orden de
+  // los nodos y el paso anterior es nodes[index - 1], también al retomar. No se retrocede hacia ni desde
+  // una pregunta con retroalimentación, ni en un registro entregado o un cuestionario completado.
+  const [alRetroceder, setAlRetroceder] = useState<string>()
+  const previo = nodes[index - 1]
+  const anterior =
+    previo &&
+    (node || reaction) &&
+    !matrix &&
+    node?.tipo !== 'pregunta' &&
+    previo.tipo !== 'pregunta' &&
+    !(activity.tipo === 'registro' && (yaCompletada || edit)) &&
+    !(activity.tipo === 'instrumento' && yaCompletada) &&
+    !(instrumentoServidor && (soloLectura || revisionInstrumento))
+      ? previo
+      : undefined
+  function retroceder() {
+    if (!anterior || enviando.current) return
+    updateJourney((current) => ({
+      ...current,
+      progress: {
+        ...current.progress,
+        [activity.id]: { ...current.progress[activity.id], nodoActualId: anterior.id },
+      },
+    }))
+    setReactions([])
+    setAlRetroceder(anterior.id)
+    setNodeId(anterior.id)
+  }
   const registro = useRegistroServidor({
     actividad: activity.id,
     registroServidor: modoApi ? registroServidor : undefined,
     nodes,
     montado,
     avanzar: (siguiente) => move(siguiente),
+    anterior,
+    volver: retroceder,
     terminar: (cierre) => {
       setCierreServidor(cierre)
       updateJourney((current) => ({
@@ -253,5 +284,8 @@ export function useActivityPlayer({
     itemSoloLectura: modoApi && soloLectura,
     puedeTerminarEncuentro: modoApi && !!instrumentoServidor,
     registro,
+    // En un registro del servidor «Anterior» guarda el borrador antes de volver (useRegistroServidor).
+    onAnterior: anterior ? retroceder : undefined,
+    alRetroceder,
   }
 }

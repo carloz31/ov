@@ -56,6 +56,8 @@ export function NodeRenderer({
     itemSoloLectura,
     puedeTerminarEncuentro,
     registro,
+    onAnterior,
+    alRetroceder,
   } = model
   const itemRegistro =
     node?.tipo === 'consigna' && registro.registroEnServidor
@@ -71,6 +73,7 @@ export function NodeRenderer({
         text={reaction.texto}
         hint="Escucha, a tu ritmo."
         onContinue={() => setReactions(reactions.slice(1))}
+        onAnterior={onAnterior}
       />
     </div>
   ) : registro.enSeguimiento ? (
@@ -116,12 +119,15 @@ export function NodeRenderer({
         text={node.texto}
         hint="Una conversación, un paso más."
         onContinue={advance}
+        onAnterior={onAnterior}
+        typewriter={node.id !== alRetroceder}
       />
     </div>
   ) : node.tipo === 'eleccion' ? (
     <ChoiceNode
       node={node}
       previous={previous?.tipo === 'dialogo' ? previous : undefined}
+      onAnterior={onAnterior}
       onChoose={(option) =>
         move(
           nodes[index + 1],
@@ -148,7 +154,7 @@ export function NodeRenderer({
       }
     />
   ) : node.tipo === 'diapositiva' ? (
-    <SlideNode node={node} onContinue={advance} onResources={openResources} />
+    <SlideNode node={node} onContinue={advance} onResources={openResources} onAnterior={onAnterior} />
   ) : node.tipo === 'pregunta' ? (
     <QuestionNode
       key={node.id}
@@ -162,6 +168,7 @@ export function NodeRenderer({
     <ItemNode
       key={node.id}
       node={node}
+      onAnterior={onAnterior}
       text={itemServidor?.enunciado ?? item?.texto ?? 'Este ítem aún no está disponible.'}
       options={
         itemServidor
@@ -205,6 +212,9 @@ export function NodeRenderer({
               ocupado={!!registro.ocupado}
               error={registro.error}
               onGuardar={(texto, opciones) => void registro.guardar(node, texto, opciones)}
+              onAnterior={
+                onAnterior && ((texto, opciones) => void registro.retroceder(node, texto, opciones))
+              }
             />
           )
         })()}
@@ -219,6 +229,7 @@ export function NodeRenderer({
           node={node}
           onSaved={advance}
           onKeep={advance}
+          onAnterior={onAnterior}
           edit={edit}
         />
         {!node.obligatoria && (

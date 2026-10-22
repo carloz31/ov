@@ -54,6 +54,8 @@ export function useRegistroServidor({
   montado,
   avanzar,
   terminar,
+  anterior,
+  volver,
 }: {
   actividad: string
   registroServidor?: RegistroServidor
@@ -61,6 +63,8 @@ export function useRegistroServidor({
   montado: { current: boolean }
   avanzar: (siguiente: Nodo | undefined) => void
   terminar: (cierre: RespuestaRegistroAccion) => void
+  anterior?: Nodo
+  volver: () => void
 }) {
   const [registro, setRegistro] = useState(registroServidor?.registro)
   const [cierre, setCierre] = useState<RespuestaRegistroAccion>()
@@ -73,7 +77,10 @@ export function useRegistroServidor({
   const pendiente = registro?.respuestas.find((r) => r.estado === 'PENDIENTE_SEGUIMIENTO')
   const ultimaConsigna = nodes.findLast((n) => n.tipo === 'consigna')?.id
 
-  async function accion(clave: string, ejecutar: (previa?: RespuestaRegistroAccion) => Promise<AccionRegistro>) {
+  async function accion(
+    clave: string,
+    ejecutar: (previa?: RespuestaRegistroAccion) => Promise<AccionRegistro>,
+  ) {
     if (enCurso.current) return
     ultima.current = () => accion(clave, ejecutar)
     enCurso.current = true
@@ -91,10 +98,13 @@ export function useRegistroServidor({
           return
         }
         confirmada.current = undefined
-        if (!respuesta.datos.respuestas.some((r) => r.estado === 'PENDIENTE_SEGUIMIENTO')) setCierre(respuesta.datos)
+        if (!respuesta.datos.respuestas.some((r) => r.estado === 'PENDIENTE_SEGUIMIENTO'))
+          setCierre(respuesta.datos)
       } else
         setError(
-          respuesta.tipo === 'sin_conexion' ? 'No se pudo guardar en el servidor' : mensajeErrorServidor(respuesta),
+          respuesta.tipo === 'sin_conexion'
+            ? 'No se pudo guardar en el servidor'
+            : mensajeErrorServidor(respuesta),
         )
     } finally {
       enCurso.current = false
@@ -102,6 +112,25 @@ export function useRegistroServidor({
     }
   }
   const entregar = () => accion('entregar', (previa) => entregarRegistro(actividad, previa))
+
+  // Refleja en el estado local el borrador que el servidor acaba de guardar.
+  function anotarBorrador(item: string, texto: string, opciones: OpcionElegida[]) {
+    setRegistro(
+      (actual) =>
+        actual && {
+          ...actual,
+          respuestas: [
+            ...actual.respuestas.filter((r) => r.item !== item),
+            {
+              item,
+              estado: 'BORRADOR',
+              opciones_elegidas: opciones,
+              conversacion: [{ tipo: 'respuesta', texto }],
+            },
+          ],
+        },
+    )
+  }
 
   async function guardar(nodo: Nodo, texto: string, opciones: OpcionElegida[]) {
     if (nodo.tipo !== 'consigna' || !nodo.item || enCurso.current) return
@@ -112,29 +141,24 @@ export function useRegistroServidor({
     setError('')
     let guardado = false
     try {
-      const respuesta = await guardarBorradorRegistro(actividad, nodo.item, texto, opciones, ultimo ? nodo.id : siguiente?.id)
+      const respuesta = await guardarBorradorRegistro(
+        actividad,
+        nodo.item,
+        texto,
+        opciones,
+        ultimo ? nodo.id : siguiente?.id,
+      )
       if (!montado.current) return
       if (respuesta.tipo !== 'ok') {
         setError(
-          respuesta.tipo === 'sin_conexion' ? 'No se pudo guardar en el servidor' : mensajeErrorServidor(respuesta),
+          respuesta.tipo === 'sin_conexion'
+            ? 'No se pudo guardar en el servidor'
+            : mensajeErrorServidor(respuesta),
         )
         return
       }
       guardado = true
-      setRegistro((actual) =>
-        actual && {
-          ...actual,
-          respuestas: [
-            ...actual.respuestas.filter((r) => r.item !== nodo.item),
-            {
-              item: nodo.item!,
-              estado: 'BORRADOR',
-              opciones_elegidas: opciones,
-              conversacion: [{ tipo: 'respuesta', texto }],
-            },
-          ],
-        },
-      )
+      anotarBorrador(nodo.item, texto, opciones)
     } finally {
       enCurso.current = false
       if (montado.current) setOcupado('')
@@ -143,6 +167,35 @@ export function useRegistroServidor({
     // En api, el registro termina en su última consigna: «Entregar» guarda y entrega.
     if (ultimo) await entregar()
     else avanzar(siguiente)
+  }
+
+  // «Anterior» antes de entregar: guarda lo escrito como borrador sin validar, con la posición del nodo al
+  // que se vuelve, y retrocede. Una «Otra» sin texto se omite: el servidor la rechaza.
+  async function retroceder(nodo: Nodo, texto: string, opciones: OpcionElegida[]) {
+    if (nodo.tipo !== 'consigna' || !nodo.item || !anterior || enCurso.current) return
+    enCurso.current = true
+    setOcupado('guardando')
+    setError('')
+    const elegidas = opciones.filter((o) => o.codigo !== 'OTRA' || !!o.texto?.trim())
+    let guardado = false
+    try {
+      const respuesta = await guardarBorradorRegistro(actividad, nodo.item, texto, elegidas, anterior.id)
+      if (!montado.current) return
+      if (respuesta.tipo !== 'ok') {
+        setError(
+          respuesta.tipo === 'sin_conexion'
+            ? 'No se pudo guardar en el servidor'
+            : mensajeErrorServidor(respuesta),
+        )
+        return
+      }
+      guardado = true
+      anotarBorrador(nodo.item, texto, elegidas)
+    } finally {
+      enCurso.current = false
+      if (montado.current) setOcupado('')
+    }
+    if (guardado) volver()
   }
 
   return {
@@ -160,13 +213,18 @@ export function useRegistroServidor({
     esUltimaConsigna: (id: string) => id === ultimaConsigna,
     respuestaDe: (item: string) => registro?.respuestas.find((r) => r.item === item),
     guardar,
+    retroceder,
     reintentar: () => ultima.current?.(),
     responder: (texto: string) =>
       pendiente &&
-      accion(`responder:${pendiente.item}`, (previa) => responderSeguimiento(actividad, pendiente.item, texto, previa)),
+      accion(`responder:${pendiente.item}`, (previa) =>
+        responderSeguimiento(actividad, pendiente.item, texto, previa),
+      ),
     omitir: () =>
       pendiente &&
-      accion(`omitir:${pendiente.item}`, (previa) => continuarSinResponder(actividad, pendiente.item, previa)),
+      accion(`omitir:${pendiente.item}`, (previa) =>
+        continuarSinResponder(actividad, pendiente.item, previa),
+      ),
     // «Continuar» deja el seguimiento y lleva al fin con los eventos de la acción que cerró.
     continuar: () => {
       if (!cierre) return

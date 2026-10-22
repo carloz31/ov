@@ -13,16 +13,19 @@ import { prepareQuestion, questionInfluencesLater } from '../../lib/reflection/p
 import { HighlightedQuestion } from '@/features/activities/components/reflection/HighlightedQuestion'
 import { QuestionMemory } from '../reflection/QuestionMemory'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
+import { PasoAnterior } from '../PasoAnterior'
 export function SubmissionNode({
   activity,
   node,
   onSaved,
   onKeep,
+  onAnterior,
 }: {
   activity: Actividad
   node: NodoConsigna
   onSaved: () => void
   onKeep?: () => void
+  onAnterior?: () => void
   edit?: boolean
 }) {
   const state = useJourney()
@@ -260,6 +263,7 @@ export function SubmissionNode({
         </p>
       )}
       <div className="sx-player-actions">
+        {onAnterior && <PasoAnterior onClick={onAnterior} disabled={busy} />}
         <button type="submit" className="sx-primary-button" disabled={busy}>
           {busy ? 'Guardando…' : existing ? 'Guardar nueva versión' : 'Guardar y continuar'}
           <Check size={18} />

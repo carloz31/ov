@@ -2,6 +2,22 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-21 · F01 · «Anterior» en batallas y junto a preguntas con retroalimentación
+
+- **Dato:** el estado de cada pregunta de comprobación (intentos, retroalimentación, pistas) y de cada batalla (vidas, aciertos).
+- **Dónde se mostraría:** el reproductor de actividades (`QuestionNode`) y el de batallas (`ChallengePlayer`).
+- **Opciones:** volver a una pregunta ya resuelta en solo lectura (con su explicación); permitir un nuevo intento al volver; mantener sin retroceso.
+- **Si no se muestra:** «Anterior» no aparece en una pregunta con retroalimentación inmediata ni en el paso que la sigue (en ese paso desaparece, aunque el anterior a él sí admitiría volver), ni en las batallas.
+- **Estado:** pendiente de decisión del usuario.
+
+## 2026-10-21 · F01 · «Anterior» en el reproductor del apoderado
+
+- **Dato:** el nodo actual de la actividad del apoderado (`useParentActivitySession`).
+- **Dónde se mostraría:** el reproductor del portal del apoderado.
+- **Opciones:** el mismo «Anterior» del estudiante; un índice de pasos; mantener sin retroceso.
+- **Si no se muestra:** el apoderado solo avanza en sus actividades, como hasta ahora.
+- **Estado:** revisar en F08.
+
 ## 2026-10-21 · F00 · Carta del apoderado (`t_apo_carta`)
 
 - **Dato:** `t-apo-carta` en `GET /cuentas/{c}/actividades` del apoderado (bloque FAMILIA), con su `bloqueo` mientras falta `t-apo-1`.

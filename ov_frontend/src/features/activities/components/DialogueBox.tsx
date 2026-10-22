@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { CharacterAvatar } from '@/components/student/CharacterAvatar'
 import { useTypewriter } from '@/hooks/useTypewriter'
+import { AccionesConAnterior } from './AccionesConAnterior'
 
 export type DialogueBoxProps = {
   speakerId: string
@@ -10,6 +11,7 @@ export type DialogueBoxProps = {
   hint?: string
   continueLabel?: string
   onContinue?: () => void
+  onAnterior?: () => void
   typewriter?: boolean
 }
 export function DialogueBox({
@@ -19,6 +21,7 @@ export function DialogueBox({
   hint,
   continueLabel = 'Continuar',
   onContinue,
+  onAnterior,
   typewriter = true,
 }: DialogueBoxProps) {
   const { visible, done, complete } = useTypewriter(text, { enabled: typewriter })
@@ -41,6 +44,19 @@ export function DialogueBox({
     window.addEventListener('keydown', enter)
     return () => window.removeEventListener('keydown', enter)
   }, [done, complete, onContinue])
+  const continuar = onContinue && (
+    <button
+      type="button"
+      className="sx-primary-button"
+      onClick={(event) => {
+        event.stopPropagation()
+        if (!done) complete()
+        else onContinue()
+      }}
+    >
+      {done ? continueLabel : 'Mostrar todo'} {done && <ArrowRight size={18} />}
+    </button>
+  )
   return (
     <section
       className="sx-glass-dark sx-dialogue-box"
@@ -60,19 +76,12 @@ export function DialogueBox({
       </div>
       <footer>
         {hint && <span>{hint}</span>}
-        {onContinue && (
-          <button
-            type="button"
-            className="sx-primary-button"
-            onClick={(event) => {
-              event.stopPropagation()
-              if (!done) complete()
-              else onContinue()
-            }}
-          >
-            {done ? continueLabel : 'Mostrar todo'} {done && <ArrowRight size={18} />}
-          </button>
-        )}
+        {continuar &&
+          (onAnterior ? (
+            <AccionesConAnterior onAnterior={onAnterior}>{continuar}</AccionesConAnterior>
+          ) : (
+            continuar
+          ))}
       </footer>
     </section>
   )

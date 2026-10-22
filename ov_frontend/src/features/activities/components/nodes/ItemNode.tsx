@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import type { NodoItem, RespuestaItem } from '@/types/activities'
 import { DialogueBox } from '../DialogueBox'
+import { AccionesConAnterior } from '../AccionesConAnterior'
 
 export function ItemNode({
   node,
@@ -10,6 +11,7 @@ export function ItemNode({
   direct,
   onAnswer,
   onContinue,
+  onAnterior,
   busy = false,
   readOnly = false,
 }: {
@@ -22,7 +24,13 @@ export function ItemNode({
   direct: boolean
   onAnswer: (value: string | number) => void
   onContinue: () => void
+  onAnterior?: () => void
 }) {
+  const mantener = existing && (
+    <button type="button" className="sx-secondary-button" disabled={busy} onClick={onContinue}>
+      {readOnly ? 'Continuar la revisión' : 'Mantener mi respuesta y continuar'} <ArrowRight size={18} />
+    </button>
+  )
   const panel = (
     <>
       {direct && <p className="sx-player-eyebrow">{node.etiqueta ?? 'Para conocerte mejor:'}</p>}
@@ -47,11 +55,7 @@ export function ItemNode({
       <p className="sx-player-note">
         No hay respuestas correctas o incorrectas. Elige lo que se parezca a ti.
       </p>
-      {existing && (
-        <button type="button" className="sx-secondary-button" disabled={busy} onClick={onContinue}>
-          {readOnly ? 'Continuar la revisión' : 'Mantener mi respuesta y continuar'} <ArrowRight size={18} />
-        </button>
-      )}
+      {onAnterior ? <AccionesConAnterior onAnterior={onAnterior}>{mantener}</AccionesConAnterior> : mantener}
     </>
   )
   return direct ? (
