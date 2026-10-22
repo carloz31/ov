@@ -34,7 +34,7 @@
       "referencia": null
     },
     "min_caracteres": null,
-    "nombre": "Ruta",
+    "nombre": "Tu ruta después del colegio",
     "obligatorio": true
   },
   {
@@ -64,7 +64,7 @@
       "referencia": null
     },
     "min_caracteres": null,
-    "nombre": "Apoyo",
+    "nombre": "Quién te apoya",
     "obligatorio": true
   },
   {
@@ -72,7 +72,7 @@
     "consigna": "¿Qué esperan de ti las personas cercanas?",
     "eleccion": null,
     "min_caracteres": null,
-    "nombre": "Expectativas",
+    "nombre": "Lo que esperan de ti",
     "obligatorio": true
   }
 ]

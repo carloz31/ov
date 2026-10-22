@@ -97,7 +97,12 @@ test('«Entregar» en la última consigna guarda, entrega y muestra la pregunta;
   await esperar()
   vista = seguimiento(player.render())
   assert.deepEqual(copia(vista.props.porAmpliar), [
-    { item: 't-val-orden', nombre: 'Valores', pista: cierreFx.items_por_ampliar[0].pista, conEleccion: true },
+    {
+      item: 't-val-orden',
+      nombre: 'Tus valores',
+      pista: cierreFx.items_por_ampliar[0].pista,
+      conEleccion: true,
+    },
   ])
   assert.equal(vista.props.hilo, undefined)
   // El cierre nunca muestra la clasificación del evaluador.

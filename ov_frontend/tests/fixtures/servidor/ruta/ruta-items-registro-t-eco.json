@@ -13,7 +13,7 @@
       "referencia": "t-ref-rutas"
     },
     "min_caracteres": null,
-    "nombre": "Ruta elegida",
+    "nombre": "La ruta que más te atrae",
     "obligatorio": true
   },
   {
@@ -21,7 +21,7 @@
     "consigna": "Antes escribiste lo que esperan de ti. ¿Sigues pensando lo mismo?",
     "eleccion": null,
     "min_caracteres": null,
-    "nombre": "Lo que esperan",
+    "nombre": "Lo que esperan de ti, hoy",
     "obligatorio": true
   }
 ]

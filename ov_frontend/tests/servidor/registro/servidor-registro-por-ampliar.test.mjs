@@ -49,7 +49,12 @@ test('el nombre humano usa la etiqueta corta, si no la consigna recortada, nunca
     itemsExpectativas,
   )
   assert.deepEqual(copia(filas), [
-    { item: 't-exp-ruta', nombre: 'Ruta', pista: PISTA_POR_DEFECTO, conEleccion: true },
+    {
+      item: 't-exp-ruta',
+      nombre: 'Tu ruta después del colegio',
+      pista: PISTA_POR_DEFECTO,
+      conEleccion: true,
+    },
     { item: 't-desconocido', nombre: 'Una de tus respuestas', pista: '¿Por qué?', conEleccion: false },
   ])
   assert.ok(filas.every((f) => !/^t-/.test(f.nombre)))
@@ -93,7 +98,7 @@ test('drawer: con uno y con dos ítems por ampliar, el bloque nombra los ítems 
     assert.equal(tree.props.texto, textoPorAmpliar(items.length, { volver: false }))
     assert.equal(tree.props.conPista, false)
     assert.equal(tree.props.compacto, true)
-    const nombres = { 't-exp-ruta': 'Ruta', 't-exp-espera': 'Expectativas' }
+    const nombres = { 't-exp-ruta': 'Tu ruta después del colegio', 't-exp-espera': 'Lo que esperan de ti' }
     assert.deepEqual(
       copia(tree.props.filas.map((f) => f.nombre)),
       items.map((i) => nombres[i]),

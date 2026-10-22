@@ -34,7 +34,7 @@
       "referencia": null
     },
     "min_caracteres": null,
-    "nombre": "Valores",
+    "nombre": "Tus valores",
     "obligatorio": true
   },
   {
@@ -42,7 +42,7 @@
     "consigna": "Escribe lo que quieras sobre tus valores.",
     "eleccion": null,
     "min_caracteres": null,
-    "nombre": "Libre",
+    "nombre": "Lo que piensas de tus valores",
     "obligatorio": true
   },
   {
@@ -50,7 +50,7 @@
     "consigna": "Describe un momento en que actuaste según tus valores.",
     "eleccion": null,
     "min_caracteres": 40,
-    "nombre": "Breve",
+    "nombre": "Un momento con tus valores",
     "obligatorio": true
   }
 ]
