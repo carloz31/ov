@@ -175,9 +175,10 @@ def test_hu009_eco_cita_lo_desarrollado_y_elige_por_referencia(cliente):
     pedir(cliente, 'POST', '/acciones/registro/continuar-sin-responder', {**accion, 'item': 't-exp-espera'})
     assert actividades(cliente)['t-eco'] == 'DISPONIBLE'
 
-    # El front lee los ítems (la elección dice de qué referencia salen sus opciones) y las referencias.
+    # El front lee los ítems (F02: la lista completa y la referencia que marca lo elegido antes) y las referencias.
     ruta_eco, _ = pedir(cliente, 'GET', '/actividades/t-eco/items-registro')
-    assert ruta_eco['eleccion']['referencia'] == 't-ref-rutas' and ruta_eco['eleccion']['opciones'] == []
+    assert ruta_eco['eleccion']['referencia'] == 't-ref-rutas'
+    assert ruta_eco['eleccion']['lista'] == 'RUTAS_DESPUES_COLEGIO' and ruta_eco['eleccion']['opciones']
     resueltas = {r['codigo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')[
         'referencias']}
     assert resueltas['t-ref-espera']['estado'] == 'POR_DESARROLLAR' and 'texto' not in resueltas['t-ref-espera']
@@ -193,10 +194,11 @@ def test_hu009_eco_cita_lo_desarrollado_y_elige_por_referencia(cliente):
 
     eco = {'cuenta': 'est-ana', 'actividad': 't-eco', 'fecha_hora': FECHA}
     texto = 'DATO DE PRUEBA: el oficio, porque quiero empezar a trabajar pronto'
+    # F02: retoma la elección de t-expectativas con su lista; aquí cambia de ruta.
     pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-          {**eco, 'item': 't-eco-ruta', 'texto': texto, 'opciones': [{'codigo': 'UNIVERSIDAD'}]}, 422)
+          {**eco, 'item': 't-eco-ruta', 'texto': texto, 'opciones': [{'codigo': 'NADA'}]}, 422)
     pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-          {**eco, 'item': 't-eco-ruta', 'texto': texto, 'opciones': [{'codigo': 'OTRA'}]})
+          {**eco, 'item': 't-eco-ruta', 'texto': texto, 'opciones': [{'codigo': 'TRABAJAR'}]})
     pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
           {**eco, 'item': 't-eco-espera', 'texto': 'DATO DE PRUEBA: sí, lo sigo pensando', 'opciones': []})
     entrega = pedir(cliente, 'POST', '/acciones/registro/entregar', eco)

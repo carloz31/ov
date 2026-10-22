@@ -33,6 +33,7 @@ export function RegistroEleccionNode({
   onAnterior,
   consulta,
   salida,
+  anteriores = [],
 }: {
   node: NodoConsigna
   item: ItemRegistroPublico
@@ -46,6 +47,8 @@ export function RegistroEleccionNode({
   // Consulta de un registro entregado (F02) y la salida de la pantalla de fin para su última consigna.
   consulta?: ConsultaRegistro
   salida?: ReactNode
+  // F02: lo elegido la vez pasada, cuando el ítem retoma una elección.
+  anteriores?: OpcionElegida[]
 }) {
   const eleccion = item.eleccion!
   const config = { ...ELECCION_POR_DEFECTO, ...node.eleccion }
@@ -60,6 +63,7 @@ export function RegistroEleccionNode({
   const [bloqueada, setBloqueada] = useState(false)
   const [errores, setErrores] = useState<{ seleccion?: string; otra?: string; texto?: string }>({})
   const otra = seleccion.find((o) => o.codigo === 'OTRA')
+  const codigosAnteriores = anteriores.map((o) => o.codigo)
   const pie = consulta && pieConsulta(consulta, ultimo, text)
   function submit() {
     const siguientes = {
@@ -77,7 +81,7 @@ export function RegistroEleccionNode({
   return (
     <RegistroGuiado
       hablanteId={node.hablanteId}
-      mensaje={mensajeEleccion(mensajes, seleccion, reglas, bloqueada)}
+      mensaje={mensajeEleccion(mensajes, seleccion, reglas, bloqueada, codigosAnteriores)}
       consigna={item.consigna}
       ultimo={ultimo}
       ocupado={ocupado}
@@ -97,6 +101,8 @@ export function RegistroEleccionNode({
         error={errores.seleccion}
         errorOtra={errores.otra}
         soloLectura={!!consulta}
+        anteriores={codigosAnteriores}
+        etiquetaAnterior={config.etiquetaAnterior}
         onAlternar={(codigo) => {
           const resultado = alternar(seleccion, codigo, reglas)
           setSeleccion(resultado.seleccion)
@@ -110,7 +116,7 @@ export function RegistroEleccionNode({
       />
       {seleccion.length > 0 && (
         <RegistroExplicacion
-          pregunta={preguntaEleccion(config, seleccion, opciones, reglas.exclusivas)}
+          pregunta={preguntaEleccion(config, seleccion, opciones, reglas.exclusivas, codigosAnteriores)}
           texto={text}
           error={errores.texto}
           disabled={consulta && !consulta.editable}

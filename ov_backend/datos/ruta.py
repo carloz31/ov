@@ -224,8 +224,8 @@ LISTAS = (('t-lista-apoyos', 'Quién te apoya', (('FAMILIA', 'Mi familia'), ('DO
                                           ('LIBERTAD', 'Tener libertad'))))
 
 # (actividad, código, nombre, consigna, elección, criterios). El orden es el de la tupla dentro de cada
-# actividad. Elección: None, (lista, mínima, máxima, ordenada, permite «otra») o, por referencia,
-# ('ref', referencia ELECCION de la misma actividad, mínima, máxima, ordenada). Criterio: (código, tipo,
+# actividad. Elección: None o (lista, mínima, máxima, ordenada, permite «otra»[, referencia]); la referencia
+# (F02), una ELECCION de la misma actividad sobre la misma lista, solo marca lo elegido la vez pasada. Criterio: (código, tipo,
 # descripción); la repregunta sale de `fijos.REPREGUNTAS_CRITERIO`.
 ITEMS_REGISTRO = (
     ('t-expectativas', 't-exp-ruta', 'Tu ruta después del colegio',
@@ -242,8 +242,10 @@ ITEMS_REGISTRO = (
      ()),
     ('t-valores', 't-val-breve', 'Un momento con tus valores',
      'Describe un momento en que actuaste según tus valores.', None, ()),
-    ('t-eco', 't-eco-ruta', 'La ruta que más te atrae', 'De las rutas que elegiste, ¿cuál te atrae más y por qué?',
-     ('ref', 't-ref-rutas', 1, 1, False), (('C1', 'RAZON', 'Por qué esa ruta le atrae más'),)),
+    ('t-eco', 't-eco-ruta', 'Tu ruta, hoy',
+     'La vez pasada elegiste una ruta. ¿Sigues pensando igual o cambiaste de idea? Cuéntame por qué.',
+     ('RUTAS_DESPUES_COLEGIO', 1, 2, False, True, 't-ref-rutas'),
+     (('C1', 'RAZON', 'Por qué mantiene o cambia su ruta'),)),
     ('t-eco', 't-eco-espera', 'Lo que esperan de ti, hoy',
      'Antes escribiste lo que esperan de ti. ¿Sigues pensando lo mismo?', None, ()),
     ('t-contraste', 't-con-contraste', 'Contraste',
@@ -633,17 +635,14 @@ def _cargar_preguntas_batalla(sesion, actividades, fichas):
 
 
 def _validar_eleccion(codigo, eleccion, listas):
-    if eleccion is None or eleccion[0] == POR_REFERENCIA:
+    if eleccion is None:
         return
-    lista, minima, maxima, _, permite_otra = eleccion
+    lista, minima, maxima, _, permite_otra = eleccion[:5]
     if lista not in listas:
         raise ValueError(f'El ítem {codigo} usa la lista inexistente {lista}')
     disponibles = len(listas[lista][2]) + (1 if permite_otra else 0)
     if not 0 <= minima <= maxima or not 1 <= maxima <= disponibles:
         raise ValueError(f'El ítem {codigo} tiene una elección mínima o máxima incoherente')
-
-
-POR_REFERENCIA = 'ref'
 
 
 def _cargar_registros(sesion, actividades, base: fijos.Fijos):
@@ -661,12 +660,8 @@ def _cargar_registros(sesion, actividades, base: fijos.Fijos):
         if ordenes[actividad] > MAXIMO_ITEMS_REGISTRO:
             raise ValueError(f'El registro {actividad} tiene más de {MAXIMO_ITEMS_REGISTRO} ítems')
         _validar_eleccion(codigo, eleccion, listas)
-        referencia = None
-        if eleccion is not None and eleccion[0] == POR_REFERENCIA:
-            lista, otra = None, False
-            _, referencia, minima, maxima, ordenada = eleccion
-        else:
-            lista, minima, maxima, ordenada, otra = eleccion or (None, None, None, False, False)
+        lista, minima, maxima, ordenada, otra, referencia = (*eleccion, None)[:6] if eleccion else (
+            None, None, None, False, False, None)
         propiedades = PROPIEDADES_ITEMS.get(codigo, {})
         item = modelos.ItemRegistro(
             codigo=codigo, actividad_id=actividades[actividad].id, orden=ordenes[actividad], nombre=nombre,
@@ -742,10 +737,13 @@ def _validar_referencias(sesion, actividades, items, base: fijos.Fijos):
             continue
         if (referencia not in referencias or referencias[referencia][0].tipo != modelos.TipoReferencia.ELECCION
                 or referencias[referencia][0].actividad_id != item.actividad_id):
-            raise ValueError(f'El ítem {codigo} elige por {referencia}, que no es una ELECCION de su actividad')
+            raise ValueError(f'El ítem {codigo} retoma {referencia}, que no es una ELECCION de su actividad')
         fuente = items[referencias[referencia][1]][0]
-        if item.eleccion_minima > fuente.eleccion_minima or item.eleccion_maxima > fuente.eleccion_maxima:
-            raise ValueError(f'El ítem {codigo} pide una elección mínima o máxima mayor que la de su fuente')
+        # Lo elegido antes llega marcado: debe caber en la lista, el máximo y la «otra» del ítem.
+        if item.lista_id != fuente.lista_id:
+            raise ValueError(f'El ítem {codigo} retoma una elección de otra lista')
+        if item.eleccion_maxima < fuente.eleccion_maxima or (fuente.permite_otra and not item.permite_otra):
+            raise ValueError(f'El ítem {codigo} no admite todo lo que pudo elegirse en su fuente')
     return referencias
 
 

@@ -30,9 +30,9 @@ def validar_contenidos_actividades(sesion: Session) -> None:
 
 
 def romper_ciclos(sesion):
-    """`item_registro` y `referencia` se apuntan entre sí: sin la elección por referencia, se borran en orden."""
-    sesion.execute(update(ItemRegistro).where(ItemRegistro.referencia_id.is_not(None)).values(
-        referencia_id=None, eleccion_minima=None, eleccion_maxima=None, eleccion_ordenada=False))
+    """`item_registro` y `referencia` se apuntan entre sí: sin la referencia de los ítems, se borran en orden.
+    Desde F02 esos ítems conservan su lista, así que la elección sigue siendo válida."""
+    sesion.execute(update(ItemRegistro).where(ItemRegistro.referencia_id.is_not(None)).values(referencia_id=None))
 
 
 def preparar_base(

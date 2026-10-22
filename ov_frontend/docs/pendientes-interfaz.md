@@ -177,7 +177,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - crear `t_eco.json` o mapear `t-eco` a una actividad real cuando se cargue la ruta;
   - definir el texto definitivo del aviso «por desarrollar».
 - **Si no se muestra:** en modo `api` las actividades no retoman lo escrito antes y `t-eco` se descarta por no tener contenido.
-- **Estado:** resuelto en F02. La consigna con `eco` muestra la cita (DISPONIBLE), el aviso «Tu respuesta en «{registro de origen}» aún está por desarrollar. Puedes ampliarla desde ese registro, con «Ver o modificar mis respuestas».», sin enlace (POR_DESARROLLAR), o nada (SIN_DATO); el registro de origen sale de `actividad` de la referencia. La elección por referencia usa las casillas con lo elegido antes. `t_eco.json` tiene sus consignas.
+- **Estado:** resuelto en F02. La consigna con `eco` muestra la cita (DISPONIBLE), el aviso «Tu respuesta en «{registro de origen}» aún está por desarrollar. Puedes ampliarla desde ese registro, con «Ver o modificar mis respuestas».», sin enlace (POR_DESARROLLAR), o nada (SIN_DATO); el registro de origen sale de `actividad` de la referencia. Ajuste de F02 (cambio de modelo aprobado): la elección que retoma una anterior usa la lista original completa con la elección guiada; lo elegido la vez pasada llega marcado con la etiqueta «La vez pasada» y se mantiene o se cambia. `t_eco.json` tiene sus consignas.
 
 ## 2026-10-13 · B04 · Respuesta consolidada y edición de registros
 

@@ -44,10 +44,12 @@ VARIANTES_REFERENCIAS = (
      'dueño inexistente'),
     ('REFERENCIAS', (REF_ESPERA, ('t-ref-rutas', ('ACTIVIDAD', 't-eco'), 'ELECCION', 't-exp-nulo')),
      'ítem inexistente'),
-    ('ITEMS_REGISTRO', _eco(('ref', 't-ref-espera', 1, 1, False)), 'no es una ELECCION de su actividad'),
-    ('ITEMS_REGISTRO', _eco(('ref', 't-ref-nula', 1, 1, False)), 'no es una ELECCION de su actividad'),
-    ('ITEMS_REGISTRO', _eco(('ref', 't-ref-rutas', 2, 2, False)), 'mayor que la de su fuente'),
-    ('ITEMS_REGISTRO', _eco(('ref', 't-ref-rutas', 1, 3, False)), 'mayor que la de su fuente'),
+    ('ITEMS_REGISTRO', _eco(('RUTAS_DESPUES_COLEGIO', 1, 2, False, True, 't-ref-espera')), 'no es una ELECCION de su actividad'),
+    ('ITEMS_REGISTRO', _eco(('RUTAS_DESPUES_COLEGIO', 1, 2, False, True, 't-ref-nula')), 'no es una ELECCION de su actividad'),
+    # F02: lo elegido antes llega marcado; debe caber en la misma lista, el máximo y la «otra».
+    ('ITEMS_REGISTRO', _eco(('t-lista-apoyos', 1, 1, False, False, 't-ref-rutas')), 'otra lista'),
+    ('ITEMS_REGISTRO', _eco(('RUTAS_DESPUES_COLEGIO', 1, 1, False, True, 't-ref-rutas')), 'no admite todo'),
+    ('ITEMS_REGISTRO', _eco(('RUTAS_DESPUES_COLEGIO', 1, 2, False, False, 't-ref-rutas')), 'no admite todo'),
     ('REFERENCIAS', (*ruta.REFERENCIAS, ('t-ref-res', ('ACTIVIDAD', 't-eco'), 'RESULTADO', 'APL-NULA')),
      'aplicación inexistente'),
     ('REFERENCIAS', (*ruta.REFERENCIAS, ('t-ref-res', ('ACTIVIDAD', 't-eco'), 'COINCIDENCIAS', 't-exp-ruta')),
@@ -99,7 +101,7 @@ def test_items_listas_y_criterios_cargados(tmp_path):
             assert items == [
                 ('t-comparar', 't-comparar-eleccion', 1, None, None),
                 ('t-contraste', 't-con-contraste', 1, None, None),
-                ('t-eco', 't-eco-ruta', 1, None, None),
+                ('t-eco', 't-eco-ruta', 1, 'RUTAS_DESPUES_COLEGIO', True),
                 ('t-eco', 't-eco-espera', 2, None, None),
                 ('t-expectativas', 't-exp-ruta', 1, 'RUTAS_DESPUES_COLEGIO', True),
                 ('t-expectativas', 't-exp-apoyo', 2, 't-lista-apoyos', False),
@@ -126,7 +128,7 @@ def test_items_listas_y_criterios_cargados(tmp_path):
             assert referencias == [('t-ref-espera', m.TipoReferencia.TEXTO, 't-eco', 't-exp-espera'),
                                    ('t-ref-rutas', m.TipoReferencia.ELECCION, 't-eco', 't-exp-ruta')]
             eco = sesion.scalar(select(m.ItemRegistro).where(m.ItemRegistro.codigo == 't-eco-ruta'))
-            assert eco.lista_id is None and eco.permite_otra is False
+            assert eco.lista_id is not None and eco.permite_otra is True
             assert sesion.get(m.Referencia, eco.referencia_id).codigo == 't-ref-rutas'
     finally:
         motor.dispose()

@@ -175,9 +175,11 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     cierre_valores = RespuestaRegistroAccion.model_validate(datos['continuar-sin-responder-t-valores'])
     assert cierre_valores.estado == 'COMPLETADA' and [i.item for i in cierre_valores.items_por_ampliar] == ['t-val-orden']
     assert 'clasificacion' not in json.dumps(datos['continuar-sin-responder-t-valores'])
-    # B05: t-eco elige por referencia y cita; con t-exp-espera poco desarrollada, sale «por desarrollar».
+    # B05: t-eco retoma la elección y cita; con t-exp-espera poco desarrollada, sale «por desarrollar».
     ruta_eco, espera_eco = TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-eco'])
-    assert ruta_eco.eleccion.referencia == 't-ref-rutas' and ruta_eco.eleccion.opciones == []
+    # F02: retoma la elección de t-exp-ruta con su misma lista; la referencia solo marca lo elegido antes.
+    assert ruta_eco.eleccion.referencia == 't-ref-rutas' and ruta_eco.eleccion.lista == 'RUTAS_DESPUES_COLEGIO'
+    assert ruta_eco.eleccion.opciones
     assert espera_eco.eleccion is None
     referencias = ReferenciasConsultadas.model_validate(datos['referencias-t-eco'])
     assert [(r.codigo, r.estado) for r in referencias.referencias] == [

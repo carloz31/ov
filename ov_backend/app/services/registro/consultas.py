@@ -11,14 +11,12 @@ def eleccion_publica(sesion, item):
     definiciones = contexto(sesion).definiciones
     comunes = dict(minima=item.eleccion_minima, maxima=item.eleccion_maxima, ordenada=item.eleccion_ordenada,
                    permite_otra=item.permite_otra)
-    if item.referencia_id is not None:
-        # Las opciones dependen de la cuenta: se leen en la consulta de referencias.
-        referencia = definiciones.obtener(Referencia, item.referencia_id)
-        return EleccionPublica(lista=None, referencia=referencia.codigo, comun=False, opciones=[], **comunes)
     if item.lista_id is None:
         return None
     lista = definiciones.obtener(ListaOpciones, item.lista_id)
-    return EleccionPublica(lista=lista.codigo, referencia=None, comun=lista.comun, **comunes,
+    # F02: la referencia solo marca lo elegido la vez pasada; se lee en la consulta de referencias.
+    referencia = None if item.referencia_id is None else definiciones.obtener(Referencia, item.referencia_id).codigo
+    return EleccionPublica(lista=lista.codigo, referencia=referencia, comun=lista.comun, **comunes,
         opciones=[OpcionListaPublica(codigo=o.codigo, texto=o.texto) for o in opciones_de(sesion, item)])
 
 

@@ -7,9 +7,9 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | Tabla | Qué guarda |
 |---|---|
 | `referencia` | `codigo`, `tipo` (`TipoReferencia`), dueño: `actividad_id` **o** `pregunta_diario_id` (CHECK: exactamente uno), y fuente: `item_registro_id`, obligatoria en ELECCION y TEXTO (CHECK `fuente_registro`), o `aplicacion_id`, obligatoria en RESULTADO, COINCIDENCIAS y RESPUESTA_CUESTIONARIO y nula en los demás (CHECK `fuente_aplicacion`), más `item_instrumento_id`, obligatorio solo en RESPUESTA_CUESTIONARIO (CHECK `fuente_cuestionario`). FAVORITOS no tiene fuente (CHECK `favoritos_sin_fuente`), ni PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL (CHECK `planes_sin_fuente`). Catálogo, en la caché de definiciones (`referencias_por_actividad` y `referencias_por_pregunta`). |
-| `item_registro.referencia_id` | Elección por referencia: las opciones del ítem son las que esa referencia ELECCION devuelve a la cuenta (`registro.md`). |
+| `item_registro.referencia_id` | Elección que retoma una anterior (F02): el ítem elige de su lista y esta referencia ELECCION, sobre la misma lista, solo marca lo elegido la vez pasada (`registro.md`). |
 
-`referencia.item_registro_id` e `item_registro.referencia_id` forman un ciclo de claves foráneas. La de `item_registro` lleva `use_alter` y se crea aparte. El vaciado de `datos.cargar` quita primero la elección por referencia de los ítems, porque los CHECK impiden dejar nula cualquiera de las dos claves, y luego borra en orden.
+`referencia.item_registro_id` e `item_registro.referencia_id` forman un ciclo de claves foráneas. La de `item_registro` lleva `use_alter` y se crea aparte. El vaciado de `datos.cargar` quita primero la referencia de los ítems (conservan su lista) y luego borra en orden.
 
 **Catálogo de tipos** (el enumerado es el catálogo; cada lote agrega los suyos):
 
@@ -49,7 +49,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 - La elección no se edita (`registro.md`). Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
 - Durante una edición, la pregunta de seguimiento queda solo en el ítem preguntado, que sale POR_DESARROLLAR. Los demás ítems editados ya se citan con su texto nuevo, y los no editados conservan su consolidada.
 - Los textos de una referencia TEXTO nunca van al evaluador: son respuestas de otra actividad (RNF-13).
-- **Elección por referencia:** al guardar, entregar, editar o responder un seguimiento, las opciones válidas son las de la referencia resuelta para la cuenta. Se guarda `{codigo}`. El evaluador recibe el texto de cada opción elegida como «opción elegida» del propio ítem, que RNF-13 permite enviar. Si se elige la OTRA de la fuente, va al evaluador el texto que el estudiante escribió en el ítem fuente, también como opción elegida y no como cita. Ningún otro texto de la fuente va al evaluador.
+- **Elección que retoma una anterior (F02):** las opciones válidas son las de la lista del ítem, como en cualquier elección; la referencia no las cambia. El front marca de entrada lo elegido la vez pasada (la ELECCION resuelta, con el texto de su OTRA) y el estudiante lo mantiene o lo cambia. Se guarda y se evalúa como cualquier elección: la OTRA lleva el texto escrito en este ítem. Ningún texto de la fuente va al evaluador.
 
 ## Consulta (GET)
 
@@ -61,7 +61,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 
 ## Carga (`datos/ruta.py`)
 
-`REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, fuente)`; la fuente es un ítem de registro en ELECCION y TEXTO, un código de aplicación en RESULTADO y COINCIDENCIAS, `(aplicación, ítem)` en RESPUESTA_CUESTIONARIO y `None` en FAVORITOS. Una pregunta de diario solo es dueña si es personalizada. En `ITEMS_REGISTRO`, la elección por referencia es `('ref', referencia, mínima, máxima, ordenada)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:
+`REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, fuente)`; la fuente es un ítem de registro en ELECCION y TEXTO, un código de aplicación en RESULTADO y COINCIDENCIAS, `(aplicación, ítem)` en RESPUESTA_CUESTIONARIO y `None` en FAVORITOS. Una pregunta de diario solo es dueña si es personalizada. En `ITEMS_REGISTRO`, la elección que retoma una anterior agrega la referencia como sexto campo: `(lista, mínima, máxima, ordenada, otra, referencia)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:
 - un tipo fuera del catálogo;
 - un dueño inexistente, o una pregunta de diario no personalizada;
 - una fuente en FAVORITOS, PLANES, PLAN, PASOS_PLAN_A u OPCION_INICIAL;
@@ -69,6 +69,6 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 - en RESULTADO o COINCIDENCIAS, una aplicación de un instrumento de COMPARACION;
 - en RESPUESTA_CUESTIONARIO, un ítem que la aplicación no presenta;
 - una ELECCION cuya fuente no tiene lista;
-- una elección por referencia que no apunta a una ELECCION de su propia actividad;
+- una elección que retoma una referencia que no es una ELECCION de su propia actividad, que lee otra lista o cuyo máximo u «otra» no admiten lo que pudo elegirse en la fuente;
 - una mínima o máxima mayor que la de la fuente;
 - un ciclo entre ítems y referencias.

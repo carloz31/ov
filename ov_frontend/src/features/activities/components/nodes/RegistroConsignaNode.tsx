@@ -127,8 +127,6 @@ function validar(item: ItemRegistroPublico, texto: string, seleccion: OpcionEleg
     return eleccion.minima === eleccion.maxima
       ? `Elige ${eleccion.minima} ${eleccion.minima === 1 ? 'opción' : 'opciones'}.`
       : `Elige al menos ${eleccion.minima} ${eleccion.minima === 1 ? 'opción' : 'opciones'}.`
-  // La «otra» de una elección por referencia ya trae su texto de la fuente: se elige sin escribirla.
-  if (eleccion.permite_otra && seleccion.some((o) => o.codigo === 'OTRA' && !o.texto?.trim()))
-    return 'Escribe cuál es tu otra opción.'
+  if (seleccion.some((o) => o.codigo === 'OTRA' && !o.texto?.trim())) return 'Escribe cuál es tu otra opción.'
   return ''
 }

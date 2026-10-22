@@ -75,7 +75,7 @@ class OpcionListaPublica(BaseModel):
 
 
 class EleccionPublica(BaseModel):
-    """Con `referencia`, `lista` es nula y `opciones` va vacía: se leen en la consulta de referencias."""
+    """`referencia` (F02): la ELECCION que marca lo elegido la vez pasada; las opciones son las de la lista."""
     lista: str | None
     referencia: str | None
     comun: bool

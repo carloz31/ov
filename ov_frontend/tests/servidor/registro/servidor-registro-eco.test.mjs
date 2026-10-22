@@ -4,7 +4,7 @@ import { copia, elementos, esperar, fixtureServidor, jsonServidor } from '../../
 import { abrir, iniciar } from '../../soporte/servidor-registro-ayudas.mjs'
 
 // F02 (HU-009): t-eco retoma lo respondido en t-expectativas: la cita (o el aviso «por desarrollar») sobre
-// la consigna y, en la elección por referencia, lo elegido antes como opciones.
+// la consigna y, en la elección que retoma la anterior, la lista completa con lo elegido antes marcado.
 const NODOS = ['RegistroConsignaNode', 'RegistroPodioNode', 'RegistroEleccionNode']
 const consigna = (tree) => elementos(tree, (e) => NODOS.includes(e.type?.name))[0]
 const REFERENCIAS = {
@@ -24,50 +24,86 @@ async function hasta(player, id) {
   for (;;) {
     const nodo = consigna(player.render())
     if (nodo.props.node.id === id) return nodo
-    // Sin dato (t-expectativas sin entregar), la elección por referencia no tiene opciones.
-    const primera = nodo.props.item.eleccion?.opciones[0]
     nodo.props.onGuardar(
       'DATO DE PRUEBA: la universidad, porque quiero investigar',
-      primera ? [{ codigo: primera.codigo }] : [],
+      nodo.props.item.eleccion ? [{ codigo: 'UNIVERSIDAD' }] : [],
     )
     await esperar()
   }
 }
 
-test('el adaptador llena la elección por referencia con lo elegido antes; sin dato, sin opciones', () => {
-  const { itemConReferencia, necesitaReferencias } = fixtureServidor().load(
+test('el adaptador da lo elegido la vez pasada, con el texto de la «otra»; sin dato, nada', () => {
+  const { anterioresDe, necesitaReferencias } = fixtureServidor().load(
     'src/lib/servidor/adaptadoresRegistro.ts',
   )
   const [ruta, espera] = jsonServidor('ruta/ruta-items-registro-t-eco')
-  const lleno = itemConReferencia(ruta, REFERENCIAS.disponible.referencias)
-  assert.deepEqual(copia(lleno.eleccion.opciones), [
-    { codigo: 'UNIVERSIDAD', texto: 'Estudiar en una universidad' },
-  ])
-  assert.equal(lleno.eleccion.permite_otra, false)
-  assert.deepEqual(copia(itemConReferencia(ruta, REFERENCIAS.sinDato.referencias).eleccion.opciones), [])
-  assert.equal(itemConReferencia(espera, REFERENCIAS.disponible.referencias), espera)
+  assert.equal(ruta.eleccion.lista, 'RUTAS_DESPUES_COLEGIO')
+  assert.deepEqual(copia(anterioresDe(ruta, REFERENCIAS.disponible.referencias)), [{ codigo: 'UNIVERSIDAD' }])
+  // DATO DE PRUEBA: una «otra» elegida la vez pasada.
+  const conOtra = [
+    {
+      codigo: 't-ref-rutas',
+      tipo: 'ELECCION',
+      estado: 'DISPONIBLE',
+      opciones: [{ codigo: 'OTRA', texto: 'Viajar un año' }],
+    },
+  ]
+  assert.deepEqual(copia(anterioresDe(ruta, conOtra)), [{ codigo: 'OTRA', texto: 'Viajar un año' }])
+  assert.deepEqual(copia(anterioresDe(ruta, REFERENCIAS.sinDato.referencias)), [])
+  assert.deepEqual(copia(anterioresDe(espera, REFERENCIAS.disponible.referencias)), [])
   assert.equal(necesitaReferencias([espera], [undefined]), false)
   assert.equal(necesitaReferencias([espera], ['t-ref-espera']), true)
   assert.equal(necesitaReferencias([ruta, espera], []), true)
 })
 
-test('t-eco pide sus referencias y responde la elección con las casillas de lo elegido antes', async () => {
+test('t-eco responde la ruta con la elección guiada y la lista completa, con lo de la vez pasada marcado', async () => {
   const { app, player } = await abrirEco(REFERENCIAS.disponible)
   assert.ok(app.requests.some((r) => r.url.endsWith('/cuentas/est-ana/actividades/t-eco/referencias')))
   const ruta = await hasta(player, 't-eco-ruta')
-  assert.equal(ruta.type.name, 'RegistroConsignaNode')
-  assert.deepEqual(copia(ruta.props.item.eleccion.opciones), [
-    { codigo: 'UNIVERSIDAD', texto: 'Estudiar en una universidad' },
-  ])
-  assert.equal(ruta.props.eco, undefined)
-  ruta.props.onGuardar('DATO DE PRUEBA: la universidad, porque quiero investigar', [
-    { codigo: 'UNIVERSIDAD' },
-  ])
+  assert.equal(ruta.type.name, 'RegistroEleccionNode')
+  assert.ok(ruta.props.item.eleccion.opciones.some((o) => o.codigo === 'AUN_NO_SE'))
+  assert.deepEqual(copia(ruta.props.inicial), { texto: '', opciones: [{ codigo: 'UNIVERSIDAD' }] })
+  assert.deepEqual(copia(ruta.props.anteriores), [{ codigo: 'UNIVERSIDAD' }])
+  ruta.props.onGuardar('DATO DE PRUEBA: ahora prefiero un instituto', [{ codigo: 'INSTITUTO' }])
   await esperar()
   assert.deepEqual(copia(app.requests.find((r) => r.url.endsWith('/guardar-borrador')).body.opciones), [
-    { codigo: 'UNIVERSIDAD' },
+    { codigo: 'INSTITUTO' },
   ])
   player.unmount()
+})
+
+test('«La vez pasada» marca lo elegido antes; mantenerlo o cambiarlo decide la pregunta y el saludo', async () => {
+  const { app, player } = await abrirEco(REFERENCIAS.disponible)
+  const ruta = await hasta(player, 't-eco-ruta')
+  player.unmount()
+  const form = app.mount(ruta.type, ruta.props)
+  let tree = form.render()
+  const guiado = elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0]
+  assert.equal(guiado.props.mensaje, ruta.props.node.eleccion.mensajes.inicio)
+  const tarjetas = elementos(tree, (e) => e.type?.name === 'ChoiceReveal')[0]
+  assert.deepEqual(copia(tarjetas.props.anteriores), ['UNIVERSIDAD'])
+  assert.equal(tarjetas.props.etiquetaAnterior, 'La vez pasada')
+  const pregunta = () =>
+    elementos(form.render(), (e) => e.type?.name === 'RegistroExplicacion')[0].props.pregunta
+  assert.equal(pregunta(), 'Sigues con estudiar en una universidad. ¿Qué te hace mantenerla?')
+  const vista = (t) => app.mount(t.type, t.props).render()
+  const tarjeta = (codigo) => elementos(vista(tarjetas), (e) => e.key === codigo)[0]
+  const insignia = (codigo) =>
+    elementos(tarjeta(codigo), (e) => e.props?.className === 'sx-choice-badge')[0]?.props.children
+  assert.equal(insignia('UNIVERSIDAD'), 'La vez pasada')
+  tarjeta('INSTITUTO').props.onClick()
+  tree = form.render()
+  const despues = elementos(tree, (e) => e.type?.name === 'ChoiceReveal')[0]
+  const conInstituto = (codigo) =>
+    elementos(
+      elementos(vista(despues), (e) => e.key === codigo)[0],
+      (e) => e.props?.className === 'sx-choice-badge',
+    )[0]?.props.children
+  assert.equal(conInstituto('UNIVERSIDAD'), 'La vez pasada')
+  assert.equal(conInstituto('INSTITUTO'), 'Tu ruta')
+  assert.match(pregunta(), /^Ahora te atrae .*¿Qué te hizo cambiar de idea\?$/)
+  elementos(vista(despues), (e) => e.key === 'AUN_NO_SE')[0].props.onClick()
+  assert.equal(pregunta(), ruta.props.node.eleccion.preguntaExclusiva)
 })
 
 test('con la respuesta disponible, la consigna cita el texto y nombra la actividad de origen', async () => {

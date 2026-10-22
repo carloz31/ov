@@ -184,12 +184,15 @@ export interface ConfigPodio {
 // cada ítem; sin ellos se usan textos genéricos.
 export interface ConfigEleccion {
   etiquetaElegida?: string // «Tu ruta», «Te acompaña»; sin ella, la tarjeta elegida no lleva etiqueta
+  etiquetaAnterior?: string // F02: «La vez pasada», en lo elegido antes cuando el ítem retoma una elección
   exclusivas?: string[] // códigos que quitan a las demás («AUN_NO_SE»)
   iconos?: Record<string, string> // código de opción (también OTRA) → nombre en `data/iconosRegistro.ts`
   mensajes?: { inicio?: string; una?: string; maximo?: string; bloqueada?: string; exclusiva?: string }
   pregunta?: string // con {opciones}
   preguntas?: Record<string, string> // pregunta propia de una opción elegida sola
   preguntaExclusiva?: string
+  preguntaMantiene?: string // F02: con {opciones}, si lo elegido es lo mismo que la vez pasada
+  preguntaCambia?: string // F02: con {opciones}, si cambió
   errorSeleccion?: string
   errorOtra?: string
 }

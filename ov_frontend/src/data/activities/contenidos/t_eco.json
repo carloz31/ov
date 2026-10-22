@@ -28,7 +28,35 @@
       },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora",
-      "item": "t-eco-ruta"
+      "item": "t-eco-ruta",
+      "eleccion": {
+        "etiquetaElegida": "Tu ruta",
+        "etiquetaAnterior": "La vez pasada",
+        "exclusivas": [
+          "AUN_NO_SE"
+        ],
+        "iconos": {
+          "UNIVERSIDAD": "universidad",
+          "INSTITUTO": "instituto",
+          "TRABAJAR": "trabajo",
+          "EMPRENDER": "emprender",
+          "AUN_NO_SE": "duda",
+          "OTRA": "brujula"
+        },
+        "mensajes": {
+          "inicio": "La vez pasada marcaste esta ruta. ¿Sigues por ahí o cambiaste de idea?",
+          "una": "Anotado. Si quieres, puedes sumar una ruta más.",
+          "maximo": "Dos rutas en el mapa. Cuéntame qué te atrae de ellas.",
+          "bloqueada": "Ya tienes dos rutas. Quita una para cambiar.",
+          "exclusiva": "Está bien no saberlo todavía. Para eso está este camino."
+        },
+        "pregunta": "¿Por qué te atrae {opciones}?",
+        "preguntaMantiene": "Sigues con {opciones}. ¿Qué te hace mantenerla?",
+        "preguntaCambia": "Ahora te atrae {opciones}. ¿Qué te hizo cambiar de idea?",
+        "preguntaExclusiva": "¿Qué te hace dudar ahora, o qué te gustaría descubrir?",
+        "errorSeleccion": "Elige al menos una ruta.",
+        "errorOtra": "Escribe cuál es tu otra ruta."
+      }
     },
     {
       "id": "t-eco-espera",

@@ -3,7 +3,7 @@ import { actividadPorContenido, registroServidor } from '@/lib/servidor/contenid
 import { mensajeErrorServidor, obtenerEstadoServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { consultarItemsRegistro, consultarRegistro } from '@/store/servidor/registro'
 import { consultarReferencias } from '@/store/servidor/referencias'
-import { itemConReferencia, necesitaReferencias } from '@/lib/servidor/adaptadoresRegistro'
+import { necesitaReferencias } from '@/lib/servidor/adaptadoresRegistro'
 import type { Actividad } from '@/types/activities'
 import type { RegistroServidor } from '../hooks/useRegistroServidor'
 import { actividadConsulta, esConsulta } from '../lib/edicionRegistro'
@@ -36,7 +36,7 @@ export function RegistroServidorPlayer({
         setError(mensajeErrorServidor(items.tipo !== 'ok' ? items : registro.tipo !== 'ok' ? registro : null))
         return
       }
-      // F02: las elecciones por referencia y los ecos leen lo que la cuenta respondió antes.
+      // F02: las elecciones que retoman otra y los ecos leen lo que la cuenta respondió antes.
       const ecos = contenido.nodos.map((n) => (n.tipo === 'consigna' ? n.eco : undefined))
       const referencias = necesitaReferencias(items.datos, ecos)
         ? await consultarReferencias(codigo)
@@ -47,8 +47,7 @@ export function RegistroServidorPlayer({
         return
       }
       const resueltas = referencias?.datos.referencias ?? []
-      const itemsVista = items.datos.map((item) => itemConReferencia(item, resueltas))
-      const completo = registroServidor(contenido, itemsVista)
+      const completo = registroServidor(contenido, items.datos)
       // F02: un registro cerrado se consulta en el mismo reproductor, solo con sus consignas.
       const activity = completo && esConsulta(registro.datos) ? actividadConsulta(completo) : completo
       if (!activity) {
@@ -57,7 +56,7 @@ export function RegistroServidorPlayer({
       }
       setCarga({
         activity,
-        registro: { items: itemsVista, registro: registro.datos, referencias: resueltas },
+        registro: { items: items.datos, registro: registro.datos, referencias: resueltas },
       })
       setError('')
     })()

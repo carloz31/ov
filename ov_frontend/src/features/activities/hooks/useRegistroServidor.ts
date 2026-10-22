@@ -10,6 +10,7 @@ import {
 } from '@/store/servidor/registro'
 import { mensajeErrorServidor, obtenerEstadoServidor } from '@/store/servidor/sesion'
 import { actividadServidor } from '@/lib/servidor/adaptadores'
+import { anterioresDe } from '@/lib/servidor/adaptadoresRegistro'
 import type { Nodo } from '@/types/activities'
 import type {
   ItemRegistroPublico,
@@ -24,7 +25,7 @@ import { anotarCambio, consolidada, consultaDe, edicionesDe, esConsulta } from '
 export type RegistroServidor = {
   items: ItemRegistroPublico[]
   registro: RegistroConsultado
-  // F02: lo que el registro retoma de la cuenta (elecciones por referencia y ecos).
+  // F02: lo que el registro retoma de la cuenta (elecciones anteriores y ecos).
   referencias?: ReferenciaResuelta[]
 }
 export type TurnoRegistro = { orden: number; pregunta: string; respuesta?: string; omitida: boolean }
@@ -245,12 +246,17 @@ export function useRegistroServidor({
     esUltimaConsigna: (id: string) => id === ultimaConsigna,
     respuestaDe: (item: string) => registro?.respuestas.find((r) => r.item === item),
     // Lo que muestra una consigna al abrirla: el borrador o, en la consulta, el texto cambiado o la consolidada.
+    // Sin nada guardado, una elección que retoma otra llega con lo elegido la vez pasada (F02).
     inicialDe: (item: string) => {
       const respuesta = registro?.respuestas.find((r) => r.item === item)
-      return consulta
-        ? { texto: cambios[item] ?? consolidada(respuesta), opciones: respuesta?.opciones_elegidas ?? [] }
-        : borradorRegistro(respuesta)
+      if (consulta)
+        return { texto: cambios[item] ?? consolidada(respuesta), opciones: respuesta?.opciones_elegidas ?? [] }
+      const definido = registroServidor?.items.find((i) => i.codigo === item)
+      return respuesta || !definido
+        ? borradorRegistro(respuesta)
+        : { texto: '', opciones: anterioresDe(definido, registroServidor?.referencias ?? []) }
     },
+    anterioresDe: (item: ItemRegistroPublico) => anterioresDe(item, registroServidor?.referencias ?? []),
     consultaDe: (item: string) => (consulta && registro ? consultaDe(registro, item, cambios) : undefined),
     puedeEditarRegistro: modoApi && consulta,
     // Zona de eco de una consigna (F02): la referencia TEXTO que cita y el título de su actividad de origen.

@@ -24,7 +24,6 @@ from app.services.actividades import completar_progreso
 from app.services.comun import (
     buscar_por_codigo, exigir_disponible, fecha_accion, responder_con_eventos,
 )
-from app.services.referencias import resolver as resolver_referencias
 from app.services.registro.eleccion import invalida, validar_eleccion
 from app.services.registro.evaluacion import (
     CriterioEvaluacion, ItemPorEvaluar, RespuestaOtroItem, TurnoEvaluacion, procesar_entrega, procesar_seguimiento,
@@ -55,20 +54,14 @@ def validar_item(items, codigo):
 
 
 def opciones_de(sesion, item):
-    """Opciones de la lista del ítem; un ítem con elección por referencia no tiene lista."""
+    """Opciones de la lista del ítem; también en la elección que retoma una anterior (F02)."""
     return contexto(sesion).definiciones.opciones_por_lista.get(item.lista_id, ())
 
 
-def opciones_por_item(sesion, cuenta, items):
-    """{id del ítem: opciones} de la lista o, en la elección por referencia, las que la referencia devuelve
-    a esta cuenta (vacías si no hay dato). Todas las referencias de los ítems se resuelven juntas."""
-    definiciones = contexto(sesion).definiciones
-    referencias = {item.id: definiciones.obtener(Referencia, item.referencia_id)
-                   for item in items if item.referencia_id is not None}
-    resueltas = resolver_referencias(sesion, cuenta, list(referencias.values())) if referencias else {}
-    return {item.id: (tuple(resueltas[referencias[item.id].codigo].opciones or ()) if item.id in referencias
-                      else opciones_de(sesion, item))
-            for item in items}
+def opciones_por_item(sesion, items):
+    """{id del ítem: opciones de su lista}. La referencia de un ítem solo marca lo elegido antes (F02): no cambia
+    sus opciones."""
+    return {item.id: opciones_de(sesion, item) for item in items}
 
 
 def criterios_de(sesion, item):
@@ -77,7 +70,7 @@ def criterios_de(sesion, item):
 
 
 def textos_elegidos(opciones, elegidas):
-    """Textos de las opciones elegidas, para el evaluador (RNF-13). Por referencia, también el de su OTRA."""
+    """Textos de las opciones elegidas, para el evaluador (RNF-13); la OTRA lleva el texto escrito."""
     textos = {opcion.codigo: opcion.texto for opcion in opciones}
     return tuple(e['texto'] if 'texto' in e else textos.get(e['codigo'], e['codigo']) for e in elegidas or ())
 
@@ -263,7 +256,7 @@ def guardar_borrador(sesion, entrada):
     if pendiente and entrada.opciones:
         raise invalida("La elección se guarda con la respuesta inicial, no con el seguimiento")
     elegidas = None if pendiente else validar_eleccion(
-        item, opciones_por_item(sesion, cuenta, (item,))[item.id], entrada.opciones, False)
+        item, opciones_por_item(sesion, (item,))[item.id], entrada.opciones, False)
     marca = marca_actualizacion(respuesta.actualizada_en if respuesta is not None else None)
     progreso = registro.progreso or crear_progreso(sesion, cuenta, actividad)
     if entrada.posicion is not None:
@@ -317,7 +310,7 @@ def preparar_entrega(sesion, entrada):
     if faltantes:
         raise ErrorAccion("Faltan ítems por responder antes de entregar", items_faltantes=faltantes)
     por_evaluar, elecciones = [], {}
-    opciones = opciones_por_item(sesion, cuenta, [item for item in items if item.id in con_texto])
+    opciones = opciones_por_item(sesion, [item for item in items if item.id in con_texto])
     for item in items:
         if item.id not in con_texto:
             continue
@@ -351,7 +344,7 @@ def preparar_edicion(sesion, entrada):
     registro = leer_registro(sesion, cuenta, actividad)
     exigir_cerrado(registro)
     por_evaluar, elecciones = [], {}
-    opciones = opciones_por_item(sesion, cuenta, [item for item in items if item.codigo in codigos])
+    opciones = opciones_por_item(sesion, [item for item in items if item.codigo in codigos])
     for item in items:
         edicion = next((e for e in entrada.items if e.item == item.codigo), None)
         if edicion is None:
@@ -504,7 +497,7 @@ def preparar_seguimiento(sesion, entrada):
                   and registro.respuestas[otro.id].clasificacion_inicial is not None)
     ultima = registro.ultima_evaluacion(respuesta)
     return LecturaSeguimiento(actividad.titulo, ItemPorEvaluar(item.codigo, item.consigna, criterios,
-        textos_elegidos(opciones_por_item(sesion, cuenta, (item,))[item.id], respuesta.opciones_elegidas),
+        textos_elegidos(opciones_por_item(sesion, (item,))[item.id], respuesta.opciones_elegidas),
         respuesta.texto_inicial, item.min_caracteres,
         item.repregunta_generica), conversacion, turno.criterios_objetivo, otras,
         ultima is not None and ultima.origen == OrigenEvaluacion.EXTENSION_MINIMA, version(registro))

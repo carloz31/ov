@@ -1,19 +1,40 @@
 [
   {
     "codigo": "t-eco-ruta",
-    "consigna": "De las rutas que elegiste, ¿cuál te atrae más y por qué?",
+    "consigna": "La vez pasada elegiste una ruta. ¿Sigues pensando igual o cambiaste de idea? Cuéntame por qué.",
     "eleccion": {
-      "comun": false,
-      "lista": null,
-      "maxima": 1,
+      "comun": true,
+      "lista": "RUTAS_DESPUES_COLEGIO",
+      "maxima": 2,
       "minima": 1,
-      "opciones": [],
+      "opciones": [
+        {
+          "codigo": "UNIVERSIDAD",
+          "texto": "Estudiar en una universidad"
+        },
+        {
+          "codigo": "INSTITUTO",
+          "texto": "Estudiar en un instituto"
+        },
+        {
+          "codigo": "TRABAJAR",
+          "texto": "Trabajar"
+        },
+        {
+          "codigo": "EMPRENDER",
+          "texto": "Emprender un negocio"
+        },
+        {
+          "codigo": "AUN_NO_SE",
+          "texto": "Aún no lo sé"
+        }
+      ],
       "ordenada": false,
-      "permite_otra": false,
+      "permite_otra": true,
       "referencia": "t-ref-rutas"
     },
     "min_caracteres": null,
-    "nombre": "La ruta que más te atrae",
+    "nombre": "Tu ruta, hoy",
     "obligatorio": true
   },
   {

@@ -1,4 +1,5 @@
-"""B05: elección por referencia en `t-eco`; solo se aceptan los códigos que la referencia devuelve a la cuenta.
+"""B05 y F02: `t-eco-ruta` retoma la elección de `t-exp-ruta`: elige de la misma lista y la referencia solo marca
+lo elegido la vez pasada, que el estudiante mantiene o cambia.
 
 Los textos son DATO DE PRUEBA; las marcas (`[vaga]`) las interpreta el evaluador falso.
 """
@@ -47,35 +48,38 @@ def entregar_eco(cliente, opciones, texto=ADECUADO, esperado=200):
     return pedir(cliente, 'POST', '/acciones/registro/entregar', accion('t-eco'), esperado)
 
 
-def test_items_de_t_eco_publican_la_referencia_sin_opciones(cliente):
+def test_items_de_t_eco_publican_la_lista_y_la_referencia(cliente):
     ruta, espera = pedir(cliente, 'GET', '/actividades/t-eco/items-registro')
-    assert ruta['eleccion'] == {'lista': None, 'referencia': 't-ref-rutas', 'comun': False, 'minima': 1,
-                                'maxima': 1, 'ordenada': False, 'permite_otra': False, 'opciones': []}
+    original = pedir(cliente, 'GET', '/actividades/t-expectativas/items-registro')[0]['eleccion']
+    assert ruta['eleccion'] == {**original, 'referencia': 't-ref-rutas'}
+    assert [o['codigo'] for o in ruta['eleccion']['opciones']] == [o['codigo'] for o in original['opciones']]
     assert espera['eleccion'] is None
-    lista = pedir(cliente, 'GET', '/actividades/t-expectativas/items-registro')[0]['eleccion']
-    assert lista['lista'] == 'RUTAS_DESPUES_COLEGIO' and lista['referencia'] is None
+    assert original['referencia'] is None
 
 
 @pytest.mark.parametrize('opciones', [
-    [{'codigo': 'INSTITUTO'}],  # de la lista original, pero no elegido
     [{'codigo': 'NADA'}],
-    [{'codigo': 'OTRA', 'texto': 'DATO DE PRUEBA otra nueva'}],  # por referencia no hay «otra» propia
-    [{'codigo': 'UNIVERSIDAD'}, {'codigo': 'OTRA'}],  # supera la máxima
+    [{'codigo': 'OTRA'}],  # la «otra» lleva su texto, como en cualquier lista
+    [{'codigo': 'UNIVERSIDAD'}, {'codigo': 'INSTITUTO'}, {'codigo': 'TRABAJAR'}],  # supera la máxima
 ])
-def test_solo_acepta_los_codigos_que_la_referencia_devuelve(cliente, opciones):
+def test_valida_contra_la_lista(cliente, opciones):
     cerrar_expectativas(cliente)
     borrador_eco(cliente, opciones, esperado=422)
 
 
-@pytest.mark.parametrize('opciones', [[{'codigo': 'UNIVERSIDAD'}], [{'codigo': 'OTRA'}]])
-def test_acepta_lo_elegido_incluida_la_otra_de_la_fuente(cliente, opciones):
+@pytest.mark.parametrize('opciones', [
+    [{'codigo': 'UNIVERSIDAD'}, OTRA],  # mantiene lo de la vez pasada
+    [{'codigo': 'INSTITUTO'}],  # cambia
+    [{'codigo': 'AUN_NO_SE'}],
+])
+def test_mantiene_o_cambia_lo_elegido_antes(cliente, opciones):
     cerrar_expectativas(cliente)
     borrador_eco(cliente, opciones)
     registro = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/registro')
     assert registro['respuestas'][0]['opciones_elegidas'] == opciones
 
 
-def test_entrega_exige_la_minima_por_referencia(cliente):
+def test_entrega_exige_la_minima(cliente):
     cerrar_expectativas(cliente)
     borrador_eco(cliente, [])
     pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
@@ -87,7 +91,7 @@ def test_el_evaluador_recibe_los_textos_elegidos_y_ninguna_cita(cliente, aplicac
     cerrar_expectativas(cliente)
     falso = evaluador(aplicacion)
     antes = len(falso.contextos)
-    entregar_eco(cliente, [{'codigo': 'OTRA'}], texto='DATO DE PRUEBA eco [vaga]')
+    entregar_eco(cliente, [OTRA], texto='DATO DE PRUEBA eco [vaga]')
     pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento',
           {**accion('t-eco'), 'item': 't-eco-ruta', 'texto': ADECUADO})
     entrega, seguimiento = falso.contextos[antes:]

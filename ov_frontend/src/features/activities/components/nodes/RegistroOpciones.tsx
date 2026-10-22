@@ -52,7 +52,7 @@ export function RegistroOpciones({
           </label>
         )
       })}
-      {otra && eleccion.permite_otra && (
+      {otra && (
         <input
           className="sx-submission-textarea"
           aria-label="¿Cuál?"
