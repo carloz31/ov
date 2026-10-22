@@ -19,6 +19,7 @@ De dónde sale cada dato del front. Las rutas parten de `src/`. Si una tarea mue
 | `services/api/acciones.ts` | `ingresar`, `completarActividad`, `responderItems` | `POST /acciones/ingresar`, `/completar-actividad`, `/responder-items` |
 | `services/api/instrumentos.ts` | `obtenerItems`, `obtenerRespuestas`, `obtenerAvance`, `obtenerResultado` | `GET /actividades/{a}/items`, `/cuentas/{c}/actividades/{a}/respuestas`, `/cuentas/{c}/instrumentos`, `/cuentas/{c}/instrumentos/{i}/resultado` |
 | `services/api/secciones.ts` | `obtenerSecciones` | `GET /cuentas/{c}/secciones` |
+| `services/api/registro.ts` | `obtenerItemsRegistro`, `obtenerRegistro`, `enviarBorrador`, `enviarEntrega`, `enviarRespuestaSeguimiento`, `enviarContinuarSinResponder` | `GET /actividades/{a}/items-registro`, `/cuentas/{c}/actividades/{a}/registro`; `POST /acciones/registro/guardar-borrador`, `/entregar`, `/responder-seguimiento`, `/continuar-sin-responder` |
 | `services/api/familia.ts` | `obtenerFamilia` | `GET /cuentas/{c}/familia` |
 | `services/api/desarrollo.ts` | `reiniciar` | `POST /desarrollo/reiniciar` |
 
@@ -33,6 +34,8 @@ Con eso el servidor decide: disponibilidad y finalización de actividades, acces
 - el mensaje de bloqueo (`bloqueo[0].mensaje` de la actividad o de su bloque).
 
 Del JSON solo se usan los nodos y la posición. Lo que dice Lumi ante algo cerrado sale de `textosBloqueo` (`data/content/guideTexts.ts`), seguido del mensaje del servidor.
+
+**Registros (F01).** En api, un registro del Camino se abre con `RegistroServidorPlayer`: lee los ítems (consigna, obligatoriedad y elección) y lo guardado (borradores, opciones elegidas, `posicion` y conversación). El borrador se guarda en el servidor solo al pulsar «Guardar y continuar» o «Entregar»; la entrega, las preguntas de seguimiento (responder o continuar sin responder) y `items_por_ampliar` vienen del servidor. Un registro cerrado abre en la pantalla de fin, sin volver a entregar. La visibilidad es una regla fija por tipo: todo registro lo ven el estudiante y su orientadora («Visible para ti y tu orientadora. Se guarda en tu cuenta.»); el diario es privado. En local siguen `journeyStore` y `followUpStore`.
 
 **Actividades del apoderado.** En api, bloque, lista, orden, títulos, descripción (el subtítulo de la tarjeta), disponibilidad, mensaje de bloqueo, completitud y progreso vienen de `GET /cuentas/{c}/actividades`, para el espacio `PORTAL_FAMILIA`. Los nodos siguen en los JSON del front, encontrados por `contenido`; una actividad invisible o sin contenido se descarta y no cuenta en el progreso, y un contenido sin nodos (`t_apo_carta` hasta F08) se lista pero no se inicia. Los requisitos del JSON solo deciden candados en local.
 

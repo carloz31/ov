@@ -339,7 +339,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 | Lote | Tema | HU | Tras | Cierra pendientes de | Pantallas que se adaptan |
 |---|---|---|---|---|---|
 | F00 | Base sobre `ruta` · **Implementado** | 002, 025 (y recomprueba 004, 011, 013–015, 021, 073, 074) | B17 | B01 (×3), B3 llave, B17 nombre | Candado con mensaje; etiqueta opcional y duración; accesos a secciones |
-| F01 | Registros: elección, borradores, entrega y seguimiento | 006, 007, 010, 016 | F00 | B02, B03 | Reproductor de registro |
+| F01 | Registros: elección, borradores, entrega y seguimiento · **Implementado** | 006, 007, 010, 016 | F00 | B02, B03 | Reproductor de registro |
 | F02 | Registros: consulta, edición y eco | 008, 009 | F01 | B04, B05 | Consulta del registro (nueva); zona de eco |
 | F03 | Instrumentos y libro de Helena | 022–024, 027, 094, 095 | F02 | B06, B07, F5 recarga | Libro: Revelar, perfil plano, comparación partida–llegada |
 | F04 | Batallas, casos y testimonios | 017, 041, 051–056 | F00 | B08, B2 testimonios, F3 testimonios, F4 íconos | Testimonios (vista nueva o en mochila); Central de Casos |
@@ -370,7 +370,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
   - Texto de la llave de la Ciudad («Destino al completar el camino» ya no es cierto: se abre a mitad de T1).
 - **Ajustes al backend posibles:** ninguno previsto.
 
-#### F01 · Registros: elección, borradores, entrega y seguimiento
+#### F01 · Registros: elección, borradores, entrega y seguimiento · **Implementado**
 - **Hace:** el reproductor de registro lee `items-registro` (elección con lista común + «otra», lista propia, ordenada), guarda borradores con `posicion` en el servidor, entrega con `registro/entregar` y muestra la pregunta de seguimiento que manda el servidor («Responder» / «Continuar sin responder»), en lugar de `followUpStore`. Al cerrar, el aviso de `items_por_ampliar` sin clasificación. La misión adicional aparece en el mapa.
 - **Contenidos:** `t_expectativas`, `t_valores`, `t_adicional`.
 - **Decisión de contrato clave:** cómo el JSON de contenido apunta a un ítem del backend (p. ej. `item: "t-expectativas-1"` en el nodo de consigna). Se documenta en `contenidos-actividades.md`. Sin esto, cada registro real necesitará un ajuste a mano.

@@ -117,9 +117,9 @@ Un agente conecta datos a la interfaz que ya existe; no diseña interfaz nueva p
 ```text
 tests/
   local/        actividades/, aventura/, casos/, perfil/, portales/   (modo local)
-  servidor/     acceso/, actividades/, mapa/, instrumentos/, logros/, perfil/  (modo api, con fixtures)
+  servidor/     acceso/, actividades/, mapa/, instrumentos/, logros/, perfil/, registro/  (modo api, con fixtures)
   despliegue/
-  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00)
+  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00) y registro (F01)
   soporte/             ayudantes compartidos
 ```
 
@@ -131,7 +131,7 @@ tests/
 | Si cambias… | Corre primero |
 |---|---|
 | `store/servidor/`, `lib/servidor/`, `services/api/`, `types/servidor.ts`, o regeneras fixtures | `npm run test:servidor` |
-| `features/activities/`, `lib/activities/`, `data/activities/` | `tests/local/actividades` y `tests/servidor/actividades` |
+| `features/activities/`, `lib/activities/`, `data/activities/` | `tests/local/actividades`, `tests/servidor/actividades` y `tests/servidor/registro` |
 | `features/adventure/` | `tests/local/aventura`, `tests/servidor/mapa` y `tests/servidor/logros` |
 | `features/discovery/` | `tests/servidor/instrumentos`, `tests/servidor/perfil` y `tests/servidor/logros` |
 | `features/cases/` | `tests/local/casos` |
