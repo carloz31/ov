@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { ClipboardList, Compass, KeyRound, LayoutGrid, Map, MessageCircle } from 'lucide-react'
+import { CircleHelp, ClipboardList, KeyRound, LayoutGrid, Map, MessageCircle } from 'lucide-react'
 import { Link } from 'react-router'
 import { appPaths } from '@/routes/paths'
 import type { ExtraCierre } from '../lib/finishSummary'
@@ -8,7 +8,8 @@ const iconos = {
   SECCIONES: LayoutGrid,
   SECCION_PLAN: ClipboardList,
   BLOQUE: Map,
-  ACTIVIDAD: Compass,
+  // Las opcionales nuevas van como intriga: el «?» de su punto en el mapa, sin nombre (F04b).
+  ACTIVIDAD: CircleHelp,
   CONVERSACIONES: MessageCircle,
   pieza: KeyRound,
 }

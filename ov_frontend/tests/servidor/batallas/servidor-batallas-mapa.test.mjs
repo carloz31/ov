@@ -20,13 +20,12 @@ function mapa(estados = {}) {
   }
 }
 
-test('la batalla abre su desafío con sus fichas y el caso, la Central de Casos', () => {
+test('la batalla abre su desafío y el caso, la Central de Casos', () => {
   const m = mapa({ 't-batalla': 'DISPONIBLE', 't-caso': 'DISPONIBLE' })
   assert.deepEqual(copia(m.contenidos.reproductorPorTipo(m.bloques, 't-batalla')), {
     tipo: 'desafio',
     actividad: 't-batalla',
     desafio: 'desafio-rumor',
-    fichas: ['t-ficha'],
   })
   assert.deepEqual(copia(m.contenidos.reproductorPorTipo(m.bloques, 't-caso')), {
     tipo: 'caso',
@@ -56,17 +55,20 @@ test('la Ciudad no repite el marcador fijo del desafío ni del caso que represen
   assert.ok(ids.includes('neighborhood-radio'))
 })
 
-test('las fichas para repasar de la batalla tienen contenido y el servidor las da', () => {
+test('las fichas de la batalla salen del servidor y tienen contenido de prueba en el catálogo', () => {
   const app = fixtureServidor()
   const { catalog } = app.load('src/data/activities/content.ts')
   const { contenidoPorClave } = app.load('src/data/activities/contenidos.ts')
-  const { fichaDisponible } = app.load('src/lib/servidor/adaptadores.ts')
-  const fichas = contenidoPorClave('t_batalla').fichas
-  assert.deepEqual(copia(fichas), ['t-ficha'])
-  for (const id of fichas) {
-    const recurso = catalog.recursos.find((r) => r.id === id)
-    assert.ok(recurso?.contenido, `${id} sin contenido en el catálogo`)
+  // F04b: el contenido ya no lista fichas; las trae la batalla del servidor, derivadas de sus preguntas.
+  assert.equal(contenidoPorClave('t_batalla').fichas, undefined)
+  const [batalla] = jsonServidor('ruta/ruta-batallas')
+  assert.deepEqual(copia(batalla.fichas.map((f) => [f.codigo, f.estado])), [
+    ['t-ficha', 'DISPONIBLE'],
+    ['t-ficha-2', 'DISPONIBLE'],
+  ])
+  for (const { codigo } of batalla.fichas) {
+    const recurso = catalog.recursos.find((r) => r.id === codigo)
+    assert.ok(recurso?.contenido, `${codigo} sin contenido en el catálogo`)
     assert.equal(recurso._dato_de_prueba, true)
-    assert.equal(fichaDisponible(jsonServidor('ruta/ruta-fichas-final'), id), true)
   }
 })

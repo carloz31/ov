@@ -114,6 +114,15 @@
       "guardableEnRecursos": false,
       "resumen": "Una ficha mínima para repasar antes de la batalla de prueba.",
       "contenido": "## Ficha de prueba\n\nContenido mínimo para probar «Repasar la ficha» antes de la batalla de `ruta`. Se reemplaza al cargar las fichas reales de la ruta base.\n\n**Tres ideas para repasar**\n1. Una creencia no es un dato: pregunta quién lo dice y desde qué experiencia.\n2. Busca evidencia a favor y en contra.\n3. Revisa si aplica a tu caso y a la situación de hoy."
+    },
+    {
+      "_dato_de_prueba": true,
+      "id": "t-ficha-2",
+      "titulo": "Segunda ficha de prueba",
+      "tipo": "ficha",
+      "guardableEnRecursos": false,
+      "resumen": "Fuentes y datos para contrastar lo que escuchas sobre estudios y trabajo.",
+      "contenido": "## Segunda ficha de prueba\n\nContenido mínimo para probar el repaso de la batalla de `ruta` con dos fichas. Se reemplaza al cargar las fichas reales de la ruta base.\n\n**Antes de creer un dato sobre una carrera**\n1. Busca fuentes oficiales y actualizadas.\n2. Contrasta una experiencia personal con otros casos.\n3. Recuerda que los ingresos dependen de la institución, la experiencia y la especialización."
     }
   ],
   "instrumentos": [

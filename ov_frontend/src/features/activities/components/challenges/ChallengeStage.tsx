@@ -3,6 +3,7 @@ import { BookOpen, Check, LockKeyhole, Star } from 'lucide-react'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { RewardCard } from '@/features/activities/components/RewardCard'
 import { CheckOption } from '@/features/activities/components/CheckOption'
+import { CierreBatalla } from './CierreBatalla'
 export function ChallengeStage({
   model,
   onClose,
@@ -23,6 +24,8 @@ export function ChallengeStage({
     requirements,
     puedeIniciar,
     muestraRecompensas,
+    cierreServidor,
+    etiquetaRepasoAntes,
     sheets,
     question,
     hit,
@@ -129,7 +132,7 @@ export function ChallengeStage({
             {sheets.length > 0 && (
               <button type="button" className="sx-secondary-button" onClick={() => setResourcesOpen(true)}>
                 <BookOpen size={18} />
-                Repasar la ficha antes
+                {etiquetaRepasoAntes}
               </button>
             )}
           </div>
@@ -196,6 +199,8 @@ export function ChallengeStage({
                   {responseTitle}
                 </h3>
                 <p>{question.explicacion}</p>
+                {/* F04b: solo texto; la ficha no se consulta durante el intento. */}
+                {question.ficha && <p className="sx-check-source">Sale de la ficha «{question.ficha.titulo}»</p>}
               </div>
             </div>
           )}
@@ -217,6 +222,8 @@ export function ChallengeStage({
             </button>
           )}
         </section>
+      ) : cierreServidor ? (
+        <CierreBatalla model={model} onClose={onClose} />
       ) : (
         battle && (
           <section

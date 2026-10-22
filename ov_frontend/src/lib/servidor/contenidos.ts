@@ -28,7 +28,7 @@ export function actividadPorContenido(
 // F04: BATALLA y CASO se abren según su tipo, no según su bloque. Basta que el servidor la muestre
 // y no la tenga bloqueada; no hace falta que la Ciudad esté abierta.
 export type ReproductorTipo =
-  | { tipo: 'desafio'; actividad: string; desafio: string; fichas: string[] }
+  | { tipo: 'desafio'; actividad: string; desafio: string }
   | { tipo: 'caso'; actividad: string; caso: string }
 export function reproductorPorTipo(
   bloques: BloqueActividades[] | null,
@@ -38,7 +38,7 @@ export function reproductorPorTipo(
   const contenido = actividad && contenidoPorClave(actividad.contenido)
   if (!actividad || !contenido || !actividad.visible || actividad.estado === 'BLOQUEADA') return undefined
   if (actividad.tipo === 'BATALLA' && contenido.desafio)
-    return { tipo: 'desafio', actividad: codigo, desafio: contenido.desafio, fichas: contenido.fichas ?? [] }
+    return { tipo: 'desafio', actividad: codigo, desafio: contenido.desafio }
   if (actividad.tipo === 'CASO' && contenido.caso) return { tipo: 'caso', actividad: codigo, caso: contenido.caso }
   return undefined
 }

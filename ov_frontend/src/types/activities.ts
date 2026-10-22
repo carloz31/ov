@@ -279,11 +279,10 @@ export interface ContenidoActividad extends Actividad {
     // Con origen: es una misión adicional y no una opcional (el nodo dice «Misión adicional»).
     adicional?: boolean
   }
-  // BATALLA y CASO (api, F04): sin nodos, apuntan al desafío o al caso del front.
+  // BATALLA y CASO (api, F04): sin nodos, apuntan al desafío o al caso del front. Las fichas de una
+  // batalla se derivan de sus preguntas en el servidor (F04b).
   desafio?: string
   caso?: string
-  // BATALLA: fichas del servidor que se ofrecen para repasar.
-  fichas?: string[]
 }
 
 /* =====================================================================

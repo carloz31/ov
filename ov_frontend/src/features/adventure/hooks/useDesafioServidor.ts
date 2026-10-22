@@ -10,6 +10,6 @@ export function useDesafioServidor(codigo: string) {
   if (reproductor?.tipo !== 'desafio') return undefined
   const challenge = challenges.find((c) => c.id === reproductor.desafio)
   return challenge
-    ? { challenge, servidor: { actividad: reproductor.actividad, fichas: reproductor.fichas } }
+    ? { challenge, servidor: { actividad: reproductor.actividad } }
     : undefined
 }

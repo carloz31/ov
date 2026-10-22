@@ -1,17 +1,39 @@
+import { useState } from 'react'
 import { useActivityResources } from '../hooks/useActivityResources'
 import { BookOpen, Check, ExternalLink, FileText, Headphones, Link2, Play } from 'lucide-react'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/Sheet'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/Collapsible'
 import { youtubeEmbedUrl } from '@/features/backpack/lib/travelerResources'
 import { ResourceText } from '@/features/activities/components/content/ResourceText'
-export function ResourceSheet({ open, ids, onClose }: { open: boolean; ids: string[]; onClose: () => void }) {
+// Con `pestanas` y más de una ficha, arriba se elige cuál ver (una a la vez), empezando por `inicial`
+// o la primera (F04b). Sin ellas, como siempre: todas plegables.
+export function ResourceSheet({
+  open,
+  ids,
+  onClose,
+  pestanas = false,
+  inicial,
+}: {
+  open: boolean
+  ids: string[]
+  onClose: () => void
+  pestanas?: boolean
+  inicial?: string
+}) {
   const { state, returnFocus, resources, marcarLeida, guardarRecurso } = useActivityResources(ids)
+  const [elegida, setElegida] = useState<string>()
+  const conPestanas = pestanas && resources.length > 1
+  const activa = resources.find((r) => r.id === elegida)?.id ?? inicial ?? resources[0]?.id
+  const visibles = conPestanas ? resources.filter((r) => r.id === activa) : resources
   const icons = { ficha: BookOpen, video: Play, lectura: FileText, enlace: Link2, audio: Headphones }
   return (
     <Sheet
       open={open}
       onOpenChange={(next) => {
-        if (!next) onClose()
+        if (!next) {
+          setElegida(undefined)
+          onClose()
+        }
       }}
     >
       <SheetContent
@@ -29,11 +51,26 @@ export function ResourceSheet({ open, ids, onClose }: { open: boolean; ids: stri
       >
         <SheetTitle>Fichas para tu camino</SheetTitle>
         <SheetDescription>Profundiza a tu ritmo y guarda lo que quieras llevar contigo.</SheetDescription>
-        {resources.map((resource) => {
+        {conPestanas && (
+          <div className="sx-resource-tabs" role="tablist" aria-label="Fichas para repasar">
+            {resources.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                role="tab"
+                aria-selected={r.id === activa}
+                onClick={() => setElegida(r.id)}
+              >
+                {r.titulo}
+              </button>
+            ))}
+          </div>
+        )}
+        {visibles.map((resource) => {
           const Icon = icons[resource.tipo]
           const embed = resource.tipo === 'video' ? youtubeEmbedUrl(resource.url) : null
           return (
-            <Collapsible className="sx-resource" key={resource.id} defaultOpen={resources.length === 1}>
+            <Collapsible className="sx-resource" key={resource.id} defaultOpen={visibles.length === 1}>
               <CollapsibleTrigger asChild>
                 <button type="button" className="sx-resource-summary">
                   <Icon size={18} />

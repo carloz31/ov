@@ -679,3 +679,69 @@
   color: #3f51b5;
   border-color: #c9d1f2;
 }
+
+/* F04b: cierres de la batalla del servidor. */
+.sx-root .sx-challenge-close {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 12px;
+}
+.sx-root .sx-challenge-emblem {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: 2px solid var(--sx-gold);
+  color: var(--sx-gold);
+  background: color-mix(in srgb, var(--sx-gold) 14%, transparent);
+}
+.sx-root .sx-challenge-emblem.is-muted {
+  border-color: var(--muted-foreground);
+  color: var(--muted-foreground);
+  background: color-mix(in srgb, var(--muted-foreground) 12%, transparent);
+  filter: grayscale(1);
+}
+.sx-root .sx-challenge-emblem.is-enemy {
+  overflow: hidden;
+  background: var(--sx-night-muted, transparent);
+}
+.sx-root .sx-challenge-emblem.is-enemy img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 1;
+}
+.sx-root .sx-challenge-close > :is(.sx-finish-medals, .sx-finish-backpack, .sx-finish-extras) {
+  width: 100%;
+  text-align: left;
+}
+.sx-root .sx-challenge-continue {
+  width: 100%;
+  justify-content: center;
+}
+.sx-root .sx-check-source {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+.sx-root .sx-resource-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.sx-root .sx-resource-tabs button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--sx-gold);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.sx-root .sx-resource-tabs button[aria-selected='true'] {
+  background: var(--sx-gold);
+  color: var(--background);
+}

@@ -28,6 +28,8 @@ export function ChallengePlayer({
     closeButton,
     sheets,
     victory,
+    repasoConPestanas,
+    salida,
   } = model
   return (
     <div
@@ -58,7 +60,9 @@ export function ChallengePlayer({
       {stage !== 'battle' && (
         <ResourceSheet
           open={resourcesOpen}
-          ids={stage === 'result' && victory ? (c.recompensa.recursoIds ?? []) : sheets}
+          ids={stage === 'result' && victory && !repasoConPestanas ? (c.recompensa.recursoIds ?? []) : sheets}
+          pestanas={repasoConPestanas}
+          inicial={sheets[0]}
           onClose={() => setResourcesOpen(false)}
         />
       )}
@@ -72,7 +76,7 @@ export function ChallengePlayer({
           }}
         >
           <ShieldCheck className="sx-exit-icon" size={48} />
-          <DialogTitle>¿Quieres volver a la ciudad?</DialogTitle>
+          <DialogTitle>{salida.titulo}</DialogTitle>
           <DialogDescription>
             Este intento no se guardará. Al volver empezarás desde el inicio del desafío.
           </DialogDescription>
@@ -81,7 +85,7 @@ export function ChallengePlayer({
               Seguir en el desafío
             </button>
             <button type="button" className="sx-primary-button" onClick={onClose}>
-              Volver a la ciudad
+              {salida.accion}
             </button>
           </div>
         </DialogContent>

@@ -28,3 +28,14 @@ export const respuestaBatalla = (pregunta: string, opcion: string): RespuestaBat
   pregunta,
   opcion: Number(opcion),
 })
+
+// Orden del repaso tras perder: primero la ficha con más preguntas falladas en el intento; si empatan, la
+// de la primera pregunta fallada. Las fichas sin fallos quedan después, en su orden. `fallos` es la ficha
+// de cada pregunta fallada, en el orden en que se fallaron.
+export function ordenFichasRepaso(fichas: string[], fallos: string[]): string[] {
+  const errores = (f: string) => fallos.filter((x) => x === f).length
+  const primero = (f: string) => (fallos.includes(f) ? fallos.indexOf(f) : Infinity)
+  return [...fichas].sort(
+    (a, b) => errores(b) - errores(a) || primero(a) - primero(b) || fichas.indexOf(a) - fichas.indexOf(b),
+  )
+}
