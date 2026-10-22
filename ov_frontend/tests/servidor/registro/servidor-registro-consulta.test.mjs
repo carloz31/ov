@@ -49,7 +49,6 @@ test('abre en la primera consigna, sin diálogos, con la consolidada y la pista 
   })
   assert.deepEqual(copia(podio.props.consulta), {
     pista: porAmpliar.items_por_ampliar[0].pista,
-    editable: true,
     original: consolidadaDe('t-val-orden'),
     opcionesOriginales: [{ codigo: 'CREAR' }, { codigo: 'LIBERTAD' }, { codigo: 'ESTABILIDAD' }],
     ordenada: true,
@@ -167,31 +166,41 @@ test('volver a la consolidada deshace el cambio; «Anterior» conserva lo escrit
   player.unmount()
 })
 
-test('un ítem no obligatorio sin responder se muestra con el texto vacío y sin poder editarse', async () => {
+test('un ítem no obligatorio en blanco se lee vacío, con «Modificar», y su primer texto se entrega como edición', async () => {
   // DATO DE PRUEBA: t-val-breve opcional y entregado sin texto.
   const registro = copia(porAmpliar)
   Object.assign(
     registro.respuestas.find((r) => r.item === 't-val-breve'),
     { texto_consolidado: null },
   )
-  const { app, items } = await iniciar({ actividad: 't-valores', registro })
+  const { app, items } = await iniciar({ actividad: 't-valores', registro, editar: edicionCerrada })
   items.find((i) => i.codigo === 't-val-breve').obligatorio = false
   const player = await abrir(app, 't-valores')
   const ultima = await recorrer(player)
   assert.deepEqual(copia(ultima.props.consulta), {
-    editable: false,
     original: '',
     opcionesOriginales: [],
     ordenada: false,
     cambiado: false,
     otrosCambios: false,
   })
+  const { anotarCambio, edicionesDe } = app.load('src/features/activities/lib/edicionRegistro.ts')
+  const primera = anotarCambio({}, registro, ultima.props.item, 'DATO DE PRUEBA: mi primera respuesta', [])
+  assert.deepEqual(copia(edicionesDe(primera)), [
+    { item: 't-val-breve', texto: 'DATO DE PRUEBA: mi primera respuesta' },
+  ])
+  ultima.props.onGuardar('DATO DE PRUEBA: mi primera respuesta', [])
+  await esperar()
+  assert.deepEqual(copia(app.requests.find((r) => r.url.endsWith('/registro/editar')).body.items), [
+    { item: 't-val-breve', texto: 'DATO DE PRUEBA: mi primera respuesta' },
+  ])
   player.unmount()
   const tree = app.mount(ultima.type, ultima.props).render()
   const lectura = elementos(tree, (e) => e.type?.name === 'RespuestaConsulta')[0]
   assert.equal(lectura.props.texto, '')
-  assert.equal(lectura.props.onModificar, undefined)
-  assert.equal(elementos(tree, (e) => e.type?.name === 'VolverAlMapa').length, 1)
+  assert.equal(typeof lectura.props.onModificar, 'function')
+  const vista = app.mount(lectura.type, lectura.props).render()
+  assert.equal(elementos(vista, (e) => e.type === 'blockquote').length, 0)
 })
 
 test('la elección guiada de t-expectativas se consulta con sus tarjetas, marcadas y sin poder cambiarlas', async () => {

@@ -3,7 +3,8 @@
 Los textos son DATO DE PRUEBA; las marcas (`[vaga]`, `[falla]`…) las interpreta el evaluador falso.
 """
 
-from sqlalchemy import func, select
+import pytest
+from sqlalchemy import func, select, update
 
 from app import models as m
 from soporte_ruta import FECHA, actividades, avanzar, pedir
@@ -315,3 +316,54 @@ def test_cambiar_la_eleccion_exige_reescribir_y_se_valida_contra_la_lista(client
     edicion = editar(cliente, t_exp_ruta='DATO DE PRUEBA: solo cambio el texto')
     assert next(r for r in edicion['respuestas'] if r['item'] == 't-exp-ruta')['opciones_elegidas'] == [
         {'codigo': 'INSTITUTO'}]
+
+
+# --- Primera respuesta de un ítem que quedó en blanco (F02) --------------------------------
+
+def espera_opcional(aplicacion):
+    """DATO DE PRUEBA: `t-exp-espera` no obligatorio, para entregarlo en blanco."""
+    with aplicacion.state.fabrica_sesiones.begin() as sesion:
+        sesion.execute(update(m.ItemRegistro).where(m.ItemRegistro.codigo == 't-exp-espera').values(obligatorio=False))
+
+
+def entregar_sin_espera(cliente, con_borrador):
+    avanzar(cliente, 't-cierre-inicio')
+    for item, opciones in OPCIONES.items():
+        if item == 't-exp-espera' and not con_borrador:
+            continue
+        texto = '' if item == 't-exp-espera' else ADECUADO
+        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
+              {**accion(), 'item': item, 'texto': texto, 'opciones': opciones})
+    return pedir(cliente, 'POST', '/acciones/registro/entregar', accion())
+
+
+@pytest.mark.parametrize('con_borrador', [False, True])
+def test_un_item_en_blanco_recibe_su_primera_respuesta_al_editar(cliente, aplicacion, sesion, con_borrador):
+    espera_opcional(aplicacion)
+    entregar_sin_espera(cliente, con_borrador)
+    assert consultar(cliente)['estado'] == 'COMPLETADA'
+    edicion = editar(cliente, t_exp_espera='DATO DE PRUEBA: algo [vaga]')
+    # Se evalúa como cualquier edición y pasa por el seguimiento.
+    assert pendiente(edicion) == ('t-exp-espera', 1)
+    responder(cliente, 't-exp-espera', 'DATO DE PRUEBA: esperan que estudie, porque confían en mí')
+    respuesta = respuesta_bd(sesion, 't-exp-espera')
+    assert respuesta.estado == 'FINAL' and respuesta.intento == 2
+    assert respuesta.clasificacion_inicial == 'POCO_DESARROLLADA'
+    assert 'esperan que estudie' in consolidadas(consultar(cliente))['t-exp-espera']
+    referencias = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')['referencias']
+    assert next(r for r in referencias if r['codigo'] == 't-ref-espera')['estado'] == 'DISPONIBLE'
+
+
+def test_la_primera_respuesta_de_una_eleccion_en_blanco_exige_la_minima(cliente, aplicacion):
+    with aplicacion.state.fabrica_sesiones.begin() as s:
+        s.execute(update(m.ItemRegistro).where(m.ItemRegistro.codigo == 't-exp-apoyo').values(obligatorio=False))
+    avanzar(cliente, 't-cierre-inicio')
+    for item in ('t-exp-ruta', 't-exp-espera'):
+        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
+              {**accion(), 'item': item, 'texto': ADECUADO, 'opciones': OPCIONES[item]})
+    pedir(cliente, 'POST', '/acciones/registro/entregar', accion())
+    editar(cliente, t_exp_apoyo='DATO DE PRUEBA: mi familia me apoya', esperado=422)
+    edicion = pedir(cliente, 'POST', '/acciones/registro/editar', {**accion(), 'items': [
+        {'item': 't-exp-apoyo', 'texto': 'DATO DE PRUEBA: mi familia me apoya', 'opciones': [{'codigo': 'FAMILIA'}]}]})
+    assert next(r for r in edicion['respuestas'] if r['item'] == 't-exp-apoyo')['opciones_elegidas'] == [
+        {'codigo': 'FAMILIA'}]

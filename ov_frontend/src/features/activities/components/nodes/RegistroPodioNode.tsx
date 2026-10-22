@@ -112,7 +112,7 @@ export function RegistroPodioNode({
       {lectura ? (
         <RespuestaConsulta
           texto={text}
-          onModificar={consulta?.editable ? () => setModificando(true) : undefined}
+          onModificar={() => setModificando(true)}
         />
       ) : (
         completo(puestos) &&

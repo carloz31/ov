@@ -330,7 +330,8 @@ def exigir_cerrado(registro):
 @usar_contexto
 def preparar_edicion(sesion, entrada):
     """Un nuevo intento con los ítems cuyo texto cambió. Desde F02 la elección también se edita: si cambia, el
-    texto debe cambiar con ella (la justificación se reescribe) y se evalúa con la elección nueva."""
+    texto debe cambiar con ella (la justificación se reescribe) y se evalúa con la elección nueva. Un ítem no
+    obligatorio que quedó en blanco recibe aquí su primera respuesta."""
     cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
     if not entrada.items:
         raise invalida("Indica al menos un ítem para editar")
@@ -352,7 +353,12 @@ def preparar_edicion(sesion, entrada):
             continue
         respuesta = registro.respuestas.get(item.id)
         if respuesta is None or respuesta.clasificacion_inicial is None:
-            raise invalida("Solo se edita un ítem entregado")
+            # Primera respuesta de un ítem que quedó en blanco (sin fila o con un borrador vacío): se evalúa
+            # como en la entrega, con su elección (si la tiene, se exige la mínima).
+            elegidas = validar_eleccion(item, opciones[item.id], edicion.opciones or [], True)
+            elecciones[item.codigo] = elegidas
+            por_evaluar.append(item_por_evaluar(sesion, item, opciones[item.id], elegidas, edicion.texto))
+            continue
         elegidas = respuesta.opciones_elegidas if edicion.opciones is None else validar_eleccion(
             item, opciones[item.id], edicion.opciones, True)
         cambio_eleccion = elegidas != respuesta.opciones_elegidas
@@ -393,14 +399,21 @@ def persistir_entrega(sesion, entrada, lectura, evaluaciones):
         evaluacion = evaluaciones.get(item.codigo)
         if evaluacion is None:
             continue
-        respuesta = registro.respuestas[item.id]
-        valores = dict(estado=EstadoRespuestaRegistro.FINAL,
-                       actualizada_en=marca_actualizacion(respuesta.actualizada_en), intento=lectura.intento, texto_inicial=textos[item.codigo],
+        respuesta = registro.respuestas.get(item.id)
+        valores = dict(estado=EstadoRespuestaRegistro.FINAL, intento=lectura.intento, texto_inicial=textos[item.codigo],
                        texto_consolidado=textos[item.codigo], opciones_elegidas=lectura.elecciones[item.codigo])
-        if lectura.intento == 1:
+        # La primera evaluación de un ítem es su clasificación inicial: en la entrega o, para uno que quedó en
+        # blanco, en la edición que le da su primera respuesta (F02).
+        if respuesta is None or respuesta.clasificacion_inicial is None:
             valores['clasificacion_inicial'] = evaluacion.clasificacion
-        comprobar_cambio(sesion, respuesta, valores)
-        insertar_evaluacion(sesion, respuesta.id, len(registro.evaluaciones.get(respuesta.id, ())) + 1, evaluacion,
+        if respuesta is None:
+            respuesta_id = sesion.execute(insert(RespuestaRegistro.__table__).returning(RespuestaRegistro.id), dict(
+                progreso_id=registro.progreso.id, item_registro_id=item.id, creada_en=fecha,
+                actualizada_en=marca_actualizacion(), ampliada=False, **valores)).scalar_one()
+        else:
+            respuesta_id = respuesta.id
+            comprobar_cambio(sesion, respuesta, dict(valores, actualizada_en=marca_actualizacion(respuesta.actualizada_en)))
+        insertar_evaluacion(sesion, respuesta_id, len(registro.evaluaciones.get(respuesta_id, ())) + 1, evaluacion,
                             fecha, lectura.elecciones[item.codigo])
     return avanzar(sesion, cuenta, actividad, items, fecha, intento=lectura.intento)
 

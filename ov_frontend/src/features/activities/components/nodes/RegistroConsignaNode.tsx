@@ -74,13 +74,12 @@ export function RegistroConsignaNode({
   const campo = lectura ? (
     <RespuestaConsulta
       texto={text}
-      onModificar={consulta?.editable ? () => setModificando(true) : undefined}
+      onModificar={() => setModificando(true)}
     />
   ) : (
     <textarea
       className="sx-submission-textarea"
       value={text}
-      disabled={consulta && !consulta.editable}
       placeholder={node.placeholder}
       aria-label={eleccion ? item.nombre : undefined}
       onChange={(event) => setText(event.target.value)}

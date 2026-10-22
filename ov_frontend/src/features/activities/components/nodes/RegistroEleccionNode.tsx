@@ -125,7 +125,7 @@ export function RegistroEleccionNode({
       {lectura ? (
         <RespuestaConsulta
           texto={text}
-          onModificar={consulta?.editable ? () => setModificando(true) : undefined}
+          onModificar={() => setModificando(true)}
         />
       ) : (
         seleccion.length > 0 && (

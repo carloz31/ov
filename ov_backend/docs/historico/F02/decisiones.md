@@ -21,3 +21,7 @@
 - **La elección se edita (cambia la decisión de B05).** `ItemEdicion` acepta `opciones`; se valida contra la lista como al entregar y, si cambia, el texto debe cambiar (422 «Si cambias tu elección, reescribe tu respuesta»). Sin `opciones`, se conserva.
 - **Consulta en modo lectura.** Elección marcada y texto como cita con «Modificar»; los cambios viven en memoria y se entregan juntos. La comparación de elecciones sin orden ignora el orden.
 - **Burbuja de Lumi en la consulta.** El eco y la pista van en una sola burbuja (primero el recuerdo, luego «Aquí podrías contar un poco más: {pista}»); sin ninguno, solo el avatar.
+
+## Ajuste posterior: primera respuesta de un ítem en blanco
+
+- **Editar da su primera respuesta a un ítem no obligatorio que quedó en blanco, sin cambio de modelo.** Se crea la fila de `respuesta_registro` (o se completa el borrador vacío) en el intento de la edición; su primera evaluación es su `clasificacion_inicial`, la elección se valida con la mínima y pasa por el seguimiento como cualquier edición. En la consulta, todo ítem tiene «Modificar»; el que quedó en blanco se lee vacío.

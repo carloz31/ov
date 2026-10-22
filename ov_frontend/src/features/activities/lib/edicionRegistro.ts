@@ -13,8 +13,6 @@ import { reflectionCopy } from '@/data/activities/reflectionConfig'
 // cambia la elección, la justificación se reescribe.
 export type ConsultaRegistro = {
   pista?: string
-  // Solo se edita un ítem entregado: uno no obligatorio que quedó sin responder no tiene consolidada.
-  editable: boolean
   original: string
   opcionesOriginales: OpcionElegida[]
   // Sin orden, elegir lo mismo en otro orden no es un cambio.
@@ -58,7 +56,6 @@ export function consultaDe(
   const original = consolidada(respuesta)
   return {
     pista: registro.items_por_ampliar?.find((p) => p.item === item)?.pista,
-    editable: !!original.trim(),
     original,
     opcionesOriginales: respuesta?.opciones_elegidas ?? [],
     ordenada: !!definido.eleccion?.ordenada,
@@ -77,9 +74,10 @@ export function anotarCambio(
 ) {
   const item = definido.codigo
   const resto = Object.fromEntries(Object.entries(cambios).filter(([codigo]) => codigo !== item))
-  const { editable, original, opcionesOriginales, ordenada } = consultaDe(registro, definido, cambios)
+  const { original, opcionesOriginales, ordenada } = consultaDe(registro, definido, cambios)
   const eleccionCambiada = !mismaEleccion(opciones, opcionesOriginales, ordenada)
-  return editable && texto.trim() && (texto !== original || eleccionCambiada)
+  // Un ítem que quedó en blanco también se modifica: su primer texto es un cambio (F02).
+  return texto.trim() && (texto !== original || eleccionCambiada)
     ? { ...resto, [item]: { texto, opciones, eleccionCambiada } }
     : resto
 }
@@ -91,8 +89,11 @@ export function edicionesDe(cambios: Record<string, CambioRegistro>): ItemEdicio
   )
 }
 
-// Si cambia la elección, la justificación se reescribe (el servidor responde 422 si no).
+// Si cambia la elección, la justificación se reescribe (el servidor responde 422 si no). Un ítem que quedó en
+// blanco necesita su texto para guardarse.
 export function errorConsulta(consulta: ConsultaRegistro, texto: string, opciones: OpcionElegida[]) {
+  if (!consulta.original.trim() && opciones.length && !texto.trim())
+    return 'Escribe tu respuesta para guardar lo que elegiste.'
   return !mismaEleccion(opciones, consulta.opcionesOriginales, consulta.ordenada) &&
     texto.trim() === consulta.original.trim()
     ? 'Cambiaste tu elección: reescribe tu respuesta para que la explique.'
@@ -111,7 +112,6 @@ export function pieConsulta(
 ) {
   const propio =
     modificando &&
-    consulta.editable &&
     !!texto.trim() &&
     (texto.trim() !== consulta.original ||
       !mismaEleccion(opciones, consulta.opcionesOriginales, consulta.ordenada))
