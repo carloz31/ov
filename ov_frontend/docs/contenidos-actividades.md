@@ -13,6 +13,9 @@ Toda actividad, de cualquier rol, es el mismo objeto: metadatos, una lista orden
 | `instrumento` | CUESTIONARIO | `dialogo`, `eleccion`, `item`, `resultado` |
 
 - `audiencia`: `estudiante` (inmersivo, por defecto) o `apoderado` (sobrio). El apoderado solo admite `encuentro`.
+- **Contenido solo de posición:** un JSON con `nodos: []` dibuja el punto en el mapa («Contenido pendiente» si está disponible), pero no se puede abrir. En el portal del apoderado, la actividad se lista sin poder iniciarse.
+- **Cuestionario del servidor:** en un `instrumento`, un nodo `item` con `itemId: "plantilla"` se repite con los ítems del servidor (`GET /actividades/{a}/items`), en su orden y con su escala, entre los diálogos del contenido. Así se responde `t_partida`, sin nodo `resultado`.
+- **Textos en api:** título, descripción, duración y bloque los da el servidor; los campos del JSON (`titulo`, `duracionEstimadaMin`, `bloque`…) quedan porque los exige el tipo `Actividad` y los usa el modo local.
 - `presentacion` (solo instrumentos): `narrativa` dibuja todos los nodos; `directa`, solo `item` y `resultado`.
 - `plantilla` (solo registros): `secuencial` (una consigna tras otra) o `matriz` (celdas `columna.fila`; sirve para línea de tiempo o FODA).
 - `mapa` (opcional): `{ x, y, icono, origen? }` para dibujar la actividad como punto del mapa. Sin `mapa`, no se dibuja.

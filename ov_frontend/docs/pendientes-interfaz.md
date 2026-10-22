@@ -19,7 +19,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - mostrar solo el nombre del hijo en la cabecera del portal del apoderado;
   - no mostrarlos hasta tener las rutas propias de la orientadora.
 - **Si no se muestra:** el portal del apoderado sigue mostrando hijos de demostración en modo `api`, aunque sus actividades sí son de la cuenta con sesión.
-- **Estado:** pendiente; B17 no toca esas vistas.
+- **Estado:** en parte: el portal del apoderado ya muestra al hijo desde `familia` (F00); `hijos` de la sesión y los salones de la orientadora siguen sin vista (F08, F10).
 
 ## 2026-10-15 · B12 · Familia: conversaciones, cartas y ruta del apoderado
 
@@ -184,7 +184,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** inicio y lista de actividades del portal. No tienen aviso de carga ni de error del servidor.
 - **Opciones:** incorporar un aviso de carga y error en esas vistas; conservar el contenido previo con un aviso al fallar una actualización; mantener la presentación actual hasta definirla.
 - **Si no se muestra:** durante la carga se ve «0 de 0 actividades» y, si falla el ingreso o la consulta, la lista queda vacía. El error llega al hook. El detalle devuelve `null` durante la carga para evitar un candado prematuro; el reproductor sí usa su aviso y reintento existentes al fallar un guardado.
-- **Estado:** pendiente de diseño del aviso del portal; no se implementa ninguna opción. Verificado en navegador el estado transitorio de la lista.
+- **Estado:** resuelto en F00: `PantallaCargaPortal` en la carga inicial (actividades y familia) y en su error, con «Reintentar» y «Volver a ingresar».
 
 ## 2026-10-09 · AP-F3 · Nombre del apoderado
 
@@ -192,7 +192,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** saludo y perfil del portal, que hoy usan `parentProfile.name` de demostración.
 - **Opciones:** conectar el nombre de la cuenta seleccionada al saludo y perfil existentes; definir un nombre preferido editable en su iteración; conservar explícitamente el perfil de demostración.
 - **Si no se muestra:** ingresar con `apo-rosa` sigue mostrando «José», aunque las actividades sí pertenecen a `apo-rosa`.
-- **Estado:** pendiente de conectar la identidad real; no se conecta el nombre ni se solicita resumen adicional.
+- **Estado:** resuelto en F00: el saludo y el perfil usan el nombre de la sesión (`useParentProfile`); el parentesco sigue siendo de demostración.
 
 ## 2026-10-09 · AP-F3 · Hijos y progreso del hijo
 
@@ -200,7 +200,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** «Mis hijos», avance y resultados del hijo en el inicio y sus detalles.
 - **Opciones:** definir una consulta del dominio familiar y conectar las vistas actuales; integrar después selección y progreso de hijos en su iteración; conservar la demostración hasta disponer del contrato.
 - **Si no se muestra:** el portal sigue mostrando a Gabriela y su progreso de demostración; completar actividades del apoderado no convierte esos datos en resultados reales de `est-ana`.
-- **Estado:** pendiente del contrato familiar; no se agrega consulta ni se deduce el vínculo desde las cuentas.
+- **Estado:** resuelto en parte en F00: en api, el resumen usa `GET /cuentas/{c}/familia` (nombre, avance del hijo y avance propio); los resultados del hijo quedan para F08.
 
 ## 2026-10-09 · AP-F3 · Evento de bloque FAMILIA completado
 
@@ -223,14 +223,11 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-10-08 · B3 · Actividad de prueba sin contenido
 
-- **Dato:** `ActividadCuenta.contenido = "sin_contenido_prueba"`, código `cdd-sin-contenido`, en `GET /cuentas/{c}/actividades` con el conjunto `piloto`.
-- **Dónde se mostraría:** mapa de la Ciudad; no existe contenido narrativo ni posición para esta actividad deliberada de prueba.
-- **Opciones:**
-  1. Mantenerla como prueba de contenido ausente, descartada por el mapa según §7.4.
-  2. Definir posteriormente un contenido y su presentación en el mapa.
-  3. Retirarla del conjunto cuando deje de necesitarse esa prueba.
-- **Si no se muestra:** desde F3 se descarta y se avisa en desarrollo según D3; su disponibilidad sigue en la API y queda cubierta por los fixtures. B3 solo exporta los datos.
-- **Estado:** pendiente de interfaz; la ausencia del contenido es intencional en este piloto.
+- **Dato:** el conjunto `piloto` y su actividad `cdd-sin-contenido` ya no existen (B00).
+- **Dónde se mostraría:** —
+- **Opciones:** —
+- **Si no se muestra:** en `ruta`, una actividad sin contenido en el front se descarta y se avisa en desarrollo (`avisarContenidoFaltante`); la prueba `servidor-mapa` lo cubre con un contenido inexistente inyectado.
+- **Estado:** cerrado en F00.
 
 ## 2026-10-08 · B3 · Texto de la llave con Ciudad abierta al segundo paso
 
@@ -241,7 +238,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   2. Mostrar la condición real de apertura desde el progreso del servidor.
   3. Conservar el texto actual durante las pruebas del piloto.
 - **Si no se muestra:** F3 muestra correctamente la llave disponible, confirmado en F4, pero el texto describe una condición distinta en piloto. Se conserva sin cambios según §8.
-- **Estado:** pendiente.
+- **Estado:** resuelto en F00: en api ya no hay punto de llave; la Ciudad cerrada se explica desde el selector Camino/Ciudad.
 
 ## 2026-10-08 · B3 · Revelado sin animación
 
@@ -362,7 +359,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** candado del mapa, lista de actividades del estudiante y del apoderado.
 - **Opciones:** mostrar el `mensaje` junto al candado; mostrar además la condición que falta; conservar los textos actuales del front.
 - **Si no se muestra:** lo bloqueado sigue con los textos locales del front; el servidor ya explica qué falta.
-- **Estado:** pendiente (lote F).
+- **Estado:** resuelto en F00: el drawer y «Actividad bloqueada» del apoderado muestran `bloqueo[0].mensaje` (de la actividad o de su bloque), y la Ciudad cerrada lo explica Lumi desde el selector.
 
 ## 2026-10-13 · B01 · Requerida, duración y descripción de actividades
 
@@ -370,7 +367,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** tarjeta o punto de cada actividad en el mapa y en el panel.
 - **Opciones:** etiqueta «opcional» y duración en la tarjeta; solo excluir opcionales del progreso del bloque; no mostrarlas todavía.
 - **Si no se muestra:** las opcionales cuentan en el progreso del front aunque el servidor no las exige para cerrar el bloque.
-- **Estado:** pendiente (lote F).
+- **Estado:** resuelto en F00: insignia «Opcional» en el drawer y « · opcional» en el panel; tiempo, descripción y etiqueta del servidor; el avance y los tramos cuentan solo las requeridas; las opcionales van fuera del camino.
 
 ## 2026-10-13 · B01 · Secciones del perfil
 
@@ -378,7 +375,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** menú y perfil del estudiante (accesos a diario, check-in, catálogo, planes y familia) y portal del apoderado (conversaciones).
 - **Opciones:** candado con mensaje en cada acceso; ocultar las secciones bloqueadas; mantener los accesos actuales hasta su lote F.
 - **Si no se muestra:** el front no sabe qué secciones están abiertas; en modo api, escribir sin la sección abierta recibe 409.
-- **Estado:** pendiente (lote F).
+- **Estado:** resuelto en F00 para el estudiante: candado y ayuda de Lumi en los accesos, y tarjeta de bloqueo por URL. CONVERSACIONES del apoderado queda para F08.
 
 ## 2026-10-13 · B01 · Fichas del apoderado
 

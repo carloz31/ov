@@ -88,6 +88,9 @@ src/
 - No cambies claves ni formatos de `localStorage`, `sessionStorage` o IndexedDB sin una migración que conserve lo guardado (claves en `docs/origen-de-datos.md`).
 - Para la red basta `fetch`. El proxy de desarrollo `/api` apunta a `http://127.0.0.1:8000`.
 - **Sesión (B17):** la sesión vive en `store/accesoStore.ts` (`ov.acceso.v1`, `localStorage`). La cuenta activa en api sale de ahí, nunca de una lista de cuentas. `cliente.ts` no guarda estado: `main.tsx` le entrega el token y qué hacer ante un 401 con `conectarAccesoApi()`. Las guardas por portal están en `routes/GuardaAcceso.tsx`. En modo local se ingresa con los usuarios de `data/demo/usuariosPrueba.ts` y nunca se llama al servidor.
+- **El modo se decide al llamar, nunca al cargar un módulo.** `main.tsx` configura `modoApi` después de importar los módulos: una elección como `const useX = modoApi ? a : b` queda siempre en local. Un hook que depende del modo usa siempre los mismos hooks internos y ramifica adentro. Los hooks que usan los componentes del arnés de `tests/local` no pueden usar efectos ni contexto en local.
+- **En api, los textos de una actividad salen del servidor (F00):** título, tipo, duración, descripción, nombre del bloque, `requerida` y el mensaje de bloqueo. Del JSON de contenido solo se usan los nodos y la posición del mapa (`x`, `y`, `icono`, `origen`). El texto de Lumi ante algo cerrado sale de `textosBloqueo`, seguido del mensaje del servidor.
+- **Excepciones al modo local congelado**, aprobadas por el usuario: solo cambios visuales que no alteran textos, orden ni momento. Hoy es una: los avisos del estudiante como toasts (`components/student/AvisoToast`, 6 s en lugar de 7).
 - **Seguridad del token:** como el token está en `localStorage`, no se usa HTML crudo (`dangerouslySetInnerHTML`) ni se cargan scripts de terceros.
 
 ## Interfaz
@@ -116,7 +119,7 @@ tests/
   local/        actividades/, aventura/, casos/, perfil/, portales/   (modo local)
   servidor/     acceso/, actividades/, mapa/, instrumentos/, logros/, perfil/  (modo api, con fixtures)
   despliegue/
-  fixtures/servidor/   generados por ov_backend; no se editan a mano; de ruta/ (ruta-*) solo tests/servidor/acceso usa ruta-sesion-*
+  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00)
   soporte/             ayudantes compartidos
 ```
 

@@ -18,17 +18,35 @@ De dónde sale cada dato del front. Las rutas parten de `src/`. Si una tarea mue
 | `services/api/logros.ts` | `obtenerLogros` | `GET /cuentas/{c}/logros` |
 | `services/api/acciones.ts` | `ingresar`, `completarActividad`, `responderItems` | `POST /acciones/ingresar`, `/completar-actividad`, `/responder-items` |
 | `services/api/instrumentos.ts` | `obtenerItems`, `obtenerRespuestas`, `obtenerAvance`, `obtenerResultado` | `GET /actividades/{a}/items`, `/cuentas/{c}/actividades/{a}/respuestas`, `/cuentas/{c}/instrumentos`, `/cuentas/{c}/instrumentos/{i}/resultado` |
+| `services/api/secciones.ts` | `obtenerSecciones` | `GET /cuentas/{c}/secciones` |
+| `services/api/familia.ts` | `obtenerFamilia` | `GET /cuentas/{c}/familia` |
 | `services/api/desarrollo.ts` | `reiniciar` | `POST /desarrollo/reiniciar` |
 
-Con eso el servidor decide: disponibilidad y finalización de actividades, acceso a la Ciudad, respuestas de Mara, resultado RIASEC (dimensiones con su descripción, código de interés, coincidencias y carreras), fichas obtenidas, insignias, nivel y avisos de desbloqueo.
+Con eso el servidor decide: disponibilidad y finalización de actividades, acceso a la Ciudad, secciones del perfil abiertas (diario, check-in, catálogo, planes, familia), respuestas de Mara, resultado RIASEC (dimensiones con su descripción, código de interés, coincidencias y carreras), fichas obtenidas, insignias, nivel y avisos de desbloqueo.
 
-**Actividades del apoderado.** En api, bloque, lista, orden, títulos, disponibilidad, completitud y progreso vienen de `GET /cuentas/{c}/actividades`, para el espacio `PORTAL_FAMILIA`. Los nodos siguen en los JSON del front, encontrados por `contenido`; una actividad invisible o sin contenido se descarta y no cuenta en el progreso. Los requisitos del JSON solo deciden candados en local.
+**Textos de cada actividad (F00).** En api, todo lo que muestran el drawer, la lista del panel, el letrero de tramo, el encabezado del reproductor y el cierre sale del servidor:
+- el título;
+- la descripción, que si llega nula no se muestra;
+- el tipo y la duración, que forman la etiqueta «Test · 10 min» y no muestran tiempo si llega nulo;
+- el nombre del bloque, que hace de región y de letrero;
+- si es opcional;
+- el mensaje de bloqueo (`bloqueo[0].mensaje` de la actividad o de su bloque).
 
-`store/servidor/apoderado.ts` mantiene una sesión independiente de la del estudiante. Al entrar pide `/cuentas`, elige la cuenta `APODERADO` que coincide con el usuario ingresado (o la primera por código), registra `/acciones/ingresar` y consulta sus actividades. La cuenta elegida vive en memoria y se vuelve a elegir al recargar; no se crea otra clave del navegador. Al terminar, envía `/acciones/completar-actividad` y vuelve a consultar actividades antes de mostrar el cierre. Un error conserva el último paso para reintentar.
+Del JSON solo se usan los nodos y la posición. Lo que dice Lumi ante algo cerrado sale de `textosBloqueo` (`data/content/guideTexts.ts`), seguido del mensaje del servidor.
 
-**Estado sincronizado (`store/servidor/`).** `sesion.ts`, `secciones.ts`, `avisos.ts`, `resultado.ts`, `consultas.ts`, `refresco.ts`, `operaciones.ts` y `cuenta.ts`. Cada dominio es una sección en memoria con `datos`, `estado` (`sin_cargar`, `cargando`, `listo`, `vencido`, `error`) y `error`. Se descartan respuestas de otra cuenta o sesión y no se duplican pedidos en curso. Qué se pide y cuándo: `ov_backend/docs/sistema/integracion.md`.
+**Actividades del apoderado.** En api, bloque, lista, orden, títulos, descripción (el subtítulo de la tarjeta), disponibilidad, mensaje de bloqueo, completitud y progreso vienen de `GET /cuentas/{c}/actividades`, para el espacio `PORTAL_FAMILIA`. Los nodos siguen en los JSON del front, encontrados por `contenido`; una actividad invisible o sin contenido se descarta y no cuenta en el progreso, y un contenido sin nodos (`t_apo_carta` hasta F08) se lista pero no se inicia. Los requisitos del JSON solo deciden candados en local.
 
-**Mapa en modo api.** La lista y el orden de los puntos salen de `actividades`; la posición, la etiqueta y el ícono, del campo `mapa` del JSON de contenido. Las actividades consecutivas con el mismo contenido forman un punto. Un contenido sin `mapa` no se dibuja y se anota en `pendientes-interfaz.md`. El modo local conserva su lista fija (`baseRoute`, `fieldMissions`).
+**Familia del apoderado (F00).** `GET /cuentas/{c}/familia` da el hijo vinculado (nombre y avance) y el avance propio hacia el diploma. Lo usan el resumen de «Mis hijos», «Mis actividades», el cierre de actividad, el detalle de cuestionario y el aviso de conversaciones. Se pide con la carga inicial del portal y otra vez al completar una actividad. Los resultados del hijo siguen pendientes de F08.
+
+`store/servidor/apoderado.ts` mantiene una sesión independiente de la del estudiante. Al entrar toma la cuenta `APODERADO` de la sesión, registra `/acciones/ingresar` y consulta sus actividades y su familia. La cuenta elegida vive en memoria y se vuelve a elegir al recargar; no se crea otra clave del navegador. Al terminar, envía `/acciones/completar-actividad` y vuelve a consultar actividades antes de mostrar el cierre. Un error conserva el último paso para reintentar.
+
+**Estado sincronizado (`store/servidor/`).** `sesion.ts`, `secciones.ts`, `avisos.ts`, `resultado.ts`, `consultas.ts`, `refresco.ts`, `operaciones.ts` y `cuenta.ts`. Cada dominio es una sección en memoria con `datos`, `estado` (`sin_cargar`, `cargando`, `listo`, `vencido`, `error`) y `error`. Se descartan respuestas de otra cuenta o sesión y no se duplican pedidos en curso. Las secciones del perfil (`secciones`) se piden al ingresar, junto con el resumen y las actividades, porque sus accesos se ven siempre en el panel. `porRevelar` guarda en memoria, sin tocar el navegador, las actividades que una acción desbloquea o vuelve visibles, para que el mapa las revele una por una. Qué se pide y cuándo: `ov_backend/docs/sistema/integracion.md`.
+
+**Mapa en modo api.** La lista y el orden de los puntos salen de `actividades`, y el Camino reúne los bloques del espacio `MISIONES_CAMPO`. La posición, el ícono y el origen de la línea de una opcional (`mapa.origen`) salen del JSON de contenido. Las actividades consecutivas con el mismo contenido forman un punto.
+- Un contenido sin `mapa` no se dibuja.
+- Un contenido sin nodos dibuja el punto como «Contenido pendiente».
+- Las opcionales con origen van fuera del camino, como las misiones adicionales.
+- El modo local conserva su lista fija (`baseRoute`, `fieldMissions`).
 
 **Resultados (libro de Helena).** En modo api, dimensiones, código, empate, perfil plano, coincidencias y carreras vienen del resultado remoto; no se calculan afinidades. Se completan con presentación del front:
 
@@ -72,7 +90,7 @@ El backend no interpreta el contenido narrativo.
 |---|---|
 | Perfiles, cuestionarios y planes ficticios (orientadora y apoderado) | `data/demo/studentProfiles.ts` |
 | Salones y personas de la orientadora | `features/counselor/data/counselorPortal.ts`, `features/counselor/data/exampleStudents.ts` |
-| Hijos y perfil del apoderado | `features/parent/data/parentPortal.ts` |
+| Hijos y perfil del apoderado (en api solo el parentesco y los resultados; el nombre, el hijo y su avance vienen del servidor) | `features/parent/data/parentPortal.ts` |
 | Comentarios, reacciones, aliados y nivel de investigación | `data/content/research.ts` (`interviewDetails` es la única definición; la orientadora la importa) |
 | Alias de salón, avisos, videos y lecturas de recursos | `data/content/adventure.ts` |
 | Entradas y check-ins de ejemplo | `data/content/journalPrompts.ts` |
@@ -101,7 +119,7 @@ Todas en `localStorage`, salvo donde se indica. No se cambian sin una migración
 
 En api, las claves `.api` guardan `por_cuenta[codigo]` y no se mezclan con el modo local ni entre cuentas. `ov.student-discovery.v1` guarda además `profileBadgesApi[cuenta]` y `revealedPagesApi[cuenta][calculado_en]`: revelar una página o elegir insignias es una preferencia local, no completa nada en el servidor. El navegador conserva borradores, nodo actual, comprobaciones, adjuntos, respuestas de la brújula, favoritos y planes.
 
-El apoderado conserva el formato de `ov.parent-missions.v1`: `accounts[apo-prototipo]` para local y `accounts[codigo]` (por ejemplo, `apo-rosa`) para api. `proyectarJourney` conserva nodo, intentos y elecciones al hidratar esa cuenta, pero fija su estado desde el servidor. La lista y el diploma en api usan la completitud remota. Hijos, resultados del hijo y nombre del apoderado siguen siendo demostración; sus pendientes están en `docs/pendientes-interfaz.md`.
+El apoderado conserva el formato de `ov.parent-missions.v1`: `accounts[apo-prototipo]` para local y `accounts[codigo]` (por ejemplo, `apo-rosa`) para api. `proyectarJourney` conserva nodo, intentos y elecciones al hidratar esa cuenta, pero fija su estado desde el servidor. La lista y el diploma en api usan la completitud remota. En api, el nombre del apoderado sale de la sesión, y el hijo y su avance, de `familia`. El parentesco y los resultados del hijo siguen siendo demostración; sus pendientes están en `docs/pendientes-interfaz.md`.
 
 ## 6. Recorrido de los datos
 

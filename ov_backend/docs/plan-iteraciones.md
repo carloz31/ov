@@ -331,14 +331,14 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 - **El backend se puede ajustar, pero declarado.** Si una pantalla necesita un dato que no existe (un campo, una lectura), el plan lo lista en **«Ajustes al backend»**. Si toca el modelo, el lote se marca **M** y sigue `/cambio-modelo` (migración, `ruta`, escenario, fixtures). Nunca dos **M** a la vez, tampoco con B13–B16.
 - **Contenidos de prueba.** Los `t_*.json` son mínimos: lo justo para recorrer la mecánica. El contenido real se carga después con la numeración de la ruta base.
 - **Pruebas.** Cada lote mueve su área de `tests/servidor/` a los `ruta-*` y, si cambia el contrato, regenera los fixtures en la misma tarea. Al cerrar F08 se retiran los fixtures de la raíz.
-- **Modo local congelado (desde F00).** `VITE_DATOS=local` conserva lo que hace hoy y no recibe funciones nuevas. Lo que agrega un lote F existe solo en `api`: el hook del dominio expone una bandera con nombre del dominio (`puedeEditarRegistro`, `muestraComparacion`) y en local la vista se comporta como antes. `tests/local/` no se amplía; solo debe seguir pasando.
+- **Modo local congelado (desde F00).** `VITE_DATOS=local` conserva lo que hace hoy y no recibe funciones nuevas. Lo que agrega un lote F existe solo en `api`: el hook del dominio expone una bandera con nombre del dominio (`puedeEditarRegistro`, `muestraComparacion`) y en local la vista se comporta como antes. `tests/local/` no se amplía; solo debe seguir pasando. Excepción: cambios solo visuales aprobados por el usuario, que no alteran textos, orden ni momento (F00: avisos como toasts).
 - **Pendientes.** Cada lote cierra (o reescribe) las entradas de `pendientes-interfaz.md` que le tocan.
 
 ### Tabla
 
 | Lote | Tema | HU | Tras | Cierra pendientes de | Pantallas que se adaptan |
 |---|---|---|---|---|---|
-| F00 | Base sobre `ruta` | 002, 025 (y recomprueba 004, 011, 013–015, 021, 073, 074) | B17 | B01 (×3), B3 llave, B17 nombre | Candado con mensaje; etiqueta opcional y duración; accesos a secciones |
+| F00 | Base sobre `ruta` · **Implementado** | 002, 025 (y recomprueba 004, 011, 013–015, 021, 073, 074) | B17 | B01 (×3), B3 llave, B17 nombre | Candado con mensaje; etiqueta opcional y duración; accesos a secciones |
 | F01 | Registros: elección, borradores, entrega y seguimiento | 006, 007, 010, 016 | F00 | B02, B03 | Reproductor de registro |
 | F02 | Registros: consulta, edición y eco | 008, 009 | F01 | B04, B05 | Consulta del registro (nueva); zona de eco |
 | F03 | Instrumentos y libro de Helena | 022–024, 027, 094, 095 | F02 | B06, B07, F5 recarga | Libro: Revelar, perfil plano, comparación partida–llegada |
@@ -357,7 +357,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 
 ### Qué hace cada lote F
 
-#### F00 · Base sobre `ruta`
+#### F00 · Base sobre `ruta` · **Implementado**
 - **Contrato:** pone `servidor.ts` al día con lo que ya devuelve el backend: `bloqueo` (mensaje y condiciones), `requerida`, `duracion_estimada_min`, `descripcion`, `SeccionEstado`; quita `resultados_generados` del tipo y de `NodeRenderer.tsx` (el cálculo real llega en F03); números de COMPARACION opcionales.
 - **Contenidos:** `t_inicio`, `t_cierre_inicio` y `t_opcional` con su `mapa` en T0/T1; T2 y la Ciudad reciben posiciones vacías para que sus puntos aparezcan bloqueados.
 - **Secciones:** `store/servidor/secciones.ts` pide `GET /cuentas/{c}/secciones` y los accesos del panel (diario, check-in, catálogo, planes, familia) leen su estado.
