@@ -2714,3 +2714,15 @@ body:has([data-student-experience] .sx-shell) {
   --sx-plan-b: var(--case-mint);
   --sx-plan-c: var(--data-secondary);
 }
+/* F01: número de cada opción en la elección ordenada de un registro. */
+.sx-root .sx-submission-order {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 13px;
+  font-weight: 700;
+}

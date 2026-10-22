@@ -1,6 +1,7 @@
 import { NodeRenderer } from './NodeRenderer'
 import { useActivityPlayer } from '../hooks/useActivityPlayer'
 import type { InstrumentoServidor } from './MaraInteractionPlayer'
+import type { RegistroServidor } from '../hooks/useRegistroServidor'
 import type { Actividad } from '@/types/activities'
 import { PlayerAmbient } from './PlayerAmbient'
 import { PlayerTopBar } from './PlayerTopBar'
@@ -11,6 +12,7 @@ export function StudentActivityPlayer({
   direct = false,
   edit = false,
   instrumentoServidor,
+  registroServidor,
   onClose,
 }: {
   activity: Actividad
@@ -18,9 +20,10 @@ export function StudentActivityPlayer({
   direct?: boolean
   edit?: boolean
   instrumentoServidor?: InstrumentoServidor
+  registroServidor?: RegistroServidor
   onClose: () => void
 }) {
-  const model = useActivityPlayer({ activity, direct, edit, instrumentoServidor, onClose })
+  const model = useActivityPlayer({ activity, direct, edit, instrumentoServidor, registroServidor, onClose })
   const {
     pageRef,
     mode,

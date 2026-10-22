@@ -7,6 +7,7 @@ import { useSearchParams } from 'react-router'
 import { useCaminoActivity } from '@/features/adventure/hooks/useCaminoActivity'
 import { StudentActivityPlayer } from '@/features/activities/components/StudentActivityPlayer'
 import { MaraInteractionPlayer } from '@/features/activities/components/MaraInteractionPlayer'
+import { RegistroServidorPlayer } from '@/features/activities/components/RegistroServidorPlayer'
 import { useJourney } from '@/store/journeyStore'
 import { useAdventure } from '@/store/adventureStore'
 import { getCaminoPoints } from '@/features/adventure/lib/caminoPoints'
@@ -20,7 +21,7 @@ export function CaminoScreen() {
   useReflections()
   const [params, setParams] = useSearchParams()
   const points = getCaminoPoints(adventure, journey)
-  const { activity, cuestionario } = useCaminoActivity(params.get('actividad') ?? '')
+  const { activity, cuestionario, registro } = useCaminoActivity(params.get('actividad') ?? '')
   const requestedPoint = activity ? points.find((point) => point.specActivityId === activity.id) : undefined
   const allowed = !!activity && !!requestedPoint && requestedPoint.status !== 'locked'
   useEffect(() => {
@@ -38,6 +39,17 @@ export function CaminoScreen() {
           key={activity.id}
           codigo={activity.id}
           revision={params.get('revision') === '1'}
+          imageUrl="/images/background/forest.png"
+          onClose={() => setParams({})}
+        />
+      </div>
+    )
+  if (activity && allowed && registro)
+    return (
+      <div className="sx-player-host">
+        <RegistroServidorPlayer
+          key={activity.id}
+          codigo={activity.id}
           imageUrl="/images/background/forest.png"
           onClose={() => setParams({})}
         />

@@ -1,0 +1,153 @@
+import assert from 'node:assert/strict'
+import test from 'node:test'
+import {
+  cargarAlmacen,
+  copia,
+  elementos,
+  escenarioRuta,
+  esConsultaDominio,
+  esperar,
+  fixtureServidor,
+  jsonServidor,
+  respuestaDominio,
+} from '../../soporte/servidor-ayudas.mjs'
+
+// F01: el Camino abre los registros de T1 con sus ítems y lo guardado en el servidor.
+async function iniciar({ actividad = 't-expectativas', registro, ruta = '/student/missions' } = {}) {
+  const app = fixtureServidor({ ruta }),
+    estado = escenarioRuta('t1')
+  // DATO DE PRUEBA: t-valores disponible, como tras completar t-expectativas.
+  const valores = estado.bloques.flatMap((b) => b.actividades).find((a) => a.codigo === 't-valores')
+  Object.assign(valores, { estado: 'DISPONIBLE', visible: true, bloqueo: null })
+  const items = jsonServidor(`ruta/ruta-items-registro-${actividad}`)
+  app.fetch((req) => {
+    if (esConsultaDominio(req)) return respuestaDominio(req, estado)
+    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.endsWith('/items-registro')) return { body: items }
+    if (req.url.endsWith('/registro')) return { body: registro ?? { posicion: null, estado: null, respuestas: [] } }
+    if (req.url.endsWith('/guardar-borrador')) return { body: { item: req.body.item, estado: 'BORRADOR' } }
+    throw Error(`Solicitud no configurada: ${req.url}`)
+  })
+  const almacen = cargarAlmacen(app)
+  almacen.publicar({ consultasHabilitadas: true })
+  await almacen.refrescar()
+  return { app, items }
+}
+
+async function abrir(app, codigo) {
+  const Cargador = app.load('src/features/activities/components/RegistroServidorPlayer.tsx').RegistroServidorPlayer
+  const cargador = app.mount(Cargador, { codigo, onClose() {} })
+  cargador.render()
+  await esperar()
+  const hijo = elementos(cargador.render(), (e) => e.type?.name === 'StudentActivityPlayer')[0]
+  assert.ok(hijo, 'el cargador abre el reproductor')
+  // El arnés comparte los hooks entre montajes: el cargador se desmonta antes de montar el reproductor.
+  cargador.unmount()
+  const Reproductor = app.load('src/features/activities/components/StudentActivityPlayer.tsx').StudentActivityPlayer
+  return app.mount(Reproductor, hijo.props)
+}
+const consigna = (tree) => elementos(tree, (e) => e.type?.name === 'RegistroConsignaNode')[0]
+
+test('el Camino abre un registro con el reproductor de registros del servidor', async () => {
+  const { app } = await iniciar({ ruta: '/student/missions?actividad=t-expectativas' })
+  const screen = app.mount(app.load('src/pages/student/CaminoScreen.tsx').CaminoScreen, {})
+  assert.equal(elementos(screen.render(), (e) => e.type?.name === 'RegistroServidorPlayer').length, 1)
+  screen.unmount()
+})
+
+test('retoma en la posición guardada con el texto y las opciones del borrador, incluida «otra»', async () => {
+  const { app, items } = await iniciar({ registro: jsonServidor('ruta/ruta-registro-t-expectativas-borrador') })
+  const player = await abrir(app, 't-expectativas')
+  const nodo = consigna(player.render())
+  assert.equal(nodo.props.node.id, 't-exp-ruta')
+  assert.equal(nodo.props.item.consigna, items[0].consigna)
+  assert.equal(nodo.props.ultimo, false)
+  assert.deepEqual(copia(nodo.props.inicial), {
+    texto: 'DATO DE PRUEBA: borrador a medias',
+    opciones: [{ codigo: 'INSTITUTO' }, { codigo: 'OTRA', texto: 'Viajar un año' }],
+  })
+  player.unmount()
+  const form = app.mount(nodo.type, nodo.props)
+  const tree = form.render()
+  assert.ok(elementos(tree, (e) => e.props?.children === 'Visible para ti y tu orientadora. Se guarda en tu cuenta.').length)
+  const lista = elementos(tree, (e) => e.type?.name === 'RegistroOpciones')[0]
+  form.unmount()
+  const opciones = app.mount(lista.type, lista.props).render()
+  assert.equal(elementos(opciones, (e) => e.props?.['aria-label'] === '¿Cuál?')[0].props.value, 'Viajar un año')
+})
+
+test('«Guardar y continuar» guarda el borrador con la posición del nodo siguiente y avanza', async () => {
+  const { app } = await iniciar()
+  const player = await abrir(app, 't-expectativas')
+  let tree = player.render()
+  // Sin borradores empieza en el diálogo de entrada.
+  elementos(tree, (e) => e.type?.name === 'DialogueBox')[0].props.onContinue()
+  const nodo = consigna(player.render())
+  assert.equal(nodo.props.node.id, 't-exp-ruta')
+  nodo.props.onGuardar('Quiero estudiar', [{ codigo: 'UNIVERSIDAD' }])
+  await esperar()
+  const req = app.requests.find((r) => r.url.endsWith('/guardar-borrador'))
+  assert.deepEqual(copia(req.body), {
+    cuenta: 'est-ana',
+    actividad: 't-expectativas',
+    item: 't-exp-ruta',
+    texto: 'Quiero estudiar',
+    opciones: [{ codigo: 'UNIVERSIDAD' }],
+    posicion: 't-exp-apoyo',
+  })
+  tree = player.render()
+  assert.equal(consigna(tree).props.node.id, 't-exp-apoyo')
+  player.unmount()
+})
+
+test('la elección ordenada numera las opciones en el orden elegido y no deja pasar de la máxima', async () => {
+  const { app, items } = await iniciar({ actividad: 't-valores' })
+  const { RegistroConsignaNode } = app.load('src/features/activities/components/nodes/RegistroConsignaNode.tsx')
+  const { RegistroOpciones } = app.load('src/features/activities/components/nodes/RegistroOpciones.tsx')
+  let guardado
+  const form = app.mount(RegistroConsignaNode, {
+    node: { id: 't-val-orden', tipo: 'consigna', item: 't-val-orden', premisa: '', entregable: { tipo: 'texto' } },
+    item: items[0],
+    inicial: { texto: '', opciones: [] },
+    ultimo: false,
+    ocupado: false,
+    error: '',
+    onGuardar: (texto, opciones) => (guardado = { texto, opciones }),
+  })
+  const opciones = () => {
+    const el = elementos(form.render(), (e) => e.type === RegistroOpciones)[0]
+    return { el, tree: app.mount(RegistroOpciones, el.props).render() }
+  }
+  for (const codigo of ['CREAR', 'LIBERTAD', 'ESTABILIDAD']) {
+    const { tree } = opciones()
+    const label = elementos(tree, (e) => e.key === codigo)[0]
+    elementos(label, (e) => e.type === 'input')[0].props.onChange()
+  }
+  const { el, tree } = opciones()
+  assert.deepEqual(copia(el.props.selection), [{ codigo: 'CREAR' }, { codigo: 'LIBERTAD' }, { codigo: 'ESTABILIDAD' }])
+  assert.equal(elementos(tree, (e) => e.type === 'legend')[0].props.children, 'Elige y ordena 3')
+  assert.deepEqual(
+    elementos(tree, (e) => e.props?.className === 'sx-submission-order').map((e) => e.props.children),
+    [1, 3, 2],
+  )
+  const servir = elementos(elementos(tree, (e) => e.key === 'SERVIR')[0], (e) => e.type === 'input')[0]
+  assert.equal(servir.props.disabled, true)
+  // Sin texto en un ítem obligatorio no se guarda.
+  elementos(form.render(), (e) => e.type === 'form')[0].props.onSubmit({ preventDefault() {} })
+  assert.equal(guardado, undefined)
+  elementos(form.render(), (e) => e.type === 'textarea')[0].props.onChange({ target: { value: 'Crear me mueve' } })
+  elementos(form.render(), (e) => e.type === 'form')[0].props.onSubmit({ preventDefault() {} })
+  assert.deepEqual(copia(guardado), {
+    texto: 'Crear me mueve',
+    opciones: [{ codigo: 'CREAR' }, { codigo: 'LIBERTAD' }, { codigo: 'ESTABILIDAD' }],
+  })
+})
+
+test('un registro cerrado abre en el fin, sin consignas ni entrega', async () => {
+  const { app } = await iniciar({ registro: jsonServidor('ruta/ruta-registro-t-expectativas-cerrado') })
+  const player = await abrir(app, 't-expectativas')
+  const tree = player.render()
+  assert.equal(consigna(tree), undefined)
+  assert.equal(elementos(tree, (e) => e.type?.name === 'FinishScreen').length, 1)
+  player.unmount()
+})

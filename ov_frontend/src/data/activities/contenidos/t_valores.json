@@ -11,7 +11,54 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-val-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Ahora piensa en lo que más valoras."
+    },
+    {
+      "id": "t-val-orden",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-val-orden",
+      "premisa": "",
+      "placeholder": "Explica el primero",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "ayuda": "Marca tres en orden: el primero es el más importante."
+    },
+    {
+      "id": "t-val-libre",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-val-libre",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "t-val-breve",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-val-breve",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
   "mapa": {
     "x": 330,
     "y": 50,

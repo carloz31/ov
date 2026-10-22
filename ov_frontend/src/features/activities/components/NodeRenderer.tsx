@@ -10,6 +10,8 @@ import { ItemNode } from '@/features/activities/components/nodes/ItemNode'
 import { SubmissionNode } from '@/features/activities/components/nodes/SubmissionNode'
 import { MatrixNode } from '@/features/activities/components/nodes/MatrixNode'
 import { ResultNode } from '@/features/activities/components/nodes/ResultNode'
+import { RegistroConsignaNode } from '@/features/activities/components/nodes/RegistroConsignaNode'
+import { borradorRegistro } from '@/features/activities/hooks/useRegistroServidor'
 export function NodeRenderer({
   model,
   activity,
@@ -48,7 +50,12 @@ export function NodeRenderer({
     itemOcupado,
     itemSoloLectura,
     puedeTerminarEncuentro,
+    registro,
   } = model
+  const itemRegistro =
+    node?.tipo === 'consigna' && registro.registroEnServidor
+      ? registro.items.find((i) => i.codigo === node.item)
+      : undefined
   return reaction ? (
     <div className="sx-player-scene">
       <div className="sx-scene-space" />
@@ -153,6 +160,21 @@ export function NodeRenderer({
         }
       }}
     />
+  ) : node.tipo === 'consigna' && itemRegistro ? (
+    <div className="sx-card-stage">
+      <section className="sx-glass sx-player-card sx-submission-card case-scrollbar">
+        <RegistroConsignaNode
+          key={node.id}
+          node={node}
+          item={itemRegistro}
+          inicial={borradorRegistro(registro.respuestaDe(itemRegistro.codigo))}
+          ultimo={registro.esUltimaConsigna(node.id)}
+          ocupado={!!registro.ocupado}
+          error={registro.error}
+          onGuardar={(texto, opciones) => void registro.guardar(node, texto, opciones)}
+        />
+      </section>
+    </div>
   ) : node.tipo === 'consigna' ? (
     <div className="sx-card-stage">
       <section className="sx-glass sx-player-card sx-submission-card case-scrollbar">

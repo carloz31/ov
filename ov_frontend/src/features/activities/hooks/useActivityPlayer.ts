@@ -12,17 +12,20 @@ import type { Actividad, NodoDialogo } from '@/types/activities'
 import { updateJourney, useJourney, useJourneyError } from '@/store/journeyStore'
 import { prepareActivity } from '@/features/activities/lib/reflection/personalization'
 import { useInstrumentResponses } from './useInstrumentResponses'
+import { useRegistroServidor, type RegistroServidor } from './useRegistroServidor'
 export function useActivityPlayer({
   activity,
   direct = false,
   edit = false,
   instrumentoServidor,
+  registroServidor,
   onClose,
 }: {
   activity: Actividad
   direct?: boolean
   edit?: boolean
   instrumentoServidor?: InstrumentoServidor
+  registroServidor?: RegistroServidor
   onClose: () => void
 }) {
   const state = useJourney()
@@ -39,6 +42,15 @@ export function useActivityPlayer({
   const pageRef = useRef<HTMLDivElement>(null)
   const [nodeId, setNodeId] = useState(() => {
     if (modoApi && instrumentoServidor) return instrumentoServidor.nodoInicialId
+    // Registro: la pregunta pendiente se muestra sobre la última consigna; cerrado, va al fin;
+    // si no, retoma en la posición guardada.
+    if (modoApi && registroServidor) {
+      const { registro } = registroServidor
+      if (registro.respuestas.some((r) => r.estado === 'PENDIENTE_SEGUIMIENTO'))
+        return nodes.findLast((n) => n.tipo === 'consigna')?.id
+      if (registro.estado === 'COMPLETADA') return undefined
+      return nodes.find((n) => n.id === registro.posicion)?.id ?? nodes[0]?.id
+    }
     if (edit) return nodes[0]?.id
     if (
       modoApi &&
@@ -145,6 +157,25 @@ export function useActivityPlayer({
   function move(...args: Parameters<typeof completion.move>) {
     return completion.move(...args)
   }
+  const registro = useRegistroServidor({
+    actividad: activity.id,
+    registroServidor: modoApi ? registroServidor : undefined,
+    nodes,
+    montado,
+    avanzar: (siguiente) => move(siguiente),
+    terminar: (cierre) => {
+      setCierreServidor(cierre)
+      updateJourney((current) => ({
+        ...current,
+        progress: {
+          ...current.progress,
+          [activity.id]: { ...current.progress[activity.id], nodoActualId: '$fin' },
+        },
+      }))
+      setNodeId(undefined)
+      setReactions([])
+    },
+  })
   function advance() {
     move(nodes[index + 1], (current) =>
       node?.tipo === 'diapositiva'
@@ -221,5 +252,6 @@ export function useActivityPlayer({
     itemOcupado: modoApi && guardando,
     itemSoloLectura: modoApi && soloLectura,
     puedeTerminarEncuentro: modoApi && !!instrumentoServidor,
+    registro,
   }
 }

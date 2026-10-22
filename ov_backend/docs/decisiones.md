@@ -7,3 +7,6 @@
 - **`item` sin validación propia:** `lib/activities/validation.ts` no valida campos de nodos; el cruce consigna ↔ ítem lo hace `registroServidor` al abrir (sin él, no hay actividad que abrir).
 - **Prueba del exportador adaptada (autorizada por la spec):** `NOMBRES` de `test_exportar_fixtures_front.py` suma los seis fixtures de `t-valores` y se validan sus contratos.
 - **`FollowUp` no se toca:** las pruebas locales leen su árbol superficial; extraer su hilo a otro componente cambiaría ese árbol. `RegistroSeguimiento` compone los mismos `TypedQuestion`, `InlineDialogue` y clases `sx-followup-*`.
+- **Prueba del mapa adaptada:** «un contenido sin nodos ubica el punto…» usaba `t-expectativas`, que ahora tiene nodos (lo pide la spec); pasa a `t-lee-cuestionario`, que sigue sin nodos, y comprueba que `t-expectativas` ya se abre.
+- **En api, el registro termina en su última consigna:** «Entregar» está en ella y, tras el seguimiento, «Continuar» lleva al fin; los nodos que siguieran a la última consigna no se muestran. Por eso `t_expectativas.json` no tiene diálogo de cierre (el plan lo mencionaba).
+- **Solo el Camino abre registros del servidor en F01:** los registros de la Ciudad (`t-contraste`) y `t-eco` no tienen contenido hasta su lote; `CiudadScreen` no cambia.

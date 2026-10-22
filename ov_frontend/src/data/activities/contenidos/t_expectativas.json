@@ -11,7 +11,55 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-exp-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Antes de seguir, cuéntame qué esperas de este camino."
+    },
+    {
+      "id": "t-exp-ruta",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-exp-ruta",
+      "premisa": "",
+      "placeholder": "Escribe por qué",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "ayuda": "Elige una o dos rutas y cuéntame por qué."
+    },
+    {
+      "id": "t-exp-apoyo",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-exp-apoyo",
+      "premisa": "",
+      "placeholder": "Cuenta un ejemplo",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "ayuda": "Elige quién te apoya y cuenta un ejemplo."
+    },
+    {
+      "id": "t-exp-espera",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-exp-espera",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
   "mapa": {
     "x": 495,
     "y": 300,
