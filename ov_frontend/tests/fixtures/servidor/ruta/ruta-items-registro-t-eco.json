@@ -39,7 +39,7 @@
   },
   {
     "codigo": "t-eco-espera",
-    "consigna": "Antes escribiste lo que esperan de ti. ¿Sigues pensando lo mismo?",
+    "consigna": "¿Qué esperan de ti las personas cercanas hoy? ¿Ha cambiado algo?",
     "eleccion": null,
     "min_caracteres": null,
     "nombre": "Lo que esperan de ti, hoy",

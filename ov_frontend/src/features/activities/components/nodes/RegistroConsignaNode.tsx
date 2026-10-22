@@ -53,7 +53,15 @@ export function RegistroConsignaNode({
         selection.map((o) => (o.codigo === 'OTRA' ? { ...o, texto: o.texto?.trim() } : o)),
       )
   }
-  const premisa = <span className="sx-submission-premise">{item.consigna}</span>
+  // Como en los registros guiados, el rótulo de visibilidad va bajo la pregunta.
+  const premisa = (
+    <>
+      <span className="sx-submission-premise">{item.consigna}</span>
+      <span className="sx-submission-visibility">
+        Visible para ti y tu orientadora. Se guarda en tu cuenta.
+      </span>
+    </>
+  )
   const campo = (
     <textarea
       className="sx-submission-textarea"
@@ -72,9 +80,11 @@ export function RegistroConsignaNode({
         submit()
       }}
     >
-      {node.hablanteId && <CharacterAvatar id={node.hablanteId} size="sm" />}
-      <p className="sx-submission-visibility">Visible para ti y tu orientadora. Se guarda en tu cuenta.</p>
-      {eco && <RegistroEco eco={eco} />}
+      {eco ? (
+        <RegistroEco eco={eco} hablanteId={node.hablanteId} />
+      ) : (
+        node.hablanteId && <CharacterAvatar id={node.hablanteId} size="sm" />
+      )}
       {eleccion ? (
         <>
           <p className="sx-submission-label">

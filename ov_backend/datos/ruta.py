@@ -246,8 +246,9 @@ ITEMS_REGISTRO = (
      'La vez pasada elegiste una ruta. ¿Sigues pensando igual o cambiaste de idea? Cuéntame por qué.',
      ('RUTAS_DESPUES_COLEGIO', 1, 2, False, True, 't-ref-rutas'),
      (('C1', 'RAZON', 'Por qué mantiene o cambia su ruta'),)),
+    # La consigna de un ítem con eco no supone que haya cita: funciona en cualquier estado del eco (F02).
     ('t-eco', 't-eco-espera', 'Lo que esperan de ti, hoy',
-     'Antes escribiste lo que esperan de ti. ¿Sigues pensando lo mismo?', None, ()),
+     '¿Qué esperan de ti las personas cercanas hoy? ¿Ha cambiado algo?', None, ()),
     ('t-contraste', 't-con-contraste', 'Contraste',
      '¿En qué se parece tu resultado a lo que pensabas de ti? ¿En qué se diferencia?', None,
      (('C1', 'CONTRASTE', 'Compara el resultado con lo que pensaba antes'),)),

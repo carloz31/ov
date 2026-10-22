@@ -121,11 +121,28 @@ test('con la respuesta disponible, la consigna cita el texto y nombra la activid
   })
   player.unmount()
   const { RegistroEco } = app.load('src/features/activities/components/nodes/RegistroEco.tsx')
-  const tree = app.mount(RegistroEco, { eco: espera.props.eco }).render()
-  assert.equal(tree.props.className, 'sx-question-memory')
-  const texto = JSON.stringify(tree)
-  assert.match(texto, new RegExp(`Lumi recuerda lo que escribiste en «${titulo}»`))
-  assert.ok(texto.includes('DATO DE PRUEBA: esperan que estudie, porque confían en mí'))
+  // Con la burbuja de Lumi de los registros guiados, como la elección de t-expectativas.
+  const tree = app.mount(RegistroEco, { eco: espera.props.eco, hablanteId: 'companero' }).render()
+  assert.equal(tree.type.name, 'RegistroLumi')
+  assert.equal(tree.props.hablanteId, 'companero')
+  assert.equal(
+    tree.props.texto,
+    `Lumi recuerda lo que escribiste en «${titulo}»: «${REFERENCIAS.disponible.referencias[0].texto}»`,
+  )
+  // La consigna no supone que haya cita, y el rótulo de visibilidad va bajo la pregunta.
+  assert.equal(espera.props.item.consigna, '¿Qué esperan de ti las personas cercanas hoy? ¿Ha cambiado algo?')
+  const form = app.mount(espera.type, espera.props).render()
+  const etiqueta = elementos(
+    form,
+    (e) => e.type === 'label' && e.props.className === 'sx-submission-label',
+  )[0]
+  const partes = elementos(etiqueta, (e) => typeof e.props?.className === 'string').map(
+    (e) => e.props.className,
+  )
+  assert.ok(partes.indexOf('sx-submission-premise') < partes.indexOf('sx-submission-visibility'))
+  assert.ok(partes.indexOf('sx-submission-visibility') < partes.indexOf('sx-submission-textarea'))
+  assert.equal(elementos(form, (e) => e.type?.name === 'RegistroEco').length, 1)
+  assert.equal(elementos(form, (e) => e.type?.name === 'CharacterAvatar').length, 0)
 })
 
 test('por desarrollar, la consigna muestra el aviso sin cita ni enlace; sin dato, no muestra nada', async () => {
@@ -135,11 +152,12 @@ test('por desarrollar, la consigna muestra el aviso sin cita ni enlace; sin dato
   player.unmount()
   const { RegistroEco } = app.load('src/features/activities/components/nodes/RegistroEco.tsx')
   const aviso = app.mount(RegistroEco, { eco: espera.props.eco }).render()
-  assert.equal(aviso.props.className, 'sx-question-memory is-neutral')
-  const texto = JSON.stringify(aviso)
-  assert.match(texto, /aún está por desarrollar/)
-  assert.equal(elementos(aviso, (e) => ['a', 'button', 'blockquote'].includes(e.type)).length, 0)
-  assert.doesNotMatch(texto, /POCO_DESARROLLADA|clasificacion/)
+  assert.equal(aviso.type.name, 'RegistroLumi')
+  assert.equal(
+    aviso.props.texto,
+    'La vez pasada lo contaste en pocas palabras. Aquí puedes tomarte tu tiempo.',
+  )
+  assert.doesNotMatch(JSON.stringify(aviso), /Ver o modificar|POCO_DESARROLLADA|clasificacion/)
 
   const sinDato = await abrirEco(REFERENCIAS.sinDato)
   const nodo = await hasta(sinDato.player, 't-eco-espera')

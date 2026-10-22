@@ -1,33 +1,18 @@
-import { Clock } from 'lucide-react'
 import { reflectionCopy } from '@/data/activities/reflectionConfig'
+import { RegistroLumi } from './RegistroLumi'
 
-// Zona de eco de una consigna que retoma una respuesta (F02), con el marcado de QuestionMemory: la cita
-// literal o, si la respuesta de origen está por desarrollar, un aviso sin cita ni enlace.
+// Zona de eco de una consigna que retoma una respuesta (F02), con la burbuja de Lumi de los registros
+// guiados: el recuerdo con la cita literal o, si la respuesta de origen quedó corta, una invitación sin cita.
 export function RegistroEco({
   eco,
+  hablanteId,
 }: {
   eco: { estado: 'DISPONIBLE' | 'POR_DESARROLLAR'; texto: string; titulo: string }
+  hablanteId?: string
 }) {
-  if (eco.estado === 'POR_DESARROLLAR')
-    return (
-      <aside className="sx-question-memory is-neutral">
-        <div>
-          <p>
-            Tu respuesta en «{eco.titulo}» aún está por desarrollar. Puedes ampliarla desde ese registro, con
-            «Ver o modificar mis respuestas».
-          </p>
-        </div>
-      </aside>
-    )
-  return (
-    <aside className="sx-question-memory">
-      <Clock size={18} aria-hidden="true" />
-      <div>
-        <strong>{reflectionCopy.memory(eco.titulo)}</strong>
-        <blockquote>
-          <mark>«{eco.texto}»</mark>
-        </blockquote>
-      </div>
-    </aside>
-  )
+  const texto =
+    eco.estado === 'POR_DESARROLLAR'
+      ? 'La vez pasada lo contaste en pocas palabras. Aquí puedes tomarte tu tiempo.'
+      : `${reflectionCopy.memory(eco.titulo)}: «${eco.texto}»`
+  return <RegistroLumi hablanteId={hablanteId} texto={texto} />
 }
