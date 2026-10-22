@@ -16,6 +16,7 @@ import { RegistroEleccionNode } from '@/features/activities/components/nodes/Reg
 import { esTopN } from '@/features/activities/lib/podio'
 import { esEleccionGuiada } from '@/features/activities/lib/eleccionGuiada'
 import { borradorRegistro, turnosRegistro } from '@/features/activities/hooks/useRegistroServidor'
+import { filasPorAmpliar } from '@/features/activities/lib/porAmpliar'
 import { RegistroSeguimiento } from '@/features/activities/components/followup/RegistroSeguimiento'
 export function NodeRenderer({
   model,
@@ -85,10 +86,7 @@ export function NodeRenderer({
           hilo={pendiente && turnosRegistro(pendiente)}
           ocupado={registro.ocupado === 'evaluando'}
           error={registro.error}
-          porAmpliar={(cierre && (cierre.items_por_ampliar ?? []))?.map((i) => ({
-            nombre: registro.items.find((item) => item.codigo === i.item)?.nombre ?? i.item,
-            pista: i.pista,
-          }))}
+          porAmpliar={cierre && filasPorAmpliar(cierre.items_por_ampliar ?? [], registro.items)}
           onResponder={(texto) => void registro.responder(texto)}
           onOmitir={() => void registro.omitir()}
           onReintentar={() => void registro.reintentar()}

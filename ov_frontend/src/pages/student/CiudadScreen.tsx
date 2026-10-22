@@ -6,6 +6,7 @@ import { ChallengePlayer } from '@/features/activities/components/challenges/Cha
 import { StudentActivityPlayer } from '@/features/activities/components/StudentActivityPlayer'
 import { getCiudadPoints } from '@/features/adventure/lib/ciudadPoints'
 import { MapScreenLayout } from '@/features/adventure/components/MapScreenLayout'
+import { RegistroPorAmpliar } from '@/features/activities/components/RegistroPorAmpliar'
 import '@/styles/student/journey.css'
 export function CiudadScreen() {
   const { adventure, journey, params, setParams, interaccion, challenge, activity } = useCityAccess()
@@ -36,6 +37,7 @@ export function CiudadScreen() {
   return (
     <MapScreenLayout
       renderCaseProgress={(adventure) => <ForestFireCaseProgress adventure={adventure} />}
+      renderPorAmpliar={(codigo) => <RegistroPorAmpliar codigo={codigo} />}
       renderJournal={(journal, onOpen) => (
         <JournalEntryCard completed={journal.completed} prompt={journal.prompt} onOpen={onOpen} />
       )}

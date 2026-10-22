@@ -97,7 +97,7 @@ test('«Entregar» en la última consigna guarda, entrega y muestra la pregunta;
   await esperar()
   vista = seguimiento(player.render())
   assert.deepEqual(copia(vista.props.porAmpliar), [
-    { nombre: 'Valores', pista: cierreFx.items_por_ampliar[0].pista },
+    { item: 't-val-orden', nombre: 'Valores', pista: cierreFx.items_por_ampliar[0].pista, conEleccion: true },
   ])
   assert.equal(vista.props.hilo, undefined)
   // El cierre nunca muestra la clasificación del evaluador.
@@ -118,7 +118,7 @@ test('al reabrir con una pregunta pendiente, el reproductor va directo al seguim
   player.unmount()
 })
 
-test('la vista de seguimiento ofrece «Responder» y «Continuar sin responder» y el cierre solo nombra ítem y pista', () => {
+test('la vista de seguimiento ofrece «Responder» y «Continuar sin responder» y el cierre muestra el bloque de Lumi', () => {
   const app = fixtureServidor()
   const { RegistroSeguimiento } = app.load(
     'src/features/activities/components/followup/RegistroSeguimiento.tsx',
@@ -151,14 +151,13 @@ test('la vista de seguimiento ofrece «Responder» y «Continuar sin responder»
     ['Responder', 'Continuar sin responder'],
   )
   pregunta.unmount()
-  const cierre = app.mount(RegistroSeguimiento, {
-    ...base,
-    porAmpliar: [{ nombre: 'Valores', pista: '¿Por qué?' }],
-  })
-  assert.deepEqual(textos(cierre.render()), [
-    'Tus respuestas quedaron entregadas.',
-    'Podrías profundizar en Valores: ¿Por qué?',
-    'Continuar',
-  ])
+  const filas = [{ item: 't-val-orden', nombre: 'Valores', pista: '¿Por qué?', conEleccion: true }]
+  const cierre = app.mount(RegistroSeguimiento, { ...base, porAmpliar: filas })
+  const tree = cierre.render()
+  const bloque = elementos(tree, (e) => e.type?.name === 'BloquePorAmpliar')[0]
+  assert.equal(bloque.props.titulo, '¡Listo! Tu registro quedó guardado.')
+  assert.match(bloque.props.texto, /^Me quedé con ganas de saber un poco más de una cosa que escribiste\./)
+  assert.equal(bloque.props.conPista, true)
+  assert.deepEqual(textos(tree), ['Continuar'])
   cierre.unmount()
 })

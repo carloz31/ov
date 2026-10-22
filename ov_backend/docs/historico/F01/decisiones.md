@@ -37,3 +37,11 @@
 - **Última pregunta:** se comporta como las demás (se marca y avanza sola). El usuario descartó un botón de cierre propio («Ver resultado»/«Terminar cuestionario»): la revelación del resultado se hará desde otro lado.
 - **«Anterior»:** solo, sin principal, va a la izquierda del pie. No aparece en la primera pregunta de un cuestionario, aunque la preceda un diálogo.
 - **Foco:** al cargar una pregunta, va a la opción guardada o a la primera.
+
+## Ajuste al cierre: ítems por ampliar en el cierre del registro y en el drawer
+
+- **Cierre del registro:** un solo bloque de Lumi («¡Listo! Tu registro quedó guardado.» y, si hay ítems por ampliar, «Me quedé con ganas de saber un poco más de {una cosa | N cosas} que escribiste. Puedes volver a {ella | ellas}…»), una lista con el ícono (con elección o solo texto), el nombre y la pista de cada ítem, y «Continuar →» a ancho completo. Reemplaza «Tus respuestas quedaron entregadas.» y «Podrías profundizar en…».
+- **Drawer:** en un registro completado con ítems por ampliar, un bloque con borde fino bajo el chip de tipo: Lumi con el mismo texto (sin la invitación a volver) y los nombres de los ítems, sin pistas. «Completada» y los botones no cambian. Llega por `renderPorAmpliar` (como `renderJournal`) y consulta `GET /cuentas/{c}/actividades/{a}/registro` al abrirse, solo en api.
+- **Compartido** (`features/activities/lib/porAmpliar.ts` y `BloquePorAmpliar`): el texto de Lumi con singular y plural, el nombre humano del ítem (etiqueta corta `nombre`; si no hay, la consigna recortada; nunca el código) y la pista con su respaldo («Cuéntame un ejemplo o un poco más de por qué.»).
+- **Sin «Ampliar →» por ahora** (decisión del usuario): la edición de un ítem entregado llega con F02. Anotado en `pendientes-interfaz.md`.
+- **Datos, sin cambios al backend:** la consulta del registro ya entrega `items_por_ampliar` con el registro cerrado, e `items-registro` da la etiqueta corta (`nombre`) de todos los ítems de `ruta`. No hace falta extender ningún endpoint ni agregar campos.

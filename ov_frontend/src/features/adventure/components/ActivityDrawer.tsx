@@ -26,6 +26,7 @@ export function ActivityDrawer({
   onFallbackFocus,
   renderCaseProgress,
   renderJournal,
+  renderPorAmpliar,
 }: {
   point?: StudentMapPoint
   details?: PointDetails
@@ -35,6 +36,8 @@ export function ActivityDrawer({
   onFallbackFocus?: () => void
   renderCaseProgress?: (adventure: AdventureState) => ReactNode
   renderJournal?: (journal: NonNullable<PointDetails['journal']>, onOpen: () => void) => ReactNode
+  // Lo que un registro completado quedó por ampliar (F01); lo decide el dominio de actividades.
+  renderPorAmpliar?: (codigo: string) => ReactNode
 }) {
   const adventure = useAdventure()
   const theme = useThemeClass()
@@ -121,6 +124,7 @@ export function ActivityDrawer({
                   </DrawerDescription>
                 </DrawerHeader>
                 <span className="sx-drawer-type">{details.type}</span>
+                {point.specActivityId && renderPorAmpliar?.(point.specActivityId)}
                 {details.requirement && (
                   <p className="sx-drawer-requirement">
                     <LockKeyhole size={18} />

@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-22 · F01 · «Ampliar →» en los ítems por ampliar
+
+- **Dato:** `items_por_ampliar` del registro cerrado (`GET /cuentas/{c}/actividades/{a}/registro`) y la edición de un ítem entregado (`POST /acciones/registro/editar`).
+- **Dónde se mostraría:** a la derecha de cada ítem por ampliar, en el cierre del registro y en el drawer de la actividad.
+- **Opciones:** abrir la edición de ese ítem en el reproductor; abrir la consulta del registro (F02) en ese ítem.
+- **Si no se muestra:** el cierre y el drawer nombran los ítems por ampliar sin enlace.
+- **Estado:** pendiente de F02 (edición del registro entregado).
+
 ## 2026-10-21 · F01 · «Anterior» en batallas y junto a preguntas con retroalimentación
 
 - **Dato:** el estado de cada pregunta de comprobación (intentos, retroalimentación, pistas) y de cada batalla (vidas, aciertos).

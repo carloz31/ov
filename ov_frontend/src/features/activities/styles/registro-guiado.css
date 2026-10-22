@@ -119,3 +119,68 @@
   min-height: 40px;
   padding: 8px 12px;
 }
+/* Lumi con los ítems por ampliar de un registro cerrado: en el cierre y, compacto, en el drawer. */
+.sx-root .sx-por-ampliar {
+  display: grid;
+  gap: 12px;
+}
+.sx-root .sx-por-ampliar.is-compact {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.sx-root .sx-por-ampliar-lumi {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.sx-root .sx-por-ampliar-lumi > div {
+  display: grid;
+  gap: 4px;
+}
+.sx-root .sx-por-ampliar-lumi strong {
+  font-size: 16px;
+}
+.sx-root .sx-por-ampliar-lumi p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.sx-root .sx-por-ampliar.is-compact .sx-por-ampliar-lumi p {
+  font-size: 13px;
+}
+.sx-root .sx-por-ampliar-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sx-root .sx-por-ampliar-lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+.sx-root .sx-por-ampliar-lista li > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--primary);
+}
+.sx-root .sx-por-ampliar-lista li > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.sx-root .sx-por-ampliar-lista strong {
+  font-size: 14px;
+}
+.sx-root .sx-por-ampliar-lista small {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  line-height: 1.4;
+}
+.sx-root .sx-por-ampliar-continuar {
+  width: 100%;
+  justify-content: center;
+}

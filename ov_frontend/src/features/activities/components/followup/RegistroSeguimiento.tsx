@@ -3,6 +3,8 @@ import { ArrowRight } from 'lucide-react'
 import { InlineDialogue } from '../InlineDialogue'
 import { TypedQuestion } from '@/features/activities/components/followup/TypedQuestion'
 import type { TurnoRegistro } from '../../hooks/useRegistroServidor'
+import { BloquePorAmpliar } from './BloquePorAmpliar'
+import { TITULO_CIERRE_REGISTRO, textoPorAmpliar, type FilaPorAmpliar } from '../../lib/porAmpliar'
 
 // Seguimiento de un registro del servidor (F01): el mismo hilo de FollowUp, con la pregunta que manda
 // el servidor. Al cerrar, solo el nombre del ítem y su pista: nunca una clasificación.
@@ -21,7 +23,7 @@ export function RegistroSeguimiento({
   hilo?: { textoInicial: string; turnos: TurnoRegistro[]; pendiente?: TurnoRegistro; borrador: string }
   ocupado: boolean
   error: string
-  porAmpliar?: { nombre: string; pista: string }[]
+  porAmpliar?: FilaPorAmpliar[]
   onResponder: (texto: string) => void
   onOmitir: () => void
   onReintentar: () => void
@@ -105,17 +107,18 @@ export function RegistroSeguimiento({
         {porAmpliar && !ocupado && (
           <div className="sx-followup-finish">
             <div role="status">
-              <InlineDialogue speakerId="companero" light text="Tus respuestas quedaron entregadas." />
-              {porAmpliar.map((p) => (
-                <InlineDialogue
-                  key={p.nombre}
-                  speakerId="companero"
-                  light
-                  text={`Podrías profundizar en ${p.nombre}: ${p.pista}`}
-                />
-              ))}
+              <BloquePorAmpliar
+                titulo={TITULO_CIERRE_REGISTRO}
+                texto={porAmpliar.length ? textoPorAmpliar(porAmpliar.length, { volver: true }) : undefined}
+                filas={porAmpliar}
+                conPista
+              />
             </div>
-            <button type="button" className="sx-primary-button" onClick={onContinuar}>
+            <button
+              type="button"
+              className="sx-primary-button sx-por-ampliar-continuar"
+              onClick={onContinuar}
+            >
               Continuar
               <ArrowRight size={18} />
             </button>

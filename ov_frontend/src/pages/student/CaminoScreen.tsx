@@ -12,6 +12,7 @@ import { useJourney } from '@/store/journeyStore'
 import { useAdventure } from '@/store/adventureStore'
 import { getCaminoPoints } from '@/features/adventure/lib/caminoPoints'
 import { MapScreenLayout } from '@/features/adventure/components/MapScreenLayout'
+import { RegistroPorAmpliar } from '@/features/activities/components/RegistroPorAmpliar'
 import '@/styles/student/journey.css'
 import { useReflections } from '@/store/reflectionStore'
 export function CaminoScreen() {
@@ -70,6 +71,7 @@ export function CaminoScreen() {
   return (
     <MapScreenLayout
       renderCaseProgress={(adventure) => <ForestFireCaseProgress adventure={adventure} />}
+      renderPorAmpliar={(codigo) => <RegistroPorAmpliar codigo={codigo} />}
       renderJournal={(journal, onOpen) => (
         <JournalEntryCard completed={journal.completed} prompt={journal.prompt} onOpen={onOpen} />
       )}
