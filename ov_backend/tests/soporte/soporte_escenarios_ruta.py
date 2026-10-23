@@ -25,9 +25,10 @@ def verificar_p01_estado_inicial(cliente):
 
 
 def verificar_p02_primer_paso(cliente):
+    # T0 en orden (F00): t-inicio abre t-partida, no t-cierre-inicio. Mismo conjunto que test_hu073 (SQLite).
     assert reglas(completar(cliente, 't-inicio')) == {
-        'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO',
-        'R-SEC-PLANES'}
+        'R-t-partida', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO',
+        'R-SEC-PLANES', 'R-t-diario-fija', 'R-PLAN-POR_QUE'}
     assert estado(cliente)['secciones'] == {
         'CATALOGO': 'DISPONIBLE', 'CHECK_IN': 'BLOQUEADA', 'DIARIO': 'DISPONIBLE', 'FAMILIA': 'BLOQUEADA',
         'PLANES': 'DISPONIBLE'}
