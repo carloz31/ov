@@ -43,8 +43,11 @@ async function iniciar(etapa, cambiar = () => {}) {
 }
 const todas = (bloques) => bloques.flatMap((b) => b.actividades)
 // Visibles en DISPONIBLE o EN_CURSO, contadas desde la respuesta del servidor.
+// Ajuste del diario (F05): los recuerdos del bloque LUMI no son puntos del mapa ni cuentan como disponibles.
 const disponiblesServidor = (bloques) =>
-  todas(bloques).filter((a) => a.visible && (a.estado === 'DISPONIBLE' || a.estado === 'EN_CURSO')).length
+  todas(bloques.filter((b) => b.espacio !== 'LUMI')).filter(
+    (a) => a.visible && (a.estado === 'DISPONIBLE' || a.estado === 'EN_CURSO'),
+  ).length
 
 function texto(nodo) {
   if (nodo == null || typeof nodo === 'boolean') return ''

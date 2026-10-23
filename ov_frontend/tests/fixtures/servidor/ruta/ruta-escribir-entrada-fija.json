@@ -6,5 +6,24 @@
       "tipo": "ESCRIBE_ENTRADA_DIARIO"
     }
   ],
-  "nuevos_desbloqueos": []
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": null,
+          "requerido": 1,
+          "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+          "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-lumi-1",
+        "nombre": "Cómo llegué a este mundo"
+      },
+      "regla": "R-t-lumi-1",
+      "tipo_objetivo": "ACTIVIDAD"
+    }
+  ]
 }

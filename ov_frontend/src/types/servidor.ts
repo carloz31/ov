@@ -33,7 +33,8 @@ export type ActividadEstado = { codigo: string; titulo: string; estado: EstadoAc
 export type BloqueEstado = {
   codigo: string
   nombre: string
-  espacio: 'MISIONES_CAMPO' | 'CIUDAD' | 'PORTAL_FAMILIA'
+  // LUMI (ajuste del diario de F05): los recuerdos de Lumi; no se pinta en el mapa.
+  espacio: 'MISIONES_CAMPO' | 'CIUDAD' | 'PORTAL_FAMILIA' | 'LUMI'
   estado: EstadoDisponibilidad
   actividades: ActividadEstado[]
 }
@@ -67,7 +68,7 @@ export type TipoEventoUso =
 export type ProgresoCondicion = {
   tipo_evento: TipoEventoUso
   referencia: string | null
-  tipo_conteo: 'EVENTOS' | 'REFERENCIAS_DISTINTAS' | 'DIAS_DISTINTOS'
+  tipo_conteo: 'EVENTOS' | 'REFERENCIAS_DISTINTAS' | 'DIAS_DISTINTOS' | 'EVENTOS_TOPE_DIARIO'
   actual: number
   requerido: number
   cumplida: boolean

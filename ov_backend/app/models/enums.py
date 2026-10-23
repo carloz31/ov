@@ -16,6 +16,8 @@ class Espacio(StrEnum):
     MISIONES_CAMPO = "MISIONES_CAMPO"
     CIUDAD = "CIUDAD"
     PORTAL_FAMILIA = "PORTAL_FAMILIA"
+    # Ajuste del diario (F05): los recuerdos de Lumi; el mapa no lo pinta y no cuenta en ningún avance.
+    LUMI = "LUMI"
 
 
 class Audiencia(StrEnum):
@@ -129,6 +131,8 @@ class TipoConteo(StrEnum):
     EVENTOS = "EVENTOS"
     REFERENCIAS_DISTINTAS = "REFERENCIAS_DISTINTAS"
     DIAS_DISTINTOS = "DIAS_DISTINTOS"
+    # Eventos por día con tope TOPE_ENTRADAS_AMISTAD_DIA: el mismo conteo que la amistad con Lumi (F05).
+    EVENTOS_TOPE_DIARIO = "EVENTOS_TOPE_DIARIO"
 
 
 class OrigenEntrada(StrEnum):

@@ -12,7 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models as modelos
-from app.core.parametros import MAXIMO_ITEMS_REGISTRO
+from app.core.parametros import MAXIMO_ITEMS_REGISTRO, UMBRALES_AMISTAD
 from datos import fijos
 from datos.ocupaciones import validar_distribucion_items
 
@@ -56,7 +56,9 @@ BLOQUES = (('T0', 1, 'Inicio', 'MISIONES_CAMPO', 'ESTUDIANTE'),
            ('T1', 2, 'Camino', 'MISIONES_CAMPO', 'ESTUDIANTE'),
            ('T2', 3, 'Decisión', 'MISIONES_CAMPO', 'ESTUDIANTE'),
            ('CIUDAD', 4, 'La ciudad', 'CIUDAD', 'ESTUDIANTE'),
-           ('FAMILIA', 1, 'Actividades para familias', 'PORTAL_FAMILIA', 'APODERADO'))
+           ('FAMILIA', 1, 'Actividades para familias', 'PORTAL_FAMILIA', 'APODERADO'),
+           # Ajuste del diario (F05): los recuerdos de Lumi; no se pinta en el mapa.
+           ('LUMI', 5, 'La historia de Lumi', 'LUMI', 'ESTUDIANTE'))
 
 # (código, bloque, título, tipo, puntaje mínimo de un CASO en puntos de satisfacción, duración estimada en minutos). El orden es el de la
 # tupla dentro de cada bloque y el contenido es el código con guiones bajos.
@@ -79,7 +81,15 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 10, 10),
                ('t-contraste', 'CIUDAD', 'Registro de contraste de intereses', 'REGISTRO', None, 10),
                ('t-apo-1', 'FAMILIA', 'Primera actividad del apoderado', 'INFORMATIVA', None, 10),
-               ('t-apo-carta', 'FAMILIA', 'Carta del apoderado', 'INFORMATIVA', None, 10))
+               ('t-apo-carta', 'FAMILIA', 'Carta del apoderado', 'INFORMATIVA', None, 10),
+               # DATO DE PRUEBA: un recuerdo de Lumi por nivel de amistad (ajuste del diario de F05).
+               ('t-lumi-1', 'LUMI', 'Cómo llegué a este mundo', 'INFORMATIVA', None, 3),
+               ('t-lumi-2', 'LUMI', 'Recuerdo de prueba 2', 'INFORMATIVA', None, 3),
+               ('t-lumi-3', 'LUMI', 'Recuerdo de prueba 3', 'INFORMATIVA', None, 3),
+               ('t-lumi-4', 'LUMI', 'Recuerdo de prueba 4', 'INFORMATIVA', None, 3),
+               ('t-lumi-5', 'LUMI', 'Recuerdo de prueba 5', 'INFORMATIVA', None, 3))
+# Los recuerdos no cuentan en el avance de la ruta ni del apoderado (opcionales) y se ven bloqueados (SIEMPRE).
+RECUERDOS_LUMI = tuple(codigo for codigo, bloque, *_ in ACTIVIDADES if bloque == 'LUMI')
 
 # Lo que cambia los valores por defecto (requerida, visibilidad SIEMPRE).
 PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
@@ -89,7 +99,8 @@ PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR
                't-lee-cuestionario': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-batalla': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-explorar': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
-               't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'}}
+               't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+               **{codigo: {'requerida': False} for codigo in RECUERDOS_LUMI}}
 
 # Texto de presentación de cada actividad (`descripcion`): el front lo muestra tal cual en el mapa y en
 # el portal del apoderado. DATO DE PRUEBA, como toda la ruta.
@@ -518,6 +529,12 @@ REGLAS = (
     ('R-t-proyecto', 'ACTIVIDAD', 't-proyecto', 'Registra al menos un paso en tu plan A para armar tu proyecto.',
      (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
 )
+# DATO DE PRUEBA: el recuerdo n se abre al llegar al nivel n de amistad: mismo umbral y mismo conteo (eventos de
+# escritura con tope diario) que la amistad con Lumi (ajuste del diario de F05).
+REGLAS += tuple(
+    (f'R-{codigo}', 'ACTIVIDAD', codigo, f'Escríbele a Lumi para que te cuente su recuerdo ({umbral} cartas).',
+     (('ESCRIBE_ENTRADA_DIARIO', None, 'EVENTOS_TOPE_DIARIO', umbral),))
+    for codigo, umbral in zip(RECUERDOS_LUMI, UMBRALES_AMISTAD, strict=True))
 
 
 # Reglas con evaluador especial (`app/services/motor/evaluadores.py`): {regla: (evaluador, parámetro)}.
@@ -843,6 +860,9 @@ def _cargar_reglas(sesion, objetivos):
     for codigo, tipo, objetivo, mensaje, condiciones in REGLAS:
         if not mensaje.strip():
             raise ValueError(f'La regla {codigo} no tiene mensaje de bloqueo')
+        # Los recuerdos de Lumi no desbloquean nada: ninguna regla depende de ellos ni de su bloque (F05).
+        if any(referencia in (*RECUERDOS_LUMI, 'LUMI') for _, referencia, _, _ in condiciones):
+            raise ValueError(f'La regla {codigo} depende de un recuerdo de Lumi o de su bloque')
         regla = modelos.ReglaDesbloqueo(codigo=codigo, nombre=f'Desbloquear {objetivo}', mensaje_bloqueo=mensaje,
             tipo_objetivo=modelos.TipoObjetivo(tipo), id_objetivo=objetivos[tipo][objetivo].id,
             evaluador_especial=EVALUADORES_REGLAS.get(codigo, (None, None))[0],

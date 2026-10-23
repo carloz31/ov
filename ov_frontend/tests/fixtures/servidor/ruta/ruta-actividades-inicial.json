@@ -654,5 +654,165 @@
     "estado": "BLOQUEADA",
     "nombre": "La ciudad",
     "numero": 4
+  },
+  {
+    "actividades": [
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (1 cartas).",
+            "regla": "R-t-lumi-1"
+          }
+        ],
+        "codigo": "t-lumi-1",
+        "contenido": "t_lumi_1",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Cómo llegué a este mundo",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 5,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (5 cartas).",
+            "regla": "R-t-lumi-2"
+          }
+        ],
+        "codigo": "t-lumi-2",
+        "contenido": "t_lumi_2",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Recuerdo de prueba 2",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 12,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (12 cartas).",
+            "regla": "R-t-lumi-3"
+          }
+        ],
+        "codigo": "t-lumi-3",
+        "contenido": "t_lumi_3",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Recuerdo de prueba 3",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 25,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (25 cartas).",
+            "regla": "R-t-lumi-4"
+          }
+        ],
+        "codigo": "t-lumi-4",
+        "contenido": "t_lumi_4",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Recuerdo de prueba 4",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 45,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (45 cartas).",
+            "regla": "R-t-lumi-5"
+          }
+        ],
+        "codigo": "t-lumi-5",
+        "contenido": "t_lumi_5",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Recuerdo de prueba 5",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "bloqueo": null,
+    "codigo": "LUMI",
+    "espacio": "LUMI",
+    "estado": "DISPONIBLE",
+    "nombre": "La historia de Lumi",
+    "numero": 5
   }
 ]

@@ -6,6 +6,7 @@ from functools import wraps
 from sqlalchemy import distinct, func, literal, select, union_all
 
 from app.core.definiciones import obtener_definiciones
+from app.core.parametros import TOPE_ENTRADAS_AMISTAD_DIA
 from app.models import Desbloqueo, EventoUso, Favorito, ProgresoActividad, TipoConteo
 
 
@@ -23,6 +24,7 @@ class ContextoConsultas:
         self.progresos = {}
         self.especiales = {}
         self.favoritos = {}
+        self.topes = {}
 
     def cargar_conteos(self, cuentas):
         faltantes = set(cuentas) - self.conteos.keys()
@@ -46,6 +48,8 @@ class ContextoConsultas:
             }
 
     def contar(self, cuenta_id, tipo, referencia, conteo):
+        if conteo == TipoConteo.EVENTOS_TOPE_DIARIO:
+            return self.contar_con_tope(cuenta_id, tipo, referencia)
         self.cargar_conteos([cuenta_id])
         return self.conteos[cuenta_id].get((tipo, referencia), {}).get(conteo, 0)
 
@@ -78,8 +82,21 @@ class ContextoConsultas:
                 Favorito.cuenta_id == cuenta_id)).tuples())
         return self.favoritos[cuenta_id]
 
+    def contar_con_tope(self, cuenta_id, tipo, referencia):
+        """Eventos por día, cada día hasta TOPE_ENTRADAS_AMISTAD_DIA (F05): una consulta por tipo y cuenta."""
+        clave = (cuenta_id, tipo, referencia)
+        if clave not in self.topes:
+            consulta = select(func.count()).select_from(EventoUso).where(
+                EventoUso.cuenta_id == cuenta_id, EventoUso.tipo == tipo)
+            if referencia is not None:
+                consulta = consulta.where(EventoUso.id_referencia == referencia)
+            por_dia = self.sesion.execute(consulta.group_by(func.date(EventoUso.fecha_hora))).scalars()
+            self.topes[clave] = sum(min(cantidad, TOPE_ENTRADAS_AMISTAD_DIA) for cantidad in por_dia)
+        return self.topes[clave]
+
     def invalidar_eventos(self, cuenta_id):
         self.conteos.pop(cuenta_id, None)
+        self.topes = {clave: valor for clave, valor in self.topes.items() if clave[0] != cuenta_id}
         self.especiales.pop(cuenta_id, None)
 
 

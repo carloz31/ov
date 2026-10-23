@@ -7,7 +7,7 @@ Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, 
 | Grupo | Tablas |
 |---|---|
 | Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash` (Argon2id), `activa`, `intentos_fallidos` y `bloqueada_hasta` para el bloqueo temporal de ingreso, B17), `salon`, `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
-| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD o PORTAL_FAMILIA, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` y `puntaje_maximo` solo en CASO, en puntos de satisfacción: el máximo es el total de necesidades del caso, y el cargador lo valida contra `CONFIGURACION_CASOS` de `ruta.py`), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado; `persona`, `ocupacion_id`, `anios_experiencia` y `cita`; el caso que lo regala no es columna: se deduce de su regla SUPERA_CASO), `pregunta_diario` (ver «Diario»), `conversacion` (`orden`, preguntas de cada rol, `preguntas_guia`, `mensaje_diferencias`; ver «Conversaciones»), `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
+| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD, PORTAL_FAMILIA o LUMI, este último para los recuerdos de Lumi: el mapa no lo pinta y sus actividades son opcionales, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` y `puntaje_maximo` solo en CASO, en puntos de satisfacción: el máximo es el total de necesidades del caso, y el cargador lo valida contra `CONFIGURACION_CASOS` de `ruta.py`), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado; `persona`, `ocupacion_id`, `anios_experiencia` y `cita`; el caso que lo regala no es columna: se deduce de su regla SUPERA_CASO), `pregunta_diario` (ver «Diario»), `conversacion` (`orden`, preguntas de cada rol, `preguntas_guia`, `mensaje_diferencias`; ver «Conversaciones»), `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
 | Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` y `respuesta_batalla` (cada intento y sus respuestas: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo`, las tablas de la tarjeta de carrera y `cuenta.opcion_inicial_id` (B11; ver «Secciones de la tarjeta») |
 | Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo`, `desbloqueo` (único por cuenta y regla; `visto`) |
 
@@ -48,6 +48,7 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
 | EVENTOS | eventos | «completó esta actividad» |
 | REFERENCIAS_DISTINTAS | referencias distintas, sin contar nulas | «8 actividades distintas»: repetir no suma |
 | DIAS_DISTINTOS | fechas calendario distintas de `fecha_hora`, sin convertir a UTC | «check-in en 3 días distintos» |
+| EVENTOS_TOPE_DIARIO | eventos por día, cada día hasta `TOPE_ENTRADAS_AMISTAD_DIA`: el mismo conteo que la amistad con Lumi (ajuste del diario de F05) | «el recuerdo n se abre al llegar a `UMBRALES_AMISTAD[n-1]` cartas» |
 
 **Evaluadores especiales** (`app/services/motor/evaluadores.py`, registro `EVALUADORES`). Reciben sesión y cuenta y leen su umbral de `regla_desbloqueo.parametro_evaluador`, no de `cantidad_minima`:
 
@@ -185,7 +186,7 @@ El registro recoge lo que el estudiante piensa o decide, y lo ve la orientadora.
 
 **Lecturas.** Preguntas, entradas y amistad exigen la sección DIARIO (409 con su mensaje); editar y borrar, no. Otros roles reciben listas vacías.
 
-**Amistad con el asistente.** Puntos = por cada día, las escrituras (eventos ESCRIBE_ENTRADA_DIARIO) hasta `TOPE_ENTRADAS_AMISTAD_DIA`; nivel según `UMBRALES_AMISTAD`. Se cuenta sobre eventos, no sobre entradas: editar o borrar no la bajan.
+**Amistad con el asistente.** Puntos = por cada día, las escrituras (eventos ESCRIBE_ENTRADA_DIARIO) hasta `TOPE_ENTRADAS_AMISTAD_DIA`; nivel según `UMBRALES_AMISTAD`. Se calcula con el conteo EVENTOS_TOPE_DIARIO del motor, el mismo que abre los recuerdos del bloque LUMI. Se cuenta sobre eventos, no sobre entradas: editar o borrar no la bajan.
 
 **Invariantes del diario.** Solo el autor lee, edita y borra sus entradas; ningún tipo de referencia lee `entrada_diario`; los contextos enviados al LLM nunca incluyen texto de entradas; la amistad nunca baja; `numero` y `numero_libre` no cambian ni se reutilizan.
 

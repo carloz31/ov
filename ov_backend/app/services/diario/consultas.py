@@ -2,13 +2,13 @@
 
 from datetime import date
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
-from app.core.parametros import TOPE_ENTRADAS_AMISTAD_DIA, UMBRALES_AMISTAD
+from app.core.parametros import UMBRALES_AMISTAD
 from app.models import (
-    Actividad, CheckIn, Cuenta, EntradaDiario, EventoUso, PreguntaDiario, Recomendacion, Rol, TipoEventoUso,
+    Actividad, CheckIn, Cuenta, EntradaDiario, PreguntaDiario, Recomendacion, Rol, TipoConteo, TipoEventoUso,
     TipoObjetivo, TipoRecomendacion, UsoPreguntaDiario,
 )
 from app.schemas.diario import (
@@ -106,10 +106,9 @@ def amistad_cuenta(sesion: Session, cuenta: Cuenta) -> AmistadAsistente:
     if cuenta.rol != Rol.ESTUDIANTE:
         return amistad(0)
     exigir_seccion(sesion, cuenta, "DIARIO")
-    por_dia = sesion.execute(select(func.count()).select_from(EventoUso).where(
-        EventoUso.cuenta_id == cuenta.id, EventoUso.tipo == TipoEventoUso.ESCRIBE_ENTRADA_DIARIO).group_by(
-        func.date(EventoUso.fecha_hora))).scalars()
-    return amistad(sum(min(cantidad, TOPE_ENTRADAS_AMISTAD_DIA) for cantidad in por_dia))
+    # El mismo conteo que desbloquea los recuerdos del bloque LUMI (F05).
+    return amistad(contexto(sesion).contar(
+        cuenta.id, TipoEventoUso.ESCRIBE_ENTRADA_DIARIO, None, TipoConteo.EVENTOS_TOPE_DIARIO))
 
 
 @usar_contexto

@@ -293,12 +293,13 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # reglas que habilitan conversaciones. F04b: 0020 se detiene antes, porque `ruta` tiene preguntas de batalla.
         # F04c: 0021 se detiene antes, porque `t-batalla` tiene vidas y destellos configurados. F02: 0022 se detiene
         # antes, porque `t-eco-ruta` retoma una elección con su lista. Ajustes Central (6): 0024 se detiene antes,
-        # porque `t-caso` tiene puntaje máximo 14 (en puntos de satisfacción).
-        with pytest.raises(RuntimeError, match='hay casos con puntaje máximo distinto de 100'):
+        # porque `t-caso` tiene puntaje máximo 14 (en puntos de satisfacción). Ajuste del diario (F05): 0027 se
+        # detiene antes, porque `ruta` tiene el bloque LUMI y condiciones con tope diario.
+        with pytest.raises(RuntimeError, match='existen bloques LUMI o condiciones con tope diario'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0024'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0027'
             for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]

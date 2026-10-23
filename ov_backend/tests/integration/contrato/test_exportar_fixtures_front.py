@@ -333,6 +333,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         'R-t-partida', 'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD',
         'R-t-opcional',
         'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA', 'R-t-adicional',
+        'R-t-lumi-1',  # Ajuste del diario (F05): la primera carta abre el primer recuerdo.
         'R-t-eco', 'R-t-diario-fija', 'R-t-diario-personal', 'R-PLAN-POR_QUE'}
     assert all(d['visto'] is False and d['fecha_hora'] == exportador.FECHA for d in avisos)
     assert [(f['codigo'], f['estado']) for f in datos['fichas-inicial']] == [
