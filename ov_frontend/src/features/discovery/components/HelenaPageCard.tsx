@@ -9,6 +9,7 @@ import type { useHelenaPages } from '../hooks/useHelenaPages'
 import { HelenaPageSummary } from './HelenaPageSummary'
 import { HelenaPageContents } from './HelenaPageContents'
 import { PartidaLlegadaSummary } from './PartidaLlegadaSummary'
+import { ScopeChip } from './ScopeChip'
 
 type ModeloLibro = ReturnType<typeof useHelenaPages>
 
@@ -23,7 +24,7 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
       title={page.title}
     >
       <div className="sx-d-helena-subtitle">
-        <span className="sx-d-tag">{page.required ? 'Para tu proyecto' : 'Opcional'}</span>
+        <ScopeChip prioritario={page.required} />
         <span>{page.subtitle}</span>
       </div>
       {page.demo && <p className="sx-d-demo">{page.avisoDemo}</p>}

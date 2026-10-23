@@ -33,9 +33,33 @@
     padding: 10px 12px;
     border-radius: 10px;
   }
+  /* Ajuste de F03: lista para revelar (también con la llegada lista), con un borde dorado suave. */
   .sx-d-helena-ready {
-    border: 2px solid var(--sx-gold);
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--sx-gold) 17%, transparent);
+    border: 2px solid color-mix(in srgb, var(--sx-gold) 70%, var(--sx-parchment-edge));
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--sx-gold) 12%, transparent);
+  }
+  .sx-d-scope {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.3;
+  }
+  .sx-d-scope svg {
+    width: 14px;
+    height: 14px;
+    flex: none;
+  }
+  .sx-d-scope-project {
+    background: color-mix(in srgb, var(--success) 62%, black);
+    color: #fff;
+  }
+  .sx-d-scope-optional {
+    border: 1px dashed color-mix(in srgb, var(--sx-parchment-muted) 70%, transparent);
+    color: var(--sx-parchment-muted);
   }
   .sx-d-helena-sealed {
     border: 2px dashed color-mix(in srgb, var(--primary) 45%, var(--sx-parchment-edge));
