@@ -130,7 +130,7 @@ test('romper el sello de la partida revela APL-PARTIDA y la página muestra sus 
   assert.match(marcado, /<strong>Tu punto de llegada<\/strong> se revela al final del camino, cuando vuelvas a responder\./)
   assert.match(marcado, /Tus respuestas, parte por parte.*Qué significa cada zona/)
   assert.match(marcado, />Ver resultado completo<svg/)
-  assert.match(marcado, /href="\/student\/profile\/helena\/partida-llegada\?guia=1"[^>]*>¿Qué significa cada zona\?/)
+  assert.doesNotMatch(marcado, /\?guia=1|¿Qué significa cada zona\?/)
   assert.doesNotMatch(marcado, /sx-d-helena-marker|puntaje|%|Revela tu punto de llegada|Se mantuvo/)
 })
 

@@ -360,7 +360,7 @@ test('vista de ruta compone el resultado por parámetro y el libro enlaza al det
   const { HelenaBookPages } = f.app.load('src/features/discovery/components/HelenaBookPages.tsx')
   const libro = html(HelenaBookPages, { model: useHelenaPages() })
   assert.match(libro, /href="\/student\/profile\/helena\/intereses"[^>]*>Ver resultado completo/)
-  assert.match(libro, /href="\/student\/profile\/helena\/intereses\?guia=1"[^>]*>¿Qué significa cada letra\?/)
+  assert.doesNotMatch(libro, /\?guia=1|¿Qué significa cada letra\?/)
   assert.doesNotMatch(libro, /Carreras que conducen a ellas|afines=1/)
 })
 

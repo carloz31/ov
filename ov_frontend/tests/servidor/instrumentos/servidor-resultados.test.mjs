@@ -237,7 +237,7 @@ test('el libro resume las dimensiones remotas y anuncia contenidos, con enlaces 
   assert.doesNotMatch(marcado, /100\s*%|Geólogo|Carreras que conducen a ellas/)
   assert.match(marcado, /Disponible en una próxima iteración/)
   assert.match(marcado, /href="\/student\/profile\/helena\/intereses"/)
-  assert.match(marcado, /href="\/student\/profile\/helena\/intereses\?guia=1"/)
+  assert.doesNotMatch(marcado, /\?guia=1/)
   assert.doesNotMatch(marcado, /act-tip-final&amp;revision=1|catalog\/careers\/civil-engineering|catalog\/professions\/geologist/)
 })
 

@@ -145,19 +145,63 @@
 }
 
 /* Tarjeta de la página I. */
+/* Una rejilla compartida (nombre | partida | flecha | llegada) para que chips y flechas queden en columna. */
+.sx-d-pl-summary {
+  container-type: inline-size;
+}
 .sx-d-pl-summary-list {
   display: grid;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 12px 8px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .sx-d-pl-summary-list li {
-  display: flex;
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px 12px;
-  flex-wrap: wrap;
+  row-gap: 6px;
+}
+.sx-d-pl-summary-list .sx-d-pl-zones {
+  display: contents;
+}
+.sx-d-pl-summary-list .sx-d-pl-chip {
+  justify-self: end;
+}
+.sx-d-pl-summary-list .sx-d-pl-zones > .sx-d-pl-chip:last-child {
+  grid-column: 4;
+  justify-self: start;
+}
+.sx-d-pl-summary-list .sx-d-pl-kept {
+  grid-column: 2 / 4;
+  justify-self: end;
+}
+/* Tarjeta angosta: el nombre arriba y las zonas debajo, siempre en las mismas columnas. */
+@container (max-width: 440px) {
+  .sx-d-pl-summary-list {
+    grid-template-columns: auto auto auto minmax(0, 1fr);
+  }
+  .sx-d-pl-summary-list li > strong {
+    grid-column: 1 / -1;
+  }
+  .sx-d-pl-summary-list .sx-d-pl-chip {
+    justify-self: start;
+  }
+  .sx-d-pl-summary-list .sx-d-pl-zones > .sx-d-pl-chip:last-child {
+    grid-column: 3;
+  }
+  .sx-d-pl-summary-list .sx-d-pl-zones > .sx-d-pl-chip:only-child {
+    grid-column: 1;
+  }
+  .sx-d-pl-summary-list .sx-d-pl-kept {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .sx-d-pl-summary-list .sx-d-pl-kept + .sx-d-pl-chip:last-child {
+    grid-column: 3;
+  }
 }
 .sx-d-pl-summary-list strong {
   font-size: 15px;

@@ -16,7 +16,6 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
   const resultadoHref = discoveryPaths.helenaPage(page.id)
   const intereses = page.tipoResultado === 'COINCIDENCIAS'
   const plano = intereses && page.perfilPlano
-  const comparacion = page.tipoResultado === 'COMPARACION'
   return (
     <Parchment
       className={`sx-d-helena-card sx-d-helena-${page.state}${page.state === 'revealed' ? ' sx-d-revealed' : ''}`}
@@ -139,19 +138,11 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
             <Link to={resultadoHref}>Ver resultado completo</Link>
           </>
         ) : (
-          <>
-            <Link className="sx-d-action sx-d-action-gold" to={resultadoHref}>
-              Ver resultado completo
-              <ChevronRight aria-hidden="true" />
-            </Link>
-            <Link to={`${resultadoHref}?guia=1`}>
-              {intereses
-                ? '¿Qué significa cada letra?'
-                : comparacion
-                  ? '¿Qué significa cada zona?'
-                  : '¿Qué es cada inteligencia?'}
-            </Link>
-          </>
+          // La guía de cada tipo, letra o zona se abre desde la vista explicada, no desde la tarjeta.
+          <Link className="sx-d-action sx-d-action-gold" to={resultadoHref}>
+            Ver resultado completo
+            <ChevronRight aria-hidden="true" />
+          </Link>
         )}
       </footer>
     </Parchment>
