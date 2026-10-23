@@ -145,7 +145,8 @@ test('la página I cuenta como descifrada desde la partida', () => {
   libroServidor(app, PARTIDA())
   const { modelo, marcado } = useTarjeta(app)
   assert.equal(modelo.pages.filter((p) => p.state === 'revealed').length, 1)
-  assert.match(marcado, /Página I · descifrada · falta la llegada/)
+  // Con la llegada ya completada (avance «final»), la tarjeta pasa al sello de la llegada.
+  assert.match(marcado, /Página I · tu llegada está lista/)
 })
 
 test('la rama COMPARACION no lee puntajes, porcentajes ni diferencias', () => {

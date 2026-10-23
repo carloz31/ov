@@ -38,6 +38,54 @@
     border: 2px solid color-mix(in srgb, var(--sx-gold) 70%, var(--sx-parchment-edge));
     box-shadow: 0 0 0 5px color-mix(in srgb, var(--sx-gold) 12%, transparent);
   }
+  /* Ajuste de F03: el sello grande es la única acción de la tarjeta lista; brillo fijo, sin parpadeo. */
+  .sx-d-reveal-box {
+    display: grid;
+    justify-items: center;
+    padding: 28px 20px 22px;
+    background: color-mix(in srgb, var(--card) 80%, var(--sx-parchment));
+  }
+  .sx-d-reveal-box p {
+    max-width: 34ch;
+    line-height: 1.5;
+  }
+  .sx-d-reveal-box p + p {
+    margin-top: 10px;
+  }
+  .sx-d-reveal-seal {
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+  }
+  .sx-d-reveal-seal[aria-disabled='true'] {
+    cursor: default;
+  }
+  .sx-d-reveal-seal:focus-visible {
+    outline: 3px solid var(--sx-gold-deep);
+    outline-offset: 8px;
+  }
+  .sx-d-reveal-seal .sx-d-seal {
+    width: 132px;
+    height: 132px;
+    background: var(--sx-gold);
+    color: var(--sx-parchment-ink);
+    border-color: var(--sx-gold-deep);
+    animation: none;
+    box-shadow:
+      0 0 0 10px color-mix(in srgb, var(--sx-gold) 16%, transparent),
+      0 0 34px color-mix(in srgb, var(--sx-gold) 45%, transparent);
+  }
+  .sx-d-reveal-seal .sx-d-seal svg {
+    width: 46px;
+    height: 46px;
+  }
+  .sx-d-reveal-box .sx-d-reveal-hint {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sx-parchment-muted);
+  }
   .sx-d-scope {
     display: inline-flex;
     align-items: center;

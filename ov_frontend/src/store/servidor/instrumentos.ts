@@ -6,6 +6,7 @@ import {
   APLICACION_PARTIDA,
   APLICACION_RIASEC,
   aplicacionesReveladas,
+  estadoAplicacion,
 } from '@/lib/servidor/adaptadoresInstrumentos'
 import { cuentaActiva } from './cuenta'
 import {
@@ -78,11 +79,13 @@ async function consultarInstrumentos(): Promise<RespuestaServidor<null>> {
   const conComparacion =
     resultados[APLICACION_PARTIDA.aplicacion] && resultados[APLICACION_LLEGADA.aplicacion]
   const conHistorial = resultados[APLICACION_RIASEC.aplicacion]?.perfil_plano
-  const [comparacion, historial] = await Promise.all([
+  const partidaLista = estadoAplicacion(avance.datos, resultados, APLICACION_PARTIDA.aplicacion) === 'ready'
+  const [comparacion, historial, catalogo] = await Promise.all([
     conComparacion
       ? consultarCuenta((c) => apiInstrumentos.obtenerComparacion(c, APLICACION_PARTIDA.instrumento))
       : null,
     conHistorial ? consultarCuenta((c) => apiInstrumentos.obtenerHistorial(c, APLICACION_RIASEC.instrumento)) : null,
+    partidaLista ? apiInstrumentos.obtenerCatalogo() : null,
   ])
   if (comparacion && comparacion.tipo !== 'ok') return fallo(comparacion)
   if (historial && historial.tipo !== 'ok') return fallo(historial)
@@ -100,6 +103,10 @@ async function consultarInstrumentos(): Promise<RespuestaServidor<null>> {
       resultados,
       comparacion: comparacion?.datos ?? null,
       historialRiasec: historial?.datos ?? null,
+      partesPartida:
+        catalogo?.tipo === 'ok'
+          ? (catalogo.datos.find((i) => i.codigo === APLICACION_PARTIDA.instrumento)?.dimensiones.length ?? null)
+          : null,
     },
   })
   return { tipo: 'ok', datos: null }

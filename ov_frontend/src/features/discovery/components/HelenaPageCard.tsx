@@ -10,6 +10,7 @@ import { HelenaPageSummary } from './HelenaPageSummary'
 import { HelenaPageContents } from './HelenaPageContents'
 import { PartidaLlegadaSummary } from './PartidaLlegadaSummary'
 import { ScopeChip } from './ScopeChip'
+import { RevealSeal } from './RevealSeal'
 
 type ModeloLibro = ReturnType<typeof useHelenaPages>
 
@@ -17,9 +18,11 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
   const resultadoHref = discoveryPaths.helenaPage(page.id)
   const intereses = page.tipoResultado === 'COINCIDENCIAS'
   const plano = intereses && page.perfilPlano
+  // Ajuste de F03: la llegada lista ocupa la tarjeta igual que el primer revelado.
+  const lista = page.state === 'ready' || !!page.selloLlegada
   return (
     <Parchment
-      className={`sx-d-helena-card sx-d-helena-${page.state}${page.state === 'revealed' ? ' sx-d-revealed' : ''}`}
+      className={`sx-d-helena-card sx-d-helena-${lista ? 'ready' : page.state}${page.state === 'revealed' ? ' sx-d-revealed' : ''}`}
       label={page.antetitulo}
       title={page.title}
     >
@@ -68,12 +71,15 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
             </div>
           )}
         </>
-      ) : page.state === 'ready' ? (
-        <div className="sx-d-helena-box sx-d-helena-ready-box">
-          <Seal state="ready" large />
-          <p>{page.textoSello}</p>
+      ) : lista ? (
+        <>
+          <RevealSeal
+            {...page.revelado}
+            ocupado={!!page.revelacionBloqueada || model.revelando}
+            romper={() => model.revelarPagina(page.id)}
+          />
           {model.errorAccion && <p role="alert">{model.errorAccion}</p>}
-        </div>
+        </>
       ) : (
         <>
           {model.opening === page.id && (
@@ -82,70 +88,50 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
             </div>
           )}
           {page.partidaLlegada ? (
-            <PartidaLlegadaSummary modelo={page.partidaLlegada} conSello={!!page.selloLlegada} />
+            <PartidaLlegadaSummary modelo={page.partidaLlegada} />
           ) : (
             <HelenaPageSummary resumen={page.resumen} plano={plano} />
           )}
           {page.resumen.contenidos.length > 0 && <HelenaPageContents contenidos={page.resumen.contenidos} />}
-          {page.selloLlegada && (
-            <div className="sx-d-helena-box sx-d-helena-ready-box">
-              <Seal state="ready" />
-              <button
-                type="button"
-                className="sx-d-action sx-d-action-gold"
-                disabled={model.revelando}
-                onClick={() => model.revelarPagina(page.id)}
-              >
-                Revela tu punto de llegada
-              </button>
-            </div>
-          )}
-          {model.errorAccion && (page.selloLlegada || plano) && <p role="alert">{model.errorAccion}</p>}
+          {model.errorAccion && plano && <p role="alert">{model.errorAccion}</p>}
         </>
       )}
-      <footer className="sx-d-helena-actions">
-        {page.state === 'sealed' ? (
-          <Link className="sx-d-action" to={page.activityHref ?? appPaths.student.exploration}>
-            Ir a la siguiente misión
-          </Link>
-        ) : page.state === 'ready' ? (
-          <button
-            type="button"
-            className="sx-d-action sx-d-action-gold"
-            disabled={page.revelacionBloqueada || model.revelando}
-            onClick={() => model.revelarPagina(page.id)}
-          >
-            Romper el sello
-          </button>
-        ) : plano && page.reinicioApi ? (
-          <>
-            {page.puedeReiniciar && (
-              <button
-                type="button"
-                className="sx-d-action"
-                disabled={model.revelando}
-                onClick={model.reiniciarIntereses}
-              >
-                Volver a hacer las misiones
-              </button>
-            )}
-            <Link to={resultadoHref}>Ver resultado completo</Link>
-          </>
-        ) : plano ? (
-          <>
-            <Link className="sx-d-action" to="/student/exploration?punto=mara-test">
-              Revisar mis encuentros con Mara
+      {!lista && (
+        <footer className="sx-d-helena-actions">
+          {page.state === 'sealed' ? (
+            <Link className="sx-d-action" to={page.activityHref ?? appPaths.student.exploration}>
+              Ir a la siguiente misión
             </Link>
-            <Link to={resultadoHref}>Ver resultado completo</Link>
-          </>
-        ) : (
-          // La guía de cada tipo, letra o zona se abre desde la vista explicada, no desde la tarjeta.
-          <Link className="sx-d-action sx-d-action-gold" to={resultadoHref}>
-            Ver resultado completo
-            <ChevronRight aria-hidden="true" />
-          </Link>
-        )}
-      </footer>
+          ) : plano && page.reinicioApi ? (
+            <>
+              {page.puedeReiniciar && (
+                <button
+                  type="button"
+                  className="sx-d-action"
+                  disabled={model.revelando}
+                  onClick={model.reiniciarIntereses}
+                >
+                  Volver a hacer las misiones
+                </button>
+              )}
+              <Link to={resultadoHref}>Ver resultado completo</Link>
+            </>
+          ) : plano ? (
+            <>
+              <Link className="sx-d-action" to="/student/exploration?punto=mara-test">
+                Revisar mis encuentros con Mara
+              </Link>
+              <Link to={resultadoHref}>Ver resultado completo</Link>
+            </>
+          ) : (
+            // La guía de cada tipo, letra o zona se abre desde la vista explicada, no desde la tarjeta.
+            <Link className="sx-d-action sx-d-action-gold" to={resultadoHref}>
+              Ver resultado completo
+              <ChevronRight aria-hidden="true" />
+            </Link>
+          )}
+        </footer>
+      )}
     </Parchment>
   )
 }

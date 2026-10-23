@@ -15,6 +15,7 @@ import { ciudadDisponible, textoRequisito } from '@/lib/servidor/adaptadores'
 import { APLICACION_RIASEC } from '@/lib/servidor/adaptadoresInstrumentos'
 
 import { resultPages } from '../data/resultPages'
+import { ADENTRO_PARTIDA_SIN_PARTES, TEXTO_LLEGADA_LISTA, TEXTOS_REVELADO } from '../data/revealTexts'
 import { resumenPagina } from '../lib/resultPage'
 import { carrerasResultado, ocupacionesResultado } from '../lib/resultCatalog'
 import { paginasLibroApi, type ExtrasPaginaApi } from '../lib/helenaPagesApi'
@@ -24,6 +25,22 @@ import type { ContenidoPagina } from '../types'
 // F03: en api, el perfil plano invita a repetir las misiones (HU-095); con el reinicio usado, ya no.
 const TEXTO_PLANO_USADO = 'Tus respuestas no distinguen un tipo de interés.'
 const TEXTO_PLANO_API = `${TEXTO_PLANO_USADO} Puedes volver a hacer las misiones una vez.`
+
+// Ajuste de F03: lo que dice la tarjeta lista para revelar (o con la llegada lista).
+function textosRevelado(id: InstrumentPageId, llegada: boolean, partes: number | null | undefined) {
+  const textos = TEXTOS_REVELADO[llegada ? 'llegada' : id]
+  return {
+    llegada,
+    texto: llegada
+      ? TEXTO_LLEGADA_LISTA
+      : `Helena terminó de leer tus respuestas. Rompe el sello para descubrir ${textos.descubrir}.`,
+    adentro: !textos.adentro.includes('{partes}')
+      ? textos.adentro
+      : partes
+        ? textos.adentro.replace('{partes}', String(partes))
+        : ADENTRO_PARTIDA_SIN_PARTES,
+  }
+}
 
 // Ajuste de F03: «En tu resultado completo» de partida y llegada, según su estado.
 const CONTENIDOS_PARTIDA_LLEGADA: Record<'partida' | 'completo', ContenidoPagina[]> = {
@@ -192,11 +209,11 @@ export function useHelenaPages() {
         tipoResultado,
         activityHref: servidorPagina ? (p.faltante?.href ?? p.activityHref) : p.activityHref,
         etiquetaDemo: modoApi ? 'Disponible en una próxima iteración · ' : 'Demostración · ',
-        antetitulo: `Página ${p.numeral} · ${p.state === 'sealed' ? 'sellada' : p.state === 'ready' ? 'lista para revelar' : 'descifrada'}${partidaLlegada && !partidaLlegada.completo ? ' · falta la llegada' : ''}`,
+        antetitulo: p.selloLlegada
+          ? `Página ${p.numeral} · tu llegada está lista`
+          : `Página ${p.numeral} · ${p.state === 'sealed' ? 'sellada' : p.state === 'ready' ? 'lista para revelar' : 'descifrada'}${partidaLlegada && !partidaLlegada.completo ? ' · falta la llegada' : ''}`,
         avisoDemo: `${modoApi ? 'Disponible en una próxima iteración · ' : 'Demostración · '}${p.state === 'sealed' ? 'Este instrumento aún no está disponible.' : 'Este ejemplo no es tu resultado personal.'}`,
-        textoSello: comparacion
-          ? 'Helena terminó de leer tus respuestas. Rompe el sello para descubrir tu punto de partida.'
-          : `Helena terminó de leer tus respuestas. Rompe el sello para descubrir ${coincidencias ? 'tu código de interés' : 'tus inteligencias más desarrolladas'}.`,
+        revelado: textosRevelado(p.id, !!p.selloLlegada, libro.partesPartida),
         mostrarRequisito: servidorPagina && !!requisito,
         requisito,
         revelacionBloqueada: modoApi && (servidorPagina ? !p.aplicacionSello : !servidor.resultadoRiasec),

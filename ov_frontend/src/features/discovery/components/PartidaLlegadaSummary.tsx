@@ -3,7 +3,7 @@ import { TEXTO_SIN_AVANCE, type ModeloPartidaLlegada } from '../lib/partidaLlega
 import { ZoneChips } from './ZoneChips'
 
 // Ajuste de F03: zonas de la página I del libro, en sus dos estados (solo partida; partida y llegada).
-export function PartidaLlegadaSummary({ modelo, conSello }: { modelo: ModeloPartidaLlegada; conSello: boolean }) {
+export function PartidaLlegadaSummary({ modelo }: { modelo: ModeloPartidaLlegada }) {
   const total = modelo.dimensiones.length
   return (
     <div className="sx-d-helena-summary sx-d-pl-summary">
@@ -23,14 +23,12 @@ export function PartidaLlegadaSummary({ modelo, conSello }: { modelo: ModeloPart
             : TEXTO_SIN_AVANCE}
         </p>
       ) : (
-        !conSello && (
-          <p className="sx-d-pl-sealed">
-            <LockKeyhole aria-hidden="true" />
-            <span>
-              <strong>Tu punto de llegada</strong> se revela al final del camino, cuando vuelvas a responder.
-            </span>
-          </p>
-        )
+        <p className="sx-d-pl-sealed">
+          <LockKeyhole aria-hidden="true" />
+          <span>
+            <strong>Tu punto de llegada</strong> se revela al final del camino, cuando vuelvas a responder.
+          </span>
+        </p>
       )}
     </div>
   )

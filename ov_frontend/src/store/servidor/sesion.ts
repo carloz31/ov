@@ -46,6 +46,9 @@ export type EstadoInstrumentos = {
   comparacion: ComparacionAutopercepcion | null
   // Historial de TEST-RIASEC, solo con perfil plano: dice si el reinicio ya se usó.
   historialRiasec: ResultadoHistorico[] | null
+  // Ajuste de F03: dimensiones de partida y llegada en el catálogo, solo con la partida lista para revelar
+  // («tu zona en las N partes»). Si el catálogo no responde, queda en null y el texto no cuenta las partes.
+  partesPartida?: number | null
 }
 // Ajuste de F03: ítems y respuestas de las actividades de APL-PARTIDA, para la vista con solo la partida. Se
 // piden al abrir esa vista; tienen su propio estado para que un fallo no oculte las zonas.
