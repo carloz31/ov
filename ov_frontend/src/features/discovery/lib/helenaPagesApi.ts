@@ -1,6 +1,6 @@
 // F03: páginas del libro de Helena en api, leídas del avance y los resultados del servidor.
 // Orden: I Partida y llegada, II Intereses, III Inteligencias, IV Habilidades (estas dos siguen de ejemplo).
-import { actividadServidor, resultadoHelenaCompleto } from '@/lib/servidor/adaptadores'
+import { actividadServidor, ciudadDisponible, resultadoHelenaCompleto } from '@/lib/servidor/adaptadores'
 import {
   APLICACION_LLEGADA,
   APLICACION_PARTIDA,
@@ -39,6 +39,9 @@ export type ExtrasPaginaApi = {
 
 export function hrefActividad(bloques: BloqueActividades[] | null, codigo: string) {
   const enCiudad = bloques?.some((b) => b.codigo === 'CIUDAD' && b.actividades.some((a) => a.codigo === codigo))
+  // Primero se entra al bloque: con la Ciudad cerrada, el enlace va a la Ciudad sin actividad, y el mapa lleva
+  // al Camino con el mensaje de Lumi sobre lo que falta.
+  if (enCiudad && !ciudadDisponible(bloques)) return '/student/exploration'
   return `${enCiudad ? '/student/exploration' : '/student/missions'}?actividad=${encodeURIComponent(codigo)}`
 }
 

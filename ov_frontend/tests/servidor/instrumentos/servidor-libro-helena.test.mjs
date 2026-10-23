@@ -86,6 +86,16 @@ test('con la Ciudad abierta, intereses pide su primera misión con el título de
   assert.deepEqual(copia(intereses.missions), { done: 0, total: 2 })
 })
 
+test('con la Ciudad cerrada, «Ir a la siguiente misión» de intereses entra primero a la Ciudad, sin la actividad', async () => {
+  const { useHelenaPages } = await libro({ etapa: 't1', avance: 'partida-lista' })
+  const intereses = pagina(useHelenaPages(), 'intereses')
+  assert.equal(intereses.state, 'sealed')
+  // El mapa de la Ciudad cerrada lleva al Camino con el mensaje de Lumi; la actividad no se abre.
+  assert.equal(intereses.activityHref, '/student/exploration')
+  const partida = pagina(useHelenaPages(), 'partida-llegada')
+  assert.equal(partida.activityHref ?? '', '')
+})
+
 test('romper el sello de la partida revela APL-PARTIDA y la página muestra sus zonas en palabras', async () => {
   const { app, useHelenaPages } = await libro({
     avance: 'partida-lista',

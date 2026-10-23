@@ -405,3 +405,16 @@ test('completar t-cierre-inicio encola para revelar las opcionales que su bloque
     ],
   )
 })
+
+test('una actividad de la Ciudad cerrada no reescribe la dirección: el mapa es quien lleva al Camino', () => {
+  // Regresión: este efecto corría después del del mapa y devolvía a la Ciudad con `?punto=`.
+  const app = fixtureServidor({ ruta: '/student/exploration?actividad=t-mision-intereses' })
+  app.load('src/store/servidor/sesion.ts').publicar({
+    actividades: { datos: jsonServidor('ruta/ruta-actividades-t1'), estado: 'listo', error: null },
+  })
+  const { useCityAccess } = app.load('src/features/adventure/hooks/useCityAccess.ts')
+  const acceso = app.mount(useCityAccess).render()
+  assert.equal(acceso.activity, undefined)
+  assert.equal(app.query.get('actividad'), 't-mision-intereses')
+  assert.equal(app.query.has('punto'), false)
+})

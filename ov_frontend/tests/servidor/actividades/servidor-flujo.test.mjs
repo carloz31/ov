@@ -325,7 +325,9 @@ test('el mapa y los enlaces directos no usan límites de demo ni abren TIP o des
       .length,
     0,
   )
-  assert.equal(app.query.has('actividad'), false)
+  // Con la Ciudad cerrada, `useCityAccess` no reescribe la dirección: el mapa lleva al Camino con el mensaje
+  // de Lumi (si la reescribiera, devolvería a la Ciudad).
+  assert.equal(app.query.has('punto'), false)
   mounted.unmount()
   const source = readFileSync('src/features/activities/hooks/useActivityCompletion.ts', 'utf8')
   assert.equal((source.match(/await completarActividad\(/g) ?? []).length, 1)
