@@ -111,7 +111,6 @@ export function BackpackCard({
           unlocked={unlocked}
           requisito={requirement.text}
           onOpen={onOpen}
-          onRequirement={onRequirement}
         />
       ) : unlocked ? (
         <TarjetaTestimonio
@@ -136,20 +135,18 @@ export function BackpackCard({
   )
 }
 
-// Ajustes Central (7): testimonio del servidor con la tarjeta del prototipo. Bloqueado, toda la tarjeta abre el
-// pop up de requisito (como las fichas bloqueadas, F04), que dice qué misión lo desbloquea.
+// Ajustes Central (7): testimonio del servidor con la tarjeta del prototipo. Bloqueado no tiene acción: la
+// tarjeta ya muestra la pista y la misión que lo desbloquea, sin pop up de requisito.
 function TestimonioServidor({
   resource,
   unlocked,
   requisito,
   onOpen,
-  onRequirement,
 }: {
   resource: TravelResource
   unlocked: boolean
   requisito: string
   onOpen: () => void
-  onRequirement: () => void
 }) {
   const [nombre, rol] = resource.author?.split(' · ') ?? []
   return unlocked ? (
@@ -162,9 +159,6 @@ function TestimonioServidor({
       onEscuchar={onOpen}
     />
   ) : (
-    <button type="button" className="sx-b-voice-locked" onClick={onRequirement}>
-      <VozPorDescubrir titulo={resource.title} intriga={resource.summary} requisito={requisito} />
-      <span className="sr-only">Bloqueado. Ver cómo conocer este testimonio.</span>
-    </button>
+    <VozPorDescubrir titulo={resource.title} intriga={resource.summary} requisito={requisito} />
   )
 }

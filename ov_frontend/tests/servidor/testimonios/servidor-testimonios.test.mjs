@@ -102,6 +102,10 @@ test('la mochila abre el testimonio en el visor y registra su vista, sin «más 
     /llega pronto/,
   )
   assert.match(vista, /resource=\{selected && isUnlocked\(selected\) \? selected : undefined\}/)
+  // Bloqueado, la tarjeta no tiene acción: sin pop up de requisito.
+  const tarjeta = readFileSync('src/features/backpack/components/BackpackCard.tsx', 'utf8')
+  const servidor = tarjeta.slice(tarjeta.indexOf('function TestimonioServidor'))
+  assert.doesNotMatch(servidor, /onRequirement|<button/)
   // Abierto desde un cierre (`?ficha=`), también registra su vista.
   assert.match(
     hook,
