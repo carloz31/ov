@@ -316,3 +316,7 @@
     justify-items: start;
   }
 }
+.sx-d-pl-item .sx-d-pl-chip {
+  max-width: 100%;
+  white-space: normal;
+}
