@@ -86,25 +86,24 @@ export function useActivityFinish(
   })
   // F05: en api, la pregunta que la acción dejó en el diario (su texto, o el nombre si está por redactar).
   const entrada = modoApi ? entradasDiario[0] : undefined
+  // Ajuste del diario (F05): una carta personalizada aún sin texto no muestra pregunta (ni la base) y lleva al buzón.
+  const enlaceLocal = `${appPaths.student.journal}?${new URLSearchParams({
+    activity: activity.id,
+    title: activity.titulo,
+    prompt: activity.promptDiario ?? '',
+  })}`
   const preguntaDiario = entrada
-    ? { texto: entrada.texto ?? entrada.nombre, titulo: 'Lumi te dejó una pregunta en tu diario' }
+    ? {
+        texto: entrada.personalizada && entrada.texto === null ? null : (entrada.texto ?? entrada.nombre),
+        enlace: `${appPaths.student.journal}?${new URLSearchParams({ pregunta: entrada.codigo })}`,
+      }
     : !modoApi && activity.promptDiario
-      ? { texto: activity.promptDiario, titulo: undefined }
+      ? { texto: activity.promptDiario, enlace: enlaceLocal }
       : undefined
   return {
     resumen,
     preguntaDiario,
     abrirLibro: () => navigate('/student/profile/helena'),
-    escribirDiario: () =>
-      entrada
-        ? navigate(`${appPaths.student.journal}?${new URLSearchParams({ pregunta: entrada.codigo })}`)
-        : navigate(
-            `${appPaths.student.journal}?${new URLSearchParams({
-              activity: activity.id,
-              title: activity.titulo,
-              prompt: activity.promptDiario ?? '',
-            })}`,
-          ),
     volverAlMapa,
   }
 }

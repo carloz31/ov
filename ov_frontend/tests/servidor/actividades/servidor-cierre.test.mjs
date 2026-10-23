@@ -208,10 +208,11 @@ test('las secciones usan enlaces semánticos, límites, diario accesible e insig
   assert.match(mochila, /Ver 1 testimonio más/)
   assert.match(mochila, /href="\/student\/resources\?kind=testimonial&amp;ficha=t-0"/)
   assert.match(mochila, /href="\/student\/resources\?kind=sheet"/)
-  assert.match(
-    render('FinishJournalSection', { pregunta: '¿Qué aprendiste?', nueva: true, onWrite() {} }),
-    /aria-label="Pregunta nueva"/,
-  )
+  // Ajuste del diario de F05 (autorizado por la spec): la carta es una fila sin badge ni botón.
+  const carta = render('FinishJournalSection', { pregunta: '¿Qué aprendiste?', enlace: '/student/journal' })
+  assert.match(carta, /Lumi te dejó una carta en tu buzón/)
+  assert.match(carta, /Leer en el diario/)
+  assert.doesNotMatch(carta, /<button|Nueva/)
   const medallas = render('FinishMedalsSection', { medallas: r.medallas })
   assert.match(medallas, /href="\/student\/profile\?section=passport"/)
   assert.match(medallas, /<small>Subiste de nivel<\/small>/)
@@ -311,11 +312,8 @@ test('el cierre API usa solo el recibo y conserva las acciones de diario y mapa'
   const m = hook(activity, recibo.nuevos_desbloqueos, false)
   assert.equal(m.resumen.totalRecursos, 0)
   assert.equal(m.resumen.extras.length, 1)
-  m.escribirDiario()
-  const diario = new URL(f.app.navigations.at(-1), 'https://prueba.local')
-  assert.equal(diario.searchParams.get('activity'), 'act-tip-14')
-  assert.equal(diario.searchParams.get('prompt'), activity.promptDiario)
-  assert.equal(diario.searchParams.get('title'), activity.titulo)
+  // Ajuste del diario de F05: en api, la carta del cierre sale de `entradas_desbloqueadas`, no de `promptDiario`.
+  assert.equal(m.preguntaDiario, undefined)
   const Finish = f.app.load('src/features/activities/components/FinishScreen.tsx').FinishScreen
   let cerrado = false
   const tree = Finish({

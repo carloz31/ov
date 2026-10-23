@@ -22,7 +22,7 @@ export function FinishScreen({
   desbloqueosServidor?: DesbloqueoNuevo[]
   entradasDiario?: EntradaDesbloqueada[]
 }) {
-  const { resumen, escribirDiario, preguntaDiario } = useActivityFinish(
+  const { resumen, preguntaDiario } = useActivityFinish(
     activity,
     desbloqueosServidor,
     yaCompletada,
@@ -31,7 +31,16 @@ export function FinishScreen({
   const mochila = resumen.modo === 'recursos'
   // Con mochila, la tarjeta tiene dos columnas; «Se abrió para ti» va a la derecha si la mochila es corta.
   const novedades = mochila || resumen.modo === 'soloExtras'
-  const abierto = novedades && resumen.extras.length > 0 && <FinishExtrasSection extras={resumen.extras} />
+  // Ajuste del diario (F05): la carta del buzón va como una fila justo debajo de «Se abrió para ti».
+  const carta = resumen.diario.visible && preguntaDiario && (
+    <FinishJournalSection pregunta={preguntaDiario.texto} enlace={preguntaDiario.enlace} />
+  )
+  const abierto = (
+    <>
+      {novedades && resumen.extras.length > 0 && <FinishExtrasSection extras={resumen.extras} />}
+      {carta}
+    </>
+  )
   return (
     <div className="sx-card-stage">
       <section
@@ -56,14 +65,6 @@ export function FinishScreen({
           </div>
           {novedades && resumen.medallas.length > 0 && <FinishMedalsSection medallas={resumen.medallas} />}
           {!resumen.abiertoAlLado && abierto}
-          {resumen.diario.visible && preguntaDiario && (
-            <FinishJournalSection
-              pregunta={preguntaDiario.texto}
-              nueva={resumen.diario.nueva}
-              onWrite={escribirDiario}
-              titulo={preguntaDiario.titulo}
-            />
-          )}
         </div>
         {mochila && (
           <div className="sx-finish-side">

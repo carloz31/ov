@@ -1693,7 +1693,7 @@ test('immersive finish shows saved sheets, narrative rewards and the prompted jo
   const { FinishScreen } = load(path.resolve('src/features/activities/components/FinishScreen.tsx'))
   journeyStore.updateJourney(() => ({ ...journeyLogic.initialJourney(), resources: ['ficha-mitos'], progress: { [activity.id]: { estado: 'completada' } } }))
   const html = renderToStaticMarkup(React.createElement(MemoryRouter, {}, React.createElement(FinishScreen, { activity, onClose() {} })))
-  for (const text of ['Este hallazgo viaja contigo.', 'Nuevo en tu mochila', 'Una pregunta para tu diario', 'Escribir en mi diario', 'Volver al mapa']) assert.ok(html.includes(text))
+  for (const text of ['Este hallazgo viaja contigo.', 'Nuevo en tu mochila', 'Lumi te dejó una carta en tu buzón', 'Leer en el diario', 'Volver al mapa']) assert.ok(html.includes(text))
   // F04d: la ficha obtenida se abre con el visor, encima del cierre.
   assert.match(html, /<button type="button" class="sx-finish-sheet">/)
   if (!activity.recompensa.mensajeFin.startsWith('Obtuviste:')) assert.ok(html.includes(activity.recompensa.mensajeFin))
