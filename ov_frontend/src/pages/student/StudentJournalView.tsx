@@ -11,6 +11,8 @@ import { DailyQuestionCard } from '@/features/journal/components/DailyQuestionCa
 import { BuzonLumi } from '@/features/journal/components/BuzonLumi'
 import { LumiBondPanel } from '@/features/journal/components/LumiBondPanel'
 import { CuadernoDiario } from '@/features/journal/components/CuadernoDiario'
+import { HistoriaLumi } from '@/features/journal/components/HistoriaLumi'
+import { StudentActivityPlayer } from '@/features/activities/components/StudentActivityPlayer'
 function StudentJournalView() {
   const {
     state,
@@ -49,7 +51,24 @@ function StudentJournalView() {
     diarioServidor,
     hoy,
     buzon,
+    historia,
+    capitulo,
+    verCapitulo,
+    cerrarCapitulo,
   } = useJournalPage()
+  // Ajuste del diario (F05): un recuerdo de Lumi se ve en el reproductor de actividades y vuelve al diario.
+  if (capitulo)
+    return (
+      <div className="sx-player-host">
+        <StudentActivityPlayer
+          key={capitulo.id}
+          activity={capitulo}
+          imageUrl="/images/background/forest.png"
+          onClose={cerrarCapitulo}
+          salida={{ texto: 'Volver al diario', onClick: cerrarCapitulo }}
+        />
+      </div>
+    )
   const abrirEntrada = (id: string) => {
     setSelectedId(id)
     setScreen('detail')
@@ -87,7 +106,13 @@ function StudentJournalView() {
               actualizar={buzon.enRedaccion.length ? buzon.actualizar : undefined}
             />
           }
-          lumi={<LumiBondPanel bond={bond} />}
+          lumi={
+            <LumiBondPanel
+              bond={bond}
+              siguienteRecuerdo={historia.siguienteRecuerdo}
+              historia={<HistoriaLumi capitulos={historia.capitulos} onVer={(c) => verCapitulo(c.codigo)} />}
+            />
+          }
           cuaderno={
             <CuadernoDiario
               entries={entries}

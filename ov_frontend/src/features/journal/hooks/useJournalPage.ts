@@ -13,6 +13,7 @@ import { getLumiBond, lumiBondServidor } from '@/features/journal/lib/lumiBond'
 import { useDiarioServidor } from '@/features/journal/hooks/useDiarioServidor'
 import { usePreguntaDeHoy } from '@/features/journal/hooks/usePreguntaDeHoy'
 import { useBuzonLumi } from '@/features/journal/hooks/useBuzonLumi'
+import { useHistoriaLumi } from '@/features/journal/hooks/useHistoriaLumi'
 import { borrarEntrada, editarEntrada, escribirEntrada } from '@/store/servidor/diario'
 import { asegurarSeccion } from '@/store/servidor/secciones'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
@@ -102,11 +103,22 @@ export function useJournalPage() {
   const avisoId = useRef(0)
   const setSaveNotice = (aviso: AvisoDiario | null) =>
     guardarAviso(aviso && { ...aviso, id: ++avisoId.current })
+  // Ajuste del diario (F05): la historia de Lumi. Un capítulo se abre en el reproductor de actividades (`capitulo`);
+  // el que abre una carta recién guardada espera a que se vuelva a la portada (`capituloPendiente`). `?memory=n`
+  // (aviso de un recuerdo nuevo) abre el capítulo n si ya está abierto.
+  const historia = useHistoriaLumi(bond)
+  const [capitulo, setCapitulo] = useState<string>()
+  const [capituloPendiente, setCapituloPendiente] = useState<string>()
   const requestedMemory = Number(searchParams.get('memory'))
+  const [memoriaAbierta, setMemoriaAbierta] = useState<number>()
   useEffect(() => {
-    if (Number.isInteger(requestedMemory) && requestedMemory >= 1 && requestedMemory <= bond.memoriesOpened)
-      setScreen('home')
-  }, [requestedMemory, bond.memoriesOpened])
+    if (!Number.isInteger(requestedMemory) || memoriaAbierta === requestedMemory) return
+    const pedido = historia.capitulos[requestedMemory - 1]
+    if (!pedido?.desbloqueado) return
+    setMemoriaAbierta(requestedMemory)
+    setScreen('home')
+    setCapitulo(pedido.codigo)
+  }, [requestedMemory, memoriaAbierta, historia.capitulos])
   const locales = useMemo(
     () => [...state.journal].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
     [state.journal],
@@ -175,6 +187,11 @@ export function useJournalPage() {
     setSelectedId(id)
     setScreen('detail')
   }, [servidor.activo, servidor.entradas, entradaPedida, entradaAbierta])
+  useEffect(() => {
+    if (screen !== 'home' || !capituloPendiente) return
+    setCapitulo(capituloPendiente)
+    setCapituloPendiente(undefined)
+  }, [screen, capituloPendiente])
   const responder = useRef(responderCarta)
   responder.current = responderCarta
   // `?pregunta=` (cierre de una actividad o drawer): abre el editor solo si la carta está lista; sellada o en
@@ -225,6 +242,11 @@ export function useJournalPage() {
       return setSaveNotice(avisoError('No se pudo guardar', respuesta))
     setDestino({})
     setScreen('home')
+    // F05: la carta que abre un recuerdo (también la primera, el recuerdo 1) lo deja listo para abrirse en la portada.
+    const recuerdo = respuesta.datos.nuevos_desbloqueos.find(
+      (d) => d.tipo_objetivo === 'ACTIVIDAD' && historia.esRecuerdo(d.objetivo.codigo),
+    )
+    if (recuerdo) setCapituloPendiente(recuerdo.objetivo.codigo)
     // La amistad cuenta escrituras con tope diario: se sabe si sumó comparando los puntos.
     const amistad = await asegurarSeccion('amistad')
     setSaveNotice(
@@ -243,6 +265,13 @@ export function useJournalPage() {
     }
     if (!body.trim() || !entryTitle.trim()) return
     const remaining = getLumiBond(state.lumiRegistrations).remainingToday
+    // En local, el recuerdo se abre si esta carta alcanza el siguiente umbral de la amistad.
+    const abiertos = getLumiBond(state.lumiRegistrations, now).memoriesOpened
+    const conEsta = editingId
+      ? abiertos
+      : getLumiBond([...state.lumiRegistrations, { entryId: 'nueva', createdAt: now.toISOString() }], now)
+          .memoriesOpened
+    if (conEsta > abiertos) setCapituloPendiente(historia.capitulos[conEsta - 1]?.codigo)
     updateAdventure((current) => {
       const existing = current.journal.find((entry) => entry.id === editingId)
       const entry: JournalEntry = {
@@ -345,6 +374,10 @@ export function useJournalPage() {
     deleteEntry,
     // Ajuste del diario (F05): «Hoy», el buzón y, en api, lo que no hay en local (temas fuera y errores).
     hoy,
+    historia,
+    capitulo: capitulo ? historia.actividad(capitulo) : undefined,
+    verCapitulo: setCapitulo,
+    cerrarCapitulo: () => setCapitulo(undefined),
     buzon: { ...buzon, responder: responderCarta },
     diarioServidor: servidor.activo ? { error: servidor.error } : undefined,
   }

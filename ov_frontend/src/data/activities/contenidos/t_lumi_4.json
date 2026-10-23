@@ -1,0 +1,28 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-lumi-4",
+  "tipo": "encuentro",
+  "titulo": "Recuerdo de prueba 4",
+  "bloque": 5,
+  "orden": 4,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 3,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-lumi-4-1",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "DATO DE PRUEBA: el cuarto recuerdo de Lumi."
+    },
+    {
+      "id": "t-lumi-4-2",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo reemplazará el texto definitivo de la historia de Lumi."
+    }
+  ]
+}

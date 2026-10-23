@@ -4,7 +4,8 @@ import {
   normalizeLumiRegistrations,
   type LumiRegistration,
 } from '@/lib/lumiFriendship'
-export const lumiMemoryThresholds = [1, 5, 10, 15] as const
+// Ajuste del diario (F05): un umbral por capítulo de la historia de Lumi (cinco), también en local.
+export const lumiMemoryThresholds = [1, 5, 10, 15, 20] as const
 const levels = [
   { minimum: 0, label: 'Conociéndonos' },
   { minimum: 5, label: 'Ganando confianza' },

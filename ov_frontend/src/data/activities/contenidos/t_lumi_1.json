@@ -1,0 +1,28 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-lumi-1",
+  "tipo": "encuentro",
+  "titulo": "Cómo llegué a este mundo",
+  "bloque": 5,
+  "orden": 1,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 3,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-lumi-1-1",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Llegué aquí perdida, sin saber hacia dónde iba."
+    },
+    {
+      "id": "t-lumi-1-2",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo primero que aprendí fue que no hacía falta tener todo el mapa para dar el primer paso."
+    }
+  ]
+}

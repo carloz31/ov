@@ -13,6 +13,7 @@ export function StudentActivityPlayer({
   instrumentoServidor,
   registroServidor,
   onClose,
+  salida,
 }: {
   activity: Actividad
   imageUrl?: string
@@ -21,6 +22,8 @@ export function StudentActivityPlayer({
   instrumentoServidor?: InstrumentoServidor
   registroServidor?: RegistroServidor
   onClose: () => void
+  // Ajuste del diario (F05): la salida del cierre cuando no es «Volver al mapa» (los recuerdos de Lumi).
+  salida?: { texto: string; onClick: () => void }
 }) {
   const model = useActivityPlayer({ activity, direct, edit, instrumentoServidor, registroServidor, onClose })
   const {
@@ -94,7 +97,7 @@ export function StudentActivityPlayer({
         </div>
       )}
       <main className="sx-player-stage">
-        <NodeRenderer model={model} activity={activity} edit={edit} direct={direct} />
+        <NodeRenderer model={model} activity={activity} edit={edit} direct={direct} salida={salida} />
       </main>
     </div>
   )

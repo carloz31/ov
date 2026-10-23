@@ -3474,7 +3474,7 @@ test('Lumi bond counts Lima days without loss and opens memories at exact bounda
  assert.equal(bond.conversations,3);assert.equal(bond.todayCounted,3);assert.equal(bond.remainingToday,0)
  assert.equal(getLumiBond([...day,{entryId:'yesterday',createdAt:'2026-10-04T04:59:00Z'}],now).conversations,4)
  assert.equal(getLumiBond([first,first,{entryId:'bad',createdAt:'bad'},{entryId:'future',createdAt:'2099-01-01'}],now).conversations,1)
- for(const [count,opened,next,progress] of [[0,0,1,0],[1,1,5,0],[3,1,5,50],[4,1,5,75],[5,2,10,0],[9,2,10,80],[10,3,15,0],[14,3,15,80],[15,4,undefined,100]]){
+ for(const [count,opened,next,progress] of [[0,0,1,0],[1,1,5,0],[3,1,5,50],[4,1,5,75],[5,2,10,0],[9,2,10,80],[10,3,15,0],[14,3,15,80],[15,4,20,0],[19,4,20,80],[20,5,undefined,100]]){ // F05: un quinto umbral, un capítulo por umbral
   const regs=Array.from({length:count},(_,i)=>({entryId:`r-${i}`,createdAt:`2026-09-${String(i+1).padStart(2,'0')}T12:00:00Z`}))
   const result=getLumiBond(regs,now);assert.equal(result.memoriesOpened,opened);assert.equal(result.nextMemoryAt,next);assert.equal(result.progress,progress)
  }
@@ -3614,14 +3614,15 @@ test('journal preserves incoming activity, family and event context while requir
  }finally{store.updateAdventure(()=>before)}
 })
 
-test('memory navigation opens the journal home from its editor and does not consume unread memories early', () => {
+test('memory navigation opens an unlocked chapter from the editor and does not consume unread memories early', () => {
  let params=new URLSearchParams()
  const fixture={...store.createInitialAdventure(),journalOnboardingSeen:true,lumiRegistrations:[{entryId:'conversation',createdAt:'2026-09-01T12:00:00Z'}]}
  const page=immersivePlayerHarness('src/pages/student/StudentJournalView',{'react-router':{useSearchParams:()=>[params]},'@/store/adventureStore':{useAdventure:()=>fixture},'@/hooks/useLumiNow':{useLumiNow:()=>new Date('2026-10-04T12:00:00Z')},'@/hooks/useReturnFocus':{useReturnFocus:()=>({})}})
  try{
   let tree=page.draw({});page.find(tree,e=>e.type?.name==='JournalHome').props.hoy.props.onFree();tree=page.draw({});assert.ok(page.find(tree,e=>e.type?.name==='JournalEditor'))
   params=new URLSearchParams('memory=4');page.draw({});tree=page.draw({});assert.ok(page.find(tree,e=>e.type?.name==='JournalEditor'))
-  params=new URLSearchParams('memory=1');page.draw({});tree=page.draw({});assert.ok(page.find(tree,e=>e.type?.name==='JournalHome'))
+  // Ajuste del diario de F05: el recuerdo abierto se ve como capítulo, en el reproductor de actividades.
+  params=new URLSearchParams('memory=1');page.draw({});tree=page.draw({});assert.equal(page.find(tree,e=>e.type?.name==='StudentActivityPlayer').props.activity.id,'t-lumi-1')
  }finally{page.dispose()}
  const ui=load(path.resolve('src/store/studentUiStore.ts')),saved=ui.useStudentUi()
  const menu=immersivePlayerHarness('src/features/adventure/components/overlays/NoveltiesMenu',{'@/store/adventureStore':{useAdventure:()=>fixture}})

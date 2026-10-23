@@ -1,0 +1,28 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-lumi-5",
+  "tipo": "encuentro",
+  "titulo": "Recuerdo de prueba 5",
+  "bloque": 5,
+  "orden": 5,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 3,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-lumi-5-1",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "DATO DE PRUEBA: el quinto recuerdo de Lumi."
+    },
+    {
+      "id": "t-lumi-5-2",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo reemplazará el texto definitivo de la historia de Lumi."
+    }
+  ]
+}

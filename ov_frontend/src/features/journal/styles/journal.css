@@ -957,3 +957,78 @@
   justify-self: start;
   min-height: 44px;
 }
+/* «La historia de Lumi» (ajuste del diario de F05): capítulos de 3 en 3 dentro de la tarjeta de Lumi. */
+.sx-j-historia-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.sx-j-historia-head h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.sx-j-historia-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx-j-capitulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+.sx-j-capitulo[data-estado='abierto'] {
+  background: var(--sx-parchment);
+  color: var(--sx-parchment-ink);
+}
+.sx-j-capitulo[data-estado='bloqueado'] {
+  border: 1px dashed var(--sx-night-border);
+  color: var(--sx-night-muted);
+}
+.sx-j-capitulo-num {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--sx-gold);
+  color: var(--sx-night);
+  font-weight: 800;
+}
+.sx-j-capitulo-title {
+  flex: 1;
+  font-weight: 700;
+}
+.sx-j-capitulo small {
+  width: 100%;
+}
+.sx-j-capitulo-ver {
+  min-height: 44px;
+  padding: 0 10px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sx-j-historia-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+.sx-j-historia-nav button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--sx-night-border);
+}
+.sx-j-historia-nav button:disabled {
+  opacity: 0.4;
+}

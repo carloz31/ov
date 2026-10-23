@@ -15,6 +15,11 @@ import informacion from './contenidos/pad_02_informacion.json'
 import tInicio from './contenidos/t_inicio.json'
 import tPartida from './contenidos/t_partida.json'
 import tCierreInicio from './contenidos/t_cierre_inicio.json'
+import tLumi1 from './contenidos/t_lumi_1.json'
+import tLumi2 from './contenidos/t_lumi_2.json'
+import tLumi3 from './contenidos/t_lumi_3.json'
+import tLumi4 from './contenidos/t_lumi_4.json'
+import tLumi5 from './contenidos/t_lumi_5.json'
 import tOpcional from './contenidos/t_opcional.json'
 import tExpectativas from './contenidos/t_expectativas.json'
 import tValores from './contenidos/t_valores.json'
@@ -51,6 +56,11 @@ export const contenidos: Record<string, ContenidoActividad> = {
   t_inicio: tInicio,
   t_partida: tPartida,
   t_cierre_inicio: tCierreInicio,
+  t_lumi_1: tLumi1,
+  t_lumi_2: tLumi2,
+  t_lumi_3: tLumi3,
+  t_lumi_4: tLumi4,
+  t_lumi_5: tLumi5,
   t_opcional: tOpcional,
   t_expectativas: tExpectativas,
   t_valores: tValores,
