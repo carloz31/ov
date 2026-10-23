@@ -186,11 +186,12 @@
   display: grid;
   gap: 14px;
 }
-.sx-d-pl-synthesis h2 {
-  font-size: 23px;
-  line-height: 1.3;
+/* Gana a `.sx-d-result-page .sx-d-result-overview h2` (rótulo pequeño de intereses). */
+.sx-d-result-page .sx-d-result-overview .sx-d-pl-synthesis h2 {
+  font-size: 26px;
+  line-height: 1.25;
   font-weight: 800;
-  color: var(--sx-gold);
+  color: var(--sx-night-text);
 }
 .sx-d-pl-counters {
   display: flex;
@@ -201,9 +202,10 @@
   list-style: none;
 }
 .sx-d-pl-counters li {
-  padding: 4px 12px;
+  padding: 5px 12px;
   border-radius: 999px;
-  border: 1px solid var(--sx-night-border);
+  background: color-mix(in srgb, var(--sx-night-text) 12%, transparent);
+  color: var(--sx-night-text);
   font-size: 13px;
   font-weight: 700;
 }
