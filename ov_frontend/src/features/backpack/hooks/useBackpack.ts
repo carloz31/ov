@@ -13,7 +13,8 @@ import {
   studentResourceRequirement as resourceRequirement,
 } from '@/features/backpack/lib/challengeResources'
 import { getCiudadPoints } from '@/features/adventure/lib/ciudadPoints'
-type KindFilter = 'all' | 'sheet' | 'testimonial'
+// Sin pestaña «Todo»: fichas o testimonios; sin `kind` válido, fichas.
+type KindFilter = 'sheet' | 'testimonial'
 export function useBackpack() {
   useFichasServidor()
   const adventure = useAdventure(),
@@ -21,7 +22,7 @@ export function useBackpack() {
     navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const rawKind = params.get('kind')
-  const kind: KindFilter = rawKind === 'sheet' || rawKind === 'testimonial' ? rawKind : 'all'
+  const kind: KindFilter = rawKind === 'testimonial' ? 'testimonial' : 'sheet'
   const tabs = useRef<(HTMLButtonElement | null)[]>([])
   const [query, setQuery] = useState(''),
     [favoritesOnly, setFavoritesOnly] = useState(false),
@@ -93,7 +94,7 @@ export function useBackpack() {
   }
   const clear = () => {
     setQuery('')
-    chooseKind('all')
+    chooseKind('sheet')
     setFavoritesOnly(false)
   }
   function consultarRequisito(resource: TravelResource) {

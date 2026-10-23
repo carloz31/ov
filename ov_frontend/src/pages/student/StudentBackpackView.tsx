@@ -12,7 +12,6 @@ import { BackpackCard } from '@/features/backpack/components/BackpackCard'
 import { VisorRecurso } from '@/features/backpack/components/VisorRecurso'
 import { RequisitoRecurso } from '@/features/backpack/components/RequisitoRecurso'
 const kinds = [
-  { id: 'all', label: 'Todo' },
   { id: 'sheet', label: 'Fichas' },
   { id: 'testimonial', label: 'Testimonios' },
 ] as const
@@ -111,7 +110,7 @@ function StudentBackpackView() {
           className="sx-d-stack"
         >
           {(['sheet', 'testimonial'] as const)
-            .filter((type) => kind === 'all' || kind === type)
+            .filter((type) => kind === type)
             .map((type) => {
               const items = visible.filter((r) => r.kind === type)
               return (

@@ -1186,7 +1186,8 @@ test('student resources show only the backpack and retain the testimonials route
   assert.match(html, /Voces de la ciudad/)
   assert.match(html, /Bloqueado/)
   assert.match(html, /La plaza de los rumores/)
-  assert.match(html, /Incendio forestal/)
+  // Sin pestaña «Todo»: los testimonios, con su caso, en su propia pestaña.
+  assert.match(render('/student/resources?kind=testimonial'), /Incendio forestal/)
   assert.doesNotMatch(html, /Recursos y novedades|Héroes de la ciudad|Investigaciones de los viajeros/)
   assert.doesNotMatch(html, /Ver ficha completa|Ver testimonio/)
   assert.match(render('/student/testimonials'), /Tu mochila de viaje/)
@@ -3430,8 +3431,12 @@ test('collapsed student map reserves its strip and keeps the recommended point v
 
 
 test('new backpack separates provisions, protects locked identities and navigates its resource tabs', () => {
- const html=render('/student/resources')
- for(const text of ['Tu mochila de viaje','Lo que aprendiste en el camino','Voces de la ciudad','Mis favoritos','Una voz por descubrir'])assert.ok(html.includes(text))
+ // Sin pestaña «Todo»: por defecto, las fichas; los testimonios, en su pestaña.
+ const fichas=render('/student/resources')
+ for(const text of ['Tu mochila de viaje','Lo que aprendiste en el camino','Mis favoritos'])assert.ok(fichas.includes(text))
+ assert.ok(!fichas.includes('Compartimento de testimonios')&&!fichas.includes('>Todo<'))
+ const html=render('/student/resources?kind=testimonial')
+ for(const text of ['Voces de la ciudad','Una voz por descubrir'])assert.ok(html.includes(text))
  assert.doesNotMatch(html,/resource-status|recursos desbloqueados|role="dialog"/)
  const resources=load(path.resolve('src/features/backpack/lib/travelerResources.ts')).getTravelResources()
  for(const voice of resources.filter(r=>r.kind==='testimonial'))assert.ok(!html.includes(voice.author))
@@ -3443,12 +3448,13 @@ test('new backpack separates provisions, protects locked identities and navigate
   tab(tree,'sheet').props.onKeyDown({key:'End',preventDefault(){}})
   assert.equal(params.get('kind'),'testimonial');assert.equal(params.get('keep'),'1')
   tree=page.draw({});tab(tree,'testimonial').props.onKeyDown({key:'ArrowRight',preventDefault(){}})
-  assert.equal(params.get('kind'),'all')
-  tree=page.draw({});tab(tree,'all').props.onKeyDown({key:'ArrowLeft',preventDefault(){}})
+  assert.equal(params.get('kind'),'sheet')
+  tree=page.draw({});tab(tree,'sheet').props.onKeyDown({key:'ArrowLeft',preventDefault(){}})
   assert.equal(params.get('kind'),'testimonial')
   tree=page.draw({});tab(tree,'testimonial').props.onKeyDown({key:'Home',preventDefault(){}})
-  assert.equal(params.get('kind'),'all');assert.equal(params.get('keep'),'1')
-  params=new URLSearchParams('kind=unknown&keep=1');tree=page.draw({});assert.equal(tab(tree,'all').props['aria-selected'],true)
+  assert.equal(params.get('kind'),'sheet');assert.equal(params.get('keep'),'1')
+  assert.equal(tab(page.draw({}),'all'),undefined)
+  params=new URLSearchParams('kind=unknown&keep=1');tree=page.draw({});assert.equal(tab(tree,'sheet').props['aria-selected'],true)
   assert.equal(navigated,undefined)
  }finally{page.dispose()}
 })
