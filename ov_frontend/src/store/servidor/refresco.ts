@@ -19,6 +19,8 @@ import type {
   RespuestaServidor,
 } from '@/types/servidor'
 let revision = 0
+const checkInAbierto = () =>
+  !!obtenerEstadoServidor().secciones.datos?.some((s) => s.codigo === 'CHECK_IN' && s.estado === 'DISPONIBLE')
 const visibles = (bloques: BloqueActividades[] | null) =>
   bloques?.flatMap((b) => b.actividades.filter((a) => a.visible).map((a) => a.codigo))
 export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<RespuestaServidor<null>> {
@@ -54,6 +56,13 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
   const respuestas = await Promise.all(pedidos)
   if (!vigente()) return cambioCuenta()
   const error = respuestas.find((r) => r.tipo !== 'ok')
+  // F05: con CHECK_IN abierta, los check-ins van con el ingreso (la señal se ve siempre en el panel) y se
+  // vuelven a pedir cuando una acción abre la sección. Si fallan, solo la señal queda sin datos.
+  if (!error && checkInAbierto() && obtenerEstadoServidor().checkIns.estado !== 'listo') {
+    if (obtenerEstadoServidor().checkIns.estado === 'error') vencerSeccion('checkIns')
+    await asegurarSeccion('checkIns')
+    if (!vigente()) return cambioCuenta()
+  }
   publicar({ cargando: false, error: error ?? null })
   if (error) return error
   if (desbloqueos !== undefined && visiblesAntes) {
@@ -72,8 +81,7 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
 }
 
 export type AccionConRefresco<T extends RespuestaAccion> =
-  | RespuestaServidor<T>
-  | { tipo: 'guardado_sin_refrescar'; datos: T; error: ErrorServidor }
+  RespuestaServidor<T> | { tipo: 'guardado_sin_refrescar'; datos: T; error: ErrorServidor }
 // Una acción con eventos y desbloqueos refresca el camino como completar: toasts y revelado de opcionales.
 // Con `confirmada`, solo se reintenta el refresco de una acción que el servidor ya guardó.
 export async function accionConRefresco<T extends RespuestaAccion>(
@@ -82,12 +90,17 @@ export async function accionConRefresco<T extends RespuestaAccion>(
 ): Promise<AccionConRefresco<T>> {
   const cuenta = cuentaActiva()
   const sesion = sesionServidor()
-  if (!modoApi || !cuenta) return { tipo: 'http', estado: 400, detalle: 'No hay una cuenta de servidor activa.' }
-  const respuesta: RespuestaServidor<T> = confirmada ? { tipo: 'ok', datos: confirmada } : await accion(cuenta)
+  if (!modoApi || !cuenta)
+    return { tipo: 'http', estado: 400, detalle: 'No hay una cuenta de servidor activa.' }
+  const respuesta: RespuestaServidor<T> = confirmada
+    ? { tipo: 'ok', datos: confirmada }
+    : await accion(cuenta)
   if (respuesta.tipo !== 'ok') return respuesta
   if (cuenta !== cuentaActiva() || sesion !== sesionServidor())
     return { tipo: 'http', estado: 409, detalle: 'La cuenta activa cambió durante la acción.' }
   incorporarDesbloqueos(respuesta.datos.nuevos_desbloqueos)
   const estado = await refrescar(respuesta.datos.nuevos_desbloqueos)
-  return estado.tipo === 'ok' ? respuesta : { tipo: 'guardado_sin_refrescar', datos: respuesta.datos, error: estado }
+  return estado.tipo === 'ok'
+    ? respuesta
+    : { tipo: 'guardado_sin_refrescar', datos: respuesta.datos, error: estado }
 }

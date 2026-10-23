@@ -114,5 +114,5 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
     ['/api/acciones/diario/pregunta-del-dia', { cuenta: 'est-ana' }],
     ['/api/acciones/check-in', { cuenta: 'est-ana', nivel_seguridad: 4 }],
   ])
-  assert.equal(almacen.obtenerEstadoServidor().checkIns.estado, 'vencido')
+  assert.equal(almacen.obtenerEstadoServidor().checkIns.estado, 'listo')
 })

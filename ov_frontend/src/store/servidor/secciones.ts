@@ -167,8 +167,6 @@ export const useSeccionesServidor = (activo = true) => useSeccion('secciones', a
 export const useDiarioPreguntasServidor = (activo = true) => useSeccion('diarioPreguntas', activo)
 export const useDiarioEntradasServidor = (activo = true) => useSeccion('diarioEntradas', activo)
 export const useAmistadServidor = (activo = true) => useSeccion('amistad', activo)
-// Solo con CHECK_IN abierta: con la sección cerrada el servidor responde 409.
-export const useCheckInsServidor = (activo = true) => useSeccion('checkIns', activo)
 
 export function errorSeccionesActivas() {
   return (

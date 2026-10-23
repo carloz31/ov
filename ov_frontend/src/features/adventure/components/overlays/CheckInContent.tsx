@@ -7,12 +7,16 @@ export function CheckInContent({
   onSave,
   onDismiss,
   onReturnFocus,
+  servidor,
 }: {
   initialValue?: ReadinessCheckIn['value']
   onSave: (value: ReadinessCheckIn['value']) => void
   onDismiss: () => void
   onReturnFocus?: () => void
+  // F05, solo api: escala del servidor (1–5), una señal por día y el error al guardarla.
+  servidor?: { escala: number; error: string }
 }) {
+  const escala = servidor?.escala ?? 10
   const [selected, setSelected] = useState(initialValue)
   const firstValue = useRef<HTMLButtonElement>(null)
   const returnFocus = useRef<HTMLElement | null>(null)
@@ -34,16 +38,18 @@ export function CheckInContent({
       <CharacterAvatar id="companero" size="md" />
       <DialogTitle>Registra tu señal de hoy</DialogTitle>
       <DialogDescription>
-        ¿Qué tan seguro te sientes de tu próximo paso? Puedes cambiar esta respuesta durante el día.
+        {servidor
+          ? '¿Qué tan seguro te sientes de tu próximo paso?'
+          : '¿Qué tan seguro te sientes de tu próximo paso? Puedes cambiar esta respuesta durante el día.'}
       </DialogDescription>
-      <div className="sx-signal-values" role="group" aria-label="Seguridad de 1 a 10">
-        {Array.from({ length: 10 }, (_, i) => (i + 1) as ReadinessCheckIn['value']).map((value) => (
+      <div className="sx-signal-values" role="group" aria-label={`Seguridad de 1 a ${escala}`}>
+        {Array.from({ length: escala }, (_, i) => (i + 1) as ReadinessCheckIn['value']).map((value) => (
           <button
             key={value}
             ref={value === (initialValue ?? 1) ? firstValue : undefined}
             className="sx-signal-value"
             type="button"
-            aria-label={`${value} de 10`}
+            aria-label={`${value} de ${escala}`}
             aria-pressed={selected === value}
             onClick={() => setSelected(value)}
           >
@@ -53,7 +59,7 @@ export function CheckInContent({
       </div>
       <div className="sx-signal-extremes">
         <span>1 · Nada seguro</span>
-        <span>10 · Muy seguro</span>
+        <span>{`${escala} · Muy seguro`}</span>
       </div>
       <div className="sx-check-in-actions">
         <button type="button" className="sx-secondary-button" onClick={onDismiss}>
@@ -70,6 +76,11 @@ export function CheckInContent({
           Guardar señal
         </button>
       </div>
+      {servidor?.error && (
+        <p className="sx-signal-privacy" role="alert">
+          {servidor.error}
+        </p>
+      )}
       <p className="sx-signal-privacy">
         Tu orientadora ve esta señal y su tendencia, nunca el texto de tu diario.
       </p>

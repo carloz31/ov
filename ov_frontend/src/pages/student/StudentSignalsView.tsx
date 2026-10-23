@@ -1,27 +1,21 @@
 import { useState } from 'react'
 import { ArrowLeft, Compass, LockKeyhole, Signal } from 'lucide-react'
 import { Link } from 'react-router'
-import { useAdventure } from '@/store/adventureStore'
 import { DiscoveryStage } from '@/features/discovery/components/DiscoveryStage'
 import { Parchment } from '@/components/student/Parchment'
-import { getTodayCheckIn, useCheckInDay } from '@/features/adventure/lib/checkIn'
+import { useHistorialSenales } from '@/features/adventure/hooks/useHistorialSenales'
 import { useStudentOverlays } from '@/features/adventure/context/overlayContext'
 import '@/styles/student/history.css'
 
 function StudentSignalsView() {
-  const state = useAdventure()
   const { openCheckIn } = useStudentOverlays()
-  useCheckInDay()
-  const today = getTodayCheckIn(state)
-  const checkIns = [...state.readinessCheckIns]
-    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
-    .slice(-12)
+  const { today, checkIns, escala, y, marcas, total, servidor } = useHistorialSenales()
   const [selectedId, setSelectedId] = useState(checkIns.at(-1)?.id)
   const selected = checkIns.find((checkIn) => checkIn.id === selectedId) ?? checkIns.at(-1)
   const points = checkIns.map((checkIn, index) => ({
     ...checkIn,
     x: checkIns.length === 1 ? 400 : 60 + (index / (checkIns.length - 1)) * 680,
-    y: 240 - ((checkIn.value - 1) / 9) * 210,
+    y: y(checkIn.value),
   }))
 
   return (
@@ -52,21 +46,23 @@ function StudentSignalsView() {
               <h2>Tu señal de hoy</h2>
               <p>¿Qué tan seguro te sientes hoy de tu próximo paso?</p>
               {today ? (
-                <p className="sx-history-score" aria-label={`${today.value} de 10`}>
+                <p className="sx-history-score" aria-label={`${today.value} de ${escala}`}>
                   <strong>{today.value}</strong>
-                  <span>/10</span>
+                  <span>{`/${escala}`}</span>
                 </p>
               ) : (
                 <p className="sx-d-muted">Aún no has registrado tu señal de hoy.</p>
               )}
               <div className="sx-history-segments" aria-hidden="true">
-                {Array.from({ length: 10 }, (_, index) => (
+                {Array.from({ length: escala }, (_, index) => (
                   <span key={index} data-filled={index < (today?.value ?? 0)} />
                 ))}
               </div>
-              <button className="sx-d-action sx-d-full" type="button" onClick={() => openCheckIn()}>
-                {today ? 'Cambiar mi señal' : 'Registrar mi señal'}
-              </button>
+              {(!servidor || servidor.puedeRegistrar) && (
+                <button className="sx-d-action sx-d-full" type="button" onClick={() => openCheckIn()}>
+                  {servidor ? 'Registrar mi señal' : today ? 'Cambiar mi señal' : 'Registrar mi señal'}
+                </button>
+              )}
             </Parchment>
             <Parchment className="sx-d-dark sx-history-privacy">
               <LockKeyhole size={22} aria-hidden="true" />
@@ -80,10 +76,14 @@ function StudentSignalsView() {
             title="Seguridad vocacional en el tiempo"
           >
             <div className="sx-history-chart-meta">
-              <span className="sx-history-badge">Escala del 1 al 10</span>
+              <span className="sx-history-badge">{`Escala del 1 al ${escala}`}</span>
               <span>
-                {points.length} {points.length === 1 ? 'señal registrada' : 'señales registradas'}
-                {state.readinessCheckIns.length > 12 ? ' · Últimas 12' : ''}
+                {servidor?.conteo ?? (
+                  <>
+                    {points.length} {points.length === 1 ? 'señal registrada' : 'señales registradas'}
+                    {total > 12 ? ' · Últimas 12' : ''}
+                  </>
+                )}
               </span>
             </div>
             {points.length ? (
@@ -95,21 +95,21 @@ function StudentSignalsView() {
                   aria-label="Historial desplazable de señales"
                 >
                   <svg
-                    aria-label="Gráfico histórico de señales del 1 al 10"
+                    aria-label={`Gráfico histórico de señales del 1 al ${escala}`}
                     role="group"
                     viewBox="0 0 800 290"
                   >
-                    {[1, 3, 5, 7, 10].map((value) => {
-                      const y = 240 - ((value - 1) / 9) * 210
+                    {marcas.map((value) => {
+                      const altura = y(value)
                       return (
                         <g key={value} aria-hidden="true">
-                          <line className="sx-history-chart-grid" x1="60" x2="740" y1={y} y2={y} />
+                          <line className="sx-history-chart-grid" x1="60" x2="740" y1={altura} y2={altura} />
                           <text
                             className="sx-history-chart-label"
                             fontSize="12"
                             textAnchor="end"
                             x="28"
-                            y={y + 4}
+                            y={altura + 4}
                           >
                             {value}
                           </text>
@@ -131,7 +131,7 @@ function StudentSignalsView() {
                       return (
                         <g key={point.id}>
                           <g
-                            aria-label={`${new Date(point.createdAt).toLocaleDateString('es-PE')}: ${point.value} de 10`}
+                            aria-label={`${new Date(point.createdAt).toLocaleDateString('es-PE')}: ${point.value} de ${escala}`}
                             aria-pressed={active}
                             className="sx-history-chart-point"
                             role="button"
@@ -188,7 +188,8 @@ function StudentSignalsView() {
               <div className="sx-history-selected">
                 <Compass size={22} aria-hidden="true" />
                 <p role="status">
-                  Señal seleccionada · {selected.value}/10 ·{' '}
+                  Señal seleccionada · {selected.value}
+                  {`/${escala} ·`}{' '}
                   {new Date(selected.createdAt).toLocaleDateString('es-PE', { dateStyle: 'long' })}
                 </p>
               </div>

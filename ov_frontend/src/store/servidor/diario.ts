@@ -1,9 +1,9 @@
 import * as apiDiario from '@/services/api/diario'
 import { consultarCuenta } from './sesion'
 import { accionConRefresco } from './refresco'
-import { vencerSeccion } from './secciones'
+import { asegurarSeccion, vencerSeccion } from './secciones'
 
-// F05: diario y check-in del servidor. Las lecturas son secciones (`useDiario…Servidor`, `useCheckInsServidor`);
+// F05: diario y check-in del servidor. Las lecturas son secciones (`useDiario…Servidor`; `checkIns`, del refresco);
 // cada acción vence lo que cambió para que las vistas montadas vuelvan a pedirlo.
 function vencerDiario() {
   vencerSeccion('diarioEntradas')
@@ -56,6 +56,10 @@ export function pedirPreguntaDelDia() {
 
 export async function registrarCheckIn(nivel: number) {
   const respuesta = await accionConRefresco((cuenta) => apiDiario.enviarCheckIn(cuenta, nivel))
-  if (respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar') vencerSeccion('checkIns')
+  if (respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar') {
+    // Nadie monta la sección: se vuelve a pedir aquí para que el panel y el aviso vean la señal de hoy.
+    vencerSeccion('checkIns')
+    await asegurarSeccion('checkIns')
+  }
   return respuesta
 }
