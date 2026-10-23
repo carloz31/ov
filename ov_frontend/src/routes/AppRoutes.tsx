@@ -89,7 +89,14 @@ function AppRoutes() {
             }
             path="journal"
           />
-          <Route element={<StudentSignalsView />} path="journal/signal" />
+          <Route
+            element={
+              <SeccionProtegida seccion="CHECK_IN">
+                <StudentSignalsView />
+              </SeccionProtegida>
+            }
+            path="journal/signal"
+          />
           <Route
             element={
               <SoloLocal>

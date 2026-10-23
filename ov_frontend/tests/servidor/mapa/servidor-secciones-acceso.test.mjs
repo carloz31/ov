@@ -16,7 +16,8 @@ async function iniciar(etapa = 'inicial') {
   const app = fixtureServidor()
   const escenario = escenarioRuta(etapa)
   app.fetch((r) => {
-    if (r.url === '/api/acciones/ingresar') return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
+    if (r.url === '/api/acciones/ingresar')
+      return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
     if (esConsultaDominio(r)) return respuestaDominio(r, escenario)
     if (r.url.includes('/desbloqueos?')) return { body: [] }
     throw Error(`Solicitud no configurada: ${r.url}`)
@@ -59,7 +60,10 @@ test('el ingreso trae las secciones y el panel cierra con candado y Lumi lo que 
   assert.deepEqual([diario.bloqueada, diario.mensaje], [true, mensajeDiario])
   assert.equal(lista[appPaths.student.catalog.professions].bloqueada, true)
   assert.equal(lista[appPaths.student.conversations].bloqueada, true)
-  const enlace = elementos(tree, (e) => e.type?.name === 'AccesoRapido' && e.props.to === appPaths.student.journal)[0]
+  const enlace = elementos(
+    tree,
+    (e) => e.type?.name === 'AccesoRapido' && e.props.to === appPaths.student.journal,
+  )[0]
   const { textosBloqueo } = app.load('src/data/content/guideTexts.ts')
   let evitado = false
   // El acceso cerrado no navega: Lumi adelanta qué será la sección y el servidor dice qué falta.
@@ -117,7 +121,9 @@ test('la entrada por URL a una sección cerrada muestra su tarjeta de bloqueo co
   // Con la sección abierta, la vista se muestra sin cambios.
   const abierto = await iniciar('t1')
   await cargarAlmacen(abierto.app).asegurarSeccion('secciones')
-  const { SeccionProtegida: Protegida } = abierto.app.load('src/features/adventure/components/SeccionProtegida.tsx')
+  const { SeccionProtegida: Protegida } = abierto.app.load(
+    'src/features/adventure/components/SeccionProtegida.tsx',
+  )
   assert.equal(abierto.app.mount(Protegida, { seccion: 'DIARIO', children: vista }).render(), vista)
 })
 
@@ -146,4 +152,29 @@ test('el modo se decide al llamar al hook, aunque se importe antes de configurar
     [true, secciones.find((s) => s.codigo === 'DIARIO').bloqueo[0].mensaje],
   )
   assert.ok(diario.pasos.length === 2)
+})
+
+test('con el check-in cerrado, «Ver evolución» tampoco se abre: ni desde el panel ni por URL', async () => {
+  const { app, escenario, guias } = await iniciar()
+  const { panel } = montarPanel(app, guias)
+  const tree = panel.render()
+  const { appPaths } = app.load('src/routes/paths.ts')
+  const mensaje = escenario.secciones.find((s) => s.codigo === 'CHECK_IN').bloqueo[0].mensaje
+  const evolucion = elementos(
+    tree,
+    (e) => e.type?.name === 'AccesoRapido' && e.props.to === appPaths.student.signals,
+  )[0]
+  assert.equal(evolucion.props.className, 'sx-signal-history')
+  assert.deepEqual([evolucion.props.acceso.bloqueada, evolucion.props.acceso.mensaje], [true, mensaje])
+  // Igual que «Registrar mi señal»: no navega y Lumi explica qué falta.
+  let evitado = false
+  evolucion.type(evolucion.props).props.onClick({ preventDefault: () => (evitado = true) })
+  assert.equal(evitado, true)
+  assert.match(guias.at(-1).at(-1), /^Todavía no puedes registrarla\. /)
+  panel.unmount()
+  // Entrada directa a /student/journal/signal: la tarjeta de bloqueo en lugar de la vista.
+  const { SeccionProtegida } = app.load('src/features/adventure/components/SeccionProtegida.tsx')
+  const vista = app.mount(SeccionProtegida, { seccion: 'CHECK_IN', children: 'vista de señales' }).render()
+  assert.equal(vista.type?.name, 'SeccionBloqueada')
+  assert.equal(vista.props.mensaje, mensaje)
 })

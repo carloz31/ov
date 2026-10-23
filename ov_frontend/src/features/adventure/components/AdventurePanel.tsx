@@ -198,10 +198,17 @@ export function AdventurePanel({
             {textoOculto(checkIn)}
             {checkIn.bloqueada && <LockKeyhole className="sx-quick-lock" size={12} aria-hidden="true" />}
           </button>
-          <Link className="sx-signal-history" to={appPaths.student.signals}>
+          {/* La evolución es parte del check-in: cerrada, se bloquea igual que «Registrar mi señal». */}
+          <AccesoRapido
+            className="sx-signal-history"
+            to={appPaths.student.signals}
+            acceso={checkIn}
+            onGuide={onGuide}
+          >
             <TrendingUp size={14} aria-hidden="true" />
             Ver evolución
-          </Link>
+            {textoOculto(checkIn)}
+          </AccesoRapido>
         </div>
       </section>
       <section className="sx-panel-section">
