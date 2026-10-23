@@ -57,6 +57,21 @@ export function enviarAbrirPregunta(cuenta: string, codigo: string): Promise<Res
   return enviar('/acciones/diario/abrir-pregunta', { cuenta, codigo })
 }
 
+// Ajuste del diario (F05): archivar una carta lista y devolverla a pendiente.
+export function enviarArchivarPregunta(
+  cuenta: string,
+  codigo: string,
+): Promise<RespuestaServidor<PreguntaDiarioEstado>> {
+  return enviar('/acciones/diario/archivar-pregunta', { cuenta, codigo })
+}
+
+export function enviarDesarchivarPregunta(
+  cuenta: string,
+  codigo: string,
+): Promise<RespuestaServidor<PreguntaDiarioEstado>> {
+  return enviar('/acciones/diario/desarchivar-pregunta', { cuenta, codigo })
+}
+
 // Devuelve la vigente o sortea una: es un POST aunque solo la lea.
 export function enviarPreguntaDelDia(cuenta: string): Promise<RespuestaServidor<PreguntaDelDia>> {
   return enviar('/acciones/diario/pregunta-del-dia', { cuenta })

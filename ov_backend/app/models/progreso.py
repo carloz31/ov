@@ -70,6 +70,8 @@ class Recomendacion(Base):
     """Pregunta del diario recibida por una cuenta: desbloqueada por una regla o sorteada como pregunta del día.
 
     `contexto` son las referencias resueltas al crearla; `texto` nulo = por redactar, y una vez guardado no cambia.
+    `archivada_en` (ajuste del diario de F05): una carta archivada (DESBLOQUEADA) o una pregunta del día cerrada al
+    borrar su entrada (DIARIA). `actividad_id`: la actividad cuya finalización la abrió (nula si la abrió otra cosa).
     """
     __tablename__ = "recomendacion"
     __table_args__ = (
@@ -95,6 +97,8 @@ class Recomendacion(Base):
     origen: Mapped[OrigenRedaccion | None] = mapped_column(enumerado(OrigenRedaccion))
     fecha: Mapped[date | None] = mapped_column(Date)
     creada_en: Mapped[datetime] = mapped_column(DateTime)
+    archivada_en: Mapped[datetime | None] = mapped_column(DateTime)
+    actividad_id: Mapped[int | None] = mapped_column(ForeignKey("actividad.id"))
 
 
 class EntradaDiario(Base):

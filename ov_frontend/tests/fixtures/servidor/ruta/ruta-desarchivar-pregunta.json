@@ -1,0 +1,18 @@
+{
+  "actividad": {
+    "codigo": "t-expectativas",
+    "titulo": "Registro de expectativas"
+  },
+  "archivada_en": null,
+  "bandeja": "PENDIENTE",
+  "codigo": "t-diario-personal",
+  "entrada": null,
+  "estado": "DISPONIBLE",
+  "nombre": "Lo que espero",
+  "personalizada": true,
+  "recibida_en": "2026-10-07T10:00:00",
+  "redactada": true,
+  "respondida": false,
+  "respondida_en": null,
+  "texto": "Sobre «DATO DE PRUEBA: una respuesta completa con su ejemplo y su r»: ¿Cómo te sientes con lo que esperas de este camino?"
+}

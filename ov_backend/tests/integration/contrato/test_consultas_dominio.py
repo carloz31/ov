@@ -36,6 +36,10 @@ def consultar(cliente, ruta, cuenta='est-ana'):
         return respuesta.json()['detail']['mensaje']
     assert respuesta.status_code == 200, respuesta.text
     datos = respuesta.json()
+    if ruta == 'diario/preguntas':
+        # Ajuste del diario (F05): los campos de la carta recibida se comprueban en tests/integration/diario.
+        recibida = ('recibida_en', 'texto', 'entrada', 'respondida_en', 'bandeja', 'archivada_en', 'actividad')
+        datos = [{k: v for k, v in pregunta.items() if k not in recibida} for pregunta in datos]
     if ruta == 'actividades':
         # `bloqueo` se comprueba aparte (test_bloqueo_actividades.py); aquí, solo que acompaña a BLOQUEADA.
         for bloque in datos:

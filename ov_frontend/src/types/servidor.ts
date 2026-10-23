@@ -91,6 +91,8 @@ export type DesbloqueoLegible = {
 // app/schemas/diario.py
 export type EntradaDesbloqueada = { codigo: string; nombre: string; personalizada: boolean; texto: string | null }
 // F05: lecturas y acciones del diario y del check-in.
+// Ajuste del diario (F05): recibida, trae fecha, texto (solo redactada), su respuesta, bandeja y remitente.
+export type BandejaCarta = 'PENDIENTE' | 'ARCHIVADA' | 'RESPONDIDA'
 export type PreguntaDiarioEstado = {
   codigo: string
   nombre: string
@@ -98,9 +100,17 @@ export type PreguntaDiarioEstado = {
   personalizada: boolean
   redactada: boolean
   respondida: boolean
+  recibida_en: string | null
+  texto: string | null
+  entrada: number | null
+  respondida_en: string | null
+  bandeja: BandejaCarta | null
+  archivada_en: string | null
+  actividad: { codigo: string; titulo: string } | null
 }
 export type PreguntaAbierta = { codigo: string; nombre: string; texto: string; respondida: boolean }
-export type PreguntaDelDia = { nombre: string; texto: string; fecha: string; respondida: boolean }
+// `cerrada`: se borró su entrada y no vuelve a responderse.
+export type PreguntaDelDia = { nombre: string; texto: string; fecha: string; respondida: boolean; cerrada: boolean }
 export type OrigenEntrada = 'GUIADA' | 'LIBRE' | 'RECOMENDACION_DIA'
 export type EntradaDiarioPublica = {
   numero: number

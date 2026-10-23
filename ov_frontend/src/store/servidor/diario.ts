@@ -50,6 +50,19 @@ export async function abrirPregunta(codigo: string) {
   return respuesta
 }
 
+// Archivar y desarchivar no tocan entradas ni amistad: solo cambia la bandeja de la carta.
+export async function archivarPregunta(codigo: string) {
+  const respuesta = await consultarCuenta((cuenta) => apiDiario.enviarArchivarPregunta(cuenta, codigo))
+  if (respuesta.tipo === 'ok') vencerSeccion('diarioPreguntas')
+  return respuesta
+}
+
+export async function desarchivarPregunta(codigo: string) {
+  const respuesta = await consultarCuenta((cuenta) => apiDiario.enviarDesarchivarPregunta(cuenta, codigo))
+  if (respuesta.tipo === 'ok') vencerSeccion('diarioPreguntas')
+  return respuesta
+}
+
 export function pedirPreguntaDelDia() {
   return consultarCuenta(apiDiario.enviarPreguntaDelDia)
 }

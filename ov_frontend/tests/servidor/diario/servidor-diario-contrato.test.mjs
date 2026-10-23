@@ -85,6 +85,8 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
       return { body: jsonServidor('ruta/ruta-abrir-pregunta-personal') }
     if (req.url.endsWith('/pregunta-del-dia')) return { body: jsonServidor('ruta/ruta-pregunta-del-dia') }
     if (/\/(escribir|editar|borrar)-entrada$|\/check-in$/.test(req.url)) return { body: sinRespuestas }
+    if (req.url.endsWith('/archivar-pregunta')) return { body: jsonServidor('ruta/ruta-archivar-pregunta') }
+    if (req.url.endsWith('/desarchivar-pregunta')) return { body: jsonServidor('ruta/ruta-desarchivar-pregunta') }
     throw Error(`Solicitud no configurada: ${req.url}`)
   })
   const almacen = cargarAlmacen(app)
@@ -103,6 +105,8 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
   assert.equal((await store.abrirPregunta('t-diario-personal')).tipo, 'ok')
   assert.equal((await store.pedirPreguntaDelDia()).tipo, 'ok')
   assert.equal((await store.registrarCheckIn(4)).tipo, 'ok')
+  assert.equal((await store.archivarPregunta('t-diario-personal')).tipo, 'ok')
+  assert.equal((await store.desarchivarPregunta('t-diario-personal')).tipo, 'ok')
   const acciones = app.requests.filter((r) => r.url.includes('/acciones/'))
   assert.deepEqual(copia(acciones.map((r) => [r.url, r.body])), [
     ['/api/acciones/escribir-entrada', { cuenta: 'est-ana', texto: 'Hoy', titulo: 'Mi día' }],
@@ -113,6 +117,8 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
     ['/api/acciones/diario/abrir-pregunta', { cuenta: 'est-ana', codigo: 't-diario-personal' }],
     ['/api/acciones/diario/pregunta-del-dia', { cuenta: 'est-ana' }],
     ['/api/acciones/check-in', { cuenta: 'est-ana', nivel_seguridad: 4 }],
+    ['/api/acciones/diario/archivar-pregunta', { cuenta: 'est-ana', codigo: 't-diario-personal' }],
+    ['/api/acciones/diario/desarchivar-pregunta', { cuenta: 'est-ana', codigo: 't-diario-personal' }],
   ])
   assert.equal(almacen.obtenerEstadoServidor().checkIns.estado, 'listo')
 })

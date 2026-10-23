@@ -78,14 +78,18 @@ def test_editar_cambia_titulo_y_texto_sin_eventos_ni_bajar_la_amistad(cliente):
     assert amistad(cliente) == antes and len(eventos(cliente)) == eventos_antes
 
 
-def test_borrar_deja_la_pregunta_sin_responder_y_no_baja_la_amistad(cliente):
+def test_borrar_archiva_la_carta_y_no_baja_la_amistad(cliente):
+    # Ajuste del diario (F05, autorizado por la spec): la carta borrada queda archivada, no por responder.
     completar(cliente, 't-inicio')
     escribir(cliente, pregunta='t-diario-fija')
     antes = amistad(cliente)
     pedir(cliente, 'POST', '/acciones/borrar-entrada', {'cuenta': 'est-ana', 'numero': 1})
     assert entradas(cliente) == []
-    assert pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')[0]['respondida'] is False
+    fija = pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')[0]
+    assert (fija['respondida'], fija['bandeja']) == (False, 'ARCHIVADA')
     assert amistad(cliente) == antes
+    escribir(cliente, pregunta='t-diario-fija', esperado=409)
+    pedir(cliente, 'POST', '/acciones/diario/desarchivar-pregunta', {'cuenta': 'est-ana', 'codigo': 't-diario-fija'})
     escribir(cliente, pregunta='t-diario-fija')
     assert [e['numero'] for e in entradas(cliente)] == [2]
 

@@ -227,6 +227,13 @@ def _recorrer(cliente):
     _pedir(cliente, 'POST', '/acciones/borrar-entrada', {**diario, 'numero': 5})
     fixtures['diario-entradas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/entradas')
     fixtures['diario-amistad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/amistad')
+    # Ajuste del diario (F05): borrar la respuesta de una carta la archiva; se desarchiva y se vuelve a archivar.
+    _pedir(cliente, 'POST', '/acciones/borrar-entrada', {**diario, 'numero': 2})
+    fixtures['desarchivar-pregunta'] = _pedir(cliente, 'POST', '/acciones/diario/desarchivar-pregunta',
+                                              {**diario, 'codigo': 't-diario-personal'})
+    fixtures['archivar-pregunta'] = _pedir(cliente, 'POST', '/acciones/diario/archivar-pregunta',
+                                           {**diario, 'codigo': 't-diario-personal'})
+    fixtures['diario-preguntas-buzon'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')
     for dia, nivel in ((6, 2), (7, 3)):
         _pedir(cliente, 'POST', '/acciones/check-in',
                {'cuenta': 'est-ana', 'nivel_seguridad': nivel, 'fecha_hora': f'2026-10-0{dia}T08:00:00'})

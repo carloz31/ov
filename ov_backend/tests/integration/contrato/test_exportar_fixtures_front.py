@@ -63,7 +63,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'catalogo-carreras', 'catalogo-carrera-psychology', 'catalogo-ocupaciones-riasec', 'catalogo-ocupacion-psychologist',
     'catalogo-instituciones', 'catalogo-institucion-t-uni', 'ver-ocupacion', 'marcar-favorito', 'favoritos',
     'diario-preguntas', 'abrir-pregunta-personal', 'pregunta-del-dia', 'escribir-entrada-fija', 'escribir-entrada-libre',
-    'editar-entrada', 'diario-entradas', 'diario-amistad', 'check-ins', 'tematicas',
+    'editar-entrada', 'diario-entradas', 'diario-amistad', 'desarchivar-pregunta', 'archivar-pregunta',
+    'diario-preguntas-buzon', 'check-ins', 'tematicas',
     'crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
     'medidores-plan', 'referencias-t-comparar', 'guardar-seccion-pasos', 'paso-hecho', 'referencias-t-proyecto',
     'planes', 'familia', 'familia-resultados', 'conversaciones-sin-carta', 'escribir-carta-est-ana',
@@ -313,6 +314,16 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert sorted((e.numero, e.origen, e.titulo_mostrado) for e in entradas)[3] == (4, 'LIBRE', 'Mi tarde')
     assert [e.numero for e in entradas if e.numero == 5] == []
     assert AmistadAsistente.model_validate(datos['diario-amistad']).puntos == 3
+    # Ajuste del diario (F05): bandeja, remitente y archivo.
+    assert PreguntaDiarioEstado.model_validate(datos['desarchivar-pregunta']).bandeja == 'PENDIENTE'
+    assert PreguntaDiarioEstado.model_validate(datos['archivar-pregunta']).bandeja == 'ARCHIVADA'
+    buzon = {p.codigo: p for p in TypeAdapter(list[PreguntaDiarioEstado]).validate_python(
+        datos['diario-preguntas-buzon'])}
+    assert (buzon['t-diario-fija'].bandeja, buzon['t-diario-fija'].entrada) == ('RESPONDIDA', 1)
+    assert buzon['t-diario-fija'].actividad.codigo == 't-inicio'
+    assert (buzon['t-diario-personal'].bandeja, buzon['t-diario-personal'].actividad.codigo) == (
+        'ARCHIVADA', 't-expectativas')
+    assert buzon['t-diario-tras-conversar'].bandeja is None
     check_ins = CheckInsCuenta.model_validate(datos['check-ins'])
     assert check_ins.dias_registrados == 2 and check_ins.registrado_hoy  # «hoy» fijado en FECHA (F05)
     assert any(t.completadas for t in TypeAdapter(list[AvanceTematica]).validate_python(datos['tematicas']))
