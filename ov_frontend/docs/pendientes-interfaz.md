@@ -2,6 +2,16 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-23 · F05 · «Hoy ya contaron tus 3 conversaciones» en el panel de amistad
+
+- **Dato:** `GET diario/amistad` trae `puntos`, `nivel` y `siguiente_en`, pero no cuántas escrituras contaron hoy (tope `TOPE_ENTRADAS_AMISTAD_DIA`).
+- **Dónde se mostraría:** panel «Amistad con Lumi» del diario (`LumiBondPanel`) y la ayuda del editor («Esta conversación suma a tu amistad con Lumi»).
+- **Opciones:**
+  1. Que `amistad` entregue `contadas_hoy` (o `restantes_hoy`).
+  2. Dejarlo solo en el aviso al guardar, que ya lo deduce comparando los puntos antes y después.
+- **Si no se muestra:** en api el panel no dice que el tope del día se alcanzó y el editor no anticipa si la entrada suma; el aviso al guardar sí lo dice.
+- **Estado:** pendiente (F05).
+
 ## 2026-10-22 · Ajustes Central (7) · Favoritos de testimonios
 
 - **Dato:** la estrella de la tarjeta y «Agregar a favoritos» del visor de un testimonio. El backend no tiene favoritos de testimonios (`TipoFavorito`: CARRERA, OCUPACION, INSTITUCION).
@@ -10,13 +20,18 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Si no se muestra en el servidor:** se guardan en `adventure.bookmarks`, como las fichas, solo en ese navegador.
 - **Estado:** el usuario decidió dejarlos locales en los ajustes de la Central.
 
-## 2026-10-22 · Ajustes Central (6) · Entrada de diario en el drawer (brecha de F04 sobre F00)
+## 2026-10-22 · Ajustes Central (6) · Qué actividad abre cada pregunta del diario (drawer y cartas)
 
-- **Dato:** en F00 se decidió que el drawer de actividad conserva la entrada de diario desbloqueada por la actividad, con su enlace. En api el drawer no la muestra: `details.journal` solo se arma en local (`pointDetails.ts`), y ninguna consulta del drawer pide las preguntas de diario que abre la actividad.
-- **Dónde se muestra:** drawer de actividad (`ActivityDrawer`, `renderJournal`), en el camino y la Ciudad.
-- **Opciones:** leerla de `GET /cuentas/{c}/diario/preguntas` (las desbloqueadas por la actividad); que `GET actividades` entregue la pregunta que abre cada actividad; dejarla solo en el cierre de la actividad.
-- **Si no se muestra:** en api el drawer no enlaza al diario; la entrada sigue en el diario y en el cierre de la actividad.
-- **Estado:** pendiente: tarea por hacer, con referencia a la decisión de F00. No se implementó en los ajustes de la Central.
+- **Dato:** el servidor no dice qué actividad desbloquea cada pregunta del diario: `GET diario/preguntas` trae `codigo`, `nombre`, `estado`, `personalizada`, `redactada` y `respondida`, sin la actividad; solo la respuesta de la acción que la abre trae `entradas_desbloqueadas`.
+- **Dónde se mostraría:** dos lugares con el mismo hueco:
+  - el drawer de actividad (`ActivityDrawer`, `renderJournal`), en el camino y la Ciudad: en F00 se decidió que conserva la entrada de diario de la actividad, con su enlace, pero en api no la muestra (`details.journal` solo se arma en local, `pointDetails.ts`);
+  - las cartas de Lumi del diario: en api no se pinta «Después de: {actividad}» (F05).
+- **Opciones:**
+  1. Que `GET diario/preguntas` entregue la actividad (o el objetivo) que abre cada pregunta.
+  2. Que `GET actividades` entregue la pregunta del diario que abre cada actividad.
+  3. Dejarlo solo en el cierre de la actividad, que ya avisa «Lumi te dejó una pregunta en tu diario» (F05).
+- **Si no se muestra:** en api el drawer no enlaza al diario y las cartas no dicen después de qué actividad llegaron; la pregunta sigue en el diario y en el cierre.
+- **Estado:** pendiente (F00, ajustes Central 6 y F05).
 
 ## 2026-10-22 · Ajustes Central (2) · Hoja de vida de los contactos
 
@@ -134,26 +149,16 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Si no se muestra:** en modo `api` los planes, la opción inicial y los requisitos de `t-comparar` y `t-proyecto` existen solo en el servidor.
 - **Estado:** pendiente del lote F de planes; no se toca la interfaz en B11.
 
-## 2026-10-14 · B09 · Diario, pregunta del día, check-in y avance
+## 2026-10-14 · B09 · Avance por temática
 
-- **Dato:**
-  - `entradas_desbloqueadas` en la respuesta de la acción que deja una pregunta en el diario (`codigo`, `nombre`, `personalizada`, `texto`; nulo si está por redactar) y `POST /acciones/diario/abrir-pregunta`, que la redacta una vez (`codigo`, `nombre`, `texto`, `respondida`);
-  - `POST /acciones/diario/pregunta-del-dia` (`nombre`, `texto`, `fecha`, `respondida`) y `escribir-entrada` con `del_dia`;
-  - `escribir-entrada` cambió: `titulo` opcional y `pregunta` o `del_dia` (sin `origen`); `POST /acciones/editar-entrada` y `POST /acciones/borrar-entrada` por `numero`;
-  - `GET /cuentas/{c}/diario/entradas` (`titulo_mostrado`, «Entrada libre N»), `GET /cuentas/{c}/diario/amistad` (`puntos`, `nivel`, `siguiente_en`) y `GET /cuentas/{c}/diario/preguntas` con `nombre`, `personalizada` y `redactada`;
-  - `GET /cuentas/{c}/check-ins` (`dias_registrados` y la serie por fecha);
-  - `GET /cuentas/{c}/tematicas` (avance por temática) y `afinidad` en `logros`.
-- **Dónde se mostraría:**
-  - en la pantalla de cierre de una actividad: «Lumi te dejó una pregunta en tu diario: {nombre}» (no existe);
-  - al abrir una pregunta personalizada: «Lumi está escribiendo…» mientras llega el texto (no existe);
-  - en el diario: títulos de las entradas, editar y borrar, la pregunta del día y la amistad con Lumi;
-  - en el perfil o el pasaporte: la evolución de check-ins, el avance por temática y la afinidad.
+- **Dato:** `GET /cuentas/{c}/tematicas` (`codigo`, `nombre`, `completadas`, `total`, `porcentaje` de las cinco dimensiones del cuestionario de partida y llegada). El resto de B09 (diario, pregunta del día, amistad, check-in y afinidad) se conectó en F05.
+- **Dónde se mostraría:** sin decidir; no tiene relación con la Ciudad.
 - **Opciones:**
-  - conectar el diario en su lote F, agregando los tipos a `servidor.ts` y `services/api/diario.ts`, y crear la pantalla de cierre y el estado «escribiendo» cuando la spec los autorice;
-  - mostrar solo lo que ya tiene vista (lista de preguntas y entradas) y dejar amistad, pregunta del día, evolución y afinidad para una spec de perfil;
-  - mantener el diario local hasta diseñar las vistas nuevas.
-- **Si no se muestra:** en modo `api` el diario no ve las preguntas personalizadas ni la del día, la amistad no sube en pantalla y la evolución de check-ins y el avance por temática solo existen en el servidor.
-- **Estado:** pendiente de los lotes F; no se toca la interfaz en B09.
+  1. Un bloque en el perfil o en el pasaporte con una barra por temática.
+  2. Junto a la comparación partida–llegada del libro de Helena.
+  3. Solo en el panel de la orientadora (F10/F11).
+- **Si no se muestra:** el avance por temática solo existe en el servidor; el front no lo pide (no hay cliente).
+- **Estado:** pendiente, sin vista por decisión del usuario (F05), para un lote posterior. HU-075 queda parcial (nivel y afinidad).
 
 ## 2026-10-13 · B08 · Batallas, casos y testimonios
 
@@ -333,7 +338,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   2. Integrarlas como sugerencias al escribir una entrada.
   3. Mantener el diario local hasta definir su integración completa.
 - **Si no se muestra:** el front no conoce la disponibilidad ni las respuestas registradas en el servidor; no llama a esta consulta durante la iteración 1 y conserva su comportamiento actual.
-- **Estado:** pendiente. B2 solo registra el dato; no implementa ninguna opción.
+- **Estado:** resuelto en F05: en api, las preguntas DISPONIBLE sin responder son las cartas de Lumi del diario y las BLOQUEADA se cuentan como «por descubrir».
 
 ## 2026-10-08 · B2 · Disponibilidad de conversaciones del servidor
 
@@ -355,7 +360,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   2. Definir antes el contrato de consulta manteniendo la integración para esa iteración.
   3. Conservar explícitamente el comportamiento local hasta completar ambos extremos.
 - **Si no se muestra:** la señal del panel sigue siendo local incluso en modo API; el recorrido de F4 no la envía al servidor y no mezcla sus datos con disponibilidad o progreso.
-- **Estado:** pendiente de la iteración 3; no se modifica interfaz ni almacenamiento.
+- **Estado:** resuelto en F05: `GET check-ins` (con `registrado_hoy`) y `POST check-in` alimentan el panel del mapa, el aviso al ingresar, el diálogo y la evolución, en la escala 1–5.
 
 ## 2026-10-09 · Anexo F3 · Persona, rol, cita y apertura de testimonios
 

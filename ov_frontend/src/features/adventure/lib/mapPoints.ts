@@ -43,7 +43,8 @@ export function getZoneProgress(zone: StudentZone, adventure: AdventureState, jo
     const estado = obtenerEstadoServidor().actividades.datos
     return zone === 'missions'
       ? { label: 'Nivel de recorrido', value: progresoBloque(estado).porcentaje }
-      : { label: 'Recorrido por la ciudad', value: progresoBloque(estado, 'CIUDAD').porcentaje }
+      : // F05: la afinidad del servidor (completadas de la Ciudad sobre todas sus actividades).
+        { label: 'Afinidad con la ciudad', value: obtenerEstadoServidor().logros.datos?.afinidad ?? 0 }
   }
   return zone === 'missions'
     ? {

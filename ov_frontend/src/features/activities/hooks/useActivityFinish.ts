@@ -1,7 +1,7 @@
 import { modoApi } from '@/config/env'
 import { actividadServidor } from '@/lib/servidor/adaptadores'
 import { useEstadoServidor } from '@/store/servidor/sesion'
-import type { DesbloqueoNuevo } from '@/types/servidor'
+import type { DesbloqueoNuevo, EntradaDesbloqueada } from '@/types/servidor'
 import { useNavigate } from 'react-router'
 import { catalog } from '@/data/activities/content'
 import type { Actividad } from '@/types/activities'
@@ -15,6 +15,7 @@ export function useActivityFinish(
   activity: Actividad,
   desbloqueosServidor: DesbloqueoNuevo[] = [],
   yaCompletada = false,
+  entradasDiario: EntradaDesbloqueada[] = [],
 ) {
   const state = useJourney()
   const servidor = useEstadoServidor()
@@ -73,7 +74,7 @@ export function useActivityFinish(
     completada,
     modoApi,
     testimonios,
-    tienePreguntaDiario: !!activity.promptDiario,
+    tienePreguntaDiario: modoApi ? entradasDiario.length > 0 : !!activity.promptDiario,
     pieza: piece
       ? {
           codigo: piece.id,
@@ -83,17 +84,27 @@ export function useActivityFinish(
         }
       : undefined,
   })
+  // F05: en api, la pregunta que la acción dejó en el diario (su texto, o el nombre si está por redactar).
+  const entrada = modoApi ? entradasDiario[0] : undefined
+  const preguntaDiario = entrada
+    ? { texto: entrada.texto ?? entrada.nombre, titulo: 'Lumi te dejó una pregunta en tu diario' }
+    : !modoApi && activity.promptDiario
+      ? { texto: activity.promptDiario, titulo: undefined }
+      : undefined
   return {
     resumen,
+    preguntaDiario,
     abrirLibro: () => navigate('/student/profile/helena'),
     escribirDiario: () =>
-      navigate(
-        `${appPaths.student.journal}?${new URLSearchParams({
-          activity: activity.id,
-          title: activity.titulo,
-          prompt: activity.promptDiario ?? '',
-        })}`,
-      ),
+      entrada
+        ? navigate(`${appPaths.student.journal}?${new URLSearchParams({ pregunta: entrada.codigo })}`)
+        : navigate(
+            `${appPaths.student.journal}?${new URLSearchParams({
+              activity: activity.id,
+              title: activity.titulo,
+              prompt: activity.promptDiario ?? '',
+            })}`,
+          ),
     volverAlMapa,
   }
 }

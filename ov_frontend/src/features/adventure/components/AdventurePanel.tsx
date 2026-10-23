@@ -66,8 +66,7 @@ export function AdventurePanel({
   const seccion = useSeccionesAcceso(adventure)
   const checkIn = seccion('CHECK_IN')
   const percentage = Math.min(100, Math.max(0, progress.value))
-  const zonaCiudad =
-    progress.label === 'Afinidad con la ciudad' || progress.label === 'Recorrido por la ciudad'
+  const zonaCiudad = progress.label === 'Afinidad con la ciudad'
   const circumference = 2 * Math.PI * 40
   return (
     <div className="sx-panel-content">

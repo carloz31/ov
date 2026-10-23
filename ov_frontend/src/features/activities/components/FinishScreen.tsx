@@ -1,5 +1,5 @@
 import { useActivityFinish } from '../hooks/useActivityFinish'
-import type { DesbloqueoNuevo } from '@/types/servidor'
+import type { DesbloqueoNuevo, EntradaDesbloqueada } from '@/types/servidor'
 import type { Actividad } from '@/types/activities'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { FinishBackpackSection } from './FinishBackpackSection'
@@ -14,16 +14,19 @@ export function FinishScreen({
   onClose,
   yaCompletada = false,
   desbloqueosServidor,
+  entradasDiario,
 }: {
   activity: Actividad
   onClose?: () => void
   yaCompletada?: boolean
   desbloqueosServidor?: DesbloqueoNuevo[]
+  entradasDiario?: EntradaDesbloqueada[]
 }) {
-  const { resumen, escribirDiario } = useActivityFinish(
+  const { resumen, escribirDiario, preguntaDiario } = useActivityFinish(
     activity,
     desbloqueosServidor,
     yaCompletada,
+    entradasDiario,
   )
   const mochila = resumen.modo === 'recursos'
   // Con mochila, la tarjeta tiene dos columnas; «Se abrió para ti» va a la derecha si la mochila es corta.
@@ -42,9 +45,8 @@ export function FinishScreen({
             </div>
             <h2>{resumen.titulo}</h2>
             <p className="sx-finish-subtitle">{resumen.subtitulo}</p>
-            {!activity.recompensa?.mensajeFin?.startsWith('Obtuviste:') && activity.recompensa?.mensajeFin && (
-              <p>{activity.recompensa.mensajeFin}</p>
-            )}
+            {!activity.recompensa?.mensajeFin?.startsWith('Obtuviste:') &&
+              activity.recompensa?.mensajeFin && <p>{activity.recompensa.mensajeFin}</p>}
             {activity.id === 'act-tip-01' && (
               <p className="sx-finish-note">
                 Has recorrido 1 de 14 encuentros. Las próximas voces de la aldea estarán disponibles cuando
@@ -54,11 +56,12 @@ export function FinishScreen({
           </div>
           {novedades && resumen.medallas.length > 0 && <FinishMedalsSection medallas={resumen.medallas} />}
           {!resumen.abiertoAlLado && abierto}
-          {resumen.diario.visible && activity.promptDiario && (
+          {resumen.diario.visible && preguntaDiario && (
             <FinishJournalSection
-              pregunta={activity.promptDiario}
+              pregunta={preguntaDiario.texto}
               nueva={resumen.diario.nueva}
               onWrite={escribirDiario}
+              titulo={preguntaDiario.titulo}
             />
           )}
         </div>
