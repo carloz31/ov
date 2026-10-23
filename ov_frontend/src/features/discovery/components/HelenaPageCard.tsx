@@ -22,7 +22,7 @@ export function HelenaPageCard({ page, model }: { page: ModeloLibro['pages'][num
   const lista = page.state === 'ready' || !!page.selloLlegada
   return (
     <Parchment
-      className={`sx-d-helena-card sx-d-helena-${lista ? 'ready' : page.state}${page.state === 'revealed' ? ' sx-d-revealed' : ''}`}
+      className={`sx-d-helena-card sx-d-helena-${lista ? 'ready' : page.state}${page.state === 'revealed' ? ' sx-d-revealed' : ''}${model.entrando === page.id && !lista ? ' sx-d-helena-entrando' : ''}`}
       label={page.antetitulo}
       title={page.title}
     >

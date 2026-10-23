@@ -275,3 +275,32 @@
     padding-top: 28px;
   }
 }
+
+/* Ajuste de F03: tras la animación del sello (0,4 s), las zonas, letras o inteligencias entran una a una,
+   150 ms entre cada una. Sin animación con «reducir movimiento». */
+@media (prefers-reduced-motion: no-preference) {
+  .sx-d-helena-entrando :is(.sx-d-pl-summary-list > li, .sx-d-helena-summary > .sx-d-helena-dimension) {
+    animation: sx-d-reveal 0.4s ease-out both;
+    animation-delay: 0.4s;
+  }
+  .sx-d-helena-entrando .sx-d-pl-summary-list > li:nth-child(2),
+  .sx-d-helena-entrando .sx-d-helena-summary > .sx-d-helena-dimension:nth-of-type(2) {
+    animation-delay: 0.55s;
+  }
+  .sx-d-helena-entrando .sx-d-pl-summary-list > li:nth-child(3),
+  .sx-d-helena-entrando .sx-d-helena-summary > .sx-d-helena-dimension:nth-of-type(3) {
+    animation-delay: 0.7s;
+  }
+  .sx-d-helena-entrando .sx-d-pl-summary-list > li:nth-child(4),
+  .sx-d-helena-entrando .sx-d-helena-summary > .sx-d-helena-dimension:nth-of-type(4) {
+    animation-delay: 0.85s;
+  }
+  .sx-d-helena-entrando .sx-d-pl-summary-list > li:nth-child(5),
+  .sx-d-helena-entrando .sx-d-helena-summary > .sx-d-helena-dimension:nth-of-type(5) {
+    animation-delay: 1s;
+  }
+  .sx-d-helena-entrando .sx-d-pl-summary-list > li:nth-child(n + 6),
+  .sx-d-helena-entrando .sx-d-helena-summary > .sx-d-helena-dimension:nth-of-type(n + 6) {
+    animation-delay: 1.15s;
+  }
+}

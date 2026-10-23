@@ -96,11 +96,17 @@ export function useHelenaPages() {
     }
   }, [servidor.actividades.datos, intento, cuenta])
   const [opening, setOpening] = useState<InstrumentPageId>()
+  // Ajuste de F03: la página recién revelada hace entrar su contenido escalonado tras el sello.
+  const [entrando, setEntrando] = useState<InstrumentPageId>()
   useEffect(() => {
     if (!opening) return
     const timer = setTimeout(() => setOpening(undefined), 400)
     return () => clearTimeout(timer)
   }, [opening])
+  const abrir = (id: InstrumentPageId) => {
+    setOpening(id)
+    setEntrando(id)
+  }
   async function accion(tarea: () => Promise<{ tipo: string }>, alTerminar: () => void) {
     setRevelando(true)
     setErrorAccion('')
@@ -114,7 +120,7 @@ export function useHelenaPages() {
     if (modoApi && sello) {
       void accion(
         () => revelarResultado(sello.instrumento, sello.aplicacion),
-        () => setOpening(id),
+        () => abrir(id),
       )
       return
     }
@@ -122,10 +128,10 @@ export function useHelenaPages() {
       // Páginas de ejemplo: su revelado sigue siendo local.
       if (!servidor.resultadoRiasec || !cuenta) return
       revelarPaginaApi(cuenta, servidor.resultadoRiasec.calculado_en, id)
-      setOpening(id)
+      abrir(id)
       return
     }
-    setOpening(id)
+    abrir(id)
     updateDiscovery((s) =>
       s.revealedPages.includes(id) ? s : { ...s, revealedPages: [...s.revealedPages, id] },
     )
@@ -149,6 +155,7 @@ export function useHelenaPages() {
     setErrorConsulta,
     setIntento,
     opening,
+    entrando,
     revelarPagina,
     reiniciarIntereses,
     revelando,
