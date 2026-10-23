@@ -64,7 +64,7 @@ Del JSON solo se usan los nodos y la posición. Lo que dice Lumi ante algo cerra
 
 - Descripción de cada dimensión: del servidor. Ejemplos por dimensión (`ejemplosDimension`), fragmentos del resumen (`fragmentosResumen`) y descripciones del modo local (`descripcionesLocales`): `features/discovery/data/dimensionExamples.ts`.
 - Duración de una carrera: `data/catalog/careersAndInstitutions.ts` (`careerCatalog.duration`), cruzando por código; si no hay coincidencia, se omite.
-- Tipo de resultado por página: `features/discovery/data/resultPages.ts`. Zonas en palabras: `lib/servidor/adaptadoresInstrumentos.ts`.
+- Tipo de resultado por página: `features/discovery/data/resultPages.ts`. Zonas en palabras: `lib/servidor/adaptadoresInstrumentos.ts`; el servidor manda el código (`FUERTE`, `EN_CAMINO`, `POR_TRABAJAR`) y `features/discovery/lib/partidaLlegada.ts` le da posición (Por trabajar → En camino → Fuerte), cuenta las que subieron y arma los dos estados de la página I (solo partida; partida y llegada). Con solo la partida, las respuestas ítem por ítem salen de `/items` y `/respuestas` de las actividades de `APL-PARTIDA` (del catálogo), pedidas en paralelo al abrir la vista explicada, con carga y error propios (`respuestasPartida` en `store/servidor/sesion.ts`). Los textos de la tarjeta, la vista explicada y la guía de zonas son del front; nunca se leen puntajes.
 - Familias: etiqueta local de `careerFamilies` por el mismo id; si no existe, el valor remoto.
 - Inteligencias: siempre la demostración `demoIntelligences` (`features/discovery/lib/helenaPages.ts`, `DATO DE PRUEBA`), con aviso de que no es personal. El instrumento real llega en su iteración.
 
