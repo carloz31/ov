@@ -1,6 +1,5 @@
 import { useTravelerLevel } from '../hooks/useTravelerLevel'
 import { useSeccionesAcceso, type AccesoSeccion } from '../hooks/useSeccionesAcceso'
-import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import {
   Backpack,
@@ -22,39 +21,11 @@ import type { AdventureState } from '@/types/adventure'
 import { appPaths } from '@/routes/paths'
 import { getReturnGreeting, type StudentMapPoint } from '../lib/mapPoints'
 import { getListedActivities, studentActivitiesPath } from '../lib/navigation'
+import type { SiguientePaso } from '../lib/siguientePaso'
+import { AccesoRapido } from './AccesoRapido'
+import { SiguientePasoServidor } from './SiguientePasoServidor'
 import { getTodayCheckIn, useCheckInDay } from '../lib/checkIn'
 
-// Acceso rápido a una sección: cerrada, lleva candado y, en api, Lumi explica qué falta.
-function AccesoRapido({
-  to,
-  acceso,
-  onGuide,
-  children,
-}: {
-  to: string
-  acceso: AccesoSeccion
-  onGuide?: (pasos: string[]) => void
-  children: ReactNode
-}) {
-  const pasos = acceso.pasos
-  return (
-    <Link
-      to={to}
-      title={acceso.bloqueada ? acceso.mensaje : undefined}
-      onClick={
-        pasos && onGuide
-          ? (event) => {
-              event.preventDefault()
-              onGuide(pasos)
-            }
-          : undefined
-      }
-    >
-      {children}
-      {acceso.bloqueada && <LockKeyhole className="sx-quick-lock" size={12} aria-hidden="true" />}
-    </Link>
-  )
-}
 const textoOculto = (acceso: AccesoSeccion) =>
   acceso.bloqueada && <small className="sr-only">{acceso.mensaje}</small>
 
@@ -66,6 +37,9 @@ export function AdventurePanel({
   onSelect,
   onCheckIn,
   onGuide,
+  siguiente,
+  masDisponibles = 0,
+  onSiguiente,
 }: {
   adventure: AdventureState
   points: StudentMapPoint[]
@@ -75,6 +49,10 @@ export function AdventurePanel({
   onCheckIn: () => void
   // Ayuda de Lumi para un acceso cerrado (api).
   onGuide?: (pasos: string[]) => void
+  // Solo api: el siguiente paso de la ruta; reemplaza la recomendada y la lista de disponibles.
+  siguiente?: SiguientePaso | null
+  masDisponibles?: number
+  onSiguiente?: () => void
 }) {
   const { level, nombre, iniciales, progresoCiudad } = useTravelerLevel(adventure)
   const visible = getListedActivities(points, false).slice(0, 4)
@@ -151,26 +129,37 @@ export function AdventurePanel({
           <p>Crece con cada {zonaCiudad ? progresoCiudad : 'misión del camino.'}</p>
         </div>
       </section>
-      <section className="sx-panel-section">
-        {recommended ? (
-          <button type="button" className="sx-next-step" onClick={() => onSelect(recommended.id)}>
-            <span>
-              <span className="sx-next-label">
-                <Target className="sx-next-target" size={24} aria-hidden="true" />
-                Siguiente paso
+      {siguiente !== undefined ? (
+        <SiguientePasoServidor
+          paso={siguiente}
+          mas={masDisponibles}
+          saludo={
+            !!getReturnGreeting(adventure, siguiente && 'punto' in siguiente ? siguiente.punto : undefined)
+          }
+          onAbrir={onSiguiente}
+        />
+      ) : (
+        <section className="sx-panel-section">
+          {recommended ? (
+            <button type="button" className="sx-next-step" onClick={() => onSelect(recommended.id)}>
+              <span>
+                <span className="sx-next-label">
+                  <Target className="sx-next-target" size={24} aria-hidden="true" />
+                  Siguiente paso
+                </span>
+                {greeting && <small className="sx-panel-return">¡Qué bueno verte de nuevo!</small>}
+                <strong>{recommended.title}</strong>
               </span>
-              {greeting && <small className="sx-panel-return">¡Qué bueno verte de nuevo!</small>}
-              <strong>{recommended.title}</strong>
-            </span>
-            <ChevronRight size={22} aria-hidden="true" />
-          </button>
-        ) : (
-          <>
-            <h2>Siguiente paso</h2>
-            <p className="sx-panel-subtitle">No hay actividades por realizar en esta zona por ahora.</p>
-          </>
-        )}
-      </section>
+              <ChevronRight size={22} aria-hidden="true" />
+            </button>
+          ) : (
+            <>
+              <h2>Siguiente paso</h2>
+              <p className="sx-panel-subtitle">No hay actividades por realizar en esta zona por ahora.</p>
+            </>
+          )}
+        </section>
+      )}
       <section className="sx-panel-section sx-signal-card">
         <div className="sx-signal-heading">
           <h2>
@@ -244,7 +233,11 @@ export function AdventurePanel({
             <Search size={18} />
             <span>Investigaciones</span>
           </Link>
-          <AccesoRapido to={appPaths.student.catalog.professions} acceso={seccion('CATALOGO')} onGuide={onGuide}>
+          <AccesoRapido
+            to={appPaths.student.catalog.professions}
+            acceso={seccion('CATALOGO')}
+            onGuide={onGuide}
+          >
             <LibraryBig size={18} />
             <span>
               Información
@@ -253,39 +246,41 @@ export function AdventurePanel({
           </AccesoRapido>
         </nav>
       </section>
-      <section className="sx-panel-section">
-        <h2>
-          Actividades disponibles{' '}
-          <span className="sx-panel-count">{getListedActivities(points, false).length}</span>
-        </h2>
-        {visible.length ? (
-          <>
-            <div className="sx-available-list">
-              {visible.map((point) => (
-                <button type="button" key={point.id} onClick={() => onSelect(point.id)}>
-                  <span>
-                    <strong>{point.title}</strong>
-                    <small>
-                      {point.subtitle}
-                      {point.opcional && ' · opcional'}
-                    </small>
-                  </span>
-                  <span
-                    className="sx-available-dot"
-                    data-recommended={point.id === recommended?.id}
-                    aria-hidden="true"
-                  />
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          <p className="sx-panel-subtitle">No hay actividades por realizar en esta zona por ahora.</p>
-        )}
-        <Link className="sx-panel-link" to={studentActivitiesPath}>
-          Ver más
-        </Link>
-      </section>
+      {siguiente === undefined && (
+        <section className="sx-panel-section">
+          <h2>
+            Actividades disponibles{' '}
+            <span className="sx-panel-count">{getListedActivities(points, false).length}</span>
+          </h2>
+          {visible.length ? (
+            <>
+              <div className="sx-available-list">
+                {visible.map((point) => (
+                  <button type="button" key={point.id} onClick={() => onSelect(point.id)}>
+                    <span>
+                      <strong>{point.title}</strong>
+                      <small>
+                        {point.subtitle}
+                        {point.opcional && ' · opcional'}
+                      </small>
+                    </span>
+                    <span
+                      className="sx-available-dot"
+                      data-recommended={point.id === recommended?.id}
+                      aria-hidden="true"
+                    />
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="sx-panel-subtitle">No hay actividades por realizar en esta zona por ahora.</p>
+          )}
+          <Link className="sx-panel-link" to={studentActivitiesPath}>
+            Ver más
+          </Link>
+        </section>
+      )}
     </div>
   )
 }

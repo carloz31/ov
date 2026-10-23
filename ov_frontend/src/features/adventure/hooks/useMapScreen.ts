@@ -15,6 +15,9 @@ import {
   type StudentMapPoint,
   type StudentZone,
 } from '@/features/adventure/lib/mapPoints'
+import { getCaminoPoints } from '@/features/adventure/lib/caminoPoints'
+import { getCiudadPoints } from '@/features/adventure/lib/ciudadPoints'
+import { actividadesMas, siguientePaso } from '@/features/adventure/lib/siguientePaso'
 export function useMapScreen({
   zone,
   points,
@@ -33,7 +36,17 @@ export function useMapScreen({
   const [detalleServidor, setDetalleServidor] = useState<{ clave: string; description?: string }>()
   const cityOpen = canAccessCity(adventure)
   const locked = zone === 'central' && !cityOpen
-  const recommended = getRecommendedPoint(points)
+  // En api, el siguiente paso de toda la ruta guía el panel, el panel plegado y el pulso del mapa.
+  const ruta = modoApi ? [...getCaminoPoints(adventure, journey), ...getCiudadPoints(adventure, journey)] : []
+  const siguiente = modoApi
+    ? siguientePaso(servidor.actividades.datos, ruta, zone === 'missions' ? 'camino' : 'ciudad')
+    : undefined
+  const recommended =
+    siguiente === undefined
+      ? getRecommendedPoint(points)
+      : siguiente && 'punto' in siguiente
+        ? points.find((p) => p.zone === siguiente.punto.zone && p.id === siguiente.punto.id)
+        : undefined
   const progress = getZoneProgress(zone, adventure, journey)
   const selected = points.find((point) => point.id === selectedId)
   const baseDetails = selected ? getPointDetails(selected, adventure, journey) : undefined
@@ -81,6 +94,8 @@ export function useMapScreen({
     cityOpen,
     locked,
     recommended,
+    siguiente,
+    masDisponibles: siguiente === undefined ? 0 : actividadesMas(ruta, siguiente),
     progress,
     selected,
     details,

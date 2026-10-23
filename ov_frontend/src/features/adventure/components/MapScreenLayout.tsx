@@ -65,6 +65,9 @@ export function MapScreenLayout({
     cityOpen,
     locked,
     recommended,
+    siguiente,
+    masDisponibles,
+    irSiguiente,
     progress,
     selected,
     details,
@@ -83,6 +86,9 @@ export function MapScreenLayout({
       adventure={adventure}
       points={points}
       recommended={recommended}
+      siguiente={siguiente}
+      masDisponibles={masDisponibles}
+      onSiguiente={irSiguiente}
       progress={progress}
       onGuide={openGuide}
       onCheckIn={() => {
@@ -140,8 +146,21 @@ export function MapScreenLayout({
             <CollapsedAdventurePanel
               iniciales={iniciales}
               progress={progress.value}
-              recommended={recommended}
-              onSelect={(id) => (locked ? navigate(appPaths.student.missions) : selectPoint(id))}
+              recommended={
+                siguiente === undefined
+                  ? recommended
+                  : siguiente && 'punto' in siguiente
+                    ? siguiente.punto
+                    : undefined
+              }
+              etiqueta={siguiente?.estado === 'empezada' ? 'Continúa' : undefined}
+              onSelect={(id) =>
+                siguiente !== undefined
+                  ? irSiguiente()
+                  : locked
+                    ? navigate(appPaths.student.missions)
+                    : selectPoint(id)
+              }
             />
           )}
           <div className="sx-panel-scroll" inert={ui.panelCollapsed ? true : undefined}>

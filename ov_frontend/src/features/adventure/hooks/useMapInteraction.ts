@@ -52,6 +52,8 @@ export function useMapInteraction({
     cityOpen,
     locked,
     recommended,
+    siguiente,
+    masDisponibles,
     progress,
     selected,
     details,
@@ -70,9 +72,7 @@ export function useMapInteraction({
     onFrame: frameAdditional,
   })
   const explicarCiudad =
-    ciudadBloqueo === undefined
-      ? undefined
-      : () => openGuide(pasosBloqueo('CIUDAD', ciudadBloqueo))
+    ciudadBloqueo === undefined ? undefined : () => openGuide(pasosBloqueo('CIUDAD', ciudadBloqueo))
   // Entrada directa a la Ciudad cerrada (api): vuelve al Camino y Lumi explica qué falta, una sola vez.
   const ciudadExplicada = useRef(false)
   useEffect(() => {
@@ -107,6 +107,12 @@ export function useMapInteraction({
       next.delete('revision')
       return next
     })
+  }
+  // Solo api: el siguiente paso se abre en su zona; si está en la otra, en el mapa de esa zona.
+  function irSiguiente() {
+    if (!siguiente || !('punto' in siguiente)) return
+    if (siguiente.href) navigate(siguiente.href)
+    else selectPoint(siguiente.punto.id)
   }
   function action(detail: PointDetails) {
     if (!accionDisponible(detail)) return
@@ -144,6 +150,9 @@ export function useMapInteraction({
     cityOpen,
     locked,
     recommended,
+    siguiente,
+    masDisponibles,
+    irSiguiente,
     progress,
     selected,
     details,

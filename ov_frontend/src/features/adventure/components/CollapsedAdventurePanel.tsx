@@ -7,11 +7,13 @@ export function CollapsedAdventurePanel({
   recommended,
   onSelect,
   iniciales = 'AL',
+  etiqueta = 'Siguiente paso',
 }: {
   iniciales?: string
   progress: number
   recommended?: StudentMapPoint
   onSelect: (id: string) => void
+  etiqueta?: string
 }) {
   return (
     <div className="sx-panel-strip">
@@ -23,7 +25,7 @@ export function CollapsedAdventurePanel({
         <button
           className="sx-strip-next"
           type="button"
-          aria-label={`Siguiente paso: ${recommended.title}`}
+          aria-label={`${etiqueta}: ${recommended.title}`}
           onClick={() => onSelect(recommended.id)}
         >
           <Target aria-hidden="true" size={22} />

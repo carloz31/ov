@@ -1211,6 +1211,17 @@ body:has([data-student-experience] .sx-shell) {
   line-height: 1.25;
   font-weight: 800;
 }
+.sx-root .sx-next-meta {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.sx-root .sx-next-more {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
 .sx-root .sx-panel-progress {
   display: flex;
   flex-direction: column;
