@@ -1,47 +1,38 @@
-import { zonaEnPalabras } from '@/lib/servidor/adaptadoresInstrumentos'
-import type { DimensionPartidaLlegada } from '../lib/partidaLlegada'
+import { ResultOverview } from './ResultOverview'
+import { PartidaLlegadaSynthesis } from './PartidaLlegadaSynthesis'
+import { ZonePathGrid } from './ZonePathGrid'
+import { ZoneGuide } from './ZoneGuide'
+import { PartidaLlegadaAnswers } from './PartidaLlegadaAnswers'
+import type { ModeloPartidaLlegada } from '../lib/partidaLlegada'
 
-// F03 (HU-094): partida y llegada por dimensión, sin puntajes. Los ítems que cambiaron van primero, con el
-// mismo estilo sea cual sea el sentido del cambio; los que se mantuvieron quedan plegados.
-export function PartidaLlegadaResult({ dimensiones }: { dimensiones: DimensionPartidaLlegada[] }) {
+// F03 (HU-094) y su ajuste: vista explicada de partida y llegada, sin puntajes. Panel oscuro (síntesis y
+// camino de cada parte), guía de zonas y respuestas por dimensión.
+export function PartidaLlegadaResult({
+  modelo,
+  cargandoItems,
+  errorItems,
+  reintentarItems,
+  guia,
+  setGuia,
+}: {
+  modelo: ModeloPartidaLlegada
+  cargandoItems: boolean
+  errorItems: string
+  reintentarItems: () => void
+  guia: boolean
+  setGuia: (abierta: boolean) => void
+}) {
   return (
-    <section className="sx-d-result-comparison" aria-label="Partida y llegada por dimensión">
-      {dimensiones.map((d) => (
-        <article key={d.codigo} className="sx-d-helena-dimension">
-          <div>
-            <h2>{d.nombre}</h2>
-            <strong className="sx-d-helena-zone">{zonaEnPalabras(d.zonaPartida)}</strong>
-            <p>{d.descripcion}</p>
-            {d.cambiaron.length > 0 && (
-              <ul>
-                {d.cambiaron.map((item) => (
-                  <li key={item.item}>
-                    <span>{item.enunciado}</span>{' '}
-                    <strong>
-                      {item.partida} → {item.llegada}
-                    </strong>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {d.mantenidos.length > 0 && (
-              <details>
-                <summary>
-                  {d.mantenidos.length}{' '}
-                  {d.mantenidos.length === 1 ? 'respuesta se mantuvo' : 'respuestas se mantuvieron'}
-                </summary>
-                <ul>
-                  {d.mantenidos.map((item) => (
-                    <li key={item.item}>
-                      <span>{item.enunciado}</span> <strong>{item.partida}</strong>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            )}
-          </div>
-        </article>
-      ))}
-    </section>
+    <>
+      <ResultOverview>
+        <PartidaLlegadaSynthesis modelo={modelo} />
+        <ZonePathGrid modelo={modelo} guia={guia} abrirGuia={() => setGuia(!guia)} />
+      </ResultOverview>
+      {guia && <ZoneGuide cerrar={() => setGuia(false)} />}
+      <PartidaLlegadaAnswers
+        modelo={modelo}
+        items={{ cargando: cargandoItems, error: errorItems, reintentar: reintentarItems }}
+      />
+    </>
   )
 }

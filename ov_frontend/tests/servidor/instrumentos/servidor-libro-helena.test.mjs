@@ -218,7 +218,7 @@ test('recarga directa: mientras se lee el libro, la vista espera; luego muestra 
   const vista = vistaRuta(HelenaResultView)
   assert.match(vista, /Página I · descifrada/)
   assert.match(vista, /Claridad/)
-  assert.match(vista, /<details><summary>4 respuestas se mantuvieron<\/summary><ul><li><span>Sé qué quiero hacer/)
+  assert.match(vista, /<summary>4 respuestas se mantuvieron<\/summary><div class="sx-d-pl-scroll">.*?Sé qué quiero hacer/)
   assert.doesNotMatch(vista, /puntaje|porcentaje|%/)
 })
 

@@ -6,9 +6,11 @@ import type { HelenaPage, TipoResultadoHelena } from '@/types/profile'
 export function ResultHeader({
   page,
   tipo,
+  soloPartida = false,
 }: {
   page: HelenaPage & { etiquetaDemo: string }
   tipo: TipoResultadoHelena
+  soloPartida?: boolean
 }) {
   return (
     <header className="sx-d-result-header">
@@ -24,7 +26,9 @@ export function ResultHeader({
         {tipo === 'COINCIDENCIAS'
           ? 'Helena leyó tus respuestas y encontró los tipos de actividad que más te llaman. No es un veredicto: es una pista para explorar ocupaciones y carreras que podrías no haber considerado.'
           : tipo === 'COMPARACION'
-            ? 'Helena leyó cómo te sentías al empezar el camino y cómo te sientes al llegar. Son zonas, no notas: muestran dónde estás hoy.'
+            ? soloPartida
+              ? 'Helena leyó cómo te sientes al empezar el camino. Son zonas, no notas: muestran desde dónde partes. Al final volverás a responder y verás qué cambió.'
+              : 'Helena leyó cómo te sentías al empezar el camino y cómo te sientes al llegar. Son zonas, no notas: muestran dónde estás hoy y qué puedes seguir trabajando.'
             : 'No hay una sola forma de ser inteligente. Helena leyó tus respuestas y encontró las capacidades que más usas para aprender, crear y resolver. Todas se pueden desarrollar.'}
       </p>
       {page.demo && (
