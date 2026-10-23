@@ -102,10 +102,9 @@ test('la mochila abre el testimonio en el visor y registra su vista, sin «más 
     /llega pronto/,
   )
   assert.match(vista, /resource=\{selected && isUnlocked\(selected\) \? selected : undefined\}/)
-  // El cierre del caso abre el mismo pop up encima, con el visor global.
-  assert.match(readFileSync('src/pages/student/ForestFireCasePage.tsx', 'utf8'), /<VisorRecursoHost \/>/)
+  // Abierto desde un cierre (`?ficha=`), también registra su vista.
   assert.match(
-    readFileSync('src/features/cases/hooks/useTestimonioCaso.ts', 'utf8'),
-    /d\.caso\?\.codigo === actividad/,
+    hook,
+    /if \(testimonioSolicitado && fichaSolicitada\) void registrarVistaTestimonio\(fichaSolicitada\)/,
   )
 })

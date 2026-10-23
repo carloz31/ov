@@ -54,6 +54,11 @@ export function useBackpack() {
   useEffect(() => {
     if (solicitadaBloqueada && fichaSolicitada) setRequisitoId(fichaSolicitada)
   }, [solicitadaBloqueada, fichaSolicitada])
+  // Ajustes Central (7): un testimonio abierto desde un cierre (`?ficha=`) también registra su vista.
+  const testimonioSolicitado = !!selected?.servidor && isUnlocked(selected) && selected.id === fichaSolicitada
+  useEffect(() => {
+    if (testimonioSolicitado && fichaSolicitada) void registrarVistaTestimonio(fichaSolicitada)
+  }, [testimonioSolicitado, fichaSolicitada])
   const visible = resources.filter(
     (item) =>
       (!favoritesOnly || (isUnlocked(item) && adventure.bookmarks.includes(item.id))) &&

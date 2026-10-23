@@ -6,7 +6,7 @@ import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
 import { superaCaso, textoPuntajeCaso, textoTiposCaso } from '@/lib/servidor/adaptadoresCasos'
 import { consultarCasos, resolverCaso } from '@/store/servidor/casos'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
-import type { OcupacionNueva } from '@/types/servidor'
+import type { DesbloqueoNuevo, OcupacionNueva } from '@/types/servidor'
 
 import { finishForestFireAttempt } from '@/features/cases/lib/forestFireCaseOutcome'
 import { useAdventure, useAdventureStorageError } from '@/store/adventureStore'
@@ -43,6 +43,8 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
   const [dropHovered, setDropHovered] = useState(false)
   // Íconos nuevos con su nombre: del servidor en api, del catálogo del front en local.
   const [newIcons, setNewIcons] = useState<OcupacionNueva[]>([])
+  // Ajustes Central (7): lo que abrió el intento (testimonios, fichas, actividades…), para el cierre.
+  const [desbloqueos, setDesbloqueos] = useState<DesbloqueoNuevo[]>([])
   const [extraProfessionalId, setExtraProfessionalId] = useState('')
   const [extraReason, setExtraReason] = useState('')
   const finalized = useRef(false)
@@ -92,6 +94,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     setDragContactId(undefined)
     setDropHovered(false)
     setNewIcons([])
+    setDesbloqueos([])
     setExtraProfessionalId('')
     setExtraReason('')
     setErrorEnvio('')
@@ -126,6 +129,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
       if (!envio) return
       finalized.current = true
       setNewIcons(envio.datos.ocupaciones_nuevas)
+      setDesbloqueos(envio.datos.nuevos_desbloqueos)
       setResultadoServidor({
         superado: superaCaso(puntaje, envio.datos),
         puntaje: textoPuntajeCaso(puntaje, envio.datos),
@@ -177,6 +181,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     dropHovered,
     setDropHovered,
     newIcons,
+    desbloqueos,
     extraProfessionalId,
     setExtraProfessionalId,
     extraReason,

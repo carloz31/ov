@@ -59,13 +59,26 @@ test('el estado del caso sale del servidor, con intentos y mejor puntaje en punt
 // Ajustes post F04 (6): el drawer del caso en sus tres estados, con la escala del servidor.
 test('el progreso del caso para el drawer distingue sin jugar, jugado sin superar y superado', () => {
   const nuevo = { ...caso, intentos: 0, superado: false, mejor_puntaje: null }
-  assert.deepEqual(copia(casos.progresoCaso(nuevo)), { minimo: 10, maximo: 14, superado: false, invitaReintento: true })
+  assert.deepEqual(copia(casos.progresoCaso(nuevo)), {
+    minimo: 10,
+    maximo: 14,
+    superado: false,
+    invitaReintento: true,
+  })
   const fallido = { ...caso, intentos: 1, superado: false, mejor_puntaje: 6 }
   assert.deepEqual(copia(casos.progresoCaso(fallido)), {
-    minimo: 10, maximo: 14, mejor: 6, superado: false, invitaReintento: true,
+    minimo: 10,
+    maximo: 14,
+    mejor: 6,
+    superado: false,
+    invitaReintento: true,
   })
   assert.deepEqual(copia(casos.progresoCaso(caso)), {
-    minimo: 10, maximo: 14, mejor: 12, superado: true, invitaReintento: true,
+    minimo: 10,
+    maximo: 14,
+    mejor: 12,
+    superado: true,
+    invitaReintento: true,
   })
   assert.deepEqual([resolver.puntaje_minimo, resolver.puntaje_maximo], [10, 14])
 })
@@ -77,7 +90,10 @@ test('el máximo del servidor es el total de necesidades del caso del front', ()
   const { forestFirePhases } = app.load('src/data/content/forestFireCase.ts')
   const necesidades = forestFirePhases.flatMap((f) => f.problems.map((p) => p.expectedProfessionalIds.length))
   assert.deepEqual(copia(necesidades), [2, 3, 3, 1, 2, 3])
-  assert.equal(necesidades.reduce((a, b) => a + b, 0), caso.puntaje_maximo)
+  assert.equal(
+    necesidades.reduce((a, b) => a + b, 0),
+    caso.puntaje_maximo,
+  )
   const { FOREST_FIRE_MAX_SATISFACTION } = app.load('src/features/cases/lib/forestFireCaseLogic.ts')
   assert.equal(FOREST_FIRE_MAX_SATISFACTION, caso.puntaje_maximo)
 })
@@ -152,12 +168,44 @@ test('la hoja de vida usa título, descripción, conocimientos y habilidades del
   assert.match(readFileSync('src/services/api/catalogo.ts', 'utf8'), /\/catalogo\/ocupaciones\//)
 })
 
+// Ajustes post F04 (7): el cierre del caso muestra sus desbloqueos como el de una batalla; el testimonio va a
+// Recursos (`?kind=testimonial&ficha=`) y se abre allí, no encima del cierre.
+test('los desbloqueos del intento superado incluyen el testimonio que regala el caso', () => {
+  const app = fixtureServidor()
+  const { resumirCierre } = app.load('src/features/activities/lib/finishSummary.ts')
+  const resumen = resumirCierre({
+    desbloqueos: resolver.nuevos_desbloqueos,
+    yaCompletada: false,
+    completada: true,
+    tienePreguntaDiario: false,
+    modoApi: true,
+  })
+  assert.deepEqual(copia(resumen.testimonios.map((t) => [t.codigo, t.nombre])), [
+    ['t-testimonio-1', 'Calma y cuidado en una emergencia'],
+    ['t-testimonio-2', 'Puentes entre idiomas'],
+  ])
+  const pagina = readFileSync('src/pages/student/ForestFireCasePage.tsx', 'utf8')
+  assert.match(
+    pagina,
+    /renderDesbloqueos=\{\(desbloqueos\) => <DesbloqueosCierre desbloqueos=\{desbloqueos\} \/>\}/,
+  )
+  assert.doesNotMatch(pagina, /VisorRecursoHost/)
+  assert.match(
+    readFileSync('src/features/activities/components/FinishBackpackSection.tsx', 'utf8'),
+    /kind: 'testimonial', ficha: t\.codigo/,
+  )
+})
+
 // Ajustes post F04 (5): los íconos nuevos llegan con su título y el cierre vuelve al mapa de origen.
 test('resolver-caso entrega los íconos nuevos con código y título', () => {
   assert.ok(resolver.ocupaciones_nuevas.length > 0)
-  for (const icono of resolver.ocupaciones_nuevas) assert.deepEqual(Object.keys(icono).sort(), ['codigo', 'titulo'])
+  for (const icono of resolver.ocupaciones_nuevas)
+    assert.deepEqual(Object.keys(icono).sort(), ['codigo', 'titulo'])
   const retorno = readFileSync('src/features/cases/hooks/useRetornoCaso.ts', 'utf8')
   assert.match(retorno, /'Volver al mapa', ruta: appPaths\.student\.missions/)
   assert.match(retorno, /'Volver a la Ciudad', ruta: appPaths\.student\.exploration/)
-  assert.match(readFileSync('src/features/adventure/hooks/useMapInteraction.ts', 'utf8'), /navigate\(detail\.href, \{ state: origen \}\)/)
+  assert.match(
+    readFileSync('src/features/adventure/hooks/useMapInteraction.ts', 'utf8'),
+    /navigate\(detail\.href, \{ state: origen \}\)/,
+  )
 })

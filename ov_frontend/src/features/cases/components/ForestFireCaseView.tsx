@@ -1,6 +1,7 @@
+import type { ReactNode } from 'react'
+import type { DesbloqueoNuevo } from '@/types/servidor'
 import { ForestFireWorkspace } from '@/features/cases/components/ForestFireWorkspace'
 import { useForestFireCase } from '@/features/cases/hooks/useForestFireCase'
-import { useTestimonioCaso } from '@/features/cases/hooks/useTestimonioCaso'
 import { ArrowRight, Check } from 'lucide-react'
 import { ayudaCentral, forestFirePhases, forestFireProfessionals } from '@/data/content/forestFireCase'
 import { ForestFireCaseHeader } from './ForestFireCaseHeader'
@@ -19,6 +20,7 @@ export function ForestFireCaseView({
   actividad,
   onAyuda,
   etiquetaVolver = 'Volver a la ciudad',
+  renderDesbloqueos,
   onClose,
   onComplete,
 }: {
@@ -27,6 +29,8 @@ export function ForestFireCaseView({
   onAyuda?: (pasos: string[]) => void
   // Botón del cierre superado: según desde dónde se abrió el caso.
   etiquetaVolver?: string
+  // Ajustes Central (7): los desbloqueos del intento, con los bloques del cierre de actividades (otra feature).
+  renderDesbloqueos?: (desbloqueos: DesbloqueoNuevo[]) => ReactNode
   onClose: () => void
   onComplete?: () => void
 }) {
@@ -38,6 +42,7 @@ export function ForestFireCaseView({
     step,
     assignments,
     newIcons,
+    desbloqueos,
     extraProfessionalId,
     setExtraProfessionalId,
     extraReason,
@@ -62,7 +67,6 @@ export function ForestFireCaseView({
     complete,
     isStepComplete,
   } = model
-  const testimonio = useTestimonioCaso(screen === 'report', adventure, actividad)
   return (
     <div
       // Revisar no ocupa la pantalla fija de la escena: su lista hace scroll en el main.
@@ -246,7 +250,7 @@ export function ForestFireCaseView({
             assignments={assignments}
             bestScore={resultadoServidor?.mejor ?? adventure.caseBestScores['forest-fire'] ?? 0}
             newIcons={newIcons}
-            testimonio={testimonio}
+            desbloqueos={desbloqueos.length > 0 ? renderDesbloqueos?.(desbloqueos) : undefined}
             etiquetaVolver={etiquetaVolver}
             servidor={resultadoServidor}
             onRestart={restart}

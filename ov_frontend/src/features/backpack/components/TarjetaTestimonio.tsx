@@ -1,7 +1,7 @@
 import { Play } from 'lucide-react'
 
-// Testimonio desbloqueado: lo usan la mochila (Recursos) y el cierre de la Central de Casos (ajustes, 7).
-// Va dentro de un `article.sx-b-card.sx-b-voice.sx-b-unlocked`; los estilos son los de la mochila.
+// Testimonio desbloqueado de la mochila, local y del servidor (ajustes Central, 7). Va dentro de un
+// `article.sx-b-card.sx-b-voice.sx-b-unlocked`.
 export function TarjetaTestimonio({
   nombre,
   rol,

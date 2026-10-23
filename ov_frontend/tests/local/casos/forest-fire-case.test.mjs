@@ -570,23 +570,16 @@ test('final report hides extra screens and budget evaluation and switches button
     assert.ok(!html.includes('Intentar llegar a'))
     assert.ok(!html.includes('<a '))
     assert.equal(html.includes('<li>Bombero/a</li>'), score >= 10)
-    // Sin testimonio asociado, el bloque no aparece.
-    assert.ok(!html.includes('Testimonio desbloqueado'))
+    // Sin desbloqueos, no hay columna.
+    assert.ok(!html.includes('ff-reward-desbloqueos'))
   }
-  // Ajustes Central (7): con testimonio, la tarjeta de Recursos y «Escuchar su historia».
+  // Ajustes Central (7): con desbloqueos, una columna «Desbloqueos» junto a los íconos, con lo que dibuje la página.
   const html = renderToStaticMarkup(
     React.createElement(FinalReportScreen, {
       assignments: team(data, 14),
       bestScore: 14,
       newIcons: [],
-      testimonio: {
-        codigo: 't-1',
-        nombre: 'Luis Mendoza',
-        rol: 'Paramédico/a',
-        titulo: 'Calma',
-        cita: 'Cita',
-        regalo: 'Incendio forestal',
-      },
+      desbloqueos: React.createElement('p', null, 'Bloque de desbloqueos'),
       etiquetaVolver: 'Volver a la ciudad',
       onRestart() {},
       onFinish() {},
@@ -594,10 +587,11 @@ test('final report hides extra screens and budget evaluation and switches button
       extraProfessionalId: '',
     }),
   )
-  assert.match(html, /Testimonio desbloqueado/)
-  assert.match(html, /<span>LM<\/span>/)
-  assert.match(html, /Te la regaló el llamado <strong>Incendio forestal<\/strong>/)
-  assert.match(html, /Escuchar su historia/)
+  assert.match(
+    html,
+    /<div class="ff-light ff-reward ff-reward-desbloqueos"><p class="ff-eyebrow">Desbloqueos<\/p><p>Bloque de desbloqueos<\/p><\/div>/,
+  )
+  assert.doesNotMatch(html, /Testimonio desbloqueado|Escuchar su historia/)
 })
 
 test('actual case flow enforces gates, allows review changes, records once on report and starts a clean retry', () => {

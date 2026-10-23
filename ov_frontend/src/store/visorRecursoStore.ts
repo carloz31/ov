@@ -4,8 +4,7 @@ import { useSyncExternalStore } from 'react'
 // `abrirRecurso` (una función, sin contexto: sirve también en el arnés de las pruebas locales) y el visor del
 // portal del estudiante lo dibuja sin navegar.
 export type ModoVisor = 'mochila' | 'repaso'
-// Ajustes Central (7): `testimonio` abre un testimonio (desde el cierre de la Central), no una ficha.
-export type RecursoAbierto = { codigo: string; modo: ModoVisor; testimonio?: boolean } | null
+export type RecursoAbierto = { codigo: string; modo: ModoVisor } | null
 
 let abierto: RecursoAbierto = null
 const oyentes = new Set<() => void>()
@@ -14,7 +13,6 @@ function publicar(siguiente: RecursoAbierto) {
   oyentes.forEach((oyente) => oyente())
 }
 export const abrirRecurso = (codigo: string, modo: ModoVisor = 'mochila') => publicar({ codigo, modo })
-export const abrirTestimonio = (codigo: string) => publicar({ codigo, modo: 'mochila', testimonio: true })
 export const cerrarRecurso = () => publicar(null)
 export const obtenerRecursoAbierto = () => abierto
 const suscribir = (oyente: () => void) => {

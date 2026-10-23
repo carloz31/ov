@@ -146,10 +146,6 @@ export function testimonioServidor(t: TestimonioEstado): TravelResource {
     servidor: { disponible, pista: t.pista, caso: t.caso },
   }
 }
-// El testimonio del prototipo local que regala un caso (cierre de la Central en local).
-export function testimonioLocal(id: string) {
-  return localTestimonials().find((r) => r.id === id)
-}
 function localTestimonials() {
   return professionalTestimonials.map((item): TravelResource => ({
     id: item.id,

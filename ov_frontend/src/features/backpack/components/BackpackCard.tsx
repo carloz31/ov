@@ -16,8 +16,8 @@ import { studentResourceRequirement as resourceRequirement } from '@/features/ba
 import { cityCases } from '@/data/content/adventure'
 
 import { FavoriteButton } from '@/components/student/FavoriteButton'
-import { TarjetaTestimonio } from '@/components/student/TarjetaTestimonio'
-import { VozPorDescubrir } from '@/components/student/VozPorDescubrir'
+import { TarjetaTestimonio } from '@/features/backpack/components/TarjetaTestimonio'
+import { VozPorDescubrir } from '@/features/backpack/components/VozPorDescubrir'
 
 const resourceIcons: Record<TravelResource['icon'], LucideIcon> = {
   compass: Compass,
