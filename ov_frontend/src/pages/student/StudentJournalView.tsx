@@ -83,6 +83,7 @@ function StudentJournalView() {
               enRedaccion={buzon.enRedaccion}
               acciones={{ onResponder: buzon.responder, onAbrir: buzon.abrir, onArchivar: buzon.archivar }}
               limite={3}
+              verTodas
               actualizar={buzon.enRedaccion.length ? buzon.actualizar : undefined}
             />
           }

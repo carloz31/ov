@@ -16,7 +16,7 @@ import { useBuzonLumi } from '@/features/journal/hooks/useBuzonLumi'
 import { borrarEntrada, editarEntrada, escribirEntrada } from '@/store/servidor/diario'
 import { asegurarSeccion } from '@/store/servidor/secciones'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
-import type { CartaLumi } from '@/lib/servidor/adaptadoresDiario'
+import { idEntradaServidor, type CartaLumi } from '@/lib/servidor/adaptadoresDiario'
 import { type DailyQuestionEditorContext } from '@/features/journal/components/DailyQuestionCard'
 
 type JournalScreen = 'home' | 'write' | 'detail'
@@ -46,6 +46,8 @@ export function useJournalPage() {
     : getLumiBond(state.lumiRegistrations, now)
   const [searchParams] = useSearchParams()
   const preguntaPedida = searchParams.get('pregunta')
+  // «Leer en el cuaderno» desde «Cartas de Lumi» (`?entrada=`): abre el detalle de esa entrada.
+  const entradaPedida = searchParams.get('entrada')
   const conversationTopic = getFamilyConversationTopic(searchParams.get('conversation') ?? '')
   const eventTitle = searchParams.get('event')
   const eventOutcome = searchParams.get('outcome')
@@ -164,6 +166,15 @@ export function useJournalPage() {
     openEditor({ prompt: carta.texto, linkedActivityId: carta.codigo, title: '', lockedTags: [] })
     setDestino({ pregunta: carta.codigo })
   }
+  const [entradaAbierta, setEntradaAbierta] = useState<string>()
+  useEffect(() => {
+    if (!servidor.activo || !entradaPedida || entradaAbierta === entradaPedida) return
+    const id = idEntradaServidor(Number(entradaPedida))
+    if (!servidor.entradas.some((e) => e.id === id)) return
+    setEntradaAbierta(entradaPedida)
+    setSelectedId(id)
+    setScreen('detail')
+  }, [servidor.activo, servidor.entradas, entradaPedida, entradaAbierta])
   const responder = useRef(responderCarta)
   responder.current = responderCarta
   // `?pregunta=` (cierre de una actividad o drawer): abre el editor solo si la carta está lista; sellada o en

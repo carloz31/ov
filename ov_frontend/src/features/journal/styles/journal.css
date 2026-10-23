@@ -948,3 +948,12 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+/* «Cartas de Lumi» (ajuste del diario de F05): filas compactas de respondidas y archivadas. */
+.sx-j-carta-compacta {
+  display: grid;
+  gap: 8px;
+}
+.sx-j-carta-compacta .sx-d-action {
+  justify-self: start;
+  min-height: 44px;
+}

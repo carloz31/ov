@@ -43,6 +43,7 @@ import { ResearchRoute } from '@/pages/student/ResearchRoute'
 import { ResearchGuideView } from '@/pages/student/ResearchGuideView'
 import { StudentJournalView } from '@/pages/student/StudentJournalView'
 import { StudentSignalsView } from '@/pages/student/StudentSignalsView'
+import { StudentLumiLettersView } from '@/pages/student/StudentLumiLettersView'
 import { CommunityView } from '@/pages/student/CommunityView'
 import { StudentResourcesView } from '@/pages/student/StudentResourcesView'
 import { FamilyConversationsView } from '@/features/family-conversations/components/FamilyConversationsView'
@@ -88,6 +89,14 @@ function AppRoutes() {
               </SeccionProtegida>
             }
             path="journal"
+          />
+          <Route
+            element={
+              <SeccionProtegida seccion="DIARIO">
+                <StudentLumiLettersView />
+              </SeccionProtegida>
+            }
+            path="journal/letters"
           />
           <Route
             element={
