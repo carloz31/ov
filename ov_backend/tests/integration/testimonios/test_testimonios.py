@@ -15,9 +15,9 @@ def test_hu056_bloqueado_muestra_pista_y_oculta_el_enlace(cliente):
     assert uno == {'codigo': 't-testimonio-1', 'titulo': 'Calma y cuidado en una emergencia', 'estado': 'BLOQUEADA',
                    'visto': False, 'pista': 'Resuelve el caso de prueba para conocer este testimonio.',
                    'descripcion': None, 'enlace': None, 'persona': None, 'ocupacion': None,
-                   'anios_experiencia': None, 'cita': None, 'caso': {'codigo': 't-caso', 'titulo': 'Caso de prueba', 'disponible': False}}
+                   'anios_experiencia': None, 'cita': None, 'caso': {'codigo': 't-caso', 'titulo': 'Caso de prueba'}}
     assert (dos['estado'], dos['pista'], dos['enlace'], dos['persona']) == ('BLOQUEADA', None, None, None)
-    assert dos['caso'] == {'codigo': 't-caso', 'titulo': 'Caso de prueba', 'disponible': False}
+    assert dos['caso'] == {'codigo': 't-caso', 'titulo': 'Caso de prueba'}
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/testimonios') == []
 
 
@@ -36,7 +36,7 @@ def test_hu041_ver_testimonio_una_sola_vez(cliente, aplicacion):
         'estado': 'DISPONIBLE', 'pista': None, 'enlace': 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
         'persona': 'Luis Mendoza', 'ocupacion': {'codigo': 'paramedic', 'titulo': 'Paramédico/a'},
         'anios_experiencia': 5}
-    assert uno['cita'] and uno['descripcion'] and uno['caso'] == {'codigo': 't-caso', 'titulo': 'Caso de prueba', 'disponible': True}
+    assert uno['cita'] and uno['descripcion'] and uno['caso'] == {'codigo': 't-caso', 'titulo': 'Caso de prueba'}
     vista = pedir(cliente, 'POST', '/acciones/ver-testimonio', ver('t-testimonio-1'))
     assert [(e['tipo'], e['referencia']) for e in vista['eventos_registrados']] == [
         ('VISTA_TESTIMONIO', 't-testimonio-1')]

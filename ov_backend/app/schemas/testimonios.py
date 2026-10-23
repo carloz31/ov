@@ -9,10 +9,9 @@ class OcupacionTestimonio(BaseModel):
 
 
 class CasoTestimonio(BaseModel):
-    # La actividad CASO cuya superación regala el testimonio, y si la cuenta ya puede jugarla.
+    # La actividad CASO cuya superación regala el testimonio.
     codigo: str
     titulo: str
-    disponible: bool
 
 
 class TestimonioEstado(BaseModel):

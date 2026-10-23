@@ -1,7 +1,7 @@
 import { LockKeyhole } from 'lucide-react'
 
 // Testimonio bloqueado de la mochila: silueta difuminada, título, intriga y requisito (ajustes Central, 7).
-// La acción (ir a la Central, «llega pronto» o el pop up de requisito) la pone quien la usa.
+// La acción (ir a la Central o el pop up de requisito) la pone quien la usa.
 export function VozPorDescubrir({
   titulo,
   intriga,

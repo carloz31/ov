@@ -8,7 +8,6 @@ from app.schemas.testimonios import CasoTestimonio, OcupacionTestimonio, Testimo
 from app.services.comun import (
     buscar_por_codigo, exigir_disponible, exigir_estudiante, existe_evento, fecha_accion, responder_con_eventos,
 )
-from app.services.actividades import estado_actividad
 from app.services.motor.reglas import objetivo_disponible
 
 
@@ -36,9 +35,7 @@ def listar_testimonios_cuenta(sesion: Session, cuenta: Cuenta) -> list[Testimoni
             ocupacion=OcupacionTestimonio(codigo=ocupacion.codigo, titulo=ocupacion.titulo) if ocupacion else None,
             anios_experiencia=testimonio.anios_experiencia if disponible else None,
             cita=testimonio.cita if disponible else None,
-            caso=None if caso is None else CasoTestimonio(
-                codigo=caso.codigo, titulo=caso.titulo,
-                disponible=estado_actividad(sesion, cuenta, caso) != "BLOQUEADA"),
+            caso=None if caso is None else CasoTestimonio(codigo=caso.codigo, titulo=caso.titulo),
         ))
     return respuesta
 

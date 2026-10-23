@@ -125,12 +125,10 @@ export function BackpackCard({
       ) : (
         <>
           <VozPorDescubrir titulo={resource.title} intriga={resource.summary} requisito={requirement.text} />
-          {playable ? (
+          {playable && (
             <button type="button" className="sx-d-action sx-d-action-ghost" onClick={onRequirement}>
               Ir a la Central de Casos
             </button>
-          ) : (
-            <p className="sx-b-coming">Este llamado llega pronto</p>
           )}
         </>
       )}
@@ -139,7 +137,7 @@ export function BackpackCard({
 }
 
 // Ajustes Central (7): testimonio del servidor con la tarjeta del prototipo. Bloqueado, toda la tarjeta abre el
-// pop up de requisito (como las fichas bloqueadas, F04); si su caso aún no se puede jugar, «llega pronto».
+// pop up de requisito (como las fichas bloqueadas, F04), que dice qué misión lo desbloquea.
 function TestimonioServidor({
   resource,
   unlocked,
@@ -166,9 +164,6 @@ function TestimonioServidor({
   ) : (
     <button type="button" className="sx-b-voice-locked" onClick={onRequirement}>
       <VozPorDescubrir titulo={resource.title} intriga={resource.summary} requisito={requisito} />
-      {resource.servidor?.caso && !resource.servidor.caso.disponible && (
-        <span className="sx-b-coming">Este llamado llega pronto</span>
-      )}
       <span className="sr-only">Bloqueado. Ver cómo conocer este testimonio.</span>
     </button>
   )

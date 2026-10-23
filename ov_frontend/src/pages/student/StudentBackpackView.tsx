@@ -1,7 +1,7 @@
 import { BackpackHeader } from '@/features/backpack/components/BackpackHeader'
 import { useBackpack } from '@/features/backpack/hooks/useBackpack'
 import { appPaths } from '@/routes/paths'
-import { Search, Sparkles, Star } from 'lucide-react'
+import { Search, Star } from 'lucide-react'
 import { DiscoveryStage } from '@/features/discovery/components/DiscoveryStage'
 import { Parchment } from '@/components/student/Parchment'
 
@@ -37,7 +37,6 @@ function StudentBackpackView() {
     reintentarRequisito,
     mostrarRequisito,
     tituloRequisito,
-    muestraMasVoces,
     isUnlocked,
     visible,
     cityPoints,
@@ -151,13 +150,6 @@ function StudentBackpackView() {
                         onRequirement={() => consultarRequisito(resource)}
                       />
                     ))}
-                    {type === 'testimonial' && muestraMasVoces && !favoritesOnly && !query.trim() && (
-                      <div className="sx-b-more">
-                        <Sparkles aria-hidden="true" />
-                        <h3>Más voces se suman a la ciudad</h3>
-                        <p>Con cada nuevo llamado aparecerán otras historias.</p>
-                      </div>
-                    )}
                   </div>
                   {!items.length && (
                     <div className="sx-b-empty">

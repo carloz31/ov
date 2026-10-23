@@ -121,8 +121,6 @@ export function useBackpack() {
     reintentarRequisito: requisito.reintentar,
     mostrarRequisito: modoApi,
     tituloRequisito: requisito.titulo,
-    // Ajustes Central (7): el cierre de «más voces» también en api.
-    muestraMasVoces: true,
     isUnlocked,
     visible,
     sheets,

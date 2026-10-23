@@ -183,7 +183,7 @@ export function resourceRequirement(resource: TravelResource) {
   const caso = resource.servidor?.caso
   if (modoApi && caso)
     return {
-      text: `Completa la misión «${caso.titulo}» en Central de Casos.${caso.disponible ? '' : ' Misión disponible próximamente.'}`,
+      text: `Completa la misión «${caso.titulo}» en Central de Casos.`,
       url: appPaths.student.exploration,
       label: 'Ir a Central de Casos',
     }
@@ -205,7 +205,7 @@ export function resourceRequirement(resource: TravelResource) {
   if ('caseId' in requirement) {
     const mission = cityCases.find((item) => item.id === requirement.caseId)
     return {
-      text: `Completa la misión «${mission?.title ?? requirement.caseId}» en Central de Casos.${requirement.caseId !== 'forest-fire' ? ' Misión disponible próximamente.' : ''}`,
+      text: `Completa la misión «${mission?.title ?? requirement.caseId}» en Central de Casos.`,
       url: appPaths.student.exploration,
       label: 'Ir a Central de Casos',
     }

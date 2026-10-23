@@ -62,7 +62,7 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
   const recursos = app.load('src/features/backpack/lib/travelerResources.ts')
   const mezcla = [final[0], inicial.find((t) => t.codigo === 't-testimonio-2')]
   const voces = recursos.getTravelResources(mezcla).filter((r) => r.kind === 'testimonial')
-  const caso = { codigo: 't-caso', titulo: 'Caso de prueba', disponible: false }
+  const caso = { codigo: 't-caso', titulo: 'Caso de prueba' }
   assert.deepEqual(
     copia(voces.map((r) => [r.id, r.title, r.summary, r.url ?? null, r.author ?? null, r.servidor])),
     [
@@ -72,22 +72,15 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
         final[0].cita,
         final[0].enlace,
         'Luis Mendoza · Paramédico/a · 5 años de experiencia',
-        { disponible: true, pista: null, caso: { ...caso, disponible: true } },
+        { disponible: true, pista: null, caso },
       ],
       ['t-testimonio-2', mezcla[1].titulo, '', null, null, { disponible: false, pista: null, caso }],
     ],
   )
   assert.deepEqual(copia(voces.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [true, false])
-  // Bloqueado con su caso aún cerrado: el requisito nombra el caso y avisa que llega pronto.
+  // Bloqueado: el requisito solo nombra la misión que lo desbloquea, sin «próximamente».
   assert.equal(
     recursos.resourceRequirement(voces[1]).text,
-    'Completa la misión «Caso de prueba» en Central de Casos. Misión disponible próximamente.',
-  )
-  assert.equal(
-    recursos.resourceRequirement({
-      ...voces[1],
-      servidor: { ...voces[1].servidor, caso: { ...caso, disponible: true } },
-    }).text,
     'Completa la misión «Caso de prueba» en Central de Casos.',
   )
   // El video del testimonio se incrusta en el visor.
@@ -97,12 +90,17 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
   )
 })
 
-test('la mochila abre el testimonio en el visor, registra su vista y muestra el cierre de más voces', () => {
+test('la mochila abre el testimonio en el visor y registra su vista, sin «más voces» ni «llega pronto»', () => {
   const hook = readFileSync('src/features/backpack/hooks/useBackpack.ts', 'utf8')
   assert.doesNotMatch(hook, /window\.open/)
   assert.match(hook, /if \(resource\.servidor\) void registrarVistaTestimonio\(resource\.id\)/)
-  assert.match(hook, /muestraMasVoces: true/)
+  assert.doesNotMatch(hook, /muestraMasVoces/)
   const vista = readFileSync('src/pages/student/StudentBackpackView.tsx', 'utf8')
+  assert.doesNotMatch(vista, /Más voces se suman a la ciudad/)
+  assert.doesNotMatch(
+    readFileSync('src/features/backpack/components/BackpackCard.tsx', 'utf8'),
+    /llega pronto/,
+  )
   assert.match(vista, /resource=\{selected && isUnlocked\(selected\) \? selected : undefined\}/)
   // El cierre del caso abre el mismo pop up encima, con el visor global.
   assert.match(readFileSync('src/pages/student/ForestFireCasePage.tsx', 'utf8'), /<VisorRecursoHost \/>/)

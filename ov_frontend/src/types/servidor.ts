@@ -315,7 +315,7 @@ export type TestimonioEstado = {
   ocupacion: { codigo: string; titulo: string } | null
   anios_experiencia: number | null
   cita: string | null
-  caso: { codigo: string; titulo: string; disponible: boolean } | null
+  caso: { codigo: string; titulo: string } | null
 }
 // F04c: las respuestas en el orden en que se dieron; el servidor decide la victoria.
 export type ResolverBatallaEntrada = {

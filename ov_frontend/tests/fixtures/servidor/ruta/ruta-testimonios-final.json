@@ -3,7 +3,6 @@
     "anios_experiencia": 5,
     "caso": {
       "codigo": "t-caso",
-      "disponible": true,
       "titulo": "Caso de prueba"
     },
     "cita": "Ayudar en una emergencia exige técnica, calma y una comunicación muy humana.",
@@ -24,7 +23,6 @@
     "anios_experiencia": 6,
     "caso": {
       "codigo": "t-caso",
-      "disponible": true,
       "titulo": "Caso de prueba"
     },
     "cita": "Traducir no es reemplazar palabras: es ayudar a que dos personas realmente se comprendan.",

@@ -282,21 +282,6 @@
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   font-size: 13px;
 }
-.sx-b-more,
-.sx-b-coming {
-  padding: 18px;
-  border: 2px dashed var(--sx-night-border);
-  border-radius: 18px;
-}
-.sx-b-more {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 12px;
-}
-.sx-b-more > svg {
-  color: var(--sx-gold);
-}
 .sx-b-empty {
   padding: 24px 0 0;
 }
