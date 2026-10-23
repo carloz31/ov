@@ -19,7 +19,7 @@ export function ZonePathGrid({
       <div className="sx-d-result-section-head">
         <h2 id="camino-partes">El camino de cada parte</h2>
         <button
-          className="sx-d-action sx-d-action-ghost"
+          className="sx-d-action sx-d-action-ghost sx-d-pl-guide"
           type="button"
           aria-expanded={guia}
           aria-controls="guia-zonas"

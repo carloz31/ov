@@ -69,7 +69,9 @@ test('solo partida: la vista pide ítems y respuestas y muestra un banderín y �
   assert.match(marcado, /El camino de cada parte/)
   assert.match(marcado, /Donde empiezas.*El banderín de llegada aparecerá al final del camino\./)
   assert.equal(cuenta(marcado, /sx-d-pl-flag-full/g), 0)
-  assert.equal(cuenta(marcado, /sx-d-pl-lit/g), 0)
+  // Solo la parada de partida va en dorado, sin tramo iluminado.
+  assert.equal(cuenta(marcado, /class="sx-d-pl-stop sx-d-pl-lit"/g), 5)
+  assert.equal(cuenta(marcado, /sx-d-pl-lit-(left|right)/g), 0)
   assert.match(marcado, /Lo que respondiste al empezar/)
   // Agrupados por la dimensión de `/items`: Claridad en la parte 1, con la etiqueta elegida.
   assert.match(marcado, /Parte 1 de 5<\/p><h3>Claridad<\/h3>/)

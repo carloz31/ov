@@ -6,12 +6,12 @@ import '../styles/partida-llegada.css'
 
 // Ajuste de F03: mini camino de tres paradas (Por trabajar · En camino · Fuerte). Banderín vacío en la
 // partida y lleno en la llegada; las paradas y el tramo entre ambas van en dorado. Solo partida: un banderín
-// y nada iluminado.
+// sobre su parada dorada, sin tramo iluminado.
 export function ZonePath({ partida, llegada }: { partida: ZonaDimension; llegada?: ZonaDimension }) {
   const desde = posicionZona(partida)
   const hasta = llegada ? posicionZona(llegada) : desde
   const [min, max] = [Math.min(desde, hasta), Math.max(desde, hasta)]
-  const iluminado = (i: number) => !!llegada && i >= min && i <= max
+  const iluminado = (i: number) => i >= min && i <= max
   const etiqueta = llegada
     ? `Empezaste en ${zonaEnPalabras(partida)}; hoy estás en ${zonaEnPalabras(llegada)}`
     : `Empiezas en ${zonaEnPalabras(partida)}`

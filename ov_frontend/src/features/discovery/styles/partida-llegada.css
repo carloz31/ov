@@ -44,20 +44,20 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
-  --pl-off: color-mix(in srgb, var(--sx-night-muted) 55%, transparent);
+  --pl-off: color-mix(in srgb, var(--sx-night-muted) 40%, transparent);
 }
 .sx-d-pl-stop {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 44px;
+  min-height: 48px;
 }
 .sx-d-pl-stop::before,
 .sx-d-pl-stop::after {
   content: '';
   position: absolute;
   top: 50%;
-  height: 3px;
+  height: 2px;
   width: 50%;
   background: var(--pl-off);
   transform: translateY(-50%);
@@ -79,22 +79,28 @@
 .sx-d-pl-dot {
   position: relative;
   z-index: 1;
-  width: 14px;
-  height: 14px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
-  background: var(--pl-off);
+  /* Parada apagada: un aro sobre el fondo del panel, que tapa el tramo. */
+  border: 2px solid var(--pl-off);
+  background: var(--sx-night-raised);
 }
 .sx-d-pl-lit .sx-d-pl-dot {
+  width: 13px;
+  height: 13px;
+  border: 0;
   background: var(--sx-gold);
 }
+/* El banderín se apoya sobre la parada: el asta empieza en el centro y termina justo encima del punto. */
 .sx-d-pl-flags {
   position: absolute;
   z-index: 2;
-  bottom: 50%;
+  bottom: calc(50% + 6px);
   left: 50%;
   display: flex;
   gap: 1px;
-  transform: translateX(-4px);
+  transform: translateX(-3px);
   color: var(--sx-gold);
 }
 .sx-d-pl-flag {
@@ -266,8 +272,10 @@
 }
 .sx-d-pl-path-zone {
   text-align: center;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--sx-night-muted);
 }
 .sx-d-pl-path-row {
@@ -290,7 +298,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--sx-night-muted);
 }
 .sx-d-pl-legend li {
@@ -300,6 +308,21 @@
 }
 .sx-d-pl-legend .sx-d-pl-flag {
   color: var(--sx-gold);
+}
+/* «¿Qué significa cada zona?» en el panel oscuro: contorno dorado, sin relleno. */
+.sx-d-result-page .sx-d-pl-paths .sx-d-action.sx-d-pl-guide {
+  min-height: 0;
+  padding: 6px 14px;
+  border: 1px solid var(--sx-gold);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sx-gold);
+  font-size: 13px;
+  box-shadow: none;
+}
+.sx-d-result-page .sx-d-pl-paths .sx-d-pl-guide svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Vista explicada · sección crema. */
