@@ -24,7 +24,7 @@ export function FinishScreen({
   desbloqueosServidor?: DesbloqueoNuevo[]
   entradasDiario?: EntradaDesbloqueada[]
   // Ajuste del diario (F05): un recuerdo de Lumi sale «Volver al diario», sin mochila, carta ni «Se abrió para ti».
-  salida?: { texto: string; onClick: () => void }
+  salida?: { texto: string; titulo?: string; onClick: () => void }
 }) {
   const { resumen, preguntaDiario } = useActivityFinish(
     activity,
@@ -56,7 +56,7 @@ export function FinishScreen({
               <LumiMedallion celebration />
               <small>Lumi</small>
             </div>
-            <h2>{resumen.titulo}</h2>
+            <h2>{salida?.titulo ?? resumen.titulo}</h2>
             <p className="sx-finish-subtitle">{resumen.subtitulo}</p>
             {!activity.recompensa?.mensajeFin?.startsWith('Obtuviste:') &&
               activity.recompensa?.mensajeFin && <p>{activity.recompensa.mensajeFin}</p>}

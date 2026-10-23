@@ -76,12 +76,30 @@ test('un capítulo se cierra con «Volver al diario», sin mochila, carta ni «V
       {},
       React.createElement(FinishScreen, {
         activity: actividad,
-        salida: { texto: 'Volver al diario', onClick() {} },
+        salida: { texto: 'Volver al diario', titulo: 'Lumi te contó un recuerdo.', onClick() {} },
       }),
     ),
   )
   assert.match(html, /Volver al diario/)
-  assert.doesNotMatch(html, /Volver al mapa|Nuevo en tu mochila|Lumi te dejó una carta/)
+  assert.match(html, /<h2>Lumi te contó un recuerdo\.<\/h2>/)
+  assert.doesNotMatch(
+    html,
+    /Volver al mapa|Nuevo en tu mochila|Lumi te dejó una carta|Este hallazgo viaja contigo/,
+  )
+  const vista = readFileSync('src/pages/student/StudentJournalView.tsx', 'utf8')
+  assert.match(vista, /titulo: 'Lumi te contó un recuerdo\.'/)
+})
+
+test('el diario dice «carta» en el editor y en los avisos, y el aviso no corta su descripción', () => {
+  const editor = readFileSync('src/features/journal/components/JournalEditor.tsx', 'utf8')
+  const pagina = readFileSync('src/features/journal/hooks/useJournalPage.ts', 'utf8')
+  assert.match(editor, /placeholder="Título de tu carta"/)
+  assert.doesNotMatch(editor, /conversaci/)
+  for (const titulo of ['¡Carta guardada!', 'Carta guardada.', 'Carta actualizada.'])
+    assert.ok(pagina.includes(titulo))
+  assert.doesNotMatch(pagina, /'Conversación (guardada|actualizada)/)
+  const css = readFileSync('src/features/journal/styles/journal.css', 'utf8')
+  assert.match(css, /\[data-ambient='journal'\] \.sx-badge-copy \.sx-toast-linea \{[^}]*white-space: normal/)
 })
 
 test('LUMI queda fuera del mapa, del avance y de las novedades; la apertura es automática al desbloquear', () => {

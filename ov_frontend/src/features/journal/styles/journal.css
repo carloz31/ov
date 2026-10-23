@@ -660,3 +660,12 @@
 .sx-j-historia-nav button:disabled {
   opacity: 0.4;
 }
+
+/* Ajuste del diario (F05): el aviso de guardado muestra su descripción completa, en hasta dos líneas. */
+.sx-root .sx-discovery[data-ambient='journal'] .sx-badge-copy .sx-toast-linea {
+  display: -webkit-box;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}

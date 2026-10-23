@@ -68,7 +68,7 @@ export function JournalEditor({
           className="sx-j-title-input"
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
-          placeholder="Título de tu conversación"
+          placeholder="Título de tu carta"
           required={conTemas}
         />
         <textarea
@@ -152,10 +152,10 @@ export function JournalEditor({
         {(editing || conTemas) && (
           <p className="sx-j-save-help">
             {editing
-              ? 'Editar no suma una conversación nueva.'
+              ? 'Editar no suma una carta nueva.'
               : remainingToday
-                ? 'Esta conversación suma a tu amistad con Lumi.'
-                : 'Hoy ya contaron tus 3 conversaciones; esta igual se guarda.'}
+                ? 'Esta carta suma a tu amistad con Lumi.'
+                : 'Hoy ya contaron tus 3 cartas; esta igual se guarda.'}
           </p>
         )}
       </Parchment>

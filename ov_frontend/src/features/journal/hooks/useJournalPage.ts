@@ -24,12 +24,12 @@ type JournalScreen = 'home' | 'write' | 'detail'
 export type AvisoDiario = { titulo: string; descripcion?: string; error?: boolean }
 // Ajuste del diario (F05): «conversaciones» pasa a «cartas».
 const avisos = {
-  suma: { titulo: '¡Conversación guardada!', descripcion: 'Tu amistad con Lumi suma una carta.' },
+  suma: { titulo: '¡Carta guardada!', descripcion: 'Tu amistad con Lumi suma una carta.' },
   tope: {
-    titulo: 'Conversación guardada.',
+    titulo: 'Carta guardada.',
     descripcion: 'Hoy ya contaron tus 3 cartas; esta igual se guarda.',
   },
-  editada: { titulo: 'Conversación actualizada.', descripcion: 'Editar no suma cartas.' },
+  editada: { titulo: 'Carta actualizada.', descripcion: 'Editar no suma cartas.' },
 } satisfies Record<string, AvisoDiario>
 const avisoError = (titulo: string, error: Parameters<typeof mensajeErrorServidor>[0]): AvisoDiario => ({
   titulo,
@@ -251,7 +251,7 @@ export function useJournalPage() {
     const amistad = await asegurarSeccion('amistad')
     setSaveNotice(
       amistad.tipo !== 'ok' || antes === null
-        ? { titulo: 'Conversación guardada.' }
+        ? { titulo: 'Carta guardada.' }
         : amistad.datos.puntos > antes
           ? avisos.suma
           : avisos.tope,
