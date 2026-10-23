@@ -62,7 +62,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
   const explorationError = useExplorationError()
   useEffect(() => {
     main.current?.querySelector<HTMLElement>('h1')?.focus()
-    window.scrollTo({ top: 0, behavior: 'instant' })
+    main.current?.scrollTo({ top: 0, behavior: 'instant' })
   }, [screen, step, phaseIndex])
 
   function goToStep(next: number) {

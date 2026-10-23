@@ -613,6 +613,8 @@ test('actual case flow enforces gates, allows review changes, records once on re
       draw()
     }
     assert.equal(named(tree, 'StepActions').props.label, 'Confirmar equipo')
+    // Revisar hace scroll: el main no hereda el overflow oculto de la escena.
+    assert.doesNotMatch(tree.props.className, /ff-workspace-active/)
     named(tree, 'StepActions').props.onNext()
     draw()
     named(tree, 'PhaseResultScreen').props.onContinue()

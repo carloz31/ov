@@ -59,7 +59,8 @@ export function ForestFireCaseView({
   } = model
   return (
     <div
-      className={`sx-root ff-case ff-play ${screen === 'workspace' ? 'ff-workspace-active' : ''}`}
+      // Revisar no ocupa la pantalla fija de la escena: su lista hace scroll en el main.
+      className={`sx-root ff-case ff-play ${screen === 'workspace' && step <= phase.problems.length ? 'ff-workspace-active' : ''}`}
       style={{
         backgroundImage: `url(${phase.backgroundImage})`,
         backgroundPosition: phase.backgroundPosition,
