@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 
 from app import models as m
 from app.core.parametros import TOPE_ENTRADAS_AMISTAD_DIA, UMBRALES_AMISTAD
+from app.dependencies import obtener_ahora
 from soporte_ruta import FECHA, avanzar, completar, eventos, pedir
 
 
@@ -123,10 +124,25 @@ def test_check_in_uno_por_dia_y_su_evolucion(cliente):
               {'cuenta': 'est-ana', 'nivel_seguridad': nivel, 'fecha_hora': f'2026-10-0{dia}T08:00:00'})
     pedir(cliente, 'POST', '/acciones/check-in',
           {'cuenta': 'est-ana', 'nivel_seguridad': 5, 'fecha_hora': '2026-10-01T20:00:00'}, 409)
-    assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins') == {'dias_registrados': 3, 'check_ins': [
+    assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins') == {'dias_registrados': 3, 'registrado_hoy': False, 'check_ins': [
         {'fecha': '2026-10-01', 'nivel_seguridad': 2}, {'fecha': '2026-10-02', 'nivel_seguridad': 3},
         {'fecha': '2026-10-03', 'nivel_seguridad': 4}]}
-    assert pedir(cliente, 'GET', '/cuentas/apo-rosa/check-ins') == {'dias_registrados': 0, 'check_ins': []}
+    assert pedir(cliente, 'GET', '/cuentas/apo-rosa/check-ins') == {'dias_registrados': 0, 'registrado_hoy': False,
+                                                                     'check_ins': []}
+
+
+def test_check_in_registrado_hoy_usa_la_fecha_del_servidor(aplicacion, cliente):
+    avanzar(cliente, 't-cierre-inicio')
+    aplicacion.dependency_overrides[obtener_ahora] = lambda: datetime(2026, 10, 2, 23, 30)
+    try:
+        assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')['registrado_hoy'] is False
+        pedir(cliente, 'POST', '/acciones/check-in',
+              {'cuenta': 'est-ana', 'nivel_seguridad': 4, 'fecha_hora': '2026-10-02T08:00:00'})
+        assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')['registrado_hoy'] is True
+        aplicacion.dependency_overrides[obtener_ahora] = lambda: datetime(2026, 10, 3, 0, 5)
+        assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')['registrado_hoy'] is False
+    finally:
+        aplicacion.dependency_overrides.pop(obtener_ahora, None)
 
 
 def test_ningun_tipo_de_referencia_lee_el_diario(sesion):

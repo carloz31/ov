@@ -63,5 +63,7 @@ class CheckInRegistrado(BaseModel):
 
 
 class CheckInsCuenta(BaseModel):
+    """`registrado_hoy`: ya hay check-in en la fecha de Lima del servidor."""
     dias_registrados: int
+    registrado_hoy: bool
     check_ins: list[CheckInRegistrado]

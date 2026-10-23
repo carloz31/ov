@@ -1,5 +1,7 @@
 """Consultas del diario y del check-in (B09). Solo devuelven datos de la cuenta del path; nunca escriben."""
 
+from datetime import date
+
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -83,12 +85,13 @@ def amistad_cuenta(sesion: Session, cuenta: Cuenta) -> AmistadAsistente:
 
 
 @usar_contexto
-def check_ins_cuenta(sesion: Session, cuenta: Cuenta) -> CheckInsCuenta:
+def check_ins_cuenta(sesion: Session, cuenta: Cuenta, hoy: date) -> CheckInsCuenta:
+    """`hoy`: fecha de Lima del servidor (F05), para que el front no decida qué día es."""
     if cuenta.rol != Rol.ESTUDIANTE:
-        return CheckInsCuenta(dias_registrados=0, check_ins=[])
+        return CheckInsCuenta(dias_registrados=0, registrado_hoy=False, check_ins=[])
     exigir_seccion(sesion, cuenta, "CHECK_IN")
     filas = sesion.execute(select(CheckIn.fecha, CheckIn.nivel_seguridad).where(
         CheckIn.cuenta_id == cuenta.id).order_by(CheckIn.fecha)).all()
-    return CheckInsCuenta(dias_registrados=len(filas), check_ins=[
+    return CheckInsCuenta(dias_registrados=len(filas), registrado_hoy=any(fecha == hoy for fecha, _ in filas), check_ins=[
         CheckInRegistrado(fecha=fecha, nivel_seguridad=nivel) for fecha, nivel in filas])
 

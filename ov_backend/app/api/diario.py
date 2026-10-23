@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 
-from app.dependencies import CuentaConsultada, SesionBD
+from app.dependencies import Ahora, CuentaConsultada, SesionBD
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.schemas.acciones import AbrirPreguntaEntrada, AccionCuenta
 from app.schemas.diario import (
@@ -35,8 +35,9 @@ def consultar_amistad(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
 
 
 @router.get("/cuentas/{cuenta}/check-ins", response_model=CheckInsCuenta)
-def consultar_check_ins(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
-    return _consultar(consultas_diario.check_ins_cuenta, sesion, cuenta_consultada)
+def consultar_check_ins(cuenta_consultada: CuentaConsultada, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda sesion, cuenta: consultas_diario.check_ins_cuenta(sesion, cuenta, ahora.date()),
+                      sesion, cuenta_consultada)
 
 
 def _con_asistente(accion, entrada, peticion):

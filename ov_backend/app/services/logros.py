@@ -2,23 +2,15 @@ from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import (
-    Actividad, Audiencia, Bloque, Cuenta, Espacio, EstadoProgreso, Insignia, Nivel, Rol, TipoEventoUso, TipoObjetivo,
+    Actividad, Audiencia, Bloque, Cuenta, Espacio, EstadoProgreso, Insignia, Nivel, Rol, TipoObjetivo,
 )
 from app.schemas.logros import InsigniaEstado, LogrosCuenta, NivelEstado
 from app.services.motor.reglas import objetivo_disponible
 from app.services.tematicas import porcentaje
 
 
-def es_mision_adicional(definiciones, actividad: Actividad) -> bool:
-    """Opcional que se abre con REGISTRO_ADECUADO: la misión adicional de un registro bien desarrollado."""
-    return not actividad.requerida and any(
-        condicion.tipo_evento == TipoEventoUso.REGISTRO_ADECUADO
-        for regla in definiciones.reglas_objetivo.get((TipoObjetivo.ACTIVIDAD, actividad.id), ())
-        for condicion in regla.condiciones)
-
-
 def afinidad(sesion: Session, cuenta: Cuenta) -> float:
-    """Completadas de la Ciudad sobre las de la Ciudad sin misiones adicionales; las adicionales suman, tope 100 %."""
+    """Completadas de la Ciudad sobre todas las de la Ciudad (requeridas, opcionales y adicionales), tope 100 %."""
     datos = contexto(sesion)
     definiciones = datos.definiciones
     ciudad = [actividad for actividad in definiciones.listar(Actividad)
@@ -26,8 +18,7 @@ def afinidad(sesion: Session, cuenta: Cuenta) -> float:
               and bloque.audiencia == Audiencia.ESTUDIANTE]
     completadas = {actividad_id for actividad_id, progreso in datos.progresos_de(cuenta.id).items()
                    if progreso.estado == EstadoProgreso.COMPLETADA}
-    total = sum(not es_mision_adicional(definiciones, actividad) for actividad in ciudad)
-    return porcentaje(sum(actividad.id in completadas for actividad in ciudad), total)
+    return porcentaje(sum(actividad.id in completadas for actividad in ciudad), len(ciudad))
 
 
 @usar_contexto

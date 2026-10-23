@@ -313,7 +313,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert sorted((e.numero, e.origen, e.titulo_mostrado) for e in entradas)[3] == (4, 'LIBRE', 'Mi tarde')
     assert [e.numero for e in entradas if e.numero == 5] == []
     assert AmistadAsistente.model_validate(datos['diario-amistad']).puntos == 3
-    assert CheckInsCuenta.model_validate(datos['check-ins']).dias_registrados == 2
+    check_ins = CheckInsCuenta.model_validate(datos['check-ins'])
+    assert check_ins.dias_registrados == 2 and check_ins.registrado_hoy  # «hoy» fijado en FECHA (F05)
     assert any(t.completadas for t in TypeAdapter(list[AvanceTematica]).validate_python(datos['tematicas']))
     assert 'afinidad' in datos['logros-final']
     avisos = datos['desbloqueos-no-vistos']
