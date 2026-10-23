@@ -18,6 +18,7 @@ Archivos de esta carpeta:
 
 | Archivo | Para qué |
 |---|---|
+| `../.github/workflows/despliegue.yml` | Pruebas de front y back; si pasan, despliega EC2 y luego Amplify. |
 | `../amplify.yml` | Build del front (monorepo, `appRoot: ov_frontend`, Node 22). |
 | `amplify/reescrituras.json` | Reglas de Amplify: `/api` → EC2 y la regla SPA de react-router. |
 | `ec2/instalar.sh` | Preparación única de la instancia. |
@@ -26,7 +27,7 @@ Archivos de esta carpeta:
 | `ec2/nginx-ov.conf` | Proxy inverso de nginx hacia uvicorn. |
 | `ec2/env.produccion.example` | Plantilla del `.env` de producción. |
 
-Elige una sola región para todo (por ejemplo `us-east-1`).
+Elige una sola región para todo (aquí, Ohio: `us-east-2`).
 
 ## 1. Rama deploy
 
@@ -36,7 +37,7 @@ git checkout -b deploy   # o: git checkout deploy && git merge main
 git push -u origin deploy
 ```
 
-Para publicar una versión nueva: integra `main` en `deploy` y haz push. Amplify compila solo; la EC2 se actualiza con `actualizar.sh` (paso 6).
+Para publicar una versión nueva: integra `main` en `deploy` y haz push. GitHub Actions corre las pruebas y, si pasan, despliega back y front (paso 7).
 
 ## 2. EC2
 
@@ -89,12 +90,12 @@ psql "postgresql://ov_admin:CONTRASENA@ENDPOINT:5432/ov?sslmode=require" -c "sel
 ## 5. Migrar, cargar datos y arrancar (una sola vez)
 
 ```bash
-sudo -u ov bash -c 'cd /opt/ov/ov_backend && ~/.local/bin/uv run --no-sync alembic upgrade head && ~/.local/bin/uv run --no-sync python -m datos.cargar plataforma'
+sudo -u ov bash -c 'cd /opt/ov/ov_backend && ~/.local/bin/uv run --no-sync alembic upgrade head && ~/.local/bin/uv run --no-sync python -m datos.cargar ruta'
 sudo systemctl start ov-backend
 curl -s -o /dev/null -w "%{http_code}\n" https://3-91-20-15.sslip.io/docs   # 200
 ```
 
-`datos.cargar plataforma` crea también los usuarios de `datos/usuarios_prueba.txt`. Sirven para la primera prueba; antes de abrirlo a estudiantes reales, cambia esas contraseñas o crea cuentas propias.
+`datos.cargar ruta` crea también los usuarios de `datos/usuarios_prueba.txt`. Sirven para la primera prueba; antes de abrirlo a estudiantes reales, cambia esas contraseñas o crea cuentas propias.
 
 ## 6. Amplify (front)
 
@@ -106,14 +107,53 @@ curl -s -o /dev/null -w "%{http_code}\n" https://3-91-20-15.sslip.io/docs   # 20
 
 Prueba: `https://deploy.XXXX.amplifyapp.com/api/openapi.json` debe devolver el JSON del backend, y en la app el ingreso con un usuario de prueba debe llevar al inicio según el rol.
 
-## 7. Actualizar
+## 7. GitHub Actions: pruebas y despliegue automático
+
+`.github/workflows/despliegue.yml` hace esto:
+
+| Evento | Qué corre |
+|---|---|
+| PR hacia `deploy` | Front: `npm run lint`, `check:estructura`, `npm test`, `npm run build`. Back: un solo head de Alembic y `pytest -n auto` (incluye las pruebas `postgres` contra un PostgreSQL 17 temporal). |
+| Push a `deploy` (o «Run workflow» a mano) | Las mismas pruebas y, si todo pasa: `actualizar.sh` en la EC2 por SSH, comprobación de `https://DOMINIO/docs` y después el build de Amplify. |
+
+Si una prueba falla, no se despliega nada: ni la EC2 ni Amplify. El backend siempre se actualiza antes que el front.
+
+### 7.1 Amplify: que compile solo cuando lo pida GitHub
+
+1. Amplify > tu app > **Configuración de la aplicación > Configuración de la ramificación** > rama `deploy` > Editar > desmarca **Habilitar la compilación automática**. Así un push no publica el front sin pasar las pruebas.
+2. Amplify > tu app > **Hosting > Configuración de compilación > Webhooks entrantes** > Crear webhook, para la rama `deploy`. Copia la URL que genera.
+
+### 7.2 Llave SSH solo para GitHub
+
+En tu máquina (no uses la `.pem` de AWS):
 
 ```bash
-# en tu máquina
-git checkout deploy && git merge main && git push
-# en la EC2
-sudo bash /opt/ov/despliegue/ec2/actualizar.sh
+ssh-keygen -t ed25519 -N "" -f github-ec2 -C "github-actions"
+ssh -i tu-llave.pem ubuntu@IP-ELASTICA "cat >> ~/.ssh/authorized_keys" < github-ec2.pub
 ```
+
+Grupo de seguridad de la EC2: GitHub sale desde IPs que cambian, así que la regla de SSH 22 pasa de «Mi IP» a `0.0.0.0/0`. La instancia solo acepta llaves (Ubuntu en EC2 trae desactivado el ingreso por contraseña), así que el riesgo es bajo para este uso.
+
+### 7.3 Secretos del repo
+
+GitHub > `carloz31/ov` > Settings > **Environments** > New environment `produccion`. En ese entorno, agrega estos secretos:
+
+| Secreto | Valor |
+|---|---|
+| `EC2_HOST` | La IP elástica (`3.151.84.94`). |
+| `EC2_SSH_KEY` | Todo el contenido de `github-ec2` (la llave privada, con las líneas `BEGIN`/`END`). |
+| `API_DOMINIO` | `3-151-84-94.sslip.io` |
+| `AMPLIFY_WEBHOOK_URL` | La URL del webhook entrante del paso 7.1. |
+
+Opcional: en Settings > Branches, protege `deploy` con «Require status checks to pass» y marca los trabajos de front y back. Así ni siquiera un merge directo entra a `deploy` sin pruebas en verde.
+
+### 7.4 Publicar una versión
+
+```bash
+git checkout deploy && git merge main && git push
+```
+
+El avance se ve en la pestaña **Actions** del repo. Para desplegar a mano sin Actions, en la EC2: `sudo bash /opt/ov/despliegue/ec2/actualizar.sh`.
 
 ## Diagnóstico
 

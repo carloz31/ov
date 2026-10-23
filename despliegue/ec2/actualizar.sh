@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Trae lo último de la rama deploy, sincroniza dependencias, migra y reinicia.
 # Uso: sudo bash /opt/ov/despliegue/ec2/actualizar.sh
-# No recarga datos: para eso, a mano, `uv run python -m datos.cargar plataforma` (con --vaciar borra el estado).
+# No recarga datos: para eso, a mano, `uv run python -m datos.cargar ruta` (con --vaciar borra el estado).
 set -euo pipefail
 
 DESTINO="/opt/ov"

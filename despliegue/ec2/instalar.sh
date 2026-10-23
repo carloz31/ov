@@ -71,6 +71,6 @@ certbot --nginx --non-interactive --agree-tos --redirect -m "$CORREO" -d "$DOMIN
 
 echo
 echo "Listo. Siguiente paso (una sola vez): migrar y cargar datos:"
-echo "  sudo -u ov bash -c 'cd $DESTINO/ov_backend && ~/.local/bin/uv run --no-sync alembic upgrade head && ~/.local/bin/uv run --no-sync python -m datos.cargar plataforma'"
+echo "  sudo -u ov bash -c 'cd $DESTINO/ov_backend && ~/.local/bin/uv run --no-sync alembic upgrade head && ~/.local/bin/uv run --no-sync python -m datos.cargar ruta'"
 echo "  sudo systemctl start ov-backend"
 echo "Después, para cada actualización: sudo bash $DESTINO/despliegue/ec2/actualizar.sh"

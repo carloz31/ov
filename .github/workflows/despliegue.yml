@@ -1,0 +1,116 @@
+# Pruebas de front y back en cada PR hacia deploy y en cada push a deploy.
+# En un push a deploy, si todo pasa: actualiza el backend en la EC2 y después lanza el build de Amplify.
+# Configuración (secretos del repo y Amplify): despliegue/README.md, sección «GitHub Actions».
+name: Pruebas y despliegue
+
+on:
+  pull_request:
+    branches: [deploy]
+  push:
+    branches: [deploy]
+  workflow_dispatch:
+
+concurrency:
+  group: despliegue-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Front · lint, estructura, pruebas y build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ov_frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ov_frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run check:estructura
+      - run: npm test
+      - run: npm run build
+        env:
+          VITE_DATOS: api
+          VITE_API_URL: /api
+
+  backend:
+    name: Back · pytest (SQLite y PostgreSQL)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ov_backend
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ov
+          POSTGRES_PASSWORD: ov
+          POSTGRES_DB: ov_pruebas
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ov"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_POSTGRES_URL: postgresql+psycopg://ov:ov@localhost:5432/ov_pruebas
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: ov_backend/uv.lock
+      # uv instala Python 3.14 según .python-version.
+      - run: uv sync --frozen --extra postgres
+      - name: Un solo head de Alembic
+        run: |
+          heads=$(uv run --no-sync alembic heads | grep -c '(head)')
+          echo "heads: $heads"
+          test "$heads" -eq 1
+      - run: uv run --no-sync pytest -n auto -q
+
+  desplegar-backend:
+    name: Desplegar backend (EC2)
+    needs: [frontend, backend]
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: produccion
+    steps:
+      - name: Llave SSH
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/ec2
+          chmod 600 ~/.ssh/ec2
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+      - name: Actualizar, migrar y reiniciar
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: ssh -i ~/.ssh/ec2 ubuntu@"$EC2_HOST" 'sudo bash /opt/ov/despliegue/ec2/actualizar.sh'
+      - name: Comprobar la API por HTTPS
+        env:
+          API_DOMINIO: ${{ secrets.API_DOMINIO }}
+        run: |
+          curl -fsS -o /dev/null -w "HTTPS: %{http_code}\n" "https://$API_DOMINIO/docs"
+
+  desplegar-frontend:
+    name: Desplegar frontend (Amplify)
+    needs: desplegar-backend
+    runs-on: ubuntu-latest
+    environment: produccion
+    steps:
+      - name: Lanzar build de Amplify
+        env:
+          AMPLIFY_WEBHOOK_URL: ${{ secrets.AMPLIFY_WEBHOOK_URL }}
+        run: |
+          curl -fsS -X POST -d '{}' -H 'Content-Type: application/json' "$AMPLIFY_WEBHOOK_URL"
