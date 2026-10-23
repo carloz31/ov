@@ -4,3 +4,8 @@
 CLAUDE.local.md
 .claude/settings.local.json
 .claude/worktrees/
+# Despliegue: parches y llaves locales
+*.patch
+*.pem
+github-ec2
+github-ec2.pub
