@@ -5,16 +5,20 @@ import { ciudadDisponible } from '@/lib/servidor/adaptadores'
 import { modoApi } from '@/config/env'
 import { cuentaActiva } from './cuenta'
 import type {
+  AmistadAsistente,
   AvanceInstrumento,
   BloqueActividades,
+  CheckInsCuenta,
   ComparacionAutopercepcion,
   ContenidoEstado,
   ResumenCuenta,
   LogrosCuenta,
   DesbloqueoLegible,
   DesbloqueoNuevo,
+  EntradaDiarioPublica,
   ErrorServidor,
   ItemPublico,
+  PreguntaDiarioEstado,
   RespuestaPublica,
   RespuestaServidor,
   ResultadoHistorico,
@@ -34,6 +38,11 @@ export type DatosSecciones = {
   logros: LogrosCuenta
   // GET /cuentas/{c}/secciones: diario, check-in, catálogo, planes y familia (F00).
   secciones: SeccionEstado[]
+  // F05: el diario se pide al abrirlo; los check-ins, al ingresar y solo con CHECK_IN abierta.
+  diarioPreguntas: PreguntaDiarioEstado[]
+  diarioEntradas: EntradaDiarioPublica[]
+  amistad: AmistadAsistente
+  checkIns: CheckInsCuenta
 }
 export type NombreSeccion = keyof DatosSecciones
 // F03: lo que lee el libro de Helena. Se pide al abrir el libro o su vista explicada.
@@ -86,6 +95,10 @@ const inicial = (): AlmacenServidor => ({
   fichas: vacia(),
   logros: vacia(),
   secciones: vacia(),
+  diarioPreguntas: vacia(),
+  diarioEntradas: vacia(),
+  amistad: vacia(),
+  checkIns: vacia(),
   cargando: false,
   error: null,
   consultasHabilitadas: false,

@@ -5,10 +5,13 @@ function JournalEntryCard({
   completed,
   prompt,
   onOpen,
+  remitente,
 }: {
   completed: boolean
   prompt?: string
   onOpen: () => void
+  // F05, solo api: la actividad que dejó la carta.
+  remitente?: string
 }) {
   if (!completed) return null
 
@@ -18,7 +21,9 @@ function JournalEntryCard({
         <BookOpen className="size-5" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-bold uppercase tracking-[0.08em]">Entrada sugerida:</p>
+        <p className="text-xs font-bold uppercase tracking-[0.08em]">
+          {remitente ? `De: ${remitente}` : 'Entrada sugerida:'}
+        </p>
         <p className="mt-1 text-sm leading-5">{prompt}</p>
         <Button className="mt-3 ml-auto px-2 text-[#a34d48]" size="sm" variant="ghost" onClick={onOpen}>
           Contarle a Lumi <ArrowRight />

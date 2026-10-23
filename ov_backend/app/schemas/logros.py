@@ -18,7 +18,7 @@ class NivelEstado(BaseModel):
 
 
 class LogrosCuenta(BaseModel):
-    """`afinidad`: porcentaje de la Ciudad completado; solo la tiene el estudiante."""
+    """`afinidad`: porcentaje de actividades de la Ciudad completadas (requeridas, opcionales y adicionales), tope 100; solo la tiene el estudiante."""
     insignias: list[InsigniaEstado]
     niveles: list[NivelEstado]
     afinidad: float | None = None

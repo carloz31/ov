@@ -9,5 +9,6 @@
       "nivel_seguridad": 3
     }
   ],
-  "dias_registrados": 2
+  "dias_registrados": 2,
+  "registrado_hoy": true
 }

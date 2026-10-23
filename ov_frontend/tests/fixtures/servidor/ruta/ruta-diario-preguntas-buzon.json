@@ -1,0 +1,53 @@
+[
+  {
+    "actividad": {
+      "codigo": "t-inicio",
+      "titulo": "Inicio de prueba"
+    },
+    "archivada_en": null,
+    "bandeja": "RESPONDIDA",
+    "codigo": "t-diario-fija",
+    "entrada": 1,
+    "estado": "DISPONIBLE",
+    "nombre": "Mi primer paso",
+    "personalizada": false,
+    "recibida_en": "2026-10-07T10:00:00",
+    "redactada": true,
+    "respondida": true,
+    "respondida_en": "2026-10-07T10:00:00",
+    "texto": "¿Qué te gustaría descubrir de ti en este camino?"
+  },
+  {
+    "actividad": {
+      "codigo": "t-expectativas",
+      "titulo": "Registro de expectativas"
+    },
+    "archivada_en": "2026-10-07T10:00:00",
+    "bandeja": "ARCHIVADA",
+    "codigo": "t-diario-personal",
+    "entrada": null,
+    "estado": "DISPONIBLE",
+    "nombre": "Lo que espero",
+    "personalizada": true,
+    "recibida_en": "2026-10-07T10:00:00",
+    "redactada": true,
+    "respondida": false,
+    "respondida_en": null,
+    "texto": "Sobre «DATO DE PRUEBA: una respuesta completa con su ejemplo y su r»: ¿Cómo te sientes con lo que esperas de este camino?"
+  },
+  {
+    "actividad": null,
+    "archivada_en": null,
+    "bandeja": null,
+    "codigo": "t-diario-tras-conversar",
+    "entrada": null,
+    "estado": "BLOQUEADA",
+    "nombre": "Lo que conversamos",
+    "personalizada": false,
+    "recibida_en": null,
+    "redactada": false,
+    "respondida": false,
+    "respondida_en": null,
+    "texto": null
+  }
+]

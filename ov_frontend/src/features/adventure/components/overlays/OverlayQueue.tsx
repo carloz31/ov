@@ -1,7 +1,8 @@
 import { useNoveltyQueue } from '../../hooks/useNoveltyQueue'
-import { type ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
+import { registrarCheckIn } from '@/store/servidor/diario'
 import { UnlockToast } from './UnlockToast'
 
 import { appPaths } from '@/routes/paths'
@@ -42,7 +43,14 @@ export function OverlayQueue({
     mostrarAviso,
     marcarVistos,
     errorAvisos,
+    senal,
   } = useNoveltyQueue(view, activityOpen)
+  const [errorSenal, setErrorSenal] = useState('')
+  const cerrarSenal = () => {
+    setErrorSenal('')
+    setManual(null)
+    setAutomatic(null)
+  }
 
   return (
     <StudentOverlayContext.Provider value={context}>
@@ -65,13 +73,24 @@ export function OverlayQueue({
       <CheckInDialog
         key={today}
         open={active?.kind === 'signal' || active?.kind === 'check-in'}
-        value={getTodayCheckIn(adventure)?.value}
+        value={senal.activo ? senal.hoy?.value : getTodayCheckIn(adventure)?.value}
         onReturnFocus={active?.kind === 'signal' ? active.onReturnFocus : undefined}
-        onDismiss={dismissSignal}
+        onDismiss={() => {
+          setErrorSenal('')
+          dismissSignal()
+        }}
+        servidor={senal.activo ? { escala: senal.escala, error: errorSenal } : undefined}
         onSave={(value) => {
-          saveTodayCheckIn(value)
-          setManual(null)
-          setAutomatic(null)
+          if (!senal.activo) {
+            saveTodayCheckIn(value)
+            return cerrarSenal()
+          }
+          // F05: uno por día en el servidor; si falla, el diálogo sigue abierto con el mensaje.
+          void registrarCheckIn(value).then((respuesta) =>
+            respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar'
+              ? cerrarSenal()
+              : setErrorSenal(mensajeErrorServidor(respuesta)),
+          )
         }}
       />
       {badge && (

@@ -181,7 +181,10 @@ def registrar_eventos(
     if preguntas:
         # La pregunta desbloqueada llega al diario en la misma transacción (B09).
         from app.services.diario.acciones import crear_desbloqueadas
-        crear_desbloqueadas(sesion, cuenta, preguntas, fecha_hora)
+        # Ajuste del diario (F05): el remitente es la actividad que completó esta misma acción, si la hay.
+        actividad = next((referencia for tipo, referencia in eventos
+                          if tipo == TipoEventoUso.COMPLETA_ACTIVIDAD and referencia is not None), None)
+        crear_desbloqueadas(sesion, cuenta, preguntas, fecha_hora, actividad)
     sesion.flush()
     return nuevos
 

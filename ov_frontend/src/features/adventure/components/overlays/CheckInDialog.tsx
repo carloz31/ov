@@ -7,12 +7,14 @@ export function CheckInDialog({
   onSave,
   onDismiss,
   onReturnFocus,
+  servidor,
 }: {
   open: boolean
   value?: ReadinessCheckIn['value']
   onSave: (value: ReadinessCheckIn['value']) => void
   onDismiss: () => void
   onReturnFocus?: () => void
+  servidor?: { escala: number; error: string }
 }) {
   return (
     <Dialog
@@ -27,6 +29,7 @@ export function CheckInDialog({
           onSave={onSave}
           onDismiss={onDismiss}
           onReturnFocus={onReturnFocus}
+          servidor={servidor}
         />
       )}
     </Dialog>

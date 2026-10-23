@@ -1,13 +1,10 @@
 import { getLumiBond } from '@/features/journal/lib/lumiBond'
-import { lumiMemories } from '@/features/journal/data/lumiMemories'
+import { capitulosLumi } from '@/features/journal/data/capitulosLumi'
 import { catalog } from '@/data/activities/content'
 import type { JourneyState } from '@/types/activities'
 import { getStudentAchievementGroups } from '@/features/discovery/lib/passport'
 import { isCityUnlocked, isFamilyUnlocked } from '@/store/adventureStore'
-import {
-  getTravelResources,
-  isTravelResourceUnlocked,
-} from '@/features/backpack/lib/travelerResources'
+import { getTravelResources, isTravelResourceUnlocked } from '@/features/backpack/lib/travelerResources'
 import type { AdventureState } from '@/types/adventure'
 import { appPaths } from '@/routes/paths'
 import type { StudentDiscoveryState } from '@/types/discovery'
@@ -33,13 +30,13 @@ export function getUnlocks(
   discovery?: StudentDiscoveryState,
 ): UnlockItem[] {
   return [
-    ...lumiMemories
+    ...capitulosLumi
       .slice(0, getLumiBond(adventure.lumiRegistrations).memoriesOpened)
-      .map((memory, index): UnlockItem => ({
+      .map((capitulo, index): UnlockItem => ({
         id: `lumi-memory:${index + 1}`,
         kind: 'memory',
         title: 'Lumi recordó algo nuevo',
-        description: `Recuerdo ${index + 1}: ${memory.title}`,
+        description: `Recuerdo ${index + 1}: ${capitulo.titulo}`,
         href: `${appPaths.student.journal}?memory=${index + 1}`,
       })),
     ...(discovery?.revealedPages ?? []).map((id): UnlockItem => ({

@@ -17,8 +17,20 @@ export function PassportBadgeDialog({
   groupIndex: number
   onClose: () => void
 }) {
-  const { returnFocus, error, setIntento, selected, visible, hidden, destination, Icon, date,
-    notaFecha, descripcionRequisito, alternarInsignia } = useBadgeDetail(badge)
+  const {
+    returnFocus,
+    error,
+    setIntento,
+    selected,
+    visible,
+    hidden,
+    destination,
+    Icon,
+    date,
+    notaFecha,
+    descripcionRequisito,
+    alternarInsignia,
+  } = useBadgeDetail(badge)
 
   return (
     <Dialog
@@ -38,9 +50,7 @@ export function PassportBadgeDialog({
             <span className="sx-p-badge-seal sx-p-badge-seal-large" aria-hidden="true">
               {hidden ? '?' : <Icon size={52} />}
             </span>
-            <p className="sx-p-badge-code">
-              {badge.code} · {group}
-            </p>
+            <p className="sx-p-badge-code">{group}</p>
             <DialogTitle>{hidden ? 'Insignia por descubrir' : badge.title}</DialogTitle>
             <DialogDescription>
               <span className="sx-p-state">{badge.done ? 'Obtenida' : 'Por descubrir'}</span>
@@ -76,9 +86,7 @@ export function PassportBadgeDialog({
                 type="button"
                 aria-pressed={visible}
                 disabled={!visible && selected.length >= 3}
-                onClick={() =>
-                  alternarInsignia()
-                }
+                onClick={() => alternarInsignia()}
               >
                 <Eye aria-hidden="true" size={18} />
                 Mostrar en mi perfil

@@ -1,6 +1,7 @@
 """Exporta los fixtures `ruta-*` del contrato con el front, sin servicios externos."""
 
 import argparse
+from datetime import datetime
 import json
 import os
 from pathlib import Path
@@ -226,10 +227,24 @@ def _recorrer(cliente):
     _pedir(cliente, 'POST', '/acciones/borrar-entrada', {**diario, 'numero': 5})
     fixtures['diario-entradas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/entradas')
     fixtures['diario-amistad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/amistad')
+    # Ajuste del diario (F05): borrar la respuesta de una carta la archiva; se desarchiva y se vuelve a archivar.
+    _pedir(cliente, 'POST', '/acciones/borrar-entrada', {**diario, 'numero': 2})
+    fixtures['desarchivar-pregunta'] = _pedir(cliente, 'POST', '/acciones/diario/desarchivar-pregunta',
+                                              {**diario, 'codigo': 't-diario-personal'})
+    fixtures['archivar-pregunta'] = _pedir(cliente, 'POST', '/acciones/diario/archivar-pregunta',
+                                           {**diario, 'codigo': 't-diario-personal'})
+    fixtures['diario-preguntas-buzon'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')
     for dia, nivel in ((6, 2), (7, 3)):
         _pedir(cliente, 'POST', '/acciones/check-in',
                {'cuenta': 'est-ana', 'nivel_seguridad': nivel, 'fecha_hora': f'2026-10-0{dia}T08:00:00'})
-    fixtures['check-ins'] = _pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')
+    # F05: «hoy» del servidor fijado en FECHA, para que `registrado_hoy` no dependa del día en que se exporta.
+    from app.dependencies import obtener_ahora
+    sobrescritas = cliente.cliente.app.dependency_overrides
+    sobrescritas[obtener_ahora] = lambda: datetime.fromisoformat(FECHA)
+    try:
+        fixtures['check-ins'] = _pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')
+    finally:
+        sobrescritas.pop(obtener_ahora, None)
     fixtures['tematicas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/tematicas')
     ruta_avisos = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
     avisos = _pedir(cliente, 'GET', ruta_avisos)

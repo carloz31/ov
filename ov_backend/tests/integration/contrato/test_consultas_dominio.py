@@ -6,7 +6,8 @@ from sqlalchemy import select
 from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActividad, Visibilidad
 from datos.fijos import SECCIONES
 from datos.ruta import (
-    ACTIVIDADES, BLOQUES, DESCRIPCIONES, FICHAS, INSIGNIAS, NIVELES, PREGUNTAS_DIARIO, PROPIEDADES, REGLAS, TESTIMONIOS, contenido,
+    ACTIVIDADES, BLOQUES, DESCRIPCIONES, FICHAS, INSIGNIAS, NIVELES, PREGUNTAS_DIARIO, PROPIEDADES, RECUERDOS_LUMI,
+    REGLAS, TESTIMONIOS, contenido,
 )
 from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
 
@@ -22,6 +23,9 @@ ESTADOS = {
            't-caso': 'BLOQUEADA', 't-contraste': 'BLOQUEADA', 't-adicional': 'DISPONIBLE', 't-eco': 'DISPONIBLE',
            't-lee-cuestionario': 'DISPONIBLE', 't-batalla': 'DISPONIBLE', 't-explorar': 'BLOQUEADA'},
 }
+# Ajuste del diario (F05): los recuerdos de Lumi siguen bloqueados mientras no se escriba en el diario.
+for _estados in ESTADOS.values():
+    _estados.update(dict.fromkeys(RECUERDOS_LUMI, 'BLOQUEADA'))
 # Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).
 SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']
 MENSAJES = {objetivo: mensaje for _, tipo, objetivo, mensaje, _ in REGLAS if tipo == 'SECCION'}
@@ -36,6 +40,10 @@ def consultar(cliente, ruta, cuenta='est-ana'):
         return respuesta.json()['detail']['mensaje']
     assert respuesta.status_code == 200, respuesta.text
     datos = respuesta.json()
+    if ruta == 'diario/preguntas':
+        # Ajuste del diario (F05): los campos de la carta recibida se comprueban en tests/integration/diario.
+        recibida = ('recibida_en', 'texto', 'entrada', 'respondida_en', 'bandeja', 'archivada_en', 'actividad')
+        datos = [{k: v for k, v in pregunta.items() if k not in recibida} for pregunta in datos]
     if ruta == 'actividades':
         # `bloqueo` se comprueba aparte (test_bloqueo_actividades.py); aquí, solo que acompaña a BLOQUEADA.
         for bloque in datos:
@@ -55,7 +63,8 @@ def esperado(ruta, completo):
     if ruta == 'actividades':
         return [{
             'codigo': bloque, 'nombre': nombre, 'numero': numero, 'espacio': espacio,
-            'estado': 'DISPONIBLE' if bloque == 'T0' or completo and bloque != 'T2' else 'BLOQUEADA',
+            # El bloque LUMI no tiene regla: está abierto; lo que se abre son sus recuerdos.
+            'estado': 'DISPONIBLE' if bloque in ('T0', 'LUMI') or completo and bloque != 'T2' else 'BLOQUEADA',
             'actividades': [
                 {'codigo': actividad, 'titulo': titulo, 'tipo': tipo, 'orden': orden,
                  'contenido': contenido(actividad),
@@ -202,11 +211,11 @@ def test_orden_por_numero_y_codigo_y_por_orden_y_codigo(sesion, cliente):
     inicio.orden = 3
     sesion.commit()
     bloques = consultar(cliente, 'actividades')
-    assert [b['codigo'] for b in bloques] == ['CIUDAD', 'T0', 'T1', 'T2']
+    assert [b['codigo'] for b in bloques] == ['CIUDAD', 'T0', 'T1', 'T2', 'LUMI']
     assert [a['codigo'] for a in bloques[1]['actividades']] == ['t-partida', 't-cierre-inicio', 't-inicio']
     ciudad.numero = 2
     sesion.commit()
-    assert [b['codigo'] for b in consultar(cliente, 'actividades')] == ['T0', 'CIUDAD', 'T1', 'T2']
+    assert [b['codigo'] for b in consultar(cliente, 'actividades')] == ['T0', 'CIUDAD', 'T1', 'T2', 'LUMI']
 
 
 def test_insignia_oculta_solo_se_revela_al_obtenerse(cliente):

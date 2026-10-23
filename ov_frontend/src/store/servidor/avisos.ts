@@ -23,11 +23,21 @@ export function quitarPorRevelar(quitar: (codigo: string) => boolean) {
   const porRevelar = obtenerEstadoServidor().porRevelar
   if (porRevelar.some(quitar)) publicar({ porRevelar: porRevelar.filter((c) => !quitar(c)) })
 }
+// Ajuste del diario (F05): un recuerdo de Lumi (bloque LUMI) no es novedad del mapa; el diario lo abre solo.
+function recuerdosLumi() {
+  return new Set(
+    obtenerEstadoServidor()
+      .actividades.datos?.filter((b) => b.espacio === 'LUMI')
+      .flatMap((b) => b.actividades.map((a) => a.codigo)) ?? [],
+  )
+}
 export function avisosPendientes() {
-  return avisosServidor([
-    ...obtenerEstadoServidor().noVistos,
-    ...obtenerEstadoServidor().desbloqueosAccion,
-  ]).filter((a) => !obtenerEstadoServidor().avisosMostrados.includes(a.id))
+  const recuerdos = recuerdosLumi()
+  return avisosServidor(
+    [...obtenerEstadoServidor().noVistos, ...obtenerEstadoServidor().desbloqueosAccion].filter(
+      (d) => !(d.tipo_objetivo === 'ACTIVIDAD' && recuerdos.has(d.objetivo.codigo)),
+    ),
+  ).filter((a) => !obtenerEstadoServidor().avisosMostrados.includes(a.id))
 }
 export function mostrarAviso(id: string) {
   if (!obtenerEstadoServidor().avisosMostrados.includes(id))

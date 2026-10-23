@@ -23,11 +23,12 @@ from app.schemas.acciones import (
     AbrirPreguntaEntrada, AccionCuenta, BorrarEntradaEntrada, CheckInEntrada, EditarEntradaEntrada,
     EscribirEntradaEntrada, ResponderRegistroEntrada, RespuestaAccion,
 )
-from app.schemas.diario import PreguntaAbierta, PreguntaDelDia
+from app.schemas.diario import PreguntaAbierta, PreguntaDelDia, PreguntaDiarioEstado
 from app.services.comun import (
     buscar_por_codigo, exigir_disponible, exigir_estudiante, fecha_accion, responder_con_eventos,
 )
 from app.services.diario.asistente import redactar, referencias_resolubles, resolver_contexto
+from app.services.diario.consultas import estado_pregunta
 from app.services.diario.sorteo import PuntajeDimension, pesos_dimensiones, semilla, sortear
 from app.services.secciones import exigir_seccion
 
@@ -43,7 +44,8 @@ def responder_registro(sesion: Session, entrada: ResponderRegistroEntrada) -> Re
 
 # --- Recomendaciones ------------------------------------------------------------------------
 
-def crear_desbloqueadas(sesion: Session, cuenta: Cuenta, preguntas_ids: list[int], fecha: datetime) -> None:
+def crear_desbloqueadas(sesion: Session, cuenta: Cuenta, preguntas_ids: list[int], fecha: datetime,
+                        actividad_id: int | None = None) -> None:
     """Deja en el diario las preguntas recién desbloqueadas, sin LLM: la fija con su texto y la personalizada con
     el contexto de este momento (o la base, si ninguna referencia tiene dato)."""
     existentes = set(sesion.scalars(select(Recomendacion.pregunta_diario_id).where(
@@ -59,7 +61,7 @@ def crear_desbloqueadas(sesion: Session, cuenta: Cuenta, preguntas_ids: list[int
         sesion.add(Recomendacion(
             cuenta_id=cuenta.id, pregunta_diario_id=pregunta.id, tipo=TipoRecomendacion.DESBLOQUEADA,
             contexto=datos if por_redactar else None, texto=None if por_redactar else pregunta.pregunta,
-            origen=None if por_redactar else OrigenRedaccion.FIJA, creada_en=fecha))
+            origen=None if por_redactar else OrigenRedaccion.FIJA, creada_en=fecha, actividad_id=actividad_id))
     sesion.flush()
 
 
@@ -119,6 +121,9 @@ def escribir_entrada(sesion: Session, entrada: EscribirEntradaEntrada) -> Respue
             raise ErrorAccion("Abre la pregunta antes de responderla")
         if respondida(sesion, recomendacion):
             raise ErrorAccion("Ya respondiste esta pregunta")
+        if recomendacion.archivada_en is not None:
+            raise ErrorAccion("La pregunta de hoy ya está cerrada" if entrada.del_dia
+                              else "Desarchiva la carta para responderla")
     numero, numero_libre = _siguiente_numero(sesion, cuenta, origen == OrigenEntrada.LIBRE)
     registro = EntradaDiario(cuenta_id=cuenta.id, origen=origen,
                              recomendacion_id=None if recomendacion is None else recomendacion.id,
@@ -157,13 +162,57 @@ def editar_entrada(sesion: Session, entrada: EditarEntradaEntrada) -> RespuestaA
 
 @usar_contexto
 def borrar_entrada(sesion: Session, entrada: BorrarEntradaEntrada) -> RespuestaAccion:
-    """Borrado físico, sin eventos: la pregunta que respondía queda otra vez sin responder."""
+    """Borrado físico, sin eventos. Ajuste del diario (F05): la carta que respondía queda archivada y la pregunta
+    del día, cerrada (`archivada_en`); ninguna vuelve a quedar por responder."""
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
     exigir_estudiante(cuenta)
     registro = _entrada_de(sesion, cuenta, entrada.numero)
+    fecha = fecha_accion(entrada)
+    recomendacion_id = registro.recomendacion_id
     sesion.execute(delete(EntradaDiario).where(EntradaDiario.id == registro.id))
     sesion.expunge(registro)
-    return responder_con_eventos(sesion, cuenta, [], fecha_accion(entrada))
+    if recomendacion_id is not None:
+        sesion.execute(update(Recomendacion).where(Recomendacion.id == recomendacion_id).values(archivada_en=fecha))
+    return responder_con_eventos(sesion, cuenta, [], fecha)
+
+
+def _carta(sesion: Session, entrada: AbrirPreguntaEntrada) -> tuple[Cuenta, PreguntaDiario, Recomendacion]:
+    cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
+    exigir_estudiante(cuenta)
+    exigir_seccion(sesion, cuenta, "DIARIO")
+    pregunta = buscar_por_codigo(sesion, PreguntaDiario, entrada.codigo)
+    if pregunta.uso == UsoPreguntaDiario.DIARIA:
+        raise ErrorAccion("La pregunta del día no se archiva ni se desarchiva")
+    recomendacion = recomendacion_desbloqueada(sesion, cuenta, pregunta)
+    if recomendacion is None:
+        raise ErrorAccion("Esta pregunta todavía no está en tu diario")
+    return cuenta, pregunta, recomendacion
+
+
+@usar_contexto
+def archivar_pregunta(sesion: Session, entrada: AbrirPreguntaEntrada) -> PreguntaDiarioEstado:
+    """Ajuste del diario (F05): solo una carta lista (redactada), pendiente y sin responder. Sin eventos."""
+    cuenta, pregunta, recomendacion = _carta(sesion, entrada)
+    if recomendacion.texto is None:
+        raise ErrorAccion("Abre la carta antes de archivarla")
+    if respondida(sesion, recomendacion):
+        raise ErrorAccion("Ya respondiste esta carta")
+    if recomendacion.archivada_en is not None:
+        raise ErrorAccion("Esta carta ya está archivada")
+    recomendacion.archivada_en = fecha_accion(entrada)
+    sesion.flush()
+    return estado_pregunta(sesion, cuenta, pregunta)
+
+
+@usar_contexto
+def desarchivar_pregunta(sesion: Session, entrada: AbrirPreguntaEntrada) -> PreguntaDiarioEstado:
+    """Devuelve una carta archivada a pendiente. Sin eventos."""
+    cuenta, pregunta, recomendacion = _carta(sesion, entrada)
+    if recomendacion.archivada_en is None:
+        raise ErrorAccion("Esta carta no está archivada")
+    recomendacion.archivada_en = None
+    sesion.flush()
+    return estado_pregunta(sesion, cuenta, pregunta)
 
 
 # --- Check-in -------------------------------------------------------------------------------
@@ -296,7 +345,8 @@ def _pregunta_del_dia(sesion: Session, recomendacion_id: int) -> PreguntaDelDia:
     recomendacion = sesion.get(Recomendacion, recomendacion_id)
     pregunta = contexto(sesion).definiciones.obtener(PreguntaDiario, recomendacion.pregunta_diario_id)
     return PreguntaDelDia(nombre=pregunta.nombre, texto=recomendacion.texto, fecha=recomendacion.fecha,
-                          respondida=respondida(sesion, recomendacion))
+                          respondida=respondida(sesion, recomendacion),
+                          cerrada=recomendacion.archivada_en is not None)
 
 
 def pregunta_del_dia(fabrica_sesiones, entrada: AccionCuenta, evaluador, *,

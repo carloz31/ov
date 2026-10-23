@@ -24,11 +24,13 @@ export function NodeRenderer({
   activity,
   edit,
   direct,
+  salida,
 }: {
   model: ReturnType<typeof useActivityPlayer>
   activity: Actividad
   edit: boolean
   direct: boolean
+  salida?: { texto: string; titulo?: string; onClick: () => void }
 }) {
   const {
     nodes,
@@ -103,6 +105,8 @@ export function NodeRenderer({
       activity={activity}
       yaCompletada={yaCompletada}
       desbloqueosServidor={cierreServidor?.nuevos_desbloqueos}
+      entradasDiario={cierreServidor?.entradas_desbloqueadas}
+      salida={salida}
     />
   ) : matrix ? (
     <MatrixNode

@@ -14,6 +14,7 @@ import { useFichaEnPantalla } from '@/store/visorRecursoStore'
 import type { StudentView } from '@/lib/studentViews'
 
 import { localDateKey, useCheckInDay } from '@/features/adventure/lib/checkIn'
+import { useSenalServidor } from '@/features/adventure/hooks/useSenalServidor'
 
 import { getNextBadge } from '@/features/adventure/lib/unlocks'
 import { useReflections } from '@/store/reflectionStore'
@@ -32,6 +33,8 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   const navigate = useNavigate()
   const today = useCheckInDay()
   const servidor = useEstadoServidor()
+  const senal = useSenalServidor()
+  const checkInPendiente = senal.activo ? senal.pendiente : undefined
   // F04d: con una ficha (o su requisito) abierta, p. ej. al entrar a la mochila con `?ficha=`, los avisos
   // automáticos esperan a que se cierre; como no llegan a mostrarse, tampoco se marcan como vistos.
   const fichaAbierta = useFichaEnPantalla()
@@ -61,7 +64,7 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     })
     return () => observer.disconnect()
   }, [])
-  const next = getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed })
+  const next = getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed, checkInPendiente })
   const nextKey =
     next?.kind === 'intro'
       ? `intro:${next.view}`
@@ -70,8 +73,8 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
         : (next?.kind ?? '')
   useEffect(() => {
     // Opening only after mounting keeps static route rendering free of dialogs.
-    setAutomatic(getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed }))
-  }, [adventure, ui, view, activityOpen, arrivalDismissed, today, nextKey])
+    setAutomatic(getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed, checkInPendiente }))
+  }, [adventure, ui, view, activityOpen, arrivalDismissed, today, nextKey, checkInPendiente])
   const active = activityOpen ? null : (manual ?? (fichaAbierta ? null : automatic))
   const announcementBlocked = activityOpen || overlayAbierto || !!active || !!next
   const context = useMemo(
@@ -152,5 +155,6 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     mostrarAviso,
     marcarVistos,
     errorAvisos: habilitarAvisos ? servidor.errorAvisos : null,
+    senal,
   }
 }

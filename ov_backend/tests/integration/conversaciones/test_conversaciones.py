@@ -168,8 +168,10 @@ def test_se_marca_con_las_dos_respuestas_y_basta_una_marca(cliente):
     assert reglas(respuesta['est-ana']) == {'R-t-diario-tras-conversar'}
     assert [e['codigo'] for e in respuesta['est-ana']['entradas_desbloqueadas']] == ['t-diario-tras-conversar']
     assert respuesta['apo-rosa']['eventos_registrados'] == respuesta['apo-rosa']['nuevos_desbloqueos'] == []
-    preguntas = {p['codigo']: p['estado'] for p in pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')}
-    assert preguntas['t-diario-tras-conversar'] == 'DISPONIBLE'
+    preguntas = {p['codigo']: p for p in pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')}
+    assert preguntas['t-diario-tras-conversar']['estado'] == 'DISPONIBLE'
+    # Ajuste del diario (F05): la abrió una conversación, no una actividad: no tiene remitente.
+    assert preguntas['t-diario-tras-conversar']['actividad'] is None
     # Marcar de nuevo, desde cualquiera de los dos, no cambia nada.
     repetida = marcar(cliente, 'est-ana', 't-conv-1')['por_cuenta']
     assert all(r['eventos_registrados'] == r['nuevos_desbloqueos'] == [] for r in repetida.values())

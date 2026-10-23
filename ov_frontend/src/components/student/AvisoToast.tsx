@@ -4,7 +4,8 @@ import { X, type LucideIcon } from 'lucide-react'
 const DURACION = 6000
 
 // Aviso compacto del estudiante, al estilo de un toast: ícono del tipo, etiqueta, título, una línea de
-// descripción, una acción y la X. Se cierra a los 6 s; el tiempo se pausa con el puntero o el foco dentro.
+// descripción, una acción y la X (descripción y acción son opcionales: el aviso de guardado del diario no las
+// necesita siempre). Se cierra a los 6 s; el tiempo se pausa con el puntero o el foco dentro.
 export function AvisoToast({
   icono: Icono,
   etiqueta,
@@ -16,8 +17,8 @@ export function AvisoToast({
   icono: LucideIcon
   etiqueta: string
   titulo: string
-  descripcion: string
-  accion: ReactNode
+  descripcion?: string
+  accion?: ReactNode
   onDismiss: () => void
 }) {
   const dismiss = useRef(onDismiss)
@@ -51,9 +52,11 @@ export function AvisoToast({
       <div className="sx-badge-copy">
         <p className="sx-badge-label">{etiqueta}</p>
         <h2>{titulo}</h2>
-        <p className="sx-toast-linea" title={descripcion}>
-          {descripcion}
-        </p>
+        {descripcion && (
+          <p className="sx-toast-linea" title={descripcion}>
+            {descripcion}
+          </p>
+        )}
         {accion}
       </div>
       <button

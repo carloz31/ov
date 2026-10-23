@@ -12,7 +12,19 @@ import { achievementIcons, travelerTitles } from '../lib/passport'
 import '../styles/passport.css'
 
 export function StudentPassportView() {
-  const { groups, level, setSelectedCode, earned, visible, groupIndex, group, selected, titulos, total, ocultasPendientes } = usePassport()
+  const {
+    groups,
+    level,
+    setSelectedCode,
+    earned,
+    visible,
+    groupIndex,
+    group,
+    selected,
+    titulos,
+    total,
+    ocultasPendientes,
+  } = usePassport()
 
   return (
     <DiscoveryStage ambient="profile">
@@ -82,9 +94,7 @@ export function StudentPassportView() {
         ) : (
           <p>No hay un nivel disponible en el servidor.</p>
         )}
-        {ocultasPendientes > 0 && (
-          <p>{`${ocultasPendientes} insignias quedan por descubrir.`}</p>
-        )}
+        {ocultasPendientes > 0 && <p>{`${ocultasPendientes} insignias quedan por descubrir.`}</p>}
         <div className="sx-d-stack">
           {groups.map((g, index) => (
             <Parchment key={g.title} className="sx-p-group">
@@ -117,7 +127,6 @@ export function StudentPassportView() {
                         {!b.done && <LockKeyhole className="sx-p-lock" size={20} />}{' '}
                         {visible.some((v) => v.code === b.code) && <Eye className="sx-p-eye" size={20} />}
                       </span>
-                      <span className="sx-p-badge-code">{b.code}</span>
                       <strong>{hidden ? '?' : b.title}</strong>
                     </button>
                   )

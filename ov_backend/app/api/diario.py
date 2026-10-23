@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 
-from app.dependencies import CuentaConsultada, SesionBD
+from app.dependencies import Ahora, CuentaConsultada, SesionBD, ejecutar_accion
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.schemas.acciones import AbrirPreguntaEntrada, AccionCuenta
 from app.schemas.diario import (
@@ -35,8 +35,9 @@ def consultar_amistad(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
 
 
 @router.get("/cuentas/{cuenta}/check-ins", response_model=CheckInsCuenta)
-def consultar_check_ins(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
-    return _consultar(consultas_diario.check_ins_cuenta, sesion, cuenta_consultada)
+def consultar_check_ins(cuenta_consultada: CuentaConsultada, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda sesion, cuenta: consultas_diario.check_ins_cuenta(sesion, cuenta, ahora.date()),
+                      sesion, cuenta_consultada)
 
 
 def _con_asistente(accion, entrada, peticion):
@@ -51,6 +52,17 @@ def _con_asistente(accion, entrada, peticion):
 @router.post("/acciones/diario/abrir-pregunta", response_model=PreguntaAbierta)
 def abrir_pregunta(entrada: AbrirPreguntaEntrada, peticion: Request):
     return _con_asistente(acciones_diario.abrir_pregunta, entrada, peticion)
+
+
+# Ajuste del diario (F05): archivar una carta lista y devolverla a pendiente.
+@router.post("/acciones/diario/archivar-pregunta", response_model=PreguntaDiarioEstado)
+def archivar_pregunta(entrada: AbrirPreguntaEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: acciones_diario.archivar_pregunta(sesion, entrada))
+
+
+@router.post("/acciones/diario/desarchivar-pregunta", response_model=PreguntaDiarioEstado)
+def desarchivar_pregunta(entrada: AbrirPreguntaEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: acciones_diario.desarchivar_pregunta(sesion, entrada))
 
 
 @router.post("/acciones/diario/pregunta-del-dia", response_model=PreguntaDelDia)

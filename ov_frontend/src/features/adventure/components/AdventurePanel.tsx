@@ -24,6 +24,7 @@ import { getListedActivities, studentActivitiesPath } from '../lib/navigation'
 import type { SiguientePaso } from '../lib/siguientePaso'
 import { AccesoRapido } from './AccesoRapido'
 import { SiguientePasoServidor } from './SiguientePasoServidor'
+import { useSenalServidor } from '@/features/adventure/hooks/useSenalServidor'
 import { getTodayCheckIn, useCheckInDay } from '../lib/checkIn'
 
 const textoOculto = (acceso: AccesoSeccion) =>
@@ -58,12 +59,14 @@ export function AdventurePanel({
   const visible = getListedActivities(points, false).slice(0, 4)
   const greeting = getReturnGreeting(adventure, recommended)
   useCheckInDay()
-  const signal = getTodayCheckIn(adventure)
+  // F05: en api, la señal de hoy y su escala (1–5) son del servidor; una por día, sin «Cambiar».
+  const senal = useSenalServidor()
+  const signal = senal.activo ? senal.hoy : getTodayCheckIn(adventure),
+    escala = senal.activo ? senal.escala : 10
   const seccion = useSeccionesAcceso(adventure)
   const checkIn = seccion('CHECK_IN')
   const percentage = Math.min(100, Math.max(0, progress.value))
-  const zonaCiudad =
-    progress.label === 'Afinidad con la ciudad' || progress.label === 'Recorrido por la ciudad'
+  const zonaCiudad = progress.label === 'Afinidad con la ciudad'
   const circumference = 2 * Math.PI * 40
   return (
     <div className="sx-panel-content">
@@ -167,9 +170,9 @@ export function AdventurePanel({
             Tu señal de hoy
           </h2>
           {signal && (
-            <p className="sx-panel-signal" aria-label={`${signal.value} de 10`}>
+            <p className="sx-panel-signal" aria-label={`${signal.value} de ${escala}`}>
               <strong>{signal.value}</strong>
-              <span>/10</span>
+              <span>{`/${escala}`}</span>
             </p>
           )}
         </div>
@@ -179,25 +182,27 @@ export function AdventurePanel({
           role="progressbar"
           aria-label="Señal de hoy"
           aria-valuemin={0}
-          aria-valuemax={10}
+          aria-valuemax={escala}
           aria-valuenow={signal?.value ?? 0}
         >
-          {Array.from({ length: 10 }, (_, i) => (
+          {Array.from({ length: escala }, (_, i) => (
             <span key={i} data-filled={i < (signal?.value ?? 0)} />
           ))}
         </div>
         <div className="sx-signal-actions">
-          <button
-            type="button"
-            className="sx-signal-edit"
-            title={checkIn.bloqueada ? checkIn.mensaje : undefined}
-            onClick={checkIn.pasos ? () => onGuide?.(checkIn.pasos!) : onCheckIn}
-          >
-            <PenLine size={14} aria-hidden="true" />
-            {signal ? 'Cambiar' : 'Registrar mi señal'}
-            {textoOculto(checkIn)}
-            {checkIn.bloqueada && <LockKeyhole className="sx-quick-lock" size={12} aria-hidden="true" />}
-          </button>
+          {!(senal.activo && signal) && (
+            <button
+              type="button"
+              className="sx-signal-edit"
+              title={checkIn.bloqueada ? checkIn.mensaje : undefined}
+              onClick={checkIn.pasos ? () => onGuide?.(checkIn.pasos!) : onCheckIn}
+            >
+              <PenLine size={14} aria-hidden="true" />
+              {signal ? 'Cambiar' : 'Registrar mi señal'}
+              {textoOculto(checkIn)}
+              {checkIn.bloqueada && <LockKeyhole className="sx-quick-lock" size={12} aria-hidden="true" />}
+            </button>
+          )}
           {/* La evolución es parte del check-in: cerrada, se bloquea igual que «Registrar mi señal». */}
           <AccesoRapido
             className="sx-signal-history"

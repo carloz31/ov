@@ -7,7 +7,7 @@ import { progresoBloque } from '@/lib/servidor/contenidos'
 import { canAccessCity, getTravelerLevel, useAdventure } from '@/store/adventureStore'
 import { paginasReveladasApi, useDiscovery } from '@/store/discoveryStore'
 import { useJourney } from '@/store/journeyStore'
-import { useLogrosServidor } from '@/store/servidor/secciones'
+import { useAfinidadServidor } from '@/store/servidor/secciones'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import { cargarInstrumentos } from '@/store/servidor/instrumentos'
 import { getAchievementPresentations } from '../lib/achievements'
@@ -21,7 +21,7 @@ export function useStudentProfile() {
     journey = useJourney(),
     discovery = useDiscovery()
   const context = useOccupationExplorationContext()
-  useLogrosServidor()
+  useAfinidadServidor()
   const servidor = useEstadoServidor()
   const cuenta = servidor.resumen.datos?.cuenta.codigo
   // F03: las páginas del libro salen del avance de instrumentos, que se pide al abrir el perfil.
@@ -47,7 +47,7 @@ export function useStudentProfile() {
     : getZoneProgress('missions', adventure, journey).value
   const afinidadCiudad = ciudad
     ? modoApi
-      ? progresoBloque(servidor.actividades.datos, 'CIUDAD').porcentaje
+      ? (servidor.logros.datos?.afinidad ?? 0)
       : getZoneProgress('central', adventure, journey).value
     : 0
   const gruposApi = modoApi

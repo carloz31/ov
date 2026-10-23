@@ -33,7 +33,8 @@ export type ActividadEstado = { codigo: string; titulo: string; estado: EstadoAc
 export type BloqueEstado = {
   codigo: string
   nombre: string
-  espacio: 'MISIONES_CAMPO' | 'CIUDAD' | 'PORTAL_FAMILIA'
+  // LUMI (ajuste del diario de F05): los recuerdos de Lumi; no se pinta en el mapa.
+  espacio: 'MISIONES_CAMPO' | 'CIUDAD' | 'PORTAL_FAMILIA' | 'LUMI'
   estado: EstadoDisponibilidad
   actividades: ActividadEstado[]
 }
@@ -67,7 +68,7 @@ export type TipoEventoUso =
 export type ProgresoCondicion = {
   tipo_evento: TipoEventoUso
   referencia: string | null
-  tipo_conteo: 'EVENTOS' | 'REFERENCIAS_DISTINTAS' | 'DIAS_DISTINTOS'
+  tipo_conteo: 'EVENTOS' | 'REFERENCIAS_DISTINTAS' | 'DIAS_DISTINTOS' | 'EVENTOS_TOPE_DIARIO'
   actual: number
   requerido: number
   cumplida: boolean
@@ -90,6 +91,41 @@ export type DesbloqueoLegible = {
 }
 // app/schemas/diario.py
 export type EntradaDesbloqueada = { codigo: string; nombre: string; personalizada: boolean; texto: string | null }
+// F05: lecturas y acciones del diario y del check-in.
+// Ajuste del diario (F05): recibida, trae fecha, texto (solo redactada), su respuesta, bandeja y remitente.
+export type BandejaCarta = 'PENDIENTE' | 'ARCHIVADA' | 'RESPONDIDA'
+export type PreguntaDiarioEstado = {
+  codigo: string
+  nombre: string
+  estado: EstadoDisponibilidad
+  personalizada: boolean
+  redactada: boolean
+  respondida: boolean
+  recibida_en: string | null
+  texto: string | null
+  entrada: number | null
+  respondida_en: string | null
+  bandeja: BandejaCarta | null
+  archivada_en: string | null
+  actividad: { codigo: string; titulo: string } | null
+}
+export type PreguntaAbierta = { codigo: string; nombre: string; texto: string; respondida: boolean }
+// `cerrada`: se borró su entrada y no vuelve a responderse.
+export type PreguntaDelDia = { nombre: string; texto: string; fecha: string; respondida: boolean; cerrada: boolean }
+export type OrigenEntrada = 'GUIADA' | 'LIBRE' | 'RECOMENDACION_DIA'
+export type EntradaDiarioPublica = {
+  numero: number
+  origen: OrigenEntrada
+  titulo: string | null
+  titulo_mostrado: string
+  pregunta: string | null
+  texto: string
+  fecha_hora: string
+  actualizada_en: string | null
+}
+export type AmistadAsistente = { puntos: number; nivel: number; siguiente_en: number | null }
+export type CheckInRegistrado = { fecha: string; nivel_seguridad: number }
+export type CheckInsCuenta = { dias_registrados: number; registrado_hoy: boolean; check_ins: CheckInRegistrado[] }
 export type RespuestaAccion = {
   eventos_registrados: { tipo: TipoEventoUso; referencia: string | null; fecha_hora: string }[]
   nuevos_desbloqueos: DesbloqueoNuevo[]
@@ -157,7 +193,8 @@ export type BloqueActividades = Omit<BloqueEstado, 'actividades'> & {
   actividades: ActividadCuenta[]
 }
 export type NivelEstado = NivelActual & { estado: 'BLOQUEADO' | 'OBTENIDO' }
-export type LogrosCuenta = { insignias: InsigniaEstado[]; niveles: NivelEstado[] }
+// `afinidad`: solo el estudiante (F05: completadas de la Ciudad sobre todas sus actividades).
+export type LogrosCuenta = { insignias: InsigniaEstado[]; niveles: NivelEstado[]; afinidad?: number | null }
 // app/schemas/familia.py · GET /cuentas/{c}/familia (B12)
 export type AvanceRuta = { completadas: number; total: number; porcentaje: number }
 export type Diploma = { obtenido: boolean; obtenido_en: string | null }

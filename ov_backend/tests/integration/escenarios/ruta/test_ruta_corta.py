@@ -407,7 +407,8 @@ def test_hu028_036_075_diario_check_in_y_avance(cliente):
     escribir(texto='DATO DE PRUEBA: una entrada libre')
     avanzar(cliente, 't-cierre-inicio')
     pedir(cliente, 'POST', '/acciones/check-in', {'cuenta': 'est-ana', 'nivel_seguridad': 3, 'fecha_hora': FECHA})
-    assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')['dias_registrados'] == 1
+    check_ins = pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')
+    assert check_ins['dias_registrados'] == 1 and isinstance(check_ins['registrado_hoy'], bool)
     expectativas = avanzar(cliente)
     assert [(e['codigo'], e['texto']) for e in expectativas['entradas_desbloqueadas']] == [('t-diario-personal', None)]
     abierta = pedir(cliente, 'POST', '/acciones/diario/abrir-pregunta', {'cuenta': 'est-ana', 'codigo': 't-diario-personal'})

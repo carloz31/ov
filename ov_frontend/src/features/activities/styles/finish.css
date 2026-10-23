@@ -398,3 +398,51 @@
   text-align: left;
   cursor: pointer;
 }
+/* Ajuste del diario (F05): la carta del buzón, una fila crema bajo «Se abrió para ti», sin botón. */
+.sx-finish-letter {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 12px;
+  border-radius: 16px;
+  background: var(--sx-parchment);
+  color: var(--sx-parchment-ink);
+  padding: 14px 16px;
+}
+.sx-finish-letter-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.sx-finish-letter-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--sx-gold);
+}
+.sx-finish-letter h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.sx-finish-letter blockquote {
+  margin: 6px 0;
+  font-style: italic;
+}
+.sx-finish-letter p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+.sx-finish-letter a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

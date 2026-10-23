@@ -17,6 +17,7 @@ export function getNextOverlay({
   activityOpen,
   arrivalDismissed = false,
   now = new Date(),
+  checkInPendiente,
 }: {
   adventure: AdventureState
   ui: StudentUiState
@@ -24,16 +25,19 @@ export function getNextOverlay({
   activityOpen: boolean
   arrivalDismissed?: boolean
   now?: Date
+  // F05, solo api: lo decide el servidor (CHECK_IN abierta y sin check-in hoy); sin definir, la señal local.
+  checkInPendiente?: boolean
 }): AutomaticOverlay | null {
   if (activityOpen) return null
   // Discovery pages only present their purpose once; arrival and the daily signal wait for the maps.
   const discovery = isDiscoveryView(view)
-  if (!discovery && isCityUnlocked(adventure) && !ui.cityArrivalSeen && !arrivalDismissed) return { kind: 'arrival' }
+  if (!discovery && isCityUnlocked(adventure) && !ui.cityArrivalSeen && !arrivalDismissed)
+    return { kind: 'arrival' }
   if (!ui.introsSeen[view]) return { kind: 'intro', view }
   if (discovery) return null
   const day = localDateKey(now)
-  if (!getTodayCheckIn(adventure, now) && ui.checkInPromptDismissedOn !== day)
-    return { kind: 'check-in', day }
+  const pendiente = checkInPendiente ?? !getTodayCheckIn(adventure, now)
+  if (pendiente && ui.checkInPromptDismissedOn !== day) return { kind: 'check-in', day }
   return null
 }
 

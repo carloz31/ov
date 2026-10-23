@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 
 from app import models as m
 from app.core.parametros import TOPE_ENTRADAS_AMISTAD_DIA, UMBRALES_AMISTAD
+from app.dependencies import obtener_ahora
 from soporte_ruta import FECHA, avanzar, completar, eventos, pedir
 
 
@@ -77,14 +78,18 @@ def test_editar_cambia_titulo_y_texto_sin_eventos_ni_bajar_la_amistad(cliente):
     assert amistad(cliente) == antes and len(eventos(cliente)) == eventos_antes
 
 
-def test_borrar_deja_la_pregunta_sin_responder_y_no_baja_la_amistad(cliente):
+def test_borrar_archiva_la_carta_y_no_baja_la_amistad(cliente):
+    # Ajuste del diario (F05, autorizado por la spec): la carta borrada queda archivada, no por responder.
     completar(cliente, 't-inicio')
     escribir(cliente, pregunta='t-diario-fija')
     antes = amistad(cliente)
     pedir(cliente, 'POST', '/acciones/borrar-entrada', {'cuenta': 'est-ana', 'numero': 1})
     assert entradas(cliente) == []
-    assert pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')[0]['respondida'] is False
+    fija = pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')[0]
+    assert (fija['respondida'], fija['bandeja']) == (False, 'ARCHIVADA')
     assert amistad(cliente) == antes
+    escribir(cliente, pregunta='t-diario-fija', esperado=409)
+    pedir(cliente, 'POST', '/acciones/diario/desarchivar-pregunta', {'cuenta': 'est-ana', 'codigo': 't-diario-fija'})
     escribir(cliente, pregunta='t-diario-fija')
     assert [e['numero'] for e in entradas(cliente)] == [2]
 
@@ -123,10 +128,25 @@ def test_check_in_uno_por_dia_y_su_evolucion(cliente):
               {'cuenta': 'est-ana', 'nivel_seguridad': nivel, 'fecha_hora': f'2026-10-0{dia}T08:00:00'})
     pedir(cliente, 'POST', '/acciones/check-in',
           {'cuenta': 'est-ana', 'nivel_seguridad': 5, 'fecha_hora': '2026-10-01T20:00:00'}, 409)
-    assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins') == {'dias_registrados': 3, 'check_ins': [
+    assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins') == {'dias_registrados': 3, 'registrado_hoy': False, 'check_ins': [
         {'fecha': '2026-10-01', 'nivel_seguridad': 2}, {'fecha': '2026-10-02', 'nivel_seguridad': 3},
         {'fecha': '2026-10-03', 'nivel_seguridad': 4}]}
-    assert pedir(cliente, 'GET', '/cuentas/apo-rosa/check-ins') == {'dias_registrados': 0, 'check_ins': []}
+    assert pedir(cliente, 'GET', '/cuentas/apo-rosa/check-ins') == {'dias_registrados': 0, 'registrado_hoy': False,
+                                                                     'check_ins': []}
+
+
+def test_check_in_registrado_hoy_usa_la_fecha_del_servidor(aplicacion, cliente):
+    avanzar(cliente, 't-cierre-inicio')
+    aplicacion.dependency_overrides[obtener_ahora] = lambda: datetime(2026, 10, 2, 23, 30)
+    try:
+        assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')['registrado_hoy'] is False
+        pedir(cliente, 'POST', '/acciones/check-in',
+              {'cuenta': 'est-ana', 'nivel_seguridad': 4, 'fecha_hora': '2026-10-02T08:00:00'})
+        assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')['registrado_hoy'] is True
+        aplicacion.dependency_overrides[obtener_ahora] = lambda: datetime(2026, 10, 3, 0, 5)
+        assert pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')['registrado_hoy'] is False
+    finally:
+        aplicacion.dependency_overrides.pop(obtener_ahora, None)
 
 
 def test_ningun_tipo_de_referencia_lee_el_diario(sesion):

@@ -1,10 +1,16 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { modoApi } from '@/config/env'
 import { obtenerResumen } from '@/services/api/cuentas'
 import { obtenerActividades } from '@/services/api/actividades'
 import { obtenerFichas } from '@/services/api/fichas'
 import { obtenerLogros } from '@/services/api/logros'
 import { obtenerSecciones } from '@/services/api/secciones'
+import {
+  obtenerAmistad,
+  obtenerCheckIns,
+  obtenerEntradasDiario,
+  obtenerPreguntasDiario,
+} from '@/services/api/diario'
 import { hidratarJourneyServidor } from '../journeyStore'
 import { hidratarAdventureServidor } from '../adventureStore'
 import { baseRoute } from '@/data/activities/reflectionConfig'
@@ -28,9 +34,24 @@ const consultas = {
   fichas: obtenerFichas,
   logros: obtenerLogros,
   secciones: obtenerSecciones,
+  diarioPreguntas: obtenerPreguntasDiario,
+  diarioEntradas: obtenerEntradasDiario,
+  amistad: obtenerAmistad,
+  checkIns: obtenerCheckIns,
 }
-const revisiones = { resumen: 0, actividades: 0, fichas: 0, logros: 0, secciones: 0 }
-const consumidores = { resumen: 0, actividades: 0, fichas: 0, logros: 0, secciones: 0 }
+const contadores = (): Record<NombreSeccion, number> => ({
+  resumen: 0,
+  actividades: 0,
+  fichas: 0,
+  logros: 0,
+  secciones: 0,
+  diarioPreguntas: 0,
+  diarioEntradas: 0,
+  amistad: 0,
+  checkIns: 0,
+})
+const revisiones = contadores()
+const consumidores = contadores()
 const pendientes = new Map<
   NombreSeccion,
   { sesion: number; cuenta: string; revision: number; promesa: Promise<RespuestaServidor<unknown>> }
@@ -110,6 +131,7 @@ export function seccionesPorDesbloqueos(desbloqueos: DesbloqueoNuevo[]): NombreS
     if (d.tipo_objetivo === 'INSIGNIA' || d.tipo_objetivo === 'NIVEL') nombres.add('logros')
     if (d.tipo_objetivo === 'NIVEL') nombres.add('resumen')
     if (d.tipo_objetivo === 'SECCION') nombres.add('secciones')
+    if (d.tipo_objetivo === 'PREGUNTA_DIARIO') nombres.add('diarioPreguntas')
   }
   return [...nombres]
 }
@@ -141,7 +163,23 @@ export const useResumenServidor = (activo = true) => useSeccion('resumen', activ
 export const useActividadesServidor = (activo = true) => useSeccion('actividades', activo)
 export const useFichasServidor = (activo = true) => useSeccion('fichas', activo)
 export const useLogrosServidor = (activo = true) => useSeccion('logros', activo)
+// F05: la afinidad (en `logros`) cambia con cada actividad de la Ciudad, aunque no haya insignias nuevas. Las
+// vistas que la muestran la vuelven a pedir al montarse y cuando cambian las actividades.
+export function useAfinidadServidor(activo = true) {
+  const seccion = useSeccion('logros', activo)
+  const actividades = useEstadoServidor().actividades.datos
+  const vistas = useRef<typeof actividades | undefined>(undefined)
+  useEffect(() => {
+    if (!modoApi || !activo) return
+    if (vistas.current !== actividades) vencerSeccion('logros')
+    vistas.current = actividades
+  }, [activo, actividades])
+  return seccion
+}
 export const useSeccionesServidor = (activo = true) => useSeccion('secciones', activo)
+export const useDiarioPreguntasServidor = (activo = true) => useSeccion('diarioPreguntas', activo)
+export const useDiarioEntradasServidor = (activo = true) => useSeccion('diarioEntradas', activo)
+export const useAmistadServidor = (activo = true) => useSeccion('amistad', activo)
 
 export function errorSeccionesActivas() {
   return (

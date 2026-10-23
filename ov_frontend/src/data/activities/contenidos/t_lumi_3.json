@@ -1,0 +1,28 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-lumi-3",
+  "tipo": "encuentro",
+  "titulo": "Recuerdo de prueba 3",
+  "bloque": 5,
+  "orden": 3,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 3,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-lumi-3-1",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "DATO DE PRUEBA: el tercer recuerdo de Lumi."
+    },
+    {
+      "id": "t-lumi-3-2",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo reemplazará el texto definitivo de la historia de Lumi."
+    }
+  ]
+}

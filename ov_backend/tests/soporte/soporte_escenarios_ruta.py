@@ -10,7 +10,7 @@ def verificar_p01_estado_inicial(cliente):
     assert estados['t-inicio'] == 'DISPONIBLE'
     assert all(estados[c] == 'BLOQUEADA' for c in ('t-partida', 't-cierre-inicio', 't-expectativas', INTERESES, INTERESES_FINAL, 't-caso'))
     assert {b['codigo']: b['estado'] for b in inicial['bloques']} == {
-        'T0': 'DISPONIBLE', 'T1': 'BLOQUEADA', 'T2': 'BLOQUEADA', 'CIUDAD': 'BLOQUEADA'}
+        'T0': 'DISPONIBLE', 'T1': 'BLOQUEADA', 'T2': 'BLOQUEADA', 'CIUDAD': 'BLOQUEADA', 'LUMI': 'DISPONIBLE'}
     assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA')]
     visibles = [i for i in inicial['insignias'] if i['codigo'] != '???']
     assert [(i['codigo'], i['estado']) for i in visibles] == [('t-ins-1', 'BLOQUEADA')]

@@ -1,2 +1,1 @@
 # Decisiones de la spec en curso
-- **Prueba de PostgreSQL al día (despliegue):** `verificar_p02_primer_paso` seguía esperando `R-t-cierre-inicio` tras completar `t-inicio`, de antes de F00 · F5. Se alinea con `test_hu073_avisos_de_desbloqueo`; SQLite y PostgreSQL devuelven el mismo conjunto y la implementación no cambia.

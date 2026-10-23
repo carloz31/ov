@@ -125,6 +125,11 @@ export function useMapInteraction({
   }
   function journal(detail: PointDetails) {
     if (!detail.journal) return
+    // F05: la carta del servidor se abre por su código; el diario decide si está lista para responder.
+    if (detail.journal.pregunta)
+      return navigate(
+        `${appPaths.student.journal}?${new URLSearchParams({ pregunta: detail.journal.pregunta })}`,
+      )
     const query = new URLSearchParams({
       activity: detail.journal.activityId,
       title: detail.journal.title,

@@ -26,7 +26,9 @@ export function CaminoScreen() {
   useReflections()
   const [params, setParams] = useSearchParams()
   const points = getCaminoPoints(adventure, journey)
-  const { activity, cuestionario, registro, encuentroConEco } = useCaminoActivity(params.get('actividad') ?? '')
+  const { activity, cuestionario, registro, encuentroConEco } = useCaminoActivity(
+    params.get('actividad') ?? '',
+  )
   const requestedPoint = activity ? points.find((point) => point.specActivityId === activity.id) : undefined
   const allowed = !!activity && !!requestedPoint && requestedPoint.status !== 'locked'
   const desafio = useDesafioServidor(params.get('actividad') ?? '')
@@ -102,7 +104,12 @@ export function CaminoScreen() {
       renderPorAmpliar={(codigo) => <RegistroPorAmpliar codigo={codigo} />}
       renderFichasBatalla={(codigo) => <FichasBatalla codigo={codigo} />}
       renderJournal={(journal, onOpen) => (
-        <JournalEntryCard completed={journal.completed} prompt={journal.prompt} onOpen={onOpen} />
+        <JournalEntryCard
+          completed={journal.completed}
+          prompt={journal.prompt}
+          onOpen={onOpen}
+          remitente={journal.remitente}
+        />
       )}
       renderAdditional={(props) => <AdditionalReveal {...props} />}
       zone="missions"

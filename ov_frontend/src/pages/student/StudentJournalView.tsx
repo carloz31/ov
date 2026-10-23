@@ -1,11 +1,18 @@
 import { useJournalPage } from '@/features/journal/hooks/useJournalPage'
-import { X } from 'lucide-react'
+import { BookOpen, TriangleAlert } from 'lucide-react'
+import { AvisoToast } from '@/components/student/AvisoToast'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { DiscoveryStage } from '@/features/discovery/components/DiscoveryStage'
 import '@/features/journal/styles/journal.css'
 import { JournalHome } from '@/features/journal/components/JournalHome'
 import { JournalEditor } from '@/features/journal/components/JournalEditor'
 import { JournalDetail } from '@/features/journal/components/JournalDetail'
+import { DailyQuestionCard } from '@/features/journal/components/DailyQuestionCard'
+import { BuzonLumi } from '@/features/journal/components/BuzonLumi'
+import { LumiBondPanel } from '@/features/journal/components/LumiBondPanel'
+import { CuadernoDiario } from '@/features/journal/components/CuadernoDiario'
+import { HistoriaLumi } from '@/features/journal/components/HistoriaLumi'
+import { StudentActivityPlayer } from '@/features/activities/components/StudentActivityPlayer'
 function StudentJournalView() {
   const {
     state,
@@ -13,10 +20,8 @@ function StudentJournalView() {
     bond,
     screen,
     setScreen,
-    grouping,
-    setGrouping,
-    query,
-    setQuery,
+    cuadernoCompleto,
+    entries,
     setSelectedId,
     editingId,
     body,
@@ -34,7 +39,6 @@ function StudentJournalView() {
     returnFocus,
     saveNotice,
     setSaveNotice,
-    filteredEntries,
     selected,
     usedTags,
     openEditor,
@@ -44,37 +48,82 @@ function StudentJournalView() {
     saveEntry,
     editEntry,
     deleteEntry,
+    diarioServidor,
+    hoy,
+    buzon,
+    historia,
+    capitulo,
+    verCapitulo,
+    cerrarCapitulo,
   } = useJournalPage()
+  // Ajuste del diario (F05): un recuerdo de Lumi se ve en el reproductor de actividades y vuelve al diario.
+  if (capitulo)
+    return (
+      <div className="sx-player-host">
+        <StudentActivityPlayer
+          key={capitulo.id}
+          activity={capitulo}
+          imageUrl="/images/background/forest.png"
+          onClose={cerrarCapitulo}
+          salida={{
+            texto: 'Volver al diario',
+            titulo: 'Lumi te contó un recuerdo.',
+            onClick: cerrarCapitulo,
+          }}
+        />
+      </div>
+    )
+  const abrirEntrada = (id: string) => {
+    setSelectedId(id)
+    setScreen('detail')
+  }
   return (
     <DiscoveryStage ambient="journal">
       {saveNotice && (
+        <AvisoToast
+          key={saveNotice.id}
+          icono={saveNotice.error ? TriangleAlert : BookOpen}
+          etiqueta="Mi diario"
+          titulo={saveNotice.titulo}
+          descripcion={saveNotice.descripcion}
+          onDismiss={() => setSaveNotice(null)}
+        />
+      )}
+      {diarioServidor?.error && (
         <p role="status" className="sx-j-save-notice">
-          {saveNotice}
-          <button type="button" aria-label="Cerrar aviso" onClick={() => setSaveNotice('')}>
-            <X aria-hidden="true" size={18} />
-          </button>
+          {diarioServidor.error}
         </p>
       )}
       {screen === 'home' && (
         <JournalHome
-          entries={filteredEntries}
-          grouping={grouping}
-          onChangeGrouping={setGrouping}
-          onSuggested={({ prompt, tags: defaultTags, activityId, title }) => {
-            openEditor({ prompt, linkedActivityId: activityId, title, lockedTags: defaultTags })
-          }}
-          now={now}
-          onDailyQuestion={openEditor}
-          onNew={startBlankEntry}
-          onOpen={(entry) => {
-            setSelectedId(entry.id)
-            setScreen('detail')
-          }}
-          query={query}
-          setQuery={setQuery}
-          bond={bond}
           onboarding={!state.journalOnboardingSeen}
           onBegin={startOnboardingEntry}
+          hoy={<DailyQuestionCard now={now} hoy={hoy} onRespond={openEditor} onFree={startBlankEntry} />}
+          buzon={
+            <BuzonLumi
+              cartas={buzon.cartas}
+              ahora={now}
+              enRedaccion={buzon.enRedaccion}
+              acciones={{ onResponder: buzon.responder, onAbrir: buzon.abrir, onArchivar: buzon.archivar }}
+              limite={3}
+              verTodas
+              actualizar={buzon.enRedaccion.length ? buzon.actualizar : undefined}
+            />
+          }
+          lumi={
+            <LumiBondPanel
+              bond={bond}
+              siguienteRecuerdo={historia.siguienteRecuerdo}
+              historia={<HistoriaLumi capitulos={historia.capitulos} onVer={(c) => verCapitulo(c.codigo)} />}
+            />
+          }
+          cuaderno={
+            <CuadernoDiario
+              entries={entries}
+              onOpen={(entry) => abrirEntrada(entry.id)}
+              completo={cuadernoCompleto}
+            />
+          }
         />
       )}
       {screen === 'write' && (
@@ -97,6 +146,7 @@ function StudentJournalView() {
           suggestedTags={usedTags.filter((tag) => !tags.includes(tag))}
           tagDraft={tagDraft}
           tags={tags}
+          servidor={diarioServidor && { escribiendo: false }}
         />
       )}
       {screen === 'detail' && selected && (
@@ -112,8 +162,9 @@ function StudentJournalView() {
           <DialogHeader>
             <DialogTitle>Eliminar esta entrada</DialogTitle>
             <DialogDescription>
-              La conversación dejará de estar disponible. Esto no reduce la amistad ni reinicia el límite
-              diario.
+              {diarioServidor && selected?.etiqueta === 'Carta de Lumi'
+                ? 'Se borrará tu respuesta y la carta quedará archivada en tu buzón.'
+                : 'Se borrará la entrada.'}
             </DialogDescription>
           </DialogHeader>
           <div className="sx-d-actions">

@@ -2,6 +2,16 @@
   {
     "fecha_hora": "2026-10-07T10:00:00",
     "objetivo": {
+      "codigo": "t-lumi-1",
+      "nombre": "Cómo llegué a este mundo"
+    },
+    "regla": "R-t-lumi-1",
+    "tipo_objetivo": "ACTIVIDAD",
+    "visto": false
+  },
+  {
+    "fecha_hora": "2026-10-07T10:00:00",
+    "objetivo": {
       "codigo": "t-opcional",
       "nombre": "Actividad opcional"
     },

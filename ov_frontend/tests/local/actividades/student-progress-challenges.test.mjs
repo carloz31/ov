@@ -468,7 +468,9 @@ test('progress has step narration and star spark; finish removes duplicate rewar
   assert.match(finish, /Nuevo en tu mochila/)
   // F04d: la ficha obtenida se abre con el visor, encima del cierre.
   assert.match(finish, /<button type="button" class="sx-finish-sheet">/)
-  assert.match(finish, /Una pregunta para tu diario/)
+  // Ajuste del diario de F05 (autorizado por la spec): la carta del buzón como fila.
+  assert.match(finish, /Lumi te dejó una carta en tu buzón/)
+  assert.match(finish, /Leer en el diario/)
   assert.equal((finish.match(/Volver al mapa<\/button>/g) ?? []).length, 1)
   assert.doesNotMatch(finish, /Seguir hacia|Revisar mis propias creencias|Lo que viene/)
 })

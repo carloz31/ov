@@ -9,6 +9,9 @@ export type JournalEntry = {
   topicTags: string[]
   lockedTopicTags?: string[]
   missionId?: string
+  // F05, solo en api: la etiqueta de origen que da el servidor y si se editó. No se guardan en el navegador.
+  etiqueta?: string
+  editada?: boolean
 }
 export type ReadinessCheckIn = {
   id: string
