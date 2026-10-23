@@ -10,7 +10,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   1. Que `amistad` entregue `contadas_hoy` (o `restantes_hoy`).
   2. Dejarlo solo en el aviso al guardar, que ya lo deduce comparando los puntos antes y después.
 - **Si no se muestra:** en api el panel no dice que el tope del día se alcanzó y el editor no anticipa si la entrada suma; el aviso al guardar sí lo dice.
-- **Estado:** pendiente (F05).
+- **Estado:** resuelto en el ajuste del diario de F05: el panel dice el texto fijo «Hoy cuentan hasta 3 cartas · la amistad nunca se pierde» y no deduce cuántas contaron hoy, por decisión del usuario.
 
 ## 2026-10-22 · Ajustes Central (7) · Favoritos de testimonios
 
@@ -31,7 +31,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   2. Que `GET actividades` entregue la pregunta del diario que abre cada actividad.
   3. Dejarlo solo en el cierre de la actividad, que ya avisa «Lumi te dejó una pregunta en tu diario» (F05).
 - **Si no se muestra:** en api el drawer no enlaza al diario y las cartas no dicen después de qué actividad llegaron; la pregunta sigue en el diario y en el cierre.
-- **Estado:** pendiente (F00, ajustes Central 6 y F05).
+- **Estado:** resuelto en el ajuste del diario de F05: `diario/preguntas` entrega `actividad` (el remitente, guardado al crear la carta); las cartas dicen «De: …» y el drawer muestra la carta de su actividad.
 
 ## 2026-10-22 · Ajustes Central (2) · Hoja de vida de los contactos
 

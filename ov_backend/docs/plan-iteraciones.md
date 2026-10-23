@@ -400,7 +400,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **F04d · Ficha única y cierre de la batalla · Implementado:** el visor de la mochila es la única presentación de una ficha; la mochila lista las fichas del servidor; intro con «Tu luz viene de», feedback con su ficha y cierre con `fichas_repaso`.
 
 #### F05 · Diario, pregunta del día y check-in · **Implementado**
-- **En curso:** «Ajuste del diario» (lote M; spec en `docs/specs/F05.md`): rediseño de la pantalla, archivo y remitente de las cartas, recuerdos como actividades del bloque LUMI y cierre de la pregunta del día al borrarla.
+- **Ajuste del diario (M) · Implementado:** portada en tres zonas («Hoy», buzón, tarjeta de Lumi y cuaderno), «Cartas de Lumi» con archivo y remitente (migración 0026), recuerdos como actividades del bloque LUMI con conteo de tope diario (migración 0027) y cierre de la pregunta del día al borrar su respuesta.
 - **Quedó:** HU-075 parcial (nivel y afinidad); el avance por temática, sin vista, en `pendientes-interfaz.md`. La afinidad cuenta las misiones adicionales en el total y `check-ins` suma `registrado_hoy`.
 - **Hace:** diario desde el servidor (preguntas fijas y personalizadas, entradas con título opcional, editar y borrar, pregunta del día vigente, amistad con Lumi); aviso en el cierre de actividad cuando deja una pregunta; check-in al ingresar si no hay uno del día y su evolución; temáticas y afinidad en el pasaporte.
 - **Pantallas a decidir:** aviso «Lumi te dejó una pregunta en tu diario» en el cierre (no existe); estado «Lumi está escribiendo…» al abrir una personalizada; dónde va la pregunta del día dentro del diario; dónde se ven evolución, temáticas y afinidad.
