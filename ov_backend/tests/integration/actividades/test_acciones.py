@@ -37,7 +37,7 @@ def test_ingresar_repite_eventos_y_usa_hora_actual_de_lima(cliente):
 
 @pytest.mark.parametrize("nombre,cuerpo", [
     ("resolver-caso", {"actividad": "ACT-01", "puntaje": -1}),
-    ("resolver-caso", {"actividad": "ACT-01", "puntaje": 101}),
+    ("resolver-caso", {"actividad": "ACT-01", "puntaje": 1.5}),
     ("resolver-caso", {"actividad": "ACT-01", "puntaje": "nan"}),
     ("check-in", {"nivel_seguridad": 0}),
     ("check-in", {"nivel_seguridad": 6}),

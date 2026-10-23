@@ -7,10 +7,11 @@
     ],
     "estado": "COMPLETADA",
     "intentos": 2,
-    "mejor_puntaje": 80.0,
-    "puntaje_minimo": 60.0,
+    "mejor_puntaje": 12,
+    "puntaje_maximo": 14,
+    "puntaje_minimo": 10,
     "superado": true,
     "titulo": "Caso de prueba",
-    "ultimo_puntaje": 80.0
+    "ultimo_puntaje": 12
   }
 ]

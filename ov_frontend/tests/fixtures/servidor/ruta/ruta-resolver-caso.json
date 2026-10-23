@@ -58,5 +58,7 @@
       "codigo": "paramedic",
       "titulo": "Paramédico/a"
     }
-  ]
+  ],
+  "puntaje_maximo": 14,
+  "puntaje_minimo": 10
 }

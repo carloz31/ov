@@ -33,7 +33,11 @@ export function useMapScreen({
 }) {
   const servidor = useEstadoServidor()
   // El requisito ya llega en `bloqueo`; solo Mara consulta sus ítems para describir el encuentro.
-  const [detalleServidor, setDetalleServidor] = useState<{ clave: string; description?: string }>()
+  const [detalleServidor, setDetalleServidor] = useState<{
+    clave: string
+    description?: string
+    listo?: boolean
+  }>()
   const cityOpen = canAccessCity(adventure)
   const locked = zone === 'central' && !cityOpen
   // En api, el siguiente paso de toda la ruta guía el panel, el panel plegado y el pulso del mapa.
@@ -68,6 +72,7 @@ export function useMapScreen({
       if (!vigente) return
       setDetalleServidor({
         clave: claveDetalle,
+        listo: true,
         ...(items
           ? {
               description:
@@ -90,8 +95,20 @@ export function useMapScreen({
     selectedZone,
   ])
 
+  // Ajustes Central (6): el drawer espera sus datos (las actividades del servidor y la descripción de Mara)
+  // y, en api, los de sus bloques, para no pintarse a medias.
+  const cargaDrawer = {
+    base:
+      modoApi &&
+      (!servidor.actividades.datos ||
+        (selectedPointId === 'mara-test' &&
+          !!selectedActivityId &&
+          !(detalleServidor?.clave === claveDetalle && detalleServidor.listo))),
+    esperaBloques: modoApi,
+  }
   return {
     cityOpen,
+    cargaDrawer,
     locked,
     recommended,
     siguiente,

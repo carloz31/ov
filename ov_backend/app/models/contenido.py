@@ -19,11 +19,12 @@ class Bloque(Base):
 class Actividad(Base):
     __tablename__ = "actividad"
     __table_args__ = (
+        # Ajustes Central (6): puntos de satisfacción; el máximo es el total de necesidades del caso.
         CheckConstraint(
-            "(tipo = 'CASO' AND puntaje_minimo BETWEEN 0 AND 100 "
-            "AND puntaje_minimo IS NOT NULL) OR "
-            "(tipo != 'CASO' AND puntaje_minimo IS NULL)",
-            name="puntaje_minimo_solo_caso",
+            "(tipo = 'CASO' AND puntaje_minimo IS NOT NULL AND puntaje_maximo IS NOT NULL "
+            "AND puntaje_minimo BETWEEN 0 AND puntaje_maximo) OR "
+            "(tipo != 'CASO' AND puntaje_minimo IS NULL AND puntaje_maximo IS NULL)",
+            name="puntajes_solo_caso",
         ),
         CheckConstraint(
             "(tipo = 'BATALLA' AND preguntas_por_intento >= 1) OR "
@@ -46,7 +47,9 @@ class Actividad(Base):
     )
     orden: Mapped[int]
     bloque_id: Mapped[int] = mapped_column(ForeignKey("bloque.id"))
-    puntaje_minimo: Mapped[float | None]
+    # Configuración de un CASO, en puntos de satisfacción (una necesidad bien cubierta = 1 punto).
+    puntaje_minimo: Mapped[int | None]
+    puntaje_maximo: Mapped[int | None]
     # Configuración de una BATALLA: cuántas preguntas de su pool salen en cada intento (F04b).
     preguntas_por_intento: Mapped[int | None]
     # Vidas del enemigo y destellos del estudiante en cada intento (F04c): el servidor decide la victoria.

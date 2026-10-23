@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-22 · Ajustes Central (6) · Entrada de diario en el drawer (brecha de F04 sobre F00)
+
+- **Dato:** en F00 se decidió que el drawer de actividad conserva la entrada de diario desbloqueada por la actividad, con su enlace. En api el drawer no la muestra: `details.journal` solo se arma en local (`pointDetails.ts`), y ninguna consulta del drawer pide las preguntas de diario que abre la actividad.
+- **Dónde se muestra:** drawer de actividad (`ActivityDrawer`, `renderJournal`), en el camino y la Ciudad.
+- **Opciones:** leerla de `GET /cuentas/{c}/diario/preguntas` (las desbloqueadas por la actividad); que `GET actividades` entregue la pregunta que abre cada actividad; dejarla solo en el cierre de la actividad.
+- **Si no se muestra:** en api el drawer no enlaza al diario; la entrada sigue en el diario y en el cierre de la actividad.
+- **Estado:** pendiente: tarea por hacer, con referencia a la decisión de F00. No se implementó en los ajustes de la Central.
+
 ## 2026-10-22 · Ajustes Central (2) · Hoja de vida de los contactos
 
 - **Dato:** la hoja de vida de la Central lee en api el detalle de ocupación del servidor (`titulo`, `descripcion`, `conocimientos`, `habilidades`). En el catálogo del backend solo algunas ocupaciones tienen esos campos; las demás llegan con `descripcion` nula y listas vacías. Los rellenos «[por completar desde O*NET]» y la etiqueta «Ficha en preparación» que pedía la spec existen solo en el catálogo del front, no en el backend.

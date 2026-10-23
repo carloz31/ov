@@ -279,9 +279,11 @@ export type CasoCuenta = {
   estado: EstadoActividad
   intentos: number
   superado: boolean
+  // Puntos de satisfacción (ajustes Central, 6).
   ultimo_puntaje: number | null
   mejor_puntaje: number | null
   puntaje_minimo: number
+  puntaje_maximo: number
 }
 // app/schemas/catalogo.py (solo lo que usa la hoja de vida de la Central de casos).
 export type CarreraResumen = {
@@ -326,4 +328,8 @@ export type RespuestaResolverBatalla = RespuestaAccion & {
 }
 export type ResolverCasoEntrada = { cuenta: string; actividad: string; puntaje: number; ocupaciones: string[] }
 export type OcupacionNueva = { codigo: string; titulo: string }
-export type RespuestaResolverCaso = RespuestaAccion & { ocupaciones_nuevas: OcupacionNueva[] }
+export type RespuestaResolverCaso = RespuestaAccion & {
+  ocupaciones_nuevas: OcupacionNueva[]
+  puntaje_minimo: number
+  puntaje_maximo: number
+}

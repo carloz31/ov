@@ -4,7 +4,6 @@ import { forestFirePhases } from '@/data/content/forestFireCase'
 import { dimensionNames } from '@/features/discovery/lib/catalogDetails'
 import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
 import {
-  puntajeCaso,
   superaCaso,
   textoPuntajeCaso,
   textoTiposCaso,
@@ -18,7 +17,6 @@ import { useAdventure, useAdventureStorageError } from '@/store/adventureStore'
 import { useExplorationError } from '@/store/explorationStore'
 import {
   FOREST_FIRE_BUDGET_LIMIT,
-  FOREST_FIRE_MAX_SATISFACTION,
   getCorrectOccupationIds,
   getTotalSatisfaction,
   SHOW_EXTRA_PROFESSIONAL,
@@ -125,16 +123,17 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
   async function showReport() {
     if (enviando) return
     if (!finalized.current && conServidor) {
-      const puntaje = puntajeCaso(getTotalSatisfaction(assignments), FOREST_FIRE_MAX_SATISFACTION)
+      // Ajustes Central (6): puntos de satisfacción; resolver-caso da la escala y GET casos, el mejor.
+      const puntaje = getTotalSatisfaction(assignments)
       const envio = await enviarIntento(puntaje, getCorrectOccupationIds(assignments))
       if (!envio) return
       finalized.current = true
       setNewIcons(envio.datos.ocupaciones_nuevas)
       setResultadoServidor({
-        superado: superaCaso(puntaje, envio.caso),
-        puntaje: textoPuntajeCaso(puntaje, envio.caso),
+        superado: superaCaso(puntaje, envio.datos),
+        puntaje: textoPuntajeCaso(puntaje, envio.datos),
         tipos: textoTiposCaso(envio.caso, dimensionNames),
-        mejor: Math.round(((envio.caso.mejor_puntaje ?? 0) * FOREST_FIRE_MAX_SATISFACTION) / 100),
+        mejor: envio.caso.mejor_puntaje ?? puntaje,
       })
     } else if (!finalized.current) {
       finalized.current = true

@@ -58,7 +58,7 @@ BLOQUES = (('T0', 1, 'Inicio', 'MISIONES_CAMPO', 'ESTUDIANTE'),
            ('CIUDAD', 4, 'La ciudad', 'CIUDAD', 'ESTUDIANTE'),
            ('FAMILIA', 1, 'Actividades para familias', 'PORTAL_FAMILIA', 'APODERADO'))
 
-# (código, bloque, título, tipo, puntaje mínimo, duración estimada en minutos). El orden es el de la
+# (código, bloque, título, tipo, puntaje mínimo de un CASO en puntos de satisfacción, duración estimada en minutos). El orden es el de la
 # tupla dentro de cada bloque y el contenido es el código con guiones bajos.
 ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-partida', 'T0', 'Punto de partida', 'CUESTIONARIO', None, 10),
@@ -76,7 +76,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-proyecto', 'T2', 'Registro de tu proyecto', 'REGISTRO', None, 15),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
-               ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 60, 10),
+               ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 10, 10),
                ('t-contraste', 'CIUDAD', 'Registro de contraste de intereses', 'REGISTRO', None, 10),
                ('t-apo-1', 'FAMILIA', 'Primera actividad del apoderado', 'INFORMATIVA', None, 10),
                ('t-apo-carta', 'FAMILIA', 'Carta del apoderado', 'INFORMATIVA', None, 10))
@@ -351,6 +351,12 @@ PREGUNTAS_BATALLA = (
 # los destellos de t-batalla son los de desafio-rumor.
 CONFIGURACION_BATALLAS = {'t-batalla': (5, 3, 7)}
 
+# DATO DE PRUEBA. (puntaje máximo, necesidades por problema) de cada CASO, en puntos de satisfacción: el
+# máximo es el total de necesidades. t-caso juega forest-fire: sus necesidades son las de
+# `expectedProfessionalIds` en ov_frontend/src/data/content/forestFireCase.ts, en orden de fase y problema.
+# Mantener sincronizado con ese archivo (lo comprueba tests/servidor/casos en el front).
+CONFIGURACION_CASOS = {'t-caso': (14, (2, 3, 3, 1, 2, 3))}
+
 # (código, título, descripción, enlace, pista). La pista se muestra mientras el testimonio está bloqueado (B08).
 TESTIMONIOS = (('t-testimonio-1', 'Testimonio de prueba 1', 'Trayectoria de prueba 1.', 'https://example.test/t1',
                 'Resuelve el caso de prueba para conocer este testimonio.'),
@@ -550,9 +556,10 @@ def _cargar_estructura(sesion):
         propiedades = PROPIEDADES.get(codigo, {})
         if tipo == 'BATALLA' and codigo not in CONFIGURACION_BATALLAS:
             raise ValueError(f'La batalla {codigo} no tiene vidas, destellos ni preguntas por intento')
+        maximo = _puntaje_maximo_caso(codigo, tipo, puntaje)
         actividades[codigo] = modelos.Actividad(
             codigo=codigo, titulo=titulo, tipo=modelos.TipoActividad(tipo), contenido=contenido(codigo),
-            orden=ordenes[bloque], bloque_id=bloques[bloque].id, puntaje_minimo=puntaje,
+            orden=ordenes[bloque], bloque_id=bloques[bloque].id, puntaje_minimo=puntaje, puntaje_maximo=maximo,
             **dict(zip(('vidas_enemigo', 'destellos', 'preguntas_por_intento'),
                        CONFIGURACION_BATALLAS.get(codigo, (None, None, None)))),
             duracion_estimada_min=duracion, requerida=propiedades.get('requerida', True),
@@ -563,6 +570,23 @@ def _cargar_estructura(sesion):
     return {'BLOQUE': bloques, 'ACTIVIDAD': actividades, 'FICHA': fichas, 'TESTIMONIO': testimonios,
             'CONVERSACION': conversaciones,
             'INSIGNIA': insignias, 'NIVEL': niveles, 'PREGUNTA_DIARIO': preguntas, 'SALON': salones}
+
+
+def _puntaje_maximo_caso(codigo, tipo, minimo):
+    """El máximo de un CASO debe ser el total de sus necesidades y alcanzar el mínimo; si no, la carga falla."""
+    if tipo != 'CASO':
+        if codigo in CONFIGURACION_CASOS:
+            raise ValueError(f'{codigo} no es un caso y no admite puntaje máximo')
+        return None
+    if codigo not in CONFIGURACION_CASOS:
+        raise ValueError(f'El caso {codigo} no tiene puntaje máximo ni necesidades')
+    maximo, necesidades = CONFIGURACION_CASOS[codigo]
+    if sum(necesidades) != maximo:
+        raise ValueError(f'El puntaje máximo de {codigo} ({maximo}) no es el total de sus necesidades '
+                         f'({sum(necesidades)})')
+    if minimo is None or not 0 <= minimo <= maximo:
+        raise ValueError(f'El puntaje mínimo de {codigo} debe estar entre 0 y {maximo}')
+    return maximo
 
 
 def _preguntas_diario(sesion):

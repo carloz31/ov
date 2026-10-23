@@ -27,7 +27,7 @@ def test_hu041_ver_testimonio_una_sola_vez(cliente, aplicacion):
     assert filas_base(aplicacion) == antes
 
     ciclo(cliente)
-    pedir(cliente, 'POST', '/acciones/resolver-caso', {'cuenta': 'est-ana', 'actividad': 't-caso', 'puntaje': 90})
+    pedir(cliente, 'POST', '/acciones/resolver-caso', {'cuenta': 'est-ana', 'actividad': 't-caso', 'puntaje': 13})
     uno, _ = pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')
     assert uno == {'codigo': 't-testimonio-1', 'titulo': 'Testimonio de prueba 1', 'estado': 'DISPONIBLE',
                    'visto': False, 'pista': None, 'descripcion': 'Trayectoria de prueba 1.',

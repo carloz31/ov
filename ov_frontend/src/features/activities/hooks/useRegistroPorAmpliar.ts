@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { actividadServidor } from '@/lib/servidor/adaptadores'
 import { useEstadoServidor } from '@/store/servidor/sesion'
+import { marcarCargaDrawer } from '@/store/cargaDrawerStore'
 import { consultarItemsRegistro, consultarRegistro } from '@/store/servidor/registro'
 import { filasPorAmpliar, type FilaPorAmpliar } from '../lib/porAmpliar'
 
@@ -18,14 +19,19 @@ export function useRegistroPorAmpliar(codigo: string) {
       return
     }
     let vigente = true
+    const clave = `por-ampliar/${codigo}`
+    marcarCargaDrawer(clave, true)
     void Promise.all([consultarRegistro(codigo), consultarItemsRegistro(codigo)]).then(
       ([registro, items]) => {
-        if (!vigente || registro.tipo !== 'ok' || items.tipo !== 'ok') return
+        if (!vigente) return
+        marcarCargaDrawer(clave, false)
+        if (registro.tipo !== 'ok' || items.tipo !== 'ok') return
         setFilas(filasPorAmpliar(registro.datos.items_por_ampliar ?? [], items.datos))
       },
     )
     return () => {
       vigente = false
+      marcarCargaDrawer(clave, false)
     }
   }, [codigo, aplica])
   return filas

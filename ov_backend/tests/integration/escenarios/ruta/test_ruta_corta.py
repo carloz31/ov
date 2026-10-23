@@ -386,10 +386,10 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
         responder(cliente, mision)
         completar(cliente, mision)
     datos_caso = {'cuenta': 'est-ana', 'actividad': 't-caso', 'fecha_hora': FECHA}
-    fallido = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 40,
+    fallido = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 6,
                                                                  'ocupaciones': ['firefighter']})
     assert fallido['ocupaciones_nuevas'] == [] and actividades(cliente)['t-caso'] == 'EN_CURSO'
-    superado = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 80,
+    superado = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 12,
                                                                   'ocupaciones': ['firefighter', 'paramedic']})
     assert reglas(superado) == {'R-t-testimonio-1', 'R-t-testimonio-2'}
     assert [o['ocupacion'] for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == ['firefighter', 'paramedic']

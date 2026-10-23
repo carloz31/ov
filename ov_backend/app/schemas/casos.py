@@ -12,10 +12,12 @@ class CasoCuenta(BaseModel):
     estado: Literal["BLOQUEADA", "DISPONIBLE", "EN_CURSO", "COMPLETADA"]
     intentos: int
     superado: bool
-    ultimo_puntaje: float | None
-    mejor_puntaje: float | None
+    # Puntos de satisfacción (ajustes Central, 6): el máximo es el total de necesidades del caso.
+    ultimo_puntaje: int | None
+    mejor_puntaje: int | None
     # Umbral propio del caso: con un puntaje igual o mayor, el intento lo supera.
-    puntaje_minimo: float
+    puntaje_minimo: int
+    puntaje_maximo: int
 
 
 class OcupacionColeccion(BaseModel):

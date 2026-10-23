@@ -98,9 +98,9 @@ def agregar_autores(sesion, cantidad, autores):
 
 def preparar_casos(sesion):
     bloque = buscar(sesion, m.Bloque, 'T0')
-    for minimo in (0, 70, 100):
-        sesion.add(m.Actividad(codigo=f'caso-prueba-{minimo}', titulo='DATO DE PRUEBA',
-            contenido='prueba', tipo='CASO', puntaje_minimo=minimo, orden=100+minimo, bloque_id=bloque.id))
+    for minimo in (0, 7, 14):
+        sesion.add(m.Actividad(codigo=f'caso-prueba-{minimo}', titulo='DATO DE PRUEBA', contenido='prueba',
+            tipo='CASO', puntaje_minimo=minimo, puntaje_maximo=14, orden=100+minimo, bloque_id=bloque.id))
 
 
 def preparar_validacion(sesion):

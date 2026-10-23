@@ -271,6 +271,8 @@ def resolver_caso(sesion: Session, entrada: ResolverCasoEntrada) -> RespuestaRes
     desconocidas = [codigo for codigo in codigos if codigo not in ocupaciones]
     if desconocidas:
         raise ErrorAccion(f"Ocupaciones inexistentes: {', '.join(desconocidas)}", estado_http=422)
+    if entrada.puntaje > actividad.puntaje_maximo:
+        raise ErrorAccion(f"El puntaje no puede superar {actividad.puntaje_maximo}", estado_http=422)
     fecha = fecha_accion(entrada)
     nuevas = []
     # Fallar guarda el intento sin completar el caso; solo superarlo libera testimonios y colección.
@@ -288,7 +290,8 @@ def resolver_caso(sesion: Session, entrada: ResolverCasoEntrada) -> RespuestaRes
     sesion.add(ResultadoCaso(progreso_id=progreso.id, puntaje=entrada.puntaje, fecha_hora=fecha))
     respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
     return RespuestaResolverCaso(**respuesta.campos(), ocupaciones_nuevas=[
-        OcupacionNueva(codigo=codigo, titulo=ocupaciones[codigo].titulo) for codigo in nuevas])
+        OcupacionNueva(codigo=codigo, titulo=ocupaciones[codigo].titulo) for codigo in nuevas],
+        puntaje_minimo=actividad.puntaje_minimo, puntaje_maximo=actividad.puntaje_maximo)
 
 
 @usar_contexto

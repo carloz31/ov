@@ -21,10 +21,11 @@ class ProgresoActividad(Base):
 
 class ResultadoCaso(Base):
     __tablename__ = "resultado_caso"
-    __table_args__ = (CheckConstraint("puntaje BETWEEN 0 AND 100", name="puntaje_valido"),)
+    # El tope (puntaje_maximo del caso) lo valida el servicio: un CHECK no ve otra tabla.
+    __table_args__ = (CheckConstraint("puntaje >= 0", name="puntaje_valido"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     progreso_id: Mapped[int] = mapped_column(ForeignKey("progreso_actividad.id"))
-    puntaje: Mapped[float]
+    puntaje: Mapped[int]
     fecha_hora: Mapped[datetime] = mapped_column(DateTime)
 
 

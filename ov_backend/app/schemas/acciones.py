@@ -77,7 +77,8 @@ class ResolverBatallaEntrada(CompletarActividadEntrada):
 
 
 class ResolverCasoEntrada(CompletarActividadEntrada):
-    puntaje: float = Field(ge=0, le=100, allow_inf_nan=False)
+    # Puntos de satisfacción; el tope es el puntaje_maximo del caso (422 si lo supera).
+    puntaje: int = Field(ge=0)
     # Códigos de las ocupaciones bien asignadas; entran a la colección solo si el caso se supera.
     ocupaciones: list[str] = []
 
@@ -195,6 +196,9 @@ class OcupacionNueva(BaseModel):
 class RespuestaResolverCaso(RespuestaAccion):
     # Ajustes Central (5): con su título, para los badges del cierre sin consultar el catálogo.
     ocupaciones_nuevas: list[OcupacionNueva]
+    # Ajustes Central (6): la escala del caso; el mejor puntaje se lee en GET casos.
+    puntaje_minimo: int
+    puntaje_maximo: int
 
 
 class RespuestaRevelarResultado(RespuestaAccion):

@@ -53,7 +53,9 @@ export function detallesRuta(
     disabled: pendiente || point.status === 'locked',
     activityId: point.specActivityId,
     // Un caso se juega en la Central de Casos.
-    ...(actividad.tipo === 'CASO' && contenido.caso ? { href: appPaths.student.case(contenido.caso) } : {}),
+    ...(actividad.tipo === 'CASO' && contenido.caso
+      ? { href: appPaths.student.case(contenido.caso), caseProgress: true }
+      : {}),
     revision: point.status === 'completed',
   }
 }

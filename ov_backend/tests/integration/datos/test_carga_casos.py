@@ -43,5 +43,29 @@ def test_solo_los_casos_tienen_dimensiones(sesion):
 def test_batalla_y_testimonios_cargados(sesion):
     batalla = sesion.scalar(select(m.Actividad).where(m.Actividad.codigo == 't-batalla'))
     assert batalla.tipo == m.TipoActividad.BATALLA and batalla.puntaje_minimo is None and not batalla.requerida
+    assert batalla.puntaje_maximo is None
     pistas = dict(sesion.execute(select(m.Testimonio.codigo, m.Testimonio.pista)).all())
     assert pistas['t-testimonio-1'] and pistas['t-testimonio-2'] is None
+
+
+# Ajustes Central (6): el máximo de un caso es el total de sus necesidades (sincronizado con el front).
+def test_caso_con_maximo_igual_al_total_de_necesidades(sesion):
+    caso = sesion.scalar(select(m.Actividad).where(m.Actividad.codigo == 't-caso'))
+    maximo, necesidades = ruta.CONFIGURACION_CASOS['t-caso']
+    assert (caso.puntaje_minimo, caso.puntaje_maximo) == (10, maximo) and sum(necesidades) == maximo == 14
+
+
+# DATO DE PRUEBA: configuraciones de caso que el cargador debe rechazar.
+VARIANTES_CASO = (
+    ({'t-caso': (15, (2, 3, 3, 1, 2, 3))}, 'no es el total de sus necesidades'),
+    ({}, 'no tiene puntaje máximo'),
+    ({'t-caso': (14, (2, 3, 3, 1, 2, 3)), 't-batalla': (1, (1,))}, 'no es un caso'),
+)
+
+
+@pytest.mark.parametrize(('valor', 'mensaje'), VARIANTES_CASO)
+def test_carga_rechaza_maximos_de_caso_invalidos(tmp_path, monkeypatch, valor, mensaje):
+    monkeypatch.setattr(ruta, 'CONFIGURACION_CASOS', valor)
+    with pytest.raises(ValueError, match=mensaje):
+        cargar.preparar_base(f'sqlite:///{(tmp_path / "maximos.db").as_posix()}', 'ruta', crear_tablas=True)
+

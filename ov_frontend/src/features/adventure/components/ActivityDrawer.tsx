@@ -1,11 +1,13 @@
 import type { ReactNode } from 'react'
 import type { AdventureState } from '@/types/adventure'
 import { useAdventure } from '@/store/adventureStore'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { Clock, LockKeyhole, Play, X } from 'lucide-react'
 import { Drawer as DrawerPrimitive } from 'vaul'
 import { useThemeClass } from '@/components/common/ThemeScope'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { useBloquesDrawerCargando } from '@/store/cargaDrawerStore'
 import {
   Drawer,
   DrawerClose,
@@ -20,6 +22,7 @@ import type { PointDetails } from '@/features/adventure/lib/pointDetails'
 export function ActivityDrawer({
   point,
   details,
+  carga,
   onClose,
   onAction,
   onJournal,
@@ -31,11 +34,13 @@ export function ActivityDrawer({
 }: {
   point?: StudentMapPoint
   details?: PointDetails
+  // `base`: faltan datos del propio drawer; `esperaBloques`: los bloques de cada tipo avisan su carga.
+  carga?: { base: boolean; esperaBloques: boolean }
   onClose: () => void
   onAction: (details: PointDetails) => void
   onJournal: (details: PointDetails) => void
   onFallbackFocus?: () => void
-  renderCaseProgress?: (adventure: AdventureState) => ReactNode
+  renderCaseProgress?: (adventure: AdventureState, actividad?: string) => ReactNode
   renderJournal?: (journal: NonNullable<PointDetails['journal']>, onOpen: () => void) => ReactNode
   // Lo que un registro completado quedó por ampliar (F01); lo decide el dominio de actividades.
   renderPorAmpliar?: (codigo: string) => ReactNode
@@ -47,6 +52,14 @@ export function ActivityDrawer({
   const closeButton = useRef<HTMLButtonElement>(null)
   const returnFocus = useRef<HTMLElement | null>(null)
   const Icon = point?.icon
+  // Los bloques avisan que cargan en sus efectos, que corren antes que el de aquí: hasta ese momento
+  // (`asentado`), y mientras alguno cargue, se ve el skeleton y el contenido queda montado pero oculto.
+  const [asentado, setAsentado] = useState<string | undefined>()
+  const bloquesCargando = useBloquesDrawerCargando()
+  const clavePunto = point ? `${point.zone}/${point.id}` : undefined
+  useEffect(() => setAsentado(clavePunto), [clavePunto])
+  const cargando =
+    !!carga && (carga.base || (carga.esperaBloques && (asentado !== clavePunto || bloquesCargando)))
   return (
     <Drawer
       direction="right"
@@ -103,7 +116,12 @@ export function ActivityDrawer({
                   </button>
                 </DrawerClose>
               </div>
-              <div className="sx-drawer-body">
+              {cargando && <EsqueletoDrawer />}
+              <div
+                className="sx-drawer-body"
+                hidden={cargando}
+                style={cargando ? { display: 'none' } : undefined}
+              >
                 <DrawerHeader className="sx-drawer-header">
                   <div className="sx-drawer-meta">
                     <span className="sx-drawer-badge" data-status={details.badge}>
@@ -140,7 +158,7 @@ export function ActivityDrawer({
                     {details.requirementLink.label}
                   </Link>
                 )}
-                {details.caseProgress && renderCaseProgress?.(adventure)}
+                {details.caseProgress && renderCaseProgress?.(adventure, point.specActivityId)}
                 {details.journal && renderJournal?.(details.journal, () => onJournal(details))}
                 <button
                   type="button"
@@ -174,5 +192,23 @@ export function ActivityDrawer({
         </DrawerPrimitive.Content>
       </DrawerPortal>
     </Drawer>
+  )
+}
+
+// Mientras el drawer espera sus datos: estado, tiempo, título, descripción, tipo y bloque del tipo.
+function EsqueletoDrawer() {
+  return (
+    <div className="sx-drawer-body" aria-busy="true" aria-label="Cargando actividad">
+      <div className="sx-drawer-meta">
+        <Skeleton className="h-6 w-24" />
+        <Skeleton className="h-5 w-16" />
+      </div>
+      <Skeleton className="h-7 w-3/4" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-5/6" />
+      <Skeleton className="h-4 w-1/3" />
+      <Skeleton className="h-20 w-full" />
+      <Skeleton className="h-11 w-full" />
+    </div>
   )
 }

@@ -68,7 +68,9 @@ export function CiudadScreen() {
     )
   return (
     <MapScreenLayout
-      renderCaseProgress={(adventure) => <ForestFireCaseProgress adventure={adventure} />}
+      renderCaseProgress={(adventure, actividad) => (
+        <ForestFireCaseProgress adventure={adventure} actividad={actividad} />
+      )}
       renderPorAmpliar={(codigo) => <RegistroPorAmpliar codigo={codigo} />}
       renderFichasBatalla={(codigo) => <FichasBatalla codigo={codigo} />}
       renderJournal={(journal, onOpen) => (

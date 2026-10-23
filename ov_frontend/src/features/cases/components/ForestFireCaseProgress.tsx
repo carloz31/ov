@@ -1,24 +1,24 @@
 import type { AdventureState } from '@/types/adventure'
-import {
-  FOREST_FIRE_MAX_SATISFACTION,
-  FOREST_FIRE_PASS_SCORE,
-  getForestFireCaseStatus,
-} from '@/features/cases/lib/forestFireCaseLogic'
+import { useProgresoCaso } from '@/features/cases/hooks/useProgresoCaso'
 import '../styles/forest-fire-progress.css'
 
 export function ForestFireCaseProgress({
   adventure,
+  actividad,
 }: {
   adventure: Pick<AdventureState, 'solvedCaseIds' | 'caseBestScores'>
+  actividad?: string
 }) {
-  const { score, passed } = getForestFireCaseStatus(adventure)
+  const progreso = useProgresoCaso(adventure, actividad)
+  if (!progreso) return null
+  const { minimo, maximo, mejor: score, superado: passed } = progreso
   return (
     <div className={`ff-case-progress ${passed ? 'is-passed' : score !== undefined ? 'is-in-progress' : ''}`}>
       {score === undefined ? (
         <p>
           Para superarlo necesitas al menos{' '}
           <strong>
-            {FOREST_FIRE_PASS_SCORE} de {FOREST_FIRE_MAX_SATISFACTION}
+            {minimo} de {maximo}
           </strong>{' '}
           puntos de satisfacción. No hace falta una respuesta perfecta.
         </p>
@@ -27,7 +27,7 @@ export function ForestFireCaseProgress({
           <p>
             Tu mejor puntaje{' '}
             <strong>
-              {score} de {FOREST_FIRE_MAX_SATISFACTION}
+              {score} de {maximo}
             </strong>
           </p>
           <div
@@ -35,19 +35,19 @@ export function ForestFireCaseProgress({
             role="progressbar"
             aria-label="Mejor puntaje del caso"
             aria-valuemin={0}
-            aria-valuemax={FOREST_FIRE_MAX_SATISFACTION}
+            aria-valuemax={maximo}
             aria-valuenow={score}
           >
-            <span style={{ width: `${Math.min(100, (score / FOREST_FIRE_MAX_SATISFACTION) * 100)}%` }} />
-            <i style={{ left: `${(FOREST_FIRE_PASS_SCORE / FOREST_FIRE_MAX_SATISFACTION) * 100}%` }} />
+            <span style={{ width: `${Math.min(100, (score / maximo) * 100)}%` }} />
+            <i style={{ left: `${(minimo / maximo) * 100}%` }} />
           </div>
-          <small>Mínimo para superar: {FOREST_FIRE_PASS_SCORE}</small>
+          <small>Mínimo para superar: {minimo}</small>
           <p>
             {passed
-              ? score >= FOREST_FIRE_MAX_SATISFACTION
+              ? score >= maximo
                 ? 'Respuesta completa: cubriste todas las necesidades.'
-                : `Superado. Puedes volver a jugarlo para llegar a ${FOREST_FIRE_MAX_SATISFACTION}.`
-              : `Te faltan ${Math.max(0, FOREST_FIRE_PASS_SCORE - score)} puntos para superarlo.`}
+                : `Superado. Puedes volver a jugarlo para llegar a ${maximo}.`
+              : `Te faltan ${Math.max(0, minimo - score)} puntos para superarlo.${progreso.invitaReintento ? ' Puedes volver a intentarlo.' : ''}`}
           </p>
         </>
       )}

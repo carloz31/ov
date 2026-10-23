@@ -26,25 +26,24 @@ test('los adaptadores de casos solo importan tipos', () => {
   assert.ok([...source.matchAll(/^import\s+(.+)$/gm)].every((match) => match[1].startsWith('type ')))
 })
 
-test('el puntaje es el porcentaje de la satisfacción máxima y el umbral lo da el servidor', () => {
-  assert.equal(casos.puntajeCaso(9, 14), 64.3)
-  assert.equal(casos.puntajeCaso(14, 14), 100)
-  assert.equal(casos.puntajeCaso(0, 14), 0)
-  assert.equal(caso.puntaje_minimo, 60)
-  assert.equal(casos.superaCaso(64.3, caso), true)
-  assert.equal(casos.superaCaso(59.9, caso), false)
-  assert.equal(casos.superaCaso(59.9, { puntaje_minimo: 50 }), true)
-  assert.equal(casos.textoPuntajeCaso(64.3, caso), 'Puntaje: 64 % · mínimo 60 %')
+test('el puntaje es en puntos de satisfacción y el umbral y el máximo los da el servidor', () => {
+  assert.equal(caso.puntaje_minimo, 10)
+  assert.equal(caso.puntaje_maximo, 14)
+  assert.equal(casos.superaCaso(10, caso), true)
+  assert.equal(casos.superaCaso(9, caso), false)
+  assert.equal(casos.superaCaso(5, { puntaje_minimo: 5 }), true)
+  assert.equal(casos.textoPuntajeCaso(12, caso), 'Puntaje: 12 de 14 · mínimo 10')
+  assert.equal('puntajeCaso' in casos, false)
 })
 
-test('el estado del caso sale del servidor, con intentos y mejor puntaje en porcentaje', () => {
+test('el estado del caso sale del servidor, con intentos y mejor puntaje en puntos', () => {
   assert.deepEqual(copia(casos.estadoCaso(caso)), {
     passed: true,
     badge: 'Superado',
     actionLabel: 'Jugar de nuevo',
-    intentos: 'Intentos: 2 · Mejor puntaje: 80 %',
+    intentos: 'Intentos: 2 · Mejor puntaje: 12 de 14',
   })
-  const fallido = { ...caso, estado: 'EN_CURSO', superado: false, intentos: 1, mejor_puntaje: 10 }
+  const fallido = { ...caso, estado: 'EN_CURSO', superado: false, intentos: 1, mejor_puntaje: 1 }
   assert.equal(casos.estadoCaso(fallido).badge, 'En progreso')
   assert.equal(casos.estadoCaso(fallido).actionLabel, 'Intentar de nuevo')
   const nuevo = { ...caso, estado: 'DISPONIBLE', superado: false, intentos: 0, mejor_puntaje: null }
@@ -55,6 +54,32 @@ test('el estado del caso sale del servidor, con intentos y mejor puntaje en porc
     intentos: null,
   })
   assert.equal(casos.textoTiposCaso(caso, { R: 'Realista', S: 'Social' }), 'Tipo del caso: Realista · Social')
+})
+
+// Ajustes post F04 (6): el drawer del caso en sus tres estados, con la escala del servidor.
+test('el progreso del caso para el drawer distingue sin jugar, jugado sin superar y superado', () => {
+  const nuevo = { ...caso, intentos: 0, superado: false, mejor_puntaje: null }
+  assert.deepEqual(copia(casos.progresoCaso(nuevo)), { minimo: 10, maximo: 14, superado: false, invitaReintento: true })
+  const fallido = { ...caso, intentos: 1, superado: false, mejor_puntaje: 6 }
+  assert.deepEqual(copia(casos.progresoCaso(fallido)), {
+    minimo: 10, maximo: 14, mejor: 6, superado: false, invitaReintento: true,
+  })
+  assert.deepEqual(copia(casos.progresoCaso(caso)), {
+    minimo: 10, maximo: 14, mejor: 12, superado: true, invitaReintento: true,
+  })
+  assert.deepEqual([resolver.puntaje_minimo, resolver.puntaje_maximo], [10, 14])
+})
+
+// Mantener sincronizado con CONFIGURACION_CASOS de ov_backend/datos/ruta.py: el máximo del servidor es
+// el total de necesidades del contenido del caso (expectedProfessionalIds por problema).
+test('el máximo del servidor es el total de necesidades del caso del front', () => {
+  const app = fixtureServidor()
+  const { forestFirePhases } = app.load('src/data/content/forestFireCase.ts')
+  const necesidades = forestFirePhases.flatMap((f) => f.problems.map((p) => p.expectedProfessionalIds.length))
+  assert.deepEqual(copia(necesidades), [2, 3, 3, 1, 2, 3])
+  assert.equal(necesidades.reduce((a, b) => a + b, 0), caso.puntaje_maximo)
+  const { FOREST_FIRE_MAX_SATISFACTION } = app.load('src/features/cases/lib/forestFireCaseLogic.ts')
+  assert.equal(FOREST_FIRE_MAX_SATISFACTION, caso.puntaje_maximo)
 })
 
 test('la colección marca las ocupaciones obtenidas por su código', () => {
@@ -82,14 +107,14 @@ test('resolver un caso envía puntaje y ocupaciones, incorpora sus desbloqueos y
   assert.deepEqual(copia(await store.consultarCasos()), { tipo: 'ok', datos: [caso] })
   assert.deepEqual(copia(await store.consultarColeccion()), { tipo: 'ok', datos: coleccion })
   const antes = app.requests.length
-  const respuesta = await store.resolverCaso('t-caso', 64.3, ['firefighter'])
+  const respuesta = await store.resolverCaso('t-caso', 9, ['firefighter'])
   assert.equal(respuesta.tipo, 'ok')
   assert.deepEqual(copia(respuesta.datos.ocupaciones_nuevas), resolver.ocupaciones_nuevas)
   const envio = app.requests.slice(antes).find((r) => r.url.endsWith('/resolver-caso'))
   assert.deepEqual(copia(envio.body), {
     cuenta: 'est-ana',
     actividad: 't-caso',
-    puntaje: 64.3,
+    puntaje: 9,
     ocupaciones: ['firefighter'],
   })
   assert.ok(app.requests.slice(antes).some((r) => r.url.endsWith('/actividades')))

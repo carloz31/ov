@@ -310,9 +310,9 @@ def _recorrer(cliente):
     fixtures['items-registro-t-contraste'] = _pedir(cliente, 'GET', '/actividades/t-contraste/items-registro')
     # B08: el caso falla, se reintenta y se supera; superarlo abre los testimonios y llena la colección.
     caso = {'cuenta': 'est-ana', 'actividad': 't-caso', 'fecha_hora': FECHA}
-    _pedir(cliente, 'POST', '/acciones/resolver-caso', {**caso, 'puntaje': 40, 'ocupaciones': ['firefighter']})
+    _pedir(cliente, 'POST', '/acciones/resolver-caso', {**caso, 'puntaje': 6, 'ocupaciones': ['firefighter']})
     fixtures['resolver-caso'] = _pedir(cliente, 'POST', '/acciones/resolver-caso', {
-        **caso, 'puntaje': 80, 'ocupaciones': ['firefighter', 'paramedic']})
+        **caso, 'puntaje': 12, 'ocupaciones': ['firefighter', 'paramedic']})
     fixtures['casos'] = _pedir(cliente, 'GET', '/cuentas/est-ana/casos')
     fixtures['coleccion'] = _pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')
     _pedir(cliente, 'POST', '/acciones/ver-testimonio',

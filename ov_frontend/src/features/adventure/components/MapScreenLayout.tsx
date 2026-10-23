@@ -71,6 +71,7 @@ export function MapScreenLayout({
     progress,
     selected,
     details,
+    cargaDrawer,
     mostrarMisionesAdicionales,
     explicarCiudad,
     mostrarCiudadBloqueada,
@@ -225,6 +226,7 @@ export function MapScreenLayout({
         renderFichasBatalla={renderFichasBatalla}
         point={selected}
         details={details}
+        carga={cargaDrawer}
         onClose={closePoint}
         onAction={action}
         onJournal={journal}
