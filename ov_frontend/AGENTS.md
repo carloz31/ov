@@ -50,7 +50,7 @@ src/
 | Una primitiva de interfaz | `components/ui/`. Usa la de shadcn antes de crear otra. |
 | Una llamada al backend | `services/api/<recurso>.ts`, agrupado como los routers del backend. GET → `obtener`, POST → `enviar`, PATCH → `actualizar`, DELETE → `eliminar`. Si el backend define un PUT, detente y avisa antes de agregar un método al cliente. |
 | Un tipo del contrato | `types/servidor.ts`, copiado tal cual del esquema Pydantic. Si el archivo no cabe en 400 líneas, un esquema va en su propio `types/servidor<Dominio>.ts`, que `servidor.ts` reexporta (hoy, `servidorInstrumentos.ts` con `app/schemas/instrumentos.py`). |
-| Convertir una respuesta en datos para la vista | `lib/servidor/adaptadores.ts` (casos, colección y testimonios: `lib/servidor/adaptadoresCasos.ts`; registros y referencias: `lib/servidor/adaptadoresRegistro.ts`). Los tres solo importan tipos. |
+| Convertir una respuesta en datos para la vista | `lib/servidor/adaptadores.ts` (casos, colección y testimonios: `lib/servidor/adaptadoresCasos.ts`; registros y referencias: `lib/servidor/adaptadoresRegistro.ts`; diario y check-in: `lib/servidor/adaptadoresDiario.ts`, F05). Todos solo importan tipos. |
 | Estado que viene del servidor | `store/servidor/`. El del portal del apoderado, en `store/servidor/apoderado.ts`; no reutiliza el almacén del estudiante. |
 | Elegir entre dato del servidor y dato local | Un hook en `features/<dominio>/hooks/`. Nunca en una vista. |
 | Estado persistente de varios dominios | `store/<nombre>Store.ts`; de un dominio, `features/<dominio>/store/`. |
@@ -71,7 +71,7 @@ src/
 - `pages/` y `features/` no importan `services/`: los datos del backend llegan por `store/servidor/` y los hooks.
 - Una feature no usa componentes de otra, salvo de `family-conversations` y `student-tracking`. Si hace falta un componente ajeno, pásalo desde la vista de ruta como prop o `children`, o súbelo a `components/`.
 - `modoApi` y `desarrollo` no se importan en `components/`, `pages/` ni `features/*/components/` (sí en `lib/` y `store/`, que son selectores). El hook del dominio devuelve el mismo modelo en los dos modos y, si algo solo se muestra en uno, una bandera con nombre del dominio (`puedeReiniciar`, `mostrarRequisito`), no `modoApi`.
-- `lib/activities/logic.ts`, `lib/servidor/adaptadores.ts`, `lib/servidor/adaptadoresRegistro.ts` y `lib/explorationAssets.ts` solo importan tipos: las pruebas los cargan aislados.
+- `lib/activities/logic.ts`, `lib/servidor/adaptadores.ts`, `lib/servidor/adaptadoresRegistro.ts`, `lib/servidor/adaptadoresDiario.ts` y `lib/explorationAssets.ts` solo importan tipos: las pruebas los cargan aislados.
 
 ### Componentes
 
@@ -120,9 +120,9 @@ Un agente conecta datos a la interfaz que ya existe; no diseña interfaz nueva p
 ```text
 tests/
   local/        actividades/, aventura/, casos/, perfil/, portales/   (modo local)
-  servidor/     acceso/, actividades/, batallas/, casos/, mapa/, instrumentos/, logros/, perfil/, registro/, testimonios/  (modo api, con fixtures)
+  servidor/     acceso/, actividades/, batallas/, casos/, diario/, mapa/, instrumentos/, logros/, perfil/, registro/, testimonios/  (modo api, con fixtures)
   despliegue/
-  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00), registro (F01) y batallas, casos y testimonios (F04)
+  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00), registro (F01), batallas, casos y testimonios (F04) y diario (F05)
   soporte/             ayudantes compartidos
 ```
 
