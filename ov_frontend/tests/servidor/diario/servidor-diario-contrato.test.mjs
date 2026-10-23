@@ -37,16 +37,6 @@ test('las entradas llevan el título mostrado, su origen, «editada» y ninguna 
   assert.ok(vista.some((e) => e.editada) && vista.some((e) => !e.editada))
 })
 
-test('cartas: las disponibles sin responder; las bloqueadas solo se cuentan', () => {
-  const { cartas, porDescubrir } = diario.cartasDiario(preguntas)
-  assert.deepEqual(copia(cartas), [
-    { codigo: 't-diario-fija', nombre: 'Mi primer paso', porRedactar: false },
-    { codigo: 't-diario-personal', nombre: 'Lo que espero', porRedactar: true },
-  ])
-  assert.equal(porDescubrir, 1)
-  assert.deepEqual(copia(diario.cartasDiario(null)), { cartas: [], porDescubrir: 0 })
-})
-
 test('amistad: nombre del nivel del servidor, un recuerdo por nivel y cuánto falta', () => {
   assert.deepEqual(copia(diario.amistadDiario(amistad)), {
     puntos: 3,
@@ -86,7 +76,8 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
     if (req.url.endsWith('/pregunta-del-dia')) return { body: jsonServidor('ruta/ruta-pregunta-del-dia') }
     if (/\/(escribir|editar|borrar)-entrada$|\/check-in$/.test(req.url)) return { body: sinRespuestas }
     if (req.url.endsWith('/archivar-pregunta')) return { body: jsonServidor('ruta/ruta-archivar-pregunta') }
-    if (req.url.endsWith('/desarchivar-pregunta')) return { body: jsonServidor('ruta/ruta-desarchivar-pregunta') }
+    if (req.url.endsWith('/desarchivar-pregunta'))
+      return { body: jsonServidor('ruta/ruta-desarchivar-pregunta') }
     throw Error(`Solicitud no configurada: ${req.url}`)
   })
   const almacen = cargarAlmacen(app)

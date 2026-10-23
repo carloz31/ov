@@ -8,6 +8,8 @@ const appPaths = {
     missions: '/student/missions',
     research: '/student/research',
     journal: '/student/journal',
+    // Ajuste del diario (F05): el buzón completo.
+    lumiLetters: '/student/journal/letters',
     signals: '/student/journal/signal',
     community: '/student/community',
     resources: '/student/resources',

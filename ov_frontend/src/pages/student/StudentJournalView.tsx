@@ -8,6 +8,9 @@ import { JournalHome } from '@/features/journal/components/JournalHome'
 import { JournalEditor } from '@/features/journal/components/JournalEditor'
 import { JournalDetail } from '@/features/journal/components/JournalDetail'
 import { DailyQuestionCard } from '@/features/journal/components/DailyQuestionCard'
+import { BuzonLumi } from '@/features/journal/components/BuzonLumi'
+import { LumiBondPanel } from '@/features/journal/components/LumiBondPanel'
+import { CuadernoDiario } from '@/features/journal/components/CuadernoDiario'
 function StudentJournalView() {
   const {
     state,
@@ -47,7 +50,13 @@ function StudentJournalView() {
     editEntry,
     deleteEntry,
     diarioServidor,
+    hoy,
+    buzon,
   } = useJournalPage()
+  const abrirEntrada = (id: string) => {
+    setSelectedId(id)
+    setScreen('detail')
+  }
   return (
     <DiscoveryStage ambient="journal">
       {saveNotice && (
@@ -67,38 +76,30 @@ function StudentJournalView() {
       )}
       {screen === 'home' && (
         <JournalHome
-          entries={filteredEntries}
-          grouping={grouping}
-          onChangeGrouping={setGrouping}
-          onSuggested={({ prompt, tags: defaultTags, activityId, title }) => {
-            openEditor({ prompt, linkedActivityId: activityId, title, lockedTags: defaultTags })
-          }}
-          now={now}
-          onDailyQuestion={openEditor}
-          onNew={startBlankEntry}
-          onOpen={(entry) => {
-            setSelectedId(entry.id)
-            setScreen('detail')
-          }}
-          query={query}
-          setQuery={setQuery}
-          bond={bond}
           onboarding={!state.journalOnboardingSeen}
           onBegin={startOnboardingEntry}
-          mostrarTemas={!diarioServidor}
-          cartasServidor={diarioServidor?.cartas}
-          dailyQuestion={
-            diarioServidor && (
-              <DailyQuestionCard
-                now={now}
-                onRespond={openEditor}
-                onOpenAnswer={(entry) => {
-                  setSelectedId(entry.id)
-                  setScreen('detail')
-                }}
-                servidor={diarioServidor.preguntaDelDia}
-              />
-            )
+          hoy={<DailyQuestionCard now={now} hoy={hoy} onRespond={openEditor} onFree={startBlankEntry} />}
+          buzon={
+            <BuzonLumi
+              cartas={buzon.cartas}
+              ahora={now}
+              enRedaccion={buzon.enRedaccion}
+              acciones={{ onResponder: buzon.responder, onAbrir: buzon.abrir, onArchivar: buzon.archivar }}
+              limite={3}
+              actualizar={buzon.enRedaccion.length ? buzon.actualizar : undefined}
+            />
+          }
+          lumi={<LumiBondPanel bond={bond} />}
+          cuaderno={
+            <CuadernoDiario
+              entries={filteredEntries}
+              grouping={grouping}
+              onChangeGrouping={setGrouping}
+              onOpen={(entry) => abrirEntrada(entry.id)}
+              query={query}
+              setQuery={setQuery}
+              mostrarTemas={!diarioServidor}
+            />
           }
         />
       )}
@@ -122,7 +123,7 @@ function StudentJournalView() {
           suggestedTags={usedTags.filter((tag) => !tags.includes(tag))}
           tagDraft={tagDraft}
           tags={tags}
-          servidor={diarioServidor && { escribiendo: diarioServidor.escribiendo }}
+          servidor={diarioServidor && { escribiendo: false }}
         />
       )}
       {screen === 'detail' && selected && (

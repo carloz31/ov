@@ -74,7 +74,12 @@ export function CiudadScreen() {
       renderPorAmpliar={(codigo) => <RegistroPorAmpliar codigo={codigo} />}
       renderFichasBatalla={(codigo) => <FichasBatalla codigo={codigo} />}
       renderJournal={(journal, onOpen) => (
-        <JournalEntryCard completed={journal.completed} prompt={journal.prompt} onOpen={onOpen} />
+        <JournalEntryCard
+          completed={journal.completed}
+          prompt={journal.prompt}
+          onOpen={onOpen}
+          remitente={journal.remitente}
+        />
       )}
       zone="central"
       points={getCiudadPoints(adventure, journey)}

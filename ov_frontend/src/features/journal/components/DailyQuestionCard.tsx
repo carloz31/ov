@@ -1,11 +1,6 @@
-import { useEffect, useRef } from 'react'
-import { Check, Mail, MailOpen } from 'lucide-react'
-import { getDailyJournalPrompt } from '@/data/content/journalPrompts'
-import { useAdventure } from '@/store/adventureStore'
-import { lumiDayKey } from '@/lib/lumiFriendship'
-import type { JournalEntry } from '@/types/adventure'
-import { Seal } from '@/components/student/Seal'
-import { updateStudentUi, useStudentUi } from '@/store/studentUiStore'
+import { PenLine } from 'lucide-react'
+import { LumiQuestion } from '@/features/journal/components/LumiQuestion'
+import type { EstadoHoy } from '@/features/journal/hooks/usePreguntaDeHoy'
 
 export type DailyQuestionEditorContext = {
   prompt: string
@@ -14,140 +9,61 @@ export type DailyQuestionEditorContext = {
   lockedTags: string[]
 }
 
-// F05, solo api: la pregunta del servidor (sin temas), su respuesta de hoy y el error al pedirla.
-export type PreguntaDelDiaServidor = {
-  texto: string | null
-  respondida: boolean
-  respuesta?: JournalEntry
-  abrir: () => void
-  error: string
-}
-
+// Ajuste del diario (F05): la columna «Hoy» reúne la pregunta del día y la escritura libre en una sola tarjeta.
 export function DailyQuestionCard({
   now,
+  hoy,
   onRespond,
-  onOpenAnswer,
-  servidor,
+  onFree,
 }: {
   now: Date
+  hoy: EstadoHoy
   onRespond: (context: DailyQuestionEditorContext) => void
-  onOpenAnswer: (entry: JournalEntry) => void
-  servidor?: PreguntaDelDiaServidor
+  onFree: () => void
 }) {
-  const adventure = useAdventure()
-  const ui = useStudentUi()
-  const respondButton = useRef<HTMLButtonElement>(null)
-  const focusOnDay = useRef<string | null>(null)
-  const day = lumiDayKey(now)
-  const dailyId = `daily-prompt-${day}`
-  const answer = servidor
-    ? servidor.respuesta
-    : adventure.journal.find((entry) => entry.linkedActivityId === dailyId)
-  const answered = servidor ? servidor.respondida : Boolean(answer)
-  const opened = servidor ? servidor.texto !== null : ui.dailyQuestionOpenedOn === day
-  // En api la pregunta llega después de pulsar: el foco espera a que se abra.
-  const esperaServidor = Boolean(servidor) && !opened
-  useEffect(() => {
-    if (focusOnDay.current === day && opened && !answered) respondButton.current?.focus()
-    if (!esperaServidor) focusOnDay.current = null
-  }, [day, opened, answered, esperaServidor])
-
-  let daily: ReturnType<typeof getDailyJournalPrompt> | undefined
-  if (servidor) daily = { prompt: servidor.texto ?? '…', tags: [] } as typeof daily
-  else
-    try {
-      daily = getDailyJournalPrompt(now)
-    } catch {
-      return null
-    }
-  if (!daily?.prompt?.trim()) return null
-
-  const state = answered ? 'answered' : opened ? 'opened' : 'sealed'
-  const Icon = answered ? Check : opened ? MailOpen : Mail
-  const dateLabel = new Intl.DateTimeFormat('es-PE', {
+  const fecha = new Intl.DateTimeFormat('es-PE', {
     timeZone: 'America/Lima',
     weekday: 'long',
     day: 'numeric',
     month: 'long',
-  }).format(now)
-
+  })
+    .format(now)
+    .replace(',', '')
+  const conPregunta = hoy.estado === 'pregunta' && hoy.editor
   return (
-    <section aria-label="La pregunta de hoy" className="sx-j-daily" data-state={state}>
-      <div className="sx-j-daily-seal">
-        <Seal state="revealed">
-          <Icon size={32} />
-        </Seal>
-      </div>
-      <div className="sx-j-daily-content">
-        <p className="sx-j-daily-label">La pregunta de hoy · {dateLabel}</p>
-        {answered ? (
-          <>
-            <h2>Ya respondiste la pregunta de hoy</h2>
-            <p className="sx-j-daily-help">
-              Mañana Lumi tendrá otra. Si un día no la respondes, no pasa nada.
-            </p>
-          </>
-        ) : opened ? (
-          <div className="sx-j-daily-question">
-            <h2>“{daily.prompt}”</h2>
-            {!servidor && (
-              <div className="sx-j-daily-tags">
-                {daily.tags.map((tag) => (
-                  <span key={tag}>#{tag}</span>
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          <>
-            <h2>Lumi dejó una pregunta nueva para ti</h2>
-            <p className="sx-j-daily-help">Cambia cada día. Ábrela cuando quieras.</p>
-            {servidor?.error && <p className="sx-j-daily-help">{servidor.error}</p>}
-          </>
-        )}
-      </div>
-      {answered ? (
-        answer && (
-          <a
-            className="sx-j-daily-link"
-            href={`#journal-entry-${answer.id}`}
-            onClick={(event) => {
-              event.preventDefault()
-              onOpenAnswer(answer)
-            }}
-          >
-            Ver mi respuesta
-          </a>
-        )
-      ) : opened ? (
-        <button
-          ref={respondButton}
-          type="button"
-          className="sx-d-action sx-j-daily-action"
-          onClick={() =>
-            onRespond({
-              prompt: daily.prompt,
-              linkedActivityId: dailyId,
-              title: servidor ? '' : 'Tema del día',
-              lockedTags: daily.tags,
-            })
-          }
-        >
-          Responder
-        </button>
+    <section aria-label="Hoy" className="sx-j-hoy" data-state={hoy.estado}>
+      <header className="sx-j-hoy-header">
+        <p className="sx-j-hoy-date">Hoy · {fecha}</p>
+        {conPregunta && <span className="sx-j-chip">La pregunta vence hoy</span>}
+      </header>
+      {hoy.estado === 'cargando' ? (
+        <LumiQuestion prompt="Lumi está escribiendo…" />
+      ) : conPregunta ? (
+        <>
+          <p className="sx-j-hoy-label">Lumi te pregunta</p>
+          <h2 className="sx-j-hoy-question">“{hoy.texto}”</h2>
+        </>
       ) : (
+        <h2 className="sx-j-hoy-question">
+          {hoy.estado === 'contada' ? 'Hoy ya le contaste a Lumi' : 'Hoy no hay pregunta'}
+        </h2>
+      )}
+      {hoy.error && <p className="sx-j-hoy-help">{hoy.error}</p>}
+      <div className="sx-j-hoy-actions">
+        {conPregunta && (
+          <button type="button" className="sx-d-action" onClick={() => onRespond(hoy.editor!)}>
+            Responder a Lumi
+          </button>
+        )}
         <button
           type="button"
-          className="sx-d-action sx-j-daily-action"
-          onClick={() => {
-            focusOnDay.current = day
-            if (servidor) servidor.abrir()
-            else updateStudentUi((current) => ({ ...current, dailyQuestionOpenedOn: day }))
-          }}
+          className={conPregunta ? 'sx-d-action sx-d-action-ghost' : 'sx-d-action'}
+          onClick={onFree}
         >
-          Abrir la pregunta
+          <PenLine aria-hidden="true" size={16} /> Escribir algo libre
         </button>
-      )}
+      </div>
+      <p className="sx-j-hoy-help">No necesitas una pregunta para contarle algo.</p>
     </section>
   )
 }

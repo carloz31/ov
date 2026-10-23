@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion'
-import { useAfinidadServidor } from '@/store/servidor/secciones'
+import { useAfinidadServidor, useDiarioPreguntasServidor } from '@/store/servidor/secciones'
+import { cartaDeActividad, cartasDiario } from '@/lib/servidor/adaptadoresDiario'
 import { consultarItems } from '@/store/servidor/consultas'
 import { ciudadDisponible, mensajeBloqueo } from '@/lib/servidor/adaptadores'
 import { guiaCaminoApi, guideSteps } from '@/data/content/guideTexts'
@@ -58,10 +59,33 @@ export function useMapScreen({
   const selected = points.find((point) => point.id === selectedId)
   const baseDetails = selected ? getPointDetails(selected, adventure, journey) : undefined
   const claveDetalle = `${servidor.resumen.datos?.cuenta.codigo}/${selected?.id}/${selected?.specActivityId}/${selected?.status}`
-  const details =
+  // Ajuste del diario (F05): en api, la entrada de diario del drawer es la carta que abrió esa actividad.
+  const diarioAbierto = servidor.secciones.datos?.some(
+    (s) => s.codigo === 'DIARIO' && s.estado === 'DISPONIBLE',
+  )
+  const preguntas = useDiarioPreguntasServidor(modoApi && !!selected && !!diarioAbierto)
+  const carta =
+    modoApi && selected?.specActivityId
+      ? cartaDeActividad(cartasDiario(preguntas.datos), selected.specActivityId)
+      : undefined
+  const conServidor =
     baseDetails && detalleServidor?.clave === claveDetalle
       ? { ...baseDetails, ...detalleServidor }
       : baseDetails
+  const details =
+    conServidor && modoApi
+      ? {
+          ...conServidor,
+          journal: carta && {
+            completed: true,
+            activityId: selected!.specActivityId!,
+            title: carta.nombre,
+            prompt: carta.texto ?? 'Lumi tiene una carta para ti',
+            pregunta: carta.codigo,
+            remitente: carta.remitente?.titulo,
+          },
+        }
+      : conServidor
   const selectedPointId = selected?.id
   const selectedActivityId = selected?.specActivityId
   const selectedStatus = selected?.status

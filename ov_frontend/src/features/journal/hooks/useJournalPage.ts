@@ -11,8 +11,9 @@ import type { JournalEntry } from '@/types/adventure'
 import { useReturnFocus } from '@/hooks/useReturnFocus'
 import { getLumiBond, lumiBondServidor } from '@/features/journal/lib/lumiBond'
 import { useDiarioServidor } from '@/features/journal/hooks/useDiarioServidor'
-import { usePreguntaDelDiaServidor } from '@/features/journal/hooks/usePreguntaDelDiaServidor'
-import { abrirPregunta, borrarEntrada, editarEntrada, escribirEntrada } from '@/store/servidor/diario'
+import { usePreguntaDeHoy } from '@/features/journal/hooks/usePreguntaDeHoy'
+import { useBuzonLumi } from '@/features/journal/hooks/useBuzonLumi'
+import { borrarEntrada, editarEntrada, escribirEntrada } from '@/store/servidor/diario'
 import { asegurarSeccion } from '@/store/servidor/secciones'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { CartaLumi } from '@/lib/servidor/adaptadoresDiario'
@@ -20,13 +21,14 @@ import { type DailyQuestionEditorContext } from '@/features/journal/components/D
 
 type JournalScreen = 'home' | 'write' | 'detail'
 export type AvisoDiario = { titulo: string; descripcion?: string; error?: boolean }
+// Ajuste del diario (F05): «conversaciones» pasa a «cartas».
 const avisos = {
-  suma: { titulo: '¡Conversación guardada!', descripcion: 'Tu amistad con Lumi suma una conversación.' },
+  suma: { titulo: '¡Conversación guardada!', descripcion: 'Tu amistad con Lumi suma una carta.' },
   tope: {
     titulo: 'Conversación guardada.',
-    descripcion: 'Hoy ya contaron tus 3 conversaciones; esta igual se guarda.',
+    descripcion: 'Hoy ya contaron tus 3 cartas; esta igual se guarda.',
   },
-  editada: { titulo: 'Conversación actualizada.', descripcion: 'Editar no suma conversaciones.' },
+  editada: { titulo: 'Conversación actualizada.', descripcion: 'Editar no suma cartas.' },
 } satisfies Record<string, AvisoDiario>
 const avisoError = (titulo: string, error: Parameters<typeof mensajeErrorServidor>[0]): AvisoDiario => ({
   titulo,
@@ -91,7 +93,6 @@ export function useJournalPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   // F05: a qué responde la entrada en el servidor (una carta o la pregunta del día) y si Lumi la redacta.
   const [destino, setDestino] = useState<{ pregunta?: string; delDia?: boolean }>({})
-  const [escribiendo, setEscribiendo] = useState(false)
   const [preguntaAbierta, setPreguntaAbierta] = useState<string>()
   const returnFocus = useReturnFocus()
   // El aviso tras guardar, editar o borrar se muestra como toast (`AvisoToast`); `error` cambia su ícono.
@@ -110,7 +111,8 @@ export function useJournalPage() {
     [state.journal],
   )
   const entries: JournalEntry[] = servidor.activo ? servidor.entradas : locales
-  const delDia = usePreguntaDelDiaServidor(now, entries, servidor.activo)
+  const hoy = usePreguntaDeHoy(now, entries, servidor.activo)
+  const buzon = useBuzonLumi((aviso) => setSaveNotice(aviso))
   const filteredEntries = entries.filter((entry) => {
     const normalized = query.trim().toLocaleLowerCase('es-PE')
     if (!normalized) return true
@@ -156,35 +158,31 @@ export function useJournalPage() {
     setScreen('write')
   }
 
-  // F05: una carta de Lumi del servidor; su texto llega con `abrir-pregunta` (las personalizadas tardan).
-  async function abrirCarta(carta: CartaLumi) {
-    setSaveNotice(null)
-    setEditingId(undefined)
+  // Una carta lista se responde en el editor con su pregunta; en local, como la sugerencia de Lumi que es.
+  function responderCarta(carta: CartaLumi) {
+    const local = buzon.sugerencia(carta.codigo)
+    if (local)
+      return openEditor({
+        prompt: local.prompt,
+        linkedActivityId: local.activityId,
+        title: local.title,
+        lockedTags: local.tags,
+      })
+    if (carta.estado !== 'lista' || !carta.texto) return
+    openEditor({ prompt: carta.texto, linkedActivityId: carta.codigo, title: '', lockedTags: [] })
     setDestino({ pregunta: carta.codigo })
-    setBody('')
-    setTags([])
-    setLockedTags([])
-    setPromptShown(undefined)
-    setLinkedActivityId(undefined)
-    setEntryTitle('')
-    setEscribiendo(carta.porRedactar)
-    setScreen('write')
-    const respuesta = await abrirPregunta(carta.codigo)
-    setEscribiendo(false)
-    if (respuesta.tipo === 'ok') setPromptShown(respuesta.datos.texto)
-    else {
-      setScreen('home')
-      setSaveNotice(avisoError('No se pudo abrir la carta', respuesta))
-    }
   }
-  // Desde el cierre de una actividad (`?pregunta=`): abre esa carta cuando llegan las preguntas.
+  const responder = useRef(responderCarta)
+  responder.current = responderCarta
+  // `?pregunta=` (cierre de una actividad o drawer): abre el editor solo si la carta está lista; sellada o en
+  // redacción, la portada muestra su estado en el buzón.
   useEffect(() => {
     if (!servidor.activo || !preguntaPedida || preguntaAbierta === preguntaPedida) return
-    const carta = servidor.cartas.find((c) => c.codigo === preguntaPedida)
+    const carta = buzon.cartas.find((c) => c.codigo === preguntaPedida)
     if (!carta) return
     setPreguntaAbierta(preguntaPedida)
-    void abrirCarta(carta)
-  }, [servidor.activo, servidor.cartas, preguntaPedida, preguntaAbierta])
+    if (carta.estado === 'lista' && carta.bandeja === 'PENDIENTE') responder.current(carta)
+  }, [servidor.activo, buzon.cartas, preguntaPedida, preguntaAbierta])
 
   function startOnboardingEntry() {
     updateAdventure((current) => ({ ...current, journalOnboardingSeen: true }))
@@ -237,7 +235,7 @@ export function useJournalPage() {
 
   function saveEntry() {
     if (servidor.activo) {
-      if (body.trim() && !escribiendo) void guardarEnServidor()
+      if (body.trim()) void guardarEnServidor()
       return
     }
     if (!body.trim() || !entryTitle.trim()) return
@@ -346,20 +344,9 @@ export function useJournalPage() {
     saveEntry,
     editEntry,
     deleteEntry,
-    // F05: lo que en api viene del servidor; en local, sin definir y la vista se comporta como antes.
-    diarioServidor: servidor.activo
-      ? {
-          error: servidor.error,
-          escribiendo,
-          cartas: { cartas: servidor.cartas, porDescubrir: servidor.porDescubrir, onCarta: abrirCarta },
-          preguntaDelDia: {
-            texto: delDia.pregunta?.texto ?? null,
-            respondida: delDia.respondida,
-            respuesta: delDia.respuesta,
-            abrir: () => void delDia.abrir(),
-            error: delDia.error,
-          },
-        }
-      : undefined,
+    // Ajuste del diario (F05): «Hoy», el buzón y, en api, lo que no hay en local (temas fuera y errores).
+    hoy,
+    buzon: { ...buzon, responder: responderCarta },
+    diarioServidor: servidor.activo ? { error: servidor.error } : undefined,
   }
 }

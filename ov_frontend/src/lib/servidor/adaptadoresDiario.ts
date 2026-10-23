@@ -2,6 +2,7 @@
 import type { JournalEntry, ReadinessCheckIn } from '@/types/adventure'
 import type {
   AmistadAsistente,
+  BandejaCarta,
   CheckInsCuenta,
   EntradaDiarioPublica,
   OrigenEntrada,
@@ -45,19 +46,48 @@ export function entradasDiario(entradas: EntradaDiarioPublica[] | null): Entrada
   }))
 }
 
-export type CartaLumi = { codigo: string; nombre: string; porRedactar: boolean }
-// Cartas: las DISPONIBLE sin responder. Las bloqueadas solo se cuentan (no se adelanta su nombre).
-export function cartasDiario(preguntas: PreguntaDiarioEstado[] | null): {
-  cartas: CartaLumi[]
-  porDescubrir: number
-} {
-  const lista = preguntas ?? []
-  return {
-    cartas: lista
-      .filter((p) => p.estado === 'DISPONIBLE' && !p.respondida)
-      .map((p) => ({ codigo: p.codigo, nombre: p.nombre, porRedactar: p.personalizada && !p.redactada })),
-    porDescubrir: lista.filter((p) => p.estado === 'BLOQUEADA').length,
-  }
+// Ajuste del diario (F05): una carta de Lumi como la pinta el buzón. `sellada`: personalizada aún sin redactar
+// (sin pregunta: «Abrir» la redacta); `lista`: con su pregunta. Las fechas y el remitente solo existen en api.
+export type CartaLumi = {
+  codigo: string
+  nombre: string
+  texto: string | null
+  estado: 'sellada' | 'lista'
+  bandeja: BandejaCarta
+  recibidaEn: string | null
+  remitente: { codigo: string; titulo: string } | null
+  entrada: number | null
+  respondidaEn: string | null
+  archivadaEn: string | null
+}
+const recibida = (p: PreguntaDiarioEstado) => p.estado === 'DISPONIBLE' && p.bandeja !== null
+// Las cartas recibidas, de la más reciente a la más antigua. Las bloqueadas no se listan ni se cuentan.
+export function cartasDiario(preguntas: PreguntaDiarioEstado[] | null): CartaLumi[] {
+  return (preguntas ?? [])
+    .filter(recibida)
+    .map((p) => ({
+      codigo: p.codigo,
+      nombre: p.nombre,
+      texto: p.redactada ? p.texto : null,
+      estado: p.personalizada && !p.redactada ? ('sellada' as const) : ('lista' as const),
+      bandeja: p.bandeja!,
+      recibidaEn: p.recibida_en,
+      remitente: p.actividad,
+      entrada: p.entrada,
+      respondidaEn: p.respondida_en,
+      archivadaEn: p.archivada_en,
+    }))
+    .sort((a, b) => (b.recibidaEn ?? '').localeCompare(a.recibidaEn ?? ''))
+}
+// La carta que abrió una actividad (drawer del mapa).
+export const cartaDeActividad = (cartas: CartaLumi[], actividad: string) =>
+  cartas.find((c) => c.remitente?.codigo === actividad)
+
+// «hoy», «ayer» o «hace N días», por fecha de calendario (sin zona, como guarda el servidor).
+export function fechaRelativa(iso: string, ahora: Date): string {
+  const dia = (fecha: Date) => Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate())
+  const dias = Math.round((dia(ahora) - dia(new Date(iso))) / 86_400_000)
+  return dias <= 0 ? 'hoy' : dias === 1 ? 'ayer' : `hace ${dias} días`
 }
 
 // Nombres de nivel del front para los niveles 0–5 del servidor; el 0 (sin puntos) comparte el primero.

@@ -723,3 +723,189 @@
     animation: none;
   }
 }
+
+/* Ajuste del diario (F05): portada en tres zonas. Arriba, «Hoy» con el buzón y la tarjeta de Lumi; abajo, el
+   cuaderno. Tarjetas crema, dorado para Lumi y azul para las acciones. */
+.sx-j-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+.sx-j-today {
+  display: grid;
+  gap: 20px;
+}
+.sx-j-hoy,
+.sx-j-buzon {
+  border: 1px solid var(--sx-parchment-edge);
+  border-radius: 24px;
+  background: var(--sx-parchment);
+  color: var(--sx-parchment-ink);
+  padding: 24px;
+}
+.sx-j-hoy-header,
+.sx-j-buzon-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.sx-j-hoy-date {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.sx-j-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sx-gold) 18%, transparent);
+  color: var(--sx-gold-deep);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sx-j-hoy-label {
+  margin: 18px 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sx-gold-deep);
+}
+.sx-j-hoy-question {
+  margin: 12px 0 0;
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-style: italic;
+  line-height: 1.35;
+}
+.sx-j-hoy-actions,
+.sx-j-carta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+.sx-j-hoy-actions > button,
+.sx-j-carta-actions > button,
+.sx-j-carta > .sx-d-action {
+  min-height: 44px;
+}
+.sx-j-hoy-help,
+.sx-j-buzon-help {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--sx-parchment-muted);
+}
+.sx-j-buzon-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.sx-j-buzon-all {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sx-j-buzon-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  font-weight: 700;
+}
+.sx-j-buzon-list {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sx-j-carta {
+  border: 1px solid var(--sx-parchment-edge);
+  border-radius: 18px;
+  padding: 16px;
+}
+.sx-j-carta[data-estado='redaccion'] {
+  border-style: dashed;
+}
+.sx-j-carta-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-j-carta-question {
+  margin: 0;
+  font-style: italic;
+  font-size: 17px;
+}
+.sx-j-carta[data-completa] .sx-j-carta-question {
+  font-size: 22px;
+}
+.sx-j-carta-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+.sx-j-carta-seal {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--sx-gold);
+}
+.sx-j-lumi-card {
+  border: 1px solid var(--sx-night-border);
+  border-radius: 24px;
+  background: var(--sx-night-raised);
+  color: var(--sx-night-text);
+  padding: 24px;
+}
+.sx-j-lumi-card-head {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.sx-j-lumi-card-head h2 {
+  margin: 2px 0 8px;
+  font-size: 20px;
+}
+.sx-j-lumi-avatar {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border: 3px solid var(--sx-gold);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sx-j-chip-gold {
+  background: var(--sx-gold);
+  color: var(--sx-night);
+}
+.sx-j-lumi-card-next {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+.sx-j-lumi-card-small {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--sx-night-muted);
+}
+.sx-j-lumi-card-rule {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid var(--sx-night-border);
+}
+@media (max-width: 1023px) {
+  .sx-j-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

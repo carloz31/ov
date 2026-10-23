@@ -39,7 +39,16 @@ export type PointDetails = {
   revision?: boolean
   href?: string
   imageUrl?: string
-  journal?: { completed: boolean; activityId: string; title: string; prompt: string }
+  // Ajuste del diario (F05), solo api: `pregunta` es la carta del servidor que abrió la actividad y `remitente`, su
+  // título; el enlace abre esa carta en el diario.
+  journal?: {
+    completed: boolean
+    activityId: string
+    title: string
+    prompt: string
+    pregunta?: string
+    remitente?: string
+  }
 }
 
 export function getPointDetails(
@@ -69,7 +78,8 @@ export function getPointDetails(
         meta: getMissionMeta(mission),
         type: getActivityType(mission),
         description: mission.description,
-        requirement: point.status === 'locked' ? mensajeBloqueo(bloques, point.specActivityId ?? '') : undefined,
+        requirement:
+          point.status === 'locked' ? mensajeBloqueo(bloques, point.specActivityId ?? '') : undefined,
         actionLabel:
           point.status === 'locked'
             ? 'Actividad bloqueada'
@@ -85,7 +95,9 @@ export function getPointDetails(
         revision: point.status === 'completed',
       }
     const ruta =
-      actividad && idPresentacion === actividad.codigo ? detallesRuta(point, actividad, badge, bloques) : undefined
+      actividad && idPresentacion === actividad.codigo
+        ? detallesRuta(point, actividad, badge, bloques)
+        : undefined
     if (ruta) return ruta
     if (point.id === 'mara-test') {
       const secuencia = point.secuencia ?? []
@@ -97,7 +109,8 @@ export function getPointDetails(
         meta: `Interacción ${numero} de ${secuencia.length}`,
         type: 'Test',
         description: 'Conversa con Mara. No hay respuestas correctas o incorrectas.',
-        requirement: point.status === 'locked' ? mensajeBloqueo(bloques, point.specActivityId ?? '') : undefined,
+        requirement:
+          point.status === 'locked' ? mensajeBloqueo(bloques, point.specActivityId ?? '') : undefined,
         actionLabel:
           point.status === 'locked'
             ? 'Encuentro bloqueado'
