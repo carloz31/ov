@@ -1,5 +1,6 @@
 import { useJournalPage } from '@/features/journal/hooks/useJournalPage'
-import { X } from 'lucide-react'
+import { BookOpen, TriangleAlert } from 'lucide-react'
+import { AvisoToast } from '@/components/student/AvisoToast'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { DiscoveryStage } from '@/features/discovery/components/DiscoveryStage'
 import '@/features/journal/styles/journal.css'
@@ -50,12 +51,14 @@ function StudentJournalView() {
   return (
     <DiscoveryStage ambient="journal">
       {saveNotice && (
-        <p role="status" className="sx-j-save-notice">
-          {saveNotice}
-          <button type="button" aria-label="Cerrar aviso" onClick={() => setSaveNotice('')}>
-            <X aria-hidden="true" size={18} />
-          </button>
-        </p>
+        <AvisoToast
+          key={saveNotice.id}
+          icono={saveNotice.error ? TriangleAlert : BookOpen}
+          etiqueta="Mi diario"
+          titulo={saveNotice.titulo}
+          descripcion={saveNotice.descripcion}
+          onDismiss={() => setSaveNotice(null)}
+        />
       )}
       {diarioServidor?.error && (
         <p role="status" className="sx-j-save-notice">

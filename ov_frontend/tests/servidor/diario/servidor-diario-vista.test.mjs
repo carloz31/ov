@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -149,4 +150,34 @@ test('la página guarda en el servidor: libre, carta o del día, editar y borrar
   assert.match(fuente, /editarEntrada\(numero, texto, titulo\)/)
   assert.match(fuente, /borrarEntrada\(numero\)/)
   assert.match(fuente, /searchParams\.get\('pregunta'\)/)
+})
+
+// Ajuste tras la prueba manual (usuario): el aviso de guardado es un toast que se cierra solo.
+test('el aviso de guardado usa AvisoToast, sin acción y con la descripción opcional', () => {
+  const { AvisoToast } = app.load('src/components/student/AvisoToast.tsx')
+  const icono = () => null
+  const conDescripcion = renderToStaticMarkup(
+    React.createElement(AvisoToast, {
+      icono,
+      etiqueta: 'Mi diario',
+      titulo: '¡Conversación guardada!',
+      descripcion: 'Tu amistad con Lumi suma una conversación.',
+      onDismiss: nada,
+    }),
+  )
+  assert.match(conDescripcion, /class="sx-root sx-glass sx-badge-toast"/)
+  assert.match(conDescripcion, /¡Conversación guardada!/)
+  assert.match(conDescripcion, /Tu amistad con Lumi suma una conversación\./)
+  const sola = renderToStaticMarkup(
+    React.createElement(AvisoToast, {
+      icono,
+      etiqueta: 'Mi diario',
+      titulo: 'Conversación guardada.',
+      onDismiss: nada,
+    }),
+  )
+  assert.doesNotMatch(sola, /sx-toast-linea/)
+  const vista = readFileSync('src/pages/student/StudentJournalView.tsx', 'utf8')
+  assert.match(vista, /<AvisoToast\s+key=\{saveNotice\.id\}/)
+  assert.doesNotMatch(vista, /sx-j-save-notice">\s*\{saveNotice/)
 })

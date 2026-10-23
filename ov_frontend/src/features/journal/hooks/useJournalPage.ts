@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useSearchParams } from 'react-router'
 
@@ -19,6 +19,20 @@ import type { CartaLumi } from '@/lib/servidor/adaptadoresDiario'
 import { type DailyQuestionEditorContext } from '@/features/journal/components/DailyQuestionCard'
 
 type JournalScreen = 'home' | 'write' | 'detail'
+export type AvisoDiario = { titulo: string; descripcion?: string; error?: boolean }
+const avisos = {
+  suma: { titulo: '¡Conversación guardada!', descripcion: 'Tu amistad con Lumi suma una conversación.' },
+  tope: {
+    titulo: 'Conversación guardada.',
+    descripcion: 'Hoy ya contaron tus 3 conversaciones; esta igual se guarda.',
+  },
+  editada: { titulo: 'Conversación actualizada.', descripcion: 'Editar no suma conversaciones.' },
+} satisfies Record<string, AvisoDiario>
+const avisoError = (titulo: string, error: Parameters<typeof mensajeErrorServidor>[0]): AvisoDiario => ({
+  titulo,
+  descripcion: mensajeErrorServidor(error),
+  error: true,
+})
 type JournalGrouping = 'timeline' | 'topics'
 export function useJournalPage() {
   const state = useAdventure()
@@ -80,7 +94,12 @@ export function useJournalPage() {
   const [escribiendo, setEscribiendo] = useState(false)
   const [preguntaAbierta, setPreguntaAbierta] = useState<string>()
   const returnFocus = useReturnFocus()
-  const [saveNotice, setSaveNotice] = useState('')
+  // El aviso tras guardar, editar o borrar se muestra como toast (`AvisoToast`); `error` cambia su ícono.
+  // Cada aviso lleva su `id`: uno nuevo reinicia el toast aunque repita el texto.
+  const [saveNotice, guardarAviso] = useState<(AvisoDiario & { id: number }) | null>(null)
+  const avisoId = useRef(0)
+  const setSaveNotice = (aviso: AvisoDiario | null) =>
+    guardarAviso(aviso && { ...aviso, id: ++avisoId.current })
   const requestedMemory = Number(searchParams.get('memory'))
   useEffect(() => {
     if (Number.isInteger(requestedMemory) && requestedMemory >= 1 && requestedMemory <= bond.memoriesOpened)
@@ -109,7 +128,7 @@ export function useJournalPage() {
     title,
     lockedTags: initialTags,
   }: DailyQuestionEditorContext) {
-    setSaveNotice('')
+    setSaveNotice(null)
     setEditingId(undefined)
     setDestino(linkedActivityId.startsWith('daily-prompt-') ? { delDia: true } : {})
     setBody('')
@@ -123,7 +142,7 @@ export function useJournalPage() {
   }
 
   function startBlankEntry() {
-    setSaveNotice('')
+    setSaveNotice(null)
     setEditingId(undefined)
     setBody('')
     setTags([])
@@ -139,7 +158,7 @@ export function useJournalPage() {
 
   // F05: una carta de Lumi del servidor; su texto llega con `abrir-pregunta` (las personalizadas tardan).
   async function abrirCarta(carta: CartaLumi) {
-    setSaveNotice('')
+    setSaveNotice(null)
     setEditingId(undefined)
     setDestino({ pregunta: carta.codigo })
     setBody('')
@@ -155,7 +174,7 @@ export function useJournalPage() {
     if (respuesta.tipo === 'ok') setPromptShown(respuesta.datos.texto)
     else {
       setScreen('home')
-      setSaveNotice(mensajeErrorServidor(respuesta))
+      setSaveNotice(avisoError('No se pudo abrir la carta', respuesta))
     }
   }
   // Desde el cierre de una actividad (`?pregunta=`): abre esa carta cuando llegan las preguntas.
@@ -193,26 +212,26 @@ export function useJournalPage() {
       const numero = numeroDe(editingId)
       if (numero === undefined) return
       const respuesta = await editarEntrada(numero, texto, titulo)
-      if (respuesta.tipo !== 'ok') return setSaveNotice(mensajeErrorServidor(respuesta))
+      if (respuesta.tipo !== 'ok') return setSaveNotice(avisoError('No se pudo guardar', respuesta))
       setSelectedId(editingId)
       setEditingId(undefined)
       setScreen('detail')
-      return setSaveNotice('Conversación actualizada. Editar no suma conversaciones.')
+      return setSaveNotice(avisos.editada)
     }
     const antes = servidor.puntos
     const respuesta = await escribirEntrada({ texto, titulo, ...destino })
     if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar')
-      return setSaveNotice(mensajeErrorServidor(respuesta))
+      return setSaveNotice(avisoError('No se pudo guardar', respuesta))
     setDestino({})
     setScreen('home')
     // La amistad cuenta escrituras con tope diario: se sabe si sumó comparando los puntos.
     const amistad = await asegurarSeccion('amistad')
     setSaveNotice(
       amistad.tipo !== 'ok' || antes === null
-        ? 'Conversación guardada.'
+        ? { titulo: 'Conversación guardada.' }
         : amistad.datos.puntos > antes
-          ? '¡Conversación guardada! Tu amistad con Lumi suma una conversación.'
-          : `Conversación guardada. Hoy ya contaron tus 3 conversaciones; esta igual se guarda.`,
+          ? avisos.suma
+          : avisos.tope,
     )
   }
 
@@ -245,13 +264,7 @@ export function useJournalPage() {
     setSelectedId(editingId)
     setEditingId(undefined)
     setScreen(editingId ? 'detail' : 'home')
-    setSaveNotice(
-      editingId
-        ? 'Conversación actualizada. Editar no suma conversaciones.'
-        : remaining > 0
-          ? '¡Conversación guardada! Tu amistad con Lumi suma una conversación.'
-          : `Conversación guardada. Hoy ya contaron tus 3 conversaciones; esta igual se guarda.`,
-    )
+    setSaveNotice(editingId ? avisos.editada : remaining > 0 ? avisos.suma : avisos.tope)
   }
 
   function editEntry(entry: JournalEntry) {
@@ -272,7 +285,7 @@ export function useJournalPage() {
   async function borrarEnServidor(numero: number) {
     const respuesta = await borrarEntrada(numero)
     setDeleteOpen(false)
-    if (respuesta.tipo !== 'ok') return setSaveNotice(mensajeErrorServidor(respuesta))
+    if (respuesta.tipo !== 'ok') return setSaveNotice(avisoError('No se pudo borrar', respuesta))
     setSelectedId(undefined)
     setScreen('home')
   }

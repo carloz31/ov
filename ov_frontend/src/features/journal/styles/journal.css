@@ -604,12 +604,6 @@
   margin-bottom: 24px;
   font-size: 14px;
 }
-.sx-j-save-notice button {
-  display: grid;
-  place-items: center;
-  min-width: 44px;
-  min-height: 44px;
-}
 .sx-root.sx-j-delete-dialog {
   background: var(--sx-parchment);
   color: var(--sx-parchment-ink);
