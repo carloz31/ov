@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-22 · Ajustes Central (7) · Favoritos de testimonios
+
+- **Dato:** la estrella de la tarjeta y «Agregar a favoritos» del visor de un testimonio. El backend no tiene favoritos de testimonios (`TipoFavorito`: CARRERA, OCUPACION, INSTITUCION).
+- **Dónde se muestra:** tarjeta del testimonio en Recursos y visor del testimonio.
+- **Opciones:** agregar TESTIMONIO (y FICHA) a los favoritos del servidor; mantenerlos en el navegador.
+- **Si no se muestra en el servidor:** se guardan en `adventure.bookmarks`, como las fichas, solo en ese navegador.
+- **Estado:** el usuario decidió dejarlos locales en los ajustes de la Central.
+
 ## 2026-10-22 · Ajustes Central (6) · Entrada de diario en el drawer (brecha de F04 sobre F00)
 
 - **Dato:** en F00 se decidió que el drawer de actividad conserva la entrada de diario desbloqueada por la actividad, con su enlace. En api el drawer no la muestra: `details.journal` solo se arma en local (`pointDetails.ts`), y ninguna consulta del drawer pide las preguntas de diario que abre la actividad.
@@ -48,7 +56,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** dentro del visor de la mochila (`VisorRecurso`), que desde F04d es la única presentación de un recurso.
 - **Opciones:** incrustar el video en `ResourceContent` cuando el enlace es de YouTube, como hacía el drawer «Fichas para tu camino»; abrirlo solo con «Abrir fuente del recurso»; abrir tipos de recurso que hoy no se abren.
 - **Si no se muestra:** el video se abre con «Abrir fuente del recurso» si tiene enlace; sin enlace (como `rec-video-mitos`), el visor muestra el aviso de «próximamente». Nada que se abría deja de abrirse.
-- **Estado:** fuera de alcance de F04d por decisión del usuario.
+- **Estado:** fuera de alcance de F04d por decisión del usuario. Ajustes Central (7): los testimonios sí incrustan su video de YouTube en el visor (ya lo hacía `ResourceContent` para enlaces de YouTube); los recursos de video del catálogo siguen igual.
 
 ## 2026-10-22 · F04 · Contenido de la ficha `t-ficha` para repasar antes de la batalla
 
@@ -355,7 +363,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** tarjeta de testimonio dentro de «Nuevo en tu mochila» y visor seleccionado mediante `?kind=testimonial&ficha={codigo}`.
 - **Opciones:** completar el catálogo narrativo con metadatos y contenido para esos códigos; definir una respuesta de lectura de testimonios con persona/rol/cita en su iteración; conservar solo el nombre en el cierre hasta disponer de contenido e integración remota.
 - **Si no se muestra:** el cierre presenta el nombre real y su enlace, sin atribuciones o citas inventadas. La selección local funciona cuando el testimonio existe, con sus candados actuales. En API la mochila conserva solo las fichas remotas de esta iteración: un testimonio sin integración no abre un visor de contenido, aunque su enlace ya incluye el código y filtro correctos.
-- **Estado:** resuelto en F04: en api la tarjeta muestra título, descripción y «Ver testimonio» (enlace en otra pestaña); persona, rol y cita no se muestran porque el backend no los tiene. El enlace del cierre abre la pestaña de testimonios.
+- **Estado:** resuelto en F04: en api la tarjeta muestra título, descripción y «Ver testimonio» (enlace en otra pestaña). Ajustes Central (7): el backend entrega persona, ocupación, años, cita y el caso que lo regala; la tarjeta es la del prototipo y «Escuchar su historia» abre el visor, también desde el cierre del caso.
 
 ## 2026-10-09 · Anexo F3 · Conservar el cierre al volver de una ficha
 

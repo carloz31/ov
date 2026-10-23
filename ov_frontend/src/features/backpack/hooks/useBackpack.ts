@@ -82,21 +82,13 @@ export function useBackpack() {
   }
   function openResource(resource: TravelResource) {
     if (!isUnlocked(resource)) return
-    if (resource.servidor) return verTestimonio(resource)
+    // Ajustes Central (7): un testimonio del servidor se abre en el visor y registra su vista.
+    if (resource.servidor) void registrarVistaTestimonio(resource.id)
     setSelectedId(resource.id)
     updateAdventure((current) =>
       current.visits.includes(resource.id)
         ? current
         : { ...current, visits: [...current.visits, resource.id] },
-    )
-  }
-  // El enlace se abre en el mismo clic, para que el navegador no bloquee la pestaña; la vista se
-  // registra después, sin esperar la respuesta.
-  function verTestimonio(resource: TravelResource) {
-    if (resource.url) window.open(resource.url, '_blank', 'noopener,noreferrer')
-    void registrarVistaTestimonio(resource.id)
-    updateAdventure((current) =>
-      current.visits.includes(resource.id) ? current : { ...current, visits: [...current.visits, resource.id] },
     )
   }
   const clear = () => {
@@ -128,8 +120,8 @@ export function useBackpack() {
     reintentarRequisito: requisito.reintentar,
     mostrarRequisito: modoApi,
     tituloRequisito: requisito.titulo,
-    // El bloque fijo de «más voces» es del modo local.
-    muestraMasVoces: !modoApi,
+    // Ajustes Central (7): el cierre de «más voces» también en api.
+    muestraMasVoces: true,
     isUnlocked,
     visible,
     sheets,

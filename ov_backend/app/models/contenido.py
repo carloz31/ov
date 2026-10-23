@@ -126,8 +126,14 @@ class Testimonio(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     titulo: Mapped[str]
     descripcion: Mapped[str] = mapped_column(Text)
+    # El enlace es el video (YouTube) y la descripción, el texto completo del testimonio.
     enlace: Mapped[str]
     pista: Mapped[str | None] = mapped_column(Text)
+    # Ajustes Central (7): quién lo cuenta. El caso que lo regala se deduce de su regla SUPERA_CASO.
+    persona: Mapped[str | None]
+    ocupacion_id: Mapped[int | None] = mapped_column(ForeignKey("ocupacion.id"))
+    anios_experiencia: Mapped[int | None]
+    cita: Mapped[str | None] = mapped_column(Text)
 
 
 class PreguntaDiario(Base):

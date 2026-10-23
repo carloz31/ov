@@ -357,10 +357,25 @@ CONFIGURACION_BATALLAS = {'t-batalla': (5, 3, 7)}
 # Mantener sincronizado con ese archivo (lo comprueba tests/servidor/casos en el front).
 CONFIGURACION_CASOS = {'t-caso': (14, (2, 3, 3, 1, 2, 3))}
 
-# (código, título, descripción, enlace, pista). La pista se muestra mientras el testimonio está bloqueado (B08).
-TESTIMONIOS = (('t-testimonio-1', 'Testimonio de prueba 1', 'Trayectoria de prueba 1.', 'https://example.test/t1',
-                'Resuelve el caso de prueba para conocer este testimonio.'),
-               ('t-testimonio-2', 'Testimonio de prueba 2', 'Trayectoria de prueba 2.', 'https://example.test/t2', None))
+# (código, título, descripción, enlace, pista, persona, ocupación, años de experiencia, cita). La pista se
+# muestra mientras el testimonio está bloqueado (B08); la descripción es el texto completo y el enlace, el
+# video. DATO DE PRUEBA: persona, cita, texto y video adaptados de los testimonios del front
+# (`professionalTestimonials` en ov_frontend/src/data/catalog/occupations.ts).
+TESTIMONIOS = (
+    ('t-testimonio-1', 'Calma y cuidado en una emergencia',
+     'Mi trabajo consiste en evaluar rápidamente qué ocurre, brindar los primeros cuidados y decidir qué necesita '
+     'la persona antes de llegar a un hospital. Cada situación es diferente y por eso practicamos constantemente. '
+     'También aprendí que explicar con calma lo que estamos haciendo puede ayudar tanto como una intervención '
+     'técnica.', 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+     'Resuelve el caso de prueba para conocer este testimonio.', 'Luis Mendoza', 'paramedic', 5,
+     'Ayudar en una emergencia exige técnica, calma y una comunicación muy humana.'),
+    ('t-testimonio-2', 'Puentes entre idiomas',
+     'Trabajo con invitados, conferencistas y equipos de producción de distintos países. Antes de cada evento '
+     'investigo el tema y preparo vocabulario especializado. Durante una conversación debo escuchar, comprender la '
+     'intención y comunicarla con precisión, incluso cuando todo ocurre muy rápido.',
+     'https://www.youtube.com/watch?v=aqz-KE-bpKQ', None, 'Sofía Kim', 'translator', 6,
+     'Traducir no es reemplazar palabras: es ayudar a que dos personas realmente se comprendan.'),
+)
 
 # (código, orden, título, pregunta del estudiante, pregunta del apoderado (None: la misma), preguntas guía,
 # mensaje de diferencias). El estudiante las habilita con reglas CONVERSACION; el apoderado, todas tras su carta.
@@ -533,8 +548,13 @@ def _cargar_estructura(sesion):
                                 audiencia=modelos.Audiencia(a)) for c, num, n, e, a in BLOQUES}
     fichas = {c: modelos.Ficha(codigo=c, titulo=t, contenido=texto, audiencia=modelos.Audiencia(a))
               for c, t, texto, a in FICHAS}
-    testimonios = {c: modelos.Testimonio(codigo=c, titulo=t, descripcion=d, enlace=e, pista=p)
-                   for c, t, d, e, p in TESTIMONIOS}
+    ocupaciones = {o.codigo: o for o in sesion.scalars(select(modelos.Ocupacion))}
+    for c, *_, ocupacion, _anios, _cita in TESTIMONIOS:
+        if ocupacion not in ocupaciones:
+            raise ValueError(f'El testimonio {c} apunta a una ocupación inexistente: {ocupacion}')
+    testimonios = {c: modelos.Testimonio(codigo=c, titulo=t, descripcion=d, enlace=e, pista=p, persona=persona,
+                                         ocupacion_id=ocupaciones[ocupacion].id, anios_experiencia=anios, cita=cita)
+                   for c, t, d, e, p, persona, ocupacion, anios, cita in TESTIMONIOS}
     conversaciones = {c: modelos.Conversacion(codigo=c, orden=o, titulo=t, pregunta_estudiante=pe,
                                              pregunta_apoderado=pa, preguntas_guia=list(guia), mensaje_diferencias=m)
                       for c, o, t, pe, pa, guia, m in CONVERSACIONES}

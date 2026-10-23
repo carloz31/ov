@@ -1,20 +1,44 @@
 [
   {
+    "anios_experiencia": 5,
+    "caso": {
+      "codigo": "t-caso",
+      "disponible": true,
+      "titulo": "Caso de prueba"
+    },
+    "cita": "Ayudar en una emergencia exige técnica, calma y una comunicación muy humana.",
     "codigo": "t-testimonio-1",
-    "descripcion": "Trayectoria de prueba 1.",
-    "enlace": "https://example.test/t1",
+    "descripcion": "Mi trabajo consiste en evaluar rápidamente qué ocurre, brindar los primeros cuidados y decidir qué necesita la persona antes de llegar a un hospital. Cada situación es diferente y por eso practicamos constantemente. También aprendí que explicar con calma lo que estamos haciendo puede ayudar tanto como una intervención técnica.",
+    "enlace": "https://www.youtube.com/watch?v=ysz5S6PUM-U",
     "estado": "DISPONIBLE",
+    "ocupacion": {
+      "codigo": "paramedic",
+      "titulo": "Paramédico/a"
+    },
+    "persona": "Luis Mendoza",
     "pista": null,
-    "titulo": "Testimonio de prueba 1",
+    "titulo": "Calma y cuidado en una emergencia",
     "visto": true
   },
   {
+    "anios_experiencia": 6,
+    "caso": {
+      "codigo": "t-caso",
+      "disponible": true,
+      "titulo": "Caso de prueba"
+    },
+    "cita": "Traducir no es reemplazar palabras: es ayudar a que dos personas realmente se comprendan.",
     "codigo": "t-testimonio-2",
-    "descripcion": "Trayectoria de prueba 2.",
-    "enlace": "https://example.test/t2",
+    "descripcion": "Trabajo con invitados, conferencistas y equipos de producción de distintos países. Antes de cada evento investigo el tema y preparo vocabulario especializado. Durante una conversación debo escuchar, comprender la intención y comunicarla con precisión, incluso cuando todo ocurre muy rápido.",
+    "enlace": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
     "estado": "DISPONIBLE",
+    "ocupacion": {
+      "codigo": "translator",
+      "titulo": "Traductor/a"
+    },
+    "persona": "Sofía Kim",
     "pista": null,
-    "titulo": "Testimonio de prueba 2",
+    "titulo": "Puentes entre idiomas",
     "visto": false
   }
 ]

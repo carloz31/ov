@@ -25,7 +25,7 @@
       ],
       "objetivo": {
         "codigo": "t-testimonio-1",
-        "nombre": "Testimonio de prueba 1"
+        "nombre": "Calma y cuidado en una emergencia"
       },
       "regla": "R-t-testimonio-1",
       "tipo_objetivo": "TESTIMONIO"
@@ -43,7 +43,7 @@
       ],
       "objetivo": {
         "codigo": "t-testimonio-2",
-        "nombre": "Testimonio de prueba 2"
+        "nombre": "Puentes entre idiomas"
       },
       "regla": "R-t-testimonio-2",
       "tipo_objetivo": "TESTIMONIO"

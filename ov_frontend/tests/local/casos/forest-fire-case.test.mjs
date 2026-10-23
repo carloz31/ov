@@ -570,7 +570,34 @@ test('final report hides extra screens and budget evaluation and switches button
     assert.ok(!html.includes('Intentar llegar a'))
     assert.ok(!html.includes('<a '))
     assert.equal(html.includes('<li>Bombero/a</li>'), score >= 10)
+    // Sin testimonio asociado, el bloque no aparece.
+    assert.ok(!html.includes('Testimonio desbloqueado'))
   }
+  // Ajustes Central (7): con testimonio, la tarjeta de Recursos y «Escuchar su historia».
+  const html = renderToStaticMarkup(
+    React.createElement(FinalReportScreen, {
+      assignments: team(data, 14),
+      bestScore: 14,
+      newIcons: [],
+      testimonio: {
+        codigo: 't-1',
+        nombre: 'Luis Mendoza',
+        rol: 'Paramédico/a',
+        titulo: 'Calma',
+        cita: 'Cita',
+        regalo: 'Incendio forestal',
+      },
+      etiquetaVolver: 'Volver a la ciudad',
+      onRestart() {},
+      onFinish() {},
+      extraReason: '',
+      extraProfessionalId: '',
+    }),
+  )
+  assert.match(html, /Testimonio desbloqueado/)
+  assert.match(html, /<span>LM<\/span>/)
+  assert.match(html, /Te la regaló el llamado <strong>Incendio forestal<\/strong>/)
+  assert.match(html, /Escuchar su historia/)
 })
 
 test('actual case flow enforces gates, allows review changes, records once on report and starts a clean retry', () => {
@@ -638,7 +665,8 @@ test('topbar help opens on demand with the active step guidance', () => {
     { ayudaCentral } = f.load('src/data/content/forestFireCase.ts')
   const abiertas = []
   let tree
-  const draw = () => (tree = f.draw(ForestFireCaseView, { onClose() {}, onAyuda: (pasos) => abiertas.push(pasos) }))
+  const draw = () =>
+    (tree = f.draw(ForestFireCaseView, { onClose() {}, onAyuda: (pasos) => abiertas.push(pasos) }))
   draw()
   assert.deepEqual(abiertas, [])
   named(tree, 'ForestFireCaseHeader').props.onAyuda()
@@ -655,7 +683,8 @@ test('topbar help opens on demand with the active step guidance', () => {
   assert.equal(pistas[0].props.label, 'Ver lo que dijo la comunidad')
   assert.equal(elements(tree, (n) => n.props?.className?.includes?.('ff-community-desktop')).length, 0)
   assert.ok(
-    elements(tree, (n) => n.type === 'p' && n.props.children === data.forestFirePhases[0].problems[0].detail).length,
+    elements(tree, (n) => n.type === 'p' && n.props.children === data.forestFirePhases[0].problems[0].detail)
+      .length,
   )
 })
 

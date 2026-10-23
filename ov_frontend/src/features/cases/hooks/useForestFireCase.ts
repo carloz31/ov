@@ -3,11 +3,7 @@ import { modoApi } from '@/config/env'
 import { forestFirePhases } from '@/data/content/forestFireCase'
 import { dimensionNames } from '@/features/discovery/lib/catalogDetails'
 import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
-import {
-  superaCaso,
-  textoPuntajeCaso,
-  textoTiposCaso,
-} from '@/lib/servidor/adaptadoresCasos'
+import { superaCaso, textoPuntajeCaso, textoTiposCaso } from '@/lib/servidor/adaptadoresCasos'
 import { consultarCasos, resolverCaso } from '@/store/servidor/casos'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { OcupacionNueva } from '@/types/servidor'
@@ -107,7 +103,8 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     setEnviando(true)
     setErrorEnvio('')
     const respuesta = await resolverCaso(actividad!, puntaje, ocupaciones)
-    const casos = respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar' ? await consultarCasos() : null
+    const casos =
+      respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar' ? await consultarCasos() : null
     setEnviando(false)
     const caso = casos?.tipo === 'ok' ? casos.datos.find((c) => c.actividad === actividad) : undefined
     if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar') {

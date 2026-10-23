@@ -356,6 +356,10 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
                                                                             ('BLOQUEADA', False, None)]
     final = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-final'])
     assert [(t.estado, t.visto, t.pista) for t in final] == [('DISPONIBLE', True, None), ('DISPONIBLE', False, None)]
+    # Ajustes Central (7): quién lo cuenta, solo disponible; el caso que lo regala, siempre.
+    assert [(t.persona, t.caso.codigo) for t in inicial] == [(None, 't-caso'), (None, 't-caso')]
+    assert [(t.persona, t.ocupacion.codigo, t.anios_experiencia) for t in final] == [
+        ('Luis Mendoza', 'paramedic', 5), ('Sofía Kim', 'translator', 6)]
     # B11: planes con sus secciones, requisitos de comparar y proyecto, y referencias de planes.
     for nombre in ('crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
                    'medidores-plan', 'guardar-seccion-pasos', 'paso-hecho'):

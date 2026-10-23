@@ -86,9 +86,12 @@ def esperado(ruta, completo):
         ], 'afinidad': 0.0}
     if ruta == 'testimonios':
         # Se abren al superar el caso, que en este recorrido sigue sin resolverse.
+        # Ajustes Central (7): bloqueados, sin quién lo cuenta y con el caso que los regala, aún cerrado.
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'visto': False, 'pista': pista,
-                 'descripcion': None, 'enlace': None}
-                for codigo, titulo, _, _, pista in sorted(TESTIMONIOS)]
+                 'descripcion': None, 'enlace': None, 'persona': None, 'ocupacion': None,
+                 'anios_experiencia': None, 'cita': None,
+                 'caso': {'codigo': 't-caso', 'titulo': 'Caso de prueba', 'disponible': False}}
+                for codigo, titulo, _, _, pista, *_ in sorted(TESTIMONIOS)]
     if ruta == 'secciones':
         return [(codigo, 'DISPONIBLE' if completo else 'BLOQUEADA', completo) for codigo in SECCIONES_ESTUDIANTE]
     if ruta == 'diario/preguntas':

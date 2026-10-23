@@ -1,20 +1,38 @@
 [
   {
+    "anios_experiencia": null,
+    "caso": {
+      "codigo": "t-caso",
+      "disponible": false,
+      "titulo": "Caso de prueba"
+    },
+    "cita": null,
     "codigo": "t-testimonio-1",
     "descripcion": null,
     "enlace": null,
     "estado": "BLOQUEADA",
+    "ocupacion": null,
+    "persona": null,
     "pista": "Resuelve el caso de prueba para conocer este testimonio.",
-    "titulo": "Testimonio de prueba 1",
+    "titulo": "Calma y cuidado en una emergencia",
     "visto": false
   },
   {
+    "anios_experiencia": null,
+    "caso": {
+      "codigo": "t-caso",
+      "disponible": false,
+      "titulo": "Caso de prueba"
+    },
+    "cita": null,
     "codigo": "t-testimonio-2",
     "descripcion": null,
     "enlace": null,
     "estado": "BLOQUEADA",
+    "ocupacion": null,
+    "persona": null,
     "pista": null,
-    "titulo": "Testimonio de prueba 2",
+    "titulo": "Puentes entre idiomas",
     "visto": false
   }
 ]

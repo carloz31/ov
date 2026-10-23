@@ -182,7 +182,7 @@ function StudentBackpackView() {
         Las estrellas son tuyas: guarda lo que quieras encontrar rápido cuando armes tus planes.
       </p>
       <VisorRecurso
-        resource={selected && isUnlocked(selected) && !selected.servidor ? selected : undefined}
+        resource={selected && isUnlocked(selected) ? selected : undefined}
         onClose={() => setSelectedId(null)}
       />
       {mostrarRequisito && (

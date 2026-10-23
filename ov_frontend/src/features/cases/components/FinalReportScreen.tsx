@@ -14,6 +14,9 @@ import {
 } from '@/features/cases/lib/forestFireCaseLogic'
 import type { ForestFireAssignments } from '@/types/cases'
 import type { OcupacionNueva } from '@/types/servidor'
+import type { TestimonioCaso } from '@/features/cases/hooks/useTestimonioCaso'
+import { TarjetaTestimonio } from '@/components/student/TarjetaTestimonio'
+import { abrirTestimonio } from '@/store/visorRecursoStore'
 import type { ResultadoCasoServidor } from '@/features/cases/hooks/useForestFireCase'
 
 import { SatisfactionBar } from '@/features/cases/components/SatisfactionBar'
@@ -22,6 +25,7 @@ export function FinalReportScreen({
   assignments,
   bestScore,
   newIcons,
+  testimonio,
   etiquetaVolver,
   onRestart,
   onFinish,
@@ -32,6 +36,8 @@ export function FinalReportScreen({
   assignments: ForestFireAssignments
   bestScore: number
   newIcons: OcupacionNueva[]
+  // Ajustes Central (7): el testimonio que regala el caso, con la tarjeta de Recursos; sin él, no hay bloque.
+  testimonio?: TestimonioCaso
   etiquetaVolver: string
   onRestart: () => void
   onFinish: () => void
@@ -101,6 +107,21 @@ export function FinalReportScreen({
               <p>Ya tenías los íconos de las ocupaciones que aportaron en este intento.</p>
             )}
           </div>
+          {testimonio && (
+            <div className="ff-reward ff-reward-testimonio">
+              <p className="ff-eyebrow">Testimonio desbloqueado</p>
+              <article className="sx-b-card sx-b-voice sx-b-unlocked">
+                <TarjetaTestimonio
+                  nombre={testimonio.nombre}
+                  rol={testimonio.rol}
+                  titulo={testimonio.titulo}
+                  cita={testimonio.cita}
+                  regalo={testimonio.regalo}
+                  onEscuchar={() => abrirTestimonio(testimonio.codigo)}
+                />
+              </article>
+            </div>
+          )}
         </div>
       ) : (
         <div className="ff-dark ff-locked">

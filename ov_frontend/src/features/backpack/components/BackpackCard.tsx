@@ -5,7 +5,6 @@ import {
   Languages,
   LockKeyhole,
   MessageSquareQuote,
-  Play,
   ScrollText,
   Sparkles,
   type LucideIcon,
@@ -17,6 +16,8 @@ import { studentResourceRequirement as resourceRequirement } from '@/features/ba
 import { cityCases } from '@/data/content/adventure'
 
 import { FavoriteButton } from '@/components/student/FavoriteButton'
+import { TarjetaTestimonio } from '@/components/student/TarjetaTestimonio'
+import { VozPorDescubrir } from '@/components/student/VozPorDescubrir'
 
 const resourceIcons: Record<TravelResource['icon'], LucideIcon> = {
   compass: Compass,
@@ -108,44 +109,22 @@ export function BackpackCard({
         <TestimonioServidor
           resource={resource}
           unlocked={unlocked}
+          requisito={requirement.text}
           onOpen={onOpen}
           onRequirement={onRequirement}
         />
       ) : unlocked ? (
-        <>
-          <div className="sx-b-author">
-            <span>
-              {name
-                ?.split(' ')
-                .slice(0, 2)
-                .map((n) => n[0])
-                .join('') ?? 'VO'}
-            </span>
-            <div>
-              <strong>{name}</strong>
-              <p>{role}</p>
-            </div>
-          </div>
-          <h3>{resource.title}</h3>
-          <blockquote>“{resource.summary}”</blockquote>
-          <p>
-            Te la regaló el llamado <strong>{call?.title ?? 'de la ciudad'}</strong>
-          </p>
-          <button type="button" className="sx-d-action sx-d-action-gold" onClick={onOpen}>
-            <Play aria-hidden="true" size={18} />
-            Escuchar su historia
-          </button>
-        </>
+        <TarjetaTestimonio
+          nombre={name}
+          rol={role}
+          titulo={resource.title}
+          cita={resource.summary}
+          regalo={call?.title ?? 'de la ciudad'}
+          onEscuchar={onOpen}
+        />
       ) : (
         <>
-          <div className="sx-b-voice-mist" aria-hidden="true">
-            <span className="sx-b-silhouette" />
-            <LockKeyhole size={56} />
-          </div>
-          <p className="sx-b-voice-label">Una voz por descubrir</p>
-          <h3>{resource.title}</h3>
-          <p>{resource.summary}</p>
-          <div className="sx-b-requirement">{requirement.text}</div>
+          <VozPorDescubrir titulo={resource.title} intriga={resource.summary} requisito={requirement.text} />
           {playable ? (
             <button type="button" className="sx-d-action sx-d-action-ghost" onClick={onRequirement}>
               Ir a la Central de Casos
@@ -159,36 +138,37 @@ export function BackpackCard({
   )
 }
 
-// F04: testimonio del servidor. Disponible: título, descripción y enlace. Bloqueado: candado y título;
-// al pulsarlo, el pop up con la pista.
+// Ajustes Central (7): testimonio del servidor con la tarjeta del prototipo. Bloqueado, toda la tarjeta abre el
+// pop up de requisito (como las fichas bloqueadas, F04); si su caso aún no se puede jugar, «llega pronto».
 function TestimonioServidor({
   resource,
   unlocked,
+  requisito,
   onOpen,
   onRequirement,
 }: {
   resource: TravelResource
   unlocked: boolean
+  requisito: string
   onOpen: () => void
   onRequirement: () => void
 }) {
+  const [nombre, rol] = resource.author?.split(' · ') ?? []
   return unlocked ? (
-    <>
-      <h3>{resource.title}</h3>
-      <p>{resource.summary}</p>
-      <button type="button" className="sx-d-action sx-d-action-gold" onClick={onOpen}>
-        <Play aria-hidden="true" size={18} />
-        Ver testimonio
-        <span className="sr-only"> (abre otra pestaña)</span>
-      </button>
-    </>
+    <TarjetaTestimonio
+      nombre={nombre}
+      rol={rol}
+      titulo={resource.title}
+      cita={resource.summary}
+      regalo={resource.servidor?.caso?.titulo ?? 'de la ciudad'}
+      onEscuchar={onOpen}
+    />
   ) : (
     <button type="button" className="sx-b-voice-locked" onClick={onRequirement}>
-      <span className="sx-b-voice-mist" aria-hidden="true">
-        <span className="sx-b-silhouette" />
-        <LockKeyhole size={56} />
-      </span>
-      <h3>{resource.title}</h3>
+      <VozPorDescubrir titulo={resource.title} intriga={resource.summary} requisito={requisito} />
+      {resource.servidor?.caso && !resource.servidor.caso.disponible && (
+        <span className="sx-b-coming">Este llamado llega pronto</span>
+      )}
       <span className="sr-only">Bloqueado. Ver cómo conocer este testimonio.</span>
     </button>
   )

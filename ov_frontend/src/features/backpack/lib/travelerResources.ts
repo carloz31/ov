@@ -23,8 +23,8 @@ export type TravelResource = {
   fileFormat?: Recurso['formatoArchivo']
   source?: string
   author?: string
-  // Testimonio del servidor (F04): si está disponible y, bloqueado, su pista.
-  servidor?: { disponible: boolean; pista: string | null }
+  // Testimonio del servidor (F04): si está disponible, su pista y el caso que lo regala (ajustes, 7).
+  servidor?: { disponible: boolean; pista: string | null; caso: TestimonioEstado['caso'] }
 }
 
 const sheetDetails: Record<
@@ -111,41 +111,57 @@ export function getTravelResources(testimonios?: TestimonioEstado[] | null): Tra
       content: `## Tu primera brújula\n\n${resourceReading}\n\n## Tres pistas\n\n**Observa:** reconoce qué disfrutas, qué te cuesta y qué despierta tu curiosidad.\n\n**Conversa:** pregunta a personas de distintas profesiones cómo viven su trabajo.\n\n**Prueba:** elige una experiencia pequeña que te permita conocer algo nuevo.`,
     },
     ...sheets,
-    ...professionalTestimonials.map((item): TravelResource => ({
-      id: item.id,
-      title:
-        item.occupationId === 'paramedic' ? 'Calma y cuidado en una emergencia' : 'Puentes entre idiomas',
-      summary: item.summary,
-      description: item.story,
-      kind: 'testimonial',
-      icon: item.occupationId === 'paramedic' ? 'flame' : 'languages',
-      requirement: { caseId: item.unlockCaseId },
-      url: item.youtubeUrl,
-      author: `${item.personName} · ${item.currentRole} · ${item.yearsExperience} años de experiencia`,
-    })),
+    ...localTestimonials(),
   ]
   // F04d: en api, las fichas de la mochila son las de la cuenta en el servidor (título y estado), con el
   // contenido del catálogo del front; aparecen en cuanto se desbloquean, sin «guardarlas».
   return modoApi
     ? [
-        ...(obtenerEstadoServidor().fichas.datos ?? []).flatMap((f) => recursoDeFicha(f.codigo, f.titulo) ?? []),
+        ...(obtenerEstadoServidor().fichas.datos ?? []).flatMap(
+          (f) => recursoDeFicha(f.codigo, f.titulo) ?? [],
+        ),
         ...(testimonios ?? []).map(testimonioServidor),
       ]
     : resources
 }
-// F04: el servidor da título, descripción y enlace; no hay persona, rol ni cita.
-function testimonioServidor(t: TestimonioEstado): TravelResource {
+// Ajustes Central (7): como el prototipo local. Disponible: persona, ocupación y años (`author`), la cita
+// (`summary`), el texto completo y el video. Bloqueado: la pista como intriga y el caso que lo regala.
+export function testimonioServidor(t: TestimonioEstado): TravelResource {
+  const disponible = t.estado === 'DISPONIBLE'
+  const autor = [
+    t.persona,
+    t.ocupacion?.titulo,
+    t.anios_experiencia !== null ? `${t.anios_experiencia} años de experiencia` : null,
+  ].filter(Boolean)
   return {
     id: t.codigo,
     title: t.titulo,
-    summary: t.descripcion ?? '',
+    summary: (disponible ? t.cita : t.pista) ?? '',
     description: t.descripcion ?? '',
     kind: 'testimonial',
     icon: 'quote',
     requirement: { anyCase: true },
     url: t.enlace ?? undefined,
-    servidor: { disponible: t.estado === 'DISPONIBLE', pista: t.pista },
+    ...(t.persona ? { author: autor.join(' · ') } : {}),
+    servidor: { disponible, pista: t.pista, caso: t.caso },
   }
+}
+// El testimonio del prototipo local que regala un caso (cierre de la Central en local).
+export function testimonioLocal(id: string) {
+  return localTestimonials().find((r) => r.id === id)
+}
+function localTestimonials() {
+  return professionalTestimonials.map((item): TravelResource => ({
+    id: item.id,
+    title: item.occupationId === 'paramedic' ? 'Calma y cuidado en una emergencia' : 'Puentes entre idiomas',
+    summary: item.summary,
+    description: item.story,
+    kind: 'testimonial',
+    icon: item.occupationId === 'paramedic' ? 'flame' : 'languages',
+    requirement: { caseId: item.unlockCaseId },
+    url: item.youtubeUrl,
+    author: `${item.personName} · ${item.currentRole} · ${item.yearsExperience} años de experiencia`,
+  }))
 }
 
 export function isTravelResourceUnlocked(
@@ -164,6 +180,13 @@ export function isTravelResourceUnlocked(
 }
 
 export function resourceRequirement(resource: TravelResource) {
+  const caso = resource.servidor?.caso
+  if (modoApi && caso)
+    return {
+      text: `Completa la misión «${caso.titulo}» en Central de Casos.${caso.disponible ? '' : ' Misión disponible próximamente.'}`,
+      url: appPaths.student.exploration,
+      label: 'Ir a Central de Casos',
+    }
   if (modoApi)
     return {
       text: 'Consulta el requisito de esta ficha.',
@@ -237,7 +260,15 @@ export function recursoDeFicha(codigo: string, titulo?: string): TravelResource 
   return (
     recursoDesdeCatalogo(codigo, titulo) ??
     (titulo
-      ? { id: codigo, title: titulo, kind: 'sheet', icon: 'scroll', summary: '', description: '', requirement: { anyCase: true } }
+      ? {
+          id: codigo,
+          title: titulo,
+          kind: 'sheet',
+          icon: 'scroll',
+          summary: '',
+          description: '',
+          requirement: { anyCase: true },
+        }
       : undefined)
   )
 }

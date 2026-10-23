@@ -1,5 +1,6 @@
 import { ForestFireWorkspace } from '@/features/cases/components/ForestFireWorkspace'
 import { useForestFireCase } from '@/features/cases/hooks/useForestFireCase'
+import { useTestimonioCaso } from '@/features/cases/hooks/useTestimonioCaso'
 import { ArrowRight, Check } from 'lucide-react'
 import { ayudaCentral, forestFirePhases, forestFireProfessionals } from '@/data/content/forestFireCase'
 import { ForestFireCaseHeader } from './ForestFireCaseHeader'
@@ -61,6 +62,7 @@ export function ForestFireCaseView({
     complete,
     isStepComplete,
   } = model
+  const testimonio = useTestimonioCaso(screen === 'report', adventure, actividad)
   return (
     <div
       // Revisar no ocupa la pantalla fija de la escena: su lista hace scroll en el main.
@@ -244,6 +246,7 @@ export function ForestFireCaseView({
             assignments={assignments}
             bestScore={resultadoServidor?.mejor ?? adventure.caseBestScores['forest-fire'] ?? 0}
             newIcons={newIcons}
+            testimonio={testimonio}
             etiquetaVolver={etiquetaVolver}
             servidor={resultadoServidor}
             onRestart={restart}
