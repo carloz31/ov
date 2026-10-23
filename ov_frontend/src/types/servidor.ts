@@ -283,6 +283,22 @@ export type CasoCuenta = {
   mejor_puntaje: number | null
   puntaje_minimo: number
 }
+// app/schemas/catalogo.py (solo lo que usa la hoja de vida de la Central de casos).
+export type CarreraResumen = {
+  codigo: string
+  nombre: string
+  familia: { codigo: string; nombre: string }
+  riasec: string[]
+  es_favorita: boolean
+}
+export type OcupacionResumen = { codigo: string; codigo_onet: string; titulo: string; riasec: string[]; es_favorita: boolean }
+export type OcupacionDetalle = OcupacionResumen & {
+  descripcion: string | null
+  lugares_trabajo: string | null
+  conocimientos: string[]
+  habilidades: string[]
+  carreras: CarreraResumen[]
+}
 export type OcupacionColeccion = { ocupacion: string; titulo: string; caso: string; obtenida_en: string }
 export type TestimonioEstado = {
   codigo: string

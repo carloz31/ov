@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-22 · Ajustes Central (2) · Hoja de vida de los contactos
+
+- **Dato:** la hoja de vida de la Central lee en api el detalle de ocupación del servidor (`titulo`, `descripcion`, `conocimientos`, `habilidades`). En el catálogo del backend solo algunas ocupaciones tienen esos campos; las demás llegan con `descripcion` nula y listas vacías. Los rellenos «[por completar desde O*NET]» y la etiqueta «Ficha en preparación» que pedía la spec existen solo en el catálogo del front, no en el backend.
+- **Dónde se muestra:** hoja de vida del paso Problema (`ProfessionalResume`).
+- **Opciones:** completar esas ocupaciones en `datos/fijos.py`; que el backend entregue un estado «ficha en preparación»; dejarlo así.
+- **Si no se muestra:** en api, una sección vacía no se pinta (queda el nombre, la inicial y la ocupación). En local no cambia.
+- **Estado:** pendiente de decisión del usuario.
+
 ## 2026-10-22 · F03 · «Sorpresas nuevas» en la línea de actividades del inicio
 
 - **Dato:** que una actividad opcional desbloqueada todavía no se haya abierto. El backend no lo entrega: `Desbloqueo.visto` dice que se vio el aviso del desbloqueo (se marca en bloque con `marcar-vistos`), y `DISPONIBLE` dice que no se inició, no que no se abrió.

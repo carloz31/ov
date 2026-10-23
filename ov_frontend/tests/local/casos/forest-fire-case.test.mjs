@@ -510,14 +510,15 @@ test('both map drawers expose the same status, score and action for every case s
   }
 })
 
-test('resume uses catalog fields and separate tab links, with a safe missing-entry fallback', () => {
+test('resume uses catalog fields without leaving the activity, with a safe missing-entry fallback', () => {
   const { f, data } = setup()
   const { ProfessionalResume } = f.load('src/features/cases/components/ProfessionalResume.tsx')
   let html = renderToStaticMarkup(
     React.createElement(ProfessionalResume, { professional: data.forestFireProfessionals[0] }),
   )
   assert.match(html, /por completar desde O\*NET/)
-  assert.match(html, /target="_blank"/)
+  // Dentro de la actividad no se navega fuera ni se nombra el origen del catálogo.
+  assert.doesNotMatch(html, /<a |Ver la ficha completa|O\*NET por completar|Datos del catálogo/)
   assert.ok(!html.includes(data.forestFireProfessionals[0].description))
   html = renderToStaticMarkup(
     React.createElement(ProfessionalResume, {

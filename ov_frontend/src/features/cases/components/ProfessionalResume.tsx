@@ -1,8 +1,8 @@
 import type { ForestFireProfessional } from '@/types/cases'
-import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
-import { discoveryPaths } from '@/routes/discoveryPaths'
+import { useHojaDeVida } from '@/features/cases/hooks/useHojaDeVida'
 export function ProfessionalResume({ professional }: { professional: ForestFireProfessional }) {
-  const occupation = getOccupation(professional.occupationId)
+  const estado = useHojaDeVida(professional)
+  const hoja = estado?.tipo === 'lista' ? estado.hoja : undefined
   return (
     <article className="ff-resume">
       <p className="ff-eyebrow">Hoja de vida · Contacto</p>
@@ -10,36 +10,45 @@ export function ProfessionalResume({ professional }: { professional: ForestFireP
         <span className="ff-initial">{professional.personName.charAt(0)}</span>
         <div>
           <h2>{professional.personName}</h2>
-          <p>{occupation?.name ?? professional.name}</p>
+          <p>{hoja?.ocupacion ?? professional.name}</p>
         </div>
       </div>
-      {occupation ? (
+      {hoja ? (
         <>
-          {occupation.contentStatus === 'pending' && <p className="ff-preparing">Ficha en preparación</p>}
-          <h3>Qué hacen</h3>
-          <p>{occupation.whatTheyDo}</p>
-          <h3>Conocimientos que usan</h3>
-          <ul className="ff-tags">
-            {occupation.knowledge.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-          <h3>Habilidades que necesitan</h3>
-          <ul className="ff-tags">
-            {occupation.skills.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-          <footer>
-            <p>Datos del catálogo de ocupaciones</p>
-            <p>{occupation.onetCode ? `O*NET ${occupation.onetCode}` : 'O*NET por completar'}</p>
-            <a href={discoveryPaths.occupation(occupation.id)} target="_blank" rel="noopener noreferrer">
-              Ver la ficha completa<span className="sr-only"> (abre otra pestaña)</span>
-            </a>
-          </footer>
+          {hoja.preparando && <p className="ff-preparing">Ficha en preparación</p>}
+          {hoja.queHacen && (
+            <>
+              <h3>Qué hacen</h3>
+              <p>{hoja.queHacen}</p>
+            </>
+          )}
+          {hoja.conocimientos.length > 0 && (
+            <>
+              <h3>Conocimientos que usan</h3>
+              <ul className="ff-tags">
+                {hoja.conocimientos.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          {hoja.habilidades.length > 0 && (
+            <>
+              <h3>Habilidades que necesitan</h3>
+              <ul className="ff-tags">
+                {hoja.habilidades.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </>
+          )}
         </>
+      ) : estado?.tipo === 'error' ? (
+        <p className="ff-preparing" role="alert">
+          {estado.mensaje}
+        </p>
       ) : (
-        <p className="ff-preparing">Ficha en preparación</p>
+        !estado && <p className="ff-preparing">Ficha en preparación</p>
       )}
     </article>
   )

@@ -178,16 +178,6 @@
   font-size: 0.78rem;
   overflow-wrap: anywhere;
 }
-.ff-resume footer {
-  margin-top: 28px;
-  padding-top: 16px;
-  border-top: 1px dashed #d7ccba;
-  font-size: 0.72rem;
-}
-.ff-resume footer p {
-  margin: 2px 0;
-}
-.ff-resume a,
 .ff-report a {
   color: #3f51b5;
   text-decoration: underline;
