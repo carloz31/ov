@@ -1,0 +1,16 @@
+[Unit]
+Description=Backend de la plataforma de orientación vocacional (FastAPI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ov
+Group=ov
+WorkingDirectory=/opt/ov/ov_backend
+# Lee DATABASE_URL, ENTORNO, JWT_SECRETO, etc. desde .env (app/config.py).
+ExecStart=/opt/ov/ov_backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2 --proxy-headers --forwarded-allow-ips 127.0.0.1
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

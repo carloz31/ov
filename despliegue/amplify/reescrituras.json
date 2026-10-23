@@ -1,0 +1,14 @@
+[
+  {
+    "source": "/api/<*>",
+    "status": "200",
+    "target": "https://IP-CON-GUIONES.sslip.io/<*>",
+    "condition": null
+  },
+  {
+    "source": "</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>",
+    "status": "200",
+    "target": "/index.html",
+    "condition": null
+  }
+]

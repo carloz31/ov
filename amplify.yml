@@ -1,0 +1,26 @@
+version: 1
+applications:
+  - appRoot: ov_frontend
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            # Vite 8 requiere Node 20.19+ o 22.12+.
+            - nvm install 22
+            - nvm use 22
+            - node --version
+            - npm ci
+        build:
+          commands:
+            # VITE_DATOS y VITE_API_URL se definen en Amplify > Variables de entorno.
+            # Si no están, el build usa el modo api con /api (la reescritura de Amplify lo envía a EC2).
+            - export VITE_DATOS=${VITE_DATOS:-api}
+            - export VITE_API_URL=${VITE_API_URL:-/api}
+            - npm run build
+      artifacts:
+        baseDirectory: dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
