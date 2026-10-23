@@ -534,4 +534,17 @@ const forestFireWordCloud: ForestFireWordCloudEntry[] = [
   },
 ]
 
-export { forestFirePhases, forestFireProfessionals, forestFireWordCloud }
+// Ayuda de Lumi del «?» del topbar (Problema y Revisar; Escuchar usa el listenPrompt de su fase).
+const ayudaCentral = {
+  problema: [
+    'Cada problema necesita su equipo. Abre las hojas de vida del directorio para ver qué hace cada contacto y en qué puede ayudar.',
+    'Para llamar a alguien, arrastra su tarjeta hasta el problema o usa el botón «+». Cada llamada usa 1 punto de presupuesto.',
+    'Si cambias de idea, quita al contacto del equipo y el punto vuelve a tu presupuesto.',
+  ],
+  revisar: [
+    'Aquí ves el equipo que armaste para cada problema. Si quieres cambiar a alguien, usa «Cambiar».',
+    'Al confirmar el equipo cierras esta fase. El presupuesto que te queda es el que tendrás para las fases siguientes.',
+  ],
+}
+
+export { ayudaCentral, forestFirePhases, forestFireProfessionals, forestFireWordCloud }

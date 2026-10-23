@@ -43,7 +43,6 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
   const [assignments, setAssignments] = useState(createInitialAssignments)
   const [heardByPhase, setHeardByPhase] = useState<Record<string, string[]>>({})
   const [visitedByPhase, setVisitedByPhase] = useState<Record<string, number[]>>({})
-  const [helpSeenByPhase, setHelpSeenByPhase] = useState<Record<string, boolean>>({})
   const [dragContactId, setDragContactId] = useState<string>()
   const [dropHovered, setDropHovered] = useState(false)
   const [newIconIds, setNewIconIds] = useState<string[]>([])
@@ -93,7 +92,6 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     setAssignments(createInitialAssignments())
     setHeardByPhase({})
     setVisitedByPhase({})
-    setHelpSeenByPhase({})
     setDragContactId(undefined)
     setDropHovered(false)
     setNewIconIds([])
@@ -170,8 +168,6 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     step,
     assignments,
     setAssignments,
-    helpSeenByPhase,
-    setHelpSeenByPhase,
     dragContactId,
     setDragContactId,
     dropHovered,

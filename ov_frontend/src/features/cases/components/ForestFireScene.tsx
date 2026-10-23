@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { ArrowRight, Check, RadioTower } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/Dialog'
-import { LumiMedallion } from '@/components/student/LumiMedallion'
 import type { ForestFireCommunityMessage, ForestFirePhase } from '@/types/cases'
 import {
   centerScene,
@@ -14,29 +13,21 @@ import {
 export function ListenScreen({
   phase,
   heard,
-  helpSeen,
-  onHelpSeen,
   onHear,
   onNext,
 }: {
   phase: ForestFirePhase
   heard: string[]
-  helpSeen: boolean
-  onHelpSeen: () => void
   onHear: (ids: string[]) => void
   onNext: () => void
 }) {
   const [message, setMessage] = useState<ForestFireCommunityMessage>()
-  const [helpOpen, setHelpOpen] = useState(!helpSeen)
   const [viewportSize, setViewportSize] = useState({ width: 1, height: 1 })
   const [imageSize, setImageSize] = useState({ width: 1536, height: 1024 })
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [dragging, setDragging] = useState(false)
   const viewport = useRef<HTMLDivElement>(null)
   const opener = useRef<HTMLButtonElement | null>(null)
-  const helpButton = useRef<HTMLButtonElement>(null)
-  const markHelpSeen = useRef(onHelpSeen)
-  markHelpSeen.current = onHelpSeen
   const offsetRef = useRef(offset)
   const drag = useRef<
     | {
@@ -57,7 +48,6 @@ export function ListenScreen({
     setOffset(bounded)
   }
   useEffect(() => {
-    markHelpSeen.current()
     const element = viewport.current
     if (!element) return
     const measure = () => setViewportSize({ width: element.clientWidth, height: element.clientHeight })
@@ -65,7 +55,6 @@ export function ListenScreen({
     const observer = new ResizeObserver(measure)
     observer.observe(element)
     return () => observer.disconnect()
-    // The seen flag belongs to the attempt, and is recorded once on entering this phase's scene.
   }, [phase.id])
   useEffect(() => {
     const centered = centerScene(viewportSize, coverScene(viewportSize, imageSize))
@@ -77,7 +66,6 @@ export function ListenScreen({
     const clue = phase.messages.find((m) => m.id === id)
     if (!clue) return
     opener.current = viewport.current?.querySelector<HTMLButtonElement>(`[data-clue-id="${id}"]`) ?? null
-    setHelpOpen(false)
     setMessage(clue)
     onHear([id])
   }
@@ -113,10 +101,6 @@ export function ListenScreen({
     if (event.currentTarget.hasPointerCapture(event.pointerId))
       event.currentTarget.releasePointerCapture(event.pointerId)
     if (!cancelled && !origin.moved && origin.clueId) openClue(origin.clueId)
-  }
-  function dismissHelp() {
-    setHelpOpen(false)
-    helpButton.current?.focus()
   }
   return (
     <section className="ff-listen">
@@ -180,44 +164,6 @@ export function ListenScreen({
             )
           })}
         </div>
-      </div>
-      <div className="ff-scene-help">
-        <button
-          ref={helpButton}
-          className="ff-help-button"
-          aria-label="¿Qué hago aquí?"
-          aria-expanded={helpOpen}
-          aria-controls={`help-${phase.id}`}
-          onClick={() => {
-            setHelpOpen((open) => !open)
-          }}
-        >
-          ?
-        </button>
-        {helpOpen && (
-          <div
-            id={`help-${phase.id}`}
-            className="ff-help-bubble ff-dark"
-            role="region"
-            aria-label="Ayuda de Lumi"
-            onKeyDown={(event) => {
-              if (event.key === 'Escape') {
-                event.stopPropagation()
-                dismissHelp()
-              }
-            }}
-          >
-            <LumiMedallion />
-            <div>
-              <p className="ff-eyebrow">Lumi</p>
-              <p className="ff-desktop-copy">{phase.listenPrompt}</p>
-              <p className="ff-mobile-copy">{phase.listenPromptMobile}</p>
-              <button className="ff-secondary" onClick={dismissHelp}>
-                Entendido
-              </button>
-            </div>
-          </div>
-        )}
       </div>
       <div className="ff-listen-footer">
         <div className="ff-listen-count" role="status">

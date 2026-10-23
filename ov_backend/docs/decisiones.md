@@ -1,4 +1,6 @@
 # Decisiones de la spec en curso
 
-<!-- Spec en curso: ninguna. -->
+<!-- Spec en curso: ajustes-central-casos.md (sobre la rama lote/F03). -->
 - **«Ver evolución» se bloquea con el check-in (pedido del usuario):** con `CHECK_IN` cerrado, el enlace lleva el mismo candado, título y texto oculto que «Registrar mi señal», y al pulsarlo Lumi explica qué falta (es un `AccesoRapido`, que ahora acepta `className`). La ruta `/student/journal/signal` queda tras `SeccionProtegida seccion="CHECK_IN"`, como el diario. En local `CHECK_IN` nunca se cierra, así que nada cambia.
+- **Central de casos en ambos modos (usuario):** los ajustes 1, 3, 4 y 5 se aplican también en local con una sola implementación (excepción al modo congelado en `ov_frontend/AGENTS.md`): la Central comparte componentes y bifurcarla duplicaría una pantalla que local no conservará. En el 2, local sigue con el catálogo del front.
+- **Ayuda de la Central (1):** el «?» del topbar abre `LumiOverlay`, montado por `ForestFireCasePage` (la Central está fuera de `StudentShell` y `cases` no importa de `adventure`). Textos de Problema y Revisar en `ayudaCentral` (`data/content/forestFireCase.ts`); Escuchar usa el `listenPrompt` de la fase. Solo se ofrece en los pasos (Escuchar, Problemas, Revisar).

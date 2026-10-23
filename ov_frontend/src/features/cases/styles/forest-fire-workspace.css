@@ -237,52 +237,6 @@
   position: relative;
   z-index: 1;
 }
-.ff-scene-help {
-  position: absolute;
-  top: 14px;
-  left: 16px;
-  z-index: 3;
-  pointer-events: none;
-  max-width: calc(100% - 32px);
-}
-.ff-help-button {
-  pointer-events: auto;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  border: 2px solid #c99a3e;
-  background: #3a3220;
-  color: #ffe29a;
-  font-weight: 800;
-  font-size: 22px;
-  cursor: pointer;
-}
-.ff-help-bubble.ff-dark {
-  pointer-events: auto;
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  width: 440px;
-  max-width: 100%;
-  margin-top: 10px;
-  padding: 18px;
-  border-radius: 18px;
-  box-shadow: 0 10px 40px #0005;
-}
-.ff-help-bubble .sx-lumi-medallion {
-  flex-shrink: 0;
-}
-.ff-case .ff-help-bubble p {
-  font-size: 13px;
-  margin: 0 0 10px;
-  line-height: 1.5;
-}
-.ff-case .ff-help-bubble .ff-eyebrow {
-  color: #ffe29a;
-  font-size: 11px;
-}
 .ff-listen-footer {
   flex-shrink: 0;
   min-height: 70px;
@@ -740,15 +694,6 @@
   .ff-point {
     width: 52px;
     height: 52px;
-  }
-  .ff-help-bubble.ff-dark {
-    width: 340px;
-    gap: 10px;
-    padding: 14px;
-  }
-  .ff-help-bubble .sx-lumi-medallion {
-    width: 44px;
-    height: 44px;
   }
   .ff-listen-footer {
     padding: 12px 16px max(12px, env(safe-area-inset-bottom));

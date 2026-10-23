@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ShieldCheck, Star, X } from 'lucide-react'
+import { CircleHelp, ShieldCheck, Star, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/Dialog'
 import '../styles/forest-fire-workspace.css'
 
@@ -9,6 +9,7 @@ export function ForestFireCaseHeader({
   budgetRemaining,
   finished,
   children,
+  onAyuda,
   onClose,
 }: {
   label: string
@@ -16,6 +17,7 @@ export function ForestFireCaseHeader({
   budgetRemaining: number
   finished?: boolean
   children?: React.ReactNode
+  onAyuda?: () => void
   onClose: () => void
 }) {
   const [exitOpen, setExitOpen] = useState(false)
@@ -41,6 +43,11 @@ export function ForestFireCaseHeader({
             <span>Presupuesto</span>
             <strong>{budgetRemaining} de 16</strong>
           </div>
+          {onAyuda && (
+            <button className="ff-icon-button" aria-label="Abrir guía" onClick={onAyuda}>
+              <CircleHelp />
+            </button>
+          )}
         </div>
         <div
           className="ff-progress"

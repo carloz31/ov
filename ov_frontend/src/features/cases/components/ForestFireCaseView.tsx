@@ -1,7 +1,7 @@
 import { ForestFireWorkspace } from '@/features/cases/components/ForestFireWorkspace'
 import { useForestFireCase } from '@/features/cases/hooks/useForestFireCase'
 import { ArrowRight, Check } from 'lucide-react'
-import { forestFirePhases, forestFireProfessionals } from '@/data/content/forestFireCase'
+import { ayudaCentral, forestFirePhases, forestFireProfessionals } from '@/data/content/forestFireCase'
 import { ForestFireCaseHeader } from './ForestFireCaseHeader'
 import { ListenScreen } from './ForestFireScene'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
@@ -16,10 +16,13 @@ import { PhaseResultScreen } from '@/features/cases/components/PhaseResultScreen
 import { FinalReportScreen } from '@/features/cases/components/FinalReportScreen'
 export function ForestFireCaseView({
   actividad,
+  onAyuda,
   onClose,
   onComplete,
 }: {
   actividad?: string
+  // La página monta el diálogo de Lumi: la Central está fuera del shell del estudiante.
+  onAyuda?: (pasos: string[]) => void
   onClose: () => void
   onComplete?: () => void
 }) {
@@ -30,8 +33,6 @@ export function ForestFireCaseView({
     setScreen,
     step,
     assignments,
-    helpSeenByPhase,
-    setHelpSeenByPhase,
     newIconIds,
     extraProfessionalId,
     setExtraProfessionalId,
@@ -75,6 +76,18 @@ export function ForestFireCaseView({
         progress={(phase.number / forestFirePhases.length) * 100}
         budgetRemaining={remaining}
         finished={screen === 'report'}
+        onAyuda={
+          screen === 'workspace' && onAyuda
+            ? () =>
+                onAyuda(
+                  step === 0
+                    ? [phase.listenPrompt]
+                    : step <= phase.problems.length
+                      ? ayudaCentral.problema
+                      : ayudaCentral.revisar,
+                )
+            : undefined
+        }
         onClose={onClose}
       >
         {screen === 'workspace' && (
@@ -124,8 +137,6 @@ export function ForestFireCaseView({
             key={phase.id}
             phase={phase}
             heard={heard}
-            helpSeen={!!helpSeenByPhase[phase.id]}
-            onHelpSeen={() => setHelpSeenByPhase((current) => ({ ...current, [phase.id]: true }))}
             onHear={markHeard}
             onNext={() => goToStep(1)}
           />

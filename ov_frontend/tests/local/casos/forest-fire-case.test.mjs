@@ -255,7 +255,7 @@ test('scene cover, bounds, pointer threshold and keyboard reveal work in both vi
   assert.equal(geometry.isSceneDrag({ x: 0, y: 0 }, { x: 5, y: 5 }), true)
 })
 
-test('listen opens individual clues, suppresses clicks after dragging, and retains dismissed phase help', () => {
+test('listen opens individual clues and suppresses clicks after dragging, without floating help', () => {
   const f = fixture(),
     { ListenScreen } = f.load('src/features/cases/components/ForestFireScene.tsx')
   const phase = f.load('src/data/content/forestFireCase.ts').forestFirePhases[0]
@@ -263,13 +263,13 @@ test('listen opens individual clues, suppresses clicks after dragging, and retai
   const props = {
     phase,
     heard: [],
-    helpSeen: false,
-    onHelpSeen() {},
     onHear: (ids) => heard.push(...ids),
     onNext() {},
   }
   let tree = f.draw(ListenScreen, props)
-  assert.ok(button(tree, 'Entendido'))
+  // La ayuda de Lumi vive en el «?» del topbar, a demanda.
+  assert.equal(button(tree, 'Entendido'), undefined)
+  assert.equal(elements(tree, (n) => n.props?.['aria-label'] === '¿Qué hago aquí?').length, 0)
   assert.equal(elements(tree, (n) => typeof n.type === 'function' && n.type.name === 'ClueList').length, 0)
   const windowNode = elements(tree, (n) => n.props?.className === 'ff-scene-window')[0]
   const event = {
@@ -294,13 +294,6 @@ test('listen opens individual clues, suppresses clicks after dragging, and retai
     (n) => n.type === 'button' && n.props['data-clue-id'] === phase.messages[1].id,
   )[0].props.onClick({ detail: 0 })
   assert.equal(new Set(heard).size, 2)
-  f.reset()
-  tree = f.draw(ListenScreen, { ...props, helpSeen: true })
-  assert.equal(button(tree, 'Entendido'), undefined)
-  const help = elements(tree, (n) => n.props?.['aria-label'] === '¿Qué hago aquí?')[0]
-  help.props.onClick()
-  tree = f.draw(ListenScreen, { ...props, helpSeen: true })
-  assert.ok(button(tree, 'Entendido'))
 })
 
 test('contact drag and plus share assignment, desktop resume replaces the list, mobile has no drag, and zero disables adding', () => {
@@ -632,6 +625,25 @@ test('actual case flow enforces gates, allows review changes, records once on re
   assert.equal(named(tree, 'ListenScreen').props.heard.length, 0)
   assert.equal(store.useAdventure().caseBestScores['forest-fire'], 14)
   assert.equal(closes, 0)
+})
+
+test('topbar help opens on demand with the active step guidance', () => {
+  const { f, data } = setup(),
+    { ForestFireCaseView } = f.load('src/features/cases/components/ForestFireCaseView.tsx'),
+    { ayudaCentral } = f.load('src/data/content/forestFireCase.ts')
+  const abiertas = []
+  let tree
+  const draw = () => (tree = f.draw(ForestFireCaseView, { onClose() {}, onAyuda: (pasos) => abiertas.push(pasos) }))
+  draw()
+  assert.deepEqual(abiertas, [])
+  named(tree, 'ForestFireCaseHeader').props.onAyuda()
+  assert.deepEqual(copy(abiertas.at(-1)), [data.forestFirePhases[0].listenPrompt])
+  named(tree, 'ListenScreen').props.onHear(data.forestFirePhases[0].messages.map((m) => m.id))
+  draw()
+  named(tree, 'ListenScreen').props.onNext()
+  draw()
+  named(tree, 'ForestFireCaseHeader').props.onAyuda()
+  assert.deepEqual(copy(abiertas.at(-1)), copy(ayudaCentral.problema))
 })
 
 test('abandonment and budget game-over do not record a score or reward', () => {
