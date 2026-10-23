@@ -29,10 +29,11 @@ test('las entradas llevan el título mostrado, su origen, «editada» y ninguna 
     vista.map((e) => [e.numero, e.title, e.origen, e.editada, e.topicTags.length]),
     entradas.map((e) => [e.numero, e.titulo_mostrado, e.origen, e.actualizada_en !== null, 0]),
   )
-  assert.deepEqual(
-    [...new Set(vista.map((e) => diario.etiquetasOrigen[e.origen]))].sort(),
-    ['Carta de Lumi', 'Libre', 'Pregunta del día'],
-  )
+  assert.deepEqual([...new Set(vista.map((e) => diario.etiquetasOrigen[e.origen]))].sort(), [
+    'Carta de Lumi',
+    'Libre',
+    'Pregunta del día',
+  ])
   assert.ok(vista.some((e) => e.editada) && vista.some((e) => !e.editada))
 })
 
@@ -80,7 +81,8 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
     if (req.url.endsWith('/diario/entradas')) return { body: entradas }
     if (req.url.endsWith('/diario/amistad')) return { body: amistad }
     if (req.url.endsWith('/check-ins')) return { body: checkIns }
-    if (req.url.endsWith('/abrir-pregunta')) return { body: jsonServidor('ruta/ruta-abrir-pregunta-personal') }
+    if (req.url.endsWith('/abrir-pregunta'))
+      return { body: jsonServidor('ruta/ruta-abrir-pregunta-personal') }
     if (req.url.endsWith('/pregunta-del-dia')) return { body: jsonServidor('ruta/ruta-pregunta-del-dia') }
     if (/\/(escribir|editar|borrar)-entrada$|\/check-in$/.test(req.url)) return { body: sinRespuestas }
     throw Error(`Solicitud no configurada: ${req.url}`)

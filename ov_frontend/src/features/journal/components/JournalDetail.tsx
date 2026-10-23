@@ -30,11 +30,12 @@ export function JournalDetail({
             timeZone: 'America/Lima',
           })}
         </time>
-        <p className="sx-j-origin">{entry.kind === 'open' ? 'Libre' : 'Carta de Lumi'}</p>
+        <p className="sx-j-origin">{entry.etiqueta ?? (entry.kind === 'open' ? 'Libre' : 'Carta de Lumi')}</p>
+        {entry.editada && <p className="sx-j-origin">Editada</p>}
         <h1 id={`journal-entry-${entry.id}`}>{entry.title}</h1>
         {entry.promptShown && <p className="sx-j-question sx-j-prompt">Lumi: “{entry.promptShown}”</p>}
         <p className="sx-j-full-text">{entry.body}</p>
-        <JournalTags tags={entry.topicTags} />
+        {entry.etiqueta === undefined && <JournalTags tags={entry.topicTags} />}
         <div className="sx-j-editor-actions">
           <button type="button" className="sx-d-action sx-d-action-ghost" onClick={onEdit}>
             <PenLine aria-hidden="true" size={16} />

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useJournalHome } from '@/features/journal/hooks/useJournalHome'
 import { ArrowRight, LockKeyhole, Search, Sparkles } from 'lucide-react'
 import { type LumiSuggestion } from '@/features/journal/lib/lumiSuggestions'
@@ -14,6 +15,13 @@ import { JournalTags } from '@/features/journal/components/JournalTags'
 import { JournalCard } from '@/features/journal/components/JournalCard'
 import { JournalOnboarding } from '@/features/journal/components/JournalOnboarding'
 import { JournalTab } from '@/features/journal/components/JournalTab'
+import type { CartaLumi } from '@/lib/servidor/adaptadoresDiario'
+// F05, solo en api: las cartas del servidor (sin «Después de»: el servidor no dice qué actividad la abrió).
+export type CartasServidor = {
+  cartas: CartaLumi[]
+  porDescubrir: number
+  onCarta: (carta: CartaLumi) => void
+}
 type JournalGrouping = 'timeline' | 'topics'
 export function JournalHome({
   entries,
@@ -29,6 +37,9 @@ export function JournalHome({
   onBegin,
   now,
   onDailyQuestion,
+  mostrarTemas = true,
+  cartasServidor,
+  dailyQuestion,
 }: {
   entries: JournalEntry[]
   grouping: JournalGrouping
@@ -43,6 +54,11 @@ export function JournalHome({
   onBegin: () => void
   now: Date
   onDailyQuestion: (context: DailyQuestionEditorContext) => void
+  // F05: en api no hay temas (pestaña «Por tema», filtros ni buscador).
+  mostrarTemas?: boolean
+  cartasServidor?: CartasServidor
+  // La tarjeta del día la arma la vista (en api lee el servidor); sin ella, la local.
+  dailyQuestion?: ReactNode
 }) {
   const { topic, setTopic, suggestions, unread, tags, shown, months } = useJournalHome({
     entries,
@@ -78,7 +94,10 @@ export function JournalHome({
               </button>
             </Parchment>
           )}
-          {!onboarding && <DailyQuestionCard now={now} onRespond={onDailyQuestion} onOpenAnswer={onOpen} />}
+          {!onboarding &&
+            (dailyQuestion ?? (
+              <DailyQuestionCard now={now} onRespond={onDailyQuestion} onOpenAnswer={onOpen} />
+            ))}
           {unread && (
             <div className="sx-j-memory-notice" role="status">
               <span className="sx-j-lumi">
@@ -92,11 +111,33 @@ export function JournalHome({
           )}
           <section aria-label="Cartas de Lumi por responder">
             <h2 className="sx-j-letters-heading">
-              Cartas de Lumi por responder <span>{suggestions.length}</span>
+              Cartas de Lumi por responder <span>{cartasServidor?.cartas.length ?? suggestions.length}</span>
             </h2>
             <p>Después de cada actividad, Lumi te deja una pregunta sobre lo que viviste.</p>
             <div className="sx-j-letters">
-              {suggestions.length ? (
+              {cartasServidor ? (
+                cartasServidor.cartas.length ? (
+                  cartasServidor.cartas.map((carta) => (
+                    <Parchment key={carta.codigo} className="sx-j-letter">
+                      <span className="sx-j-letter-seal">
+                        <Sparkles aria-hidden="true" size={16} />
+                      </span>
+                      <p className="sx-j-question">Lumi: “{carta.nombre}”</p>
+                      <button
+                        type="button"
+                        className="sx-d-action"
+                        onClick={() => cartasServidor.onCarta(carta)}
+                      >
+                        Responder a Lumi
+                      </button>
+                    </Parchment>
+                  ))
+                ) : (
+                  <p className="sx-j-empty">
+                    Respondiste todas las cartas. Lumi te dejará otra al terminar tu próxima actividad.
+                  </p>
+                )
+              ) : suggestions.length ? (
                 suggestions.map((item) => (
                   <Parchment key={item.activityId} className="sx-j-letter">
                     <span className="sx-j-letter-seal">
@@ -116,6 +157,7 @@ export function JournalHome({
                 </p>
               )}
             </div>
+            {!!cartasServidor?.porDescubrir && <p>{cartasServidor.porDescubrir} entradas por descubrir</p>}
           </section>
           <Parchment className="sx-j-notebook" label="Tu cuaderno" title="Lo que le has contado a Lumi">
             <div className="sx-j-notebook-controls">
@@ -125,24 +167,28 @@ export function JournalHome({
                   label="Línea de tiempo"
                   onClick={() => onChangeGrouping('timeline')}
                 />
-                <JournalTab
-                  active={grouping === 'topics'}
-                  label="Por tema"
-                  onClick={() => onChangeGrouping('topics')}
-                />
+                {mostrarTemas && (
+                  <JournalTab
+                    active={grouping === 'topics'}
+                    label="Por tema"
+                    onClick={() => onChangeGrouping('topics')}
+                  />
+                )}
               </nav>
-              <label className="sx-j-search">
-                <Search aria-hidden="true" size={16} />
-                <span className="sr-only">Buscar por tema</span>
-                <input
-                  className="sx-d-input"
-                  placeholder="Buscar por tema..."
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                />
-              </label>
+              {mostrarTemas && (
+                <label className="sx-j-search">
+                  <Search aria-hidden="true" size={16} />
+                  <span className="sr-only">Buscar por tema</span>
+                  <input
+                    className="sx-d-input"
+                    placeholder="Buscar por tema..."
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                  />
+                </label>
+              )}
             </div>
-            {grouping === 'topics' && (
+            {mostrarTemas && grouping === 'topics' && (
               <div className="sx-j-topic-filters">
                 {tags.map((tag) => (
                   <button

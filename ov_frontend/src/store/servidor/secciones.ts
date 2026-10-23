@@ -5,7 +5,12 @@ import { obtenerActividades } from '@/services/api/actividades'
 import { obtenerFichas } from '@/services/api/fichas'
 import { obtenerLogros } from '@/services/api/logros'
 import { obtenerSecciones } from '@/services/api/secciones'
-import { obtenerAmistad, obtenerCheckIns, obtenerEntradasDiario, obtenerPreguntasDiario } from '@/services/api/diario'
+import {
+  obtenerAmistad,
+  obtenerCheckIns,
+  obtenerEntradasDiario,
+  obtenerPreguntasDiario,
+} from '@/services/api/diario'
 import { hidratarJourneyServidor } from '../journeyStore'
 import { hidratarAdventureServidor } from '../adventureStore'
 import { baseRoute } from '@/data/activities/reflectionConfig'

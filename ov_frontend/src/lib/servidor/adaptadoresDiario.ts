@@ -40,6 +40,7 @@ export function entradasDiario(entradas: EntradaDiarioPublica[] | null): Entrada
     numero: e.numero,
     origen: e.origen,
     tituloPropio: e.titulo,
+    etiqueta: etiquetasOrigen[e.origen],
     editada: e.actualizada_en !== null,
   }))
 }

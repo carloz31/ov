@@ -5,7 +5,7 @@ import { LumiPortrait } from '@/features/journal/components/LumiPortrait'
 import { Parchment } from '@/components/student/Parchment'
 import { TrailBar } from '@/components/student/TrailBar'
 import { updateStudentUi, useStudentUi } from '@/store/studentUiStore'
-import { lumiMemories } from '../data/lumiMemories'
+import { lumiMemories, lumiMemoriesServidor } from '../data/lumiMemories'
 import type { LumiBond } from '../lib/lumiBond'
 export function LumiBondPanel({ bond }: { bond: LumiBond }) {
   const ui = useStudentUi(),
@@ -13,6 +13,8 @@ export function LumiBondPanel({ bond }: { bond: LumiBond }) {
     [open, setOpen] = useState<number>()
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
   const requested = Number(params.get('memory'))
+  const servidor = bond.fuente === 'servidor'
+  const memories = servidor ? lumiMemoriesServidor : lumiMemories
   function readMemory(number: number) {
     setOpen(number)
     updateStudentUi((current) => ({
@@ -39,7 +41,7 @@ export function LumiBondPanel({ bond }: { bond: LumiBond }) {
       )
     if (number) buttons.current[number - 1]?.focus()
   }
-  const memory = open ? lumiMemories[open - 1] : undefined
+  const memory = open ? memories[open - 1] : undefined
   return (
     <Parchment className="sx-d-dark sx-j-bond">
       <div className="sx-j-lumi">
@@ -53,25 +55,25 @@ export function LumiBondPanel({ bond }: { bond: LumiBond }) {
         value={bond.progress}
         text={
           bond.nextMemoryAt
-            ? `Faltan ${bond.nextMemoryAt - bond.conversations} para el siguiente recuerdo`
+            ? `Faltan ${bond.nextMemoryAt - bond.conversations} para el siguiente ${servidor ? 'nivel' : 'recuerdo'}`
             : 'Todos los recuerdos abiertos'
         }
       />
       <p>Hoy cuentan hasta 3 conversaciones. La amistad nunca se pierde.</p>
-      {!bond.remainingToday && (
+      {!servidor && !bond.remainingToday && (
         <p>Hoy ya contaron tus 3 conversaciones. Puedes seguir escribiendo cuando quieras.</p>
       )}
       <div className="sx-j-memory-heading">
         <h3>Recuerdos de Lumi</h3>
         <strong>
-          {bond.memoriesOpened} de {lumiMemories.length}
+          {bond.memoriesOpened} de {memories.length}
         </strong>
       </div>
       <div className="sx-j-memories">
-        {lumiMemories.map((m, i) =>
+        {memories.map((m, i) =>
           i < bond.memoriesOpened ? (
             <button
-              key={m.threshold}
+              key={i}
               ref={(node) => {
                 buttons.current[i] = node
               }}
@@ -88,14 +90,19 @@ export function LumiBondPanel({ bond }: { bond: LumiBond }) {
               {!ui.seenLumiMemories.includes(i + 1) && <small>Nuevo</small>}
             </button>
           ) : (
-            <div className="sx-j-memory-locked" key={m.threshold}>
+            <div className="sx-j-memory-locked" key={i}>
               <span aria-hidden="true">?</span>
               <div>
                 <strong>Recuerdo {i + 1}</strong>
                 <span className="sx-j-memory-blur" aria-hidden="true">
                   Un recuerdo guardado
                 </span>
-                <small>Al llegar a {m.threshold} conversaciones</small>
+                {!servidor ? (
+                  <small>Al llegar a {m.threshold} conversaciones</small>
+                ) : (
+                  i === bond.memoriesOpened &&
+                  bond.nextMemoryAt && <small>Al llegar a {bond.nextMemoryAt} conversaciones</small>
+                )}
               </div>
             </div>
           ),

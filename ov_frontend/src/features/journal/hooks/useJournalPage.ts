@@ -9,7 +9,13 @@ import { useLumiNow } from '@/hooks/useLumiNow'
 import type { JournalEntry } from '@/types/adventure'
 
 import { useReturnFocus } from '@/hooks/useReturnFocus'
-import { getLumiBond } from '@/features/journal/lib/lumiBond'
+import { getLumiBond, lumiBondServidor } from '@/features/journal/lib/lumiBond'
+import { useDiarioServidor } from '@/features/journal/hooks/useDiarioServidor'
+import { usePreguntaDelDiaServidor } from '@/features/journal/hooks/usePreguntaDelDiaServidor'
+import { abrirPregunta, borrarEntrada, editarEntrada, escribirEntrada } from '@/store/servidor/diario'
+import { asegurarSeccion } from '@/store/servidor/secciones'
+import { mensajeErrorServidor } from '@/store/servidor/sesion'
+import type { CartaLumi } from '@/lib/servidor/adaptadoresDiario'
 import { type DailyQuestionEditorContext } from '@/features/journal/components/DailyQuestionCard'
 
 type JournalScreen = 'home' | 'write' | 'detail'
@@ -17,8 +23,14 @@ type JournalGrouping = 'timeline' | 'topics'
 export function useJournalPage() {
   const state = useAdventure()
   const now = useLumiNow()
-  const bond = getLumiBond(state.lumiRegistrations, now)
+  const servidor = useDiarioServidor()
+  // F05: en api, la amistad del servidor; mientras llega, sin puntos.
+  const bond = servidor.activo
+    ? (servidor.bond ??
+      lumiBondServidor({ puntos: 0, nivel: 'Conociéndonos', indiceNivel: 0, recuerdosAbiertos: 0 }))
+    : getLumiBond(state.lumiRegistrations, now)
   const [searchParams] = useSearchParams()
+  const preguntaPedida = searchParams.get('pregunta')
   const conversationTopic = getFamilyConversationTopic(searchParams.get('conversation') ?? '')
   const eventTitle = searchParams.get('event')
   const eventOutcome = searchParams.get('outcome')
@@ -63,6 +75,10 @@ export function useJournalPage() {
         : (activityTitle ?? 'Conversación libre con Lumi'),
   )
   const [deleteOpen, setDeleteOpen] = useState(false)
+  // F05: a qué responde la entrada en el servidor (una carta o la pregunta del día) y si Lumi la redacta.
+  const [destino, setDestino] = useState<{ pregunta?: string; delDia?: boolean }>({})
+  const [escribiendo, setEscribiendo] = useState(false)
+  const [preguntaAbierta, setPreguntaAbierta] = useState<string>()
   const returnFocus = useReturnFocus()
   const [saveNotice, setSaveNotice] = useState('')
   const requestedMemory = Number(searchParams.get('memory'))
@@ -70,10 +86,12 @@ export function useJournalPage() {
     if (Number.isInteger(requestedMemory) && requestedMemory >= 1 && requestedMemory <= bond.memoriesOpened)
       setScreen('home')
   }, [requestedMemory, bond.memoriesOpened])
-  const entries = useMemo(
+  const locales = useMemo(
     () => [...state.journal].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
     [state.journal],
   )
+  const entries: JournalEntry[] = servidor.activo ? servidor.entradas : locales
+  const delDia = usePreguntaDelDiaServidor(now, entries, servidor.activo)
   const filteredEntries = entries.filter((entry) => {
     const normalized = query.trim().toLocaleLowerCase('es-PE')
     if (!normalized) return true
@@ -81,7 +99,8 @@ export function useJournalPage() {
       .toLocaleLowerCase('es-PE')
       .includes(normalized)
   })
-  const selected = state.journal.find((entry) => entry.id === selectedId)
+  const selected = entries.find((entry) => entry.id === selectedId)
+  const numeroDe = (id?: string) => servidor.entradas.find((entry) => entry.id === id)?.numero
   const usedTags = [...new Set(entries.flatMap((entry) => entry.topicTags))].sort()
 
   function openEditor({
@@ -92,6 +111,7 @@ export function useJournalPage() {
   }: DailyQuestionEditorContext) {
     setSaveNotice('')
     setEditingId(undefined)
+    setDestino(linkedActivityId.startsWith('daily-prompt-') ? { delDia: true } : {})
     setBody('')
     setTags(initialTags)
     setLockedTags(initialTags)
@@ -111,9 +131,41 @@ export function useJournalPage() {
     setTagDraft('')
     setPromptShown(undefined)
     setLinkedActivityId(undefined)
-    setEntryTitle('Conversación libre con Lumi')
+    setDestino({})
+    // En api el título es opcional: sin él, el servidor la muestra como «Entrada libre N».
+    setEntryTitle(servidor.activo ? '' : 'Conversación libre con Lumi')
     setScreen('write')
   }
+
+  // F05: una carta de Lumi del servidor; su texto llega con `abrir-pregunta` (las personalizadas tardan).
+  async function abrirCarta(carta: CartaLumi) {
+    setSaveNotice('')
+    setEditingId(undefined)
+    setDestino({ pregunta: carta.codigo })
+    setBody('')
+    setTags([])
+    setLockedTags([])
+    setPromptShown(undefined)
+    setLinkedActivityId(undefined)
+    setEntryTitle('')
+    setEscribiendo(carta.porRedactar)
+    setScreen('write')
+    const respuesta = await abrirPregunta(carta.codigo)
+    setEscribiendo(false)
+    if (respuesta.tipo === 'ok') setPromptShown(respuesta.datos.texto)
+    else {
+      setScreen('home')
+      setSaveNotice(mensajeErrorServidor(respuesta))
+    }
+  }
+  // Desde el cierre de una actividad (`?pregunta=`): abre esa carta cuando llegan las preguntas.
+  useEffect(() => {
+    if (!servidor.activo || !preguntaPedida || preguntaAbierta === preguntaPedida) return
+    const carta = servidor.cartas.find((c) => c.codigo === preguntaPedida)
+    if (!carta) return
+    setPreguntaAbierta(preguntaPedida)
+    void abrirCarta(carta)
+  }, [servidor.activo, servidor.cartas, preguntaPedida, preguntaAbierta])
 
   function startOnboardingEntry() {
     updateAdventure((current) => ({ ...current, journalOnboardingSeen: true }))
@@ -134,7 +186,41 @@ export function useJournalPage() {
     setTagDraft('')
   }
 
+  async function guardarEnServidor() {
+    const texto = body.trim(),
+      titulo = entryTitle.trim() || null
+    if (editingId) {
+      const numero = numeroDe(editingId)
+      if (numero === undefined) return
+      const respuesta = await editarEntrada(numero, texto, titulo)
+      if (respuesta.tipo !== 'ok') return setSaveNotice(mensajeErrorServidor(respuesta))
+      setSelectedId(editingId)
+      setEditingId(undefined)
+      setScreen('detail')
+      return setSaveNotice('Conversación actualizada. Editar no suma conversaciones.')
+    }
+    const antes = servidor.puntos
+    const respuesta = await escribirEntrada({ texto, titulo, ...destino })
+    if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar')
+      return setSaveNotice(mensajeErrorServidor(respuesta))
+    setDestino({})
+    setScreen('home')
+    // La amistad cuenta escrituras con tope diario: se sabe si sumó comparando los puntos.
+    const amistad = await asegurarSeccion('amistad')
+    setSaveNotice(
+      amistad.tipo !== 'ok' || antes === null
+        ? 'Conversación guardada.'
+        : amistad.datos.puntos > antes
+          ? '¡Conversación guardada! Tu amistad con Lumi suma una conversación.'
+          : `Conversación guardada. Hoy ya contaron tus 3 conversaciones; esta igual se guarda.`,
+    )
+  }
+
   function saveEntry() {
+    if (servidor.activo) {
+      if (body.trim() && !escribiendo) void guardarEnServidor()
+      return
+    }
     if (!body.trim() || !entryTitle.trim()) return
     const remaining = getLumiBond(state.lumiRegistrations).remainingToday
     updateAdventure((current) => {
@@ -170,18 +256,34 @@ export function useJournalPage() {
 
   function editEntry(entry: JournalEntry) {
     setEditingId(entry.id)
+    setDestino({})
     setBody(entry.body)
     setTags(entry.topicTags)
     setLockedTags(entry.lockedTopicTags ?? [])
     setTagDraft('')
     setPromptShown(entry.promptShown)
     setLinkedActivityId(entry.linkedActivityId)
-    setEntryTitle(entry.title)
+    setEntryTitle(
+      servidor.activo ? (servidor.entradas.find((e) => e.id === entry.id)?.tituloPropio ?? '') : entry.title,
+    )
     setScreen('write')
+  }
+
+  async function borrarEnServidor(numero: number) {
+    const respuesta = await borrarEntrada(numero)
+    setDeleteOpen(false)
+    if (respuesta.tipo !== 'ok') return setSaveNotice(mensajeErrorServidor(respuesta))
+    setSelectedId(undefined)
+    setScreen('home')
   }
 
   function deleteEntry() {
     if (!selected) return
+    const numero = numeroDe(selected.id)
+    if (servidor.activo) {
+      if (numero !== undefined) void borrarEnServidor(numero)
+      return
+    }
     updateAdventure((current) => ({
       ...current,
       journal: current.journal.filter((entry) => entry.id !== selected.id),
@@ -231,5 +333,20 @@ export function useJournalPage() {
     saveEntry,
     editEntry,
     deleteEntry,
+    // F05: lo que en api viene del servidor; en local, sin definir y la vista se comporta como antes.
+    diarioServidor: servidor.activo
+      ? {
+          error: servidor.error,
+          escribiendo,
+          cartas: { cartas: servidor.cartas, porDescubrir: servidor.porDescubrir, onCarta: abrirCarta },
+          preguntaDelDia: {
+            texto: delDia.pregunta?.texto ?? null,
+            respondida: delDia.respondida,
+            respuesta: delDia.respuesta,
+            abrir: () => void delDia.abrir(),
+            error: delDia.error,
+          },
+        }
+      : undefined,
   }
 }

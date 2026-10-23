@@ -20,6 +20,27 @@ export type LumiBond = {
   memoriesOpened: number
   nextMemoryAt?: number
   progress: number
+  // F05: en api, puntos y nivel del servidor; un recuerdo por nivel y sin el conteo de hoy.
+  fuente?: 'servidor'
+}
+export function lumiBondServidor(amistad: {
+  puntos: number
+  nivel: string
+  indiceNivel: number
+  recuerdosAbiertos: number
+  siguienteEn?: number
+}): LumiBond {
+  return {
+    conversations: amistad.puntos,
+    todayCounted: 0,
+    remainingToday: lumiFriendshipRules.dailyPointLimit,
+    level: amistad.nivel,
+    levelIndex: amistad.indiceNivel,
+    memoriesOpened: amistad.recuerdosAbiertos,
+    nextMemoryAt: amistad.siguienteEn,
+    progress: amistad.siguienteEn ? Math.min(100, (amistad.puntos / amistad.siguienteEn) * 100) : 100,
+    fuente: 'servidor',
+  }
 }
 export function getLumiBond(registrations: LumiRegistration[], now = new Date()): LumiBond {
   const days = new Map<string, number>()

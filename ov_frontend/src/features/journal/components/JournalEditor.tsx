@@ -1,6 +1,7 @@
 import { ArrowLeft, LockKeyhole, X } from 'lucide-react'
 
 import { Parchment } from '@/components/student/Parchment'
+import { LumiQuestion } from '@/features/journal/components/LumiQuestion'
 
 export function JournalEditor({
   body,
@@ -19,6 +20,7 @@ export function JournalEditor({
   suggestedTags,
   tagDraft,
   tags,
+  servidor,
 }: {
   body: string
   editing: boolean
@@ -36,7 +38,10 @@ export function JournalEditor({
   suggestedTags: string[]
   tagDraft: string
   tags: string[]
+  // F05, solo en api: título opcional, sin etiquetas, Lumi redactando la carta y sin el conteo de hoy.
+  servidor?: { escribiendo: boolean }
 }) {
+  const conTemas = !servidor
   return (
     <>
       <button type="button" className="sx-d-back" onClick={onBack}>
@@ -53,6 +58,7 @@ export function JournalEditor({
         </div>
       </header>
       <Parchment className="sx-j-notebook sx-j-editor">
+        {servidor?.escribiendo && <LumiQuestion prompt="Lumi está escribiendo…" />}
         {prompt && <p className="sx-j-question sx-j-prompt">Lumi: “{prompt}”</p>}
         <label className="sr-only" htmlFor="journal-title">
           Título de la entrada
@@ -63,7 +69,7 @@ export function JournalEditor({
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
           placeholder="Título de tu conversación"
-          required
+          required={conTemas}
         />
         <textarea
           aria-label="Texto privado de la entrada"
@@ -74,53 +80,61 @@ export function JournalEditor({
           placeholder="Escribe con calma. Lo que pongas aquí solo lo lees tú."
           required
         />
-        <label htmlFor="journal-tag">Etiquetas (opcional)</label>
-        <div className="sx-j-tags">
-          {tags.map((tag) => (
-            <span key={tag}>
-              #{tag}
-              {lockedTags.includes(tag) ? (
-                <small>sugerida</small>
-              ) : (
-                <button type="button" aria-label={`Quitar etiqueta ${tag}`} onClick={() => onRemoveTag(tag)}>
-                  <X aria-hidden="true" size={16} />
-                </button>
-              )}
-            </span>
-          ))}
-        </div>
-        <div className="sx-d-actions">
-          <input
-            id="journal-tag"
-            className="sx-d-input"
-            value={tagDraft}
-            onChange={(e) => onTagDraftChange(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                onAddTag()
-              }
-            }}
-            placeholder="Ej. familia, dudas, intereses"
-          />
-          <button
-            type="button"
-            className="sx-d-action sx-d-action-ghost"
-            disabled={!tagDraft.trim()}
-            onClick={() => onAddTag()}
-          >
-            Agregar
-          </button>
-        </div>
-        {!!suggestedTags.length && (
-          <div className="sx-j-tags">
-            <span>Usadas antes:</span>
-            {suggestedTags.slice(0, 5).map((tag) => (
-              <button type="button" key={tag} onClick={() => onAddTag(tag)}>
-                #{tag}
+        {conTemas && (
+          <>
+            <label htmlFor="journal-tag">Etiquetas (opcional)</label>
+            <div className="sx-j-tags">
+              {tags.map((tag) => (
+                <span key={tag}>
+                  #{tag}
+                  {lockedTags.includes(tag) ? (
+                    <small>sugerida</small>
+                  ) : (
+                    <button
+                      type="button"
+                      aria-label={`Quitar etiqueta ${tag}`}
+                      onClick={() => onRemoveTag(tag)}
+                    >
+                      <X aria-hidden="true" size={16} />
+                    </button>
+                  )}
+                </span>
+              ))}
+            </div>
+            <div className="sx-d-actions">
+              <input
+                id="journal-tag"
+                className="sx-d-input"
+                value={tagDraft}
+                onChange={(e) => onTagDraftChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    onAddTag()
+                  }
+                }}
+                placeholder="Ej. familia, dudas, intereses"
+              />
+              <button
+                type="button"
+                className="sx-d-action sx-d-action-ghost"
+                disabled={!tagDraft.trim()}
+                onClick={() => onAddTag()}
+              >
+                Agregar
               </button>
-            ))}
-          </div>
+            </div>
+            {!!suggestedTags.length && (
+              <div className="sx-j-tags">
+                <span>Usadas antes:</span>
+                {suggestedTags.slice(0, 5).map((tag) => (
+                  <button type="button" key={tag} onClick={() => onAddTag(tag)}>
+                    #{tag}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
         )}
         <div className="sx-j-editor-actions">
           <button type="button" className="sx-d-action sx-d-action-ghost" onClick={onBack}>
@@ -129,19 +143,21 @@ export function JournalEditor({
           <button
             type="button"
             className="sx-d-action sx-d-action-gold"
-            disabled={!body.trim() || !title.trim()}
+            disabled={!body.trim() || (conTemas ? !title.trim() : servidor.escribiendo)}
             onClick={onSave}
           >
             Contarle a Lumi
           </button>
         </div>
-        <p className="sx-j-save-help">
-          {editing
-            ? 'Editar no suma una conversación nueva.'
-            : remainingToday
-              ? 'Esta conversación suma a tu amistad con Lumi.'
-              : 'Hoy ya contaron tus 3 conversaciones; esta igual se guarda.'}
-        </p>
+        {(editing || conTemas) && (
+          <p className="sx-j-save-help">
+            {editing
+              ? 'Editar no suma una conversación nueva.'
+              : remainingToday
+                ? 'Esta conversación suma a tu amistad con Lumi.'
+                : 'Hoy ya contaron tus 3 conversaciones; esta igual se guarda.'}
+          </p>
+        )}
       </Parchment>
     </>
   )

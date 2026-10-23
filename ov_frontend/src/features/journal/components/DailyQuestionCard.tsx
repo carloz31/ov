@@ -14,14 +14,25 @@ export type DailyQuestionEditorContext = {
   lockedTags: string[]
 }
 
+// F05, solo api: la pregunta del servidor (sin temas), su respuesta de hoy y el error al pedirla.
+export type PreguntaDelDiaServidor = {
+  texto: string | null
+  respondida: boolean
+  respuesta?: JournalEntry
+  abrir: () => void
+  error: string
+}
+
 export function DailyQuestionCard({
   now,
   onRespond,
   onOpenAnswer,
+  servidor,
 }: {
   now: Date
   onRespond: (context: DailyQuestionEditorContext) => void
   onOpenAnswer: (entry: JournalEntry) => void
+  servidor?: PreguntaDelDiaServidor
 }) {
   const adventure = useAdventure()
   const ui = useStudentUi()
@@ -29,23 +40,30 @@ export function DailyQuestionCard({
   const focusOnDay = useRef<string | null>(null)
   const day = lumiDayKey(now)
   const dailyId = `daily-prompt-${day}`
-  const answer = adventure.journal.find((entry) => entry.linkedActivityId === dailyId)
-  const opened = ui.dailyQuestionOpenedOn === day
+  const answer = servidor
+    ? servidor.respuesta
+    : adventure.journal.find((entry) => entry.linkedActivityId === dailyId)
+  const answered = servidor ? servidor.respondida : Boolean(answer)
+  const opened = servidor ? servidor.texto !== null : ui.dailyQuestionOpenedOn === day
+  // En api la pregunta llega después de pulsar: el foco espera a que se abra.
+  const esperaServidor = Boolean(servidor) && !opened
   useEffect(() => {
-    if (focusOnDay.current === day && opened && !answer) respondButton.current?.focus()
-    focusOnDay.current = null
-  }, [day, opened, answer])
+    if (focusOnDay.current === day && opened && !answered) respondButton.current?.focus()
+    if (!esperaServidor) focusOnDay.current = null
+  }, [day, opened, answered, esperaServidor])
 
   let daily: ReturnType<typeof getDailyJournalPrompt> | undefined
-  try {
-    daily = getDailyJournalPrompt(now)
-  } catch {
-    return null
-  }
+  if (servidor) daily = { prompt: servidor.texto ?? '…', tags: [] } as typeof daily
+  else
+    try {
+      daily = getDailyJournalPrompt(now)
+    } catch {
+      return null
+    }
   if (!daily?.prompt?.trim()) return null
 
-  const state = answer ? 'answered' : opened ? 'opened' : 'sealed'
-  const Icon = answer ? Check : opened ? MailOpen : Mail
+  const state = answered ? 'answered' : opened ? 'opened' : 'sealed'
+  const Icon = answered ? Check : opened ? MailOpen : Mail
   const dateLabel = new Intl.DateTimeFormat('es-PE', {
     timeZone: 'America/Lima',
     weekday: 'long',
@@ -62,7 +80,7 @@ export function DailyQuestionCard({
       </div>
       <div className="sx-j-daily-content">
         <p className="sx-j-daily-label">La pregunta de hoy · {dateLabel}</p>
-        {answer ? (
+        {answered ? (
           <>
             <h2>Ya respondiste la pregunta de hoy</h2>
             <p className="sx-j-daily-help">
@@ -72,30 +90,35 @@ export function DailyQuestionCard({
         ) : opened ? (
           <div className="sx-j-daily-question">
             <h2>“{daily.prompt}”</h2>
-            <div className="sx-j-daily-tags">
-              {daily.tags.map((tag) => (
-                <span key={tag}>#{tag}</span>
-              ))}
-            </div>
+            {!servidor && (
+              <div className="sx-j-daily-tags">
+                {daily.tags.map((tag) => (
+                  <span key={tag}>#{tag}</span>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <>
             <h2>Lumi dejó una pregunta nueva para ti</h2>
             <p className="sx-j-daily-help">Cambia cada día. Ábrela cuando quieras.</p>
+            {servidor?.error && <p className="sx-j-daily-help">{servidor.error}</p>}
           </>
         )}
       </div>
-      {answer ? (
-        <a
-          className="sx-j-daily-link"
-          href={`#journal-entry-${answer.id}`}
-          onClick={(event) => {
-            event.preventDefault()
-            onOpenAnswer(answer)
-          }}
-        >
-          Ver mi respuesta
-        </a>
+      {answered ? (
+        answer && (
+          <a
+            className="sx-j-daily-link"
+            href={`#journal-entry-${answer.id}`}
+            onClick={(event) => {
+              event.preventDefault()
+              onOpenAnswer(answer)
+            }}
+          >
+            Ver mi respuesta
+          </a>
+        )
       ) : opened ? (
         <button
           ref={respondButton}
@@ -105,7 +128,7 @@ export function DailyQuestionCard({
             onRespond({
               prompt: daily.prompt,
               linkedActivityId: dailyId,
-              title: 'Tema del día',
+              title: servidor ? '' : 'Tema del día',
               lockedTags: daily.tags,
             })
           }
@@ -118,7 +141,8 @@ export function DailyQuestionCard({
           className="sx-d-action sx-j-daily-action"
           onClick={() => {
             focusOnDay.current = day
-            updateStudentUi((current) => ({ ...current, dailyQuestionOpenedOn: day }))
+            if (servidor) servidor.abrir()
+            else updateStudentUi((current) => ({ ...current, dailyQuestionOpenedOn: day }))
           }}
         >
           Abrir la pregunta

@@ -6,6 +6,7 @@ import '@/features/journal/styles/journal.css'
 import { JournalHome } from '@/features/journal/components/JournalHome'
 import { JournalEditor } from '@/features/journal/components/JournalEditor'
 import { JournalDetail } from '@/features/journal/components/JournalDetail'
+import { DailyQuestionCard } from '@/features/journal/components/DailyQuestionCard'
 function StudentJournalView() {
   const {
     state,
@@ -44,6 +45,7 @@ function StudentJournalView() {
     saveEntry,
     editEntry,
     deleteEntry,
+    diarioServidor,
   } = useJournalPage()
   return (
     <DiscoveryStage ambient="journal">
@@ -53,6 +55,11 @@ function StudentJournalView() {
           <button type="button" aria-label="Cerrar aviso" onClick={() => setSaveNotice('')}>
             <X aria-hidden="true" size={18} />
           </button>
+        </p>
+      )}
+      {diarioServidor?.error && (
+        <p role="status" className="sx-j-save-notice">
+          {diarioServidor.error}
         </p>
       )}
       {screen === 'home' && (
@@ -75,6 +82,21 @@ function StudentJournalView() {
           bond={bond}
           onboarding={!state.journalOnboardingSeen}
           onBegin={startOnboardingEntry}
+          mostrarTemas={!diarioServidor}
+          cartasServidor={diarioServidor?.cartas}
+          dailyQuestion={
+            diarioServidor && (
+              <DailyQuestionCard
+                now={now}
+                onRespond={openEditor}
+                onOpenAnswer={(entry) => {
+                  setSelectedId(entry.id)
+                  setScreen('detail')
+                }}
+                servidor={diarioServidor.preguntaDelDia}
+              />
+            )
+          }
         />
       )}
       {screen === 'write' && (
@@ -97,6 +119,7 @@ function StudentJournalView() {
           suggestedTags={usedTags.filter((tag) => !tags.includes(tag))}
           tagDraft={tagDraft}
           tags={tags}
+          servidor={diarioServidor && { escribiendo: diarioServidor.escribiendo }}
         />
       )}
       {screen === 'detail' && selected && (
