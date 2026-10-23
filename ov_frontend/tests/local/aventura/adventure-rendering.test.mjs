@@ -1150,8 +1150,9 @@ test('the passport lives inside the profile with five narrative levels and group
   assert.match(html, /Pasaporte vocacional/)
   assert.match(html, /Nivel 1 de 5/)
   assert.match(html, /Observador del horizonte/)
-  assert.match(html, /I1/)
-  assert.match(html, /I9/)
+  // Tras F05 (pedido del usuario): las insignias muestran ícono y nombre, sin su código (I1…I9).
+  assert.ok((html.match(/class="sx-p-badge"/g) ?? []).length >= 9)
+  assert.doesNotMatch(html, /sx-p-badge-code/)
   assert.match(html, /Pulsa una insignia para descubrir la historia que guarda/)
   const menu = render('/student/missions')
   assert.doesNotMatch(menu, />Mi pasaporte<\/span>/)

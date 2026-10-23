@@ -105,4 +105,15 @@ test('la evolución grafica la serie 1–5 con los días registrados y sin «Cam
   assert.match(html, /2 días registrados/)
   assert.match(html, /aria-label="3 de 5"/)
   assert.doesNotMatch(html, /Cambiar mi señal|Registrar mi señal/)
+  // Ajuste tras la prueba manual: se vuelve al mapa, no al diario.
+  assert.match(html, /href="\/student\/missions"[^>]*>.*Volver al mapa/)
+  assert.doesNotMatch(html, /Volver a mi diario/)
+})
+
+test('las insignias del pasaporte no muestran su código', () => {
+  const vista = readFileSync('src/features/discovery/components/StudentPassportView.tsx', 'utf8')
+  assert.doesNotMatch(vista, /sx-p-badge-code/)
+  const dialogo = readFileSync('src/features/discovery/components/PassportBadgeDialog.tsx', 'utf8')
+  assert.match(dialogo, /<p className="sx-p-badge-code">\{group\}<\/p>/)
+  assert.doesNotMatch(dialogo, /badge\.code\}/)
 })

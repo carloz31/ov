@@ -9,7 +9,7 @@ import '@/styles/student/history.css'
 
 function StudentSignalsView() {
   const { openCheckIn } = useStudentOverlays()
-  const { today, checkIns, escala, y, marcas, total, servidor } = useHistorialSenales()
+  const { today, checkIns, escala, y, marcas, total, servidor, mapa } = useHistorialSenales()
   const [selectedId, setSelectedId] = useState(checkIns.at(-1)?.id)
   const selected = checkIns.find((checkIn) => checkIn.id === selectedId) ?? checkIns.at(-1)
   const points = checkIns.map((checkIn, index) => ({
@@ -32,8 +32,8 @@ function StudentSignalsView() {
               de ese día.
             </p>
           </div>
-          <Link className="sx-d-action sx-d-action-ghost" to="/student/journal">
-            <ArrowLeft size={18} aria-hidden="true" /> Volver a mi diario
+          <Link className="sx-d-action sx-d-action-ghost" to={mapa}>
+            <ArrowLeft size={18} aria-hidden="true" /> Volver al mapa
           </Link>
         </header>
 
