@@ -187,8 +187,14 @@ class RespuestaResolverBatalla(RespuestaAccion):
     fichas_repaso: list[FichaPregunta]
 
 
+class OcupacionNueva(BaseModel):
+    codigo: str
+    titulo: str
+
+
 class RespuestaResolverCaso(RespuestaAccion):
-    ocupaciones_nuevas: list[str]
+    # Ajustes Central (5): con su título, para los badges del cierre sin consultar el catálogo.
+    ocupaciones_nuevas: list[OcupacionNueva]
 
 
 class RespuestaRevelarResultado(RespuestaAccion):

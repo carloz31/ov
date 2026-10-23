@@ -111,12 +111,14 @@ export function useMapInteraction({
   // Solo api: el siguiente paso se abre en su zona; si está en la otra, en el mapa de esa zona.
   function irSiguiente() {
     if (!siguiente || !('punto' in siguiente)) return
-    if (siguiente.href) navigate(siguiente.href)
+    if (siguiente.href) navigate(siguiente.href, { state: origen })
     else selectPoint(siguiente.punto.id)
   }
+  // El mapa de origen viaja con la navegación: la Central de Casos vuelve a él al cerrar.
+  const origen = { desde: zone === 'missions' ? 'camino' : 'ciudad' }
   function action(detail: PointDetails) {
     if (!accionDisponible(detail)) return
-    if (detail.href) navigate(detail.href)
+    if (detail.href) navigate(detail.href, { state: origen })
     else if (detail.activityId)
       setParams({ actividad: detail.activityId, ...(detail.revision ? { revision: '1' } : {}) })
   }

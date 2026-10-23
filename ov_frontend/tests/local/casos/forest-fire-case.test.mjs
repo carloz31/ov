@@ -555,7 +555,8 @@ test('final report hides extra screens and budget evaluation and switches button
       React.createElement(FinalReportScreen, {
         assignments: team(data, score),
         bestScore: score,
-        newIconIds: ['firefighter'],
+        newIcons: [{ codigo: 'firefighter', titulo: 'Bombero/a' }],
+        etiquetaVolver: 'Volver a la ciudad',
         onRestart() {},
         onFinish() {},
         extraReason: 'hidden',
@@ -563,9 +564,12 @@ test('final report hides extra screens and budget evaluation and switches button
       }),
     )
     assert.ok(!/presupuesto óptimo|punto adicional|Tu aporte profesional adicional/.test(html))
-    assert.equal(html.includes('Testimonio desbloqueado'), score >= 10)
+    // Superado: un solo botón de retorno y los íconos como badges sin enlace; sin superar, solo reintentar.
     assert.equal(html.includes('Intentar de nuevo'), score < 10)
-    assert.equal(html.includes('Intentar llegar a 14'), score >= 10 && score < 14)
+    assert.equal(html.includes('Volver a la ciudad'), score >= 10)
+    assert.ok(!html.includes('Intentar llegar a'))
+    assert.ok(!html.includes('<a '))
+    assert.equal(html.includes('<li>Bombero/a</li>'), score >= 10)
   }
 })
 
@@ -617,7 +621,7 @@ test('actual case flow enforces gates, allows review changes, records once on re
   assert.equal(named(tree, 'FinalReportScreen').props.bestScore, 14)
   assert.ok(store.useAdventure().solvedCaseIds.includes('forest-fire'))
   draw()
-  assert.equal(named(tree, 'FinalReportScreen').props.newIconIds.length > 0, true)
+  assert.equal(named(tree, 'FinalReportScreen').props.newIcons.length > 0, true)
   named(tree, 'FinalReportScreen').props.onRestart()
   draw()
   assert.equal(button(tree, 'Comenzar fase').props.children[0], 'Comenzar fase')

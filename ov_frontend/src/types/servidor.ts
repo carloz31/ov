@@ -325,4 +325,5 @@ export type RespuestaResolverBatalla = RespuestaAccion & {
   fichas_repaso: { codigo: string; titulo: string }[]
 }
 export type ResolverCasoEntrada = { cuenta: string; actividad: string; puntaje: number; ocupaciones: string[] }
-export type RespuestaResolverCaso = RespuestaAccion & { ocupaciones_nuevas: string[] }
+export type OcupacionNueva = { codigo: string; titulo: string }
+export type RespuestaResolverCaso = RespuestaAccion & { ocupaciones_nuevas: OcupacionNueva[] }

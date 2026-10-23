@@ -42,11 +42,12 @@ def test_fallar_no_completa_y_superar_libera_testimonios_y_coleccion(cliente, ap
                      {**caso(80, ['firefighter', 'paramedic', 'firefighter']), 'fecha_hora': '2026-10-09T10:00:00'})
     assert tipos(superado) == ['COMPLETA_ACTIVIDAD', 'SUPERA_CASO']
     assert reglas(superado) == {'R-t-testimonio-1', 'R-t-testimonio-2'}
-    assert superado['ocupaciones_nuevas'] == ['firefighter', 'paramedic']
+    assert superado['ocupaciones_nuevas'] == [{'codigo': 'firefighter', 'titulo': 'Bombero/a'},
+                                              {'codigo': 'paramedic', 'titulo': 'Paramédico/a'}]
     assert {t['estado'] for t in pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')} == {'DISPONIBLE'}
 
     otra_vez = pedir(cliente, 'POST', '/acciones/resolver-caso', caso(100, ['paramedic', 'nurse']))
-    assert 'SUPERA_CASO' not in tipos(otra_vez) and otra_vez['ocupaciones_nuevas'] == ['nurse']
+    assert 'SUPERA_CASO' not in tipos(otra_vez) and otra_vez['ocupaciones_nuevas'] == [{'codigo': 'nurse', 'titulo': 'Enfermero/a'}]
     pedir(cliente, 'POST', '/acciones/resolver-caso', caso(10, ['biologist']))
 
     fila = fila_caso(cliente)

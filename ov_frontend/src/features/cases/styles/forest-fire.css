@@ -178,14 +178,6 @@
   font-size: 0.78rem;
   overflow-wrap: anywhere;
 }
-.ff-report a {
-  color: #3f51b5;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-}
 .ff-preparing {
   background: #f0e5d4;
   padding: 8px 12px;

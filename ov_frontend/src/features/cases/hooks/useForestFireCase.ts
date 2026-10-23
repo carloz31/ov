@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { forestFirePhases } from '@/data/content/forestFireCase'
 import { dimensionNames } from '@/features/discovery/lib/catalogDetails'
+import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
 import {
   puntajeCaso,
   superaCaso,
@@ -10,6 +11,7 @@ import {
 } from '@/lib/servidor/adaptadoresCasos'
 import { consultarCasos, resolverCaso } from '@/store/servidor/casos'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
+import type { OcupacionNueva } from '@/types/servidor'
 
 import { finishForestFireAttempt } from '@/features/cases/lib/forestFireCaseOutcome'
 import { useAdventure, useAdventureStorageError } from '@/store/adventureStore'
@@ -45,7 +47,8 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
   const [visitedByPhase, setVisitedByPhase] = useState<Record<string, number[]>>({})
   const [dragContactId, setDragContactId] = useState<string>()
   const [dropHovered, setDropHovered] = useState(false)
-  const [newIconIds, setNewIconIds] = useState<string[]>([])
+  // Íconos nuevos con su nombre: del servidor en api, del catálogo del front en local.
+  const [newIcons, setNewIcons] = useState<OcupacionNueva[]>([])
   const [extraProfessionalId, setExtraProfessionalId] = useState('')
   const [extraReason, setExtraReason] = useState('')
   const finalized = useRef(false)
@@ -94,7 +97,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     setVisitedByPhase({})
     setDragContactId(undefined)
     setDropHovered(false)
-    setNewIconIds([])
+    setNewIcons([])
     setExtraProfessionalId('')
     setExtraReason('')
     setErrorEnvio('')
@@ -126,7 +129,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
       const envio = await enviarIntento(puntaje, getCorrectOccupationIds(assignments))
       if (!envio) return
       finalized.current = true
-      setNewIconIds(envio.datos.ocupaciones_nuevas)
+      setNewIcons(envio.datos.ocupaciones_nuevas)
       setResultadoServidor({
         superado: superaCaso(puntaje, envio.caso),
         puntaje: textoPuntajeCaso(puntaje, envio.caso),
@@ -135,7 +138,12 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
       })
     } else if (!finalized.current) {
       finalized.current = true
-      setNewIconIds(finishForestFireAttempt(assignments).newIconIds)
+      setNewIcons(
+        finishForestFireAttempt(assignments).newIconIds.map((codigo) => ({
+          codigo,
+          titulo: getOccupation(codigo)?.name ?? codigo,
+        })),
+      )
     }
     setScreen('report')
   }
@@ -172,7 +180,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     setDragContactId,
     dropHovered,
     setDropHovered,
-    newIconIds,
+    newIcons,
     extraProfessionalId,
     setExtraProfessionalId,
     extraReason,

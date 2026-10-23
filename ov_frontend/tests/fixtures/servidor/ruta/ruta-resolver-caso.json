@@ -50,7 +50,13 @@
     }
   ],
   "ocupaciones_nuevas": [
-    "firefighter",
-    "paramedic"
+    {
+      "codigo": "firefighter",
+      "titulo": "Bombero/a"
+    },
+    {
+      "codigo": "paramedic",
+      "titulo": "Paramédico/a"
+    }
   ]
 }

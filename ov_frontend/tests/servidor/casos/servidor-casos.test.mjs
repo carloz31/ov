@@ -126,3 +126,13 @@ test('la hoja de vida usa título, descripción, conocimientos y habilidades del
   assert.match(hook, /consultarOcupacion\(professional\.occupationId\)/)
   assert.match(readFileSync('src/services/api/catalogo.ts', 'utf8'), /\/catalogo\/ocupaciones\//)
 })
+
+// Ajustes post F04 (5): los íconos nuevos llegan con su título y el cierre vuelve al mapa de origen.
+test('resolver-caso entrega los íconos nuevos con código y título', () => {
+  assert.ok(resolver.ocupaciones_nuevas.length > 0)
+  for (const icono of resolver.ocupaciones_nuevas) assert.deepEqual(Object.keys(icono).sort(), ['codigo', 'titulo'])
+  const retorno = readFileSync('src/features/cases/hooks/useRetornoCaso.ts', 'utf8')
+  assert.match(retorno, /'Volver al mapa', ruta: appPaths\.student\.missions/)
+  assert.match(retorno, /'Volver a la Ciudad', ruta: appPaths\.student\.exploration/)
+  assert.match(readFileSync('src/features/adventure/hooks/useMapInteraction.ts', 'utf8'), /navigate\(detail\.href, \{ state: origen \}\)/)
+})

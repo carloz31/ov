@@ -14,7 +14,7 @@ from app.models import (
 from app.schemas.acciones import (
     CompletarActividadEntrada, ProgresoRespuestas, ReiniciarInstrumentoEntrada,
     ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada, RespuestaAccion,
-    RespuestaItemGuardada, RespuestaItemsGuardados, RespuestaResolverBatalla, RespuestaResolverCaso,
+    OcupacionNueva, RespuestaItemGuardada, RespuestaItemsGuardados, RespuestaResolverBatalla, RespuestaResolverCaso,
     RespuestaReiniciarInstrumento,
     RespuestaRevelarResultado, ResultadoAnulado, RevelarResultadoEntrada,
 )
@@ -287,7 +287,8 @@ def resolver_caso(sesion: Session, entrada: ResolverCasoEntrada) -> RespuestaRes
         progreso, eventos = iniciar_progreso(sesion, cuenta, actividad), []
     sesion.add(ResultadoCaso(progreso_id=progreso.id, puntaje=entrada.puntaje, fecha_hora=fecha))
     respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
-    return RespuestaResolverCaso(**respuesta.campos(), ocupaciones_nuevas=nuevas)
+    return RespuestaResolverCaso(**respuesta.campos(), ocupaciones_nuevas=[
+        OcupacionNueva(codigo=codigo, titulo=ocupaciones[codigo].titulo) for codigo in nuevas])
 
 
 @usar_contexto

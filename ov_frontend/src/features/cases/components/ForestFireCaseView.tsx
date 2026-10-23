@@ -17,12 +17,15 @@ import { FinalReportScreen } from '@/features/cases/components/FinalReportScreen
 export function ForestFireCaseView({
   actividad,
   onAyuda,
+  etiquetaVolver = 'Volver a la ciudad',
   onClose,
   onComplete,
 }: {
   actividad?: string
   // La página monta el diálogo de Lumi: la Central está fuera del shell del estudiante.
   onAyuda?: (pasos: string[]) => void
+  // Botón del cierre superado: según desde dónde se abrió el caso.
+  etiquetaVolver?: string
   onClose: () => void
   onComplete?: () => void
 }) {
@@ -33,7 +36,7 @@ export function ForestFireCaseView({
     setScreen,
     step,
     assignments,
-    newIconIds,
+    newIcons,
     extraProfessionalId,
     setExtraProfessionalId,
     extraReason,
@@ -240,7 +243,8 @@ export function ForestFireCaseView({
           <FinalReportScreen
             assignments={assignments}
             bestScore={resultadoServidor?.mejor ?? adventure.caseBestScores['forest-fire'] ?? 0}
-            newIconIds={newIconIds}
+            newIcons={newIcons}
+            etiquetaVolver={etiquetaVolver}
             servidor={resultadoServidor}
             onRestart={restart}
             onFinish={onComplete ?? onClose}
