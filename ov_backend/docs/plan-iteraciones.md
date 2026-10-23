@@ -82,6 +82,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B15 | Informe de viaje y temas para conversar | 034, 102–105 | — | B11–B13 | Bitácora desde el primer día; las siete reglas de temas; endgame |
 | B16 | Orientadora: vista del salón | 090–093, 107 | — | B14 | Capa 1 del panel |
 | B17 | Acceso · **Implementado** | 001 | M | B01 | Inicio y cierre de sesión con credenciales precargadas |
+| B18 | Prioritario visible al estudiante (pendiente del ajuste de F03) | — | — | B07 | `AvanceInstrumento` (o `/instrumentos`) trae `prioritario` por instrumento según el salón de la cuenta (`SalonInstrumento.es_prioritario`); partida y llegada, siempre prioritario. El front lo refleja en `ScopeChip` en lugar del valor fijo actual |
 
 ### Qué hace cada lote
 
@@ -386,7 +387,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Hace:** botón «Revelar» cuando un instrumento está COMPLETADO sin resultado (`revelar-resultado`); invitación a repetir con perfil plano y su reinicio; partida y llegada con zonas en palabras; comparación por dimensión (ítems que cambiaron primero, los demás plegados; un cambio a menos no se marca negativo). T2 bloqueado con el mensaje de prioritarios. Corrige la recarga directa de `/profile/helena/:pagina`.
 - **Contenidos:** `t_mision_intereses` (reutiliza `instrumento_mara` o se mapea), `t_partida`, `t_llegada`, `t_contraste` (usa el eco de F02), `t_lee_cuestionario`.
 - **Pantallas a decidir:** el revelado (animación o directo); dónde vive la comparación (página del libro o vista propia).
-- **Ajustes al backend posibles:** si el libro necesita la fecha o el número de aplicación para la comparación, ya viene; no se prevé más.
+- **Ajustes al backend posibles:** si el libro necesita la fecha o el número de aplicación para la comparación, ya viene. El chip de alcance de cada página («Para tu proyecto» u «Opcional») necesita saber si el instrumento es prioritario en el salón: queda para B18.
 - **También (adelantado de F08):** resultados visibles del hijo para el apoderado (resumida en el resumen del hijo y explicada), con `familia/resultados` y el catálogo de instrumentos.
 
 #### F04 · Batallas, casos y testimonios · **Implementado**
