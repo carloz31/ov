@@ -72,17 +72,20 @@ test('el libro en api tiene cuatro páginas: partida y llegada primero; la sella
   ])
   const partida = pagina(modelo, 'partida-llegada')
   assert.equal(partida.requisito, 'Completa: Punto de partida')
-  assert.equal(partida.activityHref, '/student/missions?actividad=t-partida')
+  assert.equal(partida.activityHref, '/student/missions?punto=t-partida')
   assert.equal(partida.mostrarRequisito, true)
   assert.equal(partida.demo, false)
 })
 
 test('con la Ciudad abierta, intereses pide su primera misión con el título del servidor', async () => {
-  const { useHelenaPages } = await libro({ avance: 'partida-lista' })
+  const { app, useHelenaPages } = await libro({ avance: 'partida-lista' })
   const intereses = pagina(useHelenaPages(), 'intereses')
   assert.equal(intereses.state, 'sealed')
   assert.equal(intereses.requisito, 'Completa: Misión de intereses')
-  assert.equal(intereses.activityHref, '/student/exploration?actividad=t-mision-intereses')
+  // Lleva al punto del mapa con su drawer abierto; no empieza la misión.
+  assert.equal(intereses.activityHref, '/student/exploration?punto=t-mision-intereses')
+  const ciudad = app.load('src/features/adventure/lib/ciudadPoints.ts').getCiudadPoints({}, {})
+  assert.ok(ciudad.some((p) => p.id === 't-mision-intereses'))
   assert.deepEqual(copia(intereses.missions), { done: 0, total: 2 })
 })
 
@@ -209,7 +212,7 @@ test('reiniciar envía la aplicación RIASEC y lleva a la primera misión de int
   await esperar()
   const reinicio = app.requests.find((r) => r.url === '/api/acciones/reiniciar-instrumento')
   assert.deepEqual(copia(reinicio.body), { cuenta: 'est-ana', instrumento: 'TEST-RIASEC', aplicacion: 'APL-RIASEC' })
-  assert.equal(app.navigations.at(-1), '/student/exploration?actividad=t-mision-intereses')
+  assert.equal(app.navigations.at(-1), '/student/exploration?punto=t-mision-intereses')
 })
 
 test('recarga directa: mientras se lee el libro, la vista espera; luego muestra la comparación', async () => {

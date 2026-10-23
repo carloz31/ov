@@ -19,6 +19,7 @@ import type {
 } from '@/types/servidor'
 import type { InstrumentPageId } from '@/types/discovery'
 import { getHelenaPagesApi } from './helenaPages'
+import { idPuntoContenido } from '@/features/adventure/lib/puntosServidor'
 
 export type LibroServidor = {
   avance: AvanceInstrumento[] | null
@@ -37,12 +38,15 @@ export type ExtrasPaginaApi = {
   puedeReiniciar: boolean
 }
 
+// La misión que falta se muestra en el mapa con su drawer abierto (`?punto=`); no se empieza sola.
 export function hrefActividad(bloques: BloqueActividades[] | null, codigo: string) {
   const enCiudad = bloques?.some((b) => b.codigo === 'CIUDAD' && b.actividades.some((a) => a.codigo === codigo))
-  // Primero se entra al bloque: con la Ciudad cerrada, el enlace va a la Ciudad sin actividad, y el mapa lleva
-  // al Camino con el mensaje de Lumi sobre lo que falta.
+  // Primero se entra al bloque: con la Ciudad cerrada, el enlace va a la Ciudad sin punto, y el mapa lleva al
+  // Camino con el mensaje de Lumi sobre lo que falta.
   if (enCiudad && !ciudadDisponible(bloques)) return '/student/exploration'
-  return `${enCiudad ? '/student/exploration' : '/student/missions'}?actividad=${encodeURIComponent(codigo)}`
+  const actividad = actividadServidor(bloques, codigo)
+  const punto = actividad ? idPuntoContenido(actividad.contenido, codigo) : codigo
+  return `${enCiudad ? '/student/exploration' : '/student/missions'}?punto=${encodeURIComponent(punto)}`
 }
 
 // La primera misión que falta de una aplicación, con el título del servidor.
