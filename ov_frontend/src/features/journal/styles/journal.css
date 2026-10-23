@@ -909,3 +909,42 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+/* Ajuste del diario (F05): el cuaderno con buscador, orden, filtros por tipo y «Ver todo el cuaderno». */
+.sx-j-notebook-count {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--sx-parchment-muted);
+}
+.sx-j-order {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  font-weight: 700;
+}
+.sx-j-notebook-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+.sx-j-notebook-filters .sx-j-topic-filters {
+  margin: 0;
+}
+.sx-j-notebook-shown {
+  margin: 0;
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-j-notebook-all {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

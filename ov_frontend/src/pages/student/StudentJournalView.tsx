@@ -18,10 +18,8 @@ function StudentJournalView() {
     bond,
     screen,
     setScreen,
-    grouping,
-    setGrouping,
-    query,
-    setQuery,
+    cuadernoCompleto,
+    entries,
     setSelectedId,
     editingId,
     body,
@@ -39,7 +37,6 @@ function StudentJournalView() {
     returnFocus,
     saveNotice,
     setSaveNotice,
-    filteredEntries,
     selected,
     usedTags,
     openEditor,
@@ -92,13 +89,9 @@ function StudentJournalView() {
           lumi={<LumiBondPanel bond={bond} />}
           cuaderno={
             <CuadernoDiario
-              entries={filteredEntries}
-              grouping={grouping}
-              onChangeGrouping={setGrouping}
+              entries={entries}
               onOpen={(entry) => abrirEntrada(entry.id)}
-              query={query}
-              setQuery={setQuery}
-              mostrarTemas={!diarioServidor}
+              completo={cuadernoCompleto}
             />
           }
         />
@@ -139,8 +132,9 @@ function StudentJournalView() {
           <DialogHeader>
             <DialogTitle>Eliminar esta entrada</DialogTitle>
             <DialogDescription>
-              La conversación dejará de estar disponible. Esto no reduce la amistad ni reinicia el límite
-              diario.
+              {diarioServidor && selected?.etiqueta === 'Carta de Lumi'
+                ? 'Se borrará tu respuesta y la carta quedará archivada en tu buzón.'
+                : 'Se borrará la entrada.'}
             </DialogDescription>
           </DialogHeader>
           <div className="sx-d-actions">

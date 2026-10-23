@@ -1,104 +1,101 @@
-import { Search } from 'lucide-react'
-import { useJournalHome } from '@/features/journal/hooks/useJournalHome'
+import { ArrowDownUp, Search } from 'lucide-react'
+import { Link } from 'react-router'
+import { useJournalHome, type FiltroCuaderno } from '@/features/journal/hooks/useJournalHome'
 import { LumiPortrait } from '@/features/journal/components/LumiPortrait'
 import type { JournalEntry } from '@/types/adventure'
 import { Parchment } from '@/components/student/Parchment'
 import { JournalCard } from '@/features/journal/components/JournalCard'
-import { JournalTab } from '@/features/journal/components/JournalTab'
+import { appPaths } from '@/routes/paths'
 
-type JournalGrouping = 'timeline' | 'topics'
-// El cuaderno del diario: lo que el estudiante le ha contado a Lumi.
+const filtros: [FiltroCuaderno, string][] = [
+  ['todas', 'Todas'],
+  ['libres', 'Libres'],
+  ['del_dia', 'Pregunta del día'],
+  ['cartas', 'Cartas de Lumi'],
+]
+
+// Ajuste del diario (F05): el cuaderno con buscador por título o pregunta, orden y filtros por tipo. En la portada
+// muestra las 3 primeras y «Ver todo el cuaderno»; con `completo`, todas.
 export function CuadernoDiario({
   entries,
-  grouping,
-  onChangeGrouping,
   onOpen,
-  query,
-  setQuery,
-  mostrarTemas,
+  completo,
 }: {
   entries: JournalEntry[]
-  grouping: JournalGrouping
-  onChangeGrouping: (grouping: JournalGrouping) => void
   onOpen: (entry: JournalEntry) => void
-  query: string
-  setQuery: (query: string) => void
-  mostrarTemas: boolean
+  completo: boolean
 }) {
-  const { topic, setTopic, tags, shown, months } = useJournalHome({ entries, grouping })
+  const c = useJournalHome({ entries, completo })
+  const desde = c.primera
+    ? new Date(c.primera).toLocaleDateString('es-PE', {
+        day: 'numeric',
+        month: 'long',
+        timeZone: 'America/Lima',
+      })
+    : undefined
   return (
     <Parchment className="sx-j-notebook" label="Tu cuaderno" title="Lo que le has contado a Lumi">
+      {desde && <p className="sx-j-notebook-count">{`${c.total} cartas desde el ${desde}`}</p>}
       <div className="sx-j-notebook-controls">
-        <nav aria-label="Organizar conversaciones" className="sx-j-tabs">
-          <JournalTab
-            active={grouping === 'timeline'}
-            label="Línea de tiempo"
-            onClick={() => onChangeGrouping('timeline')}
+        <label className="sx-j-search">
+          <Search aria-hidden="true" size={16} />
+          <span className="sr-only">Buscar por título o pregunta</span>
+          <input
+            className="sx-d-input"
+            placeholder="Buscar por título o pregunta"
+            value={c.query}
+            onChange={(event) => c.setQuery(event.target.value)}
           />
-          {mostrarTemas && (
-            <JournalTab
-              active={grouping === 'topics'}
-              label="Por tema"
-              onClick={() => onChangeGrouping('topics')}
-            />
-          )}
-        </nav>
-        {mostrarTemas && (
-          <label className="sx-j-search">
-            <Search aria-hidden="true" size={16} />
-            <span className="sr-only">Buscar por tema</span>
-            <input
-              className="sx-d-input"
-              placeholder="Buscar por tema..."
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </label>
-        )}
+        </label>
+        <button type="button" className="sx-j-order" onClick={c.alternarOrden}>
+          <ArrowDownUp aria-hidden="true" size={16} />
+          {c.orden === 'recientes' ? 'Más reciente primero' : 'Más antiguo primero'}
+        </button>
       </div>
-      {mostrarTemas && grouping === 'topics' && (
-        <div className="sx-j-topic-filters">
-          {tags.map((tag) => (
+      <div className="sx-j-notebook-filters">
+        <div className="sx-j-topic-filters" role="group" aria-label="Filtrar por tipo">
+          {filtros.map(([valor, etiqueta]) => (
             <button
               type="button"
-              aria-pressed={topic === tag}
-              key={tag}
-              onClick={() => setTopic(topic === tag ? undefined : tag)}
+              key={valor}
+              aria-pressed={c.filtro === valor}
+              onClick={() => c.setFiltro(valor)}
             >
-              #{tag} {entries.filter((e) => e.topicTags.includes(tag)).length}
+              {etiqueta}
             </button>
           ))}
         </div>
-      )}
-      {!shown.length ? (
+        {c.visibles.length > 0 && (
+          <p className="sx-j-notebook-shown">
+            {c.orden === 'recientes'
+              ? `Mostrando las ${c.visibles.length} más recientes`
+              : `Mostrando las ${c.visibles.length} más antiguas`}
+          </p>
+        )}
+      </div>
+      {c.visibles.length ? (
+        <div className="sx-d-stack">
+          {c.visibles.map((entry) => (
+            <JournalCard entry={entry} key={entry.id} onOpen={() => onOpen(entry)} />
+          ))}
+        </div>
+      ) : (
         <div className="sx-j-empty">
           <span className="sx-j-empty-lumi">
             <LumiPortrait />
           </span>
           <h3>
-            {entries.length
-              ? 'No encontramos conversaciones con este tema'
-              : 'Todavía no has escrito nada aquí'}
+            {entries.length ? 'No encontramos cartas con esa búsqueda' : 'Todavía no has escrito nada aquí'}
           </h3>
           <p>
             Este espacio está listo cuando quieras usarlo. No hace falta esperar a que algo importante pase.
           </p>
         </div>
-      ) : grouping === 'timeline' ? (
-        Object.entries(months).map(([month, items]) => (
-          <section className="sx-j-thread" key={month}>
-            <h3>{month}</h3>
-            {items.map((entry) => (
-              <JournalCard entry={entry} key={entry.id} onOpen={() => onOpen(entry)} />
-            ))}
-          </section>
-        ))
-      ) : (
-        <div className="sx-d-stack">
-          {shown.map((entry) => (
-            <JournalCard entry={entry} key={entry.id} onOpen={() => onOpen(entry)} />
-          ))}
-        </div>
+      )}
+      {c.hayMas && (
+        <Link className="sx-j-notebook-all" to={`${appPaths.student.journal}?cuaderno=completo`}>
+          Ver todo el cuaderno
+        </Link>
       )}
     </Parchment>
   )

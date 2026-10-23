@@ -35,7 +35,6 @@ const avisoError = (titulo: string, error: Parameters<typeof mensajeErrorServido
   descripcion: mensajeErrorServidor(error),
   error: true,
 })
-type JournalGrouping = 'timeline' | 'topics'
 export function useJournalPage() {
   const state = useAdventure()
   const now = useLumiNow()
@@ -63,8 +62,8 @@ export function useJournalPage() {
   const [screen, setScreen] = useState<JournalScreen>(
     conversationTopic || eventTitle || activityPrompt ? 'write' : 'home',
   )
-  const [grouping, setGrouping] = useState<JournalGrouping>('timeline')
-  const [query, setQuery] = useState('')
+  // Ajuste del diario (F05): «Ver todo el cuaderno» es la misma vista con `?cuaderno=completo`.
+  const cuadernoCompleto = searchParams.get('cuaderno') === 'completo'
   const [selectedId, setSelectedId] = useState<string>()
   const [editingId, setEditingId] = useState<string>()
   const [body, setBody] = useState('')
@@ -113,13 +112,6 @@ export function useJournalPage() {
   const entries: JournalEntry[] = servidor.activo ? servidor.entradas : locales
   const hoy = usePreguntaDeHoy(now, entries, servidor.activo)
   const buzon = useBuzonLumi((aviso) => setSaveNotice(aviso))
-  const filteredEntries = entries.filter((entry) => {
-    const normalized = query.trim().toLocaleLowerCase('es-PE')
-    if (!normalized) return true
-    return `${entry.topicTags.join(' ')} ${entry.title} ${entry.promptShown ?? ''} ${entry.body}`
-      .toLocaleLowerCase('es-PE')
-      .includes(normalized)
-  })
   const selected = entries.find((entry) => entry.id === selectedId)
   const numeroDe = (id?: string) => servidor.entradas.find((entry) => entry.id === id)?.numero
   const usedTags = [...new Set(entries.flatMap((entry) => entry.topicTags))].sort()
@@ -311,10 +303,7 @@ export function useJournalPage() {
     activityId,
     screen,
     setScreen,
-    grouping,
-    setGrouping,
-    query,
-    setQuery,
+    cuadernoCompleto,
     setSelectedId,
     editingId,
     body,
@@ -334,7 +323,6 @@ export function useJournalPage() {
     saveNotice,
     setSaveNotice,
     entries,
-    filteredEntries,
     selected,
     usedTags,
     openEditor,

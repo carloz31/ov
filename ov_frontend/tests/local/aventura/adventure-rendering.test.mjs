@@ -1353,11 +1353,13 @@ test('the counselor sees readiness trends without diary text', () => {
   assert.match(html, /El contenido del diario es privado del estudiante/)
   assert.doesNotMatch(html, /Este texto jamás debe aparecer/)
 })
-test('journal home supports topics and keeps readiness separate from entries', () => {
+test('journal home filters its notebook by type and keeps readiness separate from entries', () => {
   const html = render('/student/journal', { journalOnboardingSeen: true })
-  assert.match(html, /Línea de tiempo/)
-  assert.match(html, /Por tema/)
-  assert.match(html, /Buscar por tema/)
+  // Ajuste del diario de F05 (autorizado por la spec): filtros por tipo, buscador por título o pregunta y orden.
+  for (const filtro of ['Todas', 'Libres', 'Pregunta del día', 'Cartas de Lumi']) assert.match(html, new RegExp(filtro))
+  assert.match(html, /Buscar por título o pregunta/)
+  assert.match(html, /Más reciente primero/)
+  assert.doesNotMatch(html, /Por tema|Buscar por tema/)
   assert.match(html, /Solo tú puedes leer este espacio/)
   assert.match(html, /Mi diario/)
   assert.doesNotMatch(html, /Tu señal de hoy|Qué tan seguro te sientes hoy de tu próximo paso/i)
@@ -3705,7 +3707,8 @@ test('daily journal question shows its prompt in «Hoy», recognizes today and l
     }))
     assert.ok(newDay.includes(daily.prompt))
     assert.equal(card(render('/student/journal', { journalOnboardingSeen: false })), undefined)
-    const legacy = render('/student/journal', { journalOnboardingSeen: true })
+    // El cuaderno completo (`?cuaderno=completo`) lista todas las entradas, también las de demostración más antiguas.
+    const legacy = render('/student/journal?cuaderno=completo', { journalOnboardingSeen: true })
     assert.match(legacy, /<article class="sx-j-entry" data-kind="daily">[\s\S]*?Pregunta del día<\/span><h3>Tema del día/)
     assert.match(legacy, /data-kind="open"/)
     assert.match(legacy, /Carta de Lumi/)

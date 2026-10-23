@@ -140,21 +140,28 @@ test('tarjeta de Lumi: nivel, cartas enviadas, siguiente nivel y el texto fijo d
   )
 })
 
-test('cuaderno: solo «Línea de tiempo», sin temas, con el origen y «Editada»', () => {
-  const html = render('CuadernoDiario', {
-    entries: entradas,
-    grouping: 'timeline',
-    onChangeGrouping: nada,
-    onOpen: nada,
-    query: '',
-    setQuery: nada,
-    mostrarTemas: false,
-  })
-  assert.match(html, /Línea de tiempo/)
-  assert.doesNotMatch(html, /Por tema|Buscar por tema|sx-j-topic-filters|sx-j-tags/)
-  for (const etiqueta of ['Carta de Lumi', 'Pregunta del día', 'Libre'])
-    assert.match(html, new RegExp(etiqueta))
-  assert.equal((html.match(/>Editada</g) ?? []).length, 1)
+test('cuaderno: 3 en la portada, filtros por tipo, buscador, orden, origen y «Editada»', () => {
+  const cuaderno = (completo) => render('CuadernoDiario', { entries: entradas, onOpen: nada, completo })
+  const portada = cuaderno(false)
+  assert.equal((portada.match(/class="sx-j-entry"/g) ?? []).length, 3)
+  assert.match(portada, /4 cartas desde el 7 de octubre/)
+  assert.match(portada, /Mostrando las 3 más recientes/)
+  assert.match(portada, /Ver todo el cuaderno/)
+  assert.match(portada, /href="\/student\/journal\?cuaderno=completo"/)
+  for (const filtro of ['Todas', 'Libres', 'Pregunta del día', 'Cartas de Lumi'])
+    assert.match(portada, new RegExp(filtro))
+  assert.match(portada, /Buscar por título o pregunta/)
+  assert.match(portada, /Más reciente primero/)
+  assert.doesNotMatch(portada, /Por tema|Buscar por tema|sx-j-tags/)
+  const completo = cuaderno(true)
+  assert.equal((completo.match(/class="sx-j-entry"/g) ?? []).length, 4)
+  assert.doesNotMatch(completo, /Ver todo el cuaderno/)
+  assert.equal((completo.match(/>Editada</g) ?? []).length, 1)
+  const { tipoEntrada } = app.load('src/features/journal/hooks/useJournalHome.ts')
+  assert.deepEqual(entradas.map((e) => tipoEntrada(e)).sort(), ['cartas', 'cartas', 'del_dia', 'libres'])
+  const dialogo = readFileSync('src/pages/student/StudentJournalView.tsx', 'utf8')
+  assert.match(dialogo, /Se borrará tu respuesta y la carta quedará archivada en tu buzón\./)
+  assert.match(dialogo, /Se borrará la entrada\./)
 })
 
 test('editor: título opcional y sin etiquetas en api', () => {
