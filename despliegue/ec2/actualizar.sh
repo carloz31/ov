@@ -13,6 +13,14 @@ sudo -u ov bash -c "cd $DESTINO/ov_backend && $UV sync --frozen --no-dev --extra
 cp "$DESTINO/despliegue/ec2/ov-backend.service" /etc/systemd/system/ov-backend.service
 systemctl daemon-reload
 systemctl restart ov-backend
-sleep 2
-systemctl --no-pager --lines=5 status ov-backend
-curl -fsS -o /dev/null -w "API local: HTTP %{http_code}\n" http://127.0.0.1:8000/docs
+for intento in $(seq 1 30); do
+  if curl -fsS -o /dev/null http://127.0.0.1:8000/docs; then
+    echo "API local: HTTP 200 (tras ${intento} intento(s))"
+    exit 0
+  fi
+  sleep 2
+done
+echo "La API no respondió en 60 s."
+systemctl --no-pager --lines=20 status ov-backend
+journalctl -u ov-backend -n 50 --no-pager
+exit 1
