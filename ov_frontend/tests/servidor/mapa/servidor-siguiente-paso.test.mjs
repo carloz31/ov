@@ -29,7 +29,7 @@ async function iniciar(etapa, cambiar = () => {}) {
     throw Error(`Solicitud no configurada: ${r.url}`)
   })
   assert.equal((await app.load('src/store/servidor/operaciones.ts').ingresar()).tipo, 'ok')
-  const { siguientePaso, actividadesMas } = app.load('src/features/adventure/lib/siguientePaso.ts')
+  const { siguientePaso, actividadesDisponibles } = app.load('src/features/adventure/lib/siguientePaso.ts')
   const bloques = app.load('src/store/servidor/sesion.ts').obtenerEstadoServidor().actividades.datos
   const puntos = [
     ...app.load('src/features/adventure/lib/caminoPoints.ts').getCaminoPoints({}, {}),
@@ -37,7 +37,7 @@ async function iniciar(etapa, cambiar = () => {}) {
   ]
   const calcular = (zona = 'camino') => {
     const paso = siguientePaso(bloques, puntos, zona)
-    return { paso, mas: actividadesMas(puntos, paso) }
+    return { paso, disponibles: actividadesDisponibles(puntos) }
   }
   return { app, escenario, actividad, puntos, calcular }
 }
@@ -59,51 +59,59 @@ function pintar(app, props) {
 
 test('disponible: T2 bloqueado y una requerida disponible en la Ciudad; el botón lleva a su mapa', async () => {
   const { app, escenario, calcular } = await iniciar('ciudad')
-  const { paso, mas } = calcular('camino')
+  const { paso, disponibles } = calcular('camino')
   assert.equal(paso.estado, 'disponible')
   assert.equal(paso.punto.specActivityId, 't-mision-intereses')
   assert.equal(paso.href, '/student/exploration?punto=t-mision-intereses')
   // Desde la Ciudad se abre en la misma zona.
   assert.equal(calcular('ciudad').paso.href, undefined)
-  // N: visibles disponibles o empezadas, sin la del botón.
-  assert.equal(mas, disponiblesServidor(escenario.bloques) - 1)
-  const arbol = pintar(app, { paso, mas })
+  // N: visibles disponibles o empezadas, incluida la del botón.
+  assert.equal(disponibles, disponiblesServidor(escenario.bloques))
+  const arbol = pintar(app, { paso, disponibles })
   assert.match(texto(arbol), /Siguiente paso/)
   assert.match(texto(arbol), new RegExp(paso.punto.title))
   assert.match(texto(arbol), new RegExp(paso.punto.subtitle))
-  assert.match(texto(arbol), new RegExp(`${mas} actividades más disponibles · Ver todas ›`))
+  assert.match(texto(arbol), new RegExp(`${disponibles} actividades disponibles · Ver todas ›`))
   const linea = elementos(arbol, (e) => e.props.className === 'sx-panel-link sx-next-more')[0]
   assert.equal(linea.props.to, '/student/activities')
+})
+
+test('solo la actividad del botón: la línea dice «1 actividad disponible»', async () => {
+  const { app, calcular } = await iniciar('inicial')
+  const { paso, disponibles } = calcular()
+  assert.equal(paso.punto.specActivityId, 't-inicio')
+  assert.equal(disponibles, 1)
+  assert.match(texto(pintar(app, { paso, disponibles })), /1 actividad disponible · Ver todas ›/)
 })
 
 test('empezada: una requerida en curso gana a una disponible anterior y dice «Continúa»', async () => {
   const { app, calcular } = await iniciar('inicial', (actividad) => {
     actividad('t-partida').estado = 'EN_CURSO'
   })
-  const { paso, mas } = calcular()
+  const { paso, disponibles } = calcular()
   assert.equal(paso.estado, 'empezada')
   assert.equal(paso.punto.specActivityId, 't-partida')
   assert.equal(paso.href, undefined)
-  // t-inicio queda disponible: una más, en singular.
-  assert.equal(mas, 1)
-  const arbol = pintar(app, { paso, mas })
+  // t-inicio y t-partida: el total cuenta también la del botón.
+  assert.equal(disponibles, 2)
+  const arbol = pintar(app, { paso, disponibles })
   assert.match(texto(arbol), /Continúa/)
   assert.doesNotMatch(texto(arbol), /Siguiente paso/)
-  assert.match(texto(arbol), /1 actividad más disponible · Ver todas ›/)
+  assert.match(texto(arbol), /2 actividades disponibles · Ver todas ›/)
 })
 
 test('bloqueada: sin requeridas disponibles, la primera bloqueada con el mensaje del servidor', async () => {
   const { app, escenario, calcular } = await iniciar('t2', (actividad) => {
     for (const codigo of ['t-llegada', 't-comparar', 't-contraste']) actividad(codigo).estado = 'COMPLETADA'
   })
-  const { paso, mas } = calcular()
+  const { paso, disponibles } = calcular()
   const proyecto = todas(escenario.bloques).find((a) => a.codigo === 't-proyecto')
   const bloque = escenario.bloques.find((b) => b.codigo === 'T2')
   assert.equal(paso.estado, 'bloqueada')
   assert.equal(paso.punto.specActivityId, 't-proyecto')
   assert.equal(paso.mensaje, (proyecto.bloqueo ?? bloque.bloqueo)[0].mensaje)
-  assert.equal(mas, disponiblesServidor(escenario.bloques))
-  const arbol = pintar(app, { paso, mas })
+  assert.equal(disponibles, disponiblesServidor(escenario.bloques))
+  const arbol = pintar(app, { paso, disponibles })
   assert.match(texto(arbol), new RegExp(paso.mensaje.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
   // La misma tarjeta, con candado en lugar de la diana.
   assert.equal(elementos(arbol, (e) => e.type === LockKeyhole).length, 1)
@@ -116,11 +124,11 @@ test('completado: todas las requeridas hechas y quedan opcionales; recorrido: no
     for (const a of todas(bloques)) if (a.requerida) a.estado = 'COMPLETADA'
   }
   const { app, escenario, calcular } = await iniciar('t2', completas)
-  const { paso, mas } = calcular()
+  const { paso, disponibles } = calcular()
   assert.deepEqual(copia(paso), { estado: 'completado' })
-  assert.equal(mas, disponiblesServidor(escenario.bloques))
-  assert.ok(mas > 0)
-  const arbol = pintar(app, { paso, mas })
+  assert.equal(disponibles, disponiblesServidor(escenario.bloques))
+  assert.ok(disponibles > 0)
+  const arbol = pintar(app, { paso, disponibles })
   assert.match(texto(arbol), /Completaste el camino/)
   assert.match(texto(arbol), /Aún quedan actividades por descubrir\. Sigue explorando\./)
   assert.equal(elementos(arbol, (e) => e.props.to === '/student/activities').length, 1)
@@ -131,12 +139,15 @@ test('completado: todas las requeridas hechas y quedan opcionales; recorrido: no
   })
   const recorrido = final.calcular()
   assert.deepEqual(copia(recorrido.paso), { estado: 'recorrido' })
-  assert.equal(recorrido.mas, 0)
+  assert.equal(recorrido.disponibles, 0)
   const arbolFinal = pintar(final.app, recorrido)
   assert.match(texto(arbolFinal), /Recorriste todo el camino/)
   assert.equal(elementos(arbolFinal, (e) => e.props.to === '/student/profile/helena').length, 1)
-  // Con N = 0 la línea no aparece.
-  assert.equal(elementos(arbolFinal, (e) => e.props.className === 'sx-panel-link sx-next-more').length, 0)
+  // Sin nada disponible, el enlace a «Mis actividades» sigue ahí, sin conteo.
+  const enlace = elementos(arbolFinal, (e) => e.props.className === 'sx-panel-link sx-next-more')
+  assert.equal(enlace.length, 1)
+  assert.equal(enlace[0].props.to, '/student/activities')
+  assert.equal(texto(enlace[0]), 'Ver todas mis actividades ›')
 })
 
 test('una requerida oculta se omite con un aviso en desarrollo', async (t) => {
@@ -151,21 +162,21 @@ test('una requerida oculta se omite con un aviso en desarrollo', async (t) => {
 
 test('en api el panel muestra el siguiente paso y ya no la lista de disponibles', async () => {
   const { app, calcular } = await iniciar('ciudad')
-  const { paso, mas } = calcular()
+  const { paso, disponibles } = calcular()
   const { AdventurePanel } = app.load('src/features/adventure/components/AdventurePanel.tsx')
   const panel = app.mount(AdventurePanel, {
     adventure: app.load('src/store/adventureStore.ts').useAdventure(),
     points: [],
     progress: { label: 'Nivel de recorrido', value: 0 },
     siguiente: paso,
-    masDisponibles: mas,
+    disponibles,
     onSelect() {},
     onCheckIn() {},
   })
   const tree = panel.render()
   const seccion = elementos(tree, (e) => e.type?.name === 'SiguientePasoServidor')
   assert.equal(seccion.length, 1)
-  assert.equal(seccion[0].props.mas, mas)
+  assert.equal(seccion[0].props.disponibles, disponibles)
   assert.doesNotMatch(texto(tree), /Actividades disponibles/)
   assert.doesNotMatch(texto(tree), /Ver más/)
   panel.unmount()

@@ -66,7 +66,7 @@ export function MapScreenLayout({
     locked,
     recommended,
     siguiente,
-    masDisponibles,
+    disponibles,
     irSiguiente,
     progress,
     selected,
@@ -87,7 +87,7 @@ export function MapScreenLayout({
       points={points}
       recommended={recommended}
       siguiente={siguiente}
-      masDisponibles={masDisponibles}
+      disponibles={disponibles}
       onSiguiente={irSiguiente}
       progress={progress}
       onGuide={openGuide}

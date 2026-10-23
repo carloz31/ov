@@ -62,6 +62,5 @@ export function siguientePaso(
   }
 }
 
-// Visibles en DISPONIBLE o EN_CURSO (las que lista «Mis actividades»), sin la del botón.
-export const actividadesMas = (puntos: StudentMapPoint[], paso: SiguientePaso | null) =>
-  paso ? getListedActivities(puntos, false).filter((p) => !('punto' in paso) || p !== paso.punto).length : 0
+// Visibles en DISPONIBLE o EN_CURSO (las que lista «Mis actividades»), incluida la del botón.
+export const actividadesDisponibles = (puntos: StudentMapPoint[]) => getListedActivities(puntos, false).length

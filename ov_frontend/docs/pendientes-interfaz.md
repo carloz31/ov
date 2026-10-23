@@ -5,9 +5,9 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 ## 2026-10-22 · F03 · «Sorpresas nuevas» en la línea de actividades del inicio
 
 - **Dato:** que una actividad opcional desbloqueada todavía no se haya abierto. El backend no lo entrega: `Desbloqueo.visto` dice que se vio el aviso del desbloqueo (se marca en bloque con `marcar-vistos`), y `DISPONIBLE` dice que no se inició, no que no se abrió.
-- **Dónde se mostraría:** en la línea «N actividades más disponibles · Ver todas ›» del panel de aventura, como «· N sorpresa(s) nueva(s)».
+- **Dónde se mostraría:** en la línea «N actividades disponibles · Ver todas ›» del panel de aventura, como «· N sorpresa(s) nueva(s)».
 - **Opciones:** registrar en el backend la primera apertura de una actividad; aproximarlo con `estado == DISPONIBLE` (no iniciada); aproximarlo con los desbloqueos no vistos.
-- **Si no se muestra:** la línea solo dice cuántas actividades más hay disponibles.
+- **Si no se muestra:** la línea solo dice cuántas actividades hay disponibles.
 - **Estado:** pendiente de decisión del usuario.
 
 ## 2026-10-22 · F03 · Textos del front por decidir en instrumentos

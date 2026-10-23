@@ -38,7 +38,7 @@ export function AdventurePanel({
   onCheckIn,
   onGuide,
   siguiente,
-  masDisponibles = 0,
+  disponibles = 0,
   onSiguiente,
 }: {
   adventure: AdventureState
@@ -51,7 +51,7 @@ export function AdventurePanel({
   onGuide?: (pasos: string[]) => void
   // Solo api: el siguiente paso de la ruta; reemplaza la recomendada y la lista de disponibles.
   siguiente?: SiguientePaso | null
-  masDisponibles?: number
+  disponibles?: number
   onSiguiente?: () => void
 }) {
   const { level, nombre, iniciales, progresoCiudad } = useTravelerLevel(adventure)
@@ -132,7 +132,7 @@ export function AdventurePanel({
       {siguiente !== undefined ? (
         <SiguientePasoServidor
           paso={siguiente}
-          mas={masDisponibles}
+          disponibles={disponibles}
           saludo={
             !!getReturnGreeting(adventure, siguiente && 'punto' in siguiente ? siguiente.punto : undefined)
           }

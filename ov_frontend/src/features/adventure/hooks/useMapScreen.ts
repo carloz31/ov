@@ -17,7 +17,7 @@ import {
 } from '@/features/adventure/lib/mapPoints'
 import { getCaminoPoints } from '@/features/adventure/lib/caminoPoints'
 import { getCiudadPoints } from '@/features/adventure/lib/ciudadPoints'
-import { actividadesMas, siguientePaso } from '@/features/adventure/lib/siguientePaso'
+import { actividadesDisponibles, siguientePaso } from '@/features/adventure/lib/siguientePaso'
 export function useMapScreen({
   zone,
   points,
@@ -95,7 +95,7 @@ export function useMapScreen({
     locked,
     recommended,
     siguiente,
-    masDisponibles: siguiente === undefined ? 0 : actividadesMas(ruta, siguiente),
+    disponibles: actividadesDisponibles(ruta),
     progress,
     selected,
     details,

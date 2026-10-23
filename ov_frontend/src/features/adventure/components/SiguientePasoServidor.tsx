@@ -4,16 +4,16 @@ import { discoveryPaths } from '@/routes/discoveryPaths'
 import { studentActivitiesPath } from '../lib/navigation'
 import type { SiguientePaso } from '../lib/siguientePaso'
 
-// Solo api: el siguiente paso de la ruta y cuántas actividades más hay disponibles.
+// Solo api: el siguiente paso de la ruta y cuántas actividades hay disponibles en total.
 // `paso` nulo: el servidor aún no entrega la ruta.
 export function SiguientePasoServidor({
   paso,
-  mas,
+  disponibles,
   saludo,
   onAbrir,
 }: {
   paso: SiguientePaso | null
-  mas: number
+  disponibles: number
   saludo: boolean
   onAbrir?: () => void
 }) {
@@ -56,11 +56,12 @@ export function SiguientePasoServidor({
           </Link>
         </>
       )}
-      {mas > 0 && (
-        <Link className="sx-panel-link sx-next-more" to={studentActivitiesPath}>
-          {mas === 1 ? '1 actividad más disponible' : `${mas} actividades más disponibles`} · Ver todas ›
-        </Link>
-      )}
+      {/* Siempre lleva a «Mis actividades», también sin nada disponible (ahí están las realizadas). */}
+      <Link className="sx-panel-link sx-next-more" to={studentActivitiesPath}>
+        {disponibles === 0
+          ? 'Ver todas mis actividades ›'
+          : `${disponibles === 1 ? '1 actividad disponible' : `${disponibles} actividades disponibles`} · Ver todas ›`}
+      </Link>
     </section>
   )
 }
