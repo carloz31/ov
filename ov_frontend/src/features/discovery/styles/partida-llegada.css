@@ -178,34 +178,29 @@
   grid-column: 2 / 4;
   justify-self: end;
 }
-/* Tarjeta angosta: el nombre arriba y las zonas debajo, siempre en las mismas columnas. */
+/* Tarjeta angosta (celular): el nombre arriba y los chips debajo, alineados a la derecha en las mismas
+   columnas. */
 @container (max-width: 440px) {
-  .sx-d-pl-summary-list {
-    grid-template-columns: auto auto auto minmax(0, 1fr);
-  }
   .sx-d-pl-summary-list li > strong {
     grid-column: 1 / -1;
-  }
-  .sx-d-pl-summary-list .sx-d-pl-chip {
-    justify-self: start;
-  }
-  .sx-d-pl-summary-list .sx-d-pl-zones > .sx-d-pl-chip:last-child {
-    grid-column: 3;
-  }
-  .sx-d-pl-summary-list .sx-d-pl-zones > .sx-d-pl-chip:only-child {
-    grid-column: 1;
-  }
-  .sx-d-pl-summary-list .sx-d-pl-kept {
-    grid-column: 1;
-    justify-self: start;
-  }
-  .sx-d-pl-summary-list .sx-d-pl-kept + .sx-d-pl-chip:last-child {
-    grid-column: 3;
   }
 }
 .sx-d-pl-summary-list strong {
   font-size: 15px;
   font-weight: 800;
+  /* El nombre nunca pasa de dos líneas. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.sx-d-pl-summary-list .sx-d-pl-chip,
+.sx-d-pl-summary-list .sx-d-pl-kept {
+  font-size: 12px;
+}
+.sx-d-pl-summary-list .sx-d-pl-chip {
+  padding: 2px 9px;
 }
 .sx-d-pl-sealed {
   display: flex;
