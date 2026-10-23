@@ -145,8 +145,7 @@
   background: #e2c36e;
   color: #302819;
 }
-.ff-mobile-copy,
-.ff-community-mobile {
+.ff-mobile-copy {
   display: none;
 }
 .ff-listen {
@@ -305,39 +304,9 @@
   line-height: 1.5;
   margin: 0;
 }
-.ff-community-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.ff-case .ff-community-heading h2 {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #ffe29a;
-  letter-spacing: 0.04em;
-  margin: 0;
-}
-.ff-community-heading .ff-secondary,
-.ff-community-mobile .ff-secondary {
-  padding: 0 3px;
-  border: 0;
-  background: none;
-  color: #bdcaff;
-  font-size: 12px;
-}
-.ff-community-desktop ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.ff-community-desktop li {
-  font-size: 12px;
-  line-height: 1.45;
-  margin-top: 6px;
-}
-.ff-community-desktop strong {
-  color: #eab6a9;
+/* La comunidad se abre como diálogo; la descripción del problema queda completa. */
+.ff-community-button {
+  margin-top: 12px;
 }
 .ff-team-zone.ff-dark {
   flex: 1;
@@ -682,12 +651,10 @@
   .ff-header {
     padding-bottom: 8px;
   }
-  .ff-desktop-copy,
-  .ff-community-desktop {
+  .ff-desktop-copy {
     display: none;
   }
-  .ff-mobile-copy,
-  .ff-community-mobile {
+  .ff-mobile-copy {
     display: block;
   }
   .ff-point-position,
@@ -733,7 +700,6 @@
   .ff-case .ff-problem-card .ff-eyebrow {
     font-size: 10px;
     margin-bottom: 4px;
-    padding-right: 44px;
   }
   .ff-case .ff-problem-card h1 {
     font-size: 17px;
@@ -743,14 +709,8 @@
     font-size: 13px;
     line-height: 1.35;
   }
-  .ff-community-mobile {
-    position: absolute;
-    right: 12px;
-    top: 0;
-  }
-  .ff-community-mobile .ff-secondary {
-    font-size: 11px;
-    min-width: 44px;
+  .ff-community-button {
+    margin-top: 8px;
   }
   .ff-team-zone.ff-dark {
     grid-row: 2;

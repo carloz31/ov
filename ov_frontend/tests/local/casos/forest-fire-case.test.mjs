@@ -645,6 +645,14 @@ test('topbar help opens on demand with the active step guidance', () => {
   draw()
   named(tree, 'ForestFireCaseHeader').props.onAyuda()
   assert.deepEqual(copy(abiertas.at(-1)), copy(ayudaCentral.problema))
+  // Lo que dijo la comunidad es un solo botón que abre el diálogo; la descripción va completa.
+  const pistas = elements(tree, (n) => typeof n.type === 'function' && n.type.name === 'ClueList')
+  assert.equal(pistas.length, 1)
+  assert.equal(pistas[0].props.label, 'Ver lo que dijo la comunidad')
+  assert.equal(elements(tree, (n) => n.props?.className?.includes?.('ff-community-desktop')).length, 0)
+  assert.ok(
+    elements(tree, (n) => n.type === 'p' && n.props.children === data.forestFirePhases[0].problems[0].detail).length,
+  )
 })
 
 test('abandonment and budget game-over do not record a score or reward', () => {

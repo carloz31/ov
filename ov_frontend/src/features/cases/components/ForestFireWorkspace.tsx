@@ -29,23 +29,10 @@ export function ForestFireWorkspace({ model }: { model: ReturnType<typeof useFor
           </p>
           <h1 tabIndex={-1}>{phase.problems[step - 1].title}</h1>
           <p>{phase.problems[step - 1].detail}</p>
-          <div className="ff-community-mobile">
-            <ClueList phase={phase} label="Pistas" />
+          <div className="ff-community-button">
+            <ClueList phase={phase} label="Ver lo que dijo la comunidad" />
           </div>
         </article>
-        <div className="ff-community-desktop ff-dark">
-          <div className="ff-community-heading">
-            <h2>Lo que dijo la comunidad</h2>
-            <ClueList phase={phase} label="Ver completo" />
-          </div>
-          <ul>
-            {phase.messages.map((message) => (
-              <li key={message.id}>
-                <strong>{message.speaker}:</strong> {message.summary}
-              </li>
-            ))}
-          </ul>
-        </div>
         <div
           className={`ff-team-zone ff-dark ${dragContactId ? 'is-dragging-contact' : ''} ${dropHovered ? 'is-drop-hovered' : ''}`}
         >
