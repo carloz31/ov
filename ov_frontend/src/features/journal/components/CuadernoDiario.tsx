@@ -1,4 +1,4 @@
-import { ArrowDownUp, Search } from 'lucide-react'
+import { ArrowDownUp, ArrowRight, Search } from 'lucide-react'
 import { Link } from 'react-router'
 import { useJournalHome, type FiltroCuaderno } from '@/features/journal/hooks/useJournalHome'
 import { LumiPortrait } from '@/features/journal/components/LumiPortrait'
@@ -34,23 +34,33 @@ export function CuadernoDiario({
       })
     : undefined
   return (
-    <Parchment className="sx-j-notebook" label="Tu cuaderno" title="Lo que le has contado a Lumi">
-      {desde && <p className="sx-j-notebook-count">{`${c.total} cartas desde el ${desde}`}</p>}
+    <Parchment className="sx-j-notebook sx-j-cuaderno" aria-labelledby="cuaderno-titulo">
       <div className="sx-j-notebook-controls">
-        <label className="sx-j-search">
-          <Search aria-hidden="true" size={16} />
-          <span className="sr-only">Buscar por título o pregunta</span>
-          <input
-            className="sx-d-input"
-            placeholder="Buscar por título o pregunta"
-            value={c.query}
-            onChange={(event) => c.setQuery(event.target.value)}
-          />
-        </label>
-        <button type="button" className="sx-j-order" onClick={c.alternarOrden}>
-          <ArrowDownUp aria-hidden="true" size={16} />
-          {c.orden === 'recientes' ? 'Más reciente primero' : 'Más antiguo primero'}
-        </button>
+        <div className="sx-j-cuaderno-title">
+          <p className="sx-d-eyebrow">Tu cuaderno</p>
+          <h2 id="cuaderno-titulo">Lo que le has contado a Lumi</h2>
+          {desde && (
+            <p className="sx-j-notebook-count">
+              {`${c.total === 1 ? '1 carta' : `${c.total} cartas`} desde el ${desde}`}
+            </p>
+          )}
+        </div>
+        <div className="sx-j-cuaderno-tools">
+          <label className="sx-j-search">
+            <Search aria-hidden="true" size={16} />
+            <span className="sr-only">Buscar por título o pregunta</span>
+            <input
+              className="sx-d-input"
+              placeholder="Buscar por título o pregunta"
+              value={c.query}
+              onChange={(event) => c.setQuery(event.target.value)}
+            />
+          </label>
+          <button type="button" className="sx-j-order" onClick={c.alternarOrden}>
+            <ArrowDownUp aria-hidden="true" size={16} />
+            {c.orden === 'recientes' ? 'Más reciente primero' : 'Más antiguo primero'}
+          </button>
+        </div>
       </div>
       <div className="sx-j-notebook-filters">
         <div className="sx-j-topic-filters" role="group" aria-label="Filtrar por tipo">
@@ -74,11 +84,11 @@ export function CuadernoDiario({
         )}
       </div>
       {c.visibles.length ? (
-        <div className="sx-d-stack">
+        <ol className="sx-j-linea">
           {c.visibles.map((entry) => (
             <JournalCard entry={entry} key={entry.id} onOpen={() => onOpen(entry)} />
           ))}
-        </div>
+        </ol>
       ) : (
         <div className="sx-j-empty">
           <span className="sx-j-empty-lumi">
@@ -94,7 +104,7 @@ export function CuadernoDiario({
       )}
       {c.hayMas && (
         <Link className="sx-j-notebook-all" to={`${appPaths.student.journal}?cuaderno=completo`}>
-          Ver todo el cuaderno
+          Ver todo el cuaderno <ArrowRight aria-hidden="true" size={16} />
         </Link>
       )}
     </Parchment>

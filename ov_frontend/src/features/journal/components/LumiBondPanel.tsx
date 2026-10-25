@@ -29,15 +29,14 @@ export function LumiBondPanel({
         </div>
       </div>
       <TrailBar
-        label={`${bond.conversations} cartas enviadas`}
+        label={bond.conversations === 1 ? '1 carta enviada' : `${bond.conversations} cartas enviadas`}
         value={bond.progress}
         text={bond.nextMemoryAt ? `Siguiente nivel: ${bond.nextMemoryAt}` : 'Nivel máximo'}
       />
       {faltan > 0 && (
         <p className="sx-j-lumi-card-next">
-          {siguienteRecuerdo
-            ? `Faltan ${faltan} cartas para que Lumi te cuente «${siguienteRecuerdo}».`
-            : `Faltan ${faltan} cartas para que Lumi te cuente su siguiente recuerdo.`}
+          Faltan <strong>{faltan === 1 ? '1 carta' : `${faltan} cartas`}</strong> para que Lumi te cuente{' '}
+          {siguienteRecuerdo ? <em>«{siguienteRecuerdo}»</em> : 'su siguiente recuerdo'}.
         </p>
       )}
       <p className="sx-j-lumi-card-small">Hoy cuentan hasta 3 cartas · la amistad nunca se pierde</p>

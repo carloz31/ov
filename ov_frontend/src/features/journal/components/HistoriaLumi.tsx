@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, LockKeyhole } from 'lucide-react'
+import { ChevronLeft, ChevronRight, LockKeyhole, Sparkles } from 'lucide-react'
 import type { CapituloLumi } from '@/features/journal/hooks/useHistoriaLumi'
 
 const POR_PAGINA = 3
 
 // Ajuste del diario (F05): «La historia de Lumi» dentro de su tarjeta, de 3 en 3 con flechas. Un capítulo abierto se
-// vuelve a ver en el reproductor de actividades; uno bloqueado muestra su título como adelanto y su requisito.
+// vuelve a ver en el reproductor de actividades; uno recién desbloqueado brilla con «Nuevo recuerdo» hasta que el
+// estudiante lo abre (nunca se abre solo), y uno bloqueado muestra su título como adelanto y su requisito.
 export function HistoriaLumi({
   capitulos,
   onVer,
@@ -13,9 +14,11 @@ export function HistoriaLumi({
   capitulos: CapituloLumi[]
   onVer: (capitulo: CapituloLumi) => void
 }) {
-  const [pagina, setPagina] = useState(0)
+  const primeroNuevo = capitulos.findIndex((c) => c.nuevo)
+  const [pagina, setPagina] = useState(primeroNuevo > 0 ? Math.floor(primeroNuevo / POR_PAGINA) : 0)
   const paginas = Math.max(1, Math.ceil(capitulos.length / POR_PAGINA))
-  const visibles = capitulos.slice(pagina * POR_PAGINA, (pagina + 1) * POR_PAGINA)
+  const desde = pagina * POR_PAGINA
+  const visibles = capitulos.slice(desde, desde + POR_PAGINA)
   const abiertos = capitulos.filter((c) => c.desbloqueado).length
   return (
     <section className="sx-j-historia" aria-labelledby="historia-lumi">
@@ -26,24 +29,41 @@ export function HistoriaLumi({
       <ol className="sx-j-historia-list">
         {visibles.map((c) =>
           c.desbloqueado ? (
-            <li key={c.codigo} className="sx-j-capitulo" data-estado="abierto">
-              <span className="sx-j-capitulo-num">{c.numero}</span>
-              <span className="sx-j-capitulo-title">{c.titulo}</span>
+            <li key={c.codigo} className="sx-j-capitulo" data-estado={c.nuevo ? 'nuevo' : 'abierto'}>
               <button type="button" className="sx-j-capitulo-ver" onClick={() => onVer(c)}>
-                Volver a ver
+                <span className="sx-j-capitulo-num">{c.numero}</span>
+                <span className="sx-j-capitulo-copy">
+                  <span className="sx-j-capitulo-title">{c.titulo}</span>
+                  {c.nuevo ? (
+                    <small>
+                      <Sparkles aria-hidden="true" size={12} /> Nuevo recuerdo · Toca para verlo
+                    </small>
+                  ) : (
+                    <small>Volver a ver</small>
+                  )}
+                </span>
               </button>
             </li>
           ) : (
             <li key={c.codigo} className="sx-j-capitulo" data-estado="bloqueado">
-              <LockKeyhole aria-hidden="true" size={16} />
-              <span className="sx-j-capitulo-title">{c.titulo || `Recuerdo ${c.numero}`}</span>
-              {c.requisito && <small>{`Al llegar a ${c.requisito} cartas`}</small>}
+              <span className="sx-j-capitulo-lock">
+                <LockKeyhole aria-hidden="true" size={14} />
+              </span>
+              <span className="sx-j-capitulo-copy">
+                <span className="sx-j-capitulo-title">{c.titulo || `Recuerdo ${c.numero}`}</span>
+                {c.requisito && (
+                  <small>
+                    {c.requisito === 1 ? 'Al llegar a 1 carta' : `Al llegar a ${c.requisito} cartas`}
+                  </small>
+                )}
+              </span>
             </li>
           ),
         )}
       </ol>
       {paginas > 1 && (
         <div className="sx-j-historia-nav">
+          <span>{`Capítulos ${desde + 1}–${desde + visibles.length} de ${capitulos.length}`}</span>
           <button
             type="button"
             aria-label="Capítulos anteriores"

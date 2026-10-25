@@ -43,22 +43,23 @@ function StudentLumiLettersView() {
           </p>
         </div>
       </header>
-      <section className="sx-j-buzon" aria-label="Cartas de Lumi">
-        <div className="sx-j-buzon-header">
-          {c.conBandejas && (
-            <div className="sx-j-topic-filters" role="group" aria-label="Filtrar cartas">
-              {chips.map(([valor, etiqueta]) => (
-                <button
-                  type="button"
-                  key={valor}
-                  aria-pressed={c.bandeja === valor}
-                  onClick={() => c.setBandeja(valor)}
-                >
-                  {`${etiqueta} · ${c.conteos[valor]}`}
-                </button>
-              ))}
-            </div>
-          )}
+      <section className="sx-j-cartas" aria-label="Cartas de Lumi">
+        {c.conBandejas && (
+          <div className="sx-j-cartas-chips" role="group" aria-label="Filtrar cartas">
+            {chips.map(([valor, etiqueta]) => (
+              <button
+                type="button"
+                key={valor}
+                aria-pressed={c.bandeja === valor}
+                onClick={() => c.setBandeja(valor)}
+              >
+                {`${etiqueta} · ${c.conteos[valor]}`}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="sx-j-cartas-head">
+          <h2>{chips.find(([valor]) => valor === c.bandeja)?.[1]}</h2>
           {c.conBandejas && c.bandeja === 'PENDIENTE' && <BotonActualizar {...c.buzon.actualizar} />}
         </div>
         {lista.length ? (

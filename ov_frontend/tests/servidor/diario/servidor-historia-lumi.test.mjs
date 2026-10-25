@@ -102,7 +102,7 @@ test('el diario dice «carta» en el editor y en los avisos, y el aviso no corta
   assert.match(css, /\[data-ambient='journal'\] \.sx-badge-copy \.sx-toast-linea \{[^}]*white-space: normal/)
 })
 
-test('LUMI queda fuera del mapa, del avance y de las novedades; la apertura es automática al desbloquear', () => {
+test('LUMI queda fuera del mapa, del avance y de las novedades; un capítulo nunca se abre solo al desbloquearse', () => {
   const app = conActividades()
   const { progresoBloque } = app.load('src/lib/servidor/contenidos.ts')
   const sinLumi = inicial.filter((b) => b.espacio !== 'LUMI')
@@ -125,6 +125,71 @@ test('LUMI queda fuera del mapa, del avance y de las novedades; la apertura es a
   })
   assert.deepEqual(copia(app.load('src/store/servidor/avisos.ts').avisosPendientes()), [])
   const pagina = readFileSync('src/features/journal/hooks/useJournalPage.ts', 'utf8')
-  assert.match(pagina, /historia\.esRecuerdo\(d\.objetivo\.codigo\)/)
-  assert.match(pagina, /if \(screen !== 'home' \|\| !capituloPendiente\) return/)
+  assert.doesNotMatch(pagina, /capituloPendiente|nuevos_desbloqueos/)
+})
+
+test('un capítulo recién desbloqueado es nuevo hasta verlo: brilla con «Nuevo recuerdo» y deja de serlo al completarlo', () => {
+  const conEstado = (estado) =>
+    inicial.map((b) =>
+      b.espacio === 'LUMI'
+        ? { ...b, actividades: b.actividades.map((a, i) => (i === 0 ? { ...a, estado, bloqueo: null } : a)) }
+        : b,
+    )
+  const nuevo = useHistoriaDePrueba(conActividades(conEstado('DISPONIBLE'))).capitulos[0]
+  assert.deepEqual([nuevo.desbloqueado, nuevo.nuevo], [true, true])
+  const visto = useHistoriaDePrueba(conActividades(conEstado('COMPLETADA'))).capitulos[0]
+  assert.deepEqual([visto.desbloqueado, visto.nuevo], [true, false])
+  const app = conActividades()
+  const { HistoriaLumi } = app.load('src/features/journal/components/HistoriaLumi.tsx')
+  const html = renderToStaticMarkup(
+    React.createElement(HistoriaLumi, { capitulos: [nuevo, visto], onVer() {} }),
+  )
+  assert.match(html, /data-estado="nuevo"[^]*Nuevo recuerdo · Toca para verlo/)
+  assert.match(html, /data-estado="abierto"[^]*Volver a ver/)
+})
+
+test('local: un capítulo abierto por la amistad es nuevo mientras no esté en seenLumiMemories', () => {
+  const app = fixtureServidor({ api: false })
+  const ui = app.load('src/store/studentUiStore.ts')
+  assert.deepEqual(copia(useHistoriaDePrueba(app, 6).capitulos.map((c) => c.nuevo)), [
+    true,
+    true,
+    false,
+    false,
+    false,
+  ])
+  ui.updateStudentUi((s) => ({ ...s, seenLumiMemories: [1] }))
+  assert.deepEqual(copia(useHistoriaDePrueba(app, 6).capitulos.map((c) => c.nuevo)), [
+    false,
+    true,
+    false,
+    false,
+    false,
+  ])
+})
+
+test('tarjeta de Lumi en singular y cuaderno como línea de tiempo con su origen', () => {
+  const app = conActividades()
+  const { LumiBondPanel } = app.load('src/features/journal/components/LumiBondPanel.tsx')
+  const bond = { conversations: 1, progress: 20, nextMemoryAt: 5, levelIndex: 0, level: 'Conociéndonos' }
+  const panel = renderToStaticMarkup(React.createElement(LumiBondPanel, { bond }))
+  assert.match(panel, /1 carta enviada/)
+  assert.match(panel, /Faltan <strong>4 cartas<\/strong>/)
+  const { JournalCard } = app.load('src/features/journal/components/JournalCard.tsx')
+  const entrada = {
+    id: 'servidor-1',
+    title: 'Fútbol con amigos',
+    body: 'Hoy jugué fútbol.',
+    createdAt: '2026-10-21T15:00:00Z',
+    kind: 'guided',
+    etiqueta: 'Pregunta del día',
+    topicTags: [],
+  }
+  const html = renderToStaticMarkup(React.createElement(JournalCard, { entry: entrada, onOpen() {} }))
+  assert.match(
+    html,
+    /<li class="sx-j-entry" data-kind="daily"><button type="button" class="sx-j-entry-open">/,
+  )
+  assert.match(html, /21 de octubre[^]*Pregunta del día[^]*<h3>Fútbol con amigos<\/h3>[^]*Hoy jugué fútbol\./)
+  assert.doesNotMatch(html, /Leer completa/)
 })

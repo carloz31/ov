@@ -1,3 +1,4 @@
+import { Archive, Check } from 'lucide-react'
 import type { CartaLumi } from '@/lib/servidor/adaptadoresDiario'
 
 const fecha = (iso: string) =>
@@ -13,22 +14,30 @@ export function FilaCartaCompacta({
   onLeer?: (carta: CartaLumi) => void
   onDesarchivar?: (carta: CartaLumi) => void
 }) {
-  const cuando = carta.bandeja === 'ARCHIVADA' ? carta.archivadaEn : carta.respondidaEn
+  const archivada = carta.bandeja === 'ARCHIVADA'
+  const cuando = archivada ? carta.archivadaEn : carta.respondidaEn
+  const meta = [
+    carta.remitente && `De: ${carta.remitente.titulo}`,
+    cuando && `${archivada ? 'archivada el' : 'respondida el'} ${fecha(cuando)}`,
+  ]
+    .filter(Boolean)
+    .join(' · ')
   return (
     <li className="sx-j-carta sx-j-carta-compacta" data-bandeja={carta.bandeja}>
-      {cuando && (
-        <p className="sx-j-carta-meta">
-          <span>{`${carta.bandeja === 'ARCHIVADA' ? 'Archivada el' : 'Respondida el'} ${fecha(cuando)}`}</span>
-        </p>
-      )}
-      <p className="sx-j-carta-question">“{carta.texto}”</p>
+      <span className="sx-j-carta-icon" aria-hidden="true">
+        {archivada ? <Archive size={16} /> : <Check size={16} />}
+      </span>
+      <div className="sx-j-carta-body">
+        {meta && <p className="sx-j-carta-meta">{meta}</p>}
+        <p className="sx-j-carta-question">{carta.texto}</p>
+      </div>
       {onLeer && (
-        <button type="button" className="sx-d-action sx-d-action-ghost" onClick={() => onLeer(carta)}>
+        <button type="button" className="sx-j-carta-link" onClick={() => onLeer(carta)}>
           Leer en el cuaderno
         </button>
       )}
       {onDesarchivar && (
-        <button type="button" className="sx-d-action sx-d-action-ghost" onClick={() => onDesarchivar(carta)}>
+        <button type="button" className="sx-j-carta-link" onClick={() => onDesarchivar(carta)}>
           Desarchivar
         </button>
       )}

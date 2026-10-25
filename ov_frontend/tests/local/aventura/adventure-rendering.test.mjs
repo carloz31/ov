@@ -3710,7 +3710,8 @@ test('daily journal question shows its prompt in «Hoy», recognizes today and l
     assert.equal(card(render('/student/journal', { journalOnboardingSeen: false })), undefined)
     // El cuaderno completo (`?cuaderno=completo`) lista todas las entradas, también las de demostración más antiguas.
     const legacy = render('/student/journal?cuaderno=completo', { journalOnboardingSeen: true })
-    assert.match(legacy, /<article class="sx-j-entry" data-kind="daily">[\s\S]*?Pregunta del día<\/span><h3>Tema del día/)
+    // Ajuste del diario de F05 (pedido del usuario): cada entrada es un punto de la línea de tiempo del cuaderno.
+    assert.match(legacy, /<li class="sx-j-entry" data-kind="daily">[\s\S]*?Pregunta del día<\/span><\/span><h3>Tema del día/)
     assert.match(legacy, /data-kind="open"/)
     assert.match(legacy, /Carta de Lumi/)
   } finally {
