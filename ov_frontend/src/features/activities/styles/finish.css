@@ -398,51 +398,92 @@
   text-align: left;
   cursor: pointer;
 }
-/* Ajuste del diario (F05): la carta del buzón, una fila crema bajo «Se abrió para ti», sin botón. */
-.sx-finish-letter {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
+/* Ajuste del diario (F05): la carta del buzón, una fila crema bajo «Se abrió para ti», sin botón: sobre en un
+   cuadro blanco con punto dorado, el texto a la izquierda y el enlace con flecha a la derecha. */
+.sx-root .sx-finish-card .sx-finish-letter {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
   margin-top: 12px;
+  border: 1px solid var(--sx-parchment-edge);
   border-radius: 16px;
   background: var(--sx-parchment);
   color: var(--sx-parchment-ink);
-  padding: 14px 16px;
+  padding: 14px 18px;
+  text-align: left;
 }
-.sx-finish-letter-icon {
+.sx-root .sx-finish-letter-icon {
   position: relative;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
+  align-self: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-ink) 12%, transparent);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--primary);
 }
-.sx-finish-letter-dot {
+.sx-root .sx-finish-letter-dot {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 8px;
-  height: 8px;
+  top: -4px;
+  right: -4px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--sx-parchment);
   border-radius: 999px;
   background: var(--sx-gold);
 }
-.sx-finish-letter h3 {
+.sx-root .sx-finish-letter-copy {
+  display: grid;
+  gap: 4px;
+}
+.sx-root .sx-finish-letter h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+.sx-root .sx-finish-letter blockquote {
   margin: 0;
   font-size: 15px;
-}
-.sx-finish-letter blockquote {
-  margin: 6px 0;
   font-style: italic;
+  line-height: 1.35;
 }
-.sx-finish-letter p {
-  margin: 4px 0;
-  font-size: 14px;
+.sx-root .sx-finish-letter p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--sx-gold-deep);
 }
-.sx-finish-letter a {
+.sx-root .sx-finish-letter .sx-finish-letter-lead {
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+.sx-root .sx-finish-letter .sx-finish-letter-link {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 44px;
+  color: var(--primary);
+  font-size: 13px;
   font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sx-root .sx-finish-letter .sx-finish-letter-link:hover {
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+@media (max-width: 520px) {
+  .sx-root .sx-finish-card .sx-finish-letter {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+  .sx-root .sx-finish-letter-icon {
+    align-self: start;
+  }
+  .sx-root .sx-finish-letter .sx-finish-letter-link {
+    grid-column: 2;
+    min-height: 32px;
+  }
 }
