@@ -24,7 +24,12 @@ export function StudentActivityPlayer({
   registroServidor?: RegistroServidor
   onClose: () => void
   // Ajuste del diario (F05): la salida del cierre cuando no es «Volver al mapa» (los recuerdos de Lumi).
-  salida?: { texto: string; titulo?: string; onClick: () => void }
+  salida?: {
+    texto: string
+    titulo?: string
+    aviso?: { titulo: string; descripcion: string }
+    onClick: () => void
+  }
   desdeInicio?: boolean
 }) {
   const model = useActivityPlayer({
@@ -70,6 +75,7 @@ export function StudentActivityPlayer({
         total={nodes.length}
         progress={progress}
         nuevoMomento={node?.nuevoMomento}
+        salida={salida?.aviso && { ...salida.aviso, accion: salida.texto }}
         onClose={() => {
           if (!enviando.current) onClose()
         }}

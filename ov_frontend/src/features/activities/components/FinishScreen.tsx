@@ -24,7 +24,12 @@ export function FinishScreen({
   desbloqueosServidor?: DesbloqueoNuevo[]
   entradasDiario?: EntradaDesbloqueada[]
   // Ajuste del diario (F05): un recuerdo de Lumi sale «Volver al diario», sin mochila, carta ni «Se abrió para ti».
-  salida?: { texto: string; titulo?: string; onClick: () => void }
+  salida?: {
+    texto: string
+    titulo?: string
+    aviso?: { titulo: string; descripcion: string }
+    onClick: () => void
+  }
 }) {
   const { resumen, preguntaDiario } = useActivityFinish(
     activity,

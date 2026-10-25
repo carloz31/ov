@@ -204,3 +204,14 @@ test('un recuerdo ya visto se vuelve a ver desde su primer nodo, no desde el cie
     reproductor.indexOf('edit || desdeInicio') < reproductor.indexOf("?.estado === 'COMPLETADA'\n    )"),
   )
 })
+
+test('salir de un recuerdo con la X avisa que se vuelve al diario; las demás actividades siguen volviendo al mapa', () => {
+  const vista = readFileSync('src/pages/student/StudentJournalView.tsx', 'utf8')
+  assert.match(vista, /titulo: '¿Quieres volver al diario\?'/)
+  assert.match(vista, /Podrás volver a ver este recuerdo cuando quieras desde la historia de Lumi\./)
+  const reproductor = readFileSync('src/features/activities/components/StudentActivityPlayer.tsx', 'utf8')
+  assert.match(reproductor, /salida=\{salida\?\.aviso && \{ \.\.\.salida\.aviso, accion: salida\.texto \}\}/)
+  const barra = readFileSync('src/features/activities/components/PlayerTopBar.tsx', 'utf8')
+  assert.match(barra, /salida\?\.titulo \?\? '¿Quieres volver al mapa\?'/)
+  assert.match(barra, /salida\?\.accion \?\? 'Volver al mapa'/)
+})

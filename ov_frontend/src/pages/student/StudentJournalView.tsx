@@ -69,6 +69,10 @@ function StudentJournalView() {
           salida={{
             texto: 'Volver al diario',
             titulo: 'Lumi te contó un recuerdo.',
+            aviso: {
+              titulo: '¿Quieres volver al diario?',
+              descripcion: 'Podrás volver a ver este recuerdo cuando quieras desde la historia de Lumi.',
+            },
             onClick: cerrarCapitulo,
           }}
         />

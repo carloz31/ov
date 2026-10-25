@@ -30,7 +30,12 @@ export function NodeRenderer({
   activity: Actividad
   edit: boolean
   direct: boolean
-  salida?: { texto: string; titulo?: string; onClick: () => void }
+  salida?: {
+    texto: string
+    titulo?: string
+    aviso?: { titulo: string; descripcion: string }
+    onClick: () => void
+  }
 }) {
   const {
     nodes,
