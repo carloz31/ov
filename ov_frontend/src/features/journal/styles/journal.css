@@ -197,10 +197,10 @@
   font-weight: 800;
   margin: 16px 0;
 }
+/* El editor y el detalle ocupan el ancho del diario, alineados con su encabezado y con la portada. */
 .sx-j-editor,
 .sx-j-detail {
-  max-width: 760px;
-  margin: 24px auto;
+  margin: 24px 0;
 }
 .sx-j-prompt {
   padding: 16px;
@@ -220,7 +220,7 @@
 .sx-j-writing {
   display: block;
   width: 100%;
-  min-height: 360px;
+  min-height: max(360px, calc(100vh - 520px));
   resize: vertical;
   padding: 12px;
   font-family: var(--font-serif);
