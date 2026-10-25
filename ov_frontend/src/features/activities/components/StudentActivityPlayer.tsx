@@ -14,6 +14,7 @@ export function StudentActivityPlayer({
   registroServidor,
   onClose,
   salida,
+  desdeInicio = false,
 }: {
   activity: Actividad
   imageUrl?: string
@@ -24,8 +25,17 @@ export function StudentActivityPlayer({
   onClose: () => void
   // Ajuste del diario (F05): la salida del cierre cuando no es «Volver al mapa» (los recuerdos de Lumi).
   salida?: { texto: string; titulo?: string; onClick: () => void }
+  desdeInicio?: boolean
 }) {
-  const model = useActivityPlayer({ activity, direct, edit, instrumentoServidor, registroServidor, onClose })
+  const model = useActivityPlayer({
+    activity,
+    direct,
+    edit,
+    instrumentoServidor,
+    registroServidor,
+    onClose,
+    desdeInicio,
+  })
   const {
     pageRef,
     mode,

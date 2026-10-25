@@ -65,6 +65,7 @@ function StudentJournalView() {
           activity={capitulo}
           imageUrl="/images/background/forest.png"
           onClose={cerrarCapitulo}
+          desdeInicio
           salida={{
             texto: 'Volver al diario',
             titulo: 'Lumi te contó un recuerdo.',

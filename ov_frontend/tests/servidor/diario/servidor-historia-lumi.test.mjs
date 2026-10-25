@@ -193,3 +193,14 @@ test('tarjeta de Lumi en singular y cuaderno como línea de tiempo con su origen
   assert.match(html, /21 de octubre[^]*Pregunta del día[^]*<h3>Fútbol con amigos<\/h3>[^]*Hoy jugué fútbol\./)
   assert.doesNotMatch(html, /Leer completa/)
 })
+
+test('un recuerdo ya visto se vuelve a ver desde su primer nodo, no desde el cierre', () => {
+  const vista = readFileSync('src/pages/student/StudentJournalView.tsx', 'utf8')
+  assert.match(vista, /<StudentActivityPlayer[^>]*\bdesdeInicio\b/)
+  const reproductor = readFileSync('src/features/activities/hooks/useActivityPlayer.ts', 'utf8')
+  assert.match(reproductor, /if \(edit \|\| desdeInicio\) return nodes\[0\]\?\.id/)
+  // La regla va antes de la que abre en el cierre una actividad COMPLETADA.
+  assert.ok(
+    reproductor.indexOf('edit || desdeInicio') < reproductor.indexOf("?.estado === 'COMPLETADA'\n    )"),
+  )
+})

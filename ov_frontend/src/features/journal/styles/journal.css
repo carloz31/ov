@@ -883,6 +883,18 @@
   padding: 0;
   min-height: 42px;
 }
+/* El foco se marca en el recuadro del buscador, sin el anillo del campo. */
+.sx-root .sx-j-cuaderno .sx-j-search .sx-d-input:is(:focus, :focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+.sx-j-cuaderno .sx-j-search:focus-within {
+  border-color: var(--sx-gold-deep);
+}
+/* El mensaje sin resultados se separa de los filtros por tipo. */
+.sx-j-cuaderno .sx-j-empty {
+  margin-top: 22px;
+}
 .sx-j-order {
   display: inline-flex;
   align-items: center;

@@ -20,10 +20,13 @@ export function useActivityPlayer({
   instrumentoServidor,
   registroServidor,
   onClose,
+  desdeInicio = false,
 }: {
   activity: Actividad
   direct?: boolean
   edit?: boolean
+  // Ajuste del diario (F05): un recuerdo de Lumi se vuelve a ver desde su primer nodo, aunque esté completado.
+  desdeInicio?: boolean
   instrumentoServidor?: InstrumentoServidor
   registroServidor?: RegistroServidor
   onClose: () => void
@@ -51,7 +54,7 @@ export function useActivityPlayer({
       if (registro.estado === 'COMPLETADA') return nodes[0]?.id
       return nodes.find((n) => n.id === registro.posicion)?.id ?? nodes[0]?.id
     }
-    if (edit) return nodes[0]?.id
+    if (edit || desdeInicio) return nodes[0]?.id
     if (
       modoApi &&
       actividadServidor(obtenerEstadoServidor().actividades.datos, activity.id)?.estado === 'COMPLETADA'
