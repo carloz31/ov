@@ -46,3 +46,18 @@ Se aplica en **ambos modos** con una sola implementación (excepción al modo lo
 ### 6. Textos
 - Rótulos, estados del pie y de la señal son del front. Rango, misión, tipo y duración, del backend.
 - «Misión» en todo el panel.
+
+## Fase 3 · Avance por tramos y ciudad
+
+### Decisión
+El avance del estudiante cuenta **todas** las actividades (requeridas y opcionales) con **total fijo** desde la definición cargada: terminar la ruta no es llegar al 100 %. El texto del panel muestra el **tramo actual** (solo requeridas) y el anillo, el porcentaje global. Sin cambios de modelo, motor ni datos.
+
+### Backend
+- `GET /cuentas/{c}/avance` (solo estudiante; 404 para otros roles): `camino` (todas las de `MISIONES_CAMPO`, audiencia ESTUDIANTE), `tramo_actual` (primer bloque del camino por `numero` con una requerida pendiente; solo requeridas; `null` si no queda), `camino_completo` y `ciudad` (todas las del bloque `CIUDAD`). `logros.afinidad` delega en el cálculo de la Ciudad. LUMI y PORTAL_FAMILIA fuera. `avance_ruta` (familia) y el diploma no cambian.
+- Fixtures `avance-*` en los momentos de `actividades` y al final.
+
+### Front
+- `AvanceEstudiante` en el contrato, `services/api/avance.ts` y sección `avance` del almacén, cargada con el mapa (ingreso y tras cada acción); el mapa no se muestra sin ella. Al recargar se conserva el último valor.
+- `getZoneProgress` lee `/avance`; `useStudentProfile` también (porcentaje del camino y afinidad), para que perfil y panel digan lo mismo. `progresoBloque` queda solo como requisito de la Ciudad.
+- Tarjeta de avance (estilo de la tarjeta de la señal): un anillo de ~64 px con el porcentaje dentro, sin barra. Camino: rótulo «Camino», «Tramo {numero} · {completadas} de {total} misiones» (16 px) y el nombre del tramo en dorado; con el camino completo, «Camino completo». Ciudad: anillo del color de la Ciudad, rótulo «Ciudad» y «{porcentaje}% de afinidad». Local: mismo diseño, «{N} de {M} misiones». Si falla: anillo vacío y solo el rótulo. El anillo se anima al cambiar.
+- El panel plegado sigue con el porcentaje redondeado. `siguientePaso.ts` y el contador de disponibles no cambian.

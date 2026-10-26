@@ -1,0 +1,20 @@
+{
+  "camino": {
+    "completadas": 7,
+    "porcentaje": 50.0,
+    "total": 14
+  },
+  "camino_completo": false,
+  "ciudad": {
+    "completadas": 3,
+    "porcentaje": 75.0,
+    "total": 4
+  },
+  "tramo_actual": {
+    "codigo": "T2",
+    "completadas": 0,
+    "nombre": "Decisión",
+    "numero": 3,
+    "total": 3
+  }
+}

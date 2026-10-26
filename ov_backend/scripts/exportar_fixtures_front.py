@@ -153,7 +153,7 @@ def _consultas_dominio(cliente, momento, rutas):
 def _recorrer(cliente):
     fixtures = {'cuentas': _pedir(cliente, 'GET', '/cuentas')}
     fixtures.update(_consultas_dominio(
-        cliente, 'inicial', ('resumen', 'actividades', 'fichas', 'logros', 'secciones', 'testimonios')))
+        cliente, 'inicial', ('resumen', 'actividades', 'avance', 'fichas', 'logros', 'secciones', 'testimonios')))
     fixtures['avance-instrumentos-inicial'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     # F03: catálogo con nombre y descripción de cada cuestionario (vista del apoderado).
     fixtures['instrumentos'] = _pedir(cliente, 'GET', '/instrumentos')
@@ -179,6 +179,7 @@ def _recorrer(cliente):
         cliente, 'GET', '/cuentas/est-ana/actividades/t-lee-cuestionario/referencias')
     fixtures['completar-t-cierre-inicio'] = _completar(cliente, 't-cierre-inicio')
     fixtures['actividades-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
+    fixtures['avance-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/avance')
     fixtures['secciones-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/secciones')
     fixtures['items-registro-t-expectativas'] = _pedir(cliente, 'GET', '/actividades/t-expectativas/items-registro')
     fixtures['borrador-t-expectativas'] = _pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
@@ -208,6 +209,7 @@ def _recorrer(cliente):
     fixtures['referencias-t-eco-disponible'] = _pedir(
         cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
+    fixtures['avance-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/avance')
     # B09: diario. t-inicio dejó la pregunta fija y t-expectativas la personalizada, que se redacta al abrirla.
     diario = {'cuenta': 'est-ana', 'fecha_hora': FECHA}
     fixtures['diario-preguntas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')
@@ -335,6 +337,7 @@ def _recorrer(cliente):
     fixtures['testimonios-final'] = _pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')
     # B07: con la partida y el RIASEC prioritario del 5A revelados, T2 está abierto; la llegada se compara.
     fixtures['actividades-t2'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
+    fixtures['avance-t2'] = _pedir(cliente, 'GET', '/cuentas/est-ana/avance')
     # B11: comparar cita los planes y abre PASOS; un paso en el plan A abre t-proyecto, que cita el plan A.
     fixtures['referencias-t-comparar'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-comparar/referencias')
     _responder_registro(cliente, 't-comparar')
@@ -355,7 +358,7 @@ def _recorrer(cliente):
     fixtures['avance-instrumentos-final'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     fixtures['comparacion-partida-llegada'] = _pedir(
         cliente, 'GET', f'/cuentas/est-ana/instrumentos/{PARTIDA_LLEGADA}/comparacion')
-    fixtures.update(_consultas_dominio(cliente, 'final', ('fichas', 'logros')))
+    fixtures.update(_consultas_dominio(cliente, 'final', ('avance', 'fichas', 'logros')))
     return fixtures
 
 

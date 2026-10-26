@@ -2,23 +2,16 @@ from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import (
-    Actividad, Audiencia, Bloque, Cuenta, Espacio, EstadoProgreso, Insignia, Nivel, Rol, TipoObjetivo,
+    Cuenta, Insignia, Nivel, Rol, TipoObjetivo,
 )
 from app.schemas.logros import InsigniaEstado, LogrosCuenta, NivelEstado
+from app.services.avance import avance_ciudad
 from app.services.motor.reglas import objetivo_disponible
-from app.services.tematicas import porcentaje
 
 
 def afinidad(sesion: Session, cuenta: Cuenta) -> float:
-    """Completadas de la Ciudad sobre todas las de la Ciudad (requeridas, opcionales y adicionales), tope 100 %."""
-    datos = contexto(sesion)
-    definiciones = datos.definiciones
-    ciudad = [actividad for actividad in definiciones.listar(Actividad)
-              if (bloque := definiciones.obtener(Bloque, actividad.bloque_id)).espacio == Espacio.CIUDAD
-              and bloque.audiencia == Audiencia.ESTUDIANTE]
-    completadas = {actividad_id for actividad_id, progreso in datos.progresos_de(cuenta.id).items()
-                   if progreso.estado == EstadoProgreso.COMPLETADA}
-    return porcentaje(sum(actividad.id in completadas for actividad in ciudad), len(ciudad))
+    """Completadas de la Ciudad sobre todas las de la Ciudad, tope 100 %: el mismo cálculo que `/avance`."""
+    return avance_ciudad(sesion, cuenta).porcentaje
 
 
 @usar_contexto

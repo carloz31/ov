@@ -203,11 +203,20 @@ Conversaciones guiadas entre el estudiante y su apoderado, con una carta de cada
 - **Pregunta:** cada rol ve la suya; con `pregunta_apoderado` nula, el apoderado responde la del estudiante.
 - **Sin avisos:** no hay notificaciones entre cuentas. El apoderado no recibe aviso cuando el hijo habilita una conversación (HU-067), y si el apoderado marca, el estudiante ve su nueva pregunta del diario solo al consultarlo. Quedan para las notificaciones asíncronas.
 
+## Avance del estudiante
+
+Código: `app/services/avance.py` (`GET /cuentas/{c}/avance`, ajuste del panel de F05). Solo estudiante; otros roles, 404.
+
+- **Camino:** todas las actividades (requeridas y opcionales) de los bloques `MISIONES_CAMPO` de audiencia ESTUDIANTE, con total fijo leído de las definiciones, nunca de lo visible o desbloqueado. Terminar las requeridas no es llegar al 100 %.
+- **Tramo actual:** el primer bloque de `MISIONES_CAMPO` por `numero` con una requerida sin completar; cuenta solo sus requeridas. `null` y `camino_completo` cuando no queda ninguna, sea cual sea el porcentaje.
+- **Ciudad:** todas las actividades del bloque `CIUDAD`, total fijo. Su porcentaje es la afinidad de `/logros` (`logros.afinidad` delega en `avance_ciudad`).
+- LUMI y PORTAL_FAMILIA no cuentan. Porcentajes con `porcentaje()` de `services/tematicas.py`.
+
 ## Ruta del apoderado
 
 Código: `app/services/familia.py`. Solo para cuentas APODERADO; otras, 404.
 
-- **Avance** (`avance_ruta`, común a ambos roles): actividades requeridas COMPLETADAS sobre las requeridas de los bloques de la audiencia de la cuenta; las opcionales no cuentan.
+- **Avance** (`avance_ruta`, común a ambos roles): actividades requeridas COMPLETADAS sobre las requeridas de los bloques de la audiencia de la cuenta; las opcionales no cuentan. Es el avance que ve la familia; el del panel del estudiante es otro (ver «Avance del estudiante»).
 - **Diploma:** se obtiene al completar todos los bloques de su audiencia (COMPLETA_BLOQUE de cada uno); `obtenido_en` es la fecha del último.
 - **Hijo:** el estudiante del vínculo activo, con su avance y su nivel actual.
 - **Resultados del hijo:** solo con el diploma (si no, 409) y vínculo activo (si no, 409); los resultados vigentes del hijo en los cuestionarios que `salon_instrumento` marca `visible_apoderado` en su salón, con la misma forma que la consulta de resultado del estudiante.

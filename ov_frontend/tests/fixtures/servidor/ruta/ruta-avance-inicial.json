@@ -1,0 +1,20 @@
+{
+  "camino": {
+    "completadas": 0,
+    "porcentaje": 0.0,
+    "total": 14
+  },
+  "camino_completo": false,
+  "ciudad": {
+    "completadas": 0,
+    "porcentaje": 0.0,
+    "total": 4
+  },
+  "tramo_actual": {
+    "codigo": "T0",
+    "completadas": 0,
+    "nombre": "Inicio",
+    "numero": 1,
+    "total": 3
+  }
+}

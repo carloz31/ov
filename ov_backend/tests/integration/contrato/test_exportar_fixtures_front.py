@@ -35,6 +35,7 @@ from app.schemas.cuentas import CuentaResumen, DesbloqueoLegible, ResumenCuenta
 from app.schemas.actividades import BloqueActividades
 from app.schemas.comun import ContenidoEstado
 from app.schemas.logros import LogrosCuenta
+from app.schemas.avance import AvanceEstudiante
 from app.schemas.secciones import SeccionEstado
 from app.schemas.instrumentos import (
     AvanceInstrumento, ComparacionAutopercepcion, InstrumentoPublico, ItemPublico, RespuestasActividad,
@@ -47,6 +48,7 @@ SCRIPT = Path(exportador.__file__).resolve()
 NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'cuentas', 'resumen-inicial', 'actividades-inicial', 'actividades-t1', 'actividades-ciudad',
     'fichas-inicial', 'fichas-final', 'logros-inicial', 'logros-final',
+    'avance-inicial', 'avance-t1', 'avance-ciudad', 'avance-t2', 'avance-final',
     'completar-t-inicio', 'completar-t-cierre-inicio', 'items-t-mision-intereses', 'revelar-riasec', 'resultado-riasec',
     'desbloqueos-no-vistos', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
     'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
@@ -328,6 +330,11 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert check_ins.dias_registrados == 2 and check_ins.registrado_hoy  # «hoy» fijado en FECHA (F05)
     assert any(t.completadas for t in TypeAdapter(list[AvanceTematica]).validate_python(datos['tematicas']))
     assert 'afinidad' in datos['logros-final']
+    # Ajuste del panel (F05): el avance del panel, con total fijo, en cada momento; la Ciudad es la afinidad.
+    for momento in ('inicial', 't1', 'ciudad', 't2', 'final'):
+        AvanceEstudiante.model_validate(datos[f'avance-{momento}'])
+    assert datos['avance-final']['ciudad']['porcentaje'] == datos['logros-final']['afinidad']
+    assert {datos[f'avance-{m}']['camino']['total'] for m in ('inicial', 't1', 'ciudad', 't2', 'final')} == {14}
     avisos = datos['desbloqueos-no-vistos']
     assert {d['regla'] for d in avisos} == {
         'R-t-partida', 'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD',
