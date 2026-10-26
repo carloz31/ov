@@ -153,7 +153,11 @@ def _consultas_dominio(cliente, momento, rutas):
 def _recorrer(cliente):
     fixtures = {'cuentas': _pedir(cliente, 'GET', '/cuentas')}
     fixtures.update(_consultas_dominio(
-        cliente, 'inicial', ('resumen', 'actividades', 'avance', 'fichas', 'logros', 'secciones', 'testimonios')))
+        cliente, 'inicial', ('resumen', 'actividades', 'avance', 'fichas', 'logros', 'secciones', 'testimonios',
+                             'presentaciones')))
+    # Ajuste presentaciones-vistas: cerrar la presentación del mapa; la respuesta trae todas las vistas.
+    fixtures['presentacion-vista'] = _pedir(cliente, 'POST', '/acciones/presentacion-vista', {
+        'cuenta': 'est-ana', 'codigo': 'missions', 'fecha_hora': FECHA})
     fixtures['avance-instrumentos-inicial'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     # F03: catálogo con nombre y descripción de cada cuestionario (vista del apoderado).
     fixtures['instrumentos'] = _pedir(cliente, 'GET', '/instrumentos')

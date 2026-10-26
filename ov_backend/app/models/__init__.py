@@ -21,13 +21,13 @@ _MODELOS_POR_MODULO = {
         'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
     ),
     'app.models.contenido': (
-        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
+        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
         'GrupoInsignia', 'Insignia',
         'Nivel', 'FamiliaCarrera', 'Carrera',
     ),
     'app.models.progreso': (
         'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'Recomendacion', 'EntradaDiario', 'ContadorDiario',
-        'CheckIn', 'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito', 'InsigniaVitrina',
+        'CheckIn', 'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito', 'InsigniaVitrina', 'PresentacionVista',
     ),
     'app.models.motor': (
         'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo',
@@ -74,7 +74,7 @@ __all__ = [
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
     'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
     'SalonInstrumento', 'Bloque',
-    'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Ficha', 'Testimonio',
+    'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'GrupoInsignia', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
     'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn', 'Entrevista',
     'EntrevistaAutor', 'ConversacionVinculo', 'EventoUso', 'ReglaDesbloqueo',
@@ -85,7 +85,7 @@ __all__ = [
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
     'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera', 'RangoIngreso',
-    'TipoFavorito', 'Favorito', 'InsigniaVitrina', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
+    'TipoFavorito', 'Favorito', 'InsigniaVitrina', 'PresentacionVista', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
     'ContadorDiario', 'GestionInstitucion', 'FrecuenciaGasto', 'OrigenIdea', 'PreguntaConocimiento',
     'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'EstadoPaso',
     'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',
