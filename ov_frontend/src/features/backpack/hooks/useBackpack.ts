@@ -52,9 +52,7 @@ export function useBackpack() {
     }
   }, [])
   const [requisitoId, setRequisitoId] = useState<string | null>(null)
-  // Ajuste mochila (api): favoritos ya confirmados por el servidor, hasta que llega la consulta nueva, y los que
-  // esperan su POST.
-  const [optimistas, setOptimistas] = useState<Record<string, boolean>>({})
+  // Ajuste mochila (api): los favoritos que esperan su POST.
   const [pendientes, setPendientes] = useState<string[]>([])
   const testimonioRequisito = testimonios?.find((t) => t.codigo === requisitoId)
   const requisito = useRequisitoRecurso(requisitoId, testimonioRequisito)
@@ -62,7 +60,7 @@ export function useBackpack() {
     selected = resources.find((r) => r.id === selectedId)
   const isUnlocked = (r: TravelResource) => isTravelResourceUnlocked(r, journey, adventure)
   const esFavorita = (r: TravelResource) =>
-    modoApi ? (optimistas[r.id] ?? !!r.favorita) : adventure.bookmarks.includes(r.id)
+    modoApi ? !!r.favorita : adventure.bookmarks.includes(r.id)
   // F04d: `?ficha=<codigo>` de una ficha bloqueada abre su pop up de requisito, no el visor.
   const solicitadaBloqueada = modoApi && !!selected && selected.kind === 'sheet' && !isUnlocked(selected)
   useEffect(() => {
@@ -118,14 +116,12 @@ export function useBackpack() {
       if (pendientes.includes(id)) return
       const valor = !esFavorita(item)
       setPendientes((actual) => [...actual, id])
-      void alternarFavorito(item.kind === 'sheet' ? 'FICHA' : 'TESTIMONIO', id, valor).then(async (respuesta) => {
+      // Confirmado, el cambio se aplica a los datos ya cargados, sin volver a pedirlos: las fichas, en su
+      // sección (lo hace el store); los testimonios, aquí.
+      void alternarFavorito(item.kind === 'sheet' ? 'FICHA' : 'TESTIMONIO', id, valor).then((respuesta) => {
         setPendientes((actual) => actual.filter((p) => p !== id))
-        if (respuesta.tipo !== 'ok') return
-        setOptimistas((actual) => ({ ...actual, [id]: valor }))
-        if (item.kind !== 'sheet') {
-          const nuevos = await consultarTestimonios()
-          if (nuevos.tipo === 'ok') setTestimonios(nuevos.datos)
-        }
+        if (respuesta.tipo === 'ok' && item.kind !== 'sheet')
+          setTestimonios((actual) => actual?.map((t) => (t.codigo === id ? { ...t, es_favorita: valor } : t)) ?? actual)
       })
       return
     }

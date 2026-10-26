@@ -26,3 +26,4 @@
 - El modal de ficha se dibuja en un portal fuera de `.sx-root`: define sus propios tokens `--sx-parchment`, `--sx-parchment-edge` y `--sx-gold` (los mismos valores de `student-base.css`); sin ellos su fondo quedaba transparente.
 - Favoritos en api sin optimismo: mientras corre el POST, la estrella muestra un cargador, no se deshabilita (como la vitrina) e ignora un segundo clic; cambia al confirmar el servidor y se mantiene hasta que llega la consulta nueva (pedido del usuario).
 - `FichaCuenta` vive en `types/servidorFichas.ts`, reexportado por `servidor.ts`, para no pasar de 400 líneas.
+- Tras `ver-ficha`, `marcar-favorito` o `desmarcar-favorito` confirmados, el front actualiza la ficha o el testimonio ya cargados (`actualizarFicha` en `store/servidor/fichas.ts`; los testimonios, en la mochila) en lugar de volver a pedir `GET fichas` o `GET testimonios`: el 200 basta y se ahorra una consulta por clic (pedido del usuario).

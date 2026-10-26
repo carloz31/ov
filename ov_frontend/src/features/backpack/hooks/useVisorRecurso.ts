@@ -16,24 +16,22 @@ export type FavoritoExterno = { favorita: boolean; pendiente?: boolean; onFavori
 // su propia estrella (`externo`); sobre una actividad, en api se guarda en el servidor y en local, en el navegador.
 export function useVisorRecurso(resource?: TravelResource, externo?: FavoritoExterno) {
   const adventure = useAdventure()
-  const [optimista, setOptimista] = useState<{ id: string; valor: boolean } | null>(null)
   const [pendiente, setPendiente] = useState(false)
   const id = resource?.id ?? ''
   if (externo)
     return { favorito: externo.favorita, pendiente: !!externo.pendiente, alternarFavorito: externo.onFavorite }
   if (modoApi) {
-    const favorito = optimista?.id === id ? optimista.valor : !!resource?.favorita
-    // Mientras el POST corre, el botón muestra un cargador; el favorito cambia cuando el servidor confirma.
+    const favorito = !!resource?.favorita
+    // Mientras el POST corre, el botón muestra un cargador; confirmado, el store actualiza la ficha cargada.
     return {
       favorito,
       pendiente,
       alternarFavorito: () => {
         if (!resource || pendiente) return
         setPendiente(true)
-        void alternarFavorito(resource.kind === 'sheet' ? 'FICHA' : 'TESTIMONIO', id, !favorito).then((r) => {
-          setPendiente(false)
-          if (r.tipo === 'ok') setOptimista({ id, valor: !favorito })
-        })
+        void alternarFavorito(resource.kind === 'sheet' ? 'FICHA' : 'TESTIMONIO', id, !favorito).finally(() =>
+          setPendiente(false),
+        )
       },
     }
   }

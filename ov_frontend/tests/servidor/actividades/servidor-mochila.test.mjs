@@ -163,6 +163,8 @@ test('favoritos en api: se leen del servidor y se guardan con marcar y desmarcar
   const ficha = (id) => model.fichasObtenidas.find((f) => f.id === id)
   // En el fixture final, t-ficha es favorita.
   assert.deepEqual([model.esFavorita(ficha('t-ficha')), model.esFavorita(ficha('t-ficha-2'))], [true, false])
+  const consultas = () => app.requests.filter((r) => /\/(fichas|testimonios)$/.test(r.url)).length
+  const antes = consultas()
   // Mientras el POST corre, la estrella muestra su cargador y no cambia; un segundo clic se ignora.
   model.toggleFavorite('t-ficha-2')
   model = hook.render()
@@ -194,6 +196,13 @@ test('favoritos en api: se leen del servidor y se guardan con marcar y desmarcar
   const estrella = elementos(tarjeta, (e) => e.props?.['aria-busy'] !== undefined)[0]
   assert.equal(estrella.props['aria-busy'], true)
   assert.equal(elementos(estrella, (e) => e.type?.displayName === 'Loader2' || /Loader/.test(e.type?.displayName ?? '')).length, 1)
+  // Confirmado el POST, el cambio se aplica a lo cargado: no se vuelven a pedir fichas ni testimonios.
+  assert.equal(consultas(), antes)
+  model = hook.render()
+  assert.deepEqual(
+    [model.esFavorita(ficha('t-ficha')), model.esFavorita(model.voces.abiertas[0])],
+    [false, true],
+  )
   // «Solo favoritos» usa los del servidor.
   hook.render().setFavoritesOnly(true)
   assert.deepEqual(copia(hook.render().gruposFichas.flatMap((g) => g.fichas.map((f) => f.id))), ['t-ficha-2'])
