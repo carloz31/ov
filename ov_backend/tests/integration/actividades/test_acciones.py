@@ -88,8 +88,10 @@ def test_fecha_con_zona_conserva_calendario_simulado(cliente):
     avanzar(cliente)
     primero = post(cliente, "check-in", cuenta="est-ana", nivel_seguridad=1, fecha_hora="2026-10-01T00:01:00+14:00")
     assert primero["eventos_registrados"][0]["fecha_hora"] == "2026-10-01T00:01:00"
-    assert cliente.post("/acciones/check-in", json={"cuenta": "est-ana", "nivel_seguridad": 5,
-                                                   "fecha_hora": "2026-10-01T23:59:00-05:00"}).status_code == 409
+    # Mismo día calendario: sobrescribe el del día (ajuste del panel, F05), sin evento nuevo.
+    segundo = cliente.post("/acciones/check-in", json={"cuenta": "est-ana", "nivel_seguridad": 5,
+                                                      "fecha_hora": "2026-10-01T23:59:00-05:00"})
+    assert segundo.status_code == 200 and segundo.json()["eventos_registrados"] == []
 
 
 @pytest.mark.parametrize("cuerpo,estado_http", [

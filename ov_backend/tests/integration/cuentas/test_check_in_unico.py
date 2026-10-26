@@ -37,12 +37,13 @@ def test_check_in_unico_por_dia_con_aislamiento_entre_estudiantes(cliente, aplic
         # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
         avanzar(cliente, cuenta=cuenta)
         accion(cliente, "check-in", cuenta, nivel_seguridad=3)
-        antes = filas(aplicacion, modelos.CheckIn), filas(aplicacion, modelos.EventoUso)
-        duplicado = cliente.post("/acciones/check-in", json={
-            "cuenta": cuenta, "nivel_seguridad": 5, "fecha_hora": "2026-10-01T23:59:59",
-        })
-        assert duplicado.status_code == 409
-        assert (filas(aplicacion, modelos.CheckIn), filas(aplicacion, modelos.EventoUso)) == antes
+        antes = len(filas(aplicacion, modelos.CheckIn)), filas(aplicacion, modelos.EventoUso)
+        # Ajuste del panel (F05): el segundo del día sobrescribe el nivel, sin otra fila ni evento.
+        cambio = accion(cliente, "check-in", cuenta, nivel_seguridad=5, fecha_hora="2026-10-01T23:59:59")
+        assert cambio["eventos_registrados"] == [] and cambio["nuevos_desbloqueos"] == []
+        assert (len(filas(aplicacion, modelos.CheckIn)), filas(aplicacion, modelos.EventoUso)) == antes
+        hoy = cliente.get(f"/cuentas/{cuenta}/check-ins").json()["check_ins"]
+        assert [c["nivel_seguridad"] for c in hoy if c["fecha"] == "2026-10-01"] == [5]
         accion(cliente, "check-in", cuenta, nivel_seguridad=1, fecha_hora="2026-10-02T00:00:00")
         assert historial(cliente, cuenta)[("REGISTRA_CHECK_IN", None)] == 2
     assert len(filas(aplicacion, modelos.CheckIn)) == 4

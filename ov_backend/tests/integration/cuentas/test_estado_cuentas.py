@@ -12,7 +12,8 @@ def test_check_in_y_diario_aislados_por_cuenta(cliente, sesion):
         avanzar(cliente, cuenta=cuenta)
         cuerpo = {'cuenta': cuenta, 'nivel_seguridad': 3, 'fecha_hora': FECHA}
         pedir(cliente, 'POST', '/acciones/check-in', cuerpo)
-        pedir(cliente, 'POST', '/acciones/check-in', cuerpo, esperado=409)
+        # Ajuste del panel (F05): el segundo del día sobrescribe, sin otro evento.
+        pedir(cliente, 'POST', '/acciones/check-in', {**cuerpo, 'nivel_seguridad': 4})
         guiada = {'cuenta': cuenta, 'pregunta': 't-diario-fija', 'texto': 'DATO DE PRUEBA', 'fecha_hora': FECHA}
         pedir(cliente, 'POST', '/acciones/escribir-entrada', guiada)
         pedir(cliente, 'POST', '/acciones/escribir-entrada', guiada, esperado=409)

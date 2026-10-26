@@ -129,7 +129,7 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/editar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404); sin límite de tiempo ni sección | Cambia `texto` y, si se envía, `titulo`; fija `actualizada_en`. Sin eventos. |
 | `/acciones/borrar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404) | Borrado físico. La recomendación que respondía queda archivada (carta) o cerrada (pregunta del día): no vuelve a quedar por responder. Sin eventos. |
 | `/acciones/diario/archivar-pregunta`, `/acciones/diario/desarchivar-pregunta` | Solo estudiante; sección DIARIO; `codigo` de una carta recibida (DESBLOQUEABLE; una del día responde 409). Archivar: redactada, sin responder y no archivada; desarchivar: archivada (si no, 409) | Fija o borra `archivada_en`; responde su `PreguntaDiarioEstado`. Sin eventos. |
-| `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día; nivel 1–5 | REGISTRA_CHECK_IN |
+| `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día, editable ese día (el segundo sobrescribe el nivel y no emite evento); nivel 1–5 | REGISTRA_CHECK_IN (solo el primero del día) |
 | `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
 | `/acciones/marcar-favorito` | Sección CATALOGO abierta; aún no es favorito | MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan) |
 | `/acciones/publicar-entrevista` | Autores: lista no vacía, sin repetidos, todos estudiantes | PUBLICA_ENTREVISTA en cada autor. Código `ENT-<uuid>`. |
@@ -162,7 +162,7 @@ Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logro
 3. Una cuenta nunca ve objetivos de otra audiencia.
 4. COMPLETA_BLOQUE, SUPERA_CASO, SUPERA_BATALLA, VENCE_DESAFIO_INTACTO, VISTA_TESTIMONIO, ESCRIBE_CARTA y COMPLETA_CONVERSACION se registran solo la primera vez por referencia y cuenta; COMPLETA_ACTIVIDAD, en cada finalización.
 5. Repetir una actividad no cambia su estado COMPLETADA.
-6. Un check-in por día y una entrada por recomendación (desbloqueada o del día).
+6. Un check-in por día (editable ese día) y una entrada por recomendación (desbloqueada o del día).
 7. El nivel actual nunca baja.
 
 ## Diario
