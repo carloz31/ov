@@ -1,23 +1,18 @@
 import type { ReactNode } from 'react'
 import { LockKeyhole } from 'lucide-react'
-import { JournalOnboarding } from '@/features/journal/components/JournalOnboarding'
 
 // Ajuste del diario (F05): tres zonas. Arriba, «Hoy» (con el buzón debajo) y la tarjeta de Lumi; abajo, el
-// cuaderno. La primera visita muestra la bienvenida en lugar de «Hoy».
+// cuaderno. La bienvenida de la primera visita es la presentación de Lumi de la sección (`sectionIntros.journal`).
 export function JournalHome({
   hoy,
   buzon,
   lumi,
   cuaderno,
-  onboarding,
-  onBegin,
 }: {
   hoy: ReactNode
   buzon: ReactNode
   lumi: ReactNode
   cuaderno: ReactNode
-  onboarding: boolean
-  onBegin: () => void
 }) {
   return (
     <>
@@ -33,7 +28,7 @@ export function JournalHome({
       </header>
       <div className="sx-j-top">
         <div className="sx-j-today">
-          {onboarding ? <JournalOnboarding onBegin={onBegin} /> : hoy}
+          {hoy}
           {buzon}
         </div>
         {lumi}

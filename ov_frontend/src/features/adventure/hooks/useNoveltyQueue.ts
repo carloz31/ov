@@ -15,6 +15,7 @@ import type { StudentView } from '@/lib/studentViews'
 
 import { localDateKey, useCheckInDay } from '@/features/adventure/lib/checkIn'
 import { useSenalServidor } from '@/features/adventure/hooks/useSenalServidor'
+import { useSeccionesAcceso, type CodigoSeccion } from '@/features/adventure/hooks/useSeccionesAcceso'
 
 import { getNextBadge } from '@/features/adventure/lib/unlocks'
 import { useReflections } from '@/store/reflectionStore'
@@ -24,6 +25,19 @@ import {
   type AutomaticOverlay,
   type ManualOverlay,
 } from '@/features/adventure/context/overlayContext'
+
+// Vistas que `AppRoutes` envuelve en `SeccionProtegida`: con la sección cerrada se ve su tarjeta de bloqueo,
+// no la sección, y la presentación no se muestra ni se marca como vista.
+const seccionDeVista: Partial<Record<StudentView, CodigoSeccion>> = {
+  journal: 'DIARIO',
+  'journal-signals': 'CHECK_IN',
+  'catalog-professions': 'CATALOGO',
+  'catalog-careers': 'CATALOGO',
+  'catalog-institutions': 'CATALOGO',
+  'catalog-detail': 'CATALOGO',
+  'profile-decisions': 'PLANES',
+  conversations: 'FAMILIA',
+}
 
 export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   const adventure = useAdventure()
@@ -35,6 +49,9 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   const servidor = useEstadoServidor()
   const senal = useSenalServidor()
   const checkInPendiente = senal.activo ? senal.pendiente : undefined
+  const acceso = useSeccionesAcceso()
+  const seccion = seccionDeVista[view]
+  const seccionBloqueada = !!seccion && !!acceso(seccion).pasos
   // F04d: con una ficha (o su requisito) abierta, p. ej. al entrar a la mochila con `?ficha=`, los avisos
   // automáticos esperan a que se cierre; como no llegan a mostrarse, tampoco se marcan como vistos.
   const fichaAbierta = useFichaEnPantalla()
@@ -64,7 +81,15 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     })
     return () => observer.disconnect()
   }, [])
-  const next = getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed, checkInPendiente })
+  const next = getNextOverlay({
+    adventure,
+    ui,
+    view,
+    activityOpen,
+    arrivalDismissed,
+    checkInPendiente,
+    seccionBloqueada,
+  })
   const nextKey =
     next?.kind === 'intro'
       ? `intro:${next.view}`
@@ -73,8 +98,10 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
         : (next?.kind ?? '')
   useEffect(() => {
     // Opening only after mounting keeps static route rendering free of dialogs.
-    setAutomatic(getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed, checkInPendiente }))
-  }, [adventure, ui, view, activityOpen, arrivalDismissed, today, nextKey, checkInPendiente])
+    setAutomatic(
+      getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed, checkInPendiente, seccionBloqueada }),
+    )
+  }, [adventure, ui, view, activityOpen, arrivalDismissed, today, nextKey, checkInPendiente, seccionBloqueada])
   const active = activityOpen ? null : (manual ?? (fichaAbierta ? null : automatic))
   const announcementBlocked = activityOpen || overlayAbierto || !!active || !!next
   const context = useMemo(

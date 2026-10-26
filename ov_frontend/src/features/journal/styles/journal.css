@@ -295,24 +295,6 @@
 .sx-j-delete-dialog :is(h2, p) {
   color: var(--sx-parchment-ink);
 }
-.sx-j-onboarding-points {
-  display: grid;
-  gap: 12px;
-  margin: 20px 0;
-}
-.sx-j-onboarding-points .sx-d-slot {
-  text-align: left;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 12px;
-}
-.sx-j-onboarding-points .sx-d-slot > span {
-  color: var(--sx-gold-deep);
-}
-.sx-j-onboarding-points .sx-d-slot p {
-  font-weight: 400;
-  font-size: 13px;
-}
 @keyframes sx-j-breathe {
   50% {
     box-shadow: 0 0 30px color-mix(in srgb, var(--sx-gold) 25%, transparent);
