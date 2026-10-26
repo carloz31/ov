@@ -641,7 +641,8 @@ test('adventure keeps the original mission route and switches between path and c
   assert.match(city, /Afinidad con la ciudad/)
   assert.match(city, /role="progressbar" aria-label="Afinidad con la ciudad"/)
   assert.match(city, /Una vuelta por el molino/)
-  assert.match(city, /Test · Interacción 1 de 14/)
+  // Ajuste del panel (F05): sin lista de disponibles, el subtítulo de la recomendada va en el siguiente paso.
+  assert.match(city, /class="sx-next-meta"/)
   assert.match(city, /Cambiar zona de la aventura/)
 })
 test('immersive maps expose the panel, recommendations and one block sign', () => {
@@ -879,11 +880,10 @@ test('student signal panel offers registration or editing and retains evolution 
   assert.doesNotMatch(empty, />Cambiar</)
   const today = { id: 'current', createdAt: new Date().toISOString(), linkedActivityId: 'daily-check-in', value: 8 }
   const answered = render('/student/missions', { readinessCheckIns: [today] })
-  assert.match(answered, /class="sx-panel-signal" aria-label="8 de 10"/)
-  assert.match(answered, /<strong>8<\/strong><span>\/10<\/span>/)
-  assert.match(answered, />Cambiar</)
-  assert.match(answered, /class="sx-signal-edit"[\s\S]*?>Cambiar<\/button>/)
-  assert.match(answered, /class="sx-signal-history" href="\/student\/journal\/signal"[\s\S]*?>Ver evolución<\/a>/)
+  // Ajuste del panel (F05): etiqueta del valor y «Cambiar» como enlace; «Ver evolución» pasa a botón.
+  assert.match(answered, /<span aria-label="8 de 10"><strong>Bastante seguro<\/strong> · 8 de 10<\/span>/)
+  assert.match(answered, /class="sx-signal-change"[^>]*>Cambiar<\/button>/)
+  assert.match(answered, /class="sx-signal-history" data-variante="boton" href="\/student\/journal\/signal"[^>]*>Ver evolución<\/a>/)
   assert.doesNotMatch(answered, /Registrar mi señal/)
   assert.doesNotMatch(answered, /role="dialog"/)
 })
@@ -2818,6 +2818,7 @@ test('phase 8 map labels contain names only and use activity icons or a question
   assert.doesNotMatch(render('/student/missions'), /Arrastra el mapa para explorar/)
 })
 
+// Ajuste del panel (F05): ya no hay lista de disponibles; sin recomendada, «Explora las actividades» lleva a la lista.
 test('phase 8 available panel caps four pending implemented actions and links to the full list', () => {
   const { AdventurePanel } = load(path.resolve('src/features/adventure/components/AdventurePanel.tsx'))
   const points = Array.from({ length: 7 }, (_, index) => ({ id: 'p' + index, title: 'Disponible ' + index, subtitle: 'En progreso', status: 'available', actionEnabled: true }))
@@ -2825,9 +2826,9 @@ test('phase 8 available panel caps four pending implemented actions and links to
   const html = renderToStaticMarkup(React.createElement(MemoryRouter, {}, React.createElement(AdventurePanel, {
     points, adventure: store.createInitialAdventure(), progress: { label: 'Progreso', value: 0 }, onSelect() {}, onCheckIn() {},
   })))
-  assert.equal((html.match(/sx-available-dot/g) ?? []).length, 4)
-  assert.match(html, /href="\/student\/activities"[^>]*>Ver más/)
-  assert.doesNotMatch(html, /sx-panel-pagination|Disponible 4|Disponible 5|Disponible 6/)
+  assert.equal((html.match(/sx-available-dot/g) ?? []).length, 0)
+  assert.match(html, /class="sx-next-step" href="\/student\/activities"[^>]*>[\s\S]*?Explora las actividades/)
+  assert.doesNotMatch(html, /Actividades disponibles|Disponible 0|Ver más/)
 })
 
 test('phase 8 activities combine zones, classify publications and return to the matching map', () => {
@@ -2999,21 +3000,25 @@ test('phase 9 panel has five direct links, a compact next-step action and the re
   let selected
   let tree = panel.draw({ adventure, points, recommended: points[0], progress: { label: 'Recorrido', value: 0 }, onSelect: id => { selected = id }, onCheckIn() {} })
   const links = panel.find(tree, element => element.props['aria-label'] === 'Accesos rápidos').props.children
-  assert.deepEqual(Array.from(links, element => panel.text(element)), ['Mi perfil', 'Mi diario', 'En familia', 'Recursos', 'Investigaciones', 'Información'])
-  assert.deepEqual(Array.from(links, element => element.props.to), ['/student/profile', '/student/journal', '/student/conversations', '/student/resources', '/student/investigations', '/student/catalog/professions'])
+  // Ajuste del panel (F05): Mi perfil es la cabecera; entra Mis planes.
+  assert.deepEqual(Array.from(links, element => panel.text(element)), ['Mis planes', 'Mi diario', 'En familia', 'Recursos', 'Investigaciones', 'Información'])
+  assert.deepEqual(Array.from(links, element => element.props.to), ['/student/profile/decisions', '/student/journal', '/student/conversations', '/student/resources', '/student/investigations', '/student/catalog/professions'])
   assert.ok(links.every(element => element.type !== 'button'))
-  const next = panel.button(tree, 'Siguiente paso')
+  // Ajuste del panel (F05): el siguiente paso es su propio componente (también en local); se pinta aparte.
+  const paso = t => { const e = panel.find(t, element => element.type?.name === 'SiguientePasoServidor'); return e.type(e.props) }
+  const next = panel.button(paso(tree), 'Siguiente paso')
   assert.ok(next); assert.match(panel.text(next), /El inicio del viaje/)
-  assert.doesNotMatch(panel.text(next), /Ver misión|Informativa|4 min/)
+  // Ajuste del panel (F05): subtítulo con tipo y duración.
+  assert.doesNotMatch(panel.text(next), /Ver misión/); assert.match(panel.text(next), /Informativa · 4 min/)
   next.props.onClick(); assert.equal(selected, 'welcome')
   let rank = panel.find(tree, element => element.props.className === 'sx-panel-level')
   assert.equal(rank.props['aria-label'], `Nivel ${store.getTravelerLevel(adventure).number}: ${store.getTravelerLevel(adventure).label}`)
-  assert.match(panel.text(rank), /NIVEL01/)
+  assert.match(panel.text(rank), /^Nivel 1/)
   adventure.completedMissionIds = fieldMissions.map(mission => mission.id)
   tree = panel.draw({ adventure, points: [], progress: { label: 'Recorrido', value: 100 }, onSelect() {}, onCheckIn() {} })
   rank = panel.find(tree, element => element.props.className === 'sx-panel-level')
-  assert.match(panel.text(rank), /NIVEL03Cartógrafo de posibilidades/)
-  assert.equal(panel.button(tree, 'Siguiente paso'), undefined)
+  assert.match(panel.text(rank), /Nivel 3Cartógrafo de posibilidades/)
+  assert.equal(panel.button(paso(tree), 'Siguiente paso'), undefined)
   panel.dispose()
 })
 
@@ -3430,7 +3435,8 @@ test('collapsed student map reserves its strip and keeps the recommended point v
  }
  const html=render('/student/missions')
  assert.match(html, /class="sx-panel-traveler" href="\/student\/profile"/)
- for(const text of ['Nivel de recorrido','Tu título de viajero','Crece con cada misión del camino.','Tu señal de hoy','Actividades disponibles'])assert.ok(html.includes(text))
+ for(const text of ['Nivel de recorrido','Camino · 0 de ','Siguiente paso','Tu señal de hoy','Accesos rápidos'])assert.ok(html.includes(text))
+ for(const text of ['Tu título de viajero','Crece con cada misión del camino.','Actividades disponibles','¡Qué bueno verte!<'])assert.ok(!html.includes(text))
 })
 
 

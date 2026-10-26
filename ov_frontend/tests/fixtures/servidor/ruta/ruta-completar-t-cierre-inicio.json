@@ -25,7 +25,7 @@
       ],
       "objetivo": {
         "codigo": "N2",
-        "nombre": "Nivel 2 de prueba"
+        "nombre": "Recolector de pistas"
       },
       "regla": "R-NIV-2",
       "tipo_objetivo": "NIVEL"

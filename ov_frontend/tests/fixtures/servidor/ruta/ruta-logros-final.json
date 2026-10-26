@@ -41,12 +41,12 @@
     {
       "estado": "OBTENIDO",
       "numero": 1,
-      "titulo": "Nivel 1 de prueba"
+      "titulo": "Observador del horizonte"
     },
     {
       "estado": "OBTENIDO",
       "numero": 2,
-      "titulo": "Nivel 2 de prueba"
+      "titulo": "Recolector de pistas"
     }
   ]
 }

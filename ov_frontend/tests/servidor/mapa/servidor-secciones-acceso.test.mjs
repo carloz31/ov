@@ -43,6 +43,17 @@ const accesos = (tree) =>
   Object.fromEntries(
     elementos(tree, (e) => e.type?.name === 'AccesoRapido').map((e) => [e.props.to, e.props.acceso]),
   )
+function texto(nodo) {
+  if (nodo == null || typeof nodo === 'boolean') return ''
+  if (typeof nodo === 'string' || typeof nodo === 'number') return String(nodo)
+  if (Array.isArray(nodo)) return nodo.map(texto).join('')
+  return texto(nodo.props?.children)
+}
+// Ajuste del panel (F05): «Tu señal de hoy» es su propio componente; se pinta aparte.
+const senal = (tree) => {
+  const e = elementos(tree, (x) => x.type?.name === 'SenalHoy')[0]
+  return e.type(e.props)
+}
 
 test('el ingreso trae las secciones y el panel cierra con candado y Lumi lo que el servidor bloquea', async () => {
   const { app, escenario, guias } = await iniciar()
@@ -73,10 +84,13 @@ test('el ingreso trae las secciones y el panel cierra con candado y Lumi lo que 
     textosBloqueo.DIARIO.adelanto,
     `${textosBloqueo.DIARIO.final} ${mensajeDiario}`,
   ])
-  // El check-in cerrado tampoco abre el registro de la señal.
-  const boton = elementos(tree, (e) => e.type === 'button' && e.props.className === 'sx-signal-edit')[0]
-  assert.equal(boton.props.title, escenario.secciones.find((s) => s.codigo === 'CHECK_IN').bloqueo[0].mensaje)
-  boton.props.onClick()
+  // El check-in cerrado tampoco abre el registro: toda la tarjeta es tocable y llama a Lumi, sin escala ni botones.
+  const tarjeta = senal(tree)
+  assert.deepEqual([tarjeta.type, tarjeta.props['data-estado']], ['button', 'bloqueada'])
+  assert.equal(tarjeta.props.title, escenario.secciones.find((s) => s.codigo === 'CHECK_IN').bloqueo[0].mensaje)
+  assert.equal(elementos(tarjeta, (e) => e.props?.className === 'sx-signal-segments').length, 0)
+  assert.match(texto(tarjeta), /Aún no se abre\. Toca para saber cómo/)
+  tarjeta.props.onClick()
   assert.equal(checkIns.length, 0)
   assert.match(guias.at(-1).at(-1), /^Todavía no puedes registrarla\. /)
   panel.unmount()
@@ -93,7 +107,7 @@ test('con las secciones abiertas los accesos navegan como siempre y solo Familia
   assert.equal(lista[appPaths.student.journal].bloqueada, false)
   assert.equal(lista[appPaths.student.journal].pasos, undefined)
   assert.equal(lista[appPaths.student.conversations].bloqueada, true)
-  elementos(tree, (e) => e.type === 'button' && e.props.className === 'sx-signal-edit')[0].props.onClick()
+  elementos(senal(tree), (e) => e.type === 'button' && e.props.className === 'sx-signal-edit')[0].props.onClick()
   assert.equal(checkIns.length, 1)
   assert.equal(guias.length, 0)
   panel.unmount()
@@ -160,16 +174,9 @@ test('con el check-in cerrado, «Ver evolución» tampoco se abre: ni desde el p
   const tree = panel.render()
   const { appPaths } = app.load('src/routes/paths.ts')
   const mensaje = escenario.secciones.find((s) => s.codigo === 'CHECK_IN').bloqueo[0].mensaje
-  const evolucion = elementos(
-    tree,
-    (e) => e.type?.name === 'AccesoRapido' && e.props.to === appPaths.student.signals,
-  )[0]
-  assert.equal(evolucion.props.className, 'sx-signal-history')
-  assert.deepEqual([evolucion.props.acceso.bloqueada, evolucion.props.acceso.mensaje], [true, mensaje])
-  // Igual que «Registrar mi señal»: no navega y Lumi explica qué falta.
-  let evitado = false
-  evolucion.type(evolucion.props).props.onClick({ preventDefault: () => (evitado = true) })
-  assert.equal(evitado, true)
+  // Ajuste del panel (F05): bloqueada, la tarjeta no muestra «Ver evolución»; solo Lumi explica qué falta.
+  assert.equal(elementos(senal(tree), (e) => e.props?.to === appPaths.student.signals).length, 0)
+  senal(tree).props.onClick()
   assert.match(guias.at(-1).at(-1), /^Todavía no puedes registrarla\. /)
   panel.unmount()
   // Entrada directa a /student/journal/signal: la tarjeta de bloqueo en lugar de la vista.

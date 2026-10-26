@@ -38,21 +38,25 @@ export type StudentMapPoint = {
 
 export type StudentZone = 'missions' | 'central'
 
-export function getZoneProgress(zone: StudentZone, adventure: AdventureState, journey: JourneyState) {
+// Ajuste del panel (F05): en el camino, además del porcentaje, las misiones completadas y el total con que se calcula.
+export type ZoneProgress = { label: string; value: number; completadas?: number; total?: number }
+
+export function getZoneProgress(zone: StudentZone, adventure: AdventureState, journey: JourneyState): ZoneProgress {
   if (modoApi) {
     const estado = obtenerEstadoServidor().actividades.datos
+    const camino = progresoBloque(estado)
     return zone === 'missions'
-      ? { label: 'Nivel de recorrido', value: progresoBloque(estado).porcentaje }
+      ? { label: 'Nivel de recorrido', value: camino.porcentaje, completadas: camino.completadas, total: camino.total }
       : // F05: la afinidad del servidor (completadas de la Ciudad sobre todas sus actividades).
         { label: 'Afinidad con la ciudad', value: obtenerEstadoServidor().logros.datos?.afinidad ?? 0 }
   }
+  const completadas = fieldMissions.filter((mission) => missionComplete(mission, adventure, journey)).length
   return zone === 'missions'
     ? {
         label: 'Nivel de recorrido',
-        value:
-          (fieldMissions.filter((mission) => missionComplete(mission, adventure, journey)).length /
-            fieldMissions.length) *
-          100,
+        value: (completadas / fieldMissions.length) * 100,
+        completadas,
+        total: fieldMissions.length,
       }
     : {
         label: 'Afinidad con la ciudad',

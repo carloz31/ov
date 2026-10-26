@@ -77,11 +77,13 @@ test('nunca encima de una actividad abierta', () => {
 })
 
 // El diálogo vive en un portal (no se pinta en el servidor de pruebas): se comprueba su fuente.
-test('el diálogo usa la escala del servidor y no ofrece cambiar la señal', () => {
+test('el diálogo usa la escala del servidor y, como en local, la señal se cambia durante el día', () => {
   const fuente = readFileSync('src/features/adventure/components/overlays/CheckInContent.tsx', 'utf8')
   assert.match(fuente, /const escala = servidor\?\.escala \?\? 10/)
   assert.match(fuente, /Array\.from\(\{ length: escala \}/)
-  assert.match(fuente, /servidor\s*\?\s*'¿Qué tan seguro te sientes de tu próximo paso\?'/)
+  // Ajuste del panel (F05): una por día, editable ese día (el servidor sobrescribe la del día).
+  assert.match(fuente, /¿Qué tan seguro te sientes de tu próximo paso\? Puedes cambiar esta respuesta durante el día\./)
+  assert.doesNotMatch(fuente, /servidor\s*\?\s*'¿Qué tan seguro/)
   assert.match(fuente, /servidor\?\.error &&/)
   const cola = readFileSync('src/features/adventure/components/overlays/OverlayQueue.tsx', 'utf8')
   assert.match(cola, /void registrarCheckIn\(value\)/)

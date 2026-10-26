@@ -1117,26 +1117,9 @@ body:has([data-student-experience] .sx-shell) {
   font-size: 12px;
   font-weight: 700;
 }
-.sx-root .sx-panel-user > div {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.sx-root .sx-panel-user > div > span {
-  font-size: 12px;
-  color: var(--muted-foreground);
-}
 .sx-root .sx-panel-user strong {
   font-size: 14px;
   font-weight: 700;
-}
-.sx-root .sx-panel-level {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: var(--sx-panel-summary-height);
-  margin: 10px 0 12px;
-  color: var(--primary);
 }
 .sx-root .sx-level-medallion {
   display: flex;
@@ -1287,23 +1270,6 @@ body:has([data-student-experience] .sx-shell) {
   color: var(--primary);
   text-decoration: underline;
 }
-.sx-root .sx-panel-signal {
-  display: flex;
-  align-items: baseline;
-  gap: 2px;
-  flex-shrink: 0;
-  padding: 2px 7px;
-  border: 1px solid var(--data-secondary);
-  border-radius: 10px 4px 10px 4px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 10px;
-}
-.sx-root .sx-panel-signal strong {
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.2;
-}
 .sx-root .sx-signal-heading {
   display: flex;
   align-items: center;
@@ -1317,13 +1283,6 @@ body:has([data-student-experience] .sx-shell) {
   margin: 6px 0 0;
   font-size: 11px;
   line-height: 1.35;
-}
-.sx-root .sx-signal-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
 }
 .sx-root .sx-signal-edit {
   display: flex;

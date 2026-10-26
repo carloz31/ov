@@ -413,7 +413,7 @@ INSIGNIAS = (('t-ins-1', 'Insignia de prueba', 'Completaste t-inicio.', 'Complet
               'Mira instituciones de todos los tipos.', True))
 
 # (número, título)
-NIVELES = ((1, 'Nivel 1 de prueba'), (2, 'Nivel 2 de prueba'))
+NIVELES = ((1, 'Observador del horizonte'), (2, 'Recolector de pistas'))
 
 # Preguntas del diario: (código, nombre, pregunta base, uso, personalizada, dimensión). Las DESBLOQUEABLE las
 # abre una regla; las DIARIA entran al sorteo de la pregunta del día por la dimensión del cuestionario de

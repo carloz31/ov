@@ -74,17 +74,21 @@ test('disponible: T2 bloqueado y una requerida disponible en la Ciudad; el botó
   assert.match(texto(arbol), /Siguiente paso/)
   assert.match(texto(arbol), new RegExp(paso.punto.title))
   assert.match(texto(arbol), new RegExp(paso.punto.subtitle))
-  assert.match(texto(arbol), new RegExp(`${disponibles} actividades disponibles · Ver todas ›`))
-  const linea = elementos(arbol, (e) => e.props.className === 'sx-panel-link sx-next-more')[0]
-  assert.equal(linea.props.to, '/student/activities')
+  // Ajuste del panel (F05): el pie cuenta las otras abiertas, sin la del paso.
+  assert.ok(texto(arbol).includes(`+${disponibles - 1} misi`))
+  const linea = elementos(arbol, (e) => e.props.className === 'sx-next-more')[0]
+  assert.equal(elementos(linea, (e) => e.props.to === '/student/activities').length, 1)
+  assert.match(texto(linea), /Ver todas ›$/)
 })
 
-test('solo la actividad del botón: la línea dice «1 actividad disponible»', async () => {
+test('solo la misión del paso: el pie dice que es la única abierta, nunca «+0»', async () => {
   const { app, calcular } = await iniciar('inicial')
   const { paso, disponibles } = calcular()
   assert.equal(paso.punto.specActivityId, 't-inicio')
   assert.equal(disponibles, 1)
-  assert.match(texto(pintar(app, { paso, disponibles })), /1 actividad disponible · Ver todas ›/)
+  const arbol = texto(pintar(app, { paso, disponibles }))
+  assert.match(arbol, /Es tu única misión abierta por ahora/)
+  assert.doesNotMatch(arbol, /\+0/)
 })
 
 test('empezada: una requerida en curso gana a una disponible anterior y dice «Continúa»', async () => {
@@ -100,7 +104,7 @@ test('empezada: una requerida en curso gana a una disponible anterior y dice «C
   const arbol = pintar(app, { paso, disponibles })
   assert.match(texto(arbol), /Continúa/)
   assert.doesNotMatch(texto(arbol), /Siguiente paso/)
-  assert.match(texto(arbol), /2 actividades disponibles · Ver todas ›/)
+  assert.match(texto(arbol), /\+1 misión abierta/)
 })
 
 test('bloqueada: sin requeridas disponibles, la primera bloqueada con el mensaje del servidor', async () => {
@@ -116,10 +120,11 @@ test('bloqueada: sin requeridas disponibles, la primera bloqueada con el mensaje
   assert.equal(disponibles, disponiblesServidor(escenario.bloques))
   const arbol = pintar(app, { paso, disponibles })
   assert.match(texto(arbol), new RegExp(paso.mensaje.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
-  // La misma tarjeta, con candado en lugar de la diana.
-  assert.equal(elementos(arbol, (e) => e.type === LockKeyhole).length, 1)
-  assert.equal(elementos(arbol, (e) => e.type === Target).length, 0)
+  // La misma tarjeta, sin badge con ícono (ajuste del panel, F05).
+  assert.equal(elementos(arbol, (e) => e.type === LockKeyhole || e.type === Target).length, 0)
   assert.equal(elementos(arbol, (e) => e.props['data-estado'] === 'bloqueada').length, 1)
+  // La bloqueada no cuenta entre las abiertas: el pie no la descuenta.
+  if (disponibles) assert.ok(texto(arbol).includes(`+${disponibles} misi`))
 })
 
 test('completado: todas las requeridas hechas y quedan opcionales; recorrido: no queda ninguna', async () => {
@@ -132,9 +137,10 @@ test('completado: todas las requeridas hechas y quedan opcionales; recorrido: no
   assert.equal(disponibles, disponiblesServidor(escenario.bloques))
   assert.ok(disponibles > 0)
   const arbol = pintar(app, { paso, disponibles })
-  assert.match(texto(arbol), /Completaste el camino/)
-  assert.match(texto(arbol), /Aún quedan actividades por descubrir\. Sigue explorando\./)
+  // Ajuste del panel (F05): «Explora las actividades»; toda la tarjeta lleva a la lista y no hay pie.
+  assert.match(texto(arbol), /Explora las actividades/)
   assert.equal(elementos(arbol, (e) => e.props.to === '/student/activities').length, 1)
+  assert.equal(elementos(arbol, (e) => e.props.className === 'sx-next-more').length, 0)
 
   const final = await iniciar('t2', (actividad, bloques) => {
     for (const a of todas(bloques))
@@ -144,13 +150,11 @@ test('completado: todas las requeridas hechas y quedan opcionales; recorrido: no
   assert.deepEqual(copia(recorrido.paso), { estado: 'recorrido' })
   assert.equal(recorrido.disponibles, 0)
   const arbolFinal = pintar(final.app, recorrido)
-  assert.match(texto(arbolFinal), /Recorriste todo el camino/)
-  assert.equal(elementos(arbolFinal, (e) => e.props.to === '/student/profile/helena').length, 1)
-  // Sin nada disponible, el enlace a «Mis actividades» sigue ahí, sin conteo.
-  const enlace = elementos(arbolFinal, (e) => e.props.className === 'sx-panel-link sx-next-more')
+  assert.match(texto(arbolFinal), /Explora las actividades/)
+  const enlace = elementos(arbolFinal, (e) => e.props.className === 'sx-next-step')
   assert.equal(enlace.length, 1)
   assert.equal(enlace[0].props.to, '/student/activities')
-  assert.equal(texto(enlace[0]), 'Ver todas mis actividades ›')
+  assert.equal(elementos(arbolFinal, (e) => e.props.to === '/student/profile/helena').length, 0)
 })
 
 test('una requerida oculta se omite con un aviso en desarrollo', async (t) => {

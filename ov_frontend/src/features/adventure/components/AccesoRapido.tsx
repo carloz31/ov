@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { LockKeyhole } from 'lucide-react'
 import type { AccesoSeccion } from '../hooks/useSeccionesAcceso'
 
-// Acceso rápido a una sección: cerrada, lleva candado y, en api, Lumi explica qué falta.
+// Acceso rápido a una sección: cerrada, lleva candado, se ve atenuada y, en api, Lumi explica qué falta.
 export function AccesoRapido({
   className,
   to,
@@ -23,6 +23,7 @@ export function AccesoRapido({
       className={className}
       to={to}
       title={acceso.bloqueada ? acceso.mensaje : undefined}
+      data-bloqueada={acceso.bloqueada || undefined}
       onClick={
         pasos && onGuide
           ? (event) => {
