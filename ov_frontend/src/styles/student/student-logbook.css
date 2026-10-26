@@ -84,6 +84,19 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* El título del nivel del panel pasa a una segunda línea si no cabe (como máximo dos), en vez de cortarse. */
+.sx-root .sx-panel-level {
+  align-self: stretch;
+  align-items: flex-start;
+}
+.sx-root .sx-panel-level .sx-level-rank {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  line-height: 1.3;
+  white-space: normal;
+}
 /* Ajuste del panel (F05): avance en una tarjeta (estilo de la señal) con un solo anillo; el tramo, en texto. */
 .sx-root .sx-panel-progress {
   display: flex;
