@@ -3,11 +3,10 @@ import { modoApi } from '@/config/env'
 import { useOccupationExplorationContext } from '@/context/occupationExplorationContext'
 import { getZoneProgress } from '@/features/adventure/lib/mapPoints'
 import { ciudadDisponible, insigniasServidor } from '@/lib/servidor/adaptadores'
-import { progresoBloque } from '@/lib/servidor/contenidos'
 import { canAccessCity, getTravelerLevel, useAdventure } from '@/store/adventureStore'
 import { paginasReveladasApi, useDiscovery } from '@/store/discoveryStore'
 import { useJourney } from '@/store/journeyStore'
-import { useAfinidadServidor } from '@/store/servidor/secciones'
+import { useLogrosServidor } from '@/store/servidor/secciones'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import { cargarInstrumentos } from '@/store/servidor/instrumentos'
 import { getAchievementPresentations } from '../lib/achievements'
@@ -21,7 +20,8 @@ export function useStudentProfile() {
     journey = useJourney(),
     discovery = useDiscovery()
   const context = useOccupationExplorationContext()
-  useAfinidadServidor()
+  // Las insignias del pasaporte; el avance y la afinidad llegan con el mapa (`avance`).
+  useLogrosServidor()
   const servidor = useEstadoServidor()
   const cuenta = servidor.resumen.datos?.cuenta.codigo
   // F03: las páginas del libro salen del avance de instrumentos, que se pide al abrir el perfil.
@@ -42,14 +42,9 @@ export function useStudentProfile() {
     ? getTravelerLevel(adventure, servidor.resumen.datos?.nivel_actual ?? null)
     : getTravelerLevel(adventure)
   const ciudad = modoApi ? ciudadDisponible(servidor.actividades.datos) : canAccessCity(adventure)
-  const recorrido = modoApi
-    ? progresoBloque(servidor.actividades.datos).porcentaje
-    : getZoneProgress('missions', adventure, journey).value
-  const afinidadCiudad = ciudad
-    ? modoApi
-      ? (servidor.logros.datos?.afinidad ?? 0)
-      : getZoneProgress('central', adventure, journey).value
-    : 0
+  // Ajuste del panel (F05): el mismo avance que el panel (`/avance` en api).
+  const recorrido = getZoneProgress('missions', adventure, journey).porcentaje ?? 0
+  const afinidadCiudad = ciudad ? (getZoneProgress('central', adventure, journey).porcentaje ?? 0) : 0
   const gruposApi = modoApi
     ? insigniasServidor(servidor.logros.datos, getAchievementPresentations())
     : undefined

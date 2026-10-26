@@ -37,7 +37,8 @@ test('perfil API lee las páginas del libro del servidor: partida y llegada prim
   )
   assert.equal(p.nombre, 'Ana')
   assert.equal(p.iniciales, 'A')
-  assert.equal(p.recorrido, 100)
+  // Ajuste del panel (F05): el recorrido del perfil es el de `/avance`, como el del panel.
+  assert.equal(p.recorrido, f.almacen.obtenerEstadoServidor().avance.datos.camino.porcentaje)
   assert.equal(p.ciudad, true)
   assert.equal(p.afinidadCiudad, 0)
   assert.equal(p.level.number, 3)

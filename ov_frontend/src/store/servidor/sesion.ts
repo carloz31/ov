@@ -6,6 +6,7 @@ import { modoApi } from '@/config/env'
 import { cuentaActiva } from './cuenta'
 import type {
   AmistadAsistente,
+  AvanceEstudiante,
   AvanceInstrumento,
   BloqueActividades,
   CheckInsCuenta,
@@ -36,6 +37,8 @@ export type DatosSecciones = {
   actividades: BloqueActividades[]
   fichas: ContenidoEstado[]
   logros: LogrosCuenta
+  // Ajuste del panel (F05): el avance del panel; va con las actividades (pantalla de carga del mapa).
+  avance: AvanceEstudiante
   // GET /cuentas/{c}/secciones: diario, check-in, catálogo, planes y familia (F00).
   secciones: SeccionEstado[]
   // F05: el diario se pide al abrirlo; los check-ins, al ingresar y solo con CHECK_IN abierta.
@@ -94,6 +97,7 @@ const inicial = (): AlmacenServidor => ({
   actividades: vacia(),
   fichas: vacia(),
   logros: vacia(),
+  avance: vacia(),
   secciones: vacia(),
   diarioPreguntas: vacia(),
   diarioEntradas: vacia(),

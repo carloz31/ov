@@ -95,6 +95,8 @@ test('ingreso confirma el POST antes de cargar y pide sus consultas en paralelo 
   view.render()
   assert.deepEqual([...consultas.keys()].sort(), [
     '/api/cuentas/est-ana/actividades',
+    // Ajuste del panel (F05): el avance del panel va con las actividades.
+    '/api/cuentas/est-ana/avance',
     '/api/cuentas/est-ana/desbloqueos?solo_no_vistos=true',
     '/api/cuentas/est-ana/resumen',
     // F00: las secciones del perfil se ven siempre en el panel y llegan con el ingreso.
@@ -215,6 +217,7 @@ test('responder actualiza actividades y avisos sin adelantar fichas, logros ni r
       .sort(),
     [
       ['GET', '/api/cuentas/est-ana/actividades'],
+      ['GET', '/api/cuentas/est-ana/avance'],
       ['GET', '/api/cuentas/est-ana/desbloqueos?solo_no_vistos=true'],
       ['POST', '/api/acciones/responder-items'],
     ],

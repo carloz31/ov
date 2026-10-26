@@ -117,8 +117,10 @@ export function encuentroConEco(contenido: Actividad, referencias: ReferenciaRes
   }
 }
 
+// Conteo del requisito de la Ciudad (`useCityRequirement`): requeridas visibles del camino. No es el avance
+// del panel ni del perfil, que viene de `/avance` (ajuste del panel, F05).
 export function progresoBloque(bloques: BloqueActividades[] | null, codigo = 'CAMINO') {
-  // Como el servidor, el avance cuenta solo las actividades requeridas.
+  // Como el requisito del servidor, cuenta solo las actividades requeridas.
   const actividades = bloquesZona(bloques, codigo)
     .flatMap((b) => b.actividades)
     .filter(

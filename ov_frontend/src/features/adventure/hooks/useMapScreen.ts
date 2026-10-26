@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion'
-import { useAfinidadServidor, useDiarioPreguntasServidor } from '@/store/servidor/secciones'
+import { useDiarioPreguntasServidor } from '@/store/servidor/secciones'
 import { cartaDeActividad, cartasDiario } from '@/lib/servidor/adaptadoresDiario'
 import { consultarItems } from '@/store/servidor/consultas'
 import { ciudadDisponible, mensajeBloqueo } from '@/lib/servidor/adaptadores'
@@ -34,8 +34,6 @@ export function useMapScreen({
   selectedId?: string
 }) {
   const servidor = useEstadoServidor()
-  // F05: el anillo de la Ciudad muestra la afinidad de `logros`.
-  useAfinidadServidor(zone === 'central')
   // El requisito ya llega en `bloqueo`; solo Mara consulta sus ítems para describir el encuentro.
   const [detalleServidor, setDetalleServidor] = useState<{
     clave: string

@@ -195,6 +195,15 @@ export type BloqueActividades = Omit<BloqueEstado, 'actividades'> & {
 export type NivelEstado = NivelActual & { estado: 'BLOQUEADO' | 'OBTENIDO' }
 // `afinidad`: solo el estudiante (F05: completadas de la Ciudad sobre todas sus actividades).
 export type LogrosCuenta = { insignias: InsigniaEstado[]; niveles: NivelEstado[]; afinidad?: number | null }
+// app/schemas/avance.py · GET /cuentas/{c}/avance (ajuste del panel, F05): total fijo; el tramo, solo requeridas.
+export type ConteoAvance = { completadas: number; total: number; porcentaje: number }
+export type TramoActual = { codigo: string; nombre: string; numero: number; completadas: number; total: number }
+export type AvanceEstudiante = {
+  camino: ConteoAvance
+  tramo_actual: TramoActual | null
+  camino_completo: boolean
+  ciudad: ConteoAvance
+}
 // app/schemas/familia.py · GET /cuentas/{c}/familia (B12)
 export type AvanceRuta = { completadas: number; total: number; porcentaje: number }
 export type Diploma = { obtenido: boolean; obtenido_en: string | null }

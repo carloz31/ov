@@ -681,8 +681,8 @@ test('student point calculations preserve progress, recommendations and every dr
   adventure.completedMissionIds = []
   adventure.solvedCaseIds = ['forest-fire', 'river-mystery']
   const points = getCaminoPoints(adventure, journey)
-  assert.equal(getZoneProgress('missions', adventure, journey).value, 0)
-  assert.equal(getZoneProgress('central', adventure, journey).value, 33)
+  assert.equal(getZoneProgress('missions', adventure, journey).porcentaje, 0)
+  assert.equal(getZoneProgress('central', adventure, journey).porcentaje, 33)
   assert.equal(getRecommendedPoint(points).id, 'welcome')
   const welcome = points.find(point => point.id === 'welcome')
   assert.equal(getPointDetails(welcome, adventure, journey).actionLabel, 'Iniciar actividad')
@@ -695,7 +695,7 @@ test('student point calculations preserve progress, recommendations and every dr
   assert.equal(replay.actionLabel, 'Volver a realizar esta misión')
   assert.equal(replay.revision, true)
   assert.equal(replay.journal.completed, true)
-  assert.equal(getZoneProgress('missions', adventure, journey).value, 100 / fieldMissions.length)
+  assert.equal(getZoneProgress('missions', adventure, journey).porcentaje, 100 / fieldMissions.length)
   assert.equal(getRecommendedPoint(completed).id, 'beliefs')
   const locked = getPointDetails({ ...completed[1], status: 'locked' }, adventure, journey)
   assert.equal(locked.actionLabel, 'Actividad bloqueada')
@@ -2690,7 +2690,7 @@ test('phase 8 path sequence respects completion records within the current demo 
   assert.deepEqual(Array.from(fieldMissions, mission => mission.id), Array.from(originalIds))
   assert.equal(store.prototypeAllUnlocked, true)
   assert.equal(store.isCityUnlocked({ ...adventure, completedMissionIds: ['welcome', 'beliefs', 'pregones', 'story'] }), false)
-  assert.equal(logic.getZoneProgress('missions', { ...adventure, completedMissionIds: ['welcome'] }, journey).value, 400 / fieldMissions.length)
+  assert.equal(logic.getZoneProgress('missions', { ...adventure, completedMissionIds: ['welcome'] }, journey).porcentaje, 400 / fieldMissions.length)
 })
 
 test('phase 8 direct links open blocked details instead of starting unavailable players', () => {
@@ -3435,7 +3435,7 @@ test('collapsed student map reserves its strip and keeps the recommended point v
  }
  const html=render('/student/missions')
  assert.match(html, /class="sx-panel-traveler" href="\/student\/profile"/)
- for(const text of ['Nivel de recorrido','Camino · 0 de ','Siguiente paso','Tu señal de hoy','Accesos rápidos'])assert.ok(html.includes(text))
+ for(const text of ['Nivel de recorrido','>Camino<','<strong class="sx-progress-line">0 de ','Siguiente paso','Tu señal de hoy','Accesos rápidos'])assert.ok(html.includes(text))
  for(const text of ['Tu título de viajero','Crece con cada misión del camino.','Actividades disponibles','¡Qué bueno verte!<'])assert.ok(!html.includes(text))
 })
 

@@ -1,7 +1,6 @@
 import type { JourneyState } from '@/types/activities'
 import { modoApi } from '@/config/env'
 import { obtenerEstadoServidor } from '@/store/servidor/sesion'
-import { progresoBloque } from '@/lib/servidor/contenidos'
 import type { ActividadCuenta } from '@/types/servidor'
 import { type LucideIcon } from 'lucide-react'
 import { cityCases, fieldMissions } from '@/data/content/adventure'
@@ -38,29 +37,41 @@ export type StudentMapPoint = {
 
 export type StudentZone = 'missions' | 'central'
 
-// Ajuste del panel (F05): en el camino, además del porcentaje, las misiones completadas y el total con que se calcula.
-export type ZoneProgress = { label: string; value: number; completadas?: number; total?: number }
+// Ajuste del panel (F05): en api, del servidor (`/avance`, total fijo; el tramo cuenta solo requeridas).
+// `porcentaje` nulo: no hay avance (falló su consulta). `completadas`/`total`: solo local, misiones del camino.
+export type ZoneProgress = {
+  label: string
+  porcentaje: number | null
+  tramo?: { numero: number; nombre: string; completadas: number; total: number } | null
+  caminoCompleto?: boolean
+  completadas?: number
+  total?: number
+}
 
 export function getZoneProgress(zone: StudentZone, adventure: AdventureState, journey: JourneyState): ZoneProgress {
   if (modoApi) {
-    const estado = obtenerEstadoServidor().actividades.datos
-    const camino = progresoBloque(estado)
+    const avance = obtenerEstadoServidor().avance.datos
     return zone === 'missions'
-      ? { label: 'Nivel de recorrido', value: camino.porcentaje, completadas: camino.completadas, total: camino.total }
-      : // F05: la afinidad del servidor (completadas de la Ciudad sobre todas sus actividades).
-        { label: 'Afinidad con la ciudad', value: obtenerEstadoServidor().logros.datos?.afinidad ?? 0 }
+      ? {
+          label: 'Nivel de recorrido',
+          porcentaje: avance?.camino.porcentaje ?? null,
+          tramo: avance?.tramo_actual ?? null,
+          caminoCompleto: avance?.camino_completo ?? false,
+        }
+      : // La afinidad: completadas de la Ciudad sobre todas sus actividades (la misma de `/logros`).
+        { label: 'Afinidad con la ciudad', porcentaje: avance?.ciudad.porcentaje ?? null }
   }
   const completadas = fieldMissions.filter((mission) => missionComplete(mission, adventure, journey)).length
   return zone === 'missions'
     ? {
         label: 'Nivel de recorrido',
-        value: (completadas / fieldMissions.length) * 100,
+        porcentaje: (completadas / fieldMissions.length) * 100,
         completadas,
         total: fieldMissions.length,
       }
     : {
         label: 'Afinidad con la ciudad',
-        value: Math.round(
+        porcentaje: Math.round(
           (cityCases.filter((item) => adventure.solvedCaseIds.includes(item.id)).length / cityCases.length) *
             100,
         ),

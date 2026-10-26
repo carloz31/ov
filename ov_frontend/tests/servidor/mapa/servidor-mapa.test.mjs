@@ -58,6 +58,7 @@ test('lo que se abre al desbloquear aparece solo cuando el servidor lo hace visi
   assert.equal(ciudad.find((p) => p.specActivityId === 't-mision-intereses').status, 'available')
 })
 
+// Ajuste del panel (F05): `progresoBloque` es solo el conteo del requisito de la Ciudad; el avance viene de `/avance`.
 test('el avance del camino cuenta solo las actividades requeridas, como el servidor', () => {
   for (const [etapa, completadas] of [
     ['inicial', 0],
@@ -67,7 +68,11 @@ test('el avance del camino cuenta solo las actividades requeridas, como el servi
     const m = mapa(`ruta/ruta-actividades-${etapa}`)
     const progreso = m.app.load('src/lib/servidor/contenidos.ts').progresoBloque(m.bloques)
     assert.deepEqual([progreso.completadas, progreso.total], [completadas, 7])
-    assert.equal(m.general.getZoneProgress('missions', {}, {}).value, progreso.porcentaje)
+    const avance = jsonServidor(`ruta/ruta-avance-${etapa}`)
+    m.sesion.publicar({ avance: { datos: avance, estado: 'listo', error: null } })
+    const zona = m.general.getZoneProgress('missions', {}, {})
+    assert.equal(zona.porcentaje, avance.camino.porcentaje)
+    assert.deepEqual(zona.tramo, avance.tramo_actual)
   }
   const m = mapa('ruta/ruta-actividades-t2')
   assert.equal(m.app.load('src/lib/servidor/contenidos.ts').progresoBloque(m.bloques, 'CIUDAD').completadas, 3)

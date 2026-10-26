@@ -84,38 +84,63 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* Ajuste del panel (F05): avance en una tarjeta (estilo de la señal) con un solo anillo; el tramo, en texto. */
 .sx-root .sx-panel-progress {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 .sx-root .sx-panel-progress > div {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 .sx-root .sx-progress-ring {
-  width: 30px;
-  height: 30px;
+  width: 64px;
+  height: 64px;
   flex-shrink: 0;
 }
-.sx-root .sx-progress-line {
-  margin: 0 0 6px;
+.sx-root .sx-progress-ring-value {
+  stroke: var(--sx-gold);
+  transition: stroke-dashoffset 0.6s ease;
+}
+.sx-root .sx-panel-progress[data-zona='ciudad'] .sx-progress-ring-value {
+  stroke: var(--sx-zone-ciudad);
+}
+.sx-root .sx-progress-ring strong {
   color: var(--sx-night-text);
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.sx-root .sx-progress-label {
+  color: var(--sx-night-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.sx-root .sx-progress-line {
+  color: var(--sx-night-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.sx-root .sx-progress-tramo {
+  overflow: hidden;
+  color: var(--sx-gold);
   font-size: 12px;
   font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.sx-root .sx-progress-bar {
-  display: block;
-  height: 4px;
-  overflow: hidden;
-  border-radius: 4px;
-  background: rgb(255 255 255 / 0.14);
-}
-.sx-root .sx-progress-bar > span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--sx-gold);
+@media (prefers-reduced-motion: reduce) {
+  .sx-root .sx-progress-ring-value {
+    transition: none;
+  }
 }
 .sx-root .sx-panel-section {
   border: 0;

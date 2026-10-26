@@ -136,44 +136,54 @@ export function AdventurePanel({
   )
 }
 
-// Ajuste del panel (F05): el avance de la zona en una línea, con anillo pequeño y barra fina (mismo porcentaje).
+// Ajuste del panel (F05): el avance de la zona en una tarjeta con un solo anillo (porcentaje global) y el tramo
+// actual en texto. Sin datos (falló `/avance`), el anillo queda vacío y solo se ve el rótulo.
 function ProgresoZona({ progress }: { progress: ZoneProgress }) {
-  const percentage = Math.min(100, Math.max(0, progress.value))
+  const ciudad = progress.label === 'Afinidad con la ciudad'
+  const percentage = progress.porcentaje === null ? null : Math.min(100, Math.max(0, progress.porcentaje))
   const circumference = 2 * Math.PI * 40
+  const linea =
+    percentage === null
+      ? null
+      : ciudad
+        ? `${Math.round(percentage)}% de afinidad`
+        : progress.tramo
+          ? `Tramo ${progress.tramo.numero} · ${progress.tramo.completadas} de ${progress.tramo.total} misiones`
+          : progress.total !== undefined
+            ? `${progress.completadas} de ${progress.total} misiones`
+            : progress.caminoCompleto
+              ? 'Camino completo'
+              : null
   return (
-    <section className="sx-panel-progress">
+    <section className="sx-panel-section sx-signal-card sx-panel-progress" data-zona={ciudad ? 'ciudad' : 'camino'}>
       <span
         className="sx-progress-ring"
         role="progressbar"
         aria-label={progress.label}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-valuenow={percentage}
+        aria-valuenow={percentage ?? undefined}
       >
         <svg viewBox="0 0 96 96" aria-hidden="true">
-          <circle cx={48} cy={48} r={40} fill="none" stroke="var(--sx-night-raised)" strokeWidth={12} />
+          <circle cx={48} cy={48} r={40} fill="none" stroke="var(--sx-night)" strokeWidth={9} />
           <circle
+            className="sx-progress-ring-value"
             cx={48}
             cy={48}
             r={40}
             fill="none"
-            stroke="var(--sx-gold)"
-            strokeWidth={12}
+            strokeWidth={9}
             strokeLinecap="round"
             strokeDasharray={circumference}
-            strokeDashoffset={circumference * (1 - percentage / 100)}
+            strokeDashoffset={circumference * (1 - (percentage ?? 0) / 100)}
           />
         </svg>
+        {percentage !== null && <strong>{Math.round(percentage)}%</strong>}
       </span>
       <div>
-        <p className="sx-progress-line">
-          {progress.total !== undefined
-            ? `Camino · ${progress.completadas} de ${progress.total} misiones`
-            : `Ciudad · ${Math.round(percentage)}% de afinidad`}
-        </p>
-        <span className="sx-progress-bar" aria-hidden="true">
-          <span style={{ width: `${percentage}%` }} />
-        </span>
+        <span className="sx-progress-label">{ciudad ? 'Ciudad' : 'Camino'}</span>
+        {linea && <strong className="sx-progress-line">{linea}</strong>}
+        {!ciudad && progress.tramo && <span className="sx-progress-tramo">{progress.tramo.nombre}</span>}
       </div>
     </section>
   )

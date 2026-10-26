@@ -35,11 +35,17 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
   // F00: lo que una acción vuelve visible (una opcional que se abre con su bloque) se revela en el mapa.
   const visiblesAntes = visibles(obtenerEstadoServidor().actividades.datos)
   vencerSeccion('actividades')
+  // Ajuste del panel (F05): el avance cambia con cada actividad; se vence y se pide con ellas (conserva el último).
+  vencerSeccion('avance')
   // F00: las secciones del perfil se ven siempre (accesos del panel): van con el ingreso, como el resumen.
   const nombres =
     desbloqueos === undefined ? (['resumen', 'secciones'] as const) : seccionesPorDesbloqueos(desbloqueos)
   nombres.forEach(vencerSeccion)
-  const pedidos: Promise<RespuestaServidor<unknown>>[] = [asegurarSeccion('actividades'), consultarNoVistos()]
+  const pedidos: Promise<RespuestaServidor<unknown>>[] = [
+    asegurarSeccion('actividades'),
+    asegurarSeccion('avance'),
+    consultarNoVistos(),
+  ]
   if (
     desbloqueos === undefined ||
     nombres.includes('resumen') ||

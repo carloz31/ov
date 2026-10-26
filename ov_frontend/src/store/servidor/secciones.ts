@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { modoApi } from '@/config/env'
 import { obtenerResumen } from '@/services/api/cuentas'
 import { obtenerActividades } from '@/services/api/actividades'
+import { obtenerAvance } from '@/services/api/avance'
 import { obtenerFichas } from '@/services/api/fichas'
 import { obtenerLogros } from '@/services/api/logros'
 import { obtenerSecciones } from '@/services/api/secciones'
@@ -33,6 +34,7 @@ const consultas = {
   actividades: obtenerActividades,
   fichas: obtenerFichas,
   logros: obtenerLogros,
+  avance: obtenerAvance,
   secciones: obtenerSecciones,
   diarioPreguntas: obtenerPreguntasDiario,
   diarioEntradas: obtenerEntradasDiario,
@@ -44,6 +46,7 @@ const contadores = (): Record<NombreSeccion, number> => ({
   actividades: 0,
   fichas: 0,
   logros: 0,
+  avance: 0,
   secciones: 0,
   diarioPreguntas: 0,
   diarioEntradas: 0,
@@ -163,19 +166,6 @@ export const useResumenServidor = (activo = true) => useSeccion('resumen', activ
 export const useActividadesServidor = (activo = true) => useSeccion('actividades', activo)
 export const useFichasServidor = (activo = true) => useSeccion('fichas', activo)
 export const useLogrosServidor = (activo = true) => useSeccion('logros', activo)
-// F05: la afinidad (en `logros`) cambia con cada actividad de la Ciudad, aunque no haya insignias nuevas. Las
-// vistas que la muestran la vuelven a pedir al montarse y cuando cambian las actividades.
-export function useAfinidadServidor(activo = true) {
-  const seccion = useSeccion('logros', activo)
-  const actividades = useEstadoServidor().actividades.datos
-  const vistas = useRef<typeof actividades | undefined>(undefined)
-  useEffect(() => {
-    if (!modoApi || !activo) return
-    if (vistas.current !== actividades) vencerSeccion('logros')
-    vistas.current = actividades
-  }, [activo, actividades])
-  return seccion
-}
 export const useSeccionesServidor = (activo = true) => useSeccion('secciones', activo)
 export const useDiarioPreguntasServidor = (activo = true) => useSeccion('diarioPreguntas', activo)
 export const useDiarioEntradasServidor = (activo = true) => useSeccion('diarioEntradas', activo)
