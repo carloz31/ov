@@ -13,3 +13,6 @@
 - `0030` no siembra el catálogo: como el resto de `fijos`, lo llena el conjunto al recargarse (`datos.cargar ruta --vaciar`). Bajarla se detiene si hay presentaciones vistas (como 0028).
 - `POST /acciones/presentacion-vista` es idempotente y conserva la primera `vista_en`; no mira la sección (lo decide el front), ni registra eventos.
 - Pruebas adaptadas con el cambio de modelo: conteos de tablas (82 → 84), filas sembradas de `presentacion` (18), la presentación vista como estado en el reinicio y en el downgrade (que ahora se detiene en 0030).
+- Front (F2): `presentaciones` es una sección más de `store/servidor/`, pedida al ingresar; sin sus datos (cargando o con error) la cola de Lumi no muestra nada en esa vista (`introEnEspera`, que generaliza `seccionBloqueada`).
+- Cerrar una presentación la oculta en esa visita y envía el POST; si falla, no se marca y vuelve a salir en la próxima (sin aviso nuevo). El `introsSeen` local no se sube al servidor: en api, cada estudiante verá una vez más las presentaciones que ya había cerrado en ese navegador.
+- Pruebas de `tests/servidor` que fijaban `introsSeen` local en api (recursos, avisos, diario) pasan a fijar las presentaciones del servidor; la del ingreso suma `presentaciones` a las consultas en paralelo.

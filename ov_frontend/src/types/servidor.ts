@@ -140,6 +140,8 @@ export type SeccionEstado = {
   estado: EstadoDisponibilidad
   bloqueo: MotivoBloqueo[] | null
 }
+// app/schemas/presentaciones.py (ajuste presentaciones-vistas): ids de las vistas del estudiante.
+export type PresentacionesCuenta = { vistas: string[] }
 export type ProgresoObjetivo = {
   objetivo: { tipo: TipoObjetivo; codigo: string }
   disponible: boolean

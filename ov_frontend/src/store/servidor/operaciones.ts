@@ -2,6 +2,7 @@ import * as apiCuentas from '@/services/api/cuentas'
 import * as apiAcciones from '@/services/api/acciones'
 import * as apiDesarrollo from '@/services/api/desarrollo'
 import * as apiLogros from '@/services/api/logros'
+import * as apiPresentaciones from '@/services/api/presentaciones'
 import { desarrollo, modoApi } from '@/config/env'
 import { cuentaActiva } from './cuenta'
 import { limpiarEstadoApoderado } from './apoderado'
@@ -29,6 +30,7 @@ import type {
   RespuestaItemEntrada,
   RespuestaItemsGuardados,
   VitrinaCuenta,
+  PresentacionesCuenta,
 } from '@/types/servidor'
 
 let inicio: Promise<RespuestaServidor<RespuestaAccion>> | null = null
@@ -196,5 +198,18 @@ export async function guardarVitrina(codigos: string[]): Promise<RespuestaServid
   const logros = obtenerEstadoServidor().logros
   if (respuesta.tipo === 'ok' && cuenta === cuentaActiva() && sesion === sesionServidor() && logros.datos)
     publicar({ logros: { ...logros, datos: { ...logros.datos, vitrina: respuesta.datos.vitrina } } })
+  return respuesta
+}
+
+// Ajuste presentaciones-vistas: cerrar una presentación de primera visita la marca en el servidor.
+export async function marcarPresentacionVista(
+  codigo: string,
+): Promise<RespuestaServidor<PresentacionesCuenta>> {
+  const cuenta = cuentaActiva(),
+    sesion = sesionServidor()
+  if (!modoApi || !cuenta) return { tipo: 'http', estado: 400, detalle: 'No hay una cuenta de servidor activa.' }
+  const respuesta = await apiPresentaciones.enviarPresentacionVista(cuenta, codigo)
+  if (respuesta.tipo === 'ok' && cuenta === cuentaActiva() && sesion === sesionServidor())
+    publicar({ presentaciones: { datos: respuesta.datos, estado: 'listo', error: null } })
   return respuesta
 }

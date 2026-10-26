@@ -6,6 +6,7 @@ import { obtenerAvance } from '@/services/api/avance'
 import { obtenerFichas } from '@/services/api/fichas'
 import { obtenerLogros } from '@/services/api/logros'
 import { obtenerSecciones } from '@/services/api/secciones'
+import { obtenerPresentaciones } from '@/services/api/presentaciones'
 import {
   obtenerAmistad,
   obtenerCheckIns,
@@ -36,6 +37,7 @@ const consultas = {
   logros: obtenerLogros,
   avance: obtenerAvance,
   secciones: obtenerSecciones,
+  presentaciones: obtenerPresentaciones,
   diarioPreguntas: obtenerPreguntasDiario,
   diarioEntradas: obtenerEntradasDiario,
   amistad: obtenerAmistad,
@@ -48,6 +50,7 @@ const contadores = (): Record<NombreSeccion, number> => ({
   logros: 0,
   avance: 0,
   secciones: 0,
+  presentaciones: 0,
   diarioPreguntas: 0,
   diarioEntradas: 0,
   amistad: 0,

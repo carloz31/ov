@@ -311,6 +311,8 @@ export function escenarioServidor(etapa) {
     vitrina: jsonServidor('ruta/ruta-logros-final').vitrina,
     // DATO DE PRUEBA: estos fixtures no traen `/avance` (ajuste del panel, F05); se usa el inicial de la ruta.
     avance: jsonServidor('ruta/ruta-avance-inicial'),
+    // Ajuste presentaciones-vistas: tampoco traen presentaciones; se usa la inicial de la ruta (ninguna vista).
+    presentaciones: jsonServidor('ruta/ruta-presentaciones-inicial'),
   }
 }
 // F00: escenario de la ruta mínima (ruta-*). Las actividades tienen etapas inicial, t1, t2 y ciudad;
@@ -324,9 +326,10 @@ export function escenarioRuta(etapa) {
     ...jsonServidor('ruta/ruta-logros-' + final),
     secciones: jsonServidor('ruta/ruta-secciones-' + (etapa === 'inicial' ? 'inicial' : 't1')),
     avance: jsonServidor('ruta/ruta-avance-' + etapa),
+    presentaciones: jsonServidor('ruta/ruta-presentaciones-inicial'),
   }
 }
-export const esConsultaDominio = (r) => /\/(resumen|actividades|avance|fichas|logros|secciones)$/.test(r.url)
+export const esConsultaDominio = (r) => /\/(resumen|actividades|avance|fichas|logros|secciones|presentaciones)$/.test(r.url)
 export function respuestaDominio(r, escenario) {
   switch (r.url.split('/').at(-1)) {
     case 'resumen':
@@ -341,6 +344,8 @@ export function respuestaDominio(r, escenario) {
       return { body: escenario.secciones ?? [] }
     case 'avance':
       return { body: escenario.avance }
+    case 'presentaciones':
+      return { body: escenario.presentaciones ?? { vistas: [] } }
     default:
       throw Error('Consulta de dominio inesperada: ' + r.url)
   }

@@ -18,7 +18,7 @@ export function getNextOverlay({
   arrivalDismissed = false,
   now = new Date(),
   checkInPendiente,
-  seccionBloqueada = false,
+  introEnEspera = false,
 }: {
   adventure: AdventureState
   ui: StudentUiState
@@ -28,15 +28,16 @@ export function getNextOverlay({
   now?: Date
   // F05, solo api: lo decide el servidor (CHECK_IN abierta y sin check-in hoy); sin definir, la señal local.
   checkInPendiente?: boolean
-  // Solo api: la sección de la vista está cerrada en el servidor; su presentación espera a que se abra.
-  seccionBloqueada?: boolean
+  // Solo api: la sección de la vista está cerrada en el servidor, o aún no se sabe qué presentaciones se vieron
+  // (presentaciones-vistas). Mientras tanto la cola no muestra nada en esa vista.
+  introEnEspera?: boolean
 }): AutomaticOverlay | null {
   if (activityOpen) return null
   // Discovery pages only present their purpose once; arrival and the daily signal wait for the maps.
   const discovery = isDiscoveryView(view)
   if (!discovery && isCityUnlocked(adventure) && !ui.cityArrivalSeen && !arrivalDismissed)
     return { kind: 'arrival' }
-  if (!ui.introsSeen[view] && !seccionBloqueada) return { kind: 'intro', view }
+  if (!ui.introsSeen[view]) return introEnEspera ? null : { kind: 'intro', view }
   if (discovery) return null
   const day = localDateKey(now)
   const pendiente = checkInPendiente ?? !getTodayCheckIn(adventure, now)
