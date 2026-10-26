@@ -1,12 +1,10 @@
-import { enviar } from './cliente'
-import type { RespuestaAccion, RespuestaServidor } from '@/types/servidor'
+import { enviar, obtener } from './cliente'
+import type { FavoritosCuenta, RespuestaAccion, RespuestaServidor, TipoFavorito } from '@/types/servidor'
 
-// Ajuste mochila: favoritos de fichas y testimonios (el catálogo usa los mismos tipos en el backend).
-export type TipoFavoritoMochila = 'FICHA' | 'TESTIMONIO'
-
+// Favoritos del catálogo (F06) y de fichas y testimonios (ajuste mochila): las mismas acciones.
 export function marcarFavorito(
   cuenta: string,
-  tipo: TipoFavoritoMochila,
+  tipo: TipoFavorito,
   codigo: string,
 ): Promise<RespuestaServidor<RespuestaAccion>> {
   return enviar('/acciones/marcar-favorito', { cuenta, tipo, codigo })
@@ -14,8 +12,13 @@ export function marcarFavorito(
 
 export function desmarcarFavorito(
   cuenta: string,
-  tipo: TipoFavoritoMochila,
+  tipo: TipoFavorito,
   codigo: string,
 ): Promise<RespuestaServidor<RespuestaAccion>> {
   return enviar('/acciones/desmarcar-favorito', { cuenta, tipo, codigo })
+}
+
+// Solo carreras, ocupaciones e instituciones.
+export function obtenerFavoritos(cuenta: string): Promise<RespuestaServidor<FavoritosCuenta>> {
+  return obtener(`/cuentas/${encodeURIComponent(cuenta)}/favoritos`)
 }

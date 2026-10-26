@@ -65,3 +65,16 @@ export function verFicha(cuenta: string, ficha: string): Promise<RespuestaServid
 export function verTestimonio(cuenta: string, testimonio: string): Promise<RespuestaServidor<RespuestaAccion>> {
   return enviar('/acciones/ver-testimonio', { cuenta, testimonio })
 }
+
+// F06: abrir el detalle del catálogo registra su vista (puede abrir t-explorar).
+export function verCarrera(cuenta: string, carrera: string): Promise<RespuestaServidor<RespuestaAccion>> {
+  return enviar('/acciones/ver-carrera', { cuenta, carrera })
+}
+
+export function verOcupacion(cuenta: string, ocupacion: string): Promise<RespuestaServidor<RespuestaAccion>> {
+  return enviar('/acciones/ver-ocupacion', { cuenta, ocupacion })
+}
+
+export function verInstitucion(cuenta: string, institucion: string): Promise<RespuestaServidor<RespuestaAccion>> {
+  return enviar('/acciones/ver-institucion', { cuenta, institucion })
+}

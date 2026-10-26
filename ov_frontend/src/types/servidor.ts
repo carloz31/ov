@@ -48,6 +48,9 @@ export type TipoEventoUso =
   | 'ESCRIBE_ENTRADA_LIBRE'
   | 'REGISTRA_CHECK_IN'
   | 'VISTA_CARRERA'
+  | 'VISTA_OCUPACION'
+  | 'VISTA_INSTITUCION'
+  | 'MARCA_FAVORITO'
   | 'PUBLICA_ENTREVISTA'
   | 'SUPERA_CASO'
   | 'SUPERA_BATALLA'
@@ -173,6 +176,8 @@ export * from './servidorInstrumentos'
 export * from './servidorFichas'
 // app/schemas/logros.py vive en servidorLogros.ts (ajuste pasaporte-perfil).
 export * from './servidorLogros'
+// app/schemas/catalogo.py y favoritos.py viven en servidorCatalogo.ts (F06).
+export * from './servidorCatalogo'
 type AccionInstrumento = RespuestaAccion & { cuenta: string; instrumento: string; aplicacion: string }
 export type RespuestaRevelarResultado = AccionInstrumento & { perfil_plano: boolean }
 export type RespuestaReiniciarInstrumento = AccionInstrumento & {
@@ -335,22 +340,6 @@ export type CasoCuenta = {
   mejor_puntaje: number | null
   puntaje_minimo: number
   puntaje_maximo: number
-}
-// app/schemas/catalogo.py (solo lo que usa la hoja de vida de la Central de casos).
-export type CarreraResumen = {
-  codigo: string
-  nombre: string
-  familia: { codigo: string; nombre: string }
-  riasec: string[]
-  es_favorita: boolean
-}
-export type OcupacionResumen = { codigo: string; codigo_onet: string; titulo: string; riasec: string[]; es_favorita: boolean }
-export type OcupacionDetalle = OcupacionResumen & {
-  descripcion: string | null
-  lugares_trabajo: string | null
-  conocimientos: string[]
-  habilidades: string[]
-  carreras: CarreraResumen[]
 }
 export type OcupacionColeccion = { ocupacion: string; titulo: string; caso: string; obtenida_en: string }
 export type TestimonioEstado = {
