@@ -50,12 +50,12 @@ def test_hu040_marcar_consultar_y_desmarcar(abierto):
                                        'riasec': ['S', 'I', 'C'], 'es_favorita': True}
     assert codigos(lista['instituciones']) == ['t-uni']
 
-    carreras = {c['codigo']: c['es_favorita'] for c in pedir(abierto, 'GET', '/cuentas/est-ana/catalogo/carreras')}
+    carreras = {c['codigo']: c['es_favorita'] for c in pedir(abierto, 'GET', '/cuentas/est-ana/catalogo/carreras')['items']}
     assert [c for c, marcada in carreras.items() if marcada] == ['nursing', 'psychology']
     detalle = pedir(abierto, 'GET', '/cuentas/est-ana/catalogo/carreras/psychology')
     assert detalle['es_favorita'] is True
     assert {o['codigo']: o['es_favorita'] for o in detalle['ocupaciones']}['psychologist'] is True
-    assert detalle['instituciones'][0]['es_favorita'] is True
+    assert {i['codigo']: i['es_favorita'] for i in detalle['instituciones']}['t-uni'] is True
 
     desmarcado = pedir(abierto, 'POST', '/acciones/desmarcar-favorito', favorito('CARRERA', 'nursing'))
     assert desmarcado['eventos_registrados'] == []
@@ -84,8 +84,8 @@ def test_presupuesto_de_consultas_de_favoritos(tmp_path, base_aislada):
     for cantidad in (1, 6):
         with base_aislada(tmp_path, f'favoritos-{cantidad}') as (aplicacion, cliente):
             completar(cliente, 't-inicio')
-            carreras = [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras')][:cantidad]
-            ocupaciones = [o['codigo'] for o in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/ocupaciones')][:cantidad]
+            carreras = [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras')['items']][:cantidad]
+            ocupaciones = [o['codigo'] for o in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/ocupaciones')['items']][:cantidad]
             for codigo in carreras:
                 pedir(cliente, 'POST', '/acciones/marcar-favorito', favorito('CARRERA', codigo))
             for codigo in ocupaciones:

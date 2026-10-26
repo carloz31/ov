@@ -26,8 +26,8 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         'carrera_ocupacion': 23, 'lista_opciones': 12, 'opcion_lista': 66, 'item_registro': 12,
         'criterio_completitud': 10, 'referencia': 11, 'tematica': 5,
         'actividad_tematica': 6, 'actividad_dimension': 2, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
-        'high_point': 72, 'tipo_carrera': 11, 'ubicacion': 2, 'institucion': 3, 'institucion_carrera': 6,
-        'ingreso_carrera': 2, 'rango_ingreso': 5,
+        'high_point': 72, 'tipo_carrera': 14, 'ubicacion': 3, 'institucion': 5, 'institucion_carrera': 10,
+        'ingreso_carrera': 6, 'rango_ingreso': 15,
         'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6}
     assert len(Base.metadata.tables) == 84
     for tabla in Base.metadata.sorted_tables:

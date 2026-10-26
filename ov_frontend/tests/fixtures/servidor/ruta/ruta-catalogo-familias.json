@@ -1,0 +1,26 @@
+[
+  {
+    "codigo": "family-psychology",
+    "nombre": "Ciencias sociales y salud"
+  },
+  {
+    "codigo": "family-journalism",
+    "nombre": "Comunicación"
+  },
+  {
+    "codigo": "family-civil-engineering",
+    "nombre": "Ingeniería e infraestructura"
+  },
+  {
+    "codigo": "family-environmental-engineering",
+    "nombre": "Ingeniería y ambiente"
+  },
+  {
+    "codigo": "family-nursing",
+    "nombre": "Salud"
+  },
+  {
+    "codigo": "family-veterinary-medicine",
+    "nombre": "Salud y ciencias naturales"
+  }
+]

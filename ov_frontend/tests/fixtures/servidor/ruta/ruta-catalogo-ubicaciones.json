@@ -1,0 +1,14 @@
+[
+  {
+    "codigo": "t-arequipa",
+    "nombre": "Arequipa de prueba"
+  },
+  {
+    "codigo": "t-cusco",
+    "nombre": "Cusco de prueba"
+  },
+  {
+    "codigo": "t-lima",
+    "nombre": "Lima de prueba"
+  }
+]

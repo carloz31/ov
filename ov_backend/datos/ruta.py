@@ -198,10 +198,11 @@ TIPOS_CARRERA = (
     ('nursing', 1, 'S'),
     ('civil-engineering', 1, 'R'), ('civil-engineering', 2, 'I'),
     ('psychology', 1, 'S'), ('psychology', 2, 'I'), ('psychology', 3, 'A'),
+    ('veterinary-medicine', 1, 'I'), ('veterinary-medicine', 2, 'R'), ('veterinary-medicine', 3, 'S'),
 )
 
 # (código, nombre)
-UBICACIONES = (('t-lima', 'Lima de prueba'), ('t-cusco', 'Cusco de prueba'))
+UBICACIONES = (('t-lima', 'Lima de prueba'), ('t-cusco', 'Cusco de prueba'), ('t-arequipa', 'Arequipa de prueba'))
 
 # (código, nombre, tipo, gestión o None, ubicación, descripción, página web, carreras que ofrece). B11: una pública
 # y una privada ofrecen la misma carrera, para la precarga de la pensión y el total de la carrera.
@@ -214,6 +215,12 @@ INSTITUCIONES = (
      ('civil-engineering', 'nursing')),
     ('t-privada', 'Escuela Superior Privada de Prueba', 'UNIVERSIDAD', 'PRIVADA', 't-lima',
      'Casa de estudios privada de prueba.', 'https://example.test/privada', ('environmental-engineering',)),
+    # F06: un instituto y una privada fuera de Lima, para que cada filtro de tipo, gestión y ubicación devuelva algo.
+    ('t-tecnico', 'Instituto Técnico de Prueba', 'INSTITUTO', 'PUBLICA', 't-arequipa',
+     'Instituto de prueba con carreras técnicas de salud.', 'https://example.test/instituto',
+     ('nursing', 'veterinary-medicine')),
+    ('t-cusco-privada', 'Universidad Privada del Cusco de Prueba', 'UNIVERSIDAD', 'PRIVADA', 't-cusco',
+     'Universidad privada de prueba en el Cusco.', 'https://example.test/cusco', ('journalism', 'psychology')),
 )
 
 # (institución, carrera, ciclos) que duran en esa institución; la de 11 ciclos prueba la duración impar (B11).
@@ -223,12 +230,37 @@ DURACIONES_CICLOS = (('t-uni', 'environmental-engineering', 10), ('t-privada', '
 INGRESOS = (
     ('psychology', 3200, 'Fuente de prueba', 2025, ((0, 2000, 30), (2000, 4000, 50), (4000, None, 20))),
     ('civil-engineering', 4500, 'Fuente de prueba', 2025, ((0, 3000, 25), (3000, None, 75))),
+    ('environmental-engineering', 3800, 'Fuente de prueba', 2025,
+     ((0, 2500, 35), (2500, 5000, 45), (5000, None, 20))),
+    ('journalism', 2600, 'Fuente de prueba', 2025, ((0, 2000, 45), (2000, None, 55))),
+    ('nursing', 2900, 'Fuente de prueba', 2025, ((0, 2500, 40), (2500, 4000, 45), (4000, None, 15))),
+    ('veterinary-medicine', 3000, 'Fuente de prueba', 2025, ((0, 2500, 40), (2500, None, 60))),
 )
 
 # (ocupación, conocimientos). El front no los tiene.
 CONOCIMIENTOS_OCUPACIONES = (
     ('psychologist', ('Psicología', 'Terapia y orientación')),
     ('civil-engineer', ('Ingeniería y tecnología', 'Construcción')),
+    # F06: las demás ocupaciones de las seis carreras de la ruta.
+    ('environmental-engineer', ('Ingeniería y tecnología', 'Biología', 'Química')),
+    ('agricultural-engineer', ('Producción de alimentos', 'Biología', 'Ingeniería y tecnología')),
+    ('geologist', ('Física', 'Geografía', 'Química')),
+    ('data-analyst', ('Matemáticas', 'Informática y electrónica', 'Lengua materna')),
+    ('journalist', ('Comunicación y medios', 'Lengua materna', 'Historia')),
+    ('documentary-filmmaker', ('Comunicación y medios', 'Bellas artes', 'Historia')),
+    ('photographer', ('Bellas artes', 'Comunicación y medios')),
+    ('community-manager', ('Comunicación y medios', 'Ventas y marketing')),
+    ('translator', ('Idiomas extranjeros', 'Lengua materna')),
+    ('nurse', ('Medicina', 'Psicología', 'Atención al cliente')),
+    ('paramedic', ('Medicina', 'Seguridad pública')),
+    ('architect', ('Diseño', 'Construcción', 'Matemáticas')),
+    ('urban-planner', ('Geografía', 'Sociología', 'Diseño')),
+    ('machinery-operator', ('Mecánica', 'Seguridad pública')),
+    ('veterinarian', ('Medicina', 'Biología', 'Química')),
+    ('biologist', ('Biología', 'Química', 'Matemáticas')),
+    ('teacher', ('Educación y capacitación', 'Lengua materna', 'Psicología')),
+    ('sociologist', ('Sociología', 'Historia', 'Matemáticas')),
+    ('social-worker', ('Psicología', 'Sociología', 'Atención al cliente')),
 )
 
 # Listas propias de una actividad: (código, nombre, ((código, texto), ...)).

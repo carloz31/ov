@@ -22,7 +22,7 @@ def test_sin_resultado_hacen_falta_vistas_de_dos_tipos(cliente):
     assert reglas(vencer(cliente)) == set()
     # nursing y psychology son de tipo S; psychologist también, y la vista repetida no suma.
     for clase, codigo in (('carrera', 'nursing'), ('carrera', 'psychology'), ('ocupacion', 'psychologist'),
-                          ('ocupacion', 'psychologist'), ('carrera', 'veterinary-medicine')):
+                          ('ocupacion', 'psychologist')):
         assert not reglas(ver(cliente, clase, codigo)) & EXPLORAR
     assert actividades(cliente)['t-explorar'] == 'BLOQUEADA'
     assert reglas(ver(cliente, 'ocupacion', 'civil-engineer')) & EXPLORAR == {'R-t-explorar-ocupacion'}
@@ -32,7 +32,7 @@ def test_sin_resultado_hacen_falta_vistas_de_dos_tipos(cliente):
 def test_con_resultado_basta_una_vista_fuera_del_tipo_principal(cliente):
     ciclo(cliente)
     letra = resultado(cliente)['codigo_interes']['codigo'][0]
-    ocupaciones = pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/ocupaciones')
+    ocupaciones = pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/ocupaciones?limite=50')['items']
     propias = [o['codigo'] for o in ocupaciones if o['riasec'][0] == letra]
     ajena = next(o['codigo'] for o in ocupaciones if o['riasec'][0] != letra)
     assert len(propias) >= 2

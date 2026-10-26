@@ -366,8 +366,8 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
     assert (ganada['victoria'], ganada['practica'], ganada['aciertos'], ganada['destellos_restantes']) == (True, False, 5, 2)
     assert perdida['victoria'] is False and perdida['destellos_restantes'] == 0
     # B10: catálogo, vistas y favoritos. Sin resultado RIASEC, t-explorar pide vistas de dos tipos principales.
-    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras?riasec=s')] == [
-        'journalism', 'nursing', 'psychology']
+    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras?riasec=s')['items']] == [
+        'journalism', 'nursing', 'psychology', 'veterinary-medicine']
     pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': 'nursing', 'fecha_hora': FECHA})
     assert actividades(cliente)['t-explorar'] == 'BLOQUEADA'
     vista = pedir(cliente, 'POST', '/acciones/ver-ocupacion', {'cuenta': 'est-ana', 'ocupacion': 'civil-engineer',

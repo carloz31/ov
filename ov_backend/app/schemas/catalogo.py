@@ -74,3 +74,27 @@ class InstitucionDetalle(InstitucionResumen):
     descripcion: str | None
     pagina_web: str | None
     carreras: list[CarreraResumen]
+
+
+class PaginaCarreras(BaseModel):
+    total: int
+    """Cuántas carreras cumplen los filtros, sin paginar."""
+    items: list[CarreraResumen]
+
+
+class PaginaOcupaciones(BaseModel):
+    total: int
+    items: list[OcupacionResumen]
+
+
+class PaginaInstituciones(BaseModel):
+    total: int
+    items: list[InstitucionResumen]
+
+
+class Inesperada(BaseModel):
+    """«Llévame a un lugar inesperado» (HU-042): una carrera u ocupación que la cuenta no ha visto."""
+    codigo: str | None
+    """Nulo solo si el catálogo no tiene otra que la actual."""
+    revisitando: bool
+    """La cuenta ya las vio todas: se elige una ya vista."""

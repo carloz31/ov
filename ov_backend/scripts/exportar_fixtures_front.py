@@ -278,22 +278,28 @@ def _recorrer(cliente):
     fixtures['resolver-batalla-victoria'] = _pedir(cliente, 'POST', '/acciones/resolver-batalla', {
         **batalla, 'respuestas': responder([False, True, True, True, True, True])})
     fixtures['batallas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/batallas')
-    # B10: catálogo, vistas y favoritos. Una ocupación fuera del tipo de la carrera vista abre t-explorar, y los
-    # favoritos marcados aquí aparecen con `es_favorita` en el resultado RIASEC.
+    # B10: catálogo, vistas y favoritos. Una carrera fuera del tipo del resultado abre t-explorar (F06), y los
+    # favoritos marcados aquí aparecen con `es_favorita` en el resultado RIASEC. F06: listados paginados.
     catalogo = '/cuentas/est-ana/catalogo'
-    fixtures['catalogo-carreras'] = _pedir(cliente, 'GET', f'{catalogo}/carreras')
+    fixtures['catalogo-carreras'] = _pedir(cliente, 'GET', f'{catalogo}/carreras?limite=4')
     fixtures['catalogo-carrera-psychology'] = _pedir(cliente, 'GET', f'{catalogo}/carreras/psychology')
     fixtures['catalogo-ocupaciones-riasec'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones?riasec=SI')
     fixtures['catalogo-ocupacion-psychologist'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones/psychologist')
     fixtures['catalogo-instituciones'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones')
     fixtures['catalogo-institucion-t-uni'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones/t-uni')
-    _pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': 'nursing', 'fecha_hora': FECHA})
+    fixtures['catalogo-familias'] = _pedir(cliente, 'GET', f'{catalogo}/familias')
+    fixtures['catalogo-ubicaciones'] = _pedir(cliente, 'GET', f'{catalogo}/ubicaciones')
+    # Sin resultado todavía hacen falta dos tipos: una ocupación S y después una carrera R, que abre t-explorar.
+    # Una sola carrera vista, para no abrir aquí la insignia de familias ni cambiar los logros.
     fixtures['ver-ocupacion'] = _pedir(cliente, 'POST', '/acciones/ver-ocupacion', {
-        'cuenta': 'est-ana', 'ocupacion': 'civil-engineer', 'fecha_hora': FECHA})
+        'cuenta': 'est-ana', 'ocupacion': 'psychologist', 'fecha_hora': FECHA})
+    fixtures['ver-carrera'] = _pedir(cliente, 'POST', '/acciones/ver-carrera', {
+        'cuenta': 'est-ana', 'carrera': 'civil-engineering', 'fecha_hora': FECHA})
     for tipo, codigo in (('CARRERA', 'civil-engineering'), ('OCUPACION', 'geologist'), ('INSTITUCION', 't-uni')):
         fixtures['marcar-favorito'] = _pedir(cliente, 'POST', '/acciones/marcar-favorito', {
             'cuenta': 'est-ana', 'tipo': tipo, 'codigo': codigo, 'fecha_hora': FECHA})
     fixtures['favoritos'] = _pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')
+    fixtures['catalogo-carreras-favoritos'] = _pedir(cliente, 'GET', f'{catalogo}/carreras?favoritos=true')
     # B11: t-valores abre CONOCIMIENTO (dudas con sugerencias del evaluador falso) y t-explorar, REALIDAD. Con dos
     # planes listos para comparar se abre t-comparar.
     fixtures.update(_registro_con_seguimiento(cliente))
@@ -452,6 +458,15 @@ def _recorrer_apoderado(cliente):
     return fixtures
 
 
+def _recorrer_inesperada(cliente):
+    """F06 · HU-042: al final, para no cambiar los logros ni el avance ya exportados. La elección es al azar
+    entre las no vistas: se deja una sola carrera sin ver para que el fixture sea siempre el mismo."""
+    for carrera in ('nursing', 'environmental-engineering', 'journalism', 'psychology'):
+        _pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': carrera, 'fecha_hora': FECHA})
+    return {'catalogo-inesperada': _pedir(
+        cliente, 'GET', '/cuentas/est-ana/catalogo/carreras/inesperada?excluir=psychology')}
+
+
 def exportar_fixtures(destino: Path) -> list[Path]:
     """Exporta los fixtures de `ruta` en `destino/ruta/`, con nombres `ruta-*.json`.
 
@@ -476,6 +491,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
                     fixtures.update(_recorrer(cliente))
                     fixtures.update(_recorrer_perfil_plano(cliente))
                     fixtures.update(_recorrer_apoderado(cliente))
+                    fixtures.update(_recorrer_inesperada(cliente))
             finally:
                 aplicacion.state.motor_bd.dispose()
     finally:

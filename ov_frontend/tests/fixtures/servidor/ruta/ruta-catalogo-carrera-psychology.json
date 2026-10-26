@@ -31,6 +31,17 @@
   },
   "instituciones": [
     {
+      "codigo": "t-cusco-privada",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Universidad Privada del Cusco de Prueba",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "t-cusco",
+        "nombre": "Cusco de prueba"
+      }
+    },
+    {
       "codigo": "t-uni",
       "es_favorita": false,
       "gestion": "PUBLICA",

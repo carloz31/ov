@@ -1,0 +1,43 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "civil-engineering",
+      "tipo": "VISTA_CARRERA"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-batalla",
+          "requerido": 1,
+          "texto": null,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "SUPERA_BATALLA"
+        },
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": null,
+          "requerido": 1,
+          "texto": null,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "VISTA_CARRERA"
+        }
+      ],
+      "evaluador_especial": {
+        "cumplido": true,
+        "nombre": "vista_fuera_del_perfil"
+      },
+      "objetivo": {
+        "codigo": "t-explorar",
+        "nombre": "Registro de exploración"
+      },
+      "regla": "R-t-explorar-carrera",
+      "tipo_objetivo": "ACTIVIDAD"
+    }
+  ]
+}

@@ -1,35 +1,60 @@
-[
-  {
-    "codigo": "t-ffaa",
-    "es_favorita": false,
-    "gestion": "PUBLICA",
-    "nombre": "Escuela de Oficiales de Prueba",
-    "tipo": "FFAA_POLICIA",
-    "ubicacion": {
-      "codigo": "t-cusco",
-      "nombre": "Cusco de prueba"
+{
+  "items": [
+    {
+      "codigo": "t-cusco-privada",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Universidad Privada del Cusco de Prueba",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "t-cusco",
+        "nombre": "Cusco de prueba"
+      }
+    },
+    {
+      "codigo": "t-ffaa",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "Escuela de Oficiales de Prueba",
+      "tipo": "FFAA_POLICIA",
+      "ubicacion": {
+        "codigo": "t-cusco",
+        "nombre": "Cusco de prueba"
+      }
+    },
+    {
+      "codigo": "t-privada",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Escuela Superior Privada de Prueba",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "t-lima",
+        "nombre": "Lima de prueba"
+      }
+    },
+    {
+      "codigo": "t-tecnico",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "Instituto Técnico de Prueba",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "t-arequipa",
+        "nombre": "Arequipa de prueba"
+      }
+    },
+    {
+      "codigo": "t-uni",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "Universidad Nacional de Prueba",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "t-lima",
+        "nombre": "Lima de prueba"
+      }
     }
-  },
-  {
-    "codigo": "t-privada",
-    "es_favorita": false,
-    "gestion": "PRIVADA",
-    "nombre": "Escuela Superior Privada de Prueba",
-    "tipo": "UNIVERSIDAD",
-    "ubicacion": {
-      "codigo": "t-lima",
-      "nombre": "Lima de prueba"
-    }
-  },
-  {
-    "codigo": "t-uni",
-    "es_favorita": false,
-    "gestion": "PUBLICA",
-    "nombre": "Universidad Nacional de Prueba",
-    "tipo": "UNIVERSIDAD",
-    "ubicacion": {
-      "codigo": "t-lima",
-      "nombre": "Lima de prueba"
-    }
-  }
-]
+  ],
+  "total": 5
+}

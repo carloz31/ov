@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "codigo": "civil-engineering",
+      "es_favorita": true,
+      "familia": {
+        "codigo": "family-civil-engineering",
+        "nombre": "Ingeniería e infraestructura"
+      },
+      "nombre": "Ingeniería Civil",
+      "riasec": [
+        "R",
+        "I"
+      ]
+    }
+  ],
+  "total": 1
+}
