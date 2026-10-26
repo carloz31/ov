@@ -11,7 +11,27 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-explorar-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Miraste opciones que no estaban en tu perfil. Cuéntame qué encontraste."
+    },
+    {
+      "id": "t-explorar-sorpresa",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-explorar-sorpresa",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
   "mapa": {
     "x": 700,
     "y": 110,

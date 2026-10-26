@@ -4,10 +4,7 @@ import { Link } from 'react-router'
 import { Eye, Heart, Search, Star } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { useOccupationExplorationContext } from '@/context/occupationExplorationContext'
-import {
-  careerCatalog,
-  institutionCatalog,
-} from '@/data/catalog/careersAndInstitutions'
+import { careerCatalog, institutionCatalog } from '@/data/catalog/careersAndInstitutions'
 import { occupationCatalog } from '@/data/catalog/occupations'
 import { getInstitution, isAffine } from '@/features/discovery/lib/catalogSelectors'
 import { institutionTypeNames } from '@/features/discovery/lib/catalogDetails'
@@ -18,7 +15,14 @@ import { DiscoveryStage } from '@/features/discovery/components/DiscoveryStage'
 import { Parchment } from '@/components/student/Parchment'
 import { PendingNotice } from '@/components/student/PendingNotice'
 import { PlanCard } from '@/features/discovery/components/PlanCard'
-import { archivePlan, createPlanFromCareer, getOrderedPlans, getPlanCompleteness } from '@/features/discovery/lib/plans'
+import { FavoritosServidor } from '@/features/discovery/components/FavoritosServidor'
+import { useFavoritosCatalogo } from '@/features/discovery/hooks/useFavoritosCatalogo'
+import {
+  archivePlan,
+  createPlanFromCareer,
+  getOrderedPlans,
+  getPlanCompleteness,
+} from '@/features/discovery/lib/plans'
 
 export function StudentPlansView() {
   const focus = useReturnFocus()
@@ -30,6 +34,8 @@ export function StudentPlansView() {
   const active = context.decisionSheets.filter((s) => s.status !== 'archived')
   const first = [...active].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0]?.id
   const available = active.length < 3
+  // F06: en api, los favoritos del catálogo salen del servidor (solo lectura hasta F07a).
+  const { favoritosDelServidor, favoritos } = useFavoritosCatalogo()
   function move(index: number, direction: -1 | 1) {
     const ids = plans.map((p) => p.id),
       next = index + direction
@@ -103,91 +109,97 @@ export function StudentPlansView() {
               Explorar el catálogo
             </Link>
           </div>
-          <div className="sx-d-columns">
-            <section>
-              <h3>Carreras · {context.careerInterestIds.length}</h3>
-              {context.careerInterestIds.map((id) => {
-                const career = careerCatalog.find((c) => c.id === id)
-                const position = plans.findIndex((p) => p.sourceId === id)
-                return (
-                  career && (
-                    <div className="sx-d-favorite-row" key={id}>
-                      <Link to={discoveryPaths.career(id)}>{career.name}</Link>
-                      {position >= 0 ? (
-                        <span>Plan {'ABC'[position]}</span>
+          {favoritosDelServidor ? (
+            <FavoritosServidor favoritos={favoritos} planes={plans} disponible={available} />
+          ) : (
+            <div className="sx-d-columns">
+              <section>
+                <h3>Carreras · {context.careerInterestIds.length}</h3>
+                {context.careerInterestIds.map((id) => {
+                  const career = careerCatalog.find((c) => c.id === id)
+                  const position = plans.findIndex((p) => p.sourceId === id)
+                  return (
+                    career && (
+                      <div className="sx-d-favorite-row" key={id}>
+                        <Link to={discoveryPaths.career(id)}>{career.name}</Link>
+                        {position >= 0 ? (
+                          <span>Plan {'ABC'[position]}</span>
+                        ) : (
+                          available && (
+                            <button
+                              type="button"
+                              className="sx-d-action"
+                              onClick={() => createPlanFromCareer(career.name, career.id)}
+                            >
+                              Hacer mi plan {'ABC'[plans.length]}
+                            </button>
+                          )
+                        )}
+                      </div>
+                    )
+                  )
+                })}
+                {!context.careerInterestIds.length && (
+                  <p>
+                    Aún no guardas carreras.{' '}
+                    <Link to={appPaths.student.catalog.careers}>Explorar carreras</Link>
+                  </p>
+                )}
+              </section>
+              <section>
+                <h3>Ocupaciones · {occupations.length}</h3>
+                {occupations.map((o) => (
+                  <div key={o.id} className="sx-d-favorite-row">
+                    <Link to={discoveryPaths.occupation(o.id)}>{o.name}</Link>
+                    {discovery.research?.occupationId === o.id ? (
+                      <small>Investigación en curso</small>
+                    ) : (
+                      isAffine(o.id, discovery.revealedPages) && (
+                        <small>Afín a tu perfil · Demostración</small>
+                      )
+                    )}
+                  </div>
+                ))}
+                {!occupations.length && (
+                  <p>
+                    Aún no guardas ocupaciones.{' '}
+                    <Link to={appPaths.student.catalog.professions}>Explorar ocupaciones</Link>
+                  </p>
+                )}
+              </section>
+              <section>
+                <h3>Instituciones · {context.institutionInterestIds.length}</h3>
+                {context.institutionInterestIds.map((id) => {
+                  const legacy = institutionCatalog.find((i) => i.id === id),
+                    detail = getInstitution(id)
+                  return (
+                    <div key={id} className="sx-d-favorite-row">
+                      <Link
+                        to={legacy ? appPaths.student.catalog.institutions : discoveryPaths.institution(id)}
+                      >
+                        {legacy?.name ?? detail?.name ?? id}
+                      </Link>
+                      {legacy ? (
+                        <small>Categoría heredada · {legacy.type}</small>
                       ) : (
-                        available && (
-                          <button
-                            type="button"
-                            className="sx-d-action"
-                            onClick={() => createPlanFromCareer(career.name, career.id)}
-                          >
-                            Hacer mi plan {'ABC'[plans.length]}
-                          </button>
+                        detail && (
+                          <small>
+                            {institutionTypeNames[detail.type]} · {detail.location.department}
+                          </small>
                         )
                       )}
                     </div>
                   )
-                )
-              })}
-              {!context.careerInterestIds.length && (
-                <p>
-                  Aún no guardas carreras.{' '}
-                  <Link to={appPaths.student.catalog.careers}>Explorar carreras</Link>
-                </p>
-              )}
-            </section>
-            <section>
-              <h3>Ocupaciones · {occupations.length}</h3>
-              {occupations.map((o) => (
-                <div key={o.id} className="sx-d-favorite-row">
-                  <Link to={discoveryPaths.occupation(o.id)}>{o.name}</Link>
-                  {discovery.research?.occupationId === o.id ? (
-                    <small>Investigación en curso</small>
-                  ) : (
-                    isAffine(o.id, discovery.revealedPages) && <small>Afín a tu perfil · Demostración</small>
-                  )}
-                </div>
-              ))}
-              {!occupations.length && (
-                <p>
-                  Aún no guardas ocupaciones.{' '}
-                  <Link to={appPaths.student.catalog.professions}>Explorar ocupaciones</Link>
-                </p>
-              )}
-            </section>
-            <section>
-              <h3>Instituciones · {context.institutionInterestIds.length}</h3>
-              {context.institutionInterestIds.map((id) => {
-                const legacy = institutionCatalog.find((i) => i.id === id),
-                  detail = getInstitution(id)
-                return (
-                  <div key={id} className="sx-d-favorite-row">
-                    <Link
-                      to={legacy ? appPaths.student.catalog.institutions : discoveryPaths.institution(id)}
-                    >
-                      {legacy?.name ?? detail?.name ?? id}
-                    </Link>
-                    {legacy ? (
-                      <small>Categoría heredada · {legacy.type}</small>
-                    ) : (
-                      detail && (
-                        <small>
-                          {institutionTypeNames[detail.type]} · {detail.location.department}
-                        </small>
-                      )
-                    )}
-                  </div>
-                )
-              })}
-              {!context.institutionInterestIds.length && (
-                <p>
-                  Aún no guardas instituciones.{' '}
-                  <Link to={appPaths.student.catalog.institutions}>Explorar instituciones</Link>
-                </p>
-              )}
-            </section>
-          </div>
+                })}
+                {!context.institutionInterestIds.length && (
+                  <p>
+                    Aún no guardas instituciones.{' '}
+                    <Link to={appPaths.student.catalog.institutions}>Explorar instituciones</Link>
+                  </p>
+                )}
+              </section>
+            </div>
+          )}
         </Parchment>
       </div>
       <p className="sx-d-privacy">

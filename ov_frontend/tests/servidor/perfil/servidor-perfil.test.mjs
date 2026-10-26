@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { copia, elementos, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, elementos, esperar, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
 import { iniciarMara } from '../../soporte/servidor-mara-ayudas.mjs'
 
 // Ajuste pasaporte-perfil: la página lista para romper va destacada; aquí se vuelven a juntar en su orden.
@@ -125,7 +125,8 @@ test('antes de recibir resumen el perfil API no sustituye el nivel ni los logros
   assert.equal(paginas(p)[0].state, 'sealed')
 })
 
-test('planes y favoritos siguen locales en ambos modos y local conserva Alex y sus cálculos', async () => {
+// F06: en api, los favoritos del catálogo ya no son los del navegador: se piden al servidor (prueba aparte).
+test('los planes siguen locales en ambos modos, los favoritos solo en local, y local conserva Alex y sus cálculos', async () => {
   for (const api of [true, false]) {
     const app = api ? (await iniciarMara()).app : fixtureServidor({ api: false })
     const { contexto, perfil } = prepararPerfil(app)
@@ -137,7 +138,7 @@ test('planes y favoritos siguen locales en ambos modos y local conserva Alex y s
     const p = perfil()
     // Ajuste pasaporte-perfil: cada plan lleva su «% armado» y los favoritos van en chips con su conteo.
     assert.deepEqual(copia(p.plans), copia([{ ...plan, armado: 0 }]))
-    assert.equal(p.favoritos.carreras, 2)
+    assert.equal(p.favoritos.carreras, api ? 0 : 2)
     if (!api) {
       assert.equal(p.nombre, 'Alex')
       assert.equal(p.iniciales, 'AL')
@@ -187,4 +188,20 @@ test('la línea de ruta: un punto al inicio de cada tramo y el último, «Fin de
     [true, true, false, false],
   )
   assert.equal(elementos(puntos[1], (e) => e.props?.className === 'sx-route-marker').length, 1)
+})
+
+test('en api, los conteos de favoritos del perfil salen del servidor con el catálogo abierto', async () => {
+  const f = await iniciarMara()
+  f.app.fetch((r) => (r.url.endsWith('/favoritos') ? { body: jsonServidor('ruta/ruta-favoritos') } : f.servidor(r)))
+  const secciones = f.almacen.obtenerEstadoServidor().secciones
+  f.almacen.publicar({
+    secciones: { ...secciones, datos: [{ codigo: 'CATALOGO', nombre: 'Catálogo', estado: 'DISPONIBLE', bloqueo: [] }] },
+  })
+  const { perfil } = prepararPerfil(f.app)
+  const montado = f.app.mount(perfil, {})
+  montado.render()
+  await esperar()
+  assert.deepEqual(copia(montado.render().favoritos), { carreras: 1, ocupaciones: 1, instituciones: 1 })
+  assert.equal(f.app.requests.filter((r) => r.url.endsWith('/favoritos')).length, 1)
+  montado.unmount()
 })

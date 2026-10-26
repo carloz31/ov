@@ -15,12 +15,14 @@ import { createPlanFromCareer, getOrderedPlans } from '../lib/plans'
 import { filtrarPorAjuste, ordenarCarreras, resumirResultado } from '../lib/resultPage'
 import { useHelenaPages } from './useHelenaPages'
 import { modeloPartidaLlegada } from '../lib/partidaLlegada'
+import { useFavoritoServidor } from './useFavoritoServidor'
 
 export function useResultPage(pagina: string | undefined, resultadoRecibido?: ResultadoPublico) {
   const libro = useHelenaPages()
   const servidor = useEstadoServidor()
   const discovery = useDiscovery()
   const exploration = useExploration()
+  const favorito = useFavoritoServidor()
   const { search } = useLocation()
   const [guia, setGuia] = useState(() => new URLSearchParams(search).get('guia') === '1')
   useEffect(() => {
@@ -74,13 +76,26 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
     hayEmpate: remoto?.codigo_interes?.hay_empate,
     ejemplos: ejemplosDimension,
   })
+  // F06 (HU-026): en api, los favoritos del propio resultado son los del servidor y el corazón escribe allí;
+  // con el catálogo cerrado no hay corazones.
+  const favoritosServidor = modoApi && !resultadoRecibido
+  const catalogoAbierto =
+    !favoritosServidor || servidor.secciones.datos?.find((s) => s.codigo === 'CATALOGO')?.estado !== 'BLOQUEADA'
+  const ocupacionFavorita = (codigo: string) =>
+    !!remoto?.coincidencias?.some((c) => c.codigo === codigo && c.es_favorita)
+  const carreraFavorita = (codigo: string) =>
+    favoritosServidor
+      ? !!remoto?.carreras_recomendadas?.some((c) => c.codigo === codigo && c.es_favorita)
+      : exploration.careerInterestIds.includes(codigo)
   const ocupaciones = resumen.secciones.ocupaciones
     ? ocupacionesResultado(
         remoto,
         modoApi || !!resultadoRecibido,
         discovery.revealedPages,
         resumen.protagonistas.map((d) => d.code),
-        exploration.profiles.filter((p) => p.interested).map((p) => p.occupationId),
+        favoritosServidor
+          ? (remoto?.coincidencias ?? []).flatMap((c) => (c.es_favorita && c.codigo ? [c.codigo] : []))
+          : exploration.profiles.filter((p) => p.interested).map((p) => p.occupationId),
       )
     : []
   const elegida = ocupaciones.find((o) => o.clave === seleccion)
@@ -93,7 +108,7 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
           const indicePlan = planes.findIndex((p) => p.sourceId === c.codigo)
           return {
             ...c,
-            favorita: exploration.careerInterestIds.includes(c.codigo),
+            favorita: carreraFavorita(c.codigo),
             plan: indicePlan >= 0 ? ['A', 'B', 'C'][indicePlan] : undefined,
           }
         })
@@ -130,8 +145,20 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
     setSeleccion,
     carreras,
     siguientePlan: cantidadPlanes < 3 ? ['A', 'B', 'C'][cantidadPlanes] : undefined,
-    guardarOcupacion: toggleOccupationInterest,
-    guardarCarrera: toggleCareerInterest,
+    guardarOcupacion: !catalogoAbierto
+      ? undefined
+      : favoritosServidor
+        ? (codigo: string) => favorito.alternar('OCUPACION', codigo, !ocupacionFavorita(codigo))
+        : toggleOccupationInterest,
+    guardarCarrera: !catalogoAbierto
+      ? undefined
+      : favoritosServidor
+        ? (codigo: string) => favorito.alternar('CARRERA', codigo, !carreraFavorita(codigo))
+        : toggleCareerInterest,
+    ocupacionPendiente: (codigo: string) => favorito.pendiente('OCUPACION', codigo),
+    carreraPendiente: (codigo: string) => favorito.pendiente('CARRERA', codigo),
+    avisoFavorito: favorito.aviso,
+    cerrarAvisoFavorito: favorito.cerrarAviso,
     crearPlan: createPlanFromCareer,
   }
 }

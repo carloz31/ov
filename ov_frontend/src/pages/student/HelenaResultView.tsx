@@ -14,6 +14,7 @@ import { ResultNextSteps } from '@/features/discovery/components/ResultNextSteps
 import { FlatProfileNotice } from '@/features/discovery/components/FlatProfileNotice'
 import { ResultNotes } from '@/features/discovery/components/ResultNotes'
 import { PartidaLlegadaResult } from '@/features/discovery/components/PartidaLlegadaResult'
+import { AvisoFavorito } from '@/features/discovery/components/AvisoFavorito'
 import '@/features/discovery/styles/result-page.css'
 
 export function HelenaResultView() {
@@ -107,6 +108,7 @@ export function HelenaResultView() {
             seleccion={model.elegida?.clave}
             elegir={model.setSeleccion}
             guardar={model.guardarOcupacion}
+            pendiente={model.ocupacionPendiente}
           />
         )}
         {model.mostrarCarreras && (
@@ -116,11 +118,13 @@ export function HelenaResultView() {
             verTodas={() => model.setSeleccion(null)}
             siguientePlan={model.siguientePlan}
             guardar={model.guardarCarrera}
+            pendiente={model.carreraPendiente}
             crearPlan={model.crearPlan}
           />
         )}
         {resumen.secciones.siguientesPasos && <ResultNextSteps />}
         <ResultNotes tipo={resumen.tipoResultado} />
+        <AvisoFavorito aviso={model.avisoFavorito} onDismiss={model.cerrarAvisoFavorito} />
       </div>
     </DiscoveryStage>
   )

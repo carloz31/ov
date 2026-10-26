@@ -29,13 +29,16 @@ export function AffineOccupations({
   seleccion,
   elegir,
   guardar,
+  pendiente,
 }: {
   ocupaciones: OcupacionResultado[]
   ajuste: string
   filtrar: (ajuste: string) => void
   seleccion?: string
   elegir: (clave: string) => void
-  guardar: (codigo: string) => void
+  // F06: sin `guardar` (catálogo cerrado en api) no hay corazones.
+  guardar?: (codigo: string) => void
+  pendiente?: (codigo: string) => boolean
 }) {
   return (
     <Parchment className="sx-d-result-panel sx-d-result-occupations" aria-labelledby="ocupaciones-afines">
@@ -75,8 +78,13 @@ export function AffineOccupations({
               <span className="sx-d-result-fit" data-ajuste={o.ajuste}>
                 {o.ajuste}
               </span>
-              {o.codigo && (
-                <FavoriteButton selected={o.favorita} compact onToggle={() => guardar(o.codigo!)} />
+              {o.codigo && guardar && (
+                <FavoriteButton
+                  selected={o.favorita}
+                  compact
+                  pendiente={pendiente?.(o.codigo)}
+                  onToggle={() => guardar(o.codigo!)}
+                />
               )}
             </div>
             <h3>{o.titulo}</h3>

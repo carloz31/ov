@@ -10,13 +10,16 @@ export function RecommendedCareers({
   verTodas,
   siguientePlan,
   guardar,
+  pendiente,
   crearPlan,
 }: {
   carreras: CarreraResultado[]
   ocupacion?: string
   verTodas: () => void
   siguientePlan?: string
-  guardar: (codigo: string) => void
+  // F06: sin `guardar` (catálogo cerrado en api) no hay corazón.
+  guardar?: (codigo: string) => void
+  pendiente?: (codigo: string) => boolean
   crearPlan: (nombre: string, codigo: string) => void
 }) {
   return (
@@ -67,15 +70,19 @@ export function RecommendedCareers({
               </div>
             </div>
             <div className="sx-d-result-actions">
-              <button
-                type="button"
-                className="sx-d-action"
-                aria-pressed={c.favorita}
-                onClick={() => guardar(c.codigo)}
-              >
-                <Heart aria-hidden="true" fill={c.favorita ? 'currentColor' : 'none'} />
-                {c.favorita ? 'Favorita' : 'Guardar'}
-              </button>
+              {guardar && (
+                <button
+                  type="button"
+                  className="sx-d-action"
+                  aria-pressed={c.favorita}
+                  aria-busy={pendiente?.(c.codigo) || undefined}
+                  disabled={pendiente?.(c.codigo) || undefined}
+                  onClick={() => guardar(c.codigo)}
+                >
+                  <Heart aria-hidden="true" fill={c.favorita ? 'currentColor' : 'none'} />
+                  {c.favorita ? 'Favorita' : 'Guardar'}
+                </button>
+              )}
               {!c.plan && siguientePlan && (
                 <button
                   type="button"

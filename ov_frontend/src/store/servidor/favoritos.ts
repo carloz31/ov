@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from 'react'
 import * as apiFavoritos from '@/services/api/favoritos'
 import type { ClaseCatalogo } from '@/services/api/catalogo'
 import type { CoincidenciaPublica, FavoritosCuenta, RespuestaServidor, TipoFavorito } from '@/types/servidor'
@@ -46,7 +46,8 @@ function actualizarResultado(tipo: TipoFavorito, codigo: string, es_favorita: bo
 }
 
 // Los favoritos del catálogo para el perfil y Mis planes (hasta F07a): se piden al montar su vista, una vez por
-// sesión de cuenta; una marca confirmada los descarta para pedirlos de nuevo.
+// sesión de cuenta; una marca confirmada los descarta para pedirlos de nuevo. Sin efectos: el pedido sale de la
+// lectura del almacén, que en local (`activos` falso) no hace nada, porque el arnés local no tiene efectos.
 const favoritosCuenta = new Map<number, RespuestaServidor<FavoritosCuenta> | 'cargando'>()
 const oyentes = new Set<() => void>()
 const avisar = () => oyentes.forEach((oyente) => oyente())
@@ -56,16 +57,18 @@ const suscribir = (oyente: () => void) => {
     oyentes.delete(oyente)
   }
 }
-export function useFavoritosCuenta(activos: boolean): FavoritosCuenta | null {
-  const sesion = sesionServidor()
-  const actual = useSyncExternalStore(suscribir, () => favoritosCuenta.get(sesion))
-  useEffect(() => {
-    if (!activos || actual) return
+function leerFavoritos(sesion: number, activos: boolean) {
+  if (activos && !favoritosCuenta.has(sesion)) {
     favoritosCuenta.set(sesion, 'cargando')
     void consultarCuenta(apiFavoritos.obtenerFavoritos).then((respuesta) => {
       favoritosCuenta.set(sesion, respuesta)
       avisar()
     })
-  }, [activos, actual, sesion])
+  }
+  return favoritosCuenta.get(sesion)
+}
+export function useFavoritosCuenta(activos: boolean): FavoritosCuenta | null {
+  const sesion = sesionServidor()
+  const actual = useSyncExternalStore(suscribir, () => leerFavoritos(sesion, activos))
   return activos && actual && actual !== 'cargando' && actual.tipo === 'ok' ? actual.datos : null
 }

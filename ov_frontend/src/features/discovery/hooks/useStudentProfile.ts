@@ -14,6 +14,7 @@ import { paginasLibroApi } from '../lib/helenaPagesApi'
 import { getStudentAchievementGroups, titulosViaje, vitrinaPasaporte } from '../lib/passport'
 import { getOrderedPlans, getPlanCompleteness } from '../lib/plans'
 import { useProgresoNivel } from './useProgresoNivel'
+import { useFavoritosCatalogo } from './useFavoritosCatalogo'
 import type { RouteLineTramo } from '@/components/student/RouteLine'
 
 export function useStudentProfile() {
@@ -21,6 +22,7 @@ export function useStudentProfile() {
     journey = useJourney(),
     discovery = useDiscovery()
   const context = useOccupationExplorationContext()
+  const favoritosCatalogo = useFavoritosCatalogo()
   // Las insignias del pasaporte; el avance llega con el mapa (`avance`).
   useLogrosServidor()
   const servidor = useEstadoServidor()
@@ -105,10 +107,17 @@ export function useStudentProfile() {
     destacada,
     pages: pages.filter((p) => p !== destacada),
     plans,
-    favoritos: {
-      carreras: context.careerInterestIds.length,
-      ocupaciones: context.profiles.filter((p) => p.interested).length,
-      instituciones: context.institutionInterestIds.length,
-    },
+    // F06: en api, los conteos salen de los favoritos del servidor.
+    favoritos: favoritosCatalogo.favoritosDelServidor
+      ? {
+          carreras: favoritosCatalogo.favoritos?.carreras.length ?? 0,
+          ocupaciones: favoritosCatalogo.favoritos?.ocupaciones.length ?? 0,
+          instituciones: favoritosCatalogo.favoritos?.instituciones.length ?? 0,
+        }
+      : {
+          carreras: context.careerInterestIds.length,
+          ocupaciones: context.profiles.filter((p) => p.interested).length,
+          instituciones: context.institutionInterestIds.length,
+        },
   }
 }

@@ -3,7 +3,7 @@ import test from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter, Routes, Route } from 'react-router'
-import { copia, elementos, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, elementos, esperar, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
 import { iniciarMara } from '../../soporte/servidor-mara-ayudas.mjs'
 
 const codigos = (dimensiones) => Array.from(dimensiones, (d) => d.code)
@@ -153,8 +153,12 @@ test('filtros de ajuste usan las etiquetas remotas y Todas conserva el conjunto'
   }
 })
 
-test('hook filtra carreras por ocupación, guarda favoritos y respeta los tres planes locales', async () => {
+// F06 (HU-026): en api, los favoritos del resultado se guardan en el servidor y se ven al confirmarse.
+test('hook filtra carreras por ocupación, guarda favoritos en el servidor y respeta los tres planes locales', async () => {
   const f = await preparar()
+  f.app.fetch((r) =>
+    r.url.endsWith('-favorito') ? { body: { eventos_registrados: [], nuevos_desbloqueos: [] } } : f.servidor(r),
+  )
   const montado = f.app.mount(() => f.hook('intereses'))
   let m = montado.render()
   const ocupacion = m.ocupaciones[0]
@@ -162,10 +166,13 @@ test('hook filtra carreras por ocupación, guarda favoritos y respeta los tres p
   m = montado.render()
   assert.ok(m.carreras.every((c) => c.via.some((o) => o.codigo_onet === ocupacion.clave)))
   m.guardarOcupacion(ocupacion.codigo)
+  assert.equal(montado.render().ocupacionPendiente(ocupacion.codigo), true)
+  await esperar()
   assert.equal(montado.render().ocupaciones[0].favorita, true)
   m.setSeleccion(null)
   m = montado.render()
   m.guardarCarrera(m.carreras[0].codigo)
+  await esperar()
   assert.equal(montado.render().carreras[0].favorita, true)
   for (let i = 0; i < 3; i++) {
     m = montado.render()
@@ -176,7 +183,13 @@ test('hook filtra carreras por ocupación, guarda favoritos y respeta los tres p
   m = montado.render()
   assert.equal(m.siguientePlan, undefined)
   assert.equal(m.crearPlan('Otro', 'otro'), false)
-  assert.equal(f.app.requests.filter((r) => r.method !== 'GET').length, 0)
+  assert.deepEqual(
+    copia(f.app.requests.filter((r) => r.method !== 'GET').map((r) => [r.url, r.body.tipo])),
+    [
+      ['/api/acciones/marcar-favorito', 'OCUPACION'],
+      ['/api/acciones/marcar-favorito', 'CARRERA'],
+    ],
+  )
   montado.unmount()
 })
 
