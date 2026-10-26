@@ -282,3 +282,172 @@
     transform: none;
   }
 }
+/* Ajuste mochila: compartimento de voces (noche). */
+.sx-b-compartment.sx-d-dark .sx-b-compartment-heading p {
+  color: var(--sx-night-muted);
+}
+.sx-b-voz {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--sx-night-border);
+  border-radius: 16px;
+  background: var(--sx-night-raised);
+  color: var(--sx-parchment);
+}
+.sx-b-voz-autor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sx-b-voz-autor > span {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--sx-gold);
+  font-weight: 800;
+  color: #1f2733;
+}
+.sx-b-voz-autor > div {
+  flex: 1;
+  min-width: 0;
+}
+.sx-b-voz-autor strong {
+  font-size: 15px;
+}
+.sx-b-voz-autor p {
+  font-size: 12px;
+  color: var(--sx-night-muted);
+}
+.sx-b-voz .sx-b-estrella {
+  border-color: var(--sx-night-border);
+  background: transparent;
+  color: var(--sx-parchment);
+}
+.sx-b-voz .sx-b-estrella[aria-pressed='true'] {
+  border-color: var(--sx-gold);
+  color: var(--sx-gold);
+}
+.sx-b-voz h3 {
+  font-size: 16px;
+  font-weight: 800;
+}
+.sx-b-voz blockquote {
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sx-b-voz-regalo {
+  margin-top: auto;
+  font-size: 12px;
+  color: var(--sx-night-muted);
+}
+.sx-b-voz-regalo strong {
+  color: var(--sx-parchment);
+}
+.sx-b-voz footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sx-b-escuchar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: var(--sx-parchment);
+  font-weight: 700;
+  color: #1f2733;
+}
+.sx-b-escuchar:focus-visible,
+.sx-b-ir-central:focus-visible,
+.sx-b-voz-bloqueada h3 button:focus-visible {
+  outline: 2px solid var(--sx-gold);
+  outline-offset: 2px;
+}
+.sx-b-voz-bloqueada {
+  border-style: dashed;
+  background: color-mix(in srgb, var(--sx-night-raised) 70%, var(--sx-parchment) 6%);
+}
+.sx-b-voz-bloqueada .sx-b-voz-autor > span {
+  border: 1px solid var(--sx-gold);
+  background: transparent;
+  color: var(--sx-gold);
+}
+.sx-b-voz-bloqueada .sx-b-voice-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sx-gold);
+}
+.sx-b-voz-borrosa {
+  display: block;
+  width: 110px;
+  height: 9px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: var(--sx-night-muted);
+  opacity: 0.35;
+  filter: blur(1px);
+}
+.sx-b-voz-bloqueada h3 button {
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+/* El título abre el pop up de requisito desde toda la tarjeta; «Ir a la Central» queda encima. */
+.sx-b-voz-bloqueada h3 button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+}
+.sx-b-voz-bloqueada > p {
+  font-size: 13px;
+  color: var(--sx-night-muted);
+}
+.sx-b-voz-bloqueada .sx-b-requirement {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  background: color-mix(in srgb, var(--sx-parchment) 8%, transparent);
+}
+.sx-b-ir-central {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-weight: 700;
+  color: var(--sx-gold);
+}
+.sx-d-dark .sx-b-punteada {
+  border-color: var(--sx-night-border);
+}
+.sx-d-dark .sx-b-punteada h3 {
+  color: var(--sx-parchment);
+}
+.sx-d-dark .sx-b-punteada p {
+  color: var(--sx-night-muted);
+}
+.sx-d-dark .sx-b-punteada-icono {
+  border-color: var(--sx-night-border);
+  color: var(--sx-parchment);
+}
+.sx-d-dark .sx-b-primario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

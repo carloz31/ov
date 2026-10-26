@@ -111,3 +111,45 @@ test('sin resultados: la búsqueda que no encuentra nada ofrece «Limpiar filtro
   hook.render().setQuery('mitos y creencias')
   assert.deepEqual(copia(hook.render().gruposFichas.flatMap((g) => g.fichas.map((f) => f.id))), ['t-ficha'])
 })
+
+test('voces: abiertas, por descubrir con su llamado disponible y cierre con las que faltan', async () => {
+  const { app, model } = await mochila('final', {
+    testimonios: jsonServidor('ruta/ruta-testimonios-final'),
+    ruta: '/student/resources?kind=testimonial',
+  })
+  assert.deepEqual(
+    [model.voces.abiertas.length, model.voces.porDescubrir.length, model.voces.pendientes, model.vacio],
+    [1, 1, 2, false],
+  )
+  const { CompartimentoVoces } = app.load('src/features/backpack/components/CompartimentoVoces.tsx')
+  const arbol = app.mount(CompartimentoVoces, { model }).render()
+  assert.ok(texto(arbol).includes('1 de 4 voces'))
+  const abierta = elementos(arbol, (e) => e.type?.name === 'TarjetaTestimonio')[0].props
+  assert.deepEqual(copia([abierta.nombre, abierta.rol, abierta.regalo, abierta.nueva]), [
+    'Luis Mendoza',
+    'Paramédico/a · 5 años de experiencia',
+    'Caso de prueba',
+    false,
+  ])
+  const voz = elementos(arbol, (e) => e.type?.name === 'VozPorDescubrir')[0].props
+  assert.equal(voz.caso, 'Caso de prueba')
+  assert.ok(voz.pista && voz.hrefCaso.includes('punto='))
+  const cierre = elementos(arbol, (e) => e.type?.name === 'TarjetaPunteada')[0].props
+  assert.equal(cierre.titulo, 'Más voces se suman a la ciudad')
+  assert.ok(cierre.texto.startsWith('2 voces más esperan en llamados que aún no se abren.'))
+  // Las voces de llamados cerrados no se listan.
+  assert.equal(elementos(arbol, (e) => e.type?.name === 'VozPorDescubrir').length, 1)
+})
+
+test('voces: sin abiertas ni llamados disponibles, el compartimento vacío', async () => {
+  const { app, model } = await mochila('inicial', {
+    testimonios: jsonServidor('ruta/ruta-testimonios-inicial'),
+    ruta: '/student/resources?kind=testimonial',
+  })
+  assert.equal(model.vacio, true)
+  const { CompartimentoVoces } = app.load('src/features/backpack/components/CompartimentoVoces.tsx')
+  const vacia = elementos(app.mount(CompartimentoVoces, { model }).render(), (e) => e.type?.name === 'TarjetaPunteada')[0]
+    .props
+  assert.equal(vacia.titulo, 'Las voces llegan con los llamados')
+  assert.ok(vacia.texto.endsWith('Hay 4 voces en la ciudad.'))
+})

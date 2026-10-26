@@ -1,6 +1,7 @@
 import { useActividadesServidor, useFichasServidor } from '@/store/servidor/secciones'
 import { ciudadDisponible } from '@/lib/servidor/adaptadores'
 import { appPaths } from '@/routes/paths'
+import { cityCases } from '@/data/content/adventure'
 import { hrefActividad } from '@/features/discovery/lib/helenaPagesApi'
 import { agruparFichas } from '../lib/agruparFichas'
 import { filtrar, vocesListadas } from '../lib/compartimentos'
@@ -82,11 +83,17 @@ export function useBackpack() {
     vocesVisibles = filtrar([...voces.abiertas, ...voces.porDescubrir], criterio)
   const vacio = kind === 'sheet' ? !fichasObtenidas.length : !voces.abiertas.length && !voces.porDescubrir.length
   const sinResultados = !vacio && !(kind === 'sheet' ? fichasVisibles : vocesVisibles).length
-  // El drawer del llamado en la Central, sin pasar por el pop up de requisito.
-  const hrefCaso = (r: TravelResource) =>
+  // El llamado que regala la voz y el drawer de ese llamado en la Central, sin pasar por el pop up de requisito.
+  const casoVoz = (r: TravelResource) =>
     modoApi
-      ? r.servidor?.caso && hrefActividad(actividades.datos, r.servidor.caso.codigo)
-      : `${appPaths.student.exploration}?punto=${encodeURIComponent(casoLocal(r) ?? '')}`
+      ? {
+          titulo: r.servidor?.caso?.titulo,
+          href: r.servidor?.caso ? hrefActividad(actividades.datos, r.servidor.caso.codigo) : undefined,
+        }
+      : {
+          titulo: cityCases.find((c) => c.id === casoLocal(r))?.title,
+          href: `${appPaths.student.exploration}?punto=${encodeURIComponent(casoLocal(r) ?? '')}`,
+        }
   const centralAbierta = modoApi ? ciudadDisponible(actividades.datos) : cityPoints.some((p) => p.actionEnabled)
   function chooseKind(next: KindFilter) {
     setParams((current) => {
@@ -157,7 +164,7 @@ export function useBackpack() {
     vocesVisibles,
     vacio,
     sinResultados,
-    hrefCaso,
+    casoVoz,
     centralAbierta,
     cityPoints,
     chooseKind,

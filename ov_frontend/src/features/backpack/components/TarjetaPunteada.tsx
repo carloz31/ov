@@ -9,7 +9,7 @@ export function TarjetaPunteada({
   variante = 'cierre',
 }: {
   icono: ReactNode
-  titulo: string
+  titulo?: string
   texto: string
   accion?: ReactNode
   variante?: 'cierre' | 'vacio' | 'centrada'
@@ -20,7 +20,7 @@ export function TarjetaPunteada({
         {icono}
       </span>
       <div>
-        <h3>{titulo}</h3>
+        {titulo && <h3>{titulo}</h3>}
         <p>{texto}</p>
         {accion}
       </div>

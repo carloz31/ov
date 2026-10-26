@@ -100,23 +100,18 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
   )
 })
 
-test('la mochila abre el testimonio en el visor y registra su vista, sin «más voces» ni «llega pronto»', () => {
+// Ajuste mochila: la voz bloqueada se lista solo con su llamado disponible y su tarjeta abre el pop up de
+// requisito; las de llamados que aún no se abren se cuentan en la tarjeta de cierre.
+test('la mochila abre el testimonio en su pop up y registra su vista; sin «llega pronto»', () => {
   const hook = readFileSync('src/features/backpack/hooks/useBackpack.ts', 'utf8')
   assert.doesNotMatch(hook, /window\.open/)
   assert.match(hook, /if \(resource\.servidor\) void registrarVistaTestimonio\(resource\.id\)/)
-  assert.doesNotMatch(hook, /muestraMasVoces/)
   const vista = readFileSync('src/pages/student/StudentBackpackView.tsx', 'utf8')
-  assert.doesNotMatch(vista, /Más voces se suman a la ciudad/)
-  assert.doesNotMatch(
-    readFileSync('src/features/backpack/components/BackpackCard.tsx', 'utf8'),
-    /llega pronto/,
-  )
-  // Ajuste mochila: el testimonio abre su pop up; la ficha, el modal de ficha.
+  const voz = readFileSync('src/features/backpack/components/VozPorDescubrir.tsx', 'utf8')
+  assert.doesNotMatch(voz, /llega pronto|Misión disponible próximamente/)
+  assert.match(voz, /onClick=\{onRequisito\}/)
+  // El testimonio abre su pop up; la ficha, el modal de ficha.
   assert.match(vista, /resource=\{selected\?\.kind !== 'sheet' && selected && isUnlocked\(selected\) \? selected : undefined\}/)
-  // Bloqueado, la tarjeta no tiene acción: sin pop up de requisito.
-  const tarjeta = readFileSync('src/features/backpack/components/BackpackCard.tsx', 'utf8')
-  const servidor = tarjeta.slice(tarjeta.indexOf('function TestimonioServidor'))
-  assert.doesNotMatch(servidor, /onRequirement|<button/)
   // Abierto desde un cierre (`?ficha=`), también registra su vista.
   assert.match(
     hook,

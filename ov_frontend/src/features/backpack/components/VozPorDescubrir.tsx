@@ -1,26 +1,52 @@
-import { LockKeyhole } from 'lucide-react'
+import { Link } from 'react-router'
+import { ArrowRight, LockKeyhole } from 'lucide-react'
 
-// Testimonio bloqueado de la mochila: silueta difuminada, título, intriga y requisito (ajustes Central, 7).
-// La acción (ir a la Central o el pop up de requisito) la pone quien la usa.
+// Testimonio bloqueado cuyo llamado ya está disponible (ajuste mochila): candado, una línea borrosa en lugar del
+// nombre, título, pista y el llamado que hay que atender. La tarjeta abre el pop up de requisito; «Ir a la
+// Central» lleva directo al drawer del llamado.
 export function VozPorDescubrir({
   titulo,
-  intriga,
-  requisito,
+  pista,
+  caso,
+  hrefCaso,
+  onRequisito,
 }: {
   titulo: string
-  intriga: string
-  requisito: string
+  pista: string
+  caso?: string
+  hrefCaso?: string
+  onRequisito: () => void
 }) {
   return (
-    <>
-      <div className="sx-b-voice-mist" aria-hidden="true">
-        <span className="sx-b-silhouette" />
-        <LockKeyhole size={56} />
+    <article className="sx-b-voz sx-b-voz-bloqueada">
+      <div className="sx-b-voz-autor">
+        <span aria-hidden="true">
+          <LockKeyhole size={18} />
+        </span>
+        <div>
+          <p className="sx-b-voice-label">Una voz por descubrir</p>
+          <span className="sx-b-voz-borrosa" aria-hidden="true" />
+        </div>
       </div>
-      <p className="sx-b-voice-label">Una voz por descubrir</p>
-      <h3>{titulo}</h3>
-      {intriga && <p>{intriga}</p>}
-      <div className="sx-b-requirement">{requisito}</div>
-    </>
+      <h3>
+        <button type="button" onClick={onRequisito}>
+          {titulo}
+        </button>
+      </h3>
+      {pista && <p>{pista}</p>}
+      {caso && (
+        <div className="sx-b-requirement">
+          <p>
+            Atiende el llamado <strong>{caso}</strong> en la Central de Casos.
+          </p>
+          {hrefCaso && (
+            <Link to={hrefCaso} className="sx-b-ir-central">
+              Ir a la Central
+              <ArrowRight aria-hidden="true" size={16} />
+            </Link>
+          )}
+        </div>
+      )}
+    </article>
   )
 }
