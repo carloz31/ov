@@ -2,6 +2,16 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-25 · Ajuste pasaporte-perfil · Textos de condición en bloqueos y desbloqueos
+
+- **Dato:** cada condición trae `texto` (lo que pide, redactado en el servidor) también en `bloqueo.condiciones_faltantes` de actividades y secciones y en `nuevos_desbloqueos[].condiciones`.
+- **Dónde se mostraría:** el diálogo de Lumi ante algo cerrado, el drawer de una actividad bloqueada o el cierre de actividad.
+- **Opciones:**
+  1. Listar las condiciones faltantes con su texto bajo el mensaje de bloqueo.
+  2. Dejarlo solo en el pasaporte (modal de insignia y siguiente título), como hoy.
+- **Si no se muestra:** esas vistas siguen con el mensaje de bloqueo de la regla; el texto de cada condición solo se ve en el pasaporte y el perfil.
+- **Estado:** pendiente; ninguna vista lo pinta fuera del pasaporte por decisión del usuario al aprobar el ajuste.
+
 ## 2026-10-23 · F05 · «Hoy ya contaron tus 3 conversaciones» en el panel de amistad
 
 - **Dato:** `GET diario/amistad` trae `puntos`, `nivel` y `siguiente_en`, pero no cuántas escrituras contaron hoy (tope `TOPE_ENTRADAS_AMISTAD_DIA`).
@@ -158,7 +168,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   2. Junto a la comparación partida–llegada del libro de Helena.
   3. Solo en el panel de la orientadora (F10/F11).
 - **Si no se muestra:** el avance por temática solo existe en el servidor; el front no lo pide (no hay cliente).
-- **Estado:** pendiente, sin vista por decisión del usuario (F05), para un lote posterior. HU-075 queda parcial (nivel y afinidad).
+- **Estado:** pendiente, sin vista por decisión del usuario (F05), para un lote posterior. HU-075 queda parcial (nivel y afinidad). El ajuste pasaporte-perfil rediseñó el perfil y el pasaporte sin incluirlo: sigue sin vista.
 
 ## 2026-10-13 · B08 · Batallas, casos y testimonios
 

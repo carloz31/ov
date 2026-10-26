@@ -29,6 +29,7 @@ Spec: `docs/specs/ajuste-pasaporte-perfil.md`.
 - El downgrade completo de la base con `ruta` ahora se detiene en `0028` (grupos de insignia) en lugar de `0027`.
 - El reinicio de desarrollo guarda una vitrina antes de comprobar que todas las tablas de estado tienen filas.
 - `soporte_datos_ports.insignia_por_evento` asigna la primera página a la insignia que crea.
+- `tests/unit/arquitectura/test_clasificacion_tablas.py` clasifica `grupo_insignia` como catálogo e `insignia_vitrina` como estado.
 
 ## Frontend · pasaporte
 
@@ -49,3 +50,9 @@ Spec: `docs/specs/ajuste-pasaporte-perfil.md`.
 - Los chips de favoritos enlazan a la sección de favoritos de Mis planes (`/student/profile/decisions#sx-favorites`), la única vista de favoritos.
 - «% armado» de un plan = secciones completas de `getPlanCompleteness` sobre 4.
 - Pruebas adaptadas: perfil (`tests/servidor/perfil`: página destacada, ruta, planes con «% armado» y favoritos en chips), afinidad (el perfil ya no la muestra) y la de capítulos de `tests/local/aventura` (excepción nº 16).
+
+## Cierre
+
+- Excepción nº 16 al modo local congelado anotada en `ov_frontend/AGENTS.md`; `origen-de-datos.md` describe el pasaporte, los títulos y la vitrina en api.
+- Nuevo pendiente de interfaz: el `texto` de las condiciones en bloqueos y desbloqueos, sin vista fuera del pasaporte. «Avance por temática» (B09) sigue sin vista.
+- La spec queda en curso: cerrarla es decisión del usuario.
