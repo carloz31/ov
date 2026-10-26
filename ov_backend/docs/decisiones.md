@@ -1,1 +1,21 @@
 # Decisiones de la spec en curso
+
+- **Spec:** `ov_backend/docs/specs/ajuste-mochila.md`.
+- «Nueva» se apoya en un evento `VISTA_FICHA` por ficha (como `VISTA_TESTIMONIO`) y no en `Desbloqueo.visto`, que sigue significando «ya te avisamos»: el front marca todos los desbloqueos vistos al mostrar los toasts, y así ninguna ficha llegaría nueva a la mochila (decidido con el usuario).
+- Cambio de modelo aprobado: `ficha.tema` y `ficha.descripcion` (nullable) y el valor `VISTA_FICHA` de `TipoEventoUso`, al final del enumerado para que el CHECK de la migración 0030 coincida con el modelo.
+- `GET /fichas` y `GET /testimonios` siguen siendo listas, sin `total`: ya traen todos los de la audiencia (también bloqueados y de misiones opcionales), así que M es su largo (decidido con el usuario).
+- `contenido` de la ficha viaja completo en `GET /fichas` (solo obtenidas); aceptado para el alcance actual.
+- Las batallas siguen con `ContenidoEstado` para sus fichas; solo `GET /fichas` usa `FichaCuenta`.
+- `ver-ficha` responde 404 para una ficha de otra audiencia y 409 si está bloqueada; registra el evento una sola vez.
+- `t-testimonio-2` pide `SUPERA_CASO t-caso` y además `COMPLETA_ACTIVIDAD t-proyecto`, en lugar de superar dos veces el caso: SUPERA_CASO se registra una sola vez por cuenta y referencia, así que «×2» nunca se cumpliría. Atarlo a otro caso disponible exigía un segundo caso nuevo; su tarjeta apunta a `t-caso`, ya superado una vez.
+- `t-caso-2` («La traductora apurada») es un CASO opcional de la Ciudad que abre `t-proyecto` (el recorrido no lo alcanza): da `t-testimonio-3` y `t-testimonio-4`. Suma una actividad a la Ciudad, así que el total de la afinidad pasa de 4 a 5 en `ruta`; usa la configuración y el contenido de `forest-fire` como dato de prueba.
+- Fichas de prueba: se conservan los títulos de `t-ficha` y `t-ficha-2` (los usan las batallas); el contenido markdown y los temas son nuevos.
+- En local, abrir el modal de ficha la marca leída (`journey.readResourceIds`) y visitada, en lugar del botón «Leí la ficha»: las recompensas locales de desafío leen esas lecturas.
+- El parámetro `modo` de `abrirRecurso` se conserva por compatibilidad, pero el modal ya no lo distingue.
+- El nombre de la actividad de origen es enlace solo en la mochila (`enlazarActividad`); desde el host global va como texto (pedido del usuario).
+- La tarjeta de ficha y la voz por descubrir son clicables enteras con un enlace o botón cuyo `::after` cubre la tarjeta, y la estrella o «Ir a la Central» quedan encima; así no hay un botón dentro de un enlace (HTML inválido), con el mismo comportamiento que pide el texto.
+- El modal de ficha no muestra «Fuente:» de los recursos del catálogo local: el boceto no la incluye.
+- «Limpiar filtros» ya no vuelve a la pestaña de fichas: deja la pestaña actual.
+- Estado «sin resultados» con «Ninguna ficha/voz coincide con tu búsqueda» y «Limpiar filtros» (pedido del usuario al aprobar el plan).
+- El botón «Ir al mapa» del vacío de fichas va a `appPaths.student.exploration`, como dice el texto.
+- Sin dependencias nuevas: `ResourceText` amplía su lector de markdown (`###`, listas, citas, enlaces https).
