@@ -1339,9 +1339,10 @@ textarea.sx-d-input {
 .sx-route-track {
   display: flex;
   margin: 14px 0 0;
-  padding: 0 12px 34px 6px;
+  padding: 0 36px 34px;
   list-style: none;
 }
+/* Cada tramo va de su punto de inicio (a la izquierda) al siguiente; el último punto es «Fin del viaje». */
 .sx-route-tramo {
   position: relative;
   flex: 1;
@@ -1363,20 +1364,15 @@ textarea.sx-d-input {
 .sx-route-fill {
   background: var(--sx-gold);
 }
-.sx-route-tramo:first-child::after {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: -6px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--sx-gold);
+.sx-route-end {
+  position: relative;
+  flex: 0 0 0;
+  height: 22px;
 }
 .sx-route-marker {
   position: absolute;
   top: 1px;
-  z-index: 1;
+  z-index: 2;
   width: 20px;
   height: 20px;
   transform: translateX(-50%);
@@ -1388,7 +1384,7 @@ textarea.sx-d-input {
 .sx-route-milestone {
   position: absolute;
   top: 0;
-  right: -11px;
+  left: -11px;
   z-index: 1;
   display: grid;
   place-items: center;
@@ -1399,16 +1395,23 @@ textarea.sx-d-input {
   background: var(--sx-night-raised);
   color: var(--sx-night-muted);
 }
-[data-state='COMPLETO'] > .sx-route-milestone {
+.sx-route-milestone[data-reached='true'] {
   border: 2px solid var(--sx-gold);
   background: var(--sx-gold);
   color: var(--sx-parchment-ink);
 }
+.sx-route-milestone[data-first='true'][data-reached='true'] {
+  top: 3px;
+  left: -8px;
+  width: 16px;
+  height: 16px;
+}
 .sx-route-name {
   position: absolute;
   top: 30px;
-  right: 0;
-  transform: translateX(50%);
+  left: 0;
+  transform: translateX(-50%);
+  width: max-content;
   max-width: 120px;
   text-align: center;
   font-size: 12px;
@@ -1419,7 +1422,7 @@ textarea.sx-d-input {
   color: var(--sx-gold);
   font-weight: 700;
 }
-[data-state='ACTUAL'] > .sx-route-name {
+.sx-route-tramo[data-state='ACTUAL'] > .sx-route-name {
   color: var(--sx-night-text);
   font-weight: 800;
 }
@@ -1622,8 +1625,11 @@ textarea.sx-d-input {
   .sx-d-showcase {
     flex-basis: 100%;
   }
+  .sx-route-track {
+    padding: 0 28px 34px;
+  }
   .sx-route-name {
-    max-width: 72px;
+    max-width: 64px;
     font-size: 11px;
   }
 }

@@ -168,3 +168,23 @@ test('planes y favoritos siguen locales en ambos modos y local conserva Alex y s
     }
   }
 })
+
+test('la línea de ruta: un punto al inicio de cada tramo y el último, «Fin del viaje»', () => {
+  const app = fixtureServidor()
+  const { RouteLine } = app.load('src/components/student/RouteLine.tsx')
+  // Con T1 abierto: Inicio completo, Camino actual, Decisión pendiente.
+  const avance = jsonServidor('ruta/ruta-avance-t1')
+  const tree = RouteLine({ tramos: avance.tramos, ...avance.requeridas })
+  const puntos = elementos(tree, (e) => e.type === 'li')
+  const nombre = (li) => elementos(li, (e) => e.props?.className === 'sx-route-name')[0]
+  const textoDe = (n) => [n.props.children].flat().filter((c) => typeof c === 'string').join('')
+  assert.deepEqual(
+    puntos.map((li) => textoDe(nombre(li))),
+    ['Inicio', 'Camino', 'Decisión', 'Fin del viaje'],
+  )
+  assert.deepEqual(
+    puntos.map((li) => elementos(li, (e) => e.props?.className === 'sx-route-milestone')[0].props['data-reached']),
+    [true, true, false, false],
+  )
+  assert.equal(elementos(puntos[1], (e) => e.props?.className === 'sx-route-marker').length, 1)
+})
