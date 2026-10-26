@@ -12,6 +12,15 @@ import {
   elementos,
 } from '../../soporte/servidor-ayudas.mjs'
 
+const texto = (n) =>
+  Array.isArray(n)
+    ? n.map(texto).join('')
+    : typeof n === 'string' || typeof n === 'number'
+      ? String(n)
+      : n?.props
+        ? texto(n.props.children)
+        : ''
+
 // F00: la actividad informativa de la ruta mínima, resuelta por su contenido.
 const actividadRuta = (app, codigo = 't-inicio') =>
   app
@@ -374,18 +383,17 @@ test('leer una ficha y pasar una diapositiva no las obtiene ni finaliza en API',
     false,
   )
   player.unmount()
-  // F04d: la ficha se lee en el visor de la mochila.
-  const { VisorRecurso } = app.load('src/features/backpack/components/VisorRecurso.tsx')
+  // Ajuste mochila: la ficha se lee en el modal de ficha, sin «Leí la ficha»; abrirla no la obtiene.
+  const { FichaModal } = app.load('src/features/backpack/components/FichaModal.tsx')
   const { recursoDesdeCatalogo } = app.load('src/features/backpack/lib/travelerResources.ts')
-  const visor = app.mount(VisorRecurso, { resource: recursoDesdeCatalogo('ficha-mitos'), onClose() {} })
-  const leer = elementos(
-    visor.render(),
-    (e) => e.type?.displayName !== 'Badge' && String(e.props?.children).includes('Leí la ficha'),
-  )[0]
-  assert.ok(leer)
-  leer.props.onClick()
-  assert.ok(store.getJourneySnapshot().readResourceIds.includes('ficha-mitos'))
+  const visor = app.mount(FichaModal, { abierto: true, resource: recursoDesdeCatalogo('ficha-mitos'), onClose() {} })
+  assert.ok(!texto(visor.render()).includes('Leí la ficha'))
+  await esperar()
   assert.equal(store.getJourneySnapshot().resources.length, 0)
+  assert.equal(
+    app.requests.some((r) => r.url === '/api/acciones/completar-actividad'),
+    false,
+  )
   visor.unmount()
 })
 

@@ -11,18 +11,9 @@ import type { TravelResource } from '../lib/travelerResources'
 
 const kindLabels = { sheet: 'Ficha', testimonial: 'Testimonio', interview: 'Entrevista' }
 
-// F04d: la única presentación de una ficha. La mochila lo abre en modo `mochila`; la batalla, en modo
-// `repaso`, sin el badge de desbloqueo ni «Leí la ficha» (los favoritos se mantienen).
-export function VisorRecurso({
-  resource,
-  onClose,
-  modo = 'mochila',
-}: {
-  resource?: TravelResource
-  onClose: () => void
-  modo?: 'mochila' | 'repaso'
-}) {
-  const { leida, marcarLeida, favorito, alternarFavorito } = useVisorRecurso(resource)
+// El pop up de testimonio de la mochila (F04). Las fichas se abren en `FichaModal` (ajuste mochila).
+export function VisorRecurso({ resource, onClose }: { resource?: TravelResource; onClose: () => void }) {
+  const { favorito, alternarFavorito } = useVisorRecurso(resource)
   const abierto = Boolean(resource)
   // Mientras está abierto, la ficha tiene prioridad sobre los avisos automáticos de Lumi.
   useEffect(() => (abierto ? registrarFichaEnPantalla() : undefined), [abierto])
@@ -36,12 +27,10 @@ export function VisorRecurso({
       {resource && (
         <DialogContent className="resource-dialog max-w-4xl bg-[#fffdf7] p-0 md:p-0">
           <DialogHeader className="mb-0 border-b border-[#e4e0cb] p-6 pr-16 sm:p-7 sm:pr-16">
-            {modo === 'mochila' && (
-              <Badge className="mb-2 w-fit" variant="success">
-                <Check className="size-3" /> {kindLabels[resource.kind]}{' '}
-                {resource.kind === 'testimonial' ? 'desbloqueado' : 'desbloqueada'}
-              </Badge>
-            )}
+            <Badge className="mb-2 w-fit" variant="success">
+              <Check className="size-3" /> {kindLabels[resource.kind]}{' '}
+              {resource.kind === 'testimonial' ? 'desbloqueado' : 'desbloqueada'}
+            </Badge>
             <DialogTitle className="text-[#304b3d]">{resource.title}</DialogTitle>
             {resource.author && (
               <p className="text-xs font-semibold text-[#7c805d]">
@@ -53,12 +42,6 @@ export function VisorRecurso({
           </DialogHeader>
           <div className="p-6 sm:p-7">
             <ResourceContent resource={resource} />
-            {modo === 'mochila' && resource.kind === 'sheet' && resource.content && (
-              <Button variant="outline" disabled={leida} onClick={marcarLeida}>
-                <Check size={18} />
-                {leida ? 'Ficha leída' : 'Leí la ficha'}
-              </Button>
-            )}
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e4e0cb] bg-[#f4f3e8] px-6 py-4">
             <Button variant="outline" size="sm" aria-pressed={favorito} onClick={alternarFavorito}>

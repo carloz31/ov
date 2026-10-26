@@ -27,17 +27,16 @@ test('una diapositiva con más de un recurso no pasa la validación; los conteni
   )
 })
 
-test('en modo repaso el visor oculta el badge y «Leí la ficha», y conserva los favoritos', () => {
+// Ajuste mochila: un solo modal de ficha, sin badge ni «Leí la ficha», con favoritos en el pie.
+test('el modal de ficha no tiene badge ni «Leí la ficha» y conserva los favoritos', () => {
   const app = fixtureServidor()
-  const { VisorRecurso } = app.load('src/features/backpack/components/VisorRecurso.tsx')
+  const { FichaModal } = app.load('src/features/backpack/components/FichaModal.tsx')
   const { recursoDesdeCatalogo } = app.load('src/features/backpack/lib/travelerResources.ts')
   const resource = recursoDesdeCatalogo('t-ficha')
-  const mochila = texto(app.mount(VisorRecurso, { resource, onClose() {} }).render())
-  assert.ok(mochila.includes('desbloqueada') && mochila.includes('Leí la ficha'))
-  assert.ok(mochila.includes('Agregar a favoritos'))
-  const repaso = texto(app.mount(VisorRecurso, { resource, modo: 'repaso', onClose() {} }).render())
-  assert.ok(!repaso.includes('desbloqueada') && !repaso.includes('Leí la ficha') && !repaso.includes('Ficha leída'))
-  assert.ok(repaso.includes('Agregar a favoritos') && repaso.includes(resource.title))
+  const modal = texto(app.mount(FichaModal, { abierto: true, resource, onClose() {} }).render())
+  assert.ok(!modal.includes('desbloqueada') && !modal.includes('Leí la ficha') && !modal.includes('Ficha leída'))
+  assert.ok(modal.includes('Agregar a favoritos') && modal.includes(resource.title))
+  assert.ok(modal.includes('Las favoritas aparecen primero cuando armes tus planes.'))
 })
 
 test('los recursos del catálogo se abren por código, también los que no son fichas', () => {
@@ -65,12 +64,18 @@ test('en api, la mochila lista las fichas de la cuenta en el servidor, disponibl
   assert.deepEqual(copia(inicial.map((r) => [r.id, r.title])), [
     ['t-ficha', 'Ficha de prueba'],
     ['t-ficha-2', 'Segunda ficha de prueba'],
+    ['t-ficha-3', 'Carrera, ocupación e institución'],
   ])
-  assert.deepEqual(copia(inicial.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [false, false])
+  assert.deepEqual(copia(inicial.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [false, false, false])
   const final = fichas('final')
-  assert.deepEqual(copia(final.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [true, true])
-  // El contenido sale del catálogo del front, buscado por código.
-  assert.ok(final[0].content)
+  assert.deepEqual(copia(final.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [true, true, false])
+  // Ajuste mochila: el contenido, el tema y el origen de una ficha obtenida salen del servidor.
+  assert.ok(final[0].content.startsWith('Muchas decisiones'))
+  assert.deepEqual(copia([final[0].ficha.tema, final[0].ficha.actividad.codigo, final[0].ficha.tramo.numero]), [
+    'Mitos y creencias',
+    't-inicio',
+    1,
+  ])
 })
 
 test('?ficha= de una ficha bloqueada abre su pop up de requisito; disponible, el visor', async () => {
@@ -100,14 +105,13 @@ test('?ficha= de una ficha bloqueada abre su pop up de requisito; disponible, el
   assert.equal(disponible.isUnlocked(disponible.selected), true)
 })
 
-test('el visor muestra el contenido, la fuente, el enlace y el aviso de lo pendiente (antes en el drawer de fichas)', () => {
+test('el modal muestra el contenido, el enlace y el aviso de lo pendiente (antes en el drawer de fichas)', () => {
   const app = fixtureServidor()
-  const { VisorRecurso } = app.load('src/features/backpack/components/VisorRecurso.tsx')
+  const { FichaModal } = app.load('src/features/backpack/components/FichaModal.tsx')
   const { recursoDesdeCatalogo, recursoDeFicha } = app.load('src/features/backpack/lib/travelerResources.ts')
-  const dibujar = (resource) => app.mount(VisorRecurso, { resource, onClose() {} }).render()
+  const dibujar = (resource) => app.mount(FichaModal, { abierto: true, resource, onClose() {} }).render()
   const ficha = dibujar(recursoDesdeCatalogo('ficha-mitos'))
   assert.ok(texto(ficha).includes('Mitos y realidades del futuro profesional'))
-  assert.ok(texto(ficha).includes('Fuente:'))
   // El contenido lo dibuja ResourceContent, el mismo de la mochila.
   const { ResourceContent } = app.load('src/features/backpack/components/ResourceContent.tsx')
   const contenido = (resource) => app.mount(ResourceContent, { resource }).render()

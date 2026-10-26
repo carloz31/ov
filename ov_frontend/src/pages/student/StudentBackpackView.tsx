@@ -10,6 +10,7 @@ import '@/styles/student/resources.css'
 import '@/features/backpack/styles/backpack.css'
 import { BackpackCard } from '@/features/backpack/components/BackpackCard'
 import { VisorRecurso } from '@/features/backpack/components/VisorRecurso'
+import { FichaModal } from '@/features/backpack/components/FichaModal'
 import { RequisitoRecurso } from '@/features/backpack/components/RequisitoRecurso'
 const kinds = [
   { id: 'sheet', label: 'Fichas' },
@@ -173,7 +174,13 @@ function StudentBackpackView() {
         Las estrellas son tuyas: guarda lo que quieras encontrar rápido cuando armes tus planes.
       </p>
       <VisorRecurso
-        resource={selected && isUnlocked(selected) ? selected : undefined}
+        resource={selected?.kind !== 'sheet' && selected && isUnlocked(selected) ? selected : undefined}
+        onClose={() => setSelectedId(null)}
+      />
+      <FichaModal
+        abierto={selected?.kind === 'sheet' && isUnlocked(selected)}
+        resource={selected}
+        enlazarActividad
         onClose={() => setSelectedId(null)}
       />
       {mostrarRequisito && (
