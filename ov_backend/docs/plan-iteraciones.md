@@ -345,7 +345,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 | F03 | Instrumentos y libro de Helena · **Implementado** | 022–024, 027, 094, 095 | F02 | B06, B07, F5 recarga | Libro: Revelar, perfil plano, comparación partida–llegada |
 | F04 | Batallas, casos y testimonios · **Implementado** | 017, 041, 051–056 | F00 | B08, B2 testimonios, F3 testimonios, F4 íconos | Testimonios (vista nueva o en mochila); Central de Casos |
 | F05 | Diario, pregunta del día y check-in · **Implementado** | 028–033, 035, 036, 075 | F01 | B09, B2 diario, F4 señal | Diario; cierre de actividad; pasaporte |
-| F06 | Catálogo y favoritos | 026, 037–040 | F03 | — | Catálogo y detalles |
+| F06 | Catálogo y favoritos · **Implementado** | 026, 037–040, 042 | F03 | B11 `gestion`, F2 hoja de vida, F4 ocupaciones sin código | Catálogo y detalles |
 | F07a | Planes: tarjeta, orden y primeras secciones | 043, 044, 047, 048, 050, 098, 099, 109 | F02, F06 | B11 (parte) | Mis planes: lista A/B/C, estados por sección, POR_QUE, CONOCIMIENTO con dudas |
 | F07b | Planes: realidad, pasos y actividades que los citan | 045, 046, 097, 110 | F07a | B11 | REALIDAD con presupuesto, PASOS con sugerencias, medidores |
 | F08 | Familia: estudiante y apoderado | 066–071, 078–080 | F05, F07b | B12, B17 hijos, AP-F3 (×4), B01 fichas apoderado, B2 conversaciones | Familia del estudiante; portal del apoderado |
@@ -408,7 +408,8 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Pantallas a decidir:** aviso «Lumi te dejó una pregunta en tu diario» en el cierre (no existe); estado «Lumi está escribiendo…» al abrir una personalizada; dónde va la pregunta del día dentro del diario; dónde se ven evolución, temáticas y afinidad.
 - **Ajustes al backend posibles:** si el check-in al ingresar necesita saber «ya hizo el de hoy» sin traer la serie, un campo en el resumen.
 
-#### F06 · Catálogo y favoritos
+#### F06 · Catálogo y favoritos · **Implementado**
+- **Quedó:** listados paginados con filtro de favoritos, opciones de filtro y lugar inesperado en el servidor (HU-042, que se implementa aquí); en api, catálogo, detalles, vistas y favoritos (también los del resultado RIASEC, Mis planes y el perfil) del servidor. «Explorando familias» se retiró del detalle de carrera en api (la cubre `t-ins-familias`). Lo que el catálogo local muestra y el servidor no entrega (barras RIASEC, dirección, ingresos por ámbito y edad, duración en la tarjeta) queda en `pendientes-interfaz.md`.
 - **Hace:** búsqueda y detalle de carreras, ocupaciones e instituciones desde el servidor (filtro RIASEC por combinación), favoritos en el servidor, eventos de vista (que abren `t-explorar`), `gestion` de la institución. La presentación (imágenes, colores, videos) sigue en el front, buscada por código.
 - **Contenidos:** `t_explorar`.
 - **Riesgo:** el detalle del front muestra cosas que el backend quizá no tiene (o al revés). El plan debe cruzar campo por campo el detalle actual con la respuesta de `catalogo/*`.

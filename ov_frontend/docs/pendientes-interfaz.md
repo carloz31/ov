@@ -2,6 +2,20 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-26 · F06 · Datos del catálogo local que el servidor no entrega
+
+- **Dato:** el catálogo local muestra, y el servidor no entrega:
+  - en la ocupación, `interestScores` (las seis barras RIASEC);
+  - en la institución, dirección, distrito y provincia (el servidor tiene `ubicacion` con código y nombre);
+  - en la carrera, ingresos por ámbito (Lima, nacional) y por edad (jóvenes, adultos) con su ranking (el servidor tiene `ingreso` con promedio, fuente, año y tramos con porcentaje);
+  - en la tarjeta de carrera de la lista, la duración y la descripción (`CarreraResumen` no las trae; el detalle sí).
+- **Dónde se mostraría:** detalle de ocupación («A qué tipo de persona le suele atraer»), detalle de institución («Dónde queda»), detalle de carrera («Cuánto se gana») y tarjetas del catálogo de carreras.
+- **Opciones:**
+  1. Agregar esos campos al backend (puntajes O*NET por dimensión, dirección, ingresos por ámbito y edad, duración en el resumen).
+  2. Dejar las vistas de api con lo que hoy entrega el servidor.
+- **Si no se muestra:** en api, la ocupación muestra sus sellos sin barras, la institución solo su ubicación, la carrera su ingreso promedio con tramos y la tarjeta de carrera, nombre, familia y sellos. En local no cambia.
+- **Estado:** pendiente de decisión del usuario.
+
 ## 2026-10-25 · Ajuste pasaporte-perfil · Textos de condición en bloqueos y desbloqueos
 
 - **Dato:** cada condición trae `texto` (lo que pide, redactado en el servidor) también en `bloqueo.condiciones_faltantes` de actividades y secciones y en `nuevos_desbloqueos[].condiciones`.
@@ -49,7 +63,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se muestra:** hoja de vida del paso Problema (`ProfessionalResume`).
 - **Opciones:** completar esas ocupaciones en `datos/fijos.py`; que el backend entregue un estado «ficha en preparación»; dejarlo así.
 - **Si no se muestra:** en api, una sección vacía no se pinta (queda el nombre, la inicial y la ocupación). En local no cambia.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** resuelto en F06 con la primera opción: `datos/fijos.py` completa la descripción, los lugares de trabajo y las habilidades de las ocupaciones de las seis carreras, y `ruta` sus conocimientos. Las que siguen sin texto lo tendrán con la carga real.
 
 ## 2026-10-22 · F03 · «Sorpresas nuevas» en la línea de actividades del inicio
 
@@ -157,7 +171,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** la sección Planes del estudiante (tarjeta por secciones, medidores, orden A/B/C, aviso de misma familia), el detalle de institución del catálogo (pública o privada) y las actividades 4.5 y 5.1 (`t-comparar` y `t-proyecto` en `ruta`), que citan los planes, el relato del plan A, sus pasos y la opción inicial.
 - **Opciones:** conectar Planes en su lote F con la tarjeta v4; mantener los planes locales actuales (`DecisionSheet`), que no coinciden con este modelo, hasta diseñar la vista.
 - **Si no se muestra:** en modo `api` los planes, la opción inicial y los requisitos de `t-comparar` y `t-proyecto` existen solo en el servidor.
-- **Estado:** pendiente del lote F de planes; no se toca la interfaz en B11.
+- **Estado:** pendiente del lote F de planes (F07a/F07b), salvo `gestion`, que desde F06 se ve en las tarjetas y el detalle de institución del catálogo en api («Universidad · Pública · Lima»).
 
 ## 2026-10-14 · B09 · Avance por temática
 
@@ -395,7 +409,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** tarjetas de carreras del resultado completo de intereses.
 - **Opciones:** incorporar duración validada al contrato en su iteración; mantenerla solo en el detalle local que ya dispone de ese catálogo; omitirla del resultado completo.
 - **Si no se muestra:** las tarjetas conservan nombre, familia, vías, favorito y plan, sin atribuir duración a la respuesta remota ni copiar años de demostración.
-- **Estado:** resuelto por instrucción directa del usuario en la corrección de F4 del 9 de octubre: se muestra el texto literal de `careerCatalog.duration`, por `codigo`/`id`, en ambos modos. Se omite si no hay coincidencia. Se mantiene fuera del contrato; esta decisión sustituye la omisión inicial de la línea 331 del anexo.
+- **Estado:** resuelto por instrucción directa del usuario en la corrección de F4 del 9 de octubre: se muestra el texto literal de `careerCatalog.duration`, por `codigo`/`id`, en ambos modos. Se omite si no hay coincidencia. Se mantiene fuera del contrato; esta decisión sustituye la omisión inicial de la línea 331 del anexo. F06: el detalle de carrera del catálogo en api muestra la `duracion` del servidor; las tarjetas del resultado siguen con la de `careerCatalog`.
 
 ## 2026-10-09 · Anexo F4 · Descripciones de intereses como lista
 
@@ -411,7 +425,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** descripción, letras, detalle y corazón de las tarjetas de ocupaciones afines.
 - **Opciones:** completar el catálogo y la correspondencia por código; definir favoritos de ocupaciones sin correspondencia en una iteración posterior; conservar únicamente los datos y acciones que tienen soporte actual.
 - **Si no se muestra:** una ocupación sin catálogo conserva título y ajuste remotos y permite filtrar sus carreras por O*NET; no muestra descripción, letras o enlace inventados. Sin código local tampoco se presenta el corazón, porque los favoritos actuales guardan ese identificador. Una ocupación con contenido pendiente omite el marcador provisional y conserva su detalle existente con sus candados actuales.
-- **Estado:** faltantes registrados; no se inventa correspondencia ni contenido. El fixture actual tiene códigos locales para sus diez coincidencias. La ausencia de código queda cubierta con un escenario DATO DE PRUEBA.
+- **Estado:** resuelto en F06: en api, el corazón de las ocupaciones afines marca en el servidor cualquier coincidencia con `codigo` y su detalle se lee del catálogo del servidor; una coincidencia sin `codigo` sigue sin corazón ni enlace.
 
 
 ## 2026-10-09 · Corrección F4 · Íconos obtenidos en la Central de Casos

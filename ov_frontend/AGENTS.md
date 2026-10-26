@@ -123,9 +123,9 @@ Un agente conecta datos a la interfaz que ya existe; no diseña interfaz nueva p
 ```text
 tests/
   local/        actividades/, aventura/, casos/, perfil/, portales/   (modo local)
-  servidor/     acceso/, actividades/, batallas/, casos/, diario/, mapa/, instrumentos/, logros/, perfil/, registro/, testimonios/  (modo api, con fixtures)
+  servidor/     acceso/, actividades/, batallas/, casos/, catalogo/, diario/, mapa/, instrumentos/, logros/, perfil/, registro/, testimonios/  (modo api, con fixtures)
   despliegue/
-  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00), registro (F01), batallas, casos y testimonios (F04), diario (F05) y el pasaporte y la vitrina en logros y perfil (ajuste pasaporte-perfil)
+  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00), registro (F01), batallas, casos y testimonios (F04), diario (F05), el pasaporte y la vitrina en logros y perfil (ajuste pasaporte-perfil) y catalogo (F06)
   soporte/             ayudantes compartidos
 ```
 
@@ -139,7 +139,7 @@ tests/
 | `store/servidor/`, `lib/servidor/`, `services/api/`, `types/servidor.ts`, o regeneras fixtures | `npm run test:servidor` |
 | `features/activities/`, `lib/activities/`, `data/activities/` | `tests/local/actividades`, `tests/servidor/actividades` y `tests/servidor/registro` |
 | `features/adventure/` | `tests/local/aventura`, `tests/servidor/mapa` y `tests/servidor/logros` |
-| `features/discovery/` | `tests/servidor/instrumentos`, `tests/servidor/perfil` y `tests/servidor/logros` |
+| `features/discovery/` | `tests/servidor/catalogo`, `tests/servidor/instrumentos`, `tests/servidor/perfil` y `tests/servidor/logros` |
 | `features/cases/` | `tests/local/casos` y `tests/servidor/casos` |
 | `features/parent/`, `features/counselor/`, `features/student-tracking/`, `pages/parent/`, `pages/counselor/` | `tests/local/portales` y `tests/local/perfil` |
 | `features/auth/`, `pages/auth/`, `store/accesoStore.ts`, `routes/GuardaAcceso.tsx`, `data/demo/usuariosPrueba.ts` | `tests/local/portales`, `tests/local/aventura` y `tests/servidor/acceso` |
