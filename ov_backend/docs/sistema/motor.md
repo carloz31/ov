@@ -115,6 +115,8 @@ Toda condición cuenta eventos de la cuenta evaluada: ningún objetivo del apode
 
 **Fecha de obtención:** la de su primer desbloqueo, entre todas las reglas de la insignia.
 
+**Textos para mostrar.** El front muestra tal cual llegan el `texto` de cada condición, la `descripcion` y la `cita_lumi` del nivel, y la `frase`, la `descripcion` (historia), el `logro` y el `requisito` de una insignia: no redacta ninguno. En la semilla, ningún texto de insignia nombra códigos de actividad.
+
 **Vitrina** (ajuste pasaporte-perfil): `POST /acciones/vitrina` con `cuenta` y `codigos` reemplaza la lista completa, en el orden recibido; `[]` la vacía. Solo estudiante (409 si no). 422 con más de 3 códigos, repetidos o inexistentes; 409 si alguna no está obtenida. Sin eventos. Responde `{vitrina: [codigo]}`. Sin elección, la vitrina está vacía.
 
 ## Acciones

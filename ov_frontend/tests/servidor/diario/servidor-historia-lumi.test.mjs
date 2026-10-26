@@ -197,7 +197,8 @@ test('tarjeta de Lumi en singular y cuaderno como línea de tiempo con su origen
 test('un recuerdo ya visto se vuelve a ver desde su primer nodo, no desde el cierre', () => {
   const vista = readFileSync('src/pages/student/StudentJournalView.tsx', 'utf8')
   assert.match(vista, /<StudentActivityPlayer[^>]*\bdesdeInicio\b/)
-  const reproductor = readFileSync('src/features/activities/hooks/useActivityPlayer.ts', 'utf8')
+  // Saltos de línea normalizados: en un checkout de Windows el archivo puede tener CRLF.
+  const reproductor = readFileSync('src/features/activities/hooks/useActivityPlayer.ts', 'utf8').replace(/\r\n/g, '\n')
   assert.match(reproductor, /if \(edit \|\| desdeInicio\) return nodes\[0\]\?\.id/)
   // La regla va antes de la que abre en el cierre una actividad COMPLETADA.
   assert.ok(
