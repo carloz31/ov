@@ -36,6 +36,7 @@ def listar_testimonios_cuenta(sesion: Session, cuenta: Cuenta) -> list[Testimoni
             anios_experiencia=testimonio.anios_experiencia if disponible else None,
             cita=testimonio.cita if disponible else None,
             caso=None if caso is None else CasoTestimonio(codigo=caso.codigo, titulo=caso.titulo),
+            caso_disponible=caso is not None and objetivo_disponible(sesion, cuenta, TipoObjetivo.ACTIVIDAD, caso.id),
         ))
     return respuesta
 

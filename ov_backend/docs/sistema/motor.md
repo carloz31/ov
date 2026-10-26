@@ -35,6 +35,7 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | REINICIA_INSTRUMENTO | instrumento |
 | REVELA_RESULTADO | aplicación (el resultado es por cuenta y aplicación; ver `instrumentos.md`) |
 | VISTA_TESTIMONIO | testimonio |
+| VISTA_FICHA | ficha |
 | CREA_PLAN, ACTUALIZA_PLAN, ELIMINA_PLAN | carrera del plan (la tarjeta puede borrarse; la carrera no) |
 
 ## Reglas
@@ -130,6 +131,7 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/resolver-caso` | Actividad CASO disponible; puntaje entero entre 0 y el `puntaje_maximo` del caso (422 si lo supera); `ocupaciones` (códigos de las bien asignadas) existentes, si no 422 | Guarda el intento. Con puntaje ≥ `puntaje_minimo`: completa la actividad (COMPLETA_ACTIVIDAD), SUPERA_CASO la primera vez y agrega a `coleccion_ocupacion` las ocupaciones que la cuenta no tenía (`ocupaciones_nuevas` en la respuesta, con `codigo` y `titulo`). Con menos, queda EN_CURSO, sin eventos. Responde también `puntaje_minimo` y `puntaje_maximo`; el mejor puntaje se lee en `GET casos`. |
 | `/acciones/resolver-batalla` | Actividad BATALLA disponible; `respuestas` (`pregunta`, `opcion`: el índice de la opción), en el orden en que se dieron, al menos una, sin repetir, todas preguntas de esa batalla y con una opción existente; el intento debe terminar justo en la última respuesta (si no, 422) | El servidor recorre las respuestas con las vidas y los destellos de la batalla: cada acierto quita una vida al enemigo y cada error, un destello; gana si el enemigo queda sin vidas y pierde si se agotan los destellos (F04c). Guarda el intento en `resultado_batalla` (victoria, aciertos y preguntas) y cada respuesta en `respuesta_batalla`. La primera victoria completa la actividad (COMPLETA_ACTIVIDAD) y registra SUPERA_BATALLA, y VENCE_DESAFIO_INTACTO si terminó con todos los destellos. Perder deja la batalla EN_CURSO; los intentos posteriores a la victoria son práctica, sin eventos. Responde los campos de la acción más `victoria`, `practica` (ya estaba superada), `aciertos`, `preguntas`, `destellos_restantes` y `fichas_repaso` (F04d: `codigo` y `titulo` de las fichas de las preguntas falladas en el intento, sin repetir, de más a menos fallos; si empatan, la de la primera fallada; sin fallos, vacía). El primer intento es el que cuenta para la métrica de conocimiento. Las preguntas de cada intento las da `GET /cuentas/{c}/batallas/{a}/preguntas`. |
 | `/acciones/ver-testimonio` | Solo estudiante; testimonio disponible (si no, 409 con su mensaje) | VISTA_TESTIMONIO solo la primera vez. |
+| `/acciones/ver-ficha` | Ficha de la audiencia de la cuenta (si no, 404) y disponible (si no, 409 con su mensaje). La registra el modal de ficha al abrirse (ajuste mochila) | VISTA_FICHA solo la primera vez. |
 | `/acciones/responder-registro` | Clasificación ADECUADA o POCO_DESARROLLADA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
 | `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; `titulo` opcional y `texto`; `pregunta` (código) o `del_dia`, no ambos; sin ninguno es LIBRE. Con pregunta: su recomendación existe, ya tiene texto y no tiene entrada; la del día, además, vigente (si no, 409). | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
 | `/acciones/editar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404); sin límite de tiempo ni sección | Cambia `texto` y, si se envía, `titulo`; fija `actualizada_en`. Sin eventos. |
@@ -166,7 +168,7 @@ Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logro
 1. Nunca hay dos desbloqueos para la misma cuenta y regla, y ninguno se elimina.
 2. Una actividad bloqueada no se puede completar: 409 sin eventos.
 3. Una cuenta nunca ve objetivos de otra audiencia.
-4. COMPLETA_BLOQUE, SUPERA_CASO, SUPERA_BATALLA, VENCE_DESAFIO_INTACTO, VISTA_TESTIMONIO, ESCRIBE_CARTA y COMPLETA_CONVERSACION se registran solo la primera vez por referencia y cuenta; COMPLETA_ACTIVIDAD, en cada finalización.
+4. COMPLETA_BLOQUE, SUPERA_CASO, SUPERA_BATALLA, VENCE_DESAFIO_INTACTO, VISTA_TESTIMONIO, VISTA_FICHA, ESCRIBE_CARTA y COMPLETA_CONVERSACION se registran solo la primera vez por referencia y cuenta; COMPLETA_ACTIVIDAD, en cada finalización.
 5. Repetir una actividad no cambia su estado COMPLETADA.
 6. Un check-in por día (editable ese día) y una entrada por recomendación (desbloqueada o del día).
 7. El nivel actual nunca baja.

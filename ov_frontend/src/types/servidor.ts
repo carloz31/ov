@@ -39,6 +39,16 @@ export type BloqueEstado = {
   actividades: ActividadEstado[]
 }
 export type ContenidoEstado = { codigo: string; titulo: string; estado: EstadoDisponibilidad }
+// Ajuste mochila: el detalle solo con la ficha obtenida (nulos si está bloqueada); `visto`, por ficha.
+export type FichaCuenta = ContenidoEstado & {
+  tema: string | null
+  descripcion: string | null
+  contenido: string | null
+  obtenida_en: string | null
+  visto: boolean
+  actividad: { codigo: string; titulo: string } | null
+  tramo: { codigo: string; nombre: string; numero: number } | null
+}
 export type TipoEventoUso =
   | 'INGRESO'
   | 'COMPLETA_ACTIVIDAD'
@@ -52,6 +62,7 @@ export type TipoEventoUso =
   | 'SUPERA_CASO'
   | 'SUPERA_BATALLA'
   | 'VISTA_TESTIMONIO'
+  | 'VISTA_FICHA'
   | 'ESCRIBE_CARTA'
   | 'COMPLETA_CONVERSACION'
   | 'REINICIA_INSTRUMENTO'
@@ -360,6 +371,7 @@ export type TestimonioEstado = {
   anios_experiencia: number | null
   cita: string | null
   caso: { codigo: string; titulo: string } | null
+  caso_disponible: boolean
 }
 // F04c: las respuestas en el orden en que se dieron; el servidor decide la victoria.
 export type ResolverBatallaEntrada = {

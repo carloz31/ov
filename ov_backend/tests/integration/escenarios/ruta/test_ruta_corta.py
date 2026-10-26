@@ -52,7 +52,8 @@ def test_hu004_013_015_informativa_con_ficha_y_retroalimentacion(cliente):
         ('INSIGNIA', 't-ins-1'),
         ('SECCION', 'DIARIO'), ('SECCION', 'CATALOGO'), ('SECCION', 'PLANES'), ('PREGUNTA_DIARIO', 't-diario-fija'),
         ('SECCION_PLAN', 'POR_QUE')}
-    assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE')]
+    assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [
+        ('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE'), ('t-ficha-3', 'BLOQUEADA')]
     assert siguiente(cliente) == 't-partida'
 
 
@@ -380,7 +381,8 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
 
     testimonios = estado(cliente)['testimonios']
     assert testimonios[0]['pista'] and all(t['estado'] == 'BLOQUEADA' for t in testimonios)
-    caso, = pedir(cliente, 'GET', '/cuentas/est-ana/casos')
+    # Ajuste mochila: t-caso-2 se abre con el proyecto, que esta ruta no alcanza.
+    caso, _ = pedir(cliente, 'GET', '/cuentas/est-ana/casos')
     assert (caso['dimensiones'], caso['estado']) == (['R', 'S'], 'BLOQUEADA')
     for mision in MISIONES_INTERESES:
         responder(cliente, mision)
@@ -391,11 +393,12 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
     assert fallido['ocupaciones_nuevas'] == [] and actividades(cliente)['t-caso'] == 'EN_CURSO'
     superado = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 12,
                                                                   'ocupaciones': ['firefighter', 'paramedic']})
-    assert reglas(superado) == {'R-t-testimonio-1', 'R-t-testimonio-2'}
+    # Ajuste mochila: el segundo testimonio pide además cerrar el proyecto.
+    assert reglas(superado) == {'R-t-testimonio-1'}
     assert [o['ocupacion'] for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == ['firefighter', 'paramedic']
     pedir(cliente, 'POST', '/acciones/ver-testimonio', {'cuenta': 'est-ana', 'testimonio': 't-testimonio-1'})
     assert [(t['estado'], t['visto']) for t in estado(cliente)['testimonios']] == [
-        ('DISPONIBLE', True), ('DISPONIBLE', False)]
+        ('DISPONIBLE', True), ('BLOQUEADA', False), ('BLOQUEADA', False), ('BLOQUEADA', False)]
 
 
 def test_hu028_036_075_diario_check_in_y_avance(cliente):

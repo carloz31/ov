@@ -33,7 +33,7 @@ from app.schemas.planes import PlanesCuenta
 from app.schemas.testimonios import TestimonioEstado
 from app.schemas.cuentas import CuentaResumen, DesbloqueoLegible, ResumenCuenta
 from app.schemas.actividades import BloqueActividades
-from app.schemas.comun import ContenidoEstado
+from app.schemas.fichas import FichaCuenta
 from app.schemas.logros import LogrosCuenta
 from app.schemas.avance import AvanceEstudiante
 from app.schemas.secciones import SeccionEstado
@@ -59,7 +59,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-eco-sin-dato', 'referencias-t-eco-disponible',
     'referencias-t-contraste',
     'items-t-partida', 'respuestas-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
-    'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'preguntas-batalla',
+    'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'ver-ficha', 'preguntas-batalla',
     'resolver-batalla-derrota',
     'resolver-batalla-victoria', 'batallas', 'resolver-caso', 'casos', 'coleccion',
     'catalogo-carreras', 'catalogo-carrera-psychology', 'catalogo-ocupaciones-riasec', 'catalogo-ocupacion-psychologist',
@@ -141,7 +141,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     for nombre in ('actividades-inicial', 'actividades-t1', 'actividades-ciudad'):
         TypeAdapter(list[BloqueActividades]).validate_python(datos[nombre])
     for momento in ('inicial', 'final'):
-        TypeAdapter(list[ContenidoEstado]).validate_python(datos[f'fichas-{momento}'])
+        TypeAdapter(list[FichaCuenta]).validate_python(datos[f'fichas-{momento}'])
         LogrosCuenta.model_validate(datos[f'logros-{momento}'])
     for nombre in ('completar-t-inicio', 'completar-t-cierre-inicio'):
         RespuestaAccion.model_validate(datos[nombre])
@@ -273,7 +273,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert ciudad['estado'] == 'DISPONIBLE'
     assert [(a['codigo'], a['estado']) for a in ciudad['actividades']] == [
         ('t-mision-intereses', 'DISPONIBLE'), ('t-mision-intereses-2', 'BLOQUEADA'), ('t-caso', 'BLOQUEADA'),
-        ('t-contraste', 'BLOQUEADA')]
+        ('t-contraste', 'BLOQUEADA'), ('t-caso-2', 'BLOQUEADA')]
     assert next(b for b in datos['actividades-inicial'] if b['codigo'] == 'CIUDAD')['bloqueo'][0]['mensaje']
     items = datos['items-t-mision-intereses']
     assert [i['codigo'] for i in items] == [f'RIASEC-{n:02}' for n in range(1, 31)]
@@ -344,9 +344,13 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         'R-t-eco', 'R-t-diario-fija', 'R-t-diario-personal', 'R-PLAN-POR_QUE'}
     assert all(d['visto'] is False and d['fecha_hora'] == exportador.FECHA for d in avisos)
     assert [(f['codigo'], f['estado']) for f in datos['fichas-inicial']] == [
-        ('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA')]
-    assert [(f['codigo'], f['estado']) for f in datos['fichas-final']] == [
-        ('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE')]
+        ('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA'), ('t-ficha-3', 'BLOQUEADA')]
+    # Ajuste mochila: abrir t-ficha (ver-ficha) la deja vista; t-ficha-2 sigue nueva y t-ficha-3, bloqueada.
+    RespuestaAccion.model_validate(datos['ver-ficha'])
+    assert [(f['codigo'], f['estado'], f['visto'], (f['tramo'] or {}).get('numero'))
+            for f in datos['fichas-final']] == [
+        ('t-ficha', 'DISPONIBLE', True, 1), ('t-ficha-2', 'DISPONIBLE', False, 1),
+        ('t-ficha-3', 'BLOQUEADA', False, None)]
     assert [n['estado'] for n in datos['logros-final']['niveles']] == ['OBTENIDO', 'OBTENIDO', 'BLOQUEADO']
     # B08: batalla con reintento, caso superado, colección y testimonios.
     derrota, victoria = (RespuestaResolverBatalla.model_validate(datos[nombre])
@@ -366,20 +370,26 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     superado = RespuestaResolverCaso.model_validate(datos['resolver-caso'])
     assert [(o.codigo, o.titulo) for o in superado.ocupaciones_nuevas] == [
         ('firefighter', 'Bombero/a'), ('paramedic', 'Paramédico/a')]
-    assert {d.regla for d in superado.nuevos_desbloqueos} == {'R-t-testimonio-1', 'R-t-testimonio-2'}
-    caso, = TypeAdapter(list[CasoCuenta]).validate_python(datos['casos'])
+    # Ajuste mochila: el segundo testimonio pide además el proyecto; t-caso-2 sigue cerrado.
+    assert {d.regla for d in superado.nuevos_desbloqueos} == {'R-t-testimonio-1'}
+    caso, otro = TypeAdapter(list[CasoCuenta]).validate_python(datos['casos'])
+    assert (otro.actividad, otro.estado) == ('t-caso-2', 'BLOQUEADA')
     assert (caso.dimensiones, caso.estado, caso.intentos, caso.superado) == (['R', 'S'], 'COMPLETADA', 2, True)
     assert [o.ocupacion for o in TypeAdapter(list[OcupacionColeccion]).validate_python(datos['coleccion'])] == [
         'firefighter', 'paramedic']
     inicial = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-inicial'])
-    assert [(t.estado, t.pista is not None, t.enlace) for t in inicial] == [('BLOQUEADA', True, None),
-                                                                            ('BLOQUEADA', False, None)]
+    assert [(t.estado, t.pista is not None, t.enlace) for t in inicial] == [('BLOQUEADA', True, None)] * 4
     final = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-final'])
-    assert [(t.estado, t.visto, t.pista) for t in final] == [('DISPONIBLE', True, None), ('DISPONIBLE', False, None)]
+    # Ajuste mochila: el segundo pide además el proyecto (bloqueado con su caso disponible); los dos últimos
+    # esperan un caso que el recorrido no abre.
+    assert [(t.estado, t.visto, t.pista is None, t.caso_disponible) for t in final] == [
+        ('DISPONIBLE', True, True, True), ('BLOQUEADA', False, False, True),
+        ('BLOQUEADA', False, False, False), ('BLOQUEADA', False, False, False)]
     # Ajustes Central (7): quién lo cuenta, solo disponible; el caso que lo regala, siempre.
-    assert [(t.persona, t.caso.codigo) for t in inicial] == [(None, 't-caso'), (None, 't-caso')]
-    assert [(t.persona, t.ocupacion.codigo, t.anios_experiencia) for t in final] == [
-        ('Luis Mendoza', 'paramedic', 5), ('Sofía Kim', 'translator', 6)]
+    assert [(t.persona, t.caso.codigo) for t in inicial] == [
+        (None, 't-caso'), (None, 't-caso'), (None, 't-caso-2'), (None, 't-caso-2')]
+    assert [(t.persona, t.ocupacion and t.ocupacion.codigo, t.anios_experiencia) for t in final] == [
+        ('Luis Mendoza', 'paramedic', 5), (None, None, None), (None, None, None), (None, None, None)]
     # B11: planes con sus secciones, requisitos de comparar y proyecto, y referencias de planes.
     for nombre in ('crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
                    'medidores-plan', 'guardar-seccion-pasos', 'paso-hecho'):

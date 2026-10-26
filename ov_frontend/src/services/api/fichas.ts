@@ -1,6 +1,6 @@
 import { obtener } from './cliente'
-import type { ContenidoEstado, RespuestaServidor } from '@/types/servidor'
+import type { FichaCuenta, RespuestaServidor } from '@/types/servidor'
 
-export function obtenerFichas(cuenta: string): Promise<RespuestaServidor<ContenidoEstado[]>> {
+export function obtenerFichas(cuenta: string): Promise<RespuestaServidor<FichaCuenta[]>> {
   return obtener(`/cuentas/${encodeURIComponent(cuenta)}/fichas`)
 }

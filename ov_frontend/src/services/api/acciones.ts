@@ -58,6 +58,10 @@ export function resolverCaso(entrada: ResolverCasoEntrada): Promise<RespuestaSer
   return enviar('/acciones/resolver-caso', entrada)
 }
 
+export function verFicha(cuenta: string, ficha: string): Promise<RespuestaServidor<RespuestaAccion>> {
+  return enviar('/acciones/ver-ficha', { cuenta, ficha })
+}
+
 export function verTestimonio(cuenta: string, testimonio: string): Promise<RespuestaServidor<RespuestaAccion>> {
   return enviar('/acciones/ver-testimonio', { cuenta, testimonio })
 }

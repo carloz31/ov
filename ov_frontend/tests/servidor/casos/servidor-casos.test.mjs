@@ -180,9 +180,9 @@ test('los desbloqueos del intento superado incluyen el testimonio que regala el 
     tienePreguntaDiario: false,
     modoApi: true,
   })
+  // Ajuste mochila: el segundo testimonio pide además el proyecto; el caso regala solo el primero.
   assert.deepEqual(copia(resumen.testimonios.map((t) => [t.codigo, t.nombre])), [
     ['t-testimonio-1', 'Calma y cuidado en una emergencia'],
-    ['t-testimonio-2', 'Puentes entre idiomas'],
   ])
   const pagina = readFileSync('src/pages/student/ForestFireCasePage.tsx', 'utf8')
   assert.match(

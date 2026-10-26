@@ -1,12 +1,52 @@
 [
   {
+    "actividad": {
+      "codigo": "t-inicio",
+      "titulo": "Inicio de prueba"
+    },
     "codigo": "t-ficha",
+    "contenido": "Muchas decisiones se toman sobre frases que todos repiten y nadie revisa. Esta ficha reúne dos de las más comunes.\n\n### «Esa carrera no tiene futuro»\n\nImporta menos cuántos trabajan hoy que cómo cambia esa cifra y en qué ocupaciones terminan.\n\n> Pregunta clave: ¿quién lo dice, con qué dato y de qué año?\n\n### «Si estudias eso vas a ganar poco»\n\n- El ingreso depende de la ocupación.\n- También de la experiencia y del lugar.\n\nRevisa los rangos en [Ponte en Carrera](https://www.ponteencarrera.pe).",
+    "descripcion": "Creencias frecuentes sobre las carreras y qué dicen los datos.",
     "estado": "DISPONIBLE",
-    "titulo": "Ficha de prueba"
+    "obtenida_en": "2026-10-07T10:00:00",
+    "tema": "Mitos y creencias",
+    "titulo": "Ficha de prueba",
+    "tramo": {
+      "codigo": "T0",
+      "nombre": "Inicio",
+      "numero": 1
+    },
+    "visto": true
   },
   {
+    "actividad": {
+      "codigo": "t-inicio",
+      "titulo": "Inicio de prueba"
+    },
     "codigo": "t-ficha-2",
+    "contenido": "Lo que te gusta y lo que se te da bien no siempre coinciden.\n\n### Tres preguntas\n\n1. ¿Qué harías aunque nadie te lo pidiera?\n2. ¿En qué te piden ayuda?\n3. ¿Qué te cuesta menos que a otros?",
+    "descripcion": "Tres preguntas para distinguir lo que te gusta de lo que se te da bien.",
     "estado": "DISPONIBLE",
-    "titulo": "Segunda ficha de prueba"
+    "obtenida_en": "2026-10-07T10:00:00",
+    "tema": "Proyecto de vida",
+    "titulo": "Segunda ficha de prueba",
+    "tramo": {
+      "codigo": "T0",
+      "nombre": "Inicio",
+      "numero": 1
+    },
+    "visto": false
+  },
+  {
+    "actividad": null,
+    "codigo": "t-ficha-3",
+    "contenido": null,
+    "descripcion": null,
+    "estado": "BLOQUEADA",
+    "obtenida_en": null,
+    "tema": null,
+    "titulo": "Carrera, ocupación e institución",
+    "tramo": null,
+    "visto": false
   }
 ]

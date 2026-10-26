@@ -30,25 +30,6 @@
       },
       "regla": "R-t-testimonio-1",
       "tipo_objetivo": "TESTIMONIO"
-    },
-    {
-      "condiciones": [
-        {
-          "actual": 1,
-          "cumplida": true,
-          "referencia": "t-caso",
-          "requerido": 1,
-          "texto": null,
-          "tipo_conteo": "EVENTOS",
-          "tipo_evento": "SUPERA_CASO"
-        }
-      ],
-      "objetivo": {
-        "codigo": "t-testimonio-2",
-        "nombre": "Puentes entre idiomas"
-      },
-      "regla": "R-t-testimonio-2",
-      "tipo_objetivo": "TESTIMONIO"
     }
   ],
   "ocupaciones_nuevas": [

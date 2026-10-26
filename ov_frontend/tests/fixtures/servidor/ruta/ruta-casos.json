@@ -13,5 +13,17 @@
     "superado": true,
     "titulo": "Caso de prueba",
     "ultimo_puntaje": 12
+  },
+  {
+    "actividad": "t-caso-2",
+    "dimensiones": [],
+    "estado": "BLOQUEADA",
+    "intentos": 0,
+    "mejor_puntaje": null,
+    "puntaje_maximo": 14,
+    "puntaje_minimo": 10,
+    "superado": false,
+    "titulo": "La traductora apurada",
+    "ultimo_puntaje": null
   }
 ]

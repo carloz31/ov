@@ -29,3 +29,5 @@ class TestimonioEstado(BaseModel):
     cita: str | None
     # Siempre, bloqueado o no (ajustes Central, 7); nulo si ninguna regla SUPERA_CASO lo abre.
     caso: CasoTestimonio | None
+    # El caso ya está disponible para la cuenta (ajuste mochila): solo entonces la voz bloqueada se lista.
+    caso_disponible: bool

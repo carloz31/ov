@@ -7,11 +7,12 @@ from app.schemas.acciones import (
     ReiniciarInstrumentoEntrada, ResolverBatallaEntrada, ResolverCasoEntrada, ResponderItemsEntrada,
     ResponderRegistroEntrada, RespuestaAccion, RespuestaAgrupada, RespuestaItemsGuardados, RespuestaResolverBatalla, RespuestaResolverCaso,
     RespuestaReiniciarInstrumento, RespuestaRevelarResultado, RevelarResultadoEntrada, VerCarreraEntrada,
-    VerInstitucionEntrada, VerOcupacionEntrada, VerTestimonioEntrada,
+    VerFichaEntrada, VerInstitucionEntrada, VerOcupacionEntrada, VerTestimonioEntrada,
 )
 from app.services import (
     actividades as servicio_actividades, catalogo as servicio_catalogo,
-    comunidad as servicio_comunidad, eventos as servicio_eventos, testimonios as servicio_testimonios,
+    comunidad as servicio_comunidad, eventos as servicio_eventos, fichas as servicio_fichas,
+    testimonios as servicio_testimonios,
 )
 from app.services.diario import acciones as servicio_diario
 
@@ -100,6 +101,11 @@ def ver_institucion(entrada: VerInstitucionEntrada, sesion: SesionBD):
 @router.post("/acciones/publicar-entrevista", response_model=RespuestaAgrupada, response_model_exclude_unset=True)
 def publicar_entrevista(entrada: PublicarEntrevistaEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: servicio_comunidad.publicar_entrevista(sesion, entrada))
+
+
+@router.post("/acciones/ver-ficha", response_model=RespuestaAccion, response_model_exclude_unset=True)
+def ver_ficha(entrada: VerFichaEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: servicio_fichas.ver_ficha(sesion, entrada))
 
 
 @router.post("/acciones/ver-testimonio", response_model=RespuestaAccion, response_model_exclude_unset=True)

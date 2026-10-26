@@ -11,7 +11,8 @@ def verificar_p01_estado_inicial(cliente):
     assert all(estados[c] == 'BLOQUEADA' for c in ('t-partida', 't-cierre-inicio', 't-expectativas', INTERESES, INTERESES_FINAL, 't-caso'))
     assert {b['codigo']: b['estado'] for b in inicial['bloques']} == {
         'T0': 'DISPONIBLE', 'T1': 'BLOQUEADA', 'T2': 'BLOQUEADA', 'CIUDAD': 'BLOQUEADA', 'LUMI': 'DISPONIBLE'}
-    assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA')]
+    assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [
+        ('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA'), ('t-ficha-3', 'BLOQUEADA')]
     visibles = [i for i in inicial['insignias'] if i['codigo'] != '???']
     assert [(i['codigo'], i['estado']) for i in visibles] == [('t-ins-1', 'BLOQUEADA')]
     assert visibles[0]['requisito']
@@ -20,7 +21,8 @@ def verificar_p01_estado_inicial(cliente):
     assert inicial['secciones'] == dict.fromkeys(('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'PLANES'), 'BLOQUEADA')
     assert inicial['nivel_actual']['numero'] == 1
     assert [(t['codigo'], t['estado']) for t in inicial['testimonios']] == [
-        ('t-testimonio-1', 'BLOQUEADA'), ('t-testimonio-2', 'BLOQUEADA')]
+        ('t-testimonio-1', 'BLOQUEADA'), ('t-testimonio-2', 'BLOQUEADA'), ('t-testimonio-3', 'BLOQUEADA'),
+        ('t-testimonio-4', 'BLOQUEADA')]
     assert inicial['preguntas_diario'] is None
 
 

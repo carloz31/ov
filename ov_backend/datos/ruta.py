@@ -80,6 +80,8 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 10, 10),
                ('t-contraste', 'CIUDAD', 'Registro de contraste de intereses', 'REGISTRO', None, 10),
+               # Ajuste mochila: un llamado que el recorrido nunca abre, para las voces que aún no se listan.
+               ('t-caso-2', 'CIUDAD', 'La traductora apurada', 'CASO', 10, 10),
                ('t-apo-1', 'FAMILIA', 'Primera actividad del apoderado', 'INFORMATIVA', None, 10),
                ('t-apo-carta', 'FAMILIA', 'Carta del apoderado', 'INFORMATIVA', None, 10),
                # DATO DE PRUEBA: un recuerdo de Lumi por nivel de amistad (ajuste del diario de F05).
@@ -100,6 +102,7 @@ PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR
                't-batalla': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-explorar': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+               't-caso-2': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                **{codigo: {'requerida': False} for codigo in RECUERDOS_LUMI}}
 
 # Texto de presentación de cada actividad (`descripcion`): el front lo muestra tal cual en el mapa y en
@@ -123,6 +126,7 @@ DESCRIPCIONES = {
     't-mision-intereses-2': 'Sigue descubriendo tus intereses.',
     't-caso': 'Ayuda a resolver un caso de la ciudad.',
     't-contraste': 'Contrasta tu resultado de intereses con lo que esperabas.',
+    't-caso-2': 'Un llamado que la Central todavía no publica.',
     't-apo-1': 'Conozca cómo acompañar a su hijo en este proceso.',
     't-apo-carta': 'Escriba una carta para su hijo.',
 }
@@ -294,10 +298,30 @@ SIN_FUENTE = ('FAVORITOS', 'PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL')
 PROPIEDADES_ITEMS = {'t-val-breve': {'min_caracteres': 40}}
 REPREGUNTA_GENERICA = '¿Podrías contarme un poco más?'
 
-# (código, título, contenido, audiencia)
-FICHAS = (('t-ficha', 'Ficha de prueba', 'Ficha que otorga t-inicio.', 'ESTUDIANTE'),
-          ('t-ficha-2', 'Segunda ficha de prueba', 'Segunda ficha que otorga t-inicio (F04b).', 'ESTUDIANTE'),
-          ('t-ficha-apo', 'Ficha del apoderado', 'Ficha que otorga t-apo-1.', 'APODERADO'))
+# (código, título, descripción, tema, contenido, audiencia). El contenido es markdown y no repite el título
+# (ajuste mochila).
+FICHAS = (
+    ('t-ficha', 'Ficha de prueba',
+     'Creencias frecuentes sobre las carreras y qué dicen los datos.', 'Mitos y creencias',
+     'Muchas decisiones se toman sobre frases que todos repiten y nadie revisa. Esta ficha reúne dos de las más '
+     'comunes.\n\n### «Esa carrera no tiene futuro»\n\nImporta menos cuántos trabajan hoy que cómo cambia esa '
+     'cifra y en qué ocupaciones terminan.\n\n> Pregunta clave: ¿quién lo dice, con qué dato y de qué año?\n\n'
+     '### «Si estudias eso vas a ganar poco»\n\n- El ingreso depende de la ocupación.\n- También de la '
+     'experiencia y del lugar.\n\nRevisa los rangos en [Ponte en Carrera](https://www.ponteencarrera.pe).',
+     'ESTUDIANTE'),
+    ('t-ficha-2', 'Segunda ficha de prueba', 'Tres preguntas para distinguir lo que te gusta de lo que se te da bien.',
+     'Proyecto de vida',
+     'Lo que te gusta y lo que se te da bien no siempre coinciden.\n\n### Tres preguntas\n\n1. ¿Qué harías '
+     'aunque nadie te lo pidiera?\n2. ¿En qué te piden ayuda?\n3. ¿Qué te cuesta menos que a otros?',
+     'ESTUDIANTE'),
+    ('t-ficha-3', 'Carrera, ocupación e institución', 'Por qué no son lo mismo y cómo se relacionan entre sí.',
+     'Mundo laboral',
+     'Una **carrera** es lo que estudias; una **ocupación**, lo que haces al trabajar; una **institución**, dónde '
+     'estudias.\n\n### Cómo se relacionan\n\nUna carrera lleva a varias ocupaciones, y una ocupación recibe gente '
+     'de varias carreras.', 'ESTUDIANTE'),
+    ('t-ficha-apo', 'Ficha del apoderado', 'Cómo acompañar sin decidir por tu hijo.', 'Acompañamiento',
+     'Ficha que otorga t-apo-1.', 'APODERADO'),
+)
 
 # (código, batalla, ficha, enunciado, opciones, índice de la correcta, explicación). Pool de cada batalla:
 # cada intento toma sus preguntas por intento (CONFIGURACION_BATALLAS) al azar. Las 10 primeras vienen de desafio-rumor del front (F04b);
@@ -366,7 +390,7 @@ CONFIGURACION_BATALLAS = {'t-batalla': (5, 3, 7)}
 # máximo es el total de necesidades. t-caso juega forest-fire: sus necesidades son las de
 # `expectedProfessionalIds` en ov_frontend/src/data/content/forestFireCase.ts, en orden de fase y problema.
 # Mantener sincronizado con ese archivo (lo comprueba tests/servidor/casos en el front).
-CONFIGURACION_CASOS = {'t-caso': (14, (2, 3, 3, 1, 2, 3))}
+CONFIGURACION_CASOS = {'t-caso': (14, (2, 3, 3, 1, 2, 3)), 't-caso-2': (14, (2, 3, 3, 1, 2, 3))}
 
 # (código, título, descripción, enlace, pista, persona, ocupación, años de experiencia, cita). La pista se
 # muestra mientras el testimonio está bloqueado (B08); la descripción es el texto completo y el enlace, el
@@ -384,8 +408,16 @@ TESTIMONIOS = (
      'Trabajo con invitados, conferencistas y equipos de producción de distintos países. Antes de cada evento '
      'investigo el tema y preparo vocabulario especializado. Durante una conversación debo escuchar, comprender la '
      'intención y comunicarla con precisión, incluso cuando todo ocurre muy rápido.',
-     'https://www.youtube.com/watch?v=aqz-KE-bpKQ', None, 'Sofía Kim', 'translator', 6,
+     'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+     'Alguien que trabaja con palabras que no son las suyas. ¿Quién será?', 'Sofía Kim', 'translator', 6,
      'Traducir no es reemplazar palabras: es ayudar a que dos personas realmente se comprendan.'),
+    # Ajuste mochila: dos voces de un llamado que aún no se abre (t-caso-2).
+    ('t-testimonio-3', 'Datos que cuentan historias', 'Texto de prueba del tercer testimonio.',
+     'https://www.youtube.com/watch?v=ysz5S6PUM-U', 'Una voz que llega con un llamado futuro.', 'Ana Torres',
+     'paramedic', 3, 'Cita de prueba del tercer testimonio.'),
+    ('t-testimonio-4', 'Un puente más', 'Texto de prueba del cuarto testimonio.',
+     'https://www.youtube.com/watch?v=aqz-KE-bpKQ', 'Otra voz que llega con un llamado futuro.', 'Pedro Ríos',
+     'translator', 8, 'Cita de prueba del cuarto testimonio.'),
 )
 
 # (código, orden, título, pregunta del estudiante, pregunta del apoderado (None: la misma), preguntas guía,
@@ -506,12 +538,22 @@ REGLAS = (
      (('SUPERA_BATALLA', 't-batalla', 'EVENTOS', 1), ('VISTA_OCUPACION', None, 'EVENTOS', 1))),
     ('R-t-testimonio-1', 'TESTIMONIO', 't-testimonio-1', 'Supera el caso de prueba para conocer este testimonio.',
      (('SUPERA_CASO', 't-caso', 'EVENTOS', 1),)),
-    ('R-t-testimonio-2', 'TESTIMONIO', 't-testimonio-2', 'Supera el caso de prueba para conocer este testimonio.',
-     (('SUPERA_CASO', 't-caso', 'EVENTOS', 1),)),
+    # Además del caso, pide cerrar el proyecto: al final del recorrido sigue bloqueado con su caso disponible
+    # (ajuste mochila; SUPERA_CASO se registra una sola vez, así que no puede pedir dos superaciones).
+    ('R-t-testimonio-2', 'TESTIMONIO', 't-testimonio-2', 'Supera el caso de prueba y cierra tu proyecto para conocer este testimonio.',
+     (('SUPERA_CASO', 't-caso', 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 't-proyecto', 'EVENTOS', 1))),
+    ('R-t-testimonio-3', 'TESTIMONIO', 't-testimonio-3', 'Supera el segundo caso para conocer este testimonio.',
+     (('SUPERA_CASO', 't-caso-2', 'EVENTOS', 1),)),
+    ('R-t-testimonio-4', 'TESTIMONIO', 't-testimonio-4', 'Supera el segundo caso para conocer este testimonio.',
+     (('SUPERA_CASO', 't-caso-2', 'EVENTOS', 1),)),
+    ('R-t-caso-2', 'ACTIVIDAD', 't-caso-2', 'Completa tu proyecto para abrir este llamado.',
+     (('COMPLETA_ACTIVIDAD', 't-proyecto', 'EVENTOS', 1),)),
     ('R-t-ficha', 'FICHA', 't-ficha', 'Completa el inicio para obtener esta ficha.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-t-ficha-2', 'FICHA', 't-ficha-2', 'Completa el inicio para obtener esta ficha.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
+    ('R-t-ficha-3', 'FICHA', 't-ficha-3', 'Completa la actividad opcional para obtener esta ficha.',
+     (('COMPLETA_ACTIVIDAD', 't-opcional', 'EVENTOS', 1),)),
     ('R-t-ficha-apo', 'FICHA', 't-ficha-apo', 'Completa tu primera actividad para obtener esta ficha.',
      (('COMPLETA_ACTIVIDAD', 't-apo-1', 'EVENTOS', 1),)),
     ('R-t-ins-1', 'INSIGNIA', 't-ins-1', 'Completa el inicio.', (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
@@ -617,8 +659,9 @@ def _cargar_estructura(sesion):
                for c, n, r, salon, correo, contrasena in CUENTAS}
     bloques = {c: modelos.Bloque(codigo=c, numero=num, nombre=n, espacio=modelos.Espacio(e),
                                 audiencia=modelos.Audiencia(a)) for c, num, n, e, a in BLOQUES}
-    fichas = {c: modelos.Ficha(codigo=c, titulo=t, contenido=texto, audiencia=modelos.Audiencia(a))
-              for c, t, texto, a in FICHAS}
+    fichas = {c: modelos.Ficha(codigo=c, titulo=t, descripcion=d, tema=tema, contenido=texto,
+                               audiencia=modelos.Audiencia(a))
+              for c, t, d, tema, texto, a in FICHAS}
     ocupaciones = {o.codigo: o for o in sesion.scalars(select(modelos.Ocupacion))}
     for c, *_, ocupacion, _anios, _cita in TESTIMONIOS:
         if ocupacion not in ocupaciones:

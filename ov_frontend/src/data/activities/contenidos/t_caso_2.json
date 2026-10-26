@@ -1,0 +1,21 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-caso-2",
+  "tipo": "encuentro",
+  "titulo": "Caso",
+  "bloque": 4,
+  "orden": 5,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "caso": "forest-fire",
+  "mapa": {
+    "x": 880,
+    "y": 330,
+    "icono": "informativa"
+  }
+}

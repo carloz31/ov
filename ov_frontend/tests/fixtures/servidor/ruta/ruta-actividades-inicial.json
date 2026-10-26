@@ -653,6 +653,37 @@
         "titulo": "Registro de contraste de intereses",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa el registro de expectativas para llegar a la ciudad.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "t-caso-2",
+        "contenido": "t_caso_2",
+        "descripcion": "Un llamado que la Central todavía no publica.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": false,
+        "tipo": "CASO",
+        "titulo": "La traductora apurada",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
       }
     ],
     "bloqueo": [

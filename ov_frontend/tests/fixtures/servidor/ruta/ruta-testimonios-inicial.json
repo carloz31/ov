@@ -5,6 +5,7 @@
       "codigo": "t-caso",
       "titulo": "Caso de prueba"
     },
+    "caso_disponible": false,
     "cita": null,
     "codigo": "t-testimonio-1",
     "descripcion": null,
@@ -22,6 +23,7 @@
       "codigo": "t-caso",
       "titulo": "Caso de prueba"
     },
+    "caso_disponible": false,
     "cita": null,
     "codigo": "t-testimonio-2",
     "descripcion": null,
@@ -29,8 +31,44 @@
     "estado": "BLOQUEADA",
     "ocupacion": null,
     "persona": null,
-    "pista": null,
+    "pista": "Alguien que trabaja con palabras que no son las suyas. ¿Quién será?",
     "titulo": "Puentes entre idiomas",
+    "visto": false
+  },
+  {
+    "anios_experiencia": null,
+    "caso": {
+      "codigo": "t-caso-2",
+      "titulo": "La traductora apurada"
+    },
+    "caso_disponible": false,
+    "cita": null,
+    "codigo": "t-testimonio-3",
+    "descripcion": null,
+    "enlace": null,
+    "estado": "BLOQUEADA",
+    "ocupacion": null,
+    "persona": null,
+    "pista": "Una voz que llega con un llamado futuro.",
+    "titulo": "Datos que cuentan historias",
+    "visto": false
+  },
+  {
+    "anios_experiencia": null,
+    "caso": {
+      "codigo": "t-caso-2",
+      "titulo": "La traductora apurada"
+    },
+    "caso_disponible": false,
+    "cita": null,
+    "codigo": "t-testimonio-4",
+    "descripcion": null,
+    "enlace": null,
+    "estado": "BLOQUEADA",
+    "ocupacion": null,
+    "persona": null,
+    "pista": "Otra voz que llega con un llamado futuro.",
+    "titulo": "Un puente más",
     "visto": false
   }
 ]

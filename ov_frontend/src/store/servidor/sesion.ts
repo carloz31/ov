@@ -11,7 +11,7 @@ import type {
   BloqueActividades,
   CheckInsCuenta,
   ComparacionAutopercepcion,
-  ContenidoEstado,
+  FichaCuenta,
   ResumenCuenta,
   LogrosCuenta,
   DesbloqueoLegible,
@@ -35,7 +35,7 @@ export type Seccion<T> = {
 export type DatosSecciones = {
   resumen: ResumenCuenta
   actividades: BloqueActividades[]
-  fichas: ContenidoEstado[]
+  fichas: FichaCuenta[]
   logros: LogrosCuenta
   // Ajuste del panel (F05): el avance del panel; va con las actividades (pantalla de carga del mapa).
   avance: AvanceEstudiante

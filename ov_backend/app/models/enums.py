@@ -70,6 +70,7 @@ class TipoEventoUso(StrEnum):
     CREA_PLAN = "CREA_PLAN"
     ACTUALIZA_PLAN = "ACTUALIZA_PLAN"
     ELIMINA_PLAN = "ELIMINA_PLAN"
+    VISTA_FICHA = "VISTA_FICHA"
 
 
 class TipoInstitucion(StrEnum):

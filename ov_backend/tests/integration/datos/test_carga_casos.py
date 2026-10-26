@@ -45,7 +45,8 @@ def test_batalla_y_testimonios_cargados(sesion):
     assert batalla.tipo == m.TipoActividad.BATALLA and batalla.puntaje_minimo is None and not batalla.requerida
     assert batalla.puntaje_maximo is None
     pistas = dict(sesion.execute(select(m.Testimonio.codigo, m.Testimonio.pista)).all())
-    assert pistas['t-testimonio-1'] and pistas['t-testimonio-2'] is None
+    # Ajuste mochila: todos llevan pista (el segundo, la de la voz por descubrir).
+    assert all(pistas[c] for c in ('t-testimonio-1', 't-testimonio-2', 't-testimonio-3', 't-testimonio-4'))
 
 
 # Ajustes Central (6): el máximo de un caso es el total de sus necesidades (sincronizado con el front).

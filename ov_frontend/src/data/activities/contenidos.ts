@@ -36,6 +36,7 @@ import tApoCarta from './contenidos/t_apo_carta.json'
 import tMisionIntereses from './contenidos/t_mision_intereses.json'
 import tMisionIntereses2 from './contenidos/t_mision_intereses_2.json'
 import tCaso from './contenidos/t_caso.json'
+import tCaso2 from './contenidos/t_caso_2.json'
 import tContraste from './contenidos/t_contraste.json'
 import type { ContenidoActividad } from '@/types/activities'
 
@@ -77,6 +78,7 @@ export const contenidos: Record<string, ContenidoActividad> = {
   t_mision_intereses: tMisionIntereses,
   t_mision_intereses_2: tMisionIntereses2,
   t_caso: tCaso,
+  t_caso_2: tCaso2,
   t_contraste: tContraste,
 } as Record<string, ContenidoActividad>
 

@@ -16,8 +16,8 @@ def tipos(respuesta):
 
 
 def fila_caso(cliente):
-    fila, = pedir(cliente, 'GET', '/cuentas/est-ana/casos')
-    return fila
+    # Ajuste mochila: t-caso-2 sigue bloqueado en estas pruebas; se mira solo t-caso.
+    return next(fila for fila in pedir(cliente, 'GET', '/cuentas/est-ana/casos') if fila['actividad'] == 't-caso')
 
 
 def test_casos_traen_sus_tipos_riasec(cliente):
@@ -42,10 +42,12 @@ def test_fallar_no_completa_y_superar_libera_testimonios_y_coleccion(cliente, ap
     superado = pedir(cliente, 'POST', '/acciones/resolver-caso',
                      {**caso(12, ['firefighter', 'paramedic', 'firefighter']), 'fecha_hora': '2026-10-09T10:00:00'})
     assert tipos(superado) == ['COMPLETA_ACTIVIDAD', 'SUPERA_CASO']
-    assert reglas(superado) == {'R-t-testimonio-1', 'R-t-testimonio-2'}
+    # Ajuste mochila: el segundo testimonio pide además cerrar el proyecto.
+    assert reglas(superado) == {'R-t-testimonio-1'}
     assert superado['ocupaciones_nuevas'] == [{'codigo': 'firefighter', 'titulo': 'Bombero/a'},
                                               {'codigo': 'paramedic', 'titulo': 'Paramédico/a'}]
-    assert {t['estado'] for t in pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')} == {'DISPONIBLE'}
+    assert [t['estado'] for t in pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')] == [
+        'DISPONIBLE', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA']
 
     otra_vez = pedir(cliente, 'POST', '/acciones/resolver-caso', caso(14, ['paramedic', 'nurse']))
     assert (superado['puntaje_minimo'], superado['puntaje_maximo']) == (10, 14)

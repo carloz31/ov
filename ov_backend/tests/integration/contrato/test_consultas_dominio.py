@@ -30,6 +30,8 @@ ESTADOS = {
 # Ajuste del diario (F05): los recuerdos de Lumi siguen bloqueados mientras no se escriba en el diario.
 for _estados in ESTADOS.values():
     _estados.update(dict.fromkeys(RECUERDOS_LUMI, 'BLOQUEADA'))
+    # Ajuste mochila: el segundo caso se abre con el proyecto, que esta ruta no alcanza.
+    _estados['t-caso-2'] = 'BLOQUEADA'
 # Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).
 SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']
 MENSAJES = {objetivo: mensaje for _, tipo, objetivo, mensaje, _ in REGLAS if tipo == 'SECCION'}
@@ -84,8 +86,16 @@ def esperado(ruta, completo):
             ],
         } for bloque, numero, nombre, espacio, audiencia in BLOQUES if audiencia == 'ESTUDIANTE']
     if ruta == 'fichas':
-        return [{'codigo': codigo, 'titulo': titulo, 'estado': 'DISPONIBLE' if completo else 'BLOQUEADA'}
-                for codigo, titulo, _, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
+        # Ajuste mochila: las dos de t-inicio (T0) se obtienen; la de t-opcional sigue bloqueada y sin detalle.
+        bloque = next(fila for fila in BLOQUES if fila[0] == 'T0')
+        return [{'codigo': codigo, 'titulo': titulo, 'estado': 'DISPONIBLE', 'tema': tema, 'descripcion': descripcion,
+                 'contenido': texto, 'obtenida_en': ANY, 'visto': False,
+                 'actividad': {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'},
+                 'tramo': {'codigo': 'T0', 'nombre': bloque[2], 'numero': bloque[1]}}
+                if completo and codigo != 't-ficha-3' else
+                {'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'tema': None, 'descripcion': None,
+                 'contenido': None, 'obtenida_en': None, 'visto': False, 'actividad': None, 'tramo': None}
+                for codigo, titulo, descripcion, tema, texto, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
     if ruta == 'logros':
         # Ajuste pasaporte-perfil: por página y orden; la oculta conserva su página, su orden y su pista.
         grupos = {codigo: {'codigo': codigo, 'nombre': nombre, 'orden': orden} for codigo, nombre, orden in GRUPOS_INSIGNIA}
@@ -112,10 +122,14 @@ def esperado(ruta, completo):
     if ruta == 'testimonios':
         # Se abren al superar el caso, que en este recorrido sigue sin resolverse.
         # Ajustes Central (7): bloqueados, sin quién lo cuenta y con el caso que los regala.
+        # Ajuste mochila: el tercero y el cuarto los regala el segundo caso; ningún caso está disponible aún.
+        casos = {'t-testimonio-3': ('t-caso-2', 'La traductora apurada'),
+                 't-testimonio-4': ('t-caso-2', 'La traductora apurada')}
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'visto': False, 'pista': pista,
                  'descripcion': None, 'enlace': None, 'persona': None, 'ocupacion': None,
                  'anios_experiencia': None, 'cita': None,
-                 'caso': {'codigo': 't-caso', 'titulo': 'Caso de prueba'}}
+                 'caso': dict(zip(('codigo', 'titulo'), casos.get(codigo, ('t-caso', 'Caso de prueba')))),
+                 'caso_disponible': False}
                 for codigo, titulo, _, _, pista, *_ in sorted(TESTIMONIOS)]
     if ruta == 'secciones':
         return [(codigo, 'DISPONIBLE' if completo else 'BLOQUEADA', completo) for codigo in SECCIONES_ESTUDIANTE]
@@ -156,7 +170,9 @@ def test_apoderado_sin_listas_estudiantiles(cliente, ruta):
     elif ruta == 'secciones':
         assert respuesta == [('CONVERSACIONES', 'BLOQUEADA', False)]
     elif ruta == 'fichas':
-        assert respuesta == [{'codigo': 't-ficha-apo', 'titulo': 'Ficha del apoderado', 'estado': 'BLOQUEADA'}]
+        assert respuesta == [{'codigo': 't-ficha-apo', 'titulo': 'Ficha del apoderado', 'estado': 'BLOQUEADA',
+                              'tema': None, 'descripcion': None, 'contenido': None, 'obtenida_en': None,
+                              'visto': False, 'actividad': None, 'tramo': None}]
     elif ruta == 'actividades':
         assert respuesta == [{**{clave: valor for clave, valor in BLOQUE_FAMILIA.items() if clave != 'bloqueo'},
                               'actividades': [{clave: valor for clave, valor in actividad.items() if clave != 'bloqueo'}

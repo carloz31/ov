@@ -21,14 +21,17 @@ const inicial = jsonServidor('ruta/ruta-testimonios-inicial')
 const final = jsonServidor('ruta/ruta-testimonios-final')
 
 test('bloqueado: solo la pista, si la tiene; disponible: descripción y enlace', () => {
-  const conPista = inicial.find((t) => t.codigo === 't-testimonio-1'),
-    sinPista = inicial.find((t) => t.codigo === 't-testimonio-2')
+  const conPista = inicial.find((t) => t.codigo === 't-testimonio-1')
   assert.equal(conPista.estado, 'BLOQUEADA')
   assert.equal(conPista.enlace, null)
   assert.equal(casos.pistaTestimonio(conPista), conPista.pista)
   assert.ok(conPista.pista)
-  assert.equal(casos.pistaTestimonio(sinPista), null)
-  assert.ok(final.every((t) => t.estado === 'DISPONIBLE' && t.enlace && casos.pistaTestimonio(t) === null))
+  assert.equal(casos.pistaTestimonio({ ...conPista, pista: null }), null)
+  // Ajuste mochila: al final solo el primero está abierto; los demás conservan su pista.
+  const disponibles = final.filter((t) => t.estado === 'DISPONIBLE')
+  assert.deepEqual(copia(disponibles.map((t) => t.codigo)), ['t-testimonio-1'])
+  assert.ok(disponibles.every((t) => t.enlace && casos.pistaTestimonio(t) === null))
+  assert.ok(final.filter((t) => t.estado === 'BLOQUEADA').every((t) => !t.enlace && casos.pistaTestimonio(t)))
 })
 
 test('consultar y ver un testimonio usan las rutas del backend', async () => {
@@ -72,9 +75,16 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
         final[0].cita,
         final[0].enlace,
         'Luis Mendoza · Paramédico/a · 5 años de experiencia',
-        { disponible: true, pista: null, caso },
+        { disponible: true, pista: null, caso, casoDisponible: true, visto: true },
       ],
-      ['t-testimonio-2', mezcla[1].titulo, '', null, null, { disponible: false, pista: null, caso }],
+      [
+        't-testimonio-2',
+        mezcla[1].titulo,
+        mezcla[1].pista,
+        null,
+        null,
+        { disponible: false, pista: mezcla[1].pista, caso, casoDisponible: false, visto: false },
+      ],
     ],
   )
   assert.deepEqual(copia(voces.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [true, false])
@@ -101,7 +111,8 @@ test('la mochila abre el testimonio en el visor y registra su vista, sin «más 
     readFileSync('src/features/backpack/components/BackpackCard.tsx', 'utf8'),
     /llega pronto/,
   )
-  assert.match(vista, /resource=\{selected && isUnlocked\(selected\) \? selected : undefined\}/)
+  // Ajuste mochila: el testimonio abre su pop up; la ficha, el modal de ficha.
+  assert.match(vista, /resource=\{selected\?\.kind !== 'sheet' && selected && isUnlocked\(selected\) \? selected : undefined\}/)
   // Bloqueado, la tarjeta no tiene acción: sin pop up de requisito.
   const tarjeta = readFileSync('src/features/backpack/components/BackpackCard.tsx', 'utf8')
   const servidor = tarjeta.slice(tarjeta.indexOf('function TestimonioServidor'))

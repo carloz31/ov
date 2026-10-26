@@ -17,8 +17,9 @@ from datos.ocupaciones import leer_ocupaciones, validar_distribucion_items
 
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     esperados = {'salon': 2, 'cuenta': 5, 'orientadora_salon': 1, 'vinculo_familiar': 1, 'bloque': 6,
-        'actividad': 25, 'seccion': 6, 'ficha': 3, 'testimonio': 2, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 5, 'nivel': 3,
-        'regla_desbloqueo': 49, 'condicion_desbloqueo': 55, 'pregunta_diario': 8,
+        # Ajuste mochila: t-caso-2, t-ficha-3, t-testimonio-3 y 4, sus reglas y la condición extra de t-testimonio-2.
+        'actividad': 26, 'seccion': 6, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 5, 'nivel': 3,
+        'regla_desbloqueo': 53, 'condicion_desbloqueo': 60, 'pregunta_diario': 8,
         'instrumento': 2, 'escala_respuesta': 2, 'opcion_escala': 9, 'dimension': 11,
         'item_instrumento': 79, 'actividad_item': 98, 'aplicacion': 3, 'aplicacion_actividad': 4,
         'ocupacion': 36, 'puntaje_ocupacion': 216, 'familia_carrera': 6, 'carrera': 6,

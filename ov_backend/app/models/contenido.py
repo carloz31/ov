@@ -114,6 +114,9 @@ class Ficha(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
     titulo: Mapped[str]
+    # Resumen de la tarjeta y tema del chip (ajuste mochila); el contenido es markdown sin repetir el título.
+    descripcion: Mapped[str | None] = mapped_column(Text)
+    tema: Mapped[str | None]
     contenido: Mapped[str] = mapped_column(Text)
     audiencia: Mapped[Audiencia] = mapped_column(
         enumerado(Audiencia), default=Audiencia.ESTUDIANTE, server_default=text("'ESTUDIANTE'"),

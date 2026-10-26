@@ -361,6 +361,9 @@ def _recorrer(cliente):
     # Ajuste pasaporte-perfil: la vitrina con la primera insignia y el progreso del nivel 3 (dos condiciones).
     fixtures['vitrina'] = _pedir(cliente, 'POST', '/acciones/vitrina', {'cuenta': 'est-ana', 'codigos': ['t-ins-1']})
     fixtures['progreso-nivel-3'] = _pedir(cliente, 'GET', '/cuentas/est-ana/progreso/NIVEL/N3')
+    # Ajuste mochila: abrir t-ficha la deja vista; t-ficha-2 sigue nueva en fichas-final.
+    fixtures['ver-ficha'] = _pedir(cliente, 'POST', '/acciones/ver-ficha',
+                                   {'cuenta': 'est-ana', 'ficha': 't-ficha', 'fecha_hora': FECHA})
     fixtures.update(_consultas_dominio(cliente, 'final', ('avance', 'fichas', 'logros')))
     return fixtures
 
