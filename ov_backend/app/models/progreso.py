@@ -181,3 +181,15 @@ class Favorito(Base):
     tipo: Mapped[TipoFavorito] = mapped_column(enumerado(TipoFavorito))
     id_referencia: Mapped[int]
     fecha_hora: Mapped[datetime] = mapped_column(DateTime)
+
+
+class InsigniaVitrina(Base):
+    """Insignias obtenidas que el estudiante muestra a sus compañeros (ajuste pasaporte-perfil), hasta 3, por `orden`."""
+    __tablename__ = "insignia_vitrina"
+    __table_args__ = (
+        UniqueConstraint("cuenta_id", "orden"),
+        CheckConstraint("orden BETWEEN 1 AND 3", name="orden_vitrina_valido"),
+    )
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"), primary_key=True)
+    insignia_id: Mapped[int] = mapped_column(ForeignKey("insignia.id"), primary_key=True)
+    orden: Mapped[int]

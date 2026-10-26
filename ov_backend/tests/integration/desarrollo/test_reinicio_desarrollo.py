@@ -15,6 +15,8 @@ def test_r15_reinicio_completo_idempotente_y_atomico(cliente, aplicacion, monkey
     # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
     avanzar(cliente)
     pedir(cliente, 'POST', '/acciones/escribir-carta', {'cuenta': 'est-ana', 'texto': 'DATO DE PRUEBA'})
+    # Ajuste pasaporte-perfil: la vitrina también es estado.
+    pedir(cliente, 'POST', '/acciones/vitrina', {'cuenta': 'est-ana', 'codigos': ['t-ins-1']})
     antes = filas_base(aplicacion)
     assert all(antes[nombre] for nombre in TABLAS_DE_ESTADO)
     assert any(fila.opcion_inicial_id is not None for fila in antes['cuenta'])

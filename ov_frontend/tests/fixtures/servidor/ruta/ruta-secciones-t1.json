@@ -26,6 +26,7 @@
             "cumplida": false,
             "referencia": "t-expectativas",
             "requerido": 1,
+            "texto": null,
             "tipo_conteo": "EVENTOS",
             "tipo_evento": "COMPLETA_ACTIVIDAD"
           }

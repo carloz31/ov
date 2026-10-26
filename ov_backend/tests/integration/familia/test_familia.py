@@ -1,5 +1,7 @@
 """B12: ruta del apoderado, diploma, avance del hijo y sus resultados (HU-078–080). DATO DE PRUEBA."""
 
+from unittest.mock import ANY
+
 from sqlalchemy import func, select
 
 from app import models as modelos
@@ -56,7 +58,8 @@ def test_avance_y_diploma_del_apoderado(cliente, sesion):
 def test_avance_y_nivel_del_hijo(cliente, sesion):
     total = requeridas(sesion, 'ESTUDIANTE')
     hijo = familia(cliente)['estudiante']
-    assert hijo == {'codigo': 'est-ana', 'nombre': 'Ana', 'nivel_actual': {'numero': 1, 'titulo': 'Observador del horizonte'},
+    assert hijo == {'codigo': 'est-ana', 'nombre': 'Ana', 'nivel_actual': {'numero': 1, 'titulo': 'Observador del horizonte',
+                                                                      'descripcion': ANY},
                     'avance': {'completadas': 0, 'total': total, 'porcentaje': 0.0}}
     avanzar(cliente)
     hijo = familia(cliente)['estudiante']

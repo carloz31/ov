@@ -34,7 +34,7 @@ BLOQUE_FAMILIA = {
          'bloqueo': [{'regla': 'R-t-apo-carta', 'mensaje': 'Completa la primera actividad.',
                       'condiciones_faltantes': [{'tipo_evento': 'COMPLETA_ACTIVIDAD', 'referencia': 't-apo-1',
                                                  'tipo_conteo': 'EVENTOS', 'actual': 0, 'requerido': 1,
-                                                 'cumplida': False}],
+                                                 'cumplida': False, 'texto': None}],
                       'evaluador_especial': None}]},
     ],
 }

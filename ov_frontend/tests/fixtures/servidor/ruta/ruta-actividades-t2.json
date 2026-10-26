@@ -326,6 +326,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 5,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -356,6 +357,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 12,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -386,6 +388,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 25,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -416,6 +419,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 45,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }

@@ -5,6 +5,7 @@
     "rol": "ESTUDIANTE"
   },
   "nivel_actual": {
+    "descripcion": "Estás aprendiendo a mirar tus intereses y preguntas como pistas, sin apresurarte a elegir un destino.",
     "numero": 1,
     "titulo": "Observador del horizonte"
   }

@@ -5,48 +5,99 @@
       "codigo": "t-ins-1",
       "descripcion": "Completaste t-inicio.",
       "estado": "OBTENIDA",
+      "grupo": {
+        "codigo": "G1",
+        "nombre": "La luz que despeja caminos",
+        "orden": 1
+      },
       "nombre": "Insignia de prueba",
+      "obtenida_en": "2026-10-07T10:00:00",
+      "orden": 1,
+      "pista": null,
       "requisito": "Completa t-inicio."
     },
     {
       "codigo": "???",
       "descripcion": null,
       "estado": "BLOQUEADA",
+      "grupo": {
+        "codigo": "G1",
+        "nombre": "La luz que despeja caminos",
+        "orden": 1
+      },
       "nombre": "Logro oculto",
+      "obtenida_en": null,
+      "orden": 2,
+      "pista": "No todo brillo sobrevive a una batalla. El que no se apaga ni una vez, deja huella.",
       "requisito": null
     },
     {
       "codigo": "???",
       "descripcion": null,
       "estado": "BLOQUEADA",
+      "grupo": {
+        "codigo": "G2",
+        "nombre": "Huellas en la ciudad",
+        "orden": 2
+      },
       "nombre": "Logro oculto",
+      "obtenida_en": null,
+      "orden": 1,
+      "pista": "Las carreras viven en familias. Visita a más de una y verás que el mapa se agranda.",
       "requisito": null
     },
     {
       "codigo": "???",
       "descripcion": null,
       "estado": "BLOQUEADA",
+      "grupo": {
+        "codigo": "G2",
+        "nombre": "Huellas en la ciudad",
+        "orden": 2
+      },
       "nombre": "Logro oculto",
+      "obtenida_en": null,
+      "orden": 2,
+      "pista": "Cada oficio tiene una letra que lo guía. Busca letras distintas, no la misma dos veces.",
       "requisito": null
     },
     {
       "codigo": "???",
       "descripcion": null,
       "estado": "BLOQUEADA",
+      "grupo": {
+        "codigo": "G2",
+        "nombre": "Huellas en la ciudad",
+        "orden": 2
+      },
       "nombre": "Logro oculto",
+      "obtenida_en": null,
+      "orden": 3,
+      "pista": "Hay más de una puerta para estudiar. Asómate a todas antes de elegir una.",
       "requisito": null
     }
   ],
   "niveles": [
     {
+      "descripcion": "Estás aprendiendo a mirar tus intereses y preguntas como pistas, sin apresurarte a elegir un destino.",
       "estado": "OBTENIDO",
       "numero": 1,
       "titulo": "Observador del horizonte"
     },
     {
+      "descripcion": "Ya reconoces señales sobre lo que disfrutas, lo que haces bien y los retos que despiertan tu curiosidad.",
       "estado": "OBTENIDO",
       "numero": 2,
       "titulo": "Recolector de pistas"
+    },
+    {
+      "descripcion": "Tu mapa personal empieza a tomar forma. Ahora puedes contrastarlo con profesiones y situaciones del mundo real.",
+      "estado": "BLOQUEADO",
+      "numero": 3,
+      "titulo": "Cartógrafo de posibilidades"
     }
+  ],
+  "vitrina": [
+    "t-ins-1"
   ]
 }

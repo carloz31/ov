@@ -1,6 +1,7 @@
 import * as apiCuentas from '@/services/api/cuentas'
 import * as apiAcciones from '@/services/api/acciones'
 import * as apiDesarrollo from '@/services/api/desarrollo'
+import * as apiLogros from '@/services/api/logros'
 import { desarrollo, modoApi } from '@/config/env'
 import { cuentaActiva } from './cuenta'
 import { limpiarEstadoApoderado } from './apoderado'
@@ -27,6 +28,7 @@ import type {
   RespuestaServidor,
   RespuestaItemEntrada,
   RespuestaItemsGuardados,
+  VitrinaCuenta,
 } from '@/types/servidor'
 
 let inicio: Promise<RespuestaServidor<RespuestaAccion>> | null = null
@@ -182,5 +184,17 @@ export async function reiniciarDatosDePrueba(): Promise<RespuestaServidor<{ mens
     localStorage.removeItem('ov.student-adventure.v1.api')
     prepararIngreso()
   }
+  return respuesta
+}
+
+// Ajuste pasaporte-perfil: la vitrina se reemplaza completa en el servidor y se refleja en `logros`.
+export async function guardarVitrina(codigos: string[]): Promise<RespuestaServidor<VitrinaCuenta>> {
+  const cuenta = cuentaActiva(),
+    sesion = sesionServidor()
+  if (!modoApi || !cuenta) return { tipo: 'http', estado: 400, detalle: 'No hay una cuenta de servidor activa.' }
+  const respuesta = await apiLogros.enviarVitrina(cuenta, codigos)
+  const logros = obtenerEstadoServidor().logros
+  if (respuesta.tipo === 'ok' && cuenta === cuentaActiva() && sesion === sesionServidor() && logros.datos)
+    publicar({ logros: { ...logros, datos: { ...logros.datos, vitrina: respuesta.datos.vitrina } } })
   return respuesta
 }

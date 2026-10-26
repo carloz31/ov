@@ -19,6 +19,7 @@
           "cumplida": true,
           "referencia": "t-caso",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "SUPERA_CASO"
         }
@@ -37,6 +38,7 @@
           "cumplida": true,
           "referencia": "t-caso",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "SUPERA_CASO"
         }

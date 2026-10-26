@@ -19,6 +19,7 @@
           "cumplida": true,
           "referencia": "T0",
           "requerido": 1,
+          "texto": "Termina el bloque de inicio",
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_BLOQUE"
         }
@@ -37,6 +38,7 @@
           "cumplida": true,
           "referencia": "t-cierre-inicio",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }
@@ -55,6 +57,7 @@
           "cumplida": true,
           "referencia": "T0",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_BLOQUE"
         }

@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
 from app.models import Actividad, Audiencia, Bloque, Cuenta, Espacio, EstadoProgreso, Rol
-from app.schemas.avance import AvanceEstudiante, ConteoAvance, TramoActual
+from app.schemas.avance import AvanceEstudiante, ConteoAvance, ConteoRequeridas, Tramo, TramoActual
 from app.services.tematicas import porcentaje
 
 
@@ -44,16 +44,22 @@ def avance_estudiante(sesion: Session, cuenta: Cuenta) -> AvanceEstudiante:
     completadas = _completadas(sesion, cuenta)
     camino = _por_espacio(sesion, Espacio.MISIONES_CAMPO)
     tramo_actual = None
+    tramos = []
     for bloque in sorted({bloque.id: bloque for bloque, _ in camino}.values(), key=lambda bloque: bloque.numero):
         requeridas = [actividad for b, actividad in camino if b.id == bloque.id and actividad.requerida]
         hechas = sum(actividad.id in completadas for actividad in requeridas)
-        if hechas < len(requeridas):
+        estado = "COMPLETO" if hechas == len(requeridas) else "PENDIENTE" if tramo_actual else "ACTUAL"
+        if estado == "ACTUAL":
             tramo_actual = TramoActual(codigo=bloque.codigo, nombre=bloque.nombre, numero=bloque.numero,
                                        completadas=hechas, total=len(requeridas))
-            break
+        tramos.append(Tramo(codigo=bloque.codigo, nombre=bloque.nombre, numero=bloque.numero,
+                            completadas=hechas, total=len(requeridas), estado=estado))
     return AvanceEstudiante(
         camino=_conteo([actividad for _, actividad in camino], completadas),
         tramo_actual=tramo_actual,
         camino_completo=tramo_actual is None,
         ciudad=avance_ciudad(sesion, cuenta),
+        tramos=tramos,
+        requeridas=ConteoRequeridas(completadas=sum(tramo.completadas for tramo in tramos),
+                                    total=sum(tramo.total for tramo in tramos)),
     )

@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 80
+    assert len(Base.metadata.tables) == 82
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,7 +129,7 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 82
+    assert sql.count('CREATE TABLE ') == 84
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -294,12 +294,13 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # F04c: 0021 se detiene antes, porque `t-batalla` tiene vidas y destellos configurados. F02: 0022 se detiene
         # antes, porque `t-eco-ruta` retoma una elección con su lista. Ajustes Central (6): 0024 se detiene antes,
         # porque `t-caso` tiene puntaje máximo 14 (en puntos de satisfacción). Ajuste del diario (F05): 0027 se
-        # detiene antes, porque `ruta` tiene el bloque LUMI y condiciones con tope diario.
-        with pytest.raises(RuntimeError, match='existen bloques LUMI o condiciones con tope diario'):
+        # detiene antes, porque `ruta` tiene el bloque LUMI y condiciones con tope diario. Ajuste pasaporte-perfil:
+        # 0028 se detiene antes, porque `ruta` tiene grupos de insignia.
+        with pytest.raises(RuntimeError, match='existen grupos de insignia'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0027'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0028'
             for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]

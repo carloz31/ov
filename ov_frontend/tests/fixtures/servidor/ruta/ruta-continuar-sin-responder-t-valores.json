@@ -21,6 +21,7 @@
           "cumplida": true,
           "referencia": "t-valores",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }

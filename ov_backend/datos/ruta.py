@@ -412,8 +412,27 @@ INSIGNIAS = (('t-ins-1', 'Insignia de prueba', 'Completaste t-inicio.', 'Complet
              ('t-ins-instituciones', 'Exploradora de instituciones', 'Viste instituciones de todos los tipos.',
               'Mira instituciones de todos los tipos.', True))
 
-# (número, título)
-NIVELES = ((1, 'Observador del horizonte'), (2, 'Recolector de pistas'))
+# Páginas del pasaporte (ajuste pasaporte-perfil): (código, nombre, orden).
+GRUPOS_INSIGNIA = (('G1', 'La luz que despeja caminos', 1), ('G2', 'Huellas en la ciudad', 2))
+# {insignia: (grupo, orden dentro del grupo)}; toda insignia tiene grupo.
+PAGINAS_INSIGNIAS = {'t-ins-1': ('G1', 1), 't-ins-oculta': ('G1', 2), 't-ins-familias': ('G2', 1),
+                     't-ins-letras': ('G2', 2), 't-ins-instituciones': ('G2', 3)}
+# Pista de Lumi de cada oculta, visible mientras no se obtiene.
+PISTAS_INSIGNIAS = {
+    't-ins-oculta': 'No todo brillo sobrevive a una batalla. El que no se apaga ni una vez, deja huella.',
+    't-ins-familias': 'Las carreras viven en familias. Visita a más de una y verás que el mapa se agranda.',
+    't-ins-letras': 'Cada oficio tiene una letra que lo guía. Busca letras distintas, no la misma dos veces.',
+    't-ins-instituciones': 'Hay más de una puerta para estudiar. Asómate a todas antes de elegir una.',
+}
+
+# (número, título, descripción); las descripciones son las de `travelerLevels` del front.
+NIVELES = ((1, 'Observador del horizonte',
+            'Estás aprendiendo a mirar tus intereses y preguntas como pistas, sin apresurarte a elegir un destino.'),
+           (2, 'Recolector de pistas',
+            'Ya reconoces señales sobre lo que disfrutas, lo que haces bien y los retos que despiertan tu curiosidad.'),
+           (3, 'Cartógrafo de posibilidades',
+            'Tu mapa personal empieza a tomar forma. Ahora puedes contrastarlo con profesiones y situaciones del '
+            'mundo real.'))
 
 # Preguntas del diario: (código, nombre, pregunta base, uso, personalizada, dimensión). Las DESBLOQUEABLE las
 # abre una regla; las DIARIA entran al sorteo de la pregunta del día por la dimensión del cuestionario de
@@ -485,6 +504,9 @@ REGLAS = (
      (('VENCE_DESAFIO_INTACTO', None, 'EVENTOS', 1),)),
     ('R-NIV-2', 'NIVEL', 2, 'Termina el bloque de inicio para subir de nivel.',
      (('COMPLETA_BLOQUE', 'T0', 'EVENTOS', 1),)),
+    # Ajuste pasaporte-perfil: nivel 3 con dos condiciones (la ruta corta ve una sola carrera y no lo alcanza).
+    ('R-NIV-3', 'NIVEL', 3, 'Termina el bloque de inicio y mira tres carreras para subir de nivel.',
+     (('COMPLETA_BLOQUE', 'T0', 'EVENTOS', 1), ('VISTA_CARRERA', None, 'REFERENCIAS_DISTINTAS', 3))),
     ('R-t-apo-carta', 'ACTIVIDAD', 't-apo-carta', 'Completa la primera actividad.',
      (('COMPLETA_ACTIVIDAD', 't-apo-1', 'EVENTOS', 1),)),
     ('R-SEC-DIARIO', 'SECCION', 'DIARIO', 'Completa el inicio para abrir tu diario.',
@@ -537,6 +559,19 @@ REGLAS += tuple(
     for codigo, umbral in zip(RECUERDOS_LUMI, UMBRALES_AMISTAD, strict=True))
 
 
+# Texto de cada condición, en el orden de la regla (ajuste pasaporte-perfil): lo que el pasaporte muestra en la
+# lista de condiciones. Las reglas que no están aquí guardan sus condiciones sin texto.
+TEXTOS_CONDICIONES = {
+    'R-t-ins-1': ('Completa la misión de inicio',),
+    'R-t-ins-oculta': ('Vence un desafío sin perder destellos',),
+    'R-t-ins-familias': ('Mira carreras de familias distintas',),
+    'R-t-ins-letras': ('Mira ocupaciones de tipos distintos',),
+    'R-t-ins-instituciones': ('Mira instituciones de todos los tipos',),
+    'R-NIV-2': ('Termina el bloque de inicio',),
+    'R-NIV-3': ('Termina el bloque de inicio', 'Mira tres carreras distintas'),
+}
+
+
 # Reglas con evaluador especial (`app/services/motor/evaluadores.py`): {regla: (evaluador, parámetro)}.
 # El parámetro es el umbral del evaluador; en `vistas_diversas`, nulo exige todos los grupos del catálogo.
 EVALUADORES_REGLAS = {'R-T2': ('instrumentos_prioritarios', None),
@@ -575,9 +610,18 @@ def _cargar_estructura(sesion):
     conversaciones = {c: modelos.Conversacion(codigo=c, orden=o, titulo=t, pregunta_estudiante=pe,
                                              pregunta_apoderado=pa, preguntas_guia=list(guia), mensaje_diferencias=m)
                       for c, o, t, pe, pa, guia, m in CONVERSACIONES}
+    grupos = {c: modelos.GrupoInsignia(codigo=c, nombre=n, orden=o) for c, n, o in GRUPOS_INSIGNIA}
+    sesion.add_all(grupos.values())
+    sesion.flush()
+    if faltantes := {c for c, *_ in INSIGNIAS} ^ PAGINAS_INSIGNIAS.keys():
+        raise ValueError(f'Insignias sin página o páginas de insignias inexistentes: {sorted(faltantes)}')
+    if pistas_visibles := {c for c, *_, o in INSIGNIAS if not o} & PISTAS_INSIGNIAS.keys():
+        raise ValueError(f'Solo las insignias ocultas llevan pista: {sorted(pistas_visibles)}')
     insignias = {c: modelos.Insignia(codigo=c, nombre=n, descripcion=d, requisito=r, es_oculta=o,
-                                   audiencia=modelos.Audiencia.ESTUDIANTE) for c, n, d, r, o in INSIGNIAS}
-    niveles = {num: modelos.Nivel(numero=num, titulo=t) for num, t in NIVELES}
+                                   audiencia=modelos.Audiencia.ESTUDIANTE, grupo_id=grupos[PAGINAS_INSIGNIAS[c][0]].id,
+                                   orden=PAGINAS_INSIGNIAS[c][1], pista=PISTAS_INSIGNIAS.get(c))
+                 for c, n, d, r, o in INSIGNIAS}
+    niveles = {num: modelos.Nivel(numero=num, titulo=t, descripcion=d) for num, t, d in NIVELES}
     preguntas = _preguntas_diario(sesion)
     sesion.add_all([*cuentas.values(), *bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones.values(),
                     *insignias.values(), *niveles.values(), *preguntas.values()])
@@ -867,10 +911,13 @@ def _cargar_reglas(sesion, objetivos):
             tipo_objetivo=modelos.TipoObjetivo(tipo), id_objetivo=objetivos[tipo][objetivo].id,
             evaluador_especial=EVALUADORES_REGLAS.get(codigo, (None, None))[0],
             parametro_evaluador=EVALUADORES_REGLAS.get(codigo, (None, None))[1])
+        textos = TEXTOS_CONDICIONES.get(codigo, (None,) * len(condiciones))
+        if len(textos) != len(condiciones):
+            raise ValueError(f'La regla {codigo} tiene {len(condiciones)} condiciones y {len(textos)} textos')
         regla.condiciones = [modelos.CondicionDesbloqueo(tipo_evento=modelos.TipoEventoUso(evento),
             id_referencia=None if referencia is None else referencias[evento][referencia].id,
-            tipo_conteo=modelos.TipoConteo(conteo), cantidad_minima=cantidad)
-            for evento, referencia, conteo, cantidad in condiciones]
+            tipo_conteo=modelos.TipoConteo(conteo), cantidad_minima=cantidad, texto=texto)
+            for (evento, referencia, conteo, cantidad), texto in zip(condiciones, textos, strict=True)]
         reglas.append(regla)
     sesion.add_all(reglas)
 

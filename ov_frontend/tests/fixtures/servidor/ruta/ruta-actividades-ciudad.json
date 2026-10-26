@@ -160,6 +160,7 @@
                 "cumplida": false,
                 "referencia": "t-batalla",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "SUPERA_BATALLA"
               },
@@ -168,6 +169,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "VISTA_CARRERA"
               }
@@ -186,6 +188,7 @@
                 "cumplida": false,
                 "referencia": "t-batalla",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "SUPERA_BATALLA"
               },
@@ -194,6 +197,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "VISTA_OCUPACION"
               }
@@ -343,6 +347,7 @@
                 "cumplida": false,
                 "referencia": "t-mision-intereses",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -373,6 +378,7 @@
                 "cumplida": false,
                 "referencia": "t-mision-intereses-2",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -403,6 +409,7 @@
                 "cumplida": false,
                 "referencia": "APL-RIASEC",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "REVELA_RESULTADO"
               }
@@ -443,6 +450,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -473,6 +481,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 5,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -503,6 +512,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 12,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -533,6 +543,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 25,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -563,6 +574,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 45,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }

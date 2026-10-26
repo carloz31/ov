@@ -17,6 +17,7 @@
           "cumplida": true,
           "referencia": "T1",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_BLOQUE"
         },
@@ -25,6 +26,7 @@
           "cumplida": true,
           "referencia": null,
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "REVELA_RESULTADO"
         }
@@ -47,6 +49,7 @@
           "cumplida": true,
           "referencia": "APL-RIASEC",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "REVELA_RESULTADO"
         }

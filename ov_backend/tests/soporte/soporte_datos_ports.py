@@ -111,8 +111,10 @@ def preparar_validacion(sesion):
 
 def insignia_por_evento(sesion, codigo, evento):
     """La ruta no premia todos los eventos; la prueba crea la insignia que necesita."""
+    grupo = sesion.scalar(select(m.GrupoInsignia).order_by(m.GrupoInsignia.orden))
     insignia = m.Insignia(codigo=codigo, nombre='DATO DE PRUEBA', descripcion='DATO DE PRUEBA',
-                          requisito='DATO DE PRUEBA', es_oculta=False, audiencia='ESTUDIANTE')
+                          requisito='DATO DE PRUEBA', es_oculta=False, audiencia='ESTUDIANTE',
+                          grupo_id=grupo.id, orden=99)
     sesion.add(insignia)
     sesion.flush()
     regla(sesion, f'R-{codigo}', 'INSIGNIA', insignia.id, [condicion(evento)])

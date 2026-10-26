@@ -14,6 +14,7 @@
           "cumplida": true,
           "referencia": "t-batalla",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "SUPERA_BATALLA"
         },
@@ -22,6 +23,7 @@
           "cumplida": true,
           "referencia": null,
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "VISTA_OCUPACION"
         }

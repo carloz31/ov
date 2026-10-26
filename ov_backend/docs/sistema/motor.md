@@ -7,9 +7,9 @@ Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, 
 | Grupo | Tablas |
 |---|---|
 | Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash` (Argon2id), `activa`, `intentos_fallidos` y `bloqueada_hasta` para el bloqueo temporal de ingreso, B17), `salon`, `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
-| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD, PORTAL_FAMILIA o LUMI, este último para los recuerdos de Lumi: el mapa no lo pinta y sus actividades son opcionales, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` y `puntaje_maximo` solo en CASO, en puntos de satisfacción: el máximo es el total de necesidades del caso, y el cargador lo valida contra `CONFIGURACION_CASOS` de `ruta.py`), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado; `persona`, `ocupacion_id`, `anios_experiencia` y `cita`; el caso que lo regala no es columna: se deduce de su regla SUPERA_CASO), `pregunta_diario` (ver «Diario»), `conversacion` (`orden`, preguntas de cada rol, `preguntas_guia`, `mensaje_diferencias`; ver «Conversaciones»), `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
-| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` y `respuesta_batalla` (cada intento y sus respuestas: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo`, las tablas de la tarjeta de carrera y `cuenta.opcion_inicial_id` (B11; ver «Secciones de la tarjeta») |
-| Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo`, `desbloqueo` (único por cuenta y regla; `visto`) |
+| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD, PORTAL_FAMILIA o LUMI, este último para los recuerdos de Lumi: el mapa no lo pinta y sus actividades son opcionales, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` y `puntaje_maximo` solo en CASO, en puntos de satisfacción: el máximo es el total de necesidades del caso, y el cargador lo valida contra `CONFIGURACION_CASOS` de `ruta.py`), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado; `persona`, `ocupacion_id`, `anios_experiencia` y `cita`; el caso que lo regala no es columna: se deduce de su regla SUPERA_CASO), `pregunta_diario` (ver «Diario»), `conversacion` (`orden`, preguntas de cada rol, `preguntas_guia`, `mensaje_diferencias`; ver «Conversaciones»), `grupo_insignia` (página del pasaporte: `codigo`, `nombre`, `orden`), `insignia` (`es_oculta`, audiencia, `grupo_id`, `orden` dentro del grupo y `pista`, que se muestra mientras una oculta no se obtiene), `nivel` (`titulo`, `descripcion`), `familia_carrera`, `carrera` |
+| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` y `respuesta_batalla` (cada intento y sus respuestas: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo`, las tablas de la tarjeta de carrera y `cuenta.opcion_inicial_id` (B11; ver «Secciones de la tarjeta»), `insignia_vitrina` (hasta 3 insignias obtenidas que la cuenta muestra, con `orden` 1–3; ver «Vitrina») |
+| Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo` (`texto`: lo que pide, para mostrarlo tal cual; nulo si no tiene), `desbloqueo` (único por cuenta y regla; `fecha_hora`, `visto`) |
 
 `id_objetivo` de una regla e `id_referencia` de un evento o condición son referencias polimórficas sin FK; los cargadores resuelven códigos a ids. `id_objetivo` nunca es nulo.
 
@@ -111,7 +111,11 @@ Toda condición cuenta eventos de la cuenta evaluada: ningún objetivo del apode
 
 **Nivel actual:** el de mayor `numero` disponible. El nivel 1 no tiene reglas. Las reglas de cada nivel repiten las condiciones del anterior, así que el nivel nunca baja ni se salta. Para un apoderado es `null`.
 
-**Insignia oculta no obtenida:** se muestra con código `???`, nombre «Logro oculto» y sin descripción ni requisito; al obtenerla se muestra completa.
+**Insignia oculta no obtenida:** se muestra con código `???`, nombre «Logro oculto» y sin descripción ni requisito, pero con su grupo, su orden y su pista; al obtenerla se muestra completa.
+
+**Fecha de obtención:** la de su primer desbloqueo, entre todas las reglas de la insignia.
+
+**Vitrina** (ajuste pasaporte-perfil): `POST /acciones/vitrina` con `cuenta` y `codigos` reemplaza la lista completa, en el orden recibido; `[]` la vacía. Solo estudiante (409 si no). 422 con más de 3 códigos, repetidos o inexistentes; 409 si alguna no está obtenida. Sin eventos. Responde `{vitrina: [codigo]}`. Sin elección, la vitrina está vacía.
 
 ## Acciones
 
@@ -148,7 +152,7 @@ Un objetivo bloqueado responde 409 con `detail.mensaje` = el mensaje de bloqueo 
 |---|---|
 | `/reglas` | Todas las reglas, legibles, por código, con su `mensaje_bloqueo`. No evalúa. |
 | `/cuentas` | Cuentas. |
-| `/cuentas/{c}/progreso/{tipo}/{codigo}` | Cada regla del objetivo con su `mensaje_bloqueo` y el avance de cada condición (`actual`, `requerido`, `cumplida`) y del evaluador. Niveles con código `N1`…`N5`. Insignia oculta no obtenida: 403. Tipo inválido: 422. |
+| `/cuentas/{c}/progreso/{tipo}/{codigo}` | Cada regla del objetivo con su `mensaje_bloqueo` y el avance de cada condición (`actual`, `requerido`, `cumplida`, `texto`) y del evaluador. Niveles con código `N1`…`N5`. Insignia oculta no obtenida: 403. Tipo inválido: 422. |
 | `/cuentas/{c}/eventos` | Línea de tiempo, del más reciente al más antiguo. |
 | `/cuentas/{c}/desbloqueos?solo_no_vistos=true` | Desbloqueos con fecha y objetivo. |
 | POST `/cuentas/{c}/desbloqueos/marcar-vistos` | Marca los pendientes; devuelve `{"marcados": n}`. |
@@ -209,6 +213,7 @@ Código: `app/services/avance.py` (`GET /cuentas/{c}/avance`, ajuste del panel d
 
 - **Camino:** todas las actividades (requeridas y opcionales) de los bloques `MISIONES_CAMPO` de audiencia ESTUDIANTE, con total fijo leído de las definiciones, nunca de lo visible o desbloqueado. Terminar las requeridas no es llegar al 100 %.
 - **Tramo actual:** el primer bloque de `MISIONES_CAMPO` por `numero` con una requerida sin completar; cuenta solo sus requeridas. `null` y `camino_completo` cuando no queda ninguna, sea cual sea el porcentaje.
+- **Tramos** (ajuste pasaporte-perfil): cada bloque de `MISIONES_CAMPO` por `numero`, con sus requeridas completadas y su total fijo, y `estado` COMPLETO (todas sus requeridas), ACTUAL (el tramo actual) o PENDIENTE. `requeridas` suma las de todos los tramos.
 - **Ciudad:** todas las actividades del bloque `CIUDAD`, total fijo. Su porcentaje es la afinidad de `/logros` (`logros.afinidad` delega en `avance_ciudad`).
 - LUMI y PORTAL_FAMILIA no cuentan. Porcentajes con `porcentaje()` de `services/tematicas.py`.
 

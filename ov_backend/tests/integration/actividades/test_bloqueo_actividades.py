@@ -63,7 +63,7 @@ def test_opcional_no_impide_cerrar_el_bloque_y_la_ciudad_se_abre_a_mitad_de_t1(c
 def test_orientadora_no_ve_actividades_fichas_ni_logros(cliente):
     for ruta in ('actividades', 'fichas', 'testimonios', 'diario/preguntas'):
         assert pedir(cliente, 'GET', f'/cuentas/ori-carmen/{ruta}') == []
-    assert pedir(cliente, 'GET', '/cuentas/ori-carmen/logros') == {'insignias': [], 'niveles': []}
+    assert pedir(cliente, 'GET', '/cuentas/ori-carmen/logros') == {'insignias': [], 'niveles': [], 'vitrina': []}
     assert pedir(cliente, 'GET', '/cuentas/ori-carmen/resumen')['nivel_actual'] is None
     assert cliente.post('/acciones/completar-actividad', json={
         'cuenta': 'ori-carmen', 'actividad': 't-inicio'}).status_code == 409

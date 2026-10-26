@@ -47,7 +47,7 @@ from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, Regist
 SCRIPT = Path(exportador.__file__).resolve()
 NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'cuentas', 'resumen-inicial', 'actividades-inicial', 'actividades-t1', 'actividades-ciudad',
-    'fichas-inicial', 'fichas-final', 'logros-inicial', 'logros-final',
+    'fichas-inicial', 'fichas-final', 'logros-inicial', 'logros-final', 'vitrina', 'progreso-nivel-3',
     'avance-inicial', 'avance-t1', 'avance-ciudad', 'avance-t2', 'avance-final',
     'completar-t-inicio', 'completar-t-cierre-inicio', 'items-t-mision-intereses', 'revelar-riasec', 'resultado-riasec',
     'desbloqueos-no-vistos', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
@@ -347,7 +347,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         ('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA')]
     assert [(f['codigo'], f['estado']) for f in datos['fichas-final']] == [
         ('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE')]
-    assert [n['estado'] for n in datos['logros-final']['niveles']] == ['OBTENIDO', 'OBTENIDO']
+    assert [n['estado'] for n in datos['logros-final']['niveles']] == ['OBTENIDO', 'OBTENIDO', 'BLOQUEADO']
     # B08: batalla con reintento, caso superado, colección y testimonios.
     derrota, victoria = (RespuestaResolverBatalla.model_validate(datos[nombre])
                          for nombre in ('resolver-batalla-derrota', 'resolver-batalla-victoria'))

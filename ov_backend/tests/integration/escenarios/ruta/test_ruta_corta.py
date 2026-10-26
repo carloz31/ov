@@ -281,7 +281,7 @@ def test_hu074_logros_obtenidos_y_condiciones(cliente):
     completar(cliente, 't-cierre-inicio')
     logros = pedir(cliente, 'GET', '/cuentas/est-ana/logros')
     assert logros['insignias'][0]['estado'] == 'OBTENIDA'
-    assert [(n['numero'], n['estado']) for n in logros['niveles']] == [(1, 'OBTENIDO'), (2, 'OBTENIDO')]
+    assert [(n['numero'], n['estado']) for n in logros['niveles']] == [(1, 'OBTENIDO'), (2, 'OBTENIDO'), (3, 'BLOQUEADO')]
     assert estado(cliente)['nivel_actual']['numero'] == 2
 
 

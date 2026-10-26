@@ -41,6 +41,8 @@ class CondicionDesbloqueo(Base):
     id_referencia: Mapped[int | None]
     tipo_conteo: Mapped[TipoConteo] = mapped_column(enumerado(TipoConteo))
     cantidad_minima: Mapped[int]
+    # Lo que la condición pide, para mostrarlo tal cual (ajuste pasaporte-perfil); nulo si no tiene.
+    texto: Mapped[str | None] = mapped_column(default=None)
     regla: Mapped[ReglaDesbloqueo] = relationship(back_populates="condiciones")
 
 

@@ -1,12 +1,15 @@
 """Contrato de las consultas por dominio."""
 
+from unittest.mock import ANY
+
 import pytest
 from sqlalchemy import select
 
 from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActividad, Visibilidad
 from datos.fijos import SECCIONES
 from datos.ruta import (
-    ACTIVIDADES, BLOQUES, DESCRIPCIONES, FICHAS, INSIGNIAS, NIVELES, PREGUNTAS_DIARIO, PROPIEDADES, RECUERDOS_LUMI,
+    ACTIVIDADES, BLOQUES, DESCRIPCIONES, FICHAS, GRUPOS_INSIGNIA, INSIGNIAS, NIVELES, PAGINAS_INSIGNIAS, PISTAS_INSIGNIAS,
+    PREGUNTAS_DIARIO, PROPIEDADES, RECUERDOS_LUMI,
     REGLAS, TESTIMONIOS, contenido,
 )
 from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
@@ -59,7 +62,8 @@ def esperado(ruta, completo):
     if ruta == 'resumen':
         numero = 2 if completo else 1
         return {'cuenta': {'codigo': 'est-ana', 'nombre': 'Ana', 'rol': 'ESTUDIANTE'},
-                'nivel_actual': {'numero': numero, 'titulo': NIVELES[numero - 1][1]}}
+                'nivel_actual': {'numero': numero, 'titulo': NIVELES[numero - 1][1],
+                                 'descripcion': NIVELES[numero - 1][2]}}
     if ruta == 'actividades':
         return [{
             'codigo': bloque, 'nombre': nombre, 'numero': numero, 'espacio': espacio,
@@ -82,17 +86,26 @@ def esperado(ruta, completo):
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'DISPONIBLE' if completo else 'BLOQUEADA'}
                 for codigo, titulo, _, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
     if ruta == 'logros':
+        # Ajuste pasaporte-perfil: por página y orden; la oculta conserva su página, su orden y su pista.
+        grupos = {codigo: {'codigo': codigo, 'nombre': nombre, 'orden': orden} for codigo, nombre, orden in GRUPOS_INSIGNIA}
         insignias = []
-        for codigo, nombre, descripcion, requisito, oculta in sorted(INSIGNIAS):
+        for codigo, nombre, descripcion, requisito, oculta in sorted(
+                INSIGNIAS, key=lambda fila: (grupos[PAGINAS_INSIGNIAS[fila[0]][0]]['orden'], PAGINAS_INSIGNIAS[fila[0]][1])):
+            grupo, orden = PAGINAS_INSIGNIAS[codigo]
+            obtenida = completo and codigo == 't-ins-1'
+            comunes = {'grupo': grupos[grupo], 'orden': orden, 'pista': PISTAS_INSIGNIAS.get(codigo),
+                       'obtenida_en': ANY if obtenida else None}
             insignias.append(
-                {'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA'}
+                {'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA',
+                 **comunes}
                 if oculta else {'codigo': codigo, 'nombre': nombre, 'descripcion': descripcion,
-                                'requisito': requisito, 'estado': 'OBTENIDA' if completo and codigo == 't-ins-1' else 'BLOQUEADA'}
+                                'requisito': requisito, 'estado': 'OBTENIDA' if obtenida else 'BLOQUEADA', **comunes}
             )
         return {'insignias': insignias, 'niveles': [
-            {'numero': numero, 'titulo': titulo, 'estado': 'OBTENIDO' if numero <= (2 if completo else 1) else 'BLOQUEADO'}
-            for numero, titulo in NIVELES
-        ], 'afinidad': 0.0}
+            {'numero': numero, 'titulo': titulo, 'descripcion': descripcion,
+             'estado': 'OBTENIDO' if numero <= (2 if completo else 1) else 'BLOQUEADO'}
+            for numero, titulo, descripcion in NIVELES
+        ], 'vitrina': [], 'afinidad': 0.0}
     if ruta == 'testimonios':
         # Se abren al superar el caso, que en este recorrido sigue sin resolverse.
         # Ajustes Central (7): bloqueados, sin quién lo cuenta y con el caso que los regala.
@@ -136,7 +149,7 @@ def test_apoderado_sin_listas_estudiantiles(cliente, ruta):
     if ruta == 'resumen':
         assert respuesta == {'cuenta': {'codigo': 'apo-rosa', 'nombre': 'Rosa', 'rol': 'APODERADO'}, 'nivel_actual': None}
     elif ruta == 'logros':
-        assert respuesta == {'insignias': [], 'niveles': []}
+        assert respuesta == {'insignias': [], 'niveles': [], 'vitrina': []}
     elif ruta == 'secciones':
         assert respuesta == [('CONVERSACIONES', 'BLOQUEADA', False)]
     elif ruta == 'fichas':
@@ -221,7 +234,10 @@ def test_orden_por_numero_y_codigo_y_por_orden_y_codigo(sesion, cliente):
 def test_insignia_oculta_solo_se_revela_al_obtenerse(cliente):
     ocultas = [i for i in consultar(cliente, 'logros')['insignias'] if i['codigo'] == '???']
     # B10: además de t-ins-oculta, tres logros ocultos por vistas diversas del catálogo.
-    assert ocultas == [{'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA'}] * 4
+    assert [{clave: valor for clave, valor in i.items() if clave in ('codigo', 'nombre', 'descripcion', 'requisito', 'estado')}
+            for i in ocultas] == [{'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None,
+                                   'estado': 'BLOQUEADA'}] * 4
+    assert all(i['pista'] and i['grupo'] for i in ocultas)
     pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'VENCE_DESAFIO_INTACTO'})
     insignias = consultar(cliente, 'logros')['insignias']
     assert len([i for i in insignias if i['codigo'] == '???']) == 3

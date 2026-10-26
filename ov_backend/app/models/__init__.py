@@ -22,12 +22,12 @@ _MODELOS_POR_MODULO = {
     ),
     'app.models.contenido': (
         'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
-        'Insignia',
+        'GrupoInsignia', 'Insignia',
         'Nivel', 'FamiliaCarrera', 'Carrera',
     ),
     'app.models.progreso': (
         'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'Recomendacion', 'EntradaDiario', 'ContadorDiario',
-        'CheckIn', 'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito',
+        'CheckIn', 'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito', 'InsigniaVitrina',
     ),
     'app.models.motor': (
         'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo',
@@ -75,7 +75,7 @@ __all__ = [
     'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
     'SalonInstrumento', 'Bloque',
     'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Ficha', 'Testimonio',
-    'PreguntaDiario', 'Conversacion', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
+    'PreguntaDiario', 'Conversacion', 'GrupoInsignia', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
     'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn', 'Entrevista',
     'EntrevistaAutor', 'ConversacionVinculo', 'EventoUso', 'ReglaDesbloqueo',
     'CondicionDesbloqueo', 'Desbloqueo', 'Instrumento', 'Dimension', 'EscalaRespuesta',
@@ -85,7 +85,7 @@ __all__ = [
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
     'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera', 'RangoIngreso',
-    'TipoFavorito', 'Favorito', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
+    'TipoFavorito', 'Favorito', 'InsigniaVitrina', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
     'ContadorDiario', 'GestionInstitucion', 'FrecuenciaGasto', 'OrigenIdea', 'PreguntaConocimiento',
     'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'EstadoPaso',
     'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',

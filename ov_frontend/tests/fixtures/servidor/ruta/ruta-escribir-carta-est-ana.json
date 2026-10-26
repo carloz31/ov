@@ -14,6 +14,7 @@
           "cumplida": true,
           "referencia": null,
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "ESCRIBE_CARTA"
         },
@@ -22,6 +23,7 @@
           "cumplida": true,
           "referencia": "t-expectativas",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }

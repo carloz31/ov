@@ -13,7 +13,7 @@ from app import models as modelos
 
 MODELOS_FIJOS = (
     modelos.Bloque, modelos.Actividad, modelos.Seccion, modelos.Ficha, modelos.Testimonio,
-    modelos.PreguntaDiario, modelos.Conversacion, modelos.Insignia, modelos.Nivel,
+    modelos.PreguntaDiario, modelos.Conversacion, modelos.GrupoInsignia, modelos.Insignia, modelos.Nivel,
     modelos.FamiliaCarrera, modelos.Carrera, modelos.ReglaDesbloqueo,
     modelos.CondicionDesbloqueo, modelos.Instrumento, modelos.Dimension,
     modelos.EscalaRespuesta, modelos.OpcionEscala, modelos.ItemInstrumento,

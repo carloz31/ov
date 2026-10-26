@@ -32,6 +32,7 @@ class ProgresoCondicion(BaseModel):
     actual: int
     requerido: int
     cumplida: bool
+    texto: str | None = None
 
 
 class ResultadoEvaluador(BaseModel):

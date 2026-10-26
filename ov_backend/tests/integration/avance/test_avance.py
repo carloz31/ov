@@ -28,6 +28,12 @@ def test_total_fijo_desde_el_inicio_aunque_la_opcional_siga_oculta(cliente):
         'tramo_actual': {'codigo': 'T0', 'nombre': 'Inicio', 'numero': 1, 'completadas': 0, 'total': 3},
         'camino_completo': False,
         'ciudad': {'completadas': 0, 'total': 4, 'porcentaje': 0.0},
+        'tramos': [
+            {'codigo': 'T0', 'nombre': 'Inicio', 'numero': 1, 'completadas': 0, 'total': 3, 'estado': 'ACTUAL'},
+            {'codigo': 'T1', 'nombre': 'Camino', 'numero': 2, 'completadas': 0, 'total': 1, 'estado': 'PENDIENTE'},
+            {'codigo': 'T2', 'nombre': 'Decisión', 'numero': 3, 'completadas': 0, 'total': 3, 'estado': 'PENDIENTE'},
+        ],
+        'requeridas': {'completadas': 0, 'total': 7},
     }
 
 
@@ -74,3 +80,11 @@ def test_lumi_y_familia_no_cuentan(cliente, sesion):
 def test_solo_el_estudiante_tiene_avance(cliente):
     for cuenta in ('apo-rosa', 'ori-carmen'):
         assert cliente.get(f'/cuentas/{cuenta}/avance').status_code == 404
+
+
+def test_tramos_marcan_completo_actual_y_pendiente_y_suman_requeridas(cliente):
+    avanzar(cliente, 't-cierre-inicio')
+    datos = avance(cliente)
+    assert [(t['codigo'], t['estado'], t['completadas']) for t in datos['tramos']] == [
+        ('T0', 'COMPLETO', 3), ('T1', 'ACTUAL', 0), ('T2', 'PENDIENTE', 0)]
+    assert datos['requeridas'] == {'completadas': 3, 'total': 7}

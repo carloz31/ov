@@ -24,6 +24,7 @@
                 "cumplida": false,
                 "referencia": "t-inicio",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -54,6 +55,7 @@
                 "cumplida": false,
                 "referencia": "t-partida",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -94,6 +96,7 @@
                 "cumplida": false,
                 "referencia": "T0",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -124,6 +127,7 @@
                 "cumplida": false,
                 "referencia": "T0",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -154,6 +158,7 @@
                 "cumplida": false,
                 "referencia": "T0",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -184,6 +189,7 @@
                 "cumplida": false,
                 "referencia": "T0",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -214,6 +220,7 @@
                 "cumplida": false,
                 "referencia": "T0",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -244,6 +251,7 @@
                 "cumplida": false,
                 "referencia": "T0",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -274,6 +282,7 @@
                 "cumplida": false,
                 "referencia": "T0",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -304,6 +313,7 @@
                 "cumplida": false,
                 "referencia": "T0",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -334,6 +344,7 @@
             "cumplida": false,
             "referencia": "T0",
             "requerido": 1,
+            "texto": null,
             "tipo_conteo": "EVENTOS",
             "tipo_evento": "COMPLETA_BLOQUE"
           }
@@ -360,6 +371,7 @@
                 "cumplida": false,
                 "referencia": "T1",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               },
@@ -368,6 +380,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "REVELA_RESULTADO"
               }
@@ -401,6 +414,7 @@
                 "cumplida": false,
                 "referencia": "T1",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               },
@@ -409,6 +423,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "REVELA_RESULTADO"
               }
@@ -442,6 +457,7 @@
                 "cumplida": false,
                 "referencia": "T1",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               },
@@ -450,6 +466,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "REVELA_RESULTADO"
               }
@@ -483,6 +500,7 @@
             "cumplida": false,
             "referencia": "T1",
             "requerido": 1,
+            "texto": null,
             "tipo_conteo": "EVENTOS",
             "tipo_evento": "COMPLETA_BLOQUE"
           },
@@ -491,6 +509,7 @@
             "cumplida": false,
             "referencia": null,
             "requerido": 1,
+            "texto": null,
             "tipo_conteo": "EVENTOS",
             "tipo_evento": "REVELA_RESULTADO"
           }
@@ -520,6 +539,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -550,6 +570,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -580,6 +601,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -610,6 +632,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -640,6 +663,7 @@
             "cumplida": false,
             "referencia": "t-expectativas",
             "requerido": 1,
+            "texto": null,
             "tipo_conteo": "EVENTOS",
             "tipo_evento": "COMPLETA_ACTIVIDAD"
           }
@@ -666,6 +690,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -696,6 +721,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 5,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -726,6 +752,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 12,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -756,6 +783,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 25,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -786,6 +814,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 45,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }

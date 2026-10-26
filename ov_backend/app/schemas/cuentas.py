@@ -17,6 +17,7 @@ class CuentaResumen(BaseModel):
 class NivelActual(BaseModel):
     numero: int
     titulo: str
+    descripcion: str | None
 
 
 class ResumenCuenta(BaseModel):

@@ -167,6 +167,15 @@ class Conversacion(Base):
     mensaje_diferencias: Mapped[str] = mapped_column(Text)
 
 
+class GrupoInsignia(Base):
+    """Página del pasaporte (ajuste pasaporte-perfil): agrupa insignias por `orden`."""
+    __tablename__ = "grupo_insignia"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
+    nombre: Mapped[str]
+    orden: Mapped[int]
+
+
 class Insignia(Base):
     __tablename__ = "insignia"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -176,6 +185,10 @@ class Insignia(Base):
     requisito: Mapped[str] = mapped_column(Text)
     es_oculta: Mapped[bool]
     audiencia: Mapped[Audiencia] = mapped_column(enumerado(Audiencia))
+    grupo_id: Mapped[int] = mapped_column(ForeignKey("grupo_insignia.id"))
+    orden: Mapped[int]
+    # Pista de Lumi mientras una oculta no se obtiene; se muestra aunque esté enmascarada.
+    pista: Mapped[str | None] = mapped_column(Text, default=None)
 
 
 class Nivel(Base):
@@ -183,6 +196,7 @@ class Nivel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     numero: Mapped[int] = mapped_column(unique=True)
     titulo: Mapped[str]
+    descripcion: Mapped[str | None] = mapped_column(Text, default=None)
 
 
 class FamiliaCarrera(Base):

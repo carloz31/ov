@@ -42,6 +42,7 @@ def evaluar_regla(sesion: Session, cuenta: Cuenta, regla: ReglaDesbloqueo) -> Re
             referencia=referencia_legible(sesion, condicion.tipo_evento, condicion.id_referencia),
             tipo_conteo=condicion.tipo_conteo, actual=actual,
             requerido=condicion.cantidad_minima, cumplida=actual >= condicion.cantidad_minima,
+            texto=condicion.texto,
         ))
     especial = None
     if regla.evaluador_especial is not None:

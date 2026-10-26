@@ -358,6 +358,9 @@ def _recorrer(cliente):
     fixtures['avance-instrumentos-final'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos')
     fixtures['comparacion-partida-llegada'] = _pedir(
         cliente, 'GET', f'/cuentas/est-ana/instrumentos/{PARTIDA_LLEGADA}/comparacion')
+    # Ajuste pasaporte-perfil: la vitrina con la primera insignia y el progreso del nivel 3 (dos condiciones).
+    fixtures['vitrina'] = _pedir(cliente, 'POST', '/acciones/vitrina', {'cuenta': 'est-ana', 'codigos': ['t-ins-1']})
+    fixtures['progreso-nivel-3'] = _pedir(cliente, 'GET', '/cuentas/est-ana/progreso/NIVEL/N3')
     fixtures.update(_consultas_dominio(cliente, 'final', ('avance', 'fichas', 'logros')))
     return fixtures
 

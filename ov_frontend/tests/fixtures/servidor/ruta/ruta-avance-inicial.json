@@ -10,11 +10,41 @@
     "porcentaje": 0.0,
     "total": 4
   },
+  "requeridas": {
+    "completadas": 0,
+    "total": 7
+  },
   "tramo_actual": {
     "codigo": "T0",
     "completadas": 0,
     "nombre": "Inicio",
     "numero": 1,
     "total": 3
-  }
+  },
+  "tramos": [
+    {
+      "codigo": "T0",
+      "completadas": 0,
+      "estado": "ACTUAL",
+      "nombre": "Inicio",
+      "numero": 1,
+      "total": 3
+    },
+    {
+      "codigo": "T1",
+      "completadas": 0,
+      "estado": "PENDIENTE",
+      "nombre": "Camino",
+      "numero": 2,
+      "total": 1
+    },
+    {
+      "codigo": "T2",
+      "completadas": 0,
+      "estado": "PENDIENTE",
+      "nombre": "Decisión",
+      "numero": 3,
+      "total": 3
+    }
+  ]
 }
