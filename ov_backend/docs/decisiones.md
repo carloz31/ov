@@ -19,3 +19,10 @@
 - Estado «sin resultados» con «Ninguna ficha/voz coincide con tu búsqueda» y «Limpiar filtros» (pedido del usuario al aprobar el plan).
 - El botón «Ir al mapa» del vacío de fichas va a `appPaths.student.exploration`, como dice el texto.
 - Sin dependencias nuevas: `ResourceText` amplía su lector de markdown (`###`, listas, citas, enlaces https).
+- Favoritos de fichas y testimonios en el servidor (cambio de modelo aprobado): `TipoFavorito` suma FICHA y TESTIMONIO (migración 0031, sin tablas nuevas) y se reutilizan `marcar-favorito` y `desmarcar-favorito`. Reemplaza la decisión anterior de dejar los favoritos de testimonio (y de ficha) en local: en api se leen de `es_favorita` (`GET fichas` y `GET testimonios`) y en local siguen en `adventure.bookmarks`.
+- Para FICHA y TESTIMONIO, marcar y desmarcar no exigen la sección CATALOGO: basta que el recurso sea de la audiencia de la cuenta (404 si no) y esté desbloqueado (409 si no).
+- Marcar una ficha registra MARCA_FAVORITO_FICHA y un testimonio, MARCA_FAVORITO_TESTIMONIO, con su id como referencia (uno por tipo, como VISTA_FICHA y VISTA_TESTIMONIO), y no MARCA_FAVORITO; desmarcar no registra eventos. Ninguna regla de la semilla los usa. `MARCA_FAVORITO_TESTIMONIO` alarga la columna del enumerado de eventos de 22 a 25 caracteres (en la misma migración).
+- `GET /favoritos` y la referencia FAVORITOS siguen siendo solo del catálogo.
+- El modal de ficha se dibuja en un portal fuera de `.sx-root`: define sus propios tokens `--sx-parchment`, `--sx-parchment-edge` y `--sx-gold` (los mismos valores de `student-base.css`); sin ellos su fondo quedaba transparente.
+- Favoritos en api sin optimismo: mientras corre el POST, la estrella muestra un cargador, no se deshabilita (como la vitrina) e ignora un segundo clic; cambia al confirmar el servidor y se mantiene hasta que llega la consulta nueva (pedido del usuario).
+- `FichaCuenta` vive en `types/servidorFichas.ts`, reexportado por `servidor.ts`, para no pasar de 400 líneas.

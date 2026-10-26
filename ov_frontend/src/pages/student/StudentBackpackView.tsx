@@ -18,6 +18,12 @@ import { RequisitoRecurso } from '@/features/backpack/components/RequisitoRecurs
 function StudentBackpackView() {
   const model = useBackpack()
   const { navigate, kind, selected, setSelectedId, requisitoId, setRequisitoId, isUnlocked } = model
+  // Ajuste mochila: el modal y el pop up comparten la estrella de la mochila (favoritos del servidor en api).
+  const favorito = selected && {
+    favorita: model.esFavorita(selected),
+    pendiente: model.favoritoPendiente(selected.id),
+    onFavorite: () => model.toggleFavorite(selected.id),
+  }
   const { requisito, requisitoPendiente, errorRequisito, reintentarRequisito, mostrarRequisito, tituloRequisito } =
     model
 
@@ -41,12 +47,14 @@ function StudentBackpackView() {
       </p>
       <VisorRecurso
         resource={selected?.kind !== 'sheet' && selected && isUnlocked(selected) ? selected : undefined}
+        favorito={favorito}
         onClose={() => setSelectedId(null)}
       />
       <FichaModal
         abierto={selected?.kind === 'sheet' && isUnlocked(selected)}
         resource={selected}
         enlazarActividad
+        favorito={favorito}
         onClose={() => setSelectedId(null)}
       />
       {mostrarRequisito && (

@@ -89,12 +89,13 @@ def esperado(ruta, completo):
         # Ajuste mochila: las dos de t-inicio (T0) se obtienen; la de t-opcional sigue bloqueada y sin detalle.
         bloque = next(fila for fila in BLOQUES if fila[0] == 'T0')
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'DISPONIBLE', 'tema': tema, 'descripcion': descripcion,
-                 'contenido': texto, 'obtenida_en': ANY, 'visto': False,
+                 'contenido': texto, 'obtenida_en': ANY, 'visto': False, 'es_favorita': False,
                  'actividad': {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'},
                  'tramo': {'codigo': 'T0', 'nombre': bloque[2], 'numero': bloque[1]}}
                 if completo and codigo != 't-ficha-3' else
                 {'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'tema': None, 'descripcion': None,
-                 'contenido': None, 'obtenida_en': None, 'visto': False, 'actividad': None, 'tramo': None}
+                 'contenido': None, 'obtenida_en': None, 'visto': False, 'es_favorita': False, 'actividad': None,
+                 'tramo': None}
                 for codigo, titulo, descripcion, tema, texto, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
     if ruta == 'logros':
         # Ajuste pasaporte-perfil: por página y orden; la oculta conserva su página, su orden y su pista.
@@ -129,7 +130,7 @@ def esperado(ruta, completo):
                  'descripcion': None, 'enlace': None, 'persona': None, 'ocupacion': None,
                  'anios_experiencia': None, 'cita': None,
                  'caso': dict(zip(('codigo', 'titulo'), casos.get(codigo, ('t-caso', 'Caso de prueba')))),
-                 'caso_disponible': False}
+                 'caso_disponible': False, 'es_favorita': False}
                 for codigo, titulo, _, _, pista, *_ in sorted(TESTIMONIOS)]
     if ruta == 'secciones':
         return [(codigo, 'DISPONIBLE' if completo else 'BLOQUEADA', completo) for codigo in SECCIONES_ESTUDIANTE]
@@ -172,7 +173,7 @@ def test_apoderado_sin_listas_estudiantiles(cliente, ruta):
     elif ruta == 'fichas':
         assert respuesta == [{'codigo': 't-ficha-apo', 'titulo': 'Ficha del apoderado', 'estado': 'BLOQUEADA',
                               'tema': None, 'descripcion': None, 'contenido': None, 'obtenida_en': None,
-                              'visto': False, 'actividad': None, 'tramo': None}]
+                              'visto': False, 'es_favorita': False, 'actividad': None, 'tramo': None}]
     elif ruta == 'actividades':
         assert respuesta == [{**{clave: valor for clave, valor in BLOQUE_FAMILIA.items() if clave != 'bloqueo'},
                               'actividades': [{clave: valor for clave, valor in actividad.items() if clave != 'bloqueo'}

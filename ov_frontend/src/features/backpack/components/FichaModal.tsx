@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router'
-import { Map, Star, X } from 'lucide-react'
+import { Loader2, Map, Star, X } from 'lucide-react'
 import { registrarFichaEnPantalla } from '@/store/visorRecursoStore'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogClose, DialogDescription, DialogTitle } from '@/components/ui/Dialog'
@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { BackpackViewerFrame as DialogContent } from './BackpackViewerFrame'
 import { ChipTema } from './ChipTema'
 import { ResourceContent } from './ResourceContent'
-import { useFichaModal } from '../hooks/useVisorRecurso'
+import { useFichaModal, type FavoritoExterno } from '../hooks/useVisorRecurso'
 import type { TravelResource } from '../lib/travelerResources'
 import '../styles/ficha-modal.css'
 
@@ -19,17 +19,21 @@ export function FichaModal({
   resource,
   cargando = false,
   enlazarActividad = false,
+  favorito: externo,
   onClose,
 }: {
   abierto: boolean
   resource?: TravelResource
   cargando?: boolean
   enlazarActividad?: boolean
+  // La estrella de la mochila; sin ella, el modal guarda el favorito por su cuenta.
+  favorito?: FavoritoExterno
   onClose: () => void
 }) {
-  const { minutos, hrefActividad, favorito, alternarFavorito } = useFichaModal(
+  const { minutos, hrefActividad, favorito, pendiente, alternarFavorito } = useFichaModal(
     abierto && !cargando ? resource : undefined,
     enlazarActividad,
+    externo,
   )
   // Mientras está abierto, la ficha tiene prioridad sobre los avisos automáticos de Lumi.
   useEffect(() => (abierto ? registrarFichaEnPantalla() : undefined), [abierto])
@@ -88,8 +92,18 @@ export function FichaModal({
             </div>
           </div>
           <footer className="sx-ficha-modal__pie">
-            <Button variant="outline" aria-pressed={favorito} onClick={alternarFavorito} disabled={!resource}>
-              <Star className={favorito ? 'fill-current text-[#aa7d26]' : ''} />
+            <Button
+              variant="outline"
+              aria-pressed={favorito}
+              aria-busy={pendiente}
+              onClick={alternarFavorito}
+              disabled={!resource}
+            >
+              {pendiente ? (
+                <Loader2 className="animate-spin" aria-hidden="true" />
+              ) : (
+                <Star className={favorito ? 'fill-current text-[#aa7d26]' : ''} />
+              )}
               {favorito ? 'En tus favoritos' : 'Agregar a favoritos'}
             </Button>
             <p>Las favoritas aparecen primero cuando armes tus planes.</p>

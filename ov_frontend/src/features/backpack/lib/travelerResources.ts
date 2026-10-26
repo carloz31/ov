@@ -32,6 +32,8 @@ export type TravelResource = {
     casoDisponible?: boolean
     visto?: boolean
   }
+  // Ajuste mochila: favorita en el servidor (en local, `adventure.bookmarks`).
+  favorita?: boolean
   // Ajuste mochila: tema, origen y si ya se abrió (en local, solo la actividad de origen).
   ficha?: OrigenFicha & { tema?: string; visto?: boolean }
 }
@@ -159,6 +161,7 @@ export function testimonioServidor(t: TestimonioEstado): TravelResource {
     requirement: { anyCase: true },
     url: t.enlace ?? undefined,
     ...(t.persona ? { author: autor.join(' · ') } : {}),
+    favorita: t.es_favorita,
     servidor: { disponible, pista: t.pista, caso: t.caso, casoDisponible: t.caso_disponible, visto: t.visto },
   }
 }
@@ -278,6 +281,7 @@ export function fichaServidor(f: FichaCuenta): TravelResource {
     description: f.descripcion ?? '',
     requirement: { anyCase: true },
     content: f.contenido ?? undefined,
+    favorita: f.es_favorita,
     ficha: {
       tema: f.tema ?? undefined,
       actividad: f.actividad ?? undefined,

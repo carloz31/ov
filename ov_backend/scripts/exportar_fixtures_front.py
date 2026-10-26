@@ -364,6 +364,9 @@ def _recorrer(cliente):
     # Ajuste mochila: abrir t-ficha la deja vista; t-ficha-2 sigue nueva en fichas-final.
     fixtures['ver-ficha'] = _pedir(cliente, 'POST', '/acciones/ver-ficha',
                                    {'cuenta': 'est-ana', 'ficha': 't-ficha', 'fecha_hora': FECHA})
+    # Ajuste mochila: t-ficha queda favorita en fichas-final (registra MARCA_FAVORITO_FICHA).
+    fixtures['marcar-favorito-ficha'] = _pedir(cliente, 'POST', '/acciones/marcar-favorito', {
+        'cuenta': 'est-ana', 'tipo': 'FICHA', 'codigo': 't-ficha', 'fecha_hora': FECHA})
     fixtures.update(_consultas_dominio(cliente, 'final', ('avance', 'fichas', 'logros')))
     return fixtures
 

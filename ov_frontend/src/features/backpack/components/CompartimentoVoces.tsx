@@ -11,8 +11,8 @@ import { VozPorDescubrir } from './VozPorDescubrir'
 // Ajuste mochila: las voces abiertas, las que esperan un llamado ya disponible y una tarjeta de cierre que
 // cuenta las de llamados que aún no se abren.
 export function CompartimentoVoces({ model }: { model: ReturnType<typeof useBackpack> }) {
-  const { adventure, voces, voices, vocesVisibles, vacio, sinResultados, centralAbierta } = model
-  const { isUnlocked, esNueva, casoVoz, openResource, toggleFavorite, consultarRequisito, clear } = model
+  const { esFavorita, voces, voices, vocesVisibles, vacio, sinResultados, centralAbierta } = model
+  const { favoritoPendiente, isUnlocked, esNueva, casoVoz, openResource, toggleFavorite, consultarRequisito, clear } = model
   const faltan = voces.abiertas.length < voices.length
   return (
     <Parchment className="sx-b-compartment sx-d-dark" label="Compartimento de testimonios" title="Voces de la ciudad">
@@ -72,7 +72,8 @@ export function CompartimentoVoces({ model }: { model: ReturnType<typeof useBack
                     cita={resource.summary}
                     regalo={caso.titulo ?? 'de la ciudad'}
                     nueva={esNueva(resource)}
-                    favorita={adventure.bookmarks.includes(resource.id)}
+                    favorita={esFavorita(resource)}
+                    pendiente={favoritoPendiente(resource.id)}
                     onEscuchar={() => openResource(resource)}
                     onFavorite={() => toggleFavorite(resource.id)}
                   />

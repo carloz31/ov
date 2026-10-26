@@ -31,3 +31,5 @@ class TestimonioEstado(BaseModel):
     caso: CasoTestimonio | None
     # El caso ya está disponible para la cuenta (ajuste mochila): solo entonces la voz bloqueada se lista.
     caso_disponible: bool
+    # La cuenta lo marcó como favorito (ajuste mochila).
+    es_favorita: bool

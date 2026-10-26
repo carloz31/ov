@@ -39,16 +39,6 @@ export type BloqueEstado = {
   actividades: ActividadEstado[]
 }
 export type ContenidoEstado = { codigo: string; titulo: string; estado: EstadoDisponibilidad }
-// Ajuste mochila: el detalle solo con la ficha obtenida (nulos si está bloqueada); `visto`, por ficha.
-export type FichaCuenta = ContenidoEstado & {
-  tema: string | null
-  descripcion: string | null
-  contenido: string | null
-  obtenida_en: string | null
-  visto: boolean
-  actividad: { codigo: string; titulo: string } | null
-  tramo: { codigo: string; nombre: string; numero: number } | null
-}
 export type TipoEventoUso =
   | 'INGRESO'
   | 'COMPLETA_ACTIVIDAD'
@@ -63,6 +53,8 @@ export type TipoEventoUso =
   | 'SUPERA_BATALLA'
   | 'VISTA_TESTIMONIO'
   | 'VISTA_FICHA'
+  | 'MARCA_FAVORITO_FICHA'
+  | 'MARCA_FAVORITO_TESTIMONIO'
   | 'ESCRIBE_CARTA'
   | 'COMPLETA_CONVERSACION'
   | 'REINICIA_INSTRUMENTO'
@@ -175,6 +167,8 @@ export type ErrorServidor =
 export type RespuestaServidor<T> = { tipo: 'ok'; datos: T } | ErrorServidor
 // app/schemas/instrumentos.py vive en servidorInstrumentos.ts (F03), para que este archivo no pase de 400 líneas.
 export * from './servidorInstrumentos'
+// app/schemas/fichas.py vive en servidorFichas.ts (ajuste mochila), por el mismo límite.
+export * from './servidorFichas'
 // app/schemas/logros.py vive en servidorLogros.ts (ajuste pasaporte-perfil).
 export * from './servidorLogros'
 type AccionInstrumento = RespuestaAccion & { cuenta: string; instrumento: string; aplicacion: string }
@@ -372,6 +366,7 @@ export type TestimonioEstado = {
   cita: string | null
   caso: { codigo: string; titulo: string } | null
   caso_disponible: boolean
+  es_favorita: boolean
 }
 // F04c: las respuestas en el orden en que se dieron; el servidor decide la victoria.
 export type ResolverBatallaEntrada = {

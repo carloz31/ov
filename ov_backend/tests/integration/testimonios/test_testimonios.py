@@ -16,7 +16,7 @@ def test_hu056_bloqueado_muestra_pista_y_oculta_el_enlace(cliente):
                    'visto': False, 'pista': 'Resuelve el caso de prueba para conocer este testimonio.',
                    'descripcion': None, 'enlace': None, 'persona': None, 'ocupacion': None,
                    'anios_experiencia': None, 'cita': None, 'caso': {'codigo': 't-caso', 'titulo': 'Caso de prueba'},
-                   'caso_disponible': False}
+                   'caso_disponible': False, 'es_favorita': False}
     assert (dos['estado'], dos['enlace'], dos['persona']) == ('BLOQUEADA', None, None)
     assert dos['caso'] == {'codigo': 't-caso', 'titulo': 'Caso de prueba'}
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/testimonios') == []

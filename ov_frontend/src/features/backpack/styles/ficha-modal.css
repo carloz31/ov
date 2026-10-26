@@ -1,4 +1,10 @@
 /* Ajuste mochila: el modal de ficha de toda la plataforma. Cabecera y pie fijos; el cuerpo se desplaza. */
+/* El modal se dibuja en un portal, fuera de `.sx-root`: trae sus propios tokens (los mismos de student-base). */
+.sx-ficha-modal {
+  --sx-gold: var(--warning);
+  --sx-parchment: color-mix(in srgb, var(--warning-soft) 60%, var(--card));
+  --sx-parchment-edge: color-mix(in srgb, var(--warning) 28%, var(--card));
+}
 .sx-ficha-modal.sx-backpack-viewer {
   display: flex;
   flex-direction: column;

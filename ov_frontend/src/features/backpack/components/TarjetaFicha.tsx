@@ -1,4 +1,4 @@
-import { FileText, Star } from 'lucide-react'
+import { FileText, Loader2, Star } from 'lucide-react'
 import { colorTema } from '../lib/fichaLectura'
 import type { TravelResource } from '../lib/travelerResources'
 import { ChipTema } from './ChipTema'
@@ -9,12 +9,15 @@ export function TarjetaFicha({
   resource,
   favorita,
   nueva,
+  pendiente = false,
   onOpen,
   onFavorite,
 }: {
   resource: TravelResource
   favorita: boolean
   nueva: boolean
+  // Ajuste mochila: el POST del favorito está en curso.
+  pendiente?: boolean
   onOpen: () => void
   onFavorite: () => void
 }) {
@@ -29,12 +32,17 @@ export function TarjetaFicha({
           className="sx-b-estrella"
           aria-label={favorita ? 'Quitar de favoritos' : 'Agregar a favoritos'}
           aria-pressed={favorita}
+          aria-busy={pendiente}
           onClick={(event) => {
             event.stopPropagation()
             onFavorite()
           }}
         >
-          <Star aria-hidden="true" fill={favorita ? 'currentColor' : 'none'} />
+          {pendiente ? (
+            <Loader2 aria-hidden="true" className="animate-spin" />
+          ) : (
+            <Star aria-hidden="true" fill={favorita ? 'currentColor' : 'none'} />
+          )}
         </button>
       </div>
       <div className="sx-b-ficha-cuerpo">

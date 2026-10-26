@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
-from app.models import Actividad, Cuenta, Ocupacion, Testimonio, Rol, TipoEventoUso, TipoObjetivo
+from app.models import Actividad, Cuenta, Ocupacion, Testimonio, Rol, TipoEventoUso, TipoFavorito, TipoObjetivo
 from app.schemas.acciones import RespuestaAccion, VerTestimonioEntrada
 from app.schemas.testimonios import CasoTestimonio, OcupacionTestimonio, TestimonioEstado
 from app.services.comun import (
@@ -20,6 +20,7 @@ def listar_testimonios_cuenta(sesion: Session, cuenta: Cuenta) -> list[Testimoni
     # Una sola consulta para las ocupaciones, sea cual sea el número de testimonios (el catálogo no va en caché).
     ids = {t.ocupacion_id for t in testimonios if t.ocupacion_id is not None}
     ocupaciones = {o.id: o for o in sesion.scalars(select(Ocupacion).where(Ocupacion.id.in_(ids)))} if ids else {}
+    favoritos = contexto(sesion).favoritos_de(cuenta.id)
     respuesta = []
     for testimonio in testimonios:
         disponible = objetivo_disponible(sesion, cuenta, TipoObjetivo.TESTIMONIO, testimonio.id)
@@ -37,6 +38,7 @@ def listar_testimonios_cuenta(sesion: Session, cuenta: Cuenta) -> list[Testimoni
             cita=testimonio.cita if disponible else None,
             caso=None if caso is None else CasoTestimonio(codigo=caso.codigo, titulo=caso.titulo),
             caso_disponible=caso is not None and objetivo_disponible(sesion, cuenta, TipoObjetivo.ACTIVIDAD, caso.id),
+            es_favorita=(TipoFavorito.TESTIMONIO, testimonio.id) in favoritos,
         ))
     return respuesta
 

@@ -36,6 +36,8 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | REVELA_RESULTADO | aplicación (el resultado es por cuenta y aplicación; ver `instrumentos.md`) |
 | VISTA_TESTIMONIO | testimonio |
 | VISTA_FICHA | ficha |
+| MARCA_FAVORITO_FICHA | ficha |
+| MARCA_FAVORITO_TESTIMONIO | testimonio |
 | CREA_PLAN, ACTUALIZA_PLAN, ELIMINA_PLAN | carrera del plan (la tarjeta puede borrarse; la carrera no) |
 
 ## Reglas
@@ -139,7 +141,7 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/diario/archivar-pregunta`, `/acciones/diario/desarchivar-pregunta` | Solo estudiante; sección DIARIO; `codigo` de una carta recibida (DESBLOQUEABLE; una del día responde 409). Archivar: redactada, sin responder y no archivada; desarchivar: archivada (si no, 409) | Fija o borra `archivada_en`; responde su `PreguntaDiarioEstado`. Sin eventos. |
 | `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día, editable ese día (el segundo sobrescribe el nivel y no emite evento); nivel 1–5 | REGISTRA_CHECK_IN (solo el primero del día) |
 | `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
-| `/acciones/marcar-favorito` | Sección CATALOGO abierta; aún no es favorito | MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan) |
+| `/acciones/marcar-favorito` | Carrera, ocupación o institución: sección CATALOGO abierta. Ficha o testimonio (ajuste mochila): de la audiencia de la cuenta (si no, 404) y desbloqueado (si no, 409), sin exigir el catálogo. En ambos casos, aún no es favorito | Catálogo: MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan). Ficha: MARCA_FAVORITO_FICHA; testimonio: MARCA_FAVORITO_TESTIMONIO, con la ficha o el testimonio como referencia. Ninguna regla de la semilla los usa |
 | `/acciones/publicar-entrevista` | Autores: lista no vacía, sin repetidos, todos estudiantes | PUBLICA_ENTREVISTA en cada autor. Código `ENT-<uuid>`. |
 | `/acciones/escribir-carta` | Sección de su rol (ver «Conversaciones») y vínculo activo; la carta aún no entregada | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
 | `/acciones/responder-conversacion` | Ver «Conversaciones» | Guarda la respuesta de su rol. Sin eventos. |

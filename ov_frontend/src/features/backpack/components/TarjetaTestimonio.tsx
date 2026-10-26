@@ -1,4 +1,4 @@
-import { Play, Star } from 'lucide-react'
+import { Loader2, Play, Star } from 'lucide-react'
 
 // Testimonio abierto de la mochila, local y del servidor (ajustes Central, 7; ajuste mochila): iniciales,
 // nombre y ocupación, estrella, título, cita, el llamado que lo regaló y «Escuchar su historia».
@@ -10,6 +10,7 @@ export function TarjetaTestimonio({
   regalo,
   nueva,
   favorita,
+  pendiente = false,
   onEscuchar,
   onFavorite,
 }: {
@@ -21,6 +22,8 @@ export function TarjetaTestimonio({
   regalo: string
   nueva: boolean
   favorita: boolean
+  // Ajuste mochila: el POST del favorito está en curso.
+  pendiente?: boolean
   onEscuchar: () => void
   onFavorite: () => void
 }) {
@@ -43,9 +46,14 @@ export function TarjetaTestimonio({
           className="sx-b-estrella"
           aria-label={favorita ? 'Quitar de favoritos' : 'Agregar a favoritos'}
           aria-pressed={favorita}
+          aria-busy={pendiente}
           onClick={onFavorite}
         >
-          <Star aria-hidden="true" fill={favorita ? 'currentColor' : 'none'} />
+          {pendiente ? (
+            <Loader2 aria-hidden="true" className="animate-spin" />
+          ) : (
+            <Star aria-hidden="true" fill={favorita ? 'currentColor' : 'none'} />
+          )}
         </button>
       </div>
       <h3>{titulo}</h3>

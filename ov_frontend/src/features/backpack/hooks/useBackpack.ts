@@ -8,6 +8,7 @@ import { filtrar, vocesListadas } from '../lib/compartimentos'
 import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { consultarTestimonios, verTestimonio as registrarVistaTestimonio } from '@/store/servidor/testimonios'
+import { alternarFavorito } from '@/store/servidor/favoritos'
 import type { TestimonioEstado } from '@/types/servidor'
 import { useRequisitoRecurso } from './useRequisitoRecurso'
 import { useNavigate, useSearchParams } from 'react-router'
@@ -51,11 +52,17 @@ export function useBackpack() {
     }
   }, [])
   const [requisitoId, setRequisitoId] = useState<string | null>(null)
+  // Ajuste mochila (api): favoritos ya confirmados por el servidor, hasta que llega la consulta nueva, y los que
+  // esperan su POST.
+  const [optimistas, setOptimistas] = useState<Record<string, boolean>>({})
+  const [pendientes, setPendientes] = useState<string[]>([])
   const testimonioRequisito = testimonios?.find((t) => t.codigo === requisitoId)
   const requisito = useRequisitoRecurso(requisitoId, testimonioRequisito)
   const resources = getTravelResources(testimonios),
     selected = resources.find((r) => r.id === selectedId)
   const isUnlocked = (r: TravelResource) => isTravelResourceUnlocked(r, journey, adventure)
+  const esFavorita = (r: TravelResource) =>
+    modoApi ? (optimistas[r.id] ?? !!r.favorita) : adventure.bookmarks.includes(r.id)
   // F04d: `?ficha=<codigo>` de una ficha bloqueada abre su pop up de requisito, no el visor.
   const solicitadaBloqueada = modoApi && !!selected && selected.kind === 'sheet' && !isUnlocked(selected)
   useEffect(() => {
@@ -78,7 +85,7 @@ export function useBackpack() {
   const casoDisponible = (r: TravelResource) =>
     modoApi ? !!r.servidor?.casoDisponible : !!cityPoints.find((p) => p.id === casoLocal(r))?.actionEnabled
   const voces = vocesListadas(voices, isUnlocked, casoDisponible)
-  const criterio = { query, favoritesOnly, bookmarks: adventure.bookmarks, isUnlocked }
+  const criterio = { query, favoritesOnly, esFavorita, isUnlocked }
   const fichasVisibles = filtrar(fichasObtenidas, criterio),
     vocesVisibles = filtrar([...voces.abiertas, ...voces.porDescubrir], criterio)
   const vacio = kind === 'sheet' ? !fichasObtenidas.length : !voces.abiertas.length && !voces.porDescubrir.length
@@ -105,6 +112,23 @@ export function useBackpack() {
   function toggleFavorite(id: string) {
     const item = resources.find((r) => r.id === id)
     if (!item || !isUnlocked(item)) return
+    // Ajuste mochila: en api, el favorito se guarda en el servidor. Mientras el POST corre, la estrella muestra
+    // un cargador y no acepta otro clic; cambia solo cuando el servidor confirma.
+    if (modoApi) {
+      if (pendientes.includes(id)) return
+      const valor = !esFavorita(item)
+      setPendientes((actual) => [...actual, id])
+      void alternarFavorito(item.kind === 'sheet' ? 'FICHA' : 'TESTIMONIO', id, valor).then(async (respuesta) => {
+        setPendientes((actual) => actual.filter((p) => p !== id))
+        if (respuesta.tipo !== 'ok') return
+        setOptimistas((actual) => ({ ...actual, [id]: valor }))
+        if (item.kind !== 'sheet') {
+          const nuevos = await consultarTestimonios()
+          if (nuevos.tipo === 'ok') setTestimonios(nuevos.datos)
+        }
+      })
+      return
+    }
     updateAdventure((current) => ({
       ...current,
       bookmarks: current.bookmarks.includes(id)
@@ -153,6 +177,8 @@ export function useBackpack() {
     mostrarRequisito: modoApi,
     tituloRequisito: requisito.titulo,
     isUnlocked,
+    esFavorita,
+    favoritoPendiente: (id: string) => pendientes.includes(id),
     esNueva,
     sheets,
     voices,

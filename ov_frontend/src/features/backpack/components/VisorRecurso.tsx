@@ -1,19 +1,27 @@
 import { useEffect } from 'react'
-import { Check, Star } from 'lucide-react'
+import { Check, Loader2, Star } from 'lucide-react'
 import { registrarFichaEnPantalla } from '@/store/visorRecursoStore'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { BackpackViewerFrame as DialogContent } from './BackpackViewerFrame'
 import { ResourceContent } from './ResourceContent'
-import { useVisorRecurso } from '../hooks/useVisorRecurso'
+import { useVisorRecurso, type FavoritoExterno } from '../hooks/useVisorRecurso'
 import type { TravelResource } from '../lib/travelerResources'
 
 const kindLabels = { sheet: 'Ficha', testimonial: 'Testimonio', interview: 'Entrevista' }
 
 // El pop up de testimonio de la mochila (F04). Las fichas se abren en `FichaModal` (ajuste mochila).
-export function VisorRecurso({ resource, onClose }: { resource?: TravelResource; onClose: () => void }) {
-  const { favorito, alternarFavorito } = useVisorRecurso(resource)
+export function VisorRecurso({
+  resource,
+  favorito: externo,
+  onClose,
+}: {
+  resource?: TravelResource
+  favorito?: FavoritoExterno
+  onClose: () => void
+}) {
+  const { favorito, pendiente, alternarFavorito } = useVisorRecurso(resource, externo)
   const abierto = Boolean(resource)
   // Mientras está abierto, la ficha tiene prioridad sobre los avisos automáticos de Lumi.
   useEffect(() => (abierto ? registrarFichaEnPantalla() : undefined), [abierto])
@@ -44,8 +52,12 @@ export function VisorRecurso({ resource, onClose }: { resource?: TravelResource;
             <ResourceContent resource={resource} />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e4e0cb] bg-[#f4f3e8] px-6 py-4">
-            <Button variant="outline" size="sm" aria-pressed={favorito} onClick={alternarFavorito}>
-              <Star className={favorito ? 'fill-current text-[#aa7d26]' : ''} />
+            <Button variant="outline" size="sm" aria-pressed={favorito} aria-busy={pendiente} onClick={alternarFavorito}>
+              {pendiente ? (
+                <Loader2 className="animate-spin" aria-hidden="true" />
+              ) : (
+                <Star className={favorito ? 'fill-current text-[#aa7d26]' : ''} />
+              )}
               {favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
             </Button>
             {resource.source && (

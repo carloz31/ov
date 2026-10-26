@@ -4,7 +4,7 @@ import type { TravelResource } from './travelerResources'
 type Criterio = {
   query: string
   favoritesOnly: boolean
-  bookmarks: string[]
+  esFavorita: (r: TravelResource) => boolean
   isUnlocked: (r: TravelResource) => boolean
 }
 
@@ -15,11 +15,11 @@ export function textoBuscable(r: TravelResource, abierto: boolean) {
     : `${abierto ? (r.author ?? '') : ''} ${r.title}`
 }
 
-export function filtrar(items: TravelResource[], { query, favoritesOnly, bookmarks, isUnlocked }: Criterio) {
+export function filtrar(items: TravelResource[], { query, favoritesOnly, esFavorita, isUnlocked }: Criterio) {
   const buscado = query.trim().toLocaleLowerCase()
   return items.filter(
     (item) =>
-      (!favoritesOnly || (isUnlocked(item) && bookmarks.includes(item.id))) &&
+      (!favoritesOnly || (isUnlocked(item) && esFavorita(item))) &&
       textoBuscable(item, isUnlocked(item)).toLocaleLowerCase().includes(buscado),
   )
 }

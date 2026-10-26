@@ -49,7 +49,7 @@ src/
 | Un componente que usan dos dominios | `components/student/`, `components/staff/` o `components/common/` si no conoce el dominio. Si lo conoce, detente y pregunta. |
 | Una primitiva de interfaz | `components/ui/`. Usa la de shadcn antes de crear otra. |
 | Una llamada al backend | `services/api/<recurso>.ts`, agrupado como los routers del backend. GET → `obtener`, POST → `enviar`, PATCH → `actualizar`, DELETE → `eliminar`. Si el backend define un PUT, detente y avisa antes de agregar un método al cliente. |
-| Un tipo del contrato | `types/servidor.ts`, copiado tal cual del esquema Pydantic. Si el archivo no cabe en 400 líneas, un esquema va en su propio `types/servidor<Dominio>.ts`, que `servidor.ts` reexporta (hoy, `servidorInstrumentos.ts` con `app/schemas/instrumentos.py`). |
+| Un tipo del contrato | `types/servidor.ts`, copiado tal cual del esquema Pydantic. Si el archivo no cabe en 400 líneas, un esquema va en su propio `types/servidor<Dominio>.ts`, que `servidor.ts` reexporta (hoy, `servidorInstrumentos.ts` con `app/schemas/instrumentos.py` y `servidorFichas.ts` con `app/schemas/fichas.py`). |
 | Convertir una respuesta en datos para la vista | `lib/servidor/adaptadores.ts` (casos, colección y testimonios: `lib/servidor/adaptadoresCasos.ts`; registros y referencias: `lib/servidor/adaptadoresRegistro.ts`; diario y check-in: `lib/servidor/adaptadoresDiario.ts`, F05). Todos solo importan tipos. |
 | Estado que viene del servidor | `store/servidor/`. El del portal del apoderado, en `store/servidor/apoderado.ts`; no reutiliza el almacén del estudiante. |
 | Elegir entre dato del servidor y dato local | Un hook en `features/<dominio>/hooks/`. Nunca en una vista. |

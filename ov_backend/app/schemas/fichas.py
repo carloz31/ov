@@ -29,5 +29,7 @@ class FichaCuenta(BaseModel):
     obtenida_en: datetime | None
     # La cuenta abrió esta ficha (evento VISTA_FICHA con esta ficha como referencia).
     visto: bool
+    # La marcó como favorita (solo obtenida; ajuste mochila).
+    es_favorita: bool
     actividad: ActividadFicha | None
     tramo: TramoFicha | None

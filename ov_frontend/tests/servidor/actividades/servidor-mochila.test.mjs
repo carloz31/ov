@@ -15,6 +15,7 @@ const texto = (n) =>
 async function mochila(etapa, { testimonios = [], ruta = '/student/resources' } = {}) {
   const app = fixtureServidor({ ruta })
   app.fetch((r) => {
+    if (r.url.endsWith('-favorito')) return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
     if (r.url.endsWith('/fichas')) return { body: jsonServidor(`ruta/ruta-fichas-${etapa}`) }
     if (r.url.endsWith('/testimonios')) return { body: testimonios }
     return { body: [] }
@@ -152,4 +153,48 @@ test('voces: sin abiertas ni llamados disponibles, el compartimento vacío', asy
     .props
   assert.equal(vacia.titulo, 'Las voces llegan con los llamados')
   assert.ok(vacia.texto.endsWith('Hay 4 voces en la ciudad.'))
+})
+
+test('favoritos en api: se leen del servidor y se guardan con marcar y desmarcar', async () => {
+  const { app, hook } = await mochila('final', {
+    testimonios: jsonServidor('ruta/ruta-testimonios-final'),
+  })
+  let model = hook.render()
+  const ficha = (id) => model.fichasObtenidas.find((f) => f.id === id)
+  // En el fixture final, t-ficha es favorita.
+  assert.deepEqual([model.esFavorita(ficha('t-ficha')), model.esFavorita(ficha('t-ficha-2'))], [true, false])
+  // Mientras el POST corre, la estrella muestra su cargador y no cambia; un segundo clic se ignora.
+  model.toggleFavorite('t-ficha-2')
+  model = hook.render()
+  assert.deepEqual([model.favoritoPendiente('t-ficha-2'), model.esFavorita(ficha('t-ficha-2'))], [true, false])
+  model.toggleFavorite('t-ficha-2')
+  await esperar()
+  model = hook.render()
+  assert.deepEqual([model.favoritoPendiente('t-ficha-2'), model.esFavorita(ficha('t-ficha-2'))], [false, true])
+  model.toggleFavorite('t-ficha')
+  model.toggleFavorite('t-testimonio-1')
+  await esperar()
+  assert.deepEqual(
+    copia(app.requests.filter((r) => r.url.endsWith('-favorito')).map((r) => [r.url, r.body])),
+    [
+      ['/api/acciones/marcar-favorito', { cuenta: 'est-ana', tipo: 'FICHA', codigo: 't-ficha-2' }],
+      ['/api/acciones/desmarcar-favorito', { cuenta: 'est-ana', tipo: 'FICHA', codigo: 't-ficha' }],
+      ['/api/acciones/marcar-favorito', { cuenta: 'est-ana', tipo: 'TESTIMONIO', codigo: 't-testimonio-1' }],
+    ],
+  )
+  const { TarjetaFicha } = app.load('src/features/backpack/components/TarjetaFicha.tsx')
+  const tarjeta = app.mount(TarjetaFicha, {
+    resource: ficha('t-ficha'),
+    favorita: true,
+    nueva: false,
+    pendiente: true,
+    onOpen() {},
+    onFavorite() {},
+  }).render()
+  const estrella = elementos(tarjeta, (e) => e.props?.['aria-busy'] !== undefined)[0]
+  assert.equal(estrella.props['aria-busy'], true)
+  assert.equal(elementos(estrella, (e) => e.type?.displayName === 'Loader2' || /Loader/.test(e.type?.displayName ?? '')).length, 1)
+  // «Solo favoritos» usa los del servidor.
+  hook.render().setFavoritesOnly(true)
+  assert.deepEqual(copia(hook.render().gruposFichas.flatMap((g) => g.fichas.map((f) => f.id))), ['t-ficha-2'])
 })

@@ -98,7 +98,10 @@ def _opciones_de_resultado(tipo, resultado):
 
 
 def _leer_favoritos(sesion, cuenta):
-    filas = sesion.execute(select(Favorito.tipo, Favorito.id_referencia).where(Favorito.cuenta_id == cuenta.id).order_by(
+    # Solo el catálogo: las fichas y los testimonios favoritos (ajuste mochila) no son opciones de la referencia.
+    catalogo = (TipoFavorito.CARRERA, TipoFavorito.OCUPACION, TipoFavorito.INSTITUCION)
+    filas = sesion.execute(select(Favorito.tipo, Favorito.id_referencia).where(
+        Favorito.cuenta_id == cuenta.id, Favorito.tipo.in_(catalogo)).order_by(
         Favorito.fecha_hora.desc(), Favorito.id.desc())).all()
     por_tipo = {}
     for tipo, referencia in filas:

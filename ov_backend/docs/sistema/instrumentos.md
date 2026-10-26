@@ -121,7 +121,7 @@ Código: `app/services/favoritos.py`. Exigen la sección CATALOGO, como el catá
 
 | Ruta | Qué hace |
 |---|---|
-| `POST /acciones/marcar-favorito` `{cuenta, tipo, codigo, fecha_hora?}` | `tipo` es CARRERA, OCUPACION o INSTITUCION. Registra MARCA_FAVORITO (sin referencia). Si ya es favorito, 409; si el código no existe, 404. |
+| `POST /acciones/marcar-favorito` `{cuenta, tipo, codigo, fecha_hora?}` | `tipo` es CARRERA, OCUPACION o INSTITUCION (registra MARCA_FAVORITO, sin referencia) o, desde el ajuste mochila, FICHA o TESTIMONIO (ver `motor.md`). Si ya es favorito, 409; si el código no existe, 404. |
 | `POST /acciones/desmarcar-favorito` `{cuenta, tipo, codigo}` | Lo quita sin registrar eventos. Si no era favorito, 409. |
 | `GET /cuentas/{c}/favoritos` | `{carreras[], ocupaciones[], instituciones[]}` con los resúmenes del catálogo, del más reciente al más antiguo. |
 

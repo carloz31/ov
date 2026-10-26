@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, Bloque, Cuenta, Desbloqueo, Espacio, Ficha, TipoEventoUso, TipoObjetivo,
+    Actividad, Bloque, Cuenta, Desbloqueo, Espacio, Ficha, TipoEventoUso, TipoFavorito, TipoObjetivo,
 )
 from app.schemas.acciones import RespuestaAccion, VerFichaEntrada
 from app.schemas.fichas import ActividadFicha, FichaCuenta, TramoFicha
@@ -18,6 +18,7 @@ def listar_fichas_cuenta(sesion: Session, cuenta: Cuenta) -> list[FichaCuenta]:
     definiciones = datos.definiciones
     # Los eventos de la cuenta (VISTA_FICHA) se leen siempre en una consulta, haya o no fichas obtenidas.
     datos.cargar_conteos([cuenta.id])
+    datos.favoritos_de(cuenta.id)
     fichas = [ficha for ficha in sorted(definiciones.listar(Ficha), key=lambda ficha: ficha.codigo)
               if objetivo_corresponde_a_cuenta(sesion, cuenta, TipoObjetivo.FICHA, ficha.id)]
     reglas = {regla.id: (ficha, regla) for ficha in fichas
@@ -37,7 +38,7 @@ def _ficha_cuenta(sesion, cuenta, ficha, obtenida):
     disponible = objetivo_disponible(sesion, cuenta, TipoObjetivo.FICHA, ficha.id)
     if not disponible:
         return FichaCuenta(codigo=ficha.codigo, titulo=ficha.titulo, estado="BLOQUEADA", tema=None, descripcion=None,
-                           contenido=None, obtenida_en=None, visto=False, actividad=None, tramo=None)
+                           contenido=None, obtenida_en=None, visto=False, es_favorita=False, actividad=None, tramo=None)
     fecha, regla = obtenida if obtenida else (None, None)
     actividad = None if regla is None else _actividad_de_la_regla(sesion, regla)
     bloque = None if actividad is None else contexto(sesion).definiciones.obtener(Bloque, actividad.bloque_id)
@@ -46,6 +47,7 @@ def _ficha_cuenta(sesion, cuenta, ficha, obtenida):
         contenido=ficha.contenido, obtenida_en=fecha,
         # Por ficha: solo cuenta el evento cuya referencia es esta ficha.
         visto=existe_evento(sesion, cuenta, TipoEventoUso.VISTA_FICHA, ficha.id),
+        es_favorita=(TipoFavorito.FICHA, ficha.id) in contexto(sesion).favoritos_de(cuenta.id),
         actividad=None if actividad is None else ActividadFicha(codigo=actividad.codigo, titulo=actividad.titulo),
         tramo=TramoFicha(codigo=bloque.codigo, nombre=bloque.nombre, numero=bloque.numero)
         if bloque is not None and bloque.espacio == Espacio.MISIONES_CAMPO else None,

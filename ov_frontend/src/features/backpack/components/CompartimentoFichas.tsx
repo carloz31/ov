@@ -10,8 +10,8 @@ import { TarjetaPunteada } from './TarjetaPunteada'
 // Ajuste mochila: solo las fichas obtenidas, por tramo, con el cierre «Más adelante» (cuántas faltan, sin
 // nombrar la misión) y el estado vacío.
 export function CompartimentoFichas({ model }: { model: ReturnType<typeof useBackpack> }) {
-  const { adventure, gruposFichas, fichasObtenidas, fichasPendientes, sheets, vacio, sinResultados } = model
-  const { esNueva, openResource, toggleFavorite, clear } = model
+  const { esFavorita, gruposFichas, fichasObtenidas, fichasPendientes, sheets, vacio, sinResultados } = model
+  const { esNueva, favoritoPendiente, openResource, toggleFavorite, clear } = model
   return (
     <Parchment className="sx-b-compartment" label="Compartimento de fichas" title="Lo que aprendiste en el camino">
       {vacio ? (
@@ -44,7 +44,8 @@ export function CompartimentoFichas({ model }: { model: ReturnType<typeof useBac
                     <TarjetaFicha
                       key={resource.id}
                       resource={resource}
-                      favorita={adventure.bookmarks.includes(resource.id)}
+                      favorita={esFavorita(resource)}
+                      pendiente={favoritoPendiente(resource.id)}
                       nueva={esNueva(resource)}
                       onOpen={() => openResource(resource)}
                       onFavorite={() => toggleFavorite(resource.id)}

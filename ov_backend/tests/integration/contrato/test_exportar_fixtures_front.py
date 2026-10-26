@@ -59,7 +59,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-eco-sin-dato', 'referencias-t-eco-disponible',
     'referencias-t-contraste',
     'items-t-partida', 'respuestas-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
-    'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'ver-ficha', 'preguntas-batalla',
+    'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'ver-ficha', 'marcar-favorito-ficha', 'preguntas-batalla',
     'resolver-batalla-derrota',
     'resolver-batalla-victoria', 'batallas', 'resolver-caso', 'casos', 'coleccion',
     'catalogo-carreras', 'catalogo-carrera-psychology', 'catalogo-ocupaciones-riasec', 'catalogo-ocupacion-psychologist',
@@ -347,6 +347,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         ('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA'), ('t-ficha-3', 'BLOQUEADA')]
     # Ajuste mochila: abrir t-ficha (ver-ficha) la deja vista; t-ficha-2 sigue nueva y t-ficha-3, bloqueada.
     RespuestaAccion.model_validate(datos['ver-ficha'])
+    assert [e['tipo'] for e in datos['marcar-favorito-ficha']['eventos_registrados']] == ['MARCA_FAVORITO_FICHA']
+    assert [f['es_favorita'] for f in datos['fichas-final']] == [True, False, False]
     assert [(f['codigo'], f['estado'], f['visto'], (f['tramo'] or {}).get('numero'))
             for f in datos['fichas-final']] == [
         ('t-ficha', 'DISPONIBLE', True, 1), ('t-ficha-2', 'DISPONIBLE', False, 1),

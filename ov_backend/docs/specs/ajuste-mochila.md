@@ -126,3 +126,19 @@ Un commit por fase: `Ajuste mochila · F<n>: …`.
   - Completar `t-inicio`: la mochila muestra «Tramo 1 · …» con 2 fichas «Nueva», «2 nuevas», «2 de 3» y la tarjeta «Más adelante».
   - Al abrir una ficha desaparece «Nueva».
   - El modal hace scroll solo en el cuerpo.
+
+## Fase 6 · Favoritos de fichas y testimonios y fondo del modal
+
+Pedido del usuario tras la prueba manual, aprobado como cambio de modelo:
+
+- `TipoFavorito` suma FICHA y TESTIMONIO, y `TipoEventoUso` suma MARCA_FAVORITO_FICHA y MARCA_FAVORITO_TESTIMONIO, con la ficha o el testimonio como referencia (migración 0031).
+- `marcar-favorito` y `desmarcar-favorito` aceptan esos tipos:
+  - no exigen la sección CATALOGO;
+  - exigen que el recurso sea de la audiencia de la cuenta (404 si no) y esté desbloqueado (409 si no);
+  - al marcar registran su propio evento, no MARCA_FAVORITO.
+- `GET fichas` y `GET testimonios` suman `es_favorita`. `GET favoritos` y la referencia FAVORITOS siguen siendo solo del catálogo.
+- Front:
+  - en api, las estrellas de las tarjetas, del modal de ficha y del pop up de testimonio leen y escriben en el servidor;
+  - en local, siguen en `adventure.bookmarks`.
+- Mientras corre el POST de un favorito, la estrella (tarjetas, modal de ficha y pop up de testimonio) muestra un cargador (`aria-busy`) y cambia solo cuando el servidor confirma (pedido del usuario).
+- El modal de ficha define sus propios tokens de color, porque se dibuja fuera de `.sx-root` y su fondo quedaba transparente.

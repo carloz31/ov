@@ -27,6 +27,8 @@ MODELOS_REFERENCIA = {
     TipoEventoUso.SUPERA_BATALLA: Actividad,
     TipoEventoUso.VISTA_TESTIMONIO: Testimonio,
     TipoEventoUso.VISTA_FICHA: Ficha,
+    TipoEventoUso.MARCA_FAVORITO_FICHA: Ficha,
+    TipoEventoUso.MARCA_FAVORITO_TESTIMONIO: Testimonio,
     TipoEventoUso.REGISTRO_ADECUADO: Actividad,
     TipoEventoUso.VISTA_CARRERA: Carrera,
     TipoEventoUso.VISTA_OCUPACION: Ocupacion,

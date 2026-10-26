@@ -71,6 +71,8 @@ class TipoEventoUso(StrEnum):
     ACTUALIZA_PLAN = "ACTUALIZA_PLAN"
     ELIMINA_PLAN = "ELIMINA_PLAN"
     VISTA_FICHA = "VISTA_FICHA"
+    MARCA_FAVORITO_FICHA = "MARCA_FAVORITO_FICHA"
+    MARCA_FAVORITO_TESTIMONIO = "MARCA_FAVORITO_TESTIMONIO"
 
 
 class TipoInstitucion(StrEnum):
@@ -88,6 +90,9 @@ class TipoFavorito(StrEnum):
     CARRERA = "CARRERA"
     OCUPACION = "OCUPACION"
     INSTITUCION = "INSTITUCION"
+    # Ajuste mochila: recursos de la mochila, ya desbloqueados.
+    FICHA = "FICHA"
+    TESTIMONIO = "TESTIMONIO"
 
 
 class NivelAjuste(StrEnum):

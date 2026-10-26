@@ -32,7 +32,7 @@ def test_ficha_bloqueada_no_trae_detalle(cliente):
     bloqueada = fichas(cliente)['t-ficha']
     assert bloqueada == {'codigo': 't-ficha', 'titulo': 'Ficha de prueba', 'estado': 'BLOQUEADA', 'tema': None,
                          'descripcion': None, 'contenido': None, 'obtenida_en': None, 'visto': False,
-                         'actividad': None, 'tramo': None}
+                         'es_favorita': False, 'actividad': None, 'tramo': None}
 
 
 def test_ver_ficha_una_sola_vez_y_solo_esa_ficha(cliente, aplicacion):
