@@ -401,6 +401,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 
 #### F05 · Diario, pregunta del día y check-in · **Implementado**
 - **Ajuste del diario (M) · Implementado:** portada en tres zonas («Hoy», buzón, tarjeta de Lumi y cuaderno), «Cartas de Lumi» con archivo y remitente (migración 0026), recuerdos como actividades del bloque LUMI con conteo de tope diario (migración 0027) y cierre de la pregunta del día al borrar su respuesta.
+- **Ajuste presentaciones-vistas (S) · Implementado:** la bienvenida del diario pasa a la presentación de Lumi de la sección, y en api las presentaciones de primera visita ya cerradas se guardan por cuenta en el servidor (`presentacion`, `presentacion_vista`, migración 0030). Queda unir presentación y ayuda del «?» en un solo texto.
 - **Quedó:** HU-075 parcial (nivel y afinidad); el avance por temática, sin vista, en `pendientes-interfaz.md`. La afinidad cuenta las misiones adicionales en el total y `check-ins` suma `registrado_hoy`.
 - **Hace:** diario desde el servidor (preguntas fijas y personalizadas, entradas con título opcional, editar y borrar, pregunta del día vigente, amistad con Lumi); aviso en el cierre de actividad cuando deja una pregunta; check-in al ingresar si no hay uno del día y su evolución; temáticas y afinidad en el pasaporte.
 - **Pantallas a decidir:** aviso «Lumi te dejó una pregunta en tu diario» en el cierre (no existe); estado «Lumi está escribiendo…» al abrir una personalizada; dónde va la pregunta del día dentro del diario; dónde se ven evolución, temáticas y afinidad.

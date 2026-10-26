@@ -57,7 +57,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 | Un cuerpo de entrada o respuesta | `app/schemas/<dominio>.py`. |
 | Un umbral o constante de método | `app/core/parametros.py`. |
 | Una variable de entorno | `app/config.py` y `.env.example`. |
-| Lo que tendrá la plataforma sea cual sea la ruta (secciones, listas comunes, repreguntas por tipo de criterio, temáticas, RIASEC, catálogo O*NET, cuestionario de partida y llegada…) | `datos/fijos.py`, sin `DATO DE PRUEBA`. Nunca en `app/`. |
+| Lo que tendrá la plataforma sea cual sea la ruta (secciones, presentaciones de primera visita, listas comunes, repreguntas por tipo de criterio, temáticas, RIASEC, catálogo O*NET, cuestionario de partida y llegada…) | `datos/fijos.py`, sin `DATO DE PRUEBA`. Nunca en `app/`. |
 | Datos de prueba de una mecánica | `datos/ruta.py`, en tuplas declarativas que interpreta el cargador, con códigos `t-...`. Nunca en `app/`. |
 | Una tabla de estado de las cuentas | Además, en `TABLAS_DE_ESTADO` de `app/services/desarrollo.py`, para que el reinicio la vacíe (una prueba exige clasificar toda tabla como catálogo o estado). |
 | Un dominio nuevo (favoritos, planes…) | Un archivo en `services/`, `schemas/` y, si tiene tablas, `models/`. Un archivo pasa a carpeta solo cuando ya no cabe en uno; un dominio que ya nace grande (planes: consulta, cuatro guardados con efectos y sugerencias) puede nacer como carpeta. |
