@@ -19,6 +19,14 @@ SECCIONES = (('CATALOGO', 'Catálogo', 'ESTUDIANTE'), ('CHECK_IN', 'Check-in', '
              ('DIARIO', 'Diario', 'ESTUDIANTE'), ('FAMILIA', 'Familia', 'ESTUDIANTE'),
              ('PLANES', 'Planes', 'ESTUDIANTE'), ('CONVERSACIONES', 'Conversaciones', 'APODERADO'))
 
+# (código, audiencia). Presentaciones de primera visita: los ids de las vistas del estudiante en el front
+# (`ov_frontend/src/lib/studentViews.ts`); el texto está en el front.
+PRESENTACIONES = tuple((codigo, 'ESTUDIANTE') for codigo in (
+    'activities', 'catalog-careers', 'catalog-detail', 'catalog-institutions', 'catalog-professions', 'central',
+    'community', 'conversations', 'investigations', 'journal', 'journal-signals', 'missions', 'profile-decisions',
+    'profile-general', 'profile-helena', 'research', 'research-guide', 'resources',
+))
+
 # Código reservado para la opción «otra»; ninguna lista puede usarlo.
 CODIGO_OTRA = 'OTRA'
 
@@ -488,6 +496,10 @@ def _cargar_secciones(sesion):
     return secciones
 
 
+def _cargar_presentaciones(sesion):
+    sesion.add_all(modelos.Presentacion(codigo=c, audiencia=modelos.Audiencia(a)) for c, a in PRESENTACIONES)
+
+
 def cargar_listas(sesion, listas, comun):
     """Carga listas de opciones; la ruta usa la misma función para sus listas propias."""
     cargadas = {}
@@ -537,6 +549,7 @@ def _cargar_tarjeta(sesion, listas):
 
 def cargar(sesion: Session) -> Fijos:
     secciones = _cargar_secciones(sesion)
+    _cargar_presentaciones(sesion)
     listas = cargar_listas(sesion, LISTAS_COMUNES, comun=True)
     secciones_tarjeta = _cargar_tarjeta(sesion, listas)
     archivo = _leer_catalogo_seleccionado()

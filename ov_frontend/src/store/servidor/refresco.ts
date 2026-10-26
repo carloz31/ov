@@ -58,6 +58,9 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
     obtenerEstadoServidor().secciones.estado !== 'listo'
   )
     pedidos.push(asegurarSeccion('secciones'))
+  // Ajuste presentaciones-vistas: deciden la presentación de la vista al entrar; ninguna acción las cambia.
+  if (obtenerEstadoServidor().presentaciones.estado === 'error') vencerSeccion('presentaciones')
+  if (obtenerEstadoServidor().presentaciones.estado !== 'listo') pedidos.push(asegurarSeccion('presentaciones'))
   pedidos.push(...cargarVencidasMontadas())
   const respuestas = await Promise.all(pedidos)
   if (!vigente()) return cambioCuenta()

@@ -161,10 +161,12 @@ export const sectionIntros: Record<StudentView, string[]> = {
   'journal-signals': [
     'Tu señal muestra cómo te has sentido día a día. Mirarla con calma te ayuda a notar qué te da energía y qué te pesa.',
   ],
+  // Ajuste del diario: el contenido del antiguo cuadro «Un espacio para ti y Lumi», dicho por Lumi.
   journal: [
-    'Este es nuestro cuaderno. Solo tú puedes leerlo: ni tu orientadora ni tu familia ven lo que escribes.',
-    // DATO DE PRUEBA
-    'Escribir lo que piensas y sientes te ayuda a ordenar tus ideas y a reconocer lo que de verdad te importa.',
+    'Este es un espacio para ti y para mí: tu diario se convierte en conversaciones con tu compañera de viaje. No hay respuestas automáticas: tú decides qué contar.',
+    'Es privado para siempre. Nadie lee lo que escribes aquí. Ni tu orientadora, ni nadie del programa. Nunca.',
+    'Escríbelo a tu manera: no hay respuestas correctas. Puedes escribir una frase o una página.',
+    'Y hay una señal separada: de vez en cuando te preguntaremos qué tan seguro te sientes de tu próximo paso. Tu orientadora ve solo esa respuesta corta, nunca lo que escribes.',
   ],
   // DATO DE PRUEBA
   research: [

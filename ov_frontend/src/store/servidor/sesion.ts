@@ -21,6 +21,7 @@ import type {
   ErrorServidor,
   ItemPublico,
   PreguntaDiarioEstado,
+  PresentacionesCuenta,
   RespuestaPublica,
   RespuestaServidor,
   ResultadoHistorico,
@@ -44,6 +45,8 @@ export type DatosSecciones = {
   avance: AvanceEstudiante
   // GET /cuentas/{c}/secciones: diario, check-in, catálogo, planes y familia (F00).
   secciones: SeccionEstado[]
+  // Ajuste presentaciones-vistas: las presentaciones de primera visita ya cerradas; van con el ingreso.
+  presentaciones: PresentacionesCuenta
   // F05: el diario se pide al abrirlo; los check-ins, al ingresar y solo con CHECK_IN abierta.
   diarioPreguntas: PreguntaDiarioEstado[]
   diarioEntradas: EntradaDiarioPublica[]
@@ -103,6 +106,7 @@ const inicial = (): AlmacenServidor => ({
   logros: vacia(),
   avance: vacia(),
   secciones: vacia(),
+  presentaciones: vacia(),
   diarioPreguntas: vacia(),
   diarioEntradas: vacia(),
   amistad: vacia(),

@@ -98,6 +98,8 @@ test('ingreso confirma el POST antes de cargar y pide sus consultas en paralelo 
     // Ajuste del panel (F05): el avance del panel va con las actividades.
     '/api/cuentas/est-ana/avance',
     '/api/cuentas/est-ana/desbloqueos?solo_no_vistos=true',
+    // Ajuste presentaciones-vistas: deciden la presentación de Lumi al entrar a cada vista.
+    '/api/cuentas/est-ana/presentaciones',
     '/api/cuentas/est-ana/resumen',
     // F00: las secciones del perfil se ven siempre en el panel y llegan con el ingreso.
     '/api/cuentas/est-ana/secciones',

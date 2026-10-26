@@ -213,18 +213,6 @@ export function useJournalPage() {
     if (carta.estado === 'lista' && carta.bandeja === 'PENDIENTE') responder.current(carta)
   }, [servidor.activo, buzon.cartas, preguntaPedida, preguntaAbierta])
 
-  function startOnboardingEntry() {
-    updateAdventure((current) => ({ ...current, journalOnboardingSeen: true }))
-    if (!initialPrompt) {
-      setPromptShown('¿Cómo llegas al inicio de este proceso?')
-      setLinkedActivityId('journal-onboarding')
-      setEntryTitle('Al inicio del camino')
-      setLockedTags([])
-      setBody('')
-      setScreen('write')
-    }
-  }
-
   function addTag(raw = tagDraft) {
     const next = raw.trim().replace(/^#/, '').toLocaleLowerCase('es-PE')
     if (!next || tags.includes(next)) return
@@ -364,7 +352,6 @@ export function useJournalPage() {
     usedTags,
     openEditor,
     startBlankEntry,
-    startOnboardingEntry,
     addTag,
     saveEntry,
     editEntry,

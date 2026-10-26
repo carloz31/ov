@@ -126,11 +126,14 @@ test('con una ficha abierta (o su requisito), el tutorial de Lumi espera y no se
   const app = fixtureServidor({ ruta: '/student/resources?kind=sheet&ficha=t-ficha' })
   const ui = app.load('src/store/studentUiStore.ts')
   const visor = app.load('src/store/visorRecursoStore.ts')
-  ui.updateStudentUi((s) => ({ ...s, introsSeen: { ...s.introsSeen, resources: false }, cityArrivalSeen: true }))
+  ui.updateStudentUi((s) => ({ ...s, cityArrivalSeen: true }))
+  // Ajuste presentaciones-vistas: en api, lo visto lo dice el servidor.
+  app.load('src/store/servidor/sesion.ts').publicar({ presentaciones: { datos: { vistas: [] }, estado: 'listo', error: null } })
+  app.fetch((r) => ({ body: { vistas: r.url === '/api/acciones/presentacion-vista' ? [r.body.codigo] : [] } }))
   const { useNoveltyQueue } = app.load('src/features/adventure/hooks/useNoveltyQueue.ts')
   const cola = app.mount((p) => useNoveltyQueue(p.view, p.activityOpen), { view: 'resources', activityOpen: false })
   const render = () => cola.render()
-  const vista = () => ui.useStudentUi().introsSeen.resources ?? false
+  const vista = () => app.requests.some((r) => r.url === '/api/acciones/presentacion-vista' && r.body.codigo === 'resources')
   // La mochila abrió la ficha pedida por ?ficha=: el tutorial no se muestra.
   const cerrarFicha = visor.registrarFichaEnPantalla()
   render()

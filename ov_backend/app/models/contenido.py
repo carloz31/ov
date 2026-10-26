@@ -109,6 +109,14 @@ class Seccion(Base):
     audiencia: Mapped[Audiencia] = mapped_column(enumerado(Audiencia))
 
 
+class Presentacion(Base):
+    """Presentación de primera visita de una vista del front; `codigo` es el id de la vista (`journal`, `missions`…)."""
+    __tablename__ = "presentacion"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
+    audiencia: Mapped[Audiencia] = mapped_column(enumerado(Audiencia))
+
+
 class Ficha(Base):
     __tablename__ = "ficha"
     id: Mapped[int] = mapped_column(primary_key=True)

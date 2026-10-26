@@ -5,7 +5,7 @@ from app.services.desarrollo import TABLAS_DE_ESTADO
 
 
 CATALOGO = {
-    'salon', 'salon_instrumento', 'salon_actividad_prioritaria', 'cuenta', 'orientadora_salon', 'vinculo_familiar', 'bloque', 'actividad', 'tematica', 'actividad_tematica', 'actividad_dimension', 'pregunta_batalla', 'seccion', 'ficha', 'testimonio',
+    'salon', 'salon_instrumento', 'salon_actividad_prioritaria', 'cuenta', 'orientadora_salon', 'vinculo_familiar', 'bloque', 'actividad', 'tematica', 'actividad_tematica', 'actividad_dimension', 'pregunta_batalla', 'seccion', 'presentacion', 'ficha', 'testimonio',
     'pregunta_diario', 'conversacion', 'grupo_insignia', 'insignia', 'nivel', 'familia_carrera', 'carrera',
     'regla_desbloqueo', 'condicion_desbloqueo', 'instrumento', 'dimension',
     'escala_respuesta', 'opcion_escala', 'item_instrumento', 'actividad_item',
@@ -17,7 +17,7 @@ CATALOGO = {
 
 
 ESTADO = {
-    'progreso_actividad', 'resultado_caso', 'resultado_batalla', 'respuesta_batalla', 'coleccion_ocupacion', 'recomendacion', 'entrada_diario', 'contador_diario', 'check_in', 'insignia_vitrina',
+    'progreso_actividad', 'resultado_caso', 'resultado_batalla', 'respuesta_batalla', 'coleccion_ocupacion', 'recomendacion', 'entrada_diario', 'contador_diario', 'check_in', 'insignia_vitrina', 'presentacion_vista',
     'entrevista',
     'entrevista_autor', 'conversacion_vinculo', 'evento_uso', 'desbloqueo',
     'respuesta_item', 'resultado_instrumento', 'resultado_dimension', 'coincidencia',

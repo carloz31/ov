@@ -3491,12 +3491,13 @@ test('Lumi bond counts Lima days without loss and opens memories at exact bounda
  }
 })
 
-test('journal uses conversations, inline onboarding and private titled saving without automatic windows', () => {
+test('journal uses conversations, Lumi onboarding and private titled saving without automatic windows', () => {
  const html=render('/student/journal',{journalOnboardingSeen:true})
  // Ajuste del diario de F05 (autorizado por la spec): «Hoy» reemplaza la página en blanco y la tarjeta de Lumi es compacta.
  for(const text of ['Amistad con Lumi','Escribir algo libre','Lo que le has contado a Lumi','la amistad nunca se pierde'])assert.ok(html.includes(text),text)
  assert.doesNotMatch(html,/puntos de amistad|baja 1 punto|role="dialog"/)
- const intro=render('/student/journal',{journalOnboardingSeen:false});assert.match(intro,/Un espacio para ti y Lumi/);assert.doesNotMatch(intro,/role="dialog"/)
+ // Ajuste diario-lumi (autorizado): la bienvenida pasó a la presentación de Lumi; la portada ya no la muestra.
+ const intro=render('/student/journal',{journalOnboardingSeen:false});assert.doesNotMatch(intro,/Un espacio para ti y Lumi|Entendido, empezar a escribir/);assert.match(intro,/Escribir algo libre/);assert.doesNotMatch(intro,/role="dialog"/)
  const page=immersivePlayerHarness('src/pages/student/StudentJournalView',{'react-router':{useSearchParams:()=>[new URLSearchParams()]},'@/hooks/useLumiNow':{useLumiNow:()=>new Date()},'@/hooks/useReturnFocus':{useReturnFocus:()=>({})}})
  const before=store.useAdventure()
  try{
@@ -3720,7 +3721,8 @@ test('daily journal question shows its prompt in «Hoy», recognizes today and l
       journalOnboardingSeen: true, journal: [{ ...answer, linkedActivityId: `daily-prompt-${yesterday}` }],
     }))
     assert.ok(newDay.includes(daily.prompt))
-    assert.equal(card(render('/student/journal', { journalOnboardingSeen: false })), undefined)
+    // Ajuste diario-lumi: sin el cuadro de bienvenida, «Hoy» se ve también en la primera visita.
+    assert.ok(card(render('/student/journal', { journalOnboardingSeen: false })).includes(daily.prompt))
     // El cuaderno completo (`?cuaderno=completo`) lista todas las entradas, también las de demostración más antiguas.
     const legacy = render('/student/journal?cuaderno=completo', { journalOnboardingSeen: true })
     // Ajuste del diario de F05 (pedido del usuario): cada entrada es un punto de la línea de tiempo del cuaderno.

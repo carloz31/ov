@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 82
+    assert len(Base.metadata.tables) == 84
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,7 +129,7 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 84
+    assert sql.count('CREATE TABLE ') == 86
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -283,6 +283,9 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
                 assert cliente.post('/acciones/completar-actividad', json={
                     'cuenta': 'apo-rosa', 'actividad': actividad,
                 }).status_code == 200
+            assert cliente.post('/acciones/presentacion-vista', json={
+                'cuenta': 'est-ana', 'codigo': 'missions',
+            }).status_code == 200
         with motor.connect() as conexion:
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).mappings().all()
                           for tabla in Base.metadata.sorted_tables}
@@ -295,12 +298,13 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # antes, porque `t-eco-ruta` retoma una elección con su lista. Ajustes Central (6): 0024 se detiene antes,
         # porque `t-caso` tiene puntaje máximo 14 (en puntos de satisfacción). Ajuste del diario (F05): 0027 se
         # detiene antes, porque `ruta` tiene el bloque LUMI y condiciones con tope diario. Ajuste pasaporte-perfil:
-        # 0028 se detiene antes, porque `ruta` tiene grupos de insignia.
-        with pytest.raises(RuntimeError, match='existen grupos de insignia'):
+        # 0028 se detiene antes, porque `ruta` tiene grupos de insignia. Ajuste presentaciones-vistas: 0032 se detiene
+        # antes, porque est-ana ya cerró una presentación.
+        with pytest.raises(RuntimeError, match='existen presentaciones vistas'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0028'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0032'
             for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]

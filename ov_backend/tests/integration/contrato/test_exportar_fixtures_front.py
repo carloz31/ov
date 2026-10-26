@@ -36,6 +36,7 @@ from app.schemas.actividades import BloqueActividades
 from app.schemas.fichas import FichaCuenta, FichaDetalle
 from app.schemas.logros import LogrosCuenta
 from app.schemas.avance import AvanceEstudiante
+from app.schemas.presentaciones import PresentacionesCuenta
 from app.schemas.secciones import SeccionEstado
 from app.schemas.instrumentos import (
     AvanceInstrumento, ComparacionAutopercepcion, InstrumentoPublico, ItemPublico, RespuestasActividad,
@@ -51,7 +52,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'avance-inicial', 'avance-t1', 'avance-ciudad', 'avance-t2', 'avance-final',
     'completar-t-inicio', 'completar-t-cierre-inicio', 'items-t-mision-intereses', 'revelar-riasec', 'resultado-riasec',
     'desbloqueos-no-vistos', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
-    'secciones-inicial', 'secciones-t1', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
+    'secciones-inicial', 'secciones-t1', 'presentaciones-inicial', 'presentacion-vista', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
     'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
     'items-registro-t-valores', 'borrador-t-valores', 'entregar-t-valores-seguimiento', 'registro-t-valores-pendiente',
@@ -267,6 +268,9 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         'PLANES': 'DISPONIBLE'}
     assert [(s['codigo'], s['estado']) for s in datos['apoderado-secciones-inicial']] == [('CONVERSACIONES', 'BLOQUEADA')]
     assert [(s['codigo'], s['estado']) for s in datos['apoderado-secciones-final']] == [('CONVERSACIONES', 'DISPONIBLE')]
+    # Ajuste presentaciones-vistas.
+    assert PresentacionesCuenta.model_validate(datos['presentaciones-inicial']).vistas == []
+    assert PresentacionesCuenta.model_validate(datos['presentacion-vista']).vistas == ['missions']
     assert cierre['eventos_registrados'][-1]['referencia'] == 'T0'
     assert estados(datos['actividades-t1'])['t-expectativas'] == 'DISPONIBLE'
     ciudad = next(b for b in datos['actividades-ciudad'] if b['codigo'] == 'CIUDAD')

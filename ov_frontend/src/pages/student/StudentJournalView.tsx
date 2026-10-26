@@ -15,7 +15,6 @@ import { HistoriaLumi } from '@/features/journal/components/HistoriaLumi'
 import { StudentActivityPlayer } from '@/features/activities/components/StudentActivityPlayer'
 function StudentJournalView() {
   const {
-    state,
     now,
     bond,
     screen,
@@ -43,7 +42,6 @@ function StudentJournalView() {
     usedTags,
     openEditor,
     startBlankEntry,
-    startOnboardingEntry,
     addTag,
     saveEntry,
     editEntry,
@@ -101,8 +99,6 @@ function StudentJournalView() {
       )}
       {screen === 'home' && (
         <JournalHome
-          onboarding={!state.journalOnboardingSeen}
-          onBegin={startOnboardingEntry}
           hoy={<DailyQuestionCard now={now} hoy={hoy} onRespond={openEditor} onFree={startBlankEntry} />}
           buzon={
             <BuzonLumi

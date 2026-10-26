@@ -193,3 +193,11 @@ class InsigniaVitrina(Base):
     cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"), primary_key=True)
     insignia_id: Mapped[int] = mapped_column(ForeignKey("insignia.id"), primary_key=True)
     orden: Mapped[int]
+
+
+class PresentacionVista(Base):
+    """Presentaciones de primera visita que la cuenta ya cerró; `vista_en` es la primera vez."""
+    __tablename__ = "presentacion_vista"
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"), primary_key=True)
+    presentacion_id: Mapped[int] = mapped_column(ForeignKey("presentacion.id"), primary_key=True)
+    vista_en: Mapped[datetime] = mapped_column(DateTime)
