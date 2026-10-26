@@ -1,4 +1,9 @@
-import { useFichasServidor } from '@/store/servidor/secciones'
+import { useActividadesServidor, useFichasServidor } from '@/store/servidor/secciones'
+import { ciudadDisponible } from '@/lib/servidor/adaptadores'
+import { appPaths } from '@/routes/paths'
+import { hrefActividad } from '@/features/discovery/lib/helenaPagesApi'
+import { agruparFichas } from '../lib/agruparFichas'
+import { filtrar, vocesListadas } from '../lib/compartimentos'
 import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { consultarTestimonios, verTestimonio as registrarVistaTestimonio } from '@/store/servidor/testimonios'
@@ -17,6 +22,7 @@ import { getCiudadPoints } from '@/features/adventure/lib/ciudadPoints'
 type KindFilter = 'sheet' | 'testimonial'
 export function useBackpack() {
   useFichasServidor()
+  const actividades = useActividadesServidor()
   const adventure = useAdventure(),
     journey = useJourney(),
     navigate = useNavigate()
@@ -59,16 +65,29 @@ export function useBackpack() {
   useEffect(() => {
     if (testimonioSolicitado && fichaSolicitada) void registrarVistaTestimonio(fichaSolicitada)
   }, [testimonioSolicitado, fichaSolicitada])
-  const visible = resources.filter(
-    (item) =>
-      (!favoritesOnly || (isUnlocked(item) && adventure.bookmarks.includes(item.id))) &&
-      `${item.title} ${item.summary} ${isUnlocked(item) ? (item.author ?? '') : ''}`
-        .toLocaleLowerCase()
-        .includes(query.trim().toLocaleLowerCase()),
-  )
   const sheets = resources.filter((r) => r.kind === 'sheet'),
     voices = resources.filter((r) => r.kind === 'testimonial')
   const cityPoints = getCiudadPoints(adventure, journey)
+  // Ajuste mochila: las fichas se listan solo obtenidas, agrupadas por tramo; «Nueva» = sin abrir aún.
+  const esNueva = (r: TravelResource) =>
+    modoApi ? (r.kind === 'sheet' ? r.ficha?.visto === false : r.servidor?.visto === false) : !adventure.visits.includes(r.id)
+  const fichasObtenidas = sheets.filter(isUnlocked)
+  // Una voz bloqueada se lista solo si su llamado ya está disponible (en local, si su punto se puede jugar).
+  const casoLocal = (r: TravelResource) => ('caseId' in r.requirement ? r.requirement.caseId : undefined)
+  const casoDisponible = (r: TravelResource) =>
+    modoApi ? !!r.servidor?.casoDisponible : !!cityPoints.find((p) => p.id === casoLocal(r))?.actionEnabled
+  const voces = vocesListadas(voices, isUnlocked, casoDisponible)
+  const criterio = { query, favoritesOnly, bookmarks: adventure.bookmarks, isUnlocked }
+  const fichasVisibles = filtrar(fichasObtenidas, criterio),
+    vocesVisibles = filtrar([...voces.abiertas, ...voces.porDescubrir], criterio)
+  const vacio = kind === 'sheet' ? !fichasObtenidas.length : !voces.abiertas.length && !voces.porDescubrir.length
+  const sinResultados = !vacio && !(kind === 'sheet' ? fichasVisibles : vocesVisibles).length
+  // El drawer del llamado en la Central, sin pasar por el pop up de requisito.
+  const hrefCaso = (r: TravelResource) =>
+    modoApi
+      ? r.servidor?.caso && hrefActividad(actividades.datos, r.servidor.caso.codigo)
+      : `${appPaths.student.exploration}?punto=${encodeURIComponent(casoLocal(r) ?? '')}`
+  const centralAbierta = modoApi ? ciudadDisponible(actividades.datos) : cityPoints.some((p) => p.actionEnabled)
   function chooseKind(next: KindFilter) {
     setParams((current) => {
       const nextParams = new URLSearchParams(current)
@@ -97,9 +116,9 @@ export function useBackpack() {
         : { ...current, visits: [...current.visits, resource.id] },
     )
   }
+  // «Limpiar filtros» deja la pestaña como está (ajuste mochila).
   const clear = () => {
     setQuery('')
-    chooseKind('sheet')
     setFavoritesOnly(false)
   }
   function consultarRequisito(resource: TravelResource) {
@@ -127,9 +146,19 @@ export function useBackpack() {
     mostrarRequisito: modoApi,
     tituloRequisito: requisito.titulo,
     isUnlocked,
-    visible,
+    esNueva,
     sheets,
     voices,
+    fichasObtenidas,
+    gruposFichas: agruparFichas(fichasVisibles, (r) => r.ficha),
+    fichasPendientes: sheets.length - fichasObtenidas.length,
+    nuevas: fichasObtenidas.filter(esNueva).length,
+    voces,
+    vocesVisibles,
+    vacio,
+    sinResultados,
+    hrefCaso,
+    centralAbierta,
     cityPoints,
     chooseKind,
     toggleFavorite,

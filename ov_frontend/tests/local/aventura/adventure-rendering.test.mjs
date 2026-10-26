@@ -1182,12 +1182,12 @@ test('student resources show only the backpack and retain the testimonials route
   const html = render('/student/resources')
   assert.match(html, /Tu mochila de viaje/)
   assert.match(html, /Mi mochila/)
-  assert.match(html, /Testimonios/)
   assert.doesNotMatch(html, /Investigaciones|>Comunidad</)
   assert.match(html, /Lo que aprendiste en el camino/)
   assert.match(html, /Voces de la ciudad/)
-  assert.match(html, /Bloqueado/)
-  assert.match(html, /La plaza de los rumores/)
+  // Ajuste mochila: sin fichas bloqueadas; sin fichas obtenidas, el compartimento vacío lleva al mapa.
+  assert.doesNotMatch(html, /Bloqueado/)
+  assert.match(html, /Tu mochila está lista, pero todavía vacía/)
   // Sin pestaña «Todo»: los testimonios, con su caso, en su propia pestaña.
   assert.match(render('/student/resources?kind=testimonial'), /Incendio forestal/)
   assert.doesNotMatch(html, /Recursos y novedades|Héroes de la ciudad|Investigaciones de los viajeros/)
@@ -2425,8 +2425,9 @@ test('saved resources and counselor submissions appear in their respective desti
   }))
   const resources = render('/student/resources')
   assert.match(resources, /Ficha: Mitos y realidades del futuro profesional/)
-  assert.match(resources, /Abrir ficha/)
-  assert.match(resources, /Guardar en favoritos/)
+  // Ajuste mochila: la tarjeta entera abre la ficha; la estrella es su propio botón.
+  assert.match(resources, /De la misión <strong>La plaza de los rumores<\/strong>/)
+  assert.match(resources, /aria-label="Agregar a favoritos"/)
   assert.doesNotMatch(resources, /No visto|Visto/)
   assert.match(render('/counselor/reviews'), /Registros observados/)
   assert.doesNotMatch(render('/parent/activities'), /Consejo de ejemplo compartido con orientación/)
@@ -3445,7 +3446,7 @@ test('collapsed student map reserves its strip and keeps the recommended point v
 test('new backpack separates provisions, protects locked identities and navigates its resource tabs', () => {
  // Sin pestaña «Todo»: por defecto, las fichas; los testimonios, en su pestaña.
  const fichas=render('/student/resources')
- for(const text of ['Tu mochila de viaje','Lo que aprendiste en el camino','Mis favoritos'])assert.ok(fichas.includes(text))
+ for(const text of ['Tu mochila de viaje','Lo que aprendiste en el camino','Solo favoritos'])assert.ok(fichas.includes(text))
  assert.ok(!fichas.includes('Compartimento de testimonios')&&!fichas.includes('>Todo<'))
  const html=render('/student/resources?kind=testimonial')
  for(const text of ['Voces de la ciudad','Una voz por descubrir'])assert.ok(html.includes(text))
@@ -3456,7 +3457,9 @@ test('new backpack separates provisions, protects locked identities and navigate
  const page=immersivePlayerHarness('src/pages/student/StudentBackpackView',{'react-router':{useNavigate:()=>href=>{navigated=href},useSearchParams:()=>[params,update=>{params=update(params)}]}})
  try{
   let tree=page.draw({})
-  const tab=(tree,id)=>page.find(tree,e=>e.props.id===`sx-backpack-tab-${id}`)
+  // Ajuste mochila: las pestañas viven en BarraMochila, que no usa hooks; se dibuja con sus props.
+  const barra=tree=>{const b=page.find(tree,e=>e.type?.name==='BarraMochila');return b.type(b.props)}
+  const tab=(tree,id)=>page.find(barra(tree),e=>e.props?.id===`sx-backpack-tab-${id}`)
   tab(tree,'sheet').props.onKeyDown({key:'End',preventDefault(){}})
   assert.equal(params.get('kind'),'testimonial');assert.equal(params.get('keep'),'1')
   tree=page.draw({});tab(tree,'testimonial').props.onKeyDown({key:'ArrowRight',preventDefault(){}})
