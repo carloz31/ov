@@ -12,3 +12,14 @@
 - Se conservan «Continúa» (misión empezada), el mensaje de bloqueo como subtítulo y el saludo de regreso: la spec no los retira.
 - En la Ciudad no hay N de M (la afinidad del servidor es un porcentaje): la línea dice «Ciudad · X% de afinidad».
 - «Mis planes» usa el ícono `Signpost` y la sección PLANES (`/student/profile/decisions`), con el color que tenía Mi perfil.
+
+### Fase 3 · Avance por tramos y ciudad
+
+- Regla del avance del estudiante: todas las actividades del camino (requeridas y opcionales) con total fijo desde las definiciones; el tramo actual cuenta solo sus requeridas; terminar la ruta no es llegar al 100 % (`camino_completo` no depende del porcentaje). La familia sigue con `avance_ruta`.
+- Pregunta abierta 1: las 14 actividades del camino y las 4 de la Ciudad de `ruta` tienen contenido con mapa en el front; ninguna cambia de cuenta.
+- El bloque T1 de `ruta` se llama «Camino», así que la tarjeta muestra «Camino» dos veces (rótulo y nombre del tramo): es dato de prueba; no se cambia ni se oculta el nombre del tramo.
+- `/avance` va con las actividades en `refrescar` y el mapa espera por él; si falla con el mapa ya visible se conserva el último valor; sin datos, anillo vacío y solo el rótulo (aprobado por el usuario).
+- Local: mismo diseño de tarjeta, sin tramo: «X de Y misiones» con las misiones del camino (aprobado por el usuario).
+- El perfil (`useStudentProfile`) lee recorrido y afinidad de `getZoneProgress`, es decir, de `/avance` (pedido del usuario); se retira `useAfinidadServidor` y el perfil monta `logros` solo por las insignias.
+- `ZoneProgress.value` pasa a `porcentaje` (nulo sin datos), como pide la spec; se adaptaron las pruebas locales que lo leían.
+- Exportador: `avance-*` en inicial, t1, ciudad, t2 y final (129 fixtures). Los escenarios con fixtures de la raíz (Mara, sin `/avance`) usan `ruta-avance-inicial` como dato de prueba.
