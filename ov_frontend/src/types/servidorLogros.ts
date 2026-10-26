@@ -11,11 +11,15 @@ export type InsigniaEstado = {
   orden: number
   pista: string | null
   obtenida_en: string | null
+  // F5: frase destacada y cómo se consiguió; nulas mientras una oculta siga enmascarada.
+  frase: string | null
+  logro: string | null
 }
 export type NivelEstado = {
   numero: number
   titulo: string
   descripcion: string | null
+  cita_lumi: string | null
   estado: 'BLOQUEADO' | 'OBTENIDO'
 }
 // `afinidad`: solo el estudiante (F05). `vitrina`: códigos que la cuenta muestra, en orden (hasta 3).

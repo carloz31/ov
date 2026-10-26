@@ -53,7 +53,8 @@ def resumen_cuenta(sesion: Session, cuenta: Cuenta) -> ResumenCuenta:
     actual = nivel_actual(sesion, cuenta)
     return ResumenCuenta(
         cuenta=CuentaResumen.model_validate(cuenta),
-        nivel_actual=None if actual is None else NivelActual(numero=actual.numero, titulo=actual.titulo, descripcion=actual.descripcion),
+        nivel_actual=None if actual is None else NivelActual(numero=actual.numero, titulo=actual.titulo, descripcion=actual.descripcion,
+                                                             cita_lumi=actual.cita_lumi),
     )
 
 

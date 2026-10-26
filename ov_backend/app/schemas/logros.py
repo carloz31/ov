@@ -23,12 +23,16 @@ class InsigniaEstado(BaseModel):
     orden: int
     pista: str | None
     obtenida_en: datetime | None
+    # F5: la frase destacada y cómo se consiguió; nulas mientras una oculta siga enmascarada.
+    frase: str | None
+    logro: str | None
 
 
 class NivelEstado(BaseModel):
     numero: int
     titulo: str
     descripcion: str | None
+    cita_lumi: str | None
     estado: Literal["BLOQUEADO", "OBTENIDO"]
 
 

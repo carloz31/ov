@@ -2,7 +2,7 @@ import { useBadgeDetail } from '../hooks/useBadgeDetail'
 import { Link } from 'react-router'
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
-import { ArrowRight, Check, Lightbulb } from 'lucide-react'
+import { ArrowRight, Check, Lightbulb, LoaderCircle } from 'lucide-react'
 
 import { ConditionList } from './ConditionList'
 import { numeroPagina } from '../lib/passport'
@@ -34,6 +34,7 @@ export function PassportBadgeDialog({
     enUso,
     vitrinaLlena,
     guardando,
+    errorVitrina,
     alternarVitrina,
   } = useBadgeDetail(badge)
   const secreta = estado === 'secreta'
@@ -71,28 +72,39 @@ export function PassportBadgeDialog({
             <>
               <section className="sx-p-box sx-p-keeps">
                 <h3>Lo que guarda este sello</h3>
-                <blockquote>«{badge.message}»</blockquote>
+                {badge.metaphor && <blockquote>«{badge.metaphor}»</blockquote>}
+                {badge.vocationalMeaning && <p>{badge.vocationalMeaning}</p>}
               </section>
               <p className="sx-p-how">
                 <Check aria-hidden="true" size={16} />
                 <span>
-                  <strong>Cómo la conseguiste:</strong> {badge.description}
+                  <strong>Cómo la conseguiste:</strong> {badge.logro ?? badge.description}
                 </span>
               </p>
+              {/* F5: mientras guarda conserva su estilo (aria-disabled, no disabled) y muestra el cargador. */}
               <button
                 className="sx-p-profile-choice"
                 type="button"
                 aria-pressed={enVitrina}
-                disabled={vitrinaLlena || guardando}
-                onClick={() => alternarVitrina()}
+                aria-busy={guardando}
+                aria-disabled={guardando || undefined}
+                disabled={vitrinaLlena}
+                onClick={() => {
+                  if (!guardando) alternarVitrina()
+                }}
               >
-                {enVitrina && <Check aria-hidden="true" size={18} />}
+                {guardando ? (
+                  <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                ) : (
+                  enVitrina && <Check aria-hidden="true" size={18} />
+                )}
                 {enVitrina ? 'En tu vitrina' : 'Añadir a tu vitrina'}
               </button>
-              <p className="sx-p-choice-help">
-                {vitrinaLlena
-                  ? 'Ya tienes 3 sellos en tu vitrina. Quita uno para elegir este.'
-                  : `Tus compañeros ven hasta 3 sellos en tu perfil · ${enUso} de 3 en uso.`}
+              <p className="sx-p-choice-help" role={errorVitrina ? 'alert' : undefined}>
+                {errorVitrina ||
+                  (vitrinaLlena
+                    ? 'Ya tienes 3 sellos en tu vitrina. Quita uno para elegir este.'
+                    : `Tus compañeros ven hasta 3 sellos en tu perfil · ${enUso} de 3 en uso.`)}
               </p>
             </>
           ) : (

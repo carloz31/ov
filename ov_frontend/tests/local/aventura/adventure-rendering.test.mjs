@@ -3553,7 +3553,8 @@ test('passport hides pending meanings, respects the profile limit and starts wit
   assert.match(page.text(tree),/Su historia se revela cuando la consigas/);assert.equal(page.button(tree,'Añadir a tu vitrina'),undefined)
   const earned=groups.flatMap(g=>g.items).find(b=>b.code==='I7')
   tree=page.draw({badge:earned,group:'Prueba',groupIndex:2,onClose(){}})
-  assert.ok(page.text(tree).includes(earned.message));assert.equal(page.button(tree,'Añadir a tu vitrina').props.disabled,true)
+  // F5: el modal obtenido vuelve a mostrar la frase (metaphor) y la historia (vocationalMeaning).
+  assert.ok(page.text(tree).includes(earned.vocationalMeaning));assert.equal(page.button(tree,'Añadir a tu vitrina').props.disabled,true)
   tree=page.draw({badge:{...pending,hidden:true},group:'Prueba',groupIndex:1,onClose(){}})
   assert.ok(!page.text(tree).includes(pending.description));assert.ok(!page.text(tree).includes(pending.title))
  }finally{page.dispose()}

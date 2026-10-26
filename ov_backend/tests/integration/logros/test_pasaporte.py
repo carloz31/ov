@@ -22,6 +22,7 @@ def test_insignias_por_pagina_y_orden_con_las_secretas_en_su_pagina(cliente):
     assert secreta['codigo'] == '???' and secreta['nombre'] == 'Logro oculto'
     assert secreta['descripcion'] is None and secreta['requisito'] is None and secreta['obtenida_en'] is None
     assert secreta['pista'].startswith('No todo brillo sobrevive')
+    assert secreta['frase'] is None and secreta['logro'] is None
     assert insignias[0]['pista'] is None
 
 
@@ -32,6 +33,10 @@ def test_obtenida_en_es_la_fecha_del_desbloqueo(cliente):
     primera = logros(cliente)['insignias'][0]
     assert primera['codigo'] == 't-ins-1' and primera['estado'] == 'OBTENIDA'
     assert primera['obtenida_en'] == FECHA
+    # F5: lo que muestra el sello obtenido, sin códigos de actividad.
+    assert (primera['nombre'], primera['frase'], primera['logro']) == (
+        'La primera chispa', 'Una nueva mirada viaja contigo.', 'completaste la introducción de tu viaje.')
+    assert primera['descripcion'].startswith('Antes de buscar un destino decidiste mirar.')
 
 
 def test_niveles_con_descripcion_y_tercer_nivel_de_dos_condiciones(cliente):
@@ -40,6 +45,8 @@ def test_niveles_con_descripcion_y_tercer_nivel_de_dos_condiciones(cliente):
     assert datos['niveles'][0]['descripcion'].startswith('Estás aprendiendo a mirar')
     resumen = pedir(cliente, 'GET', '/cuentas/est-ana/resumen')
     assert resumen['nivel_actual']['descripcion'] == datos['niveles'][0]['descripcion']
+    assert datos['niveles'][1]['cita_lumi'] == 'Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.'
+    assert resumen['nivel_actual']['cita_lumi'] == datos['niveles'][0]['cita_lumi']
     condiciones = progreso(cliente, 'NIVEL', 'N3')['reglas'][0]['condiciones']
     assert [(c['texto'], c['cumplida'], c['requerido']) for c in condiciones] == [
         ('Termina el bloque de inicio', False, 1), ('Mira tres carreras distintas', False, 3)]

@@ -64,7 +64,8 @@ def consultar_familia(sesion: Session, cuenta: Cuenta) -> FamiliaApoderado:
         nivel = nivel_actual(sesion, hijo)
         estudiante = EstudianteVinculado(
             codigo=hijo.codigo, nombre=hijo.nombre, avance=avance_ruta(sesion, hijo),
-            nivel_actual=None if nivel is None else NivelActual(numero=nivel.numero, titulo=nivel.titulo, descripcion=nivel.descripcion))
+            nivel_actual=None if nivel is None else NivelActual(numero=nivel.numero, titulo=nivel.titulo, descripcion=nivel.descripcion,
+                                                          cita_lumi=nivel.cita_lumi))
     return FamiliaApoderado(avance=avance_ruta(sesion, cuenta), diploma=_diploma(sesion, cuenta), estudiante=estudiante)
 
 

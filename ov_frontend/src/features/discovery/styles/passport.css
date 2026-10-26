@@ -540,3 +540,16 @@ li[data-done='true'] > .sx-p-condition-mark {
     transform: none;
   }
 }
+/* F5: la frase y la historia del sello, la cita de Lumi del nivel y el botón de vitrina mientras guarda. */
+.sx-p-keeps blockquote + p {
+  margin-top: 10px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-level .sx-p-lumi-quote {
+  margin-top: 12px;
+  font-size: 13px;
+  font-style: italic;
+}
+.sx-p-profile-choice[aria-busy='true'] {
+  cursor: progress;
+}

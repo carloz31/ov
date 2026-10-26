@@ -38,6 +38,7 @@ export function PassportLevelCard({
             </p>
             <h2>{level.label}</h2>
             <p>{level.description}</p>
+            {level.citaLumi && <p className="sx-p-lumi-quote">Lumi: «{level.citaLumi}»</p>}
           </div>
         </div>
         <div className="sx-p-next-title">

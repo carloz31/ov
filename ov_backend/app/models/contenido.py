@@ -189,6 +189,10 @@ class Insignia(Base):
     orden: Mapped[int]
     # Pista de Lumi mientras una oculta no se obtiene; se muestra aunque esté enmascarada.
     pista: Mapped[str | None] = mapped_column(Text, default=None)
+    # Ajuste pasaporte-perfil (F5): la frase destacada del sello y cómo se consiguió, en pasado. `descripcion` es
+    # su historia y `requisito`, lo que pide.
+    frase: Mapped[str | None] = mapped_column(Text, default=None)
+    logro: Mapped[str | None] = mapped_column(Text, default=None)
 
 
 class Nivel(Base):
@@ -197,6 +201,8 @@ class Nivel(Base):
     numero: Mapped[int] = mapped_column(unique=True)
     titulo: Mapped[str]
     descripcion: Mapped[str | None] = mapped_column(Text, default=None)
+    # Ajuste pasaporte-perfil (F5): la cita de Lumi de cada nivel.
+    cita_lumi: Mapped[str | None] = mapped_column(Text, default=None)
 
 
 class FamiliaCarrera(Base):

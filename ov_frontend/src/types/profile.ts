@@ -27,7 +27,13 @@ export type HelenaPage = {
 }
 
 // Ajuste pasaporte-perfil: `pista` (secreta) y `obtenidaEn` solo llegan del servidor.
-export type PassportBadge = Achievement & { hidden?: boolean; pista?: string | null; obtenidaEn?: string | null }
+// F5: `logro` (cómo se consiguió, en pasado) también llega solo del servidor.
+export type PassportBadge = Achievement & {
+  hidden?: boolean
+  pista?: string | null
+  obtenidaEn?: string | null
+  logro?: string | null
+}
 // Una condición de una insignia o de un título; `actual` y `requerido` solo en las de conteo.
 export type CondicionPasaporte = { texto: string; cumplida: boolean; actual?: number; requerido?: number }
 // Cada bloque es una regla alternativa; `cumplidas` y `total`, de la más avanzada.

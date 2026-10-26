@@ -18,6 +18,7 @@ class NivelActual(BaseModel):
     numero: int
     titulo: str
     descripcion: str | None
+    cita_lumi: str | None
 
 
 class ResumenCuenta(BaseModel):

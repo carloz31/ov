@@ -1,5 +1,5 @@
 import { useLogrosServidor } from '@/store/servidor/secciones'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useJourney } from '@/store/journeyStore'
 import { getTravelerLevel, useAdventure } from '@/store/adventureStore'
@@ -20,7 +20,7 @@ export function usePassport() {
   useLogrosServidor()
   const servidor = useEstadoServidor()
   const logros = servidor.logros.datos
-  const gruposApi = modoApi ? insigniasServidor(logros) : undefined
+  const gruposApi = useMemo(() => (modoApi ? insigniasServidor(logros) : undefined), [logros])
   const adventure = useAdventure(),
     discovery = useDiscovery(),
     journey = useJourney(),

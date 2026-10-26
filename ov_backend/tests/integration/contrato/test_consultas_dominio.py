@@ -8,7 +8,8 @@ from sqlalchemy import select
 from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActividad, Visibilidad
 from datos.fijos import SECCIONES
 from datos.ruta import (
-    ACTIVIDADES, BLOQUES, DESCRIPCIONES, FICHAS, GRUPOS_INSIGNIA, INSIGNIAS, NIVELES, PAGINAS_INSIGNIAS, PISTAS_INSIGNIAS,
+    ACTIVIDADES, BLOQUES, DESCRIPCIONES, FICHAS, CITAS_LUMI, GRUPOS_INSIGNIA, INSIGNIAS, NIVELES, PAGINAS_INSIGNIAS, PISTAS_INSIGNIAS,
+    TEXTOS_INSIGNIAS,
     PREGUNTAS_DIARIO, PROPIEDADES, RECUERDOS_LUMI,
     REGLAS, TESTIMONIOS, contenido,
 )
@@ -63,7 +64,7 @@ def esperado(ruta, completo):
         numero = 2 if completo else 1
         return {'cuenta': {'codigo': 'est-ana', 'nombre': 'Ana', 'rol': 'ESTUDIANTE'},
                 'nivel_actual': {'numero': numero, 'titulo': NIVELES[numero - 1][1],
-                                 'descripcion': NIVELES[numero - 1][2]}}
+                                 'descripcion': NIVELES[numero - 1][2], 'cita_lumi': CITAS_LUMI[numero]}}
     if ruta == 'actividades':
         return [{
             'codigo': bloque, 'nombre': nombre, 'numero': numero, 'espacio': espacio,
@@ -95,14 +96,16 @@ def esperado(ruta, completo):
             obtenida = completo and codigo == 't-ins-1'
             comunes = {'grupo': grupos[grupo], 'orden': orden, 'pista': PISTAS_INSIGNIAS.get(codigo),
                        'obtenida_en': ANY if obtenida else None}
+            frase, logro = TEXTOS_INSIGNIAS[codigo]
             insignias.append(
                 {'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA',
-                 **comunes}
+                 'frase': None, 'logro': None, **comunes}
                 if oculta else {'codigo': codigo, 'nombre': nombre, 'descripcion': descripcion,
-                                'requisito': requisito, 'estado': 'OBTENIDA' if obtenida else 'BLOQUEADA', **comunes}
+                                'requisito': requisito, 'estado': 'OBTENIDA' if obtenida else 'BLOQUEADA',
+                                'frase': frase, 'logro': logro, **comunes}
             )
         return {'insignias': insignias, 'niveles': [
-            {'numero': numero, 'titulo': titulo, 'descripcion': descripcion,
+            {'numero': numero, 'titulo': titulo, 'descripcion': descripcion, 'cita_lumi': CITAS_LUMI[numero],
              'estado': 'OBTENIDO' if numero <= (2 if completo else 1) else 'BLOQUEADO'}
             for numero, titulo, descripcion in NIVELES
         ], 'vitrina': [], 'afinidad': 0.0}

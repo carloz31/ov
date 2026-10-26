@@ -27,7 +27,7 @@ export type SesionRespuesta = {
   hijos: HijoSesion[]
   salones: SalonSesion[]
 }
-export type NivelActual = { numero: number; titulo: string; descripcion: string | null }
+export type NivelActual = { numero: number; titulo: string; descripcion: string | null; cita_lumi: string | null }
 export type DesbloqueosMarcados = { marcados: number }
 export type ActividadEstado = { codigo: string; titulo: string; estado: EstadoActividad }
 export type BloqueEstado = {

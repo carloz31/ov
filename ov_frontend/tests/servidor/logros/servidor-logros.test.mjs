@@ -30,7 +30,12 @@ const progresoNivel3 = jsonServidor('ruta/ruta-progreso-nivel-3')
 const resumen = jsonServidor('ruta/ruta-resumen-inicial')
 const nivel2 = {
   ...resumen,
-  nivel_actual: { numero: 2, titulo: logrosFinal.niveles[1].titulo, descripcion: logrosFinal.niveles[1].descripcion },
+  nivel_actual: {
+    numero: 2,
+    titulo: logrosFinal.niveles[1].titulo,
+    descripcion: logrosFinal.niveles[1].descripcion,
+    cita_lumi: logrosFinal.niveles[1].cita_lumi,
+  },
 }
 
 function preparar({ logros = logrosFinal, cuenta = nivel2, servidor = () => ({ body: progresoNivel3 }) } = {}) {
@@ -111,6 +116,8 @@ test('pasaporte: sellos con secretas, vitrina del servidor, título siguiente co
   assert.match(todo, /Vitrina:\s+1\s+de 3/)
   assert.match(todo, /Nivel\s+2\s+de\s+3/)
   assert.match(todo, new RegExp(logrosFinal.niveles[1].descripcion))
+  // F5: la cita de Lumi del nivel viene del servidor.
+  assert.match(todo, /Lumi: «\s*Los títulos no dicen cuánto vales\. Dicen en qué parte del camino vas\.\s*»/)
   assert.match(todo, /Cartógrafo de posibilidades/)
   assert.match(todo, /1\s+de\s+2\s+condiciones cumplidas/)
   assert.match(todo, /Mira tres carreras distintas/)
@@ -163,8 +170,11 @@ test('getTravelerLevel toma número, título y descripción remotos; null no sup
       },
     },
   )
-  const actual = level(sinLocal, { numero: 2, titulo: 'Título 2', descripcion: 'Descripción remota' })
-  assert.deepEqual([actual.number, actual.label, actual.description], [2, 'Título 2', 'Descripción remota'])
+  const actual = level(sinLocal, { numero: 2, titulo: 'Título 2', descripcion: 'Descripción remota', cita_lumi: 'Cita' })
+  assert.deepEqual(
+    [actual.number, actual.label, actual.description, actual.citaLumi],
+    [2, 'Título 2', 'Descripción remota', 'Cita'],
+  )
   assert.ok(level(sinLocal, { numero: 3, titulo: 'Título 3', descripcion: null }).description)
   assert.equal(level({}, null), null)
 })
@@ -192,10 +202,19 @@ test('modal por descubrir: condiciones del servidor y, si la consulta falla, sol
     },
   })
   const badge = a.insigniasServidor(logrosInicial)[0].items[0]
-  let m = modal(app, badge)
+  // F5: la insignia llega como un objeto nuevo en cada render (como desde el adaptador) y se consulta una vez.
+  const Dialogo = app.load('src/features/discovery/components/PassportBadgeDialog.tsx').PassportBadgeDialog
+  let m = app.mount((props) => Dialogo({ ...props, badge: { ...badge } }), {
+    group: 'La luz que despeja caminos',
+    groupIndex: 0,
+    onClose() {},
+  })
+  m.render()
+  await esperar()
   m.render()
   await esperar()
   let todo = texto(m.render())
+  assert.equal(app.requests.filter((r) => r.url.endsWith('/progreso/INSIGNIA/t-ins-1')).length, 1)
   assert.match(todo, /Por descubrir/)
   assert.match(todo, /Cómo se consigue\s+·\s+0 de 1 cumplidas/)
   assert.match(todo, /Completa la misión de inicio/)
@@ -227,32 +246,80 @@ test('modal secreto: pista de Lumi, sin consultar el progreso; sin pista, el tex
   assert.equal(app.requests.length, 0)
 })
 
-test('modal obtenido: fecha, lo que guarda, cómo se consiguió y vitrina contra el servidor', async () => {
+test('modal obtenido: fecha, frase, historia y cómo se consiguió, como en el boceto', () => {
+  const { app, a } = preparar()
+  const badge = a.insigniasServidor(logrosFinal)[0].items[0]
+  const todo = texto(modal(app, badge).render())
+  assert.match(todo, /La primera chispa/)
+  assert.match(todo, /Sellada el 7 de octubre de 2026/)
+  assert.match(todo, /Lo que guarda este sello\s+«\s*Una nueva mirada viaja contigo\.\s*»\s+Antes de buscar un destino decidiste mirar/)
+  assert.match(todo, /Cómo la conseguiste:\s+completaste la introducción de tu viaje\./)
+  assert.doesNotMatch(todo, /t-inicio|Lo que lograste|Qué significa|viajeros/)
+})
+
+test('vitrina: cargador sin pasar al gris mientras guarda y un segundo toque no envía otra petición', async () => {
   const enviados = []
+  let responder
   const { app, a } = preparar({
     servidor: (r) => {
       assert.equal(r.url, '/api/acciones/vitrina')
-      const cuerpo = r.body
-      enviados.push(cuerpo)
-      return { body: { vitrina: cuerpo.codigos } }
+      enviados.push(r.body)
+      return new Promise((ok) => {
+        responder = () => ok({ body: { vitrina: r.body.codigos } })
+      })
     },
   })
   const badge = a.insigniasServidor(logrosFinal)[0].items[0]
   const m = modal(app, badge)
-  let tree = m.render()
-  const todo = texto(tree)
-  assert.match(todo, /Sellada el 7 de octubre de 2026/)
-  assert.match(todo, /Lo que guarda este sello/)
-  assert.match(todo, new RegExp(logrosFinal.insignias[0].descripcion))
-  assert.match(todo, /Cómo la conseguiste:/)
-  assert.doesNotMatch(todo, /Lo que lograste|Qué significa/)
-  assert.match(todo, /1 de 3 en uso/)
-  botonEn(tree, 'En tu vitrina').props.onClick()
+  botonEn(m.render(), 'En tu vitrina').props.onClick()
+  let boton = botonEn(m.render(), 'En tu vitrina')
+  assert.equal(boton.props['aria-busy'], true)
+  assert.equal(boton.props['aria-disabled'], true)
+  assert.equal(boton.props.disabled, false)
+  assert.ok(elementos(boton, (e) => /animate-spin/.test(e.props?.className ?? '')).length)
+  boton.props.onClick()
+  responder()
   await esperar()
-  assert.deepEqual(enviados, [{ cuenta: 'est-ana', codigos: [] }])
-  assert.deepEqual(copia(app.load('src/store/servidor/sesion.ts').obtenerEstadoServidor().logros.datos.vitrina), [])
-  tree = m.render()
-  assert.ok(botonEn(tree, 'Añadir a tu vitrina'))
+  assert.deepEqual(copia(enviados), [{ cuenta: 'est-ana', codigos: [] }])
+  boton = botonEn(m.render(), 'Añadir a tu vitrina')
+  assert.equal(boton.props['aria-busy'], false)
+  assert.equal(elementos(boton, (e) => /animate-spin/.test(e.props?.className ?? '')).length, 0)
+  m.unmount()
+})
+
+test('guardar la vitrina no vuelve a pedir el título siguiente ni lo deja vacío', async () => {
+  const { app } = preparar({
+    servidor: (r) =>
+      r.url.endsWith('/progreso/NIVEL/N3') ? { body: progresoNivel3 } : { body: { vitrina: r.body.codigos } },
+  })
+  const v = vista(app)
+  v.render()
+  await esperar()
+  const condiciones = () => texto(expandir(v.render()))
+  assert.match(condiciones(), /1\s+de\s+2\s+condiciones cumplidas/)
+  await app.load('src/store/servidor/operaciones.ts').guardarVitrina([])
+  assert.match(condiciones(), /1\s+de\s+2\s+condiciones cumplidas/)
+  await esperar()
+  assert.match(condiciones(), /Vitrina:\s+0\s+de 3/)
+  assert.equal(app.requests.filter((r) => r.url.endsWith('/progreso/NIVEL/N3')).length, 1)
+  v.unmount()
+})
+
+test('vitrina: si falla, el pie lo dice y el botón vuelve a su estado', async () => {
+  const { app, a } = preparar({
+    servidor: () => ({ status: 500, body: { detail: { mensaje: 'DATO DE PRUEBA: falla' } } }),
+  })
+  const badge = a.insigniasServidor(logrosFinal)[0].items[0]
+  const m = modal(app, badge)
+  botonEn(m.render(), 'En tu vitrina').props.onClick()
+  await esperar()
+  const tree = m.render()
+  const boton = botonEn(tree, 'En tu vitrina')
+  assert.equal(boton.props['aria-busy'], false)
+  assert.equal(elementos(tree, (e) => e.props?.role === 'alert').length, 1)
+  assert.deepEqual(copia(app.load('src/store/servidor/sesion.ts').obtenerEstadoServidor().logros.datos.vitrina), [
+    't-ins-1',
+  ])
   m.unmount()
 })
 

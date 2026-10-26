@@ -70,12 +70,14 @@ def logros_cuenta(sesion: Session, cuenta: Cuenta) -> LogrosCuenta:
             orden=insignia.orden,
             pista=insignia.pista,
             obtenida_en=fechas.get(insignia.id) if obtenida else None,
+            frase=None if oculta else insignia.frase,
+            logro=None if oculta else insignia.logro,
         ))
 
     niveles = []
     if cuenta.rol == Rol.ESTUDIANTE:
         niveles = [NivelEstado(
-            numero=nivel.numero, titulo=nivel.titulo, descripcion=nivel.descripcion,
+            numero=nivel.numero, titulo=nivel.titulo, descripcion=nivel.descripcion, cita_lumi=nivel.cita_lumi,
             estado="OBTENIDO" if objetivo_disponible(sesion, cuenta, TipoObjetivo.NIVEL, nivel.id) else "BLOQUEADO",
         ) for nivel in sorted(datos.definiciones.listar(Nivel), key=lambda nivel: nivel.numero)]
     if cuenta.rol != Rol.ESTUDIANTE:

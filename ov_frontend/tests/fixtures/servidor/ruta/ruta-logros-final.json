@@ -3,28 +3,32 @@
   "insignias": [
     {
       "codigo": "t-ins-1",
-      "descripcion": "Completaste t-inicio.",
+      "descripcion": "Antes de buscar un destino decidiste mirar. Ese primer paso, el de aceptar que todavía no sabes, es el que abre todos los demás.",
       "estado": "OBTENIDA",
+      "frase": "Una nueva mirada viaja contigo.",
       "grupo": {
         "codigo": "G1",
         "nombre": "La luz que despeja caminos",
         "orden": 1
       },
-      "nombre": "Insignia de prueba",
+      "logro": "completaste la introducción de tu viaje.",
+      "nombre": "La primera chispa",
       "obtenida_en": "2026-10-07T10:00:00",
       "orden": 1,
       "pista": null,
-      "requisito": "Completa t-inicio."
+      "requisito": "Completa la introducción de tu viaje."
     },
     {
       "codigo": "???",
       "descripcion": null,
       "estado": "BLOQUEADA",
+      "frase": null,
       "grupo": {
         "codigo": "G1",
         "nombre": "La luz que despeja caminos",
         "orden": 1
       },
+      "logro": null,
       "nombre": "Logro oculto",
       "obtenida_en": null,
       "orden": 2,
@@ -35,11 +39,13 @@
       "codigo": "???",
       "descripcion": null,
       "estado": "BLOQUEADA",
+      "frase": null,
       "grupo": {
         "codigo": "G2",
         "nombre": "Huellas en la ciudad",
         "orden": 2
       },
+      "logro": null,
       "nombre": "Logro oculto",
       "obtenida_en": null,
       "orden": 1,
@@ -50,11 +56,13 @@
       "codigo": "???",
       "descripcion": null,
       "estado": "BLOQUEADA",
+      "frase": null,
       "grupo": {
         "codigo": "G2",
         "nombre": "Huellas en la ciudad",
         "orden": 2
       },
+      "logro": null,
       "nombre": "Logro oculto",
       "obtenida_en": null,
       "orden": 2,
@@ -65,11 +73,13 @@
       "codigo": "???",
       "descripcion": null,
       "estado": "BLOQUEADA",
+      "frase": null,
       "grupo": {
         "codigo": "G2",
         "nombre": "Huellas en la ciudad",
         "orden": 2
       },
+      "logro": null,
       "nombre": "Logro oculto",
       "obtenida_en": null,
       "orden": 3,
@@ -79,18 +89,21 @@
   ],
   "niveles": [
     {
+      "cita_lumi": "Mirar con calma también es avanzar.",
       "descripcion": "Estás aprendiendo a mirar tus intereses y preguntas como pistas, sin apresurarte a elegir un destino.",
       "estado": "OBTENIDO",
       "numero": 1,
       "titulo": "Observador del horizonte"
     },
     {
+      "cita_lumi": "Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.",
       "descripcion": "Ya reconoces señales sobre lo que disfrutas, lo que haces bien y los retos que despiertan tu curiosidad.",
       "estado": "OBTENIDO",
       "numero": 2,
       "titulo": "Recolector de pistas"
     },
     {
+      "cita_lumi": "Un mapa no te dice adónde ir; te muestra por dónde podrías.",
       "descripcion": "Tu mapa personal empieza a tomar forma. Ahora puedes contrastarlo con profesiones y situaciones del mundo real.",
       "estado": "BLOQUEADO",
       "numero": 3,

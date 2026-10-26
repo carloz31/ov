@@ -125,7 +125,7 @@ test('el ingreso confirmado conserva sus avisos si falla la consulta y reintenta
   const acciones = app.load('src/store/servidor/operaciones.ts')
   const almacen = cargarAlmacen(app)
   assert.equal((await acciones.ingresar()).tipo, 'http')
-  assert.ok(almacen.avisosPendientes().some((a) => a.title === 'Insignia de prueba'))
+  assert.ok(almacen.avisosPendientes().some((a) => a.title === 'La primera chispa'))
   falla = false
   assert.equal((await acciones.ingresar()).tipo, 'ok')
   assert.equal(app.requests.filter((r) => r.url === '/api/acciones/ingresar').length, 1)

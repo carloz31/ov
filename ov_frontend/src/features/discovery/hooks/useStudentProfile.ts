@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { modoApi } from '@/config/env'
 import { useOccupationExplorationContext } from '@/context/occupationExplorationContext'
 import { getZoneProgress } from '@/features/adventure/lib/mapPoints'
@@ -60,7 +60,7 @@ export function useStudentProfile() {
   const requeridas = modoApi
     ? (avance?.requeridas ?? { completadas: 0, total: 0 })
     : { completadas: local?.completadas ?? 0, total: local?.total ?? 0 }
-  const gruposApi = modoApi ? insigniasServidor(logros) : undefined
+  const gruposApi = useMemo(() => (modoApi ? insigniasServidor(logros) : undefined), [logros])
   const todas = getStudentAchievementGroups(adventure, journey, gruposApi).flatMap((g, index) =>
     g.items.map((b) => ({ ...b, group: index })),
   )

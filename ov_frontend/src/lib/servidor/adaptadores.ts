@@ -103,10 +103,12 @@ export function insigniasServidor(logros: LogrosCuenta | null): AchievementGroup
       icon: 'sparkles',
       description: i.requisito ?? '',
       message: i.descripcion ?? '',
-      metaphor: '',
-      vocationalMeaning: '',
+      // F5: la frase destacada y la historia del sello, como `metaphor` y `vocationalMeaning` en local.
+      metaphor: i.frase ?? '',
+      vocationalMeaning: i.descripcion ?? '',
       pista: i.pista,
       obtenidaEn: i.obtenida_en,
+      logro: i.logro,
     })
   }
   return grupos

@@ -400,17 +400,32 @@ CONVERSACIONES = (
      'Si ven el resultado de forma distinta, cuenten un ejemplo que lo explique.'),
 )
 
-# (código, nombre, descripción, requisito, oculta)
-INSIGNIAS = (('t-ins-1', 'Insignia de prueba', 'Completaste t-inicio.', 'Completa t-inicio.', False),
-             ('t-ins-oculta', 'Insignia oculta', 'Venciste sin perder destellos.',
-              'Vence al enemigo sin perder destellos.', True),
+# (código, nombre, descripción, requisito, oculta). La descripción es la historia del sello y el requisito, lo que
+# pide; ninguno nombra códigos de actividad (ajuste pasaporte-perfil, F5).
+INSIGNIAS = (('t-ins-1', 'La primera chispa',
+              'Antes de buscar un destino decidiste mirar. Ese primer paso, el de aceptar que todavía no sabes, es el '
+              'que abre todos los demás.', 'Completa la introducción de tu viaje.', False),
+             ('t-ins-oculta', 'Destello intacto',
+              'Enfrentaste una idea equivocada sin perder ni un destello. Contrastar lo que crees con lo que sabes te '
+              'deja mirar con más claridad.', 'Vence un desafío sin perder destellos.', True),
              # B10: logros ocultos por vistas diversas del catálogo.
-             ('t-ins-familias', 'Exploradora de familias', 'Viste carreras de dos familias distintas.',
-              'Mira carreras de familias distintas.', True),
-             ('t-ins-letras', 'Exploradora de intereses', 'Viste ocupaciones de dos tipos principales distintos.',
-              'Mira ocupaciones de tipos distintos.', True),
-             ('t-ins-instituciones', 'Exploradora de instituciones', 'Viste instituciones de todos los tipos.',
-              'Mira instituciones de todos los tipos.', True))
+             ('t-ins-familias', 'Exploradora de familias',
+              'Te asomaste a carreras de familias distintas. Mirar más de un territorio te ayuda a no quedarte con el '
+              'primero que conoces.', 'Mira carreras de familias distintas.', True),
+             ('t-ins-letras', 'Exploradora de intereses',
+              'Recorriste ocupaciones guiadas por intereses distintos. Cada letra nueva es otra forma de imaginarte '
+              'trabajando.', 'Mira ocupaciones de tipos distintos.', True),
+             ('t-ins-instituciones', 'Exploradora de instituciones',
+              'Conociste todas las formas de seguir estudiando. Saber qué puertas existen te deja elegir con más '
+              'libertad.', 'Mira instituciones de todos los tipos.', True))
+# {insignia: (frase destacada, cómo se consiguió en pasado)}; lo que muestra el sello obtenido (F5).
+TEXTOS_INSIGNIAS = {
+    't-ins-1': ('Una nueva mirada viaja contigo.', 'completaste la introducción de tu viaje.'),
+    't-ins-oculta': ('La información hace brillar tu camino.', 'venciste un desafío sin perder destellos.'),
+    't-ins-familias': ('Un mapa crece cuando visitas más de un territorio.', 'miraste carreras de familias distintas.'),
+    't-ins-letras': ('Cada interés abre una ventana distinta.', 'miraste ocupaciones de tipos distintos.'),
+    't-ins-instituciones': ('Conocer las puertas también es avanzar.', 'miraste instituciones de todos los tipos.'),
+}
 
 # Páginas del pasaporte (ajuste pasaporte-perfil): (código, nombre, orden).
 GRUPOS_INSIGNIA = (('G1', 'La luz que despeja caminos', 1), ('G2', 'Huellas en la ciudad', 2))
@@ -433,6 +448,10 @@ NIVELES = ((1, 'Observador del horizonte',
            (3, 'Cartógrafo de posibilidades',
             'Tu mapa personal empieza a tomar forma. Ahora puedes contrastarlo con profesiones y situaciones del '
             'mundo real.'))
+# Cita de Lumi de cada nivel, bajo su descripción en el pasaporte (F5); la del 2, la del boceto.
+CITAS_LUMI = {1: 'Mirar con calma también es avanzar.',
+              2: 'Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.',
+              3: 'Un mapa no te dice adónde ir; te muestra por dónde podrías.'}
 
 # Preguntas del diario: (código, nombre, pregunta base, uso, personalizada, dimensión). Las DESBLOQUEABLE las
 # abre una regla; las DIARIA entran al sorteo de la pregunta del día por la dimensión del cuestionario de
@@ -615,13 +634,18 @@ def _cargar_estructura(sesion):
     sesion.flush()
     if faltantes := {c for c, *_ in INSIGNIAS} ^ PAGINAS_INSIGNIAS.keys():
         raise ValueError(f'Insignias sin página o páginas de insignias inexistentes: {sorted(faltantes)}')
+    if sobrantes := TEXTOS_INSIGNIAS.keys() - {c for c, *_ in INSIGNIAS}:
+        raise ValueError(f'Textos de insignias inexistentes: {sorted(sobrantes)}')
     if pistas_visibles := {c for c, *_, o in INSIGNIAS if not o} & PISTAS_INSIGNIAS.keys():
         raise ValueError(f'Solo las insignias ocultas llevan pista: {sorted(pistas_visibles)}')
     insignias = {c: modelos.Insignia(codigo=c, nombre=n, descripcion=d, requisito=r, es_oculta=o,
                                    audiencia=modelos.Audiencia.ESTUDIANTE, grupo_id=grupos[PAGINAS_INSIGNIAS[c][0]].id,
-                                   orden=PAGINAS_INSIGNIAS[c][1], pista=PISTAS_INSIGNIAS.get(c))
+                                   orden=PAGINAS_INSIGNIAS[c][1], pista=PISTAS_INSIGNIAS.get(c),
+                                   frase=TEXTOS_INSIGNIAS.get(c, (None, None))[0],
+                                   logro=TEXTOS_INSIGNIAS.get(c, (None, None))[1])
                  for c, n, d, r, o in INSIGNIAS}
-    niveles = {num: modelos.Nivel(numero=num, titulo=t, descripcion=d) for num, t, d in NIVELES}
+    niveles = {num: modelos.Nivel(numero=num, titulo=t, descripcion=d, cita_lumi=CITAS_LUMI.get(num))
+               for num, t, d in NIVELES}
     preguntas = _preguntas_diario(sesion)
     sesion.add_all([*cuentas.values(), *bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones.values(),
                     *insignias.values(), *niveles.values(), *preguntas.values()])

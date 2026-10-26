@@ -248,7 +248,8 @@ const travelerLevels = [
     nextStep: 'Sigue revisando tu pasaporte: cada nueva experiencia puede enriquecer tu decisión.',
   },
 ] as const
-export type TravelerLevel = { number: number; label: string; description: string; nextStep: string }
+// F5: `citaLumi` solo llega del servidor.
+export type TravelerLevel = { number: number; label: string; description: string; nextStep: string; citaLumi?: string }
 export function getTravelerLevel(value: AdventureState): TravelerLevel
 export function getTravelerLevel(value: AdventureState, nivel: NivelActual | null): TravelerLevel | null
 export function getTravelerLevel(value: AdventureState, nivel?: NivelActual | null): TravelerLevel | null {
@@ -256,7 +257,12 @@ export function getTravelerLevel(value: AdventureState, nivel?: NivelActual | nu
     const presentacion = nivel ? travelerLevels.find((n) => n.number === nivel.numero) : undefined
     // Ajuste pasaporte-perfil: la descripción del nivel también llega del servidor.
     return presentacion && nivel
-      ? { ...presentacion, label: nivel.titulo, description: nivel.descripcion ?? presentacion.description }
+      ? {
+          ...presentacion,
+          label: nivel.titulo,
+          description: nivel.descripcion ?? presentacion.description,
+          ...(nivel.cita_lumi ? { citaLumi: nivel.cita_lumi } : {}),
+        }
       : null
   }
   const levels = travelerLevels

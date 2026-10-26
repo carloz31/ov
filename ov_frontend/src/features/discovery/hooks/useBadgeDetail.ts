@@ -1,7 +1,7 @@
 import { useLogrosServidor } from '@/store/servidor/secciones'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { modoApi } from '@/config/env'
-import { useEstadoServidor } from '@/store/servidor/sesion'
+import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { consultarProgreso } from '@/store/servidor/consultas'
 import { guardarVitrina } from '@/store/servidor/operaciones'
 import { condicionesObjetivo, insigniasServidor } from '@/lib/servidor/adaptadores'
@@ -29,21 +29,27 @@ export function useBadgeDetail(badge?: PassportBadge) {
   useLogrosServidor(!!badge)
   const servidor = useEstadoServidor()
   const logros = servidor.logros.datos
-  const gruposApi = modoApi ? insigniasServidor(logros) : undefined
+  const gruposApi = useMemo(() => (modoApi ? insigniasServidor(logros) : undefined), [logros])
   const secreta = !!badge?.hidden && !badge.done
   const [remotas, setRemotas] = useState<CondicionesPasaporte | null>(null)
   const [guardando, setGuardando] = useState(false)
+  const [errorVitrina, setErrorVitrina] = useState('')
+  // F5: depende del código y del estado, no del objeto (se recrea en cada render): una sola consulta por insignia.
+  const codigo = badge?.code,
+    respaldo = badge?.description,
+    consultable = modoApi && !!badge && !badge.done && !badge.hidden
   useEffect(() => {
-    if (!modoApi || !badge || badge.done || badge.hidden) return
+    if (!consultable || !codigo) return
     let vigente = true
     setRemotas(null)
-    void consultarProgreso('INSIGNIA', badge.code).then((r) => {
-      if (vigente) setRemotas(r.tipo === 'ok' ? condicionesObjetivo(r.datos, badge.description) : null)
+    void consultarProgreso('INSIGNIA', codigo).then((r) => {
+      if (vigente) setRemotas(r.tipo === 'ok' ? condicionesObjetivo(r.datos, respaldo) : null)
     })
     return () => {
       vigente = false
     }
-  }, [badge, logros])
+  }, [consultable, codigo, respaldo])
+  useEffect(() => setErrorVitrina(''), [codigo])
   const vitrina = vitrinaPasaporte(adventure, discovery, journey, gruposApi, logros?.vitrina),
     enVitrina = vitrina.some((b) => b.code === badge?.code)
   const condiciones = modoApi
@@ -63,9 +69,11 @@ export function useBadgeDetail(badge?: PassportBadge) {
     }
     const codigos = vitrina.map((b) => b.code as string)
     setGuardando(true)
-    void guardarVitrina(enVitrina ? codigos.filter((c) => c !== badge.code) : [...codigos, badge.code]).then(() =>
-      setGuardando(false),
-    )
+    setErrorVitrina('')
+    void guardarVitrina(enVitrina ? codigos.filter((c) => c !== badge.code) : [...codigos, badge.code]).then((r) => {
+      setGuardando(false)
+      if (r.tipo !== 'ok') setErrorVitrina(mensajeErrorServidor(r))
+    })
   }
   return {
     returnFocus,
@@ -78,6 +86,7 @@ export function useBadgeDetail(badge?: PassportBadge) {
     enUso: vitrina.length,
     vitrinaLlena: !enVitrina && vitrina.length >= 3,
     guardando,
+    errorVitrina: modoApi ? errorVitrina : '',
     alternarVitrina,
   }
 }

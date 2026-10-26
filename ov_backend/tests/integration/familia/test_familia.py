@@ -59,7 +59,7 @@ def test_avance_y_nivel_del_hijo(cliente, sesion):
     total = requeridas(sesion, 'ESTUDIANTE')
     hijo = familia(cliente)['estudiante']
     assert hijo == {'codigo': 'est-ana', 'nombre': 'Ana', 'nivel_actual': {'numero': 1, 'titulo': 'Observador del horizonte',
-                                                                      'descripcion': ANY},
+                                                                      'descripcion': ANY, 'cita_lumi': ANY},
                     'avance': {'completadas': 0, 'total': total, 'porcentaje': 0.0}}
     avanzar(cliente)
     hijo = familia(cliente)['estudiante']

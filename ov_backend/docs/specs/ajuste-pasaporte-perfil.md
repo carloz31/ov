@@ -75,6 +75,63 @@ Un commit por fase: `Ajuste pasaporte-perfil · F<n>: <qué>`. Sin push.
 6. **Capítulo II del perfil:** incluye la tarjeta destacada cuando una página está `ready` y la barra pequeña «x de y misiones» en las selladas (2.3 del texto).
 7. El usuario enviará fotos de los bocetos de las cinco pantallas como referencia visual.
 
+## Fase 5 · Textos del boceto y vitrina fluida
+
+Se agrega como fase nueva a la spec en curso `ov_backend/docs/specs/ajuste-pasaporte-perfil.md` (sección «Fase 5»), en la misma rama `ajuste/pasaporte-perfil`.
+
+### Contexto
+
+Tras probar F2–F3, el usuario pide:
+1. Que el modal de una insignia obtenida se vea como el boceto: una frase destacada («Una nueva mirada viaja contigo.»), un párrafo con su historia y «Cómo la conseguiste: completaste la introducción de tu viaje.». Hoy sale «Completaste t-inicio.» y «Completa t-inicio.» porque el modelo solo tiene `descripcion` y `requisito`, y la semilla los redactó con códigos de actividad.
+2. Que la cita de Lumi bajo la descripción del nivel («Lumi: «Los títulos no dicen cuánto vales…»») también venga del modelo.
+3. **No** se agrega «N viajeros de tu salón ya la encontraron».
+4. Que al añadir o quitar de la vitrina la página bajo el modal no tiemble y el botón muestre un cargador mientras llama al backend.
+
+### Qué cambia (hoy → pasará a)
+
+**Modelo (decisión de diseño a aprobar; sigue `/cambio-modelo`, migración `0029`)**
+- `insignia.frase` (Text, nulo): la frase destacada del sello.
+- `insignia.logro` (Text, nulo): cómo se consiguió, en pasado («completaste la introducción de tu viaje.»).
+- `insignia.descripcion` se mantiene y pasa a ser el párrafo de la historia; `requisito` se mantiene (lo que pide, en imperativo, para la por descubrir).
+- `nivel.cita_lumi` (Text, nulo): la cita de Lumi de cada nivel.
+
+**Backend**
+- `app/services/logros.py::logros_cuenta`: `InsigniaEstado` gana `frase` y `logro` (nulos si la oculta sigue enmascarada); `NivelEstado` gana `cita_lumi`.
+- `NivelActual` (resumen y familia) gana `cita_lumi`, igual que `descripcion` en F1.
+- Pruebas: `tests/integration/logros/test_pasaporte.py` (frase, logro y cita; ocultas sin frase ni logro); contrato, migraciones y semilla se adaptan por la forma nueva.
+
+**Datos (`datos/ruta.py`, `DATO DE PRUEBA`)**
+- Textos sin códigos de actividad en las cinco insignias. `t-ins-1` toma los del boceto: «La primera chispa», frase «Una nueva mirada viaja contigo.», historia «Antes de buscar un destino decidiste mirar. Ese primer paso, el de aceptar que todavía no sabes, es el que abre todos los demás.», logro «completaste la introducción de tu viaje.», requisito «Completa la introducción de tu viaje.». Las otras cuatro, adaptadas de las presentaciones del front (`achievements.ts`) cuando exista una parecida.
+- Frase y logro van en un diccionario aparte (`TEXTOS_INSIGNIAS = {codigo: (frase, logro)}`) y la cita en `CITAS_LUMI = {numero: cita}`, como `PAGINAS_INSIGNIAS` y `PISTAS_INSIGNIAS`: no cambia la forma de `INSIGNIAS` ni de `NIVELES`.
+- Citas de Lumi para los niveles 1 a 3; la del 2, la del boceto.
+- Fixtures regenerados.
+
+**Frontend**
+- Tipos (`types/servidorLogros.ts`, `types/servidor.ts`), adaptador (`insigniasServidor`: `metaphor` ← `frase`, `vocationalMeaning` ← `descripcion`, nuevo `logro`) y `getTravelerLevel` (nuevo `citaLumi` desde `nivel_actual.cita_lumi`).
+- `PassportBadgeDialog.tsx`, estado obtenida: «Lo que guarda este sello» con la frase en cursiva (`badge.metaphor`) y debajo el párrafo (`badge.vocationalMeaning`); «Cómo la conseguiste:» con `logro` (si no llega, el `requisito`). En local, las mismas piezas salen de `metaphor`, `vocationalMeaning` y `description` de las presentaciones locales. Esto corrige lo que 1.5 del texto había retirado (`metaphor` y `vocationalMeaning`), a pedido del usuario con el boceto.
+- `PassportLevelCard.tsx`: bajo la descripción, «Lumi: «{cita}»» en cursiva cuando el nivel la trae (en local no hay cita: no se pinta).
+
+**Vitrina fluida**
+- Causa del temblor: al guardar, `guardarVitrina` publica un `logros` nuevo; `useProgresoNivel` depende del objeto `logros`, pone sus condiciones en `null` y vuelve a consultar, así que la lista del «Siguiente título» desaparece y reaparece bajo el modal (pasa también en el perfil). Además `useBadgeDetail` depende del objeto `badge`, que `insigniasServidor` recrea en cada render: en una insignia por descubrir puede volver a consultar el progreso en bucle.
+- `useProgresoNivel`: depende de `numero` y de una clave estable de los estados de los niveles (no del objeto `logros`), y conserva las condiciones anteriores mientras llega la nueva respuesta del mismo nivel.
+- `useBadgeDetail`: depende de `badge.code` y `badge.done`; `usePassport`, `useBadgeDetail` y `useStudentProfile` memorizan `insigniasServidor(logros)` con `useMemo`.
+- Botón de vitrina: mientras guarda, `aria-busy` y `aria-disabled` (no `disabled`, para no pasar al gris), mantiene el estilo y el texto de su estado y muestra `LoaderCircle` girando (el patrón de `features/activities/components/nodes/ItemNode.tsx`: `animate-spin motion-reduce:animate-none`). Si falla, el pie muestra `mensajeErrorServidor` con `role="alert"` y el botón vuelve a su estado.
+
+### Qué no cambia
+
+El motor, `/progreso`, `/avance`, la vitrina en el servidor (`POST /acciones/vitrina`), los textos de condición, el modal secreto y el por descubrir, el perfil salvo dejar de parpadear, y el modo local salvo mostrar sus `metaphor`/`vocationalMeaning` en el modal obtenido (excepción nº 16).
+
+### Pruebas
+
+- Backend: `logros`, `migraciones`, `datos`, `contrato`, `cuentas`, `familia`, `escenarios`.
+- Front: `tests/servidor/logros` (modal obtenido con frase, historia y logro; cita de Lumi; el botón con cargador y sin `disabled` mientras guarda; error que deja el botón como estaba; que guardar la vitrina no vuelva a consultar `/progreso/NIVEL` ni deje las condiciones en `null`; que una insignia por descubrir consulte su progreso una sola vez aunque se vuelva a renderizar), `tests/servidor/perfil`, `tests/local/aventura` (modal obtenido local), `npm run test:servidor`.
+- Navegador: backend y front temporales como en F2 (puerto 8001, base en el scratchpad), añadir y quitar de la vitrina midiendo cambios de diseño (`PerformanceObserver` de `layout-shift`) y peticiones; se limpia al terminar.
+- Cierre de fase: suite completa de ambos repos.
+
+### Commit
+
+`Ajuste pasaporte-perfil · F5: textos del boceto y vitrina fluida`, con `decisiones.md`, `motor.md`/`integracion.md` y `origen-de-datos.md` actualizados. Sin push.
+
 ## Anexo · Texto de observaciones
 
 Texto original del usuario (`ajuste-pasaporte-perfil.md`). Las correcciones y observaciones de arriba prevalecen sobre él.

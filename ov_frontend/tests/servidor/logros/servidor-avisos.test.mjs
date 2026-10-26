@@ -137,7 +137,7 @@ test('los nuevos desbloqueos confirmados sobreviven a un refresco fallido', asyn
   const respuesta = await f.acciones.completarActividad('t-inicio')
   assert.equal(respuesta.tipo, 'guardado_sin_refrescar')
   assert.ok(f.store.obtenerEstadoServidor().desbloqueosAccion.length)
-  assert.ok(f.store.avisosPendientes().some((a) => a.title === 'Insignia de prueba'))
+  assert.ok(f.store.avisosPendientes().some((a) => a.title === 'La primera chispa'))
 })
 
 test('recargar antes del marcado vuelve a presentar el lote; cambiar de cuenta descarta respuestas tardías', async () => {

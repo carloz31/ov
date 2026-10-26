@@ -271,7 +271,7 @@ def test_hu074_logros_obtenidos_y_condiciones(cliente):
     logros = pedir(cliente, 'GET', '/cuentas/est-ana/logros')
     visible = next(i for i in logros['insignias'] if i['codigo'] == 't-ins-1')
     oculto = next(i for i in logros['insignias'] if i['codigo'] == '???')
-    assert (visible['codigo'], visible['estado'], visible['requisito']) == ('t-ins-1', 'BLOQUEADA', 'Completa t-inicio.')
+    assert (visible['codigo'], visible['estado'], visible['requisito']) == ('t-ins-1', 'BLOQUEADA', 'Completa la introducción de tu viaje.')
     assert (oculto['codigo'], oculto['requisito']) == ('???', None)
     condicion, = pedir(cliente, 'GET', '/cuentas/est-ana/progreso/INSIGNIA/t-ins-1')['reglas'][0]['condiciones']
     assert (condicion['referencia'], condicion['actual'], condicion['requerido']) == ('t-inicio', 0, 1)

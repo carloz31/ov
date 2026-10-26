@@ -56,3 +56,13 @@ Spec: `docs/specs/ajuste-pasaporte-perfil.md`.
 - Excepción nº 16 al modo local congelado anotada en `ov_frontend/AGENTS.md`; `origen-de-datos.md` describe el pasaporte, los títulos y la vitrina en api.
 - Nuevo pendiente de interfaz: el `texto` de las condiciones en bloqueos y desbloqueos, sin vista fuera del pasaporte. «Avance por temática» (B09) sigue sin vista.
 - La spec queda en curso: cerrarla es decisión del usuario.
+
+## Fase 5 · Textos del boceto y vitrina fluida
+
+- Modelo (`0029`): `insignia.frase` y `insignia.logro` y `nivel.cita_lumi`, nulos. `descripcion` pasa a ser la historia del sello y `requisito` sigue siendo lo que pide; así el modal obtenido se ve como el boceto sin redactar en el front.
+- La semilla ya no nombra códigos de actividad en insignias; `t-ins-1` es «La primera chispa» con los textos del boceto. Frase y logro van en `TEXTOS_INSIGNIAS` y la cita en `CITAS_LUMI`, aparte de las tuplas.
+- El front vuelve a mostrar `metaphor` (frase) y `vocationalMeaning` (historia) en el modal obtenido, que 1.5 del texto había retirado; en api salen de `frase` y `descripcion`. «Cómo la conseguiste» usa `logro` y, si falta, el requisito.
+- Sin «N viajeros de tu salón ya la encontraron», por decisión del usuario.
+- Temblor de la vitrina: `useProgresoNivel` dependía del objeto `logros` y vaciaba sus condiciones al guardar; ahora depende de los estados de los niveles y conserva la lista mientras consulta. `useBadgeDetail` depende del código y el estado de la insignia (el objeto se recrea en cada render), y los grupos se memorizan con `useMemo`.
+- El botón de vitrina usa `aria-busy`/`aria-disabled` (no `disabled`) mientras guarda, con `LoaderCircle`; un error se muestra en el pie con `role="alert"`.
+- No se verificó en el navegador: el usuario borró `.claude/launch.json` (commit propio) y no se volvió a crear. Lo cubren las pruebas de `tests/servidor/logros`.
