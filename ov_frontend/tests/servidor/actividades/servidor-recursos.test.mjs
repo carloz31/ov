@@ -69,8 +69,9 @@ test('en api, la mochila lista las fichas de la cuenta en el servidor, disponibl
   assert.deepEqual(copia(inicial.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [false, false, false])
   const final = fichas('final')
   assert.deepEqual(copia(final.map((r) => recursos.isTravelResourceUnlocked(r, {}, {}))), [true, true, false])
-  // Ajuste mochila: el contenido, el tema y el origen de una ficha obtenida salen del servidor.
-  assert.ok(final[0].content.startsWith('Muchas decisiones'))
+  // Ajuste mochila: el tema y el origen de una ficha obtenida salen de la lista; el contenido, del detalle
+  // que pide el modal.
+  assert.deepEqual([final[0].content, final[0].contenidoRemoto], [undefined, true])
   assert.deepEqual(copia([final[0].ficha.tema, final[0].ficha.actividad.codigo, final[0].ficha.tramo.numero]), [
     'Mitos y creencias',
     't-inicio',

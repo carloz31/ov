@@ -22,10 +22,10 @@ class FichaCuenta(BaseModel):
     codigo: str
     titulo: str
     estado: EstadoDisponibilidad
-    # Solo con la ficha obtenida; nulos si está bloqueada (ajuste mochila).
+    # Solo con la ficha obtenida; nulos si está bloqueada (ajuste mochila). Lo de la tarjeta: el contenido va
+    # aparte, en FichaDetalle.
     tema: str | None
     descripcion: str | None
-    contenido: str | None
     obtenida_en: datetime | None
     # La cuenta abrió esta ficha (evento VISTA_FICHA con esta ficha como referencia).
     visto: bool
@@ -33,3 +33,11 @@ class FichaCuenta(BaseModel):
     es_favorita: bool
     actividad: ActividadFicha | None
     tramo: TramoFicha | None
+
+
+class FichaDetalle(BaseModel):
+    """GET /cuentas/{c}/fichas/{codigo}: el texto de una ficha obtenida, que el modal pide al abrirse."""
+    codigo: str
+    titulo: str
+    # Markdown, sin repetir el título.
+    contenido: str

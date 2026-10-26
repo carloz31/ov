@@ -46,14 +46,24 @@ test('el markdown de lectura dibuja subtítulos, listas, citas y enlaces https, 
   assert.ok(texto(arbol).includes('otro'))
 })
 
-test('el modal muestra tema, origen, tramo y minutos; enlaza la actividad solo desde la mochila', () => {
+test('el modal muestra tema, origen, tramo y minutos; enlaza la actividad solo desde la mochila', async () => {
   const app = fixtureServidor()
+  app.fetch((r) => {
+    if (r.url.endsWith('/fichas/t-ficha')) return { body: jsonServidor('ruta/ruta-ficha-t-ficha') }
+    if (r.url.endsWith('/ver-ficha')) return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
+    return { body: [] }
+  })
+  cargarAlmacen(app).publicar({ consultasHabilitadas: true })
   const { FichaModal } = app.load('src/features/backpack/components/FichaModal.tsx')
   const { fichaServidor } = app.load('src/features/backpack/lib/travelerResources.ts')
   const resource = fichaServidor(fichasFinal[0])
-  const dibujar = (enlazarActividad) =>
-    app.mount(FichaModal, { abierto: true, resource, enlazarActividad, onClose() {} }).render()
-  const mochila = dibujar(true)
+  const dibujar = async (enlazarActividad) => {
+    const modal = app.mount(FichaModal, { abierto: true, resource, enlazarActividad, onClose() {} })
+    modal.render()
+    await esperar()
+    return modal.render()
+  }
+  const mochila = await dibujar(true)
   assert.deepEqual(copia(elementos(mochila, (e) => e.type?.name === 'ChipTema').map((e) => e.props.tema)), [
     'Mitos y creencias',
   ])
@@ -62,7 +72,7 @@ test('el modal muestra tema, origen, tramo y minutos; enlaza la actividad solo d
   assert.equal(enlaces.length, 1)
   assert.match(enlaces[0].props.to, /^\/student\/missions\?punto=/)
   // Desde una actividad (el host global), el nombre va como texto plano.
-  const actividad = dibujar(false)
+  const actividad = await dibujar(false)
   assert.equal(elementos(actividad, (e) => typeof e.props?.to === 'string').length, 0)
   assert.ok(texto(actividad).includes('Inicio de prueba'))
   assert.ok(!texto(actividad).includes('Ficha desbloqueada') && !texto(actividad).includes('Leí la ficha'))
@@ -96,4 +106,28 @@ test('mientras se piden las fichas, el modal muestra su esqueleto', () => {
   const arbol = app.mount(FichaModal, { abierto: true, cargando: true, onClose() {} }).render()
   assert.ok(elementos(arbol, (e) => e.type?.name === 'Skeleton').length > 0)
   assert.equal(elementos(arbol, (e) => e.type?.name === 'ResourceContent').length, 0)
+})
+
+test('en api, el modal pide el contenido al abrirse: primero su carga, luego la ficha; un solo pedido', async () => {
+  const app = fixtureServidor()
+  app.fetch((r) => {
+    if (r.url.endsWith('/fichas/t-ficha')) return { body: jsonServidor('ruta/ruta-ficha-t-ficha') }
+    return { body: [] }
+  })
+  cargarAlmacen(app).publicar({ consultasHabilitadas: true })
+  const { FichaModal } = app.load('src/features/backpack/components/FichaModal.tsx')
+  const { fichaServidor } = app.load('src/features/backpack/lib/travelerResources.ts')
+  const resource = fichaServidor(fichasFinal[0])
+  // Dos aperturas (mochila y una actividad) comparten el pedido.
+  const uno = app.mount(FichaModal, { abierto: true, resource, enlazarActividad: true, onClose() {} })
+  const dos = app.mount(FichaModal, { abierto: true, resource, onClose() {} })
+  const cargando = uno.render()
+  dos.render()
+  assert.ok(elementos(cargando, (e) => e.type?.name === 'Skeleton').length > 0)
+  assert.equal(elementos(cargando, (e) => e.type?.name === 'ResourceContent').length, 0)
+  await esperar()
+  const listo = uno.render()
+  const cuerpo = elementos(listo, (e) => e.type?.name === 'ResourceContent')[0]
+  assert.ok(cuerpo.props.resource.content.startsWith('Muchas decisiones'))
+  assert.equal(app.requests.filter((r) => r.url.endsWith('/fichas/t-ficha')).length, 1)
 })

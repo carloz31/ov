@@ -13,7 +13,8 @@ import type { TravelResource } from '../lib/travelerResources'
 import '../styles/ficha-modal.css'
 
 // Ajuste mochila: el modal de ficha de toda la plataforma (mochila, reproductor, batalla y cierres). Cabecera y
-// pie fijos; solo el cuerpo se desplaza. El nombre de la actividad enlaza a su drawer solo desde la mochila.
+// pie fijos; solo el cuerpo se desplaza. El nombre de la actividad enlaza a su drawer solo desde la mochila. En api,
+// la cabecera sale de la lista de fichas y el cuerpo muestra su carga hasta que llega el contenido.
 export function FichaModal({
   abierto,
   resource,
@@ -30,11 +31,13 @@ export function FichaModal({
   favorito?: FavoritoExterno
   onClose: () => void
 }) {
-  const { minutos, hrefActividad, favorito, pendiente, alternarFavorito } = useFichaModal(
+  const modal = useFichaModal(
     abierto && !cargando ? resource : undefined,
     enlazarActividad,
     externo,
   )
+  const { recurso, cargandoContenido, errorContenido, reintentarContenido } = modal
+  const { minutos, hrefActividad, favorito, pendiente, alternarFavorito } = modal
   // Mientras está abierto, la ficha tiene prioridad sobre los avisos automáticos de Lumi.
   useEffect(() => (abierto ? registrarFichaEnPantalla() : undefined), [abierto])
   const ficha = resource?.ficha
@@ -61,7 +64,7 @@ export function FichaModal({
                       <strong>{ficha.actividad.titulo}</strong>
                     )}
                     {ficha.tramo && ` · Tramo ${ficha.tramo.numero}`}
-                    {!cargando && ` · ${minutos} min de lectura`}
+                    {!cargando && !cargandoContenido && !errorContenido && ` · ${minutos} min de lectura`}
                   </span>
                 </p>
               )}
@@ -80,14 +83,21 @@ export function FichaModal({
           </header>
           <div className="sx-ficha-modal__cuerpo">
             <div className="sx-ficha-lectura">
-              {cargando || !resource ? (
+              {errorContenido ? (
+                <div className="space-y-3" role="alert">
+                  <p>{errorContenido}</p>
+                  <Button variant="outline" onClick={reintentarContenido}>
+                    Reintentar
+                  </Button>
+                </div>
+              ) : cargando || cargandoContenido || !recurso ? (
                 <div className="space-y-3" aria-busy="true">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-11/12" />
                   <Skeleton className="h-4 w-4/5" />
                 </div>
               ) : (
-                <ResourceContent resource={resource} />
+                <ResourceContent resource={recurso} />
               )}
             </div>
           </div>

@@ -34,6 +34,8 @@ export type TravelResource = {
   }
   // Ajuste mochila: favorita en el servidor (en local, `adventure.bookmarks`).
   favorita?: boolean
+  // Ajuste mochila: ficha del servidor; su contenido lo pide el modal al abrirse (GET de una ficha).
+  contenidoRemoto?: boolean
   // Ajuste mochila: tema, origen y si ya se abrió (en local, solo la actividad de origen).
   ficha?: OrigenFicha & { tema?: string; visto?: boolean }
 }
@@ -280,7 +282,7 @@ export function fichaServidor(f: FichaCuenta): TravelResource {
     summary: f.descripcion ?? '',
     description: f.descripcion ?? '',
     requirement: { anyCase: true },
-    content: f.contenido ?? undefined,
+    contenidoRemoto: true,
     favorita: f.es_favorita,
     ficha: {
       tema: f.tema ?? undefined,

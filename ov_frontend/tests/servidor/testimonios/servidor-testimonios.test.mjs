@@ -48,9 +48,12 @@ test('consultar y ver un testimonio usan las rutas del backend', async () => {
   const almacen = cargarAlmacen(app)
   almacen.publicar({ consultasHabilitadas: true })
   await almacen.refrescar()
+  // Ajuste mochila: los testimonios son una sección del almacén; ver uno actualiza lo cargado.
+  assert.deepEqual(copia(await almacen.asegurarSeccion('testimonios')), { tipo: 'ok', datos: final })
   const store = app.load('src/store/servidor/testimonios.ts')
-  assert.deepEqual(copia(await store.consultarTestimonios()), { tipo: 'ok', datos: final })
   assert.equal((await store.verTestimonio('t-testimonio-2')).tipo, 'ok')
+  const sesion = app.load('src/store/servidor/sesion.ts')
+  assert.equal(sesion.obtenerEstadoServidor().testimonios.datos.find((t) => t.codigo === 't-testimonio-2').visto, true)
   assert.deepEqual(copia(app.requests.slice(-2).map((r) => [r.url, r.body ?? null])), [
     ['/api/cuentas/est-ana/testimonios', null],
     ['/api/acciones/ver-testimonio', { cuenta: 'est-ana', testimonio: 't-testimonio-2' }],

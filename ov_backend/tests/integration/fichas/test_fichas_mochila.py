@@ -18,7 +18,8 @@ def test_ficha_obtenida_trae_tema_origen_y_tramo(cliente):
     assert list(estado) == ['t-ficha', 't-ficha-2', 't-ficha-3']
     primera = estado['t-ficha']
     assert (primera['estado'], primera['tema'], primera['visto']) == ('DISPONIBLE', 'Mitos y creencias', False)
-    assert primera['descripcion'] and primera['contenido'].startswith('Muchas decisiones')
+    # La lista trae lo de la tarjeta; el contenido va en el detalle.
+    assert primera['descripcion'] and 'contenido' not in primera
     assert primera['obtenida_en'] is not None
     assert primera['actividad'] == {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'}
     assert primera['tramo']['codigo'] == 'T0' and primera['tramo']['numero'] == 1
@@ -31,7 +32,7 @@ def test_ficha_obtenida_trae_tema_origen_y_tramo(cliente):
 def test_ficha_bloqueada_no_trae_detalle(cliente):
     bloqueada = fichas(cliente)['t-ficha']
     assert bloqueada == {'codigo': 't-ficha', 'titulo': 'Ficha de prueba', 'estado': 'BLOQUEADA', 'tema': None,
-                         'descripcion': None, 'contenido': None, 'obtenida_en': None, 'visto': False,
+                         'descripcion': None, 'obtenida_en': None, 'visto': False,
                          'es_favorita': False, 'actividad': None, 'tramo': None}
 
 
@@ -51,3 +52,16 @@ def test_ver_ficha_una_sola_vez_y_solo_esa_ficha(cliente, aplicacion):
     # Abrir una ficha no apaga «Nueva» en las demás.
     estado = fichas(cliente)
     assert (estado['t-ficha']['visto'], estado['t-ficha-2']['visto']) == (True, False)
+
+
+def test_detalle_de_una_ficha_obtenida_y_sus_rechazos(cliente):
+    bloqueada = pedir(cliente, 'GET', '/cuentas/est-ana/fichas/t-ficha', esperado=409)
+    assert bloqueada['detail']['mensaje'] == 'Completa el inicio para obtener esta ficha.'
+    pedir(cliente, 'GET', '/cuentas/est-ana/fichas/t-nula', esperado=404)
+    pedir(cliente, 'GET', '/cuentas/est-ana/fichas/t-ficha-apo', esperado=404)
+    completar(cliente, 't-inicio')
+    detalle = pedir(cliente, 'GET', '/cuentas/est-ana/fichas/t-ficha')
+    assert detalle['codigo'] == 't-ficha' and detalle['titulo'] == 'Ficha de prueba'
+    assert detalle['contenido'].startswith('Muchas decisiones')
+    # Leer el detalle no registra la vista: eso lo hace ver-ficha.
+    assert fichas(cliente)['t-ficha']['visto'] is False

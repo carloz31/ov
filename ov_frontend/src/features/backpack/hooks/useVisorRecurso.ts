@@ -3,7 +3,8 @@ import { modoApi } from '@/config/env'
 import { appPaths } from '@/routes/paths'
 import { updateAdventure, useAdventure } from '@/store/adventureStore'
 import { updateJourney } from '@/store/journeyStore'
-import { verFicha } from '@/store/servidor/fichas'
+import { cargarFicha, useFichaDetalle, verFicha } from '@/store/servidor/fichas'
+import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { alternarFavorito } from '@/store/servidor/favoritos'
 import { useActividadesServidor } from '@/store/servidor/secciones'
 import { hrefActividad } from '@/features/discovery/lib/helenaPagesApi'
@@ -79,5 +80,17 @@ export function useFichaModal(
       : modoApi
         ? hrefActividad(actividades.datos, actividad.codigo)
         : `${appPaths.student.missions}?actividad=${encodeURIComponent(actividad.codigo)}`
-  return { minutos: tiempoLectura(resource?.content), hrefActividad: href, ...useVisorRecurso(resource, externo) }
+  // En api, el contenido de una ficha del servidor llega aparte: hasta entonces, el cuerpo muestra su carga.
+  const remoto = modoApi && resource?.contenidoRemoto ? resource : undefined
+  const detalle = useFichaDetalle(remoto?.id)
+  const conContenido = remoto && detalle?.datos ? { ...remoto, content: detalle.datos.contenido } : resource
+  return {
+    recurso: conContenido,
+    cargandoContenido: !!remoto && detalle?.estado !== 'listo' && detalle?.estado !== 'error',
+    errorContenido: remoto && detalle?.estado === 'error' ? mensajeErrorServidor(detalle.error) : null,
+    reintentarContenido: () => remoto && cargarFicha(remoto.id),
+    minutos: tiempoLectura(conContenido?.content),
+    hrefActividad: href,
+    ...useVisorRecurso(resource, externo),
+  }
 }

@@ -7,7 +7,7 @@ from app.models import (
     Actividad, Bloque, Cuenta, Desbloqueo, Espacio, Ficha, TipoEventoUso, TipoFavorito, TipoObjetivo,
 )
 from app.schemas.acciones import RespuestaAccion, VerFichaEntrada
-from app.schemas.fichas import ActividadFicha, FichaCuenta, TramoFicha
+from app.schemas.fichas import ActividadFicha, FichaCuenta, FichaDetalle, TramoFicha
 from app.services.comun import buscar_por_codigo, exigir_disponible, existe_evento, fecha_accion, responder_con_eventos
 from app.services.motor.reglas import objetivo_corresponde_a_cuenta, objetivo_disponible
 
@@ -38,13 +38,13 @@ def _ficha_cuenta(sesion, cuenta, ficha, obtenida):
     disponible = objetivo_disponible(sesion, cuenta, TipoObjetivo.FICHA, ficha.id)
     if not disponible:
         return FichaCuenta(codigo=ficha.codigo, titulo=ficha.titulo, estado="BLOQUEADA", tema=None, descripcion=None,
-                           contenido=None, obtenida_en=None, visto=False, es_favorita=False, actividad=None, tramo=None)
+                           obtenida_en=None, visto=False, es_favorita=False, actividad=None, tramo=None)
     fecha, regla = obtenida if obtenida else (None, None)
     actividad = None if regla is None else _actividad_de_la_regla(sesion, regla)
     bloque = None if actividad is None else contexto(sesion).definiciones.obtener(Bloque, actividad.bloque_id)
     return FichaCuenta(
         codigo=ficha.codigo, titulo=ficha.titulo, estado="DISPONIBLE", tema=ficha.tema, descripcion=ficha.descripcion,
-        contenido=ficha.contenido, obtenida_en=fecha,
+        obtenida_en=fecha,
         # Por ficha: solo cuenta el evento cuya referencia es esta ficha.
         visto=existe_evento(sesion, cuenta, TipoEventoUso.VISTA_FICHA, ficha.id),
         es_favorita=(TipoFavorito.FICHA, ficha.id) in contexto(sesion).favoritos_de(cuenta.id),
@@ -62,11 +62,24 @@ def _actividad_de_la_regla(sesion, regla):
 
 
 @usar_contexto
-def ver_ficha(sesion: Session, entrada: VerFichaEntrada) -> RespuestaAccion:
-    cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
-    ficha = buscar_por_codigo(sesion, Ficha, entrada.ficha)
+def detalle_ficha(sesion: Session, cuenta: Cuenta, codigo: str) -> FichaDetalle:
+    """El contenido de una ficha: 404 si no existe o es de otra audiencia; 409 con su mensaje si está bloqueada."""
+    ficha = _ficha_de_la_cuenta(sesion, cuenta, codigo)
+    exigir_disponible(sesion, cuenta, TipoObjetivo.FICHA, ficha)
+    return FichaDetalle(codigo=ficha.codigo, titulo=ficha.titulo, contenido=ficha.contenido)
+
+
+def _ficha_de_la_cuenta(sesion, cuenta, codigo):
+    ficha = buscar_por_codigo(sesion, Ficha, codigo)
     if not objetivo_corresponde_a_cuenta(sesion, cuenta, TipoObjetivo.FICHA, ficha.id):
         raise ErrorAccion("Cuenta o referencia no encontrada", estado_http=404)
+    return ficha
+
+
+@usar_contexto
+def ver_ficha(sesion: Session, entrada: VerFichaEntrada) -> RespuestaAccion:
+    cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
+    ficha = _ficha_de_la_cuenta(sesion, cuenta, entrada.ficha)
     exigir_disponible(sesion, cuenta, TipoObjetivo.FICHA, ficha)
     # Solo la primera vista cuenta; volver a abrirla no registra otro evento (como ver-testimonio).
     visto = existe_evento(sesion, cuenta, TipoEventoUso.VISTA_FICHA, ficha.id)

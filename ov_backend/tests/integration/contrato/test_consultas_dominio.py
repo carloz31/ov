@@ -89,14 +89,14 @@ def esperado(ruta, completo):
         # Ajuste mochila: las dos de t-inicio (T0) se obtienen; la de t-opcional sigue bloqueada y sin detalle.
         bloque = next(fila for fila in BLOQUES if fila[0] == 'T0')
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'DISPONIBLE', 'tema': tema, 'descripcion': descripcion,
-                 'contenido': texto, 'obtenida_en': ANY, 'visto': False, 'es_favorita': False,
+                 'obtenida_en': ANY, 'visto': False, 'es_favorita': False,
                  'actividad': {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'},
                  'tramo': {'codigo': 'T0', 'nombre': bloque[2], 'numero': bloque[1]}}
                 if completo and codigo != 't-ficha-3' else
                 {'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'tema': None, 'descripcion': None,
-                 'contenido': None, 'obtenida_en': None, 'visto': False, 'es_favorita': False, 'actividad': None,
+                 'obtenida_en': None, 'visto': False, 'es_favorita': False, 'actividad': None,
                  'tramo': None}
-                for codigo, titulo, descripcion, tema, texto, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
+                for codigo, titulo, descripcion, tema, _texto, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
     if ruta == 'logros':
         # Ajuste pasaporte-perfil: por página y orden; la oculta conserva su página, su orden y su pista.
         grupos = {codigo: {'codigo': codigo, 'nombre': nombre, 'orden': orden} for codigo, nombre, orden in GRUPOS_INSIGNIA}
@@ -172,7 +172,7 @@ def test_apoderado_sin_listas_estudiantiles(cliente, ruta):
         assert respuesta == [('CONVERSACIONES', 'BLOQUEADA', False)]
     elif ruta == 'fichas':
         assert respuesta == [{'codigo': 't-ficha-apo', 'titulo': 'Ficha del apoderado', 'estado': 'BLOQUEADA',
-                              'tema': None, 'descripcion': None, 'contenido': None, 'obtenida_en': None,
+                              'tema': None, 'descripcion': None, 'obtenida_en': None,
                               'visto': False, 'es_favorita': False, 'actividad': None, 'tramo': None}]
     elif ruta == 'actividades':
         assert respuesta == [{**{clave: valor for clave, valor in BLOQUE_FAMILIA.items() if clave != 'bloqueo'},

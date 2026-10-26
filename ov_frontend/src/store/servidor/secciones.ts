@@ -4,6 +4,7 @@ import { obtenerResumen } from '@/services/api/cuentas'
 import { obtenerActividades } from '@/services/api/actividades'
 import { obtenerAvance } from '@/services/api/avance'
 import { obtenerFichas } from '@/services/api/fichas'
+import { obtenerTestimonios } from '@/services/api/testimonios'
 import { obtenerLogros } from '@/services/api/logros'
 import { obtenerSecciones } from '@/services/api/secciones'
 import {
@@ -33,6 +34,7 @@ const consultas = {
   resumen: obtenerResumen,
   actividades: obtenerActividades,
   fichas: obtenerFichas,
+  testimonios: obtenerTestimonios,
   logros: obtenerLogros,
   avance: obtenerAvance,
   secciones: obtenerSecciones,
@@ -45,6 +47,7 @@ const contadores = (): Record<NombreSeccion, number> => ({
   resumen: 0,
   actividades: 0,
   fichas: 0,
+  testimonios: 0,
   logros: 0,
   avance: 0,
   secciones: 0,
@@ -131,6 +134,8 @@ export function seccionesPorDesbloqueos(desbloqueos: DesbloqueoNuevo[]): NombreS
   const nombres = new Set<NombreSeccion>()
   for (const d of desbloqueos) {
     if (d.tipo_objetivo === 'FICHA') nombres.add('fichas')
+    // Un testimonio abierto, o una actividad (un llamado de la Central) que cambia `caso_disponible`.
+    if (d.tipo_objetivo === 'TESTIMONIO' || d.tipo_objetivo === 'ACTIVIDAD') nombres.add('testimonios')
     if (d.tipo_objetivo === 'INSIGNIA' || d.tipo_objetivo === 'NIVEL') nombres.add('logros')
     if (d.tipo_objetivo === 'NIVEL') nombres.add('resumen')
     if (d.tipo_objetivo === 'SECCION') nombres.add('secciones')
@@ -165,6 +170,7 @@ function useSeccion<N extends NombreSeccion>(nombre: N, activo = true): Seccion<
 export const useResumenServidor = (activo = true) => useSeccion('resumen', activo)
 export const useActividadesServidor = (activo = true) => useSeccion('actividades', activo)
 export const useFichasServidor = (activo = true) => useSeccion('fichas', activo)
+export const useTestimoniosServidor = (activo = true) => useSeccion('testimonios', activo)
 export const useLogrosServidor = (activo = true) => useSeccion('logros', activo)
 export const useSeccionesServidor = (activo = true) => useSeccion('secciones', activo)
 export const useDiarioPreguntasServidor = (activo = true) => useSeccion('diarioPreguntas', activo)

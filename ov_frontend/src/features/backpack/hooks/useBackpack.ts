@@ -1,4 +1,4 @@
-import { useActividadesServidor, useFichasServidor } from '@/store/servidor/secciones'
+import { useActividadesServidor, useFichasServidor, useTestimoniosServidor } from '@/store/servidor/secciones'
 import { ciudadDisponible } from '@/lib/servidor/adaptadores'
 import { appPaths } from '@/routes/paths'
 import { cityCases } from '@/data/content/adventure'
@@ -7,9 +7,8 @@ import { agruparFichas } from '../lib/agruparFichas'
 import { filtrar, vocesListadas } from '../lib/compartimentos'
 import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
-import { consultarTestimonios, verTestimonio as registrarVistaTestimonio } from '@/store/servidor/testimonios'
+import { verTestimonio as registrarVistaTestimonio } from '@/store/servidor/testimonios'
 import { alternarFavorito } from '@/store/servidor/favoritos'
-import type { TestimonioEstado } from '@/types/servidor'
 import { useRequisitoRecurso } from './useRequisitoRecurso'
 import { useNavigate, useSearchParams } from 'react-router'
 import { useJourney } from '@/store/journeyStore'
@@ -39,18 +38,9 @@ export function useBackpack() {
   useEffect(() => {
     setSelectedId(fichaSolicitada)
   }, [fichaSolicitada])
-  // F04: los testimonios se piden al abrir la mochila.
-  const [testimonios, setTestimonios] = useState<TestimonioEstado[] | null>(null)
-  useEffect(() => {
-    if (!modoApi) return
-    let vigente = true
-    void consultarTestimonios().then((respuesta) => {
-      if (vigente && respuesta.tipo === 'ok') setTestimonios(respuesta.datos)
-    })
-    return () => {
-      vigente = false
-    }
-  }, [])
+  // F04: los testimonios se piden al abrir la mochila; desde el ajuste mochila, por su sección del almacén
+  // (un solo pedido, que se conserva hasta que un desbloqueo lo vence).
+  const testimonios = useTestimoniosServidor().datos
   const [requisitoId, setRequisitoId] = useState<string | null>(null)
   // Ajuste mochila (api): los favoritos que esperan su POST.
   const [pendientes, setPendientes] = useState<string[]>([])
@@ -116,13 +106,10 @@ export function useBackpack() {
       if (pendientes.includes(id)) return
       const valor = !esFavorita(item)
       setPendientes((actual) => [...actual, id])
-      // Confirmado, el cambio se aplica a los datos ya cargados, sin volver a pedirlos: las fichas, en su
-      // sección (lo hace el store); los testimonios, aquí.
-      void alternarFavorito(item.kind === 'sheet' ? 'FICHA' : 'TESTIMONIO', id, valor).then((respuesta) => {
-        setPendientes((actual) => actual.filter((p) => p !== id))
-        if (respuesta.tipo === 'ok' && item.kind !== 'sheet')
-          setTestimonios((actual) => actual?.map((t) => (t.codigo === id ? { ...t, es_favorita: valor } : t)) ?? actual)
-      })
+      // Confirmado, el store aplica el cambio a la ficha o al testimonio ya cargados, sin volver a pedirlos.
+      void alternarFavorito(item.kind === 'sheet' ? 'FICHA' : 'TESTIMONIO', id, valor).finally(() =>
+        setPendientes((actual) => actual.filter((p) => p !== id)),
+      )
       return
     }
     updateAdventure((current) => ({

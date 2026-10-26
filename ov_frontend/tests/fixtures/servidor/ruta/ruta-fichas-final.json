@@ -5,7 +5,6 @@
       "titulo": "Inicio de prueba"
     },
     "codigo": "t-ficha",
-    "contenido": "Muchas decisiones se toman sobre frases que todos repiten y nadie revisa. Esta ficha reúne dos de las más comunes.\n\n### «Esa carrera no tiene futuro»\n\nImporta menos cuántos trabajan hoy que cómo cambia esa cifra y en qué ocupaciones terminan.\n\n> Pregunta clave: ¿quién lo dice, con qué dato y de qué año?\n\n### «Si estudias eso vas a ganar poco»\n\n- El ingreso depende de la ocupación.\n- También de la experiencia y del lugar.\n\nRevisa los rangos en [Ponte en Carrera](https://www.ponteencarrera.pe).",
     "descripcion": "Creencias frecuentes sobre las carreras y qué dicen los datos.",
     "es_favorita": true,
     "estado": "DISPONIBLE",
@@ -25,7 +24,6 @@
       "titulo": "Inicio de prueba"
     },
     "codigo": "t-ficha-2",
-    "contenido": "Lo que te gusta y lo que se te da bien no siempre coinciden.\n\n### Tres preguntas\n\n1. ¿Qué harías aunque nadie te lo pidiera?\n2. ¿En qué te piden ayuda?\n3. ¿Qué te cuesta menos que a otros?",
     "descripcion": "Tres preguntas para distinguir lo que te gusta de lo que se te da bien.",
     "es_favorita": false,
     "estado": "DISPONIBLE",
@@ -42,7 +40,6 @@
   {
     "actividad": null,
     "codigo": "t-ficha-3",
-    "contenido": null,
     "descripcion": null,
     "es_favorita": false,
     "estado": "BLOQUEADA",

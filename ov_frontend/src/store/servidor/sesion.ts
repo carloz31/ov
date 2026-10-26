@@ -12,6 +12,7 @@ import type {
   CheckInsCuenta,
   ComparacionAutopercepcion,
   FichaCuenta,
+  TestimonioEstado,
   ResumenCuenta,
   LogrosCuenta,
   DesbloqueoLegible,
@@ -36,6 +37,8 @@ export type DatosSecciones = {
   resumen: ResumenCuenta
   actividades: BloqueActividades[]
   fichas: FichaCuenta[]
+  // Ajuste mochila: los testimonios, como las fichas, se piden al abrir la mochila y se conservan.
+  testimonios: TestimonioEstado[]
   logros: LogrosCuenta
   // Ajuste del panel (F05): el avance del panel; va con las actividades (pantalla de carga del mapa).
   avance: AvanceEstudiante
@@ -96,6 +99,7 @@ const inicial = (): AlmacenServidor => ({
   resumen: vacia(),
   actividades: vacia(),
   fichas: vacia(),
+  testimonios: vacia(),
   logros: vacia(),
   avance: vacia(),
   secciones: vacia(),

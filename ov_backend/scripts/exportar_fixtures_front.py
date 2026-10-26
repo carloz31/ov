@@ -361,7 +361,9 @@ def _recorrer(cliente):
     # Ajuste pasaporte-perfil: la vitrina con la primera insignia y el progreso del nivel 3 (dos condiciones).
     fixtures['vitrina'] = _pedir(cliente, 'POST', '/acciones/vitrina', {'cuenta': 'est-ana', 'codigos': ['t-ins-1']})
     fixtures['progreso-nivel-3'] = _pedir(cliente, 'GET', '/cuentas/est-ana/progreso/NIVEL/N3')
-    # Ajuste mochila: abrir t-ficha la deja vista; t-ficha-2 sigue nueva en fichas-final.
+    # Ajuste mochila: el modal pide el contenido de t-ficha y, al abrirse, la deja vista (ver-ficha); t-ficha-2
+    # sigue nueva en fichas-final.
+    fixtures['ficha-t-ficha'] = _pedir(cliente, 'GET', '/cuentas/est-ana/fichas/t-ficha')
     fixtures['ver-ficha'] = _pedir(cliente, 'POST', '/acciones/ver-ficha',
                                    {'cuenta': 'est-ana', 'ficha': 't-ficha', 'fecha_hora': FECHA})
     # Ajuste mochila: t-ficha queda favorita en fichas-final (registra MARCA_FAVORITO_FICHA).

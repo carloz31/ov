@@ -2,7 +2,6 @@
   {
     "actividad": null,
     "codigo": "t-ficha",
-    "contenido": null,
     "descripcion": null,
     "es_favorita": false,
     "estado": "BLOQUEADA",
@@ -15,7 +14,6 @@
   {
     "actividad": null,
     "codigo": "t-ficha-2",
-    "contenido": null,
     "descripcion": null,
     "es_favorita": false,
     "estado": "BLOQUEADA",
@@ -28,7 +26,6 @@
   {
     "actividad": null,
     "codigo": "t-ficha-3",
-    "contenido": null,
     "descripcion": null,
     "es_favorita": false,
     "estado": "BLOQUEADA",

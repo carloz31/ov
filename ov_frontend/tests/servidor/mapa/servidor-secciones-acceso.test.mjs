@@ -146,7 +146,10 @@ test('un desbloqueo de sección vence la consulta de secciones', async () => {
   const almacen = cargarAlmacen(app)
   await almacen.asegurarSeccion('secciones')
   assert.deepEqual(copia(almacen.seccionesPorDesbloqueos([{ tipo_objetivo: 'SECCION' }])), ['secciones'])
-  assert.deepEqual(copia(almacen.seccionesPorDesbloqueos([{ tipo_objetivo: 'ACTIVIDAD' }])), [])
+  // Ajuste mochila: una actividad abierta puede ser un llamado de la Central (`caso_disponible`): vence los
+  // testimonios, que se vuelven a pedir al abrir la mochila.
+  assert.deepEqual(copia(almacen.seccionesPorDesbloqueos([{ tipo_objetivo: 'ACTIVIDAD' }])), ['testimonios'])
+  assert.deepEqual(copia(almacen.seccionesPorDesbloqueos([{ tipo_objetivo: 'TESTIMONIO' }])), ['testimonios'])
 })
 
 test('el modo se decide al llamar al hook, aunque se importe antes de configurar api', async () => {
