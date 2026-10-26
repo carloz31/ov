@@ -6,7 +6,7 @@ import type { ErrorServidor, FamiliaPublica, UbicacionPublica } from '@/types/se
 import { accionConRefresco } from './refresco'
 import { consultarCuenta, sesionServidor } from './sesion'
 
-export type { ClaseCatalogo, FiltrosCatalogo } from '@/services/api/catalogo'
+export type { ClaseCatalogo, DetalleCatalogo, FiltrosCatalogo, ResumenCatalogo } from '@/services/api/catalogo'
 export const LIMITE_CATALOGO = 20
 
 // La hoja de vida de la Central pide su ocupación al abrirse.

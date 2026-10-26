@@ -9,9 +9,10 @@ import { useDiscovery } from '@/store/discoveryStore'
 import { CatalogRevisitNotice } from '@/features/discovery/components/CatalogRevisitNotice'
 import { UnexpectedPlace } from '@/features/discovery/components/UnexpectedPlace'
 import { useCatalogVisit } from '@/features/discovery/hooks/useCatalogVisit'
+import { useCatalogoDelServidor } from '@/features/discovery/hooks/useCatalogoServidor'
+import { DetalleCarreraServidor } from '@/features/discovery/components/DetalleCarreraServidor'
+import { PlanDeCarrera } from '@/features/discovery/components/PlanDeCarrera'
 import { discoveryPaths } from '@/routes/discoveryPaths'
-import { appPaths } from '@/routes/paths'
-import { createPlanFromCareer, getOrderedPlans } from '@/features/discovery/lib/plans'
 import {
   getCareer,
   getFamily,
@@ -61,7 +62,10 @@ export function CareerDetailView() {
     discovery = useDiscovery()
   const career = getCareer(careerId),
     [region, setRegion] = useState<'LIMA' | 'NACIONAL'>('LIMA')
-  useCatalogVisit('career', career?.id)
+  // F06: en api, el detalle sale del servidor, que registra su propia vista.
+  const { catalogoDelServidor } = useCatalogoDelServidor()
+  useCatalogVisit('career', catalogoDelServidor ? undefined : career?.id)
+  if (catalogoDelServidor) return <DetalleCarreraServidor codigo={careerId} />
   if (!career)
     return (
       <DiscoveryStage ambient="atlas">
@@ -71,9 +75,6 @@ export function CareerDetailView() {
   const family = getFamily(career.familyId)!,
     incomes = family.incomes[region]
   const scale = Math.max(incomes.young?.max ?? 0, incomes.adult?.max ?? 0, 1)
-  const plans = getOrderedPlans(context.decisionSheets, discovery.planOrder),
-    position = plans.findIndex((p) => p.sourceId === career.id)
-  const activeCount = context.decisionSheets.filter((s) => s.status !== 'archived').length
   const families = new Set(
     [...discovery.viewedCareerIds, career.id].flatMap((id) => {
       const c = getCareer(id)
@@ -158,26 +159,7 @@ export function CareerDetailView() {
             ))}
             <p>Los costos se consultan en la página de cada institución.</p>
           </Parchment>
-          {position >= 0 ? (
-            <Parchment title="En tus planes" className="sx-d-highlight">
-              <p>Ya es tu Plan {'ABC'[position]}.</p>
-              <Link className="sx-d-action" to={appPaths.student.decisions}>
-                Ver mi tarjeta
-              </Link>
-            </Parchment>
-          ) : (
-            activeCount < 3 && (
-              <Parchment title="¿Y si la conviertes en un plan?" className="sx-d-highlight">
-                <button
-                  type="button"
-                  className="sx-d-action sx-d-action-gold"
-                  onClick={() => createPlanFromCareer(career.name, career.id)}
-                >
-                  Hacer mi plan {'ABC'[plans.length]}
-                </button>
-              </Parchment>
-            )
-          )}
+          <PlanDeCarrera nombre={career.name} codigo={career.id} />
           <Parchment title="Explorando familias">
             <GraduationCap aria-hidden="true" />
             <div

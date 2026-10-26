@@ -1,5 +1,9 @@
 import { useIconosObtenidos } from '@/features/discovery/hooks/useIconosObtenidos'
 import { useCatalogAffinity } from '@/features/discovery/hooks/useCatalogAffinity'
+import { useCatalogoDelServidor } from '@/features/discovery/hooks/useCatalogoServidor'
+import { CatalogoServidor } from '@/features/discovery/components/CatalogoServidor'
+import { AvisoFavorito } from '@/features/discovery/components/AvisoFavorito'
+import { useFavoritoServidor } from '@/features/discovery/hooks/useFavoritoServidor'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Search, GraduationCap, BriefcaseBusiness, School } from 'lucide-react'
@@ -12,7 +16,13 @@ import { useDiscovery } from '@/store/discoveryStore'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { textoAjuste } from '@/lib/servidor/adaptadores'
 import { discoveryPaths } from '@/routes/discoveryPaths'
-import { careerDetails, occupationDetails, institutionDetails, dimensionNames, institutionTypeNames } from '@/features/discovery/lib/catalogDetails'
+import {
+  careerDetails,
+  occupationDetails,
+  institutionDetails,
+  dimensionNames,
+  institutionTypeNames,
+} from '@/features/discovery/lib/catalogDetails'
 import { getFamily, matchesName } from '@/features/discovery/lib/catalogSelectors'
 const sectionCopy = {
   professions: {
@@ -36,10 +46,24 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
     discovery = useDiscovery(),
     [params] = useSearchParams()
   const [query, setQuery] = useState('')
-  const { coincidencias, coincidenciasAdicionales, ordenarOcupaciones, afinidadPara, textoAfinidad,
-    errorAfinidad, perfilPlano, necesitaRevelar, reintentarAfinidad } = useCatalogAffinity(discovery, params.get('afines') === '1')
+  const {
+    coincidencias,
+    coincidenciasAdicionales,
+    ordenarOcupaciones,
+    afinidadPara,
+    textoAfinidad,
+    errorAfinidad,
+    perfilPlano,
+    necesitaRevelar,
+    reintentarAfinidad,
+  } = useCatalogAffinity(discovery, params.get('afines') === '1')
   const copy = sectionCopy[section]
   const obtained = useIconosObtenidos()
+  // F06: en api, la pestaña lee el catálogo del servidor; `?afines=1` sigue con las afinidades del resultado.
+  const { catalogoDelServidor } = useCatalogoDelServidor()
+  const servidor = catalogoDelServidor && params.get('afines') !== '1'
+  // En api, las afines son las del resultado (hasta 10) y su corazón es el del servidor.
+  const favorito = useFavoritoServidor()
   const obtainedCount = occupationDetails.filter((o) => obtained(o.id)).length
   const occupations = [
     ...occupationDetails.map((occupation) => ({
@@ -48,6 +72,7 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
     })),
     ...coincidenciasAdicionales.map((match) => ({ occupation: undefined, match })),
   ]
+    .filter(({ match }) => !catalogoDelServidor || !!match)
     .filter(({ occupation, match }) => matchesName(occupation?.name ?? match?.titulo ?? '', query))
     .sort(ordenarOcupaciones)
   const careers = careerDetails.filter((c) => matchesName(c.name, query)),
@@ -85,114 +110,124 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
           onChange={(e) => setQuery(e.target.value)}
         />
       </label>
-      <div className="sx-d-columns">
-        {errorAfinidad && (
-          <section role="alert">
-            <p>{mensajeErrorServidor(errorAfinidad)}</p>
-            <button className="sx-d-action" onClick={() => void reintentarAfinidad()}>
-              Reintentar consulta
-            </button>
-          </section>
-        )}
-        {perfilPlano && (
-          <p>
-            Tus respuestas todavía no distinguen un interés. No hay ocupaciones afines para este resultado.
-          </p>
-        )}
-        {necesitaRevelar && (
-          <Link className="sx-d-action" to="/student/profile/helena">
-            Revela tu página de intereses para consultar las afinidades.
-          </Link>
-        )}
-        {section === 'careers' &&
-          careers.map((c) => (
-            <article className="sx-d-parchment sx-d-atlas-card" key={c.id}>
-              <FavoriteButton
-                compact
-                selected={context.careerInterestIds.includes(c.id)}
-                onToggle={() => context.toggleCareerInterest(c.id)}
-              />
-              <Link to={discoveryPaths.career(c.id)} className="sx-d-card-link">
-                <GraduationCap aria-hidden="true" />
-                <h2>{c.name}</h2>
-                <p className="sx-d-eyebrow">{getFamily(c.familyId)?.name}</p>
-                <span className="sx-d-tag">{c.durationYears} años</span>
-                <p className="sx-d-clamp-two">{c.description}</p>
-              </Link>
-            </article>
-          ))}
-        {section === 'professions' &&
-          occupations.map(({ occupation: o, match }) =>
-            o ? (
-              <article className="sx-d-parchment sx-d-atlas-card" key={o.id}>
+      {servidor ? (
+        <CatalogoServidor section={section} query={query} obtenido={obtained} />
+      ) : (
+        <div className="sx-d-columns">
+          {errorAfinidad && (
+            <section role="alert">
+              <p>{mensajeErrorServidor(errorAfinidad)}</p>
+              <button className="sx-d-action" onClick={() => void reintentarAfinidad()}>
+                Reintentar consulta
+              </button>
+            </section>
+          )}
+          {perfilPlano && (
+            <p>
+              Tus respuestas todavía no distinguen un interés. No hay ocupaciones afines para este resultado.
+            </p>
+          )}
+          {necesitaRevelar && (
+            <Link className="sx-d-action" to="/student/profile/helena">
+              Revela tu página de intereses para consultar las afinidades.
+            </Link>
+          )}
+          {section === 'careers' &&
+            careers.map((c) => (
+              <article className="sx-d-parchment sx-d-atlas-card" key={c.id}>
                 <FavoriteButton
                   compact
-                  selected={context.profiles.some((p) => p.occupationId === o.id && p.interested)}
-                  onToggle={() => context.toggleOccupationInterest(o.id)}
+                  selected={context.careerInterestIds.includes(c.id)}
+                  onToggle={() => context.toggleCareerInterest(c.id)}
                 />
-                <Link to={discoveryPaths.occupation(o.id)} className="sx-d-card-link">
-                  <BriefcaseBusiness aria-hidden="true" />
-                  <h2>{o.name}</h2>
-                  <div className="sx-d-seal-row">
-                    {o.highPoints.map((d) => (
-                      <span key={d} title={dimensionNames[d]}>
-                        <Seal state="revealed">{d}</Seal>
-                      </span>
-                    ))}
-                  </div>
-                  <p className="sx-d-clamp-two">{o.whatTheyDo}</p>
-                  {obtained(o.id) && <span className="sx-d-tag">Ícono obtenido</span>}
-                  {params.get('afines') === '1' && afinidadPara(o.id) && (
-                    <p>
-                      {textoAfinidad(match)}
-                    </p>
-                  )}
-                  <small>
-                    {o.contentStatus === 'pending'
-                      ? 'Ficha en preparación desde O*NET'
-                      : 'Perfil de intereses de demostración'}
-                  </small>
+                <Link to={discoveryPaths.career(c.id)} className="sx-d-card-link">
+                  <GraduationCap aria-hidden="true" />
+                  <h2>{c.name}</h2>
+                  <p className="sx-d-eyebrow">{getFamily(c.familyId)?.name}</p>
+                  <span className="sx-d-tag">{c.durationYears} años</span>
+                  <p className="sx-d-clamp-two">{c.description}</p>
                 </Link>
               </article>
-            ) : (
-              <article className="sx-d-parchment sx-d-atlas-card" key={match!.codigo_onet}>
-                <h2>{match!.titulo}</h2>
-                <p>
-                  Afín a tu perfil · {textoAjuste(match!.ajuste)} · posición {match!.posicion} · correlación{' '}
-                  {match!.correlacion}
-                </p>
-                <small>Detalle aún no disponible en el catálogo.</small>
+            ))}
+          {section === 'professions' &&
+            occupations.map(({ occupation: o, match }) =>
+              o ? (
+                <article className="sx-d-parchment sx-d-atlas-card" key={o.id}>
+                  <FavoriteButton
+                    compact
+                    selected={
+                      catalogoDelServidor
+                        ? !!match?.es_favorita
+                        : context.profiles.some((p) => p.occupationId === o.id && p.interested)
+                    }
+                    pendiente={favorito.pendiente('OCUPACION', o.id)}
+                    onToggle={() =>
+                      catalogoDelServidor
+                        ? favorito.alternar('OCUPACION', o.id, !match?.es_favorita)
+                        : context.toggleOccupationInterest(o.id)
+                    }
+                  />
+                  <Link to={discoveryPaths.occupation(o.id)} className="sx-d-card-link">
+                    <BriefcaseBusiness aria-hidden="true" />
+                    <h2>{o.name}</h2>
+                    <div className="sx-d-seal-row">
+                      {o.highPoints.map((d) => (
+                        <span key={d} title={dimensionNames[d]}>
+                          <Seal state="revealed">{d}</Seal>
+                        </span>
+                      ))}
+                    </div>
+                    <p className="sx-d-clamp-two">{o.whatTheyDo}</p>
+                    {obtained(o.id) && <span className="sx-d-tag">Ícono obtenido</span>}
+                    {params.get('afines') === '1' && afinidadPara(o.id) && <p>{textoAfinidad(match)}</p>}
+                    <small>
+                      {o.contentStatus === 'pending'
+                        ? 'Ficha en preparación desde O*NET'
+                        : 'Perfil de intereses de demostración'}
+                    </small>
+                  </Link>
+                </article>
+              ) : (
+                <article className="sx-d-parchment sx-d-atlas-card" key={match!.codigo_onet}>
+                  <h2>{match!.titulo}</h2>
+                  <p>
+                    Afín a tu perfil · {textoAjuste(match!.ajuste)} · posición {match!.posicion} · correlación{' '}
+                    {match!.correlacion}
+                  </p>
+                  <small>Detalle aún no disponible en el catálogo.</small>
+                </article>
+              ),
+            )}
+          {section === 'institutions' &&
+            institutions.map((i) => (
+              <article className="sx-d-parchment sx-d-atlas-card" key={i.id}>
+                <FavoriteButton
+                  compact
+                  selected={context.institutionInterestIds.includes(i.id)}
+                  onToggle={() => context.toggleInstitutionInterest(i.id)}
+                />
+                <Link to={discoveryPaths.institution(i.id)} className="sx-d-card-link">
+                  <School aria-hidden="true" />
+                  <h2>{i.name}</h2>
+                  <p>
+                    {institutionTypeNames[i.type]} · {i.management === 'PUBLICA' ? 'Pública' : 'Privada'}
+                  </p>
+                  <p>
+                    {i.location.department} · {i.careerIds.length} carreras
+                  </p>
+                  <small>Institución ficticia · Demostración</small>
+                </Link>
               </article>
-            ),
+            ))}
+          {empty && (
+            <section className="sx-d-parchment">
+              <h2>No encontramos resultados</h2>
+              <p>No hay resultados que coincidan con tu búsqueda. Prueba con otro nombre.</p>
+            </section>
           )}
-        {section === 'institutions' &&
-          institutions.map((i) => (
-            <article className="sx-d-parchment sx-d-atlas-card" key={i.id}>
-              <FavoriteButton
-                compact
-                selected={context.institutionInterestIds.includes(i.id)}
-                onToggle={() => context.toggleInstitutionInterest(i.id)}
-              />
-              <Link to={discoveryPaths.institution(i.id)} className="sx-d-card-link">
-                <School aria-hidden="true" />
-                <h2>{i.name}</h2>
-                <p>
-                  {institutionTypeNames[i.type]} · {i.management === 'PUBLICA' ? 'Pública' : 'Privada'}
-                </p>
-                <p>
-                  {i.location.department} · {i.careerIds.length} carreras
-                </p>
-                <small>Institución ficticia · Demostración</small>
-              </Link>
-            </article>
-          ))}
-        {empty && (
-          <section className="sx-d-parchment">
-            <h2>No encontramos resultados</h2>
-            <p>No hay resultados que coincidan con tu búsqueda. Prueba con otro nombre.</p>
-          </section>
-        )}
-      </div>
+        </div>
+      )}
+      <AvisoFavorito aviso={favorito.aviso} onDismiss={favorito.cerrarAviso} />
     </DiscoveryStage>
   )
 }
