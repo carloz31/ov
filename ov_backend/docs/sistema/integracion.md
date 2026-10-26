@@ -93,11 +93,12 @@ Además usa `/cuentas`, `/cuentas/{c}/progreso/...`, `/cuentas/{c}/desbloqueos` 
 - En api, el front muestra el título, el tipo, la duración, la descripción y el mensaje de bloqueo tal como llegan; del contenido solo usa los nodos y la posición. Un contenido sin nodos ubica el punto, pero no se puede abrir.
 - En el mapa, las actividades consecutivas de un bloque que comparten `contenido` forman un solo punto («Interacción n de total»), que representa la primera no completada.
 
-**Reglas de los datos del servidor en el front** (ajuste mochila; valen para todo dominio nuevo):
+**Reglas de los datos del servidor en el front** (ajuste mochila; valen para todo dominio nuevo; son cuatro):
 
 1. **Todo dato del servidor pasa por `store/servidor/`.** Ningún hook ni vista hace una consulta en su propio `useEffect`: las listas de un dominio son una sección del almacén (`secciones.ts`, que comparte el pedido en curso, también con StrictMode, y conserva lo cargado entre pantallas), y un detalle que se pide por código tiene su caché en el store de su dominio (como `cargarFicha` en `store/servidor/fichas.ts`).
 2. **Una lista trae solo lo que muestran sus tarjetas; el detalle se pide al abrirlo** (`GET /cuentas/{c}/<dominio>/{codigo}`). La vista muestra la cabecera con los datos de la lista y un esqueleto en el cuerpo hasta que llega el detalle.
 3. **Una acción confirmada actualiza lo cargado con su respuesta** (`actualizarFicha`, `actualizarTestimonio`), sin volver a pedir el dominio. Solo se vuelve a pedir una sección cuando `nuevos_desbloqueos` la vence (`seccionesPorDesbloqueos`) o al recargar la página.
+4. **Lo que puede cambiar otra cuenta se revalida cada vez que se abre su vista.** `nuevos_desbloqueos` solo informa de las acciones de la propia cuenta: las conversaciones y cartas de la familia (las responde el apoderado), lo que publique u observe la orientadora y cualquier dato compartido entre cuentas se muestran con lo ya cargado, si lo hay, y se vuelven a pedir al montar la vista, reemplazándolo cuando llega. La sección lo declara al montarse; si `secciones.ts` aún no lo permite, el lote que lo necesite lo agrega. Fichas, testimonios, logros y avance del estudiante solo cambian con sus propias acciones y siguen la regla 3.
 
 **Qué se vuelve a pedir:**
 
