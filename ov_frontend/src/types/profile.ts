@@ -31,7 +31,7 @@ export type PassportBadge = Achievement & { hidden?: boolean; pista?: string | n
 // Una condición de una insignia o de un título; `actual` y `requerido` solo en las de conteo.
 export type CondicionPasaporte = { texto: string; cumplida: boolean; actual?: number; requerido?: number }
 // Cada bloque es una regla alternativa; `cumplidas` y `total`, de la más avanzada.
-export type CondicionesPasaporte = { bloques: CondicionPasaporte[][]; cumplidas: number; total: number }
+export type CondicionesPasaporte = { bloques: CondicionPasaporte[][]; cumplidas: number; total: number; mejor: number }
 
 export type AchievementIcon =
   'campfire' | 'compass' | 'key' | 'message' | 'people' | 'send' | 'shield' | 'sparkles' | 'telescope'

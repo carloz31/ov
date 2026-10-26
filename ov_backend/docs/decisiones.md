@@ -39,3 +39,13 @@ Spec: `docs/specs/ajuste-pasaporte-perfil.md`.
 - El ícono de una insignia sin presentación local es `sparkles` (genérico).
 - Los escenarios Mara de las pruebas (fixtures de la raíz, congelados) toman insignias y vitrina de `ruta-logros-final`: así no se editan fixtures generados.
 - Pruebas adaptadas: `tests/servidor/logros/servidor-logros.test.mjs` reescrita con `ruta-*`; la de insignias de `tests/servidor/perfil`; la del código de insignia en `tests/servidor/diario/servidor-senal.test.mjs`; dos de `tests/local/aventura` por textos del rediseño (excepción nº 16).
+
+## Frontend · perfil
+
+- `RouteLine` (en `components/student/`, solo props) pinta un hito al final de cada tramo y el marcador azul dentro del tramo actual, en proporción a sus requeridas. En local hay un solo tramo, «Misiones de campo», con los conteos de `getZoneProgress('missions')`.
+- La tira de sellos ordena las obtenidas por `obtenida_en` descendente (en local, en su orden, sin fecha) y luego las pendientes; con más de 5, el quinto círculo dice «+k».
+- «Siguiente título» en el capítulo I usa la regla más avanzada (`mejor` en el modelo de condiciones) para los puntos y la primera condición pendiente para «te falta…», con la primera letra en minúscula.
+- «Descifrada · la llegada se escribe al final» se muestra en la página de partida y llegada revelada mientras no hay comparación (no existe aún la llegada revelada).
+- Los chips de favoritos enlazan a la sección de favoritos de Mis planes (`/student/profile/decisions#sx-favorites`), la única vista de favoritos.
+- «% armado» de un plan = secciones completas de `getPlanCompleteness` sobre 4.
+- Pruebas adaptadas: perfil (`tests/servidor/perfil`: página destacada, ruta, planes con «% armado» y favoritos en chips), afinidad (el perfil ya no la muestra) y la de capítulos de `tests/local/aventura` (excepción nº 16).

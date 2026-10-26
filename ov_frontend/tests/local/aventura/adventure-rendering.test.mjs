@@ -3139,7 +3139,8 @@ test('student favorites remain separate from explicit decision sheets', () => {
 
 test('discovery profile exposes the three chapters and keeps its passport route', () => {
   const html = render('/student/profile')
-  for (const text of ['Lo que he logrado', 'Lo que Helena descubre de mí', 'Hacia dónde voy', 'Recorrido', 'Logros recientes']) assert.ok(html.includes(text), text)
+  // Ajuste pasaporte-perfil (excepción nº 16): la línea de ruta y la tira de sellos reemplazan «Recorrido» y «Logros recientes».
+  for (const text of ['Lo que he logrado', 'Lo que Helena descubre de mí', 'Hacia dónde voy', 'Tu ruta', 'Sellos del pasaporte']) assert.ok(html.includes(text), text)
   assert.doesNotMatch(html, /Ver mi progreso|Mi punto de partida|Ver mis favoritos/)
   assert.match(render('/student/profile?section=passport'), /Pasaporte vocacional/)
   assert.doesNotMatch(html, /role="dialog"/)

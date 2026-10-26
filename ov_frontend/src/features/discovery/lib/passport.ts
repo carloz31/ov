@@ -145,6 +145,16 @@ export function vitrinaPasaporte(
   const obtenidas = gruposApi.flatMap((g, index) => g.items.filter((b) => b.done).map((b) => ({ ...b, group: index })))
   return (codigos ?? []).flatMap((code) => obtenidas.filter((b) => b.code === code))
 }
+// Ajuste pasaporte-perfil: los títulos del viaje; en api, los niveles del servidor; en local, `travelerTitles`.
+export function titulosViaje(
+  numeroActual: number | undefined,
+  niveles?: { numero: number; titulo: string; estado: 'BLOQUEADO' | 'OBTENIDO' }[],
+) {
+  if (numeroActual === undefined) return []
+  return niveles
+    ? niveles.map((n) => ({ numero: n.numero, titulo: n.titulo, obtenido: n.estado === 'OBTENIDO' }))
+    : travelerTitles.map((titulo, i) => ({ numero: i + 1, titulo, obtenido: i + 1 < numeroActual }))
+}
 export const numeroPagina = (indice: number) => ['I', 'II', 'III', 'IV', 'V', 'VI'][indice] ?? String(indice + 1)
 export function recordBadgeFirstSeenAt(
   discovery: StudentDiscoveryState,

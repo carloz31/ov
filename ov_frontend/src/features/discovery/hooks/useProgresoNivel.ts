@@ -22,5 +22,5 @@ export function useProgresoNivel(numero: number | undefined, textoLocal = ''): C
     }
   }, [numero, logros])
   if (numero === undefined) return null
-  return modoApi ? condiciones : { bloques: [[{ texto: textoLocal, cumplida: false }]], cumplidas: 0, total: 1 }
+  return modoApi ? condiciones : { bloques: [[{ texto: textoLocal, cumplida: false }]], cumplidas: 0, total: 1, mejor: 0 }
 }

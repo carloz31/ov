@@ -3,6 +3,19 @@ import test from 'node:test'
 import { copia, elementos, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
 import { iniciarMara } from '../../soporte/servidor-mara-ayudas.mjs'
 
+// Ajuste pasaporte-perfil: la página lista para romper va destacada; aquí se vuelven a juntar en su orden.
+const paginas = (p) => [p.destacada, ...p.pages].filter(Boolean).sort((a, b) => a.numeral.localeCompare(b.numeral))
+// Los capítulos son componentes sin hooks: se expanden para leer su marcado (Parchment queda sin expandir).
+const PROPIOS = new Set(['ProfileHeader', 'ProfileAchievements', 'ProfileHelena', 'ProfilePlans', 'RouteLine'])
+const expandir = (n) =>
+  Array.isArray(n)
+    ? n.map(expandir)
+    : typeof n?.type === 'function' && PROPIOS.has(n.type.name)
+      ? expandir(n.type(n.props))
+      : n?.props?.children !== undefined
+        ? { ...n, props: { ...n.props, children: expandir(n.props.children) } }
+        : n
+
 function prepararPerfil(app) {
   const contexto = { decisionSheets: [], careerInterestIds: [], institutionInterestIds: [], profiles: [] }
   app.load('src/context/occupationExplorationContext.ts').useOccupationExplorationContext = () => contexto
@@ -17,7 +30,7 @@ test('perfil API lee las páginas del libro del servidor: partida y llegada prim
   const { perfil } = prepararPerfil(f.app)
   // F03: el revelado local ya no cuenta; sin el libro leído, todo queda sellado.
   f.app.load('src/store/discoveryStore.ts').revelarPaginaApi('est-ana', resultado.calculado_en, 'intereses')
-  assert.deepEqual(copia(perfil().pages.map((p) => [p.id, p.numeral, p.state])), [
+  assert.deepEqual(copia(paginas(perfil()).map((p) => [p.id, p.numeral, p.state])), [
     ['partida-llegada', 'I', 'sealed'],
     ['intereses', 'II', 'sealed'],
     ['inteligencias', 'III', 'ready'],
@@ -25,26 +38,27 @@ test('perfil API lee las páginas del libro del servidor: partida y llegada prim
   ])
   libroServidor(f.app, { 'APL-RIASEC': resultado })
   const p = perfil()
-  assert.equal(p.pages[1].state, 'revealed')
-  assert.equal(p.pages[0].state, 'ready')
+  const todas = paginas(p)
+  assert.equal(todas[1].state, 'revealed')
+  assert.equal(todas[0].state, 'ready')
+  assert.equal(p.destacada.id, 'partida-llegada')
   assert.deepEqual(
-    Array.from(p.pages[1].result.areas, (a) => a.code),
+    Array.from(todas[1].result.areas, (a) => a.code),
     ['I', 'R', 'A'],
   )
   assert.deepEqual(
-    Array.from(p.pages[1].result.areas, (a) => a.score),
+    Array.from(todas[1].result.areas, (a) => a.score),
     [100, 75, 50],
   )
   assert.equal(p.nombre, 'Ana')
   assert.equal(p.iniciales, 'A')
-  // Ajuste del panel (F05): el recorrido del perfil es el de `/avance`, como el del panel.
-  assert.equal(p.recorrido, f.almacen.obtenerEstadoServidor().avance.datos.camino.porcentaje)
-  assert.equal(p.ciudad, true)
-  assert.equal(p.afinidadCiudad, 0)
+  // Ajuste pasaporte-perfil: la ruta del perfil son los tramos de `/avance`; la afinidad ya no se muestra aquí.
+  assert.deepEqual(copia(p.requeridas), copia(f.almacen.obtenerEstadoServidor().avance.datos.requeridas))
+  assert.equal('afinidadCiudad' in p, false)
   assert.equal(p.level.number, 3)
   assert.equal('ficha' in p, false)
   const pendiente = await iniciarMara()
-  assert.equal(prepararPerfil(pendiente.app).perfil().pages[1].state, 'sealed')
+  assert.equal(paginas(prepararPerfil(pendiente.app).perfil())[1].state, 'sealed')
 })
 
 test('insignias del perfil API proceden de logros remotos y la vitrina es la del servidor', async () => {
@@ -84,7 +98,7 @@ test('sin nivel remoto el perfil completo muestra el aviso y omite el medallón 
   const { perfil } = prepararPerfil(f.app)
   assert.equal(perfil().level, null)
   const View = f.app.load('src/pages/student/StudentProfileView.tsx').StudentProfileView
-  const tree = View()
+  const tree = expandir(View())
   assert.equal(
     elementos(
       tree,
@@ -108,8 +122,7 @@ test('antes de recibir resumen el perfil API no sustituye el nivel ni los logros
   assert.equal(p.level, null)
   assert.equal(p.badges.length, 0)
   assert.equal(p.visibleBadges.length, 0)
-  assert.equal(p.ciudad, false)
-  assert.equal(p.pages[0].state, 'sealed')
+  assert.equal(paginas(p)[0].state, 'sealed')
 })
 
 test('planes y favoritos siguen locales en ambos modos y local conserva Alex y sus cálculos', async () => {
@@ -122,21 +135,33 @@ test('planes y favoritos siguen locales en ambos modos y local conserva Alex y s
     contexto.decisionSheets = [plan]
     contexto.careerInterestIds = ['psychology', 'nursing']
     const p = perfil()
-    assert.deepEqual(copia(p.plans), copia([plan]))
-    assert.equal(p.extraFavorites, 1)
+    // Ajuste pasaporte-perfil: cada plan lleva su «% armado» y los favoritos van en chips con su conteo.
+    assert.deepEqual(copia(p.plans), copia([{ ...plan, armado: 0 }]))
+    assert.equal(p.favoritos.carreras, 2)
     if (!api) {
       assert.equal(p.nombre, 'Alex')
       assert.equal(p.iniciales, 'AL')
       assert.deepEqual(
         copia(p.level),
-        copia(app.load('src/store/adventureStore.ts').getTravelerLevel(p.adventure)),
+        copia(
+          app
+            .load('src/store/adventureStore.ts')
+            .getTravelerLevel(app.load('src/store/adventureStore.ts').useAdventure()),
+        ),
       )
       assert.deepEqual(
-        copia(p.pages),
+        copia(
+          paginas(p).map((pagina) =>
+            Object.fromEntries(Object.entries(pagina).filter(([clave]) => clave !== 'llegadaPendiente')),
+          ),
+        ),
         copia(
           app
             .load('src/features/discovery/lib/helenaPages.ts')
-            .getHelenaPages(p.journey, app.load('src/store/discoveryStore.ts').getDiscovery()),
+            .getHelenaPages(
+              app.load('src/store/journeyStore.ts').getJourneySnapshot(),
+              app.load('src/store/discoveryStore.ts').getDiscovery(),
+            ),
         ),
       )
       assert.equal(app.requests.length, 0)

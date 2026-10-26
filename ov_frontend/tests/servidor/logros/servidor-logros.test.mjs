@@ -84,6 +84,7 @@ test('condiciones: todas las reglas, resumen de la más avanzada, barra solo en 
     ],
     cumplidas: 1,
     total: 2,
+    mejor: 0,
   })
   // DATO DE PRUEBA: dos reglas alternativas, una sin texto en su condición.
   const alternativas = copia(progresoNivel3)

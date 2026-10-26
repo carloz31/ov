@@ -121,14 +121,10 @@ export function condicionesObjetivo(progreso: ProgresoObjetivo, respaldo?: strin
       ...(c.requerido > 1 ? { actual: Math.min(c.actual, c.requerido), requerido: c.requerido } : {}),
     })),
   )
-  const mejor = bloques.reduce<CondicionPasaporte[] | undefined>(
-    (a, b) =>
-      !a || b.filter((c) => c.cumplida).length / (b.length || 1) > a.filter((c) => c.cumplida).length / (a.length || 1)
-        ? b
-        : a,
-    undefined,
-  )
-  return { bloques, cumplidas: mejor?.filter((c) => c.cumplida).length ?? 0, total: mejor?.length ?? 0 }
+  const proporcion = (b: CondicionPasaporte[]) => b.filter((c) => c.cumplida).length / (b.length || 1)
+  const indice = bloques.reduce((m, b, i) => (proporcion(b) > proporcion(bloques[m]) ? i : m), 0)
+  const mejor: CondicionPasaporte[] | undefined = bloques[indice]
+  return { bloques, cumplidas: mejor?.filter((c) => c.cumplida).length ?? 0, total: mejor?.length ?? 0, mejor: indice }
 }
 
 // El Camino son los bloques de MISIONES_CAMPO (T0, T1, T2); 'CAMINO' los nombra juntos.

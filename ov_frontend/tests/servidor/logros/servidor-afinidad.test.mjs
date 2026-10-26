@@ -37,7 +37,8 @@ test('sin avance (falló su consulta) el anillo no inventa un valor', () => {
   )
 })
 
-test('el Capítulo I del perfil muestra la afinidad del servidor', () => {
+// Ajuste pasaporte-perfil: el perfil ya no muestra la afinidad; su ruta son los tramos de `/avance`.
+test('la ruta del perfil sale de los tramos de avance, sin afinidad', () => {
   const app = fixtureServidor()
   app.load('src/store/servidor/sesion.ts').publicar({
     actividades: listo(jsonServidor('ruta/ruta-actividades-ciudad')),
@@ -47,7 +48,11 @@ test('el Capítulo I del perfil muestra la afinidad del servidor', () => {
   const contexto = { decisionSheets: [], careerInterestIds: [], institutionInterestIds: [], profiles: [] }
   app.load('src/context/occupationExplorationContext.ts').useOccupationExplorationContext = () => contexto
   const { useStudentProfile } = app.load('src/features/discovery/hooks/useStudentProfile.ts')
-  // Perfil y panel dicen lo mismo: los dos leen `/avance`.
-  assert.equal(useStudentProfile().afinidadCiudad, avance.ciudad.porcentaje)
-  assert.equal(useStudentProfile().recorrido, avance.camino.porcentaje)
+  const perfil = useStudentProfile()
+  assert.equal('afinidadCiudad' in perfil, false)
+  assert.deepEqual(
+    perfil.tramos.map((t) => [t.nombre, t.estado]),
+    avance.tramos.map((t) => [t.nombre, t.estado]),
+  )
+  assert.equal(perfil.requeridas, avance.requeridas)
 })

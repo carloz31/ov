@@ -48,7 +48,7 @@ export function useBadgeDetail(badge?: PassportBadge) {
     enVitrina = vitrina.some((b) => b.code === badge?.code)
   const condiciones = modoApi
     ? remotas
-    : badge && { bloques: [[{ texto: badge.description, cumplida: false }]], cumplidas: 0, total: 1 }
+    : badge && { bloques: [[{ texto: badge.description, cumplida: false }]], cumplidas: 0, total: 1, mejor: 0 }
   const fecha = modoApi
     ? badge?.obtenidaEn
     : badge
