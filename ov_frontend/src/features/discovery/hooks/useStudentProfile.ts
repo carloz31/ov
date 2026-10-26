@@ -9,10 +9,9 @@ import { useJourney } from '@/store/journeyStore'
 import { useLogrosServidor } from '@/store/servidor/secciones'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import { cargarInstrumentos } from '@/store/servidor/instrumentos'
-import { getAchievementPresentations } from '../lib/achievements'
 import { getHelenaPages } from '../lib/helenaPages'
 import { paginasLibroApi } from '../lib/helenaPagesApi'
-import { getProfileBadges, getStudentAchievementGroups } from '../lib/passport'
+import { getStudentAchievementGroups, vitrinaPasaporte } from '../lib/passport'
 import { getOrderedPlans } from '../lib/plans'
 
 export function useStudentProfile() {
@@ -45,18 +44,11 @@ export function useStudentProfile() {
   // Ajuste del panel (F05): el mismo avance que el panel (`/avance` en api).
   const recorrido = getZoneProgress('missions', adventure, journey).porcentaje ?? 0
   const afinidadCiudad = ciudad ? (getZoneProgress('central', adventure, journey).porcentaje ?? 0) : 0
-  const gruposApi = modoApi
-    ? insigniasServidor(servidor.logros.datos, getAchievementPresentations())
-    : undefined
+  const gruposApi = modoApi ? insigniasServidor(servidor.logros.datos) : undefined
   const badges = getStudentAchievementGroups(adventure, journey, gruposApi).flatMap((g, index) =>
     g.items.filter((b) => b.done).map((b) => ({ ...b, group: index })),
   )
-  const visibleBadges = getProfileBadges(
-    adventure,
-    discovery,
-    journey,
-    gruposApi ? { grupos: gruposApi, cuenta: cuenta ?? '' } : undefined,
-  )
+  const visibleBadges = vitrinaPasaporte(adventure, discovery, journey, gruposApi, servidor.logros.datos?.vitrina)
   const pages = modoApi
     ? paginasLibroApi(
         servidor.actividades.datos,

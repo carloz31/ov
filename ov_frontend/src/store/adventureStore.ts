@@ -254,7 +254,10 @@ export function getTravelerLevel(value: AdventureState, nivel: NivelActual | nul
 export function getTravelerLevel(value: AdventureState, nivel?: NivelActual | null): TravelerLevel | null {
   if (nivel !== undefined) {
     const presentacion = nivel ? travelerLevels.find((n) => n.number === nivel.numero) : undefined
-    return presentacion && nivel ? { ...presentacion, label: nivel.titulo } : null
+    // Ajuste pasaporte-perfil: la descripción del nivel también llega del servidor.
+    return presentacion && nivel
+      ? { ...presentacion, label: nivel.titulo, description: nivel.descripcion ?? presentacion.description }
+      : null
   }
   const levels = travelerLevels
   const allCasesSolved = cityCases.every((item) => value.solvedCaseIds.includes(item.id))

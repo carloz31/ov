@@ -47,7 +47,7 @@ test('perfil API lee las páginas del libro del servidor: partida y llegada prim
   assert.equal(prepararPerfil(pendiente.app).perfil().pages[1].state, 'sealed')
 })
 
-test('insignias del perfil API proceden de logros remotos y respetan la selección de la cuenta', async () => {
+test('insignias del perfil API proceden de logros remotos y la vitrina es la del servidor', async () => {
   const f = await iniciarMara()
   await f.almacen.asegurarSeccion('logros')
   const { perfil } = prepararPerfil(f.app)
@@ -60,24 +60,23 @@ test('insignias del perfil API proceden de logros remotos y respetan la selecci�
   const discovery = f.app.load('src/store/discoveryStore.ts')
   discovery.updateDiscovery((s) => ({
     ...s,
-    // DATO DE PRUEBA: preferencias locales contradictorias y selección API independiente.
+    // DATO DE PRUEBA: preferencias locales que el modo api ya no lee (ajuste pasaporte-perfil).
     profileBadgesConfigured: true,
     profileBadges: ['I9'],
-    profileBadgesApi: { 'est-ana': { profileBadgesConfigured: true, profileBadges: ['I3', 'I9'] } },
+    profileBadgesApi: { 'est-ana': { profileBadgesConfigured: true, profileBadges: [] } },
   }))
   assert.deepEqual(
     Array.from(perfil().visibleBadges, (b) => b.code),
-    ['I3'],
+    ['t-ins-1'],
   )
-  f.estado.insignias.find((b) => b.codigo === 'I3').estado = 'BLOQUEADA'
+  f.estado.insignias.find((b) => b.codigo === 't-ins-1').estado = 'BLOQUEADA'
   await f.almacen.reintentarSeccion('logros')
   assert.equal(
-    perfil().badges.some((b) => b.code === 'I3'),
+    perfil().badges.some((b) => b.code === 't-ins-1'),
     false,
   )
   assert.equal(perfil().visibleBadges.length, 0)
 })
-
 test('sin nivel remoto el perfil completo muestra el aviso y omite el medallón y el siguiente nivel', async () => {
   const f = await iniciarMara()
   f.estado.nivel_actual = null

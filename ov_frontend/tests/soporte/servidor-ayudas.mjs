@@ -305,6 +305,10 @@ export function escenarioServidor(etapa) {
     bloques: jsonServidor('actividades-' + etapa),
     fichas: jsonServidor('fichas-' + etapa),
     ...logros,
+    // Ajuste pasaporte-perfil: los fixtures de la raíz (congelados) no traen páginas ni vitrina; las insignias y
+    // la vitrina se toman de la ruta.
+    insignias: jsonServidor('ruta/ruta-logros-final').insignias,
+    vitrina: jsonServidor('ruta/ruta-logros-final').vitrina,
     // DATO DE PRUEBA: estos fixtures no traen `/avance` (ajuste del panel, F05); se usa el inicial de la ruta.
     avance: jsonServidor('ruta/ruta-avance-inicial'),
   }
@@ -332,7 +336,7 @@ export function respuestaDominio(r, escenario) {
     case 'fichas':
       return { body: escenario.fichas }
     case 'logros':
-      return { body: { insignias: escenario.insignias, niveles: escenario.niveles } }
+      return { body: { insignias: escenario.insignias, niveles: escenario.niveles, vitrina: escenario.vitrina ?? [] } }
     case 'secciones':
       return { body: escenario.secciones ?? [] }
     case 'avance':

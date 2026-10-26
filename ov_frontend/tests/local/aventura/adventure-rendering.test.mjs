@@ -1153,7 +1153,8 @@ test('the passport lives inside the profile with five narrative levels and group
   // Tras F05 (pedido del usuario): las insignias muestran ícono y nombre, sin su código (I1…I9).
   assert.ok((html.match(/class="sx-p-badge"/g) ?? []).length >= 9)
   assert.doesNotMatch(html, /sx-p-badge-code/)
-  assert.match(html, /Pulsa una insignia para descubrir la historia que guarda/)
+  // Ajuste pasaporte-perfil (excepción nº 16 al modo local congelado): textos del rediseño.
+  assert.match(html, /Pulsa uno para leer la historia que guarda/)
   const menu = render('/student/missions')
   assert.doesNotMatch(menu, />Mi pasaporte<\/span>/)
 })
@@ -3547,10 +3548,11 @@ test('passport hides pending meanings, respects the profile limit and starts wit
   const pending=groups.flatMap(g=>g.items).find(b=>!b.done)
   let tree=page.draw({badge:pending,group:'Prueba',groupIndex:1,onClose(){}})
   assert.ok(!page.text(tree).includes(pending.metaphor));assert.ok(!page.text(tree).includes(pending.vocationalMeaning))
-  assert.match(page.text(tree),/Se revela cuando obtengas/);assert.equal(page.button(tree,'Mostrar en mi perfil'),undefined)
+  // Ajuste pasaporte-perfil (excepción nº 16): textos del modal rediseñado.
+  assert.match(page.text(tree),/Su historia se revela cuando la consigas/);assert.equal(page.button(tree,'Añadir a tu vitrina'),undefined)
   const earned=groups.flatMap(g=>g.items).find(b=>b.code==='I7')
   tree=page.draw({badge:earned,group:'Prueba',groupIndex:2,onClose(){}})
-  assert.ok(page.text(tree).includes(earned.vocationalMeaning));assert.equal(page.button(tree,'Mostrar en mi perfil').props.disabled,true)
+  assert.ok(page.text(tree).includes(earned.message));assert.equal(page.button(tree,'Añadir a tu vitrina').props.disabled,true)
   tree=page.draw({badge:{...pending,hidden:true},group:'Prueba',groupIndex:1,onClose(){}})
   assert.ok(!page.text(tree).includes(pending.description));assert.ok(!page.text(tree).includes(pending.title))
  }finally{page.dispose()}

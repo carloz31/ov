@@ -116,6 +116,7 @@ test('las insignias del pasaporte no muestran su código', () => {
   const vista = readFileSync('src/features/discovery/components/StudentPassportView.tsx', 'utf8')
   assert.doesNotMatch(vista, /sx-p-badge-code/)
   const dialogo = readFileSync('src/features/discovery/components/PassportBadgeDialog.tsx', 'utf8')
-  assert.match(dialogo, /<p className="sx-p-badge-code">\{group\}<\/p>/)
+  // Ajuste pasaporte-perfil: la línea del grupo dice «Página X · {grupo}», sin el código de la insignia.
+  assert.match(dialogo, /<p className="sx-p-badge-code">\s*Página \{numeroPagina\(groupIndex\)\} · \{group\}\s*<\/p>/)
   assert.doesNotMatch(dialogo, /badge\.code\}/)
 })

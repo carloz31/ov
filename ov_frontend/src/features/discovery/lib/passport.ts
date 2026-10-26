@@ -102,18 +102,13 @@ export const badgeDestinations: Record<string, { label: string; href: string }> 
   I8: { label: 'Ir a Investigaciones', href: appPaths.student.research },
   I9: { label: 'Ir a la Central de Casos', href: appPaths.student.exploration },
 }
-export function getProfileBadges(
-  adventure: AdventureState,
-  discovery: StudentDiscoveryState,
-  journey?: JourneyState,
-  api?: { grupos: AchievementGroup[]; cuenta: string },
-) {
-  const earned = getStudentAchievementGroups(adventure, journey, api?.grupos).flatMap((g, index) =>
+// Vitrina local (modo local congelado): sin elección, las tres primeras obtenidas.
+export function getProfileBadges(adventure: AdventureState, discovery: StudentDiscoveryState, journey?: JourneyState) {
+  const earned = getStudentAchievementGroups(adventure, journey).flatMap((g, index) =>
     g.items.filter((b) => b.done).map((b) => ({ ...b, group: index })),
   )
-  const preferencias = api ? discovery.profileBadgesApi?.[api.cuenta] : discovery
-  return preferencias?.profileBadgesConfigured
-    ? preferencias.profileBadges
+  return discovery.profileBadgesConfigured
+    ? discovery.profileBadges
         .flatMap((code) => {
           const badge = earned.find((b) => b.code === code)
           return badge ? [badge] : []
@@ -126,33 +121,31 @@ export function toggleProfileBadge(
   adventure: AdventureState,
   code: string,
   journey?: JourneyState,
-  api?: { grupos: AchievementGroup[]; cuenta: string },
 ): StudentDiscoveryState {
-  if (
-    !getStudentAchievementGroups(adventure, journey, api?.grupos).some((g) =>
-      g.items.some((b) => b.code === code && b.done),
-    )
-  )
+  if (!getStudentAchievementGroups(adventure, journey).some((g) => g.items.some((b) => b.code === code && b.done)))
     return discovery
-  const selected: string[] = getProfileBadges(adventure, discovery, journey, api).map((b) => b.code)
+  const selected: string[] = getProfileBadges(adventure, discovery, journey).map((b) => b.code)
   if (!selected.includes(code) && selected.length >= 3) return discovery
-  if (api)
-    return {
-      ...discovery,
-      profileBadgesApi: {
-        ...discovery.profileBadgesApi,
-        [api.cuenta]: {
-          profileBadgesConfigured: true,
-          profileBadges: selected.includes(code) ? selected.filter((c) => c !== code) : [...selected, code],
-        },
-      },
-    }
   return {
     ...discovery,
     profileBadgesConfigured: true,
     profileBadges: selected.includes(code) ? selected.filter((c) => c !== code) : [...selected, code],
   }
 }
+// Ajuste pasaporte-perfil: en api la vitrina es la del servidor, en su orden y sin valor por defecto; en local,
+// la de siempre.
+export function vitrinaPasaporte(
+  adventure: AdventureState,
+  discovery: StudentDiscoveryState,
+  journey?: JourneyState,
+  gruposApi?: AchievementGroup[],
+  codigos?: string[],
+) {
+  if (!gruposApi) return getProfileBadges(adventure, discovery, journey)
+  const obtenidas = gruposApi.flatMap((g, index) => g.items.filter((b) => b.done).map((b) => ({ ...b, group: index })))
+  return (codigos ?? []).flatMap((code) => obtenidas.filter((b) => b.code === code))
+}
+export const numeroPagina = (indice: number) => ['I', 'II', 'III', 'IV', 'V', 'VI'][indice] ?? String(indice + 1)
 export function recordBadgeFirstSeenAt(
   discovery: StudentDiscoveryState,
   adventure: AdventureState,

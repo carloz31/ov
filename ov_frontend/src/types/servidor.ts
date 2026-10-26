@@ -145,6 +145,7 @@ export type ProgresoObjetivo = {
   disponible: boolean
   reglas: {
     regla: string
+    mensaje_bloqueo: string
     cumplida: boolean
     condiciones: ProgresoCondicion[]
     evaluador_especial?: ResultadoEvaluador | null

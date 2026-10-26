@@ -29,3 +29,13 @@ Spec: `docs/specs/ajuste-pasaporte-perfil.md`.
 - El downgrade completo de la base con `ruta` ahora se detiene en `0028` (grupos de insignia) en lugar de `0027`.
 - El reinicio de desarrollo guarda una vitrina antes de comprobar que todas las tablas de estado tienen filas.
 - `soporte_datos_ports.insignia_por_evento` asigna la primera página a la insignia que crea.
+
+## Frontend · pasaporte
+
+- Una secreta no obtenida llega como `???`; el adaptador le da un código local `???-<grupo>-<posición>` para elegirla en la grilla sin exponer el real.
+- Una condición lleva barra solo si `requerido > 1` (conteo). El resumen «x de y» es el de la regla con mayor proporción cumplida.
+- Sin texto en la condición, la fila muestra el `requisito` de la insignia o, en niveles, el `mensaje_bloqueo` de la regla (el tipo `ProgresoObjetivo` del front gana `mensaje_bloqueo`).
+- La vitrina en api sale de `logros.vitrina` (`vitrinaPasaporte`); `getProfileBadges`/`toggleProfileBadge` quedan solo para local. `profileBadgesApi` se conserva en el almacén sin la validación `/^I\d+$/`.
+- El ícono de una insignia sin presentación local es `sparkles` (genérico).
+- Los escenarios Mara de las pruebas (fixtures de la raíz, congelados) toman insignias y vitrina de `ruta-logros-final`: así no se editan fixtures generados.
+- Pruebas adaptadas: `tests/servidor/logros/servidor-logros.test.mjs` reescrita con `ruta-*`; la de insignias de `tests/servidor/perfil`; la del código de insignia en `tests/servidor/diario/servidor-senal.test.mjs`; dos de `tests/local/aventura` por textos del rediseño (excepción nº 16).

@@ -4,6 +4,8 @@ import type {
   HelenaResult,
   TipoResultadoHelena,
   AchievementGroup,
+  CondicionesPasaporte,
+  CondicionPasaporte,
   PassportBadge,
 } from '@/types/profile'
 import type { StudentDiscoveryState } from '@/types/discovery'
@@ -85,68 +87,48 @@ export function avisosServidor(desbloqueos: (DesbloqueoNuevo | DesbloqueoLegible
     }
   })
 }
-export const insigniasOcultasPendientes = (logros: LogrosCuenta | null) =>
-  logros?.insignias.filter((i) => i.codigo === '???' && i.estado !== 'OBTENIDA').length ?? 0
-export function insigniasServidor(
-  logros: LogrosCuenta | null,
-  presentaciones: AchievementGroup[],
-): AchievementGroup[] {
-  const publicas = logros?.insignias.filter((i) => i.estado === 'OBTENIDA' || i.codigo !== '???') ?? []
-  const conocidas = new Set(presentaciones.flatMap((g) => g.items.map((i) => i.code)))
-  const grupos = presentaciones
-    .map((g) => ({
-      ...g,
-      items: g.items.flatMap((p) => {
-        const i = publicas.find((i) => i.codigo === p.code)
-        return i
-          ? [
-              {
-                ...p,
-                title: i.nombre,
-                description: i.requisito ?? i.descripcion ?? '',
-                done: i.estado === 'OBTENIDA',
-              },
-            ]
-          : []
-      }),
-    }))
-    .filter((g) => g.items.length)
-  const otras = publicas
-    .filter((i) => !conocidas.has(i.codigo as PassportBadge['code']))
-    .map((i): PassportBadge => ({
-      code: i.codigo as PassportBadge['code'],
+// Ajuste pasaporte-perfil: las páginas del pasaporte son los grupos del servidor, en su orden. Una secreta no
+// obtenida llega como `???`: su código local la distingue por página y posición, sin exponer el real.
+export function insigniasServidor(logros: LogrosCuenta | null): AchievementGroup[] {
+  const grupos: AchievementGroup[] = []
+  for (const i of logros?.insignias ?? []) {
+    let grupo = grupos.find((g) => g.title === i.grupo.nombre)
+    if (!grupo) grupos.push((grupo = { title: i.grupo.nombre, description: '', icon: 'key', items: [] }))
+    const secreta = i.codigo === '???'
+    grupo.items.push({
+      code: (secreta ? `???-${i.grupo.codigo}-${grupo.items.length + 1}` : i.codigo) as PassportBadge['code'],
       title: i.nombre,
+      hidden: secreta,
       done: i.estado === 'OBTENIDA',
       icon: 'sparkles',
-      description: i.requisito ?? i.descripcion ?? '',
-      message: i.descripcion ?? 'Un nuevo descubrimiento acompaña tu viaje.',
-      metaphor: 'Una nueva mirada viaja contigo.',
-      vocationalMeaning: i.descripcion ?? 'Cada descubrimiento amplía tus posibilidades.',
-    }))
-  if (otras.length)
-    grupos.push({
-      title: 'La luz que despeja caminos',
-      description: 'Descubrimientos que aparecen durante el viaje.',
-      icon: 'key',
-      items: otras,
+      description: i.requisito ?? '',
+      message: i.descripcion ?? '',
+      metaphor: '',
+      vocationalMeaning: '',
+      pista: i.pista,
+      obtenidaEn: i.obtenida_en,
     })
+  }
   return grupos
 }
-export function textoRequisitoInsignia(
-  progreso: ProgresoObjetivo,
-  bloques: BloqueActividades[] | null,
-  codigo: string,
-  logros: LogrosCuenta | null,
-) {
-  const requisito =
-    logros?.insignias.find((i) => i.codigo === codigo)?.requisito ?? 'El requisito sigue pendiente.'
-  if (progreso.reglas.some((r) => r.evaluador_especial)) {
-    const completadas = bloquesZona(bloques, 'CAMINO')
-      .flatMap((b) => b.actividades)
-      .filter((a) => a.codigo !== 'mission-welcome' && a.estado === 'COMPLETADA').length
-    return `${requisito} · ${Math.min(3, completadas)} de 3 misiones.`
-  }
-  return requisito
+// Todas las reglas (alternativas) con sus condiciones; el resumen cuenta la regla más avanzada. Una condición sin
+// texto muestra el respaldo: el requisito de la insignia o el mensaje de bloqueo de la regla.
+export function condicionesObjetivo(progreso: ProgresoObjetivo, respaldo?: string | null): CondicionesPasaporte {
+  const bloques = progreso.reglas.map((r) =>
+    r.condiciones.map((c) => ({
+      texto: c.texto ?? respaldo ?? r.mensaje_bloqueo,
+      cumplida: c.cumplida,
+      ...(c.requerido > 1 ? { actual: Math.min(c.actual, c.requerido), requerido: c.requerido } : {}),
+    })),
+  )
+  const mejor = bloques.reduce<CondicionPasaporte[] | undefined>(
+    (a, b) =>
+      !a || b.filter((c) => c.cumplida).length / (b.length || 1) > a.filter((c) => c.cumplida).length / (a.length || 1)
+        ? b
+        : a,
+    undefined,
+  )
+  return { bloques, cumplidas: mejor?.filter((c) => c.cumplida).length ?? 0, total: mejor?.length ?? 0 }
 }
 
 // El Camino son los bloques de MISIONES_CAMPO (T0, T1, T2); 'CAMINO' los nombra juntos.

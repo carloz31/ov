@@ -7,24 +7,20 @@ import { getTravelerLevel, useAdventure } from '@/store/adventureStore'
 import { useDiscovery } from '@/store/discoveryStore'
 
 import {
-  getProfileBadges,
   getStudentAchievementGroups,
   travelerTitles,
+  vitrinaPasaporte,
 } from '@/features/discovery/lib/passport'
 import { modoApi } from '@/config/env'
 import { useEstadoServidor } from '@/store/servidor/sesion'
-import { insigniasServidor, insigniasOcultasPendientes } from '@/lib/servidor/adaptadores'
-import { getAchievementPresentations } from '@/features/discovery/lib/achievements'
+import { insigniasServidor } from '@/lib/servidor/adaptadores'
+import { useProgresoNivel } from './useProgresoNivel'
 
 export function usePassport() {
   useLogrosServidor()
   const servidor = useEstadoServidor()
-  const gruposApi = modoApi
-    ? insigniasServidor(servidor.logros.datos, getAchievementPresentations())
-    : undefined
-  const api = gruposApi
-    ? { grupos: gruposApi, cuenta: servidor.resumen.datos?.cuenta.codigo ?? '' }
-    : undefined
+  const logros = servidor.logros.datos
+  const gruposApi = modoApi ? insigniasServidor(logros) : undefined
   const adventure = useAdventure(),
     discovery = useDiscovery(),
     journey = useJourney(),
@@ -35,23 +31,19 @@ export function usePassport() {
   const [selectedCode, setSelectedCode] = useState<string>()
   const all = groups.flatMap((g) => g.items),
     earned = all.filter((b) => b.done),
-    visible = getProfileBadges(adventure, discovery, journey, api)
+    visible = vitrinaPasaporte(adventure, discovery, journey, gruposApi, logros?.vitrina)
   const groupIndex = groups.findIndex((g) => g.items.some((b) => b.code === selectedCode)),
     group = groups[groupIndex],
     selected = group?.items.find((b) => b.code === selectedCode)
   const titulos = level
     ? modoApi
-      ? (servidor.logros.datos?.niveles.map((n) => ({
-          numero: n.numero,
-          titulo: n.titulo,
-          obtenido: n.estado === 'OBTENIDO',
-        })) ?? [])
-      : travelerTitles.map((titulo, i) => ({
-          numero: i + 1,
-          titulo,
-          obtenido: i + 1 < level.number,
-        }))
+      ? (logros?.niveles.map((n) => ({ numero: n.numero, titulo: n.titulo, obtenido: n.estado === 'OBTENIDO' })) ??
+        [])
+      : travelerTitles.map((titulo, i) => ({ numero: i + 1, titulo, obtenido: i + 1 < level.number }))
     : []
+  // Ajuste pasaporte-perfil: el siguiente título sale de la lista de niveles, no de `travelerTitles`.
+  const siguiente = level ? titulos.find((t) => t.numero === level.number + 1) : undefined
+  const condiciones = useProgresoNivel(siguiente?.numero, level?.nextStep)
   return {
     groups,
     level,
@@ -62,7 +54,7 @@ export function usePassport() {
     group,
     selected,
     titulos,
-    total: modoApi ? (servidor.logros.datos?.insignias.length ?? 0) : all.length,
-    ocultasPendientes: modoApi ? insigniasOcultasPendientes(servidor.logros.datos) : 0,
+    siguiente: siguiente && { titulo: siguiente.titulo, condiciones },
+    total: all.length,
   }
 }
