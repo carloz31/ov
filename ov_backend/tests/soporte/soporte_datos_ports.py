@@ -77,7 +77,7 @@ def renombrar_e_invertir_dimensiones(sesion):
 def agregar_ocupaciones(sesion, extra):
     dimensiones = list(sesion.scalars(select(m.Dimension).order_by(m.Dimension.orden)))
     for n in range(extra):
-        ocupacion = m.Ocupacion(codigo_onet=f'PRUEBA-{n}', titulo='DATO DE PRUEBA')
+        ocupacion = m.Ocupacion(codigo=f'prueba-{n}', codigo_onet=f'PRUEBA-{n}', titulo='DATO DE PRUEBA', grupo='15')
         sesion.add(ocupacion)
         sesion.flush()
         sesion.add_all([m.PuntajeOcupacion(ocupacion_id=ocupacion.id, dimension_id=d.id, valor=i+1)

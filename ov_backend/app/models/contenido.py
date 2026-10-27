@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import TipoJSON
 from app.models.base import Base, busqueda_de, enumerado
-from app.models.enums import Audiencia, Espacio, TipoActividad, UsoPreguntaDiario, Visibilidad
+from app.models.enums import Audiencia, Espacio, TipoActividad, TipoInstitucion, UsoPreguntaDiario, Visibilidad
 
 
 class Bloque(Base):
@@ -217,10 +217,13 @@ class Nivel(Base):
 
 
 class FamiliaCarrera(Base):
+    """Campo detallado CINE (3 cifras); el área es su campo de educación, desnormalizado."""
     __tablename__ = "familia_carrera"
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
+    area_codigo: Mapped[str]
+    area_nombre: Mapped[str]
 
 
 class Carrera(Base):
@@ -229,8 +232,15 @@ class Carrera(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
     familia_id: Mapped[int] = mapped_column(ForeignKey("familia_carrera.id"))
+    tipo: Mapped[TipoInstitucion] = mapped_column(enumerado(TipoInstitucion))
+    # Código CINE de 6 cifras; no es único entre carreras.
+    codigo_cine: Mapped[str]
+    # Nombre del programa CINE, solo si difiere del nombre de la carrera.
+    nombre_cine: Mapped[str | None] = mapped_column(default=None)
     descripcion: Mapped[str | None] = mapped_column(Text, default=None)
     duracion: Mapped[str | None] = mapped_column(default=None)
+    # Una línea por lugar de trabajo, separadas por saltos de línea.
+    ambito_laboral: Mapped[str | None] = mapped_column(Text, default=None)
     # Letras de `tipo_carrera` en orden de posición («RIS»); lo calcula el cargador.
     codigo_riasec: Mapped[str | None] = mapped_column(default=None)
     busqueda: Mapped[str] = mapped_column(default=busqueda_de("nombre"))
@@ -240,4 +250,3 @@ class Carrera(Base):
         secondary="carrera_ocupacion", viewonly=True, lazy="raise", order_by="Ocupacion.codigo")
     instituciones: Mapped[list["Institucion"]] = relationship(
         secondary="institucion_carrera", viewonly=True, lazy="raise", order_by="Institucion.codigo")
-    ingreso: Mapped["IngresoCarrera | None"] = relationship(viewonly=True, lazy="raise")

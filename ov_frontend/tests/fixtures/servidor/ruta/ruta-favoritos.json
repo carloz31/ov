@@ -1,29 +1,34 @@
 {
   "carreras": [
     {
-      "codigo": "civil-engineering",
+      "codigo": "mtpe-106",
+      "duracion": "5 años",
       "es_favorita": true,
       "familia": {
-        "codigo": "family-civil-engineering",
-        "nombre": "Ingeniería e infraestructura"
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "531",
+        "nombre": "Ingeniería Civil"
       },
       "nombre": "Ingeniería Civil",
       "riasec": [
         "R",
         "I"
-      ]
+      ],
+      "tipo": "UNIVERSIDAD"
     }
   ],
   "instituciones": [
     {
-      "codigo": "t-uni",
+      "codigo": "inst-63",
+      "distrito": "Lima",
       "es_favorita": true,
       "gestion": "PUBLICA",
-      "nombre": "Universidad Nacional de Prueba",
+      "nombre": "Universidad Nacional Federico Villarreal",
       "tipo": "UNIVERSIDAD",
       "ubicacion": {
-        "codigo": "t-lima",
-        "nombre": "Lima de prueba"
+        "codigo": "dep-15",
+        "nombre": "Lima"
       }
     }
   ],
@@ -32,11 +37,14 @@
       "codigo": "geologist",
       "codigo_onet": "19-2042.00",
       "es_favorita": true,
+      "grupo": "19",
+      "resumen": "Estudian la composición, estructura y otros aspectos físicos de la Tierra.",
       "riasec": [
         "I",
-        "R"
+        "R",
+        "C"
       ],
-      "titulo": "Geólogo/a"
+      "titulo": "Científicos de la Geociencia"
     }
   ]
 }

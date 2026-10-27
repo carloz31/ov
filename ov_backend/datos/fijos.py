@@ -1,17 +1,19 @@
 """Lo fijo de la plataforma, sea cual sea la ruta: secciones, listas comunes, repreguntas por tipo
-de criterio, temáticas, RIASEC, el catálogo O*NET y el cuestionario de partida y llegada.
+de criterio, temáticas, RIASEC, el catálogo real (`datos/catalogo.py`) y el cuestionario de partida y llegada.
 
 Se carga en todo conjunto. La transacción pertenece al llamador; este módulo no confirma ni migra.
 """
 
 from dataclasses import dataclass
 
-from sqlalchemy import insert, select
+from collections import Counter
+
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models as modelos
 from app.core.parametros import DESCRIPCIONES_RIASEC, DIMENSIONES_RIASEC, transformar_opcion_onet
-from datos.ocupaciones import RUTA_OCUPACIONES, leer_ocupaciones
+from datos import catalogo
 
 
 # (código, nombre, audiencia). Cada ruta decide con sus reglas cuándo se abre cada sección.
@@ -198,216 +200,45 @@ ENUNCIADOS_RIASEC = {'R': ('Reparar una bicicleta o un electrodoméstico.',
        'Verificar que una factura esté correcta.',
        'Mantener al día una base de datos.')}
 
-OCUPACIONES = (('sound-technician', 'Técnico/a de sonido', '27-4014.00'),
- ('electrician', 'Electricista', '47-2111.00'),
- ('event-coordinator', 'Coordinador/a de eventos', '13-1121.00'),
- ('translator', 'Traductor/a', '27-3091.00'),
- ('community-manager', 'Community manager', '27-3031.00'),
- ('graphic-designer', 'Diseñador/a gráfico/a', '27-1024.00'),
- ('event-assistant', 'Asistente de eventos', '39-3031.00'),
- ('security-guard', 'Guardia de seguridad', '33-9032.00'),
- ('paramedic', 'Paramédico/a', '29-2043.00'),
- ('photographer', 'Fotógrafo/a', '27-4021.00'),
- ('lawyer', 'Abogado/a', '23-1011.00'),
- ('cook', 'Cocinero/a', '35-2014.00'),
- ('illustrator', 'Ilustrador/a', '27-1013.00'),
- ('firefighter', 'Bombero/a', '33-2011.00'),
- ('meteorologist', 'Meteorólogo/a', '19-2021.00'),
- ('municipal-police', 'Policía municipal', '33-3051.00'),
- ('medical-specialist', 'Médico/a especialista', '29-1216.00'),
- ('veterinarian', 'Veterinario/a', '29-1131.00'),
- ('biologist', 'Biólogo/a', '19-1029.04'),
- ('environmental-engineer', 'Ingeniero/a medioambiental', '17-2081.00'),
- ('civil-engineer', 'Ingeniero/a civil', '17-2051.00'),
- ('machinery-operator', 'Operador/a de maquinaria', '47-2073.00'),
- ('social-worker', 'Trabajador/a social', '21-1021.00'),
- ('psychologist', 'Psicólogo/a', '19-3033.00'),
- ('logistics-coordinator', 'Coordinador/a logístico/a', '13-1081.00'),
- ('journalist', 'Periodista', '27-3023.00'),
- ('teacher', 'Docente', '25-2031.00'),
- ('architect', 'Arquitecto/a', '17-1011.00'),
- ('geologist', 'Geólogo/a', '19-2042.00'),
- ('agricultural-engineer', 'Ingeniero/a agrónomo/a', '17-2021.00'),
- ('public-administrator', 'Gestor/a público/a', '11-3012.00'),
- ('sociologist', 'Sociólogo/a', '19-3041.00'),
- ('data-analyst', 'Analista de datos', '15-2051.00'),
- ('urban-planner', 'Urbanista', '19-3051.00'),
- ('documentary-filmmaker', 'Documentalista', '27-2012.00'),
- # nurse no existe en el catálogo del frontend; la exige la carrera nursing.
- ('nurse', 'Enfermero/a', '29-1141.00'))
-
-CARRERAS = (('environmental-engineering',
-  'Ingeniería Ambiental',
-  'Ingeniería y ambiente',
-  ('environmental-engineer', 'agricultural-engineer', 'geologist', 'data-analyst')),
- ('journalism',
-  'Periodismo',
-  'Comunicación',
-  ('journalist', 'documentary-filmmaker', 'photographer', 'community-manager', 'translator')),
- ('nursing', 'Enfermería', 'Salud', ('nurse', 'paramedic')),
- ('civil-engineering',
-  'Ingeniería Civil',
-  'Ingeniería e infraestructura',
-  ('civil-engineer', 'architect', 'urban-planner', 'geologist', 'machinery-operator')),
- ('veterinary-medicine',
-  'Medicina Veterinaria',
-  'Salud y ciencias naturales',
-  ('veterinarian', 'agricultural-engineer', 'biologist')),
- ('psychology',
-  'Psicología',
-  'Ciencias sociales y salud',
-  ('psychologist', 'teacher', 'sociologist', 'social-worker')))
-
-
-# (carrera, descripción, duración), copiados de `careerCatalog` del front.
-DETALLE_CARRERAS = (
-    ('environmental-engineering',
-     'Diseña soluciones para prevenir, medir y reducir impactos sobre el ambiente.', '5 años aproximadamente'),
-    ('journalism',
-     'Investiga hechos, contrasta fuentes y comunica información de interés público.', '5 años aproximadamente'),
-    ('nursing',
-     'Brinda cuidados integrales y acompaña a las personas en prevención, atención y recuperación.',
-     '5 años aproximadamente'),
-    ('civil-engineering',
-     'Planifica, construye y evalúa infraestructura segura para las comunidades.', '5 años aproximadamente'),
-    ('veterinary-medicine',
-     'Protege la salud y el bienestar de animales domésticos, productivos y silvestres.', '5 años aproximadamente'),
-    ('psychology',
-     'Comprende el comportamiento humano y acompaña procesos de bienestar y desarrollo.', '5 años aproximadamente'),
-)
-
-# (ocupación, qué hacen, lugares de trabajo, habilidades), copiados del catálogo del front
-# (`typicalWork`, `workplaces`, `skills`). Las ocupaciones con el texto por completar no aparecen.
-DETALLE_OCUPACIONES = (
-    ('sound-technician',
-     'Realiza montajes, pruebas de sonido, operación en vivo y solución de fallas.',
-     'Eventos, teatros, estudios, medios y empresas audiovisuales.',
-     ('Diagnóstico técnico', 'Escucha crítica', 'Trabajo bajo presión')),
-    ('electrician',
-     'Mide voltajes, instala circuitos y localiza fallas eléctricas.',
-     'Construcción, industria, mantenimiento, eventos y servicios técnicos.',
-     ('Precisión', 'Seguridad', 'Diagnóstico')),
-    ('event-coordinator',
-     'Planifica cronogramas, coordina proveedores y gestiona contingencias.',
-     'Convenciones, festivales, agencias, centros culturales y empresas.',
-     ('Organización', 'Negociación', 'Toma de decisiones')),
-    ('translator',
-     'Traduce conversaciones, textos o contenidos preservando su significado.',
-     'Eventos, empresas, editoriales, instituciones y trabajo independiente.',
-     ('Idiomas', 'Escucha', 'Precisión cultural')),
-    ('community-manager',
-     'Planifica publicaciones, conversa con audiencias y analiza respuestas digitales.',
-     'Marcas, agencias, medios, instituciones y proyectos independientes.',
-     ('Redacción', 'Estrategia digital', 'Empatía')),
-    ('graphic-designer',
-     'Diseña identidades, piezas informativas, interfaces y materiales impresos o digitales.',
-     'Agencias, editoriales, empresas, estudios y trabajo independiente.',
-     ('Comunicación visual', 'Creatividad', 'Síntesis')),
-    ('event-assistant',
-     'Apoya acreditaciones, orientación, montaje y coordinación cotidiana.',
-     'Ferias, convenciones, congresos, festivales y centros de eventos.',
-     ('Servicio', 'Adaptabilidad', 'Comunicación')),
-    ('security-guard',
-     'Vigila espacios, controla accesos y aplica protocolos de seguridad.',
-     'Eventos, comercios, instituciones, empresas y espacios públicos.',
-     ('Observación', 'Calma', 'Respuesta rápida')),
-    ('paramedic',
-     'Responde a emergencias, brinda primeros cuidados y coordina traslados.',
-     'Ambulancias, hospitales, eventos, industrias y equipos de respuesta.',
-     ('Evaluación rápida', 'Calma', 'Atención prehospitalaria')),
-    ('photographer',
-     'Planifica tomas, registra eventos y selecciona o edita imágenes.',
-     'Medios, estudios, eventos, agencias y trabajo independiente.',
-     ('Observación', 'Narrativa visual', 'Técnica fotográfica')),
-    ('lawyer',
-     'Analiza casos, asesora personas y redacta o revisa acuerdos.',
-     'Estudios jurídicos, empresas, instituciones y consultoría.',
-     ('Argumentación', 'Lectura detallada', 'Negociación')),
-    ('cook',
-     'Planifica preparaciones, controla insumos y produce alimentos de forma segura.',
-     'Restaurantes, hoteles, servicios de catering, eventos y emprendimientos.',
-     ('Organización', 'Técnica culinaria', 'Higiene')),
-    ('illustrator',
-     'Investiga referencias, desarrolla bocetos y crea piezas visuales finales.',
-     'Editoriales, estudios de videojuegos, agencias y trabajo independiente.',
-     ('Dibujo', 'Narrativa visual', 'Creatividad')),
-    ('psychologist',
-     'Escucha, evalúa necesidades emocionales y diseña estrategias de acompañamiento.',
-     'Centros de salud, colegios, organizaciones, empresas y consulta privada.',
-     ('Escucha activa', 'Contención emocional', 'Evaluación', 'Empatía')),
-    ('logistics-coordinator',
-     'Controla inventarios, coordina transporte y resuelve necesidades de abastecimiento.',
-     'Empresas, almacenes, organizaciones humanitarias, hospitales y operaciones públicas.',
-     ('Organización', 'Inventarios', 'Coordinación', 'Resolución de problemas')),
-    ('teacher',
-     'Planifica clases, facilita aprendizajes y acompaña el desarrollo de estudiantes.',
-     'Colegios, institutos, organizaciones sociales y proyectos educativos.',
-     ('Comunicación', 'Planificación', 'Facilitación', 'Creatividad')),
-    ('architect',
-     'Diseña proyectos, desarrolla planos y coordina soluciones espaciales y constructivas.',
-     'Estudios, constructoras, municipalidades, consultorías y trabajo independiente.',
-     ('Diseño espacial', 'Planificación', 'Representación visual', 'Coordinación')),
-    ('geologist',
-     'Realiza trabajo de campo, analiza suelos y rocas y elabora mapas de riesgo.',
-     'Consultoras, minería, obras públicas, investigación y gestión de riesgos.',
-     ('Trabajo de campo', 'Análisis del terreno', 'Cartografía', 'Gestión de riesgos')),
-    ('agricultural-engineer',
-     'Evalúa cultivos, asesora productores y diseña mejoras para el manejo agrícola.',
-     'Campos, cooperativas, empresas agrícolas, instituciones públicas y consultorías.',
-     ('Manejo de suelos', 'Producción agrícola', 'Asesoría técnica', 'Planificación')),
-    ('public-administrator',
-     'Diseña programas, gestiona presupuestos y coordina servicios para la ciudadanía.',
-     'Municipalidades, ministerios, gobiernos regionales y organizaciones públicas.',
-     ('Gestión de proyectos', 'Coordinación institucional', 'Presupuesto', 'Servicio público')),
-    ('sociologist',
-     'Realiza investigaciones, analiza información social y propone intervenciones comunitarias.',
-     'Universidades, instituciones públicas, consultoras y organizaciones sociales.',
-     ('Investigación social', 'Análisis', 'Entrevistas', 'Trabajo comunitario')),
-    ('data-analyst',
-     'Limpia información, crea visualizaciones y comunica hallazgos a equipos de decisión.',
-     'Empresas, instituciones públicas, centros de investigación y organizaciones.',
-     ('Análisis', 'Visualización de datos', 'Pensamiento crítico', 'Comunicación')),
-    ('urban-planner',
-     'Analiza territorios, diseña planes urbanos y coordina propuestas con comunidades e instituciones.',
-     'Municipalidades, consultoras, universidades y organismos de planificación.',
-     ('Planificación territorial', 'Cartografía', 'Participación ciudadana', 'Análisis urbano')),
-    ('documentary-filmmaker',
-     'Investiga temas, realiza entrevistas y produce relatos audiovisuales de no ficción.',
-     'Productoras, medios, organizaciones culturales y proyectos independientes.',
-     ('Investigación', 'Entrevistas', 'Narrativa audiovisual', 'Edición')),
-    # F06: las ocupaciones de las seis carreras que el catálogo del front dejaba por completar.
-    ('environmental-engineer',
-     'Mide la calidad del aire, el agua y el suelo, y diseña soluciones para reducir la contaminación.',
-     'Consultoras ambientales, municipalidades, empresas mineras e industriales y organismos públicos.',
-     ('Análisis', 'Trabajo de campo', 'Resolución de problemas', 'Comunicación técnica')),
-    ('civil-engineer',
-     'Diseña y supervisa obras como puentes, carreteras, edificios y sistemas de agua.',
-     'Constructoras, consultoras, municipalidades y ministerios.',
-     ('Cálculo', 'Supervisión de obras', 'Trabajo en equipo', 'Seguridad')),
-    ('journalist',
-     'Investiga hechos, entrevista fuentes y redacta noticias y reportajes.',
-     'Diarios, radios, canales de televisión, medios digitales y agencias de noticias.',
-     ('Redacción', 'Entrevistas', 'Verificación de datos', 'Trabajo bajo presión')),
-    ('machinery-operator',
-     'Maneja y da mantenimiento básico a maquinaria pesada en obras y explotaciones.',
-     'Obras de construcción, minería, agricultura y empresas de transporte.',
-     ('Coordinación', 'Seguridad', 'Atención al detalle')),
-    ('nurse',
-     'Cuida a pacientes, administra tratamientos y educa a las familias en prevención.',
-     'Hospitales, centros de salud, clínicas, colegios y atención domiciliaria.',
-     ('Cuidado del paciente', 'Empatía', 'Trabajo bajo presión', 'Trabajo en equipo')),
-    ('social-worker',
-     'Acompaña a personas y familias en situación de vulnerabilidad y las conecta con servicios de apoyo.',
-     'Municipalidades, centros de salud, colegios, ONG y programas sociales.',
-     ('Escucha activa', 'Mediación', 'Gestión de casos', 'Trabajo comunitario')),
-    ('veterinarian',
-     'Diagnostica, trata y previene enfermedades en animales domésticos, productivos y silvestres.',
-     'Clínicas veterinarias, granjas, zoológicos, laboratorios y organismos de sanidad animal.',
-     ('Diagnóstico', 'Cirugía', 'Cuidado animal', 'Comunicación con dueños')),
-    ('biologist',
-     'Estudia seres vivos y ecosistemas mediante trabajo de campo, laboratorio y análisis de datos.',
-     'Universidades, centros de investigación, áreas protegidas, laboratorios y consultoras.',
-     ('Investigación', 'Observación', 'Análisis de datos', 'Trabajo de campo')),
+# (slug, código O*NET). Las ocupaciones que casos, testimonios y escenarios nombran por slug; las demás de
+# Mi Próximo Paso se codifican `onet-<código>` (`datos/catalogo.py`).
+OCUPACIONES = (
+    ('sound-technician', '27-4014.00'),
+    ('electrician', '47-2111.00'),
+    ('event-coordinator', '13-1121.00'),
+    ('translator', '27-3091.00'),
+    ('community-manager', '27-3031.00'),
+    ('graphic-designer', '27-1024.00'),
+    ('event-assistant', '39-3031.00'),
+    ('security-guard', '33-9032.00'),
+    ('paramedic', '29-2043.00'),
+    ('photographer', '27-4021.00'),
+    ('lawyer', '23-1011.00'),
+    ('cook', '35-2014.00'),
+    ('illustrator', '27-1013.00'),
+    ('firefighter', '33-2011.00'),
+    ('meteorologist', '19-2021.00'),
+    ('municipal-police', '33-3051.00'),
+    ('medical-specialist', '29-1216.00'),
+    ('veterinarian', '29-1131.00'),
+    ('biologist', '19-1029.04'),
+    ('environmental-engineer', '17-2081.00'),
+    ('civil-engineer', '17-2051.00'),
+    ('machinery-operator', '47-2073.00'),
+    ('social-worker', '21-1021.00'),
+    ('psychologist', '19-3033.00'),
+    ('logistics-coordinator', '13-1081.00'),
+    ('journalist', '27-3023.00'),
+    ('teacher', '25-2031.00'),
+    ('architect', '17-1011.00'),
+    ('geologist', '19-2042.00'),
+    ('agricultural-engineer', '17-2021.00'),
+    ('public-administrator', '11-3012.00'),
+    ('sociologist', '19-3041.00'),
+    ('data-analyst', '15-2051.00'),
+    ('urban-planner', '19-3051.00'),
+    ('documentary-filmmaker', '27-2012.00'),
+    ('nurse', '29-1141.00'),
 )
 
 PATRON_RIASEC = 'RRIIAASSEECC'
@@ -423,14 +254,6 @@ class Fijos:
     listas: dict[str, modelos.ListaOpciones]
     tematicas: dict[str, modelos.Tematica]
     secciones_tarjeta: dict[str, modelos.SeccionTarjeta]
-
-
-def _leer_catalogo_seleccionado():
-    archivo = {fila.codigo_onet: fila for fila in leer_ocupaciones(RUTA_OCUPACIONES)}
-    for codigo, _, codigo_onet in OCUPACIONES:
-        if codigo_onet not in archivo:
-            raise ValueError(f'Falta la ocupación O*NET {codigo_onet}, requerida por {codigo}')
-    return {codigo: archivo[codigo_onet] for codigo, _, codigo_onet in OCUPACIONES}
 
 
 def _cargar_riasec(sesion):
@@ -496,32 +319,6 @@ def _cargar_partida_llegada(sesion, tematicas):
     return aplicaciones, items
 
 
-def _cargar_catalogo(sesion, archivo, dimensiones):
-    ocupaciones = {c: modelos.Ocupacion(codigo=c, titulo=t, codigo_onet=onet) for c, t, onet in OCUPACIONES}
-    familias = {c: modelos.FamiliaCarrera(codigo=f'family-{c}', nombre=f) for c, _, f, _ in CARRERAS}
-    sesion.add_all([*ocupaciones.values(), *familias.values()])
-    sesion.flush()
-    detalle_carreras = {c: (d, duracion) for c, d, duracion in DETALLE_CARRERAS}
-    detalle_ocupaciones = {c: (d, lugares, habilidades) for c, d, lugares, habilidades in DETALLE_OCUPACIONES}
-    for codigo, (descripcion, lugares, habilidades) in detalle_ocupaciones.items():
-        ocupaciones[codigo].descripcion = descripcion
-        ocupaciones[codigo].lugares_trabajo = lugares
-        ocupaciones[codigo].habilidades = list(habilidades)
-    carreras = {c: modelos.Carrera(codigo=c, nombre=n, familia_id=familias[c].id,
-                                   descripcion=detalle_carreras[c][0], duracion=detalle_carreras[c][1])
-                for c, n, _, _ in CARRERAS}
-    sesion.add_all(carreras.values())
-    sesion.flush()
-    sesion.execute(insert(modelos.PuntajeOcupacion), [
-        {'ocupacion_id': ocupaciones[c].id, 'dimension_id': dimensiones[d].id, 'valor': fila.valores[n]}
-        for c, fila in archivo.items() for n, (d, _) in enumerate(DIMENSIONES_RIASEC)
-    ])
-    sesion.execute(insert(modelos.CarreraOcupacion), [
-        {'carrera_id': carreras[c].id, 'ocupacion_id': ocupaciones[o].id}
-        for c, _, _, relaciones in CARRERAS for o in relaciones
-    ])
-
-
 def _cargar_secciones(sesion):
     secciones = {c: modelos.Seccion(codigo=c, nombre=n, audiencia=modelos.Audiencia(a)) for c, n, a in SECCIONES}
     sesion.add_all(secciones.values())
@@ -585,12 +382,30 @@ def cargar(sesion: Session) -> Fijos:
     _cargar_presentaciones(sesion)
     listas = cargar_listas(sesion, LISTAS_COMUNES, comun=True)
     secciones_tarjeta = _cargar_tarjeta(sesion, listas)
-    archivo = _leer_catalogo_seleccionado()
     tematicas = _cargar_tematicas(sesion)
     dimensiones, aplicacion, items = _cargar_riasec(sesion)
-    _cargar_catalogo(sesion, archivo, dimensiones)
+    catalogo.cargar(sesion, dimensiones, {onet: slug for slug, onet in OCUPACIONES})
     comparacion, items_comparacion = _cargar_partida_llegada(sesion, tematicas)
     sesion.flush()
     return Fijos(aplicaciones={a.codigo: a for a in (aplicacion, *comparacion)},
                  items={'TEST-RIASEC': items, 'TEST-PARTIDA-LLEGADA': items_comparacion}, secciones=secciones,
                  listas=listas, tematicas=tematicas, secciones_tarjeta=secciones_tarjeta)
+
+
+def validar_distribucion_items(sesion: Session) -> None:
+    """Cada aplicación presenta todos los ítems de su instrumento exactamente una vez."""
+    for aplicacion in sesion.scalars(select(modelos.Aplicacion).order_by(modelos.Aplicacion.codigo)):
+        esperados = dict(sesion.execute(select(modelos.ItemInstrumento.id, modelos.ItemInstrumento.codigo).where(
+            modelos.ItemInstrumento.instrumento_id == aplicacion.instrumento_id,
+        )).all())
+        presentados = Counter(sesion.scalars(select(modelos.ActividadItem.item_id).join(
+            modelos.AplicacionActividad, modelos.AplicacionActividad.actividad_id == modelos.ActividadItem.actividad_id,
+        ).where(modelos.AplicacionActividad.aplicacion_id == aplicacion.id)))
+        if not esperados or presentados != Counter({item: 1 for item in esperados}):
+            faltantes = [codigo for item, codigo in esperados.items() if presentados[item] == 0]
+            repetidos = [codigo for item, codigo in esperados.items() if presentados[item] > 1]
+            ajenos = sesion.scalars(select(modelos.ItemInstrumento.codigo).where(
+                modelos.ItemInstrumento.id.in_(set(presentados) - set(esperados)),
+            )).all()
+            raise ValueError(f"Distribución inválida en {aplicacion.codigo}: faltantes={faltantes}, "
+                             f"repetidos={repetidos}, ajenos={ajenos}")

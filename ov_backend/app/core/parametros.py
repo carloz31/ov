@@ -97,3 +97,13 @@ MAXIMO_CARACTERES_PASO = 140
 # F06 · Catálogo: tamaño de página de los listados.
 LIMITE_PAGINA_CATALOGO = 20
 LIMITE_MAXIMO_CATALOGO = 50
+
+# Ajuste catalogo-datos-reales: fuente de los ingresos de egresados, que toda respuesta con ingresos muestra.
+FUENTE_INGRESOS = "Ponte en Carrera (MTPE)"
+# Escala de los puntajes RIASEC de las ocupaciones (Mi Próximo Paso); el detalle los entrega de 0 a 100.
+PUNTAJE_OCUPACION_MINIMO = 1
+PUNTAJE_OCUPACION_MAXIMO = 7
+
+
+def puntaje_ocupacion_porcentaje(valor: float) -> int:
+    return round((valor - PUNTAJE_OCUPACION_MINIMO) / (PUNTAJE_OCUPACION_MAXIMO - PUNTAJE_OCUPACION_MINIMO) * 100)

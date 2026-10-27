@@ -28,7 +28,8 @@ def llenar_estado(aplicacion):
         pregunta = sesion.scalar(select(modelos.PreguntaDiario))
         ocupacion = sesion.scalar(select(modelos.Ocupacion))
         if ocupacion is None:
-            ocupacion = modelos.Ocupacion(codigo_onet='PRUEBA-REINICIO', titulo='DATO DE PRUEBA')
+            ocupacion = modelos.Ocupacion(codigo='prueba-reinicio', codigo_onet='PRUEBA-REINICIO',
+                                          titulo='DATO DE PRUEBA', grupo='15')
             sesion.add(ocupacion)
         progreso = modelos.ProgresoActividad(cuenta_id=cuenta.id, actividad_id=actividad.id, estado='EN_CURSO')
         entrevista = modelos.Entrevista(codigo='ENT-REINICIO', resumen='DATO DE PRUEBA', fecha_hora=fecha)

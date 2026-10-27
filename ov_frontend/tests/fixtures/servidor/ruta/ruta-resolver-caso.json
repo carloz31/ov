@@ -35,11 +35,11 @@
   "ocupaciones_nuevas": [
     {
       "codigo": "firefighter",
-      "titulo": "Bombero/a"
+      "titulo": "Bomberos"
     },
     {
       "codigo": "paramedic",
-      "titulo": "Paramédico/a"
+      "titulo": "Paramédicos"
     }
   ],
   "puntaje_maximo": 14,

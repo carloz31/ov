@@ -1,60 +1,246 @@
 {
   "items": [
     {
-      "codigo": "t-cusco-privada",
-      "es_favorita": false,
-      "gestion": "PRIVADA",
-      "nombre": "Universidad Privada del Cusco de Prueba",
-      "tipo": "UNIVERSIDAD",
-      "ubicacion": {
-        "codigo": "t-cusco",
-        "nombre": "Cusco de prueba"
-      }
-    },
-    {
-      "codigo": "t-ffaa",
+      "codigo": "inst-96",
+      "distrito": "Zarumilla",
       "es_favorita": false,
       "gestion": "PUBLICA",
-      "nombre": "Escuela de Oficiales de Prueba",
-      "tipo": "FFAA_POLICIA",
-      "ubicacion": {
-        "codigo": "t-cusco",
-        "nombre": "Cusco de prueba"
-      }
-    },
-    {
-      "codigo": "t-privada",
-      "es_favorita": false,
-      "gestion": "PRIVADA",
-      "nombre": "Escuela Superior Privada de Prueba",
-      "tipo": "UNIVERSIDAD",
-      "ubicacion": {
-        "codigo": "t-lima",
-        "nombre": "Lima de prueba"
-      }
-    },
-    {
-      "codigo": "t-tecnico",
-      "es_favorita": false,
-      "gestion": "PUBLICA",
-      "nombre": "Instituto Técnico de Prueba",
+      "nombre": "24 de Julio de Zarumilla",
       "tipo": "INSTITUTO",
       "ubicacion": {
-        "codigo": "t-arequipa",
-        "nombre": "Arequipa de prueba"
+        "codigo": "dep-24",
+        "nombre": "Tumbes"
       }
     },
     {
-      "codigo": "t-uni",
+      "codigo": "inst-97",
+      "distrito": "Jaén",
       "es_favorita": false,
       "gestion": "PUBLICA",
-      "nombre": "Universidad Nacional de Prueba",
-      "tipo": "UNIVERSIDAD",
+      "nombre": "4 de Junio de 1821",
+      "tipo": "INSTITUTO",
       "ubicacion": {
-        "codigo": "t-lima",
-        "nombre": "Lima de prueba"
+        "codigo": "dep-6",
+        "nombre": "Cajamarca"
+      }
+    },
+    {
+      "codigo": "inst-98",
+      "distrito": "Manzanares",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "9 de Mayo",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-12",
+        "nombre": "Junín"
+      }
+    },
+    {
+      "codigo": "inst-99",
+      "distrito": "Eten",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Abaco - Chiclayo",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-14",
+        "nombre": "Lambayeque"
+      }
+    },
+    {
+      "codigo": "inst-100",
+      "distrito": "Cusco",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Abaco - Cusco",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-8",
+        "nombre": "Cusco"
+      }
+    },
+    {
+      "codigo": "inst-101",
+      "distrito": "Piura",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Abaco - Piura",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-20",
+        "nombre": "Piura"
+      }
+    },
+    {
+      "codigo": "inst-102",
+      "distrito": "Abancay",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "Abancay",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-3",
+        "nombre": "Apurímac"
+      }
+    },
+    {
+      "codigo": "inst-104",
+      "distrito": "Acora",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "Acora",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-21",
+        "nombre": "Puno"
+      }
+    },
+    {
+      "codigo": "inst-105",
+      "distrito": "Chincha Alta",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Ada A. Byron",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-11",
+        "nombre": "Ica"
+      }
+    },
+    {
+      "codigo": "inst-106",
+      "distrito": "Pachacamac",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Addis",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-108",
+      "distrito": "Jesús María",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Administracion y Negocios",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-111",
+      "distrito": "Tarma",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "Adolfo Vienrich",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-12",
+        "nombre": "Junín"
+      }
+    },
+    {
+      "codigo": "inst-112",
+      "distrito": "Juliaca",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Adventistas del Titicaca",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-21",
+        "nombre": "Puno"
+      }
+    },
+    {
+      "codigo": "inst-114",
+      "distrito": "Arequipa",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Agrario del Sur",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-4",
+        "nombre": "Arequipa"
+      }
+    },
+    {
+      "codigo": "inst-115",
+      "distrito": "Sihuas",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "Agustin Haya de la Torre",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-2",
+        "nombre": "Áncash"
+      }
+    },
+    {
+      "codigo": "inst-116",
+      "distrito": "Aija",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "Aija",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-2",
+        "nombre": "Áncash"
+      }
+    },
+    {
+      "codigo": "inst-119",
+      "distrito": "Chincha Alta",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Alas Peruanas - Chincha",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-11",
+        "nombre": "Ica"
+      }
+    },
+    {
+      "codigo": "inst-121",
+      "distrito": "Puente Piedra",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Alexander Fleming",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-122",
+      "distrito": "Santiago de Surco",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "nombre": "Alexander Von Humboldt",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-125",
+      "distrito": "Huariaca",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "nombre": "Alfred Nobel",
+      "tipo": "INSTITUTO",
+      "ubicacion": {
+        "codigo": "dep-19",
+        "nombre": "Pasco"
       }
     }
   ],
-  "total": 5
+  "total": 706,
+  "total_dominio": 706
 }

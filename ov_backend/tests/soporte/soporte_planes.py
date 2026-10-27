@@ -1,6 +1,7 @@
 """Ayudas para las pruebas de planes de carrera (B11); los textos son DATO DE PRUEBA."""
 
 from soporte_ruta import completar, pedir
+from soporte_catalogo_ruta import INST_UNI
 
 
 RELATO = 'Cuando ayudé a mi primo con sus tareas sentí que explicar me hace feliz.'  # DATO DE PRUEBA
@@ -45,7 +46,7 @@ def por_que_lista():
     return {'idea_origen': 'MIA', 'motivos': [{'opcion': 'AYUDAR'}, {'otro': 'Me gusta explicar'}], 'relato': RELATO}
 
 
-def realidad_lista(institucion='t-uni', **cambios):
+def realidad_lista(institucion=INST_UNI, **cambios):
     return {'institucion': institucion, 'camino': {'opcion': 'PREPARARME'},
             'gastos': [{'rubro': 'MATRICULA', 'monto': 600, 'frecuencia': 'POR_CICLO'}],
             'financiamiento': [{'opcion': 'FAMILIA'}], **cambios}

@@ -1,18 +1,23 @@
 {
   "items": [
     {
-      "codigo": "civil-engineering",
+      "codigo": "mtpe-106",
+      "duracion": "5 años",
       "es_favorita": true,
       "familia": {
-        "codigo": "family-civil-engineering",
-        "nombre": "Ingeniería e infraestructura"
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "531",
+        "nombre": "Ingeniería Civil"
       },
       "nombre": "Ingeniería Civil",
       "riasec": [
         "R",
         "I"
-      ]
+      ],
+      "tipo": "UNIVERSIDAD"
     }
   ],
-  "total": 1
+  "total": 1,
+  "total_dominio": 603
 }

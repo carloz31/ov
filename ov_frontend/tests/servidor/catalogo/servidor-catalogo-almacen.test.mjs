@@ -4,7 +4,8 @@ import { cargarAlmacen, copia, esperar, fixtureServidor, jsonServidor } from '..
 
 // F06: el almacén del catálogo con los fixtures ruta-*: listas paginadas por clase y filtros, detalle en caché,
 // opciones de filtro, vistas y favoritos aplicados a lo cargado.
-const carreras = jsonServidor('ruta/ruta-catalogo-carreras')
+// Ajuste catalogo-datos-reales: el fixture es la primera página (4) de 603; aquí se finge un catálogo de 6.
+const carreras = { ...jsonServidor('ruta/ruta-catalogo-carreras'), total: 6 }
 const psicologia = jsonServidor('ruta/ruta-catalogo-carrera-psychology')
 const accion = { eventos_registrados: [], nuevos_desbloqueos: [] }
 
@@ -66,14 +67,14 @@ test('el detalle se pide una vez por código y las opciones de filtro una vez po
   const detalle = app.mount(() => store.useDetalleCatalogo('carreras', 'psychology'), {})
   detalle.render()
   await esperar()
-  assert.equal(detalle.render().datos.ingreso.promedio_mensual, 3200)
+  assert.equal(detalle.render().datos.ingreso.nacional.jovenes.promedio, 2824)
   app.mount(() => store.useDetalleCatalogo('carreras', 'psychology'), {}).render()
   const opciones = app.mount(() => store.useOpcionesCatalogo(true), {})
   opciones.render()
   await esperar()
   app.mount(() => store.useOpcionesCatalogo(true), {}).render()
   await esperar()
-  assert.equal(opciones.render().ubicaciones.length, 3)
+  assert.equal(opciones.render().ubicaciones.length, 25)
   const pedidas = app.requests.map((r) => r.url)
   assert.equal(pedidas.filter((u) => u.endsWith('/carreras/psychology')).length, 1)
   assert.equal(pedidas.filter((u) => u.endsWith('/familias')).length, 1)
@@ -118,6 +119,6 @@ test('ver un detalle registra la vista y refresca; el lugar inesperado es una le
   const vista = app.requests.find((r) => r.url.endsWith('/acciones/ver-carrera'))
   assert.deepEqual(copia(vista.body), { cuenta: 'est-ana', carrera: 'civil-engineering' })
   const inesperada = await store.pedirInesperada('carreras', 'psychology')
-  assert.deepEqual(copia(inesperada.datos), { codigo: 'veterinary-medicine', revisitando: false })
+  assert.deepEqual(copia(inesperada.datos), { codigo: 'mtpe-1', revisitando: false })
   assert.ok(app.requests.some((r) => r.url.endsWith('/catalogo/carreras/inesperada?excluir=psychology')))
 })

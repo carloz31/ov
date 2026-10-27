@@ -1,14 +1,102 @@
 [
   {
-    "codigo": "t-arequipa",
-    "nombre": "Arequipa de prueba"
+    "codigo": "dep-1",
+    "nombre": "Amazonas"
   },
   {
-    "codigo": "t-cusco",
-    "nombre": "Cusco de prueba"
+    "codigo": "dep-2",
+    "nombre": "Áncash"
   },
   {
-    "codigo": "t-lima",
-    "nombre": "Lima de prueba"
+    "codigo": "dep-3",
+    "nombre": "Apurímac"
+  },
+  {
+    "codigo": "dep-4",
+    "nombre": "Arequipa"
+  },
+  {
+    "codigo": "dep-5",
+    "nombre": "Ayacucho"
+  },
+  {
+    "codigo": "dep-6",
+    "nombre": "Cajamarca"
+  },
+  {
+    "codigo": "dep-7",
+    "nombre": "Callao"
+  },
+  {
+    "codigo": "dep-8",
+    "nombre": "Cusco"
+  },
+  {
+    "codigo": "dep-9",
+    "nombre": "Huancavelica"
+  },
+  {
+    "codigo": "dep-10",
+    "nombre": "Huánuco"
+  },
+  {
+    "codigo": "dep-11",
+    "nombre": "Ica"
+  },
+  {
+    "codigo": "dep-12",
+    "nombre": "Junín"
+  },
+  {
+    "codigo": "dep-13",
+    "nombre": "La Libertad"
+  },
+  {
+    "codigo": "dep-14",
+    "nombre": "Lambayeque"
+  },
+  {
+    "codigo": "dep-15",
+    "nombre": "Lima"
+  },
+  {
+    "codigo": "dep-16",
+    "nombre": "Loreto"
+  },
+  {
+    "codigo": "dep-17",
+    "nombre": "Madre de Dios"
+  },
+  {
+    "codigo": "dep-18",
+    "nombre": "Moquegua"
+  },
+  {
+    "codigo": "dep-19",
+    "nombre": "Pasco"
+  },
+  {
+    "codigo": "dep-20",
+    "nombre": "Piura"
+  },
+  {
+    "codigo": "dep-21",
+    "nombre": "Puno"
+  },
+  {
+    "codigo": "dep-22",
+    "nombre": "San Martín"
+  },
+  {
+    "codigo": "dep-23",
+    "nombre": "Tacna"
+  },
+  {
+    "codigo": "dep-24",
+    "nombre": "Tumbes"
+  },
+  {
+    "codigo": "dep-25",
+    "nombre": "Ucayali"
   }
 ]

@@ -6,7 +6,7 @@ from app.dependencies import CuentaConsultada, SesionBD
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.core.parametros import LIMITE_PAGINA_CATALOGO
 from app.schemas.catalogo import (
-    CarreraDetalle, FamiliaPublica, Inesperada, InstitucionDetalle, OcupacionDetalle, PaginaCarreras,
+    CarreraDetalle, FamiliaPublica, GrupoPublico, Inesperada, InstitucionDetalle, OcupacionDetalle, PaginaCarreras,
     PaginaInstituciones, PaginaOcupaciones, UbicacionPublica,
 )
 from app.services import catalogo as servicio_catalogo
@@ -24,10 +24,11 @@ def _consultar(operacion: Callable):
 
 @router.get("/cuentas/{cuenta}/catalogo/carreras", response_model=PaginaCarreras)
 def buscar_carreras(cuenta_consultada: CuentaConsultada, sesion: SesionBD, buscar: str | None = None,
-                    familia: str | None = None, riasec: str | None = None, favoritos: bool = False,
-                    limite: int = LIMITE_PAGINA_CATALOGO, desde: int = 0):
+                    tipo: str | None = None, area: str | None = None, familia: str | None = None,
+                    riasec: str | None = None, favoritos: bool = False, limite: int = LIMITE_PAGINA_CATALOGO,
+                    desde: int = 0):
     return _consultar(lambda: servicio_catalogo.buscar_carreras(
-        sesion, cuenta_consultada, buscar, familia, riasec, favoritos, limite, desde))
+        sesion, cuenta_consultada, buscar, tipo, area, familia, riasec, favoritos, limite, desde))
 
 
 @router.get("/cuentas/{cuenta}/catalogo/familias", response_model=list[FamiliaPublica])
@@ -38,6 +39,11 @@ def listar_familias(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
 @router.get("/cuentas/{cuenta}/catalogo/ubicaciones", response_model=list[UbicacionPublica])
 def listar_ubicaciones(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
     return _consultar(lambda: servicio_catalogo.listar_ubicaciones(sesion, cuenta_consultada))
+
+
+@router.get("/cuentas/{cuenta}/catalogo/grupos", response_model=list[GrupoPublico])
+def listar_grupos(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
+    return _consultar(lambda: servicio_catalogo.listar_grupos(sesion, cuenta_consultada))
 
 
 # Antes del detalle, para que «inesperada» no se lea como un código.
@@ -58,10 +64,10 @@ def detalle_carrera(codigo: str, cuenta_consultada: CuentaConsultada, sesion: Se
 
 @router.get("/cuentas/{cuenta}/catalogo/ocupaciones", response_model=PaginaOcupaciones)
 def buscar_ocupaciones(cuenta_consultada: CuentaConsultada, sesion: SesionBD, buscar: str | None = None,
-                       riasec: str | None = None, favoritos: bool = False, limite: int = LIMITE_PAGINA_CATALOGO,
-                       desde: int = 0):
+                       grupo: str | None = None, riasec: str | None = None, favoritos: bool = False,
+                       limite: int = LIMITE_PAGINA_CATALOGO, desde: int = 0):
     return _consultar(lambda: servicio_catalogo.buscar_ocupaciones(
-        sesion, cuenta_consultada, buscar, riasec, favoritos, limite, desde))
+        sesion, cuenta_consultada, buscar, grupo, riasec, favoritos, limite, desde))
 
 
 @router.get("/cuentas/{cuenta}/catalogo/ocupaciones/{codigo}", response_model=OcupacionDetalle)
@@ -71,10 +77,10 @@ def detalle_ocupacion(codigo: str, cuenta_consultada: CuentaConsultada, sesion: 
 
 @router.get("/cuentas/{cuenta}/catalogo/instituciones", response_model=PaginaInstituciones)
 def buscar_instituciones(cuenta_consultada: CuentaConsultada, sesion: SesionBD, buscar: str | None = None,
-                         tipo: str | None = None, ubicacion: str | None = None, favoritos: bool = False,
-                         limite: int = LIMITE_PAGINA_CATALOGO, desde: int = 0):
+                         tipo: str | None = None, gestion: str | None = None, ubicacion: str | None = None,
+                         favoritos: bool = False, limite: int = LIMITE_PAGINA_CATALOGO, desde: int = 0):
     return _consultar(lambda: servicio_catalogo.buscar_instituciones(
-        sesion, cuenta_consultada, buscar, tipo, ubicacion, favoritos, limite, desde))
+        sesion, cuenta_consultada, buscar, tipo, gestion, ubicacion, favoritos, limite, desde))
 
 
 @router.get("/cuentas/{cuenta}/catalogo/instituciones/{codigo}", response_model=InstitucionDetalle)

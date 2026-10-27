@@ -1,57 +1,62 @@
 {
   "items": [
     {
-      "codigo": "civil-engineering",
+      "codigo": "mtpe-537",
+      "duracion": "3 años",
       "es_favorita": false,
       "familia": {
-        "codigo": "family-civil-engineering",
-        "nombre": "Ingeniería e infraestructura"
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "331",
+        "nombre": "Administración de Empresas"
       },
-      "nombre": "Ingeniería Civil",
-      "riasec": [
-        "R",
-        "I"
-      ]
+      "nombre": "Abastecimiento",
+      "riasec": [],
+      "tipo": "FFAA_POLICIA"
     },
     {
-      "codigo": "environmental-engineering",
+      "codigo": "mtpe-99",
+      "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "codigo": "family-environmental-engineering",
-        "nombre": "Ingeniería y ambiente"
+        "area_codigo": "6",
+        "area_nombre": "Agropecuaria y Veterinaria",
+        "codigo": "613",
+        "nombre": "Acuicultura"
       },
-      "nombre": "Ingeniería Ambiental",
-      "riasec": [
-        "I",
-        "R"
-      ]
+      "nombre": "Acuicultura",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
     },
     {
-      "codigo": "journalism",
+      "codigo": "mtpe-275",
+      "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "codigo": "family-journalism",
-        "nombre": "Comunicación"
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "331",
+        "nombre": "Administración de Empresas"
       },
-      "nombre": "Periodismo",
-      "riasec": [
-        "A",
-        "E",
-        "S"
-      ]
+      "nombre": "Administración",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
     },
     {
-      "codigo": "nursing",
+      "codigo": "mtpe-601",
+      "duracion": "3 años",
       "es_favorita": false,
       "familia": {
-        "codigo": "family-nursing",
-        "nombre": "Salud"
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "331",
+        "nombre": "Administración de Empresas"
       },
-      "nombre": "Enfermería",
-      "riasec": [
-        "S"
-      ]
+      "nombre": "Administración",
+      "riasec": [],
+      "tipo": "FFAA_POLICIA"
     }
   ],
-  "total": 6
+  "total": 603,
+  "total_dominio": 603
 }

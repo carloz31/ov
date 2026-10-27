@@ -18,13 +18,12 @@ from app.models import (
     PreguntaConocimiento, ReferenciaCamino, ReferenciaRubro, SeccionTarjeta, SugerenciaTarjeta, TarjetaCarrera,
     TipoObjetivo,
 )
-from app.schemas.catalogo import FamiliaPublica
 from app.schemas.planes import (
     AvisoPlanes, CaminoTarjeta, ComplicacionPublica, DudaPublica, Elegida, GastoPublico, Medidores, MotivoPublico,
     OpcionesTarjeta, OpcionTarjeta, OrigenPasoPublico, OrigenSugerenciaPublico, PasoPublico, PlanCarrera,
     PlanesCuenta, PreguntaTarjeta, RubroTarjeta, SeccionPlan, SugerenciaPublica,
 )
-from app.services.catalogo import resumen_carrera, resumen_institucion
+from app.services.catalogo import familia_publica, resumen_carrera, resumen_institucion
 from app.services.motor.reglas import motivos_bloqueo, objetivo_disponible
 from app.services.secciones import exigir_seccion, seccion_de_cuenta
 
@@ -204,8 +203,7 @@ def _avisos(tarjetas, carreras) -> list[AvisoPlanes]:
     for tarjeta in tarjetas:
         por_familia.setdefault(carreras[tarjeta.carrera_id].familia_id, []).append(tarjeta)
     return [AvisoPlanes(tipo='MISMA_FAMILIA', planes=[LETRAS[t.prioridad - 1] for t in grupo],
-                        familia=FamiliaPublica(codigo=carreras[grupo[0].carrera_id].familia.codigo,
-                                               nombre=carreras[grupo[0].carrera_id].familia.nombre))
+                        familia=familia_publica(carreras[grupo[0].carrera_id].familia))
             for grupo in por_familia.values() if len(grupo) > 1]
 
 

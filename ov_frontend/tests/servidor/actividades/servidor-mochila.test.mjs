@@ -128,7 +128,7 @@ test('voces: abiertas, por descubrir con su llamado disponible y cierre con las 
   const abierta = elementos(arbol, (e) => e.type?.name === 'TarjetaTestimonio')[0].props
   assert.deepEqual(copia([abierta.nombre, abierta.rol, abierta.regalo, abierta.nueva]), [
     'Luis Mendoza',
-    'Paramédico/a · 5 años de experiencia',
+    'Paramédicos · 5 años de experiencia',
     'Caso de prueba',
     false,
   ])

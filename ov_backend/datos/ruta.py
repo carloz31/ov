@@ -8,13 +8,13 @@ La transacción pertenece al llamador; este módulo no confirma ni migra.
 from functools import cache
 
 from argon2 import PasswordHasher
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app import models as modelos
 from app.core.parametros import MAXIMO_ITEMS_REGISTRO, UMBRALES_AMISTAD
 from datos import fijos
-from datos.ocupaciones import validar_distribucion_items
+from datos.fijos import validar_distribucion_items
 
 
 # Mismos parámetros por defecto que `app/services/acceso.py`; datos/ no importa services/.
@@ -149,118 +149,45 @@ TEMATICAS_ACTIVIDADES = (('t-expectativas', ('A', 'B')), ('t-valores', ('B',)), 
 # (caso, dimensiones RIASEC). Solo las actividades CASO llevan dimensiones; un caso puede tener varias (B08).
 DIMENSIONES_ACTIVIDADES = (('t-caso', ('R', 'S')),)
 
-# --- Catálogo (B10) ---
-# Letras RIASEC por posición, como las traerá la carga real: (ocupación, posición, letra). De 1 a 3 por ocupación
-# con `codigo`, en posiciones consecutivas desde 1; la posición 1 es el tipo principal. Ficticias.
-HIGH_POINTS = (
-    ('sound-technician', 1, 'R'),
-    ('electrician', 1, 'R'), ('electrician', 2, 'C'),
-    ('event-coordinator', 1, 'E'), ('event-coordinator', 2, 'C'), ('event-coordinator', 3, 'S'),
-    ('translator', 1, 'C'),
-    ('community-manager', 1, 'E'), ('community-manager', 2, 'A'),
-    ('graphic-designer', 1, 'A'), ('graphic-designer', 2, 'C'), ('graphic-designer', 3, 'E'),
-    ('event-assistant', 1, 'C'),
-    ('security-guard', 1, 'R'), ('security-guard', 2, 'C'),
-    ('paramedic', 1, 'S'), ('paramedic', 2, 'R'), ('paramedic', 3, 'I'),
-    ('photographer', 1, 'R'),
-    ('lawyer', 1, 'E'), ('lawyer', 2, 'C'),
-    ('cook', 1, 'R'), ('cook', 2, 'C'), ('cook', 3, 'E'),
-    ('illustrator', 1, 'A'),
-    ('firefighter', 1, 'R'), ('firefighter', 2, 'C'),
-    ('meteorologist', 1, 'I'), ('meteorologist', 2, 'R'), ('meteorologist', 3, 'C'),
-    ('municipal-police', 1, 'R'),
-    ('medical-specialist', 1, 'I'), ('medical-specialist', 2, 'S'),
-    ('veterinarian', 1, 'R'), ('veterinarian', 2, 'I'), ('veterinarian', 3, 'C'),
-    ('biologist', 1, 'I'),
-    ('environmental-engineer', 1, 'I'), ('environmental-engineer', 2, 'R'),
-    ('civil-engineer', 1, 'R'), ('civil-engineer', 2, 'I'), ('civil-engineer', 3, 'C'),
-    ('machinery-operator', 1, 'R'),
-    ('social-worker', 1, 'S'), ('social-worker', 2, 'C'),
-    ('psychologist', 1, 'S'), ('psychologist', 2, 'I'), ('psychologist', 3, 'C'),
-    ('logistics-coordinator', 1, 'C'),
-    ('journalist', 1, 'A'), ('journalist', 2, 'I'),
-    ('teacher', 1, 'S'), ('teacher', 2, 'A'), ('teacher', 3, 'C'),
-    ('architect', 1, 'R'),
-    ('geologist', 1, 'I'), ('geologist', 2, 'R'),
-    ('agricultural-engineer', 1, 'R'), ('agricultural-engineer', 2, 'I'), ('agricultural-engineer', 3, 'C'),
-    ('public-administrator', 1, 'E'),
-    ('sociologist', 1, 'I'), ('sociologist', 2, 'S'),
-    ('data-analyst', 1, 'I'), ('data-analyst', 2, 'C'), ('data-analyst', 3, 'A'),
-    ('urban-planner', 1, 'I'),
-    ('documentary-filmmaker', 1, 'A'), ('documentary-filmmaker', 2, 'E'),
-    ('nurse', 1, 'S'), ('nurse', 2, 'C'), ('nurse', 3, 'I'),
-)
+# --- Catálogo (B10, F06) ---
+# El catálogo es real y lo carga `fijos` (`datos/catalogo.py`). La ruta solo nombra, por su código real, las
+# carreras, instituciones y ubicaciones con que las pruebas demuestran cada mecánica.
+CARRERAS_RUTA = {
+    'psychology': 'mtpe-369',
+    'civil-engineering': 'mtpe-106',
+    'environmental-engineering': 'mtpe-176',
+    'journalism': 'mtpe-291',  # Ciencias de la Comunicación: ninguna pública dicta Periodismo (mtpe-14)
+    'nursing': 'mtpe-308',
+    'veterinary-medicine': 'mtpe-115',
+}
+# B11: t-uni (pública) y t-privada ofrecen la misma carrera (Ingeniería Ambiental), para la precarga de la pensión.
+INSTITUCIONES_RUTA = {
+    't-uni': 'inst-63',             # Universidad Nacional Federico Villarreal, pública, Lima
+    't-privada': 'inst-83',         # Universidad Peruana Unión, privada, Lima
+    't-cusco-privada': 'inst-4',    # Universidad Andina del Cusco, privada
+    't-tecnico': 'inst-408',        # IEST Público Faustino B. Franco, Arequipa
+    't-ffaa': 'inst-966',           # Escuela Militar de Chorrillos
+}
+UBICACIONES_RUTA = {'t-lima': 'dep-15', 't-cusco': 'dep-8', 't-arequipa': 'dep-4'}
 
-# Tipos RIASEC de carrera: (carrera, posición, letra). De 0 a 3 por carrera; veterinary-medicine queda sin tipos.
-TIPOS_CARRERA = (
-    ('environmental-engineering', 1, 'I'), ('environmental-engineering', 2, 'R'),
-    ('journalism', 1, 'A'), ('journalism', 2, 'E'), ('journalism', 3, 'S'),
-    ('nursing', 1, 'S'),
-    ('civil-engineering', 1, 'R'), ('civil-engineering', 2, 'I'),
-    ('psychology', 1, 'S'), ('psychology', 2, 'I'), ('psychology', 3, 'A'),
-    ('veterinary-medicine', 1, 'I'), ('veterinary-medicine', 2, 'R'), ('veterinary-medicine', 3, 'S'),
-)
+# DATO DE PRUEBA: (institución, carrera, ciclos). Reemplaza la duración derivada de la carrera; la de 11 ciclos
+# prueba la duración impar (B11).
+DURACIONES_CICLOS = (('t-privada', 'environmental-engineering', 11),)
 
-# (código, nombre)
-UBICACIONES = (('t-lima', 'Lima de prueba'), ('t-cusco', 'Cusco de prueba'), ('t-arequipa', 'Arequipa de prueba'))
+# DATO DE PRUEBA: (carrera, letras RIASEC). Mientras `carreras_riasec.csv` no llegue, las carreras reales no tienen
+# letras; estas las reciben solo si no traen las suyas, para que las mecánicas de la ruta (t-explorar, carreras
+# recomendadas, sugerencias) sigan demostrándose.
+TIPOS_CARRERA = (('environmental-engineering', 'IR'), ('journalism', 'AES'), ('nursing', 'S'),
+                 ('civil-engineering', 'RI'), ('psychology', 'SIA'), ('veterinary-medicine', 'IRS'))
 
-# (código, nombre, tipo, gestión o None, ubicación, descripción, página web, carreras que ofrece). B11: una pública
-# y una privada ofrecen la misma carrera, para la precarga de la pensión y el total de la carrera.
-INSTITUCIONES = (
-    ('t-uni', 'Universidad Nacional de Prueba', 'UNIVERSIDAD', 'PUBLICA', 't-lima',
-     'Universidad de prueba con varias facultades.', 'https://example.test/universidad',
-     ('environmental-engineering', 'journalism', 'psychology')),
-    ('t-ffaa', 'Escuela de Oficiales de Prueba', 'FFAA_POLICIA', 'PUBLICA', 't-cusco',
-     'Escuela de formación de oficiales de prueba.', 'https://example.test/escuela',
-     ('civil-engineering', 'nursing')),
-    ('t-privada', 'Escuela Superior Privada de Prueba', 'UNIVERSIDAD', 'PRIVADA', 't-lima',
-     'Casa de estudios privada de prueba.', 'https://example.test/privada', ('environmental-engineering',)),
-    # F06: un instituto y una privada fuera de Lima, para que cada filtro de tipo, gestión y ubicación devuelva algo.
-    ('t-tecnico', 'Instituto Técnico de Prueba', 'INSTITUTO', 'PUBLICA', 't-arequipa',
-     'Instituto de prueba con carreras técnicas de salud.', 'https://example.test/instituto',
-     ('nursing', 'veterinary-medicine')),
-    ('t-cusco-privada', 'Universidad Privada del Cusco de Prueba', 'UNIVERSIDAD', 'PRIVADA', 't-cusco',
-     'Universidad privada de prueba en el Cusco.', 'https://example.test/cusco', ('journalism', 'psychology')),
-)
-
-# (institución, carrera, ciclos) que duran en esa institución; la de 11 ciclos prueba la duración impar (B11).
-DURACIONES_CICLOS = (('t-uni', 'environmental-engineering', 10), ('t-privada', 'environmental-engineering', 11))
-
-# (carrera, promedio mensual, fuente, año, ((mínimo, máximo o None, porcentaje), ...))
-INGRESOS = (
-    ('psychology', 3200, 'Fuente de prueba', 2025, ((0, 2000, 30), (2000, 4000, 50), (4000, None, 20))),
-    ('civil-engineering', 4500, 'Fuente de prueba', 2025, ((0, 3000, 25), (3000, None, 75))),
-    ('environmental-engineering', 3800, 'Fuente de prueba', 2025,
-     ((0, 2500, 35), (2500, 5000, 45), (5000, None, 20))),
-    ('journalism', 2600, 'Fuente de prueba', 2025, ((0, 2000, 45), (2000, None, 55))),
-    ('nursing', 2900, 'Fuente de prueba', 2025, ((0, 2500, 40), (2500, 4000, 45), (4000, None, 15))),
-    ('veterinary-medicine', 3000, 'Fuente de prueba', 2025, ((0, 2500, 40), (2500, None, 60))),
-)
-
-# (ocupación, conocimientos). El front no los tiene.
-CONOCIMIENTOS_OCUPACIONES = (
-    ('psychologist', ('Psicología', 'Terapia y orientación')),
-    ('civil-engineer', ('Ingeniería y tecnología', 'Construcción')),
-    # F06: las demás ocupaciones de las seis carreras de la ruta.
-    ('environmental-engineer', ('Ingeniería y tecnología', 'Biología', 'Química')),
-    ('agricultural-engineer', ('Producción de alimentos', 'Biología', 'Ingeniería y tecnología')),
-    ('geologist', ('Física', 'Geografía', 'Química')),
-    ('data-analyst', ('Matemáticas', 'Informática y electrónica', 'Lengua materna')),
-    ('journalist', ('Comunicación y medios', 'Lengua materna', 'Historia')),
-    ('documentary-filmmaker', ('Comunicación y medios', 'Bellas artes', 'Historia')),
-    ('photographer', ('Bellas artes', 'Comunicación y medios')),
-    ('community-manager', ('Comunicación y medios', 'Ventas y marketing')),
-    ('translator', ('Idiomas extranjeros', 'Lengua materna')),
-    ('nurse', ('Medicina', 'Psicología', 'Atención al cliente')),
-    ('paramedic', ('Medicina', 'Seguridad pública')),
-    ('architect', ('Diseño', 'Construcción', 'Matemáticas')),
-    ('urban-planner', ('Geografía', 'Sociología', 'Diseño')),
-    ('machinery-operator', ('Mecánica', 'Seguridad pública')),
-    ('veterinarian', ('Medicina', 'Biología', 'Química')),
-    ('biologist', ('Biología', 'Química', 'Matemáticas')),
-    ('teacher', ('Educación y capacitación', 'Lengua materna', 'Psicología')),
-    ('sociologist', ('Sociología', 'Historia', 'Matemáticas')),
-    ('social-worker', ('Psicología', 'Sociología', 'Atención al cliente')),
+# DATO DE PRUEBA: (carrera, ocupaciones). Para estas carreras reemplazan la relación provisional al azar.
+OCUPACIONES_CARRERA = (
+    ('environmental-engineering', ('environmental-engineer', 'agricultural-engineer', 'geologist', 'data-analyst')),
+    ('journalism', ('journalist', 'documentary-filmmaker', 'photographer', 'community-manager', 'translator')),
+    ('nursing', ('nurse', 'paramedic')),
+    ('civil-engineering', ('civil-engineer', 'architect', 'urban-planner', 'geologist', 'machinery-operator')),
+    ('veterinary-medicine', ('veterinarian', 'agricultural-engineer', 'biologist')),
+    ('psychology', ('psychologist', 'teacher', 'sociologist', 'social-worker')),
 )
 
 # Listas propias de una actividad: (código, nombre, ((código, texto), ...)).
@@ -1021,71 +948,43 @@ def _cargar_reglas(sesion, objetivos):
     sesion.add_all(reglas)
 
 
-def _letras(filas, duenos, dimensiones, modelo, columna):
-    """Valida filas (dueño, posición, letra) y devuelve las filas del modelo y el código de cada dueño («RIS»)."""
-    por_dueno = {}
-    for dueno, posicion, letra in filas:
-        if dueno not in duenos:
-            raise ValueError(f'Letras RIASEC de {dueno}, que no existe o no tiene código')
-        if letra not in dimensiones:
-            raise ValueError(f'Letra RIASEC inválida en {dueno}: {letra}')
-        if posicion in por_dueno.setdefault(dueno, {}):
-            raise ValueError(f'Posición repetida en las letras de {dueno}: {posicion}')
-        por_dueno[dueno][posicion] = letra
-    codigos = {}
-    for dueno, posiciones in por_dueno.items():
-        if sorted(posiciones) != list(range(1, len(posiciones) + 1)) or len(posiciones) > 3:
-            raise ValueError(f'Las letras de {dueno} deben ocupar posiciones consecutivas desde 1, hasta 3')
-        letras = [posiciones[p] for p in sorted(posiciones)]
-        if len(set(letras)) != len(letras):
-            raise ValueError(f'Letra repetida en {dueno}')
-        codigos[dueno] = ''.join(letras)
-    return [modelo(**{columna: duenos[d].id}, posicion=p, dimension_id=dimensiones[letra].id)
-            for d, p, letra in filas], codigos
+def _codigos(sesion, modelo, mapa):
+    """Los códigos reales de un mapa de la ruta; falla si alguno no está cargado."""
+    reales = dict(sesion.execute(select(modelo.codigo, modelo.id).where(modelo.codigo.in_(mapa.values()))).all())
+    faltantes = sorted(c for c, real in mapa.items() if real not in reales)
+    if faltantes:
+        raise ValueError(f'Códigos de la ruta sin {modelo.__tablename__} real: {", ".join(faltantes)}')
+    return {c: reales[real] for c, real in mapa.items()}
 
 
 def _cargar_catalogo(sesion):
-    dimensiones = {d.codigo: d for d in sesion.scalars(select(modelos.Dimension).join(modelos.Instrumento).where(
-        modelos.Instrumento.codigo == 'TEST-RIASEC'))}
-    ocupaciones = {o.codigo: o for o in sesion.scalars(select(modelos.Ocupacion).where(
-        modelos.Ocupacion.codigo.is_not(None)))}
-    carreras = {c.codigo: c for c in sesion.scalars(select(modelos.Carrera))}
-    high_points, codigos = _letras(HIGH_POINTS, ocupaciones, dimensiones, modelos.HighPoint, 'ocupacion_id')
-    faltantes = sorted(set(ocupaciones) - set(codigos))
-    if faltantes:
-        raise ValueError(f'Ocupaciones con código sin high points: {", ".join(faltantes)}')
-    for codigo, letras in codigos.items():
-        ocupaciones[codigo].codigo_riasec = letras
-    tipos, codigos = _letras(TIPOS_CARRERA, carreras, dimensiones, modelos.TipoCarrera, 'carrera_id')
-    for codigo, letras in codigos.items():
-        carreras[codigo].codigo_riasec = letras
-    for codigo, conocimientos in CONOCIMIENTOS_OCUPACIONES:
-        ocupaciones[codigo].conocimientos = list(conocimientos)
-    ubicaciones = {c: modelos.Ubicacion(codigo=c, nombre=n) for c, n in UBICACIONES}
-    sesion.add_all([*high_points, *tipos, *ubicaciones.values()])
-    sesion.flush()
-    instituciones = {c: modelos.Institucion(codigo=c, nombre=n, tipo=modelos.TipoInstitucion(t),
-                                            gestion=None if g is None else modelos.GestionInstitucion(g),
-                                            ubicacion_id=ubicaciones[u].id, descripcion=d, pagina_web=w)
-                     for c, n, t, g, u, d, w, _ in INSTITUCIONES}
-    ingresos = {c: modelos.IngresoCarrera(carrera_id=carreras[c].id, promedio_mensual=p, fuente=f, anio=a)
-                for c, p, f, a, _ in INGRESOS}
-    sesion.add_all([*instituciones.values(), *ingresos.values()])
-    sesion.flush()
-    ofrecidas = {(i, c) for i, *_, carreras_institucion in INSTITUCIONES for c in carreras_institucion}
-    duraciones = {(i, c): ciclos for i, c, ciclos in DURACIONES_CICLOS}
-    for (i, c), ciclos in duraciones.items():
-        if (i, c) not in ofrecidas:
+    _codigos(sesion, modelos.Ubicacion, UBICACIONES_RUTA)
+    carreras = _codigos(sesion, modelos.Carrera, CARRERAS_RUTA)
+    instituciones = _codigos(sesion, modelos.Institucion, INSTITUCIONES_RUTA)
+    ocupaciones = dict(sesion.execute(select(modelos.Ocupacion.codigo, modelos.Ocupacion.id)).all())
+    for i, c, ciclos in DURACIONES_CICLOS:
+        oferta = sesion.get(modelos.InstitucionCarrera, (instituciones[i], carreras[c]))
+        if oferta is None:
             raise ValueError(f'Duración de {c} en {i}, que no la ofrece')
         if ciclos < 1:
             raise ValueError(f'Duración inválida de {c} en {i}: {ciclos}')
-    sesion.add_all(modelos.InstitucionCarrera(institucion_id=instituciones[i].id, carrera_id=carreras[c].id,
-                                              duracion_ciclos=duraciones.get((i, c)))
-                   for i, c in sorted(ofrecidas))
-    sesion.add_all(modelos.RangoIngreso(ingreso_carrera_id=ingresos[c].id, posicion=posicion, minimo=minimo,
-                                        maximo=maximo, porcentaje=porcentaje)
-                   for c, *_, rangos in INGRESOS
-                   for posicion, (minimo, maximo, porcentaje) in enumerate(rangos, start=1))
+        oferta.duracion_ciclos = ciclos
+    dimensiones = {d.codigo: d.id for d in sesion.scalars(select(modelos.Dimension).join(modelos.Instrumento).where(
+        modelos.Instrumento.codigo == 'TEST-RIASEC'))}
+    con_letras = set(sesion.scalars(select(modelos.TipoCarrera.carrera_id)))
+    for c, letras in TIPOS_CARRERA:
+        if carreras[c] in con_letras:
+            continue
+        sesion.get(modelos.Carrera, carreras[c]).codigo_riasec = letras
+        sesion.add_all(modelos.TipoCarrera(carrera_id=carreras[c], posicion=p, dimension_id=dimensiones[letra])
+                       for p, letra in enumerate(letras, start=1))
+    faltantes = sorted({o for _, relaciones in OCUPACIONES_CARRERA for o in relaciones} - set(ocupaciones))
+    if faltantes:
+        raise ValueError(f'Ocupaciones de la ruta que no existen: {", ".join(faltantes)}')
+    sesion.execute(delete(modelos.CarreraOcupacion).where(
+        modelos.CarreraOcupacion.carrera_id.in_([carreras[c] for c, _ in OCUPACIONES_CARRERA])))
+    sesion.add_all(modelos.CarreraOcupacion(carrera_id=carreras[c], ocupacion_id=ocupaciones[o])
+                   for c, relaciones in OCUPACIONES_CARRERA for o in relaciones)
 
 
 def cargar(sesion: Session) -> None:

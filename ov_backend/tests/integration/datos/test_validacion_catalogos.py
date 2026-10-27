@@ -1,11 +1,11 @@
-"""R37: carga atómica y correspondencia de las dimensiones del Excel."""
+"""R37: carga atómica y correspondencia de las dimensiones del archivo de ocupaciones."""
 
 import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app import models as m
 from app.database import crear_motor_bd
-from datos import cargar, fijos
+from datos import cargar, catalogo, fijos
 from soporte_catalogos import cargar_catalogo_corrupto
 
 
@@ -34,13 +34,13 @@ def test_r37_catalogos_invalidos_atomicos_y_excel_por_codigo(tmp_path, monkeypat
     with monkeypatch.context() as parche:
         parche.setattr(fijos, '_cargar_riasec', invertir)
         cargar.preparar_base(url, 'ruta', crear_tablas=True)
-    archivo = fijos._leer_catalogo_seleccionado()
+    archivo = {o.codigo_onet: o.puntajes for o in catalogo.leer_catalogo().ocupaciones}
     motor = crear_motor_bd(url)
     try:
         with Session(motor) as sesion:
-            filas = sesion.execute(select(m.Ocupacion.codigo, m.Dimension.codigo, m.PuntajeOcupacion.valor)
+            filas = sesion.execute(select(m.Ocupacion.codigo_onet, m.Dimension.codigo, m.PuntajeOcupacion.valor)
                 .select_from(m.PuntajeOcupacion).join(m.Ocupacion).join(m.Dimension)).all()
-            esperados = {(codigo, dimension): fila.valores[n] for codigo, fila in archivo.items()
+            esperados = {(codigo, dimension): valores[n] for codigo, valores in archivo.items()
                          for n, (dimension, _) in enumerate(fijos.DIMENSIONES_RIASEC)}
             assert {(codigo, dimension): valor for codigo, dimension, valor in filas} == esperados
     finally:

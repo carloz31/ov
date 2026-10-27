@@ -88,21 +88,35 @@ class AplicacionActividad(Base):
 class Ocupacion(Base):
     __tablename__ = "ocupacion"
     __table_args__ = (
-        CheckConstraint(TipoJSON(column("habilidades")) == 'array', name="habilidades_lista"),
         CheckConstraint(TipoJSON(column("conocimientos")) == 'array', name="conocimientos_lista"),
+        CheckConstraint(TipoJSON(column("aptitudes")) == 'array', name="aptitudes_lista"),
+        CheckConstraint(TipoJSON(column("tareas")) == 'array', name="tareas_lista"),
+        CheckConstraint(TipoJSON(column("tambien_llamado")) == 'array', name="tambien_llamado_lista"),
+        CheckConstraint(TipoJSON(column("estilos_trabajo")) == 'array', name="estilos_trabajo_lista"),
+        CheckConstraint("job_zone BETWEEN 1 AND 5", name="job_zone_valido"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
-    codigo: Mapped[str | None] = mapped_column(unique=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
     codigo_onet: Mapped[str] = mapped_column(unique=True)
     titulo: Mapped[str]
+    # Grupo mayor O*NET (2 cifras).
+    grupo: Mapped[str] = mapped_column(ForeignKey("grupo_ocupacional.codigo"))
+    resumen: Mapped[str | None] = mapped_column(default=None)
     descripcion: Mapped[str | None] = mapped_column(Text, default=None)
-    lugares_trabajo: Mapped[str | None] = mapped_column(Text, default=None)
-    habilidades: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list,
-                                                   server_default=text("'[]'"))
+    job_zone: Mapped[int | None] = mapped_column(default=None)
+    personalidad: Mapped[str | None] = mapped_column(Text, default=None)
+    tambien_llamado: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list,
+                                                       server_default=text("'[]'"))
+    tareas: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list, server_default=text("'[]'"))
     conocimientos: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list,
                                                      server_default=text("'[]'"))
+    aptitudes: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list, server_default=text("'[]'"))
+    # Códigos de `estilo_trabajo`, en el orden de la fuente.
+    estilos_trabajo: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list,
+                                                       server_default=text("'[]'"))
     # Letras de `high_point` en orden de posición («RIS»); lo calcula el cargador.
     codigo_riasec: Mapped[str | None] = mapped_column(default=None)
+    # Título y nombres alternativos sin tildes; el cargador la llena con ambos.
     busqueda: Mapped[str] = mapped_column(default=busqueda_de("titulo"))
     carreras: Mapped[list["Carrera"]] = relationship(
         secondary="carrera_ocupacion", viewonly=True, lazy="raise", order_by="Carrera.codigo")

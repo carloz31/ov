@@ -1,16 +1,256 @@
 {
   "items": [
     {
-      "codigo": "psychologist",
-      "codigo_onet": "19-3033.00",
+      "codigo": "onet-29-1291-00",
+      "codigo_onet": "29-1291.00",
       "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Diagnostican, tratan y previenen desórdenes mediante la estimulación de puntos de acupuntura específicos dentro del cuerpo usando agujas…",
+      "riasec": [
+        "S",
+        "I",
+        "R"
+      ],
+      "titulo": "Acupunturistas"
+    },
+    {
+      "codigo": "onet-31-1133-00",
+      "codigo_onet": "31-1133.00",
+      "es_favorita": false,
+      "grupo": "31",
+      "resumen": "Ayudan a pacientes que padecen trastornos mentales o disturbios emocionales trabajando bajo la dirección de personal médico y de enfermería.",
       "riasec": [
         "S",
         "I",
         "C"
       ],
-      "titulo": "Psicólogo/a"
+      "titulo": "Auxiliares de Psiquiatría"
+    },
+    {
+      "codigo": "onet-29-1071-01",
+      "codigo_onet": "29-1071.01",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Ayudan a los anestesiólogos en la administración de anestesia para procedimientos quirúrgicos o los que no requieren cirugía.",
+      "riasec": [
+        "C",
+        "S",
+        "I"
+      ],
+      "titulo": "Ayudantes de Anestesiología"
+    },
+    {
+      "codigo": "onet-25-4022-00",
+      "codigo_onet": "25-4022.00",
+      "es_favorita": false,
+      "grupo": "25",
+      "resumen": "Administran y mantienen bibliotecas y colecciones de información, para acceso público o privado a través de referencias o préstamos.",
+      "riasec": [
+        "C",
+        "S",
+        "I"
+      ],
+      "titulo": "Bibliotecarios y Especialistas en Colecciones de Materiales Multimedios"
+    },
+    {
+      "codigo": "onet-21-1014-00",
+      "codigo_onet": "21-1014.00",
+      "es_favorita": false,
+      "grupo": "21",
+      "resumen": "Aconsejan y asesoran a individuos y grupos con el fin de promover un estado de salud de mental y emocional óptimo, poniendo énfasis en la…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Consejeros de Salud Mental"
+    },
+    {
+      "codigo": "onet-21-1011-00",
+      "codigo_onet": "21-1011.00",
+      "es_favorita": false,
+      "grupo": "21",
+      "resumen": "Aconsejan y asesoran a las personas que tienen problemas de alcoholismo, tabaquismo, drogadicción, y otros problemas tales como adicción a…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Consejeros Especializados en Abuso de Sustancias y Trastornos del Comportamiento"
+    },
+    {
+      "codigo": "onet-29-1031-00",
+      "codigo_onet": "29-1031.00",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Planifican y dirigen servicios de comidas o programas nutricionales para colaborar con la promoción de la salud y control de enfermedades.",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Dietistas y Nutricionistas"
+    },
+    {
+      "codigo": "onet-25-9021-00",
+      "codigo_onet": "25-9021.00",
+      "es_favorita": false,
+      "grupo": "25",
+      "resumen": "Capacitan y asesoran a individuos y familias que se dedican a la agricultura, a procesos relacionados con la agricultura, o a actividades…",
+      "riasec": [
+        "S",
+        "I",
+        "R"
+      ],
+      "titulo": "Educadores en Gerencia de Granjas y Hogares"
+    },
+    {
+      "codigo": "onet-29-1151-00",
+      "codigo_onet": "29-1151.00",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Administran anestesia a los pacientes, monitorean los signos vitales de los pacientes y supervisan su recuperación de la anestesia.",
+      "riasec": [
+        "S",
+        "I",
+        "R"
+      ],
+      "titulo": "Enfermeros Anestesistas"
+    },
+    {
+      "codigo": "onet-29-1141-01",
+      "codigo_onet": "29-1141.01",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Proporcionan cuidados avanzados de enfermería a pacientes con afecciones agudas, tales como ataques al corazón, síndrome de estrés…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Enfermeros de Cuidado Agudo"
+    },
+    {
+      "codigo": "onet-29-1141-03",
+      "codigo_onet": "29-1141.03",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Proporcionan atención de enfermería especializada a pacientes en unidades de cuidados intensivos o coronarios.",
+      "riasec": [
+        "S",
+        "I",
+        "C"
+      ],
+      "titulo": "Enfermeros de Cuidado Crítico"
+    },
+    {
+      "codigo": "onet-29-1161-00",
+      "codigo_onet": "29-1161.00",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Diagnostican o coordinan todos los aspectos relacionados con el proceso de parto, pueden trabajar independientemente o como parte de un…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Enfermeros de Partos"
+    },
+    {
+      "codigo": "onet-29-1141-02",
+      "codigo_onet": "29-1141.02",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Evalúan, diagnostican y tratan a personas y familias con trastornos de salud mental o por uso de sustancias o con la posibilidad de…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Enfermeros de Práctica Avanzada de Psiquiatría"
+    },
+    {
+      "codigo": "onet-29-1229-02",
+      "codigo_onet": "29-1229.02",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Proporcionan cuidados a pacientes internados predominantemente en ambientes tales como guarderías médicas, unidades de cuidados agudos…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Especialistas en Atención Médica Hospitalaria"
+    },
+    {
+      "codigo": "onet-13-1151-00",
+      "codigo_onet": "13-1151.00",
+      "es_favorita": false,
+      "grupo": "13",
+      "resumen": "Diseñan o llevan a cabo programas de capacitación y desarrollo relacionados al trabajo para mejorar las destrezas individuales o el…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Especialistas en Capacitación y Desarrollo"
+    },
+    {
+      "codigo": "onet-21-1091-00",
+      "codigo_onet": "21-1091.00",
+      "es_favorita": false,
+      "grupo": "21",
+      "resumen": "Proveen y gestionan programas de educación para la salud que tienen como objetivo ayudar a los individuos, familias y a la comunidad en su…",
+      "riasec": [
+        "S",
+        "I",
+        "C"
+      ],
+      "titulo": "Especialistas en Educación de la Salud"
+    },
+    {
+      "codigo": "onet-29-1141-04",
+      "codigo_onet": "29-1141.04",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Dirigen al personal de enfermería cuando proporcionan atención al paciente en un entorno de práctica clínica, como un hospital, un…",
+      "riasec": [
+        "S",
+        "I",
+        "C"
+      ],
+      "titulo": "Especialistas en Enfermería Clínica"
+    },
+    {
+      "codigo": "onet-29-1123-00",
+      "codigo_onet": "29-1123.00",
+      "es_favorita": false,
+      "grupo": "29",
+      "resumen": "Evalúan planifican, organizan y participan de programas de rehabilitación que tienen por fin mejorar la movilidad, aliviar el dolor…",
+      "riasec": [
+        "S",
+        "I",
+        "R"
+      ],
+      "titulo": "Fisioterapeutas"
+    },
+    {
+      "codigo": "onet-25-2056-00",
+      "codigo_onet": "25-2056.00",
+      "es_favorita": false,
+      "grupo": "25",
+      "resumen": "Enseñan destrezas académicas, sociales, y de la vida diaria a alumnos de escuela primaria con discapacidades de aprendizaje, emocionales…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Maestros de Educación Especial de Escuela Primaria"
+    },
+    {
+      "codigo": "onet-25-2058-00",
+      "codigo_onet": "25-2058.00",
+      "es_favorita": false,
+      "grupo": "25",
+      "resumen": "Enseñan destrezas académicas, sociales, y de la vida diaria a alumnos de escuela secundaria alta con discapacidades de aprendizaje…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Maestros de Educación Especial de Escuela Secundaria"
     }
   ],
-  "total": 1
+  "total": 68,
+  "total_dominio": 923
 }

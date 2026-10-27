@@ -6,6 +6,7 @@ from app import models as m
 from app.core.contexto import usar_contexto
 from app.services.referencias import resolver
 from soporte_ruta import completar, pedir
+from soporte_catalogo_ruta import ING_CIVIL, INST_UNI
 
 
 @usar_contexto
@@ -23,16 +24,16 @@ def resolver_favoritos(aplicacion, cuenta):
 def test_favoritos_por_cuenta_y_en_orden(cliente, aplicacion):
     assert resolver_favoritos(aplicacion, 'est-ana').estado == m.EstadoReferencia.SIN_DATO
     completar(cliente, 't-inicio')
-    for tipo, codigo, hora in (('CARRERA', 'civil-engineering', 9), ('OCUPACION', 'geologist', 10),
-                               ('INSTITUCION', 't-uni', 11)):
+    for tipo, codigo, hora in (('CARRERA', ING_CIVIL, 9), ('OCUPACION', 'geologist', 10),
+                               ('INSTITUCION', INST_UNI, 11)):
         pedir(cliente, 'POST', '/acciones/marcar-favorito',
               {'cuenta': 'est-ana', 'tipo': tipo, 'codigo': codigo, 'fecha_hora': f'2026-10-07T{hora:02d}:00:00'})
     resuelta = resolver_favoritos(aplicacion, 'est-ana')
     assert resuelta.estado == m.EstadoReferencia.DISPONIBLE and resuelta.texto is None
     with aplicacion.state.fabrica_sesiones() as sesion:
         geologo = sesion.scalar(select(m.Ocupacion).where(m.Ocupacion.codigo == 'geologist'))
-        institucion = sesion.scalar(select(m.Institucion).where(m.Institucion.codigo == 't-uni'))
-        carrera = sesion.scalar(select(m.Carrera).where(m.Carrera.codigo == 'civil-engineering'))
+        institucion = sesion.scalar(select(m.Institucion).where(m.Institucion.codigo == INST_UNI))
+        carrera = sesion.scalar(select(m.Carrera).where(m.Carrera.codigo == ING_CIVIL))
         esperadas = [(institucion.codigo, institucion.nombre), (geologo.codigo_onet, geologo.titulo),
                      (carrera.codigo, carrera.nombre)]
     assert [(o.codigo, o.texto) for o in resuelta.opciones] == esperadas

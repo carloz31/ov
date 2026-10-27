@@ -45,7 +45,6 @@ def test_r38_integridad_catalogos_relaciones_respuestas_y_defaults(cliente, apli
             with sesion.begin_nested():
                 sesion.add(m.Ocupacion(codigo=ocupacion.codigo, codigo_onet='PRUEBA-UNICO', titulo='DATO DE PRUEBA'))
                 sesion.flush()
-        assert len(list(sesion.scalars(select(m.Ocupacion).where(m.Ocupacion.codigo.is_(None))))) == 2
         conversacion = m.Conversacion(codigo='conv-default', orden=98, titulo='DATO DE PRUEBA',
                                       pregunta_estudiante='DATO DE PRUEBA', preguntas_guia=[],
                                       mensaje_diferencias='DATO DE PRUEBA')
@@ -61,8 +60,10 @@ def test_r38_integridad_catalogos_relaciones_respuestas_y_defaults(cliente, apli
         assert desbloqueo.visto is False and item.inverso is False
         assert sesion.scalar(select(m.Actividad)).visibilidad == 'SIEMPRE'
     inspector = inspect(aplicacion.state.motor_bd)
-    assert len(inspector.get_table_names()) == 84
+    assert len(inspector.get_table_names()) == 86
     columnas = {c['name']: c for c in inspector.get_columns('ocupacion')}
-    assert set(columnas) == {'id', 'codigo', 'codigo_onet', 'titulo', 'descripcion', 'lugares_trabajo', 'habilidades',
-                            'conocimientos', 'codigo_riasec', 'busqueda'} and columnas['codigo']['nullable'] is True
+    # Ajuste catalogo-datos-reales: toda ocupación tiene código (su slug o `onet-<código>`).
+    assert set(columnas) == {'id', 'codigo', 'codigo_onet', 'titulo', 'grupo', 'resumen', 'descripcion', 'job_zone',
+                            'personalidad', 'tambien_llamado', 'tareas', 'conocimientos', 'aptitudes',
+                            'estilos_trabajo', 'codigo_riasec', 'busqueda'} and columnas['codigo']['nullable'] is False
     assert any(r['column_names'] == ['codigo'] for r in inspector.get_unique_constraints('ocupacion'))

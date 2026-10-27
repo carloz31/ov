@@ -4,9 +4,213 @@
     "calculado_en": "2026-10-07T10:00:00",
     "carreras_recomendadas": [
       {
-        "codigo": "civil-engineering",
+        "codigo": "mtpe-102",
+        "es_favorita": false,
+        "familia": "411",
+        "nombre": "Biotecnología",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-3092-00",
+            "codigo_onet": "19-3092.00",
+            "correlacion": 0.917016,
+            "es_favorita": false,
+            "posicion": 1,
+            "titulo": "Geógrafos"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-196",
+        "es_favorita": false,
+        "familia": "342",
+        "nombre": "Gestión Tributaria",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-3092-00",
+            "codigo_onet": "19-3092.00",
+            "correlacion": 0.917016,
+            "es_favorita": false,
+            "posicion": 1,
+            "titulo": "Geógrafos"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-105",
+        "es_favorita": false,
+        "familia": "594",
+        "nombre": "Ingeniería de Gestión Ambiental",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-1021-00",
+            "codigo_onet": "19-1021.00",
+            "correlacion": 0.854943,
+            "es_favorita": false,
+            "posicion": 2,
+            "titulo": "Bioquímicos y Biofísicos"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-205",
+        "es_favorita": false,
+        "familia": "412",
+        "nombre": "Ingeniería Zootecnia",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-2011-00",
+            "codigo_onet": "19-2011.00",
+            "correlacion": 0.854441,
+            "es_favorita": false,
+            "posicion": 3,
+            "titulo": "Astrónomos"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-251",
+        "es_favorita": false,
+        "familia": "331",
+        "nombre": "Administracion y Emprendimiento",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-1013-00",
+            "codigo_onet": "19-1013.00",
+            "correlacion": 0.842033,
+            "es_favorita": false,
+            "posicion": 4,
+            "titulo": "Científicos Especializados en Suelos y Botánica"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-258",
+        "es_favorita": false,
+        "familia": "523",
+        "nombre": "Ingeniería Agroindustrial y Agronegocios",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-1013-00",
+            "codigo_onet": "19-1013.00",
+            "correlacion": 0.842033,
+            "es_favorita": false,
+            "posicion": 4,
+            "titulo": "Científicos Especializados en Suelos y Botánica"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-28",
+        "es_favorita": false,
+        "familia": "331",
+        "nombre": "Administración de Empresas",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-1013-00",
+            "codigo_onet": "19-1013.00",
+            "correlacion": 0.842033,
+            "es_favorita": false,
+            "posicion": 4,
+            "titulo": "Científicos Especializados en Suelos y Botánica"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-301",
+        "es_favorita": false,
+        "familia": "341",
+        "nombre": "Economía y Negocios Internacionales",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-1013-00",
+            "codigo_onet": "19-1013.00",
+            "correlacion": 0.842033,
+            "es_favorita": false,
+            "posicion": 4,
+            "titulo": "Científicos Especializados en Suelos y Botánica"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-168",
+        "es_favorita": false,
+        "familia": "612",
+        "nombre": "Ciencias Forestales y del Ambiente",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-17-1012-00",
+            "codigo_onet": "17-1012.00",
+            "correlacion": 0.83596,
+            "es_favorita": false,
+            "posicion": 5,
+            "titulo": "Arquitectos Paisajistas"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-86",
+        "es_favorita": false,
+        "familia": "511",
+        "nombre": "Ingeniería de Sistemas de Información / Ingenieria de la Información",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-17-1012-00",
+            "codigo_onet": "17-1012.00",
+            "correlacion": 0.83596,
+            "es_favorita": false,
+            "posicion": 5,
+            "titulo": "Arquitectos Paisajistas"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-502",
+        "es_favorita": false,
+        "familia": "527",
+        "nombre": "Metalurgia",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-3091-00",
+            "codigo_onet": "19-3091.00",
+            "correlacion": 0.832091,
+            "es_favorita": false,
+            "posicion": 6,
+            "titulo": "Antropólogos y Arqueólogos"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-535",
+        "es_favorita": false,
+        "familia": "339",
+        "nombre": "Aministrativo",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-3091-00",
+            "codigo_onet": "19-3091.00",
+            "correlacion": 0.832091,
+            "es_favorita": false,
+            "posicion": 6,
+            "titulo": "Antropólogos y Arqueólogos"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-106",
         "es_favorita": true,
-        "familia": "family-civil-engineering",
+        "familia": "531",
         "nombre": "Ingeniería Civil",
         "via": [
           {
@@ -15,42 +219,15 @@
             "codigo_onet": "19-2042.00",
             "correlacion": 0.826325,
             "es_favorita": true,
-            "posicion": 1,
-            "titulo": "Geólogo/a"
-          },
-          {
-            "ajuste": "GREAT_FIT",
-            "codigo": "civil-engineer",
-            "codigo_onet": "17-2051.00",
-            "correlacion": 0.615342,
-            "es_favorita": false,
-            "posicion": 6,
-            "titulo": "Ingeniero/a civil"
-          },
-          {
-            "ajuste": "GOOD_FIT",
-            "codigo": "architect",
-            "codigo_onet": "17-1011.00",
-            "correlacion": 0.448109,
-            "es_favorita": false,
-            "posicion": 9,
-            "titulo": "Arquitecto/a"
-          },
-          {
-            "ajuste": "GOOD_FIT",
-            "codigo": "machinery-operator",
-            "codigo_onet": "47-2073.00",
-            "correlacion": 0.433994,
-            "es_favorita": false,
-            "posicion": 10,
-            "titulo": "Operador/a de maquinaria"
+            "posicion": 7,
+            "titulo": "Científicos de la Geociencia"
           }
         ]
       },
       {
-        "codigo": "environmental-engineering",
+        "codigo": "mtpe-176",
         "es_favorita": false,
-        "familia": "family-environmental-engineering",
+        "familia": "594",
         "nombre": "Ingeniería Ambiental",
         "via": [
           {
@@ -59,70 +236,144 @@
             "codigo_onet": "19-2042.00",
             "correlacion": 0.826325,
             "es_favorita": true,
-            "posicion": 1,
-            "titulo": "Geólogo/a"
-          },
-          {
-            "ajuste": "BEST_FIT",
-            "codigo": "agricultural-engineer",
-            "codigo_onet": "17-2021.00",
-            "correlacion": 0.791529,
-            "es_favorita": false,
-            "posicion": 2,
-            "titulo": "Ingeniero/a agrónomo/a"
-          },
-          {
-            "ajuste": "GREAT_FIT",
-            "codigo": "environmental-engineer",
-            "codigo_onet": "17-2081.00",
-            "correlacion": 0.611065,
-            "es_favorita": false,
             "posicion": 7,
-            "titulo": "Ingeniero/a medioambiental"
-          },
-          {
-            "ajuste": "GOOD_FIT",
-            "codigo": "data-analyst",
-            "codigo_onet": "15-2051.00",
-            "correlacion": 0.452457,
-            "es_favorita": false,
-            "posicion": 8,
-            "titulo": "Analista de datos"
+            "titulo": "Científicos de la Geociencia"
           }
         ]
       },
       {
-        "codigo": "veterinary-medicine",
+        "codigo": "mtpe-397",
         "es_favorita": false,
-        "familia": "family-veterinary-medicine",
-        "nombre": "Medicina Veterinaria",
+        "familia": "214",
+        "nombre": "Traducción de Idiomas",
         "via": [
           {
             "ajuste": "BEST_FIT",
-            "codigo": "agricultural-engineer",
-            "codigo_onet": "17-2021.00",
-            "correlacion": 0.791529,
-            "es_favorita": false,
-            "posicion": 2,
-            "titulo": "Ingeniero/a agrónomo/a"
-          },
+            "codigo": "geologist",
+            "codigo_onet": "19-2042.00",
+            "correlacion": 0.826325,
+            "es_favorita": true,
+            "posicion": 7,
+            "titulo": "Científicos de la Geociencia"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-516",
+        "es_favorita": false,
+        "familia": "525",
+        "nombre": "Electrónica Digital",
+        "via": [
           {
-            "ajuste": "GREAT_FIT",
-            "codigo": "biologist",
-            "codigo_onet": "19-1029.04",
-            "correlacion": 0.660533,
-            "es_favorita": false,
-            "posicion": 4,
-            "titulo": "Biólogo/a"
-          },
+            "ajuste": "BEST_FIT",
+            "codigo": "geologist",
+            "codigo_onet": "19-2042.00",
+            "correlacion": 0.826325,
+            "es_favorita": true,
+            "posicion": 7,
+            "titulo": "Científicos de la Geociencia"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-29",
+        "es_favorita": false,
+        "familia": "411",
+        "nombre": "Ingeniería Biotecnológica",
+        "via": [
           {
-            "ajuste": "GREAT_FIT",
-            "codigo": "veterinarian",
-            "codigo_onet": "29-1131.00",
-            "correlacion": 0.625955,
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-17-2199-07",
+            "codigo_onet": "17-2199.07",
+            "correlacion": 0.821556,
             "es_favorita": false,
-            "posicion": 5,
-            "titulo": "Veterinario/a"
+            "posicion": 8,
+            "titulo": "Ingenieros en Fotónica"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-536",
+        "es_favorita": false,
+        "familia": "342",
+        "nombre": "Finanzas",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-17-2199-07",
+            "codigo_onet": "17-2199.07",
+            "correlacion": 0.821556,
+            "es_favorita": false,
+            "posicion": 8,
+            "titulo": "Ingenieros en Fotónica"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-242",
+        "es_favorita": false,
+        "familia": "332",
+        "nombre": "Administración y Servicios Turísticos",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-1023-00",
+            "codigo_onet": "19-1023.00",
+            "correlacion": 0.8158,
+            "es_favorita": false,
+            "posicion": 9,
+            "titulo": "Zoólogos y Biólogos de la Fauna Silvestre"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-386",
+        "es_favorita": false,
+        "familia": "333",
+        "nombre": "Marketing Empresarial",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-1011-00",
+            "codigo_onet": "19-1011.00",
+            "correlacion": 0.815156,
+            "es_favorita": false,
+            "posicion": 10,
+            "titulo": "Científicos Especializados en Animales"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-475",
+        "es_favorita": false,
+        "familia": "528",
+        "nombre": "Diseño de Modas",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-1011-00",
+            "codigo_onet": "19-1011.00",
+            "correlacion": 0.815156,
+            "es_favorita": false,
+            "posicion": 10,
+            "titulo": "Científicos Especializados en Animales"
+          }
+        ]
+      },
+      {
+        "codigo": "mtpe-494",
+        "es_favorita": false,
+        "familia": "332",
+        "nombre": "Gastronomía y Arte Culinario",
+        "via": [
+          {
+            "ajuste": "BEST_FIT",
+            "codigo": "onet-19-1011-00",
+            "codigo_onet": "19-1011.00",
+            "correlacion": 0.815156,
+            "es_favorita": false,
+            "posicion": 10,
+            "titulo": "Científicos Especializados en Animales"
           }
         ]
       }
@@ -134,93 +385,93 @@
     "coincidencias": [
       {
         "ajuste": "BEST_FIT",
+        "codigo": "onet-19-3092-00",
+        "codigo_onet": "19-3092.00",
+        "correlacion": 0.917016,
+        "es_favorita": false,
+        "posicion": 1,
+        "titulo": "Geógrafos"
+      },
+      {
+        "ajuste": "BEST_FIT",
+        "codigo": "onet-19-1021-00",
+        "codigo_onet": "19-1021.00",
+        "correlacion": 0.854943,
+        "es_favorita": false,
+        "posicion": 2,
+        "titulo": "Bioquímicos y Biofísicos"
+      },
+      {
+        "ajuste": "BEST_FIT",
+        "codigo": "onet-19-2011-00",
+        "codigo_onet": "19-2011.00",
+        "correlacion": 0.854441,
+        "es_favorita": false,
+        "posicion": 3,
+        "titulo": "Astrónomos"
+      },
+      {
+        "ajuste": "BEST_FIT",
+        "codigo": "onet-19-1013-00",
+        "codigo_onet": "19-1013.00",
+        "correlacion": 0.842033,
+        "es_favorita": false,
+        "posicion": 4,
+        "titulo": "Científicos Especializados en Suelos y Botánica"
+      },
+      {
+        "ajuste": "BEST_FIT",
+        "codigo": "onet-17-1012-00",
+        "codigo_onet": "17-1012.00",
+        "correlacion": 0.83596,
+        "es_favorita": false,
+        "posicion": 5,
+        "titulo": "Arquitectos Paisajistas"
+      },
+      {
+        "ajuste": "BEST_FIT",
+        "codigo": "onet-19-3091-00",
+        "codigo_onet": "19-3091.00",
+        "correlacion": 0.832091,
+        "es_favorita": false,
+        "posicion": 6,
+        "titulo": "Antropólogos y Arqueólogos"
+      },
+      {
+        "ajuste": "BEST_FIT",
         "codigo": "geologist",
         "codigo_onet": "19-2042.00",
         "correlacion": 0.826325,
         "es_favorita": true,
-        "posicion": 1,
-        "titulo": "Geólogo/a"
-      },
-      {
-        "ajuste": "BEST_FIT",
-        "codigo": "agricultural-engineer",
-        "codigo_onet": "17-2021.00",
-        "correlacion": 0.791529,
-        "es_favorita": false,
-        "posicion": 2,
-        "titulo": "Ingeniero/a agrónomo/a"
-      },
-      {
-        "ajuste": "BEST_FIT",
-        "codigo": "meteorologist",
-        "codigo_onet": "19-2021.00",
-        "correlacion": 0.729229,
-        "es_favorita": false,
-        "posicion": 3,
-        "titulo": "Meteorólogo/a"
-      },
-      {
-        "ajuste": "GREAT_FIT",
-        "codigo": "biologist",
-        "codigo_onet": "19-1029.04",
-        "correlacion": 0.660533,
-        "es_favorita": false,
-        "posicion": 4,
-        "titulo": "Biólogo/a"
-      },
-      {
-        "ajuste": "GREAT_FIT",
-        "codigo": "veterinarian",
-        "codigo_onet": "29-1131.00",
-        "correlacion": 0.625955,
-        "es_favorita": false,
-        "posicion": 5,
-        "titulo": "Veterinario/a"
-      },
-      {
-        "ajuste": "GREAT_FIT",
-        "codigo": "civil-engineer",
-        "codigo_onet": "17-2051.00",
-        "correlacion": 0.615342,
-        "es_favorita": false,
-        "posicion": 6,
-        "titulo": "Ingeniero/a civil"
-      },
-      {
-        "ajuste": "GREAT_FIT",
-        "codigo": "environmental-engineer",
-        "codigo_onet": "17-2081.00",
-        "correlacion": 0.611065,
-        "es_favorita": false,
         "posicion": 7,
-        "titulo": "Ingeniero/a medioambiental"
+        "titulo": "Científicos de la Geociencia"
       },
       {
-        "ajuste": "GOOD_FIT",
-        "codigo": "data-analyst",
-        "codigo_onet": "15-2051.00",
-        "correlacion": 0.452457,
+        "ajuste": "BEST_FIT",
+        "codigo": "onet-17-2199-07",
+        "codigo_onet": "17-2199.07",
+        "correlacion": 0.821556,
         "es_favorita": false,
         "posicion": 8,
-        "titulo": "Analista de datos"
+        "titulo": "Ingenieros en Fotónica"
       },
       {
-        "ajuste": "GOOD_FIT",
-        "codigo": "architect",
-        "codigo_onet": "17-1011.00",
-        "correlacion": 0.448109,
+        "ajuste": "BEST_FIT",
+        "codigo": "onet-19-1023-00",
+        "codigo_onet": "19-1023.00",
+        "correlacion": 0.8158,
         "es_favorita": false,
         "posicion": 9,
-        "titulo": "Arquitecto/a"
+        "titulo": "Zoólogos y Biólogos de la Fauna Silvestre"
       },
       {
-        "ajuste": "GOOD_FIT",
-        "codigo": "machinery-operator",
-        "codigo_onet": "47-2073.00",
-        "correlacion": 0.433994,
+        "ajuste": "BEST_FIT",
+        "codigo": "onet-19-1011-00",
+        "codigo_onet": "19-1011.00",
+        "correlacion": 0.815156,
         "es_favorita": false,
         "posicion": 10,
-        "titulo": "Operador/a de maquinaria"
+        "titulo": "Científicos Especializados en Animales"
       }
     ],
     "dimensiones": [

@@ -33,7 +33,7 @@ export function useHojaDeVida(professional: ForestFireProfessional): Estado | un
                 preparando: false,
                 queHacen: respuesta.datos.descripcion ?? '',
                 conocimientos: respuesta.datos.conocimientos,
-                habilidades: respuesta.datos.habilidades,
+                habilidades: respuesta.datos.aptitudes,
               },
             }
           : { tipo: 'error', mensaje: mensajeErrorServidor(respuesta) },

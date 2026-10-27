@@ -1,6 +1,6 @@
 # Instrumentos, resultados y recomendación
 
-Cuestionarios repartidos en actividades, cálculo de resultados y recomendación de ocupaciones y carreras. Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar). Parámetros: `app/core/parametros.py`. Datos: `datos/fijos.py` (temáticas, RIASEC, ocupaciones, carreras y el cuestionario de partida y llegada), `datos/ocupaciones.py` y, para unir ítems y actividades, `datos/ruta.py`.
+Cuestionarios repartidos en actividades, cálculo de resultados y recomendación de ocupaciones y carreras. Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar). Parámetros: `app/core/parametros.py`. Datos: `datos/fijos.py` (temáticas, RIASEC y el cuestionario de partida y llegada), `datos/catalogo.py` (el catálogo real: carreras, instituciones, ingresos y ocupaciones) y, para unir ítems y actividades, `datos/ruta.py`.
 
 ## Modelo
 
@@ -13,19 +13,22 @@ Cuestionarios repartidos en actividades, cálculo de resultados y recomendación
 | `item_instrumento` | `numero`, `enunciado`, dimensión, escala e `inverso`. |
 | `actividad_item` | Qué ítems presenta cada actividad y en qué orden. |
 | `aplicacion`, `aplicacion_actividad` | Una aplicación del instrumento (`momento` UNICA, ENTRADA o SALIDA) y sus actividades. |
-| `ocupacion`, `puntaje_ocupacion` | Catálogo O*NET (código, título, `codigo` del front y seis puntajes RIASEC, que solo usa el test). Detalle: `descripcion`, `lugares_trabajo`, `habilidades` y `conocimientos` (listas JSON), `codigo_riasec` y `busqueda`. |
+| `ocupacion`, `puntaje_ocupacion` | Ocupaciones de Mi Próximo Paso (O*NET en español): `codigo` (el slug del front o `onet-<código>`), `codigo_onet`, `titulo`, `grupo`, `resumen`, `descripcion`, `job_zone` (1–5), `personalidad`, listas JSON `tambien_llamado`, `tareas`, `conocimientos`, `aptitudes` y `estilos_trabajo` (códigos), `codigo_riasec` y `busqueda` (título y otros nombres). Seis puntajes RIASEC en la escala 1–7 de la fuente. |
+| `grupo_ocupacional`, `estilo_trabajo` | Grupos mayores O*NET (2 cifras) y estilos de trabajo, con su nombre en español. |
 | `high_point` | De 1 a 3 letras RIASEC por ocupación (`posicion` 1–3), cargadas, no calculadas desde los puntajes. La posición 1 es su tipo principal. |
-| `carrera`, `tipo_carrera` | Carrera con familia, `descripcion`, `duracion`, `codigo_riasec` y `busqueda`; de 0 a 3 letras RIASEC cargadas por carrera, con la misma estructura que `high_point`. |
-| `carrera_ocupacion` | Ocupaciones a las que conduce cada carrera. |
+| `familia_carrera` | Campo detallado CINE (`codigo` de 3 cifras) con su área (`area_codigo`, `area_nombre`: el campo de educación). |
+| `carrera`, `tipo_carrera` | Carrera de Ponte en Carrera (`mtpe-<id>`) con `tipo` (universidad, instituto o FF. AA. y Policía), familia, `codigo_cine`, `nombre_cine` (solo si difiere), `descripcion`, `duracion`, `ambito_laboral` (líneas), `codigo_riasec` y `busqueda`; de 0 a 3 letras RIASEC cargadas por carrera, con la misma estructura que `high_point`. |
+| `carrera_ocupacion` | Ocupaciones a las que conduce cada carrera. **Provisional**: de 3 a 5 al azar con semilla fija (sin las carreras de FF. AA.), salvo las 6 carreras de la ruta, que tienen las suyas, hasta el archivo real de emparejamiento. |
 | `ubicacion`, `institucion`, `institucion_carrera` | Instituciones (`tipo` UNIVERSIDAD, INSTITUTO o FFAA_POLICIA, ubicación, página web) y las carreras que ofrecen. |
 | `favorito` | Estado: carrera, ocupación o institución (`tipo` + `id_referencia`) que marca la cuenta, única por cuenta, tipo y referencia. |
-| `ingreso_carrera`, `rango_ingreso` | Ingreso mensual promedio de una carrera (fuente y año) y su distribución por tramos (`maximo` nulo = tramo abierto). |
+| `ingreso_familia` | Ingreso mensual de los egresados por tipo de institución × familia × departamento (`ubicacion_id` nulo = nacional): promedio, mínimo y máximo de jóvenes y de adultos. |
+| `ingreso_institucion` | Ingreso mensual de los egresados de una institución en una familia: promedio, mínimo y máximo. |
 | `respuesta_item` | Respuesta por progreso de actividad e ítem (única). |
 | `resultado_instrumento`, `resultado_dimension`, `coincidencia` | Resultado calculado, con `anulado_en` y `perfil_plano`. A lo sumo uno vigente por cuenta y aplicación; los anulados quedan como historial. |
 
 Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente una actividad; la carga lo valida (`validar_distribucion_items`).
 
-**Catálogo O*NET.** `datos/ocupaciones.py` lee `datos/archivos/Career_Interest_RIASEC_Clean.xlsx` (columnas `code, title, R, I, A, S, E, C`) solo al cargar la base. Encabezado distinto, valores no numéricos o códigos repetidos detienen la carga. La aplicación nunca lee el Excel.
+**Catálogo real.** `datos/catalogo.py` lee los CSV de `datos/archivos/catalogo/` solo al cargar la base (ver `integracion.md`); un archivo o columna que falta, o una fila inválida, detiene la carga con su número de fila. La aplicación nunca lee esos archivos. Las ocupaciones son las de `ocupaciones_mpp_completo.csv` con `flag_en_mpp = 1`; sus puntajes (1–7) son los que usa el test, y `high_point` sale de `riasec_perfil`. El cálculo de coincidencias (Pearson) no depende de la escala.
 
 **Letras RIASEC del catálogo.** Al cargar, se valida que las posiciones de `high_point` y `tipo_carrera` sean consecutivas desde 1, sin letras repetidas. `codigo_riasec` se calcula con las letras en orden de posición («RIS»). `busqueda` es el nombre o título en minúsculas y sin tildes (`sin_tildes`, en `app/models/base.py`), y el modelo la calcula al insertar.
 
@@ -103,17 +106,20 @@ Código: `app/services/catalogo.py`. Se lee de la base, no de la caché, con `se
 
 | Ruta | Respuesta |
 |---|---|
-| `carreras?buscar=&familia=&riasec=` | `[{codigo, nombre, familia{codigo, nombre}, riasec[0–3]}]`, por código |
-| `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `ocupaciones[]`, `instituciones[]` e `ingreso{promedio_mensual, fuente, anio, rangos[]}` (o `null`) |
-| `ocupaciones?buscar=&riasec=` | `[{codigo, codigo_onet, titulo, riasec[1–3]}]`, solo las ocupaciones con `codigo` |
-| `ocupaciones/{codigo}` | Lo anterior más `descripcion`, `lugares_trabajo`, `conocimientos`, `habilidades` y `carreras[]` |
-| `instituciones?buscar=&tipo=&ubicacion=` | `[{codigo, nombre, tipo, ubicacion{codigo, nombre}}]` |
-| `instituciones/{codigo}` | Lo anterior más `descripcion`, `pagina_web` y `carreras[]` |
+| `carreras?buscar=&tipo=&area=&familia=&riasec=` | Página de `{codigo, nombre, tipo, familia{codigo, nombre, area_codigo, area_nombre}, riasec[0–3]}`, por nombre |
+| `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `nombre_cine`, `ambito_laboral[]`, `ocupaciones[]`, `instituciones[]` (cada una con `ingreso`: el `Tramo` de esa institución en la familia, o `null`), `ingreso{fuente, nacional, departamentos[]}` (o `null` sin fila nacional; cada fila con `ubicacion` y `Tramo` de `jovenes` y `adultos`) y `parecidas{total, carreras[≤3]}` (misma familia y tipo) |
+| `ocupaciones?buscar=&grupo=&riasec=` | Página de `{codigo, codigo_onet, titulo, resumen, grupo, riasec[1–3]}`, por título |
+| `ocupaciones/{codigo}` | Lo anterior más `descripcion`, `tambien_llamado[]`, `job_zone`, `tareas[]`, `personalidad`, `estilos_trabajo[{codigo, nombre}]`, `conocimientos[]`, `aptitudes[]`, `puntajes{R…C: 0–100}` y `carreras[]` |
+| `instituciones?buscar=&tipo=&gestion=&ubicacion=` | Página de `{codigo, nombre, tipo, gestion, ubicacion{codigo, nombre}, distrito}`, por nombre |
+| `instituciones/{codigo}` | Lo anterior más `descripcion` (nula), `direccion`, `pagina_web` y `carreras[]` (cada una con `ingreso` de la institución en su familia, o `null`) |
+| `familias`, `ubicaciones`, `grupos` | Solo las familias con carreras (por área y nombre), los departamentos con instituciones y los grupos con ocupaciones (por nombre) |
 
 - `buscar`: subcadena sobre `busqueda`, sin mayúsculas ni tildes; `%`, `_` y `\` se buscan literalmente.
 - `riasec`: de 1 a 3 letras distintas (acepta minúsculas). Coincide si `codigo_riasec` las contiene seguidas y en ese orden: `RI` encuentra RI, RIS y ARI, pero no IR ni RSI. Una letra inválida, repetida o más de 3 → 422, y lo que no tiene código no coincide nunca.
 - Cada resumen trae `es_favorita`.
-- `familia` y `ubicacion` filtran por código; un `tipo` fuera de `TipoInstitucion` → 422. Un código inexistente en el detalle → 404.
+- Cada página trae `total` (lo filtrado) y `total_dominio` (todo el catálogo).
+- `familia`, `area`, `grupo` y `ubicacion` filtran por código; un `tipo` fuera de `TipoInstitucion` o una `gestion` fuera de `GestionInstitucion` → 422. Un código inexistente en el detalle → 404.
+- Los ingresos son de la familia y el tipo (o de la institución en la familia), no de la carrera exacta; la fuente es `FUENTE_INGRESOS`.
 
 ## Favoritos (HU-040)
 

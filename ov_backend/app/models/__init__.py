@@ -46,8 +46,8 @@ _MODELOS_POR_MODULO = {
         'Referencia',
     ),
     'app.models.catalogo': (
-        'HighPoint', 'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera',
-        'RangoIngreso',
+        'HighPoint', 'TipoCarrera', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion',
+        'InstitucionCarrera', 'IngresoFamilia', 'IngresoInstitucion',
     ),
     'app.models.planes': (
         'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta',
@@ -84,7 +84,8 @@ __all__ = [
     'ResultadoDimension', 'Coincidencia', 'ListaOpciones', 'OpcionLista', 'ItemRegistro',
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
-    'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera', 'RangoIngreso',
+    'TipoCarrera', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion', 'InstitucionCarrera',
+    'IngresoFamilia', 'IngresoInstitucion',
     'TipoFavorito', 'Favorito', 'InsigniaVitrina', 'PresentacionVista', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
     'ContadorDiario', 'GestionInstitucion', 'FrecuenciaGasto', 'OrigenIdea', 'PreguntaConocimiento',
     'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'EstadoPaso',

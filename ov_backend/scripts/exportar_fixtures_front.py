@@ -13,6 +13,8 @@ from tempfile import TemporaryDirectory
 if __package__ in (None, ''):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from datos.ruta import CARRERAS_RUTA, INSTITUCIONES_RUTA  # noqa: E402
+
 
 # DATO DE PRUEBA: fecha y respuestas explícitas para reproducir los momentos de la ruta corta.
 FECHA = '2026-10-07T10:00:00'
@@ -26,6 +28,10 @@ OPCIONES_PARTIDA = {'AUTO-A': (3, 3, 3, 3), 'AUTO-B': (2, 2, 2, 2), 'AUTO-C': (2
 OPCIONES_LLEGADA = {'AUTO-A': (3, 3, 3, 3), 'AUTO-B': (4, 4, 4, 4), 'AUTO-C': (3, 3, 2, 2),
                     'AUTO-D': (3, 3, 3, 3), 'AUTO-E': (2, 2, 1)}
 CARPETA = 'ruta'
+# Carreras e instituciones de la ruta por su papel; los nombres de los fixtures conservan el slug de prueba.
+PSICOLOGIA, PERIODISMO, ING_CIVIL, ENFERMERIA, ING_AMBIENTAL = (CARRERAS_RUTA[c] for c in (
+    'psychology', 'journalism', 'civil-engineering', 'nursing', 'environmental-engineering'))
+INST_UNI = INSTITUCIONES_RUTA['t-uni']
 PREFIJO = 'ruta-'
 # DATO DE PRUEBA (B17): el token y su vencimiento cambian en cada ingreso; los fixtures llevan valores fijos para
 # regenerarse idénticos. El recorrido usa los tokens reales.
@@ -163,7 +169,7 @@ def _recorrer(cliente):
     fixtures['instrumentos'] = _pedir(cliente, 'GET', '/instrumentos')
     fixtures['completar-t-inicio'] = _completar(cliente, 't-inicio')
     # B11: dos planes antes de cerrar el camino; el primero queda como opción inicial. t-inicio abre POR_QUE.
-    for carrera in ('psychology', 'journalism'):
+    for carrera in (PSICOLOGIA, PERIODISMO):
         fixtures['crear-plan'] = _pedir(cliente, 'POST', '/acciones/planes/crear', {
             'cuenta': 'est-ana', 'carrera': carrera, 'fecha_hora': FECHA})
         fixtures['guardar-seccion-por-que'] = _guardar_seccion(cliente, carrera, 'POR_QUE', {
@@ -282,11 +288,11 @@ def _recorrer(cliente):
     # favoritos marcados aquí aparecen con `es_favorita` en el resultado RIASEC. F06: listados paginados.
     catalogo = '/cuentas/est-ana/catalogo'
     fixtures['catalogo-carreras'] = _pedir(cliente, 'GET', f'{catalogo}/carreras?limite=4')
-    fixtures['catalogo-carrera-psychology'] = _pedir(cliente, 'GET', f'{catalogo}/carreras/psychology')
+    fixtures['catalogo-carrera-psychology'] = _pedir(cliente, 'GET', f'{catalogo}/carreras/{PSICOLOGIA}')
     fixtures['catalogo-ocupaciones-riasec'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones?riasec=SI')
     fixtures['catalogo-ocupacion-psychologist'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones/psychologist')
     fixtures['catalogo-instituciones'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones')
-    fixtures['catalogo-institucion-t-uni'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones/t-uni')
+    fixtures['catalogo-institucion-t-uni'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones/{INST_UNI}')
     fixtures['catalogo-familias'] = _pedir(cliente, 'GET', f'{catalogo}/familias')
     fixtures['catalogo-ubicaciones'] = _pedir(cliente, 'GET', f'{catalogo}/ubicaciones')
     # Sin resultado todavía hacen falta dos tipos: una ocupación S y después una carrera R, que abre t-explorar.
@@ -294,8 +300,8 @@ def _recorrer(cliente):
     fixtures['ver-ocupacion'] = _pedir(cliente, 'POST', '/acciones/ver-ocupacion', {
         'cuenta': 'est-ana', 'ocupacion': 'psychologist', 'fecha_hora': FECHA})
     fixtures['ver-carrera'] = _pedir(cliente, 'POST', '/acciones/ver-carrera', {
-        'cuenta': 'est-ana', 'carrera': 'civil-engineering', 'fecha_hora': FECHA})
-    for tipo, codigo in (('CARRERA', 'civil-engineering'), ('OCUPACION', 'geologist'), ('INSTITUCION', 't-uni')):
+        'cuenta': 'est-ana', 'carrera': ING_CIVIL, 'fecha_hora': FECHA})
+    for tipo, codigo in (('CARRERA', ING_CIVIL), ('OCUPACION', 'geologist'), ('INSTITUCION', INST_UNI)):
         fixtures['marcar-favorito'] = _pedir(cliente, 'POST', '/acciones/marcar-favorito', {
             'cuenta': 'est-ana', 'tipo': tipo, 'codigo': codigo, 'fecha_hora': FECHA})
     fixtures['favoritos'] = _pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')
@@ -303,22 +309,22 @@ def _recorrer(cliente):
     # B11: t-valores abre CONOCIMIENTO (dudas con sugerencias del evaluador falso) y t-explorar, REALIDAD. Con dos
     # planes listos para comparar se abre t-comparar.
     fixtures.update(_registro_con_seguimiento(cliente))
-    fixtures['guardar-seccion-conocimiento'] = _guardar_seccion(cliente, 'psychology', 'CONOCIMIENTO', {
+    fixtures['guardar-seccion-conocimiento'] = _guardar_seccion(cliente, PSICOLOGIA, 'CONOCIMIENTO', {
         'respuestas': {'DIA_NORMAL': 'SI', 'DONDE_TRABAJAR': 'MAS_O_MENOS', 'CURSOS': 'NO', 'INGRESO': 'SI',
                        'CONOCE_ALGUIEN': 'SI'},
         'dudas': [{'origen': 'SUGERIDA', 'opcion': 'POSTULANTES'},
                   {'origen': 'PROPIA', 'texto': 'DATO DE PRUEBA: ¿hay trabajo en Lima?'}]})
     _responder_registro(cliente, 't-explorar')
-    for carrera in ('psychology', 'journalism'):
+    for carrera in (PSICOLOGIA, PERIODISMO):
         fixtures['guardar-seccion-realidad'] = _guardar_seccion(cliente, carrera, 'REALIDAD', {
-            'institucion': 't-uni', 'camino': {'opcion': 'PREPARARME'},
+            'institucion': INST_UNI, 'camino': {'opcion': 'PREPARARME'},
             'gastos': [{'rubro': 'PREPARACION', 'monto': 1300, 'frecuencia': 'UNICA'},
                        {'rubro': 'PENSION', 'monto': 0, 'frecuencia': 'MENSUAL'},
                        {'rubro': 'MATRICULA', 'monto': 600, 'frecuencia': 'POR_CICLO'}],
             'financiamiento': [{'opcion': 'FAMILIA'}, {'otro': 'Trabajo de verano'}],
             'complicaciones': [{'opcion': 'ECONOMICAS'}]})
     fixtures['medidores-plan'] = _pedir(cliente, 'POST', '/acciones/planes/medidores', {
-        'cuenta': 'est-ana', 'carrera': 'psychology', 'entusiasmo': 3, 'capacidad': 2, 'recursos': 2,
+        'cuenta': 'est-ana', 'carrera': PSICOLOGIA, 'entusiasmo': 3, 'capacidad': 2, 'recursos': 2,
         'fecha_hora': FECHA})
     for mision in MISIONES_INTERESES:
         items = _pedir(cliente, 'GET', f'/actividades/{mision}/items')
@@ -351,11 +357,11 @@ def _recorrer(cliente):
     # B11: comparar cita los planes y abre PASOS; un paso en el plan A abre t-proyecto, que cita el plan A.
     fixtures['referencias-t-comparar'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-comparar/referencias')
     _responder_registro(cliente, 't-comparar')
-    fixtures['guardar-seccion-pasos'] = _guardar_seccion(cliente, 'psychology', 'PASOS', {
+    fixtures['guardar-seccion-pasos'] = _guardar_seccion(cliente, PSICOLOGIA, 'PASOS', {
         'pasos': [{'sugerencia': 1}, {'tipo': 'visitar', 'texto': 'DATO DE PRUEBA: ir a la feria vocacional.'}],
         'sugerencias_descartadas': [2]})
     fixtures['paso-hecho'] = _pedir(cliente, 'POST', '/acciones/planes/paso-hecho', {
-        'cuenta': 'est-ana', 'carrera': 'psychology', 'paso': 1, 'hallazgo': 'DATO DE PRUEBA: hay estadística.',
+        'cuenta': 'est-ana', 'carrera': PSICOLOGIA, 'paso': 1, 'hallazgo': 'DATO DE PRUEBA: hay estadística.',
         'fecha_hora': FECHA})
     fixtures['referencias-t-proyecto'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-proyecto/referencias')
     fixtures['planes'] = _pedir(cliente, 'GET', '/cuentas/est-ana/planes')
@@ -460,11 +466,15 @@ def _recorrer_apoderado(cliente):
 
 def _recorrer_inesperada(cliente):
     """F06 · HU-042: al final, para no cambiar los logros ni el avance ya exportados. La elección es al azar
-    entre las no vistas: se deja una sola carrera sin ver para que el fixture sea siempre el mismo."""
-    for carrera in ('nursing', 'environmental-engineering', 'journalism', 'psychology'):
+    entre las no vistas; con el catálogo real se elige la de menor código, para que el fixture sea siempre el mismo."""
+    from unittest.mock import patch
+
+    from app.services import catalogo as servicio_catalogo
+    for carrera in (ENFERMERIA, ING_AMBIENTAL, PERIODISMO, PSICOLOGIA):
         _pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': carrera, 'fecha_hora': FECHA})
-    return {'catalogo-inesperada': _pedir(
-        cliente, 'GET', '/cuentas/est-ana/catalogo/carreras/inesperada?excluir=psychology')}
+    with patch.object(servicio_catalogo.random, 'choice', min):
+        return {'catalogo-inesperada': _pedir(
+            cliente, 'GET', f'/cuentas/est-ana/catalogo/carreras/inesperada?excluir={PSICOLOGIA}')}
 
 
 def exportar_fixtures(destino: Path) -> list[Path]:

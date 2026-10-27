@@ -3,6 +3,7 @@
 from app import models as m
 from soporte_retiro import ciclo
 from soporte_ruta import FECHA, eventos, filas_base, pedir
+from soporte_catalogo_ruta import PSICOLOGIA
 
 
 def favorito(tipo, codigo, cuenta='est-ana'):
@@ -17,7 +18,7 @@ def test_una_ficha_desbloqueada_se_marca_con_el_catalogo_cerrado(cliente, aplica
     # DATO DE PRUEBA: una ficha sin regla está disponible desde el inicio, con el catálogo todavía cerrado.
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         sesion.add(m.Ficha(codigo='fic-libre', titulo='DATO DE PRUEBA', contenido='DATO DE PRUEBA'))
-    cerrado = pedir(cliente, 'POST', '/acciones/marcar-favorito', favorito('CARRERA', 'psychology'), 409)
+    cerrado = pedir(cliente, 'POST', '/acciones/marcar-favorito', favorito('CARRERA', PSICOLOGIA), 409)
     assert cerrado['detail']['mensaje'] == 'Completa el inicio para abrir el catálogo.'
     marcada = pedir(cliente, 'POST', '/acciones/marcar-favorito', favorito('FICHA', 'fic-libre'))
     # Su propio evento, con la ficha como referencia; no MARCA_FAVORITO.

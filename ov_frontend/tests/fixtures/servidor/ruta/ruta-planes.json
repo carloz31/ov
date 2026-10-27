@@ -2,18 +2,22 @@
   "avisos": [],
   "maximo_planes": 3,
   "opcion_inicial": {
-    "codigo": "psychology",
+    "codigo": "mtpe-369",
+    "duracion": "5 años",
     "es_favorita": false,
     "familia": {
-      "codigo": "family-psychology",
-      "nombre": "Ciencias sociales y salud"
+      "area_codigo": "3",
+      "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+      "codigo": "313",
+      "nombre": "Psicología"
     },
     "nombre": "Psicología",
     "riasec": [
       "S",
       "I",
       "A"
-    ]
+    ],
+    "tipo": "UNIVERSIDAD"
   },
   "opciones": {
     "caminos": [
@@ -276,18 +280,22 @@
         "otro": null
       },
       "carrera": {
-        "codigo": "psychology",
+        "codigo": "mtpe-369",
+        "duracion": "5 años",
         "es_favorita": false,
         "familia": {
-          "codigo": "family-psychology",
-          "nombre": "Ciencias sociales y salud"
+          "area_codigo": "3",
+          "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+          "codigo": "313",
+          "nombre": "Psicología"
         },
         "nombre": "Psicología",
         "riasec": [
           "S",
           "I",
           "A"
-        ]
+        ],
+        "tipo": "UNIVERSIDAD"
       },
       "complicaciones": [
         {
@@ -373,14 +381,15 @@
       ],
       "idea_origen": "MIA",
       "institucion": {
-        "codigo": "t-uni",
+        "codigo": "inst-63",
+        "distrito": "Lima",
         "es_favorita": true,
         "gestion": "PUBLICA",
-        "nombre": "Universidad Nacional de Prueba",
+        "nombre": "Universidad Nacional Federico Villarreal",
         "tipo": "UNIVERSIDAD",
         "ubicacion": {
-          "codigo": "t-lima",
-          "nombre": "Lima de prueba"
+          "codigo": "dep-15",
+          "nombre": "Lima"
         }
       },
       "lista_para_comparar": true,
@@ -521,7 +530,7 @@
           "tipo": "conversar"
         }
       ],
-      "total_carrera": null,
+      "total_carrera": 7300,
       "total_primer_anio": 2500,
       "totales_por_frecuencia": {
         "ANUAL": 0,
@@ -537,18 +546,22 @@
         "otro": null
       },
       "carrera": {
-        "codigo": "journalism",
+        "codigo": "mtpe-291",
+        "duracion": "5 años",
         "es_favorita": false,
         "familia": {
-          "codigo": "family-journalism",
-          "nombre": "Comunicación"
+          "area_codigo": "3",
+          "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+          "codigo": "321",
+          "nombre": "Ciencias de la Comunicación"
         },
-        "nombre": "Periodismo",
+        "nombre": "Ciencias de la Comunicación",
         "riasec": [
           "A",
           "E",
           "S"
-        ]
+        ],
+        "tipo": "UNIVERSIDAD"
       },
       "complicaciones": [
         {
@@ -597,14 +610,15 @@
       ],
       "idea_origen": "MIA",
       "institucion": {
-        "codigo": "t-uni",
+        "codigo": "inst-63",
+        "distrito": "Lima",
         "es_favorita": true,
         "gestion": "PUBLICA",
-        "nombre": "Universidad Nacional de Prueba",
+        "nombre": "Universidad Nacional Federico Villarreal",
         "tipo": "UNIVERSIDAD",
         "ubicacion": {
-          "codigo": "t-lima",
-          "nombre": "Lima de prueba"
+          "codigo": "dep-15",
+          "nombre": "Lima"
         }
       },
       "lista_para_comparar": true,
@@ -672,7 +686,7 @@
           "tipo": "conversar"
         }
       ],
-      "total_carrera": null,
+      "total_carrera": 7300,
       "total_primer_anio": 2500,
       "totales_por_frecuencia": {
         "ANUAL": 0,

@@ -8,6 +8,7 @@ el ingreso real, como el front). Cada lote extiende este recorrido con su tramo.
 
 import soporte_escenarios_ruta as escenarios
 from soporte_ruta import FECHA, avanzar, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, eventos, filas_base, pedir, reglas, responder, responder_registro, revelar, respuestas_batalla
+from soporte_catalogo_ruta import ENFERMERIA, INST_UNI, PERIODISMO, PSICOLOGIA, VETERINARIA
 
 
 def siguiente(cliente, cuenta='est-ana'):
@@ -367,15 +368,15 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
     assert perdida['victoria'] is False and perdida['destellos_restantes'] == 0
     # B10: catálogo, vistas y favoritos. Sin resultado RIASEC, t-explorar pide vistas de dos tipos principales.
     assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras?riasec=s')['items']] == [
-        'journalism', 'nursing', 'psychology', 'veterinary-medicine']
-    pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': 'nursing', 'fecha_hora': FECHA})
+        PERIODISMO, ENFERMERIA, VETERINARIA, PSICOLOGIA]
+    pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': ENFERMERIA, 'fecha_hora': FECHA})
     assert actividades(cliente)['t-explorar'] == 'BLOQUEADA'
     vista = pedir(cliente, 'POST', '/acciones/ver-ocupacion', {'cuenta': 'est-ana', 'ocupacion': 'civil-engineer',
                                                                 'fecha_hora': FECHA})
     assert reglas(vista) == {'R-t-explorar-ocupacion'} and actividades(cliente)['t-explorar'] == 'DISPONIBLE'
-    pedir(cliente, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': 'nursing',
+    pedir(cliente, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': ENFERMERIA,
                                                           'fecha_hora': FECHA})
-    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')['carreras']] == ['nursing']
+    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')['carreras']] == [ENFERMERIA]
     fila, = pedir(cliente, 'GET', '/cuentas/est-ana/batallas')
     assert (fila['estado'], fila['intentos'], fila['primer_intento']['victoria']) == ('COMPLETADA', 2, False)
 
@@ -442,31 +443,31 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
 
     completar(cliente, 't-inicio')
     # La opción inicial es el primer plan, registrado antes de terminar el camino.
-    for carrera in ('psychology', 'journalism'):
+    for carrera in (PSICOLOGIA, PERIODISMO):
         pedir(cliente, 'POST', '/acciones/planes/crear', {**ana, 'carrera': carrera})
         seccion(carrera, 'POR_QUE', {'idea_origen': 'MIA', 'motivos': [{'opcion': 'AYUDAR'}],
                                      'relato': 'DATO DE PRUEBA: un día expliqué un tema y sentí que era lo mío.'})
-    bloqueada = seccion('psychology', 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'}}, esperado=409)['detail']
+    bloqueada = seccion(PSICOLOGIA, 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'}}, esperado=409)['detail']
     assert bloqueada['mensaje'] == 'Completa el registro de valores para revisar qué tanto conoces esta carrera.'
-    assert [s['estado'] for s in plan('psychology')['secciones']] == ['LISTA', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA']
+    assert [s['estado'] for s in plan(PSICOLOGIA)['secciones']] == ['LISTA', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA']
     avanzar(cliente)
     assert reglas(completar(cliente, 't-valores')) >= {'R-PLAN-CONOCIMIENTO'}
-    seccion('psychology', 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'},
+    seccion(PSICOLOGIA, 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'},
                                            'dudas': [{'origen': 'PROPIA', 'texto': '¿Hay trabajo en Lima?'}]})
-    assert [(s['origen']['duda'], s['generada_por']) for s in plan('psychology')['sugerencias']] == [
+    assert [(s['origen']['duda'], s['generada_por']) for s in plan(PSICOLOGIA)['sugerencias']] == [
         (1, 'LLM'), (2, 'LLM')]
     # t-explorar abre REALIDAD; con dos planes listos para comparar se abre t-comparar.
     batalla = {**ana, 'actividad': 't-batalla'}
     pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'respuestas': respuestas_batalla(True, 1)})
-    pedir(cliente, 'POST', '/acciones/ver-carrera', {**ana, 'carrera': 'nursing'})
+    pedir(cliente, 'POST', '/acciones/ver-carrera', {**ana, 'carrera': ENFERMERIA})
     pedir(cliente, 'POST', '/acciones/ver-ocupacion', {**ana, 'ocupacion': 'civil-engineer'})
     assert 'R-PLAN-REALIDAD' in reglas(responder_registro(cliente, 't-explorar'))
-    realidad = {'institucion': 't-uni', 'camino': {'opcion': 'POSTULAR_DIRECTO'},
+    realidad = {'institucion': INST_UNI, 'camino': {'opcion': 'POSTULAR_DIRECTO'},
                 'gastos': [{'rubro': 'MATRICULA', 'monto': 600, 'frecuencia': 'POR_CICLO'}],
                 'financiamiento': [{'opcion': 'BECA'}], 'complicaciones': [{'opcion': 'ECONOMICAS'}]}
-    assert 'R-t-comparar' not in reglas(seccion('psychology', 'REALIDAD', realidad))
-    assert 'R-t-comparar' in reglas(seccion('journalism', 'REALIDAD', {**realidad, 'complicaciones': []}))
-    assert plan('psychology')['total_primer_anio'] == 1200 and plan('psychology')['lista_para_comparar'] is True
+    assert 'R-t-comparar' not in reglas(seccion(PSICOLOGIA, 'REALIDAD', realidad))
+    assert 'R-t-comparar' in reglas(seccion(PERIODISMO, 'REALIDAD', {**realidad, 'complicaciones': []}))
+    assert plan(PSICOLOGIA)['total_primer_anio'] == 1200 and plan(PSICOLOGIA)['lista_para_comparar'] is True
     # T2 se abre con la partida y el RIASEC revelados; comparar cita los planes y abre los pasos.
     revelar(cliente, instrumento='TEST-PARTIDA-LLEGADA', aplicacion='APL-PARTIDA')
     for mision in MISIONES_INTERESES:
@@ -474,14 +475,14 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
         completar(cliente, mision)
     assert 'R-T2' in reglas(revelar(cliente))
     planes_citados, = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-comparar/referencias')['referencias']
-    assert [o['codigo'] for o in planes_citados['opciones']] == ['psychology', 'journalism']
+    assert [o['codigo'] for o in planes_citados['opciones']] == [PSICOLOGIA, PERIODISMO]
     assert 'R-PLAN-PASOS' in reglas(responder_registro(cliente, 't-comparar'))
-    pasos = seccion('psychology', 'PASOS', {'pasos': [{'sugerencia': 1}], 'sugerencias_descartadas': [2]})
+    pasos = seccion(PSICOLOGIA, 'PASOS', {'pasos': [{'sugerencia': 1}], 'sugerencias_descartadas': [2]})
     assert 'R-t-proyecto' in reglas(pasos)
     hecho = pedir(cliente, 'POST', '/acciones/planes/paso-hecho', {
-        **ana, 'carrera': 'psychology', 'paso': 1, 'hallazgo': 'DATO DE PRUEBA: estadística en segundo año.'})
+        **ana, 'carrera': PSICOLOGIA, 'paso': 1, 'hallazgo': 'DATO DE PRUEBA: estadística en segundo año.'})
     assert hecho['eventos_registrados'][0]['tipo'] == 'ACTUALIZA_PLAN'
-    assert plan('psychology')['dudas'][0]['estado'] == 'CERRADA'
+    assert plan(PSICOLOGIA)['dudas'][0]['estado'] == 'CERRADA'
     proyecto = {r['tipo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-proyecto/referencias')[
         'referencias']}
     assert (proyecto['PLAN']['texto'], proyecto['OPCION_INICIAL']['texto']) == ('Psicología', 'Psicología')
@@ -491,7 +492,7 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
     completar(cliente, 't-llegada')
     responder_registro(cliente, 't-proyecto')
     assert any(e['tipo'] == 'COMPLETA_BLOQUE' and e['referencia'] == 'T2' for e in eventos(cliente))
-    assert pedir(cliente, 'GET', planes)['opcion_inicial']['codigo'] == 'psychology'
+    assert pedir(cliente, 'GET', planes)['opcion_inicial']['codigo'] == PSICOLOGIA
 
 
 def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):

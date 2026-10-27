@@ -44,6 +44,7 @@ from app.schemas.instrumentos import (
     ResultadoHistorico, ResultadoPublico,
 )
 from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
+from soporte_catalogo_ruta import ING_AMBIENTAL, ING_CIVIL, INST_UNI, PERIODISMO, PSICOLOGIA
 
 
 SCRIPT = Path(exportador.__file__).resolve()
@@ -291,34 +292,32 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0,
     }
     assert len(resultado['coincidencias']) == 10
-    assert resultado['coincidencias'][0]['codigo'] == 'geologist'
-    assert {c['codigo'] for c in resultado['carreras_recomendadas']} == {
-        'environmental-engineering', 'civil-engineering', 'veterinary-medicine',
-    }
+    assert 'geologist' in [c['codigo'] for c in resultado['coincidencias']]
+    assert {ING_AMBIENTAL, ING_CIVIL} <= {c['codigo'] for c in resultado['carreras_recomendadas']}
     # B10 · HU-026: los favoritos marcados antes de revelar se indican en el resultado.
     assert [c['codigo'] for c in resultado['coincidencias'] if c['es_favorita']] == ['geologist']
-    assert [c['codigo'] for c in resultado['carreras_recomendadas'] if c['es_favorita']] == ['civil-engineering']
+    assert [c['codigo'] for c in resultado['carreras_recomendadas'] if c['es_favorita']] == [ING_CIVIL]
     # B10: catálogo, vistas y favoritos.
     # F06: listados paginados, opciones de filtro, lugar inesperado y filtro de favoritos.
     carreras = PaginaCarreras.model_validate(datos['catalogo-carreras'])
-    assert (carreras.total, len(carreras.items)) == (6, 4)
+    assert (carreras.total, carreras.total_dominio, len(carreras.items)) == (603, 603, 4)
     PaginaOcupaciones.model_validate(datos['catalogo-ocupaciones-riasec'])
-    assert {i['tipo'] for i in PaginaInstituciones.model_validate(datos['catalogo-instituciones']).model_dump()[
-        'items']} == {'UNIVERSIDAD', 'INSTITUTO', 'FFAA_POLICIA'}
-    assert CarreraDetalle.model_validate(datos['catalogo-carrera-psychology']).ingreso.promedio_mensual == 3200
-    assert OcupacionDetalle.model_validate(datos['catalogo-ocupacion-psychologist']).conocimientos
+    instituciones = PaginaInstituciones.model_validate(datos['catalogo-instituciones'])
+    assert (instituciones.total, len(instituciones.items)) == (706, 20)
+    assert CarreraDetalle.model_validate(datos['catalogo-carrera-psychology']).ingreso.nacional.jovenes.promedio == 2824
+    assert OcupacionDetalle.model_validate(datos['catalogo-ocupacion-psychologist']).aptitudes
     assert InstitucionDetalle.model_validate(datos['catalogo-institucion-t-uni']).pagina_web
     assert all('SI' in ''.join(o['riasec']) for o in datos['catalogo-ocupaciones-riasec']['items'])
     TypeAdapter(list[FamiliaPublica]).validate_python(datos['catalogo-familias'])
-    assert len(TypeAdapter(list[UbicacionPublica]).validate_python(datos['catalogo-ubicaciones'])) == 3
-    assert datos['catalogo-inesperada'] == {'codigo': 'veterinary-medicine', 'revisitando': False}
+    assert len(TypeAdapter(list[UbicacionPublica]).validate_python(datos['catalogo-ubicaciones'])) == 25
+    assert datos['catalogo-inesperada'] == {'codigo': 'mtpe-1', 'revisitando': False}
     assert {d['regla'] for d in datos['ver-carrera']['nuevos_desbloqueos']} == {'R-t-explorar-carrera'}
     favoritas = PaginaCarreras.model_validate(datos['catalogo-carreras-favoritos'])
-    assert [c.codigo for c in favoritas.items] == ['civil-engineering'] and favoritas.items[0].es_favorita
+    assert [c.codigo for c in favoritas.items] == [ING_CIVIL] and favoritas.items[0].es_favorita
     assert [e['tipo'] for e in datos['marcar-favorito']['eventos_registrados']] == ['MARCA_FAVORITO']
     favoritos = FavoritosCuenta.model_validate(datos['favoritos'])
     assert ([c.codigo for c in favoritos.carreras], [o.codigo for o in favoritos.ocupaciones],
-            [i.codigo for i in favoritos.instituciones]) == (['civil-engineering'], ['geologist'], ['t-uni'])
+            [i.codigo for i in favoritos.instituciones]) == ([ING_CIVIL], ['geologist'], [INST_UNI])
     # B09: diario, check-ins y temáticas.
     preguntas = TypeAdapter(list[PreguntaDiarioEstado]).validate_python(datos['diario-preguntas'])
     assert [(p.codigo, p.redactada) for p in preguntas] == [('t-diario-fija', True), ('t-diario-personal', False),
@@ -386,7 +385,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert (batalla.vidas_enemigo, batalla.destellos) == (5, 3)
     superado = RespuestaResolverCaso.model_validate(datos['resolver-caso'])
     assert [(o.codigo, o.titulo) for o in superado.ocupaciones_nuevas] == [
-        ('firefighter', 'Bombero/a'), ('paramedic', 'Paramédico/a')]
+        ('firefighter', 'Bomberos'), ('paramedic', 'Paramédicos')]
     # Ajuste mochila: el segundo testimonio pide además el proyecto; t-caso-2 sigue cerrado.
     assert {d.regla for d in superado.nuevos_desbloqueos} == {'R-t-testimonio-1'}
     caso, otro = TypeAdapter(list[CasoCuenta]).validate_python(datos['casos'])
@@ -415,12 +414,12 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert {d['regla'] for d in datos['guardar-seccion-pasos']['nuevos_desbloqueos']} == {'R-t-proyecto'}
     planes = PlanesCuenta.model_validate(datos['planes'])
     assert [(p.prioridad, p.carrera.codigo, p.lista_para_comparar) for p in planes.planes] == [
-        ('A', 'psychology', True), ('B', 'journalism', True)]
+        ('A', PSICOLOGIA, True), ('B', PERIODISMO, True)]
     assert [s.estado for s in planes.planes[0].secciones] == ['LISTA', 'LISTA', 'LISTA', 'LISTA']
-    assert planes.opcion_inicial.codigo == 'psychology' and planes.avisos == []
+    assert planes.opcion_inicial.codigo == PSICOLOGIA and planes.avisos == []
     assert {s.generada_por for s in planes.planes[0].sugerencias} == {'LLM'}
     comparar, = ReferenciasConsultadas.model_validate(datos['referencias-t-comparar']).referencias
-    assert [o.codigo for o in comparar.opciones] == ['psychology', 'journalism']
+    assert [o.codigo for o in comparar.opciones] == [PSICOLOGIA, PERIODISMO]
     proyecto = {r.tipo: r for r in ReferenciasConsultadas.model_validate(datos['referencias-t-proyecto']).referencias}
     assert proyecto['PLAN'].cita.startswith('DATO DE PRUEBA') and proyecto['OPCION_INICIAL'].texto == 'Psicología'
     # B12: ruta del apoderado, resultados del hijo, conversaciones y cartas.

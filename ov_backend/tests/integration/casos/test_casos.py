@@ -44,14 +44,14 @@ def test_fallar_no_completa_y_superar_libera_testimonios_y_coleccion(cliente, ap
     assert tipos(superado) == ['COMPLETA_ACTIVIDAD', 'SUPERA_CASO']
     # Ajuste mochila: el segundo testimonio pide además cerrar el proyecto.
     assert reglas(superado) == {'R-t-testimonio-1'}
-    assert superado['ocupaciones_nuevas'] == [{'codigo': 'firefighter', 'titulo': 'Bombero/a'},
-                                              {'codigo': 'paramedic', 'titulo': 'Paramédico/a'}]
+    assert superado['ocupaciones_nuevas'] == [{'codigo': 'firefighter', 'titulo': 'Bomberos'},
+                                              {'codigo': 'paramedic', 'titulo': 'Paramédicos'}]
     assert [t['estado'] for t in pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')] == [
         'DISPONIBLE', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA']
 
     otra_vez = pedir(cliente, 'POST', '/acciones/resolver-caso', caso(14, ['paramedic', 'nurse']))
     assert (superado['puntaje_minimo'], superado['puntaje_maximo']) == (10, 14)
-    assert 'SUPERA_CASO' not in tipos(otra_vez) and otra_vez['ocupaciones_nuevas'] == [{'codigo': 'nurse', 'titulo': 'Enfermero/a'}]
+    assert 'SUPERA_CASO' not in tipos(otra_vez) and otra_vez['ocupaciones_nuevas'] == [{'codigo': 'nurse', 'titulo': 'Enfermeros Graduados'}]
     pedir(cliente, 'POST', '/acciones/resolver-caso', caso(1, ['biologist']))
 
     fila = fila_caso(cliente)
@@ -60,7 +60,7 @@ def test_fallar_no_completa_y_superar_libera_testimonios_y_coleccion(cliente, ap
     coleccion = pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')
     assert [(o['ocupacion'], o['caso']) for o in coleccion] == [
         ('firefighter', 't-caso'), ('paramedic', 't-caso'), ('nurse', 't-caso')]
-    assert coleccion[0]['obtenida_en'] == '2026-10-09T10:00:00' and coleccion[0]['titulo'] == 'Bombero/a'
+    assert coleccion[0]['obtenida_en'] == '2026-10-09T10:00:00' and coleccion[0]['titulo'] == 'Bomberos'
     with aplicacion.state.fabrica_sesiones() as sesion:
         assert len(sesion.scalars(select(m.ColeccionOcupacion)).all()) == 3
         assert len(sesion.scalars(select(m.ResultadoCaso)).all()) == 4

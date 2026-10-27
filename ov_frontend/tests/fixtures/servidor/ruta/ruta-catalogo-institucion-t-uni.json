@@ -1,56 +1,936 @@
 {
   "carreras": [
     {
-      "codigo": "environmental-engineering",
+      "codigo": "mtpe-28",
+      "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "codigo": "family-environmental-engineering",
-        "nombre": "Ingeniería y ambiente"
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "331",
+        "nombre": "Administración de Empresas"
+      },
+      "ingreso": {
+        "maximo": 14193,
+        "minimo": 1493,
+        "promedio": 5460
+      },
+      "nombre": "Administración de Empresas",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-279",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "336",
+        "nombre": "Administración Pública"
+      },
+      "ingreso": {
+        "maximo": 12114,
+        "minimo": 1200,
+        "promedio": 5299
+      },
+      "nombre": "Administración Pública y Gestión Social",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-284",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "2",
+        "area_nombre": "Humanidades y Artes",
+        "codigo": "211",
+        "nombre": "Antropología y Arqueología"
+      },
+      "ingreso": {
+        "maximo": 9167,
+        "minimo": 1529,
+        "promedio": 4386
+      },
+      "nombre": "Antropología",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-285",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "2",
+        "area_nombre": "Humanidades y Artes",
+        "codigo": "211",
+        "nombre": "Antropología y Arqueología"
+      },
+      "ingreso": {
+        "maximo": 9167,
+        "minimo": 1529,
+        "promedio": 4386
+      },
+      "nombre": "Arqueología",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-286",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "533",
+        "nombre": "Arquitectura y Urbanismo"
+      },
+      "ingreso": {
+        "maximo": 12114,
+        "minimo": 1650,
+        "promedio": 5799
+      },
+      "nombre": "Arquitectura",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-290",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "4",
+        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "codigo": "411",
+        "nombre": "Biología"
+      },
+      "ingreso": {
+        "maximo": 8564,
+        "minimo": 1260,
+        "promedio": 4041
+      },
+      "nombre": "Biología",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-26",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "352",
+        "nombre": "Ciencias Políticas"
+      },
+      "ingreso": {
+        "maximo": 10464,
+        "minimo": 1300,
+        "promedio": 5112
+      },
+      "nombre": "Ciencia Política",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-291",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "321",
+        "nombre": "Ciencias de la Comunicación"
+      },
+      "ingreso": {
+        "maximo": 11863,
+        "minimo": 1500,
+        "promedio": 4713
+      },
+      "nombre": "Ciencias de la Comunicación",
+      "riasec": [
+        "A",
+        "E",
+        "S"
+      ],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-296",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "342",
+        "nombre": "Contabilidad y Finanzas"
+      },
+      "ingreso": {
+        "maximo": 12666,
+        "minimo": 1500,
+        "promedio": 5080
+      },
+      "nombre": "Contabilidad",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-297",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "351",
+        "nombre": "Derecho"
+      },
+      "ingreso": {
+        "maximo": 16195,
+        "minimo": 2114,
+        "promedio": 7509
+      },
+      "nombre": "Derecho",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-300",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "341",
+        "nombre": "Economía"
+      },
+      "ingreso": {
+        "maximo": 14019,
+        "minimo": 1420,
+        "promedio": 5646
+      },
+      "nombre": "Economía",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-305",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "1",
+        "area_nombre": "Educación",
+        "codigo": "131",
+        "nombre": "Educación Física"
+      },
+      "ingreso": {
+        "maximo": 5800,
+        "minimo": 1167,
+        "promedio": 3009
+      },
+      "nombre": "Educación Física",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-306",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "1",
+        "area_nombre": "Educación",
+        "codigo": "111",
+        "nombre": "Educación Inicial"
+      },
+      "ingreso": {
+        "maximo": 6650,
+        "minimo": 1130,
+        "promedio": 3095
+      },
+      "nombre": "Educación Inicial",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-307",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "1",
+        "area_nombre": "Educación",
+        "codigo": "112",
+        "nombre": "Educación Primaria"
+      },
+      "ingreso": {
+        "maximo": 5837,
+        "minimo": 1130,
+        "promedio": 3115
+      },
+      "nombre": "Educación Primaria",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-10",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "1",
+        "area_nombre": "Educación",
+        "codigo": "121",
+        "nombre": "Educación Secundaria"
+      },
+      "ingreso": {
+        "maximo": 7319,
+        "minimo": 1130,
+        "promedio": 3556
+      },
+      "nombre": "Educación Secundaria",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-308",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "7",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "714",
+        "nombre": "Enfermería"
+      },
+      "ingreso": {
+        "maximo": 9554,
+        "minimo": 1848,
+        "promedio": 5054
+      },
+      "nombre": "Enfermería",
+      "riasec": [
+        "S"
+      ],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-310",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "4",
+        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "codigo": "432",
+        "nombre": "Estadística"
+      },
+      "ingreso": null,
+      "nombre": "Estadística",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-313",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "2",
+        "area_nombre": "Humanidades y Artes",
+        "codigo": "216",
+        "nombre": "Teología y Filosofía"
+      },
+      "ingreso": null,
+      "nombre": "Filosofía",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-314",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "4",
+        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "codigo": "421",
+        "nombre": "Física"
+      },
+      "ingreso": null,
+      "nombre": "Física",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-318",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "2",
+        "area_nombre": "Humanidades y Artes",
+        "codigo": "212",
+        "nombre": "Historia"
+      },
+      "ingreso": {
+        "maximo": 8264,
+        "minimo": 1700,
+        "promedio": 4096
+      },
+      "nombre": "Historia",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-321",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "523",
+        "nombre": "Ingeniería en Agroindustria"
+      },
+      "ingreso": {
+        "maximo": 10537,
+        "minimo": 1613,
+        "promedio": 4419
+      },
+      "nombre": "Ingeniería Agroindustrial",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-170",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "522",
+        "nombre": "Ingeniería en Industrias Alimentarias"
+      },
+      "ingreso": {
+        "maximo": 11283,
+        "minimo": 1500,
+        "promedio": 4507
+      },
+      "nombre": "Ingeniería Alimentaria",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-176",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "594",
+        "nombre": "Ecología y Medio Ambiente"
+      },
+      "ingreso": {
+        "maximo": 11960,
+        "minimo": 1283,
+        "promedio": 5110
       },
       "nombre": "Ingeniería Ambiental",
       "riasec": [
         "I",
         "R"
-      ]
+      ],
+      "tipo": "UNIVERSIDAD"
     },
     {
-      "codigo": "journalism",
+      "codigo": "mtpe-106",
+      "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "codigo": "family-journalism",
-        "nombre": "Comunicación"
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "531",
+        "nombre": "Ingeniería Civil"
       },
-      "nombre": "Periodismo",
+      "ingreso": {
+        "maximo": 16613,
+        "minimo": 1311,
+        "promedio": 8097
+      },
+      "nombre": "Ingeniería Civil",
       "riasec": [
-        "A",
-        "E",
-        "S"
-      ]
+        "R",
+        "I"
+      ],
+      "tipo": "UNIVERSIDAD"
     },
     {
-      "codigo": "psychology",
+      "codigo": "mtpe-22",
+      "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "codigo": "family-psychology",
-        "nombre": "Ciencias sociales y salud"
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "511",
+        "nombre": "Ingeniería de Sistemas y Cómputo"
+      },
+      "ingreso": {
+        "maximo": 13019,
+        "minimo": 2064,
+        "promedio": 6666
+      },
+      "nombre": "Ingeniería de Sistemas",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-332",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "512",
+        "nombre": "Ingeniería de Telecomunicaciones"
+      },
+      "ingreso": {
+        "maximo": 10600,
+        "minimo": 1700,
+        "promedio": 5078
+      },
+      "nombre": "Ingeniería de Telecomunicaciones",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-333",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "599",
+        "nombre": "Otras Ingenierías"
+      },
+      "ingreso": {
+        "maximo": 12616,
+        "minimo": 1679,
+        "promedio": 5774
+      },
+      "nombre": "Ingeniería de Transportes",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-336",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "525",
+        "nombre": "Ingeniería Electrónica"
+      },
+      "ingreso": {
+        "maximo": 10088,
+        "minimo": 1550,
+        "promedio": 4663
+      },
+      "nombre": "Ingeniería Electrónica",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-172",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "6",
+        "area_nombre": "Agropecuaria y Veterinaria",
+        "codigo": "613",
+        "nombre": "Acuicultura"
+      },
+      "ingreso": null,
+      "nombre": "Ingeniería en Acuicultura",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-171",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "594",
+        "nombre": "Ecología y Medio Ambiente"
+      },
+      "ingreso": {
+        "maximo": 11960,
+        "minimo": 1283,
+        "promedio": 5110
+      },
+      "nombre": "Ingeniería en Ecoturismo",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-342",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "593",
+        "nombre": "Geografía"
+      },
+      "ingreso": {
+        "maximo": 12525,
+        "minimo": 1850,
+        "promedio": 6081
+      },
+      "nombre": "Ingeniería Geográfica",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-107",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "521",
+        "nombre": "Ingeniería Industrial"
+      },
+      "ingreso": {
+        "maximo": 15204,
+        "minimo": 1901,
+        "promedio": 6249
+      },
+      "nombre": "Ingeniería Industrial",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-19",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "511",
+        "nombre": "Ingeniería de Sistemas y Cómputo"
+      },
+      "ingreso": {
+        "maximo": 13019,
+        "minimo": 2064,
+        "promedio": 6666
+      },
+      "nombre": "Ingeniería Informática",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-351",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "5",
+        "area_nombre": "Ingeniería, Industria y Construcción",
+        "codigo": "591",
+        "nombre": "Ingeniería Pesquera"
+      },
+      "ingreso": {
+        "maximo": 12094,
+        "minimo": 1356,
+        "promedio": 4999
+      },
+      "nombre": "Ingeniería Pesquera",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-357",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "2",
+        "area_nombre": "Humanidades y Artes",
+        "codigo": "213",
+        "nombre": "Lingüística y Literatura"
+      },
+      "ingreso": {
+        "maximo": 6069,
+        "minimo": 1130,
+        "promedio": 2863
+      },
+      "nombre": "Lingüística",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-358",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "2",
+        "area_nombre": "Humanidades y Artes",
+        "codigo": "213",
+        "nombre": "Lingüística y Literatura"
+      },
+      "ingreso": {
+        "maximo": 6069,
+        "minimo": 1130,
+        "promedio": 2863
+      },
+      "nombre": "Literatura",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-359",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "333",
+        "nombre": "Marketing"
+      },
+      "ingreso": null,
+      "nombre": "Marketing",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-360",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "4",
+        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "codigo": "431",
+        "nombre": "Matemática"
+      },
+      "ingreso": null,
+      "nombre": "Matemática",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-44",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "7",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "711",
+        "nombre": "Medicina"
+      },
+      "ingreso": {
+        "maximo": 13135,
+        "minimo": 3300,
+        "promedio": 7885
+      },
+      "nombre": "Medicina",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-61",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "335",
+        "nombre": "Negocios Internacionales"
+      },
+      "ingreso": {
+        "maximo": 13519,
+        "minimo": 1400,
+        "promedio": 5151
+      },
+      "nombre": "Negocios Internacionales",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-364",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "7",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "712",
+        "nombre": "Nutrición"
+      },
+      "ingreso": {
+        "maximo": 9145,
+        "minimo": 1800,
+        "promedio": 4852
+      },
+      "nombre": "Nutrición",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-365",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "7",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "717",
+        "nombre": "Obstetricia"
+      },
+      "ingreso": {
+        "maximo": 8268,
+        "minimo": 1200,
+        "promedio": 3999
+      },
+      "nombre": "Obstetricia",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-366",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "7",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "713",
+        "nombre": "Odontología"
+      },
+      "ingreso": {
+        "maximo": 8346,
+        "minimo": 1300,
+        "promedio": 4242
+      },
+      "nombre": "Odontología",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-369",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "313",
+        "nombre": "Psicología"
+      },
+      "ingreso": {
+        "maximo": 9200,
+        "minimo": 1223,
+        "promedio": 4130
       },
       "nombre": "Psicología",
       "riasec": [
         "S",
         "I",
         "A"
-      ]
+      ],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-371",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "4",
+        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "codigo": "422",
+        "nombre": "Química"
+      },
+      "ingreso": null,
+      "nombre": "Química",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-372",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "311",
+        "nombre": "Servicios Sociales y Asistenciales"
+      },
+      "ingreso": {
+        "maximo": 11000,
+        "minimo": 1200,
+        "promedio": 5141
+      },
+      "nombre": "Sociología",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-56",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "7",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "715",
+        "nombre": "Tecnología Médica"
+      },
+      "ingreso": {
+        "maximo": 8268,
+        "minimo": 1500,
+        "promedio": 4258
+      },
+      "nombre": "Tecnología Médica",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-374",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "312",
+        "nombre": "Trabajo Social"
+      },
+      "ingreso": {
+        "maximo": 9470,
+        "minimo": 1680,
+        "promedio": 4421
+      },
+      "nombre": "Trabajo Social",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-21",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "332",
+        "nombre": "Administración de Servicios Turísticos, Hotelería y Gastronomía"
+      },
+      "ingreso": {
+        "maximo": 7538,
+        "minimo": 1200,
+        "promedio": 3295
+      },
+      "nombre": "Turismo",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
     }
   ],
-  "codigo": "t-uni",
-  "descripcion": "Universidad de prueba con varias facultades.",
+  "codigo": "inst-63",
+  "descripcion": null,
+  "direccion": "Av.Nicolas De Pierola Nº 347-351-355 / Jr. Moquegua 651-653",
+  "distrito": "Lima",
   "es_favorita": false,
   "gestion": "PUBLICA",
-  "nombre": "Universidad Nacional de Prueba",
-  "pagina_web": "https://example.test/universidad",
+  "nombre": "Universidad Nacional Federico Villarreal",
+  "pagina_web": "https://www.unfv.edu.pe/",
   "tipo": "UNIVERSIDAD",
   "ubicacion": {
-    "codigo": "t-lima",
-    "nombre": "Lima de prueba"
+    "codigo": "dep-15",
+    "nombre": "Lima"
   }
 }

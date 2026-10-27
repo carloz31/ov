@@ -32,11 +32,12 @@ def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
         "actividad_item", "aplicacion", "aplicacion_actividad", "ocupacion", "puntaje_ocupacion",
         "carrera_ocupacion",
         "lista_opciones", "opcion_lista", "item_registro", "criterio_completitud", "referencia",
-        "high_point", "tipo_carrera", "ubicacion", "institucion", "institucion_carrera", "ingreso_carrera",
-        "rango_ingreso", "seccion_tarjeta", "referencia_rubro", "referencia_camino",
+        "high_point", "tipo_carrera", "ubicacion", "institucion", "institucion_carrera", "grupo_ocupacional",
+        "estilo_trabajo", "ingreso_familia", "ingreso_institucion", "seccion_tarjeta", "referencia_rubro",
+        "referencia_camino",
     }
     assert set(inspector.get_table_names()) == esperadas
-    assert len(esperadas) == 84
+    assert len(esperadas) == 86
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]

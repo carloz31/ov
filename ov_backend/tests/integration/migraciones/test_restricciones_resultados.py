@@ -36,8 +36,8 @@ def test_dos_resultados_vigentes_prohibidos(sesion):
     (0.607, "GREAT_FIT", 1), (0.608, "GOOD_FIT", 1), (0.9, "BEST_FIT", 0), (0.9, "BEST_FIT", 11),
 ])
 def test_coincidencias_rechazan_ajustes_y_posiciones_invalidas(sesion, correlacion, ajuste, posicion):
-    # Ocupación independiente del Excel, únicamente para probar restricciones SQL.
-    ocupacion = modelos.Ocupacion(codigo_onet="PRUEBA", titulo="Prueba SQL")
+    # Ocupación independiente del catálogo, únicamente para probar restricciones SQL.
+    ocupacion = modelos.Ocupacion(codigo="prueba", codigo_onet="PRUEBA", titulo="Prueba SQL", grupo="15")
     sesion.add(ocupacion)
     resultado = modelos.ResultadoInstrumento(cuenta_id=buscar(sesion, modelos.Cuenta, "est-ana").id,
                                              aplicacion_id=buscar(sesion, modelos.Aplicacion, "APL-RIASEC").id,

@@ -156,13 +156,13 @@ test('el caso del front se juega solo si su actividad CASO está abierta en el s
 })
 
 // Ajustes post F04 (2): la hoja de vida de la Central lee la ocupación del catálogo del servidor.
-test('la hoja de vida usa título, descripción, conocimientos y habilidades del detalle de ocupación', () => {
+test('la hoja de vida usa título, descripción, conocimientos y aptitudes del detalle de ocupación', () => {
   const ocupacion = jsonServidor('ruta/ruta-catalogo-ocupacion-psychologist')
   assert.equal(ocupacion.codigo, 'psychologist')
   assert.equal(typeof ocupacion.titulo, 'string')
   assert.equal(typeof ocupacion.descripcion, 'string')
   assert.ok(Array.isArray(ocupacion.conocimientos) && ocupacion.conocimientos.length > 0)
-  assert.ok(Array.isArray(ocupacion.habilidades) && ocupacion.habilidades.length > 0)
+  assert.ok(Array.isArray(ocupacion.aptitudes) && ocupacion.aptitudes.length > 0)
   const hook = readFileSync('src/features/cases/hooks/useHojaDeVida.ts', 'utf8')
   assert.match(hook, /consultarOcupacion\(professional\.occupationId\)/)
   assert.match(readFileSync('src/services/api/catalogo.ts', 'utf8'), /\/catalogo\/ocupaciones\//)

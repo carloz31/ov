@@ -5,44 +5,44 @@
       "estado": "DISPONIBLE",
       "opciones": [
         {
+          "codigo": "onet-19-3092-00",
+          "texto": "Geógrafos"
+        },
+        {
+          "codigo": "onet-19-1021-00",
+          "texto": "Bioquímicos y Biofísicos"
+        },
+        {
+          "codigo": "onet-19-2011-00",
+          "texto": "Astrónomos"
+        },
+        {
+          "codigo": "onet-19-1013-00",
+          "texto": "Científicos Especializados en Suelos y Botánica"
+        },
+        {
+          "codigo": "onet-17-1012-00",
+          "texto": "Arquitectos Paisajistas"
+        },
+        {
+          "codigo": "onet-19-3091-00",
+          "texto": "Antropólogos y Arqueólogos"
+        },
+        {
           "codigo": "geologist",
-          "texto": "Geólogo/a"
+          "texto": "Científicos de la Geociencia"
         },
         {
-          "codigo": "agricultural-engineer",
-          "texto": "Ingeniero/a agrónomo/a"
+          "codigo": "onet-17-2199-07",
+          "texto": "Ingenieros en Fotónica"
         },
         {
-          "codigo": "meteorologist",
-          "texto": "Meteorólogo/a"
+          "codigo": "onet-19-1023-00",
+          "texto": "Zoólogos y Biólogos de la Fauna Silvestre"
         },
         {
-          "codigo": "biologist",
-          "texto": "Biólogo/a"
-        },
-        {
-          "codigo": "veterinarian",
-          "texto": "Veterinario/a"
-        },
-        {
-          "codigo": "civil-engineer",
-          "texto": "Ingeniero/a civil"
-        },
-        {
-          "codigo": "environmental-engineer",
-          "texto": "Ingeniero/a medioambiental"
-        },
-        {
-          "codigo": "data-analyst",
-          "texto": "Analista de datos"
-        },
-        {
-          "codigo": "architect",
-          "texto": "Arquitecto/a"
-        },
-        {
-          "codigo": "machinery-operator",
-          "texto": "Operador/a de maquinaria"
+          "codigo": "onet-19-1011-00",
+          "texto": "Científicos Especializados en Animales"
         }
       ],
       "tipo": "COINCIDENCIAS"

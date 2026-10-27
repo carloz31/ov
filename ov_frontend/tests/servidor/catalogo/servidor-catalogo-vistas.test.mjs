@@ -51,7 +51,7 @@ function catalogo(ruta = '/student/catalog/careers') {
   return { app, almacen }
 }
 
-test('los adaptadores del catálogo solo importan tipos y arman tramos, gestión y letras', () => {
+test('los adaptadores del catálogo solo importan tipos y arman rangos, gestión y letras', () => {
   const fuente = readFileSync('src/lib/servidor/adaptadoresCatalogo.ts', 'utf8')
   assert.ok([...fuente.matchAll(/^import\s+(.+)$/gm)].every((m) => m[1].startsWith('type ')))
   const codigo = ts.transpileModule(fuente, {
@@ -59,8 +59,7 @@ test('los adaptadores del catálogo solo importan tipos y arman tramos, gestión
   }).outputText
   return import(`data:text/javascript;base64,${Buffer.from(codigo).toString('base64')}`).then((a) => {
     const { ingreso } = jsonServidor('ruta/ruta-catalogo-carrera-psychology')
-    assert.deepEqual(copia(a.tramosIngreso(ingreso).map((t) => [t.porcentaje, t.ancho])), [[30, 60], [50, 100], [20, 40]])
-    assert.match(a.tramosIngreso(ingreso)[2].etiqueta, /^Desde S\/ 4/)
+    assert.match(a.rangoSoles(ingreso.nacional.jovenes), /^de S\/ 1[.,\s]?240 a S\/ 5[.,\s]?359$/)
     assert.equal(a.lineaInstitucion({ tipo: 'INSTITUTO', gestion: null, ubicacion: { nombre: 'Arequipa' } }), 'Instituto · Arequipa')
     assert.equal(a.alternarLetra('S', 'I'), 'SI')
     assert.equal(a.alternarLetra('SIA', 'E'), 'SIA')
@@ -77,7 +76,7 @@ test('la pestaña de carreras pide su lista al mostrarse, filtra por familia y a
   let arbol = vista.render()
   const tarjetas = () => elementos(arbol, (e) => e.type?.name === 'TarjetaCatalogo')
   assert.equal(tarjetas().length, 4)
-  assert.equal(tarjetas()[0].props.item.nombre, 'Ingeniería Civil')
+  assert.equal(tarjetas()[0].props.item.nombre, jsonServidor('ruta/ruta-catalogo-carreras').items[0].nombre)
   const mas = elementos(arbol, (e) => e.type === 'button' && texto(e) === 'Mostrar más')[0]
   mas.props.onClick()
   await esperar()
@@ -109,8 +108,7 @@ test('«Mis favoritos» pide la misma lista con el filtro, y el corazón espera 
   let arbol = vista.render()
   const tarjetas = () => elementos(arbol, (e) => e.type?.name === 'TarjetaCatalogo')
   const { TarjetaCatalogo } = app.load('src/features/discovery/components/TarjetaCatalogo.tsx')
-  const tecnico = tarjetas().find((t) => t.props.item.codigo === 't-tecnico')
-  assert.match(texto(TarjetaCatalogo(tecnico.props)), /Instituto · Pública · Arequipa de prueba/)
+  assert.match(texto(TarjetaCatalogo(tarjetas()[0].props)), /(Universidad|Instituto) · (Pública|Privada) · /)
   elementos(arbol, (e) => e.type?.name === 'FiltrosCatalogo')[0].props.onFavoritos()
   vista.render()
   await esperar()
@@ -137,25 +135,25 @@ test('los detalles del servidor muestran sus datos y registran la vista una sola
   assert.match(marcado, /Psicología/)
   const ingreso = elementos(arbol, (e) => e.type?.name === 'IngresoCarrera')[0]
   const { IngresoCarrera } = app.load('src/features/discovery/components/IngresoCarrera.tsx')
-  assert.match(texto(IngresoCarrera(ingreso.props)), /Ingreso promedio mensual: S\/ 3[.,\s]?200/)
-  assert.match(texto(IngresoCarrera(ingreso.props)), /Fuente de prueba · 2025/)
+  assert.match(texto(IngresoCarrera(ingreso.props)), /JóvenesS\/ 2[.,\s]?824/)
+  assert.match(texto(IngresoCarrera(ingreso.props)), /Ponte en Carrera \(MTPE\)/)
   assert.doesNotMatch(marcado, /Explorando familias|Datos de demostración/)
   const vistas = app.requests.filter((r) => r.url.endsWith('/acciones/ver-carrera'))
-  assert.deepEqual(copia(vistas.map((r) => r.body)), [{ cuenta: 'est-ana', carrera: 'psychology' }])
+  assert.deepEqual(copia(vistas.map((r) => r.body)), [{ cuenta: 'est-ana', carrera: 'mtpe-369' }])
   const { DetalleOcupacionServidor } = app.load('src/features/discovery/components/DetalleOcupacionServidor.tsx')
   const ocupacion = app.mount(DetalleOcupacionServidor, { codigo: 'psychologist' })
   ocupacion.render()
   await esperar()
   arbol = ocupacion.render()
-  assert.match(elementos(arbol, (e) => e.type?.name === 'DondeTrabajan')[0].props.lugares, /Centros de salud/)
+  assert.match(texto(arbol), /Psicólogos Clínicos y de Consejería/)
   assert.match(texto(arbol), /Psicología/)
   const { DetalleInstitucionServidor } = app.load('src/features/discovery/components/DetalleInstitucionServidor.tsx')
   const institucion = app.mount(DetalleInstitucionServidor, { codigo: 't-uni' })
   institucion.render()
   await esperar()
   arbol = institucion.render()
-  assert.match(texto(arbol), /Universidad · Pública · Lima de prueba/)
-  assert.equal(elementos(arbol, (e) => e.type === 'a' && e.props.href === 'https://example.test/universidad').length, 1)
+  assert.match(texto(arbol), /Universidad · Pública · Lima/)
+  assert.equal(elementos(arbol, (e) => e.type === 'a' && e.props.href === 'https://www.unfv.edu.pe/').length, 1)
   assert.ok(app.requests.some((r) => r.url.endsWith('/acciones/ver-institucion')))
 })
 

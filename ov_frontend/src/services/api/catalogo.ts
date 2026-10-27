@@ -3,6 +3,7 @@ import type {
   CarreraDetalle,
   CarreraResumen,
   FamiliaPublica,
+  GrupoPublico,
   Inesperada,
   InstitucionDetalle,
   InstitucionResumen,
@@ -17,10 +18,13 @@ import type {
 export type ClaseCatalogo = 'carreras' | 'ocupaciones' | 'instituciones'
 export type FiltrosCatalogo = {
   buscar?: string
+  tipo?: string
+  area?: string
   familia?: string
   riasec?: string
-  tipo?: string
+  gestion?: string
   ubicacion?: string
+  grupo?: string
   favoritos?: boolean
 }
 export type ResumenCatalogo = {
@@ -69,6 +73,10 @@ export function obtenerFamilias(cuenta: string): Promise<RespuestaServidor<Famil
 
 export function obtenerUbicaciones(cuenta: string): Promise<RespuestaServidor<UbicacionPublica[]>> {
   return obtener(`${base(cuenta)}/ubicaciones`)
+}
+
+export function obtenerGrupos(cuenta: string): Promise<RespuestaServidor<GrupoPublico[]>> {
+  return obtener(`${base(cuenta)}/grupos`)
 }
 
 export function obtenerInesperada(

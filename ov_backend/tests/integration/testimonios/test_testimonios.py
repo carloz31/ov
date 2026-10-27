@@ -35,7 +35,7 @@ def test_hu041_ver_testimonio_una_sola_vez(cliente, aplicacion):
     uno, *_ = pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')
     assert {k: uno[k] for k in ('estado', 'pista', 'enlace', 'persona', 'ocupacion', 'anios_experiencia')} == {
         'estado': 'DISPONIBLE', 'pista': None, 'enlace': 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
-        'persona': 'Luis Mendoza', 'ocupacion': {'codigo': 'paramedic', 'titulo': 'Paramédico/a'},
+        'persona': 'Luis Mendoza', 'ocupacion': {'codigo': 'paramedic', 'titulo': 'Paramédicos'},
         'anios_experiencia': 5}
     assert uno['cita'] and uno['descripcion'] and uno['caso'] == {'codigo': 't-caso', 'titulo': 'Caso de prueba'}
     vista = pedir(cliente, 'POST', '/acciones/ver-testimonio', ver('t-testimonio-1'))

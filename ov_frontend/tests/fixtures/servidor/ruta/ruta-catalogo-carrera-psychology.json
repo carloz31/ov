@@ -1,106 +1,974 @@
 {
-  "codigo": "psychology",
-  "descripcion": "Comprende el comportamiento humano y acompaña procesos de bienestar y desarrollo.",
-  "duracion": "5 años aproximadamente",
+  "ambito_laboral": [
+    "Hospitales y clínicas, diagnosticando y tratando trastornos psicológicos.",
+    "Centros educativos, orientando y acompañando a estudiantes.",
+    "Empresas privadas, gestionando selección y desarrollo de personal.",
+    "Organismos públicos, ejecutando programas de salud mental comunitaria.",
+    "Centros de investigación, estudiando el comportamiento humano.",
+    "Servicios propios, ofreciendo psicoterapia y asesoría psicológica."
+  ],
+  "codigo": "mtpe-369",
+  "descripcion": "Estudia el comportamiento humano y la salud mental, desarrollando proyectos de investigación y aplicando técnicas de promoción, prevención, diagnóstico e intervención para favorecer el bienestar individual y colectivo. Contribuye al desarrollo de las potencialidades de las personas y a la solución de problemáticas sociales a través de una mirada crítica y comprometida.",
+  "duracion": "5 años",
   "es_favorita": false,
   "familia": {
-    "codigo": "family-psychology",
-    "nombre": "Ciencias sociales y salud"
+    "area_codigo": "3",
+    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+    "codigo": "313",
+    "nombre": "Psicología"
   },
   "ingreso": {
-    "anio": 2025,
-    "fuente": "Fuente de prueba",
-    "promedio_mensual": 3200,
-    "rangos": [
+    "departamentos": [
       {
-        "maximo": 2000,
-        "minimo": 0,
-        "porcentaje": 30.0
+        "adultos": {
+          "maximo": 6959,
+          "minimo": 1358,
+          "promedio": 3654
+        },
+        "jovenes": {
+          "maximo": 2500,
+          "minimo": 1130,
+          "promedio": 1996
+        },
+        "ubicacion": {
+          "codigo": "dep-2",
+          "nombre": "Áncash"
+        }
       },
       {
-        "maximo": 4000,
-        "minimo": 2000,
-        "porcentaje": 50.0
+        "adultos": {
+          "maximo": 6500,
+          "minimo": 1488,
+          "promedio": 3929
+        },
+        "jovenes": {
+          "maximo": 3000,
+          "minimo": 1130,
+          "promedio": 1908
+        },
+        "ubicacion": {
+          "codigo": "dep-4",
+          "nombre": "Arequipa"
+        }
       },
       {
-        "maximo": null,
-        "minimo": 4000,
-        "porcentaje": 20.0
+        "adultos": {
+          "maximo": 6761,
+          "minimo": 1615,
+          "promedio": 3959
+        },
+        "jovenes": {
+          "maximo": 3400,
+          "minimo": 1130,
+          "promedio": 1892
+        },
+        "ubicacion": {
+          "codigo": "dep-5",
+          "nombre": "Ayacucho"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 8539,
+          "minimo": 1474,
+          "promedio": 3990
+        },
+        "jovenes": {
+          "maximo": 3615,
+          "minimo": 1130,
+          "promedio": 2371
+        },
+        "ubicacion": {
+          "codigo": "dep-6",
+          "nombre": "Cajamarca"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 11318,
+          "minimo": 1810,
+          "promedio": 5459
+        },
+        "jovenes": {
+          "maximo": 4486,
+          "minimo": 1200,
+          "promedio": 2655
+        },
+        "ubicacion": {
+          "codigo": "dep-7",
+          "nombre": "Callao"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 5865,
+          "minimo": 1600,
+          "promedio": 3702
+        },
+        "jovenes": {
+          "maximo": 3500,
+          "minimo": 1200,
+          "promedio": 2057
+        },
+        "ubicacion": {
+          "codigo": "dep-8",
+          "nombre": "Cusco"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 3300,
+          "minimo": 1225,
+          "promedio": 1975
+        },
+        "jovenes": {
+          "maximo": 1945,
+          "minimo": 1130,
+          "promedio": 1568
+        },
+        "ubicacion": {
+          "codigo": "dep-10",
+          "nombre": "Huánuco"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 11113,
+          "minimo": 1600,
+          "promedio": 5212
+        },
+        "jovenes": {
+          "maximo": 4064,
+          "minimo": 1225,
+          "promedio": 2313
+        },
+        "ubicacion": {
+          "codigo": "dep-11",
+          "nombre": "Ica"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 5276,
+          "minimo": 1500,
+          "promedio": 3345
+        },
+        "jovenes": {
+          "maximo": 2300,
+          "minimo": 1130,
+          "promedio": 1618
+        },
+        "ubicacion": {
+          "codigo": "dep-12",
+          "nombre": "Junín"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 6103,
+          "minimo": 1500,
+          "promedio": 3668
+        },
+        "jovenes": {
+          "maximo": 3050,
+          "minimo": 1130,
+          "promedio": 2010
+        },
+        "ubicacion": {
+          "codigo": "dep-13",
+          "nombre": "La Libertad"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 5172,
+          "minimo": 1574,
+          "promedio": 3247
+        },
+        "jovenes": {
+          "maximo": 3023,
+          "minimo": 1130,
+          "promedio": 1988
+        },
+        "ubicacion": {
+          "codigo": "dep-14",
+          "nombre": "Lambayeque"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 10688,
+          "minimo": 1800,
+          "promedio": 5648
+        },
+        "jovenes": {
+          "maximo": 4200,
+          "minimo": 1250,
+          "promedio": 2534
+        },
+        "ubicacion": {
+          "codigo": "dep-15",
+          "nombre": "Lima"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 8400,
+          "minimo": 1700,
+          "promedio": 4911
+        },
+        "jovenes": {
+          "maximo": 4200,
+          "minimo": 1130,
+          "promedio": 2642
+        },
+        "ubicacion": {
+          "codigo": "dep-26",
+          "nombre": "Lima Provincias"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 8500,
+          "minimo": 1313,
+          "promedio": 3494
+        },
+        "jovenes": {
+          "maximo": 3500,
+          "minimo": 1130,
+          "promedio": 2071
+        },
+        "ubicacion": {
+          "codigo": "dep-16",
+          "nombre": "Loreto"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 21020,
+          "minimo": 1500,
+          "promedio": 9884
+        },
+        "jovenes": {
+          "maximo": 4620,
+          "minimo": 1200,
+          "promedio": 2601
+        },
+        "ubicacion": {
+          "codigo": "dep-18",
+          "nombre": "Moquegua"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 5356,
+          "minimo": 1588,
+          "promedio": 3723
+        },
+        "jovenes": {
+          "maximo": 3207,
+          "minimo": 1209,
+          "promedio": 2230
+        },
+        "ubicacion": {
+          "codigo": "dep-20",
+          "nombre": "Piura"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 6782,
+          "minimo": 1205,
+          "promedio": 3354
+        },
+        "jovenes": {
+          "maximo": 2400,
+          "minimo": 1025,
+          "promedio": 1710
+        },
+        "ubicacion": {
+          "codigo": "dep-21",
+          "nombre": "Puno"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 5000,
+          "minimo": 1764,
+          "promedio": 3426
+        },
+        "jovenes": {
+          "maximo": 3113,
+          "minimo": 1500,
+          "promedio": 2177
+        },
+        "ubicacion": {
+          "codigo": "dep-22",
+          "nombre": "San Martín"
+        }
+      },
+      {
+        "adultos": {
+          "maximo": 5513,
+          "minimo": 1279,
+          "promedio": 3026
+        },
+        "jovenes": {
+          "maximo": 2539,
+          "minimo": 1128,
+          "promedio": 1632
+        },
+        "ubicacion": {
+          "codigo": "dep-23",
+          "nombre": "Tacna"
+        }
       }
-    ]
+    ],
+    "fuente": "Ponte en Carrera (MTPE)",
+    "nacional": {
+      "adultos": {
+        "maximo": 8592,
+        "minimo": 2000,
+        "promedio": 5033
+      },
+      "jovenes": {
+        "maximo": 5359,
+        "minimo": 1240,
+        "promedio": 2824
+      },
+      "ubicacion": null
+    }
   },
   "instituciones": [
     {
-      "codigo": "t-cusco-privada",
+      "codigo": "inst-3",
+      "distrito": "San Miguel",
       "es_favorita": false,
       "gestion": "PRIVADA",
-      "nombre": "Universidad Privada del Cusco de Prueba",
+      "ingreso": {
+        "maximo": 18103,
+        "minimo": 1500,
+        "promedio": 6357
+      },
+      "nombre": "Pontificia Universidad Católica del Perú",
       "tipo": "UNIVERSIDAD",
       "ubicacion": {
-        "codigo": "t-cusco",
-        "nombre": "Cusco de prueba"
+        "codigo": "dep-15",
+        "nombre": "Lima"
       }
     },
     {
-      "codigo": "t-uni",
+      "codigo": "inst-4",
+      "distrito": "San Jerónimo",
       "es_favorita": false,
-      "gestion": "PUBLICA",
-      "nombre": "Universidad Nacional de Prueba",
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 6832,
+        "minimo": 1200,
+        "promedio": 3501
+      },
+      "nombre": "Universidad Andina del Cusco",
       "tipo": "UNIVERSIDAD",
       "ubicacion": {
-        "codigo": "t-lima",
-        "nombre": "Lima de prueba"
+        "codigo": "dep-8",
+        "nombre": "Cusco"
+      }
+    },
+    {
+      "codigo": "inst-5",
+      "distrito": "Pueblo Libre",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": null,
+      "nombre": "Universidad Antonio Ruíz de Montoya",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-7",
+      "distrito": "Villa El Salvador",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 4606,
+        "minimo": 1200,
+        "promedio": 2551
+      },
+      "nombre": "Universidad Autónoma del Perú",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-8",
+      "distrito": "Arequipa",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 7435,
+        "minimo": 1150,
+        "promedio": 3560
+      },
+      "nombre": "Universidad Católica de Santa María",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-4",
+        "nombre": "Arequipa"
+      }
+    },
+    {
+      "codigo": "inst-9",
+      "distrito": "Moche",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 4451,
+        "minimo": 1130,
+        "promedio": 2444
+      },
+      "nombre": "Universidad Católica de Trujillo Benedicto Xvi",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-13",
+        "nombre": "La Libertad"
+      }
+    },
+    {
+      "codigo": "inst-10",
+      "distrito": "Arequipa",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 7800,
+        "minimo": 1208,
+        "promedio": 3117
+      },
+      "nombre": "Universidad Católica San Pablo",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-4",
+        "nombre": "Arequipa"
+      }
+    },
+    {
+      "codigo": "inst-11",
+      "distrito": "Chiclayo",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 5610,
+        "minimo": 1311,
+        "promedio": 3337
+      },
+      "nombre": "Universidad Católica Santo Toribio de Mogrovejo",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-14",
+        "nombre": "Lambayeque"
+      }
+    },
+    {
+      "codigo": "inst-12",
+      "distrito": "Los Olivos",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 5763,
+        "minimo": 1130,
+        "promedio": 2718
+      },
+      "nombre": "Universidad Católica Sedes Sapientiae",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-15",
+      "distrito": "Huancayo",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 5865,
+        "minimo": 1130,
+        "promedio": 2867
+      },
+      "nombre": "Universidad Continental",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-12",
+        "nombre": "Junín"
+      }
+    },
+    {
+      "codigo": "inst-17",
+      "distrito": "Huanuco",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 5783,
+        "minimo": 1290,
+        "promedio": 2885
+      },
+      "nombre": "Universidad de Huánuco",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-10",
+        "nombre": "Huánuco"
+      }
+    },
+    {
+      "codigo": "inst-19",
+      "distrito": "Santiago de Surco",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 23150,
+        "minimo": 1700,
+        "promedio": 7143
+      },
+      "nombre": "Universidad de Lima",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-21",
+      "distrito": "Santa Anita",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 9300,
+        "minimo": 1200,
+        "promedio": 4043
+      },
+      "nombre": "Universidad de San Martín de Porres",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-24",
+      "distrito": "La Molina",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 12247,
+        "minimo": 1130,
+        "promedio": 4341
+      },
+      "nombre": "Universidad Femenina del Sagrado Corazón",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-52",
+      "distrito": "Arequipa",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "ingreso": {
+        "maximo": 7000,
+        "minimo": 1130,
+        "promedio": 3812
+      },
+      "nombre": "Universidad Nacional de San Agustín",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-4",
+        "nombre": "Arequipa"
+      }
+    },
+    {
+      "codigo": "inst-53",
+      "distrito": "Cusco",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "ingreso": {
+        "maximo": 5763,
+        "minimo": 1200,
+        "promedio": 2895
+      },
+      "nombre": "Universidad Nacional de San Antonio Abad del Cusco",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-8",
+        "nombre": "Cusco"
+      }
+    },
+    {
+      "codigo": "inst-63",
+      "distrito": "Lima",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "ingreso": {
+        "maximo": 9200,
+        "minimo": 1223,
+        "promedio": 4130
+      },
+      "nombre": "Universidad Nacional Federico Villarreal",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-64",
+      "distrito": "Pillco Marca",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "ingreso": {
+        "maximo": 6634,
+        "minimo": 1700,
+        "promedio": 3887
+      },
+      "nombre": "Universidad Nacional Hermilio Valdizán",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-10",
+        "nombre": "Huánuco"
+      }
+    },
+    {
+      "codigo": "inst-72",
+      "distrito": "Lima",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "ingreso": {
+        "maximo": 9977,
+        "minimo": 1350,
+        "promedio": 4363
+      },
+      "nombre": "Universidad Nacional Mayor de San Marcos",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-74",
+      "distrito": "Lambayeque",
+      "es_favorita": false,
+      "gestion": "PUBLICA",
+      "ingreso": {
+        "maximo": 7000,
+        "minimo": 1175,
+        "promedio": 3387
+      },
+      "nombre": "Universidad Nacional Pedro Ruíz Gallo",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-14",
+        "nombre": "Lambayeque"
+      }
+    },
+    {
+      "codigo": "inst-80",
+      "distrito": "San Martín de Porres",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 10837,
+        "minimo": 1360,
+        "promedio": 4688
+      },
+      "nombre": "Universidad Peruana Cayetano Heredia",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-81",
+      "distrito": "Santiago de Surco",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 10607,
+        "minimo": 1341,
+        "promedio": 3639
+      },
+      "nombre": "Universidad Peruana de Ciencias Aplicadas",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-82",
+      "distrito": "Huancayo",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 5914,
+        "minimo": 1200,
+        "promedio": 3262
+      },
+      "nombre": "Universidad Peruana los Andes",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-12",
+        "nombre": "Junín"
+      }
+    },
+    {
+      "codigo": "inst-83",
+      "distrito": "Lurigancho",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 5667,
+        "minimo": 1200,
+        "promedio": 3179
+      },
+      "nombre": "Universidad Peruana Unión",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-84",
+      "distrito": "Trujillo",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 7313,
+        "minimo": 1130,
+        "promedio": 3156
+      },
+      "nombre": "Universidad Privada Antenor Orrego",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-13",
+        "nombre": "La Libertad"
+      }
+    },
+    {
+      "codigo": "inst-13",
+      "distrito": "Victor Larco Herrera",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 6113,
+        "minimo": 1249,
+        "promedio": 3226
+      },
+      "nombre": "Universidad Privada César Vallejo",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-13",
+        "nombre": "La Libertad"
+      }
+    },
+    {
+      "codigo": "inst-86",
+      "distrito": "Pocollay",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 7916,
+        "minimo": 1130,
+        "promedio": 2433
+      },
+      "nombre": "Universidad Privada de Tacna",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-23",
+        "nombre": "Tacna"
+      }
+    },
+    {
+      "codigo": "inst-87",
+      "distrito": "Trujillo",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 5493,
+        "minimo": 1200,
+        "promedio": 2314
+      },
+      "nombre": "Universidad Privada del Norte",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-13",
+        "nombre": "La Libertad"
+      }
+    },
+    {
+      "codigo": "inst-28",
+      "distrito": "Santiago de Surco",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 5501,
+        "minimo": 1371,
+        "promedio": 2905
+      },
+      "nombre": "Universidad Privada Marcelino Champagnat",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-92",
+      "distrito": "La Molina",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 9464,
+        "minimo": 1500,
+        "promedio": 3697
+      },
+      "nombre": "Universidad Privada San Ignacio de Loyola",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
+      }
+    },
+    {
+      "codigo": "inst-93",
+      "distrito": "Pimentel",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 6063,
+        "minimo": 1200,
+        "promedio": 3592
+      },
+      "nombre": "Universidad Privada Señor de Sipán",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-14",
+        "nombre": "Lambayeque"
+      }
+    },
+    {
+      "codigo": "inst-91",
+      "distrito": "Santiago de Surco",
+      "es_favorita": false,
+      "gestion": "PRIVADA",
+      "ingreso": {
+        "maximo": 12786,
+        "minimo": 1400,
+        "promedio": 4970
+      },
+      "nombre": "Universidad Ricardo Palma",
+      "tipo": "UNIVERSIDAD",
+      "ubicacion": {
+        "codigo": "dep-15",
+        "nombre": "Lima"
       }
     }
   ],
   "nombre": "Psicología",
+  "nombre_cine": null,
   "ocupaciones": [
     {
       "codigo": "psychologist",
       "codigo_onet": "19-3033.00",
       "es_favorita": false,
+      "grupo": "19",
+      "resumen": "Evalúan, diagnostican y tratan trastornos mentales y emocionales de individuos a través de la observación, de entrevista y de pruebas…",
       "riasec": [
         "S",
-        "I",
-        "C"
+        "I"
       ],
-      "titulo": "Psicólogo/a"
+      "titulo": "Psicólogos Clínicos y de Consejería"
     },
     {
       "codigo": "social-worker",
       "codigo_onet": "21-1021.00",
       "es_favorita": false,
+      "grupo": "21",
+      "resumen": "Prestan asistencia y servicios sociales para mejorar el funcionamiento social y psicológico de los niños y de sus familias y para…",
       "riasec": [
-        "S",
-        "C"
+        "S"
       ],
-      "titulo": "Trabajador/a social"
+      "titulo": "Trabajadores Sociales Especializados en Temas de la Infancia, Familiares y Escolares"
     },
     {
       "codigo": "sociologist",
       "codigo_onet": "19-3041.00",
       "es_favorita": false,
+      "grupo": "19",
+      "resumen": "Estudian la sociedad humana y el comportamiento social por medio del análisis de los grupos e instituciones sociales formadas por…",
       "riasec": [
         "I",
-        "S"
+        "S",
+        "A"
       ],
-      "titulo": "Sociólogo/a"
+      "titulo": "Sociólogos"
     },
     {
       "codigo": "teacher",
       "codigo_onet": "25-2031.00",
       "es_favorita": false,
+      "grupo": "25",
+      "resumen": "Enseñan una o más materias a alumnos de escuelas de nivel secundaria alta.",
       "riasec": [
-        "S",
-        "A",
-        "C"
+        "S"
       ],
-      "titulo": "Docente"
+      "titulo": "Maestros de Escuela Secundaria"
     }
   ],
+  "parecidas": {
+    "carreras": [
+      {
+        "codigo": "mtpe-87",
+        "duracion": "5 años",
+        "es_favorita": false,
+        "familia": {
+          "area_codigo": "3",
+          "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+          "codigo": "313",
+          "nombre": "Psicología"
+        },
+        "nombre": "Psicología del Consumidor",
+        "riasec": [],
+        "tipo": "UNIVERSIDAD"
+      },
+      {
+        "codigo": "mtpe-88",
+        "duracion": "5 años",
+        "es_favorita": false,
+        "familia": {
+          "area_codigo": "3",
+          "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+          "codigo": "313",
+          "nombre": "Psicología"
+        },
+        "nombre": "Psicología Organizacional",
+        "riasec": [],
+        "tipo": "UNIVERSIDAD"
+      }
+    ],
+    "total": 2
+  },
   "riasec": [
     "S",
     "I",
     "A"
-  ]
+  ],
+  "tipo": "UNIVERSIDAD"
 }

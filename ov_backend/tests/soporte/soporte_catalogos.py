@@ -3,7 +3,7 @@
 from sqlalchemy import delete, update
 from app import models as m
 from datos import ruta
-from datos.ocupaciones import validar_distribucion_items
+from datos.fijos import validar_distribucion_items
 from soporte_retiro import FECHA_BD, buscar, instrumento_minimo
 
 
@@ -41,4 +41,3 @@ def completar_catalogos_vacios(sesion):
     # numero 2: `llenar_estado` ya dejó la entrada 1 de Ana.
     sesion.add(m.EntradaDiario(cuenta_id=ana, origen='GUIADA', recomendacion_id=recomendacion.id, numero=2,
         texto='DATO DE PRUEBA', fecha_hora=FECHA_BD))
-    sesion.add_all([m.Ocupacion(codigo_onet=f'PRUEBA-NULO-{n}', titulo='DATO DE PRUEBA') for n in (1, 2)])

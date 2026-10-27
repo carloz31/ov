@@ -13,7 +13,6 @@ import { AtlasNavigation } from './AtlasNavigation'
 import { AvisoFavorito } from './AvisoFavorito'
 import { CatalogRevisitNotice } from './CatalogRevisitNotice'
 import { DiscoveryStage } from './DiscoveryStage'
-import { DondeTrabajan } from './DondeTrabajan'
 import { EntrevistasOcupacion } from './EntrevistasOcupacion'
 import { EsperaDetalle } from './EsperaDetalle'
 import { UnexpectedPlace } from './UnexpectedPlace'
@@ -68,9 +67,7 @@ export function DetalleOcupacionServidor({ codigo }: { codigo: string }) {
               <p>{ocupacion.descripcion}</p>
             </Parchment>
           )}
-          <DondeTrabajan lugares={ocupacion.lugares_trabajo} />
           <Etiquetas titulo="Conocimientos que usan" items={ocupacion.conocimientos} />
-          <Etiquetas titulo="Habilidades que necesitan" items={ocupacion.habilidades} />
           {ocupacion.riasec.length > 0 && (
             <Parchment title="A qué tipo de persona le suele atraer">
               <div className="sx-d-seal-row">

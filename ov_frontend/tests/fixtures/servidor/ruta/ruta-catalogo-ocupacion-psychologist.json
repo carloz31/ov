@@ -1,39 +1,108 @@
 {
+  "aptitudes": [
+    "Lectura de la información relacionada con el trabajo",
+    "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+    "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+    "Comprender las reacciones de las personas",
+    "Buscar maneras de ayudar a las personas"
+  ],
   "carreras": [
     {
-      "codigo": "psychology",
+      "codigo": "mtpe-369",
+      "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "codigo": "family-psychology",
-        "nombre": "Ciencias sociales y salud"
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "313",
+        "nombre": "Psicología"
       },
       "nombre": "Psicología",
       "riasec": [
         "S",
         "I",
         "A"
-      ]
+      ],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-398",
+      "duracion": "3 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "8",
+        "area_nombre": "Servicios",
+        "codigo": "811",
+        "nombre": "Turismo"
+      },
+      "nombre": "Guía Oficial de Montaña",
+      "riasec": [],
+      "tipo": "INSTITUTO"
     }
   ],
   "codigo": "psychologist",
   "codigo_onet": "19-3033.00",
   "conocimientos": [
+    "Terapia y consejería",
     "Psicología",
-    "Terapia y orientación"
+    "Sociología y antropología",
+    "Idioma inglés",
+    "Enseñanza y diseño de cursos"
   ],
-  "descripcion": "Escucha, evalúa necesidades emocionales y diseña estrategias de acompañamiento.",
+  "descripcion": "Evalúan, diagnostican y tratan trastornos mentales y emocionales de individuos a través de la observación, de entrevista y de pruebas psicológicas. Ayudan a personas con angustia o disfunción a comprender sus problemas por medio de su conocimiento del historial del caso, las entrevistas con los pacientes, y la teoría. Proveen servicios de consejería individual o grupal para ayudar a las personas a lograr un desarrollo y una adaptación más efectivos a nivel personal, social, educativo y vocacional. Pueden diseñar programas de modificación del comportamiento y consultar con el personal médico sobre el mejor tratamiento para los pacientes.",
   "es_favorita": false,
-  "habilidades": [
-    "Escucha activa",
-    "Contención emocional",
-    "Evaluación",
-    "Empatía"
+  "estilos_trabajo": [
+    {
+      "codigo": "sinceridad",
+      "nombre": "Sinceridad"
+    },
+    {
+      "codigo": "empatia",
+      "nombre": "Empatía"
+    },
+    {
+      "codigo": "tolerancia-estres",
+      "nombre": "Tolerancia al estrés"
+    },
+    {
+      "codigo": "autocontrol",
+      "nombre": "Autocontrol"
+    },
+    {
+      "codigo": "orientacion-social",
+      "nombre": "Orientación social"
+    },
+    {
+      "codigo": "logro",
+      "nombre": "Orientación al logro"
+    }
   ],
-  "lugares_trabajo": "Centros de salud, colegios, organizaciones, empresas y consulta privada.",
+  "grupo": "19",
+  "job_zone": 5,
+  "personalidad": "A las personas interesadas en este trabajo les gustan actividades que incluyan ayudar a las personas, enseñar y hablar.",
+  "puntajes": {
+    "A": 34,
+    "C": 42,
+    "E": 27,
+    "I": 76,
+    "R": 1,
+    "S": 93
+  },
+  "resumen": "Evalúan, diagnostican y tratan trastornos mentales y emocionales de individuos a través de la observación, de entrevista y de pruebas…",
   "riasec": [
     "S",
-    "I",
-    "C"
+    "I"
   ],
-  "titulo": "Psicólogo/a"
+  "tambien_llamado": [
+    "Psicólogo",
+    "Psicólogo Clínico",
+    "Psicólogo Consejero",
+    "Psicoterapeuta"
+  ],
+  "tareas": [
+    "Realizar evaluaciones del riesgo de los pacientes de hacerse daño a sí mismo oa otros.",
+    "Documento de información para el paciente incluido notas de la sesión, notas de progreso, recomendaciones y planes de tratamiento.",
+    "Identificar problemas psicológicos, emocionales o de comportamiento y diagnosticar trastornos, usando información obtenida de entrevistas, exámenes, registros o materiales de referencia."
+  ],
+  "titulo": "Psicólogos Clínicos y de Consejería"
 }
