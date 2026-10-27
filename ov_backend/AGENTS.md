@@ -37,7 +37,7 @@ app/                    solo la aplicación; no lee archivos de datos
     registro/           registro con evaluador de respuestas
     planes/             planes de carrera: consultas, acciones y sugerencias
   core/                 parámetros, caché de definiciones y contexto de consultas
-datos/                  lo que llena la base: fijos.py, ruta.py, ocupaciones.py (Excel O*NET), cargar.py
+datos/                  lo que llena la base: fijos.py, ruta.py, catalogo.py (CSV de archivos/catalogo/), cargar.py
 migrations/             migraciones de Alembic
 scripts/                herramientas manuales (exportador de fixtures)
 tests/                  pruebas (ver «Pruebas»)
@@ -85,6 +85,8 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 | `ruta` (`datos/ruta.py` + `datos/fijos.py`) | Ruta mínima de prueba: lo justo para demostrar cada mecánica (`docs/plan-iteraciones.md`, «Ruta mínima de prueba»). Todo lo de `ruta.py` es `DATO DE PRUEBA`; `fijos.py` se carga en todo conjunto. |
 
 - La aplicación no sabe qué conjunto tiene la base. Se carga con `uv run python -m datos.cargar <conjunto>` (`--vaciar` para reemplazarlo). El cargador valida que `contenido` use solo `[a-z0-9_]`.
+- El catálogo es real y lo carga `fijos` desde los CSV de `datos/archivos/catalogo/` (`datos/catalogo.py`: carreras, instituciones e ingresos de Ponte en Carrera; ocupaciones de Mi Próximo Paso). Las pruebas nombran las carreras, instituciones y ubicaciones de la ruta por su papel (`CARRERAS_RUTA`, `INSTITUCIONES_RUTA`, `UBICACIONES_RUTA` en `ruta.py`; `tests/soporte/soporte_catalogo_ruta.py`), nunca por su código real. La relación carrera → ocupaciones es provisional (al azar con semilla) hasta el archivo de emparejamiento.
+- Una base con el catálogo anterior a la migración 0033 no sube: se vacía (el esquema completo) y se vuelve a migrar y cargar.
 - `POST /desarrollo/reiniciar`, solo con `ENTORNO=desarrollo`, borra el estado de las cuentas y conserva el catálogo.
 - Los datos inventados se marcan con `DATO DE PRUEBA`.
 
