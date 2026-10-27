@@ -362,6 +362,22 @@
   align-items: center;
   justify-content: flex-end;
 }
+/* Botones de la cabecera de un detalle («Página web», favorito): mismo alto, borde y espaciado. */
+.sx-c-cabecera-acciones > .sx-d-action,
+.sx-c-cabecera-acciones > .sx-d-favorite {
+  box-sizing: border-box;
+  height: 46px;
+  min-height: 0;
+  margin: 0;
+  padding: 0 18px;
+  border: 2px solid currentColor;
+  border-radius: 12px;
+  font-size: 15px;
+  line-height: 1;
+}
+.sx-c-cabecera-acciones > .sx-d-action {
+  border-color: var(--primary);
+}
 .sx-c-etiqueta-oscura {
   background: rgb(255 255 255 / 0.12);
   color: var(--sx-night-text);
