@@ -1,26 +1,16 @@
 import { Link } from 'react-router'
-import { BriefcaseBusiness, GraduationCap, School } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { FavoriteButton } from '@/components/student/FavoriteButton'
-import { Seal } from '@/components/student/Seal'
+import { appPaths } from '@/routes/paths'
 import { discoveryPaths } from '@/routes/discoveryPaths'
-import { lineaInstitucion } from '@/lib/servidor/adaptadoresCatalogo'
+import { nombresTipoCarrera, nombresTipoInstitucion, textoGestion } from '@/lib/servidor/adaptadoresCatalogo'
 import type { ClaseCatalogo, ResumenCatalogo } from '@/store/servidor/catalogo'
-import { dimensionNames, type RiasecDimension } from '../lib/catalogDetails'
+import { IconoProfesion } from './IconoProfesion'
+import { SellosRiasec } from './SellosRiasec'
 
-function Sellos({ letras }: { letras: string[] }) {
-  if (!letras.length) return null
-  return (
-    <div className="sx-d-seal-row">
-      {letras.map((d) => (
-        <span key={d} title={dimensionNames[d as RiasecDimension]}>
-          <Seal state="revealed">{d}</Seal>
-        </span>
-      ))}
-    </div>
-  )
-}
-
-// F06: la tarjeta del catálogo del servidor, con el marcado de las del catálogo local (solo lo del resumen).
+// Ajuste catalogo-datos-reales (F6a): la tarjeta de cada listado del catálogo del servidor. Carrera: tipo,
+// nombre, familia (enlace al listado filtrado), sellos y duración. Profesión: sellos, ícono, título y resumen.
+// Institución: tipo y gestión, nombre y «Departamento · Distrito».
 export function TarjetaCatalogo({
   item,
   obtenido = false,
@@ -37,36 +27,63 @@ export function TarjetaCatalogo({
   )
   if ('familia' in item)
     return (
-      <article className="sx-d-parchment sx-d-atlas-card">
-        {favorito}
-        <Link to={discoveryPaths.career(item.codigo)} className="sx-d-card-link">
-          <GraduationCap aria-hidden="true" />
-          <h2>{item.nombre}</h2>
-          <p className="sx-d-eyebrow">{item.familia.nombre}</p>
-          <Sellos letras={item.riasec} />
+      <article className="sx-d-parchment sx-c-tarjeta">
+        <div className="sx-c-tarjeta-cabeza">
+          <span className="sx-c-etiqueta" data-tipo={item.tipo}>
+            {nombresTipoCarrera[item.tipo]}
+          </span>
+          {favorito}
+        </div>
+        <h2>
+          <Link to={discoveryPaths.career(item.codigo)}>{item.nombre}</Link>
+        </h2>
+        <Link
+          className="sx-c-familia"
+          to={`${appPaths.student.catalog.careers}?familia=${item.familia.codigo}`}
+        >
+          {item.familia.nombre}
         </Link>
+        <div className="sx-c-tarjeta-pie">
+          <SellosRiasec letras={item.riasec} />
+          {item.duracion && <span className="sx-c-duracion">{item.duracion}</span>}
+        </div>
       </article>
     )
   if ('titulo' in item)
     return (
-      <article className="sx-d-parchment sx-d-atlas-card">
-        {favorito}
-        <Link to={discoveryPaths.occupation(item.codigo)} className="sx-d-card-link">
-          <BriefcaseBusiness aria-hidden="true" />
-          <h2>{item.titulo}</h2>
-          <Sellos letras={item.riasec} />
-          {obtenido && <span className="sx-d-tag">Ícono obtenido</span>}
-        </Link>
+      <article className="sx-d-parchment sx-c-tarjeta">
+        <div className="sx-c-tarjeta-cabeza">
+          <SellosRiasec letras={item.riasec} />
+          {favorito}
+        </div>
+        <div className="sx-c-profesion">
+          <IconoProfesion grupo={item.grupo} revelado={obtenido} />
+          <h2>
+            <Link to={discoveryPaths.occupation(item.codigo)}>{item.titulo}</Link>
+          </h2>
+        </div>
+        {item.resumen && <p className="sx-d-clamp-two">{item.resumen}</p>}
       </article>
     )
+  const gestion = textoGestion(item.gestion)
   return (
-    <article className="sx-d-parchment sx-d-atlas-card">
-      {favorito}
-      <Link to={discoveryPaths.institution(item.codigo)} className="sx-d-card-link">
-        <School aria-hidden="true" />
-        <h2>{item.nombre}</h2>
-        <p>{lineaInstitucion(item)}</p>
-      </Link>
+    <article className="sx-d-parchment sx-c-tarjeta">
+      <div className="sx-c-tarjeta-cabeza">
+        <span className="sx-c-etiquetas">
+          <span className="sx-c-etiqueta" data-tipo={item.tipo}>
+            {nombresTipoInstitucion[item.tipo]}
+          </span>
+          {gestion && <span className="sx-c-etiqueta">{gestion}</span>}
+        </span>
+        {favorito}
+      </div>
+      <h2>
+        <Link to={discoveryPaths.institution(item.codigo)}>{item.nombre}</Link>
+      </h2>
+      <p className="sx-c-lugar">
+        <MapPin aria-hidden="true" size={16} />
+        {[item.ubicacion.nombre, item.distrito].filter(Boolean).join(' · ')}
+      </p>
     </article>
   )
 }

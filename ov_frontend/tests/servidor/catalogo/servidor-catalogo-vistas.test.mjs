@@ -26,6 +26,7 @@ function catalogo(ruta = '/student/catalog/careers') {
     const url = new URL(r.url, 'http://x')
     if (url.pathname.endsWith('/catalogo/carreras')) return { body: pagina('catalogo-carreras', url.searchParams.get('desde')) }
     if (url.pathname.endsWith('/catalogo/instituciones')) return { body: jsonServidor('ruta/ruta-catalogo-instituciones') }
+    if (url.pathname.endsWith('/catalogo/ocupaciones')) return { body: jsonServidor('ruta/ruta-catalogo-ocupaciones-riasec') }
     if (url.pathname.endsWith('/catalogo/carreras/psychology')) return { body: jsonServidor('ruta/ruta-catalogo-carrera-psychology') }
     if (url.pathname.endsWith('/catalogo/ocupaciones/psychologist'))
       return { body: jsonServidor('ruta/ruta-catalogo-ocupacion-psychologist') }
@@ -67,49 +68,79 @@ test('los adaptadores del catálogo solo importan tipos y arman rangos, gestión
   })
 })
 
-test('la pestaña de carreras pide su lista al mostrarse, filtra por familia y acumula con «Mostrar más»', async () => {
+// Ajuste catalogo-datos-reales (F6a): los filtros esperan 400 ms antes de pedir la lista.
+const esperarFiltros = () => new Promise((resolve) => setTimeout(resolve, 450))
+const busquedas = (app, clase) =>
+  app.requests.filter((r) => r.url.includes(`/catalogo/${clase}?`)).map((r) => new URL(r.url, 'http://x').search)
+
+test('la pestaña de carreras pide su lista al mostrarse, filtra por familia y acumula con «Mostrar 20 más»', async () => {
   const { app } = catalogo()
   const { CatalogoServidor } = app.load('src/features/discovery/components/CatalogoServidor.tsx')
-  const vista = app.mount(CatalogoServidor, { section: 'careers', query: '', obtenido: () => false })
+  const vista = app.mount(CatalogoServidor, { section: 'careers', obtenido: () => false, iconosRevelados: null })
   vista.render()
   await esperar()
   let arbol = vista.render()
   const tarjetas = () => elementos(arbol, (e) => e.type?.name === 'TarjetaCatalogo')
   assert.equal(tarjetas().length, 4)
   assert.equal(tarjetas()[0].props.item.nombre, jsonServidor('ruta/ruta-catalogo-carreras').items[0].nombre)
-  const mas = elementos(arbol, (e) => e.type === 'button' && texto(e) === 'Mostrar más')[0]
-  mas.props.onClick()
+  assert.match(texto(arbol), /603 carreras universitarias, técnicas y de las Fuerzas Armadas y Policía/)
+  assert.doesNotMatch(texto(arbol), /Tu exploración/)
+  const pie = elementos(arbol, (e) => e.type?.name === 'PieListado')[0]
+  assert.deepEqual([pie.props.mostrados, pie.props.total, pie.props.hayMas], [4, 603, true])
+  const { PieListado } = app.load('src/features/discovery/components/PieListado.tsx')
+  assert.match(texto(PieListado(pie.props)), /Mostrando 4 de 603.*Mostrar 20 más/)
+  pie.props.onMas()
   await esperar()
   arbol = vista.render()
   assert.equal(tarjetas().length, 8)
-  const filtros = elementos(arbol, (e) => e.type?.name === 'FiltrosCatalogo')[0]
-  const { FiltrosCatalogo } = app.load('src/features/discovery/components/FiltrosCatalogo.tsx')
-  const select = elementos(FiltrosCatalogo(filtros.props), (e) => e.type === 'select')[0]
-  assert.deepEqual([select.props['aria-label'], select.props.disabled], ['Familia', false])
-  select.props.onChange({ target: { value: 'family-nursing' } })
+  // La familia cambia la URL; la lista se pide después de la espera, con las páginas anteriores descartadas.
+  elementos(arbol, (e) => e.type?.name === 'FiltrosCatalogo')[0].props.onCambiar({ familia: '331' })
+  arbol = vista.render()
+  assert.equal(tarjetas().length, 0)
+  assert.equal(app.query.get('familia'), '331')
+  await esperarFiltros()
   vista.render()
   await esperar()
-  const listas = app.requests.filter((r) => r.url.includes('/catalogo/carreras?')).map((r) => r.url)
-  assert.deepEqual(listas.map((u) => new URL(u, 'http://x').search), [
-    '?limite=20&desde=0',
-    '?limite=20&desde=4',
-    '?familia=family-nursing&limite=20&desde=0',
-  ])
-  // Las opciones de filtro se piden una sola vez; la colección no se pide en la pestaña de carreras.
+  arbol = vista.render()
+  assert.equal(tarjetas().length, 4)
+  assert.deepEqual(busquedas(app, 'carreras'), ['?limite=20&desde=0', '?limite=20&desde=4', '?familia=331&limite=20&desde=0'])
+  // Las opciones de filtro se piden una sola vez.
   assert.equal(app.requests.filter((r) => r.url.endsWith('/familias')).length, 1)
+})
+
+test('las letras pulsadas seguidas piden una sola lista, en el orden en que se pulsan', async () => {
+  const { app } = catalogo('/student/catalog/professions')
+  const { CatalogoServidor } = app.load('src/features/discovery/components/CatalogoServidor.tsx')
+  const vista = app.mount(CatalogoServidor, { section: 'professions', obtenido: () => false, iconosRevelados: 1 })
+  vista.render()
+  await esperar()
+  const arbol = vista.render()
+  assert.match(texto(arbol), /Tu exploración1 de 923 íconos revelados/)
+  const filtros = elementos(arbol, (e) => e.type?.name === 'FiltrosCatalogo')[0]
+  for (const letra of ['R', 'I', 'C']) filtros.props.onLetra(letra)
+  assert.equal(app.query.get('riasec'), 'RIC')
+  vista.render()
+  await esperarFiltros()
+  vista.render()
+  await esperar()
+  assert.deepEqual(busquedas(app, 'ocupaciones'), ['?limite=20&desde=0', '?riasec=RIC&limite=20&desde=0'])
 })
 
 test('«Mis favoritos» pide la misma lista con el filtro, y el corazón espera al servidor', async () => {
   const { app } = catalogo('/student/catalog/institutions')
   const { CatalogoServidor } = app.load('src/features/discovery/components/CatalogoServidor.tsx')
-  const vista = app.mount(CatalogoServidor, { section: 'institutions', query: '', obtenido: () => false })
+  const vista = app.mount(CatalogoServidor, { section: 'institutions', obtenido: () => false, iconosRevelados: null })
   vista.render()
   await esperar()
   let arbol = vista.render()
   const tarjetas = () => elementos(arbol, (e) => e.type?.name === 'TarjetaCatalogo')
   const { TarjetaCatalogo } = app.load('src/features/discovery/components/TarjetaCatalogo.tsx')
-  assert.match(texto(TarjetaCatalogo(tarjetas()[0].props)), /(Universidad|Instituto) · (Pública|Privada) · /)
-  elementos(arbol, (e) => e.type?.name === 'FiltrosCatalogo')[0].props.onFavoritos()
+  const primera = jsonServidor('ruta/ruta-catalogo-instituciones').items[0]
+  assert.match(texto(TarjetaCatalogo(tarjetas()[0].props)), new RegExp(`${primera.ubicacion.nombre} · ${primera.distrito}`))
+  assert.equal(elementos(arbol, (e) => e.type?.name === 'UnexpectedPlace').length, 0)
+  elementos(arbol, (e) => e.type === 'button' && /Mis favoritos/.test(texto(e)))[0].props.onClick()
+  vista.render()
+  await esperarFiltros()
   vista.render()
   await esperar()
   assert.ok(app.requests.some((r) => /\/catalogo\/instituciones\?favoritos=true&limite=20&desde=0$/.test(r.url)))
@@ -120,6 +151,26 @@ test('«Mis favoritos» pide la misma lista con el filtro, y el corazón espera 
   await esperar()
   const marca = app.requests.find((r) => r.url.endsWith('/acciones/marcar-favorito'))
   assert.equal(marca.body.tipo, 'INSTITUCION')
+})
+
+test('los filtros en la URL: afines y favoritos se excluyen, el área quita la familia y se recuerda cada pestaña', async () => {
+  const fuente = readFileSync('src/features/discovery/lib/filtrosCatalogo.ts', 'utf8')
+  const codigo = ts.transpileModule(fuente, {
+    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2023 },
+  }).outputText
+  const f = await import(`data:text/javascript;base64,${Buffer.from(codigo).toString('base64')}`)
+  const leidos = f.leerFiltros('careers', new URLSearchParams('buscar=psi&gestion=PUBLICA&area=3&familia=313'))
+  assert.deepEqual(copia(leidos), { buscar: 'psi', area: '3', familia: '313' })
+  assert.equal(f.escribirFiltros('careers', { familia: '313', tipo: 'INSTITUTO' }).toString(), 'tipo=INSTITUTO&familia=313')
+  assert.deepEqual(copia(f.cambiarFiltros({ favoritos: '1', riasec: 'RI' }, { afines: '1' })), { afines: '1' })
+  assert.deepEqual(copia(f.cambiarFiltros({ afines: '1' }, { favoritos: '1' })), { favoritos: '1' })
+  assert.deepEqual(copia(f.cambiarFiltros({ afines: '1' }, { riasec: 'S' })), { riasec: 'S' })
+  assert.deepEqual(copia(f.cambiarFiltros({ area: '3', familia: '313' }, { area: '5' })), { area: '5' })
+  assert.deepEqual(copia(f.cambiarFiltros({ area: '3', familia: '313' }, { tipo: '' })), { area: '3', familia: '313' })
+  assert.equal(f.letrasAfines('IRA'), 'IR')
+  assert.equal(f.busquedaRecordada('careers'), '')
+  f.recordarBusqueda('careers', 'familia=313')
+  assert.equal(f.busquedaRecordada('careers'), '?familia=313')
 })
 
 test('los detalles del servidor muestran sus datos y registran la vista una sola vez', async () => {

@@ -1,39 +1,61 @@
 import { useEffect, useSyncExternalStore } from 'react'
 import * as apiAcciones from '@/services/api/acciones'
 import * as apiCatalogo from '@/services/api/catalogo'
-import type { ClaseCatalogo, DetalleCatalogo, FiltrosCatalogo, ResumenCatalogo } from '@/services/api/catalogo'
-import type { ErrorServidor, FamiliaPublica, UbicacionPublica } from '@/types/servidor'
+import type {
+  ClaseCatalogo,
+  DetalleCatalogo,
+  FiltrosCatalogo,
+  ResumenCatalogo,
+} from '@/services/api/catalogo'
+import type { ErrorServidor, FamiliaPublica, GrupoPublico, UbicacionPublica } from '@/types/servidor'
 import { accionConRefresco } from './refresco'
 import { consultarCuenta, sesionServidor } from './sesion'
 
-export type { ClaseCatalogo, DetalleCatalogo, FiltrosCatalogo, ResumenCatalogo } from '@/services/api/catalogo'
+export type {
+  ClaseCatalogo,
+  DetalleCatalogo,
+  FiltrosCatalogo,
+  ResumenCatalogo,
+} from '@/services/api/catalogo'
 export const LIMITE_CATALOGO = 20
+// Ajuste catalogo-datos-reales (F6): detalles abiertos que se conservan en memoria.
+export const LIMITE_DETALLES = 20
 
 // La hoja de vida de la Central pide su ocupación al abrirse.
 export function consultarOcupacion(codigo: string) {
   return consultarCuenta((cuenta) => apiCatalogo.obtenerOcupacion(cuenta, codigo))
 }
 
-// F06 · Listas del catálogo: una por clase y filtros, pedida al mostrarse y acumulada con «Mostrar más». Cada
-// combinación de filtros tiene su propia entrada, así que la respuesta de «psi» nunca pisa la de «psico»; dentro
-// de una entrada, solo cuenta la última petición.
+// F06 · Listas del catálogo, pedidas al mostrarse y acumuladas con «Mostrar más». Ajuste catalogo-datos-reales:
+// cada clase guarda solo su combinación de filtros activa; cambiar de búsqueda o filtro descarta las páginas
+// acumuladas. Un turno por clase descarta las respuestas viejas («psi» no pisa a «psico»).
 export type ListaCatalogo<C extends ClaseCatalogo = ClaseCatalogo> = {
   estado: 'cargando' | 'listo' | 'mas' | 'error'
   items: ResumenCatalogo[C][]
   total: number
   error: ErrorServidor | null
 }
+type Entrada = ListaCatalogo & { llave: string }
 type Detalle<C extends ClaseCatalogo = ClaseCatalogo> = {
   estado: 'cargando' | 'listo' | 'error'
   datos: DetalleCatalogo[C] | null
   error: ErrorServidor | null
 }
-type Opciones = { familias: FamiliaPublica[]; ubicaciones: UbicacionPublica[] } | null
+export type OpcionesCatalogo = {
+  familias: FamiliaPublica[]
+  ubicaciones: UbicacionPublica[]
+  grupos: GrupoPublico[]
+} | null
 
-const listas = new Map<string, ListaCatalogo>()
-const turnos = new Map<string, number>()
+const listas = new Map<ClaseCatalogo, Entrada>()
+const turnos = new Map<ClaseCatalogo, number>()
+// Total de cada clase sin filtros (la cabecera), del último listado recibido.
+const dominios = new Map<ClaseCatalogo, number>()
 const detalles = new Map<string, Detalle>()
-const opciones = new Map<number, Opciones>()
+let opciones: OpcionesCatalogo = null
+let opcionesEnCurso = false
+// Lo cargado es de una sesión de cuenta: al cambiar (cerrar sesión, otra cuenta) se vacía.
+let sesionCargada = -1
 const oyentes = new Set<() => void>()
 const avisar = () => oyentes.forEach((oyente) => oyente())
 const suscribir = (oyente: () => void) => {
@@ -41,6 +63,17 @@ const suscribir = (oyente: () => void) => {
   return () => {
     oyentes.delete(oyente)
   }
+}
+
+function vigente() {
+  if (sesionCargada === sesionServidor()) return
+  sesionCargada = sesionServidor()
+  listas.clear()
+  turnos.clear()
+  dominios.clear()
+  detalles.clear()
+  opciones = null
+  opcionesEnCurso = false
 }
 
 function filtrosLimpios(filtros: FiltrosCatalogo): FiltrosCatalogo {
@@ -52,80 +85,119 @@ function filtrosLimpios(filtros: FiltrosCatalogo): FiltrosCatalogo {
   }
   return limpios
 }
-const claveLista = (clase: ClaseCatalogo, filtros: FiltrosCatalogo) =>
-  `${sesionServidor()}:${clase}:${JSON.stringify(filtrosLimpios(filtros))}`
-const claveDetalle = (clase: ClaseCatalogo, codigo: string) => `${sesionServidor()}:${clase}:${codigo}`
+const claveLista = (filtros: FiltrosCatalogo) =>
+  `${sesionServidor()}:${JSON.stringify(filtrosLimpios(filtros))}`
+const claveDetalle = (clase: ClaseCatalogo, codigo: string) => `${clase}:${codigo}`
+const vacia = (estado: ListaCatalogo['estado'], llave: string): Entrada => ({
+  estado,
+  items: [],
+  total: 0,
+  error: null,
+  llave,
+})
 
 export async function cargarLista(clase: ClaseCatalogo, filtros: FiltrosCatalogo, mas = false) {
-  const llave = claveLista(clase, filtros)
-  const actual = listas.get(llave)
-  if (!mas && actual && actual.estado !== 'error') return
-  if (mas && (!actual || actual.estado === 'cargando' || actual.estado === 'mas' || actual.items.length >= actual.total))
+  vigente()
+  const llave = claveLista(filtros)
+  const actual = listas.get(clase)
+  const misma = actual?.llave === llave
+  if (!mas && misma && actual.estado !== 'error') return
+  if (
+    mas &&
+    (!misma || actual.estado === 'cargando' || actual.estado === 'mas' || actual.items.length >= actual.total)
+  )
     return
-  const turno = (turnos.get(llave) ?? 0) + 1
-  turnos.set(llave, turno)
+  const turno = (turnos.get(clase) ?? 0) + 1
+  turnos.set(clase, turno)
   const previos = mas && actual ? actual.items : []
-  listas.set(llave, mas && actual ? { ...actual, estado: 'mas', error: null } : vacia('cargando'))
+  listas.set(clase, mas && actual ? { ...actual, estado: 'mas', error: null } : vacia('cargando', llave))
   avisar()
   const respuesta = await consultarCuenta((cuenta) =>
     apiCatalogo.buscarCatalogo(cuenta, clase, filtrosLimpios(filtros), LIMITE_CATALOGO, previos.length),
   )
-  if (turnos.get(llave) !== turno) return
+  if (turnos.get(clase) !== turno) return
+  if (respuesta.tipo === 'ok') dominios.set(clase, respuesta.datos.total_dominio)
   listas.set(
-    llave,
+    clase,
     respuesta.tipo === 'ok'
-      ? { estado: 'listo', items: [...previos, ...respuesta.datos.items], total: respuesta.datos.total, error: null }
-      : { estado: 'error', items: previos, total: actual?.total ?? 0, error: respuesta },
+      ? {
+          estado: 'listo',
+          items: [...previos, ...respuesta.datos.items],
+          total: respuesta.datos.total,
+          error: null,
+          llave,
+        }
+      : { estado: 'error', items: previos, total: actual?.total ?? 0, error: respuesta, llave },
   )
   avisar()
 }
-const vacia = (estado: ListaCatalogo['estado']): ListaCatalogo => ({ estado, items: [], total: 0, error: null })
 
 // Tras un error, reintenta lo que faltó: la primera página o la siguiente.
 export function reintentarLista(clase: ClaseCatalogo, filtros: FiltrosCatalogo) {
-  const actual = listas.get(claveLista(clase, filtros))
-  if (actual?.estado !== 'error') return
+  const actual = listas.get(clase)
+  if (actual?.estado !== 'error' || actual.llave !== claveLista(filtros)) return
   if (!actual.items.length) return cargarLista(clase, filtros)
-  listas.set(claveLista(clase, filtros), { ...actual, estado: 'listo' })
+  listas.set(clase, { ...actual, estado: 'listo' })
   return cargarLista(clase, filtros, true)
 }
 
-// La lista de una clase con sus filtros, pedida mientras `activa` (la pestaña a la vista).
+// La lista de una clase con sus filtros, pedida mientras `activa` (la pestaña a la vista). Mientras se piden
+// otros filtros, devuelve `undefined`.
 export function useListaCatalogo<C extends ClaseCatalogo>(
   clase: C,
   filtros: FiltrosCatalogo,
   activa: boolean,
 ): ListaCatalogo<C> | undefined {
-  const llave = claveLista(clase, filtros)
-  const lista = useSyncExternalStore(suscribir, () => listas.get(llave)) as ListaCatalogo<C> | undefined
+  const llave = claveLista(filtros)
+  const entrada = useSyncExternalStore(suscribir, () => listas.get(clase))
+  const lista = entrada?.llave === llave ? (entrada as unknown as ListaCatalogo<C>) : undefined
   useEffect(() => {
     // `llave` resume los filtros (limpios), así que el efecto no depende de la identidad del objeto.
-    if (activa && !lista) void cargarLista(clase, JSON.parse(llave.slice(llave.indexOf('{'))) as FiltrosCatalogo)
+    if (activa && !lista)
+      void cargarLista(clase, JSON.parse(llave.slice(llave.indexOf('{'))) as FiltrosCatalogo)
   }, [activa, clase, llave, lista])
   return lista
 }
 
-// El detalle se pide al abrirlo y se guarda por código; un error se puede reintentar.
+// Cuántos hay en todo el catálogo de la clase (cabecera y «N de M»); nulo hasta el primer listado.
+export function useTotalDominio(clase: ClaseCatalogo) {
+  return useSyncExternalStore(suscribir, () => dominios.get(clase) ?? null)
+}
+
+// El detalle se pide al abrirlo y se guarda por código, con los últimos LIMITE_DETALLES abiertos; un error se
+// puede reintentar.
 export function cargarDetalle(clase: ClaseCatalogo, codigo: string, reintentar = false) {
+  vigente()
   const llave = claveDetalle(clase, codigo)
   const actual = detalles.get(llave)
-  if (actual && (actual.estado !== 'error' || !reintentar)) return
+  if (actual && (actual.estado !== 'error' || !reintentar)) {
+    // Abierto otra vez: pasa a ser el más reciente.
+    detalles.delete(llave)
+    detalles.set(llave, actual)
+    return
+  }
+  detalles.delete(llave)
   detalles.set(llave, { estado: 'cargando', datos: null, error: null })
+  while (detalles.size > LIMITE_DETALLES) detalles.delete(detalles.keys().next().value!)
   avisar()
-  void consultarCuenta((cuenta) => apiCatalogo.obtenerDetalleCatalogo(cuenta, clase, codigo)).then((respuesta) => {
-    detalles.set(
-      llave,
-      respuesta.tipo === 'ok'
-        ? { estado: 'listo', datos: respuesta.datos, error: null }
-        : { estado: 'error', datos: null, error: respuesta },
-    )
-    avisar()
-  })
+  const sesion = sesionServidor()
+  void consultarCuenta((cuenta) => apiCatalogo.obtenerDetalleCatalogo(cuenta, clase, codigo)).then(
+    (respuesta) => {
+      if (sesion !== sesionServidor() || !detalles.has(llave)) return
+      detalles.set(
+        llave,
+        respuesta.tipo === 'ok'
+          ? { estado: 'listo', datos: respuesta.datos, error: null }
+          : { estado: 'error', datos: null, error: respuesta },
+      )
+      avisar()
+    },
+  )
 }
 
 export function useDetalleCatalogo<C extends ClaseCatalogo>(clase: C, codigo: string | undefined) {
   const detalle = useSyncExternalStore(suscribir, () =>
-    codigo ? detalles.get(claveDetalle(clase, codigo)) : undefined,
+    codigo && sesionCargada === sesionServidor() ? detalles.get(claveDetalle(clase, codigo)) : undefined,
   ) as Detalle<C> | undefined
   useEffect(() => {
     if (codigo) cargarDetalle(clase, codigo)
@@ -133,21 +205,23 @@ export function useDetalleCatalogo<C extends ClaseCatalogo>(clase: C, codigo: st
   return detalle
 }
 
-// Familias y ubicaciones de los filtros: una vez por sesión de cuenta.
-let opcionesEnCurso: number | null = null
-export function useOpcionesCatalogo(activas: boolean): Opciones {
+// Familias, ubicaciones y grupos de los filtros: una vez por sesión de cuenta.
+export function useOpcionesCatalogo(activas: boolean): OpcionesCatalogo {
   const sesion = sesionServidor()
-  const actuales = useSyncExternalStore(suscribir, () => opciones.get(sesion) ?? null)
+  const actuales = useSyncExternalStore(suscribir, () => (sesionCargada === sesion ? opciones : null))
   useEffect(() => {
-    if (!activas || opciones.has(sesion) || opcionesEnCurso === sesion) return
-    opcionesEnCurso = sesion
+    vigente()
+    if (!activas || opciones || opcionesEnCurso) return
+    opcionesEnCurso = true
     void Promise.all([
       consultarCuenta(apiCatalogo.obtenerFamilias),
       consultarCuenta(apiCatalogo.obtenerUbicaciones),
-    ]).then(([familias, ubicaciones]) => {
-      opcionesEnCurso = null
-      if (familias.tipo !== 'ok' || ubicaciones.tipo !== 'ok') return
-      opciones.set(sesion, { familias: familias.datos, ubicaciones: ubicaciones.datos })
+      consultarCuenta(apiCatalogo.obtenerGrupos),
+    ]).then(([familias, ubicaciones, grupos]) => {
+      if (sesion !== sesionServidor()) return
+      opcionesEnCurso = false
+      if (familias.tipo !== 'ok' || ubicaciones.tipo !== 'ok' || grupos.tipo !== 'ok') return
+      opciones = { familias: familias.datos, ubicaciones: ubicaciones.datos, grupos: grupos.datos }
       avisar()
     })
   }, [activas, sesion])
@@ -155,18 +229,17 @@ export function useOpcionesCatalogo(activas: boolean): Opciones {
 }
 
 // Una acción de favorito confirmada se aplica a lo cargado: listas, detalles y lo que cada detalle lista.
-// Las listas filtradas por favoritos de esa clase se descartan: se vuelven a pedir al mostrarse.
+// La lista de favoritos de esa clase se descarta: se vuelve a pedir al mostrarse.
 export function actualizarFavoritoCatalogo(clase: ClaseCatalogo, codigo: string, es_favorita: boolean) {
   const marcar = <T extends { codigo: string; es_favorita: boolean }>(items: T[]) =>
     items.map((item) => (item.codigo === codigo ? { ...item, es_favorita } : item))
-  for (const [llave, lista] of listas) {
-    if (llave.includes(`:${clase}:`) && llave.includes('"favoritos":true')) listas.delete(llave)
-    else if (llave.includes(`:${clase}:`)) listas.set(llave, { ...lista, items: marcar(lista.items) })
-  }
+  const lista = listas.get(clase)
+  if (lista?.llave.includes('"favoritos":true')) listas.delete(clase)
+  else if (lista) listas.set(clase, { ...lista, items: marcar(lista.items) })
   for (const [llave, detalle] of detalles) {
     if (!detalle.datos) continue
     let datos = detalle.datos as DetalleCatalogo[ClaseCatalogo] & Partial<Record<ClaseCatalogo, unknown>>
-    if (llave.endsWith(`:${clase}:${codigo}`)) datos = { ...datos, es_favorita }
+    if (llave === claveDetalle(clase, codigo)) datos = { ...datos, es_favorita }
     const anidados = datos[clase]
     if (Array.isArray(anidados)) datos = { ...datos, [clase]: marcar(anidados) }
     detalles.set(llave, { ...detalle, datos })

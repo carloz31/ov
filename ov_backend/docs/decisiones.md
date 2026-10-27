@@ -34,3 +34,13 @@ Spec: `docs/specs/ajuste-catalogo-datos-reales.md`.
 - **`TramoIngreso` en el front**: el esquema se llama `Tramo`, pero en `types/servidor.ts` ese nombre ya es el de los tramos del avance.
 - **`test_r29_codigo_nullable_en_coincidencia_via_e_historial`** se retira: probaba ocupaciones sin código, que ya no existen (`Ocupacion.codigo` es obligatorio).
 - **`CarreraResumen.duracion`** (antes solo en el detalle): la tarjeta de carrera del boceto muestra la duración; se agrega al resumen y el detalle la hereda.
+
+## F6a · Listados
+
+- **«Tu exploración»**: se elimina de carreras e instituciones (ninguna consulta dice cuántas vio la cuenta; decidido con el usuario) y se conserva en profesiones como «N de M íconos revelados» (colección + `total_dominio`).
+- **Pestañas**: siguen siendo rutas (`/student/catalog/<pestaña>`), no `?tab=`; los filtros van como query. Cada pestaña recuerda su última búsqueda en memoria (`lib/filtrosCatalogo.ts`) y los enlaces de las pestañas la usan; en local queda vacía.
+- **«Afines a mi resultado»**: es el filtro `riasec` con las dos primeras letras del código de interés del resultado (seguidas y en orden, como busca el filtro); excluyente con «Mis favoritos». Sin resultado revelado, el chip queda deshabilitado. `?afines=1` ya no es un modo aparte en api.
+- **Espera**: el texto escribe la URL a los 300 ms y los demás filtros piden la lista a los 400 ms; cada cambio se calcula sobre la última URL escrita, así que R-I-C seguidas piden una sola vez «RIC». El turno por clase del almacén descarta respuestas viejas.
+- **Almacén**: una sola lista por clase (la combinación activa); cambiar de filtro descarta las páginas acumuladas. Detalles en memoria, los últimos 20 (LRU). Todo lo del catálogo se vacía al cambiar la sesión de cuenta.
+- **«Mostrar N más»**: muestra cuántas faltan cuando son menos de 20 («Mostrar 8 más»).
+- **Prueba adaptada**: `servidor-resultados` probaba el modo aparte `?afines=1` en api (coincidencias con correlación); ahora verifica que abre el catálogo del servidor, que aplica el filtro (lo autoriza la spec: «?afines=1 deja de ser un modo aparte»).

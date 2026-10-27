@@ -1,6 +1,7 @@
 import { BriefcaseBusiness, GraduationCap, School } from 'lucide-react'
 import { Link, useLocation } from 'react-router'
 import { appPaths } from '@/routes/paths'
+import { busquedaRecordada } from '../lib/filtrosCatalogo'
 
 const sections = [
   { id: 'professions', label: 'Profesiones', Icon: BriefcaseBusiness },
@@ -15,7 +16,8 @@ export function CatalogNavigation() {
       {sections.map(({ id, label, Icon }) => (
         <Link
           key={id}
-          to={appPaths.student.catalog[id]}
+          // Ajuste catalogo-datos-reales (F6a): vuelve a la última búsqueda de esa pestaña (solo en api).
+          to={appPaths.student.catalog[id] + busquedaRecordada(id)}
           aria-current={pathname.split('/')[3] === id ? 'page' : undefined}
         >
           <Icon aria-hidden="true" size={20} />

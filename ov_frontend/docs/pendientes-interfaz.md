@@ -16,6 +16,11 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Si no se muestra:** en api, la ocupación muestra sus sellos sin barras, la institución solo su ubicación, la carrera su ingreso promedio con tramos y la tarjeta de carrera, nombre, familia y sellos. En local no cambia.
 - **Estado:** resuelto en el ajuste catalogo-datos-reales (2026-10-27): el servidor entrega los puntajes por dimensión (`puntajes`, 0–100), la dirección y el distrito (la provincia se descarta), los ingresos de la familia por departamento y por edad (`ingreso.nacional` y `ingreso.departamentos`, con jóvenes y adultos) y por institución, y la duración en el resumen de carrera. Las pantallas que los muestran son F6 de ese ajuste.
 
+## 2026-10-27 · Ajuste catalogo-datos-reales · Contador de exploración en carreras e instituciones
+
+- **Dato:** cuántas carreras o instituciones vio la cuenta («Tu exploración: N descubiertas» en los bocetos).
+- **Estado:** descartado por el usuario: el progreso va en el pasaporte. El bloque no se pinta en esos listados (sí en profesiones, como «N de M íconos revelados»). Si más adelante se quiere un empujón ahí, que tenga mecánica (por ejemplo, familias visitadas hacia la insignia), no un conteo de vistas.
+
 ## 2026-10-27 · Ajuste catalogo-datos-reales · Ocupaciones reales por carrera
 
 - **Dato:** la relación carrera → ocupaciones. Hoy es provisional: de 3 a 5 ocupaciones al azar por carrera (semilla fija), salvo las 6 carreras de la ruta; las carreras de FF. AA. no tienen ninguna.

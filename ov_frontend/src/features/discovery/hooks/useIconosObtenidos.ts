@@ -5,8 +5,9 @@ import { ocupacionesObtenidas } from '@/lib/servidor/adaptadoresCasos'
 import { consultarColeccion } from '@/store/servidor/casos'
 import type { OcupacionColeccion } from '@/types/servidor'
 
-// HU-055: ocupaciones cuyo ícono se obtuvo en la Central de Casos. En api, la colección del servidor.
-export function useIconosObtenidos() {
+// HU-055: ocupaciones cuyo ícono se obtuvo en la Central de Casos. En api, la colección del servidor, con
+// cuántas son (ajuste catalogo-datos-reales: «N de M íconos revelados»).
+export function useColeccionIconos() {
   const context = useOccupationExplorationContext()
   const [coleccion, setColeccion] = useState<OcupacionColeccion[] | null>(null)
   useEffect(() => {
@@ -20,8 +21,16 @@ export function useIconosObtenidos() {
     }
   }, [])
   const obtenidas = ocupacionesObtenidas(coleccion)
-  return (id: string) =>
-    modoApi
-      ? obtenidas.has(id)
-      : context.profiles.some((p) => p.occupationId === id && p.discoveryState !== 'unused')
+  return {
+    obtenido: (id: string) =>
+      modoApi
+        ? obtenidas.has(id)
+        : context.profiles.some((p) => p.occupationId === id && p.discoveryState !== 'unused'),
+    cantidad: coleccion === null ? null : obtenidas.size,
+    coleccion,
+  }
+}
+
+export function useIconosObtenidos() {
+  return useColeccionIconos().obtenido
 }

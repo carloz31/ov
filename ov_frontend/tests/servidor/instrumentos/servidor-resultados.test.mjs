@@ -191,17 +191,10 @@ test('isAffine usa código y ajuste del servidor y oculta afinidades antes de re
   )
 })
 
-test('el catálogo respeta posición y correlación e incluye códigos desconocidos sin enlace', async () => {
-  // DATO DE PRUEBA: nurse y código nulo sin detalle del catálogo del front.
+// Ajuste catalogo-datos-reales (F6a): en api, `?afines=1` ya no es un modo aparte con las coincidencias del
+// resultado: es un filtro del catálogo del servidor (las letras del código de interés).
+test('en api, «afines» abre el catálogo del servidor con el filtro', async () => {
   const resultado = jsonServidor('resultado-riasec')
-  resultado.coincidencias.push({
-    ...resultado.coincidencias[0],
-    codigo: 'nurse',
-    codigo_onet: '29-1141.00',
-    titulo: 'Enfermero/a',
-    posicion: 2,
-  })
-  resultado.coincidencias.reverse()
   const f = await iniciarMara({ resultado, ruta: '/student/catalog/professions?afines=1' })
   const context = f.app.load('src/context/occupationExplorationContext.ts')
   context.useOccupationExplorationContext = () => ({
@@ -209,16 +202,11 @@ test('el catálogo respeta posición y correlación e incluye códigos desconoci
     careerInterestIds: [],
     institutionInterestIds: [],
   })
-  const discovery = f.app.load('src/store/discoveryStore.ts')
-  discovery.revelarPaginaApi('est-ana', resultado.calculado_en, 'intereses')
   const View = f.app.load('src/pages/student/StudentCatalogView.tsx').StudentCatalogView
-  const tree = View({ section: 'professions' }),
-    cards = elementos(tree, (e) => e.type === 'article')
-  assert.match(texto(cards[0]), /Geólogo/)
-  const nurse = cards.find((c) => texto(c).includes('Enfermero/a'))
-  assert.ok(nurse)
-  assert.match(texto(nurse), /correlación/)
-  assert.equal(elementos(nurse, (e) => !!e.props.to).length, 0)
+  const tree = View({ section: 'professions' })
+  const [catalogo] = elementos(tree, (e) => e.type?.name === 'CatalogoServidor')
+  assert.equal(catalogo.props.section, 'professions')
+  assert.equal(elementos(tree, (e) => e.type === 'article').length, 0)
 })
 
 test('el libro resume las dimensiones remotas y anuncia contenidos, con enlaces al resultado y la guía', async () => {

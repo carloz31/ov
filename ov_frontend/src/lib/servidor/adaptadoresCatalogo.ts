@@ -6,6 +6,12 @@ export const nombresTipoInstitucion: Record<TipoInstitucionServidor, string> = {
   INSTITUTO: 'Instituto',
   FFAA_POLICIA: 'FF. AA. y Policía',
 }
+// Ajuste catalogo-datos-reales (F6): la etiqueta de tipo de una carrera.
+export const nombresTipoCarrera: Record<TipoInstitucionServidor, string> = {
+  UNIVERSIDAD: 'Universitaria',
+  INSTITUTO: 'Técnica',
+  FFAA_POLICIA: 'FF. AA. y Policía',
+}
 export const textoGestion = (gestion: GestionInstitucion | null) =>
   gestion === 'PUBLICA' ? 'Pública' : gestion === 'PRIVADA' ? 'Privada' : null
 
@@ -15,7 +21,11 @@ export function lineaInstitucion(institucion: {
   gestion: GestionInstitucion | null
   ubicacion: { nombre: string }
 }) {
-  return [nombresTipoInstitucion[institucion.tipo], textoGestion(institucion.gestion), institucion.ubicacion.nombre]
+  return [
+    nombresTipoInstitucion[institucion.tipo],
+    textoGestion(institucion.gestion),
+    institucion.ubicacion.nombre,
+  ]
     .filter(Boolean)
     .join(' · ')
 }

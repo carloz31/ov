@@ -49,7 +49,7 @@ test('la lista se pide al mostrarse, con filtros y página, y «Mostrar más» a
   assert.equal(listas(app).length, 2)
 })
 
-test('cada búsqueda tiene su entrada: una respuesta vieja no pisa la nueva', async () => {
+test('una respuesta vieja no pisa la nueva y solo se guarda la combinación activa', async () => {
   let soltar
   const { app, store } = catalogo({ pagina: () => carreras })
   const lenta = new Promise((resolve) => (soltar = resolve))
@@ -60,6 +60,8 @@ test('cada búsqueda tiene su entrada: una respuesta vieja no pisa la nueva', as
   await esperar()
   const hook = app.mount(() => store.useListaCatalogo('carreras', { buscar: 'psico' }, true), {})
   assert.equal(hook.render().total, 6)
+  // Ajuste catalogo-datos-reales: la lista de «psi» ya no se guarda; volver a ella la pide de nuevo.
+  assert.equal(app.mount(() => store.useListaCatalogo('carreras', { buscar: 'psi' }, false), {}).render(), undefined)
 })
 
 test('el detalle se pide una vez por código y las opciones de filtro una vez por sesión', async () => {
@@ -78,12 +80,23 @@ test('el detalle se pide una vez por código y las opciones de filtro una vez po
   const pedidas = app.requests.map((r) => r.url)
   assert.equal(pedidas.filter((u) => u.endsWith('/carreras/psychology')).length, 1)
   assert.equal(pedidas.filter((u) => u.endsWith('/familias')).length, 1)
+  assert.equal(pedidas.filter((u) => u.endsWith('/grupos')).length, 1)
+})
+
+test('los detalles abiertos se guardan hasta un límite: el más antiguo se vuelve a pedir', async () => {
+  const { app, store } = catalogo()
+  for (let n = 0; n <= store.LIMITE_DETALLES; n++) store.cargarDetalle('carreras', `c-${n}`)
+  await esperar()
+  store.cargarDetalle('carreras', `c-${store.LIMITE_DETALLES}`)
+  store.cargarDetalle('carreras', 'c-0')
+  const pedidas = app.requests.map((r) => r.url)
+  assert.equal(pedidas.filter((u) => u.endsWith('/carreras/c-0')).length, 2)
+  assert.equal(pedidas.filter((u) => u.endsWith(`/carreras/c-${store.LIMITE_DETALLES}`)).length, 1)
 })
 
 test('un favorito confirmado se aplica a listas, detalles y resultado, y descarta la lista de favoritos', async () => {
   const { app, almacen, store, favoritos } = catalogo()
   await store.cargarLista('carreras', {})
-  await store.cargarLista('carreras', { favoritos: true })
   store.cargarDetalle('carreras', 'psychology')
   await esperar()
   almacen.publicar({ resultadoRiasec: jsonServidor('ruta/ruta-resultado-riasec') })
@@ -92,6 +105,9 @@ test('un favorito confirmado se aplica a listas, detalles y resultado, y descart
   assert.equal(respuesta.tipo, 'ok')
   const lista = app.mount(() => store.useListaCatalogo('carreras', {}, false), {}).render()
   assert.equal(lista.items[0].es_favorita, !carreras.items[0].es_favorita)
+  // La lista filtrada por favoritos se descarta al cambiar un favorito: se vuelve a pedir.
+  await store.cargarLista('carreras', { favoritos: true })
+  await favoritos.alternarFavorito('CARRERA', objetivo, carreras.items[0].es_favorita)
   assert.equal(app.mount(() => store.useListaCatalogo('carreras', { favoritos: true }, false), {}).render(), undefined)
   const recomendada = almacen
     .obtenerEstadoServidor()
@@ -103,7 +119,7 @@ test('un favorito confirmado se aplica a listas, detalles y resultado, y descart
   assert.equal(detalle.datos.ocupaciones.find((o) => o.codigo === 'psychologist').es_favorita, true)
   assert.deepEqual(
     copia(app.requests.filter((r) => r.url.endsWith('-favorito')).map((r) => r.body.tipo)),
-    ['CARRERA', 'OCUPACION'],
+    ['CARRERA', 'CARRERA', 'OCUPACION'],
   )
 })
 
