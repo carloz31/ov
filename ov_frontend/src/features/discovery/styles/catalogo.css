@@ -562,6 +562,7 @@
   align-items: flex-end;
   text-align: right;
 }
+.sx-d-related.sx-c-fila-enlace,
 .sx-c-fila-enlace {
   display: flex;
   align-items: center;
@@ -571,6 +572,12 @@
 .sx-c-fila-enlace > span:first-child {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+}
+/* La etiqueta de tipo mide lo que su texto, a la derecha de la fila. */
+.sx-c-fila-enlace > .sx-c-etiqueta {
+  flex: none;
+  align-self: center;
 }
 .sx-c-fila-enlace .sx-d-seal {
   width: 26px;
