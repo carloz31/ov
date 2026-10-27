@@ -30,7 +30,8 @@ export function lineaInstitucion(institucion: {
     .join(' · ')
 }
 
-export const soles = (monto: number) => `S/ ${monto.toLocaleString('es-PE')}`
+// Miles separados por un espacio fino que no se corta, como los publica Ponte en Carrera («S/ 4 320»).
+export const soles = (monto: number) => `S/ ${String(Math.round(monto)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f')}`
 
 // Los extremos de un tramo de ingreso, en texto.
 export const rangoSoles = (tramo: TramoIngreso) => `de ${soles(tramo.minimo)} a ${soles(tramo.maximo)}`

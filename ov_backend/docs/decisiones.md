@@ -44,3 +44,12 @@ Spec: `docs/specs/ajuste-catalogo-datos-reales.md`.
 - **Almacén**: una sola lista por clase (la combinación activa); cambiar de filtro descarta las páginas acumuladas. Detalles en memoria, los últimos 20 (LRU). Todo lo del catálogo se vacía al cambiar la sesión de cuenta.
 - **«Mostrar N más»**: muestra cuántas faltan cuando son menos de 20 («Mostrar 8 más»).
 - **Prueba adaptada**: `servidor-resultados` probaba el modo aparte `?afines=1` en api (coincidencias con correlación); ahora verifica que abre el catálogo del servidor, que aplica el filtro (lo autoriza la spec: «?afines=1 deja de ser un modo aparte»).
+
+## F6b · Detalles
+
+- **Plan de la carrera**: el bloque lee los planes que la pantalla ya tiene (los locales del front) y «Armar un plan» usa el flujo existente (`createPlanFromCareer`). La precarga de institución, «En tus planes» de la institución y el departamento del estudiante quedan en `pendientes-interfaz.md`.
+- **«En tus planes» en el detalle de carrera** no se repite: lo cubre el bloque de plan en sus tres estados, como en el boceto.
+- **Título del caso** del ícono revelado: sale de las actividades ya cargadas (el `caso` de la colección es el código de la actividad); si no está, «Ícono revelado en la Central de Casos».
+- **Tareas** de la profesión: se muestran las 5 primeras; «También se le llama», los 4 primeros nombres.
+- **Montos**: miles con espacio fino (`S/ 4 320`), como en los bocetos.
+- **Tabla de carreras de la institución**: buscador y chips por área con más de 8 carreras; 6 filas y «Mostrar las N restantes».

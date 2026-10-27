@@ -186,8 +186,14 @@ test('los detalles del servidor muestran sus datos y registran la vista una sola
   assert.match(marcado, /Psicología/)
   const ingreso = elementos(arbol, (e) => e.type?.name === 'IngresoCarrera')[0]
   const { IngresoCarrera } = app.load('src/features/discovery/components/IngresoCarrera.tsx')
-  assert.match(texto(IngresoCarrera(ingreso.props)), /JóvenesS\/ 2[.,\s]?824/)
-  assert.match(texto(IngresoCarrera(ingreso.props)), /Ponte en Carrera \(MTPE\)/)
+  // Ajuste catalogo-datos-reales (F6b): «Por lugar» arranca en todo el país, con jóvenes destacada.
+  const tramos = elementos(IngresoCarrera(ingreso.props), (e) => e.type?.name === 'TarjetaTramo')
+  assert.deepEqual(
+    tramos.map((t) => [t.props.titulo, t.props.tramo.promedio, !!t.props.destacada]),
+    [['Jóvenes', 2824, true], ['Adultos', 5033, false]],
+  )
+  assert.equal(elementos(arbol, (e) => e.type?.name === 'FuentesCatalogo')[0].props.de, 'carrera')
+  assert.equal(elementos(arbol, (e) => e.type?.name === 'BloquePlanCarrera').length, 1)
   assert.doesNotMatch(marcado, /Explorando familias|Datos de demostración/)
   const vistas = app.requests.filter((r) => r.url.endsWith('/acciones/ver-carrera'))
   assert.deepEqual(copia(vistas.map((r) => r.body)), [{ cuenta: 'est-ana', carrera: 'mtpe-369' }])
@@ -203,8 +209,9 @@ test('los detalles del servidor muestran sus datos y registran la vista una sola
   institucion.render()
   await esperar()
   arbol = institucion.render()
-  assert.match(texto(arbol), /Universidad · Pública · Lima/)
-  assert.equal(elementos(arbol, (e) => e.type === 'a' && e.props.href === 'https://www.unfv.edu.pe/').length, 1)
+  assert.match(texto(arbol), /Universidad Nacional Federico Villarreal/)
+  assert.equal(elementos(arbol, (e) => e.type === 'a' && e.props.href === 'https://www.unfv.edu.pe/').length, 2)
+  assert.equal(elementos(arbol, (e) => e.type?.name === 'CarrerasDeInstitucion').length, 1)
   assert.ok(app.requests.some((r) => r.url.endsWith('/acciones/ver-institucion')))
 })
 
@@ -232,4 +239,31 @@ test('el lugar inesperado lo elige el servidor y lleva a su detalle', async () =
   await esperar()
   assert.ok(app.requests.some((r) => r.url.endsWith('/catalogo/carreras/inesperada?excluir=psychology')))
   assert.deepEqual(copia(app.navigations), ['/student/catalog/careers/nursing'])
+})
+
+test('el bloque de plan de la carrera tiene tres estados: ya es plan, hay espacio o los tres están ocupados', () => {
+  const { app } = catalogo()
+  const { BloquePlanCarrera } = app.load('src/features/discovery/components/BloquePlanCarrera.tsx')
+  const base = { letra: null, libres: 0, ocupados: [], armar: () => {} }
+  assert.match(texto(BloquePlanCarrera({ planes: { ...base, letra: 'B' } })), /Ya es tu Plan BSigue armándolo.*Ver mi tarjeta/)
+  const libre = BloquePlanCarrera({ planes: { ...base, libres: 1 } })
+  assert.match(texto(libre), /Te queda 1 de 3 espacios/)
+  assert.equal(elementos(libre, (e) => e.type === 'button').length, 1)
+  const ocupados = [{ letra: 'A', nombre: 'Ingeniería Civil' }, { letra: 'B', nombre: 'Psicología' }, { letra: 'C', nombre: 'Derecho' }]
+  const lleno = BloquePlanCarrera({ planes: { ...base, ocupados } })
+  assert.match(texto(lleno), /A: Ingeniería Civil, B: Psicología, C: Derecho/)
+  assert.equal(elementos(lleno, (e) => e.type === 'button').length, 0)
+})
+
+test('el perfil de intereses ordena las barras y compara con el resultado en tres frases', () => {
+  const { app } = catalogo()
+  const { PerfilIntereses } = app.load('src/features/discovery/components/PerfilIntereses.tsx')
+  const puntajes = { R: 1, I: 76, A: 34, S: 93, E: 27, C: 42 }
+  const sinResultado = PerfilIntereses({ puntajes, codigo: ['S', 'I'], resultado: null })
+  assert.match(texto(sinResultado), /Social93 %Investigador76 %Convencional42 %/)
+  assert.doesNotMatch(texto(sinResultado), /Comparado con tu resultado/)
+  const frase = (resultado) => texto(PerfilIntereses({ puntajes, codigo: ['S', 'I'], resultado }))
+  assert.match(frase(['S', 'A', 'E']), /Comparten el interés principal, Social\./)
+  assert.match(frase(['I', 'R', 'A']), /Comparten Investigador, aunque no el interés principal\./)
+  assert.match(frase(['R', 'E', 'C']), /tus intereses van por otro lado, aunque eso no la descarta/)
 })

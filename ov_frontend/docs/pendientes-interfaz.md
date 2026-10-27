@@ -16,6 +16,14 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Si no se muestra:** en api, la ocupación muestra sus sellos sin barras, la institución solo su ubicación, la carrera su ingreso promedio con tramos y la tarjeta de carrera, nombre, familia y sellos. En local no cambia.
 - **Estado:** resuelto en el ajuste catalogo-datos-reales (2026-10-27): el servidor entrega los puntajes por dimensión (`puntajes`, 0–100), la dirección y el distrito (la provincia se descarta), los ingresos de la familia por departamento y por edad (`ingreso.nacional` y `ingreso.departamentos`, con jóvenes y adultos) y por institución, y la duración en el resumen de carrera. Las pantallas que los muestran son F6 de ese ajuste.
 
+## 2026-10-27 · Ajuste catalogo-datos-reales · Planes en los detalles del catálogo
+
+- **Dato:** los planes de carrera del front siguen siendo locales (el servidor los tiene desde B11, pero el front aún no los usa) y no guardan institución; el perfil del estudiante en api no tiene departamento.
+- **Dónde se mostraría:** «Usarla en un presupuesto» (debería abrir Mis planes con la institución precargada en el plan elegido), «En tus planes» del detalle de institución («Aquí estudiarías X en tu Plan A») y el chip inicial de «Dónde estudiarla» (el departamento del estudiante).
+- **Hoy:** «Usarla en un presupuesto» lleva a Mis planes sin precarga; «En tus planes» no se pinta en la institución; «Dónde estudiarla» arranca en Lima. «Armar un plan» crea el plan con la carrera (el flujo que ya existía), sin pasar por una pantalla de creación.
+- **Opciones:** conectar los planes del servidor (B11) en el front y agregar la precarga de institución; o mantenerlo así hasta ese lote.
+- **Estado:** pendiente de decisión del usuario.
+
 ## 2026-10-27 · Ajuste catalogo-datos-reales · Contador de exploración en carreras e instituciones
 
 - **Dato:** cuántas carreras o instituciones vio la cuenta («Tu exploración: N descubiertas» en los bocetos).

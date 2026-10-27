@@ -1,57 +1,116 @@
 import { Link } from 'react-router'
+import { Clock, FileText } from 'lucide-react'
 import { FavoriteButton } from '@/components/student/FavoriteButton'
 import { Parchment } from '@/components/student/Parchment'
 import { discoveryPaths } from '@/routes/discoveryPaths'
-import { lineaInstitucion } from '@/lib/servidor/adaptadoresCatalogo'
+import { appPaths } from '@/routes/paths'
+import { nombresTipoCarrera } from '@/lib/servidor/adaptadoresCatalogo'
 import { useDetalleServidor } from '../hooks/useDetalleServidor'
+import { usePlanesCarrera } from '../hooks/usePlanesCarrera'
 import { AtlasNavigation } from './AtlasNavigation'
 import { AvisoFavorito } from './AvisoFavorito'
+import { BloquePlanCarrera } from './BloquePlanCarrera'
+import { CarrerasParecidas } from './CarrerasParecidas'
 import { CatalogRevisitNotice } from './CatalogRevisitNotice'
 import { DiscoveryStage } from './DiscoveryStage'
+import { DondeEstudiarla } from './DondeEstudiarla'
 import { EsperaDetalle } from './EsperaDetalle'
+import { FuentesCatalogo } from './FuentesCatalogo'
 import { IngresoCarrera } from './IngresoCarrera'
-import { PlanDeCarrera } from './PlanDeCarrera'
+import { SellosRiasec } from './SellosRiasec'
 import { UnexpectedPlace } from './UnexpectedPlace'
+import '../styles/catalogo.css'
 
-// F06: el detalle de carrera en api, con lo que entrega el servidor y el marcado del detalle local.
+// F06 · ajuste catalogo-datos-reales (F6b): el detalle de carrera en api. Cabecera con tipo, área y familia;
+// qué trata, dónde trabajar, ingresos y profesiones; al lado, el plan (la acción central), dónde estudiarla,
+// las parecidas y el lugar inesperado; al pie, las fuentes.
 export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
   const { datos: carrera, favorito, ...estado } = useDetalleServidor('carreras', codigo)
+  const planes = usePlanesCarrera(carrera?.codigo ?? codigo, carrera?.nombre ?? '')
   if (!carrera) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} />
+  const areaUrl = `${appPaths.student.catalog.careers}?area=${carrera.familia.area_codigo}`
   return (
     <DiscoveryStage ambient="atlas">
       <AtlasNavigation section="careers" />
       <CatalogRevisitNotice />
-      <Parchment className="sx-d-dark">
-        <div className="sx-d-header">
-          <div>
-            <p className="sx-d-eyebrow">Carrera</p>
+      <Parchment className="sx-d-dark sx-c-cabecera">
+        <div className="sx-c-cabecera-fila">
+          <div className="sx-c-cabecera-texto">
+            <div className="sx-c-etiquetas">
+              <span className="sx-c-etiqueta" data-tipo={carrera.tipo}>
+                Carrera {nombresTipoCarrera[carrera.tipo].toLowerCase()}
+              </span>
+              <Link className="sx-c-etiqueta sx-c-etiqueta-oscura" to={areaUrl}>
+                {carrera.familia.area_nombre}
+              </Link>
+              <Link
+                className="sx-c-etiqueta sx-c-etiqueta-oscura"
+                to={`${appPaths.student.catalog.careers}?familia=${carrera.familia.codigo}`}
+              >
+                {carrera.familia.nombre}
+              </Link>
+            </div>
             <h1 className="sx-d-detail-title" tabIndex={-1}>
               {carrera.nombre}
             </h1>
-            <p>{[carrera.familia.nombre, carrera.duracion].filter(Boolean).join(' · ')}</p>
+            <p className="sx-c-datos">
+              {carrera.duracion && (
+                <span>
+                  <Clock aria-hidden="true" size={16} /> {carrera.duracion}
+                </span>
+              )}
+              {carrera.nombre_cine && (
+                <span>
+                  <FileText aria-hidden="true" size={16} /> Se registra como <strong>{carrera.nombre_cine}</strong>
+                </span>
+              )}
+            </p>
+            <SellosRiasec letras={carrera.riasec} conNombres />
           </div>
-          <FavoriteButton
-            selected={carrera.es_favorita}
-            pendiente={favorito.pendiente('carreras', carrera.codigo)}
-            onToggle={() => favorito.alternar('carreras', carrera.codigo, !carrera.es_favorita)}
-          />
+          <div className="sx-c-cabecera-acciones">
+            {planes.letra && <span className="sx-c-es-plan">Es tu Plan {planes.letra}</span>}
+            <FavoriteButton
+              selected={carrera.es_favorita}
+              pendiente={favorito.pendiente('carreras', carrera.codigo)}
+              onToggle={() => favorito.alternar('carreras', carrera.codigo, !carrera.es_favorita)}
+            />
+          </div>
         </div>
       </Parchment>
       <div className="sx-d-detail-grid">
         <main className="sx-d-stack">
-          {(carrera.descripcion || carrera.duracion) && (
+          {carrera.descripcion && (
             <Parchment title="De qué trata">
-              {carrera.descripcion && <p>{carrera.descripcion}</p>}
-              {carrera.duracion && <span className="sx-d-tag">Duración referencial: {carrera.duracion}</span>}
+              <p>{carrera.descripcion}</p>
             </Parchment>
           )}
-          {carrera.ingreso && <IngresoCarrera ingreso={carrera.ingreso} />}
+          {carrera.ambito_laboral.length > 0 && (
+            <Parchment title="Dónde podrías trabajar">
+              <ul className="sx-c-vinetas sx-c-dos-columnas">
+                {carrera.ambito_laboral.map((linea) => (
+                  <li key={linea}>{linea}</li>
+                ))}
+              </ul>
+            </Parchment>
+          )}
+          {carrera.ingreso && (
+            <IngresoCarrera
+              ingreso={carrera.ingreso}
+              instituciones={carrera.instituciones}
+              familia={carrera.familia.nombre}
+              tipo={carrera.tipo}
+            />
+          )}
           {carrera.ocupaciones.length > 0 && (
-            <Parchment title="Ocupaciones a las que conduce">
+            <Parchment title="Profesiones a las que conduce">
+              <p className="sx-c-conteo">
+                {carrera.ocupaciones.length} {carrera.ocupaciones.length === 1 ? 'profesión' : 'profesiones'}
+              </p>
               <div className="sx-d-two">
                 {carrera.ocupaciones.map((o) => (
-                  <Link className="sx-d-related" key={o.codigo} to={discoveryPaths.occupation(o.codigo)}>
+                  <Link className="sx-d-related sx-c-fila-enlace" key={o.codigo} to={discoveryPaths.occupation(o.codigo)}>
                     <strong>{o.titulo}</strong>
+                    <SellosRiasec letras={o.riasec} />
                   </Link>
                 ))}
               </div>
@@ -59,21 +118,13 @@ export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
           )}
         </main>
         <aside className="sx-d-stack">
-          {carrera.instituciones.length > 0 && (
-            <Parchment title="Dónde estudiarla">
-              {carrera.instituciones.map((i) => (
-                <Link className="sx-d-related" key={i.codigo} to={discoveryPaths.institution(i.codigo)}>
-                  <strong>{i.nombre}</strong>
-                  <small>{lineaInstitucion(i)}</small>
-                </Link>
-              ))}
-              <p>Los costos se consultan en la página de cada institución.</p>
-            </Parchment>
-          )}
-          <PlanDeCarrera nombre={carrera.nombre} codigo={carrera.codigo} />
+          <BloquePlanCarrera planes={planes} />
+          <DondeEstudiarla instituciones={carrera.instituciones} />
+          <CarrerasParecidas parecidas={carrera.parecidas} familia={carrera.familia} />
+          <UnexpectedPlace kind="career" currentId={carrera.codigo} />
         </aside>
       </div>
-      <UnexpectedPlace kind="career" currentId={carrera.codigo} />
+      <FuentesCatalogo de="carrera" />
       <AvisoFavorito aviso={favorito.aviso} onDismiss={favorito.cerrarAviso} />
     </DiscoveryStage>
   )
