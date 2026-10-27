@@ -137,6 +137,8 @@ export function fixtureServidor({
         method: options?.method ?? 'GET',
         headers: options?.headers ?? {},
         body: options?.body ? JSON.parse(options.body) : undefined,
+        // Ajuste catalogo-datos-reales: para comprobar que una consulta se canceló.
+        signal: options?.signal,
       }
       requests.push(request)
       const result = await handler(request)

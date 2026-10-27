@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import test from 'node:test'
+import test, { mock } from 'node:test'
 import ts from 'typescript'
 import { cargarAlmacen, copia, elementos, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
@@ -124,6 +124,41 @@ test('las letras pulsadas seguidas piden una sola lista, en el orden en que se p
   vista.render()
   await esperar()
   assert.deepEqual(busquedas(app, 'ocupaciones'), ['?limite=20&desde=0', '?riasec=RIC&limite=20&desde=0'])
+})
+
+test('con temporizadores falsos, R, I y A a 100 ms una de otra piden una sola lista con riasec=RIA', async () => {
+  // El arnés toma `setTimeout` al crearse: los temporizadores falsos se activan antes.
+  mock.timers.enable({ apis: ['setTimeout'] })
+  try {
+    const { app } = catalogo()
+    const { CatalogoServidor } = app.load('src/features/discovery/components/CatalogoServidor.tsx')
+    const vista = app.mount(CatalogoServidor, { section: 'careers', obtenido: () => false, iconosRevelados: null })
+    vista.render()
+    await esperar()
+    let arbol = vista.render()
+    const filtros = () => elementos(arbol, (e) => e.type?.name === 'FiltrosCatalogo')[0].props
+    for (const [n, letra] of ['R', 'I', 'A'].entries()) {
+      if (n) mock.timers.tick(100)
+      filtros().onLetra(letra)
+      arbol = vista.render()
+      // Las letras y «Código: …» cambian al instante; la grilla espera con el esqueleto y el contador busca.
+      assert.equal(filtros().letras, 'RIA'.slice(0, n + 1))
+      assert.match(texto(arbol), /Buscando…/)
+    }
+    mock.timers.tick(399)
+    vista.render()
+    await esperar()
+    assert.deepEqual(busquedas(app, 'carreras'), ['?limite=20&desde=0'])
+    mock.timers.tick(1)
+    vista.render()
+    await esperar()
+    vista.render()
+    await esperar()
+    assert.deepEqual(busquedas(app, 'carreras'), ['?limite=20&desde=0', '?riasec=RIA&limite=20&desde=0'])
+    assert.doesNotMatch(texto(vista.render()), /Buscando…/)
+  } finally {
+    mock.timers.reset()
+  }
 })
 
 test('«Mis favoritos» pide la misma lista con el filtro, y el corazón espera al servidor', async () => {

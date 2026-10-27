@@ -22,7 +22,7 @@ export function DetalleInstitucionServidor({ codigo }: { codigo: string }) {
   const gestion = textoGestion(institucion.gestion)
   const lugar = [institucion.distrito, institucion.ubicacion.nombre].filter(Boolean)
   return (
-    <DiscoveryStage ambient="atlas">
+    <DiscoveryStage ambient="atlas" navegacion={false}>
       <AtlasNavigation section="institutions" />
       <Parchment className="sx-d-dark sx-c-cabecera">
         <div className="sx-c-cabecera-fila">

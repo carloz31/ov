@@ -46,13 +46,14 @@ export function buscarCatalogo<C extends ClaseCatalogo>(
   filtros: FiltrosCatalogo,
   limite: number,
   desde: number,
+  senal?: AbortSignal,
 ): Promise<RespuestaServidor<Pagina<ResumenCatalogo[C]>>> {
   const parametros = new URLSearchParams()
   for (const [nombre, valor] of Object.entries(filtros))
     if (valor !== undefined && valor !== '' && valor !== false) parametros.set(nombre, String(valor))
   parametros.set('limite', String(limite))
   parametros.set('desde', String(desde))
-  return obtener(`${base(cuenta)}/${clase}?${parametros}`)
+  return obtener(`${base(cuenta)}/${clase}?${parametros}`, senal)
 }
 
 export function obtenerDetalleCatalogo<C extends ClaseCatalogo>(

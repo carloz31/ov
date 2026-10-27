@@ -56,6 +56,9 @@ test('una respuesta vieja no pisa la nueva y solo se guarda la combinación acti
   app.fetch((r) => (r.url.includes('buscar=psi&') ? lenta.then(() => ({ body: { total: 0, items: [] } })) : { body: carreras }))
   void store.cargarLista('carreras', { buscar: 'psi' })
   await store.cargarLista('carreras', { buscar: 'psico' })
+  // La nueva búsqueda cancela la que seguía en vuelo; la vieja, además, se descarta si llega.
+  const [vieja, nueva] = app.requests.filter((r) => r.url.includes('/catalogo/carreras?'))
+  assert.deepEqual([vieja.signal.aborted, nueva.signal.aborted], [true, false])
   soltar()
   await esperar()
   const hook = app.mount(() => store.useListaCatalogo('carreras', { buscar: 'psico' }, true), {})

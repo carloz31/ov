@@ -53,3 +53,5 @@ Spec: `docs/specs/ajuste-catalogo-datos-reales.md`.
 - **Tareas** de la profesión: se muestran las 5 primeras; «También se le llama», los 4 primeros nombres.
 - **Montos**: miles con espacio fino (`S/ 4 320`), como en los bocetos.
 - **Tabla de carreras de la institución**: buscador y chips por área con más de 8 carreras; 6 filas y «Mostrar las N restantes».
+- **Detalles sin pestañas** (revisión del usuario): los tres detalles del catálogo del servidor no muestran la barra Profesiones / Carreras / Instituciones; se vuelve con «← Carreras» (que recuerda la búsqueda). `DiscoveryStage` gana `navegacion`; local no cambia.
+- **Cancelación de listas** (revisión del usuario): además del turno por clase, la petición en vuelo de una pestaña se cancela con `AbortController` al pedir otra (`obtener` acepta una señal; una consulta cancelada responde como sin conexión y nadie la espera).

@@ -55,7 +55,7 @@ export function DetalleOcupacionServidor({ codigo }: { codigo: string }) {
   const grupo = opciones?.grupos.find((g) => g.codigo === ocupacion.grupo)?.nombre
   const resultado = servidor.resultadoRiasec?.codigo_interes?.codigo
   return (
-    <DiscoveryStage ambient="atlas">
+    <DiscoveryStage ambient="atlas" navegacion={false}>
       <AtlasNavigation section="professions" />
       <CatalogRevisitNotice />
       <Parchment className="sx-d-dark sx-c-cabecera">

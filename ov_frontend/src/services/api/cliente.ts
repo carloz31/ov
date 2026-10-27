@@ -21,6 +21,7 @@ async function solicitar<T>(
   metodo: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   ruta: string,
   cuerpo?: unknown,
+  senal?: AbortSignal,
 ): Promise<RespuestaServidor<T>> {
   let respuesta: Response
   try {
@@ -28,7 +29,7 @@ async function solicitar<T>(
       `${urlApi}${ruta}`,
       conToken(
         metodo === 'GET'
-          ? undefined
+          ? senal && { signal: senal }
           : metodo === 'DELETE'
             ? { method: 'DELETE' }
             : {
@@ -62,9 +63,10 @@ async function solicitar<T>(
   return { tipo: 'http', estado: respuesta.status, detalle }
 }
 
-// GET: consultar un recurso sin enviar cuerpo.
-export function obtener<T>(ruta: string): Promise<RespuestaServidor<T>> {
-  return solicitar<T>('GET', ruta)
+// GET: consultar un recurso sin enviar cuerpo. Con `senal`, quien la pidió puede cancelarla (una consulta
+// cancelada responde como sin conexión; quien la canceló ya no la espera).
+export function obtener<T>(ruta: string, senal?: AbortSignal): Promise<RespuestaServidor<T>> {
+  return solicitar<T>('GET', ruta, undefined, senal)
 }
 
 // POST: crear recursos o ejecutar acciones.

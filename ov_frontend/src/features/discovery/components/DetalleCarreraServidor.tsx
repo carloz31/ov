@@ -30,7 +30,7 @@ export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
   if (!carrera) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} />
   const areaUrl = `${appPaths.student.catalog.careers}?area=${carrera.familia.area_codigo}`
   return (
-    <DiscoveryStage ambient="atlas">
+    <DiscoveryStage ambient="atlas" navegacion={false}>
       <AtlasNavigation section="careers" />
       <CatalogRevisitNotice />
       <Parchment className="sx-d-dark sx-c-cabecera">

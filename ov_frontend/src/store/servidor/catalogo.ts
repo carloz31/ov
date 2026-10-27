@@ -49,6 +49,8 @@ export type OpcionesCatalogo = {
 
 const listas = new Map<ClaseCatalogo, Entrada>()
 const turnos = new Map<ClaseCatalogo, number>()
+// La petición en vuelo de cada clase: una nueva la cancela (además del turno, que descarta lo que llegue tarde).
+const peticiones = new Map<ClaseCatalogo, AbortController>()
 // Total de cada clase sin filtros (la cabecera), del último listado recibido.
 const dominios = new Map<ClaseCatalogo, number>()
 const detalles = new Map<string, Detalle>()
@@ -69,6 +71,8 @@ function vigente() {
   if (sesionCargada === sesionServidor()) return
   sesionCargada = sesionServidor()
   listas.clear()
+  peticiones.forEach((peticion) => peticion.abort())
+  peticiones.clear()
   turnos.clear()
   dominios.clear()
   detalles.clear()
@@ -109,13 +113,24 @@ export async function cargarLista(clase: ClaseCatalogo, filtros: FiltrosCatalogo
     return
   const turno = (turnos.get(clase) ?? 0) + 1
   turnos.set(clase, turno)
+  peticiones.get(clase)?.abort()
+  const peticion = new AbortController()
+  peticiones.set(clase, peticion)
   const previos = mas && actual ? actual.items : []
   listas.set(clase, mas && actual ? { ...actual, estado: 'mas', error: null } : vacia('cargando', llave))
   avisar()
   const respuesta = await consultarCuenta((cuenta) =>
-    apiCatalogo.buscarCatalogo(cuenta, clase, filtrosLimpios(filtros), LIMITE_CATALOGO, previos.length),
+    apiCatalogo.buscarCatalogo(
+      cuenta,
+      clase,
+      filtrosLimpios(filtros),
+      LIMITE_CATALOGO,
+      previos.length,
+      peticion.signal,
+    ),
   )
   if (turnos.get(clase) !== turno) return
+  peticiones.delete(clase)
   if (respuesta.tipo === 'ok') dominios.set(clase, respuesta.datos.total_dominio)
   listas.set(
     clase,
