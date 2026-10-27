@@ -56,7 +56,7 @@ export function DetalleOcupacionServidor({ codigo }: { codigo: string }) {
   const resultado = servidor.resultadoRiasec?.codigo_interes?.codigo
   return (
     <DiscoveryStage ambient="atlas" navegacion={false}>
-      <AtlasNavigation section="professions" />
+      <AtlasNavigation section="professions" migas={false} />
       <CatalogRevisitNotice />
       <Parchment className="sx-d-dark sx-c-cabecera">
         <div className="sx-c-cabecera-fila">

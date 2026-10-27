@@ -31,7 +31,7 @@ export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
   const areaUrl = `${appPaths.student.catalog.careers}?area=${carrera.familia.area_codigo}`
   return (
     <DiscoveryStage ambient="atlas" navegacion={false}>
-      <AtlasNavigation section="careers" />
+      <AtlasNavigation section="careers" migas={false} />
       <CatalogRevisitNotice />
       <Parchment className="sx-d-dark sx-c-cabecera">
         <div className="sx-c-cabecera-fila">

@@ -2,6 +2,7 @@ import { Star } from 'lucide-react'
 import type { OpcionesCatalogo } from '@/store/servidor/catalogo'
 import type { ClaseCatalogo } from '@/store/servidor/catalogo'
 import type { FiltrosUrl } from '../lib/filtrosCatalogo'
+import { PanelFiltros, type FilaFiltro } from './PanelFiltros'
 
 const LETRAS = ['R', 'I', 'A', 'S', 'E', 'C']
 const TIPOS_CARRERA = [
@@ -23,32 +24,25 @@ const GESTIONES = [
 ] as const
 
 function Chips({
-  etiqueta,
   opciones,
   valor,
   onElegir,
 }: {
-  etiqueta: string
   opciones: readonly (readonly [string, string])[]
   valor: string | undefined
   onElegir: (valor: string) => void
 }) {
-  return (
-    <div className="sx-c-grupo" role="group" aria-label={etiqueta}>
-      <span className="sx-c-grupo-nombre">{etiqueta}</span>
-      {opciones.map(([codigo, nombre]) => (
-        <button
-          type="button"
-          key={codigo || 'todas'}
-          className="sx-c-chip"
-          aria-pressed={(valor ?? '') === codigo}
-          onClick={() => onElegir(codigo)}
-        >
-          {nombre}
-        </button>
-      ))}
-    </div>
-  )
+  return opciones.map(([codigo, nombre]) => (
+    <button
+      type="button"
+      key={codigo || 'todas'}
+      className="sx-c-chip"
+      aria-pressed={(valor ?? '') === codigo}
+      onClick={() => onElegir(codigo)}
+    >
+      {nombre}
+    </button>
+  ))
 }
 
 function Selector({
@@ -79,9 +73,9 @@ function Selector({
   )
 }
 
-// Ajuste catalogo-datos-reales (F6a): los filtros de cada pestaña. Carreras: tipo, área, familia (según el área),
-// letras RIASEC y «Afines a mi resultado». Profesiones: letras, afines y grupo. Instituciones: tipo, gestión y
-// departamento. Los cambios esperan antes de pedir la lista (`useCatalogoServidor`).
+// Ajuste catalogo-datos-reales (F6a, rediseño tras la revisión): los filtros de cada pestaña como filas de un
+// panel. Carreras: Tipo, Campo (área y familia según el área) e Intereses. Profesiones: Intereses y Grupo.
+// Instituciones: Tipo, Gestión y Lugar. Los cambios esperan antes de pedir la lista (`useCatalogoServidor`).
 export function FiltrosCatalogo({
   clase,
   filtros,
@@ -109,103 +103,115 @@ export function FiltrosCatalogo({
       ]
     : null
   const familias = opciones?.familias.filter((f) => !filtros.area || f.area_codigo === filtros.area) ?? null
-  const intereses = (
-    <div className="sx-c-grupo" role="group" aria-label="Intereses">
-      <span className="sx-c-grupo-nombre">Intereses</span>
-      {LETRAS.map((letra) => (
+  const intereses: FilaFiltro = {
+    etiqueta: 'Intereses',
+    controles: (
+      <>
+        {LETRAS.map((letra) => (
+          <button
+            type="button"
+            key={letra}
+            className="sx-c-letra"
+            aria-pressed={letras.includes(letra)}
+            onClick={() => onLetra(letra)}
+          >
+            {letra}
+          </button>
+        ))}
+        {letras && (
+          <small>
+            Código: <strong>{letras}</strong> · en el orden en que los pulsas
+          </small>
+        )}
         <button
           type="button"
-          key={letra}
-          className="sx-c-letra"
-          aria-pressed={letras.includes(letra)}
-          onClick={() => onLetra(letra)}
+          className="sx-c-chip"
+          aria-pressed={!!filtros.afines}
+          disabled={!afinesDisponibles}
+          aria-describedby={afinesDisponibles ? undefined : 'afines-sin-resultado'}
+          onClick={onAfines}
         >
-          {letra}
+          <Star aria-hidden="true" size={16} /> Afines a mi resultado
         </button>
-      ))}
-      {letras && (
-        <small>
-          Código: <strong>{letras}</strong> · en el orden en que los pulsas
-        </small>
-      )}
-      <button
-        type="button"
-        className="sx-c-chip"
-        aria-pressed={!!filtros.afines}
-        disabled={!afinesDisponibles}
-        title={afinesDisponibles ? undefined : 'Revela tu página de intereses para usar este filtro'}
-        onClick={onAfines}
-      >
-        <Star aria-hidden="true" size={16} /> Afines a mi resultado
-      </button>
-    </div>
-  )
-  if (clase === 'carreras')
-    return (
-      <div className="sx-c-filtros">
-        <div className="sx-c-fila">
-          <Chips
-            etiqueta="Tipo"
-            opciones={TIPOS_CARRERA}
-            valor={filtros.tipo}
-            onElegir={(tipo) => onCambiar({ tipo })}
-          />
-          <Selector
-            etiqueta="Área"
-            todas="Todas las áreas"
-            opciones={areas}
-            valor={filtros.area}
-            onElegir={(area) => onCambiar({ area })}
-          />
-          <Selector
-            etiqueta="Familia"
-            todas="Todas las familias"
-            opciones={familias}
-            valor={filtros.familia}
-            onElegir={(familia) => onCambiar({ familia })}
-          />
-        </div>
-        <div className="sx-c-fila">{intereses}</div>
-      </div>
-    )
-  if (clase === 'ocupaciones')
-    return (
-      <div className="sx-c-filtros">
-        <div className="sx-c-fila">
-          {intereses}
-          <Selector
-            etiqueta="Grupo"
-            todas="Todos los grupos"
-            opciones={opciones?.grupos ?? null}
-            valor={filtros.grupo}
-            onElegir={(grupo) => onCambiar({ grupo })}
-          />
-        </div>
-      </div>
-    )
-  return (
-    <div className="sx-c-filtros">
-      <div className="sx-c-fila">
-        <Chips
-          etiqueta="Tipo"
-          opciones={TIPOS_INSTITUCION}
-          valor={filtros.tipo}
-          onElegir={(tipo) => onCambiar({ tipo })}
-        />
-        <Chips
-          etiqueta="Gestión"
-          opciones={GESTIONES}
-          valor={filtros.gestion}
-          onElegir={(gestion) => onCambiar({ gestion })}
-        />
-        <Selector
-          etiqueta="Departamento"
-          todas="Todo el país"
-          opciones={opciones?.ubicaciones ?? null}
-          valor={filtros.ubicacion}
-          onElegir={(ubicacion) => onCambiar({ ubicacion })}
-        />
-      </div>
-    </div>
-  )
+        {!afinesDisponibles && (
+          <small id="afines-sin-resultado" className="sr-only">
+            Revela tu página de intereses para usar este filtro.
+          </small>
+        )}
+      </>
+    ),
+  }
+  const filas: FilaFiltro[] =
+    clase === 'carreras'
+      ? [
+          {
+            etiqueta: 'Tipo',
+            controles: <Chips opciones={TIPOS_CARRERA} valor={filtros.tipo} onElegir={(tipo) => onCambiar({ tipo })} />,
+          },
+          {
+            etiqueta: 'Campo',
+            controles: (
+              <>
+                <Selector
+                  etiqueta="Área"
+                  todas="Todas las áreas"
+                  opciones={areas}
+                  valor={filtros.area}
+                  onElegir={(area) => onCambiar({ area })}
+                />
+                <Selector
+                  etiqueta="Familia"
+                  todas="Todas las familias"
+                  opciones={familias}
+                  valor={filtros.familia}
+                  onElegir={(familia) => onCambiar({ familia })}
+                />
+              </>
+            ),
+          },
+          intereses,
+        ]
+      : clase === 'ocupaciones'
+        ? [
+            intereses,
+            {
+              etiqueta: 'Grupo',
+              controles: (
+                <Selector
+                  etiqueta="Grupo"
+                  todas="Todos los grupos"
+                  opciones={opciones?.grupos ?? null}
+                  valor={filtros.grupo}
+                  onElegir={(grupo) => onCambiar({ grupo })}
+                />
+              ),
+            },
+          ]
+        : [
+            {
+              etiqueta: 'Tipo',
+              controles: (
+                <Chips opciones={TIPOS_INSTITUCION} valor={filtros.tipo} onElegir={(tipo) => onCambiar({ tipo })} />
+              ),
+            },
+            {
+              etiqueta: 'Gestión',
+              controles: (
+                <Chips opciones={GESTIONES} valor={filtros.gestion} onElegir={(gestion) => onCambiar({ gestion })} />
+              ),
+            },
+            {
+              etiqueta: 'Lugar',
+              controles: (
+                <Selector
+                  etiqueta="Departamento"
+                  todas="Todo el país"
+                  opciones={opciones?.ubicaciones ?? null}
+                  valor={filtros.ubicacion}
+                  onElegir={(ubicacion) => onCambiar({ ubicacion })}
+                />
+              ),
+            },
+          ]
+  return <PanelFiltros filas={filas} />
 }

@@ -44,6 +44,30 @@ function TarjetaTramo({
   )
 }
 
+function SelectorLugar({
+  valor,
+  lugares,
+  onElegir,
+}: {
+  valor: string
+  lugares: { codigo: string; nombre: string }[]
+  onElegir: (codigo: string) => void
+}) {
+  return (
+    <label className="sx-c-selector sx-c-selector-claro">
+      <span>Lugar</span>
+      <select value={valor} onChange={(e) => onElegir(e.target.value)}>
+        <option value="">Todo el país</option>
+        {lugares.map((l) => (
+          <option key={l.codigo} value={l.codigo}>
+            {l.nombre}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+}
+
 // F06 · ajuste catalogo-datos-reales (F6b): cuánto ganan los egresados de la familia y el tipo de la carrera
 // (no de la carrera exacta). «Por lugar»: jóvenes y adultos en todo el país o en un departamento con dato.
 // «Por institución»: las instituciones que la dictan y tienen dato, de mayor a menor promedio.
@@ -61,11 +85,17 @@ export function IngresoCarrera({
   const [pestana, setPestana] = useState<'lugar' | 'institucion'>('lugar')
   const [lugar, setLugar] = useState('')
   const [todas, setTodas] = useState(false)
+  // Revisión del usuario: «Por institución» también se acota por departamento (el de la institución).
+  const [lugarInstitucion, setLugarInstitucion] = useState('')
   const fila = ingreso.departamentos.find((d) => d.ubicacion?.codigo === lugar) ?? ingreso.nacional
   const conIngreso = instituciones
     .filter((i): i is InstitucionEnCarrera & { ingreso: TramoIngreso } => i.ingreso !== null)
     .sort((a, b) => b.ingreso.promedio - a.ingreso.promedio)
   const escala = Math.max(fila.jovenes.maximo, fila.adultos.maximo, 1)
+  const lugaresInstituciones = [...new Map(conIngreso.map((i) => [i.ubicacion.codigo, i.ubicacion])).values()].sort(
+    (a, b) => a.nombre.localeCompare(b.nombre, 'es'),
+  )
+  const enLugar = lugarInstitucion ? conIngreso.filter((i) => i.ubicacion.codigo === lugarInstitucion) : conIngreso
   return (
     <Parchment title="Cuánto ganan sus egresados">
       <p className="sx-c-subtitulo">
@@ -87,17 +117,21 @@ export function IngresoCarrera({
           </button>
         )}
         {pestana === 'lugar' && ingreso.departamentos.length > 0 && (
-          <label className="sx-c-selector sx-c-selector-claro">
-            <span>Lugar</span>
-            <select value={lugar} onChange={(e) => setLugar(e.target.value)}>
-              <option value="">Todo el país</option>
-              {ingreso.departamentos.map((d) => (
-                <option key={d.ubicacion!.codigo} value={d.ubicacion!.codigo}>
-                  {d.ubicacion!.nombre}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SelectorLugar
+            valor={lugar}
+            lugares={ingreso.departamentos.map((d) => d.ubicacion!)}
+            onElegir={setLugar}
+          />
+        )}
+        {pestana === 'institucion' && lugaresInstituciones.length > 1 && (
+          <SelectorLugar
+            valor={lugarInstitucion}
+            lugares={lugaresInstituciones}
+            onElegir={(codigo) => {
+              setLugarInstitucion(codigo)
+              setTodas(false)
+            }}
+          />
         )}
       </div>
       {pestana === 'lugar' ? (
@@ -107,7 +141,7 @@ export function IngresoCarrera({
         </div>
       ) : (
         <div className="sx-c-filas">
-          {(todas ? conIngreso : conIngreso.slice(0, VISIBLES)).map((i) => (
+          {(todas ? enLugar : enLugar.slice(0, VISIBLES)).map((i) => (
             <div className="sx-c-fila-dato" key={i.codigo}>
               <div>
                 <strong>{i.nombre}</strong>
@@ -119,9 +153,9 @@ export function IngresoCarrera({
               </div>
             </div>
           ))}
-          {!todas && conIngreso.length > VISIBLES && (
+          {!todas && enLugar.length > VISIBLES && (
             <button type="button" className="sx-d-action sx-d-action-ghost" onClick={() => setTodas(true)}>
-              Ver las {conIngreso.length - VISIBLES} restantes
+              Ver las {enLugar.length - VISIBLES} restantes
             </button>
           )}
         </div>

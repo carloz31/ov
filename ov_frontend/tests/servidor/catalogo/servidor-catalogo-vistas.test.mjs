@@ -143,7 +143,7 @@ test('con temporizadores falsos, R, I y A a 100 ms una de otra piden una sola li
       arbol = vista.render()
       // Las letras y «Código: …» cambian al instante; la grilla espera con el esqueleto y el contador busca.
       assert.equal(filtros().letras, 'RIA'.slice(0, n + 1))
-      assert.match(texto(arbol), /Buscando…/)
+      assert.equal(elementos(arbol, (e) => e.type?.name === 'FilaResultado')[0].props.buscando, true)
     }
     mock.timers.tick(399)
     vista.render()
@@ -155,10 +155,34 @@ test('con temporizadores falsos, R, I y A a 100 ms una de otra piden una sola li
     vista.render()
     await esperar()
     assert.deepEqual(busquedas(app, 'carreras'), ['?limite=20&desde=0', '?riasec=RIA&limite=20&desde=0'])
-    assert.doesNotMatch(texto(vista.render()), /Buscando…/)
+    arbol = vista.render()
+    assert.equal(elementos(arbol, (e) => e.type?.name === 'FilaResultado')[0].props.buscando, false)
   } finally {
     mock.timers.reset()
   }
+})
+
+test('«Limpiar filtros» cuenta los activos, limpia la pestaña y pide la lista de inmediato', async () => {
+  const { app } = catalogo('/student/catalog/careers?tipo=INSTITUTO&riasec=IC&afines=1&buscar=adm')
+  const { CatalogoServidor } = app.load('src/features/discovery/components/CatalogoServidor.tsx')
+  const vista = app.mount(CatalogoServidor, { section: 'careers', obtenido: () => false, iconosRevelados: null })
+  vista.render()
+  await esperar()
+  let arbol = vista.render()
+  const fila = () => elementos(arbol, (e) => e.type?.name === 'FilaResultado')[0].props
+  // Las letras y «afines» cuentan como un filtro: tipo, intereses y búsqueda.
+  assert.equal(fila().activos, 3)
+  const { FilaResultado } = app.load('src/features/discovery/components/FilaResultado.tsx')
+  assert.match(texto(FilaResultado(fila())), /· 3 filtros activos/)
+  fila().onLimpiar()
+  arbol = vista.render()
+  assert.equal(app.query.toString(), '')
+  await esperar()
+  arbol = vista.render()
+  await esperar()
+  assert.equal(fila().activos, 0)
+  assert.doesNotMatch(texto(FilaResultado(fila())), /filtros activos/)
+  assert.equal(busquedas(app, 'carreras').at(-1), '?limite=20&desde=0')
 })
 
 test('«Mis favoritos» pide la misma lista con el filtro, y el corazón espera al servidor', async () => {

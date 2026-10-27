@@ -121,6 +121,8 @@ export function useCatalogoServidor(seccion: SeccionCatalogo) {
   const opciones = useOpcionesCatalogo(true)
   const favorito = useFavoritoServidor()
   const letras = filtros.afines ? afines : (filtros.riasec ?? '')
+  // Filtros activos: las letras y «afines» cuentan como uno (los intereses); la búsqueda y «Mis favoritos», también.
+  const activos = new Set(Object.keys(filtros).map((nombre) => (nombre === 'afines' ? 'riasec' : nombre))).size
   return {
     clase,
     filtros,
@@ -134,8 +136,17 @@ export function useCatalogoServidor(seccion: SeccionCatalogo) {
     cargandoMas: lista?.estado === 'mas',
     sinResultados: clave === consultada && lista?.estado === 'listo' && lista.items.length === 0,
     hayMas: !!lista && lista.estado === 'listo' && lista.items.length < lista.total,
+    activos,
     buscar: setTexto,
     cambiar,
+    // Limpia solo la pestaña activa y pide su lista de inmediato, sin esperar.
+    limpiar: () => {
+      escrito.current = ''
+      setTexto('')
+      ultima.current = new URLSearchParams()
+      setParametros(ultima.current, { replace: true })
+      setConsultada('')
+    },
     alternarLetra: (letra: string) =>
       cambiar((f) => ({ riasec: alternarLetra(f.afines ? afines : (f.riasec ?? ''), letra) })),
     alternarAfines: () => cambiar((f) => ({ afines: f.afines ? '' : '1' })),

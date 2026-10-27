@@ -3,6 +3,8 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { useCatalogoServidor, type SeccionCatalogo } from '../hooks/useCatalogoServidor'
 import { AvisoFavorito } from './AvisoFavorito'
+import { BotonLimpiar } from './BotonLimpiar'
+import { FilaResultado } from './FilaResultado'
 import { FiltrosCatalogo } from './FiltrosCatalogo'
 import { PieListado } from './PieListado'
 import { TarjetaCatalogo } from './TarjetaCatalogo'
@@ -67,7 +69,6 @@ export function CatalogoServidor({
   const catalogo = useCatalogoServidor(section)
   const { lista, totalDominio } = catalogo
   const copia = textos[section]
-  const [uno, varios] = nombreItems[section]
   const total = totalDominio === null ? '' : `${totalDominio.toLocaleString('es-PE')} `
   return (
     <>
@@ -106,27 +107,23 @@ export function CatalogoServidor({
           <Heart aria-hidden="true" size={18} /> Mis favoritos
         </button>
       </div>
-      <div className="sx-c-barra">
-        <FiltrosCatalogo
-          clase={catalogo.clase}
-          filtros={catalogo.filtros}
-          letras={catalogo.letras}
-          afinesDisponibles={catalogo.afinesDisponibles}
-          opciones={catalogo.opciones}
-          onCambiar={catalogo.cambiar}
-          onLetra={catalogo.alternarLetra}
-          onAfines={catalogo.alternarAfines}
-        />
-        <p className="sx-c-contador" aria-live="polite">
-          {catalogo.buscando || !lista ? (
-            'Buscando…'
-          ) : (
-            <>
-              <strong>{lista.total.toLocaleString('es-PE')}</strong> {lista.total === 1 ? uno : varios}
-            </>
-          )}
-        </p>
-      </div>
+      <FiltrosCatalogo
+        clase={catalogo.clase}
+        filtros={catalogo.filtros}
+        letras={catalogo.letras}
+        afinesDisponibles={catalogo.afinesDisponibles}
+        opciones={catalogo.opciones}
+        onCambiar={catalogo.cambiar}
+        onLetra={catalogo.alternarLetra}
+        onAfines={catalogo.alternarAfines}
+      />
+      <FilaResultado
+        buscando={catalogo.buscando}
+        total={lista?.total ?? null}
+        nombres={nombreItems[section]}
+        activos={catalogo.activos}
+        onLimpiar={catalogo.limpiar}
+      />
       <div className="sx-d-columns" aria-busy={catalogo.buscando || catalogo.cargandoMas}>
         {!catalogo.buscando &&
           lista?.items.map((item) => (
@@ -153,6 +150,7 @@ export function CatalogoServidor({
             <p>
               No hay resultados que coincidan con tu búsqueda. Prueba con otro nombre o quita algún filtro.
             </p>
+            {catalogo.activos > 0 && <BotonLimpiar onLimpiar={catalogo.limpiar} />}
           </section>
         )}
       </div>

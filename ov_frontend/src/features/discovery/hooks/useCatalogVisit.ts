@@ -22,7 +22,10 @@ export function useCatalogVisit(kind: 'career' | 'occupation' | 'institution', i
       }))
     }
     const heading = document.querySelector<HTMLElement>('.sx-d-detail-title')
-    heading?.scrollIntoView({ block: 'start' })
+    // Ajuste catalogo-datos-reales: en api el detalle se abre desde arriba (con su cabecera y «volver»), no desde
+    // el título.
+    const inicio = modoApi ? document.querySelector<HTMLElement>('.sx-discovery') : heading
+    inicio?.scrollIntoView({ block: 'start' })
     heading?.focus({ preventScroll: true })
   }, [kind, id])
 }
