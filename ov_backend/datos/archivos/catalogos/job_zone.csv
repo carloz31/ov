@@ -1,0 +1,6 @@
+job_zone,nombre,descripcion
+1,Poca o ninguna preparación,Se aprende en el trabajo en pocos días o semanas.
+2,Algo de preparación,Suele bastar la secundaria completa y capacitación en el trabajo.
+3,Preparación media,Requiere formación técnica o varios años de experiencia.
+4,Preparación considerable,Suele requerir una carrera universitaria o técnica larga.
+5,Preparación extensa,Suele requerir posgrado o muchos años de formación.

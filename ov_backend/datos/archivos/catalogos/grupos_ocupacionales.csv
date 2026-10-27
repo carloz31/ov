@@ -1,0 +1,23 @@
+codigo,nombre,icono
+11,Dirección y gerencia,briefcase
+13,Negocios y finanzas,chart
+15,Computación y matemática,code
+17,Arquitectura e ingeniería,ruler
+19,Ciencias naturales y sociales,flask
+21,Servicios sociales y comunitarios,hands
+23,Derecho,scale
+25,Educación y capacitación,book
+27,"Artes, diseño, medios y deportes",palette
+29,Salud: profesionales y técnicos,stethoscope
+31,Salud: apoyo y cuidado,heart
+33,Seguridad y protección,shield
+35,Alimentos y restaurantes,chef
+37,Limpieza y mantenimiento de edificios,broom
+39,Cuidado y servicios personales,scissors
+41,Ventas,tag
+43,Oficina y apoyo administrativo,folder
+45,"Agricultura, pesca y bosques",leaf
+47,Construcción,hardhat
+49,"Instalación, mantenimiento y reparación",wrench
+51,Producción industrial,factory
+53,Transporte y logística,truck

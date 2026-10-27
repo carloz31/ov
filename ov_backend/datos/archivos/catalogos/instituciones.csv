@@ -1,0 +1,717 @@
+﻿id,tipo_institucion_id,institucion_nombre,departamento,provincia,distrito,tipo_gestion_nombre,direccion,pagina_web
+90,1,ASOCIACIÓN UNIVERSIDAD PRIVADA SAN JUAN BAUTISTA,Lima,Lima,Chorrillos,Privado,"Sub Lote A Con Frente Al Parque Público, Urbanización Parte Del Fundo Villa Denominado Lotización San Juan Bautista De Villa - Chorrillos",https://www.upsjb.edu.pe/
+2,1,FACULTAD DE TEOLOGÍA PONTIFICIA Y CIVIL DE LIMA,Lima,Lima,Pueblo Libre,Privado,Jr. Carlos Bondy 700,https://www.ftpcl.edu.pe/
+3,1,PONTIFICIA UNIVERSIDAD CATÓLICA DEL PERÚ,Lima,Lima,San Miguel,Privado,Av. Universitaria N° 1801,https://www.pucp.edu.pe/
+4,1,UNIVERSIDAD ANDINA DEL CUSCO,Cusco,Cusco,San Jerónimo,Privado,"Urb. Ingeniería Larapa Grande A-7, San Jerónimo",https://www.uandina.edu.pe/
+5,1,UNIVERSIDAD ANTONIO RUÍZ DE MONTOYA,Lima,Lima,Pueblo Libre,Privado,Av. Paso De Los Andes 970,https://www.uarm.edu.pe/
+7,1,UNIVERSIDAD AUTÓNOMA DEL PERÚ,Lima,Lima,Villa El Salvador,Privado,"Carretera Panamericana Sur Km 16.3, Manzana A, Lote 06",https://www.autonoma.pe/
+8,1,UNIVERSIDAD CATÓLICA DE SANTA MARÍA,Arequipa,Arequipa,Arequipa,Privado,Urb San José S/N,https://www.ucsm.edu.pe/
+9,1,UNIVERSIDAD CATÓLICA DE TRUJILLO BENEDICTO XVI,La Libertad,Trujillo,Moche,Privado,Carretera Panamericana Km 555,https://www.uct.edu.pe/
+10,1,UNIVERSIDAD CATÓLICA SAN PABLO,Arequipa,Arequipa,Arequipa,Privado,Urb. Campiña Paisajista S/N Quinta Vivanco,https://ucsp.edu.pe/
+11,1,UNIVERSIDAD CATÓLICA SANTO TORIBIO DE MOGROVEJO,Lambayeque,Chiclayo,Chiclayo,Privado,Av. San Josemaría Escrivá De Balaguer Nro. 855,http://www.usat.edu.pe/
+12,1,UNIVERSIDAD CATÓLICA SEDES SAPIENTIAE,Lima,Lima,Los Olivos,Privado,"Jirón Constelaciones Y Sol De Oro S/N, Urb. Sol De Oro",https://www.ucss.edu.pe/
+15,1,UNIVERSIDAD CONTINENTAL,Junín,Huancayo,Huancayo,Privado,Av. San Carlos N° 1980,https://ucontinental.edu.pe/
+16,1,UNIVERSIDAD DE CIENCIAS Y ARTES DE AMÉRICA LATINA,Lima,Lima,La Molina,Privado,"Av. La Molina N° 3755 (Lotes 21A, 21B, 21 C Y 22 Mz D) Y Lote 23-B Mz D, Urb. El Sol De La Molina",https://www.ucal.edu.pe/
+1,1,UNIVERSIDAD DE CIENCIAS Y HUMANIDADES,Lima,Lima,Los Olivos,Privado,Av. Universitaria Norte 5175,https://www.uch.edu.pe/
+17,1,UNIVERSIDAD DE HUÁNUCO,Huánuco,Huánuco,Huanuco,Privado,Jr. Hermilio Valdizán N° 871,http://www.udh.edu.pe/
+18,1,UNIVERSIDAD DE INGENIERÍA Y TECNOLOGÍA,Lima,Lima,Barranco,Privado,Jr. Medrano Silva N° 165,https://utec.edu.pe/
+19,1,UNIVERSIDAD DE LIMA,Lima,Lima,Santiago de Surco,Privado,Av. Javier Prado Este Cuadra 46 S/N,https://www.ulima.edu.pe/
+20,1,UNIVERSIDAD DE PIURA,Piura,Piura,Piura,Privado,"Av. Ramón Mugica 131, Urb. San Eduardo, Piura.",https://www.udep.edu.pe/
+21,1,UNIVERSIDAD DE SAN MARTÍN DE PORRES,Lima,Lima,Santa Anita,Privado,Jr. Las Calandrias N° 151¿291,https://usmp.edu.pe/
+22,1,UNIVERSIDAD DEL PACÍFICO,Lima,Lima,Jesús María,Privado,Jr. Luis M. Sánchez Cerro N° 2141,https://www.up.edu.pe/
+23,1,UNIVERSIDAD ESAN,Lima,Lima,Santiago de Surco,Privado,Jr. Alonso De Molina 1652 Urb. Monterrico Chico,https://www.ue.edu.pe/
+24,1,UNIVERSIDAD FEMENINA DEL SAGRADO CORAZÓN,Lima,Lima,La Molina,Privado,Av. Los Frutales 954,https://www.unife.edu.pe/
+25,1,UNIVERSIDAD JAIME BAUSATE Y MEZA,Lima,Lima,Jesús María,Privado,Jr. Rio De Janeiro N° 560,https://bausate.edu.pe/
+26,1,UNIVERSIDAD LA SALLE,Arequipa,Arequipa,Arequipa,Privado,Avenida Alfonso Ugarte N° 517,https://www.ulasalle.edu.pe/
+27,1,UNIVERSIDAD LE CORDON BLEU,Lima,Lima,Magdalena del Mar,Privado,Av. Salaverry 3180-3184,https://www.ulcb.edu.pe/
+29,1,UNIVERSIDAD MARÍA AUXILIADORA,Lima,Lima,San Juan de Lurigancho,Privado,Av. Canto Bello 431/Av. Canto Bello 441,https://uma.edu.pe/
+30,1,UNIVERSIDAD NACIONAL AGRARIA DE LA SELVA,Huánuco,Leoncio Prado,Rupa-Rupa,Público,Av. Abelardo Alva Maurtual N° 489,https://www.gob.pe/unas
+31,1,UNIVERSIDAD NACIONAL AGRARIA LA MOLINA,Lima,Lima,La Molina,Público,Av. La Molina S/N,http://www.lamolina.edu.pe/
+32,1,UNIVERSIDAD NACIONAL AMAZÓNICA DE MADRE DE DIOS,Madre de Dios,Tambopata,Tambopata,Público,Av. Jorge Chavez N° 1160,https://www.gob.pe/unamad/
+33,1,UNIVERSIDAD NACIONAL AUTÓNOMA ALTOANDINA DE TARMA,Junín,Tarma,Tarma,Público,Jirón Malecón Gálvez N° 2202,https://www.gob.pe/unaat
+34,1,UNIVERSIDAD NACIONAL AUTÓNOMA DE ALTO AMAZONAS,Loreto,Alto Amazonas,Yurimaguas,Público,Calle Prolongación Libertad N° 1220 - 1228,https://web-institucional.unaaa.edu.pe/
+35,1,UNIVERSIDAD NACIONAL AUTÓNOMA DE CHOTA,Cajamarca,Chota,Chota,Público,José Osores N° 418/Chota,https://www.gob.pe/unach
+36,1,UNIVERSIDAD NACIONAL AUTÓNOMA DE HUANTA,Ayacucho,Huanta,Huanta,Público,Jiron Razuhuillca Nº 624,https://www.gob.pe/unah
+37,1,UNIVERSIDAD NACIONAL AUTONOMA DE TAYACAJA DANIEL HERNANDEZ MORILLO,Huancavelica,Tayacaja,Daniel Hernández,Público,Via A Rundo S/N,https://www.gob.pe/unat
+38,1,UNIVERSIDAD NACIONAL CIRO ALEGRÍA,La Libertad,Sánchez Carrión,Huamachuco,Público,-,https://www.unca.edu.pe/unca-direccion.html
+39,1,UNIVERSIDAD NACIONAL DANIEL ALCIDES CARRIÓN,Pasco,Pasco,Yanacancha,Público,Av. Daniel Alcides Carrión S/N,https://undac.edu.pe/
+40,1,UNIVERSIDAD NACIONAL DE BARRANCA,Lima,Barranca,Barranca,Público,"Av. Toribio Luzuriaga N° 376, Mz J - Urbanización La Florida / Av. Ancash S/N, Mz J / Calle José De San Martín S/N, Mz J",https://unab.edu.pe/
+41,1,UNIVERSIDAD NACIONAL DE CAJAMARCA,Cajamarca,Cajamarca,Cajamarca,Público,Av.Atahualpa 1050,https://www.unc.edu.pe/
+42,1,UNIVERSIDAD NACIONAL DE CAÑETE,Lima,Cañete,San Vicente de Cañete,Público,Av. Mariscal Benavides 1370 (Carretera A Imperial),https://portal.undc.edu.pe/
+43,1,UNIVERSIDAD NACIONAL DE EDUCACIÓN E.G.V.,Lima,Lima,Lurigancho,Público,Av. Enrique Guzman Y Val Nro. 951. Urb. La Cantuta,https://www.une.edu.pe/uneweb/
+44,1,UNIVERSIDAD NACIONAL DE FRONTERA,Piura,Sullana,Sullana,Público,Calle San Hilarion S/N Villa Perú Canadá,https://www.unf.edu.pe/unf/
+45,1,UNIVERSIDAD NACIONAL DE HUANCAVELICA,Huancavelica,Huancavelica,Huancavelica,Público,Av. Agricultura Nº 319 Y 321 Del Sector Denominado Paturpampa,https://www.unh.edu.pe/
+46,1,UNIVERSIDAD NACIONAL DE INGENIERÍA,Lima,Lima,Rímac,Público,Av Tupac Amaru 210,https://portal.uni.edu.pe/
+47,1,UNIVERSIDAD NACIONAL DE JAÉN,Cajamarca,Jaén,Jaén,Público,Jr. Cuzco N° 250,https://unj.edu.pe/
+48,1,UNIVERSIDAD NACIONAL DE JULIACA,Puno,San Román,Juliaca,Público,Av. Nueva Zelandia N° 631 Urb. La Capilla/,https://unaj.edu.pe/es
+49,1,UNIVERSIDAD NACIONAL DE LA AMAZONÍA PERUANA,Loreto,Loreto,Maynas,Público,"Calle San Marcos s/n, San Juan Bautista, Maynas, Loreto",https://www.gob.pe/unapiquitos
+50,1,UNIVERSIDAD NACIONAL DE MOQUEGUA,Moquegua,Mariscal Nieto,Moquegua,Público,"Av. Circunvalación, Lote 1 B, Sub Lote 3, Fundo El Gramadal",https://unam.edu.pe/
+51,1,UNIVERSIDAD NACIONAL DE PIURA,Piura,Piura,Castilla,Público,Carretera Caserío Miraflores S/N Y Campus Universitario S/N Urb. Miraflores Castilla-Piura,https://www.unp.edu.pe/
+52,1,UNIVERSIDAD NACIONAL DE SAN AGUSTÍN,Arequipa,Arequipa,Arequipa,Público,Avenida Independencia -Avenida Venezuela,https://www.unsa.edu.pe/
+53,1,UNIVERSIDAD NACIONAL DE SAN ANTONIO ABAD DEL CUSCO,Cusco,Cusco,Cusco,Público,Av. De La Cultura Nº 733,https://www.unsaac.edu.pe/
+54,1,UNIVERSIDAD NACIONAL DE SAN CRISTÓBAL DE HUAMANGA,Ayacucho,Huamanga,Ayacucho,Público,Av. Independencia N° 8,https://www.gob.pe/unsch
+55,1,UNIVERSIDAD NACIONAL DE SAN MARTÍN,San Martín,San Martín,Morales,Público,Jr. Amonarca N° 334,https://unsm.edu.pe/
+56,1,UNIVERSIDAD NACIONAL DE TRUJILLO,La Libertad,Trujillo,Trujillo,Público,Fundo San Andrés-Av. Juan Pablo Ii S/N,https://www.unitru.edu.pe/
+57,1,UNIVERSIDAD NACIONAL DE TUMBES,Tumbes,Tumbes,Tumbes,Público,AVENIDA ARICA N° 361 CALLE TARAPACÁ N° 344,https://web.untumbes.edu.pe/#
+58,1,UNIVERSIDAD NACIONAL DE UCAYALI,Ucayali,Coronel Portillo,Calleria,Público,Carretera Federico Basadre Km 6.200,https://www.unu.edu.pe/portal/index.php
+59,1,UNIVERSIDAD NACIONAL DEL ALTIPLANO,Puno,Puno,Puno,Público,Av. Floral N° 1153,https://www.portal.unap.edu.pe/
+60,1,UNIVERSIDAD NACIONAL DEL CALLAO,Callao,Prov. Const. del Callao,Bellavista,Público,"Av. Juan Pablo II N°300 - 306 (Ex Fundo Aguilar, Av. Prolongacion Sta Rosa S/N, Av. Sta. Rosa B4 09, Av. Sta. Rosa Mz C4 Lt02)",https://unac.edu.pe/
+61,1,UNIVERSIDAD NACIONAL DEL CENTRO DEL PERÚ,Junín,Huancayo,El Tambo,Público,Av. Mariscal Castilla N° 3909 - 4089,https://uncp.edu.pe/
+62,1,UNIVERSIDAD NACIONAL DEL SANTA,Áncash,Santa,Nuevo Chimbote,Público,Av. Universitaria S/N,https://www.uns.edu.pe/
+63,1,UNIVERSIDAD NACIONAL FEDERICO VILLARREAL,Lima,Lima,Lima,Público,Av.Nicolas De Pierola Nº 347-351-355 / Jr. Moquegua 651-653,https://www.unfv.edu.pe/
+64,1,UNIVERSIDAD NACIONAL HERMILIO VALDIZÁN,Huánuco,Huánuco,Pillco Marca,Público,Av. Universitaria 601-607-Cayhuayna,https://www.unheval.edu.pe/
+65,1,UNIVERSIDAD NACIONAL INTERCULTURAL DE LA AMAZONÍA,Ucayali,Coronel Portillo,Yarinacocha,Público,Carretera San José Km. 0.500,https://unia.edu.pe/
+66,1,UNIVERSIDAD NACIONAL INTERCULTURAL DE LA SELVA CENTRAL JUAN SANTOS ATAHUALPA,Junín,Chanchamayo,Chanchamayo,Público,Jr. Los Cedros N° 141,http://dos.uniscjsa.edu.pe/
+67,1,UNIVERSIDAD NACIONAL INTERCULTURAL DE QUILLABAMBA,Cusco,La Convención,Santa Ana,Público,El Arenal S/N,https://www.gob.pe/uniq
+68,1,"UNIVERSIDAD NACIONAL INTERCULTURAL ""FABIOLA SALAZAR LEGUÍA""",Amazonas,Bagua,Bagua,Público,Jr. Ancash 520,https://www.unibagua.edu.pe/
+69,1,UNIVERSIDAD NACIONAL JORGE BASADRE GROHMANN,Tacna,Tacna,Tacna,Público,Av. Miraflores Y Av. Cuzco S/N,http://www.unjbg.edu.pe/
+70,1,UNIVERSIDAD NACIONAL JOSÉ FAUSTINO SÁNCHEZ CARRIÓN,Lima,Huaura,Huacho,Público,Av. Mercedes Indacochea N° 609 - Puerta 01,https://unjfsc.edu.pe/
+71,1,UNIVERSIDAD NACIONAL JOSÉ MARÍA ARGUEDAS,Apurímac,Andahuaylas,San Jerónimo,Público,Av. Jose María Arguedas S/N,http://www.unajma.edu.pe/
+72,1,UNIVERSIDAD NACIONAL MAYOR DE SAN MARCOS,Lima,Lima,Lima,Público,Calle Germán Amézaga Nº 375,https://www.unmsm.edu.pe/
+73,1,UNIVERSIDAD NACIONAL MICAELA BASTIDAS DE APURÍMAC,Apurímac,Abancay,Tamburco,Público,Sector De Aychahuacso,https://www.unamba.edu.pe/
+74,1,UNIVERSIDAD NACIONAL PEDRO RUÍZ GALLO,Lambayeque,Lambayeque,Lambayeque,Público,Calle Juan Xxiii 391,https://www.unprg.edu.pe/univ/portal/index.php
+75,1,UNIVERSIDAD NACIONAL SAN LUIS GONZAGA,Ica,Ica,Ica,Público,Av. Los Maestros S/N - Ciudad Universitaria,https://www.unica.edu.pe/
+76,1,UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO,Áncash,Huaraz,Independencia,Público,Av. Universitaria S/N,https://www.unasam.edu.pe/
+77,1,UNIVERSIDAD NACIONAL TECNOLÓGICA DEL CONO SUR DE LIMA,Lima,Lima,Villa El Salvador,Público,"Av. Bolívar S/N Sector 3, Grupo 1 Mz. ""A"" Sub Lote 3",https://www.untels.edu.pe/
+78,1,UNIVERSIDAD NACIONAL TORIBIO RODRÍGUEZ DE MENDOZA DE AMAZONAS,Amazonas,Chachapoyas,Chachapoyas,Público,Calle Higos Urco N° 342-350-356 y Calle Universitaria N° 304,https://www.untrm.edu.pe/
+79,1,UNIVERSIDAD PARA EL DESARROLLO ANDINO,Huancavelica,Angaraes,Lircay,Privado,Av. Ricardo Fernandez Nro.103,https://udea.edu.pe/
+85,1,UNIVERSIDAD PARTICULAR DE HUANCAYO FRANKLIN ROOSEVELT,Junín,Huancayo,Huancayo,Privado,Av. Giraldez N° 542-550,https://uroosevelt.edu.pe/
+89,1,UNIVERSIDAD PARTICULAR PERUANO ALEMANA,Lima,Lima,Chorrillos,Privado,Av. Alejandro Iglesias N° 296,https://upal.edu.pe/
+80,1,UNIVERSIDAD PERUANA CAYETANO HEREDIA,Lima,Lima,San Martín de Porres,Privado,"Av. Honorio Delgado N° 430, Urb. Ingenieria S.M.P",https://cayetano.edu.pe/
+81,1,UNIVERSIDAD PERUANA DE CIENCIAS APLICADAS,Lima,Lima,Santiago de Surco,Privado,Av. Alonso De Molina Nº 1611 Urb. Lima Polo And Hunt Club / Av. Prolongación Primavera Nº 2390 / Jr. Jose Nicolas Rodrigo N° 440-490 / Av. Primavera N° 2482 / Calle Los Ficus N° 136-191,https://www.upc.edu.pe/
+82,1,UNIVERSIDAD PERUANA LOS ANDES,Junín,Huancayo,Huancayo,Privado,"Av. Mártires Del Periodismo N°2008-2040-2060-2080, Jr. Ciro Alegria N°215, Calle Las Estrellas N°105-115, Calle Neptuno N°100-150 Y Calle Los Andes N°125",https://upla.edu.pe/
+83,1,UNIVERSIDAD PERUANA UNIÓN,Lima,Lima,Lurigancho,Privado,"Acumulación De Los Lotes N° 27, 27-A, 28, 28-A, 29, 29-A, 30, 31, 31-A, 32 Y De La Ladera San Pascual, De La Lotización Del Ex Fundo Ñaña",https://upeu.edu.pe/
+84,1,UNIVERSIDAD PRIVADA ANTENOR ORREGO,La Libertad,Trujillo,Trujillo,Privado,Av. América Sur 3145 Monserrate,https://upao.edu.pe/
+13,1,UNIVERSIDAD PRIVADA CÉSAR VALLEJO,La Libertad,Trujillo,Victor Larco Herrera,Privado,"Av. Larco Num 1770 Urb. 5Ta Etapa San Andrés, Trujillo (Partida Registral 03117476)",https://www.ucv.edu.pe/
+86,1,UNIVERSIDAD PRIVADA DE TACNA,Tacna,Tacna,Pocollay,Privado,Calle 28 De Agosto N° 275,https://www.upt.edu.pe/
+87,1,UNIVERSIDAD PRIVADA DEL NORTE,La Libertad,Trujillo,Trujillo,Privado,Av. Ejercito 920 - 940 Urbanización El Molino,https://www.upn.edu.pe/
+28,1,UNIVERSIDAD PRIVADA MARCELINO CHAMPAGNAT,Lima,Lima,Santiago de Surco,Privado,Av. Mariscal Castilla 1270,https://umch.edu.pe/
+88,1,UNIVERSIDAD PRIVADA NORBERT WIENER,Lima,Lima,Lima,Privado,Jiron Larrabure Y Unanue N° 100,https://www.uwiener.edu.pe/
+92,1,UNIVERSIDAD PRIVADA SAN IGNACIO DE LOYOLA,Lima,Lima,La Molina,Privado,Av. La Fontana 550,https://usil.edu.pe
+93,1,UNIVERSIDAD PRIVADA SEÑOR DE SIPÁN,Lambayeque,Chiclayo,Pimentel,Privado,"Sector La La Garita De Pimentel, Sector La Garita / Parcela Frente A Linea De Ferrocarr. A Pimentel",https://www.uss.edu.pe/uss/Inicio
+91,1,UNIVERSIDAD RICARDO PALMA,Lima,Lima,Santiago de Surco,Privado,Av. Benavides 5440,https://www.urp.edu.pe/
+94,1,UNIVERSIDAD TECNOLÓGICA DE LOS ANDES,Apurímac,Abancay,Abancay,Privado,Av. Perú N° 700,https://utea.edu.pe/
+95,1,UNIVERSIDAD TECNOLÓGICA DEL PERÚ,Lima,Lima,Lima,Privado,Av.Abel Bergasse Du Petit Thouars 114 Y 116 Urb. Santa Beatriz,https://www.utp.edu.pe/web/
+99,2,ABACO - CHICLAYO,Lambayeque,Chiclayo,Eten,Privado,Calle Mariscal Castilla S/N Mz 104 Lote 1,https://www.abacochiclayo.edu.pe/
+100,2,ABACO - CUSCO,Cusco,Cusco,Cusco,Privado,Avenida El Sol 616,https://www.facebook.com/deingenieriacusco/?locale=es_LA
+101,2,ABACO - PIURA,Piura,Piura,Piura,Privado,Calle Callao 253,https://abacopiura.edu.pe/
+102,2,ABANCAY,Apurímac,Abancay,Abancay,Público,Avenida Circunvalacion,https://iestpabancay.edu.pe/
+104,2,ACORA,Puno,Puno,Acora,Público,Jiron Tecnica 157,https://iestpacora.edu.pe/portal/
+105,2,ADA A. BYRON,Ica,Chincha,Chincha Alta,Privado,Avenida Abelardo Alva Maurtua 449,https://www.facebook.com/ISTADAABYRON/?locale=es_LA
+106,2,ADDIS,Lima,Lima,Pachacamac,Privado,Avenida Huertos De Manchay S/N,https://addis.edu.pe/
+108,2,ADMINISTRACION Y NEGOCIOS,Lima,Lima,Jesús María,Privado,Avenida San Felipe 650-652,https://www.deperu.com/educacion/instituto-educacion-superior/iest-administracion-y-negocios-1472273-jesus-maria-7934
+111,2,ADOLFO VIENRICH,Junín,Tarma,Tarma,Público,Jiron Esquina Malecon Galvez Cuadra 12 Y Los Proceres 137,https://iestpvienrich.edu.pe/
+112,2,ADVENTISTAS DEL TITICACA,Puno,San Román,Juliaca,Privado,Carretera A Arequipa Km. 6,https://istat.edu.pe/
+114,2,AGRARIO DEL SUR,Arequipa,Arequipa,Arequipa,Privado,Calle Bolivar 313,http://www.iagrario.edu.pe/iagrariov2/
+115,2,AGUSTIN HAYA DE LA TORRE,Áncash,Sihuas,Sihuas,Público,Avenida 28 De Julio Norte 280,https://www.facebook.com/iestp.agustinhayadelatorre/?locale=es_LA
+116,2,AIJA,Áncash,Aija,Aija,Público,Monserrate,https://www.facebook.com/Institutodeaija/
+119,2,ALAS PERUANAS - CHINCHA,Ica,Chincha,Chincha Alta,Privado,Avenida Luis Galvez Chipoco 320,S/D
+121,2,ALEXANDER FLEMING,Lima,Lima,Puente Piedra,Privado,Calle San Francisco 1 Cdra Mz B Lote 19,https://www.institucioneducativa.info/dre/dre-lima-metropolitana/instituto-tecnologico-alexander-fleming-29645/
+122,2,ALEXANDER VON HUMBOLDT,Lima,Lima,Santiago de Surco,Privado,Avenida Benavides 3572,S/D
+125,2,ALFRED NOBEL,Pasco,Pasco,Huariaca,Público,Jiron Huallaga 101,https://www.iestpanhuariaca.edu.pe/
+127,2,ALFREDO SARMIENTO PALOMINO,Apurímac,Andahuaylas,Huancarama,Público,Avenida Bolivar S/N,https://iestpalfredosarmiento.edu.pe/
+129,2,ALMIRANTE MIGUEL GRAU,Piura,Piura,Veintiseis de Octubre,Público,Avenida Chulucanas S/N,https://tecnograu.edu.pe/
+133,2,ALTO MAYO,San Martín,Moyobamba,Moyobamba,Público,Carretera Fernando Belaunde Terry Km 492 Sector Indañe,https://iestpam.edu.pe/
+135,2,AMAUTA JULIO C. TELLO,Lima,Huarochirí,Huarochiri,Público,Chacarilla S/N,https://iestphuarochiri.edu.pe/
+136,2,AMAZONAS - YURIMAGUAS,Loreto,Alto Amazonas,Yurimaguas,Público,Carretera Yurimaguas-Tarapoto Km 3 5,https://tecnologicoamazonasygs.edu.pe/quienes-somos/
+138,2,AMBROSSIA - CUSCO,Cusco,Cusco,Wanchaq,Privado,Avenida 28 De Julio S/N Mz J-2 Lote 2,https://www.facebook.com/InstitutoAmbrossia.Cusco/
+141,2,AMERICAN INSTITUTE,Lambayeque,Chiclayo,Chiclayo,Privado,Calle Manuel Maria Izaga 807,https://www.institucioneducativa.info/dre/dre-lambayeque/instituto-tecnologico-american-institute-79478/
+142,2,AMERICAN SYSTEM,Loreto,Alto Amazonas,Yurimaguas,Privado,Calle Francisco Bardales 441,http://www.americansystem.edu.pe/nosotros/
+143,2,AMERICANA DE MADRE DE DIOS,Madre de Dios,Tambopata,Tambopata,Privado,Avenida Fitzcarrald 130,sd
+144,2,AMERICANA DEL CUSCO,Cusco,Cusco,Wanchaq,Privado,Avenida Pedro Vilcapaza 203,https://www.deperu.com/educacion/instituto-educacion-superior/iest-americana-del-cusco-0934182-huanchac-7971
+145,2,AMERICANO,Lima,Lima,Puente Piedra,Privado,Avenida Saenz Peña Mz E-F Lote 22,http://institutoamericano.edu.pe/portal/contactanos.php
+146,2,ANDABAMBA,Cajamarca,Santa Cruz,Andabamba,Público,Calle Eleodoro Benel S/N,S/D
+153,2,ANTA,Cusco,Anta,Zurite,Público,La Huaylla S/N,S/D
+154,2,ANTENOR ORREGO ESPINOZA,Lima,Lima,Chorrillos,Público,Avenida Ciro Alegria Cuadra 2,https://iestpantenororrego.edu.pe/website/
+155,2,ANTONIO LORENA,Cusco,Cusco,Cusco,Privado,Avenida La Cultura 3035,https://antoniolorena.edu.pe/
+160,2,APARICIO POMARES,Huánuco,Huánuco,Amarilis,Público,Carretera Central Huanuco - Tingo Maria Km 1.5,https://www.istap.edu.pe/
+161,2,APOLO'S,Cajamarca,Cajabamba,Cajabamba,Privado,Jiron Jose Sabogal 977,https://www.institucioneducativa.info/dre/dre-cajamarca/instituto-tecnologico-apolos-85113/
+163,2,ARGENTINA,Lima,Lima,Lima,Público,Avenida Alfonso Ugarte 1011,https://www.istpargentina.edu.pe/
+165,2,ARTURO SABROSO MONTOYA,Lima,Lima,La Victoria,Público,Jiron Prolg Antonio Raymondi 1020,https://iestpasm.edu.pe/
+166,2,ARZOBISPO LOAYZA,Lima,Lima,Lima,Privado,Avenida Garcilaso De La Vega 1022-1024-1040,https://www.ial.edu.pe/
+167,2,ASCOPE,La Libertad,Ascope,Ascope,Público,Avenida Grau S/N,https://iestp-ascope.ueniweb.com/
+169,2,ASHANINKA,Junín,Satipo,Río Tambo,Público,Calle Madre Teresa Posada S/N,https://www.institucioneducativa.info/dre/dre-junin/instituto-tecnologico-ashaninka-82532/
+170,2,ATALAYA,Ucayali,Atalaya,Raymondi,Público,Carretera Aerija,https://web.institutoatalaya.edu.pe/
+171,2,AUCARA,Ayacucho,Lucanas,Aucara,Público,Avenida Tupac Amaru 700,https://institutoaucara.edu.pe/2023/
+172,2,AUGUSTE RENOIR,Lima,Lima,Puente Piedra,Privado,"Mz B Lote 2,3 Y 52",https://www.institucioneducativa.info/dre/dre-lima-metropolitana/instituto-pedagogico-auguste-renoir-29805/
+173,2,AUGUSTO SALAZAR BONDY,Puno,San Román,Juliaca,Privado,Jiron Bolivar 323,https://www.salazarbondy.org/
+174,2,AURAHUA,Huancavelica,Castrovirreyna,Aurahua,Público,Jiron Ayacucho 230,https://www.institucioneducativa.info/dre/dre-huancavelica/instituto-tecnologico-aurahua-81150/
+178,2,AYABACA,Piura,Ayabaca,Ayabaca,Público,Carretera Ex Quinta Rios S/N,https://iestpayabaca.edu.pe/
+179,2,AYAVIRI,Puno,Melgar,Ayaviri,Público,Avenida Balsaspata S/N,https://iestpayaviri.edu.pe/
+180,2,BAGUA,Amazonas,Bagua,Bagua,Público,Bagua Copallin,https://www.iestpbagua.edu.pe/
+181,2,BAMBAMARCA,Cajamarca,Hualgayoc,Bambamarca,Público,Chala S/N,https://iesppbambamarca.edu.pe/
+182,2,BELLAVISTA,San Martín,Bellavista,Bellavista,Público,Jiron Los Claveles S/N,https://iestbellavista.edu.pe/
+183,2,BENJAMIN FRANKLIN,Moquegua,Mariscal Nieto,Moquegua,Privado,Jiron Lima 905,http://www.iestpbf.edu.pe/
+184,2,BETA COMPUTER,Lima,Lima,San Martín de Porres,Privado,Avenida Mayorazgo Mz D Lote 21,http://iestpbetacomputer.com/
+185,2,BITEC,Áncash,Santa,Chimbote,Privado,Jiron Jose Olaya 569,https://www.facebook.com/institutosuperior.bitec/?locale=es_LA
+186,2,BLAISE PASCAL,San Martín,San Martín,Tarapoto,Público,Jiron Manco Capac 237,https://ibp.org.pe/campus/
+188,2,BLUE RIBBON INTERNATIONAL CUSCO,Cusco,Cusco,Wanchaq,Privado,Avenida Infancia 535,http://campus.blueribboninternational.edu.pe/
+192,2,BUENAVENTURA MESTANZA MORI,San Martín,Rioja,Nueva Cajamarca,Privado,Avenida Cajamarca 925,https://www.institucioneducativa.info/dre/dre-san-martin/instituto-tecnologico-buenaventura-mestanza-mori-85126/
+193,2,CABANA,Áncash,Pallasca,Cabana,Público,Jiron Las Animas 103,https://iestpcabana.edu.pe/
+195,2,CAJAMARCA,Cajamarca,Cajamarca,Cajamarca,Público,Autopista Cajamarca - Baños Del Inca Km. 3.5,https://www.iestpcajamarca.edu.pe/
+196,2,CAMISEA,Cusco,La Convención,Santa Ana,Privado,Pasaje,https://www.institucioneducativa.info/dre/dre-cusco/instituto-tecnologico-camisea-85178/
+197,2,CANCHAQUE,Piura,Huancabamba,Canchaque,Público,Chalaco S/N,https://www.iestpcanchaque.edu.pe/
+198,2,CANCHIS,Cusco,Canchis,Sicuani,Privado,Jiron Arequipa 334,https://www.iestpcanchis.edu.pe/
+199,2,CANIPACO,Junín,Huancayo,Chacapampa,Público,Plaza Principal,https://iestpcanipaco.edu.pe/
+200,2,CANTA,Lima,Canta,Canta,Público,Avenida 26 De Junio S/N,https://iestpcanta.edu.pe/
+201,2,CAÑETE,Lima,Cañete,Quilmana,Público,Carretera Imperial - Quilmana Km 11,https://www.iescanete.edu.pe/
+204,2,CARHUAZ,Áncash,Carhuaz,Carhuaz,Público,Jiron 9 De Diciembre 425,https://www.istec.edu.pe/
+205,2,CARLOS CUETO FERNANDINI,Lima,Lima,Comas,Público,Avenida Tupac Amaru Km 8,https://carloscueto.edu.pe/
+206,2,CARLOS LABORDE,Ucayali,Atalaya,Sepahua,Público,Jiron Junin S/N,https://m.facebook.com/p/Instituto-Superior-Tecnol%C3%B3gico-Carlos-Laborde--100083129327127/
+207,2,CARLOS MALPICA RIVAROLA,Cajamarca,Contumazá,Yonan,Público,Jiron Dos De Mayo 210,S/D
+208,2,CARLOS SALAZAR ROMERO,Áncash,Santa,Nuevo Chimbote,Público,Avenida Pacifico S/N,https://istpcsr.edu.pe/
+210,2,CASTILLA,Arequipa,Castilla,Aplao,Público,Avenida 3 De Abril S/N,https://www.iestpcastilla.edu.pe/
+211,2,CASTROVIRREYNA,Huancavelica,Castrovirreyna,Castrovirreyna,Público,Avenida Los Libertadores S/N,https://www.institucioneducativa.info/dre/dre-huancavelica/instituto-tecnologico-castrvirreyna-81313/
+212,2,CATALINA BUENDIA DE PECHO,Ica,Ica,Ica,Público,Avenida Tupac Amaru S/N,https://cbp.edu.pe/
+213,2,CAYETANO HEREDIA - AREQUIPA,Lambayeque,Chiclayo,Chiclayo,Privado,Avenida Jose Balta 057,https://www.cayetanoherediachiclayo.edu.pe/
+215,2,CAYETANO HEREDIA -CHICLAYO,Arequipa,Arequipa,Arequipa,Privado,Calle Victor Lira 409,https://icayetanoheredia.edu.pe/
+214,2,CAYETANO HEREDIA DE LIMA,Lima,Lima,Lima,Privado,Avenida Uruguay 315,https://icayetanoheredia.edu.pe/
+216,2,CCAPAC,Cusco,Cusco,Wanchaq,Privado,Calle Republica De Bolivia S/N,https://www.deperu.com/educacion/instituto-educacion-superior/iest-ccapac-1387349-wanchaq-8034
+217,2,CEFOP CAJAMARCA,Cajamarca,Cajamarca,Los Baños Del Inca,Público,Carretera Cajamarca - Baños Del Inca Km. 3.5,https://www.fya57cefop.edu.pe/cajamarca1.html
+218,2,CEFOP LA LIBERTAD,La Libertad,Trujillo,Trujillo,Público,Jiron Junin 372,https://www.fya57cefop.edu.pe/
+220,2,CELENDIN,Cajamarca,Celendín,Celendín,Privado,Jiron Dos De Mayo 1382-1390,https://www.ipc.edu.pe/
+221,2,CENFOMIN - CENTRO DE FORMACION EN MINERIA,Cajamarca,Cajamarca,Cajamarca,Privado,Jiron Jose Sabogal 625,https://www.institucioneducativa.info/dre/dre-cajamarca/instituto-tecnologico-cenfomin-centro-de-formacion-en-mineria-82663/
+222,2,CENFOTUR-CENTRO DE FORMACION EN TURISMO,Lima,Lima,Barranco,Público,"Calle Pedro Martinto 320 , Barranco",https://www.gob.pe/cenfotur
+223,2,CENTRO DE ALTOS ESTUDIOS DE LA MODA - CEAM,Lima,Lima,Miraflores,Privado,Avenida Alfredo Benavides 750,https://www.ceam.edu.pe/
+224,2,CENTRO DE ESTUDIOS DE ALTA MONTAÑA,Áncash,Huaraz,Huaraz,Privado,Parque Ginebra Mz G Lote 28,https://www.iestpceam.edu.pe/
+225,2,CENTRO DE FORMACION AGRICOLA MOQUEGUA,Moquegua,Mariscal Nieto,Moquegua,Público,Alto La Villa,https://www.iestpcfam.edu.pe/
+227,2,CENTRO DE FORMACION PROFESIONAL BINACIONAL,Piura,Sullana,Marcavelica,Público,Carretera Sullana - Talara Km 1027,https://www.institucioneducativa.info/dre/dre-piura/instituto-tecnologico-centro-de-formacion-profesional-binacional-84504/
+228,2,CENTRO DE INVESTIGACION PARA EL DESARROLLO TECNOLOGICO-CIDET,Lima,Huaura,Huacho,Privado,Calle Colon 427-437,S/D
+229,2,CENTRO DE INVESTIGACION Y CAPACITACION TECNOLOGICA-CICAT,Lima,Lima,Carabayllo,Privado,Avenida Universitaria 381,https://www.educacicat.edu.pe/
+230,2,CENTRO DE LA IMAGEN,Lima,Lima,Miraflores,Privado,Avenida 28 De Julio 815,https://www.centrodelaimagen.edu.pe/
+232,2,CENTRO PERUANO DE ESTUDIOS BANCARIOS-CEPEBAN,Lima,Lima,Lince,Privado,Avenida Arequipa 2661,https://www.cepeban.edu.pe/
+233,2,CEPEA-ALTO AMAZONAS,Lima,Lima,Pueblo Libre,Privado,Avenida Brasil 1360,http://181.224.236.219/
+234,2,CEPEA-LIMA,Áncash,Santa,Nuevo Chimbote,Privado,Avenida Chimbote 304 Etapa I,S/D
+237,2,CESAR AUGUSTO GUARDIA MAYORGA,Ayacucho,Parinacochas,Coracora,Público,Avenida De La Cultura S/N,https://istcoracora.edu.pe/2023-0/
+240,2,CESCA AREQUIPA,Arequipa,Arequipa,Arequipa,Privado,Calle Ayacucho 119,https://www.facebook.com/CescaPeru/?locale=es_LA
+239,2,CESCA-LIMA,Callao,Prov. Const. del Callao,Ventanilla,Privado,Calle S/N Mz C-8 Lote 20,https://www.cesca.edu.pe/
+241,2,CESDE (CENTRO DE ENSEÑANZA SUPERIOR PARA EL DESARROLLO),Ayacucho,Huamanga,Ayacucho,Privado,Jiron Mariscal Caceres 1058,https://www.cesde.edu.pe/
+242,2,CESSAG,Lima,Lima,San Juan de Miraflores,Privado,Avenida Los Heroes 620-B,S/D
+245,2,CETURGH PERU,Piura,Piura,Piura,Privado,Avenida Sanchez Cerro 234-242,https://ceturghperu.edu.pe/
+246,2,CEVATUR - IQUITOS,Loreto,Maynas,Iquitos,Privado,Jiron Putumayo 247,https://www.institucioneducativa.info/dre/dre-loreto/instituto-tecnologico-cevatur-iquitos-82867/
+250,2,CEVATUR ICA,Ica,Ica,Ica,Privado,Calle Domingo Elias 286,http://cevaturperu.edu.pe/cevatur_ica/
+249,2,CEVATUR PERU,Lima,Lima,Lince,Privado,Avenida Arequipa 2515,http://cevaturperu.edu.pe/
+251,2,CEVATUR TRUJILLO,La Libertad,Trujillo,Trujillo,Privado,Jiron Miguel Estete 540,https://www.facebook.com/INSTITUTO.CEVATUR/?locale=es_LA
+247,2,CEVATUR-CHICLAYO ( ALTOS ESTUDIOS TURISTICOS),Lambayeque,Chiclayo,Chiclayo,Privado,Avenida Saenz Peña 644-646,http://cevaturperu.edu.pe/quienes-somos/chiclayo2/
+248,2,CEVATUR-HUANCAYO,Junín,Huancayo,Huancayo,Privado,Avenida Centenario 535,https://www.facebook.com/cevaturHYO/
+252,2,CHACAS,Áncash,Asunción,Acochaca,Público,Carretera Principal A Tazapampa,S/D
+254,2,CHALAMARCA,Cajamarca,Chota,Chalamarca,Público,Avenida Chota S/N,https://iestpchalamarca.edu.pe/
+255,2,CHALHUAHUACHO,Apurímac,Cotabambas,Challhuahuacho,Público,Chalhuahuacho,https://ieschalhuahuacho.edu.pe/
+256,2,CHALHUANCA,Apurímac,Aymaraes,Chalhuanca,Público,Jiron Chalhuanca 618,https://iestpchalhuanca.edu.pe/
+257,2,CHANCAY,Lima,Huaral,Chancay,Público,Avenida La Maritima S/N,https://iestpchancay.edu.pe/
+258,2,CHARLES ASHBEE,Piura,Piura,Piura,Privado,Avenida Sanchez Cerro 430 3Er Y 4To Piso,https://charlesashbee.edu.pe/
+259,2,CHARLES CHAPLIN,Lima,Lima,San Isidro,Privado,Avenida Las Flores 247 - 249,www.charleschaplin.edu.pe
+260,2,CHILLIA,La Libertad,Pataz,Chillia,Público,Mantaibamba S/N,https://www.facebook.com/IESTPCHILLIA/
+261,2,CHINCHA,Ica,Chincha,Pueblo Nuevo,Público,Avenida Union 500,S/D
+262,2,CHIO LECCA,Lima,Lima,San Isidro,Privado,Avenida Javier Prado Oeste 1310-1320,https://www.chio-lecca.edu.pe/
+264,2,CHIPAO,Ayacucho,Lucanas,Chipao,Público,Avenida Cuba Mz 9 Lote 1,https://iestpchipao.edu.pe/2023-0/
+267,2,CHOCOPE,La Libertad,Ascope,Chocope,Público,Avenida Escolar S/N,https://www.facebook.com/PaginaOficialIESTPChocope/?locale=es_LA
+268,2,CHOJATA,Moquegua,General Sánchez Cerro,Chojata,Público,Plaza De Armas S/N,https://www.iestpchojata.edu.pe/
+269,2,CHONGOYAPE,Lambayeque,Chiclayo,Chongoyape,Público,Calle Miguel Iglesias 380,https://iestchongoyape.edu.pe/
+270,2,CHOTA,Cajamarca,Chota,Chota,Público,Carretera Carretera Chota - Chiclayo Km. 3,https://eespnschota.edu.pe/nuestra-historia/
+271,2,CHRISTIAN BARNARD-CALLAO,Callao,Prov. Const. del Callao,Callao,Privado,Avenida Saenz Peña 451,https://www.deperu.com/educacion/instituto-educacion-superior/iest-christian-barnard-1195676-callao-8084
+272,2,CHUPA,Puno,Azángaro,Chupa,Público,Carretera Chupa - Pedro Vilcapaza,S/D
+273,2,CHUQUIBAMBA,Arequipa,Condesuyos,Chuquibamba,Público,Jiron Iray S/N,https://www.deperu.com/educacion/instituto-educacion-superior/iest-chuquibamba-0815068-chuquibamba-8086
+274,2,CHURCAMPA,Huancavelica,Churcampa,Churcampa,Público,Avenida Cultura 180,https://www.institucioneducativa.info/dre/dre-huancavelica/instituto-tecnologico-churcampa-81334/
+275,2,CIBERNET UTCUBAMBA,Amazonas,Utcubamba,Bagua Grande,Privado,Jiron Daniel Alcides Carrion 692,https://www.facebook.com/cibernetistp/?locale=es_LA
+276,2,CIBERTEC,Lima,Lima,Lima,Privado,Avenida Uruguay 514,https://www.cibertec.edu.pe/
+277,2,CIENCIAS DE LA SALUD,Ucayali,Coronel Portillo,Calleria,Privado,Jiron Salaverry 570-572 Mz 72 Lote 5-6,https://www.ics.edu.pe/
+278,2,CIENCIAS TECNOLOGICAS DE AREQUIPA,Arequipa,Arequipa,Arequipa,Privado,Calle Puente Grau 104,https://cta.edu.pe/
+279,2,CIMA,Apurímac,Abancay,Abancay,Privado,Avenida Enrique Pelach 108,https://www.facebook.com/p/Instituto-CIMAC-SC-Abancay-100064283582417/
+281,2,CIMAC DEL SUR,Arequipa,Arequipa,Arequipa,Privado,Calle La Merced 518-520,www.cimacdelsur.edu.pe
+282,2,CIRO ALEGRIA,San Martín,San Martín,Morales,Privado,Jiron Cocopa 204,https://iestpca.edu.pe/
+285,2,CIUDAD ETEN,Lambayeque,Chiclayo,Eten,Público,Calle Mariscal Castilla S/N Mz 104 Lote 1,https://www.regionlambayeque.pe/web/tema/detalle/8155?pass=MTYxMw==
+286,2,CLORINDA MATTO DE TURNER,Cusco,Calca,Calca,Público,Avenida Vilcanota S/N,https://iesclorindamattodeturner.edu.pe/portal/
+288,2,COLONIA DEL CACO,Ucayali,Coronel Portillo,Iparia,Público,Rio Alto Ucayali,https://icoloniadelcaco.edu.pe/
+289,2,COLUMBIA,Lima,Lima,San Isidro,Privado,Avenida Javier Prado Este 515,https://www.columbia.edu.pe/
+290,2,COMPLEJO HOSPITALARIO SAN PABLO,Lima,Lima,Independencia,Privado,Avenida Carlos Izaguirre 159,https://istsanpablo.edu.pe/
+291,2,COMPUTER MASTER,Ica,Ica,Ica,Privado,Calle Servulo Gutierrez 280,https://www.computermaster.edu.pe/
+296,2,CONDORAY,Lima,Cañete,San Vicente de Cañete,Privado,Avenida Condoray 120,https://www.condoray.edu.pe/
+297,2,CONTAMANA,Loreto,Ucayali,Contamana,Público,Avenida Victor R. Haya De La Torre S/N,https://www.iestpcontamana.edu.pe/
+298,2,CONTINENTAL,Junín,Huancayo,Huancayo,Privado,Avenida Real 125,https://icontinental.edu.pe/
+299,2,CONTRALMIRANTE MANUEL VILLAR OLIVERA,Tumbes,Contralmirante Villar,Zorritos,Público,Carretera Panamericana Norte Km.1235,https://iestpcmvo.edu.pe/
+300,2,COPACABANA,Áncash,Pallasca,Llapo,Público,Jiron Huanucutanga 385 Mz N1 Lote 3 Sector Iv,https://iestpcopacabanallapo.edu.pe/
+301,2,CORRIENTE ALTERNA,Lima,Lima,Miraflores,Privado,Avenida Aviacion 500,https://www.corrientealterna.edu.pe/
+302,2,CREA E INNOVA - INSTITUTO DE EMPRENDEDORES,Lima,Lima,Los Olivos,Privado,Avenida Alfredo Mendiola 3857,https://www.institucioneducativa.info/dre/dre-lima-metropolitana/instituto-tecnologico-crea-e-innova-instituto-de-emprendedores-84936/
+303,2,CRISTO REY,Ayacucho,Huamanga,Ayacucho,Privado,Jiron Garcilazo De La Vega 336,https://www.institutocristorey.edu.pe/
+304,2,CUMBRE,Lambayeque,Chiclayo,Chiclayo,Privado,Avenida Lora Y Lora 625,S/D
+305,2,CUNA DE LA LIBERTAD AMERICANA,Ayacucho,Huamanga,Ayacucho,Privado,Jiron Garcilazo De La Vega 257,https://iesppclam.edu.pe/index.php/institucional
+306,2,CURAHUASI,Apurímac,Abancay,Curahuasi,Público,Curahuasi,https://iestpcurahuasi.edu.pe/
+307,2,CUTERVO,Cajamarca,Cutervo,Cutervo,Público,Calle Juan Z Montenegro 490,https://tecnologicocutervo.pe/
+308,2,DAMASO LABERGE,Loreto,Maynas,Indiana,Público,Calle Damaso Laberge S/N,https://www.iestpdamasolaberge.edu.pe/
+309,2,DANIEL ALCIDES CARRION-DANIEL ALCIDES CARRION,Lima,Lima,Lima,Privado,Avenida Arequipa 351,https://www.acarrion.edu.pe/
+310,2,DANIEL ALCIDES CARRION-LIMA,Pasco,Daniel Alcides Carrión,Yanahuanca,Público,28 De Julio,S/D
+311,2,DANIEL VILLAR,Áncash,Huaylas,Caraz,Público,Jiron Sucre 124,https://www.iestpdv.edu.pe/
+312,2,DATA SYSTEMS INGENIEROS,Ica,Ica,Ica,Privado,Avenida Jose Matias Manzanilla 479,https://www.deperu.com/educacion/instituto-educacion-superior/iest-data-systems-ingenieros-1117670-ica-8122
+313,2,DE AVANCE TECNOLÓGICO Y CIENTÍFICO-ISATEC,Lambayeque,Lambayeque,Lambayeque,Privado,Avenida Ramon Castilla 445,https://www.facebook.com/institutoisatec/?locale=es_LA
+209,2,DE CASMA,Áncash,Casma,Casma,Público,Calle Mercado Modelo 2Do Piso,https://iestpcasma.edu.pe/
+314,2,DE CHINCHEROS,Apurímac,Chincheros,Chincheros,Público,Llimpe,https://m.facebook.com/p/Instituto-de-Educaci%C3%B3n-Superior-Tecnol%C3%B3gico-P%C3%BAblico-de-Chincheros-100069441139312/
+265,2,DE CHIRINOS,Cajamarca,San Ignacio,Chirinos,Público,Calle San Ignacio S/N,https://www.institucioneducativa.info/dre/dre-cajamarca/instituto-tecnologico-de-chirinos-86288/
+317,2,DE CONCEPCION,Junín,Concepción,Nueve de Julio,Público,Calle Heroinas Toledo 110,https://institutodeconcepcion.edu.pe/
+343,2,DE DISEÑO PUBLICITARIO LEO DESIGN,Lima,Lima,Lince,Privado,Avenida Arequipa 2698,https://www.leo.edu.pe/home-2/
+429,2,DE FORMACION EMPRESARIAL EN COMPUTACION E INFORMATICA - ITEC,Junín,Huancayo,El Tambo,Privado,Jiron Sebastian Lorente 530,https://www.facebook.com/p/ITEC-Huancayo-Oficial-100083100562205/
+442,2,DE GASTRONOMIA LE CUISINIER,Arequipa,Arequipa,Arequipa,Privado,Calle Mariscal Benavides 223,https://www.institucioneducativa.info/dre/dre-arequipa/instituto-tecnologico-de-gastronomia-le-cuisinier-85485/
+321,2,DE HUARMEY,Áncash,Huarmey,Huarmey,Público,Avenida El Olivar S/N,https://www.iestphuarmey.edu.pe/
+323,2,DE INVESTIGACIONES INDUSTRIALES,Cajamarca,Hualgayoc,Bambamarca,Privado,Jiron Jaime D Emartinez 285,https://www.deperu.com/comercios/educacion/iest-privado-in-perial-1133058
+324,2,DE LA JOYA,Arequipa,Arequipa,La Joya,Público,Jiron 2 De Mayo 311,https://www.facebook.com/tecnologicodelajoya/
+620,2,DE LLAMELLIN,Áncash,Antonio Raymondi,Llamellin,Público,Garapampa,https://iestllamellin.edu.pe/
+327,2,DE PISCOBAMBA,Áncash,Mariscal Luzuriaga,Piscobamba,Público,Carretera Manzanapampa,https://www.iestpdepiscobamba.edu.pe/
+328,2,DE SALUD ALBERTO BARTON THOMPSOM,Cajamarca,Cajamarca,Cajamarca,Privado,Jiron Dos De Mayo 1172,S/D
+330,2,DEL ALTIPLANO,Puno,Puno,Puno,Privado,Jiron Lambayeque 416,https://www.istpa.edu.pe/
+331,2,DEL CUSCO - ANTA,Cusco,Anta,Anta,Privado,Calle Chimpahuaylla S/N,S/D
+332,2,DEL NOR OESTE,Piura,Talara,Pariñas,Privado,Avenida Centro Civico 293,https://delnoroeste.webcindario.com/
+333,2,DEL ORIENTE,Huánuco,Leoncio Prado,Rupa-rupa,Privado,Tito Jaime Shenn,S/D
+334,2,DEL SANTA,Áncash,Santa,Chimbote,Privado,Avenida Jose Pardo 4126 Mz D Lote 12,https://www.deperu.com/educacion/instituto-educacion-superior/iest-del-santa-1000777-chimbote-8167
+335,2,DEL SUR,Arequipa,Arequipa,Arequipa,Privado,Avenida Salaverry 301,https://www.isur.edu.pe/
+336,2,DEL VALLE ZAÑA,Lambayeque,Chiclayo,Oyotun,Privado,Calle Tarapaca S/N,https://www.deperu.com/educacion/instituto-educacion-superior/iest-del-valle-zana-1196336-oyotun-8169
+338,2,DESAGUADERO,Puno,Chucuito,Desaguadero,Público,Jiron Grau 571,https://iestpdesaguadero.edu.pe/
+340,2,DIDASCALIO CRISTO REY,Cusco,Cusco,Santiago,Privado,Avenida Prolongacion Grau 30,https://www.didascaliocristorey.com/index.php?tm=1
+344,2,DISEÑO Y COMUNICACION,Lima,Lima,Lima,Público,Jiron Chota 1121,https://idc.edu.pe/web/
+345,2,DIVINA MISERICORDIA,Ica,Chincha,Chincha Alta,Privado,Avenida Luis Galvez Chipoco 111,https://www.divina.edu.pe/index.php
+347,2,DON BOSCO,Áncash,Asunción,Chacas,Privado,Jiron Raymondi S/N,https://www.donboscochacas.org/
+349,2,EDILBERTO RIVAS VASQUEZ,Lambayeque,Chiclayo,Cayalti,Público,28 De Julio,https://www.iestperv.edu.pe/
+350,2,EDUCACION MEDICA SAN FERNANDO,Lima,Lima,Jesús María,Privado,Avenida Republica De Chile 475 - 477,https://institutosanfernando.edu.pe/
+351,2,EDUCACION Y SOLIDARIDAD,Lambayeque,Chiclayo,Chiclayo,Privado,Calle Leoncio Prado 443,https://guia-lambayeque.portaldeeducacion.pe/educacion-superior-tecnologica-iest/Educacion-Superior-Tecnologica-IEST-EDUCACION-Y-SOLIDARIDAD-chiclayo-chiclayo-lambayeque-i50988.htm
+352,2,EDUTEC-INSTITUTO DE FORMACION EMPRESARIAL,San Martín,San Martín,Tarapoto,Privado,Jiron Prolongacion España 901,S/D
+355,2,EL BUEN PASTOR,Lima,Lima,Los Olivos,Privado,Avenida El Trebol 7194,https://www.ibp.edu.pe/
+356,2,EL DESCANSO,Cusco,Canas,Kunturkanki,Público,Avenida Cusco - Arequipa S/N,https://www.institucioneducativa.info/dre/dre-cusco/instituto-tecnologico-el-descanso-85124/
+357,2,EL DORADO,San Martín,El Dorado,San José de Sisa,Público,Carretera San Isidro - Shatoja Km 3,https://www.iestped.edu.pe/
+358,2,EL MILAGRO,Loreto,Maynas,San Juan Bautista,Público,Carretera Iquitos - Nauta Km 21,S/D
+359,2,EL NAZARENO,Ayacucho,Huanta,Huanta,Privado,Jiron Miller 370,https://iestpelnazareno.edu.pe/
+360,2,ELA,Lima,Lima,Lince,Privado,Avenida Arequipa 2053,https://www.ela.edu.pe/
+361,2,ELEAZAR GUZMAN BARRON,Áncash,Huaraz,Independencia,Público,Avenida Tecnologia S/N,https://iegb.edu.pe/
+363,2,ELMER FAUCETT-AREQUIPA,Lima,Lima,Pueblo Libre,Privado,Avenida Bolivar 1923-1925,https://www.elmerfaucett.edu.pe/
+365,2,EMILIO ROMERO PADILLA,Loreto,Maynas,Iquitos,Privado,Jiron Prospero 501,http://ister.edu.pe/nosotros/
+366,2,ENRIQUE LOPEZ ALBUJAR,Lambayeque,Ferreñafe,Ferreñafe,Público,Avenida Victor Raul Haya De La Torre 214,https://iestpela.edu.pe/
+367,2,ENRIQUE PABLO MEJIA TUPAYACHI,Cusco,Canchis,Marangani,Público,Avenida San Martin 100,https://www.facebook.com/EPAMET.PERU/?locale=es_LA
+369,2,ERASMO ARELLANO GUILLEN,La Libertad,Pataz,Pataz,Público,Plaza Principal,https://www.facebook.com/edycm06/?locale=es_LA
+974,2,Escuela de Educación Superior Pedagógica La Salle,Apurímac,Abancay,Abancay,Privado,"Av. Daniel Alcides Carrión S/N, Patibamba",https://www.elasalle.edu.pe/
+391,2,ESCUELA DE NEGOCIOS Y DESARROLLO GERENCIAL,La Libertad,Trujillo,Trujillo,Privado,Avenida Ricardo Palma 348,https://endg.edu.pe/
+394,2,ESCUELA SUPERIOR PRIVADA DE TECNOLOGIA SENATI,Lima,Lima,San Martín de Porres,Privado,Isidro Alcibar 299,https://www.senati.edu.pe/especialidades/escuela-superior-de-tecnologia
+398,2,ESITUR INTERNATIONAL,Cusco,Cusco,Cusco,Privado,Avenida Tullumayu 774,https://www.deperu.com/educacion/instituto-educacion-superior/iest-esitur-international-1386937-cusco-8198
+400,2,ESSUMIN,La Libertad,Trujillo,Trujillo,Privado,Avenida Antenor Orrego 1265 Sector El Alambre,S/D
+401,2,ESTUDIOS SUPERIORES DEL SUR,Ica,Ica,Ica,Privado,Calle Chiclayo 243,S/D
+404,2,EUGENIO PACCELLY,Junín,Huancayo,Huancayo,Privado,Calle Amazonas 747,https://institutopaccelly.edu.pe/
+405,2,EUROAMERICANO,Lima,Lima,San Martín de Porres,Privado,Jiron Angamos S/N Mz B Lote 05 Sector Educacion,https://www.pedagogicoeuroamericano.edu.pe/
+407,2,EXPRO - EXCELENCIA PROFESIONAL,Lima,Lima,San Isidro,Privado,Avenida Javier Prado Este 330,http://www.expro.edu.pe/
+408,2,FAUSTINO B. FRANCO,Arequipa,Camaná,Samuel Pastor,Público,Avenida Samuel Pastor 1301,https://www.facebook.com/IESTPFaustinoB.FrancoOficial/
+411,2,FEDERICO GONZALES CABEZUDO,Ayacucho,Huanca Sancos,Sancos,Público,Avenida Miguel Grau 120,https://tecnologicohuancasancos.edu.pe/
+412,2,FEDERICO URANGA,Ica,Pisco,Independencia,Público,Avenida Federico Uranga 201,https://www.facebook.com/institutosuperiortecnologicofedericouranga/?locale=es_LA
+414,2,FEDERICO VILLARREAL - CHINCHA,Ica,Chincha,Chincha Alta,Privado,Avenida Prolongacion Luis Massaro 104,http://ifv.edu.pe/
+413,2,FEDERICO VILLARREAL-LIMA,Lima,Lima,Lima,Privado,Jiron Callao 358,https://www.ifvillarreal.edu.pe/es/index.html
+415,2,FELIPE ALVA Y ALVA,Cajamarca,Contumazá,Contumaza,Público,Avenida Sanchez Carrion 128,S/D
+416,2,FELIPE HUAMAN POMA DE AYALA,Huánuco,Dos de Mayo,La Unión,Público,Jiron Comercio Km 1.5,https://iestpfelipehuaman.edu.pe/
+417,2,FELIX DE LA ROSA REATEGUI Y GAVIRIA,San Martín,Moyobamba,Moyobamba,Privado,Jiron Varcadillo 308 Pios 3,https://isfer.edu.pe/
+419,2,FERMIN TANGUIS,Ica,Pisco,Pisco,Privado,Avenida San Martin 575-569,https://www.ift.edu.pe/
+420,2,FERNANDO BELAUNDE TERRY,Pasco,Oxapampa,Puerto Bermúdez,Público,Ciudad Constitucion S/N,https://www.iestpfbelaundet.edu.pe/admision/
+421,2,FERNANDO LEON DE VIVERO,Ica,Ica,La Tinguiña,Público,Avenida Maria De Las Nieves 140,https://www.iestpflv.edu.pe/
+422,2,FERNANDO LORES TENAZOA,Loreto,Maynas,Fernando Lores,Público,Calle Gonzales Prada 401,https://www.facebook.com/tecnologicofernando.lorestenazoa/about_contact_and_basic_info
+423,2,FIBONACCI,Huánuco,Huánuco,Huanuco,Privado,Jiron Bolivar 449-451,https://institutofibonacci.edu.pe/
+427,2,FLAVISUR,Arequipa,Arequipa,Arequipa,Privado,Avenida Independencia Y Pasaje Union 124 271-280,https://web.flavisur.edu.pe/
+428,2,FLORENCIA DE MORA,La Libertad,Trujillo,Florencia de Mora,Público,Jiron Jose De La Torre Mz 41 Lote 2,https://www.facebook.com/IESTP.FlorenciaMora/
+430,2,FRANCIS COLLINS,Junín,Huancayo,Huancayo,Privado,Jiron Miller 161,https://www.institucioneducativa.info/dre/dre-junin/instituto-tecnologico-francis-collins-94664/
+431,2,FRANCISCO ANTONIO DE ZELA,Tacna,Tacna,Tacna,Privado,Avenida San Martin 877,https://ieefaz.edu.pe/
+432,2,FRANCISCO DE PAULA GONZALES VIGIL,Tacna,Tacna,Alto de La Alianza,Público,Avenida Gustavo Pinto 1301,https://www.iespvigil.edu.pe/web/
+433,2,FRANCISCO RICCI,La Libertad,Chepén,Chepen,Privado,Calle Trujillo 772,https://www.institucioneducativa.info/dre/dre-la-libertad/instituto-tecnologico-francisco-ricci-24461/
+434,2,FRANCISCO VIGO CABALLERO,San Martín,Tocache,Uchiza,Público,Avenida Atahualpa 1401,https://www.facebook.com/FranciscoVigoCaballero/?locale=es_LA
+435,2,FRANKLIN ROOSEVELT-HUANCAYO,Lima,Lima,Lince,Privado,Avenida Arequipa 2349,https://iestp-roosevelt.edu.pe/
+436,2,FRANKLIN ROOSEVELT-LIMA,Junín,Huancayo,Huancayo,Privado,Jiron Huancas 749,https://roosevelt.edu.pe/
+437,2,FREDERICK WINSLOW TAYLOR,Lima,Lima,Lima,Privado,Jiron Chota 1281,https://institutotaylor.jedu.pe/
+439,2,FUTURO DEL SUR-EL CARMEN,Arequipa,Caylloma,Majes,Privado,Calle Tiabaya Mz K Lote 07,https://isfutsur.edu.pe/
+440,2,GABRIELA PORTO DE POWER,Loreto,Maynas,Iquitos,Privado,Calle Pablo Rosell 565,https://www.institucioneducativa.info/dre/dre-loreto/instituto-tecnologico-gabriela-porto-de-power-94666/
+443,2,GENERAL OSCAR ARTETA TERZI,Lima,Lima,Jesús María,Público,Avenida Republica De Chile 614,https://iestp-pnp-gral-oscar-arteta-terzi.webnode.es/
+444,2,GENOVA,Lima,Lima,Puente Piedra,Privado,Calle 4 111-121,https://www.institucioneducativa.info/dre/dre-lima-metropolitana/instituto-tecnologico-genova-86253/
+445,2,GILDA LILIANA BALLIVIAN ROSADO,Lima,Lima,San Juan de Miraflores,Público,Avenida Vargas Machuca 315,https://iestpgildaballivian.edu.pe/
+446,2,GLICERIO GOMEZ IGARZA,Huánuco,Huamalíes,Llata,Público,Jiron 28 De Julio Cdra 4,https://www.facebook.com/iestpggi/?locale=es_LA
+447,2,GRAN CHAVIN,Áncash,Huaraz,Independencia,Privado,Pasaje Amapolas S/N Mz 56-B Lote 4,S/D
+448,2,GUADALUPE,La Libertad,Pacasmayo,Guadalupe,Público,Avenida Nila Cerruti S/N,https://www.institucioneducativa.info/dre/dre-la-libertad/instituto-tecnologico-guadalupe-25130/
+449,2,GUILLERMO ALMENARA MARTINS,Tacna,Tacna,Tacna,Privado,Avenida Miraflores 410,https://guillermoalmenara.edu.pe/
+450,2,GUSTAVO EDUARDO LANATTA LUJAN,Amazonas,Chachapoyas,Leimebamba,Público,Jiron Dos De Mayo S/N,https://www.deperu.com/educacion/instituto-educacion-superior/iest-gustavo-eduardo-lanatta-lujan-0766766-palmira-8240
+451,2,HAQUIRA,Apurímac,Cotabambas,Haquira,Público,Calle Almirante S/N,https://m.facebook.com/people/Instituto-Tecnol%C3%B3gico-Haquira/100063962565433/
+454,2,HATUN SORAS,Ayacucho,Sucre,Soras,Público,Avenida Grau S/N,https://iestphatunsoras.edu.pe/2023/
+455,2,HEADWAY COLLEGE,Lima,Lima,Miraflores,Privado,Calle Sevilla 107,S/D
+456,2,HECTOR VASQUEZ JIMENEZ,La Libertad,Santiago de Chuco,Cachicadan,Público,Calle Antonio Raymondy S/N,https://www.institucioneducativa.info/dre/dre-la-libertad/instituto-tecnologico-hector-vasquez-jimenez-26189/
+457,2,HERMANOS CARCAMO,Piura,Paita,Paita,Público,Carretera Km 2 Paita Piura Mz M Lote 001,https://ieshercar.edu.pe/
+458,2,HERMENEGILDO MIRANDA SEGOVIA,Apurímac,Antabamba,Antabamba,Público,Calle Juan Espinoza Medrano,https://www.facebook.com/iestpAntabamba/?locale=es_LA
+459,2,HEROES DE SIERRA LUMI,Junín,Concepción,Comas,Público,Plaza Principal,https://hersil.edu.pe/
+460,2,HESSEN,Huánuco,Ambo,Ambo,Privado,Jiron Progreso 231,https://institutohessen.edu.pe/
+461,2,HIPOLITO UNANUE-AREQUIPA,Áncash,Huaraz,Huaraz,Privado,Jiron Sebastian Beaz 858,S/D
+462,2,HIPOLITO UNANUE-HUARAZ,Arequipa,Arequipa,Arequipa,Privado,Calle Sanchez Trujillo 114-A,https://www.institutohipolitounanue.edu.pe/
+463,2,HIPOLITO UNANUE-SAN MARTIN,San Martín,San Martín,Tarapoto,Privado,Jiron Tahuantinsuyo 241,https://iestphipolitounanue.edu.pe/
+464,2,HONORIO DELGADO ESPINOZA,Arequipa,Arequipa,Cayma,Público,Calle Los Arces 202,http://www.isphde.edu.pe/
+465,2,HUACCANA,Apurímac,Chincheros,Huaccana,Público,Virgen Del Carmen Rosaspata,https://institutodehuaccana.edu.pe/
+467,2,HUAMACHUCO,La Libertad,Sánchez Carrión,Huamachuco,Público,Jiron Esquina 17 De Diciembre Y Ponce De Leon S/N,https://www.facebook.com/iestphco/?locale=es_LA
+468,2,HUANCANE,Puno,Huancané,Huancane,Público,San Martin,https://iesthuancane.edu.pe/portal/contactos/
+469,2,HUANCASPATA,La Libertad,Pataz,Huancaspata,Público,Jiron Bolivar,https://www.institucioneducativa.info/dre/dre-la-libertad/instituto-tecnologico-huancaspata-25501/
+470,2,HUANCAVELICA,Huancavelica,Huancavelica,Ascensión,Público,Prog. Ernesto Morales S/N,https://www.facebook.com/Pedagogico.Huancavelica/?locale=es_LA
+471,2,HUANCAYO,Junín,Huancayo,El Tambo,Privado,Calle Los Minerales 325,https://www.facebook.com/ISTinstitutohuancayo/?locale=es_LA
+472,2,HUANDO,Lima,Huaral,Huaral,Público,Calle 8 De Dicembre S/N Mz 30 Lote 17,https://portal.isthuando.edu.pe/
+473,2,HUANTA,Ayacucho,Huanta,Huanta,Público,Jiron General Cordova 650,https://iestphuanta.edu.pe/
+474,2,HUARMACA,Piura,Huancabamba,Huarmaca,Público,Avenida San Antonio S/N,S/D
+476,2,HUMBERTO CAUWE,Lima,Lima,Villa María del Triunfo,Privado,Avenida Pachacutec 1872,https://cursos.ihc.edu.pe/
+477,2,IBERIA-TAHUAMANU,Madre de Dios,Tahuamanu,Iberia,Público,Barrio Alto Peru S/N,https://www.iestpiberia.edu.pe/
+478,2,IBEROAMERICANO,Arequipa,Arequipa,Arequipa,Público,Avenida Goyeneche 312,https://istpiberoamericano.edu.pe/
+483,2,IDAT - TARAPOTO,San Martín,San Martín,Tarapoto,Privado,Jiron Federico Sanchez 564 - 566,S/D
+484,2,IDATUR,Lima,Lima,San Miguel,Privado,Avenida La Marina 1369 - 1375,S/D
+487,2,IGATUR,Cusco,Cusco,Cusco,Privado,Calle Pantipata 775,https://www.deperu.com/educacion/instituto-educacion-superior/iest-igatur-1062496-cusco-8274
+488,2,ILAVE,Puno,El Collao,Ilave,Público,Avenida Puno 350,https://tecnoilave.edu.pe/portal/
+490,2,ILLIMO,Lambayeque,Lambayeque,Illimo,Público,Calle 22 De Noviembre S/N,https://www.regionlambayeque.pe/web/tema/detalle/17732?pass=NTA0
+492,2,INFONET,Junín,Chanchamayo,San Ramón,Privado,Tarma 340,S/D
+494,2,INFOTRONIC,Áncash,Huaraz,Huaraz,Privado,Jiron San Martin 626,https://infotronic.edu.pe/
+497,2,INMACULADA CONCEPCION,Moquegua,General Sánchez Cerro,Ubinas,Público,Calle Concepcion S/N,https://www.institucioneducativa.info/dre/dre-moquegua/instituto-inmaculada-concepcion-8502/
+501,2,INSTITUTO CIENTIFICO TECNOLOGICO DEL PERU - INCITEP,Lima,Lima,Villa El Salvador,Privado,Avenida Jorge Chavez 1086 Sector 2,https://incitep.edu.pe/
+506,2,INSTITUTO DE DESARROLLO EMPRESARIAL Y ADMINISTRATIVO-IDEA,Lima,Lima,Miraflores,Privado,Avenida Arequipa 5163,http://www.idea.edu.pe/
+685,3,INSTITUTO DE EDUCACIÓN SUPERIOR TECNOLOGICO PÚBLICO NAVAL (CITEN),Callao,Prov. Const. del Callao,Callao,Público,Avenida Contralmirante Mora S/N,https://citen.edu.pe/
+509,2,INSTITUTO DE FORMACION MINERA DEL PERU,Cajamarca,Cajamarca,Cajamarca,Privado,Jiron Jose Sabogal 625 Ciudad,https://www.deperu.com/educacion/instituto-educacion-superior/iest-instituto-de-formacion-minera-del-peru-1528579-cajamarca-8284
+513,2,INSTITUTO DE PROFESIONES EMPRESARIALES - INTECI,Lima,Lima,Santiago de Surco,Privado,Avenida Santiago De Surco 4366,https://www.inteci.edu.pe/
+518,2,INSTITUTO PERUANO DE ADMINISTRACION DE EMPRESAS IPAE-IQUITOS,Loreto,Maynas,Iquitos,Privado,Calle Echenique Cuadra 3,S/D
+522,2,INSTITUTO PERUANO DE PUBLICIDAD,Lima,Lima,Magdalena Del Mar,Privado,Avenida Juan De Aliaga 421,https://www.ipp.edu.pe/
+526,2,INSTITUTO TECNICO DE ADMINISTRACION DE EMPRESAS-ITAE,Lima,Lima,Los Olivos,Privado,Avenida Alfredo Mendiola 3581,https://itae.edu.pe/
+529,2,INTERAMERICANO,La Libertad,Trujillo,Victor Larco Herrera,Privado,Calle Juan Julio Ganoza 485,https://www.deperu.com/educacion/instituto-educacion-superior/iest-interamericano-1445766-victor-larco-herrera-8296
+531,2,INTERNACIONAL,Lima,Lima,San Borja,Privado,Avenida Angamos Este S/N Mz H6,S/D
+535,2,ISA CHICLAYO,Lambayeque,Chiclayo,Chiclayo,Privado,Calle Leoncio Prado 1575,https://isachiclayo.edu.pe/
+537,2,ISABEL LA CATÓLICA,Huánuco,Huánuco,Amarilis,Privado,Calle 8 102,http://institutolacatolica.edu.pe/
+540,2,ISHOTUR,Lima,Lima,Los Olivos,Privado,Calle Faustino Maldonado 265,https://www.institutoisotur.edu.pe/modelo/index.php
+541,2,ISTEPSA,Apurímac,Andahuaylas,Andahuaylas,Privado,Avenida Ramon Castilla 322,https://www.istepsa.edu.pe/
+545,2,JACQUELINE,Lima,Lima,Lima,Privado,Avenida Tacna 329,S/D
+546,2,JAIME CERRON PALOMINO,Junín,Chupaca,Chongos Bajo,Público,Jiron Bolognesi S/N,https://iestpjcp.edu.pe/
+547,2,JATUM YAUYOS,Lima,Yauyos,Yauyos,Público,Jiron Leoncio Prado 126,https://iestpjatumyauyos.edu.pe/
+548,2,JAVIER PRADO,Arequipa,Arequipa,Mariano Melgar,Privado,Calle Elias Aguirre 410,https://jprado.edu.pe/
+549,2,JAVIER PULGAR VIDAL,Huánuco,Pachitea,Panao,Público,Carretera Charamayo S/N,https://www.facebook.com/p/IESTP-Javier-Pulgar-Vidal-Panao-100054409873847/
+550,2,JHALEBET,Ica,Ica,Ica,Privado,Calle Lima 438,https://www.jhalebet.edu.pe/
+551,2,JOAQUIN REATEGUI MEDINA,Loreto,Loreto,Nauta,Público,Jiron Manuel Pacaya Cuadra 10,https://www.iestpjoaquinreateguimedina.edu.pe/
+553,2,JOHN A. MACKAY,San Martín,Rioja,Rioja,Privado,Jiron Bernardo Alcedo S/N Mz 25,https://ijamvirtual.edu.pe/
+554,2,JOHN DEWEY,Amazonas,Bagua,Bagua,Privado,Jiron Marañon 204,https://m.facebook.com/people/Instituto-Superior-Tecnol%C3%B3gico-JOHN-DEWEY/100064159417973/?locale=be_BY
+558,2,JORGE BASADRE,Arequipa,Islay,Mollendo,Público,Carretera Panamericana Sur,https://pedagogicojorgebasadre.edu.pe/
+561,2,JORGE DESMAISON SEMINARIO,La Libertad,Pacasmayo,Pacasmayo,Público,Jiron Sarmiento 992,http://aula.iestpjorgedesmaison.edu.pe/moodle/
+562,2,JOSE ANTONIO ENCINAS,Puno,Puno,Puno,Público,Avenida Don Bosco S/N,https://www.iestpjae.edu.pe/
+563,2,JOSE ARNALDO SABOGAL DIEGUEZ,Cajamarca,Cajabamba,Cajabamba,Público,Avenida Victor Raul Haya De La Torre 102,https://www.facebook.com/FBiestpJASD/?locale=es_LA
+564,2,JOSE CARLOS MARIATEGUI - MARISCAL NIETO,Lima,Lima,Comas,Privado,Avenida El Retablo 1233,S/D
+565,2,JOSE CARLOS MARIATEGUI-TALARA,Moquegua,Mariscal Nieto,Samegua,Público,Avenida Andres Avelino Caceres S/N,https://iesjcm.edu.pe/web/
+566,2,JOSÉ CRISAM,Arequipa,Arequipa,Arequipa,Privado,Avenida Independencia 1819,https://www.josecrisam.edu.pe/
+567,2,JOSE DOMINGO CHOQUEHUANCA,Puno,Azángaro,José Domingo Choquehuanca,Público,Jiron Bolognesi S/N,https://www.facebook.com/people/Instituto-Tecnol%C3%B3gico-JDCH/100056081266720/
+568,2,JOSE FELIX IGUAIN,Lima,Lima,Lima,Privado,Avenida Inca Garcilazo De La Vega 1584,https://www.deperu.com/educacion/instituto-educacion-superior/iest-jose-felix-iguain-1065895-lima-cercado-8330
+569,2,JOSE MARIA ARGUEDAS - HUANCAYO,Ayacucho,Lucanas,Puquio,Público,Carretera Nazca-Puquio,https://iestpjmapuquio.edu.pe/2023/
+570,2,JOSE MARIA ARGUEDAS - LUCANAS,Junín,Huancayo,Sicaya,Público,Avenida Jose Maria Arguedas S/N,https://www.facebook.com/computacionsicaya/
+571,2,JOSE PARDO,Lima,Lima,La Victoria,Público,Avenida Grau 620,https://www.jpardo.edu.pe/
+572,2,JOSÉ SANTOS CHOCANO,Lima,Huaral,Huaral,Privado,Mz E Lote 23-24,https://www.iestchocano.edu.pe/
+573,2,JUAN BOSCO DE HUANUCO,Huánuco,Huánuco,Huanuco,Privado,Jiron Dos De Mayo 470,https://netbosco.edu.pe/
+574,2,JUAN ESTEBAN LOPEZ CRUZ,Piura,Morropón,Yamango,Público,Sector La Victoria S/N,http://institutojeloc.50webs.com/
+575,2,JUAN HUARIN,Áncash,Huari,Huari,Público,Avenida Magisterial 195,https://www.iestpjuanhuarin.edu.pe/
+576,2,JUAN JOSE FARFAN CESPEDES,Piura,Sullana,Sullana,Público,Calle Marcelino Champagnat S/N,S/D
+577,2,JUAN MEJIA BACA,Lambayeque,Chiclayo,Chiclayo,Privado,Calle 7 De Enero 1326,https://www.facebook.com/juanmejiabaca/?locale=es_LA
+578,2,JUAN VELASCO ALVARADO,Lima,Lima,Villa María del Triunfo,Público,Avenida Jose Olaya 120,https://www.iestpjva.edu.pe/
+579,2,JUANA MARIA CONDESA,Arequipa,Castilla,Uraca,Privado,Avenida Juan Pablo Vizcrdo Y Guzman S/N,https://www.institucioneducativa.info/dre/dre-arequipa/instituto-tecnologico-juana-maria-condesa-91105/
+580,2,JUANJUI,San Martín,Mariscal Cáceres,Juanjuí,Privado,Jiron Alfonso Ugarte 346,https://tecnologicojuanjui.edu.pe/
+581,2,JULI,Puno,Chucuito,Juli,Público,Avenida Alfonso Ugarte 1064,https://www.tecnojuli.edu.pe/
+582,2,JULIO CESAR TELLO,Lima,Lima,Villa El Salvador,Público,Mz A Lote 1 Sector Iii,https://iestpjctello.edu.pe/
+583,2,KHIPU,Cusco,Cusco,Cusco,Privado,Avenida Camino Real Y Avenida Manantiales 164 443,https://khipu.edu.pe/
+585,2,KIMBIRI,Cusco,La Convención,Kimbiri,Público,Quimbiri,https://ieskimbiri.edu.pe/portal/
+587,2,LA CANTUTA,Huancavelica,Angaraes,Secclla,Público,Avenida Prolongacion Los Heroes S/N,https://www.institucioneducativa.info/dre/dre-huancavelica/instituto-tecnologico-la-cantuta-84898/
+589,2,LA CATOLICA LIMA NORTE,Lima,Lima,Los Olivos,Privado,Avenida Alfredo Mendiola 3315,S/D
+590,2,LA CATOLICA-CHOTA,Cajamarca,Chota,Chota,Privado,Jiron Gregorio Malca 877,https://chota.ieslacatolica.edu.pe/
+591,2,LA FLORIDA DEL INCA,Lima,Lima,Ate,Privado,Avenida Los Virreyes 2055,S/D
+592,2,LA MERCED,Junín,Chanchamayo,Chanchamayo,Público,Avenida Los Pioneros S/N,https://iestplamerced.edu.pe/
+594,2,LA OROYA,Junín,Yauli,Santa Rosa de Sacco,Público,Pasaje Jose Santos Chocano 210,https://iestplaoroya.edu.pe/
+597,2,LA PONTIFICIA-ANDAHUAYLAS,Apurímac,Andahuaylas,Andahuaylas,Privado,Jiron David Samanez Ocampo 420,https://www.facebook.com/ILPInstitutoLaPontificiaAndahuaylas/?locale=es_LA
+596,2,LA PONTIFICIA-HUAMANGA,Ayacucho,Huamanga,Carmen Alto,Privado,Avenida Carmen Alto 390 - 392,https://www.ilp.edu.pe/
+598,2,LA RECOLETA,Arequipa,Arequipa,Arequipa,Público,Calle La Recoleta 117-A,https://www.iestlarecoleta.edu.pe/
+599,2,LA SALLE,Cusco,Urubamba,Urubamba,Público,Avenida Los Incas S/N,https://ieslasalle.edu.pe/portal/
+600,2,LA UNION,Piura,Piura,La Unión,Público,Jiron Sinchi Roca S/N,https://iestp-la-union.vercel.app/
+601,2,LAGUNAS,Loreto,Alto Amazonas,Lagunas,Público,Calle Padre Juan L Lucero S/N,https://www.iestplagunas.edu.pe/
+602,2,LAREDO,La Libertad,Trujillo,Laredo,Público,Pasaje 28 De Julio Mz C Lote 13,https://campusvirtual.istelaredo.edu.pe/
+605,2,LATINO-SAN JUAN,Lima,Lima,San Juan de Miraflores,Privado,Jiron Jose Santos Chocano 105,https://latino.edu.pe/
+608,2,LE CORDON BLEU PERU,Lima,Lima,Miraflores,Privado,Avenida Vasco Nuñez De Balboa 530,https://www.ilcb.edu.pe/
+609,2,LEONARDO DA VINCI-COMPUMATIC-TRUJILLO,La Libertad,Trujillo,Trujillo,Privado,Avenida 28 De Julio 112-114 Etapa I,https://davinci.pe/
+610,2,LEONIDAS LOPEZ CHICAE,Loreto,Mariscal Ramón Castilla,Pebas,Público,Calle Amazonas S/N,https://www.iestplopezchicae.edu.pe/
+611,2,LIBERTAD,La Libertad,Trujillo,Victor Larco Herrera,Privado,Calle Los Tios 149,https://iespplibertad.com/
+613,2,LIBERTADOR,Lima,Lima,Chorrillos,Privado,Calle Martir Olaya 327,https://libertador.edu.pe/ste/
+617,2,LINCOLN,Lima,Lima,San Juan de Miraflores,Privado,Jiron Lizardo Montero 514,S/D
+618,2,LIRCAY,Huancavelica,Angaraes,Lircay,Público,Carretera Lircay - Carhuapata Km 4,https://www.facebook.com/p/Instituto-Tecnol%C3%B3gico-Lircay-100063738934628/?locale=es_LA&paipv=0&eav=AfY2AofP88W72tJIWxDtGRM_lwvcIrNz_d0z2g33x4roDYxk3QRh7gSZA3YO6VuYqQc&_rdr
+619,2,LIZARDO MONTERO FLORES,Piura,Ayabaca,Montero,Público,Jiron Las Casuarinas S/N,https://iestpmontero.tecmeraki.pe/quienes-somos
+621,2,LONYA GRANDE,Amazonas,Utcubamba,Lonya Grande,Público,Jiron Dos De Mayo S/N,https://campus.iestplg.edu.pe/
+622,2,LOS LIBERTADORES,La Libertad,Trujillo,Trujillo,Privado,Avenida Los Incas 272 - 274,https://www.iesploslibertadores.edu.pe/instituto
+623,2,LOS MOROCHUCOS,Ayacucho,Cangallo,Los Morochucos,Público,Plaza Principal,https://iestplm.edu.pe/2023/
+624,2,LOUIS PASTEUR-TRUJILLO,Lima,Lima,Lima,Privado,Avenida Wilson 1044,https://www.deperu.com/educacion/instituto-educacion-superior/iest-louis-pasteur-1065978-lima-cercado-121987
+625,2,LUCIANO CASTILLO COLONNA,Piura,Talara,Pariñas,Público,Carretera Panamericana Norte Km 1089,https://istlcc.tripod.com/
+626,2,LUIS E VALCARCEL,Moquegua,Ilo,Ilo,Público,Carretera Panamericana Sur Km 2.5,https://www.facebook.com/iestluisevalcarcelilo/
+627,2,LUIS F. AGURTO OLAYA,Piura,Paita,La Huaca,Público,Calle Celso Talledo S/N,https://www.facebook.com/p/IESTP-Luis-Felipe-Agurto-Olaya-100063662600039/
+628,2,LUIS FELIPE DE LAS CASAS GRIEVE,Ica,Nasca,Marcona,Público,Avenida Industrial 125,https://iestmarcona.edu.pe/
+629,2,LUIS LUMIERE,Áncash,Huaraz,Huaraz,Privado,Jiron Huascar 274,https://www.deperu.com/educacion/instituto-educacion-superior/iest-luis-lumiere-0911768-huaraz-8391
+630,2,LUIS NEGREIROS VEGA,Lima,Lima,San Martín de Porres,Público,Avenida Jose Granda Cuadra 24,https://www.iestpluisnegreiros.edu.pe/
+631,2,LUIS PASTEUR-CUSCO,Cusco,Cusco,Cusco,Privado,Calle Tres Cruces De Oro 485,http://istluispasteur.edu.pe/#/home
+633,2,LURIN,Lima,Lima,Lurin,Público,Mz K Lote 15-16 Etapa I,http://institutolurin.drelm.edu.pe/
+634,2,MACHE,La Libertad,Otuzco,Mache,Público,Calle Maravillas 321,https://www.institucioneducativa.info/dre/dre-la-libertad/instituto-tecnologico-mache-24921/
+637,2,MACUSANI,Puno,Carabaya,Macusani,Público,Avenida Bolivar 405,https://tecnomacusani.edu.pe/
+638,2,MADRE JOSEFINA VANNINI,Lima,Lima,Santiago de Surco,Privado,Avenida El Polo 641,https://www.facebook.com/Instituto.Enfermeria.Vannini/?locale=es_LA
+639,2,MAGDA PORTAL - CIENEGUILLA,Lima,Lima,Cieneguilla,Público,Mz M1 Lote 01,http://institutomagdaportal.drelm.edu.pe/
+640,2,MANOS UNIDAS,Loreto,Requena,Requena,Público,Calle Juan Pabloii S/N,https://iestpmanosunidas.wixsite.com/requena
+641,2,MANU,Madre de Dios,Manu,Manu,Público,Avenida Manu S/N,https://www.facebook.com/iestpmanufilialbocacolorado/
+642,2,MANUEL ANTONIO HIERRO POZO,Ayacucho,Huamanga,Ayacucho,Público,Avenida Universitaria E Independencia S/N,https://tecnologicohierropozo.edu.pe/
+643,2,MANUEL AREVALO CACERES,Lima,Lima,Los Olivos,Público,Avenida Los Alisos Cuadra 9,S/D
+645,2,MANUEL GONZALES PRADA,La Libertad,Trujillo,El Porvenir,Público,Jiron Jose Crespo Y Castillo 1499,https://www.facebook.com/InstitutoMGP/?locale=es_LA
+647,2,MANUEL MESONES MURO - MASTER SYSTEM,Lambayeque,Chiclayo,Chiclayo,Privado,Avenida Alfonso Ugarte 670,S/D
+648,2,MANUEL NUÑEZ BUTRON,Puno,San Román,Juliaca,Público,Avenida Hipolito Unanue 310,https://www.tecnojuliaca.edu.pe/
+649,2,MANUEL SCORZA TORRE,Huancavelica,Acobamba,Acobamba,Público,Avenida Universitaria 258,https://www.facebook.com/mstcomputacion.edu.pe/
+650,2,MANUEL SEOANE CORRALES,Lima,Lima,San Juan de Lurigancho,Público,Avenida Fernando Wisse Cuadra 44 Km 10,http://institutomanuelseoane.drelm.edu.pe/
+651,2,MANUEL YARLEQUE ESPINOZA,Piura,Piura,Catacaos,Público,Pasaje 15 S/N,https://iestpmye.edu.pe/
+652,2,MAÑAZO,Puno,Puno,Mañazo,Público,Jiron 17 De Mayo S/N,https://iesmaniazo.edu.pe/portal/
+653,2,MARCO,Junín,Jauja,Marco,Público,Carretera Marco Km 5,https://www.iestpmarco.edu.pe/
+654,2,MARIA DE LOS ANGELES CIMAS,Lima,Lima,Lima,Privado,Avenida Arequipa 1010,https://www.cimas.edu.pe/
+655,2,MARIA ELENA MOYANO,Lima,Lima,Villa El Salvador,Privado,Avenida Cesar Vallejo Sector 2 Grupo 15,https://instituto-superior-maria-elena-moyano.negocio.site/
+656,2,MARÍA MONTESSORI,Arequipa,Arequipa,Arequipa,Privado,Avenida Independencia 056,https://www.ismontessori.edu.pe/
+658,2,MARIA ROSARIO ARAOZ PINTO,Lima,Lima,San Miguel,Público,Calle Jose Marti 155,https://institutoaraozpinto.com/
+659,2,MARIANO BONIN,Huánuco,Huamalíes,Monzón,Público,Jiron Raimondi S/N,https://www.iestpmarianobonin.edu.pe/
+660,2,MARIANO IBERICO RODRIGUEZ,Cajamarca,Cajamarca,Cajamarca,Privado,Avenida Via De Evitamiento 740,https://iesiberico.edu.pe/
+661,2,MARIO GUTIERREZ LOPEZ,Junín,Concepción,Orcotuna,Público,Carretera Central Margen Derecha Km 12,https://iestpmariogutierrezlopez.jimdofree.com/
+662,2,MARIO SAMAME BOGGIO,Puno,San Román,Juliaca,Privado,Jiron Libertad 294,https://www.samame.edu.pe/instituto-mario-samame-bogio
+663,2,MARISCAL RAMON CASTILLA,Loreto,Mariscal Ramón Castilla,Ramón Castilla,Público,Avenida Ramon Castilla 701,S/D
+664,2,MASISEA,Ucayali,Coronel Portillo,Masisea,Público,Jiron Padre Plaza S/N,https://imasisea.edu.pe/
+665,2,MAX PLANCK,Huánuco,Ambo,Ambo,Público,Avenida Javier Prado S/N,S/D
+668,2,METROPOLITANO,Lima,Lima,Lima,Privado,Avenida Arequipa 694,https://metropolitano.edu.pe/
+671,2,MISIONEROS MONFORTIANOS,Lima,Lima,Chaclacayo,Público,Carretera Cerro Vecino Huascata Km 1,http://institutomisionerosmonfortianos.drelm.edu.pe/
+673,2,MODERN SYSTEMS,Tumbes,Tumbes,Tumbes,Privado,Jiron Bolivar 424,https://www.facebook.com/p/ISTP-Modern-Systems-Tumbes-100063522848545/
+674,2,MONSEFU,Lambayeque,Chiclayo,Monsefu,Público,Avenida Bernardo Alcedo 220,https://www.regionlambayeque.pe/web/?pass=MTc2Mg==
+675,2,MONSEÑOR JULIO GONZALES RUIZ,Arequipa,La Unión,Cotahuasi,Público,Avenida Santa Ana S/N,https://m.facebook.com/p/IESTP-Monse%C3%B1or-Julio-Gonzales-Ruiz-Cotahuasi-100064941342338/
+677,2,MOTUPE,Lambayeque,Lambayeque,Motupe,Público,Avenida Juan Pablo Ii 468,https://www.iestpmotupe.edu.pe/
+678,2,MOYOBAMBA,San Martín,Moyobamba,Moyobamba,Privado,Jiron Faustino Sanchez Carrion 150,https://iestpmoyobamba.edu.pe/
+679,2,MUCHIK,Lambayeque,Chiclayo,Chiclayo,Privado,Calle Lora Y Cordero 1150,https://www.deperu.com/educacion/instituto-educacion-superior/iest-muchik-1528181-chiclayo-8440
+680,2,MUÑANI,Puno,Azángaro,Muñani,Público,Jiron Plaza De Armas S/N,S/D
+682,2,NARANJILLO,Huánuco,Leoncio Prado,Luyando,Público,Pasaje El Carmen Mz 18 Lote 018035,https://www.isten.edu.pe/
+683,2,NARCISO VILLANUEVA MANZO,Áncash,Pallasca,Conchucos,Público,Jiron La Banda S/N,https://iestpnarcisovillanuevamanzo.edu.pe/
+684,2,NASCA,Ica,Nasca,Nasca,Público,Avenida Guardia Civil S/N,https://istpnasca.edu.pe/
+686,2,NAZARET,Puno,San Román,Juliaca,Privado,Avenida Ferial 957 - 961,https://nazaret.edu.pe/
+687,2,NESTOR SAMUEL MARTOS GARRIDO,Piura,Huancabamba,Huancabamba,Público,Carretera A Sondor Km 1,https://www.facebook.com/IepnestorSamuelMartosGarrido/?locale=es_LA
+688,2,NICANOR MUJICA ALVAREZ CALDERON,Lima,Huarochirí,Matucana,Público,Avenida Plaza Independencia 173,https://iestpnmac.edu.pe/
+689,2,NICOLAS COPERNICO,Lima,Lima,Lima,Privado,Avenida Arequipa 1215,https://pedagogicocopernico.edu.pe/
+690,2,NINA DESIGN,Lima,Lima,San Isidro,Privado,Calle Los Halcones 129,https://www.institutoninadesign.com/
+691,2,NOR ORIENTAL DE LA SELVA,San Martín,San Martín,La Banda de Shilcayo,Público,Jiron Tupac Amaru 398,https://iestpnos.edu.pe/
+692,2,NORBERT WIENER,Lima,Lima,Lince,Privado,Avenida Arequipa 1959,S/D
+693,2,NORMEDIC - CAJAMARCA,Cajamarca,Cajamarca,Cajamarca,Privado,Jiron Amazonas 790,https://normedic.edu.pe/
+694,2,NUESTRA SEÑORA DE LAS MERCEDES,Cajamarca,Santa Cruz,Ninabamba,Público,Calle Principal,https://iestnlasmercedes.edu.pe/
+695,2,NUESTRA SEÑORA DE MONTSERRAT,Lima,Lima,Lurigancho,Público,Calle Los Canarios Mz I-2 Lote 3 Y 4 Etapa Ii,S/D
+696,2,NUESTRA SEÑORA DEL CARMEN-LIMA,Lima,Lima,Lima,Privado,Jiron Washington 1102,S/D
+697,2,NUESTRA SEÑORA DEL CARMEN-TALARA,Piura,Talara,Pariñas,Privado,Avenida Bolognesi 955,https://www.nsc.edu.pe/
+698,2,NUEVA AMERICA,Junín,Satipo,Satipo,Privado,Jiron Francisco Irazola 314,https://www.institucioneducativa.info/dre/dre-junin/instituto-tecnologico-nueva-america-83604/
+700,2,NUEVA ESPERANZA,La Libertad,Trujillo,La Esperanza,Público,Avenida Jose Castelli 900,https://web2.istene.edu.pe/
+702,2,NUEVO MILENIO,Ucayali,Coronel Portillo,Calleria,Privado,Jiron Guillermo Sisley 831,https://www.facebook.com/institutonuevomileniooficial/?locale=es_LA
+703,2,NUEVO OCCORO,Huancavelica,Huancavelica,Nuevo Occoro,Público,Jiron Angel Ambrosio S/N,https://www.facebook.com/IESTPNUEVOOCCORO/
+704,2,NUEVO PACHACUTEC,Callao,Prov. Const. del Callao,Ventanilla,Privado,Parcela E,https://fundacionpachacutec.org/instituto/
+705,2,NUÑOA,Puno,Melgar,Nuñoa,Público,Jiron Huascar 100,S/D
+706,2,OLMOS,Lambayeque,Lambayeque,Olmos,Público,Pasaje San Agustin S/N,https://www.regionlambayeque.pe/web/?pass=ODg3
+707,2,OMATE,Moquegua,General Sánchez Cerro,Omate,Público,Avenida Mariscal Domingo Nieto,https://iestpomate.edu.pe/
+709,2,ORSON WELLES,Lima,Lima,San Isidro,Privado,Avenida Salaverry 3641,https://www.orsonwelles.edu.pe/
+711,2,OTTO TONSMANN,Piura,Piura,Piura,Privado,Calle Huancavelica Mz G Lote 10,https://ottotonsmann.edu.pe/
+712,2,OTUZCO,La Libertad,Otuzco,Otuzco,Público,Calle Bolivar S/N,https://iestpo.edu.pe/
+713,2,OXAPAMPA,Pasco,Oxapampa,Oxapampa,Público,Jiron Enrique Bottger 720,https://istpoxapampa.edu.pe/
+714,2,OYON,Lima,Oyón,Oyon,Público,Calle Nueva Runtu Rumi S/N,https://www.iestpoyon.edu.pe/oyon/
+715,2,PABLO BUTZ,Ucayali,Coronel Portillo,Campoverde,Público,Avenida Victor Raul Haya De La Torre Mz 16 Lote 1,https://ipablobutz.edu.pe/
+716,2,PABLO CASALS,La Libertad,Trujillo,Trujillo,Privado,Avenida Roma 460,https://pablocasals.edu.pe/
+718,2,PACARAOS,Lima,Huaral,Pacaraos,Público,Avenida Alfonso De Mesias S/N,https://iestppacaraos.edu.pe/
+720,2,PACIFICO NORTE,Piura,Piura,Piura,Privado,Avenida Vice S/N Mz Z Lote 26,https://www.facebook.com/grupoeducativodelpacifico/
+721,2,PADRE ABAD,Ucayali,Padre Abad,Padre Abad,Público,Carretera Federico Basadre Km 164.5 Mz 145B Lote 8 Sector 02,https://ipadreabad.edu.pe/
+722,2,PAIJAN,La Libertad,Ascope,Paijan,Público,Carretera Panamericana Norte Km. 627,https://campusvirtual.iestpaijan.edu.pe/
+723,2,PALPA,Ica,Palpa,Río Grande,Público,Calle Ica 200,https://istpalpa.edu.pe/
+726,2,PASCO,Pasco,Pasco,Yanacancha,Público,Avenida Los Incas S/N,S/D
+727,2,PASCUAL SACO Y OLIVEROS,Lambayeque,Lambayeque,Lambayeque,Público,Calle 2 De Mayo 548,https://www.regionlambayeque.pe/web/tema/detalle/22575?pass=NDc4
+728,2,PAUCAR DEL SARASARA,Ayacucho,Páucar del Sara Sara,Pausa,Público,Avenida Andres Avelino Caceres,https://www.iestpsarasara.edu.pe/
+730,2,PAUCARTAMBO,Pasco,Pasco,Paucartambo,Público,Avenida La Paz 300,https://iestpaucartambo.edu.pe/portal/
+731,2,PAUL MULLER,Lima,Lima,Lima,Privado,Avenida Guzman Blanco 309,https://www.paulmuller.edu.pe/
+732,2,PAZOS,Huancavelica,Tayacaja,Pazos,Público,Via Evitamiento S/N,S/D
+733,2,PEDRO A. DEL AGUILA HIDALGO,Loreto,Maynas,Iquitos,Público,Avenida Del Ejercito 1459,https://iestppedroadelaguilahidalgo.edu.pe/
+734,2,PEDRO ORTIZ MONTOYA,Cajamarca,Celendín,Celendín,Público,Jiron Prolg. Dos De Mayo S/N,https://www.iestppom.edu.pe/
+735,2,PEDRO P. DIAZ,Arequipa,Arequipa,José Luis Bustamante Y Rivero,Público,Avenida Pizarro 130,https://iestp-ppd.edu.pe/
+736,2,PEDRO VILCAPAZA,Puno,Azángaro,Azángaro,Público,Avenida Los Proceres S/N,https://iestpazangaro.edu.pe/
+737,2,PERU,Ica,Chincha,Chincha Alta,Privado,Calle Grau 443,https://www.facebook.com/InstitutoPeruChincha/
+738,2,PERU - CATOLICA,Lima,Lima,Ate,Privado,Avenida Central 725,https://www.facebook.com/PERUCATOLICAOFICIAL/?locale=es_LA
+740,2,PERU FRANCIA (PERU),Lambayeque,Chiclayo,Chiclayo,Privado,Jiron Diego Ferre 590,S/D
+742,2,PERU PACIFICO,Lima,Lima,Pueblo Libre,Privado,Avenida Brasil 1306,S/D
+743,2,PERUANO CANADIENSE,Ica,Ica,Ica,Privado,Calle Lima 418,https://es-la.facebook.com/istppc/
+744,2,PERUANO DE CHEFS,Lima,Lima,San Miguel,Privado,Avenida La Marina 3274,https://www.ipchefs.edu.pe/
+746,2,PERUANO DE MARKETING,Lima,Lima,Miraflores,Privado,Avenida Paseo De La Republica 6099,https://ipm.com.pe/
+747,2,PERUANO DE SISTEMAS SISE,Lima,Lima,Lima,Privado,Avenida Arequipa 1290,https://www.sise.edu.pe/
+748,2,PERUANO ESPAÑOL,Arequipa,Caravelí,Bella Unión,Público,La Capilla Sector La Capilla,https://www.iestpperuanoespanol.edu.pe/
+739,2,PERU-COREA DEL SUR,Ayacucho,Víctor Fajardo,Huancapi,Público,Jiron Lambayeque 136,https://iestpperucoreadelsur.edu.pe/2023/
+741,2,PERU-JAPON,Amazonas,Chachapoyas,Chachapoyas,Público,Jiron Ayacucho Cuadra 1 S/N,https://idexperujapon.edu.pe/
+749,2,PICHANAKI,Junín,Chanchamayo,Pichanaqui,Público,Jiron Jose Galvez 102,https://institutopichanaki.edu.pe/
+750,2,PISCO,Ica,Pisco,Pisco,Público,Avenida Las Americas S/N,https://www.iestppisco.edu.pe/
+754,2,PUERTO INCA,Huánuco,Puerto Inca,Puerto Inca,Público,Jiron Fernando Belaunde S/N,https://iestppuertoinca.edu.pe/
+755,2,PUERTO LIBRE,Junín,Chanchamayo,Perene,Público,Jiron Asociacion S/N,https://www.iestpuertolibre.edu.pe/inicio
+756,2,PURUS,Ucayali,Purús,Purus,Público,Avenida Reverendo Padre Miguel Piovesan,https://ipurus.edu.pe/
+757,2,QUEROCOTO,Cajamarca,Chota,Querocoto,Público,Calle Paises Escandinavos S/N,https://www.institucioneducativa.info/dre/dre-cajamarca/instituto-tecnologico-querocoto-85122/
+758,2,RAMIRO PRIALE PRIALE,Lima,Lima,Lurigancho,Público,Calle Las Riolitas 133,https://www.iestpramiropriale.edu.pe/
+759,2,RAMON COPAJA,Tacna,Tarata,Tarata,Público,Carretera Tarata -Tacna Km 02,https://iestpramoncopaja.edu.pe/
+760,2,RECUAY,Áncash,Recuay,Recuay,Público,Jiron Bolivar 325,https://iestprecuay.edu.pe/
+761,2,REGIONAL DEL SUR,Cusco,Canchis,Sicuani,Privado,Jiron Jose Olaya,https://www.facebook.com/INSTITUTOREGIONALDELSURSICUANI/?locale=es_LA
+762,2,REPUBLICA FEDERAL DE ALEMANIA,Lambayeque,Chiclayo,Chiclayo,Público,Avenida Elvira Garcia Y Garcia 755,https://istrfa.edu.pe/web/
+763,2,REYNA DE LAS AMERICAS,Loreto,Maynas,Iquitos,Privado,Calle Brasil Cuadra 1,https://istra.edu.pe/
+764,2,RICARDO PALMA,Lima,Lima,Ate,Privado,Avenida Nicolas Ayllon 6376 Mz B Lote 11,https://www.iesrp.edu.pe/
+765,2,RICARDO RAMOS PLATA,Piura,Sechura,Sechura,Público,Avenida Heroes Del Cenepa S/N,https://istprrp.edu.pe/home/
+766,2,RICARDO SALINAS VARA,Huánuco,Lauricocha,Jesús,Público,Shampucancha,https://www.facebook.com/p/Instituto-Ricardo-Salinas-Vara-100054445781710/
+767,2,RIO SANTA,Áncash,Santa,Santa,Público,Avenida 28 De Julio S/N,https://www.facebook.com/institutoriosanta/?locale=es_LA
+768,2,RIOJA,San Martín,Rioja,Rioja,Público,Carretera Posic Km 1.5,https://iestprioja.edu.pe/
+770,2,RODRIGO SALAZAR PALACIOS,Pasco,Daniel Alcides Carrión,Santa Ana de Tusi,Público,Tusicancha S/N,https://www.institucioneducativa.info/dre/dre-pasco/instituto-tecnologico-rodrigo-salazar-palacios-88963/
+771,2,RODRIGUEZ DE MENDOZA,Amazonas,Rodríguez de Mendoza,San Nicolás,Público,Jiron Braulio De Campo Redondo 150,https://iestprodriguezdemendoza.com/
+772,2,RUDOLF DIESEL,Junín,Huancayo,El Tambo,Privado,Jiron Jose Manuel Alonso 377,https://illumignosis.wixsite.com/istprudolfdiesel
+774,2,SABIO NACIONAL ANTUNEZ DE MAYOLO-TELESUP,Lima,Lima,Los Olivos,Privado,Avenida Alfredo Mendiola 6565 Mz G Lote 15,https://ed.isam.edu.pe/
+775,2,SAN AGUSTIN - JAEN,Ica,Ica,Ica,Privado,Calle Tacna 177,https://iestpsanagustinica.edu.pe/
+776,2,SAN AGUSTIN-ABANCAY,Lima,Lima,San Isidro,Privado,Avenida Javier Prado Este 980,https://www.isat.edu.pe/
+777,2,SAN AGUSTIN-ICA,Apurímac,Abancay,Abancay,Privado,Jiron Arica S/N,https://www.facebook.com/people/Instituto-Superior-Tecnol%C3%B3gico-Privado-San-Agust%C3%ADn-de-Abancay-Apur%C3%ADmac/100063931307486/
+778,2,SAN AGUSTIN-LIMA,Cajamarca,Jaén,Jaén,Público,Calle Arana Vidal Y Torre Tagle S/N,https://isanagustin.edu.pe/portal/
+780,2,SAN ANTONIO DE PADUA,Cajamarca,Chota,Lajas,Público,Jiron Rio Jalqueño S/N,https://www.institucioneducativa.info/dre/dre-cajamarca/instituto-tecnologico-san-antonio-de-padua-86112/
+784,2,SAN EDUARDO,La Libertad,Trujillo,Trujillo,Privado,Avenida España 122,https://ise.edu.pe/
+785,2,SAN FELIPE,Arequipa,Islay,Mollendo,Privado,Avenida Mariscal Castilla 225,https://www.facebook.com/incempsac/?locale=es_LA
+787,2,SAN FRANCISCO,Cusco,Cusco,San Sebastian,Privado,Avenida Huayruropata 1803,https://institutosanfrancisco.edu.pe/#
+793,2,SAN IGNACIO,Cajamarca,San Ignacio,San Ignacio,Público,Jiron Jaen S/N,https://portal.iestpsanignacio.edu.pe/
+797,2,SAN IGNACIO DE MONTERRICO-SIDEM,Lima,Lima,Pachacamac,Privado,Avenida Lima 1725,https://sidem.edu.pe/
+798,2,SAN IGNACIO DE PEDRALBES,San Martín,Moyobamba,Moyobamba,Privado,Jiron Alonso Alvarado 450,https://pedralbes.edu.pe/
+799,2,SAN JAVIER DEL MARAÑON,Cajamarca,Jaén,Jaén,Privado,Calle Bolivar 1658,https://sajamar.edu.pe/
+800,2,SAN JOSE,Huancavelica,Tayacaja,Tintay Puncu,Público,Calle Escandinvos S/N,https://sites.google.com/view/iestp-tintay-puncu/inicio?pli=1
+803,2,SAN JOSE MARELLO,Áncash,Huaraz,Independencia,Privado,Jiron Recuay S/N,https://marello.edu.pe/
+804,2,SAN JOSE ORIOL,Arequipa,Arequipa,Arequipa,Privado,Calle Villalba 310,https://sanjoseoriol.edu.pe/
+807,2,SAN JUAN BAUTISTA,Huancavelica,Huaytará,Huaytara,Público,Avenida Los Angeles S/N,https://www.facebook.com/IESTPSanJuanBautistaHuaytara/
+808,2,SAN JUAN BAUTISTA LA SALLE,Puno,San Román,Juliaca,Privado,Jiron San Martin 868 - 896,https://www.sjb-lasalle.edu.pe/
+809,2,SAN JUAN BOSCO,La Libertad,Chepén,Chepen,Privado,Avenida Aviacion,https://www.institucioneducativa.info/dre/dre-la-libertad/instituto-tecnologico-san-juan-bosco-24416/
+810,2,SAN JUAN DEL ORO,Puno,Sandia,San Juan Del Oro,Público,Avenida Agricultura S/N,https://www.deperu.com/educacion/instituto-educacion-superior/iest-san-juan-del-oro-1028919-san-juan-del-oro-8565
+806,2,SAN JUAN-SULLANA,Piura,Sullana,Sullana,Privado,Avenida Jose De Lama 195,https://www.institutosanjuansullana.edu.pe/web/
+805,2,SAN JUAN-VILCASHUAMAN,Ayacucho,Vilcas Huamán,Vilcas Huaman,Público,Huaychahuaccana,https://iestpsanjuan.edu.pe/2023/
+811,2,SAN LORENZO,Loreto,Datem del Marañón,Barranca,Público,Calle Morona/Miguel Montalvan S/N,https://www.iestpsanlorenzo.edu.pe/
+815,2,SAN LUIS MARIA DE MONTFORT,Tacna,Tacna,Tacna,Privado,Calle Arica 596,https://www.facebook.com/Montforttacna/?locale=es_LA
+813,2,SAN LUIS-CARLOS FERMIN FITZCARRALD,Áncash,Carlos Fermín Fitzcarrald,San Luis,Público,Jiron Simon Bolivar S/N,S/D
+814,2,SAN LUIS-TRUJILLO,La Libertad,Trujillo,Trujillo,Privado,Avenida Del Ejercito 1175,https://www.facebook.com/ISTPSANLUIS/?locale=es_LA
+816,2,SAN MARCOS,Áncash,Huari,San Marcos,Público,Calle Amauta Jose Carlos Mariategui 001,https://iestpsanmarcos.edu.pe/
+820,2,SAN MARTIN DE PANGOA,Junín,Satipo,Pangoa,Público,Calle Principal S/N,https://www.facebook.com/InstitutoPangoa/?locale=es_LA
+821,2,SAN MARTIN DE PORRAS,Piura,Piura,Tambo Grande,Privado,Jiron Tumbres 101,S/D
+822,2,SAN MIGUEL,Lambayeque,Chiclayo,Chiclayo,Privado,Avenida Bolognesi 472,S/D
+824,2,SAN NICOLAS,Áncash,Carlos Fermín Fitzcarrald,San Nicolás,Público,Avenida Magisterial S/N,S/D
+825,2,SAN PEDRO - CORONGO,Áncash,Corongo,Corongo,Público,Jiron Lima 600,https://iestpsanpedro.edu.pe/
+826,2,SAN PEDRO -CHIMBOTE,Áncash,Santa,Chimbote,Privado,Avenida Jose Pardo S/N Mz Z Lote 25,https://www.facebook.com/isanpedrousp/photos?locale=es_LA
+827,2,SAN PEDRO DE CHURCAMPA,Junín,Huancayo,El Tambo,Privado,Pasaje Los Andes 376,S/D
+828,2,SAN PEDRO DEL MAR,Huancavelica,Churcampa,San Pedro de Coris,Público,Avenida San Pedro De Coris S/N,S/D
+829,2,SAN PEDRO DEL VALLE DE MALA,Lima,Cañete,Mala,Público,Avenida San Pedro S/N,https://coquilloman.wixsite.com/istpmala
+830,2,SAN SALVADOR,Puno,Puno,Capachica,Público,Fundo Canjata,S/D
+831,2,SAN SANTIAGO,Áncash,Huaraz,Huaraz,Privado,Avenida Centenario 921,S/D
+832,2,SANGARARA,Cusco,Acomayo,Sangarara,Público,Avenida 18 De Noviembre S/N,https://iessangarara.edu.pe/
+833,2,SANTA ANA,Lima,Lima,Villa María del Triunfo,Privado,Avenida Maria Parado De Bellido 187,https://istbellido.edu.pe/
+834,2,SANTA ANGELA,Piura,Piura,Piura,Privado,Avenida Sanchez Cerro 536,https://www.iestpisa.edu.pe/
+839,2,SANTA MARIA MAGDALENA,Lima,Cajatambo,Cajatambo,Público,Avenida Central S/N,https://iestpcajatambo.edu.pe/
+840,2,SANTA MARIA MAZZARELLO,Lambayeque,Chiclayo,Chiclayo,Privado,Avenida Balta 1324,https://www.isma.edu.pe/
+845,2,SANTA URSULA,Piura,Sullana,Sullana,Privado,Autopista Panamericana Norte 337,S/D
+846,2,SANTIAGO ANTUNEZ DE MAYOLO,Junín,Huancayo,Huancayo,Público,Avenida La Victoria 291,https://sam.edu.pe/
+847,2,SANTIAGO RAMON Y CAJAL,Arequipa,Caylloma,Majes,Privado,Las Malvinas Mz U Lote 1,https://www.idema.edu.pe/index.html
+848,2,SANTO CRISTO DE BAGAZAN,San Martín,San Martín,Tarapoto,Privado,Jiron Manco Inca 427,S/D
+849,2,SANTO DOMINGO DE GUZMAN - MORROPÓN,Ayacucho,Sucre,Querobamba,Público,Yacuwusina S/N,https://iestpsdg.edu.pe/2023/
+850,2,SANTO DOMINGO DE GUZMAN - SUCRE,Piura,Morropón,Santo Domingo,Público,Calle Lima 253,http://www.iestpsantodomingodeguzman.edu.pe/
+851,2,SANTOS VILLALOBOS HUAMAN,Cajamarca,Santa Cruz,Yauyucan,Público,Avenida Cajamarca S/N,https://santosvillaloboshuaman.blogspot.com/
+852,2,SAUSA,Junín,Jauja,Sausa,Público,Jiron Marino Nuñes 495,https://www.iestpsausa.edu.pe/
+854,2,SECOMTUR,Áncash,Santa,Nuevo Chimbote,Privado,Calle Huascaran 392,S/D
+856,2,SELENE,Lima,Lima,Lince,Privado,Avenida Petit Thouars 1500,https://www.seleneperu.edu.pe/
+857,2,SELVA SYSTEM,Ica,Nasca,Nasca,Privado,Calle Callao 783,https://selvasystem.edu.pe/web/index.php
+858,2,SEMINARIO BIBLICO ANDINO,Lima,Lima,Pueblo Libre,Privado,Avenida Colombia 325,https://www.usba.edu.pe/
+859,2,SEMINARIO EVANGELICO DE LIMA,Lima,Lima,La Molina,Privado,Avenida La Molina 585,S/D
+863,2,SENCICO AREQUIPA,Arequipa,Arequipa,Yanahuara,Privado,Calle Leon Velarde 405,https://www.facebook.com/SencicoArequipa/
+864,2,SENCICO PIURA,Piura,Piura,Veintiseis de Octubre,Privado,Avenida Grau 1535,https://cursos.sencico.gob.pe/
+862,2,SENCICO-LIMA,Lima,Lima,San Borja,Público,Av. De La Poesía 351 San Borja,https://www.gob.pe/sencico
+865,2,SEÑOR DE BURGOS,Huánuco,Huánuco,Huanuco,Privado,Jiron Progreso 230,https://www.facebook.com/institutoburgoshuanuco/?locale=es_LA
+866,2,SEÑOR DE CHOCAN,Piura,Sullana,Querecotillo,Público,Avenida Peru 500,https://www.iestpsrdechocan.edu.pe/
+867,2,SEÑOR DE GUALAMITA,Amazonas,Luya,Lamud,Público,Lamud,https://portal.iestpsenordegualamita.com.pe/
+868,2,SEÑOR DE LA DIVINA MISERICORDIA,Áncash,Ocros,Ocros,Público,Jiron Atahualpa S/N,https://isdm.edu.pe/index.html
+869,2,SEÑOR DE LOCUMBA,Tacna,Jorge Basadre,Locumba,Público,Carretera A Locumba Km.12,https://www.institucioneducativa.info/dre/dre-tacna/instituto-tecnologico-senor-de-locumba-85709/
+873,2,SERGIO BERNALES - CHOTA,Cajamarca,Chota,Chota,Privado,Jiron Coronel Becerra 243,https://www.institucioneducativa.info/dre/dre-cajamarca/instituto-tecnologico-sergio-bernales-chota-85123/
+874,2,SERGIO BERNALES GARCIA-CAÑETE,Lima,Huaral,Huaral,Privado,Mz H Lote 09,https://www.isergiobernalesgarcia.edu.pe/
+875,2,SERGIO BERNALES GARCIA-HUARAL,Lima,Cañete,San Vicente de Cañete,Privado,Avenida Mariscal Benavides,https://www.isergiobernalesgarcia.edu.pe/
+872,2,SERGIO BERNALES-CAJAMARCA,Cajamarca,Cajamarca,Cajamarca,Privado,Jiron Comercio 424-416,https://www.facebook.com/p/Instituto-Sergio-Bernales-Cajamarca-100063894136295/
+871,2,SERGIO BERNALES-LIMA,Lima,Lima,Jesús María,Privado,Avenida General Garzon 2301,https://www.isergiobernales.edu.pe/
+877,2,SIGMUND FREUD,Áncash,Pomabamba,Pomabamba,Privado,Jiron Teniente Coronel Melgarejo 595,https://www.facebook.com/groups/747437178792545/
+878,2,SIGNOS DE FE,Cusco,La Convención,Santa Ana,Privado,Macamango Sector 2,https://signosdefe.com/
+879,2,SIMON BOLIVAR - CALLAO,Callao,Prov. Const. del Callao,Bellavista,Público,Calle 3 100,https://www.institutobolivar.edu.pe/
+880,2,SIMON BOLIVAR - PAITA,Piura,Paita,Amotape,Público,San Martin S/N,https://m.facebook.com/p/IESTP-Sim%C3%B3n-Bolivar-Amotape-Paita-100064045027618/
+881,2,SIMON SANCHEZ REYES,La Libertad,Santiago de Chuco,Mollebamba,Público,San Miguel 05,https://www.institucioneducativa.info/dre/dre-la-libertad/instituto-tecnologico-simon-sanchez-reyes-26204/
+884,2,SISTEMAS DEL SUR,Tacna,Tacna,Tacna,Privado,Calle Deustua 270,https://www.sistemasdelsur.edu.pe/
+885,2,SISTEMAS PERU,Lima,Lima,Lima,Privado,Jiron Madre De Dios 255,S/D
+886,2,SOUTHERN TECHNOLOGICAL INSTITUTE,Lima,Lima,Jesús María,Privado,Avenida Arenales 956,https://www.institutosouthern.edu.pe/
+887,2,STANFORD,La Libertad,Chepén,Chepen,Privado,Calle Cajamarca 474,https://www.iestpstanford.edu.pe/
+888,2,STENDHAL,Arequipa,Arequipa,Arequipa,Privado,Calle Alvarez Thomas 307,https://stendhal.edu.pe/
+889,2,SUIZA,Ucayali,Coronel Portillo,Calleria,Público,Avenida Centenario,https://institutosuiza.edu.pe/
+890,2,SULLANA,Piura,Sullana,Sullana,Público,Carretera Sullana - Tambogrande Km 6,S/D
+892,2,TALLAN,Piura,Piura,Castilla,Privado,Avenida Tacna 203,https://institutotallan-edu.negocio.site/
+893,2,TAURIJA,La Libertad,Pataz,Taurija,Público,Calle Alfonso Ugarte S/N,https://www.institucioneducativa.info/dre/dre-la-libertad/instituto-tecnologico-taurija-25476/
+896,2,TECCEN,Lima,Lima,Lima,Privado,Avenida Garcilazo De La Vega 1652-1662,S/D
+895,2,TEC-CENTRO DE CAPACITACION TECNICA,Ucayali,Coronel Portillo,Calleria,Privado,Avenida Huanuco 163,https://intec.edu.pe/tec/
+898,2,TECNOLOGÍA E INFORMÁTICA DEL SUR,Ica,Chincha,Chincha Alta,Privado,Jiron Lima 557,http://istptecnosur.atspace.com/i_s_t_p_tecnosur.htm
+900,2,TECNOLOGICO DE ESTUDIOS ADMINISTRATIVOS - ISEA,Lima,Lima,Jesús María,Privado,Jiron Talara 702,S/D
+901,2,TECNOTRONIC,Puno,San Román,Juliaca,Privado,Jiron La Mar 236,https://tecnotronic.edu.pe/
+902,2,TECSEL,San Martín,Moyobamba,Moyobamba,Privado,Jiron San Martin 488,https://tecsel.edu.pe/
+903,2,TECSUP NO.1-LIMA,Lima,Lima,Santa Anita,Privado,Avenida Casacanueces 221,https://www.tecsup.edu.pe/
+904,2,TECSUP NO.2-AREQUIPA,Arequipa,Arequipa,José Luis Bustamante Y Rivero,Privado,Monterrey Mz D Lote 8,https://www.tecsup.edu.pe/
+905,2,TEMBLADERA,Cajamarca,Contumazá,Yonan,Público,Avenida Miraflores 465,https://iestptembladera.edu.pe/
+906,2,TEODORO RIVERA TAYPE,Junín,Satipo,Satipo,Público,Calle Esquina Julio C. Tello Y 1 De Noviembre,https://iestptrt.edu.pe/
+907,2,TEPNUM,Arequipa,Arequipa,Miraflores,Privado,Calle Tacna 543,https://tepnum.edu.pe/
+908,2,THOMAS JEFFERSON,Arequipa,Arequipa,Arequipa,Privado,Calle Rivero 419,https://thomasjefferson.edu.pe/
+909,2,TICRAPO,Huancavelica,Castrovirreyna,Ticrapo,Público,Avenida Manchego Muñoz S/N,https://www.facebook.com/iestpticrapo/
+910,2,TINYASH,Huánuco,Huacaybamba,Huacaybamba,Público,Avenida El Ejercito 209,https://institutotinyash.edu.pe/
+911,2,TODAS LAS ARTES,Apurímac,Andahuaylas,Talavera,Público,Avenida 3 De Octubre 462,https://iestptodaslasartes.edu.pe/
+913,2,TORIBIO RODRÍGUEZ DE MENDOZA,Cajamarca,Jaén,Jaén,Privado,Calle Pardo Y Miguel 958,S/D
+914,2,TOULOUSE LAUTREC,Lima,Lima,Santiago de Surco,Privado,Avenida Primavera 970,https://www.toulouselautrec.edu.pe/
+915,2,TRENTINO JUAN PABLO II DE MANCHAY,Lima,Lima,Pachacamac,Privado,Calle 88 Sector G,https://trentino.edu.pe/
+916,2,TRUJILLO,La Libertad,Trujillo,Trujillo,Público,Pasaje Jose Olaya 180,https://www.iestptrujillo.edu.pe/
+917,2,TSAMAJAIN,Amazonas,Bagua,Imaza,Público,Avenida Morro Solar S/N,https://m.facebook.com/p/Instituto-De-Educaci%C3%B3n-Superior-Tecnol%C3%B3gico-P%C3%BAblico-Tsamajain-100057418152331/
+918,2,TUINEN STAR,Cusco,Cusco,Wanchaq,Privado,Avenida Diagonal Angamos Lote 17,https://www.tuinenstar.edu.pe/
+919,2,TUMAN,Lambayeque,Chiclayo,Tuman,Privado,Avenida Ramon Castilla 505,S/D
+920,2,TUPAC AMARU,Cusco,Cusco,San Sebastian,Público,Avenida Cusco S/N,https://www.istta.edu.pe/
+923,2,TUSAN,Lima,Lima,Lima,Privado,Avenida 9 De Diciembre 346-372-378,S/D
+924,2,UNIBACT,Cajamarca,Celendín,Celendín,Privado,Jiron Dos De Mayo 272,https://www.institucioneducativa.info/dre/dre-cajamarca/instituto-tecnologico-unibact-85114/
+932,2,UNITEK-AREQUIPA,Arequipa,Arequipa,Cerro Colorado,Privado,Calle Miguel Grau 206-208,https://unitek.edu.pe/
+926,2,UNITEK-CHINCHA,Ica,Chincha,Chincha Alta,Privado,Avenida Fatima 331,https://unitek.edu.pe/
+927,2,UNITEK-ICA,Ica,Ica,Ica,Privado,Calle Bolivar 830,https://unitek.edu.pe/
+928,2,UNITEK-ILO,Moquegua,Ilo,Ilo,Privado,Calle Abtao 709,https://unitek.edu.pe/
+929,2,UNITEK-JULIACA,Puno,San Román,Juliaca,Privado,Pasaje De La Cultura 218 2Do Piso,https://unitek.edu.pe/
+930,2,UNITEK-PUNO,Puno,Puno,Puno,Privado,Avenida El Sol 809,https://www.facebook.com/somosunitekpuno/?locale=es_LA
+931,2,UNITEK-TACNA,Tacna,Tacna,Tacna,Privado,Avenida Miraflores 120,https://unitek.edu.pe/
+934,2,URUSAYHUA,Cusco,La Convención,Santa Ana,Privado,Avenida Quillabamba 110,https://urusayhua.edu.pe/
+935,2,UTCUBAMBA,Amazonas,Utcubamba,Bagua Grande,Público,Calle Las Delicias 380,https://iestputcubamba.edu.pe/
+936,2,VALLE DE TAMBO,Arequipa,Islay,Cocachacra,Público,Carretera Avis Veracruz Chica Mz X2 Lote 4,https://www.facebook.com/p/IESTP-Valle-de-Tambo-100066718052086/
+937,2,VALLE GRANDE,Lima,Cañete,San Vicente de Cañete,Privado,Carretera Panamericana Sur Km 144,https://vallegrande.edu.pe/
+938,2,VELILLE,Cusco,Chumbivilcas,Velille,Público,Avenida El Triunfo S/N,https://www.institucioneducativa.info/dre/dre-cusco/instituto-tecnologico-velille-83537/
+939,2,VICENTE FERRER,Áncash,Yungay,Yungay,Público,Avenida Fidel Angeles,https://www.deperu.com/educacion/instituto-educacion-superior/iest-vicente-ferrer-0905349-tumpa-122129
+940,2,VICTOR ALVAREZ HUAPAYA,Ayacucho,Huamanga,San Juan Bautista,Público,Parque Principal Miraflores Mz U-1 Lote 1 Sector V,https://victoralvarezhuapaya.edu.pe/
+943,2,VICTOR RAUL HAYA DE LA TORRE-BARRANCA,Lima,Barranca,Barranca,Público,Avenida Jose Galvez 691,https://institutovrht.edu.pe/index.php
+942,2,VICTOR RAUL HAYA DE LA TORRE-TRUJILLO,La Libertad,Trujillo,Moche,Público,Diego Ferre 370,https://institutovrht.edu.pe/
+944,2,VICUS,Piura,Morropón,Chulucanas,Público,Calle Vate Manrique Mz V Lote 7,https://iestpvicus.wordpress.com/
+945,2,VILCABAMBA,Apurímac,Grau,Vilcabamba,Público,Mayhuaypata,https://www.facebook.com/institutovilcabamba/?locale=es_LA
+946,2,VILCANOTA,Cusco,Canchis,Sicuani,Público,Avenida Confederacion S/N,https://iesvilcanota.edu.pe/
+948,2,VIRGEN DE COCHARCAS - ANGARAES,Huancavelica,Angaraes,Julcamarca,Público,Jiron Jesus Nazareno S/N,https://www.facebook.com/p/IESTP-Virgen-de-Cocharcas-100063705261124/?paipv=0&eav=Afbcf2TlmD-A9UV3XY3N9zT3KMxHPJ6iW7_ofirY1zypqcOB08yfsuXovtU5ZoMJ9oE&_rdr
+949,2,VIRGEN DE COCHARCAS-JAUJA,Junín,Jauja,Apata,Privado,Carretera Central Km 95,https://www.institucioneducativa.info/dre/dre-junin/instituto-tecnologico-virgen-de-cocharcas-84610/
+950,2,VIRGEN DE COPACABANA,Cusco,Espinar,Espinar,Privado,Calle Anta 402,https://www.iestpvcopacabana.edu.pe/
+952,2,VIRGEN DE GUADALUPE-LIMA,Lima,Lima,Miraflores,Privado,Avenida Larco 1275-1279,https://www.margaritacabrera.edu.pe/
+951,2,VIRGEN DE GUADALUPE-SANTA,Áncash,Santa,Nepeña,Público,Avenida Miguel Grau S/N Mz C Lote 1,https://iestpvirgendeguadalupe.edu.pe/
+953,2,VIRGEN DEL ROSARIO,Ayacucho,Lucanas,Laramate,Público,Avenida Moises Galimide Susen S/N,https://institutovirgendelrosario.edu.pe/2023-ant/
+954,2,VIRGINIA HENDERSON,Lima,Lima,Breña,Privado,Avenida Bolivia 724,https://www.institucioneducativa.info/dre/dre-lima-metropolitana/instituto-tecnologico-virginia-henderson-90229/
+955,2,VIRU,La Libertad,Virú,Viru,Público,Carretera Panamericana Norte Km. 531.1,https://instituto-indecap-viru.negocio.site/
+956,2,VON HUMBOLDT,La Libertad,Trujillo,Trujillo,Privado,Jiron Tupac Yupanqui 544,https://www.facebook.com/institutovonhumboldt/?locale=es_LA
+957,2,WALTER PEÑALOZA RAMELLA,Áncash,Pomabamba,Pomabamba,Privado,Jiron Huaraz S/N Mz O Lote 14,https://www.institucioneducativa.info/dre/dre-ancash/instituto-tecnologico-walter-penaloza-ramella-94894/
+958,2,WERNHER VON BRAUN,Lima,Lima,Lince,Privado,Jiron Manuel Candamo 241,https://iesvonbraun.edu.pe/
+959,2,WILLIAM BOEING,Lambayeque,Chiclayo,Chiclayo,Privado,Avenida Fitzcarral S/N,https://www.peruyello.com/company/30680/Instituto_Superior_Tecnologico_Privado_William_Boeing
+960,2,YACHAY WASI,Lima,Lima,Miraflores,Privado,Jiron Bolognesi 300,https://www.yachaywasi.org/
+961,2,YANQUE,Arequipa,Caylloma,Yanque,Público,Avenida Colca 115,https://www.iestp-yanque.edu.pe/
+962,2,YATRAYWASI,Lambayeque,Ferreñafe,Incahuasi,Público,Carretera Trocha Carrozable La Playa Km 0.39,https://www.regionlambayeque.pe/web/tema/detalle/18469?pass=Mjkz
+96,2,24 DE JULIO DE ZARUMILLA,Tumbes,Zarumilla,Zarumilla,Público,Calle Santa Rosa S/N,https://iest24dejuliodezarumilla.edu.pe/
+97,2,4 DE JUNIO DE 1821,Cajamarca,Jaén,Jaén,Público,Avenida Hermogenes Mejia Solf S/N,S/D
+98,2,9 DE MAYO,Junín,Concepción,Manzanares,Público,Jiron Atahualpa 581,https://www.facebook.com/Iestp9demayomanzanares/?locale=es_LA
+972,3,ESCUELA DE EDUCACIÓN SUPERIOR TÉCNICO PROFESIONAL PNP (EETSPNP),Lima,Lima,Chorrillos,Público,Av. Guardia Civil N°800-Chorrillos,https://direddoc.pnp.edu.pe/escuelas-de-educacion-superior-tenico-profesional/
+969,3,ESCUELA DE OFICIALES DE LA FUERZA AÉREA DEL PERÚ (EOFAP),Lima,Lima,Santiago de Surco,Público,Av. Jorge Chávez S/N - Base Aérea,https://eofap.edu.pe/
+973,3,ESCUELA DE OFICIALES DE LA POLICIA NACIONAL DEL PERÚ (EOPNP),Lima,Lima,Chorrillos,Público,Av. Guardia Civil N°800-Chorrillos,https://direddoc.pnp.edu.pe/escuela-de-oficiales/
+968,3,ESCUELA DE SUB OFICIALES DE LA FUERZA AÉREA DEL PERÚ (ESOFA),Lima,Lima,Santiago de Surco,Público,"Av. Jorge Chavez N° 1817 -Santiago de Surco ""Villa FAP Las Alamedas""",
+966,3,ESCUELA MILITAR DE CHORRILLOS,Lima,Lima,Chorrillos,Público,Av. Escuela Militar S/N - Chorrillos,
+971,3,ESCUELA NAVAL DEL PERÚ,Callao,Callao,La Punta,Público,"Calle Medina s/n La Punta, Callao",https://www.escuelanaval.edu.pe/
+967,3,ESCUELA TÉCNICA DEL EJÉRCITO (ETE),Lima,Lima,Chorrillos,Público,"Av. Paseo de La República S/N. Chorrillos - Lima, Perú.",https://ete.edu.pe/
+975,2,AMAZÓNICO,San Martín,San Martín,Tarapoto,Privada,"Av. Circunvalación 653, Tarapoto",https://www.institutoamazonico.edu.pe/
+976,2,CESCA,Lima,Lima,Breña,Privada,Av. Alfonso Ugarte Nº 1280,http://www.cesca.edu.pe/
+977,2,DE COMERCIO EXTERIOR,Lima,Lima,San Borja,Privada,Av. Javier Prado Este 2875,https://adex.edu.pe/
+978,2,DE OPTOMETRÍA Y CIENCIAS EUROHISPANO,Lima,Lima,Magdalena del Mar,Privada,Av. Brasil 3251-3255,https://eurohispano.edu.pe/
+979,2,ISA INTEGRAL,Piura,Piura,Piura,Privada,Calle Cuzco Nro. 221,https://www.iestpintegral.edu.pe/
+980,2,JOHN VON NEUMANN,Tacna,Tacna,Tacna,Privada,"Parcela B-4-A, Valle de Tacna, Sector Copare",https://www.neumann.edu.pe/
+981,2,OPTICA Y OPTOMETRIA,Lima,Lima,Jesús María,Privada,Jr. Huayna Cápac 1253,https://www.iesppoo.edu.pe/
+982,2,SAN IGNACIO DE LOYOLA S.A. - ISIL,Lima,Lima,Miraflores,Privada,Av. Benavides 778,https://isil.pe/
+983,2,SANTA ROSA,Lima,Lima,Jesús María,Privada,Av. República de Chile 284,https://tecnologicosantarosa.edu.pe/
+984,1,UNIVERSIDAD AUTÓNOMA DE ICA S.A.C.,Ica,Chincha,Chincha Alta,Privada,,https://portal.autonomadeica.com/

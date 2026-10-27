@@ -1,0 +1,1120 @@
+﻿codigo,nombre,cod_campo_detallado,cod_nivel_estudio
+011016,Ciencias de la Administración Aeroespacial (Aviación),011,6
+011026,Ciencias Militares (Ejército),011,6
+011036,Ciencias Administrativas Marítimas(Marina),011,6
+012015,Armas Submarinas,012,5
+012025,Artillería,012,5
+012035,Capitanía y Guardacostas,012,5
+012045,Defensa Aérea,012,5
+012055,Fuerzas Especiales,012,5
+012065,Infantería de Marina,012,5
+012075,Inteligencia,012,5
+012085,Maniobras,012,5
+012095,Operaciones Especiales,012,5
+012105,Policía Naval,012,5
+012115,Seguridad e Instrucción Militar,012,5
+012125,Sensores,012,5
+012135,Otros programas en educación militar y defensa,012,5
+021016,Administración y Ciencias Policiales (oficiales),021,6
+022015,Administración y Ciencias Policiales,022,5
+111015,Educación Inicial,111,5
+111016,"Educación Básica, Inicial y Primaria",111,6
+111025,EducaciónInicial (Intercultural y Bilingüe),111,5
+111026,Educación Inicial,111,6
+111036,Educación Inicial- Niñez Temprana,111,6
+111046,Educación Inicial- Retardo Mental,111,6
+111056,Educación Inicial Bilingüe,111,6
+111066,Educación Inicial y Arte,111,6
+111076,Educación Intercultural Bilingüe: Nivel Inicial y Nivel Primaria,111,6
+112015,Educación Primaria,112,5
+112016,Educación Primaria,112,6
+112025,Educación Primaria (Intercultural y Bilingüe),112,5
+112026,Educación Primaria- Educación Básica Alternativa,112,6
+112036,Educación Primaria- Inglés,112,6
+112046,Educación Primaria Intercultural,112,6
+112056,Educación Primaria y Bilingüe,112,6
+112066,Educación Primaria y Bilingüe Intercultural,112,6
+112076,Educación Primaria y Problemas de Aprendizaje,112,6
+121015,Educación en Computación e Informática,121,5
+121016,Educación Secundaria,121,6
+121025,Educación en Idiomas- Inglés,121,5
+121026,Educación Secundaria- Antropología Social,121,6
+121035,Educación para el Trabajo,121,5
+121036,Educación Secundaria- Arte,121,6
+121045,Educación Religiosa,121,5
+121046,Educación Secundaria Bilingüe,121,6
+121055,"Educación Secundaria - Ciencia, Tecnología y Ambiente",121,5
+121056,"Educación Secundaria - Biología, Química y Tecnología de los Alimentos",121,6
+121065,Educación Secundaria - Ciencias Sociales,121,5
+121066,Educación Secundaria- Biología y Química,121,6
+121075,Educación Secundaria - Comunicación,121,5
+121076,Educación Secundaria- Ciencia Tecnología y Ambiente,121,6
+121085,Educación Secundaria - Matemática,121,5
+121086,Educación Secundaria- Ciencia Tecnología de la Comunicación,121,6
+121095,Educación Secundaria Técnica,121,5
+121096,Educación Secundaria - Ciencias Biológicas y Química,121,6
+121106,Educación Secundaria- Ciencias Histórico Sociales,121,6
+121116,"Educación Secundaria- Ciencias Matemáticas, Físicas e Informática",121,6
+121126,Educación Secundaria- Ciencias Naturales,121,6
+121136,Educación Secundaria- Ciencias Naturales Tecnología y Ambiente,121,6
+121146,Educación Secundaria- Ciencias Naturales y Ecología,121,6
+121156,Educación Secundaria- Ciencias Sociales,121,6
+121166,Educación Secundaria- Ciencias Sociales - Filosofía,121,6
+121176,Educación Secundaria- Ciencias Sociales - Geografía,121,6
+121186,Educación Secundaria- Ciencias Sociales - Historia,121,6
+121196,Educación Secundaria- Ciencias Sociales - Psicología,121,6
+121206,Educación Secundaria- Ciencias Sociales y Bioética,121,6
+121216,Educación Secundaria- Ciencias Sociales y Desarrollo Rural,121,6
+121226,Educación Secundaria- Ciencias Sociales y Promoción Socio Cultural,121,6
+121236,Educación Secundaria- Ciencias Sociales y Turismo,121,6
+121246,Educación Secundaria- Computación e Informática,121,6
+121256,Educación Secundaria- Comunicación,121,6
+121266,"Educación Secundaria - Filosofía, Psicología y Ciencias Sociales",121,6
+121276,Educación Secundaria- Filosofía y Ciencias Sociales,121,6
+121286,Educación Secundaria- Filosofía y Psicopedagogía,121,6
+121296,Educación Secundaria- Filosofía y Religión,121,6
+121306,"Educación Secundaria- Historia, Geografía y Ecología",121,6
+121316,"Educación Secundaria- Historia, Geografía y Ciencias Sociales",121,6
+121326,Educación Secundaria- Historia y Ciencias Sociales,121,6
+121336,Educación Secundaria- Historia y Geografía,121,6
+121346,Educación Secundaria- Idioma Extranjero Traducción e Interpretación,121,6
+121356,Educación Secundaria- Idioma Extranjero/Originario,121,6
+121366,Educación Secundaria- Inglés,121,6
+121376,Educación Secundaria- Inglés e Italiano,121,6
+121386,Educación Secundaria- Inglés y Alemán,121,6
+121396,Educación Secundaria- Inglés y Francés,121,6
+121406,"Educación Secundaria- Lengua, Comunicación e Idioma Inglés",121,6
+121416,Educación Secundaria- Lengua Literatura y Gestión Educativa,121,6
+121426,Educación Secundaria- Lengua y Literatura,121,6
+121436,"Educación Secundaria- Lenguaje, Literatura e Idiomas",121,6
+121446,Educación Secundaria- Lingüística y Literatura,121,6
+121456,Educación Secundaria- Matemática,121,6
+121466,"Educación Secundaria- Matemática, Computación e Informática",121,6
+121476,"Educación Secundaria- Matemática, Computación y Física",121,6
+121486,Educación Secundaria- Matemática e Informática,121,6
+121496,"Educación Secundaria- Matemática, Física e Informática",121,6
+121506,Educación Secundaria- Matemática y Física,121,6
+121516,Educación Secundaria- Para el trabajo,121,6
+121526,"Educación Secundaria- Persona, Familia y Relaciones Humanas",121,6
+121536,"Educación Secundaria- Química, Física y Biología",121,6
+121546,Educación Secundaria- Religión,121,6
+121556,Educación Secundaria- Religiosa y Ciencias Sociales,121,6
+121996,Otras Carreras de Educación Secundaria,121,6
+131014,Deportes,131,4
+131015,Educación Física,131,5
+131016,Educación Física,131,6
+131024,DirecciónTécnica en Futbol,131,4
+131026,Educación Física en Edades Tempranas,131,6
+131036,Educación Física en Poblaciones Especiales,131,6
+131046,Educación Física y Danzas,131,6
+131056,Educación Física y Deportes,131,6
+141015,Educación Especial Audición,141,5
+141016,"Audición, Lenguaje yAprendizaje",141,6
+141025,Educación Especial Retardo,141,5
+141026,Discapacidad Intelectual y Multidiscapacidad,141,6
+151015,Educación Artística,151,5
+151016,Educación Artística,151,6
+151025,Educación Danza,151,5
+151026,Educación Artística- Arte Dramático,151,6
+151035,Educación en Danza Clásica,151,5
+151036,Educación Artística- Artes Plásticas,151,6
+151045,Educación Musical,151,5
+151046,Educación Artística - Danza Folklórica,151,6
+151055,Pedagogía de la Interpretación Musical,151,5
+151056,Educación Artística- Música,151,6
+151996,Otras Carreras de Educación Artísticas,151,6
+161016,Artes Industriales,161,6
+161026,Automatización Industrial,161,6
+161036,Construcción Civil,161,6
+161046,Construcciones Metálicas- Soldadura Industrial,161,6
+161056,Diseño Industrial y Arquitectónico,161,6
+161066,Ebanistería y Decoración,161,6
+161076,Electricidad,161,6
+161086,Electrónica,161,6
+161096,Electrónica e Informática,161,6
+161106,Fuerza Motriz,161,6
+161116,Mecánica Automotriz,161,6
+161126,Mecánica de Producción,161,6
+161136,Metalurgia y Joyería,161,6
+161146,Tecnología Textil,161,6
+161156,Tecnología del Vestido,161,6
+161166,Telecomunicaciones e Informática,161,6
+161996,Otras Carreras de Educación Tecnológica,161,6
+199015,Educación Básica Alternativa,199,5
+199016,Educación,199,6
+199025,Otras Carreras de Educación,199,5
+199996,Otras Carreras de Educación,199,6
+211016,Antropología,211,6
+211026,Antropología Social,211,6
+211036,Arqueología,211,6
+211046,Arqueología e Historia,211,6
+212016,Historia,212,6
+212026,Historia y Gestión Cultural,212,6
+213016,Comunicación Lingüística y Literatura,213,6
+213026,Lingüística,213,6
+213036,Literatura,213,6
+213046,Literatura y Lingüística,213,6
+214013,Idioma,214,3
+214015,Interpretación de Idiomas,214,5
+214016,Idiomas,214,6
+214025,Traducción de Idiomas,214,5
+214026,"Lengua, Traducción e Interpretación",214,6
+214035,Traducción e Interpretación,214,5
+214036,Traducción e Interpretación,214,6
+215015,Archivos,215,5
+215016,Archivo y Gestión Documental,215,6
+215026,Bibliotecología y Ciencias de la Información,215,6
+216014,Literatura Bíblica,216,4
+216015,Religión y Educación para el Trabajo,216,5
+216016,Filosofía,216,6
+216024,Teología Pastoral,216,4
+216025,Teología - Católica,216,5
+216026,Teología,216,6
+216035,Teología - Evangélica,216,5
+216045,Teología - Formación Religiosa,216,5
+217016,Estudios Latinoamericanos,217,6
+217026,Estudios de Lenguaje y Cultura,217,6
+217036,Mención en Estudios Peruanos,217,6
+217046,Estudios Teóricos y Críticos,217,6
+221015,Artes Plásticas y Visuales,221,5
+221016,Artes,221,6
+221025,Construcción de Arte en Madera,221,5
+221026,Arte y Humanidades,221,6
+221035,Restauración yConservación de Obras de Arte,221,5
+221036,Artes Escénicas,221,6
+221046,Artes Escénicas y Literatura,221,6
+221056,Conservación y Restauración,221,6
+221066,Escultura,221,6
+221076,Grabado,221,6
+221086,Pintura,221,6
+221996,Otras Carreras de Arte,221,6
+222013,Encuadernación,222,3
+222014,Publicidad y Medios Digitales,222,4
+222015,Animación Digital,222,5
+222016,Arte y Diseño Gráfico Empresarial,222,6
+222023,Serigrafía,222,3
+222025,Artes Gráficas,222,5
+222026,Arte y Diseño Empresarial,222,6
+222035,Artes Gráficas y Publicitarias,222,5
+222036,Dirección de Artes Gráficas y Publicitarias,222,6
+222045,Artes y Ciencias Publicitarias,222,5
+222046,Diseño Digital Publicitario,222,6
+222055,Ciencias Publicitarias,222,5
+222056,Diseño Gráfico,222,6
+222065,Dirección de Artes Gráficos y Publicitarias,222,5
+222066,Diseño Gráfico Publicitario,222,6
+222075,Dirección y Diseño Gráfico,222,5
+222076,Diseño Industrial,222,6
+222085,Dirección y Diseño Publicitario,222,5
+222086,Diseño Industrial y Arquitectónico,222,6
+222095,Diseño de Interiores,222,5
+222096,Diseño Profesional de Interiores,222,6
+222105,Diseño de Producto,222,5
+222106,Diseño Profesional Gráfico,222,6
+222115,Diseño Escenográfico,222,5
+222116,Diseño y Gestión en Moda,222,6
+222125,Diseño Gráfico,222,5
+222135,Diseño Gráfico y Publicidad Digital,222,5
+222145,Diseño Gráfico y Publicitario,222,5
+222155,Diseño Industrial,222,5
+222165,Diseño Publicitario,222,5
+222175,Diseño Técnico,222,5
+222185,Diseño Web y Multimedia,222,5
+222195,Producción de Impresos,222,5
+222205,Publicidad,222,5
+222996,Otras Carreras de Diseño,222,6
+223015,Danza,223,5
+223016,Danza,223,6
+223025,Interprete en Danza Clásica,223,5
+224015,Composición,224,5
+224016,Artista Músico,224,6
+224025,Dirección Musical,224,5
+224026,Interpretación Musical,224,6
+224035,Interpretación Musical,224,5
+224036,Música,224,6
+224045,Música,224,5
+224046,Música con Mención en Canto,224,6
+224055,Música y Tecnología de Sonido,224,5
+224056,Música con Mención en Composición Musical,224,6
+224065,Musicología,224,5
+224066,Música con Mención en Composición y Etnomusicólogo,224,6
+224075,Producción Musical,224,5
+224076,"Música con Mención en Intérprete, Productor y Director",224,6
+224086,Música con Mención en Musicología,224,6
+224096,Música y Tecnología de Sonido,224,6
+224106,Producción Musical,224,6
+225015,Actuación,225,5
+225016,Teatro con Mención en Actuación,225,6
+225025,Arte Dramático,225,5
+225026,Teatro con Mención en Diseño Escenográfico,225,6
+225035,Teatro y Televisión,225,5
+226013,Artesanía en Cerámica,226,3
+226014,Joyería,226,4
+226023,Artesanía en Cuero y Pieles,226,3
+226033,Artesanía en Madera,226,3
+226043,Artesanía en Metales,226,3
+226053,Artesanía en Piedra Tallada,226,3
+226063,Artesanía en Textiles,226,3
+226073,Bisutería,226,3
+226083,Decoración de Eventos,226,3
+226093,Pintura,226,3
+311013,Asistente Adulto Mayor,311,3
+311015,Promoción Comunal,311,5
+311016,Sociología,311,6
+311023,Asistente de Niños,311,3
+311025,Relaciones Institucionales,311,5
+311033,Cuidado de Niños,311,3
+311035,Relaciones Públicas,311,5
+311043,Cuidado de Niños y Ancianos,311,3
+311045,Tecnología Penitenciaria,311,5
+312016,Gerontología Social,312,6
+312026,Servicio Social,312,6
+312036,Trabajo Social,312,6
+313014,PsicoterapiaPsicoanalítica,313,4
+313015,Terapia Psicoanalítica,313,5
+313016,Psicología,313,6
+313026,Psicología del Consumidor,313,6
+313036,Psicología Humana,313,6
+313046,Psicología Organizacional,313,6
+321014,Producción Radial y Televisiva,321,4
+321015,Ciencias de la Comunicación,321,5
+321016,Ciencia y Tecnología de la Comunicación,321,6
+321025,Comunicación Audiovisual,321,5
+321026,Ciencias de la Comunicación,321,6
+321035,Comunicación Audiovisual Multimedia,321,5
+321036,Ciencias de la Comunicación Social,321,6
+321045,Comunicación Escénica,321,5
+321046,Ciencias de la Comunicación y Publicidad,321,6
+321055,Comunicación Integral,321,5
+321056,Comunicación Audiovisual,321,6
+321065,Comunicación Social,321,5
+321066,Comunicación Audiovisual y Medios Interactivos,321,6
+321075,Dirección y Guionización,321,5
+321076,Comunicación e Idioma Inglés,321,6
+321085,Dirección y Producción en Radio,321,5
+321086,Comunicación e Imagen Empresarial,321,6
+321095,"Dirección, Realización de Cine y TV",321,5
+321096,Comunicación Para el Desarrollo,321,6
+321105,Producción de Espectáculos,321,5
+321106,Comunicación y Marketing,321,6
+321115,Producción de Programas de Televisión,321,5
+321116,Comunicación y Periodismo,321,6
+321125,Producción de Radio y Televisión,321,5
+321126,Comunicación y Publicidad,321,6
+321136,Comunicaciones,321,6
+322013,Locución y Comunicación de Radio y TV,322,3
+322014,Locución y Comunicación de Radio y Televisión,322,4
+322015,"Locución, Comunicación Radial y Televisiva",322,5
+322016,Multimedia y Fotografía Publicitaria,322,6
+322023,Teleoperadorde Call Center,322,3
+322025,Operaciones de Comunicaciones,322,5
+322026,Periodismo,322,6
+322035,Periodismo,322,5
+322036,Periodismo Escrito,322,6
+322045,Periodismo Audiovisual,322,5
+322046,Periodismo Radial,322,6
+322055,Periodismo Deportivo,322,5
+322056,Periodismo Televisivo,322,6
+322065,Periodismo Radial y Televisivo,322,5
+322066,"Producción de Radio, Cine y Televisión",322,6
+322075,Reporterismo,322,5
+322076,Publicidad,322,6
+322086,Publicidad y Multimedia,322,6
+323014,Operación de Equipos de Grabación y Mezcla,323,4
+323015,Audiovisual Multimedia,323,5
+323024,Operación de Equipos de Radio y Televisión,323,4
+323025,Cámara y Edición Creativa,323,5
+323034,Operación de Sistemas de Difusión Sonora,323,4
+323035,Fotografía,323,5
+331015,Abastecimiento,331,5
+331016,Administración,331,6
+331025,Administración,331,5
+331026,Administración de Banca y Finanzas,331,6
+331035,Administración Bancaria,331,5
+331036,Administración de Empresas,331,6
+331045,Administración Bancaria por Competencias,331,5
+331046,Administración de Negocios,331,6
+331055,Administración Bancaria y Financiera,331,5
+331056,Administración de Negocios Turísticos,331,6
+331065,Administración de Aeropuertos,331,5
+331066,Administración de Servicios,331,6
+331075,Administración de Agencia de Viajes,331,5
+331076,Administración en Salud,331,6
+331085,Administración de Banca y Finanzas,331,5
+331086,Administración y Emprendimiento,331,6
+331095,Administración de Empresas,331,5
+331096,Administración y Finanzas,331,6
+331105,Administración de Empresas de Transportes,331,5
+331106,Administración y Gerencia,331,6
+331115,Administración de Negocios,331,5
+331116,Administración y Gestión Empresarial,331,6
+331125,Administración de Negocios y Ventas,331,5
+331126,Administración y Recursos Humanos,331,6
+331135,Administración de Seguros,331,5
+331136,Administración y Sistemas,331,6
+331145,Administración Ejecutiva,331,5
+331146,Ciencias Administrativas,331,6
+331155,Administración Industrial,331,5
+331156,Ciencias Empresariales,331,6
+331165,Administración Logística,331,5
+331166,Ingeniería Administrativa,331,6
+331175,Administración Municipal,331,5
+331176,Ingeniería Comercial,331,6
+331185,Administración y Gestión Comercial,331,5
+331186,Ingeniería Comercial y Financiera,331,6
+331195,Administración y Gestión Empresarial,331,5
+331196,Ingeniería de Negocios,331,6
+331205,Administración y Finanzas,331,5
+331206,Ingeniería Empresarial,331,6
+331215,Dirección de Empresas,331,5
+331216,Ingeniería Empresarial y de Sistemas,331,6
+331225,Dirección de Empresas y Finanzas,331,5
+331226,Ingeniería en Gestión Empresarial,331,6
+331235,Gerencia,331,5
+331245,Gestión Comercial,331,5
+331255,Gestión del Emprendimiento,331,5
+331265,Gestión y Administración de Negocios,331,5
+331275,Organización y Administración de Empresas,331,5
+332013,Asistencia de Panadería y Pastelería,332,3
+332014,Administración de Hostelería,332,4
+332015,Administración de Empresas Turísticas,332,5
+332016,Administración de Empresas Turísticas,332,6
+332023,Asistencia en Cocina,332,3
+332024,Administración de Hoteles,332,4
+332025,Administración de Empresas Turísticas y Hoteleras,332,5
+332026,Administración de Negocios Turísticos,332,6
+332033,Barman,332,3
+332034,Administración de Restaurantes,332,4
+332035,Administración de Hostelería,332,5
+332036,Administración de Negocios Turísticos y Hoteleros,332,6
+332043,Cocina (Alta Cocina),332,3
+332044,Administración Turística,332,4
+332045,Administración de Hoteles y Restaurantes,332,5
+332046,Administración de Servicios Turísticos,332,6
+332053,Cocina y Repostería,332,3
+332054,Aviación Comercial,332,4
+332055,"Administración de Hoteles, Restaurantes y Afines",332,5
+332056,Administración deTurismo Sostenible y Hotelería,332,6
+332063,Recepción Hostelera,332,3
+332064,Bar y Cocteleria,332,4
+332065,Administración de Servicios de Hostelería,332,5
+332066,Administración en Turismo,332,6
+332073,Repostería,332,3
+332074,Cocina,332,4
+332075,Administración de Negocios Internacionales de Turismo,332,5
+332076,Administración en Turismo y Hotelería,332,6
+332083,Servicio de Mesa,332,3
+332084,Cocina y Repostería,332,4
+332085,Administración Hotelera,332,5
+332086,Administración en Turismo y Negocios,332,6
+332093,Servicios Básicos de Hostelería,332,3
+332094,Hostelería,332,4
+332095,Administración y Gerencia en Hotelería Internacional,332,5
+332096,"Administración en Turismo, Hotelería y Gastronomía",332,6
+332103,Servicios Básicos de Recepción Hostelera,332,3
+332104,Pastelería,332,4
+332105,Cocina,332,5
+332106,Administración Hotelera,332,6
+332113,Servicios Básicos de Turismo e Idiomas,332,3
+332114,Pastelería y Panadería,332,4
+332115,Ecoturismo y Gestión Ambiental,332,5
+332116,Administración Hotelera y de Servicios,332,6
+332123,Servicios Hosteleros,332,3
+332124,Pastelería y Turismo,332,4
+332125,Gastronomía y Arte Culinario,332,5
+332126,Administración Hotelera y Ecoturismo,332,6
+332133,Técnicas de Recepción Hostelera,332,3
+332134,Servicio de Restaurante y Bar,332,4
+332135,Hostelería,332,5
+332136,Administración Turística,332,6
+332145,Hoteles yRestaurantes,332,5
+332146,Administración Turística Hotelera,332,6
+332155,Pastelería,332,5
+332156,"Administración Turística, Hotelera y Gastronómica",332,6
+332165,Servicios Hoteleros y Cocina,332,5
+332166,Arte Culinario,332,6
+332175,Turismo y Hotelería,332,5
+332176,Ecoturismo,332,6
+332186,Gastronomía,332,6
+332196,Gastronomía y Arte Culinario,332,6
+332206,Gastronomía y Gestión de Restaurantes,332,6
+332216,"Gastronomía, Arte Culinario y Gestión de Restaurantes",332,6
+332226,"Gerencia en Hotelería, Turismo y Gastronomía",332,6
+332236,Gerencia en Servicios Turísticos y Hoteleros,332,6
+332246,Gestión en Hotelería y Turismo,332,6
+332256,Hotelería y Administración,332,6
+332266,Ingeniería Ecoturismo,332,6
+332276,Turismo,332,6
+332286,Turismo- Conducción de Grupos,332,6
+332296,Turismo- Gestión Turística y Medio Ambiente,332,6
+332306,Turismo Sostenible,332,6
+332316,Turismo Sostenible y Hotelería,332,6
+332326,Turismo y Administración,332,6
+332336,Turismo y Hotelería,332,6
+332346,Turismo y Negocios,332,6
+332356,"Turismo, Hotelería y Gastronomía",332,6
+332366,"Turismo, Hotelería y Gestión Cultural Administración Hotelera y Turismo",332,6
+333013,Venta al Detalle en Tienda,333,3
+333015,Marketing,333,5
+333016,Administración y Marketing,333,6
+333025,Marketing Empresarial,333,5
+333026,Administración y Marketing Estratégico,333,6
+333035,Marketing Integral,333,5
+333036,Marketing,333,6
+333045,Marketing Visual,333,5
+333046,Marketing Empresarial,333,6
+333055,Marketing y Publicidad,333,5
+333056,Marketing y Administración,333,6
+333065,Marketing y Ventas,333,5
+333066,Marketing y Dirección de Empresas,333,6
+333075,Mercadotecnia,333,5
+333076,Marketing y Gestión Comercial,333,6
+333085,Ventas,333,5
+333086,Marketing y Negocios Globales,333,6
+333096,Marketing y Negocios Internacionales,333,6
+333106,Marketing y Publicidad,333,6
+334016,Administración y Agronegocios,334,6
+334026,Ingeniería de Negocios Agroforestales,334,6
+334036,Ingeniería en Agronegocios,334,6
+335014,Comercio Internacional,335,4
+335015,Administración de Negocios Internacionales,335,5
+335016,Administración de Negocios Globales,335,6
+335024,Comercio y Producción,335,4
+335025,Comercio Exterior,335,5
+335026,Administración de Negocios Internacionales,335,6
+335034,Negocios - Comercio Internacional,335,4
+335035,Comercio Exterior Área Artesanía del Vestir,335,5
+335036,Comercio Exterior,335,6
+335044,Negocios - Comercio y Producción,335,4
+335045,Comercio Exterior Área Finanzas,335,5
+335046,Comercio Exterior y Marketing Internacional,335,6
+335055,Comercio Exterior Área Marketing,335,5
+335056,Comercio y Negocios Internacionales,335,6
+335065,Logística del ComercioInternacional,335,5
+335066,Gestión,335,6
+335076,Gestión de Puertos y Aduanas,335,6
+335086,Ingeniería Comercial y NegociosInternacionales,335,6
+335096,Logística Internacional,335,6
+335106,Negocios Globales,335,6
+335116,Negocios Internacionales,335,6
+335126,Negocios Internacionales y Turismo,335,6
+335136,Relaciones Internacionales,335,6
+335146,Relaciones Internacionales y Negociaciones,335,6
+336016,Administración Pública,336,6
+336026,Administración Pública y Gestión Social,336,6
+336036,Gestión de Negocios,336,6
+336046,Gestión Pública y Desarrollo Social,336,6
+337013,Secretariado Comercial,337,3
+337015,Asistente Ejecutivo,337,5
+337023,Secretariado Computarizado,337,3
+337025,Secretariado Ejecutivo,337,5
+337033,Secretariado Ejecutivo Computarizado,337,3
+337035,Secretariado Ejecutivo Bilingüe,337,5
+337045,Secretariado Ejecutivo Computarizado,337,5
+337055,Secretariado Ejecutivo y Gerencial,337,5
+337065,SecretariadoInternacional Ejecutivo,337,5
+339013,Asistente Administrativo Bilingüe,339,3
+339014,Comercio,339,4
+339015,Administración de Recursos Humanos,339,5
+339016,Administración y Gestión Deportiva,339,6
+339023,Asistente Administrativo Castellano,339,3
+339024,Logística y Almacenes,339,4
+339025,Administración de Servicios de Postales,339,5
+339026,Administración y Negocios del Deporte,339,6
+339035,Administrativo,339,5
+339036,Cooperativismo,339,6
+339045,Agencia de Desarrollo Integral,339,5
+339046,Gestión de Negocios,339,6
+339055,Comercio,339,5
+339056,Gestión de Recursos Humanos,339,6
+339065,Moneda Extranjera,339,5
+339066,Gestión y Alta Dirección,339,6
+339075,Planificación Empresarial,339,5
+339076,Relaciones Industriales,339,6
+339085,Planificación y Gestión de Desarrollo,339,5
+339095,Supervisión de Operaciones,339,5
+339996,Otras Carreras de Administración,339,6
+341015,Análisis Económico,341,5
+341016,Ciencias Económicas,341,6
+341025,Economía Empresarial,341,5
+341026,Economía,341,6
+341035,Elaboración y Evaluación de Proyecto,341,5
+341036,Economía Agraria,341,6
+341046,Economía Gerencial,341,6
+341056,Economía Internacional,341,6
+341066,Economía Pública,341,6
+341076,Economía y Finanzas,341,6
+341086,Economía y Gestión Ambiental,341,6
+341096,Economía y Microfinanzas,341,6
+341106,Economía y Negocios Internacionales,341,6
+341116,Ingeniería Económica,341,6
+341126,Ingeniería Económica y de Negocios,341,6
+342014,Contabilidad,342,4
+342015,Banca y Finanzas,342,5
+342016,Auditoria Empresarial y del Sector Público,342,6
+342025,Contabilidad,342,5
+342026,Banca y Seguros,342,6
+342035,Contabilidad Computarizada,342,5
+342036,Ciencias Contables,342,6
+342045,Contabilidad y Finanzas,342,5
+342046,Ciencias Contables y Financieras,342,6
+342055,Crédito Sectorial,342,5
+342056,Contabilidad,342,6
+342065,Créditos,342,5
+342066,Contabilidad Administrativay Auditoria,342,6
+342075,Finanzas,342,5
+342076,Contabilidad Auditoría y Finanzas,342,6
+342085,Operaciones Bancarias y Financieras,342,5
+342086,Contabilidad y Administración,342,6
+342096,Contabilidad y Auditoria,342,6
+342106,Contabilidad y Finanzas,342,6
+342116,Contabilidad y Tributación,342,6
+342126,Finanzas,342,6
+342136,Gestión Tributaria,342,6
+351016,Derecho,351,6
+351026,Derecho Corporativo,351,6
+351036,Derecho Empresarial,351,6
+351046,Derecho del Mar y Servicios Aduaneros,351,6
+351056,Derecho y Ciencias Políticas,351,6
+352015,Análisis Político,352,5
+352016,Ciencia Política,352,6
+352026,Ciencia Política y Gobierno,352,6
+411016,Biología,411,6
+411026,Biología en Acuicultura,411,6
+411036,Biología Marina y Econegocios,411,6
+411046,Biología y Microbiología,411,6
+411056,Biotecnología,411,6
+411066,Botánica,411,6
+411076,Ciencias Biológicas,411,6
+411086,Genética y Biotecnología,411,6
+411096,Ingeniería Biotecnológica,411,6
+411106,Microbiología,411,6
+411116,Microbiología y Parasitología,411,6
+412015,Zootecnia,412,5
+412016,Ingeniería Zootecnia,412,6
+412026,Zootecnia,412,6
+413015,Hidrografía y Navegación,413,5
+414015,Meteorología,414,5
+421016,Ciencias Físico Matemática,421,6
+421026,Física,421,6
+421036,Física Aplicada,421,6
+421046,Ingeniería Física,421,6
+422013,ProcesosQuímicos,422,3
+422015,Análisis Químico,422,5
+422016,Ingeniería de Procesos Químicos y Metalúrgicos,422,6
+422025,Química Industrial,422,5
+422026,Ingeniería Química,422,6
+422035,Tecnología de Análisis Químico,422,5
+422036,Química,422,6
+423016,Geología,423,6
+423026,Geología Geotecnia,423,6
+423036,Ingeniería de Geología- Geotecnia,423,6
+423046,Ingeniería Geofísica,423,6
+423056,Ingeniería Geológica,423,6
+431016,Matemática,431,6
+431026,Matemática Aplicada,431,6
+431036,Matemática e Informática,431,6
+432016,Estadística,432,6
+432026,Estadística e Informática,432,6
+432036,Ingeniería Estadística,432,6
+432046,Ingeniería Estadística e Informática,432,6
+433016,Investigación Operativa,433,6
+441013,Asistente de Computación,441,3
+441014,Administración de Base de Datos,441,4
+441015,Administración de Centro de Cómputo,441,5
+441016,Ciencias de la Computación,441,6
+441023,Asistente en elManejo y Operación de Computadoras,441,3
+441024,Administración de Redes,441,4
+441025,Administración Informática de Empresas,441,5
+441026,Ciencias de la Información,441,6
+441033,Computación,441,3
+441034,Computación,441,4
+441035,Administración y Sistemas,441,5
+441036,Computación Científica,441,6
+441043,Digitación,441,3
+441044,Mantenimiento de Equipo de Cómputo,441,4
+441045,Análisis de Sistemas,441,5
+441046,Computación e Informática,441,6
+441053,Ensamblaje y Mantenimiento de Computadoras,441,3
+441054,Operación de Computadoras,441,4
+441055,Análisis de Sistemas y Modelación de Base de Datos,441,5
+441056,Informática,441,6
+441063,Instalación y Mantenimiento de Computadoras,441,3
+441065,Analista,441,5
+441073,Mantenimiento de Equipo de Cómputo,441,3
+441075,Analista Programador,441,5
+441083,Mantenimiento de Equipos de Cómputo y Administración de Redes,441,3
+441085,Computación,441,5
+441093,Ofimática,441,3
+441095,Computación e Informática,441,5
+441103,Operación de Computadoras,441,3
+441105,Computación y Administración de Sistemas,441,5
+441113,Operación de Programas de Computación e Informática,441,3
+441115,Computación y Sistemas,441,5
+441125,Informática,441,5
+441135,Microcomputación e Informática,441,5
+441145,Procesamiento de Datos,441,5
+441155,Programación,441,5
+441165,Redes y Comunicación deDatos,441,5
+441175,Redes y Comunicaciones,441,5
+441185,Redes y Seguridad Informática,441,5
+441195,Reparación de Computadoras,441,5
+441205,Reparación de Computadoras y Redes,441,5
+441215,Seguridad Informática,441,5
+441225,Sistemas de Información,441,5
+441235,Sistemas Informáticos para la Productividad,441,5
+441245,Software y Sistemas,441,5
+441255,Soporte de Sistemas y Redes,441,5
+511014,Técnicas de Ingeniería de Sistemas de Información,511,4
+511016,Ingeniería de Seguridad y Auditoría Informática,511,6
+511026,Ingeniería de Sistemas,511,6
+511036,Ingeniería de Sistemas de Información,511,6
+511046,Ingeniería de Sistemas de Información y Gestión,511,6
+511056,Ingeniería de Sistemas e Informática,511,6
+511066,Ingeniería de Sistemas Empresariales,511,6
+511076,Ingeniería de Sistemas y Computación,511,6
+511086,Ingeniería de Sistemas y Gestión de Tecnologías de la Información,511,6
+511096,Ingeniería de Sistemas y Seguridad Informática,511,6
+511106,Ingeniería de Sistemas y Telemática,511,6
+511116,Ingeniería de Sistemas y Tecnológicas,511,6
+511126,Ingeniería de Software,511,6
+511136,Ingeniería de Tecnologías de laInformación y Sistemas,511,6
+511146,Ingeniería en Tecnologías y Sistemas de Información,511,6
+511156,Ingeniería Informática,511,6
+511166,Ingeniería Informática y Estadística,511,6
+512015,Controlde Tránsito Aéreo,512,5
+512016,Ingeniería de Redes y Comunicaciones,512,6
+512025,Sistemas de Telecomunicaciones,512,5
+512026,Ingeniería de Tecnologías de Información y Comunicación,512,6
+512035,Técnica en Ingeniería de Sonidos,512,5
+512036,Ingeniería de Tecnologías de Información y Sistemas,512,6
+512045,Técnica en Ingeniería de Telecomunicaciones,512,5
+512046,Ingeniería de Telecomunicaciones,512,6
+512055,Técnica en Ingeniería de Telemática,512,5
+512056,Ingeniería en Telecomunicaciones yRedes,512,6
+512065,Telecomunicaciones,512,5
+512066,Ingeniería en Telecomunicaciones y Telemática,512,6
+512075,Telemática,512,5
+512076,Ingeniería en Teleinformática,512,6
+521015,Procesos Industriales y de Sistemas,521,5
+521016,Ingeniería Ambiental y de Prevención de Riesgos,521,6
+521025,Salud y Seguridad Ocupacional,521,5
+521026,Ingeniería de Higiene y Seguridad Industrial,521,6
+521035,Tecnología de la Producción,521,5
+521036,Ingeniería de la Producción y Administración,521,6
+521046,Ingeniería Industrial,521,6
+521056,Ingeniería Industrial y Comercial,521,6
+521066,Ingeniería Industrial y de Gestión Empresarial,521,6
+521076,Ingeniería Industrial y Sistemas,521,6
+522013,Conservación y Semiconservación de Pescados y Mariscos,522,3
+522014,Confitería Industrial,522,4
+522015,Gastronomía Industrial,522,5
+522016,Industrias Alimentarias,522,6
+522023,Ganadería y Transformaciones Lácteas,522,3
+522024,"Conservación de Carnes, Productos Hidrobiológicos y Vegetales",522,4
+522025,Industrias Alimentarias,522,5
+522026,Ingeniería Alimentaria,522,6
+522033,Matarife y Preparaciones Cárnicas Básicas,522,3
+522034,"Extracción deAceites, Grasas y Azúcar",522,4
+522035,Industrias Alimentarias lácteas,522,5
+522036,Ingeniería de Industrias Alimentarias,522,6
+522043,Panadería y Pastelería,522,3
+522044,Industrias Lácteas,522,4
+522053,Procesamiento de Frutas,522,3
+522054,Molinería y Procesamiento de Granos y Tubérculos,522,4
+522063,Procesamiento de Lácteos,522,3
+522064,Panadería y Pastelería Industrial,522,4
+522074,Panificación,522,4
+522084,"Producción Industrial de Vinos, Piscos y Otros Productos afines",522,4
+523013,"Viticultura y Elaboración de Vinos, Pisco y Otros Productos Afines",523,3
+523015,Agroindustrias,523,5
+523016,Agroindustrias,523,6
+523025,Olivicultura y Elaiotecnia,523,5
+523026,Ingeniería Agroindustrial,523,6
+523035,Viticulturay Enología,523,5
+523036,Ingeniería Agroindustrial y Agronegocios,523,6
+523046,Ingeniería Agroindustrial y Comercio Exterior,523,6
+523056,Ingeniería Agroindustrial y de Biocomercio,523,6
+524013,Asistencia enElectricidad,524,3
+524014,Electricidad,524,4
+524015,Electricidad,524,5
+524016,Ingeniería de Sistemas de Energía,524,6
+524023,Electricidad,524,3
+524024,Electricidad Industrial,524,4
+524025,Electricidad Industrial,524,5
+524026,Ingeniería Eléctrica,524,6
+524033,Electricidad Automotriz,524,3
+524034,Instalaciones Electrotécnicas,524,4
+524035,Electrotécnia Industrial,524,5
+524036,Ingeniería Eléctrica y de Potencia,524,6
+524043,Instalaciones Eléctricas,524,3
+524045,Técnicas deIngeniería Eléctrica,524,5
+524046,Ingeniería Eléctrica y Electrónica,524,6
+524053,Instalaciones Eléctricas y Electrónicas,524,3
+524056,Ingeniería en Energía,524,6
+524063,Instalaciones Electrotécnicas,524,3
+524066,Ingeniería en Energía Renovable y Gestión Ambiental,524,6
+524073,Instalaciones Internas y Artefactos Electrodomésticos,524,3
+524076,Ingeniería Energética,524,6
+525013,Asistencia de Electrónica,525,3
+525014,Electrónica,525,4
+525015,Electrónica,525,5
+525016,Ingeniería Electrónica,525,6
+525023,Electrónica,525,3
+525024,Electrónica de Consumo,525,4
+525025,Electrónica Aeronáutica,525,5
+525026,Ingeniería Electrónica- Biomédica,525,6
+525033,Equipos Electrónicos de Audio,525,3
+525034,Equipos Electrónicos de Consumo,525,4
+525035,Electrónica de Microcomputadoras,525,5
+525036,Ingeniería Electrónica- Mecatrónica,525,6
+525043,Equipos Electrónicos de Consumo,525,3
+525044,Refrigeración y Aire Acondicionado,525,4
+525045,Electrónica de Sistemas Industriales,525,5
+525046,Ingeniería Electrónica- Telecomunicaciones,525,6
+525053,Reparación deEquipos Electrónicos de Consumo,525,3
+525055,Electrónica Digital,525,5
+525056,Ingeniería Electrónica y Automatización,525,6
+525065,Electrónica Industrial,525,5
+525066,Ingeniería Electrónica y Telecomunicaciones,525,6
+525075,Electrónica y Automatización Industrial,525,5
+525085,Electrónica de Sistemas Computarizados,525,5
+525095,Sistemas Automáticos Programables,525,5
+525105,Técnicas de IngenieríaElectrónica,525,5
+526013,Carpintería Metálica,526,3
+526014,Construcciones Metálicas,526,4
+526015,Aeronáutica,526,5
+526016,Ingeniería de Materiales,526,6
+526023,Construcciones Metálicas,526,3
+526024,Electromecánica,526,4
+526025,Autotrónica,526,5
+526026,Ingeniería Electromecánica,526,6
+526033,Mantenimiento de Vehículos,526,3
+526034,Mantenimiento de Equipo Pesado,526,4
+526035,Aviónica,526,5
+526036,Ingeniería Mecánica,526,6
+526043,Mantenimiento de Vehículos Motorizados,526,3
+526044,Matricería,526,4
+526045,Mantenimiento de Aeronaves,526,5
+526046,Ingeniería Mecánica de Fluidos,526,6
+526053,Mecánica Automotriz,526,3
+526054,Mecánica Automotriz,526,4
+526055,Mantenimiento de Estructuras,526,5
+526056,Ingeniería Mecánica Eléctrica,526,6
+526063,Mecánica de Banco,526,3
+526064,Mecánica de Equipos Pesados,526,4
+526065,Mantenimiento de Maquinaria,526,5
+526066,Ingeniería Mecánica Eléctrica y Mecatrónica,526,6
+526073,Mecánica de Motores Menores,526,3
+526074,Mecánica de Planta,526,4
+526075,Mantenimiento de Maquinaria de Planta,526,5
+526076,Ingeniería Mecatrónica,526,6
+526083,Mecánica de Motos,526,3
+526084,Mecánica de Producción,526,4
+526085,Mantenimiento de Maquinaria Pesada,526,5
+526093,Mecánico Tornero,526,3
+526095,"Mantenimiento de Motores, Hélices y Unidad de Potencia Auxiliar",526,5
+526103,Planchado y Pintura,526,3
+526105,Mantenimiento de Vehículos Motorizados y Equipos Contra Incendio,526,5
+526113,Rectificaciones Mecánicas,526,3
+526115,Mantenimiento y Operación de Armamento y Equipos Auxiliares,526,5
+526123,Reparación de Motocicletas,526,3
+526125,Maquinas Navales,526,5
+526133,Soldadura,526,3
+526135,Mecánica Aeronáutica,526,5
+526145,Mecánica Aeronaval,526,5
+526155,Mecánica Agrícola,526,5
+526165,Mecánica Automotriz,526,5
+526175,Mecánica de Mantenimiento,526,5
+526185,Mecánica de Producción,526,5
+526195,Mecánica Hidráulica,526,5
+526205,Motores,526,5
+526215,"Operación de Máquinas, Herramientas y Control Numérico",526,5
+526225,Técnica en Ingeniería Mecánica de Mantenimiento,526,5
+526235,Técnica en Ingeniería Mecánica de Producción,526,5
+526245,Tecnología Mecánica Eléctrica,526,5
+527014,Concentración de Minerales por Separación Física,527,4
+527015,Concentración de Minerales,527,5
+527016,Ingeniería de Minas,527,6
+527024,Explotación de Minas,527,4
+527025,Explotación Minera,527,5
+527026,Ingeniería de Minas y Maquinaria Pesada,527,6
+527034,Operaciones de Perforación,527,4
+527035,Geología de Minas,527,5
+527036,Ingeniería de Petróleo,527,6
+527044,Procesamiento de Minerales,527,4
+527045,Laboratorio Químico y Metalúrgico,527,5
+527046,Ingeniería de Petróleo y Gas Natural,527,6
+527054,Secciones Delgadas y Pulidas,527,4
+527055,Metalurgia,527,5
+527056,Ingeniería Metalúrgica,527,6
+527064,Seguridad Minera e Industrial,527,4
+527065,Modelería y Fundición,527,5
+527066,Ingeniería Metalúrgicay de Materiales,527,6
+527075,ProcesosQuímicos y Metalúrgicos,527,5
+527076,Ingeniería Petroquímica,527,6
+528013,Bordados a Maquina,528,3
+528014,Confección de Calzado,528,4
+528015,Diseño de Modas,528,5
+528016,Ingeniería Textil,528,6
+528023,Bordados Computarizados y Manuales,528,3
+528024,Confección Industrial,528,4
+528025,Diseño de Modas y Modistería Industrial,528,5
+528026,Ingeniería Textil y Confecciones,528,6
+528033,Confección de Calzado,528,3
+528034,Confección Textil,528,4
+528035,Diseño Textil,528,5
+528043,Confección Industrial,528,3
+528044,Curtiembre y Peletería,528,4
+528045,Diseño y Producción de Textiles,528,5
+528053,Confección Textil,528,3
+528054,Industria del calzado,528,4
+528055,Gestión de Modas y Confecciones,528,5
+528063,Cuero y Calzado,528,3
+528064,Industria del Vestido,528,4
+528065,Gestión de la Producción en la Industria de las Confecciones,528,5
+528073,Estampado Computarizado y Manual,528,3
+528074,Sastrería,528,4
+528075,Gestión Textil,528,5
+528083,Estampado Textil,528,3
+528084,Tejido a Mano,528,4
+528085,Industria del Cuero,528,5
+528093,Hilandería Industrial,528,3
+528094,Tejido a Mano y a Máquina de Tejer,528,4
+528095,Industria del Vestido,528,5
+528103,Industria del Calzado,528,3
+528104,Tejido a Máquina,528,4
+528105,Producción Textil,528,5
+528113,Patronaje Industrial,528,3
+528114,Tintorería y Acabado Textil,528,4
+528123,Sastrería,528,3
+528133,Tapicería,528,3
+528143,Tejido a Mano,528,3
+528153,Tejido a Máquina,528,3
+528163,Tejido a Telar,528,3
+528173,Tejidos,528,3
+528183,Tejidos yBordados,528,3
+528193,Textil,528,3
+528203,Tintorería y Estampado Industrial,528,3
+528213,Zapatería,528,3
+531013,Vidriería,531,3
+531014,Administración de la Construcción,531,4
+531015,Aerofotografía,531,5
+531016,Ingeniería Civil,531,6
+531024,Albañilería,531,4
+531025,Construcción Civil,531,5
+531026,Ingeniería Civil y Ambiental,531,6
+531034,Gasfitería,531,4
+531035,Dibujo en Construcción Civil,531,5
+531036,Ingeniería Civil y Desarrollo Inmobiliario,531,6
+531044,Topografía,531,4
+531045,Edificaciones,531,5
+531046,Ingeniería Civil y Diseño Arquitectónico,531,6
+531054,Topografía Civil y Minera,531,4
+531055,Geomática,531,5
+531056,Ingeniería Topográfica y Agrimensura,531,6
+531065,Gestión de la Producción en la Industria de la Construcción,531,5
+531075,"Laboratorio de Suelos, Concreto y Asfalto",531,5
+531085,"Suelos, Concreto y Asfalto",531,5
+531095,Topografía,531,5
+531105,Topografía Superficial y Minera,531,5
+532016,Ingeniería Sanitaria,532,6
+532026,Ingeniería Sanitaria y Ambiental,532,6
+533015,Arquitectura de Interiores,533,5
+533016,Arqueoarquitectura y Gestión Turística,533,6
+533026,Arquitectura,533,6
+533036,Arquitectura de Interiores,533,6
+533046,Arquitectura del Paisaje,533,6
+533056,Arquitectura y Diseño de Interiores,533,6
+533066,Arquitectura y Gestión de Proyectos,533,6
+533076,Arquitectura y Gestión de Territorios,533,6
+533086,Arquitectura y Territorio,533,6
+533096,Arquitectura y Urbanismo,533,6
+533106,Arquitectura y Urbanismo Ambiental,533,6
+533116,"Arquitectura, Urbanismo y Artes",533,6
+533126,"Arquitectura, Urbanismo y Territorio",533,6
+533136,Urbanismo,533,6
+534013,Mantenimiento Básico de Casa y Edificios,534,3
+534014,Mantenimiento Básico de Casa y Edificios,534,4
+534015,Conservación de BienesArqueológicos,534,5
+534025,Conservación y Restauración,534,5
+534035,Restauración de Monumentos Históricos y Bienes inmuebles,534,5
+535013,Carpintería,535,3
+535014,Carpintería,535,4
+535023,Carpintería Metal y Madera,535,3
+535024,Carpintería yEbanistería,535,4
+535033,Ebanistería,535,3
+535034,Ebanistería,535,4
+535043,Ebanistería y Tallados,535,3
+591013,Tripulación de Pesca,591,3
+591014,Navegacióny Pesca,591,4
+591015,Conducción de Embarcaciones de Pesca,591,5
+591016,Ingeniería de la Producción e Industrialización de Recursos Hidrobiológicos,591,6
+591025,Producción en Pesquería,591,5
+591026,Ingeniería Pesquera,591,6
+591035,Tecnología Pesquera,591,5
+591036,Pesquería,591,6
+592016,Ciencias Aeronáuticas,592,6
+592026,Ciencias Navales,592,6
+592036,Ingeniería Aeronáutica,592,6
+592046,Ingeniería de Navegación y Marina Mercante,592,6
+592056,Ingeniería del Transporte Marítimo y Gestión Logística Portuaria,592,6
+592066,Ingeniería Hidráulica,592,6
+592076,Ingeniería Marítima,592,6
+592086,Ingeniería Naval,592,6
+593016,Geografía,593,6
+593026,Geografía y Medio Ambiente,593,6
+593036,Ingeniería Geográfica,593,6
+593046,Ingeniería Geográfica y Ecológica,593,6
+594015,Manejo de Cuencas y Gestión Ambiental,594,5
+594016,Ciencia Tecnología y Ambiente,594,6
+594025,Medio Ambiente,594,5
+594026,Desarrollo Ambiental,594,6
+594035,Medio Ambiente y Recursos Naturales,594,5
+594036,Ecología,594,6
+594046,Gestión AmbientalEmpresarial,594,6
+594056,Ingeniería Ambiental,594,6
+594066,Ingeniería Ambiental y Recursos Naturales,594,6
+594076,Ingeniería de Recursos Naturales y Energías Renovables,594,6
+594086,Ingeniería de Medio Ambiente,594,6
+594096,Ingeniería en Ecología de Bosques Tropicales,594,6
+594106,Ingeniería en Ecoturismo,594,6
+594116,Ingeniería en Gestión Ambiental,594,6
+594126,Meteorología,594,6
+599016,Ingeniería Automotriz,599,6
+599026,Ingeniería Biomédica,599,6
+599036,Ingeniería de Diseño Gráfico,599,6
+599046,Ingeniería de Transportes,599,6
+611013,Agricultura de Costa,611,3
+611014,Avicultura y Crianza de Animales Menores,611,4
+611015,Administración de Negocios Agropecuarios,611,5
+611016,Agronomía,611,6
+611023,Agricultura de Sierra,611,3
+611024,Caficultura Orgánica,611,4
+611025,Administración Rural,611,5
+611026,Agronomía Tropical,611,6
+611033,Agricultura Orgánica,611,3
+611034,Jardinería y Floricultura,611,4
+611035,Agropecuaria,611,5
+611036,Ciencias Agrarias,611,6
+611043,Crianza de Animales Menores,611,3
+611045,Fruticultura,611,5
+611046,Ciencias Pecuarias,611,6
+611053,Cultivos Hidropónicos,611,3
+611055,Fruticultura y Olivicultura,611,5
+611056,Conservación de Suelos y Agua,611,6
+611063,Jardinería,611,3
+611065,Gestión de Recursos Hídricos,611,5
+611066,Ingeniería Agraria,611,6
+611073,Manejo de Ganado Vacuno,611,3
+611075,Horticultura,611,5
+611076,Ingeniería Agrícola,611,6
+611083,Manejo de Instalaciones Hortofrutícolas,611,3
+611085,Jardinería y Paisajismo,611,5
+611086,Ingeniería Agrícola y Forestal,611,6
+611093,Manejo de Maquinarias y Equipos Agrícolas,611,3
+611095,ProducciónAgraria,611,5
+611096,Ingeniería Agroecológica y Desarrollo Rural,611,6
+611103,Producción Agropecuaria,611,3
+611105,Producción Agrícola,611,5
+611106,Ingeniería Agrónoma,611,6
+611115,Producción Agropecuaria,611,5
+611116,Ingeniería Agronómica,611,6
+611125,Producción Pecuaria,611,5
+611126,Ingeniería Agronómica Tropical,611,6
+611135,Producción y Gestión Pecuaria,611,5
+611136,Ingeniería Agropecuaria,611,6
+611145,Riego Drenaje,611,5
+611146,Ingeniería de Negocios Agronómicos y Forestales,611,6
+611155,Tecnología Agrícola,611,5
+611156,Ingeniería en Ciencias Agrarias,611,6
+612013,Extracción y Transformación Primaria de Recursos Maderables en Selva,612,3
+612014,Conservación y Aprovechamiento Racional de Recursos Forestales,612,4
+612015,Administración de Recursos Forestales,612,5
+612016,Ciencias Forestales,612,6
+612025,Forestal,612,5
+612026,Ciencias Forestales y del Ambiente,612,6
+612035,Forestal (para zona de selva),612,5
+612036,Ingeniería Agroforestal,612,6
+612046,Ingeniería Agroforestal Acuícola,612,6
+612056,Ingeniería Forestal,612,6
+612066,Ingeniería Forestal y del Medio Ambiente,612,6
+613015,Acuicultura,613,5
+613016,Acuicultura,613,6
+613026,Ingeniería en Acuicultura,613,6
+621016,Medicina Veterinaria,621,6
+621026,Veterinaria y Zootecnia,621,6
+621036,Medicina Veterinaria yZootecnia,621,6
+711014,Alto Riesgo,711,4
+711015,Anestesiología,711,5
+711016,Medicina,711,6
+711025,Paramédico,711,5
+711026,Medicina Humana,711,6
+712015,Nutrición y Dietética,712,5
+712016,Bromatología y Nutrición,712,6
+712025,Nutrición yTecnología de los Alimentos,712,5
+712026,Ciencias de la Nutrición,712,6
+712036,Ciencias de los Alimentos,712,6
+712046,Nutrición,712,6
+712056,Nutrición Humana,712,6
+712066,"Nutrición, Salud y Técnicas Alimentarias",712,6
+712076,Nutrición y Dietética,712,6
+713015,Prótesis Dental,713,5
+713016,Estomatología,713,6
+713026,Odontología,713,6
+714013,Primeros Auxilios,714,3
+714015,Auxiliar de Enfermería,714,5
+714016,Enfermería,714,6
+714025,Cuidados Auxiliares de Enfermería,714,5
+714035,Enfermería Técnica,714,5
+714045,Inyectables y Primeros Auxilios,714,5
+715015,Fisioterapia y Rehabilitación,715,5
+715016,Laboratorio Clínico,715,6
+715025,Laboratorio Clínico,715,5
+715026,Laboratorio y Anatomía Patológica,715,6
+715035,Mantenimiento de Establecimientos de Salud,715,5
+715036,Optometría,715,6
+715045,Óptica,715,5
+715046,Radiología,715,6
+715055,Optometría,715,5
+715056,Tecnología Médica,715,6
+715065,Ortopedia,715,5
+715066,Terapia de Lenguaje,715,6
+715075,Radiología,715,5
+715076,Terapia Física,715,6
+715086,Terapia Física y Rehabilitación,715,6
+715096,Terapia Ocupacional,715,6
+716014,Farmacia,716,4
+716015,Farmacia,716,5
+716016,Ciencias Farmacéuticas y Bioquímica,716,6
+716026,Farmacia y Bioquímica,716,6
+716036,Toxicología,716,6
+717015,Obstetricia,717,5
+717016,Obstetricia,717,6
+717026,Obstetricia y Puericultura,717,6
+719013,Podología,719,3
+719016,Ciencias del Deporte,719,6
+719023,Reflexología,719,3
+811014,Guía de Turistas,811,4
+811015,Conducción en Turismo,811,5
+811025,Ecología Turística,811,5
+811035,Guía Oficial de Caminata,811,5
+811045,Guía Oficial de Montaña,811,5
+811055,Guía Oficial de Turismo,811,5
+811065,Información Turística,811,5
+811075,Operaciones de Viajes,811,5
+811085,Operaciones Hoteleras,811,5
+811095,Promoción de Turismo,811,5
+811105,Turismo,811,5
+811115,Viajes y Turismo,811,5
+812013,Cosmetología,812,3
+812014,Cosmetología,812,4
+812015,Cosmética Dermatológica,812,5
+812023,Cosmetología y Peluquería,812,3
+812024,Peluquería,812,4
+812033,Peluquería,812,3
+812043,Peluquería y Belleza Personal,812,3
+821013,Conducción de Vehículos Motorizados y Mecánica Automotriz,821,3
+821014,TransportesTerrestres y Operación de Equipos Pesados,821,4
+821023,Conducción de Vehículos y Electricidad Básica,821,3
+821033,Operador de Equipos Pesados,821,3

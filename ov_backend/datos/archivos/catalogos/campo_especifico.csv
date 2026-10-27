@@ -1,0 +1,30 @@
+﻿codigo,nombre,cod_campo_educacion
+01,Fuerzas Armadas,0
+02,Fuerzas Policiales,0
+11,Educación Inicial y Primaria,1
+12,Educación Secundaria,1
+13,Educación Física,1
+14,Educación Especial,1
+15,Educación Artística,1
+16,Educación Tecnológica,1
+19,Otras Carreras de Educación,1
+21,Humanidades,2
+22,Artes,2
+31,Ciencias Sociales y del Comportamiento,3
+32,Ciencias de la Comunicación,3
+33,Ciencias Administrativas y Comerciales,3
+34,Ciencias Económicas y Contables,3
+35,"Derecho, Ciencias Políticas y Jurídicas",3
+41,Ciencias de la Vida,4
+42,Ciencias Físicas y Químicas,4
+43,Matemáticas y Estadística,4
+44,Informática,4
+51,Ingeniería de Sistemas y Telecomunicaciones,5
+52,Ingeniería Industrial y Producción,5
+53,"Ingeniería de la Construcción, Sanitaria y Arquitectura",5
+59,Otras Ingenierías,5
+61,"Agropecuaria, Forestal y Acuicultura",6
+62,Veterinaria,6
+71,Ciencias de la Salud,7
+81,Servicios,8
+82,Servicios de Transporte,8
