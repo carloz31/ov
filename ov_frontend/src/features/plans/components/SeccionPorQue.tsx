@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import { X } from 'lucide-react'
-import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import {
   IDEAS_ORIGEN,
@@ -11,6 +8,7 @@ import {
   type MotivoBorrador,
 } from '@/lib/servidor/adaptadoresPlanes'
 import type { OpcionesTarjeta, PlanCarrera } from '@/types/servidor'
+import { ChipsElegibles } from './ChipsElegibles'
 
 type Encaje = { carrera: string; principal: string; segundo: string } | null
 
@@ -34,7 +32,6 @@ export function SeccionPorQue({
   onCambiar: (cambio: (b: BorradorPorQue) => BorradorPorQue) => void
   onEditar: () => void
 }) {
-  const [otro, setOtro] = useState<string | null>(null)
   const bloqueEncaje = encaje && (
     <div className="sx-p-encaje">
       <strong>Cómo encaja contigo</strong>
@@ -60,7 +57,7 @@ export function SeccionPorQue({
               {plan.motivos.length
                 ? plan.motivos.map((m, i) => (
                     <span className="sx-p-chip" data-elegido="true" key={m.posicion}>
-                      {i === 0 && <span className="sx-p-orden">1</span>}
+                      <span className="sx-p-orden">{i + 1}</span>
                       {textoMotivo(m, opciones)}
                     </span>
                   ))
@@ -82,23 +79,13 @@ export function SeccionPorQue({
         )}
       </>
     )
-  const alternar = (codigo: string) =>
-    onCambiar((b) => ({
-      ...b,
-      motivos: b.motivos.some((m) => mismoMotivo(m, codigo))
-        ? b.motivos.filter((m) => !mismoMotivo(m, codigo))
-        : [...b.motivos, { opcion: codigo }],
-    }))
-  // Un motivo propio se confirma con Enter o al salir del campo: pasa a ser un chip numerado y el campo queda
-  // vacío para otro. Vacío o repetido (el servidor rechaza un motivo dos veces), no se agrega.
-  const confirmarOtro = () => {
-    const texto = otro?.trim() ?? ''
-    setOtro('')
-    if (!texto || borrador.motivos.some((m) => 'otro' in m && normal(m.otro) === normal(texto))) return
-    onCambiar((b) => ({ ...b, motivos: [...b.motivos, { otro: texto }] }))
-  }
-  const quitarOtro = (texto: string) =>
-    onCambiar((b) => ({ ...b, motivos: b.motivos.filter((m) => !('otro' in m && m.otro === texto)) }))
+  // Un motivo propio repetido (sin importar mayúsculas ni espacios) no se agrega: el servidor lo rechazaría (422).
+  const agregarOtro = (texto: string) =>
+    onCambiar((b) =>
+      b.motivos.some((m) => 'otro' in m && normal(m.otro) === normal(texto))
+        ? b
+        : { ...b, motivos: [...b.motivos, { otro: texto }] },
+    )
   return (
     <>
       {bloqueEncaje}
@@ -119,62 +106,22 @@ export function SeccionPorQue({
       </fieldset>
       <fieldset className="sx-p-campo">
         <legend>¿Qué te mueve a elegirla?</legend>
-        <p className="sx-p-ayuda">Marca todos los que pesen. El primero que marques será el principal.</p>
-        <div className="sx-p-chips">
-          {opciones.valores.map((v) => {
-            const posicion = borrador.motivos.findIndex((m) => mismoMotivo(m, v.codigo))
-            return (
-              <button
-                type="button"
-                className="sx-p-chip"
-                key={v.codigo}
-                aria-pressed={posicion >= 0}
-                data-elegido={posicion >= 0}
-                onClick={() => alternar(v.codigo)}
-              >
-                {posicion >= 0 && <span className="sx-p-orden">{posicion + 1}</span>}
-                {v.texto}
-              </button>
-            )
-          })}
-          {borrador.motivos.map(
-            (m, i) =>
-              'otro' in m && (
-                <span className="sx-p-chip" data-elegido="true" key={`otro-${m.otro}`}>
-                  <span className="sx-p-orden">{i + 1}</span>
-                  {m.otro}
-                  <button
-                    type="button"
-                    className="sx-p-quitar"
-                    aria-label={`Quitar ${m.otro}`}
-                    onClick={() => quitarOtro(m.otro)}
-                  >
-                    <X aria-hidden="true" size={14} />
-                  </button>
-                </span>
-              ),
+        <ChipsElegibles
+          titulo="Tus motivos · el 1 es el principal"
+          vacio="Todavía no marcas ninguno. El primero que marques será el principal."
+          numerado
+          elegidos={borrador.motivos.map((m) =>
+            'otro' in m
+              ? { clave: `otro-${m.otro}`, texto: m.otro }
+              : { clave: m.opcion, texto: textoMotivo({ opcion: m.opcion, otro: null }, opciones) },
           )}
-          {otro !== null ? (
-            <Input
-              className="sx-p-otro"
-              aria-label="Otro motivo"
-              placeholder="Escribe otro motivo"
-              value={otro}
-              onChange={(e) => setOtro(e.target.value)}
-              onBlur={confirmarOtro}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  confirmarOtro()
-                }
-              }}
-            />
-          ) : (
-            <button type="button" className="sx-p-chip sx-p-chip-nuevo" onClick={() => setOtro('')}>
-              + Otro motivo
-            </button>
-          )}
-        </div>
+          disponibles={opciones.valores.filter((v) => !borrador.motivos.some((m) => mismoMotivo(m, v.codigo)))}
+          textoOtro="Otro motivo"
+          ayuda="Marcar sube el motivo a «Tus motivos»; la ✕ lo baja. Un motivo tuyo con ✕ desaparece. Escribe otro y pulsa Enter para sumarlo."
+          onMarcar={(codigo) => onCambiar((b) => ({ ...b, motivos: [...b.motivos, { opcion: codigo }] }))}
+          onQuitar={(indice) => onCambiar((b) => ({ ...b, motivos: b.motivos.filter((_, k) => k !== indice) }))}
+          onOtro={agregarOtro}
+        />
       </fieldset>
       <label className="sx-p-campo">
         <strong>¿Qué viviste que te hizo pensar en esta carrera?</strong>

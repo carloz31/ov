@@ -333,14 +333,54 @@
   color: var(--sx-night);
   font-size: 12px;
 }
+/* Todos los chips con el mismo alto: la «✕» y el campo de «Otro» no lo estiran. */
+.sx-p-chip {
+  min-height: 34px;
+  line-height: 1.2;
+}
 .sx-p-otro {
-  width: min(260px, 100%);
+  width: min(240px, 100%);
+  height: 34px;
+  border-radius: 999px;
+  padding: 0 14px;
 }
 .sx-p-quitar {
   display: inline-grid;
   place-items: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
   margin-left: 2px;
+  border: 0;
   border-radius: 50%;
+  background: transparent;
+  line-height: 0;
+}
+.sx-p-elegibles {
+  display: grid;
+  gap: 10px;
+}
+.sx-p-fila {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 14px;
+  background: var(--card);
+}
+.sx-p-fila[data-fila='elegidos'] {
+  border-color: color-mix(in srgb, var(--sx-gold) 55%, transparent);
+  background: color-mix(in srgb, var(--sx-gold) 10%, var(--sx-parchment));
+}
+.sx-p-fila .sx-p-ayuda {
+  margin: 0;
+}
+.sx-p-fila-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sx-parchment-muted);
 }
 .sx-p-lectura {
   display: grid;

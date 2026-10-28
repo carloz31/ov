@@ -179,7 +179,7 @@ test('una carrera sin plan vuelve a Mis planes', async () => {
   assert.ok(app.navigations.every((destino) => destino === '/student/profile/decisions'))
 })
 
-test('motivos propios: Enter o salir del campo los vuelve chips numerados; «✕» los quita y no se repiten', async () => {
+test('motivos en dos filas: marcar sube con su número, la ✕ baja (o borra uno propio) y se renumera', async () => {
   const { app } = planAbierto()
   const { SeccionPorQue } = app.load('src/features/plans/components/SeccionPorQue.tsx')
   const adaptador = app.load('src/lib/servidor/adaptadoresPlanes.ts')
@@ -187,27 +187,59 @@ test('motivos propios: Enter o salir del campo los vuelve chips numerados; «✕
     plan: familia.planes[0],
     opciones: familia.opciones,
     encaje: null,
-    borrador: { idea: 'MIA', motivos: [{ opcion: 'AYUDAR' }], relato: 'r' },
+    borrador: { idea: 'MIA', motivos: [], relato: 'r' },
     onCambiar: (cambio) => (props.borrador = cambio(props.borrador)),
     onEditar() {},
   }
-  const vista = app.mount(SeccionPorQue, props)
+  const filas = () => elementos(SeccionPorQue(props), (e) => e.type?.name === 'ChipsElegibles')[0].props
+  assert.equal(filas().elegidos.length, 0)
+  assert.equal(filas().vacio, 'Todavía no marcas ninguno. El primero que marques será el principal.')
+  assert.equal(filas().disponibles.length, familia.opciones.valores.length)
+  filas().onMarcar('COMUNIDAD')
+  filas().onMarcar('APRENDER')
+  filas().onOtro('Pepe')
+  // Repetido (sin importar mayúsculas ni espacios): no se agrega.
+  filas().onOtro('pepe ')
+  assert.deepEqual(copia(filas().elegidos.map((e) => e.texto)), ['Aportar a mi comunidad', 'Aprender', 'Pepe'])
+  assert.ok(!filas().disponibles.some((d) => ['COMUNIDAD', 'APRENDER'].includes(d.codigo)))
+  // La ✕ de uno de VALORES lo baja a «Para elegir»; la de uno propio lo borra. Los demás se renumeran.
+  filas().onQuitar(0)
+  assert.ok(filas().disponibles.some((d) => d.codigo === 'COMUNIDAD'))
+  filas().onQuitar(1)
+  assert.deepEqual(copia(filas().elegidos.map((e) => e.texto)), ['Aprender'])
+  filas().onOtro('Me gusta viajar')
+  assert.deepEqual(copia(adaptador.datosPorQue(props.borrador).motivos), [{ opcion: 'APRENDER' }, { otro: 'Me gusta viajar' }])
+})
+
+test('«+ Otro»: al confirmar con Enter o al salir con texto, sube y el botón vuelve a su estado inicial', async () => {
+  const { app } = planAbierto()
+  const { ChipsElegibles } = app.load('src/features/plans/components/ChipsElegibles.tsx')
+  const agregados = []
+  const props = {
+    titulo: 'Tus motivos · el 1 es el principal',
+    vacio: 'Todavía no marcas ninguno.',
+    numerado: true,
+    elegidos: [{ clave: 'a', texto: 'Aprender' }, { clave: 'b', texto: 'Pepe' }],
+    disponibles: [{ codigo: 'CREAR', texto: 'Crear' }],
+    textoOtro: 'Otro motivo',
+    onMarcar() {},
+    onQuitar() {},
+    onOtro: (texto) => agregados.push(texto),
+  }
+  const vista = app.mount(ChipsElegibles, props)
   const campo = () => elementos(vista.render(), (e) => e.props?.['aria-label'] === 'Otro motivo')[0]
+  const chips = elementos(vista.render(), (e) => e.type === 'span' && e.props?.className === 'sx-p-chip')
+  assert.deepEqual(chips.map(texto), ['1Aprender', '2Pepe'])
+  assert.equal(campo(), undefined)
   boton(vista.render(), '+ Otro motivo').props.onClick()
-  campo().props.onChange({ target: { value: ' Pepe ' } })
+  campo().props.onChange({ target: { value: '  Viajar  ' } })
   campo().props.onKeyDown({ key: 'Enter', preventDefault() {} })
-  assert.equal(campo().props.value, '')
-  // Repetido (sin importar mayúsculas ni espacios) o vacío: no se agrega.
-  campo().props.onChange({ target: { value: 'pepe' } })
+  assert.deepEqual(agregados, ['Viajar'])
+  assert.equal(campo(), undefined)
+  assert.ok(boton(vista.render(), '+ Otro motivo'))
+  // Vacío: no se agrega y el botón vuelve igual.
+  boton(vista.render(), '+ Otro motivo').props.onClick()
   campo().props.onBlur()
-  campo().props.onBlur()
-  campo().props.onChange({ target: { value: 'Me gusta viajar' } })
-  campo().props.onBlur()
-  assert.deepEqual(copia(props.borrador.motivos), [{ opcion: 'AYUDAR' }, { otro: 'Pepe' }, { otro: 'Me gusta viajar' }])
-  let chips = elementos(vista.render(), (e) => e.props?.className === 'sx-p-chip' && e.type === 'span')
-  assert.deepEqual(chips.map(texto), ['2Pepe', '3Me gusta viajar'])
-  elementos(vista.render(), (e) => e.props?.['aria-label'] === 'Quitar Pepe')[0].props.onClick()
-  chips = elementos(vista.render(), (e) => e.props?.className === 'sx-p-chip' && e.type === 'span')
-  assert.deepEqual(chips.map(texto), ['2Me gusta viajar'])
-  assert.deepEqual(copia(adaptador.datosPorQue(props.borrador).motivos), [{ opcion: 'AYUDAR' }, { otro: 'Me gusta viajar' }])
+  assert.deepEqual(agregados, ['Viajar'])
+  assert.ok(boton(vista.render(), '+ Otro motivo'))
 })
