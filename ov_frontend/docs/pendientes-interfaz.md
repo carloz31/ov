@@ -235,7 +235,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - mostrar solo el nombre del hijo en la cabecera del portal del apoderado;
   - no mostrarlos hasta tener las rutas propias de la orientadora.
 - **Si no se muestra:** el portal del apoderado sigue mostrando hijos de demostración en modo `api`, aunque sus actividades sí son de la cuenta con sesión.
-- **Estado:** hijos resuelto en F08: el portal usa `GET /sesion` para el parentesco del perfil, el selector «Con {nombre}» de Conversaciones y el hijo activo; los salones de la orientadora siguen pendientes (F10). El inicio y «Mis hijos» siguen mostrando un solo hijo (el de `familia`): ver «F08 · Varios hijos en el inicio».
+- **Estado:** hijos resuelto en F08: el portal usa `GET /sesion` para el parentesco del perfil, el selector «Con {nombre}» de Conversaciones (en la lista, no al escribir la carta) y el hijo activo; los salones de la orientadora siguen pendientes (F10). El inicio y «Mis hijos» siguen mostrando un solo hijo (el de `familia`): ver «F08 · Varios hijos en el inicio».
 
 ## 2026-10-15 · B12 · Familia: conversaciones, cartas y ruta del apoderado
 

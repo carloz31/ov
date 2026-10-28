@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { ArrowLeft, CircleHelp, Heart, Sparkles } from 'lucide-react'
 import { cartaEditable } from '@/lib/servidor/adaptadoresConversaciones'
@@ -9,7 +9,7 @@ import { CabeceraFamilia } from './CabeceraFamilia'
 // F08 (E3/A3): el papel de la carta y, al lado, Lumi con sus ideas (no se insertan en el texto). Al guardar, el
 // área de texto queda en solo lectura y el botón ocupado; si falla, vuelve a habilitarse con el texto intacto.
 // Entregada (todas conversadas), la carta se lee y no se guarda más.
-export function EscribirCarta({ m, selector }: { m: ModeloFamilia; selector?: ReactNode }) {
+export function EscribirCarta({ m }: { m: ModeloFamilia }) {
   const { textos: t, datos } = m
   const navigate = useNavigate()
   const [texto, setTexto] = useState(datos?.carta_propia ?? '')
@@ -30,12 +30,7 @@ export function EscribirCarta({ m, selector }: { m: ModeloFamilia; selector?: Re
         <ArrowLeft aria-hidden="true" size={18} />
         {t.cartaVolver}
       </Link>
-      <CabeceraFamilia
-        kicker={t.cartaKicker}
-        titulo={t.cartaTitulo}
-        subtitulo={t.cartaSubtitulo}
-        accion={selector}
-      />
+      <CabeceraFamilia kicker={t.cartaKicker} titulo={t.cartaTitulo} subtitulo={t.cartaSubtitulo} />
       <div className="fam-carta-layout">
         <section className="fam-papel">
           <h2 className="fam-caligrafia" id="fam-saludo">
