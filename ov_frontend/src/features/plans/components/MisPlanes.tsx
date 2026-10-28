@@ -128,7 +128,7 @@ export function MisPlanes() {
               ¿Eliminar el plan {v.porEliminar?.prioridad} · {v.porEliminar?.carrera.nombre}?
             </DialogTitle>
             <DialogDescription>
-              Se borrará lo que escribiste en sus secciones. Podrás volver a crearlo desde tus favoritos.
+              Lo que escribiste queda guardado: si vuelves a crearlo desde tus favoritos, lo recuperas tal como estaba.
             </DialogDescription>
           </DialogHeader>
           <div className="sx-d-actions">

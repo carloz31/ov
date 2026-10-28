@@ -122,7 +122,7 @@ class DatosPlanes:
 
 def cargar_planes(sesion: Session, cuenta: Cuenta) -> DatosPlanes:
     datos = DatosPlanes(tarjetas=list(sesion.scalars(select(TarjetaCarrera).where(
-        TarjetaCarrera.cuenta_id == cuenta.id).order_by(TarjetaCarrera.prioridad))))
+        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.activa).order_by(TarjetaCarrera.prioridad))))
     ids = [tarjeta.id for tarjeta in datos.tarjetas]
     if not ids:
         return datos

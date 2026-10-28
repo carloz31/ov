@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { appPaths } from '@/routes/paths'
-import { crearPlan, eliminarPlan, ordenarPlanes } from '@/store/servidor/planes'
+import { seccionSiguiente } from '@/lib/servidor/adaptadoresPlanes'
+import { crearPlan, eliminarPlan, ordenarPlanes, planesRefrescados } from '@/store/servidor/planes'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { ErrorServidor, PlanCarrera } from '@/types/servidor'
 
@@ -35,12 +36,22 @@ export function useAccionesPlanes() {
   async function crear(carrera: string) {
     setOcupado(`crear:${carrera}`)
     const respuesta = await crearPlan(carrera)
-    setOcupado(null)
-    if (!respondio(respuesta)) return fallo(respuesta)
-    const estado: EstadoNavegacionPlan = {
-      aviso: { titulo: 'Plan creado.', descripcion: 'Empieza por contar por qué la eliges.', error: false },
+    if (!respondio(respuesta)) {
+      setOcupado(null)
+      return fallo(respuesta)
     }
-    navigate(appPaths.student.plan(carrera, 'POR_QUE'), { state: estado })
+    // Ajuste F07b: si la carrera tuvo un plan eliminado, vuelve con lo suyo y se abre donde iba.
+    const plan = (await planesRefrescados())?.planes.find((p) => p.carrera.codigo === carrera)
+    setOcupado(null)
+    const recuperado = !!plan?.secciones.some((s) => s.guardada_en)
+    const estado: EstadoNavegacionPlan = {
+      aviso: recuperado
+        ? { titulo: 'Plan recuperado.', descripcion: 'Volvió con lo que habías escrito.', error: false }
+        : { titulo: 'Plan creado.', descripcion: 'Empieza por contar por qué la eliges.', error: false },
+    }
+    navigate(appPaths.student.plan(carrera, recuperado && plan ? seccionSiguiente(plan) : 'POR_QUE'), {
+      state: estado,
+    })
   }
 
   // Ajuste v4.2: «Hacer mi plan A» envía la permutación con esa carrera primero; los demás se corren.
@@ -60,7 +71,11 @@ export function useAccionesPlanes() {
     const respuesta = await eliminarPlan(carrera)
     setOcupado(null)
     if (!respondio(respuesta)) return fallo(respuesta)
-    avisar({ titulo: 'Plan eliminado', error: false })
+    avisar({
+      titulo: 'Plan eliminado',
+      descripcion: 'Si lo vuelves a crear, recuperas lo que escribiste.',
+      error: false,
+    })
   }
 
   return { ocupado, aviso, cerrarAviso: () => setAviso(null), avisar, crear, hacerA, eliminar }

@@ -37,7 +37,7 @@ def _cuenta(sesion: Session, entrada) -> Cuenta:
 def _plan(sesion: Session, cuenta: Cuenta, codigo_carrera: str) -> tuple[TarjetaCarrera, Carrera]:
     carrera = buscar_por_codigo(sesion, Carrera, codigo_carrera)
     tarjeta = sesion.scalar(select(TarjetaCarrera).where(TarjetaCarrera.cuenta_id == cuenta.id,
-                                                         TarjetaCarrera.carrera_id == carrera.id))
+                                                         TarjetaCarrera.carrera_id == carrera.id, TarjetaCarrera.activa))
     if tarjeta is None:
         raise ErrorAccion('No tienes un plan para esa carrera')
     return tarjeta, carrera
@@ -61,7 +61,8 @@ def _antes_del_bloque_inicial(sesion: Session, cuenta: Cuenta) -> bool:
 def crear_plan(sesion: Session, entrada: PlanEntrada) -> RespuestaAccion:
     cuenta = _cuenta(sesion, entrada)
     carrera = buscar_por_codigo(sesion, Carrera, entrada.carrera)
-    carreras = list(sesion.scalars(select(TarjetaCarrera.carrera_id).where(TarjetaCarrera.cuenta_id == cuenta.id)))
+    carreras = list(sesion.scalars(select(TarjetaCarrera.carrera_id).where(
+        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.activa)))
     if carrera.id in carreras:
         raise ErrorAccion('Ya tienes un plan para esa carrera')
     if len(carreras) >= MAXIMO_PLANES:
@@ -71,8 +72,14 @@ def crear_plan(sesion: Session, entrada: PlanEntrada) -> RespuestaAccion:
                                                Favorito.id_referencia == carrera.id)) is None:
         raise ErrorAccion('Primero guarda la carrera en tus favoritos')
     fecha = fecha_accion(entrada)
-    sesion.add(TarjetaCarrera(cuenta_id=cuenta.id, carrera_id=carrera.id, prioridad=len(carreras) + 1,
-                              creada_en=fecha, actualizada_en=fecha))
+    # Ajuste F07b: si la carrera tuvo un plan eliminado, vuelve con todo lo suyo, al final del orden.
+    inactiva = sesion.scalar(select(TarjetaCarrera).where(TarjetaCarrera.cuenta_id == cuenta.id,
+                                                          TarjetaCarrera.carrera_id == carrera.id))
+    if inactiva is not None:
+        inactiva.activa, inactiva.prioridad, inactiva.actualizada_en = True, len(carreras) + 1, fecha
+    else:
+        sesion.add(TarjetaCarrera(cuenta_id=cuenta.id, carrera_id=carrera.id, prioridad=len(carreras) + 1,
+                                  creada_en=fecha, actualizada_en=fecha))
     # La opción inicial es la carrera del primer plan registrado antes de completar el bloque; no cambia después.
     if cuenta.opcion_inicial_id is None and _antes_del_bloque_inicial(sesion, cuenta):
         cuenta.opcion_inicial_id = carrera.id
@@ -93,7 +100,7 @@ def _asignar_prioridades(sesion: Session, tarjetas_en_orden: list[TarjetaCarrera
 def ordenar_planes(sesion: Session, entrada: OrdenarPlanesEntrada) -> RespuestaAccion:
     cuenta = _cuenta(sesion, entrada)
     tarjetas = {t.carrera_id: t for t in sesion.scalars(select(TarjetaCarrera).where(
-        TarjetaCarrera.cuenta_id == cuenta.id))}
+        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.activa))}
     carreras = [buscar_por_codigo(sesion, Carrera, codigo) for codigo in entrada.carreras]
     if len({c.id for c in carreras}) != len(carreras) or {c.id for c in carreras} != set(tarjetas):
         raise _invalido('Envía todas las carreras de tus planes, una vez cada una')
@@ -106,18 +113,20 @@ def ordenar_planes(sesion: Session, entrada: OrdenarPlanesEntrada) -> RespuestaA
 
 @usar_contexto
 def eliminar_plan(sesion: Session, entrada: PlanEntrada) -> RespuestaAccion:
-    """Borra el plan con todo lo suyo; los demás suben de prioridad sin dejar huecos."""
+    """Desactiva el plan (ajuste F07b): queda sin prioridad y conserva lo suyo, por si se vuelve a crear; los demás
+    suben de prioridad sin dejar huecos."""
     cuenta = _cuenta(sesion, entrada)
     tarjeta, carrera = _plan(sesion, cuenta, entrada.carrera)
-    sesion.delete(tarjeta)
+    fecha = fecha_accion(entrada)
+    tarjeta.activa, tarjeta.prioridad, tarjeta.actualizada_en = False, None, fecha
     sesion.flush()
-    restantes = list(sesion.scalars(select(TarjetaCarrera).where(TarjetaCarrera.cuenta_id == cuenta.id).order_by(
-        TarjetaCarrera.prioridad)))
+    restantes = list(sesion.scalars(select(TarjetaCarrera).where(
+        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.activa).order_by(TarjetaCarrera.prioridad)))
     for prioridad, restante in enumerate(restantes, start=1):
         if restante.prioridad != prioridad:
             restante.prioridad = prioridad
             sesion.flush()
-    return _responder(sesion, cuenta, TipoEventoUso.ELIMINA_PLAN, carrera, fecha_accion(entrada))
+    return _responder(sesion, cuenta, TipoEventoUso.ELIMINA_PLAN, carrera, fecha)
 
 
 # --- Medidores y paso hecho ----------------------------------------------------------------------

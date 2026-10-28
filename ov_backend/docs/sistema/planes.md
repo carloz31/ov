@@ -9,7 +9,7 @@ Cada estudiante desarrolla hasta tres planes de carrera (HU-043 a 048, 050, 097 
 | `seccion_tarjeta` | Catálogo fijo: POR_QUE, CONOCIMIENTO, REALIDAD y PASOS, con `orden` y `para_comparar` (POR_QUE y REALIDAD). Objetivo `SECCION_PLAN` del motor. |
 | `referencia_rubro` | Por opción de RUBROS_GASTO: `frecuencia_recomendada`, `monto_referencia` (nulo si se consulta en la institución: Matrícula y Pensión, migración 0034), `cero_si_publica` y `solo_si_camino_prepara`. Tener fila es lo que hace que el front lo proponga. |
 | `referencia_camino` | Por opción de CAMINOS: `incluye_preparacion`. |
-| `tarjeta_carrera` | `cuenta_id`, `carrera_id`, `prioridad` (1 = A), `creada_en`, `actualizada_en`, `idea_origen` (`OrigenIdea`), `relato`, `institucion_id`, `camino_opcion_id` o `camino_otro`, medidores `entusiasmo`, `capacidad` y `recursos` (1 a 3), una marca `guardada_*_en` por sección, contadores `ultimo_numero_*` y `llamadas_sugerencias`. Únicos `(cuenta, carrera)` y `(cuenta, prioridad)`. |
+| `tarjeta_carrera` | `cuenta_id`, `carrera_id`, `prioridad` (1 = A; nula si está inactiva), `activa` (migración 0035), `creada_en`, `actualizada_en`, `idea_origen` (`OrigenIdea`), `relato`, `institucion_id`, `camino_opcion_id` o `camino_otro`, medidores `entusiasmo`, `capacidad` y `recursos` (1 a 3), una marca `guardada_*_en` por sección, contadores `ultimo_numero_*` y `llamadas_sugerencias`. Únicos `(cuenta, carrera)` y `(cuenta, prioridad)`; CHECK `prioridad_si_activa` (activa con prioridad, inactiva sin ella). |
 | `motivo_tarjeta` | Motivos por `posicion` (1 = principal): opción de VALORES o `texto_otro`. |
 | `conocimiento_tarjeta` | Respuesta (`SI`, `MAS_O_MENOS`, `NO`) a cada `PreguntaConocimiento`: DIA_NORMAL, DONDE_TRABAJAR, CURSOS, INGRESO, CONOCE_ALGUIEN. |
 | `duda_tarjeta` | `numero`, `origen` (PREGUNTA con su `pregunta`, SUGERIDA con su opción de DUDAS_SUGERIDAS, PROPIA), `texto`, `estado` (ABIERTA, CERRADA) y `cerrada_por_paso_id`. Una por pregunta. |
@@ -23,7 +23,8 @@ Cada estudiante desarrolla hasta tres planes de carrera (HU-043 a 048, 050, 097 
 - Toda opción «o Otro» lleva exactamente una de las dos (CHECK `opcion_u_otro`).
 - Dudas, complicaciones, sugerencias y pasos se identifican en la API por `numero`: una secuencia por tipo y por tarjeta que nunca se reutiliza, aunque se borre la fila (contadores `ultimo_numero_*`). La API nunca expone ids internos.
 - `duda_tarjeta.cerrada_por_paso_id` y `paso_tarjeta.duda_id` forman un ciclo: la primera clave lleva `use_alter` y la migración la crea al final.
-- Borrar una duda o una complicación borra todas sus sugerencias; los pasos que salieron de ellas conservan texto, tipo y estado, con su origen en nulo (`ON DELETE SET NULL`). Borrar un plan borra todo lo suyo (`ON DELETE CASCADE`).
+- Borrar una duda o una complicación borra todas sus sugerencias; los pasos que salieron de ellas conservan texto, tipo y estado, con su origen en nulo (`ON DELETE SET NULL`). Eliminar un plan no lo borra: queda inactivo y conserva todo lo suyo (las claves siguen con `ON DELETE CASCADE` por si un día se purgan).
+- **Planes inactivos.** Un plan inactivo no existe para la cuenta: no sale en la consulta ni en las referencias, no cuenta para el tope, para `planes_listos_para_comparar` ni para `pasos_plan_a`, y las acciones sobre él responden 409 como si no hubiera plan. Volver a crear esa carrera lo reactiva con todo lo suyo, al final del orden.
 - `prioridad` tiene CHECK `>= 1`: ordenar pasa por prioridades temporales mayores que `MAXIMO_PLANES`, porque ni SQLite ni PostgreSQL difieren el único. El tope lo garantiza el servicio.
 - Las nueve tablas de la tarjeta son estado (`TABLAS_DE_ESTADO`); el reinicio de desarrollo también pone `cuenta.opcion_inicial_id` en nulo.
 
@@ -63,12 +64,12 @@ Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, 
 
 | Ruta | Cuerpo | Errores |
 |---|---|---|
-| `crear` | `cuenta, carrera` | 409 si la carrera ya tiene plan, con tres planes o si la carrera no es favorita de la cuenta (F07a; desmarcarla después no toca el plan); 404 carrera inexistente |
+| `crear` | `cuenta, carrera` (si la carrera tuvo un plan eliminado, lo recupera) | 409 si la carrera ya tiene plan activo, con tres planes activos o si la carrera no es favorita de la cuenta (F07a; desmarcarla después no toca el plan); 404 carrera inexistente |
 | `guardar-seccion` | `cuenta, carrera, seccion, datos` | 409 sección bloqueada (mensaje y `progreso`, nada guardado) o sin plan; 422 validación |
 | `medidores` | `cuenta, carrera, entusiasmo?, capacidad?, recursos?` (1 a 3; lo enviado reemplaza) | 422 fuera de rango |
 | `paso-hecho` | `cuenta, carrera, paso, hallazgo?` | 409 si el paso no es suyo o ya está hecho |
 | `ordenar` | `cuenta, carreras` (todas, en orden A, B, C) | 422 si no es una permutación de sus planes |
-| `eliminar` | `cuenta, carrera` | 409 sin ese plan; los demás suben sin dejar huecos |
+| `eliminar` | `cuenta, carrera` (lo deja inactivo, sin prioridad) | 409 sin ese plan activo; los demás suben sin dejar huecos |
 
 `datos` de `guardar-seccion` reemplaza la sección entera y nada más; sus efectos ocurren solo ahí:
 - **POR_QUE:** `idea_origen`, `motivos` (`[{opcion | otro}]`, el primero es el principal, sin repetir) y `relato`.
@@ -78,7 +79,7 @@ Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, 
 
 `paso-hecho` marca el paso, guarda el hallazgo y cierra la duda de la que salió (la consulta la devuelve CERRADA con su hallazgo).
 
-**Opción inicial.** Al crear un plan, si la cuenta no tiene opción inicial y no completó el bloque MISIONES_CAMPO del estudiante con número `NUMERO_BLOQUE_OPCION_INICIAL` (en `ruta`, T1), esa carrera queda como opción inicial. No cambia después, aunque se elimine el plan.
+**Opción inicial.** Al crear un plan, si la cuenta no tiene opción inicial y no completó el bloque MISIONES_CAMPO del estudiante con número `NUMERO_BLOQUE_OPCION_INICIAL` (en `ruta`, T1), esa carrera queda como opción inicial. No cambia después, aunque se elimine el plan; recuperar un plan eliminado sigue la misma regla que crearlo.
 
 ## Sugerencias de pasos (HU-110)
 

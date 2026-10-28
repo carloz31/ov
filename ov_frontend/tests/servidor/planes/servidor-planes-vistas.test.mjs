@@ -143,6 +143,38 @@ test('crear desde favoritas: las que ya son plan van deshabilitadas; crear naveg
   assert.match(app.navigations.at(-1), /^\/student\/profile\/decisions\/.+\?seccion=POR_QUE$/)
 })
 
+test('ajuste F07b: crear una carrera con un plan eliminado lo recupera y abre donde iba', async () => {
+  const libre = favoritos.carreras.find((c) => !completos.planes.some((p) => p.carrera.codigo === c.codigo))
+  // Tras crear, el servidor devuelve el plan recuperado: con lo que tenía (secciones guardadas).
+  const recuperado = {
+    ...completos.planes[1],
+    prioridad: 'C',
+    carrera: { ...completos.planes[1].carrera, codigo: libre.codigo },
+  }
+  let creado = false
+  const { app } = misPlanes({
+    planes: completos,
+    responder: (r) => {
+      if (r.url.endsWith('/acciones/planes/crear')) creado = true
+      return creado && r.url.endsWith('/planes')
+        ? { body: { ...completos, planes: [...completos.planes, recuperado] } }
+        : null
+    },
+  })
+  const vista = await montar(app, 'src/features/plans/components/MisPlanes.tsx')
+  elementos(vista.render(), (e) => e.type?.name === 'EspacioPlan' && e.props.conAcciones)[0].props.onCrear()
+  vista.render()
+  await esperar()
+  const dialogo = elementos(vista.render(), (e) => e.type?.name === 'DialogoCrearPlan')[0]
+  dialogo.props.onCrear(libre.codigo)
+  await esperar()
+  await esperar()
+  const seccion = recuperado.secciones.find(
+    (s) => s.estado === 'POR_EMPEZAR' || s.estado === 'EN_PROCESO',
+  ).codigo
+  assert.equal(app.navigations.at(-1), `/student/profile/decisions/${libre.codigo}?seccion=${seccion}`)
+})
+
 test('sin favoritas, el diálogo invita al catálogo', async () => {
   const { app } = misPlanes()
   const { DialogoCrearPlan } = app.load('src/features/plans/components/DialogoCrearPlan.tsx')
@@ -200,7 +232,7 @@ test('«Hacer mi plan A» envía la permutación con esa carrera primero; elimin
   arbol = vista.render()
   assert.match(
     texto(arbol),
-    /¿Eliminar el plan A · Psicología\?.*Se borrará lo que escribiste en sus secciones\./,
+    /¿Eliminar el plan A · Psicología\?.*Lo que escribiste queda guardado: si vuelves a crearlo desde tus favoritos, lo recuperas tal como estaba\./,
   )
   elementos(arbol, (e) => e.type === 'button' && texto(e) === 'Eliminar plan')[0].props.onClick()
   await esperar()

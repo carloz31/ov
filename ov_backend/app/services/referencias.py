@@ -124,8 +124,8 @@ def _leer_planes(sesion, cuenta, tipos):
     """Datos de las referencias de planes por tipo, solo de esta cuenta; un tipo sin dato no aparece."""
     definiciones = contexto(sesion).definiciones
     planes = sesion.execute(select(TarjetaCarrera, Carrera.codigo, Carrera.nombre).join(
-        Carrera, Carrera.id == TarjetaCarrera.carrera_id).where(TarjetaCarrera.cuenta_id == cuenta.id).order_by(
-        TarjetaCarrera.prioridad)).all()
+        Carrera, Carrera.id == TarjetaCarrera.carrera_id).where(
+        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.activa).order_by(TarjetaCarrera.prioridad)).all()
 
     def opcion(opcion_id, texto_otro=None, texto=None):
         if opcion_id is None:

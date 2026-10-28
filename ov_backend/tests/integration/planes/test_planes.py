@@ -1,7 +1,7 @@
 """B11 · Planes de carrera: tarjetas, secciones, totales, dudas, sugerencias de respaldo, pasos, orden y avisos."""
 
 import pytest
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app import models as m
 from soporte_planes import (
@@ -317,19 +317,47 @@ def test_hu047_hu050_ordenar_y_eliminar_sin_huecos(cliente):
     assert planes(cliente)['planes'][2]['prioridad'] == 'C'
 
 
-def test_eliminar_un_plan_borra_todo_lo_suyo(cliente, sesion):
+def test_eliminar_desactiva_el_plan_y_crearlo_otra_vez_lo_recupera(cliente, sesion):
+    """Ajuste F07b: eliminar no borra; el plan queda inactivo, sin prioridad, fuera de todo, y vuelve con lo suyo."""
     abrir_planes(cliente)
     abrir_secciones(cliente, 'CONOCIMIENTO', 'REALIDAD', 'PASOS')
-    crear(cliente, PSICOLOGIA)
+    for carrera in (PSICOLOGIA, PERIODISMO):
+        crear(cliente, carrera)
     guardar(cliente, PSICOLOGIA, 'POR_QUE', por_que_lista())
     guardar(cliente, PSICOLOGIA, 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'}})
     guardar(cliente, PSICOLOGIA, 'REALIDAD', realidad_lista(complicaciones=[{'opcion': 'DISTANCIA'}]))
     guardar(cliente, PSICOLOGIA, 'PASOS', {'pasos': [{'sugerencia': 1}]})
     pedir(cliente, 'POST', '/acciones/planes/paso-hecho', {'cuenta': 'est-ana', 'carrera': PSICOLOGIA, 'paso': 1})
+    pedir(cliente, 'POST', '/acciones/planes/medidores', {'cuenta': 'est-ana', 'carrera': PSICOLOGIA, 'entusiasmo': 3})
+    antes = plan(cliente, PSICOLOGIA)
     pedir(cliente, 'POST', '/acciones/planes/eliminar', {'cuenta': 'est-ana', 'carrera': PSICOLOGIA})
-    for modelo in (m.TarjetaCarrera, m.MotivoTarjeta, m.ConocimientoTarjeta, m.DudaTarjeta, m.GastoTarjeta,
-                   m.FinanciamientoTarjeta, m.ComplicacionTarjeta, m.SugerenciaTarjeta, m.PasoTarjeta):
-        assert sesion.scalars(select(modelo)).all() == [], modelo
+    # Fuera de la consulta y de las acciones; lo suyo sigue en la base.
+    assert [(p['prioridad'], p['carrera']['codigo']) for p in planes(cliente)['planes']] == [('A', PERIODISMO)]
+    pedir(cliente, 'POST', '/acciones/planes/medidores', {'cuenta': 'est-ana', 'carrera': PSICOLOGIA, 'recursos': 1}, 409)
+    pedir(cliente, 'POST', '/acciones/planes/eliminar', {'cuenta': 'est-ana', 'carrera': PSICOLOGIA}, 409)
+    inactiva = sesion.scalar(select(m.TarjetaCarrera).where(m.TarjetaCarrera.activa.is_(False)))
+    assert (inactiva.prioridad, inactiva.relato) == (None, RELATO)
+    for modelo in (m.MotivoTarjeta, m.ConocimientoTarjeta, m.DudaTarjeta, m.GastoTarjeta, m.FinanciamientoTarjeta,
+                   m.ComplicacionTarjeta, m.SugerenciaTarjeta, m.PasoTarjeta):
+        assert sesion.scalars(select(modelo).where(modelo.tarjeta_id == inactiva.id)).all(), modelo
+    # Crearlo otra vez lo recupera completo, al final del orden.
+    crear(cliente, PSICOLOGIA)
+    despues = plan(cliente, PSICOLOGIA)
+    assert despues['prioridad'] == 'B'
+    ignorar = {'prioridad', 'actualizada_en'}
+    assert {k: v for k, v in despues.items() if k not in ignorar} == {k: v for k, v in antes.items() if k not in ignorar}
+
+
+def test_un_plan_inactivo_no_cuenta_para_el_tope_ni_para_los_requisitos(cliente, sesion):
+    abrir_planes(cliente)
+    for carrera in (PSICOLOGIA, PERIODISMO, ENFERMERIA):
+        crear(cliente, carrera)
+    pedir(cliente, 'POST', '/acciones/planes/eliminar', {'cuenta': 'est-ana', 'carrera': ENFERMERIA})
+    # Con un inactivo hay espacio para otro plan, y el inactivo no se cita.
+    crear(cliente, ING_CIVIL)
+    assert [p['carrera']['codigo'] for p in planes(cliente)['planes']] == [PSICOLOGIA, PERIODISMO, ING_CIVIL]
+    pedir(cliente, 'POST', '/acciones/planes/crear', {'cuenta': 'est-ana', 'carrera': ENFERMERIA}, 409)
+    assert sesion.scalar(select(func.count()).select_from(m.TarjetaCarrera)) == 4
 
 
 def test_hu098_aviso_cuando_dos_planes_son_de_la_misma_familia(cliente, sesion, aplicacion):
