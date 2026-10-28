@@ -19,3 +19,6 @@
 - **Avisos simples:** REALIDAD sin sugerencias, «Guardado. Muéstrales este número en casa.»; PASOS, «Guardado. Tus pasos quedaron anotados.» (el documento no los fija).
 - **Nombre completo de la institución** en el menú y en el resumen de REALIDAD: el lienzo usa la sigla (UNALM), que el catálogo no entrega.
 - **«≈ S/ {x} al mes»** redondea `primer año / 12` al entero más cercano (los números del lienzo son ilustrativos y no cuadran entre sí).
+- **Paso nuevo:** la fila punteada «Tipo…» + «+ Escribir un paso» lo suma al confirmar (Enter o salir con texto); sin tipo elegido toma el último de PASOS («Otra»), porque el servidor exige tipo.
+- **«Lo hice» es la casilla** de cada paso pendiente (en el lienzo, «Lo hice ←» es una anotación que la señala): botón con `aria-label` y `title` «Lo hice». En la sección 4 no se repite «Guardar puede tardar unos segundos.» porque guardar pasos no llama al LLM (el lienzo tampoco lo muestra).
+- **Migas del plan abierto:** el lienzo pone «Plan A · {carrera}» en la barra superior; se conserva lo de F07a (solo «Mis planes»; el plan y la carrera están en la cabecera del menú), que tiene su prueba.

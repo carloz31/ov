@@ -8,6 +8,7 @@ import { cargarResultadoRiasec } from '@/store/servidor/resultado'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import type { CodigoSeccionPlan } from '@/types/servidor'
 import type { AvisoPlan, EstadoNavegacionPlan } from './useAccionesPlanes'
+import { usePasoHecho } from './usePasoHecho'
 import { usePlanesServidor } from './usePlanesServidor'
 import { useSeccionPlan } from './useSeccionPlan'
 
@@ -33,6 +34,7 @@ export function usePlanAbierto(
   const plan = servidor.datos?.planes.find((p) => p.carrera.codigo === carrera) ?? null
   const noExiste = !!servidor.datos && !plan
   const [elegida, setElegida] = useState<CodigoSeccionPlan | null>(esSeccion(seccionUrl) ? seccionUrl : null)
+  const pasoHecho = usePasoHecho(carrera, avisar)
   const edicion = useSeccionPlan(plan, servidor.datos?.opciones ?? null, avisar)
 
   useEffect(() => {
@@ -77,6 +79,7 @@ export function usePlanAbierto(
       setElegida(codigo)
     },
     edicion,
+    pasoHecho,
     instituciones,
     paginaInstitucion: institucionDetalle?.datos?.pagina_web ?? null,
     encaje: plan ? encajeRiasec(plan.carrera.riasec, almacen.resultadoRiasec, dimensionNames) : null,

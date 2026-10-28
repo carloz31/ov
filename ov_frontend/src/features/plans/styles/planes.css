@@ -744,3 +744,145 @@
   margin: 2px 0 0;
   font-weight: 700;
 }
+
+/* F07b · Sección 4 (lienzo «Mis próximos pasos»: edición, lectura y diálogo «Lo hice»). */
+.sx-p-pasos {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sx-p-paso {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 14px;
+  background: var(--card);
+}
+.sx-p-paso > div {
+  flex: 1;
+  min-width: 0;
+}
+.sx-p-paso p {
+  margin: 0;
+}
+.sx-p-paso small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-paso > small {
+  flex-basis: 100%;
+  margin-top: 0;
+}
+.sx-p-paso[data-editando='true'] {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  background: color-mix(in srgb, var(--primary) 6%, var(--card));
+}
+.sx-p-paso[data-nuevo='true'] {
+  border-style: dashed;
+  background: transparent;
+}
+.sx-p-paso-fila {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.sx-p-paso-fila > p {
+  flex: 1;
+  min-width: 200px;
+}
+.sx-p-paso-fila > input {
+  flex: 1;
+  min-width: 180px;
+  min-height: 40px;
+}
+.sx-p-select-tipo {
+  width: 150px;
+  min-height: 40px;
+  background: var(--card);
+}
+.sx-p-paso-botones {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: auto;
+}
+.sx-p-mini {
+  padding: 6px 10px;
+  border: 1px solid var(--sx-night-border);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: 13px;
+  font-weight: 700;
+}
+.sx-p-mini[data-principal='true'] {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.sx-p-mas {
+  justify-self: center;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-tipo {
+  display: inline-block;
+  padding: 1px 8px;
+  margin-right: 4px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--primary) 12%, var(--card));
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  vertical-align: 2px;
+}
+.sx-p-casilla-paso {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin-top: 2px;
+  border: 2px solid var(--sx-gold-deep, var(--sx-gold));
+  border-radius: 6px;
+  background: transparent;
+}
+.sx-p-paso[data-estado='HECHO'] .sx-p-casilla-paso {
+  border-color: var(--success);
+  background: var(--success);
+  color: var(--card);
+}
+.sx-p-paso[data-estado='HECHO'] s {
+  color: var(--sx-parchment-muted);
+}
+.sx-p-paso[data-estado='HECHO'] small strong {
+  color: var(--success);
+}
+.sx-p-franja {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--sx-gold) 60%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--sx-gold) 10%, var(--sx-parchment));
+}
+.sx-p-franja p {
+  margin: 0;
+}

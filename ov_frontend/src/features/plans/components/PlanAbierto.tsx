@@ -2,14 +2,22 @@ import { Link } from 'react-router'
 import { ArrowLeft, Pencil } from 'lucide-react'
 import { PantallaCarga } from '@/components/student/PantallaCarga'
 import { SeccionBloqueada } from '@/components/student/SeccionBloqueada'
-import { mensajeBloqueo, NUMERO_SECCION, TITULOS_SECCION } from '@/lib/servidor/adaptadoresPlanes'
+import {
+  mensajeBloqueo,
+  NUMERO_SECCION,
+  sugerenciasEsperan,
+  sugerenciasPendientes,
+  TITULOS_SECCION,
+} from '@/lib/servidor/adaptadoresPlanes'
 import { appPaths } from '@/routes/paths'
 import { usePlanAbierto } from '../hooks/usePlanAbierto'
 import type { AvisoPlan as Aviso } from '../hooks/useAccionesPlanes'
 import { AvisoPlan } from './AvisoPlan'
+import { DialogoPasoHecho } from './DialogoPasoHecho'
 import { MenuSeccionesPlan } from './MenuSeccionesPlan'
 import { PildoraEstado } from './PildoraEstado'
 import { SeccionConocimiento } from './SeccionConocimiento'
+import { SeccionPasos } from './SeccionPasos'
 import { SeccionPorQue } from './SeccionPorQue'
 import { SeccionRealidad } from './SeccionRealidad'
 import '../styles/planes.css'
@@ -39,7 +47,7 @@ export function PlanAbierto({
     )
   const { plan, estadoSeccion: s, edicion } = v
   const opciones = v.datos.opciones
-  const editable = s.estado !== 'BLOQUEADA' && s.codigo !== 'PASOS'
+  const editable = s.estado !== 'BLOQUEADA'
   // Las que llaman al LLM al guardar avisan que puede tardar (lienzo de la sección 3).
   const tarda = s.codigo === 'CONOCIMIENTO' || s.codigo === 'REALIDAD'
   const editando = edicion.editando === s.codigo
@@ -54,7 +62,15 @@ export function PlanAbierto({
       <div className="sx-p-plan">
         <MenuSeccionesPlan plan={plan} opciones={opciones} seccion={v.seccion} onElegir={v.elegir} />
         {s.estado === 'BLOQUEADA' ? (
-          <SeccionBloqueada titulo={`${NUMERO_SECCION[s.codigo]} · ${titulo}`} mensaje={mensajeBloqueo(s)} />
+          <SeccionBloqueada
+            titulo={`${NUMERO_SECCION[s.codigo]} · ${titulo}`}
+            mensaje={mensajeBloqueo(s)}
+            nota={
+              s.codigo === 'PASOS' && sugerenciasPendientes(plan).length
+                ? sugerenciasEsperan(plan)
+                : undefined
+            }
+          />
         ) : (
           <section className="sx-p-panel" data-editando={editando} aria-labelledby="sx-p-panel-titulo">
             <header>
@@ -102,6 +118,16 @@ export function PlanAbierto({
                 onCambiar={edicion.cambiarRealidad}
               />
             )}
+            {s.codigo === 'PASOS' && (
+              <SeccionPasos
+                plan={plan}
+                opciones={opciones}
+                borrador={editando ? edicion.pasos : null}
+                onCambiar={edicion.cambiarPasos}
+                onRevisar={() => edicion.editar('PASOS')}
+                onLoHice={v.pasoHecho.abrir}
+              />
+            )}
             {editando && (
               <div className="sx-d-actions sx-p-acciones">
                 {tarda && <p className="sx-p-ayuda">Guardar puede tardar unos segundos.</p>}
@@ -127,6 +153,13 @@ export function PlanAbierto({
           </section>
         )}
       </div>
+      <DialogoPasoHecho
+        key={v.pasoHecho.paso?.numero ?? 'cerrado'}
+        abierto={!!v.pasoHecho.paso}
+        enviando={v.pasoHecho.enviando}
+        onEnviar={(hallazgo) => void v.pasoHecho.enviar(hallazgo)}
+        onCerrar={v.pasoHecho.cerrar}
+      />
       <AvisoPlan aviso={v.aviso} onDismiss={v.cerrarAviso} />
     </>
   )
