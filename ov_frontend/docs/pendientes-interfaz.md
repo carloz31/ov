@@ -2,6 +2,22 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-28 · F07a · «De tu camino» en «Por qué la elijo»
+
+- **Dato:** la tarjeta v4 cita en POR_QUE lo que el estudiante escribió en la actividad 1.7 («De tu camino»); el backend no entrega esa cita en `GET /planes`.
+- **Dónde se mostraría:** sección 1 del plan abierto, sobre «¿De quién fue la idea?», en lectura y en edición.
+- **Opciones:** una referencia con la respuesta de 1.7 en `GET /planes` (ajuste sin modelo); reutilizar `GET /actividades/{a}/referencias` desde la tarjeta; o dejar la sección sin la cita.
+- **Si no se muestra:** el estudiante escribe su relato sin ver lo que ya contó en 1.7.
+- **Estado:** pendiente de decisión del usuario; no se implementa en F07a.
+
+## 2026-10-28 · F07a · Valores del registro 2.3 primero
+
+- **Dato:** la tarjeta v4 ordena los chips de VALORES en POR_QUE con los que el estudiante marcó en el registro «Lo que valoro» (2.3) primero; `opciones.valores` no indica cuáles marcó.
+- **Dónde se mostraría:** «¿Qué te mueve a elegirla?» de la sección 1 del plan abierto (orden de los chips y, quizá, una marca «de Lo que valoro»).
+- **Opciones:** `opciones.valores[].de_registro` en `GET /planes` (ajuste sin modelo); leer las respuestas del registro desde la tarjeta; o mantener el orden de la lista común.
+- **Si no se muestra:** los chips siguen el orden de la lista común VALORES.
+- **Estado:** pendiente de decisión del usuario; no se implementa en F07a.
+
 ## 2026-10-26 · F06 · Datos del catálogo local que el servidor no entrega
 
 - **Dato:** el catálogo local muestra, y el servidor no entrega:
@@ -18,11 +34,11 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-10-27 · Ajuste catalogo-datos-reales · Planes en los detalles del catálogo
 
-- **Dato:** los planes de carrera del front siguen siendo locales (el servidor los tiene desde B11, pero el front aún no los usa) y no guardan institución; el perfil del estudiante en api no tiene departamento.
-- **Dónde se mostraría:** «Usarla en un presupuesto» (debería abrir Mis planes con la institución precargada en el plan elegido), «En tus planes» del detalle de institución («Aquí estudiarías X en tu Plan A») y el chip inicial de «Dónde estudiarla» (el departamento del estudiante).
-- **Hoy:** «Usarla en un presupuesto» lleva a Mis planes sin precarga; «En tus planes» no se pinta en la institución; «Dónde estudiarla» arranca en Lima. «Armar un plan» crea el plan con la carrera (el flujo que ya existía), sin pasar por una pantalla de creación.
-- **Opciones:** conectar los planes del servidor (B11) en el front y agregar la precarga de institución; o mantenerlo así hasta ese lote.
-- **Estado:** pendiente de decisión del usuario.
+- **Dato:** desde F07a, los planes del front en api son los del servidor, pero la institución del plan se elige en REALIDAD (F07b); el perfil del estudiante en api no tiene departamento.
+- **Dónde se mostraría:** «Usarla en un presupuesto» (debería abrir el plan con la institución precargada en REALIDAD), «En tus planes» del detalle de institución («Aquí estudiarías X en tu Plan A») y el chip inicial de «Dónde estudiarla» (el departamento del estudiante).
+- **Hoy:** «Usarla en un presupuesto» lleva a Mis planes sin precarga; «En tus planes» no se pinta en la institución; «Dónde estudiarla» arranca en Lima. En api, «Armar un plan» crea el plan en el servidor (solo si la carrera es favorita) y abre su sección 1; «Ver mi tarjeta» abre el plan de esa carrera (F07a).
+- **Opciones:** precargar la institución al llegar a REALIDAD (F07b); o mantenerlo así hasta la revisión estética.
+- **Estado:** reescrito en F07a; «Usarla en un presupuesto» y «En tus planes» esperan REALIDAD (F07b). El departamento sigue pendiente de decisión del usuario.
 
 ## 2026-10-27 · Ajuste catalogo-datos-reales · Contador de exploración en carreras e instituciones
 
@@ -191,7 +207,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** la sección Planes del estudiante (tarjeta por secciones, medidores, orden A/B/C, aviso de misma familia), el detalle de institución del catálogo (pública o privada) y las actividades 4.5 y 5.1 (`t-comparar` y `t-proyecto` en `ruta`), que citan los planes, el relato del plan A, sus pasos y la opción inicial.
 - **Opciones:** conectar Planes en su lote F con la tarjeta v4; mantener los planes locales actuales (`DecisionSheet`), que no coinciden con este modelo, hasta diseñar la vista.
 - **Si no se muestra:** en modo `api` los planes, la opción inicial y los requisitos de `t-comparar` y `t-proyecto` existen solo en el servidor.
-- **Estado:** pendiente del lote F de planes (F07a/F07b), salvo `gestion`, que desde F06 se ve en las tarjetas y el detalle de institución del catálogo en api («Universidad · Pública · Lima»).
+- **Estado:** en parte resuelto en F07a. En api, Mis planes (lista A/B/C con estados por sección, «Lista para comparar», aviso de misma familia, opción inicial como «Tu primer interés»), crear desde favoritas, ordenar, eliminar y el plan abierto con POR_QUE y CONOCIMIENTO (dudas que se crean y se cierran) leen y escriben en el servidor; `gestion` se ve desde F06. Queda para F07b: REALIDAD (presupuesto con precarga y totales, financiamiento, complicaciones), las `sugerencias` (el servidor ya las genera al guardar CONOCIMIENTO, sin mostrarse), PASOS, medidores, `cita` en las referencias y el contenido de `t-comparar` y `t-proyecto`.
 
 ## 2026-10-14 · B09 · Avance por temática
 

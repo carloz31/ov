@@ -25,7 +25,7 @@ src/
   routes/        AppRoutes.tsx (solo la tabla de rutas), paths.ts, guardas
   pages/         una vista por ruta y los layouts de cada portal: auth/, student/, parent/, counselor/
   features/      un dominio por carpeta: auth, activities, adventure, backpack, cases, discovery,
-                 journal, family-conversations, parent, counselor, student-tracking
+                 journal, family-conversations, parent, counselor, plans, student-tracking
     <dominio>/   components/, hooks/, lib/, data/, store/, context/, styles/, types.ts
   components/    reutilizables sin lógica de dominio: ui/ (shadcn), common/, layout/, staff/, student/
   context/       contextos que usan varios dominios
@@ -50,7 +50,7 @@ src/
 | Una primitiva de interfaz | `components/ui/`. Usa la de shadcn antes de crear otra. |
 | Una llamada al backend | `services/api/<recurso>.ts`, agrupado como los routers del backend. GET → `obtener`, POST → `enviar`, PATCH → `actualizar`, DELETE → `eliminar`. Si el backend define un PUT, detente y avisa antes de agregar un método al cliente. |
 | Un tipo del contrato | `types/servidor.ts`, copiado tal cual del esquema Pydantic. Si el archivo no cabe en 400 líneas, un esquema va en su propio `types/servidor<Dominio>.ts`, que `servidor.ts` reexporta (hoy, `servidorInstrumentos.ts` con `app/schemas/instrumentos.py` y `servidorFichas.ts` con `app/schemas/fichas.py`). |
-| Convertir una respuesta en datos para la vista | `lib/servidor/adaptadores.ts` (casos, colección y testimonios: `lib/servidor/adaptadoresCasos.ts`; registros y referencias: `lib/servidor/adaptadoresRegistro.ts`; diario y check-in: `lib/servidor/adaptadoresDiario.ts`, F05). Todos solo importan tipos. |
+| Convertir una respuesta en datos para la vista | `lib/servidor/adaptadores.ts` (casos, colección y testimonios: `lib/servidor/adaptadoresCasos.ts`; registros y referencias: `lib/servidor/adaptadoresRegistro.ts`; diario y check-in: `lib/servidor/adaptadoresDiario.ts`, F05; planes de carrera: `lib/servidor/adaptadoresPlanes.ts`, F07a). Todos solo importan tipos. |
 | Estado que viene del servidor | `store/servidor/`. El del portal del apoderado, en `store/servidor/apoderado.ts`; no reutiliza el almacén del estudiante. Sigue las cuatro «Reglas de los datos del servidor en el front» de `ov_backend/docs/sistema/integracion.md`: todo pasa por el almacén (nunca una consulta en el `useEffect` de un hook), las listas solo con lo de sus tarjetas y el detalle al abrirlo, una acción confirmada actualiza lo cargado sin volver a pedirlo y lo que puede cambiar otra cuenta (conversaciones y cartas con el apoderado, lo de la orientadora) se revalida al abrir su vista. |
 | Elegir entre dato del servidor y dato local | Un hook en `features/<dominio>/hooks/`. Nunca en una vista. |
 | Estado persistente de varios dominios | `store/<nombre>Store.ts`; de un dominio, `features/<dominio>/store/`. |
@@ -71,7 +71,7 @@ src/
 - `pages/` y `features/` no importan `services/`: los datos del backend llegan por `store/servidor/` y los hooks.
 - Una feature no usa componentes de otra, salvo de `family-conversations` y `student-tracking`. Si hace falta un componente ajeno, pásalo desde la vista de ruta como prop o `children`, o súbelo a `components/`.
 - `modoApi` y `desarrollo` no se importan en `components/`, `pages/` ni `features/*/components/` (sí en `lib/` y `store/`, que son selectores). El hook del dominio devuelve el mismo modelo en los dos modos y, si algo solo se muestra en uno, una bandera con nombre del dominio (`puedeReiniciar`, `mostrarRequisito`), no `modoApi`.
-- `lib/activities/logic.ts`, `lib/servidor/adaptadores.ts`, `lib/servidor/adaptadoresRegistro.ts`, `lib/servidor/adaptadoresDiario.ts` y `lib/explorationAssets.ts` solo importan tipos: las pruebas los cargan aislados.
+- `lib/activities/logic.ts`, `lib/servidor/adaptadores.ts`, `lib/servidor/adaptadoresRegistro.ts`, `lib/servidor/adaptadoresDiario.ts`, `lib/servidor/adaptadoresPlanes.ts` y `lib/explorationAssets.ts` solo importan tipos: las pruebas los cargan aislados.
 
 ### Componentes
 
@@ -97,6 +97,7 @@ src/
 - **Pasaporte y perfil (ajuste pasaporte-perfil):** vocabulario fijo en pantalla: niveles = **títulos** («tu título actual», «siguiente título»); insignias = **sellos** («n de m sellos», «sellada el…»); grupo de insignias = **página**; las que el estudiante muestra a sus compañeros = **vitrina** (hasta 3); una insignia oculta = **secreta** (nunca «oculta»). En api, páginas, pistas, fechas, textos del sello y del nivel, condiciones (`/progreso/NIVEL` y `/progreso/INSIGNIA`, todas las reglas, con «o bien» entre alternativas y el resumen de la más avanzada) y vitrina salen del servidor; sin `texto`, una condición muestra el requisito de la insignia o el mensaje de bloqueo de la regla. Una secreta no obtenida lleva el código local `???-<grupo>-<posición>`. La vitrina se guarda con `POST /acciones/vitrina` y el botón muestra un cargador sin deshabilitarse; guardar no vuelve a pedir el siguiente título. La línea de ruta del perfil pone un punto al inicio de cada tramo de `avance.tramos` y uno final, «Fin del viaje»; el perfil no muestra la afinidad.
 - **Presentaciones de primera visita (ajuste presentaciones-vistas):** en api, las ya cerradas salen del servidor (`store/servidor/`, sección `presentaciones`, con el ingreso) y se marcan con `marcarPresentacionVista`; `useNoveltyQueue` arma con ellas el `introsSeen` de la cola. Sin esos datos (cargando o con error), o con la sección de la vista cerrada, la cola no muestra nada en esa vista. Cerrar una presentación la oculta en esa visita; si el POST falla, vuelve a salir en la próxima. El `introsSeen` local no se lee, ni se escribe, ni se sube en api; en local sigue en `ov.student-ui.v1`. Los códigos son los ids de `studentViews`. La presentación (`sectionIntros`) y la ayuda del «?» (`guideSteps`) siguen separadas.
 - **Diario y señal (F05):** el diario no tiene temas en ningún modo (filtros por tipo: libres, pregunta del día y cartas de Lumi); en api, la señal usa la escala 1–5 del servidor y es una por día, editable ese día («Cambiar» sobrescribe la del día), y los check-ins los pide el refresco solo con CHECK_IN abierta; el detalle está en `docs/origen-de-datos.md`.
+- **Planes de carrera (F07a):** en api, Mis planes, el plan abierto (`profile/decisions/:carrera`), el bloque de plan del detalle de carrera y el capítulo III del perfil leen los planes del servidor (`features/plans/`, bandera `usaTarjetaV4` en `features/plans/lib/tarjeta.ts`); en local, `MisPlanesLocales`, `PlanCard` y `DecisionSheet` siguen como antes y la ruta del plan abierto vuelve a Mis planes. Un plan se crea solo desde una carrera favorita. Cada sección del plan abierto se lee primero y se edita con «Editar» / «Cancelar» / «Guardar sección»; los títulos de sección y las etiquetas de estado son del front (el `nombre` del servidor solo al citar un desbloqueo). Sin planes cargados (PLANES cerrada o en espera), el bloque de plan del detalle de carrera no se muestra. La ruta del plan abierto cuenta como vista `profile-decisions` (cabecera «Mis planes» y su guía) y lleva sus propias migas. El detalle está en `docs/origen-de-datos.md`.
 - **Seguridad del token:** como el token está en `localStorage`, no se usa HTML crudo (`dangerouslySetInnerHTML`) ni se cargan scripts de terceros.
 
 ## Interfaz
@@ -123,9 +124,9 @@ Un agente conecta datos a la interfaz que ya existe; no diseña interfaz nueva p
 ```text
 tests/
   local/        actividades/, aventura/, casos/, perfil/, portales/   (modo local)
-  servidor/     acceso/, actividades/, batallas/, casos/, catalogo/, diario/, mapa/, instrumentos/, logros/, perfil/, registro/, testimonios/  (modo api, con fixtures)
+  servidor/     acceso/, actividades/, batallas/, casos/, catalogo/, diario/, mapa/, instrumentos/, logros/, perfil/, planes/, registro/, testimonios/  (modo api, con fixtures)
   despliegue/
-  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00), registro (F01), batallas, casos y testimonios (F04), diario (F05), el pasaporte y la vitrina en logros y perfil (ajuste pasaporte-perfil) y catalogo (F06)
+  fixtures/servidor/   generados por ov_backend; no se editan a mano; ruta/ (ruta-*) la usan acceso, mapa, actividades y logros (F00), registro (F01), batallas, casos y testimonios (F04), diario (F05), el pasaporte y la vitrina en logros y perfil (ajuste pasaporte-perfil), catalogo (F06) y planes (F07a)
   soporte/             ayudantes compartidos
 ```
 
@@ -139,7 +140,8 @@ tests/
 | `store/servidor/`, `lib/servidor/`, `services/api/`, `types/servidor.ts`, o regeneras fixtures | `npm run test:servidor` |
 | `features/activities/`, `lib/activities/`, `data/activities/` | `tests/local/actividades`, `tests/servidor/actividades` y `tests/servidor/registro` |
 | `features/adventure/` | `tests/local/aventura`, `tests/servidor/mapa` y `tests/servidor/logros` |
-| `features/discovery/` | `tests/servidor/catalogo`, `tests/servidor/instrumentos`, `tests/servidor/perfil` y `tests/servidor/logros` |
+| `features/discovery/` | `tests/servidor/catalogo`, `tests/servidor/instrumentos`, `tests/servidor/perfil`, `tests/servidor/logros` y `tests/servidor/planes` |
+| `features/plans/` | `tests/servidor/planes`, `tests/servidor/catalogo`, `tests/servidor/perfil` y `tests/local/aventura` |
 | `features/cases/` | `tests/local/casos` y `tests/servidor/casos` |
 | `features/parent/`, `features/counselor/`, `features/student-tracking/`, `pages/parent/`, `pages/counselor/` | `tests/local/portales` y `tests/local/perfil` |
 | `features/auth/`, `pages/auth/`, `store/accesoStore.ts`, `routes/GuardaAcceso.tsx`, `data/demo/usuariosPrueba.ts` | `tests/local/portales`, `tests/local/aventura` y `tests/servidor/acceso` |
