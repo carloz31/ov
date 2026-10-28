@@ -343,6 +343,7 @@
     {
       "codigo": "inst-3",
       "distrito": "San Miguel",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -360,6 +361,7 @@
     {
       "codigo": "inst-4",
       "distrito": "San Jerónimo",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -377,6 +379,7 @@
     {
       "codigo": "inst-5",
       "distrito": "Pueblo Libre",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": null,
@@ -390,6 +393,7 @@
     {
       "codigo": "inst-7",
       "distrito": "Villa El Salvador",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -407,6 +411,7 @@
     {
       "codigo": "inst-8",
       "distrito": "Arequipa",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -424,6 +429,7 @@
     {
       "codigo": "inst-9",
       "distrito": "Moche",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -441,6 +447,7 @@
     {
       "codigo": "inst-10",
       "distrito": "Arequipa",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -458,6 +465,7 @@
     {
       "codigo": "inst-11",
       "distrito": "Chiclayo",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -475,6 +483,7 @@
     {
       "codigo": "inst-12",
       "distrito": "Los Olivos",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -492,6 +501,7 @@
     {
       "codigo": "inst-15",
       "distrito": "Huancayo",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -509,6 +519,7 @@
     {
       "codigo": "inst-17",
       "distrito": "Huanuco",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -526,6 +537,7 @@
     {
       "codigo": "inst-19",
       "distrito": "Santiago de Surco",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -543,6 +555,7 @@
     {
       "codigo": "inst-21",
       "distrito": "Santa Anita",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -560,6 +573,7 @@
     {
       "codigo": "inst-24",
       "distrito": "La Molina",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -577,6 +591,7 @@
     {
       "codigo": "inst-52",
       "distrito": "Arequipa",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PUBLICA",
       "ingreso": {
@@ -594,6 +609,7 @@
     {
       "codigo": "inst-53",
       "distrito": "Cusco",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PUBLICA",
       "ingreso": {
@@ -611,6 +627,7 @@
     {
       "codigo": "inst-63",
       "distrito": "Lima",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PUBLICA",
       "ingreso": {
@@ -628,6 +645,7 @@
     {
       "codigo": "inst-64",
       "distrito": "Pillco Marca",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PUBLICA",
       "ingreso": {
@@ -645,6 +663,7 @@
     {
       "codigo": "inst-72",
       "distrito": "Lima",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PUBLICA",
       "ingreso": {
@@ -662,6 +681,7 @@
     {
       "codigo": "inst-74",
       "distrito": "Lambayeque",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PUBLICA",
       "ingreso": {
@@ -679,6 +699,7 @@
     {
       "codigo": "inst-80",
       "distrito": "San Martín de Porres",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -696,6 +717,7 @@
     {
       "codigo": "inst-81",
       "distrito": "Santiago de Surco",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -713,6 +735,7 @@
     {
       "codigo": "inst-82",
       "distrito": "Huancayo",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -730,6 +753,7 @@
     {
       "codigo": "inst-83",
       "distrito": "Lurigancho",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -747,6 +771,7 @@
     {
       "codigo": "inst-84",
       "distrito": "Trujillo",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -764,6 +789,7 @@
     {
       "codigo": "inst-13",
       "distrito": "Victor Larco Herrera",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -781,6 +807,7 @@
     {
       "codigo": "inst-86",
       "distrito": "Pocollay",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -798,6 +825,7 @@
     {
       "codigo": "inst-87",
       "distrito": "Trujillo",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -815,6 +843,7 @@
     {
       "codigo": "inst-28",
       "distrito": "Santiago de Surco",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -832,6 +861,7 @@
     {
       "codigo": "inst-92",
       "distrito": "La Molina",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -849,6 +879,7 @@
     {
       "codigo": "inst-93",
       "distrito": "Pimentel",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {
@@ -866,6 +897,7 @@
     {
       "codigo": "inst-91",
       "distrito": "Santiago de Surco",
+      "duracion_ciclos": 10,
       "es_favorita": false,
       "gestion": "PRIVADA",
       "ingreso": {

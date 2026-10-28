@@ -49,10 +49,12 @@ export type SeccionPlan = {
   bloqueo: MotivoBloqueo[] | null
   guardada_en: string | null
 }
+// F07b: con la duración de la carrera en la institución, nula si no se conoce.
+export type InstitucionPlan = InstitucionResumen & { duracion_ciclos: number | null }
 export type PlanCarrera = {
   prioridad: Prioridad
   carrera: CarreraResumen
-  institucion: InstitucionResumen | null
+  institucion: InstitucionPlan | null
   idea_origen: OrigenIdea | null
   motivos: MotivoPublico[]
   relato: string | null
@@ -95,6 +97,8 @@ export type OpcionesTarjeta = {
   pasos: OpcionTarjeta[]
   dudas_sugeridas: OpcionTarjeta[]
   preguntas: PreguntaTarjeta[]
+  // F07b: para calcular los totales en vivo con la fórmula del servidor.
+  ciclos_por_anio: number
 }
 export type PlanesCuenta = {
   // Por prioridad: A, B y C.

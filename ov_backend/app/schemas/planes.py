@@ -105,10 +105,15 @@ class SeccionPlan(BaseModel):
     guardada_en: datetime | None
 
 
+class InstitucionPlan(InstitucionResumen):
+    duracion_ciclos: int | None
+    """Duración de la carrera en esa institución (F07b: el total de la carrera en vivo); nula si no se conoce."""
+
+
 class PlanCarrera(BaseModel):
     prioridad: Prioridad
     carrera: CarreraResumen
-    institucion: InstitucionResumen | None
+    institucion: InstitucionPlan | None
     idea_origen: OrigenIdea | None
     motivos: list[MotivoPublico]
     relato: str | None
@@ -169,6 +174,8 @@ class OpcionesTarjeta(BaseModel):
     pasos: list[OpcionTarjeta]
     dudas_sugeridas: list[OpcionTarjeta]
     preguntas: list[PreguntaTarjeta]
+    ciclos_por_anio: int
+    """F07b: para que el front calcule los totales en vivo con la misma fórmula."""
 
 
 class PlanesCuenta(BaseModel):

@@ -107,7 +107,7 @@ Código: `app/services/catalogo.py`. Se lee de la base, no de la caché, con `se
 | Ruta | Respuesta |
 |---|---|
 | `carreras?buscar=&tipo=&area=&familia=&riasec=` | Página de `{codigo, nombre, tipo, familia{codigo, nombre, area_codigo, area_nombre}, riasec[0–3]}`, por nombre |
-| `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `nombre_cine`, `ambito_laboral[]`, `ocupaciones[]`, `instituciones[]` (cada una con `ingreso`: el `Tramo` de esa institución en la familia, o `null`), `ingreso{fuente, nacional, departamentos[]}` (o `null` sin fila nacional; cada fila con `ubicacion` y `Tramo` de `jovenes` y `adultos`) y `parecidas{total, carreras[≤3]}` (misma familia y tipo) |
+| `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `nombre_cine`, `ambito_laboral[]`, `ocupaciones[]`, `instituciones[]` (cada una con `ingreso`: el `Tramo` de esa institución en la familia, o `null`, y `duracion_ciclos` de la carrera en ella, o `null`; F07b), `ingreso{fuente, nacional, departamentos[]}` (o `null` sin fila nacional; cada fila con `ubicacion` y `Tramo` de `jovenes` y `adultos`) y `parecidas{total, carreras[≤3]}` (misma familia y tipo) |
 | `ocupaciones?buscar=&grupo=&riasec=` | Página de `{codigo, codigo_onet, titulo, resumen, grupo, riasec[1–3]}`, por título |
 | `ocupaciones/{codigo}` | Lo anterior más `descripcion`, `tambien_llamado[]`, `job_zone`, `tareas[]`, `personalidad`, `estilos_trabajo[{codigo, nombre}]`, `conocimientos[]`, `aptitudes[]`, `puntajes{R…C: 0–100}` y `carreras[]` |
 | `instituciones?buscar=&tipo=&gestion=&ubicacion=` | Página de `{codigo, nombre, tipo, gestion, ubicacion{codigo, nombre}, distrito}`, por nombre |

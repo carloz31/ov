@@ -111,7 +111,7 @@ def test_hu037_detalle_de_carrera(abierto):
     assert unfv == {'codigo': INST_UNI, 'nombre': 'Universidad Nacional Federico Villarreal', 'tipo': 'UNIVERSIDAD',
                     'gestion': 'PUBLICA', 'distrito': 'Lima', 'es_favorita': False,
                     'ubicacion': {'codigo': UBIC_LIMA, 'nombre': 'Lima'},
-                    'ingreso': {'promedio': 4130, 'minimo': 1223, 'maximo': 9200}}
+                    'ingreso': {'promedio': 4130, 'minimo': 1223, 'maximo': 9200}, 'duracion_ciclos': 10}
     ingreso = detalle['ingreso']
     assert ingreso['fuente'] == 'Ponte en Carrera (MTPE)'
     assert ingreso['nacional'] == {'ubicacion': None, 'jovenes': {'promedio': 2824, 'minimo': 1240, 'maximo': 5359},

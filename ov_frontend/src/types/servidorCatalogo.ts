@@ -48,7 +48,8 @@ export type IngresoCarreraPublico = {
   departamentos: IngresoFamiliaPublico[]
 }
 // `ingreso`: de los egresados de la institución en la familia de la carrera; nulo si no hay dato.
-export type InstitucionEnCarrera = InstitucionResumen & { ingreso: TramoIngreso | null }
+// F07b: `duracion_ciclos` de la carrera en esa institución, nula si no se conoce.
+export type InstitucionEnCarrera = InstitucionResumen & { ingreso: TramoIngreso | null; duracion_ciclos: number | null }
 export type CarreraEnInstitucion = CarreraResumen & { ingreso: TramoIngreso | null }
 // Otras carreras del mismo tipo en la familia: cuántas y hasta 3 por nombre.
 export type CarrerasParecidas = { total: number; carreras: CarreraResumen[] }

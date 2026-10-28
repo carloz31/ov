@@ -19,8 +19,8 @@ from app.models import (
     TipoObjetivo,
 )
 from app.schemas.planes import (
-    AvisoPlanes, CaminoTarjeta, ComplicacionPublica, DudaPublica, Elegida, GastoPublico, Medidores, MotivoPublico,
-    OpcionesTarjeta, OpcionTarjeta, OrigenPasoPublico, OrigenSugerenciaPublico, PasoPublico, PlanCarrera,
+    AvisoPlanes, CaminoTarjeta, ComplicacionPublica, DudaPublica, Elegida, GastoPublico, InstitucionPlan, Medidores,
+    MotivoPublico, OpcionesTarjeta, OpcionTarjeta, OrigenPasoPublico, OrigenSugerenciaPublico, PasoPublico, PlanCarrera,
     PlanesCuenta, PreguntaTarjeta, RubroTarjeta, SeccionPlan, SugerenciaPublica,
 )
 from app.services.catalogo import familia_publica, resumen_carrera, resumen_institucion
@@ -100,6 +100,7 @@ def opciones_tarjeta(sesion: Session) -> OpcionesTarjeta:
         dudas_sugeridas=simples('DUDAS_SUGERIDAS'),
         preguntas=[PreguntaTarjeta(codigo=o.codigo, texto=o.texto, texto_duda=dudas[o.codigo])
                    for o in opciones_lista(sesion, 'PREGUNTAS_CONOCIMIENTO')],
+        ciclos_por_anio=CICLOS_POR_ANIO,
     )
 
 
@@ -234,8 +235,9 @@ def _plan(sesion, cuenta, tarjeta, datos, carreras, instituciones, duraciones, f
     return PlanCarrera(
         prioridad=LETRAS[tarjeta.prioridad - 1],
         carrera=resumen_carrera(carreras[tarjeta.carrera_id], favoritos),
-        institucion=None if tarjeta.institucion_id is None else resumen_institucion(
-            instituciones[tarjeta.institucion_id], favoritos),
+        institucion=None if tarjeta.institucion_id is None else InstitucionPlan(
+            **resumen_institucion(instituciones[tarjeta.institucion_id], favoritos).model_dump(),
+            duracion_ciclos=duraciones.get((tarjeta.institucion_id, tarjeta.carrera_id))),
         idea_origen=tarjeta.idea_origen,
         motivos=[MotivoPublico(posicion=m.posicion, **_elegida(sesion, m.opcion_id, m.texto_otro).model_dump())
                  for m in datos.motivos.get(tarjeta.id, [])],

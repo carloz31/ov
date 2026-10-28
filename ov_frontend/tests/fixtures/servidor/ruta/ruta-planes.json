@@ -52,6 +52,7 @@
         "texto": "Tomarme un tiempo"
       }
     ],
+    "ciclos_por_anio": 2,
     "dificultades": [
       {
         "codigo": "ECONOMICAS",
@@ -383,6 +384,7 @@
       "institucion": {
         "codigo": "inst-63",
         "distrito": "Lima",
+        "duracion_ciclos": 10,
         "es_favorita": true,
         "gestion": "PUBLICA",
         "nombre": "Universidad Nacional Federico Villarreal",
@@ -612,6 +614,7 @@
       "institucion": {
         "codigo": "inst-63",
         "distrito": "Lima",
+        "duracion_ciclos": 10,
         "es_favorita": true,
         "gestion": "PUBLICA",
         "nombre": "Universidad Nacional Federico Villarreal",

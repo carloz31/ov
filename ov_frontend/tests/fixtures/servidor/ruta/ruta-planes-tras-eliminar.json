@@ -35,6 +35,7 @@
         "texto": "Tomarme un tiempo"
       }
     ],
+    "ciclos_por_anio": 2,
     "dificultades": [
       {
         "codigo": "ECONOMICAS",

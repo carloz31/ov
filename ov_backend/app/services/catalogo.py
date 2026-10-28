@@ -206,13 +206,17 @@ def detalle_carrera(sesion: Session, cuenta: Cuenta, codigo: str) -> CarreraDeta
         IngresoInstitucion.familia_id == carrera.familia_id,
         IngresoInstitucion.institucion_id.in_(select(InstitucionCarrera.institucion_id).where(
             InstitucionCarrera.carrera_id == carrera.id))))}
+    duraciones = dict(sesion.execute(select(
+        InstitucionCarrera.institucion_id, InstitucionCarrera.duracion_ciclos).where(
+        InstitucionCarrera.carrera_id == carrera.id)).all())
     return CarreraDetalle(
         **resumen_carrera(carrera, favoritos).model_dump(), descripcion=carrera.descripcion,
         nombre_cine=carrera.nombre_cine,
         ambito_laboral=(carrera.ambito_laboral or '').splitlines(), ingreso=_ingreso(sesion, carrera),
         ocupaciones=[resumen_ocupacion(o, favoritos) for o in carrera.ocupaciones],
         instituciones=[InstitucionEnCarrera(**resumen_institucion(i, favoritos).model_dump(),
-                                            ingreso=_tramo(ingresos.get(i.id)))
+                                            ingreso=_tramo(ingresos.get(i.id)),
+                                            duracion_ciclos=duraciones.get(i.id))
                        for i in sorted(carrera.instituciones, key=lambda i: (i.busqueda, i.codigo))],
         parecidas=_parecidas(sesion, carrera, favoritos))
 

@@ -171,3 +171,12 @@ test('un 409 de crear (carrera no favorita) llega con el mensaje del servidor y 
   assert.equal(almacen.mensajeErrorServidor(respuesta), 'Primero guarda la carrera en tus favoritos')
   assert.equal(almacen.obtenerEstadoServidor().planes.estado, 'listo')
 })
+
+// F07b: los totales en vivo usan `ciclos_por_anio` y la duración de la carrera en la institución elegida.
+test('el contrato trae los ciclos por año y la duración de la carrera en cada institución', () => {
+  assert.equal(completos.opciones.ciclos_por_anio, 2)
+  const conInstitucion = completos.planes.find((p) => p.institucion)
+  assert.ok(conInstitucion && 'duracion_ciclos' in conInstitucion.institucion)
+  const detalle = jsonServidor('ruta/ruta-catalogo-carrera-psychology')
+  assert.ok(detalle.instituciones.every((i) => i.duracion_ciclos === null || Number.isInteger(i.duracion_ciclos)))
+})

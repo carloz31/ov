@@ -85,6 +85,8 @@ class IngresoCarreraPublico(BaseModel):
 class InstitucionEnCarrera(InstitucionResumen):
     ingreso: Tramo | None
     """Ingreso de los egresados de la institución en la familia de la carrera; nulo si no hay dato."""
+    duracion_ciclos: int | None
+    """Duración de la carrera en esa institución (F07b: el total de la carrera en vivo); nula si no se conoce."""
 
 
 class CarreraEnInstitucion(CarreraResumen):

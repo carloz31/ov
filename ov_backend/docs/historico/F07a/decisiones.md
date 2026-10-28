@@ -10,3 +10,10 @@
 - **Pruebas del front adaptadas en F2.** `tests/local/aventura` carga `MisPlanesLocales` (el archivo se movió, sin cambio de marcado); `servidor-catalogo-vistas` desmonta el detalle de carrera antes de montar el de ocupación (el arnés comparte las ranuras de hooks y el detalle ahora lee los planes); `servidor-perfil` espera en api los planes del servidor (ninguno sin PLANES abierta) y «Espacio libre».
 - **Plan abierto (F3).** Ruta `profile/decisions/:carrera` (`StudentPlanView`, en local redirige a Mis planes). La cabecera del módulo no cambia: la ruta cuenta como vista `profile-decisions` («Mis planes» y su guía), y «← Mis planes · Plan X · carrera» va como migas dentro de la página. La sección por defecto se fija al abrir el plan y no salta al guardar. Un plan inexistente vuelve a Mis planes con «Ese plan ya no está entre los tuyos.» (texto del front: no hay lectura de un solo plan). «Cómo encaja contigo» pide el resultado RIASEC al abrir el plan si aún no está cargado.
 - **Vista previa de dudas al pasar a «Sí» (opcional de la spec): implementada.** Una duda de pregunta abierta cuya respuesta pasa a «Sí» se ve tachada con «se resolverá al guardar».
+
+## Ajuste F07a · Mis planes v4.2 (jerarquía A / B / C)
+
+- **Sin contador de planes listos y sin «Lista para comparar» en pantalla.** El requisito de dos planes lo muestra el camino en `t-comparar`; `lista_para_comparar` sigue en el contrato. En su lugar, el sello «Plan completo» (cuatro secciones Lista) junto a «Tu primer interés»; en el perfil, «Plan completo» o «N de 4 secciones listas».
+- **Orden con «Hacer mi plan A».** En B y C, una sola permutación (esa carrera primero, las demás se corren) y el toast «{carrera} ahora es tu plan A»; se retiran «Subir / Bajar prioridad».
+- **Secciones como casillas independientes.** Sin línea ni secuencia; en A con título y estado, en B y C solo ícono o número. El detalle «{n} · {título} · {estado}» y el mensaje de bloqueo van solo en el tooltip.
+- **Sin plan A, el primer espacio libre ocupa la columna principal**, compacto como los demás; B, C y los espacios restantes van en «Rutas alternas».

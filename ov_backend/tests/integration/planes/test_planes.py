@@ -137,11 +137,14 @@ def test_hu045_totales_por_frecuencia_y_de_la_carrera(cliente, sesion):
     assert ambiental['total_primer_anio'] == 350 + 12 * 150 + 2 * 600 + 101
     # t-uni: 10 ciclos son 5 años.
     assert ambiental['total_carrera'] == 350 + 10 * (6 * 150 + 600) + 5 * 101
+    # F07b: la duración viaja con la institución para que el front recalcule en vivo.
+    assert ambiental['institucion']['duracion_ciclos'] == 10
     assert ambiental['gastos'][3] == {'rubro': None, 'otro': 'Seguro', 'monto': 101, 'frecuencia': 'ANUAL'}
     # t-privada: 11 ciclos son 5,5 años; sin división entera y redondeado solo al final (17 405,5).
     guardar(cliente, ING_AMBIENTAL, 'REALIDAD', realidad_lista(institucion=INST_PRIVADA, gastos=gastos))
     ambiental = plan(cliente, ING_AMBIENTAL)
     assert ambiental['total_carrera'] == 17406
+    assert ambiental['institucion']['duracion_ciclos'] == 11
     assert ambiental['institucion']['gestion'] == 'PRIVADA'
     # Cambiar de institución no toca los montos, que son del estudiante.
     assert [g['monto'] for g in ambiental['gastos']] == [350, 150, 600, 101]
@@ -151,7 +154,11 @@ def test_hu045_totales_por_frecuencia_y_de_la_carrera(cliente, sesion):
     sesion.commit()
     crear(cliente, PSICOLOGIA)
     guardar(cliente, PSICOLOGIA, 'REALIDAD', realidad_lista(gastos=gastos))
-    assert plan(cliente, PSICOLOGIA)['total_carrera'] is None
+    psicologia = plan(cliente, PSICOLOGIA)
+    assert psicologia['total_carrera'] is None and psicologia['institucion']['duracion_ciclos'] is None
+    # F07b: el detalle de carrera también la trae, para recalcular al cambiar de institución en edición.
+    detalle = pedir(cliente, 'GET', f'/cuentas/est-ana/catalogo/carreras/{PSICOLOGIA}')
+    assert next(i for i in detalle['instituciones'] if i['codigo'] == INST_UNI)['duracion_ciclos'] is None
 
 
 def test_opciones_de_la_tarjeta_para_la_precarga(cliente):
@@ -168,6 +175,7 @@ def test_opciones_de_la_tarjeta_para_la_precarga(cliente):
     assert [p['codigo'] for p in opciones['pasos']] == ['investigar', 'conversar', 'visitar', 'curso', 'practicar',
                                                         'otra']
     assert len(opciones['valores']) == 9 and len(opciones['dudas_sugeridas']) == 3
+    assert opciones['ciclos_por_anio'] == 2
     assert opciones['preguntas'][0] == {'codigo': 'DIA_NORMAL',
                                         'texto': '¿Sabes cómo es un día normal de alguien de {carrera}?',
                                         'texto_duda': '¿Cómo es un día normal de alguien de {carrera}?'}
