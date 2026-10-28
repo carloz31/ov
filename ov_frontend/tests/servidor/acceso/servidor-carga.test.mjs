@@ -82,24 +82,24 @@ test('las iniciales del panel salen del nombre de la cuenta', () => {
   assert.equal(app.load('src/features/adventure/hooks/useTravelerLevel.ts').inicialesViajero('Ana'), 'AN')
 })
 
-test('el resumen del apoderado en api usa GET /familia: hijo, avances y solo el aviso de resultados', () => {
+// Ajuste inicio-apoderado: la tarjeta del hijo elegido con su título y su avance; el avance hacia el diploma
+// pasó a «Tus actividades».
+test('el resumen del apoderado en api usa GET /familia: hijo elegido, título, avance y sus cuestionarios', () => {
   const app = fixtureApoderado({ portal: true })
   const familia = jsonServidor('ruta/ruta-familia')
   const { ParentChildServerSummary } = app.load('src/features/parent/components/ParentChildServerSummary.tsx')
   const texto = (e) => JSON.stringify(copia(e))
-  const tree = ParentChildServerSummary({ familia })
-  const cabecera = tree.props.children[1]
-  assert.deepEqual([cabecera.props.title, cabecera.props.initials, cabecera.props.details], ['Ana', 'AN', undefined])
-  const [hijo, diploma] = cabecera.props.metrics.props.children
-  assert.deepEqual([hijo.props.label, hijo.props.detail], ['Avance de Ana', '9 de 11 actividades'])
-  assert.deepEqual([diploma.props.label, diploma.props.detail], ['Su avance hacia el diploma', '2 de 2 actividades'])
-  assert.match(texto(tree), /Podrás ver los resultados de Ana cuando completes tus actividades\./)
-  assert.doesNotMatch(texto(tree), /Cuestionarios que se compartirán|Salón/)
-  assert.match(texto(ParentChildServerSummary({ familia: { ...familia, estudiantes: [] } })), /Todavía no tienes un hijo vinculado\./)
+  const resultados = { habilitado: false, resultados: null, error: '', reintentar() {} }
+  const tree = ParentChildServerSummary({ familia, hijo: familia.estudiantes[0], onElegir() {}, resultados })
+  const tarjeta = tree.props.children[1]
+  assert.deepEqual([tarjeta.props.hijo.nombre, tarjeta.props.diploma], ['Ana', true])
+  const vacia = ParentChildServerSummary({ familia: { ...familia, estudiantes: [] }, hijo: null, onElegir() {}, resultados })
+  assert.match(texto(vacia), /Todavía no tienes un hijo vinculado\. Pídele a la orientadora del colegio que te vincule\./)
   const { avanceConFamilia, nombreHijo } = app.load('src/features/parent/lib/familia.ts')
   const local = { completed: 0, total: 5, percent: 0, complete: false, next: 'x' }
   assert.deepEqual(copia(avanceConFamilia(local, familia)), { completed: 2, total: 2, percent: 100, complete: true, next: 'x' })
   assert.equal(avanceConFamilia(local, null), local)
   assert.equal(nombreHijo(familia, 'Gabriela'), 'Ana')
+  assert.equal(nombreHijo(familia, 'Gabriela', 'est-luis'), 'Luis')
   assert.equal(nombreHijo(null, 'Gabriela'), 'Gabriela')
 })

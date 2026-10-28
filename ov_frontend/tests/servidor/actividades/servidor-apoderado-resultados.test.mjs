@@ -54,13 +54,17 @@ test('la consulta usa la cuenta del apoderado y pide el catálogo; sin diploma d
   assert.equal(sinDiploma.detalle.mensaje, 'Completa tus actividades para ver los resultados de tu hijo')
 })
 
-test('el resumen del hijo lista los resultados con enlace a la explicada; sin diploma, el aviso de siempre', () => {
+// Ajuste inicio-apoderado: los cuestionarios se ven siempre; con el diploma, la clave y «Ver resultado» hacia la
+// explicada; sin él, el candado en lugar del botón.
+test('la tarjeta del hijo muestra la clave y el enlace a la explicada con el diploma; sin él, el candado', () => {
   const app = fixtureApoderado()
   const { ParentChildServerSummary } = app.load('src/features/parent/components/ParentChildServerSummary.tsx')
   const { resultadoFamilia } = app.load('src/lib/servidor/adaptadoresInstrumentos.ts')
   const conDiploma = familia(true)
   const marcado = html(ParentChildServerSummary, {
     familia: conDiploma,
+    hijo: conDiploma.estudiantes[0],
+    onElegir() {},
     resultados: {
       habilitado: true,
       resultados: RESULTADOS.map((r) => resultadoFamilia(r, CATALOGO)),
@@ -69,18 +73,23 @@ test('el resumen del hijo lista los resultados con enlace a la explicada; sin di
     },
   })
   assert.match(marcado, /Test de intereses \(RIASEC\)/)
-  assert.match(marcado, /Investigativa · Realista · Artística/)
+  assert.match(marcado, /Lo que más destaca: <strong>Investigativa · Realista · Artística<\/strong>/)
   assert.match(
     marcado,
     new RegExp(`href="/parent/children/${conDiploma.estudiantes[0].codigo}/questionnaires/TEST-RIASEC"`),
   )
-  assert.doesNotMatch(marcado, /Podrás ver los resultados|puntaje|correlaci/)
+  assert.match(marcado, /Estos resultados son exploratorios/)
+  assert.doesNotMatch(marcado, /Verás su resultado|puntaje|correlaci/)
+  const sinDiploma = familia(false)
   const bloqueado = html(ParentChildServerSummary, {
-    familia: familia(false),
+    familia: sinDiploma,
+    hijo: sinDiploma.estudiantes[0],
+    onElegir() {},
     resultados: { habilitado: false, resultados: null, error: '', reintentar() {} },
   })
-  assert.match(bloqueado, /Podrás ver los resultados de .+ cuando completes tus actividades\./)
-  assert.doesNotMatch(bloqueado, /questionnaires/)
+  assert.match(bloqueado, /Completado · /)
+  assert.match(bloqueado, /Verás su resultado cuando completes tus actividades/)
+  assert.doesNotMatch(bloqueado, /questionnaires|Lo que más destaca|exploratorios/)
 })
 
 test('la explicada del apoderado muestra qué mide, el código de interés y cada dimensión con su descripción', () => {

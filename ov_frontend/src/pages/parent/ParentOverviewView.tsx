@@ -1,6 +1,7 @@
 import { ParentRouteSummary } from '@/features/parent/components/ParentRouteSummary'
 import { ParentConversationNotice } from '@/features/parent/components/ParentConversationNotice'
 import { ParentChildrenSummary } from '@/features/parent/components/ParentChildrenSummary'
+import { ParentHomeServer } from '@/features/parent/components/ParentHomeServer'
 import { useParentOverview } from '@/features/parent/hooks/useParentOverview'
 
 import { GuideDialogue } from '@/components/common/GuideDialogue'
@@ -8,6 +9,7 @@ import { parentGuides } from '@/data/content/guideTexts'
 import { useParentProfile } from '@/features/parent/hooks/useParentProfile'
 import { parentMotivation } from '@/features/parent/data/parentMotivation'
 import '@/features/parent/styles/parent-activities.css'
+import '@/features/parent/styles/inicio-apoderado.css'
 
 function ParentOverviewView() {
   const model = useParentOverview()
@@ -22,11 +24,17 @@ function ParentOverviewView() {
         <h1 className="text-3xl font-bold">Hola, {parentProfile.firstName}</h1>
         <p className="text-muted-foreground">{parentMotivation('greeting')}</p>
       </header>
-      <ParentChildrenSummary model={model} />
-      <div className="flex flex-col gap-4">
-        <ParentConversationNotice model={model} />
-        <ParentRouteSummary model={model} />
-      </div>
+      {model.inicio ? (
+        <ParentHomeServer model={model} inicio={model.inicio} />
+      ) : (
+        <>
+          <ParentChildrenSummary model={model} />
+          <div className="flex flex-col gap-4">
+            <ParentConversationNotice model={model} />
+            <ParentRouteSummary model={model} />
+          </div>
+        </>
+      )}
       <GuideDialogue audience="parent" text={parentGuides.overview} />
     </main>
   )

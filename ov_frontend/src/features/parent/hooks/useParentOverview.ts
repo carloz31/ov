@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 
 import { parentChildren } from '@/features/parent/data/parentPortal'
@@ -12,14 +12,20 @@ import {
 } from '@/features/parent/lib/selectors'
 import { activities, questionnaires, studentProfiles } from '@/data/demo/studentProfiles'
 import { generalProgress } from '@/features/student-tracking/lib/selectors'
-import { avanceConFamilia, nombreHijo } from '@/features/parent/lib/familia'
+import { avanceConFamilia, hijoElegido, nombreHijo } from '@/features/parent/lib/familia'
+import { estadoConversaciones } from '@/features/parent/lib/inicio'
 import { useResultadosHijo } from './useResultadosHijo'
 
 import { usePrioritySettings } from '@/features/counselor/hooks/usePrioritySettings'
 import { canAccessFamilyConversations, useAdventure } from '@/store/adventureStore'
 import { familyConversationTopics, familyConversationDemoData } from '@/data/content/familyConversations'
 import { modoApi } from '@/config/env'
-import { useConversacionesApoderadoSeccion } from '@/store/servidor/apoderadoConversaciones'
+import {
+  elegirHijo,
+  hijoActivo,
+  reintentarConversacionesApoderado,
+  useConversacionesApoderadoSeccion,
+} from '@/store/servidor/apoderadoConversaciones'
 
 export function useParentOverview() {
   const mainRef = useRef<HTMLElement>(null)
@@ -38,8 +44,23 @@ export function useParentOverview() {
   const settings = usePrioritySettings()
   const [params, setParams] = useSearchParams()
   const child = selectedFamilyChild(parentChildren, params.get('child'))
+  // Ajuste inicio-apoderado: en api, los hijos del servidor; el elegido es el mismo de Conversaciones
+  // (`hijoActivo`) y se refleja en `?child=`. Una URL con un hijo vinculado lo elige.
+  const hijos = useMemo(() => (modoApi ? (familia?.estudiantes ?? []) : []), [familia])
+  const seccionConversaciones = useConversacionesApoderadoSeccion(modoApi && hijos.length > 0)
+  const hijo = hijoElegido(familia, seccionConversaciones.hijo ?? hijoActivo())
+  const pedido = params.get('child')
   useEffect(() => {
-    if (child && params.get('child') !== child.id) {
+    if (!modoApi || !hijo) return
+    if (pedido && pedido !== hijo.codigo && hijos.some((h) => h.codigo === pedido)) elegirHijo(pedido)
+    else if (pedido !== hijo.codigo) {
+      const next = new URLSearchParams(params)
+      next.set('child', hijo.codigo)
+      setParams(next, { replace: true })
+    }
+  }, [hijo, hijos, pedido, params, setParams])
+  useEffect(() => {
+    if (!modoApi && child && params.get('child') !== child.id) {
       const next = new URLSearchParams(params)
       next.set('child', child.id)
       setParams(next, { replace: true })
@@ -59,27 +80,35 @@ export function useParentOverview() {
     return () => window.clearTimeout(timer)
   }, [requestedDiploma, route.complete])
   const shared = questionnaires.filter((q) => familySharedIds(settings).includes(q.id))
-  // F08: en api, el avance de las conversaciones con el hijo activo (sin la sección abierta, ninguna).
-  const servidor = useConversacionesApoderadoSeccion(modoApi).seccion.datos
-  const conversation =
-    modoApi && servidor
-      ? {
-          available: servidor.total,
-          completed: servidor.completadas,
-          pending: servidor.total - servidor.completadas,
-        }
-      : conversationSummary(
-          familyConversationTopics,
-          familyConversationDemoData,
-          state.conversations,
-          canAccessFamilyConversations(state),
-        )
+  // Solo local: el resumen de conversaciones de demostración (en api, la tarjeta lee la sección del hijo).
+  const conversation = conversationSummary(
+    familyConversationTopics,
+    familyConversationDemoData,
+    state.conversations,
+    canAccessFamilyConversations(state),
+  )
   const student = studentProfiles.find((s) => s.id === child?.id)
   const progress = student ? generalProgress(student, activities) : null
-  // F03: en api, los resultados del hijo (con el diploma obtenido).
-  const resultadosHijo = useResultadosHijo(familia, familia?.estudiantes[0]?.codigo)
+  // F03: en api, los resultados del hijo elegido (con el diploma obtenido).
+  const resultadosHijo = useResultadosHijo(familia, hijo?.codigo)
   return {
     resultadosHijo,
+    // Ajuste inicio-apoderado: el Inicio del servidor (solo api); en local, null y las vistas de siempre.
+    inicio: modoApi
+      ? {
+          familia,
+          hijos,
+          hijo,
+          elegir: (codigo: string) => {
+            elegirHijo(codigo)
+            const next = new URLSearchParams(params)
+            next.set('child', codigo)
+            setParams(next, { replace: true })
+          },
+          conversaciones: estadoConversaciones(seccionConversaciones.seccion),
+          reintentarConversaciones: () => void reintentarConversacionesApoderado(),
+        }
+      : null,
     mainRef,
     diplomaRef,
     highlightDiploma,
@@ -94,7 +123,7 @@ export function useParentOverview() {
     progress,
     // Solo api: el hijo y el avance del servidor; las vistas dejan los datos de demostración.
     familia,
-    nombreHijo: nombreHijo(familia, student?.nombres),
-    variosHijos: !familia && parentChildren.length > 1,
+    nombreHijo: nombreHijo(familia, student?.nombres, hijo?.codigo),
+    variosHijos: !modoApi && parentChildren.length > 1,
   }
 }
