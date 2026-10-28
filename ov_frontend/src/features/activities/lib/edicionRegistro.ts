@@ -125,13 +125,14 @@ export function pieConsulta(
 // Lo que dice Lumi en la burbuja de una consigna: el recuerdo del eco y, en la consulta, la pista del ítem por
 // ampliar (que se resalta), en una sola burbuja. Sin ninguno de los dos, Lumi no habla.
 // F03: `cita` es el recuerdo completo de un resultado (código de interés, ocupaciones), sin registro de origen.
-// F07b: `chips`, los motivos del plan A que acompañan su cita.
+// F07b: `chips`, los motivos del plan A justo tras su cita, y `citaTras`, lo que sigue después de ellos.
 export type EcoRegistro = {
   estado: 'DISPONIBLE' | 'POR_DESARROLLAR'
   texto: string
   titulo: string
   cita?: string
   chips?: string[]
+  citaTras?: string
 }
 export const INTRO_PISTA = 'Aquí podrías contar un poco más:'
 export function burbujaRegistro(eco?: EcoRegistro, pista?: string) {

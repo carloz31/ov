@@ -42,3 +42,23 @@ test('t_comparar y t_proyecto tienen su consigna con el eco de sus referencias',
   assert.equal(consignaProyecto.item, 't-proyecto-paso')
   assert.deepEqual([...consignaProyecto.eco].sort(), PROYECTO.referencias.map((r) => r.codigo).sort())
 })
+
+test('t-proyecto: los motivos van justo tras la cita del plan y las citas se unen sin punto doble', () => {
+  const { ecoDeReferencias, unirCitas } = fixtureServidor().load('src/lib/servidor/adaptadoresRegistro.ts')
+  const eco = contenido('t_proyecto').nodos.find((n) => n.tipo === 'consigna').eco
+  const referencias = eco.map((codigo) => ref(PROYECTO, codigo))
+  const plan = ref(PROYECTO, 't-ref-plan-a')
+  const pasos = ref(PROYECTO, 't-ref-pasos-plan-a')
+  assert.deepEqual(copia(ecoDeReferencias(referencias)), {
+    cita: `Tu plan A, Psicología: «${plan.cita}»`,
+    chips: ['Ayudar a otros', 'Me gusta explicar'],
+    citaTras: `Tus pasos: ${pasos.opciones.map((o) => `«${o.texto}»`).join(', ')} Tu primer interés: Psicología`,
+  })
+  assert.doesNotMatch(JSON.stringify(ecoDeReferencias(referencias)), /\.»\./)
+  // Sin chips (t-comparar), una sola cita; sin dato, nada.
+  assert.deepEqual(copia(ecoDeReferencias(COMPARAR.referencias)), {
+    cita: 'Tus planes: A · Psicología, B · Ciencias de la Comunicación',
+  })
+  assert.equal(ecoDeReferencias(referencias.map((r) => ({ ...r, estado: 'SIN_DATO' }))), undefined)
+  assert.equal(unirCitas(['Uno', 'Dos.', '«Tres.»', 'Cuatro']), 'Uno. Dos. «Tres.» Cuatro')
+})

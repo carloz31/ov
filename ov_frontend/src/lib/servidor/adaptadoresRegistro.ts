@@ -49,6 +49,28 @@ export function citaReferencia(referencia: ReferenciaResuelta | undefined): stri
   return undefined
 }
 
+// Une las citas en una burbuja: punto y espacio entre ellas, solo espacio si la anterior ya cierra con punto
+// (también dentro de las comillas: «…mío.» Tus pasos…).
+export const unirCitas = (citas: string[]) =>
+  citas.reduce((texto, cita) => (!texto ? cita : `${texto}${/[.!?]»?$/.test(texto) ? ' ' : '. '}${cita}`), '')
+
+// F07b: la zona de eco de las referencias que no son TEXTO, en el orden del contenido. Los motivos del plan A van
+// como chips justo tras su cita (`cita`), y lo que sigue, después de los chips (`citaTras`). Sin dato, nada.
+export function ecoDeReferencias(referencias: ReferenciaResuelta[]) {
+  const corte = referencias.findIndex((r) => chipsReferencia(r).length > 0)
+  const citas = (lista: ReferenciaResuelta[]) =>
+    unirCitas(lista.map(citaReferencia).filter((c): c is string => !!c))
+  const cita = citas(corte < 0 ? referencias : referencias.slice(0, corte + 1))
+  const citaTras = corte < 0 ? '' : citas(referencias.slice(corte + 1))
+  if (!cita && !citaTras) return undefined
+  const chips = corte < 0 ? [] : chipsReferencia(referencias[corte])
+  return {
+    cita: cita || citaTras,
+    ...(chips.length && cita ? { chips } : {}),
+    ...(citaTras && cita ? { citaTras } : {}),
+  }
+}
+
 // F07b: los motivos del plan A (referencia PLAN), que la zona de eco muestra como chips.
 export function chipsReferencia(referencia: ReferenciaResuelta | undefined): string[] {
   if (referencia?.estado !== 'DISPONIBLE' || referencia.tipo !== 'PLAN') return []

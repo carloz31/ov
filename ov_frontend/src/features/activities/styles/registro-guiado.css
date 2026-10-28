@@ -210,3 +210,7 @@
   font-size: 13px;
   font-weight: 600;
 }
+.sx-root .sx-eco-tras {
+  display: block;
+  margin-top: 6px;
+}
