@@ -15,7 +15,7 @@ type Encaje = { carrera: string; principal: string; segundo: string } | null
 
 const mismoMotivo = (a: MotivoBorrador, codigo: string) => 'opcion' in a && a.opcion === codigo
 
-// F07a (F07-pantallas §4.2): «Por qué la elijo». En lectura, idea, motivos (el principal primero) y lo que vivió,
+// F07a (F07b-pantallas §4.2): «Por qué la elijo». En lectura, idea, motivos (el principal primero) y lo que vivió,
 // con la repregunta fija si quedó en proceso; en edición, los tres campos. Arriba, «Cómo encaja contigo».
 export function SeccionPorQue({
   plan,

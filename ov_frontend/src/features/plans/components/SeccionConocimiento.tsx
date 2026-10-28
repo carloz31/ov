@@ -15,7 +15,7 @@ import type { OpcionesTarjeta, PlanCarrera } from '@/types/servidor'
 
 const NOTA_RESPUESTA = { SI: '«Sí»', MAS_O_MENOS: '«Más o menos»', NO: '«No»' }
 
-// F07a (F07-pantallas §4.3): «Qué tanto la conozco». En edición, las cinco preguntas y «Mis dudas» con la vista
+// F07a (F07b-pantallas §4.3): «Qué tanto la conozco». En edición, las cinco preguntas y «Mis dudas» con la vista
 // previa de lo que hará el servidor al guardar (las de respuesta se crean, se conservan o se resuelven solas); las
 // sugeridas y las propias se agregan y se quitan. En lectura, cada respuesta y las dudas con su origen y estado.
 export function SeccionConocimiento({

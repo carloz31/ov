@@ -13,7 +13,7 @@ import { SeccionConocimiento } from './SeccionConocimiento'
 import { SeccionPorQue } from './SeccionPorQue'
 import '../styles/planes.css'
 
-// F07a (F07-pantallas §4): un plan abierto. A la izquierda, el menú de secciones; a la derecha, solo la sección
+// F07a (F07b-pantallas §4): un plan abierto. A la izquierda, el menú de secciones; a la derecha, solo la sección
 // elegida, en lectura («Editar») o en edición («Cancelar» / «Guardar sección»). REALIDAD y PASOS llegan en F07b.
 export function PlanAbierto({
   carrera,

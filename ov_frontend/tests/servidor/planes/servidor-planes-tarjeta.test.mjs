@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { cargarAlmacen, copia, elementos, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
-// F07a (F07-pantallas §4): el plan abierto con menú de secciones, lectura y edición de POR_QUE y CONOCIMIENTO,
+// F07a (F07b-pantallas §4): el plan abierto con menú de secciones, lectura y edición de POR_QUE y CONOCIMIENTO,
 // sección bloqueada, sección por defecto y plan inexistente, con los fixtures ruta-*.
 const texto = (n) =>
   Array.isArray(n)

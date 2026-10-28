@@ -422,7 +422,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
   - **F07a · Implementado:** crear desde favoritos, ordenar A/B/C, eliminar, estado de cada sección y qué actividad la abre, aviso de misma familia, opción inicial, POR_QUE y CONOCIMIENTO (las dudas se crean y se cierran; todavía sin sugerencias).
     - **Quedó:** en api, Mis planes con la tarjeta v4 (`features/plans`), el diálogo de crear desde favoritas, el plan abierto (`profile/decisions/:carrera`) con menú de secciones y lectura/edición de POR_QUE y CONOCIMIENTO, el bloque de plan del detalle de carrera y el capítulo III del perfil con los planes del servidor. Ajuste al backend sin modelo: `crear` exige que la carrera sea favorita (409). Las acciones vencen `planes` y un desbloqueo `SECCION_PLAN` también. Pendientes nuevos: «De tu camino» (cita de 1.7) y los valores de 2.3 primero.
   - **F07b:** REALIDAD (presupuesto con precarga y totales, financiamiento, complicaciones), pasos sugeridos por el LLM desde dudas y complicaciones (aceptar, editar, descartar, respaldo), PASOS (pendiente/hecho), medidores y las actividades `t-comparar` y `t-proyecto`.
-- **Pantallas:** las de F07a quedaron decididas e implementadas; las de F07b (presupuesto, pasos, sugerencias y medidores) están en `docs/specs/F07-pantallas.md` (§7–§13), que sigue en `specs/` como insumo de F07b.
+- **Pantallas:** las de F07a quedaron decididas e implementadas; las de F07b (presupuesto, pasos, sugerencias y medidores) están en `docs/specs/F07b-pantallas.md` (§7–§13), que sigue en `specs/` como insumo de F07b.
 - **Ajustes al backend posibles:** los que salgan al aterrizar los textos y listas de la tarjeta.
 
 #### F08 · Familia

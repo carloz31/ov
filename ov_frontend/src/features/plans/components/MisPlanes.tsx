@@ -10,7 +10,7 @@ import { DialogoCrearPlan } from './DialogoCrearPlan'
 import { TarjetaPlan } from './TarjetaPlan'
 import '../styles/planes.css'
 
-// F07a (F07-pantallas §2): Mis planes con los planes del servidor. Tres espacios A, B y C; el aviso de misma
+// F07a (F07b-pantallas §2): Mis planes con los planes del servidor. Tres espacios A, B y C; el aviso de misma
 // familia; crear desde favoritas, ordenar y eliminar.
 export function MisPlanes() {
   const focus = useReturnFocus()

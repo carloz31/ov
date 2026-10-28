@@ -14,7 +14,7 @@ const SECCIONES: CodigoSeccionPlan[] = ['POR_QUE', 'CONOCIMIENTO', 'REALIDAD', '
 const esSeccion = (valor: string | null): valor is CodigoSeccionPlan =>
   SECCIONES.includes(valor as CodigoSeccionPlan)
 
-// F07a (F07-pantallas §4): un plan abierto, con una sola sección a la vista. Sin `?seccion=`, abre la que indica
+// F07a (F07b-pantallas §4): un plan abierto, con una sola sección a la vista. Sin `?seccion=`, abre la que indica
 // el botón de su tarjeta (la primera abierta no lista, o la 1) y la conserva aunque al guardar cambie la
 // siguiente. Si la carrera no tiene plan (eliminado o enlace viejo), vuelve a Mis planes con un aviso.
 export function usePlanAbierto(carrera: string, seccionUrl: string | null, avisoInicial?: Omit<AvisoPlan, 'id'>) {

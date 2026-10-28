@@ -5,7 +5,7 @@ import { nombresTipoCarrera } from '@/lib/servidor/adaptadoresCatalogo'
 import { appPaths } from '@/routes/paths'
 import type { CarreraResumen, PlanCarrera } from '@/types/servidor'
 
-// F07a (F07-pantallas §3): elegir entre las carreras favoritas la del plan nuevo. Las que ya son plan quedan
+// F07a (F07b-pantallas §3): elegir entre las carreras favoritas la del plan nuevo. Las que ya son plan quedan
 // deshabilitadas; un plan solo se crea desde una favorita.
 export function DialogoCrearPlan({
   abierto,

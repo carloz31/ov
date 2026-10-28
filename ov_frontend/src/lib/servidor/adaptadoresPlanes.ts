@@ -16,7 +16,7 @@ import type {
   SeccionPlan,
 } from '@/types/servidor'
 
-// F07a: la tarjeta v4 a partir de GET /planes. Los textos de pantalla son del front (F07-pantallas §0); los de las
+// F07a: la tarjeta v4 a partir de GET /planes. Los textos de pantalla son del front (F07b-pantallas §0); los de las
 // listas, preguntas, dudas y bloqueos llegan del servidor y se muestran tal cual. Solo importa tipos.
 
 export const TITULOS_SECCION: Record<CodigoSeccionPlan, string> = {
@@ -89,7 +89,7 @@ export const resumenDudas = (dudas: DudaPublica[]) => {
   return `${abiertas} ${abiertas === 1 ? 'abierta' : 'abiertas'} · ${resueltas} ${resueltas === 1 ? 'resuelta' : 'resueltas'}`
 }
 
-// La línea de cada entrada del menú del plan (F07-pantallas §4).
+// La línea de cada entrada del menú del plan (F07b-pantallas §4).
 export function resumenSeccion(plan: PlanCarrera, seccion: SeccionPlan, opciones: OpcionesTarjeta) {
   if (seccion.estado === 'BLOQUEADA') return mensajeBloqueo(seccion)
   if (seccion.estado === 'POR_EMPEZAR') return 'Todavía nada'

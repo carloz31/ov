@@ -9,7 +9,7 @@ import {
 import type { CodigoSeccionPlan, OpcionesTarjeta, PlanCarrera } from '@/types/servidor'
 import { PildoraEstado } from './PildoraEstado'
 
-// F07a (F07-pantallas §4): el menú del plan abierto. Cabecera del plan y una entrada por sección con su título,
+// F07a (F07b-pantallas §4): el menú del plan abierto. Cabecera del plan y una entrada por sección con su título,
 // su píldora y una línea de resumen; las bloqueadas también se pueden elegir (muestran su bloqueo).
 export function MenuSeccionesPlan({
   plan,

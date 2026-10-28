@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { cargarAlmacen, copia, elementos, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
-// F07a (F07-pantallas §2, §3 y §5): Mis planes, crear desde favoritas, ordenar, eliminar, el bloque del detalle de
+// F07a (F07b-pantallas §2, §3 y §5): Mis planes, crear desde favoritas, ordenar, eliminar, el bloque del detalle de
 // carrera y el perfil, en api, con los fixtures ruta-*.
 const texto = (n) =>
   Array.isArray(n)

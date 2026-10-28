@@ -16,7 +16,7 @@ import { appPaths } from '@/routes/paths'
 import type { OpcionesTarjeta, PlanCarrera } from '@/types/servidor'
 import { PildoraEstado } from './PildoraEstado'
 
-// F07a (F07-pantallas §2): el frente de un plan del servidor en Mis planes, sobre el marcado de la tarjeta local.
+// F07a (F07b-pantallas §2): el frente de un plan del servidor en Mis planes, sobre el marcado de la tarjeta local.
 export function TarjetaPlan({
   plan,
   indice,
