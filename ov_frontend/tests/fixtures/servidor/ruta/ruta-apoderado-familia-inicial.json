@@ -9,19 +9,64 @@
     "obtenido": false,
     "obtenido_en": null
   },
-  "estudiante": {
-    "avance": {
-      "completadas": 9,
-      "porcentaje": 81.82,
-      "total": 11
+  "estudiantes": [
+    {
+      "avance": {
+        "completadas": 9,
+        "porcentaje": 81.82,
+        "total": 11
+      },
+      "codigo": "est-ana",
+      "cuestionarios": [
+        {
+          "aplicaciones": [
+            {
+              "aplicacion": "APL-RIASEC",
+              "completado_en": "2026-10-07T10:00:00",
+              "momento": "UNICA",
+              "nombre": "Intereses"
+            }
+          ],
+          "instrumento": "TEST-RIASEC",
+          "nombre": "Test de intereses (RIASEC)"
+        }
+      ],
+      "nivel_actual": {
+        "cita_lumi": "Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.",
+        "descripcion": "Ya reconoces señales sobre lo que disfrutas, lo que haces bien y los retos que despiertan tu curiosidad.",
+        "numero": 2,
+        "titulo": "Recolector de pistas"
+      },
+      "nombre": "Ana"
     },
-    "codigo": "est-ana",
-    "nivel_actual": {
-      "cita_lumi": "Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.",
-      "descripcion": "Ya reconoces señales sobre lo que disfrutas, lo que haces bien y los retos que despiertan tu curiosidad.",
-      "numero": 2,
-      "titulo": "Recolector de pistas"
-    },
-    "nombre": "Ana"
-  }
+    {
+      "avance": {
+        "completadas": 4,
+        "porcentaje": 36.36,
+        "total": 11
+      },
+      "codigo": "est-luis",
+      "cuestionarios": [
+        {
+          "aplicaciones": [
+            {
+              "aplicacion": "APL-RIASEC",
+              "completado_en": null,
+              "momento": "UNICA",
+              "nombre": "Intereses"
+            }
+          ],
+          "instrumento": "TEST-RIASEC",
+          "nombre": "Test de intereses (RIASEC)"
+        }
+      ],
+      "nivel_actual": {
+        "cita_lumi": "Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.",
+        "descripcion": "Ya reconoces señales sobre lo que disfrutas, lo que haces bien y los retos que despiertan tu curiosidad.",
+        "numero": 2,
+        "titulo": "Recolector de pistas"
+      },
+      "nombre": "Luis"
+    }
+  ]
 }

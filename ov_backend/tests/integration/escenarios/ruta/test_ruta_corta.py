@@ -506,7 +506,8 @@ def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):
         completar(cliente, actividad, 'apo-rosa')
     familia = pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')
     assert familia['diploma']['obtenido'] is True and familia['avance']['porcentaje'] == 100.0
-    assert familia['estudiante']['codigo'] == 'est-ana' and familia['estudiante']['avance']['completadas'] == 4
+    ana, luis = familia['estudiantes']
+    assert ana['codigo'] == 'est-ana' and ana['avance']['completadas'] == 4 and luis['codigo'] == 'est-luis'
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados') == []
     assert pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')['carta_pendiente'] is True
 

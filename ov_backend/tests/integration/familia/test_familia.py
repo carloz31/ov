@@ -1,5 +1,6 @@
 """B12: ruta del apoderado, diploma, avance del hijo y sus resultados (HU-078–080). DATO DE PRUEBA."""
 
+from datetime import datetime
 from unittest.mock import ANY
 
 from sqlalchemy import func, select
@@ -19,8 +20,22 @@ def familia(cliente, cuenta='apo-rosa', esperado=200):
     return pedir(cliente, 'GET', f'/cuentas/{cuenta}/familia', esperado=esperado)
 
 
-def resultados(cliente, esperado=200):
-    return pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados', esperado=esperado)
+def resultados(cliente, esperado=200, estudiante=None):
+    consulta = '' if estudiante is None else f'?estudiante={estudiante}'
+    return pedir(cliente, 'GET', f'/cuentas/apo-rosa/familia/resultados{consulta}', esperado=esperado)
+
+
+def hijo(cliente, codigo='est-ana'):
+    return next(e for e in familia(cliente)['estudiantes'] if e['codigo'] == codigo)
+
+
+def hacer_visible(aplicacion, instrumento='TEST-PARTIDA-LLEGADA', salon='5A'):
+    """Configura un cuestionario más como visible al apoderado en el salón (no está en `ruta`)."""
+    with aplicacion.state.fabrica_sesiones.begin() as sesion:
+        salon_id = sesion.scalar(select(modelos.Salon.id).where(modelos.Salon.codigo == salon))
+        instrumento_id = sesion.scalar(select(modelos.Instrumento.id).where(modelos.Instrumento.codigo == instrumento))
+        sesion.add(modelos.SalonInstrumento(salon_id=salon_id, instrumento_id=instrumento_id, es_prioritario=False,
+                                            visible_apoderado=True))
 
 
 def completar_ruta_apoderado(cliente):
@@ -67,21 +82,29 @@ def test_codigo_del_diploma():
 
 def test_avance_y_nivel_del_hijo(cliente, sesion):
     total = requeridas(sesion, 'ESTUDIANTE')
-    hijo = familia(cliente)['estudiante']
-    assert hijo == {'codigo': 'est-ana', 'nombre': 'Ana', 'nivel_actual': {'numero': 1, 'titulo': 'Observador del horizonte',
-                                                                      'descripcion': ANY, 'cita_lumi': ANY},
-                    'avance': {'completadas': 0, 'total': total, 'porcentaje': 0.0}}
+    ana = hijo(cliente)
+    assert ana == {'codigo': 'est-ana', 'nombre': 'Ana', 'nivel_actual': {'numero': 1, 'titulo': 'Observador del horizonte',
+                                                                     'descripcion': ANY, 'cita_lumi': ANY},
+                   'avance': {'completadas': 0, 'total': total, 'porcentaje': 0.0}, 'cuestionarios': ANY}
     avanzar(cliente)
-    hijo = familia(cliente)['estudiante']
+    ana = hijo(cliente)
     # El recorrido completa T0 (sube al nivel 2) y t-expectativas, todas requeridas.
-    assert hijo['avance']['completadas'] == 4 and hijo['nivel_actual']['numero'] == 2
+    assert ana['avance']['completadas'] == 4 and ana['nivel_actual']['numero'] == 2
 
 
-def test_sin_vinculo_activo_no_hay_estudiante(cliente, aplicacion):
+def test_todos_los_hijos_en_el_orden_de_sus_vinculos(cliente):
+    avanzar(cliente)
+    estudiantes = familia(cliente)['estudiantes']
+    assert [e['codigo'] for e in estudiantes] == ['est-ana', 'est-luis']
+    # Cada hijo con su propio avance: Ana avanzó, Luis no.
+    assert estudiantes[0]['avance']['completadas'] == 4 and estudiantes[1]['avance']['completadas'] == 0
+
+
+def test_sin_vinculo_activo_no_hay_estudiantes(cliente, aplicacion):
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         for vinculo in sesion.scalars(select(modelos.VinculoFamiliar)):
             vinculo.es_activo = False
-    assert familia(cliente)['estudiante'] is None
+    assert familia(cliente)['estudiantes'] == []
     completar_ruta_apoderado(cliente)
     assert resultados(cliente, 409)['detail']['mensaje'] == 'La cuenta no pertenece a un vínculo familiar'
 
@@ -103,3 +126,52 @@ def test_resultados_del_hijo_con_ruta_completa_e_instrumento_visible(cliente, ap
 def test_instrumento_visible_sin_resultado_revelado_no_aparece(cliente):
     completar_ruta_apoderado(cliente)
     assert resultados(cliente) == []
+
+
+def test_cuestionarios_visibles_sin_resultado_y_sin_diploma(cliente):
+    # Sin diploma: los cuestionarios y su estado llegan; los resultados siguen bloqueados.
+    for codigo in ('est-ana', 'est-luis'):
+        assert hijo(cliente, codigo)['cuestionarios'] == [{
+            'instrumento': 'TEST-RIASEC', 'nombre': 'Test de intereses (RIASEC)',
+            'aplicaciones': [{'aplicacion': 'APL-RIASEC', 'nombre': 'Intereses', 'momento': 'UNICA',
+                              'completado_en': None}]}]
+    revelar_intereses(cliente)
+    [riasec] = hijo(cliente)['cuestionarios']
+    assert riasec['aplicaciones'][0]['completado_en'] == FECHA
+    assert hijo(cliente, 'est-luis')['cuestionarios'][0]['aplicaciones'][0]['completado_en'] is None
+    assert resultados(cliente, 409)['detail']['mensaje'] == 'Completa tus actividades para ver los resultados de tu hijo'
+
+
+def test_un_resultado_anulado_no_cuenta(cliente, aplicacion):
+    revelar_intereses(cliente)
+    with aplicacion.state.fabrica_sesiones.begin() as sesion:
+        sesion.scalar(select(modelos.ResultadoInstrumento)).anulado_en = datetime.fromisoformat(FECHA)
+    assert hijo(cliente)['cuestionarios'][0]['aplicaciones'][0]['completado_en'] is None
+
+
+def test_instrumento_no_visible_no_aparece(cliente, aplicacion):
+    with aplicacion.state.fabrica_sesiones.begin() as sesion:
+        sesion.scalar(select(modelos.SalonInstrumento)).visible_apoderado = False
+    assert hijo(cliente)['cuestionarios'] == []
+
+
+def test_partida_y_llegada_con_solo_la_partida(cliente, aplicacion):
+    hacer_visible(aplicacion)
+    avanzar(cliente, 't-partida')
+    # El resultado de la partida existe al revelarla (`completado_en` es su `calculado_en`).
+    assert hijo(cliente)['cuestionarios'][0]['aplicaciones'][0]['completado_en'] is None
+    revelar(cliente, 'TEST-PARTIDA-LLEGADA', aplicacion='APL-PARTIDA')
+    cuestionarios = {c['instrumento']: c for c in hijo(cliente)['cuestionarios']}
+    assert list(cuestionarios) == ['TEST-PARTIDA-LLEGADA', 'TEST-RIASEC']
+    assert [(a['aplicacion'], a['momento'], a['completado_en'])
+            for a in cuestionarios['TEST-PARTIDA-LLEGADA']['aplicaciones']] == [
+        ('APL-PARTIDA', 'ENTRADA', FECHA), ('APL-LLEGADA', 'SALIDA', None)]
+
+
+def test_resultados_por_hijo_elegido(cliente):
+    revelar_intereses(cliente)
+    completar_ruta_apoderado(cliente)
+    assert [r['instrumento'] for r in resultados(cliente, estudiante='est-ana')] == ['TEST-RIASEC']
+    assert resultados(cliente, estudiante='est-luis') == []
+    assert resultados(cliente, 404, estudiante='est-beto')['detail']['mensaje'] == 'El estudiante no es su hijo'
+    assert resultados(cliente, 404, estudiante='nadie')['detail']['mensaje'] == 'El estudiante no es su hijo'

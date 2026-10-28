@@ -453,9 +453,12 @@ def _recorrer_apoderado(cliente):
     fixtures['apoderado-secciones-final'] = _pedir(cliente, 'GET', secciones)
     fixtures['apoderado-fichas-final'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/fichas')
     fixtures['apoderado-ficha-t-ficha-apo'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/fichas/t-ficha-apo')
-    # B12: avance, diploma e hijo; resultados visibles del hijo. F08: conversaciones en cada estado y regalo.
+    # B12: avance, diploma e hijos (con sus cuestionarios); resultados visibles del hijo. F08: conversaciones en cada estado y regalo.
     fixtures['familia'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')
     fixtures['familia-resultados'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados')
+    # Ajuste inicio-apoderado: los resultados del segundo hijo (Luis), elegido con `?estudiante=`.
+    fixtures['familia-resultados-luis'] = _pedir(
+        cliente, 'GET', '/cuentas/apo-rosa/familia/resultados?estudiante=est-luis')
     fixtures['conversaciones-sin-carta'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')
     fixtures['conversaciones-estudiante-sin-carta'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
     for cuenta in ('est-ana', 'apo-rosa'):

@@ -74,7 +74,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'crear-plan-no-favorita', 'guardar-seccion-bloqueada', 'planes-misma-familia', 'ordenar-planes', 'eliminar-plan',
     'planes-tras-eliminar', 'crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
     'medidores-plan', 'referencias-t-comparar', 'guardar-seccion-pasos', 'paso-hecho', 'referencias-t-proyecto',
-    'planes', 'familia', 'familia-resultados', 'conversaciones-sin-carta', 'escribir-carta-est-ana',
+    'planes', 'familia', 'familia-resultados', 'familia-resultados-luis', 'conversaciones-sin-carta', 'escribir-carta-est-ana',
     'escribir-carta-apo-rosa', 'responder-conversacion', 'conversaciones-te-toca', 'conversaciones-final',
     # F08: conversaciones en cada estado, segundo hijo, regalo y fichas del apoderado.
     'conversaciones-estudiante-sin-carta', 'apoderado-conversaciones-sin-carta', 'conversaciones-estudiante-carta',
@@ -443,8 +443,13 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert proyecto['PLAN'].cita.startswith('DATO DE PRUEBA') and proyecto['OPCION_INICIAL'].texto == 'Psicología'
     # B12: ruta del apoderado, resultados del hijo, conversaciones y cartas.
     familia = FamiliaApoderado.model_validate(datos['familia'])
-    assert familia.diploma.obtenido and familia.avance.porcentaje == 100.0 and familia.estudiante.codigo == 'est-ana'
+    assert familia.diploma.obtenido and familia.avance.porcentaje == 100.0
+    # Ajuste inicio-apoderado: los dos hijos, cada uno con sus cuestionarios visibles y su estado.
+    assert [e.codigo for e in familia.estudiantes] == ['est-ana', 'est-luis']
+    assert [c.instrumento for c in familia.estudiantes[0].cuestionarios] == ['TEST-RIASEC']
+    assert familia.estudiantes[0].cuestionarios[0].aplicaciones[0].completado_en is not None
     assert [r['instrumento'] for r in datos['familia-resultados']] == ['TEST-RIASEC']
+    assert all(r['instrumento'] == 'TEST-RIASEC' for r in datos['familia-resultados-luis'])
     assert familia.diploma.codigo.startswith('EXP-AP-')
     assert ConversacionesCuenta.model_validate(datos['conversaciones-sin-carta']).carta_pendiente
     assert {d['regla'] for d in datos['escribir-carta-est-ana']['nuevos_desbloqueos']} == {'R-t-conv-1'}
