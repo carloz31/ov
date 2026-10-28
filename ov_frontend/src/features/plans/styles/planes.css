@@ -541,17 +541,26 @@
   display: grid;
 }
 .sx-p-preguntas li {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 16px;
   align-items: center;
-  justify-content: space-between;
   padding: 12px 0;
   border-bottom: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
 }
 .sx-p-preguntas li > span:first-child {
   display: grid;
   gap: 2px;
+}
+/* Ajuste: las respuestas siempre a la derecha, sin partirse; en un teléfono pasan debajo, alineadas a la derecha. */
+.sx-p-preguntas .sx-p-opciones {
+  flex-wrap: nowrap;
+  justify-self: end;
+}
+@media (max-width: 600px) {
+  .sx-p-preguntas li {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .sx-p-preguntas small {
   font-size: 13px;

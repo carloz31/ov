@@ -81,13 +81,8 @@ export function SeccionConocimiento({
       </p>
       <ul className="sx-p-preguntas">
         {opciones.preguntas.map((p) => (
-          <li key={p.codigo} data-falta={!borrador.respuestas[p.codigo]}>
-            <span>
-              {conCarrera(p.texto, carrera)}
-              {!borrador.respuestas[p.codigo] && (
-                <small>Falta responder esta para que la sección quede lista.</small>
-              )}
-            </span>
+          <li key={p.codigo}>
+            <span>{conCarrera(p.texto, carrera)}</span>
             <span className="sx-p-opciones" role="group" aria-label={conCarrera(p.texto, carrera)}>
               {RESPUESTAS_CONOCIMIENTO.map(([codigo, texto]) => (
                 <button
