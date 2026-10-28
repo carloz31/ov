@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { PenLine } from 'lucide-react'
-import { etiquetaTramo, respondieron } from '@/lib/servidor/adaptadoresConversaciones'
+import { respondieron } from '@/lib/servidor/adaptadoresConversaciones'
 import type { ConversacionCuenta } from '@/types/servidor'
 import type { ModeloFamilia } from '../../types'
 import { CajaEsperando } from './CajaEsperando'
@@ -16,11 +16,10 @@ export function EsperandoTema({
   onEditar: () => void
 }) {
   const { textos: t } = m
-  const tramo = etiquetaTramo(c)
   return (
     <section className="fam-card fam-tema-detalle">
-      {tramo && <span className="fam-chip">{tramo}</span>}
-      <p className="fam-kicker">{c.tema}</p>
+      {c.tema && <span className="fam-chip">{c.tema}</span>}
+      <p className="fam-kicker">{c.titulo}</p>
       <h2>{t.miradaGuardada}</h2>
       <div className="fam-grid-2">
         <div className="fam-mirada">

@@ -55,7 +55,7 @@ def test_seccion_cerrada_responde_409_y_la_orientadora_404(cliente):
     carta(cliente, 'apo-rosa', esperado=409)
 
 
-def test_sin_carta_todas_bloqueadas_con_su_tema_y_tramo(cliente):
+def test_sin_carta_todas_bloqueadas_con_su_titulo_y_tema(cliente):
     preparar(cliente)
     otros = {'est-ana': {'codigo': 'apo-rosa', 'nombre': 'Rosa', 'parentesco': 'madre'},
              'apo-rosa': {'codigo': 'est-ana', 'nombre': 'Ana', 'parentesco': 'madre'}}
@@ -66,12 +66,12 @@ def test_sin_carta_todas_bloqueadas_con_su_tema_y_tramo(cliente):
             'carta_pendiente': True, 'completadas': 0, 'total': 2, 'cartas_disponibles': False,
             'carta_propia': None, 'carta_recibida': None}
         assert vista['otro']['codigo'] == otros[cuenta]['codigo'] and vista['otro']['parentesco'] == 'madre'
-        assert [(c['codigo'], c['orden'], c['tema'], c['estado'], c['bloqueo_mensaje'])
+        assert [(c['codigo'], c['orden'], c['titulo'], c['tema'], c['estado'], c['bloqueo_mensaje'])
                 for c in vista['conversaciones']] == [
-            ('t-conv-1', 1, 'Primera conversación', 'bloqueada', 'Escribe tu carta para empezar las conversaciones'),
-            ('t-conv-2', 2, 'Segunda conversación', 'bloqueada', 'Escribe tu carta para empezar las conversaciones')]
-        # El tramo es el bloque de la actividad que la habilita.
-        assert [c['tramo']['nombre'] for c in vista['conversaciones']][0] is not None
+            ('t-conv-1', 1, 'Primera conversación', 'Expectativas', 'bloqueada',
+             'Escribe tu carta para empezar las conversaciones'),
+            ('t-conv-2', 2, 'Segunda conversación', 'Intereses', 'bloqueada',
+             'Escribe tu carta para empezar las conversaciones')]
         rechazo = responder(cliente, cuenta, 't-conv-1', esperado=409)
         assert rechazo['detail']['mensaje'] == 'Escribe tu carta para empezar las conversaciones'
 

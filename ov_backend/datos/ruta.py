@@ -380,16 +380,16 @@ TESTIMONIOS = (
      'translator', 8, 'Cita de prueba del cuarto testimonio.'),
 )
 
-# (código, orden, título, pregunta del estudiante, pregunta del apoderado (None: la misma), preguntas guía,
+# (código, orden, título, tema (chip), pregunta del estudiante, pregunta del apoderado (None: la misma), preguntas guía,
 # mensaje de diferencias, algo que ya saben (F08)). El estudiante las habilita con reglas CONVERSACION; el
 # apoderado, todas tras su carta.
 CONVERSACIONES = (
-    ('t-conv-1', 1, 'Primera conversación', '¿Qué esperas tú de tu futuro después del colegio?',
+    ('t-conv-1', 1, 'Primera conversación', 'Expectativas', '¿Qué esperas tú de tu futuro después del colegio?',
      '¿Qué espera usted del futuro de su hijo después del colegio?',
      ('¿En qué coinciden sus respuestas?', '¿Qué les sorprendió de la respuesta del otro?'),
      'Si sus respuestas son distintas, conversen sobre qué hay detrás de cada una.',
      'Recuerden lo que ya ha funcionado: acompañar también puede ser preguntar, escuchar y dar tiempo.'),
-    ('t-conv-2', 2, 'Segunda conversación', '¿Qué te dijo tu resultado de intereses sobre ti?', None,
+    ('t-conv-2', 2, 'Segunda conversación', 'Intereses', '¿Qué te dijo tu resultado de intereses sobre ti?', None,
      ('¿Qué parte del resultado les pareció más acertada?',),
      'Si ven el resultado de forma distinta, cuenten un ejemplo que lo explique.',
      'Un resultado describe intereses de hoy; ustedes ya conocen ejemplos que lo confirman o lo matizan.'),
@@ -632,10 +632,10 @@ def _cargar_estructura(sesion):
     testimonios = {c: modelos.Testimonio(codigo=c, titulo=t, descripcion=d, enlace=e, pista=p, persona=persona,
                                          ocupacion_id=ocupaciones[ocupacion].id, anios_experiencia=anios, cita=cita)
                    for c, t, d, e, p, persona, ocupacion, anios, cita in TESTIMONIOS}
-    conversaciones = {c: modelos.Conversacion(codigo=c, orden=o, titulo=t, pregunta_estudiante=pe,
+    conversaciones = {c: modelos.Conversacion(codigo=c, orden=o, titulo=t, tema=tema, pregunta_estudiante=pe,
                                              pregunta_apoderado=pa, preguntas_guia=list(guia), mensaje_diferencias=m,
                                              algo_que_saben=saben)
-                      for c, o, t, pe, pa, guia, m, saben in CONVERSACIONES}
+                      for c, o, t, tema, pe, pa, guia, m, saben in CONVERSACIONES}
     grupos = {c: modelos.GrupoInsignia(codigo=c, nombre=n, orden=o) for c, n, o in GRUPOS_INSIGNIA}
     sesion.add_all(grupos.values())
     sesion.flush()

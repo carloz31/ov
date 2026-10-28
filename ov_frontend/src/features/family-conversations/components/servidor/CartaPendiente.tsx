@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import { LockKeyhole, PenLine } from 'lucide-react'
-import { etiquetaTramo } from '@/lib/servidor/adaptadoresConversaciones'
 import { enLetras } from '../../data/textosFamilia'
 import type { ModeloFamilia } from '../../types'
 import { CabeceraFamilia } from './CabeceraFamilia'
@@ -54,8 +53,8 @@ export function CartaPendiente({ m, selector }: { m: ModeloFamilia; selector?: R
       <ul className="fam-grid-3 fam-lista-limpia">
         {datos.conversaciones.slice(0, 3).map((c) => (
           <li key={c.codigo} className="fam-apagada">
-            {etiquetaTramo(c) && <span className="fam-chip">{etiquetaTramo(c)}</span>}
-            <h3>{c.tema}</h3>
+            {c.tema && <span className="fam-chip">{c.tema}</span>}
+            <h3>{c.titulo}</h3>
           </li>
         ))}
       </ul>

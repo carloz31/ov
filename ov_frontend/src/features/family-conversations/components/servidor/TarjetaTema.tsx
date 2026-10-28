@@ -1,11 +1,6 @@
 import { Link } from 'react-router'
 import { ArrowRight, Info, LockKeyhole } from 'lucide-react'
-import {
-  etiquetaTramo,
-  lineaEstado,
-  puedeAdelantar,
-  respondieron,
-} from '@/lib/servidor/adaptadoresConversaciones'
+import { lineaEstado, puedeAdelantar, respondieron } from '@/lib/servidor/adaptadoresConversaciones'
 import type { ConversacionCuenta } from '@/types/servidor'
 import type { ModeloFamilia } from '../../types'
 import { ParAvatares } from './ParAvatares'
@@ -15,12 +10,11 @@ import { ParAvatares } from './ParAvatares'
 // que su hijo aún no abrió y puede adelantar su respuesta.
 export function TarjetaTema({ m, c }: { m: ModeloFamilia; c: ConversacionCuenta }) {
   const { textos: t } = m
-  const tramo = etiquetaTramo(c)
   if (c.estado === 'bloqueada')
     return (
       <article className="fam-card fam-tema fam-tema--bloqueada">
-        {tramo && <span className="fam-chip">{tramo}</span>}
-        <p className="fam-kicker">{c.tema}</p>
+        {c.tema && <span className="fam-chip">{c.tema}</span>}
+        <p className="fam-kicker">{c.titulo}</p>
         <h3>{t.porAbrirTitulo}</h3>
         <p className="fam-bloqueo">
           <LockKeyhole aria-hidden="true" size={18} />
@@ -41,8 +35,8 @@ export function TarjetaTema({ m, c }: { m: ModeloFamilia; c: ConversacionCuenta 
   return (
     <article className={`fam-card fam-tema${adelantar ? ' fam-tema--adelantar' : ''}`}>
       {c.estado === 'te_toca' && <span className="fam-tema-nueva">{t.nueva}</span>}
-      {tramo && <span className="fam-chip">{tramo}</span>}
-      <p className="fam-kicker">{c.tema}</p>
+      {c.tema && <span className="fam-chip">{c.tema}</span>}
+      <p className="fam-kicker">{c.titulo}</p>
       <h3>{c.pregunta}</h3>
       {adelantar && t.adelantarNota && (
         <p className="fam-bloqueo">

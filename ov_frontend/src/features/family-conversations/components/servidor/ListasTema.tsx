@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { BookOpen, MessageCircle } from 'lucide-react'
-import { etiquetaTramo, puntosRegalo } from '@/lib/servidor/adaptadoresConversaciones'
+import { puntosRegalo } from '@/lib/servidor/adaptadoresConversaciones'
 import type { ConversacionCuenta } from '@/types/servidor'
 import { enLetras } from '../../data/textosFamilia'
 import type { ModeloFamilia } from '../../types'
@@ -12,7 +12,6 @@ import { PuntosRegalo } from './PuntosRegalo'
 export function ListasTema({ m, c }: { m: ModeloFamilia; c: ConversacionCuenta }) {
   const { textos: t, datos } = m
   if (!datos) return null
-  const tramo = etiquetaTramo(c)
   const estudiante = m.rol === 'estudiante'
   const propia = (
     <div className="fam-mirada">
@@ -30,8 +29,8 @@ export function ListasTema({ m, c }: { m: ModeloFamilia; c: ConversacionCuenta }
   )
   return (
     <section className="fam-card fam-tema-detalle">
-      {tramo && <span className="fam-chip">{tramo}</span>}
-      <p className="fam-kicker">{c.tema}</p>
+      {c.tema && <span className="fam-chip">{c.tema}</span>}
+      <p className="fam-kicker">{c.titulo}</p>
       <h2>{t.listasTitulo}</h2>
       <div className="fam-grid-2">
         {propia}

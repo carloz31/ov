@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ArrowRight, CircleHelp, LockKeyhole } from 'lucide-react'
-import { etiquetaTramo, respondieron } from '@/lib/servidor/adaptadoresConversaciones'
+import { respondieron } from '@/lib/servidor/adaptadoresConversaciones'
 import type { ConversacionCuenta } from '@/types/servidor'
 import type { ModeloFamilia } from '../../types'
 import { CajaEsperando } from './CajaEsperando'
@@ -20,7 +20,6 @@ export function ResponderTema({
   const { textos: t } = m
   const [texto, setTexto] = useState(c.mi_respuesta ?? '')
   const guardando = m.enviando === c.codigo
-  const tramo = etiquetaTramo(c)
   const avatares = respondieron(c, m.rol)
 
   async function guardar() {
@@ -32,14 +31,14 @@ export function ResponderTema({
 
   return (
     <section className="fam-card fam-tema-detalle">
-      {tramo && <span className="fam-chip">{tramo}</span>}
+      {c.tema && <span className="fam-chip">{c.tema}</span>}
       {m.abrirAyuda && (
         <button aria-label="Abrir guía" className="fam-ayuda" type="button" onClick={m.abrirAyuda}>
           <CircleHelp aria-hidden="true" size={24} />
         </button>
       )}
-      <p className="fam-kicker">{c.tema}</p>
-      <h2>{t.dosMiradas(c.tema)}</h2>
+      <p className="fam-kicker">{c.titulo}</p>
+      <h2>{t.dosMiradas(c.titulo)}</h2>
       <div className="fam-grid-2">
         <div className="fam-respuesta">
           <p className="fam-pregunta">{c.pregunta}</p>

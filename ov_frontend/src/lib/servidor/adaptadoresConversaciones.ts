@@ -87,6 +87,3 @@ export const cartaEditable = (datos: ConversacionesCuenta) => !datos.cartas_disp
 // Tras guardar una respuesta: con las dos, «Listas para conversar»; si no, «Esperando».
 export const vistaTrasResponder = (conversacion: ConversacionCuenta | undefined) =>
   conversacion?.estado === 'conversada' ? 'lista' : 'esperando'
-
-export const etiquetaTramo = (conversacion: ConversacionCuenta) =>
-  conversacion.tramo ? `Bloque ${conversacion.tramo.numero} · ${conversacion.tramo.nombre}` : null

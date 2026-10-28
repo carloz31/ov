@@ -24,12 +24,6 @@ class ResponderConversacionEntrada(AccionCuenta):
         return texto
 
 
-class TramoConversacion(BaseModel):
-    # El bloque de la actividad que habilita la conversación (primera condición COMPLETA_ACTIVIDAD de su regla).
-    numero: int
-    nombre: str
-
-
 class EntradaDiarioConversacion(BaseModel):
     # La pregunta del diario que abre conversarla, ya desbloqueada para el estudiante.
     codigo: str
@@ -41,8 +35,9 @@ class ConversacionCuenta(BaseModel):
     """Una conversación vista por quien consulta. Lo del otro y la guía, solo con las dos respuestas."""
     codigo: str
     orden: int
-    tema: str
-    tramo: TramoConversacion | None
+    titulo: str
+    # El chip de la tarjeta; nulo, sin chip.
+    tema: str | None
     pregunta: str
     estado: EstadoConversacion
     # Por qué está bloqueada: sin carta propia, o la regla del estudiante; nulo si no lo está.

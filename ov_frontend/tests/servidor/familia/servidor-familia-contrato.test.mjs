@@ -37,7 +37,7 @@ test('estudiante: sin carta, la sección muestra la carta pendiente; con carta, 
   const [primera, segunda] = datos.conversaciones
   assert.equal(conv.lineaEstado(primera, 'Tu familia'), 'Nadie ha respondido aún')
   assert.equal(conv.lineaEstado(segunda, 'Tu familia'), segunda.bloqueo_mensaje)
-  assert.equal(conv.etiquetaTramo(primera), 'Bloque 2 · Camino')
+  assert.deepEqual([primera.titulo, primera.tema], ['Primera conversación', 'Expectativas'])
   assert.equal(conv.cartaEditable(datos), true)
 })
 

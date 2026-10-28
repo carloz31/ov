@@ -23,11 +23,8 @@
         "¿Qué les sorprendió de la respuesta del otro?"
       ],
       "respuesta_otro": "DATO DE PRUEBA: quiero estudiar psicología.",
-      "tema": "Primera conversación",
-      "tramo": {
-        "nombre": "Camino",
-        "numero": 2
-      }
+      "tema": "Expectativas",
+      "titulo": "Primera conversación"
     },
     {
       "abierta_para_hijo": true,
@@ -46,11 +43,8 @@
         "¿Qué parte del resultado les pareció más acertada?"
       ],
       "respuesta_otro": "DATO DE PRUEBA: lo que dijo el resultado.",
-      "tema": "Segunda conversación",
-      "tramo": {
-        "nombre": "La ciudad",
-        "numero": 4
-      }
+      "tema": "Intereses",
+      "titulo": "Segunda conversación"
     }
   ],
   "otro": {

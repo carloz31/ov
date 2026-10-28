@@ -20,11 +20,8 @@
       "pregunta_otro": null,
       "preguntas_guia": null,
       "respuesta_otro": null,
-      "tema": "Primera conversación",
-      "tramo": {
-        "nombre": "Camino",
-        "numero": 2
-      }
+      "tema": "Expectativas",
+      "titulo": "Primera conversación"
     },
     {
       "abierta_para_hijo": null,
@@ -41,11 +38,8 @@
       "pregunta_otro": null,
       "preguntas_guia": null,
       "respuesta_otro": null,
-      "tema": "Segunda conversación",
-      "tramo": {
-        "nombre": "La ciudad",
-        "numero": 4
-      }
+      "tema": "Intereses",
+      "titulo": "Segunda conversación"
     }
   ],
   "otro": {

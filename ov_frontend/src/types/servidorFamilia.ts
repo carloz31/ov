@@ -19,13 +19,13 @@ export type FamiliaApoderado = {
 // lo del otro y la guía, solo con las dos respuestas; la carta del otro, solo con `cartas_disponibles`.
 export type EstadoConversacion =
   'bloqueada' | 'sin_responder' | 'esperando_al_otro' | 'te_toca' | 'conversada'
-export type TramoConversacion = { numero: number; nombre: string }
 export type EntradaDiarioConversacion = { codigo: string; nombre: string; pregunta: string }
 export type ConversacionCuenta = {
   codigo: string
   orden: number
-  tema: string
-  tramo: TramoConversacion | null
+  titulo: string
+  // El chip de la tarjeta; nulo, sin chip.
+  tema: string | null
   pregunta: string
   estado: EstadoConversacion
   bloqueo_mensaje: string | null

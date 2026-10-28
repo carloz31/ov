@@ -171,6 +171,8 @@ class Conversacion(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     orden: Mapped[int] = mapped_column(unique=True)
     titulo: Mapped[str]
+    # El tema del chip de la tarjeta (como `Ficha.tema`); nulo, sin chip.
+    tema: Mapped[str | None]
     pregunta_estudiante: Mapped[str] = mapped_column(Text)
     # Nula: el apoderado responde la misma pregunta que el estudiante.
     pregunta_apoderado: Mapped[str | None] = mapped_column(Text)

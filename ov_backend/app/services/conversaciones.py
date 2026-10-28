@@ -9,13 +9,12 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, Bloque, Conversacion, ConversacionVinculo, Cuenta, PreguntaDiario, Rol, TipoEventoUso, TipoObjetivo,
+    Conversacion, ConversacionVinculo, Cuenta, PreguntaDiario, Rol, TipoEventoUso, TipoObjetivo,
     VinculoFamiliar,
 )
 from app.schemas.acciones import EscribirCartaEntrada, RespuestaAgrupada, RespuestaAccion
 from app.schemas.conversaciones import (
     ConversacionCuenta, ConversacionesCuenta, EntradaDiarioConversacion, OtroVinculo, ResponderConversacionEntrada,
-    TramoConversacion,
 )
 from app.services.comun import (
     buscar_por_codigo, exigir_disponible, existe_evento, fecha_accion, responder_con_eventos, responder_varias_cuentas,
@@ -86,16 +85,6 @@ def _preguntas(conversacion: Conversacion, cuenta: Cuenta) -> tuple[str, str]:
     return conversacion.pregunta_estudiante, del_apoderado
 
 
-def _tramo(sesion: Session, conversacion: Conversacion) -> TramoConversacion | None:
-    definiciones = contexto(sesion).definiciones
-    for regla in definiciones.reglas_objetivo.get((TipoObjetivo.CONVERSACION, conversacion.id), ()):
-        for condicion in regla.condiciones:
-            if condicion.tipo_evento == TipoEventoUso.COMPLETA_ACTIVIDAD and condicion.id_referencia is not None:
-                bloque = definiciones.obtener(Bloque, definiciones.obtener(Actividad, condicion.id_referencia).bloque_id)
-                return TramoConversacion(numero=bloque.numero, nombre=bloque.nombre)
-    return None
-
-
 def _entrada_diario(sesion: Session, cuenta: Cuenta, conversacion: Conversacion) -> EntradaDiarioConversacion | None:
     """La pregunta del diario que abre conversarla, si ya está desbloqueada para el estudiante."""
     definiciones = contexto(sesion).definiciones
@@ -142,8 +131,8 @@ def consultar_conversaciones(sesion: Session, cuenta: Cuenta, estudiante: str | 
         bloqueo = _bloqueo(sesion, cuenta, conversacion, carta_propia)
         pregunta, pregunta_otro = _preguntas(conversacion, cuenta)
         conversaciones.append(ConversacionCuenta(
-            codigo=conversacion.codigo, orden=conversacion.orden, tema=conversacion.titulo,
-            tramo=_tramo(sesion, conversacion), pregunta=pregunta,
+            codigo=conversacion.codigo, orden=conversacion.orden, titulo=conversacion.titulo,
+            tema=conversacion.tema, pregunta=pregunta,
             estado="bloqueada" if bloqueo is not None and not ambas else ESTADOS[mia is not None, suya is not None],
             bloqueo_mensaje=bloqueo if not ambas else None,
             abierta_para_hijo=objetivo_disponible(sesion, otra_cuenta, TipoObjetivo.CONVERSACION, conversacion.id)
