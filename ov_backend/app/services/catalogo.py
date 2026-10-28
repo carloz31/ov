@@ -2,7 +2,8 @@
 
 Se lee de la base, no de la caché de definiciones: pocas consultas fijas por petición, con `selectinload`.
 Los listados se paginan y pueden limitarse a los favoritos de la cuenta (F06).
-Todo exige la sección CATALOGO abierta."""
+Para el estudiante, todo exige la sección CATALOGO abierta. El apoderado y la orientadora lo leen sin sección y
+sus vistas no se registran (ajuste catalogo-apoderado)."""
 
 import random
 
@@ -15,7 +16,7 @@ from app.exceptions import ErrorAccion
 from app.models import (
     Carrera, Cuenta, Dimension, EstiloTrabajo, EventoUso, FamiliaCarrera, Favorito, GestionInstitucion,
     GrupoOcupacional, IngresoFamilia, IngresoInstitucion, Institucion, InstitucionCarrera, Ocupacion,
-    PuntajeOcupacion, TipoEventoUso, TipoFavorito, TipoInstitucion, Ubicacion,
+    PuntajeOcupacion, Rol, TipoEventoUso, TipoFavorito, TipoInstitucion, Ubicacion,
 )
 from app.models.base import sin_tildes
 from app.schemas.acciones import (
@@ -37,7 +38,10 @@ SECCION = 'CATALOGO'
 
 @usar_contexto
 def exigir_catalogo(sesion: Session, cuenta: Cuenta) -> None:
-    """404 si la sección no es de la audiencia de la cuenta; 409 con su mensaje si está cerrada."""
+    """404 si la sección no es de la audiencia de la cuenta; 409 con su mensaje si está cerrada. Una cuenta que no
+    es de estudiante (apoderado, orientadora) lee el catálogo sin sección."""
+    if cuenta.rol != Rol.ESTUDIANTE:
+        return
     try:
         seccion_de_cuenta(sesion, cuenta, SECCION)
     except LookupError as error:
@@ -370,6 +374,9 @@ def _ver(sesion: Session, entrada, modelo, codigo: str, evento: TipoEventoUso) -
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
     entidad = buscar_por_codigo(sesion, modelo, codigo)
     exigir_catalogo(sesion, cuenta)
+    if cuenta.rol != Rol.ESTUDIANTE:
+        # La exploración se mide solo en el estudiante: la vista de otro rol se ignora, sin error.
+        return RespuestaAccion(eventos_registrados=[], nuevos_desbloqueos=[])
     return responder_con_eventos(sesion, cuenta, [(evento, entidad.id)], fecha_accion(entrada))
 
 
