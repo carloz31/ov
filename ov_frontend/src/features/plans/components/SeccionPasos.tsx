@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Check, X } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
+import { Textarea } from '@/components/ui/Textarea'
 import { origenPaso, sugerenciasPendientes } from '@/lib/servidor/adaptadoresPlanes'
 import {
   aceptarSugerencia,
@@ -146,8 +147,9 @@ export function SeccionPasos({
                   etiqueta="Tipo del paso"
                   onCambiar={(tipo) => cambiarPaso(i, { tipo })}
                 />
-                <Input
+                <Textarea
                   aria-label="Texto del paso"
+                  rows={2}
                   value={p.texto}
                   onChange={(e) => cambiarPaso(i, { texto: e.target.value })}
                 />

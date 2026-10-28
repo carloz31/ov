@@ -793,7 +793,7 @@
   min-height: 40px;
 }
 .sx-p-select-tipo {
-  width: 150px;
+  width: 200px;
   min-height: 40px;
   background: var(--card);
 }
@@ -1051,4 +1051,20 @@
 .sx-p-campo input[role='combobox'] {
   min-height: 44px;
   background: var(--card);
+}
+
+/* Ajuste: el texto de un paso o de una sugerencia en edición puede ser largo (hasta 140 caracteres): área que
+   crece con el texto; en la sugerencia, «Agregar así» / «Cancelar» bajan a su propia línea. */
+.sx-p-paso-fila > textarea {
+  flex: 1;
+  min-width: 220px;
+  min-height: 44px;
+  field-sizing: content;
+  resize: vertical;
+  line-height: 1.4;
+  background: var(--card);
+}
+.sx-p-paso[data-editando='true'] .sx-p-paso-botones {
+  flex-basis: 100%;
+  justify-content: flex-end;
 }

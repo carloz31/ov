@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Input } from '@/components/ui/Input'
+import { Textarea } from '@/components/ui/Textarea'
 import type { SugerenciaPublica, OpcionesTarjeta } from '@/types/servidor'
 import { InsigniaPaso } from './InsigniaPaso'
 import { SelectTipoPaso } from './SelectTipoPaso'
@@ -42,8 +42,9 @@ export function SugerenciasPasos({
                   etiqueta="Tipo de la sugerencia"
                   onCambiar={(tipo) => setEditando({ ...editando, tipo })}
                 />
-                <Input
+                <Textarea
                   aria-label="Texto de la sugerencia"
+                  rows={2}
                   value={editando.texto}
                   onChange={(e) => setEditando({ ...editando, texto: e.target.value })}
                 />
