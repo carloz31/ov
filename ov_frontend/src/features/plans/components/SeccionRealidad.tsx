@@ -15,6 +15,7 @@ import { TablaGastos } from './TablaGastos'
 import { TarjetaTotal } from './TarjetaTotal'
 
 const NINGUNA = 'todavia-no-se'
+const OTRO = 'otro-camino'
 const mismo = (a: ElegidaEntrada, codigo: string) => 'opcion' in a && a.opcion === codigo
 const chipsDe = (elegidas: ElegidaEntrada[], lista: OpcionesTarjeta['financiamiento']) =>
   elegidas.map((e) => ({ clave: 'otro' in e ? `otro-${e.otro}` : e.opcion, texto: textoElegida(e, lista) }))
@@ -26,9 +27,10 @@ const sinRepetir = <T extends ElegidaEntrada>(lista: T[], texto: string): T[] =>
     ? lista
     : [...lista, { otro: texto } as T]
 
-// F07b (§7, lienzos «sección 3 en edición» y «en lectura»): «Cómo lo haría realidad». En lectura, dónde y cómo,
-// la tarjeta del costo con los totales del servidor junto a la tabla, y los chips de pago y complicaciones; en
-// edición, institución y camino arriba, la tabla con los totales en vivo y las dos filas de chips.
+// F07b (§7; lienzo «en lectura» y ajuste de «Cuánto costaría», que reemplaza el de edición): «Cómo lo haría
+// realidad». En lectura, dónde y cómo, la tarjeta del costo con los totales del servidor junto a la tabla, y los
+// chips de pago y complicaciones; en edición, institución y camino (dos `Select`) arriba, la tabla de gastos
+// propuestos con los totales en vivo y las dos filas de chips.
 export function SeccionRealidad({
   plan,
   opciones,
@@ -169,34 +171,51 @@ export function SeccionRealidad({
             </SelectContent>
           </Select>
         </label>
-        <fieldset className="sx-p-campo">
-          <legend>Cómo llegaría</legend>
-          <span className="sx-p-ayuda">Una sola opción.</span>
-          <div className="sx-p-caminos" role="group" aria-label="Cómo llegaría">
-            {opciones.caminos.map((c) => (
-              <button
-                type="button"
-                key={c.codigo}
-                aria-pressed={!!borrador.camino && mismo(borrador.camino, c.codigo)}
-                onClick={() => onCambiar((b) => cambiarCamino(b, { opcion: c.codigo }, opciones))}
-              >
-                {c.texto}
-              </button>
-            ))}
+        <label className="sx-p-campo">
+          <strong>Cómo llegaría</strong>
+          <span className="sx-p-ayuda">Una sola opción; cambia los gastos propuestos.</span>
+          <Select
+            value={!borrador.camino ? undefined : 'otro' in borrador.camino ? OTRO : borrador.camino.opcion}
+            onValueChange={(valor) =>
+              onCambiar((b) =>
+                cambiarCamino(
+                  b,
+                  valor === OTRO ? { otro: otroCamino } : { opcion: valor },
+                  opciones,
+                  gestion,
+                ),
+              )
+            }
+          >
+            <SelectTrigger aria-label="Cómo llegaría">
+              <SelectValue placeholder="Elige cómo llegarías" />
+            </SelectTrigger>
+            <SelectContent>
+              {opciones.caminos.map((c) => (
+                <SelectItem key={c.codigo} value={c.codigo}>
+                  {c.texto}
+                </SelectItem>
+              ))}
+              <SelectItem value={OTRO}>Otro…</SelectItem>
+            </SelectContent>
+          </Select>
+          {borrador.camino && 'otro' in borrador.camino && (
             <Input
               aria-label="Otro camino"
-              placeholder="Otro camino…"
+              placeholder="¿Cómo llegarías?"
+              autoFocus
               value={otroCamino}
-              onChange={(e) => onCambiar((b) => cambiarCamino(b, { otro: e.target.value }, opciones))}
+              onChange={(e) =>
+                onCambiar((b) => cambiarCamino(b, { otro: e.target.value }, opciones, gestion))
+              }
             />
-          </div>
-        </fieldset>
+          )}
+        </label>
       </div>
       <TablaGastos
         borrador={borrador}
         opciones={opciones}
         gestion={gestion}
-        institucion={elegida?.nombre ?? null}
         paginaWeb={paginaWeb}
         onCambiar={onCambiar}
       />
@@ -205,6 +224,7 @@ export function SeccionRealidad({
         carrera={totales.carrera}
         anios={totales.anios}
         ciclosPorAnio={ciclos}
+        faltan={totales.faltan}
         enVivo
       />
       <fieldset className="sx-p-campo">

@@ -23,48 +23,89 @@ const porEmpezar = (plan) => ({
   secciones: plan.secciones.map((s) => (s.codigo === 'REALIDAD' ? { ...s, estado: 'POR_EMPEZAR' } : s)),
 })
 const filas = (b) => b.gastos.map((g) => [g.rubro, g.monto, g.frecuencia])
-const ref = (codigo) => opciones.rubros.find((r) => r.codigo === codigo)
 
-test('precarga solo la primera vez: rubros con referencia, pensión en 0 si es pública, sin alimentación ni vivienda', () => {
-  const sinNada = { ...porEmpezar(listo), institucion: null, camino: null }
-  const b = edicion.borradorRealidad(sinNada, opciones)
-  const codigos = b.gastos.map((g) => g.rubro)
-  assert.ok(
-    !codigos.includes('PREPARACION') && !codigos.includes('ALIMENTACION') && !codigos.includes('VIVIENDA'),
+test('gastos propuestos en cada edición: guardados más predeterminados vacíos, con su pista y Pensión pública en 0', () => {
+  const b = edicion.borradorRealidad(listo, opciones)
+  // Guardados: Preparación 1300, Pensión 0, Matrícula 600; faltan Admisión, Materiales y Transporte (vacíos).
+  assert.deepEqual(filas(b), [
+    ['PREPARACION', 1300, 'UNICA'],
+    ['ADMISION', null, 'UNICA'],
+    ['MATRICULA', 600, 'POR_CICLO'],
+    ['PENSION', 0, 'MENSUAL'],
+    ['MATERIALES', null, 'POR_CICLO'],
+    ['TRANSPORTE', null, 'MENSUAL'],
+  ])
+  const pista = (rubro, gestion = 'PUBLICA') =>
+    copia(
+      edicion.pistaGasto(
+        b.gastos.find((g) => g.rubro === rubro),
+        opciones,
+        gestion,
+      ),
+    )
+  assert.deepEqual(pista('ADMISION'), { referencia: 350 })
+  assert.deepEqual(pista('MATRICULA'), { texto: 'Consúltalo en su página' })
+  assert.deepEqual(pista('PENSION'), { texto: '0 por ser pública' })
+  assert.deepEqual(pista('PENSION', 'PRIVADA'), { texto: 'Consúltalo en su página' })
+  // Sin nada guardado ni institución: todos vacíos, sin Preparación, Alimentación ni Vivienda.
+  const nuevo = edicion.borradorRealidad(
+    { ...porEmpezar(listo), institucion: null, camino: null, gastos: [] },
+    opciones,
   )
-  assert.equal(b.gastos.find((g) => g.rubro === 'PENSION').monto, ref('PENSION').monto_referencia)
-  assert.ok(b.precargando)
-  // Con una institución pública y un camino que prepara: Pensión en 0 y Preparación con su referencia.
-  const publica = edicion.borradorRealidad(porEmpezar(listo), opciones)
-  assert.equal(publica.gastos.find((g) => g.rubro === 'PENSION').monto, 0)
-  assert.deepEqual(filas(publica)[0], ['PREPARACION', ref('PREPARACION').monto_referencia, 'UNICA'])
-  // Ya guardada, se edita lo del servidor tal cual.
-  const guardada = edicion.borradorRealidad(listo, opciones)
+  assert.deepEqual(filas(nuevo), [
+    ['ADMISION', null, 'UNICA'],
+    ['MATRICULA', null, 'POR_CICLO'],
+    ['PENSION', null, 'MENSUAL'],
+    ['MATERIALES', null, 'POR_CICLO'],
+    ['TRANSPORTE', null, 'MENSUAL'],
+  ])
+  // Una fila vacía no se envía.
   assert.deepEqual(
-    filas(guardada),
-    listo.gastos.map((g) => [g.rubro, g.monto, g.frecuencia]),
+    copia(edicion.datosRealidad(b).gastos).map((g) => g.rubro),
+    ['PREPARACION', 'MATRICULA', 'PENSION'],
   )
-  assert.equal(guardada.precargando, false)
 })
 
-test('el camino agrega o quita Preparación; la institución no toca los montos salvo la pensión precargada', () => {
-  const b = edicion.borradorRealidad(listo, opciones)
-  const sinPreparar = edicion.cambiarCamino(b, { opcion: 'DIRECTO' }, opciones)
-  assert.ok(!sinPreparar.gastos.some((g) => g.rubro === 'PREPARACION'))
-  const otraVez = edicion.cambiarCamino(sinPreparar, { opcion: 'PREPARARME' }, opciones)
-  assert.deepEqual(filas(otraVez)[0], ['PREPARACION', ref('PREPARACION').monto_referencia, 'UNICA'])
+test('camino, institución, «✕», chips y «Restablecer predeterminados» conservan lo escrito', () => {
+  let b = edicion.borradorRealidad(listo, opciones)
+  b = { ...b, gastos: b.gastos.map((g) => (g.rubro === 'ADMISION' ? { ...g, monto: 400 } : g)) }
+  // El camino rehace el conjunto: sin preparación se va Preparación; con ella vuelve vacía. Lo escrito sigue.
+  const directo = edicion.cambiarCamino(b, { opcion: 'POSTULAR_DIRECTO' }, opciones, 'PUBLICA')
+  assert.ok(!directo.gastos.some((g) => g.rubro === 'PREPARACION'))
+  const otraVez = edicion.cambiarCamino(directo, { opcion: 'PREPARARME' }, opciones, 'PUBLICA')
+  assert.deepEqual(filas(otraVez).slice(0, 2), [
+    ['PREPARACION', null, 'UNICA'],
+    ['ADMISION', 400, 'UNICA'],
+  ])
+  // La institución solo toca la pensión: en 0 vuelve a vacía con una privada, y vacía pasa a 0 con una pública.
+  const privada = edicion.cambiarInstitucion(b, 'otra', 'PRIVADA', opciones)
+  assert.equal(privada.gastos.find((g) => g.rubro === 'PENSION').monto, null)
+  assert.equal(privada.gastos.find((g) => g.rubro === 'ADMISION').monto, 400)
   assert.equal(
-    edicion.notaGasto(otraVez.gastos[0], otraVez, opciones, 'PUBLICA'),
-    'porque eliges prepararte primero',
+    edicion
+      .cambiarInstitucion(privada, 'inst-63', 'PUBLICA', opciones)
+      .gastos.find((g) => g.rubro === 'PENSION').monto,
+    0,
   )
-  assert.deepEqual(filas(edicion.cambiarInstitucion(b, 'otra', 'PRIVADA', opciones)), filas(b))
-  const primera = edicion.borradorRealidad({ ...porEmpezar(listo), institucion: null }, opciones)
-  const publica = edicion.cambiarInstitucion(primera, 'inst-63', 'PUBLICA', opciones)
-  const pension = publica.gastos.find((g) => g.rubro === 'PENSION')
-  assert.equal(pension.monto, 0)
-  assert.equal(edicion.notaGasto(pension, publica, opciones, 'PUBLICA'), '0 por ser pública')
-  const agregado = edicion.agregarGasto(b, 'VIVIENDA', opciones, 'PUBLICA')
-  assert.deepEqual(filas(agregado).at(-1), ['VIVIENDA', 0, 'MENSUAL'])
+  // La «✕» manda la fila a los chips; «Restablecer» la repone vacía sin borrar montos.
+  const transporte = b.gastos.find((g) => g.rubro === 'TRANSPORTE')
+  const sinTransporte = edicion.quitarGasto(b, transporte.clave)
+  assert.ok(edicion.rubrosSinFila(sinTransporte, opciones).some((r) => r.codigo === 'TRANSPORTE'))
+  assert.equal(edicion.faltanPredeterminados(sinTransporte, opciones), true)
+  const repuesto = edicion.restablecerGastos(sinTransporte, opciones, 'PUBLICA')
+  assert.deepEqual(filas(repuesto), filas(b))
+  assert.equal(edicion.faltanPredeterminados(repuesto, opciones), false)
+  // Alimentación entra por su chip, vacía; «+ Otro gasto» va al final.
+  const conOtro = edicion.agregarGasto(
+    edicion.agregarGasto(b, null, opciones, 'PUBLICA'),
+    'ALIMENTACION',
+    opciones,
+    'PUBLICA',
+  )
+  assert.deepEqual(filas(conOtro).slice(-2), [
+    ['ALIMENTACION', null, 'MENSUAL'],
+    [null, null, 'MENSUAL'],
+  ])
 })
 
 test('los totales en vivo coinciden con los del servidor', () => {
@@ -161,10 +202,23 @@ test('§9: el aviso al guardar 2 y 3 cuenta dudas o complicaciones y pasos suger
   assert.equal(conocimiento.titulo, `${abiertas} dudas y ${m} pasos sugeridos`)
   assert.equal(conocimiento.descripcion, 'te esperan en Mis próximos pasos.')
   assert.equal(planes.avisoGuardado('REALIDAD', listo).titulo, `1 complicación y ${m} pasos sugeridos`)
+  // Sin complicaciones (las sugerencias vienen de CONOCIMIENTO), solo los pasos.
+  assert.equal(planes.avisoGuardado('REALIDAD', { ...listo, complicaciones: [] }).titulo, `${m} pasos sugeridos`)
   const sin = { ...listo, sugerencias: [] }
   assert.deepEqual(copia(planes.avisoGuardado('CONOCIMIENTO', sin)), {
     titulo: 'Guardado.',
     descripcion: 'Tus dudas quedaron anotadas.',
   })
   assert.equal(planes.avisoGuardado('POR_QUE', listo).titulo, 'Lo anoté.')
+})
+
+test('los totales en vivo suman solo lo escrito y cuentan los montos que faltan', () => {
+  const gastos = [
+    { monto: 350, frecuencia: 'UNICA' },
+    { monto: null, frecuencia: 'MENSUAL' },
+    { monto: 600, frecuencia: 'POR_CICLO' },
+    { monto: null, frecuencia: 'POR_CICLO' },
+  ]
+  const t = edicion.totalesGastos(gastos, 2, 10)
+  assert.deepEqual([t.primerAnio, t.carrera, t.faltan], [350 + 2 * 600, 350 + 10 * 600, 2])
 })

@@ -151,7 +151,8 @@ class CaminoTarjeta(OpcionTarjeta):
 
 
 class RubroTarjeta(OpcionTarjeta):
-    """Con `frecuencia_recomendada` y `monto_referencia`, el front lo precarga; sin ellos, se agrega a mano."""
+    """Con `frecuencia_recomendada`, el front lo propone (con `monto_referencia` como pista, o nulo si se consulta en
+    la institución); sin ella, se agrega a mano."""
     frecuencia_recomendada: FrecuenciaGasto | None
     monto_referencia: int | None
     cero_si_publica: bool

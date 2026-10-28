@@ -56,7 +56,15 @@ export function PlanAbierto({
     )
   const { plan, edicion } = v
   const opciones = v.datos.opciones
-  const menu = <MenuSeccionesPlan plan={plan} opciones={opciones} seccion={v.seccion} onElegir={v.elegir} />
+  const menu = (
+    <MenuSeccionesPlan
+      plan={plan}
+      opciones={opciones}
+      seccion={v.seccion}
+      bloqueado={edicion.guardando}
+      onElegir={v.elegir}
+    />
+  )
   if (!v.estadoSeccion)
     return (
       <>
@@ -94,14 +102,19 @@ export function PlanAbierto({
             }
           />
         ) : (
-          <section className="sx-p-panel" data-editando={editando} aria-labelledby="sx-p-panel-titulo">
+          <section
+            className="sx-p-panel"
+            data-editando={editando}
+            aria-busy={edicion.guardando}
+            aria-labelledby="sx-p-panel-titulo"
+          >
             <header>
               <span className="sx-p-numero">{NUMERO_SECCION[s.codigo]}</span>
               <h2 id="sx-p-panel-titulo">{titulo}</h2>
               <PildoraEstado estado={s.estado} />
               {editable &&
                 (editando ? (
-                  <span className="sx-p-editando">Editando</span>
+                  <span className="sx-p-editando">{edicion.guardando ? 'Guardando…' : 'Editando'}</span>
                 ) : (
                   <button
                     type="button"
@@ -112,44 +125,47 @@ export function PlanAbierto({
                   </button>
                 ))}
             </header>
-            {s.codigo === 'POR_QUE' && (
-              <SeccionPorQue
-                plan={plan}
-                opciones={opciones}
-                encaje={v.encaje}
-                borrador={editando ? edicion.porQue : null}
-                onCambiar={edicion.cambiarPorQue}
-                onEditar={() => edicion.editar('POR_QUE')}
-              />
-            )}
-            {s.codigo === 'CONOCIMIENTO' && (
-              <SeccionConocimiento
-                plan={plan}
-                opciones={opciones}
-                borrador={editando ? edicion.conocimiento : null}
-                onCambiar={edicion.cambiarConocimiento}
-              />
-            )}
-            {s.codigo === 'REALIDAD' && (
-              <SeccionRealidad
-                plan={plan}
-                opciones={opciones}
-                instituciones={v.instituciones}
-                paginaWeb={v.paginaInstitucion}
-                borrador={editando ? edicion.realidad : null}
-                onCambiar={edicion.cambiarRealidad}
-              />
-            )}
-            {s.codigo === 'PASOS' && (
-              <SeccionPasos
-                plan={plan}
-                opciones={opciones}
-                borrador={editando ? edicion.pasos : null}
-                onCambiar={edicion.cambiarPasos}
-                onRevisar={() => edicion.editar('PASOS')}
-                onLoHice={v.pasoHecho.abrir}
-              />
-            )}
+            {/* Ajuste: mientras se guarda, la sección no admite cambios (el `fieldset` deshabilita todo lo de adentro). */}
+            <fieldset className="sx-p-cuerpo" disabled={edicion.guardando}>
+              {s.codigo === 'POR_QUE' && (
+                <SeccionPorQue
+                  plan={plan}
+                  opciones={opciones}
+                  encaje={v.encaje}
+                  borrador={editando ? edicion.porQue : null}
+                  onCambiar={edicion.cambiarPorQue}
+                  onEditar={() => edicion.editar('POR_QUE')}
+                />
+              )}
+              {s.codigo === 'CONOCIMIENTO' && (
+                <SeccionConocimiento
+                  plan={plan}
+                  opciones={opciones}
+                  borrador={editando ? edicion.conocimiento : null}
+                  onCambiar={edicion.cambiarConocimiento}
+                />
+              )}
+              {s.codigo === 'REALIDAD' && (
+                <SeccionRealidad
+                  plan={plan}
+                  opciones={opciones}
+                  instituciones={v.instituciones}
+                  paginaWeb={v.paginaInstitucion}
+                  borrador={editando ? edicion.realidad : null}
+                  onCambiar={edicion.cambiarRealidad}
+                />
+              )}
+              {s.codigo === 'PASOS' && (
+                <SeccionPasos
+                  plan={plan}
+                  opciones={opciones}
+                  borrador={editando ? edicion.pasos : null}
+                  onCambiar={edicion.cambiarPasos}
+                  onRevisar={() => edicion.editar('PASOS')}
+                  onLoHice={v.pasoHecho.abrir}
+                />
+              )}
+            </fieldset>
             {editando && (
               <div className="sx-d-actions sx-p-acciones">
                 {tarda && <p className="sx-p-ayuda">Guardar puede tardar unos segundos.</p>}

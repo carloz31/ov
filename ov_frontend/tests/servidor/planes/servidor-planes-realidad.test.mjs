@@ -92,7 +92,7 @@ test('lectura: dónde, cómo, tarjeta del costo con los totales del servidor, ta
   )
 })
 
-test('edición: totales en vivo, el camino quita Preparación, cuerpo completo y aviso §9 de complicaciones', async () => {
+test('edición: camino en Select, totales de lo escrito con «faltan N montos», cuerpo sin vacíos y aviso §9', async () => {
   const { app, vista } = planAbierto()
   let arbol = await dibujar(vista)
   boton(arbol, 'Editar').props.onClick()
@@ -108,25 +108,33 @@ test('edición: totales en vivo, el camino quita Preparación, cuerpo completo y
     carrera: 7300,
     anios: 5,
     ciclosPorAnio: 2,
+    faltan: 3,
     enVivo: true,
   })
   assert.match(
     texto(edicion),
-    /Instituciones que ofrecen esta carrera; tus favoritas primero\..*Una sola opción\./,
+    /Instituciones que ofrecen esta carrera; tus favoritas primero\..*Una sola opción; cambia los gastos propuestos\./,
   )
   assert.match(texto(edicion), /Lo que marques aquí se convierte en pasos sugeridos, como tus dudas\./)
   const [pago, complicaciones] = elementos(edicion, (e) => e.type?.name === 'ChipsElegibles')
   assert.equal(pago.props.titulo, 'Elegidas')
   assert.equal(pago.props.numerado, undefined)
   assert.deepEqual([pago.props.textoOtro, complicaciones.props.textoOtro], ['Otra forma', 'Otra'])
-  // Postular directamente no prepara: se va la fila de Preparación y el total baja.
-  boton(edicion, 'Postular directamente').props.onClick()
+  // «Cómo llegaría» es un Select con «Otro…»; postular directamente no prepara: se va Preparación y el total baja.
+  const camino = elementos(edicion, (e) => e.props?.onValueChange && e.props.value === 'PREPARARME')[0]
+  assert.ok(elementos(camino, (e) => texto(e) === 'Otro…').length)
+  camino.props.onValueChange('POSTULAR_DIRECTO')
   seccion = hijo(vista.render(), 'SeccionRealidad')
   edicion = SeccionRealidad(seccion.props)
   assert.ok(!seccion.props.borrador.gastos.some((g) => g.rubro === 'PREPARACION'))
   assert.equal(hijo(edicion, 'TarjetaTotal').props.primerAnio, 1200)
   complicaciones.props.onMarcar('DISTANCIA')
   boton(vista.render(), 'Guardar sección').props.onClick()
+  // Ajuste: mientras se guarda, el cuerpo de la sección y el menú no admiten acciones.
+  const enVuelo = vista.render()
+  assert.equal(elementos(enVuelo, (e) => e.type === 'fieldset')[0].props.disabled, true)
+  assert.equal(hijo(enVuelo, 'MenuSeccionesPlan').props.bloqueado, true)
+  assert.match(texto(enVuelo), /Guardando…/)
   await esperar()
   await esperar()
   const guardar = app.requests.find((r) => r.url.endsWith('/acciones/planes/guardar-seccion'))
@@ -137,9 +145,10 @@ test('edición: totales en vivo, el camino quita Preparación, cuerpo completo y
     datos: {
       institucion: 'inst-63',
       camino: { opcion: 'POSTULAR_DIRECTO' },
+      // Las filas con el monto vacío (Admisión, Materiales, Transporte) no se envían.
       gastos: [
-        { rubro: 'PENSION', monto: 0, frecuencia: 'MENSUAL' },
         { rubro: 'MATRICULA', monto: 600, frecuencia: 'POR_CICLO' },
+        { rubro: 'PENSION', monto: 0, frecuencia: 'MENSUAL' },
       ],
       financiamiento: [{ opcion: 'FAMILIA' }, { otro: 'Trabajo de verano' }],
       complicaciones: [{ numero: 1 }, { opcion: 'DISTANCIA' }],
@@ -149,6 +158,7 @@ test('edición: totales en vivo, el camino quita Preparación, cuerpo completo y
   const m = listo.sugerencias.filter((s) => s.estado === 'PENDIENTE').length
   assert.equal(aviso.titulo, `1 complicación y ${m} pasos sugeridos`)
   assert.equal(hijo(vista.render(), 'SeccionRealidad').props.borrador, null)
+  assert.equal(elementos(vista.render(), (e) => e.type === 'fieldset')[0].props.disabled, false)
 })
 
 test('frente de la tarjeta: «1.er año ≈ S/ …» bajo la institución solo con REALIDAD lista', () => {

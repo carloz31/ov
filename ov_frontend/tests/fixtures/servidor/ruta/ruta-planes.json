@@ -189,7 +189,7 @@
         "cero_si_publica": false,
         "codigo": "MATRICULA",
         "frecuencia_recomendada": "POR_CICLO",
-        "monto_referencia": 600,
+        "monto_referencia": null,
         "solo_si_camino_prepara": false,
         "texto": "Matrícula"
       },
@@ -197,7 +197,7 @@
         "cero_si_publica": true,
         "codigo": "PENSION",
         "frecuencia_recomendada": "MENSUAL",
-        "monto_referencia": 1800,
+        "monto_referencia": null,
         "solo_si_camino_prepara": false,
         "texto": "Pensión"
       },

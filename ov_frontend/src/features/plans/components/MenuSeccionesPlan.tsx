@@ -18,11 +18,14 @@ export function MenuSeccionesPlan({
   plan,
   opciones,
   seccion,
+  bloqueado = false,
   onElegir,
 }: {
   plan: PlanCarrera
   opciones: OpcionesTarjeta
   seccion: VistaPlan
+  // Mientras se guarda una sección no se cambia de entrada.
+  bloqueado?: boolean
   onElegir: (codigo: VistaPlan) => void
 }) {
   const listas = seccionesListas(plan)
@@ -47,6 +50,7 @@ export function MenuSeccionesPlan({
             className="sx-p-menu-entrada"
             data-medidores="true"
             aria-current={seccion === 'MEDIDORES' ? 'true' : undefined}
+            disabled={bloqueado}
             onClick={() => onElegir('MEDIDORES')}
           >
             <strong>Cómo me siento</strong>
@@ -59,6 +63,7 @@ export function MenuSeccionesPlan({
               type="button"
               className="sx-p-menu-entrada"
               aria-current={s.codigo === seccion ? 'true' : undefined}
+              disabled={bloqueado}
               onClick={() => onElegir(s.codigo)}
             >
               <span className="sx-p-menu-titulo">

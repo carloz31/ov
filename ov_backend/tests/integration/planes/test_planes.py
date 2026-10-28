@@ -168,8 +168,11 @@ def test_opciones_de_la_tarjeta_para_la_precarga(cliente):
     assert list(rubros) == ['PREPARACION', 'ADMISION', 'MATRICULA', 'PENSION', 'MATERIALES', 'TRANSPORTE',
                             'ALIMENTACION', 'VIVIENDA']
     assert rubros['PENSION'] == {'codigo': 'PENSION', 'texto': 'Pensión', 'frecuencia_recomendada': 'MENSUAL',
-                                 'monto_referencia': 1800, 'cero_si_publica': True, 'solo_si_camino_prepara': False}
+                                 'monto_referencia': None, 'cero_si_publica': True, 'solo_si_camino_prepara': False}
     assert rubros['PREPARACION']['solo_si_camino_prepara'] is True
+    # Ajuste F07b: Matrícula y Pensión se consultan en la institución (sin monto de referencia).
+    assert [r for r in rubros if rubros[r]['monto_referencia'] is None and rubros[r]['frecuencia_recomendada']] == [
+        'MATRICULA', 'PENSION']
     assert rubros['VIVIENDA']['frecuencia_recomendada'] is None and rubros['VIVIENDA']['monto_referencia'] is None
     assert [c['codigo'] for c in opciones['caminos'] if c['incluye_preparacion']] == ['PREPARARME']
     assert [p['codigo'] for p in opciones['pasos']] == ['investigar', 'conversar', 'visitar', 'curso', 'practicar',

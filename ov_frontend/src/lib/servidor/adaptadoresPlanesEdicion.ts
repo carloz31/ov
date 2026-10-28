@@ -11,17 +11,18 @@ import type {
   RealidadDatos,
 } from '@/types/servidor'
 
-// F07b: borradores de edición de REALIDAD y PASOS, la precarga de gastos y los totales en vivo (F07b-pantallas
-// §7–§8). Solo importa tipos: las pruebas lo cargan aislado.
+// F07b: borradores de edición de REALIDAD y PASOS, los gastos propuestos y los totales en vivo (F07b-pantallas
+// §7–§8, con el ajuste de «Cuánto costaría»). Solo importa tipos: las pruebas lo cargan aislado.
 
 type Gestion = 'PUBLICA' | 'PRIVADA' | null
 type Rubro = OpcionesTarjeta['rubros'][number]
 
+// `monto` nulo: la fila está, pero el estudiante todavía no escribe cuánto cuesta (no se envía).
 export type GastoBorrador = {
   clave: number
   rubro: string | null
   otro: string
-  monto: number
+  monto: number | null
   frecuencia: FrecuenciaGasto
 }
 export type ComplicacionBorrador = ({ opcion: string } | { otro: string }) & { numero?: number }
@@ -31,8 +32,6 @@ export type BorradorRealidad = {
   gastos: GastoBorrador[]
   financiamiento: ElegidaEntrada[]
   complicaciones: ComplicacionBorrador[]
-  // Mientras dura la primera edición (sección por empezar), la pensión sigue a la gestión si no se tocó.
-  precargando: boolean
 }
 
 let siguienteClave = 1
@@ -43,8 +42,9 @@ const prepara = (camino: ElegidaEntrada | null, opciones: OpcionesTarjeta) =>
   !!camino &&
   'opcion' in camino &&
   !!opciones.caminos.find((c) => c.codigo === camino.opcion)?.incluye_preparacion
-const montoInicial = (rubro: Rubro, gestion: Gestion) =>
-  rubro.cero_si_publica && gestion === 'PUBLICA' ? 0 : (rubro.monto_referencia ?? 0)
+// El único monto escrito de antemano: Pensión en 0 con institución pública.
+const montoInicial = (rubro: Rubro | undefined, gestion: Gestion) =>
+  rubro?.cero_si_publica && gestion === 'PUBLICA' ? 0 : null
 const filaDe = (rubro: Rubro, gestion: Gestion): GastoBorrador => ({
   clave: clave(),
   rubro: rubro.codigo,
@@ -52,70 +52,92 @@ const filaDe = (rubro: Rubro, gestion: Gestion): GastoBorrador => ({
   monto: montoInicial(rubro, gestion),
   frecuencia: rubro.frecuencia_recomendada ?? 'MENSUAL',
 })
-
-// Precarga: los rubros con referencia, Preparación solo si el camino la incluye; Alimentación y Vivienda (sin
-// referencia) nunca. Pensión en 0 con institución pública; sin gestión, su referencia.
-export function gastosPrecargados(
-  opciones: OpcionesTarjeta,
-  gestion: Gestion,
-  camino: ElegidaEntrada | null,
-) {
-  return opciones.rubros
-    .filter((r) => r.frecuencia_recomendada !== null && r.monto_referencia !== null)
-    .filter((r) => !r.solo_si_camino_prepara || prepara(camino, opciones))
-    .map((r) => filaDe(r, gestion))
+// Orden de la tabla: los rubros de la lista en su orden, y los «Otro» al final en el orden en que se agregaron.
+const orden = (g: GastoBorrador, opciones: OpcionesTarjeta) => {
+  const i = opciones.rubros.findIndex((r) => r.codigo === g.rubro)
+  return i < 0 ? opciones.rubros.length : i
 }
+const ordenar = (gastos: GastoBorrador[], opciones: OpcionesTarjeta) =>
+  gastos
+    .map((g, i) => ({ g, i }))
+    .sort((a, b) => orden(a.g, opciones) - orden(b.g, opciones) || a.i - b.i)
+    .map(({ g }) => g)
 
+// Predeterminados: los rubros con frecuencia recomendada, con Preparación solo si el camino la incluye;
+// Alimentación y Vivienda (sin frecuencia) nunca.
+export const predeterminados = (opciones: OpcionesTarjeta, camino: ElegidaEntrada | null) =>
+  opciones.rubros
+    .filter((r) => r.frecuencia_recomendada !== null)
+    .filter((r) => !r.solo_si_camino_prepara || prepara(camino, opciones))
+// Agrega, vacíos, los predeterminados que falten, sin tocar las filas que ya están.
+const completar = (
+  gastos: GastoBorrador[],
+  opciones: OpcionesTarjeta,
+  camino: ElegidaEntrada | null,
+  gestion: Gestion,
+) =>
+  ordenar(
+    [
+      ...gastos,
+      ...predeterminados(opciones, camino)
+        .filter((r) => !gastos.some((g) => g.rubro === r.codigo))
+        .map((r) => filaDe(r, gestion)),
+    ],
+    opciones,
+  )
+
+// En cada edición: los gastos guardados más los predeterminados que falten, con el monto vacío.
 export function borradorRealidad(plan: PlanCarrera, opciones: OpcionesTarjeta): BorradorRealidad {
   const camino = plan.camino && elegida(plan.camino)
-  const porEmpezar = plan.secciones.find((s) => s.codigo === 'REALIDAD')?.estado === 'POR_EMPEZAR'
+  const guardados = plan.gastos.map((g: GastoPublico) => ({
+    clave: clave(),
+    rubro: g.rubro,
+    otro: g.otro ?? '',
+    monto: g.monto,
+    frecuencia: g.frecuencia,
+  }))
   return {
     institucion: plan.institucion?.codigo ?? null,
     camino,
-    gastos: porEmpezar
-      ? gastosPrecargados(opciones, plan.institucion?.gestion ?? null, camino)
-      : plan.gastos.map((g: GastoPublico) => ({
-          clave: clave(),
-          rubro: g.rubro,
-          otro: g.otro ?? '',
-          monto: g.monto,
-          frecuencia: g.frecuencia,
-        })),
+    gastos: completar(guardados, opciones, camino, plan.institucion?.gestion ?? null),
     financiamiento: plan.financiamiento.map(elegida),
     complicaciones: plan.complicaciones.map((c) => ({ ...elegida(c), numero: c.numero })),
-    precargando: porEmpezar,
   }
 }
 
-// Elegir o cambiar el camino agrega la fila de Preparación (con su referencia) si falta, o la quita.
-export function cambiarCamino(b: BorradorRealidad, camino: ElegidaEntrada | null, opciones: OpcionesTarjeta) {
-  const conPreparacion = prepara(camino, opciones)
-  const rubros = opciones.rubros.filter((r) => r.solo_si_camino_prepara)
-  const faltan = conPreparacion ? rubros.filter((r) => !b.gastos.some((g) => g.rubro === r.codigo)) : []
-  const gastos = conPreparacion
-    ? [...faltan.map((r) => filaDe(r, null)), ...b.gastos]
-    : b.gastos.filter((g) => !rubros.some((r) => r.codigo === g.rubro))
+// Cambiar el camino rehace el conjunto: Preparación entra (vacía) o sale; lo escrito en los demás se conserva.
+export function cambiarCamino(
+  b: BorradorRealidad,
+  camino: ElegidaEntrada | null,
+  opciones: OpcionesTarjeta,
+  gestion: Gestion,
+) {
+  const soloSiPrepara = opciones.rubros.filter((r) => r.solo_si_camino_prepara)
+  const faltan = soloSiPrepara.filter((r) => !b.gastos.some((g) => g.rubro === r.codigo))
+  const gastos = prepara(camino, opciones)
+    ? ordenar([...b.gastos, ...faltan.map((r) => filaDe(r, gestion))], opciones)
+    : b.gastos.filter((g) => !soloSiPrepara.some((r) => r.codigo === g.rubro))
   return { ...b, camino, gastos }
 }
 
-// Cambiar de institución no toca los montos; solo en la primera edición, la pensión precargada sigue a la gestión
-// mientras el estudiante no la cambie.
+// La institución solo toca la pensión: vacía pasa a 0 si la nueva es pública, y en 0 vuelve a vacía si no lo es.
 export function cambiarInstitucion(
   b: BorradorRealidad,
   codigo: string | null,
   gestion: Gestion,
   opciones: OpcionesTarjeta,
 ) {
-  if (!b.precargando) return { ...b, institucion: codigo }
   const gastos = b.gastos.map((g) => {
     const rubro = opciones.rubros.find((r) => r.codigo === g.rubro)
-    const precargado = rubro?.cero_si_publica && (g.monto === 0 || g.monto === rubro.monto_referencia)
-    return rubro && precargado ? { ...g, monto: montoInicial(rubro, gestion) } : g
+    if (!rubro?.cero_si_publica) return g
+    if (gestion === 'PUBLICA' && g.monto === null) return { ...g, monto: 0 }
+    if (gestion !== 'PUBLICA' && g.monto === 0) return { ...g, monto: null }
+    return g
   })
   return { ...b, institucion: codigo, gastos }
 }
 
-// Un rubro de la lista (con su referencia si la tiene) u «Otro» con su texto, al final de la tabla.
+// Un rubro de la lista (vacío, salvo Pensión pública) u «Otro» con su texto; la «✕» lo devuelve a los chips.
 export function agregarGasto(
   b: BorradorRealidad,
   rubro: string | null,
@@ -125,32 +147,39 @@ export function agregarGasto(
   const deLista = opciones.rubros.find((r) => r.codigo === rubro)
   const fila: GastoBorrador = deLista
     ? filaDe(deLista, gestion)
-    : { clave: clave(), rubro: null, otro: '', monto: 0, frecuencia: 'MENSUAL' }
-  return { ...b, gastos: [...b.gastos, fila] }
+    : { clave: clave(), rubro: null, otro: '', monto: null, frecuencia: 'MENSUAL' }
+  return { ...b, gastos: ordenar([...b.gastos, fila], opciones) }
 }
+export const quitarGasto = (b: BorradorRealidad, fila: number) => ({
+  ...b,
+  gastos: b.gastos.filter((g) => g.clave !== fila),
+})
+// «Restablecer predeterminados»: repone los que falten, sin borrar montos escritos.
+export const restablecerGastos = (b: BorradorRealidad, opciones: OpcionesTarjeta, gestion: Gestion) => ({
+  ...b,
+  gastos: completar(b.gastos, opciones, b.camino, gestion),
+})
 export const rubrosSinFila = (b: BorradorRealidad, opciones: OpcionesTarjeta) =>
   opciones.rubros.filter((r) => !b.gastos.some((g) => g.rubro === r.codigo))
+export const faltanPredeterminados = (b: BorradorRealidad, opciones: OpcionesTarjeta) =>
+  predeterminados(opciones, b.camino).some((r) => !b.gastos.some((g) => g.rubro === r.codigo))
 
-// La nota bajo un rubro de la tabla: por qué está Preparación y por qué la pensión va en 0.
-export function notaGasto(
-  g: GastoBorrador,
-  b: BorradorRealidad,
-  opciones: OpcionesTarjeta,
-  gestion: Gestion,
-) {
+// La pista bajo un rubro: «0 por ser pública», su referencia o, sin ella, que se consulta en la institución.
+export type PistaGasto = { referencia: number } | { texto: string } | null
+export function pistaGasto(g: GastoBorrador, opciones: OpcionesTarjeta, gestion: Gestion): PistaGasto {
   const rubro = opciones.rubros.find((r) => r.codigo === g.rubro)
-  if (rubro?.solo_si_camino_prepara && b.camino && 'opcion' in b.camino) {
-    const texto =
-      opciones.caminos.find((c) => c.codigo === (b.camino as { opcion: string }).opcion)?.texto ?? ''
-    return `porque eliges ${texto.charAt(0).toLowerCase()}${texto.slice(1).replace(/^(\S*?)me\b/, '$1te')}`
-  }
-  if (rubro?.cero_si_publica && gestion === 'PUBLICA' && g.monto === 0) return '0 por ser pública'
-  return null
+  if (!rubro || rubro.frecuencia_recomendada === null) return null
+  if (rubro.cero_si_publica && gestion === 'PUBLICA' && g.monto === 0) return { texto: '0 por ser pública' }
+  return rubro.monto_referencia !== null
+    ? { referencia: rubro.monto_referencia }
+    : { texto: 'Consúltalo en su página' }
 }
 
+// Una fila con el monto vacío no se envía (el servidor exige un entero ≥ 0).
 export function datosRealidad(b: BorradorRealidad): RealidadDatos {
   const gastos: GastoEntrada[] = b.gastos.flatMap((g): GastoEntrada[] => {
-    const monto = Math.max(0, Math.round(Number(g.monto) || 0))
+    if (g.monto === null) return []
+    const monto = Math.max(0, Math.round(g.monto))
     if (g.rubro) return [{ rubro: g.rubro, monto, frecuencia: g.frecuencia }]
     return g.otro.trim() ? [{ otro: g.otro.trim(), monto, frecuencia: g.frecuencia }] : []
   })
@@ -162,14 +191,15 @@ export function datosRealidad(b: BorradorRealidad): RealidadDatos {
 }
 
 // Totales con la fórmula del servidor (planes.md): primer año = UNICA + 12·MENSUAL + c·POR_CICLO + ANUAL; la
-// carrera, exacta y redondeada al final (mitad hacia arriba), solo con la duración en ciclos.
+// carrera, exacta y redondeada al final (mitad hacia arriba), solo con la duración en ciclos. Suman solo lo
+// escrito; `faltan` cuenta las filas con el monto vacío.
 export function totalesGastos(
-  gastos: { monto: number; frecuencia: FrecuenciaGasto }[],
+  gastos: { monto: number | null; frecuencia: FrecuenciaGasto }[],
   ciclosPorAnio: number,
   duracionCiclos: number | null,
 ) {
   const suma = { UNICA: 0, MENSUAL: 0, POR_CICLO: 0, ANUAL: 0 }
-  for (const g of gastos) suma[g.frecuencia] += Math.max(0, Math.round(Number(g.monto) || 0))
+  for (const g of gastos) if (g.monto !== null) suma[g.frecuencia] += Math.max(0, Math.round(g.monto))
   const primerAnio = suma.UNICA + 12 * suma.MENSUAL + ciclosPorAnio * suma.POR_CICLO + suma.ANUAL
   let carrera: number | null = null
   if (duracionCiclos !== null) {
@@ -179,7 +209,8 @@ export function totalesGastos(
     carrera = Math.floor((2 * numerador + c) / (2 * c))
   }
   const anios = duracionCiclos === null ? null : duracionCiclos / ciclosPorAnio
-  return { primerAnio, alMes: Math.round(primerAnio / 12), carrera, anios }
+  const faltan = gastos.filter((g) => g.monto === null).length
+  return { primerAnio, alMes: Math.round(primerAnio / 12), carrera, anios, faltan }
 }
 export const textoAnios = (anios: number) =>
   `${String(anios).replace('.', ',')} ${anios === 1 ? 'año' : 'años'}`

@@ -86,11 +86,11 @@ LISTAS_COMUNES = (
 SECCIONES_TARJETA = (('POR_QUE', 'Por qué', True), ('CONOCIMIENTO', 'Qué tanto la conozco', False),
                      ('REALIDAD', 'Qué tan real es', True), ('PASOS', 'Mis pasos', False))
 
-# Rubros que el front precarga en REALIDAD: (rubro, frecuencia recomendada, monto de referencia en soles,
-# en cero si la institución es pública, solo si el camino incluye prepararse). Alimentación y Vivienda no se
-# precargan: el estudiante los agrega a mano.
+# Rubros que el front propone en REALIDAD: (rubro, frecuencia recomendada, monto de referencia en soles o None si
+# se consulta en la institución, en cero si la institución es pública, solo si el camino incluye prepararse).
+# Alimentación y Vivienda no se proponen: el estudiante los agrega a mano.
 REFERENCIAS_RUBROS = (('PREPARACION', 'UNICA', 1300, False, True), ('ADMISION', 'UNICA', 350, False, False),
-                      ('MATRICULA', 'POR_CICLO', 600, False, False), ('PENSION', 'MENSUAL', 1800, True, False),
+                      ('MATRICULA', 'POR_CICLO', None, False, False), ('PENSION', 'MENSUAL', None, True, False),
                       ('MATERIALES', 'POR_CICLO', 300, False, False), ('TRANSPORTE', 'MENSUAL', 150, False, False))
 
 # Caminos que incluyen prepararse antes de postular (precargan el rubro Preparación).

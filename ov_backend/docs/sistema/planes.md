@@ -7,7 +7,7 @@ Cada estudiante desarrolla hasta tres planes de carrera (HU-043 a 048, 050, 097 
 | Tabla | Qué guarda |
 |---|---|
 | `seccion_tarjeta` | Catálogo fijo: POR_QUE, CONOCIMIENTO, REALIDAD y PASOS, con `orden` y `para_comparar` (POR_QUE y REALIDAD). Objetivo `SECCION_PLAN` del motor. |
-| `referencia_rubro` | Por opción de RUBROS_GASTO: `frecuencia_recomendada`, `monto_referencia`, `cero_si_publica` y `solo_si_camino_prepara`. Tener fila es lo que hace que el front lo precargue. |
+| `referencia_rubro` | Por opción de RUBROS_GASTO: `frecuencia_recomendada`, `monto_referencia` (nulo si se consulta en la institución: Matrícula y Pensión, migración 0034), `cero_si_publica` y `solo_si_camino_prepara`. Tener fila es lo que hace que el front lo proponga. |
 | `referencia_camino` | Por opción de CAMINOS: `incluye_preparacion`. |
 | `tarjeta_carrera` | `cuenta_id`, `carrera_id`, `prioridad` (1 = A), `creada_en`, `actualizada_en`, `idea_origen` (`OrigenIdea`), `relato`, `institucion_id`, `camino_opcion_id` o `camino_otro`, medidores `entusiasmo`, `capacidad` y `recursos` (1 a 3), una marca `guardada_*_en` por sección, contadores `ultimo_numero_*` y `llamadas_sugerencias`. Únicos `(cuenta, carrera)` y `(cuenta, prioridad)`. |
 | `motivo_tarjeta` | Motivos por `posicion` (1 = principal): opción de VALORES o `texto_otro`. |
@@ -55,7 +55,7 @@ Un plan está **listo para comparar** cuando todas sus secciones `para_comparar`
 
 **Totales.** `total_primer_anio` = UNICA + 12·MENSUAL + `CICLOS_POR_ANIO`·POR_CICLO + ANUAL. Con la duración de la carrera en la institución elegida, `total_carrera` = UNICA + ciclos·(MENSUAL·12 / `CICLOS_POR_ANIO` + POR_CICLO) + ANUAL·ciclos / `CICLOS_POR_ANIO`, calculado exacto (7 ciclos son 3,5 años) y redondeado a entero solo al final; sin duración, nulo. El front repite la fórmula en vivo mientras se edita REALIDAD, con `opciones.ciclos_por_anio` y la `duracion_ciclos` de la institución elegida (la del plan o la de `InstitucionEnCarrera` del detalle de carrera, F07b); en lectura muestra los totales del servidor.
 
-**Precarga de gastos.** La hace el front con `opciones`: Pensión en 0 si la institución es pública (con su monto de referencia si no tiene gestión), Preparación solo si el camino incluye prepararse, y Alimentación y Vivienda a mano. El backend no inserta gastos: solo valida lo que llega en REALIDAD.
+**Gastos propuestos.** Los arma el front con `opciones` en cada edición: los rubros con `frecuencia_recomendada` (Preparación solo si el camino incluye prepararse; Alimentación y Vivienda nunca), con su frecuencia y el monto vacío; `monto_referencia` se muestra como pista, y sin él, «Consúltalo en su página». El único monto escrito de antemano es Pensión en 0 si la institución es pública. Una fila con el monto vacío no se envía. El backend no inserta gastos: solo valida lo que llega en REALIDAD.
 
 ## Acciones
 

@@ -219,13 +219,16 @@ const AVISOS_SIMPLES: Record<CodigoSeccionPlan, AvisoGuardado> = {
 export function avisoGuardado(seccion: CodigoSeccionPlan, plan: PlanCarrera | null): AvisoGuardado {
   const m = plan ? sugerenciasPendientes(plan).length : 0
   if (!plan || !m || (seccion !== 'CONOCIMIENTO' && seccion !== 'REALIDAD')) return AVISOS_SIMPLES[seccion]
+  const cuantas = seccion === 'CONOCIMIENTO' ? contarDudas(plan.dudas).abiertas : plan.complicaciones.length
   const n =
     seccion === 'CONOCIMIENTO'
-      ? plural(contarDudas(plan.dudas).abiertas, 'duda', 'dudas')
-      : plural(plan.complicaciones.length, 'complicación', 'complicaciones')
+      ? plural(cuantas, 'duda', 'dudas')
+      : plural(cuantas, 'complicación', 'complicaciones')
+  const pasos = plural(m, 'paso sugerido', 'pasos sugeridos')
+  // Sin dudas abiertas o complicaciones (las sugerencias vienen de la otra sección), solo los pasos.
   return {
     etiqueta: 'Guardado',
-    titulo: `${n} y ${plural(m, 'paso sugerido', 'pasos sugeridos')}`,
+    titulo: cuantas ? `${n} y ${pasos}` : pasos,
     descripcion: `${m === 1 ? 'te espera' : 'te esperan'} en Mis próximos pasos.`,
     destacado: true,
   }

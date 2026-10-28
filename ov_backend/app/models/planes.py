@@ -32,12 +32,14 @@ class SeccionTarjeta(Base):
 
 
 class ReferenciaRubro(Base):
-    """Rubro de RUBROS_GASTO que el front precarga, con su frecuencia y monto de referencia."""
+    """Rubro de RUBROS_GASTO que el front propone, con su frecuencia y monto de referencia.
+
+    Sin monto (nulo), el estudiante lo consulta en la institución (F07b: Matrícula y Pensión)."""
     __tablename__ = "referencia_rubro"
     __table_args__ = (CheckConstraint("monto_referencia >= 0", name="monto_valido"),)
     opcion_id: Mapped[int] = mapped_column(ForeignKey("opcion_lista.id"), primary_key=True)
     frecuencia_recomendada: Mapped[FrecuenciaGasto] = mapped_column(enumerado(FrecuenciaGasto))
-    monto_referencia: Mapped[int]
+    monto_referencia: Mapped[int | None]
     cero_si_publica: Mapped[bool] = mapped_column(default=False, server_default=false())
     solo_si_camino_prepara: Mapped[bool] = mapped_column(default=False, server_default=false())
 
