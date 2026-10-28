@@ -250,6 +250,10 @@ test('«Subir prioridad» confirma, ocupa el botón y cambia el plan con el de a
     /¿Eliminar el plan A · Psicología\?.*Lo que escribiste queda guardado: si vuelves a crearlo desde tus favoritos, lo recuperas tal como estaba\./,
   )
   elementos(arbol, (e) => e.type === 'button' && texto(e) === 'Eliminar plan')[0].props.onClick()
+  // Como al subir prioridad: el diálogo sigue abierto con el botón ocupado hasta la respuesta.
+  const enVuelo = elementos(vista.render(), (e) => e.type === 'button' && texto(e) === 'Guardando…')
+  assert.equal(enVuelo.length, 1)
+  assert.equal(enVuelo[0].props.disabled, true)
   await esperar()
   const eliminar = app.requests.find((r) => r.url.endsWith('/acciones/planes/eliminar'))
   assert.equal(eliminar.body.carrera, familia.planes[0].carrera.codigo)

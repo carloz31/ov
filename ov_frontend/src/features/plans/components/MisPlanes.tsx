@@ -64,6 +64,9 @@ export function MisPlanes() {
       />
     )
   const { planes, opcion_inicial, avisos } = v.datos
+  // Cada confirmación queda ocupada solo por su acción.
+  const eliminando = !!v.ocupado?.startsWith('eliminar:'),
+    subiendo = !!v.ocupado?.startsWith('ordenar:')
   const espacio = (i: number) => (
     <EspacioPlan key={i} letra={'ABC'[i]} conAcciones={i === planes.length} onCrear={v.abrirCrear} />
   )
@@ -127,7 +130,7 @@ export function MisPlanes() {
         onCrear={(carrera) => void v.crearDesdeDialogo(carrera)}
         onCerrar={v.cerrarCrear}
       />
-      <Dialog open={!!v.porEliminar} onOpenChange={(open) => !open && v.pedirEliminar(null)}>
+      <Dialog open={!!v.porEliminar} onOpenChange={(open) => !open && !eliminando && v.pedirEliminar(null)}>
         <DialogContent {...focus} className="sx-root sx-d-dialog">
           <DialogHeader>
             <DialogTitle>
@@ -142,17 +145,24 @@ export function MisPlanes() {
             <button
               type="button"
               className="sx-d-action sx-d-action-ghost"
+              disabled={eliminando}
               onClick={() => v.pedirEliminar(null)}
             >
               Cancelar
             </button>
-            <button type="button" className="sx-d-action" onClick={() => void v.confirmarEliminar()}>
-              Eliminar plan
+            <button
+              type="button"
+              className="sx-d-action"
+              aria-busy={eliminando}
+              disabled={eliminando}
+              onClick={() => void v.confirmarEliminar()}
+            >
+              {eliminando ? 'Guardando…' : 'Eliminar plan'}
             </button>
           </div>
         </DialogContent>
       </Dialog>
-      <Dialog open={!!v.porSubir} onOpenChange={(open) => !open && !v.ocupado && v.pedirSubir(null)}>
+      <Dialog open={!!v.porSubir} onOpenChange={(open) => !open && !subiendo && v.pedirSubir(null)}>
         <DialogContent {...focus} className="sx-root sx-d-dialog">
           <DialogHeader>
             <DialogTitle>
@@ -168,7 +178,7 @@ export function MisPlanes() {
             <button
               type="button"
               className="sx-d-action sx-d-action-ghost"
-              disabled={!!v.ocupado}
+              disabled={subiendo}
               onClick={() => v.pedirSubir(null)}
             >
               Cancelar
@@ -176,11 +186,11 @@ export function MisPlanes() {
             <button
               type="button"
               className="sx-d-action"
-              aria-busy={!!v.ocupado}
-              disabled={!!v.ocupado}
+              aria-busy={subiendo}
+              disabled={subiendo}
               onClick={() => void v.confirmarSubir()}
             >
-              {v.ocupado ? 'Guardando…' : 'Subir prioridad'}
+              {subiendo ? 'Guardando…' : 'Subir prioridad'}
             </button>
           </div>
         </DialogContent>

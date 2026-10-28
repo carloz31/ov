@@ -26,11 +26,11 @@ export function useMisPlanes() {
     cerrarCrear: () => setCreando(false),
     porEliminar: planes.find((p) => p.carrera.codigo === porEliminar) ?? null,
     pedirEliminar: (carrera: string | null) => setPorEliminar(carrera),
+    // Como subir prioridad: el diálogo queda abierto, con su botón ocupado, hasta la respuesta.
     confirmarEliminar: async () => {
       if (!porEliminar) return
-      const carrera = porEliminar
+      await acciones.eliminar(porEliminar)
       setPorEliminar(null)
-      await acciones.eliminar(carrera)
     },
     // Subir prioridad pide confirmación; el diálogo queda abierto, con su botón ocupado, hasta la respuesta.
     porSubir: planes.find((p) => p.carrera.codigo === porSubir) ?? null,
