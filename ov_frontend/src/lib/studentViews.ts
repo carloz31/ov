@@ -64,7 +64,8 @@ export function getStudentView(pathname: string): StudentView {
   if (pathname.endsWith('/catalog/institutions')) return 'catalog-institutions'
   if (pathname.endsWith('/catalog/professions')) return 'catalog-professions'
   if (pathname.endsWith('/testimonials')) return 'resources'
-  if (pathname.endsWith('/profile/decisions')) return 'profile-decisions'
+  // F07a: también un plan abierto (/profile/decisions/:carrera).
+  if (pathname.includes('/profile/decisions')) return 'profile-decisions'
   if (pathname.endsWith('/profile')) return 'profile-general'
   return 'central'
 }

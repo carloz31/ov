@@ -21,6 +21,7 @@ import { CareerDetailView } from '@/pages/student/CareerDetailView'
 import { OccupationDetailView } from '@/pages/student/OccupationDetailView'
 import { InstitutionDetailView } from '@/pages/student/InstitutionDetailView'
 import { StudentPlansView } from '@/pages/student/StudentPlansView'
+import { StudentPlanView } from '@/pages/student/StudentPlanView'
 import { ProfileRoute } from '@/pages/student/ProfileRoute'
 import { HelenaBookView } from '@/pages/student/HelenaBookView'
 import { HelenaResultView } from '@/pages/student/HelenaResultView'
@@ -193,6 +194,14 @@ function AppRoutes() {
               </SeccionProtegida>
             }
             path="profile/decisions"
+          />
+          <Route
+            element={
+              <SeccionProtegida seccion="PLANES">
+                <StudentPlanView />
+              </SeccionProtegida>
+            }
+            path="profile/decisions/:carrera"
           />
           <Route element={<Navigate replace to={appPaths.student.exploration} />} path="*" />
         </Route>
