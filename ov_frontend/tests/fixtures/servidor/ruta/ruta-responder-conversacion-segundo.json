@@ -1,7 +1,13 @@
 {
   "por_cuenta": {
     "apo-rosa": {
-      "eventos_registrados": [],
+      "eventos_registrados": [
+        {
+          "fecha_hora": "2026-10-07T10:00:00",
+          "referencia": "t-conv-1",
+          "tipo": "COMPLETA_CONVERSACION"
+        }
+      ],
       "nuevos_desbloqueos": []
     },
     "est-ana": {

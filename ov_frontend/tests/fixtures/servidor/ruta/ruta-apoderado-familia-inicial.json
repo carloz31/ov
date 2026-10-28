@@ -1,0 +1,27 @@
+{
+  "avance": {
+    "completadas": 0,
+    "porcentaje": 0.0,
+    "total": 2
+  },
+  "diploma": {
+    "codigo": null,
+    "obtenido": false,
+    "obtenido_en": null
+  },
+  "estudiante": {
+    "avance": {
+      "completadas": 9,
+      "porcentaje": 81.82,
+      "total": 11
+    },
+    "codigo": "est-ana",
+    "nivel_actual": {
+      "cita_lumi": "Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.",
+      "descripcion": "Ya reconoces señales sobre lo que disfrutas, lo que haces bien y los retos que despiertan tu curiosidad.",
+      "numero": 2,
+      "titulo": "Recolector de pistas"
+    },
+    "nombre": "Ana"
+  }
+}

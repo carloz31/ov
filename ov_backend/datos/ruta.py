@@ -42,7 +42,8 @@ CUENTAS = (('est-ana', 'Ana', 'ESTUDIANTE', '5A', 'ana.estudiante@example.com', 
 ORIENTADORAS_SALONES = (('ori-carmen', '5A', True),)
 
 # (código, estudiante, apoderado, parentesco)
-VINCULOS = (('VIN-ANA', 'est-ana', 'apo-rosa', 'madre'),)
+# F08: un segundo hijo para el selector del apoderado; Ana sigue siendo el primer vínculo.
+VINCULOS = (('VIN-ANA', 'est-ana', 'apo-rosa', 'madre'), ('VIN-LUIS', 'est-luis', 'apo-rosa', 'madre'))
 
 # Configuración del salón (B07; la orientadora la editará en B14). (salón, instrumento, prioritario, visible al
 # apoderado): un cuestionario prioritario es requisito de T2. El de partida y llegada (COMPARACION) es obligatorio
@@ -83,7 +84,7 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                # Ajuste mochila: un llamado que el recorrido nunca abre, para las voces que aún no se listan.
                ('t-caso-2', 'CIUDAD', 'La traductora apurada', 'CASO', 10, 10),
                ('t-apo-1', 'FAMILIA', 'Primera actividad del apoderado', 'INFORMATIVA', None, 10),
-               ('t-apo-carta', 'FAMILIA', 'Carta del apoderado', 'INFORMATIVA', None, 10),
+               ('t-apo-2', 'FAMILIA', 'Segunda actividad del apoderado', 'INFORMATIVA', None, 10),
                # DATO DE PRUEBA: un recuerdo de Lumi por nivel de amistad (ajuste del diario de F05).
                ('t-lumi-1', 'LUMI', 'Cómo llegué a este mundo', 'INFORMATIVA', None, 3),
                ('t-lumi-2', 'LUMI', 'Recuerdo de prueba 2', 'INFORMATIVA', None, 3),
@@ -128,7 +129,7 @@ DESCRIPCIONES = {
     't-contraste': 'Contrasta tu resultado de intereses con lo que esperabas.',
     't-caso-2': 'Un llamado que la Central todavía no publica.',
     't-apo-1': 'Conozca cómo acompañar a su hijo en este proceso.',
-    't-apo-carta': 'Escriba una carta para su hijo.',
+    't-apo-2': 'Conozca cómo decide un adolescente.',
 }
 
 # (actividad, instrumento, primer ítem, último ítem). El RIASEC va en dos misiones para probar que el
@@ -380,15 +381,18 @@ TESTIMONIOS = (
 )
 
 # (código, orden, título, pregunta del estudiante, pregunta del apoderado (None: la misma), preguntas guía,
-# mensaje de diferencias). El estudiante las habilita con reglas CONVERSACION; el apoderado, todas tras su carta.
+# mensaje de diferencias, algo que ya saben (F08)). El estudiante las habilita con reglas CONVERSACION; el
+# apoderado, todas tras su carta.
 CONVERSACIONES = (
     ('t-conv-1', 1, 'Primera conversación', '¿Qué esperas tú de tu futuro después del colegio?',
      '¿Qué espera usted del futuro de su hijo después del colegio?',
      ('¿En qué coinciden sus respuestas?', '¿Qué les sorprendió de la respuesta del otro?'),
-     'Si sus respuestas son distintas, conversen sobre qué hay detrás de cada una.'),
+     'Si sus respuestas son distintas, conversen sobre qué hay detrás de cada una.',
+     'Recuerden lo que ya ha funcionado: acompañar también puede ser preguntar, escuchar y dar tiempo.'),
     ('t-conv-2', 2, 'Segunda conversación', '¿Qué te dijo tu resultado de intereses sobre ti?', None,
      ('¿Qué parte del resultado les pareció más acertada?',),
-     'Si ven el resultado de forma distinta, cuenten un ejemplo que lo explique.'),
+     'Si ven el resultado de forma distinta, cuenten un ejemplo que lo explique.',
+     'Un resultado describe intereses de hoy; ustedes ya conocen ejemplos que lo confirman o lo matizan.'),
 )
 
 # (código, nombre, descripción, requisito, oculta). La descripción es la historia del sello y el requisito, lo que
@@ -527,7 +531,7 @@ REGLAS = (
     # Ajuste pasaporte-perfil: nivel 3 con dos condiciones (la ruta corta ve una sola carrera y no lo alcanza).
     ('R-NIV-3', 'NIVEL', 3, 'Termina el bloque de inicio y mira tres carreras para subir de nivel.',
      (('COMPLETA_BLOQUE', 'T0', 'EVENTOS', 1), ('VISTA_CARRERA', None, 'REFERENCIAS_DISTINTAS', 3))),
-    ('R-t-apo-carta', 'ACTIVIDAD', 't-apo-carta', 'Completa la primera actividad.',
+    ('R-t-apo-2', 'ACTIVIDAD', 't-apo-2', 'Completa la primera actividad.',
      (('COMPLETA_ACTIVIDAD', 't-apo-1', 'EVENTOS', 1),)),
     ('R-SEC-DIARIO', 'SECCION', 'DIARIO', 'Completa el inicio para abrir tu diario.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
@@ -629,8 +633,9 @@ def _cargar_estructura(sesion):
                                          ocupacion_id=ocupaciones[ocupacion].id, anios_experiencia=anios, cita=cita)
                    for c, t, d, e, p, persona, ocupacion, anios, cita in TESTIMONIOS}
     conversaciones = {c: modelos.Conversacion(codigo=c, orden=o, titulo=t, pregunta_estudiante=pe,
-                                             pregunta_apoderado=pa, preguntas_guia=list(guia), mensaje_diferencias=m)
-                      for c, o, t, pe, pa, guia, m in CONVERSACIONES}
+                                             pregunta_apoderado=pa, preguntas_guia=list(guia), mensaje_diferencias=m,
+                                             algo_que_saben=saben)
+                      for c, o, t, pe, pa, guia, m, saben in CONVERSACIONES}
     grupos = {c: modelos.GrupoInsignia(codigo=c, nombre=n, orden=o) for c, n, o in GRUPOS_INSIGNIA}
     sesion.add_all(grupos.values())
     sesion.flush()

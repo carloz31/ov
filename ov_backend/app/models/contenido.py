@@ -176,6 +176,8 @@ class Conversacion(Base):
     pregunta_apoderado: Mapped[str | None] = mapped_column(Text)
     preguntas_guia: Mapped[list[str]] = mapped_column(JSON)
     mensaje_diferencias: Mapped[str] = mapped_column(Text)
+    # F08: «Algo que ya saben», que acompaña la guía cuando están las dos respuestas.
+    algo_que_saben: Mapped[str | None] = mapped_column(Text)
 
 
 class GrupoInsignia(Base):

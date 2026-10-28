@@ -50,7 +50,7 @@ def test_apoderado_abre_conversaciones_al_completar_su_ruta(cliente):
     assert secciones(cliente, 'apo-rosa') == {'CONVERSACIONES': 'BLOQUEADA'}
     motivo, = pedir(cliente, 'GET', '/cuentas/apo-rosa/secciones/CONVERSACIONES')['bloqueo']
     assert motivo['condiciones_faltantes'][0]['referencia'] == 'FAMILIA'
-    for actividad in ('t-apo-1', 't-apo-carta'):
+    for actividad in ('t-apo-1', 't-apo-2'):
         completar(cliente, actividad, 'apo-rosa')
     assert secciones(cliente, 'apo-rosa') == {'CONVERSACIONES': 'DISPONIBLE'}
 
@@ -92,7 +92,7 @@ def test_carta_del_apoderado_exige_su_seccion(cliente):
     rechazo = pedir(cliente, 'POST', '/acciones/escribir-carta', datos, 409)['detail']
     assert rechazo['mensaje'] == 'Completa tus actividades para conversar en familia.'
     assert not any(e['tipo'] == 'ESCRIBE_CARTA' for e in eventos(cliente, 'apo-rosa'))
-    for actividad in ('t-apo-1', 't-apo-carta'):
+    for actividad in ('t-apo-1', 't-apo-2'):
         completar(cliente, actividad, 'apo-rosa')
     respuesta = pedir(cliente, 'POST', '/acciones/escribir-carta', datos)
     assert [e['tipo'] for e in respuesta['eventos_registrados']] == ['ESCRIBE_CARTA']

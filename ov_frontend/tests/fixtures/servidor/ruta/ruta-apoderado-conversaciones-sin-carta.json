@@ -1,0 +1,57 @@
+{
+  "carta_pendiente": true,
+  "carta_propia": null,
+  "carta_recibida": null,
+  "cartas_disponibles": false,
+  "completadas": 0,
+  "conversaciones": [
+    {
+      "abierta_para_hijo": false,
+      "algo_que_saben": null,
+      "bloqueo_mensaje": "Escribe tu carta para empezar las conversaciones",
+      "codigo": "t-conv-1",
+      "conversada_en": null,
+      "entrada_diario": null,
+      "estado": "bloqueada",
+      "mensaje_diferencias": null,
+      "mi_respuesta": null,
+      "orden": 1,
+      "pregunta": "¿Qué espera usted del futuro de su hijo después del colegio?",
+      "pregunta_otro": null,
+      "preguntas_guia": null,
+      "respuesta_otro": null,
+      "tema": "Primera conversación",
+      "tramo": {
+        "nombre": "Camino",
+        "numero": 2
+      }
+    },
+    {
+      "abierta_para_hijo": false,
+      "algo_que_saben": null,
+      "bloqueo_mensaje": "Escribe tu carta para empezar las conversaciones",
+      "codigo": "t-conv-2",
+      "conversada_en": null,
+      "entrada_diario": null,
+      "estado": "bloqueada",
+      "mensaje_diferencias": null,
+      "mi_respuesta": null,
+      "orden": 2,
+      "pregunta": "¿Qué te dijo tu resultado de intereses sobre ti?",
+      "pregunta_otro": null,
+      "preguntas_guia": null,
+      "respuesta_otro": null,
+      "tema": "Segunda conversación",
+      "tramo": {
+        "nombre": "La ciudad",
+        "numero": 4
+      }
+    }
+  ],
+  "otro": {
+    "codigo": "est-luis",
+    "nombre": "Luis",
+    "parentesco": "madre"
+  },
+  "total": 2
+}

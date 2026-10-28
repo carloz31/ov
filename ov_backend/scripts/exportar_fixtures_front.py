@@ -435,40 +435,51 @@ def _recorrer_perfil_plano(cliente):
 def _recorrer_apoderado(cliente):
     ruta, secciones = '/cuentas/apo-rosa/actividades', '/cuentas/apo-rosa/secciones'
     fixtures = {'apoderado-actividades-inicial': _pedir(cliente, 'GET', ruta),
-                'apoderado-secciones-inicial': _pedir(cliente, 'GET', secciones)}
+                'apoderado-secciones-inicial': _pedir(cliente, 'GET', secciones),
+                # F08: las fichas del apoderado, bloqueadas con la actividad que las da.
+                'apoderado-fichas-inicial': _pedir(cliente, 'GET', '/cuentas/apo-rosa/fichas'),
+                'apoderado-familia-inicial': _pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')}
     # F03: sin el diploma, los resultados del hijo responden 409 con su mensaje.
     sin_diploma = cliente.request('GET', '/cuentas/apo-rosa/familia/resultados')
     if sin_diploma.status_code != 409:
         raise RuntimeError(f'Los resultados sin diploma respondieron {sin_diploma.status_code}')
     fixtures['familia-resultados-sin-diploma'] = sin_diploma.json()
-    for actividad in ('t-apo-1', 't-apo-carta'):
+    for actividad in ('t-apo-1', 't-apo-2'):
         _completar(cliente, actividad, 'apo-rosa')
     fixtures['apoderado-actividades-final'] = _pedir(cliente, 'GET', ruta)
     fixtures['apoderado-secciones-final'] = _pedir(cliente, 'GET', secciones)
-    # B12: avance, diploma e hijo; resultados visibles del hijo; conversaciones y cartas hasta la entrega.
+    fixtures['apoderado-fichas-final'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/fichas')
+    fixtures['apoderado-ficha-t-ficha-apo'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/fichas/t-ficha-apo')
+    # B12: avance, diploma e hijo; resultados visibles del hijo. F08: conversaciones en cada estado y regalo.
     fixtures['familia'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')
     fixtures['familia-resultados'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados')
     fixtures['conversaciones-sin-carta'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')
+    fixtures['conversaciones-estudiante-sin-carta'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
     for cuenta in ('est-ana', 'apo-rosa'):
         fixtures[f'escribir-carta-{cuenta}'] = _pedir(cliente, 'POST', '/acciones/escribir-carta', {
             'cuenta': cuenta, 'texto': f'DATO DE PRUEBA: carta de {cuenta}.', 'fecha_hora': FECHA})
+    # El segundo hijo (Luis), todavía sin carta de su madre.
+    fixtures['apoderado-conversaciones-sin-carta'] = _pedir(
+        cliente, 'GET', '/cuentas/apo-rosa/conversaciones?estudiante=est-luis')
+    fixtures['conversaciones-estudiante-carta'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
     conversacion = {'conversacion': 't-conv-1', 'fecha_hora': FECHA}
     fixtures['responder-conversacion'] = _pedir(cliente, 'POST', '/acciones/responder-conversacion', {
         **conversacion, 'cuenta': 'est-ana', 'texto': 'DATO DE PRUEBA: quiero estudiar psicología.'})
     fixtures['conversaciones-te-toca'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')
-    _pedir(cliente, 'POST', '/acciones/responder-conversacion', {
-        **conversacion, 'cuenta': 'apo-rosa', 'texto': 'DATO DE PRUEBA: que elija lo que le guste.'})
-    fixtures['conversaciones-por-conversar'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
-    fixtures['completar-conversacion'] = _pedir(cliente, 'POST', '/acciones/completar-conversacion', {
-        **conversacion, 'cuenta': 'apo-rosa'})
+    fixtures['conversaciones-esperando'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
+    fixtures['responder-conversacion-segundo'] = _pedir(cliente, 'POST', '/acciones/responder-conversacion', {
+        **conversacion, 'cuenta': 'apo-rosa', 'estudiante': 'est-ana',
+        'texto': 'DATO DE PRUEBA: que elija lo que le guste.'})
+    fixtures['conversaciones-conversada'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
+    fixtures['conversaciones-apoderado-conversada'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')
     # t-contraste habilita al estudiante la segunda conversación.
     _responder_registro(cliente, 't-contraste')
     conversacion['conversacion'] = 't-conv-2'
     for cuenta in ('est-ana', 'apo-rosa'):
         _pedir(cliente, 'POST', '/acciones/responder-conversacion', {
             **conversacion, 'cuenta': cuenta, 'texto': 'DATO DE PRUEBA: lo que dijo el resultado.'})
-    _pedir(cliente, 'POST', '/acciones/completar-conversacion', {**conversacion, 'cuenta': 'est-ana'})
     fixtures['conversaciones-final'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
+    fixtures['conversaciones-apoderado-final'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')
     return fixtures
 
 

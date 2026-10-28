@@ -5,6 +5,8 @@ from unittest.mock import ANY
 from sqlalchemy import func, select
 
 from app import models as modelos
+from app.models import Cuenta
+from app.services.familia import codigo_diploma
 from soporte_ruta import FECHA, INTERESES, INTERESES_FINAL, avanzar, completar, pedir, responder, revelar
 
 
@@ -22,7 +24,7 @@ def resultados(cliente, esperado=200):
 
 
 def completar_ruta_apoderado(cliente):
-    for actividad in ('t-apo-1', 't-apo-carta'):
+    for actividad in ('t-apo-1', 't-apo-2'):
         completar(cliente, actividad, 'apo-rosa')
 
 
@@ -45,14 +47,22 @@ def test_avance_y_diploma_del_apoderado(cliente, sesion):
     total = requeridas(sesion, 'APODERADO')
     inicio = familia(cliente)
     assert inicio['avance'] == {'completadas': 0, 'total': total, 'porcentaje': 0.0}
-    assert inicio['diploma'] == {'obtenido': False, 'obtenido_en': None}
+    assert inicio['diploma'] == {'obtenido': False, 'obtenido_en': None, 'codigo': None}
     completar(cliente, 't-apo-1', 'apo-rosa')
     mitad = familia(cliente)
     assert mitad['avance']['completadas'] == 1 and mitad['diploma']['obtenido'] is False
-    completar(cliente, 't-apo-carta', 'apo-rosa')
+    completar(cliente, 't-apo-2', 'apo-rosa')
     final = familia(cliente)
     assert final['avance'] == {'completadas': total, 'total': total, 'porcentaje': 100.0}
-    assert final['diploma'] == {'obtenido': True, 'obtenido_en': FECHA}
+    rosa = sesion.scalar(select(Cuenta).where(Cuenta.codigo == 'apo-rosa'))
+    assert final['diploma'] == {'obtenido': True, 'obtenido_en': FECHA,
+                                'codigo': codigo_diploma(rosa.id, int(FECHA[:4]))}
+
+
+def test_codigo_del_diploma():
+    # F08 §8.3: año 2026 y cuenta 148 → dígitos 2,0,2,6,0,0,1,4,8 por su posición, módulo 10.
+    verificador = (2 * 1 + 0 * 2 + 2 * 3 + 6 * 4 + 0 * 5 + 0 * 6 + 1 * 7 + 4 * 8 + 8 * 9) % 10
+    assert codigo_diploma(148, 2026) == f'EXP-AP-2026-00148-{verificador}'
 
 
 def test_avance_y_nivel_del_hijo(cliente, sesion):
@@ -69,7 +79,8 @@ def test_avance_y_nivel_del_hijo(cliente, sesion):
 
 def test_sin_vinculo_activo_no_hay_estudiante(cliente, aplicacion):
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
-        sesion.scalar(select(modelos.VinculoFamiliar)).es_activo = False
+        for vinculo in sesion.scalars(select(modelos.VinculoFamiliar)):
+            vinculo.es_activo = False
     assert familia(cliente)['estudiante'] is None
     completar_ruta_apoderado(cliente)
     assert resultados(cliente, 409)['detail']['mensaje'] == 'La cuenta no pertenece a un vínculo familiar'

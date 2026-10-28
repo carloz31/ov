@@ -300,13 +300,13 @@ def test_hu004_ruta_del_apoderado(cliente):
     rosa = estado(cliente, 'apo-rosa')
     familia, = rosa['bloques']
     assert [(a['codigo'], a['estado']) for a in familia['actividades']] == [
-        ('t-apo-1', 'DISPONIBLE'), ('t-apo-carta', 'BLOQUEADA')]
+        ('t-apo-1', 'DISPONIBLE'), ('t-apo-2', 'BLOQUEADA')]
     assert [(f['codigo'], f['estado']) for f in rosa['fichas']] == [('t-ficha-apo', 'BLOQUEADA')]
     assert rosa['insignias'] == [] and rosa['nivel_actual'] is None
     assert rosa['secciones'] == {'CONVERSACIONES': 'BLOQUEADA'} and rosa['preguntas_diario'] == []
     assert siguiente(cliente, 'apo-rosa') == 't-apo-1'
-    assert reglas(completar(cliente, 't-apo-1', 'apo-rosa')) == {'R-t-apo-carta', 'R-t-ficha-apo'}
-    respuesta = completar(cliente, 't-apo-carta', 'apo-rosa')
+    assert reglas(completar(cliente, 't-apo-1', 'apo-rosa')) == {'R-t-apo-2', 'R-t-ficha-apo'}
+    respuesta = completar(cliente, 't-apo-2', 'apo-rosa')
     assert respuesta['eventos_registrados'][-1]['tipo'] == 'COMPLETA_BLOQUE'
     assert reglas(respuesta) == {'R-SEC-CONVERSACIONES'}
     assert estado(cliente, 'apo-rosa')['secciones'] == {'CONVERSACIONES': 'DISPONIBLE'}
@@ -502,7 +502,7 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
 def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):
     # B12: la ruta del apoderado da su diploma; las cartas habilitan las conversaciones de cada uno.
     avanzar(cliente)
-    for actividad in ('t-apo-1', 't-apo-carta'):
+    for actividad in ('t-apo-1', 't-apo-2'):
         completar(cliente, actividad, 'apo-rosa')
     familia = pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')
     assert familia['diploma']['obtenido'] is True and familia['avance']['porcentaje'] == 100.0
@@ -519,23 +519,24 @@ def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):
             'cuenta': cuenta, 'conversacion': conversacion, 'texto': 'DATO DE PRUEBA: mi respuesta.',
             'fecha_hora': FECHA})
 
-    def marcar(cuenta, conversacion):
-        return pedir(cliente, 'POST', '/acciones/completar-conversacion',
-                     {'cuenta': cuenta, 'conversacion': conversacion, 'fecha_hora': FECHA})
-
     def vista(cuenta):
         return pedir(cliente, 'GET', f'/cuentas/{cuenta}/conversaciones')
 
     assert reglas(carta('est-ana')) == {'R-t-conv-1'}
     carta('apo-rosa')
-    assert [c['codigo'] for c in vista('est-ana')['conversaciones']] == ['t-conv-1']
+    assert [c['estado'] for c in vista('est-ana')['conversaciones']] == ['sin_responder', 'bloqueada']
     assert [c['estado'] for c in vista('apo-rosa')['conversaciones']] == ['sin_responder', 'sin_responder']
     responder_conversacion('apo-rosa', 't-conv-2')
     responder_conversacion('est-ana', 't-conv-1')
     assert [c['estado'] for c in vista('apo-rosa')['conversaciones']] == ['te_toca', 'esperando_al_otro']
-    responder_conversacion('apo-rosa', 't-conv-1')
-    respuesta = marcar('apo-rosa', 't-conv-1')['por_cuenta']['est-ana']
-    assert [e['codigo'] for e in respuesta['entradas_desbloqueadas']] == ['t-diario-tras-conversar']
+    # F08: responde el apoderado, segundo; la conversación queda conversada en ambas cuentas y la entrada de
+    # diario del estudiante se abre igual que con la marca de antes (ninguna regla dependía de quién marcaba).
+    respuesta = responder_conversacion('apo-rosa', 't-conv-1')['por_cuenta']
+    assert [e['codigo'] for e in respuesta['est-ana']['entradas_desbloqueadas']] == ['t-diario-tras-conversar']
+    for cuenta in ('est-ana', 'apo-rosa'):
+        assert [(e['tipo'], e['referencia']) for e in respuesta[cuenta]['eventos_registrados']] == [
+            ('COMPLETA_CONVERSACION', 't-conv-1')]
+    assert vista('est-ana')['conversaciones'][0]['entrada_diario']['codigo'] == 't-diario-tras-conversar'
     assert vista('est-ana')['carta_recibida'] is None
     # Revelar el RIASEC y contrastarlo habilita la segunda; el hijo responde la que su madre ya respondió.
     for actividad in (INTERESES, INTERESES_FINAL):
@@ -545,8 +546,9 @@ def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):
     responder_registro(cliente, 't-contraste')
     assert vista('est-ana')['conversaciones'][1]['estado'] == 'te_toca'
     responder_conversacion('est-ana', 't-conv-2')
-    marcar('est-ana', 't-conv-2')
     final = vista('est-ana')
-    assert (final['completadas'], final['carta_recibida']) == (2, 'DATO DE PRUEBA: carta de apo-rosa.')
+    assert (final['completadas'], final['cartas_disponibles']) == (2, True)
+    assert final['carta_recibida'] == 'DATO DE PRUEBA: carta de apo-rosa.'
+    assert (final['otro']['nombre'], final['otro']['parentesco']) == ('Rosa', 'madre')
     assert vista('apo-rosa')['carta_recibida'] == 'DATO DE PRUEBA: carta de est-ana.'
     assert [r['instrumento'] for r in pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados')] == ['TEST-RIASEC']

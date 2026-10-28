@@ -37,8 +37,14 @@ def listar_fichas_cuenta(sesion: Session, cuenta: Cuenta) -> list[FichaCuenta]:
 def _ficha_cuenta(sesion, cuenta, ficha, obtenida):
     disponible = objetivo_disponible(sesion, cuenta, TipoObjetivo.FICHA, ficha.id)
     if not disponible:
+        # F08: la actividad que la da también en las bloqueadas («{k} fichas al completar» del apoderado).
+        reglas = contexto(sesion).definiciones.reglas_objetivo.get((TipoObjetivo.FICHA, ficha.id), ())
+        actividad = _actividad_de_la_regla(sesion, reglas[0]) if reglas else None
         return FichaCuenta(codigo=ficha.codigo, titulo=ficha.titulo, estado="BLOQUEADA", tema=None, descripcion=None,
-                           obtenida_en=None, visto=False, es_favorita=False, actividad=None, tramo=None)
+                           obtenida_en=None, visto=False, es_favorita=False,
+                           actividad=None if actividad is None else ActividadFicha(codigo=actividad.codigo,
+                                                                                   titulo=actividad.titulo),
+                           tramo=None)
     fecha, regla = obtenida if obtenida else (None, None)
     actividad = None if regla is None else _actividad_de_la_regla(sesion, regla)
     bloque = None if actividad is None else contexto(sesion).definiciones.obtener(Bloque, actividad.bloque_id)

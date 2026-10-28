@@ -7,7 +7,7 @@ from soporte_acceso import ClienteConToken as TestClient
 from soporte_ruta import BLOQUE_FAMILIA, FECHA, completar, estado, eventos, pedir
 
 
-PROPIAS = {'R-t-apo-carta', 'R-t-ficha-apo', 'R-SEC-CONVERSACIONES'}
+PROPIAS = {'R-t-apo-2', 'R-t-ficha-apo', 'R-SEC-CONVERSACIONES'}
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def test_familia_inicial_visible_y_separada_del_estudiante(cliente_apoderado):
 def test_segunda_bloqueada_no_escribe_estado_ni_eventos(cliente_apoderado):
     cliente = cliente_apoderado
     antes = estado(cliente, 'apo-rosa')
-    rechazo = completar(cliente, 't-apo-carta', 'apo-rosa', esperado=409)
+    rechazo = completar(cliente, 't-apo-2', 'apo-rosa', esperado=409)
     condicion, = rechazo['detail']['progreso']['reglas'][0]['condiciones']
     assert (condicion['referencia'], condicion['actual'], condicion['requerido']) == ('t-apo-1', 0, 1)
     assert estado(cliente, 'apo-rosa') == antes
@@ -44,7 +44,7 @@ def test_primera_desbloquea_solo_la_segunda(cliente_apoderado):
         {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-apo-1', 'fecha_hora': FECHA},
     ]
     assert [(d['regla'], d['tipo_objetivo'], d['objetivo']['codigo']) for d in respuesta['nuevos_desbloqueos']] == [
-        ('R-t-apo-carta', 'ACTIVIDAD', 't-apo-carta'), ('R-t-ficha-apo', 'FICHA', 't-ficha-apo'),
+        ('R-t-apo-2', 'ACTIVIDAD', 't-apo-2'), ('R-t-ficha-apo', 'FICHA', 't-ficha-apo'),
     ]
     esperado = deepcopy(BLOQUE_FAMILIA)
     esperado['actividades'][0]['estado'] = 'COMPLETADA'
@@ -56,9 +56,9 @@ def test_primera_desbloquea_solo_la_segunda(cliente_apoderado):
 def test_segunda_completa_familia_sin_nuevos_desbloqueos(cliente_apoderado):
     cliente = cliente_apoderado
     completar(cliente, 't-apo-1', 'apo-rosa')
-    respuesta = completar(cliente, 't-apo-carta', 'apo-rosa')
+    respuesta = completar(cliente, 't-apo-2', 'apo-rosa')
     assert respuesta['eventos_registrados'] == [
-        {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-apo-carta', 'fecha_hora': FECHA},
+        {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-apo-2', 'fecha_hora': FECHA},
         {'tipo': 'COMPLETA_BLOQUE', 'referencia': 'FAMILIA', 'fecha_hora': FECHA},
     ]
     # B01: cerrar la ruta del apoderado abre su sección CONVERSACIONES.
@@ -68,9 +68,9 @@ def test_segunda_completa_familia_sin_nuevos_desbloqueos(cliente_apoderado):
 
 def test_repeticiones_no_duplican_el_evento_del_bloque(cliente_apoderado):
     cliente = cliente_apoderado
-    for codigo in ('t-apo-1', 't-apo-carta'):
+    for codigo in ('t-apo-1', 't-apo-2'):
         completar(cliente, codigo, 'apo-rosa')
-    for codigo in ('t-apo-1', 't-apo-carta'):
+    for codigo in ('t-apo-1', 't-apo-2'):
         respuesta = completar(cliente, codigo, 'apo-rosa')
         assert respuesta['eventos_registrados'] == [
             {'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': codigo, 'fecha_hora': FECHA},
@@ -95,7 +95,7 @@ def test_otras_audiencias_se_rechazan_sin_efectos(cliente_apoderado):
 def test_completar_no_otorga_logros_ni_niveles_ni_afecta_al_estudiante(cliente_apoderado):
     cliente = cliente_apoderado
     estudiante = estado(cliente)
-    for codigo in ('t-apo-1', 't-apo-carta', 't-apo-1', 't-apo-carta'):
+    for codigo in ('t-apo-1', 't-apo-2', 't-apo-1', 't-apo-2'):
         respuesta = completar(cliente, codigo, 'apo-rosa')
         assert {d['regla'] for d in respuesta['nuevos_desbloqueos']} <= PROPIAS
         rosa = estado(cliente, 'apo-rosa')

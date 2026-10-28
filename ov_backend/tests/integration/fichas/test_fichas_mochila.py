@@ -31,9 +31,10 @@ def test_ficha_obtenida_trae_tema_origen_y_tramo(cliente):
 
 def test_ficha_bloqueada_no_trae_detalle(cliente):
     bloqueada = fichas(cliente)['t-ficha']
+    # F08: sin detalle, pero con la actividad que la da (el chip «{k} fichas al completar» del apoderado).
     assert bloqueada == {'codigo': 't-ficha', 'titulo': 'Ficha de prueba', 'estado': 'BLOQUEADA', 'tema': None,
-                         'descripcion': None, 'obtenida_en': None, 'visto': False,
-                         'es_favorita': False, 'actividad': None, 'tramo': None}
+                         'descripcion': None, 'obtenida_en': None, 'visto': False, 'es_favorita': False,
+                         'actividad': {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'}, 'tramo': None}
 
 
 def test_ver_ficha_una_sola_vez_y_solo_esa_ficha(cliente, aplicacion):

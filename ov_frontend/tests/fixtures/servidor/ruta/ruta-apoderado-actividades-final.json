@@ -17,15 +17,15 @@
       },
       {
         "bloqueo": null,
-        "codigo": "t-apo-carta",
-        "contenido": "t_apo_carta",
-        "descripcion": "Escriba una carta para su hijo.",
+        "codigo": "t-apo-2",
+        "contenido": "t_apo_2",
+        "descripcion": "Conozca cómo decide un adolescente.",
         "duracion_estimada_min": 10,
         "estado": "COMPLETADA",
         "orden": 2,
         "requerida": true,
         "tipo": "INFORMATIVA",
-        "titulo": "Carta del apoderado",
+        "titulo": "Segunda actividad del apoderado",
         "visibilidad": "SIEMPRE",
         "visible": true
       }

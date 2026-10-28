@@ -1,6 +1,9 @@
 [
   {
-    "actividad": null,
+    "actividad": {
+      "codigo": "t-inicio",
+      "titulo": "Inicio de prueba"
+    },
     "codigo": "t-ficha",
     "descripcion": null,
     "es_favorita": false,
@@ -12,7 +15,10 @@
     "visto": false
   },
   {
-    "actividad": null,
+    "actividad": {
+      "codigo": "t-inicio",
+      "titulo": "Inicio de prueba"
+    },
     "codigo": "t-ficha-2",
     "descripcion": null,
     "es_favorita": false,
@@ -24,7 +30,10 @@
     "visto": false
   },
   {
-    "actividad": null,
+    "actividad": {
+      "codigo": "t-opcional",
+      "titulo": "Actividad opcional"
+    },
     "codigo": "t-ficha-3",
     "descripcion": null,
     "es_favorita": false,

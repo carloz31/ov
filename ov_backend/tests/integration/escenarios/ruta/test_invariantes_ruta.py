@@ -53,4 +53,4 @@ def test_desbloqueos_y_nivel_no_retroceden(cliente, aplicacion):
     assert actividades(cliente)['t-expectativas'] == 'COMPLETADA'
     assert eventos(cliente, 'est-luis') == [] and estado(cliente, 'est-luis')['nivel_actual']['numero'] == 1
     familia, = estado(cliente, 'apo-rosa')['bloques']
-    assert [a['codigo'] for a in familia['actividades']] == ['t-apo-1', 't-apo-carta']
+    assert [a['codigo'] for a in familia['actividades']] == ['t-apo-1', 't-apo-2']

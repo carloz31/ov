@@ -15,6 +15,8 @@ class AvanceRuta(BaseModel):
 class Diploma(BaseModel):
     obtenido: bool
     obtenido_en: datetime | None
+    # F08: determinista desde la cuenta y el año de emisión; nulo sin diploma.
+    codigo: str | None
 
 
 class EstudianteVinculado(BaseModel):

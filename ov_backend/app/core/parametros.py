@@ -107,3 +107,8 @@ PUNTAJE_OCUPACION_MAXIMO = 7
 
 def puntaje_ocupacion_porcentaje(valor: float) -> int:
     return round((valor - PUNTAJE_OCUPACION_MINIMO) / (PUNTAJE_OCUPACION_MAXIMO - PUNTAJE_OCUPACION_MINIMO) * 100)
+
+# F08: código del diploma del apoderado, EXP-AP-{año}-{id con ceros}-{dígito verificador}. El prefijo cambia si
+# cambia el nombre de la plataforma.
+PREFIJO_DIPLOMA = 'EXP-AP'
+CIFRAS_CUENTA_DIPLOMA = 5

@@ -1,0 +1,29 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-apo-2",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "Segunda actividad del apoderado",
+  "bloque": 1,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": [],
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "orientacion"
+  ],
+  "nodos": [
+    {
+      "id": "t-apo-2-01",
+      "tipo": "diapositiva",
+      "etiqueta": "Para seguir",
+      "titulo": "Cómo decide un adolescente",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Actividad de prueba del portal familiar. Al terminarla se abren las conversaciones con su hijo."
+        }
+      ]
+    }
+  ]
+}

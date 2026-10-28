@@ -1,0 +1,64 @@
+{
+  "carta_pendiente": false,
+  "carta_propia": "DATO DE PRUEBA: carta de est-ana.",
+  "carta_recibida": null,
+  "cartas_disponibles": false,
+  "completadas": 1,
+  "conversaciones": [
+    {
+      "abierta_para_hijo": null,
+      "algo_que_saben": "Recuerden lo que ya ha funcionado: acompañar también puede ser preguntar, escuchar y dar tiempo.",
+      "bloqueo_mensaje": null,
+      "codigo": "t-conv-1",
+      "conversada_en": "2026-10-07T10:00:00",
+      "entrada_diario": {
+        "codigo": "t-diario-tras-conversar",
+        "nombre": "Lo que conversamos",
+        "pregunta": "¿Qué te llevas de la conversación con tu familia?"
+      },
+      "estado": "conversada",
+      "mensaje_diferencias": "Si sus respuestas son distintas, conversen sobre qué hay detrás de cada una.",
+      "mi_respuesta": "DATO DE PRUEBA: quiero estudiar psicología.",
+      "orden": 1,
+      "pregunta": "¿Qué esperas tú de tu futuro después del colegio?",
+      "pregunta_otro": "¿Qué espera usted del futuro de su hijo después del colegio?",
+      "preguntas_guia": [
+        "¿En qué coinciden sus respuestas?",
+        "¿Qué les sorprendió de la respuesta del otro?"
+      ],
+      "respuesta_otro": "DATO DE PRUEBA: que elija lo que le guste.",
+      "tema": "Primera conversación",
+      "tramo": {
+        "nombre": "Camino",
+        "numero": 2
+      }
+    },
+    {
+      "abierta_para_hijo": null,
+      "algo_que_saben": null,
+      "bloqueo_mensaje": "Escribe tu carta y contrasta tu resultado de intereses para conversar.",
+      "codigo": "t-conv-2",
+      "conversada_en": null,
+      "entrada_diario": null,
+      "estado": "bloqueada",
+      "mensaje_diferencias": null,
+      "mi_respuesta": null,
+      "orden": 2,
+      "pregunta": "¿Qué te dijo tu resultado de intereses sobre ti?",
+      "pregunta_otro": null,
+      "preguntas_guia": null,
+      "respuesta_otro": null,
+      "tema": "Segunda conversación",
+      "tramo": {
+        "nombre": "La ciudad",
+        "numero": 4
+      }
+    }
+  ],
+  "otro": {
+    "codigo": "apo-rosa",
+    "nombre": "Rosa",
+    "parentesco": "madre"
+  },
+  "total": 2
+}

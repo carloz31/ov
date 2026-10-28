@@ -32,7 +32,7 @@ Bloques: `T0` Inicio, `T1` Camino y `T2` Decisión (desde B07), `CIUDAD` y `FAMI
 
 Cuentas:
 - `est-ana` y `est-luis` en el salón `5A`, y `est-beto` en el `5B`;
-- `apo-rosa`, vinculada con Ana;
+- `apo-rosa`, vinculada con Ana (y con Luis desde F08, para el selector de hijo);
 - `ori-carmen`, orientadora principal del `5A` (desde B01).
 
 | Código | Tipo | Dónde | Desde | Qué prueba |
@@ -54,7 +54,7 @@ Cuentas:
 | `t-comparar` | R | T2 | B11 | Se abre con `planes_listos_para_comparar` (dos planes); cita PLANES y abre la sección PASOS. |
 | `t-proyecto` | R | T2 | B11 | Se abre con `pasos_plan_a` (un paso); cita PLAN, PASOS_PLAN_A y OPCION_INICIAL; cierra T2. |
 | `t-investigador`, `t-investigador-cierre` | I | CIUDAD | B13 | Sección INVESTIGACIONES; el cierre se abre con PUBLICA_ENTREVISTA. |
-| `t-apo-1`, `t-apo-carta` | I | FAMILIA | B00 | Ruta del apoderado. B01: `t-apo-1` da la ficha `t-ficha-apo`; cerrar FAMILIA abre la sección CONVERSACIONES. B12: carta y diploma. |
+| `t-apo-1`, `t-apo-2` | I | FAMILIA | B00 | Ruta del apoderado. B01: `t-apo-1` da la ficha `t-ficha-apo`; cerrar FAMILIA abre la sección CONVERSACIONES. B12: diploma. F08: `t-apo-2` reemplaza a `t-apo-carta` (la carta se escribe en Conversaciones). |
 | `t-conv-1`, `t-conv-2` | Conversación | — | B00 | B12: `t-conv-1` con `t-expectativas` + carta; `t-conv-2` con `t-contraste`; entrada de diario al conversar. |
 | `t-ins-1`, `t-ins-oculta`, niveles 1 y 2 | Logros | — | B00 | Progreso de logros, insignia oculta y nivel. |
 

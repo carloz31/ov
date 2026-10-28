@@ -1,4 +1,12 @@
 {
-  "eventos_registrados": [],
-  "nuevos_desbloqueos": []
+  "por_cuenta": {
+    "apo-rosa": {
+      "eventos_registrados": [],
+      "nuevos_desbloqueos": []
+    },
+    "est-ana": {
+      "eventos_registrados": [],
+      "nuevos_desbloqueos": []
+    }
+  }
 }

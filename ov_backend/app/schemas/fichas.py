@@ -31,6 +31,7 @@ class FichaCuenta(BaseModel):
     visto: bool
     # La marcó como favorita (solo obtenida; ajuste mochila).
     es_favorita: bool
+    # F08: también en las bloqueadas.
     actividad: ActividadFicha | None
     tramo: TramoFicha | None
 

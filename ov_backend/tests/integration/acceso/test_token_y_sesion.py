@@ -65,7 +65,9 @@ def test_sesion_del_estudiante_sin_hijos_ni_salones(cliente):
 def test_sesion_del_apoderado_trae_sus_hijos(cliente_sin_token, aplicacion):
     cuerpo = cliente_sin_token.get('/sesion', headers=con_token(token_de(aplicacion, 'apo-rosa'))).json()
     assert cuerpo['cuenta']['rol'] == 'APODERADO'
-    assert cuerpo['hijos'] == [{'codigo': 'est-ana', 'nombre': 'Ana', 'salon': '5A', 'parentesco': 'madre'}]
+    # F08: Rosa tiene dos hijos en ruta, por código de vínculo.
+    assert cuerpo['hijos'] == [{'codigo': 'est-ana', 'nombre': 'Ana', 'salon': '5A', 'parentesco': 'madre'},
+                               {'codigo': 'est-luis', 'nombre': 'Luis', 'salon': '5A', 'parentesco': 'madre'}]
     assert cuerpo['salones'] == []
 
 

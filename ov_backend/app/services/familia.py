@@ -4,6 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
+from app.core.parametros import CIFRAS_CUENTA_DIPLOMA, PREFIJO_DIPLOMA
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, Aplicacion, Bloque, Cuenta, EstadoProgreso, EventoUso, Instrumento, ResultadoInstrumento, Rol,
@@ -41,7 +42,17 @@ def _diploma(sesion: Session, cuenta: Cuenta) -> Diploma:
     ).where(EventoUso.cuenta_id == cuenta.id, EventoUso.tipo == TipoEventoUso.COMPLETA_BLOQUE,
             EventoUso.id_referencia.in_(bloques))).one()
     obtenido = bool(bloques) and completos == len(bloques)
-    return Diploma(obtenido=obtenido, obtenido_en=ultima if obtenido else None)
+    if not obtenido:
+        return Diploma(obtenido=False, obtenido_en=None, codigo=None)
+    return Diploma(obtenido=True, obtenido_en=ultima, codigo=codigo_diploma(cuenta.id, ultima.year))
+
+
+def codigo_diploma(cuenta_id: int, anio: int) -> str:
+    """`EXP-AP-AAAA-NNNNN-D`: D es la suma de cada dígito de año y cuenta por su posición (1…), módulo 10."""
+    numero = str(cuenta_id).zfill(CIFRAS_CUENTA_DIPLOMA)
+    digitos = f"{anio:04d}{numero}"
+    verificador = sum(int(digito) * posicion for posicion, digito in enumerate(digitos, start=1)) % 10
+    return f"{PREFIJO_DIPLOMA}-{anio:04d}-{numero}-{verificador}"
 
 
 def _exigir_apoderado(cuenta: Cuenta) -> None:

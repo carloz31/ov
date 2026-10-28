@@ -785,14 +785,14 @@ test('sin conexión, el hook expone el error y una lista vacía sin usar el cat�
   assert.deepEqual([...app.local.keys()], ['ov.acceso.v1'])
 })
 
-// F00: la ruta mínima del apoderado. t_apo_carta no tiene nodos: se lista, pero no se inicia hasta F08.
-test('ruta lista las dos actividades del apoderado y la carta sin nodos no se puede iniciar', () => {
+// F00: la ruta mínima del apoderado. F08: t-apo-2 reemplaza a la carta y se juega al abrirse.
+test('ruta lista las dos actividades del apoderado y la segunda se abre tras la primera', () => {
   const app = fixtureServidor({ cuenta: 'apo-rosa' })
   const contenidos = app.load('src/lib/servidor/contenidos.ts')
   const { mensajeBloqueo } = app.load('src/lib/servidor/adaptadores.ts')
   const inicial = jsonServidor('ruta/ruta-apoderado-actividades-inicial')
   const lista = contenidos.actividadesApoderado(inicial)
-  assert.deepEqual(copia(lista.actividades.map((a) => a.id)), ['t-apo-1', 't-apo-carta'])
+  assert.deepEqual(copia(lista.actividades.map((a) => a.id)), ['t-apo-1', 't-apo-2'])
   assert.deepEqual(copia(lista.sinContenido), [])
   // La presentación de cada tarjeta es la descripción del servidor.
   assert.deepEqual(
@@ -801,13 +801,13 @@ test('ruta lista las dos actividades del apoderado y la carta sin nodos no se pu
   )
   assert.ok(lista.actividades.every((a) => a.subtitulo))
   assert.deepEqual([...contenidos.disponiblesApoderado(inicial)], ['t-apo-1'])
-  assert.equal(mensajeBloqueo(inicial, 't-apo-carta'), 'Completa la primera actividad.')
-  // DATO DE PRUEBA: la carta ya abierta por el servidor tras completar t-apo-1.
+  assert.equal(mensajeBloqueo(inicial, 't-apo-2'), 'Completa la primera actividad.')
+  // DATO DE PRUEBA: la segunda ya abierta por el servidor tras completar t-apo-1.
   const abierta = copia(inicial)
   abierta[0].actividades[0].estado = 'COMPLETADA'
   abierta[0].actividades[1].estado = 'DISPONIBLE'
   abierta[0].actividades[1].bloqueo = null
-  // t-apo-1 completada sigue disponible para repasar; la carta abierta, no.
-  assert.deepEqual([...contenidos.disponiblesApoderado(abierta)], ['t-apo-1'])
+  // t-apo-1 completada sigue disponible para repasar; la segunda, abierta, se puede iniciar.
+  assert.deepEqual([...contenidos.disponiblesApoderado(abierta)], ['t-apo-1', 't-apo-2'])
   assert.deepEqual(copia(contenidos.completadasApoderado(abierta)), ['t-apo-1'])
 })

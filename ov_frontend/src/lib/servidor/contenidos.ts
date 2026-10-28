@@ -169,7 +169,7 @@ export function actividadesApoderado(bloques: BloqueActividades[] | null) {
 export function disponiblesApoderado(bloques: BloqueActividades[] | null): Set<string> {
   return new Set(
     listaApoderado(bloques)
-      // Un contenido sin nodos (t_apo_carta hasta F08) se lista, pero no se puede iniciar.
+      // Un contenido sin nodos se lista, pero no se puede iniciar.
       .filter((a) => a.visible && !!contenidoPorClave(a.contenido)?.nodos.length && a.estado !== 'BLOQUEADA')
       .map((a) => a.codigo),
   )

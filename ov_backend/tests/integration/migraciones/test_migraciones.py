@@ -279,7 +279,7 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
     aplicacion = crear_aplicacion(url)
     try:
         with TestClient(aplicacion) as cliente:
-            for actividad in ('t-apo-1', 't-apo-carta'):
+            for actividad in ('t-apo-1', 't-apo-2'):
                 assert cliente.post('/acciones/completar-actividad', json={
                     'cuenta': 'apo-rosa', 'actividad': actividad,
                 }).status_code == 200

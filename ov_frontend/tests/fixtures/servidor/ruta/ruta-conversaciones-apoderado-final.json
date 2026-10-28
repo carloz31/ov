@@ -1,0 +1,62 @@
+{
+  "carta_pendiente": false,
+  "carta_propia": "DATO DE PRUEBA: carta de apo-rosa.",
+  "carta_recibida": "DATO DE PRUEBA: carta de est-ana.",
+  "cartas_disponibles": true,
+  "completadas": 2,
+  "conversaciones": [
+    {
+      "abierta_para_hijo": true,
+      "algo_que_saben": "Recuerden lo que ya ha funcionado: acompañar también puede ser preguntar, escuchar y dar tiempo.",
+      "bloqueo_mensaje": null,
+      "codigo": "t-conv-1",
+      "conversada_en": "2026-10-07T10:00:00",
+      "entrada_diario": null,
+      "estado": "conversada",
+      "mensaje_diferencias": "Si sus respuestas son distintas, conversen sobre qué hay detrás de cada una.",
+      "mi_respuesta": "DATO DE PRUEBA: que elija lo que le guste.",
+      "orden": 1,
+      "pregunta": "¿Qué espera usted del futuro de su hijo después del colegio?",
+      "pregunta_otro": "¿Qué esperas tú de tu futuro después del colegio?",
+      "preguntas_guia": [
+        "¿En qué coinciden sus respuestas?",
+        "¿Qué les sorprendió de la respuesta del otro?"
+      ],
+      "respuesta_otro": "DATO DE PRUEBA: quiero estudiar psicología.",
+      "tema": "Primera conversación",
+      "tramo": {
+        "nombre": "Camino",
+        "numero": 2
+      }
+    },
+    {
+      "abierta_para_hijo": true,
+      "algo_que_saben": "Un resultado describe intereses de hoy; ustedes ya conocen ejemplos que lo confirman o lo matizan.",
+      "bloqueo_mensaje": null,
+      "codigo": "t-conv-2",
+      "conversada_en": "2026-10-07T10:00:00",
+      "entrada_diario": null,
+      "estado": "conversada",
+      "mensaje_diferencias": "Si ven el resultado de forma distinta, cuenten un ejemplo que lo explique.",
+      "mi_respuesta": "DATO DE PRUEBA: lo que dijo el resultado.",
+      "orden": 2,
+      "pregunta": "¿Qué te dijo tu resultado de intereses sobre ti?",
+      "pregunta_otro": "¿Qué te dijo tu resultado de intereses sobre ti?",
+      "preguntas_guia": [
+        "¿Qué parte del resultado les pareció más acertada?"
+      ],
+      "respuesta_otro": "DATO DE PRUEBA: lo que dijo el resultado.",
+      "tema": "Segunda conversación",
+      "tramo": {
+        "nombre": "La ciudad",
+        "numero": 4
+      }
+    }
+  ],
+  "otro": {
+    "codigo": "est-ana",
+    "nombre": "Ana",
+    "parentesco": "madre"
+  },
+  "total": 2
+}

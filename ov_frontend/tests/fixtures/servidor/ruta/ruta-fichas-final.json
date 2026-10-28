@@ -38,7 +38,10 @@
     "visto": false
   },
   {
-    "actividad": null,
+    "actividad": {
+      "codigo": "t-opcional",
+      "titulo": "Actividad opcional"
+    },
     "codigo": "t-ficha-3",
     "descripcion": null,
     "es_favorita": false,

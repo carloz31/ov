@@ -35,7 +35,7 @@ def test_carta_se_registra_solo_la_primera_vez_por_cuenta(cliente):
     # B01: diario, check-in y carta exigen su sección abierta; el recorrido de T0 y T1 las abre.
     avanzar(cliente)
     # B12: el apoderado escribe su carta con la sección CONVERSACIONES, que abre su ruta completa.
-    for actividad in ('t-apo-1', 't-apo-carta'):
+    for actividad in ('t-apo-1', 't-apo-2'):
         completar(cliente, actividad, 'apo-rosa')
     for cuenta in ('est-ana', 'apo-rosa'):
         for texto in ('Primera carta', 'Carta editada'):

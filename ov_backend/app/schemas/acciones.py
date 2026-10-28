@@ -154,10 +154,8 @@ class PublicarEntrevistaEntrada(FechaAccion):
 
 class EscribirCartaEntrada(AccionCuenta):
     texto: str
-
-
-class CompletarConversacionEntrada(AccionCuenta):
-    conversacion: str
+    # Solo el apoderado: el hijo del vínculo; sin él, el primer vínculo activo (F08).
+    estudiante: str | None = None
 
 
 class EventoEntrada(AccionCuenta):

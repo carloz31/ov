@@ -40,6 +40,12 @@ MENSAJES = {objetivo: mensaje for _, tipo, objetivo, mensaje, _ in REGLAS if tip
 RUTAS = ('resumen', 'actividades', 'fichas', 'logros', 'testimonios', 'diario/preguntas', 'secciones')
 
 
+
+# F08: la actividad que da cada ficha del estudiante, también mientras está bloqueada.
+ACTIVIDADES_FICHA = {'t-ficha': {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'},
+                     't-ficha-2': {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'},
+                     't-ficha-3': {'codigo': 't-opcional', 'titulo': 'Actividad opcional'}}
+
 def consultar(cliente, ruta, cuenta='est-ana'):
     respuesta = cliente.get(f'/cuentas/{cuenta}/{ruta}')
     if ruta == 'diario/preguntas' and respuesta.status_code == 409:
@@ -94,8 +100,9 @@ def esperado(ruta, completo):
                  'tramo': {'codigo': 'T0', 'nombre': bloque[2], 'numero': bloque[1]}}
                 if completo and codigo != 't-ficha-3' else
                 {'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'tema': None, 'descripcion': None,
-                 'obtenida_en': None, 'visto': False, 'es_favorita': False, 'actividad': None,
-                 'tramo': None}
+                 'obtenida_en': None, 'visto': False, 'es_favorita': False,
+                 # F08: la bloqueada también trae la actividad que la da.
+                 'actividad': ACTIVIDADES_FICHA[codigo], 'tramo': None}
                 for codigo, titulo, descripcion, tema, _texto, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
     if ruta == 'logros':
         # Ajuste pasaporte-perfil: por página y orden; la oculta conserva su página, su orden y su pista.
@@ -173,7 +180,9 @@ def test_apoderado_sin_listas_estudiantiles(cliente, ruta):
     elif ruta == 'fichas':
         assert respuesta == [{'codigo': 't-ficha-apo', 'titulo': 'Ficha del apoderado', 'estado': 'BLOQUEADA',
                               'tema': None, 'descripcion': None, 'obtenida_en': None,
-                              'visto': False, 'es_favorita': False, 'actividad': None, 'tramo': None}]
+                              'visto': False, 'es_favorita': False,
+                              'actividad': {'codigo': 't-apo-1', 'titulo': 'Primera actividad del apoderado'},
+                              'tramo': None}]
     elif ruta == 'actividades':
         assert respuesta == [{**{clave: valor for clave, valor in BLOQUE_FAMILIA.items() if clave != 'bloqueo'},
                               'actividades': [{clave: valor for clave, valor in actividad.items() if clave != 'bloqueo'}

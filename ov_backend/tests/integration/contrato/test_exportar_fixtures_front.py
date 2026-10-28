@@ -14,7 +14,7 @@ from soporte_ruta import BLOQUE_FAMILIA
 from app import main as principal
 from app.schemas.referencias import ReferenciasConsultadas
 from app.schemas.acciones import (
-    RespuestaAccion, RespuestaReiniciarInstrumento, RespuestaResolverBatalla, RespuestaResolverCaso,
+    RespuestaAccion, RespuestaAgrupada, RespuestaReiniciarInstrumento, RespuestaResolverBatalla, RespuestaResolverCaso,
     RespuestaRevelarResultado,
 )
 from app.schemas.batallas import BatallaCuenta, PreguntaIntento
@@ -75,8 +75,12 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'planes-tras-eliminar', 'crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
     'medidores-plan', 'referencias-t-comparar', 'guardar-seccion-pasos', 'paso-hecho', 'referencias-t-proyecto',
     'planes', 'familia', 'familia-resultados', 'conversaciones-sin-carta', 'escribir-carta-est-ana',
-    'escribir-carta-apo-rosa', 'responder-conversacion', 'conversaciones-te-toca', 'conversaciones-por-conversar',
-    'completar-conversacion', 'conversaciones-final',
+    'escribir-carta-apo-rosa', 'responder-conversacion', 'conversaciones-te-toca', 'conversaciones-final',
+    # F08: conversaciones en cada estado, segundo hijo, regalo y fichas del apoderado.
+    'conversaciones-estudiante-sin-carta', 'apoderado-conversaciones-sin-carta', 'conversaciones-estudiante-carta',
+    'conversaciones-esperando', 'responder-conversacion-segundo', 'conversaciones-conversada',
+    'conversaciones-apoderado-conversada', 'conversaciones-apoderado-final', 'apoderado-fichas-inicial',
+    'apoderado-fichas-final', 'apoderado-ficha-t-ficha-apo', 'apoderado-familia-inicial',
     'sesion-ingresar-estudiante', 'sesion-ingresar-apoderado', 'sesion-ingresar-orientadora',
     'sesion-estudiante', 'sesion-apoderado', 'sesion-orientadora', 'sesion-error',
     # F03: avance para el libro de Helena, llegada, perfil plano con su reinicio y resultados sin diploma.
@@ -440,20 +444,35 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     familia = FamiliaApoderado.model_validate(datos['familia'])
     assert familia.diploma.obtenido and familia.avance.porcentaje == 100.0 and familia.estudiante.codigo == 'est-ana'
     assert [r['instrumento'] for r in datos['familia-resultados']] == ['TEST-RIASEC']
+    assert familia.diploma.codigo.startswith('EXP-AP-')
     assert ConversacionesCuenta.model_validate(datos['conversaciones-sin-carta']).carta_pendiente
     assert {d['regla'] for d in datos['escribir-carta-est-ana']['nuevos_desbloqueos']} == {'R-t-conv-1'}
-    RespuestaAccion.model_validate(datos['responder-conversacion'])
+    luis = ConversacionesCuenta.model_validate(datos['apoderado-conversaciones-sin-carta'])
+    assert luis.carta_pendiente and luis.otro.codigo == 'est-luis'
+    carta = ConversacionesCuenta.model_validate(datos['conversaciones-estudiante-carta'])
+    assert [c.estado for c in carta.conversaciones] == ['sin_responder', 'bloqueada']
+    RespuestaAgrupada.model_validate(datos['responder-conversacion'])
     te_toca = ConversacionesCuenta.model_validate(datos['conversaciones-te-toca'])
-    assert [(c.codigo, c.estado, c.respuesta_otro) for c in te_toca.conversaciones] == [
-        ('t-conv-1', 'te_toca', None), ('t-conv-2', 'sin_responder', None)]
-    por_conversar, = ConversacionesCuenta.model_validate(datos['conversaciones-por-conversar']).conversaciones
-    assert por_conversar.estado == 'por_conversar' and por_conversar.preguntas_guia
-    marca = datos['completar-conversacion']['por_cuenta']
-    assert [e['tipo'] for e in marca['est-ana']['eventos_registrados']] == ['COMPLETA_CONVERSACION']
-    assert marca['apo-rosa']['eventos_registrados'] == []
-    final = ConversacionesCuenta.model_validate(datos['conversaciones-final'])
-    assert (final.completadas, final.total, final.carta_recibida) == (2, 2, 'DATO DE PRUEBA: carta de apo-rosa.')
-    assert {c.estado for c in final.conversaciones} == {'conversada'}
+    assert [(c.codigo, c.estado, c.respuesta_otro, c.abierta_para_hijo) for c in te_toca.conversaciones] == [
+        ('t-conv-1', 'te_toca', None, True), ('t-conv-2', 'sin_responder', None, False)]
+    esperando = ConversacionesCuenta.model_validate(datos['conversaciones-esperando'])
+    assert esperando.conversaciones[0].estado == 'esperando_al_otro'
+    segundo = datos['responder-conversacion-segundo']['por_cuenta']
+    for cuenta in ('est-ana', 'apo-rosa'):
+        assert [e['tipo'] for e in segundo[cuenta]['eventos_registrados']] == ['COMPLETA_CONVERSACION']
+    conversada = ConversacionesCuenta.model_validate(datos['conversaciones-conversada']).conversaciones[0]
+    assert conversada.estado == 'conversada' and conversada.preguntas_guia and conversada.algo_que_saben
+    assert conversada.entrada_diario.codigo == 't-diario-tras-conversar'
+    assert ConversacionesCuenta.model_validate(datos['conversaciones-apoderado-conversada']).conversaciones[
+        0].entrada_diario is None
+    for nombre, carta_otro in (('conversaciones-final', 'apo-rosa'), ('conversaciones-apoderado-final', 'est-ana')):
+        final = ConversacionesCuenta.model_validate(datos[nombre])
+        assert (final.completadas, final.total, final.cartas_disponibles) == (2, 2, True)
+        assert final.carta_recibida == f'DATO DE PRUEBA: carta de {carta_otro}.'
+        assert {c.estado for c in final.conversaciones} == {'conversada'}
+    fichas_inicio = [FichaCuenta.model_validate(f) for f in datos['apoderado-fichas-inicial']]
+    assert [(f.codigo, f.estado, f.actividad.codigo) for f in fichas_inicio] == [('t-ficha-apo', 'BLOQUEADA', 't-apo-1')]
+    assert FichaDetalle.model_validate(datos['apoderado-ficha-t-ficha-apo']).codigo == 't-ficha-apo'
     # Regenera sobre archivos existentes sin tocar otros archivos del destino.
     conservar = destino / 'ruta' / 'conservar.txt'
     conservar.write_text('Conservar', encoding='utf-8')
@@ -531,6 +550,7 @@ def test_fixtures_de_sesion(tmp_path):
         assert ingreso.token == exportador.TOKEN_FIJO and ingreso.cuenta.codigo == codigo
         sesion = SesionRespuesta.model_validate(datos[f'sesion-{rol}'])
         assert sesion.cuenta.codigo == codigo
-    assert [h.codigo for h in SesionRespuesta.model_validate(datos['sesion-apoderado']).hijos] == ['est-ana']
+    assert [h.codigo for h in SesionRespuesta.model_validate(datos['sesion-apoderado']).hijos] == [
+        'est-ana', 'est-luis']
     assert [s.codigo for s in SesionRespuesta.model_validate(datos['sesion-orientadora']).salones] == ['5A']
     assert datos['sesion-error'] == {'detail': {'mensaje': 'Usuario o contraseña incorrectos'}}
