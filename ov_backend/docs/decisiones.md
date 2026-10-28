@@ -13,3 +13,9 @@
 - **Frente de la tarjeta:** «1.er año ≈ S/ {total_primer_anio}» bajo la institución con REALIDAD Lista.
 - **`t_comparar` y `t_proyecto`** con nodos mínimos; la zona de eco cita PLANES, PLAN (con cita y motivos como chips), PASOS_PLAN_A y OPCION_INICIAL.
 - **Textos del lienzo sobre el documento:** la intro de «Cómo me siento» («No es una nota: te ayuda a ver qué plan te mueve más y cuál tienes más a la mano.»), la ayuda de sugerencias («…; las demás, «Ahora no».») y la ayuda del diálogo «Lo hice» son las de los lienzos, que mandan sobre §8 y §10.
+- **Pensión en la primera edición:** mientras REALIDAD está por empezar, la pensión precargada (0 o su referencia, sin tocar) sigue a la gestión de la institución que se elige; después, cambiar de institución no toca ningún monto. Así se reproduce el lienzo (UNALM pública, pensión 0) sin contradecir «la institución no toca los montos».
+- **«Guardar puede tardar unos segundos.»** pasa al pie de la sección, junto a «Cancelar» / «Guardar sección», en CONOCIMIENTO y REALIDAD (lienzo de la sección 3); la prueba de F07a que lo buscaba dentro de CONOCIMIENTO se adaptó, igual que la de su aviso, que §9 reemplaza.
+- **Aviso de sugerencias (§9) en `AvisoToast`:** etiqueta «Guardado», estrella, título en negrita «{N} complicaciones y {M} pasos sugeridos» y la línea «te esperan en Mis próximos pasos.». Diferencia con el lienzo: el toast pone el título y la descripción en dos líneas (su estructura) en lugar de una frase seguida, y «Mis próximos pasos» no va en cursiva.
+- **Avisos simples:** REALIDAD sin sugerencias, «Guardado. Muéstrales este número en casa.»; PASOS, «Guardado. Tus pasos quedaron anotados.» (el documento no los fija).
+- **Nombre completo de la institución** en el menú y en el resumen de REALIDAD: el lienzo usa la sigla (UNALM), que el catálogo no entrega.
+- **«≈ S/ {x} al mes»** redondea `primer año / 12` al entero más cercano (los números del lienzo son ilustrativos y no cuadran entre sí).

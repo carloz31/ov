@@ -65,7 +65,8 @@ export function DialogoCrearPlan({
             </ul>
             <p className="sx-p-ayuda">
               ¿No está la que buscas?{' '}
-              <Link to={appPaths.student.catalog.careers}>Márcala como favorita en el catálogo</Link> y vuelve aquí.
+              <Link to={appPaths.student.catalog.careers}>Márcala como favorita en el catálogo</Link> y vuelve
+              aquí.
             </p>
           </>
         ) : (

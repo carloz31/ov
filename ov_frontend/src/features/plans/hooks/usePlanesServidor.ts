@@ -8,14 +8,20 @@ import { usaTarjetaV4 as enApi } from '../lib/tarjeta'
 export function usePlanesServidor(activo = true) {
   const usaTarjetaV4 = enApi()
   const almacen = useEstadoServidor()
-  const planesAbierta = !!almacen.secciones.datos?.some((s) => s.codigo === 'PLANES' && s.estado !== 'BLOQUEADA')
+  const planesAbierta = !!almacen.secciones.datos?.some(
+    (s) => s.codigo === 'PLANES' && s.estado !== 'BLOQUEADA',
+  )
   const seccion = usePlanesServidorSeccion(usaTarjetaV4 && activo && planesAbierta)
   const datos = usaTarjetaV4 ? seccion.datos : null
   return {
     usaTarjetaV4,
     planesAbierta,
     datos,
-    estado: datos ? ('listo' as const) : seccion.estado === 'error' ? ('error' as const) : ('cargando' as const),
+    estado: datos
+      ? ('listo' as const)
+      : seccion.estado === 'error'
+        ? ('error' as const)
+        : ('cargando' as const),
     mensajeError: seccion.estado === 'error' ? mensajeErrorServidor(seccion.error) : undefined,
     reintentar: () => void reintentarSeccion('planes'),
   }

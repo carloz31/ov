@@ -37,8 +37,8 @@ export function SeccionPorQue({
       <strong>Cómo encaja contigo</strong>
       <p>
         {plan.carrera.nombre} es de tipo <strong>{encaje.carrera}</strong>. Tu tipo principal es{' '}
-        <strong>{encaje.principal}</strong> y el segundo, <strong>{encaje.segundo}</strong>. Es una pista, no una
-        regla.
+        <strong>{encaje.principal}</strong> y el segundo, <strong>{encaje.segundo}</strong>. Es una pista, no
+        una regla.
       </p>
     </div>
   )
@@ -115,18 +115,25 @@ export function SeccionPorQue({
               ? { clave: `otro-${m.otro}`, texto: m.otro }
               : { clave: m.opcion, texto: textoMotivo({ opcion: m.opcion, otro: null }, opciones) },
           )}
-          disponibles={opciones.valores.filter((v) => !borrador.motivos.some((m) => mismoMotivo(m, v.codigo)))}
+          disponibles={opciones.valores.filter(
+            (v) => !borrador.motivos.some((m) => mismoMotivo(m, v.codigo)),
+          )}
           textoOtro="Otro motivo"
           ayuda="Marcar sube el motivo a «Tus motivos»; la ✕ lo baja. Un motivo tuyo con ✕ desaparece. Escribe otro y pulsa Enter para sumarlo."
           onMarcar={(codigo) => onCambiar((b) => ({ ...b, motivos: [...b.motivos, { opcion: codigo }] }))}
-          onQuitar={(indice) => onCambiar((b) => ({ ...b, motivos: b.motivos.filter((_, k) => k !== indice) }))}
+          onQuitar={(indice) =>
+            onCambiar((b) => ({ ...b, motivos: b.motivos.filter((_, k) => k !== indice) }))
+          }
           onOtro={agregarOtro}
         />
       </fieldset>
       <label className="sx-p-campo">
         <strong>¿Qué viviste que te hizo pensar en esta carrera?</strong>
         <span className="sx-p-ayuda">Un momento, una persona, algo que te llamó la atención.</span>
-        <Textarea value={borrador.relato} onChange={(e) => onCambiar((b) => ({ ...b, relato: e.target.value }))} />
+        <Textarea
+          value={borrador.relato}
+          onChange={(e) => onCambiar((b) => ({ ...b, relato: e.target.value }))}
+        />
       </label>
     </>
   )

@@ -21,7 +21,14 @@ const planes = await import(`data:text/javascript;base64,${Buffer.from(code).toS
 const completos = jsonServidor('ruta/ruta-planes')
 const familia = jsonServidor('ruta/ruta-planes-misma-familia')
 const sinRespuestas = { eventos_registrados: [], nuevos_desbloqueos: [] }
-const nombres = { R: 'Realista', I: 'Investigador', A: 'Artístico', S: 'Social', E: 'Emprendedor', C: 'Convencional' }
+const nombres = {
+  R: 'Realista',
+  I: 'Investigador',
+  A: 'Artístico',
+  S: 'Social',
+  E: 'Emprendedor',
+  C: 'Convencional',
+}
 
 test('estados, botón y sección siguiente salen de las secciones del servidor', () => {
   const [corto, nuevo] = familia.planes
@@ -45,8 +52,14 @@ test('estados, botón y sección siguiente salen de las secciones del servidor',
 test('resúmenes del menú: POR_QUE con idea, motivo principal y relato; CONOCIMIENTO con conteos', () => {
   const plan = completos.planes[0]
   const [porQue, conocimiento] = plan.secciones
-  assert.match(planes.resumenSeccion(plan, porQue, completos.opciones), /^Mía · Ayudar a otros · «DATO DE PRUEBA/)
-  assert.match(planes.resumenSeccion(plan, conocimiento, completos.opciones), /^5 de 5 respondidas · \d+ dudas? abiertas? · \d+ resueltas?$/)
+  assert.match(
+    planes.resumenSeccion(plan, porQue, completos.opciones),
+    /^Mía · Ayudar a otros · «DATO DE PRUEBA/,
+  )
+  assert.match(
+    planes.resumenSeccion(plan, conocimiento, completos.opciones),
+    /^5 de 5 respondidas · \d+ dudas? abiertas? · \d+ resueltas?$/,
+  )
 })
 
 test('CONOCIMIENTO: vista previa de dudas, «Sí · averiguado» y cuerpo de guardado', () => {
@@ -59,8 +72,14 @@ test('CONOCIMIENTO: vista previa de dudas, «Sí · averiguado» y cuerpo de gua
   const previa = planes.dudasDePregunta(plan, cambiado, completos.opciones)
   assert.ok(previa.some((d) => d.pregunta === abierta.pregunta && d.efecto === 'resolver'))
   const sinDudas = { ...plan, dudas: [] }
-  const nuevas = planes.dudasDePregunta(sinDudas, { respuestas: { CURSOS: 'NO' }, dudas: [] }, completos.opciones)
-  assert.deepEqual(copia(nuevas.map((d) => [d.efecto, d.texto])), [['crear', `¿Qué cursos se llevan en ${plan.carrera.nombre}?`]])
+  const nuevas = planes.dudasDePregunta(
+    sinDudas,
+    { respuestas: { CURSOS: 'NO' }, dudas: [] },
+    completos.opciones,
+  )
+  assert.deepEqual(copia(nuevas.map((d) => [d.efecto, d.texto])), [
+    ['crear', `¿Qué cursos se llevan en ${plan.carrera.nombre}?`],
+  ])
   const cerrada = plan.dudas.find((d) => d.estado === 'CERRADA' && d.hallazgo)
   if (cerrada) assert.equal(planes.respuestaLeida(plan, cerrada.pregunta), 'Sí · averiguado')
   const datos = planes.datosConocimiento({
@@ -74,7 +93,11 @@ test('CONOCIMIENTO: vista previa de dudas, «Sí · averiguado» y cuerpo de gua
   })
   assert.deepEqual(copia(datos), {
     respuestas: { CURSOS: 'NO' },
-    dudas: [{ numero: 3 }, { origen: 'SUGERIDA', opcion: 'SUELDO_INICIAL' }, { origen: 'PROPIA', texto: '¿Hay trabajo?' }],
+    dudas: [
+      { numero: 3 },
+      { origen: 'SUGERIDA', opcion: 'SUELDO_INICIAL' },
+      { origen: 'PROPIA', texto: '¿Hay trabajo?' },
+    ],
   })
 })
 
@@ -82,11 +105,14 @@ test('POR_QUE: borrador, cuerpo, repregunta y «Cómo encaja contigo»', () => {
   const plan = completos.planes[0]
   const borrador = planes.borradorPorQue(plan)
   assert.equal(borrador.idea, 'MIA')
-  assert.deepEqual(copia(planes.datosPorQue({ ...borrador, motivos: [{ opcion: 'AYUDAR' }, { otro: ' ' }], relato: ' ' })), {
-    idea_origen: 'MIA',
-    motivos: [{ opcion: 'AYUDAR' }],
-    relato: null,
-  })
+  assert.deepEqual(
+    copia(planes.datosPorQue({ ...borrador, motivos: [{ opcion: 'AYUDAR' }, { otro: ' ' }], relato: ' ' })),
+    {
+      idea_origen: 'MIA',
+      motivos: [{ opcion: 'AYUDAR' }],
+      relato: null,
+    },
+  )
   assert.equal(planes.pideMasRelato(familia.planes[0]), true)
   assert.equal(planes.pideMasRelato(plan), false)
   const resultado = { perfil_plano: false, codigo_interes: { codigo: 'SIA', hay_empate: false } }
@@ -130,7 +156,10 @@ test('el almacén pide los planes y las acciones usan las rutas del backend y ve
   const acciones = app.requests.filter((r) => r.url.includes('/acciones/'))
   assert.deepEqual(copia(acciones.map((r) => [r.url, r.body])), [
     ['/api/acciones/planes/crear', { cuenta: 'est-ana', carrera: 'mtpe-1' }],
-    ['/api/acciones/planes/guardar-seccion', { cuenta: 'est-ana', carrera: 'mtpe-1', seccion: 'POR_QUE', datos: porQue }],
+    [
+      '/api/acciones/planes/guardar-seccion',
+      { cuenta: 'est-ana', carrera: 'mtpe-1', seccion: 'POR_QUE', datos: porQue },
+    ],
     ['/api/acciones/planes/ordenar', { cuenta: 'est-ana', carreras: ['mtpe-2', 'mtpe-1'] }],
     ['/api/acciones/planes/eliminar', { cuenta: 'est-ana', carrera: 'mtpe-2' }],
   ])
@@ -178,5 +207,7 @@ test('el contrato trae los ciclos por año y la duración de la carrera en cada 
   const conInstitucion = completos.planes.find((p) => p.institucion)
   assert.ok(conInstitucion && 'duracion_ciclos' in conInstitucion.institucion)
   const detalle = jsonServidor('ruta/ruta-catalogo-carrera-psychology')
-  assert.ok(detalle.instituciones.every((i) => i.duracion_ciclos === null || Number.isInteger(i.duracion_ciclos)))
+  assert.ok(
+    detalle.instituciones.every((i) => i.duracion_ciclos === null || Number.isInteger(i.duracion_ciclos)),
+  )
 })

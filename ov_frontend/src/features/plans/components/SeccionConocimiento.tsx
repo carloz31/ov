@@ -48,7 +48,11 @@ export function SeccionConocimiento({
         <ul className="sx-p-dudas">
           {plan.dudas.map((d) => (
             <li key={d.numero} data-estado={d.estado}>
-              {d.estado === 'CERRADA' ? <CircleCheck aria-hidden="true" /> : <CircleHelp aria-hidden="true" />}
+              {d.estado === 'CERRADA' ? (
+                <CircleCheck aria-hidden="true" />
+              ) : (
+                <CircleHelp aria-hidden="true" />
+              )}
               <div>
                 {d.estado === 'CERRADA' ? <s>{d.texto}</s> : <span>{d.texto}</span>}
                 <small>{d.estado === 'CERRADA' ? 'Resuelta' : ORIGENES_DUDA[d.origen]}</small>
@@ -61,14 +65,18 @@ export function SeccionConocimiento({
     )
   const previa = dudasDePregunta(plan, borrador, opciones)
   const sugeridasLibres = opciones.dudas_sugeridas.filter(
-    (s) => !borrador.dudas.some((d) => d.origen === 'SUGERIDA' && ('opcion' in d ? d.opcion === s.codigo : d.texto === s.texto)),
+    (s) =>
+      !borrador.dudas.some(
+        (d) => d.origen === 'SUGERIDA' && ('opcion' in d ? d.opcion === s.codigo : d.texto === s.texto),
+      ),
   )
-  const quitar = (indice: number) => onCambiar((b) => ({ ...b, dudas: b.dudas.filter((_, i) => i !== indice) }))
+  const quitar = (indice: number) =>
+    onCambiar((b) => ({ ...b, dudas: b.dudas.filter((_, i) => i !== indice) }))
   return (
     <>
       <p className="sx-p-intro">
-        Responde con sinceridad. Si no podrías explicarlo en una frase, marca <em>Más o menos</em>. Lo que no sepas se
-        convierte en una duda, y cada duda te puede dar un próximo paso.{' '}
+        Responde con sinceridad. Si no podrías explicarlo en una frase, marca <em>Más o menos</em>. Lo que no
+        sepas se convierte en una duda, y cada duda te puede dar un próximo paso.{' '}
         <Link to={discoveryPaths.career(plan.carrera.codigo)}>Ver la ficha de la carrera</Link>
       </p>
       <ul className="sx-p-preguntas">
@@ -86,7 +94,9 @@ export function SeccionConocimiento({
                   type="button"
                   key={codigo}
                   aria-pressed={borrador.respuestas[p.codigo] === codigo}
-                  onClick={() => onCambiar((b) => ({ ...b, respuestas: { ...b.respuestas, [p.codigo]: codigo } }))}
+                  onClick={() =>
+                    onCambiar((b) => ({ ...b, respuestas: { ...b.respuestas, [p.codigo]: codigo } }))
+                  }
                 >
                   {texto}
                 </button>
@@ -147,7 +157,10 @@ export function SeccionConocimiento({
             className="sx-p-chip sx-p-chip-nuevo"
             key={s.codigo}
             onClick={() =>
-              onCambiar((b) => ({ ...b, dudas: [...b.dudas, { origen: 'SUGERIDA', opcion: s.codigo, texto: s.texto }] }))
+              onCambiar((b) => ({
+                ...b,
+                dudas: [...b.dudas, { origen: 'SUGERIDA', opcion: s.codigo, texto: s.texto }],
+              }))
             }
           >
             + {s.texto}
@@ -157,13 +170,15 @@ export function SeccionConocimiento({
           type="button"
           className="sx-p-chip sx-p-chip-nuevo"
           onClick={() =>
-            onCambiar((b) => ({ ...b, dudas: [...b.dudas, { origen: 'PROPIA', texto: '', clave: Date.now() }] }))
+            onCambiar((b) => ({
+              ...b,
+              dudas: [...b.dudas, { origen: 'PROPIA', texto: '', clave: Date.now() }],
+            }))
           }
         >
           + Escribir otra duda
         </button>
       </div>
-      <p className="sx-p-ayuda">Guardar puede tardar unos segundos.</p>
     </>
   )
 }

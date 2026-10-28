@@ -5,7 +5,15 @@ import { crearPlan, eliminarPlan, ordenarPlanes } from '@/store/servidor/planes'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { ErrorServidor, PlanCarrera } from '@/types/servidor'
 
-export type AvisoPlan = { id: number; titulo: string; descripcion?: string; error: boolean }
+// F07b: `etiqueta` y `destacado` (estrella) para el aviso de sugerencias al guardar 2 y 3.
+export type AvisoPlan = {
+  id: number
+  titulo: string
+  descripcion?: string
+  error: boolean
+  etiqueta?: string
+  destacado?: boolean
+}
 // El aviso que el plan abierto muestra al llegar (crear navega a él; el de Mis planes se desmonta).
 export type EstadoNavegacionPlan = { aviso?: Omit<AvisoPlan, 'id'> }
 
@@ -21,7 +29,8 @@ export function useAccionesPlanes() {
   const [ocupado, setOcupado] = useState<string | null>(null)
   const [aviso, setAviso] = useState<AvisoPlan | null>(() => (inicial ? { ...inicial, id: 0 } : null))
   const avisar = (a: Omit<AvisoPlan, 'id'>) => setAviso({ ...a, id: Date.now() })
-  const fallo = (r: { tipo: string }) => avisar({ titulo: 'No se pudo guardar', descripcion: mensajeDe(r), error: true })
+  const fallo = (r: { tipo: string }) =>
+    avisar({ titulo: 'No se pudo guardar', descripcion: mensajeDe(r), error: true })
 
   async function crear(carrera: string) {
     setOcupado(`crear:${carrera}`)

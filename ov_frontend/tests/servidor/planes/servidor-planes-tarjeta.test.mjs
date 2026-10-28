@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { cargarAlmacen, copia, elementos, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import {
+  cargarAlmacen,
+  copia,
+  elementos,
+  esperar,
+  fixtureServidor,
+  jsonServidor,
+} from '../../soporte/servidor-ayudas.mjs'
 
 // F07a (F07b-pantallas §4): el plan abierto con menú de secciones, lectura y edición de POR_QUE y CONOCIMIENTO,
 // sección bloqueada, sección por defecto y plan inexistente, con los fixtures ruta-*.
@@ -24,13 +31,16 @@ function planAbierto({ planes = familia, carrera = PSICOLOGIA, seccion = null, r
     const respuesta = responder?.(r)
     if (respuesta) return respuesta
     if (r.url.endsWith('/planes')) return { body: planes }
-    if (r.url.includes('/instrumentos/TEST-RIASEC/resultado')) return { body: jsonServidor('ruta/ruta-resultado-riasec') }
+    if (r.url.includes('/instrumentos/TEST-RIASEC/resultado'))
+      return { body: jsonServidor('ruta/ruta-resultado-riasec') }
     if (r.url.includes('/acciones/')) return { body: accion }
     return { body: [] }
   })
   const almacen = cargarAlmacen(app)
   almacen.publicar({ consultasHabilitadas: true })
-  almacen.publicar({ secciones: { ...almacen.obtenerEstadoServidor().secciones, datos: SECCIONES, estado: 'listo' } })
+  almacen.publicar({
+    secciones: { ...almacen.obtenerEstadoServidor().secciones, datos: SECCIONES, estado: 'listo' },
+  })
   const { PlanAbierto } = app.load('src/features/plans/components/PlanAbierto.tsx')
   const vista = app.mount(PlanAbierto, { carrera, seccion })
   return { app, vista }
@@ -43,7 +53,8 @@ async function dibujar(vista) {
   return vista.render()
 }
 const hijo = (arbol, nombre) => elementos(arbol, (e) => e.type?.name === nombre)[0]
-const boton = (arbol, etiqueta) => elementos(arbol, (e) => e.type === 'button' && texto(e).includes(etiqueta))[0]
+const boton = (arbol, etiqueta) =>
+  elementos(arbol, (e) => e.type === 'button' && texto(e).includes(etiqueta))[0]
 
 test('sin ?seccion= abre la primera abierta no lista; el menú lleva títulos del front, píldoras y resúmenes', async () => {
   const { app, vista } = planAbierto()
@@ -55,7 +66,10 @@ test('sin ?seccion= abre la primera abierta no lista; el menú lleva títulos de
   assert.equal(menu.props.seccion, 'POR_QUE')
   const { MenuSeccionesPlan } = app.load('src/features/plans/components/MenuSeccionesPlan.tsx')
   const marcado = texto(MenuSeccionesPlan(menu.props))
-  assert.match(marcado, /1 · Por qué la elijo.*2 · Qué tanto la conozco.*3 · Cómo lo haría realidad.*4 · Mis próximos pasos/)
+  assert.match(
+    marcado,
+    /1 · Por qué la elijo.*2 · Qué tanto la conozco.*3 · Cómo lo haría realidad.*4 · Mis próximos pasos/,
+  )
   assert.match(marcado, /De un test · Ayudar a otros · «DATO DE PRUEBA: corto\.»/)
   assert.match(marcado, new RegExp(familia.planes[0].secciones[3].bloqueo[0].mensaje))
   const barra = elementos(MenuSeccionesPlan(menu.props), (e) => e.type?.name === 'TrailBar')[0]
@@ -73,8 +87,15 @@ test('POR_QUE en lectura con la repregunta fija; «Cómo encaja contigo» con el
   assert.match(marcado, /IdeaDe un test/)
   assert.match(marcado, /¿Puedes contar un poco más\? ¿Qué pasó, con quién estabas\?Agregar/)
   // ruta-resultado-riasec: código IRA; Psicología es S, I, A.
-  assert.deepEqual(copia(porQue.props.encaje), { carrera: 'Social', principal: 'Investigador', segundo: 'Realista' })
-  assert.match(marcado, /Cómo encaja contigoPsicología es de tipo Social\. Tu tipo principal es Investigador y el segundo, Realista\. Es una pista, no una regla\./)
+  assert.deepEqual(copia(porQue.props.encaje), {
+    carrera: 'Social',
+    principal: 'Investigador',
+    segundo: 'Realista',
+  })
+  assert.match(
+    marcado,
+    /Cómo encaja contigoPsicología es de tipo Social\. Tu tipo principal es Investigador y el segundo, Realista\. Es una pista, no una regla\./,
+  )
   assert.ok(boton(arbol, 'Editar'))
 })
 
@@ -86,7 +107,11 @@ test('editar POR_QUE: cambios en memoria, «Guardar sección» envía la secció
   assert.match(texto(arbol), /Editando/)
   const porQue = hijo(arbol, 'SeccionPorQue')
   assert.equal(porQue.props.borrador.idea, 'TEST')
-  porQue.props.onCambiar((b) => ({ ...b, idea: 'MIA', relato: 'DATO DE PRUEBA: un relato más largo que el anterior.' }))
+  porQue.props.onCambiar((b) => ({
+    ...b,
+    idea: 'MIA',
+    relato: 'DATO DE PRUEBA: un relato más largo que el anterior.',
+  }))
   arbol = vista.render()
   boton(arbol, 'Guardar sección').props.onClick()
   await esperar()
@@ -95,7 +120,11 @@ test('editar POR_QUE: cambios en memoria, «Guardar sección» envía la secció
     cuenta: 'est-ana',
     carrera: PSICOLOGIA,
     seccion: 'POR_QUE',
-    datos: { idea_origen: 'MIA', motivos: [{ opcion: 'AYUDAR' }], relato: 'DATO DE PRUEBA: un relato más largo que el anterior.' },
+    datos: {
+      idea_origen: 'MIA',
+      motivos: [{ opcion: 'AYUDAR' }],
+      relato: 'DATO DE PRUEBA: un relato más largo que el anterior.',
+    },
   })
   arbol = vista.render()
   assert.equal(hijo(arbol, 'SeccionPorQue').props.borrador, null)
@@ -144,7 +173,8 @@ test('CONOCIMIENTO: lectura con «Sí · averiguado» y dudas; edición con vist
   const edicion = SeccionConocimiento(seccion.props)
   assert.match(texto(edicion), /Responde con sinceridad\..*Ver la ficha de la carrera/)
   assert.match(texto(edicion), /se resolverá al guardar/)
-  assert.match(texto(edicion), /Guardar puede tardar unos segundos\./)
+  // F07b: la nota va en el pie, junto a «Cancelar» / «Guardar sección» (lienzo de la sección 3).
+  assert.match(texto(vista.render()), /Guardar puede tardar unos segundos\./)
   boton(edicion, '¿Cuánto gana alguien que recién termina?').props.onClick()
   boton(vista.render(), 'Guardar sección').props.onClick()
   await esperar()
@@ -153,7 +183,16 @@ test('CONOCIMIENTO: lectura con «Sí · averiguado» y dudas; edición con vist
   assert.equal(guardar.body.datos.respuestas.CURSOS, 'SI')
   assert.deepEqual(copia(guardar.body.datos.dudas.at(-1)), { origen: 'SUGERIDA', opcion: 'SUELDO_INICIAL' })
   assert.ok(guardar.body.datos.dudas.slice(0, -1).every((d) => Object.keys(d).join() === 'numero'))
-  assert.equal(hijo(vista.render(), 'AvisoPlan').props.aviso.descripcion, 'Tus dudas quedaron anotadas.')
+  // F07b (§9): con sugerencias pendientes, el aviso cuenta dudas abiertas y pasos sugeridos (planes refrescados).
+  await esperar()
+  const aviso = hijo(vista.render(), 'AvisoPlan').props.aviso
+  const listo = completos.planes[0]
+  const abiertas = listo.dudas.filter((d) => d.estado === 'ABIERTA').length
+  const m = listo.sugerencias.filter((s) => s.estado === 'PENDIENTE').length
+  assert.deepEqual(
+    [aviso.etiqueta, aviso.titulo, aviso.descripcion, aviso.destacado],
+    ['Guardado', `${abiertas} dudas y ${m} pasos sugeridos`, 'te esperan en Mis próximos pasos.', true],
+  )
 })
 
 test('un 409 de sección bloqueada al guardar avisa con el mensaje del servidor y vuelve a lectura', async () => {
@@ -200,7 +239,11 @@ test('motivos en dos filas: marcar sube con su número, la ✕ baja (o borra uno
   filas().onOtro('Pepe')
   // Repetido (sin importar mayúsculas ni espacios): no se agrega.
   filas().onOtro('pepe ')
-  assert.deepEqual(copia(filas().elegidos.map((e) => e.texto)), ['Aportar a mi comunidad', 'Aprender', 'Pepe'])
+  assert.deepEqual(copia(filas().elegidos.map((e) => e.texto)), [
+    'Aportar a mi comunidad',
+    'Aprender',
+    'Pepe',
+  ])
   assert.ok(!filas().disponibles.some((d) => ['COMUNIDAD', 'APRENDER'].includes(d.codigo)))
   // La ✕ de uno de VALORES lo baja a «Para elegir»; la de uno propio lo borra. Los demás se renumeran.
   filas().onQuitar(0)
@@ -208,7 +251,10 @@ test('motivos en dos filas: marcar sube con su número, la ✕ baja (o borra uno
   filas().onQuitar(1)
   assert.deepEqual(copia(filas().elegidos.map((e) => e.texto)), ['Aprender'])
   filas().onOtro('Me gusta viajar')
-  assert.deepEqual(copia(adaptador.datosPorQue(props.borrador).motivos), [{ opcion: 'APRENDER' }, { otro: 'Me gusta viajar' }])
+  assert.deepEqual(copia(adaptador.datosPorQue(props.borrador).motivos), [
+    { opcion: 'APRENDER' },
+    { otro: 'Me gusta viajar' },
+  ])
 })
 
 test('«+ Otro»: al confirmar con Enter o al salir con texto, sube y el botón vuelve a su estado inicial', async () => {
@@ -219,7 +265,10 @@ test('«+ Otro»: al confirmar con Enter o al salir con texto, sube y el botón 
     titulo: 'Tus motivos · el 1 es el principal',
     vacio: 'Todavía no marcas ninguno.',
     numerado: true,
-    elegidos: [{ clave: 'a', texto: 'Aprender' }, { clave: 'b', texto: 'Pepe' }],
+    elegidos: [
+      { clave: 'a', texto: 'Aprender' },
+      { clave: 'b', texto: 'Pepe' },
+    ],
     disponibles: [{ codigo: 'CREAR', texto: 'Crear' }],
     textoOtro: 'Otro motivo',
     onMarcar() {},

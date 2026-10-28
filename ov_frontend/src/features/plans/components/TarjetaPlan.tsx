@@ -7,6 +7,7 @@ import {
   NUMERO_SECCION,
   planCompleto,
   seccionSiguiente,
+  soles,
   textoBotonPlan,
   TITULOS_SECCION,
   tooltipSeccion,
@@ -65,7 +66,8 @@ export function TarjetaPlan({
 }) {
   const letra = plan.prioridad,
     gestion = plan.institucion && textoGestion(plan.institucion.gestion),
-    completo = planCompleto(plan)
+    completo = planCompleto(plan),
+    realidadLista = plan.secciones.some((s) => s.codigo === 'REALIDAD' && s.estado === 'LISTA')
   return (
     <article className="sx-d-plan-card sx-p-tarjeta" data-position={indice} data-principal={principal}>
       <div className="sx-d-parchment">
@@ -81,8 +83,14 @@ export function TarjetaPlan({
                 ? [plan.institucion.nombre, gestion].filter(Boolean).join(' · ')
                 : 'Aún sin institución elegida'}
             </p>
+            {realidadLista && <p className="sx-p-primer-anio">1.er año ≈ {soles(plan.total_primer_anio)}</p>}
           </div>
-          <button type="button" className="sx-d-icon" aria-label={`Eliminar plan ${letra}`} onClick={onEliminar}>
+          <button
+            type="button"
+            className="sx-d-icon"
+            aria-label={`Eliminar plan ${letra}`}
+            onClick={onEliminar}
+          >
             <Trash2 aria-hidden="true" />
           </button>
         </div>
@@ -105,7 +113,12 @@ export function TarjetaPlan({
             {textoBotonPlan(plan)}
           </Link>
           {!principal && onHacerA && (
-            <button type="button" className="sx-d-action sx-d-action-ghost" disabled={ocupado} onClick={onHacerA}>
+            <button
+              type="button"
+              className="sx-d-action sx-d-action-ghost"
+              disabled={ocupado}
+              onClick={onHacerA}
+            >
               Hacer mi plan A
             </button>
           )}

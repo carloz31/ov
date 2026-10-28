@@ -11,7 +11,15 @@ import { TarjetaPlan } from './TarjetaPlan'
 import '../styles/planes.css'
 
 // Un espacio libre, compacto. Solo el primero lleva «Desde mis favoritos» y «Buscar en el catálogo».
-function EspacioPlan({ letra, conAcciones, onCrear }: { letra: string; conAcciones: boolean; onCrear: () => void }) {
+function EspacioPlan({
+  letra,
+  conAcciones,
+  onCrear,
+}: {
+  letra: string
+  conAcciones: boolean
+  onCrear: () => void
+}) {
   return (
     <section className="sx-d-empty-plan sx-p-espacio">
       <div className="sx-p-tarjeta-cabecera">
@@ -76,8 +84,8 @@ export function MisPlanes() {
         <div>
           <h1>Mis planes</h1>
           <p>
-            Las opciones que estás considerando para después del colegio. Ninguna es definitiva: puedes cambiarlas
-            cuando quieras.
+            Las opciones que estás considerando para después del colegio. Ninguna es definitiva: puedes
+            cambiarlas cuando quieras.
           </p>
         </div>
       </header>
@@ -85,9 +93,9 @@ export function MisPlanes() {
         <p className="sx-p-aviso" role="note" key={aviso.familia.codigo}>
           <CircleAlert aria-hidden="true" />
           <span>
-            Tus planes {aviso.planes.join(' y ')} son de la misma familia, <strong>{aviso.familia.nombre}</strong>.
-            Tener una alternativa en otra área también puede ayudarte a decidir.{' '}
-            <Link to={appPaths.student.catalog.careers}>Explorar otras áreas</Link>
+            Tus planes {aviso.planes.join(' y ')} son de la misma familia,{' '}
+            <strong>{aviso.familia.nombre}</strong>. Tener una alternativa en otra área también puede ayudarte
+            a decidir. <Link to={appPaths.student.catalog.careers}>Explorar otras áreas</Link>
           </span>
         </p>
       ))}
@@ -124,7 +132,11 @@ export function MisPlanes() {
             </DialogDescription>
           </DialogHeader>
           <div className="sx-d-actions">
-            <button type="button" className="sx-d-action sx-d-action-ghost" onClick={() => v.pedirEliminar(null)}>
+            <button
+              type="button"
+              className="sx-d-action sx-d-action-ghost"
+              onClick={() => v.pedirEliminar(null)}
+            >
               Cancelar
             </button>
             <button type="button" className="sx-d-action" onClick={() => void v.confirmarEliminar()}>

@@ -11,10 +11,11 @@ import { MenuSeccionesPlan } from './MenuSeccionesPlan'
 import { PildoraEstado } from './PildoraEstado'
 import { SeccionConocimiento } from './SeccionConocimiento'
 import { SeccionPorQue } from './SeccionPorQue'
+import { SeccionRealidad } from './SeccionRealidad'
 import '../styles/planes.css'
 
 // F07a (F07b-pantallas §4): un plan abierto. A la izquierda, el menú de secciones; a la derecha, solo la sección
-// elegida, en lectura («Editar») o en edición («Cancelar» / «Guardar sección»). REALIDAD y PASOS llegan en F07b.
+// elegida, en lectura («Editar») o en edición («Cancelar» / «Guardar sección»). F07b: REALIDAD y PASOS.
 export function PlanAbierto({
   carrera,
   seccion: seccionUrl,
@@ -38,7 +39,9 @@ export function PlanAbierto({
     )
   const { plan, estadoSeccion: s, edicion } = v
   const opciones = v.datos.opciones
-  const editable = s.estado !== 'BLOQUEADA' && (s.codigo === 'POR_QUE' || s.codigo === 'CONOCIMIENTO')
+  const editable = s.estado !== 'BLOQUEADA' && s.codigo !== 'PASOS'
+  // Las que llaman al LLM al guardar avisan que puede tardar (lienzo de la sección 3).
+  const tarda = s.codigo === 'CONOCIMIENTO' || s.codigo === 'REALIDAD'
   const editando = edicion.editando === s.codigo
   const titulo = TITULOS_SECCION[s.codigo]
   return (
@@ -89,9 +92,19 @@ export function PlanAbierto({
                 onCambiar={edicion.cambiarConocimiento}
               />
             )}
-            {!editable && <p className="sx-p-ayuda">Esta sección llega en el siguiente lote.</p>}
+            {s.codigo === 'REALIDAD' && (
+              <SeccionRealidad
+                plan={plan}
+                opciones={opciones}
+                instituciones={v.instituciones}
+                paginaWeb={v.paginaInstitucion}
+                borrador={editando ? edicion.realidad : null}
+                onCambiar={edicion.cambiarRealidad}
+              />
+            )}
             {editando && (
               <div className="sx-d-actions sx-p-acciones">
+                {tarda && <p className="sx-p-ayuda">Guardar puede tardar unos segundos.</p>}
                 <button
                   type="button"
                   className="sx-d-action sx-d-action-ghost"
