@@ -13,7 +13,7 @@ import { usePrioritySettings } from '@/features/counselor/hooks/usePrioritySetti
 import { parentChildren } from '@/features/parent/data/parentPortal'
 import { useParentPortalContext } from '@/features/parent/context/parentPortalContext'
 import { useResultadosHijo } from '@/features/parent/hooks/useResultadosHijo'
-import { inicialesHijo } from '@/features/parent/lib/familia'
+import { inicialesHijo, resultadoDeInstrumento } from '@/features/parent/lib/familia'
 import {
   completeFamilyResult,
   familySharedIds,
@@ -36,15 +36,18 @@ export function ParentQuestionnaireDetailView() {
   )
   const route = parentRoute(activities, parentChildren, completedActivityIds, available)
   const application = student?.questionnaires.find((item) => item.questionnaireId === definition?.id)
-  const back = parentHomeUrl(child?.id ?? parentChildren[0]?.id ?? '')
-  // F03: en api, con el diploma, el resultado del hijo sale del servidor.
-  const resultadosHijo = useResultadosHijo(familia)
-  const resultadoServidor = resultadosHijo.resultados?.find((r) => r.instrumento === questionnaireId)
-  if (familia?.estudiante && resultadosHijo.habilitado && (!resultadosHijo.resultados || resultadoServidor))
+  // Ajuste inicio-apoderado: en api, el hijo es el de la URL entre los vinculados.
+  const hijoServidor = familia?.estudiantes.find((e) => e.codigo === childId) ?? null
+  const back = parentHomeUrl(familia ? (hijoServidor?.codigo ?? '') : (child?.id ?? parentChildren[0]?.id ?? ''))
+  // F03: en api, con el diploma, el resultado del hijo sale del servidor (de partida y llegada, el de llegada
+  // si existe).
+  const resultadosHijo = useResultadosHijo(familia, hijoServidor?.codigo)
+  const resultadoServidor = resultadoDeInstrumento(resultadosHijo.resultados, questionnaireId)
+  if (hijoServidor && resultadosHijo.habilitado && (!resultadosHijo.resultados || resultadoServidor))
     return (
       <main ref={mainRef} className="min-w-0 space-y-6 break-words p-4 sm:p-6 lg:p-8" aria-busy={!resultadoServidor}>
         <Button asChild variant="link" className="min-h-11 px-0">
-          <Link to={parentHomeUrl(familia.estudiante.codigo)}>
+          <Link to={back}>
             <ArrowLeft aria-hidden />
             Volver
           </Link>
@@ -61,17 +64,17 @@ export function ParentQuestionnaireDetailView() {
           <>
             <StaffEntityHeader
               title={resultadoServidor.nombre}
-              initials={inicialesHijo(familia.estudiante.nombre)}
-              details={<p>{familia.estudiante.nombre}</p>}
+              initials={inicialesHijo(hijoServidor.nombre)}
+              details={<p>{hijoServidor.nombre}</p>}
             />
-            <QuestionnaireDetailContent servidor={resultadoServidor} nombre={familia.estudiante.nombre} />
+            <QuestionnaireDetailContent servidor={resultadoServidor} nombre={hijoServidor.nombre} />
           </>
         )}
         <GuideDialogue audience="parent" text={parentGuides.questionnaire} />
       </main>
     )
   // En api, sin diploma, el detalle solo muestra el aviso, con el nombre real del hijo.
-  const hijo = familia ? familia.estudiante?.nombre : student?.nombres
+  const hijo = familia ? hijoServidor?.nombre : student?.nombres
   if (
     familia ||
     !child ||
@@ -82,7 +85,7 @@ export function ParentQuestionnaireDetailView() {
   ) {
     // F03: con el diploma, un cuestionario que el servidor no entrega ya no espera actividades.
     const locked = familia
-      ? !!familia.estudiante && !familia.diploma.obtenido
+      ? !!hijoServidor && !familia.diploma.obtenido
       : !!(child && definition && !route.complete)
     return (
       <main className="space-y-5 p-5 sm:p-8">

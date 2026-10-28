@@ -3,16 +3,28 @@ import type { NivelActual, RespuestaAccion } from './servidor'
 // app/schemas/familia.py · GET /cuentas/{c}/familia (B12). F08: `codigo` del diploma (nulo sin diploma).
 export type AvanceRuta = { completadas: number; total: number; porcentaje: number }
 export type Diploma = { obtenido: boolean; obtenido_en: string | null; codigo: string | null }
+// Ajuste inicio-apoderado: los cuestionarios visibles al apoderado en el salón de cada hijo, con su estado (sin
+// puntajes). `completado_en` es la fecha del resultado vigente; nulo sin él. Partida antes que llegada.
+export type MomentoAplicacion = 'UNICA' | 'ENTRADA' | 'SALIDA'
+export type AplicacionHijo = {
+  aplicacion: string
+  nombre: string
+  momento: MomentoAplicacion
+  completado_en: string | null
+}
+export type CuestionarioHijo = { instrumento: string; nombre: string; aplicaciones: AplicacionHijo[] }
 export type EstudianteVinculado = {
   codigo: string
   nombre: string
   avance: AvanceRuta
   nivel_actual: NivelActual | null
+  cuestionarios: CuestionarioHijo[]
 }
+// Todos los hijos de sus vínculos activos, en orden; vacía sin vínculo.
 export type FamiliaApoderado = {
   avance: AvanceRuta
   diploma: Diploma
-  estudiante: EstudianteVinculado | null
+  estudiantes: EstudianteVinculado[]
 }
 
 // app/schemas/conversaciones.py · GET /cuentas/{c}/conversaciones (B12, F08). Todas las conversaciones, siempre;

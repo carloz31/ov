@@ -251,10 +251,11 @@ export function completarActividadApoderado(
 
 // F03 (HU-022, HU-023): resultados vigentes del hijo visibles al apoderado, con el catálogo para sus nombres.
 // Se piden al abrir la vista que los muestra; sin diploma, el servidor responde 409 con su mensaje.
-export async function consultarResultadosHijo() {
+// Ajuste inicio-apoderado: del hijo elegido (`estudiante`).
+export async function consultarResultadosHijo(estudiante?: string) {
   const cuenta = estado.cuenta
   if (!modoApi || !cuenta) return sinCuenta()
-  const [resultados, catalogo] = await Promise.all([obtenerResultadosHijo(cuenta), obtenerCatalogo()])
+  const [resultados, catalogo] = await Promise.all([obtenerResultadosHijo(cuenta, estudiante), obtenerCatalogo()])
   if (resultados.tipo !== 'ok') return resultados
   if (catalogo.tipo !== 'ok') return catalogo
   return { tipo: 'ok' as const, datos: { resultados: resultados.datos, catalogo: catalogo.datos } }

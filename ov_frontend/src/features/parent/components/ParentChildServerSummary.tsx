@@ -4,7 +4,7 @@ import { StaffEntityHeader } from '@/components/staff/StaffEntityHeader'
 import { CardIcon } from '@/components/ui/Status'
 import { StaffMetric } from '@/components/staff/StaffMetric'
 import type { FamiliaApoderado } from '@/types/servidor'
-import { inicialesHijo } from '../lib/familia'
+import { hijoElegido, inicialesHijo } from '../lib/familia'
 import { parentResultUrl } from '../lib/selectors'
 import type { useResultadosHijo } from '../hooks/useResultadosHijo'
 
@@ -17,7 +17,7 @@ export function ParentChildServerSummary({
   familia: FamiliaApoderado
   resultados?: ReturnType<typeof useResultadosHijo>
 }) {
-  const hijo = familia.estudiante
+  const hijo = hijoElegido(familia)
   const avance = familia.avance
   return (
     <section className="space-y-5" aria-labelledby="family-children">

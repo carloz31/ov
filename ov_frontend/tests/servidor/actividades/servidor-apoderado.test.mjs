@@ -668,8 +668,8 @@ test('la ruta y el diploma se completan con el servidor aunque no haya nodos loc
         ? jsonServidor('cuentas')
         : r.url.endsWith('/actividades')
           ? jsonServidor('ruta/ruta-apoderado-actividades-final')
-          : // F03: con el diploma, el portal pide los resultados del hijo y el catálogo de instrumentos.
-            r.url.endsWith('/familia/resultados') || r.url === '/api/instrumentos'
+          : // F03: con el diploma, el portal pide los resultados del hijo (con `?estudiante=`) y el catálogo.
+            r.url.includes('/familia/resultados') || r.url === '/api/instrumentos'
             ? []
             : { eventos_registrados: [], nuevos_desbloqueos: [] },
   }))

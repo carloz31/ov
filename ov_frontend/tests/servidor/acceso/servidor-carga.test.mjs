@@ -95,7 +95,7 @@ test('el resumen del apoderado en api usa GET /familia: hijo, avances y solo el 
   assert.deepEqual([diploma.props.label, diploma.props.detail], ['Su avance hacia el diploma', '2 de 2 actividades'])
   assert.match(texto(tree), /Podrás ver los resultados de Ana cuando completes tus actividades\./)
   assert.doesNotMatch(texto(tree), /Cuestionarios que se compartirán|Salón/)
-  assert.match(texto(ParentChildServerSummary({ familia: { ...familia, estudiante: null } })), /Todavía no tienes un hijo vinculado\./)
+  assert.match(texto(ParentChildServerSummary({ familia: { ...familia, estudiantes: [] } })), /Todavía no tienes un hijo vinculado\./)
   const { avanceConFamilia, nombreHijo } = app.load('src/features/parent/lib/familia.ts')
   const local = { completed: 0, total: 5, percent: 0, complete: false, next: 'x' }
   assert.deepEqual(copia(avanceConFamilia(local, familia)), { completed: 2, total: 2, percent: 100, complete: true, next: 'x' })

@@ -77,7 +77,7 @@ export function useParentOverview() {
   const student = studentProfiles.find((s) => s.id === child?.id)
   const progress = student ? generalProgress(student, activities) : null
   // F03: en api, los resultados del hijo (con el diploma obtenido).
-  const resultadosHijo = useResultadosHijo(familia)
+  const resultadosHijo = useResultadosHijo(familia, familia?.estudiantes[0]?.codigo)
   return {
     resultadosHijo,
     mainRef,

@@ -72,7 +72,7 @@ test('el resumen del hijo lista los resultados con enlace a la explicada; sin di
   assert.match(marcado, /Investigativa · Realista · Artística/)
   assert.match(
     marcado,
-    new RegExp(`href="/parent/children/${conDiploma.estudiante.codigo}/questionnaires/TEST-RIASEC"`),
+    new RegExp(`href="/parent/children/${conDiploma.estudiantes[0].codigo}/questionnaires/TEST-RIASEC"`),
   )
   assert.doesNotMatch(marcado, /Podrás ver los resultados|puntaje|correlaci/)
   const bloqueado = html(ParentChildServerSummary, {
