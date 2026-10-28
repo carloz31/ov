@@ -11,4 +11,4 @@
 - `TEST-PARTIDA-LLEGADA` no se agrega a `SALON_INSTRUMENTOS` (decisión del usuario: mide también la presión de la familia y no se comparte con los apoderados); su caso se prueba con una fila `SalonInstrumento` creada en la prueba. La comparación partida → llegada para el apoderado quedó en `pendientes-interfaz.md`.
 - Se agrega el fixture `familia-resultados-luis` (`?estudiante=est-luis`) para el contrato del segundo hijo.
 - El modo local del Inicio no cambia: `ParentChildrenSummary`, `ParentConversationNotice` y `ParentRouteSummary` solo se usan en local; el hook expone `inicio` (nulo en local) en lugar de ramificar la vista por `modoApi`.
-
+- Los resultados del hijo pasan a una sección por hijo del almacén (`store/servidor/apoderadoResultados.ts`), como Conversaciones: `useResultadosHijo` ya no consulta en su propio efecto. El activo es el último hijo pedido; lo que llega de otro hijo se descarta y su sección queda por pedir. Se revalidan al montar la vista (los cambia el hijo al revelar).

@@ -3,7 +3,7 @@ import test from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router'
-import { copia, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 import { fixtureApoderado } from '../../soporte/apoderado-ayudas.mjs'
 
 // Ajuste inicio-apoderado (bocetos A–D): el Inicio del apoderado en api con los fixtures ruta-*.
@@ -153,4 +153,41 @@ test('«Conversaciones con {hijo}»: textos y acción de cada estado del boceto 
   assert.match(error, /No pudimos cargar las conversaciones\. Revisa tu conexión e inténtalo de nuevo\./)
   assert.match(error, />Reintentar</)
   assert.match(tarjeta({ tipo: 'cargando' }), /aria-busy="true"/)
+})
+
+test('los resultados tienen una sección por hijo y se descarta lo que llega del hijo que dejó de ser el activo', async () => {
+  const app = fixtureServidor({ cuenta: 'apo-rosa' })
+  const RESULTADOS = jsonServidor('ruta/ruta-familia-resultados')
+  const demorados = []
+  app.fetch((req) => {
+    if (req.url === '/api/acciones/ingresar') return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
+    if (req.url.endsWith('/apo-rosa/actividades')) return { body: jsonServidor('ruta/ruta-apoderado-actividades-final') }
+    if (req.url.endsWith('/apo-rosa/familia')) return { body: FAMILIA }
+    if (req.url === '/api/instrumentos') return { body: jsonServidor('ruta/ruta-instrumentos') }
+    if (req.url.endsWith('/familia/resultados?estudiante=est-ana'))
+      return new Promise((resolve) => demorados.push(() => resolve({ body: RESULTADOS })))
+    if (req.url.endsWith('/familia/resultados?estudiante=est-luis')) return { body: [] }
+    throw Error(`Solicitud no configurada: ${req.url}`)
+  })
+  const apoderado = app.load('src/store/servidor/apoderado.ts')
+  const almacen = app.load('src/store/servidor/apoderadoResultados.ts')
+  assert.equal((await apoderado.ingresarApoderado()).tipo, 'ok')
+  const ana = almacen.asegurarResultadosHijo('est-ana')
+  await esperar()
+  assert.equal(almacen.obtenerResultadosHijoAlmacen().porHijo['est-ana'].estado, 'cargando')
+  // Elige a Luis antes de que lleguen los de Ana.
+  assert.deepEqual(copia((await almacen.asegurarResultadosHijo('est-luis')).datos.resultados), [])
+  demorados.forEach((soltar) => soltar())
+  assert.equal((await ana).tipo, 'http')
+  const tras = almacen.obtenerResultadosHijoAlmacen()
+  assert.equal(tras.activo, 'est-luis')
+  assert.deepEqual(copia(tras.porHijo['est-ana']), { datos: null, estado: 'sin_cargar', error: null })
+  assert.equal(tras.porHijo['est-luis'].estado, 'listo')
+  // Al volver a Ana se pide otra vez y ahora sí se guarda.
+  const otraVez = almacen.asegurarResultadosHijo('est-ana')
+  await esperar()
+  demorados.at(-1)()
+  assert.equal((await otraVez).tipo, 'ok')
+  assert.deepEqual(copia(almacen.obtenerResultadosHijoAlmacen().porHijo['est-ana'].datos.resultados), RESULTADOS)
+  assert.equal(app.requests.filter((r) => r.url.endsWith('?estudiante=est-ana')).length, 2)
 })
