@@ -9,21 +9,224 @@
   "obligatoria": true,
   "requisitos": [],
   "duracionEstimadaMin": 10,
-  "personajeIds": [
-    "orientacion"
-  ],
+  "personajeIds": ["orientacion"],
   "nodos": [
     {
       "id": "t-apo-2-01",
       "tipo": "diapositiva",
-      "etiqueta": "Para seguir",
-      "titulo": "Cómo decide un adolescente",
+      "etiqueta": "Para empezar",
+      "titulo": "El mundo que conocimos cambió",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Actividad de prueba del portal familiar. Al terminarla se abren las conversaciones con su hijo."
+          "texto": "Muchas decisiones familiares se toman con ideas que fueron ciertas hace veinte años: qué carreras \"tienen futuro\", qué instituciones son buenas o cuánto se gana en cada trabajo. Desde entonces han aparecido nuevas carreras, otras se han saturado y la oferta de institutos y universidades ha cambiado mucho."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "No necesita saberlo todo para acompañar. Necesita saber dónde buscar información confiable y actual."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "En esta actividad verá:",
+          "items": [
+            "Las rutas de estudio que existen después del colegio.",
+            "Cómo saber si una institución es confiable.",
+            "Mejores preguntas sobre trabajo, ingresos y costos.",
+            "Cómo leer los resultados de los cuestionarios de su hijo."
+          ]
         }
       ]
+    },
+    {
+      "id": "t-apo-2-02",
+      "tipo": "diapositiva",
+      "etiqueta": "Información",
+      "titulo": "Las rutas posibles después del colegio",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "No existe una sola ruta \"buena\". Cada una sirve para objetivos distintos y tiene tiempos y costos diferentes."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": ["Ruta", "Dónde se estudia", "Duración referencial", "Qué se obtiene"],
+          "filas": [
+            [
+              "Universitaria",
+              "Universidades públicas y privadas",
+              "En general 5 años (algunas carreras, más)",
+              "Grado de bachiller y título profesional"
+            ],
+            [
+              "Técnica",
+              "Institutos y escuelas de educación superior",
+              "En general de 2 a 3 años en institutos",
+              "Título de técnico o profesional técnico"
+            ],
+            [
+              "Fuerzas Armadas y Policía",
+              "Escuelas de oficiales y de suboficiales",
+              "Variable según la escuela",
+              "Formación y carrera dentro de la institución"
+            ]
+          ],
+          "nota": "Las duraciones son referenciales: confirme siempre en la institución. También existen centros de formación en oficios (CETPRO) y el camino del emprendimiento."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Lo que conviene saber",
+          "items": [
+            "Una carrera técnica permite empezar a trabajar antes y suele ser muy práctica.",
+            "Elegir lo técnico no cierra la puerta a la universidad: en muchos casos se puede continuar estudios y pedir convalidación de cursos, según cada institución.",
+            "Los ingresos dependen sobre todo de la carrera específica y de la institución, no solo de si es universitaria o técnica."
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ley N.° 30220, Ley Universitaria, y Ley N.° 30512, Ley de Institutos y Escuelas de Educación Superior."
+        }
+      ]
+    },
+    {
+      "id": "t-apo-2-03",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "verdadero_falso",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Verdadero o falso: si su hijo estudia una carrera técnica, ya no podrá estudiar en la universidad más adelante.",
+      "opciones": [
+        {
+          "id": "v",
+          "texto": "Verdadero",
+          "correcta": false,
+          "retroalimentacion": "No es así. La ruta técnica no cierra otras rutas."
+        },
+        {
+          "id": "f",
+          "texto": "Falso",
+          "correcta": true,
+          "retroalimentacion": "Correcto. Puede continuar estudiando después."
+        }
+      ],
+      "explicacion": "Muchas personas estudian una carrera técnica, empiezan a trabajar y luego continúan en la universidad. Las condiciones de convalidación se consultan en cada institución.",
+      "pistas": [
+        {
+          "id": "t-apo-2-03p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Revise la segunda idea de \"Lo que conviene saber\"."
+        }
+      ],
+      "transicion": "Listo, ya conoce las rutas de estudio. Ahora, compruebe cómo se pueden combinar."
+    },
+    {
+      "id": "t-apo-2-04",
+      "tipo": "diapositiva",
+      "etiqueta": "Información",
+      "titulo": "¿Cómo saber si una institución es confiable?",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un local bonito o una pensión baja no garantizan una buena formación. Antes de decidir, conviene revisar cuatro cosas."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Que esté licenciada",
+              "texto": "Las universidades las licencia la SUNEDU. Los institutos y escuelas de educación superior, el Ministerio de Educación. La lista es pública en sus páginas web."
+            },
+            {
+              "titulo": "Que la carrera esté autorizada",
+              "texto": "No basta con que la institución esté licenciada: la carrera específica también debe estar en su oferta autorizada."
+            },
+            {
+              "titulo": "Qué pasa con sus egresados",
+              "texto": "En Ponte en Carrera puede comparar carreras e instituciones y ver información sobre el empleo e ingresos de sus egresados."
+            },
+            {
+              "titulo": "Cuánto cuesta en total",
+              "texto": "Pregunte por todos los pagos: admisión, matrícula, pensiones durante toda la carrera, materiales y trámites de titulación."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "alerta",
+          "texto": "Desconfíe de ofertas que prometen títulos muy rápidos, sin examen de admisión o \"garantizados\". Verifique siempre el licenciamiento."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ponte en Carrera, plataforma del Estado peruano.",
+          "url": "https://www.ponteencarrera.pe"
+        }
+      ],
+      "recursoIds": ["rec-ponteencarrera"],
+      "transicion": "Listo, ya revisó cómo combinar las rutas. Ahora, vea cómo reconocer una institución confiable."
+    },
+    {
+      "id": "t-apo-2-05",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "La familia de Jorge encontró un instituto cerca de casa con una pensión muy baja, que ofrece la carrera de enfermería técnica. ¿Qué conviene revisar primero?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que el instituto esté licenciado por el Ministerio de Educación y que la carrera esté autorizada.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Es lo primero, porque de eso depende la validez del título."
+        },
+        {
+          "id": "b",
+          "texto": "Que tenga buenas instalaciones y publicidad.",
+          "correcta": false,
+          "retroalimentacion": "Puede importar, pero no dice nada sobre la validez del título."
+        },
+        {
+          "id": "c",
+          "texto": "Nada: si está cerca y es barato, es la mejor opción.",
+          "correcta": false,
+          "retroalimentacion": "La cercanía y el precio son importantes, pero no reemplazan la verificación."
+        }
+      ],
+      "explicacion": "La cercanía y el costo son razones válidas para elegir, siempre que antes se haya verificado el licenciamiento de la institución y la autorización de la carrera.",
+      "pistas": [
+        {
+          "id": "t-apo-2-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Recuerde el primer paso de la lista anterior."
+        }
+      ]
+    },
+    {
+      "id": "t-apo-2-11",
+      "tipo": "diapositiva",
+      "etiqueta": "Resumen",
+      "titulo": "Lo que se lleva de esta actividad",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "Hay varias rutas válidas: universitaria, técnica, Fuerzas Armadas y Policía, oficios y emprendimiento.",
+            "Antes de elegir, verifique el licenciamiento de la institución y la autorización de la carrera.",
+            "Pregunte por empleo e ingresos de egresados de esa carrera en esa institución, no solo \"si da plata\".",
+            "Calcule el costo total y busque becas con tiempo.",
+            "Los resultados de los cuestionarios son una fotografía para conversar, no una etiqueta."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Al terminar esta actividad se abren las conversaciones en familia con su hijo o hija."
+        }
+      ],
+      "recursoIds": ["ficha-pad-info"],
+      "transicion": "Listo, ya revisó cómo conversar con información. Ahora, repase las ideas que se lleva."
     }
   ]
 }

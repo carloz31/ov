@@ -10,21 +10,10 @@ const FAMILIA = {
   final: 'ruta/ruta-familia',
 }
 const familiaDe = (etapa) => jsonServidor(FAMILIA[etapa])
-// DATO DE PRUEBA: la ruta mínima trae una sola diapositiva por actividad; para recorrer elección, pregunta
-// bloqueante y varios pasos se le agregan la elección y la primera pregunta de pad_01_acompanar (contenido
-// local del front) y la diapositiva de t_apo_2 como cierre.
 function conPreguntas(app, activity) {
+  // F08: t_apo_1 trae su elección y sus preguntas; las pruebas del reproductor recorren sus nodos.
   const { contenidoPorClave } = app.load('src/data/activities/contenidos.ts')
-  const local = contenidoPorClave('pad_01_acompanar').nodos
-  return {
-    ...activity,
-    nodos: [
-      ...activity.nodos,
-      local.find((n) => n.tipo === 'eleccion'),
-      local.find((n) => n.tipo === 'pregunta'),
-      ...contenidoPorClave('t_apo_2').nodos,
-    ],
-  }
+  return { ...activity, nodos: contenidoPorClave('t_apo_1').nodos }
 }
 function fixture(usuario = 'apo-rosa', cuentas = jsonServidor('cuentas'), opciones = {}) {
   const app = opciones.portal ? fixtureApoderado(opciones) : fixtureServidor(opciones)
@@ -828,4 +817,40 @@ test('ruta lista las dos actividades del apoderado y la segunda se abre tras la 
   // t-apo-1 completada sigue disponible para repasar; la segunda, abierta, se puede iniciar.
   assert.deepEqual([...contenidos.disponiblesApoderado(abierta)], ['t-apo-1', 't-apo-2'])
   assert.deepEqual(copia(contenidos.completadasApoderado(abierta)), ['t-apo-1'])
+})
+
+// F08: un `$fin` guardado en el navegador para una actividad que el servidor no tiene completada (la base se
+// reinició o se volvió a cargar) dejaba el reproductor en el último paso sin poder terminar.
+test('una finalización local que el servidor no conoce vuelve a empezar la actividad', () => {
+  const app = fixtureServidor({ cuenta: 'apo-rosa' })
+  const { proyectarJourneyApoderado } = app.load('src/lib/servidor/adaptadores.ts')
+  const local = {
+    progress: {
+      't-apo-1': {
+        estudianteId: 'apo-rosa',
+        actividadId: 't-apo-1',
+        estado: 'completada',
+        nodoActualId: '$fin',
+      },
+    },
+    attempts: [],
+    choices: [],
+  }
+  const inicial = proyectarJourneyApoderado(
+    jsonServidor('ruta/ruta-apoderado-actividades-inicial'),
+    local,
+    'apo-rosa',
+  )
+  assert.equal(inicial.progress['t-apo-1'].estado, 'no_iniciada')
+  assert.equal('nodoActualId' in inicial.progress['t-apo-1'], false)
+  // Completada en el servidor, el `$fin` se conserva (el cierre y el repaso lo usan).
+  const final = proyectarJourneyApoderado(
+    jsonServidor('ruta/ruta-apoderado-actividades-final'),
+    local,
+    'apo-rosa',
+  )
+  assert.deepEqual(
+    [final.progress['t-apo-1'].estado, final.progress['t-apo-1'].nodoActualId],
+    ['completada', '$fin'],
+  )
 })

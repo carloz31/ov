@@ -115,7 +115,10 @@ export function insigniasServidor(logros: LogrosCuenta | null): AchievementGroup
 }
 // Todas las reglas (alternativas) con sus condiciones; el resumen cuenta la regla más avanzada. Una condición sin
 // texto muestra el respaldo: el requisito de la insignia o el mensaje de bloqueo de la regla.
-export function condicionesObjetivo(progreso: ProgresoObjetivo, respaldo?: string | null): CondicionesPasaporte {
+export function condicionesObjetivo(
+  progreso: ProgresoObjetivo,
+  respaldo?: string | null,
+): CondicionesPasaporte {
   const bloques = progreso.reglas.map((r) =>
     r.condiciones.map((c) => ({
       texto: c.texto ?? respaldo ?? r.mensaje_bloqueo,
@@ -126,7 +129,12 @@ export function condicionesObjetivo(progreso: ProgresoObjetivo, respaldo?: strin
   const proporcion = (b: CondicionPasaporte[]) => b.filter((c) => c.cumplida).length / (b.length || 1)
   const indice = bloques.reduce((m, b, i) => (proporcion(b) > proporcion(bloques[m]) ? i : m), 0)
   const mejor: CondicionPasaporte[] | undefined = bloques[indice]
-  return { bloques, cumplidas: mejor?.filter((c) => c.cumplida).length ?? 0, total: mejor?.length ?? 0, mejor: indice }
+  return {
+    bloques,
+    cumplidas: mejor?.filter((c) => c.cumplida).length ?? 0,
+    total: mejor?.length ?? 0,
+    mejor: indice,
+  }
 }
 
 // El Camino son los bloques de MISIONES_CAMPO (T0, T1, T2); 'CAMINO' los nombra juntos.
@@ -191,6 +199,25 @@ export function proyectarJourney(
       progress[codigo] = { ...progress[codigo], estado: 'no_iniciada', completadaEn: undefined }
   }
   return { ...actual, progress }
+}
+// F08: el portal del apoderado guarda su paso en el navegador. Un `$fin` de una finalización que el servidor no
+// conoce (la base se reinició o se volvió a cargar) dejaría el reproductor en el último paso sin poder terminar:
+// la actividad no completada en el servidor vuelve a empezar.
+export function proyectarJourneyApoderado(
+  bloques: BloqueActividades[],
+  actual: JourneyState,
+  cuenta: string,
+): JourneyState {
+  const proyectado = proyectarJourney(bloques, actual, cuenta)
+  const progress = { ...proyectado.progress }
+  for (const actividad of bloques.flatMap((b) => b.actividades)) {
+    const paso = progress[actividad.codigo]
+    if (actividad.estado !== 'COMPLETADA' && paso?.nodoActualId === '$fin') {
+      const { nodoActualId: _fin, ...sinPaso } = paso
+      progress[actividad.codigo] = sinPaso
+    }
+  }
+  return { ...proyectado, progress }
 }
 export function misionesCompletadas(
   bloques: BloqueActividades[],

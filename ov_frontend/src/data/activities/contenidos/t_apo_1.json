@@ -9,21 +9,239 @@
   "obligatoria": true,
   "requisitos": [],
   "duracionEstimadaMin": 10,
-  "personajeIds": [
-    "orientacion"
-  ],
+  "personajeIds": ["orientacion"],
   "nodos": [
     {
       "id": "t-apo-1-01",
       "tipo": "diapositiva",
       "etiqueta": "Para empezar",
-      "titulo": "Acompañar el camino",
+      "titulo": "Su hijo o hija está por tomar una decisión importante",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Actividad de prueba del portal familiar. Al terminarla se abre la segunda actividad."
+          "texto": "En el último año de secundaria, muchos jóvenes sienten que deben saber qué harán con su vida. Es una etapa de dudas, ilusiones y también de presión. En esa decisión, la familia tiene un papel que pocas veces se reconoce."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Las investigaciones coinciden en que la familia es una de las influencias más fuertes en la elección de estudios y trabajo de los adolescentes, muchas veces más que el colegio o los amigos."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "En esta actividad usted podrá:",
+          "items": [
+            "Reconocer de dónde vienen sus propias expectativas.",
+            "Distinguir entre acompañar, presionar y desentenderse.",
+            "Llevarse frases y acciones concretas para conversar en casa."
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Whiston, S. y Keller, B. (2004). The influences of the family of origin on career development: A review and analysis. The Counseling Psychologist, 32(4)."
         }
       ]
+    },
+    {
+      "id": "t-apo-1-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Cuando piensa en el futuro de su hijo o hija, ¿qué le preocupa más en este momento?",
+      "nota": "Su respuesta no se guarda ni la ve nadie. Solo sirve para mostrarle información útil.",
+      "opciones": [
+        {
+          "id": "t-apo-1-02a",
+          "texto": "Que no consiga trabajo.",
+          "reaccion": [
+            {
+              "id": "t-apo-1-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es una de las preocupaciones más frecuentes. La buena noticia es que hoy existe información pública sobre empleo e ingresos por carrera e institución. En la siguiente actividad verá dónde consultarla."
+            }
+          ]
+        },
+        {
+          "id": "t-apo-1-02b",
+          "texto": "Que elija algo que después no le guste.",
+          "reaccion": [
+            {
+              "id": "t-apo-1-02br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es una preocupación muy razonable. Conocerse mejor y explorar antes de decidir reduce ese riesgo, y eso es justamente lo que su hijo está haciendo en la plataforma."
+            }
+          ]
+        },
+        {
+          "id": "t-apo-1-02c",
+          "texto": "Que no podamos pagar sus estudios.",
+          "reaccion": [
+            {
+              "id": "t-apo-1-02cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "El factor económico es real y merece conversarse con calma. Hay opciones públicas, becas y carreras de distinta duración. En la siguiente actividad verá cómo planificarlo."
+            }
+          ]
+        },
+        {
+          "id": "t-apo-1-02d",
+          "texto": "Que todavía no sepa qué quiere.",
+          "reaccion": [
+            {
+              "id": "t-apo-1-02dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es más común de lo que parece y, en esta etapa, no es una mala señal. Más adelante en esta actividad verá por qué la duda forma parte del proceso."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t-apo-1-04",
+      "tipo": "diapositiva",
+      "etiqueta": "Concepto",
+      "titulo": "Tres formas en que la familia influye",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Los estudios sobre el tema distinguen tres maneras en que los padres participan en la decisión vocacional de sus hijos. Todos pasamos por las tres en algún momento; lo que importa es cuál predomina."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Apoyo",
+              "texto": "Escuchar, interesarse por lo que le atrae, ofrecer información y experiencias, y aceptar que todavía tenga dudas."
+            },
+            {
+              "titulo": "Interferencia",
+              "texto": "Decidir por él, descalificar sus opciones (\"eso no sirve\") o presionarlo para que elija algo concreto."
+            },
+            {
+              "titulo": "Desconexión",
+              "texto": "No involucrarse: \"tú verás\", \"es tu problema\". A veces se hace con buena intención, para no presionar."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "La interferencia y la desconexión se asocian con más dificultades para decidir. El apoyo se asocia con más exploración y más confianza."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Dietrich, J. y Kracke, B. (2009). Career-specific parental behaviors in adolescents' development. Journal of Vocational Behavior, 75(2)."
+        }
+      ]
+    },
+    {
+      "id": "t-apo-1-05",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Daniela le cuenta a su papá que le interesa estudiar gastronomía. Él le responde: \"Haz lo que quieras, igual tú vas a decidir\". ¿Qué forma de influencia predomina en esa respuesta?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Apoyo",
+          "correcta": false,
+          "retroalimentacion": "Parece respetuoso, pero no hay interés ni acompañamiento: Daniela se queda sola con su idea."
+        },
+        {
+          "id": "b",
+          "texto": "Interferencia",
+          "correcta": false,
+          "retroalimentacion": "No le impone nada ni descalifica su opción, así que no es interferencia."
+        },
+        {
+          "id": "c",
+          "texto": "Desconexión",
+          "correcta": true,
+          "retroalimentacion": "Así es. Dejarla decidir está bien, pero sin conversar ni interesarse se convierte en desconexión."
+        }
+      ],
+      "explicacion": "Respetar la decisión no significa desentenderse. Una respuesta de apoyo sería: \"¿Qué te atrae de la gastronomía? Averigüemos juntos dónde se estudia y cómo es el trabajo\".",
+      "pistas": [
+        {
+          "id": "t-apo-1-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Fíjese si el papá muestra interés por lo que Daniela le contó o si da por cerrada la conversación."
+        }
+      ],
+      "transicion": "Listo, ya conoce las tres formas de influencia. Ahora, un caso para comprobar."
+    },
+    {
+      "id": "t-apo-1-08",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Su hijo le dice: \"Creo que quiero estudiar diseño gráfico\". ¿Cuáles de estas respuestas abren la conversación? (Marque todas las que correspondan.)",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "\"¿Qué es lo que más te gusta del diseño?\"",
+          "correcta": true,
+          "retroalimentacion": "Abre: le invita a explicar sus razones."
+        },
+        {
+          "id": "b",
+          "texto": "\"Eso es un pasatiempo, no una carrera.\"",
+          "correcta": false,
+          "retroalimentacion": "Cierra: descalifica la opción antes de conocerla."
+        },
+        {
+          "id": "c",
+          "texto": "\"Me preocupa el tema del trabajo. ¿Lo investigamos juntos?\"",
+          "correcta": true,
+          "retroalimentacion": "Abre: comparte una preocupación real y propone hacer algo juntos."
+        },
+        {
+          "id": "d",
+          "texto": "\"Bueno, es tu vida.\"",
+          "correcta": false,
+          "retroalimentacion": "Cierra: aunque no impone nada, da por terminada la conversación."
+        }
+      ],
+      "explicacion": "Las respuestas que abren tienen algo en común: muestran interés, permiten expresar preocupaciones sin descalificar y proponen dar un paso juntos.",
+      "pistas": [
+        {
+          "id": "t-apo-1-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Hay dos respuestas que abren. Busque las que hacen una pregunta o proponen algo."
+        }
+      ]
+    },
+    {
+      "id": "t-apo-1-13",
+      "tipo": "diapositiva",
+      "etiqueta": "Resumen",
+      "titulo": "Lo que se lleva de esta actividad",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "La familia influye mucho en la decisión vocacional: puede ser un gran apoyo.",
+            "Las expectativas nacen del cariño, pero conviene revisar si son suyas o de su hijo.",
+            "Apoyar es escuchar, preguntar y ofrecer información. Interferir es decidir por él. Desconectarse es dejarlo solo.",
+            "Respetar su decisión no significa dejar de acompañar.",
+            "La duda es parte del proceso, no una mala señal."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "En la siguiente actividad verá cómo decide un adolescente y dónde encontrar información confiable para conversar con datos."
+        }
+      ],
+      "recursoIds": ["ficha-pad-rol"],
+      "transicion": "Listo, ya eligió una acción para comenzar. Ahora, repase las ideas que se lleva."
     }
   ]
 }

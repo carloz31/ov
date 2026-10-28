@@ -4,7 +4,7 @@ import { ingresar, completarActividad } from '@/services/api/acciones'
 import { obtenerActividades } from '@/services/api/actividades'
 import { obtenerFamilia, obtenerResultadosHijo } from '@/services/api/familia'
 import { obtenerCatalogo } from '@/services/api/instrumentos'
-import { proyectarJourney } from '@/lib/servidor/adaptadores'
+import { proyectarJourneyApoderado } from '@/lib/servidor/adaptadores'
 import { hidratarParentJourney } from '../parentJourneyStore'
 import { cuentaApoderado } from './cuenta'
 import type { Seccion } from './sesion'
@@ -90,7 +90,11 @@ export function ingresarApoderado(): Promise<RespuestaServidor<RespuestaAccion>>
         // B17: la cuenta del apoderado sale de la sesión.
         const cuenta = cuentaApoderado()
         if (!cuenta) {
-          const error: ErrorServidor = { tipo: 'http', estado: 401, detalle: 'No hay una sesión de apoderado.' }
+          const error: ErrorServidor = {
+            tipo: 'http',
+            estado: 401,
+            detalle: 'No hay una sesión de apoderado.',
+          }
           publicar({ error })
           return error
         }
@@ -189,7 +193,7 @@ export function asegurarActividadesApoderado(): Promise<RespuestaServidor<Bloque
           publicar({ actividades: { ...estado.actividades, estado: 'error', error: respuesta } })
           return respuesta
         }
-        hidratarParentJourney(cuenta, (actual) => proyectarJourney(respuesta.datos, actual, cuenta))
+        hidratarParentJourney(cuenta, (actual) => proyectarJourneyApoderado(respuesta.datos, actual, cuenta))
         publicar({ actividades: { datos: respuesta.datos, estado: 'listo', error: null } })
         return respuesta
       })
