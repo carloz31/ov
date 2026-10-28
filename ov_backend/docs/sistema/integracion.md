@@ -116,7 +116,7 @@ Además usa `/cuentas`, `/cuentas/{c}/progreso/...`, `/cuentas/{c}/desbloqueos` 
 
 Una sección vencida con una vista montada se vuelve a pedir enseguida; si no, al abrir su vista.
 
-El portal del apoderado tiene su propia sesión en `ov_frontend/src/store/servidor/apoderado.ts`, separada del estado del estudiante. Al ingresar toma la cuenta `APODERADO` de la sesión, envía `ingresar` y consulta sus `actividades` y su `familia`, que forman la carga inicial del portal. Tras completar vuelve a pedir las dos; no consulta resumen, logros ni desbloqueos del estudiante. La cuenta se conserva en memoria y se vuelve a seleccionar al recargar. Se descartan respuestas de otra sesión y se reutilizan pedidos en curso; durante una finalización solo se admite un envío, compartido si es del mismo código.
+El portal del apoderado tiene su propia sesión en `ov_frontend/src/store/servidor/apoderado.ts`, separada del estado del estudiante. Al ingresar toma la cuenta `APODERADO` de la sesión, envía `ingresar` y consulta sus `actividades` y su `familia`, que forman la carga inicial del portal. Los resultados de cada hijo (`familia/resultados?estudiante=`, solo con el diploma) tienen su sección por hijo en `store/servidor/apoderadoResultados.ts` y se piden al abrir el Inicio o la vista explicada. Tras completar vuelve a pedir las dos; no consulta resumen, logros ni desbloqueos del estudiante. La cuenta se conserva en memoria y se vuelve a seleccionar al recargar. Se descartan respuestas de otra sesión y se reutilizan pedidos en curso; durante una finalización solo se admite un envío, compartido si es del mismo código.
 
 ## Finalizar actividades desde el front
 

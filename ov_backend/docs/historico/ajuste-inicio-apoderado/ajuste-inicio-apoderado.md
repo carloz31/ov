@@ -2,7 +2,7 @@
 
 Texto de observaciones para `/ajuste inicio-apoderado`. Rediseño ligero del Inicio del apoderado (`ParentOverviewView`) en modo api, con varios hijos y conectado de verdad al backend.
 
-Bocetos (lienzo «Inicio del apoderado · rediseño», exportados a PNG; ábrelos con Read antes de la fase de pantallas): `ov_backend/docs/specs/bocetos/ajuste-inicio-apoderado/`
+Bocetos (lienzo «Inicio del apoderado · rediseño», exportados a PNG; ábrelos con Read antes de la fase de pantallas): `bocetos/` (junto a esta spec)
 - `A-inicio-sin-diploma.png`: varios hijos y el apoderado sin completar su ruta (candado en los resultados).
 - `B-inicio-con-diploma.png`: otro hijo elegido (Luis), el apoderado con diploma: clave y «Ver resultado».
 - `C-estados-tarjetas.png`: los estados de la tarjeta de conversaciones, el caso sin hijo vinculado y el skeleton de carga.
@@ -87,7 +87,7 @@ Las vistas deben quedar lo más cercanas posible a los bocetos, con el tema `the
 
 ### Contexto
 
-Las observaciones del usuario (`ajuste-inicio-apoderado.md`, con los bocetos A–D) piden rehacer el Inicio del apoderado en modo api: varios hijos, los cuestionarios del hijo siempre visibles (los resultados siguen con candado hasta el diploma) y una tarjeta de Conversaciones que no invente estados. No hay spec en curso en `ov_backend/docs/specs/`, así que el ajuste tendrá la suya: `ov_backend/docs/specs/ajuste-inicio-apoderado.md`. Los bocetos (imágenes adjuntas) se guardan en `ov_backend/docs/specs/bocetos/ajuste-inicio-apoderado/` con los nombres A–D que da el texto.
+Las observaciones del usuario (`ajuste-inicio-apoderado.md`, con los bocetos A–D) piden rehacer el Inicio del apoderado en modo api: varios hijos, los cuestionarios del hijo siempre visibles (los resultados siguen con candado hasta el diploma) y una tarjeta de Conversaciones que no invente estados. No hay spec en curso en `ov_backend/docs/specs/`, así que el ajuste tendrá la suya: `ov_backend/docs/specs/ajuste-inicio-apoderado.md`. Los bocetos (imágenes adjuntas) se guardan en `bocetos/` (junto a esta spec) con los nombres A–D que da el texto.
 
 Rama: la sesión exige trabajar en `claude/ajuste-pantalla-inicio-apoderado-6ja55n` (ya creada desde `main`); se usa esa en lugar de `ajuste/inicio-apoderado`.
 
@@ -147,7 +147,7 @@ Commits `Ajuste inicio-apoderado · F<n>: …`; push a la rama de la sesión al 
 0. **Datos:** no se agrega `TEST-PARTIDA-LLEGADA` a `SALON_INSTRUMENTOS` en `ruta.py`: ese cuestionario mide también la presión de la familia y no se comparte con los apoderados. Solo sigue visible el Test de intereses, así que `test_resultados_del_hijo_…` no se adapta. ENTRADA/SALIDA queda contemplado en el código y se prueba con una fila `SalonInstrumento` creada dentro de la prueba.
 1. **Partida y llegada, si llegara a ser visible:** `/familia/resultados` devuelve un resultado por aplicación (partida y llegada) con el mismo instrumento. El Inicio muestra una sola fila por instrumento y, para ENTRADA/SALIDA, la clave y «Ver resultado» usan el resultado de llegada si existe y, si no, el de partida; la vista explicada aplica el mismo criterio. La comparación partida→llegada para el apoderado va a `ov_frontend/docs/pendientes-interfaz.md`.
 2. **Rama:** se trabaja en la rama de la sesión y se hace push al terminar; al cerrar, la integración sigue el patrón `ajuste/<nombre>`.
-3. **Bocetos:** antes de F1 se guardan los cuatro bocetos adjuntos en `ov_backend/docs/specs/bocetos/ajuste-inicio-apoderado/` con los nombres A–D; en F3 se comparan las capturas de 1280 y 390 px contra ellos.
+3. **Bocetos:** antes de F1 se guardan los cuatro bocetos adjuntos en `bocetos/` (junto a esta spec) con los nombres A–D; en F3 se comparan las capturas de 1280 y 390 px contra ellos.
 
 ### Verificación
 
