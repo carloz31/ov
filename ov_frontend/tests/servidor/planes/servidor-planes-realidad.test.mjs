@@ -175,3 +175,30 @@ test('frente de la tarjeta: «1.er año ≈ S/ …» bajo la institución solo c
   }
   assert.doesNotMatch(texto(TarjetaPlan({ ...props, plan: enProceso })), /1\.er año/)
 })
+
+test('«Dónde estudiaría» busca entre muchas instituciones, sin tildes ni mayúsculas, con «Todavía no sé» al final', () => {
+  const app = fixtureServidor({ ruta: `/student/profile/decisions/${PSICOLOGIA}` })
+  const { Combobox } = app.load('src/components/ui/Combobox.tsx')
+  const elegidas = []
+  const opciones = carreraDetalle.instituciones.map((i) => ({ valor: i.codigo, texto: i.nombre }))
+  const vista = app.mount(Combobox, {
+    etiqueta: 'Dónde estudiaría',
+    opciones,
+    fijas: [{ valor: 'todavia-no-se', texto: 'Todavía no sé' }],
+    valor: 'todavia-no-se',
+    onCambiar: (v) => elegidas.push(v),
+  })
+  const campo = () => elementos(vista.render(), (e) => e.type === 'input')[0]
+  const textos = () => elementos(vista.render(), (e) => e.props?.role === 'option').map((e) => texto(e))
+  assert.equal(campo().props.value, 'Todavía no sé')
+  campo().props.onFocus()
+  assert.equal(textos().length, opciones.length + 1)
+  const buscada = opciones.find((o) => /Católica/.test(o.texto))
+  campo().props.onChange({ target: { value: 'catolica' } })
+  assert.ok(textos().includes(buscada.texto))
+  assert.ok(textos().every((t) => /Católica/.test(t) || t === 'Todavía no sé'))
+  assert.equal(textos().at(-1), 'Todavía no sé')
+  campo().props.onKeyDown({ key: 'Enter', preventDefault() {} })
+  assert.deepEqual(elegidas, [buscada.valor])
+  assert.equal(campo().props['aria-expanded'], false)
+})

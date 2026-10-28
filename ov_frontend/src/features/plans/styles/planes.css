@@ -1048,3 +1048,7 @@
 .sx-p-menu-entrada:disabled {
   cursor: progress;
 }
+.sx-p-campo input[role='combobox'] {
+  min-height: 44px;
+  background: var(--card);
+}

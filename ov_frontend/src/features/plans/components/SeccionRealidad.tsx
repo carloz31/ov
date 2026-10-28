@@ -1,3 +1,4 @@
+import { Combobox } from '@/components/ui/Combobox'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { textoGestion } from '@/lib/servidor/adaptadoresCatalogo'
@@ -148,29 +149,24 @@ export function SeccionRealidad({
   return (
     <>
       <div className="sx-p-dos">
-        <label className="sx-p-campo">
+        <div className="sx-p-campo">
           <strong>Dónde estudiaría</strong>
           <span className="sx-p-ayuda">Instituciones que ofrecen esta carrera; tus favoritas primero.</span>
-          <Select
-            value={borrador.institucion ?? NINGUNA}
-            onValueChange={(codigo) => {
+          <Combobox
+            etiqueta="Dónde estudiaría"
+            opciones={opcionesInstitucion.map((x) => ({
+              valor: x.codigo,
+              texto: [x.nombre, textoGestion(x.gestion) ?? 'sin dato', x.ubicacion.nombre].join(' · '),
+            }))}
+            fijas={[{ valor: NINGUNA, texto: 'Todavía no sé' }]}
+            valor={borrador.institucion ?? NINGUNA}
+            vacio="Ninguna institución coincide."
+            onCambiar={(codigo) => {
               const nueva = instituciones.find((x) => x.codigo === codigo) ?? null
               onCambiar((b) => cambiarInstitucion(b, nueva?.codigo ?? null, nueva?.gestion ?? null, opciones))
             }}
-          >
-            <SelectTrigger aria-label="Dónde estudiaría">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {opcionesInstitucion.map((x) => (
-                <SelectItem key={x.codigo} value={x.codigo}>
-                  {[x.nombre, textoGestion(x.gestion) ?? 'sin dato', x.ubicacion.nombre].join(' · ')}
-                </SelectItem>
-              ))}
-              <SelectItem value={NINGUNA}>Todavía no sé</SelectItem>
-            </SelectContent>
-          </Select>
-        </label>
+          />
+        </div>
         <label className="sx-p-campo">
           <strong>Cómo llegaría</strong>
           <span className="sx-p-ayuda">Una sola opción; cambia los gastos propuestos.</span>
