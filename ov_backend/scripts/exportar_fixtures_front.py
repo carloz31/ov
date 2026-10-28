@@ -444,8 +444,11 @@ def _recorrer_apoderado(cliente):
     if sin_diploma.status_code != 409:
         raise RuntimeError(f'Los resultados sin diploma respondieron {sin_diploma.status_code}')
     fixtures['familia-resultados-sin-diploma'] = sin_diploma.json()
-    for actividad in ('t-apo-1', 't-apo-2'):
-        _completar(cliente, actividad, 'apo-rosa')
+    # F08: la respuesta de completar cada actividad y la ruta a mitad de camino (t-apo-2 abierta).
+    fixtures['apoderado-completar-t-apo-1'] = _completar(cliente, 't-apo-1', 'apo-rosa')
+    fixtures['apoderado-actividades-mitad'] = _pedir(cliente, 'GET', ruta)
+    fixtures['apoderado-familia-mitad'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')
+    fixtures['apoderado-completar-t-apo-2'] = _completar(cliente, 't-apo-2', 'apo-rosa')
     fixtures['apoderado-actividades-final'] = _pedir(cliente, 'GET', ruta)
     fixtures['apoderado-secciones-final'] = _pedir(cliente, 'GET', secciones)
     fixtures['apoderado-fichas-final'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/fichas')

@@ -1,0 +1,49 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-apo-1",
+      "tipo": "COMPLETA_ACTIVIDAD"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-apo-1",
+          "requerido": 1,
+          "texto": null,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-apo-2",
+        "nombre": "Segunda actividad del apoderado"
+      },
+      "regla": "R-t-apo-2",
+      "tipo_objetivo": "ACTIVIDAD"
+    },
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-apo-1",
+          "requerido": 1,
+          "texto": null,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "t-ficha-apo",
+        "nombre": "Ficha del apoderado"
+      },
+      "regla": "R-t-ficha-apo",
+      "tipo_objetivo": "FICHA"
+    }
+  ]
+}

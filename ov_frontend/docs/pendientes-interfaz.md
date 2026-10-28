@@ -2,6 +2,43 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-28 · F08 · Avisos al apoderado (HU-067)
+
+- **Dato:** cuándo el hijo habilita una conversación (`abierta_para_hijo` pasa a verdadero) o responde una que el apoderado espera.
+- **Dónde se mostraría:** un aviso al ingresar al portal o una marca en el menú «Conversaciones».
+- **Opciones:** notificaciones asíncronas (backend con eventos por cuenta); calcular la novedad al ingresar comparando con la última visita; dejar solo la marca «{hijo} respondió» de la lista (como hoy).
+- **Si no se muestra:** el apoderado ve lo nuevo al abrir Conversaciones (la lista se revalida al montarla).
+- **Estado:** pospuesto en F08 (notificaciones asíncronas).
+
+## 2026-10-28 · F08 · «Requiere atención» en el inicio del apoderado
+
+- **Dato:** temas en «Le toca responder» del hijo activo.
+- **Dónde se mostraría:** la tarjeta de Conversaciones del inicio (estilo de alerta que ya tiene la tarjeta en local).
+- **Opciones:** resaltar la tarjeta cuando hay temas por responder; un contador en el menú; no resaltar.
+- **Si no se muestra:** el inicio muestra conversadas y por conversar del hijo activo, sin alerta.
+- **Estado:** pospuesto en F08.
+
+## 2026-10-28 · F08 · Varios hijos en el inicio del apoderado
+
+- **Dato:** `GET /sesion` trae todos los hijos; `GET /familia` solo el primer vínculo (`estudiante`).
+- **Dónde se mostraría:** «Mis hijos», el avance del hijo y sus resultados en el inicio (hoy, solo el primero).
+- **Opciones:** `familia?estudiante=` como en Conversaciones (ajuste sin modelo); un selector en el inicio; mantener el primero.
+- **Si no se muestra:** con dos hijos, el inicio muestra al primero; Conversaciones ya permite elegir.
+- **Estado:** pendiente de decisión del usuario.
+
+## 2026-10-28 · F08 · Tramos colapsables en Mis actividades
+
+- **Dato:** el bloque de cada actividad del apoderado (nombre y número).
+- **Dónde se mostraría:** cabecera de cada tramo «{n} · {nombre} · {x} de {y} completadas» con «Ocultar / Mostrar».
+- **Opciones:** implementarlos cuando la ruta del apoderado tenga más de un bloque.
+- **Si no se muestra:** con un solo bloque (FAMILIA, la ruta actual) la spec pide la lista directa, que es lo que se ve.
+- **Estado:** pendiente hasta que la ruta real del apoderado tenga más de un bloque.
+
+## 2026-10-28 · F08 · Contenido de fichas del estudiante bajo demanda
+
+- **Dato:** la mochila del estudiante ya pide el contenido de cada ficha al abrir el modal (`GET /fichas/{codigo}`, ajuste mochila); la lista no trae el contenido.
+- **Estado:** verificado en F08; no hace falta cambio.
+
 ## 2026-10-28 · F07b · Planes fuera de los lotes F07
 
 - **Dato:** lo que B11 dejó fuera y ningún lote F07 implementa: HU-049 (sugerir revisar los planes al completar un cuestionario, un caso o una comprobación, o al publicar una entrevista); «Es a propósito» en el aviso de misma familia (guardar que el estudiante ya respondió); lo que ve la orientadora de las tarjetas (HU-086, B14).
@@ -179,7 +216,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el reproductor del portal del apoderado.
 - **Opciones:** el mismo «Anterior» del estudiante; un índice de pasos; mantener sin retroceso.
 - **Si no se muestra:** el apoderado solo avanza en sus actividades, como hasta ahora.
-- **Estado:** revisar en F08.
+- **Estado:** revisado en F08 sin cambios: la spec de pantallas no lo incluye; queda para la revisión estética.
 
 ## 2026-10-21 · F00 · Carta del apoderado (`t_apo_carta`)
 
@@ -187,7 +224,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** lista «Mis actividades» del portal y su reproductor; en F08 se completa escribiendo la carta.
 - **Opciones:** conectar la escritura de la carta (B12) en F08; mostrarla como informativa hasta entonces; ocultarla.
 - **Si no se muestra:** F00 la lista con `t_apo_carta.json` sin nodos (`DATO DE PRUEBA`). Bloqueada, la tarjeta dice «Bloqueada» y la entrada por URL muestra el mensaje del servidor. Abierta, el portal la sigue tratando como no disponible y no se puede iniciar: así FAMILIA no se cierra sin la carta.
-- **Estado:** pendiente de F08.
+- **Estado:** resuelto en F08: la carta no es una actividad; se escribe en Conversaciones (A3) y `t-apo-carta` sale de la ruta (la reemplaza `t-apo-2`, de prueba).
 
 ## 2026-10-19 · B17 · Hijos y salones de la sesión
 
@@ -198,7 +235,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - mostrar solo el nombre del hijo en la cabecera del portal del apoderado;
   - no mostrarlos hasta tener las rutas propias de la orientadora.
 - **Si no se muestra:** el portal del apoderado sigue mostrando hijos de demostración en modo `api`, aunque sus actividades sí son de la cuenta con sesión.
-- **Estado:** en parte: el portal del apoderado ya muestra al hijo desde `familia` (F00); `hijos` de la sesión y los salones de la orientadora siguen sin vista (F08, F10).
+- **Estado:** hijos resuelto en F08: el portal usa `GET /sesion` para el parentesco del perfil, el selector «Con {nombre}» de Conversaciones y el hijo activo; los salones de la orientadora siguen pendientes (F10). El inicio y «Mis hijos» siguen mostrando un solo hijo (el de `familia`): ver «F08 · Varios hijos en el inicio».
 
 ## 2026-10-15 · B12 · Familia: conversaciones, cartas y ruta del apoderado
 
@@ -210,7 +247,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** sección Familia del estudiante (carta y conversaciones), portal del apoderado (conversaciones, carta, diploma, avance y resultados del hijo). Hoy el diploma del apoderado se calcula en el front con el estado remoto de sus actividades.
 - **Opciones:** conectar familia en su lote F con estas consultas; mientras tanto, el portal del apoderado sigue con sus actividades y su diploma actuales.
 - **Si no se muestra:** en modo `api` las conversaciones, las cartas y los resultados visibles al apoderado existen solo en el servidor. El aviso al apoderado cuando el hijo habilita una conversación (HU-067) queda fuera de B12.
-- **Estado:** pendiente del lote F de familia; no se toca la interfaz en B12.
+- **Estado:** resuelto en F08: Familia del estudiante (E2–E8), Conversaciones del apoderado (A1–A6), diploma (A9) y avance; el contrato cambió (conversada al responder el segundo, lista completa con tramo y bloqueo, `otro`, `cartas_disponibles`, código del diploma). El aviso HU-067 queda en «F08 · Avisos al apoderado».
 
 ## 2026-10-14 · B09 · Avance por temática
 
@@ -338,7 +375,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** confirmación del recorrido o diploma; el evento no tiene una vista propia.
 - **Opciones:** mantener el diploma derivado de la ruta completa; mostrar el evento en un historial futuro; definir una confirmación específica del bloque.
 - **Si no se muestra:** el backend registra el evento y el diploma existente se muestra desde `route.complete`, calculado con las actividades completadas del servidor.
-- **Estado:** pendiente de una presentación propia del evento; se conserva el diploma actual sin nuevos elementos.
+- **Estado:** resuelto en F08: el diploma sale del servidor (`familia.diploma`, con fecha y código) y se ve en Mis actividades y en su pantalla (A9).
 
 ## 2026-10-09 · Anexo F2 · Descripciones fuera del resumen de Helena
 
@@ -412,7 +449,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   2. Mostrarla al abrir el detalle de una conversación.
   3. Mantener el acceso de próxima iteración hasta integrar lectura y acciones.
 - **Si no se muestra:** el estado sigue disponible en el backend; el front no solicita la consulta y conserva su presentación actual de próxima iteración.
-- **Estado:** pendiente. B2 solo registra el dato; no implementa ninguna opción.
+- **Estado:** resuelto en F08: el estado de cada conversación (y `bloqueada` con su mensaje) organiza las pestañas de Familia y Conversaciones.
 
 ## 2026-10-08 · F4 · Señal de hoy todavía local
 
@@ -513,4 +550,4 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** portal del apoderado (no tiene vista de fichas).
 - **Opciones:** una sección de recursos en el portal; mostrarlas dentro de cada actividad; no mostrarlas todavía.
 - **Si no se muestra:** las fichas del apoderado se obtienen sin que se vean.
-- **Estado:** pendiente (lote F).
+- **Estado:** resuelto en F08: chips por actividad en Mis actividades (A7) y el modal compartido sin favorito (A8), con el contenido pedido al abrir.

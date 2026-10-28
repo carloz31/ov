@@ -1,0 +1,40 @@
+[
+  {
+    "actividades": [
+      {
+        "bloqueo": null,
+        "codigo": "t-apo-1",
+        "contenido": "t_apo_1",
+        "descripcion": "Conozca cómo acompañar a su hijo en este proceso.",
+        "duracion_estimada_min": 10,
+        "estado": "COMPLETADA",
+        "orden": 1,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Primera actividad del apoderado",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-apo-2",
+        "contenido": "t_apo_2",
+        "descripcion": "Conozca cómo decide un adolescente.",
+        "duracion_estimada_min": 10,
+        "estado": "DISPONIBLE",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Segunda actividad del apoderado",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "bloqueo": null,
+    "codigo": "FAMILIA",
+    "espacio": "PORTAL_FAMILIA",
+    "estado": "DISPONIBLE",
+    "nombre": "Actividades para familias",
+    "numero": 1
+  }
+]

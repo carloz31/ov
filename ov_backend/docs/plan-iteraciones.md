@@ -331,7 +331,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 - **Pantallas antes que código.** Si existe `docs/specs/<lote>-pantallas.md` (insumo preparado con el usuario), el plan parte de él y no decide pantallas fuera de él. En todo caso, el plan de cada lote F lleva una sección **«Pantallas»**: por vista, qué cambia (elementos, textos, componentes que reutiliza) y, si es nueva, un boceto. Lo aprobado en el plan queda autorizado; lo que no esté ahí sigue la regla de `pendientes-interfaz.md`.
 - **El backend se puede ajustar, pero declarado.** Si una pantalla necesita un dato que no existe (un campo, una lectura), el plan lo lista en **«Ajustes al backend»**. Si toca el modelo, el lote se marca **M** y sigue `/cambio-modelo` (migración, `ruta`, escenario, fixtures). Nunca dos **M** a la vez, tampoco con B13–B16.
 - **Contenidos de prueba.** Los `t_*.json` son mínimos: lo justo para recorrer la mecánica. El contenido real se carga después con la numeración de la ruta base.
-- **Pruebas.** Cada lote mueve su área de `tests/servidor/` a los `ruta-*` y, si cambia el contrato, regenera los fixtures en la misma tarea. Al cerrar F08 se retiran los fixtures de la raíz.
+- **Pruebas.** Cada lote mueve su área de `tests/servidor/` a los `ruta-*` y, si cambia el contrato, regenera los fixtures en la misma tarea. En F08 se retiraron los fixtures de la raíz del portal del apoderado; los que siguen allí los usan pruebas locales y las de Mara.
 - **Modo local congelado (desde F00).** `VITE_DATOS=local` conserva lo que hace hoy y no recibe funciones nuevas. Lo que agrega un lote F existe solo en `api`: el hook del dominio expone una bandera con nombre del dominio (`puedeEditarRegistro`, `muestraComparacion`) y en local la vista se comporta como antes. `tests/local/` no se amplía; solo debe seguir pasando. Excepción: cambios solo visuales aprobados por el usuario, que no alteran textos, orden ni momento (F00: avisos como toasts).
 - **Pendientes.** Cada lote cierra (o reescribe) las entradas de `pendientes-interfaz.md` que le tocan.
 
@@ -348,7 +348,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 | F06 | Catálogo y favoritos · **Implementado** | 026, 037–040, 042 | F03 | B11 `gestion`, F2 hoja de vida, F4 ocupaciones sin código | Catálogo y detalles |
 | F07a | Planes: tarjeta, orden y primeras secciones · **Implementado** | 043, 044, 047, 048, 050, 098, 099, 109 | F02, F06 | B11 (parte) | Mis planes: lista A/B/C, estados por sección, POR_QUE, CONOCIMIENTO con dudas |
 | F07b | Planes: realidad, pasos y actividades que los citan (M) · **Implementado** | 045, 046, 097, 110 | F07a | B11 | REALIDAD con presupuesto, PASOS con sugerencias, medidores |
-| F08 | Familia: estudiante y apoderado | 066–071, 078–080 | F05, F07b | B12, B17 hijos, AP-F3 (×4), B01 fichas apoderado, B2 conversaciones | Familia del estudiante; portal del apoderado |
+| F08 | Familia: estudiante y apoderado (M) · **Implementado** | 066–071, 078–080 | F05, F07b | B12, B17 hijos, AP-F3 (×4), B01 fichas apoderado, B2 conversaciones | Familia del estudiante; portal del apoderado |
 | F09 | Investigaciones y entrevistas | 057–065, 100, 101 | B13 | — | Investigaciones, comunidad, Leyendas |
 | F10 | Orientadora: seguimiento y configuración | 081–089 | B14 | B17 salones | Mis estudiantes, perfil, prioritarios, alertas |
 | F11 | Informe de viaje, temas y vista del salón | 034, 090–093, 102–105, 107 | B15, B16 | — | Informe; panel del salón |
@@ -426,13 +426,14 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Pantallas:** decididas e implementadas en F07a y F07b.
 - **Ajustes al backend posibles:** los que salgan al aterrizar los textos y listas de la tarjeta.
 
-#### F08 · Familia
+#### F08 · Familia (M) · **Implementado**
 - **Hace:**
   - Estudiante: sección Familia con su carta primero y después las conversaciones por estado (`sin_responder`, `esperando_al_otro`, `te_toca`, `por_conversar`, `conversada`); responder, ver la del otro con la guía y marcar conversada.
   - Apoderado: hijos reales (`GET /sesion`), conversaciones con el mismo flujo, carta, diploma y avance desde `familia`, sus fichas, avisos de carga y error del portal.
 - **Contenidos:** `t_apo_1`, `t_apo_carta`.
 - **Pantallas a decidir:** reemplazo de la doble marca por responder → ver → conversar; dónde ve el apoderado sus fichas; aviso de carga y error del portal.
 - **Al cerrar:** se retiran los fixtures congelados de la raíz y los datos de demostración de hijos.
+- **Quedó:** en api, Familia del estudiante (carta pendiente con el sobre, carta editable hasta la entrega, lista por pestañas sin «Conversadas», responder, esperando, listas para conversar con puente, preguntas, «Algo que ya saben» y entrada de diario, y el regalo como pantalla propia) y Conversaciones del apoderado con las mismas pantallas en claro, bloqueo con su avance y selector de hijo; Mis actividades del apoderado con anillo, diploma y fichas por actividad (modal compartido sin favorito, contenido al abrir) y el diploma imprimible. Ajustes al backend: `conversacion.algo_que_saben` (migración 0036, **M**); conversada al responder el segundo (sin `completar-conversacion` ni `por_conversar`); lista completa con tramo, bloqueo y `abierta_para_hijo`; `?estudiante=` para el apoderado; diploma con código; fichas bloqueadas con su actividad. `ruta`: `t-apo-2` reemplaza a `t-apo-carta` y Rosa tiene un segundo hijo (Luis). Pendientes nuevos: avisos al apoderado, «requiere atención», varios hijos en el inicio y tramos colapsables.
 
 #### F09 a F11
 Se detallan al cerrar sus lotes B (B13, B14, B15–B16), con la misma estructura. Sus vistas ya existen en el prototipo (investigaciones, comunidad, panel de la orientadora), así que serán sobre todo conexión, con los ajustes que dejen sus lotes B en `pendientes-interfaz.md`.

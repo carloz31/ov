@@ -1,0 +1,35 @@
+{
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-apo-2",
+      "tipo": "COMPLETA_ACTIVIDAD"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "FAMILIA",
+      "tipo": "COMPLETA_BLOQUE"
+    }
+  ],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "FAMILIA",
+          "requerido": 1,
+          "texto": null,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_BLOQUE"
+        }
+      ],
+      "objetivo": {
+        "codigo": "CONVERSACIONES",
+        "nombre": "Conversaciones"
+      },
+      "regla": "R-SEC-CONVERSACIONES",
+      "tipo_objetivo": "SECCION"
+    }
+  ]
+}

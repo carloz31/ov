@@ -3,14 +3,27 @@ import test from 'node:test'
 import { copia, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 import { fixtureApoderado } from '../../soporte/apoderado-ayudas.mjs'
 
-// DATO DE PRUEBA: la familia que acompaña a los fixtures de plataforma, con el avance de su etapa.
-function familiaDe(etapa) {
-  const actividades = jsonServidor(`apoderado-actividades-${etapa}`).flatMap((b) => b.actividades)
-  const completadas = actividades.filter((a) => a.estado === 'COMPLETADA').length
-  const total = actividades.length
+// La familia de la ruta mínima en cada etapa del apoderado (la final trae el diploma).
+const FAMILIA = {
+  inicial: 'ruta/ruta-apoderado-familia-inicial',
+  mitad: 'ruta/ruta-apoderado-familia-mitad',
+  final: 'ruta/ruta-familia',
+}
+const familiaDe = (etapa) => jsonServidor(FAMILIA[etapa])
+// DATO DE PRUEBA: la ruta mínima trae una sola diapositiva por actividad; para recorrer elección, pregunta
+// bloqueante y varios pasos se le agregan la elección y la primera pregunta de pad_01_acompanar (contenido
+// local del front) y la diapositiva de t_apo_2 como cierre.
+function conPreguntas(app, activity) {
+  const { contenidoPorClave } = app.load('src/data/activities/contenidos.ts')
+  const local = contenidoPorClave('pad_01_acompanar').nodos
   return {
-    ...jsonServidor('ruta/ruta-familia'),
-    avance: { completadas, total, porcentaje: total ? (completadas / total) * 100 : 0 },
+    ...activity,
+    nodos: [
+      ...activity.nodos,
+      local.find((n) => n.tipo === 'eleccion'),
+      local.find((n) => n.tipo === 'pregunta'),
+      ...contenidoPorClave('t_apo_2').nodos,
+    ],
   }
 }
 function fixture(usuario = 'apo-rosa', cuentas = jsonServidor('cuentas'), opciones = {}) {
@@ -31,17 +44,18 @@ function fixture(usuario = 'apo-rosa', cuentas = jsonServidor('cuentas'), opcion
       if (request.url.endsWith('/familia')) return { body: familiaDe(etapa) }
       const respuesta = await handler(request)
       if (request.url === '/api/acciones/completar-actividad' && !respuesta?.status)
-        etapa = request.body.actividad === 'pad-01-rol' ? 'pad-01' : 'final'
+        etapa = request.body.actividad === 't-apo-1' ? 'mitad' : 'final'
       return respuesta
     })
   fetch((request) => {
     if (request.url === '/api/cuentas') return { body: cuentas }
     if (request.url === '/api/acciones/ingresar')
       return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
-    if (request.url.endsWith('/actividades')) return { body: jsonServidor(`apoderado-actividades-${etapa}`) }
+    if (request.url.endsWith('/actividades'))
+      return { body: jsonServidor(`ruta/ruta-apoderado-actividades-${etapa}`) }
     if (request.url === '/api/acciones/completar-actividad') {
-      etapa = request.body.actividad === 'pad-01-rol' ? 'pad-01' : 'final'
-      return { body: jsonServidor(`apoderado-completar-${request.body.actividad}`) }
+      etapa = request.body.actividad === 't-apo-1' ? 'mitad' : 'final'
+      return { body: jsonServidor(`ruta/ruta-apoderado-completar-${request.body.actividad}`) }
     }
     if (request.url === '/api/desarrollo/reiniciar') return { body: { mensaje: 'Reiniciado' } }
     throw Error(`Petición inesperada: ${request.url}`)
@@ -52,7 +66,14 @@ function fixture(usuario = 'apo-rosa', cuentas = jsonServidor('cuentas'), opcion
     fijarEtapa: (nueva) => {
       etapa = nueva
     },
-    store, persistencia, contenidos, alumno, estadoAlumno, localAlumno, aventuraAlumno }
+    store,
+    persistencia,
+    contenidos,
+    alumno,
+    estadoAlumno,
+    localAlumno,
+    aventuraAlumno,
+  }
 }
 
 test('el ingreso usa la cuenta de apoderado de la sesión sin tocar al estudiante', async () => {
@@ -97,9 +118,9 @@ for (const usuario of ['est-ana', '']) {
 
 test('la lista toma estructura y disponibilidad del servidor y conserva exactamente los nodos JSON', () => {
   const app = fixture()
-  const bloques = jsonServidor('apoderado-actividades-inicial')
+  const bloques = jsonServidor('ruta/ruta-apoderado-actividades-inicial')
   const lista = app.contenidos.actividadesApoderado(bloques)
-  assert.deepEqual(copia(lista.actividades.map((a) => a.id)), ['pad-01-rol', 'pad-02-info'])
+  assert.deepEqual(copia(lista.actividades.map((a) => a.id)), ['t-apo-1', 't-apo-2'])
   assert.deepEqual(copia(lista.sinContenido), [])
   const { contenidoPorClave } = app.load('src/data/activities/contenidos.ts')
   for (const [indice, actividad] of lista.actividades.entries()) {
@@ -110,7 +131,7 @@ test('la lista toma estructura y disponibilidad del servidor y conserva exactame
     assert.deepEqual(copia(actividad.nodos), copia(contenidoPorClave(servidor.contenido).nodos))
     assert.equal(Object.hasOwn(actividad, 'mapa'), false)
   }
-  assert.deepEqual([...app.contenidos.disponiblesApoderado(bloques)], ['pad-01-rol'])
+  assert.deepEqual([...app.contenidos.disponiblesApoderado(bloques)], ['t-apo-1'])
   assert.deepEqual(copia(app.contenidos.completadasApoderado(bloques)), [])
   // DATO DE PRUEBA: cambia el código de bloque, el orden y los títulos, conservando su espacio.
   bloques[0].codigo = 'OTRA_FAMILIA'
@@ -118,8 +139,8 @@ test('la lista toma estructura y disponibilidad del servidor y conserva exactame
   bloques[0].actividades[0].titulo = 'Título del servidor'
   const reordenadas = app.contenidos.actividadesApoderado(bloques).actividades
   assert.deepEqual(copia(reordenadas.map((a) => [a.id, a.orden])), [
-    ['pad-02-info', 1],
-    ['pad-01-rol', 2],
+    ['t-apo-2', 1],
+    ['t-apo-1', 2],
   ])
   assert.equal(reordenadas[0].titulo, 'Título del servidor')
   assert.deepEqual(copia(app.contenidos.actividadesApoderado(jsonServidor('actividades-inicial'))), {
@@ -130,7 +151,7 @@ test('la lista toma estructura y disponibilidad del servidor y conserva exactame
 
 test('el contenido ausente se informa aparte y ni este ni lo invisible cuentan como progreso', () => {
   const app = fixture()
-  const bloques = jsonServidor('apoderado-actividades-final')
+  const bloques = jsonServidor('ruta/ruta-apoderado-actividades-final')
   // DATO DE PRUEBA: una actividad completa sin contenido y otra invisible para verificar DA12.
   bloques[0].actividades.push({
     ...bloques[0].actividades[0],
@@ -140,18 +161,18 @@ test('el contenido ausente se informa aparte y ni este ni lo invisible cuentan c
   bloques[0].actividades[1].visible = false
   assert.deepEqual(copia(app.contenidos.actividadesApoderado(bloques).sinContenido), ['sin-json'])
   assert.deepEqual(copia(app.contenidos.actividadesApoderado(bloques).actividades.map((a) => a.id)), [
-    'pad-01-rol',
+    't-apo-1',
   ])
-  assert.deepEqual([...app.contenidos.disponiblesApoderado(bloques)], ['pad-01-rol'])
-  assert.deepEqual(copia(app.contenidos.completadasApoderado(bloques)), ['pad-01-rol'])
+  assert.deepEqual([...app.contenidos.disponiblesApoderado(bloques)], ['t-apo-1'])
+  assert.deepEqual(copia(app.contenidos.completadasApoderado(bloques)), ['t-apo-1'])
 })
 
 test('completar refresca el servidor y conserva nodo, intentos, elecciones y la cuenta local', async () => {
   const app = fixture('apo-rosa')
   const { initialJourney } = app.load('src/lib/activities/logic.ts')
-  const narrativa = app.load('src/data/activities/contenidos.ts').contenidoPorClave('pad_01_acompanar')
+  const narrativa = conPreguntas(app, { id: 't-apo-1', nodos: [] })
   const pregunta = narrativa.nodos.find((n) => n.tipo === 'pregunta')
-  // DATO DE PRUEBA: elección histórica que debe sobrevivir a la hidratación del servidor.
+  // DATO DE PRUEBA: intento y elección históricos que deben sobrevivir a la hidratación del servidor.
   const eleccion = narrativa.nodos.find((n) => n.tipo === 'eleccion')
   const actual = initialJourney()
   actual.progress[narrativa.id] = {
@@ -181,11 +202,11 @@ test('completar refresca el servidor y conserva nodo, intentos, elecciones y la 
   app.persistencia.updateParentJourney((j) => ({ ...j, resources: ['ficha-local'] }))
   const local = copia(app.persistencia.getParentJourney())
   await app.store.ingresarApoderado()
-  const promesa = app.store.completarActividadApoderado('pad-01-rol')
-  assert.equal(app.store.completarActividadApoderado('pad-01-rol'), promesa)
+  const promesa = app.store.completarActividadApoderado('t-apo-1')
+  assert.equal(app.store.completarActividadApoderado('t-apo-1'), promesa)
   assert.deepEqual(copia(await promesa), {
     tipo: 'ok',
-    datos: jsonServidor('apoderado-completar-pad-01-rol'),
+    datos: jsonServidor('ruta/ruta-apoderado-completar-t-apo-1'),
   })
   const guardado = app.persistencia.getParentJourney('apo-rosa')
   assert.equal(guardado.progress[narrativa.id].estado, 'completada')
@@ -194,9 +215,9 @@ test('completar refresca el servidor y conserva nodo, intentos, elecciones y la 
   assert.deepEqual(copia(guardado.choices), copia(actual.choices))
   assert.deepEqual(copia(app.persistencia.getParentJourney()), local)
   const bloques = app.store.obtenerEstadoApoderado().actividades.datos
-  assert.deepEqual(copia(bloques), jsonServidor('apoderado-actividades-pad-01'))
-  assert.deepEqual([...app.contenidos.disponiblesApoderado(bloques)], ['pad-01-rol', 'pad-02-info'])
-  assert.deepEqual(copia(app.contenidos.completadasApoderado(bloques)), ['pad-01-rol'])
+  assert.deepEqual(copia(bloques), jsonServidor('ruta/ruta-apoderado-actividades-mitad'))
+  assert.deepEqual([...app.contenidos.disponiblesApoderado(bloques)], ['t-apo-1', 't-apo-2'])
+  assert.deepEqual(copia(app.contenidos.completadasApoderado(bloques)), ['t-apo-1'])
   // F00: tras completar se refrescan las actividades y la familia.
   assert.deepEqual(
     app.requests.slice(-3).map((r) => r.url),
@@ -225,9 +246,9 @@ test('un 409 conserva progreso, comparte la promesa y permite reintentar despué
         resolver = resolve
       }),
   )
-  const primero = app.store.completarActividadApoderado('pad-02-info')
-  assert.equal(app.store.completarActividadApoderado('pad-02-info'), primero)
-  const otro = await app.store.completarActividadApoderado('pad-01-rol')
+  const primero = app.store.completarActividadApoderado('t-apo-2')
+  assert.equal(app.store.completarActividadApoderado('t-apo-2'), primero)
+  const otro = await app.store.completarActividadApoderado('t-apo-1')
   assert.equal(otro.estado, 409)
   await esperar()
   resolver({ status: 409, body: { detail: { mensaje: 'Actividad bloqueada' } } })
@@ -237,7 +258,7 @@ test('un 409 conserva progreso, comparte la promesa y permite reintentar despué
   assert.equal(app.store.obtenerEstadoApoderado().actividades, seccion)
   assert.equal(app.store.obtenerEstadoApoderado().enviando, null)
   app.fetch(() => ({ status: 409, body: { detail: { mensaje: 'Actividad bloqueada' } } }))
-  assert.equal((await app.store.completarActividadApoderado('pad-02-info')).tipo, 'bloqueado')
+  assert.equal((await app.store.completarActividadApoderado('t-apo-2')).tipo, 'bloqueado')
   assert.equal(app.requests.filter((r) => r.url.includes('completar-actividad')).length, 2)
 })
 
@@ -264,7 +285,7 @@ for (const ruta of ['/api/acciones/ingresar', '/api/cuentas/apo-rosa/actividades
     const limpio = app.store.obtenerEstadoApoderado()
     resolver({
       body: ruta.endsWith('/actividades')
-        ? jsonServidor('apoderado-actividades-inicial')
+        ? jsonServidor('ruta/ruta-apoderado-actividades-inicial')
         : { eventos_registrados: [], nuevos_desbloqueos: [] },
     })
     assert.equal((await pendiente).estado, 409)
@@ -283,12 +304,12 @@ test('una finalización tardía tras limpiar no publica ni sobrescribe el progre
         resolver = resolve
       }),
   )
-  const pendiente = app.store.completarActividadApoderado('pad-01-rol')
+  const pendiente = app.store.completarActividadApoderado('t-apo-1')
   await esperar()
   const disco = app.local.get('ov.parent-missions.v1')
   app.store.limpiarEstadoApoderado()
   const limpio = app.store.obtenerEstadoApoderado()
-  resolver({ body: jsonServidor('apoderado-completar-pad-01-rol') })
+  resolver({ body: jsonServidor('ruta/ruta-apoderado-completar-t-apo-1') })
   assert.equal((await pendiente).estado, 409)
   assert.equal(app.store.obtenerEstadoApoderado(), limpio)
   assert.equal(app.local.get('ov.parent-missions.v1'), disco)
@@ -337,8 +358,10 @@ function prepararUltimoPaso(app, activity) {
 test('avanzar en servidor llega a $fin sin completitud ni recompensas locales', async () => {
   const app = fixture('apo-rosa', undefined, { portal: true })
   await app.store.ingresarApoderado()
-  const activity = app.contenidos.actividadesApoderado(app.store.obtenerEstadoApoderado().actividades.datos)
-    .actividades[0]
+  const activity = conPreguntas(
+    app,
+    app.contenidos.actividadesApoderado(app.store.obtenerEstadoApoderado().actividades.datos).actividades[0],
+  )
   const state = prepararUltimoPaso(app, activity)
   const logic = app.load('src/features/parent/lib/missionLogic.ts')
   assert.equal(logic.readyToCompleteOnServer(activity, state), true)
@@ -398,9 +421,9 @@ test('el hook api carga la lista sin usar el progreso de apo-prototipo', async (
   app.persistencia.updateParentJourney((s) => ({
     ...s,
     progress: {
-      'pad-01-rol': {
+      't-apo-1': {
         estudianteId: 'apo-prototipo',
-        actividadId: 'pad-01-rol',
+        actividadId: 't-apo-1',
         estado: 'completada',
         nodoActualId: '$fin',
       },
@@ -443,8 +466,10 @@ test('el hook local conserva catálogo, cuenta y requisitos sin peticiones', () 
 test('las preguntas guardan los intentos en la cuenta del servidor y conservan la cuenta local', async () => {
   const app = fixture('apo-rosa', undefined, { portal: true })
   await app.store.ingresarApoderado()
-  const activity = app.contenidos.actividadesApoderado(app.store.obtenerEstadoApoderado().actividades.datos)
-    .actividades[0]
+  const activity = conPreguntas(
+    app,
+    app.contenidos.actividadesApoderado(app.store.obtenerEstadoApoderado().actividades.datos).actividades[0],
+  )
   const node = activity.nodos.find((n) => n.tipo === 'pregunta')
   const { useParentQuestion } = app.load('src/features/parent/hooks/useParentQuestion.ts')
   const mounted = app.mount(useParentQuestion, {
@@ -467,8 +492,10 @@ test('las preguntas guardan los intentos en la cuenta del servidor y conservan l
 test('el reproductor inicializa el nodo de un progreso proyectado sin nodo y avanza', async () => {
   const app = fixture('apo-rosa', undefined, { portal: true })
   await app.store.ingresarApoderado()
-  const activity = app.contenidos.actividadesApoderado(app.store.obtenerEstadoApoderado().actividades.datos)
-    .actividades[0]
+  const activity = conPreguntas(
+    app,
+    app.contenidos.actividadesApoderado(app.store.obtenerEstadoApoderado().actividades.datos).actividades[0],
+  )
   const { useParentActivitySession } = app.load('src/features/parent/hooks/useParentActivitySession.ts')
   const mounted = app.mount(useParentActivitySession, activity, false)
   const inicial = mounted.render()
@@ -506,18 +533,18 @@ test('la pantalla final espera el POST y la consulta; durante el envío no dupli
   assert.equal(app.requests.filter((r) => r.url.includes('completar-actividad')).length, 1)
   assert.equal(mounted.render().node.id, activity.nodos.at(-1).id)
   assert.equal(mounted.render().celebrate, false)
-  resolverPost({ body: jsonServidor('apoderado-completar-pad-01-rol') })
+  resolverPost({ body: jsonServidor('ruta/ruta-apoderado-completar-t-apo-1') })
   await esperar()
   assert.equal(mounted.render().node.id, activity.nodos.at(-1).id)
   const { ParentActivityView } = app.load('src/pages/parent/ParentActivityView.tsx')
   assert.equal(ParentActivityView(), null, 'La vista espera mientras se refresca la sección (§7)')
-  resolverGet({ body: jsonServidor('apoderado-actividades-pad-01') })
+  resolverGet({ body: jsonServidor('ruta/ruta-apoderado-actividades-mitad') })
   await pendiente
   const final = mounted.render()
   assert.equal(final.node, undefined)
   assert.equal(final.celebrate, true)
   assert.equal(final.route.completed, 1)
-  assert.equal(final.route.next.id, 'pad-02-info')
+  assert.equal(final.route.next.id, 't-apo-2')
   assert.equal(app.persistencia.getParentJourney('apo-rosa').progress[activity.id].nodoActualId, '$fin')
 })
 
@@ -533,9 +560,9 @@ test('un fallo de conexión conserva el último nodo y el botón existente reint
   app.fetch((r) => {
     if (r.method === 'POST') {
       if (fallar) throw Error('Sin conexión')
-      return { body: jsonServidor('apoderado-completar-pad-01-rol') }
+      return { body: jsonServidor('ruta/ruta-apoderado-completar-t-apo-1') }
     }
-    return { body: jsonServidor('apoderado-actividades-pad-01') }
+    return { body: jsonServidor('ruta/ruta-apoderado-actividades-mitad') }
   })
   await mounted.render().advance()
   const error = mounted.render()
@@ -558,7 +585,7 @@ test('al remontar tras la carga se recupera el final confirmado y se celebra sin
   let resolverGet
   app.fetch((r) =>
     r.method === 'POST'
-      ? { body: jsonServidor('apoderado-completar-pad-01-rol') }
+      ? { body: jsonServidor('ruta/ruta-apoderado-completar-t-apo-1') }
       : r.url.endsWith('/familia')
         ? { body: jsonServidor('ruta/ruta-familia') }
         : new Promise((resolve) => {
@@ -570,7 +597,7 @@ test('al remontar tras la carga se recupera el final confirmado y se celebra sin
   const pendiente = anterior.render().advance()
   await esperar()
   anterior.unmount()
-  resolverGet({ body: jsonServidor('apoderado-actividades-pad-01') })
+  resolverGet({ body: jsonServidor('ruta/ruta-apoderado-actividades-mitad') })
   await pendiente
   const siguiente = app.mount(useParentActivitySession, activity, false)
   const final = siguiente.render()
@@ -599,34 +626,28 @@ test('un 409 se muestra en el error del reproductor sin llegar a la pantalla fin
 
 test('el enlace directo espera la carga y después muestra el candado del servidor', async () => {
   const app = fixture('apo-rosa', undefined, { portal: true })
-  app.setActivityId('pad-02-info')
+  app.setActivityId('t-apo-2')
   const { ParentActivityView } = app.load('src/pages/parent/ParentActivityView.tsx')
   const mounted = app.mount(ParentActivityView)
   assert.equal(mounted.render(), null)
   await esperar()
   assert.equal(mounted.render().props.locked, true)
-  app.setActivityId('pad-01-rol')
-  assert.equal(mounted.render().props.activity.id, 'pad-01-rol')
+  app.setActivityId('t-apo-1')
+  assert.equal(mounted.render().props.activity.id, 't-apo-1')
 })
 
 test('el candado del apoderado lleva el mensaje de bloqueo del servidor', async () => {
   const app = fixture('apo-rosa', undefined, { portal: true })
-  // DATO DE PRUEBA: motivo de bloqueo con el contrato de MotivoBloqueo (los fixtures de plataforma no lo traen).
-  const mensaje = 'Completa la actividad anterior para abrir esta.'
+  // El motivo de bloqueo de t-apo-2 viene en el fixture de la ruta.
+  const mensaje = 'Completa la primera actividad.'
   app.fetch((request) => {
     if (request.url === '/api/acciones/ingresar')
       return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
     if (request.url.endsWith('/familia')) return { body: jsonServidor('ruta/ruta-familia') }
     if (!request.url.endsWith('/actividades')) throw Error(`Petición inesperada: ${request.url}`)
-    const bloques = jsonServidor('apoderado-actividades-inicial')
-    bloques
-      .flatMap((b) => b.actividades)
-      .find((a) => a.codigo === 'pad-02-info').bloqueo = [
-      { regla: 'R-pad-02', mensaje, condiciones_faltantes: [], evaluador_especial: null },
-    ]
-    return { body: bloques }
+    return { body: jsonServidor('ruta/ruta-apoderado-actividades-inicial') }
   })
-  app.setActivityId('pad-02-info')
+  app.setActivityId('t-apo-2')
   const { ParentActivityView } = app.load('src/pages/parent/ParentActivityView.tsx')
   const mounted = app.mount(ParentActivityView)
   mounted.render()
@@ -647,7 +668,7 @@ test('la ruta y el diploma se completan con el servidor aunque no haya nodos loc
       r.url === '/api/cuentas'
         ? jsonServidor('cuentas')
         : r.url.endsWith('/actividades')
-          ? jsonServidor('apoderado-actividades-final')
+          ? jsonServidor('ruta/ruta-apoderado-actividades-final')
           : // F03: con el diploma, el portal pide los resultados del hijo y el catálogo de instrumentos.
             r.url.endsWith('/familia/resultados') || r.url === '/api/instrumentos'
             ? []
@@ -661,14 +682,14 @@ test('la ruta y el diploma se completan con el servidor aunque no haya nodos loc
   const route = parentRoute(source.activities, [], source.completedIds, source.available)
   assert.equal(route.complete, true)
   assert.equal(route.percent, 100)
-  assert.equal(source.journey.progress['pad-01-rol'].nodoActualId, undefined)
+  assert.equal(source.journey.progress['t-apo-1'].nodoActualId, undefined)
   const { useParentOverview } = app.load('src/features/parent/hooks/useParentOverview.ts')
   assert.equal(app.mount(useParentOverview).render().route.complete, true)
   const { ParentPortalModule } = app.load('src/pages/parent/ParentPortalModule.tsx')
   const context = ParentPortalModule().props.children.props.children.props.context
   assert.equal(context.accountId, 'apo-rosa')
   assert.equal(context.activities.length, 2)
-  assert.deepEqual(copia(context.completedActivityIds), ['pad-01-rol', 'pad-02-info'])
+  assert.deepEqual(copia(context.completedActivityIds), ['t-apo-1', 't-apo-2'])
 })
 
 test('el repaso no envía completitud ni modifica el progreso del servidor', async () => {
@@ -687,11 +708,11 @@ test('el repaso no envía completitud ni modifica el progreso del servidor', asy
 
 test('el contenido faltante se descarta y el hook avisa una sola vez en desarrollo', async () => {
   const app = fixture('apo-rosa', undefined, { portal: true })
-  const bloques = jsonServidor('apoderado-actividades-final')
+  const bloques = jsonServidor('ruta/ruta-apoderado-actividades-final')
   // DATO DE PRUEBA: actividad deliberadamente ausente del registro de contenidos.
   bloques[0].actividades.push({
     ...bloques[0].actividades[0],
-    codigo: 'pad-sin-json',
+    codigo: 't-apo-sin-json',
     contenido: 'sin_contenido_prueba',
   })
   app.fetch((r) => ({
@@ -714,7 +735,7 @@ test('el contenido faltante se descarta y el hook avisa una sola vez en desarrol
     assert.equal(source.activities.length, 2)
     assert.equal(source.completedIds.length, 2)
     assert.equal(avisos.length, 1)
-    assert.match(avisos[0], /pad-sin-json → sin_contenido_prueba/)
+    assert.match(avisos[0], /t-apo-sin-json → sin_contenido_prueba/)
   } finally {
     console.warn = anterior
   }
@@ -728,9 +749,9 @@ test('si falla la consulta tras guardar, el reproductor conserva el paso y permi
   prepararUltimoPaso(app, activity)
   let fallar = true
   app.fetch((r) => {
-    if (r.method === 'POST') return { body: jsonServidor('apoderado-completar-pad-01-rol') }
+    if (r.method === 'POST') return { body: jsonServidor('ruta/ruta-apoderado-completar-t-apo-1') }
     if (fallar) throw Error('Sin conexión')
-    return { body: jsonServidor('apoderado-actividades-pad-01') }
+    return { body: jsonServidor('ruta/ruta-apoderado-actividades-mitad') }
   })
   const { useParentActivitySession } = app.load('src/features/parent/hooks/useParentActivitySession.ts')
   const mounted = app.mount(useParentActivitySession, activity, false)
@@ -763,7 +784,7 @@ test('salir y limpiar durante el envío impide guardar $fin con la respuesta tar
   mounted.unmount()
   app.store.limpiarEstadoApoderado()
   const antes = app.local.get('ov.parent-missions.v1')
-  resolver({ body: jsonServidor('apoderado-completar-pad-01-rol') })
+  resolver({ body: jsonServidor('ruta/ruta-apoderado-completar-t-apo-1') })
   await pendiente
   assert.equal(app.local.get('ov.parent-missions.v1'), antes)
   assert.equal(app.store.obtenerEstadoApoderado().cuenta, null)
@@ -802,11 +823,8 @@ test('ruta lista las dos actividades del apoderado y la segunda se abre tras la 
   assert.ok(lista.actividades.every((a) => a.subtitulo))
   assert.deepEqual([...contenidos.disponiblesApoderado(inicial)], ['t-apo-1'])
   assert.equal(mensajeBloqueo(inicial, 't-apo-2'), 'Completa la primera actividad.')
-  // DATO DE PRUEBA: la segunda ya abierta por el servidor tras completar t-apo-1.
-  const abierta = copia(inicial)
-  abierta[0].actividades[0].estado = 'COMPLETADA'
-  abierta[0].actividades[1].estado = 'DISPONIBLE'
-  abierta[0].actividades[1].bloqueo = null
+  // La segunda, ya abierta por el servidor tras completar t-apo-1.
+  const abierta = jsonServidor('ruta/ruta-apoderado-actividades-mitad')
   // t-apo-1 completada sigue disponible para repasar; la segunda, abierta, se puede iniciar.
   assert.deepEqual([...contenidos.disponiblesApoderado(abierta)], ['t-apo-1', 't-apo-2'])
   assert.deepEqual(copia(contenidos.completadasApoderado(abierta)), ['t-apo-1'])

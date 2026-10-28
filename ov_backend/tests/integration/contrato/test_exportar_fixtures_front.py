@@ -81,6 +81,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'conversaciones-esperando', 'responder-conversacion-segundo', 'conversaciones-conversada',
     'conversaciones-apoderado-conversada', 'conversaciones-apoderado-final', 'apoderado-fichas-inicial',
     'apoderado-fichas-final', 'apoderado-ficha-t-ficha-apo', 'apoderado-familia-inicial',
+    'apoderado-completar-t-apo-1', 'apoderado-actividades-mitad', 'apoderado-familia-mitad', 'apoderado-completar-t-apo-2',
     'sesion-ingresar-estudiante', 'sesion-ingresar-apoderado', 'sesion-ingresar-orientadora',
     'sesion-estudiante', 'sesion-apoderado', 'sesion-orientadora', 'sesion-error',
     # F03: avance para el libro de Helena, llegada, perfil plano con su reinicio y resultados sin diploma.
