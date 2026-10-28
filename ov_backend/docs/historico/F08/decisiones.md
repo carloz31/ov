@@ -18,3 +18,5 @@
 - **Tramos colapsables de Mis actividades** no se implementan: la ruta del apoderado tiene un bloque y la spec pide lista directa; anotado en `pendientes-interfaz.md`.
 - **Fixtures de la raíz:** se retiran solo los del portal del apoderado (`apoderado-*`), cuyas pruebas pasan a `ruta-*` con los nuevos `apoderado-actividades-mitad`, `apoderado-completar-t-apo-*` y `apoderado-familia-mitad`. Los demás (Mara, `cuentas`, `resultado-riasec`…) siguen en uso por pruebas locales y de Mara, fuera de F08. Los datos demo de hijos (`parentPortal.ts`) quedan solo para local (congelado).
 - **Inicio del apoderado:** la tarjeta de conversaciones toma conversadas y por conversar del hijo activo; el parentesco sale de `GET /sesion`. Varios hijos en el inicio queda pendiente.
+
+- Ajuste posterior a F08: `conversacion.tema` (columna nueva, migración 0037) es el chip de la tarjeta y reemplaza a `tramo`, que se calculaba con el bloque de la primera actividad de su regla. En la respuesta, el título pasa a `titulo` y `tema` es la columna. Lo pidió el usuario: el chip debe ser un dato de la conversación y no depender de la regla.
