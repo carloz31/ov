@@ -347,7 +347,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 | F05 | Diario, pregunta del día y check-in · **Implementado** | 028–033, 035, 036, 075 | F01 | B09, B2 diario, F4 señal | Diario; cierre de actividad; pasaporte |
 | F06 | Catálogo y favoritos · **Implementado** | 026, 037–040, 042 | F03 | B11 `gestion`, F2 hoja de vida, F4 ocupaciones sin código | Catálogo y detalles |
 | F07a | Planes: tarjeta, orden y primeras secciones · **Implementado** | 043, 044, 047, 048, 050, 098, 099, 109 | F02, F06 | B11 (parte) | Mis planes: lista A/B/C, estados por sección, POR_QUE, CONOCIMIENTO con dudas |
-| F07b | Planes: realidad, pasos y actividades que los citan | 045, 046, 097, 110 | F07a | B11 | REALIDAD con presupuesto, PASOS con sugerencias, medidores |
+| F07b | Planes: realidad, pasos y actividades que los citan · **Implementado** | 045, 046, 097, 110 | F07a | B11 | REALIDAD con presupuesto, PASOS con sugerencias, medidores |
 | F08 | Familia: estudiante y apoderado | 066–071, 078–080 | F05, F07b | B12, B17 hijos, AP-F3 (×4), B01 fichas apoderado, B2 conversaciones | Familia del estudiante; portal del apoderado |
 | F09 | Investigaciones y entrevistas | 057–065, 100, 101 | B13 | — | Investigaciones, comunidad, Leyendas |
 | F10 | Orientadora: seguimiento y configuración | 081–089 | B14 | B17 salones | Mis estudiantes, perfil, prioritarios, alertas |
@@ -415,14 +415,15 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Riesgo:** el detalle del front muestra cosas que el backend quizá no tiene (o al revés). El plan debe cruzar campo por campo el detalle actual con la respuesta de `catalogo/*`.
 - **Ajustes al backend posibles:** campos faltantes del detalle (es el lote con más probabilidad de agregar columnas).
 
-#### F07 · Planes de carrera (tarjeta v4)
+#### F07 · Planes de carrera (tarjeta v4) · **Implementado**
 - **Hace:** reemplaza `DecisionSheet` por la tarjeta v4 (`caso-tarjeta-plan-v4.md`): crear desde favoritos, solo la sección elegida a la vista, editar y guardar por sección, estados homogéneos, medidores, dudas → pasos sugeridos, presupuesto con precarga armada en el front (`opciones.rubros`, `caminos`, `gestion`), pasos pendiente/hecho, orden A/B/C, aviso de misma familia, opción inicial. `t-comparar` y `t-proyecto` citan los planes.
 - **Contenidos:** `t_comparar`, `t_proyecto`.
 - **Partido en dos (decidido):**
   - **F07a · Implementado:** crear desde favoritos, ordenar A/B/C, eliminar, estado de cada sección y qué actividad la abre, aviso de misma familia, opción inicial, POR_QUE y CONOCIMIENTO (las dudas se crean y se cierran; todavía sin sugerencias).
     - **Quedó:** en api, Mis planes con la tarjeta v4 (`features/plans`), el diálogo de crear desde favoritas, el plan abierto (`profile/decisions/:carrera`) con menú de secciones y lectura/edición de POR_QUE y CONOCIMIENTO, el bloque de plan del detalle de carrera y el capítulo III del perfil con los planes del servidor. Ajuste al backend sin modelo: `crear` exige que la carrera sea favorita (409). Las acciones vencen `planes` y un desbloqueo `SECCION_PLAN` también. Pendientes nuevos: «De tu camino» (cita de 1.7) y los valores de 2.3 primero.
-  - **F07b:** REALIDAD (presupuesto con precarga y totales, financiamiento, complicaciones), pasos sugeridos por el LLM desde dudas y complicaciones (aceptar, editar, descartar, respaldo), PASOS (pendiente/hecho), medidores y las actividades `t-comparar` y `t-proyecto`.
-- **Pantallas:** las de F07a quedaron decididas e implementadas; las de F07b (presupuesto, pasos, sugerencias y medidores) están en `docs/specs/F07b-pantallas.md` (§7–§13), que sigue en `specs/` como insumo de F07b.
+  - **F07b · Implementado:** REALIDAD (presupuesto con precarga y totales, financiamiento, complicaciones), pasos sugeridos por el LLM desde dudas y complicaciones (aceptar, editar, descartar, respaldo), PASOS (pendiente/hecho), medidores y las actividades `t-comparar` y `t-proyecto`.
+    - **Quedó:** en api, la sección 3 (institución entre las que ofrecen la carrera, camino, tabla de gastos con precarga la primera vez y totales en vivo, financiamiento y complicaciones en dos filas de chips; en lectura, los totales del servidor), la sección 4 (sugerencias con «Agregar», «Editar» en sitio y «Ahora no»; pasos pendientes y hechos; «Lo hice» con hallazgo al instante; en lectura, la franja «{m} sugerencias esperan tu decisión»), el aviso de sugerencias al guardar 2 y 3, «Cómo me siento» con su control segmentado y las mini tarjetas del plan A, «1.er año» en el frente de la tarjeta y los nodos de `t_comparar` y `t_proyecto` con la zona de eco citando PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL. Ajustes al backend sin modelo: `opciones.ciclos_por_anio`, `institucion.duracion_ciclos` en el plan y `duracion_ciclos` en las instituciones del detalle de carrera. Pendiente nuevo: HU-049, «Es a propósito» y la vista de la orientadora, fuera de los lotes F07.
+- **Pantallas:** decididas e implementadas en F07a y F07b.
 - **Ajustes al backend posibles:** los que salgan al aterrizar los textos y listas de la tarjeta.
 
 #### F08 · Familia
