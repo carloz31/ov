@@ -256,6 +256,9 @@ test('los detalles del servidor muestran sus datos y registran la vista una sola
   assert.doesNotMatch(marcado, /Explorando familias|Datos de demostración/)
   const vistas = app.requests.filter((r) => r.url.endsWith('/acciones/ver-carrera'))
   assert.deepEqual(copia(vistas.map((r) => r.body)), [{ cuenta: 'est-ana', carrera: 'mtpe-369' }])
+  // F07a: el arnés comparte las ranuras de hooks entre montajes; el detalle de carrera (que ahora lee los planes)
+  // se desmonta antes de montar el siguiente.
+  carrera.unmount()
   const { DetalleOcupacionServidor } = app.load('src/features/discovery/components/DetalleOcupacionServidor.tsx')
   const ocupacion = app.mount(DetalleOcupacionServidor, { codigo: 'psychologist' })
   ocupacion.render()

@@ -228,6 +228,12 @@ export const parentGuides = {
     'Este es el resultado de un cuestionario que tu hijo o hija completó. Describe sus intereses o fortalezas, no lo que debe elegir: úsalo para conversar juntos.',
 }
 
+// F07a: la guía de Mis planes con la tarjeta v4 (api); en local sigue la de `profile-decisions`.
+export const planesGuideSteps = [
+  'Tus planes son las opciones que estás considerando. Puedes tener hasta tres: A, B y C.',
+  'Cada tarjeta tiene cuatro secciones que se abren con tu camino: por qué la eliges, qué tanto la conoces, cómo la harías realidad y tus próximos pasos.',
+  'Puedes cambiar el orden o eliminar un plan cuando quieras.',
+]
 export const passportGuideSteps = [
   'Este es tu pasaporte. Cada sello cuenta una parte de tu viaje.',
   'Arriba ves tu título de viajero y qué te falta para el siguiente.',

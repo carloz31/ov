@@ -26,8 +26,15 @@ import '../styles/catalogo.css'
 // las parecidas y el lugar inesperado; al pie, las fuentes.
 export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
   const { datos: carrera, favorito, ...estado } = useDetalleServidor('carreras', codigo)
-  const planes = usePlanesCarrera(carrera?.codigo ?? codigo, carrera?.nombre ?? '')
+  const planes = usePlanesCarrera(carrera?.codigo ?? codigo, !!carrera?.es_favorita)
   if (!carrera) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} />
+  const botonFavorito = (
+    <FavoriteButton
+      selected={carrera.es_favorita}
+      pendiente={favorito.pendiente('carreras', carrera.codigo)}
+      onToggle={() => favorito.alternar('carreras', carrera.codigo, !carrera.es_favorita)}
+    />
+  )
   const areaUrl = `${appPaths.student.catalog.careers}?area=${carrera.familia.area_codigo}`
   return (
     <DiscoveryStage ambient="atlas" navegacion={false}>
@@ -69,11 +76,7 @@ export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
           </div>
           <div className="sx-c-cabecera-acciones">
             {planes.letra && <span className="sx-c-es-plan">Es tu Plan {planes.letra}</span>}
-            <FavoriteButton
-              selected={carrera.es_favorita}
-              pendiente={favorito.pendiente('carreras', carrera.codigo)}
-              onToggle={() => favorito.alternar('carreras', carrera.codigo, !carrera.es_favorita)}
-            />
+            {botonFavorito}
           </div>
         </div>
       </Parchment>
@@ -118,7 +121,7 @@ export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
           )}
         </main>
         <aside className="sx-d-stack">
-          <BloquePlanCarrera planes={planes} />
+          <BloquePlanCarrera planes={planes} favorito={botonFavorito} />
           <DondeEstudiarla instituciones={carrera.instituciones} />
           <CarrerasParecidas parecidas={carrera.parecidas} familia={carrera.familia} />
           <UnexpectedPlace kind="career" currentId={carrera.codigo} />

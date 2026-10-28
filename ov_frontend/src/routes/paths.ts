@@ -23,6 +23,9 @@ const appPaths = {
     testimonials: '/student/testimonials',
     profile: '/student/profile',
     decisions: '/student/profile/decisions',
+    // F07a: un plan abierto en una sección (api).
+    plan: (carrera: string, seccion?: string) =>
+      `/student/profile/decisions/${encodeURIComponent(carrera)}${seccion ? `?seccion=${seccion}` : ''}`,
     case: (caseId: string) => `/student/cases/${caseId}`,
     casePlay: (caseId: string) => `/student/cases/${caseId}/play`,
   },

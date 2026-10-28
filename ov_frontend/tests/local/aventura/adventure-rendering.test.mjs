@@ -3339,7 +3339,7 @@ test('discovery plan actions create explicitly, reorder and archive only on conf
   const d = load(path.resolve('src/store/discoveryStore.ts'))
   const e = load(path.resolve('src/store/explorationStore.ts'))
   const savedD = d.getDiscovery(), savedE = e.getExploration()
-  const page = immersivePlayerHarness('src/pages/student/StudentPlansView', {
+  const page = immersivePlayerHarness('src/features/discovery/components/MisPlanesLocales', {
     '@/hooks/useReturnFocus': { useReturnFocus: () => ({}) },
     '@/context/occupationExplorationContext': { useOccupationExplorationContext: () => ({ ...e.getExploration(), setDecisionSheets: e.setDecisionSheets }) },
     'react-router': { Link: 'a' },

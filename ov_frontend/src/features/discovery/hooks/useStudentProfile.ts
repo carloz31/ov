@@ -15,6 +15,8 @@ import { getStudentAchievementGroups, titulosViaje, vitrinaPasaporte } from '../
 import { getOrderedPlans, getPlanCompleteness } from '../lib/plans'
 import { useProgresoNivel } from './useProgresoNivel'
 import { useFavoritosCatalogo } from './useFavoritosCatalogo'
+import { usePlanesServidor } from '@/features/plans/hooks/usePlanesServidor'
+import { seccionesListas } from '@/lib/servidor/adaptadoresPlanes'
 import type { RouteLineTramo } from '@/components/student/RouteLine'
 
 export function useStudentProfile() {
@@ -23,6 +25,7 @@ export function useStudentProfile() {
     discovery = useDiscovery()
   const context = useOccupationExplorationContext()
   const favoritosCatalogo = useFavoritosCatalogo()
+  const planesServidor = usePlanesServidor()
   // Las insignias del pasaporte; el avance llega con el mapa (`avance`).
   useLogrosServidor()
   const servidor = useEstadoServidor()
@@ -90,10 +93,18 @@ export function useStudentProfile() {
     llegadaPendiente: p.id === 'partida-llegada' && 'conComparacion' in p && !p.conComparacion,
   }))
   const destacada = pages.find((p) => p.state === 'ready')
-  const plans = getOrderedPlans(context.decisionSheets, discovery.planOrder).map((p) => ({
-    ...p,
-    armado: Math.round((getPlanCompleteness(p) / 4) * 100),
-  }))
+  // F07a: en api, los planes del servidor con «Lista para comparar» o «N de 4 secciones listas».
+  const plans = planesServidor.usaTarjetaV4
+    ? (planesServidor.datos?.planes ?? []).map((p) => ({
+        id: p.carrera.codigo,
+        name: p.carrera.nombre,
+        armado: Math.round((seccionesListas(p) / 4) * 100),
+        resumen: p.lista_para_comparar ? 'Lista para comparar' : `${seccionesListas(p)} de 4 secciones listas`,
+      }))
+    : getOrderedPlans(context.decisionSheets, discovery.planOrder).map((p) => ({
+        ...p,
+        armado: Math.round((getPlanCompleteness(p) / 4) * 100),
+      }))
   return {
     nombre,
     iniciales,
@@ -107,6 +118,7 @@ export function useStudentProfile() {
     destacada,
     pages: pages.filter((p) => p !== destacada),
     plans,
+    espacioLibre: planesServidor.usaTarjetaV4 ? 'Espacio libre' : undefined,
     // F06: en api, los conteos salen de los favoritos del servidor.
     favoritos: favoritosCatalogo.favoritosDelServidor
       ? {

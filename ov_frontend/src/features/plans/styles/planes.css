@@ -1,0 +1,103 @@
+/* F07a: tarjeta v4 de los planes (api). Cambios ligeros sobre el marcado de Mis planes; la revisión estética va
+   al final, aparte. */
+
+.sx-p-pildora {
+  display: inline-block;
+  flex: none;
+  margin-left: auto;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--sx-parchment-muted) 18%, var(--sx-parchment));
+  color: var(--sx-parchment-ink);
+}
+.sx-p-pildora[data-estado='LISTA'] {
+  background: color-mix(in srgb, var(--success) 22%, var(--sx-parchment));
+}
+.sx-p-pildora[data-estado='EN_PROCESO'] {
+  background: color-mix(in srgb, var(--sx-gold) 28%, var(--sx-parchment));
+}
+.sx-p-pildora[data-estado='BLOQUEADA'] {
+  background: color-mix(in srgb, var(--primary) 14%, var(--sx-parchment));
+}
+
+.sx-d-plan-sections li[data-estado='EN_PROCESO'] > span {
+  border-style: solid;
+  background: linear-gradient(90deg, var(--sx-gold) 50%, transparent 50%);
+}
+.sx-d-plan-sections li[data-estado='BLOQUEADA'] > span {
+  border: 0;
+}
+.sx-p-seccion-texto {
+  display: grid;
+  gap: 2px;
+}
+.sx-p-seccion-texto small {
+  font-size: 13px;
+  line-height: 1.35;
+}
+.sx-p-motivo {
+  margin: 4px 0 0;
+  font-weight: 700;
+  color: var(--sx-gold-ink, var(--sx-parchment-ink));
+}
+.sx-p-cambio {
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+
+.sx-p-aviso {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 0 0 24px;
+  padding: 16px 20px;
+  border-radius: 18px;
+  background: var(--sx-parchment);
+  color: var(--sx-parchment-ink);
+}
+.sx-p-aviso > svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.sx-p-favoritas {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  display: grid;
+  gap: 10px;
+}
+.sx-p-favoritas li {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid var(--sx-night-border);
+  border-radius: 14px;
+  background: var(--card);
+}
+.sx-p-favoritas li[data-plan='true'] {
+  opacity: 0.6;
+  background: transparent;
+}
+.sx-p-favoritas li > div {
+  display: grid;
+  gap: 2px;
+}
+.sx-p-favoritas small,
+.sx-p-ayuda {
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-ya-plan {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, var(--sx-parchment));
+}

@@ -126,7 +126,8 @@ test('antes de recibir resumen el perfil API no sustituye el nivel ni los logros
 })
 
 // F06: en api, los favoritos del catálogo ya no son los del navegador: se piden al servidor (prueba aparte).
-test('los planes siguen locales en ambos modos, los favoritos solo en local, y local conserva Alex y sus cálculos', async () => {
+// F07a: en api, tampoco los planes (sin la sección PLANES abierta no hay ninguno); en local, los del navegador.
+test('los planes y los favoritos son locales solo en local, y local conserva Alex y sus cálculos', async () => {
   for (const api of [true, false]) {
     const app = api ? (await iniciarMara()).app : fixtureServidor({ api: false })
     const { contexto, perfil } = prepararPerfil(app)
@@ -137,7 +138,8 @@ test('los planes siguen locales en ambos modos, los favoritos solo en local, y l
     contexto.careerInterestIds = ['psychology', 'nursing']
     const p = perfil()
     // Ajuste pasaporte-perfil: cada plan lleva su «% armado» y los favoritos van en chips con su conteo.
-    assert.deepEqual(copia(p.plans), copia([{ ...plan, armado: 0 }]))
+    assert.deepEqual(copia(p.plans), api ? [] : copia([{ ...plan, armado: 0 }]))
+    assert.equal(p.espacioLibre, api ? 'Espacio libre' : undefined)
     assert.equal(p.favoritos.carreras, api ? 0 : 2)
     if (!api) {
       assert.equal(p.nombre, 'Alex')

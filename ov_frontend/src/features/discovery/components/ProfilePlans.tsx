@@ -12,11 +12,14 @@ const VACIOS = [
 // Ajuste pasaporte-perfil: capítulo III, los planes A/B/C, los favoritos en chips y el acceso a los planes.
 export function ProfilePlans({
   plans,
+  espacioLibre,
   favoritos,
   bloqueo,
   onBloqueado,
 }: {
-  plans: { id: string; name: string; armado: number }[]
+  // F07a: en api, el resumen del plan (píldora) en lugar de la barra, y un solo texto para los espacios vacíos.
+  plans: { id: string; name: string; armado: number; resumen?: string }[]
+  espacioLibre?: string
   favoritos: { carreras: number; ocupaciones: number; instituciones: number }
   bloqueo?: string
   onBloqueado?: () => void
@@ -37,12 +40,16 @@ export function ProfilePlans({
             </span>
             <div>
               <strong>{plan.name}</strong>
-              <div className="sx-d-mini-bar">
-                <span>
-                  <span style={{ width: `${plan.armado}%` }} />
-                </span>
-                <small>{plan.armado} % armado</small>
-              </div>
+              {plan.resumen ? (
+                <span className="sx-d-tag">{plan.resumen}</span>
+              ) : (
+                <div className="sx-d-mini-bar">
+                  <span>
+                    <span style={{ width: `${plan.armado}%` }} />
+                  </span>
+                  <small>{plan.armado} % armado</small>
+                </div>
+              )}
             </div>
           </div>
         ) : (
@@ -51,8 +58,8 @@ export function ProfilePlans({
               {'ABC'[i]}
             </span>
             <div>
-              <strong>{VACIOS[i][0]}</strong>
-              {VACIOS[i][1] && <small>{VACIOS[i][1]}</small>}
+              <strong>{espacioLibre ?? VACIOS[i][0]}</strong>
+              {!espacioLibre && VACIOS[i][1] && <small>{VACIOS[i][1]}</small>}
             </div>
           </div>
         )

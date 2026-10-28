@@ -1,20 +1,23 @@
-import { useOccupationExplorationContext } from '@/context/occupationExplorationContext'
-import { useDiscovery } from '@/store/discoveryStore'
-import { createPlanFromCareer, getOrderedPlans } from '../lib/plans'
+import { useAccionesPlanes } from '@/features/plans/hooks/useAccionesPlanes'
+import { usePlanesServidor } from '@/features/plans/hooks/usePlanesServidor'
 
-const LETRAS = 'ABC'
-
-// Ajuste catalogo-datos-reales (F6b): la carrera frente a los planes del estudiante (los que la pantalla ya
-// tiene): ya es un plan, hay espacio para armarlo o los tres están ocupados por otras carreras.
-export function usePlanesCarrera(codigo: string, nombre: string) {
-  const context = useOccupationExplorationContext(),
-    discovery = useDiscovery()
-  const planes = getOrderedPlans(context.decisionSheets, discovery.planOrder)
-  const posicion = planes.findIndex((p) => p.sourceId === codigo)
+// Ajuste catalogo-datos-reales (F6b) · F07a: la carrera frente a los planes del servidor (el detalle de carrera
+// solo existe en api): ya es un plan, los tres están ocupados, no es favorita (un plan se crea solo desde una
+// favorita) o hay espacio para armarlo. Sin los planes (PLANES cerrada o cargando), el bloque no se muestra.
+export function usePlanesCarrera(codigo: string, esFavorita: boolean) {
+  const { datos } = usePlanesServidor()
+  const acciones = useAccionesPlanes()
+  const planes = datos?.planes ?? []
   return {
-    letra: posicion >= 0 ? LETRAS[posicion] : null,
-    libres: 3 - planes.length,
-    ocupados: planes.map((p, i) => ({ letra: LETRAS[i], nombre: p.name })),
-    armar: () => createPlanFromCareer(nombre, codigo),
+    disponible: !!datos,
+    codigo,
+    letra: planes.find((p) => p.carrera.codigo === codigo)?.prioridad ?? null,
+    libres: (datos?.maximo_planes ?? 3) - planes.length,
+    ocupados: planes.map((p) => ({ letra: p.prioridad, nombre: p.carrera.nombre })),
+    esFavorita,
+    armar: () => void acciones.crear(codigo),
+    ocupado: !!acciones.ocupado,
+    aviso: acciones.aviso,
+    cerrarAviso: acciones.cerrarAviso,
   }
 }

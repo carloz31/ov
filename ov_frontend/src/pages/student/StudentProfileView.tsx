@@ -27,6 +27,7 @@ export function StudentProfileView() {
         <ProfileHelena destacada={perfil.destacada} pages={perfil.pages} />
         <ProfilePlans
           plans={perfil.plans}
+          espacioLibre={perfil.espacioLibre}
           favoritos={perfil.favoritos}
           bloqueo={planes.bloqueada ? planes.mensaje : undefined}
           onBloqueado={planes.pasos ? () => openGuide(planes.pasos!) : undefined}
