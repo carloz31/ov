@@ -6,7 +6,10 @@ export type PestanaConversacion = 'te_toca' | 'esperando' | 'listas' | 'por_abri
 export const ORDEN_PESTANAS: PestanaConversacion[] = ['te_toca', 'esperando', 'listas', 'por_abrir']
 
 // El apoderado no tiene «Por abrir»: lo que su hijo no abrió lo puede adelantar desde «Te toca responder».
-export function pestanaDe(conversacion: ConversacionCuenta, rol: RolConversacion): PestanaConversacion | null {
+export function pestanaDe(
+  conversacion: ConversacionCuenta,
+  rol: RolConversacion,
+): PestanaConversacion | null {
   switch (conversacion.estado) {
     case 'sin_responder':
     case 'te_toca':

@@ -76,7 +76,12 @@ export function ResponderTema({
             </p>
           </div>
         ) : (
-          <CajaEsperando avatares={avatares} titulo={t.esperandoTitulo} texto={t.esperandoTexto} />
+          <CajaEsperando
+            avatares={avatares}
+            letra={t.letraEstudiante}
+            titulo={t.esperandoTitulo}
+            texto={t.esperandoTexto}
+          />
         )}
       </div>
     </section>

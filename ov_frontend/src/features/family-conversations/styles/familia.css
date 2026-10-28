@@ -379,7 +379,10 @@
   padding: 0;
   border: 0;
   outline: none;
-  font: 24px/54px Georgia, 'Times New Roman', serif;
+  font:
+    24px/54px Georgia,
+    'Times New Roman',
+    serif;
   color: inherit;
   background: transparent;
   resize: vertical;
@@ -757,7 +760,11 @@
   text-align: center;
 }
 .fam--estudiante.fam--regalo {
-  background: radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--primary) 40%, var(--sx-night)), var(--sx-night) 70%);
+  background: radial-gradient(
+    ellipse at 50% 35%,
+    color-mix(in srgb, var(--primary) 40%, var(--sx-night)),
+    var(--sx-night) 70%
+  );
 }
 .fam-regalo-pantalla h1 {
   margin: 0;
@@ -896,4 +903,110 @@
 }
 .fam-carta-abierta h2 {
   font-weight: 800;
+}
+.fam-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 18px 0 10px;
+  border: 1px solid var(--fam-panel-border);
+  border-radius: 16px;
+  font-weight: 800;
+  color: var(--fam-text);
+  background: var(--fam-card);
+}
+.fam-selector-inicial {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: var(--fam-btn-text);
+  background: var(--fam-btn);
+}
+.fam-link--subrayado {
+  margin-top: 10px;
+  text-decoration: underline;
+}
+.fam-bloqueo-titulo {
+  font-size: clamp(26px, 3.4vw, 38px);
+}
+.fam-bloqueo-portal {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: center;
+  margin: 26px 0;
+  padding: 28px;
+  border: 1px dashed var(--fam-panel-border);
+  border-radius: 22px;
+  background: var(--fam-panel);
+}
+.fam-bloqueo-candado {
+  display: grid;
+  place-items: center;
+  width: 108px;
+  height: 108px;
+  border: 2px solid var(--fam-panel-border);
+  border-radius: 50%;
+  color: var(--fam-accent);
+  background: var(--fam-card);
+}
+.fam-bloqueo-avance {
+  font-weight: 800;
+  color: var(--fam-accent) !important;
+}
+.fam--apoderado .fam-apagada {
+  border-style: solid;
+  background: var(--fam-card);
+}
+.fam--apoderado .fam-papel {
+  background-image: none;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+.fam--apoderado .fam-papel h2.fam-caligrafia {
+  font-family: inherit;
+  font-weight: 800;
+}
+.fam--apoderado .fam-papel textarea {
+  min-height: 420px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font: 18px/1.6 var(--font-sans);
+}
+.fam--apoderado .fam-card,
+.fam--apoderado .fam-papel {
+  box-shadow: none;
+}
+@media (max-width: 900px) {
+  .fam-bloqueo-portal {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.fam--apoderado {
+  padding: 24px clamp(16px, 3vw, 40px) 40px;
+}
+.fam--apoderado .fam-btn--oro {
+  color: var(--primary-foreground);
+}
+.fam-regalo > div:last-child {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+}
+.fam--apoderado .fam-regalo {
+  border-left: 6px solid var(--primary);
+  background: var(--card);
+}
+.fam--apoderado .fam-regalo-sello {
+  border-color: color-mix(in srgb, var(--primary) 25%, var(--card));
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, var(--card));
+}
+.fam-bloqueo svg {
+  flex-shrink: 0;
 }

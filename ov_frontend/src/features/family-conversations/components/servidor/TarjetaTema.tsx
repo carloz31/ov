@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { ArrowRight, LockKeyhole } from 'lucide-react'
+import { ArrowRight, Info, LockKeyhole } from 'lucide-react'
 import {
   etiquetaTramo,
   lineaEstado,
@@ -44,16 +44,22 @@ export function TarjetaTema({ m, c }: { m: ModeloFamilia; c: ConversacionCuenta 
       {tramo && <span className="fam-chip">{tramo}</span>}
       <p className="fam-kicker">{c.tema}</p>
       <h3>{c.pregunta}</h3>
-      {adelantar && t.adelantarNota && <p className="fam-nota">{t.adelantarNota(t.otro)}</p>}
+      {adelantar && t.adelantarNota && (
+        <p className="fam-bloqueo">
+          <Info aria-hidden="true" size={18} />
+          {t.adelantarNota(t.otro)}
+        </p>
+      )}
       <div className="fam-tema-pie">
         <ParAvatares
           estudiante={avatares.estudiante}
           familia={avatares.familia}
-          texto={lineaEstado(c, t.otro)}
+          letra={t.letraEstudiante}
+          texto={adelantar && t.temaNoAbierto ? t.temaNoAbierto : lineaEstado(c, t.otro)}
         />
-        <Link className="fam-btn" to={m.rutas.conversacion(c.codigo)}>
+        <Link className={`fam-btn${adelantar ? ' fam-btn--claro' : ''}`} to={m.rutas.conversacion(c.codigo)}>
           {adelantar ? t.adelantar : responde ? t.responder : t.ver}
-          <ArrowRight aria-hidden="true" size={18} />
+          {!adelantar && <ArrowRight aria-hidden="true" size={18} />}
         </Link>
       </div>
     </article>

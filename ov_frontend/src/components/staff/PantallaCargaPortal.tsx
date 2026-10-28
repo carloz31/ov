@@ -1,21 +1,27 @@
 import { LoaderCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
-// Carga o fallo inicial de un portal del personal (apoderado, orientadora), a pantalla completa.
+// Carga o fallo inicial de un portal del personal (apoderado, orientadora), a pantalla completa. F08: `enSeccion`
+// la usa dentro de una vista del portal (sin «Volver a ingresar»).
 export function PantallaCargaPortal({
   estado,
   mensaje,
   onReintentar,
   onVolver,
+  enSeccion = false,
 }: {
   estado: 'cargando' | 'error'
   mensaje?: string
   onReintentar: () => void
-  onVolver: () => void
+  onVolver?: () => void
+  enSeccion?: boolean
 }) {
   const error = estado === 'error'
   return (
-    <div className="grid min-h-svh place-items-center p-8 text-center" role={error ? 'alert' : 'status'}>
+    <div
+      className={`grid ${enSeccion ? 'min-h-96' : 'min-h-svh'} place-items-center p-8 text-center`}
+      role={error ? 'alert' : 'status'}
+    >
       <div className="max-w-md">
         {!error && (
           <LoaderCircle
@@ -32,9 +38,11 @@ export function PantallaCargaPortal({
             <Button className="min-h-11" onClick={onReintentar}>
               Reintentar
             </Button>
-            <Button className="min-h-11" variant="outline" onClick={onVolver}>
-              Volver a ingresar
-            </Button>
+            {onVolver && (
+              <Button className="min-h-11" variant="outline" onClick={onVolver}>
+                Volver a ingresar
+              </Button>
+            )}
           </div>
         )}
       </div>

@@ -17,7 +17,7 @@ export function TarjetaRegalo({ m }: { m: ModeloFamilia }) {
       </span>
       <div>
         <p className="fam-kicker">{t.regaloKicker}</p>
-        <h2>{datos.cartas_disponibles ? t.regaloRoto : `${datos.completadas} de ${datos.total} conversaciones`}</h2>
+        <h2>{datos.cartas_disponibles ? t.regaloRoto : t.regaloConteo(datos.completadas, datos.total)}</h2>
         <PuntosRegalo puntos={puntosRegalo(datos)} />
       </div>
       <div>
@@ -25,6 +25,11 @@ export function TarjetaRegalo({ m }: { m: ModeloFamilia }) {
         {datos.cartas_disponibles && (
           <Link className="fam-btn fam-btn--oro" to={m.rutas.regalo}>
             {t.regaloAbrir}
+          </Link>
+        )}
+        {t.cartaEnRegalo && (
+          <Link className="fam-link fam-link--subrayado" to={m.rutas.carta}>
+            {t.enlaceCarta}
           </Link>
         )}
       </div>

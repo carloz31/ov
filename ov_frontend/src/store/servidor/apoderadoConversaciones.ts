@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { modoApi } from '@/config/env'
 import * as apiConversaciones from '@/services/api/conversaciones'
 import { datosSesion } from '../accesoStore'
@@ -23,10 +23,18 @@ type AlmacenConversacionesApoderado = {
   // 'carta' o el código de la conversación que se está guardando.
   enviando: string | null
 }
-const inicial = (): AlmacenConversacionesApoderado => ({ cuenta: null, hijo: null, porHijo: {}, enviando: null })
+const inicial = (): AlmacenConversacionesApoderado => ({
+  cuenta: null,
+  hijo: null,
+  porHijo: {},
+  enviando: null,
+})
 let estado = inicial()
 let revision = 0
-const pendientes = new Map<string, { revision: number; promesa: Promise<RespuestaServidor<ConversacionesCuenta>> }>()
+const pendientes = new Map<
+  string,
+  { revision: number; promesa: Promise<RespuestaServidor<ConversacionesCuenta>> }
+>()
 const oyentes = new Set<() => void>()
 function publicar(cambios: Partial<AlmacenConversacionesApoderado>) {
   estado = { ...estado, ...cambios }
@@ -36,7 +44,11 @@ function publicarHijo(hijo: string, seccion: Seccion<ConversacionesCuenta>) {
   publicar({ porHijo: { ...estado.porHijo, [hijo]: seccion } })
 }
 const vacia = (): Seccion<ConversacionesCuenta> => ({ datos: null, estado: 'sin_cargar', error: null })
-const sinCuenta = (): ErrorServidor => ({ tipo: 'http', estado: 400, detalle: 'No hay una cuenta de apoderado activa.' })
+const sinCuenta = (): ErrorServidor => ({
+  tipo: 'http',
+  estado: 400,
+  detalle: 'No hay una cuenta de apoderado activa.',
+})
 const cambioSesion = (): ErrorServidor => ({
   tipo: 'http',
   estado: 409,
@@ -121,6 +133,8 @@ export function vencerConversacionesApoderado(hijo = hijoActivo()) {
   return asegurarConversacionesApoderado()
 }
 
+export const reintentarConversacionesApoderado = () => vencerConversacionesApoderado()
+
 async function enviarAccion<T>(
   clave: string,
   accion: (cuenta: string, hijo: string) => Promise<RespuestaServidor<T>>,
@@ -150,3 +164,17 @@ export const responderConversacionApoderado = (
   enviarAccion(conversacion, (cuenta, hijo) =>
     apiConversaciones.enviarRespuestaConversacion(cuenta, conversacion, texto, hijo),
   )
+
+// Al montar Conversaciones (o al cambiar de hijo) se pide el vínculo activo; si ya estaba cargado, se revalida
+// (lo cambia también el hijo) mostrando lo último leído.
+export function useConversacionesApoderadoSeccion(activo = true) {
+  const almacen = useConversacionesApoderado()
+  const cuenta = obtenerEstadoApoderado().cuenta
+  const hijo = hijoActivo()
+  useEffect(() => {
+    if (!modoApi || !activo || !cuenta || !hijo) return
+    if (estado.porHijo[hijo]?.estado === 'listo') void vencerConversacionesApoderado(hijo)
+    else void asegurarConversacionesApoderado()
+  }, [activo, cuenta, hijo])
+  return { hijo, seccion: hijo ? (almacen.porHijo[hijo] ?? vacia()) : vacia(), enviando: almacen.enviando }
+}

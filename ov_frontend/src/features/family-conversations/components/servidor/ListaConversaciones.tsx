@@ -30,10 +30,12 @@ export function ListaConversaciones({ m, selector }: { m: ModeloFamilia; selecto
         accion={
           <div className="fam-header-acciones">
             {selector}
-            <Link className="fam-link" to={m.rutas.carta}>
-              <Mail aria-hidden="true" size={20} />
-              {t.enlaceCarta}
-            </Link>
+            {!t.cartaEnRegalo && (
+              <Link className="fam-link" to={m.rutas.carta}>
+                <Mail aria-hidden="true" size={20} />
+                {t.enlaceCarta}
+              </Link>
+            )}
           </div>
         }
       />

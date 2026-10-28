@@ -9,11 +9,16 @@ export type EstudianteVinculado = {
   avance: AvanceRuta
   nivel_actual: NivelActual | null
 }
-export type FamiliaApoderado = { avance: AvanceRuta; diploma: Diploma; estudiante: EstudianteVinculado | null }
+export type FamiliaApoderado = {
+  avance: AvanceRuta
+  diploma: Diploma
+  estudiante: EstudianteVinculado | null
+}
 
 // app/schemas/conversaciones.py · GET /cuentas/{c}/conversaciones (B12, F08). Todas las conversaciones, siempre;
 // lo del otro y la guía, solo con las dos respuestas; la carta del otro, solo con `cartas_disponibles`.
-export type EstadoConversacion = 'bloqueada' | 'sin_responder' | 'esperando_al_otro' | 'te_toca' | 'conversada'
+export type EstadoConversacion =
+  'bloqueada' | 'sin_responder' | 'esperando_al_otro' | 'te_toca' | 'conversada'
 export type TramoConversacion = { numero: number; nombre: string }
 export type EntradaDiarioConversacion = { codigo: string; nombre: string; pregunta: string }
 export type ConversacionCuenta = {

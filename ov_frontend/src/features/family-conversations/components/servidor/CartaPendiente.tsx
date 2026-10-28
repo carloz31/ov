@@ -15,7 +15,12 @@ export function CartaPendiente({ m, selector }: { m: ModeloFamilia; selector?: R
   const n = enLetras(datos.total)
   return (
     <div className="fam-container">
-      <CabeceraFamilia kicker={t.kicker} titulo={t.titulo} subtitulo={t.subtituloPendiente} accion={selector} />
+      <CabeceraFamilia
+        kicker={t.kickerPendiente}
+        titulo={t.titulo}
+        subtitulo={t.subtituloPendiente}
+        accion={selector}
+      />
       <section className="fam-card fam-hero">
         <SobreSellado />
         <div>

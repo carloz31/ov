@@ -48,7 +48,12 @@ export function RegaloCarta({ m, selector }: { m: ModeloFamilia; selector?: Reac
                 key={`${dx}:${dy}`}
                 aria-hidden="true"
                 className="fam-chispa"
-                style={{ left: '50%', top: '50%', ['--dx' as string]: `${dx}px`, ['--dy' as string]: `${dy}px` }}
+                style={{
+                  left: '50%',
+                  top: '50%',
+                  ['--dx' as string]: `${dx}px`,
+                  ['--dy' as string]: `${dy}px`,
+                }}
               />
             ))}
         </div>

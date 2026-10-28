@@ -29,7 +29,10 @@ export function useFamiliaEstudiante(): ModeloFamilia {
   const avisos = useAvisoFamilia()
   const textos = textosEstudiante()
 
-  async function ejecutar(clave: string, accion: () => Promise<{ tipo: string }>): Promise<ResultadoAccionFamilia> {
+  async function ejecutar(
+    clave: string,
+    accion: () => Promise<{ tipo: string }>,
+  ): Promise<ResultadoAccionFamilia> {
     setEnviando(clave)
     const respuesta = await accion()
     setEnviando(null)

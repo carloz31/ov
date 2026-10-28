@@ -6,7 +6,15 @@ import type { ModeloFamilia } from '../../types'
 import { CajaEsperando } from './CajaEsperando'
 
 // F08 (E6): la mirada propia guardada, editable mientras el otro no responda, y la caja de espera.
-export function EsperandoTema({ m, c, onEditar }: { m: ModeloFamilia; c: ConversacionCuenta; onEditar: () => void }) {
+export function EsperandoTema({
+  m,
+  c,
+  onEditar,
+}: {
+  m: ModeloFamilia
+  c: ConversacionCuenta
+  onEditar: () => void
+}) {
   const { textos: t } = m
   const tramo = etiquetaTramo(c)
   return (
@@ -24,7 +32,12 @@ export function EsperandoTema({ m, c, onEditar }: { m: ModeloFamilia; c: Convers
             {t.editar}
           </button>
         </div>
-        <CajaEsperando avatares={respondieron(c, m.rol)} titulo={t.esperandoTitulo} texto={t.esperandoTexto} />
+        <CajaEsperando
+          avatares={respondieron(c, m.rol)}
+          letra={t.letraEstudiante}
+          titulo={t.esperandoTitulo}
+          texto={t.esperandoTexto}
+        />
       </div>
       <Link className="fam-btn" to={m.rutas.lista}>
         {t.volverLista}

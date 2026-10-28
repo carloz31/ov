@@ -2,6 +2,7 @@ import { LoginRoute } from '@/pages/auth/LoginRoute'
 import { PortalDeCuenta } from './PortalDeCuenta'
 import { SoloLocal } from './SoloLocal'
 import { SegunModo } from './SegunModo'
+import { subrutasFamilia } from './SubrutasFamilia'
 import { SeccionProtegida } from '@/features/adventure/components/SeccionProtegida'
 import { Navigate, Route, Routes } from 'react-router'
 import { CounselorDashboardView } from '@/pages/counselor/CounselorDashboardView'
@@ -33,9 +34,7 @@ import { CaminoScreen } from '@/pages/student/CaminoScreen'
 import { CiudadScreen } from '@/pages/student/CiudadScreen'
 import { StudentFamilyConversationsView } from '@/pages/student/StudentFamilyConversationsView'
 import { StudentFamiliaView } from '@/pages/student/StudentFamiliaView'
-import { StudentFamiliaCartaView } from '@/pages/student/StudentFamiliaCartaView'
-import { StudentFamiliaTemaView } from '@/pages/student/StudentFamiliaTemaView'
-import { StudentFamiliaRegaloView } from '@/pages/student/StudentFamiliaRegaloView'
+import { ParentFamiliaView } from '@/pages/parent/ParentFamiliaView'
 import { ParentActivitiesView } from '@/pages/parent/ParentActivitiesView'
 import { ParentActivityView } from '@/pages/parent/ParentActivityView'
 import { ParentCareerGuideView } from '@/pages/parent/ParentCareerGuideView'
@@ -138,24 +137,7 @@ function AppRoutes() {
             }
             path="conversations"
           />
-          {/* F08: carta, regalo y una conversación de Familia; solo en api. */}
-          {(
-            [
-              ['conversations/carta', <StudentFamiliaCartaView key="carta" />],
-              ['conversations/regalo', <StudentFamiliaRegaloView key="regalo" />],
-              ['conversations/tema/:conversacion', <StudentFamiliaTemaView key="tema" />],
-            ] as const
-          ).map(([path, vista]) => (
-            <Route
-              key={path}
-              element={
-                <SeccionProtegida seccion="FAMILIA" titulo="Un espacio para conversar en familia">
-                  <SegunModo api={vista} local={<Navigate replace to={appPaths.student.conversations} />} />
-                </SeccionProtegida>
-              }
-              path={path}
-            />
-          ))}
+          {subrutasFamilia('estudiante')}
           <Route
             element={
               <SeccionProtegida seccion="CATALOGO">
@@ -234,7 +216,13 @@ function AppRoutes() {
         <Route element={<Navigate replace to={appPaths.parent.overview} />} index />
         <Route element={<ParentOverviewView />} path="overview" />
         <Route element={<ParentActivitiesView />} path="activities" />
-        <Route element={<FamilyConversationsView audience="parent" />} path="conversations" />
+        <Route
+          element={
+            <SegunModo api={<ParentFamiliaView />} local={<FamilyConversationsView audience="parent" />} />
+          }
+          path="conversations"
+        />
+        {subrutasFamilia('apoderado')}
         <Route element={<ParentActivityView />} path="activities/:activityId" />
         <Route
           element={<Navigate replace to={appPaths.parent.child(parentChildren[0].id)} />}

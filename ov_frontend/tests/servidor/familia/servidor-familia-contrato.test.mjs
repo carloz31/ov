@@ -20,7 +20,10 @@ const conv = await import(`data:text/javascript;base64,${Buffer.from(code).toStr
 const sinRespuestas = { eventos_registrados: [], nuevos_desbloqueos: [] }
 
 test('estudiante: sin carta, la sección muestra la carta pendiente; con carta, la lista con «Por abrir»', () => {
-  assert.equal(conv.pantallaSeccion(jsonServidor('ruta/ruta-conversaciones-estudiante-sin-carta')), 'carta_pendiente')
+  assert.equal(
+    conv.pantallaSeccion(jsonServidor('ruta/ruta-conversaciones-estudiante-sin-carta')),
+    'carta_pendiente',
+  )
   const datos = jsonServidor('ruta/ruta-conversaciones-estudiante-carta')
   assert.equal(conv.pantallaSeccion(datos), 'lista')
   const pestanas = conv.pestanasConversaciones(datos.conversaciones, 'estudiante')
@@ -112,7 +115,9 @@ test('estudiante: el almacén pide las conversaciones y las acciones usan las ru
 
 test('estudiante: abrir la entrada del diario al conversar vence también las preguntas del diario', async () => {
   const { almacen } = almacenFamilia()
-  const { nuevos_desbloqueos } = jsonServidor('ruta/ruta-responder-conversacion-segundo').por_cuenta['est-ana']
+  const { nuevos_desbloqueos } = jsonServidor('ruta/ruta-responder-conversacion-segundo').por_cuenta[
+    'est-ana'
+  ]
   assert.ok(almacen.seccionesPorDesbloqueos(nuevos_desbloqueos).includes('diarioPreguntas'))
 })
 
@@ -126,7 +131,8 @@ async function almacenApoderado() {
   app.fetch((req) => {
     if (req.url === '/api/sesion') return { body: jsonServidor('ruta/ruta-sesion-apoderado') }
     if (req.url === '/api/acciones/ingresar') return { body: sinRespuestas }
-    if (req.url.endsWith('/actividades')) return { body: jsonServidor('ruta/ruta-apoderado-actividades-final') }
+    if (req.url.endsWith('/actividades'))
+      return { body: jsonServidor('ruta/ruta-apoderado-actividades-final') }
     if (req.url.endsWith('/familia')) return { body: jsonServidor('ruta/ruta-familia') }
     if (req.url.includes('/conversaciones?estudiante='))
       return { body: porHijo[new URL(req.url, 'http://x').searchParams.get('estudiante')] }
@@ -157,16 +163,22 @@ test('apoderado: el hijo activo es el primero de la sesión y elegir otro pide s
   app.requests.length = 0
   assert.equal((await store.guardarCartaApoderado('DATO DE PRUEBA: para Luis')).tipo, 'ok')
   store.elegirHijo('est-ana')
-  assert.equal((await store.responderConversacionApoderado('t-conv-2', 'DATO DE PRUEBA: adelanto')).tipo, 'ok')
+  assert.equal(
+    (await store.responderConversacionApoderado('t-conv-2', 'DATO DE PRUEBA: adelanto')).tipo,
+    'ok',
+  )
   const acciones = app.requests.filter((r) => r.url.includes('/acciones/'))
   assert.deepEqual(copia(acciones.map((r) => r.body)), [
     { cuenta: 'apo-rosa', texto: 'DATO DE PRUEBA: para Luis', estudiante: 'est-luis' },
-    { cuenta: 'apo-rosa', conversacion: 't-conv-2', texto: 'DATO DE PRUEBA: adelanto', estudiante: 'est-ana' },
+    {
+      cuenta: 'apo-rosa',
+      conversacion: 't-conv-2',
+      texto: 'DATO DE PRUEBA: adelanto',
+      estudiante: 'est-ana',
+    },
   ])
   // Cada acción confirmada vuelve a pedir las conversaciones de ese hijo.
-  assert.ok(
-    app.requests.some((r) => r.url === '/api/cuentas/apo-rosa/conversaciones?estudiante=est-luis'),
-  )
+  assert.ok(app.requests.some((r) => r.url === '/api/cuentas/apo-rosa/conversaciones?estudiante=est-luis'))
   // Un código que no es su hijo no cambia el activo.
   store.elegirHijo('est-beto')
   assert.equal(store.hijoActivo(), 'est-ana')

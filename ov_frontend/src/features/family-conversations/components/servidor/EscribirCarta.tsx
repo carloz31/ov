@@ -30,7 +30,12 @@ export function EscribirCarta({ m, selector }: { m: ModeloFamilia; selector?: Re
         <ArrowLeft aria-hidden="true" size={18} />
         {t.cartaVolver}
       </Link>
-      <CabeceraFamilia kicker={t.cartaKicker} titulo={t.cartaTitulo} subtitulo={t.cartaSubtitulo} accion={selector} />
+      <CabeceraFamilia
+        kicker={t.cartaKicker}
+        titulo={t.cartaTitulo}
+        subtitulo={t.cartaSubtitulo}
+        accion={selector}
+      />
       <div className="fam-carta-layout">
         <section className="fam-papel">
           <h2 className="fam-caligrafia" id="fam-saludo">
@@ -45,7 +50,9 @@ export function EscribirCarta({ m, selector }: { m: ModeloFamilia; selector?: Re
             onChange={(e) => setTexto(e.target.value)}
           />
           <div className="fam-papel-pie">
-            <span className="fam-nota">{editable ? t.cartaContador(contarPalabras(texto)) : t.cartaEntregada}</span>
+            <span className="fam-nota">
+              {editable ? t.cartaContador(contarPalabras(texto)) : t.cartaEntregada}
+            </span>
             {editable && (
               <button
                 className="fam-btn"
