@@ -1,0 +1,114 @@
+/* Ajuste catalogo-apoderado: el catálogo del estudiante con el estilo del portal del apoderado y de la orientadora
+   (boceto A10). Solo cambia colores, bordes y sombras; el layout y los espaciados son los del estudiante. Fuera del
+   portal del estudiante no existe `.sx-root`, así que aquí se definen todas las variables que usa el catálogo. */
+.sx-discovery[data-variante='portal'] {
+  --primary: #3f4b9c;
+  --primary-foreground: #ffffff;
+  --ring: #3f4b9c;
+  --sx-night: #f3f4f6;
+  --sx-night-raised: #ffffff;
+  --sx-night-border: #e5e7eb;
+  --sx-night-text: #1f2937;
+  --sx-night-muted: #4b5563;
+  --sx-parchment: #ffffff;
+  --sx-parchment-edge: #e5e7eb;
+  --sx-parchment-ink: #1f2937;
+  --sx-parchment-muted: #6b7280;
+  --sx-gold: #3f4b9c;
+  --sx-gold-deep: #3f4b9c;
+  --sx-seal: #3f4b9c;
+  --sx-amb-atlas: transparent;
+  --sx-plan-a: #3f4b9c;
+  --sx-plan-b: #3f4b9c;
+  --sx-plan-c: #3f4b9c;
+  min-height: 100%;
+  background: var(--sx-night);
+  color: var(--sx-night-text);
+}
+
+/* Tarjetas blancas con borde fino, sin la sombra de pergamino. */
+.sx-discovery[data-variante='portal'] .sx-d-parchment {
+  border-width: 1px;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
+}
+.sx-discovery[data-variante='portal'] .sx-d-eyebrow {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sx-discovery[data-variante='portal'] .sx-d-header h1 {
+  color: #111827;
+}
+
+/* Las pestañas: control segmentado claro con la activa en índigo. */
+.sx-discovery[data-variante='portal'] .sx-d-catalog-nav {
+  border-width: 1px;
+  background: #ffffff;
+}
+.sx-discovery[data-variante='portal'] .sx-d-catalog-nav a {
+  color: #374151;
+}
+.sx-discovery[data-variante='portal'] .sx-d-catalog-nav a:hover {
+  color: #111827;
+  background: #f3f4f6;
+}
+.sx-discovery[data-variante='portal'] .sx-d-catalog-nav a[aria-current='page'] {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Búsqueda y panel de filtros en blanco. */
+.sx-discovery[data-variante='portal'] .sx-d-input,
+.sx-discovery[data-variante='portal'] .sx-d-search-row {
+  background: #ffffff;
+  color: var(--sx-night-text);
+}
+.sx-discovery[data-variante='portal'] .sx-c-panel-filtros {
+  border-color: #e5e7eb;
+  background: #ffffff;
+}
+.sx-discovery[data-variante='portal'] .sx-c-chip {
+  border-width: 1px;
+  background: #ffffff;
+}
+.sx-discovery[data-variante='portal'] .sx-c-chip[aria-pressed='true'] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+.sx-discovery[data-variante='portal'] .sx-c-ayuda {
+  color: var(--sx-night-muted);
+}
+.sx-discovery[data-variante='portal'] select {
+  background: #ffffff;
+  color: var(--sx-night-text);
+}
+
+/* Cabeceras de detalle claras (la variante oscura del estudiante pasa a blanca). */
+.sx-discovery[data-variante='portal'] .sx-d-dark {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: var(--sx-night-text);
+}
+.sx-discovery[data-variante='portal'] .sx-d-back {
+  color: var(--primary);
+}
+.sx-discovery[data-variante='portal'] .sx-c-etiqueta-oscura {
+  background: #f3f4f6;
+  color: #374151;
+}
+.sx-discovery[data-variante='portal'] .sx-d-detail-title:focus {
+  outline: none;
+}
+.sx-discovery[data-variante='portal'] .sx-d-action-ghost {
+  border-color: #e5e7eb;
+  color: var(--primary);
+}
+.sx-discovery[data-variante='portal'] .sx-d-input {
+  border-width: 1px;
+  border-color: #e5e7eb;
+}
+.sx-discovery[data-variante='portal'] .sx-c-etiqueta-filtro {
+  color: #6b7280;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}

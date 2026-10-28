@@ -10,3 +10,5 @@
 - Una sola vista de ruta por portal (`ParentExplorarView`, `CounselorExplorarView`) para el listado y el detalle (`:codigo`), que monta `CatalogoPortal`, en lugar de dos vistas por portal.
 - Las subrutas van en `routes/SubrutasExplorar.tsx` (como `SubrutasFamilia`), para que `AppRoutes.tsx` no pase de 300 líneas.
 - En modo lectura, la ayuda «Filtre por el tipo de interés…» se oculta cuando ya hay letras elegidas, porque entonces se muestra «Código: …».
+- `catalogo-portal.css` define todas las variables `--sx-*` del catálogo dentro de `[data-variante='portal']`: en los portales del personal no existe `.sx-root`, que es donde el estudiante las define.
+- La espera del detalle en el portal usa `PantallaCargaPortal` (`enSeccion`), el cargador de las secciones del portal, porque los estilos de `PantallaCarga` (Lumi, «Abriendo el atlas») dependen de `.sx-root`. Los esqueletos del listado y de «Mostrar más» son los de F06.
