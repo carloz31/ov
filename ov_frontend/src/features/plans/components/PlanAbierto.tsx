@@ -47,9 +47,6 @@ export function PlanAbierto({
         <Link to={appPaths.student.decisions}>
           <ArrowLeft aria-hidden="true" size={16} /> Mis planes
         </Link>
-        <span>
-          Plan {plan.prioridad} · {plan.carrera.nombre}
-        </span>
       </nav>
       <div className="sx-p-plan">
         <MenuSeccionesPlan plan={plan} opciones={opciones} seccion={v.seccion} onElegir={v.elegir} />

@@ -87,7 +87,7 @@ export function TarjetaPlan({
             </li>
           ))}
         </ul>
-        <TrailBar label={`${listas} de 4 secciones listas`} value={(listas / 4) * 100} />
+        <TrailBar label={`${listas} de 4 secciones listas`} value={(listas / 4) * 100} text="" />
         <p className="sx-p-cambio">Último cambio: {fechaCorta(plan.actualizada_en)}</p>
         <Link
           className="sx-d-action sx-d-full"

@@ -23,11 +23,42 @@
   background: color-mix(in srgb, var(--primary) 14%, var(--sx-parchment));
 }
 
-.sx-d-plan-sections li[data-estado='EN_PROCESO'] > span {
+/* La píldora es hija del <li> como el círculo de estado de la tarjeta local: se anulan los estilos del círculo. */
+.sx-d-plan-sections li[data-estado] > .sx-p-pildora {
+  display: inline-block;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 999px;
+  color: var(--sx-parchment-ink);
+}
+.sx-d-plan-sections li[data-estado='LISTA'] > .sx-p-pildora {
+  background: color-mix(in srgb, var(--success) 22%, var(--sx-parchment));
+}
+.sx-d-plan-sections li[data-estado='EN_PROCESO'] > .sx-p-pildora {
+  background: color-mix(in srgb, var(--sx-gold) 28%, var(--sx-parchment));
+}
+.sx-d-plan-sections li[data-estado='POR_EMPEZAR'] > .sx-p-pildora {
+  background: color-mix(in srgb, var(--sx-parchment-muted) 18%, var(--sx-parchment));
+}
+.sx-d-plan-sections li[data-estado='BLOQUEADA'] > .sx-p-pildora {
+  background: color-mix(in srgb, var(--primary) 14%, var(--sx-parchment));
+}
+.sx-d-plan-sections li[data-estado] {
+  align-items: flex-start;
+}
+.sx-d-plan-sections li[data-estado] > :first-child {
+  flex: none;
+}
+.sx-d-plan-sections li[data-estado] > .sx-p-seccion-texto {
+  flex: 1;
+  min-width: 0;
+}
+.sx-d-plan-sections li[data-estado='EN_PROCESO'] > span:first-child {
   border-style: solid;
   background: linear-gradient(90deg, var(--sx-gold) 50%, transparent 50%);
 }
-.sx-d-plan-sections li[data-estado='BLOQUEADA'] > span {
+.sx-d-plan-sections li[data-estado='BLOQUEADA'] > span:first-child {
   border: 0;
 }
 .sx-p-seccion-texto {
@@ -39,9 +70,16 @@
   line-height: 1.35;
 }
 .sx-p-motivo {
-  margin: 4px 0 0;
+  margin: 6px 0 2px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--sx-gold-ink, var(--sx-parchment-ink));
+  color: color-mix(in srgb, var(--sx-gold) 65%, var(--sx-parchment-ink));
+}
+.sx-d-plan-card .sx-d-quote p {
+  margin: 0;
+}
+.sx-d-plan-card .sx-d-quote em {
+  font-size: 14px;
 }
 .sx-p-cambio {
   margin: 12px 0;
@@ -117,9 +155,6 @@
   align-items: center;
   color: inherit;
 }
-.sx-p-migas span {
-  font-weight: 700;
-}
 .sx-p-plan {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -128,7 +163,7 @@
 }
 @media (min-width: 900px) {
   .sx-p-plan {
-    grid-template-columns: 280px minmax(0, 1fr);
+    grid-template-columns: 300px minmax(0, 1fr);
   }
 }
 .sx-p-menu {
@@ -199,6 +234,7 @@
 .sx-p-panel > header h2 {
   margin: 0;
   font-size: 22px;
+  font-weight: 800;
 }
 .sx-p-panel > header .sx-p-pildora {
   margin-left: 0;
@@ -300,17 +336,38 @@
 .sx-p-otro {
   width: min(260px, 100%);
 }
+.sx-p-quitar {
+  display: inline-grid;
+  place-items: center;
+  margin-left: 2px;
+  border-radius: 50%;
+}
 .sx-p-lectura {
   display: grid;
-  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px 24px;
   margin: 0;
+}
+@media (min-width: 700px) {
+  .sx-p-lectura {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sx-p-lectura .sx-p-ancho {
+    grid-column: 1 / -1;
+  }
 }
 .sx-p-lectura dt {
   font-weight: 700;
-  margin-top: 8px;
+  margin-bottom: 8px;
 }
 .sx-p-lectura dd {
   margin: 0;
+}
+.sx-p-dato {
+  padding: 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 12px;
+  background: var(--card);
 }
 .sx-p-intro {
   margin: 0;

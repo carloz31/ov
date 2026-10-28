@@ -48,7 +48,9 @@ const boton = (arbol, etiqueta) => elementos(arbol, (e) => e.type === 'button' &
 test('sin ?seccion= abre la primera abierta no lista; el menú lleva títulos del front, píldoras y resúmenes', async () => {
   const { app, vista } = planAbierto()
   const arbol = await dibujar(vista)
-  assert.match(texto(arbol), /Mis planes.*Plan A · Psicología/)
+  // Las migas solo llevan «Mis planes»: el plan y la carrera ya están en la cabecera del menú.
+  assert.match(texto(arbol), /Mis planes/)
+  assert.doesNotMatch(texto(arbol), /Plan A · Psicología/)
   const menu = hijo(arbol, 'MenuSeccionesPlan')
   assert.equal(menu.props.seccion, 'POR_QUE')
   const { MenuSeccionesPlan } = app.load('src/features/plans/components/MenuSeccionesPlan.tsx')
@@ -175,4 +177,37 @@ test('una carrera sin plan vuelve a Mis planes', async () => {
   // El navigate del arnés cambia en cada render (en React es estable): basta con que todo lleve a Mis planes.
   assert.ok(app.navigations.length >= 1)
   assert.ok(app.navigations.every((destino) => destino === '/student/profile/decisions'))
+})
+
+test('motivos propios: Enter o salir del campo los vuelve chips numerados; «✕» los quita y no se repiten', async () => {
+  const { app } = planAbierto()
+  const { SeccionPorQue } = app.load('src/features/plans/components/SeccionPorQue.tsx')
+  const adaptador = app.load('src/lib/servidor/adaptadoresPlanes.ts')
+  const props = {
+    plan: familia.planes[0],
+    opciones: familia.opciones,
+    encaje: null,
+    borrador: { idea: 'MIA', motivos: [{ opcion: 'AYUDAR' }], relato: 'r' },
+    onCambiar: (cambio) => (props.borrador = cambio(props.borrador)),
+    onEditar() {},
+  }
+  const vista = app.mount(SeccionPorQue, props)
+  const campo = () => elementos(vista.render(), (e) => e.props?.['aria-label'] === 'Otro motivo')[0]
+  boton(vista.render(), '+ Otro motivo').props.onClick()
+  campo().props.onChange({ target: { value: ' Pepe ' } })
+  campo().props.onKeyDown({ key: 'Enter', preventDefault() {} })
+  assert.equal(campo().props.value, '')
+  // Repetido (sin importar mayúsculas ni espacios) o vacío: no se agrega.
+  campo().props.onChange({ target: { value: 'pepe' } })
+  campo().props.onBlur()
+  campo().props.onBlur()
+  campo().props.onChange({ target: { value: 'Me gusta viajar' } })
+  campo().props.onBlur()
+  assert.deepEqual(copia(props.borrador.motivos), [{ opcion: 'AYUDAR' }, { otro: 'Pepe' }, { otro: 'Me gusta viajar' }])
+  let chips = elementos(vista.render(), (e) => e.props?.className === 'sx-p-chip' && e.type === 'span')
+  assert.deepEqual(chips.map(texto), ['2Pepe', '3Me gusta viajar'])
+  elementos(vista.render(), (e) => e.props?.['aria-label'] === 'Quitar Pepe')[0].props.onClick()
+  chips = elementos(vista.render(), (e) => e.props?.className === 'sx-p-chip' && e.type === 'span')
+  assert.deepEqual(chips.map(texto), ['2Me gusta viajar'])
+  assert.deepEqual(copia(adaptador.datosPorQue(props.borrador).motivos), [{ opcion: 'AYUDAR' }, { otro: 'Me gusta viajar' }])
 })

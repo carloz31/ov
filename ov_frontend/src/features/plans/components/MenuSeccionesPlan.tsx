@@ -58,7 +58,7 @@ export function MenuSeccionesPlan({
           </li>
         ))}
       </ul>
-      <TrailBar label={`${listas} de 4 secciones listas`} value={(listas / 4) * 100} />
+      <TrailBar label={`${listas} de 4 secciones listas`} value={(listas / 4) * 100} text="" />
     </nav>
   )
 }

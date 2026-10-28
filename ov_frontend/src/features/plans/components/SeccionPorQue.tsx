@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { X } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import {
@@ -14,6 +15,7 @@ import type { OpcionesTarjeta, PlanCarrera } from '@/types/servidor'
 type Encaje = { carrera: string; principal: string; segundo: string } | null
 
 const mismoMotivo = (a: MotivoBorrador, codigo: string) => 'opcion' in a && a.opcion === codigo
+const normal = (texto: string) => texto.trim().toLocaleLowerCase('es')
 
 // F07a (F07b-pantallas §4.2): «Por qué la elijo». En lectura, idea, motivos (el principal primero) y lo que vivió,
 // con la repregunta fija si quedó en proceso; en edición, los tres campos. Arriba, «Cómo encaja contigo».
@@ -32,7 +34,7 @@ export function SeccionPorQue({
   onCambiar: (cambio: (b: BorradorPorQue) => BorradorPorQue) => void
   onEditar: () => void
 }) {
-  const [otro, setOtro] = useState(false)
+  const [otro, setOtro] = useState<string | null>(null)
   const bloqueEncaje = encaje && (
     <div className="sx-p-encaje">
       <strong>Cómo encaja contigo</strong>
@@ -48,21 +50,27 @@ export function SeccionPorQue({
       <>
         {bloqueEncaje}
         <dl className="sx-p-lectura">
-          <dt>Idea</dt>
-          <dd>{textoIdea(plan.idea_origen) ?? 'Todavía nada'}</dd>
-          <dt>Motivos</dt>
-          <dd className="sx-p-chips">
-            {plan.motivos.length
-              ? plan.motivos.map((m, i) => (
-                  <span className="sx-p-chip" data-elegido="true" key={m.posicion}>
-                    {i === 0 && <span className="sx-p-orden">1</span>}
-                    {textoMotivo(m, opciones)}
-                  </span>
-                ))
-              : 'Todavía nada'}
-          </dd>
-          <dt>Lo que viví</dt>
-          <dd>{plan.relato ? <em>«{plan.relato}»</em> : 'Todavía nada'}</dd>
+          <div>
+            <dt>Idea</dt>
+            <dd className="sx-p-dato">{textoIdea(plan.idea_origen) ?? 'Todavía nada'}</dd>
+          </div>
+          <div>
+            <dt>Motivos</dt>
+            <dd className="sx-p-chips">
+              {plan.motivos.length
+                ? plan.motivos.map((m, i) => (
+                    <span className="sx-p-chip" data-elegido="true" key={m.posicion}>
+                      {i === 0 && <span className="sx-p-orden">1</span>}
+                      {textoMotivo(m, opciones)}
+                    </span>
+                  ))
+                : 'Todavía nada'}
+            </dd>
+          </div>
+          <div className="sx-p-ancho">
+            <dt>Lo que viví</dt>
+            <dd className="sx-p-dato">{plan.relato ? <em>«{plan.relato}»</em> : 'Todavía nada'}</dd>
+          </div>
         </dl>
         {pideMasRelato(plan) && (
           <div className="sx-p-repregunta">
@@ -74,7 +82,6 @@ export function SeccionPorQue({
         )}
       </>
     )
-  const otroMotivo = borrador.motivos.find((m) => 'otro' in m) as { otro: string } | undefined
   const alternar = (codigo: string) =>
     onCambiar((b) => ({
       ...b,
@@ -82,13 +89,16 @@ export function SeccionPorQue({
         ? b.motivos.filter((m) => !mismoMotivo(m, codigo))
         : [...b.motivos, { opcion: codigo }],
     }))
-  const cambiarOtro = (texto: string) =>
-    onCambiar((b) => ({
-      ...b,
-      motivos: b.motivos.some((m) => 'otro' in m)
-        ? b.motivos.map((m) => ('otro' in m ? { otro: texto } : m))
-        : [...b.motivos, { otro: texto }],
-    }))
+  // Un motivo propio se confirma con Enter o al salir del campo: pasa a ser un chip numerado y el campo queda
+  // vacío para otro. Vacío o repetido (el servidor rechaza un motivo dos veces), no se agrega.
+  const confirmarOtro = () => {
+    const texto = otro?.trim() ?? ''
+    setOtro('')
+    if (!texto || borrador.motivos.some((m) => 'otro' in m && normal(m.otro) === normal(texto))) return
+    onCambiar((b) => ({ ...b, motivos: [...b.motivos, { otro: texto }] }))
+  }
+  const quitarOtro = (texto: string) =>
+    onCambiar((b) => ({ ...b, motivos: b.motivos.filter((m) => !('otro' in m && m.otro === texto)) }))
   return (
     <>
       {bloqueEncaje}
@@ -127,15 +137,40 @@ export function SeccionPorQue({
               </button>
             )
           })}
-          {otro || otroMotivo ? (
+          {borrador.motivos.map(
+            (m, i) =>
+              'otro' in m && (
+                <span className="sx-p-chip" data-elegido="true" key={`otro-${m.otro}`}>
+                  <span className="sx-p-orden">{i + 1}</span>
+                  {m.otro}
+                  <button
+                    type="button"
+                    className="sx-p-quitar"
+                    aria-label={`Quitar ${m.otro}`}
+                    onClick={() => quitarOtro(m.otro)}
+                  >
+                    <X aria-hidden="true" size={14} />
+                  </button>
+                </span>
+              ),
+          )}
+          {otro !== null ? (
             <Input
               className="sx-p-otro"
               aria-label="Otro motivo"
-              value={otroMotivo?.otro ?? ''}
-              onChange={(e) => cambiarOtro(e.target.value)}
+              placeholder="Escribe otro motivo"
+              value={otro}
+              onChange={(e) => setOtro(e.target.value)}
+              onBlur={confirmarOtro}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  confirmarOtro()
+                }
+              }}
             />
           ) : (
-            <button type="button" className="sx-p-chip sx-p-chip-nuevo" onClick={() => setOtro(true)}>
+            <button type="button" className="sx-p-chip sx-p-chip-nuevo" onClick={() => setOtro('')}>
               + Otro motivo
             </button>
           )}
