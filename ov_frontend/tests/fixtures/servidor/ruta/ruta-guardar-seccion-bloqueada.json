@@ -1,0 +1,30 @@
+{
+  "detail": {
+    "mensaje": "Completa el registro de exploración para ver qué tan real es esta opción.",
+    "progreso": {
+      "disponible": false,
+      "objetivo": {
+        "codigo": "REALIDAD",
+        "tipo": "SECCION_PLAN"
+      },
+      "reglas": [
+        {
+          "condiciones": [
+            {
+              "actual": 0,
+              "cumplida": false,
+              "referencia": "t-explorar",
+              "requerido": 1,
+              "texto": null,
+              "tipo_conteo": "EVENTOS",
+              "tipo_evento": "COMPLETA_ACTIVIDAD"
+            }
+          ],
+          "cumplida": false,
+          "mensaje_bloqueo": "Completa el registro de exploración para ver qué tan real es esta opción.",
+          "regla": "R-PLAN-REALIDAD"
+        }
+      ]
+    }
+  }
+}

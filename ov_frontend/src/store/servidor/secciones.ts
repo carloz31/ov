@@ -14,6 +14,7 @@ import {
   obtenerEntradasDiario,
   obtenerPreguntasDiario,
 } from '@/services/api/diario'
+import { obtenerPlanes } from '@/services/api/planes'
 import { hidratarJourneyServidor } from '../journeyStore'
 import { hidratarAdventureServidor } from '../adventureStore'
 import { baseRoute } from '@/data/activities/reflectionConfig'
@@ -44,6 +45,7 @@ const consultas = {
   diarioEntradas: obtenerEntradasDiario,
   amistad: obtenerAmistad,
   checkIns: obtenerCheckIns,
+  planes: obtenerPlanes,
 }
 const contadores = (): Record<NombreSeccion, number> => ({
   resumen: 0,
@@ -58,6 +60,7 @@ const contadores = (): Record<NombreSeccion, number> => ({
   diarioEntradas: 0,
   amistad: 0,
   checkIns: 0,
+  planes: 0,
 })
 const revisiones = contadores()
 const consumidores = contadores()
@@ -143,6 +146,8 @@ export function seccionesPorDesbloqueos(desbloqueos: DesbloqueoNuevo[]): NombreS
     if (d.tipo_objetivo === 'NIVEL') nombres.add('resumen')
     if (d.tipo_objetivo === 'SECCION') nombres.add('secciones')
     if (d.tipo_objetivo === 'PREGUNTA_DIARIO') nombres.add('diarioPreguntas')
+    // F07a: una sección de la tarjeta se abre al completar una actividad (t-valores abre CONOCIMIENTO).
+    if (d.tipo_objetivo === 'SECCION_PLAN') nombres.add('planes')
   }
   return [...nombres]
 }
@@ -179,6 +184,7 @@ export const useSeccionesServidor = (activo = true) => useSeccion('secciones', a
 export const useDiarioPreguntasServidor = (activo = true) => useSeccion('diarioPreguntas', activo)
 export const useDiarioEntradasServidor = (activo = true) => useSeccion('diarioEntradas', activo)
 export const useAmistadServidor = (activo = true) => useSeccion('amistad', activo)
+export const usePlanesServidorSeccion = (activo = true) => useSeccion('planes', activo)
 
 export function errorSeccionesActivas() {
   return (

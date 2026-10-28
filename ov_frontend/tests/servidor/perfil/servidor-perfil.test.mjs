@@ -201,7 +201,14 @@ test('en api, los conteos de favoritos del perfil salen del servidor con el catÃ
   const montado = f.app.mount(perfil, {})
   montado.render()
   await esperar()
-  assert.deepEqual(copia(montado.render().favoritos), { carreras: 1, ocupaciones: 1, instituciones: 1 })
+  // F07a: las dos carreras de los planes tambiÃ©n son favoritas en ruta-favoritos.
+  const { carreras, ocupaciones, instituciones } = jsonServidor('ruta/ruta-favoritos')
+  assert.deepEqual(copia(montado.render().favoritos), {
+    carreras: carreras.length,
+    ocupaciones: ocupaciones.length,
+    instituciones: instituciones.length,
+  })
+  assert.equal(carreras.length, 3)
   assert.equal(f.app.requests.filter((r) => r.url.endsWith('/favoritos')).length, 1)
   montado.unmount()
 })

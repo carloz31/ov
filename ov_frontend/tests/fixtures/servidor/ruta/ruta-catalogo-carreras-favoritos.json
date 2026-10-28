@@ -1,6 +1,24 @@
 {
   "items": [
     {
+      "codigo": "mtpe-291",
+      "duracion": "5 años",
+      "es_favorita": true,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "321",
+        "nombre": "Ciencias de la Comunicación"
+      },
+      "nombre": "Ciencias de la Comunicación",
+      "riasec": [
+        "A",
+        "E",
+        "S"
+      ],
+      "tipo": "UNIVERSIDAD"
+    },
+    {
       "codigo": "mtpe-106",
       "duracion": "5 años",
       "es_favorita": true,
@@ -16,8 +34,26 @@
         "I"
       ],
       "tipo": "UNIVERSIDAD"
+    },
+    {
+      "codigo": "mtpe-369",
+      "duracion": "5 años",
+      "es_favorita": true,
+      "familia": {
+        "area_codigo": "3",
+        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "codigo": "313",
+        "nombre": "Psicología"
+      },
+      "nombre": "Psicología",
+      "riasec": [
+        "S",
+        "I",
+        "A"
+      ],
+      "tipo": "UNIVERSIDAD"
     }
   ],
-  "total": 1,
+  "total": 3,
   "total_dominio": 603
 }

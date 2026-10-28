@@ -1,0 +1,401 @@
+{
+  "avisos": [],
+  "maximo_planes": 3,
+  "opcion_inicial": null,
+  "opciones": {
+    "caminos": [
+      {
+        "codigo": "POSTULAR_DIRECTO",
+        "incluye_preparacion": false,
+        "texto": "Postular directamente"
+      },
+      {
+        "codigo": "PREPARARME",
+        "incluye_preparacion": true,
+        "texto": "Prepararme primero"
+      },
+      {
+        "codigo": "ESTUDIAR_Y_TRABAJAR",
+        "incluye_preparacion": false,
+        "texto": "Estudiar y trabajar"
+      },
+      {
+        "codigo": "TRABAJAR_PRIMERO",
+        "incluye_preparacion": false,
+        "texto": "Trabajar primero y luego estudiar"
+      },
+      {
+        "codigo": "TECNICA_PRIMERO",
+        "incluye_preparacion": false,
+        "texto": "Empezar con una técnica y continuar"
+      },
+      {
+        "codigo": "TOMARME_TIEMPO",
+        "incluye_preparacion": false,
+        "texto": "Tomarme un tiempo"
+      }
+    ],
+    "dificultades": [
+      {
+        "codigo": "ECONOMICAS",
+        "texto": "Económicas"
+      },
+      {
+        "codigo": "ACADEMICAS",
+        "texto": "Académicas"
+      },
+      {
+        "codigo": "FAMILIARES",
+        "texto": "Familiares"
+      },
+      {
+        "codigo": "INFORMACION",
+        "texto": "Falta de información"
+      },
+      {
+        "codigo": "DISTANCIA",
+        "texto": "Distancia"
+      }
+    ],
+    "dudas_sugeridas": [
+      {
+        "codigo": "POSTULANTES",
+        "texto": "¿Cuántos postulan y cuántos ingresan?"
+      },
+      {
+        "codigo": "CURSOS_DIFICILES",
+        "texto": "¿Qué cursos son los más difíciles?"
+      },
+      {
+        "codigo": "SUELDO_INICIAL",
+        "texto": "¿Cuánto gana alguien que recién termina?"
+      }
+    ],
+    "financiamiento": [
+      {
+        "codigo": "FAMILIA",
+        "texto": "Apoyo de mi familia"
+      },
+      {
+        "codigo": "TRABAJO",
+        "texto": "Mi propio trabajo"
+      },
+      {
+        "codigo": "BECA",
+        "texto": "Beca (Beca 18 u otra)"
+      },
+      {
+        "codigo": "CREDITO",
+        "texto": "Crédito educativo"
+      },
+      {
+        "codigo": "AHORROS",
+        "texto": "Ahorros"
+      },
+      {
+        "codigo": "INSTITUCION",
+        "texto": "Apoyos de la institución"
+      }
+    ],
+    "pasos": [
+      {
+        "codigo": "investigar",
+        "texto": "Investigar"
+      },
+      {
+        "codigo": "conversar",
+        "texto": "Conversar con alguien"
+      },
+      {
+        "codigo": "visitar",
+        "texto": "Visitar"
+      },
+      {
+        "codigo": "curso",
+        "texto": "Llevar un curso"
+      },
+      {
+        "codigo": "practicar",
+        "texto": "Practicar"
+      },
+      {
+        "codigo": "otra",
+        "texto": "Otro"
+      }
+    ],
+    "preguntas": [
+      {
+        "codigo": "DIA_NORMAL",
+        "texto": "¿Sabes cómo es un día normal de alguien de {carrera}?",
+        "texto_duda": "¿Cómo es un día normal de alguien de {carrera}?"
+      },
+      {
+        "codigo": "DONDE_TRABAJAR",
+        "texto": "¿Sabes dónde podrías trabajar si estudias {carrera}?",
+        "texto_duda": "¿Dónde podría trabajar si estudio {carrera}?"
+      },
+      {
+        "codigo": "CURSOS",
+        "texto": "¿Sabes qué cursos se llevan en {carrera}?",
+        "texto_duda": "¿Qué cursos se llevan en {carrera}?"
+      },
+      {
+        "codigo": "INGRESO",
+        "texto": "¿Sabes cómo se ingresa a {carrera}?",
+        "texto_duda": "¿Cómo se ingresa a {carrera}?"
+      },
+      {
+        "codigo": "CONOCE_ALGUIEN",
+        "texto": "¿Conoces a alguien que estudie o trabaje en {carrera}?",
+        "texto_duda": "¿A quién podría preguntarle sobre {carrera}?"
+      }
+    ],
+    "rubros": [
+      {
+        "cero_si_publica": false,
+        "codigo": "PREPARACION",
+        "frecuencia_recomendada": "UNICA",
+        "monto_referencia": 1300,
+        "solo_si_camino_prepara": true,
+        "texto": "Preparación"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "ADMISION",
+        "frecuencia_recomendada": "UNICA",
+        "monto_referencia": 350,
+        "solo_si_camino_prepara": false,
+        "texto": "Admisión"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "MATRICULA",
+        "frecuencia_recomendada": "POR_CICLO",
+        "monto_referencia": 600,
+        "solo_si_camino_prepara": false,
+        "texto": "Matrícula"
+      },
+      {
+        "cero_si_publica": true,
+        "codigo": "PENSION",
+        "frecuencia_recomendada": "MENSUAL",
+        "monto_referencia": 1800,
+        "solo_si_camino_prepara": false,
+        "texto": "Pensión"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "MATERIALES",
+        "frecuencia_recomendada": "POR_CICLO",
+        "monto_referencia": 300,
+        "solo_si_camino_prepara": false,
+        "texto": "Materiales"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "TRANSPORTE",
+        "frecuencia_recomendada": "MENSUAL",
+        "monto_referencia": 150,
+        "solo_si_camino_prepara": false,
+        "texto": "Transporte"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "ALIMENTACION",
+        "frecuencia_recomendada": null,
+        "monto_referencia": null,
+        "solo_si_camino_prepara": false,
+        "texto": "Alimentación"
+      },
+      {
+        "cero_si_publica": false,
+        "codigo": "VIVIENDA",
+        "frecuencia_recomendada": null,
+        "monto_referencia": null,
+        "solo_si_camino_prepara": false,
+        "texto": "Vivienda"
+      }
+    ],
+    "valores": [
+      {
+        "codigo": "ESTABILIDAD",
+        "texto": "Estabilidad"
+      },
+      {
+        "codigo": "INGRESOS",
+        "texto": "Ingresos"
+      },
+      {
+        "codigo": "AYUDAR",
+        "texto": "Ayudar a otros"
+      },
+      {
+        "codigo": "CREAR",
+        "texto": "Crear"
+      },
+      {
+        "codigo": "AUTONOMIA",
+        "texto": "Autonomía"
+      },
+      {
+        "codigo": "RECONOCIMIENTO",
+        "texto": "Reconocimiento"
+      },
+      {
+        "codigo": "TIEMPO_FAMILIA",
+        "texto": "Tiempo para la familia"
+      },
+      {
+        "codigo": "APRENDER",
+        "texto": "Aprender"
+      },
+      {
+        "codigo": "COMUNIDAD",
+        "texto": "Aportar a mi comunidad"
+      }
+    ]
+  },
+  "planes": [
+    {
+      "actualizada_en": "2026-10-07T10:00:00",
+      "camino": null,
+      "carrera": {
+        "codigo": "mtpe-369",
+        "duracion": "5 años",
+        "es_favorita": true,
+        "familia": {
+          "area_codigo": "3",
+          "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+          "codigo": "313",
+          "nombre": "Psicología"
+        },
+        "nombre": "Psicología",
+        "riasec": [
+          "S",
+          "I",
+          "A"
+        ],
+        "tipo": "UNIVERSIDAD"
+      },
+      "complicaciones": [],
+      "conocimiento": {
+        "CONOCE_ALGUIEN": null,
+        "CURSOS": null,
+        "DIA_NORMAL": null,
+        "DONDE_TRABAJAR": null,
+        "INGRESO": null
+      },
+      "dudas": [],
+      "financiamiento": [],
+      "gastos": [],
+      "idea_origen": "TEST",
+      "institucion": null,
+      "lista_para_comparar": false,
+      "medidores": {
+        "capacidad": null,
+        "entusiasmo": null,
+        "recursos": null
+      },
+      "motivos": [
+        {
+          "opcion": "AYUDAR",
+          "otro": null,
+          "posicion": 1
+        }
+      ],
+      "pasos": [],
+      "prioridad": "A",
+      "relato": "DATO DE PRUEBA: corto.",
+      "secciones": [
+        {
+          "bloqueo": null,
+          "codigo": "POR_QUE",
+          "estado": "EN_PROCESO",
+          "guardada_en": "2026-10-07T10:00:00",
+          "nombre": "Por qué"
+        },
+        {
+          "bloqueo": [
+            {
+              "condiciones_faltantes": [
+                {
+                  "actual": 0,
+                  "cumplida": false,
+                  "referencia": "t-valores",
+                  "requerido": 1,
+                  "texto": null,
+                  "tipo_conteo": "EVENTOS",
+                  "tipo_evento": "COMPLETA_ACTIVIDAD"
+                }
+              ],
+              "evaluador_especial": null,
+              "mensaje": "Completa el registro de valores para revisar qué tanto conoces esta carrera.",
+              "regla": "R-PLAN-CONOCIMIENTO"
+            }
+          ],
+          "codigo": "CONOCIMIENTO",
+          "estado": "BLOQUEADA",
+          "guardada_en": null,
+          "nombre": "Qué tanto la conozco"
+        },
+        {
+          "bloqueo": [
+            {
+              "condiciones_faltantes": [
+                {
+                  "actual": 0,
+                  "cumplida": false,
+                  "referencia": "t-explorar",
+                  "requerido": 1,
+                  "texto": null,
+                  "tipo_conteo": "EVENTOS",
+                  "tipo_evento": "COMPLETA_ACTIVIDAD"
+                }
+              ],
+              "evaluador_especial": null,
+              "mensaje": "Completa el registro de exploración para ver qué tan real es esta opción.",
+              "regla": "R-PLAN-REALIDAD"
+            }
+          ],
+          "codigo": "REALIDAD",
+          "estado": "BLOQUEADA",
+          "guardada_en": null,
+          "nombre": "Qué tan real es"
+        },
+        {
+          "bloqueo": [
+            {
+              "condiciones_faltantes": [
+                {
+                  "actual": 0,
+                  "cumplida": false,
+                  "referencia": "t-comparar",
+                  "requerido": 1,
+                  "texto": null,
+                  "tipo_conteo": "EVENTOS",
+                  "tipo_evento": "COMPLETA_ACTIVIDAD"
+                }
+              ],
+              "evaluador_especial": null,
+              "mensaje": "Completa la comparación de tus planes para definir tus pasos.",
+              "regla": "R-PLAN-PASOS"
+            }
+          ],
+          "codigo": "PASOS",
+          "estado": "BLOQUEADA",
+          "guardada_en": null,
+          "nombre": "Mis pasos"
+        }
+      ],
+      "sugerencias": [],
+      "total_carrera": null,
+      "total_primer_anio": 0,
+      "totales_por_frecuencia": {
+        "ANUAL": 0,
+        "MENSUAL": 0,
+        "POR_CICLO": 0,
+        "UNICA": 0
+      }
+    }
+  ]
+}

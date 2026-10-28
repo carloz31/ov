@@ -6,6 +6,7 @@ import { modoApi } from '@/config/env'
 import { cuentaActiva } from './cuenta'
 import type {
   AmistadAsistente,
+  PlanesCuenta,
   AvanceEstudiante,
   AvanceInstrumento,
   BloqueActividades,
@@ -52,6 +53,8 @@ export type DatosSecciones = {
   diarioEntradas: EntradaDiarioPublica[]
   amistad: AmistadAsistente
   checkIns: CheckInsCuenta
+  // F07a: los planes de carrera; se piden al abrir Mis planes, un plan, el detalle de carrera o el perfil.
+  planes: PlanesCuenta
 }
 export type NombreSeccion = keyof DatosSecciones
 // F03: lo que lee el libro de Helena. Se pide al abrir el libro o su vista explicada.
@@ -110,6 +113,7 @@ const inicial = (): AlmacenServidor => ({
   diarioPreguntas: vacia(),
   diarioEntradas: vacia(),
   amistad: vacia(),
+  planes: vacia(),
   checkIns: vacia(),
   cargando: false,
   error: null,

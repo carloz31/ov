@@ -472,6 +472,32 @@ def _recorrer_apoderado(cliente):
     return fixtures
 
 
+def _recorrer_planes_luis(cliente):
+    """F07a: con est-luis (para no mover los planes de est-ana), dos planes de la misma familia, una sección
+    bloqueada, un «por qué» corto en proceso, ordenar y eliminar. La carrera hermana es la de menor código de la
+    familia de Psicología en el catálogo real."""
+    luis, cuenta = '/cuentas/est-luis', {'cuenta': 'est-luis', 'fecha_hora': FECHA}
+    familia = _pedir(cliente, 'GET', f'{luis}/catalogo/carreras/{PSICOLOGIA}')['familia']['codigo']
+    pagina = _pedir(cliente, 'GET', f'{luis}/catalogo/carreras?familia={familia}&limite=50')
+    hermana = min(c['codigo'] for c in pagina['items'] if c['codigo'] != PSICOLOGIA)
+    for carrera in (PSICOLOGIA, hermana):
+        _pedir(cliente, 'POST', '/acciones/marcar-favorito', {**cuenta, 'tipo': 'CARRERA', 'codigo': carrera})
+        _pedir(cliente, 'POST', '/acciones/planes/crear', {**cuenta, 'carrera': carrera})
+    _pedir(cliente, 'POST', '/acciones/planes/guardar-seccion', {**cuenta, 'carrera': PSICOLOGIA, 'seccion': 'POR_QUE',
+           'datos': {'idea_origen': 'TEST', 'motivos': [{'opcion': 'AYUDAR'}], 'relato': 'DATO DE PRUEBA: corto.'}})
+    bloqueada = cliente.request('POST', '/acciones/planes/guardar-seccion', json={
+        **cuenta, 'carrera': PSICOLOGIA, 'seccion': 'REALIDAD', 'datos': {}})
+    if bloqueada.status_code != 409:
+        raise RuntimeError(f'Guardar una sección bloqueada respondió {bloqueada.status_code}')
+    fixtures = {'guardar-seccion-bloqueada': bloqueada.json(),
+                'planes-misma-familia': _pedir(cliente, 'GET', f'{luis}/planes')}
+    fixtures['ordenar-planes'] = _pedir(cliente, 'POST', '/acciones/planes/ordenar', {
+        **cuenta, 'carreras': [hermana, PSICOLOGIA]})
+    fixtures['eliminar-plan'] = _pedir(cliente, 'POST', '/acciones/planes/eliminar', {**cuenta, 'carrera': hermana})
+    fixtures['planes-tras-eliminar'] = _pedir(cliente, 'GET', f'{luis}/planes')
+    return fixtures
+
+
 def _recorrer_inesperada(cliente):
     """F06 · HU-042: al final, para no cambiar los logros ni el avance ya exportados. La elección es al azar
     entre las no vistas; con el catálogo real se elige la de menor código, para que el fixture sea siempre el mismo."""
@@ -508,6 +534,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
                     fixtures = _ingresar(cliente)
                     fixtures.update(_recorrer(cliente))
                     fixtures.update(_recorrer_perfil_plano(cliente))
+                    fixtures.update(_recorrer_planes_luis(cliente))
                     fixtures.update(_recorrer_apoderado(cliente))
                     fixtures.update(_recorrer_inesperada(cliente))
             finally:

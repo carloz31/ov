@@ -136,7 +136,7 @@
     {
       "codigo": "mtpe-291",
       "duracion": "5 años",
-      "es_favorita": false,
+      "es_favorita": true,
       "familia": {
         "area_codigo": "3",
         "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
@@ -808,7 +808,7 @@
     {
       "codigo": "mtpe-369",
       "duracion": "5 años",
-      "es_favorita": false,
+      "es_favorita": true,
       "familia": {
         "area_codigo": "3",
         "area_nombre": "Ciencias Sociales, Comerciales y Derecho",

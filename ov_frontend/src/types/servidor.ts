@@ -178,6 +178,8 @@ export * from './servidorFichas'
 export * from './servidorLogros'
 // app/schemas/catalogo.py y favoritos.py viven en servidorCatalogo.ts (F06).
 export * from './servidorCatalogo'
+// app/schemas/planes.py vive en servidorPlanes.ts (F07a).
+export * from './servidorPlanes'
 type AccionInstrumento = RespuestaAccion & { cuenta: string; instrumento: string; aplicacion: string }
 export type RespuestaRevelarResultado = AccionInstrumento & { perfil_plano: boolean }
 export type RespuestaReiniciarInstrumento = AccionInstrumento & {

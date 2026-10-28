@@ -71,7 +71,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'diario-preguntas', 'abrir-pregunta-personal', 'pregunta-del-dia', 'escribir-entrada-fija', 'escribir-entrada-libre',
     'editar-entrada', 'diario-entradas', 'diario-amistad', 'desarchivar-pregunta', 'archivar-pregunta',
     'diario-preguntas-buzon', 'check-ins', 'tematicas',
-    'crear-plan-no-favorita', 'crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
+    'crear-plan-no-favorita', 'guardar-seccion-bloqueada', 'planes-misma-familia', 'ordenar-planes', 'eliminar-plan',
+    'planes-tras-eliminar', 'crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
     'medidores-plan', 'referencias-t-comparar', 'guardar-seccion-pasos', 'paso-hecho', 'referencias-t-proyecto',
     'planes', 'familia', 'familia-resultados', 'conversaciones-sin-carta', 'escribir-carta-est-ana',
     'escribir-carta-apo-rosa', 'responder-conversacion', 'conversaciones-te-toca', 'conversaciones-por-conversar',
@@ -414,6 +415,15 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
                    'medidores-plan', 'guardar-seccion-pasos', 'paso-hecho'):
         RespuestaAccion.model_validate(datos[nombre])
     assert datos['crear-plan-no-favorita']['detail']['mensaje'] == 'Primero guarda la carrera en tus favoritos'
+    # F07a, con est-luis: dos planes de la misma familia, POR_QUE corto en proceso, ordenar y eliminar.
+    assert 'mensaje' in datos['guardar-seccion-bloqueada']['detail']
+    familia = PlanesCuenta.model_validate(datos['planes-misma-familia'])
+    assert [(a.tipo, a.planes) for a in familia.avisos] == [('MISMA_FAMILIA', ['A', 'B'])]
+    assert [s.estado for s in familia.planes[0].secciones] == ['EN_PROCESO', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA']
+    for nombre in ('ordenar-planes', 'eliminar-plan'):
+        RespuestaAccion.model_validate(datos[nombre])
+    assert [p.carrera.codigo for p in PlanesCuenta.model_validate(datos['planes-tras-eliminar']).planes] == [
+        PSICOLOGIA]
     assert {d['regla'] for d in datos['guardar-seccion-realidad']['nuevos_desbloqueos']} == {'R-t-comparar'}
     assert {d['regla'] for d in datos['guardar-seccion-pasos']['nuevos_desbloqueos']} == {'R-t-proyecto'}
     planes = PlanesCuenta.model_validate(datos['planes'])
