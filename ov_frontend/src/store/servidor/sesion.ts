@@ -6,6 +6,7 @@ import { modoApi } from '@/config/env'
 import { cuentaActiva } from './cuenta'
 import type {
   AmistadAsistente,
+  ConversacionesCuenta,
   PlanesCuenta,
   AvanceEstudiante,
   AvanceInstrumento,
@@ -55,6 +56,9 @@ export type DatosSecciones = {
   checkIns: CheckInsCuenta
   // F07a: los planes de carrera; se piden al abrir Mis planes, un plan, el detalle de carrera o el perfil.
   planes: PlanesCuenta
+  // F08: la sección Familia del estudiante; se pide al abrirla y se revalida cada vez que se monta (la cambia
+  // también el apoderado).
+  conversaciones: ConversacionesCuenta
 }
 export type NombreSeccion = keyof DatosSecciones
 // F03: lo que lee el libro de Helena. Se pide al abrir el libro o su vista explicada.
@@ -114,6 +118,7 @@ const inicial = (): AlmacenServidor => ({
   diarioEntradas: vacia(),
   amistad: vacia(),
   planes: vacia(),
+  conversaciones: vacia(),
   checkIns: vacia(),
   cargando: false,
   error: null,

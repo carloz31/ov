@@ -180,6 +180,8 @@ export * from './servidorLogros'
 export * from './servidorCatalogo'
 // app/schemas/planes.py vive en servidorPlanes.ts (F07a).
 export * from './servidorPlanes'
+// app/schemas/familia.py y conversaciones.py viven en servidorFamilia.ts (F08).
+export * from './servidorFamilia'
 type AccionInstrumento = RespuestaAccion & { cuenta: string; instrumento: string; aplicacion: string }
 export type RespuestaRevelarResultado = AccionInstrumento & { perfil_plano: boolean }
 export type RespuestaReiniciarInstrumento = AccionInstrumento & {
@@ -216,16 +218,6 @@ export type AvanceEstudiante = {
   requeridas: { completadas: number; total: number }
 }
 export type Tramo = TramoActual & { estado: 'COMPLETO' | 'ACTUAL' | 'PENDIENTE' }
-// app/schemas/familia.py · GET /cuentas/{c}/familia (B12)
-export type AvanceRuta = { completadas: number; total: number; porcentaje: number }
-export type Diploma = { obtenido: boolean; obtenido_en: string | null }
-export type EstudianteVinculado = {
-  codigo: string
-  nombre: string
-  avance: AvanceRuta
-  nivel_actual: NivelActual | null
-}
-export type FamiliaApoderado = { avance: AvanceRuta; diploma: Diploma; estudiante: EstudianteVinculado | null }
 // app/schemas/registro.py (B02–B04; F01)
 export type EstadoRespuestaRegistro = 'BORRADOR' | 'PENDIENTE_SEGUIMIENTO' | 'FINAL'
 export type OpcionElegida = { codigo: string; texto?: string | null }

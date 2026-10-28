@@ -15,6 +15,7 @@ import {
   obtenerPreguntasDiario,
 } from '@/services/api/diario'
 import { obtenerPlanes } from '@/services/api/planes'
+import { obtenerConversaciones } from '@/services/api/conversaciones'
 import { hidratarJourneyServidor } from '../journeyStore'
 import { hidratarAdventureServidor } from '../adventureStore'
 import { baseRoute } from '@/data/activities/reflectionConfig'
@@ -46,6 +47,7 @@ const consultas = {
   amistad: obtenerAmistad,
   checkIns: obtenerCheckIns,
   planes: obtenerPlanes,
+  conversaciones: (cuenta: string) => obtenerConversaciones(cuenta),
 }
 const contadores = (): Record<NombreSeccion, number> => ({
   resumen: 0,
@@ -61,6 +63,7 @@ const contadores = (): Record<NombreSeccion, number> => ({
   amistad: 0,
   checkIns: 0,
   planes: 0,
+  conversaciones: 0,
 })
 const revisiones = contadores()
 const consumidores = contadores()
@@ -148,6 +151,8 @@ export function seccionesPorDesbloqueos(desbloqueos: DesbloqueoNuevo[]): NombreS
     if (d.tipo_objetivo === 'PREGUNTA_DIARIO') nombres.add('diarioPreguntas')
     // F07a: una sección de la tarjeta se abre al completar una actividad (t-valores abre CONOCIMIENTO).
     if (d.tipo_objetivo === 'SECCION_PLAN') nombres.add('planes')
+    // F08: una conversación habilitada (o la sección Familia) cambia la lista de conversaciones.
+    if (d.tipo_objetivo === 'CONVERSACION') nombres.add('conversaciones')
   }
   return [...nombres]
 }
@@ -185,6 +190,17 @@ export const useDiarioPreguntasServidor = (activo = true) => useSeccion('diarioP
 export const useDiarioEntradasServidor = (activo = true) => useSeccion('diarioEntradas', activo)
 export const useAmistadServidor = (activo = true) => useSeccion('amistad', activo)
 export const usePlanesServidorSeccion = (activo = true) => useSeccion('planes', activo)
+// F08: lo que puede cambiar el apoderado se revalida al montar la vista (regla 4): se muestra lo ya cargado y
+// se vuelve a pedir.
+export function useConversacionesServidorSeccion(activo = true) {
+  const seccion = useSeccion('conversaciones', activo),
+    sesion = sesionServidor()
+  useEffect(() => {
+    if (!modoApi || !activo) return
+    if (obtenerEstadoServidor().conversaciones.estado === 'listo') vencerSeccion('conversaciones')
+  }, [activo, sesion])
+  return seccion
+}
 
 export function errorSeccionesActivas() {
   return (
