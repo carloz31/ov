@@ -8,6 +8,7 @@ from sqlalchemy import select
 
 from app import models as m
 from soporte_catalogo_ruta import ENFERMERIA, INST_TECNICO, INST_UNI, PSICOLOGIA, UBIC_CUSCO, UBIC_LIMA
+from soporte_acceso import token_de
 from soporte_retiro import buscar, medir
 from soporte_ruta import completar, filas_base, pedir
 
@@ -44,8 +45,28 @@ def test_catalogo_cerrado_responde_409_en_cada_ruta(cliente, aplicacion):
     for accion, campo, codigo, _ in VISTAS:
         pedir(cliente, 'POST', f'/acciones/{accion}', {'cuenta': 'est-ana', campo: codigo}, 409)
     assert filas_base(aplicacion) == antes
+
+
+@pytest.mark.parametrize('cuenta', ['apo-rosa', 'ori-carmen'])
+def test_apoderado_y_orientadora_leen_el_catalogo_sin_seccion_y_sin_registrar_vistas(cliente, aplicacion, cuenta):
+    """Ajuste catalogo-apoderado: el catálogo se lee sin la sección CATALOGO (es del estudiante) y la vista de otro
+    rol se ignora: 200 sin eventos ni filas nuevas."""
+    antes = filas_base(aplicacion)
     for ruta in RUTAS_CONSULTA:
-        pedir(cliente, 'GET', ruta.replace('est-ana', 'apo-rosa'), esperado=404)
+        pedir(cliente, 'GET', ruta.replace('est-ana', cuenta))
+    carreras = pedir(cliente, 'GET', f'/cuentas/{cuenta}/catalogo/carreras')
+    assert carreras['items'] and not any(c['es_favorita'] for c in carreras['items'])
+    for accion, campo, codigo, _ in VISTAS:
+        vista = pedir(cliente, 'POST', f'/acciones/{accion}', {'cuenta': cuenta, campo: codigo})
+        assert vista['eventos_registrados'] == [] and vista['nuevos_desbloqueos'] == []
+    assert filas_base(aplicacion) == antes
+
+
+def test_el_catalogo_de_otra_cuenta_responde_404_aunque_sea_el_mismo(cliente, aplicacion):
+    token = token_de(aplicacion, 'apo-rosa')
+    for ruta in RUTAS_CONSULTA:
+        respuesta = cliente.get(ruta, headers={'Authorization': f'Bearer {token}'})
+        assert respuesta.status_code == 404
 
 
 def test_hu037_busca_carreras_por_nombre_tipo_area_familia_y_letras(abierto):

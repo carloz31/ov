@@ -1,12 +1,12 @@
 import { Link } from 'react-router'
 import { FavoriteButton } from '@/components/student/FavoriteButton'
 import { Parchment } from '@/components/student/Parchment'
-import { discoveryPaths } from '@/routes/discoveryPaths'
 import { nombresTipoCarrera } from '@/lib/servidor/adaptadoresCatalogo'
 import { useOpcionesCatalogo } from '@/store/servidor/catalogo'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import { useDetalleServidor } from '../hooks/useDetalleServidor'
 import { useColeccionIconos } from '../hooks/useIconosObtenidos'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 import { preparacionJobZone } from '../data/catalogoTextos'
 import { AtlasNavigation } from './AtlasNavigation'
 import { AvisoFavorito } from './AvisoFavorito'
@@ -41,21 +41,30 @@ function Etiquetas({ titulo, items }: { titulo: string; items: string[] }) {
 // F06 · ajuste catalogo-datos-reales (F6b): el detalle de profesión en api. Cabecera con el ícono (revelado o
 // por revelar), grupo, preparación y otros nombres; qué hacen, perfil de intereses, a quién atrae,
 // conocimientos y aptitudes; al lado, las carreras, las entrevistas del salón y el lugar inesperado.
-export function DetalleOcupacionServidor({ codigo }: { codigo: string }) {
+// Ajuste catalogo-apoderado: en modo lectura, el ícono siempre visible (sin su etiqueta de revelado) y sin
+// favorito, comparación con el resultado, entrevistas ni lugar inesperado.
+export function DetalleOcupacionServidor({
+  codigo,
+  variante,
+}: {
+  codigo: string
+  variante?: 'estudiante' | 'portal'
+}) {
+  const { modoLectura, rutas } = useModoCatalogo()
   const { datos: ocupacion, favorito, ...estado } = useDetalleServidor('ocupaciones', codigo)
   const iconos = useColeccionIconos()
   const opciones = useOpcionesCatalogo(true)
   const servidor = useEstadoServidor()
-  if (!ocupacion) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} />
+  if (!ocupacion) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} variante={variante} />
   const revelado = iconos.obtenido(ocupacion.codigo)
   const caso = iconos.coleccion?.find((c) => c.ocupacion === ocupacion.codigo)?.caso
   const tituloCaso = (servidor.actividades.datos ?? [])
     .flatMap((b) => b.actividades)
     .find((a) => a.codigo === caso)?.titulo
   const grupo = opciones?.grupos.find((g) => g.codigo === ocupacion.grupo)?.nombre
-  const resultado = servidor.resultadoRiasec?.codigo_interes?.codigo
+  const resultado = modoLectura ? undefined : servidor.resultadoRiasec?.codigo_interes?.codigo
   return (
-    <DiscoveryStage ambient="atlas" navegacion={false}>
+    <DiscoveryStage ambient="atlas" navegacion={false} variante={variante}>
       <AtlasNavigation section="professions" migas={false} />
       <CatalogRevisitNotice />
       <Parchment className="sx-d-dark sx-c-cabecera">
@@ -69,9 +78,11 @@ export function DetalleOcupacionServidor({ codigo }: { codigo: string }) {
                   Preparación: {preparacionJobZone[ocupacion.job_zone]} ({ocupacion.job_zone} de 5)
                 </span>
               )}
-              {revelado && (
+              {!modoLectura && revelado && (
                 <span className="sx-c-etiqueta sx-c-etiqueta-dorada">
-                  {tituloCaso ? `Ícono revelado en el caso «${tituloCaso}»` : 'Ícono revelado en la Central de Casos'}
+                  {tituloCaso
+                    ? `Ícono revelado en el caso «${tituloCaso}»`
+                    : 'Ícono revelado en la Central de Casos'}
                 </span>
               )}
             </div>
@@ -85,13 +96,15 @@ export function DetalleOcupacionServidor({ codigo }: { codigo: string }) {
             )}
             <SellosRiasec letras={ocupacion.riasec} conNombres />
           </div>
-          <div className="sx-c-cabecera-acciones">
-            <FavoriteButton
-              selected={ocupacion.es_favorita}
-              pendiente={favorito.pendiente('ocupaciones', ocupacion.codigo)}
-              onToggle={() => favorito.alternar('ocupaciones', ocupacion.codigo, !ocupacion.es_favorita)}
-            />
-          </div>
+          {!modoLectura && (
+            <div className="sx-c-cabecera-acciones">
+              <FavoriteButton
+                selected={ocupacion.es_favorita}
+                pendiente={favorito.pendiente('ocupaciones', ocupacion.codigo)}
+                onToggle={() => favorito.alternar('ocupaciones', ocupacion.codigo, !ocupacion.es_favorita)}
+              />
+            </div>
+          )}
         </div>
       </Parchment>
       <div className="sx-d-detail-grid">
@@ -152,7 +165,7 @@ export function DetalleOcupacionServidor({ codigo }: { codigo: string }) {
                 {ocupacion.carreras.length} {ocupacion.carreras.length === 1 ? 'carrera' : 'carreras'}
               </p>
               {ocupacion.carreras.map((c) => (
-                <Link key={c.codigo} className="sx-d-related sx-c-fila-enlace" to={discoveryPaths.career(c.codigo)}>
+                <Link key={c.codigo} className="sx-d-related sx-c-fila-enlace" to={rutas.career(c.codigo)}>
                   <span>
                     <strong>{c.nombre}</strong>
                     {c.duracion && <small>{c.duracion}</small>}
@@ -164,8 +177,12 @@ export function DetalleOcupacionServidor({ codigo }: { codigo: string }) {
               ))}
             </Parchment>
           )}
-          <EntrevistasOcupacion codigo={ocupacion.codigo} />
-          <UnexpectedPlace kind="occupation" currentId={ocupacion.codigo} />
+          {!modoLectura && (
+            <>
+              <EntrevistasOcupacion codigo={ocupacion.codigo} />
+              <UnexpectedPlace kind="occupation" currentId={ocupacion.codigo} />
+            </>
+          )}
         </aside>
       </div>
       <FuentesCatalogo de="profesion" />

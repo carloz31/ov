@@ -9,7 +9,7 @@ import type {
 } from '@/services/api/catalogo'
 import type { ErrorServidor, FamiliaPublica, GrupoPublico, UbicacionPublica } from '@/types/servidor'
 import { accionConRefresco } from './refresco'
-import { consultarCuenta, sesionServidor } from './sesion'
+import { consultarCuenta, consultarCuentaSesion, sesionServidor } from './sesion'
 
 export type {
   ClaseCatalogo,
@@ -25,6 +25,9 @@ export const LIMITE_DETALLES = 20
 export function consultarOcupacion(codigo: string) {
   return consultarCuenta((cuenta) => apiCatalogo.obtenerOcupacion(cuenta, codigo))
 }
+
+// Ajuste catalogo-apoderado: listas, detalles y opciones se piden con la cuenta de la sesión (también el apoderado y
+// la orientadora); la ocupación de la Central y el lugar inesperado siguen siendo del estudiante.
 
 // F06 · Listas del catálogo, pedidas al mostrarse y acumuladas con «Mostrar más». Ajuste catalogo-datos-reales:
 // cada clase guarda solo su combinación de filtros activa; cambiar de búsqueda o filtro descarta las páginas
@@ -119,7 +122,7 @@ export async function cargarLista(clase: ClaseCatalogo, filtros: FiltrosCatalogo
   const previos = mas && actual ? actual.items : []
   listas.set(clase, mas && actual ? { ...actual, estado: 'mas', error: null } : vacia('cargando', llave))
   avisar()
-  const respuesta = await consultarCuenta((cuenta) =>
+  const respuesta = await consultarCuentaSesion((cuenta) =>
     apiCatalogo.buscarCatalogo(
       cuenta,
       clase,
@@ -196,7 +199,7 @@ export function cargarDetalle(clase: ClaseCatalogo, codigo: string, reintentar =
   while (detalles.size > LIMITE_DETALLES) detalles.delete(detalles.keys().next().value!)
   avisar()
   const sesion = sesionServidor()
-  void consultarCuenta((cuenta) => apiCatalogo.obtenerDetalleCatalogo(cuenta, clase, codigo)).then(
+  void consultarCuentaSesion((cuenta) => apiCatalogo.obtenerDetalleCatalogo(cuenta, clase, codigo)).then(
     (respuesta) => {
       if (sesion !== sesionServidor() || !detalles.has(llave)) return
       detalles.set(
@@ -229,9 +232,9 @@ export function useOpcionesCatalogo(activas: boolean): OpcionesCatalogo {
     if (!activas || opciones || opcionesEnCurso) return
     opcionesEnCurso = true
     void Promise.all([
-      consultarCuenta(apiCatalogo.obtenerFamilias),
-      consultarCuenta(apiCatalogo.obtenerUbicaciones),
-      consultarCuenta(apiCatalogo.obtenerGrupos),
+      consultarCuentaSesion(apiCatalogo.obtenerFamilias),
+      consultarCuentaSesion(apiCatalogo.obtenerUbicaciones),
+      consultarCuentaSesion(apiCatalogo.obtenerGrupos),
     ]).then(([familias, ubicaciones, grupos]) => {
       if (sesion !== sesionServidor()) return
       opcionesEnCurso = false

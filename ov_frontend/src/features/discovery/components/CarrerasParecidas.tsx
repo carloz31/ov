@@ -1,11 +1,12 @@
 import { Link } from 'react-router'
 import { Parchment } from '@/components/student/Parchment'
-import { appPaths } from '@/routes/paths'
 import type { CarrerasParecidas as Parecidas, FamiliaPublica } from '@/types/servidor'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 
 // Ajuste catalogo-datos-reales (F6b): cuántas otras carreras de su tipo hay en la familia, tres por nombre, y el
 // listado filtrado por la familia.
 export function CarrerasParecidas({ parecidas, familia }: { parecidas: Parecidas; familia: FamiliaPublica }) {
+  const { rutas } = useModoCatalogo()
   if (!parecidas.total) return null
   return (
     <Parchment title="Carreras parecidas">
@@ -16,7 +17,7 @@ export function CarrerasParecidas({ parecidas, familia }: { parecidas: Parecidas
       </p>
       <Link
         className="sx-d-action sx-d-action-ghost sx-d-full"
-        to={`${appPaths.student.catalog.careers}?familia=${familia.codigo}`}
+        to={`${rutas.catalog.careers}?familia=${familia.codigo}`}
       >
         Ver toda la familia
       </Link>

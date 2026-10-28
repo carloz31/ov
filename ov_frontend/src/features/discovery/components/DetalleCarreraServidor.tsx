@@ -2,10 +2,9 @@ import { Link } from 'react-router'
 import { Clock, FileText } from 'lucide-react'
 import { FavoriteButton } from '@/components/student/FavoriteButton'
 import { Parchment } from '@/components/student/Parchment'
-import { discoveryPaths } from '@/routes/discoveryPaths'
-import { appPaths } from '@/routes/paths'
 import { nombresTipoCarrera } from '@/lib/servidor/adaptadoresCatalogo'
 import { useDetalleServidor } from '../hooks/useDetalleServidor'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 import { usePlanesCarrera } from '../hooks/usePlanesCarrera'
 import { AtlasNavigation } from './AtlasNavigation'
 import { AvisoFavorito } from './AvisoFavorito'
@@ -24,20 +23,28 @@ import '../styles/catalogo.css'
 // F06 · ajuste catalogo-datos-reales (F6b): el detalle de carrera en api. Cabecera con tipo, área y familia;
 // qué trata, dónde trabajar, ingresos y profesiones; al lado, el plan (la acción central), dónde estudiarla,
 // las parecidas y el lugar inesperado; al pie, las fuentes.
-export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
+// Ajuste catalogo-apoderado: en modo lectura, sin favorito, plan ni lugar inesperado.
+export function DetalleCarreraServidor({
+  codigo,
+  variante,
+}: {
+  codigo: string
+  variante?: 'estudiante' | 'portal'
+}) {
+  const { modoLectura, rutas } = useModoCatalogo()
   const { datos: carrera, favorito, ...estado } = useDetalleServidor('carreras', codigo)
-  const planes = usePlanesCarrera(carrera?.codigo ?? codigo, !!carrera?.es_favorita)
-  if (!carrera) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} />
-  const botonFavorito = (
+  const planes = usePlanesCarrera(carrera?.codigo ?? codigo, !!carrera?.es_favorita, !modoLectura)
+  if (!carrera) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} variante={variante} />
+  const botonFavorito = !modoLectura && (
     <FavoriteButton
       selected={carrera.es_favorita}
       pendiente={favorito.pendiente('carreras', carrera.codigo)}
       onToggle={() => favorito.alternar('carreras', carrera.codigo, !carrera.es_favorita)}
     />
   )
-  const areaUrl = `${appPaths.student.catalog.careers}?area=${carrera.familia.area_codigo}`
+  const areaUrl = `${rutas.catalog.careers}?area=${carrera.familia.area_codigo}`
   return (
-    <DiscoveryStage ambient="atlas" navegacion={false}>
+    <DiscoveryStage ambient="atlas" navegacion={false} variante={variante}>
       <AtlasNavigation section="careers" migas={false} />
       <CatalogRevisitNotice />
       <Parchment className="sx-d-dark sx-c-cabecera">
@@ -52,7 +59,7 @@ export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
               </Link>
               <Link
                 className="sx-c-etiqueta sx-c-etiqueta-oscura"
-                to={`${appPaths.student.catalog.careers}?familia=${carrera.familia.codigo}`}
+                to={`${rutas.catalog.careers}?familia=${carrera.familia.codigo}`}
               >
                 {carrera.familia.nombre}
               </Link>
@@ -68,14 +75,15 @@ export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
               )}
               {carrera.nombre_cine && (
                 <span>
-                  <FileText aria-hidden="true" size={16} /> Se registra como <strong>{carrera.nombre_cine}</strong>
+                  <FileText aria-hidden="true" size={16} /> Se registra como{' '}
+                  <strong>{carrera.nombre_cine}</strong>
                 </span>
               )}
             </p>
             <SellosRiasec letras={carrera.riasec} conNombres />
           </div>
           <div className="sx-c-cabecera-acciones">
-            {planes.letra && <span className="sx-c-es-plan">Es tu Plan {planes.letra}</span>}
+            {!modoLectura && planes.letra && <span className="sx-c-es-plan">Es tu Plan {planes.letra}</span>}
             {botonFavorito}
           </div>
         </div>
@@ -111,7 +119,11 @@ export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
               </p>
               <div className="sx-d-two">
                 {carrera.ocupaciones.map((o) => (
-                  <Link className="sx-d-related sx-c-fila-enlace" key={o.codigo} to={discoveryPaths.occupation(o.codigo)}>
+                  <Link
+                    className="sx-d-related sx-c-fila-enlace"
+                    key={o.codigo}
+                    to={rutas.occupation(o.codigo)}
+                  >
                     <strong>{o.titulo}</strong>
                     <SellosRiasec letras={o.riasec} />
                   </Link>
@@ -121,10 +133,10 @@ export function DetalleCarreraServidor({ codigo }: { codigo: string }) {
           )}
         </main>
         <aside className="sx-d-stack">
-          <BloquePlanCarrera planes={planes} favorito={botonFavorito} />
+          {!modoLectura && <BloquePlanCarrera planes={planes} favorito={botonFavorito} />}
           <DondeEstudiarla instituciones={carrera.instituciones} />
           <CarrerasParecidas parecidas={carrera.parecidas} familia={carrera.familia} />
-          <UnexpectedPlace kind="career" currentId={carrera.codigo} />
+          {!modoLectura && <UnexpectedPlace kind="career" currentId={carrera.codigo} />}
         </aside>
       </div>
       <FuentesCatalogo de="carrera" />

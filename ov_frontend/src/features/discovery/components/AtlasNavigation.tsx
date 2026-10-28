@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { ArrowLeft } from 'lucide-react'
-import { appPaths } from '@/routes/paths'
 import { busquedaRecordada } from '../lib/filtrosCatalogo'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 export function AtlasNavigation({
   section,
   migas = true,
@@ -10,10 +10,11 @@ export function AtlasNavigation({
   // Ajuste catalogo-datos-reales: los detalles del servidor no llevan «Catálogo · …» bajo «volver».
   migas?: boolean
 }) {
+  const { rutas } = useModoCatalogo()
   const label = { careers: 'Carreras', professions: 'Ocupaciones', institutions: 'Instituciones' }[section]
   return (
     <div>
-      <Link className="sx-d-back" to={appPaths.student.catalog[section] + busquedaRecordada(section)}>
+      <Link className="sx-d-back" to={rutas.catalog[section] + busquedaRecordada(section)}>
         <ArrowLeft aria-hidden="true" />
         {label}
       </Link>

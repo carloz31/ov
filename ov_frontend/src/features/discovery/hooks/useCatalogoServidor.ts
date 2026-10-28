@@ -24,6 +24,7 @@ import {
   type SeccionCatalogo,
 } from '../lib/filtrosCatalogo'
 import { useFavoritoServidor } from './useFavoritoServidor'
+import { useModoCatalogo } from './useModoCatalogo'
 
 export type { SeccionCatalogo } from '../lib/filtrosCatalogo'
 export const claseDeSeccion: Record<SeccionCatalogo, ClaseCatalogo> = {
@@ -66,7 +67,9 @@ export function useCatalogoServidor(seccion: SeccionCatalogo) {
   const filtros = leerFiltros(seccion, parametros)
   const clave = escribirFiltros(seccion, filtros).toString()
   const servidor = useEstadoServidor()
-  const afines = letrasAfines(servidor.resultadoRiasec?.codigo_interes?.codigo)
+  // Ajuste catalogo-apoderado: en modo lectura no hay resultado propio ni «Afines a mi resultado».
+  const { modoLectura } = useModoCatalogo()
+  const afines = modoLectura ? '' : letrasAfines(servidor.resultadoRiasec?.codigo_interes?.codigo)
   const [texto, setTexto] = useState(filtros.buscar ?? '')
   const escrito = useRef(filtros.buscar ?? '')
   const [consultada, setConsultada] = useState(clave)
@@ -86,8 +89,9 @@ export function useCatalogoServidor(seccion: SeccionCatalogo) {
   }
 
   useEffect(() => {
-    if (seccion !== 'institutions' && servidor.estadoResultado === 'sin_cargar') void cargarResultadoRiasec()
-  }, [seccion, servidor.estadoResultado])
+    if (!modoLectura && seccion !== 'institutions' && servidor.estadoResultado === 'sin_cargar')
+      void cargarResultadoRiasec()
+  }, [modoLectura, seccion, servidor.estadoResultado])
   useEffect(() => recordarBusqueda(seccion, clave), [seccion, clave])
   // La URL cambió desde fuera (atrás, un enlace filtrado): el campo de búsqueda la sigue.
   useEffect(() => {
@@ -122,7 +126,8 @@ export function useCatalogoServidor(seccion: SeccionCatalogo) {
   const favorito = useFavoritoServidor()
   const letras = filtros.afines ? afines : (filtros.riasec ?? '')
   // Filtros activos: las letras y «afines» cuentan como uno (los intereses); la búsqueda y «Mis favoritos», también.
-  const activos = new Set(Object.keys(filtros).map((nombre) => (nombre === 'afines' ? 'riasec' : nombre))).size
+  const activos = new Set(Object.keys(filtros).map((nombre) => (nombre === 'afines' ? 'riasec' : nombre)))
+    .size
   return {
     clase,
     filtros,

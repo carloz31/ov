@@ -1,3 +1,16 @@
+// Ajuste catalogo-apoderado: el catálogo del portal del apoderado y de la orientadora, con las mismas pestañas y
+// detalles que el del estudiante.
+const rutasCatalogo = (base: string) => ({
+  catalog: {
+    professions: `${base}/professions`,
+    careers: `${base}/careers`,
+    institutions: `${base}/institutions`,
+  },
+  career: (id: string) => `${base}/careers/${encodeURIComponent(id)}`,
+  occupation: (id: string) => `${base}/professions/${encodeURIComponent(id)}`,
+  institution: (id: string) => `${base}/institutions/${encodeURIComponent(id)}`,
+})
+
 const appPaths = {
   home: '/',
   login: '/login',
@@ -48,6 +61,7 @@ const appPaths = {
     children: '/parent/children',
     child: (childId: string) => `/parent/children/${childId}`,
     careers: '/parent/careers',
+    explorar: rutasCatalogo('/parent/explorar'),
   },
   counselor: {
     root: '/counselor',
@@ -78,6 +92,7 @@ const appPaths = {
     reports: '/counselor/reports',
     adventure: '/counselor/adventure',
     settings: '/counselor/settings',
+    explorar: rutasCatalogo('/counselor/explorar'),
   },
 } as const
 

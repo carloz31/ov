@@ -1,4 +1,4 @@
-export type CounselorView = 'home' | 'students' | 'reviews' | 'publications' | 'priorities' | 'settings'
+export type CounselorView = 'home' | 'students' | 'reviews' | 'publications' | 'priorities' | 'settings' | 'explorar'
 
 export type AlertCode = 'A1' | 'A2' | 'A3' | 'A4' | 'A5' | 'A6'
 export type TrafficLight = 'priority' | 'attention' | 'on-track'

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { Parchment } from '@/components/student/Parchment'
-import { discoveryPaths } from '@/routes/discoveryPaths'
 import { textoGestion } from '@/lib/servidor/adaptadoresCatalogo'
 import type { InstitucionEnCarrera } from '@/types/servidor'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 
 const VISIBLES = 5
 // Departamento con que arrancan los chips: el perfil del estudiante aún no lo tiene (pendientes-interfaz.md).
@@ -11,7 +11,9 @@ const DEPARTAMENTO_INICIAL = { codigo: 'dep-15', nombre: 'Lima' }
 
 // Ajuste catalogo-datos-reales (F6b): las instituciones que dictan la carrera, acotadas en memoria (el detalle
 // ya las trae todas): el departamento, todo el país o solo las públicas. 5 filas y «Ver las N de <lugar>».
+// Ajuste catalogo-apoderado: en modo lectura, sin favoritas primero ni su marca (orden del backend).
 export function DondeEstudiarla({ instituciones }: { instituciones: InstitucionEnCarrera[] }) {
+  const { modoLectura, rutas } = useModoCatalogo()
   const grupos = [
     {
       id: 'lugar',
@@ -25,7 +27,9 @@ export function DondeEstudiarla({ instituciones }: { instituciones: InstitucionE
   const [todas, setTodas] = useState(false)
   const grupo = grupos.find((g) => g.id === elegido) ?? grupos[0]
   if (!grupo) return null
-  const orden = [...grupo.items].sort((a, b) => Number(b.es_favorita) - Number(a.es_favorita))
+  const orden = modoLectura
+    ? grupo.items
+    : [...grupo.items].sort((a, b) => Number(b.es_favorita) - Number(a.es_favorita))
   return (
     <Parchment title="Dónde estudiarla" className="sx-c-panel">
       <p className="sx-c-conteo">{instituciones.length} instituciones</p>
@@ -45,14 +49,20 @@ export function DondeEstudiarla({ instituciones }: { instituciones: InstitucionE
         ))}
       </div>
       {(todas ? orden : orden.slice(0, VISIBLES)).map((i) => (
-        <Link className="sx-d-related sx-c-institucion" key={i.codigo} to={discoveryPaths.institution(i.codigo)}>
+        <Link className="sx-d-related sx-c-institucion" key={i.codigo} to={rutas.institution(i.codigo)}>
           <strong>{i.nombre}</strong>
-          {i.es_favorita && <span className="sx-c-favorita">Favorita</span>}
-          <small>{[textoGestion(i.gestion), i.distrito ?? i.ubicacion.nombre].filter(Boolean).join(' · ')}</small>
+          {!modoLectura && i.es_favorita && <span className="sx-c-favorita">Favorita</span>}
+          <small>
+            {[textoGestion(i.gestion), i.distrito ?? i.ubicacion.nombre].filter(Boolean).join(' · ')}
+          </small>
         </Link>
       ))}
       {!todas && orden.length > VISIBLES && (
-        <button type="button" className="sx-d-action sx-d-action-ghost sx-d-full" onClick={() => setTodas(true)}>
+        <button
+          type="button"
+          className="sx-d-action sx-d-action-ghost sx-d-full"
+          onClick={() => setTodas(true)}
+        >
           Ver las {orden.length} de {grupo.id === 'lugar' ? grupo.nombre : grupo.nombre.toLowerCase()}
         </button>
       )}

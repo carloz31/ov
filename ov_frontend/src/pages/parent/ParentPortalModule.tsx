@@ -9,6 +9,7 @@ import { useParentProfile } from '@/features/parent/hooks/useParentProfile'
 import { PantallaCargaPortal } from '@/components/staff/PantallaCargaPortal'
 import type { ParentPortalContext } from '@/features/parent/context/parentPortalContext'
 import { useParentActivities } from '@/features/parent/hooks/useParentActivities'
+import { useModoCatalogo } from '@/features/discovery/hooks/useModoCatalogo'
 
 function ParentPortalModule() {
   const navigate = useNavigate()
@@ -17,6 +18,8 @@ function ParentPortalModule() {
   const parentProfile = useParentProfile()
   const context = { ...source, completedActivityIds } satisfies ParentPortalContext
   const routeState = getParentRouteState(location.pathname)
+  // Ajuste catalogo-apoderado: en api, «Explorar opciones» abre directo el catálogo; en local, la guía de siempre.
+  const { catalogoEnPortal } = useModoCatalogo()
   const navigationGroups = useMemo<AppNavigationGroup[]>(
     () => [
       {
@@ -44,12 +47,13 @@ function ParentPortalModule() {
             id: 'careers',
             icon: Compass,
             label: 'Explorar opciones',
-            onSelect: () => navigate(appPaths.parent.careers),
+            onSelect: () =>
+              navigate(catalogoEnPortal ? appPaths.parent.explorar.catalog.careers : appPaths.parent.careers),
           },
         ],
       },
     ],
-    [navigate],
+    [navigate, catalogoEnPortal],
   )
 
   if (source.pantallaCarga)
@@ -108,7 +112,8 @@ function getParentRouteState(pathname: string) {
     return { activeItemId: 'activities', title: 'Actividades para familias' }
   }
   if (pathname.includes('/children')) return { activeItemId: 'overview', title: 'Inicio' }
-  if (pathname.includes('/careers')) return { activeItemId: 'careers', title: 'Explorar opciones' }
+  if (pathname.includes('/careers') || pathname.includes('/explorar'))
+    return { activeItemId: 'careers', title: 'Explorar opciones' }
   return { activeItemId: 'overview', title: 'Inicio' }
 }
 
