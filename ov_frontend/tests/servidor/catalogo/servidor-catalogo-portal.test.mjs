@@ -136,7 +136,8 @@ for (const { cuenta, base, coletilla } of ROLES) {
     arbol = institucion.render()
     assert.equal(elementos(arbol, (e) => e.type === 'a' && e.props.href === 'https://www.unfv.edu.pe/').length, 2)
     assert.equal(nombres(arbol, 'FavoriteButton').length, 0)
-    assert.doesNotMatch(texto(arbol), /Usarla en un presupuesto/)
+    assert.doesNotMatch(texto(arbol), /Usarla en un presupuesto|presupuesto de tu tarjeta/)
+    assert.match(texto(arbol), /Revíselos en su página oficial\./)
     sinPedidosDelEstudiante(app, cuenta)
   })
 }

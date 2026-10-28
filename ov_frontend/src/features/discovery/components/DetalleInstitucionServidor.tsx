@@ -17,7 +17,8 @@ import '../styles/catalogo.css'
 // F06 · ajuste catalogo-datos-reales (F6b): el detalle de institución en api. Cabecera con tipo, gestión,
 // ubicación, cuántas carreras, página web y favorito; la tabla de carreras con su ingreso; al lado, dónde queda
 // y los costos; al pie, las fuentes.
-// Ajuste catalogo-apoderado: en modo lectura, sin favorito ni «Usarla en un presupuesto».
+// Ajuste catalogo-apoderado: en modo lectura, sin favorito, «Usarla en un presupuesto» ni la mención a la tarjeta en
+// «Costos y admisión».
 export function DetalleInstitucionServidor({
   codigo,
   variante,
@@ -92,8 +93,9 @@ export function DetalleInstitucionServidor({
           </Parchment>
           <Parchment title="Costos y admisión">
             <p>
-              Los costos, becas y fechas de admisión cambian cada año. Revísalos en su página oficial y
-              anótalos en el presupuesto de tu tarjeta.
+              {modoLectura
+                ? 'Los costos, becas y fechas de admisión cambian cada año. Revíselos en su página oficial.'
+                : 'Los costos, becas y fechas de admisión cambian cada año. Revísalos en su página oficial y anótalos en el presupuesto de tu tarjeta.'}
             </p>
             {institucion.pagina_web && (
               <a
