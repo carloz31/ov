@@ -3,7 +3,7 @@ import { configurarJourneyServidor } from '../journeyStore'
 import { configurarAdventureServidor } from '../adventureStore'
 import { ciudadDisponible } from '@/lib/servidor/adaptadores'
 import { modoApi } from '@/config/env'
-import { cuentaActiva } from './cuenta'
+import { cuentaActiva, cuentaSesion } from './cuenta'
 import type {
   AmistadAsistente,
   ConversacionesCuenta,
@@ -187,6 +187,18 @@ export async function consultarCuenta<T>(
     return { tipo: 'http', estado: 400, detalle: 'No hay una cuenta de servidor activa.' }
   const respuesta = await consulta(cuenta)
   return cuenta === cuentaActiva() && sesion === revisionCuenta ? respuesta : cambioCuenta()
+}
+// Ajuste catalogo-apoderado: como `consultarCuenta`, con la cuenta de la sesión sea cual sea su rol (el catálogo
+// lo leen también el apoderado y la orientadora).
+export async function consultarCuentaSesion<T>(
+  consulta: (cuenta: string) => Promise<RespuestaServidor<T>>,
+): Promise<RespuestaServidor<T>> {
+  const cuenta = cuentaSesion(),
+    sesion = revisionCuenta
+  if (!modoApi || !cuenta)
+    return { tipo: 'http', estado: 400, detalle: 'No hay una cuenta de servidor activa.' }
+  const respuesta = await consulta(cuenta)
+  return cuenta === cuentaSesion() && sesion === revisionCuenta ? respuesta : cambioCuenta()
 }
 export function mensajeErrorServidor(error: ErrorServidor | null) {
   if (!error) return ''

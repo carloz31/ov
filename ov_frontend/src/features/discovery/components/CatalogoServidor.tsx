@@ -2,6 +2,7 @@ import { Heart, Search } from 'lucide-react'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { useCatalogoServidor, type SeccionCatalogo } from '../hooks/useCatalogoServidor'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 import { AvisoFavorito } from './AvisoFavorito'
 import { BotonLimpiar } from './BotonLimpiar'
 import { FilaResultado } from './FilaResultado'
@@ -57,16 +58,27 @@ function Esqueletos() {
 // F06 · ajuste catalogo-datos-reales (F6a): la pestaña del catálogo en api. Cabecera con el total del dominio,
 // buscador y «Mis favoritos», filtros, contador, grilla de 3, pie con «Mostrar 20 más» y, en carreras y
 // profesiones, el lugar inesperado. La lista se pide al mostrarse, de a 20.
+// Ajuste catalogo-apoderado: en modo lectura (apoderado, orientadora) no hay «Tu exploración», «Mis favoritos»,
+// corazones, afines ni lugar inesperado; `variante="portal"` cambia el kicker y agrega la coletilla del rol.
 export function CatalogoServidor({
   section,
   obtenido,
   iconosRevelados,
+  variante = 'estudiante',
 }: {
   section: SeccionCatalogo
   obtenido: (codigo: string) => boolean
   iconosRevelados: number | null
+  variante?: 'estudiante' | 'portal'
 }) {
   const catalogo = useCatalogoServidor(section)
+  const { modoLectura, rol } = useModoCatalogo()
+  const coletilla =
+    variante !== 'portal'
+      ? ''
+      : rol === 'ORIENTADORA'
+        ? ' La misma información que ven sus estudiantes.'
+        : ' La misma información que ve su hijo o hija.'
   const { lista, totalDominio } = catalogo
   const copia = textos[section]
   const total = totalDominio === null ? '' : `${totalDominio.toLocaleString('es-PE')} `
@@ -74,11 +86,16 @@ export function CatalogoServidor({
     <>
       <header className="sx-d-header" id="inicio-catalogo">
         <div>
-          <p className="sx-d-eyebrow">Atlas del mundo exterior</p>
+          <p className="sx-d-eyebrow">
+            {variante === 'portal' ? 'Explorar opciones' : 'Atlas del mundo exterior'}
+          </p>
           <h1>{copia.titulo}</h1>
-          <p>{copia.descripcion(total)}</p>
+          <p>
+            {copia.descripcion(total)}
+            {coletilla}
+          </p>
         </div>
-        {section === 'professions' && iconosRevelados !== null && totalDominio !== null && (
+        {!modoLectura && section === 'professions' && iconosRevelados !== null && totalDominio !== null && (
           <div className="sx-d-exploration-summary">
             <span className="sx-d-eyebrow">Tu exploración</span>
             <strong>
@@ -98,14 +115,16 @@ export function CatalogoServidor({
             onChange={(e) => catalogo.buscar(e.target.value)}
           />
         </label>
-        <button
-          type="button"
-          className="sx-c-chip sx-c-favoritos"
-          aria-pressed={!!catalogo.filtros.favoritos}
-          onClick={catalogo.alternarFavoritos}
-        >
-          <Heart aria-hidden="true" size={18} /> Mis favoritos
-        </button>
+        {!modoLectura && (
+          <button
+            type="button"
+            className="sx-c-chip sx-c-favoritos"
+            aria-pressed={!!catalogo.filtros.favoritos}
+            onClick={catalogo.alternarFavoritos}
+          >
+            <Heart aria-hidden="true" size={18} /> Mis favoritos
+          </button>
+        )}
       </div>
       <FiltrosCatalogo
         clase={catalogo.clase}
@@ -116,6 +135,7 @@ export function CatalogoServidor({
         onCambiar={catalogo.cambiar}
         onLetra={catalogo.alternarLetra}
         onAfines={catalogo.alternarAfines}
+        soloLetras={modoLectura}
       />
       <FilaResultado
         buscando={catalogo.buscando}
@@ -131,6 +151,7 @@ export function CatalogoServidor({
               key={item.codigo}
               item={item}
               obtenido={obtenido(item.codigo)}
+              conFavorito={!modoLectura}
               pendiente={catalogo.favorito.pendiente(item.codigo)}
               onFavorito={() => catalogo.favorito.alternar(item.codigo, !item.es_favorita)}
             />
@@ -163,7 +184,7 @@ export function CatalogoServidor({
           onMas={catalogo.mostrarMas}
         />
       )}
-      {section !== 'institutions' && (
+      {!modoLectura && section !== 'institutions' && (
         <UnexpectedPlace kind={section === 'careers' ? 'career' : 'occupation'} currentId="" />
       )}
       <AvisoFavorito aviso={catalogo.favorito.aviso} onDismiss={catalogo.favorito.cerrarAviso} />

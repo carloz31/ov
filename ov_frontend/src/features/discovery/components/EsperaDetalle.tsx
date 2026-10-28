@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router'
 import { PantallaCarga } from '@/components/student/PantallaCarga'
-import { appPaths } from '@/routes/paths'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 import { DiscoveryStage } from './DiscoveryStage'
 import { MissingAtlasPage } from './MissingAtlasPage'
 
@@ -9,14 +9,17 @@ export function EsperaDetalle({
   noExiste,
   error,
   onReintentar,
+  variante,
 }: {
   noExiste: boolean
   error: string | null
   onReintentar: () => void
+  variante?: 'estudiante' | 'portal'
 }) {
   const navigate = useNavigate()
+  const { rutas } = useModoCatalogo()
   return (
-    <DiscoveryStage ambient="atlas">
+    <DiscoveryStage ambient="atlas" variante={variante}>
       {noExiste ? (
         <MissingAtlasPage />
       ) : (
@@ -26,7 +29,7 @@ export function EsperaDetalle({
           frase="Lumi está buscando esta página…"
           mensaje={error ?? undefined}
           onReintentar={onReintentar}
-          volver={{ texto: 'Volver al catálogo', onClick: () => navigate(appPaths.student.catalog.professions) }}
+          volver={{ texto: 'Volver al catálogo', onClick: () => navigate(rutas.catalog.professions) }}
           enSeccion
         />
       )}

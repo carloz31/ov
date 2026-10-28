@@ -5,6 +5,7 @@ import { Parchment } from '@/components/student/Parchment'
 import { appPaths } from '@/routes/paths'
 import { nombresTipoInstitucion, textoGestion } from '@/lib/servidor/adaptadoresCatalogo'
 import { useDetalleServidor } from '../hooks/useDetalleServidor'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 import { AtlasNavigation } from './AtlasNavigation'
 import { AvisoFavorito } from './AvisoFavorito'
 import { CarrerasDeInstitucion } from './CarrerasDeInstitucion'
@@ -16,13 +17,21 @@ import '../styles/catalogo.css'
 // F06 · ajuste catalogo-datos-reales (F6b): el detalle de institución en api. Cabecera con tipo, gestión,
 // ubicación, cuántas carreras, página web y favorito; la tabla de carreras con su ingreso; al lado, dónde queda
 // y los costos; al pie, las fuentes.
-export function DetalleInstitucionServidor({ codigo }: { codigo: string }) {
+// Ajuste catalogo-apoderado: en modo lectura, sin favorito ni «Usarla en un presupuesto».
+export function DetalleInstitucionServidor({
+  codigo,
+  variante,
+}: {
+  codigo: string
+  variante?: 'estudiante' | 'portal'
+}) {
+  const { modoLectura } = useModoCatalogo()
   const { datos: institucion, favorito, ...estado } = useDetalleServidor('instituciones', codigo)
-  if (!institucion) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} />
+  if (!institucion) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} variante={variante} />
   const gestion = textoGestion(institucion.gestion)
   const lugar = [institucion.distrito, institucion.ubicacion.nombre].filter(Boolean)
   return (
-    <DiscoveryStage ambient="atlas" navegacion={false}>
+    <DiscoveryStage ambient="atlas" navegacion={false} variante={variante}>
       <AtlasNavigation section="institutions" migas={false} />
       <Parchment className="sx-d-dark sx-c-cabecera">
         <div className="sx-c-cabecera-fila">
@@ -52,11 +61,15 @@ export function DetalleInstitucionServidor({ codigo }: { codigo: string }) {
                 Página web <ExternalLink aria-hidden="true" size={16} />
               </a>
             )}
-            <FavoriteButton
-              selected={institucion.es_favorita}
-              pendiente={favorito.pendiente('instituciones', institucion.codigo)}
-              onToggle={() => favorito.alternar('instituciones', institucion.codigo, !institucion.es_favorita)}
-            />
+            {!modoLectura && (
+              <FavoriteButton
+                selected={institucion.es_favorita}
+                pendiente={favorito.pendiente('instituciones', institucion.codigo)}
+                onToggle={() =>
+                  favorito.alternar('instituciones', institucion.codigo, !institucion.es_favorita)
+                }
+              />
+            )}
           </div>
         </div>
       </Parchment>
@@ -71,24 +84,33 @@ export function DetalleInstitucionServidor({ codigo }: { codigo: string }) {
               <span>
                 {institucion.direccion ?? institucion.ubicacion.nombre}
                 <br />
-                <small>{[institucion.distrito, institucion.ubicacion.nombre].filter(Boolean).join(' · ')}</small>
+                <small>
+                  {[institucion.distrito, institucion.ubicacion.nombre].filter(Boolean).join(' · ')}
+                </small>
               </span>
             </p>
           </Parchment>
           <Parchment title="Costos y admisión">
             <p>
-              Los costos, becas y fechas de admisión cambian cada año. Revísalos en su página oficial y anótalos en
-              el presupuesto de tu tarjeta.
+              Los costos, becas y fechas de admisión cambian cada año. Revísalos en su página oficial y
+              anótalos en el presupuesto de tu tarjeta.
             </p>
             {institucion.pagina_web && (
-              <a className="sx-d-action sx-d-full" href={institucion.pagina_web} target="_blank" rel="noreferrer">
+              <a
+                className="sx-d-action sx-d-full"
+                href={institucion.pagina_web}
+                target="_blank"
+                rel="noreferrer"
+              >
                 Ir a su página web
                 <ExternalLink aria-hidden="true" size={16} />
               </a>
             )}
-            <Link className="sx-d-action sx-d-action-ghost sx-d-full" to={appPaths.student.decisions}>
-              Usarla en un presupuesto
-            </Link>
+            {!modoLectura && (
+              <Link className="sx-d-action sx-d-action-ghost sx-d-full" to={appPaths.student.decisions}>
+                Usarla en un presupuesto
+              </Link>
+            )}
           </Parchment>
         </aside>
       </div>

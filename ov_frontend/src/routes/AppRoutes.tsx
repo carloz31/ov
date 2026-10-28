@@ -3,6 +3,7 @@ import { PortalDeCuenta } from './PortalDeCuenta'
 import { SoloLocal } from './SoloLocal'
 import { SegunModo } from './SegunModo'
 import { subrutasFamilia } from './SubrutasFamilia'
+import { subrutasExplorar } from './SubrutasExplorar'
 import { SeccionProtegida } from '@/features/adventure/components/SeccionProtegida'
 import { Navigate, Route, Routes } from 'react-router'
 import { CounselorDashboardView } from '@/pages/counselor/CounselorDashboardView'
@@ -247,7 +248,16 @@ function AppRoutes() {
           element={<ParentQuestionnaireDetailView />}
           path="children/:childId/questionnaires/:questionnaireId"
         />
-        <Route element={<ParentCareerGuideView />} path="careers" />
+        <Route
+          element={
+            <SegunModo
+              api={<Navigate replace to={appPaths.parent.explorar.catalog.careers} />}
+              local={<ParentCareerGuideView />}
+            />
+          }
+          path="careers"
+        />
+        {subrutasExplorar('apoderado')}
         <Route element={<Navigate replace to={appPaths.parent.overview} />} path="*" />
       </Route>
 
@@ -267,6 +277,7 @@ function AppRoutes() {
         <Route element={<PublicationsView />} path="publications/interviews/:interviewId" />
         <Route element={<PrioritiesView />} path="priorities" />
         <Route element={<CounselorSettingsView />} path="settings" />
+        {subrutasExplorar('orientadora')}
         <Route element={<Navigate replace to={appPaths.counselor.home} />} path="dashboard" />
         <Route element={<Navigate replace to={appPaths.counselor.students} />} path="classrooms" />
         <Route element={<Navigate replace to={appPaths.counselor.students} />} path="families" />

@@ -76,6 +76,7 @@ function Selector({
 // Ajuste catalogo-datos-reales (F6a, rediseño tras la revisión): los filtros de cada pestaña como filas de un
 // panel. Carreras: Tipo, Campo (área y familia según el área) e Intereses. Profesiones: Intereses y Grupo.
 // Instituciones: Tipo, Gestión y Lugar. Los cambios esperan antes de pedir la lista (`useCatalogoServidor`).
+// Ajuste catalogo-apoderado: con `soloLetras` (modo lectura) no hay «Afines a mi resultado»; queda una ayuda.
 export function FiltrosCatalogo({
   clase,
   filtros,
@@ -85,6 +86,7 @@ export function FiltrosCatalogo({
   onCambiar,
   onLetra,
   onAfines,
+  soloLetras = false,
 }: {
   clase: ClaseCatalogo
   filtros: FiltrosUrl
@@ -94,6 +96,7 @@ export function FiltrosCatalogo({
   onCambiar: (cambios: FiltrosUrl) => void
   onLetra: (letra: string) => void
   onAfines: () => void
+  soloLetras?: boolean
 }) {
   const areas = opciones
     ? [
@@ -123,20 +126,30 @@ export function FiltrosCatalogo({
             Código: <strong>{letras}</strong> · en el orden en que los pulsas
           </small>
         )}
-        <button
-          type="button"
-          className="sx-c-chip"
-          aria-pressed={!!filtros.afines}
-          disabled={!afinesDisponibles}
-          aria-describedby={afinesDisponibles ? undefined : 'afines-sin-resultado'}
-          onClick={onAfines}
-        >
-          <Star aria-hidden="true" size={16} /> Afines a mi resultado
-        </button>
-        {!afinesDisponibles && (
-          <small id="afines-sin-resultado" className="sr-only">
-            Revela tu página de intereses para usar este filtro.
-          </small>
+        {soloLetras ? (
+          !letras && (
+            <small className="sx-c-ayuda">
+              Filtre por el tipo de interés de la {clase === 'carreras' ? 'carrera' : 'profesión'}
+            </small>
+          )
+        ) : (
+          <>
+            <button
+              type="button"
+              className="sx-c-chip"
+              aria-pressed={!!filtros.afines}
+              disabled={!afinesDisponibles}
+              aria-describedby={afinesDisponibles ? undefined : 'afines-sin-resultado'}
+              onClick={onAfines}
+            >
+              <Star aria-hidden="true" size={16} /> Afines a mi resultado
+            </button>
+            {!afinesDisponibles && (
+              <small id="afines-sin-resultado" className="sr-only">
+                Revela tu página de intereses para usar este filtro.
+              </small>
+            )}
+          </>
         )}
       </>
     ),
@@ -146,7 +159,9 @@ export function FiltrosCatalogo({
       ? [
           {
             etiqueta: 'Tipo',
-            controles: <Chips opciones={TIPOS_CARRERA} valor={filtros.tipo} onElegir={(tipo) => onCambiar({ tipo })} />,
+            controles: (
+              <Chips opciones={TIPOS_CARRERA} valor={filtros.tipo} onElegir={(tipo) => onCambiar({ tipo })} />
+            ),
           },
           {
             etiqueta: 'Campo',
@@ -191,13 +206,21 @@ export function FiltrosCatalogo({
             {
               etiqueta: 'Tipo',
               controles: (
-                <Chips opciones={TIPOS_INSTITUCION} valor={filtros.tipo} onElegir={(tipo) => onCambiar({ tipo })} />
+                <Chips
+                  opciones={TIPOS_INSTITUCION}
+                  valor={filtros.tipo}
+                  onElegir={(tipo) => onCambiar({ tipo })}
+                />
               ),
             },
             {
               etiqueta: 'Gestión',
               controles: (
-                <Chips opciones={GESTIONES} valor={filtros.gestion} onElegir={(gestion) => onCambiar({ gestion })} />
+                <Chips
+                  opciones={GESTIONES}
+                  valor={filtros.gestion}
+                  onElegir={(gestion) => onCambiar({ gestion })}
+                />
               ),
             },
             {

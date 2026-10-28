@@ -2,35 +2,39 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { ChevronRight, Heart, Search } from 'lucide-react'
 import { Parchment } from '@/components/student/Parchment'
-import { discoveryPaths } from '@/routes/discoveryPaths'
 import { rangoSoles, soles } from '@/lib/servidor/adaptadoresCatalogo'
 import type { CarreraEnInstitucion } from '@/types/servidor'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 
 const VISIBLES = 6
 // Con más carreras que esto, la tabla ofrece buscador y chips por área.
 const CON_FILTROS = 8
-const sinTildes = (texto: string) =>
-  texto
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
+const sinTildes = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
 // Ajuste catalogo-datos-reales (F6b): las carreras de una institución como filas-enlace (favoritas primero),
 // con el ingreso de los egresados de la institución en la familia de cada una.
+// Ajuste catalogo-apoderado: en modo lectura no hay favoritas; las carreras van en el orden del backend.
 export function CarrerasDeInstitucion({ carreras }: { carreras: CarreraEnInstitucion[] }) {
+  const { modoLectura, rutas } = useModoCatalogo()
   const [texto, setTexto] = useState('')
   const [area, setArea] = useState('')
   const [todas, setTodas] = useState(false)
   const areas = [...new Map(carreras.map((c) => [c.familia.area_codigo, c.familia.area_nombre])).entries()]
   const filtradas = carreras
-    .filter((c) => (!area || c.familia.area_codigo === area) && sinTildes(c.nombre).includes(sinTildes(texto.trim())))
-    .sort((a, b) => Number(b.es_favorita) - Number(a.es_favorita))
+    .filter(
+      (c) =>
+        (!area || c.familia.area_codigo === area) && sinTildes(c.nombre).includes(sinTildes(texto.trim())),
+    )
+    .sort((a, b) => (modoLectura ? 0 : Number(b.es_favorita) - Number(a.es_favorita)))
   const visibles = todas ? filtradas : filtradas.slice(0, VISIBLES)
   return (
     <Parchment title="Carreras que ofrece">
       <p className="sx-c-subtitulo">
-        Tus favoritas van primero y cada carrera lleva a su detalle. El ingreso es el <strong>promedio mensual</strong>{' '}
-        de los egresados de esta institución en <strong>esa familia de carreras</strong>, no de la carrera exacta.
+        {modoLectura
+          ? 'Cada carrera lleva a su detalle.'
+          : 'Tus favoritas van primero y cada carrera lleva a su detalle.'}{' '}
+        El ingreso es el <strong>promedio mensual</strong> de los egresados de esta institución en{' '}
+        <strong>esa familia de carreras</strong>, no de la carrera exacta.
       </p>
       {carreras.length > CON_FILTROS && (
         <>
@@ -50,7 +54,12 @@ export function CarrerasDeInstitucion({ carreras }: { carreras: CarreraEnInstitu
                 Todas las áreas
               </button>
               {areas.map(([codigo, nombre]) => (
-                <button type="button" key={codigo} aria-pressed={area === codigo} onClick={() => setArea(codigo)}>
+                <button
+                  type="button"
+                  key={codigo}
+                  aria-pressed={area === codigo}
+                  onClick={() => setArea(codigo)}
+                >
                   {nombre}
                 </button>
               ))}
@@ -65,10 +74,10 @@ export function CarrerasDeInstitucion({ carreras }: { carreras: CarreraEnInstitu
           <span role="columnheader">Promedio de egresados de la familia</span>
         </div>
         {visibles.map((c) => (
-          <Link className="sx-c-tabla-fila" role="row" key={c.codigo} to={discoveryPaths.career(c.codigo)}>
+          <Link className="sx-c-tabla-fila" role="row" key={c.codigo} to={rutas.career(c.codigo)}>
             <span role="cell">
               <strong>{c.nombre}</strong>
-              {c.es_favorita && (
+              {!modoLectura && c.es_favorita && (
                 <span className="sx-c-favorita">
                   <Heart aria-hidden="true" size={12} fill="currentColor" /> Favorita
                 </span>
@@ -92,7 +101,11 @@ export function CarrerasDeInstitucion({ carreras }: { carreras: CarreraEnInstitu
         {!filtradas.length && <p>Ninguna carrera coincide con tu búsqueda.</p>}
       </div>
       {!todas && filtradas.length > VISIBLES && (
-        <button type="button" className="sx-d-action sx-d-action-ghost sx-d-full" onClick={() => setTodas(true)}>
+        <button
+          type="button"
+          className="sx-d-action sx-d-action-ghost sx-d-full"
+          onClick={() => setTodas(true)}
+        >
           Mostrar las {filtradas.length - VISIBLES} restantes
         </button>
       )}

@@ -4,8 +4,9 @@ import { usePlanesServidor } from '@/features/plans/hooks/usePlanesServidor'
 // Ajuste catalogo-datos-reales (F6b) · F07a: la carrera frente a los planes del servidor (el detalle de carrera
 // solo existe en api): ya es un plan, los tres están ocupados, no es favorita (un plan se crea solo desde una
 // favorita) o hay espacio para armarlo. Sin los planes (PLANES cerrada o cargando), el bloque no se muestra.
-export function usePlanesCarrera(codigo: string, esFavorita: boolean) {
-  const { datos } = usePlanesServidor()
+// Ajuste catalogo-apoderado: `activo` falso (modo lectura) no pide los planes y el bloque no se muestra.
+export function usePlanesCarrera(codigo: string, esFavorita: boolean, activo = true) {
+  const { datos } = usePlanesServidor(activo)
   const acciones = useAccionesPlanes()
   const planes = datos?.planes ?? []
   return {

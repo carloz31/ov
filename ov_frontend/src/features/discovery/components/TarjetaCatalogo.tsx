@@ -1,28 +1,31 @@
 import { Link } from 'react-router'
 import { MapPin } from 'lucide-react'
 import { FavoriteButton } from '@/components/student/FavoriteButton'
-import { appPaths } from '@/routes/paths'
-import { discoveryPaths } from '@/routes/discoveryPaths'
 import { nombresTipoCarrera, nombresTipoInstitucion, textoGestion } from '@/lib/servidor/adaptadoresCatalogo'
 import type { ClaseCatalogo, ResumenCatalogo } from '@/store/servidor/catalogo'
+import { useModoCatalogo } from '../hooks/useModoCatalogo'
 import { IconoProfesion } from './IconoProfesion'
 import { SellosRiasec } from './SellosRiasec'
 
 // Ajuste catalogo-datos-reales (F6a): la tarjeta de cada listado del catálogo del servidor. Carrera: tipo,
 // nombre, familia (enlace al listado filtrado), sellos y duración. Profesión: sellos, ícono, título y resumen.
 // Institución: tipo y gestión, nombre y «Departamento · Distrito».
+// Ajuste catalogo-apoderado: sin `conFavorito` (modo lectura) no lleva corazón; los enlaces siguen las rutas del rol.
 export function TarjetaCatalogo({
   item,
   obtenido = false,
+  conFavorito = true,
   pendiente,
   onFavorito,
 }: {
   item: ResumenCatalogo[ClaseCatalogo]
   obtenido?: boolean
+  conFavorito?: boolean
   pendiente: boolean
   onFavorito: () => void
 }) {
-  const favorito = (
+  const { rutas } = useModoCatalogo()
+  const favorito = conFavorito && (
     <FavoriteButton compact selected={item.es_favorita} pendiente={pendiente} onToggle={onFavorito} />
   )
   if ('familia' in item)
@@ -35,12 +38,9 @@ export function TarjetaCatalogo({
           {favorito}
         </div>
         <h2>
-          <Link to={discoveryPaths.career(item.codigo)}>{item.nombre}</Link>
+          <Link to={rutas.career(item.codigo)}>{item.nombre}</Link>
         </h2>
-        <Link
-          className="sx-c-familia"
-          to={`${appPaths.student.catalog.careers}?familia=${item.familia.codigo}`}
-        >
+        <Link className="sx-c-familia" to={`${rutas.catalog.careers}?familia=${item.familia.codigo}`}>
           {item.familia.nombre}
         </Link>
         <div className="sx-c-tarjeta-pie">
@@ -59,7 +59,7 @@ export function TarjetaCatalogo({
         <div className="sx-c-profesion">
           <IconoProfesion grupo={item.grupo} revelado={obtenido} />
           <h2>
-            <Link to={discoveryPaths.occupation(item.codigo)}>{item.titulo}</Link>
+            <Link to={rutas.occupation(item.codigo)}>{item.titulo}</Link>
           </h2>
         </div>
         {item.resumen && <p className="sx-d-clamp-two">{item.resumen}</p>}
@@ -78,7 +78,7 @@ export function TarjetaCatalogo({
         {favorito}
       </div>
       <h2>
-        <Link to={discoveryPaths.institution(item.codigo)}>{item.nombre}</Link>
+        <Link to={rutas.institution(item.codigo)}>{item.nombre}</Link>
       </h2>
       <p className="sx-c-lugar">
         <MapPin aria-hidden="true" size={16} />
