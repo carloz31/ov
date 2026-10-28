@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Check, Contrast, Lock, Trash2 } from 'lucide-react'
+import { ArrowUp, Check, Contrast, Lock, Trash2 } from 'lucide-react'
 import { textoGestion } from '@/lib/servidor/adaptadoresCatalogo'
 import {
   ESTADOS_SECCION,
@@ -47,7 +47,7 @@ function CasillaSeccion({ seccion, conTexto }: { seccion: SeccionPlan; conTexto:
 }
 
 // F07a · ajuste v4.2: el frente de un plan en Mis planes. El A es la tarjeta principal («tu ruta principal», casillas
-// con texto); B y C son compactas, con «Hacer mi plan A». Sin cita del «por qué», sin barra ni orden por flechas.
+// con texto); B y C son compactas, con «Subir prioridad» (ajuste de Mis planes). Sin cita del «por qué» ni barra.
 export function TarjetaPlan({
   plan,
   indice,
@@ -55,7 +55,7 @@ export function TarjetaPlan({
   primerInteres,
   ocupado,
   onEliminar,
-  onHacerA,
+  onSubir,
 }: {
   plan: PlanCarrera
   indice: number
@@ -63,7 +63,7 @@ export function TarjetaPlan({
   primerInteres: boolean
   ocupado: boolean
   onEliminar: () => void
-  onHacerA?: () => void
+  onSubir?: () => void
 }) {
   const letra = plan.prioridad,
     gestion = plan.institucion && textoGestion(plan.institucion.gestion),
@@ -113,14 +113,14 @@ export function TarjetaPlan({
           >
             {textoBotonPlan(plan)}
           </Link>
-          {!principal && onHacerA && (
+          {!principal && onSubir && (
             <button
               type="button"
               className="sx-d-action sx-d-action-ghost"
               disabled={ocupado}
-              onClick={onHacerA}
+              onClick={onSubir}
             >
-              Hacer mi plan A
+              <ArrowUp aria-hidden="true" size={16} /> Subir prioridad
             </button>
           )}
         </div>

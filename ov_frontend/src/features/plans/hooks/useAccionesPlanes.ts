@@ -54,16 +54,17 @@ export function useAccionesPlanes() {
     })
   }
 
-  // Ajuste v4.2: «Hacer mi plan A» envía la permutación con esa carrera primero; los demás se corren.
-  async function hacerA(planes: PlanCarrera[], carrera: string) {
-    const elegido = planes.find((p) => p.carrera.codigo === carrera)
-    if (!elegido || elegido.prioridad === 'A') return
-    const carreras = [carrera, ...planes.map((p) => p.carrera.codigo).filter((c) => c !== carrera)]
+  // Ajuste de Mis planes: «Subir prioridad» cambia el plan con el de arriba (C sube a B, B sube a A).
+  async function subir(planes: PlanCarrera[], carrera: string) {
+    const i = planes.findIndex((p) => p.carrera.codigo === carrera)
+    if (i < 1) return
+    const carreras = planes.map((p) => p.carrera.codigo)
+    ;[carreras[i - 1], carreras[i]] = [carreras[i], carreras[i - 1]]
     setOcupado(`ordenar:${carrera}`)
     const respuesta = await ordenarPlanes(carreras)
     setOcupado(null)
     if (!respondio(respuesta)) return fallo(respuesta)
-    avisar({ titulo: `${elegido.carrera.nombre} ahora es tu plan A`, error: false })
+    avisar({ titulo: `${planes[i].carrera.nombre} ahora es tu plan ${'ABC'[i - 1]}`, error: false })
   }
 
   async function eliminar(carrera: string) {
@@ -78,5 +79,5 @@ export function useAccionesPlanes() {
     })
   }
 
-  return { ocupado, aviso, cerrarAviso: () => setAviso(null), avisar, crear, hacerA, eliminar }
+  return { ocupado, aviso, cerrarAviso: () => setAviso(null), avisar, crear, subir, eliminar }
 }

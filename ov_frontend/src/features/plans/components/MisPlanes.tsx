@@ -47,7 +47,8 @@ function EspacioPlan({
 
 // F07a · ajuste v4.2 (F07b-pantallas §2): Mis planes con los planes del servidor. El plan A es la tarjeta
 // principal; B y C, «Rutas alternas» compactas a la derecha, con los espacios libres al final. Aviso de misma
-// familia; crear desde favoritas, «Hacer mi plan A» y eliminar.
+// familia; crear desde favoritas, «Subir prioridad» (con confirmación) y eliminar. Ajuste: «Ruta principal» sobre
+// el plan A, que ocupa el mismo alto que las rutas alternas.
 export function MisPlanes() {
   const focus = useReturnFocus()
   const v = useMisPlanes()
@@ -75,7 +76,7 @@ export function MisPlanes() {
       primerInteres={planes[i].carrera.codigo === opcion_inicial?.codigo}
       ocupado={!!v.ocupado}
       onEliminar={() => v.pedirEliminar(planes[i].carrera.codigo)}
-      onHacerA={() => void v.hacerA(planes, planes[i].carrera.codigo)}
+      onSubir={() => v.pedirSubir(planes[i].carrera.codigo)}
     />
   )
   return (
@@ -100,7 +101,12 @@ export function MisPlanes() {
         </p>
       ))}
       <div className="sx-p-mis-planes">
-        <div className="sx-p-principal">{planes[0] ? tarjeta(0) : espacio(0)}</div>
+        <section className="sx-p-principal" aria-labelledby="sx-p-principal-titulo">
+          <h2 id="sx-p-principal-titulo" className="sx-p-fila-titulo">
+            Ruta principal
+          </h2>
+          {planes[0] ? tarjeta(0) : espacio(0)}
+        </section>
         <section className="sx-p-alternas" aria-labelledby="sx-p-alternas-titulo">
           <h2 id="sx-p-alternas-titulo" className="sx-p-fila-titulo">
             Rutas alternas
@@ -128,7 +134,8 @@ export function MisPlanes() {
               ¿Eliminar el plan {v.porEliminar?.prioridad} · {v.porEliminar?.carrera.nombre}?
             </DialogTitle>
             <DialogDescription>
-              Lo que escribiste queda guardado: si vuelves a crearlo desde tus favoritos, lo recuperas tal como estaba.
+              Lo que escribiste queda guardado: si vuelves a crearlo desde tus favoritos, lo recuperas tal
+              como estaba.
             </DialogDescription>
           </DialogHeader>
           <div className="sx-d-actions">
@@ -141,6 +148,39 @@ export function MisPlanes() {
             </button>
             <button type="button" className="sx-d-action" onClick={() => void v.confirmarEliminar()}>
               Eliminar plan
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!v.porSubir} onOpenChange={(open) => !open && !v.ocupado && v.pedirSubir(null)}>
+        <DialogContent {...focus} className="sx-root sx-d-dialog">
+          <DialogHeader>
+            <DialogTitle>
+              ¿Subir {v.porSubir?.carrera.nombre} al plan {v.planArriba?.prioridad}?
+            </DialogTitle>
+            <DialogDescription>
+              {v.porSubir?.carrera.nombre} pasa a ser tu plan {v.planArriba?.prioridad} y{' '}
+              {v.planArriba?.carrera.nombre} baja al plan {v.porSubir?.prioridad}. Puedes cambiarlo cuando
+              quieras.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="sx-d-actions">
+            <button
+              type="button"
+              className="sx-d-action sx-d-action-ghost"
+              disabled={!!v.ocupado}
+              onClick={() => v.pedirSubir(null)}
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className="sx-d-action"
+              aria-busy={!!v.ocupado}
+              disabled={!!v.ocupado}
+              onClick={() => void v.confirmarSubir()}
+            >
+              {v.ocupado ? 'Guardando…' : 'Subir prioridad'}
             </button>
           </div>
         </DialogContent>

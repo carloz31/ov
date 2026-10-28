@@ -63,7 +63,7 @@ test('Mis planes v4.2: A como ruta principal, B y C como rutas alternas compacta
   const marcado = texto(arbol)
   assert.doesNotMatch(marcado, /planes listos para comparar/)
   assert.match(marcado, /Tus planes A y B son de la misma familia, Psicología\..*Explorar otras áreas/)
-  assert.match(marcado, /Rutas alternas/)
+  assert.match(marcado, /Ruta principal.*Rutas alternas/)
   const tarjetas = elementos(arbol, (e) => e.type?.name === 'TarjetaPlan')
   assert.deepEqual(copia(tarjetas.map((t) => [t.props.plan.prioridad, t.props.principal])), [
     ['A', true],
@@ -97,9 +97,9 @@ test('Mis planes v4.2: A como ruta principal, B y C como rutas alternas compacta
   assert.doesNotMatch(textoA, new RegExp(bloqueada.bloqueo[0].mensaje))
   assert.match(textoA, /Seguir con: Por qué la elijo/)
   assert.match(textoA, /Último cambio: /)
-  assert.equal(elementos(a, (e) => e.type === 'button' && texto(e) === 'Hacer mi plan A').length, 0)
+  assert.equal(elementos(a, (e) => e.type === 'button' && texto(e).includes('Subir prioridad')).length, 0)
   const b = TarjetaPlan(tarjetas[1].props)
-  assert.match(texto(b), /Empezar: Por qué la elijo.*Hacer mi plan A/)
+  assert.match(texto(b), /Empezar: Por qué la elijo.*Subir prioridad/)
   assert.ok(elementos(b, (e) => e.type?.name === 'CasillaSeccion').every((c) => c.props.conTexto === false))
   assert.doesNotMatch(texto(b), /tu ruta principal/)
 })
@@ -212,12 +212,27 @@ test('un 409 al crear muestra el mensaje del servidor y no navega', async () => 
   assert.equal(app.navigations.length, 0)
 })
 
-test('«Hacer mi plan A» envía la permutación con esa carrera primero; eliminar confirma y avisa', async () => {
+test('«Subir prioridad» confirma, ocupa el botón y cambia el plan con el de arriba; eliminar confirma y avisa', async () => {
   const { app } = misPlanes()
   const vista = await montar(app, 'src/features/plans/components/MisPlanes.tsx')
   let arbol = vista.render()
   const [a, b] = elementos(arbol, (e) => e.type?.name === 'TarjetaPlan')
-  b.props.onHacerA()
+  b.props.onSubir()
+  arbol = vista.render()
+  assert.equal(app.requests.filter((r) => r.url.endsWith('/acciones/planes/ordenar')).length, 0)
+  const [primero, segundo] = familia.planes.map((p) => p.carrera.nombre)
+  assert.ok(
+    texto(arbol).includes(
+      `¿Subir ${segundo} al plan A?${segundo} pasa a ser tu plan A y ${primero} baja al plan B.`,
+    ),
+  )
+  const confirmar = () =>
+    elementos(vista.render(), (e) => e.type === 'button' && /Subir prioridad|Guardando…/.test(texto(e))).at(
+      -1,
+    )
+  confirmar().props.onClick()
+  assert.equal(texto(confirmar()), 'Guardando…')
+  assert.equal(confirmar().props.disabled, true)
   await esperar()
   const ordenar = app.requests.find((r) => r.url.endsWith('/acciones/planes/ordenar'))
   assert.deepEqual(copia(ordenar.body.carreras), [

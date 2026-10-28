@@ -47,9 +47,34 @@
   display: grid;
   gap: 16px;
 }
-.sx-p-alternas > h2 {
+.sx-p-alternas > h2,
+.sx-p-principal > h2 {
   margin: 0;
   color: var(--sx-night-text);
+}
+/* Ajuste de Mis planes: «Ruta principal» sobre el plan A, que estira su tarjeta al alto de las rutas alternas
+   (el pie «Último cambio» baja al fondo). */
+.sx-p-principal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+@media (min-width: 900px) {
+  .sx-p-mis-planes {
+    align-items: stretch;
+  }
+  .sx-p-principal > .sx-p-tarjeta,
+  .sx-p-principal > .sx-p-espacio {
+    flex: 1;
+  }
+  .sx-p-principal > .sx-p-tarjeta > .sx-d-parchment {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .sx-p-principal > .sx-p-tarjeta .sx-p-cambio {
+    margin-top: auto;
+  }
 }
 .sx-p-tarjeta > .sx-d-parchment {
   display: grid;
