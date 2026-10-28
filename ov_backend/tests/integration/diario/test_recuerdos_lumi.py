@@ -60,11 +60,11 @@ def test_ver_un_recuerdo_no_cuenta_en_avances_ni_desbloquea_nada(cliente):
     avanzar(cliente)
     escribir(cliente)
     afinidad = pedir(cliente, 'GET', '/cuentas/est-ana/logros')['afinidad']
-    familia = pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')['estudiante']['avance']
+    familia = pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')['estudiantes'][0]['avance']
     respuesta = completar(cliente, 't-lumi-1')
     assert respuesta['nuevos_desbloqueos'] == []
     assert pedir(cliente, 'GET', '/cuentas/est-ana/logros')['afinidad'] == afinidad
-    assert pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')['estudiante']['avance'] == familia
+    assert pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')['estudiantes'][0]['avance'] == familia
     # Se puede volver a ver: repetirlo la mantiene completada.
     completar(cliente, 't-lumi-1')
     _, actividades = recuerdos(cliente)
