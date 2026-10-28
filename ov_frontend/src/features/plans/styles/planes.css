@@ -696,7 +696,7 @@
 .sx-p-gastos td:last-child:not(:nth-child(3)) {
   width: 40px;
 }
-.sx-p-total {
+.sx-p-costo {
   display: flex;
   flex-wrap: wrap;
   gap: 12px 24px;
@@ -707,30 +707,30 @@
   background: var(--sx-night);
   color: var(--sx-night-text);
 }
-.sx-p-total[data-en-vivo='false'] {
+.sx-p-costo[data-en-vivo='false'] {
   align-items: flex-start;
   height: 100%;
 }
-.sx-p-total small {
+.sx-p-costo small {
   display: block;
   font-size: 13px;
 }
-.sx-p-total strong {
+.sx-p-costo strong {
   display: block;
   font-size: 30px;
   font-weight: 800;
   line-height: 1.2;
 }
-.sx-p-total p {
+.sx-p-costo p {
   margin: 2px 0 0;
   font-size: 13px;
 }
-.sx-p-total .sx-p-total-casa {
+.sx-p-costo .sx-p-costo-casa {
   margin-top: 14px;
   font-weight: 700;
   color: var(--sx-gold);
 }
-.sx-p-total .sx-p-total-formula {
+.sx-p-costo .sx-p-costo-formula {
   max-width: 240px;
   color: var(--sx-night-muted);
   font-size: 12px;
@@ -847,6 +847,8 @@
   text-transform: uppercase;
   vertical-align: 2px;
 }
+/* `.sx-discovery button` da 44 px a todo botón: la casilla del lienzo mide 22. */
+.sx-discovery .sx-p-casilla-paso,
 .sx-p-casilla-paso {
   display: grid;
   flex: none;
@@ -942,7 +944,7 @@
   border-radius: 0 10px 10px 0;
 }
 .sx-p-segmentado > button[aria-pressed='true'] {
-  background: var(--sx-gold-deep);
+  background: var(--sx-gold);
   color: var(--sx-night);
 }
 .sx-p-mini-medidores {
@@ -987,7 +989,7 @@
   background: color-mix(in srgb, var(--sx-parchment-muted) 25%, transparent);
 }
 .sx-p-barra > span[data-lleno='true'] {
-  background: var(--sx-gold-deep);
+  background: var(--sx-gold);
 }
 .sx-p-mini-medidores li[data-valorado='false'] .sx-p-barra > span {
   border: 1px dashed var(--sx-parchment-muted);
@@ -997,4 +999,12 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--sx-parchment-muted);
+}
+/* En lectura, la tarjeta del costo ocupa el alto de su fila, junto a la tabla (lienzo de la sección 3). */
+.sx-p-realidad > div {
+  display: flex;
+  flex-direction: column;
+}
+.sx-p-realidad > div > dd:has(> .sx-p-costo) {
+  flex: 1;
 }

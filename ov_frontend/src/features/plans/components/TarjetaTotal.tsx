@@ -20,17 +20,17 @@ export function TarjetaTotal({
     carrera !== null &&
     ` · toda la carrera ≈ ${soles(carrera)}${enVivo && anios ? ` (${textoAnios(anios)})` : ''}`
   return (
-    <div className="sx-p-total" data-en-vivo={enVivo}>
+    <div className="sx-p-costo" data-en-vivo={enVivo}>
       <div>
         <small>{enVivo ? 'Primer año, con lo que tienes ahora' : 'Primer año'}</small>
         <strong>≈ {soles(primerAnio)}</strong>
         <p>
           ≈ {soles(Math.round(primerAnio / 12))} al mes{carreraTexto}
         </p>
-        {!enVivo && <p className="sx-p-total-casa">Muéstrales este número en casa.</p>}
+        {!enVivo && <p className="sx-p-costo-casa">Muéstrales este número en casa.</p>}
       </div>
       {enVivo && (
-        <p className="sx-p-total-formula">
+        <p className="sx-p-costo-formula">
           Se recalcula mientras editas. Una vez × 1 · Mensual × 12 · Por ciclo × {ciclosPorAnio} · Anual × 1.
         </p>
       )}
