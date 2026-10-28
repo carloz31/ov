@@ -16,7 +16,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** la tarjeta de Conversaciones del inicio (estilo de alerta que ya tiene la tarjeta en local).
 - **Opciones:** resaltar la tarjeta cuando hay temas por responder; un contador en el menú; no resaltar.
 - **Si no se muestra:** el inicio muestra conversadas y por conversar del hijo activo, sin alerta.
-- **Estado:** pospuesto en F08.
+- **Estado:** resuelto en el ajuste inicio-apoderado: la tarjeta «Conversaciones con {hijo}» lleva «{hijo} te espera en N» y «Seguir conversando» como acción principal.
 
 ## 2026-10-28 · F08 · Varios hijos en el inicio del apoderado
 
@@ -24,7 +24,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** «Mis hijos», el avance del hijo y sus resultados en el inicio (hoy, solo el primero).
 - **Opciones:** `familia?estudiante=` como en Conversaciones (ajuste sin modelo); un selector en el inicio; mantener el primero.
 - **Si no se muestra:** con dos hijos, el inicio muestra al primero; Conversaciones ya permite elegir.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** resuelto en el ajuste inicio-apoderado: `GET /familia` entrega `estudiantes` y el inicio tiene un selector compartido con Conversaciones.
 
 ## 2026-10-28 · F08 · Tramos colapsables en Mis actividades
 
@@ -551,3 +551,11 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Opciones:** una sección de recursos en el portal; mostrarlas dentro de cada actividad; no mostrarlas todavía.
 - **Si no se muestra:** las fichas del apoderado se obtienen sin que se vean.
 - **Estado:** resuelto en F08: chips por actividad en Mis actividades (A7) y el modal compartido sin favorito (A8), con el contenido pedido al abrir.
+
+## 2026-10-28 · Ajuste inicio-apoderado · Comparación partida → llegada para el apoderado
+
+- **Dato:** los dos resultados de partida y llegada del hijo (`GET /cuentas/{c}/familia/resultados`, uno por aplicación con el mismo instrumento), si el salón llegara a compartir ese cuestionario con la familia.
+- **Dónde se mostraría:** la vista explicada del apoderado (`ParentQuestionnaireDetailView`), con el cambio de zona por dimensión.
+- **Opciones:** reutilizar la comparación del libro de Helena en modo lectura; una tabla sencilla «partida / llegada» por dimensión; no mostrarla (solo el resultado más reciente).
+- **Si no se muestra:** el inicio y la vista explicada usan el resultado de llegada si existe y, si no, el de partida. Hoy ningún salón de `ruta` lo comparte (mide también la presión de la familia).
+- **Estado:** pendiente.

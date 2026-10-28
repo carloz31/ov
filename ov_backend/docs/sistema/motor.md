@@ -231,8 +231,8 @@ Código: `app/services/familia.py`. Solo para cuentas APODERADO; otras, 404.
 
 - **Avance** (`avance_ruta`, común a ambos roles): actividades requeridas COMPLETADAS sobre las requeridas de los bloques de la audiencia de la cuenta; las opcionales no cuentan. Es el avance que ve la familia; el del panel del estudiante es otro (ver «Avance del estudiante»).
 - **Diploma:** se obtiene al completar todos los bloques de su audiencia (COMPLETA_BLOQUE de cada uno); `obtenido_en` es la fecha del último.
-- **Hijo:** el estudiante del vínculo activo, con su avance y su nivel actual.
-- **Resultados del hijo:** solo con el diploma (si no, 409) y vínculo activo (si no, 409); los resultados vigentes del hijo en los cuestionarios que `salon_instrumento` marca `visible_apoderado` en su salón, con la misma forma que la consulta de resultado del estudiante.
+- **Hijos:** los estudiantes de sus vínculos activos, por código de vínculo, cada uno con su avance, su nivel actual y sus cuestionarios: los que `salon_instrumento` marca `visible_apoderado` en su salón, con cada aplicación (partida antes que llegada) y la fecha de su resultado vigente (`calculado_en`, nulo sin él). Los cuestionarios y su estado se entregan sin diploma; los puntajes no (ajuste inicio-apoderado).
+- **Resultados del hijo:** solo con el diploma (si no, 409, antes de mirar el hijo); del hijo elegido (`estudiante`; uno ajeno, 404) o del primer vínculo activo (sin vínculo, 409); los resultados vigentes del hijo en esos cuestionarios, en el mismo orden, con la misma forma que la consulta de resultado del estudiante.
 
 ## Preguntas de batalla (F04b)
 
