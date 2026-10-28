@@ -35,6 +35,8 @@ import { CiudadScreen } from '@/pages/student/CiudadScreen'
 import { StudentFamilyConversationsView } from '@/pages/student/StudentFamilyConversationsView'
 import { StudentFamiliaView } from '@/pages/student/StudentFamiliaView'
 import { ParentFamiliaView } from '@/pages/parent/ParentFamiliaView'
+import { ParentMisActividadesView } from '@/pages/parent/ParentMisActividadesView'
+import { ParentDiplomaView } from '@/pages/parent/ParentDiplomaView'
 import { ParentActivitiesView } from '@/pages/parent/ParentActivitiesView'
 import { ParentActivityView } from '@/pages/parent/ParentActivityView'
 import { ParentCareerGuideView } from '@/pages/parent/ParentCareerGuideView'
@@ -215,7 +217,19 @@ function AppRoutes() {
       <Route element={<ParentPortalModule />} path="/parent">
         <Route element={<Navigate replace to={appPaths.parent.overview} />} index />
         <Route element={<ParentOverviewView />} path="overview" />
-        <Route element={<ParentActivitiesView />} path="activities" />
+        <Route
+          element={<SegunModo api={<ParentMisActividadesView />} local={<ParentActivitiesView />} />}
+          path="activities"
+        />
+        <Route
+          element={
+            <SegunModo
+              api={<ParentDiplomaView />}
+              local={<Navigate replace to={appPaths.parent.activities} />}
+            />
+          }
+          path="activities/diploma"
+        />
         <Route
           element={
             <SegunModo api={<ParentFamiliaView />} local={<FamilyConversationsView audience="parent" />} />

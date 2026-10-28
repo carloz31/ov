@@ -69,7 +69,8 @@ function ParentPortalModule() {
       </ThemeProvider>
     )
 
-  if (/^\/parent\/activities\/[^/]+\/?$/.test(location.pathname))
+  // Una actividad abierta va sin menú; el diploma (F08), dentro del portal.
+  if (/^\/parent\/activities\/(?!diploma\/?$)[^/]+\/?$/.test(location.pathname))
     return (
       <ThemeProvider theme="staff">
         <div className="theme-staff min-h-svh bg-background text-foreground" data-audience="parent">
@@ -101,6 +102,8 @@ function ParentPortalModule() {
 function getParentRouteState(pathname: string) {
   if (pathname.includes('/conversations'))
     return { activeItemId: 'conversations', title: 'Conversaciones en familia' }
+  if (pathname.includes('/activities/diploma'))
+    return { activeItemId: 'activities', title: 'Actividades para familias · Diploma' }
   if (pathname.includes('/activities')) {
     return { activeItemId: 'activities', title: 'Actividades para familias' }
   }

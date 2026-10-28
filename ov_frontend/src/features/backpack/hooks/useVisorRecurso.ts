@@ -20,7 +20,11 @@ export function useVisorRecurso(resource?: TravelResource, externo?: FavoritoExt
   const [pendiente, setPendiente] = useState(false)
   const id = resource?.id ?? ''
   if (externo)
-    return { favorito: externo.favorita, pendiente: !!externo.pendiente, alternarFavorito: externo.onFavorite }
+    return {
+      favorito: externo.favorita,
+      pendiente: !!externo.pendiente,
+      alternarFavorito: externo.onFavorite,
+    }
   if (modoApi) {
     const favorito = !!resource?.favorita
     // Mientras el POST corre, el botón muestra un cargador; confirmado, el store actualiza la ficha cargada.
@@ -51,16 +55,26 @@ export function useVisorRecurso(resource?: TravelResource, externo?: FavoritoExt
 
 // Ajuste mochila: abrir el modal de ficha la marca como abierta, venga de donde venga. En api registra
 // VISTA_FICHA (apaga «Nueva»); en local la agrega a las visitas y a las leídas, que reemplazan «Leí la ficha».
+// F08: `externa` es el contenido que trae otro almacén (las fichas del apoderado): el modal no lo pide ni registra
+// la vista, que hace quien lo abre.
+export type ContenidoExterno = {
+  estado: 'cargando' | 'listo' | 'error'
+  contenido: string | null
+  error: string | null
+  reintentar: () => void
+}
 export function useFichaModal(
   resource: TravelResource | undefined,
   enlazarActividad: boolean,
   externo?: FavoritoExterno,
+  externa?: ContenidoExterno,
 ) {
   const actividades = useActividadesServidor(enlazarActividad && Boolean(resource))
   const id = resource?.id
   const visto = resource?.ficha?.visto
+  const conExterna = !!externa
   useEffect(() => {
-    if (!id) return
+    if (!id || conExterna) return
     if (modoApi) {
       if (visto === false) void verFicha(id)
       return
@@ -72,7 +86,7 @@ export function useFichaModal(
       const leidas = current.readResourceIds ?? current.resources
       return leidas.includes(id) ? current : { ...current, readResourceIds: [...leidas, id] }
     })
-  }, [id, visto])
+  }, [id, visto, conExterna])
   const actividad = resource?.ficha?.actividad
   const href =
     !enlazarActividad || !actividad
@@ -81,9 +95,26 @@ export function useFichaModal(
         ? hrefActividad(actividades.datos, actividad.codigo)
         : `${appPaths.student.missions}?actividad=${encodeURIComponent(actividad.codigo)}`
   // En api, el contenido de una ficha del servidor llega aparte: hasta entonces, el cuerpo muestra su carga.
-  const remoto = modoApi && resource?.contenidoRemoto ? resource : undefined
+  const remoto = modoApi && resource?.contenidoRemoto && !externa ? resource : undefined
   const detalle = useFichaDetalle(remoto?.id)
-  const conContenido = remoto && detalle?.datos ? { ...remoto, content: detalle.datos.contenido } : resource
+  const visor = useVisorRecurso(resource, externo)
+  const conContenido = externa
+    ? resource && externa.contenido !== null
+      ? { ...resource, content: externa.contenido }
+      : resource
+    : remoto && detalle?.datos
+      ? { ...remoto, content: detalle.datos.contenido }
+      : resource
+  if (externa)
+    return {
+      recurso: conContenido,
+      cargandoContenido: externa.estado === 'cargando',
+      errorContenido: externa.error,
+      reintentarContenido: externa.reintentar,
+      minutos: tiempoLectura(conContenido?.content),
+      hrefActividad: href,
+      ...visor,
+    }
   return {
     recurso: conContenido,
     cargandoContenido: !!remoto && detalle?.estado !== 'listo' && detalle?.estado !== 'error',
@@ -91,6 +122,6 @@ export function useFichaModal(
     reintentarContenido: () => remoto && cargarFicha(remoto.id),
     minutos: tiempoLectura(conContenido?.content),
     hrefActividad: href,
-    ...useVisorRecurso(resource, externo),
+    ...visor,
   }
 }

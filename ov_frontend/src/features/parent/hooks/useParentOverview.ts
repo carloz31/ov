@@ -18,6 +18,8 @@ import { useResultadosHijo } from './useResultadosHijo'
 import { usePrioritySettings } from '@/features/counselor/hooks/usePrioritySettings'
 import { canAccessFamilyConversations, useAdventure } from '@/store/adventureStore'
 import { familyConversationTopics, familyConversationDemoData } from '@/data/content/familyConversations'
+import { modoApi } from '@/config/env'
+import { useConversacionesApoderadoSeccion } from '@/store/servidor/apoderadoConversaciones'
 
 export function useParentOverview() {
   const mainRef = useRef<HTMLElement>(null)
@@ -57,12 +59,21 @@ export function useParentOverview() {
     return () => window.clearTimeout(timer)
   }, [requestedDiploma, route.complete])
   const shared = questionnaires.filter((q) => familySharedIds(settings).includes(q.id))
-  const conversation = conversationSummary(
-    familyConversationTopics,
-    familyConversationDemoData,
-    state.conversations,
-    canAccessFamilyConversations(state),
-  )
+  // F08: en api, el avance de las conversaciones con el hijo activo (sin la sección abierta, ninguna).
+  const servidor = useConversacionesApoderadoSeccion(modoApi).seccion.datos
+  const conversation =
+    modoApi && servidor
+      ? {
+          available: servidor.total,
+          completed: servidor.completadas,
+          pending: servidor.total - servidor.completadas,
+        }
+      : conversationSummary(
+          familyConversationTopics,
+          familyConversationDemoData,
+          state.conversations,
+          canAccessFamilyConversations(state),
+        )
   const student = studentProfiles.find((s) => s.id === child?.id)
   const progress = student ? generalProgress(student, activities) : null
   // F03: en api, los resultados del hijo (con el diploma obtenido).

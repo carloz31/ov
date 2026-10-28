@@ -37,6 +37,8 @@ const appPaths = {
     root: '/parent',
     overview: '/parent/overview',
     activities: '/parent/activities',
+    // F08: el diploma de compromiso, dentro de Mis actividades.
+    diploma: '/parent/activities/diploma',
     conversations: '/parent/conversations',
     // F08: la carta, el regalo y una conversación del apoderado.
     conversationLetter: '/parent/conversations/carta',

@@ -183,3 +183,39 @@ test('apoderado: el hijo activo es el primero de la sesión y elegir otro pide s
   store.elegirHijo('est-beto')
   assert.equal(store.hijoActivo(), 'est-ana')
 })
+
+test('apoderado: las fichas se listan livianas, el contenido se pide al abrir y abrirla quita «Nueva»', async () => {
+  const { app } = await almacenApoderado()
+  app.fetch((req) => {
+    if (req.url.endsWith('/cuentas/apo-rosa/fichas'))
+      return { body: jsonServidor('ruta/ruta-apoderado-fichas-final') }
+    if (req.url.endsWith('/fichas/t-ficha-apo'))
+      return { body: jsonServidor('ruta/ruta-apoderado-ficha-t-ficha-apo') }
+    if (req.url.endsWith('/acciones/ver-ficha')) return { body: sinRespuestas }
+    throw Error(`Solicitud no configurada: ${req.url}`)
+  })
+  const fichas = app.load('src/store/servidor/apoderadoFichas.ts')
+  await fichas.cargarFichasApoderado()
+  const [ficha] = fichas.obtenerFichasApoderado().lista.datos
+  assert.deepEqual([ficha.codigo, ficha.visto, ficha.actividad.codigo], ['t-ficha-apo', false, 't-apo-1'])
+  // La lista no trae el contenido: se pide al abrir.
+  assert.equal('contenido' in ficha, false)
+  app.requests.length = 0
+  await fichas.abrirFichaApoderado('t-ficha-apo')
+  await new Promise((r) => setTimeout(r, 0))
+  assert.deepEqual(
+    app.requests.map((r) => r.url),
+    ['/api/cuentas/apo-rosa/fichas/t-ficha-apo', '/api/acciones/ver-ficha'],
+  )
+  const estado = fichas.obtenerFichasApoderado()
+  assert.equal(estado.detalles['t-ficha-apo'].estado, 'listo')
+  assert.equal(estado.lista.datos[0].visto, true)
+})
+
+test('apoderado: antes de completar, la ficha bloqueada dice qué actividad la da (chip «1 ficha al completar»)', () => {
+  const [bloqueada] = jsonServidor('ruta/ruta-apoderado-fichas-inicial')
+  assert.deepEqual([bloqueada.estado, bloqueada.actividad.codigo], ['BLOQUEADA', 't-apo-1'])
+  const familia = jsonServidor('ruta/ruta-familia')
+  assert.match(familia.diploma.codigo, /^EXP-AP-\d{4}-\d{5}-\d$/)
+  assert.equal(jsonServidor('ruta/ruta-apoderado-familia-inicial').diploma.codigo, null)
+})

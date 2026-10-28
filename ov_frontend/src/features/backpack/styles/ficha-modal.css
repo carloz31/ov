@@ -169,3 +169,38 @@
     padding: 12px 16px;
   }
 }
+/* F08 (A8): el modal en el portal del apoderado, claro y con el acento del portal. */
+.sx-ficha-modal--apoderado.sx-backpack-viewer {
+  background: var(--card);
+  color: var(--foreground);
+}
+.sx-ficha-modal__cabecera--apoderado {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.sx-ficha-modal__icono {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 64px;
+  height: 72px;
+  border: 1px solid var(--border);
+  border-top: 6px solid var(--primary);
+  border-radius: 10px;
+  color: var(--primary);
+}
+.sx-ficha-modal__kicker {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.sx-ficha-modal__cabecera--apoderado [data-slot='dialog-description'],
+.sx-ficha-modal__cabecera--apoderado p + h2 + p {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
