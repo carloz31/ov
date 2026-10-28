@@ -24,9 +24,33 @@ export const codigosEco = (eco: string | string[] | undefined) => (eco === undef
 export function citaReferencia(referencia: ReferenciaResuelta | undefined): string | undefined {
   if (referencia?.estado !== 'DISPONIBLE') return undefined
   const textos = (referencia.opciones ?? []).map((o) => o.texto)
-  if (referencia.tipo === 'RESULTADO') return textos.length ? `Tu código de interés: ${textos.join(' · ')}` : undefined
+  if (referencia.tipo === 'RESULTADO')
+    return textos.length ? `Tu código de interés: ${textos.join(' · ')}` : undefined
   if (referencia.tipo === 'COINCIDENCIAS')
     return textos.length ? `Ocupaciones afines: ${textos.slice(0, 3).join(', ')}` : undefined
-  if (referencia.tipo === 'RESPUESTA_CUESTIONARIO') return referencia.texto ? `«${referencia.texto}»` : undefined
+  if (referencia.tipo === 'RESPUESTA_CUESTIONARIO')
+    return referencia.texto ? `«${referencia.texto}»` : undefined
+  // F07b: las referencias de los planes. PLANES por prioridad (A, B, C); PLAN, la carrera del plan A con su relato
+  // (sus motivos van como chips, `chipsReferencia`); PASOS_PLAN_A, sus pasos; OPCION_INICIAL, la carrera.
+  if (referencia.tipo === 'PLANES')
+    return textos.length
+      ? `Tus planes: ${textos.map((t, i) => `${'ABC'[i] ?? ''} · ${t}`).join(', ')}`
+      : undefined
+  if (referencia.tipo === 'PLAN') {
+    if (!referencia.texto) return undefined
+    return referencia.cita
+      ? `Tu plan A, ${referencia.texto}: «${referencia.cita}»`
+      : `Tu plan A, ${referencia.texto}`
+  }
+  if (referencia.tipo === 'PASOS_PLAN_A')
+    return textos.length ? `Tus pasos: ${textos.map((t) => `«${t}»`).join(', ')}` : undefined
+  if (referencia.tipo === 'OPCION_INICIAL')
+    return referencia.texto ? `Tu primer interés: ${referencia.texto}` : undefined
   return undefined
+}
+
+// F07b: los motivos del plan A (referencia PLAN), que la zona de eco muestra como chips.
+export function chipsReferencia(referencia: ReferenciaResuelta | undefined): string[] {
+  if (referencia?.estado !== 'DISPONIBLE' || referencia.tipo !== 'PLAN') return []
+  return (referencia.opciones ?? []).map((o) => o.texto)
 }

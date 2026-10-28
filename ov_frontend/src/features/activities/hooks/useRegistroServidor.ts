@@ -10,7 +10,7 @@ import {
 } from '@/store/servidor/registro'
 import { mensajeErrorServidor, obtenerEstadoServidor } from '@/store/servidor/sesion'
 import { actividadServidor } from '@/lib/servidor/adaptadores'
-import { anterioresDe, citaReferencia, codigosEco } from '@/lib/servidor/adaptadoresRegistro'
+import { anterioresDe, chipsReferencia, citaReferencia, codigosEco } from '@/lib/servidor/adaptadoresRegistro'
 import type { Nodo } from '@/types/activities'
 import type {
   ItemRegistroPublico,
@@ -283,7 +283,15 @@ export function useRegistroServidor({
       const referencia = referencias.find((r) => r.tipo === 'TEXTO')
       if (!referencia) {
         const citas = referencias.map(citaReferencia).filter((c): c is string => !!c)
-        return citas.length ? { estado: 'DISPONIBLE', texto: '', titulo: '', cita: citas.join('. ') } : undefined
+        const chips = referencias.flatMap(chipsReferencia)
+        if (!citas.length) return undefined
+        return {
+          estado: 'DISPONIBLE',
+          texto: '',
+          titulo: '',
+          cita: citas.join('. '),
+          ...(chips.length ? { chips } : {}),
+        }
       }
       if (referencia.estado === 'SIN_DATO') return undefined
       const origen = actividadServidor(obtenerEstadoServidor().actividades.datos, referencia.actividad ?? '')

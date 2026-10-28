@@ -11,7 +11,28 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-comparar-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Ya tienes dos planes listos. Pongámoslos lado a lado."
+    },
+    {
+      "id": "t-comparar-eleccion",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-comparar-eleccion",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eco": "t-ref-planes"
+    }
+  ],
   "mapa": {
     "x": 960,
     "y": 350,

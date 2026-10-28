@@ -38,19 +38,30 @@ test('ruta dibuja T0, T1 y T2 en el orden del servidor, con su tramo y su estado
   ])
   const { contenidoPorClave } = m.app.load('src/data/activities/contenidos.ts')
   const inicio = camino[0]
-  assert.deepEqual([inicio.title, inicio.x, inicio.y, inicio.subtitle], [
-    'Inicio de prueba',
-    contenidoPorClave('t_inicio').mapa.x,
-    contenidoPorClave('t_inicio').mapa.y,
-    'Informativa · 5 min',
-  ])
-  assert.ok(m.ciudad().filter((p) => p.specActivityId?.startsWith('t-')).every((p) => p.status === 'locked'))
+  assert.deepEqual(
+    [inicio.title, inicio.x, inicio.y, inicio.subtitle],
+    [
+      'Inicio de prueba',
+      contenidoPorClave('t_inicio').mapa.x,
+      contenidoPorClave('t_inicio').mapa.y,
+      'Informativa · 5 min',
+    ],
+  )
+  assert.ok(
+    m
+      .ciudad()
+      .filter((p) => p.specActivityId?.startsWith('t-'))
+      .every((p) => p.status === 'locked'),
+  )
   assert.equal(m.siguiente(camino).id, 't-inicio')
   assert.ok(m.siguiente(camino).nodos.length > 0)
 })
 
 test('lo que se abre al desbloquear aparece solo cuando el servidor lo hace visible', () => {
-  const visibles = (etapa) => mapa(`ruta/ruta-actividades-${etapa}`).camino().map((p) => p.specActivityId)
+  const visibles = (etapa) =>
+    mapa(`ruta/ruta-actividades-${etapa}`)
+      .camino()
+      .map((p) => p.specActivityId)
   assert.equal(visibles('t1').includes('t-opcional'), false)
   assert.equal(visibles('ciudad').includes('t-opcional'), true)
   assert.equal(visibles('ciudad').includes('t-adicional'), true)
@@ -75,14 +86,19 @@ test('el avance del camino cuenta solo las actividades requeridas, como el servi
     assert.deepEqual(zona.tramo, avance.tramo_actual)
   }
   const m = mapa('ruta/ruta-actividades-t2')
-  assert.equal(m.app.load('src/lib/servidor/contenidos.ts').progresoBloque(m.bloques, 'CIUDAD').completadas, 3)
+  assert.equal(
+    m.app.load('src/lib/servidor/contenidos.ts').progresoBloque(m.bloques, 'CIUDAD').completadas,
+    3,
+  )
 })
 
 test('un contenido sin nodos ubica el punto, pero no abre actividad', () => {
   const m = mapa('ruta/ruta-actividades-t2')
   const { getPointDetails } = m.app.load('src/features/adventure/lib/pointDetails.ts')
   const { actividadPorContenido } = m.app.load('src/lib/servidor/contenidos.ts')
-  // F03 dio nodos a t-lee-cuestionario: el ejemplo de contenido sin nodos pasa a t-comparar (T2).
+  // F03 dio nodos a t-lee-cuestionario y F07b, a t-comparar: el ejemplo vacía en la prueba los nodos de t-comparar
+  // (T2), porque ya no queda un registro abierto sin contenido.
+  m.app.load('src/data/activities/contenidos.ts').contenidoPorClave('t_comparar').nodos.length = 0
   const pendiente = m.camino().find((p) => p.specActivityId === 't-comparar')
   assert.equal(pendiente.status, 'available')
   const detalle = getPointDetails(pendiente, {}, {})
@@ -163,7 +179,10 @@ test('orden remoto, códigos nuevos, visibilidad y secuencias dirigen puntos y s
 test('contenido sin posición no se dibuja ni participa del progreso', () => {
   const m = mapa('ruta/ruta-actividades-inicial')
   m.bloques[0].actividades[0].contenido = 'pad_01_acompanar'
-  assert.equal(m.camino().some((p) => p.specActivityId === 't-inicio'), false)
+  assert.equal(
+    m.camino().some((p) => p.specActivityId === 't-inicio'),
+    false,
+  )
   assert.equal(m.app.load('src/lib/servidor/contenidos.ts').progresoBloque(m.bloques).total, 6)
 })
 
@@ -233,7 +252,10 @@ test('una opcional lleva su insignia, su duración del servidor y no cuenta para
 
 test('la Ciudad cerrada se explica desde el selector: sin llave en el mapa y con el mensaje del bloque', async () => {
   const m = mapa('ruta/ruta-actividades-t1')
-  assert.equal(m.camino().some((p) => p.id === 'city'), false)
+  assert.equal(
+    m.camino().some((p) => p.id === 'city'),
+    false,
+  )
   const mensaje = m.bloques.find((b) => b.codigo === 'CIUDAD').bloqueo[0].mensaje
   const { useMapScreen } = m.app.load('src/features/adventure/hooks/useMapScreen.ts')
   const adventure = m.app.load('src/store/adventureStore.ts').useAdventure()
@@ -255,7 +277,10 @@ test('la Ciudad cerrada se explica desde el selector: sin llave en el mapa y con
     onCityLocked: () => explicada++,
   })
   const tree = selector.render()
-  assert.equal(elementos(tree, (e) => typeof e.type !== 'string' && /Tooltip/.test(e.type?.name ?? '')).length, 0)
+  assert.equal(
+    elementos(tree, (e) => typeof e.type !== 'string' && /Tooltip/.test(e.type?.name ?? '')).length,
+    0,
+  )
   assert.equal(elementos(tree, (e) => e.props?.children === mensaje).length, 0)
   elementos(tree, (e) => e.type === 'button' && e.props.className === 'sx-zone-city')[0].props.onClick()
   assert.equal(explicada, 1)
@@ -290,54 +315,65 @@ test('en api el drawer, el panel, los tramos y el reproductor toman sus textos d
   assert.equal(getPointDetails(sinTiempo, {}, {}).meta, '')
   const { BlockSign } = m.app.load('src/features/adventure/components/BlockSign.tsx')
   const letreros = BlockSign({ points: m.camino() }).props.children.map((s) => s.props.children[1])
-  assert.deepEqual(copia(letreros), m.bloques.filter((b) => b.espacio === 'MISIONES_CAMPO').map((b) => b.nombre))
+  assert.deepEqual(
+    copia(letreros),
+    m.bloques.filter((b) => b.espacio === 'MISIONES_CAMPO').map((b) => b.nombre),
+  )
   const inicio = actividadPorContenido(m.bloques, 't-inicio')
-  assert.deepEqual([inicio.titulo, inicio.ubicacion], [m.bloques[0].actividades[0].titulo, m.bloques[0].nombre])
+  assert.deepEqual(
+    [inicio.titulo, inicio.ubicacion],
+    [m.bloques[0].actividades[0].titulo, m.bloques[0].nombre],
+  )
 })
 
 test('las opcionales van fuera del camino, con línea desde su origen, y se revelan una por una', () => {
   const m = mapa('ruta/ruta-actividades-t1')
   const camino = m.camino()
   const opcionales = camino.filter((p) => p.additional)
-  assert.deepEqual(
-    copia(opcionales.map((p) => [p.specActivityId, p.originId, p.opcional])),
-    [
-      ['t-valores', 't-cierre-inicio', true],
-      ['t-lee-cuestionario', 't-cierre-inicio', true],
-      ['t-batalla', 't-cierre-inicio', true],
-    ],
-  )
+  assert.deepEqual(copia(opcionales.map((p) => [p.specActivityId, p.originId, p.opcional])), [
+    ['t-valores', 't-cierre-inicio', true],
+    ['t-lee-cuestionario', 't-cierre-inicio', true],
+    ['t-batalla', 't-cierre-inicio', true],
+  ])
   // El camino principal une solo las requeridas, en orden y cruzando bloques.
   const { MapPath } = m.app.load('src/features/adventure/components/MapPath.tsx')
   const lineas = MapPath({ points: camino }).props.children
-  assert.deepEqual(
-    copia(lineas[0].map((l) => l.key)),
-    ['t-inicio-t-partida', 't-partida-t-cierre-inicio', 't-cierre-inicio-t-expectativas', 't-expectativas-t-llegada', 't-llegada-t-comparar', 't-comparar-t-proyecto'],
-  )
+  assert.deepEqual(copia(lineas[0].map((l) => l.key)), [
+    't-inicio-t-partida',
+    't-partida-t-cierre-inicio',
+    't-cierre-inicio-t-expectativas',
+    't-expectativas-t-llegada',
+    't-llegada-t-comparar',
+    't-comparar-t-proyecto',
+  ])
   assert.equal(lineas[1].filter(Boolean).length, 3)
   // Los desbloqueos de una acción quedan en memoria y se revelan uno por uno.
   const avisos = m.app.load('src/store/servidor/avisos.ts')
   avisos.incorporarDesbloqueos(
-    jsonServidor('ruta/ruta-completar-t-cierre-inicio')
-      .nuevos_desbloqueos.concat(
-        ['t-valores', 't-lee-cuestionario', 't-batalla', 't-partida'].map((codigo) => ({
-          regla: `DATO DE PRUEBA ${codigo}`,
-          tipo_objetivo: 'ACTIVIDAD',
-          objetivo: { codigo, nombre: codigo },
-          condiciones: [],
-        })),
-      ),
+    jsonServidor('ruta/ruta-completar-t-cierre-inicio').nuevos_desbloqueos.concat(
+      ['t-valores', 't-lee-cuestionario', 't-batalla', 't-partida'].map((codigo) => ({
+        regla: `DATO DE PRUEBA ${codigo}`,
+        tipo_objetivo: 'ACTIVIDAD',
+        objetivo: { codigo, nombre: codigo },
+        condiciones: [],
+      })),
+    ),
   )
   const estado = (codigo) => {
     const p = m.camino().find((x) => x.specActivityId === codigo)
     return p.revealing ? 'revela' : p.revealQueued ? 'espera' : 'visible'
   }
-  assert.deepEqual(
-    ['t-valores', 't-lee-cuestionario', 't-batalla'].map(estado),
-    ['revela', 'espera', 'espera'],
-  )
+  assert.deepEqual(['t-valores', 't-lee-cuestionario', 't-batalla'].map(estado), [
+    'revela',
+    'espera',
+    'espera',
+  ])
   avisos.quitarPorRevelar((c) => c === 't-valores')
-  assert.deepEqual(['t-valores', 't-lee-cuestionario', 't-batalla'].map(estado), ['visible', 'revela', 'espera'])
+  assert.deepEqual(['t-valores', 't-lee-cuestionario', 't-batalla'].map(estado), [
+    'visible',
+    'revela',
+    'espera',
+  ])
   // Una requerida no se anima: el Camino la descarta de la cola.
   avisos.quitarPorRevelar((c) => !['t-lee-cuestionario', 't-batalla'].includes(c))
   assert.deepEqual(copia(m.sesion.obtenerEstadoServidor().porRevelar), ['t-lee-cuestionario', 't-batalla'])
@@ -379,11 +415,13 @@ test('en api las opcionales llevan «?» sin píldora, lo bloqueado candado y la
 })
 
 test('completar t-cierre-inicio encola para revelar las opcionales que su bloque vuelve visibles', async () => {
-  const { escenarioRuta, esConsultaDominio, respuestaDominio } = await import('../../soporte/servidor-ayudas.mjs')
+  const { escenarioRuta, esConsultaDominio, respuestaDominio } =
+    await import('../../soporte/servidor-ayudas.mjs')
   const app = fixtureServidor()
   let etapa = 'inicial'
   app.fetch((r) => {
-    if (r.url === '/api/acciones/ingresar') return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
+    if (r.url === '/api/acciones/ingresar')
+      return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
     if (r.url === '/api/acciones/completar-actividad') {
       etapa = 't1'
       return { body: jsonServidor('ruta/ruta-completar-t-cierre-inicio') }
@@ -399,7 +437,11 @@ test('completar t-cierre-inicio encola para revelar las opcionales que su bloque
   assert.deepEqual(copia(sesion.obtenerEstadoServidor().porRevelar), [])
   // El servidor solo informa NIVEL, SECCION y BLOQUE T1; las opcionales llegan al volverse visibles.
   assert.equal((await acciones.completarActividad('t-cierre-inicio')).tipo, 'ok')
-  assert.deepEqual(copia(sesion.obtenerEstadoServidor().porRevelar), ['t-valores', 't-lee-cuestionario', 't-batalla'])
+  assert.deepEqual(copia(sesion.obtenerEstadoServidor().porRevelar), [
+    't-valores',
+    't-lee-cuestionario',
+    't-batalla',
+  ])
   const camino = app.load('src/features/adventure/lib/caminoPoints.ts').getCaminoPoints({}, {})
   assert.deepEqual(
     copia(camino.filter((p) => p.additional).map((p) => [p.specActivityId, !!p.revealing, !!p.revealQueued])),

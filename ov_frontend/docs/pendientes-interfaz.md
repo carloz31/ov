@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-28 · F07b · Planes fuera de los lotes F07
+
+- **Dato:** lo que B11 dejó fuera y ningún lote F07 implementa: HU-049 (sugerir revisar los planes al completar un cuestionario, un caso o una comprobación, o al publicar una entrevista); «Es a propósito» en el aviso de misma familia (guardar que el estudiante ya respondió); lo que ve la orientadora de las tarjetas (HU-086, B14).
+- **Dónde se mostraría:** el cierre de actividad o un aviso en Mis planes (HU-049); la franja del aviso de misma familia; el perfil del estudiante en el portal de la orientadora (F10).
+- **Opciones:** HU-049 como aviso en el cierre de actividad con enlace a Mis planes, o como franja en Mis planes; «Es a propósito» como botón en el aviso, con su campo en el backend; las tarjetas en la vista de la orientadora cuando llegue B14.
+- **Si no se muestra:** el estudiante no recibe el recordatorio de revisar sus planes y el aviso de misma familia sigue apareciendo.
+- **Estado:** pendiente de su lote (backend sin implementar para HU-049 y «Es a propósito»; B14 para la orientadora).
+
 ## 2026-10-28 · Ajuste F07a v4.2 · Compartir o imprimir el plan
 
 - **Dato:** el plan completo (secciones, dudas y, desde F07b, presupuesto y pasos) ya está en `GET /planes`; no hay forma de compartirlo ni imprimirlo para verlo en familia.
@@ -203,19 +211,6 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Opciones:** conectar familia en su lote F con estas consultas; mientras tanto, el portal del apoderado sigue con sus actividades y su diploma actuales.
 - **Si no se muestra:** en modo `api` las conversaciones, las cartas y los resultados visibles al apoderado existen solo en el servidor. El aviso al apoderado cuando el hijo habilita una conversación (HU-067) queda fuera de B12.
 - **Estado:** pendiente del lote F de familia; no se toca la interfaz en B12.
-
-## 2026-10-15 · B11 · Planes de carrera
-
-- **Dato:**
-  - `GET /cuentas/{c}/planes`: hasta tres tarjetas por prioridad (A, B, C) con sus cuatro secciones (POR_QUE, CONOCIMIENTO, REALIDAD, PASOS), el estado de cada una (`BLOQUEADA`, `POR_EMPEZAR`, `EN_PROCESO`, `LISTA`, con el motivo de bloqueo que nombra la actividad que la abre), `lista_para_comparar`, dudas, gastos con `totales_por_frecuencia`, `total_primer_anio` y `total_carrera`, financiamiento, complicaciones, sugerencias, pasos, medidores (1–3), `avisos` de misma familia, `opcion_inicial` y `opciones` (las listas de la tarjeta);
-  - `POST /acciones/planes/crear`, `guardar-seccion`, `medidores`, `paso-hecho`, `ordenar` y `eliminar`. Dudas, complicaciones, sugerencias y pasos se identifican por `numero` dentro de la tarjeta;
-  - `gestion` (PUBLICA, PRIVADA o nula) en `InstitucionResumen` del catálogo.
-  - referencias nuevas en `GET /cuentas/{c}/actividades/{a}/referencias`: PLANES (carreras por prioridad), PLAN (plan A: `texto` con la carrera, `cita` con el relato y `opciones` con los motivos), PASOS_PLAN_A y OPCION_INICIAL. `cita` es un campo nuevo de la referencia que el front no consume todavía.
-- **Precarga de gastos (responsabilidad del front):** el backend no inserta gastos ni devuelve una propuesta. Con `opciones.rubros` (`frecuencia_recomendada`, `monto_referencia`, `cero_si_publica`, `solo_si_camino_prepara`), `opciones.caminos` (`incluye_preparacion`) y la `gestion` de la institución elegida, el front arma en vivo los gastos precargados: Pensión en 0 si la institución es pública (con su monto de referencia si no tiene gestión), Preparación solo si el camino incluye prepararse, y Alimentación y Vivienda a mano. Al guardar REALIDAD envía los gastos que el estudiante dejó.
-- **Dónde se mostraría:** la sección Planes del estudiante (tarjeta por secciones, medidores, orden A/B/C, aviso de misma familia), el detalle de institución del catálogo (pública o privada) y las actividades 4.5 y 5.1 (`t-comparar` y `t-proyecto` en `ruta`), que citan los planes, el relato del plan A, sus pasos y la opción inicial.
-- **Opciones:** conectar Planes en su lote F con la tarjeta v4; mantener los planes locales actuales (`DecisionSheet`), que no coinciden con este modelo, hasta diseñar la vista.
-- **Si no se muestra:** en modo `api` los planes, la opción inicial y los requisitos de `t-comparar` y `t-proyecto` existen solo en el servidor.
-- **Estado:** en parte resuelto en F07a. En api, Mis planes (lista A/B/C con estados por sección, «Lista para comparar», aviso de misma familia, opción inicial como «Tu primer interés»), crear desde favoritas, ordenar, eliminar y el plan abierto con POR_QUE y CONOCIMIENTO (dudas que se crean y se cierran) leen y escriben en el servidor; `gestion` se ve desde F06. Queda para F07b: REALIDAD (presupuesto con precarga y totales, financiamiento, complicaciones), las `sugerencias` (el servidor ya las genera al guardar CONOCIMIENTO, sin mostrarse), PASOS, medidores, `cita` en las referencias y el contenido de `t-comparar` y `t-proyecto`.
 
 ## 2026-10-14 · B09 · Avance por temática
 

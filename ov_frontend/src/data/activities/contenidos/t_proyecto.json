@@ -11,7 +11,32 @@
   "personajeIds": [
     "companero"
   ],
-  "nodos": [],
+  "nodos": [
+    {
+      "id": "t-proyecto-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Tu plan A ya tiene pasos. Armemos tu proyecto con ellos."
+    },
+    {
+      "id": "t-proyecto-paso",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-proyecto-paso",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eco": [
+        "t-ref-plan-a",
+        "t-ref-pasos-plan-a",
+        "t-ref-opcion-inicial"
+      ]
+    }
+  ],
   "mapa": {
     "x": 1030,
     "y": 480,

@@ -194,3 +194,19 @@
 .sx-root .sx-registro-lectura blockquote {
   width: 100%;
 }
+
+/* F07b: chips del eco (los motivos del plan A tras su cita). */
+.sx-root .sx-eco-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.sx-root .sx-eco-chip {
+  padding: 2px 10px;
+  border: 1px solid color-mix(in srgb, var(--sx-gold) 60%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sx-gold) 18%, transparent);
+  font-size: 13px;
+  font-weight: 600;
+}
