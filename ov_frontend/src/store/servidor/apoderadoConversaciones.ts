@@ -173,7 +173,9 @@ export function useConversacionesApoderadoSeccion(activo = true) {
   const hijo = hijoActivo()
   useEffect(() => {
     if (!modoApi || !activo || !cuenta || !hijo) return
-    if (estado.porHijo[hijo]?.estado === 'listo') void vencerConversacionesApoderado(hijo)
+    // Lo cargado y un error (la sección cerrada antes de terminar la ruta) se vuelven a pedir.
+    const previo = estado.porHijo[hijo]?.estado
+    if (previo === 'listo' || previo === 'error') void vencerConversacionesApoderado(hijo)
     else void asegurarConversacionesApoderado()
   }, [activo, cuenta, hijo])
   return { hijo, seccion: hijo ? (almacen.porHijo[hijo] ?? vacia()) : vacia(), enviando: almacen.enviando }

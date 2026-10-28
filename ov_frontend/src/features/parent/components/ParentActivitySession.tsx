@@ -13,9 +13,23 @@ import { evaluateParentQuestion } from '@/features/parent/lib/missionLogic'
 import { ParentResourceDialog } from '@/features/parent/components/ParentResourceDialog'
 import { ParentQuestion } from '@/features/parent/components/ParentQuestion'
 import { PreviousButton } from '@/features/parent/components/PreviousButton'
+import { ConfirmarSalidaActividad } from '@/features/parent/components/ConfirmarSalidaActividad'
+import { useState, type ReactNode } from 'react'
 
-export function ParentActivitySession({ activity, review }: { activity: Actividad; review: boolean }) {
+// F08: `onAbrirFicha` abre una ficha obtenida desde el cierre (api); la vista de ruta pasa el modal (`modalFicha`).
+export function ParentActivitySession({
+  activity,
+  review,
+  onAbrirFicha,
+  modalFicha,
+}: {
+  activity: Actividad
+  review: boolean
+  onAbrirFicha?: (codigo: string) => void
+  modalFicha?: ReactNode
+}) {
   const model = useParentActivitySession(activity, review)
+  const [saliendo, setSaliendo] = useState(false)
   const {
     navigate,
     error,
@@ -43,11 +57,16 @@ export function ParentActivitySession({ activity, review }: { activity: Activida
           className="parent-player-exit"
           size="icon"
           aria-label="Salir de la actividad"
-          onClick={() => navigate(appPaths.parent.activities)}
+          onClick={() => (model.confirmarSalida ? setSaliendo(true) : navigate(appPaths.parent.activities))}
           variant="ghost"
         >
           <X aria-hidden />
         </Button>
+        <ConfirmarSalidaActividad
+          abierto={saliendo}
+          onSalir={() => navigate(appPaths.parent.activities)}
+          onSeguir={() => setSaliendo(false)}
+        />
         <div className="parent-activity-heading">
           <p>{review ? 'Repaso' : 'Actividad informativa'}</p>
           <h1>{activity.titulo}</h1>
@@ -180,7 +199,7 @@ export function ParentActivitySession({ activity, review }: { activity: Activida
             )}
           </div>
         ) : (
-          <ParentActivityFinish model={model} />
+          <ParentActivityFinish model={model} onAbrirFicha={onAbrirFicha} />
         )}
       </main>
       <ParentResourceDialog
@@ -191,6 +210,7 @@ export function ParentActivitySession({ activity, review }: { activity: Activida
           if (!open) setResources([])
         }}
       />
+      {modalFicha}
     </div>
   )
 }

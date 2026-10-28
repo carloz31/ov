@@ -197,6 +197,16 @@ test('completar refresca el servidor y conserva nodo, intentos, elecciones y la 
     tipo: 'ok',
     datos: jsonServidor('ruta/ruta-apoderado-completar-t-apo-1'),
   })
+  // F08: el cierre conserva lo que abrió completar (la vista se vuelve a montar al refrescar).
+  const { cierre } = app.store.obtenerEstadoApoderado()
+  assert.equal(cierre.actividad, 't-apo-1')
+  assert.deepEqual(
+    cierre.desbloqueos.map((d) => [d.tipo_objetivo, d.objetivo.codigo]),
+    [
+      ['ACTIVIDAD', 't-apo-2'],
+      ['FICHA', 't-ficha-apo'],
+    ],
+  )
   const guardado = app.persistencia.getParentJourney('apo-rosa')
   assert.equal(guardado.progress[narrativa.id].estado, 'completada')
   assert.equal(guardado.progress[narrativa.id].nodoActualId, pregunta.id)

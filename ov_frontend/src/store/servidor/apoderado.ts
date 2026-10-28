@@ -10,6 +10,7 @@ import { cuentaApoderado } from './cuenta'
 import type { Seccion } from './sesion'
 import type {
   BloqueActividades,
+  DesbloqueoNuevo,
   ErrorServidor,
   FamiliaApoderado,
   RespuestaAccion,
@@ -24,6 +25,8 @@ type AlmacenApoderado = {
   familia: Seccion<FamiliaApoderado>
   error: ErrorServidor | null
   enviando: string | null
+  // F08: lo que abrió la última actividad completada, para su cierre (la vista se vuelve a montar al refrescar).
+  cierre: { actividad: string; desbloqueos: DesbloqueoNuevo[] } | null
 }
 const inicial = (): AlmacenApoderado => ({
   cuenta: null,
@@ -31,6 +34,7 @@ const inicial = (): AlmacenApoderado => ({
   familia: { datos: null, estado: 'sin_cargar', error: null },
   error: null,
   enviando: null,
+  cierre: null,
 })
 let estado = inicial()
 let revisionSesion = 0
@@ -225,6 +229,7 @@ export function completarActividadApoderado(
       const respuesta = await completarActividad(cuenta, codigo)
       if (sesion !== revisionSesion || cuenta !== estado.cuenta) return cambioSesion()
       if (respuesta.tipo !== 'ok') return respuesta
+      publicar({ cierre: { actividad: codigo, desbloqueos: respuesta.datos.nuevos_desbloqueos } })
       revisionActividades++
       publicar({ actividades: { ...estado.actividades, estado: 'vencido', error: null } })
       // El avance de la familia cambia con cada actividad completada.

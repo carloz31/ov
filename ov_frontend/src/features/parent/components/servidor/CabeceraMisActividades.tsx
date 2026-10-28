@@ -5,7 +5,7 @@ const fechaLarga = (iso: string) =>
   new Date(iso).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' })
 
 // F08 (A7): la cabecera en dos columnas: título y descripción; a la derecha, el avance en un anillo y la fila del
-// diploma (apagada hasta completar la ruta; emitido, «Ver» lleva a él).
+// diploma: hasta completar la ruta, solo el aviso de terminar las actividades; emitido, su fecha y «Ver».
 export function CabeceraMisActividades({
   avance,
   diploma,
@@ -52,17 +52,19 @@ export function CabeceraMisActividades({
           <span aria-hidden="true" className="pa-diploma-icono">
             <Award size={20} />
           </span>
-          <div>
-            <p className="pa-avance-titulo">Diploma de compromiso</p>
-            <p className="pa-diploma-estado">
-              {diploma?.obtenido && diploma.obtenido_en
-                ? `Emitido el ${fechaLarga(diploma.obtenido_en)}`
-                : `Se emite a su nombre al completar las ${total}`}
-            </p>
-          </div>
-          <button className="pa-boton-ver" disabled={!diploma?.obtenido} type="button" onClick={onVerDiploma}>
-            Ver
-          </button>
+          {diploma?.obtenido && diploma.obtenido_en ? (
+            <>
+              <div>
+                <p className="pa-avance-titulo">Diploma de compromiso</p>
+                <p className="pa-diploma-estado">Emitido el {fechaLarga(diploma.obtenido_en)}</p>
+              </div>
+              <button className="pa-boton-ver" type="button" onClick={onVerDiploma}>
+                Ver
+              </button>
+            </>
+          ) : (
+            <p className="pa-diploma-pendiente">Termine sus actividades para ver su diploma de compromiso.</p>
+          )}
         </div>
       </aside>
     </header>

@@ -1,15 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { appPaths } from '@/routes/paths'
-import {
-  abrirFichaApoderado,
-  cargarFichaApoderado,
-  useFichasApoderado,
-} from '@/store/servidor/apoderadoFichas'
-import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { FichaCuenta } from '@/types/servidor'
 import type { Actividad } from '@/types/activities'
 import { useParentPortalContext } from '../context/parentPortalContext'
+import { useFichaApoderadoAbierta } from './useFichaApoderadoAbierta'
 
 export type EstadoFilaActividad = 'completada' | 'disponible' | 'bloqueada'
 export type FilaActividadServidor = {
@@ -27,10 +22,8 @@ export type FilaActividadServidor = {
 export function useMisActividadesServidor() {
   const portal = useParentPortalContext()
   const navigate = useNavigate()
-  const { lista, detalles } = useFichasApoderado()
-  const [abierta, setAbierta] = useState<string | null>(null)
+  const { fichas, ...ficha } = useFichaApoderadoAbierta()
   const [abriendo, setAbriendo] = useState<string | null>(null)
-  const fichas = lista.datos ?? []
   const filas: FilaActividadServidor[] = portal.activities.map((actividad) => {
     const completada = portal.completedActivityIds.includes(actividad.id)
     const propias = fichas.filter((f) => f.actividad?.codigo === actividad.id)
@@ -42,8 +35,6 @@ export function useMisActividadesServidor() {
       porObtener: completada ? 0 : propias.filter((f) => f.estado === 'BLOQUEADA').length,
     }
   })
-  const fichaAbierta = fichas.find((f) => f.codigo === abierta) ?? null
-  const detalle = abierta ? detalles[abierta] : undefined
   return {
     filas,
     avance: portal.familia?.avance ?? null,
@@ -56,19 +47,6 @@ export function useMisActividadesServidor() {
       )
     },
     verDiploma: () => navigate(appPaths.parent.diploma),
-    fichaAbierta,
-    abrirFicha: (codigo: string) => {
-      setAbierta(codigo)
-      void abrirFichaApoderado(codigo)
-    },
-    cerrarFicha: () => setAbierta(null),
-    contenidoFicha: abierta
-      ? {
-          estado: detalle?.estado ?? ('cargando' as const),
-          contenido: detalle?.datos?.contenido ?? null,
-          error: detalle?.estado === 'error' ? mensajeErrorServidor(detalle.error) : null,
-          reintentar: () => cargarFichaApoderado(abierta),
-        }
-      : undefined,
+    ...ficha,
   }
 }

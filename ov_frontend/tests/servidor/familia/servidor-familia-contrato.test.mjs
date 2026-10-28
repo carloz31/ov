@@ -219,3 +219,26 @@ test('apoderado: antes de completar, la ficha bloqueada dice qué actividad la d
   assert.match(familia.diploma.codigo, /^EXP-AP-\d{4}-\d{5}-\d$/)
   assert.equal(jsonServidor('ruta/ruta-apoderado-familia-inicial').diploma.codigo, null)
 })
+
+test('apoderado: Conversaciones cerrada (409) se vuelve a pedir al montarla, para abrirse al terminar la ruta', async () => {
+  const { app, store } = await almacenApoderado()
+  let cerrada = true
+  app.fetch((req) => {
+    if (req.url.includes('/conversaciones?estudiante='))
+      return cerrada
+        ? {
+            status: 409,
+            body: { detail: { mensaje: 'Completa tus actividades para conversar en familia.' } },
+          }
+        : { body: jsonServidor('ruta/ruta-conversaciones-sin-carta') }
+    throw Error(`Solicitud no configurada: ${req.url}`)
+  })
+  await store.asegurarConversacionesApoderado()
+  assert.equal(store.obtenerConversacionesApoderado().porHijo['est-ana'].estado, 'error')
+  cerrada = false
+  // Lo que hace el hook al montar la vista con un error guardado.
+  await store.vencerConversacionesApoderado('est-ana')
+  const seccion = store.obtenerConversacionesApoderado().porHijo['est-ana']
+  assert.equal(seccion.estado, 'listo')
+  assert.equal(conv.pantallaSeccion(seccion.datos), 'carta_pendiente')
+})

@@ -473,3 +473,67 @@ button.pa-chip {
     -webkit-print-color-adjust: exact;
   }
 }
+/* F08: «Se abrió para usted» en el cierre de una actividad del apoderado. */
+.pa-se-abrio {
+  margin-top: 24px;
+  text-align: left;
+}
+.pa-se-abrio h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.pa-se-abrio ul {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.pa-se-abrio li {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+}
+.pa-se-abrio li > div {
+  flex: 1;
+  min-width: 0;
+}
+.pa-se-abrio-icono {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 9%, var(--card));
+}
+.pa-se-abrio-tipo {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted-foreground);
+}
+.pa-se-abrio-titulo {
+  margin: 0;
+  font-weight: 800;
+}
+.pa-se-abrio .pa-boton {
+  min-height: 44px;
+  padding: 0 16px;
+}
+.pa-diploma-pendiente {
+  flex: 1;
+  margin: 0 !important;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted-foreground) !important;
+}
