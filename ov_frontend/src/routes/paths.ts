@@ -15,6 +15,10 @@ const appPaths = {
     resources: '/student/resources',
     passport: '/student/profile?section=passport',
     conversations: '/student/conversations',
+    // F08: la carta, el regalo y una conversación de Familia (api).
+    conversationLetter: '/student/conversations/carta',
+    conversationGift: '/student/conversations/regalo',
+    conversation: (codigo: string) => `/student/conversations/tema/${encodeURIComponent(codigo)}`,
     catalog: {
       professions: '/student/catalog/professions',
       careers: '/student/catalog/careers',
@@ -34,6 +38,10 @@ const appPaths = {
     overview: '/parent/overview',
     activities: '/parent/activities',
     conversations: '/parent/conversations',
+    // F08: la carta, el regalo y una conversación del apoderado.
+    conversationLetter: '/parent/conversations/carta',
+    conversationGift: '/parent/conversations/regalo',
+    conversation: (codigo: string) => `/parent/conversations/tema/${encodeURIComponent(codigo)}`,
     activity: (activityId: string) => `/parent/activities/${activityId}`,
     children: '/parent/children',
     child: (childId: string) => `/parent/children/${childId}`,

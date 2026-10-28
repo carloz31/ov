@@ -1,0 +1,899 @@
+/* F08: Familia (estudiante) y Conversaciones (apoderado). Las mismas pantallas; el rol solo cambia las variables:
+   estudiante = fondo oscuro, tarjetas crema y acentos dorados; apoderado = portal claro con acento índigo. */
+.fam--estudiante {
+  --fam-text: var(--sx-night-text);
+  --fam-muted: var(--sx-night-muted);
+  --fam-kicker: var(--sx-gold);
+  --fam-card: var(--sx-parchment);
+  --fam-ink: var(--sx-parchment-ink);
+  --fam-card-muted: var(--sx-parchment-muted);
+  --fam-card-border: var(--sx-parchment-edge);
+  --fam-panel: var(--sx-night-raised);
+  --fam-panel-border: var(--sx-night-border);
+  --fam-panel-text: var(--sx-night-text);
+  --fam-panel-muted: var(--sx-night-muted);
+  --fam-accent: var(--sx-gold);
+  --fam-accent-deep: var(--sx-gold-deep);
+  --fam-btn: color-mix(in srgb, var(--primary) 45%, var(--sx-night));
+  --fam-btn-text: #fff;
+  --fam-seal: var(--sx-seal);
+  --fam-paper: var(--sx-parchment);
+  --fam-tab: transparent;
+  --fam-tab-active: var(--sx-parchment);
+  --fam-tab-active-text: var(--sx-parchment-ink);
+  --fam-dim: color-mix(in srgb, var(--sx-parchment) 55%, var(--neutral-text, #888));
+  min-height: 100%;
+  padding: 32px 28px 48px;
+  color: var(--fam-text);
+  background: var(--sx-night);
+}
+.fam--apoderado {
+  --fam-text: var(--foreground);
+  --fam-muted: var(--muted-foreground);
+  --fam-kicker: var(--primary);
+  --fam-card: var(--card);
+  --fam-ink: var(--foreground);
+  --fam-card-muted: var(--muted-foreground);
+  --fam-card-border: var(--border);
+  --fam-panel: color-mix(in srgb, var(--primary) 7%, var(--card));
+  --fam-panel-border: color-mix(in srgb, var(--primary) 22%, var(--border));
+  --fam-panel-text: var(--foreground);
+  --fam-panel-muted: var(--muted-foreground);
+  --fam-accent: var(--primary);
+  --fam-accent-deep: var(--primary);
+  --fam-btn: var(--primary);
+  --fam-btn-text: var(--primary-foreground);
+  --fam-seal: color-mix(in srgb, var(--danger, #c0392b) 80%, black);
+  --fam-paper: color-mix(in srgb, var(--warning-soft, #fdf3dc) 55%, var(--card));
+  --fam-tab: var(--card);
+  --fam-tab-active: var(--primary);
+  --fam-tab-active-text: var(--primary-foreground);
+  --fam-dim: color-mix(in srgb, var(--muted) 80%, var(--card));
+  padding: 8px 0 40px;
+  color: var(--fam-text);
+}
+.fam-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  min-width: 0;
+}
+.fam-kicker {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fam-kicker);
+}
+.fam-card .fam-kicker {
+  color: var(--fam-accent-deep);
+}
+.fam-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.fam-header h1 {
+  margin: 0;
+  font-size: clamp(28px, 4.5vw, 44px);
+  font-weight: 800;
+  line-height: 1.1;
+}
+.fam-header p {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: var(--fam-muted);
+}
+.fam-back,
+.fam-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: none;
+  font-weight: 700;
+  color: var(--fam-kicker);
+  cursor: pointer;
+}
+.fam-back {
+  margin-bottom: 24px;
+}
+.fam-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 800;
+  color: var(--fam-btn-text);
+  background: var(--fam-btn);
+  cursor: pointer;
+}
+.fam-btn--oro {
+  color: var(--sx-night, #1b2240);
+  background: var(--fam-accent);
+}
+.fam-btn--borde {
+  border: 2px solid var(--fam-accent);
+  color: var(--fam-accent);
+  background: transparent;
+}
+.fam-btn--claro {
+  border: 2px solid var(--fam-btn);
+  color: var(--fam-btn);
+  background: transparent;
+}
+.fam-btn:disabled,
+.fam-btn[aria-disabled='true'] {
+  opacity: 0.65;
+  cursor: progress;
+}
+.fam-card {
+  padding: 32px;
+  border: 1px solid var(--fam-card-border);
+  border-radius: 28px;
+  color: var(--fam-ink);
+  background: var(--fam-card);
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.18);
+}
+.fam-card :where(h2, h3) {
+  margin: 0;
+  font-weight: 800;
+  color: var(--fam-ink);
+}
+.fam-card :where(p) {
+  color: var(--fam-card-muted);
+}
+.fam-panel {
+  padding: 24px;
+  border: 1px solid var(--fam-panel-border);
+  border-radius: 22px;
+  color: var(--fam-panel-text);
+  background: var(--fam-panel);
+}
+.fam-panel :where(p) {
+  color: var(--fam-panel-muted);
+}
+.fam-chip {
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 10px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fam-card-muted);
+  background: color-mix(in srgb, var(--fam-card-muted) 14%, transparent);
+}
+.fam-lista-limpia {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.fam-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+.fam-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+/* Sobre sellado (ilustración CSS). */
+.fam-sobre {
+  position: relative;
+  width: min(100%, 380px);
+  aspect-ratio: 3 / 2;
+  border: 2px solid color-mix(in srgb, var(--fam-accent) 45%, #e9dcb4);
+  border-radius: 16px;
+  background: #f1e6c4;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgb(0 0 0 / 0.25);
+}
+.fam-sobre::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 58%;
+  background: #e4d5a6;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.fam-sobre-sello {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 25%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--fam-seal);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 0.3);
+  transform: translate(-50%, -50%);
+}
+.fam-sobre--flota {
+  animation: fam-flota 3.6s ease-in-out infinite;
+}
+.fam-sobre--flota .fam-sobre-sello {
+  animation: fam-pulso 1.8s ease-in-out infinite;
+}
+@keyframes fam-flota {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes fam-pulso {
+  50% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--fam-seal) 25%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fam-sobre--flota,
+  .fam-sobre--flota .fam-sobre-sello,
+  .fam-carta-abierta,
+  .fam-chispa {
+    animation: none;
+  }
+}
+
+/* Puntos numerados del regalo. */
+.fam-puntos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0;
+  margin: 14px 0 0;
+  list-style: none;
+}
+.fam-punto {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid color-mix(in srgb, var(--fam-panel-muted) 55%, transparent);
+  border-radius: 50%;
+  font-weight: 800;
+  color: var(--fam-panel-muted);
+}
+.fam-punto.is-lleno {
+  border-color: var(--fam-accent);
+  color: var(--sx-night, #fff);
+  background: var(--fam-accent);
+}
+.fam--apoderado .fam-punto.is-lleno {
+  color: var(--primary-foreground);
+}
+.fam-puntos--chicos .fam-punto {
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
+}
+
+/* E2/A2: carta pendiente. */
+.fam-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+  gap: 40px;
+  align-items: center;
+}
+.fam-hero h2 {
+  font-size: clamp(26px, 3.4vw, 38px);
+  font-weight: 800;
+}
+.fam-hero-accion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  align-items: center;
+  margin-top: 22px;
+}
+.fam-nota {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fam-card-muted);
+}
+.fam-pasos {
+  margin: 28px 0;
+}
+.fam-paso {
+  display: flex;
+  gap: 16px;
+}
+.fam-paso h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+.fam-paso-numero {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-weight: 800;
+  color: var(--sx-night, #fff);
+  background: var(--fam-accent);
+}
+.fam--apoderado .fam-paso-numero {
+  color: var(--primary-foreground);
+}
+.fam-candado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 18px;
+  font-weight: 700;
+  color: var(--fam-kicker);
+}
+.fam-apagada {
+  min-height: 150px;
+  padding: 22px;
+  border: 2px dashed color-mix(in srgb, var(--fam-card-muted) 45%, transparent);
+  border-radius: 22px;
+  color: var(--fam-card-muted);
+  background: var(--fam-dim);
+  opacity: 0.85;
+}
+.fam-apagada h3 {
+  margin: 12px 0 0;
+  font-size: 20px;
+}
+
+/* E3/A3: escribir la carta. */
+.fam-carta-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.fam-papel {
+  padding: 36px 48px 28px;
+  border-radius: 28px;
+  color: var(--fam-ink, #1f2a44);
+  background-color: var(--fam-paper);
+  background-image: repeating-linear-gradient(
+    transparent 0 53px,
+    color-mix(in srgb, var(--fam-accent) 22%, transparent) 53px 54px
+  );
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.2);
+}
+.fam-caligrafia {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.fam-papel h2 {
+  margin: 0;
+  font-size: clamp(26px, 3vw, 36px);
+}
+.fam-papel textarea {
+  width: 100%;
+  min-height: 380px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  font: 24px/54px Georgia, 'Times New Roman', serif;
+  color: inherit;
+  background: transparent;
+  resize: vertical;
+}
+.fam-papel textarea:disabled,
+.fam-papel textarea[readonly] {
+  opacity: 0.6;
+}
+.fam-papel-pie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.fam-lateral {
+  display: grid;
+  gap: 22px;
+}
+.fam-lumi {
+  display: flex;
+  gap: 16px;
+}
+.fam-lumi-icono {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  color: var(--sx-night, #fff);
+  background: var(--fam-accent);
+}
+
+/* E4/A4: lista. */
+.fam-regalo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: 28px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+.fam-regalo-sello {
+  display: grid;
+  place-items: center;
+  width: 108px;
+  height: 108px;
+  border: 6px solid color-mix(in srgb, var(--fam-accent) 60%, white);
+  border-radius: 50%;
+  color: var(--sx-night, #fff);
+  background: var(--fam-accent);
+}
+.fam--apoderado .fam-regalo-sello {
+  color: var(--primary-foreground);
+}
+.fam-regalo h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+}
+.fam-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.fam-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 22px;
+  border: 1px solid var(--fam-panel-border);
+  border-radius: 999px;
+  font-weight: 800;
+  color: var(--fam-text);
+  background: var(--fam-tab);
+  cursor: pointer;
+}
+.fam-tab[aria-selected='true'] {
+  color: var(--fam-tab-active-text);
+  background: var(--fam-tab-active);
+}
+.fam-tab-contador {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: #fff;
+  background: color-mix(in srgb, var(--primary) 60%, var(--sx-night, #1b2240));
+}
+.fam-tema {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px;
+}
+.fam-tema h3 {
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 800;
+  line-height: 1.25;
+}
+.fam-tema-nueva {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--fam-accent-deep);
+}
+.fam-tema-pie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+.fam-tema--bloqueada,
+.fam-tema--adelantar {
+  border: 2px dashed color-mix(in srgb, var(--fam-card-muted) 45%, transparent);
+  box-shadow: none;
+}
+.fam-tema--bloqueada {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 18px,
+    color-mix(in srgb, var(--fam-accent) 10%, transparent) 18px 36px
+  );
+}
+.fam-tema--bloqueada h3 {
+  color: var(--fam-card-muted);
+}
+.fam-bloqueo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-weight: 600;
+  color: var(--fam-card-muted);
+  background: color-mix(in srgb, var(--fam-card-muted) 9%, transparent);
+}
+.fam-avatares {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  color: var(--fam-card-muted);
+}
+.fam-avatares > span:first-child {
+  display: inline-flex;
+}
+.fam-avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 2px solid var(--fam-card);
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--fam-card-muted);
+  background: color-mix(in srgb, var(--fam-card-muted) 16%, var(--fam-card));
+}
+.fam-avatar + .fam-avatar {
+  margin-left: -8px;
+}
+.fam-avatar.is-lleno {
+  color: #fff;
+  background: var(--fam-btn);
+}
+.fam-vacio {
+  padding: 40px;
+  border: 1px dashed var(--fam-panel-border);
+  border-radius: 22px;
+  text-align: center;
+  color: var(--fam-muted);
+}
+
+/* E5–E7/A5: una conversación. */
+.fam-tema-detalle {
+  position: relative;
+}
+.fam-tema-detalle > h2 {
+  margin-bottom: 26px;
+  font-size: clamp(26px, 3.4vw, 40px);
+  font-weight: 800;
+}
+.fam-ayuda {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 2px solid var(--fam-card-border);
+  border-radius: 50%;
+  color: var(--fam-ink);
+  background: transparent;
+  cursor: pointer;
+}
+.fam-pregunta {
+  margin: 0 0 18px;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--fam-ink);
+}
+.fam-etiqueta {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--fam-card-muted);
+}
+.fam-respuesta textarea {
+  width: 100%;
+  min-height: 220px;
+  padding: 18px 20px;
+  border: 2px solid var(--fam-card-border);
+  border-radius: 20px;
+  font: inherit;
+  color: var(--fam-ink);
+  background: var(--card, #fff);
+  resize: vertical;
+}
+.fam-respuesta textarea:disabled {
+  opacity: 0.6;
+}
+.fam-caja-punteada {
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  min-height: 260px;
+  padding: 28px;
+  border: 2px dashed color-mix(in srgb, var(--fam-card-muted) 40%, transparent);
+  border-radius: 24px;
+  text-align: center;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 18px,
+    color-mix(in srgb, var(--fam-accent) 9%, transparent) 18px 36px
+  );
+}
+.fam-caja-punteada h3 {
+  font-size: 22px;
+}
+.fam-borroso {
+  margin-top: 10px;
+  filter: blur(6px);
+  user-select: none;
+}
+.fam-mirada {
+  padding: 26px;
+  border: 2px solid color-mix(in srgb, var(--fam-accent) 55%, transparent);
+  border-radius: 22px;
+  background: var(--card, #fff);
+}
+.fam-mirada--otro {
+  border-color: var(--fam-btn);
+}
+.fam-mirada h3 {
+  padding-bottom: 16px;
+  margin: 10px 0 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--fam-accent) 40%, transparent);
+  font-size: 18px;
+}
+.fam-mirada-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fam-accent-deep);
+}
+.fam-mirada--otro .fam-mirada-titulo {
+  color: var(--fam-btn);
+}
+.fam-mirada-texto {
+  margin: 0;
+  font-size: 18px;
+  white-space: pre-wrap;
+  color: var(--fam-ink) !important;
+}
+.fam-puente {
+  margin: 26px 0;
+  padding: 24px 28px;
+  border-radius: 20px;
+  color: #fff;
+  background: var(--fam-btn);
+}
+.fam-puente h3 {
+  color: #fff !important;
+}
+.fam-puente p {
+  margin: 6px 0 0;
+  color: rgb(255 255 255 / 0.82) !important;
+}
+.fam-guia {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 24px;
+}
+.fam-guia ul {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 14px 0 0;
+  list-style: none;
+}
+.fam-guia li {
+  display: flex;
+  gap: 10px;
+}
+.fam-saben {
+  padding: 24px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--fam-accent) 12%, var(--fam-card));
+}
+.fam-cierre {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 24px;
+  margin-top: 26px;
+}
+.fam-diario {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 24px;
+  border-radius: 22px;
+  color: #fff;
+  background: var(--fam-btn);
+}
+.fam-diario h3 {
+  color: #fff !important;
+}
+.fam-diario p {
+  margin: 4px 0 0;
+  color: rgb(255 255 255 / 0.8) !important;
+}
+.fam-tema-listo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+  padding: 22px;
+  border: 2px dashed color-mix(in srgb, var(--fam-accent) 50%, transparent);
+  border-radius: 22px;
+}
+.fam-tema-listo .fam-punto {
+  border-color: var(--fam-accent);
+  color: var(--fam-accent-deep);
+}
+.fam-tema-listo .fam-punto.is-lleno {
+  color: #fff;
+}
+
+/* E8/A6: el regalo. */
+.fam-regalo-pantalla {
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+  padding: 48px 16px;
+  text-align: center;
+}
+.fam--estudiante.fam--regalo {
+  background: radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--primary) 40%, var(--sx-night)), var(--sx-night) 70%);
+}
+.fam-regalo-pantalla h1 {
+  margin: 0;
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 800;
+}
+.fam-regalo-pantalla > p {
+  max-width: 640px;
+  color: var(--fam-muted);
+}
+.fam-chispas {
+  position: relative;
+}
+.fam-chispa {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fam-accent);
+  animation: fam-chispa 0.9s ease-out forwards;
+}
+@keyframes fam-chispa {
+  to {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0.4);
+  }
+}
+.fam-carta-abierta {
+  width: min(100%, 860px);
+  padding: 48px 56px;
+  text-align: left;
+  animation: fam-rise 0.8s ease-out both;
+}
+@keyframes fam-rise {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+}
+.fam-carta-texto {
+  margin: 18px 0;
+  font-size: 24px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.fam-firma {
+  font-size: 28px;
+  color: var(--fam-accent-deep);
+}
+.fam-regalo-pie {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 860px);
+  text-align: left;
+}
+.fam-regalo-pie > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.fam-regalo-pie p {
+  margin: 0;
+  color: var(--fam-muted);
+}
+
+@media (max-width: 900px) {
+  .fam-hero,
+  .fam-carta-layout,
+  .fam-grid-2,
+  .fam-guia,
+  .fam-cierre,
+  .fam-regalo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fam-grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .fam--estudiante {
+    padding: 20px 16px 40px;
+  }
+  .fam-card,
+  .fam-papel {
+    padding: 22px;
+  }
+  .fam-carta-abierta {
+    padding: 28px 22px;
+  }
+}
+.fam-header-acciones {
+  display: grid;
+  justify-items: end;
+  gap: 12px;
+}
+.fam-tema-detalle > .fam-btn {
+  margin-top: 26px;
+}
+.fam-header .fam-kicker {
+  color: var(--fam-kicker);
+}
+.fam-panel h3,
+.fam-paso h3,
+.fam-apagada h3,
+.fam-lateral h3 {
+  font-weight: 800;
+}
+.fam-lumi + .fam-btn {
+  margin-top: 18px;
+}
+.fam-mirada .fam-link {
+  margin-top: 18px;
+}
+.fam-caja-punteada h3,
+.fam-mirada h3,
+.fam-guia h3,
+.fam-saben h3 {
+  font-weight: 800;
+}
+.fam-guia-lista h3 {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.fam-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.fam-chispas {
+  display: grid;
+  justify-items: center;
+  width: min(100%, 440px);
+}
+.fam-regalo-pantalla > .fam-kicker {
+  color: var(--fam-kicker);
+}
+.fam-carta-abierta h2 {
+  font-weight: 800;
+}
