@@ -38,10 +38,17 @@ SECCION = 'CATALOGO'
 
 @usar_contexto
 def exigir_catalogo(sesion: Session, cuenta: Cuenta) -> None:
-    """404 si la sección no es de la audiencia de la cuenta; 409 con su mensaje si está cerrada. Una cuenta que no
-    es de estudiante (apoderado, orientadora) lee el catálogo sin sección."""
+    """Guardia de lectura del catálogo: una cuenta que no es de estudiante (apoderado, orientadora) lo lee sin
+    sección; el estudiante, con CATALOGO abierta."""
     if cuenta.rol != Rol.ESTUDIANTE:
         return
+    exigir_seccion_catalogo(sesion, cuenta)
+
+
+@usar_contexto
+def exigir_seccion_catalogo(sesion: Session, cuenta: Cuenta) -> None:
+    """404 si la sección no es de la audiencia de la cuenta; 409 con su mensaje si está cerrada. Lo que es del
+    estudiante (favoritos) la exige siempre."""
     try:
         seccion_de_cuenta(sesion, cuenta, SECCION)
     except LookupError as error:

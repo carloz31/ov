@@ -11,7 +11,7 @@ from app.models import (
 )
 from app.schemas.acciones import RespuestaAccion
 from app.schemas.favoritos import FavoritoEntrada, FavoritosCuenta
-from app.services.catalogo import exigir_catalogo, resumen_carrera, resumen_institucion, resumen_ocupacion
+from app.services.catalogo import exigir_seccion_catalogo, resumen_carrera, resumen_institucion, resumen_ocupacion
 from app.services.comun import buscar_por_codigo, exigir_disponible, fecha_accion, responder_con_eventos
 from app.services.motor.reglas import objetivo_corresponde_a_cuenta
 
@@ -34,7 +34,7 @@ def _preparar(sesion: Session, entrada: FavoritoEntrada):
         exigir_disponible(sesion, cuenta, objetivo, entidad)
         return cuenta, entidad
     entidad = buscar_por_codigo(sesion, CATALOGO[entrada.tipo], entrada.codigo)
-    exigir_catalogo(sesion, cuenta)
+    exigir_seccion_catalogo(sesion, cuenta)
     return cuenta, entidad
 
 
@@ -69,7 +69,7 @@ def desmarcar_favorito(sesion: Session, entrada: FavoritoEntrada) -> RespuestaAc
 
 @usar_contexto
 def listar_favoritos(sesion: Session, cuenta: Cuenta) -> FavoritosCuenta:
-    exigir_catalogo(sesion, cuenta)
+    exigir_seccion_catalogo(sesion, cuenta)
     orden = {}
     for tipo, referencia in sesion.execute(select(Favorito.tipo, Favorito.id_referencia).where(
         Favorito.cuenta_id == cuenta.id,

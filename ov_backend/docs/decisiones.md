@@ -12,3 +12,4 @@
 - En modo lectura, la ayuda «Filtre por el tipo de interés…» se oculta cuando ya hay letras elegidas, porque entonces se muestra «Código: …».
 - `catalogo-portal.css` define todas las variables `--sx-*` del catálogo dentro de `[data-variante='portal']`: en los portales del personal no existe `.sx-root`, que es donde el estudiante las define.
 - La espera del detalle en el portal usa `PantallaCargaPortal` (`enSeccion`), el cargador de las secciones del portal, porque los estilos de `PantallaCarga` (Lumi, «Abriendo el atlas») dependen de `.sx-root`. Los esqueletos del listado y de «Mostrar más» son los de F06.
+- Los favoritos siguen siendo del estudiante: `favoritos.py` usa `exigir_seccion_catalogo`, que exige CATALOGO siempre. La lectura del catálogo usa `exigir_catalogo`, libre para otros roles. Así `GET /cuentas/apo-rosa/favoritos` sigue en 404 (`test_favoritos_exigen_el_catalogo_abierto`, sin adaptar).
