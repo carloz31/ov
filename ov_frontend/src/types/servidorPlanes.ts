@@ -23,7 +23,12 @@ export type DudaPublica = {
   // El del paso que la cerró, si lo hay.
   hallazgo: string | null
 }
-export type GastoPublico = { rubro: string | null; otro: string | null; monto: number; frecuencia: FrecuenciaGasto }
+export type GastoPublico = {
+  rubro: string | null
+  otro: string | null
+  monto: number
+  frecuencia: FrecuenciaGasto
+}
 export type ComplicacionPublica = Elegida & { numero: number }
 export type SugerenciaPublica = {
   numero: number
@@ -109,17 +114,39 @@ export type PlanesCuenta = {
   opciones: OpcionesTarjeta
 }
 
-// Cuerpos de guardar-seccion (F07a: POR_QUE y CONOCIMIENTO; REALIDAD y PASOS llegan en F07b).
+// Cuerpos de guardar-seccion (F07a: POR_QUE y CONOCIMIENTO; F07b: REALIDAD y PASOS).
 export type ElegidaEntrada = { opcion: string } | { otro: string }
 export type PorQueDatos = { idea_origen: OrigenIdea | null; motivos: ElegidaEntrada[]; relato: string | null }
 export type DudaEntrada =
-  | { numero: number }
-  | { origen: 'SUGERIDA'; opcion: string }
-  | { origen: 'PROPIA'; texto: string }
+  { numero: number } | { origen: 'SUGERIDA'; opcion: string } | { origen: 'PROPIA'; texto: string }
 export type ConocimientoDatos = {
   respuestas: Partial<Record<PreguntaConocimiento, RespuestaConocimiento>>
   dudas: DudaEntrada[]
 }
+export type GastoEntrada = ({ rubro: string } | { otro: string }) & {
+  monto: number
+  frecuencia: FrecuenciaGasto
+}
+// Una complicación que se conserva (`numero`) o una nueva, de la lista (`opcion`) u «Otro».
+export type ComplicacionEntrada = { numero: number } | ElegidaEntrada
+export type RealidadDatos = {
+  institucion: string | null
+  camino: ElegidaEntrada | null
+  gastos: GastoEntrada[]
+  financiamiento: ElegidaEntrada[]
+  complicaciones: ComplicacionEntrada[]
+}
+// Un paso que se conserva o edita (`numero`), uno que acepta una sugerencia (`sugerencia`, con `tipo` y `texto`
+// para editarla) o uno nuevo (`tipo` y `texto`).
+export type PasoEntrada =
+  | { numero: number; tipo: string; texto: string }
+  | { sugerencia: number; tipo: string; texto: string }
+  | { tipo: string; texto: string }
+export type PasosDatos = { pasos: PasoEntrada[]; sugerencias_descartadas: number[] }
 export type GuardarSeccionPlan =
   | { seccion: 'POR_QUE'; datos: PorQueDatos }
   | { seccion: 'CONOCIMIENTO'; datos: ConocimientoDatos }
+  | { seccion: 'REALIDAD'; datos: RealidadDatos }
+  | { seccion: 'PASOS'; datos: PasosDatos }
+// Medidores (lo enviado reemplaza) y paso hecho.
+export type MedidoresEntrada = Medidores

@@ -5,9 +5,12 @@ import type {
   DudaPublica,
   ElegidaEntrada,
   EstadoSeccionPlan,
+  FrecuenciaGasto,
+  Medidores,
   OpcionesTarjeta,
   OrigenDuda,
   OrigenIdea,
+  PasoPublico,
   PlanCarrera,
   PorQueDatos,
   PreguntaConocimiento,
@@ -25,7 +28,12 @@ export const TITULOS_SECCION: Record<CodigoSeccionPlan, string> = {
   REALIDAD: 'Cómo lo haría realidad',
   PASOS: 'Mis próximos pasos',
 }
-export const NUMERO_SECCION: Record<CodigoSeccionPlan, number> = { POR_QUE: 1, CONOCIMIENTO: 2, REALIDAD: 3, PASOS: 4 }
+export const NUMERO_SECCION: Record<CodigoSeccionPlan, number> = {
+  POR_QUE: 1,
+  CONOCIMIENTO: 2,
+  REALIDAD: 3,
+  PASOS: 4,
+}
 export const ESTADOS_SECCION: Record<EstadoSeccionPlan, string> = {
   BLOQUEADA: 'Bloqueada',
   POR_EMPEZAR: 'Por empezar',
@@ -50,13 +58,72 @@ export const ORIGENES_DUDA: Record<OrigenDuda, string> = {
   PROPIA: 'Duda tuya',
 }
 
+// F07b: frecuencias de un gasto y escala de los medidores (1 a 3).
+export const FRECUENCIAS: [FrecuenciaGasto, string][] = [
+  ['UNICA', 'Una vez'],
+  ['MENSUAL', 'Mensual'],
+  ['POR_CICLO', 'Por ciclo'],
+  ['ANUAL', 'Anual'],
+]
+export const ESCALA_MEDIDOR = ['Poco', 'Algo', 'Mucho'] as const
+export const MEDIDORES: { codigo: keyof Medidores; nombre: string; pregunta: string }[] = [
+  { codigo: 'entusiasmo', nombre: 'Me entusiasma', pregunta: '¿Cuánto te atrae esta opción?' },
+  {
+    codigo: 'capacidad',
+    nombre: 'Me siento capaz',
+    pregunta: '¿Crees que puedes con los estudios y el ingreso?',
+  },
+  {
+    codigo: 'recursos',
+    nombre: 'Tengo cómo lograrlo',
+    pregunta: '¿Cuentas con el dinero, el apoyo y el tiempo?',
+  },
+]
+
 export const textoIdea = (idea: OrigenIdea | null) => IDEAS_ORIGEN.find(([c]) => c === idea)?.[1] ?? null
 export const textoRespuesta = (r: RespuestaConocimiento | null | undefined) =>
   RESPUESTAS_CONOCIMIENTO.find(([c]) => c === r)?.[1] ?? null
 export const conCarrera = (texto: string, carrera: string) => texto.replaceAll('{carrera}', carrera)
 
-export function textoMotivo(motivo: { opcion: string | null; otro: string | null }, opciones: OpcionesTarjeta) {
+export function textoMotivo(
+  motivo: { opcion: string | null; otro: string | null },
+  opciones: OpcionesTarjeta,
+) {
   return motivo.otro ?? opciones.valores.find((v) => v.codigo === motivo.opcion)?.texto ?? motivo.opcion ?? ''
+}
+
+// F07b: el texto de una elección de lista común u «Otro» (camino, financiamiento, complicación, rubro).
+export const textoElegida = (
+  e: { opcion?: string | null; otro?: string | null },
+  lista: { codigo: string; texto: string }[],
+) => e.otro ?? lista.find((o) => o.codigo === e.opcion)?.texto ?? e.opcion ?? ''
+export const textoFrecuencia = (f: FrecuenciaGasto) => FRECUENCIAS.find(([c]) => c === f)?.[1] ?? f
+export const textoTipoPaso = (tipo: string, opciones: OpcionesTarjeta) =>
+  opciones.pasos.find((p) => p.codigo === tipo)?.texto ?? tipo
+// «S/ 6 250»: soles enteros con espacio de miles.
+export const soles = (monto: number) =>
+  `S/ ${String(Math.round(monto)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')}`
+export const sugerenciasPendientes = (plan: PlanCarrera) =>
+  plan.sugerencias.filter((s) => s.estado === 'PENDIENTE')
+const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
+
+// «para: …» de un paso: el texto de la duda, la complicación o la sugerencia de la que salió.
+export function origenPaso(plan: PlanCarrera, paso: PasoPublico, opciones: OpcionesTarjeta) {
+  const { duda, complicacion, sugerencia } = paso.origen
+  if (duda !== null) return plan.dudas.find((d) => d.numero === duda)?.texto ?? null
+  if (complicacion !== null) {
+    const c = plan.complicaciones.find((x) => x.numero === complicacion)
+    return c ? textoElegida(c, opciones.dificultades) : null
+  }
+  if (sugerencia !== null) return plan.sugerencias.find((s) => s.numero === sugerencia)?.origen.texto ?? null
+  return null
+}
+
+// Resumen de «Cómo me siento»: la palabra de cada medidor, o «Sin valorar» si no hay ninguno.
+export function resumenMedidores(m: Medidores) {
+  const valores = MEDIDORES.map((x) => m[x.codigo])
+  if (valores.every((v) => v === null)) return 'Sin valorar'
+  return valores.map((v) => (v ? ESCALA_MEDIDOR[v - 1] : 'Sin valorar')).join(' · ')
 }
 
 // La primera línea del relato, recortada para las tarjetas y el menú.
@@ -65,19 +132,24 @@ export function inicioRelato(relato: string | null, largo = 60) {
   return linea.length > largo ? `${linea.slice(0, largo).trimEnd()}…` : linea
 }
 
-export const seccionesListas = (plan: PlanCarrera) => plan.secciones.filter((s) => s.estado === 'LISTA').length
+export const seccionesListas = (plan: PlanCarrera) =>
+  plan.secciones.filter((s) => s.estado === 'LISTA').length
 export const mensajeBloqueo = (seccion: SeccionPlan) => seccion.bloqueo?.[0]?.mensaje ?? ''
 // Ajuste v4.2: «Plan completo» con las cuatro secciones listas (`lista_para_comparar` no se muestra).
 export const planCompleto = (plan: PlanCarrera) => seccionesListas(plan) === 4
 // Tooltip de una casilla de sección: «{n} · {título} · {estado}» y, si está bloqueada, el mensaje del servidor.
 export function tooltipSeccion(seccion: SeccionPlan) {
   const base = `${NUMERO_SECCION[seccion.codigo]} · ${TITULOS_SECCION[seccion.codigo]} · ${ESTADOS_SECCION[seccion.estado]}`
-  return seccion.estado === 'BLOQUEADA' && mensajeBloqueo(seccion) ? `${base}. ${mensajeBloqueo(seccion)}` : base
+  return seccion.estado === 'BLOQUEADA' && mensajeBloqueo(seccion)
+    ? `${base}. ${mensajeBloqueo(seccion)}`
+    : base
 }
 
 // La sección que abre el botón de la tarjeta: la primera abierta que no esté lista, o la 1 si todas lo están.
 export function seccionSiguiente(plan: PlanCarrera): CodigoSeccionPlan {
-  return plan.secciones.find((s) => s.estado === 'POR_EMPEZAR' || s.estado === 'EN_PROCESO')?.codigo ?? 'POR_QUE'
+  return (
+    plan.secciones.find((s) => s.estado === 'POR_EMPEZAR' || s.estado === 'EN_PROCESO')?.codigo ?? 'POR_QUE'
+  )
 }
 export function textoBotonPlan(plan: PlanCarrera) {
   const siguiente = plan.secciones.find((s) => s.estado === 'POR_EMPEZAR' || s.estado === 'EN_PROCESO')
@@ -98,11 +170,18 @@ export const resumenDudas = (dudas: DudaPublica[]) => {
 
 // La línea de cada entrada del menú del plan (F07b-pantallas §4).
 export function resumenSeccion(plan: PlanCarrera, seccion: SeccionPlan, opciones: OpcionesTarjeta) {
-  if (seccion.estado === 'BLOQUEADA') return mensajeBloqueo(seccion)
+  if (seccion.estado === 'BLOQUEADA')
+    return seccion.codigo === 'PASOS' && sugerenciasPendientes(plan).length
+      ? `${mensajeBloqueo(seccion)} · ${sugerenciasEsperan(plan)}`
+      : mensajeBloqueo(seccion)
   if (seccion.estado === 'POR_EMPEZAR') return 'Todavía nada'
   if (seccion.codigo === 'POR_QUE') {
     const relato = inicioRelato(plan.relato, 24)
-    return [textoIdea(plan.idea_origen), plan.motivos[0] && textoMotivo(plan.motivos[0], opciones), relato && `«${relato}»`]
+    return [
+      textoIdea(plan.idea_origen),
+      plan.motivos[0] && textoMotivo(plan.motivos[0], opciones),
+      relato && `«${relato}»`,
+    ]
       .filter(Boolean)
       .join(' · ')
   }
@@ -111,7 +190,45 @@ export function resumenSeccion(plan: PlanCarrera, seccion: SeccionPlan, opciones
     const { abiertas, resueltas } = contarDudas(plan.dudas)
     return `${respondidas} de 5 respondidas · ${abiertas} ${abiertas === 1 ? 'duda abierta' : 'dudas abiertas'} · ${resueltas} ${resueltas === 1 ? 'resuelta' : 'resueltas'}`
   }
-  return ESTADOS_SECCION[seccion.estado]
+  if (seccion.codigo === 'REALIDAD')
+    return [
+      plan.institucion?.nombre,
+      plan.camino && textoElegida(plan.camino, opciones.caminos),
+      `1.er año ≈ ${soles(plan.total_primer_anio)}`,
+    ]
+      .filter(Boolean)
+      .join(' · ')
+  const hechos = plan.pasos.filter((p) => p.estado === 'HECHO').length
+  return `${plural(plan.pasos.length, 'paso', 'pasos')}, ${plural(hechos, 'hecho', 'hechos')} · ${plural(sugerenciasPendientes(plan).length, 'sugerencia', 'sugerencias')}`
+}
+// «{m} sugerencias te esperan» (sección 4 bloqueada con sugerencias pendientes).
+export const sugerenciasEsperan = (plan: PlanCarrera) => {
+  const m = sugerenciasPendientes(plan).length
+  return m === 1 ? '1 sugerencia te espera' : `${m} sugerencias te esperan`
+}
+
+// §9: el aviso al guardar una sección, con los planes ya refrescados. Con sugerencias pendientes, en 2 y 3, la
+// cuenta de dudas abiertas (o complicaciones) y de pasos sugeridos; si no, el aviso simple de la sección.
+export type AvisoGuardado = { etiqueta?: string; titulo: string; descripcion?: string; destacado?: boolean }
+const AVISOS_SIMPLES: Record<CodigoSeccionPlan, AvisoGuardado> = {
+  POR_QUE: { titulo: 'Lo anoté.', descripcion: 'Volverá cuando compares tus planes.' },
+  CONOCIMIENTO: { titulo: 'Guardado.', descripcion: 'Tus dudas quedaron anotadas.' },
+  REALIDAD: { titulo: 'Guardado.', descripcion: 'Muéstrales este número en casa.' },
+  PASOS: { titulo: 'Guardado.', descripcion: 'Tus pasos quedaron anotados.' },
+}
+export function avisoGuardado(seccion: CodigoSeccionPlan, plan: PlanCarrera | null): AvisoGuardado {
+  const m = plan ? sugerenciasPendientes(plan).length : 0
+  if (!plan || !m || (seccion !== 'CONOCIMIENTO' && seccion !== 'REALIDAD')) return AVISOS_SIMPLES[seccion]
+  const n =
+    seccion === 'CONOCIMIENTO'
+      ? plural(contarDudas(plan.dudas).abiertas, 'duda', 'dudas')
+      : plural(plan.complicaciones.length, 'complicación', 'complicaciones')
+  return {
+    etiqueta: 'Guardado',
+    titulo: `${n} y ${plural(m, 'paso sugerido', 'pasos sugeridos')}`,
+    descripcion: `${m === 1 ? 'te espera' : 'te esperan'} en Mis próximos pasos.`,
+    destacado: true,
+  }
 }
 
 // «Último cambio: 25 oct» (fecha corta, sin texto relativo).
@@ -184,14 +301,20 @@ export type DudaPrevia = {
   efecto: 'crear' | 'existe' | 'resolver'
   existente: DudaPublica | null
 }
-export function dudasDePregunta(plan: PlanCarrera, b: BorradorConocimiento, opciones: OpcionesTarjeta): DudaPrevia[] {
+export function dudasDePregunta(
+  plan: PlanCarrera,
+  b: BorradorConocimiento,
+  opciones: OpcionesTarjeta,
+): DudaPrevia[] {
   return opciones.preguntas.flatMap((p): DudaPrevia[] => {
     const respuesta = b.respuestas[p.codigo],
       existente = plan.dudas.find((d) => d.origen === 'PREGUNTA' && d.pregunta === p.codigo) ?? null
     if (!respuesta) return []
     const texto = existente?.texto ?? conCarrera(p.texto_duda, plan.carrera.nombre)
     if (respuesta === 'SI')
-      return existente?.estado === 'ABIERTA' ? [{ pregunta: p.codigo, texto, respuesta, efecto: 'resolver', existente }] : []
+      return existente?.estado === 'ABIERTA'
+        ? [{ pregunta: p.codigo, texto, respuesta, efecto: 'resolver', existente }]
+        : []
     const efecto = existente?.estado === 'ABIERTA' ? 'existe' : 'crear'
     return [{ pregunta: p.codigo, texto, respuesta, efecto, existente }]
   })
