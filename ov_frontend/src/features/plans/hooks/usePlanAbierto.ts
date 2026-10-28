@@ -8,13 +8,15 @@ import { cargarResultadoRiasec } from '@/store/servidor/resultado'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import type { CodigoSeccionPlan } from '@/types/servidor'
 import type { AvisoPlan, EstadoNavegacionPlan } from './useAccionesPlanes'
+import { useMedidores } from './useMedidores'
 import { usePasoHecho } from './usePasoHecho'
 import { usePlanesServidor } from './usePlanesServidor'
 import { useSeccionPlan } from './useSeccionPlan'
 
-const SECCIONES: CodigoSeccionPlan[] = ['POR_QUE', 'CONOCIMIENTO', 'REALIDAD', 'PASOS']
-const esSeccion = (valor: string | null): valor is CodigoSeccionPlan =>
-  SECCIONES.includes(valor as CodigoSeccionPlan)
+// F07b: «Cómo me siento» (`MEDIDORES`) se elige como una sección más, aunque no lo sea en el servidor.
+export type VistaPlan = CodigoSeccionPlan | 'MEDIDORES'
+const VISTAS: VistaPlan[] = ['MEDIDORES', 'POR_QUE', 'CONOCIMIENTO', 'REALIDAD', 'PASOS']
+const esVista = (valor: string | null): valor is VistaPlan => VISTAS.includes(valor as VistaPlan)
 
 // F07a (F07b-pantallas §4): un plan abierto, con una sola sección a la vista. Sin `?seccion=`, abre la que indica
 // el botón de su tarjeta (la primera abierta no lista, o la 1) y la conserva aunque al guardar cambie la
@@ -33,8 +35,9 @@ export function usePlanAbierto(
   const avisar = (a: Omit<AvisoPlan, 'id'>) => setAviso({ ...a, id: Date.now() })
   const plan = servidor.datos?.planes.find((p) => p.carrera.codigo === carrera) ?? null
   const noExiste = !!servidor.datos && !plan
-  const [elegida, setElegida] = useState<CodigoSeccionPlan | null>(esSeccion(seccionUrl) ? seccionUrl : null)
+  const [elegida, setElegida] = useState<VistaPlan | null>(esVista(seccionUrl) ? seccionUrl : null)
   const pasoHecho = usePasoHecho(carrera, avisar)
+  const medidores = useMedidores(plan, avisar)
   const edicion = useSeccionPlan(plan, servidor.datos?.opciones ?? null, avisar)
 
   useEffect(() => {
@@ -68,18 +71,19 @@ export function usePlanAbierto(
     (a, b) => Number(b.es_favorita) - Number(a.es_favorita),
   )
 
-  const seccion = elegida ?? (plan ? seccionSiguiente(plan) : 'POR_QUE')
+  const seccion: VistaPlan = elegida ?? (plan ? seccionSiguiente(plan) : 'POR_QUE')
   return {
     ...servidor,
     plan,
     seccion,
     estadoSeccion: plan?.secciones.find((s) => s.codigo === seccion) ?? null,
-    elegir: (codigo: CodigoSeccionPlan) => {
+    elegir: (codigo: VistaPlan) => {
       edicion.cancelar()
       setElegida(codigo)
     },
     edicion,
     pasoHecho,
+    medidores,
     instituciones,
     paginaInstitucion: institucionDetalle?.datos?.pagina_web ?? null,
     encaje: plan ? encajeRiasec(plan.carrera.riasec, almacen.resultadoRiasec, dimensionNames) : null,

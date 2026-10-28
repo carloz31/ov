@@ -13,6 +13,7 @@ import { appPaths } from '@/routes/paths'
 import { usePlanAbierto } from '../hooks/usePlanAbierto'
 import type { AvisoPlan as Aviso } from '../hooks/useAccionesPlanes'
 import { AvisoPlan } from './AvisoPlan'
+import { ComoMeSiento } from './ComoMeSiento'
 import { DialogoPasoHecho } from './DialogoPasoHecho'
 import { MenuSeccionesPlan } from './MenuSeccionesPlan'
 import { PildoraEstado } from './PildoraEstado'
@@ -21,6 +22,14 @@ import { SeccionPasos } from './SeccionPasos'
 import { SeccionPorQue } from './SeccionPorQue'
 import { SeccionRealidad } from './SeccionRealidad'
 import '../styles/planes.css'
+
+const migas = (
+  <nav className="sx-p-migas">
+    <Link to={appPaths.student.decisions}>
+      <ArrowLeft aria-hidden="true" size={16} /> Mis planes
+    </Link>
+  </nav>
+)
 
 // F07a (F07b-pantallas §4): un plan abierto. A la izquierda, el menú de secciones; a la derecha, solo la sección
 // elegida, en lectura («Editar») o en edición («Cancelar» / «Guardar sección»). F07b: REALIDAD y PASOS.
@@ -34,7 +43,7 @@ export function PlanAbierto({
   avisoInicial?: Omit<Aviso, 'id'>
 }) {
   const v = usePlanAbierto(carrera, seccionUrl, avisoInicial)
-  if (!v.datos || !v.plan || !v.estadoSeccion)
+  if (!v.datos || !v.plan || (!v.estadoSeccion && v.seccion !== 'MEDIDORES'))
     return (
       <PantallaCarga
         estado={v.estado === 'error' ? 'error' : 'cargando'}
@@ -45,8 +54,25 @@ export function PlanAbierto({
         enSeccion
       />
     )
-  const { plan, estadoSeccion: s, edicion } = v
+  const { plan, edicion } = v
   const opciones = v.datos.opciones
+  const menu = <MenuSeccionesPlan plan={plan} opciones={opciones} seccion={v.seccion} onElegir={v.elegir} />
+  if (!v.estadoSeccion)
+    return (
+      <>
+        {migas}
+        <div className="sx-p-plan">
+          {menu}
+          <ComoMeSiento
+            medidores={plan.medidores}
+            ocupado={v.medidores.ocupado}
+            onFijar={v.medidores.fijar}
+          />
+        </div>
+        <AvisoPlan aviso={v.aviso} onDismiss={v.cerrarAviso} />
+      </>
+    )
+  const s = v.estadoSeccion
   const editable = s.estado !== 'BLOQUEADA'
   // Las que llaman al LLM al guardar avisan que puede tardar (lienzo de la sección 3).
   const tarda = s.codigo === 'CONOCIMIENTO' || s.codigo === 'REALIDAD'
@@ -54,13 +80,9 @@ export function PlanAbierto({
   const titulo = TITULOS_SECCION[s.codigo]
   return (
     <>
-      <nav className="sx-p-migas">
-        <Link to={appPaths.student.decisions}>
-          <ArrowLeft aria-hidden="true" size={16} /> Mis planes
-        </Link>
-      </nav>
+      {migas}
       <div className="sx-p-plan">
-        <MenuSeccionesPlan plan={plan} opciones={opciones} seccion={v.seccion} onElegir={v.elegir} />
+        {menu}
         {s.estado === 'BLOQUEADA' ? (
           <SeccionBloqueada
             titulo={`${NUMERO_SECCION[s.codigo]} · ${titulo}`}

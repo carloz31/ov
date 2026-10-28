@@ -886,3 +886,115 @@
 .sx-p-franja p {
   margin: 0;
 }
+
+/* F07b · «Cómo me siento» y medidores del plan A (lienzos «Cómo me siento» y Mis planes v4.2). */
+.sx-p-menu-entrada[data-medidores='true'] {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.sx-p-medidores {
+  display: grid;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sx-p-medidores li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 14px;
+  align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 20%, transparent);
+}
+.sx-p-medidores li:first-child {
+  border-top: 0;
+}
+.sx-p-medidores li > div {
+  flex: 1;
+  min-width: 180px;
+}
+.sx-p-medidores small {
+  display: block;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-medidor-icono {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid color-mix(in srgb, var(--sx-gold) 60%, transparent);
+  border-radius: 10px;
+  color: var(--sx-gold-deep);
+}
+.sx-p-segmentado > button {
+  min-width: 96px;
+  min-height: 44px;
+  border-radius: 0;
+  background: var(--card);
+  font-weight: 700;
+}
+.sx-p-segmentado > button:first-child {
+  border-radius: 10px 0 0 10px;
+}
+.sx-p-segmentado > button:last-child {
+  border-radius: 0 10px 10px 0;
+}
+.sx-p-segmentado > button[aria-pressed='true'] {
+  background: var(--sx-gold-deep);
+  color: var(--sx-night);
+}
+.sx-p-mini-medidores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+@media (max-width: 480px) {
+  .sx-p-mini-medidores {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.sx-p-mini-medidores li {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 12px;
+  background: var(--card);
+}
+.sx-p-mini-medidores small {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sx-p-mini-medidores small svg {
+  color: var(--sx-gold-deep);
+}
+.sx-p-barra {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.sx-p-barra > span {
+  height: 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sx-parchment-muted) 25%, transparent);
+}
+.sx-p-barra > span[data-lleno='true'] {
+  background: var(--sx-gold-deep);
+}
+.sx-p-mini-medidores li[data-valorado='false'] .sx-p-barra > span {
+  border: 1px dashed var(--sx-parchment-muted);
+  background: transparent;
+}
+.sx-p-sin-valorar {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sx-parchment-muted);
+}

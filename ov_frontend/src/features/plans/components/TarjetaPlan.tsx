@@ -14,6 +14,7 @@ import {
 } from '@/lib/servidor/adaptadoresPlanes'
 import { appPaths } from '@/routes/paths'
 import type { PlanCarrera, SeccionPlan } from '@/types/servidor'
+import { MedidoresTarjeta } from './MedidoresTarjeta'
 
 // Una sección como casilla independiente (se llenan en cualquier orden): ícono de estado y, en el plan A, título y
 // estado en texto. El detalle y el mensaje de bloqueo van en el tooltip.
@@ -123,6 +124,7 @@ export function TarjetaPlan({
             </button>
           )}
         </div>
+        {principal && <MedidoresTarjeta medidores={plan.medidores} carrera={plan.carrera.codigo} />}
         <p className="sx-p-cambio">Último cambio: {fechaCorta(plan.actualizada_en)}</p>
       </div>
     </article>
