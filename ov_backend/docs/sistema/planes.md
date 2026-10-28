@@ -63,7 +63,7 @@ Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, 
 
 | Ruta | Cuerpo | Errores |
 |---|---|---|
-| `crear` | `cuenta, carrera` | 409 con tres planes o si la carrera ya tiene plan; 404 carrera inexistente |
+| `crear` | `cuenta, carrera` | 409 si la carrera ya tiene plan, con tres planes o si la carrera no es favorita de la cuenta (F07a; desmarcarla después no toca el plan); 404 carrera inexistente |
 | `guardar-seccion` | `cuenta, carrera, seccion, datos` | 409 sección bloqueada (mensaje y `progreso`, nada guardado) o sin plan; 422 validación |
 | `medidores` | `cuenta, carrera, entusiasmo?, capacidad?, recursos?` (1 a 3; lo enviado reemplaza) | 422 fuera de rango |
 | `paso-hecho` | `cuenta, carrera, paso, hallazgo?` | 409 si el paso no es suyo o ya está hecho |

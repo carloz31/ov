@@ -11,9 +11,9 @@ from app.core.parametros import MAXIMO_PLANES, NUMERO_BLOQUE_OPCION_INICIAL
 from app.exceptions import ErrorAccion
 from app.models import (
     Audiencia, Bloque, Carrera, ComplicacionTarjeta, ConocimientoTarjeta, Cuenta, DudaTarjeta, Espacio, EstadoDuda,
-    EstadoPaso, EstadoSugerencia, FinanciamientoTarjeta, GastoTarjeta, Institucion, InstitucionCarrera, MotivoTarjeta,
-    OrigenDuda, PasoTarjeta, RespuestaConocimiento, SeccionTarjeta, SugerenciaTarjeta, TarjetaCarrera, TipoEventoUso,
-    TipoObjetivo,
+    EstadoPaso, EstadoSugerencia, Favorito, FinanciamientoTarjeta, GastoTarjeta, Institucion, InstitucionCarrera,
+    MotivoTarjeta, OrigenDuda, PasoTarjeta, RespuestaConocimiento, SeccionTarjeta, SugerenciaTarjeta, TarjetaCarrera,
+    TipoEventoUso, TipoFavorito, TipoObjetivo,
 )
 from app.schemas.acciones import RespuestaAccion
 from app.schemas.planes import (
@@ -66,6 +66,10 @@ def crear_plan(sesion: Session, entrada: PlanEntrada) -> RespuestaAccion:
         raise ErrorAccion('Ya tienes un plan para esa carrera')
     if len(carreras) >= MAXIMO_PLANES:
         raise ErrorAccion(f'Ya tienes {MAXIMO_PLANES} planes; elimina uno para crear otro')
+    # F07a: un plan se crea solo desde una carrera favorita; desmarcarla después no toca el plan.
+    if sesion.scalar(select(Favorito.id).where(Favorito.cuenta_id == cuenta.id, Favorito.tipo == TipoFavorito.CARRERA,
+                                               Favorito.id_referencia == carrera.id)) is None:
+        raise ErrorAccion('Primero guarda la carrera en tus favoritos')
     fecha = fecha_accion(entrada)
     sesion.add(TarjetaCarrera(cuenta_id=cuenta.id, carrera_id=carrera.id, prioridad=len(carreras) + 1,
                               creada_en=fecha, actualizada_en=fecha))

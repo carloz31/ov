@@ -34,6 +34,19 @@ def test_hu043_hasta_tres_planes_sin_repetir_carrera(cliente):
     assert planes(cliente)['maximo_planes'] == 3
 
 
+def test_f07a_solo_se_crea_desde_una_carrera_favorita(cliente):
+    abrir_planes(cliente)
+    respuesta = crear(cliente, PSICOLOGIA, esperado=409, favorita=False)
+    assert respuesta['detail']['mensaje'] == 'Primero guarda la carrera en tus favoritos'
+    assert planes(cliente)['planes'] == []
+    eventos = pedir(cliente, 'GET', '/cuentas/est-ana/eventos')
+    assert 'CREA_PLAN' not in [e['tipo'] for e in eventos]
+    crear(cliente, PSICOLOGIA)
+    # Desmarcar la favorita no toca el plan.
+    pedir(cliente, 'POST', '/acciones/desmarcar-favorito', {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': PSICOLOGIA})
+    assert [p['carrera']['codigo'] for p in planes(cliente)['planes']] == [PSICOLOGIA]
+
+
 def test_seccion_planes_cerrada_y_cuentas_ajenas(cliente):
     assert planes(cliente, esperado=409)['detail']['mensaje'] == 'Completa el inicio para abrir tus planes.'
     crear(cliente, PSICOLOGIA, esperado=409)

@@ -443,7 +443,11 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
 
     completar(cliente, 't-inicio')
     # La opción inicial es el primer plan, registrado antes de terminar el camino.
+    # F07a: un plan se crea desde una carrera favorita.
+    assert pedir(cliente, 'POST', '/acciones/planes/crear', {**ana, 'carrera': PSICOLOGIA}, 409)['detail'][
+        'mensaje'] == 'Primero guarda la carrera en tus favoritos'
     for carrera in (PSICOLOGIA, PERIODISMO):
+        pedir(cliente, 'POST', '/acciones/marcar-favorito', {**ana, 'tipo': 'CARRERA', 'codigo': carrera})
         pedir(cliente, 'POST', '/acciones/planes/crear', {**ana, 'carrera': carrera})
         seccion(carrera, 'POR_QUE', {'idea_origen': 'MIA', 'motivos': [{'opcion': 'AYUDAR'}],
                                      'relato': 'DATO DE PRUEBA: un día expliqué un tema y sentí que era lo mío.'})

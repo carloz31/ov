@@ -169,7 +169,15 @@ def _recorrer(cliente):
     fixtures['instrumentos'] = _pedir(cliente, 'GET', '/instrumentos')
     fixtures['completar-t-inicio'] = _completar(cliente, 't-inicio')
     # B11: dos planes antes de cerrar el camino; el primero queda como opción inicial. t-inicio abre POR_QUE.
+    # F07a: un plan se crea solo desde una carrera favorita; sin marcarla, 409.
+    no_favorita = cliente.request('POST', '/acciones/planes/crear', json={
+        'cuenta': 'est-ana', 'carrera': PSICOLOGIA, 'fecha_hora': FECHA})
+    if no_favorita.status_code != 409:
+        raise RuntimeError(f'Crear un plan sin favorita respondió {no_favorita.status_code}')
+    fixtures['crear-plan-no-favorita'] = no_favorita.json()
     for carrera in (PSICOLOGIA, PERIODISMO):
+        _pedir(cliente, 'POST', '/acciones/marcar-favorito', {
+            'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': carrera, 'fecha_hora': FECHA})
         fixtures['crear-plan'] = _pedir(cliente, 'POST', '/acciones/planes/crear', {
             'cuenta': 'est-ana', 'carrera': carrera, 'fecha_hora': FECHA})
         fixtures['guardar-seccion-por-que'] = _guardar_seccion(cliente, carrera, 'POR_QUE', {

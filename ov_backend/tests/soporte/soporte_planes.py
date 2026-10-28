@@ -21,7 +21,15 @@ def abrir_secciones(cliente, *secciones, cuenta='est-ana'):
                                             'referencia': ABRE_SECCION[seccion]})
 
 
-def crear(cliente, carrera, cuenta='est-ana', esperado=200):
+def marcar_favorita(cliente, carrera, cuenta='est-ana'):
+    """F07a: un plan se crea desde una carrera favorita. Sin aserción: puede no existir o estar ya marcada."""
+    cliente.post('/acciones/marcar-favorito', json={'cuenta': cuenta, 'tipo': 'CARRERA', 'codigo': carrera})
+
+
+def crear(cliente, carrera, cuenta='est-ana', esperado=200, favorita=True):
+    """Crea el plan; con `favorita`, antes marca la carrera como favorita (F07a)."""
+    if favorita:
+        marcar_favorita(cliente, carrera, cuenta)
     return pedir(cliente, 'POST', '/acciones/planes/crear', {'cuenta': cuenta, 'carrera': carrera}, esperado)
 
 

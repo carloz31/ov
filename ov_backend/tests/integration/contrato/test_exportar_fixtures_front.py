@@ -71,7 +71,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'diario-preguntas', 'abrir-pregunta-personal', 'pregunta-del-dia', 'escribir-entrada-fija', 'escribir-entrada-libre',
     'editar-entrada', 'diario-entradas', 'diario-amistad', 'desarchivar-pregunta', 'archivar-pregunta',
     'diario-preguntas-buzon', 'check-ins', 'tematicas',
-    'crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
+    'crear-plan-no-favorita', 'crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
     'medidores-plan', 'referencias-t-comparar', 'guardar-seccion-pasos', 'paso-hecho', 'referencias-t-proyecto',
     'planes', 'familia', 'familia-resultados', 'conversaciones-sin-carta', 'escribir-carta-est-ana',
     'escribir-carta-apo-rosa', 'responder-conversacion', 'conversaciones-te-toca', 'conversaciones-por-conversar',
@@ -313,11 +313,14 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert datos['catalogo-inesperada'] == {'codigo': 'mtpe-1', 'revisitando': False}
     assert {d['regla'] for d in datos['ver-carrera']['nuevos_desbloqueos']} == {'R-t-explorar-carrera'}
     favoritas = PaginaCarreras.model_validate(datos['catalogo-carreras-favoritos'])
-    assert [c.codigo for c in favoritas.items] == [ING_CIVIL] and favoritas.items[0].es_favorita
+    # F07a: las carreras de los planes también son favoritas (un plan se crea desde una favorita).
+    assert {c.codigo for c in favoritas.items} == {ING_CIVIL, PSICOLOGIA, PERIODISMO}
+    assert all(c.es_favorita for c in favoritas.items)
     assert [e['tipo'] for e in datos['marcar-favorito']['eventos_registrados']] == ['MARCA_FAVORITO']
     favoritos = FavoritosCuenta.model_validate(datos['favoritos'])
-    assert ([c.codigo for c in favoritos.carreras], [o.codigo for o in favoritos.ocupaciones],
-            [i.codigo for i in favoritos.instituciones]) == ([ING_CIVIL], ['geologist'], [INST_UNI])
+    assert ({c.codigo for c in favoritos.carreras}, [o.codigo for o in favoritos.ocupaciones],
+            [i.codigo for i in favoritos.instituciones]) == ({ING_CIVIL, PSICOLOGIA, PERIODISMO}, ['geologist'],
+                                                             [INST_UNI])
     # B09: diario, check-ins y temáticas.
     preguntas = TypeAdapter(list[PreguntaDiarioEstado]).validate_python(datos['diario-preguntas'])
     assert [(p.codigo, p.redactada) for p in preguntas] == [('t-diario-fija', True), ('t-diario-personal', False),
@@ -410,6 +413,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     for nombre in ('crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
                    'medidores-plan', 'guardar-seccion-pasos', 'paso-hecho'):
         RespuestaAccion.model_validate(datos[nombre])
+    assert datos['crear-plan-no-favorita']['detail']['mensaje'] == 'Primero guarda la carrera en tus favoritos'
     assert {d['regla'] for d in datos['guardar-seccion-realidad']['nuevos_desbloqueos']} == {'R-t-comparar'}
     assert {d['regla'] for d in datos['guardar-seccion-pasos']['nuevos_desbloqueos']} == {'R-t-proyecto'}
     planes = PlanesCuenta.model_validate(datos['planes'])

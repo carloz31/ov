@@ -1,1 +1,5 @@
 # Decisiones de la spec en curso
+
+- **Un plan solo desde una carrera favorita (F07a, opción ii).** `crear` responde 409 «Primero guarda la carrera en tus favoritos» si la carrera no es favorita (se valida después de la carrera inexistente, el repetido y el tope); desmarcarla después no toca el plan. Es regla de negocio, así vale para todo cliente. En el detalle de carrera, el bloque del plan sigue la precedencia ya es plan → tres ocupados → no favorita → hay espacio.
+- **Pruebas adaptadas por la regla anterior (autorizado por la spec).** El ayudante `crear` de `tests/soporte/soporte_planes.py` marca la carrera como favorita antes de crear (`favorita=False` para probar el 409); el escenario `test_ruta_corta.py` y el exportador marcan PSICOLOGIA y PERIODISMO antes de crear sus planes, lo que agrega esas carreras a `ruta-favoritos` y `ruta-catalogo-carreras-favoritos`.
+- **Refresco de planes sin ajuste al backend (opción b).** Las acciones de planes siguen respondiendo `RespuestaAccion`; en el front vencen la sección `planes` y la vista montada la vuelve a pedir. Un desbloqueo `SECCION_PLAN` también vence `planes`.
