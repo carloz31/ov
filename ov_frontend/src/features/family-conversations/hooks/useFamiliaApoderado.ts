@@ -28,7 +28,7 @@ const resultado = (respuesta: RespuestaServidor<unknown>): ResultadoAccionFamili
     : { ok: false, mensaje: mensajeErrorServidor(respuesta as ErrorServidor) }
 
 // F08: Conversaciones del apoderado en api, por hijo (el activo se conserva al navegar). Con la sección cerrada,
-// el servidor responde 409 y la vista muestra el bloqueo (A1). Las ideas de la carta se abren en su diálogo.
+// el servidor responde 409 y la vista muestra el bloqueo (A1). Las ideas de la carta se abren en la guía para familias.
 export function useFamiliaApoderado() {
   const { hijo, seccion, enviando } = useConversacionesApoderadoSeccion(usaFamiliaServidor())
   const hijos = hijosApoderado()

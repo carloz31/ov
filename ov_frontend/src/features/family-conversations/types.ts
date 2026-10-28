@@ -29,7 +29,7 @@ export type ModeloFamilia = {
   rutas: RutasFamilia
   // Ayuda de la sección (el «?» de Responder); nulo si el rol no la tiene.
   abrirAyuda: (() => void) | null
-  // El diálogo de ideas de la carta (Anterior/Siguiente).
+  // Las ideas de la carta (la guía de Lumi).
   abrirIdeas: () => void
   // El aviso (toast) de la última acción; el inicial lo deja la navegación (la carta guardada vuelve a la lista).
   aviso: AvisoFamilia | null

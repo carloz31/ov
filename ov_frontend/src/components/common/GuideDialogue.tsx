@@ -9,6 +9,8 @@ function GuideDialogue({
   disabled = false,
   audience = 'student',
   buttonLabel = 'Abrir guía',
+  abierto,
+  onCerrar,
 }: {
   text: string
   onContinue?: () => void
@@ -16,8 +18,14 @@ function GuideDialogue({
   disabled?: boolean
   audience?: 'student' | 'parent'
   buttonLabel?: string
+  // Controlado desde fuera (sin el botón flotante): lo abre otro botón de la vista.
+  abierto?: boolean
+  onCerrar?: () => void
 }) {
-  const [open, setOpen] = useState(false)
+  const [abiertoPropio, setOpen] = useState(false)
+  const controlado = abierto !== undefined
+  const open = controlado ? abierto : abiertoPropio
+  const cerrar = () => (controlado ? onCerrar?.() : setOpen(false))
   const [visible, setVisible] = useState(0)
 
   useEffect(() => {
@@ -41,11 +49,11 @@ function GuideDialogue({
   useEffect(() => {
     if (!open) return
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setOpen(false)
+      if (event.key === 'Escape') cerrar()
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [open])
+  })
 
   const typing = visible < text.length
   function continueOrClose() {
@@ -54,20 +62,22 @@ function GuideDialogue({
       return
     }
     if (disabled) return
-    setOpen(false)
+    cerrar()
     onContinue?.()
   }
 
   return (
     <div className="pointer-events-none fixed inset-0 z-40">
-      <button
-        type="button"
-        aria-label={buttonLabel}
-        className="pointer-events-auto absolute bottom-5 right-5 grid size-12 place-items-center rounded-full border border-[var(--family-white-border)]/80 bg-[var(--family-guide-button)] text-[var(--family-guide-icon)] shadow-[var(--family-guide-shadow)] transition-transform hover:-translate-y-1 focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-primary sm:bottom-7 sm:right-7"
-        onClick={() => setOpen(true)}
-      >
-        <CircleHelp className="size-6" />
-      </button>
+      {!controlado && (
+        <button
+          type="button"
+          aria-label={buttonLabel}
+          className="pointer-events-auto absolute bottom-5 right-5 grid size-12 place-items-center rounded-full border border-[var(--family-white-border)]/80 bg-[var(--family-guide-button)] text-[var(--family-guide-icon)] shadow-[var(--family-guide-shadow)] transition-transform hover:-translate-y-1 focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-primary sm:bottom-7 sm:right-7"
+          onClick={() => setOpen(true)}
+        >
+          <CircleHelp className="size-6" />
+        </button>
+      )}
       {open && (
         <div
           className="pointer-events-auto fixed inset-0 z-50 grid place-items-center bg-[var(--family-guide-overlay)]/35 p-4 backdrop-blur-[7px]"
@@ -75,7 +85,7 @@ function GuideDialogue({
           aria-modal="true"
           aria-label={audience === 'student' ? 'Orientación de Lumi' : 'Guía para familias'}
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setOpen(false)
+            if (event.target === event.currentTarget) cerrar()
           }}
         >
           <section className="relative w-full max-w-xl rounded-3xl border border-[var(--family-white-border)]/70 bg-[var(--family-guide-surface)] px-6 pb-6 pt-16 shadow-[var(--family-guide-dialog-shadow)] sm:px-8 sm:pb-8">
@@ -83,7 +93,7 @@ function GuideDialogue({
               type="button"
               aria-label="Cerrar guía"
               className="absolute right-4 top-4 grid size-9 place-items-center rounded-full text-[var(--family-guide-secondary)] hover:bg-[var(--family-guide-hover)]"
-              onClick={() => setOpen(false)}
+              onClick={cerrar}
             >
               <X className="size-4" />
             </button>
@@ -108,7 +118,10 @@ function GuideDialogue({
               {audience === 'student' ? 'Lumi · Tu compañero de viaje' : 'Guía para familias'}
             </p>
             <div className="mx-auto mb-5 h-1 w-24 rounded-full bg-[var(--family-guide-divider)]" />
-            <p className="min-h-24 text-sm leading-7 text-[var(--family-guide-text)]" aria-hidden="true">
+            <p
+              className="min-h-24 whitespace-pre-line text-sm leading-7 text-[var(--family-guide-text)]"
+              aria-hidden="true"
+            >
               {text.slice(0, visible)}
               {typing && <span className="ml-0.5">▍</span>}
             </p>

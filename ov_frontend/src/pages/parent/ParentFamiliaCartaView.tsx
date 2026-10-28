@@ -1,10 +1,10 @@
-import { DialogoIdeas } from '@/features/family-conversations/components/servidor/DialogoIdeas'
+import { GuideDialogue } from '@/components/common/GuideDialogue'
 import { EscribirCarta } from '@/features/family-conversations/components/servidor/EscribirCarta'
 import { MarcoFamiliaApoderado } from '@/features/family-conversations/components/servidor/MarcoFamiliaApoderado'
 import { SelectorHijo } from '@/features/family-conversations/components/servidor/SelectorHijo'
 import { useFamiliaApoderado } from '@/features/family-conversations/hooks/useFamiliaApoderado'
 
-// F08 (A3): la carta del apoderado para el hijo del vínculo activo, con sus ideas en un diálogo.
+// F08 (A3): la carta del apoderado para el hijo del vínculo activo. «Ver ideas» abre la guía para familias.
 export function ParentFamiliaCartaView() {
   const f = useFamiliaApoderado()
   return (
@@ -14,10 +14,10 @@ export function ParentFamiliaCartaView() {
         m={f.m}
         selector={<SelectorHijo activo={f.hijo} hijos={f.hijos} onElegir={f.elegirHijo} />}
       />
-      <DialogoIdeas
+      <GuideDialogue
         abierto={f.ideasAbiertas}
-        pasos={f.m.textos.ideas}
-        titulo={f.m.textos.cartaIdeasBoton}
+        audience="parent"
+        text={f.m.textos.ideas.join('\n')}
         onCerrar={f.cerrarIdeas}
       />
     </MarcoFamiliaApoderado>
