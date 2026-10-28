@@ -197,7 +197,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - `t-lee-cuestionario` cita la respuesta del cuestionario.
 - **Comprueba:** sección 11; los tres sentidos de «prioritario»; apertura del Bloque 4.
 
-**B08 · Batallas, casos y testimonios (M)**
+**B08 · Batallas, casos y testimonios (M) · Implementado**
 - **Modelo:**
   - `TipoActividad.BATALLA`, `ResultadoBatalla` y `SUPERA_BATALLA`;
   - `Actividad.dimension_id` y `ColeccionOcupacion`;
@@ -256,7 +256,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Ninguna actividad escribe en los planes.
 - **Comprueba:** regla 1; la tarjeta que crece; opción inicial; requisitos de 4.5 y 5.1.
 
-**B12 · Familia (M)**
+**B12 · Familia (M) · Implementado**
 - **Modelo:** `TipoObjetivo.CONVERSACION`.
 - **Pruebas:**
   - El apoderado ve todas las guías tras completar su ruta y su carta; el estudiante las abre una por una.
