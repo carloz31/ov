@@ -19,7 +19,6 @@ export function useMisPlanes() {
     ...acciones,
     planes,
     favoritas: favoritos?.carreras ?? null,
-    listos: planes.filter((p) => p.lista_para_comparar).length,
     letraLibre: LETRAS[planes.length] ?? '',
     creando,
     abrirCrear: () => setCreando(true),

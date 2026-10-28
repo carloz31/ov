@@ -34,16 +34,16 @@ export function useAccionesPlanes() {
     navigate(appPaths.student.plan(carrera, 'POR_QUE'), { state: estado })
   }
 
-  // Sube o baja un plan: envía la permutación completa de carreras (A, B, C).
-  async function mover(planes: PlanCarrera[], indice: number, direccion: -1 | 1) {
-    const destino = indice + direccion
-    if (destino < 0 || destino >= planes.length) return
-    const carreras = planes.map((p) => p.carrera.codigo)
-    ;[carreras[indice], carreras[destino]] = [carreras[destino], carreras[indice]]
-    setOcupado(`mover:${planes[indice].carrera.codigo}`)
+  // Ajuste v4.2: «Hacer mi plan A» envía la permutación con esa carrera primero; los demás se corren.
+  async function hacerA(planes: PlanCarrera[], carrera: string) {
+    const elegido = planes.find((p) => p.carrera.codigo === carrera)
+    if (!elegido || elegido.prioridad === 'A') return
+    const carreras = [carrera, ...planes.map((p) => p.carrera.codigo).filter((c) => c !== carrera)]
+    setOcupado(`ordenar:${carrera}`)
     const respuesta = await ordenarPlanes(carreras)
     setOcupado(null)
-    if (!respondio(respuesta)) fallo(respuesta)
+    if (!respondio(respuesta)) return fallo(respuesta)
+    avisar({ titulo: `${elegido.carrera.nombre} ahora es tu plan A`, error: false })
   }
 
   async function eliminar(carrera: string) {
@@ -54,5 +54,5 @@ export function useAccionesPlanes() {
     avisar({ titulo: 'Plan eliminado', error: false })
   }
 
-  return { ocupado, aviso, cerrarAviso: () => setAviso(null), avisar, crear, mover, eliminar }
+  return { ocupado, aviso, cerrarAviso: () => setAviso(null), avisar, crear, hacerA, eliminar }
 }

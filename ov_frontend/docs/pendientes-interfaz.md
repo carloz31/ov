@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-28 · Ajuste F07a v4.2 · Compartir o imprimir el plan
+
+- **Dato:** el plan completo (secciones, dudas y, desde F07b, presupuesto y pasos) ya está en `GET /planes`; no hay forma de compartirlo ni imprimirlo para verlo en familia.
+- **Dónde se mostraría:** Mis planes o el plan abierto (una acción «Compartir» o «Imprimir»), o el portal del apoderado.
+- **Opciones:** vista de impresión del plan abierto; compartir con el apoderado desde F08; o dejarlo para la revisión final.
+- **Si no se muestra:** el estudiante comenta su plan en casa sin tenerlo a la vista.
+- **Estado:** pendiente de decisión del usuario (F08 o revisión final).
+
 ## 2026-10-28 · F07a · «De tu camino» en «Por qué la elijo»
 
 - **Dato:** la tarjeta v4 cita en POR_QUE lo que el estudiante escribió en la actividad 1.7 («De tu camino»); el backend no entrega esa cita en `GET /planes`.

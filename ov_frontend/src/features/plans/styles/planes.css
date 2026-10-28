@@ -23,68 +23,187 @@
   background: color-mix(in srgb, var(--primary) 14%, var(--sx-parchment));
 }
 
-/* La píldora es hija del <li> como el círculo de estado de la tarjeta local: se anulan los estilos del círculo. */
-.sx-d-plan-sections li[data-estado] > .sx-p-pildora {
-  display: inline-block;
-  width: auto;
-  height: auto;
-  border: 0;
-  border-radius: 999px;
-  color: var(--sx-parchment-ink);
+.sx-p-cambio {
+  margin: 12px 0 0;
+  font-size: 12px;
+  text-align: right;
+  color: var(--sx-parchment-muted);
 }
-.sx-d-plan-sections li[data-estado='LISTA'] > .sx-p-pildora {
-  background: color-mix(in srgb, var(--success) 22%, var(--sx-parchment));
+
+/* Ajuste v4.2: el plan A a la izquierda, «Rutas alternas» (B, C y los espacios libres) a la derecha. */
+.sx-p-mis-planes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 24px;
 }
-.sx-d-plan-sections li[data-estado='EN_PROCESO'] > .sx-p-pildora {
-  background: color-mix(in srgb, var(--sx-gold) 28%, var(--sx-parchment));
+@media (min-width: 900px) {
+  .sx-p-mis-planes {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
 }
-.sx-d-plan-sections li[data-estado='POR_EMPEZAR'] > .sx-p-pildora {
-  background: color-mix(in srgb, var(--sx-parchment-muted) 18%, var(--sx-parchment));
+.sx-p-alternas {
+  display: grid;
+  gap: 16px;
 }
-.sx-d-plan-sections li[data-estado='BLOQUEADA'] > .sx-p-pildora {
-  background: color-mix(in srgb, var(--primary) 14%, var(--sx-parchment));
+.sx-p-alternas > h2 {
+  margin: 0;
+  color: var(--sx-night-text);
 }
-.sx-d-plan-sections li[data-estado] {
+.sx-p-tarjeta > .sx-d-parchment {
+  display: grid;
+  gap: 16px;
+}
+.sx-p-tarjeta-cabecera {
+  display: flex;
+  gap: 14px;
   align-items: flex-start;
 }
-.sx-d-plan-sections li[data-estado] > :first-child {
-  flex: none;
-}
-.sx-d-plan-sections li[data-estado] > .sx-p-seccion-texto {
+.sx-p-tarjeta-cabecera > div {
+  display: grid;
+  gap: 2px;
   flex: 1;
   min-width: 0;
 }
-.sx-d-plan-sections li[data-estado='EN_PROCESO'] > span:first-child {
-  border-style: solid;
-  background: linear-gradient(90deg, var(--sx-gold) 50%, transparent 50%);
-}
-.sx-d-plan-sections li[data-estado='BLOQUEADA'] > span:first-child {
-  border: 0;
-}
-.sx-p-seccion-texto {
-  display: grid;
-  gap: 2px;
-}
-.sx-p-seccion-texto small {
-  font-size: 13px;
-  line-height: 1.35;
-}
-.sx-p-motivo {
-  margin: 6px 0 2px;
-  font-size: 14px;
-  font-weight: 700;
-  color: color-mix(in srgb, var(--sx-gold) 65%, var(--sx-parchment-ink));
-}
-.sx-d-plan-card .sx-d-quote p {
+.sx-p-tarjeta-cabecera h2,
+.sx-p-tarjeta-cabecera p {
   margin: 0;
 }
-.sx-d-plan-card .sx-d-quote em {
-  font-size: 14px;
+.sx-p-tarjeta[data-principal='false'] h2 {
+  font-size: 17px;
 }
-.sx-p-cambio {
-  margin: 12px 0;
-  font-size: 13px;
+.sx-p-tarjeta-cabecera p {
+  font-size: 14px;
   color: var(--sx-parchment-muted);
+}
+.sx-p-rotulo {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--sx-gold) 70%, var(--sx-parchment-ink));
+}
+.sx-p-sello {
+  display: inline-block;
+  padding: 5px 12px;
+  border: 2px solid var(--success);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--success);
+  transform: rotate(-3deg);
+}
+.sx-p-casillas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.sx-p-casilla {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 12px;
+  background: var(--card);
+  font-size: 13px;
+}
+.sx-p-tarjeta[data-principal='false'] .sx-p-casilla {
+  place-items: center;
+  padding: 8px;
+}
+.sx-p-casilla small {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-casilla-icono {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sx-p-casilla[data-estado='LISTA'] {
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  background: color-mix(in srgb, var(--success) 14%, var(--sx-parchment));
+}
+.sx-p-casilla[data-estado='LISTA'] .sx-p-casilla-icono {
+  background: var(--success);
+  color: var(--card);
+}
+.sx-p-casilla[data-estado='EN_PROCESO'] {
+  border-color: color-mix(in srgb, var(--sx-gold) 50%, transparent);
+  background: color-mix(in srgb, var(--sx-gold) 12%, var(--sx-parchment));
+}
+.sx-p-casilla[data-estado='EN_PROCESO'] .sx-p-casilla-icono {
+  color: color-mix(in srgb, var(--sx-gold) 75%, var(--sx-parchment-ink));
+}
+.sx-p-casilla[data-estado='POR_EMPEZAR'] {
+  border-style: dashed;
+}
+.sx-p-casilla[data-estado='POR_EMPEZAR'] .sx-p-casilla-icono {
+  border: 2px dashed currentColor;
+}
+.sx-p-casilla[data-estado='BLOQUEADA'] {
+  background: color-mix(in srgb, var(--primary) 8%, var(--sx-parchment));
+  color: var(--sx-parchment-muted);
+}
+.sx-p-casilla[data-estado='BLOQUEADA'] .sx-p-casilla-icono {
+  background: color-mix(in srgb, var(--sx-parchment-muted) 20%, transparent);
+}
+.sx-p-tarjeta-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.sx-p-tarjeta[data-principal='true'] .sx-p-tarjeta-acciones > .sx-d-action {
+  flex: 1;
+}
+.sx-p-tarjeta[data-principal='false'] .sx-p-tarjeta-acciones > a {
+  flex: 1;
+}
+.sx-p-espacio {
+  display: grid;
+  gap: 12px;
+  min-height: 0;
+  padding: 18px 20px;
+  align-items: stretch;
+  text-align: left;
+}
+.sx-p-espacio h2 {
+  margin: 0;
+  font-size: 17px;
+}
+.sx-p-espacio p {
+  margin: 0;
+  font-size: 13px;
+}
+.sx-p-espacio .sx-d-plan-letter {
+  width: 40px;
+  height: 40px;
+}
+.sx-p-tarjeta[data-principal='false'] {
+  border-width: 5px;
+}
+.sx-p-tarjeta[data-principal='false'] .sx-d-plan-letter {
+  width: 40px;
+  height: 40px;
+}
+@media (max-width: 480px) {
+  .sx-p-tarjeta[data-principal='true'] .sx-p-casillas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .sx-p-aviso {

@@ -47,52 +47,59 @@ async function montar(app, ruta, props = {}) {
   return montado
 }
 
-test('Mis planes: cabecera, aviso de misma familia, tarjetas con estados homogéneos y un solo espacio con botones', async () => {
+test('Mis planes v4.2: A como ruta principal, B y C como rutas alternas compactas, sin contador', async () => {
   const { app } = misPlanes()
   const vista = await montar(app, 'src/features/plans/components/MisPlanes.tsx')
   const arbol = vista.render()
   const marcado = texto(arbol)
-  assert.match(marcado, /0 de 3 planes listos para comparar/)
+  assert.doesNotMatch(marcado, /planes listos para comparar/)
   assert.match(marcado, /Tus planes A y B son de la misma familia, Psicología\..*Explorar otras áreas/)
+  assert.match(marcado, /Rutas alternas/)
   const tarjetas = elementos(arbol, (e) => e.type?.name === 'TarjetaPlan')
-  assert.deepEqual(copia(tarjetas.map((t) => t.props.plan.prioridad)), ['A', 'B'])
-  assert.match(marcado, /Espacio para tu plan C.*Desde mis favoritos.*Buscar en el catálogo/)
+  assert.deepEqual(copia(tarjetas.map((t) => [t.props.plan.prioridad, t.props.principal])), [['A', true], ['B', false]])
+  const espacios = elementos(arbol, (e) => e.type?.name === 'EspacioPlan')
+  assert.deepEqual(copia(espacios.map((e) => [e.props.letra, e.props.conAcciones])), [['C', true]])
   const { TarjetaPlan } = app.load('src/features/plans/components/TarjetaPlan.tsx')
   const a = TarjetaPlan(tarjetas[0].props)
   const textoA = texto(a)
-  assert.match(textoA, /Plan A/)
+  assert.match(textoA, /Plan A · tu ruta principal/)
   assert.match(textoA, /Aún sin institución elegida/)
-  assert.match(textoA, /Ayudar a otros.*«DATO DE PRUEBA: corto\.»/)
-  const pildoras = elementos(a, (e) => e.type?.name === 'PildoraEstado').map((p) => p.props.estado)
-  assert.deepEqual(pildoras, ['EN_PROCESO', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA'])
-  // HU-099: cada sección bloqueada dice qué actividad la abre.
-  assert.match(textoA, new RegExp(familia.planes[0].secciones[1].bloqueo[0].mensaje))
-  assert.match(textoA, /Último cambio: /)
+  assert.doesNotMatch(textoA, /Por qué la elijo«|secciones listas|Lista para comparar|prioridad/)
+  // Cuatro casillas independientes; el mensaje de bloqueo va solo en el tooltip.
+  const casillas = elementos(a, (e) => e.type?.name === 'CasillaSeccion')
+  assert.deepEqual(casillas.map((c) => [c.props.seccion.estado, c.props.conTexto]), [
+    ['EN_PROCESO', true], ['BLOQUEADA', true], ['BLOQUEADA', true], ['BLOQUEADA', true],
+  ])
+  const planes = app.load('src/lib/servidor/adaptadoresPlanes.ts')
+  const bloqueada = familia.planes[0].secciones[1]
+  assert.equal(planes.tooltipSeccion(bloqueada), `2 · Qué tanto la conozco · Bloqueada. ${bloqueada.bloqueo[0].mensaje}`)
+  assert.doesNotMatch(textoA, new RegExp(bloqueada.bloqueo[0].mensaje))
   assert.match(textoA, /Seguir con: Por qué la elijo/)
-  // A no puede subir; B no puede bajar.
-  assert.deepEqual(elementos(a, (e) => e.type === 'button' && /prioridad/.test(e.props['aria-label'])).map((b) => b.props['aria-label']), ['Bajar prioridad'])
+  assert.match(textoA, /Último cambio: /)
+  assert.equal(elementos(a, (e) => e.type === 'button' && texto(e) === 'Hacer mi plan A').length, 0)
   const b = TarjetaPlan(tarjetas[1].props)
-  assert.match(texto(b), /Todavía no cuentas por qué la eliges\..*Empezar: Por qué la elijo/)
-  assert.doesNotMatch(texto(a), /Tu primer interés/)
+  assert.match(texto(b), /Empezar: Por qué la elijo.*Hacer mi plan A/)
+  assert.ok(elementos(b, (e) => e.type?.name === 'CasillaSeccion').every((c) => c.props.conTexto === false))
+  assert.doesNotMatch(texto(b), /tu ruta principal/)
 })
 
-test('la tarjeta marca «Tu primer interés» y «Lista para comparar»; «Ver mi plan» con todo listo', async () => {
+test('«Tu primer interés» y el sello «Plan completo» con las cuatro secciones listas; «Ver mi plan»', async () => {
   const { app } = misPlanes({ planes: completos })
   const vista = await montar(app, 'src/features/plans/components/MisPlanes.tsx')
   const tarjetas = elementos(vista.render(), (e) => e.type?.name === 'TarjetaPlan')
   const { TarjetaPlan } = app.load('src/features/plans/components/TarjetaPlan.tsx')
   const a = texto(TarjetaPlan(tarjetas[0].props))
-  assert.match(a, /Tu primer interés.*Lista para comparar/)
+  assert.match(a, /Tu primer interés.*Plan completo/)
   assert.match(a, /Universidad Nacional Federico Villarreal · Pública/)
-  assert.match(a, /4 de 4 secciones listas|Ver mi plan/)
-  assert.match(texto(vista.render()), /2 de 3 planes listos para comparar/)
+  assert.match(a, /Ver mi plan/)
+  assert.doesNotMatch(a, /Lista para comparar/)
 })
 
 test('crear desde favoritas: las que ya son plan van deshabilitadas; crear navega al plan en POR_QUE', async () => {
   const { app } = misPlanes({ planes: completos })
   const vista = await montar(app, 'src/features/plans/components/MisPlanes.tsx')
   let arbol = vista.render()
-  elementos(arbol, (e) => e.type === 'button' && texto(e) === 'Desde mis favoritos')[0].props.onClick()
+  elementos(arbol, (e) => e.type?.name === 'EspacioPlan' && e.props.conAcciones)[0].props.onCrear()
   arbol = vista.render()
   await esperar()
   arbol = vista.render()
@@ -133,15 +140,19 @@ test('un 409 al crear muestra el mensaje del servidor y no navega', async () => 
   assert.equal(app.navigations.length, 0)
 })
 
-test('ordenar envía la permutación completa; eliminar confirma con el diálogo y avisa', async () => {
+test('«Hacer mi plan A» envía la permutación con esa carrera primero; eliminar confirma y avisa', async () => {
   const { app } = misPlanes()
   const vista = await montar(app, 'src/features/plans/components/MisPlanes.tsx')
   let arbol = vista.render()
-  const [a] = elementos(arbol, (e) => e.type?.name === 'TarjetaPlan')
-  a.props.onMover(1)
+  const [a, b] = elementos(arbol, (e) => e.type?.name === 'TarjetaPlan')
+  b.props.onHacerA()
   await esperar()
   const ordenar = app.requests.find((r) => r.url.endsWith('/acciones/planes/ordenar'))
   assert.deepEqual(copia(ordenar.body.carreras), [familia.planes[1].carrera.codigo, familia.planes[0].carrera.codigo])
+  assert.equal(
+    elementos(vista.render(), (e) => e.type?.name === 'AvisoPlan')[0].props.aviso.titulo,
+    `${familia.planes[1].carrera.nombre} ahora es tu plan A`,
+  )
   a.props.onEliminar()
   arbol = vista.render()
   assert.match(texto(arbol), /¿Eliminar el plan A · Psicología\?.*Se borrará lo que escribiste en sus secciones\./)
@@ -195,12 +206,13 @@ test('perfil en api: la píldora del plan en lugar de la barra y «Espacio libre
   const { app } = misPlanes()
   const { ProfilePlans } = app.load('src/features/discovery/components/ProfilePlans.tsx')
   const props = {
-    plans: [{ id: 'mtpe-369', name: 'Psicología', armado: 25, resumen: '1 de 4 secciones listas' }],
+    plans: [{ id: 'mtpe-369', name: 'Psicología', armado: 25, resumen: '1 de 4 secciones listas' }, { id: 'mtpe-87', name: 'Otra', armado: 100, resumen: 'Plan completo' }],
     espacioLibre: 'Espacio libre',
     favoritos: { carreras: 3, ocupaciones: 1, instituciones: 1 },
   }
   const marcado = texto(ProfilePlans(props))
   assert.match(marcado, /Psicología1 de 4 secciones listas/)
   assert.doesNotMatch(marcado, /% armado|Tu primer camino/)
-  assert.equal((marcado.match(/Espacio libre/g) ?? []).length, 2)
+  assert.match(marcado, /OtraPlan completo/)
+  assert.equal((marcado.match(/Espacio libre/g) ?? []).length, 1)
 })

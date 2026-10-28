@@ -36,7 +36,6 @@ export function MenuSeccionesPlan({
           <strong>{plan.carrera.nombre}</strong>
         </div>
       </div>
-      {plan.lista_para_comparar && <span className="sx-d-tag">Lista para comparar</span>}
       <p className="sx-p-cambio">Último cambio: {fechaCorta(plan.actualizada_en)}</p>
       <ul>
         {plan.secciones.map((s) => (

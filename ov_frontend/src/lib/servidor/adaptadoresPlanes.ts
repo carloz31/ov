@@ -67,6 +67,13 @@ export function inicioRelato(relato: string | null, largo = 60) {
 
 export const seccionesListas = (plan: PlanCarrera) => plan.secciones.filter((s) => s.estado === 'LISTA').length
 export const mensajeBloqueo = (seccion: SeccionPlan) => seccion.bloqueo?.[0]?.mensaje ?? ''
+// Ajuste v4.2: «Plan completo» con las cuatro secciones listas (`lista_para_comparar` no se muestra).
+export const planCompleto = (plan: PlanCarrera) => seccionesListas(plan) === 4
+// Tooltip de una casilla de sección: «{n} · {título} · {estado}» y, si está bloqueada, el mensaje del servidor.
+export function tooltipSeccion(seccion: SeccionPlan) {
+  const base = `${NUMERO_SECCION[seccion.codigo]} · ${TITULOS_SECCION[seccion.codigo]} · ${ESTADOS_SECCION[seccion.estado]}`
+  return seccion.estado === 'BLOQUEADA' && mensajeBloqueo(seccion) ? `${base}. ${mensajeBloqueo(seccion)}` : base
+}
 
 // La sección que abre el botón de la tarjeta: la primera abierta que no esté lista, o la 1 si todas lo están.
 export function seccionSiguiente(plan: PlanCarrera): CodigoSeccionPlan {
