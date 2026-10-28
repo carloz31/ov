@@ -20,7 +20,9 @@
       "Bash(git switch:*)",
       "Bash(git mv:*)",
       "Bash(git push origin lote/:*)",
-      "Bash(git push -u origin lote/:*)"
+      "Bash(git push -u origin lote/:*)",
+      "Bash(git push origin claude/:*)",
+      "Bash(git push -u origin claude/:*)"
     ],
     "deny": [
       "Bash(git push origin main:*)",
