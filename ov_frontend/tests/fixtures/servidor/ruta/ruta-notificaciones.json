@@ -1,0 +1,56 @@
+{
+  "items": [
+    {
+      "codigo": "NOT-00000000000000000000000000000005",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": "BLOQUE",
+      "estudiante": null,
+      "nombre": "La ciudad",
+      "referencia": "CIUDAD",
+      "tipo": "DESBLOQUEO",
+      "vista": false
+    },
+    {
+      "codigo": "NOT-00000000000000000000000000000004",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": "NIVEL",
+      "estudiante": null,
+      "nombre": "Recolector de pistas",
+      "referencia": "N2",
+      "tipo": "DESBLOQUEO",
+      "vista": false
+    },
+    {
+      "codigo": "NOT-00000000000000000000000000000003",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": "INSIGNIA",
+      "estudiante": null,
+      "nombre": "La primera chispa",
+      "referencia": "t-ins-1",
+      "tipo": "DESBLOQUEO",
+      "vista": false
+    },
+    {
+      "codigo": "NOT-00000000000000000000000000000002",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": "FICHA",
+      "estudiante": null,
+      "nombre": "Segunda ficha de prueba",
+      "referencia": "t-ficha-2",
+      "tipo": "DESBLOQUEO",
+      "vista": false
+    },
+    {
+      "codigo": "NOT-00000000000000000000000000000001",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": "FICHA",
+      "estudiante": null,
+      "nombre": "Ficha de prueba",
+      "referencia": "t-ficha",
+      "tipo": "DESBLOQUEO",
+      "vista": false
+    }
+  ],
+  "no_vistas": 5,
+  "total": 5
+}

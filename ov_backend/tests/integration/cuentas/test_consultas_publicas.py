@@ -32,8 +32,8 @@ def test_lista_cuentas_con_codigos_publicos(cliente):
 
 def test_validacion_de_tipo_y_filtro(cliente):
     assert cliente.get("/cuentas/est-ana/progreso/NO_EXISTE/ACT-01").status_code == 422
-    assert cliente.get("/cuentas/est-ana/desbloqueos?solo_no_vistos=incorrecto").status_code == 422
-    assert cliente.post("/cuentas/no-existe/desbloqueos/marcar-vistos").status_code == 404
+    assert cliente.get("/cuentas/est-ana/notificaciones?limite=incorrecto").status_code == 422
+    assert cliente.post("/cuentas/no-existe/notificaciones/marcar-vistas", json={}).status_code == 404
 
 
 def test_eventos_diario_y_check_in_no_exponen_ids(sesion, cliente):

@@ -127,7 +127,7 @@ Toda condición cuenta eventos de la cuenta evaluada: ningún objetivo del apode
 
 ## Acciones
 
-Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados` y `nuevos_desbloqueos`. Las que afectan a varias cuentas devuelven `{"por_cuenta": {codigo: {...}}}`.
+Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados`, `nuevos_desbloqueos` y `nuevas_notificaciones` (las creadas en esa acción para la cuenta; ver «Notificaciones»). Las que afectan a varias cuentas devuelven `{"por_cuenta": {codigo: {...}}}`.
 
 | Acción (POST) | Valida | Efecto y eventos |
 |---|---|---|
@@ -162,8 +162,9 @@ Un objetivo bloqueado responde 409 con `detail.mensaje` = el mensaje de bloqueo 
 | `/cuentas` | Cuentas. |
 | `/cuentas/{c}/progreso/{tipo}/{codigo}` | Cada regla del objetivo con su `mensaje_bloqueo` y el avance de cada condición (`actual`, `requerido`, `cumplida`, `texto`) y del evaluador. Niveles con código `N1`…`N5`. Insignia oculta no obtenida: 403. Tipo inválido: 422. |
 | `/cuentas/{c}/eventos` | Línea de tiempo, del más reciente al más antiguo. |
-| `/cuentas/{c}/desbloqueos?solo_no_vistos=true` | Desbloqueos con fecha y objetivo. |
-| POST `/cuentas/{c}/desbloqueos/marcar-vistos` | Marca los pendientes; devuelve `{"marcados": n}`. |
+| `/cuentas/{c}/desbloqueos` | Desbloqueos con fecha y objetivo, del más reciente al más antiguo (línea de tiempo). Lo visto no vive aquí, sino en las notificaciones. |
+| `/cuentas/{c}/notificaciones?limite&desde` | La campana: `{total, no_vistas, items}`, ver «Notificaciones». |
+| POST `/cuentas/{c}/notificaciones/marcar-vistas` | `{codigos}`; ver «Notificaciones». |
 
 Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logros`…) están en `integracion.md`.
 
@@ -214,7 +215,27 @@ Conversaciones guiadas entre el estudiante y su apoderado, con una carta de cada
 - **Conversada** (F08): al responder el segundo, sin marca aparte. Se fijan `conversada_en` y `conversada_por` (quien respondió segundo) y COMPLETA_CONVERSACION va a las dos cuentas; en el estudiante abre su pregunta del diario. No existe `completar-conversacion`.
 - **Lista:** siempre todas, por `orden`, con `titulo`, `tema` (el chip de su tarjeta, columna propia de la conversación; nulo, sin chip) y `estado` para quien consulta: `bloqueada` (sin carta propia o, para el estudiante, sin su regla; `bloqueo_mensaje` dice por qué), `sin_responder`, `esperando_al_otro` (solo yo respondí; también si el hijo aún no la habilitó), `te_toca` o `conversada`. El apoderado ve además `abierta_para_hijo`. Con las dos respuestas se ven la pregunta y la respuesta del otro (`pregunta_otro`, `respuesta_otro`), `preguntas_guia`, `mensaje_diferencias` (el puente) y `algo_que_saben`; el estudiante, además, `entrada_diario` (`codigo`, `nombre`, `pregunta`) si la pregunta del diario que abre conversarla ya está desbloqueada.
 - **Pregunta:** cada rol ve la suya; con `pregunta_apoderado` nula, el apoderado responde la del estudiante.
-- **Sin avisos:** no hay notificaciones entre cuentas. El apoderado no recibe aviso cuando el hijo habilita una conversación (HU-067), y si el apoderado responde segundo, el estudiante ve su nueva pregunta del diario solo al consultarlo. Quedan para las notificaciones asíncronas.
+- **Avisos:** la primera respuesta de cada uno a una conversación notifica al otro del vínculo (RESPUESTA_CONVERSACION, ver «Notificaciones»). El apoderado no recibe aviso cuando el hijo habilita una conversación (HU-067), y el estudiante ve su nueva pregunta del diario al consultarlo.
+
+## Notificaciones
+
+Lo que lista la campana (ajuste notificaciones). Código: `app/services/notificaciones.py`; tabla de estado `notificacion` (se vacía con el reinicio). Es la única verdad de «visto»: `desbloqueo.visto` ya no se usa.
+
+- **Criterio:** un logro se anuncia una sola vez, en su lugar más ceremonial; la campana es el historial. Se crean en la transacción de la acción que las origina, y la respuesta de esa acción trae las de la cuenta que actúa en `nuevas_notificaciones` (en `RespuestaAgrupada`, por cuenta). En una acción de varias cuentas se insertan en un solo lote.
+- **Tipos** (`TipoNotificacion`; `nombre` es una foto del nombre al crearla):
+
+| Tipo | Se crea | Para | `referencia` | `nombre` | `detalle` |
+|---|---|---|---|---|---|
+| DESBLOQUEO | En `registrar_eventos`, con el desbloqueo, solo si el objetivo es INSIGNIA, FICHA, NIVEL o el BLOQUE `CIUDAD` (el resto se revela en su vista) | La cuenta que desbloquea (estudiante o apoderado; la audiencia ya la filtra el motor) | Código del objetivo (niveles, `N2`…) | Nombre del objetivo | Tipo de objetivo: `INSIGNIA`, `FICHA`, `NIVEL` o `BLOQUE` |
+| RESPUESTA_CONVERSACION | `responder-conversacion`, la primera respuesta de cada uno (cambiarla no vuelve a avisar) | El otro del vínculo | Código de la conversación | Su título | Para el apoderado, el código del hijo, que la respuesta expone como `estudiante` (con `detalle` nulo); para el hijo, nulo |
+| ENTREVISTA_DESTACADA | `destacar-entrevista` al destacar, una vez por autor y entrevista (como el evento) | Cada autor | Código de la entrevista | Su título | Nulo |
+| ENTREVISTA_LEYENDA | Al pasar a Leyenda, una vez por autor y entrevista | Cada autor | Código de la entrevista | Su título | Nulo |
+| REACCION_ENTREVISTA | `reaccionar-entrevista`, solo la primera reacción de cada cuenta (como REACCIONA_ENTREVISTA) | Cada autor | Código de la entrevista | Su título | Nombre del tipo de reacción |
+
+- Nadie se notifica a sí mismo (un autor no puede reaccionar a su entrevista). La orientadora no recibe notificaciones. No hay notificaciones de secciones, comentarios de la orientadora, publicaciones de compañeros, favoritos ni de actividades, testimonios o preguntas del diario.
+- **Consulta:** `GET /cuentas/{c}/notificaciones?limite=20&desde=0` (tope 50; fuera de rango, 422) → `{total, no_vistas, items}`, de la más reciente a la más antigua. Ítem: `codigo` (`NOT-<uuid>`), `tipo`, `referencia`, `nombre`, `detalle`, `creada_en`, `vista` y `estudiante` (solo RESPUESTA_CONVERSACION del apoderado).
+- **Marcado:** `POST /cuentas/{c}/notificaciones/marcar-vistas` con `{codigos: [...]}`; sin códigos, todas las pendientes. Responde `{marcadas}`. Idempotente: las ya vistas, ajenas o inexistentes se ignoran. Sin eventos.
+- Solo la cuenta propia (guardia por defecto).
 
 ## Avance del estudiante
 

@@ -52,9 +52,15 @@ def sello(cliente, cuenta):
     return insignia
 
 
-def desbloqueos_sello(cliente, cuenta, solo_no_vistos=False):
-    return [d for d in pedir(cliente, 'GET', f'/cuentas/{cuenta}/desbloqueos?solo_no_vistos={str(solo_no_vistos).lower()}')
+def desbloqueos_sello(cliente, cuenta):
+    return [d for d in pedir(cliente, 'GET', f'/cuentas/{cuenta}/desbloqueos')
             if d['objetivo']['codigo'] == 't-ins-leyenda']
+
+
+def notificaciones_sello(cliente, cuenta, solo_no_vistas=False):
+    """Ajuste notificaciones: el sello llega a la campana del autor como DESBLOQUEO."""
+    return [n for n in pedir(cliente, 'GET', f'/cuentas/{cuenta}/notificaciones')['items']
+            if n['referencia'] == 't-ins-leyenda' and not (solo_no_vistas and n['vista'])]
 
 
 def leyenda_completa(cliente, orden):
@@ -83,9 +89,9 @@ def test_caso_completo_en_los_dos_ordenes(cliente, orden):
         assert [e['referencia'] for e in eventos_leyenda(cliente, autor)] == [codigo]
         obtenido = sello(cliente, autor)
         assert obtenido['estado'] == 'OBTENIDA' and obtenido['obtenida_en'] is not None
-        # El desbloqueo queda sin ver: el front lo muestra como aviso al ingresar.
-        pendiente, = desbloqueos_sello(cliente, autor, solo_no_vistos=True)
-        assert pendiente['regla'] == 'R-t-ins-leyenda' and not pendiente['visto']
+        # El sello queda sin ver en la campana del autor.
+        pendiente, = notificaciones_sello(cliente, autor, solo_no_vistas=True)
+        assert (pendiente['tipo'], pendiente['detalle']) == ('DESBLOQUEO', 'INSIGNIA')
     assert all(sello(cliente, fan)['estado'] == 'BLOQUEADA' for fan in FANS)
 
 
@@ -114,9 +120,9 @@ def test_regla_2_cada_autor_registra_el_evento_y_obtiene_el_sello(cliente):
     for autor in AUTORES:
         assert len(eventos_leyenda(cliente, autor)) == 1
         assert len(desbloqueos_sello(cliente, autor)) == 1
-    # Marcar vistos los deja fuera del aviso, pero el sello sigue obtenido.
-    pedir(cliente, 'POST', '/cuentas/est-luis/desbloqueos/marcar-vistos')
-    assert desbloqueos_sello(cliente, 'est-luis', solo_no_vistos=True) == []
+    # Marcar vistas las notificaciones no quita el sello.
+    pedir(cliente, 'POST', '/cuentas/est-luis/notificaciones/marcar-vistas', {'codigos': []})
+    assert notificaciones_sello(cliente, 'est-luis', solo_no_vistas=True) == []
     assert sello(cliente, 'est-luis')['estado'] == 'OBTENIDA'
     assert entrevistas(cliente, 'est-luis', vista='MIAS')['items'][0]['leyenda']
 

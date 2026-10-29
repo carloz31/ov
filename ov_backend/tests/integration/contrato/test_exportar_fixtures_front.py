@@ -30,9 +30,10 @@ from app.schemas.catalogo import (
 from app.schemas.conversaciones import ConversacionesCuenta
 from app.schemas.familia import FamiliaApoderado
 from app.schemas.favoritos import FavoritosCuenta
+from app.schemas.notificaciones import PaginaNotificaciones
 from app.schemas.planes import PlanesCuenta
 from app.schemas.testimonios import TestimonioEstado
-from app.schemas.cuentas import CuentaResumen, DesbloqueoLegible, ResumenCuenta
+from app.schemas.cuentas import CuentaResumen, ResumenCuenta
 from app.schemas.actividades import BloqueActividades
 from app.schemas.fichas import FichaCuenta, FichaDetalle
 from app.schemas.logros import LogrosCuenta
@@ -57,7 +58,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'fichas-inicial', 'fichas-final', 'logros-inicial', 'logros-final', 'vitrina', 'progreso-nivel-3',
     'avance-inicial', 'avance-t1', 'avance-ciudad', 'avance-t2', 'avance-final',
     'completar-t-inicio', 'completar-t-cierre-inicio', 'items-t-mision-intereses', 'revelar-riasec', 'resultado-riasec',
-    'desbloqueos-no-vistos', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
+    'notificaciones', 'notificaciones-marcar-una', 'notificaciones-pagina-2', 'notificaciones-autora',
+    'notificaciones-apoderado', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
     'secciones-inicial', 'secciones-t1', 'presentaciones-inicial', 'presentacion-vista', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
     'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
     'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
@@ -166,7 +168,6 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     for nombre in ('completar-t-inicio', 'completar-t-cierre-inicio'):
         RespuestaAccion.model_validate(datos[nombre])
     TypeAdapter(list[ItemPublico]).validate_python(datos['items-t-mision-intereses'])
-    TypeAdapter(list[DesbloqueoLegible]).validate_python(datos['desbloqueos-no-vistos'])
     ResultadoPublico.model_validate(datos['resultado-riasec'])
     revelado = RespuestaRevelarResultado.model_validate(datos['revelar-riasec'])
     # B07: con la partida revelada y T1 cerrado, revelar el RIASEC prioritario del 5A también abre T2.
@@ -368,14 +369,22 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         AvanceEstudiante.model_validate(datos[f'avance-{momento}'])
     assert datos['avance-final']['ciudad']['porcentaje'] == datos['logros-final']['afinidad']
     assert {datos[f'avance-{m}']['camino']['total'] for m in ('inicial', 't1', 'ciudad', 't2', 'final')} == {14}
-    avisos = datos['desbloqueos-no-vistos']
-    assert {d['regla'] for d in avisos} == {
-        'R-t-partida', 'R-t-cierre-inicio', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-T1', 'R-NIV-2', 'R-CIUDAD',
-        'R-t-opcional',
-        'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES', 'R-SEC-CHECK_IN', 'R-SEC-FAMILIA', 'R-t-adicional',
-        'R-t-lumi-1',  # Ajuste del diario (F05): la primera carta abre el primer recuerdo.
-        'R-t-eco', 'R-t-diario-fija', 'R-t-diario-personal', 'R-PLAN-POR_QUE'}
-    assert all(d['visto'] is False and d['fecha_hora'] == exportador.FECHA for d in avisos)
+    # Ajuste notificaciones: los logros del camino de Ana (sin actividades, secciones ni preguntas), sin ver.
+    campana = PaginaNotificaciones.model_validate(datos['notificaciones'])
+    assert {(n.tipo, n.detalle, n.referencia) for n in campana.items} == {
+        ('DESBLOQUEO', 'FICHA', 't-ficha'), ('DESBLOQUEO', 'FICHA', 't-ficha-2'), ('DESBLOQUEO', 'INSIGNIA', 't-ins-1'),
+        ('DESBLOQUEO', 'NIVEL', 'N2'), ('DESBLOQUEO', 'BLOQUE', 'CIUDAD')}
+    assert campana.total == campana.no_vistas == len(campana.items)
+    assert all(not n.vista and n.creada_en.isoformat() == exportador.FECHA for n in campana.items)
+    assert datos['notificaciones-marcar-una'] == {'marcadas': 1}
+    assert PaginaNotificaciones.model_validate(datos['notificaciones-pagina-2']).items == []
+    autora = PaginaNotificaciones.model_validate(datos['notificaciones-autora'])
+    assert [n.tipo for n in autora.items[:2]] == ['ENTREVISTA_DESTACADA', 'REACCION_ENTREVISTA']
+    assert autora.items[1].detalle == 'Aprendí algo' and autora.no_vistas < autora.total
+    rosa = PaginaNotificaciones.model_validate(datos['notificaciones-apoderado'])
+    assert {(n.tipo, n.referencia, n.estudiante) for n in rosa.items} == {
+        ('RESPUESTA_CONVERSACION', 't-conv-1', 'est-ana'), ('RESPUESTA_CONVERSACION', 't-conv-2', 'est-ana'),
+        ('DESBLOQUEO', 't-ficha-apo', None)}
     assert [(f['codigo'], f['estado']) for f in datos['fichas-inicial']] == [
         ('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA'), ('t-ficha-3', 'BLOQUEADA')]
     # Ajuste mochila: abrir t-ficha (ver-ficha) la deja vista; t-ficha-2 sigue nueva y t-ficha-3, bloqueada.

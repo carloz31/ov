@@ -56,8 +56,3 @@ class DesbloqueoLegible(BaseModel):
     tipo_objetivo: TipoObjetivo
     objetivo: ObjetivoLegible
     fecha_hora: datetime
-    visto: bool
-
-
-class DesbloqueosMarcados(BaseModel):
-    marcados: int

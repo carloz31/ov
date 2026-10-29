@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
 from app.models import (
-    Conversacion, ConversacionVinculo, Cuenta, PreguntaDiario, Rol, TipoEventoUso, TipoObjetivo,
+    Conversacion, ConversacionVinculo, Cuenta, PreguntaDiario, Rol, TipoEventoUso, TipoNotificacion, TipoObjetivo,
     VinculoFamiliar,
 )
 from app.schemas.acciones import EscribirCartaEntrada, RespuestaAgrupada, RespuestaAccion
@@ -20,6 +20,7 @@ from app.services.comun import (
     buscar_por_codigo, exigir_disponible, existe_evento, fecha_accion, responder_con_eventos, responder_varias_cuentas,
 )
 from app.services.motor.reglas import objetivo_disponible
+from app.services.notificaciones import abrir_lote, crear as crear_notificacion
 from app.services.secciones import exigir_seccion
 
 
@@ -190,6 +191,7 @@ def responder_conversacion(sesion: Session, entrada: ResponderConversacionEntrad
     elif getattr(registro, f"respuesta_{otro}") is not None and getattr(registro, f"respuesta_{propio}") is not None:
         raise ErrorAccion("La otra persona ya respondió; tu respuesta ya no se puede cambiar")
     fecha = fecha_accion(entrada)
+    primera_respuesta = getattr(registro, f"respuesta_{propio}") is None
     setattr(registro, f"respuesta_{propio}", entrada.texto)
     setattr(registro, f"respondida_{propio}_en", fecha)
     ids_cuentas = (vinculo.estudiante_id, vinculo.apoderado_id)
@@ -203,4 +205,11 @@ def responder_conversacion(sesion: Session, entrada: ResponderConversacionEntrad
             if not existe_evento(sesion, fila, TipoEventoUso.COMPLETA_CONVERSACION, conversacion.id):
                 eventos[fila.id] = [(TipoEventoUso.COMPLETA_CONVERSACION, conversacion.id)]
     sesion.flush()
+    if primera_respuesta:
+        # Ajuste notificaciones: el otro del vínculo se entera de la respuesta; al apoderado se le dice de qué hijo.
+        otra_cuenta = por_id[vinculo.apoderado_id if cuenta.rol == Rol.ESTUDIANTE else vinculo.estudiante_id]
+        hijo = por_id[vinculo.estudiante_id].codigo if otra_cuenta.rol == Rol.APODERADO else None
+        abrir_lote(sesion)
+        crear_notificacion(sesion, otra_cuenta, TipoNotificacion.RESPUESTA_CONVERSACION, conversacion.codigo,
+                           conversacion.titulo, hijo, fecha=fecha)
     return responder_varias_cuentas(sesion, cuentas, eventos, fecha)

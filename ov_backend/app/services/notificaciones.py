@@ -31,26 +31,38 @@ def _publica(fila: dict, rol: Rol | None = None) -> NotificacionPublica:
     )
 
 
-def crear_varias(sesion: Session, cuenta: Cuenta, filas: list[tuple[TipoNotificacion, str, str, str | None]],
-                 fecha: datetime) -> None:
-    """Inserta en lote (tipo, referencia, nombre, detalle) para `cuenta` y las anota para la respuesta."""
+def crear_para(sesion: Session, filas: list[tuple[Cuenta, TipoNotificacion, str, str, str | None]],
+               fecha: datetime) -> None:
+    """Inserta en lote (cuenta, tipo, referencia, nombre, detalle) y las anota para la respuesta de cada cuenta."""
     if not filas:
         return
-    nuevas = [dict(codigo=f'NOT-{uuid4().hex}', cuenta_id=cuenta.id, tipo=tipo, referencia=referencia, nombre=nombre,
-                   detalle=detalle, creada_en=fecha, vista_en=None) for tipo, referencia, nombre, detalle in filas]
+    nuevas = [(cuenta, dict(codigo=f'NOT-{uuid4().hex}', cuenta_id=cuenta.id, tipo=tipo, referencia=referencia,
+                            nombre=nombre, detalle=detalle, creada_en=fecha, vista_en=None))
+              for cuenta, tipo, referencia, nombre, detalle in filas]
     pendientes = sesion.info.get(LOTE_SESION)
     if pendientes is None:
-        sesion.execute(insert(Notificacion.__table__), nuevas)
+        sesion.execute(insert(Notificacion.__table__), [fila for _, fila in nuevas])
     else:
         # Una acción de varias cuentas las inserta todas juntas al final (`responder_varias_cuentas`).
-        pendientes.extend(nuevas)
-    sesion.info.setdefault(CLAVE_SESION, {}).setdefault(cuenta.id, []).extend(
-        _publica(fila, cuenta.rol) for fila in nuevas)
+        pendientes.extend(fila for _, fila in nuevas)
+    anotadas = sesion.info.setdefault(CLAVE_SESION, {})
+    for cuenta, fila in nuevas:
+        anotadas.setdefault(cuenta.id, []).append(_publica(fila, cuenta.rol))
+
+
+def crear_varias(sesion: Session, cuenta: Cuenta, filas: list[tuple[TipoNotificacion, str, str, str | None]],
+                 fecha: datetime) -> None:
+    crear_para(sesion, [(cuenta, *fila) for fila in filas], fecha)
 
 
 def crear(sesion: Session, cuenta: Cuenta, tipo: TipoNotificacion, referencia: str, nombre: str,
           detalle: str | None = None, *, fecha: datetime) -> None:
-    crear_varias(sesion, cuenta, [(tipo, referencia, nombre, detalle)], fecha)
+    crear_para(sesion, [(cuenta, tipo, referencia, nombre, detalle)], fecha)
+
+
+def abrir_lote(sesion: Session) -> None:
+    """Desde aquí hasta `insertar_lote`, las notificaciones se insertan juntas."""
+    sesion.info.setdefault(LOTE_SESION, [])
 
 
 def nuevas_de(sesion: Session, cuenta: Cuenta) -> list[NotificacionPublica]:
@@ -60,6 +72,7 @@ def nuevas_de(sesion: Session, cuenta: Cuenta) -> list[NotificacionPublica]:
 
 def olvidar_nuevas(sesion: Session) -> None:
     sesion.info.pop(CLAVE_SESION, None)
+    sesion.info.pop(LOTE_SESION, None)
 
 
 def listar(sesion: Session, cuenta: Cuenta, limite: int, desde: int) -> PaginaNotificaciones:

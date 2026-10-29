@@ -2,7 +2,18 @@
   "por_cuenta": {
     "apo-rosa": {
       "eventos_registrados": [],
-      "nuevas_notificaciones": [],
+      "nuevas_notificaciones": [
+        {
+          "codigo": "NOT-0000000000000000000000000000000c",
+          "creada_en": "2026-10-07T10:00:00",
+          "detalle": null,
+          "estudiante": "est-ana",
+          "nombre": "Primera conversación",
+          "referencia": "t-conv-1",
+          "tipo": "RESPUESTA_CONVERSACION",
+          "vista": false
+        }
+      ],
       "nuevos_desbloqueos": []
     },
     "est-ana": {

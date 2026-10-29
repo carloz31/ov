@@ -266,12 +266,17 @@ def _recorrer(cliente):
     finally:
         sobrescritas.pop(obtener_ahora, None)
     fixtures['tematicas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/tematicas')
-    ruta_avisos = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
-    avisos = _pedir(cliente, 'GET', ruta_avisos)
-    fixtures['desbloqueos-no-vistos'] = avisos
-    marcados = _pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')
-    if marcados['marcados'] != len(avisos) or _pedir(cliente, 'GET', ruta_avisos) != []:
-        raise RuntimeError('El marcado no vació los desbloqueos no vistos')
+    # Ajuste notificaciones: la campana de Ana con los logros del camino; se marca una y luego todas.
+    ruta_notificaciones = '/cuentas/est-ana/notificaciones'
+    notificaciones = _pedir(cliente, 'GET', ruta_notificaciones)
+    fixtures['notificaciones'] = notificaciones
+    fixtures['notificaciones-marcar-una'] = _pedir(cliente, 'POST', f'{ruta_notificaciones}/marcar-vistas',
+                                                   {'codigos': [notificaciones['items'][0]['codigo']]})
+    fixtures['notificaciones-pagina-2'] = _pedir(cliente, 'GET', f'{ruta_notificaciones}?limite=5&desde=5')
+    marcadas = _pedir(cliente, 'POST', f'{ruta_notificaciones}/marcar-vistas', {'codigos': []})
+    if marcadas['marcadas'] != notificaciones['no_vistas'] - 1 or _pedir(
+            cliente, 'GET', ruta_notificaciones)['no_vistas'] != 0:
+        raise RuntimeError('El marcado no dejó vistas todas las notificaciones')
     # B08: la batalla se pierde, se repasa y se gana; solo la victoria la completa. F04b: las preguntas del
     # intento salen del servidor (con semilla fija, para que el fixture no cambie) y se responden con ellas.
     from app.services import batallas as servicio_batallas
@@ -486,6 +491,8 @@ def _recorrer_apoderado(cliente):
             **conversacion, 'cuenta': cuenta, 'texto': 'DATO DE PRUEBA: lo que dijo el resultado.'})
     fixtures['conversaciones-final'] = _pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')
     fixtures['conversaciones-apoderado-final'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/conversaciones')
+    # Ajuste notificaciones: la campana de Rosa, con las respuestas de Ana (y su hijo) y la ficha de t-apo-1.
+    fixtures['notificaciones-apoderado'] = _pedir(cliente, 'GET', '/cuentas/apo-rosa/notificaciones')
     return fixtures
 
 
@@ -592,6 +599,8 @@ def _recorrido_investigaciones(cliente):
     fixtures['entrevista-detalle'] = _pedir(cliente, 'GET', f'/cuentas/est-luis/entrevistas/{codigo}')
     fixtures['publicaciones'] = _pedir(cliente, 'GET', '/cuentas/ori-carmen/publicaciones')
     fixtures['publicacion-detalle'] = _pedir(cliente, 'GET', f'/cuentas/ori-carmen/publicaciones/{codigo}')
+    # Ajuste notificaciones: la reacción de Luis y el destacado llegan a la campana de Ana, la autora.
+    fixtures['notificaciones-autora'] = _pedir(cliente, 'GET', '/cuentas/est-ana/notificaciones')
     fixtures['referencias-investigador-cierre'] = _pedir(
         cliente, 'GET', '/cuentas/est-ana/actividades/t-investigador-cierre/referencias')
     return fixtures

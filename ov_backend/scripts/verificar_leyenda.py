@@ -140,8 +140,8 @@ def main():
     print(f'· Ana publica {codigo} con Luis como coautor')
     for autor in AUTORES:
         # Como el front al mostrar sus avisos: lo pendiente de ver queda solo lo que trae la Leyenda.
-        marcados = pedir('POST', f'/cuentas/{autor}/desbloqueos/marcar-vistos', {}, autor)['marcados']
-        print(f'· {autor} ya vio sus avisos anteriores (marcar-vistos: {marcados})')
+        marcadas = pedir('POST', f'/cuentas/{autor}/notificaciones/marcar-vistas', {'codigos': []}, autor)['marcadas']
+        print(f'· {autor} ya vio sus notificaciones anteriores (marcar-vistas: {marcadas})')
 
     print('\n-- Regla 4: los autores no marcan favorito')
     for autor in AUTORES:
@@ -181,11 +181,12 @@ def main():
                    if e['tipo'] in ('ENTREVISTA_DESTACADA', 'ENTREVISTA_LEYENDA')]
         print(f"· GET /cuentas/{autor}/eventos → {[(e['tipo'], e['referencia'], e['fecha_hora']) for e in eventos]}")
         comprobar(sum(e['tipo'] == 'ENTREVISTA_LEYENDA' for e in eventos) == 1, f'{autor}: un ENTREVISTA_LEYENDA')
-        pendientes = pedir('GET', f'/cuentas/{autor}/desbloqueos?solo_no_vistos=true', cuenta=autor)
-        sellos = [d for d in pendientes if d['objetivo']['codigo'] == 't-ins-leyenda']
-        print(f"· GET /cuentas/{autor}/desbloqueos?solo_no_vistos=true → "
-              f"{[(d['regla'], d['tipo_objetivo'], d['objetivo']['nombre'], d['fecha_hora'], d['visto']) for d in pendientes]}")
-        comprobar(len(sellos) == 1, f'{autor}: desbloqueo del sello pendiente de ver (toast)')
+        pendientes = [n for n in pedir('GET', f'/cuentas/{autor}/notificaciones', cuenta=autor)['items']
+                      if not n['vista']]
+        sellos = [n for n in pendientes if n['referencia'] == 't-ins-leyenda']
+        print(f"· GET /cuentas/{autor}/notificaciones (sin ver) → "
+              f"{[(n['tipo'], n['detalle'], n['nombre'], n['creada_en']) for n in pendientes]}")
+        comprobar(len(sellos) == 1, f'{autor}: el sello en la campana, sin ver')
     for fan in FANS:
         insignia = next(i for i in pedir('GET', f'/cuentas/{fan}/logros', cuenta=fan)['insignias']
                         if i['codigo'] == 't-ins-leyenda')

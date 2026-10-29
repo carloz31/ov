@@ -255,18 +255,21 @@ def test_perfil_plano(cliente):
 
 
 def test_hu073_avisos_de_desbloqueo(cliente):
-    ruta = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
-    completar(cliente, 't-inicio')
-    no_vistos = pedir(cliente, 'GET', ruta)
-    assert {d['regla'] for d in no_vistos} == {
-        'R-t-partida', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES',
-        'R-t-diario-fija', 'R-PLAN-POR_QUE'}
-    assert all(d['visto'] is False for d in no_vistos)
-    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 10
-    assert pedir(cliente, 'GET', ruta) == []
+    """Ajuste notificaciones: los logros llegan a la campana (las actividades, secciones y preguntas no), se marcan
+    vistos uno a uno o todos, y los siguientes llegan sin ver."""
+    ruta = '/cuentas/est-ana/notificaciones'
+    nuevas = completar(cliente, 't-inicio')['nuevas_notificaciones']
+    campana = pedir(cliente, 'GET', ruta)
+    assert {n['referencia'] for n in campana['items']} == {n['referencia'] for n in nuevas} == {
+        't-ficha', 't-ficha-2', 't-ins-1'}
+    assert campana['no_vistas'] == 3
+    assert pedir(cliente, 'POST', f'{ruta}/marcar-vistas', {'codigos': [nuevas[0]['codigo']]})['marcadas'] == 1
+    assert pedir(cliente, 'POST', f'{ruta}/marcar-vistas', {'codigos': []})['marcadas'] == 2
+    assert pedir(cliente, 'GET', ruta)['no_vistas'] == 0
     completar(cliente, 't-partida')
     completar(cliente, 't-cierre-inicio')
-    assert {d['regla'] for d in pedir(cliente, 'GET', ruta)} == {'R-t-cierre-inicio', 'R-T1', 'R-NIV-2', 'R-SEC-CHECK_IN'}
+    campana = pedir(cliente, 'GET', ruta)
+    assert [(n['detalle'], n['vista']) for n in campana['items'] if not n['vista']] == [('NIVEL', False)]
 
 
 def test_hu074_logros_obtenidos_y_condiciones(cliente):

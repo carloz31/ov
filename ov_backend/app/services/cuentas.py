@@ -1,6 +1,6 @@
 import re
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
@@ -120,27 +120,19 @@ def listar_eventos(sesion: Session, cuenta: Cuenta) -> list[EventoLegible]:
 
 
 @usar_contexto
-def listar_desbloqueos(sesion: Session, cuenta: Cuenta, solo_no_vistos: bool = False) -> list[DesbloqueoLegible]:
-    consulta = select(Desbloqueo).where(Desbloqueo.cuenta_id == cuenta.id)
-    if solo_no_vistos:
-        consulta = consulta.where(Desbloqueo.visto.is_(False))
-    consulta = consulta.order_by(Desbloqueo.fecha_hora.desc(), Desbloqueo.id.desc())
+def listar_desbloqueos(sesion: Session, cuenta: Cuenta) -> list[DesbloqueoLegible]:
+    """La línea de tiempo de desbloqueos; lo visto vive en las notificaciones (ajuste notificaciones)."""
+    consulta = select(Desbloqueo).where(Desbloqueo.cuenta_id == cuenta.id).order_by(
+        Desbloqueo.fecha_hora.desc(), Desbloqueo.id.desc())
     resultado = []
     for desbloqueo in sesion.scalars(consulta):
         regla = contexto(sesion).definiciones.obtener(ReglaDesbloqueo, desbloqueo.regla_id)
         if objetivo_corresponde_a_cuenta(sesion, cuenta, regla.tipo_objetivo, regla.id_objetivo):
             resultado.append(DesbloqueoLegible(
                 regla=regla.codigo, tipo_objetivo=regla.tipo_objetivo,
-                objetivo=objetivo_legible(sesion, regla), fecha_hora=desbloqueo.fecha_hora, visto=desbloqueo.visto,
+                objetivo=objetivo_legible(sesion, regla), fecha_hora=desbloqueo.fecha_hora,
             ))
     return resultado
-
-
-def marcar_desbloqueos_vistos(sesion: Session, cuenta: Cuenta) -> int:
-    resultado = sesion.execute(update(Desbloqueo).where(
-        Desbloqueo.cuenta_id == cuenta.id, Desbloqueo.visto.is_(False),
-    ).values(visto=True))
-    return resultado.rowcount
 
 
 def obtener_cuenta(sesion: Session, cuenta: str) -> Cuenta | None:

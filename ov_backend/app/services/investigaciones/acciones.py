@@ -11,7 +11,7 @@ from app.exceptions import ErrorAccion
 from app.models import (
     Cuenta, Entrevista, EntrevistaAutor, EstadoEntrevista, EstadoInvestigacion, EstadoReporte, EstadoSugerenciaGuion,
     Investigacion, Ocupacion, OrigenPreguntaGuion, PreguntaGuion, Reaccion, Reporte, Rol, SugerenciaGuion,
-    TipoEventoUso, TipoReaccion,
+    TipoEventoUso, TipoNotificacion, TipoReaccion,
 )
 from app.models.base import sin_tildes
 from app.schemas.acciones import RespuestaAccion, RespuestaAgrupada
@@ -23,10 +23,11 @@ from app.services.comun import (
     buscar_por_codigo, existe_evento, fecha_accion, responder_con_eventos, responder_varias_cuentas,
 )
 from app.services.investigaciones.consultas import (
-    contar_favoritos, de_autor, entrevista_de_sus_salones, entrevista_visible, exigir_investigacion_activa,
+    autores_de, contar_favoritos, de_autor, entrevista_de_sus_salones, entrevista_visible, exigir_investigacion_activa,
     exigir_seccion_investigaciones, investigacion_activa, salones_de_orientadora,
 )
 from app.services.motor.reglas import registrar_eventos
+from app.services.notificaciones import crear_para
 
 
 def cuenta_estudiante(sesion: Session, codigo: str) -> Cuenta:
@@ -241,11 +242,16 @@ def evaluar_leyenda(sesion: Session, entrevista: Entrevista, fecha) -> None:
 
 
 def registrar_en_autores(sesion: Session, entrevista: Entrevista, tipo: TipoEventoUso, fecha) -> None:
-    """El evento en cada autor, una sola vez por entrevista: volver a destacarla o a hacerla Leyenda no lo repite."""
+    """El evento en cada autor, una sola vez por entrevista: volver a destacarla o a hacerla Leyenda no lo repite.
+    Con el evento, cada autor recibe su notificación (ajuste notificaciones), también una sola vez."""
+    notificados = []
     for autor in sesion.scalars(select(Cuenta).join(EntrevistaAutor, EntrevistaAutor.cuenta_id == Cuenta.id).where(
             EntrevistaAutor.entrevista_id == entrevista.id).order_by(Cuenta.codigo)):
         if not existe_evento(sesion, autor, tipo, entrevista.id):
             registrar_eventos(sesion, autor, [(tipo, entrevista.id)], fecha)
+            notificados.append(autor)
+    crear_para(sesion, [(autor, TipoNotificacion(tipo.value), entrevista.codigo, entrevista.titulo, None)
+                        for autor in notificados], fecha)
 
 
 # --- Reacciones y reportes ----------------------------------------------------------------------
@@ -279,6 +285,10 @@ def reaccionar(sesion: Session, entrada: ReaccionarEntrada) -> RespuestaAccion:
         actual.tipo_reaccion_id, actual.comentario, actual.editada_en = tipo.id, entrada.comentario, fecha
     sesion.flush()
     primera = not existe_evento(sesion, cuenta, TipoEventoUso.REACCIONA_ENTREVISTA, entrevista.id)
+    if primera:
+        crear_para(sesion, [(autor, TipoNotificacion.REACCION_ENTREVISTA, entrevista.codigo, entrevista.titulo,
+                             tipo.nombre) for autor in autores_de(sesion, [entrevista.id]).get(entrevista.id, [])],
+                   fecha)
     return responder_con_eventos(sesion, cuenta, [(TipoEventoUso.REACCIONA_ENTREVISTA, entrevista.id)] if primera
                                  else [], fecha)
 
