@@ -15,7 +15,23 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Opciones:** las define la spec de F09 con sus bocetos.
 - **Si no se muestra:** en modo `api`, las investigaciones existen solo en el servidor. Las dos misiones nuevas no se muestran porque su contenido no existe en el front.
 - **Pruebas:** mientras falte su contenido, `tests/servidor/mapa/servidor-siguiente-paso.test.mjs` (`SIN_CONTENIDO_HASTA_F09`) y la prueba del aviso «Actividad sin contenido» de `servidor-mapa.test.mjs` ignoran `t-investigador` y `t-investigador-cierre`. F09, al crear `t_investigador.json` y `t_investigador_cierre.json`, quita esos dos filtros.
-- **Estado:** pendiente de F09.
+- **Estado:** resuelto en F09: las pantallas de la spec (listado con sus tres vistas, en curso y aliados, asistente del guion, publicar, detalle con reacciones y reportes, y la tabla y el detalle de la orientadora), con `t_investigador` y `t_investigador_cierre`; se quitaron los dos filtros de las pruebas.
+
+## 2026-10-29 · F09 · Aviso a los autores cuando la orientadora elimina
+
+- **Dato:** que la orientadora eliminó la entrevista o un comentario de un autor (la spec pide «un aviso genérico»).
+- **Dónde se mostraría:** un aviso al entrar a Investigaciones o en el detalle de la entrevista propia.
+- **Opciones:** un evento por autor que el backend exponga como aviso no visto (como los desbloqueos); una marca en Mis investigaciones al faltar una entrevista que estaba; no avisar.
+- **Si no se muestra:** la entrevista eliminada desaparece de Mis investigaciones y su detalle responde 404; el comentario eliminado deja de verse.
+- **Estado:** pendiente de decisión del usuario (el backend no guarda el aviso).
+
+## 2026-10-29 · F09 · Insignias de la vitrina de los aliados
+
+- **Dato:** los códigos de las insignias que cada aliado tiene en su vitrina (`aliados[].vitrina`).
+- **Dónde se mostraría:** los círculos del panel «Aliados en tu salón» (boceto 03), cada uno con el ícono de su insignia.
+- **Opciones:** el servidor entrega nombre e ícono por insignia en la vitrina; el front busca cada código en `GET logros` del propio estudiante (las secretas que no tiene salen enmascaradas); un ícono genérico de sello (como hoy).
+- **Si no se muestra:** cada insignia se ve como un sello genérico, con el total en la etiqueta accesible.
+- **Estado:** pendiente de decisión del usuario.
 
 ## 2026-10-28 · F08 · Avisos al apoderado (HU-067)
 
