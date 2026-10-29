@@ -37,7 +37,7 @@ def test_r33_conversacion_actor_disponible_repeticion_y_rollback(cliente, aplica
         with pytest.raises(RuntimeError, match='segunda cuenta'):
             pedir(cliente, 'POST', '/acciones/responder-conversacion', segunda)
     assert filas_base(aplicacion) == antes
-    respuesta, contador = medir(cliente, aplicacion, 'POST', '/acciones/responder-conversacion', segunda, limite=14)
+    respuesta, contador = medir(cliente, aplicacion, 'POST', '/acciones/responder-conversacion', segunda, limite=15)
     assert set(respuesta['por_cuenta']) == {'est-ana', 'apo-rosa'}
     for cuenta in ('est-ana', 'apo-rosa'):
         assert [e['tipo'] for e in respuesta['por_cuenta'][cuenta]['eventos_registrados']] == ['COMPLETA_CONVERSACION']

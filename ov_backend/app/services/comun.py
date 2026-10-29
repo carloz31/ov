@@ -15,6 +15,7 @@ from app.schemas.cuentas import EventoLegible
 from app.schemas.diario import EntradaDesbloqueada
 from app.schemas.motor import DesbloqueoNuevo
 from app.services.motor.referencias import referencia_legible
+from app.services.notificaciones import LOTE_SESION, insertar_lote, nuevas_de
 from app.services.motor.reglas import (
     motivos_bloqueo, objetivo_corresponde_a_cuenta, objetivo_disponible, registrar_eventos,
 )
@@ -76,6 +77,7 @@ def responder_con_eventos(
             tipo=tipo, referencia=referencia_legible(sesion, tipo, referencia), fecha_hora=fecha,
         ) for tipo, referencia in eventos],
         nuevos_desbloqueos=nuevos,
+        nuevas_notificaciones=nuevas_de(sesion, cuenta),
     )
     preguntas = [nuevo.objetivo.codigo for nuevo in nuevos if nuevo.tipo_objetivo == TipoObjetivo.PREGUNTA_DIARIO]
     if preguntas:
@@ -110,16 +112,19 @@ def responder_varias_cuentas(sesion, cuentas, eventos_por_cuenta, fecha):
     datos.cargar_desbloqueos(ids_cuentas)
     sesion.info['lote_eventos'] = set(ids_cuentas)
     sesion.info['lote_desbloqueos'] = []
+    sesion.info[LOTE_SESION] = []
     try:
         respuestas = {cuenta.codigo: responder_con_eventos(sesion, cuenta, eventos_por_cuenta[cuenta.id], fecha)
                       for cuenta in cuentas}
         pendientes = sesion.info['lote_desbloqueos']
         if pendientes:
             sesion.execute(insert(Desbloqueo.__table__), pendientes)
+        insertar_lote(sesion)
         return RespuestaAgrupada(por_cuenta=respuestas)
     finally:
         sesion.info.pop('lote_eventos', None)
         sesion.info.pop('lote_desbloqueos', None)
+        sesion.info.pop(LOTE_SESION, None)
 
 
 @usar_contexto

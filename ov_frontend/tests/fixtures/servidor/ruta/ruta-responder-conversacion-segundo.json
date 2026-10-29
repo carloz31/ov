@@ -8,6 +8,7 @@
           "tipo": "COMPLETA_CONVERSACION"
         }
       ],
+      "nuevas_notificaciones": [],
       "nuevos_desbloqueos": []
     },
     "est-ana": {
@@ -26,6 +27,7 @@
           "tipo": "COMPLETA_CONVERSACION"
         }
       ],
+      "nuevas_notificaciones": [],
       "nuevos_desbloqueos": [
         {
           "condiciones": [

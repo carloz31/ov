@@ -16,7 +16,7 @@ TABLAS_ESTADO = {
     "respuesta_registro", "turno_seguimiento", "evaluacion_respuesta", "favorito",
     "tarjeta_carrera", "motivo_tarjeta", "conocimiento_tarjeta", "duda_tarjeta", "gasto_tarjeta",
     "financiamiento_tarjeta", "complicacion_tarjeta", "sugerencia_tarjeta", "paso_tarjeta",
-    "investigacion", "pregunta_guion", "sugerencia_guion", "reaccion", "reporte",
+    "investigacion", "pregunta_guion", "sugerencia_guion", "reaccion", "reporte", "notificacion",
 }
 
 
@@ -38,7 +38,7 @@ def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
         "referencia_camino", "pregunta_base_guion", "tipo_reaccion",
     }
     assert set(inspector.get_table_names()) == esperadas
-    assert len(esperadas) == 93
+    assert len(esperadas) == 94
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]

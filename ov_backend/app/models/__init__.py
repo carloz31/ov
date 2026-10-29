@@ -10,7 +10,7 @@ from app.models.enums import (
     UsoPreguntaDiario, TipoRecomendacion, OrigenRedaccion, GestionInstitucion, FrecuenciaGasto, OrigenIdea,
     PreguntaConocimiento, RespuestaConocimiento, OrigenDuda, EstadoDuda, EstadoSugerencia, OrigenSugerencia,
     EstadoPaso, OrigenSesion, EstadoInvestigacion, OrigenPreguntaGuion, EstadoSugerenciaGuion, EstadoEntrevista,
-    MotivoReporte, EstadoReporte,
+    MotivoReporte, EstadoReporte, TipoNotificacion,
 )
 
 
@@ -35,7 +35,7 @@ _MODELOS_POR_MODULO = {
         'EntrevistaAutor', 'Reaccion', 'Reporte',
     ),
     'app.models.motor': (
-        'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo',
+        'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo', 'Notificacion',
     ),
     'app.models.instrumentos': (
         'Instrumento', 'Dimension', 'EscalaRespuesta', 'OpcionEscala', 'ItemInstrumento',

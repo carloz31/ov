@@ -4,7 +4,7 @@ from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Text, Uniqu
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, enumerado
-from app.models.enums import TipoConteo, TipoEventoUso, TipoObjetivo
+from app.models.enums import TipoConteo, TipoEventoUso, TipoNotificacion, TipoObjetivo
 
 
 class EventoUso(Base):
@@ -54,3 +54,19 @@ class Desbloqueo(Base):
     regla_id: Mapped[int] = mapped_column(ForeignKey("regla_desbloqueo.id"))
     fecha_hora: Mapped[datetime] = mapped_column(DateTime)
     visto: Mapped[bool] = mapped_column(default=False, server_default=false())
+
+
+class Notificacion(Base):
+    """Ajuste notificaciones: lo que la campana lista. `nombre` es una foto del nombre al crearla; `vista_en` nula
+    mientras no se ve. El significado de `referencia` y `detalle` por tipo está en `motor.md`."""
+    __tablename__ = "notificacion"
+    __table_args__ = (Index("notificacion_cuenta_vista", "cuenta_id", "vista_en"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
+    tipo: Mapped[TipoNotificacion] = mapped_column(enumerado(TipoNotificacion))
+    referencia: Mapped[str]
+    nombre: Mapped[str]
+    detalle: Mapped[str | None] = mapped_column(default=None)
+    creada_en: Mapped[datetime] = mapped_column(DateTime)
+    vista_en: Mapped[datetime | None] = mapped_column(DateTime, default=None)

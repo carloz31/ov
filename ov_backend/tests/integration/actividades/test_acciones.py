@@ -76,7 +76,7 @@ def test_carta_se_actualiza_sin_repetir_evento(cliente, sesion):
     primera = post(cliente, "escribir-carta", cuenta="est-ana", texto="")
     segunda = post(cliente, "escribir-carta", cuenta="est-ana", texto="Texto actualizado")
     assert len(primera["eventos_registrados"]) == 1
-    assert segunda == {"eventos_registrados": [], "nuevos_desbloqueos": []}
+    assert segunda == {"eventos_registrados": [], "nuevos_desbloqueos": [], "nuevas_notificaciones": []}
     vinculo = sesion.scalar(select(modelos.VinculoFamiliar))
     assert vinculo.carta_estudiante == "Texto actualizado"
     assert vinculo.carta_apoderado is None

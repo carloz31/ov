@@ -597,6 +597,18 @@ def _recorrido_investigaciones(cliente):
     return fixtures
 
 
+def _codigos_notificacion_fijos():
+    """Ajuste notificaciones: los códigos `NOT-` salen de `uuid4`; se fijan con su propio contador (no el de
+    investigaciones, para no mover sus códigos)."""
+    from itertools import count
+    from types import SimpleNamespace
+    from unittest.mock import patch
+
+    from app.services import notificaciones
+    numeros = count(1)
+    return patch.object(notificaciones, 'uuid4', lambda: SimpleNamespace(hex=f'{next(numeros):032x}'))
+
+
 def exportar_fixtures(destino: Path) -> list[Path]:
     """Exporta los fixtures de `ruta` en `destino/ruta/`, con nombres `ruta-*.json`.
 
@@ -615,7 +627,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
             preparar_base(url, 'ruta', crear_tablas=True)
             aplicacion = crear_aplicacion(url)
             try:
-                with TestClient(aplicacion) as cliente_http:
+                with TestClient(aplicacion) as cliente_http, _codigos_notificacion_fijos():
                     cliente = _ClienteConSesion(cliente_http)
                     fixtures = _ingresar(cliente)
                     fixtures.update(_recorrer(cliente))

@@ -8,6 +8,7 @@ from app.schemas.batallas import FichaPregunta
 from app.schemas.cuentas import EventoLegible
 from app.schemas.diario import EntradaDesbloqueada
 from app.schemas.motor import DesbloqueoNuevo
+from app.schemas.notificaciones import NotificacionPublica
 
 
 class FechaAccion(BaseModel):
@@ -153,14 +154,17 @@ class EventoEntrada(AccionCuenta):
 
 
 class RespuestaAccion(BaseModel):
-    """`entradas_desbloqueadas` solo aparece si la acción dejó preguntas en el diario."""
+    """`entradas_desbloqueadas` solo aparece si la acción dejó preguntas en el diario. `nuevas_notificaciones`: las
+    creadas en esta acción para la cuenta (ajuste notificaciones)."""
     eventos_registrados: list[EventoLegible]
     nuevos_desbloqueos: list[DesbloqueoNuevo]
+    nuevas_notificaciones: list[NotificacionPublica] = []
     entradas_desbloqueadas: list[EntradaDesbloqueada] = []
 
     def campos(self) -> dict:
         """Los campos de la acción, para heredarlos en una respuesta más amplia sin fijar los omitidos."""
-        campos = dict(eventos_registrados=self.eventos_registrados, nuevos_desbloqueos=self.nuevos_desbloqueos)
+        campos = dict(eventos_registrados=self.eventos_registrados, nuevos_desbloqueos=self.nuevos_desbloqueos,
+                      nuevas_notificaciones=self.nuevas_notificaciones)
         if 'entradas_desbloqueadas' in self.model_fields_set:
             campos['entradas_desbloqueadas'] = self.entradas_desbloqueadas
         return campos

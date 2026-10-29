@@ -6,6 +6,18 @@
       "tipo": "COMPLETA_ACTIVIDAD"
     }
   ],
+  "nuevas_notificaciones": [
+    {
+      "codigo": "NOT-0000000000000000000000000000000b",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": "FICHA",
+      "estudiante": null,
+      "nombre": "Ficha del apoderado",
+      "referencia": "t-ficha-apo",
+      "tipo": "DESBLOQUEO",
+      "vista": false
+    }
+  ],
   "nuevos_desbloqueos": [
     {
       "condiciones": [

@@ -8,6 +8,18 @@
           "tipo": "PUBLICA_ENTREVISTA"
         }
       ],
+      "nuevas_notificaciones": [
+        {
+          "codigo": "NOT-0000000000000000000000000000000e",
+          "creada_en": "2026-10-07T10:00:00",
+          "detalle": "INSIGNIA",
+          "estudiante": null,
+          "nombre": "Voz de la ciudad",
+          "referencia": "t-ins-entrevista",
+          "tipo": "DESBLOQUEO",
+          "vista": false
+        }
+      ],
       "nuevos_desbloqueos": [
         {
           "condiciones": [

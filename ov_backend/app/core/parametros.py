@@ -97,6 +97,9 @@ MAXIMO_CARACTERES_PASO = 140
 # F06 · Catálogo: tamaño de página de los listados.
 LIMITE_PAGINA_CATALOGO = 20
 LIMITE_MAXIMO_CATALOGO = 50
+# Ajuste notificaciones: páginas de la campana, como las del catálogo.
+LIMITE_PAGINA_NOTIFICACIONES = 20
+LIMITE_MAXIMO_NOTIFICACIONES = 50
 
 # Ajuste catalogo-datos-reales: fuente de los ingresos de egresados, que toda respuesta con ingresos muestra.
 FUENTE_INGRESOS = "Ponte en Carrera (MTPE)"

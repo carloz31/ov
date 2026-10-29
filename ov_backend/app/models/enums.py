@@ -313,3 +313,13 @@ class EstadoReporte(StrEnum):
     PENDIENTE = "PENDIENTE"
     DESCARTADO = "DESCARTADO"
     RESUELTO = "RESUELTO"
+
+
+class TipoNotificacion(StrEnum):
+    """Ajuste notificaciones: lo que se anuncia en la campana. Los logros (DESBLOQUEO) son de la propia cuenta;
+    el resto llega de otra cuenta."""
+    DESBLOQUEO = "DESBLOQUEO"
+    RESPUESTA_CONVERSACION = "RESPUESTA_CONVERSACION"
+    ENTREVISTA_DESTACADA = "ENTREVISTA_DESTACADA"
+    ENTREVISTA_LEYENDA = "ENTREVISTA_LEYENDA"
+    REACCION_ENTREVISTA = "REACCION_ENTREVISTA"

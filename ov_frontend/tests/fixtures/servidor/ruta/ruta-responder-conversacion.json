@@ -2,10 +2,12 @@
   "por_cuenta": {
     "apo-rosa": {
       "eventos_registrados": [],
+      "nuevas_notificaciones": [],
       "nuevos_desbloqueos": []
     },
     "est-ana": {
       "eventos_registrados": [],
+      "nuevas_notificaciones": [],
       "nuevos_desbloqueos": []
     }
   }

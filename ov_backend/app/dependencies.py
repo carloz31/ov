@@ -14,6 +14,7 @@ from app.exceptions import ErrorAccion, traducir_error_accion
 from app.models import Cuenta
 from app.services import cuentas as servicio_cuentas
 from app.services.acceso import Actor, TokenInvalido, es_propia, leer_token
+from app.services.notificaciones import olvidar_nuevas
 
 
 SesionBD = Annotated[Session, Depends(obtener_sesion)]
@@ -117,6 +118,8 @@ CuentaConsultada = Annotated[Cuenta, Depends(obtener_cuenta)]
 
 
 def ejecutar_accion(sesion: Session, operacion: Callable):
+    # Las notificaciones nuevas son de una sola acción; las que no entraron en su respuesta no pasan a la siguiente.
+    olvidar_nuevas(sesion)
     try:
         with sesion.begin():
             return operacion()
