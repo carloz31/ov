@@ -137,7 +137,7 @@ tests/
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.
 - Las pruebas nuevas usan los fixtures de plantilla (`aplicacion` con `ruta`, `cliente`, `sesion`, `base_aislada`) y las ayudas de `soporte_ruta.py`. Solo las pruebas de carga, migraciones y atomicidad de la carga preparan bases propias.
-- `cliente` es un `ClienteConToken` (`soporte_acceso.py`): firma con `emitir_token` el token de la cuenta que nombra la petición (la ruta, `cuenta` o el primer autor; est-ana si no nombra ninguna o si no existe), así que el guardia real corre en todas las pruebas. Las pruebas de rechazo usan `cliente_sin_token`. Quien cree su propio cliente usa `ClienteConToken` en vez de `TestClient`. `tests/integration/acceso/test_cobertura_rutas.py` recorre todas las rutas publicadas (401 sin token, 404 sobre otra cuenta).
+- `cliente` es un `ClienteConToken` (`soporte_acceso.py`): firma con `emitir_token` el token de la cuenta que nombra la petición (la ruta o `cuenta`; est-ana si no nombra ninguna o si no existe), así que el guardia real corre en todas las pruebas. Las pruebas de rechazo usan `cliente_sin_token`. Quien cree su propio cliente usa `ClienteConToken` en vez de `TestClient`. `tests/integration/acceso/test_cobertura_rutas.py` recorre todas las rutas publicadas (401 sin token, 404 sobre otra cuenta).
 - Solo se crean carpetas con pruebas. Los nombres `test_*.py` son únicos en todo `tests/` (`--import-mode=importlib`).
 
 | Si cambias… | Corre primero |

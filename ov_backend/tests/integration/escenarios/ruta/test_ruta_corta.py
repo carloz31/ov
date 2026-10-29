@@ -2,8 +2,8 @@
 
 B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010; B03, las HU 007
 y 016; B07, la HU 094; B08, las HU 017, 041 y 051 a 056; B09, las HU 028 a 033, 035, 036 y 075; B11, las HU 043
-a 048, 050, 097 a 099, 109 y 110; B12, las HU 066, 068 a 071 y 078 a 080; B17, la HU 001 (el recorrido empieza con
-el ingreso real, como el front). Cada lote extiende este recorrido con su tramo.
+a 048, 050, 097 a 099, 109 y 110; B12, las HU 066, 068 a 071 y 078 a 080; B13, las HU 057 a 065, 100 y 101; B17, la
+HU 001 (el recorrido empieza con el ingreso real, como el front). Cada lote extiende este recorrido con su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
@@ -553,3 +553,56 @@ def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):
     assert (final['otro']['nombre'], final['otro']['parentesco']) == ('Rosa', 'madre')
     assert vista('apo-rosa')['carta_recibida'] == 'DATO DE PRUEBA: carta de est-ana.'
     assert [r['instrumento'] for r in pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados')] == ['TEST-RIASEC']
+
+
+def test_hu057_065_100_101_investigaciones_y_entrevistas(cliente):
+    # B13: la misión del investigador abre la sección; Ana y Luis investigan la misma ocupación y publican juntos.
+    def accion(nombre, datos, cuenta='est-ana', esperado=200):
+        return pedir(cliente, 'POST', f'/acciones/{nombre}', {'cuenta': cuenta, 'fecha_hora': FECHA, **datos},
+                     esperado)
+
+    pienso = {'ocupacion': 'electrician', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas.',
+              'necesita': 'DATO DE PRUEBA: un instituto y mucha práctica.', 'duda': '¿Es peligroso?'}
+    for cuenta in ('est-ana', 'est-luis'):
+        avanzar(cliente, cuenta=cuenta)
+        assert pedir(cliente, 'GET', f'/cuentas/{cuenta}/secciones/INVESTIGACIONES')['estado'] == 'BLOQUEADA'
+        assert 'R-SEC-INVESTIGACIONES' in reglas(completar(cliente, 't-investigador', cuenta))
+        accion('guardar-lo-que-pienso', pienso, cuenta)
+    # Paso 2: base + duda + una sugerida; Luis termina sin pedir sugerencias.
+    sugerencias = accion('pedir-sugerencias-guion', {})
+    assert sugerencias['estado'] == 'LISTAS'
+    sugerida = sugerencias['sugerencias'][0]
+    preguntas = [{'origen': 'DUDA', 'texto': pienso['duda']},
+                 {'origen': 'SUGERIDA', 'texto': sugerida['texto'], 'sugerencia': sugerida['codigo']}]
+    accion('guardar-guion', {'preguntas': preguntas, 'terminar': True})
+    accion('guardar-guion', {'preguntas': preguntas[:1], 'terminar': True}, 'est-luis')
+    vista = pedir(cliente, 'GET', '/cuentas/est-ana/investigaciones')
+    assert vista['en_curso']['estado'] == 'GUIA_LISTA'
+    assert [a['codigo'] for a in vista['aliados']['misma_ocupacion']] == ['est-luis']
+    # La misión de cierre espera la publicación.
+    assert actividades(cliente)['t-investigador-cierre'] == 'BLOQUEADA'
+    publicada = accion('publicar-entrevista', {
+        'titulo': 'DATO DE PRUEBA: un día con un electricista', 'profesional': 'DATO DE PRUEBA',
+        'duracion': '20 minutos', 'enlace': 'https://youtu.be/dQw4w9WgXcQ',
+        'resumen': 'DATO DE PRUEBA: nos contó cómo empezó.', 'coautores': ['est-luis'], 'permiso': True})
+    codigo = publicada['por_cuenta']['est-ana']['eventos_registrados'][0]['referencia']
+    for cuenta in ('est-ana', 'est-luis'):
+        assert {'R-t-investigador-cierre', 'R-t-ins-entrevista'} <= reglas(publicada['por_cuenta'][cuenta])
+    # Luis, coautor, la ve como propia y no reacciona.
+    assert pedir(cliente, 'GET', f'/cuentas/est-luis/entrevistas/{codigo}')['propia'] is True
+    accion('reaccionar-entrevista', {'entrevista': codigo, 'tipo': 'ME_GUSTO'}, 'est-luis', 409)
+    # La orientadora la ve en su tabla, comenta y la destaca.
+    tabla = pedir(cliente, 'GET', '/cuentas/ori-carmen/publicaciones')
+    assert [f['codigo'] for f in tabla['items']] == [codigo]
+    accion('comentar-entrevista', {'entrevista': codigo, 'texto': 'DATO DE PRUEBA: buen trabajo.'}, 'ori-carmen')
+    accion('destacar-entrevista', {'entrevista': codigo, 'destacada': True}, 'ori-carmen')
+    tarjeta, = pedir(cliente, 'GET', '/cuentas/est-ana/entrevistas?vista=MIAS')['items']
+    assert tarjeta['destacada'] and not tarjeta['leyenda'] and tarjeta['favoritos'] == 0
+    # HU-101: la misión de cierre retoma lo que Ana pensaba antes.
+    referencias = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-investigador-cierre/referencias')
+    eco, = referencias['referencias']
+    assert eco['tipo'] == 'LO_QUE_PIENSO' and eco['estado'] == 'DISPONIBLE'
+    assert [o['codigo'] for o in eco['opciones']] == ['DIA', 'NECESITA', 'DUDA']
+    assert eco['opciones'][2]['texto'] == pienso['duda']
+    responder_registro(cliente, 't-investigador-cierre')
+    assert actividades(cliente)['t-investigador-cierre'] == 'COMPLETADA'

@@ -108,6 +108,56 @@ class EntrevistaEntrada(AccionCuenta):
     entrevista: str
 
 
+ComentarioOpcional = Annotated[str | None, StringConstraints(strip_whitespace=True)]
+
+
+class ReaccionarEntrada(AccionCuenta):
+    """Crea o cambia la reacción de la cuenta (HU-063). El comentario vacío cuenta como ausente."""
+    entrevista: str
+    tipo: str
+    comentario: ComentarioOpcional = None
+
+    @field_validator('comentario')
+    @classmethod
+    def vacio_es_nulo(cls, valor):
+        return valor or None
+
+
+class ReaccionEntrada(AccionCuenta):
+    reaccion: str
+
+
+class ReportarEntrada(AccionCuenta):
+    """Reporta una entrevista o una reacción, exactamente una."""
+    entrevista: str | None = None
+    reaccion: str | None = None
+    motivo: MotivoReporte
+    detalle: ComentarioOpcional = None
+
+    @model_validator(mode='after')
+    def un_contenido(self):
+        if (self.entrevista is None) == (self.reaccion is None):
+            raise ValueError('Reporta una entrevista o una reacción')
+        self.detalle = self.detalle or None
+        return self
+
+
+class DestacarEntrada(AccionCuenta):
+    entrevista: str
+    destacada: bool
+
+
+class ComentarEntrada(AccionCuenta):
+    """Comentario de la orientadora a los autores; con `reaccion`, edita uno suyo."""
+    entrevista: str
+    texto: Texto
+    reaccion: str | None = None
+
+
+class ReporteEntrada(AccionCuenta):
+    reporte: str
+
+
 # --- Salidas ------------------------------------------------------------------------------------
 
 class OcupacionBreve(BaseModel):
@@ -248,3 +298,79 @@ class EntrevistaDetalle(TarjetaEntrevista):
     favoritos_leyenda: int
     reportada_por_mi: bool
     lista_reacciones: list[ReaccionPublica]
+
+
+# --- Orientadora --------------------------------------------------------------------------------
+
+EstadoPublicacion = Literal['SIN_DESTACAR', 'DESTACADA', 'LEYENDA']
+
+
+class AutorPublicacion(BaseModel):
+    """`salon`: código del salón (nulo si la cuenta no tiene). `lo_que_pensaba`: solo en el detalle."""
+    codigo: str
+    nombre: str
+    salon: str | None
+    lo_que_pensaba: LoQuePienso | None = None
+
+
+class FilaPublicacion(BaseModel):
+    """`reportes_pendientes`: de la entrevista; `comentarios_reportados`: reacciones con reportes pendientes.
+    `de_sus_salones` falso: Leyenda de otro salón o promoción (va al final)."""
+    codigo: str
+    titulo: str
+    autores: list[AutorPublicacion]
+    ocupacion: OcupacionBreve
+    fecha_hora: datetime
+    reacciones: int
+    favoritos: int
+    estado: EstadoPublicacion
+    reportes_pendientes: int
+    comentarios_reportados: int
+    de_sus_salones: bool
+
+
+class PaginaPublicaciones(BaseModel):
+    total: int
+    favoritos_leyenda: int
+    items: list[FilaPublicacion]
+
+
+class ReportePublico(BaseModel):
+    """Sin quién reportó."""
+    codigo: str
+    motivo: MotivoReporte
+    detalle: str | None
+    fecha_hora: datetime
+
+
+class ReaccionModerada(BaseModel):
+    codigo: str
+    autor: PersonaInvestigacion
+    tipo: str | None
+    comentario: str | None
+    creada_en: datetime
+    editada_en: datetime | None
+    propia: bool
+    reportes: list[ReportePublico]
+
+
+class PublicacionDetalle(BaseModel):
+    """Lo que ve la orientadora: la ficha, lo que pensaban antes los autores, reportes y reacciones (las
+    reportadas primero, luego de la más reciente a la más antigua)."""
+    codigo: str
+    titulo: str
+    ocupacion: OcupacionBreve
+    profesional: str
+    duracion: str
+    enlace: str
+    resumen: str
+    fecha_hora: datetime
+    editada_en: datetime | None
+    estado: EstadoPublicacion
+    de_sus_salones: bool
+    favoritos: int
+    favoritos_leyenda: int
+    reacciones_por_tipo: dict[str, int]
+    autores: list[AutorPublicacion]
+    reportes: list[ReportePublico]
+    reacciones: list[ReaccionModerada]

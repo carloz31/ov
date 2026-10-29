@@ -6,7 +6,7 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 
 | Tabla | Qué guarda |
 |---|---|
-| `referencia` | `codigo`, `tipo` (`TipoReferencia`), dueño: `actividad_id` **o** `pregunta_diario_id` (CHECK: exactamente uno), y fuente: `item_registro_id`, obligatoria en ELECCION y TEXTO (CHECK `fuente_registro`), o `aplicacion_id`, obligatoria en RESULTADO, COINCIDENCIAS y RESPUESTA_CUESTIONARIO y nula en los demás (CHECK `fuente_aplicacion`), más `item_instrumento_id`, obligatorio solo en RESPUESTA_CUESTIONARIO (CHECK `fuente_cuestionario`). FAVORITOS no tiene fuente (CHECK `favoritos_sin_fuente`), ni PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL (CHECK `planes_sin_fuente`). Catálogo, en la caché de definiciones (`referencias_por_actividad` y `referencias_por_pregunta`). |
+| `referencia` | `codigo`, `tipo` (`TipoReferencia`), dueño: `actividad_id` **o** `pregunta_diario_id` (CHECK: exactamente uno), y fuente: `item_registro_id`, obligatoria en ELECCION y TEXTO (CHECK `fuente_registro`), o `aplicacion_id`, obligatoria en RESULTADO, COINCIDENCIAS y RESPUESTA_CUESTIONARIO y nula en los demás (CHECK `fuente_aplicacion`), más `item_instrumento_id`, obligatorio solo en RESPUESTA_CUESTIONARIO (CHECK `fuente_cuestionario`). FAVORITOS no tiene fuente (CHECK `favoritos_sin_fuente`), ni PLANES, PLAN, PASOS_PLAN_A, OPCION_INICIAL y LO_QUE_PIENSO (CHECK `planes_sin_fuente`). Catálogo, en la caché de definiciones (`referencias_por_actividad` y `referencias_por_pregunta`). |
 | `item_registro.referencia_id` | Elección que retoma una anterior (F02): el ítem elige de su lista y esta referencia ELECCION, sobre la misma lista, solo marca lo elegido la vez pasada (`registro.md`). |
 
 `referencia.item_registro_id` e `item_registro.referencia_id` forman un ciclo de claves foráneas. La de `item_registro` lleva `use_alter` y se crea aparte. El vaciado de `datos.cargar` quita primero la referencia de los ítems (conservan su lista) y luego borra en orden.
@@ -25,6 +25,7 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | PLAN | El plan A: su carrera, su relato y sus motivos (sin fuente) | B11 |
 | PASOS_PLAN_A | Los pasos del plan A (sin fuente) | B11 |
 | OPCION_INICIAL | La carrera de la opción inicial (sin fuente) | B11 |
+| LO_QUE_PIENSO | Lo que el estudiante pensaba de la ocupación antes de su primera entrevista publicada (sin fuente) | B13 |
 
 Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola dirección (`motor.md`, «Diario»).
 
@@ -44,6 +45,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 | PLAN | Con al menos un plan. `texto`: la carrera del plan A; `cita`: su relato (nulo si no lo escribió); `opciones`: sus motivos por posición, con el código de VALORES o `OTRA` y el texto escrito. | — | Sin planes. |
 | PASOS_PLAN_A | El plan A tiene pasos. `opciones`: `[{codigo, texto}]` por posición, con el código del tipo de paso. | — | Sin planes o sin pasos. |
 | OPCION_INICIAL | La cuenta tiene opción inicial. `texto`: el nombre de la carrera. | — | Sin opción inicial. |
+| LO_QUE_PIENSO | La cuenta publicó al menos una entrevista. `texto`: el título de la ocupación de la primera; `opciones`: `DIA`, `NECESITA` y `DUDA` con lo que escribió antes (aunque la entrevista se haya retirado). | — | Sin entrevistas publicadas. |
 
 **Reglas:**
 - Desde F02 la elección se puede editar, y entonces la justificación se reescribe (`registro.md`); ELECCION cita siempre la elección vigente. Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
@@ -64,7 +66,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 `REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, fuente)`; la fuente es un ítem de registro en ELECCION y TEXTO, un código de aplicación en RESULTADO y COINCIDENCIAS, `(aplicación, ítem)` en RESPUESTA_CUESTIONARIO y `None` en FAVORITOS. Una pregunta de diario solo es dueña si es personalizada. En `ITEMS_REGISTRO`, la elección que retoma una anterior agrega la referencia como sexto campo: `(lista, mínima, máxima, ordenada, otra, referencia)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:
 - un tipo fuera del catálogo;
 - un dueño inexistente, o una pregunta de diario no personalizada;
-- una fuente en FAVORITOS, PLANES, PLAN, PASOS_PLAN_A u OPCION_INICIAL;
+- una fuente en FAVORITOS, PLANES, PLAN, PASOS_PLAN_A, OPCION_INICIAL o LO_QUE_PIENSO;
 - una fuente inexistente o de la propia actividad dueña;
 - en RESULTADO o COINCIDENCIAS, una aplicación de un instrumento de COMPARACION;
 - en RESPUESTA_CUESTIONARIO, un ítem que la aplicación no presenta;

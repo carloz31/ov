@@ -11,9 +11,7 @@ FECHA = "2026-10-01T10:00:00"
 
 
 def accion(cliente, nombre, cuenta="est-ana", **datos):
-    cuerpo = {"fecha_hora": FECHA, **datos}
-    if nombre != "publicar-entrevista":
-        cuerpo["cuenta"] = cuenta
+    cuerpo = {"fecha_hora": FECHA, "cuenta": cuenta, **datos}
     respuesta = cliente.post(f"/acciones/{nombre}", json=cuerpo)
     assert respuesta.status_code == 200, respuesta.text
     return respuesta.json()

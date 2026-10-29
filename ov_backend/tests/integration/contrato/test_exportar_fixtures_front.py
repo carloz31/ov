@@ -38,6 +38,10 @@ from app.schemas.fichas import FichaCuenta, FichaDetalle
 from app.schemas.logros import LogrosCuenta
 from app.schemas.avance import AvanceEstudiante
 from app.schemas.presentaciones import PresentacionesCuenta
+from app.schemas.investigaciones import (
+    EntrevistaDetalle, InvestigacionesCuenta, PaginaEntrevistas, PaginaPublicaciones, PublicacionDetalle,
+    SugerenciasGuion,
+)
 from app.schemas.secciones import SeccionEstado
 from app.schemas.instrumentos import (
     AvanceInstrumento, ComparacionAutopercepcion, InstrumentoPublico, ItemPublico, RespuestasActividad,
@@ -91,6 +95,10 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'revelar-riasec-plano', 'resultado-riasec-plano', 'historial-riasec-plano', 'historial-riasec',
     'reiniciar-riasec', 'referencias-t-contraste-plano', 'referencias-t-contraste-reiniciado',
     'familia-resultados-sin-diploma', 'items-registro-t-contraste', 'instrumentos',
+    # B13: investigaciones y entrevistas.
+    'investigaciones-inicial', 'sugerencias-guion', 'investigaciones-guia-lista', 'publicar-entrevista',
+    'entrevistas-salon', 'entrevistas-mias', 'entrevista-detalle', 'publicaciones', 'publicacion-detalle',
+    'referencias-investigador-cierre',
 )}
 
 
@@ -479,6 +487,25 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     fichas_inicio = [FichaCuenta.model_validate(f) for f in datos['apoderado-fichas-inicial']]
     assert [(f.codigo, f.estado, f.actividad.codigo) for f in fichas_inicio] == [('t-ficha-apo', 'BLOQUEADA', 't-apo-1')]
     assert FichaDetalle.model_validate(datos['apoderado-ficha-t-ficha-apo']).codigo == 't-ficha-apo'
+    # B13: investigaciones, entrevistas y publicaciones con el esquema de la respuesta.
+    inicial = InvestigacionesCuenta.model_validate(datos['investigaciones-inicial'])
+    assert inicial.en_curso is None and inicial.favoritos_leyenda == 3 and len(inicial.tipos_reaccion) == 4
+    assert SugerenciasGuion.model_validate(datos['sugerencias-guion']).estado == 'LISTAS'
+    guia = InvestigacionesCuenta.model_validate(datos['investigaciones-guia-lista'])
+    assert guia.en_curso.estado == 'GUIA_LISTA' and [a.codigo for a in guia.aliados.misma_ocupacion] == ['est-luis']
+    entrevista = RespuestaAgrupada.model_validate(datos['publicar-entrevista']).por_cuenta['est-ana']
+    codigo = entrevista.eventos_registrados[0].referencia
+    salon = PaginaEntrevistas.model_validate(datos['entrevistas-salon'])
+    assert [(t.codigo, t.destacada, t.favorita, t.vista) for t in salon.items] == [(codigo, True, True, True)]
+    assert PaginaEntrevistas.model_validate(datos['entrevistas-mias']).items[0].reacciones_por_tipo == {'APRENDI': 1}
+    ficha = EntrevistaDetalle.model_validate(datos['entrevista-detalle'])
+    assert [(r.tipo, r.propia) for r in ficha.lista_reacciones] == [('APRENDI', True), (None, False)]
+    fila, = PaginaPublicaciones.model_validate(datos['publicaciones']).items
+    assert (fila.codigo, fila.estado, fila.favoritos, fila.reacciones) == (codigo, 'DESTACADA', 1, 1)
+    detalle_orientadora = PublicacionDetalle.model_validate(datos['publicacion-detalle'])
+    assert detalle_orientadora.autores[0].lo_que_pensaba.duda == '¿Es peligroso?'
+    eco, = ReferenciasConsultadas.model_validate(datos['referencias-investigador-cierre']).referencias
+    assert eco.tipo == 'LO_QUE_PIENSO' and eco.estado == 'DISPONIBLE'
     # Regenera sobre archivos existentes sin tocar otros archivos del destino.
     conservar = destino / 'ruta' / 'conservar.txt'
     conservar.write_text('Conservar', encoding='utf-8')

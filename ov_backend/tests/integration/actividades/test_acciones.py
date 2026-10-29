@@ -4,7 +4,6 @@ import pytest
 from sqlalchemy import func, select
 
 from app import models as modelos
-from app.services import comun as acciones
 from soporte_ruta import avanzar
 
 
@@ -46,8 +45,11 @@ def test_ingresar_repite_eventos_y_usa_hora_actual_de_lima(cliente):
     ("escribir-entrada", {"pregunta": "t-diario-fija", "del_dia": True, "texto": "Dos preguntas"}),
     ("responder-registro", {"clasificacion": "OTRA", "ampliada": False}),
     ("ingresar", {"fecha_hora": "fecha-invalida"}),
-    ("publicar-entrevista", {"autores": [], "resumen": "Vacía"}),
-    ("publicar-entrevista", {"autores": ["est-ana", "est-ana"], "resumen": "Duplicada"}),
+    # B13: enlace que no es de YouTube, sin permiso del entrevistado y coautores repetidos.
+    ("publicar-entrevista", {"titulo": "T", "profesional": "P", "duracion": "20 min", "resumen": "R", "enlace": "https://vimeo.com/1", "permiso": True}),
+    ("publicar-entrevista", {"titulo": "T", "profesional": "P", "duracion": "20 min", "resumen": "R", "enlace": "https://youtu.be/dQw4w9WgXcQ", "permiso": False}),
+    ("publicar-entrevista", {"titulo": "T", "profesional": "P", "duracion": "20 min", "resumen": "R", "enlace": "https://youtu.be/dQw4w9WgXcQ", "permiso": True,
+                             "coautores": ["est-luis", "est-luis"]}),
 ])
 def test_entradas_invalidas_no_generan_estado(cliente, sesion, nombre, cuerpo):
     respuesta = cliente.post(f"/acciones/{nombre}", json={"cuenta": "est-ana", **cuerpo})
@@ -61,7 +63,6 @@ def test_entradas_invalidas_no_generan_estado(cliente, sesion, nombre, cuerpo):
     ("ingresar", {"cuenta": "no-existe"}),
     ("completar-actividad", {"cuenta": "est-ana", "actividad": "ACT-NO-EXISTE"}),
     ("ver-carrera", {"cuenta": "est-ana", "carrera": "CAR-NO-EXISTE"}),
-    ("publicar-entrevista", {"autores": ["est-ana", "no-existe"], "resumen": "Autor desconocido"}),
 ])
 def test_referencias_inexistentes_responden_404(cliente, sesion, nombre, cuerpo):
     assert cliente.post(f"/acciones/{nombre}", json=cuerpo).status_code == 404
@@ -105,19 +106,3 @@ def test_referencias_de_eventos_invalidas_no_se_registran(cliente, sesion, cuerp
     respuesta = cliente.post("/eventos", json={"cuenta": "est-ana", **cuerpo})
     assert respuesta.status_code == estado_http
     assert contar(sesion, modelos.EventoUso) == 0
-
-
-def test_fallo_segundo_autor_revierte_entrevista_completa(cliente, sesion, monkeypatch):
-    original = acciones.registrar_eventos
-
-    def fallar_con_luis(sesion, cuenta, eventos, fecha):
-        nuevos = original(sesion, cuenta, eventos, fecha)
-        if cuenta.codigo == "est-luis":
-            raise RuntimeError("Fallo con segundo autor")
-        return nuevos
-
-    monkeypatch.setattr(acciones, "registrar_eventos", fallar_con_luis)
-    with pytest.raises(RuntimeError, match="Fallo con segundo autor"):
-        cliente.post("/acciones/publicar-entrevista", json={"autores": ["est-ana", "est-luis"], "resumen": "Conjunto"})
-    for modelo in (modelos.Entrevista, modelos.EntrevistaAutor, modelos.EventoUso, modelos.Desbloqueo):
-        assert contar(sesion, modelo) == 0

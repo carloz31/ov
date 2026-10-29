@@ -8,8 +8,8 @@ from app.core.parametros import FAVORITOS_LEYENDA
 from app.exceptions import ErrorAccion
 from app.models import (
     Cuenta, Entrevista, EntrevistaAutor, EstadoEntrevista, EstadoInvestigacion, EstadoSugerenciaGuion, EventoUso,
-    Favorito, Insignia, InsigniaVitrina, Investigacion, Ocupacion, PreguntaBaseGuion, PreguntaGuion, Reaccion, Reporte,
-    Rol, SugerenciaGuion, TipoEventoUso, TipoFavorito, TipoReaccion,
+    Favorito, Insignia, InsigniaVitrina, Investigacion, Ocupacion, OrientadoraSalon, PreguntaBaseGuion, PreguntaGuion,
+    Reaccion, Reporte, Rol, SugerenciaGuion, TipoEventoUso, TipoFavorito, TipoReaccion,
 )
 from app.models.base import sin_tildes
 from app.schemas.investigaciones import (
@@ -47,6 +47,20 @@ def exigir_investigacion_activa(sesion: Session, cuenta: Cuenta) -> Investigacio
     if investigacion is None:
         raise ErrorAccion('No tienes una investigación en curso')
     return investigacion
+
+
+def salones_de_orientadora(sesion: Session, cuenta: Cuenta) -> list[int]:
+    return list(sesion.scalars(select(OrientadoraSalon.salon_id).where(
+        OrientadoraSalon.orientadora_id == cuenta.id).order_by(OrientadoraSalon.salon_id)))
+
+
+def entrevista_de_sus_salones(sesion: Session, salones: list[int], codigo: str) -> Entrevista:
+    """Publicada y de algún autor de los salones de la orientadora; si no, 404 (no actúa sobre otros salones)."""
+    entrevista = sesion.scalar(select(Entrevista).where(
+        Entrevista.codigo == codigo, Entrevista.estado == EstadoEntrevista.PUBLICADA, de_autor_en_salones(salones)))
+    if entrevista is None:
+        raise ErrorAccion('Entrevista no encontrada', estado_http=404)
+    return entrevista
 
 
 # --- Visibilidad --------------------------------------------------------------------------------
@@ -187,7 +201,7 @@ def contar_favoritos(sesion: Session, ids) -> dict[int, int]:
     return dict(sesion.execute(select(Favorito.id_referencia, func.count()).join(
         Cuenta, Cuenta.id == Favorito.cuenta_id).where(
         Favorito.tipo == TipoFavorito.ENTREVISTA, Favorito.id_referencia.in_(ids), Cuenta.rol == Rol.ESTUDIANTE,
-    ).group_by(Favorito.id_referencia)).tuples())
+    ).group_by(Favorito.id_referencia)).all())
 
 
 def reacciones_por_tipo(sesion: Session, ids) -> dict[int, dict[str, int]]:

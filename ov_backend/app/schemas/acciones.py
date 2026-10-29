@@ -141,17 +141,6 @@ class VerFichaEntrada(AccionCuenta):
     ficha: str
 
 
-class PublicarEntrevistaEntrada(FechaAccion):
-    autores: list[str] = Field(min_length=1)
-    resumen: str
-
-    @model_validator(mode="after")
-    def validar_autores(self):
-        if len(set(self.autores)) != len(self.autores):
-            raise ValueError("Los autores no pueden repetirse")
-        return self
-
-
 class EscribirCartaEntrada(AccionCuenta):
     texto: str
     # Solo el apoderado: el hijo del vínculo; sin él, el primer vínculo activo (F08).

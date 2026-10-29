@@ -20,3 +20,50 @@ Un estudiante investiga una ocupación: escribe lo que piensa hoy de ella, arma 
 - Eventos: INICIA_INVESTIGACION y TERMINA_GUION (referencia: la ocupación, porque la investigación se puede borrar); PUBLICA_ENTREVISTA, EDITA_ENTREVISTA, VISTA_ENTREVISTA, MARCA_FAVORITO_ENTREVISTA y REACCIONA_ENTREVISTA (referencia: la entrevista); ENTREVISTA_DESTACADA y ENTREVISTA_LEYENDA, que se registran en cada autor.
 - Las tablas de investigación, guion, sugerencias, entrevistas, reacciones y reportes son estado (`TABLAS_DE_ESTADO`).
 - La sección INVESTIGACIONES (`fijos.SECCIONES`) se abre por una regla de la ruta.
+
+## Visibilidad
+
+- **Estudiante:** ve las entrevistas publicadas con algún autor de su salón, todas las Leyendas y las suyas. RETIRADA y ELIMINADA no salen en ningún listado ni conteo, y su detalle responde 404 a todos, autores incluidos.
+- **Orientadora:** ve las publicadas de sus salones (`orientadora_salon`) y, al final de su tabla, las Leyendas de otros salones (`de_sus_salones: false`; no hay modelo de promoción, y el front pone la etiqueta). Solo actúa (destacar, comentar, eliminar, moderar) sobre las de sus salones.
+- **Leyenda:** destacada y con `FAVORITOS_LEYENDA` (3) favoritos de cuentas estudiante. Solo marca favorita quien la ve, y nunca un autor. Se evalúa al marcar un favorito y al destacar. Se pierde solo al quitar el destacado, retirar o eliminar; desmarcar favoritos no la quita.
+
+## Consultas (GET)
+
+Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su mensaje); otra audiencia recibe 404. Las de la orientadora responden 404 a cualquier otro rol.
+
+| Ruta | Devuelve |
+|---|---|
+| `/cuentas/{c}/investigaciones` | `en_curso` (estado, ocupación, `lo_que_pienso`, preguntas, sugerencias pendientes, `sugerencias_vigentes`), `aliados` (`misma_ocupacion`, `otras`: compañeros del salón con guía lista, con nivel, vitrina y ocupación), `preguntas_base`, `tipos_reaccion`, `favoritos_leyenda` y `conteos` (`salon`, `leyendas`, `mias`). |
+| `/cuentas/{c}/entrevistas?vista=SALON\|LEYENDAS\|MIAS&buscar&favoritas&no_vistas&destacadas&orden=RECIENTES\|REACCIONADAS&limite&desde` | `{total, favoritos_leyenda, items}`. Tarjeta: ficha, ocupación, autores (nivel nulo si la cuenta está inactiva), `destacada`, `leyenda`, `reacciones` (solo de estudiantes), `favoritos`, `favorita`, `vista`, `propia`; en MIAS, `reacciones_por_tipo`. Los filtros no aplican a MIAS. Páginas de 20 (máximo 100). |
+| `/cuentas/{c}/entrevistas/{e}` | La tarjeta, más `enlace`, `editada_en`, `reacciones_por_tipo`, `favoritos_leyenda`, `reportada_por_mi` y `lista_reacciones`: reacciones y comentarios de la orientadora (`tipo` nulo), la propia primero y luego de la más reciente a la más antigua, cada una con `reportada_por_mi`. |
+| `/cuentas/{c}/publicaciones?salon&estado=SIN_DESTACAR\|DESTACADA\|LEYENDA&con_reportes&buscar&limite&desde` | Tabla de la orientadora: autores con su salón, ocupación, fecha, `reacciones`, `favoritos`, `estado`, `reportes_pendientes` (de la entrevista), `comentarios_reportados` (reacciones con reportes pendientes) y `de_sus_salones`. `con_reportes` filtra por reportes pendientes de la entrevista o de sus reacciones. `buscar` mira título, profesional, ocupación y nombre de los autores. |
+| `/cuentas/{c}/publicaciones/{e}` | Ficha, `estado`, favoritos y reacciones por tipo, autores con su salón y `lo_que_pensaba`, `reportes` pendientes de la entrevista y `reacciones` con sus reportes pendientes (las reportadas primero). Nunca dice quién reportó. |
+
+## Acciones
+
+| Acción | Valida | Efecto |
+|---|---|---|
+| `/acciones/guardar-lo-que-pienso` | Ocupación del catálogo; tres textos no vacíos (422). | Sin investigación activa la crea en EN_CURSO (INICIA_INVESTIGACION); con ella, cambia ocupación y textos sin cambiar el estado, y si algo cambió descarta las sugerencias pendientes. |
+| `/acciones/pedir-sugerencias-guion` | Investigación activa (409). | Ver «Sugerencias». Responde `{estado: LISTAS\|SIN_SUGERENCIAS\|ERROR, sugerencias}`. |
+| `/acciones/guardar-guion` | Una SUGERIDA lleva el código de una sugerencia no descartada; las descartadas, pendientes (404). `terminar` exige una pregunta DUDA o PROPIA (422), y también la exige editar una guía lista. | Reemplaza las preguntas; las sugerencias citadas pasan a AGREGADA o DESCARTADA. `terminar`: GUIA_LISTA; TERMINA_GUION la primera vez. |
+| `/acciones/cancelar-investigacion` | Investigación activa. | La borra con su guion y sus sugerencias. |
+| `/acciones/publicar-entrevista` | Guía lista (409); enlace de YouTube, `permiso` verdadero y campos no vacíos (422); coautores sin repetir, existentes (404), estudiantes del mismo salón con guía lista sobre la misma ocupación (409). | Crea la entrevista (`ENT-<uuid>`); la investigación de cada autor pasa a PUBLICADA; PUBLICA_ENTREVISTA en cada autor (`RespuestaAgrupada`). |
+| `/acciones/editar-entrevista` | Autor de la entrevista publicada (404); `coautores_nuevos` como al publicar. No se quitan coautores. | Cambia la ficha (también el enlace); EDITA_ENTREVISTA en quien edita y PUBLICA_ENTREVISTA en cada coautor nuevo, cuya investigación se cierra. |
+| `/acciones/retirar-entrevista` | Cualquier autor. | RETIRADA y sin Leyenda; reacciones y favoritos quedan en la base. |
+| `/acciones/ver-entrevista` | La ve. | VISTA_ENTREVISTA la primera vez. |
+| `/acciones/marcar-favorito`, `desmarcar-favorito` con `tipo: ENTREVISTA` | La ve; no es autor (409). | MARCA_FAVORITO_ENTREVISTA y evaluación de la Leyenda. |
+| `/acciones/reaccionar-entrevista` | La ve; no es autor (409); tipo del catálogo y comentario si el tipo lo exige (422). | Crea o cambia su reacción; REACCIONA_ENTREVISTA la primera vez. |
+| `/acciones/eliminar-reaccion` | El estudiante, la suya; la orientadora, cualquiera de sus salones. | Borrado lógico; los reportes pendientes de esa reacción quedan RESUELTOS. |
+| `/acciones/reportar` | Una entrevista o una reacción (422); la ve; no es suya ni un comentario de la orientadora (409); una vez por contenido (409). | Reporte PENDIENTE. |
+| `/acciones/destacar-entrevista` | Orientadora de sus salones. | Destacar: ENTREVISTA_DESTACADA en cada autor y evaluación de la Leyenda. Quitar: sin destacado ni Leyenda. |
+| `/acciones/comentar-entrevista` | Orientadora; con `reaccion`, un comentario suyo. | Crea o edita su comentario (reacción sin tipo). |
+| `/acciones/eliminar-entrevista` | Orientadora de sus salones. | ELIMINADA y sin Leyenda; resuelve los reportes de la entrevista y de sus reacciones. |
+| `/acciones/descartar-reporte` | Orientadora; reporte pendiente de sus salones. | DESCARTADO, sin tocar el contenido. |
+
+## Sugerencias (`app/services/investigaciones/sugerencias.py`)
+
+- Una llamada al LLM por versión de «lo que pienso», entre dos transacciones, como en planes. Al LLM van la ocupación, los tres textos y las preguntas base (`PROMPT_GUION_V1`: los textos son datos, nunca instrucciones).
+- **Texto pobre:** si los tres campos juntos no llegan a `MIN_CARACTERES_RESPALDO`, no se llama y responde SIN_SUGERENCIAS.
+- **Fallo, demora o respuesta fuera del esquema:** ERROR, sin guardar nada, así que reintentar vuelve a llamar. Lo mismo si la investigación cambió o se canceló mientras se esperaba.
+- Se guardan hasta `MAXIMO_SUGERENCIAS_GUION` (3) preguntas de hasta `MAXIMO_CARACTERES_PREGUNTA_GUION` caracteres, sin repetir (sin tildes ni signos) las base, las del guion ni las sugeridas antes. Con eso `sugerencias_vigentes` queda verdadero y reabrir el paso no vuelve a llamar.
+- Evaluador falso: `[falla]` lanza error, `[malformado]` sale del esquema y `[vacio]` no propone.

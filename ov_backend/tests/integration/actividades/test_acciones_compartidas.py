@@ -2,6 +2,7 @@
 
 from soporte_datos_ports import agregar_autores
 from soporte_datos_ports import insignia_por_evento, preparar_conversacion
+from soporte_investigaciones import FICHA, OCUPACION, guia_lista, guias_listas_directas, guion, pensar
 import pytest
 from app.services import comun
 from soporte_ruta import avanzar, completar, filas_base, pedir
@@ -53,17 +54,20 @@ def test_r34_coautoria_independiente_y_sql_de_dos_a_veinte(tmp_path, base_aislad
     cantidades = []
     for cantidad in (2, 20):
         with base_aislada(tmp_path, f'autores-{cantidad}') as (aplicacion, cliente):
+            # B13: Ana publica sola primero (ya tiene la insignia); la publicación conjunta evalúa a cada autor.
+            guia_lista(cliente)
+            pedir(cliente, 'POST', '/acciones/publicar-entrevista', {'cuenta': 'est-ana', **FICHA})
+            pensar(cliente)
+            guion(cliente)
             autores = ['est-ana', 'est-luis']
             with aplicacion.state.fabrica_sesiones.begin() as sesion:
                 agregar_autores(sesion, cantidad, autores)
-                insignia_por_evento(sesion, 'ins-prueba-entrevista', 'PUBLICA_ENTREVISTA')
-            # Ana ya tiene la insignia; la nueva publicación se evalúa individualmente.
-            pedir(cliente, 'POST', '/acciones/publicar-entrevista', {'autores': ['est-ana'], 'resumen': 'DATO DE PRUEBA'})
+                guias_listas_directas(sesion, autores[1:], OCUPACION)
             respuesta, contador = medir(cliente, aplicacion, 'POST', '/acciones/publicar-entrevista',
-                {'autores': autores, 'resumen': 'DATO DE PRUEBA'})
+                {'cuenta': 'est-ana', **FICHA, 'coautores': autores[1:]}, limite=40)
             assert set(respuesta['por_cuenta']) == set(autores)
             for codigo, salida in respuesta['por_cuenta'].items():
                 assert [e['tipo'] for e in salida['eventos_registrados']] == ['PUBLICA_ENTREVISTA']
-                assert ('R-ins-prueba-entrevista' in {d['regla'] for d in salida['nuevos_desbloqueos']}) == (codigo != 'est-ana')
+                assert ('R-t-ins-entrevista' in {d['regla'] for d in salida['nuevos_desbloqueos']}) == (codigo != 'est-ana')
             cantidades.append(contador.cantidad)
     assert cantidades[0] == cantidades[1]

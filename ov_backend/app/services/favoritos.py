@@ -1,5 +1,5 @@
-"""Favoritos de carreras, ocupaciones e instituciones (B10 · HU-040) y de fichas y testimonios de la mochila (ajuste
-mochila). Ninguna regla ni logro de la semilla depende de ellos."""
+"""Favoritos de carreras, ocupaciones e instituciones (B10 · HU-040), de fichas y testimonios de la mochila (ajuste
+mochila) y de entrevistas (B13, cuentan para la Leyenda)."""
 
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, selectinload
@@ -13,6 +13,7 @@ from app.schemas.acciones import RespuestaAccion
 from app.schemas.favoritos import FavoritoEntrada, FavoritosCuenta
 from app.services.catalogo import exigir_seccion_catalogo, resumen_carrera, resumen_institucion, resumen_ocupacion
 from app.services.comun import buscar_por_codigo, exigir_disponible, fecha_accion, responder_con_eventos
+from app.services.investigaciones.acciones import entrevista_para_favorito, evaluar_leyenda
 from app.services.motor.reglas import objetivo_corresponde_a_cuenta
 
 
@@ -26,6 +27,8 @@ MOCHILA = {TipoFavorito.FICHA: (Ficha, TipoObjetivo.FICHA, TipoEventoUso.MARCA_F
 def _preparar(sesion: Session, entrada: FavoritoEntrada):
     """El catálogo exige su sección abierta; una ficha o un testimonio, solo estar desbloqueado (409 si no)."""
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
+    if entrada.tipo == TipoFavorito.ENTREVISTA:
+        return cuenta, entrevista_para_favorito(sesion, cuenta, entrada.codigo)
     if entrada.tipo in MOCHILA:
         modelo, objetivo, _ = MOCHILA[entrada.tipo]
         entidad = buscar_por_codigo(sesion, modelo, entrada.codigo)
@@ -39,6 +42,8 @@ def _preparar(sesion: Session, entrada: FavoritoEntrada):
 
 
 def _evento_marcar(tipo, entidad):
+    if tipo == TipoFavorito.ENTREVISTA:
+        return TipoEventoUso.MARCA_FAVORITO_ENTREVISTA, entidad.id
     return (MOCHILA[tipo][2], entidad.id) if tipo in MOCHILA else (TipoEventoUso.MARCA_FAVORITO, None)
 
 
@@ -51,7 +56,10 @@ def marcar_favorito(sesion: Session, entrada: FavoritoEntrada) -> RespuestaAccio
     sesion.add(Favorito(cuenta_id=cuenta.id, tipo=entrada.tipo, id_referencia=entidad.id, fecha_hora=fecha))
     sesion.flush()
     contexto(sesion).favoritos.pop(cuenta.id, None)
-    return responder_con_eventos(sesion, cuenta, [_evento_marcar(entrada.tipo, entidad)], fecha)
+    respuesta = responder_con_eventos(sesion, cuenta, [_evento_marcar(entrada.tipo, entidad)], fecha)
+    if entrada.tipo == TipoFavorito.ENTREVISTA:
+        evaluar_leyenda(sesion, entidad, fecha)
+    return respuesta
 
 
 @usar_contexto

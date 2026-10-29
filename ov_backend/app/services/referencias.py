@@ -8,6 +8,7 @@ RESPUESTA_CUESTIONARIO: la etiqueta elegida en un ítem de la aplicación fuente
 FAVORITOS: las carreras, ocupaciones e instituciones marcadas, de la más reciente a la más antigua.
 PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL (B11): los planes por prioridad, el plan A (carrera, relato y
 motivos), los pasos del plan A y la carrera de la opción inicial.
+LO_QUE_PIENSO (B13): lo que el estudiante pensaba de la ocupación antes de su primera entrevista publicada.
 """
 
 from sqlalchemy import select
@@ -16,8 +17,8 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import LONGITUD_CODIGO_INTERES
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, EstadoProgreso, EvaluacionRespuesta,
-    Favorito, Institucion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
+    Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, Entrevista, EstadoInvestigacion,
+    EstadoProgreso, EvaluacionRespuesta, Favorito, Institucion, Investigacion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
     ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol, TarjetaCarrera, TipoFavorito,
 )
 from app.models.enums import (
@@ -154,6 +155,23 @@ def _leer_planes(sesion, cuenta, tipos):
     return datos
 
 
+def _leer_lo_que_pienso(sesion, cuenta):
+    """La investigación de la primera entrevista publicada: título de la ocupación y los tres textos (DIA, NECESITA,
+    DUDA). La entrevista puede haberse retirado después: lo que pensaba no cambia."""
+    fila = sesion.execute(select(Investigacion, Ocupacion.titulo).join(
+        Entrevista, Entrevista.id == Investigacion.entrevista_id).join(
+        Ocupacion, Ocupacion.id == Investigacion.ocupacion_id).where(
+        Investigacion.cuenta_id == cuenta.id, Investigacion.estado == EstadoInvestigacion.PUBLICADA).order_by(
+        Entrevista.fecha_hora, Entrevista.id).limit(1)).first()
+    if fila is None:
+        return None
+    investigacion, titulo = fila
+    return dict(texto=titulo, opciones=[
+        OpcionReferida(codigo='DIA', texto=investigacion.piensa_dia),
+        OpcionReferida(codigo='NECESITA', texto=investigacion.piensa_necesita),
+        OpcionReferida(codigo='DUDA', texto=investigacion.piensa_duda)])
+
+
 def resolver(sesion, cuenta, referencias):
     """{código: ReferenciaResuelta} para `referencias` (filas del catálogo), con datos de `cuenta`."""
     definiciones = contexto(sesion).definiciones
@@ -167,6 +185,8 @@ def resolver(sesion, cuenta, referencias):
                  else [])
     tipos_planes = {r.tipo for r in referencias if r.tipo in DE_PLANES}
     planes = _leer_planes(sesion, cuenta, tipos_planes) if tipos_planes else {}
+    lo_que_pienso = (_leer_lo_que_pienso(sesion, cuenta)
+                     if any(r.tipo == TipoReferencia.LO_QUE_PIENSO for r in referencias) else None)
     resueltas = {}
     for referencia in referencias:
         base = dict(codigo=referencia.codigo, tipo=referencia.tipo)
@@ -178,6 +198,11 @@ def resolver(sesion, cuenta, referencias):
             resueltas[referencia.codigo] = (
                 ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, **planes[referencia.tipo])
                 if referencia.tipo in planes else ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO))
+            continue
+        if referencia.tipo == TipoReferencia.LO_QUE_PIENSO:
+            resueltas[referencia.codigo] = (
+                ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO) if lo_que_pienso is None else
+                ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, **lo_que_pienso))
             continue
         if referencia.tipo == TipoReferencia.FAVORITOS:
             resueltas[referencia.codigo] = (

@@ -13,7 +13,7 @@ Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, 
 
 `id_objetivo` de una regla e `id_referencia` de un evento o condición son referencias polimórficas sin FK; los cargadores resuelven códigos a ids. `id_objetivo` nunca es nulo.
 
-**Secciones.** Partes del perfil que se abren con reglas como cualquier objetivo (`SECCION`). Las fijas están en `datos/fijos.py`: DIARIO, CHECK_IN, CATALOGO, PLANES y FAMILIA del estudiante, y CONVERSACIONES del apoderado. Cada ruta decide con sus reglas cuándo se abre cada una. La migración `0004` convirtió las reglas del antiguo objetivo CONVERSACIONES en reglas de esa sección.
+**Secciones.** Partes del perfil que se abren con reglas como cualquier objetivo (`SECCION`). Las fijas están en `datos/fijos.py`: DIARIO, CHECK_IN, CATALOGO, PLANES, FAMILIA e INVESTIGACIONES (B13) del estudiante, y CONVERSACIONES del apoderado. Cada ruta decide con sus reglas cuándo se abre cada una. La migración `0004` convirtió las reglas del antiguo objetivo CONVERSACIONES en reglas de esa sección.
 
 **Secciones de la tarjeta (B11).** Cada tarjeta de carrera tiene cuatro secciones, fijas en `seccion_tarjeta` (`datos/fijos.py`): POR_QUE, CONOCIMIENTO, REALIDAD y PASOS (`para_comparar` en POR_QUE y REALIDAD). Se abren por cuenta, para todas sus tarjetas, con reglas del objetivo `SECCION_PLAN`, solo del estudiante; cada ruta decide con qué actividad. Los medidores, la carrera y la prioridad no son secciones. Las tablas de la tarjeta (`tarjeta_carrera` y sus motivos, conocimiento, dudas, gastos, financiamiento, complicaciones, sugerencias y pasos) son estado y las vacía el reinicio, que además pone `cuenta.opcion_inicial_id` en nulo.
 
@@ -29,7 +29,8 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | ESCRIBE_ENTRADA_DIARIO, ESCRIBE_ENTRADA_LIBRE | entrada de diario (se expone como `null`: no tiene código público) |
 | REGISTRA_CHECK_IN | check-in (se expone como `null`) |
 | VISTA_CARRERA | carrera |
-| PUBLICA_ENTREVISTA | entrevista |
+| PUBLICA_ENTREVISTA, EDITA_ENTREVISTA, VISTA_ENTREVISTA, MARCA_FAVORITO_ENTREVISTA, REACCIONA_ENTREVISTA, ENTREVISTA_DESTACADA, ENTREVISTA_LEYENDA | entrevista (ver `investigaciones.md`) |
+| INICIA_INVESTIGACION, TERMINA_GUION | ocupación investigada (la investigación puede borrarse; la ocupación no) |
 | ESCRIBE_CARTA | vínculo familiar |
 | COMPLETA_CONVERSACION | conversación |
 | REINICIA_INSTRUMENTO | instrumento |
@@ -143,8 +144,8 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/diario/archivar-pregunta`, `/acciones/diario/desarchivar-pregunta` | Solo estudiante; sección DIARIO; `codigo` de una carta recibida (DESBLOQUEABLE; una del día responde 409). Archivar: redactada, sin responder y no archivada; desarchivar: archivada (si no, 409) | Fija o borra `archivada_en`; responde su `PreguntaDiarioEstado`. Sin eventos. |
 | `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día, editable ese día (el segundo sobrescribe el nivel y no emite evento); nivel 1–5 | REGISTRA_CHECK_IN (solo el primero del día) |
 | `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta (estudiante). Una cuenta de apoderado u orientadora recibe 200 sin eventos ni desbloqueos: la exploración se mide solo en el estudiante (ajuste catalogo-apoderado) | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
-| `/acciones/marcar-favorito` | Carrera, ocupación o institución: sección CATALOGO abierta. Ficha o testimonio (ajuste mochila): de la audiencia de la cuenta (si no, 404) y desbloqueado (si no, 409), sin exigir el catálogo. En ambos casos, aún no es favorito | Catálogo: MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan). Ficha: MARCA_FAVORITO_FICHA; testimonio: MARCA_FAVORITO_TESTIMONIO, con la ficha o el testimonio como referencia. Ninguna regla de la semilla los usa |
-| `/acciones/publicar-entrevista` | Autores: lista no vacía, sin repetidos, todos estudiantes | PUBLICA_ENTREVISTA en cada autor. Código `ENT-<uuid>`. |
+| `/acciones/marcar-favorito` | Carrera, ocupación o institución: sección CATALOGO abierta. Ficha o testimonio (ajuste mochila): de la audiencia de la cuenta (si no, 404) y desbloqueado (si no, 409), sin exigir el catálogo. En ambos casos, aún no es favorito | Catálogo: MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan). Ficha: MARCA_FAVORITO_FICHA; testimonio: MARCA_FAVORITO_TESTIMONIO, con la ficha o el testimonio como referencia. Entrevista (B13): ver `investigaciones.md` |
+| `/acciones/publicar-entrevista` y las demás de investigaciones | Ver `investigaciones.md` (B13) | PUBLICA_ENTREVISTA en cada autor; el resto, en `investigaciones.md`. |
 | `/acciones/escribir-carta` | Sección de su rol (ver «Conversaciones») y vínculo activo; la carta aún no entregada | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
 | `/acciones/responder-conversacion` | Ver «Conversaciones» | Guarda la respuesta de su rol. Si con ella están las dos, la conversación queda conversada y COMPLETA_CONVERSACION va a las dos cuentas, la primera vez (`RespuestaAgrupada`). |
 | `/eventos` (depuración) | Solo que existan cuenta y referencia | Registra un evento crudo y evalúa reglas, sin validaciones de dominio ni cambios de estado. |

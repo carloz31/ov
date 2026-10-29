@@ -528,6 +528,67 @@ def _recorrer_inesperada(cliente):
             cliente, 'GET', f'/cuentas/est-ana/catalogo/carreras/inesperada?excluir={PSICOLOGIA}')}
 
 
+def _recorrer_investigaciones(cliente):
+    """B13: al final, para no cambiar lo ya exportado. Ana y Luis investigan la misma ocupación; Ana publica sola,
+    Luis reacciona y la marca, y la orientadora comenta y la destaca. Los códigos (`ENT-`, `SUG-`, `REA-`…) salen de
+    `uuid4`: aquí se fijan con un contador, para que los fixtures sean siempre los mismos."""
+    from itertools import count
+    from types import SimpleNamespace
+    from unittest.mock import patch
+
+    from app.services.investigaciones import acciones, orientadora, sugerencias
+    numeros = count(1)
+
+    def uuid_fijo():
+        return SimpleNamespace(hex=f'{next(numeros):032x}')
+
+    with patch.object(acciones, 'uuid4', uuid_fijo), patch.object(orientadora, 'uuid4', uuid_fijo), \
+            patch.object(sugerencias, 'uuid4', uuid_fijo):
+        return _recorrido_investigaciones(cliente)
+
+
+def _recorrido_investigaciones(cliente):
+    pienso = {'ocupacion': 'electrician', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas y edificios.',
+              'necesita': 'DATO DE PRUEBA: estudiar en un instituto y practicar.', 'duda': '¿Es peligroso?'}
+
+    def accion(nombre, datos, cuenta='est-ana'):
+        return _pedir(cliente, 'POST', f'/acciones/{nombre}', {'cuenta': cuenta, 'fecha_hora': FECHA, **datos})
+
+    fixtures = {}
+    for cuenta in ('est-ana', 'est-luis'):
+        _completar(cliente, 't-investigador', cuenta)
+    fixtures['investigaciones-inicial'] = _pedir(cliente, 'GET', '/cuentas/est-ana/investigaciones')
+    for cuenta in ('est-luis', 'est-ana'):
+        accion('guardar-lo-que-pienso', pienso, cuenta)
+    sugerencias = fixtures['sugerencias-guion'] = accion('pedir-sugerencias-guion', {})
+    sugerida = sugerencias['sugerencias'][0]
+    accion('guardar-guion', {'terminar': True, 'preguntas': [
+        {'origen': 'DUDA', 'texto': pienso['duda']},
+        {'origen': 'SUGERIDA', 'texto': sugerida['texto'], 'sugerencia': sugerida['codigo']}]})
+    accion('guardar-guion', {'terminar': True, 'preguntas': [{'origen': 'DUDA', 'texto': pienso['duda']}]}, 'est-luis')
+    fixtures['investigaciones-guia-lista'] = _pedir(cliente, 'GET', '/cuentas/est-ana/investigaciones')
+    publicada = fixtures['publicar-entrevista'] = accion('publicar-entrevista', {
+        'titulo': 'DATO DE PRUEBA: un día con un electricista', 'profesional': 'DATO DE PRUEBA: Rosa Quispe',
+        'duracion': '20 minutos', 'enlace': 'https://youtu.be/dQw4w9WgXcQ',
+        'resumen': 'DATO DE PRUEBA: nos contó cómo empezó y qué cuidados toma.', 'coautores': [], 'permiso': True})
+    codigo = publicada['por_cuenta']['est-ana']['eventos_registrados'][0]['referencia']
+    accion('ver-entrevista', {'entrevista': codigo}, 'est-luis')
+    accion('reaccionar-entrevista', {'entrevista': codigo, 'tipo': 'APRENDI',
+                                     'comentario': 'DATO DE PRUEBA: aprendí que siempre se corta la luz.'}, 'est-luis')
+    accion('marcar-favorito', {'tipo': 'ENTREVISTA', 'codigo': codigo}, 'est-luis')
+    accion('comentar-entrevista', {'entrevista': codigo, 'texto': 'DATO DE PRUEBA: muy buena conversación.'},
+           'ori-carmen')
+    accion('destacar-entrevista', {'entrevista': codigo, 'destacada': True}, 'ori-carmen')
+    fixtures['entrevistas-salon'] = _pedir(cliente, 'GET', '/cuentas/est-luis/entrevistas?vista=SALON')
+    fixtures['entrevistas-mias'] = _pedir(cliente, 'GET', '/cuentas/est-ana/entrevistas?vista=MIAS')
+    fixtures['entrevista-detalle'] = _pedir(cliente, 'GET', f'/cuentas/est-luis/entrevistas/{codigo}')
+    fixtures['publicaciones'] = _pedir(cliente, 'GET', '/cuentas/ori-carmen/publicaciones')
+    fixtures['publicacion-detalle'] = _pedir(cliente, 'GET', f'/cuentas/ori-carmen/publicaciones/{codigo}')
+    fixtures['referencias-investigador-cierre'] = _pedir(
+        cliente, 'GET', '/cuentas/est-ana/actividades/t-investigador-cierre/referencias')
+    return fixtures
+
+
 def exportar_fixtures(destino: Path) -> list[Path]:
     """Exporta los fixtures de `ruta` en `destino/ruta/`, con nombres `ruta-*.json`.
 
@@ -554,6 +615,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
                     fixtures.update(_recorrer_planes_luis(cliente))
                     fixtures.update(_recorrer_apoderado(cliente))
                     fixtures.update(_recorrer_inesperada(cliente))
+                    fixtures.update(_recorrer_investigaciones(cliente))
             finally:
                 aplicacion.state.motor_bd.dispose()
     finally:

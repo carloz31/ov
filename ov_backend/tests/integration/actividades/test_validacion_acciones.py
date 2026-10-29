@@ -18,7 +18,9 @@ def test_r40_rechazos_de_acciones_y_consultas_sin_efectos(cliente, aplicacion):
         ('/acciones/responder-conversacion', {'cuenta': 'est-luis', 'conversacion': 'conv-prueba',
                                               'texto': 'DATO DE PRUEBA'}, 409),
         ('/acciones/completar-actividad', {'cuenta': 'apo-rosa', 'actividad': 't-inicio'}, 409),
-        ('/acciones/publicar-entrevista', {'autores': ['apo-rosa'], 'resumen': 'DATO DE PRUEBA'}, 409),
+        ('/acciones/publicar-entrevista', {'cuenta': 'apo-rosa', 'titulo': 'DATO DE PRUEBA', 'profesional': 'DATO DE PRUEBA',
+                                           'duracion': '20 min', 'enlace': 'https://youtu.be/dQw4w9WgXcQ',
+                                           'resumen': 'DATO DE PRUEBA', 'permiso': True}, 404),
         ('/acciones/check-in', {'cuenta': 'apo-rosa', 'nivel_seguridad': 3}, 409),
     ]
     consultas = [('/actividades/no-existe/items', 404), ('/cuentas/est-ana/actividades/no-existe/respuestas', 404),

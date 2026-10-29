@@ -20,11 +20,8 @@ def cuenta_de_peticion(url, cuerpo) -> str:
     coincidencia = _CUENTA_EN_RUTA.match(urlsplit(str(url)).path)
     if coincidencia:
         return coincidencia.group(1)
-    if isinstance(cuerpo, dict):
-        if isinstance(cuerpo.get('cuenta'), str):
-            return cuerpo['cuenta']
-        if isinstance(cuerpo.get('autores'), list) and cuerpo['autores']:
-            return cuerpo['autores'][0]
+    if isinstance(cuerpo, dict) and isinstance(cuerpo.get('cuenta'), str):
+        return cuerpo['cuenta']
     return CUENTA_POR_DEFECTO
 
 
