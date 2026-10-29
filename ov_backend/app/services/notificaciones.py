@@ -19,7 +19,8 @@ LOTE_SESION = 'lote_notificaciones'
 
 
 def se_anuncia(tipo_objetivo: TipoObjetivo, codigo: str) -> bool:
-    return tipo_objetivo in OBJETIVOS_ANUNCIADOS or (tipo_objetivo == TipoObjetivo.BLOQUE and codigo == BLOQUE_ANUNCIADO)
+    return tipo_objetivo in OBJETIVOS_ANUNCIADOS or (
+        tipo_objetivo == TipoObjetivo.BLOQUE and codigo == BLOQUE_ANUNCIADO)
 
 
 def _publica(fila: dict, rol: Rol | None = None) -> NotificacionPublica:

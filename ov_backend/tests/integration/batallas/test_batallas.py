@@ -50,7 +50,8 @@ def test_hu017_perder_reintentar_y_ganar_una_sola_vez(cliente, aplicacion):
     perdida = pedir(cliente, 'POST', '/acciones/resolver-batalla',
                     {**intento(False, 1), 'fecha_hora': '2026-10-08T10:00:00'})
     # F04d: las fallas fueron p02 (t-ficha-2), p03 y p04 (t-ficha): primero la de más fallos.
-    assert perdida == {'eventos_registrados': [], 'nuevos_desbloqueos': [], 'victoria': False, 'practica': False,
+    assert perdida == {'eventos_registrados': [], 'nuevos_desbloqueos': [], 'nuevas_notificaciones': [],
+                       'victoria': False, 'practica': False,
                        'aciertos': 1, 'preguntas': 4, 'destellos_restantes': 0,
                        'fichas_repaso': [{'codigo': 't-ficha', 'titulo': 'Ficha de prueba'},
                                          {'codigo': 't-ficha-2', 'titulo': 'Segunda ficha de prueba'}]}

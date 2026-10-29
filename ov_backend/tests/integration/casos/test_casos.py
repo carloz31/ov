@@ -32,7 +32,8 @@ def test_casos_traen_sus_tipos_riasec(cliente):
 def test_fallar_no_completa_y_superar_libera_testimonios_y_coleccion(cliente, aplicacion):
     ciclo(cliente)
     fallido = pedir(cliente, 'POST', '/acciones/resolver-caso', caso(9, ['firefighter']))
-    assert fallido == {'eventos_registrados': [], 'nuevos_desbloqueos': [], 'ocupaciones_nuevas': [],
+    assert fallido == {'eventos_registrados': [], 'nuevos_desbloqueos': [], 'nuevas_notificaciones': [],
+                       'ocupaciones_nuevas': [],
                        'puntaje_minimo': 10, 'puntaje_maximo': 14}
     fila = fila_caso(cliente)
     assert (fila['estado'], fila['intentos'], fila['superado'], fila['ultimo_puntaje']) == ('EN_CURSO', 1, False, 9)

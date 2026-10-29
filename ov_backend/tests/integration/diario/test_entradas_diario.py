@@ -67,7 +67,7 @@ def test_editar_cambia_titulo_y_texto_sin_eventos_ni_bajar_la_amistad(cliente):
     respuesta = pedir(cliente, 'POST', '/acciones/editar-entrada', {
         'cuenta': 'est-ana', 'numero': 1, 'titulo': 'Nuevo título', 'texto': 'Después',
         'fecha_hora': '2026-11-01T09:00:00'})
-    assert respuesta == {'eventos_registrados': [], 'nuevos_desbloqueos': []}
+    assert respuesta == {'eventos_registrados': [], 'nuevos_desbloqueos': [], 'nuevas_notificaciones': []}
     [entrada] = entradas(cliente)
     assert (entrada['titulo'], entrada['texto'], entrada['actualizada_en']) == (
         'Nuevo título', 'Después', '2026-11-01T09:00:00')
