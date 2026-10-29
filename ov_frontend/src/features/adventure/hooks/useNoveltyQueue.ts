@@ -37,6 +37,7 @@ const seccionDeVista: Partial<Record<StudentView, CodigoSeccion>> = {
   'catalog-detail': 'CATALOGO',
   'profile-decisions': 'PLANES',
   conversations: 'FAMILIA',
+  investigations: 'INVESTIGACIONES',
 }
 
 export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {

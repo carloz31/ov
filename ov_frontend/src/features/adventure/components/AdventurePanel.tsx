@@ -115,10 +115,17 @@ export function AdventurePanel({
             <Backpack size={18} />
             <span>Recursos</span>
           </Link>
-          <Link to="/student/investigations">
+          <AccesoRapido
+            to={appPaths.student.investigations}
+            acceso={seccion('INVESTIGACIONES')}
+            onGuide={onGuide}
+          >
             <Search size={18} />
-            <span>Investigaciones</span>
-          </Link>
+            <span>
+              Investigaciones
+              {textoOculto(seccion('INVESTIGACIONES'))}
+            </span>
+          </AccesoRapido>
           <AccesoRapido
             to={appPaths.student.catalog.professions}
             acceso={seccion('CATALOGO')}

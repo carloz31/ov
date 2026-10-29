@@ -1,0 +1,115 @@
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router'
+import { esEnlaceYoutube } from '@/lib/servidor/adaptadoresInvestigaciones'
+import { appPaths } from '@/routes/paths'
+import { cuentaActiva } from '@/store/servidor/cuenta'
+import { useDetalleEntrevista } from '@/store/servidor/entrevistas'
+import { editarEntrevista, publicarEntrevista } from '@/store/servidor/investigaciones'
+import { useInvestigacionesServidorSeccion } from '@/store/servidor/secciones'
+import { mensajeErrorServidor } from '@/store/servidor/sesion'
+import type { Aliado, FichaEntrevistaEntrada } from '@/types/servidor'
+import { mostrarAvisoInvestigacion } from '../store/avisoInvestigaciones'
+
+const VACIA: FichaEntrevistaEntrada = { titulo: '', profesional: '', duracion: '', enlace: '', resumen: '' }
+
+// F09 (boceto 04 · HU-060 y HU-061): publicar la entrevista con la guía lista, o editar la ficha (`?editar=`). Los
+// coautores son compañeros del salón con guía lista en la misma ocupación; al editar solo se agregan.
+export function usePublicarEntrevista() {
+  const [params] = useSearchParams()
+  const navegar = useNavigate()
+  const editar = params.get('editar') ?? undefined
+  const seccion = useInvestigacionesServidorSeccion(true)
+  const detalle = useDetalleEntrevista('entrevista', editar)
+  const datos = seccion.datos
+  const entrevista = editar ? (detalle?.datos ?? null) : null
+  const ocupacion = editar ? entrevista?.ocupacion : datos?.en_curso?.ocupacion
+  const [ficha, setFicha] = useState<FichaEntrevistaEntrada>(VACIA)
+  const [coautores, setCoautores] = useState<Aliado[]>([])
+  const [buscar, setBuscar] = useState('')
+  const [permiso, setPermiso] = useState(false)
+  const [enviando, setEnviando] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [intento, setIntento] = useState(false)
+  const iniciado = useRef(false)
+  useEffect(() => {
+    if (!entrevista || iniciado.current) return
+    iniciado.current = true
+    const { titulo, profesional, duracion, enlace, resumen } = entrevista
+    setFicha({ titulo, profesional, duracion, enlace, resumen })
+  }, [entrevista])
+
+  const aliados = [...(datos?.aliados.misma_ocupacion ?? []), ...(datos?.aliados.otras ?? [])].filter(
+    (a) => a.ocupacion.codigo === ocupacion?.codigo,
+  )
+  const autores = entrevista?.autores.map((a) => a.codigo) ?? []
+  const candidatos = aliados.filter(
+    (a) =>
+      !autores.includes(a.codigo) &&
+      !coautores.some((c) => c.codigo === a.codigo) &&
+      a.nombre.toLowerCase().includes(buscar.trim().toLowerCase()),
+  )
+  const errores = {
+    titulo: !ficha.titulo.trim(),
+    profesional: !ficha.profesional.trim(),
+    duracion: !ficha.duracion.trim(),
+    enlace: !esEnlaceYoutube(ficha.enlace),
+    resumen: !ficha.resumen.trim(),
+    permiso: !editar && !permiso,
+  }
+  const valido = !Object.values(errores).some(Boolean)
+  const volver = editar ? appPaths.student.interview(editar) : appPaths.student.investigations
+
+  async function enviar() {
+    setIntento(true)
+    if (!valido || enviando) return
+    setEnviando(true)
+    setError(null)
+    const limpia = Object.fromEntries(
+      Object.entries(ficha).map(([k, v]) => [k, v.trim()]),
+    ) as FichaEntrevistaEntrada
+    const codigos = coautores.map((c) => c.codigo)
+    const respuesta = editar
+      ? await editarEntrevista(editar, limpia, codigos)
+      : await publicarEntrevista(limpia, codigos, permiso)
+    setEnviando(false)
+    if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar')
+      return setError(mensajeErrorServidor(respuesta))
+    if (editar) {
+      mostrarAvisoInvestigacion('Ficha actualizada', 'Tus compañeros ya ven los cambios.')
+      return void navegar(appPaths.student.interview(editar))
+    }
+    const codigo = respuesta.datos.eventos_registrados.find((e) => e.tipo === 'PUBLICA_ENTREVISTA')?.referencia
+    mostrarAvisoInvestigacion('Publicaste tu entrevista', 'Tu salón y tu orientadora ya pueden verla.')
+    void navegar(codigo ? appPaths.student.interview(codigo) : `${appPaths.student.investigations}?vista=mias`)
+  }
+  return {
+    cuenta: cuentaActiva(),
+    editar,
+    cargando: !datos || (!!editar && !entrevista && detalle?.estado !== 'error'),
+    errorCarga: seccion.error ?? (editar ? detalle?.error : null) ?? null,
+    // Publicar exige la guía lista; editar, ser autor de la entrevista.
+    disponible: editar ? !!entrevista?.propia : datos?.en_curso?.estado === 'GUIA_LISTA',
+    ocupacion,
+    autoresActuales: entrevista?.autores ?? [],
+    ficha,
+    cambiar: (campo: keyof FichaEntrevistaEntrada, valor: string) => setFicha((f) => ({ ...f, [campo]: valor })),
+    errores: intento ? errores : null,
+    coautores,
+    agregarCoautor: (a: Aliado) => {
+      setCoautores((c) => [...c, a])
+      setBuscar('')
+    },
+    quitarCoautor: (codigo: string) => setCoautores((c) => c.filter((a) => a.codigo !== codigo)),
+    buscar,
+    setBuscar,
+    candidatos,
+    hayAliados: aliados.length > 0,
+    permiso,
+    setPermiso,
+    enviando,
+    error,
+    enviar,
+    volver,
+  }
+}
+export type ModeloPublicar = ReturnType<typeof usePublicarEntrevista>

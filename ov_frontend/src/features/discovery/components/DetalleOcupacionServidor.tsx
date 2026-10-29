@@ -12,7 +12,7 @@ import { AtlasNavigation } from './AtlasNavigation'
 import { AvisoFavorito } from './AvisoFavorito'
 import { CatalogRevisitNotice } from './CatalogRevisitNotice'
 import { DiscoveryStage } from './DiscoveryStage'
-import { EntrevistasOcupacion } from './EntrevistasOcupacion'
+import { EntrevistasOcupacionServidor } from './EntrevistasOcupacionServidor'
 import { EsperaDetalle } from './EsperaDetalle'
 import { FuentesCatalogo } from './FuentesCatalogo'
 import { IconoProfesion } from './IconoProfesion'
@@ -179,7 +179,7 @@ export function DetalleOcupacionServidor({
           )}
           {!modoLectura && (
             <>
-              <EntrevistasOcupacion codigo={ocupacion.codigo} />
+              <EntrevistasOcupacionServidor codigo={ocupacion.codigo} />
               <UnexpectedPlace kind="occupation" currentId={ocupacion.codigo} />
             </>
           )}

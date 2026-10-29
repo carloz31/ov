@@ -40,6 +40,12 @@ export const textosBloqueo = {
     adelanto: 'Este será un espacio para conversar con tu familia sobre lo que vas descubriendo.',
     final: 'Todavía no se abre.',
   },
+  // F09
+  INVESTIGACIONES: {
+    adelanto:
+      'Aquí podrás investigar una ocupación entrevistando a alguien que la ejerce, y ver las entrevistas de tu salón.',
+    final: 'Todavía no puedes investigar.',
+  },
 }
 export type CodigoBloqueo = keyof typeof textosBloqueo
 export const pasosBloqueo = (codigo: CodigoBloqueo, mensaje: string) => [
@@ -53,6 +59,14 @@ export const guiaCaminoApi = [
   'A la izquierda está tu panel: tu siguiente paso, cómo te sientes hoy y los accesos a tu diario, tu familia y todo lo que vas reuniendo. Puedes plegarlo cuando quieras.',
   'En el camino se abre la ciudad, donde podrás elegir tus actividades y ayudar a sus habitantes. Arriba puedes cambiar entre el camino y la ciudad.',
   'Si en algún momento no sabes qué hacer, toca el botón de ayuda y vendré.',
+]
+
+// F09 (solo api): la ayuda del «?» en Investigaciones, con la sección abierta.
+export const investigacionesGuideSteps = [
+  'Aquí ves las entrevistas que hicieron tus compañeros a personas que trabajan en lo que les intriga. Elige una vista: tu salón, las Leyendas o las tuyas.',
+  'Para investigar, eliges una ocupación, escribes lo que piensas hoy de ella y armamos juntos tu guion de preguntas.',
+  'La entrevista ocurre fuera de aquí. Cuando la subas a YouTube como «No listado», vuelve a publicarla, sola o con tus compañeros.',
+  'Deja tu reacción en las entrevistas de otros y guarda en favoritos las que quieras volver a ver. Las mejores llegan al Salón de Leyendas.',
 ]
 
 export const guideSteps: Record<StudentView, string[]> = {

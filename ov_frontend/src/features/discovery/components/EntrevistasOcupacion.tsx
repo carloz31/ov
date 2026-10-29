@@ -7,7 +7,7 @@ import { discoveryPaths } from '@/routes/discoveryPaths'
 import { demoOccupationByVideo } from '@/data/content/research'
 import { getClassroomInterviews } from '../lib/research'
 
-// Las entrevistas del salón sobre una ocupación (locales hasta F09).
+// Las entrevistas del salón sobre una ocupación, en local (en api, `EntrevistasOcupacionServidor`, F09).
 export function EntrevistasOcupacion({ codigo }: { codigo: string }) {
   const discovery = useDiscovery(),
     adventure = useAdventure()

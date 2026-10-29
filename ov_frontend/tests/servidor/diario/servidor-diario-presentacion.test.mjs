@@ -180,8 +180,8 @@ test('cada sección del estudiante muestra su presentación en la primera visita
   const marcadas = []
   for (const view of studentViews) {
     const { q, estado } = await activa(app, view)
-    // En ruta-secciones-t1, FAMILIA sigue cerrada: «En familia» espera a que se abra.
-    if (view === 'conversations') {
+    // En ruta-secciones-t1, FAMILIA e INVESTIGACIONES (F09) siguen cerradas: sus presentaciones esperan.
+    if (view === 'conversations' || view === 'investigations') {
       assert.equal(estado.active, null, view)
       q.unmount()
       continue

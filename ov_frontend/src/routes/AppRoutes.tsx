@@ -3,6 +3,7 @@ import { PortalDeCuenta } from './PortalDeCuenta'
 import { SoloLocal } from './SoloLocal'
 import { SegunModo } from './SegunModo'
 import { subrutasFamilia } from './SubrutasFamilia'
+import { rutasInvestigaciones } from './SubrutasInvestigaciones'
 import { subrutasExplorar } from './SubrutasExplorar'
 import { SeccionProtegida } from '@/features/adventure/components/SeccionProtegida'
 import { Navigate, Route, Routes } from 'react-router'
@@ -123,14 +124,7 @@ function AppRoutes() {
             path="community"
           />
           <Route element={<StudentResourcesView />} path="resources" />
-          <Route
-            element={
-              <SoloLocal>
-                <ResearchRoute />
-              </SoloLocal>
-            }
-            path="investigations"
-          />
+          {rutasInvestigaciones(<ResearchRoute />)}
           <Route element={<Navigate replace to={appPaths.student.passport} />} path="achievements" />
           <Route
             element={

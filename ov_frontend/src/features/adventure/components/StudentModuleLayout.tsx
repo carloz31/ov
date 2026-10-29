@@ -2,8 +2,14 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { ArrowLeft, CircleHelp } from 'lucide-react'
 import { Link, useLocation } from 'react-router'
 import { appPaths } from '@/routes/paths'
-import { guideSteps, passportGuideSteps, planesGuideSteps } from '@/data/content/guideTexts'
+import {
+  guideSteps,
+  investigacionesGuideSteps,
+  passportGuideSteps,
+  planesGuideSteps,
+} from '@/data/content/guideTexts'
 import { usaTarjetaV4 } from '@/features/plans/lib/tarjeta'
+import { usaInvestigacionesServidor } from '@/features/discovery/lib/investigacionesServidor'
 import { useStudentOverlays } from '../context/overlayContext'
 import { useStudentUi } from '@/store/studentUiStore'
 import { getStudentViewLabel, type StudentView } from '@/lib/studentViews'
@@ -43,7 +49,9 @@ export function StudentModuleLayout({ view, children }: { view: StudentView; chi
                   ? passportGuideSteps
                   : view === 'profile-decisions' && usaTarjetaV4()
                     ? planesGuideSteps
-                    : guideSteps[view],
+                    : view === 'investigations' && usaInvestigacionesServidor()
+                      ? investigacionesGuideSteps
+                      : guideSteps[view],
               )
             }
           >

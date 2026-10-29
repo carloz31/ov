@@ -20,6 +20,18 @@ const appPaths = {
     exploration: '/student/exploration',
     missions: '/student/missions',
     research: '/student/research',
+    // F09 (api): Investigaciones, el asistente del guion (paso 1–3), publicar o editar la ficha y una entrevista.
+    investigations: '/student/investigations',
+    investigationGuide: (paso?: number, ocupacion?: string) =>
+      `/student/investigations/guion${paso || ocupacion ? '?' : ''}${[
+        paso ? `paso=${paso}` : '',
+        ocupacion ? `ocupacion=${encodeURIComponent(ocupacion)}` : '',
+      ]
+        .filter(Boolean)
+        .join('&')}`,
+    investigationPublish: (editar?: string) =>
+      `/student/investigations/publicar${editar ? `?editar=${encodeURIComponent(editar)}` : ''}`,
+    interview: (codigo: string) => `/student/investigations/${encodeURIComponent(codigo)}`,
     journal: '/student/journal',
     // Ajuste del diario (F05): el buzón completo.
     lumiLetters: '/student/journal/letters',
