@@ -106,6 +106,9 @@ def test_tabla_y_detalle_de_la_orientadora(cliente):
     assert ficha['autores'][0]['lo_que_pensaba']['duda'].startswith('¿Es peligroso')
     reportada, = ficha['reacciones']
     assert reportada['reportes'][0]['motivo'] == 'OFENSIVO' and 'cuenta' not in reportada['reportes'][0]
+    # F09: el autor de cada reacción trae su salón (la orientadora puede tener varios).
+    assert reportada['autor']['codigo'] == 'est-luis' and reportada['autor']['salon'] == '5A'
+    assert [t['codigo'] for t in ficha['tipos_reaccion']] == ['APRENDI', 'ME_GUSTO', 'CURIOSIDAD', 'MI_CAMINO']
     # Descartar el reporte lo saca del filtro sin tocar la reacción.
     orientadora(cliente, 'descartar-reporte', {'reporte': reportada['reportes'][0]['codigo']})
     assert publicaciones(cliente, con_reportes=True)['total'] == 0

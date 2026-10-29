@@ -65,10 +65,11 @@ def cancelar_investigacion(entrada: CancelarInvestigacionEntrada, sesion: Sesion
 @router.get("/cuentas/{cuenta}/entrevistas", response_model=PaginaEntrevistas)
 def listar_entrevistas(cuenta_consultada: CuentaConsultada, sesion: SesionBD, vista: str = 'SALON',
                        buscar: str | None = None, favoritas: bool = False, no_vistas: bool = False,
-                       destacadas: bool = False, orden: str = 'RECIENTES',
+                       destacadas: bool = False, orden: str = 'RECIENTES', ocupacion: str | None = None,
                        limite: int = Query(LIMITE_PAGINA_CATALOGO, ge=1, le=100), desde: int = Query(0, ge=0)):
     return _consultar(lambda: consultas_investigaciones.listar_entrevistas(
-        sesion, cuenta_consultada, vista, buscar, favoritas, no_vistas, destacadas, orden, limite, desde))
+        sesion, cuenta_consultada, vista, buscar, favoritas, no_vistas, destacadas, orden, limite, desde,
+        ocupacion))
 
 
 @router.get("/cuentas/{cuenta}/entrevistas/{codigo}", response_model=EntrevistaDetalle)

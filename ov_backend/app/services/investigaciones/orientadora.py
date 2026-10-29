@@ -15,14 +15,14 @@ from app.models import (
 )
 from app.schemas.acciones import RespuestaAccion
 from app.schemas.investigaciones import (
-    AutorPublicacion, ComentarEntrada, DestacarEntrada, EntrevistaEntrada, FilaPublicacion, LoQuePienso,
-    PaginaPublicaciones, PublicacionDetalle, ReaccionModerada, ReporteEntrada, ReportePublico,
+    AutorModerado, AutorPublicacion, ComentarEntrada, DestacarEntrada, EntrevistaEntrada, FilaPublicacion,
+    LoQuePienso, PaginaPublicaciones, PublicacionDetalle, ReaccionModerada, ReporteEntrada, ReportePublico,
 )
 from app.services.comun import buscar_por_codigo, fecha_accion, responder_con_eventos
 from app.services.investigaciones.acciones import evaluar_leyenda, exigir_orientadora, resolver_reportes
 from app.services.investigaciones.consultas import (
     autores_de, contar_favoritos, contiene, de_autor_en_salones, entrevista_de_sus_salones, ocupaciones_breves,
-    personas, reacciones_por_tipo,
+    personas, reacciones_por_tipo, tipos_reaccion,
 )
 from app.services.motor.reglas import registrar_eventos
 
@@ -210,8 +210,9 @@ def detalle_publicacion(sesion: Session, codigo_cuenta: str, codigo: str) -> Pub
         if reporte.reaccion_id is not None:
             por_reaccion.setdefault(reporte.reaccion_id, []).append(reporte)
     definiciones = contexto(sesion).definiciones
+    codigos_salon = dict(sesion.execute(select(Salon.id, Salon.codigo)).all())
     reacciones = [ReaccionModerada(
-        codigo=r.codigo, autor=gente[c.id],
+        codigo=r.codigo, autor=AutorModerado(**gente[c.id].model_dump(), salon=codigos_salon.get(c.salon_id)),
         tipo=None if r.tipo_reaccion_id is None else definiciones.obtener(TipoReaccion, r.tipo_reaccion_id).codigo,
         comentario=r.comentario, creada_en=r.creada_en, editada_en=r.editada_en, propia=c.id == cuenta.id,
         reportes=_reportes(por_reaccion.get(r.id, []))) for r, c in filas]
@@ -224,4 +225,4 @@ def detalle_publicacion(sesion: Session, codigo_cuenta: str, codigo: str) -> Pub
         favoritos=contar_favoritos(sesion, [entrevista.id]).get(entrevista.id, 0), favoritos_leyenda=FAVORITOS_LEYENDA,
         reacciones_por_tipo=reacciones_por_tipo(sesion, [entrevista.id]).get(entrevista.id, {}), autores=autores,
         reportes=_reportes(r for r in pendientes if r.entrevista_id is not None),
-        reacciones=sorted(reacciones, key=lambda reaccion: not reaccion.reportes))
+        reacciones=sorted(reacciones, key=lambda reaccion: not reaccion.reportes), tipos_reaccion=tipos_reaccion(sesion))

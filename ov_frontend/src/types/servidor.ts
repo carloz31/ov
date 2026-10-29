@@ -64,6 +64,15 @@ export type TipoEventoUso =
   | 'INVITA_A_CREW'
   | 'FORMA_CREW'
   | 'VENCE_DESAFIO_INTACTO'
+  // B13 (F09)
+  | 'INICIA_INVESTIGACION'
+  | 'TERMINA_GUION'
+  | 'EDITA_ENTREVISTA'
+  | 'VISTA_ENTREVISTA'
+  | 'MARCA_FAVORITO_ENTREVISTA'
+  | 'REACCIONA_ENTREVISTA'
+  | 'ENTREVISTA_DESTACADA'
+  | 'ENTREVISTA_LEYENDA'
 export type ProgresoCondicion = {
   tipo_evento: TipoEventoUso
   referencia: string | null
@@ -182,6 +191,8 @@ export * from './servidorCatalogo'
 export * from './servidorPlanes'
 // app/schemas/familia.py y conversaciones.py viven en servidorFamilia.ts (F08).
 export * from './servidorFamilia'
+// app/schemas/investigaciones.py vive en servidorInvestigaciones.ts (F09).
+export * from './servidorInvestigaciones'
 type AccionInstrumento = RespuestaAccion & { cuenta: string; instrumento: string; aplicacion: string }
 export type RespuestaRevelarResultado = AccionInstrumento & { perfil_plano: boolean }
 export type RespuestaReiniciarInstrumento = AccionInstrumento & {
@@ -283,6 +294,7 @@ export type TipoReferencia =
   | 'PLAN'
   | 'PASOS_PLAN_A'
   | 'OPCION_INICIAL'
+  | 'LO_QUE_PIENSO'
 export type EstadoReferencia = 'DISPONIBLE' | 'POR_DESARROLLAR' | 'SIN_DATO'
 export type OpcionReferida = { codigo: string; texto: string }
 export type ReferenciaResuelta = {

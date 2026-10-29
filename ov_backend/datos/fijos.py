@@ -24,18 +24,18 @@ SECCIONES = (('CATALOGO', 'Catálogo', 'ESTUDIANTE'), ('CHECK_IN', 'Check-in', '
 
 # (código, texto). Preguntas que siempre van en el guion de una entrevista (B13); las del front (`research.ts`).
 PREGUNTAS_BASE_GUION = (('BASE-1', '¿Cómo es un día normal en tu trabajo?'),
-                        ('BASE-2', '¿Qué estudiaste para llegar a donde estás?'),
-                        ('BASE-3', '¿Qué consejo le darías a alguien de mi edad?'))
+                        ('BASE-2', '¿Qué estudiaste o aprendiste para llegar a donde estás?'),
+                        ('BASE-3', '¿Qué consejo le darías a alguien de mi edad que quiere dedicarse a esto?'))
 
 # (código, nombre, descripción, pregunta, comentario obligatorio, ícono). Reacciones a una entrevista (B13); el ícono
 # es un nombre que el front traduce.
 TIPOS_REACCION = (
-    ('APRENDI', 'Aprendí algo', 'Me llevé un dato o una idea nueva.', '¿Qué aprendiste?', True, 'bombilla'),
-    ('ME_GUSTO', 'Me gustó cómo se realizó', 'La conversación estuvo bien hecha.',
+    ('APRENDI', 'Aprendí algo', 'Me llevo una idea nueva sobre la ocupación.', '¿Qué aprendiste?', True, 'bombilla'),
+    ('ME_GUSTO', 'Me gustó cómo se realizó', 'Las preguntas, la conversación, la edición.',
      '¿Qué te gustó de cómo la hicieron?', False, 'estrella'),
-    ('CURIOSIDAD', 'Me dio curiosidad', 'Me quedé con ganas de saber más.', '¿Qué le preguntarías tú?', True,
+    ('CURIOSIDAD', 'Me dio curiosidad', 'Me quedé con una pregunta para esa persona.', '¿Qué le preguntarías tú?', True,
      'pregunta'),
-    ('MI_CAMINO', 'Me hizo pensar en mi camino', 'Me hizo pensar en lo que quiero para mí.',
+    ('MI_CAMINO', 'Me hizo pensar en mi camino', 'Me movió algo sobre lo que yo quiero.',
      '¿En qué te hizo pensar?', True, 'caminos'),
 )
 

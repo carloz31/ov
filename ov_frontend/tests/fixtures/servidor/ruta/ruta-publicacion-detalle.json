@@ -28,9 +28,36 @@
   "reacciones": [
     {
       "autor": {
+        "codigo": "est-luis",
+        "nivel": {
+          "numero": 2,
+          "titulo": "Recolector de pistas"
+        },
+        "nombre": "Luis",
+        "salon": "5A",
+        "vitrina": []
+      },
+      "codigo": "REA-00000000000000000000000000000007",
+      "comentario": "DATO DE PRUEBA: aprendí que siempre se corta la luz.",
+      "creada_en": "2026-10-07T10:00:00",
+      "editada_en": null,
+      "propia": false,
+      "reportes": [
+        {
+          "codigo": "REP-00000000000000000000000000000009",
+          "detalle": null,
+          "fecha_hora": "2026-10-07T10:00:00",
+          "motivo": "OFENSIVO"
+        }
+      ],
+      "tipo": "APRENDI"
+    },
+    {
+      "autor": {
         "codigo": "ori-carmen",
         "nivel": null,
         "nombre": "Carmen",
+        "salon": null,
         "vitrina": []
       },
       "codigo": "REA-00000000000000000000000000000008",
@@ -40,24 +67,6 @@
       "propia": true,
       "reportes": [],
       "tipo": null
-    },
-    {
-      "autor": {
-        "codigo": "est-luis",
-        "nivel": {
-          "numero": 2,
-          "titulo": "Recolector de pistas"
-        },
-        "nombre": "Luis",
-        "vitrina": []
-      },
-      "codigo": "REA-00000000000000000000000000000007",
-      "comentario": "DATO DE PRUEBA: aprendí que siempre se corta la luz.",
-      "creada_en": "2026-10-07T10:00:00",
-      "editada_en": null,
-      "propia": false,
-      "reportes": [],
-      "tipo": "APRENDI"
     }
   ],
   "reacciones_por_tipo": {
@@ -65,5 +74,39 @@
   },
   "reportes": [],
   "resumen": "DATO DE PRUEBA: nos contó cómo empezó y qué cuidados toma.",
+  "tipos_reaccion": [
+    {
+      "codigo": "APRENDI",
+      "comentario_obligatorio": true,
+      "descripcion": "Me llevo una idea nueva sobre la ocupación.",
+      "icono": "bombilla",
+      "nombre": "Aprendí algo",
+      "pregunta": "¿Qué aprendiste?"
+    },
+    {
+      "codigo": "ME_GUSTO",
+      "comentario_obligatorio": false,
+      "descripcion": "Las preguntas, la conversación, la edición.",
+      "icono": "estrella",
+      "nombre": "Me gustó cómo se realizó",
+      "pregunta": "¿Qué te gustó de cómo la hicieron?"
+    },
+    {
+      "codigo": "CURIOSIDAD",
+      "comentario_obligatorio": true,
+      "descripcion": "Me quedé con una pregunta para esa persona.",
+      "icono": "pregunta",
+      "nombre": "Me dio curiosidad",
+      "pregunta": "¿Qué le preguntarías tú?"
+    },
+    {
+      "codigo": "MI_CAMINO",
+      "comentario_obligatorio": true,
+      "descripcion": "Me movió algo sobre lo que yo quiero.",
+      "icono": "caminos",
+      "nombre": "Me hizo pensar en mi camino",
+      "pregunta": "¿En qué te hizo pensar?"
+    }
+  ],
   "titulo": "DATO DE PRUEBA: un día con un electricista"
 }

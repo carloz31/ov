@@ -144,6 +144,13 @@ def _aliados(sesion: Session, cuenta: Cuenta, propia: Investigacion | None) -> t
     return filas, [ocupacion_id for _, ocupacion_id in filas] + ([] if propia is None else [propia.ocupacion_id])
 
 
+def tipos_reaccion(sesion: Session) -> list[TipoReaccionPublico]:
+    """El catálogo de reacciones, por `orden` (del estudiante y, F09, del detalle de la orientadora)."""
+    return [TipoReaccionPublico(codigo=t.codigo, nombre=t.nombre, descripcion=t.descripcion, pregunta=t.pregunta,
+                                comentario_obligatorio=t.comentario_obligatorio, icono=t.icono)
+            for t in sorted(contexto(sesion).definiciones.listar(TipoReaccion), key=lambda t: t.orden)]
+
+
 @usar_contexto
 def consultar_investigaciones(sesion: Session, cuenta: Cuenta) -> InvestigacionesCuenta:
     exigir_seccion_investigaciones(sesion, cuenta)
@@ -163,10 +170,7 @@ def consultar_investigaciones(sesion: Session, cuenta: Cuenta) -> Investigacione
         aliados=Aliados(misma_ocupacion=misma, otras=otras),
         preguntas_base=[PreguntaBasePublica(codigo=p.codigo, texto=p.texto) for p in sorted(
             definiciones.listar(PreguntaBaseGuion), key=lambda p: p.orden)],
-        tipos_reaccion=[TipoReaccionPublico(codigo=t.codigo, nombre=t.nombre, descripcion=t.descripcion,
-                                            pregunta=t.pregunta, comentario_obligatorio=t.comentario_obligatorio,
-                                            icono=t.icono)
-                        for t in sorted(definiciones.listar(TipoReaccion), key=lambda t: t.orden)],
+        tipos_reaccion=tipos_reaccion(sesion),
         favoritos_leyenda=FAVORITOS_LEYENDA,
         conteos=ConteosEntrevistas(salon=conteos['SALON'], leyendas=conteos['LEYENDAS'], mias=conteos['MIAS']))
 
@@ -252,8 +256,10 @@ def tarjetas(sesion: Session, cuenta: Cuenta, entrevistas: list[Entrevista], *,
 
 @usar_contexto
 def listar_entrevistas(sesion: Session, cuenta: Cuenta, vista: str, buscar: str | None, favoritas: bool,
-                       no_vistas: bool, destacadas: bool, orden: str, limite: int, desde: int) -> PaginaEntrevistas:
-    """Una página de la vista. Los filtros no aplican a MIAS (la spec no los muestra ahí)."""
+                       no_vistas: bool, destacadas: bool, orden: str, limite: int, desde: int,
+                       ocupacion: str | None = None) -> PaginaEntrevistas:
+    """Una página de la vista. Los filtros no aplican a MIAS (la spec no los muestra ahí). `ocupacion` (F09) sí
+    aplica a todas: las entrevistas de una ocupación del catálogo; un código desconocido no trae ninguna."""
     exigir_seccion_investigaciones(sesion, cuenta)
     if vista not in VISTAS or orden not in ORDENES:
         raise ErrorAccion('Vista u orden desconocidos', estado_http=422)
@@ -261,6 +267,9 @@ def listar_entrevistas(sesion: Session, cuenta: Cuenta, vista: str, buscar: str 
     texto = contiene(Entrevista.busqueda, buscar)
     if texto is not None:
         condiciones.append(texto)
+    if ocupacion is not None:
+        condiciones.append(Entrevista.ocupacion_id == select(Ocupacion.id).where(
+            Ocupacion.codigo == ocupacion).scalar_subquery())
     if vista != 'MIAS':
         if favoritas:
             condiciones.append(exists().where(Favorito.cuenta_id == cuenta.id, Favorito.tipo == TipoFavorito.ENTREVISTA,

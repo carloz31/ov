@@ -99,6 +99,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'investigaciones-inicial', 'sugerencias-guion', 'investigaciones-guia-lista', 'publicar-entrevista',
     'entrevistas-salon', 'entrevistas-mias', 'entrevista-detalle', 'publicaciones', 'publicacion-detalle',
     'referencias-investigador-cierre',
+    # F09: en curso con sugerencias, Luis con guía lista, por ocupación y el detalle propio.
+    'investigaciones-en-curso', 'investigaciones-luis', 'entrevistas-ocupacion', 'entrevista-detalle-propia',
 )}
 
 
@@ -505,6 +507,16 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert (fila.codigo, fila.estado, fila.favoritos, fila.reacciones) == (codigo, 'DESTACADA', 1, 1)
     detalle_orientadora = PublicacionDetalle.model_validate(datos['publicacion-detalle'])
     assert detalle_orientadora.autores[0].lo_que_pensaba.duda == '¿Es peligroso?'
+    # F09: la reacción reportada va primero, con el salón de su autor.
+    reportada = detalle_orientadora.reacciones[0]
+    assert (reportada.autor.codigo, reportada.autor.salon, len(reportada.reportes)) == ('est-luis', '5A', 1)
+    en_curso = InvestigacionesCuenta.model_validate(datos['investigaciones-en-curso']).en_curso
+    assert en_curso.estado == 'EN_CURSO' and en_curso.sugerencias and en_curso.sugerencias_vigentes
+    luis = InvestigacionesCuenta.model_validate(datos['investigaciones-luis'])
+    assert luis.en_curso.estado == 'GUIA_LISTA' and luis.conteos.mias == 0 and luis.conteos.salon == 1
+    assert [t.codigo for t in PaginaEntrevistas.model_validate(datos['entrevistas-ocupacion']).items] == [codigo]
+    propia = EntrevistaDetalle.model_validate(datos['entrevista-detalle-propia'])
+    assert propia.propia and [r.reportada_por_mi for r in propia.lista_reacciones if r.tipo] == [True]
     eco, = ReferenciasConsultadas.model_validate(datos['referencias-investigador-cierre']).referencias
     assert eco.tipo == 'LO_QUE_PIENSO' and eco.estado == 'DISPONIBLE'
     # Regenera sobre archivos existentes sin tocar otros archivos del destino.

@@ -66,18 +66,18 @@
     },
     {
       "codigo": "BASE-2",
-      "texto": "¿Qué estudiaste para llegar a donde estás?"
+      "texto": "¿Qué estudiaste o aprendiste para llegar a donde estás?"
     },
     {
       "codigo": "BASE-3",
-      "texto": "¿Qué consejo le darías a alguien de mi edad?"
+      "texto": "¿Qué consejo le darías a alguien de mi edad que quiere dedicarse a esto?"
     }
   ],
   "tipos_reaccion": [
     {
       "codigo": "APRENDI",
       "comentario_obligatorio": true,
-      "descripcion": "Me llevé un dato o una idea nueva.",
+      "descripcion": "Me llevo una idea nueva sobre la ocupación.",
       "icono": "bombilla",
       "nombre": "Aprendí algo",
       "pregunta": "¿Qué aprendiste?"
@@ -85,7 +85,7 @@
     {
       "codigo": "ME_GUSTO",
       "comentario_obligatorio": false,
-      "descripcion": "La conversación estuvo bien hecha.",
+      "descripcion": "Las preguntas, la conversación, la edición.",
       "icono": "estrella",
       "nombre": "Me gustó cómo se realizó",
       "pregunta": "¿Qué te gustó de cómo la hicieron?"
@@ -93,7 +93,7 @@
     {
       "codigo": "CURIOSIDAD",
       "comentario_obligatorio": true,
-      "descripcion": "Me quedé con ganas de saber más.",
+      "descripcion": "Me quedé con una pregunta para esa persona.",
       "icono": "pregunta",
       "nombre": "Me dio curiosidad",
       "pregunta": "¿Qué le preguntarías tú?"
@@ -101,7 +101,7 @@
     {
       "codigo": "MI_CAMINO",
       "comentario_obligatorio": true,
-      "descripcion": "Me hizo pensar en lo que quiero para mí.",
+      "descripcion": "Me movió algo sobre lo que yo quiero.",
       "icono": "caminos",
       "nombre": "Me hizo pensar en mi camino",
       "pregunta": "¿En qué te hizo pensar?"

@@ -1,0 +1,39 @@
+{
+  "favoritos_leyenda": 3,
+  "items": [
+    {
+      "autores": [
+        {
+          "codigo": "est-ana",
+          "nivel": {
+            "numero": 3,
+            "titulo": "Cartógrafo de posibilidades"
+          },
+          "nombre": "Ana",
+          "vitrina": [
+            "t-ins-1"
+          ]
+        }
+      ],
+      "codigo": "ENT-00000000000000000000000000000006",
+      "destacada": true,
+      "duracion": "20 minutos",
+      "favorita": true,
+      "favoritos": 1,
+      "fecha_hora": "2026-10-07T10:00:00",
+      "leyenda": false,
+      "ocupacion": {
+        "codigo": "electrician",
+        "titulo": "Electricistas"
+      },
+      "profesional": "DATO DE PRUEBA: Rosa Quispe",
+      "propia": false,
+      "reacciones": 1,
+      "reacciones_por_tipo": null,
+      "resumen": "DATO DE PRUEBA: nos contó cómo empezó y qué cuidados toma.",
+      "titulo": "DATO DE PRUEBA: un día con un electricista",
+      "vista": true
+    }
+  ],
+  "total": 1
+}

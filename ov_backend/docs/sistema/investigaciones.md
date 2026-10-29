@@ -34,10 +34,10 @@ Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su 
 | Ruta | Devuelve |
 |---|---|
 | `/cuentas/{c}/investigaciones` | `en_curso` (estado, ocupación, `lo_que_pienso`, preguntas, sugerencias pendientes, `sugerencias_vigentes`), `aliados` (`misma_ocupacion`, `otras`: compañeros del salón con guía lista, con nivel, vitrina y ocupación), `preguntas_base`, `tipos_reaccion`, `favoritos_leyenda` y `conteos` (`salon`, `leyendas`, `mias`). |
-| `/cuentas/{c}/entrevistas?vista=SALON\|LEYENDAS\|MIAS&buscar&favoritas&no_vistas&destacadas&orden=RECIENTES\|REACCIONADAS&limite&desde` | `{total, favoritos_leyenda, items}`. Tarjeta: ficha, ocupación, autores (nivel nulo si la cuenta está inactiva), `destacada`, `leyenda`, `reacciones` (solo de estudiantes), `favoritos`, `favorita`, `vista`, `propia`; en MIAS, `reacciones_por_tipo`. Los filtros no aplican a MIAS. Páginas de 20 (máximo 100). |
+| `/cuentas/{c}/entrevistas?vista=SALON\|LEYENDAS\|MIAS&buscar&favoritas&no_vistas&destacadas&orden=RECIENTES\|REACCIONADAS&ocupacion&limite&desde` | `{total, favoritos_leyenda, items}`. `ocupacion` (código del catálogo) aplica a todas las vistas y sirve al detalle de la ocupación; un código desconocido no trae ninguna. Tarjeta: ficha, ocupación, autores (nivel nulo si la cuenta está inactiva), `destacada`, `leyenda`, `reacciones` (solo de estudiantes), `favoritos`, `favorita`, `vista`, `propia`; en MIAS, `reacciones_por_tipo`. Los filtros no aplican a MIAS. Páginas de 20 (máximo 100). |
 | `/cuentas/{c}/entrevistas/{e}` | La tarjeta, más `enlace`, `editada_en`, `reacciones_por_tipo`, `favoritos_leyenda`, `reportada_por_mi` y `lista_reacciones`: reacciones y comentarios de la orientadora (`tipo` nulo), la propia primero y luego de la más reciente a la más antigua, cada una con `reportada_por_mi`. |
 | `/cuentas/{c}/publicaciones?salon&estado=SIN_DESTACAR\|DESTACADA\|LEYENDA&con_reportes&buscar&limite&desde` | Tabla de la orientadora: autores con su salón, ocupación, fecha, `reacciones`, `favoritos`, `estado`, `reportes_pendientes` (de la entrevista), `comentarios_reportados` (reacciones con reportes pendientes) y `de_sus_salones`. `con_reportes` filtra por reportes pendientes de la entrevista o de sus reacciones. `buscar` mira título, profesional, ocupación y nombre de los autores. |
-| `/cuentas/{c}/publicaciones/{e}` | Ficha, `estado`, favoritos y reacciones por tipo, autores con su salón y `lo_que_pensaba`, `reportes` pendientes de la entrevista y `reacciones` con sus reportes pendientes (las reportadas primero). Nunca dice quién reportó. |
+| `/cuentas/{c}/publicaciones/{e}` | Ficha, `estado`, favoritos y reacciones por tipo, autores con su salón y `lo_que_pensaba`, `reportes` pendientes de la entrevista y `reacciones` con sus reportes pendientes (las reportadas primero) y el salón de su autor (`autor.salon`), y el catálogo `tipos_reaccion` para nombrar los tipos. Nunca dice quién reportó. |
 
 ## Acciones
 
@@ -45,7 +45,7 @@ Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su 
 |---|---|---|
 | `/acciones/guardar-lo-que-pienso` | Ocupación del catálogo; tres textos no vacíos (422). | Sin investigación activa la crea en EN_CURSO (INICIA_INVESTIGACION); con ella, cambia ocupación y textos sin cambiar el estado, y si algo cambió descarta las sugerencias pendientes. |
 | `/acciones/pedir-sugerencias-guion` | Investigación activa (409). | Ver «Sugerencias». Responde `{estado: LISTAS\|SIN_SUGERENCIAS\|ERROR, sugerencias}`. |
-| `/acciones/guardar-guion` | Una SUGERIDA lleva el código de una sugerencia no descartada; las descartadas, pendientes (404). `terminar` exige una pregunta DUDA o PROPIA (422), y también la exige editar una guía lista. | Reemplaza las preguntas; las sugerencias citadas pasan a AGREGADA o DESCARTADA. `terminar`: GUIA_LISTA; TERMINA_GUION la primera vez. |
+| `/acciones/guardar-guion` | Una SUGERIDA que se agrega lleva el código de una sugerencia no descartada (sin código, es una que ya estaba en el guion y no cambia ninguna sugerencia); las descartadas, pendientes (404). `terminar` exige una pregunta DUDA o PROPIA (422), y también la exige editar una guía lista. | Reemplaza las preguntas; las sugerencias citadas pasan a AGREGADA o DESCARTADA. `terminar`: GUIA_LISTA; TERMINA_GUION la primera vez. |
 | `/acciones/cancelar-investigacion` | Investigación activa. | La borra con su guion y sus sugerencias. |
 | `/acciones/publicar-entrevista` | Guía lista (409); enlace de YouTube, `permiso` verdadero y campos no vacíos (422); coautores sin repetir, existentes (404), estudiantes del mismo salón con guía lista sobre la misma ocupación (409). | Crea la entrevista (`ENT-<uuid>`); la investigación de cada autor pasa a PUBLICADA; PUBLICA_ENTREVISTA en cada autor (`RespuestaAgrupada`). |
 | `/acciones/editar-entrevista` | Autor de la entrevista publicada (404); `coautores_nuevos` como al publicar. No se quitan coautores. | Cambia la ficha (también el enlace); EDITA_ENTREVISTA en quien edita y PUBLICA_ENTREVISTA en cada coautor nuevo, cuya investigación se cierra. |
@@ -71,7 +71,7 @@ Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su 
 ## Notas
 
 - La migración 0038 vació `entrevista` y `entrevista_autor`: sus filas anteriores solo tenían resumen y ninguna pantalla las publicaba.
-- Las descripciones cortas de `fijos.TIPOS_REACCION` son provisionales: la spec de B13/F09 no las da.
+- Las descripciones cortas de `fijos.TIPOS_REACCION` y las preguntas base son las de los bocetos de F09.
 - En `ruta`, `t-investigador` (abre la sección) y `t-investigador-cierre` (registro con LO_QUE_PIENSO, abierto por PUBLICA_ENTREVISTA) son opcionales, para no cambiar el avance ni el cierre de la Ciudad.
 - Los filtros Favoritas, No vistas y Destacadas no aplican a la vista MIAS. La búsqueda de la orientadora por nombre de autor usa minúsculas, pero no quita tildes.
 - Los códigos públicos (`INV-`, `ENT-`, `SUG-`, `REA-`, `REP-`) llevan un `uuid4`. El exportador de fixtures los fija con un contador.

@@ -110,6 +110,9 @@ def test_listados_por_vista_filtros_y_orden(cliente):
     pagina = entrevistas(cliente, limite=1, desde=1)
     assert pagina['total'] == 2 and [t['codigo'] for t in pagina['items']] == [de_ana]
     assert entrevistas(cliente, orden='REACCIONADAS')['total'] == 2
+    # F09: por ocupación, para el detalle de la ocupación del catálogo; un código desconocido no trae ninguna.
+    assert [t['codigo'] for t in entrevistas(cliente, ocupacion=OTRA_OCUPACION)['items']] == [de_luis]
+    assert entrevistas(cliente, ocupacion='no-existe')['total'] == 0
     entrevistas(cliente, vista='OTRA', esperado=422)
     entrevistas(cliente, limite=0, esperado=422)
 

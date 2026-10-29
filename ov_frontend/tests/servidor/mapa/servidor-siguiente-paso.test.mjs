@@ -44,15 +44,9 @@ async function iniciar(etapa, cambiar = () => {}) {
 const todas = (bloques) => bloques.flatMap((b) => b.actividades)
 // Visibles en DISPONIBLE o EN_CURSO, contadas desde la respuesta del servidor.
 // Ajuste del diario (F05): los recuerdos del bloque LUMI no son puntos del mapa ni cuentan como disponibles.
-// B13: las misiones del investigador aún no tienen contenido en el front, así que no se muestran (contrato).
-// F09 crea t_investigador.json y t_investigador_cierre.json y debe quitar este filtro.
-const SIN_CONTENIDO_HASTA_F09 = new Set(['t_investigador', 't_investigador_cierre'])
 const disponiblesServidor = (bloques) =>
   todas(bloques.filter((b) => b.espacio !== 'LUMI')).filter(
-    (a) =>
-      a.visible &&
-      !SIN_CONTENIDO_HASTA_F09.has(a.contenido) &&
-      (a.estado === 'DISPONIBLE' || a.estado === 'EN_CURSO'),
+    (a) => a.visible && (a.estado === 'DISPONIBLE' || a.estado === 'EN_CURSO'),
   ).length
 
 function texto(nodo) {

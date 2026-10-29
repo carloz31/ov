@@ -561,6 +561,7 @@ def _recorrido_investigaciones(cliente):
     for cuenta in ('est-luis', 'est-ana'):
         accion('guardar-lo-que-pienso', pienso, cuenta)
     sugerencias = fixtures['sugerencias-guion'] = accion('pedir-sugerencias-guion', {})
+    fixtures['investigaciones-en-curso'] = _pedir(cliente, 'GET', '/cuentas/est-ana/investigaciones')
     sugerida = sugerencias['sugerencias'][0]
     accion('guardar-guion', {'terminar': True, 'preguntas': [
         {'origen': 'DUDA', 'texto': pienso['duda']},
@@ -579,6 +580,13 @@ def _recorrido_investigaciones(cliente):
     accion('comentar-entrevista', {'entrevista': codigo, 'texto': 'DATO DE PRUEBA: muy buena conversación.'},
            'ori-carmen')
     accion('destacar-entrevista', {'entrevista': codigo, 'destacada': True}, 'ori-carmen')
+    de_luis = next(r['codigo'] for r in _pedir(cliente, 'GET', f'/cuentas/est-ana/entrevistas/{codigo}')[
+        'lista_reacciones'] if r['autor']['codigo'] == 'est-luis')
+    accion('reportar', {'reaccion': de_luis, 'motivo': 'OFENSIVO'})
+    fixtures['investigaciones-luis'] = _pedir(cliente, 'GET', '/cuentas/est-luis/investigaciones')
+    fixtures['entrevistas-ocupacion'] = _pedir(
+        cliente, 'GET', '/cuentas/est-luis/entrevistas?vista=SALON&ocupacion=electrician')
+    fixtures['entrevista-detalle-propia'] = _pedir(cliente, 'GET', f'/cuentas/est-ana/entrevistas/{codigo}')
     fixtures['entrevistas-salon'] = _pedir(cliente, 'GET', '/cuentas/est-luis/entrevistas?vista=SALON')
     fixtures['entrevistas-mias'] = _pedir(cliente, 'GET', '/cuentas/est-ana/entrevistas?vista=MIAS')
     fixtures['entrevista-detalle'] = _pedir(cliente, 'GET', f'/cuentas/est-luis/entrevistas/{codigo}')

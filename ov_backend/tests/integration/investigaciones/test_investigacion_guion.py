@@ -97,6 +97,12 @@ def test_sugerencias_se_piden_una_vez_y_se_agregan_o_descartan(cliente, aplicaci
     en_curso = investigaciones(cliente)['en_curso']
     assert len(en_curso['sugerencias']) == 1
     assert en_curso['preguntas'][0] == {'origen': 'SUGERIDA', 'texto': 'Editada por mí'}
+    # F09: el front reenvía la sugerida ya agregada sin código (la consulta no lo devuelve); no cambia sugerencias.
+    guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': 'Editada otra vez'},
+                              {'origen': 'DUDA', 'texto': PIENSO['duda']}], terminar=True)
+    assert investigaciones(cliente)['en_curso']['preguntas'][0] == {'origen': 'SUGERIDA', 'texto': 'Editada otra vez'}
+    assert len(investigaciones(cliente)['en_curso']['sugerencias']) == 1
+    guion(cliente, preguntas=[{'origen': 'PROPIA', 'texto': 'x', 'sugerencia': agregada}], esperado=422)
     # Una descartada no se puede agregar después; una inexistente tampoco.
     guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': 'x', 'sugerencia': descartada},
                               {'origen': 'DUDA', 'texto': 'y'}], esperado=404)

@@ -76,7 +76,7 @@ def guardar_guion(sesion: Session, entrada: GuardarGuionEntrada) -> RespuestaAcc
     fecha = fecha_accion(entrada)
     sugerencias = {s.codigo: s for s in sesion.scalars(select(SugerenciaGuion).where(
         SugerenciaGuion.investigacion_id == investigacion.id))}
-    agregadas = [p.sugerencia for p in entrada.preguntas if p.origen == OrigenPreguntaGuion.SUGERIDA]
+    agregadas = [p.sugerencia for p in entrada.preguntas if p.sugerencia is not None]
     if any(codigo not in sugerencias or sugerencias[codigo].estado == EstadoSugerenciaGuion.DESCARTADA
            for codigo in agregadas):
         raise ErrorAccion('Esa sugerencia no está disponible en tu guion', estado_http=404)

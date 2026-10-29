@@ -16,6 +16,7 @@ import {
 } from '@/services/api/diario'
 import { obtenerPlanes } from '@/services/api/planes'
 import { obtenerConversaciones } from '@/services/api/conversaciones'
+import { obtenerInvestigaciones } from '@/services/api/investigaciones'
 import { hidratarJourneyServidor } from '../journeyStore'
 import { hidratarAdventureServidor } from '../adventureStore'
 import { baseRoute } from '@/data/activities/reflectionConfig'
@@ -48,6 +49,7 @@ const consultas = {
   checkIns: obtenerCheckIns,
   planes: obtenerPlanes,
   conversaciones: (cuenta: string) => obtenerConversaciones(cuenta),
+  investigaciones: obtenerInvestigaciones,
 }
 const contadores = (): Record<NombreSeccion, number> => ({
   resumen: 0,
@@ -64,6 +66,7 @@ const contadores = (): Record<NombreSeccion, number> => ({
   checkIns: 0,
   planes: 0,
   conversaciones: 0,
+  investigaciones: 0,
 })
 const revisiones = contadores()
 const consumidores = contadores()
@@ -192,15 +195,18 @@ export const useAmistadServidor = (activo = true) => useSeccion('amistad', activ
 export const usePlanesServidorSeccion = (activo = true) => useSeccion('planes', activo)
 // F08: lo que puede cambiar el apoderado se revalida al montar la vista (regla 4): se muestra lo ya cargado y
 // se vuelve a pedir.
-export function useConversacionesServidorSeccion(activo = true) {
-  const seccion = useSeccion('conversaciones', activo),
+function useSeccionRevalidada<N extends 'conversaciones' | 'investigaciones'>(nombre: N, activo: boolean) {
+  const seccion = useSeccion(nombre, activo),
     sesion = sesionServidor()
   useEffect(() => {
     if (!modoApi || !activo) return
-    if (obtenerEstadoServidor().conversaciones.estado === 'listo') vencerSeccion('conversaciones')
-  }, [activo, sesion])
+    if (obtenerEstadoServidor()[nombre].estado === 'listo') vencerSeccion(nombre)
+  }, [nombre, activo, sesion])
   return seccion
 }
+export const useConversacionesServidorSeccion = (activo = true) => useSeccionRevalidada('conversaciones', activo)
+// F09: un coautor cierra la investigación en curso de otro al publicar; se revalida al montar, como Familia.
+export const useInvestigacionesServidorSeccion = (activo = true) => useSeccionRevalidada('investigaciones', activo)
 
 export function errorSeccionesActivas() {
   return (

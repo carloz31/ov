@@ -2,7 +2,7 @@
 // que los reexporta).
 export type TipoInstitucionServidor = 'UNIVERSIDAD' | 'INSTITUTO' | 'FFAA_POLICIA'
 export type GestionInstitucion = 'PUBLICA' | 'PRIVADA'
-export type TipoFavorito = 'CARRERA' | 'OCUPACION' | 'INSTITUCION' | 'FICHA' | 'TESTIMONIO'
+export type TipoFavorito = 'CARRERA' | 'OCUPACION' | 'INSTITUCION' | 'FICHA' | 'TESTIMONIO' | 'ENTREVISTA'
 // Campo detallado CINE; el área es su campo de educación.
 export type FamiliaPublica = { codigo: string; nombre: string; area_codigo: string; area_nombre: string }
 export type UbicacionPublica = { codigo: string; nombre: string }

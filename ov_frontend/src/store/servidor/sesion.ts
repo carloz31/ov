@@ -7,6 +7,7 @@ import { cuentaActiva, cuentaSesion } from './cuenta'
 import type {
   AmistadAsistente,
   ConversacionesCuenta,
+  InvestigacionesCuenta,
   PlanesCuenta,
   AvanceEstudiante,
   AvanceInstrumento,
@@ -59,6 +60,9 @@ export type DatosSecciones = {
   // F08: la sección Familia del estudiante; se pide al abrirla y se revalida cada vez que se monta (la cambia
   // también el apoderado).
   conversaciones: ConversacionesCuenta
+  // F09: la investigación en curso, aliados, catálogos y conteos; se pide al abrir Investigaciones y se revalida
+  // al montar (un coautor la cambia al publicar).
+  investigaciones: InvestigacionesCuenta
 }
 export type NombreSeccion = keyof DatosSecciones
 // F03: lo que lee el libro de Helena. Se pide al abrir el libro o su vista explicada.
@@ -119,6 +123,7 @@ const inicial = (): AlmacenServidor => ({
   amistad: vacia(),
   planes: vacia(),
   conversaciones: vacia(),
+  investigaciones: vacia(),
   checkIns: vacia(),
   cargando: false,
   error: null,

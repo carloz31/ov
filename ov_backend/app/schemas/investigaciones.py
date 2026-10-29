@@ -52,11 +52,12 @@ class PreguntaGuionEntrada(BaseModel):
     origen: OrigenPreguntaGuion
     texto: Texto
     sugerencia: str | None = None
-    """Código de la sugerencia agregada; obligatorio en SUGERIDA y prohibido en los demás orígenes."""
+    """Código de la sugerencia que se agrega ahora; solo en SUGERIDA. F09: una SUGERIDA sin código es una que ya estaba
+    en el guion (la consulta no devuelve el código) y no cambia ninguna sugerencia."""
 
     @model_validator(mode='after')
     def validar_sugerencia(self):
-        if (self.origen == OrigenPreguntaGuion.SUGERIDA) != (self.sugerencia is not None):
+        if self.origen != OrigenPreguntaGuion.SUGERIDA and self.sugerencia is not None:
             raise ValueError('Solo una pregunta sugerida lleva el código de su sugerencia')
         return self
 
@@ -343,9 +344,14 @@ class ReportePublico(BaseModel):
     fecha_hora: datetime
 
 
+class AutorModerado(PersonaInvestigacion):
+    """F09: con el código de su salón (nulo si la cuenta no tiene), para la orientadora con todos sus salones."""
+    salon: str | None
+
+
 class ReaccionModerada(BaseModel):
     codigo: str
-    autor: PersonaInvestigacion
+    autor: AutorModerado
     tipo: str | None
     comentario: str | None
     creada_en: datetime
@@ -374,3 +380,5 @@ class PublicacionDetalle(BaseModel):
     autores: list[AutorPublicacion]
     reportes: list[ReportePublico]
     reacciones: list[ReaccionModerada]
+    # F09: el catálogo, para nombrar los tipos (la orientadora no consulta /investigaciones).
+    tipos_reaccion: list[TipoReaccionPublico]
