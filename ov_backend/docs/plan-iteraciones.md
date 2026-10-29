@@ -77,7 +77,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B10 | Catálogo, instituciones y favoritos · **Implementado** | 026, 037–040 | M | B06 | `t-explorar` bloqueado hasta tener favoritos diversos |
 | B11 | Planes de carrera · **Implementado** | 043–048, 050, 097–099, 109, 110 | M | B07, B08, B10 | Secciones que se habilitan, presupuesto, dudas con pasos sugeridos y requisitos de comparar y proyecto |
 | B12 | Familia: ruta del apoderado, conversaciones y cartas · **Implementado** | 066–071, 078–080 | M | B09, B11 | Conversaciones que se abren una por una; cartas al completar todas |
-| B13 | Investigaciones y entrevistas | 057–065, 100, 101 | M | B10 | Investigación completa, con aliados, reacciones y Leyenda |
+| B13 | Investigaciones y entrevistas · **Implementado** | 057–065, 100, 101 | M | B10 | Investigación completa, con aliados, reacciones y Leyenda |
 | B14 | Orientadora: seguimiento y configuración | 081–089 (108 si entra) | M | B07, B11, B12 | Sus estudiantes, sus registros, la configuración y las seis alertas |
 | B15 | Informe de viaje y temas para conversar | 034, 102–105 | — | B11–B13 | Bitácora desde el primer día; las siete reglas de temas; endgame |
 | B16 | Orientadora: vista del salón | 090–093, 107 | — | B14 | Capa 1 del panel |
