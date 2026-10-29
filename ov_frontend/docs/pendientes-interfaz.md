@@ -2,6 +2,20 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-10-29 · B13 · Investigaciones y entrevistas
+
+- **Dato:**
+  - `GET /cuentas/{c}/investigaciones`: investigación en curso (lo que pienso, guion, sugerencias pendientes), aliados del salón, preguntas base, tipos de reacción, `favoritos_leyenda` y conteos por vista;
+  - `GET /cuentas/{c}/entrevistas` (vistas SALON, LEYENDAS y MIAS con filtros, orden y paginado) y `/entrevistas/{e}` (detalle con reacciones y comentarios de la orientadora);
+  - acciones `guardar-lo-que-pienso`, `pedir-sugerencias-guion`, `guardar-guion`, `cancelar-investigacion`, `publicar-entrevista` (cuerpo nuevo, con `cuenta` y `coautores`), `editar-entrevista`, `retirar-entrevista`, `ver-entrevista`, `reaccionar-entrevista`, `eliminar-reaccion`, `reportar` y `marcar-favorito` con `tipo: ENTREVISTA`;
+  - de la orientadora, `GET /cuentas/{c}/publicaciones` y `/publicaciones/{e}`, y las acciones `destacar-entrevista`, `comentar-entrevista`, `eliminar-entrevista` y `descartar-reporte`;
+  - la misión `t-investigador` (abre la sección INVESTIGACIONES) y `t-investigador-cierre` (registro con la referencia LO_QUE_PIENSO), sin contenido en el front;
+  - la sección INVESTIGACIONES en `/secciones` y las insignias `t-ins-entrevista` y `t-ins-leyenda` en los logros.
+- **Dónde se mostraría:** las pantallas de la spec `ov_backend/docs/specs/investigaciones-B13-F09.md` (§3 del estudiante y §4 de la orientadora), que conecta F09. Los contenidos `t_investigador` y `t_investigador_cierre` también los agrega F09.
+- **Opciones:** las define la spec de F09 con sus bocetos.
+- **Si no se muestra:** en modo `api`, las investigaciones existen solo en el servidor. Las dos misiones nuevas no se muestran porque su contenido no existe en el front.
+- **Estado:** pendiente de F09.
+
 ## 2026-10-28 · F08 · Avisos al apoderado (HU-067)
 
 - **Dato:** cuándo el hijo habilita una conversación (`abierta_para_hijo` pasa a verdadero) o responde una que el apoderado espera.

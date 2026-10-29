@@ -323,6 +323,51 @@
         "titulo": "La traductora apurada",
         "visibilidad": "AL_DESBLOQUEAR",
         "visible": false
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-investigador",
+        "contenido": "t_investigador",
+        "descripcion": "Conoce cómo investigar una ocupación entrevistando a quien la ejerce.",
+        "duracion_estimada_min": 5,
+        "estado": "DISPONIBLE",
+        "orden": 6,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "El investigador de oficios",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "PUBLICA_ENTREVISTA"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Publica tu primera entrevista para contar qué cambió.",
+            "regla": "R-t-investigador-cierre"
+          }
+        ],
+        "codigo": "t-investigador-cierre",
+        "contenido": "t_investigador_cierre",
+        "descripcion": "Compara lo que pensabas antes de tu entrevista con lo que aprendiste.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 7,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Lo que cambió",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
       }
     ],
     "bloqueo": null,

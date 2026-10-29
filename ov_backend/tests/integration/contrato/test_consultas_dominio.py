@@ -32,7 +32,11 @@ for _estados in ESTADOS.values():
     _estados.update(dict.fromkeys(RECUERDOS_LUMI, 'BLOQUEADA'))
     # Ajuste mochila: el segundo caso se abre con el proyecto, que esta ruta no alcanza.
     _estados['t-caso-2'] = 'BLOQUEADA'
-# Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).
+    # B13: el cierre del investigador espera una entrevista publicada.
+    _estados['t-investigador-cierre'] = 'BLOQUEADA'
+ESTADOS[False]['t-investigador'], ESTADOS[True]['t-investigador'] = 'BLOQUEADA', 'DISPONIBLE'
+# Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas). B13: INVESTIGACIONES espera
+# la misión del investigador.
 SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']
 MENSAJES = {objetivo: mensaje for _, tipo, objetivo, mensaje, _ in REGLAS if tipo == 'SECCION'}
 
@@ -140,7 +144,8 @@ def esperado(ruta, completo):
                  'caso_disponible': False, 'es_favorita': False}
                 for codigo, titulo, _, _, pista, *_ in sorted(TESTIMONIOS)]
     if ruta == 'secciones':
-        return [(codigo, 'DISPONIBLE' if completo else 'BLOQUEADA', completo) for codigo in SECCIONES_ESTUDIANTE]
+        return [(codigo, 'DISPONIBLE' if abierta else 'BLOQUEADA', abierta) for codigo in SECCIONES_ESTUDIANTE
+                for abierta in (completo and codigo != 'INVESTIGACIONES',)]
     if ruta == 'diario/preguntas':
         if not completo:
             return MENSAJES['DIARIO']

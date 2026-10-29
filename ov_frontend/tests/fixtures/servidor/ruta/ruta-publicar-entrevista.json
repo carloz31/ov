@@ -1,0 +1,53 @@
+{
+  "por_cuenta": {
+    "est-ana": {
+      "eventos_registrados": [
+        {
+          "fecha_hora": "2026-10-07T10:00:00",
+          "referencia": "ENT-00000000000000000000000000000006",
+          "tipo": "PUBLICA_ENTREVISTA"
+        }
+      ],
+      "nuevos_desbloqueos": [
+        {
+          "condiciones": [
+            {
+              "actual": 1,
+              "cumplida": true,
+              "referencia": null,
+              "requerido": 1,
+              "texto": "Publica una entrevista",
+              "tipo_conteo": "EVENTOS",
+              "tipo_evento": "PUBLICA_ENTREVISTA"
+            }
+          ],
+          "objetivo": {
+            "codigo": "t-ins-entrevista",
+            "nombre": "Voz de la ciudad"
+          },
+          "regla": "R-t-ins-entrevista",
+          "tipo_objetivo": "INSIGNIA"
+        },
+        {
+          "condiciones": [
+            {
+              "actual": 1,
+              "cumplida": true,
+              "referencia": null,
+              "requerido": 1,
+              "texto": null,
+              "tipo_conteo": "EVENTOS",
+              "tipo_evento": "PUBLICA_ENTREVISTA"
+            }
+          ],
+          "objetivo": {
+            "codigo": "t-investigador-cierre",
+            "nombre": "Lo que cambió"
+          },
+          "regla": "R-t-investigador-cierre",
+          "tipo_objetivo": "ACTIVIDAD"
+        }
+      ]
+    }
+  }
+}

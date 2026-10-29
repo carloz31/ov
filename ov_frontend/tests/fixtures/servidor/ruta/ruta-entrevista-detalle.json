@@ -1,0 +1,74 @@
+{
+  "autores": [
+    {
+      "codigo": "est-ana",
+      "nivel": {
+        "numero": 3,
+        "titulo": "Cartógrafo de posibilidades"
+      },
+      "nombre": "Ana",
+      "vitrina": [
+        "t-ins-1"
+      ]
+    }
+  ],
+  "codigo": "ENT-00000000000000000000000000000006",
+  "destacada": true,
+  "duracion": "20 minutos",
+  "editada_en": null,
+  "enlace": "https://youtu.be/dQw4w9WgXcQ",
+  "favorita": true,
+  "favoritos": 1,
+  "favoritos_leyenda": 3,
+  "fecha_hora": "2026-10-07T10:00:00",
+  "leyenda": false,
+  "lista_reacciones": [
+    {
+      "autor": {
+        "codigo": "est-luis",
+        "nivel": {
+          "numero": 2,
+          "titulo": "Recolector de pistas"
+        },
+        "nombre": "Luis",
+        "vitrina": []
+      },
+      "codigo": "REA-00000000000000000000000000000007",
+      "comentario": "DATO DE PRUEBA: aprendí que siempre se corta la luz.",
+      "creada_en": "2026-10-07T10:00:00",
+      "editada_en": null,
+      "propia": true,
+      "reportada_por_mi": false,
+      "tipo": "APRENDI"
+    },
+    {
+      "autor": {
+        "codigo": "ori-carmen",
+        "nivel": null,
+        "nombre": "Carmen",
+        "vitrina": []
+      },
+      "codigo": "REA-00000000000000000000000000000008",
+      "comentario": "DATO DE PRUEBA: muy buena conversación.",
+      "creada_en": "2026-10-07T10:00:00",
+      "editada_en": null,
+      "propia": false,
+      "reportada_por_mi": false,
+      "tipo": null
+    }
+  ],
+  "ocupacion": {
+    "codigo": "electrician",
+    "titulo": "Electricistas"
+  },
+  "profesional": "DATO DE PRUEBA: Rosa Quispe",
+  "propia": false,
+  "reacciones": 1,
+  "reacciones_por_tipo": {
+    "APRENDI": 1
+  },
+  "reportada_por_mi": false,
+  "resumen": "DATO DE PRUEBA: nos contó cómo empezó y qué cuidados toma.",
+  "titulo": "DATO DE PRUEBA: un día con un electricista",
+  "vista": true
+}

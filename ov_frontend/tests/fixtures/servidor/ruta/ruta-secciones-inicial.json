@@ -98,6 +98,29 @@
           {
             "actual": 0,
             "cumplida": false,
+            "referencia": "t-investigador",
+            "requerido": 1,
+            "texto": null,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_ACTIVIDAD"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa la misión del investigador para investigar.",
+        "regla": "R-SEC-INVESTIGACIONES"
+      }
+    ],
+    "codigo": "INVESTIGACIONES",
+    "estado": "BLOQUEADA",
+    "nombre": "Investigaciones"
+  },
+  {
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
             "referencia": "t-inicio",
             "requerido": 1,
             "texto": null,

@@ -1,0 +1,29 @@
+{
+  "favoritos_leyenda": 3,
+  "items": [
+    {
+      "autores": [
+        {
+          "codigo": "est-ana",
+          "lo_que_pensaba": null,
+          "nombre": "Ana",
+          "salon": "5A"
+        }
+      ],
+      "codigo": "ENT-00000000000000000000000000000006",
+      "comentarios_reportados": 0,
+      "de_sus_salones": true,
+      "estado": "DESTACADA",
+      "favoritos": 1,
+      "fecha_hora": "2026-10-07T10:00:00",
+      "ocupacion": {
+        "codigo": "electrician",
+        "titulo": "Electricistas"
+      },
+      "reacciones": 1,
+      "reportes_pendientes": 0,
+      "titulo": "DATO DE PRUEBA: un día con un electricista"
+    }
+  ],
+  "total": 1
+}

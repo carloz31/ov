@@ -1,0 +1,69 @@
+{
+  "autores": [
+    {
+      "codigo": "est-ana",
+      "lo_que_pensaba": {
+        "dia": "DATO DE PRUEBA: revisa instalaciones de casas y edificios.",
+        "duda": "¿Es peligroso?",
+        "necesita": "DATO DE PRUEBA: estudiar en un instituto y practicar."
+      },
+      "nombre": "Ana",
+      "salon": "5A"
+    }
+  ],
+  "codigo": "ENT-00000000000000000000000000000006",
+  "de_sus_salones": true,
+  "duracion": "20 minutos",
+  "editada_en": null,
+  "enlace": "https://youtu.be/dQw4w9WgXcQ",
+  "estado": "DESTACADA",
+  "favoritos": 1,
+  "favoritos_leyenda": 3,
+  "fecha_hora": "2026-10-07T10:00:00",
+  "ocupacion": {
+    "codigo": "electrician",
+    "titulo": "Electricistas"
+  },
+  "profesional": "DATO DE PRUEBA: Rosa Quispe",
+  "reacciones": [
+    {
+      "autor": {
+        "codigo": "ori-carmen",
+        "nivel": null,
+        "nombre": "Carmen",
+        "vitrina": []
+      },
+      "codigo": "REA-00000000000000000000000000000008",
+      "comentario": "DATO DE PRUEBA: muy buena conversación.",
+      "creada_en": "2026-10-07T10:00:00",
+      "editada_en": null,
+      "propia": true,
+      "reportes": [],
+      "tipo": null
+    },
+    {
+      "autor": {
+        "codigo": "est-luis",
+        "nivel": {
+          "numero": 2,
+          "titulo": "Recolector de pistas"
+        },
+        "nombre": "Luis",
+        "vitrina": []
+      },
+      "codigo": "REA-00000000000000000000000000000007",
+      "comentario": "DATO DE PRUEBA: aprendí que siempre se corta la luz.",
+      "creada_en": "2026-10-07T10:00:00",
+      "editada_en": null,
+      "propia": false,
+      "reportes": [],
+      "tipo": "APRENDI"
+    }
+  ],
+  "reacciones_por_tipo": {
+    "APRENDI": 1
+  },
+  "reportes": [],
+  "resumen": "DATO DE PRUEBA: nos contó cómo empezó y qué cuidados toma.",
+  "titulo": "DATO DE PRUEBA: un día con un electricista"
+}

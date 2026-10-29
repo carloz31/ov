@@ -1,0 +1,110 @@
+{
+  "aliados": {
+    "misma_ocupacion": [
+      {
+        "codigo": "est-luis",
+        "nivel": {
+          "numero": 2,
+          "titulo": "Recolector de pistas"
+        },
+        "nombre": "Luis",
+        "ocupacion": {
+          "codigo": "electrician",
+          "titulo": "Electricistas"
+        },
+        "vitrina": []
+      }
+    ],
+    "otras": []
+  },
+  "conteos": {
+    "leyendas": 0,
+    "mias": 0,
+    "salon": 0
+  },
+  "en_curso": {
+    "codigo": "INV-00000000000000000000000000000002",
+    "creada_en": "2026-10-07T10:00:00",
+    "estado": "GUIA_LISTA",
+    "guia_lista_en": "2026-10-07T10:00:00",
+    "lo_que_pienso": {
+      "dia": "DATO DE PRUEBA: revisa instalaciones de casas y edificios.",
+      "duda": "¿Es peligroso?",
+      "necesita": "DATO DE PRUEBA: estudiar en un instituto y practicar."
+    },
+    "ocupacion": {
+      "codigo": "electrician",
+      "titulo": "Electricistas"
+    },
+    "preguntas": [
+      {
+        "origen": "DUDA",
+        "texto": "¿Es peligroso?"
+      },
+      {
+        "origen": "SUGERIDA",
+        "texto": "¿Qué te sorprendió al empezar como Electricistas? (1)"
+      }
+    ],
+    "sugerencias": [
+      {
+        "codigo": "SUG-00000000000000000000000000000004",
+        "texto": "¿Qué parte de tu trabajo casi nadie conoce? (1)"
+      },
+      {
+        "codigo": "SUG-00000000000000000000000000000005",
+        "texto": "¿Qué harías distinto si empezaras hoy? (1)"
+      }
+    ],
+    "sugerencias_vigentes": true
+  },
+  "favoritos_leyenda": 3,
+  "preguntas_base": [
+    {
+      "codigo": "BASE-1",
+      "texto": "¿Cómo es un día normal en tu trabajo?"
+    },
+    {
+      "codigo": "BASE-2",
+      "texto": "¿Qué estudiaste para llegar a donde estás?"
+    },
+    {
+      "codigo": "BASE-3",
+      "texto": "¿Qué consejo le darías a alguien de mi edad?"
+    }
+  ],
+  "tipos_reaccion": [
+    {
+      "codigo": "APRENDI",
+      "comentario_obligatorio": true,
+      "descripcion": "Me llevé un dato o una idea nueva.",
+      "icono": "bombilla",
+      "nombre": "Aprendí algo",
+      "pregunta": "¿Qué aprendiste?"
+    },
+    {
+      "codigo": "ME_GUSTO",
+      "comentario_obligatorio": false,
+      "descripcion": "La conversación estuvo bien hecha.",
+      "icono": "estrella",
+      "nombre": "Me gustó cómo se realizó",
+      "pregunta": "¿Qué te gustó de cómo la hicieron?"
+    },
+    {
+      "codigo": "CURIOSIDAD",
+      "comentario_obligatorio": true,
+      "descripcion": "Me quedé con ganas de saber más.",
+      "icono": "pregunta",
+      "nombre": "Me dio curiosidad",
+      "pregunta": "¿Qué le preguntarías tú?"
+    },
+    {
+      "codigo": "MI_CAMINO",
+      "comentario_obligatorio": true,
+      "descripcion": "Me hizo pensar en lo que quiero para mí.",
+      "icono": "caminos",
+      "nombre": "Me hizo pensar en mi camino",
+      "pregunta": "¿En qué te hizo pensar?"
+    }
+  ]
+}

@@ -85,6 +85,40 @@
       "orden": 3,
       "pista": "Hay más de una puerta para estudiar. Asómate a todas antes de elegir una.",
       "requisito": null
+    },
+    {
+      "codigo": "t-ins-entrevista",
+      "descripcion": "Conversaste con alguien que ejerce un oficio y lo compartiste con tu salón. Preguntar a quien ya recorrió el camino lo vuelve más real.",
+      "estado": "BLOQUEADA",
+      "frase": "Preguntar abre caminos.",
+      "grupo": {
+        "codigo": "G2",
+        "nombre": "Huellas en la ciudad",
+        "orden": 2
+      },
+      "logro": "publicaste una entrevista.",
+      "nombre": "Voz de la ciudad",
+      "obtenida_en": null,
+      "orden": 4,
+      "pista": null,
+      "requisito": "Publica una entrevista."
+    },
+    {
+      "codigo": "t-ins-leyenda",
+      "descripcion": "Tu entrevista quedó como Leyenda: la verán otros salones y otras promociones.",
+      "estado": "BLOQUEADA",
+      "frase": "Tu voz llega lejos.",
+      "grupo": {
+        "codigo": "G2",
+        "nombre": "Huellas en la ciudad",
+        "orden": 2
+      },
+      "logro": "tu entrevista llegó a Leyenda.",
+      "nombre": "Leyenda",
+      "obtenida_en": null,
+      "orden": 5,
+      "pista": null,
+      "requisito": "Logra que tu entrevista sea Leyenda."
     }
   ],
   "niveles": [

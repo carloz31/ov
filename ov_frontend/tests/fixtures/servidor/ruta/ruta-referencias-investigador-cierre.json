@@ -1,0 +1,24 @@
+{
+  "referencias": [
+    {
+      "codigo": "t-ref-lo-que-pienso",
+      "estado": "DISPONIBLE",
+      "opciones": [
+        {
+          "codigo": "DIA",
+          "texto": "DATO DE PRUEBA: revisa instalaciones de casas y edificios."
+        },
+        {
+          "codigo": "NECESITA",
+          "texto": "DATO DE PRUEBA: estudiar en un instituto y practicar."
+        },
+        {
+          "codigo": "DUDA",
+          "texto": "¿Es peligroso?"
+        }
+      ],
+      "texto": "Electricistas",
+      "tipo": "LO_QUE_PIENSO"
+    }
+  ]
+}

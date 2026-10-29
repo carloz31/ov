@@ -67,3 +67,11 @@ Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su 
 - **Fallo, demora o respuesta fuera del esquema:** ERROR, sin guardar nada, así que reintentar vuelve a llamar. Lo mismo si la investigación cambió o se canceló mientras se esperaba.
 - Se guardan hasta `MAXIMO_SUGERENCIAS_GUION` (3) preguntas de hasta `MAXIMO_CARACTERES_PREGUNTA_GUION` caracteres, sin repetir (sin tildes ni signos) las base, las del guion ni las sugeridas antes. Con eso `sugerencias_vigentes` queda verdadero y reabrir el paso no vuelve a llamar.
 - Evaluador falso: `[falla]` lanza error, `[malformado]` sale del esquema y `[vacio]` no propone.
+
+## Notas
+
+- La migración 0038 vació `entrevista` y `entrevista_autor`: sus filas anteriores solo tenían resumen y ninguna pantalla las publicaba.
+- Las descripciones cortas de `fijos.TIPOS_REACCION` son provisionales: la spec de B13/F09 no las da.
+- En `ruta`, `t-investigador` (abre la sección) y `t-investigador-cierre` (registro con LO_QUE_PIENSO, abierto por PUBLICA_ENTREVISTA) son opcionales, para no cambiar el avance ni el cierre de la Ciudad.
+- Los filtros Favoritas, No vistas y Destacadas no aplican a la vista MIAS. La búsqueda de la orientadora por nombre de autor usa minúsculas, pero no quita tildes.
+- Los códigos públicos (`INV-`, `ENT-`, `SUG-`, `REA-`, `REP-`) llevan un `uuid4`. El exportador de fixtures los fija con un contador.

@@ -1,0 +1,17 @@
+{
+  "estado": "LISTAS",
+  "sugerencias": [
+    {
+      "codigo": "SUG-00000000000000000000000000000003",
+      "texto": "¿Qué te sorprendió al empezar como Electricistas? (1)"
+    },
+    {
+      "codigo": "SUG-00000000000000000000000000000004",
+      "texto": "¿Qué parte de tu trabajo casi nadie conoce? (1)"
+    },
+    {
+      "codigo": "SUG-00000000000000000000000000000005",
+      "texto": "¿Qué harías distinto si empezaras hoy? (1)"
+    }
+  ]
+}
