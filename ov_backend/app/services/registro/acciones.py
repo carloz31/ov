@@ -209,8 +209,8 @@ def crear_progreso(sesion, cuenta, actividad):
 
 
 def marca_actualizacion(anterior=None):
-    """Avanza aunque la fecha simulada o el reloj retrocedan."""
-    ahora = datetime.now(timezone.utc).replace(tzinfo=None)
+    """Avanza aunque la fecha simulada o el reloj retrocedan. En hora de Lima, como el resto de fechas guardadas."""
+    ahora = datetime.now(timezone(timedelta(hours=-5))).replace(tzinfo=None)
     return max(ahora, anterior + timedelta(microseconds=1)) if anterior is not None else ahora
 
 
