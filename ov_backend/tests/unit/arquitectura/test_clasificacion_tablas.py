@@ -13,7 +13,7 @@ CATALOGO = {
     'carrera_ocupacion', 'lista_opciones', 'opcion_lista', 'item_registro', 'criterio_completitud',
     'referencia', 'high_point', 'tipo_carrera', 'ubicacion', 'institucion', 'institucion_carrera',
     'grupo_ocupacional', 'estilo_trabajo', 'ingreso_familia', 'ingreso_institucion', 'seccion_tarjeta', 'referencia_rubro',
-    'referencia_camino',
+    'referencia_camino', 'pregunta_base_guion', 'tipo_reaccion',
 }
 
 
@@ -25,6 +25,7 @@ ESTADO = {
     'respuesta_registro', 'turno_seguimiento', 'evaluacion_respuesta', 'favorito',
     'tarjeta_carrera', 'motivo_tarjeta', 'conocimiento_tarjeta', 'duda_tarjeta', 'gasto_tarjeta',
     'financiamiento_tarjeta', 'complicacion_tarjeta', 'sugerencia_tarjeta', 'paso_tarjeta',
+    'investigacion', 'pregunta_guion', 'sugerencia_guion', 'reaccion', 'reporte',
 }
 
 

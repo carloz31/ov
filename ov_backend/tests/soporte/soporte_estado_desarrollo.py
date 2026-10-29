@@ -32,7 +32,11 @@ def llenar_estado(aplicacion):
                                           titulo='DATO DE PRUEBA', grupo='15')
             sesion.add(ocupacion)
         progreso = modelos.ProgresoActividad(cuenta_id=cuenta.id, actividad_id=actividad.id, estado='EN_CURSO')
-        entrevista = modelos.Entrevista(codigo='ENT-REINICIO', resumen='DATO DE PRUEBA', fecha_hora=fecha)
+        sesion.flush()
+        entrevista = modelos.Entrevista(codigo='ENT-REINICIO', ocupacion_id=ocupacion.id, titulo='DATO DE PRUEBA',
+                                        profesional='DATO DE PRUEBA', duracion='DATO DE PRUEBA',
+                                        enlace='https://youtu.be/datoPrueba1', resumen='DATO DE PRUEBA',
+                                        busqueda='dato de prueba', estado='PUBLICADA', fecha_hora=fecha)
         resultado = modelos.ResultadoInstrumento(cuenta_id=cuenta.id, aplicacion_id=aplicacion_instrumento.id, calculado_en=fecha)
         sesion.add_all([progreso, entrevista, resultado])
         sesion.flush()
@@ -70,6 +74,7 @@ def llenar_estado(aplicacion):
         sesion.add(modelos.RespuestaBatalla(resultado_batalla_id=batalla.id, pregunta_batalla_id=pregunta.id,
                                             opcion=pregunta.correcta, correcta=True))
         _llenar_planes(sesion, cuenta, fecha)
+        _llenar_investigaciones(sesion, cuenta, entrevista, fecha)
 
 
 def _llenar_planes(sesion, cuenta, fecha):
@@ -103,6 +108,26 @@ def _llenar_planes(sesion, cuenta, fecha):
         modelos.GastoTarjeta(tarjeta_id=tarjeta.id, posicion=1, rubro_otro='DATO DE PRUEBA', monto=10,
                              frecuencia='UNICA'),
         modelos.FinanciamientoTarjeta(tarjeta_id=tarjeta.id, posicion=1, texto_otro='DATO DE PRUEBA'),
+    ])
+
+
+def _llenar_investigaciones(sesion, cuenta, entrevista, fecha):
+    """B13: una investigación publicada con su guion, una sugerencia, una reacción y un reporte."""
+    tipo = sesion.scalar(select(modelos.TipoReaccion))
+    investigacion = modelos.Investigacion(codigo='INV-REINICIO', cuenta_id=cuenta.id, ocupacion_id=entrevista.ocupacion_id,
+                                          estado='PUBLICADA', piensa_dia='DATO DE PRUEBA', piensa_necesita='DATO DE PRUEBA',
+                                          piensa_duda='DATO DE PRUEBA', creada_en=fecha, guia_lista_en=fecha,
+                                          entrevista_id=entrevista.id)
+    reaccion = modelos.Reaccion(codigo='REA-REINICIO', entrevista_id=entrevista.id, cuenta_id=cuenta.id,
+                                tipo_reaccion_id=tipo.id, comentario='DATO DE PRUEBA', creada_en=fecha)
+    sesion.add_all([investigacion, reaccion])
+    sesion.flush()
+    sesion.add_all([
+        modelos.PreguntaGuion(investigacion_id=investigacion.id, posicion=1, origen='PROPIA', texto='DATO DE PRUEBA'),
+        modelos.SugerenciaGuion(codigo='SUG-REINICIO', investigacion_id=investigacion.id, texto='DATO DE PRUEBA',
+                                estado='DESCARTADA'),
+        modelos.Reporte(codigo='REP-REINICIO', cuenta_id=cuenta.id, reaccion_id=reaccion.id, motivo='OTRO',
+                        estado='PENDIENTE', fecha_hora=fecha),
     ])
 
 

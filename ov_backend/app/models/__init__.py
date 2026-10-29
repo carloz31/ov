@@ -9,7 +9,8 @@ from app.models.enums import (
     TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion, TipoFavorito,
     UsoPreguntaDiario, TipoRecomendacion, OrigenRedaccion, GestionInstitucion, FrecuenciaGasto, OrigenIdea,
     PreguntaConocimiento, RespuestaConocimiento, OrigenDuda, EstadoDuda, EstadoSugerencia, OrigenSugerencia,
-    EstadoPaso, OrigenSesion,
+    EstadoPaso, OrigenSesion, EstadoInvestigacion, OrigenPreguntaGuion, EstadoSugerenciaGuion, EstadoEntrevista,
+    MotivoReporte, EstadoReporte,
 )
 
 
@@ -27,7 +28,11 @@ _MODELOS_POR_MODULO = {
     ),
     'app.models.progreso': (
         'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'Recomendacion', 'EntradaDiario', 'ContadorDiario',
-        'CheckIn', 'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito', 'InsigniaVitrina', 'PresentacionVista',
+        'CheckIn', 'ConversacionVinculo', 'Favorito', 'InsigniaVitrina', 'PresentacionVista',
+    ),
+    'app.models.investigaciones': (
+        'PreguntaBaseGuion', 'TipoReaccion', 'Investigacion', 'PreguntaGuion', 'SugerenciaGuion', 'Entrevista',
+        'EntrevistaAutor', 'Reaccion', 'Reporte',
     ),
     'app.models.motor': (
         'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo',
@@ -91,5 +96,7 @@ __all__ = [
     'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'EstadoPaso',
     'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',
     'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta', 'SugerenciaTarjeta', 'PasoTarjeta',
-    'OrigenSesion',
+    'OrigenSesion', 'EstadoInvestigacion', 'OrigenPreguntaGuion', 'EstadoSugerenciaGuion', 'EstadoEntrevista',
+    'MotivoReporte', 'EstadoReporte', 'PreguntaBaseGuion', 'TipoReaccion', 'Investigacion', 'PreguntaGuion',
+    'SugerenciaGuion', 'Reaccion', 'Reporte',
 ]

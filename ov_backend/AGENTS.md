@@ -13,6 +13,7 @@ Documentos vigentes (lee los que toque la tarea):
 | `docs/sistema/registro.md` | Respuestas de registro, preguntas de seguimiento, evaluador (Gemini o falso) y asistente del diario. |
 | `docs/sistema/referencias.md` | Referencias: catálogo de tipos, resolución por cuenta y elección por referencia. |
 | `docs/sistema/planes.md` | Planes de carrera: tarjeta, secciones, totales, acciones y sugerencias de pasos con LLM. |
+| `docs/sistema/investigaciones.md` | Investigaciones, guion con sugerencias del LLM, entrevistas, reacciones, reportes y Leyenda. |
 | `docs/sistema/integracion.md` | Contrato con el front, conjuntos de datos, fixtures y reinicio. |
 | `docs/specs/` | La spec en curso. |
 | `docs/decisiones.md` | Decisiones de la spec en curso. |
@@ -36,6 +37,7 @@ app/                    solo la aplicación; no lee archivos de datos
     instrumentos/       cálculo, consultas y resultados
     registro/           registro con evaluador de respuestas
     planes/             planes de carrera: consultas, acciones y sugerencias
+    investigaciones/    investigaciones y entrevistas: consultas, acciones, sugerencias y orientadora
   core/                 parámetros, caché de definiciones y contexto de consultas
 datos/                  lo que llena la base: fijos.py, ruta.py, catalogo.py (CSV de archivos/catalogo/), cargar.py
 migrations/             migraciones de Alembic

@@ -274,7 +274,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert all(s['estado'] == 'BLOQUEADA' and s['bloqueo'] for s in datos['secciones-inicial'])
     assert {s['codigo']: s['estado'] for s in datos['secciones-t1']} == {
         'CATALOGO': 'DISPONIBLE', 'CHECK_IN': 'DISPONIBLE', 'DIARIO': 'DISPONIBLE', 'FAMILIA': 'BLOQUEADA',
-        'PLANES': 'DISPONIBLE'}
+        'INVESTIGACIONES': 'BLOQUEADA', 'PLANES': 'DISPONIBLE'}
     assert [(s['codigo'], s['estado']) for s in datos['apoderado-secciones-inicial']] == [('CONVERSACIONES', 'BLOQUEADA')]
     assert [(s['codigo'], s['estado']) for s in datos['apoderado-secciones-final']] == [('CONVERSACIONES', 'DISPONIBLE')]
     # Ajuste presentaciones-vistas.

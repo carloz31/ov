@@ -12,6 +12,7 @@ TABLAS_DE_ESTADO = (
     'coincidencia', 'respuesta_registro', 'turno_seguimiento', 'evaluacion_respuesta', 'favorito',
     'tarjeta_carrera', 'motivo_tarjeta', 'conocimiento_tarjeta', 'duda_tarjeta', 'gasto_tarjeta',
     'financiamiento_tarjeta', 'complicacion_tarjeta', 'sugerencia_tarjeta', 'paso_tarjeta',
+    'investigacion', 'pregunta_guion', 'sugerencia_guion', 'reaccion', 'reporte',
 )
 
 

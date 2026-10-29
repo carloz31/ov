@@ -6,7 +6,7 @@ from soporte_retiro import buscar, condicion, medir, regla
 from soporte_ruta import FECHA, RECORRIDO, avanzar, completar, eventos, filas_base, pedir
 
 
-SECCIONES_ESTUDIANTE = ('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'PLANES')
+SECCIONES_ESTUDIANTE = ('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'INVESTIGACIONES', 'PLANES')
 
 
 def secciones(cliente, cuenta='est-ana'):

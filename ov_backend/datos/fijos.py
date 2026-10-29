@@ -19,7 +19,25 @@ from datos import catalogo
 # (código, nombre, audiencia). Cada ruta decide con sus reglas cuándo se abre cada sección.
 SECCIONES = (('CATALOGO', 'Catálogo', 'ESTUDIANTE'), ('CHECK_IN', 'Check-in', 'ESTUDIANTE'),
              ('DIARIO', 'Diario', 'ESTUDIANTE'), ('FAMILIA', 'Familia', 'ESTUDIANTE'),
-             ('PLANES', 'Planes', 'ESTUDIANTE'), ('CONVERSACIONES', 'Conversaciones', 'APODERADO'))
+             ('PLANES', 'Planes', 'ESTUDIANTE'), ('CONVERSACIONES', 'Conversaciones', 'APODERADO'),
+             ('INVESTIGACIONES', 'Investigaciones', 'ESTUDIANTE'))
+
+# (código, texto). Preguntas que siempre van en el guion de una entrevista (B13); las del front (`research.ts`).
+PREGUNTAS_BASE_GUION = (('BASE-1', '¿Cómo es un día normal en tu trabajo?'),
+                        ('BASE-2', '¿Qué estudiaste para llegar a donde estás?'),
+                        ('BASE-3', '¿Qué consejo le darías a alguien de mi edad?'))
+
+# (código, nombre, descripción, pregunta, comentario obligatorio, ícono). Reacciones a una entrevista (B13); el ícono
+# es un nombre que el front traduce.
+TIPOS_REACCION = (
+    ('APRENDI', 'Aprendí algo', 'Me llevé un dato o una idea nueva.', '¿Qué aprendiste?', True, 'bombilla'),
+    ('ME_GUSTO', 'Me gustó cómo se realizó', 'La conversación estuvo bien hecha.',
+     '¿Qué te gustó de cómo la hicieron?', False, 'estrella'),
+    ('CURIOSIDAD', 'Me dio curiosidad', 'Me quedé con ganas de saber más.', '¿Qué le preguntarías tú?', True,
+     'pregunta'),
+    ('MI_CAMINO', 'Me hizo pensar en mi camino', 'Me hizo pensar en lo que quiero para mí.',
+     '¿En qué te hizo pensar?', True, 'caminos'),
+)
 
 # (código, audiencia). Presentaciones de primera visita: los ids de las vistas del estudiante en el front
 # (`ov_frontend/src/lib/studentViews.ts`); el texto está en el front.
@@ -330,6 +348,14 @@ def _cargar_presentaciones(sesion):
     sesion.add_all(modelos.Presentacion(codigo=c, audiencia=modelos.Audiencia(a)) for c, a in PRESENTACIONES)
 
 
+def _cargar_investigaciones(sesion):
+    sesion.add_all(modelos.PreguntaBaseGuion(codigo=c, orden=orden, texto=t)
+                   for orden, (c, t) in enumerate(PREGUNTAS_BASE_GUION, start=1))
+    sesion.add_all(modelos.TipoReaccion(codigo=c, nombre=n, descripcion=d, pregunta=p, comentario_obligatorio=o,
+                                        icono=i, orden=orden)
+                   for orden, (c, n, d, p, o, i) in enumerate(TIPOS_REACCION, start=1))
+
+
 def cargar_listas(sesion, listas, comun):
     """Carga listas de opciones; la ruta usa la misma función para sus listas propias."""
     cargadas = {}
@@ -380,6 +406,7 @@ def _cargar_tarjeta(sesion, listas):
 def cargar(sesion: Session) -> Fijos:
     secciones = _cargar_secciones(sesion)
     _cargar_presentaciones(sesion)
+    _cargar_investigaciones(sesion)
     listas = cargar_listas(sesion, LISTAS_COMUNES, comun=True)
     secciones_tarjeta = _cargar_tarjeta(sesion, listas)
     tematicas = _cargar_tematicas(sesion)

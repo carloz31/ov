@@ -16,7 +16,7 @@ def vitrina(cliente, codigos, esperado=200, cuenta='est-ana'):
 def test_insignias_por_pagina_y_orden_con_las_secretas_en_su_pagina(cliente):
     insignias = logros(cliente)['insignias']
     assert [(i['grupo']['codigo'], i['orden']) for i in insignias] == [
-        ('G1', 1), ('G1', 2), ('G2', 1), ('G2', 2), ('G2', 3)]
+        ('G1', 1), ('G1', 2), ('G2', 1), ('G2', 2), ('G2', 3), ('G2', 4), ('G2', 5)]
     assert insignias[0]['grupo'] == {'codigo': 'G1', 'nombre': 'La luz que despeja caminos', 'orden': 1}
     secreta = insignias[1]
     assert secreta['codigo'] == '???' and secreta['nombre'] == 'Logro oculto'

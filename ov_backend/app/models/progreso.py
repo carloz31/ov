@@ -143,20 +143,6 @@ class CheckIn(Base):
     nivel_seguridad: Mapped[int]
 
 
-class Entrevista(Base):
-    __tablename__ = "entrevista"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    codigo: Mapped[str] = mapped_column(unique=True)
-    resumen: Mapped[str] = mapped_column(Text)
-    fecha_hora: Mapped[datetime] = mapped_column(DateTime)
-
-
-class EntrevistaAutor(Base):
-    __tablename__ = "entrevista_autor"
-    entrevista_id: Mapped[int] = mapped_column(ForeignKey("entrevista.id"), primary_key=True)
-    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"), primary_key=True)
-
-
 class ConversacionVinculo(Base):
     __tablename__ = "conversacion_vinculo"
     __table_args__ = (UniqueConstraint("vinculo_id", "conversacion_id"),)

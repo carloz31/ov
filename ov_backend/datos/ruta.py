@@ -83,6 +83,9 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-contraste', 'CIUDAD', 'Registro de contraste de intereses', 'REGISTRO', None, 10),
                # Ajuste mochila: un llamado que el recorrido nunca abre, para las voces que aún no se listan.
                ('t-caso-2', 'CIUDAD', 'La traductora apurada', 'CASO', 10, 10),
+               # B13: la misión que abre Investigaciones y la que vuelve tras publicar la primera entrevista.
+               ('t-investigador', 'CIUDAD', 'El investigador de oficios', 'INFORMATIVA', None, 5),
+               ('t-investigador-cierre', 'CIUDAD', 'Lo que cambió', 'REGISTRO', None, 10),
                ('t-apo-1', 'FAMILIA', 'Primera actividad del apoderado', 'INFORMATIVA', None, 10),
                ('t-apo-2', 'FAMILIA', 'Segunda actividad del apoderado', 'INFORMATIVA', None, 10),
                # DATO DE PRUEBA: un recuerdo de Lumi por nivel de amistad (ajuste del diario de F05).
@@ -104,6 +107,8 @@ PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR
                't-explorar': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-caso-2': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+               't-investigador': {'requerida': False},
+               't-investigador-cierre': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                **{codigo: {'requerida': False} for codigo in RECUERDOS_LUMI}}
 
 # Texto de presentación de cada actividad (`descripcion`): el front lo muestra tal cual en el mapa y en
@@ -128,6 +133,8 @@ DESCRIPCIONES = {
     't-caso': 'Ayuda a resolver un caso de la ciudad.',
     't-contraste': 'Contrasta tu resultado de intereses con lo que esperabas.',
     't-caso-2': 'Un llamado que la Central todavía no publica.',
+    't-investigador': 'Conoce cómo investigar una ocupación entrevistando a quien la ejerce.',
+    't-investigador-cierre': 'Compara lo que pensabas antes de tu entrevista con lo que aprendiste.',
     't-apo-1': 'Conozca cómo acompañar a su hijo en este proceso.',
     't-apo-2': 'Conozca cómo decide un adolescente.',
 }
@@ -196,7 +203,9 @@ LISTAS = (('t-lista-apoyos', 'Quién te apoya', (('FAMILIA', 'Mi familia'), ('DO
                                                 ('AMIGOS', 'Mis amigos'))),
           ('t-lista-valores', 'Valores', (('SERVIR', 'Servir a otros'), ('CREAR', 'Crear cosas nuevas'),
                                           ('ESTABILIDAD', 'Tener estabilidad'), ('RECONOCIMIENTO', 'Ser reconocido'),
-                                          ('LIBERTAD', 'Tener libertad'))))
+                                          ('LIBERTAD', 'Tener libertad'))),
+          ('t-lista-cambio', 'En tu lista', (('SUBE', 'Sube en mi lista'), ('IGUAL', 'Se queda igual'),
+                                             ('BAJA', 'Baja en mi lista'))))
 
 # (actividad, código, nombre, consigna, elección, criterios). El orden es el de la tupla dentro de cada
 # actividad. Elección: None o (lista, mínima, máxima, ordenada, permite «otra»[, referencia]); la referencia
@@ -233,6 +242,12 @@ ITEMS_REGISTRO = (
      None, (('C1', 'RAZON', 'Por qué ese plan le convence más'),)),
     ('t-proyecto', 't-proyecto-paso', 'Mi proyecto', '¿Cuál de tus pasos vas a dar primero y qué esperas averiguar?',
      None, (('C1', 'ACCION', 'Qué paso dará primero'),)),
+    # B13 · HU-101: contrasta lo que pensaba (LO_QUE_PIENSO) con lo que aprendió en la entrevista.
+    ('t-investigador-cierre', 't-cierre-cambio', 'Lo que cambió',
+     '¿Qué cambió en lo que pensabas de la ocupación después de tu entrevista?', None,
+     (('C1', 'CONTRASTE', 'Compara lo que pensaba antes con lo que aprendió'),)),
+    ('t-investigador-cierre', 't-cierre-lista', 'En tu lista', '¿La ocupación sube o baja en tu lista? ¿Por qué?',
+     ('t-lista-cambio', 1, 1, False, False), (('C1', 'RAZON', 'Por qué sube, baja o se queda igual'),)),
 )
 
 # Referencias: (código, (tipo de dueño, dueño), tipo, fuente). Dueño: ('ACTIVIDAD', código) o
@@ -250,9 +265,10 @@ REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera')
                ('t-ref-planes', ('ACTIVIDAD', 't-comparar'), 'PLANES', None),
                ('t-ref-plan-a', ('ACTIVIDAD', 't-proyecto'), 'PLAN', None),
                ('t-ref-pasos-plan-a', ('ACTIVIDAD', 't-proyecto'), 'PASOS_PLAN_A', None),
-               ('t-ref-opcion-inicial', ('ACTIVIDAD', 't-proyecto'), 'OPCION_INICIAL', None))
+               ('t-ref-opcion-inicial', ('ACTIVIDAD', 't-proyecto'), 'OPCION_INICIAL', None),
+               ('t-ref-lo-que-pienso', ('ACTIVIDAD', 't-investigador-cierre'), 'LO_QUE_PIENSO', None))
 FUENTE_APLICACION = ('RESULTADO', 'COINCIDENCIAS')
-SIN_FUENTE = ('FAVORITOS', 'PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL')
+SIN_FUENTE = ('FAVORITOS', 'PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL', 'LO_QUE_PIENSO')
 
 # Lo que cambia los valores por defecto de un ítem (obligatorio, sin longitud mínima).
 PROPIEDADES_ITEMS = {'t-val-breve': {'min_caracteres': 40}}
@@ -412,7 +428,14 @@ INSIGNIAS = (('t-ins-1', 'La primera chispa',
               'trabajando.', 'Mira ocupaciones de tipos distintos.', True),
              ('t-ins-instituciones', 'Exploradora de instituciones',
               'Conociste todas las formas de seguir estudiando. Saber qué puertas existen te deja elegir con más '
-              'libertad.', 'Mira instituciones de todos los tipos.', True))
+              'libertad.', 'Mira instituciones de todos los tipos.', True),
+             # B13: publicar una entrevista y llegar a Leyenda.
+             ('t-ins-entrevista', 'Voz de la ciudad',
+              'Conversaste con alguien que ejerce un oficio y lo compartiste con tu salón. Preguntar a quien ya '
+              'recorrió el camino lo vuelve más real.', 'Publica una entrevista.', False),
+             ('t-ins-leyenda', 'Leyenda',
+              'Tu entrevista quedó como Leyenda: la verán otros salones y otras promociones.',
+              'Logra que tu entrevista sea Leyenda.', False))
 # {insignia: (frase destacada, cómo se consiguió en pasado)}; lo que muestra el sello obtenido (F5).
 TEXTOS_INSIGNIAS = {
     't-ins-1': ('Una nueva mirada viaja contigo.', 'completaste la introducción de tu viaje.'),
@@ -420,13 +443,16 @@ TEXTOS_INSIGNIAS = {
     't-ins-familias': ('Un mapa crece cuando visitas más de un territorio.', 'miraste carreras de familias distintas.'),
     't-ins-letras': ('Cada interés abre una ventana distinta.', 'miraste ocupaciones de tipos distintos.'),
     't-ins-instituciones': ('Conocer las puertas también es avanzar.', 'miraste instituciones de todos los tipos.'),
+    't-ins-entrevista': ('Preguntar abre caminos.', 'publicaste una entrevista.'),
+    't-ins-leyenda': ('Tu voz llega lejos.', 'tu entrevista llegó a Leyenda.'),
 }
 
 # Páginas del pasaporte (ajuste pasaporte-perfil): (código, nombre, orden).
 GRUPOS_INSIGNIA = (('G1', 'La luz que despeja caminos', 1), ('G2', 'Huellas en la ciudad', 2))
 # {insignia: (grupo, orden dentro del grupo)}; toda insignia tiene grupo.
 PAGINAS_INSIGNIAS = {'t-ins-1': ('G1', 1), 't-ins-oculta': ('G1', 2), 't-ins-familias': ('G2', 1),
-                     't-ins-letras': ('G2', 2), 't-ins-instituciones': ('G2', 3)}
+                     't-ins-letras': ('G2', 2), 't-ins-instituciones': ('G2', 3), 't-ins-entrevista': ('G2', 4),
+                     't-ins-leyenda': ('G2', 5)}
 # Pista de Lumi de cada oculta, visible mientras no se obtiene.
 PISTAS_INSIGNIAS = {
     't-ins-oculta': 'No todo brillo sobrevive a una batalla. El que no se apaga ni una vez, deja huella.',
@@ -541,6 +567,16 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-SEC-CHECK_IN', 'SECCION', 'CHECK_IN', 'Completa el cierre del inicio para hacer tu check-in.',
      (('COMPLETA_ACTIVIDAD', 't-cierre-inicio', 'EVENTOS', 1),)),
+    # B13: Investigaciones se abre con una misión de la ciudad; la primera entrevista publicada trae de vuelta al
+    # investigador con la misión de registro «qué cambió».
+    ('R-SEC-INVESTIGACIONES', 'SECCION', 'INVESTIGACIONES', 'Completa la misión del investigador para investigar.',
+     (('COMPLETA_ACTIVIDAD', 't-investigador', 'EVENTOS', 1),)),
+    ('R-t-investigador-cierre', 'ACTIVIDAD', 't-investigador-cierre',
+     'Publica tu primera entrevista para contar qué cambió.', (('PUBLICA_ENTREVISTA', None, 'EVENTOS', 1),)),
+    ('R-t-ins-entrevista', 'INSIGNIA', 't-ins-entrevista', 'Publica una entrevista.',
+     (('PUBLICA_ENTREVISTA', None, 'EVENTOS', 1),)),
+    ('R-t-ins-leyenda', 'INSIGNIA', 't-ins-leyenda', 'Logra que tu entrevista sea Leyenda.',
+     (('ENTREVISTA_LEYENDA', None, 'EVENTOS', 1),)),
     ('R-SEC-FAMILIA', 'SECCION', 'FAMILIA', 'Completa el registro de expectativas para abrir la sección Familia.',
      (('COMPLETA_ACTIVIDAD', 't-expectativas', 'EVENTOS', 1),)),
     ('R-t-diario-fija', 'PREGUNTA_DIARIO', 't-diario-fija', 'Completa el inicio para recibir esta pregunta.',
@@ -591,6 +627,8 @@ TEXTOS_CONDICIONES = {
     'R-t-ins-familias': ('Mira carreras de familias distintas',),
     'R-t-ins-letras': ('Mira ocupaciones de tipos distintos',),
     'R-t-ins-instituciones': ('Mira instituciones de todos los tipos',),
+    'R-t-ins-entrevista': ('Publica una entrevista',),
+    'R-t-ins-leyenda': ('Logra que tu entrevista sea Leyenda',),
     'R-NIV-2': ('Termina el bloque de inicio',),
     'R-NIV-3': ('Termina el bloque de inicio', 'Mira tres carreras distintas'),
 }

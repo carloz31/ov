@@ -17,20 +17,22 @@ from datos.fijos import validar_distribucion_items
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     esperados = {'salon': 2, 'cuenta': 5, 'orientadora_salon': 1, 'vinculo_familiar': 2, 'bloque': 6,
         # Ajuste mochila: t-caso-2, t-ficha-3, t-testimonio-3 y 4, sus reglas y la condición extra de t-testimonio-2.
-        'actividad': 26, 'seccion': 6, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 5, 'nivel': 3,
-        'regla_desbloqueo': 53, 'condicion_desbloqueo': 60, 'pregunta_diario': 8,
+        'actividad': 28, 'seccion': 7, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 7, 'nivel': 3,
+        'regla_desbloqueo': 57, 'condicion_desbloqueo': 64, 'pregunta_diario': 8,
         'instrumento': 2, 'escala_respuesta': 2, 'opcion_escala': 9, 'dimension': 11,
         'item_instrumento': 79, 'actividad_item': 98, 'aplicacion': 3, 'aplicacion_actividad': 4,
         # Ajuste catalogo-datos-reales: el catálogo real (603 carreras tras fusionar 5 duplicadas por tilde,
         # 706 instituciones con carreras, 923 ocupaciones de Mi Próximo Paso) y la relación provisional al azar.
         'ocupacion': 923, 'puntaje_ocupacion': 5538, 'familia_carrera': 89, 'carrera': 603,
-        'carrera_ocupacion': 2224, 'lista_opciones': 12, 'opcion_lista': 66, 'item_registro': 12,
-        'criterio_completitud': 10, 'referencia': 11, 'tematica': 5,
+        'carrera_ocupacion': 2224, 'lista_opciones': 13, 'opcion_lista': 69, 'item_registro': 14,
+        'criterio_completitud': 12, 'referencia': 12, 'tematica': 5,
         'actividad_tematica': 6, 'actividad_dimension': 2, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 2316, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,
         'grupo_ocupacional': 22, 'estilo_trabajo': 21, 'ingreso_familia': 716, 'ingreso_institucion': 1096,
-        'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6}
-    assert len(Base.metadata.tables) == 86
+        'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6,
+        # B13: catálogos de investigaciones.
+        'pregunta_base_guion': 3, 'tipo_reaccion': 4}
+    assert len(Base.metadata.tables) == 93
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA', 'LUMI'}

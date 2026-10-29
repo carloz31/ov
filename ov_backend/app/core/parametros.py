@@ -112,3 +112,9 @@ def puntaje_ocupacion_porcentaje(valor: float) -> int:
 # cambia el nombre de la plataforma.
 PREFIJO_DIPLOMA = 'EXP-AP'
 CIFRAS_CUENTA_DIPLOMA = 5
+
+# B13: favoritos de estudiantes que, con el destacado de la orientadora, vuelven Leyenda una entrevista.
+FAVORITOS_LEYENDA = 3
+# B13: sugerencias de preguntas para el guion de una entrevista (una llamada al LLM por versión de «lo que pienso»).
+MAXIMO_SUGERENCIAS_GUION = 3
+MAXIMO_CARACTERES_PREGUNTA_GUION = 160
