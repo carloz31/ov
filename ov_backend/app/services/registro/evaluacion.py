@@ -350,6 +350,9 @@ class EvaluadorFalso:
         self.contextos_sugerencias: list = []
         self.llamadas_sugerencias = 0
         self.falla_sugerencias = False
+        # Investigaciones (B13): sugerencias de preguntas para el guion.
+        self.contextos_guion: list = []
+        self.llamadas_guion = 0
 
     @staticmethod
     def _clasificar(texto, criterios, previos):
@@ -434,3 +437,21 @@ class EvaluadorFalso:
             if '[ajeno]' in novedad.texto:
                 resultado.append({clave: 999, 'pasos': [paso]})
         return resultado
+
+    def sugerir_preguntas(self, contexto) -> dict:
+        """Tres preguntas nuevas, distintas en cada llamada, más una que repite la primera base (el servicio la
+        filtra). Marcas en los textos: `[falla]` lanza error; `[malformado]` sale del esquema; `[vacio]` no propone."""
+        self.llamadas_guion += 1
+        self.contextos_guion.append(contexto)
+        textos = ' '.join((contexto.dia, contexto.necesita, contexto.duda))
+        if '[falla]' in textos:
+            raise RuntimeError("Fallo simulado de las sugerencias del guion")
+        if '[malformado]' in textos:
+            return {'preguntas': 'DATO DE PRUEBA'}
+        if '[vacio]' in textos:
+            return {'preguntas': []}
+        n = self.llamadas_guion
+        return {'preguntas': [contexto.preguntas_base[0],
+                              f'¿Qué te sorprendió al empezar como {contexto.ocupacion}? ({n})',
+                              f'¿Qué parte de tu trabajo casi nadie conoce? ({n})',
+                              f'¿Qué harías distinto si empezaras hoy? ({n})']}
