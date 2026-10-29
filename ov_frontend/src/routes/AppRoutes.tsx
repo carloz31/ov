@@ -12,6 +12,8 @@ import { CounselorPortalModule } from '@/pages/counselor/CounselorPortalModule'
 import { CounselorSettingsView } from '@/pages/counselor/CounselorSettingsView'
 import { PrioritiesView } from '@/pages/counselor/PrioritiesView'
 import { PublicationsView } from '@/pages/counselor/PublicationsView'
+import { PublicacionesServidorView } from '@/pages/counselor/PublicacionesServidorView'
+import { PublicacionServidorView } from '@/pages/counselor/PublicacionServidorView'
 import { StudentDetailView } from '@/pages/counselor/StudentDetailView'
 import { QuestionnaireDetailView } from '@/pages/counselor/QuestionnaireDetailView'
 import { StudentRecordDetailView } from '@/pages/counselor/StudentRecordDetailView'
@@ -267,8 +269,14 @@ function AppRoutes() {
         <Route element={<StudentDetailView />} path="students/:studentId" />
         <Route element={<StudentRecordDetailView />} path="students/:studentId/records/:recordId" />
         <Route element={<FamilyRecordDetailView />} path="students/:studentId/family-records/:activityId" />
-        <Route element={<PublicationsView />} path="publications" />
-        <Route element={<PublicationsView />} path="publications/interviews/:interviewId" />
+        <Route
+          element={<SegunModo api={<PublicacionesServidorView />} local={<PublicationsView />} />}
+          path="publications"
+        />
+        <Route
+          element={<SegunModo api={<PublicacionServidorView />} local={<PublicationsView />} />}
+          path="publications/interviews/:interviewId"
+        />
         <Route element={<PrioritiesView />} path="priorities" />
         <Route element={<CounselorSettingsView />} path="settings" />
         {subrutasExplorar('orientadora')}
