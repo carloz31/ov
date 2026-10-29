@@ -8,7 +8,7 @@ import type {
   TipoReaccionPublico,
 } from '@/types/servidor'
 
-// F09: Investigaciones en api (spec investigaciones-B13-F09, §3 y §4). Solo importa tipos: las pruebas lo cargan aislado.
+// F09: Investigaciones en api (estudiante y orientadora). Solo importa tipos: las pruebas lo cargan aislado.
 
 // Paso del asistente que abre «Ver mi guion» o «Iniciar»: sin investigación, lo que pienso; en curso, las
 // preguntas; con la guía lista, la guía.

@@ -11,7 +11,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - de la orientadora, `GET /cuentas/{c}/publicaciones` y `/publicaciones/{e}`, y las acciones `destacar-entrevista`, `comentar-entrevista`, `eliminar-entrevista` y `descartar-reporte`;
   - la misión `t-investigador` (abre la sección INVESTIGACIONES) y `t-investigador-cierre` (registro con la referencia LO_QUE_PIENSO), sin contenido en el front;
   - la sección INVESTIGACIONES en `/secciones` y las insignias `t-ins-entrevista` y `t-ins-leyenda` en los logros.
-- **Dónde se mostraría:** las pantallas de la spec `ov_backend/docs/specs/investigaciones-B13-F09.md` (§3 del estudiante y §4 de la orientadora), que conecta F09. Los contenidos `t_investigador` y `t_investigador_cierre` también los agrega F09.
+- **Dónde se mostraría:** las pantallas de Investigaciones del estudiante y de Publicaciones de la orientadora, que conecta F09. Los contenidos `t_investigador` y `t_investigador_cierre` también los agrega F09.
 - **Opciones:** las define la spec de F09 con sus bocetos.
 - **Si no se muestra:** en modo `api`, las investigaciones existen solo en el servidor. Las dos misiones nuevas no se muestran porque su contenido no existe en el front.
 - **Pruebas:** mientras falte su contenido, `tests/servidor/mapa/servidor-siguiente-paso.test.mjs` (`SIN_CONTENIDO_HASTA_F09`) y la prueba del aviso «Actividad sin contenido» de `servidor-mapa.test.mjs` ignoran `t-investigador` y `t-investigador-cierre`. F09, al crear `t_investigador.json` y `t_investigador_cierre.json`, quita esos dos filtros.
