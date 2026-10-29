@@ -31,13 +31,10 @@ test('el guion se numera seguido (base 1–3) y termina con una pregunta propia 
     guion.base.map((p) => p.numero),
     [1, 2, 3],
   )
-  assert.deepEqual(
-    copia(guion.propias.map((p) => [p.numero, p.origen])),
-    [
-      [4, 'DUDA'],
-      [5, 'SUGERIDA'],
-    ],
-  )
+  assert.deepEqual(copia(guion.propias.map((p) => [p.numero, p.origen])), [
+    [4, 'DUDA'],
+    [5, 'SUGERIDA'],
+  ])
   assert.equal(guion.total, 5)
   assert.equal(puedeTerminarGuion(datos.en_curso.preguntas), true)
   assert.equal(puedeTerminarGuion([{ origen: 'SUGERIDA', texto: 'x' }]), false)
@@ -55,8 +52,14 @@ test('la tarjeta: conteos sin desglose, desglose por tipo en el catálogo y medi
     copia(medidorLeyenda({ favoritos: 3, favoritosLeyenda: 5, destacada: true, leyenda: false })),
     { porcentaje: 80, favoritos: 3, requeridos: 5, destacada: true },
   )
-  assert.equal(medidorLeyenda({ favoritos: 9, favoritosLeyenda: 3, destacada: false, leyenda: false }).porcentaje, 50)
-  assert.equal(medidorLeyenda({ favoritos: 3, favoritosLeyenda: 3, destacada: true, leyenda: true }).porcentaje, 100)
+  assert.equal(
+    medidorLeyenda({ favoritos: 9, favoritosLeyenda: 3, destacada: false, leyenda: false }).porcentaje,
+    50,
+  )
+  assert.equal(
+    medidorLeyenda({ favoritos: 3, favoritosLeyenda: 3, destacada: true, leyenda: true }).porcentaje,
+    100,
+  )
 })
 
 test('YouTube, reportes y fechas', () => {
@@ -68,12 +71,16 @@ test('YouTube, reportes y fechas', () => {
   assert.equal(embedYoutube('https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=3'), embedYoutube(detalle.enlace))
   assert.equal(lineaReportes([]), null)
   assert.equal(lineaReportes(['OFENSIVO']), 'Reportado: ofensivo · por 1 estudiante')
-  const ahora = new Date(2026, 9, 29, 12, 0)
+  // Las fechas del servidor están en hora de Lima: las 12:00 de Lima son las 17:00 UTC.
+  const ahora = new Date('2026-10-29T17:00:00Z')
   assert.equal(fechaRelativa('2026-10-29T10:00:00', ahora), 'hace 2 h')
   assert.equal(fechaRelativa('2026-10-28T18:00:00', ahora), 'ayer')
   assert.equal(fechaRelativa('2026-10-26T18:00:00', ahora), 'hace 3 días')
   assert.equal(fechaRelativa('2026-10-12T18:00:00', ahora), '12 oct')
   assert.equal(fechaNumerica('2026-10-25T09:00:00'), '25/10/2026')
+  // A las 21:00 de Lima ya es el día siguiente en UTC, pero sigue siendo el mismo día.
+  assert.equal(fechaNumerica('2026-10-25T21:00:00'), '25/10/2026')
+  assert.equal(fechaRelativa('2026-10-28T21:00:00', new Date('2026-10-29T03:00:00Z')), 'hace 1 h')
 })
 
 test('la orientadora: reacción reportada primero, con el salón de su autor', () => {
@@ -95,13 +102,10 @@ test('«Lo que cambió» cita lo que pensaba antes, y sus contenidos existen con
   const cierre = contenido('t_investigador_cierre')
   assert.equal(cierre._dato_de_prueba, true)
   const consignas = cierre.nodos.filter((n) => n.tipo === 'consigna')
-  assert.deepEqual(
-    copia(consignas.map((n) => [n.item, n.eco ?? null])),
-    [
-      ['t-cierre-cambio', ['t-ref-lo-que-pienso']],
-      ['t-cierre-lista', null],
-    ],
-  )
+  assert.deepEqual(copia(consignas.map((n) => [n.item, n.eco ?? null])), [
+    ['t-cierre-cambio', ['t-ref-lo-que-pienso']],
+    ['t-cierre-lista', null],
+  ])
   assert.equal(contenido('t_investigador')._dato_de_prueba, true)
 })
 
@@ -111,9 +115,11 @@ function almacenInvestigaciones() {
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
     if (req.url.includes('/desbloqueos?')) return { body: [] }
-    if (req.url.endsWith('/investigaciones')) return { body: jsonServidor('ruta/ruta-investigaciones-en-curso') }
+    if (req.url.endsWith('/investigaciones'))
+      return { body: jsonServidor('ruta/ruta-investigaciones-en-curso') }
     if (req.url.includes('/entrevistas?')) return { body: jsonServidor('ruta/ruta-entrevistas-salon') }
-    if (req.url.endsWith('/acciones/pedir-sugerencias-guion')) return { body: jsonServidor('ruta/ruta-sugerencias-guion') }
+    if (req.url.endsWith('/acciones/pedir-sugerencias-guion'))
+      return { body: jsonServidor('ruta/ruta-sugerencias-guion') }
     if (req.url.endsWith('/acciones/publicar-entrevista'))
       return { body: { por_cuenta: { 'est-ana': sinRespuestas, 'est-luis': sinRespuestas } } }
     if (req.url.includes('/acciones/')) return { body: sinRespuestas }
@@ -135,7 +141,11 @@ test('el almacén pide la sección y las listas con sus filtros; las acciones us
   assert.equal((await almacen.asegurarSeccion('investigaciones')).tipo, 'ok')
   assert.equal(almacen.obtenerEstadoServidor().investigaciones.datos.en_curso.estado, 'EN_CURSO')
   app.requests.length = 0
-  await entrevistas.cargarListaEntrevistas('entrevistas', { vista: 'SALON', buscar: ' luz ', favoritas: true })
+  await entrevistas.cargarListaEntrevistas('entrevistas', {
+    vista: 'SALON',
+    buscar: ' luz ',
+    favoritas: true,
+  })
   assert.deepEqual(
     app.requests.map((r) => r.url),
     ['/api/cuentas/est-ana/entrevistas?buscar=luz&favoritas=true&vista=SALON&limite=20&desde=0'],
@@ -144,7 +154,13 @@ test('el almacén pide la sección y las listas con sus filtros; las acciones us
   assert.equal((await store.guardarLoQuePienso('electrician', 'a', 'b', 'c')).tipo, 'ok')
   assert.equal(almacen.obtenerEstadoServidor().investigaciones.estado, 'vencido')
   assert.equal((await store.pedirSugerenciasGuion()).datos.estado, 'LISTAS')
-  const ficha = { titulo: 't', profesional: 'p', duracion: '5 min', enlace: 'https://youtu.be/dQw4w9WgXcQ', resumen: 'r' }
+  const ficha = {
+    titulo: 't',
+    profesional: 'p',
+    duracion: '5 min',
+    enlace: 'https://youtu.be/dQw4w9WgXcQ',
+    resumen: 'r',
+  }
   assert.equal((await store.publicarEntrevista(ficha, ['est-luis'], true)).tipo, 'ok')
   assert.equal((await store.alternarFavoritoEntrevista('ENT-1', true)).tipo, 'ok')
   assert.equal((await store.reportarContenido({ reaccion: 'REA-1' }, 'OFENSIVO', null)).tipo, 'ok')
@@ -155,7 +171,10 @@ test('el almacén pide la sección y las listas con sus filtros; las acciones us
       { cuenta: 'est-ana', ocupacion: 'electrician', dia: 'a', necesita: 'b', duda: 'c' },
     ],
     ['/api/acciones/pedir-sugerencias-guion', { cuenta: 'est-ana' }],
-    ['/api/acciones/publicar-entrevista', { cuenta: 'est-ana', ...ficha, coautores: ['est-luis'], permiso: true }],
+    [
+      '/api/acciones/publicar-entrevista',
+      { cuenta: 'est-ana', ...ficha, coautores: ['est-luis'], permiso: true },
+    ],
     ['/api/acciones/marcar-favorito', { cuenta: 'est-ana', tipo: 'ENTREVISTA', codigo: 'ENT-1' }],
     ['/api/acciones/reportar', { cuenta: 'est-ana', reaccion: 'REA-1', motivo: 'OFENSIVO', detalle: null }],
   ])
@@ -171,7 +190,11 @@ test('la orientadora: la tabla pide sus filtros y las acciones usan las rutas de
   })
   const entrevistas = app.load('src/store/servidor/entrevistas.ts')
   const store = app.load('src/store/servidor/investigaciones.ts')
-  await entrevistas.cargarListaEntrevistas('publicaciones', { salon: '5A', con_reportes: true, buscar: 'ana' })
+  await entrevistas.cargarListaEntrevistas('publicaciones', {
+    salon: '5A',
+    con_reportes: true,
+    buscar: 'ana',
+  })
   assert.equal(await entrevistas.contarConReportes(), 1)
   const detalle = await entrevistas.cargarDetalleEntrevista('publicacion', 'ENT-1')
   assert.deepEqual(
@@ -186,7 +209,10 @@ test('la orientadora: la tabla pide sus filtros y las acciones usan las rutas de
     ['/api/cuentas/ori-carmen/publicaciones?con_reportes=true&limite=1&desde=0', null],
     ['/api/cuentas/ori-carmen/publicaciones/ENT-1', null],
     ['/api/acciones/destacar-entrevista', { cuenta: 'ori-carmen', entrevista: 'ENT-1', destacada: false }],
-    ['/api/acciones/comentar-entrevista', { cuenta: 'ori-carmen', entrevista: 'ENT-1', texto: 'Bien', reaccion: 'REA-9' }],
+    [
+      '/api/acciones/comentar-entrevista',
+      { cuenta: 'ori-carmen', entrevista: 'ENT-1', texto: 'Bien', reaccion: 'REA-9' },
+    ],
     ['/api/acciones/descartar-reporte', { cuenta: 'ori-carmen', reporte: 'REP-1' }],
   ])
 })

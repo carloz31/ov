@@ -9,13 +9,14 @@ export function SugerenciasLumi({ p }: { p: ModeloPreguntas }) {
       <p className="sx-i-grupo">Lumi te sugiere, a partir de lo que escribiste</p>
       {p.estadoSugerencias === 'cargando' && (
         <div className="sx-i-sugerencia" data-estado="cargando" role="status">
-          <Loader2 aria-hidden="true" size={18} className="animate-spin" /> Lumi está leyendo lo que escribiste…
+          <Loader2 aria-hidden="true" size={18} className="animate-spin" /> Lumi está leyendo lo que
+          escribiste…
         </div>
       )}
       {p.estadoSugerencias === 'sin_sugerencias' && (
         <div className="sx-i-sugerencia" data-estado="aviso">
-          Con lo que escribiste no pude armar preguntas nuevas, pero las tres base y tu duda ya son un buen comienzo.
-          Agrega las tuyas.
+          Con lo que escribiste no pude armar preguntas nuevas, pero las tres base y tu duda ya son un buen
+          comienzo. Agrega las tuyas.
         </div>
       )}
       {p.estadoSugerencias === 'error' && (
@@ -30,10 +31,26 @@ export function SugerenciasLumi({ p }: { p: ModeloPreguntas }) {
         p.pendientes.map((s) => (
           <div className="sx-i-sugerencia" key={s.codigo}>
             <span>{s.texto}</span>
-            <button type="button" className="sx-i-boton" data-tono="claro" onClick={() => p.agregar(s)}>
-              <Plus aria-hidden="true" size={14} /> Agregar
+            <button
+              type="button"
+              className="sx-i-boton"
+              data-tono="claro"
+              aria-busy={p.guardando === s.codigo || undefined}
+              onClick={() => p.agregar(s)}
+            >
+              {p.guardando === s.codigo ? (
+                <Loader2 aria-hidden="true" size={14} className="animate-spin" />
+              ) : (
+                <Plus aria-hidden="true" size={14} />
+              )}{' '}
+              Agregar
             </button>
-            <button type="button" className="sx-i-quitar" aria-label="Descartar sugerencia" onClick={() => p.descartar(s)}>
+            <button
+              type="button"
+              className="sx-i-quitar"
+              aria-label="Descartar sugerencia"
+              onClick={() => p.descartar(s)}
+            >
               <X aria-hidden="true" size={16} />
             </button>
           </div>

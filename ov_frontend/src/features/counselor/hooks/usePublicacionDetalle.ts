@@ -73,10 +73,17 @@ export function usePublicacionDetalle() {
     pedirEliminarComentario: (r: ReaccionModerada | null) => setEliminandoComentario(r),
     eliminarComentario: async () => {
       if (!eliminandoComentario) return
-      if (await correr('eliminar-comentario', () => eliminarReaccion(eliminandoComentario.codigo), 'Comentario eliminado'))
+      if (
+        await correr(
+          'eliminar-comentario',
+          () => eliminarReaccion(eliminandoComentario.codigo),
+          'Comentario eliminado',
+        )
+      )
         setEliminandoComentario(null)
     },
-    descartar: (reporte: string) => void correr(`descartar-${reporte}`, () => descartarReporte(reporte), 'Reporte descartado'),
+    descartar: (reporte: string) =>
+      void correr(`descartar-${reporte}`, () => descartarReporte(reporte), 'Reporte descartado'),
     comentario,
     setComentario,
     editando,

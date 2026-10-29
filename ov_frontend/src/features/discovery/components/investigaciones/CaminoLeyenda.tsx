@@ -28,7 +28,11 @@ export function CaminoLeyenda({ entrevista }: { entrevista: EntrevistaDetalle })
           <span style={{ width: `${medidor.porcentaje}%` }} />
         </div>
         <p className="sx-i-condicion">
-          {entrevista.destacada ? <Check aria-hidden="true" size={18} /> : <Circle aria-hidden="true" size={18} />}
+          {entrevista.destacada ? (
+            <Check aria-hidden="true" size={18} />
+          ) : (
+            <Circle aria-hidden="true" size={18} />
+          )}
           Destacada por tu orientadora
         </p>
         <p className="sx-i-condicion">
@@ -47,12 +51,12 @@ export function CaminoLeyenda({ entrevista }: { entrevista: EntrevistaDetalle })
       <section className="sx-i-panel sx-i-panel-nota">
         <h3>Autores y coautores: mismos permisos</h3>
         <p>
-          Cualquiera de los autores puede editar la ficha, retirar la entrevista y reportar comentarios. Ninguno reacciona
-          a la propia.
+          Cualquiera de los autores puede editar la ficha, retirar la entrevista y reportar comentarios.
+          Ninguno reacciona a la propia.
         </p>
         <p>
-          Lo que pensaban antes no se muestra aquí: la primera entrevista publicada abre en la Ciudad una misión de
-          registro que lo trae como eco para contrastarlo.
+          Lo que pensaban antes no se muestra aquí: la primera entrevista publicada abre en la Ciudad una
+          misión de registro que lo trae como eco para contrastarlo.
         </p>
       </section>
     </div>

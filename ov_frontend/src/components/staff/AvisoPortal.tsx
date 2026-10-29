@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { CircleCheck, TriangleAlert, X } from 'lucide-react'
 
 const DURACION = 6000
@@ -23,13 +24,18 @@ export function AvisoPortal({
     return () => clearTimeout(temporizador)
   }, [])
   const Icono = error ? TriangleAlert : CircleCheck
-  return (
+  // En `document.body`: el contenido del portal estira a todo el ancho a sus hijos directos.
+  return createPortal(
     <aside
       role="status"
       aria-live="polite"
-      className="fixed right-4 top-4 z-50 flex max-w-sm items-start gap-3 rounded-xl border bg-card p-4 shadow-lg"
+      className="fixed right-4 top-4 z-50 flex items-start gap-3 rounded-xl border bg-card p-4 shadow-lg"
+      style={{ width: 'min(24rem, calc(100vw - 2rem))' }}
     >
-      <Icono className={`mt-0.5 size-5 shrink-0 ${error ? 'text-danger-text' : 'text-primary'}`} aria-hidden="true" />
+      <Icono
+        className={`mt-0.5 size-5 shrink-0 ${error ? 'text-danger-text' : 'text-primary'}`}
+        aria-hidden="true"
+      />
       <div className="min-w-0 flex-1">
         <p className="font-semibold">{titulo}</p>
         {descripcion && <p className="mt-1 text-sm text-muted-foreground">{descripcion}</p>}
@@ -37,6 +43,7 @@ export function AvisoPortal({
       <button type="button" className="min-h-8 min-w-8" aria-label="Cerrar aviso" onClick={onCerrar}>
         <X className="size-4" aria-hidden="true" />
       </button>
-    </aside>
+    </aside>,
+    document.body,
   )
 }

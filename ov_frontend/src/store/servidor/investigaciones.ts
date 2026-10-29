@@ -19,6 +19,11 @@ import { actualizarEntrevista, vencerEntrevistas } from './entrevistas'
 // sección `investigaciones` (en curso, aliados, conteos) y las listas y detalles de entrevistas.
 type Resultado<T> = Awaited<ReturnType<typeof accionConRefresco<T & RespuestaAccion>>>
 const confirmada = (r: { tipo: string }) => r.tipo === 'ok' || r.tipo === 'guardado_sin_refrescar'
+// Un 409 dice que otra cuenta cambió el estado (un coautor publicó, la orientadora eliminó): se relee todo.
+function vencerTodo() {
+  vencerSeccion('investigaciones')
+  vencerEntrevistas()
+}
 
 async function accionInvestigacion<T extends RespuestaAccion>(
   accion: (cuenta: string) => Promise<RespuestaServidor<T>>,
@@ -28,7 +33,7 @@ async function accionInvestigacion<T extends RespuestaAccion>(
   if (confirmada(respuesta)) {
     vencerSeccion('investigaciones')
     if (entrevistas) vencerEntrevistas()
-  }
+  } else if (respuesta.tipo === 'bloqueado') vencerTodo()
   return respuesta
 }
 // Publicar y editar responden por cuenta (los coautores); el estudiante refresca con la suya.
@@ -43,14 +48,23 @@ const propia =
 export const MAXIMO_OCUPACIONES_BUSCADOR = 8
 export const buscarOcupaciones = (texto: string, senal: AbortSignal) =>
   consultarCuenta((cuenta) =>
-    apiCatalogo.buscarCatalogo(cuenta, 'ocupaciones', { buscar: texto }, MAXIMO_OCUPACIONES_BUSCADOR, 0, senal),
+    apiCatalogo.buscarCatalogo(
+      cuenta,
+      'ocupaciones',
+      { buscar: texto },
+      MAXIMO_OCUPACIONES_BUSCADOR,
+      0,
+      senal,
+    ),
   )
 // «Investigarla» desde el detalle de una ocupación: su título.
 export const consultarOcupacionInvestigar = (codigo: string) =>
   consultarCuenta((cuenta) => apiCatalogo.obtenerOcupacion(cuenta, codigo))
 
 export const guardarLoQuePienso = (ocupacion: string, dia: string, necesita: string, duda: string) =>
-  accionInvestigacion((cuenta) => apiInvestigaciones.guardarLoQuePienso(cuenta, ocupacion, dia, necesita, duda))
+  accionInvestigacion((cuenta) =>
+    apiInvestigaciones.guardarLoQuePienso(cuenta, ocupacion, dia, necesita, duda),
+  )
 
 // Una lectura con efecto: las sugerencias quedan guardadas y `sugerencias_vigentes` pasa a verdadero.
 export async function pedirSugerenciasGuion() {
@@ -70,7 +84,11 @@ export const publicarEntrevista = (ficha: FichaEntrevistaEntrada, coautores: str
     true,
   )
 
-export const editarEntrevista = (entrevista: string, ficha: FichaEntrevistaEntrada, coautoresNuevos: string[]) =>
+export const editarEntrevista = (
+  entrevista: string,
+  ficha: FichaEntrevistaEntrada,
+  coautoresNuevos: string[],
+) =>
   accionInvestigacion(
     propia((cuenta) => apiInvestigaciones.editarEntrevista(cuenta, entrevista, ficha, coautoresNuevos)),
     true,
@@ -111,6 +129,7 @@ export const reaccionarEntrevista = (entrevista: string, tipo: string, comentari
 async function accionEntrevistas(accion: (cuenta: string) => Promise<RespuestaServidor<RespuestaAccion>>) {
   const respuesta = await consultarCuentaSesion(accion)
   if (respuesta.tipo === 'ok') vencerEntrevistas()
+  else if (respuesta.tipo === 'bloqueado') vencerTodo()
   return respuesta
 }
 // También la orientadora (con la cuenta de la sesión).

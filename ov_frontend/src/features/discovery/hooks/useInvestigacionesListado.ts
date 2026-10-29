@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router'
-import { pasoInvestigacion } from '@/lib/servidor/adaptadoresInvestigaciones'
+import { useNavigate, useSearchParams } from 'react-router'
+import { pasoInvestigacion, sellosVitrina } from '@/lib/servidor/adaptadoresInvestigaciones'
 import { cuentaActiva } from '@/store/servidor/cuenta'
 import {
   cargarListaEntrevistas,
@@ -8,10 +8,15 @@ import {
   useListaEntrevistas,
 } from '@/store/servidor/entrevistas'
 import { alternarFavoritoEntrevista, cancelarInvestigacion } from '@/store/servidor/investigaciones'
-import { reintentarSeccion, useInvestigacionesServidorSeccion } from '@/store/servidor/secciones'
+import {
+  reintentarSeccion,
+  useInvestigacionesServidorSeccion,
+  useLogrosServidor,
+} from '@/store/servidor/secciones'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { FiltrosEntrevistas, OrdenEntrevistas, VistaEntrevistas } from '@/types/servidor'
 import { mostrarAvisoInvestigacion } from '../store/avisoInvestigaciones'
+import { avisarRechazoInvestigacion } from './cierreInvestigacion'
 
 const ESPERA_BUSQUEDA = 300
 const VISTAS: Record<string, VistaEntrevistas> = { salon: 'SALON', leyendas: 'LEYENDAS', mias: 'MIAS' }
@@ -21,11 +26,18 @@ export type Chip = 'favoritas' | 'no_vistas' | 'destacadas'
 // desde un detalle; la búsqueda espera 300 ms; los chips y el orden no aplican a Mis investigaciones.
 export function useInvestigacionesListado() {
   const seccion = useInvestigacionesServidorSeccion(true)
+  // Los nombres de los sellos de la vitrina de los aliados salen de los logros propios.
+  const logros = useLogrosServidor(true).datos
   const [params, setParams] = useSearchParams()
+  const navegar = useNavigate()
   const vista = VISTAS[params.get('vista') ?? ''] ?? 'SALON'
   const [texto, setTexto] = useState('')
   const [buscar, setBuscar] = useState('')
-  const [chips, setChips] = useState<Record<Chip, boolean>>({ favoritas: false, no_vistas: false, destacadas: false })
+  const [chips, setChips] = useState<Record<Chip, boolean>>({
+    favoritas: false,
+    no_vistas: false,
+    destacadas: false,
+  })
   const [orden, setOrden] = useState<OrdenEntrevistas>('RECIENTES')
   const [favoritosPendientes, setFavoritosPendientes] = useState<string[]>([])
   const [cancelando, setCancelando] = useState(false)
@@ -60,14 +72,15 @@ export function useInvestigacionesListado() {
       mostrarAvisoInvestigacion('Investigación cancelada', 'Tu guion y lo que pensabas se borraron.')
       return true
     }
-    mostrarAvisoInvestigacion('No se pudo cancelar', mensajeErrorServidor(respuesta), true)
-    return false
+    await avisarRechazoInvestigacion(respuesta, 'No se pudo cancelar', (ruta) => void navegar(ruta))
+    return respuesta.tipo === 'bloqueado'
   }
   return {
     cuenta: cuentaActiva(),
     seccion: { estado: seccion.estado, error: seccion.error, datos },
     reintentarSeccion: () => void reintentarSeccion('investigaciones'),
     enCurso,
+    sellos: (codigos: string[]) => sellosVitrina(codigos, logros),
     pasoGuion: pasoInvestigacion(enCurso),
     vista,
     elegirVista,

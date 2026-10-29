@@ -31,7 +31,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** los círculos del panel «Aliados en tu salón» (boceto 03), cada uno con el ícono de su insignia.
 - **Opciones:** el servidor entrega nombre e ícono por insignia en la vitrina; el front busca cada código en `GET logros` del propio estudiante (las secretas que no tiene salen enmascaradas); un ícono genérico de sello (como hoy).
 - **Si no se muestra:** cada insignia se ve como un sello genérico, con el total en la etiqueta accesible.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** resuelto en F09 a pedido del usuario: cada sello se ve con el mismo ícono que el pasaporte y la vitrina propia (en api, el sello de `achievementIcons`) y su nombre sale de `GET logros` del propio estudiante (título al pasar el puntero y texto para lectores); una secreta que no tiene se nombra «Sello secreto».
 
 ## 2026-10-28 · F08 · Avisos al apoderado (HU-067)
 

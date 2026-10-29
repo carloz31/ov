@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { noDisponible } from '@/lib/servidor/adaptadoresInvestigaciones'
 import { appPaths } from '@/routes/paths'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { useEntrevistaDetalle } from '../../hooks/useEntrevistaDetalle'
@@ -23,7 +24,11 @@ export function DetalleEntrevista() {
     <>
       <Link
         className="sx-i-volver"
-        to={m.desdeMias || e?.propia ? `${appPaths.student.investigations}?vista=mias` : appPaths.student.investigations}
+        to={
+          m.desdeMias || e?.propia
+            ? `${appPaths.student.investigations}?vista=mias`
+            : appPaths.student.investigations
+        }
       >
         <ArrowLeft aria-hidden="true" size={18} />{' '}
         {m.desdeMias || e?.propia ? 'Volver a Mis investigaciones' : 'Volver a Investigaciones'}
@@ -31,10 +36,16 @@ export function DetalleEntrevista() {
       {!e ? (
         m.estado === 'error' ? (
           <section className="sx-i-error" role="alert">
-            <p>{mensajeErrorServidor(m.error)}</p>
-            <button type="button" className="sx-i-boton" onClick={m.reintentar}>
-              Reintentar
-            </button>
+            <p>{noDisponible(m.error) ?? mensajeErrorServidor(m.error)}</p>
+            {noDisponible(m.error) ? (
+              <Link className="sx-i-boton" to={appPaths.student.investigations}>
+                Ir a Investigaciones
+              </Link>
+            ) : (
+              <button type="button" className="sx-i-boton" onClick={m.reintentar}>
+                Reintentar
+              </button>
+            )}
           </section>
         ) : (
           <div className="sx-i-esqueleto" aria-busy="true">
@@ -68,7 +79,9 @@ export function DetalleEntrevista() {
       <DialogoReporte
         abierto={!!reportando}
         contexto={
-          reportando?.tipo === 'reaccion' ? `Comentario de ${reportando.reaccion.autor.nombre}` : 'La entrevista completa'
+          reportando?.tipo === 'reaccion'
+            ? `Comentario de ${reportando.reaccion.autor.nombre}`
+            : 'La entrevista completa'
         }
         ocupado={m.ocupado === 'reporte'}
         onEnviar={(motivo, detalle) => void m.reportar(motivo, detalle)}

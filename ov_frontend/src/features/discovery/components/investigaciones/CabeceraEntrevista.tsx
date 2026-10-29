@@ -37,7 +37,11 @@ export function CabeceraEntrevista({ m }: { m: ModeloDetalle }) {
           </span>
           <span className="sx-i-acciones">
             {e.propia ? (
-              <Link className="sx-i-boton" data-tono="claro" to={appPaths.student.investigationPublish(e.codigo)}>
+              <Link
+                className="sx-i-boton"
+                data-tono="claro"
+                to={appPaths.student.investigationPublish(e.codigo)}
+              >
                 Editar ficha
               </Link>
             ) : (
@@ -49,7 +53,11 @@ export function CabeceraEntrevista({ m }: { m: ModeloDetalle }) {
                 aria-busy={m.ocupado === 'favorito' || undefined}
                 onClick={m.alternarFavorito}
               >
-                {m.ocupado === 'favorito' ? <Loader2 className="animate-spin" size={18} /> : <Star size={18} />}
+                {m.ocupado === 'favorito' ? (
+                  <Loader2 className="animate-spin" size={18} />
+                ) : (
+                  <Star size={18} />
+                )}
               </button>
             )}
             <MenuOpciones
@@ -59,7 +67,12 @@ export function CabeceraEntrevista({ m }: { m: ModeloDetalle }) {
                   ? [{ texto: 'Retirar entrevista', peligro: true, onElegir: () => m.setRetirando(true) }]
                   : e.reportada_por_mi
                     ? []
-                    : [{ texto: '¿Algo no está bien? Reportar', onElegir: () => m.abrirReporte({ tipo: 'entrevista' }) }]
+                    : [
+                        {
+                          texto: '¿Algo no está bien? Reportar',
+                          onElegir: () => m.abrirReporte({ tipo: 'entrevista' }),
+                        },
+                      ]
               }
             />
           </span>

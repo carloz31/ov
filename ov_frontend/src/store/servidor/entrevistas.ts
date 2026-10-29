@@ -17,7 +17,11 @@ import { consultarCuenta, consultarCuentaSesion, sesionServidor } from './sesion
 // más» y un turno descarta las respuestas viejas. Lo que cambian otras cuentas (reacciones, favoritos, destacado)
 // se revalida al montar la vista: se muestra lo cargado mientras llega lo nuevo (regla 4).
 export const LIMITE_ENTREVISTAS = 20
-type Espacios = { entrevistas: TarjetaEntrevista; ocupacion: TarjetaEntrevista; publicaciones: FilaPublicacion }
+type Espacios = {
+  entrevistas: TarjetaEntrevista
+  ocupacion: TarjetaEntrevista
+  publicaciones: FilaPublicacion
+}
 export type EspacioLista = keyof Espacios
 type Filtros<E extends EspacioLista> = E extends 'publicaciones' ? FiltrosPublicaciones : FiltrosEntrevistas
 export type ListaEntrevistas<E extends EspacioLista = EspacioLista> = {
@@ -28,7 +32,11 @@ export type ListaEntrevistas<E extends EspacioLista = EspacioLista> = {
   error: ErrorServidor | null
 }
 type Entrada = ListaEntrevistas & { llave: string; revision: number }
-export type DetalleCargado<T> = { estado: 'cargando' | 'listo' | 'error'; datos: T | null; error: ErrorServidor | null }
+export type DetalleCargado<T> = {
+  estado: 'cargando' | 'listo' | 'error'
+  datos: T | null
+  error: ErrorServidor | null
+}
 type Detalles = { entrevista: EntrevistaDetalle; publicacion: PublicacionDetalle }
 
 const listas = new Map<EspacioLista, Entrada>()
@@ -70,11 +78,21 @@ function pedirPagina(espacio: EspacioLista, filtros: object, desde: number, sena
       apiInvestigaciones.listarPublicaciones(cuenta, filtros, LIMITE_ENTREVISTAS, desde, senal),
     )
   return consultarCuenta((cuenta) =>
-    apiInvestigaciones.listarEntrevistas(cuenta, filtros as FiltrosEntrevistas, LIMITE_ENTREVISTAS, desde, senal),
+    apiInvestigaciones.listarEntrevistas(
+      cuenta,
+      filtros as FiltrosEntrevistas,
+      LIMITE_ENTREVISTAS,
+      desde,
+      senal,
+    ),
   )
 }
 
-export async function cargarListaEntrevistas<E extends EspacioLista>(espacio: E, filtros: Filtros<E>, mas = false) {
+export async function cargarListaEntrevistas<E extends EspacioLista>(
+  espacio: E,
+  filtros: Filtros<E>,
+  mas = false,
+) {
   vigente()
   const llave = claveLista(filtros)
   const actual = listas.get(espacio)
@@ -92,7 +110,15 @@ export async function cargarListaEntrevistas<E extends EspacioLista>(espacio: E,
   const pedida = revision
   if (mas && actual) listas.set(espacio, { ...actual, estado: 'mas', error: null })
   else if (!revalida)
-    listas.set(espacio, { estado: 'cargando', items: [], total: 0, favoritosLeyenda: 0, error: null, llave, revision })
+    listas.set(espacio, {
+      estado: 'cargando',
+      items: [],
+      total: 0,
+      favoritosLeyenda: 0,
+      error: null,
+      llave,
+      revision,
+    })
   avisar()
   const respuesta = await pedirPagina(espacio, filtrosLimpios(filtros), previos.length, peticion.signal)
   if (turnos.get(espacio) !== turno) return
@@ -125,13 +151,18 @@ export function reintentarListaEntrevistas<E extends EspacioLista>(espacio: E, f
 
 // La lista del espacio con sus filtros, pedida mientras `activa`; con otros filtros en camino, `undefined`. Se
 // revalida al montar y cada vez que una acción la vence.
-export function useListaEntrevistas<E extends EspacioLista>(espacio: E, filtros: Filtros<E>, activa: boolean) {
+export function useListaEntrevistas<E extends EspacioLista>(
+  espacio: E,
+  filtros: Filtros<E>,
+  activa: boolean,
+) {
   const llave = claveLista(filtros)
   const entrada = useSyncExternalStore(suscribir, () => listas.get(espacio))
   const actual = useSyncExternalStore(suscribir, () => revision)
   const lista = entrada?.llave === llave ? (entrada as unknown as ListaEntrevistas<E>) : undefined
   useEffect(() => {
-    if (activa) void cargarListaEntrevistas(espacio, JSON.parse(llave.slice(llave.indexOf('{'))) as Filtros<E>)
+    if (activa)
+      void cargarListaEntrevistas(espacio, JSON.parse(llave.slice(llave.indexOf('{'))) as Filtros<E>)
   }, [activa, espacio, llave, actual])
   useEffect(() => {
     // Solo al montar, si ya estaba cargada: lo que cambiaron otras cuentas.
@@ -149,23 +180,35 @@ export function vencerEntrevistas() {
 }
 
 // Cambios confirmados sobre una entrevista (vista, favorito) se aplican a lo cargado sin volver a pedirlo.
-export function actualizarEntrevista(codigo: string, cambio: (t: TarjetaEntrevista) => Partial<TarjetaEntrevista>) {
+export function actualizarEntrevista(
+  codigo: string,
+  cambio: (t: TarjetaEntrevista) => Partial<TarjetaEntrevista>,
+) {
   for (const espacio of ['entrevistas', 'ocupacion'] as const) {
     const lista = listas.get(espacio)
     if (!lista) continue
-    const items = (lista.items as TarjetaEntrevista[]).map((t) => (t.codigo === codigo ? { ...t, ...cambio(t) } : t))
+    const items = (lista.items as TarjetaEntrevista[]).map((t) =>
+      t.codigo === codigo ? { ...t, ...cambio(t) } : t,
+    )
     listas.set(espacio, { ...lista, items })
   }
   const detalle = detalles.get(`entrevista:${codigo}`) as DetalleCargado<EntrevistaDetalle> | undefined
-  if (detalle?.datos) detalles.set(`entrevista:${codigo}`, { ...detalle, datos: { ...detalle.datos, ...cambio(detalle.datos) } })
+  if (detalle?.datos)
+    detalles.set(`entrevista:${codigo}`, {
+      ...detalle,
+      datos: { ...detalle.datos, ...cambio(detalle.datos) },
+    })
   avisar()
 }
 
-function pedirDetalle<C extends keyof Detalles>(clase: C, codigo: string): Promise<RespuestaServidor<Detalles[C]>> {
+function pedirDetalle<C extends keyof Detalles>(
+  clase: C,
+  codigo: string,
+): Promise<RespuestaServidor<Detalles[C]>> {
   if (clase === 'publicacion')
-    return consultarCuentaSesion((cuenta) => apiInvestigaciones.obtenerPublicacion(cuenta, codigo)) as Promise<
-      RespuestaServidor<Detalles[C]>
-    >
+    return consultarCuentaSesion((cuenta) =>
+      apiInvestigaciones.obtenerPublicacion(cuenta, codigo),
+    ) as Promise<RespuestaServidor<Detalles[C]>>
   return consultarCuenta((cuenta) => apiInvestigaciones.obtenerEntrevista(cuenta, codigo)) as Promise<
     RespuestaServidor<Detalles[C]>
   >
@@ -176,7 +219,10 @@ export function cargarDetalleEntrevista<C extends keyof Detalles>(clase: C, codi
   vigente()
   const llave = `${clase}:${codigo}`
   const actual = detalles.get(llave)
-  detalles.set(llave, actual?.datos ? { ...actual, error: null } : { estado: 'cargando', datos: null, error: null })
+  detalles.set(
+    llave,
+    actual?.datos ? { ...actual, error: null } : { estado: 'cargando', datos: null, error: null },
+  )
   avisar()
   const sesion = sesionServidor()
   return pedirDetalle(clase, codigo).then((respuesta) => {

@@ -35,9 +35,10 @@ export function AsistenteGuion() {
             type="button"
             aria-current={m.paso === paso ? 'step' : undefined}
             data-hecho={(completado(paso) && m.paso !== paso) || undefined}
-            disabled={!m.permitido(paso)}
-            onClick={() => {
-              if (m.paso === 2) void p.guardarAlVolver()
+            disabled={!m.permitido(paso) || p.ocupado || m.guardando}
+            onClick={async () => {
+              if (m.paso === paso) return
+              if (m.paso === 2 && !(await p.guardarAlVolver())) return
               m.irA(paso)
             }}
           >
@@ -66,9 +67,8 @@ export function AsistenteGuion() {
         <PasoMisPreguntas
           p={p}
           ocupacion={m.enCurso?.ocupacion.titulo ?? ''}
-          onVolver={() => {
-            void p.guardarAlVolver()
-            m.irA(1)
+          onVolver={async () => {
+            if (await p.guardarAlVolver()) m.irA(1)
           }}
         />
       ) : (

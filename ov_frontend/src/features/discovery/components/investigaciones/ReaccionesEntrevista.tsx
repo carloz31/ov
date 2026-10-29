@@ -13,7 +13,9 @@ export function ReaccionesEntrevista({ m }: { m: ModeloDetalle }) {
     <section className="sx-i-panel" aria-labelledby="reacciones-titulo">
       <div className="sx-i-panel-cabecera">
         <div>
-          <h2 id="reacciones-titulo">{e.propia ? 'Lo que dicen de tu entrevista' : 'Lo que dejó a tu salón'}</h2>
+          <h2 id="reacciones-titulo">
+            {e.propia ? 'Lo que dicen de tu entrevista' : 'Lo que dejó a tu salón'}
+          </h2>
           <p className="sx-i-meta">{resumen.join(' · ')}</p>
         </div>
         {!e.propia && !m.reaccionPropia && (
@@ -24,13 +26,15 @@ export function ReaccionesEntrevista({ m }: { m: ModeloDetalle }) {
       </div>
       {!e.propia && (
         <p className="sx-i-nota-clara">
-          Tu reacción se publica con tu nombre y la ven el salón, los autores y tu orientadora. Una por entrevista;
-          puedes editarla o borrarla.
+          Tu reacción se publica con tu nombre y la ven el salón, los autores y tu orientadora. Una por
+          entrevista; puedes editarla o borrarla.
         </p>
       )}
       {m.reacciones.length === 0 ? (
         <p className="sx-i-meta">
-          {e.propia ? 'Todavía nadie ha reaccionado a tu entrevista.' : 'Sé la primera persona en dejar su reacción.'}
+          {e.propia
+            ? 'Todavía nadie ha reaccionado a tu entrevista.'
+            : 'Sé la primera persona en dejar su reacción.'}
         </p>
       ) : (
         <ul className="sx-i-reacciones">
@@ -55,8 +59,8 @@ export function ReaccionesEntrevista({ m }: { m: ModeloDetalle }) {
       )}
       {e.propia && (
         <small className="sx-i-letra-chica">
-          Los autores no reaccionan a su propia entrevista; solo leen. El «⋯» de cada comentario permite reportarlo si
-          es inadecuado.
+          Los autores no reaccionan a su propia entrevista; solo leen. El «⋯» de cada comentario permite
+          reportarlo si es inadecuado.
         </small>
       )}
     </section>

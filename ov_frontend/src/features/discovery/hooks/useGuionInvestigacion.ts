@@ -8,9 +8,9 @@ import {
   reintentarSeccion,
   useInvestigacionesServidorSeccion,
 } from '@/store/servidor/secciones'
-import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { OcupacionBreve } from '@/types/servidor'
 import { mostrarAvisoInvestigacion } from '../store/avisoInvestigaciones'
+import { avisarRechazoInvestigacion } from './cierreInvestigacion'
 
 export type PasoGuion = 1 | 2 | 3
 
@@ -25,8 +25,10 @@ export function useGuionInvestigacion() {
   const enCurso = datos?.en_curso ?? null
   const maximo = pasoInvestigacion(enCurso)
   const pedido = Number(params.get('paso')) as PasoGuion
-  const paso: PasoGuion = pedido >= 1 && pedido <= 3 ? (Math.min(pedido, enCurso ? 3 : 1) as PasoGuion) : maximo
-  const permitido = (p: PasoGuion) => p === 1 || (p === 2 && !!enCurso) || (p === 3 && enCurso?.estado === 'GUIA_LISTA')
+  const paso: PasoGuion =
+    pedido >= 1 && pedido <= 3 ? (Math.min(pedido, enCurso ? 3 : 1) as PasoGuion) : maximo
+  const permitido = (p: PasoGuion) =>
+    p === 1 || (p === 2 && !!enCurso) || (p === 3 && enCurso?.estado === 'GUIA_LISTA')
   const irA = (p: PasoGuion) => setParams({ paso: String(p) })
   const ocupacionUrl = params.get('ocupacion')
 
@@ -76,8 +78,12 @@ export function useGuionInvestigacion() {
       irA(2)
       return
     }
+    await avisarRechazoInvestigacion(
+      respuesta,
+      'No se pudo guardar lo que piensas',
+      (ruta) => void navegar(ruta),
+    )
     setGuardando(false)
-    mostrarAvisoInvestigacion('No se pudo guardar', mensajeErrorServidor(respuesta), true)
   }
   return {
     estado: seccion.estado,

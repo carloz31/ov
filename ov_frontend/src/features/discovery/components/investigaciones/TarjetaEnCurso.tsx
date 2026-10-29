@@ -67,8 +67,8 @@ export function TarjetaEnCurso({
         )}
       </div>
       <small className="sx-i-letra-chica">
-        El guion sigue editable hasta que publiques. Cancelar borra el guion y lo que pensabas; te lo preguntamos una
-        vez, sin pedir motivo.
+        El guion sigue editable hasta que publiques. Cancelar borra el guion y lo que pensabas; te lo
+        preguntamos una vez, sin pedir motivo.
       </small>
     </section>
   )

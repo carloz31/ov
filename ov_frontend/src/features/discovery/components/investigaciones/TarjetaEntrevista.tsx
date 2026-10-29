@@ -97,14 +97,16 @@ export function TarjetaEntrevista({
             favoritosLeyenda={favoritosLeyenda}
             destacada={tarjeta.destacada}
             leyenda={tarjeta.leyenda}
-            detalle={[textoReacciones(tarjeta.reacciones), ...desglosePorTipo(tarjeta.reacciones_por_tipo, tipos)].join(
-              ' · ',
-            )}
+            detalle={[
+              textoReacciones(tarjeta.reacciones),
+              ...desglosePorTipo(tarjeta.reacciones_por_tipo, tipos),
+            ].join(' · ')}
           />
         ) : (
           <div className="sx-i-pie">
             <span>{lineaConteos(tarjeta.reacciones, tarjeta.favoritos)}</span>
-            {!tarjeta.propia && (tarjeta.vista ? <span>Vista</span> : <span className="sx-i-nueva">Nueva</span>)}
+            {!tarjeta.propia &&
+              (tarjeta.vista ? <span>Vista</span> : <span className="sx-i-nueva">Nueva</span>)}
           </div>
         )}
         <Link

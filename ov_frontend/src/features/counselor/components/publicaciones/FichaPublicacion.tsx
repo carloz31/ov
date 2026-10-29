@@ -5,9 +5,19 @@ import { Card } from '@/components/ui/Card'
 import { fechaNumerica } from '@/lib/servidor/adaptadoresInvestigaciones'
 import type { PublicacionDetalle } from '@/types/servidor'
 
-function Fila({ etiqueta, children, tenue = false }: { etiqueta: string; children: React.ReactNode; tenue?: boolean }) {
+function Fila({
+  etiqueta,
+  children,
+  tenue = false,
+}: {
+  etiqueta: string
+  children: React.ReactNode
+  tenue?: boolean
+}) {
   return (
-    <div className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] gap-4 border-t px-4 py-3 ${tenue ? 'bg-muted/50' : ''}`}>
+    <div
+      className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] gap-4 border-t px-4 py-3 ${tenue ? 'bg-muted/50' : ''}`}
+    >
       <dt className="text-sm text-muted-foreground">{etiqueta}</dt>
       <dd className="whitespace-pre-line break-words">{children}</dd>
     </div>

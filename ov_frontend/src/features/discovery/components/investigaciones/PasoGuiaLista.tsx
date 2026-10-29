@@ -46,8 +46,8 @@ export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuent
             <span className="sx-i-numero-redondo">1</span>
             <div>
               <p>
-                <strong>Mira si alguien de tu salón investiga lo mismo.</strong> Pueden entrevistar juntos y publicar
-                como coautores. Se coordinan fuera de la plataforma.
+                <strong>Mira si alguien de tu salón investiga lo mismo.</strong> Pueden entrevistar juntos y
+                publicar como coautores. Se coordinan fuera de la plataforma.
               </p>
               {datos.aliados.misma_ocupacion.length > 0 ? (
                 <div className="sx-i-autores">
@@ -57,12 +57,18 @@ export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuent
                   ))}
                 </div>
               ) : (
-                <small className="sx-i-meta">Ahora mismo nadie más investiga {enCurso.ocupacion.titulo}.</small>
+                <small className="sx-i-meta">
+                  Ahora mismo nadie más investiga {enCurso.ocupacion.titulo}.
+                </small>
               )}
               {otras > 0 && (
                 <small className="sx-i-meta">
                   {' '}
-                  Y {otras} {otras === 1 ? 'compañero más investiga otra ocupación' : 'compañeros más investigan otras ocupaciones'}.
+                  Y {otras}{' '}
+                  {otras === 1
+                    ? 'compañero más investiga otra ocupación'
+                    : 'compañeros más investigan otras ocupaciones'}
+                  .
                 </small>
               )}
             </div>
@@ -70,22 +76,22 @@ export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuent
           <li>
             <span className="sx-i-numero-redondo">2</span>
             <p>
-              <strong>Busca a alguien que ejerza esta ocupación:</strong> un familiar, un conocido o alguien que te
-              recomienden. Pídele unos 15 minutos.
+              <strong>Busca a alguien que ejerza esta ocupación:</strong> un familiar, un conocido o alguien
+              que te recomienden. Pídele unos 15 minutos.
             </p>
           </li>
           <li>
             <span className="sx-i-numero-redondo">3</span>
             <p>
-              <strong>Conversa, no interrogues.</strong> Lleva tus preguntas, pero sigue lo que te cuente. Graba en
-              video con su permiso.
+              <strong>Conversa, no interrogues.</strong> Lleva tus preguntas, pero sigue lo que te cuente.
+              Graba en video con su permiso.
             </p>
           </li>
           <li>
             <span className="sx-i-numero-redondo">4</span>
             <p>
-              <strong>Súbela a YouTube como «No listado»</strong> y vuelve aquí para publicarla con un resumen y el
-              enlace. Solo tu salón y tu orientadora la verán.
+              <strong>Súbela a YouTube como «No listado»</strong> y vuelve aquí para publicarla con un resumen
+              y el enlace. Solo tu salón y tu orientadora la verán.
             </p>
           </li>
         </ol>
@@ -125,13 +131,13 @@ export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuent
             <Crown aria-hidden="true" size={18} /> Camino a Leyenda
           </h3>
           <p>
-            Si tu orientadora la destaca y al menos <strong>{datos.favoritos_leyenda} compañeros</strong> la guardan en
-            favoritos, pasa al Salón de Leyendas: la verán todos los salones y las promociones que vienen, y tendrás un
-            sello en tu pasaporte.
+            Si tu orientadora la destaca y al menos <strong>{datos.favoritos_leyenda} compañeros</strong> la
+            guardan en favoritos, pasa al Salón de Leyendas: la verán todos los salones y las promociones que
+            vienen, y tendrás un sello en tu pasaporte.
           </p>
           <p>
-            Lo que hace Leyenda a una entrevista no es la cámara: es que se sienta como una conversación de verdad y que
-            quien la vea aprenda algo que no sabía de esa ocupación.
+            Lo que hace Leyenda a una entrevista no es la cámara: es que se sienta como una conversación de
+            verdad y que quien la vea aprenda algo que no sabía de esa ocupación.
           </p>
         </section>
       </aside>

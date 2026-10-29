@@ -22,13 +22,32 @@ const ESTADOS: [EstadoPublicacion | 'todos', string][] = [
   ['LEYENDA', 'Leyenda'],
 ]
 const ANCHOS = ['w-[17%]', 'w-[10%]', 'w-[15%]', 'w-[12%]', 'w-[10%]', 'w-[9%]', 'w-[15%]', 'w-[12%]']
-const COLUMNAS = ['Autores', 'Salón', 'Profesión u ocupación', 'Fecha de publicación', 'Reacciones', 'Favoritos', 'Estado', 'Acciones']
+const COLUMNAS = [
+  'Autores',
+  'Salón',
+  'Profesión u ocupación',
+  'Fecha de publicación',
+  'Reacciones',
+  'Favoritos',
+  'Estado',
+  'Acciones',
+]
 
-function Fila({ fila, m, favoritosLeyenda }: { fila: FilaPublicacion; m: ModeloPublicaciones; favoritosLeyenda: number }) {
+function Fila({
+  fila,
+  m,
+  favoritosLeyenda,
+}: {
+  fila: FilaPublicacion
+  m: ModeloPublicaciones
+  favoritosLeyenda: number
+}) {
   const salones = [...new Set(fila.autores.map((a) => a.salon))]
   return (
     <TableRow className="hover:bg-transparent">
-      <TableCell className="px-2.5 py-3 whitespace-normal break-words">{fila.autores.map((a) => a.nombre).join(', ')}</TableCell>
+      <TableCell className="px-2.5 py-3 whitespace-normal break-words">
+        {fila.autores.map((a) => a.nombre).join(', ')}
+      </TableCell>
       <TableCell className="px-2.5 py-3 whitespace-normal">
         {fila.de_sus_salones ? salones.map(m.nombreSalon).join(', ') : 'Promoción anterior'}
       </TableCell>
@@ -37,7 +56,9 @@ function Fila({ fila, m, favoritosLeyenda }: { fila: FilaPublicacion; m: ModeloP
       <TableCell className="px-2.5 py-3 text-center">{fila.reacciones}</TableCell>
       <TableCell className="px-2.5 py-3 text-center">
         {fila.favoritos}
-        {fila.estado !== 'LEYENDA' && <span className="text-sm text-muted-foreground"> / {favoritosLeyenda}</span>}
+        {fila.estado !== 'LEYENDA' && (
+          <span className="text-sm text-muted-foreground"> / {favoritosLeyenda}</span>
+        )}
       </TableCell>
       <TableCell className="px-2.5 py-3">
         <EstadoPublicacionBadges
@@ -73,7 +94,10 @@ export function TablaPublicaciones({ m }: { m: ModeloPublicaciones }) {
       />
       <div className="flex flex-wrap items-center gap-3">
         <label className="relative min-w-64 flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Search
+            className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <span className="sr-only">Buscar por autor, ocupación o título</span>
           <Input
             className="min-h-11 bg-card pl-9"
@@ -95,7 +119,10 @@ export function TablaPublicaciones({ m }: { m: ModeloPublicaciones }) {
             ))}
           </SelectContent>
         </Select>
-        <Select value={m.estado || 'todos'} onValueChange={(v) => m.setEstado(v === 'todos' ? '' : (v as EstadoPublicacion))}>
+        <Select
+          value={m.estado || 'todos'}
+          onValueChange={(v) => m.setEstado(v === 'todos' ? '' : (v as EstadoPublicacion))}
+        >
           <SelectTrigger aria-label="Filtrar por estado" className="min-h-11 w-full bg-card sm:w-52">
             <SelectValue>{ESTADOS.find(([v]) => v === (m.estado || 'todos'))?.[1]}</SelectValue>
           </SelectTrigger>
@@ -124,14 +151,23 @@ export function TablaPublicaciones({ m }: { m: ModeloPublicaciones }) {
         </Select>
       </div>
       {lista?.estado === 'error' && !lista.items.length ? (
-        <PantallaCargaPortal enSeccion estado="error" mensaje={mensajeErrorServidor(lista.error)} onReintentar={m.reintentar} />
+        <PantallaCargaPortal
+          enSeccion
+          estado="error"
+          mensaje={mensajeErrorServidor(lista.error)}
+          onReintentar={m.reintentar}
+        />
       ) : (
         <Card className="overflow-x-auto rounded-xl">
           <Table className="min-w-[880px] table-fixed text-base">
             <TableHeader className="bg-muted">
               <TableRow className="hover:bg-transparent">
                 {COLUMNAS.map((c, i) => (
-                  <TableHead key={c} scope="col" className={`px-2.5 py-2.5 text-base font-semibold whitespace-normal text-muted-foreground ${i >= 4 ? 'text-center' : ''} ${ANCHOS[i]}`}>
+                  <TableHead
+                    key={c}
+                    scope="col"
+                    className={`px-2.5 py-2.5 text-base font-semibold whitespace-normal text-muted-foreground ${i >= 4 ? 'text-center' : ''} ${ANCHOS[i]}`}
+                  >
                     {c}
                   </TableHead>
                 ))}

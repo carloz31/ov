@@ -34,30 +34,45 @@ export function DialogoReporte({
         <DialogHeader>
           <p className="sx-i-kicker">{contexto}</p>
           <DialogTitle>¿Qué no está bien?</DialogTitle>
-          <DialogDescription>Tu orientadora revisará el reporte. Nadie más sabrá que lo enviaste.</DialogDescription>
+          <DialogDescription>
+            Tu orientadora revisará el reporte. Nadie más sabrá que lo enviaste.
+          </DialogDescription>
         </DialogHeader>
-        <div className="sx-i-motivos" role="radiogroup" aria-label="Motivo">
-          {MOTIVOS_REPORTE.map((m) => (
-            <label key={m.motivo} className="sx-i-motivo">
-              <input
-                type="radio"
-                name="motivo-reporte"
-                checked={motivo === m.motivo}
-                onChange={() => setMotivo(m.motivo)}
-              />
-              {m.texto}
-            </label>
-          ))}
-        </div>
-        <label className="sx-i-campo">
-          <span className="sx-i-etiqueta">
-            Cuéntanos un poco más <span className="sx-i-meta">(opcional)</span>
-          </span>
-          <textarea className="sx-d-input" rows={2} value={detalle} onChange={(e) => setDetalle(e.target.value)} />
-        </label>
+        <fieldset className="sx-i-fieldset" data-guardando={ocupado || undefined} disabled={ocupado}>
+          <div className="sx-i-motivos" role="radiogroup" aria-label="Motivo">
+            {MOTIVOS_REPORTE.map((m) => (
+              <label key={m.motivo} className="sx-i-motivo">
+                <input
+                  type="radio"
+                  name="motivo-reporte"
+                  checked={motivo === m.motivo}
+                  onChange={() => setMotivo(m.motivo)}
+                />
+                {m.texto}
+              </label>
+            ))}
+          </div>
+          <label className="sx-i-campo">
+            <span className="sx-i-etiqueta">
+              Cuéntanos un poco más <span className="sx-i-meta">(opcional)</span>
+            </span>
+            <textarea
+              className="sx-d-input"
+              rows={2}
+              value={detalle}
+              onChange={(e) => setDetalle(e.target.value)}
+            />
+          </label>
+        </fieldset>
         <div className="sx-i-dialogo-pie" data-alineado="fin">
           <span className="sx-i-acciones">
-            <button type="button" className="sx-i-boton" data-tono="claro" disabled={ocupado} onClick={onCerrar}>
+            <button
+              type="button"
+              className="sx-i-boton"
+              data-tono="claro"
+              disabled={ocupado}
+              onClick={onCerrar}
+            >
               Cancelar
             </button>
             <button

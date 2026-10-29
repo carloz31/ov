@@ -22,7 +22,9 @@ export function EstadoPublicacionBadges({
       <Badge variant={estado === 'LEYENDA' ? 'warning' : estado === 'DESTACADA' ? 'secondary' : 'outline'}>
         {TEXTO[estado]}
       </Badge>
-      {reportes > 0 && <Badge variant="attention">{reportes === 1 ? '1 reporte' : `${reportes} reportes`}</Badge>}
+      {reportes > 0 && (
+        <Badge variant="attention">{reportes === 1 ? '1 reporte' : `${reportes} reportes`}</Badge>
+      )}
       {comentarios > 0 && (
         <Badge variant="attention">
           {comentarios === 1 ? '1 comentario reportado' : `${comentarios} comentarios reportados`}

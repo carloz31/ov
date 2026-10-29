@@ -1,5 +1,10 @@
 import { Ellipsis } from 'lucide-react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/DropdownMenu'
 
 // F09: el menú «⋯» de una entrevista o un comentario (Reportar, Eliminar, Retirar).
 export function MenuOpciones({

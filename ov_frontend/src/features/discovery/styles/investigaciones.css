@@ -489,7 +489,7 @@
   display: flex;
   gap: 4px;
 }
-.sx-i-vitrina span {
+.sx-i-vitrina li {
   display: inline-grid;
   place-items: center;
   width: 26px;
@@ -603,6 +603,13 @@
 }
 .sx-i-fieldset:disabled {
   opacity: 0.55;
+}
+/* Mientras se guarda, lo escrito se ve igual pero no se edita. */
+.sx-i-fieldset[data-guardando='true']:disabled {
+  opacity: 0.8;
+}
+.sx-i-fieldset[data-guardando='true'] .sx-i-fieldset:disabled {
+  opacity: 1;
 }
 .sx-i-fieldset legend {
   display: grid;

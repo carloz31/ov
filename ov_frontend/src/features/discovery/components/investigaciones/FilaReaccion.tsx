@@ -1,4 +1,9 @@
-import { etiquetaComentario, fechaRelativa, iniciales, lineaNivel } from '@/lib/servidor/adaptadoresInvestigaciones'
+import {
+  etiquetaComentario,
+  fechaRelativa,
+  iniciales,
+  lineaNivel,
+} from '@/lib/servidor/adaptadoresInvestigaciones'
 import type { ReaccionPublica, TipoReaccionPublico } from '@/types/servidor'
 import { MenuOpciones } from './MenuOpciones'
 

@@ -29,7 +29,12 @@ export function ConfirmarInvestigacion({
           <DialogDescription>{descripcion}</DialogDescription>
         </DialogHeader>
         <div className="sx-d-actions">
-          <button type="button" className="sx-d-action sx-d-action-ghost" disabled={ocupado} onClick={onCerrar}>
+          <button
+            type="button"
+            className="sx-d-action sx-d-action-ghost"
+            disabled={ocupado}
+            onClick={onCerrar}
+          >
             Volver
           </button>
           <button

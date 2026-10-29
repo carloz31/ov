@@ -41,13 +41,30 @@ export function useEntrevistaDetalle() {
     void verEntrevista(datos.codigo)
   }, [datos])
 
-  async function correr<T extends { tipo: string }>(clave: string, accion: () => Promise<T>, exito: string, error: string) {
+  async function correr<T extends { tipo: string }>(
+    clave: string,
+    accion: () => Promise<T>,
+    exito: string,
+    error: string,
+  ) {
     setOcupado(clave)
     const respuesta = await accion()
     setOcupado(null)
-    if (confirmada(respuesta)) mostrarAvisoInvestigacion(exito)
-    else mostrarAvisoInvestigacion(error, mensajeErrorServidor(respuesta as never), true)
-    return confirmada(respuesta)
+    if (confirmada(respuesta)) {
+      mostrarAvisoInvestigacion(exito)
+      return true
+    }
+    // Retirada o eliminada mientras estaba abierta: ya no existe para nadie.
+    if ((respuesta as { tipo: string; estado?: number }).estado === 404) {
+      setReaccionando(null)
+      setReportando(null)
+      setEliminando(null)
+      mostrarAvisoInvestigacion(error, 'Esta entrevista ya no está disponible.', true)
+      void navegar(appPaths.student.investigations)
+      return false
+    }
+    mostrarAvisoInvestigacion(error, mensajeErrorServidor(respuesta as never), true)
+    return false
   }
   const propia = datos?.lista_reacciones.find((r) => r.propia && r.tipo) ?? null
   return {
@@ -88,7 +105,14 @@ export function useEntrevistaDetalle() {
     pedirEliminar: (r: ReaccionPublica | null) => setEliminando(r),
     eliminar: async () => {
       if (!eliminando) return
-      if (await correr('eliminar', () => eliminarReaccion(eliminando.codigo), 'Reacción eliminada', 'No se pudo eliminar'))
+      if (
+        await correr(
+          'eliminar',
+          () => eliminarReaccion(eliminando.codigo),
+          'Reacción eliminada',
+          'No se pudo eliminar',
+        )
+      )
         setEliminando(null)
     },
     reportando,
@@ -108,7 +132,12 @@ export function useEntrevistaDetalle() {
     retirando,
     setRetirando,
     retirar: async () => {
-      const ok = await correr('retirar', () => retirarEntrevista(codigo), 'Entrevista retirada', 'No se pudo retirar')
+      const ok = await correr(
+        'retirar',
+        () => retirarEntrevista(codigo),
+        'Entrevista retirada',
+        'No se pudo retirar',
+      )
       if (!ok) return
       setRetirando(false)
       void navegar(`${appPaths.student.investigations}?vista=mias`)

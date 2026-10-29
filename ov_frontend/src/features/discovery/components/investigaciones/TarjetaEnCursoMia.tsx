@@ -40,7 +40,11 @@ export function TarjetaEnCursoMia({
               }.`}
         </p>
         <div className="sx-i-acciones">
-          <Link className="sx-i-boton" data-tono="claro" to={appPaths.student.investigationGuide(lista ? 3 : 2)}>
+          <Link
+            className="sx-i-boton"
+            data-tono="claro"
+            to={appPaths.student.investigationGuide(lista ? 3 : 2)}
+          >
             Ver mi guion
           </Link>
           {lista && (
@@ -50,8 +54,8 @@ export function TarjetaEnCursoMia({
           )}
         </div>
         <small className="sx-i-letra-chica">
-          Solo puede haber una investigación en curso. Cancelarla se hace desde la tarjeta de en curso de la vista
-          principal.
+          Solo puede haber una investigación en curso. Cancelarla se hace desde la tarjeta de en curso de la
+          vista principal.
         </small>
       </div>
     </article>

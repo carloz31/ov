@@ -517,6 +517,13 @@
   width: 20px;
   height: 20px;
 }
+.theme-staff [data-slot='button'][data-variant='outline'][data-tono='peligro'] {
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+  color: var(--danger-text);
+}
+.theme-staff [data-slot='button'][data-variant='outline'][data-tono='peligro']:hover {
+  background: var(--danger-soft);
+}
 .theme-staff .staff-alert-card [data-slot='button'][data-variant='outline'] {
   background: white;
   border-color: #d9b54a;

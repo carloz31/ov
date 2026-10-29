@@ -40,7 +40,10 @@ export function listarEntrevistas(
   return obtener(ruta(cuenta, `entrevistas${consulta({ ...filtros, limite, desde })}`), senal)
 }
 
-export function obtenerEntrevista(cuenta: string, codigo: string): Promise<RespuestaServidor<EntrevistaDetalle>> {
+export function obtenerEntrevista(
+  cuenta: string,
+  codigo: string,
+): Promise<RespuestaServidor<EntrevistaDetalle>> {
   return obtener(ruta(cuenta, `entrevistas/${encodeURIComponent(codigo)}`))
 }
 
@@ -54,7 +57,10 @@ export function listarPublicaciones(
   return obtener(ruta(cuenta, `publicaciones${consulta({ ...filtros, limite, desde })}`), senal)
 }
 
-export function obtenerPublicacion(cuenta: string, codigo: string): Promise<RespuestaServidor<PublicacionDetalle>> {
+export function obtenerPublicacion(
+  cuenta: string,
+  codigo: string,
+): Promise<RespuestaServidor<PublicacionDetalle>> {
   return obtener(ruta(cuenta, `publicaciones/${encodeURIComponent(codigo)}`))
 }
 
@@ -101,7 +107,12 @@ export function editarEntrevista(
   ficha: FichaEntrevistaEntrada,
   coautoresNuevos: string[],
 ): Promise<RespuestaServidor<RespuestaAgrupada>> {
-  return enviar('/acciones/editar-entrevista', { cuenta, entrevista, ...ficha, coautores_nuevos: coautoresNuevos })
+  return enviar('/acciones/editar-entrevista', {
+    cuenta,
+    entrevista,
+    ...ficha,
+    coautores_nuevos: coautoresNuevos,
+  })
 }
 
 const sobreEntrevista = (accion: string) => (cuenta: string, entrevista: string) =>
@@ -119,7 +130,10 @@ export function reaccionarEntrevista(
 }
 
 // También la orientadora, sobre cualquier reacción de sus salones.
-export function eliminarReaccion(cuenta: string, reaccion: string): Promise<RespuestaServidor<RespuestaAccion>> {
+export function eliminarReaccion(
+  cuenta: string,
+  reaccion: string,
+): Promise<RespuestaServidor<RespuestaAccion>> {
   return enviar('/acciones/eliminar-reaccion', { cuenta, reaccion })
 }
 
@@ -149,11 +163,19 @@ export function comentarEntrevista(
   texto: string,
   reaccion?: string | null,
 ): Promise<RespuestaServidor<RespuestaAccion>> {
-  return enviar('/acciones/comentar-entrevista', { cuenta, entrevista, texto, ...(reaccion ? { reaccion } : {}) })
+  return enviar('/acciones/comentar-entrevista', {
+    cuenta,
+    entrevista,
+    texto,
+    ...(reaccion ? { reaccion } : {}),
+  })
 }
 
 export const eliminarEntrevista = sobreEntrevista('eliminar-entrevista')
 
-export function descartarReporte(cuenta: string, reporte: string): Promise<RespuestaServidor<RespuestaAccion>> {
+export function descartarReporte(
+  cuenta: string,
+  reporte: string,
+): Promise<RespuestaServidor<RespuestaAccion>> {
   return enviar('/acciones/descartar-reporte', { cuenta, reporte })
 }

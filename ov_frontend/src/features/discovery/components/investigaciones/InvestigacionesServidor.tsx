@@ -52,7 +52,8 @@ export function InvestigacionesServidor() {
     )
   const mias = v.vista === 'MIAS'
   const enCurso = v.enCurso
-  const vacioMias = mias && !enCurso && lista?.estado === 'listo' && lista.items.length === 0 && !v.texto.trim()
+  const vacioMias =
+    mias && !enCurso && lista?.estado === 'listo' && lista.items.length === 0 && !v.texto.trim()
   return (
     <>
       <header className="sx-i-cabecera" id="inicio-catalogo">
@@ -66,8 +67,12 @@ export function InvestigacionesServidor() {
       </header>
       {enCurso && !mias && (
         <div className="sx-i-en-curso">
-          <TarjetaEnCurso enCurso={enCurso} base={datos.preguntas_base} onCancelar={() => setConfirmar(true)} />
-          <PanelAliados aliados={datos.aliados} />
+          <TarjetaEnCurso
+            enCurso={enCurso}
+            base={datos.preguntas_base}
+            onCancelar={() => setConfirmar(true)}
+          />
+          <PanelAliados aliados={datos.aliados} sellos={v.sellos} />
         </div>
       )}
       <FiltrosInvestigaciones
@@ -83,7 +88,12 @@ export function InvestigacionesServidor() {
       />
       <div className="sx-i-grilla" aria-busy={v.buscando || v.cargandoMas}>
         {mias && enCurso && (
-          <TarjetaEnCursoMia enCurso={enCurso} base={datos.preguntas_base} aliados={datos.aliados} ahora={ahora} />
+          <TarjetaEnCursoMia
+            enCurso={enCurso}
+            base={datos.preguntas_base}
+            aliados={datos.aliados}
+            ahora={ahora}
+          />
         )}
         {!v.buscando &&
           lista?.items.map((tarjeta) => (
@@ -103,8 +113,8 @@ export function InvestigacionesServidor() {
           <section className="sx-i-invitacion">
             <h2>¿Y la tuya?</h2>
             <p>
-              Investiga una ocupación que te intrigue y compártela con tu salón. Las mejores llegan al Salón de
-              Leyendas y ayudan a las promociones que vienen.
+              Investiga una ocupación que te intrigue y compártela con tu salón. Las mejores llegan al Salón
+              de Leyendas y ayudan a las promociones que vienen.
             </p>
           </section>
         )}
@@ -130,8 +140,8 @@ export function InvestigacionesServidor() {
         <section className="sx-i-vacio">
           <h2>Aún no tienes investigaciones</h2>
           <p>
-            Cuando publiques una entrevista, o te agreguen como coautor, aparecerá aquí con todo lo que te dejen tus
-            compañeros.
+            Cuando publiques una entrevista, o te agreguen como coautor, aparecerá aquí con todo lo que te
+            dejen tus compañeros.
           </p>
           <Link className="sx-i-boton" to={appPaths.student.investigationGuide(1)}>
             Iniciar investigación

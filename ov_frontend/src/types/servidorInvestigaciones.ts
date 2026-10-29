@@ -5,7 +5,12 @@ export type MotivoReporte = 'OFENSIVO' | 'VIDEO' | 'DATOS_PRIVADOS' | 'OTRO'
 export type OcupacionBreve = { codigo: string; titulo: string }
 export type NivelBreve = { numero: number; titulo: string }
 // `nivel` nulo si la cuenta está inactiva; `vitrina`: códigos de insignia.
-export type PersonaInvestigacion = { codigo: string; nombre: string; nivel: NivelBreve | null; vitrina: string[] }
+export type PersonaInvestigacion = {
+  codigo: string
+  nombre: string
+  nivel: NivelBreve | null
+  vitrina: string[]
+}
 export type LoQuePienso = { dia: string; necesita: string; duda: string }
 export type PreguntaGuionPublica = { origen: OrigenPreguntaGuion; texto: string }
 export type SugerenciaGuionPublica = { codigo: string; texto: string }
@@ -129,7 +134,12 @@ export type FiltrosPublicaciones = {
   con_reportes?: boolean
   buscar?: string
 }
-export type ReportePublico = { codigo: string; motivo: MotivoReporte; detalle: string | null; fecha_hora: string }
+export type ReportePublico = {
+  codigo: string
+  motivo: MotivoReporte
+  detalle: string | null
+  fecha_hora: string
+}
 export type AutorModerado = PersonaInvestigacion & { salon: string | null }
 export type ReaccionModerada = {
   codigo: string

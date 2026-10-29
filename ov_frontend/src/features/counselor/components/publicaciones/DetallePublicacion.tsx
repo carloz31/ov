@@ -45,13 +45,22 @@ function Confirmar({
 }
 
 // F09 (api, boceto 12b): el detalle de una publicación para la orientadora.
-export function DetallePublicacion({ m, nombreSalon }: { m: ModeloPublicacion; nombreSalon: (codigo: string | null) => string }) {
+export function DetallePublicacion({
+  m,
+  nombreSalon,
+}: {
+  m: ModeloPublicacion
+  nombreSalon: (codigo: string | null) => string
+}) {
   const d = m.datos
   const nombresTipos = Object.fromEntries((d?.tipos_reaccion ?? []).map((t) => [t.codigo, t.nombre]))
   const comentariosReportados = d?.reacciones.filter((r) => r.reportes.length).length ?? 0
   return (
     <div className="min-w-0 space-y-6 p-4 sm:p-6 lg:p-8">
-      <Link to={m.volver} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary">
+      <Link
+        to={m.volver}
+        className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary"
+      >
         <ArrowLeft className="size-4" aria-hidden="true" /> Volver a Publicaciones
       </Link>
       {!d ? (
@@ -65,37 +74,70 @@ export function DetallePublicacion({ m, nombreSalon }: { m: ModeloPublicacion; n
         <>
           <header className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-2">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Contenido · Publicación</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+                Contenido · Publicación
+              </p>
               <h1 className="text-2xl font-bold">{d.titulo}</h1>
               <div className="flex flex-wrap items-center gap-2">
-                <EstadoPublicacionBadges estado={d.estado} reportes={d.reportes.length} comentarios={comentariosReportados} />
+                <EstadoPublicacionBadges
+                  estado={d.estado}
+                  reportes={d.reportes.length}
+                  comentarios={comentariosReportados}
+                />
                 {d.estado !== 'LEYENDA' && (
                   <span className="text-sm text-muted-foreground">
                     Favoritos {d.favoritos} de {d.favoritos_leyenda} para Leyenda
                   </span>
                 )}
-                {!d.de_sus_salones && <span className="text-sm text-muted-foreground">Promoción anterior · solo lectura</span>}
+                {!d.de_sus_salones && (
+                  <span className="text-sm text-muted-foreground">Promoción anterior · solo lectura</span>
+                )}
               </div>
             </div>
             {m.puedeActuar && (
               <div className="flex flex-wrap gap-3">
-                <Button className="min-h-11" variant={m.destacada ? 'default' : 'outline'} disabled={m.ocupado === 'destacar'} onClick={m.destacar}>
-                  {m.ocupado === 'destacar' ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Star className="size-4" aria-hidden="true" />}
+                <Button
+                  className="min-h-11"
+                  variant={m.destacada ? 'default' : 'outline'}
+                  disabled={m.ocupado === 'destacar'}
+                  onClick={m.destacar}
+                >
+                  {m.ocupado === 'destacar' ? (
+                    <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Star className="size-4" aria-hidden="true" />
+                  )}
                   {m.destacada ? 'Quitar destacado' : 'Destacar'}
                 </Button>
-                <Button variant="outline" className="min-h-11 border-[color:var(--danger)]/40 text-[color:var(--danger)]" onClick={() => m.setEliminandoEntrevista(true)}>
+                <Button
+                  variant="outline"
+                  className="min-h-11"
+                  data-tono="peligro"
+                  onClick={() => m.setEliminandoEntrevista(true)}
+                >
                   Eliminar entrevista
                 </Button>
               </div>
             )}
           </header>
           {d.reportes.length > 0 && m.puedeActuar && (
-            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-danger-soft bg-danger-soft/40 p-4" role="status">
+            <div
+              className="flex flex-wrap items-center gap-3 rounded-xl border border-danger-soft bg-danger-soft/40 p-4"
+              role="status"
+            >
               <span className="font-semibold">
-                {d.reportes.length === 1 ? 'La entrevista tiene 1 reporte' : `La entrevista tiene ${d.reportes.length} reportes`}
+                {d.reportes.length === 1
+                  ? 'La entrevista tiene 1 reporte'
+                  : `La entrevista tiene ${d.reportes.length} reportes`}
               </span>
               {d.reportes.map((r) => (
-                <Button key={r.codigo} variant="outline" className="min-h-11" disabled={m.ocupado === `descartar-${r.codigo}`} onClick={() => m.descartar(r.codigo)}>
+                <Button
+                  key={r.codigo}
+                  variant="outline"
+                  className="min-h-11"
+                  disabled={m.ocupado === `descartar-${r.codigo}`}
+                  onClick={() => m.descartar(r.codigo)}
+                >
                   Descartar reporte
                 </Button>
               ))}
@@ -106,7 +148,8 @@ export function DetallePublicacion({ m, nombreSalon }: { m: ModeloPublicacion; n
             <ReaccionesModeradas m={m} nombreSalon={nombreSalon} nombresTipos={nombresTipos} />
           </div>
           <p className="text-sm text-muted-foreground">
-            Destacar es reversible. Eliminar (entrevista o comentario) pide confirmación; los autores no ven quién reportó.
+            Destacar es reversible. Eliminar (entrevista o comentario) pide confirmación; los autores no ven
+            quién reportó.
           </p>
         </>
       )}

@@ -43,7 +43,12 @@ export function FiltrosInvestigaciones({
       <div className="sx-i-selector">
         <div className="sx-i-vistas" role="group" aria-label="Vista">
           {VISTAS.map((v) => (
-            <button key={v.vista} type="button" aria-pressed={vista === v.vista} onClick={() => onVista(v.vista)}>
+            <button
+              key={v.vista}
+              type="button"
+              aria-pressed={vista === v.vista}
+              onClick={() => onVista(v.vista)}
+            >
               {v.vista === 'LEYENDAS' && <Crown aria-hidden="true" size={16} />}
               {v.texto}
               {conteos && <small>· {conteos[v.conteo]}</small>}

@@ -9,6 +9,7 @@ import { useInvestigacionesServidorSeccion } from '@/store/servidor/secciones'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { Aliado, FichaEntrevistaEntrada } from '@/types/servidor'
 import { mostrarAvisoInvestigacion } from '../store/avisoInvestigaciones'
+import { avisarRechazoInvestigacion } from './cierreInvestigacion'
 
 const VACIA: FichaEntrevistaEntrada = { titulo: '', profesional: '', duracion: '', enlace: '', resumen: '' }
 
@@ -71,16 +72,27 @@ export function usePublicarEntrevista() {
     const respuesta = editar
       ? await editarEntrevista(editar, limpia, codigos)
       : await publicarEntrevista(limpia, codigos, permiso)
+    if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar') {
+      await avisarRechazoInvestigacion(
+        respuesta,
+        editar ? 'No se pudo guardar la ficha' : 'No se pudo realizar la publicación',
+        (ruta) => void navegar(ruta),
+      )
+      setEnviando(false)
+      return setError(respuesta.tipo === 'bloqueado' ? null : mensajeErrorServidor(respuesta))
+    }
     setEnviando(false)
-    if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar')
-      return setError(mensajeErrorServidor(respuesta))
     if (editar) {
       mostrarAvisoInvestigacion('Ficha actualizada', 'Tus compañeros ya ven los cambios.')
       return void navegar(appPaths.student.interview(editar))
     }
-    const codigo = respuesta.datos.eventos_registrados.find((e) => e.tipo === 'PUBLICA_ENTREVISTA')?.referencia
+    const codigo = respuesta.datos.eventos_registrados.find(
+      (e) => e.tipo === 'PUBLICA_ENTREVISTA',
+    )?.referencia
     mostrarAvisoInvestigacion('Publicaste tu entrevista', 'Tu salón y tu orientadora ya pueden verla.')
-    void navegar(codigo ? appPaths.student.interview(codigo) : `${appPaths.student.investigations}?vista=mias`)
+    void navegar(
+      codigo ? appPaths.student.interview(codigo) : `${appPaths.student.investigations}?vista=mias`,
+    )
   }
   return {
     cuenta: cuentaActiva(),
@@ -89,10 +101,12 @@ export function usePublicarEntrevista() {
     errorCarga: seccion.error ?? (editar ? detalle?.error : null) ?? null,
     // Publicar exige la guía lista; editar, ser autor de la entrevista.
     disponible: editar ? !!entrevista?.propia : datos?.en_curso?.estado === 'GUIA_LISTA',
+    sinInvestigacion: !editar && !!datos && !datos.en_curso,
     ocupacion,
     autoresActuales: entrevista?.autores ?? [],
     ficha,
-    cambiar: (campo: keyof FichaEntrevistaEntrada, valor: string) => setFicha((f) => ({ ...f, [campo]: valor })),
+    cambiar: (campo: keyof FichaEntrevistaEntrada, valor: string) =>
+      setFicha((f) => ({ ...f, [campo]: valor })),
     errores: intento ? errores : null,
     coautores,
     agregarCoautor: (a: Aliado) => {
