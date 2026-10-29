@@ -8,8 +8,12 @@ import { ConditionList } from './ConditionList'
 import { numeroPagina } from '../lib/passport'
 import type { PassportBadge } from '@/types/profile'
 
+// El servidor manda la hora de Lima sin zona: se lee como −05:00 para no depender de la zona del navegador.
 const fechaLarga = (fecha: string) =>
-  new Date(fecha).toLocaleDateString('es-PE', { dateStyle: 'long', timeZone: 'America/Lima' })
+  new Date(/(Z|[+-]\d\d:\d\d)$/.test(fecha) ? fecha : `${fecha}-05:00`).toLocaleDateString('es-PE', {
+    dateStyle: 'long',
+    timeZone: 'America/Lima',
+  })
 
 // Ajuste pasaporte-perfil: tres estados (secreta, por descubrir, obtenida) con la misma cabecera.
 export function PassportBadgeDialog({
