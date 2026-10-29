@@ -1,17 +1,10 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import ts from 'typescript'
-import { copia, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, importarAislado, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
 // F07b: borradores de REALIDAD y PASOS, precarga, totales en vivo, resúmenes del menú y avisos (§7–§10), con los
-// fixtures ruta-*. Los adaptadores se cargan aislados (solo importan tipos).
-async function cargar(ruta) {
-  const code = ts.transpileModule(readFileSync(ruta, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2023 },
-  }).outputText
-  return import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`)
-}
+// fixtures ruta-*. Los adaptadores se cargan aislados (solo importan tipos y `fechas.ts`).
+const cargar = importarAislado
 const edicion = await cargar('src/lib/servidor/adaptadoresPlanesEdicion.ts')
 const planes = await cargar('src/lib/servidor/adaptadoresPlanes.ts')
 const completos = jsonServidor('ruta/ruta-planes')

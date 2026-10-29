@@ -1,7 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import ts from 'typescript'
 import {
   cargarAlmacen,
   copia,
@@ -11,13 +9,11 @@ import {
   fixtureServidor,
   jsonServidor,
   respuestaDominio,
+  importarAislado,
 } from '../../soporte/servidor-ayudas.mjs'
 
 // F07a: contrato de los planes de carrera (adaptador, almacén y acciones) con los fixtures ruta-*.
-const code = ts.transpileModule(readFileSync('src/lib/servidor/adaptadoresPlanes.ts', 'utf8'), {
-  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2023 },
-}).outputText
-const planes = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`)
+const planes = await importarAislado('src/lib/servidor/adaptadoresPlanes.ts')
 const completos = jsonServidor('ruta/ruta-planes')
 const familia = jsonServidor('ruta/ruta-planes-misma-familia')
 const sinRespuestas = { eventos_registrados: [], nuevos_desbloqueos: [] }

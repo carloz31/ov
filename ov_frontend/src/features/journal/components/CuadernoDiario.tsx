@@ -6,6 +6,7 @@ import type { JournalEntry } from '@/types/adventure'
 import { Parchment } from '@/components/student/Parchment'
 import { JournalCard } from '@/features/journal/components/JournalCard'
 import { appPaths } from '@/routes/paths'
+import { fechaServidor } from '@/lib/servidor/fechas'
 
 const filtros: [FiltroCuaderno, string][] = [
   ['todas', 'Todas'],
@@ -27,7 +28,7 @@ export function CuadernoDiario({
 }) {
   const c = useJournalHome({ entries, completo })
   const desde = c.primera
-    ? new Date(c.primera).toLocaleDateString('es-PE', {
+    ? fechaServidor(c.primera).toLocaleDateString('es-PE', {
         day: 'numeric',
         month: 'long',
         timeZone: 'America/Lima',

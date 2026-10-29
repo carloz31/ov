@@ -1,4 +1,4 @@
-// F05: del contrato del diario y del check-in a los modelos de las vistas. Solo importa tipos.
+// F05: del contrato del diario y del check-in a los modelos de las vistas. Solo importa tipos y `fechas.ts`.
 import type { JournalEntry, ReadinessCheckIn } from '@/types/adventure'
 import type {
   AmistadAsistente,
@@ -8,6 +8,7 @@ import type {
   OrigenEntrada,
   PreguntaDiarioEstado,
 } from '@/types/servidor'
+import { diaLima, fechaServidor } from './fechas'
 
 export type EntradaDiarioVista = JournalEntry & {
   numero: number
@@ -83,10 +84,10 @@ export function cartasDiario(preguntas: PreguntaDiarioEstado[] | null): CartaLum
 export const cartaDeActividad = (cartas: CartaLumi[], actividad: string) =>
   cartas.find((c) => c.remitente?.codigo === actividad)
 
-// «hoy», «ayer» o «hace N días», por fecha de calendario (sin zona, como guarda el servidor).
+// «hoy», «ayer» o «hace N días», por fecha de calendario en Lima (la del servidor y la de ahora).
 export function fechaRelativa(iso: string, ahora: Date): string {
-  const dia = (fecha: Date) => Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate())
-  const dias = Math.round((dia(ahora) - dia(new Date(iso))) / 86_400_000)
+  const dia = (fecha: Date) => Date.parse(diaLima(fecha))
+  const dias = Math.round((dia(ahora) - dia(fechaServidor(iso))) / 86_400_000)
   return dias <= 0 ? 'hoy' : dias === 1 ? 'ayer' : `hace ${dias} días`
 }
 

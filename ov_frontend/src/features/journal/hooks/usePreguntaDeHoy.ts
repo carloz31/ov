@@ -5,6 +5,7 @@ import { pedirPreguntaDelDia } from '@/store/servidor/diario'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { JournalEntry } from '@/types/adventure'
 import type { DailyQuestionEditorContext } from '@/features/journal/components/DailyQuestionCard'
+import { fechaServidor } from '@/lib/servidor/fechas'
 
 // La columna «Hoy» del diario (ajuste de F05).
 // - `pregunta`: hay una vigente por responder.
@@ -42,7 +43,7 @@ export function usePreguntaDeHoy(now: Date, entradas: JournalEntry[], activo: bo
   }, [activo, day])
   if (activo) {
     const respondidaHoy = entradas.some(
-      (e) => e.etiqueta === 'Pregunta del día' && lumiDayKey(new Date(e.createdAt)) === day,
+      (e) => e.etiqueta === 'Pregunta del día' && lumiDayKey(fechaServidor(e.createdAt)) === day,
     )
     const estado = servidor.estado === 'pregunta' && respondidaHoy ? 'contada' : servidor.estado
     return {

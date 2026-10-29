@@ -1,9 +1,10 @@
 import { Mail, PenLine } from 'lucide-react'
 import { fechaRelativa, type CartaLumi } from '@/lib/servidor/adaptadoresDiario'
 import type { AccionesCarta } from '@/features/journal/components/BuzonLumi'
+import { fechaServidor } from '@/lib/servidor/fechas'
 
 const fechaLarga = (iso: string) =>
-  new Date(iso).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', timeZone: 'America/Lima' })
+  fechaServidor(iso).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', timeZone: 'America/Lima' })
 
 // Una carta del buzón: sellada (solo «Abrir»), en redacción (sin acciones) o lista para responder. En la portada es
 // una fila con una sola acción a la derecha; `completa` («Cartas de Lumi») suma la explicación de cada estado y, en

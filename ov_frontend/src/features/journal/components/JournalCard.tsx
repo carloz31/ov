@@ -1,6 +1,7 @@
 import type { JournalEntry } from '@/types/adventure'
 
 import { JournalTags } from '@/features/journal/components/JournalTags'
+import { fechaServidor } from '@/lib/servidor/fechas'
 
 const dia = (fecha: Date) =>
   fecha.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', timeZone: 'America/Lima' })
@@ -12,7 +13,7 @@ export function JournalCard({ entry, onOpen }: { entry: JournalEntry; onOpen: ()
   const origen =
     entry.etiqueta ?? (daily ? 'Pregunta del día' : entry.kind === 'open' ? 'Libre' : 'Carta de Lumi')
   const tipo = origen === 'Pregunta del día' ? 'daily' : origen === 'Libre' ? 'open' : 'letter'
-  const creada = new Date(entry.createdAt)
+  const creada = fechaServidor(entry.createdAt)
   const fecha = dia(creada) === dia(new Date()) ? `Hoy, ${dia(creada)}` : dia(creada)
   return (
     <li className="sx-j-entry" data-kind={tipo}>

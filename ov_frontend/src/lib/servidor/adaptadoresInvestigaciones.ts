@@ -7,6 +7,7 @@ import type {
   PreguntaGuionPublica,
   TipoReaccionPublico,
 } from '@/types/servidor'
+import { fechaServidor } from './fechas'
 
 // F09: Investigaciones en api (estudiante y orientadora). Solo importa tipos: las pruebas lo cargan aislado.
 
@@ -115,9 +116,9 @@ export const lineaNivel = (nivel: { numero: number; titulo: string } | null, con
   nivel ? (conTitulo ? `Nivel ${nivel.numero} · ${nivel.titulo}` : `Nivel ${nivel.numero}`) : ''
 
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dic']
-// Las fechas del servidor van sin zona, en hora de Lima (UTC−05:00, sin horario de verano).
+// Las fechas del servidor van sin zona, en hora de Lima: se leen con `fechaServidor`.
 const LIMA = -5 * 60 * 60000
-const leer = (iso: string) => new Date(/(Z|[+-]\d\d:\d\d)$/.test(iso) ? iso : `${iso}-05:00`)
+const leer = fechaServidor
 // Año, mes y día en Lima de un instante (con getUTC* sobre el instante corrido a Lima).
 const enLima = (fecha: Date) => new Date(fecha.getTime() + LIMA)
 export const fechaCorta = (iso: string) => {

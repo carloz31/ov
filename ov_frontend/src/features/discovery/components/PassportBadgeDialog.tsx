@@ -7,10 +7,10 @@ import { ArrowRight, Check, Lightbulb, LoaderCircle } from 'lucide-react'
 import { ConditionList } from './ConditionList'
 import { numeroPagina } from '../lib/passport'
 import type { PassportBadge } from '@/types/profile'
+import { fechaServidor } from '@/lib/servidor/fechas'
 
-// El servidor manda la hora de Lima sin zona: se lee como −05:00 para no depender de la zona del navegador.
 const fechaLarga = (fecha: string) =>
-  new Date(/(Z|[+-]\d\d:\d\d)$/.test(fecha) ? fecha : `${fecha}-05:00`).toLocaleDateString('es-PE', {
+  fechaServidor(fecha).toLocaleDateString('es-PE', {
     dateStyle: 'long',
     timeZone: 'America/Lima',
   })

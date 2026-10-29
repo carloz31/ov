@@ -1,7 +1,13 @@
 import { Star } from 'lucide-react'
+import { ZONA_SERVIDOR, fechaServidor } from '@/lib/servidor/fechas'
 
 const fechaLarga = (iso: string) =>
-  new Date(iso).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' })
+  fechaServidor(iso).toLocaleDateString('es-PE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: ZONA_SERVIDOR,
+  })
 
 // F08 (A9, §8.1): el diploma de compromiso, emitido por la plataforma a nombre del apoderado. Sin nombre de hijo.
 // Es lo único que se imprime (estilos de impresión en mis-actividades.css).
@@ -14,7 +20,10 @@ export function HojaDiploma({
   emitidoEn: string
   codigo: string
 }) {
-  const anio = new Date(emitidoEn).getFullYear()
+  const anio = fechaServidor(emitidoEn).toLocaleDateString('es-PE', {
+    year: 'numeric',
+    timeZone: ZONA_SERVIDOR,
+  })
   return (
     <article aria-label="Diploma de compromiso" className="pa-hoja">
       <span aria-hidden="true" className="pa-hoja-esquina is-1" />

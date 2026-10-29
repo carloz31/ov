@@ -1,8 +1,9 @@
 import { Archive, Check } from 'lucide-react'
 import type { CartaLumi } from '@/lib/servidor/adaptadoresDiario'
+import { fechaServidor } from '@/lib/servidor/fechas'
 
 const fecha = (iso: string) =>
-  new Date(iso).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', timeZone: 'America/Lima' })
+  fechaServidor(iso).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', timeZone: 'America/Lima' })
 
 // Ajuste del diario (F05): una carta respondida («Leer en el cuaderno») o archivada («Desarchivar»), compacta.
 export function FilaCartaCompacta({

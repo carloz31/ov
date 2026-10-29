@@ -1,7 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import ts from 'typescript'
 import {
   cargarAlmacen,
   copia,
@@ -10,13 +8,11 @@ import {
   fixtureServidor,
   jsonServidor,
   respuestaDominio,
+  importarAislado,
 } from '../../soporte/servidor-ayudas.mjs'
 
 // F05: contrato del diario y del check-in (adaptadores y almacén).
-const code = ts.transpileModule(readFileSync('src/lib/servidor/adaptadoresDiario.ts', 'utf8'), {
-  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2023 },
-}).outputText
-const diario = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`)
+const diario = await importarAislado('src/lib/servidor/adaptadoresDiario.ts')
 const preguntas = jsonServidor('ruta/ruta-diario-preguntas')
 const entradas = jsonServidor('ruta/ruta-diario-entradas')
 const amistad = jsonServidor('ruta/ruta-diario-amistad')

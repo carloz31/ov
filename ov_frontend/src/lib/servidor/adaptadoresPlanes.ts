@@ -18,6 +18,7 @@ import type {
   ResultadoPublico,
   SeccionPlan,
 } from '@/types/servidor'
+import { ZONA_SERVIDOR, fechaServidor } from './fechas'
 
 // F07a: la tarjeta v4 a partir de GET /planes. Los textos de pantalla son del front (F07b-pantallas §0); los de las
 // listas, preguntas, dudas y bloqueos llegan del servidor y se muestran tal cual. Solo importa tipos.
@@ -236,9 +237,11 @@ export function avisoGuardado(seccion: CodigoSeccionPlan, plan: PlanCarrera | nu
 
 // «Último cambio: 25 oct» (fecha corta, sin texto relativo).
 export function fechaCorta(iso: string) {
-  const fecha = new Date(iso)
+  const fecha = fechaServidor(iso)
   if (Number.isNaN(fecha.getTime())) return iso
-  return fecha.toLocaleDateString('es-PE', { day: 'numeric', month: 'short' }).replace('.', '')
+  return fecha
+    .toLocaleDateString('es-PE', { day: 'numeric', month: 'short', timeZone: ZONA_SERVIDOR })
+    .replace('.', '')
 }
 
 // «Cómo encaja contigo» (POR_QUE): solo con resultado RIASEC revelado, no plano, y carrera con tipo.

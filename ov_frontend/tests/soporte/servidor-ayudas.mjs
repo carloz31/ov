@@ -9,6 +9,16 @@ import React from 'react'
 const nativeRequire = createRequire(import.meta.url)
 export const jsonServidor = (name) => JSON.parse(readFileSync(`tests/fixtures/servidor/${name}.json`, 'utf8'))
 export const copia = (value) => JSON.parse(JSON.stringify(value))
+const comoModulo = (ruta) =>
+  `data:text/javascript;base64,${Buffer.from(
+    ts
+      .transpileModule(readFileSync(ruta, 'utf8'), {
+        compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2023 },
+      })
+      .outputText.replace(/from '\.\/fechas'/g, () => `from '${comoModulo('src/lib/servidor/fechas.ts')}'`),
+  ).toString('base64')}`
+// Un adaptador de lib/servidor cargado aislado: solo importa tipos y, si lo usa, `fechas.ts` (fechaServidor).
+export const importarAislado = (ruta) => import(comoModulo(ruta))
 export const esperar = async () => {
   for (let i = 0; i < 15; i++) await new Promise((resolve) => setImmediate(resolve))
 }
