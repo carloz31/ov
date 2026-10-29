@@ -19,12 +19,13 @@ from app.schemas.investigaciones import (
     LoQuePienso, PaginaPublicaciones, PublicacionDetalle, ReaccionModerada, ReporteEntrada, ReportePublico,
 )
 from app.services.comun import buscar_por_codigo, fecha_accion, responder_con_eventos
-from app.services.investigaciones.acciones import evaluar_leyenda, exigir_orientadora, resolver_reportes
+from app.services.investigaciones.acciones import (
+    evaluar_leyenda, exigir_orientadora, registrar_en_autores, resolver_reportes,
+)
 from app.services.investigaciones.consultas import (
     autores_de, contar_favoritos, contiene, de_autor_en_salones, entrevista_de_sus_salones, ocupaciones_breves,
     personas, reacciones_por_tipo, tipos_reaccion,
 )
-from app.services.motor.reglas import registrar_eventos
 
 
 ESTADOS = ('SIN_DESTACAR', 'DESTACADA', 'LEYENDA')
@@ -41,9 +42,7 @@ def destacar_entrevista(sesion: Session, entrada: DestacarEntrada) -> RespuestaA
     if entrada.destacada and entrevista.destacada_en is None:
         entrevista.destacada_en, entrevista.destacada_por = fecha, cuenta.id
         sesion.flush()
-        for autor in sesion.scalars(select(Cuenta).join(EntrevistaAutor, EntrevistaAutor.cuenta_id == Cuenta.id)
-                                    .where(EntrevistaAutor.entrevista_id == entrevista.id).order_by(Cuenta.codigo)):
-            registrar_eventos(sesion, autor, [(TipoEventoUso.ENTREVISTA_DESTACADA, entrevista.id)], fecha)
+        registrar_en_autores(sesion, entrevista, TipoEventoUso.ENTREVISTA_DESTACADA, fecha)
         evaluar_leyenda(sesion, entrevista, fecha)
     elif not entrada.destacada:
         entrevista.destacada_en = entrevista.destacada_por = entrevista.leyenda_en = None

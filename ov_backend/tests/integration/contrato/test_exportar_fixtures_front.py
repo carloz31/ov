@@ -549,7 +549,7 @@ def test_fixtures_de_cuentas_y_apoderado(tmp_path):
     cuentas = TypeAdapter(list[CuentaResumen]).validate_python(datos['cuentas'])
     assert [(c.codigo, c.rol) for c in cuentas] == [
         ('apo-rosa', 'APODERADO'), ('est-ana', 'ESTUDIANTE'), ('est-beto', 'ESTUDIANTE'), ('est-luis', 'ESTUDIANTE'),
-        ('ori-carmen', 'ORIENTADORA'),
+        ('est-mia', 'ESTUDIANTE'), ('est-sol', 'ESTUDIANTE'), ('est-teo', 'ESTUDIANTE'), ('ori-carmen', 'ORIENTADORA'),
     ]
     for momento in ('inicial', 'final'):
         TypeAdapter(list[BloqueActividades]).validate_python(datos[f'apoderado-actividades-{momento}'])

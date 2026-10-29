@@ -35,6 +35,10 @@ SALONES = (('5A', 'Quinto A'), ('5B', 'Quinto B'))
 CUENTAS = (('est-ana', 'Ana', 'ESTUDIANTE', '5A', 'ana.estudiante@example.com', 'Ana2026!'),
            ('est-luis', 'Luis', 'ESTUDIANTE', '5A', 'luis.estudiante@example.com', 'Luis2026!'),
            ('est-beto', 'Beto', 'ESTUDIANTE', '5B', 'beto.estudiante@example.com', 'Beto2026!'),
+           # DATO DE PRUEBA (Ajuste leyenda): compañeros de 5A que no son autores, para llegar a FAVORITOS_LEYENDA.
+           ('est-mia', 'Mía', 'ESTUDIANTE', '5A', 'mia.estudiante@example.com', 'Mia2026!'),
+           ('est-teo', 'Teo', 'ESTUDIANTE', '5A', 'teo.estudiante@example.com', 'Teo2026!'),
+           ('est-sol', 'Sol', 'ESTUDIANTE', '5A', 'sol.estudiante@example.com', 'Sol2026!'),
            ('apo-rosa', 'Rosa', 'APODERADO', None, 'rosa.apoderada@example.com', 'Rosa2026!'),
            ('ori-carmen', 'Carmen', 'ORIENTADORA', None, 'carmen.orientadora@example.com', 'Carmen2026!'))
 

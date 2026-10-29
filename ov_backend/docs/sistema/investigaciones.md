@@ -25,7 +25,7 @@ Un estudiante investiga una ocupación: escribe lo que piensa hoy de ella, arma 
 
 - **Estudiante:** ve las entrevistas publicadas con algún autor de su salón, todas las Leyendas y las suyas. RETIRADA y ELIMINADA no salen en ningún listado ni conteo, y su detalle responde 404 a todos, autores incluidos.
 - **Orientadora:** ve las publicadas de sus salones (`orientadora_salon`) y, al final de su tabla, las Leyendas de otros salones (`de_sus_salones: false`; no hay modelo de promoción, y el front pone la etiqueta). Solo actúa (destacar, comentar, eliminar, moderar) sobre las de sus salones.
-- **Leyenda:** destacada y con `FAVORITOS_LEYENDA` (3) favoritos de cuentas estudiante. Solo marca favorita quien la ve, y nunca un autor. Se evalúa al marcar un favorito y al destacar. Se pierde solo al quitar el destacado, retirar o eliminar; desmarcar favoritos no la quita.
+- **Leyenda:** destacada y con `FAVORITOS_LEYENDA` (3) favoritos de cuentas estudiante que no son autores (el favorito de quien después se suma como coautor deja de contar, también en los conteos que se muestran). Solo marca favorita quien la ve, y nunca un autor. Se evalúa al marcar un favorito y al destacar, en cualquier orden. Se pierde solo al quitar el destacado, retirar o eliminar; desmarcar favoritos no la quita. ENTREVISTA_DESTACADA y ENTREVISTA_LEYENDA se registran una sola vez por autor y entrevista: volver a destacarla o a hacerla Leyenda no los repite. El sello `t-ins-leyenda` (ENTREVISTA_LEYENDA) es un desbloqueo y no se pierde si la entrevista deja de ser Leyenda; llega a los autores como desbloqueo sin ver.
 
 ## Consultas (GET)
 

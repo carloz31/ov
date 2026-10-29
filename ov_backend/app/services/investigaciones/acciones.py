@@ -240,9 +240,15 @@ def evaluar_leyenda(sesion: Session, entrevista: Entrevista, fecha) -> None:
         return
     entrevista.leyenda_en = fecha
     sesion.flush()
+    registrar_en_autores(sesion, entrevista, TipoEventoUso.ENTREVISTA_LEYENDA, fecha)
+
+
+def registrar_en_autores(sesion: Session, entrevista: Entrevista, tipo: TipoEventoUso, fecha) -> None:
+    """El evento en cada autor, una sola vez por entrevista: volver a destacarla o a hacerla Leyenda no lo repite."""
     for autor in sesion.scalars(select(Cuenta).join(EntrevistaAutor, EntrevistaAutor.cuenta_id == Cuenta.id).where(
             EntrevistaAutor.entrevista_id == entrevista.id).order_by(Cuenta.codigo)):
-        registrar_eventos(sesion, autor, [(TipoEventoUso.ENTREVISTA_LEYENDA, entrevista.id)], fecha)
+        if not existe_evento(sesion, autor, tipo, entrevista.id):
+            registrar_eventos(sesion, autor, [(tipo, entrevista.id)], fecha)
 
 
 # --- Reacciones y reportes ----------------------------------------------------------------------

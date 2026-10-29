@@ -201,10 +201,14 @@ def conteo_reacciones():
 
 
 def contar_favoritos(sesion: Session, ids) -> dict[int, int]:
-    """Favoritos que cuentan para la Leyenda: los de cuentas de estudiante."""
+    """Favoritos que cuentan para la Leyenda: los de estudiantes que no son autores (un coautor sumado después de
+    marcarla no cuenta)."""
+    autor = exists().where(EntrevistaAutor.entrevista_id == Favorito.id_referencia,
+                           EntrevistaAutor.cuenta_id == Favorito.cuenta_id)
     return dict(sesion.execute(select(Favorito.id_referencia, func.count()).join(
         Cuenta, Cuenta.id == Favorito.cuenta_id).where(
         Favorito.tipo == TipoFavorito.ENTREVISTA, Favorito.id_referencia.in_(ids), Cuenta.rol == Rol.ESTUDIANTE,
+        ~autor,
     ).group_by(Favorito.id_referencia)).all())
 
 

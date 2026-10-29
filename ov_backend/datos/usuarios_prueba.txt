@@ -4,5 +4,8 @@
 est-ana | ESTUDIANTE | ana.estudiante@example.com | Ana2026!
 est-luis | ESTUDIANTE | luis.estudiante@example.com | Luis2026!
 est-beto | ESTUDIANTE | beto.estudiante@example.com | Beto2026!
+est-mia | ESTUDIANTE | mia.estudiante@example.com | Mia2026!
+est-teo | ESTUDIANTE | teo.estudiante@example.com | Teo2026!
+est-sol | ESTUDIANTE | sol.estudiante@example.com | Sol2026!
 apo-rosa | APODERADO | rosa.apoderada@example.com | Rosa2026!
 ori-carmen | ORIENTADORA | carmen.orientadora@example.com | Carmen2026!
