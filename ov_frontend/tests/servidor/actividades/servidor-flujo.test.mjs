@@ -104,7 +104,7 @@ test('el ingreso deduplica el montaje, usa la cuenta de estudiante de la sesión
     assert.equal(app.requests.some((r) => r.url === '/api/cuentas'), false)
     assert.equal(app.load('src/store/servidor/cuenta.ts').cuentaActiva(), usuario)
     assert.equal(
-      app.requests.some((r) => r.url.includes('marcar-vistos')),
+      app.requests.some((r) => r.url.includes('/notificaciones/marcar-vistas')),
       false,
     )
   }
@@ -115,7 +115,7 @@ test('el ingreso deduplica el montaje, usa la cuenta de estudiante de la sesión
   assert.deepEqual(apoderado.requests, [])
 })
 
-test('el ingreso confirmado conserva sus avisos si falla la consulta y reintenta sin otro POST', async () => {
+test('el ingreso confirmado pide la campana aunque falle la consulta y reintenta sin otro POST', async () => {
   const app = fixtureServidor()
   const recibo = jsonServidor('ruta/ruta-completar-t-inicio')
   // DATO DE PRUEBA: desbloqueos durante el ingreso y desconexión posterior.
@@ -128,18 +128,19 @@ test('el ingreso confirmado conserva sus avisos si falla la consulta y reintenta
       return falla
         ? { status: 503, body: 'DATO DE PRUEBA: conexión interrumpida' }
         : respuestaDominio(r, inicial)
-    if (r.url.includes('/desbloqueos?')) return { body: [] }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     throw Error(r.url)
   })
   const acciones = app.load('src/store/servidor/operaciones.ts')
   const almacen = cargarAlmacen(app)
   assert.equal((await acciones.ingresar()).tipo, 'http')
-  assert.ok(almacen.avisosPendientes().some((a) => a.title === 'La primera chispa'))
+  // Ajuste notificaciones: la campana se pide con el ingreso aunque fallen las consultas de dominio.
+  assert.equal(almacen.obtenerNotificaciones().estado, 'listo')
   falla = false
   assert.equal((await acciones.ingresar()).tipo, 'ok')
   assert.equal(app.requests.filter((r) => r.url === '/api/acciones/ingresar').length, 1)
   assert.equal(
-    app.requests.some((r) => r.url.includes('marcar-vistos')),
+    app.requests.some((r) => r.url.includes('/notificaciones/marcar-vistas')),
     false,
   )
 })
@@ -217,7 +218,7 @@ test('move informa $fin una sola vez ante doble clic, espera el refresco y muest
       return { body: jsonServidor('ruta/ruta-completar-t-inicio') }
     }
     if (esConsultaDominio(r)) return respuestaDominio(r, escenarioRuta('t1'))
-    if (r.url.includes('/desbloqueos?')) return { body: jsonServidor('ruta/ruta-desbloqueos-no-vistos') }
+    if (r.url.includes('/notificaciones')) return { body: jsonServidor('ruta/ruta-notificaciones') }
     throw Error('Solicitud inesperada')
   })
   const { player, continuar, store } = ultimoDialogo(app)
@@ -242,7 +243,7 @@ test('un POST confirmado con refresco fallido reintenta solo la consulta', async
     if (r.url === '/api/acciones/completar-actividad')
       return { body: jsonServidor('ruta/ruta-completar-t-inicio') }
     if (esConsultaDominio(r) && conConexion) return respuestaDominio(r, escenarioRuta('t1'))
-    if (r.url.includes('/desbloqueos?')) return { body: [] }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     throw Error('Sin conexión')
   })
   const { player, continuar } = ultimoDialogo(app)
@@ -301,7 +302,7 @@ test('repetir una informativa llega nuevamente al servidor sin fabricar logros',
         },
       }
     if (esConsultaDominio(r)) return respuestaDominio(r, escenarioRuta('t1'))
-    if (r.url.includes('/desbloqueos?')) return { body: [] }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
   })
   assert.equal((await acciones.completarActividad('t-inicio')).datos.nuevos_desbloqueos.length, 10)
   assert.equal((await acciones.completarActividad('t-inicio')).datos.nuevos_desbloqueos.length, 0)

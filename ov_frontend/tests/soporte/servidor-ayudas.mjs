@@ -299,7 +299,7 @@ export function servidorInicial(app, inicial = escenarioRuta('inicial')) {
         ...inicial,
         cuenta: { ...inicial.cuenta, codigo: request.url.split('/')[3] },
       })
-    if (request.url.includes('/desbloqueos?')) return { body: [] }
+    if (request.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     throw Error(`Solicitud no configurada: ${request.url}`)
   })
 }
@@ -366,7 +366,7 @@ export function respuestaDominio(r, escenario) {
 export function cargarAlmacen(app) {
   return Object.assign(
     {},
-    ...['sesion', 'secciones', 'avisos', 'resultado', 'consultas', 'refresco'].map((n) =>
+    ...['sesion', 'secciones', 'revelado', 'notificaciones', 'resultado', 'consultas', 'refresco'].map((n) =>
       app.load('src/store/servidor/' + n + '.ts'),
     ),
   )

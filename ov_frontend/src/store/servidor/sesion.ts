@@ -18,8 +18,6 @@ import type {
   TestimonioEstado,
   ResumenCuenta,
   LogrosCuenta,
-  DesbloqueoLegible,
-  DesbloqueoNuevo,
   EntradaDiarioPublica,
   ErrorServidor,
   ItemPublico,
@@ -91,13 +89,6 @@ export type AlmacenServidor = { [N in NombreSeccion]: Seccion<DatosSecciones[N]>
   cargando: boolean
   error: ErrorServidor | null
   consultasHabilitadas: boolean
-  noVistos: DesbloqueoLegible[]
-  desbloqueosAccion: DesbloqueoNuevo[]
-  avisosMostrados: string[]
-  errorAvisos: ErrorServidor | null
-  procesandoAvisos: boolean
-  marcadoAvisos: string[] | null
-  fechasInsignias: Record<string, string>
   // F00: actividades desbloqueadas por una acción que el mapa revela una por una. Solo en memoria.
   porRevelar: string[]
   resultadoRiasec: ResultadoPublico | null
@@ -128,13 +119,6 @@ const inicial = (): AlmacenServidor => ({
   cargando: false,
   error: null,
   consultasHabilitadas: false,
-  noVistos: [],
-  desbloqueosAccion: [],
-  avisosMostrados: [],
-  errorAvisos: null,
-  procesandoAvisos: false,
-  marcadoAvisos: null,
-  fechasInsignias: {},
   porRevelar: [],
   resultadoRiasec: null,
   estadoResultado: 'sin_cargar',

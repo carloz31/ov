@@ -348,8 +348,8 @@ test('las opcionales van fuera del camino, con línea desde su origen, y se reve
   ])
   assert.equal(lineas[1].filter(Boolean).length, 3)
   // Los desbloqueos de una acción quedan en memoria y se revelan uno por uno.
-  const avisos = m.app.load('src/store/servidor/avisos.ts')
-  avisos.incorporarDesbloqueos(
+  const avisos = m.app.load('src/store/servidor/revelado.ts')
+  avisos.revelarDesbloqueos(
     jsonServidor('ruta/ruta-completar-t-cierre-inicio').nuevos_desbloqueos.concat(
       ['t-valores', 't-lee-cuestionario', 't-batalla', 't-partida'].map((codigo) => ({
         regla: `DATO DE PRUEBA ${codigo}`,
@@ -427,7 +427,7 @@ test('completar t-cierre-inicio encola para revelar las opcionales que su bloque
       return { body: jsonServidor('ruta/ruta-completar-t-cierre-inicio') }
     }
     if (esConsultaDominio(r)) return respuestaDominio(r, escenarioRuta(etapa))
-    if (r.url.includes('/desbloqueos?')) return { body: [] }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     throw Error(`Solicitud no configurada: ${r.url}`)
   })
   const acciones = app.load('src/store/servidor/operaciones.ts')

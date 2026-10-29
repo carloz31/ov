@@ -62,7 +62,7 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
     estado = escenarioRuta('t1')
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/diario/preguntas')) return { body: preguntas }
     if (req.url.endsWith('/diario/entradas')) return { body: entradas }
     if (req.url.endsWith('/diario/amistad')) return { body: amistad }

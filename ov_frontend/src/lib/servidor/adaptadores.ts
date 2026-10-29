@@ -23,70 +23,8 @@ import type {
   RespuestaPublica,
   ResultadoPublico,
   CoincidenciaPublica,
-  DesbloqueoLegible,
 } from '@/types/servidor'
 
-export type AvisoServidor = {
-  id: string
-  kind: 'badge' | 'ficha' | 'ciudad' | 'nivel'
-  title: string
-  description: string
-  href: string
-}
-export const claveDesbloqueo = (d: DesbloqueoNuevo | DesbloqueoLegible) =>
-  `${d.regla}/${d.tipo_objetivo}/${d.objetivo.codigo}`
-export function avisosServidor(desbloqueos: (DesbloqueoNuevo | DesbloqueoLegible)[]): AvisoServidor[] {
-  const encontrados = new Set<string>()
-  return desbloqueos.flatMap<AvisoServidor>((d) => {
-    const id = claveDesbloqueo(d)
-    if (encontrados.has(id)) return []
-    encontrados.add(id)
-    const base = { id, title: d.objetivo.nombre }
-    switch (d.tipo_objetivo) {
-      case 'INSIGNIA':
-        return [
-          {
-            ...base,
-            kind: 'badge',
-            description: 'Un nuevo sello cuenta una parte de tu viaje.',
-            href: '/student/profile?section=passport',
-          },
-        ]
-      case 'FICHA':
-        return [
-          {
-            ...base,
-            kind: 'ficha',
-            description: 'Una nueva ficha viaja en tu mochila.',
-            href: '/student/resources',
-          },
-        ]
-      case 'NIVEL':
-        return [
-          {
-            ...base,
-            kind: 'nivel',
-            description: `Subiste a ${d.objetivo.nombre}.`,
-            href: '/student/profile?section=passport#nivel',
-          },
-        ]
-      case 'BLOQUE':
-        return d.objetivo.codigo === 'CIUDAD'
-          ? [
-              {
-                ...base,
-                kind: 'ciudad',
-                title: 'La ciudad te espera',
-                description: 'Tu camino abrió nuevas posibilidades.',
-                href: '/student/exploration',
-              },
-            ]
-          : []
-      default:
-        return []
-    }
-  })
-}
 // Ajuste pasaporte-perfil: las páginas del pasaporte son los grupos del servidor, en su orden. Una secreta no
 // obtenida llega como `???`: su código local la distingue por página y posición, sin exponer el real.
 export function insigniasServidor(logros: LogrosCuenta | null): AchievementGroup[] {

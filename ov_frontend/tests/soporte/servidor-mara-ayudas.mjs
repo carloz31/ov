@@ -22,7 +22,7 @@ export async function iniciarMara({ cantidad = 0, completada = false, resultado 
     }))
   const servidor = (req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/resultado'))
       return resultado
         ? { body: resultado }

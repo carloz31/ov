@@ -1,5 +1,6 @@
 // Contratos de app/schemas/ de ov_backend.
 import type { AvanceAplicacion, AvanceInstrumento } from './servidorInstrumentos'
+import type { NotificacionPublica } from './servidorNotificaciones'
 export type TipoObjetivo =
   | 'ACTIVIDAD'
   | 'BLOQUE'
@@ -28,7 +29,6 @@ export type SesionRespuesta = {
   salones: SalonSesion[]
 }
 export type NivelActual = { numero: number; titulo: string; descripcion: string | null; cita_lumi: string | null }
-export type DesbloqueosMarcados = { marcados: number }
 export type ActividadEstado = { codigo: string; titulo: string; estado: EstadoActividad }
 export type BloqueEstado = {
   codigo: string
@@ -96,7 +96,6 @@ export type DesbloqueoLegible = {
   tipo_objetivo: TipoObjetivo
   objetivo: ObjetivoLegible
   fecha_hora: string
-  visto: boolean
 }
 // app/schemas/diario.py
 export type EntradaDesbloqueada = { codigo: string; nombre: string; personalizada: boolean; texto: string | null }
@@ -138,6 +137,8 @@ export type CheckInsCuenta = { dias_registrados: number; registrado_hoy: boolean
 export type RespuestaAccion = {
   eventos_registrados: { tipo: TipoEventoUso; referencia: string | null; fecha_hora: string }[]
   nuevos_desbloqueos: DesbloqueoNuevo[]
+  // Ajuste notificaciones: las creadas en esta acción para la cuenta.
+  nuevas_notificaciones?: NotificacionPublica[]
   entradas_desbloqueadas?: EntradaDesbloqueada[]
 }
 export type RespuestaCompletarActividad = RespuestaAccion
@@ -193,6 +194,8 @@ export * from './servidorPlanes'
 export * from './servidorFamilia'
 // app/schemas/investigaciones.py vive en servidorInvestigaciones.ts (F09).
 export * from './servidorInvestigaciones'
+// app/schemas/notificaciones.py vive en servidorNotificaciones.ts (ajuste notificaciones).
+export * from './servidorNotificaciones'
 type AccionInstrumento = RespuestaAccion & { cuenta: string; instrumento: string; aplicacion: string }
 export type RespuestaRevelarResultado = AccionInstrumento & { perfil_plano: boolean }
 export type RespuestaReiniciarInstrumento = AccionInstrumento & {

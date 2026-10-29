@@ -112,7 +112,10 @@ test('los cierres enumeran únicamente los desbloqueos del servidor, incluidos n
   )
   assert.ok(cierre.some((d) => d.tipo === 'NIVEL' && d.texto.startsWith('Subiste a ')))
   assert.ok(!cierre.some((d) => d.tipo === 'BLOQUE'))
-  const ciudadAbierta = jsonServidor('ruta/ruta-desbloqueos-no-vistos').filter((d) => d.tipo_objetivo === 'BLOQUE')
+  // DATO DE PRUEBA: el desbloqueo de la Ciudad (R-CIUDAD de `ruta`), como lo trae `entregar-t-expectativas`.
+  const ciudadAbierta = jsonServidor('ruta/ruta-entregar-t-expectativas').nuevos_desbloqueos.filter(
+    (d) => d.tipo_objetivo === 'BLOQUE',
+  )
   assert.deepEqual(
     copia(adaptadores.textosDesbloqueos(ciudadAbierta).map((d) => d.texto)),
     ['La ciudad te espera'],

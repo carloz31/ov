@@ -82,7 +82,7 @@ function almacenFamilia(datos = jsonServidor('ruta/ruta-conversaciones-estudiant
     estado = escenarioRuta('t1')
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/conversaciones')) return { body: datos }
     if (req.url.endsWith('/acciones/escribir-carta')) return { body: sinRespuestas }
     if (req.url.endsWith('/acciones/responder-conversacion'))

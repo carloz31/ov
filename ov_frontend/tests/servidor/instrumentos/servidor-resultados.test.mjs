@@ -153,7 +153,7 @@ test('al fallar la consulta del resultado después del POST 14 se reintenta solo
   // F00: sin resultados_generados el cierre no anuncia el libro; el aviso vuelve con Revelar (F03).
   assert.doesNotMatch(texto(tree), /Elena tiene algo que mostrarte/)
   assert.equal(
-    f.app.requests.some((r) => r.url.includes('marcar-vistos')),
+    f.app.requests.some((r) => r.url.includes('/notificaciones/marcar-vistas')),
     false,
   )
 })

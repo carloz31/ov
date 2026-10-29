@@ -131,7 +131,7 @@ test('ver un detalle registra la vista y refresca; el lugar inesperado es una le
   app.fetch((r) => {
     if (r.url.includes('/acciones/ver-carrera')) return { body: jsonServidor('ruta/ruta-ver-carrera') }
     if (r.url.includes('/inesperada?')) return { body: jsonServidor('ruta/ruta-catalogo-inesperada') }
-    if (r.url.includes('/desbloqueos?')) return { body: [] }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     return { body: [] }
   })
   await store.verEnCatalogo('carreras', 'civil-engineering')

@@ -112,18 +112,19 @@ test('LUMI queda fuera del mapa, del avance y de las novedades; un capítulo nun
   assert.ok(!bloquesZona(inicial, 'CIUDAD').some((b) => b.espacio === 'LUMI'))
   const contenidos = app.load('src/data/activities/contenidos.ts')
   for (const n of [1, 2, 3, 4, 5]) assert.equal(contenidos.contenidoPorClave(`t_lumi_${n}`).mapa, undefined)
-  const sesion = app.load('src/store/servidor/sesion.ts')
-  sesion.publicar({
-    desbloqueosAccion: [
-      {
-        regla: 'R-t-lumi-1',
-        tipo_objetivo: 'ACTIVIDAD',
-        objetivo: { codigo: 't-lumi-1', nombre: 'Cómo llegué' },
-        condiciones: [],
-      },
-    ],
-  })
-  assert.deepEqual(copia(app.load('src/store/servidor/avisos.ts').avisosPendientes()), [])
+  // Ajuste notificaciones: un recuerdo (ACTIVIDAD) nunca llega como notificación; el adaptador no lo anuncia.
+  const { notificacionLegible } = app.load('src/lib/servidor/adaptadoresNotificaciones.ts')
+  const recuerdo = {
+    codigo: 'NOT-1',
+    tipo: 'DESBLOQUEO',
+    referencia: 't-lumi-1',
+    nombre: 'Cómo llegué',
+    detalle: 'ACTIVIDAD',
+    creada_en: '2026-10-07T10:00:00',
+    vista: false,
+    estudiante: null,
+  }
+  assert.equal(notificacionLegible(recuerdo), null)
   const pagina = readFileSync('src/features/journal/hooks/useJournalPage.ts', 'utf8')
   assert.doesNotMatch(pagina, /capituloPendiente|nuevos_desbloqueos/)
 })

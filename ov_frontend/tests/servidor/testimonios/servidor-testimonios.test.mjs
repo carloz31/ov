@@ -39,7 +39,7 @@ test('consultar y ver un testimonio usan las rutas del backend', async () => {
     estado = escenarioRuta('ciudad')
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/testimonios')) return { body: final }
     if (req.url.endsWith('/ver-testimonio'))
       return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }

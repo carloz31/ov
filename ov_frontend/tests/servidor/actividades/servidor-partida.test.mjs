@@ -23,7 +23,7 @@ async function iniciarPartida({ ruta = '/student/missions' } = {}) {
   const respuestas = new Map()
   const servidor = (req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/items')) return { body: items }
     // DATO DE PRUEBA: respuestas guardadas de t-partida, con el contrato de RespuestasActividad.
     if (req.url.endsWith('/respuestas'))

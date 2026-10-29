@@ -11,8 +11,8 @@ import { updateStudentUi } from '@/store/studentUiStore'
 import { markUnlocksSeen } from '../../lib/unlocks'
 import { ServerNoveltiesMenu } from '@/features/adventure/components/overlays/ServerNoveltiesMenu'
 export function NoveltiesMenu({ glass = false }: { glass?: boolean }) {
-  const { ordered, open, setOpen, unread, loteAvisos } = useNovelties()
-  if (loteAvisos) return <ServerNoveltiesMenu glass={glass} />
+  const { ordered, open, setOpen, unread, campanaServidor } = useNovelties()
+  if (campanaServidor) return <ServerNoveltiesMenu glass={glass} />
   const titles = {
     badge: 'Nueva insignia disponible',
     ficha: 'Nueva ficha disponible',

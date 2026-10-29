@@ -42,7 +42,7 @@ async function libro({ etapa = 'ciudad', avance = 'riasec-listo', ruta = '/stude
   let fase = avance
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     const respuesta = extra?.(req, (nueva) => (fase = nueva))
     if (respuesta) return respuesta
     if (req.url.endsWith('/instrumentos')) return { body: jsonServidor(`ruta/ruta-avance-instrumentos-${fase}`) }

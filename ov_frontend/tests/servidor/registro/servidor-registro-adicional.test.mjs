@@ -15,7 +15,7 @@ async function camino(etapa, ruta = '/student/missions') {
     estado = escenarioRuta(etapa)
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     throw Error(`Solicitud no configurada: ${req.url}`)
   })
   const almacen = cargarAlmacen(app)

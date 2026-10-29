@@ -55,7 +55,7 @@ function servidorAccion(app, tipos = [], etapa = 't1') {
         },
       }
     if (esConsultaDominio(r)) return respuestaDominio(r, escenario)
-    if (r.url.includes('/desbloqueos?')) return { body: [] }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     throw Error('Consulta inesperada: ' + r.url)
   })
 }
@@ -72,7 +72,9 @@ test('ingreso confirma el POST antes de cargar y pide sus consultas en paralelo 
     const pendiente = diferida()
     consultas.set(r.url, {
       pendiente,
-      respuesta: esConsultaDominio(r) ? respuestaDominio(r, escenario) : { body: [] },
+      respuesta: esConsultaDominio(r)
+        ? respuestaDominio(r, escenario)
+        : { body: { total: 0, no_vistas: 0, items: [] } },
     })
     return pendiente.promesa
   })
@@ -97,7 +99,8 @@ test('ingreso confirma el POST antes de cargar y pide sus consultas en paralelo 
     '/api/cuentas/est-ana/actividades',
     // Ajuste del panel (F05): el avance del panel va con las actividades.
     '/api/cuentas/est-ana/avance',
-    '/api/cuentas/est-ana/desbloqueos?solo_no_vistos=true',
+    // Ajuste notificaciones: la primera página de la campana va con el ingreso.
+    '/api/cuentas/est-ana/notificaciones?limite=20&desde=0',
     // Ajuste presentaciones-vistas: deciden la presentación de Lumi al entrar a cada vista.
     '/api/cuentas/est-ana/presentaciones',
     '/api/cuentas/est-ana/resumen',
@@ -187,9 +190,12 @@ for (const [tipo, vencidas] of [
       assert.equal((await acciones.completarActividad('t-inicio')).tipo, 'ok')
       await esperar()
       const pedidos = app.requests.slice(antes)
-      assert.equal(pedidos.filter((r) => r.method === 'POST').length, 1)
+      assert.equal(pedidos.filter((r) => r.url.endsWith('/completar-actividad')).length, 1)
+      // El cierre marca vistas las notificaciones de completar (las de `ruta-completar-t-inicio`).
+      assert.equal(pedidos.filter((r) => r.url.endsWith('/notificaciones/marcar-vistas')).length, 1)
       assert.equal(pedidos.filter((r) => r.url.endsWith('/actividades')).length, 1)
-      assert.equal(pedidos.filter((r) => r.url.includes('/desbloqueos?')).length, 1)
+      // Ajuste notificaciones: las de la acción llegan en su respuesta; la campana no se vuelve a pedir.
+      assert.equal(pedidos.filter((r) => r.url.includes('/notificaciones?')).length, 0)
       assert.equal(pedidos.filter((r) => r.url.endsWith('/resumen')).length, tipo === 'NIVEL' ? 1 : 0)
       for (const n of ['fichas', 'logros']) {
         assert.equal(
@@ -207,7 +213,7 @@ for (const [tipo, vencidas] of [
   }
 }
 
-test('responder actualiza actividades y avisos sin adelantar fichas, logros ni resumen', async () => {
+test('responder actualiza actividades sin adelantar fichas, logros ni resumen', async () => {
   const { app, acciones } = await iniciar(),
     antes = app.requests.length
   servidorAccion(app)
@@ -220,7 +226,6 @@ test('responder actualiza actividades y avisos sin adelantar fichas, logros ni r
     [
       ['GET', '/api/cuentas/est-ana/actividades'],
       ['GET', '/api/cuentas/est-ana/avance'],
-      ['GET', '/api/cuentas/est-ana/desbloqueos?solo_no_vistos=true'],
       ['POST', '/api/acciones/responder-items'],
     ],
   )

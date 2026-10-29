@@ -25,7 +25,7 @@ async function iniciar(etapa, cambiar = () => {}) {
     if (r.url === '/api/acciones/ingresar')
       return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
     if (esConsultaDominio(r)) return respuestaDominio(r, escenario)
-    if (r.url.includes('/desbloqueos?')) return { body: [] }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     throw Error(`Solicitud no configurada: ${r.url}`)
   })
   assert.equal((await app.load('src/store/servidor/operaciones.ts').ingresar()).tipo, 'ok')

@@ -31,6 +31,8 @@ function fixture(usuario = 'apo-rosa', cuentas = jsonServidor('cuentas'), opcion
   const fetch = (handler) =>
     fetchBase(async (request) => {
       if (request.url.endsWith('/familia')) return { body: familiaDe(etapa) }
+      // Ajuste notificaciones: la campana del apoderado se pide con el ingreso y el cierre marca sus vistas.
+      if (request.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
       const respuesta = await handler(request)
       if (request.url === '/api/acciones/completar-actividad' && !respuesta?.status)
         etapa = request.body.actividad === 't-apo-1' ? 'mitad' : 'final'
@@ -77,6 +79,8 @@ test('el ingreso usa la cuenta de apoderado de la sesión sin tocar al estudiant
     app.requests.map((r) => [r.method, r.url]),
     [
       ['POST', '/api/acciones/ingresar'],
+      // Ajuste notificaciones: la campana del apoderado va con el ingreso.
+      ['GET', '/api/cuentas/apo-rosa/notificaciones?limite=20&desde=0'],
       ['GET', '/api/cuentas/apo-rosa/actividades'],
       // F00: la familia forma parte de la carga inicial del portal.
       ['GET', '/api/cuentas/apo-rosa/familia'],
@@ -197,6 +201,11 @@ test('completar refresca el servidor y conserva nodo, intentos, elecciones y la 
     tipo: 'ok',
     datos: jsonServidor('ruta/ruta-apoderado-completar-t-apo-1'),
   })
+  const marcado = app.requests.find((r) => r.url.endsWith('/notificaciones/marcar-vistas'))
+  assert.deepEqual(
+    marcado.body.codigos,
+    jsonServidor('ruta/ruta-apoderado-completar-t-apo-1').nuevas_notificaciones.map((n) => n.codigo),
+  )
   // F08: el cierre conserva lo que abrió completar (la vista se vuelve a montar al refrescar).
   const { cierre } = app.store.obtenerEstadoApoderado()
   assert.equal(cierre.actividad, 't-apo-1')
@@ -218,8 +227,12 @@ test('completar refresca el servidor y conserva nodo, intentos, elecciones y la 
   assert.deepEqual([...app.contenidos.disponiblesApoderado(bloques)], ['t-apo-1', 't-apo-2'])
   assert.deepEqual(copia(app.contenidos.completadasApoderado(bloques)), ['t-apo-1'])
   // F00: tras completar se refrescan las actividades y la familia.
+  // Ajuste notificaciones: el cierre marca vistas las notificaciones de completar (la ficha de t-apo-1).
   assert.deepEqual(
-    app.requests.slice(-3).map((r) => r.url),
+    app.requests
+      .filter((r) => !r.url.includes('/notificaciones'))
+      .slice(-3)
+      .map((r) => r.url),
     [
       '/api/acciones/completar-actividad',
       '/api/cuentas/apo-rosa/actividades',
@@ -442,8 +455,9 @@ test('el hook api carga la lista sin usar el progreso de apo-prototipo', async (
   assert.equal(cargado.available(cargado.activities[0]), true)
   assert.equal(cargado.available(cargado.activities[1]), false)
   assert.equal(app.alumno.obtenerEstadoServidor(), app.estadoAlumno)
-  // B17: ingreso y actividades (F00: y familia); la cuenta sale de la sesión, sin GET /cuentas.
-  assert.equal(app.requests.length, 3)
+  // B17: ingreso y actividades (F00: y familia; ajuste notificaciones: y la campana); la cuenta sale de la sesión,
+  // sin GET /cuentas.
+  assert.equal(app.requests.length, 4)
   mounted.unmount()
 })
 

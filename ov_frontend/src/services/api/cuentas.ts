@@ -1,7 +1,5 @@
-import { enviar, obtener } from './cliente'
+import { obtener } from './cliente'
 import type {
-  DesbloqueoLegible,
-  DesbloqueosMarcados,
   ResumenCuenta,
   ProgresoObjetivo,
   RespuestaServidor,
@@ -18,12 +16,4 @@ export function obtenerProgreso(
   codigo: string,
 ): Promise<RespuestaServidor<ProgresoObjetivo>> {
   return obtener(`/cuentas/${encodeURIComponent(cuenta)}/progreso/${tipo}/${encodeURIComponent(codigo)}`)
-}
-
-export function obtenerDesbloqueosNoVistos(cuenta: string): Promise<RespuestaServidor<DesbloqueoLegible[]>> {
-  return obtener(`/cuentas/${encodeURIComponent(cuenta)}/desbloqueos?solo_no_vistos=true`)
-}
-
-export function marcarDesbloqueosVistos(cuenta: string): Promise<RespuestaServidor<DesbloqueosMarcados>> {
-  return enviar(`/cuentas/${encodeURIComponent(cuenta)}/desbloqueos/marcar-vistos`, {})
 }

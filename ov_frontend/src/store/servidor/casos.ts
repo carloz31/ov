@@ -20,5 +20,7 @@ export function resolverCaso(
   return accionConRefresco(
     (cuenta) => apiAcciones.resolverCaso({ cuenta, actividad, puntaje, ocupaciones }),
     confirmada,
+    // Ajuste notificaciones: el informe final del caso anuncia lo desbloqueado (sin toast).
+    true,
   )
 }

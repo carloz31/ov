@@ -36,7 +36,7 @@ function misPlanes({ planes = familia, api = true, responder } = {}) {
     if (r.url.endsWith('/planes')) return { body: planes }
     if (r.url.endsWith('/favoritos')) return { body: favoritos }
     if (r.url.includes('/acciones/')) return { body: accion }
-    if (r.url.includes('/desbloqueos?')) return { body: [] }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     return { body: [] }
   })
   const almacen = cargarAlmacen(app)

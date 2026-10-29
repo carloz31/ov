@@ -47,7 +47,6 @@ export function getNextOverlay({
 
 export const StudentOverlayContext = createContext({
   announcementBlocked: false,
-  openServerNotices: () => {},
   openGuide: (_steps: string[]) => {},
   openCheckIn: (_onReturnFocus?: () => void) => {},
 })

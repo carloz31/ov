@@ -7,6 +7,7 @@ import { obtenerCatalogo } from '@/services/api/instrumentos'
 import { proyectarJourneyApoderado } from '@/lib/servidor/adaptadores'
 import { hidratarParentJourney } from '../parentJourneyStore'
 import { cuentaApoderado } from './cuenta'
+import { cargarNotificaciones, incorporarNotificaciones } from './notificaciones'
 import type { Seccion } from './sesion'
 import type {
   BloqueActividades,
@@ -110,6 +111,8 @@ export function ingresarApoderado(): Promise<RespuestaServidor<RespuestaAccion>>
           return respuesta
         }
         ingresoRegistrado = respuesta.datos
+        // Ajuste notificaciones: la campana del apoderado se pide con el ingreso.
+        void cargarNotificaciones()
       }
       const [actividades, familia] = await Promise.all([
         asegurarActividadesApoderado(),
@@ -230,6 +233,8 @@ export function completarActividadApoderado(
       if (sesion !== revisionSesion || cuenta !== estado.cuenta) return cambioSesion()
       if (respuesta.tipo !== 'ok') return respuesta
       publicar({ cierre: { actividad: codigo, desbloqueos: respuesta.datos.nuevos_desbloqueos } })
+      // «Se abrió para usted» anuncia lo desbloqueado: sus notificaciones se marcan vistas, sin toast.
+      incorporarNotificaciones(respuesta.datos.nuevas_notificaciones, true)
       revisionActividades++
       publicar({ actividades: { ...estado.actividades, estado: 'vencido', error: null } })
       // El avance de la familia cambia con cada actividad completada.

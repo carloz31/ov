@@ -105,12 +105,12 @@ test('la colección marca las ocupaciones obtenidas por su código', () => {
   assert.equal(casos.ocupacionesObtenidas(null).size, 0)
 })
 
-test('resolver un caso envía puntaje y ocupaciones, incorpora sus desbloqueos y refresca', async () => {
+test('resolver un caso envía puntaje y ocupaciones, sin toasts, y refresca', async () => {
   const app = fixtureServidor(),
     estado = escenarioRuta('ciudad')
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/casos')) return { body: [caso] }
     if (req.url.endsWith('/coleccion')) return { body: coleccion }
     if (req.url.endsWith('/resolver-caso')) return { body: resolver }
@@ -136,11 +136,8 @@ test('resolver un caso envía puntaje y ocupaciones, incorpora sus desbloqueos y
   assert.ok(app.requests.slice(antes).some((r) => r.url.endsWith('/actividades')))
   const desbloqueos = resolver.nuevos_desbloqueos.map((d) => d.objetivo.codigo)
   assert.ok(desbloqueos.includes('t-testimonio-1'))
-  assert.ok(
-    desbloqueos.every((codigo) =>
-      almacen.obtenerEstadoServidor().desbloqueosAccion.some((d) => d.objetivo.codigo === codigo),
-    ),
-  )
+  // Ajuste notificaciones: el informe final del caso anuncia lo desbloqueado; nada pasa a la cola de toasts.
+  assert.deepEqual(copia(almacen.obtenerNotificaciones().colaToast), [])
 })
 
 test('el caso del front se juega solo si su actividad CASO está abierta en el servidor', () => {

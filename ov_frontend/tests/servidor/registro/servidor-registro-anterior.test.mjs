@@ -112,7 +112,7 @@ async function partida({ soloLectura = false } = {}) {
   Object.assign(t0[1], { estado: 'DISPONIBLE', bloqueo: null })
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/responder-items'))
       return {
         body: {

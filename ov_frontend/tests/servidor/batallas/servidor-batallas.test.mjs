@@ -24,7 +24,7 @@ async function preparar() {
   let respuesta = derrota
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/batallas')) return { body: batallas }
     if (req.url.endsWith('/batallas/t-batalla/preguntas')) return { body: preguntas }
     if (req.url.endsWith('/resolver-batalla')) return { body: respuesta }
@@ -117,7 +117,7 @@ test('la primera victoria no convierte en práctica su propio intento; el siguie
   const [batalla] = batallas
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, escenarioRuta('t1'))
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/batallas')) return { body: [{ ...batalla, superada: false, intentos: 0 }] }
     if (req.url.endsWith('/batallas/t-batalla/preguntas')) return { body: preguntas }
     if (req.url.endsWith('/resolver-batalla')) return { body: victoria }

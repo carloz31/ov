@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { useEstadoServidor } from '@/store/servidor/sesion'
-import { avisosPendientes, mostrarAviso } from '@/store/servidor/avisos'
-import { marcarPresentacionVista, marcarVistos } from '@/store/servidor/operaciones'
+import { marcarPresentacionVista } from '@/store/servidor/operaciones'
+import {
+  cargarNotificaciones,
+  marcarNotificacionesVistas,
+  useNotificaciones,
+} from '@/store/servidor/notificaciones'
+import { notificacionLegible } from '@/lib/servidor/adaptadoresNotificaciones'
 
 import { useNavigate } from 'react-router'
 import { useAdventure } from '@/store/adventureStore'
@@ -71,11 +76,14 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   // F04d: con una ficha (o su requisito) abierta, p. ej. al entrar a la mochila con `?ficha=`, los avisos
   // automáticos esperan a que se cierre; como no llegan a mostrarse, tampoco se marcan como vistos.
   const fichaAbierta = useFichaEnPantalla()
-  const [avisosManual, setAvisosManual] = useState(false)
+  const notificaciones = useNotificaciones()
   useEffect(() => {
-    setAvisosManual(false)
     setCerradas([])
   }, [servidor.resumen.datos?.cuenta.codigo])
+  // Ajuste notificaciones: al volver al mapa se vuelve a pedir la campana (sin polling).
+  useEffect(() => {
+    if (modoApi && view === 'missions') void cargarNotificaciones()
+  }, [view])
   const [arrivalDismissed, setArrivalDismissed] = useState(false)
   const [automatic, setAutomatic] = useState<AutomaticOverlay | null>(null)
   const [manual, setManual] = useState<ManualOverlay | null>(null)
@@ -124,7 +132,6 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   const context = useMemo(
     () => ({
       announcementBlocked,
-      openServerNotices: () => setAvisosManual(true),
       openGuide: (steps: string[]) => setManual({ kind: 'guide', steps }),
       openCheckIn: (onReturnFocus?: () => void) => setManual({ kind: 'signal', onReturnFocus }),
     }),
@@ -138,22 +145,13 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   const badge = modoApi
     ? undefined
     : getNextBadge(adventure, ui, activityOpen, announcementBlocked || additionalPending, journey)
-  const habilitarAvisos =
-    modoApi && !announcementBlocked && (view === 'missions' || view === 'central' || avisosManual)
-  const aviso = habilitarAvisos && !servidor.errorAvisos ? avisosPendientes()[0] : undefined
-  useEffect(() => {
-    if (
-      habilitarAvisos &&
-      !aviso &&
-      servidor.avisosMostrados.length &&
-      !servidor.procesandoAvisos &&
-      !servidor.errorAvisos
-    ) {
-      void marcarVistos().then((r) => {
-        if (r.tipo === 'ok' && r.datos === 'terminado') setAvisosManual(false)
-      })
-    }
-  }, [habilitarAvisos, aviso, servidor.avisosMostrados, servidor.procesandoAvisos, servidor.errorAvisos])
+  // Ajuste notificaciones: los toasts son solo lo que llegó de acciones sin cierre, uno por vez; cada uno se marca
+  // visto al cerrarlo, pulsarlo o vencer su tiempo.
+  const habilitarAvisos = modoApi && !announcementBlocked && (view === 'missions' || view === 'central')
+  const aviso = habilitarAvisos
+    ? notificaciones.colaToast.map((n) => notificacionLegible(n)).find((a) => a !== null)
+    : undefined
+  const descartarAviso = (codigo: string) => void marcarNotificacionesVistas([codigo])
   const guide =
     active?.kind === 'guide'
       ? active.steps
@@ -200,9 +198,7 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     guide,
     closeGuide,
     dismissSignal,
-    mostrarAviso,
-    marcarVistos,
-    errorAvisos: habilitarAvisos ? servidor.errorAvisos : null,
+    descartarAviso,
     senal,
   }
 }

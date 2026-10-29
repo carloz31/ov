@@ -114,7 +114,7 @@ function almacenInvestigaciones() {
     estado = escenarioRuta('t1')
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/investigaciones'))
       return { body: jsonServidor('ruta/ruta-investigaciones-en-curso') }
     if (req.url.includes('/entrevistas?')) return { body: jsonServidor('ruta/ruta-entrevistas-salon') }

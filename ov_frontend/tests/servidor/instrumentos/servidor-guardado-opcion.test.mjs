@@ -60,7 +60,7 @@ test('solo la primera respuesta vuelve a leer el camino; las demás pasan a la s
   let respondidos = 0
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/responder-items')) {
       respondidos += 1
       return {

@@ -127,7 +127,7 @@ function almacenPlanes() {
     estado = escenarioRuta('t1')
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/planes')) return { body: completos }
     if (req.url.includes('/acciones/planes/')) return { body: sinRespuestas }
     throw Error(`Solicitud no configurada: ${req.url}`)
