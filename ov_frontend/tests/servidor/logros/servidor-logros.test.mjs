@@ -60,7 +60,7 @@ test('las páginas son los grupos del servidor y las secretas entran con su pist
     copia(grupos.map((g) => [g.title, g.items.length])),
     [
       ['La luz que despeja caminos', 2],
-      ['Huellas en la ciudad', 3],
+      ['Huellas en la ciudad', 5],
     ],
   )
   const [obtenida, secreta] = grupos[0].items
@@ -71,7 +71,7 @@ test('las páginas son los grupos del servidor y las secretas entran con su pist
   assert.match(secreta.pista, /No todo brillo sobrevive/)
   assert.deepEqual(
     copia(grupos[1].items.map((b) => b.code)),
-    ['???-G2-1', '???-G2-2', '???-G2-3'],
+    ['???-G2-1', '???-G2-2', '???-G2-3', 't-ins-entrevista', 't-ins-leyenda'],
   )
   assert.equal(a.textoRequisitoInsignia, undefined)
   assert.equal(a.insigniasOcultasPendientes, undefined)
@@ -112,7 +112,7 @@ test('pasaporte: sellos con secretas, vitrina del servidor, título siguiente co
   await esperar()
   const tree = expandir(v.render())
   const todo = texto(tree)
-  assert.match(todo, /1\s+de\s+5\s+sellos/)
+  assert.match(todo, /1\s+de\s+7\s+sellos/)
   assert.match(todo, /Vitrina:\s+1\s+de 3/)
   assert.match(todo, /Nivel\s+2\s+de\s+3/)
   assert.match(todo, new RegExp(logrosFinal.niveles[1].descripcion))

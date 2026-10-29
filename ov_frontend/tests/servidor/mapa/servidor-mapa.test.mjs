@@ -123,7 +123,11 @@ test('un contenido sin nodos ubica el punto, pero no abre actividad', () => {
 test('una actividad sin contenido avisa una vez por sesión en desarrollo y nunca en producción', () => {
   const original = console.warn,
     avisos = []
-  console.warn = (texto) => avisos.push(texto)
+  // B13: las misiones del investigador aún no tienen contenido en el front y también avisan. F09 crea
+  // t_investigador.json y t_investigador_cierre.json y debe quitar este filtro.
+  console.warn = (texto) => {
+    if (!/: t-investigador(-cierre)? → /.test(texto)) avisos.push(texto)
+  }
   const sinContenido = (m) => {
     m.bloques[3].actividades[0].contenido = 'sin_contenido_prueba'
     m.sesion.publicar({ actividades: { datos: m.bloques, estado: 'listo', error: null } })

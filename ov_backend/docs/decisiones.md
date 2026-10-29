@@ -15,3 +15,4 @@
 - Al borrar una reacción, la quite el estudiante o la orientadora, sus reportes pendientes quedan RESUELTOS: el contenido ya no existe.
 - Nadie reporta su propia entrevista ni su propia reacción (409).
 - Las reacciones del detalle van todas, sin paginar en el servidor; el «Mostrar más» de 10 en 10 lo hace el front.
+- Fixtures regenerados (autorizado por el usuario): se adaptan pruebas del front en `tests/servidor/logros` (la página II pasa de 3 a 5 sellos y el total de 5 a 7) y en `tests/servidor/mapa`. El ayudante `disponiblesServidor` de la prueba de siguiente paso y la prueba del aviso «Actividad sin contenido» ignoran `t-investigador` y `t-investigador-cierre`: su contenido no existe aún en el front y, por contrato, no se muestran. Solo cambian las pruebas, no la lógica de la app. **F09 debe crear `t_investigador.json` y `t_investigador_cierre.json` y, al hacerlo, quitar esos dos filtros**, para que las pruebas vuelvan a cubrir esas misiones.
