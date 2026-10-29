@@ -3,7 +3,7 @@
 ## Ajuste leyenda (verificación de punta a punta de la Leyenda)
 
 - `ruta` suma tres estudiantes de 5A (`est-mia`, `est-teo`, `est-sol`, DATO DE PRUEBA, en `usuarios_prueba.txt`): con Ana y Luis como autores no quedaba nadie de su salón para llegar a `FAVORITOS_LEYENDA`. Las pruebas que cuentan o listan las cuentas de `ruta` (carga, semilla, invariantes, `GET /cuentas` y fixture `cuentas`) pasan a las 8.
-- `contar_favoritos` excluye a los autores: el favorito de un compañero que después se suma como coautor seguía contando para la Leyenda (regla 4).
+- Los autores de una entrevista son los de la publicación y no cambian (decisión del usuario; en F09, HU-061 permitía sumar coautores al editar la ficha). `editar-entrevista` solo cambia la ficha y rechaza `coautores_nuevos` con 422; en el front, «Editar ficha» muestra los coautores fijos y publicar avisa que no cambian. Así un favorito no puede venir de quien después es autor, y `contar_favoritos` no necesita excluir autores (se probó y se retiró esa exclusión).
 - ENTREVISTA_DESTACADA y ENTREVISTA_LEYENDA se registran una sola vez por autor y entrevista (`registrar_en_autores`): al quitar el destacado y volver a destacar se duplicaban (regla 6). El sello ya no se duplicaba, porque una regla obtenida no se vuelve a desbloquear.
 - El diálogo del sello en el pasaporte (`PassportBadgeDialog`) lee `obtenida_en` como hora de Lima (−05:00) si viene sin zona, como ya lo hacían las fechas de Investigaciones. Con un navegador fuera de Lima (en la verificación, Playwright en UTC), el sello obtenido el 29 a las 04:53 decía «28 de octubre». Después se extendió a todas las fechas del servidor (sección siguiente).
 

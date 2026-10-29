@@ -93,7 +93,7 @@ export function PublicarEntrevista() {
               <h3>{m.editar ? 'Al guardar' : 'Al publicar'}</h3>
               <p>
                 {m.editar
-                  ? 'Tus compañeros verán la ficha actualizada. Los coautores que agregues la reciben como suya.'
+                  ? 'Tus compañeros verán la ficha actualizada. Los autores no cambian.'
                   : 'Tu salón y tu orientadora la verán de inmediato. Si es tu primera entrevista, en la Ciudad se abre una misión para contrastar lo que pensabas con lo que descubriste.'}
               </p>
               <small>

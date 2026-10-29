@@ -14,7 +14,8 @@ import { avisarRechazoInvestigacion } from './cierreInvestigacion'
 const VACIA: FichaEntrevistaEntrada = { titulo: '', profesional: '', duracion: '', enlace: '', resumen: '' }
 
 // F09 (boceto 04 · HU-060 y HU-061): publicar la entrevista con la guía lista, o editar la ficha (`?editar=`). Los
-// coautores son compañeros del salón con guía lista en la misma ocupación; al editar solo se agregan.
+// coautores son compañeros del salón con guía lista en la misma ocupación y se eligen solo al publicar: después, los
+// autores no cambian.
 export function usePublicarEntrevista() {
   const [params] = useSearchParams()
   const navegar = useNavigate()
@@ -42,10 +43,8 @@ export function usePublicarEntrevista() {
   const aliados = [...(datos?.aliados.misma_ocupacion ?? []), ...(datos?.aliados.otras ?? [])].filter(
     (a) => a.ocupacion.codigo === ocupacion?.codigo,
   )
-  const autores = entrevista?.autores.map((a) => a.codigo) ?? []
   const candidatos = aliados.filter(
     (a) =>
-      !autores.includes(a.codigo) &&
       !coautores.some((c) => c.codigo === a.codigo) &&
       a.nombre.toLowerCase().includes(buscar.trim().toLowerCase()),
   )
@@ -68,10 +67,13 @@ export function usePublicarEntrevista() {
     const limpia = Object.fromEntries(
       Object.entries(ficha).map(([k, v]) => [k, v.trim()]),
     ) as FichaEntrevistaEntrada
-    const codigos = coautores.map((c) => c.codigo)
     const respuesta = editar
-      ? await editarEntrevista(editar, limpia, codigos)
-      : await publicarEntrevista(limpia, codigos, permiso)
+      ? await editarEntrevista(editar, limpia)
+      : await publicarEntrevista(
+          limpia,
+          coautores.map((c) => c.codigo),
+          permiso,
+        )
     if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar') {
       await avisarRechazoInvestigacion(
         respuesta,

@@ -184,19 +184,16 @@ def entrevista_propia(sesion: Session, cuenta: Cuenta, codigo: str) -> Entrevist
 
 @usar_contexto
 def editar_entrevista(sesion: Session, entrada: EditarEntrevistaEntrada) -> RespuestaAgrupada:
-    """Cualquier autor cambia la ficha (también el enlace) y suma coautores, que publican con ella."""
+    """Cualquier autor cambia la ficha (también el enlace). Los autores no cambian después de publicar."""
     cuenta = cuenta_estudiante(sesion, entrada.cuenta)
     entrevista = entrevista_propia(sesion, cuenta, entrada.entrevista)
-    nuevos = _coautores(sesion, cuenta, entrada.coautores_nuevos, entrevista.ocupacion_id)
     fecha = fecha_accion(entrada)
     entrevista.titulo, entrevista.profesional, entrevista.duracion = entrada.titulo, entrada.profesional, entrada.duracion
     entrevista.enlace, entrevista.resumen, entrevista.editada_en = entrada.enlace, entrada.resumen, fecha
     entrevista.busqueda = _busqueda(sesion, entrevista)
     sesion.flush()
-    _sumar_autores(sesion, entrevista, nuevos)
-    eventos = {cuenta.id: [(TipoEventoUso.EDITA_ENTREVISTA, entrevista.id)]}
-    eventos.update({c.id: [(TipoEventoUso.PUBLICA_ENTREVISTA, entrevista.id)] for c, _ in nuevos})
-    return responder_varias_cuentas(sesion, [cuenta, *(c for c, _ in nuevos)], eventos, fecha)
+    return responder_varias_cuentas(sesion, [cuenta], {cuenta.id: [(TipoEventoUso.EDITA_ENTREVISTA, entrevista.id)]},
+                                    fecha)
 
 
 @usar_contexto

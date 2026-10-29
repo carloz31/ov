@@ -6,7 +6,7 @@ import pytest
 
 from app.core.parametros import FAVORITOS_LEYENDA
 from soporte_investigaciones import (
-    FICHA, abrir_investigaciones, accion, codigo_publicado, detalle, entrevistas, guia_lista, publicar,
+    abrir_investigaciones, accion, codigo_publicado, detalle, entrevistas, guia_lista, publicar,
 )
 from soporte_ruta import pedir
 
@@ -139,17 +139,11 @@ def test_regla_3_la_ve_otro_salon_solo_como_leyenda(cliente):
 
 
 def test_regla_4_los_autores_no_marcan_ni_cuentan(cliente):
-    guia_lista(cliente, 'est-luis')
-    guia_lista(cliente)
-    codigo = codigo_publicado(publicar(cliente))
+    codigo = publicar_con_luis(cliente)
     abrir_fans(cliente)
-    favorito(cliente, codigo, 'est-ana', esperado=409)
-    # Luis la marca antes de ser coautor; al sumarse como autor, su favorito deja de contar.
-    favorito(cliente, codigo, 'est-luis')
-    assert detalle(cliente, codigo)['favoritos'] == 1
-    accion(cliente, 'editar-entrevista', {'entrevista': codigo, **FICHA, 'coautores_nuevos': ['est-luis']})
+    for autor in AUTORES:
+        favorito(cliente, codigo, autor, esperado=409)
     assert detalle(cliente, codigo)['favoritos'] == 0
-    favorito(cliente, codigo, 'est-luis', esperado=409)
     destacar(cliente, codigo)
     for fan in FANS[:FAVORITOS_LEYENDA - 1]:
         favorito(cliente, codigo, fan)

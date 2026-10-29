@@ -84,13 +84,9 @@ export const publicarEntrevista = (ficha: FichaEntrevistaEntrada, coautores: str
     true,
   )
 
-export const editarEntrevista = (
-  entrevista: string,
-  ficha: FichaEntrevistaEntrada,
-  coautoresNuevos: string[],
-) =>
+export const editarEntrevista = (entrevista: string, ficha: FichaEntrevistaEntrada) =>
   accionInvestigacion(
-    propia((cuenta) => apiInvestigaciones.editarEntrevista(cuenta, entrevista, ficha, coautoresNuevos)),
+    propia((cuenta) => apiInvestigaciones.editarEntrevista(cuenta, entrevista, ficha)),
     true,
   )
 

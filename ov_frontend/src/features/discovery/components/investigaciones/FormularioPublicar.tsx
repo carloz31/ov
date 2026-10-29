@@ -103,7 +103,9 @@ export function FormularioPublicar({ m }: { m: ModeloPublicar }) {
           largo
         />
         <div className="sx-i-campo">
-          <span className="sx-i-etiqueta">¿La hicieron en grupo? Agrega a tus compañeros</span>
+          <span className="sx-i-etiqueta">
+            {m.editar ? 'Coautores' : '¿La hicieron en grupo? Agrega a tus compañeros'}
+          </span>
           <div className="sx-i-coautores">
             {m.autoresActuales
               .filter((a) => a.codigo !== m.cuenta)
@@ -112,6 +114,7 @@ export function FormularioPublicar({ m }: { m: ModeloPublicar }) {
                   <span className="sx-i-avatar">{iniciales(a.nombre)}</span> {a.nombre}
                 </span>
               ))}
+            {m.editar && m.autoresActuales.length <= 1 && <small>Sin coautores.</small>}
             {m.coautores.map((a) => (
               <span className="sx-i-chip-coautor" key={a.codigo}>
                 <span className="sx-i-avatar">{iniciales(a.nombre)}</span> {a.nombre}
@@ -124,32 +127,35 @@ export function FormularioPublicar({ m }: { m: ModeloPublicar }) {
                 </button>
               </span>
             ))}
-            <span className="sx-i-buscar-coautor">
-              <input
-                aria-label="Buscar compañero"
-                placeholder="Buscar compañero…"
-                value={m.buscar}
-                disabled={!m.hayAliados}
-                onChange={(e) => m.setBuscar(e.target.value)}
-              />
-              {m.buscar.trim() && (
-                <span className="sx-i-resultados">
-                  {m.candidatos.length ? (
-                    m.candidatos.map((a) => (
-                      <button type="button" key={a.codigo} onClick={() => m.agregarCoautor(a)}>
-                        {a.nombre}
-                      </button>
-                    ))
-                  ) : (
-                    <small>Nadie con ese nombre tiene una guía lista sobre esta ocupación.</small>
-                  )}
-                </span>
-              )}
-            </span>
+            {!m.editar && (
+              <span className="sx-i-buscar-coautor">
+                <input
+                  aria-label="Buscar compañero"
+                  placeholder="Buscar compañero…"
+                  value={m.buscar}
+                  disabled={!m.hayAliados}
+                  onChange={(e) => m.setBuscar(e.target.value)}
+                />
+                {m.buscar.trim() && (
+                  <span className="sx-i-resultados">
+                    {m.candidatos.length ? (
+                      m.candidatos.map((a) => (
+                        <button type="button" key={a.codigo} onClick={() => m.agregarCoautor(a)}>
+                          {a.nombre}
+                        </button>
+                      ))
+                    ) : (
+                      <small>Nadie con ese nombre tiene una guía lista sobre esta ocupación.</small>
+                    )}
+                  </span>
+                )}
+              </span>
+            )}
           </div>
           <small className="sx-i-letra-chica">
-            Solo aparecen los de tu salón que tienen guía lista para esta misma ocupación. Al publicar, su
-            investigación en curso se cierra y la entrevista les aparece como suya.
+            {m.editar
+              ? 'Los coautores se eligen al publicar y no cambian después.'
+              : 'Solo aparecen los de tu salón que tienen guía lista para esta misma ocupación. Al publicar, su investigación en curso se cierra y la entrevista les aparece como suya. Después de publicar, los coautores ya no cambian.'}
           </small>
         </div>
         {!m.editar && (

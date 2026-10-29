@@ -2,7 +2,7 @@ from datetime import datetime
 import re
 from typing import Annotated, Literal
 
-from pydantic import AfterValidator, BaseModel, StringConstraints, field_validator, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, StringConstraints, field_validator, model_validator
 
 from app.models.enums import EstadoInvestigacion, MotivoReporte, OrigenPreguntaGuion
 from app.schemas.acciones import AccionCuenta
@@ -100,9 +100,11 @@ class PublicarEntrevistaEntrada(FichaEntrevistaEntrada):
 
 
 class EditarEntrevistaEntrada(FichaEntrevistaEntrada):
-    """Cualquier autor edita la ficha y puede sumar coautores; no puede quitarlos."""
+    """Cualquier autor edita la ficha. Los autores son los de la publicación y no cambian: un campo de más (como
+    `coautores_nuevos`) responde 422 en vez de ignorarse."""
+    model_config = ConfigDict(extra='forbid')
+
     entrevista: str
-    coautores_nuevos: Annotated[list[str], AfterValidator(_sin_repetidos)] = []
 
 
 class EntrevistaEntrada(AccionCuenta):

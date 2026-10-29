@@ -52,23 +52,26 @@ def test_validacion_del_enlace_y_del_permiso(cliente):
     publicar(cliente, enlace='https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 
 
-def test_editar_suma_coautores_y_cualquier_autor_retira(cliente):
+def test_editar_no_cambia_autores_y_cualquier_autor_retira(cliente):
     guia_lista(cliente, 'est-luis')
     guia_lista(cliente)
-    codigo = codigo_publicado(publicar(cliente))
+    codigo = codigo_publicado(publicar(cliente, coautores=['est-luis']))
     nueva = {**FICHA, 'titulo': 'Lo que no se ve de la electricidad', 'enlace': 'https://youtu.be/aaaaaaaaaaa'}
     nueva.pop('permiso')
-    editada = accion(cliente, 'editar-entrevista', {**nueva, 'entrevista': codigo, 'coautores_nuevos': ['est-luis']})
-    assert [e['tipo'] for e in editada['por_cuenta']['est-ana']['eventos_registrados']] == ['EDITA_ENTREVISTA']
-    assert [e['tipo'] for e in editada['por_cuenta']['est-luis']['eventos_registrados']] == ['PUBLICA_ENTREVISTA']
-    ficha = detalle(cliente, codigo, 'est-luis')
+    # Un coautor también edita la ficha; solo él registra EDITA_ENTREVISTA.
+    editada = accion(cliente, 'editar-entrevista', {**nueva, 'entrevista': codigo}, cuenta='est-luis')
+    assert list(editada['por_cuenta']) == ['est-luis']
+    assert [e['tipo'] for e in editada['por_cuenta']['est-luis']['eventos_registrados']] == ['EDITA_ENTREVISTA']
+    ficha = detalle(cliente, codigo)
     assert ficha['titulo'] == nueva['titulo'] and ficha['enlace'] == 'https://youtu.be/aaaaaaaaaaa'
-    assert [a['codigo'] for a in ficha['autores']] == ['est-ana', 'est-luis'] and ficha['propia']
     assert ficha['editada_en'] is not None
-    # Un coautor que no cumple responde 409, y quien no es autor no edita.
-    accion(cliente, 'editar-entrevista', {**nueva, 'entrevista': codigo, 'coautores_nuevos': ['est-beto']}, 409)
-    guia_lista(cliente, 'est-beto')
-    accion(cliente, 'editar-entrevista', {**nueva, 'entrevista': codigo}, 404, cuenta='est-beto')
+    # Los autores son los de la publicación: sumar coautores al editar ya no existe (422) y nada cambia.
+    guia_lista(cliente, 'est-mia')
+    accion(cliente, 'editar-entrevista', {**nueva, 'entrevista': codigo, 'coautores_nuevos': ['est-mia']}, 422)
+    assert [a['codigo'] for a in detalle(cliente, codigo)['autores']] == ['est-ana', 'est-luis']
+    assert investigaciones(cliente, 'est-mia')['en_curso']['estado'] == 'GUIA_LISTA'
+    # Quien no es autor no edita.
+    accion(cliente, 'editar-entrevista', {**nueva, 'entrevista': codigo}, 404, cuenta='est-mia')
     # Luis la retira: desaparece para todos, también el detalle para sus autores.
     accion(cliente, 'retirar-entrevista', {'entrevista': codigo}, cuenta='est-luis')
     for cuenta in ('est-ana', 'est-luis'):

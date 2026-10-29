@@ -101,18 +101,13 @@ export function publicarEntrevista(
   return enviar('/acciones/publicar-entrevista', { cuenta, ...ficha, coautores, permiso })
 }
 
+// Solo la ficha: los autores son los de la publicación y no cambian.
 export function editarEntrevista(
   cuenta: string,
   entrevista: string,
   ficha: FichaEntrevistaEntrada,
-  coautoresNuevos: string[],
 ): Promise<RespuestaServidor<RespuestaAgrupada>> {
-  return enviar('/acciones/editar-entrevista', {
-    cuenta,
-    entrevista,
-    ...ficha,
-    coautores_nuevos: coautoresNuevos,
-  })
+  return enviar('/acciones/editar-entrevista', { cuenta, entrevista, ...ficha })
 }
 
 const sobreEntrevista = (accion: string) => (cuenta: string, entrevista: string) =>
