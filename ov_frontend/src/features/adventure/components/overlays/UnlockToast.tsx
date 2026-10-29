@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
-import type { AvisoServidor, TipoAviso } from '@/lib/servidor/adaptadoresNotificaciones'
+import type { AvisoServidor, TipoAviso } from '@/types/notificaciones'
 import { AvisoToast } from '@/components/student/AvisoToast'
-import { iconosAviso } from '../../lib/iconosAviso'
+import { iconosAviso } from '@/lib/iconosAviso'
 
 // Ajuste notificaciones: solo los logros llegan como toast; las asíncronas (de otra cuenta) van a la campana.
 const labels: Record<TipoAviso, string> = {

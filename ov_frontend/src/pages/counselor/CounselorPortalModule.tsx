@@ -8,6 +8,7 @@ import { CounselorPortalProvider } from '@/features/counselor/store/CounselorPor
 import { counselorProfile } from '@/features/counselor/data/counselorPortal'
 import type { CounselorView } from '@/features/counselor/types'
 import { useModoCatalogo } from '@/features/discovery/hooks/useModoCatalogo'
+import { useCampanaPortal } from '@/hooks/useCampanaNotificaciones'
 
 const labels: Record<CounselorView, string> = {
   home: 'Inicio',
@@ -25,6 +26,8 @@ function CounselorPortalModule() {
   const view = getView(location.pathname)
   // Ajuste catalogo-apoderado: el catálogo de solo lectura, solo en api.
   const { catalogoEnPortal } = useModoCatalogo()
+  // Ajuste notificaciones: la orientadora no recibe notificaciones; en api no ve campana.
+  const campana = useCampanaPortal()
   const navigationGroups = useMemo<AppNavigationGroup[]>(
     () => [
       {
@@ -75,6 +78,7 @@ function CounselorPortalModule() {
         theme="staff"
         audience="counselor"
         activeItemId={view}
+        campana={campana.activa ? null : undefined}
         navigationGroups={navigationGroups}
         onLogout={() => {
           cerrarSesion()

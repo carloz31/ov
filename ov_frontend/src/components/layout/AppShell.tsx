@@ -9,6 +9,8 @@ type AppShellProps = {
   theme?: AppTheme
   audience?: 'parent' | 'counselor'
   activeItemId: string
+  // Ajuste notificaciones: la campana de la barra (ver AppTopBar).
+  campana?: ReactNode
   children: ReactNode
   navigationGroups: AppNavigationGroup[]
   onLogout?: () => void
@@ -22,6 +24,7 @@ function AppShell({
   theme = 'student',
   audience,
   activeItemId,
+  campana,
   children,
   navigationGroups,
   onLogout,
@@ -49,7 +52,7 @@ function AppShell({
           userRole={userRole}
         />
         <SidebarInset className="h-svh min-h-0 min-w-0 overflow-hidden">
-          <AppTopBar title={title} />
+          <AppTopBar title={title} campana={campana} />
           <div
             ref={contentRef}
             className="min-h-0 flex-1 overflow-y-auto overscroll-contain [&>*]:!mx-0 [&>*]:!max-w-none [&>*]:!w-full"

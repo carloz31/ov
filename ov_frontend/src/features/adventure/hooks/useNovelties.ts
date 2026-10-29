@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { modoApi } from '@/config/env'
-import { useNotificaciones } from '@/store/servidor/notificaciones'
 
 import { useDiscovery } from '@/store/discoveryStore'
 
@@ -23,9 +22,4 @@ export function useNovelties() {
 
   // Ajuste notificaciones: en api, la campana lista las notificaciones del servidor.
   return { ordered, open, setOpen, unread, campanaServidor: modoApi }
-}
-export function useServerNovelties() {
-  const [open, setOpen] = useState(false)
-  const notificaciones = useNotificaciones()
-  return { open, setOpen, pendientes: notificaciones.noVistas }
 }

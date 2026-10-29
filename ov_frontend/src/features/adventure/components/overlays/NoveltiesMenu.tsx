@@ -9,10 +9,10 @@ import {
 } from '@/components/ui/DropdownMenu'
 import { updateStudentUi } from '@/store/studentUiStore'
 import { markUnlocksSeen } from '../../lib/unlocks'
-import { ServerNoveltiesMenu } from '@/features/adventure/components/overlays/ServerNoveltiesMenu'
+import { NotificacionesMenu } from '@/features/adventure/components/overlays/NotificacionesMenu'
 export function NoveltiesMenu({ glass = false }: { glass?: boolean }) {
   const { ordered, open, setOpen, unread, campanaServidor } = useNovelties()
-  if (campanaServidor) return <ServerNoveltiesMenu glass={glass} />
+  if (campanaServidor) return <NotificacionesMenu glass={glass} />
   const titles = {
     badge: 'Nueva insignia disponible',
     ficha: 'Nueva ficha disponible',

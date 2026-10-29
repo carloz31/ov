@@ -1,30 +1,8 @@
 import type { NotificacionPublica } from '@/types/servidor'
+import type { AvisoServidor, PortalNotificaciones } from '@/types/notificaciones'
 
 // Ajuste notificaciones: una notificación del servidor, lista para el toast y la campana. Los textos son del
 // front; el servidor manda `nombre` (foto del nombre del objetivo, la entrevista o la conversación) y `detalle`.
-export type TipoAviso =
-  | 'badge'
-  | 'ficha'
-  | 'ciudad'
-  | 'nivel'
-  | 'conversacion'
-  | 'destacada'
-  | 'leyenda'
-  | 'reaccion'
-export type AvisoServidor = {
-  id: string
-  kind: TipoAviso
-  title: string
-  description: string
-  href: string
-  // Llega de otra cuenta: nunca es toast y en la campana va primero, con su propio acento.
-  asincrona: boolean
-  vista: boolean
-  // Apoderado: el hijo que se elige antes de abrir la conversación.
-  hijo?: string
-}
-export type PortalNotificaciones = 'estudiante' | 'apoderado'
-
 const enlace = (base: string, codigo: string) => `${base}${encodeURIComponent(codigo)}`
 
 function desbloqueo(n: NotificacionPublica, portal: PortalNotificaciones) {

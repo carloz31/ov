@@ -20,6 +20,7 @@ import { usePrioritySettings } from '@/features/counselor/hooks/usePrioritySetti
 import { canAccessFamilyConversations, useAdventure } from '@/store/adventureStore'
 import { familyConversationTopics, familyConversationDemoData } from '@/data/content/familyConversations'
 import { modoApi } from '@/config/env'
+import { cargarNotificaciones } from '@/store/servidor/notificaciones'
 import {
   elegirHijo,
   hijoActivo,
@@ -50,6 +51,10 @@ export function useParentOverview() {
   const seccionConversaciones = useConversacionesApoderadoSeccion(modoApi && hijos.length > 0)
   const hijo = hijoElegido(familia, seccionConversaciones.hijo ?? hijoActivo())
   const pedido = params.get('child')
+  // Ajuste notificaciones: al volver al Inicio se vuelve a pedir la campana (sin polling).
+  useEffect(() => {
+    if (modoApi) void cargarNotificaciones()
+  }, [])
   useEffect(() => {
     if (!modoApi || !hijo) return
     if (pedido && pedido !== hijo.codigo && hijos.some((h) => h.codigo === pedido)) elegirHijo(pedido)

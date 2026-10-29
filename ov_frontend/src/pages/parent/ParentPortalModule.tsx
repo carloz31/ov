@@ -10,6 +10,8 @@ import { PantallaCargaPortal } from '@/components/staff/PantallaCargaPortal'
 import type { ParentPortalContext } from '@/features/parent/context/parentPortalContext'
 import { useParentActivities } from '@/features/parent/hooks/useParentActivities'
 import { useModoCatalogo } from '@/features/discovery/hooks/useModoCatalogo'
+import { useCampanaPortal } from '@/hooks/useCampanaNotificaciones'
+import { CampanaApoderado } from '@/features/parent/components/CampanaApoderado'
 
 function ParentPortalModule() {
   const navigate = useNavigate()
@@ -20,6 +22,7 @@ function ParentPortalModule() {
   const routeState = getParentRouteState(location.pathname)
   // Ajuste catalogo-apoderado: en api, «Explorar opciones» abre directo el catálogo; en local, la guía de siempre.
   const { catalogoEnPortal } = useModoCatalogo()
+  const campana = useCampanaPortal()
   const navigationGroups = useMemo<AppNavigationGroup[]>(
     () => [
       {
@@ -88,6 +91,7 @@ function ParentPortalModule() {
       theme="staff"
       audience="parent"
       activeItemId={routeState.activeItemId}
+      campana={campana.activa ? <CampanaApoderado /> : undefined}
       navigationGroups={navigationGroups}
       onLogout={() => {
         cerrarSesion()

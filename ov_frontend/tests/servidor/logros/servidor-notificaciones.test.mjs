@@ -1,6 +1,7 @@
 // Ajuste notificaciones: adaptador, almacén de la campana, cola de toasts con visto individual y cierres sin toast.
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { createElement } from 'react'
 import {
   cargarAlmacen,
   copia,
@@ -174,4 +175,107 @@ test('cola de toasts solo en mapa y Central, pausada por actividad y overlays; c
   props.view = 'central'
   assert.equal(toasts()[0].props.aviso.id, b.codigo)
   queue.unmount()
+})
+
+// F2: la campana y «Ver todas».
+const muchas = {
+  total: 7,
+  no_vistas: 6,
+  items: [...autora.items.slice(0, 2), ...logros.items].map((n, i) => ({ ...n, vista: i === 6 })),
+}
+
+test('la campana muestra las 5 primeras con las asíncronas sin ver arriba y su acento', async () => {
+  const { app, store } = await iniciar({ pagina: muchas })
+  await store.cargarNotificaciones()
+  const { useCampanaNotificaciones } = app.load('src/hooks/useCampanaNotificaciones.ts')
+  const modelo = useCampanaNotificaciones('estudiante')
+  assert.equal(modelo.noVistas, 6)
+  assert.equal(modelo.recientes.length, 5)
+  assert.deepEqual(copia(modelo.recientes.slice(0, 2).map((a) => a.kind)), ['destacada', 'reaccion'])
+  assert.equal(modelo.todas.at(-1).vista, true)
+  const { CampanaNotificaciones } = app.load('src/components/common/CampanaNotificaciones.tsx')
+  const campana = app.mount(CampanaNotificaciones, { modelo, variante: 'estudiante' })
+  const tree = campana.render()
+  const filas = elementos(tree, (e) => e.type?.name === 'FilaNotificacion')
+  assert.equal(filas.length, 5)
+  const { FilaNotificacion } = app.load('src/components/common/FilaNotificacion.tsx')
+  const primera = FilaNotificacion(filas[0].props)
+  assert.match(primera.props.className, /is-asincrona/)
+  assert.ok(elementos(tree, (e) => e.props?.children === 'Ver todas').length)
+  assert.ok(
+    elementos(tree, (e) => e.props?.children === '6').length +
+      elementos(tree, (e) => e.props?.children === 6).length,
+  )
+  campana.unmount()
+  // Pulsar una la marca vista (y navega con su enlace).
+  primera.props.onClick()
+  await esperar()
+  assert.deepEqual(marcados(app), [[modelo.recientes[0].id]])
+  assert.equal(store.obtenerNotificaciones().noVistas, 5)
+})
+
+test('sin notificaciones, la campana dice que no hay novedades y no ofrece «Ver todas»', async () => {
+  const { app } = await iniciar()
+  const { useCampanaNotificaciones } = app.load('src/hooks/useCampanaNotificaciones.ts')
+  const { CampanaNotificaciones } = app.load('src/components/common/CampanaNotificaciones.tsx')
+  const campana = app.mount(CampanaNotificaciones, {
+    modelo: useCampanaNotificaciones('estudiante'),
+    variante: 'estudiante',
+  })
+  const tree = campana.render()
+  assert.ok(elementos(tree, (e) => e.props?.children === 'No tienes novedades pendientes').length)
+  assert.equal(elementos(tree, (e) => e.props?.children === 'Ver todas').length, 0)
+  campana.unmount()
+})
+
+test('«Ver todas» pagina con «Mostrar más» y «Marcar todas como vistas» deja la campana en cero', async () => {
+  const paginas = {
+    0: { ...muchas, total: 9, items: muchas.items },
+    7: { total: 9, no_vistas: 6, items: rosa.items.slice(0, 2) },
+  }
+  const { app, store } = await iniciar()
+  app.fetch((r) => {
+    if (r.url.endsWith('/notificaciones/marcar-vistas')) return { body: { marcadas: 6 } }
+    const desde = Number(new URL('http://x' + r.url).searchParams.get('desde'))
+    return { body: paginas[desde] }
+  })
+  await store.cargarNotificaciones()
+  const { useCampanaNotificaciones } = app.load('src/hooks/useCampanaNotificaciones.ts')
+  const { NotificacionesModal } = app.load('src/components/common/NotificacionesModal.tsx')
+  const modal = (modelo) =>
+    NotificacionesModal({ abierto: true, onAbiertoChange() {}, modelo, variante: 'estudiante' })
+  let modelo = useCampanaNotificaciones('estudiante')
+  assert.equal(modelo.hayMas, true)
+  const mas = elementos(modal(modelo), (e) => e.type === 'button' && e.props.children === 'Mostrar más')[0]
+  mas.props.onClick()
+  await esperar()
+  modelo = useCampanaNotificaciones('estudiante')
+  assert.equal(modelo.todas.length, 9)
+  assert.equal(modelo.hayMas, false)
+  assert.equal(elementos(modal(modelo), (e) => e.props?.children === 'Mostrar más').length, 0)
+  const todas = elementos(
+    modal(modelo),
+    (e) => e.type === 'button' && e.props.children === 'Marcar todas como vistas',
+  )[0]
+  todas.props.onClick()
+  await esperar()
+  assert.deepEqual(marcados(app), [[]])
+  modelo = useCampanaNotificaciones('estudiante')
+  assert.equal(modelo.noVistas, 0)
+  assert.ok(modelo.todas.every((a) => a.vista))
+  assert.equal(elementos(modal(modelo), (e) => e.props?.children === 'Marcar todas como vistas').length, 0)
+})
+
+test('la barra del portal: campana inerte sin prop, ninguna con null y la del apoderado si se le pasa', () => {
+  const app = fixtureServidor()
+  const { AppTopBar } = app.load('src/components/layout/AppTopBar.tsx')
+  const botones = (tree) => elementos(tree, (e) => e.props?.['aria-label'] === 'Notificaciones')
+  assert.equal(botones(AppTopBar({ title: 'Inicio' })).length, 1)
+  assert.equal(botones(AppTopBar({ title: 'Inicio', campana: null })).length, 0)
+  const propia = createElement('span', { 'aria-label': 'Notificaciones' }, 'DATO DE PRUEBA')
+  const conPropia = botones(AppTopBar({ title: 'Inicio', campana: propia }))
+  assert.equal(conPropia.length, 1)
+  assert.equal(conPropia[0].props.children, 'DATO DE PRUEBA')
+  const { useCampanaPortal } = app.load('src/hooks/useCampanaNotificaciones.ts')
+  assert.equal(useCampanaPortal().activa, true)
 })

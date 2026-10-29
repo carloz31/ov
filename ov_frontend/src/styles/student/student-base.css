@@ -280,6 +280,38 @@ body:has([data-student-experience] .sx-shell) {
   outline: 3px solid var(--ring);
   outline-offset: -3px;
 }
+/* Ajuste notificaciones: lo que llega de otra cuenta tiene su propio acento; lo visto queda atenuado. */
+.sx-root .sx-novelty.is-asincrona {
+  background: color-mix(in srgb, var(--sx-lumi) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--sx-lumi);
+}
+.sx-root .sx-novelty.is-asincrona > svg {
+  color: var(--sx-lumi);
+}
+.sx-root .sx-novelty.is-vista {
+  opacity: 0.72;
+}
+.sx-root .sx-novelties-todas {
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 4px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.sx-root.sx-novelties-modal .sx-novelties-lista {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx-root.sx-novelties-modal .sx-novelties-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
 .sx-root .sx-novelties-empty {
   margin: 8px;
   font-size: 14px;
