@@ -1,5 +1,5 @@
 import { useChallengePlayer } from '@/features/activities/hooks/useChallengePlayer'
-import { LockKeyhole, Star } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { RewardCard } from '@/features/activities/components/RewardCard'
 import { CheckOption } from '@/features/activities/components/CheckOption'
@@ -151,12 +151,6 @@ export function ChallengeStage({
                   {responseTitle}
                 </h3>
                 <p>{question.explicacion}</p>
-                {/* F04d: de qué ficha sale, como texto: la ficha no se abre durante el intento. */}
-                {question.ficha && (
-                  <p className="sx-check-source">
-                    Sale de {question.ficha.titulo} <LockKeyhole size={14} aria-hidden="true" /> se abre al terminar
-                  </p>
-                )}
               </div>
             </div>
           )}

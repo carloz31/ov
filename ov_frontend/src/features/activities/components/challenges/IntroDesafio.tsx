@@ -33,14 +33,14 @@ export function IntroDesafio({ model }: { model: ReturnType<typeof useChallengeP
         <>
           <div className="sx-challenge-rules">
             <span>
-              {c.nombre}: {vidasEnemigo} de vida
+              {c.nombre} tiene: {vidasEnemigo} vidas
             </span>
-            <span>Tú: {destellos} destellos</span>
+            <span>Tú tienes: {destellos} vidas</span>
           </div>
           <p className="sx-challenge-rule">
-            Cada acierto le quita una vida al enemigo y cada error te quita un destello. Sin límite de tiempo.
+            Cada acierto le quita una vida al enemigo y cada error te quita una de las tuyas. Sin límite de tiempo.
           </p>
-          <ChipsFicha etiqueta="Tu luz viene de:" fichas={fichasIntro} />
+          <ChipsFicha etiqueta="Este desafío se basa en estas fichas:" fichas={fichasIntro} />
           <ul className="sx-challenge-requirements">
             {requirements.map((r) => (
               <li key={`${r.tipo}-${r.id}`}>

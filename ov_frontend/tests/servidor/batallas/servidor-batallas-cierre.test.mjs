@@ -73,17 +73,19 @@ const FICHAS_REPASO = [
 ]
 const chips = (arbol) => elementos(arbol, (e) => e.type?.name === 'ChipsFicha')
 
-test('la derrota muestra «Para la próxima, repasa» con las fichas del servidor y solo «Intentar de nuevo»', () => {
+test('la derrota muestra «Para la próxima, repasa» con las fichas del servidor, «Volver al mapa» e «Intentar de nuevo»', () => {
   const { arbol, llamadas } = cierre({
     resultado: { victoria: false, aciertos: 3, preguntas: 6, destellos_restantes: 0, fichas_repaso: FICHAS_REPASO },
   })
   assert.ok(texto(arbol).includes('Le quitaste 3 de sus 5 vidas'))
   const [repaso] = chips(arbol)
   assert.deepEqual([repaso.props.etiqueta, copia(repaso.props.fichas)], ['Para la próxima, repasa:', FICHAS_REPASO])
-  assert.deepEqual(copia(botones(arbol).map(texto)), ['Intentar de nuevo'])
-  assert.ok(botones(arbol)[0].props.className.includes('sx-primary-button'))
+  // «Volver al mapa» secundario, al lado de «Intentar de nuevo», la acción principal.
+  assert.deepEqual(copia(botones(arbol).map(texto)), ['Volver al mapa', 'Intentar de nuevo'])
+  assert.ok(botones(arbol)[0].props.className.includes('sx-secondary-button'))
+  assert.ok(botones(arbol)[1].props.className.includes('sx-primary-button'))
   assert.ok(!texto(arbol).includes('Volver a la ciudad') && !/correcta/i.test(texto(arbol)))
-  botones(arbol)[0].props.onClick()
+  botones(arbol)[1].props.onClick()
   assert.deepEqual(llamadas, [['intentar']])
   // El emblema es el personaje, intacto.
   const [img] = elementos(arbol, (e) => e.type === 'img')
@@ -115,7 +117,7 @@ test('mientras se envía el intento, un estado de carga; si falla, el error con 
   assert.deepEqual(fallido.llamadas, [['reintentar']])
 })
 
-test('la intro: dos estadísticas, reglas en una línea, «Tu luz viene de» y la acción a la derecha (F04d)', () => {
+test('la intro: las vidas de cada uno, reglas en una línea, las fichas del desafío y la acción a la derecha (F04d)', () => {
   const app = fixtureServidor()
   const { challenges } = app.load('src/data/content/challenges.ts')
   const { IntroDesafio } = app.load('src/features/activities/components/challenges/IntroDesafio.tsx')
@@ -128,12 +130,12 @@ test('la intro: dos estadísticas, reglas en una línea, «Tu luz viene de» y l
     model: { c, title: { current: null }, requirements: [], puedeIniciar: true, estadoBatalla: 'lista', vidasEnemigo: 5, destellos: 3, fichasIntro, start() {} },
   })
   const t = texto(arbol)
-  assert.ok(t.includes('El Rumor: 5 de vida') && t.includes('Tú: 3 destellos'))
+  assert.ok(t.includes('El Rumor tiene: 5 vidas') && t.includes('Tú tienes: 3 vidas'))
   assert.ok(!t.includes('Cada pregunta'))
-  assert.ok(t.includes('Cada acierto le quita una vida al enemigo y cada error te quita un destello. Sin límite de tiempo.'))
+  assert.ok(t.includes('Cada acierto le quita una vida al enemigo y cada error te quita una de las tuyas. Sin límite de tiempo.'))
   assert.ok(!t.includes('Repasar'))
   const [chips] = elementos(arbol, (e) => e.type?.name === 'ChipsFicha')
-  assert.deepEqual([chips.props.etiqueta, copia(chips.props.fichas)], ['Tu luz viene de:', fichasIntro])
+  assert.deepEqual([chips.props.etiqueta, copia(chips.props.fichas)], ['Este desafío se basa en estas fichas:', fichasIntro])
   const [acciones] = elementos(arbol, (e) => String(e.props?.className).includes('sx-actions-end'))
   assert.deepEqual(copia(botones(acciones).map(texto)), ['Enfrentar a El Rumor'])
 })
@@ -156,7 +158,7 @@ test('cada chip abre su ficha en modo repaso; la bloqueada lleva candado', () =>
   assert.equal(ChipsFicha({ etiqueta: 'x', fichas: [] }), null)
 })
 
-test('el feedback dice de qué ficha sale, sin enlace, y «Ver resultado» va a la derecha (F04d)', () => {
+test('el feedback no dice de qué ficha sale ni enlaza fichas, y «Ver resultado» va a la derecha', () => {
   const app = fixtureServidor()
   const { challenges } = app.load('src/data/content/challenges.ts')
   const { ChallengeStage } = app.load('src/features/activities/components/challenges/ChallengeStage.tsx')
@@ -174,9 +176,8 @@ test('el feedback dice de qué ficha sale, sin enlace, y «Ver resultado» va a 
     model: { c, error: '', practice: { current: false }, stage: 'battle', setStage() {}, battle, setBattle() {}, title: { current: null }, muestraRecompensas: false, cierreServidor: true, vidasEnemigo: 5, destellos: 3, question: pregunta, hit: true, victory: true, answer() {}, responseTitle: '¡Golpe de luz!' },
     onClose() {},
   })
-  const [origen] = elementos(arbol, (e) => String(e.props?.className).includes('sx-check-source'))
-  assert.equal(texto(origen).replace(/\s+/g, ' ').trim(), 'Sale de Ficha de prueba se abre al terminar')
-  assert.equal(elementos(origen, (e) => e.type === 'button' || e.type === 'a' || 'onClick' in (e.props ?? {})).length, 0)
+  assert.equal(elementos(arbol, (e) => String(e.props?.className).includes('sx-check-source')).length, 0)
+  assert.ok(!texto(arbol).includes('Sale de') && !texto(arbol).includes('se abre al terminar'))
   assert.ok(!texto(arbol).includes('Las fichas se abren al terminar el desafío'))
   const [acciones] = elementos(arbol, (e) => String(e.props?.className).includes('sx-actions-end'))
   assert.deepEqual(copia(botones(acciones).map(texto)), ['Ver resultado'])

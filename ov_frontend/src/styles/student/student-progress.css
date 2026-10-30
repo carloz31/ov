@@ -708,15 +708,6 @@
   width: 100%;
   justify-content: center;
 }
-.sx-root .sx-check-source {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
-  margin-top: 6px;
-  font-size: 0.85rem;
-  opacity: 0.8;
-}
 
 /* F04d: intro de la batalla. Reglas en una línea, chips de fichas y acción a la derecha. */
 .sx-root .sx-challenge-rule {
