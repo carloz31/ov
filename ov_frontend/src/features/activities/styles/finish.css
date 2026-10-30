@@ -223,6 +223,8 @@
   margin: 0;
   display: grid;
   gap: 8px;
+  /* Cada medalla, del ancho de su contenido y centrada bajo el título. */
+  justify-items: center;
 }
 .sx-root .sx-finish-medals li,
 .sx-root .sx-finish-medals li > a {
@@ -231,6 +233,8 @@
   gap: 10px;
 }
 .sx-root .sx-finish-medals li {
+  width: fit-content;
+  max-width: 100%;
   padding: 8px 12px;
   border: 1px solid #e6dcc4;
   border-radius: 12px;
