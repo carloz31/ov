@@ -876,6 +876,10 @@ body:has([data-student-experience] .sx-shell) {
   min-height: 0;
   overflow: hidden;
 }
+/* El mapa espera a su imagen: imagen, camino y nodos aparecen juntos (MapCanvas). */
+.sx-root .sx-map-viewport[data-cargando] .sx-map-canvas {
+  visibility: hidden;
+}
 .sx-root .sx-map-viewport {
   position: absolute;
   inset: 0;

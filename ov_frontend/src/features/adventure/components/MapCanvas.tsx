@@ -1,13 +1,8 @@
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-  type PointerEvent,
-} from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { PantallaCarga } from '@/components/student/PantallaCarga'
 import { BlockSign } from './BlockSign'
+import { useImagenMapa } from '../hooks/useImagenMapa'
+import { useArrastreMapa } from '../hooks/useArrastreMapa'
 import { MapNode } from './MapNode'
 import { MapPath } from './MapPath'
 import type { StudentMapPoint } from '../lib/mapPoints'
@@ -70,14 +65,12 @@ export const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
   const viewport = useRef<HTMLDivElement>(null)
   const panelMetrics = useRef({ panelOpen, panelInset })
   panelMetrics.current = { panelOpen, panelInset }
-  const drag = useRef<
-    { pointerId: number; x: number; y: number; originX: number; originY: number } | undefined
-  >(undefined)
   const animationTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const transformRef = useRef<MapTransform>({ x: 0, y: 0, scale: initialScale })
   const [transform, setTransform] = useState(transformRef.current)
-  const [dragging, setDragging] = useState(false)
   const [moving, setMoving] = useState(false)
+  // El lienzo no se muestra hasta que su imagen está cargada: nunca los nodos sobre un fondo vacío.
+  const { imagen, mostrarMapa } = useImagenMapa(backgroundImage)
   const apply = useCallback(
     (next: MapTransform, animate = false) => {
       const bounds = viewport.current?.getBoundingClientRect()
@@ -199,31 +192,7 @@ export const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
     return () => element.removeEventListener('wheel', wheel)
   }, [setScale])
 
-  function pointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (event.button !== 0 || (event.target as HTMLElement).closest('button,input,a') || locked) return
-    drag.current = {
-      pointerId: event.pointerId,
-      x: event.clientX,
-      y: event.clientY,
-      originX: transformRef.current.x,
-      originY: transformRef.current.y,
-    }
-    event.currentTarget.setPointerCapture(event.pointerId)
-    setDragging(true)
-  }
-  function pointerMove(event: PointerEvent<HTMLDivElement>) {
-    const origin = drag.current
-    if (!origin || origin.pointerId !== event.pointerId) return
-    apply({
-      ...transformRef.current,
-      x: origin.originX + event.clientX - origin.x,
-      y: origin.originY + event.clientY - origin.y,
-    })
-  }
-  function stopDragging() {
-    drag.current = undefined
-    setDragging(false)
-  }
+  const { dragging, pointerDown, pointerMove, stopDragging } = useArrastreMapa(apply, transformRef, locked)
 
   return (
     <section
@@ -231,6 +200,7 @@ export const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
       ref={viewport}
       aria-label={label}
       data-dragging={dragging || undefined}
+      data-cargando={!mostrarMapa || undefined}
       onPointerDown={pointerDown}
       onPointerMove={pointerMove}
       onPointerUp={stopDragging}
@@ -247,7 +217,14 @@ export const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
           transformOrigin: '0 0',
         }}
       >
-        <img className="sx-map-image" src={backgroundImage} alt="" aria-hidden="true" draggable={false} />
+        <img
+          ref={imagen}
+          className="sx-map-image"
+          src={backgroundImage}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+        />
         <div className="sx-map-vignette" />
         {!locked && (
           <>
@@ -281,6 +258,14 @@ export const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
           </>
         )}
       </div>
+      {!mostrarMapa && (
+        <PantallaCarga
+          estado="cargando"
+          titulo="Preparando el mapa"
+          frase="Lumi está desplegando el mapa…"
+          enSeccion
+        />
+      )}
     </section>
   )
 })
