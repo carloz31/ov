@@ -294,8 +294,8 @@ export function useActivityPlayer({
     setErrorServidor,
     revisionInstrumento,
     itemOcupado: modoApi && guardando,
-    // Ajuste de F03: en api la opción se envía al pulsarla; el loader de la opción indica el guardado.
-    itemAlElegir: modoApi && !!instrumentoServidor,
+    // Api: en un test, elegir marca la opción y «Continuar» la envía.
+    itemConfirmar: modoApi && !!instrumentoServidor,
     itemSoloLectura: modoApi && lectura,
     itemCambiar: modoApi ? cambiarRespuestas : undefined,
     itemFijas: modoApi && respuestasFijas,

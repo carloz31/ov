@@ -62,7 +62,7 @@ export function NodeRenderer({
     setErrorServidor,
     revisionInstrumento,
     itemOcupado,
-    itemAlElegir,
+    itemConfirmar,
     itemSoloLectura,
     itemCambiar,
     itemFijas,
@@ -194,7 +194,7 @@ export function NodeRenderer({
           : existingItemAnswer
       }
       busy={itemOcupado}
-      inmediato={itemAlElegir}
+      confirmar={itemConfirmar}
       readOnly={itemSoloLectura}
       fijas={itemFijas}
       onCambiar={itemCambiar}

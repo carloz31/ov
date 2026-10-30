@@ -13,45 +13,82 @@ import {
   respuestaDominio,
 } from '../../soporte/servidor-ayudas.mjs'
 
-// Ajuste de F03: en api, la opción del test se guarda al pulsarla, con un loader en la propia opción y las
-// demás deshabilitadas; sin aviso de «Guardando» y sin volver a leer el camino tras cada respuesta.
+// En api, tocar una opción del test solo la marca; «Continuar» la envía y avanza, con el cargador en el botón y las
+// opciones deshabilitadas mientras guarda; sin aviso de «Guardando» y sin volver a leer el camino tras cada respuesta.
 const ITEM = jsonServidor('ruta/ruta-items-t-partida')[0]
 const opciones = ITEM.escala.opciones.map((o) => ({ value: o.orden, text: o.etiqueta }))
 const nodo = { id: 'n', tipo: 'item', instrumentoId: ITEM.instrumento, itemId: ITEM.codigo }
 
-test('mientras guarda, la opción elegida lleva el loader y todas quedan deshabilitadas', () => {
+test('mientras guarda, «Continuar» lleva el cargador y todas las opciones quedan deshabilitadas', () => {
   const { ItemNode } = fixtureServidor().load('src/features/activities/components/nodes/ItemNode.tsx')
-  const props = { node: nodo, text: ITEM.enunciado, options: opciones, direct: true, onAnswer() {}, onContinue() {} }
+  const props = {
+    node: nodo,
+    text: ITEM.enunciado,
+    options: opciones,
+    direct: true,
+    onAnswer() {},
+    onContinue() {},
+  }
   const guardando = renderToStaticMarkup(
-    React.createElement(ItemNode, { ...props, existing: { valor: 3 }, busy: true, inmediato: true }),
+    React.createElement(ItemNode, { ...props, existing: { valor: 3 }, busy: true, confirmar: true }),
   )
   assert.equal((guardando.match(/animate-spin/g) ?? []).length, 1)
-  assert.match(guardando, /aria-busy="true"[^>]*>Bastante de acuerdo<svg/)
+  assert.match(
+    guardando,
+    /<button[^>]*sx-primary-button[^>]*aria-busy="true"[^>]*>Continuar<svg[^>]*animate-spin/,
+  )
   assert.equal((guardando.match(/<button[^>]*sx-player-option[^>]*disabled/g) ?? []).length, opciones.length)
-  const libre = renderToStaticMarkup(React.createElement(ItemNode, { ...props, inmediato: true }))
-  assert.doesNotMatch(libre, /animate-spin|disabled/)
+  assert.match(guardando, /<button[^>]*sx-player-option is-selected[^>]*>Bastante de acuerdo</)
+  // Sin elegir, «Continuar» está deshabilitado y sin cargador.
+  const libre = renderToStaticMarkup(React.createElement(ItemNode, { ...props, confirmar: true }))
+  assert.doesNotMatch(libre, /animate-spin/)
+  assert.match(libre, /<button[^>]*sx-primary-button[^>]*disabled[^>]*>Continuar/)
+  assert.doesNotMatch(libre, /sx-player-option[^>]*disabled/)
 })
 
-test('con inmediato la opción se envía al pulsarla; sin él conserva el lapso de avance', () => {
+test('con confirmar, elegir solo marca; «Continuar» envía la elegida (o avanza si no cambió); sin él, el lapso local', async () => {
   const app = fixtureServidor()
   const { ItemNode } = app.load('src/features/activities/components/nodes/ItemNode.tsx')
-  const enviadas = []
-  for (const inmediato of [true, false]) {
+  const montar = (props) => {
+    const llamadas = { respuestas: [], continuar: 0 }
     const item = app.mount(ItemNode, {
       node: nodo,
       text: ITEM.enunciado,
       options: opciones,
       direct: true,
-      inmediato,
-      onAnswer: (valor) => enviadas.push([inmediato, valor]),
-      onContinue() {},
+      onAnswer: (valor) => llamadas.respuestas.push(valor),
+      onContinue: () => llamadas.continuar++,
+      ...props,
     })
-    const tree = item.render()
-    const boton = elementos(tree, (e) => e.type === 'button' && 'aria-pressed' in e.props)[0]
-    boton.props.onClick()
-    item.unmount()
+    const opcion = (i) => elementos(item.render(), (e) => e.type === 'button' && 'aria-pressed' in e.props)[i]
+    const continuar = () =>
+      elementos(item.render(), (e) => e.type === 'button' && e.props.className === 'sx-primary-button')[0]
+    return { item, llamadas, opcion, continuar }
   }
-  assert.deepEqual(copia(enviadas), [[true, opciones[0].value]])
+  const nueva = montar({ confirmar: true })
+  assert.equal(nueva.continuar().props.disabled, true)
+  nueva.opcion(0).props.onClick()
+  nueva.opcion(1).props.onClick()
+  await new Promise((resolve) => setTimeout(resolve, 350))
+  assert.deepEqual(copia(nueva.llamadas), { respuestas: [], continuar: 0 })
+  assert.equal(nueva.opcion(1).props['aria-pressed'], true)
+  assert.equal(nueva.continuar().props.disabled, false)
+  nueva.continuar().props.onClick()
+  assert.deepEqual(copia(nueva.llamadas), { respuestas: [opciones[1].value], continuar: 0 })
+  nueva.item.unmount()
+  // Al volver a una ya respondida, «Continuar» sin cambiar avanza una sola vez, sin volver a responder.
+  const igual = montar({ confirmar: true, existing: { valor: opciones[2].value } })
+  igual.continuar().props.onClick()
+  igual.continuar().props.onClick()
+  assert.deepEqual(copia(igual.llamadas), { respuestas: [], continuar: 1 })
+  igual.item.unmount()
+  // Sin confirmar (modo local), se sigue avanzando tras el lapso, sin botón.
+  const local = montar({})
+  assert.equal(local.continuar(), undefined)
+  local.opcion(0).props.onClick()
+  await new Promise((resolve) => setTimeout(resolve, 350))
+  assert.deepEqual(copia(local.llamadas), { respuestas: [opciones[0].value], continuar: 0 })
+  local.item.unmount()
 })
 
 test('solo la primera respuesta vuelve a leer el camino; las demás pasan a la siguiente pregunta', async () => {

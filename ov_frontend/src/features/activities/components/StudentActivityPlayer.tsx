@@ -1,3 +1,4 @@
+import { LoaderCircle } from 'lucide-react'
 import { NodeRenderer } from './NodeRenderer'
 import { useActivityPlayer } from '../hooks/useActivityPlayer'
 import type { InstrumentoServidor } from './MaraInteractionPlayer'
@@ -85,11 +86,12 @@ export function StudentActivityPlayer({
           {storageError}
         </p>
       )}
-      {/* Ajuste de F03: guardar una respuesta del test se indica en la opción elegida, no con este aviso. */}
+      {/* Guardar una respuesta del test se indica en «Continuar»; guardar la actividad, con un cargador al centro. */}
       {guardando && !respuestaPendiente.current && (
-        <p className="sx-player-error" role="status">
-          Guardando la actividad en el servidor…
-        </p>
+        <div className="sx-player-cargando" role="status">
+          <LoaderCircle className="size-8 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          <span className="sr-only">Guardando la actividad en el servidor…</span>
+        </div>
       )}
       {errorServidor && (
         <div className="sx-player-error" role="alert">

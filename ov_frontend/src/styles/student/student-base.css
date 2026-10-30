@@ -2078,6 +2078,16 @@ body:has([data-student-experience] .sx-shell) {
   color: var(--destructive);
   font-size: 14px;
 }
+/* Guardar la actividad en el servidor: un cargador simple al centro, sin bloquear la lectura. */
+.sx-root .sx-player-cargando {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  color: var(--sx-lumi);
+}
 .sx-root .sx-content-reading {
   display: grid;
   gap: 20px;
