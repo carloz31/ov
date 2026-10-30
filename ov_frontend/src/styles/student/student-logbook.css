@@ -352,9 +352,10 @@
 .sx-root .sx-quick-links a:nth-child(6) > svg {
   color: var(--sx-amb-atlas);
 }
-/* Cerrado: el ícono pierde su color y el texto se atenúa; el candado no. */
-.sx-root .sx-quick-links a[data-bloqueada='true'] > svg:first-child {
-  color: var(--sx-night-muted);
+/* Cerrado: el ícono y el candado pierden el color de la sección y quedan en el mismo gris atenuado que el texto.
+   Va después de los colores por posición (misma especificidad), que si no también pintarían el candado. */
+.sx-root .sx-quick-links a[data-bloqueada='true'] > svg {
+  color: rgb(255 255 255 / 0.45);
 }
 .sx-root .sx-quick-links a[data-bloqueada='true'] > span {
   opacity: 0.55;
@@ -363,7 +364,6 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  color: var(--sx-night-muted);
 }
 .sx-root .sx-panel-count {
   margin-left: auto;
