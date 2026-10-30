@@ -4,7 +4,7 @@ import { ingresar, completarActividad } from '@/services/api/acciones'
 import { obtenerActividades } from '@/services/api/actividades'
 import { obtenerFamilia, obtenerResultadosHijo } from '@/services/api/familia'
 import { obtenerCatalogo } from '@/services/api/instrumentos'
-import { proyectarJourneyApoderado } from '@/lib/servidor/adaptadores'
+import { proyectarJourney } from '@/lib/servidor/adaptadores'
 import { hidratarParentJourney } from '../parentJourneyStore'
 import { cuentaApoderado } from './cuenta'
 import { cargarNotificaciones, incorporarNotificaciones } from './notificaciones'
@@ -200,7 +200,7 @@ export function asegurarActividadesApoderado(): Promise<RespuestaServidor<Bloque
           publicar({ actividades: { ...estado.actividades, estado: 'error', error: respuesta } })
           return respuesta
         }
-        hidratarParentJourney(cuenta, (actual) => proyectarJourneyApoderado(respuesta.datos, actual, cuenta))
+        hidratarParentJourney(cuenta, (actual) => proyectarJourney(respuesta.datos, actual, cuenta))
         publicar({ actividades: { datos: respuesta.datos, estado: 'listo', error: null } })
         return respuesta
       })

@@ -129,7 +129,12 @@ export function proyectarJourney(
             ? 'en_curso'
             : 'no_iniciada',
     }
-    if (actividad.estado !== 'COMPLETADA') delete progress[actividad.codigo].completadaEn
+    if (actividad.estado !== 'COMPLETADA') {
+      delete progress[actividad.codigo].completadaEn
+      // Un `$fin` de una finalización que el servidor no conoce (la base se reinició o se volvió a cargar) dejaría
+      // el reproductor en el último paso: la actividad no completada en el servidor vuelve a empezar.
+      if (progress[actividad.codigo].nodoActualId === '$fin') delete progress[actividad.codigo].nodoActualId
+    }
   }
   // Las actividades ausentes del servidor nunca conservan una finalización autoritativa.
   for (const codigo of Object.keys(progress)) {
@@ -137,25 +142,6 @@ export function proyectarJourney(
       progress[codigo] = { ...progress[codigo], estado: 'no_iniciada', completadaEn: undefined }
   }
   return { ...actual, progress }
-}
-// F08: el portal del apoderado guarda su paso en el navegador. Un `$fin` de una finalización que el servidor no
-// conoce (la base se reinició o se volvió a cargar) dejaría el reproductor en el último paso sin poder terminar:
-// la actividad no completada en el servidor vuelve a empezar.
-export function proyectarJourneyApoderado(
-  bloques: BloqueActividades[],
-  actual: JourneyState,
-  cuenta: string,
-): JourneyState {
-  const proyectado = proyectarJourney(bloques, actual, cuenta)
-  const progress = { ...proyectado.progress }
-  for (const actividad of bloques.flatMap((b) => b.actividades)) {
-    const paso = progress[actividad.codigo]
-    if (actividad.estado !== 'COMPLETADA' && paso?.nodoActualId === '$fin') {
-      const { nodoActualId: _fin, ...sinPaso } = paso
-      progress[actividad.codigo] = sinPaso
-    }
-  }
-  return { ...proyectado, progress }
 }
 export function misionesCompletadas(
   bloques: BloqueActividades[],

@@ -97,6 +97,19 @@ test('la hidratación conserva respuestas y nodos y corrige finalizaciones obsol
       .estado,
     'completada',
   )
+  // Un `$fin` local de una actividad que el servidor no tiene completada (base reiniciada o vuelta a cargar) no
+  // abre el reproductor en el último paso: vuelve a empezar. Completada en el servidor, se conserva.
+  const terminada = {
+    ...actual,
+    progress: { 't-inicio': { ...actual.progress['t-inicio'], nodoActualId: '$fin' } },
+  }
+  const sinTerminar = adaptadores.proyectarJourney(inicial.bloques, terminada, inicial.cuenta.codigo)
+  assert.equal('nodoActualId' in sinTerminar.progress['t-inicio'], false)
+  assert.equal(
+    adaptadores.proyectarJourney(ciudad.bloques, terminada, ciudad.cuenta.codigo).progress['t-inicio']
+      .nodoActualId,
+    '$fin',
+  )
 })
 test('los cierres enumeran únicamente los desbloqueos del servidor, incluidos nivel y ciudad', () => {
   const inicio = adaptadores.textosDesbloqueos(jsonServidor('ruta/ruta-completar-t-inicio').nuevos_desbloqueos)

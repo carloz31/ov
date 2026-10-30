@@ -847,7 +847,7 @@ test('ruta lista las dos actividades del apoderado y la segunda se abre tras la 
 // reinició o se volvió a cargar) dejaba el reproductor en el último paso sin poder terminar.
 test('una finalización local que el servidor no conoce vuelve a empezar la actividad', () => {
   const app = fixtureServidor({ cuenta: 'apo-rosa' })
-  const { proyectarJourneyApoderado } = app.load('src/lib/servidor/adaptadores.ts')
+  const { proyectarJourney } = app.load('src/lib/servidor/adaptadores.ts')
   const local = {
     progress: {
       't-apo-1': {
@@ -860,7 +860,7 @@ test('una finalización local que el servidor no conoce vuelve a empezar la acti
     attempts: [],
     choices: [],
   }
-  const inicial = proyectarJourneyApoderado(
+  const inicial = proyectarJourney(
     jsonServidor('ruta/ruta-apoderado-actividades-inicial'),
     local,
     'apo-rosa',
@@ -868,7 +868,7 @@ test('una finalización local que el servidor no conoce vuelve a empezar la acti
   assert.equal(inicial.progress['t-apo-1'].estado, 'no_iniciada')
   assert.equal('nodoActualId' in inicial.progress['t-apo-1'], false)
   // Completada en el servidor, el `$fin` se conserva (el cierre y el repaso lo usan).
-  const final = proyectarJourneyApoderado(
+  const final = proyectarJourney(
     jsonServidor('ruta/ruta-apoderado-actividades-final'),
     local,
     'apo-rosa',
