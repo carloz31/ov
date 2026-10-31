@@ -130,7 +130,7 @@ tests/
   integration/
     conftest.py      plantillas SQLite por sesión y proceso; cada prueba copia la suya
     acceso/ actividades/ batallas/ casos/ catalogo/ cuentas/ desarrollo/ diario/ favoritos/ fichas/ instrumentos/ logros/
-    motor/ planes/ referencias/ registro/ secciones/ tematicas/ testimonios/
+    motor/ notificaciones/ planes/ referencias/ registro/ secciones/ tematicas/ testimonios/
     datos/ migraciones/ contrato/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
 ```
