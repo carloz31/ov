@@ -105,7 +105,7 @@ def guardar_resultados(sesion, calculos):
     for cabecera, calculadas, afines in calculos:
         resultado_id = ids_resultados[cabecera['aplicacion_id']]
         dimensiones.extend(dict(resultado_id=resultado_id, dimension_id=dimension_id, puntaje=dimension.puntaje,
-                                puntaje_maximo=dimension.puntaje_maximo, porcentaje=dimension.porcentaje)
+                                puntaje_maximo=dimension.puntaje_maximo)
                            for dimension_id, dimension in calculadas.items())
         coincidencias.extend(dict(resultado_id=resultado_id, ocupacion_id=ocupaciones[afin.codigo_onet],
                                   posicion=afin.posicion, correlacion=afin.correlacion, ajuste=afin.ajuste)

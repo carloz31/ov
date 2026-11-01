@@ -4,55 +4,71 @@
   "dimensiones": [
     {
       "codigo": "AUTO-A",
+      "desarrollo": [],
       "descripcion": "Qué tan claro tienes lo que quieres hacer después del colegio.",
+      "ejemplos": null,
+      "fortalezas": [],
       "nombre": "Claridad",
-      "porcentaje": null,
       "puntaje": null,
       "puntaje_maximo": null,
+      "puntaje_visual": null,
       "tematica": "A",
       "zona": "EN_CAMINO"
     },
     {
       "codigo": "AUTO-B",
+      "desarrollo": [],
       "descripcion": "Qué tanto reconoces tus intereses, habilidades y valores.",
+      "ejemplos": null,
+      "fortalezas": [],
       "nombre": "Conocimiento de mí",
-      "porcentaje": null,
       "puntaje": null,
       "puntaje_maximo": null,
+      "puntaje_visual": null,
       "tematica": "B",
       "zona": "POR_TRABAJAR"
     },
     {
       "codigo": "AUTO-C",
+      "desarrollo": [],
       "descripcion": "Qué tanto conoces las carreras, los caminos y lo que piden.",
+      "ejemplos": null,
+      "fortalezas": [],
       "nombre": "Conocimiento de las opciones",
-      "porcentaje": null,
       "puntaje": null,
       "puntaje_maximo": null,
+      "puntaje_visual": null,
       "tematica": "C",
       "zona": "POR_TRABAJAR"
     },
     {
       "codigo": "AUTO-D",
+      "desarrollo": [],
       "descripcion": "Qué tanto sientes que la decisión es tuya y no de otros.",
+      "ejemplos": null,
+      "fortalezas": [],
       "nombre": "Decisión propia",
-      "porcentaje": null,
       "puntaje": null,
       "puntaje_maximo": null,
+      "puntaje_visual": null,
       "tematica": "D",
       "zona": "FUERTE"
     },
     {
       "codigo": "AUTO-E",
+      "desarrollo": [],
       "descripcion": "Qué tan seguro te sientes de poder tomar y sostener tu decisión.",
+      "ejemplos": null,
+      "fortalezas": [],
       "nombre": "Confianza",
-      "porcentaje": null,
       "puntaje": null,
       "puntaje_maximo": null,
+      "puntaje_visual": null,
       "tematica": "E",
       "zona": "POR_TRABAJAR"
     }
   ],
   "instrumento": "TEST-PARTIDA-LLEGADA",
+  "lectura": "",
   "perfil_plano": false
 }

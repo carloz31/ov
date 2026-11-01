@@ -167,7 +167,7 @@ def test_hu038_detalle_de_ocupacion(abierto):
     assert (detalle['codigo_onet'], detalle['riasec'], detalle['job_zone'], detalle['grupo']) == (
         '19-3033.00', ['S', 'I'], 5, '19')
     assert detalle['resumen'].startswith('Evalúan, diagnostican y tratan') and detalle['resumen'].endswith('…')
-    assert detalle['puntajes'] == {'R': 1, 'I': 76, 'A': 34, 'S': 93, 'E': 27, 'C': 42}
+    assert detalle['puntajes'] == {'R': 1, 'I': 76, 'A': 34, 'S': 93, 'E': 28, 'C': 42}
     # Psicología por `ruta`; las demás, por la relación provisional al azar.
     assert PSICOLOGIA in codigos(detalle['carreras'])
     assert 'lugares_trabajo' not in detalle and 'habilidades' not in detalle

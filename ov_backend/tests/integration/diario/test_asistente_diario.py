@@ -127,7 +127,7 @@ def sembrar_partida(sesion, puntajes):
         dimension = sesion.scalar(select(m.Dimension).where(m.Dimension.codigo == codigo))
         items = len(sesion.scalars(select(m.ItemInstrumento.id).where(m.ItemInstrumento.dimension_id == dimension.id)).all())
         sesion.add(m.ResultadoDimension(resultado_id=resultado.id, dimension_id=dimension.id, puntaje=promedio * items,
-                                        puntaje_maximo=4 * items, porcentaje=promedio * 25))
+                                        puntaje_maximo=4 * items))
     sesion.commit()
 
 

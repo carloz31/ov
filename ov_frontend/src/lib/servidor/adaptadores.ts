@@ -270,7 +270,7 @@ export function resultadoHelenaCompleto(r: ResultadoPublico, tipo: TipoResultado
   const adaptar = (d: ResultadoPublico['dimensiones'][number]) => ({
     code: d.codigo,
     name: d.nombre,
-    score: d.porcentaje ?? 0,
+    score: d.puntaje_visual ?? 0,
     description: d.descripcion,
   })
   return {

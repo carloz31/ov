@@ -85,7 +85,7 @@ def verificar_p10_resultado(cliente):
     assert revelado['eventos_registrados'][0]['referencia'] == 'APL-RIASEC'
     assert reglas(revelado) == {'R-t-contraste'}
     resultado = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
-    assert {d['codigo']: d['porcentaje'] for d in resultado['dimensiones']} == {'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0}
+    assert {d['codigo']: d['puntaje_visual'] for d in resultado['dimensiones']} == {'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0}
     assert resultado['codigo_interes'] == {'codigo': 'IRA', 'hay_empate': False}
     coincidencias = resultado['coincidencias']
     assert len(coincidencias) == 10 and all(c['codigo'] for c in coincidencias)

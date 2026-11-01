@@ -6,8 +6,8 @@ Cuestionarios repartidos en actividades, cálculo de resultados y recomendación
 
 | Tabla | Qué guarda |
 |---|---|
-| `instrumento` | `tipo_resultado`: COINCIDENCIAS (RIASEC), DESTACADAS (inteligencias, habilidades sociales) o COMPARACION (autopercepción). |
-| `dimension` | Dimensiones con `orden`, `descripcion` (la que ve el estudiante) y, en el cuestionario de partida y llegada, su `tematica_id`. |
+| `instrumento` | `tipo_resultado`: COINCIDENCIAS (RIASEC), DESTACADAS (inteligencias, habilidades sociales) o COMPARACION (autopercepción); `descripcion` (frase corta antes de responder) y `lectura` (cómo leer el resultado: párrafo introductorio de la vista explicada). |
+| `dimension` | Dimensiones con `orden`, cuatro piezas para el estudiante —`descripcion` (qué es), `ejemplos` («Suele notarse cuando …», nulo si no hay), `fortalezas` («Suele venir con …») y `desarrollo` («Para desarrollarla», vacío en RIASEC), estas dos listas JSON— y, en el cuestionario de partida y llegada, su `tematica_id`. |
 | `tematica`, `actividad_tematica` | Las cinco temáticas (A–E) del cuestionario de partida y llegada, y las actividades asociadas a cada una. |
 | `escala_respuesta`, `opcion_escala` | Opciones con `orden`, `etiqueta` y `puntaje`. |
 | `item_instrumento` | `numero`, `enunciado`, dimensión, escala e `inverso`. |
@@ -24,7 +24,7 @@ Cuestionarios repartidos en actividades, cálculo de resultados y recomendación
 | `ingreso_familia` | Ingreso mensual de los egresados por tipo de institución × familia × departamento (`ubicacion_id` nulo = nacional): promedio, mínimo y máximo de jóvenes y de adultos. |
 | `ingreso_institucion` | Ingreso mensual de los egresados de una institución en una familia: promedio, mínimo y máximo. |
 | `respuesta_item` | Respuesta por progreso de actividad e ítem (única). |
-| `resultado_instrumento`, `resultado_dimension`, `coincidencia` | Resultado calculado, con `anulado_en` y `perfil_plano`. A lo sumo uno vigente por cuenta y aplicación; los anulados quedan como historial. |
+| `resultado_instrumento`, `resultado_dimension`, `coincidencia` | Resultado calculado, con `anulado_en` y `perfil_plano`; cada dimensión guarda `puntaje` y `puntaje_maximo` (el 0–100 no se guarda). A lo sumo uno vigente por cuenta y aplicación; los anulados quedan como historial. |
 
 Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente una actividad; la carga lo valida (`validar_distribucion_items`).
 
@@ -56,7 +56,8 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 **Cálculo** (`calculo.py`):
 
 - Puntaje del ítem: el de la opción; si es inverso, `máximo + mínimo − puntaje` de su escala.
-- Dimensión: suma de sus ítems; máximo = suma de los máximos; porcentaje = `100 × puntaje / máximo`, redondeado a 2 decimales.
+- Dimensión: suma de sus ítems; máximo = suma de los máximos.
+- **Puntaje visual** (`puntaje_visual(valor, mínimo, máximo)`): `(valor − mín) / (máx − mín) × 100`, entero con `ROUND_HALF_UP` (52,5 → 53). Solo presenta: se deriva al consultar y ningún cálculo lo usa. En la dimensión, mínimo = suma de los mínimos de las escalas de sus ítems y máximo = `puntaje_maximo`; en la ocupación, 1 y 7. En COMPARACION es nulo.
 - Entradas inválidas (puntaje fuera de escala, vectores incompletos, máximo no positivo): `ValueError`, nunca un valor inventado.
 
 **Coincidencias (COINCIDENCIAS):**
@@ -90,13 +91,13 @@ Volver a hacer el test cuando el resultado no distingue ningún tipo (HU-095). R
 
 | Ruta | Devuelve |
 |---|---|
-| `/instrumentos` | Instrumentos con dimensiones (con descripción), escalas, aplicaciones y actividades. |
+| `/instrumentos` | Instrumentos con `lectura`, dimensiones (con sus cuatro piezas), escalas, aplicaciones y actividades. |
 | `/actividades/{a}/items` | Ítems de la actividad en orden, con las opciones de su escala. No exige cuenta ni disponibilidad. |
 | `/cuentas/{c}/actividades/{a}/respuestas` | Respuestas actuales de la cuenta en esa actividad. |
 | `/cuentas/{c}/instrumentos` | Por instrumento y aplicación: NO_INICIADO, EN_PROGRESO o COMPLETADO (todas sus actividades completadas, se haya revelado o no); actividades e ítems respondidos sobre el total; `hay_resultado_vigente` (revelado). COMPLETADO sin resultado vigente es «listo para revelar». |
-| `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=` | Resultado vigente (vistas resumida y explicada, HU-022 y HU-023): dimensiones (con `descripcion`; en COMPARACION, con `zona` y `tematica` y los números en `null`), y según el tipo, `codigo_interes`, `coincidencias`, `carreras_recomendadas` o `dimensiones_destacadas`. Sin vigente (no revelado o reiniciado): 409 con el avance. |
+| `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=` | Resultado vigente (vistas resumida y explicada, HU-022 y HU-023): `lectura` del instrumento, dimensiones (con `descripcion`, `ejemplos`, `fortalezas`, `desarrollo`, `puntaje`, `puntaje_maximo` y `puntaje_visual`; en COMPARACION, con `zona` y `tematica` y los números en `null`), y según el tipo, `codigo_interes`, `coincidencias`, `carreras_recomendadas` o `dimensiones_destacadas`. Sin vigente (no revelado o reiniciado): 409 con el avance. |
 | `/cuentas/{c}/instrumentos/{i}/historial` | Todos los resultados, incluidos los anulados, del más reciente al más antiguo. |
-| `/cuentas/{c}/instrumentos/{i}/comparacion` | HU-094. `{instrumento, partida, llegada, dimensiones}`. Cada dimensión, en orden, trae `codigo`, `nombre`, `descripcion`, `tematica`, `zona_partida`, `zona_llegada`, `actividades_completadas` (cuántas actividades de su temática tiene COMPLETADA la cuenta) e `items`. Cada ítem trae `item`, `enunciado`, `partida` y `llegada` (la etiqueta elegida) y `cambio` (bool; un cambio hacia una opción menor no se distingue). Sin números. La aplicación ENTRADA y la SALIDA se eligen por `momento`, nunca por código. Instrumento de otro tipo: 404. Sin las dos reveladas: 409 con el avance de ambas. |
+| `/cuentas/{c}/instrumentos/{i}/comparacion` | HU-094. `{instrumento, lectura, partida, llegada, dimensiones}`. Cada dimensión, en orden, trae `codigo`, `nombre`, `descripcion`, `tematica`, `zona_partida`, `zona_llegada`, `actividades_completadas` (cuántas actividades de su temática tiene COMPLETADA la cuenta) e `items`. Cada ítem trae `item`, `enunciado`, `partida` y `llegada` (la etiqueta elegida) y `cambio` (bool; un cambio hacia una opción menor no se distingue). Sin números. La aplicación ENTRADA y la SALIDA se eligen por `momento`, nunca por código. Instrumento de otro tipo: 404. Sin las dos reveladas: 409 con el avance de ambas. |
 
 Las consultas con cuenta responden 404 a un apoderado. El resultado se arma con lo guardado, sin recalcular.
 
@@ -109,7 +110,7 @@ Código: `app/services/catalogo.py`. Se lee de la base, no de la caché, con `se
 | `carreras?buscar=&tipo=&area=&familia=&riasec=` | Página de `{codigo, nombre, tipo, familia{codigo, nombre, area_codigo, area_nombre}, riasec[0–3]}`, por nombre |
 | `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `nombre_cine`, `ambito_laboral[]`, `ocupaciones[]`, `instituciones[]` (cada una con `ingreso`: el `Tramo` de esa institución en la familia, o `null`, y `duracion_ciclos` de la carrera en ella, o `null`; F07b), `ingreso{fuente, nacional, departamentos[]}` (o `null` sin fila nacional; cada fila con `ubicacion` y `Tramo` de `jovenes` y `adultos`) y `parecidas{total, carreras[≤3]}` (misma familia y tipo) |
 | `ocupaciones?buscar=&grupo=&riasec=` | Página de `{codigo, codigo_onet, titulo, resumen, grupo, riasec[1–3]}`, por título |
-| `ocupaciones/{codigo}` | Lo anterior más `descripcion`, `tambien_llamado[]`, `job_zone`, `tareas[]`, `personalidad`, `estilos_trabajo[{codigo, nombre}]`, `conocimientos[]`, `aptitudes[]`, `puntajes{R…C: 0–100}` y `carreras[]` |
+| `ocupaciones/{codigo}` | Lo anterior más `descripcion`, `tambien_llamado[]`, `job_zone`, `tareas[]`, `personalidad`, `estilos_trabajo[{codigo, nombre}]`, `conocimientos[]`, `aptitudes[]`, `puntajes{R…C: 0–100}` (enteros, con `puntaje_visual` sobre 1–7) y `carreras[]` |
 | `instituciones?buscar=&tipo=&gestion=&ubicacion=` | Página de `{codigo, nombre, tipo, gestion, ubicacion{codigo, nombre}, distrito}`, por nombre |
 | `instituciones/{codigo}` | Lo anterior más `descripcion` (nula), `direccion`, `pagina_web` y `carreras[]` (cada una con `ingreso` de la institución en su familia, o `null`) |
 | `familias`, `ubicaciones`, `grupos` | Solo las familias con carreras (por área y nombre), los departamentos con instituciones y los grupos con ocupaciones (por nombre) |

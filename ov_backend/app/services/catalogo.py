@@ -11,7 +11,9 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.contexto import contexto, usar_contexto
-from app.core.parametros import FUENTE_INGRESOS, LIMITE_MAXIMO_CATALOGO, puntaje_ocupacion_porcentaje
+from app.core.parametros import (
+    FUENTE_INGRESOS, LIMITE_MAXIMO_CATALOGO, PUNTAJE_OCUPACION_MAXIMO, PUNTAJE_OCUPACION_MINIMO,
+)
 from app.exceptions import ErrorAccion
 from app.models import (
     Carrera, Cuenta, Dimension, EstiloTrabajo, EventoUso, FamiliaCarrera, Favorito, GestionInstitucion,
@@ -29,6 +31,7 @@ from app.schemas.catalogo import (
     Tramo, UbicacionPublica,
 )
 from app.services.comun import buscar_por_codigo, fecha_accion, responder_con_eventos
+from app.services.instrumentos.calculo import puntaje_visual
 from app.services.secciones import exigir_seccion, seccion_de_cuenta
 
 
@@ -277,7 +280,7 @@ def detalle_ocupacion(sesion: Session, cuenta: Cuenta, codigo: str) -> Ocupacion
         tambien_llamado=ocupacion.tambien_llamado, job_zone=ocupacion.job_zone, tareas=ocupacion.tareas,
         personalidad=ocupacion.personalidad, conocimientos=ocupacion.conocimientos, aptitudes=ocupacion.aptitudes,
         estilos_trabajo=[EstiloPublico(codigo=c, nombre=estilos[c]) for c in ocupacion.estilos_trabajo],
-        puntajes={d: puntaje_ocupacion_porcentaje(puntajes[d]) for d in LETRAS_RIASEC if d in puntajes},
+        puntajes={d: puntaje_visual(puntajes[d], PUNTAJE_OCUPACION_MINIMO, PUNTAJE_OCUPACION_MAXIMO) for d in LETRAS_RIASEC if d in puntajes},
         carreras=[resumen_carrera(c, favoritos) for c in ocupacion.carreras])
 
 

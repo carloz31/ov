@@ -61,7 +61,7 @@ def agregar_veinte_resultados(sesion):
         sesion.add(nuevo)
         sesion.flush()
         sesion.add_all([m.ResultadoDimension(resultado_id=nuevo.id, dimension_id=d.dimension_id,
-            puntaje=d.puntaje, puntaje_maximo=d.puntaje_maximo, porcentaje=n) for d in dimensiones])
+            puntaje=n, puntaje_maximo=d.puntaje_maximo) for d in dimensiones])
         sesion.add_all([m.Coincidencia(resultado_id=nuevo.id, ocupacion_id=c.ocupacion_id,
             posicion=c.posicion, correlacion=c.correlacion, ajuste=c.ajuste) for c in coincidencias])
 

@@ -184,9 +184,10 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
                            for nombre, tabla in anteriores.tables.items()
                            # 0005 retira actividad_item_registro; sus filas pasan a item_registro. 0016 cambia
                            # `pregunta_id` de entrada_diario por `recomendacion_id` (aquí sin filas). 0018 cambia
-                           # las columnas de las conversaciones (aquí sin filas).
+                           # las columnas de las conversaciones (aquí sin filas). 0040 retira el porcentaje de
+                           # resultado_dimension (aquí sin filas).
                            if nombre not in {'alembic_version', 'actividad_item_registro', 'entrada_diario',
-                                             'conversacion', 'conversacion_vinculo'}}
+                                             'conversacion', 'conversacion_vinculo', 'resultado_dimension'}}
         command.upgrade(configuracion, 'head')
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == (

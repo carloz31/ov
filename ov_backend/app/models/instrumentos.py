@@ -19,16 +19,26 @@ class Instrumento(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
     descripcion: Mapped[str] = mapped_column(Text)
+    # Cómo leer el resultado: párrafo introductorio de la vista explicada.
+    lectura: Mapped[str] = mapped_column(Text, default="", server_default=text("''"))
     tipo_resultado: Mapped[TipoResultado] = mapped_column(enumerado(TipoResultado), default=TipoResultado.DESTACADAS)
 
 
 class Dimension(Base):
     __tablename__ = "dimension"
+    __table_args__ = (
+        CheckConstraint(TipoJSON(column("fortalezas")) == 'array', name="fortalezas_lista"),
+        CheckConstraint(TipoJSON(column("desarrollo")) == 'array', name="desarrollo_lista"),
+    )
     id: Mapped[int] = mapped_column(primary_key=True)
     instrumento_id: Mapped[int] = mapped_column(ForeignKey("instrumento.id"))
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
     descripcion: Mapped[str] = mapped_column(Text)
+    # «Suele notarse cuando …», «Suele venir con …» y «Para desarrollarla» (vacío en RIASEC).
+    ejemplos: Mapped[str | None] = mapped_column(Text, default=None)
+    fortalezas: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list, server_default=text("'[]'"))
+    desarrollo: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list, server_default=text("'[]'"))
     orden: Mapped[int]
     tematica_id: Mapped[int | None] = mapped_column(ForeignKey("tematica.id"))
 
@@ -166,7 +176,6 @@ class ResultadoDimension(Base):
     dimension_id: Mapped[int] = mapped_column(ForeignKey("dimension.id"), primary_key=True)
     puntaje: Mapped[float]
     puntaje_maximo: Mapped[float]
-    porcentaje: Mapped[float]
 
 
 class Coincidencia(Base):

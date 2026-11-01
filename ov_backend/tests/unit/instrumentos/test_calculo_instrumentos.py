@@ -5,8 +5,7 @@ import pytest
 from app.services.instrumentos.calculo import (
     CodigoInteresCalculado, DimensionCalculada, ItemParaCalculo, PerfilOcupacion,
     calcular_codigo_interes, calcular_coincidencias, calcular_dimension,
-    calcular_dimensiones_destacadas, calcular_pearson, calcular_porcentaje, calcular_puntaje_item,
-    clasificar_ajuste,
+    calcular_dimensiones_destacadas, calcular_pearson, calcular_puntaje_item, clasificar_ajuste, puntaje_visual,
 )
 
 
@@ -53,18 +52,21 @@ def test_puntuacion_e_inversion_segun_limites_de_la_escala(puntaje, minimo, maxi
     assert calcular_puntaje_item(puntaje, minimo, maximo, inverso) == esperado
 
 
-@pytest.mark.parametrize("puntaje, maximo, esperado", [
-    (0, 40, 0), (40, 40, 100), (21, 40, 52.5), (4, 7, 57.14), (1, 3, 33.33),
+@pytest.mark.parametrize("valor, minimo, maximo, esperado", [
+    (0, 0, 40, 0), (40, 0, 40, 100), (21, 0, 40, 53), (27, 0, 40, 68), (1, 0, 8, 13), (4, 0, 7, 57),
+    (1, 0, 3, 33), (2, 0, 3, 67), (1, 1, 7, 0), (7, 1, 7, 100), (4, 1, 7, 50), (5.54, 1, 7, 76), (1.6, 1, 7, 10),
+    (2.5, 0, 5, 50),
 ])
-def test_porcentaje_redondeado_a_dos_decimales(puntaje, maximo, esperado):
-    assert calcular_porcentaje(puntaje, maximo) == esperado
+def test_puntaje_visual_de_cero_a_cien_redondea_la_mitad_hacia_arriba(valor, minimo, maximo, esperado):
+    # Ajuste carga-instrumentos: 21/40 = 52,5 → 53 y 1/8 = 12,5 → 13, no al par como round().
+    assert puntaje_visual(valor, minimo, maximo) == esperado
 
 
 def test_dimension_suma_puntajes_y_maximos_con_escalas_distintas():
     # Máximos 1+4+4=9; puntajes 1+(4-1)+(4+1-4)=5.
     items = [ItemParaCalculo(1, 0, 1), ItemParaCalculo(1, 0, 4, inverso=True),
              ItemParaCalculo(4, 1, 4, inverso=True)]
-    assert calcular_dimension("DIM-DEMO", iter(items)) == DimensionCalculada("DIM-DEMO", 5, 9, 55.56)
+    assert calcular_dimension("DIM-DEMO", iter(items)) == DimensionCalculada("DIM-DEMO", 5, 9)
 
 
 @pytest.mark.parametrize("valores, esperadas", [
@@ -75,44 +77,45 @@ def test_dimension_suma_puntajes_y_maximos_con_escalas_distintas():
     ([(4, 7), (8, 14)], ("D-2", "D-1")),
 ])
 def test_dimensiones_destacadas_compara_proporciones_exactas_y_conserva_empates(valores, esperadas):
-    dimensiones = [DimensionCalculada(f"D-{2 - n}", puntaje, maximo, calcular_porcentaje(puntaje, maximo))
-                   for n, (puntaje, maximo) in enumerate(valores)]
+    dimensiones = [DimensionCalculada(f"D-{2 - n}", puntaje, maximo) for n, (puntaje, maximo) in enumerate(valores)]
     assert calcular_dimensiones_destacadas(dimensiones) == esperadas
 
 
-@pytest.mark.parametrize("numeros, puntaje, maximo, porcentaje", [
+@pytest.mark.parametrize("numeros, puntaje, maximo, visual", [
     ([1, 8, 11, 17, 21, 24, 27, 36, 41, 43], 7, 10, 70),
-    ([3, 6, 13, 20, 25, 28, 37], 4, 7, 57.14),
+    ([3, 6, 13, 20, 25, 28, 37], 4, 7, 57),
     ([7, 18, 26, 29], 2, 4, 50), ([2, 14, 19, 30, 38], 1, 5, 20),
-    ([5, 10, 31, 39], 3, 4, 75), ([4, 9, 16, 22, 32, 34, 40, 42], 1, 8, 12.5),
+    ([5, 10, 31, 39], 3, 4, 75), ([4, 9, 16, 22, 32, 34, 40, 42], 1, 8, 13),
     ([12, 15, 23, 33, 35], 4, 5, 80),
 ])
-def test_calculo_de_inteligencias_con_si_en_impares(numeros, puntaje, maximo, porcentaje):
+def test_calculo_de_inteligencias_con_si_en_impares(numeros, puntaje, maximo, visual):
     items = [ItemParaCalculo(1 if numero % 2 else 0, 0, 1) for numero in numeros]
     resultado = calcular_dimension("INT", items)
-    assert (resultado.puntaje, resultado.puntaje_maximo, resultado.porcentaje) == (puntaje, maximo, porcentaje)
+    assert (resultado.puntaje, resultado.puntaje_maximo) == (puntaje, maximo)
+    assert puntaje_visual(resultado.puntaje, 0, resultado.puntaje_maximo) == visual
 
 
-@pytest.mark.parametrize("codigo, numeros, inversos, puntaje, maximo, porcentaje", [
+@pytest.mark.parametrize("codigo, numeros, inversos, puntaje, maximo, visual", [
     ("HAB-ASE", [1, 10, 15, 19, 21], set(), 2, 5, 40),
     ("HAB-EMP", [4, 7, 16, 22], set(), 2, 4, 50),
-    ("HAB-LID", [5, 14, 20], {5, 20}, 1, 3, 33.33),
+    ("HAB-LID", [5, 14, 20], {5, 20}, 1, 3, 33),
     ("HAB-RES", [6, 13, 17, 24], set(), 1, 4, 25),
     ("HAB-EXP", [3, 8, 23], {3, 8}, 0, 3, 0),
     ("HAB-VAL", [2, 9, 11, 12, 18], set(), 4, 5, 80),
 ])
-def test_calculo_de_habilidades_con_items_inversos(codigo, numeros, inversos, puntaje, maximo, porcentaje):
+def test_calculo_de_habilidades_con_items_inversos(codigo, numeros, inversos, puntaje, maximo, visual):
     items = [ItemParaCalculo(1 if numero <= 12 else 0, 0, 1, inverso=numero in inversos) for numero in numeros]
-    assert calcular_dimension(codigo, items) == DimensionCalculada(codigo, puntaje, maximo, porcentaje)
+    assert calcular_dimension(codigo, items) == DimensionCalculada(codigo, puntaje, maximo)
+    assert puntaje_visual(puntaje, 0, maximo) == visual
 
 
-@pytest.mark.parametrize("cadena, puntajes, porcentajes, codigo", [
+@pytest.mark.parametrize("cadena, puntajes, visuales, codigo", [
     ("511222115515411122551525542552114321231141335215514152553521",
-     (21, 9, 17, 20, 28, 15), (52.5, 22.5, 42.5, 50, 70, 37.5), "ERS"),
+     (21, 9, 17, 20, 28, 15), (53, 23, 43, 50, 70, 38), "ERS"),
     ("333322223322343333233333443333333333444433333433444433334433",
-     (27, 24, 18, 17, 23, 18), (67.5, 60, 45, 42.5, 57.5, 45), "RIE"),
+     (27, 24, 18, 17, 23, 18), (68, 60, 45, 43, 58, 45), "RIE"),
 ])
-def test_puntuacion_de_las_cadenas_riasec_completas(cadena, puntajes, porcentajes, codigo):
+def test_puntuacion_de_las_cadenas_riasec_completas(cadena, puntajes, visuales, codigo):
     resultados = []
     for dimension in "RIASEC":
         items = [ItemParaCalculo(int(opcion) - 1, 0, 4) for indice, opcion in enumerate(cadena)
@@ -120,7 +123,7 @@ def test_puntuacion_de_las_cadenas_riasec_completas(cadena, puntajes, porcentaje
         resultados.append(calcular_dimension(dimension, items))
     assert tuple(r.puntaje for r in resultados) == puntajes
     assert tuple(r.puntaje_maximo for r in resultados) == (40,) * 6
-    assert tuple(r.porcentaje for r in resultados) == porcentajes
+    assert tuple(puntaje_visual(r.puntaje, 0, r.puntaje_maximo) for r in resultados) == visuales
     assert calcular_codigo_interes(puntajes) == CodigoInteresCalculado(codigo, hay_empate=False)
 
 
@@ -172,8 +175,9 @@ def test_perfil_plano_no_evalua_ocupaciones():
 @pytest.mark.parametrize("operacion", [
     lambda: calcular_puntaje_item(5, 0, 4), lambda: calcular_puntaje_item(1, 4, 0),
     lambda: calcular_puntaje_item(float("nan"), 0, 4),
-    lambda: calcular_porcentaje(0, 0), lambda: calcular_porcentaje(2, -1),
-    lambda: calcular_porcentaje(float("inf"), 40), lambda: calcular_porcentaje(41, 40),
+    lambda: calcular_dimension("SIN-MAXIMO", [ItemParaCalculo(0, 0, 0)]),
+    lambda: puntaje_visual(0, 0, 0), lambda: puntaje_visual(2, 3, 1),
+    lambda: puntaje_visual(float("inf"), 0, 40), lambda: puntaje_visual(41, 0, 40), lambda: puntaje_visual(0, 1, 7),
     lambda: calcular_dimension("VACIA", []), lambda: calcular_codigo_interes((1, 2)),
     lambda: calcular_pearson(VECTOR_A, (1, 2, 3)),
     lambda: calcular_pearson(VECTOR_A, (1, 2, 3, 4, 5, float("nan"))),

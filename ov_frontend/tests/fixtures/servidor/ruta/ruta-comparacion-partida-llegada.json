@@ -190,6 +190,7 @@
     }
   ],
   "instrumento": "TEST-PARTIDA-LLEGADA",
+  "lectura": "",
   "llegada": "APL-LLEGADA",
   "partida": "APL-PARTIDA"
 }

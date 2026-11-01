@@ -33,7 +33,7 @@ export function ResultNode({ activity, instrumentId }: { activity: Actividad; in
           <>
             {resultado.areas.map((d) => (
               <p key={d.codigo}>
-                <strong>{d.nombre}</strong>: {d.porcentaje}%
+                <strong>{d.nombre}</strong>: {d.puntaje_visual}%
               </p>
             ))}
             <p>

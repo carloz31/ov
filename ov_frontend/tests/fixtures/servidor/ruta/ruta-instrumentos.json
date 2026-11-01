@@ -31,31 +31,46 @@
     "dimensiones": [
       {
         "codigo": "AUTO-A",
+        "desarrollo": [],
         "descripcion": "Qué tan claro tienes lo que quieres hacer después del colegio.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Claridad",
         "orden": 1
       },
       {
         "codigo": "AUTO-B",
+        "desarrollo": [],
         "descripcion": "Qué tanto reconoces tus intereses, habilidades y valores.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Conocimiento de mí",
         "orden": 2
       },
       {
         "codigo": "AUTO-C",
+        "desarrollo": [],
         "descripcion": "Qué tanto conoces las carreras, los caminos y lo que piden.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Conocimiento de las opciones",
         "orden": 3
       },
       {
         "codigo": "AUTO-D",
+        "desarrollo": [],
         "descripcion": "Qué tanto sientes que la decisión es tuya y no de otros.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Decisión propia",
         "orden": 4
       },
       {
         "codigo": "AUTO-E",
+        "desarrollo": [],
         "descripcion": "Qué tan seguro te sientes de poder tomar y sostener tu decisión.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Confianza",
         "orden": 5
       }
@@ -88,6 +103,7 @@
         ]
       }
     ],
+    "lectura": "",
     "nombre": "Punto de partida y de llegada",
     "tipo_resultado": "COMPARACION"
   },
@@ -116,37 +132,55 @@
     "dimensiones": [
       {
         "codigo": "R",
+        "desarrollo": [],
         "descripcion": "Te atraen las actividades prácticas: trabajar con las manos, usar herramientas o máquinas y estar al aire libre.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Realista",
         "orden": 1
       },
       {
         "codigo": "I",
+        "desarrollo": [],
         "descripcion": "Te atrae observar, preguntar y analizar para entender cómo y por qué funcionan las cosas.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Investigativa",
         "orden": 2
       },
       {
         "codigo": "A",
+        "desarrollo": [],
         "descripcion": "Te atrae crear, imaginar y expresarte con libertad, sin reglas rígidas.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Artística",
         "orden": 3
       },
       {
         "codigo": "S",
+        "desarrollo": [],
         "descripcion": "Te atrae ayudar, enseñar, cuidar o acompañar a otras personas.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Social",
         "orden": 4
       },
       {
         "codigo": "E",
+        "desarrollo": [],
         "descripcion": "Te atrae liderar, convencer, organizar proyectos y tomar decisiones.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Emprendedora",
         "orden": 5
       },
       {
         "codigo": "C",
+        "desarrollo": [],
         "descripcion": "Te atrae ordenar información, seguir procedimientos claros y trabajar con datos de forma precisa.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Convencional",
         "orden": 6
       }
@@ -184,6 +218,7 @@
         ]
       }
     ],
+    "lectura": "",
     "nombre": "Test de intereses (RIASEC)",
     "tipo_resultado": "COINCIDENCIAS"
   }

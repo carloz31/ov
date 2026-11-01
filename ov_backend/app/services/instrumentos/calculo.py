@@ -3,12 +3,13 @@
 import statistics
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from decimal import ROUND_HALF_UP, Decimal
 from fractions import Fraction
 from math import isfinite
 from typing import Literal
 
 from app.core.parametros import (
-    CORRELACION_MINIMA, DECIMALES_PORCENTAJE, FACTOR_PORCENTAJE, LIMITE_COINCIDENCIAS,
+    CORRELACION_MINIMA, FACTOR_PORCENTAJE, LIMITE_COINCIDENCIAS,
     LONGITUD_CODIGO_INTERES, UMBRAL_BEST_FIT, UMBRAL_GREAT_FIT, UMBRAL_ZONA_EN_CAMINO, UMBRAL_ZONA_FUERTE,
 )
 
@@ -36,7 +37,6 @@ class DimensionCalculada:
     codigo: str
     puntaje: float
     puntaje_maximo: float
-    porcentaje: float
 
 
 @dataclass(frozen=True)
@@ -88,12 +88,22 @@ def calcular_zona(puntaje: float, cantidad_items: int) -> ZonaCalculada:
     return "POR_TRABAJAR"
 
 
-def calcular_porcentaje(puntaje: float, puntaje_maximo: float) -> float:
+def _validar_dimension(puntaje: float, puntaje_maximo: float) -> None:
     if not isfinite(puntaje) or not isfinite(puntaje_maximo) or puntaje_maximo <= 0:
         raise ValueError("El puntaje debe ser finito y el máximo debe ser finito y positivo")
     if not 0 <= puntaje <= puntaje_maximo:
         raise ValueError("El puntaje debe estar entre cero y el máximo")
-    return round(FACTOR_PORCENTAJE * puntaje / puntaje_maximo, DECIMALES_PORCENTAJE)
+
+
+def puntaje_visual(valor: float, minimo: float, maximo: float) -> int:
+    """0–100 de cualquier escala: `(valor − mín) / (máx − mín) · 100`, redondeado con ROUND_HALF_UP.
+    Solo para mostrar; ningún cálculo de resultado lo usa."""
+    if not all(isfinite(v) for v in (valor, minimo, maximo)) or minimo >= maximo:
+        raise ValueError("Los límites deben ser finitos y el mínimo menor que el máximo")
+    if not minimo <= valor <= maximo:
+        raise ValueError("El valor debe estar entre el mínimo y el máximo")
+    proporcion = (Decimal(str(valor)) - Decimal(str(minimo))) / (Decimal(str(maximo)) - Decimal(str(minimo)))
+    return int((proporcion * FACTOR_PORCENTAJE).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
 def calcular_dimension(codigo: str, items: Iterable[ItemParaCalculo]) -> DimensionCalculada:
@@ -102,14 +112,15 @@ def calcular_dimension(codigo: str, items: Iterable[ItemParaCalculo]) -> Dimensi
     for item in items:
         puntaje += calcular_puntaje_item(item.puntaje, item.minimo, item.maximo, item.inverso)
         puntaje_maximo += item.maximo
-    return DimensionCalculada(codigo, puntaje, puntaje_maximo, calcular_porcentaje(puntaje, puntaje_maximo))
+    _validar_dimension(puntaje, puntaje_maximo)
+    return DimensionCalculada(codigo, puntaje, puntaje_maximo)
 
 
 def calcular_dimensiones_destacadas(dimensiones: Sequence[DimensionCalculada]) -> tuple[str, ...]:
     """Conserva el orden recibido y compara proporciones sin redondearlas."""
     proporciones = []
     for dimension in dimensiones:
-        calcular_porcentaje(dimension.puntaje, dimension.puntaje_maximo)  # Valida los límites.
+        _validar_dimension(dimension.puntaje, dimension.puntaje_maximo)
         proporciones.append(Fraction(dimension.puntaje) / Fraction(dimension.puntaje_maximo))
     if not proporciones:
         return ()

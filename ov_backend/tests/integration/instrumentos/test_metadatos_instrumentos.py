@@ -31,6 +31,6 @@ def test_r26_destacadas_genericas_inversos_empates_y_cero(tmp_path, base_aislada
             assert (salida['instrumento'], salida['aplicacion'], salida['perfil_plano']) == (
                 'TEST-PRUEBA', 'APL-PRUEBA-UNICA', False)
             obtenido = resultado(cliente, instrumento='TEST-PRUEBA')
-            assert [d['porcentaje'] for d in obtenido['dimensiones']] == porcentajes
+            assert [d['puntaje_visual'] for d in obtenido['dimensiones']] == porcentajes
             assert [d['codigo'] for d in obtenido['dimensiones_destacadas']] == destacadas
             assert 'codigo_interes' not in obtenido and 'coincidencias' not in obtenido

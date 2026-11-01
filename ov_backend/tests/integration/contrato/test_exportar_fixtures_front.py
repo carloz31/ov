@@ -180,7 +180,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
                                                      'POR_TRABAJAR']
     respuestas = RespuestasActividad.model_validate(datos['respuestas-t-partida']).respuestas
     assert respuestas[0].item == 'AUTO-01' and respuestas[0].opcion.etiqueta == 'Bastante de acuerdo'
-    assert all(d.puntaje is None and d.porcentaje is None for d in partida.dimensiones)
+    assert all(d.puntaje is None and d.puntaje_visual is None for d in partida.dimensiones)
     cita, = ReferenciasConsultadas.model_validate(datos['referencias-t-lee-cuestionario']).referencias
     assert (cita.tipo, cita.estado, cita.texto) == ('RESPUESTA_CUESTIONARIO', 'DISPONIBLE', 'Bastante de acuerdo')
     assert estados(datos['actividades-t2'])['t-llegada'] == 'DISPONIBLE'
@@ -306,7 +306,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     resultado = datos['resultado-riasec']
     assert resultado['calculado_en'] == exportador.FECHA
     assert resultado['codigo_interes'] == {'codigo': 'IRA', 'hay_empate': False}
-    assert {d['codigo']: d['porcentaje'] for d in resultado['dimensiones']} == {
+    assert {d['codigo']: d['puntaje_visual'] for d in resultado['dimensiones']} == {
         'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0,
     }
     assert len(resultado['coincidencias']) == 10

@@ -1,5 +1,7 @@
 // Contratos de app/schemas/instrumentos.py de ov_backend (F03: separados de servidor.ts, que los reexporta).
-export type DimensionPublica = { codigo: string; nombre: string; descripcion: string; orden: number }
+// Ajuste carga-instrumentos: cuatro piezas por dimensión (descripción, ejemplos, fortalezas y desarrollo).
+export type TextosDimension = { ejemplos: string | null; fortalezas: string[]; desarrollo: string[] }
+export type DimensionPublica = { codigo: string; nombre: string; descripcion: string; orden: number } & TextosDimension
 export type ActividadPublica = { codigo: string; titulo: string; orden: number }
 export type AplicacionPublica = {
   codigo: string
@@ -12,6 +14,7 @@ export type InstrumentoPublico = {
   codigo: string
   nombre: string
   descripcion: string
+  lectura: string
   tipo_resultado: 'COINCIDENCIAS' | 'DESTACADAS' | 'COMPARACION'
   dimensiones: DimensionPublica[]
   escalas: EscalaPublica[]
@@ -55,13 +58,13 @@ export type DimensionResultado = {
   codigo: string
   nombre: string
   descripcion: string
-  // En COMPARACION los números llegan en null (B07).
+  // En COMPARACION los números llegan en null (B07). `puntaje_visual` es el 0–100 entero que se muestra.
   puntaje: number | null
   puntaje_maximo: number | null
-  porcentaje: number | null
+  puntaje_visual: number | null
   zona?: 'FUERTE' | 'EN_CAMINO' | 'POR_TRABAJAR' | null
   tematica?: string | null
-}
+} & TextosDimension
 export type CoincidenciaPublica = {
   posicion: number
   codigo: string | null
@@ -83,6 +86,7 @@ export type ResultadoPublico = {
   aplicacion: string
   calculado_en: string
   perfil_plano: boolean
+  lectura: string
   dimensiones: DimensionResultado[]
   dimensiones_destacadas?: DimensionResultado[] | null
   codigo_interes?: { codigo: string; hay_empate: boolean } | null
@@ -104,6 +108,7 @@ export type ComparacionDimension = {
 }
 export type ComparacionAutopercepcion = {
   instrumento: string
+  lectura: string
   partida: string
   llegada: string
   dimensiones: ComparacionDimension[]

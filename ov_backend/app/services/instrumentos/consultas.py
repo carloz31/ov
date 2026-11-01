@@ -24,13 +24,30 @@ from app.schemas.instrumentos import (
     ResultadoHistorico, ResultadoPublico,
 )
 from app.services.instrumentos.calculo import (
-    DimensionCalculada, calcular_codigo_interes, calcular_dimensiones_destacadas, calcular_zona,
+    DimensionCalculada, calcular_codigo_interes, calcular_dimensiones_destacadas, calcular_zona, puntaje_visual,
 )
 
 
 def items_por_dimension(definiciones, instrumento: Instrumento) -> Counter:
     return Counter(item.dimension_id for item in definiciones.listar(ItemInstrumento)
                    if item.instrumento_id == instrumento.id)
+
+
+def minimos_por_dimension(definiciones, instrumento: Instrumento) -> Counter:
+    """Suma de los puntajes mínimos de las escalas de los ítems de cada dimensión: el 0 del puntaje visual."""
+    minimos = {}
+    for opcion in definiciones.listar(OpcionEscala):
+        minimos[opcion.escala_id] = min(opcion.puntaje, minimos.get(opcion.escala_id, opcion.puntaje))
+    resultado = Counter()
+    for item in definiciones.listar(ItemInstrumento):
+        if item.instrumento_id == instrumento.id:
+            resultado[item.dimension_id] += minimos[item.escala_id]
+    return resultado
+
+
+def textos_dimension(dimension) -> dict:
+    return dict(ejemplos=dimension.ejemplos, fortalezas=list(dimension.fortalezas or []),
+                desarrollo=list(dimension.desarrollo or []))
 
 
 def codigo_tematica(definiciones, dimension) -> str | None:
@@ -100,9 +117,9 @@ def catalogo_instrumentos(sesion: Session) -> list[InstrumentoPublico]:
                                            if item.instrumento_id == instrumento.id}), key=lambda escala: escala.codigo)
         catalogo.append(InstrumentoPublico(
             codigo=instrumento.codigo, nombre=instrumento.nombre, descripcion=instrumento.descripcion,
-            tipo_resultado=instrumento.tipo_resultado,
+            lectura=instrumento.lectura, tipo_resultado=instrumento.tipo_resultado,
             dimensiones=[DimensionPublica(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
-                                         orden=d.orden) for d in dimensiones],
+                                         **textos_dimension(d), orden=d.orden) for d in dimensiones],
             escalas=[escala_publica(sesion, escala) for escala in escalas],
             aplicaciones=[AplicacionPublica(codigo=a.codigo, nombre=a.nombre, momento=a.momento, actividades=[
                 ActividadPublica(codigo=t.codigo, titulo=t.titulo, orden=t.orden)
@@ -234,17 +251,19 @@ def representar_resultado(sesion: Session, resultado: ResultadoInstrumento, hist
     if instrumento.tipo_resultado == TipoResultado.COMPARACION:
         # B07: el estudiante recibe la zona en palabras, nunca los números.
         cantidades = items_por_dimension(definiciones, instrumento)
-        dimensiones = [DimensionResultado(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion, puntaje=None,
-            puntaje_maximo=None, porcentaje=None, zona=calcular_zona(r.puntaje, cantidades[d.id]),
-            tematica=codigo_tematica(definiciones, d)) for d, r in filas]
-    else:
         dimensiones = [DimensionResultado(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
-            puntaje=r.puntaje, puntaje_maximo=r.puntaje_maximo, porcentaje=r.porcentaje) for d, r in filas]
+            **textos_dimension(d), puntaje=None, puntaje_maximo=None, puntaje_visual=None,
+            zona=calcular_zona(r.puntaje, cantidades[d.id]), tematica=codigo_tematica(definiciones, d)) for d, r in filas]
+    else:
+        minimos = minimos_por_dimension(definiciones, instrumento)
+        dimensiones = [DimensionResultado(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
+            **textos_dimension(d), puntaje=r.puntaje, puntaje_maximo=r.puntaje_maximo,
+            puntaje_visual=puntaje_visual(r.puntaje, minimos[d.id], r.puntaje_maximo)) for d, r in filas]
     datos = dict(instrumento=instrumento.codigo, aplicacion=aplicacion.codigo, calculado_en=resultado.calculado_en,
-        perfil_plano=resultado.perfil_plano, dimensiones=dimensiones)
+        perfil_plano=resultado.perfil_plano, lectura=instrumento.lectura, dimensiones=dimensiones)
     if instrumento.tipo_resultado == TipoResultado.DESTACADAS:
         destacadas = calcular_dimensiones_destacadas([
-            DimensionCalculada(d.codigo, r.puntaje, r.puntaje_maximo, r.porcentaje) for d, r in filas
+            DimensionCalculada(d.codigo, r.puntaje, r.puntaje_maximo) for d, r in filas
         ])
         datos["dimensiones_destacadas"] = [d for d in datos["dimensiones"] if d.codigo in destacadas]
     if instrumento.tipo_resultado == TipoResultado.COINCIDENCIAS:
@@ -328,7 +347,7 @@ def comparacion_autopercepcion(sesion: Session, cuenta: Cuenta, instrumento: Ins
                    key=lambda item: item.numero)
     dimensiones = sorted((d for d in definiciones.listar(Dimension) if d.instrumento_id == instrumento.id),
                          key=lambda d: (d.orden, d.codigo))
-    return ComparacionAutopercepcion(instrumento=instrumento.codigo, partida=entrada.codigo, llegada=salida.codigo,
+    return ComparacionAutopercepcion(instrumento=instrumento.codigo, lectura=instrumento.lectura, partida=entrada.codigo, llegada=salida.codigo,
         dimensiones=[ComparacionDimension(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
             tematica=codigo_tematica(definiciones, d),
             zona_partida=calcular_zona(puntajes[entrada.id, d.id], cantidades[d.id]),

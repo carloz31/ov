@@ -103,13 +103,10 @@ LIMITE_MAXIMO_NOTIFICACIONES = 50
 
 # Ajuste catalogo-datos-reales: fuente de los ingresos de egresados, que toda respuesta con ingresos muestra.
 FUENTE_INGRESOS = "Ponte en Carrera (MTPE)"
-# Escala de los puntajes RIASEC de las ocupaciones (Mi Próximo Paso); el detalle los entrega de 0 a 100.
+# Escala de los puntajes RIASEC de las ocupaciones (Mi Próximo Paso); el detalle los entrega de 0 a 100 con
+# `puntaje_visual` (calculo.py).
 PUNTAJE_OCUPACION_MINIMO = 1
 PUNTAJE_OCUPACION_MAXIMO = 7
-
-
-def puntaje_ocupacion_porcentaje(valor: float) -> int:
-    return round((valor - PUNTAJE_OCUPACION_MINIMO) / (PUNTAJE_OCUPACION_MAXIMO - PUNTAJE_OCUPACION_MINIMO) * 100)
 
 # F08: código del diploma del apoderado, EXP-AP-{año}-{id con ceros}-{dígito verificador}. El prefijo cambia si
 # cambia el nombre de la plataforma.

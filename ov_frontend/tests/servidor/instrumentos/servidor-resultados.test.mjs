@@ -17,13 +17,13 @@ const texto = (node) =>
         ? texto(node.props.children)
         : ''
 
-test('el resultado conserva IRA y sus porcentajes en el orden del código, sin ordenar puntajes localmente', async () => {
+test('el resultado conserva IRA y sus puntajes visuales en el orden del código, sin ordenar puntajes localmente', async () => {
   const f = await iniciarMara({ resultado: jsonServidor('resultado-riasec') }),
     a = f.app.load('src/lib/servidor/adaptadores.ts')
   const resultado = copia(jsonServidor('resultado-riasec'))
   resultado.dimensiones.reverse()
   assert.deepEqual(
-    Array.from(a.areasRiasec(resultado), (d) => [d.codigo, d.porcentaje]),
+    Array.from(a.areasRiasec(resultado), (d) => [d.codigo, d.puntaje_visual]),
     [
       ['I', 100],
       ['R', 75],

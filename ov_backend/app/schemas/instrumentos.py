@@ -24,6 +24,9 @@ class DimensionPublica(BaseModel):
     codigo: str
     nombre: str
     descripcion: str
+    ejemplos: str | None
+    fortalezas: list[str]
+    desarrollo: list[str]
     orden: int
 
 
@@ -44,6 +47,7 @@ class InstrumentoPublico(BaseModel):
     codigo: str
     nombre: str
     descripcion: str
+    lectura: str
     tipo_resultado: TipoResultado
     dimensiones: list[DimensionPublica]
     escalas: list[EscalaPublica]
@@ -99,13 +103,17 @@ class AvanceInstrumento(BaseModel):
 
 
 class DimensionResultado(BaseModel):
-    """En COMPARACION, el estudiante recibe solo la zona y la temática: los números van en null (B07)."""
+    """En COMPARACION, el estudiante recibe solo la zona y la temática: los números van en null (B07).
+    `puntaje_visual` es el 0–100 entero que se muestra; se deriva al consultar, no se guarda."""
     codigo: str
     nombre: str
     descripcion: str
+    ejemplos: str | None
+    fortalezas: list[str]
+    desarrollo: list[str]
     puntaje: float | None
     puntaje_maximo: float | None
-    porcentaje: float | None
+    puntaje_visual: int | None
     zona: ZonaDimension | None = None
     tematica: str | None = None
 
@@ -138,6 +146,7 @@ class ResultadoPublico(BaseModel):
     aplicacion: str
     calculado_en: datetime
     perfil_plano: bool
+    lectura: str
     dimensiones: list[DimensionResultado]
     dimensiones_destacadas: list[DimensionResultado] | None = None
     codigo_interes: CodigoInteresPublico | None = None
@@ -171,6 +180,7 @@ class ComparacionDimension(BaseModel):
 
 class ComparacionAutopercepcion(BaseModel):
     instrumento: str
+    lectura: str
     partida: str
     llegada: str
     dimensiones: list[ComparacionDimension]
