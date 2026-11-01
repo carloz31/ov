@@ -99,6 +99,53 @@ test('con la Ciudad cerrada, «Ir a la siguiente misión» de intereses entra pr
   assert.equal(partida.activityHref ?? '', '')
 })
 
+// Ajuste carga-instrumentos: habilidades se revela sin haber revelado antes el RIASEC.
+test('el sello de habilidades se rompe aunque intereses siga sellado', async () => {
+  let revelada = false
+  const avance = () =>
+    jsonServidor('ruta/ruta-avance-instrumentos-inicial').map((i) => ({
+      ...i,
+      aplicaciones: i.aplicaciones.map((a) =>
+        a.aplicacion === 'APL-HABILIDADES'
+          ? {
+              ...a,
+              estado: 'COMPLETADO',
+              hay_resultado_vigente: revelada,
+              actividades: { completadas: 1, total: 1, faltantes: [] },
+              items: { respondidos: 24, total: 24 },
+            }
+          : a,
+      ),
+    }))
+  // DATO DE PRUEBA: resultado de habilidades como lo entrega el servidor.
+  const dimension = { codigo: 'HS-ASE', nombre: 'Asertividad', descripcion: 'Defiendes tus derechos.', puntaje: 5,
+    puntaje_maximo: 5, puntaje_visual: 100, ejemplos: null, fortalezas: [], desarrollo: [] }
+  const resultado = { instrumento: 'TEST-HABILIDADES', aplicacion: 'APL-HABILIDADES', calculado_en: '2026-10-09T10:00:00',
+    perfil_plano: false, lectura: 'Este inventario muestra cómo te relacionas.', dimensiones: [dimension],
+    dimensiones_destacadas: [dimension] }
+  const { app, useHelenaPages } = await libro({
+    avance: 'inicial',
+    extra: (req) => {
+      if (req.url.endsWith('/instrumentos')) return { body: avance() }
+      if (req.url.includes('resultado?aplicacion=APL-HABILIDADES')) return { body: resultado }
+      if (!req.url.endsWith('/revelar-resultado')) return undefined
+      revelada = true
+      return { body: { cuenta: 'est-ana', instrumento: 'TEST-HABILIDADES', aplicacion: 'APL-HABILIDADES',
+        perfil_plano: false, ...accionVacia } }
+    },
+  })
+  assert.equal(pagina(useHelenaPages(), 'intereses').state, 'sealed')
+  const antes = pagina(useHelenaPages(), 'habilidades')
+  assert.equal(antes.state, 'ready')
+  assert.equal(antes.revelacionBloqueada, false)
+  useHelenaPages().revelarPagina('habilidades')
+  await esperar()
+  await esperar()
+  const revelar = app.requests.find((r) => r.url === '/api/acciones/revelar-resultado')
+  assert.deepEqual(copia(revelar.body), { cuenta: 'est-ana', instrumento: 'TEST-HABILIDADES', aplicacion: 'APL-HABILIDADES' })
+  assert.equal(pagina(useHelenaPages(), 'habilidades').state, 'revealed')
+})
+
 test('romper el sello de la partida revela APL-PARTIDA y la página muestra sus zonas en palabras', async () => {
   const { app, useHelenaPages } = await libro({
     avance: 'partida-lista',

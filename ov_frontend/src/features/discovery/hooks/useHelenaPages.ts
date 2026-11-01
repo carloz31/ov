@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 
 import { useJourney } from '@/store/journeyStore'
 
-import { useDiscovery, updateDiscovery, revelarPaginaApi } from '@/store/discoveryStore'
+import { useDiscovery, updateDiscovery } from '@/store/discoveryStore'
 
 import type { InstrumentPageId } from '@/types/discovery'
 import { getHelenaPages } from '@/features/discovery/lib/helenaPages'
@@ -113,18 +113,12 @@ export function useHelenaPages() {
   }
   function revelarPagina(id: InstrumentPageId) {
     const sello = pages.find((p) => p.id === id)?.aplicacionSello
-    if (modoApi && sello) {
-      void accion(
-        () => revelarResultado(sello.instrumento, sello.aplicacion),
-        () => abrir(id),
-      )
-      return
-    }
     if (modoApi) {
-      // Páginas de ejemplo: su revelado sigue siendo local.
-      if (!servidor.resultadoRiasec || !cuenta) return
-      revelarPaginaApi(cuenta, servidor.resultadoRiasec.calculado_en, id)
-      abrir(id)
+      if (sello)
+        void accion(
+          () => revelarResultado(sello.instrumento, sello.aplicacion),
+          () => abrir(id),
+        )
       return
     }
     abrir(id)
@@ -175,7 +169,9 @@ export function useHelenaPages() {
               [],
             )
           : []
-      const servidorPagina = modoApi && (coincidencias || comparacion)
+      // Ajuste carga-instrumentos: en api las cuatro páginas son del servidor (también inteligencias y
+      // habilidades): su sello depende de su propia aplicación, no del resultado RIASEC.
+      const servidorPagina = modoApi
       // En api, la misión que falta (o, en intereses con la Ciudad cerrada, lo que pide la Ciudad).
       const requisito =
         coincidencias && requisitoCiudad
