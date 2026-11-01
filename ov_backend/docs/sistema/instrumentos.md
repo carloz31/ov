@@ -69,7 +69,7 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 1. Vector del estudiante en el orden de `dimension.orden` (R, I, A, S, E, C).
 2. Si los seis puntajes son iguales: `perfil_plano`, sin coincidencias.
 3. Si no, Pearson (`statistics.correlation`) con cada ocupación. Se descartan las negativas. BEST_FIT si r ≥ 0.729; GREAT_FIT si 0.608 ≤ r < 0.729; GOOD_FIT si 0 ≤ r < 0.608.
-4. Se guardan las 10 primeras por r descendente, con `codigo_onet` ascendente como desempate. La correlación se guarda sin redondear y se expone con 6 decimales.
+4. Se guardan las 10 primeras por r descendente, con `codigo_onet` ascendente como desempate, sin filtrar por Job Zone; las carreras recomendadas salen de esas 10. La correlación se guarda sin redondear y se expone con 6 decimales.
 
 **Derivados al consultar** (no se guardan):
 
