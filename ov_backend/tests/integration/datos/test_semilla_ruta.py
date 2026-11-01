@@ -17,10 +17,11 @@ from datos.fijos import validar_distribucion_items
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     esperados = {'salon': 2, 'cuenta': 8, 'orientadora_salon': 1, 'vinculo_familiar': 2, 'bloque': 6,
         # Ajuste mochila: t-caso-2, t-ficha-3, t-testimonio-3 y 4, sus reglas y la condición extra de t-testimonio-2.
-        'actividad': 28, 'seccion': 7, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 7, 'nivel': 3,
+        # Ajuste carga-instrumentos: t-mision-inteligencias y t-mision-habilidades, con sus instrumentos reales.
+        'actividad': 30, 'seccion': 7, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 7, 'nivel': 3,
         'regla_desbloqueo': 57, 'condicion_desbloqueo': 64, 'pregunta_diario': 8,
-        'instrumento': 2, 'escala_respuesta': 2, 'opcion_escala': 9, 'dimension': 11,
-        'item_instrumento': 79, 'actividad_item': 98, 'aplicacion': 3, 'aplicacion_actividad': 4,
+        'instrumento': 4, 'escala_respuesta': 4, 'opcion_escala': 14, 'dimension': 23,
+        'item_instrumento': 138, 'actividad_item': 157, 'aplicacion': 5, 'aplicacion_actividad': 6,
         # Ajuste catalogo-datos-reales: el catálogo real (603 carreras tras fusionar 5 duplicadas por tilde,
         # 706 instituciones con carreras, 923 ocupaciones de Mi Próximo Paso) y la relación provisional al azar.
         'ocupacion': 923, 'puntaje_ocupacion': 5538, 'familia_carrera': 89, 'carrera': 603,
@@ -36,7 +37,8 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA', 'LUMI'}
-    assert sesion.scalars(select(modelos.Instrumento.codigo).order_by(modelos.Instrumento.codigo)).all() == ['TEST-PARTIDA-LLEGADA', 'TEST-RIASEC']
+    assert sesion.scalars(select(modelos.Instrumento.codigo).order_by(modelos.Instrumento.codigo)).all() == [
+        'TEST-HABILIDADES', 'TEST-INTELIGENCIAS', 'TEST-PARTIDA-LLEGADA', 'TEST-RIASEC']
     assert sesion.execute(text('PRAGMA foreign_key_check')).all() == []
     # Las ocupaciones con slug lo conservan; las demás se codifican `onet-<código>`.
     codigos = dict(sesion.execute(select(modelos.Ocupacion.codigo_onet, modelos.Ocupacion.codigo)).all())

@@ -1,6 +1,6 @@
 # Instrumentos, resultados y recomendación
 
-Cuestionarios repartidos en actividades, cálculo de resultados y recomendación de ocupaciones y carreras. Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar). Parámetros: `app/core/parametros.py`. Datos: `datos/fijos.py` (temáticas, RIASEC y el cuestionario de partida y llegada), `datos/catalogo.py` (el catálogo real: carreras, instituciones, ingresos y ocupaciones) y, para unir ítems y actividades, `datos/ruta.py`.
+Cuestionarios repartidos en actividades, cálculo de resultados y recomendación de ocupaciones y carreras. Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar). Parámetros: `app/core/parametros.py`. Datos: `datos/fijos.py` (temáticas y los cuatro instrumentos), `datos/catalogo.py` (el catálogo real: carreras, instituciones, ingresos y ocupaciones) y, para unir ítems y actividades, `datos/ruta.py`.
 
 ## Modelo
 
@@ -27,6 +27,10 @@ Cuestionarios repartidos en actividades, cálculo de resultados y recomendación
 | `resultado_instrumento`, `resultado_dimension`, `coincidencia` | Resultado calculado, con `anulado_en` y `perfil_plano`; cada dimensión guarda `puntaje` y `puntaje_maximo` (el 0–100 no se guarda). A lo sumo uno vigente por cuenta y aplicación; los anulados quedan como historial. |
 
 Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente una actividad; la carga lo valida (`validar_distribucion_items`).
+
+**Instrumentos cargados** (`datos/fijos.py`): `TEST-RIASEC` (O*NET Interest Profiler Short Form, 60 ítems, `ESC-LIKERT5`, COINCIDENCIAS), `TEST-INTELIGENCIAS` (Gardner, 35 ítems V/F, `ESC-VERDAD3`: Falso 0 · No estoy seguro 0,5 · Verdadero 1, siete dimensiones de 5), `TEST-HABILIDADES` («Mi comportamiento con los demás», Burga, 24 ítems, `ESC-CASI2`: Casi nunca 0 · Casi siempre 1, inversos 3, 5, 8 y 20; cinco dimensiones) y `TEST-PARTIDA-LLEGADA`. Solo el RIASEC recomienda ocupaciones y carreras; las dimensiones de los otros no llevan perfiles profesionales.
+
+**Principio de generalidad.** Un instrumento nuevo es datos: ítems, escala, dimensiones y textos, cargados con `_cargar_instrumento`. El puntaje por dimensión es siempre la suma de los puntajes de opción (con inverso = máx + mín − puntaje) y el 0–100 es la misma fórmula mín/máx para cualquier escala; `tipo_resultado` decide qué se calcula encima. Un instrumento con coincidencias necesita además puntajes de ocupación por dimensión (`puntaje_ocupacion`, por `dimension_id`). El código de interés de tres letras, el filtro `riasec` y los *high points* son del modelo de Holland, no del test, y los hereda cualquier instrumento con los seis tipos. Los umbrales 0.729 / 0.608 son de O*NET y están en `parametros.py`; pasarán a ser datos del instrumento cuando haya un segundo instrumento de coincidencias. `calculo.py` recibe siempre el número de dimensiones del instrumento (`orden_canonico_riasec()` queda solo por compatibilidad).
 
 **Catálogo real.** `datos/catalogo.py` lee los CSV de `datos/archivos/catalogo/` solo al cargar la base (ver `integracion.md`); un archivo o columna que falta, o una fila inválida, detiene la carga con su número de fila. La aplicación nunca lee esos archivos. Las ocupaciones son las de `ocupaciones_mpp_completo.csv` con `flag_en_mpp = 1`; sus puntajes (1–7) son los que usa el test, y `high_point` sale de `riasec_perfil`. El cálculo de coincidencias (Pearson) no depende de la escala.
 

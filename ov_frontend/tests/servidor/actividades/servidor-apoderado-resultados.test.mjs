@@ -72,7 +72,7 @@ test('la tarjeta del hijo muestra la clave y el enlace a la explicada con el dip
       reintentar() {},
     },
   })
-  assert.match(marcado, /Test de intereses \(RIASEC\)/)
+  assert.match(marcado, /Test de intereses</)
   assert.match(marcado, /Lo que más destaca: <strong>Investigativa · Realista · Artística<\/strong>/)
   assert.match(
     marcado,

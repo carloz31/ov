@@ -11,3 +11,11 @@
 - F1 · La prueba de migración desde 0001 deja de comparar `resultado_dimension` (sin filas allí), como ya hacía con las tablas cuyas columnas cambian.
 - F1 · El fixture de raíz `ov_frontend/tests/fixtures/servidor/resultado-riasec.json` (congelado, sin generador, lo usan las pruebas de Mara) se transformó con un script de una vez: `porcentaje` → `puntaje_visual` entero y los campos nuevos vacíos (`lectura`, `ejemplos`, `fortalezas`, `desarrollo`). Es una excepción aprobada por el usuario a «nunca se editan a mano»; no cambia ningún otro dato.
 - F1 · En el front, la prueba de `areasRiasec` leía `d.porcentaje`; ahora lee `d.puntaje_visual` (adaptación que autoriza la spec).
+- F2 · `_cargar_instrumento(sesion, definicion)` (con `DefinicionInstrumento`) es la carga de cualquier instrumento futuro; inteligencias y habilidades la usan. RIASEC y partida/llegada conservan sus funciones solo para no tocar lo que funciona.
+- F2 · `DESCRIPCIONES_RIASEC` sale de `app/core/parametros.py` y pasa a `datos/fijos.py` como `TEXTOS_RIASEC` (descripción, ejemplos y fortalezas): es contenido, no un parámetro, y la aplicación ya no lo usa.
+- F2 · `TEST-RIASEC` se llama «Test de intereses» (antes «Test de intereses (RIASEC)»), como dice la spec.
+- F2 · Las misiones `t-mision-inteligencias` y `t-mision-habilidades` no tienen reglas propias: quedan disponibles al abrirse la Ciudad, como las de intereses. Al ser de la Ciudad, crecen los denominadores que cuentan todas sus actividades (afinidad, mapa); esas pruebas se adaptan solo en esos números.
+- F2 · El instrumento mínimo de `test_descripciones_resultados` usaba los códigos `INT-*`, que ahora son los reales: pasa a `PRUEBA-INT-*` (mismos textos de prueba).
+- F2 · La lectura de partida y llegada dice «No hay puntajes»; la prueba de fixtures que verificaba que el JSON del estudiante no trae la palabra «puntaje» ahora verifica que no trae ningún campo `"puntaje…"`.
+- F2 · Los JSON de contenido de `t-mision-inteligencias` y `t-mision-habilidades` (`DATO DE PRUEBA`, nodo `item` de plantilla) entran con la ruta en F2 y no en F3: sin ellos el front avisa «actividad sin contenido» y oculta las dos misiones del mapa.
+- F2 · Pruebas del front adaptadas a los datos nuevos: el nombre «Test de intereses» en la tarjeta del apoderado.

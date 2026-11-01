@@ -1,0 +1,41 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-mision-inteligencias",
+  "tipo": "instrumento",
+  "titulo": "Misión de inteligencias",
+  "bloque": 4,
+  "orden": 3,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-mision-inteligencias-entrada",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Ahora veamos cómo aprendes y resuelves. Responde pensando en cómo eres hoy."
+    },
+    {
+      "id": "t-mision-inteligencias-item",
+      "tipo": "item",
+      "instrumentoId": "TEST-INTELIGENCIAS",
+      "itemId": "plantilla",
+      "hablanteId": "companero",
+      "etiqueta": "¿Es verdad para ti?"
+    },
+    {
+      "id": "t-mision-inteligencias-cierre",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Listo. Helena ya puede leer tus respuestas en su libro."
+    }
+  ],
+  "mapa": {
+    "x": 600,
+    "y": 200,
+    "icono": "test"
+  }
+}

@@ -1,18 +1,18 @@
 """Lo fijo de la plataforma, sea cual sea la ruta: secciones, listas comunes, repreguntas por tipo
-de criterio, temáticas, RIASEC, el catálogo real (`datos/catalogo.py`) y el cuestionario de partida y llegada.
+de criterio, temáticas, los instrumentos (RIASEC, inteligencias, habilidades sociales y el cuestionario de partida
+y llegada) y el catálogo real (`datos/catalogo.py`).
 
 Se carga en todo conjunto. La transacción pertenece al llamador; este módulo no confirma ni migra.
 """
 
-from dataclasses import dataclass
-
 from collections import Counter
+from dataclasses import dataclass
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models as modelos
-from app.core.parametros import DESCRIPCIONES_RIASEC, DIMENSIONES_RIASEC, transformar_opcion_onet
+from app.core.parametros import DIMENSIONES_RIASEC, transformar_opcion_onet
 from datos import catalogo
 
 
@@ -156,67 +156,335 @@ ENUNCIADOS_PARTIDA_LLEGADA = (
     ('E', 'Confío en que podré lograr lo que me proponga.', False),
 )
 
-# Los 60 enunciados de §4.3.7, sin texto narrativo del front.
-ENUNCIADOS_RIASEC = {'R': ('Reparar una bicicleta o un electrodoméstico.',
-       'Armar muebles siguiendo un plano.',
-       'Cultivar un huerto o cuidar plantas.',
-       'Manejar maquinaria o herramientas eléctricas.',
-       'Instalar el cableado eléctrico de una casa.',
-       'Construir una maqueta o una estructura de madera.',
-       'Cuidar animales en una granja o un refugio.',
-       'Trabajar al aire libre, en el campo o en una obra.',
-       'Pintar o reparar paredes y techos.',
-       'Ensamblar las piezas de una computadora.'),
- 'I': ('Hacer experimentos en un laboratorio.',
-       'Investigar por qué ocurre un fenómeno natural.',
-       'Resolver problemas de matemáticas o de lógica.',
-       'Analizar datos para encontrar patrones.',
-       'Leer sobre descubrimientos científicos.',
-       'Estudiar cómo funciona el cuerpo humano.',
-       'Observar el cielo y aprender sobre los planetas.',
-       'Investigar las causas de una enfermedad.',
-       'Programar una solución para un problema.',
-       'Comparar información de distintas fuentes antes de concluir.'),
- 'A': ('Dibujar o pintar.',
-       'Escribir cuentos, poemas o guiones.',
-       'Tocar un instrumento o componer música.',
-       'Actuar en una obra de teatro.',
-       'Diseñar un afiche o la portada de una revista.',
-       'Tomar fotografías o grabar videos creativos.',
-       'Decorar un espacio con un estilo propio.',
-       'Bailar o crear una coreografía.',
-       'Diseñar ropa o accesorios.',
-       'Inventar personajes para una historia o un videojuego.'),
- 'S': ('Enseñar algo a un niño o a un compañero.',
-       'Escuchar y aconsejar a alguien que tiene un problema.',
-       'Cuidar a personas enfermas o mayores.',
-       'Organizar actividades para ayudar a la comunidad.',
-       'Trabajar como voluntario en una campaña.',
-       'Explicar un tema difícil a un grupo.',
-       'Mediar en una discusión entre amigos.',
-       'Acompañar a alguien en su primer día en un lugar nuevo.',
-       'Orientar a otros estudiantes sobre sus estudios.',
-       'Atender a personas que llegan buscando ayuda.'),
- 'E': ('Vender un producto o una idea.',
-       'Liderar un equipo para cumplir una meta.',
-       'Iniciar un negocio propio.',
-       'Convencer a otros en un debate.',
-       'Organizar un evento y conseguir auspiciadores.',
-       'Negociar un acuerdo o un precio.',
-       'Representar a tu salón ante la dirección.',
-       'Planificar cómo hacer crecer un emprendimiento.',
-       'Dirigir una reunión y tomar decisiones.',
-       'Promocionar una actividad en redes sociales.'),
- 'C': ('Ordenar y clasificar documentos.',
-       'Llevar las cuentas de ingresos y gastos.',
-       'Registrar datos en una hoja de cálculo.',
-       'Revisar un texto para corregir errores.',
-       'Seguir un procedimiento paso a paso.',
-       'Organizar un inventario de materiales.',
-       'Preparar un horario o un calendario de actividades.',
-       'Archivar información para encontrarla rápido.',
-       'Verificar que una factura esté correcta.',
-       'Mantener al día una base de datos.')}
+# Ajuste carga-instrumentos: instrumentos reales. Un instrumento nuevo es datos (ítems, escala, dimensiones y
+# textos) y se carga con `_cargar_instrumento`; RIASEC y partida/llegada conservan sus funciones.
+
+LECTURA_RIASEC = (
+    'Este test mide qué tipo de actividades te atraen, en seis tipos de interés. No mide capacidad ni talento: '
+    'mide gusto. Cada tipo va de 0 a 100, la misma escala con la que se describe cada ocupación, para que puedas '
+    'compararte con ella. De aquí salen tu código de interés, las ocupaciones que se parecen a lo que te gusta y '
+    'las carreras que llevan a ellas. Tómalo como punto de partida para explorar, no como una lista cerrada.')
+LECTURA_PARTIDA_LLEGADA = (
+    'Estas son las mismas afirmaciones que respondiste al empezar y al terminar el camino. No hay puntajes: cada '
+    'dimensión te dice en qué zona estás y qué cambió entre el inicio y el final. Lo que sigue por trabajar no es '
+    'una falla: es lo que viene después del colegio.')
+
+# (descripción, ejemplos, fortalezas). Un interés no se «desarrolla»: RIASEC no lleva `desarrollo`.
+TEXTOS_RIASEC = {
+    'R': ('Te atraen las actividades prácticas: trabajar con las manos, usar herramientas o máquinas y estar al aire '
+          'libre.',
+          'reparar o armar objetos, cultivar, construir, manejar equipos o trabajar al aire libre.',
+          ('ser práctico y persistente: resolver con hechos, no con palabras',
+           'preferir trabajar por tu cuenta, sin tener que dirigir ni destacar',
+           'manejar herramientas, máquinas, materiales o animales',
+           'sentirte a gusto en el campo, el taller, la obra o la cancha más que en una oficina')),
+    'I': ('Te atrae observar, preguntar y analizar para entender cómo y por qué funcionan las cosas.',
+          'hacer experimentos, resolver acertijos, investigar un tema o entender cómo funciona algo.',
+          ('preferir pensar antes que actuar: observar, analizar, comprobar',
+           'trabajar con ideas, datos y símbolos',
+           'ser curioso y creativo para resolver problemas',
+           'rendir mejor en un laboratorio, una biblioteca o un centro de investigación que dirigiendo gente')),
+    'A': ('Te atrae crear, imaginar y expresarte con libertad, sin reglas rígidas.',
+          'dibujar, escribir, actuar, componer, diseñar o crear contenido.',
+          ('expresar sentimientos, emociones e imaginación en lo que haces',
+           'usar muchos medios: la palabra, la imagen, el sonido, el cuerpo',
+           'relacionarte con los demás a través de tus creaciones',
+           'preferir el tiempo de crear y reflexionar antes que las rutinas y las reglas fijas')),
+    'S': ('Te atrae ayudar, enseñar, cuidar o acompañar a otras personas.',
+          'enseñar a alguien, cuidar, escuchar, hacer voluntariado o trabajar en equipo.',
+          ('disfrutar el trabajo con personas',
+           'enseñar, orientar y acompañar',
+           'manejar grupos: conversar, debatir, escuchar',
+           'sentirte a gusto en colegios, consultorios y servicios a la comunidad')),
+    'E': ('Te atrae liderar, convencer, organizar proyectos y tomar decisiones.',
+          'dirigir un grupo, convencer, vender una idea u organizar un evento.',
+          ('expresar tus ideas con facilidad y convencer',
+           'organizar y dirigir grupos, y sobresalir',
+           'preferir la acción y los resultados antes que la teoría',
+           'interesarte por los negocios, lo económico y las metas ambiciosas')),
+    'C': ('Te atrae ordenar información, seguir procedimientos claros y trabajar con datos de forma precisa.',
+          'ordenar información, llevar registros, planificar con detalle o trabajar con números.',
+          ('ser ordenado, eficiente y responsable',
+           'cumplir normas y procedimientos con precisión',
+           'trabajar con datos, registros y números',
+           'sentirte a gusto en oficinas, administración y comercio, donde se valora la exactitud')),
+}
+
+# O*NET Interest Profiler Short Form: los 10 ítems de cada tipo en el orden del formulario en papel (k = 1…10).
+# `_cargar_riasec` los reparte con PATRON_RIASEC: el k-ésimo ocupa el número 12·⌊(k−1)/2⌋ + 2·pos + (k−1) mod 2 + 1.
+ENUNCIADOS_RIASEC = {
+    'R': ('Construir gabinetes de cocina', 'Conducir un camión para entregar paquetes a oficinas y casas',
+          'Colocar ladrillos o baldosas', 'Probar la calidad de piezas antes del envío',
+          'Reparar electrodomésticos del hogar', 'Reparar e instalar cerraduras', 'Criar peces en un criadero',
+          'Instalar y operar máquinas para fabricar productos', 'Ensamblar piezas electrónicas',
+          'Apagar incendios forestales'),
+    'I': ('Desarrollar un nuevo medicamento', 'Investigar la causa de un incendio',
+          'Estudiar formas de reducir la contaminación del agua', 'Desarrollar un método para predecir mejor el clima',
+          'Realizar experimentos químicos', 'Trabajar en un laboratorio de biología',
+          'Estudiar el movimiento de los planetas', 'Inventar un reemplazo para el azúcar',
+          'Examinar muestras de sangre con un microscopio', 'Hacer pruebas de laboratorio para identificar enfermedades'),
+    'A': ('Escribir libros u obras de teatro', 'Pintar la escenografía de una obra de teatro',
+          'Tocar un instrumento musical', 'Escribir guiones para películas o programas de televisión',
+          'Componer o arreglar música', 'Bailar jazz o tap', 'Dibujar', 'Cantar en una banda',
+          'Crear efectos especiales para películas', 'Editar películas'),
+    'S': ('Enseñar a una persona una rutina de ejercicios', 'Enseñar a los niños a practicar deportes',
+          'Ayudar a personas con problemas personales o emocionales', 'Enseñar lengua de señas a personas sordas',
+          'Dar orientación vocacional a las personas', 'Ayudar a conducir una sesión de terapia grupal',
+          'Realizar terapia de rehabilitación', 'Cuidar niños en una guardería',
+          'Hacer trabajo voluntario en una organización sin fines de lucro', 'Enseñar en una clase de secundaria'),
+    'E': ('Comprar y vender acciones y bonos', 'Negociar contratos comerciales', 'Administrar una tienda minorista',
+          'Representar a un cliente en un juicio', 'Dirigir un salón de belleza o barbería',
+          'Comercializar una nueva línea de ropa', 'Administrar un departamento dentro de una empresa grande',
+          'Vender productos en una tienda por departamentos', 'Iniciar tu propio negocio',
+          'Administrar una tienda de ropa'),
+    'C': ('Desarrollar una hoja de cálculo usando software de computadora', 'Calcular los salarios de los empleados',
+          'Revisar registros o formularios', 'Hacer inventario con un dispositivo portátil',
+          'Instalar software en una red de computadoras', 'Registrar pagos de alquiler', 'Usar una calculadora',
+          'Mantener registros de inventario', 'Llevar registros de envíos y recepciones',
+          'Clasificar, ordenar y distribuir correspondencia en una organización'),
+}
+
+
+@dataclass(frozen=True)
+class DefinicionInstrumento:
+    """Un instrumento como datos. `dimensiones`: (código, nombre, descripción, ejemplos, fortalezas, desarrollo), en
+    orden. `items`: (dimensión, enunciado, inverso), con `numero` = posición. `opciones`: (etiqueta, puntaje) por
+    `orden`."""
+    codigo: str
+    nombre: str
+    descripcion: str
+    lectura: str
+    tipo_resultado: modelos.TipoResultado
+    escala: tuple[str, str]
+    opciones: tuple[tuple[str, float], ...]
+    dimensiones: tuple[tuple[str, str, str, str | None, tuple[str, ...], tuple[str, ...]], ...]
+    prefijo_item: str
+    items: tuple[tuple[str, str, bool], ...]
+    aplicacion: tuple[str, str]
+
+
+# Test de las inteligencias múltiples (H. Gardner), 35 afirmaciones. «No estoy seguro» vale medio punto
+# (adaptación aprobada: la duda es una respuesta legítima).
+INTELIGENCIAS = DefinicionInstrumento(
+    codigo='TEST-INTELIGENCIAS', nombre='Test de las inteligencias múltiples',
+    descripcion='Descubre cuáles de las siete inteligencias usas más hoy y cómo aprendes y resuelves mejor.',
+    lectura=('Este test muestra qué inteligencias usas más en tu día a día, según el modelo de Howard Gardner. '
+             'Todos tenemos las siete, unas más desarrolladas que otras; aquí ves cuáles tienes más a mano hoy. '
+             'No mide cuánto vales ni qué carrera te toca: te dice cómo aprendes y resuelves mejor, y eso sirve '
+             'para estudiar a tu manera y para saber qué te va a costar más en lo que elijas. Cada inteligencia se '
+             'puede desarrollar.'),
+    tipo_resultado=modelos.TipoResultado.DESTACADAS,
+    escala=('ESC-VERDAD3', 'Verdadero, falso o no estoy seguro'),
+    opciones=(('Falso', 0), ('No estoy seguro', 0.5), ('Verdadero', 1)),
+    dimensiones=(
+        ('INT-LIN', 'Verbal-lingüística',
+         'Usas las palabras con eficacia, al hablar y al escribir: traduces lo que piensas en palabras precisas, '
+         'sea en una conversación, un debate o una carta.',
+         'te fijas en cómo están dichas las cosas y no solo en qué dicen, te sale fácil redactar un trabajo o un '
+         'mensaje delicado, recuerdas frases exactas de lo que leíste o escuchaste o prefieres explicar algo con '
+         'palabras antes que mostrarlo.',
+         ('expresar con precisión lo que piensas', 'entender rápido lo que lees y escuchas',
+          'argumentar y convencer con palabras', 'disfrutar escribir y contar'),
+         ('elige una palabra del diccionario al azar y úsala en situaciones normales',
+          'propicia un debate amistoso sobre un tema: pregunta, discute, escucha',
+          'prepara una presentación oral sobre algo que te interese: un hobby, un libro, alguien que conoces')),
+        ('INT-LOG', 'Lógico-matemática',
+         'Usas los números con eficacia y razonas con lógica: encuentras patrones y conexiones entre datos, como en '
+         'el pensamiento científico.',
+         'detectas cuando un argumento no cierra, resuelves un problema por pasos antes de pedir ayuda, sabes al '
+         'toque si el vuelto está bien o te gusta ordenar las cosas con un criterio.',
+         ('calcular y estimar con rapidez', 'detectar patrones y relaciones', 'razonar paso a paso y comprobar',
+          'encontrar conexiones entre datos sueltos'),
+         ('toma doce objetos al azar y crea un criterio para clasificarlos (color, forma, tamaño, uso)',
+          'prepara un argumento lógico y convincente para algo ridículo',
+          'inventa una secuencia de números con un patrón escondido y ve si otro lo descubre')),
+        ('INT-ESP', 'Visual-espacial',
+         'Percibes el mundo visual y espacial con precisión y te formas un modelo mental de él: imaginas, dibujas, '
+         'decoras y te mueves en el espacio con ese mapa en la cabeza.',
+         'recuerdas lugares y caras mejor que nombres, notas cuando algo está desalineado o mal combinado, armas un '
+         'rompecabezas o un mueble con facilidad o imaginas cómo quedaría un cuarto antes de mover nada.',
+         ('imaginar objetos y lugares en tres dimensiones', 'captar color, forma y proporción',
+          'orientarte y leer mapas y planos', 'expresar ideas con dibujos y esquemas'),
+         ('mira las nubes con amigos y busca animales o caras escondidas',
+          'imagina con detalle que vives en otra época o conversas con un personaje histórico',
+          'organiza una búsqueda del tesoro y dibuja el mapa para que otros lo sigan')),
+        ('INT-CIN', 'Corporal-cinestésica',
+         'Usas el cuerpo para expresar ideas y sentimientos y para resolver problemas o crear cosas: equilibrio, '
+         'coordinación y destreza con las manos.',
+         'aprendes un movimiento con verlo una vez, pruebas las cosas con las manos antes de leer cómo se hacen, te '
+         'cuesta quedarte quieto cuando piensas o imitas gestos y posturas sin esfuerzo.',
+         ('coordinación, equilibrio y velocidad', 'aprender haciendo más que escuchando',
+          'habilidad manual para armar, reparar o crear', 'expresar emociones con el cuerpo'),
+         ('camina, baila o trota según tu estado de ánimo, y prueba a cambiarlo con el movimiento',
+          'usa la mano que no sueles usar para lavarte los dientes o abotonarte',
+          'representa con mímica una idea, una opinión o un sentimiento')),
+        ('INT-MUS', 'Musical-rítmica',
+         'Percibes, distingues y expresas formas musicales: la música te calma o te activa, se te queda en la '
+         'cabeza y la usas para expresarte.',
+         'reconoces una canción con los primeros segundos, te molesta cuando alguien desafina, te concentras mejor '
+         'con música o inventas ritmos con lo que tengas a mano.',
+         ('captar ritmo, melodía y tono con facilidad', 'memorizar mejor lo que tiene sonido o ritmo',
+          'distinguir matices de voz y sonido', 'expresarte a través de la música'),
+         ('escucha unos minutos de cada tipo de música que tengas y anota qué sentimientos, imágenes o recuerdos '
+          'te trae',
+          'expresa un sentimiento (miedo, alegría, rabia) solo con la voz, cambiando volumen, tono y timbre',
+          'lee una historia y ponle efectos de sonido, como en los antiguos programas de radio')),
+        ('INT-INTRA', 'Intrapersonal',
+         'Te comprendes a ti mismo y actúas a partir de eso: reconoces tus sentimientos y tu forma de pensar, y '
+         'sabes cuáles son tus lados brillantes y cuáles los opacos.',
+         'te das cuenta de cuándo necesitas parar, decides sin dejarte arrastrar por el grupo, tienes claro qué es '
+         'importante para ti aunque otros no lo compartan o prefieres entender un error tuyo antes que taparlo.',
+         ('saber cómo te sientes y por qué', 'conocer tus virtudes y tus límites',
+          'ponerte metas propias y sostenerlas', 'aprender de lo que te pasa'),
+         ('dibuja la curva de tu ánimo durante un día, con sus puntos altos, bajos y medios, y anota qué pasó en '
+          'cada uno',
+          'anota los hechos importantes del día y expresa lo que sentiste con pintura, música o un poema',
+          'obsérvate como si fueras otra persona: qué patrón aparece cuando te enojas, te distraes o te pones '
+          'nervioso')),
+        ('INT-INTER', 'Interpersonal',
+         'Captas con rapidez los estados de ánimo, intenciones y sentimientos de los demás y respondes a ellos: '
+         'empatía y trabajo en equipo, sin perder lo tuyo.',
+         'calmas una discusión entre amigos, sabes a quién pedirle qué en un trabajo en grupo, la gente nueva se te '
+         'acerca con facilidad o te buscan para contarte sus cosas.',
+         ('leer el ánimo y las intenciones de los demás', 'escuchar y responder con empatía',
+          'trabajar en equipo y llegar a acuerdos', 'convencer e influir en positivo'),
+         ('pregunta y escucha antes de opinar',
+          'súmate a un equipo, un voluntariado o la organización de algo',
+          'fíjate en gestos y tono de voz, no solo en palabras')),
+    ),
+    prefijo_item='INTEL',
+    items=(
+        ('INT-ESP', 'Prefiero hacer un mapa que explicarle a alguien cómo tiene que llegar a un lugar determinado.', False),
+        ('INT-INTRA', 'Si estoy enojado o contento, generalmente sé la razón exacta de por qué es así.', False),
+        ('INT-MUS', 'Sé tocar, o antes sabía, un instrumento musical.', False),
+        ('INT-MUS', 'Asocio la música con mis estados de ánimo.', False),
+        ('INT-LOG', 'Puedo sumar o multiplicar mentalmente con mucha rapidez.', False),
+        ('INT-INTRA', 'Puedo ayudar a un amigo/a a manejar y controlar sus sentimientos, porque yo lo pude hacer '
+                      'antes con sentimientos parecidos.', False),
+        ('INT-LOG', 'Me gusta trabajar con calculadora y computadoras.', False),
+        ('INT-CIN', 'Aprendo rápidamente a bailar un baile nuevo.', False),
+        ('INT-LIN', 'No me es difícil decir lo que pienso durante una discusión o debate.', False),
+        ('INT-LIN', 'Disfruto de una buena charla o exposición.', False),
+        ('INT-ESP', 'Siempre distingo el norte del sur, esté donde esté.', False),
+        ('INT-INTER', 'Me gusta reunir grupos de personas en una fiesta o evento especial.', False),
+        ('INT-MUS', 'Realmente la vida me parece vacía sin música.', False),
+        ('INT-ESP', 'Siempre entiendo los gráficos que vienen en las instrucciones de equipos o instrumentos.', False),
+        ('INT-LOG', 'Me gusta resolver puzzles y entretenerme con juegos electrónicos.', False),
+        ('INT-CIN', 'Me fue fácil aprender a andar en bicicleta o patines.', False),
+        ('INT-LIN', 'Me enojo cuando escucho una discusión o una afirmación que me parece ilógica o absurda.', False),
+        ('INT-INTER', 'Soy capaz de convencer a otros de que sigan mis planes o ideas.', False),
+        ('INT-CIN', 'Tengo buen sentido del equilibrio y de la coordinación.', False),
+        ('INT-LOG', 'A menudo puedo captar relaciones entre números con mayor rapidez y facilidad que algunos de '
+                    'mis compañeros.', False),
+        ('INT-CIN', 'Me gusta construir modelos, maquetas o hacer esculturas.', False),
+        ('INT-LIN', 'Soy bueno para encontrar el significado preciso de las palabras.', False),
+        ('INT-ESP', 'Puedo mirar un objeto de una manera y con la misma facilidad verlo dado vuelta o al revés.', False),
+        ('INT-MUS', 'Con frecuencia establezco la relación que puede haber entre una música o canción y algo que '
+                    'haya ocurrido en mi vida.', False),
+        ('INT-LOG', 'Me gusta trabajar con números y figuras.', False),
+        ('INT-INTRA', 'Me gusta sentarme muy callado y pensar, reflexionar sobre mis sentimientos más íntimos.', False),
+        ('INT-ESP', 'Solo con mirar las formas de las construcciones y estructuras me siento a gusto.', False),
+        ('INT-MUS', 'Cuando estoy en la ducha, o cuando estoy solo, me gusta tararear, cantar o silbar.', False),
+        ('INT-CIN', 'Soy bueno para el atletismo.', False),
+        ('INT-LIN', 'Me gusta escribir cartas largas a mis amigos.', False),
+        ('INT-INTRA', 'Generalmente me doy cuenta de la expresión o los gestos que tengo en la cara.', False),
+        ('INT-INTER', 'Muchas veces me doy cuenta de las expresiones o gestos en la cara de las otras personas.', False),
+        ('INT-INTRA', 'Reconozco mis estados de ánimo, no me cuesta identificarlos.', False),
+        ('INT-INTER', 'Me doy cuenta de los estados de ánimo de las personas con quienes me encuentro.', False),
+        ('INT-INTER', 'Me doy cuenta bastante bien de lo que los otros piensan de mí.', False),
+    ),
+    aplicacion=('APL-INTELIGENCIAS', 'Inteligencias'),
+)
+
+# Inventario «Mi comportamiento con los demás» (Burga, 2000), 24 afirmaciones. Los ítems 3 y 8 (esconder los
+# sentimientos) y 5 y 20 (no sentirse líder) están redactados al revés de su habilidad: van inversos.
+HABILIDADES = DefinicionInstrumento(
+    codigo='TEST-HABILIDADES', nombre='Mi comportamiento con los demás',
+    descripcion='Descubre cómo te relacionas con los demás y qué habilidades sociales tienes más a mano hoy.',
+    lectura=('Este inventario muestra cómo te relacionas con los demás, en cinco habilidades sociales. Son '
+             'conductas aprendidas: nadie nace con ellas y todas se pueden desarrollar. Las que salen arriba son '
+             'tus recursos de hoy. Pero fíjate sobre todo en las que quedaron abajo: ahí está lo que puedes '
+             'trabajar, y en cada una encontrarás por dónde empezar.'),
+    tipo_resultado=modelos.TipoResultado.DESTACADAS,
+    escala=('ESC-CASI2', 'Casi siempre o casi nunca'),
+    opciones=(('Casi nunca', 0), ('Casi siempre', 1)),
+    dimensiones=(
+        ('HS-ASE', 'Asertividad',
+         'Defiendes tus derechos y dices lo que piensas sin ofender: puedes decir «no», expresar una queja con calma '
+         'y escuchar cuando toca.',
+         'pides que te expliquen una nota que te parece injusta, dices que no a un plan sin inventar excusas, pones '
+         'un límite cuando alguien se pasa contigo o escuchas una crítica sin ponerte a la defensiva.',
+         ('decir lo que piensas sin ofender', 'decir «no» cuando no estás de acuerdo',
+          'reclamar con calma cuando algo es injusto', 'hacerte respetar sin pasar sobre nadie'),
+         ('practica decir «no» en cosas pequeñas', 'habla en primera persona: «yo pienso», «a mí me molesta»',
+          'antes de reclamar, respira y di solo el hecho y lo que pides')),
+        ('HS-EMP', 'Empatía',
+         'Te pones en el lugar del otro y comprendes lo que siente, tanto con la emoción como con la cabeza.',
+         'te das cuenta de que un compañero anda mal aunque no lo diga, entiendes por qué alguien reaccionó así '
+         'aunque no estés de acuerdo, te afecta lo que les pasa a otros o te quedas a acompañar a quien lo necesita.',
+         ('notar cuando alguien está triste o preocupado', 'comprender antes de juzgar',
+          'inspirar confianza: la gente te cuenta sus cosas', 'ayudar sin que te lo pidan'),
+         ('pregunta «¿cómo te sientes?» y escucha sin interrumpir',
+          'intenta explicar la postura del otro con tus palabras', 'fíjate en lo no verbal: gestos, silencios')),
+        ('HS-EXP', 'Expresión de sentimientos',
+         'Reconoces lo que sientes, identificas de dónde viene y eliges el momento para decirlo a la persona indicada.',
+         'puedes decir «estoy molesto» sin estallar, sabes explicar qué te puso así, eliges el momento para hablar en '
+         'vez de soltarlo en caliente o la gente sabe cómo estás sin tener que adivinarlo.',
+         ('reconocer qué emoción sientes', 'identificar de dónde viene', 'elegir el momento y la persona para decirlo',
+          'ser honesto con lo que sientes'),
+         ('ponle nombre a lo que sientes: alegría, fastidio, miedo', 'escríbelo antes de decirlo',
+          'dilo a tiempo, con calma y a quien corresponde')),
+        ('HS-RES', 'Resolución de problemas',
+         'Analizas una situación difícil, identificas sus causas y buscas con creatividad la mejor salida.',
+         'cuando algo sale mal buscas qué pasó en vez de a quién culpar, propones una salida cuando el grupo se '
+         'traba, piensas en qué podría fallar antes de empezar o sigues probando alternativas hasta que funciona.',
+         ('analizar el problema antes de actuar', 'identificar causas y consecuencias',
+          'buscar alternativas con creatividad', 'no soltar hasta resolverlo'),
+         ('escribe el problema en una frase y sus posibles causas', 'lista tres salidas antes de elegir una',
+          'revisa después qué funcionó y qué no')),
+        ('HS-LID', 'Liderazgo',
+         'Actúas en representación de otros y diriges grupos: planificas, orientas y guías con creatividad ante lo '
+         'nuevo.',
+         'te eligen para hablar por el grupo, organizas quién hace qué en un trabajo, mantienes al grupo animado '
+         'cuando algo se complica o pones orden cuando una discusión se desvía.',
+         ('tomar la iniciativa', 'planificar y orientar al grupo', 'convencer con ideas, no con imposición',
+          'manejar las fricciones del grupo'),
+         ('ofrécete a coordinar algo pequeño: un trabajo, una actividad',
+          'reparte tareas y pregunta cómo va cada uno', 'ante un desacuerdo, busca lo que une al grupo')),
+    ),
+    prefijo_item='HSOC',
+    items=(
+        ('HS-ASE', 'Digo siempre lo que pienso en la mayoría de situaciones.', False),
+        ('HS-EMP', 'Por ningún motivo está bien causarle daño a otra persona.', False),
+        ('HS-EXP', 'La mayoría de personas no se da cuenta cuando me hiere, porque escondo mis verdaderos '
+                   'sentimientos.', True),
+        ('HS-EXP', 'Me gusta ayudar a mis amigos/as para que tomen decisiones.', False),
+        ('HS-LID', 'No estoy seguro/a de que pueda ser un buen líder.', True),
+        ('HS-RES', 'Participo en actividades que involucran la resolución de problemas.', False),
+        ('HS-EMP', 'Si un amigo/a es incapaz de cumplir con lo que me promete, seguramente lo comprendería en vez de '
+                   'enojarme.', False),
+        ('HS-EXP', 'Cuando alguien cercano y respetado me molesta, generalmente escondo mis sentimientos.', True),
+        ('HS-LID', 'Disfruto participando en una buena discusión.', False),
+        ('HS-ASE', 'Me aseguro de que la gente sepa cuál es mi posición frente a una injusticia.', False),
+        ('HS-EMP', 'Creo que uno puede salir adelante en la vida sin tener que pasar sobre los demás.', False),
+        ('HS-EXP', 'Le digo a una persona cuando me parece que ha sido injusta.', False),
+        ('HS-RES', 'Me adelanto a las consecuencias cuando surgen problemas.', False),
+        ('HS-LID', 'Puedo convencer a otros/as de que mis ideas son correctas.', False),
+        ('HS-ASE', 'Es muy importante para mí ser capaz de decir lo que pienso.', False),
+        ('HS-EMP', 'Mis amigos/as me buscan para contarme sus cosas.', False),
+        ('HS-RES', 'No me quedo tranquilo/a hasta resolver un problema.', False),
+        ('HS-LID', 'En la mayoría de las situaciones, prefiero participar antes que escuchar solamente.', False),
+        ('HS-ASE', 'Si después de salir de una tienda me doy cuenta de que me han dado menos vuelto, vuelvo y pido '
+                   'el dinero que falta.', False),
+        ('HS-LID', 'Rara vez tomo el liderazgo en la organización de un proyecto.', True),
+        ('HS-ASE', 'Doy a conocer mi punto de vista, aun si alguien a quien respeto dijera algo distinto.', False),
+        ('HS-EMP', 'Me resulta fácil ayudar a mis amigos/as.', False),
+        ('HS-EXP', 'Trato de ser honesto/a acerca de mis verdaderos sentimientos.', False),
+        ('HS-RES', 'Identifico las causas de algún problema.', False),
+    ),
+    aplicacion=('APL-HABILIDADES', 'Habilidades sociales'),
+)
+INSTRUMENTOS = (INTELIGENCIAS, HABILIDADES)
 
 # (slug, código O*NET). Las ocupaciones que casos, testimonios y escenarios nombran por slug; las demás de
 # Mi Próximo Paso se codifican `onet-<código>` (`datos/catalogo.py`).
@@ -275,8 +543,9 @@ class Fijos:
 
 
 def _cargar_riasec(sesion):
-    instrumento = modelos.Instrumento(codigo='TEST-RIASEC', nombre='Test de intereses (RIASEC)',
-        descripcion='Versión de prueba para la iteración 1.', tipo_resultado=modelos.TipoResultado.COINCIDENCIAS)
+    instrumento = modelos.Instrumento(codigo='TEST-RIASEC', nombre='Test de intereses',
+        descripcion='Descubre qué tipo de actividades te atraen y qué ocupaciones se parecen a ti.',
+        lectura=LECTURA_RIASEC, tipo_resultado=modelos.TipoResultado.COINCIDENCIAS)
     escala = modelos.EscalaRespuesta(codigo='ESC-LIKERT5', nombre='Preferencia en cinco opciones')
     sesion.add_all([instrumento, escala])
     sesion.flush()
@@ -284,7 +553,8 @@ def _cargar_riasec(sesion):
                                       puntaje=transformar_opcion_onet(n))
                    for n, etiqueta in enumerate(OPCIONES_LIKERT, start=1))
     dimensiones = {c: modelos.Dimension(codigo=c, nombre=n, instrumento_id=instrumento.id, orden=orden,
-                                        descripcion=DESCRIPCIONES_RIASEC[c])
+                                        descripcion=TEXTOS_RIASEC[c][0], ejemplos=TEXTOS_RIASEC[c][1],
+                                        fortalezas=list(TEXTOS_RIASEC[c][2]), desarrollo=[])
                    for orden, (c, n) in enumerate(DIMENSIONES_RIASEC, start=1)}
     aplicacion = modelos.Aplicacion(codigo='APL-RIASEC', nombre='Intereses', instrumento_id=instrumento.id,
                                     momento=modelos.MomentoAplicacion.UNICA)
@@ -302,6 +572,32 @@ def _cargar_riasec(sesion):
     return dimensiones, aplicacion, items
 
 
+def _cargar_instrumento(sesion, definicion: DefinicionInstrumento):
+    """Carga cualquier instrumento definido como datos; devuelve su aplicación y sus ítems por número."""
+    instrumento = modelos.Instrumento(codigo=definicion.codigo, nombre=definicion.nombre,
+        descripcion=definicion.descripcion, lectura=definicion.lectura, tipo_resultado=definicion.tipo_resultado)
+    escala = modelos.EscalaRespuesta(codigo=definicion.escala[0], nombre=definicion.escala[1])
+    sesion.add_all([instrumento, escala])
+    sesion.flush()
+    sesion.add_all(modelos.OpcionEscala(escala_id=escala.id, orden=n, etiqueta=etiqueta, puntaje=puntaje)
+                   for n, (etiqueta, puntaje) in enumerate(definicion.opciones, start=1))
+    dimensiones = {c: modelos.Dimension(codigo=c, nombre=n, descripcion=d, ejemplos=e, fortalezas=list(f),
+                                        desarrollo=list(m), instrumento_id=instrumento.id, orden=orden)
+                   for orden, (c, n, d, e, f, m) in enumerate(definicion.dimensiones, start=1)}
+    aplicacion = modelos.Aplicacion(codigo=definicion.aplicacion[0], nombre=definicion.aplicacion[1],
+                                    instrumento_id=instrumento.id, momento=modelos.MomentoAplicacion.UNICA)
+    sesion.add_all([*dimensiones.values(), aplicacion])
+    sesion.flush()
+    items = {numero: modelos.ItemInstrumento(codigo=f'{definicion.prefijo_item}-{numero:02}', numero=numero,
+                                             enunciado=enunciado, instrumento_id=instrumento.id,
+                                             dimension_id=dimensiones[dimension].id, escala_id=escala.id,
+                                             inverso=inverso)
+             for numero, (dimension, enunciado, inverso) in enumerate(definicion.items, start=1)}
+    sesion.add_all(items.values())
+    sesion.flush()
+    return aplicacion, items
+
+
 def _cargar_tematicas(sesion):
     tematicas = {c: modelos.Tematica(codigo=c, nombre=n, descripcion=d, orden=orden)
                  for orden, (c, n, d) in enumerate(TEMATICAS, start=1)}
@@ -313,7 +609,7 @@ def _cargar_tematicas(sesion):
 def _cargar_partida_llegada(sesion, tematicas):
     instrumento = modelos.Instrumento(codigo='TEST-PARTIDA-LLEGADA', nombre='Punto de partida y de llegada',
         descripcion='Las mismas afirmaciones al inicio y al cierre, para ver cuánto cambiaste.',
-        tipo_resultado=modelos.TipoResultado.COMPARACION)
+        lectura=LECTURA_PARTIDA_LLEGADA, tipo_resultado=modelos.TipoResultado.COMPARACION)
     escala = modelos.EscalaRespuesta(codigo='ESC-ACUERDO4', nombre='Acuerdo en cuatro opciones')
     sesion.add_all([instrumento, escala])
     sesion.flush()
@@ -413,9 +709,11 @@ def cargar(sesion: Session) -> Fijos:
     dimensiones, aplicacion, items = _cargar_riasec(sesion)
     catalogo.cargar(sesion, dimensiones, {onet: slug for slug, onet in OCUPACIONES})
     comparacion, items_comparacion = _cargar_partida_llegada(sesion, tematicas)
+    otros = {definicion.codigo: _cargar_instrumento(sesion, definicion) for definicion in INSTRUMENTOS}
     sesion.flush()
-    return Fijos(aplicaciones={a.codigo: a for a in (aplicacion, *comparacion)},
-                 items={'TEST-RIASEC': items, 'TEST-PARTIDA-LLEGADA': items_comparacion}, secciones=secciones,
+    return Fijos(aplicaciones={a.codigo: a for a in (aplicacion, *comparacion, *(a for a, _ in otros.values()))},
+                 items={'TEST-RIASEC': items, 'TEST-PARTIDA-LLEGADA': items_comparacion,
+                        **{codigo: i for codigo, (_, i) in otros.items()}}, secciones=secciones,
                  listas=listas, tematicas=tematicas, secciones_tarjeta=secciones_tarjeta)
 
 

@@ -12,8 +12,13 @@
       "codigo": "R",
       "desarrollo": [],
       "descripcion": "Te atraen las actividades prácticas: trabajar con las manos, usar herramientas o máquinas y estar al aire libre.",
-      "ejemplos": null,
-      "fortalezas": [],
+      "ejemplos": "reparar o armar objetos, cultivar, construir, manejar equipos o trabajar al aire libre.",
+      "fortalezas": [
+        "ser práctico y persistente: resolver con hechos, no con palabras",
+        "preferir trabajar por tu cuenta, sin tener que dirigir ni destacar",
+        "manejar herramientas, máquinas, materiales o animales",
+        "sentirte a gusto en el campo, el taller, la obra o la cancha más que en una oficina"
+      ],
       "nombre": "Realista",
       "puntaje": 20.0,
       "puntaje_maximo": 40.0,
@@ -23,8 +28,13 @@
       "codigo": "I",
       "desarrollo": [],
       "descripcion": "Te atrae observar, preguntar y analizar para entender cómo y por qué funcionan las cosas.",
-      "ejemplos": null,
-      "fortalezas": [],
+      "ejemplos": "hacer experimentos, resolver acertijos, investigar un tema o entender cómo funciona algo.",
+      "fortalezas": [
+        "preferir pensar antes que actuar: observar, analizar, comprobar",
+        "trabajar con ideas, datos y símbolos",
+        "ser curioso y creativo para resolver problemas",
+        "rendir mejor en un laboratorio, una biblioteca o un centro de investigación que dirigiendo gente"
+      ],
       "nombre": "Investigativa",
       "puntaje": 20.0,
       "puntaje_maximo": 40.0,
@@ -34,8 +44,13 @@
       "codigo": "A",
       "desarrollo": [],
       "descripcion": "Te atrae crear, imaginar y expresarte con libertad, sin reglas rígidas.",
-      "ejemplos": null,
-      "fortalezas": [],
+      "ejemplos": "dibujar, escribir, actuar, componer, diseñar o crear contenido.",
+      "fortalezas": [
+        "expresar sentimientos, emociones e imaginación en lo que haces",
+        "usar muchos medios: la palabra, la imagen, el sonido, el cuerpo",
+        "relacionarte con los demás a través de tus creaciones",
+        "preferir el tiempo de crear y reflexionar antes que las rutinas y las reglas fijas"
+      ],
       "nombre": "Artística",
       "puntaje": 20.0,
       "puntaje_maximo": 40.0,
@@ -45,8 +60,13 @@
       "codigo": "S",
       "desarrollo": [],
       "descripcion": "Te atrae ayudar, enseñar, cuidar o acompañar a otras personas.",
-      "ejemplos": null,
-      "fortalezas": [],
+      "ejemplos": "enseñar a alguien, cuidar, escuchar, hacer voluntariado o trabajar en equipo.",
+      "fortalezas": [
+        "disfrutar el trabajo con personas",
+        "enseñar, orientar y acompañar",
+        "manejar grupos: conversar, debatir, escuchar",
+        "sentirte a gusto en colegios, consultorios y servicios a la comunidad"
+      ],
       "nombre": "Social",
       "puntaje": 20.0,
       "puntaje_maximo": 40.0,
@@ -56,8 +76,13 @@
       "codigo": "E",
       "desarrollo": [],
       "descripcion": "Te atrae liderar, convencer, organizar proyectos y tomar decisiones.",
-      "ejemplos": null,
-      "fortalezas": [],
+      "ejemplos": "dirigir un grupo, convencer, vender una idea u organizar un evento.",
+      "fortalezas": [
+        "expresar tus ideas con facilidad y convencer",
+        "organizar y dirigir grupos, y sobresalir",
+        "preferir la acción y los resultados antes que la teoría",
+        "interesarte por los negocios, lo económico y las metas ambiciosas"
+      ],
       "nombre": "Emprendedora",
       "puntaje": 20.0,
       "puntaje_maximo": 40.0,
@@ -67,8 +92,13 @@
       "codigo": "C",
       "desarrollo": [],
       "descripcion": "Te atrae ordenar información, seguir procedimientos claros y trabajar con datos de forma precisa.",
-      "ejemplos": null,
-      "fortalezas": [],
+      "ejemplos": "ordenar información, llevar registros, planificar con detalle o trabajar con números.",
+      "fortalezas": [
+        "ser ordenado, eficiente y responsable",
+        "cumplir normas y procedimientos con precisión",
+        "trabajar con datos, registros y números",
+        "sentirte a gusto en oficinas, administración y comercio, donde se valora la exactitud"
+      ],
       "nombre": "Convencional",
       "puntaje": 20.0,
       "puntaje_maximo": 40.0,
@@ -76,6 +106,6 @@
     }
   ],
   "instrumento": "TEST-RIASEC",
-  "lectura": "",
+  "lectura": "Este test mide qué tipo de actividades te atraen, en seis tipos de interés. No mide capacidad ni talento: mide gusto. Cada tipo va de 0 a 100, la misma escala con la que se describe cada ocupación, para que puedas compararte con ella. De aquí salen tu código de interés, las ocupaciones que se parecen a lo que te gusta y las carreras que llevan a ellas. Tómalo como punto de partida para explorar, no como una lista cerrada.",
   "perfil_plano": true
 }

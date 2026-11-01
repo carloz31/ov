@@ -35,6 +35,9 @@ for _estados in ESTADOS.values():
     # B13: el cierre del investigador espera una entrevista publicada.
     _estados['t-investigador-cierre'] = 'BLOQUEADA'
 ESTADOS[False]['t-investigador'], ESTADOS[True]['t-investigador'] = 'BLOQUEADA', 'DISPONIBLE'
+# Ajuste carga-instrumentos: las misiones de inteligencias y habilidades se abren con la Ciudad.
+for _mision in ('t-mision-inteligencias', 't-mision-habilidades'):
+    ESTADOS[False][_mision], ESTADOS[True][_mision] = 'BLOQUEADA', 'DISPONIBLE'
 # Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas). B13: INVESTIGACIONES espera
 # la misión del investigador.
 SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']

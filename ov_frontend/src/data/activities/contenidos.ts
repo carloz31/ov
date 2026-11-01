@@ -37,6 +37,8 @@ import tApo1 from './contenidos/t_apo_1.json'
 import tApo2 from './contenidos/t_apo_2.json'
 import tMisionIntereses from './contenidos/t_mision_intereses.json'
 import tMisionIntereses2 from './contenidos/t_mision_intereses_2.json'
+import tMisionInteligencias from './contenidos/t_mision_inteligencias.json'
+import tMisionHabilidades from './contenidos/t_mision_habilidades.json'
 import tCaso from './contenidos/t_caso.json'
 import tCaso2 from './contenidos/t_caso_2.json'
 import tContraste from './contenidos/t_contraste.json'
@@ -81,6 +83,8 @@ export const contenidos: Record<string, ContenidoActividad> = {
   t_apo_2: tApo2,
   t_mision_intereses: tMisionIntereses,
   t_mision_intereses_2: tMisionIntereses2,
+  t_mision_inteligencias: tMisionInteligencias,
+  t_mision_habilidades: tMisionHabilidades,
   t_caso: tCaso,
   t_caso_2: tCaso2,
   t_contraste: tContraste,

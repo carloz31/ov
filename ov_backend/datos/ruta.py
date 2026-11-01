@@ -83,6 +83,10 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                ('t-proyecto', 'T2', 'Registro de tu proyecto', 'REGISTRO', None, 15),
                ('t-mision-intereses', 'CIUDAD', 'Misión de intereses', 'CUESTIONARIO', None, 10),
                ('t-mision-intereses-2', 'CIUDAD', 'Misión de intereses, segunda parte', 'CUESTIONARIO', None, 10),
+               # Ajuste carga-instrumentos: una misión por instrumento real, para que su aplicación presente todos
+               # sus ítems.
+               ('t-mision-inteligencias', 'CIUDAD', 'Misión de inteligencias', 'CUESTIONARIO', None, 8),
+               ('t-mision-habilidades', 'CIUDAD', 'Misión de habilidades sociales', 'CUESTIONARIO', None, 5),
                ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 10, 10),
                ('t-contraste', 'CIUDAD', 'Registro de contraste de intereses', 'REGISTRO', None, 10),
                # Ajuste mochila: un llamado que el recorrido nunca abre, para las voces que aún no se listan.
@@ -112,6 +116,8 @@ PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR
                't-adicional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-caso-2': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                't-investigador': {'requerida': False},
+               't-mision-inteligencias': {'requerida': False},
+               't-mision-habilidades': {'requerida': False},
                't-investigador-cierre': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
                **{codigo: {'requerida': False} for codigo in RECUERDOS_LUMI}}
 
@@ -134,6 +140,8 @@ DESCRIPCIONES = {
     't-proyecto': 'Escribe tu proyecto con tu plan y tus próximos pasos.',
     't-mision-intereses': 'Descubre qué actividades te interesan.',
     't-mision-intereses-2': 'Sigue descubriendo tus intereses.',
+    't-mision-inteligencias': 'Descubre qué inteligencias usas más hoy.',
+    't-mision-habilidades': 'Descubre cómo te relacionas con los demás.',
     't-caso': 'Ayuda a resolver un caso de la ciudad.',
     't-contraste': 'Contrasta tu resultado de intereses con lo que esperabas.',
     't-caso-2': 'Un llamado que la Central todavía no publica.',
@@ -147,12 +155,16 @@ DESCRIPCIONES = {
 # resultado espera a todas las de su aplicación.
 ITEMS_ACTIVIDADES = (('t-mision-intereses', 'TEST-RIASEC', 1, 30),
                      ('t-mision-intereses-2', 'TEST-RIASEC', 31, 60),
+                     ('t-mision-inteligencias', 'TEST-INTELIGENCIAS', 1, 35),
+                     ('t-mision-habilidades', 'TEST-HABILIDADES', 1, 24),
                      ('t-partida', 'TEST-PARTIDA-LLEGADA', 1, 19),
                      ('t-llegada', 'TEST-PARTIDA-LLEGADA', 1, 19))
 
 # (aplicación, actividad)
 APLICACIONES_ACTIVIDADES = (('APL-RIASEC', 't-mision-intereses'), ('APL-RIASEC', 't-mision-intereses-2'),
-                            ('APL-PARTIDA', 't-partida'), ('APL-LLEGADA', 't-llegada'))
+                            ('APL-PARTIDA', 't-partida'), ('APL-LLEGADA', 't-llegada'),
+                            ('APL-INTELIGENCIAS', 't-mision-inteligencias'),
+                            ('APL-HABILIDADES', 't-mision-habilidades'))
 
 # (actividad, temáticas). Solo las necesarias para contar actividades completadas por dimensión (B07).
 TEMATICAS_ACTIVIDADES = (('t-expectativas', ('A', 'B')), ('t-valores', ('B',)), ('t-eco', ('A',)),

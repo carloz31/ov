@@ -132,7 +132,7 @@ def test_cuestionarios_visibles_sin_resultado_y_sin_diploma(cliente):
     # Sin diploma: los cuestionarios y su estado llegan; los resultados siguen bloqueados.
     for codigo in ('est-ana', 'est-luis'):
         assert hijo(cliente, codigo)['cuestionarios'] == [{
-            'instrumento': 'TEST-RIASEC', 'nombre': 'Test de intereses (RIASEC)',
+            'instrumento': 'TEST-RIASEC', 'nombre': 'Test de intereses',
             'aplicaciones': [{'aplicacion': 'APL-RIASEC', 'nombre': 'Intereses', 'momento': 'UNICA',
                               'completado_en': None}]}]
     revelar_intereses(cliente)

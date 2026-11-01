@@ -189,7 +189,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         ('EN_CAMINO', 'EN_CAMINO'), ('POR_TRABAJAR', 'FUERTE'), ('POR_TRABAJAR', 'EN_CAMINO'),
         ('FUERTE', 'EN_CAMINO'), ('POR_TRABAJAR', 'POR_TRABAJAR')]
     assert not any(i.cambio for i in comparacion.dimensiones[0].items)
-    assert 'puntaje' not in json.dumps(datos['comparacion-partida-llegada'])
+    assert '"puntaje' not in json.dumps(datos['comparacion-partida-llegada'])
     # F03: el avance distingue «listo para revelar» (COMPLETADO sin resultado vigente).
     def aplicacion(momento, codigo):
         avance = TypeAdapter(list[AvanceInstrumento]).validate_python(datos[f'avance-instrumentos-{momento}'])
@@ -296,7 +296,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     ciudad = next(b for b in datos['actividades-ciudad'] if b['codigo'] == 'CIUDAD')
     assert ciudad['estado'] == 'DISPONIBLE'
     assert [(a['codigo'], a['estado']) for a in ciudad['actividades']] == [
-        ('t-mision-intereses', 'DISPONIBLE'), ('t-mision-intereses-2', 'BLOQUEADA'), ('t-caso', 'BLOQUEADA'),
+        ('t-mision-intereses', 'DISPONIBLE'), ('t-mision-intereses-2', 'BLOQUEADA'),
+        ('t-mision-inteligencias', 'DISPONIBLE'), ('t-mision-habilidades', 'DISPONIBLE'), ('t-caso', 'BLOQUEADA'),
         ('t-contraste', 'BLOQUEADA'), ('t-caso-2', 'BLOQUEADA'), ('t-investigador', 'DISPONIBLE'),
         ('t-investigador-cierre', 'BLOQUEADA')]
     assert next(b for b in datos['actividades-inicial'] if b['codigo'] == 'CIUDAD')['bloqueo'][0]['mensaje']

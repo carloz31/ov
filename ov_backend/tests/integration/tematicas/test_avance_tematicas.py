@@ -28,8 +28,8 @@ def test_afinidad_cuenta_las_misiones_adicionales_en_el_total(cliente, sesion):
     adicional.bloque_id = sesion.scalar(select(m.Bloque.id).where(m.Bloque.codigo == 'CIUDAD'))
     sesion.commit()
     # t-mision-intereses, t-mision-intereses-2, t-caso, t-contraste, t-caso-2, t-investigador, t-investigador-cierre
-    # (B13) y t-adicional.
-    ciudad = 8
+    # (B13), t-mision-inteligencias y t-mision-habilidades (ajuste carga-instrumentos) y t-adicional.
+    ciudad = 10
     assert pedir(cliente, 'GET', '/cuentas/est-ana/logros')['afinidad'] == 0.0
     avanzar(cliente)
     responder(cliente, 't-mision-intereses')
