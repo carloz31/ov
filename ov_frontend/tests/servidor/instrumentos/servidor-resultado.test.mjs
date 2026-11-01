@@ -220,13 +220,12 @@ test('páginas inexistentes, selladas o sin revelar no tienen modelo', async () 
   assert.equal(f.hook('inteligencias'), null)
 })
 
-test('inteligencias demuestra siete dimensiones y el empate en ambos modos, y acepta resultado real', async () => {
-  const remoto = await preparar(jsonServidor('resultado-riasec'), 'inteligencias')
+test('inteligencias demuestra siete dimensiones y el empate en local, y acepta resultado real', async () => {
   const local = fixtureServidor({ api: false })
   local
     .load('src/store/discoveryStore.ts')
     .updateDiscovery((s) => ({ ...s, revealedPages: ['inteligencias'] }))
-  for (const app of [remoto.app, local]) {
+  for (const app of [local]) {
     const { useResultPage } = app.load('src/features/discovery/hooks/useResultPage.ts')
     const m = useResultPage('inteligencias')
     assert.equal(m.page.demo, true)
@@ -243,15 +242,19 @@ test('inteligencias demuestra siete dimensiones y el empate en ambos modos, y ac
       codigo: d.code,
       nombre: d.name,
       descripcion: `Remota: ${d.name}`,
-      porcentaje: d.score,
+      puntaje_visual: d.score,
       puntaje: d.score,
       puntaje_maximo: 100,
+      ejemplos: null,
+      fortalezas: [],
+      desarrollo: [],
     }))
     const r = {
-      instrumento: 'TEST-INT',
-      aplicacion: 'APL-INT',
+      instrumento: 'TEST-INTELIGENCIAS',
+      aplicacion: 'APL-INTELIGENCIAS',
       calculado_en: '2026-10-09T00:00:00',
       perfil_plano: false,
+      lectura: '',
       dimensiones,
       dimensiones_destacadas: [dimensiones[2]],
     }
@@ -260,6 +263,56 @@ test('inteligencias demuestra siete dimensiones y el empate en ambos modos, y ac
     assert.deepEqual(codigos(real.resumen.protagonistas), ['INT-ESP'])
     assert.equal(real.resumen.protagonistas[0].description, 'Remota: Espacial')
   }
+})
+
+test('inteligencias en api: la página se revela en el servidor y muestra sus piezas sin «%»', async () => {
+  const f = await preparar(jsonServidor('resultado-riasec'), 'inteligencias')
+  const { useResultPage } = f.app.load('src/features/discovery/hooks/useResultPage.ts')
+  assert.equal(useResultPage('inteligencias'), null)
+  // DATO DE PRUEBA: resultado de inteligencias como lo entrega el servidor.
+  const dimension = (codigo, nombre, puntaje) => ({
+    codigo,
+    nombre,
+    descripcion: `Remota: ${nombre}`,
+    puntaje,
+    puntaje_maximo: 5,
+    puntaje_visual: puntaje * 20,
+    ejemplos: 'te fijas en cómo están dichas las cosas',
+    fortalezas: ['argumentar y convencer con palabras'],
+    desarrollo: ['prepara una presentación oral'],
+  })
+  const dimensiones = [dimension('INT-LIN', 'Verbal-lingüística', 5), dimension('INT-LOG', 'Lógico-matemática', 3)]
+  libroServidor(f.app, {
+    'APL-RIASEC': jsonServidor('resultado-riasec'),
+    'APL-INTELIGENCIAS': {
+      instrumento: 'TEST-INTELIGENCIAS',
+      aplicacion: 'APL-INTELIGENCIAS',
+      calculado_en: '2026-10-09T00:00:00',
+      perfil_plano: false,
+      lectura: 'Este test muestra qué inteligencias usas más.',
+      dimensiones,
+      dimensiones_destacadas: [dimensiones[0]],
+    },
+  })
+  const m = useResultPage('inteligencias')
+  assert.equal(m.page.demo, false)
+  assert.equal(m.resumen.lectura, 'Este test muestra qué inteligencias usas más.')
+  assert.equal(m.resumen.puntajeVisual, true)
+  assert.deepEqual(codigos(m.resumen.protagonistas), ['INT-LIN'])
+  const { HighlightedDimensions } = f.app.load('src/features/discovery/components/HighlightedDimensions.tsx')
+  const tarjeta = html(HighlightedDimensions, {
+    dimensiones: m.resumen.protagonistas,
+    pagina: m.resumen.pagina,
+    puntajeVisual: true,
+  })
+  assert.match(tarjeta, /<span class="sx-d-result-circle">100<\/span>/)
+  assert.match(tarjeta, /Suele notarse cuando<\/strong> te fijas/)
+  assert.match(tarjeta, /Suele venir con.*argumentar y convencer con palabras/)
+  assert.doesNotMatch(tarjeta, /%|Para desarrollarla/)
+  const { DimensionGuide } = f.app.load('src/features/discovery/components/DimensionGuide.tsx')
+  const guia = html(DimensionGuide, { resumen: m.resumen, cerrar() {} })
+  assert.match(guia, /Para desarrollarla.*prepara una presentación oral/)
+  assert.doesNotMatch(guia, /Por ejemplo:/)
 })
 
 test('intereses local conserva afinidades existentes y no usa datos del servidor', () => {
@@ -297,8 +350,8 @@ test('ocupaciones desconocidas no inventan descripción, letras, detalle ni iden
   assert.equal(o.href, undefined)
 })
 
-test('perfil y guía exponen aria-expanded, texto remoto y ejemplos por código', async () => {
-  const f = await preparar()
+test('perfil y guía exponen aria-expanded, texto remoto y ejemplos del servidor', async () => {
+  const f = await preparar(jsonServidor('ruta/ruta-resultado-riasec'))
   const { resumen } = f.model()
   const { DimensionProfile } = f.app.load('src/features/discovery/components/DimensionProfile.tsx')
   const { DimensionGuide } = f.app.load('src/features/discovery/components/DimensionGuide.tsx')
@@ -314,7 +367,7 @@ test('perfil y guía exponen aria-expanded, texto remoto y ejemplos por código'
   const guia = html(DimensionGuide, { resumen, cerrar() {} })
   assert.match(guia, /aria-label="Cerrar guía"/)
   assert.equal((guia.match(/<article/g) ?? []).length, 6)
-  assert.match(guia, /Por ejemplo: reparar o armar objetos/)
+  assert.match(guia, /Suele notarse cuando<\/strong> reparar o armar objetos/)
 })
 
 test('carreras muestran duración literal y ocultan crear plan al alcanzar el límite', async () => {

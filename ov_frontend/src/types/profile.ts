@@ -2,10 +2,20 @@ import type { InstrumentPageId } from '@/types/discovery'
 
 export type HelenaPageState = 'sealed' | 'ready' | 'revealed'
 export type TipoResultadoHelena = 'COINCIDENCIAS' | 'DESTACADAS' | 'COMPARACION'
-export type HelenaDimension = { code: string; name: string; score: number; description: string }
+// Ajuste carga-instrumentos: en api, `score` es el puntaje visual 0–100 y llegan las cuatro piezas de la dimensión.
+export type HelenaDimension = {
+  code: string
+  name: string
+  score: number
+  description: string
+  ejemplos?: string
+  fortalezas?: string[]
+  desarrollo?: string[]
+}
 
 export type HelenaResult = {
   source: 'real' | 'demo'
+  lectura?: string
   areas: HelenaDimension[]
   dimensiones?: HelenaDimension[]
   destacadas?: HelenaDimension[]

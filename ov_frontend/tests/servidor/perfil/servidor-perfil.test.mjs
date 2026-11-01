@@ -33,7 +33,7 @@ test('perfil API lee las páginas del libro del servidor: partida y llegada prim
   assert.deepEqual(copia(paginas(perfil()).map((p) => [p.id, p.numeral, p.state])), [
     ['partida-llegada', 'I', 'sealed'],
     ['intereses', 'II', 'sealed'],
-    ['inteligencias', 'III', 'ready'],
+    ['inteligencias', 'III', 'sealed'],
     ['habilidades', 'IV', 'sealed'],
   ])
   libroServidor(f.app, { 'APL-RIASEC': resultado })

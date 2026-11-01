@@ -74,7 +74,10 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
   const resumen = resumirResultado(configuracion.tipoResultado, resultado, {
     perfilPlano: remoto?.perfil_plano ?? page.perfilPlano,
     hayEmpate: remoto?.codigo_interes?.hay_empate,
-    ejemplos: ejemplosDimension,
+    // Ajuste carga-instrumentos: en api los ejemplos llegan del servidor; el mapa fijo queda para local.
+    ejemplos: modoApi ? undefined : ejemplosDimension,
+    puntajeVisual: modoApi,
+    pagina: page.id,
   })
   // F06 (HU-026): en api, los favoritos del propio resultado son los del servidor y el corazón escribe allí;
   // con el catálogo cerrado no hay corazones.

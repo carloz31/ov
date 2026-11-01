@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 
 import { useJourney } from '@/store/journeyStore'
 
-import { useDiscovery, updateDiscovery, revelarPaginaApi, paginasReveladasApi } from '@/store/discoveryStore'
+import { useDiscovery, updateDiscovery, revelarPaginaApi } from '@/store/discoveryStore'
 
 import type { InstrumentPageId } from '@/types/discovery'
 import { getHelenaPages } from '@/features/discovery/lib/helenaPages'
@@ -62,11 +62,7 @@ export function useHelenaPages() {
   const cuenta = servidor.resumen.datos?.cuenta.codigo
   const libro = servidor.instrumentos
   const pages: (ReturnType<typeof getHelenaPages>[number] & Partial<ExtrasPaginaApi>)[] = modoApi
-    ? paginasLibroApi(
-        servidor.actividades.datos,
-        libro,
-        paginasReveladasApi(discovery, cuenta, servidor.resultadoRiasec?.calculado_en),
-      )
+    ? paginasLibroApi(servidor.actividades.datos, libro)
     : getHelenaPages(journey, discovery)
   const [requisitoCiudad, setRequisitoCiudad] = useState('')
   const [errorConsulta, setErrorConsulta] = useState('')
@@ -143,7 +139,7 @@ export function useHelenaPages() {
       () => {
         // Tras el reinicio, el libro ya se volvió a leer: la misión que falta es la primera de intereses.
         const estado = obtenerEstadoServidor()
-        const href = paginasLibroApi(estado.actividades.datos, estado.instrumentos, []).find(
+        const href = paginasLibroApi(estado.actividades.datos, estado.instrumentos).find(
           (p) => p.id === 'intereses',
         )?.faltante?.href
         navigate(href ?? '/student/exploration')

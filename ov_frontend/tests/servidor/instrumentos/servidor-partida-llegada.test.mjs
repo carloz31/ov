@@ -81,7 +81,7 @@ test('solo partida: la vista pide ítems y respuestas y muestra un banderín y �
     marcado,
     /Sé qué quiero hacer cuando termine el colegio\.<\/span><span role="cell"><span class="sx-d-pl-chip">Bastante de acuerdo/,
   )
-  assert.doesNotMatch(marcado, /<details|Completaste|Se mantuvo|puntaje|porcentaje|%/)
+  assert.doesNotMatch(marcado, /<details|Completaste|Se mantuvo|\bpuntaje\b|porcentaje|%/)
 })
 
 test('solo partida: si fallan las respuestas, la sección de ítems avisa y el panel de zonas sigue visible', async () => {
@@ -124,7 +124,7 @@ test('completo: contadores, dos banderines, ítems cambiados primero y los igual
   assert.equal(cuenta(marcado, /Ahora lo ves distinto\./g), 1)
   const d = marcado.slice(marcado.indexOf('<h3>Decisión propia'), marcado.indexOf('<h3>Confianza'))
   assert.match(d, /Fuerte<\/span><svg[^]*?sx-d-pl-chip sx-d-pl-chip-strong">En camino.*Ahora lo ves distinto/)
-  assert.doesNotMatch(marcado, /Al final<|puntaje|porcentaje|diferencia|%/)
+  assert.doesNotMatch(marcado, /Al final<|\bpuntaje\b|porcentaje|diferencia|%/)
 })
 
 test('ninguna dimensión sube: sin «0 avanzaron», con el texto de zonas mantenidas en el panel y la tarjeta', () => {

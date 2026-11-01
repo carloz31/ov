@@ -272,9 +272,13 @@ export function resultadoHelenaCompleto(r: ResultadoPublico, tipo: TipoResultado
     name: d.nombre,
     score: d.puntaje_visual ?? 0,
     description: d.descripcion,
+    ejemplos: d.ejemplos ?? undefined,
+    fortalezas: d.fortalezas,
+    desarrollo: d.desarrollo,
   })
   return {
     source: 'real',
+    lectura: r.lectura || undefined,
     dimensiones: r.dimensiones.map(adaptar),
     areas:
       tipo === 'COINCIDENCIAS' ? areasRiasec(r).map(adaptar) : (r.dimensiones_destacadas ?? []).map(adaptar),

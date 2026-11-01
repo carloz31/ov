@@ -15,11 +15,16 @@ export function DimensionProfile({
   alternar: (codigo: string) => void
 }) {
   const intereses = resumen.tipoResultado === 'COINCIDENCIAS'
+  const habilidades = resumen.pagina === 'habilidades'
   return (
     <section className="sx-d-result-profile" aria-labelledby="perfil-dimensiones">
       <div className="sx-d-result-section-head">
         <h2 id="perfil-dimensiones">
-          {intereses ? 'Cuánto resonó cada tipo de actividad' : 'Cuánto se expresó cada inteligencia'}
+          {intereses
+            ? 'Cuánto resonó cada tipo de actividad'
+            : habilidades
+              ? 'Cuánto se expresó cada habilidad'
+              : 'Cuánto se expresó cada inteligencia'}
         </h2>
         <button
           className="sx-d-action sx-d-action-ghost"
@@ -60,7 +65,7 @@ export function DimensionProfile({
                 <span className="sx-d-result-track" aria-hidden="true">
                   <span style={{ width: `${d.score}%` }} />
                 </span>
-                <span>{d.score}%</span>
+                <span>{`${d.score}${resumen.puntajeVisual ? '' : '%'}`}</span>
               </button>
               {abierta && <p id={`dimension-${d.code}`}>{d.description}</p>}
             </div>
@@ -70,7 +75,11 @@ export function DimensionProfile({
       <p className="sx-d-result-note">
         {intereses
           ? 'Toca un tipo para ver qué significa, o abre la guía completa. Ninguno es mejor que otro.'
-          : 'Toca una inteligencia para ver qué significa. Un porcentaje bajo no es una carencia: es una capacidad que aún puedes ejercitar.'}
+          : habilidades
+            ? 'Las que quedaron abajo no son una carencia: en la guía encontrarás por dónde empezar.'
+            : resumen.puntajeVisual
+              ? 'Toca una inteligencia para ver qué significa. Un puntaje bajo no es una carencia: es una capacidad que aún puedes ejercitar.'
+              : 'Toca una inteligencia para ver qué significa. Un porcentaje bajo no es una carencia: es una capacidad que aún puedes ejercitar.'}
       </p>
     </section>
   )

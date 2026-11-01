@@ -1,8 +1,9 @@
 import type { HelenaDimension, HelenaPage, HelenaResult, TipoResultadoHelena } from '@/types/profile'
+import type { InstrumentPageId } from '@/types/discovery'
 import type { ResumenPagina, ResumenResultado } from '../types'
 
 export function resumenPagina(
-  page: Pick<HelenaPage, 'state' | 'perfilPlano'> & { tipoResultado?: TipoResultadoHelena },
+  page: Pick<HelenaPage, 'state' | 'perfilPlano'> & { tipoResultado?: TipoResultadoHelena; id?: InstrumentPageId },
   resultado?: HelenaResult & { coincidencias?: unknown[] | null; carreras_recomendadas?: unknown[] | null },
   // F03: en api, el perfil plano invita a repetir las misiones en lugar de revisar los encuentros con Mara.
   opciones: { textoPlano?: string } = {},
@@ -10,13 +11,16 @@ export function resumenPagina(
   const vacio: ResumenPagina = { rotulo: '', filas: [], cierre: '', contenidos: [] }
   if (page.state !== 'revealed' || !page.tipoResultado || !resultado) return vacio
   const intereses = page.tipoResultado === 'COINCIDENCIAS'
+  const habilidades = page.id === 'habilidades'
   const cantidad = (resultado.dimensiones ?? resultado.areas).length
   const contenidos: ResumenPagina['contenidos'] = [
     {
       icono: 'perfil',
       texto: intereses
         ? `Tu perfil en los ${cantidad} tipos de interés`
-        : `Tu perfil en las ${cantidad} inteligencias`,
+        : habilidades
+          ? `Tu perfil en las ${cantidad} habilidades sociales`
+          : `Tu perfil en las ${cantidad} inteligencias`,
     },
   ]
   if (intereses && page.perfilPlano)
@@ -42,9 +46,13 @@ export function resumenPagina(
   return {
     rotulo: intereses
       ? `Tu código de interés · ${principales.map((d) => d.code).join('')}`
-      : principales.length === 1
-        ? 'Tu inteligencia más desarrollada'
-        : 'Tus inteligencias más desarrolladas',
+      : habilidades
+        ? principales.length === 1
+          ? 'Tu habilidad social más desarrollada hoy'
+          : 'Tus habilidades sociales más desarrolladas hoy'
+        : principales.length === 1
+          ? 'Tu inteligencia más desarrollada'
+          : 'Tus inteligencias más desarrolladas',
     filas: principales.map((d) => ({
       codigo: d.code,
       nombre: d.name,
@@ -53,7 +61,9 @@ export function resumenPagina(
     })),
     cierre: intereses
       ? 'Ninguno es mejor que otro: son pistas para explorar.'
-      : principales.length === 1
+      : habilidades
+        ? 'Las que quedaron abajo no son una carencia: en la guía encontrarás por dónde empezar.'
+        : principales.length === 1
         ? 'Es la que más usas hoy para aprender y resolver. Todas se pueden desarrollar.'
         : 'Destacan por igual. Ninguna es mejor que otra: describen cómo te gusta aprender y resolver.',
     contenidos,
@@ -76,12 +86,16 @@ export function filtrarPorAjuste<T extends { ajuste: string }>(ocupaciones: T[],
 export function resumirResultado(
   tipoResultado: TipoResultadoHelena,
   resultado: HelenaResult,
-  opciones: { perfilPlano?: boolean; hayEmpate?: boolean; ejemplos?: Record<string, string> } = {},
+  opciones: {
+    perfilPlano?: boolean
+    hayEmpate?: boolean
+    ejemplos?: Record<string, string>
+    puntajeVisual?: boolean
+    pagina?: InstrumentPageId
+  } = {},
 ): ResumenResultado {
-  const dimensiones = (resultado.dimensiones ?? resultado.areas).map((d) => ({
-    ...d,
-    ejemplos: opciones.ejemplos?.[d.code],
-  }))
+  const conEjemplos = <T extends HelenaDimension>(d: T) => ({ ...d, ejemplos: d.ejemplos ?? opciones.ejemplos?.[d.code] })
+  const dimensiones = (resultado.dimensiones ?? resultado.areas).map(conEjemplos)
   const coincidencias = tipoResultado === 'COINCIDENCIAS'
   const perfilPlano = coincidencias && !!opciones.perfilPlano
   const principales = perfilPlano
@@ -91,9 +105,12 @@ export function resumirResultado(
       : (resultado.destacadas ?? dimensionesDestacadas(dimensiones))
   return {
     tipoResultado,
+    pagina: opciones.pagina,
+    lectura: resultado.lectura,
+    puntajeVisual: !!opciones.puntajeVisual,
     dimensiones,
     ordenadas: ordenarDimensiones(dimensiones),
-    protagonistas: principales.map((d) => ({ ...d, ejemplos: opciones.ejemplos?.[d.code] })),
+    protagonistas: principales.map(conEjemplos),
     perfilPlano,
     hayEmpate: !!opciones.hayEmpate,
     secciones: {

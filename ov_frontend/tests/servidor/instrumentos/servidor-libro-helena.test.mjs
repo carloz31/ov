@@ -67,7 +67,7 @@ test('el libro en api tiene cuatro páginas: partida y llegada primero; la sella
   assert.deepEqual(copia(modelo.pages.map((p) => [p.id, p.numeral, p.state])), [
     ['partida-llegada', 'I', 'sealed'],
     ['intereses', 'II', 'sealed'],
-    ['inteligencias', 'III', 'ready'],
+    ['inteligencias', 'III', 'sealed'],
     ['habilidades', 'IV', 'sealed'],
   ])
   const partida = pagina(modelo, 'partida-llegada')
@@ -238,7 +238,7 @@ test('recarga directa: mientras se lee el libro, la vista espera; luego muestra 
   assert.match(vista, /Página I · descifrada/)
   assert.match(vista, /Claridad/)
   assert.match(vista, /<summary>4 respuestas se mantuvieron<\/summary><div class="sx-d-pl-scroll">.*?Sé qué quiero hacer/)
-  assert.doesNotMatch(vista, /puntaje|porcentaje|%/)
+  assert.doesNotMatch(vista, /\bpuntaje\b|porcentaje|%/)
 })
 
 test('T2 bloqueado por un revelado muestra el aviso con el enlace al libro de Helena', () => {

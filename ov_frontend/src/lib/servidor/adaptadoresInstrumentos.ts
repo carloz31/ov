@@ -20,6 +20,15 @@ export const APLICACION_LLEGADA: AplicacionInstrumento = {
   instrumento: 'TEST-PARTIDA-LLEGADA',
   aplicacion: 'APL-LLEGADA',
 }
+// Ajuste carga-instrumentos: las páginas III y IV del libro.
+export const APLICACION_INTELIGENCIAS: AplicacionInstrumento = {
+  instrumento: 'TEST-INTELIGENCIAS',
+  aplicacion: 'APL-INTELIGENCIAS',
+}
+export const APLICACION_HABILIDADES: AplicacionInstrumento = {
+  instrumento: 'TEST-HABILIDADES',
+  aplicacion: 'APL-HABILIDADES',
+}
 export const MAXIMO_REINICIOS_PERFIL_PLANO = 1
 
 export type EstadoAplicacion = 'sealed' | 'ready' | 'revealed'

@@ -1,9 +1,39 @@
 import { Parchment } from '@/components/student/Parchment'
 import { X } from 'lucide-react'
-import type { ResumenResultado } from '../types'
+import type { DimensionPagina, ResumenResultado } from '../types'
+
+// Ajuste carga-instrumentos (api): «Suele notarse cuando…», «Suele venir con…» y «Para desarrollarla»; lo vacío
+// no se pinta, ni su rótulo.
+function PiezasDimension({ dimension }: { dimension: DimensionPagina }) {
+  const lista = (rotulo: string, elementos?: string[]) =>
+    !!elementos?.length && (
+      <>
+        <p>
+          <strong>{rotulo}</strong>
+        </p>
+        <ul className="sx-d-result-pieces">
+          {elementos.map((e) => (
+            <li key={e}>{e}</li>
+          ))}
+        </ul>
+      </>
+    )
+  return (
+    <>
+      {dimension.ejemplos && (
+        <p>
+          <strong>Suele notarse cuando</strong> {dimension.ejemplos}
+        </p>
+      )}
+      {lista('Suele venir con', dimension.fortalezas)}
+      {lista('Para desarrollarla', dimension.desarrollo)}
+    </>
+  )
+}
 
 export function DimensionGuide({ resumen, cerrar }: { resumen: ResumenResultado; cerrar: () => void }) {
   const intereses = resumen.tipoResultado === 'COINCIDENCIAS'
+  const habilidades = resumen.pagina === 'habilidades'
   return (
     <Parchment
       id="guia-dimensiones"
@@ -16,7 +46,9 @@ export function DimensionGuide({ resumen, cerrar }: { resumen: ResumenResultado;
           <h2 id="titulo-guia">
             {intereses
               ? 'Los seis tipos de interés (RIASEC)'
-              : 'Las siete inteligencias de este cuestionario'}
+              : habilidades
+                ? 'Las cinco habilidades sociales de este inventario'
+                : 'Las siete inteligencias de este cuestionario'}
           </h2>
         </div>
         <button
@@ -46,7 +78,11 @@ export function DimensionGuide({ resumen, cerrar }: { resumen: ResumenResultado;
             <div>
               <h3>{d.name}</h3>
               <p>{d.description}</p>
-              {d.ejemplos && <p>Por ejemplo: {d.ejemplos}</p>}
+              {resumen.puntajeVisual ? (
+                <PiezasDimension dimension={d} />
+              ) : (
+                d.ejemplos && <p>Por ejemplo: {d.ejemplos}</p>
+              )}
             </div>
           </article>
         ))}

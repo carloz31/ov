@@ -183,7 +183,10 @@ export function NodeRenderer({
       text={itemServidor?.enunciado ?? item?.texto ?? 'Este ítem aún no está disponible.'}
       options={
         itemServidor
-          ? itemServidor.escala.opciones.map((o) => ({ value: o.orden, text: o.etiqueta }))
+          ? // Ajuste carga-instrumentos: en lista vertical, de mayor a menor puntaje; se sigue enviando el orden.
+            [...itemServidor.escala.opciones]
+              .sort((a, b) => b.puntaje - a.puntaje)
+              .map((o) => ({ value: o.orden, text: o.etiqueta }))
           : itemOptions
       }
       existing={

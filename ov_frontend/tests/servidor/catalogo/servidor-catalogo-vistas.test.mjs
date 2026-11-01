@@ -322,7 +322,7 @@ test('el perfil de intereses ordena las barras y compara con el resultado en tre
   const { PerfilIntereses } = app.load('src/features/discovery/components/PerfilIntereses.tsx')
   const puntajes = { R: 1, I: 76, A: 34, S: 93, E: 27, C: 42 }
   const sinResultado = PerfilIntereses({ puntajes, codigo: ['S', 'I'], resultado: null })
-  assert.match(texto(sinResultado), /Social93 %Investigador76 %Convencional42 %/)
+  assert.match(texto(sinResultado), /Social93Investigador76Convencional42/)
   assert.doesNotMatch(texto(sinResultado), /Comparado con tu resultado/)
   const frase = (resultado) => texto(PerfilIntereses({ puntajes, codigo: ['S', 'I'], resultado }))
   assert.match(frase(['S', 'A', 'E']), /Comparten el interés principal, Social\./)

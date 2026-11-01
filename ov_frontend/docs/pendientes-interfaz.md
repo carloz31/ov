@@ -590,3 +590,10 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Opciones:** reutilizar la comparación del libro de Helena en modo lectura; una tabla sencilla «partida / llegada» por dimensión; no mostrarla (solo el resultado más reciente).
 - **Si no se muestra:** el inicio y la vista explicada usan el resultado de llegada si existe y, si no, el de partida. Hoy ningún salón de `ruta` lo comparte (mide también la presión de la familia).
 - **Estado:** pendiente.
+
+## 2026-11-01 · Ajuste carga-instrumentos · Puntaje visual en la vista de la orientadora
+
+- **Dato:** cada dimensión del resultado trae `puntaje_visual` (0–100 entero), `puntaje` y `puntaje_maximo`. La spec pide que la orientadora vea el 0–100 como dato principal y «27 de 40» como secundario.
+- **Dónde se mostraría:** el detalle de cuestionario de la orientadora (`QuestionnaireBars` / `QuestionnaireDetailContent`), que en api todavía no existe: hoy solo pinta datos de demostración y llega con B14.
+- **Opciones:** el número 0–100 junto a la barra con «27 de 40» debajo en gris; o el 0–100 en la barra y «27 de 40» en una nota al pie de la tarjeta.
+- **Estado:** pendiente de B14 (vista de resultados de la orientadora).

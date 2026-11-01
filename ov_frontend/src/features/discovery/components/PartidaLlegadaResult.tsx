@@ -24,6 +24,7 @@ export function PartidaLlegadaResult({
 }) {
   return (
     <>
+      {modelo.lectura && <p className="sx-d-result-lectura">{modelo.lectura}</p>}
       <ResultOverview>
         <PartidaLlegadaSynthesis modelo={modelo} />
         <ZonePathGrid modelo={modelo} guia={guia} abrirGuia={() => setGuia(!guia)} />

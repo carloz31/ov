@@ -54,7 +54,7 @@ export function PerfilIntereses({
             <span className="sx-c-barra-fondo">
               <span style={{ width: `${valor}%` }} />
             </span>
-            <span>{valor} %</span>
+            <span>{valor}</span>
           </div>
         ))}
       </div>

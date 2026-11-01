@@ -32,9 +32,10 @@ test('el resultado conserva IRA y sus puntajes visuales en el orden del código,
   )
   const node = f.app.load('src/features/activities/components/nodes/ResultNode.tsx').ResultNode
   const tree = node({ activity: f.activity, instrumentId: 'TEST-RIASEC' })
-  assert.match(texto(tree), /100\s*%/)
-  assert.match(texto(tree), /75\s*%/)
-  assert.match(texto(tree), /50\s*%/)
+  assert.match(texto(tree), /Investigativa\s*:\s*100\b/)
+  assert.match(texto(tree), /Realista\s*:\s*75\b/)
+  assert.doesNotMatch(texto(tree), /%/)
+  assert.match(texto(tree), /Artística\s*:\s*50\b/)
   assert.equal(f.app.load('src/store/journeyStore.ts').getJourneySnapshot().results.length, 0)
   assert.equal(f.app.requests.filter((r) => r.method === 'POST').length, 0)
 })
@@ -223,7 +224,8 @@ test('el libro resume las dimensiones remotas y anuncia contenidos, con enlaces 
   assert.match(marcado, /10 ocupaciones afines/)
   assert.match(marcado, /3 carreras que conducen a ellas/)
   assert.doesNotMatch(marcado, /100\s*%|Geólogo|Carreras que conducen a ellas/)
-  assert.match(marcado, /Disponible en una próxima iteración/)
+  // Ajuste carga-instrumentos: en api ya no hay páginas de ejemplo.
+  assert.doesNotMatch(marcado, /Disponible en una próxima iteración/)
   assert.match(marcado, /href="\/student\/profile\/helena\/intereses"/)
   assert.doesNotMatch(marcado, /\?guia=1/)
   assert.doesNotMatch(marcado, /act-tip-final&amp;revision=1|catalog\/careers\/civil-engineering|catalog\/professions\/geologist/)

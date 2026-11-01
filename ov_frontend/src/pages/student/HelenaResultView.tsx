@@ -62,6 +62,7 @@ export function HelenaResultView() {
             </button>
           </div>
         )}
+        {resumen.lectura && <p className="sx-d-result-lectura">{resumen.lectura}</p>}
         <ResultOverview>
           {resumen.perfilPlano ? (
             <FlatProfileNotice
@@ -89,7 +90,11 @@ export function HelenaResultView() {
           ) : resumen.tipoResultado === 'COINCIDENCIAS' ? (
             <InterestCode dimensiones={resumen.protagonistas} empate={resumen.hayEmpate} />
           ) : (
-            <HighlightedDimensions dimensiones={resumen.protagonistas} />
+            <HighlightedDimensions
+              dimensiones={resumen.protagonistas}
+              pagina={resumen.pagina}
+              puntajeVisual={resumen.puntajeVisual}
+            />
           )}
           <DimensionProfile
             resumen={resumen}

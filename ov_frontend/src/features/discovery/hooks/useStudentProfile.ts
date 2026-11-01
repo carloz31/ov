@@ -4,7 +4,7 @@ import { useOccupationExplorationContext } from '@/context/occupationExploration
 import { getZoneProgress } from '@/features/adventure/lib/mapPoints'
 import { insigniasServidor } from '@/lib/servidor/adaptadores'
 import { getTravelerLevel, useAdventure } from '@/store/adventureStore'
-import { paginasReveladasApi, useDiscovery } from '@/store/discoveryStore'
+import { useDiscovery } from '@/store/discoveryStore'
 import { useJourney } from '@/store/journeyStore'
 import { useLogrosServidor } from '@/store/servidor/secciones'
 import { useEstadoServidor } from '@/store/servidor/sesion'
@@ -81,11 +81,7 @@ export function useStudentProfile() {
   const condiciones = useProgresoNivel(siguiente?.numero, level?.nextStep)
   const pages = (
     modoApi
-      ? paginasLibroApi(
-          servidor.actividades.datos,
-          servidor.instrumentos,
-          paginasReveladasApi(discovery, cuenta, servidor.resultadoRiasec?.calculado_en),
-        )
+      ? paginasLibroApi(servidor.actividades.datos, servidor.instrumentos)
       : getHelenaPages(journey, discovery)
   ).map((p) => ({
     ...p,

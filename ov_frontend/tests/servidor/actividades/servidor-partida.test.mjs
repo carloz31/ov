@@ -107,7 +107,7 @@ test('t-partida usa los ítems y la escala del servidor entre los diálogos del 
   const item = elementos(player.render(), (e) => e.type?.name === 'ItemNode')[0]
   assert.deepEqual(
     Array.from(item.props.options, (o) => o.text),
-    items[0].escala.opciones.map((o) => o.etiqueta),
+    [...items[0].escala.opciones].sort((a, b) => b.puntaje - a.puntaje).map((o) => o.etiqueta),
   )
   item.props.onAnswer(3)
   await esperar()
