@@ -76,7 +76,7 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 - Código de interés: las 3 dimensiones de mayor puntaje, con el orden de las dimensiones como desempate. `hay_empate` si la tercera y la cuarta empatan.
 - Carreras recomendadas: las vinculadas a alguna de las 10 ocupaciones, ordenadas por su mejor posición (y código); cada una con `via`, las ocupaciones que la vinculan.
 - `es_favorita` en cada coincidencia y carrera recomendada (HU-026): si está entre los favoritos de la cuenta. Se lee al consultar, no se guarda en el resultado.
-- Dimensiones destacadas (DESTACADAS): las de mayor proporción exacta `puntaje / máximo` (no el porcentaje redondeado); si empatan, todas, en el orden del instrumento.
+- Dimensiones destacadas (DESTACADAS): las de mayor proporción exacta `puntaje / máximo` (no el puntaje visual redondeado); si empatan, todas, en el orden del instrumento.
 
 **Partida y llegada (COMPARACION):**
 - Cada aplicación (ENTRADA = partida, SALIDA = llegada) se revela por separado y guarda sus dimensiones, sin perfil plano. El reinicio responde 409.
