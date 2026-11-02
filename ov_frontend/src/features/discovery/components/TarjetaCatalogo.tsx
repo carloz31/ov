@@ -53,11 +53,7 @@ export function TarjetaCatalogo({
     return (
       <article className="sx-d-parchment sx-c-tarjeta">
         <div className="sx-c-tarjeta-cabeza">
-          <span className="sx-c-etiquetas">
-            <SellosRiasec letras={item.riasec} />
-            {/* Ajuste resultados-intereses: al filtrar por familia, la que la tiene como secundaria. */}
-            {item.via_familia === 'SECUNDARIA' && <span className="sx-c-etiqueta">Vía alternativa</span>}
-          </span>
+          <SellosRiasec letras={item.riasec} />
           {favorito}
         </div>
         <div className="sx-c-profesion">
@@ -67,6 +63,13 @@ export function TarjetaCatalogo({
           </h2>
         </div>
         {item.resumen && <p className="sx-d-clamp-two">{item.resumen}</p>}
+        {/* Ajuste resultados-intereses: al filtrar por familia, la que la tiene como secundaria. */}
+        {item.via_familia === 'SECUNDARIA' && (
+          <p className="sx-c-via-tarjeta">
+            <strong>Vía alternativa</strong> de esta familia
+            {item.familia_principal && `; su familia principal es ${item.familia_principal.nombre}`}.
+          </p>
+        )}
       </article>
     )
   const gestion = textoGestion(item.gestion)

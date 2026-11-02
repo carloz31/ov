@@ -115,6 +115,11 @@ export function DetalleCarreraServidor({
               tipo={carrera.tipo}
             />
           )}
+          <OcupacionesDeLaFamilia
+            ocupaciones={carrera.ocupaciones_de_la_familia}
+            familia={carrera.familia}
+            rutas={rutas}
+          />
         </main>
         <aside className="sx-d-stack">
           <DondeEstudiarla instituciones={carrera.instituciones} />
@@ -122,11 +127,6 @@ export function DetalleCarreraServidor({
           {!modoLectura && <UnexpectedPlace kind="career" currentId={carrera.codigo} />}
         </aside>
       </div>
-      <OcupacionesDeLaFamilia
-        ocupaciones={carrera.ocupaciones_de_la_familia}
-        familia={carrera.familia}
-        rutas={rutas}
-      />
       <FuentesCatalogo de="carrera" />
       <AvisoFavorito aviso={favorito.aviso} onDismiss={favorito.cerrarAviso} />
     </DiscoveryStage>

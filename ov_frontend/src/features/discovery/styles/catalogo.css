@@ -872,6 +872,7 @@
 .sx-c-ficha-familia {
   display: grid;
   gap: 20px;
+  margin-top: 16px;
 }
 /* El acento de la izquierda, también en el portal (que fija el borde de las tarjetas en 1 px). */
 .sx-discovery .sx-d-parchment.sx-c-ficha-familia,
@@ -939,14 +940,24 @@
 }
 
 /* Ajuste resultados-intereses: «Hacer mi plan» en la cabecera y las ocupaciones por familia (boceto 06). */
+/* Sus piezas se acomodan en la fila de acciones: los botones a la par y la ayuda debajo, sin ensancharla. */
 .sx-c-plan-cabecera {
-  display: grid;
-  justify-items: end;
-  gap: 6px;
-  max-width: 280px;
+  display: contents;
+}
+.sx-c-cabecera-acciones .sx-c-plan-cabecera > .sx-d-action {
+  box-sizing: border-box;
+  height: 46px;
+  min-height: 0;
   margin: 0;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  line-height: 1;
+  box-shadow: none;
 }
 .sx-c-plan-cabecera small {
+  flex-basis: 100%;
+  contain: inline-size;
   color: var(--sx-night-muted);
   font-size: 12px;
   text-align: right;
@@ -1028,4 +1039,13 @@
 }
 .sx-c-ocupacion-familia .sx-d-seal-row {
   gap: 4px;
+}
+
+/* Ajuste resultados-intereses: en profesiones filtradas por familia, la que la tiene como secundaria. */
+.sx-c-via-tarjeta {
+  margin: auto 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--sx-parchment-edge);
+  color: var(--sx-parchment-muted);
+  font-size: 13px;
 }

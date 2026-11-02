@@ -35,7 +35,7 @@ export function OcupacionesDeLaFamilia({
           className="sx-c-enlace"
           to={`${rutas.catalog.professions}?${new URLSearchParams({ familia: familia.codigo })}`}
         >
-          Ver estas {total} ocupaciones en el catálogo ›
+          {total === 1 ? 'Ver esta ocupación' : `Ver estas ${total} ocupaciones`} en el catálogo ›
         </Link>
       </div>
       {principales.length > 0 && (
