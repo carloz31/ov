@@ -51,7 +51,7 @@ _MODELOS_POR_MODULO = {
         'Referencia',
     ),
     'app.models.catalogo': (
-        'HighPoint', 'TipoCarrera', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion',
+        'HighPoint', 'TipoCarrera', 'OcupacionFamilia', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion',
         'InstitucionCarrera', 'IngresoFamilia', 'IngresoInstitucion',
     ),
     'app.models.planes': (
@@ -89,7 +89,7 @@ __all__ = [
     'ResultadoDimension', 'Coincidencia', 'ListaOpciones', 'OpcionLista', 'ItemRegistro',
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
-    'TipoCarrera', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion', 'InstitucionCarrera',
+    'TipoCarrera', 'OcupacionFamilia', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion', 'InstitucionCarrera',
     'IngresoFamilia', 'IngresoInstitucion',
     'TipoFavorito', 'Favorito', 'InsigniaVitrina', 'PresentacionVista', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
     'ContadorDiario', 'GestionInstitucion', 'FrecuenciaGasto', 'OrigenIdea', 'PreguntaConocimiento',

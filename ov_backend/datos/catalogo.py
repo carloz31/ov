@@ -97,13 +97,21 @@ class OcupacionArchivo:
     estilos_trabajo: tuple[str, ...]
     puntajes: tuple[float, ...]
     perfil: str
+    titulo_es: str = ''
+    en_test: bool = False
+    en_catalogo: bool = True
+    familias: tuple[str, ...] = ()
+    """La principal primero y hasta dos secundarias; vacía si la curaduría no le da familia."""
+    programas_cine: tuple[str, ...] = ()
 
 
 @dataclass
 class CatalogoArchivo:
     areas: dict[str, str] = field(default_factory=dict)
+    """Campo específico (2 cifras) → nombre."""
     familias: dict[str, tuple[str, str]] = field(default_factory=dict)
     """Código CINE de 3 cifras → (nombre, área)."""
+    descripciones_familia: dict[str, str] = field(default_factory=dict)
     departamentos: dict[str, str] = field(default_factory=dict)
     carreras: list[CarreraArchivo] = field(default_factory=list)
     instituciones: list[InstitucionArchivo] = field(default_factory=list)
@@ -216,16 +224,23 @@ def _resumen(resumen: str, descripcion: str) -> str:
 
 
 def _leer_familias(carpeta, catalogo):
-    catalogo.areas = {f['codigo']: f['nombre'] for _, f in _leer(carpeta, 'campo_educacion.csv', ('codigo', 'nombre'))}
-    especificos = {}
+    """Familia = campo detallado (3 cifras); su área, el campo específico (2 cifras), con la descripción de la
+    familia de `campo_detallado_con_descripcion.csv`."""
+    educacion = {f['codigo'] for _, f in _leer(carpeta, 'campo_educacion.csv', ('codigo', 'nombre'))}
     for numero, fila in _leer(carpeta, 'campo_especifico.csv', ('codigo', 'nombre', 'cod_campo_educacion')):
-        if fila['cod_campo_educacion'] not in catalogo.areas:
+        if fila['cod_campo_educacion'] not in educacion:
             raise _error('campo_especifico.csv', numero, f'campo de educación desconocido {fila["cod_campo_educacion"]}')
-        especificos[fila['codigo']] = fila['cod_campo_educacion']
+        catalogo.areas[fila['codigo']] = fila['nombre']
     for numero, fila in _leer(carpeta, 'campo_detallado.csv', ('codigo', 'nombre', 'cod_campo_especifico')):
-        if not re.fullmatch(r'\d{3}', fila['codigo']) or fila['cod_campo_especifico'] not in especificos:
+        if not re.fullmatch(r'\d{3}', fila['codigo']) or fila['cod_campo_especifico'] not in catalogo.areas:
             raise _error('campo_detallado.csv', numero, f'campo detallado inválido {fila["codigo"]}')
-        catalogo.familias[fila['codigo']] = (fila['nombre'], especificos[fila['cod_campo_especifico']])
+        catalogo.familias[fila['codigo']] = (fila['nombre'], fila['cod_campo_especifico'])
+    nombre = 'campo_detallado_con_descripcion.csv'
+    for numero, fila in _leer(carpeta, nombre, ('codigo', 'descripcion')):
+        if fila['codigo'] not in catalogo.familias:
+            raise _error(nombre, numero, f'familia desconocida {fila["codigo"]}')
+        if fila['descripcion']:
+            catalogo.descripciones_familia[fila['codigo']] = fila['descripcion']
 
 
 def _leer_carreras(carpeta, catalogo):
@@ -358,24 +373,100 @@ def _leer_ingresos(carpeta, catalogo):
     registro.info('Ingresos por institución descartados (institución no cargada o repetidos): %d', descartadas)
 
 
-def _leer_ocupaciones(carpeta, catalogo):
+@dataclass(frozen=True)
+class OcupacionCurada:
+    titulo: str
+    en_test: bool
+    en_catalogo: bool
+    job_zone: int | None
+
+
+def _bandera(nombre, numero, valor) -> bool:
+    if valor not in ('0', '1'):
+        raise _error(nombre, numero, f'se esperaba 0 o 1, no {valor!r}')
+    return valor == '1'
+
+
+def _leer_curaduria(carpeta, ocultas) -> dict[str, OcupacionCurada]:
+    """Las ocupaciones que existen en la plataforma: `en_catalogo = 1`, más las `ocultas` (las que nombran casos y
+    testimonios) con `en_catalogo` falso. Solo las `en_test` entran al cálculo del test."""
+    nombre = 'ocupaciones_curadas.csv'
+    curadas = {}
+    for numero, fila in _leer(carpeta, nombre, ('codigo', 'titulo_pe', 'job_zone', 'en_test', 'en_catalogo')):
+        en_test, en_catalogo = _bandera(nombre, numero, fila['en_test']), _bandera(nombre, numero, fila['en_catalogo'])
+        if en_test and not en_catalogo:
+            raise _error(nombre, numero, f'{fila["codigo"]} está en el test pero no en el catálogo')
+        if en_catalogo or fila['codigo'] in ocultas:
+            job_zone = int(fila['job_zone']) if fila['job_zone'] else None
+            curadas[fila['codigo']] = OcupacionCurada(fila['titulo_pe'], en_test, en_catalogo, job_zone)
+    return curadas
+
+
+def _leer_ocupacion_familia(carpeta, catalogo, curadas) -> dict[str, tuple[tuple[str, ...], tuple[str, ...]]]:
+    """Código O*NET → (familias con la principal primero, programas CINE de referencia). Toda familia existe en el
+    catálogo y cada ocupación tiene una principal y hasta dos secundarias, o ninguna familia."""
+    nombre = 'ocupacion_familia_v2.csv'
+    relacion = {}
+    for numero, fila in _leer(carpeta, nombre, ('codigo', 'familia_principal', 'familias', 'carreras_cine_referencia')):
+        if fila['codigo'] not in curadas or not curadas[fila['codigo']].en_catalogo:
+            raise _error(nombre, numero, f'{fila["codigo"]} no está en el catálogo')
+        if fila['codigo'] in relacion:
+            raise _error(nombre, numero, f'{fila["codigo"]} repetida')
+        familias = tuple(f for f in fila['familias'].split('|') if f)
+        if any(f not in catalogo.familias for f in familias):
+            raise _error(nombre, numero, f'familia desconocida en {fila["familias"]!r}')
+        principal_bien = familias[0] == fila['familia_principal'] if familias else not fila['familia_principal']
+        if not principal_bien or len(familias) > 3 or len(set(familias)) != len(familias):
+            raise _error(nombre, numero, 'se espera la familia principal primero y hasta dos secundarias')
+        programas = tuple(p for p in fila['carreras_cine_referencia'].split('|') if p)
+        if any(not re.fullmatch(r'\d{6}', p) for p in programas):
+            raise _error(nombre, numero, f'código CINE inválido en {fila["carreras_cine_referencia"]!r}')
+        relacion[fila['codigo']] = (familias, programas)
+    faltantes = sorted(c for c, o in curadas.items() if o.en_catalogo and c not in relacion)
+    if faltantes:
+        raise ValueError(f'{nombre}: faltan las ocupaciones del catálogo {", ".join(faltantes)}')
+    return relacion
+
+
+def _ocupacion_sin_riasec(nombre, numero, fila, curada, catalogo, base) -> 'OcupacionArchivo':
+    grupo = fila['grupo_mayor'].zfill(2)
+    if grupo not in catalogo.grupos:
+        raise _error(nombre, numero, f'grupo desconocido {grupo}')
+    return OcupacionArchivo(**base, grupo=grupo, resumen=_resumen(fila['resumen_es'], fila['descripcion_es']) or None,
+                            descripcion=fila['descripcion_es'] or None, job_zone=curada.job_zone, personalidad=None,
+                            tambien_llamado=(), tareas=(), conocimientos=(), aptitudes=(), estilos_trabajo=(),
+                            puntajes=(), perfil='')
+
+
+def _leer_ocupaciones(carpeta, catalogo, ocultas=frozenset()):
     catalogo.grupos = {f['codigo']: f['nombre'] for _, f in _leer(carpeta, 'grupos_ocupacionales.csv',
                                                                     ('codigo', 'nombre'))}
     traduccion = {}
     for _, fila in _leer(carpeta, 'estilos_trabajo.csv', ('valor_mpp', 'codigo', 'nombre')):
         traduccion[fila['valor_mpp']] = fila['codigo']
         catalogo.estilos[fila['codigo']] = fila['nombre']
+    curadas = _leer_curaduria(carpeta, ocultas)
+    familias = _leer_ocupacion_familia(carpeta, catalogo, curadas)
     nombre = 'ocupaciones_mpp_completo.csv'
     letras = tuple(f'riasec_{d}' for d, _ in DIMENSIONES_RIASEC)
     for numero, fila in _leer(carpeta, nombre, ('codigo', 'titulo_es', 'resumen_es', 'tambien_llamado',
                                                 'descripcion_es', 'job_zone', 'riasec_perfil', 'grupo_mayor',
-                                                'flag_en_mpp', 'tareas', 'conocimientos_detalle',
+                                                'tareas', 'conocimientos_detalle',
                                                 'aptitudes_detalle', 'personalidad_frase', 'estilos_trabajo',
                                                 *letras)):
-        if fila['flag_en_mpp'] != '1':
+        curada = curadas.get(fila['codigo'])
+        if curada is None:
             continue
-        if not re.fullmatch(r'\d{2}-\d{4}\.\d{2}', fila['codigo']) or not fila['titulo_es']:
+        if not re.fullmatch(r'\d{2}-\d{4}\.\d{2}', fila['codigo']) or not (curada.titulo or fila['titulo_es']):
             raise _error(nombre, numero, f'código O*NET o título inválido {fila["codigo"]!r}')
+        de_familia, programas = familias.get(fila['codigo'], ((), ()))
+        base = dict(codigo_onet=fila['codigo'], titulo=curada.titulo or fila['titulo_es'], titulo_es=fila['titulo_es'],
+                    en_test=curada.en_test, en_catalogo=curada.en_catalogo, familias=de_familia,
+                    programas_cine=programas)
+        if not any(fila[c] for c in letras) and not curada.en_test:
+            # Sin perfil RIASEC (las militares): al catálogo, nunca al test.
+            catalogo.ocupaciones.append(_ocupacion_sin_riasec(nombre, numero, fila, curada, catalogo, base))
+            continue
         grupo = fila['grupo_mayor'].zfill(2)
         if grupo not in catalogo.grupos:
             raise _error(nombre, numero, f'grupo desconocido {grupo}')
@@ -400,7 +491,7 @@ def _leer_ocupaciones(carpeta, catalogo):
         conocimientos = _json(nombre, numero, fila['conocimientos_detalle'], dict)
         aptitudes = _json(nombre, numero, fila['aptitudes_detalle'], dict)
         catalogo.ocupaciones.append(OcupacionArchivo(
-            codigo_onet=fila['codigo'], titulo=fila['titulo_es'], grupo=grupo,
+            **base, grupo=grupo,
             resumen=_resumen(fila['resumen_es'], fila['descripcion_es']), descripcion=fila['descripcion_es'] or None,
             job_zone=job_zone, personalidad=fila['personalidad_frase'] or None,
             tambien_llamado=tuple(dict.fromkeys(
@@ -413,7 +504,8 @@ def _leer_ocupaciones(carpeta, catalogo):
         raise ValueError(f'{nombre}: hay códigos O*NET repetidos')
 
 
-def leer_catalogo(carpeta: Path | None = None) -> CatalogoArchivo:
+def leer_catalogo(carpeta: Path | None = None, ocultas=frozenset()) -> CatalogoArchivo:
+    """`ocultas`: códigos O*NET fuera del catálogo que igual se cargan (los que nombran casos y testimonios)."""
     carpeta = carpeta or CARPETA_CATALOGO
     catalogo = CatalogoArchivo()
     _leer_familias(carpeta, catalogo)
@@ -426,7 +518,7 @@ def leer_catalogo(carpeta: Path | None = None) -> CatalogoArchivo:
     catalogo.carreras, catalogo.ofertas = _fusionar_duplicadas(carreras, ofertas)
     catalogo.instituciones = instituciones
     _leer_ingresos(carpeta, catalogo)
-    _leer_ocupaciones(carpeta, catalogo)
+    _leer_ocupaciones(carpeta, catalogo, ocultas)
     return catalogo
 
 
@@ -441,7 +533,8 @@ def _ids(sesion, modelo):
 
 def _cargar_carreras(sesion, catalogo, dimensiones):
     sesion.execute(insert(modelos.FamiliaCarrera), [
-        {'codigo': c, 'nombre': n, 'area_codigo': a, 'area_nombre': catalogo.areas[a]}
+        {'codigo': c, 'nombre': n, 'area_codigo': a, 'area_nombre': catalogo.areas[a],
+         'descripcion': catalogo.descripciones_familia.get(c)}
         for c, (n, a) in sorted(catalogo.familias.items())])
     familias = _ids(sesion, modelos.FamiliaCarrera)
     sesion.execute(insert(modelos.Carrera), [
@@ -498,17 +591,43 @@ def _cargar_ocupaciones(sesion, catalogo, dimensiones, slugs):
          'grupo': o.grupo, 'resumen': o.resumen, 'descripcion': o.descripcion, 'job_zone': o.job_zone,
          'personalidad': o.personalidad, 'tambien_llamado': list(o.tambien_llamado), 'tareas': list(o.tareas),
          'conocimientos': list(o.conocimientos), 'aptitudes': list(o.aptitudes),
-         'estilos_trabajo': list(o.estilos_trabajo), 'codigo_riasec': o.perfil,
-         'busqueda': sin_tildes(' '.join((o.titulo, *o.tambien_llamado)))}
+         'estilos_trabajo': list(o.estilos_trabajo), 'codigo_riasec': o.perfil or None,
+         'en_test': o.en_test, 'en_catalogo': o.en_catalogo, 'programas_cine': list(o.programas_cine),
+         'busqueda': sin_tildes(' '.join(dict.fromkeys((o.titulo, o.titulo_es, *o.tambien_llamado))))}
         for o in catalogo.ocupaciones])
     ocupaciones = dict(sesion.execute(select(modelos.Ocupacion.codigo_onet, modelos.Ocupacion.id)).all())
     sesion.execute(insert(modelos.PuntajeOcupacion), [
         {'ocupacion_id': ocupaciones[o.codigo_onet], 'dimension_id': dimensiones[d].id, 'valor': o.puntajes[n]}
-        for o in catalogo.ocupaciones for n, (d, _) in enumerate(DIMENSIONES_RIASEC)])
+        for o in catalogo.ocupaciones if o.puntajes for n, (d, _) in enumerate(DIMENSIONES_RIASEC)])
     sesion.execute(insert(modelos.HighPoint), [
         {'ocupacion_id': ocupaciones[o.codigo_onet], 'posicion': posicion, 'dimension_id': dimensiones[letra].id}
         for o in catalogo.ocupaciones for posicion, letra in enumerate(o.perfil, start=1)])
     return _ids(sesion, modelos.Ocupacion)
+
+
+def _relacionar_familias(sesion, catalogo, familias):
+    """Ocupación → familias de la curaduría: la principal con `orden` 0 y las secundarias después."""
+    ocupaciones = dict(sesion.execute(select(modelos.Ocupacion.codigo_onet, modelos.Ocupacion.id)).all())
+    filas = [{'ocupacion_id': ocupaciones[o.codigo_onet], 'familia_id': familias[f], 'es_principal': orden == 0,
+              'orden': orden}
+             for o in catalogo.ocupaciones for orden, f in enumerate(o.familias)]
+    if filas:
+        sesion.execute(insert(modelos.OcupacionFamilia), filas)
+
+
+def reportar(catalogo: CatalogoArchivo) -> dict[str, list]:
+    """Lo que conviene revisar de la curaduría tras cargarla; se registra en el log de la carga."""
+    principales = {}
+    for o in catalogo.ocupaciones:
+        if o.familias:
+            principales.setdefault(o.familias[0], []).append(o.codigo_onet)
+    return {
+        'ocupaciones_por_familia': sorted((f, len(c)) for f, c in principales.items()),
+        'familias_sin_principal': sorted(f for f in catalogo.familias if f not in principales),
+        'test_sin_riasec': sorted(o.codigo_onet for o in catalogo.ocupaciones if o.en_test and not o.puntajes),
+        'familias_sin_descripcion': sorted(f for f in catalogo.familias if f not in catalogo.descripciones_familia),
+        'sin_familia': sorted(o.codigo_onet for o in catalogo.ocupaciones if o.en_catalogo and not o.familias),
+    }
 
 
 def _relacionar_provisional(sesion, catalogo, carreras, ocupaciones):
@@ -527,8 +646,11 @@ def _relacionar_provisional(sesion, catalogo, carreras, ocupaciones):
 
 def cargar(sesion: Session, dimensiones: dict, slugs: dict[str, str], carpeta: Path | None = None) -> None:
     """Carga todo el catálogo. `dimensiones` son las del test RIASEC por letra; `slugs`, código O*NET → slug."""
-    catalogo = leer_catalogo(carpeta)
+    catalogo = leer_catalogo(carpeta, ocultas=frozenset(slugs))
     familias, carreras = _cargar_carreras(sesion, catalogo, dimensiones)
     _cargar_instituciones(sesion, catalogo, familias, carreras)
     ocupaciones = _cargar_ocupaciones(sesion, catalogo, dimensiones, slugs)
+    _relacionar_familias(sesion, catalogo, familias)
     _relacionar_provisional(sesion, catalogo, carreras, ocupaciones)
+    for clave, valor in reportar(catalogo).items():
+        registro.info('Catálogo · %s: %s', clave, valor)

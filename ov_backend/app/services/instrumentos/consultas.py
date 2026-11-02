@@ -117,7 +117,7 @@ def catalogo_instrumentos(sesion: Session) -> list[InstrumentoPublico]:
                                            if item.instrumento_id == instrumento.id}), key=lambda escala: escala.codigo)
         catalogo.append(InstrumentoPublico(
             codigo=instrumento.codigo, nombre=instrumento.nombre, descripcion=instrumento.descripcion,
-            lectura=instrumento.lectura, tipo_resultado=instrumento.tipo_resultado,
+            lectura=instrumento.lectura_estudiante, tipo_resultado=instrumento.tipo_resultado,
             dimensiones=[DimensionPublica(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
                                          **textos_dimension(d), orden=d.orden) for d in dimensiones],
             escalas=[escala_publica(sesion, escala) for escala in escalas],
@@ -260,7 +260,7 @@ def representar_resultado(sesion: Session, resultado: ResultadoInstrumento, hist
             **textos_dimension(d), puntaje=r.puntaje, puntaje_maximo=r.puntaje_maximo,
             puntaje_visual=puntaje_visual(r.puntaje, minimos[d.id], r.puntaje_maximo)) for d, r in filas]
     datos = dict(instrumento=instrumento.codigo, aplicacion=aplicacion.codigo, calculado_en=resultado.calculado_en,
-        perfil_plano=resultado.perfil_plano, lectura=instrumento.lectura, dimensiones=dimensiones)
+        perfil_plano=resultado.perfil_plano, lectura=instrumento.lectura_estudiante, dimensiones=dimensiones)
     if instrumento.tipo_resultado == TipoResultado.DESTACADAS:
         destacadas = calcular_dimensiones_destacadas([
             DimensionCalculada(d.codigo, r.puntaje, r.puntaje_maximo) for d, r in filas
@@ -347,7 +347,7 @@ def comparacion_autopercepcion(sesion: Session, cuenta: Cuenta, instrumento: Ins
                    key=lambda item: item.numero)
     dimensiones = sorted((d for d in definiciones.listar(Dimension) if d.instrumento_id == instrumento.id),
                          key=lambda d: (d.orden, d.codigo))
-    return ComparacionAutopercepcion(instrumento=instrumento.codigo, lectura=instrumento.lectura, partida=entrada.codigo, llegada=salida.codigo,
+    return ComparacionAutopercepcion(instrumento=instrumento.codigo, lectura=instrumento.lectura_estudiante, partida=entrada.codigo, llegada=salida.codigo,
         dimensiones=[ComparacionDimension(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
             tematica=codigo_tematica(definiciones, d),
             zona_partida=calcular_zona(puntajes[entrada.id, d.id], cantidades[d.id]),

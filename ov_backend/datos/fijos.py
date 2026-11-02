@@ -159,15 +159,89 @@ ENUNCIADOS_PARTIDA_LLEGADA = (
 # Ajuste carga-instrumentos: instrumentos reales. Un instrumento nuevo es datos (ítems, escala, dimensiones y
 # textos) y se carga con `_cargar_instrumento`; RIASEC y partida/llegada conservan sus funciones.
 
-LECTURA_RIASEC = (
-    'Este test mide qué tipo de actividades te atraen, en seis tipos de interés. No mide capacidad ni talento: '
-    'mide gusto. Cada tipo va de 0 a 100, la misma escala con la que se describe cada ocupación, para que puedas '
-    'compararte con ella. De aquí salen tu código de interés, las ocupaciones que se parecen a lo que te gusta y '
-    'las carreras que llevan a ellas. Tómalo como punto de partida para explorar, no como una lista cerrada.')
-LECTURA_PARTIDA_LLEGADA = (
-    'Estas son las mismas afirmaciones que respondiste al empezar y al terminar el camino. No hay puntajes: cada '
-    'dimensión te dice en qué zona estás y qué cambió entre el inicio y el final. Lo que sigue por trabajar no es '
-    'una falla: es lo que viene después del colegio.')
+# Ajuste resultados-intereses: cómo leer el resultado y una línea de encuadre, por audiencia. Dicen cómo leerlo y
+# qué cuidar, no cómo es el test (eso es `descripcion`). En el apoderado, `{nombre}` es el nombre del hijo y lo
+# resuelve la consulta; Partida y llegada no se muestra al apoderado y deja sus textos vacíos.
+# (mensaje_estudiante, lectura_estudiante, mensaje_apoderado, lectura_apoderado, mensaje_orientadora,
+#  lectura_orientadora, guia_abierta)
+TEXTOS_INSTRUMENTOS = {
+    'TEST-RIASEC': (
+        'Es una pista para explorar, no un veredicto.',
+        'Tu código son los tres tipos de actividad que más te atrajeron, y las barras muestran cuánto resonó cada '
+        'uno, de 0 a 100. Habla de gusto, no de talento: un tipo bajo no es algo que hagas mal. Las ocupaciones '
+        'afines tienen un perfil de intereses parecido al tuyo y las familias de carreras son las que llevan a '
+        'ellas. Explora también lo que no salió arriba: tus gustos cambian con lo que vas conociendo.',
+        'Úselo para conversar con {nombre}, no para decidir por su hijo o hija.',
+        'El código resume los tres tipos de actividad que más le atraen hoy a {nombre}, y las barras, cuánto le '
+        'atrajo cada uno, de 0 a 100. Muestra gusto, no capacidad ni rendimiento: un puntaje bajo no cierra ninguna '
+        'puerta y uno alto no obliga a nada. Las ocupaciones y familias de carreras son puntos de partida para '
+        'explorar juntos, no una indicación de qué estudiar. Antes de opinar, pregúntele qué le sorprendió y qué no '
+        'le representa, y evite descartar opciones solo por ingreso o prestigio sin conversarlas.',
+        'Resultado exploratorio: insumo para la tutoría, no diagnóstico.',
+        'Perfil de intereses RIASEC (Holland) en seis tipos, de 0 a 100. Las ocupaciones afines salen de comparar '
+        'el perfil del estudiante con el de cada ocupación (porcentaje de parecido) y las familias de carreras, de '
+        'las ocupaciones más afines. Es preferencia, no aptitud. Un perfil poco marcado o plano es información '
+        '(intereses aún en formación), no un resultado fallido: conviene proponer experiencias antes que '
+        'recomendar. Contrástelo con sus registros y con el cuestionario de partida y llegada.',
+        False),
+    'TEST-INTELIGENCIAS': (
+        'Es una foto de hoy: todas se desarrollan.',
+        'Las inteligencias que salen arriba son las formas de pensar y aprender en las que hoy te sientes más '
+        'cómodo; las de abajo son las que usas menos, no las que te faltan. Ninguna vale más que otra. Úsalo para '
+        'estudiar a tu manera y para saber qué te costará más en lo que elijas. Cada inteligencia trae ideas para '
+        'practicarla.',
+        'No mide la inteligencia de {nombre}: muestra cómo prefiere aprender.',
+        'Muestra en qué formas de pensar y aprender se siente más cómodo hoy {nombre}, según cómo se ve. No es una '
+        'medida de coeficiente intelectual ni de rendimiento escolar, y no conviene compararlo con las notas ni con '
+        'hermanos o compañeros. Un puntaje bajo no es un defecto: todas se desarrollan con práctica. Sirve para '
+        'entender cómo estudia mejor y acompañarle en casa; evite usarlo como etiqueta («no es de números»).',
+        'Autopercepción de preferencias de aprendizaje; sin valor diagnóstico.',
+        'Autopercepción basada en las inteligencias múltiples de Gardner. Las destacadas indican formas de aprender '
+        'preferidas, no aptitudes medidas. Útil para sugerir estrategias de estudio y para contrastar con el test '
+        'de intereses, que mide gusto. Cada dimensión trae actividades de desarrollo que pueden proponerse en '
+        'tutoría.',
+        True),
+    'TEST-HABILIDADES': (
+        'Se entrenan, como cualquier otra habilidad.',
+        'Las habilidades que salen arriba son tus recursos de hoy para relacionarte con los demás; las de abajo, lo '
+        'que puedes practicar. Es cómo te ves tú, no una nota sobre tu forma de ser, y cambia con las experiencias. '
+        'Fíjate sobre todo en las de abajo: cada una trae por dónde empezar.',
+        'Es cómo se ve {nombre} con los demás, no una evaluación de su conducta.',
+        # `{habilidades}`: los nombres de las cinco dimensiones cargadas, para que el texto no se desalinee.
+        'Muestra cómo se percibe {nombre} al relacionarse con otras personas en cinco habilidades: {habilidades}. '
+        'Es su propia mirada, no un juicio sobre su carácter ni sobre cómo se porta en casa o en el colegio. Un '
+        'puntaje bajo señala algo que puede practicar, no un problema. Lo más útil es preguntarle en qué '
+        'situaciones se reconoce y acompañar sin corregir el resultado.',
+        'Autoinforme: interprételo con el contexto del estudiante.',
+        'Autopercepción del desempeño social en cinco habilidades. Es sensible a la deseabilidad social y al '
+        'momento que vive el estudiante, y no reemplaza la conducta observada. No es tamizaje clínico: un puntaje '
+        'bajo señala un área de trabajo en tutoría, no un problema. Cada dimensión trae actividades de desarrollo.',
+        True),
+    'TEST-PARTIDA-LLEGADA': (
+        'Lo que cambió entre las dos páginas es tuyo.',
+        'Cada dimensión te muestra en qué zona estabas al empezar la ruta y en cuál estás al terminarla, en '
+        'palabras y sin puntajes. No dice si decides bien o mal: muestra cómo cambió tu forma de verlo. Lo que '
+        'sigue por trabajar no es una falla; es lo que viene después del colegio.',
+        '', '',
+        'Medida antes y después: su valor está en el cambio.',
+        'Mismas afirmaciones al inicio y al cierre de la ruta sobre claridad, conocimiento de sí, de las opciones, '
+        'decisión propia y confianza. Lea el cambio entre las dos aplicaciones más que la zona aislada. Incluye la '
+        'presión percibida del entorno, también de la familia: úselo en tutoría con criterio y sin exponer al '
+        'estudiante frente a su familia.',
+        False),
+}
+CAMPOS_TEXTOS = ('mensaje_estudiante', 'lectura_estudiante', 'mensaje_apoderado', 'lectura_apoderado',
+                 'mensaje_orientadora', 'lectura_orientadora', 'guia_abierta')
+
+
+def textos_instrumento(codigo: str, dimensiones=()) -> dict:
+    """Columnas de textos por audiencia del instrumento; `{habilidades}` se arma con los nombres de sus
+    dimensiones en orden («a, b y c»)."""
+    nombres = [n[0].lower() + n[1:] for n in dimensiones]
+    habilidades = ', '.join(nombres[:-1]) + ' y ' + nombres[-1] if len(nombres) > 1 else ''.join(nombres)
+    return {campo: valor.replace('{habilidades}', habilidades) if isinstance(valor, str) else valor
+            for campo, valor in zip(CAMPOS_TEXTOS, TEXTOS_INSTRUMENTOS[codigo])}
+
 
 # (descripción, ejemplos, fortalezas). Un interés no se «desarrolla»: RIASEC no lleva `desarrollo`.
 TEXTOS_RIASEC = {
@@ -253,7 +327,6 @@ class DefinicionInstrumento:
     codigo: str
     nombre: str
     descripcion: str
-    lectura: str
     tipo_resultado: modelos.TipoResultado
     escala: tuple[str, str]
     opciones: tuple[tuple[str, float], ...]
@@ -268,11 +341,6 @@ class DefinicionInstrumento:
 INTELIGENCIAS = DefinicionInstrumento(
     codigo='TEST-INTELIGENCIAS', nombre='Test de las inteligencias múltiples',
     descripcion='Descubre cuáles de las siete inteligencias usas más hoy y cómo aprendes y resuelves mejor.',
-    lectura=('Este test muestra qué inteligencias usas más en tu día a día, según el modelo de Howard Gardner. '
-             'Todos tenemos las siete, unas más desarrolladas que otras; aquí ves cuáles tienes más a mano hoy. '
-             'No mide cuánto vales ni qué carrera te toca: te dice cómo aprendes y resuelves mejor, y eso sirve '
-             'para estudiar a tu manera y para saber qué te va a costar más en lo que elijas. Cada inteligencia se '
-             'puede desarrollar.'),
     tipo_resultado=modelos.TipoResultado.DESTACADAS,
     escala=('ESC-VERDAD3', 'Verdadero, falso o no estoy seguro'),
     opciones=(('Falso', 0), ('No estoy seguro', 0.5), ('Verdadero', 1)),
@@ -401,10 +469,6 @@ INTELIGENCIAS = DefinicionInstrumento(
 HABILIDADES = DefinicionInstrumento(
     codigo='TEST-HABILIDADES', nombre='Mi comportamiento con los demás',
     descripcion='Descubre cómo te relacionas con los demás y qué habilidades sociales tienes más a mano hoy.',
-    lectura=('Este inventario muestra cómo te relacionas con los demás, en cinco habilidades sociales. Son '
-             'conductas aprendidas: nadie nace con ellas y todas se pueden desarrollar. Las que salen arriba son '
-             'tus recursos de hoy. Pero fíjate sobre todo en las que quedaron abajo: ahí está lo que puedes '
-             'trabajar, y en cada una encontrarás por dónde empezar.'),
     tipo_resultado=modelos.TipoResultado.DESTACADAS,
     escala=('ESC-CASI2', 'Casi siempre o casi nunca'),
     opciones=(('Casi nunca', 0), ('Casi siempre', 1)),
@@ -545,7 +609,7 @@ class Fijos:
 def _cargar_riasec(sesion):
     instrumento = modelos.Instrumento(codigo='TEST-RIASEC', nombre='Test de intereses',
         descripcion='Descubre qué tipo de actividades te atraen y qué ocupaciones se parecen a ti.',
-        lectura=LECTURA_RIASEC, tipo_resultado=modelos.TipoResultado.COINCIDENCIAS)
+        tipo_resultado=modelos.TipoResultado.COINCIDENCIAS, **textos_instrumento('TEST-RIASEC'))
     escala = modelos.EscalaRespuesta(codigo='ESC-LIKERT5', nombre='Preferencia en cinco opciones')
     sesion.add_all([instrumento, escala])
     sesion.flush()
@@ -575,7 +639,8 @@ def _cargar_riasec(sesion):
 def _cargar_instrumento(sesion, definicion: DefinicionInstrumento):
     """Carga cualquier instrumento definido como datos; devuelve su aplicación y sus ítems por número."""
     instrumento = modelos.Instrumento(codigo=definicion.codigo, nombre=definicion.nombre,
-        descripcion=definicion.descripcion, lectura=definicion.lectura, tipo_resultado=definicion.tipo_resultado)
+        descripcion=definicion.descripcion, tipo_resultado=definicion.tipo_resultado,
+        **textos_instrumento(definicion.codigo, [n for _, n, *_ in definicion.dimensiones]))
     escala = modelos.EscalaRespuesta(codigo=definicion.escala[0], nombre=definicion.escala[1])
     sesion.add_all([instrumento, escala])
     sesion.flush()
@@ -609,7 +674,7 @@ def _cargar_tematicas(sesion):
 def _cargar_partida_llegada(sesion, tematicas):
     instrumento = modelos.Instrumento(codigo='TEST-PARTIDA-LLEGADA', nombre='Punto de partida y de llegada',
         descripcion='Las mismas afirmaciones al inicio y al cierre, para ver cuánto cambiaste.',
-        lectura=LECTURA_PARTIDA_LLEGADA, tipo_resultado=modelos.TipoResultado.COMPARACION)
+        tipo_resultado=modelos.TipoResultado.COMPARACION, **textos_instrumento('TEST-PARTIDA-LLEGADA'))
     escala = modelos.EscalaRespuesta(codigo='ESC-ACUERDO4', nombre='Acuerdo en cuatro opciones')
     sesion.add_all([instrumento, escala])
     sesion.flush()

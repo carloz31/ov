@@ -415,7 +415,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert (batalla.vidas_enemigo, batalla.destellos) == (5, 3)
     superado = RespuestaResolverCaso.model_validate(datos['resolver-caso'])
     assert [(o.codigo, o.titulo) for o in superado.ocupaciones_nuevas] == [
-        ('firefighter', 'Bomberos'), ('paramedic', 'Paramédicos')]
+        ('firefighter', 'Bomberos'), ('paramedic', 'Paramédico / técnico en emergencias médicas')]
     # Ajuste mochila: el segundo testimonio pide además el proyecto; t-caso-2 sigue cerrado.
     assert {d.regla for d in superado.nuevos_desbloqueos} == {'R-t-testimonio-1'}
     caso, otro = TypeAdapter(list[CasoCuenta]).validate_python(datos['casos'])

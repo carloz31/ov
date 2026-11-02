@@ -373,8 +373,8 @@ def test_hu098_aviso_cuando_dos_planes_son_de_la_misma_familia(cliente, sesion, 
     assert planes(cliente)['avisos'] == []
     crear(cliente, 't-carrera-hermana')
     assert planes(cliente)['avisos'] == [{'tipo': 'MISMA_FAMILIA', 'planes': ['A', 'C'], 'familia': {
-        'codigo': '313', 'nombre': 'Psicología', 'area_codigo': '3',
-        'area_nombre': 'Ciencias Sociales, Comerciales y Derecho'}}]
+        'codigo': '313', 'nombre': 'Psicología', 'area_codigo': '31',
+        'area_nombre': 'Ciencias Sociales y del Comportamiento'}}]
 
 
 def test_opcion_inicial_solo_antes_de_completar_t1(cliente):

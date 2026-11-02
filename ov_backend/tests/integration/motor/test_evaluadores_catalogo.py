@@ -33,7 +33,9 @@ def test_sin_resultado_hacen_falta_vistas_de_dos_tipos(cliente):
 def test_con_resultado_basta_una_vista_fuera_del_tipo_principal(cliente):
     ciclo(cliente)
     letra = resultado(cliente)['codigo_interes']['codigo'][0]
-    ocupaciones = pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/ocupaciones?limite=50')['items']
+    # Ajuste resultados-intereses: las militares del catálogo no tienen letras RIASEC.
+    ocupaciones = [o for o in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/ocupaciones?limite=50')['items']
+                   if o['riasec']]
     propias = [o['codigo'] for o in ocupaciones if o['riasec'][0] == letra]
     ajena = next(o['codigo'] for o in ocupaciones if o['riasec'][0] != letra)
     assert len(propias) >= 2

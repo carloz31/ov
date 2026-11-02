@@ -221,13 +221,14 @@ class Nivel(Base):
 
 
 class FamiliaCarrera(Base):
-    """Campo detallado CINE (3 cifras); el área es su campo de educación, desnormalizado."""
+    """Campo detallado CINE (3 cifras); el área es su campo específico (2 cifras), desnormalizado."""
     __tablename__ = "familia_carrera"
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
     area_codigo: Mapped[str]
     area_nombre: Mapped[str]
+    descripcion: Mapped[str | None] = mapped_column(Text, default=None)
 
 
 class Carrera(Base):

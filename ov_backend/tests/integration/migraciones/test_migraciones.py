@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 94
+    assert len(Base.metadata.tables) == 95
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,7 +129,7 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 98
+    assert sql.count('CREATE TABLE ') == 99
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -138,8 +138,9 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     assert "WHERE tipo = 'DIARIA'" in sql and "WHERE tipo = 'DESBLOQUEADA'" in sql
     assert 'WHERE anulado_en IS NULL' in sql
     # B17: 15 desde que 0017 usa sa.false(); un booleano con DEFAULT 0 no se crea en PostgreSQL. B13: 16, con
-    # `investigacion.sugerencias_vigentes`.
-    assert sql.count('BOOLEAN DEFAULT false') == 16
+    # `investigacion.sugerencias_vigentes`. Ajuste resultados-intereses: 18, con `instrumento.guia_abierta` y
+    # `ocupacion.en_test`.
+    assert sql.count('BOOLEAN DEFAULT false') == 18
     assert 'BOOLEAN DEFAULT 0' not in sql and 'BOOLEAN DEFAULT 1' not in sql
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:
@@ -305,12 +306,13 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # `ruta` tiene el catálogo real cargado. Ajuste F07b: 0034 se detiene antes, porque Matrícula y Pensión no tienen
         # monto de referencia. B13: 0038 se detiene antes, porque `ruta` tiene la referencia LO_QUE_PIENSO y una regla
         # con ENTREVISTA_LEYENDA. Ajuste notificaciones: 0039 se detiene antes, porque `t-apo-1` le dio una
-        # notificación a apo-rosa.
-        with pytest.raises(RuntimeError, match='existen notificaciones'):
+        # notificación a apo-rosa. Ajuste resultados-intereses: 0041 se detiene antes, porque `ruta` tiene el catálogo
+        # curado con familias de ocupaciones.
+        with pytest.raises(RuntimeError, match='existen familias de ocupaciones'):
             command.downgrade(configuracion, '0002')
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0039'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0041'
             for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]

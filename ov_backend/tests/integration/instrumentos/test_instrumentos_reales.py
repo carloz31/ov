@@ -21,7 +21,7 @@ def test_habilidades_aplica_los_inversos_y_destaca_las_de_mayor_proporcion(clien
     assert [(o['orden'], o['etiqueta']) for o in items[0]['escala']['opciones']] == [(1, 'Casi nunca'), (2, 'Casi siempre')]
     revelar(cliente, instrumento='TEST-HABILIDADES')
     resultado = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-HABILIDADES/resultado')
-    assert resultado['lectura'].startswith('Este inventario muestra cómo te relacionas')
+    assert resultado['lectura'].startswith('Las habilidades que salen arriba son tus recursos')
     numeros = {d['codigo']: (d['puntaje'], d['puntaje_maximo'], d['puntaje_visual']) for d in resultado['dimensiones']}
     # Expresión: los inversos 3 y 8 en «Casi siempre» valen 0. Liderazgo: el 5 en «Casi nunca» vale 1 y el 20, 0.
     assert numeros == {'HS-ASE': (5, 5, 100), 'HS-EMP': (5, 5, 100), 'HS-EXP': (3, 5, 60),
@@ -41,12 +41,12 @@ def test_inteligencias_la_duda_vale_medio_punto(cliente):
     assert (lin['puntaje'], lin['puntaje_maximo'], lin['puntaje_visual']) == (3, 5, 60)
     assert {d['puntaje_visual'] for d in resultado['dimensiones'] if d['codigo'] != 'INT-LIN'} == {50}
     assert [d['codigo'] for d in resultado['dimensiones_destacadas']] == ['INT-LIN']
-    assert resultado['lectura'].startswith('Este test muestra qué inteligencias usas más')
+    assert resultado['lectura'].startswith('Las inteligencias que salen arriba son las formas')
 
 
 def test_riasec_expone_lectura_y_fortalezas_sin_desarrollo(cliente):
     catalogo = {i['codigo']: i for i in pedir(cliente, 'GET', '/instrumentos')}
     riasec = catalogo['TEST-RIASEC']
-    assert riasec['lectura'].startswith('Este test mide qué tipo de actividades te atraen')
+    assert riasec['lectura'].startswith('Tu código son los tres tipos de actividad')
     assert all(d['ejemplos'] and len(d['fortalezas']) == 4 and d['desarrollo'] == [] for d in riasec['dimensiones'])
     assert set(catalogo) == {'TEST-HABILIDADES', 'TEST-INTELIGENCIAS', 'TEST-PARTIDA-LLEGADA', 'TEST-RIASEC'}

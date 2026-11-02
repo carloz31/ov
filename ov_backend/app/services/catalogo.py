@@ -251,14 +251,15 @@ def buscar_ocupaciones(sesion: Session, cuenta: Cuenta, buscar: str | None, grup
     _pagina(limite, desde)
     favoritos = contexto(sesion).favoritos_de(cuenta.id)
     letras = letras_riasec(riasec)
-    consulta = select(Ocupacion).where(*_filtros(
+    consulta = select(Ocupacion).where(Ocupacion.en_catalogo, *_filtros(
         _contiene(Ocupacion.busqueda, buscar),
         None if grupo is None else Ocupacion.grupo == grupo,
         None if letras is None else Ocupacion.codigo_riasec.like(f'%{letras}%'),
         _solo_favoritos(cuenta, TipoFavorito.OCUPACION, Ocupacion.id, solo_favoritos),
     ))
     total, ocupaciones = _paginar(sesion, consulta, (Ocupacion.busqueda, Ocupacion.codigo), limite, desde)
-    return PaginaOcupaciones(total=total, total_dominio=_total(sesion, Ocupacion),
+    return PaginaOcupaciones(total=total, total_dominio=sesion.scalar(
+                                 select(func.count()).select_from(Ocupacion).where(Ocupacion.en_catalogo)),
                              items=[resumen_ocupacion(o, favoritos) for o in ocupaciones])
 
 
@@ -347,7 +348,8 @@ def listar_ubicaciones(sesion: Session, cuenta: Cuenta) -> list[UbicacionPublica
 def listar_grupos(sesion: Session, cuenta: Cuenta) -> list[GrupoPublico]:
     """Solo los grupos con ocupaciones, por nombre."""
     exigir_catalogo(sesion, cuenta)
-    grupos = sesion.scalars(select(GrupoOcupacional).where(GrupoOcupacional.codigo.in_(select(Ocupacion.grupo))))
+    grupos = sesion.scalars(select(GrupoOcupacional).where(GrupoOcupacional.codigo.in_(
+        select(Ocupacion.grupo).where(Ocupacion.en_catalogo))))
     return [GrupoPublico(codigo=g.codigo, nombre=g.nombre) for g in sorted(grupos, key=lambda g: sin_tildes(g.nombre))]
 
 
@@ -357,7 +359,9 @@ def _inesperada(sesion: Session, cuenta: Cuenta, modelo, evento: TipoEventoUso, 
     """Al azar entre lo que la cuenta no ha visto, sin el actual; si ya vio todo, uno distinto del actual."""
     exigir_catalogo(sesion, cuenta)
     candidatos = sesion.execute(select(modelo.id, modelo.codigo).where(*_filtros(
-        None if excluir is None else modelo.codigo != excluir))).all()
+        None if excluir is None else modelo.codigo != excluir,
+        # Las ocupaciones fuera del catálogo (solo de casos y testimonios) no se proponen.
+        Ocupacion.en_catalogo if modelo is Ocupacion else None))).all()
     vistos = set(sesion.scalars(select(EventoUso.id_referencia).where(
         EventoUso.cuenta_id == cuenta.id, EventoUso.tipo == evento, EventoUso.id_referencia.is_not(None))))
     sin_ver = [codigo for id_, codigo in candidatos if id_ not in vistos]

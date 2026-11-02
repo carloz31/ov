@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import (
-    JSON, CheckConstraint, DateTime, ForeignKey, Index, Text, UniqueConstraint, column, false, text,
+    JSON, CheckConstraint, DateTime, ForeignKey, Index, Text, UniqueConstraint, column, false, text, true,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -19,8 +19,16 @@ class Instrumento(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
     descripcion: Mapped[str] = mapped_column(Text)
-    # Cómo leer el resultado: párrafo introductorio de la vista explicada.
-    lectura: Mapped[str] = mapped_column(Text, default="", server_default=text("''"))
+    # Cómo leer el resultado y una línea de encuadre, por audiencia (ajuste resultados-intereses); en el del
+    # apoderado, `{nombre}` es el nombre del hijo y lo resuelve la consulta.
+    lectura_estudiante: Mapped[str] = mapped_column(Text, default="", server_default=text("''"))
+    lectura_apoderado: Mapped[str] = mapped_column(Text, default="", server_default=text("''"))
+    lectura_orientadora: Mapped[str] = mapped_column(Text, default="", server_default=text("''"))
+    mensaje_estudiante: Mapped[str] = mapped_column(Text, default="", server_default=text("''"))
+    mensaje_apoderado: Mapped[str] = mapped_column(Text, default="", server_default=text("''"))
+    mensaje_orientadora: Mapped[str] = mapped_column(Text, default="", server_default=text("''"))
+    # La guía de dimensiones del resultado arranca abierta.
+    guia_abierta: Mapped[bool] = mapped_column(default=False, server_default=false())
     tipo_resultado: Mapped[TipoResultado] = mapped_column(enumerado(TipoResultado), default=TipoResultado.DESTACADAS)
 
 
@@ -103,12 +111,21 @@ class Ocupacion(Base):
         CheckConstraint(TipoJSON(column("tareas")) == 'array', name="tareas_lista"),
         CheckConstraint(TipoJSON(column("tambien_llamado")) == 'array', name="tambien_llamado_lista"),
         CheckConstraint(TipoJSON(column("estilos_trabajo")) == 'array', name="estilos_trabajo_lista"),
+        CheckConstraint(TipoJSON(column("programas_cine")) == 'array', name="programas_cine_lista"),
         CheckConstraint("job_zone BETWEEN 1 AND 5", name="job_zone_valido"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
     codigo_onet: Mapped[str] = mapped_column(unique=True)
+    # Nombre adaptado al Perú de la curaduría (o el de Mi Próximo Paso si no tiene).
     titulo: Mapped[str]
+    # Participa en el cálculo de ocupaciones afines del test de intereses.
+    en_test: Mapped[bool] = mapped_column(default=False, server_default=false())
+    # Se lista en el catálogo; las que no, existen solo porque casos y testimonios las nombran.
+    en_catalogo: Mapped[bool] = mapped_column(default=True, server_default=true())
+    # Códigos CINE de 6 cifras de los programas de referencia; solo para nombrar programas de ejemplo.
+    programas_cine: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list,
+                                                      server_default=text("'[]'"))
     # Grupo mayor O*NET (2 cifras).
     grupo: Mapped[str] = mapped_column(ForeignKey("grupo_ocupacional.codigo"))
     resumen: Mapped[str | None] = mapped_column(default=None)

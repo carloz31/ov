@@ -29,8 +29,25 @@ def dimensiones(sesion, codigo):
 
 
 def test_ningun_instrumento_queda_sin_lectura(sesion):
-    # El `server_default ''` de la columna es solo para la migración: `fijos` llena todas.
-    assert all(i.lectura.strip() for i in sesion.scalars(select(modelos.Instrumento)))
+    # El `server_default ''` de las columnas es solo para la migración: `fijos` llena todas, salvo las del
+    # apoderado en Partida y llegada, que no se le muestra (ajuste resultados-intereses).
+    for i in sesion.scalars(select(modelos.Instrumento)):
+        audiencias = ('estudiante', 'orientadora') if i.codigo == 'TEST-PARTIDA-LLEGADA' else (
+            'estudiante', 'apoderado', 'orientadora')
+        assert all(getattr(i, f'{campo}_{a}').strip() for campo in ('lectura', 'mensaje') for a in audiencias), i.codigo
+        if i.codigo == 'TEST-PARTIDA-LLEGADA':
+            assert (i.lectura_apoderado, i.mensaje_apoderado) == ('', '')
+
+
+def test_textos_por_audiencia_y_guia(sesion):
+    guia = {i.codigo: i.guia_abierta for i in sesion.scalars(select(modelos.Instrumento))}
+    assert guia == {'TEST-RIASEC': False, 'TEST-INTELIGENCIAS': True, 'TEST-HABILIDADES': True,
+                    'TEST-PARTIDA-LLEGADA': False}
+    # Las habilidades que nombra el texto del apoderado son las dimensiones cargadas, en orden.
+    nombres = [d.nombre.lower() for d in dimensiones(sesion, 'TEST-HABILIDADES')]
+    texto = instrumento(sesion, 'TEST-HABILIDADES').lectura_apoderado
+    assert ', '.join(nombres[:-1]) + ' y ' + nombres[-1] in texto
+    assert '{nombre}' in texto and '{habilidades}' not in texto
 
 
 def test_inteligencias_35_items_siete_dimensiones_de_cinco(sesion):

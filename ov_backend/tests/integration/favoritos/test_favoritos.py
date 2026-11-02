@@ -49,7 +49,7 @@ def test_hu040_marcar_consultar_y_desmarcar(abierto):
     assert codigos(lista['carreras']) == [PSICOLOGIA, ENFERMERIA]
     ocupacion = lista['ocupaciones'][0]
     assert {k: ocupacion[k] for k in ('codigo', 'codigo_onet', 'titulo', 'riasec', 'es_favorita')} == {
-        'codigo': 'psychologist', 'codigo_onet': '19-3033.00', 'titulo': 'Psicólogos Clínicos y de Consejería',
+        'codigo': 'psychologist', 'codigo_onet': '19-3033.00', 'titulo': 'Psicólogo clínico',
         'riasec': ['S', 'I'], 'es_favorita': True}
     assert codigos(lista['instituciones']) == [INST_UNI]
 

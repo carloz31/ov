@@ -59,7 +59,7 @@ def test_limpieza_de_textos_y_rangos():
 
 def test_catalogo_real_conteos_y_fusiones(real):
     assert (len(real.carreras), len(real.instituciones), len(real.ofertas), len(real.familias)) == (603, 706, 3597, 89)
-    assert (len(real.departamentos), len(real.grupos), len(real.estilos), len(real.ocupaciones)) == (26, 22, 21, 923)
+    assert (len(real.departamentos), len(real.grupos), len(real.estilos), len(real.ocupaciones)) == (26, 23, 21, 245)
     ids = {c.id for c in real.carreras}
     # Las duplicadas por tilde se fusionan en la que tiene instituciones, que recibe sus relaciones.
     assert {'176', '106', '50', '163', '107'} <= ids and not {'322', '325', '236', '179', '344'} & ids
@@ -89,14 +89,58 @@ def test_catalogo_real_carreras_e_ingresos(real):
 def test_catalogo_real_ocupaciones(real):
     ocupaciones = {o.codigo_onet: o for o in real.ocupaciones}
     directores = ocupaciones['11-1011.00']
-    assert directores.titulo == 'Directores Ejecutivos' and 'Presidente' in directores.tambien_llamado
+    assert directores.titulo == 'Director ejecutivo (gerente general)' and directores.titulo_es == 'Directores Ejecutivos'
+    assert 'Presidente' in directores.tambien_llamado
     assert directores.grupo == '11' and directores.perfil == 'EC' and directores.job_zone == 5
-    assert all(len(o.resumen) <= datos_catalogo.TOPE_RESUMEN for o in real.ocupaciones)
+    assert all(len(o.resumen or '') <= datos_catalogo.TOPE_RESUMEN for o in real.ocupaciones)
     assert directores.resumen.endswith('…')
     assert directores.estilos_trabajo[0] == 'tolerancia-ambiguedad'
     assert directores.conocimientos[:2] == ('Administración', 'Recursos humanos')
     assert all(t[:1].isupper() for o in real.ocupaciones for t in (*o.tareas, *o.conocimientos, *o.aptitudes))
     assert all(len(set(o.conocimientos)) == len(o.conocimientos) for o in real.ocupaciones)
+
+
+def test_curaduria_de_ocupaciones_y_familias(real):
+    # Ajuste resultados-intereses: solo las del catálogo curado; 234 entran al test.
+    ocupaciones = {o.codigo_onet: o for o in real.ocupaciones}
+    assert all(o.en_catalogo for o in real.ocupaciones) and sum(o.en_test for o in real.ocupaciones) == 234
+    fotografo = ocupaciones['27-4021.00']
+    assert fotografo.familias[0] == '323' and fotografo.programas_cine
+    # Las militares no tienen RIASEC: van al catálogo sin puntajes y nunca al test.
+    militar = ocupaciones['55-1011.00']
+    assert (militar.puntajes, militar.perfil, militar.en_test, militar.grupo) == ((), '', False, '55')
+    # Joyero y Tripulante de cabina no tienen familia; Tripulante sí entra al test.
+    assert ocupaciones['51-9071.00'].familias == () and ocupaciones['53-2031.00'].en_test
+    # El área de la familia es el campo específico (2 cifras), con su nombre; toda familia tiene descripción.
+    assert all(len(area) == 2 for _, area in real.familias.values())
+    assert real.familias['222'] == ('Diseño', '22') and real.areas['22'] == 'Artes'
+    assert set(real.descripciones_familia) == set(real.familias)
+    reporte = datos_catalogo.reportar(real)
+    assert reporte['test_sin_riasec'] == [] and reporte['familias_sin_descripcion'] == []
+    assert reporte['sin_familia'] == ['51-9071.00', '53-2031.00']
+
+
+def test_ocultas_se_cargan_fuera_del_catalogo():
+    catalogo = leer_catalogo(ocultas=frozenset({'33-2011.00'}))
+    bombero = next(o for o in catalogo.ocupaciones if o.codigo_onet == '33-2011.00')
+    assert (bombero.en_catalogo, bombero.en_test) == (False, False)
+
+
+@pytest.mark.parametrize('archivo, cambio, mensaje', [
+    ('ocupacion_familia_v2.csv', lambda f: [{**f[0], 'familias': '999', 'familia_principal': '999'}, *f[1:]],
+     'ocupacion_familia_v2.csv, fila 2: familia desconocida'),
+    ('ocupacion_familia_v2.csv', lambda f: [{**f[0], 'familias': '331|321', 'familia_principal': '321'}, *f[1:]],
+     'ocupacion_familia_v2.csv, fila 2: se espera la familia principal primero'),
+    ('ocupacion_familia_v2.csv', lambda f: f[1:], 'ocupacion_familia_v2.csv: faltan las ocupaciones del catálogo'),
+    ('ocupaciones_curadas.csv', lambda f: [{**f[0], 'en_catalogo': '0'}, *f[1:]],
+     'ocupaciones_curadas.csv, fila 2: 11-1011.00 está en el test pero no en el catálogo'),
+    ('campo_detallado_con_descripcion.csv', lambda f: [{**f[0], 'codigo': '999'}, *f[1:]],
+     'campo_detallado_con_descripcion.csv, fila 2: familia desconocida 999'),
+])
+def test_errores_de_la_curaduria(copia, archivo, cambio, mensaje):
+    reescribir(copia / archivo, cambio)
+    with pytest.raises(ValueError, match=mensaje):
+        leer_catalogo(copia)
 
 
 def test_riasec_de_carreras_es_opcional(copia, real):

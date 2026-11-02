@@ -31,6 +31,23 @@ class TipoCarrera(Base):
     dimension_id: Mapped[int] = mapped_column(ForeignKey("dimension.id"))
 
 
+class OcupacionFamilia(Base):
+    """Familias de carreras que llevan a una ocupación (curaduría): una principal (`orden` 0) y hasta dos
+    secundarias (`orden` 1–2). Solo la principal puntúa en las familias recomendadas."""
+    __tablename__ = "ocupacion_familia"
+    __table_args__ = (
+        UniqueConstraint("ocupacion_id", "orden"),
+        Index("ix_ocupacion_familia_principal_unica", "ocupacion_id", unique=True,
+              sqlite_where=text("es_principal"), postgresql_where=text("es_principal")),
+        CheckConstraint("orden BETWEEN 0 AND 2", name="orden_valido"),
+        CheckConstraint("(orden = 0) = es_principal", name="principal_primera"),
+    )
+    ocupacion_id: Mapped[int] = mapped_column(ForeignKey("ocupacion.id"), primary_key=True)
+    familia_id: Mapped[int] = mapped_column(ForeignKey("familia_carrera.id"), primary_key=True)
+    es_principal: Mapped[bool]
+    orden: Mapped[int]
+
+
 class GrupoOcupacional(Base):
     """Grupo mayor O*NET (SOC de 2 cifras), con su nombre en español."""
     __tablename__ = "grupo_ocupacional"

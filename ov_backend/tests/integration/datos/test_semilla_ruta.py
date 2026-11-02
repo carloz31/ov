@@ -8,6 +8,7 @@ from app import models as modelos
 from app.main import crear_aplicacion
 from app.models.base import Base
 from datos import catalogo as datos_catalogo
+from datos import fijos
 from datos import ruta as semilla_ruta
 from datos.cargar import preparar_base
 from datos.fijos import validar_distribucion_items
@@ -23,17 +24,18 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         'instrumento': 4, 'escala_respuesta': 4, 'opcion_escala': 14, 'dimension': 23,
         'item_instrumento': 138, 'actividad_item': 157, 'aplicacion': 5, 'aplicacion_actividad': 6,
         # Ajuste catalogo-datos-reales: el catálogo real (603 carreras tras fusionar 5 duplicadas por tilde,
-        # 706 instituciones con carreras, 923 ocupaciones de Mi Próximo Paso) y la relación provisional al azar.
-        'ocupacion': 923, 'puntaje_ocupacion': 5538, 'familia_carrera': 89, 'carrera': 603,
-        'carrera_ocupacion': 2224, 'lista_opciones': 13, 'opcion_lista': 69, 'item_registro': 14,
+        # 706 instituciones con carreras) y la relación provisional al azar. Ajuste resultados-intereses: 250
+        # ocupaciones (245 curadas y las 5 ocultas de casos y testimonios; 10 militares sin puntajes) y sus familias.
+        'ocupacion': 250, 'puntaje_ocupacion': 1440, 'familia_carrera': 89, 'carrera': 603,
+        'carrera_ocupacion': 2233, 'ocupacion_familia': 341, 'lista_opciones': 13, 'opcion_lista': 69, 'item_registro': 14,
         'criterio_completitud': 12, 'referencia': 12, 'tematica': 5,
         'actividad_tematica': 6, 'actividad_dimension': 2, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
-        'high_point': 2316, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,
-        'grupo_ocupacional': 22, 'estilo_trabajo': 21, 'ingreso_familia': 716, 'ingreso_institucion': 1096,
+        'high_point': 626, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,
+        'grupo_ocupacional': 23, 'estilo_trabajo': 21, 'ingreso_familia': 716, 'ingreso_institucion': 1096,
         'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6,
         # B13: catálogos de investigaciones.
         'pregunta_base_guion': 3, 'tipo_reaccion': 4}
-    assert len(Base.metadata.tables) == 94
+    assert len(Base.metadata.tables) == 95
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA', 'LUMI'}
@@ -45,7 +47,8 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     assert {(codigos[onet], onet) for _, _, onet in OCUPACIONES_APROBADAS} == {
         (codigo, onet) for codigo, _, onet in OCUPACIONES_APROBADAS}
     assert codigos['11-1011.00'] == 'onet-11-1011-00'
-    archivo = {o.codigo_onet: o.puntajes for o in datos_catalogo.leer_catalogo().ocupaciones}
+    archivo = {o.codigo_onet: o.puntajes for o in datos_catalogo.leer_catalogo(
+        ocultas=frozenset(onet for _, onet in fijos.OCUPACIONES)).ocupaciones if o.puntajes}
     puntajes = list(sesion.execute(select(modelos.Ocupacion.codigo_onet, modelos.Dimension.codigo, modelos.PuntajeOcupacion.valor)
         .join(modelos.PuntajeOcupacion, modelos.PuntajeOcupacion.ocupacion_id == modelos.Ocupacion.id)
         .join(modelos.Dimension, modelos.Dimension.id == modelos.PuntajeOcupacion.dimension_id)))
@@ -78,8 +81,8 @@ def test_catalogo_erroneo_revierte_carga_explicita(cliente, aplicacion, tmp_path
     cache = aplicacion.state.motor_bd.cache_definiciones.actual
     if fallo == 'referencia_ausente':
         original = datos_catalogo.leer_catalogo
-        def sin_geologo(carpeta=None):
-            catalogo = original(carpeta)
+        def sin_geologo(carpeta=None, ocultas=frozenset()):
+            catalogo = original(carpeta, ocultas)
             catalogo.ocupaciones = [o for o in catalogo.ocupaciones if o.codigo_onet != '19-2042.00']
             return catalogo
         monkeypatch.setattr(datos_catalogo, 'leer_catalogo', sin_geologo)

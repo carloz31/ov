@@ -46,13 +46,13 @@ def test_fallar_no_completa_y_superar_libera_testimonios_y_coleccion(cliente, ap
     # Ajuste mochila: el segundo testimonio pide además cerrar el proyecto.
     assert reglas(superado) == {'R-t-testimonio-1'}
     assert superado['ocupaciones_nuevas'] == [{'codigo': 'firefighter', 'titulo': 'Bomberos'},
-                                              {'codigo': 'paramedic', 'titulo': 'Paramédicos'}]
+                                              {'codigo': 'paramedic', 'titulo': 'Paramédico / técnico en emergencias médicas'}]
     assert [t['estado'] for t in pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')] == [
         'DISPONIBLE', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA']
 
     otra_vez = pedir(cliente, 'POST', '/acciones/resolver-caso', caso(14, ['paramedic', 'nurse']))
     assert (superado['puntaje_minimo'], superado['puntaje_maximo']) == (10, 14)
-    assert 'SUPERA_CASO' not in tipos(otra_vez) and otra_vez['ocupaciones_nuevas'] == [{'codigo': 'nurse', 'titulo': 'Enfermeros Graduados'}]
+    assert 'SUPERA_CASO' not in tipos(otra_vez) and otra_vez['ocupaciones_nuevas'] == [{'codigo': 'nurse', 'titulo': 'Enfermero(a)'}]
     pedir(cliente, 'POST', '/acciones/resolver-caso', caso(1, ['biologist']))
 
     fila = fila_caso(cliente)

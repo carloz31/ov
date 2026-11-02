@@ -29,7 +29,7 @@ def perfiles_de_ocupaciones(sesion: Session, dimensiones: dict[str, int]) -> Ite
                                    PuntajeOcupacion.dimension_id, PuntajeOcupacion.valor).outerjoin(
         PuntajeOcupacion, (PuntajeOcupacion.ocupacion_id == Ocupacion.id)
         & PuntajeOcupacion.dimension_id.in_(dimensiones.values()),
-    ).order_by(Ocupacion.codigo_onet)).all()
+    ).where(Ocupacion.en_test).order_by(Ocupacion.codigo_onet)).all()
     if not filas:
         raise ValueError("El catálogo de ocupaciones está vacío")
     ocupaciones, puntajes = {}, {}
