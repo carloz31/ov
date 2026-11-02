@@ -49,7 +49,7 @@ from app.schemas.instrumentos import (
     ResultadoHistorico, ResultadoPublico,
 )
 from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
-from soporte_catalogo_ruta import ING_AMBIENTAL, ING_CIVIL, INST_UNI, PERIODISMO, PSICOLOGIA
+from soporte_catalogo_ruta import ING_CIVIL, INST_UNI, PERIODISMO, PSICOLOGIA
 
 
 SCRIPT = Path(exportador.__file__).resolve()
@@ -205,7 +205,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     RespuestaRevelarResultado.model_validate(datos['revelar-llegada'])
     assert {d.zona for d in ResultadoPublico.model_validate(datos['resultado-llegada']).dimensiones} >= {'FUERTE'}
     assert RespuestaRevelarResultado.model_validate(datos['revelar-riasec-plano']).perfil_plano
-    assert ResultadoPublico.model_validate(datos['resultado-riasec-plano']).coincidencias == []
+    assert ResultadoPublico.model_validate(datos['resultado-riasec-plano']).ocupaciones is None
     plano, = TypeAdapter(list[ResultadoHistorico]).validate_python(datos['historial-riasec-plano'])
     assert plano.perfil_plano and plano.anulado_en is None
     anulado, = TypeAdapter(list[ResultadoHistorico]).validate_python(datos['historial-riasec'])
@@ -310,12 +310,11 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert {d['codigo']: d['puntaje_visual'] for d in resultado['dimensiones']} == {
         'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0,
     }
-    assert len(resultado['coincidencias']) == 10
-    assert 'geologist' in [c['codigo'] for c in resultado['coincidencias']]
-    assert {ING_AMBIENTAL, ING_CIVIL} <= {c['codigo'] for c in resultado['carreras_recomendadas']}
-    # B10 · HU-026: los favoritos marcados antes de revelar se indican en el resultado.
-    assert [c['codigo'] for c in resultado['coincidencias'] if c['es_favorita']] == ['geologist']
-    assert [c['codigo'] for c in resultado['carreras_recomendadas'] if c['es_favorita']] == [ING_CIVIL]
+    # Ajuste resultados-intereses: ocupaciones afines con parecido y banda, por área y familias; sin favoritos.
+    assert 10 <= len(resultado['ocupaciones']) <= 30 and resultado['perfil_poco_marcado'] is False
+    assert 'geologist' in [c['codigo'] for c in resultado['ocupaciones']]
+    assert resultado['familias'] and resultado['por_area'] and resultado['mensaje'] and resultado['lectura']
+    assert 'es_favorita' not in resultado['ocupaciones'][0] and 'carreras_recomendadas' not in resultado
     # B10: catálogo, vistas y favoritos.
     # F06: listados paginados, opciones de filtro, lugar inesperado y filtro de favoritos.
     carreras = PaginaCarreras.model_validate(datos['catalogo-carreras'])

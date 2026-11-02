@@ -11,7 +11,7 @@ from app.core.parametros import CIFRAS_CUENTA_DIPLOMA, PREFIJO_DIPLOMA
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, Aplicacion, Bloque, Cuenta, EstadoProgreso, EventoUso, Instrumento, MomentoAplicacion,
-    ResultadoInstrumento, Rol, SalonInstrumento, TipoEventoUso, VinculoFamiliar,
+    ResultadoInstrumento, Rol, SalonInstrumento, TipoEventoUso, TipoResultado, VinculoFamiliar,
 )
 from app.schemas.cuentas import NivelActual
 from app.schemas.familia import (
@@ -87,10 +87,12 @@ def _hijo(sesion: Session, cuenta: Cuenta, estudiante: str | None = None) -> Cue
 
 def _aplicaciones_visibles(sesion: Session, salon_id: int | None) -> list[Aplicacion]:
     """Aplicaciones de los instrumentos visibles al apoderado en el salón, por código de instrumento y, dentro de él,
-    por momento (la partida antes que la llegada) y código."""
+    por momento (la partida antes que la llegada) y código. Partida y llegada (COMPARACION) nunca, aunque el salón
+    la marque visible: mide también la presión que el estudiante siente de su familia (ajuste resultados-intereses)."""
     definiciones = contexto(sesion).definiciones
     visibles = {fila.instrumento_id for fila in definiciones.listar(SalonInstrumento)
-                if fila.salon_id == salon_id and fila.visible_apoderado}
+                if fila.salon_id == salon_id and fila.visible_apoderado
+                and definiciones.obtener(Instrumento, fila.instrumento_id).tipo_resultado != TipoResultado.COMPARACION}
     aplicaciones = [a for a in definiciones.listar(Aplicacion) if a.instrumento_id in visibles]
     return sorted(aplicaciones, key=lambda a: (definiciones.obtener(Instrumento, a.instrumento_id).codigo,
                                               list(MomentoAplicacion).index(a.momento), a.codigo))
@@ -155,5 +157,5 @@ def resultados_hijo(sesion: Session, cuenta: Cuenta, estudiante: str | None = No
         ResultadoInstrumento.anulado_en.is_(None)))
 
     orden = list(aplicaciones)
-    return [representar_resultado(sesion, resultado)
+    return [representar_resultado(sesion, resultado, audiencia='apoderado', nombre=hijo.nombre)
             for resultado in sorted(resultados, key=lambda r: orden.index(r.aplicacion_id))]

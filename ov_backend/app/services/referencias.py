@@ -88,7 +88,7 @@ def _opciones_de_resultado(tipo, resultado):
     if resultado.perfil_plano:
         return []
     if tipo == TipoReferencia.COINCIDENCIAS:
-        return [OpcionReferida(codigo=c.codigo or c.codigo_onet, texto=c.titulo) for c in resultado.coincidencias or ()]
+        return [OpcionReferida(codigo=c.codigo or c.codigo_onet, texto=c.titulo) for c in resultado.ocupaciones or ()]
     if resultado.dimensiones_destacadas is not None:
         dimensiones = resultado.dimensiones_destacadas
     else:

@@ -4,11 +4,20 @@ Los umbrales son los criterios de §5.4, no una atribución bibliográfica
 adicional. Las opciones persistidas siguen siendo la fuente de sus puntajes.
 """
 
-# §5.4: ajuste inclusivo y cantidad máxima de coincidencias guardadas.
-UMBRAL_BEST_FIT = 0.729
-UMBRAL_GREAT_FIT = 0.608
+# Se guardan todas las coincidencias con r ≥ CORRELACION_MINIMA, sin tope (ajuste resultados-intereses).
 CORRELACION_MINIMA = 0
-LIMITE_COINCIDENCIAS = 10
+# Ocupaciones afines que se muestran: r ≥ UMBRAL_AFIN, de MINIMO a MAXIMO (si menos pasan el umbral, se
+# completan hasta el mínimo y el perfil es «poco marcado»). Banda «muy afín» desde UMBRAL_MUY_AFIN de parecido.
+UMBRAL_AFIN = 0.5
+MAXIMO_OCUPACIONES_AFINES = 30
+MINIMO_OCUPACIONES_AFINES = 10
+UMBRAL_MUY_AFIN = 70
+UMBRAL_AFIN_PARECIDO = 50
+# Familias recomendadas: media de las 2 mejores r de sus ocupaciones afines con esa familia principal; si solo
+# tiene una, el segundo cupo vale RELLENO_SEGUNDA_OCUPACION.
+FAMILIAS_RECOMENDADAS = 5
+OCUPACIONES_POR_FAMILIA = 2
+RELLENO_SEGUNDA_OCUPACION = 0.5
 
 # B07: zona de una dimensión de partida o llegada según su promedio (inclusivo). Provisional.
 UMBRAL_ZONA_FUERTE = 3.5

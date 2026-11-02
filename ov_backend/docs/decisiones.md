@@ -12,3 +12,8 @@
 - F1 · Bajar de 0041 se detiene si hay familias de ocupaciones (como 0033 y 0039): el catálogo curado no cabe en 0040; la base se vacía y se recarga.
 - F1 · El cálculo de coincidencias usa solo las ocupaciones `en_test`; el listado del catálogo, sus grupos y el «lugar inesperado» excluyen las de `en_catalogo` falso.
 - F1 · Pruebas adaptadas por el cambio de datos que pide la observación: conteos de tablas y ocupaciones (250 cargadas, 245 listadas), áreas de 2 cifras (`313` → `31`), títulos curados (`Psicólogo clínico`, `Paramédico / técnico en emergencias médicas`, `Director ejecutivo (gerente general)`) y el punto donde se detiene el downgrade.
+- F2 · El resultado se sigue leyendo en `GET /cuentas/{c}/instrumentos/{i}/resultado` (la ruta que usa el front); no se crea `/resultados/intereses`. `coincidencias` y `carreras_recomendadas` dan paso a `ocupaciones`, `por_area` y `familias`.
+- F2 · `{nombre}` se reemplaza por el nombre de pila (primera palabra de `cuenta.nombre`), como en el boceto («Ana»).
+- F2 · Bajar de 0042 se detiene si algún resultado tiene más de 10 coincidencias; con 10 o menos se recalcula `ajuste` con los umbrales O*NET.
+- F2 · `por_area` se ordena por la primera aparición de cada área en la lista de ocupaciones; «Sin familia» va al final con `area_codigo` nulo.
+- F2 · Las opciones de la referencia COINCIDENCIAS pasan a ser las ocupaciones afines mostradas (de 10 a 30).

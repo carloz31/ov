@@ -15,7 +15,7 @@ def test_r25_coincidencias_tipo_y_orden_independientes_del_codigo(tmp_path, base
             assert [d['codigo'] for d in obtenido['dimensiones']] == list('CESAIR')
             assert obtenido['codigo_interes'] == {'codigo': 'CES' if plano else 'IRA', 'hay_empate': plano}
             assert obtenido['perfil_plano'] == plano
-            assert (obtenido['coincidencias'] == []) == plano
+            assert ('ocupaciones' not in obtenido) == plano
 
 
 def test_r26_destacadas_genericas_inversos_empates_y_cero(tmp_path, base_aislada):

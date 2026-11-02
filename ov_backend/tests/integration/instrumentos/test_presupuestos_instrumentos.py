@@ -1,7 +1,7 @@
 """R12, R30–R31: SQL agrupado de respuestas, cálculo y consultas."""
 
 from soporte_datos_ports import agregar_ocupaciones
-from sqlalchemy import select
+from sqlalchemy import func, select
 from app import models as m
 from soporte_ruta import INTERESES_FINAL, avanzar, completar, pedir
 from soporte_retiro import actividades_extra, ciclo, datos_respuestas, medir, preparar_ultimo
@@ -66,3 +66,26 @@ def test_r31_presupuestos_de_consultas_y_reinicio(tmp_path, base_aislada):
                 {'cuenta': 'est-ana', 'instrumento': 'TEST-RIASEC'}, limite=12)[1].cantidad)
             conteos.append(cantidades)
     assert conteos[0] == conteos[1]
+
+
+def test_lectura_del_resultado_constante_con_cien_coincidencias_mas(tmp_path, base_aislada):
+    # Ajuste resultados-intereses: se guardan todas las coincidencias (hasta 234 por resultado); leerlo, con sus
+    # ocupaciones afines, áreas y familias, no hace más consultas por tener más coincidencias.
+    conteos = []
+    for extra in (0, 100):
+        with base_aislada(tmp_path, f'lectura-{extra}') as (aplicacion, cliente):
+            if extra:
+                with aplicacion.state.fabrica_sesiones.begin() as sesion:
+                    agregar_ocupaciones(sesion, extra)
+                    # Perfil descendente R…C, que se correlaciona en positivo con el de est-ana (IRA).
+                    for puntaje in sesion.scalars(select(m.PuntajeOcupacion).join(m.Ocupacion).where(
+                            m.Ocupacion.codigo.like('prueba-%'))):
+                        puntaje.valor = 7 - puntaje.valor
+            ciclo(cliente)
+            with aplicacion.state.fabrica_sesiones() as sesion:
+                guardadas = sesion.scalar(select(func.count()).select_from(m.Coincidencia))
+            resultado, contador = medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado',
+                                        limite=12)
+            assert resultado['familias']
+            conteos.append((guardadas, contador.cantidad))
+    assert conteos[1][0] > conteos[0][0] and conteos[0][1] == conteos[1][1]

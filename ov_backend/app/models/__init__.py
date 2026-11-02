@@ -3,7 +3,7 @@
 from importlib import import_module
 
 from app.models.enums import (
-    Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso, NivelAjuste,
+    Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso,
     TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
     ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion, TipoCriterio,
     TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion, TipoFavorito,
@@ -75,7 +75,7 @@ def __getattr__(nombre):
 
 __all__ = [
     'Base', 'Rol', 'Espacio', 'Audiencia', 'TipoActividad', 'Visibilidad', 'EstadoProgreso',
-    'TipoEventoUso', 'NivelAjuste', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
+    'TipoEventoUso', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
     'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
     'SalonInstrumento', 'Bloque',

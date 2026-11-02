@@ -67,20 +67,13 @@ def test_hu040_marcar_consultar_y_desmarcar(abierto):
     assert codigos(pedir(abierto, 'GET', '/cuentas/est-ana/favoritos')['carreras']) == [PSICOLOGIA]
 
 
-def test_hu026_el_resultado_marca_ocupaciones_y_carreras_favoritas(cliente):
+def test_el_resultado_no_lleva_favoritos(cliente):
+    # Ajuste resultados-intereses: el resultado no tiene Guardar ni planes; marcar favoritos no lo cambia.
     ciclo(cliente)
     antes = resultado(cliente)
-    assert not any(c['es_favorita'] for c in antes['coincidencias'])
-    assert not any(c['es_favorita'] for c in antes['carreras_recomendadas'])
-    ocupacion = antes['coincidencias'][0]['codigo']
-    carrera = antes['carreras_recomendadas'][0]['codigo']
-    pedir(cliente, 'POST', '/acciones/marcar-favorito', favorito('OCUPACION', ocupacion))
-    pedir(cliente, 'POST', '/acciones/marcar-favorito', favorito('CARRERA', carrera))
-    despues = resultado(cliente)
-    assert [c['codigo'] for c in despues['coincidencias'] if c['es_favorita']] == [ocupacion]
-    assert [c['codigo'] for c in despues['carreras_recomendadas'] if c['es_favorita']] == [carrera]
-    via = [v for c in despues['carreras_recomendadas'] for v in c['via'] if v['codigo'] == ocupacion]
-    assert via and all(v['es_favorita'] for v in via)
+    assert all('es_favorita' not in c for c in antes['ocupaciones'])
+    pedir(cliente, 'POST', '/acciones/marcar-favorito', favorito('OCUPACION', antes['ocupaciones'][0]['codigo']))
+    assert resultado(cliente) == antes
 
 
 def test_presupuesto_de_consultas_de_favoritos(tmp_path, base_aislada):

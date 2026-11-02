@@ -106,12 +106,6 @@ class TipoFavorito(StrEnum):
     ENTREVISTA = "ENTREVISTA"
 
 
-class NivelAjuste(StrEnum):
-    BEST_FIT = "BEST_FIT"
-    GREAT_FIT = "GREAT_FIT"
-    GOOD_FIT = "GOOD_FIT"
-
-
 class TipoResultado(StrEnum):
     COINCIDENCIAS = "COINCIDENCIAS"
     DESTACADAS = "DESTACADAS"

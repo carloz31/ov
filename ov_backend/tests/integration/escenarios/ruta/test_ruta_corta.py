@@ -251,7 +251,8 @@ def test_perfil_plano(cliente):
     assert revelar(cliente, cuenta='est-luis')['perfil_plano'] is True
     resultado = pedir(cliente, 'GET', '/cuentas/est-luis/instrumentos/TEST-RIASEC/resultado')
     assert resultado['perfil_plano'] is True
-    assert resultado['coincidencias'] == resultado['carreras_recomendadas'] == []
+    # Ajuste resultados-intereses: sin ocupaciones ni familias con perfil plano.
+    assert 'ocupaciones' not in resultado and 'familias' not in resultado
 
 
 def test_hu073_avisos_de_desbloqueo(cliente):

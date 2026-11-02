@@ -115,7 +115,11 @@ def test_resultados_del_hijo_con_ruta_completa_e_instrumento_visible(cliente, ap
     completar_ruta_apoderado(cliente)
     [riasec] = resultados(cliente)
     propio = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
-    assert riasec == propio and riasec['codigo_interes']['codigo'] == 'IRA'
+    # Ajuste resultados-intereses: el mismo resultado con los textos del apoderado, con el nombre de pila del hijo.
+    textos = ('mensaje', 'lectura')
+    assert {k: v for k, v in riasec.items() if k not in textos} == {k: v for k, v in propio.items() if k not in textos}
+    assert riasec['codigo_interes']['codigo'] == 'IRA' and riasec['lectura'] != propio['lectura']
+    assert 'Ana' in riasec['mensaje'] and 'Ana' in riasec['lectura'] and '{nombre}' not in riasec['lectura']
     # El de partida y llegada no está configurado como visible al apoderado.
     assert {r['instrumento'] for r in resultados(cliente)} == {'TEST-RIASEC'}
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
@@ -155,17 +159,15 @@ def test_instrumento_no_visible_no_aparece(cliente, aplicacion):
     assert hijo(cliente)['cuestionarios'] == []
 
 
-def test_partida_y_llegada_con_solo_la_partida(cliente, aplicacion):
+def test_partida_y_llegada_nunca_se_muestra_al_apoderado(cliente, aplicacion):
+    # Ajuste resultados-intereses: aunque el salón la marque visible, mide también la presión de la familia.
     hacer_visible(aplicacion)
     avanzar(cliente, 't-partida')
-    # El resultado de la partida existe al revelarla (`completado_en` es su `calculado_en`).
-    assert hijo(cliente)['cuestionarios'][0]['aplicaciones'][0]['completado_en'] is None
     revelar(cliente, 'TEST-PARTIDA-LLEGADA', aplicacion='APL-PARTIDA')
-    cuestionarios = {c['instrumento']: c for c in hijo(cliente)['cuestionarios']}
-    assert list(cuestionarios) == ['TEST-PARTIDA-LLEGADA', 'TEST-RIASEC']
-    assert [(a['aplicacion'], a['momento'], a['completado_en'])
-            for a in cuestionarios['TEST-PARTIDA-LLEGADA']['aplicaciones']] == [
-        ('APL-PARTIDA', 'ENTRADA', FECHA), ('APL-LLEGADA', 'SALIDA', None)]
+    assert [c['instrumento'] for c in hijo(cliente)['cuestionarios']] == ['TEST-RIASEC']
+    revelar_intereses(cliente)
+    completar_ruta_apoderado(cliente)
+    assert [r['instrumento'] for r in resultados(cliente)] == ['TEST-RIASEC']
 
 
 def test_resultados_por_hijo_elegido(cliente):

@@ -108,7 +108,7 @@ def guardar_resultados(sesion, calculos):
                                 puntaje_maximo=dimension.puntaje_maximo)
                            for dimension_id, dimension in calculadas.items())
         coincidencias.extend(dict(resultado_id=resultado_id, ocupacion_id=ocupaciones[afin.codigo_onet],
-                                  posicion=afin.posicion, correlacion=afin.correlacion, ajuste=afin.ajuste)
+                                  posicion=afin.posicion, correlacion=afin.correlacion)
                              for afin in afines)
     sesion.execute(insert(ResultadoDimension.__table__), dimensiones)
     if coincidencias:

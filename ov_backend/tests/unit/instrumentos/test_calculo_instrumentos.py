@@ -3,9 +3,10 @@
 import pytest
 
 from app.services.instrumentos.calculo import (
-    CodigoInteresCalculado, DimensionCalculada, ItemParaCalculo, PerfilOcupacion,
-    calcular_codigo_interes, calcular_coincidencias, calcular_dimension,
-    calcular_dimensiones_destacadas, calcular_pearson, calcular_puntaje_item, clasificar_ajuste, puntaje_visual,
+    CodigoInteresCalculado, DimensionCalculada, ItemParaCalculo, OcupacionAfin, PerfilOcupacion,
+    calcular_codigo_interes, calcular_coincidencias, calcular_dimension, calcular_dimensiones_destacadas,
+    calcular_parecido, calcular_pearson, calcular_puntaje_item, clasificar_banda, puntaje_visual,
+    recomendar_familias, seleccionar_afines,
 )
 
 
@@ -13,34 +14,35 @@ VECTOR_A = (21, 9, 17, 20, 28, 15)
 VECTOR_B = (27, 24, 18, 17, 23, 18)
 
 
-@pytest.mark.parametrize("vector_ocupacion, esperado, ajuste", [
-    ((4.2, 1.8, 3.4, 4.0, 5.6, 3.0), 1.000000, "BEST_FIT"),
-    ((5.0, 1.0, 2.0, 4.0, 6.0, 4.5), 0.845946, "BEST_FIT"),
-    ((3.0, 2.5, 3.5, 5.0, 4.5, 2.0), 0.681419, "GREAT_FIT"),
-    ((1.00, 1.69, 3.87, 3.14, 7.00, 4.43), 0.584176, "GOOD_FIT"),
+@pytest.mark.parametrize("vector_ocupacion, esperado, banda", [
+    ((4.2, 1.8, 3.4, 4.0, 5.6, 3.0), 1.000000, "MUY_AFIN"),
+    ((5.0, 1.0, 2.0, 4.0, 6.0, 4.5), 0.845946, "MUY_AFIN"),
+    ((3.0, 2.5, 3.5, 5.0, 4.5, 2.0), 0.681419, "AFIN"),
+    ((1.00, 1.69, 3.87, 3.14, 7.00, 4.43), 0.584176, "AFIN"),
 ])
-def test_pearson_y_ajuste_con_vectores_de_la_especificacion(vector_ocupacion, esperado, ajuste):
+def test_pearson_y_banda_con_vectores_de_la_especificacion(vector_ocupacion, esperado, banda):
+    # Ajuste resultados-intereses: la banda reemplaza al nivel de ajuste O*NET.
     correlacion = calcular_pearson(VECTOR_A, vector_ocupacion)
     assert correlacion == pytest.approx(esperado, abs=1e-6, rel=0)
-    assert clasificar_ajuste(correlacion) == ajuste
+    assert clasificar_banda(calcular_parecido(correlacion)) == banda
 
 
 def test_correlacion_negativa_del_notebook_se_descarta():
     ocupacion = PerfilOcupacion("11-1021.00", "General and Operations Managers", (2.20, 2.37, 1.29, 3.38, 7, 5.34))
     correlacion = calcular_pearson(VECTOR_B, ocupacion.puntajes)
     assert correlacion == pytest.approx(-0.061193, abs=1e-6, rel=0)
-    assert clasificar_ajuste(correlacion) is None
     resultado = calcular_coincidencias(VECTOR_B, [ocupacion])
     assert resultado.perfil_plano is False
     assert resultado.coincidencias == ()
 
 
-@pytest.mark.parametrize("correlacion, esperado", [
-    (-1, None), (-0.000001, None), (0, "GOOD_FIT"), (0.607999, "GOOD_FIT"),
-    (0.608, "GREAT_FIT"), (0.728999, "GREAT_FIT"), (0.729, "BEST_FIT"), (1, "BEST_FIT"),
+@pytest.mark.parametrize("correlacion, parecido, banda", [
+    (1, 100, "MUY_AFIN"), (0.695, 70, "MUY_AFIN"), (0.6949, 69, "AFIN"), (0.5, 50, "AFIN"),
+    (0.4951, 50, "AFIN"), (0.4949, 49, "CERCANA"), (0, 0, "CERCANA"),
 ])
-def test_umbrales_de_ajuste_inclusivos_sin_redondear(correlacion, esperado):
-    assert clasificar_ajuste(correlacion) == esperado
+def test_parecido_redondea_la_mitad_hacia_arriba_y_bandas_inclusivas(correlacion, parecido, banda):
+    assert calcular_parecido(correlacion) == parecido
+    assert clasificar_banda(parecido) == banda
 
 
 @pytest.mark.parametrize("puntaje, minimo, maximo, inverso, esperado", [
@@ -135,13 +137,14 @@ def test_codigo_de_interes_y_empate_solo_en_el_corte(puntajes, codigo, hay_empat
     assert calcular_codigo_interes(puntajes) == CodigoInteresCalculado(codigo, hay_empate)
 
 
-def test_top_diez_desempata_por_codigo_y_asigna_posiciones():
+def test_guarda_todas_sin_tope_desempata_por_codigo_y_asigna_posiciones():
+    # Ajuste resultados-intereses: se guardan todas las de r ≥ 0, sin el tope de 10.
     ocupaciones = [PerfilOcupacion(f"O-{numero:02}", f"Ocupación {numero}", VECTOR_A) for numero in range(12, 0, -1)]
     resultado = calcular_coincidencias(VECTOR_A, iter(ocupaciones))
     assert resultado.perfil_plano is False
-    assert [c.codigo_onet for c in resultado.coincidencias] == [f"O-{numero:02}" for numero in range(1, 11)]
-    assert [c.posicion for c in resultado.coincidencias] == list(range(1, 11))
-    assert all(c.correlacion == pytest.approx(1) and c.ajuste == "BEST_FIT" for c in resultado.coincidencias)
+    assert [c.codigo_onet for c in resultado.coincidencias] == [f"O-{numero:02}" for numero in range(1, 13)]
+    assert [c.posicion for c in resultado.coincidencias] == list(range(1, 13))
+    assert all(c.correlacion == pytest.approx(1) for c in resultado.coincidencias)
     assert [o.codigo_onet for o in ocupaciones] == [f"O-{numero:02}" for numero in range(12, 0, -1)]
 
 
@@ -153,7 +156,6 @@ def test_top_ordena_por_pearson_y_conserva_precision_y_titulos():
     ]
     coincidencias = calcular_coincidencias(VECTOR_A, ocupaciones).coincidencias
     assert [c.codigo_onet for c in coincidencias] == ["03-BEST", "02-GREAT", "01-GOOD"]
-    assert [c.ajuste for c in coincidencias] == ["BEST_FIT", "GREAT_FIT", "GOOD_FIT"]
     assert [c.posicion for c in coincidencias] == [1, 2, 3]
     assert coincidencias[-1].titulo == "Advertising and Promotions Managers"
     for coincidencia, esperado in zip(coincidencias, (0.845946, 0.681419, 0.584176), strict=True):
@@ -181,7 +183,8 @@ def test_perfil_plano_no_evalua_ocupaciones():
     lambda: calcular_dimension("VACIA", []), lambda: calcular_codigo_interes((1, 2)),
     lambda: calcular_pearson(VECTOR_A, (1, 2, 3)),
     lambda: calcular_pearson(VECTOR_A, (1, 2, 3, 4, 5, float("nan"))),
-    lambda: clasificar_ajuste(float("nan")), lambda: clasificar_ajuste(1.01),
+    lambda: calcular_parecido(float("nan")), lambda: calcular_parecido(1.01),
+    lambda: seleccionar_afines([("A", 0.4), ("B", 0.6)]), lambda: seleccionar_afines([("A", 1.2)]),
 ])
 def test_calculo_rechaza_datos_invalidos_en_lugar_de_generar_resultados(operacion):
     with pytest.raises(ValueError):
@@ -192,3 +195,50 @@ def test_ocupacion_constante_provoca_error_identificando_su_codigo():
     ocupacion = PerfilOcupacion("O-PLANA", "Vector constante", (2,) * 6)
     with pytest.raises(ValueError, match="O-PLANA.*vector constante"):
         calcular_coincidencias(VECTOR_A, [ocupacion])
+
+
+def _coincidencias(*correlaciones):
+    return [(f"O-{n:02}", r) for n, r in enumerate(correlaciones, start=1)]
+
+
+def test_afines_umbral_de_medio_y_tope_de_treinta():
+    coincidencias = _coincidencias(*[0.9 - n * 0.01 for n in range(45)])
+    afines = seleccionar_afines(coincidencias)
+    # 0,9 … 0,5: 41 pasan el umbral; se muestran las 30 primeras.
+    assert len(afines.ocupaciones) == 30 and afines.poco_marcado is False
+    assert afines.ocupaciones[0] == OcupacionAfin("O-01", 0.9, 90, "MUY_AFIN")
+    assert afines.ocupaciones[-1].parecido == 61 and afines.ocupaciones[-1].banda == "AFIN"
+    medio = seleccionar_afines(_coincidencias(*[0.8] * 12, 0.5, 0.49, 0.3))
+    assert [o.codigo for o in medio.ocupaciones] == [f"O-{n:02}" for n in range(1, 14)]
+
+
+def test_afines_minimo_de_diez_marca_perfil_poco_marcado():
+    afines = seleccionar_afines(_coincidencias(0.8, 0.6, 0.55, *[0.4 - n * 0.02 for n in range(12)]))
+    assert afines.poco_marcado is True and len(afines.ocupaciones) == 10
+    assert [o.banda for o in afines.ocupaciones[:4]] == ["MUY_AFIN", "AFIN", "AFIN", "CERCANA"]
+    pocas = seleccionar_afines(_coincidencias(0.7, 0.2))
+    assert pocas.poco_marcado is True and len(pocas.ocupaciones) == 2
+    assert seleccionar_afines([]) .ocupaciones == ()
+
+
+def _afines(**correlaciones):
+    return [OcupacionAfin(codigo, r, calcular_parecido(r), clasificar_banda(calcular_parecido(r)))
+            for codigo, r in sorted(correlaciones.items(), key=lambda par: -par[1])]
+
+
+def test_familias_media_de_las_dos_mejores_con_relleno_y_desempate():
+    afines = _afines(a1=0.9, a2=0.6, b1=0.85, c1=0.8, c2=0.79, c3=0.78, d1=0.7, sin=0.95)
+    principal = {"a1": "300", "a2": "300", "b1": "200", "c1": "100", "c2": "100", "c3": "100", "d1": "400"}
+    familias = recomendar_familias(afines, principal)
+    # c: (0,8 + 0,79)/2 = 0,795; a: 0,75; b: (0,85 + 0,5)/2 = 0,675; d: 0,6. «sin» no tiene familia.
+    assert [f.codigo for f in familias] == ["100", "300", "200", "400"]
+    assert [o.codigo for o in familias[0].ocupaciones] == ["c1", "c2", "c3"]
+    assert [f.unica_ocupacion for f in familias] == [False, False, True, True]
+    empate = recomendar_familias(_afines(x=0.8, y=0.8), {"x": "900", "y": "050"})
+    assert [f.codigo for f in empate] == ["050", "900"]
+
+
+def test_familias_solo_las_cinco_mejores():
+    afines = _afines(**{f"o{n}": 0.9 - n * 0.05 for n in range(7)})
+    familias = recomendar_familias(afines, {f"o{n}": f"{n:03}" for n in range(7)})
+    assert [f.codigo for f in familias] == ["000", "001", "002", "003", "004"]

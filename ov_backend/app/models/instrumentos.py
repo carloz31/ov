@@ -5,12 +5,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.core.parametros import (
-    CORRELACION_MINIMA, LIMITE_COINCIDENCIAS, UMBRAL_BEST_FIT, UMBRAL_GREAT_FIT,
-)
+from app.core.parametros import CORRELACION_MINIMA
 from app.database import TipoJSON
 from app.models.base import Base, busqueda_de, enumerado
-from app.models.enums import MomentoAplicacion, NivelAjuste, TipoResultado
+from app.models.enums import MomentoAplicacion, TipoResultado
 
 
 class Instrumento(Base):
@@ -199,16 +197,12 @@ class Coincidencia(Base):
     __tablename__ = "coincidencia"
     __table_args__ = (
         UniqueConstraint("resultado_id", "posicion"),
-        CheckConstraint(f"posicion BETWEEN 1 AND {LIMITE_COINCIDENCIAS}", name="posicion_valida"),
-        CheckConstraint(
-            f"(correlacion >= {UMBRAL_BEST_FIT} AND ajuste = 'BEST_FIT') OR "
-            f"(correlacion >= {UMBRAL_GREAT_FIT} AND correlacion < {UMBRAL_BEST_FIT} AND ajuste = 'GREAT_FIT') OR "
-            f"(correlacion >= {CORRELACION_MINIMA} AND correlacion < {UMBRAL_GREAT_FIT} AND ajuste = 'GOOD_FIT')",
-            name="ajuste_segun_correlacion",
-        ),
+        CheckConstraint("posicion >= 1", name="posicion_valida"),
+        CheckConstraint(f"correlacion >= {CORRELACION_MINIMA} AND correlacion <= 1", name="correlacion_valida"),
     )
     resultado_id: Mapped[int] = mapped_column(ForeignKey("resultado_instrumento.id"), primary_key=True)
     ocupacion_id: Mapped[int] = mapped_column(ForeignKey("ocupacion.id"), primary_key=True)
     posicion: Mapped[int]
+    # Todas las de r ≥ 0 de las ocupaciones `en_test`, por r descendente (ajuste resultados-intereses): las
+    # afines que se muestran y las familias recomendadas se derivan al leer.
     correlacion: Mapped[float]
-    ajuste: Mapped[NivelAjuste] = mapped_column(enumerado(NivelAjuste))

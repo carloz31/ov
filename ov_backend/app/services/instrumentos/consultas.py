@@ -1,31 +1,37 @@
 """Consultas de instrumentos: derivan vistas sin modificar respuestas ni resultados."""
 
 from collections import Counter
+from typing import Literal
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.core.definiciones import MODELOS_FIJOS
-from app.core.parametros import DECIMALES_CORRELACION
 from app.exceptions import ConsultaPendiente
 from app.models import (
     Actividad, ActividadItem, Aplicacion, AplicacionActividad, Audiencia, Bloque, Carrera,
-    CarreraOcupacion, Coincidencia, Cuenta, Dimension, EscalaRespuesta, EstadoProgreso,
-    FamiliaCarrera, Instrumento, ItemInstrumento, MomentoAplicacion, Ocupacion, OpcionEscala,
+    Coincidencia, Cuenta, Dimension, EscalaRespuesta, EstadoProgreso,
+    FamiliaCarrera, Instrumento, ItemInstrumento, MomentoAplicacion, Ocupacion, OcupacionFamilia, OpcionEscala,
     ProgresoActividad, RespuestaItem, ResultadoDimension, ResultadoInstrumento, Rol, Tematica, ActividadTematica,
-    TipoFavorito, TipoResultado,
+    TipoInstitucion, TipoResultado,
 )
 from app.schemas.instrumentos import (
-    ActividadPublica, AplicacionPublica, AvanceAplicacion, AvanceInstrumento, CarreraRecomendada,
-    CodigoInteresPublico, CoincidenciaPublica, ComparacionAutopercepcion, ComparacionDimension, ComparacionItem,
+    ActividadPublica, AplicacionPublica, AreaOcupaciones, AvanceAplicacion, AvanceInstrumento,
+    CodigoInteresPublico, ComparacionAutopercepcion, ComparacionDimension, ComparacionItem,
     ConteoAvance, ConteoItems, DimensionPublica, DimensionResultado, EscalaPublica,
-    InstrumentoPublico, ItemPublico, OpcionPublica, RespuestaPublica, RespuestasActividad,
-    ResultadoHistorico, ResultadoPublico,
+    FamiliaRecomendadaPublica, InstrumentoPublico, ItemPublico, OcupacionAfinPublica, OcupacionDeFamilia,
+    OpcionPublica, RespuestaPublica, RespuestasActividad, ResultadoHistorico, ResultadoPublico,
 )
+from app.schemas.catalogo import FamiliaPublica
 from app.services.instrumentos.calculo import (
     DimensionCalculada, calcular_codigo_interes, calcular_dimensiones_destacadas, calcular_zona, puntaje_visual,
+    recomendar_familias, seleccionar_afines,
 )
+
+
+AudienciaTextos = Literal['estudiante', 'apoderado', 'orientadora']
+SIN_FAMILIA = 'Sin familia'
 
 
 def items_por_dimension(definiciones, instrumento: Instrumento) -> Counter:
@@ -48,6 +54,15 @@ def minimos_por_dimension(definiciones, instrumento: Instrumento) -> Counter:
 def textos_dimension(dimension) -> dict:
     return dict(ejemplos=dimension.ejemplos, fortalezas=list(dimension.fortalezas or []),
                 desarrollo=list(dimension.desarrollo or []))
+
+
+def textos_instrumento(instrumento: Instrumento, audiencia: AudienciaTextos = 'estudiante',
+                       nombre: str | None = None) -> dict:
+    """`mensaje`, `lectura` y `guia_abierta` de la audiencia; `{nombre}` es el nombre de pila del estudiante."""
+    pila = (nombre or '').split(' ')[0]
+    return dict(mensaje=getattr(instrumento, f'mensaje_{audiencia}').replace('{nombre}', pila),
+                lectura=getattr(instrumento, f'lectura_{audiencia}').replace('{nombre}', pila),
+                guia_abierta=instrumento.guia_abierta)
 
 
 def codigo_tematica(definiciones, dimension) -> str | None:
@@ -117,7 +132,7 @@ def catalogo_instrumentos(sesion: Session) -> list[InstrumentoPublico]:
                                            if item.instrumento_id == instrumento.id}), key=lambda escala: escala.codigo)
         catalogo.append(InstrumentoPublico(
             codigo=instrumento.codigo, nombre=instrumento.nombre, descripcion=instrumento.descripcion,
-            lectura=instrumento.lectura_estudiante, tipo_resultado=instrumento.tipo_resultado,
+            **textos_instrumento(instrumento), tipo_resultado=instrumento.tipo_resultado,
             dimensiones=[DimensionPublica(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
                                          **textos_dimension(d), orden=d.orden) for d in dimensiones],
             escalas=[escala_publica(sesion, escala) for escala in escalas],
@@ -209,6 +224,8 @@ def seleccionar_aplicacion(sesion: Session, instrumento: Instrumento, codigo: st
 
 
 def cargar_representaciones(sesion, resultados):
+    """Dimensiones, coincidencias y familia principal de cada ocupación de los resultados, en lote: tres lecturas
+    para cualquier número de resultados."""
     datos = contexto(sesion)
     if not hasattr(datos, 'representaciones'):
         datos.representaciones = {}
@@ -217,37 +234,103 @@ def cargar_representaciones(sesion, resultados):
         return
     por_dimension = {identificador: [] for identificador in faltantes}
     por_coincidencia = {identificador: [] for identificador in faltantes}
-    por_carrera = {identificador: [] for identificador in faltantes}
     for dimension, resultado in sesion.execute(select(Dimension, ResultadoDimension).join(ResultadoDimension).where(
         ResultadoDimension.resultado_id.in_(faltantes),
     ).order_by(Dimension.orden, Dimension.codigo)):
         por_dimension[resultado.resultado_id].append((dimension, resultado))
     riasec = {resultado.id for resultado in resultados if resultado.id in faltantes
               and datos.definiciones.obtener(Instrumento, datos.definiciones.obtener(Aplicacion, resultado.aplicacion_id).instrumento_id).tipo_resultado == TipoResultado.COINCIDENCIAS}
+    principales = {}
     if riasec:
         for coincidencia, ocupacion in sesion.execute(select(Coincidencia, Ocupacion).join(Ocupacion).where(
             Coincidencia.resultado_id.in_(riasec),
         ).order_by(Coincidencia.posicion)):
             por_coincidencia[coincidencia.resultado_id].append((coincidencia, ocupacion))
-        for resultado_id, carrera_id, ocupacion_id in sesion.execute(select(
-            Coincidencia.resultado_id, CarreraOcupacion.carrera_id, CarreraOcupacion.ocupacion_id,
-        ).join(CarreraOcupacion, CarreraOcupacion.ocupacion_id == Coincidencia.ocupacion_id).where(
-            Coincidencia.resultado_id.in_(riasec),
-        )):
-            carrera = datos.definiciones.obtener(Carrera, carrera_id)
-            familia = datos.definiciones.obtener(FamiliaCarrera, carrera.familia_id)
-            por_carrera[resultado_id].append((carrera, familia, ocupacion_id))
-    datos.representaciones.update({identificador: (por_dimension[identificador], por_coincidencia[identificador], por_carrera[identificador])
-                                  for identificador in faltantes})
+        principales = dict(sesion.execute(select(OcupacionFamilia.ocupacion_id, OcupacionFamilia.familia_id).where(
+            OcupacionFamilia.es_principal, OcupacionFamilia.ocupacion_id.in_(
+                select(Coincidencia.ocupacion_id).where(Coincidencia.resultado_id.in_(riasec))))).all())
+    datos.representaciones.update({identificador: (por_dimension[identificador], por_coincidencia[identificador],
+                                                   principales) for identificador in faltantes})
+
+
+def ocupaciones_principales_por_familia(sesion) -> Counter:
+    """Ocupaciones del catálogo cuya familia principal es cada familia; una lectura por petición."""
+    datos = contexto(sesion)
+    if not hasattr(datos, 'principales_por_familia'):
+        datos.principales_por_familia = Counter(dict(sesion.execute(
+            select(OcupacionFamilia.familia_id, func.count()).join(Ocupacion).where(
+                OcupacionFamilia.es_principal, Ocupacion.en_catalogo).group_by(OcupacionFamilia.familia_id)).all()))
+    return datos.principales_por_familia
+
+
+def carreras_por_familia(definiciones) -> dict[int, Counter]:
+    """Carreras de cada familia por tipo, desde la caché de definiciones."""
+    conteo: dict[int, Counter] = {}
+    for carrera in definiciones.listar(Carrera):
+        conteo.setdefault(carrera.familia_id, Counter())[carrera.tipo] += 1
+    return conteo
+
+
+def familia_publica(familia: FamiliaCarrera) -> FamiliaPublica:
+    return FamiliaPublica(codigo=familia.codigo, nombre=familia.nombre, area_codigo=familia.area_codigo,
+                          area_nombre=familia.area_nombre)
+
+
+def ocupaciones_y_familias(sesion, afines_guardadas, principales) -> dict:
+    """Lo que el resultado de intereses deriva al leer (ajuste resultados-intereses): las ocupaciones afines que
+    se muestran, agrupadas también por área, y las familias recomendadas."""
+    definiciones = contexto(sesion).definiciones
+    por_codigo = {ocupacion.codigo: ocupacion for _, ocupacion in afines_guardadas}
+    seleccion = seleccionar_afines([(o.codigo, c.correlacion) for c, o in afines_guardadas])
+    familia_de = {codigo: definiciones.obtener(FamiliaCarrera, principales[o.id])
+                  for codigo, o in por_codigo.items() if o.id in principales}
+    ocupaciones = []
+    for posicion, afin in enumerate(seleccion.ocupaciones, start=1):
+        ocupacion, familia = por_codigo[afin.codigo], familia_de.get(afin.codigo)
+        ocupaciones.append(OcupacionAfinPublica(
+            posicion=posicion, codigo=ocupacion.codigo, codigo_onet=ocupacion.codigo_onet, titulo=ocupacion.titulo,
+            resumen=ocupacion.resumen, riasec=list(ocupacion.codigo_riasec or ''), parecido=afin.parecido,
+            banda=afin.banda, familia_principal=None if familia is None else familia_publica(familia)))
+    areas: dict[str | None, AreaOcupaciones] = {}
+    for ocupacion in ocupaciones:
+        familia = ocupacion.familia_principal
+        clave = None if familia is None else familia.area_codigo
+        if clave not in areas:
+            areas[clave] = AreaOcupaciones(area_codigo=clave, area_nombre=SIN_FAMILIA if familia is None
+                                           else familia.area_nombre, ocupaciones=[])
+        areas[clave].ocupaciones.append(ocupacion.codigo)
+    por_area = [a for c, a in areas.items() if c is not None] + ([areas[None]] if None in areas else [])
+    recomendadas = recomendar_familias(seleccion.ocupaciones, {c: f.codigo for c, f in familia_de.items()})
+    carreras = carreras_por_familia(definiciones)
+    # Los totales por familia se leen solo si hay familias que mostrar.
+    totales = ocupaciones_principales_por_familia(sesion) if recomendadas else Counter()
+    familias_por_codigo = {f.codigo: f for f in familia_de.values()}
+    titulos = {o.codigo: o.titulo for o in ocupaciones}
+    familias = []
+    for posicion, recomendada in enumerate(recomendadas, start=1):
+        familia = familias_por_codigo[recomendada.codigo]
+        tipos = carreras.get(familia.id, Counter())
+        familias.append(FamiliaRecomendadaPublica(
+            posicion=posicion, codigo=familia.codigo, nombre=familia.nombre, area_codigo=familia.area_codigo,
+            area_nombre=familia.area_nombre, descripcion=familia.descripcion,
+            tipos=[t for t in TipoInstitucion if tipos[t]], total_carreras=sum(tipos.values()),
+            total_ocupaciones=totales[familia.id],
+            ocupaciones=[OcupacionDeFamilia(codigo=o.codigo, titulo=titulos[o.codigo], parecido=o.parecido)
+                         for o in recomendada.ocupaciones],
+            unica_ocupacion=recomendada.unica_ocupacion))
+    return dict(perfil_poco_marcado=seleccion.poco_marcado, ocupaciones=ocupaciones, por_area=por_area,
+                familias=familias)
 
 
 @usar_contexto
-def representar_resultado(sesion: Session, resultado: ResultadoInstrumento, historico: bool = False) -> ResultadoPublico:
+def representar_resultado(sesion: Session, resultado: ResultadoInstrumento, historico: bool = False,
+                          audiencia: AudienciaTextos = 'estudiante', nombre: str | None = None) -> ResultadoPublico:
+    """El resultado guardado, con los textos de la `audiencia` (`nombre`: el del estudiante, para el apoderado)."""
     definiciones = contexto(sesion).definiciones
     aplicacion = definiciones.obtener(Aplicacion, resultado.aplicacion_id)
     instrumento = definiciones.obtener(Instrumento, aplicacion.instrumento_id)
     cargar_representaciones(sesion, [resultado])
-    filas, afines, relaciones_carreras = contexto(sesion).representaciones[resultado.id]
+    filas, afines, principales = contexto(sesion).representaciones[resultado.id]
     if instrumento.tipo_resultado == TipoResultado.COMPARACION:
         # B07: el estudiante recibe la zona en palabras, nunca los números.
         cantidades = items_por_dimension(definiciones, instrumento)
@@ -260,7 +343,8 @@ def representar_resultado(sesion: Session, resultado: ResultadoInstrumento, hist
             **textos_dimension(d), puntaje=r.puntaje, puntaje_maximo=r.puntaje_maximo,
             puntaje_visual=puntaje_visual(r.puntaje, minimos[d.id], r.puntaje_maximo)) for d, r in filas]
     datos = dict(instrumento=instrumento.codigo, aplicacion=aplicacion.codigo, calculado_en=resultado.calculado_en,
-        perfil_plano=resultado.perfil_plano, lectura=instrumento.lectura_estudiante, dimensiones=dimensiones)
+        perfil_plano=resultado.perfil_plano, **textos_instrumento(instrumento, audiencia, nombre),
+        dimensiones=dimensiones)
     if instrumento.tipo_resultado == TipoResultado.DESTACADAS:
         destacadas = calcular_dimensiones_destacadas([
             DimensionCalculada(d.codigo, r.puntaje, r.puntaje_maximo) for d, r in filas
@@ -269,21 +353,8 @@ def representar_resultado(sesion: Session, resultado: ResultadoInstrumento, hist
     if instrumento.tipo_resultado == TipoResultado.COINCIDENCIAS:
         codigo = calcular_codigo_interes([r.puntaje for d, r in filas], [d.codigo for d, r in filas])
         datos["codigo_interes"] = CodigoInteresPublico(codigo=codigo.codigo, hay_empate=codigo.hay_empate)
-        # B10 · HU-026: cada ocupación afín y carrera recomendada indica si está entre los favoritos.
-        favoritos = contexto(sesion).favoritos_de(resultado.cuenta_id)
-        por_ocupacion = {o.id: CoincidenciaPublica(posicion=c.posicion, codigo=o.codigo, codigo_onet=o.codigo_onet,
-            titulo=o.titulo, correlacion=round(c.correlacion, DECIMALES_CORRELACION), ajuste=c.ajuste,
-            es_favorita=(TipoFavorito.OCUPACION, o.id) in favoritos) for c, o in afines}
-        datos["coincidencias"] = list(por_ocupacion.values())
-        carreras = {}
-        for carrera, familia, ocupacion_id in relaciones_carreras:
-            if carrera.id not in carreras:
-                carreras[carrera.id] = CarreraRecomendada(codigo=carrera.codigo, nombre=carrera.nombre,
-                    familia=familia.codigo, es_favorita=(TipoFavorito.CARRERA, carrera.id) in favoritos, via=[])
-            carreras[carrera.id].via.append(por_ocupacion[ocupacion_id])
-        for carrera in carreras.values():
-            carrera.via.sort(key=lambda via: via.posicion)
-        datos["carreras_recomendadas"] = sorted(carreras.values(), key=lambda c: (c.via[0].posicion, c.codigo))
+        if not resultado.perfil_plano:
+            datos.update(ocupaciones_y_familias(sesion, afines, principales))
     if historico:
         return ResultadoHistorico(**datos, anulado_en=resultado.anulado_en)
     return ResultadoPublico(**datos)
@@ -347,7 +418,9 @@ def comparacion_autopercepcion(sesion: Session, cuenta: Cuenta, instrumento: Ins
                    key=lambda item: item.numero)
     dimensiones = sorted((d for d in definiciones.listar(Dimension) if d.instrumento_id == instrumento.id),
                          key=lambda d: (d.orden, d.codigo))
-    return ComparacionAutopercepcion(instrumento=instrumento.codigo, lectura=instrumento.lectura_estudiante, partida=entrada.codigo, llegada=salida.codigo,
+    textos = textos_instrumento(instrumento)
+    return ComparacionAutopercepcion(instrumento=instrumento.codigo, lectura=textos['lectura'],
+        mensaje=textos['mensaje'], partida=entrada.codigo, llegada=salida.codigo,
         dimensiones=[ComparacionDimension(codigo=d.codigo, nombre=d.nombre, descripcion=d.descripcion,
             tematica=codigo_tematica(definiciones, d),
             zona_partida=calcular_zona(puntajes[entrada.id, d.id], cantidades[d.id]),

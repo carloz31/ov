@@ -11,11 +11,11 @@ def test_r21_historial_detallado_ordenado_y_coste_constante(cliente, aplicacion)
     ruta = '/cuentas/est-ana/instrumentos/TEST-RIASEC/historial'
     inicial, antes = medir(cliente, aplicacion, 'GET', ruta)
     assert inicial[0]['dimensiones'] == original['dimensiones']
-    assert inicial[0]['coincidencias'] == original['coincidencias'] and inicial[0]['anulado_en'] is not None
+    assert inicial[0].get('ocupaciones') == original.get('ocupaciones') and inicial[0]['anulado_en'] is not None
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
         agregar_veinte_resultados(sesion)
     historial, despues = medir(cliente, aplicacion, 'GET', ruta)
     assert despues.cantidad == antes.cantidad <= 10 and len(historial) == 21
     assert [h['dimensiones'][0]['puntaje'] for h in historial[:20]] == list(reversed(range(20)))
     assert historial[-1] == inicial[0]
-    assert all(h['coincidencias'] == original['coincidencias'] for h in historial)
+    assert all(h.get('ocupaciones', []) == original.get('ocupaciones', []) for h in historial)

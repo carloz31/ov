@@ -1,7 +1,6 @@
 """Verificadores de la ruta mínima, compartidos entre SQLite y PostgreSQL."""
 
 from soporte_ruta import INTERESES, INTERESES_FINAL, actividades, avanzar, completar, estado, pedir, reglas, responder, revelar
-from soporte_catalogo_ruta import ING_AMBIENTAL, ING_CIVIL, VETERINARIA
 
 
 def verificar_p01_estado_inicial(cliente):
@@ -87,16 +86,21 @@ def verificar_p10_resultado(cliente):
     resultado = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
     assert {d['codigo']: d['puntaje_visual'] for d in resultado['dimensiones']} == {'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0}
     assert resultado['codigo_interes'] == {'codigo': 'IRA', 'hay_empate': False}
-    coincidencias = resultado['coincidencias']
-    assert len(coincidencias) == 10 and all(c['codigo'] for c in coincidencias)
-    assert [c['posicion'] for c in coincidencias] == list(range(1, 11))
-    assert [c['correlacion'] for c in coincidencias] == sorted((c['correlacion'] for c in coincidencias), reverse=True)
-    # Con el catálogo real no se fija qué ocupación encabeza: geologist (IRC) está entre las 10, y por ella las
-    # carreras de la ruta que conducen a ella.
-    assert coincidencias[0]['ajuste'] == 'BEST_FIT' and 'geologist' in [c['codigo'] for c in coincidencias]
-    carreras = resultado['carreras_recomendadas']
-    assert {ING_AMBIENTAL, ING_CIVIL} <= {c['codigo'] for c in carreras}
-    assert all(c['via'] and all(v in coincidencias for v in c['via']) for c in carreras)
+    # Ajuste resultados-intereses: ocupaciones afines (de 10 a 30, por parecido), por área y 5 familias.
+    coincidencias = resultado['ocupaciones']
+    assert 10 <= len(coincidencias) <= 30 and all(c['codigo'] for c in coincidencias)
+    assert [c['posicion'] for c in coincidencias] == list(range(1, len(coincidencias) + 1))
+    assert [c['parecido'] for c in coincidencias] == sorted((c['parecido'] for c in coincidencias), reverse=True)
+    assert 'correlacion' not in coincidencias[0] and coincidencias[0]['banda'] == 'MUY_AFIN'
+    assert resultado['perfil_poco_marcado'] is False and 'geologist' in [c['codigo'] for c in coincidencias]
+    assert sorted(c for a in resultado['por_area'] for c in a['ocupaciones']) == sorted(c['codigo'] for c in coincidencias)
+    assert all(len(a['area_codigo']) == 2 for a in resultado['por_area'] if a['area_codigo'] is not None)
+    familias = resultado['familias']
+    assert [f['posicion'] for f in familias] == list(range(1, len(familias) + 1)) and len(familias) <= 5
+    principal = {c['codigo']: (c['familia_principal'] or {}).get('codigo') for c in coincidencias}
+    assert all(principal[o['codigo']] == f['codigo'] for f in familias for o in f['ocupaciones'])
+    assert all(f['unica_ocupacion'] == (len(f['ocupaciones']) == 1) for f in familias)
+    assert 'carreras_recomendadas' not in resultado and 'es_favorita' not in coincidencias[0]
     # B06: revelar abre t-contraste, que cita el resultado y las coincidencias.
     assert actividades(cliente)['t-contraste'] == 'DISPONIBLE'
     citas = {r['codigo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')['referencias']}

@@ -63,7 +63,7 @@ def agregar_veinte_resultados(sesion):
         sesion.add_all([m.ResultadoDimension(resultado_id=nuevo.id, dimension_id=d.dimension_id,
             puntaje=n, puntaje_maximo=d.puntaje_maximo) for d in dimensiones])
         sesion.add_all([m.Coincidencia(resultado_id=nuevo.id, ocupacion_id=c.ocupacion_id,
-            posicion=c.posicion, correlacion=c.correlacion, ajuste=c.ajuste) for c in coincidencias])
+            posicion=c.posicion, correlacion=c.correlacion) for c in coincidencias])
 
 
 def renombrar_e_invertir_dimensiones(sesion):
