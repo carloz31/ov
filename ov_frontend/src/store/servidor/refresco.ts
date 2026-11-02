@@ -83,8 +83,12 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
     const resultado = await cargarResultadoRiasec()
     if (!vigente()) return cambioCuenta()
     if (resultado.tipo !== 'ok') return resultado
-  } else if (!obtenerEstadoServidor().instrumentos.resultados['APL-RIASEC'])
-    // F03: en `ruta` no hay act-tip-final; un resultado RIASEC ya leído por el libro se conserva.
+  } else if (
+    obtenerEstadoServidor().instrumentos.estado === 'listo' &&
+    !obtenerEstadoServidor().instrumentos.resultados['APL-RIASEC']
+  )
+    // F03: en `ruta` no hay act-tip-final; un resultado RIASEC ya leído por el libro se conserva. Solo el libro
+    // cargado dice que no hay resultado: sin él, el que pidió el catálogo tampoco se borra.
     publicar({ resultadoRiasec: null, estadoResultado: 'pendiente', errorResultado: null })
   return { tipo: 'ok', datos: null }
 }

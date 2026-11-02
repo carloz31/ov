@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { cargarAlmacen, copia, esperar, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import {
+  cargarAlmacen,
+  copia,
+  escenarioRuta,
+  esConsultaDominio,
+  esperar,
+  fixtureServidor,
+  jsonServidor,
+  respuestaDominio,
+} from '../../soporte/servidor-ayudas.mjs'
 
 // F06: el almacén del catálogo con los fixtures ruta-*: listas paginadas por clase y filtros, detalle en caché,
 // opciones de filtro, vistas y favoritos aplicados a lo cargado.
@@ -138,4 +147,21 @@ test('ver un detalle registra la vista y refresca; el lugar inesperado es una le
   const inesperada = await store.pedirInesperada('carreras', 'psychology')
   assert.deepEqual(copia(inesperada.datos), { codigo: 'mtpe-1', revisitando: false })
   assert.ok(app.requests.some((r) => r.url.endsWith('/catalogo/carreras/inesperada?excluir=psychology')))
+})
+
+test('el refresco del camino no borra el resultado que pidió el catálogo si el libro no se cargó', async () => {
+  // Con el resultado en el almacén y el libro sin cargar, «Afines a mi resultado» debe seguir disponible.
+  const app = fixtureServidor({ ruta: '/student/catalog/professions' })
+  app.fetch((r) => (esConsultaDominio(r) ? respuestaDominio(r, escenarioRuta('t1')) : { body: [] }))
+  const almacen = cargarAlmacen(app)
+  const resultado = jsonServidor('ruta/ruta-resultado-riasec')
+  almacen.publicar({ consultasHabilitadas: true, resultadoRiasec: resultado, estadoResultado: 'listo' })
+  await almacen.refrescar()
+  assert.equal(almacen.obtenerEstadoServidor().resultadoRiasec, resultado)
+  // Con el libro cargado y sin resultado RIASEC, el refresco sí lo deja pendiente.
+  const libro = almacen.obtenerEstadoServidor().instrumentos
+  almacen.publicar({ instrumentos: { ...libro, estado: 'listo', resultados: {} } })
+  await almacen.refrescar()
+  assert.equal(almacen.obtenerEstadoServidor().resultadoRiasec, null)
+  assert.equal(almacen.obtenerEstadoServidor().estadoResultado, 'pendiente')
 })
