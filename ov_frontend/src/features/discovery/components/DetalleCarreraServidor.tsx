@@ -16,13 +16,15 @@ import { DondeEstudiarla } from './DondeEstudiarla'
 import { EsperaDetalle } from './EsperaDetalle'
 import { FuentesCatalogo } from './FuentesCatalogo'
 import { IngresoCarrera } from './IngresoCarrera'
+import { OcupacionesDeLaFamilia } from './OcupacionesDeLaFamilia'
 import { SellosRiasec } from './SellosRiasec'
 import { UnexpectedPlace } from './UnexpectedPlace'
 import '../styles/catalogo.css'
 
-// F06 · ajuste catalogo-datos-reales (F6b): el detalle de carrera en api. Cabecera con tipo, área y familia;
-// qué trata, dónde trabajar, ingresos y profesiones; al lado, el plan (la acción central), dónde estudiarla,
-// las parecidas y el lugar inesperado; al pie, las fuentes.
+// F06 · ajuste catalogo-datos-reales (F6b): el detalle de carrera en api. Cabecera con tipo, área y familia,
+// «Guardar» y «Hacer mi plan» (ajuste resultados-intereses); qué trata, dónde trabajar e ingresos; al lado, dónde
+// estudiarla, las parecidas y el lugar inesperado; debajo, las ocupaciones a las que lleva su familia; al pie, las
+// fuentes.
 // Ajuste catalogo-apoderado: en modo lectura, sin favorito, plan ni lugar inesperado.
 export function DetalleCarreraServidor({
   codigo,
@@ -43,6 +45,10 @@ export function DetalleCarreraServidor({
     />
   )
   const areaUrl = `${rutas.catalog.careers}?area=${carrera.familia.area_codigo}`
+  const familiaUrl = `${rutas.catalog.careers}?${new URLSearchParams({
+    area: carrera.familia.area_codigo,
+    familia: carrera.familia.codigo,
+  })}`
   return (
     <DiscoveryStage ambient="atlas" navegacion={false} variante={variante}>
       <AtlasNavigation section="careers" migas={false} />
@@ -55,13 +61,10 @@ export function DetalleCarreraServidor({
                 Carrera {nombresTipoCarrera[carrera.tipo].toLowerCase()}
               </span>
               <Link className="sx-c-etiqueta sx-c-etiqueta-oscura" to={areaUrl}>
-                {carrera.familia.area_nombre}
+                Área: {carrera.familia.area_nombre}
               </Link>
-              <Link
-                className="sx-c-etiqueta sx-c-etiqueta-oscura"
-                to={`${rutas.catalog.careers}?familia=${carrera.familia.codigo}`}
-              >
-                {carrera.familia.nombre}
+              <Link className="sx-c-etiqueta sx-c-etiqueta-oscura sx-c-etiqueta-enlace" to={familiaUrl}>
+                Familia: {carrera.familia.nombre}
               </Link>
             </div>
             <h1 className="sx-d-detail-title" tabIndex={-1}>
@@ -83,8 +86,8 @@ export function DetalleCarreraServidor({
             <SellosRiasec letras={carrera.riasec} conNombres />
           </div>
           <div className="sx-c-cabecera-acciones">
-            {!modoLectura && planes.letra && <span className="sx-c-es-plan">Es tu Plan {planes.letra}</span>}
             {botonFavorito}
+            {!modoLectura && <BloquePlanCarrera planes={planes} />}
           </div>
         </div>
       </Parchment>
@@ -112,34 +115,18 @@ export function DetalleCarreraServidor({
               tipo={carrera.tipo}
             />
           )}
-          {carrera.ocupaciones_de_la_familia.principales.length > 0 && (
-            <Parchment title="Profesiones a las que conduce">
-              <p className="sx-c-conteo">
-                {carrera.ocupaciones_de_la_familia.principales.length}{' '}
-                {carrera.ocupaciones_de_la_familia.principales.length === 1 ? 'profesión' : 'profesiones'}
-              </p>
-              <div className="sx-d-two">
-                {carrera.ocupaciones_de_la_familia.principales.map((o) => (
-                  <Link
-                    className="sx-d-related sx-c-fila-enlace"
-                    key={o.codigo}
-                    to={rutas.occupation(o.codigo)}
-                  >
-                    <strong>{o.titulo}</strong>
-                    <SellosRiasec letras={o.riasec} />
-                  </Link>
-                ))}
-              </div>
-            </Parchment>
-          )}
         </main>
         <aside className="sx-d-stack">
-          {!modoLectura && <BloquePlanCarrera planes={planes} favorito={botonFavorito} />}
           <DondeEstudiarla instituciones={carrera.instituciones} />
           <CarrerasParecidas parecidas={carrera.parecidas} familia={carrera.familia} />
           {!modoLectura && <UnexpectedPlace kind="career" currentId={carrera.codigo} />}
         </aside>
       </div>
+      <OcupacionesDeLaFamilia
+        ocupaciones={carrera.ocupaciones_de_la_familia}
+        familia={carrera.familia}
+        rutas={rutas}
+      />
       <FuentesCatalogo de="carrera" />
       <AvisoFavorito aviso={favorito.aviso} onDismiss={favorito.cerrarAviso} />
     </DiscoveryStage>

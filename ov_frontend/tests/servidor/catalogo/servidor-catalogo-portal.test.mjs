@@ -113,8 +113,11 @@ for (const { cuenta, base, coletilla } of ROLES) {
     assert.equal(nombres(arbol, 'IngresoCarrera', 'DondeEstudiarla', 'CarrerasParecidas', 'FuentesCatalogo').length, 4)
     assert.equal(nombres(arbol, 'FavoriteButton', 'BloquePlanCarrera', 'UnexpectedPlace').length, 0)
     assert.equal(nombres(arbol, 'DiscoveryStage')[0].props.variante, 'portal')
-    const profesiones = elementos(arbol, (e) => typeof e.props?.to === 'string' && e.props.to.includes('/professions/'))
-    assert.ok(profesiones.length > 0 && profesiones.every((e) => e.props.to.startsWith(`${base}/professions/`)))
+    // Ajuste resultados-intereses: las ocupaciones de la familia enlazan con las rutas del portal.
+    const [familia] = nombres(arbol, 'OcupacionesDeLaFamilia')
+    assert.ok(familia.props.ocupaciones.principales.length > 0)
+    assert.ok(familia.props.rutas.occupation('psychologist').startsWith(`${base}/professions/`))
+    assert.ok(familia.props.rutas.catalog.professions.startsWith(base))
     carrera.unmount()
 
     const { DetalleOcupacionServidor } = app.load('src/features/discovery/components/DetalleOcupacionServidor.tsx')

@@ -1,6 +1,5 @@
-import type { ReactNode } from 'react'
 import { Link } from 'react-router'
-import { FileText, TriangleAlert } from 'lucide-react'
+import { Loader2, TriangleAlert } from 'lucide-react'
 import { AvisoToast } from '@/components/student/AvisoToast'
 import { appPaths } from '@/routes/paths'
 
@@ -18,10 +17,11 @@ type PlanesCarrera = {
   cerrarAviso?: () => void
 }
 
-// Ajuste catalogo-datos-reales (F6b) · F07a: la acción central del detalle de carrera. Precedencia: ya es un plan,
-// los tres planes tienen otra carrera, la carrera no es favorita (un plan se crea solo desde una favorita; se
-// marca con el mismo botón de la cabecera) o hay espacio para armarlo.
-export function BloquePlanCarrera({ planes, favorito }: { planes: PlanesCarrera; favorito?: ReactNode }) {
+// Ajuste catalogo-datos-reales (F6b) · F07a: el plan desde el detalle de carrera. Ajuste resultados-intereses
+// (boceto 06): «Hacer mi plan» va en la cabecera, junto a «Guardar». Precedencia: ya es un plan, los tres planes
+// tienen otra carrera, la carrera no es favorita (un plan se crea solo desde una favorita: el botón queda
+// deshabilitado y lo explica) o hay espacio para armarlo.
+export function BloquePlanCarrera({ planes }: { planes: PlanesCarrera }) {
   if (planes.disponible === false) return null
   const aviso = planes.aviso && planes.cerrarAviso && (
     <AvisoToast
@@ -35,54 +35,46 @@ export function BloquePlanCarrera({ planes, favorito }: { planes: PlanesCarrera;
   )
   if (planes.letra)
     return (
-      <section className="sx-c-plan">
-        <h2>
-          <FileText aria-hidden="true" /> Ya es tu Plan {planes.letra}
-        </h2>
-        <p>Sigue armándolo en tu tarjeta: presupuesto, dudas y pasos.</p>
+      <div className="sx-c-plan-cabecera">
+        <span className="sx-c-es-plan">Ya es tu Plan {planes.letra}</span>
         <Link
           className="sx-d-action sx-d-action-gold"
           to={planes.codigo ? appPaths.student.plan(planes.codigo) : appPaths.student.decisions}
         >
           Ver mi tarjeta
         </Link>
-      </section>
+      </div>
     )
   if (planes.libres <= 0)
     return (
-      <section className="sx-c-plan">
-        <h2>
-          <FileText aria-hidden="true" /> ¿Te ves aquí?
-        </h2>
-        <p>
-          Tus tres planes ya tienen carrera ({planes.ocupados.map((p) => `${p.letra}: ${p.nombre}`).join(', ')}). Para
-          usar esta, reemplaza uno desde <Link to={appPaths.student.decisions}>Mis planes</Link>.
-        </p>
-      </section>
-    )
-  if (planes.esFavorita === false)
-    return (
-      <section className="sx-c-plan">
-        <h2>
-          <FileText aria-hidden="true" /> ¿Te ves aquí? Arma un plan
-        </h2>
-        <p>Para armar un plan, primero guárdala en tus favoritos</p>
-        {favorito}
-      </section>
-    )
-  return (
-    <section className="sx-c-plan">
-      <h2>
-        <FileText aria-hidden="true" /> ¿Te ves aquí? Arma un plan
-      </h2>
-      <p>
-        Convierte esta carrera en un plan con institución, presupuesto y pasos. Te queda{planes.libres === 1 ? '' : 'n'}{' '}
-        <strong>{planes.libres} de 3</strong> espacios.
+      <p className="sx-c-plan-cabecera">
+        <small>
+          Tus tres planes ya tienen carrera (
+          {planes.ocupados.map((p) => `${p.letra}: ${p.nombre}`).join(', ')}). Para usar esta, reemplaza uno
+          desde <Link to={appPaths.student.decisions}>Mis planes</Link>.
+        </small>
       </p>
-      <button type="button" className="sx-d-action sx-d-action-gold" disabled={planes.ocupado} onClick={planes.armar}>
-        Armar un plan con esta carrera
+    )
+  const noFavorita = planes.esFavorita === false
+  return (
+    <div className="sx-c-plan-cabecera">
+      <button
+        type="button"
+        className="sx-d-action sx-d-action-gold"
+        disabled={noFavorita || !!planes.ocupado}
+        aria-busy={planes.ocupado || undefined}
+        aria-describedby="plan-ayuda"
+        onClick={planes.armar}
+      >
+        {planes.ocupado && <Loader2 aria-hidden="true" size={18} className="animate-spin" />}
+        Hacer mi plan
       </button>
+      <small id="plan-ayuda" className={noFavorita ? undefined : 'sr-only'}>
+        {noFavorita
+          ? 'Para armar un plan, primero guárdala en tus favoritos'
+          : `Te queda${planes.libres === 1 ? '' : 'n'} ${planes.libres} de 3 espacios.`}
+      </small>
       {aviso}
-    </section>
+    </div>
   )
 }

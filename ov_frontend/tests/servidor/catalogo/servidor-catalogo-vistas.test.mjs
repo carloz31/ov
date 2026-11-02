@@ -307,7 +307,7 @@ test('el bloque de plan de la carrera tiene tres estados: ya es plan, hay espaci
   const { app } = catalogo()
   const { BloquePlanCarrera } = app.load('src/features/discovery/components/BloquePlanCarrera.tsx')
   const base = { letra: null, libres: 0, ocupados: [], armar: () => {} }
-  assert.match(texto(BloquePlanCarrera({ planes: { ...base, letra: 'B' } })), /Ya es tu Plan BSigue armándolo.*Ver mi tarjeta/)
+  assert.match(texto(BloquePlanCarrera({ planes: { ...base, letra: 'B' } })), /Ya es tu Plan BVer mi tarjeta/)
   const libre = BloquePlanCarrera({ planes: { ...base, libres: 1 } })
   assert.match(texto(libre), /Te queda 1 de 3 espacios/)
   assert.equal(elementos(libre, (e) => e.type === 'button').length, 1)

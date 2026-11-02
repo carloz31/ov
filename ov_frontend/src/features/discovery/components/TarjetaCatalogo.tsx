@@ -53,7 +53,11 @@ export function TarjetaCatalogo({
     return (
       <article className="sx-d-parchment sx-c-tarjeta">
         <div className="sx-c-tarjeta-cabeza">
-          <SellosRiasec letras={item.riasec} />
+          <span className="sx-c-etiquetas">
+            <SellosRiasec letras={item.riasec} />
+            {/* Ajuste resultados-intereses: al filtrar por familia, la que la tiene como secundaria. */}
+            {item.via_familia === 'SECUNDARIA' && <span className="sx-c-etiqueta">Vía alternativa</span>}
+          </span>
           {favorito}
         </div>
         <div className="sx-c-profesion">

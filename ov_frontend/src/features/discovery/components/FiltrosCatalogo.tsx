@@ -74,7 +74,8 @@ function Selector({
 }
 
 // Ajuste catalogo-datos-reales (F6a, rediseño tras la revisión): los filtros de cada pestaña como filas de un
-// panel. Carreras: Tipo, Campo (área y familia según el área) e Intereses. Profesiones: Intereses y Grupo.
+// panel. Carreras: Tipo, Campo (área y familia según el área) e Intereses. Profesiones: Campo e Intereses
+// (ajuste resultados-intereses: el grupo ya no filtra).
 // Instituciones: Tipo, Gestión y Lugar. Los cambios esperan antes de pedir la lista (`useCatalogoServidor`).
 // Ajuste catalogo-apoderado: con `soloLetras` (modo lectura) no hay «Afines a mi resultado»; queda una ayuda.
 export function FiltrosCatalogo({
@@ -154,6 +155,28 @@ export function FiltrosCatalogo({
       </>
     ),
   }
+  const campo: FilaFiltro = {
+    etiqueta: 'Campo',
+    controles: (
+      <>
+        <Selector
+          etiqueta="Área"
+          todas="Todas las áreas"
+          opciones={areas}
+          valor={filtros.area}
+          onElegir={(area) => onCambiar({ area })}
+        />
+        <Selector
+          etiqueta="Familia"
+          todas="Todas las familias"
+          opciones={familias}
+          valor={filtros.familia}
+          onElegir={(familia) => onCambiar({ familia })}
+        />
+        <small className="sx-c-ayuda">La lista de familias se acota al área elegida.</small>
+      </>
+    ),
+  }
   const filas: FilaFiltro[] =
     clase === 'carreras'
       ? [
@@ -163,45 +186,11 @@ export function FiltrosCatalogo({
               <Chips opciones={TIPOS_CARRERA} valor={filtros.tipo} onElegir={(tipo) => onCambiar({ tipo })} />
             ),
           },
-          {
-            etiqueta: 'Campo',
-            controles: (
-              <>
-                <Selector
-                  etiqueta="Área"
-                  todas="Todas las áreas"
-                  opciones={areas}
-                  valor={filtros.area}
-                  onElegir={(area) => onCambiar({ area })}
-                />
-                <Selector
-                  etiqueta="Familia"
-                  todas="Todas las familias"
-                  opciones={familias}
-                  valor={filtros.familia}
-                  onElegir={(familia) => onCambiar({ familia })}
-                />
-              </>
-            ),
-          },
+          campo,
           intereses,
         ]
       : clase === 'ocupaciones'
-        ? [
-            intereses,
-            {
-              etiqueta: 'Grupo',
-              controles: (
-                <Selector
-                  etiqueta="Grupo"
-                  todas="Todos los grupos"
-                  opciones={opciones?.grupos ?? null}
-                  valor={filtros.grupo}
-                  onElegir={(grupo) => onCambiar({ grupo })}
-                />
-              ),
-            },
-          ]
+        ? [campo, intereses]
         : [
             {
               etiqueta: 'Tipo',

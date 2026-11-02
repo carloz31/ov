@@ -5,6 +5,7 @@ import { useCatalogoServidor, type SeccionCatalogo } from '../hooks/useCatalogoS
 import { useModoCatalogo } from '../hooks/useModoCatalogo'
 import { AvisoFavorito } from './AvisoFavorito'
 import { BotonLimpiar } from './BotonLimpiar'
+import { FichaFamilia } from './FichaFamilia'
 import { FilaResultado } from './FilaResultado'
 import { FiltrosCatalogo } from './FiltrosCatalogo'
 import { PieListado } from './PieListado'
@@ -14,13 +15,16 @@ import '../styles/catalogo.css'
 
 const textos: Record<
   SeccionCatalogo,
-  { titulo: string; buscar: string; descripcion: (total: string) => string }
+  { titulo: string; buscar: string; descripcion: (total: string, familias: string) => string }
 > = {
   careers: {
     titulo: 'Catálogo de carreras',
     buscar: 'Buscar una carrera por nombre…',
-    descripcion: (total) =>
-      `${total}carreras universitarias, técnicas y de las Fuerzas Armadas y Policía, con lo que estudian, dónde se dictan y cuánto ganan sus egresados.`,
+    // Ajuste resultados-intereses: las familias agrupan las carreras (boceto 04).
+    descripcion: (total, familias) =>
+      familias
+        ? `${total}carreras universitarias, técnicas y de las Fuerzas Armadas y Policía, agrupadas en ${familias} familias. Filtra por familia para ver carreras parecidas juntas.`
+        : `${total}carreras universitarias, técnicas y de las Fuerzas Armadas y Policía, con lo que estudian, dónde se dictan y cuánto ganan sus egresados.`,
   },
   professions: {
     titulo: 'Catálogo de profesiones',
@@ -72,7 +76,7 @@ export function CatalogoServidor({
   variante?: 'estudiante' | 'portal'
 }) {
   const catalogo = useCatalogoServidor(section)
-  const { modoLectura, rol } = useModoCatalogo()
+  const { modoLectura, rol, rutas } = useModoCatalogo()
   const coletilla =
     variante !== 'portal'
       ? ''
@@ -91,7 +95,7 @@ export function CatalogoServidor({
           </p>
           <h1>{copia.titulo}</h1>
           <p>
-            {copia.descripcion(total)}
+            {copia.descripcion(total, catalogo.opciones ? String(catalogo.opciones.familias.length) : '')}
             {coletilla}
           </p>
         </div>
@@ -137,6 +141,9 @@ export function CatalogoServidor({
         onAfines={catalogo.alternarAfines}
         soloLetras={modoLectura}
       />
+      {section === 'careers' && catalogo.filtros.familia && (
+        <FichaFamilia codigo={catalogo.filtros.familia} rutas={rutas} conRecomendacion={!modoLectura} />
+      )}
       <FilaResultado
         buscando={catalogo.buscando}
         total={lista?.total ?? null}

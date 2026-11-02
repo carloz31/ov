@@ -275,14 +275,14 @@ test('detalle de carrera: ya es plan > tres ocupados > no favorita > hay espacio
     codigo: 'mtpe-1',
     esFavorita: false,
   }
-  const favorito = { type: 'span', props: { children: 'corazón' } }
-  const noFavorita = BloquePlanCarrera({ planes: base, favorito })
+  // Ajuste resultados-intereses: «Hacer mi plan» va en la cabecera; sin favorita queda deshabilitado y lo explica.
+  const noFavorita = BloquePlanCarrera({ planes: base })
   assert.match(texto(noFavorita), /Para armar un plan, primero guárdala en tus favoritos/)
-  assert.equal(elementos(noFavorita, (e) => e.type === 'button').length, 0)
-  assert.match(
-    texto(BloquePlanCarrera({ planes: { ...base, esFavorita: true } })),
-    /Armar un plan con esta carrera/,
-  )
+  const [deshabilitado] = elementos(noFavorita, (e) => e.type === 'button')
+  assert.equal(deshabilitado.props.disabled, true)
+  const libre = BloquePlanCarrera({ planes: { ...base, esFavorita: true } })
+  assert.match(texto(libre), /Hacer mi plan/)
+  assert.equal(elementos(libre, (e) => e.type === 'button')[0].props.disabled, false)
   assert.match(texto(BloquePlanCarrera({ planes: { ...base, letra: 'A' } })), /Ya es tu Plan A/)
   assert.match(
     texto(BloquePlanCarrera({ planes: { ...base, libres: 0, ocupados: [{ letra: 'A', nombre: 'X' }] } })),

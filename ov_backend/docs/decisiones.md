@@ -35,3 +35,7 @@
 - F6 · El encuadre (`mensaje`) del apoderado va en negrita al inicio de «Qué mide este test y cómo leerlo»; el resumen del código usa fragmentos en tercera persona (`fragmentosResumenTercera`).
 - F6 · El adaptador `resultadoFamilia` lleva el resultado completo (`remoto`): la vista de intereses del apoderado muestra barras con puntaje, como el boceto. Se adapta la prueba que exigía «sin puntajes» en todo el adaptador (ahora solo en sus dimensiones resumidas).
 - F6 · La vista del resultado de la orientadora queda para B14 (no tiene ruta en el backend); anotado en `pendientes-interfaz.md`.
+- F7 · Profesiones se filtra por Campo (área y familia) e Intereses; `grupo` deja de ser un parámetro de la URL. Las profesiones filtradas por familia muestran «Vía alternativa» en las secundarias.
+- F7 · La ficha de familia muestra «Ver sus N ocupaciones» con N = principales + secundarias, el mismo total que lista el catálogo de profesiones filtrado (el boceto 04 contaba solo las principales). Los ingresos van como «Egresados jóvenes: S/ X promedio» si la familia tiene un solo tipo; con varios, uno por tipo.
+- F7 · «Guardar» y «Hacer mi plan» van en la cabecera del detalle de carrera (boceto 06): `BloquePlanCarrera` pasa a ser esa acción compacta con los mismos estados (ya es plan, sin espacios, no favorita con el botón deshabilitado y su explicación, y libre con cargador). Se adaptan sus pruebas.
+- F7 · En «Ocupaciones a las que lleva su familia», la marca es «Muy afín a ti» o «Afín a ti» según la banda del estudiante; las cercanas no se marcan.

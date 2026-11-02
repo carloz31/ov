@@ -867,3 +867,165 @@
   font-size: 13px;
   font-weight: 600;
 }
+
+/* Ajuste resultados-intereses: la ficha de la familia elegida (boceto 04). */
+.sx-c-ficha-familia {
+  display: grid;
+  gap: 20px;
+}
+/* El acento de la izquierda, también en el portal (que fija el borde de las tarjetas en 1 px). */
+.sx-discovery .sx-d-parchment.sx-c-ficha-familia,
+.sx-discovery[data-variante] .sx-d-parchment.sx-c-ficha-familia {
+  border-left: 5px solid var(--primary);
+}
+.sx-c-ficha-texto {
+  display: grid;
+  gap: 8px;
+}
+.sx-c-ficha-texto h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+}
+.sx-c-ficha-texto > p {
+  margin: 0;
+  color: var(--sx-parchment-muted);
+  line-height: 1.6;
+}
+.sx-c-ficha-rotulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px !important;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sx-c-ficha-rotulo .sx-c-etiqueta {
+  letter-spacing: 0;
+  text-transform: none;
+}
+.sx-c-ficha-area {
+  font-size: 13px;
+}
+.sx-c-ficha-texto > .sx-c-etiquetas {
+  display: flex;
+}
+.sx-c-ficha-acciones {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+.sx-c-ficha-acciones small {
+  color: var(--sx-parchment-muted);
+  font-size: 12px;
+}
+.sx-c-ficha-acciones p {
+  margin: 8px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--sx-parchment-edge);
+  font-size: 13px;
+}
+.sx-c-ficha-acciones a:not(.sx-c-boton-familia) {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+@media (min-width: 900px) {
+  .sx-c-ficha-familia {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+}
+
+/* Ajuste resultados-intereses: «Hacer mi plan» en la cabecera y las ocupaciones por familia (boceto 06). */
+.sx-c-plan-cabecera {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  max-width: 280px;
+  margin: 0;
+}
+.sx-c-plan-cabecera small {
+  color: var(--sx-night-muted);
+  font-size: 12px;
+  text-align: right;
+}
+.sx-c-plan-cabecera a:not(.sx-d-action) {
+  color: inherit;
+  text-decoration: underline;
+}
+.sx-c-ocupaciones-familia {
+  display: grid;
+  gap: 12px;
+}
+.sx-c-ocupaciones-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sx-c-ocupaciones-cabecera h2 {
+  margin: 0 0 6px;
+}
+.sx-c-ocupaciones-cabecera p {
+  max-width: 720px;
+}
+.sx-c-ocupaciones-cabecera .sx-c-enlace {
+  margin: 0;
+  font-size: 13px;
+}
+.sx-c-via {
+  margin: 4px 0 0;
+  color: var(--sx-parchment-muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sx-c-via-principal {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+.sx-c-ocupacion-familia {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--sx-parchment-edge);
+  border-radius: 10px;
+  font-size: 14px;
+}
+.sx-c-ocupacion-familia:hover {
+  border-color: var(--primary);
+}
+.sx-c-muy-afin {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 750;
+}
+.sx-c-via-alternativa {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+.sx-c-chip-ocupacion {
+  padding: 6px 14px;
+  border: 1px dashed color-mix(in srgb, var(--sx-parchment-ink) 30%, transparent);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.sx-c-ocupacion-familia .sx-d-seal {
+  width: 24px;
+  height: 24px;
+  border-width: 0;
+  font-size: 11px;
+  box-shadow: none;
+}
+.sx-c-ocupacion-familia .sx-d-seal-row {
+  gap: 4px;
+}
