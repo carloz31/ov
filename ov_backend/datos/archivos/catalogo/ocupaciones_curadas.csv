@@ -1,0 +1,1017 @@
+codigo,titulo_es,titulo_pe,job_zone,grupo_mayor,riasec_perfil,en_test,en_catalogo,motivo,nota
+11-1011.00,Directores Ejecutivos,Director ejecutivo (gerente general),5,11,EC,1,1,,
+11-1011.03,Directores de Desarrollo Sostenible,,5,11,EIC,0,0,CARGO,cubierto por Especialista en sostenibilidad
+11-1021.00,Gerentes Generales y de Operaciones,Gerente general y de operaciones,4,11,EC,1,1,,
+11-1031.00,Legisladores,,4,11,ESC,0,0,NO_CARRERA,cargo electivo
+11-2011.00,Gerentes de Publicidad y Promociones,Gerente de publicidad (publicista),4,11,ECA,1,1,,
+11-2021.00,Gerentes de Mercadeo,Gerente de marketing,4,11,EC,1,1,,
+11-2022.00,Gerentes de Ventas,Gerente comercial y de ventas,4,11,EC,1,1,,
+11-2032.00,Gerentes de Relaciones Públicas,,4,11,ECS,0,0,DUPLICADO,Especialista en relaciones públicas
+11-2033.00,Gerentes de Recaudación de Fondos,,4,11,ECS,0,0,NO_PERU,"recaudación de fondos para nonprofits, figura estadounidense"
+11-3012.00,Gerentes de Servicios Administrativos,Gerente administrativo,3,11,ECS,1,1,,
+11-3013.00,Gerentes de Instalaciones,,3,11,ECR,0,0,CARGO,
+11-3013.01,Administradores de Seguridad,,4,11,EC,0,0,CARGO,cubierto por seguridad y salud ocupacional
+11-3021.00,Gerentes de Sistemas de Computación e Información,,4,11,CEI,0,0,CARGO,muchas ocupaciones de informática ya incluidas
+11-3031.00,Gerentes Financieros,Gerente financiero,4,11,EC,1,1,,
+11-3031.01,Tesoreros e Interventores,,4,11,CE,0,0,CARGO,cubierto por Gerente financiero
+11-3031.03,Gerentes de Fondos de Inversión,,5,11,ECI,0,0,NO_PERU,"fondos de inversión, muy específica"
+11-3051.00,Gerentes de Producción Industrial,Gerente de producción (jefe de planta),4,11,ECR,0,0,CARGO,regla de gerencias: la familia 521 la representa Ingeniero industrial
+11-3051.01,Gerentes de Sistemas de Control de Calidad,,4,11,CEI,0,0,CARGO,cubierto por Analista de control de calidad
+11-3051.02,Gerentes de Producción Geotérmica,,3,11,RCE,0,0,NO_PERU,geotermia
+11-3051.03,Gerentes de Producción de Biocombustibles,,4,11,ECR,0,0,NO_PERU,biocombustibles
+11-3051.04,Gerentes de Plantas de Energía Proveniente de Biomasa,,4,11,CRE,0,0,NO_PERU,biomasa
+11-3051.06,Gerentes de Producción Hidroeléctrica,,3,11,RCE,0,0,CARGO,cubierto por ingeniería eléctrica/energía
+11-3061.00,Gerentes de Compras,,4,11,EC,0,0,CARGO,cubierto por Agente de compras
+11-3071.00,"Gerentes de Transporte, Almacenamiento, y Distribución",,4,11,EC,0,0,CARGO,cubierto por Especialista en logística
+11-3071.04,Gerentes de Cadena de Suministros,,4,11,EC,0,0,CARGO,cubierto por Especialista en logística
+11-3111.00,Gerentes de Compensaciones y Beneficios,,4,11,ECS,0,0,DUPLICADO,RR. HH.
+11-3121.00,Gerentes de Recursos Humanos,Gerente de recursos humanos,4,11,ECS,1,1,,
+11-3131.00,Gerentes de Capacitación y Desarrollo,,4,11,ESC,0,0,DUPLICADO,Especialista en capacitación
+11-9013.00,"Gerentes de Establecimientos Agrícolas, Ganaderos, y de Otras Actividades Agrícolas","Administrador de empresas agropecuarias, acuícolas y forestales",4,11,ERC,1,1,,
+11-9021.00,Gerentes de Construcción,,4,11,ECR,0,0,CARGO,cubierto por Ingeniero civil
+11-9031.00,Administradores Educativos y de Cuido Infantil de Preescolar y Guardería Infantil,,4,11,SEC,0,0,CARGO,director de centro educativo: se llega desde docencia
+11-9032.00,Administradores Educativos de Nivel Primario hasta Secundario,,5,11,SEC,0,0,CARGO,director de colegio: se llega desde docencia
+11-9033.00,Administradores Educativos de Nivel Postsecundario,,5,11,SEC,0,0,CARGO,
+11-9039.00,"Education Administrators, All Other",,,11,,0,0,RESIDUAL,
+11-9041.00,Directores de Arquitectura e Ingeniería,,5,11,EIC,0,0,CARGO,
+11-9041.01,Gerentes de Desarrollo de Productos y Tecnología de Biocombustibles y Biodiesel,,4,11,IER,0,0,NO_PERU,biocombustibles
+11-9051.00,Directores de Servicio de Alimentos,Administrador de restaurantes y servicios de alimentación,2,11,ECR,1,1,TECNICO_PE,Administración de restaurantes (CINE 332)
+11-9071.00,Gerentes de Salas de Juego,,2,11,EC,0,0,SIN_ESTUDIOS,
+11-9072.00,Gerentes de Entretenimiento y Recreación,,4,11,ECS,0,0,CARGO,
+11-9081.00,Gerentes de Hospedaje,Administrador hotelero,4,11,ECS,1,1,,
+11-9111.00,Directores de Servicios Médicos y de Salud,Administrador de servicios de salud,4,11,ECS,1,1,,
+11-9121.00,Directores de Ciencias Naturales,,5,11,IEC,0,0,CARGO,
+11-9121.01,Coordinadores de Estudios Clínicos,,4,11,ICE,0,0,DUPLICADO,"investigación clínica, muy específica"
+11-9121.02,Especialistas en Recursos Hídricos,Especialista en recursos hídricos,4,11,IRC,1,1,,
+11-9131.00,Jefes de Correo y Superintendentes de Correo,,2,11,ECS,0,0,SIN_ESTUDIOS,
+11-9141.00,"Gerentes de Propiedad, Inmuebles, y Asociaciones de Vivienda Comunitaria",,4,11,EC,0,0,NO_PERU,"administración de propiedades, figura estadounidense"
+11-9151.00,Directores de Servicios Sociales y Comunitarios,Director de programas sociales y comunitarios,4,11,ESC,1,1,,
+11-9161.00,Directores de Manejo de Emergencias,,4,11,ECI,0,0,NO_CARRERA,"manejo de emergencias, sin carrera"
+11-9171.00,Gerentes de Funerarias,,3,11,ECS,0,0,NO_PERU,funerarias
+11-9179.00,"Personal Service Managers, All Other",,,11,,0,0,RESIDUAL,
+11-9179.01,Coordinadores de Salud y Bienestar Físico,,4,11,SE,0,0,CARGO,
+11-9179.02,Gerentes de Baños de Hidromasaje «Spa»,,3,11,ECS,0,0,NO_PERU,spa
+11-9199.00,"Managers, All Other",,,11,,0,0,RESIDUAL,
+11-9199.01,Gerentes de Asuntos Normativos,,4,11,EC,0,0,CARGO,
+11-9199.02,Gerentes de Cumplimiento de Estándares,,4,11,CE,0,0,DUPLICADO,Especialista en cumplimiento
+11-9199.08,Gerentes de Prevención de Pérdidas,,4,11,CE,0,0,CARGO,
+11-9199.09,Gerentes de Operaciones de Energía Eólica (Proveniente del Viento),,3,11,ECR,0,0,NO_PERU,energía eólica
+11-9199.10,Gerentes de Desarrollo de Energía Eólica,,4,11,EC,0,0,NO_PERU,energía eólica
+11-9199.11,Especialistas y Gerentes de Redesarrollo de Zonas Industriales Abandonadas,,4,11,CER,0,0,NO_PERU,zonas industriales abandonadas (brownfields)
+13-1011.00,"Agentes y Gerentes Comerciales de Artistas, Intérpretes Artísticos, y Atletas",,4,13,ESC,0,0,NO_PERU,"representante de artistas y atletas, muy específica"
+13-1021.00,Compradores y Agentes de Compras de Productos Agrícolas,,4,13,ECR,0,0,DUPLICADO,Agente de compras
+13-1022.00,Compradores Mayoristas y Minoristas,,3,13,ECR,0,0,DUPLICADO,Agente de compras
+13-1023.00,Agentes de Compras,Agente / analista de compras,4,13,CER,1,1,,
+13-1031.00,"Ajustadores, Examinadores, e Investigadores de Reclamaciones",,4,13,CEI,0,0,NO_PERU,"ajustador de seguros, figura estadounidense"
+13-1032.00,Tasadores de Seguro de Automóviles,,3,13,CRE,0,0,NO_PERU,tasador de seguros de autos
+13-1041.00,Funcionarios de Cumplimiento,Especialista en cumplimiento normativo (compliance),4,13,CE,1,1,,
+13-1041.01,Inspectores del Medio Ambiente,Fiscalizador ambiental,4,13,CIR,1,1,,
+13-1041.03,Funcionarios Que Observan el Cumplimiento de Leyes Que Otorgan Igualdad de Oportunidad para Obtener Trabajo,,4,13,ECS,0,0,NO_PERU,igualdad de oportunidades (EEOC)
+13-1041.04,Inspectores e Investigadores de las Propiedades Gubernamentales,,3,13,CE,0,0,NO_PERU,
+13-1041.06,"Funcionarios Encargados de Investigar las Causas de Muertes Violentas, Repentinas o Sospechosas",,3,13,ICE,0,0,NO_PERU,coroner; en el Perú es médico legista
+13-1041.07,Especialistas en Asuntos Normativos,,4,13,CEI,0,0,DUPLICADO,Especialista en cumplimiento
+13-1041.08,Agentes de Aduanas,Agente de aduanas,3,13,CE,1,1,,
+13-1051.00,Estimadores de Costos,Especialista en costos y presupuestos,4,13,CE,1,1,,
+13-1071.00,Especialistas en Recursos Humanos,Especialista en recursos humanos,4,13,ECS,1,1,,
+13-1074.00,Contratistas de Mano de Obra Agrícola,,2,13,ERC,0,0,SIN_ESTUDIOS,
+13-1075.00,Especialistas en Relaciones Laborales,Especialista en relaciones laborales (relaciones industriales),4,13,ECS,1,1,,
+13-1081.00,Especialistas en Logística,Especialista en logística,4,13,CEI,1,1,,
+13-1081.01,Ingenieros de Logística,,4,13,CIR,0,0,DUPLICADO,Especialista en logística
+13-1081.02,Analistas de Logística,,4,13,CEI,0,0,DUPLICADO,Especialista en logística
+13-1082.00,Especialistas en Gestión de Proyectos,Gestor de proyectos,4,13,EC,1,1,,
+13-1111.00,Analistas de Gestión,Consultor / analista de gestión empresarial,4,13,CIE,1,1,,
+13-1121.00,"Planificadores de Reuniones, Convenciones, y Eventos",Organizador de eventos,4,13,ECS,1,1,,
+13-1131.00,Recaudadores de Fondos,,4,13,ESC,0,0,NO_PERU,recaudación de fondos
+13-1141.00,"Especialistas en Compensaciones, Beneficios, y Análisis Ocupacional",,4,13,CES,0,0,DUPLICADO,RR. HH.
+13-1151.00,Especialistas en Capacitación y Desarrollo,Especialista en capacitación y desarrollo,4,13,SI,1,1,,
+13-1161.00,Analistas de Investigación de Mercado y Especialistas en Mercadeo,Analista de marketing e investigación de mercados,4,13,ECI,1,1,,
+13-1161.01,Estrategas de Investigación de Mercado,,4,13,ECI,0,0,DUPLICADO,Analista de marketing
+13-1199.00,"Business Operations Specialists, All Other",,,13,,0,0,RESIDUAL,
+13-1199.04,Planificadores de Continuidad Comercial,,4,13,ECI,0,0,NO_PERU,"continuidad de negocio, muy específica"
+13-1199.05,Especialistas en Sostenibilidad,Especialista en sostenibilidad,4,13,IEC,1,1,,
+13-1199.06,Comerciantes en Internet,Especialista en comercio electrónico,4,13,CE,1,1,,
+13-1199.07,Especialistas en Gestión de Seguridad,,4,13,CIR,0,0,DUPLICADO,seguridad y salud ocupacional
+13-2011.00,Contadores y Auditores,Contador y auditor,4,13,CEI,1,1,,
+13-2022.00,Tasadores de Propiedades Personales y Comerciales,,4,13,CER,0,0,NO_PERU,
+13-2023.00,Tasadores y Especialistas en Valoración de Bienes Raíces,,4,13,CE,0,0,DUPLICADO,"perito tasador, muy específica"
+13-2031.00,Analistas de Presupuesto,,4,13,CEI,0,0,DUPLICADO,Contador / Analista financiero
+13-2041.00,Analistas de Crédito,Analista de créditos,4,13,CEI,1,1,,
+13-2051.00,Analistas Financieros y de Inversiones,Analista financiero y de inversiones,4,13,CEI,1,1,,
+13-2052.00,Asesores de Finanzas Personales,,4,13,ECS,0,0,NO_PERU,"asesor de finanzas personales, figura estadounidense"
+13-2053.00,Aseguradores,,4,13,CEI,0,0,DUPLICADO,"suscriptor de seguros, muy específica"
+13-2054.00,Especialistas de Riesgo Financiero,Analista de riesgos financieros,4,13,CIE,1,1,,
+13-2061.00,Examinadores Financieros,,4,13,CEI,0,0,DUPLICADO,Analista de riesgos
+13-2071.00,Asesores de Crédito,,4,13,CSE,0,0,DUPLICADO,Analista de créditos
+13-2072.00,Oficiales de Préstamo,,4,13,CES,0,0,DUPLICADO,Analista de créditos
+13-2081.00,"Examinadores y Cobradores de Impuestos, y Agentes de Rentas Públicas",Especialista tributario,3,13,CE,1,1,,
+13-2082.00,Preparadores de Impuestos,,3,13,CE,0,0,DUPLICADO,Especialista tributario
+13-2099.00,"Financial Specialists, All Other",,,13,,0,0,RESIDUAL,
+13-2099.01,Analistas Cuantitativos Financieros,,5,13,IC,0,0,DUPLICADO,Analista financiero
+13-2099.04,"Examinadores, Investigadores y Analistas de Fraudes",,4,13,CIE,0,0,DUPLICADO,Contador y auditor
+15-1211.00,Analistas de Sistemas de Computadoras,Analista de sistemas,4,15,IC,1,1,,
+15-1211.01,Especialistas en Informática Médica,,5,15,ICS,0,0,DUPLICADO,informática médica
+15-1212.00,Analistas de Seguridad de la Información,Analista de ciberseguridad,4,15,CI,1,1,,
+15-1221.00,Investigadores de Ciencias de la Computación e Información,Científico de la computación (investigador),5,15,IC,1,1,,
+15-1231.00,Especialistas en Apoyo Técnico de Computadoras y Redes Informáticas,Técnico de soporte de redes,4,15,CIR,1,1,,
+15-1232.00,Especialistas en Apoyo Técnico para Usuarios de Computadoras,Técnico de soporte informático,3,15,CRI,1,1,,
+15-1241.00,Diseñadores de Redes Informáticas,Arquitecto de redes,4,15,ICR,1,1,,
+15-1241.01,Especialistas en Ingeniería de Telecomunicaciones,Especialista en telecomunicaciones,3,15,CRI,1,1,,
+15-1242.00,Administradores de Bases de Datos,Administrador de bases de datos,4,15,CI,1,1,,
+15-1243.00,Diseñadores de Bases de Datos,,4,15,CI,0,0,DUPLICADO,Administrador de bases de datos
+15-1243.01,Especialistas en Almacenamiento de Datos,,4,15,CI,0,0,DUPLICADO,Administrador de bases de datos
+15-1244.00,Administradores de Redes Informáticas y Sistemas de Computación,Administrador de redes y sistemas,3,15,CRI,1,1,,
+15-1251.00,Programadores de Computadoras,Programador,4,15,CI,1,1,,
+15-1252.00,Diseñadores de Programas Software,Desarrollador / ingeniero de software,4,15,IC,1,1,,
+15-1253.00,Analistas y Probadores de Control de Calidad de Software,Analista de calidad de software (QA),4,15,ICR,1,1,,
+15-1254.00,Desarrolladores de Página Web,Desarrollador web,3,15,CI,1,1,,
+15-1255.00,Diseñadores de Página Web y de Interfaz Digital,Diseñador web y de experiencia de usuario (UX/UI),4,15,IAC,1,1,,
+15-1255.01,Diseñadores de Videojuegos,Diseñador de videojuegos,4,15,AI,1,1,,
+15-1299.00,"Computer Occupations, All Other",,,15,,0,0,RESIDUAL,
+15-1299.01,Administradores de Sitios en Internet,,4,15,CIE,0,0,DUPLICADO,Desarrollador web
+15-1299.02,Tecnólogos y Técnicos de Sistemas de Información Geográfica,Especialista en sistemas de información geográfica (SIG),4,15,CIR,1,1,,
+15-1299.03,Especialistas en Administración de Documentos,,4,15,CI,0,0,NO_PERU,
+15-1299.04,Examinadores de Penetración,,4,15,ICR,0,0,DUPLICADO,Analista de ciberseguridad
+15-1299.05,Ingenieros de Seguridad de la Información,,4,15,CIR,0,0,DUPLICADO,Analista de ciberseguridad
+15-1299.06,Analistas Forenses Digitales,,4,15,IC,0,0,DUPLICADO,"forense digital, muy específica"
+15-1299.07,Ingenieros de Blockchain (Cadena de Bloques),,4,15,CI,0,0,NO_PERU,blockchain
+15-1299.08,Ingenieros o Arquitectos de Sistemas de Computadoras,,3,15,CIR,0,0,DUPLICADO,Analista de sistemas
+15-1299.09,Gerentes de Proyectos de Informática,,4,15,ECI,0,0,CARGO,cubierto por Gestor de proyectos
+15-2011.00,Actuarios,,4,15,CIE,0,0,NO_PERU,"ciencias actuariales, casi sin oferta"
+15-2021.00,Matemáticos,Matemático,5,15,IC,1,1,,
+15-2031.00,Analistas de Investigación de Operaciones,Analista de investigación de operaciones,5,15,IC,1,1,,
+15-2041.00,Estadísticos,Estadístico,5,15,IC,1,1,,
+15-2041.01,Especialistas en Bioestadística,,5,15,IC,0,0,DUPLICADO,Estadístico
+15-2051.00,Científico de Datos,Científico de datos,4,15,IC,1,1,,
+15-2051.01,Analistas de Inteligencia Empresarial,Analista de inteligencia de negocios,4,15,CIE,1,1,,
+15-2051.02,Gerentes de Datos Clínicos,,4,15,CI,0,0,NO_PERU,
+15-2099.00,"Mathematical Science Occupations, All Other",,,15,,0,0,RESIDUAL,
+15-2099.01,Técnicos en Bioinformática,,4,15,ICR,0,0,DUPLICADO,bioinformática
+17-1011.00,Arquitectos,Arquitecto,5,17,RCA,1,1,,
+17-1012.00,Arquitectos Paisajistas,Arquitecto paisajista,4,17,RIA,1,1,,
+17-1021.00,Cartógrafos y Fotogrametristas,Cartógrafo / especialista en geomática,4,17,CIR,1,1,,
+17-1022.00,Agrimensores,Topógrafo,4,17,CRI,1,1,,
+17-1022.01,Agrimensores Geodeticos,,4,17,RIC,0,0,DUPLICADO,Topógrafo
+17-2011.00,Ingenieros Aeroespaciales,Ingeniero aeronáutico,4,17,IRC,1,1,,
+17-2021.00,Ingenieros Agrónomos,Ingeniero agrícola,4,17,RI,1,1,,
+17-2031.00,Ingenieros Biogenéticos y Biomédicos,Ingeniero biomédico,4,17,IRC,1,1,,
+17-2041.00,Ingenieros Químicos,Ingeniero químico,4,17,RIC,1,1,,
+17-2051.00,Ingenieros Civiles,Ingeniero civil,4,17,RIC,1,1,,
+17-2051.01,Ingenieros de Transporte,Ingeniero de transportes,4,17,RIC,1,1,,
+17-2051.02,Ingenieros en Agua Potable y Desagüe,Ingeniero sanitario,4,17,RIC,1,1,,
+17-2061.00,Ingenieros de Computadoras,Ingeniero de computación (hardware),4,17,RIC,1,1,,
+17-2071.00,Ingenieros Eléctricos,Ingeniero eléctrico,4,17,RIC,1,1,,
+17-2072.00,Ingenieros Electrónicos,Ingeniero electrónico,4,17,RIC,1,1,,
+17-2072.01,Especialistas en Dispositivos de Identificación de Frecuencias de Radio,,4,17,CRI,0,0,NO_PERU,RFID
+17-2081.00,Ingenieros Ambientales,Ingeniero ambiental,4,17,IRC,1,1,,
+17-2111.00,Ingenieros Sanitarios y de Seguridad,Ingeniero de seguridad e higiene industrial,4,17,IRC,1,1,,
+17-2111.02,Ingenieros Que Se Dedican a la Prevención y Protección Contra Incendios,,4,17,RIC,0,0,DUPLICADO,ingeniería de seguridad
+17-2112.00,Ingenieros Industriales,Ingeniero industrial,4,17,CIR,1,1,,
+17-2112.01,Ergonomistas e Ingenieros de Factores Humanos,,5,17,IRC,0,0,NO_PERU,ergonomía como ingeniería
+17-2112.02,Ingenieros de Validación,,4,17,ICR,0,0,DUPLICADO,Ingeniero industrial
+17-2112.03,Ingenieros de Manufactura,,4,17,RIC,0,0,DUPLICADO,Ingeniero industrial
+17-2121.00,Ingenieros Marítimos y Arquitectos Navales,Ingeniero naval,4,17,RIC,1,1,,
+17-2131.00,Ingenieros de Materiales,Ingeniero de materiales,4,17,RIC,1,1,,
+17-2141.00,Ingenieros Mecánicos,Ingeniero mecánico,4,17,RIC,1,1,,
+17-2141.01,Ingenieros en Celdas de Combustible,,4,17,RIC,0,0,NO_PERU,celdas de combustible
+17-2141.02,Ingenieros Automotrices,Ingeniero automotriz,4,17,RIC,1,1,,
+17-2151.00,"Ingenieros de Minería y Geología, Incluye a los Ingenieros de Seguridad Minera",Ingeniero de minas,4,17,RIC,1,1,,
+17-2161.00,Ingenieros Nucleares,,4,17,IRC,0,0,NO_PERU,ingeniería nuclear
+17-2171.00,Ingenieros Petroleros,Ingeniero de petróleo,4,17,RIC,1,1,,
+17-2199.00,"Engineers, All Other",,,17,,0,0,RESIDUAL,
+17-2199.03,Ingenieros en Energía,Ingeniero en energía,4,17,RIC,1,1,,
+17-2199.05,Ingenieros en Mecatrónica,Ingeniero mecatrónico,4,17,RIC,1,1,,
+17-2199.06,Ingenieros en Microsistemas,,5,17,IRC,0,0,NO_PERU,microsistemas
+17-2199.07,Ingenieros en Fotónica,,4,17,RIC,0,0,NO_PERU,fotónica
+17-2199.08,Ingenieros en Robótica,,4,17,RIC,0,0,DUPLICADO,Ingeniero mecatrónico
+17-2199.09,Ingenieros en Nanosistemas,,5,17,IRC,0,0,NO_PERU,nanosistemas
+17-2199.10,Ingenieros en Energía Eólica (Proveniente del Viento),,4,17,RIC,0,0,NO_PERU,energía eólica
+17-2199.11,Ingenieros en Sistemas de Energía Solar,,4,17,RIC,0,0,DUPLICADO,Ingeniero en energía
+17-3011.00,Delineantes de Planos Arquitectónicos y Civiles,Dibujante técnico / proyectista,3,17,RCA,1,1,,
+17-3012.00,Delineantes de Sistemas Eléctricos y Electrónicos,,3,17,RC,0,0,DUPLICADO,Dibujante técnico
+17-3013.00,Delineantes de Sistemas Mecánicos,,3,17,RCI,0,0,DUPLICADO,Dibujante técnico
+17-3019.00,"Drafters, All Other",,,17,,0,0,RESIDUAL,
+17-3021.00,Tecnólogos y Técnicos en Ingeniería y Operaciones Aeroespaciales,,3,17,RCI,0,0,DUPLICADO,Técnico en mantenimiento de aeronaves
+17-3022.00,Tecnólogos y Técnicos en Ingeniería Civil,Técnico en construcción civil,3,17,RIC,1,1,,
+17-3023.00,Tecnólogos y Técnicos en Ingeniería Eléctrica y Electrónica,Técnico en electricidad y electrónica,3,17,RIC,1,1,,
+17-3024.00,Tecnólogos y Técnicos en Electromecánica y Mecatrónica,Técnico en electromecánica y mecatrónica,3,17,RCI,1,1,,
+17-3024.01,Técnicos en Robótica,,3,17,RCI,0,0,DUPLICADO,Técnico en electromecánica y mecatrónica
+17-3025.00,Tecnólogos y Técnicos en Ingeniería Ambiental,,4,17,RIC,0,0,DUPLICADO,Técnico en gestión ambiental
+17-3026.00,Tecnólogos y Técnicos en Ingeniería Industrial,Técnico en producción industrial,3,17,RCI,1,1,,
+17-3026.01,Tecnólogos y Técnicos de Ingeniería en Nanotecnología,,4,17,RIC,0,0,NO_PERU,nanotecnología
+17-3027.00,Tecnólogos y Técnicos en Ingeniería Mecánica,Técnico en mecánica de producción,3,17,RIC,1,1,,
+17-3027.01,Técnicos en Ingeniería Automotriz,,3,17,RIC,0,0,DUPLICADO,Mecánico automotriz
+17-3028.00,Tecnólogos y Técnicos de Calibración,Técnico en metrología y calibración,3,17,RCI,1,1,,
+17-3029.00,"Engineering Technologists and Technicians, Except Drafters, All Other",,,17,,0,0,RESIDUAL,
+17-3029.01,Especialistas en Pruebas No Destructivas,,2,17,RIC,0,0,SIN_ESTUDIOS,
+17-3029.08,Técnicos en Fotónica,,3,17,RCI,0,0,NO_PERU,fotónica
+17-3031.00,Técnicos en Agrimensura y Cartografía,,3,17,RCI,0,0,DUPLICADO,Topógrafo
+19-1011.00,Científicos Especializados en Animales,Zootecnista,5,19,IR,1,1,,
+19-1012.00,Científicos y Tecnólogos Especializados en Alimentos,Ingeniero en industrias alimentarias,4,19,IRC,1,1,,
+19-1013.00,Científicos Especializados en Suelos y Botánica,Ingeniero agrónomo,5,19,IR,1,1,,
+19-1021.00,Bioquímicos y Biofísicos,Bioquímico,5,19,IR,1,1,,
+19-1022.00,Microbiólogos,Microbiólogo,4,19,IRC,1,1,,
+19-1023.00,Zoólogos y Biólogos de la Fauna Silvestre,Biólogo de fauna silvestre,4,19,IR,1,1,,
+19-1029.00,"Biological Scientists, All Other",,,19,,0,0,RESIDUAL,
+19-1029.01,Científicos en Bioinformática,,5,19,ICR,0,0,DUPLICADO,bioinformática
+19-1029.02,Biólogos Moleculares y Celulares,,5,19,ICR,0,0,DUPLICADO,Biólogo
+19-1029.03,Genetistas,Genetista,5,19,ICR,1,1,,
+19-1029.04,Biólogos,Biólogo,5,19,ICR,1,1,,
+19-1031.00,Científicos Especializados en Conservación,Especialista en conservación de recursos naturales,4,19,IRC,1,1,,
+19-1031.02,Guardabosques,,4,19,RIE,0,0,NO_CARRERA,guardaparque
+19-1031.03,Naturalistas/Ecologistas de Parques,,4,19,SRI,0,0,NO_PERU,
+19-1032.00,Silvicultores,Ingeniero forestal,4,19,RIC,1,1,,
+19-1041.00,Epidemiólogos,Epidemiólogo,5,19,IS,1,1,,
+19-1042.00,Científicos Médicos,Investigador biomédico,5,19,IR,1,1,,
+19-1099.00,"Life Scientists, All Other",,,19,,0,0,RESIDUAL,
+19-2011.00,Astrónomos,,5,19,IR,0,0,NO_PERU,astronomía sin carrera de pregrado
+19-2012.00,Físicos,Físico,5,19,IRC,1,1,,
+19-2021.00,Científicos Atmosféricos y Espaciales,Meteorólogo,4,19,IRC,1,1,,
+19-2031.00,Químicos,Químico,4,19,IRC,1,1,,
+19-2032.00,Científicos de Materiales,,4,19,IRC,0,0,DUPLICADO,Ingeniero de materiales
+19-2041.00,"Científicos y Especialistas del Medioambiente, Incluye Salud",Científico ambiental,4,19,IRC,1,1,,
+19-2041.01,Analistas de Políticas de Cambio Climático,,5,19,IEC,0,0,DUPLICADO,Científico ambiental
+19-2041.02,Planificadores de Renovación Ambiental,,5,19,IRC,0,0,DUPLICADO,Científico ambiental
+19-2041.03,Ecólogos Industriales,,5,19,IRC,0,0,DUPLICADO,Científico ambiental
+19-2042.00,Científicos de la Geociencia,Geólogo,4,19,IRC,1,1,,
+19-2043.00,Hidrólogos,Hidrólogo,4,19,IRC,1,1,,
+19-2099.00,"Physical Scientists, All Other",,,19,,0,0,RESIDUAL,
+19-2099.01,Científicos y Tecnólogos de Sensores Remotos,,4,19,IRC,0,0,NO_PERU,sensores remotos
+19-3011.00,Economistas,Economista,5,19,ICE,1,1,,
+19-3011.01,Economistas Ambientales,,5,19,IEC,0,0,DUPLICADO,Economista
+19-3022.00,Investigadores de Encuestas,,5,19,IC,0,0,DUPLICADO,investigación de mercados / estadística
+19-3032.00,Psicólogos Industriales-Organizacionales,Psicólogo organizacional,5,19,IEC,1,1,,
+19-3033.00,Psicólogos Clínicos y de Consejería,Psicólogo clínico,5,19,SI,1,1,,
+19-3034.00,Psicólogos Escolares,Psicólogo educativo,5,19,SIC,1,1,,
+19-3039.00,"Psychologists, All Other",,,19,,0,0,RESIDUAL,
+19-3039.02,Neuropsicólogos,,5,19,IS,0,0,DUPLICADO,"neuropsicología, posgrado"
+19-3039.03,Neuropsicólogos Clínicos,,5,19,IS,0,0,DUPLICADO,"neuropsicología, posgrado"
+19-3041.00,Sociólogos,Sociólogo,5,19,ISA,1,1,,
+19-3051.00,Planificadores Urbanos y Regionales,Urbanista / planificador urbano,5,19,IEC,1,1,,
+19-3091.00,Antropólogos y Arqueólogos,Antropólogo y arqueólogo,5,19,IA,1,1,,
+19-3092.00,Geógrafos,Geógrafo,4,19,IR,1,1,,
+19-3093.00,Historiadores,Historiador,5,19,IC,1,1,,
+19-3094.00,Científicos Políticos,Politólogo,5,19,IA,1,1,,
+19-3099.00,"Social Scientists and Related Workers, All Other",,,19,,0,0,RESIDUAL,
+19-3099.01,Planificadores de Transporte,,4,19,ICR,0,0,DUPLICADO,Ingeniero de transporte
+19-4012.00,Técnicos en Ciencias Agrícolas,Técnico agropecuario,3,19,RIC,1,1,,
+19-4012.01,Técnicos de Precisión en Agricultura,,3,19,RIC,0,0,DUPLICADO,Técnico agropecuario
+19-4013.00,Técnico de Ciencias de los Alimentos,Técnico en industrias alimentarias,3,19,RCI,1,1,,
+19-4021.00,Técnicos en Biología,,4,19,CRI,0,0,SIN_VIA_TECNICA,nivel técnico de Biólogo
+19-4031.00,Técnicos Químicos,Técnico en química industrial,3,19,IRC,1,1,,
+19-4042.00,"Técnicos del Medioambiente y de Protección, Incluye Salud",Técnico en gestión ambiental,4,19,RIC,1,1,,
+19-4043.00,Técnicos en Exploración Geológica,Técnico en exploración geológica y minera,4,19,RCI,1,1,,
+19-4044.00,Técnicos en Hidrología,,3,19,RCI,0,0,SIN_VIA_TECNICA,nivel técnico de Hidrólogo
+19-4051.00,Técnicos Nucleares,,3,19,RCI,0,0,NO_PERU,nuclear
+19-4051.02,Técnicos para el Control Nuclear,,3,19,RCI,0,0,NO_PERU,nuclear
+19-4061.00,Asistentes de Investigación en Ciencias Sociales,,4,19,IC,0,0,APOYO,
+19-4071.00,Técnicos Forestales y de Conservación,Técnico forestal,3,19,RCI,1,1,,
+19-4092.00,Técnicos en Ciencias Forenses,,3,19,IRC,0,0,DUPLICADO,criminalística: vía PNP
+19-4099.00,"Life, Physical, and Social Science Technicians, All Other",,,19,,0,0,RESIDUAL,
+19-4099.01,Analistas de Control de Calidad,Analista de control de calidad,3,19,CIR,1,1,,
+19-4099.03,Técnicos de Sensores Remotos,,4,19,CRI,0,0,NO_PERU,sensores remotos
+19-5011.00,Especialistas en Salud y Seguridad Ocupacional,Especialista en seguridad y salud ocupacional,4,19,ICR,1,1,,
+19-5012.00,Técnicos en Salud y Seguridad Ocupacional,Técnico en seguridad industrial y prevención de riesgos,3,19,CRI,1,1,,
+21-1011.00,Consejeros Especializados en Abuso de Sustancias y Trastornos del Comportamiento,,5,21,SI,0,0,DUPLICADO,Psicólogo clínico
+21-1012.00,"Consejeros y Orientadores Educativos, Académicos, y Ocupacionales",Orientador educativo y vocacional,5,21,SCE,1,1,,
+21-1013.00,Terapeutas de Matrimonios y Familias,,5,21,SI,0,0,DUPLICADO,"terapia familiar, posgrado"
+21-1014.00,Consejeros de Salud Mental,,5,21,SI,0,0,DUPLICADO,Psicólogo clínico
+21-1015.00,Consejeros de Rehabilitación,,5,21,S,0,0,DUPLICADO,Psicólogo / Trabajador social
+21-1019.00,"Counselors, All Other",,,21,,0,0,RESIDUAL,
+21-1021.00,"Trabajadores Sociales Especializados en Temas de la Infancia, Familiares y Escolares",Trabajador social,4,21,S,1,1,,
+21-1022.00,Trabajadores Sociales de Cuidado de la Salud,,5,21,SI,0,0,DUPLICADO,Trabajador social
+21-1023.00,Trabajadores Sociales Especializados en Salud Mental y Abuso de Sustancias,,5,21,SI,0,0,DUPLICADO,Trabajador social
+21-1029.00,"Social Workers, All Other",,,21,,0,0,RESIDUAL,
+21-1091.00,Especialistas en Educación de la Salud,,4,21,SIC,0,0,DUPLICADO,enfermería / obstetricia
+21-1092.00,Oficiales de Libertad Condicional y Especialistas en Tratamiento Correccional,,4,21,SCE,0,0,NO_PERU,libertad condicional
+21-1093.00,Asistentes de Servicios Sociales y Humanos,,4,21,SCE,0,0,APOYO,
+21-1094.00,Trabajadores de la Salud para la Comunidad,,4,21,S,0,0,NO_PERU,"promotor de salud comunitario, sin carrera"
+21-1099.00,"Community and Social Service Specialists, All Other",,,21,,0,0,RESIDUAL,
+21-2011.00,Clérigos,,5,21,SE,0,0,RELIGIOSA,
+21-2021.00,Directores de Educación y Actividades Religiosas,,4,21,SE,0,0,RELIGIOSA,
+21-2099.00,"Religious Workers, All Other",,,21,,0,0,RESIDUAL,
+23-1011.00,Abogados,Abogado,5,23,ECI,1,1,,
+23-1012.00,Oficiales Jurídicos,,5,23,CEI,0,0,NO_PERU,law clerk
+23-1021.00,"Jueces de Derecho Administrativo, Adjudicadores y Oficiales de Audiencia",,5,23,CEI,0,0,NO_PERU,juez administrativo
+23-1022.00,"Árbitros, Mediadores y Conciliadores",Conciliador / árbitro,5,23,ECS,1,1,,
+23-1023.00,"Jueces, Jueces Magistrados y Magistrados",Juez / fiscal,5,23,ECS,1,1,,
+23-2011.00,Asistentes Legales y Asistentes de Abogados,,3,23,CIE,0,0,APOYO,asistente legal
+23-2093.00,"Examinadores, Analistas de Títulos y Gestores de Búsqueda de Títulos",,2,23,CE,0,0,SIN_ESTUDIOS,
+23-2099.00,"Legal Support Workers, All Other",,,23,,0,0,RESIDUAL,
+25-1011.00,Profesores de Estudios Comerciales de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1021.00,Profesores de Ciencias de la Computación de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1022.00,Profesores de Ciencias Matemáticas de Nivel Postsecundario,,5,25,SIC,0,0,DOCENCIA_ESP,
+25-1031.00,Profesores de Arquitectura de Nivel Postsecundario,,5,25,SIA,0,0,DOCENCIA_ESP,
+25-1032.00,Profesores de Ingeniería de Nivel Postsecundario,,5,25,SIR,0,0,DOCENCIA_ESP,
+25-1041.00,Profesores de Ciencias Agrarias de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1042.00,Profesores de Ciencias Biológicas de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1043.00,Profesores de Silvicultura y Ciencias de la Conservación de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1051.00,"Profesores de Ciencias Atmosféricas, Geológicas, Oceanográficas y Espaciales de Nivel Postsecundario",,5,25,SI,0,0,DOCENCIA_ESP,
+25-1052.00,Profesores de Química de Nivel Postsecundario,,5,25,IS,0,0,DOCENCIA_ESP,
+25-1053.00,Profesores de Ciencias Ambientales de Nivel Postsecundario,,5,25,IS,0,0,DOCENCIA_ESP,
+25-1054.00,Profesores de Física de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1061.00,Profesores de Antropología y Arqueología de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1062.00,"Profesores de Estudios Regionales, Étnicos y Culturales de Nivel Postsecundario",,5,25,SI,0,0,DOCENCIA_ESP,
+25-1063.00,Profesores de Economía de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1064.00,Profesores de Geografía de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1065.00,Profesores de Ciencias Políticas de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1066.00,Profesores de Psicología de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1067.00,Profesores de Sociología de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1069.00,"Social Sciences Teachers, Postsecondary, All Other",,,25,,0,0,RESIDUAL,
+25-1071.00,Profesores de Especialidades de Salud de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1072.00,Profesores e Instructores de Enfermería de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1081.00,Profesores de Educación de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1082.00,Profesores de Bibliotecología de Nivel Postsecundario,,5,25,SIC,0,0,DOCENCIA_ESP,
+25-1111.00,Profesores de Justicia Criminal y Aplicación y Cumplimiento de la Ley de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1112.00,Profesores de Derecho de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1113.00,Profesores de Trabajo Social de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1121.00,"Profesores de Arte, Teatro, y Música de Nivel Postsecundario","Docente de arte, teatro y música",5,25,SA,1,1,,
+25-1122.00,Profesores de Comunicaciones de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1123.00,Profesores de Inglés y Literatura de Nivel Postsecundario,,5,25,SIA,0,0,NO_PERU,profesor de inglés = literatura inglesa en EE. UU.
+25-1124.00,Profesores de Lengua y Literatura Extranjeras de Nivel Postsecundario,Docente de idiomas,5,25,SIA,1,1,,
+25-1125.00,Profesores de Historia de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1126.00,Profesores de Filosofía y Religión de Nivel Postsecundario,Docente de filosofía y religión,5,25,SI,1,1,,excepción a DOCENCIA_ESP: única salida de la familia 216 Teología y Filosofía
+25-1192.00,Profesores de Ciencias de la Familia y de los Consumidores de Nivel Postsecundario,,5,25,SI,0,0,DOCENCIA_ESP,
+25-1193.00,Profesores de Estudios de Recreación y Acondicionamiento Físico de Nivel Postsecundario,Docente de educación física y deportes,5,25,SI,1,1,,
+25-1194.00,Profesores de Educación Profesional/Técnica de Nivel Postsecundario,"Docente de formación técnica (instituto, CETPRO)",3,25,SI,1,1,,
+25-1199.00,"Postsecondary Teachers, All Other",,,25,,0,0,RESIDUAL,
+25-2011.00,Maestros de Nivel Preescolar,Docente de educación inicial,3,25,SA,1,1,,
+25-2012.00,Maestros de Jardín de Infantes,,4,25,SA,0,0,DUPLICADO,Docente de educación inicial
+25-2021.00,Maestros de Escuela Primaria,Docente de educación primaria,4,25,S,1,1,,
+25-2022.00,Maestros de Escuela de Nivel Medio,,4,25,SA,0,0,DUPLICADO,Docente de secundaria (middle school no existe)
+25-2023.00,Maestros de Educación Profesional/Técnica de Escuela de Nivel Medio,,4,25,S,0,0,DUPLICADO,Docente de educación para el trabajo
+25-2031.00,Maestros de Escuela Secundaria,Docente de educación secundaria,4,25,S,1,1,,
+25-2032.00,Maestros de Educación Profesional/Técnica de Escuela Secundaria,Docente de educación para el trabajo (educación técnica),4,25,S,1,1,,
+25-2051.00,Maestros de Educación Especial de Nivel Preescolar,,4,25,SA,0,0,DUPLICADO,Docente de educación especial
+25-2055.00,Maestros de Educación Especial de Jardín de Infantes,,4,25,S,0,0,DUPLICADO,Docente de educación especial
+25-2056.00,Maestros de Educación Especial de Escuela Primaria,Docente de educación especial,4,25,SI,1,1,,
+25-2057.00,Maestros de Educación Especial de Escuela de Nivel Medio,,4,25,SAI,0,0,DUPLICADO,Docente de educación especial
+25-2058.00,Maestros de Educación Especial de Escuela Secundaria,,4,25,SI,0,0,DUPLICADO,Docente de educación especial
+25-2059.00,"Special Education Teachers, All Other",,,25,,0,0,RESIDUAL,
+25-2059.01,Especialistas en Educación Física Adaptada,,4,25,SCR,0,0,ALCANCE,educación física adaptada (discapacidad); la EF se representa con 25-1193 y los entrenadores
+25-3011.00,"Instructores de Educación Básica y Secundaria para Adultos, y de Inglés como Segunda Lengua",Docente de educación básica alternativa (adultos),4,25,SA,1,1,,
+25-3021.00,Maestros de Enriquecimiento Personal,,3,25,SA,0,0,NO_PERU,enriquecimiento personal
+25-3031.00,Maestros Sustitutos de Corto Plazo,,4,25,SC,0,0,NO_CARRERA,sustituto
+25-3041.00,Tutores,,3,25,S,0,0,NO_CARRERA,tutor particular
+25-3099.00,"Teachers and Instructors, All Other",,,25,,0,0,RESIDUAL,
+25-4011.00,Archiveros,Archivero,5,25,CI,1,1,,
+25-4012.00,Curadores,Curador de museo / gestor cultural,5,25,CES,1,1,,
+25-4013.00,Técnicos y Conservadores de Museo,Conservador y restaurador,5,25,RC,1,1,,
+25-4022.00,Bibliotecarios y Especialistas en Colecciones de Materiales Multimedios,Bibliotecario,5,25,CSI,1,1,,
+25-4031.00,Técnicos de Biblioteca,,3,25,CS,0,0,APOYO,
+25-9021.00,Educadores en Gerencia de Granjas y Hogares,Extensionista agrario,5,25,SIR,1,1,,
+25-9031.00,Coordinadores Educativos,,5,25,SEI,0,0,CARGO,
+25-9042.00,"Auxiliares Docentes de Educación Preescolar, Primaria, Nivel Medio, Secundaria",,3,25,SC,0,0,APOYO,
+25-9043.00,Auxiliares Docentes de Educación Especial,,3,25,S,0,0,APOYO,
+25-9044.00,Auxiliares Docentes de Educación Postsecundaria,,5,25,SC,0,0,APOYO,
+25-9049.00,"Teaching Assistants, All Other",,,25,,0,0,RESIDUAL,
+25-9099.00,"Educational Instruction and Library Workers, All Other",,,25,,0,0,RESIDUAL,
+27-1011.00,Directores de Arte,Director de arte,4,27,AE,1,1,,
+27-1012.00,Artesanos,Artesano,3,27,AR,1,1,,
+27-1013.00,"Artistas de Bellas Artes, Incluye Pintores, Escultores e Ilustradores","Artista plástico (pintor, escultor, ilustrador)",3,27,AR,1,1,,
+27-1014.00,Animadores y Artistas de Efectos Especiales,Animador digital y artista de efectos visuales,4,27,AR,1,1,,
+27-1019.00,"Artists and Related Workers, All Other",,,27,,0,0,RESIDUAL,
+27-1021.00,Diseñadores Comerciales e Industriales,Diseñador industrial,4,27,ARI,1,1,,
+27-1022.00,Diseñadores de Moda,Diseñador de modas,3,27,ARE,1,1,,
+27-1023.00,Diseñadores Florales,,2,27,RAC,0,0,SIN_ESTUDIOS,
+27-1024.00,Diseñadores Gráficos,Diseñador gráfico,4,27,AC,1,1,,
+27-1025.00,Diseñadores de Interiores,Diseñador de interiores,4,27,AR,1,1,,
+27-1026.00,Diseñadores de Exhibidores de Mercadería y Escaparatistas,,3,27,ARE,0,0,DUPLICADO,Diseñador gráfico / de interiores
+27-1027.00,Escenógrafos y Diseñadores de Exposiciones,Escenógrafo,5,27,A,1,1,,
+27-1029.00,"Designers, All Other",,,27,,0,0,RESIDUAL,
+27-2011.00,Actores,Actor,2,27,ASE,1,1,TECNICO_PE,Artes escénicas (CINE 221)
+27-2012.00,Productores y Directores,Productor y director audiovisual,4,27,AE,1,1,,
+27-2012.03,Directores de Programación de Medios de Comunicación,,4,27,ECA,0,0,CARGO,
+27-2012.04,Directores Buscadores de Talentos,,4,27,EAS,0,0,NO_PERU,casting director
+27-2012.05,Directores / Gerentes técnicos de Medios de Comunicación,,4,27,ECR,0,0,CARGO,
+27-2021.00,Atletas y Competidores Deportivos,,2,27,RES,0,0,SIN_ESTUDIOS,
+27-2022.00,Entrenadores y Buscadores de Talentos Deportivos,Entrenador deportivo,4,27,SER,1,1,,
+27-2023.00,"Árbitros, Referís y Otros Oficiales Deportivos",,2,27,ECR,0,0,SIN_ESTUDIOS,
+27-2031.00,Bailarines,Bailarín,3,27,ARS,1,1,,
+27-2032.00,Coreógrafos,,3,27,AS,0,0,DUPLICADO,Bailarín
+27-2041.00,Directores y Compositores de Música,Director y compositor musical,4,27,AE,1,1,,
+27-2042.00,Músicos y Cantantes,Músico y cantante,4,27,AE,1,1,,
+27-2091.00,Pinchadiscos (Disc-Jockeys),,2,27,AEC,0,0,SIN_ESTUDIOS,
+27-2099.00,"Entertainers and Performers, Sports and Related Workers, All Other",,,27,,0,0,RESIDUAL,
+27-3011.00,Anunciadores de Medios de Difusión y Locutores de Radio,Locutor de radio y televisión,4,27,AES,1,1,,
+27-3023.00,"Analistas de Noticias, Reporteros y Periodistas",Periodista,4,27,AIE,1,1,,
+27-3031.00,Especialistas en Relaciones Públicas,Especialista en relaciones públicas,4,27,EAS,1,1,,
+27-3041.00,Editores,Editor (prensa y publicaciones),4,27,ACE,1,1,,
+27-3042.00,Redactores Técnicos,,4,27,CAI,0,0,DUPLICADO,Escritor / Editor
+27-3043.00,Escritores y Autores,Escritor,4,27,AE,1,1,,
+27-3043.05,"Poetas, Letristas y Escritores Creativos",,4,27,AI,0,0,DUPLICADO,Escritor
+27-3091.00,Intérpretes y Traductores,Traductor e intérprete,4,27,CAS,1,1,,
+27-3092.00,Transcriptores Judiciales y Estenógrafos de Subtítulos en Tiempo Real,,3,27,C,0,0,NO_PERU,estenografía judicial
+27-3099.00,"Media and Communication Workers, All Other",,,27,,0,0,RESIDUAL,
+27-4011.00,Técnicos de Audio y Video,Técnico de audio y video,3,27,RC,1,1,,
+27-4012.00,Técnicos de Difusión,,3,27,CR,0,0,DUPLICADO,Técnico de audio y video
+27-4014.00,Técnicos de Ingeniería de Sonido,Técnico en ingeniería de sonido,3,27,RAC,1,1,,
+27-4015.00,Técnicos de Iluminación,,3,27,RC,0,0,DUPLICADO,Técnico de audio y video
+27-4021.00,Fotógrafos,Fotógrafo,3,27,RA,1,1,,
+27-4031.00,"Operadores de Cámara de Televisión, Video, y Película Cinematográfica",Camarógrafo,3,27,ARC,1,1,,
+27-4032.00,Editores de Películas Cinematográficas y Video,Editor de video y cine,4,27,AC,1,1,,
+27-4099.00,"Media and Communication Equipment Workers, All Other",,,27,,0,0,RESIDUAL,
+29-1011.00,Quiroprácticos,,5,29,SRI,0,0,NO_PERU,quiropraxia
+29-1021.00,Dentistas Generales,Odontólogo,5,29,IRS,1,1,,
+29-1022.00,Cirujanos Bucales y Maxilofaciales,,5,29,IRS,0,0,DUPLICADO,especialidad odontológica
+29-1023.00,Ortodoncistas,,5,29,IRC,0,0,DUPLICADO,especialidad odontológica
+29-1024.00,Prostodoncistas,,5,29,RIS,0,0,DUPLICADO,especialidad odontológica
+29-1029.00,"Dentists, All Other Specialists",,,29,,0,0,RESIDUAL,
+29-1031.00,Dietistas y Nutricionistas,Nutricionista,5,29,SI,1,1,,
+29-1041.00,Optómetras,Optómetra,5,29,ISR,1,1,,
+29-1051.00,Farmacéuticos,Químico farmacéutico,5,29,ISC,1,1,,
+29-1071.00,Médicos Asistentes,,5,29,SIC,0,0,NO_PERU,physician assistant
+29-1071.01,Ayudantes de Anestesiología,,5,29,CSI,0,0,NO_PERU,
+29-1081.00,Podiatras,,5,29,IRS,0,0,NO_PERU,podiatría
+29-1122.00,Terapistas Ocupacionales,Terapeuta ocupacional,5,29,SI,1,1,,
+29-1122.01,"Terapeutas Especialistas en Visión Limitada, Orientación y Movilidad, y Rehabilitación de la Visión",,5,29,SRI,0,0,DUPLICADO,Terapeuta ocupacional
+29-1123.00,Fisioterapeutas,Fisioterapeuta,5,29,SIR,1,1,,
+29-1124.00,Radioterapistas,,3,29,RSI,0,0,DUPLICADO,Tecnólogo en radiología
+29-1125.00,Terapistas Recreativos,,4,29,SI,0,0,NO_PERU,terapia recreativa
+29-1126.00,Terapistas Respiratorios,,3,29,RSI,0,0,NO_PERU,terapia respiratoria
+29-1127.00,Patólogos del Habla y el Lenguaje,Terapeuta de lenguaje,5,29,SIC,1,1,,
+29-1128.00,Fisiólogos de Ejercicios,,4,29,RIS,0,0,DUPLICADO,Ciencias del deporte
+29-1129.00,"Therapists, All Other",,,29,,0,0,RESIDUAL,
+29-1129.01,Terapeutas de Arte,,5,29,SA,0,0,NO_PERU,terapia de arte
+29-1129.02,Terapeutas de Música,,4,29,SAI,0,0,NO_PERU,terapia de música
+29-1131.00,Veterinarios,Médico veterinario,5,29,IR,1,1,,
+29-1141.00,Enfermeros Graduados,Enfermero(a),4,29,SCI,1,1,,
+29-1141.01,Enfermeros de Cuidado Agudo,,4,29,SI,0,0,DUPLICADO,Enfermero
+29-1141.02,Enfermeros de Práctica Avanzada de Psiquiatría,,5,29,SI,0,0,DUPLICADO,Enfermero
+29-1141.03,Enfermeros de Cuidado Crítico,,4,29,SIC,0,0,DUPLICADO,Enfermero
+29-1141.04,Especialistas en Enfermería Clínica,,5,29,SIC,0,0,DUPLICADO,Enfermero
+29-1151.00,Enfermeros Anestesistas,,5,29,SIR,0,0,NO_PERU,enfermero anestesista
+29-1161.00,Enfermeros de Partos,,5,29,SI,0,0,DUPLICADO,Obstetra
+29-1171.00,Enfermeros Médicos,,5,29,ISC,0,0,NO_PERU,nurse practitioner
+29-1181.00,Audiólogos,,5,29,IS,0,0,DUPLICADO,terapia de lenguaje / tecnología médica
+29-1211.00,Anestesiólogos,,5,29,ISR,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1212.00,Cardiólogos,Cardiólogo,5,29,IRS,1,1,,
+29-1213.00,Dermatólogos,,5,29,IRS,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1214.00,Médicos Especialistas en Medicina de Emergencias,Médico de emergencias,5,29,ISC,1,1,,
+29-1215.00,Médicos de Familia,Médico general,5,29,SI,1,1,,
+29-1216.00,Médicos de Medicina Interna General,,5,29,ISR,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1217.00,Neurólogos,,5,29,IS,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1218.00,Obstetras y Ginecólogos,Ginecólogo-obstetra,5,29,ISR,1,1,,
+29-1221.00,"Pediatras, General",,5,29,SI,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1222.00,Patólogos,,5,29,IRC,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1223.00,Psiquiatras,Psiquiatra,5,29,IS,1,1,,
+29-1224.00,Radiólogos,Radiólogo,5,29,IRC,1,1,,
+29-1229.00,"Physicians, All Other",,,29,,0,0,RESIDUAL,
+29-1229.01,Alergistas e Inmunólogos,,5,29,IS,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1229.02,Especialistas en Atención Médica Hospitalaria,,5,29,SI,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1229.03,Urólogos,,5,29,ISR,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1229.04,Médicos Especialistas en Medicina Física y Rehabilitación,,5,29,ISR,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1229.05,Médicos en Medicina Preventiva,,5,29,IS,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1229.06,Médicos de Medicina Deportiva,,5,29,ISR,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1241.00,Oftalmólogos,,5,29,ISR,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1242.00,Cirujanos Ortopédicos,,5,29,IRS,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1243.00,Cirujanos Pediátricos,,5,29,ISR,0,0,DUPLICADO,especialidad médica con el mismo perfil RIASEC que la representante incluida (regla: una por perfil)
+29-1249.00,"Surgeons, All Other",,,29,,0,0,RESIDUAL,
+29-1291.00,Acupunturistas,,5,29,SIR,0,0,NO_PERU,acupuntura
+29-1292.00,Higienistas Dentales,,3,29,SRI,0,0,NO_PERU,higienista dental
+29-1299.00,"Healthcare Diagnosing or Treating Practitioners, All Other",,,29,,0,0,RESIDUAL,
+29-1299.01,Médicos Naturistas,,5,29,ISR,0,0,NO_PERU,medicina naturista
+29-1299.02,Ortoptista,,5,29,IRS,0,0,NO_PERU,ortóptica
+29-2011.00,Tecnólogos de Laboratorio Médico y Clínico,Tecnólogo médico en laboratorio clínico,4,29,IRC,1,1,,
+29-2011.01,Tecnólogos Citogenéticos,,4,29,IRC,0,0,DUPLICADO,Tecnólogo en laboratorio
+29-2011.02,Citotecnólogos,,5,29,IRC,0,0,DUPLICADO,Tecnólogo en laboratorio
+29-2011.04,Histotecnólogos,,4,29,IRC,0,0,DUPLICADO,Tecnólogo en laboratorio
+29-2012.00,Técnicos de Laboratorio Médico y Clínico,Técnico en laboratorio clínico,3,29,RIC,1,1,,
+29-2012.01,Técnicos en Histología,,3,29,RIC,0,0,DUPLICADO,Técnico en laboratorio
+29-2031.00,Tecnólogos y Técnicos Cardiovasculares,,3,29,RIC,0,0,DUPLICADO,Tecnólogo en radiología / cardiología
+29-2032.00,Sonografistas de Diagnóstico Médico,,3,29,RCI,0,0,DUPLICADO,Tecnólogo en radiología
+29-2033.00,Tecnólogos de Medicina Nuclear,,3,29,RIC,0,0,NO_PERU,medicina nuclear
+29-2034.00,Tecnólogos y Técnicos de Radiología,Tecnólogo médico en radiología,3,29,RCI,1,1,,
+29-2035.00,Tecnólogos Especializados en Imágenes de Resonancia Magnética,,3,29,RCI,0,0,DUPLICADO,Tecnólogo en radiología
+29-2036.00,Dosimetristas Médicos,,4,29,ICR,0,0,NO_PERU,
+29-2042.00,Técnicos de Emergencias Médicas,,3,29,SRI,0,0,DUPLICADO,Paramédico
+29-2043.00,Paramédicos,Paramédico / técnico en emergencias médicas,3,29,SRI,1,1,,
+29-2051.00,Técnicos en Dietética,,3,29,SCR,0,0,DUPLICADO,Nutricionista
+29-2052.00,Técnicos de Farmacia,Técnico en farmacia,3,29,CR,1,1,,
+29-2053.00,Técnicos Psiquiátricos,,3,29,SI,0,0,DUPLICADO,Técnico en enfermería
+29-2055.00,Tecnólogos Quirúrgicos,,3,29,RCS,0,0,DUPLICADO,Enfermero (instrumentación)
+29-2056.00,Tecnólogos y Técnicos de Veterinaria,Técnico veterinario,3,29,RIC,1,1,,
+29-2057.00,Técnicos de Medicina Oftalmológica,,3,29,RIS,0,0,SIN_VIA_TECNICA,nivel técnico de Optómetra
+29-2061.00,Enfermeros Prácticos y Vocacionales con Licencia,Técnico en enfermería,3,29,SCR,1,1,,
+29-2072.00,Especialistas en Registros Médicos,,3,29,CI,0,0,NO_PERU,
+29-2081.00,"Ópticos, Despacho",,3,29,CR,0,0,SIN_VIA_TECNICA,nivel técnico de Optómetra
+29-2091.00,Ortopedas y Protésicos,,5,29,RIS,0,0,DUPLICADO,"ortopedia y prótesis, muy específica"
+29-2092.00,Especialistas en Aparatos Auditivos,,3,29,SCI,0,0,NO_PERU,
+29-2099.00,"Health Technologists and Technicians, All Other",,,29,,0,0,RESIDUAL,
+29-2099.01,Tecnólogos de Neurodiagnóstico,,3,29,IRC,0,0,NO_PERU,
+29-2099.05,Tecnólogos Médicos Oftálmicos,,3,29,RCI,0,0,DUPLICADO,Optómetra
+29-2099.08,Representantes de Pacientes,,3,29,SIC,0,0,NO_PERU,
+29-9021.00,Tecnólogos de Información de la Salud y Registradores Médicos,,3,29,CIS,0,0,NO_PERU,
+29-9091.00,Instructores Atléticos,,5,29,SRI,0,0,DUPLICADO,Entrenador deportivo / Fisioterapeuta
+29-9092.00,Consejeros Genéticos,,5,29,ISC,0,0,NO_PERU,consejería genética
+29-9093.00,Asistente Quirúrgicos,,3,29,RCS,0,0,APOYO,
+29-9099.00,"Healthcare Practitioners and Technical Workers, All Other",,,29,,0,0,RESIDUAL,
+29-9099.01,Comadronas o Parteras,Obstetra,5,29,SR,1,1,,
+31-1121.00,Auxiliares de Atención en el Hogar,,2,31,SRC,0,0,SIN_ESTUDIOS,
+31-1122.00,Auxiliares de Cuidado Personal,,2,31,SCR,0,0,SIN_ESTUDIOS,
+31-1131.00,Asistentes de Enfermería,,3,31,SRC,0,0,APOYO,cubierto por Técnico en enfermería
+31-1132.00,Camilleros,,2,31,RCS,0,0,SIN_ESTUDIOS,
+31-1133.00,Auxiliares de Psiquiatría,,2,31,SIC,0,0,SIN_ESTUDIOS,
+31-2011.00,Asistentes de Terapia Ocupacional,,3,31,SCR,0,0,APOYO,
+31-2012.00,Auxiliares de Terapia Ocupacional,,3,31,SRC,0,0,APOYO,
+31-2021.00,Asistentes de Fisioterapeutas,,3,31,SRC,0,0,APOYO,
+31-2022.00,Auxiliares de Fisioterapeutas,,2,31,SRC,0,0,SIN_ESTUDIOS,
+31-9011.00,Terapistas de Masajes,,3,31,SRI,0,0,NO_CARRERA,masajes
+31-9091.00,Asistentes Dentales,,3,31,CRS,0,0,APOYO,
+31-9092.00,Ayudantes de Médicos,,3,31,CSR,0,0,APOYO,
+31-9093.00,Preparadores de Equipos Médicos,,2,31,RCI,0,0,SIN_ESTUDIOS,
+31-9094.00,Transcriptores Médicos,,3,31,CSI,0,0,NO_PERU,
+31-9095.00,Auxiliares de Farmacia,,2,31,CER,0,0,SIN_ESTUDIOS,
+31-9096.00,Asistentes de Veterinarios y Cuidadores de Animales de Laboratorio,,2,31,RIC,0,0,SIN_ESTUDIOS,
+31-9097.00,Flebotomistas,,3,31,RCI,0,0,APOYO,
+31-9099.00,"Healthcare Support Workers, All Other",,,31,,0,0,RESIDUAL,
+31-9099.01,Ayudantes de Patólogos del Habla y el Lenguaje,,3,31,SCI,0,0,APOYO,
+31-9099.02,Técnicos de Endoscopias,,2,31,RCI,0,0,SIN_ESTUDIOS,
+33-1011.00,Supervisores Directos de Oficiales Correccionales,,3,33,ECS,0,0,CARGO,
+33-1012.00,Supervisores Directos de Policías y Detectives,,2,33,EC,0,0,SIN_ESTUDIOS,
+33-1021.00,Supervisores Directos de Trabajadores de Extinción y Prevención de Incendios,,3,33,ERC,0,0,CARGO,
+33-1091.00,Supervisores Directos de Trabajadores de Seguridad,,2,33,ECR,0,0,SIN_ESTUDIOS,
+33-1099.00,"First-Line Supervisors of Protective Service Workers, All Other",,,33,,0,0,RESIDUAL,
+33-2011.00,Bomberos,,2,33,R,0,0,SIN_ESTUDIOS,
+33-2021.00,Inspectores e Investigadores de Incendios,,3,33,RCI,0,0,NO_CARRERA,bomberos: voluntariado en el Perú
+33-2022.00,Inspectores y Especialistas en Prevención de Incendios Forestales,,3,33,RC,0,0,NO_CARRERA,
+33-3011.00,Alguaciles,,3,33,RCE,0,0,NO_PERU,alguacil
+33-3012.00,Oficiales Correccionales y Carceleros,,2,33,RCS,0,0,SIN_ESTUDIOS,
+33-3021.00,Detectives e Investigadores Criminales,"Policía (investigación criminal, PNP)",3,33,ICR,1,1,,
+33-3021.02,Oficiales de Policía para la Identificación y Control de Evidencia,,3,33,CRI,0,0,DUPLICADO,Policía (investigación criminal)
+33-3021.06,Analistas de Inteligencia,,4,33,ICE,0,0,DUPLICADO,inteligencia: vía FF. AA./PNP
+33-3031.00,Guardianes de Caza y Pesca,,3,33,RCI,0,0,NO_PERU,
+33-3041.00,Guardias Controladores de Reglas de Estacionamiento,,2,33,RC,0,0,SIN_ESTUDIOS,
+33-3051.00,Agentes y Patrulleros Policiales,Oficial de la Policía Nacional (PNP),3,33,RCE,1,1,,
+33-3051.04,Oficiales de Aduanas y Protección Fronteriza,,3,33,CER,0,0,DUPLICADO,Agente de aduanas / Policía
+33-3052.00,Policías de Tránsito y Policías Ferroviarios,,3,33,RC,0,0,DUPLICADO,Policía
+33-9011.00,Trabajadores de Control de Animales,,2,33,RCI,0,0,SIN_ESTUDIOS,
+33-9021.00,Detectives e Investigadores Privados,,3,33,CEI,0,0,NO_CARRERA,detective privado
+33-9031.00,Agentes de Vigilancia de Salas de Juego e Investigadores de Juego,,2,33,CER,0,0,SIN_ESTUDIOS,
+33-9032.00,Guardias de Seguridad,,2,33,RC,0,0,SIN_ESTUDIOS,
+33-9091.00,Guardias y Controladores de Cruce Peatonal y Vehicular,,2,33,RC,0,0,SIN_ESTUDIOS,
+33-9092.00,"Guardavidas, Patrullas de Esquí y Otros Trabajadores de Servicios de Protección en Espacios Recreativos",,2,33,RSC,0,0,SIN_ESTUDIOS,
+33-9093.00,Agentes de la Seguridad en el Transporte,,2,33,CR,0,0,SIN_ESTUDIOS,
+33-9094.00,Auxiliar de Autobús Escolar,,2,33,SCR,0,0,SIN_ESTUDIOS,
+33-9099.00,"Protective Service Workers, All Other",,,33,,0,0,RESIDUAL,
+33-9099.02,Especialista en Prevención de Pérdidas en Ventas al por Menor,,2,33,CER,0,0,SIN_ESTUDIOS,
+35-1011.00,Chefs y Primeros Chefs,Chef / cocinero profesional,3,35,ERC,1,1,,
+35-1012.00,Supervisores Directos de Trabajadores de Preparación y Servicio de Comidas,,2,35,ECR,0,0,SIN_ESTUDIOS,
+35-2011.00,Cocineros de Comidas Rápidas,,2,35,RCE,0,0,SIN_ESTUDIOS,
+35-2012.00,Cocineros de Instituciones y Cafeterías,,2,35,RC,0,0,SIN_ESTUDIOS,
+35-2013.00,Cocineros de Residencias Privadas,,3,35,RSA,0,0,DUPLICADO,Chef
+35-2014.00,Cocineros de Restaurante,,2,35,RCE,0,0,SIN_ESTUDIOS,
+35-2015.00,Cocineros de Platos de Preparación Sencilla,,2,35,RCE,0,0,SIN_ESTUDIOS,
+35-2019.00,"Cooks, All Other",,,35,,0,0,RESIDUAL,
+35-2021.00,Trabajadores de Preparación de Comidas,,2,35,RC,0,0,SIN_ESTUDIOS,
+35-3011.00,Cantineros,,2,35,RCE,0,0,SIN_ESTUDIOS,
+35-3023.00,Trabajadores de Comidas Rápidas y Dependientes de Mostrador,,2,35,CRS,0,0,SIN_ESTUDIOS,
+35-3023.01,Baristas,,2,35,RSC,0,0,SIN_ESTUDIOS,
+35-3031.00,Camareros y Camareras,,2,35,CSR,0,0,SIN_ESTUDIOS,
+35-3041.00,"Servidores de Comida, Excepto Restaurante",,2,35,RSC,0,0,SIN_ESTUDIOS,
+35-9011.00,"Auxiliares de Salón Comedor y Cafetería, y Ayudantes de Cantineros",,2,35,RCS,0,0,SIN_ESTUDIOS,
+35-9021.00,Lavaplatos,,2,35,RC,0,0,SIN_ESTUDIOS,
+35-9031.00,"Anfitriones de Restaurante, Bar y Establecimiento de Servicio de Café",,2,35,SEC,0,0,SIN_ESTUDIOS,
+35-9099.00,"Food Preparation and Serving Related Workers, All Other",,,35,,0,0,RESIDUAL,
+37-1011.00,Supervisores Directos de Empleados Domésticos y de Limpieza,,2,37,ECR,0,0,SIN_ESTUDIOS,
+37-1012.00,"Supervisores Directos de Trabajadores de Jardinería, Mantenimiento de Césped y Terrenos",,3,37,ECR,0,0,CARGO,
+37-2011.00,Ordenanzas y Empleados de Limpieza,,3,37,RC,0,0,SIN_ESTUDIOS,limpieza
+37-2012.00,Empleados Domésticos y Personal de Limpieza de Casas Privadas,,2,37,RC,0,0,SIN_ESTUDIOS,
+37-2019.00,"Building Cleaning Workers, All Other",,,37,,0,0,RESIDUAL,
+37-2021.00,Trabajadores de Control y Exterminación de Plagas,,2,37,RC,0,0,SIN_ESTUDIOS,
+37-3011.00,Trabajadores de Jardinería y Áreas Verdes,,2,37,RC,0,0,SIN_ESTUDIOS,
+37-3012.00,"Operadores, Fumigadores y Aplicadores de Pesticidas, Vegetación",,2,37,RC,0,0,SIN_ESTUDIOS,
+37-3013.00,Podadores y Cortadores de Árboles,,2,37,RC,0,0,SIN_ESTUDIOS,
+37-3019.00,"Grounds Maintenance Workers, All Other",,,37,,0,0,RESIDUAL,
+39-1013.00,Supervisores de Trabajadores de Salas de Juego,,2,39,ECR,0,0,SIN_ESTUDIOS,
+39-1014.00,Supervisores de Trabajadores de Entretenimiento y Recreación,,2,39,ECS,0,0,SIN_ESTUDIOS,
+39-1022.00,Supervisores Directos de Trabajadores de Servicios Personales,,3,39,ECS,0,0,CARGO,
+39-2011.00,Adiestradores de Animales,,2,39,RS,0,0,SIN_ESTUDIOS,
+39-2021.00,Cuidadores de Animales,,2,39,RSC,0,0,SIN_ESTUDIOS,
+39-3011.00,Operadores de Mesas de Juego,,2,39,CER,0,0,SIN_ESTUDIOS,
+39-3012.00,Receptores y Corredores de Apuestas de Juego y Deportes,,2,39,CE,0,0,SIN_ESTUDIOS,
+39-3019.00,"Gambling Service Workers, All Other",,,39,,0,0,RESIDUAL,
+39-3021.00,Operadores de Proyectores de Cine,,2,39,RC,0,0,SIN_ESTUDIOS,
+39-3031.00,Acomodadores y Controladores de Boletos de Admisión,,2,39,CSE,0,0,SIN_ESTUDIOS,
+39-3091.00,Asistentes de Establecimientos de Diversión y Recreación,,2,39,CSR,0,0,SIN_ESTUDIOS,
+39-3092.00,Asistentes de Vestuario,,2,39,ACR,0,0,SIN_ESTUDIOS,
+39-3093.00,"Asistentes del Área de Armarios, Guardarropa y Vestidor",,2,39,CRS,0,0,SIN_ESTUDIOS,
+39-3099.00,"Entertainment Attendants and Related Workers, All Other",,,39,,0,0,RESIDUAL,
+39-4011.00,Embalsamadores,,3,39,RCS,0,0,NO_PERU,embalsamador
+39-4012.00,Operadores de Crematorio,,2,39,RC,0,0,SIN_ESTUDIOS,
+39-4021.00,Asistentes de Servicios Fúnebres,,2,39,RCS,0,0,SIN_ESTUDIOS,
+39-4031.00,"Enterradores, Sepultureros, y Coordinadores de Servicios Fúnebres",,3,39,CES,0,0,NO_PERU,servicios fúnebres
+39-5011.00,Barberos,,3,39,RCS,0,0,DUPLICADO,Estilista
+39-5012.00,"Peluqueros, Estilistas de Cabello y Cosmetólogos",Estilista / cosmetólogo,3,39,RCS,1,1,,
+39-5091.00,"Maquilladores Artísticos, Teatrales y de Actores",,3,39,AR,0,0,DUPLICADO,Estilista / cosmetólogo
+39-5092.00,Manicuristas y Pedicuristas,,2,39,RC,0,0,SIN_ESTUDIOS,
+39-5093.00,Lavadores de Cabello,,2,39,RSC,0,0,SIN_ESTUDIOS,
+39-5094.00,Especialistas en Cuidados de la Piel,Cosmiatra (cuidado de la piel),3,39,RS,1,1,,
+39-6011.00,Maleteros y Botones,,2,39,RCS,0,0,SIN_ESTUDIOS,
+39-6012.00,Porteros,,2,39,SEC,0,0,SIN_ESTUDIOS,
+39-7011.00,Guías y Escoltas de Excursiones,Guía oficial de turismo,3,39,SE,1,1,,
+39-7012.00,Guías de Viajes,,2,39,SEC,0,0,SIN_ESTUDIOS,
+39-9011.00,Trabajadores de Cuidado de Niños,,2,39,SA,0,0,SIN_ESTUDIOS,
+39-9011.01,Niñeras,,2,39,S,0,0,SIN_ESTUDIOS,
+39-9031.00,Entrenadores Físicos e Instructores de Ejercicios en Grupo,Entrenador físico (acondicionamiento),3,39,SR,1,1,,
+39-9032.00,Trabajadores de Actividades Recreativas,,4,39,SER,0,0,NO_CARRERA,recreación
+39-9041.00,Coordinadores de Residencias Comunitarias,,3,39,SCE,0,0,NO_PERU,residencias comunitarias
+39-9099.00,"Personal Care and Service Workers, All Other",,,39,,0,0,RESIDUAL,
+41-1011.00,Supervisores Directos de Trabajadores de Ventas Minoristas,,2,41,ECS,0,0,SIN_ESTUDIOS,
+41-1012.00,"Supervisores Directos de Trabajadores de Ventas, Excepto Ventas Minoristas",,4,41,ECS,0,0,CARGO,
+41-2011.00,Cajeros,,2,41,CE,0,0,SIN_ESTUDIOS,
+41-2012.00,Encargados de Cambio y Cajeros de Cabina de Salas de Juego,,2,41,CE,0,0,SIN_ESTUDIOS,
+41-2021.00,Empleados de Mostrador y de Alquiler,,2,41,CES,0,0,SIN_ESTUDIOS,
+41-2022.00,Vendedores de Piezas,,2,41,RCE,0,0,SIN_ESTUDIOS,
+41-2031.00,Vendedores Minoristas,,2,41,EC,0,0,SIN_ESTUDIOS,
+41-3011.00,Agentes de Venta de Publicidad,,3,41,ECA,0,0,DUPLICADO,Representante de ventas / Publicista
+41-3021.00,Agentes de Venta de Seguros,Agente de seguros,4,41,ECS,1,1,,
+41-3031.00,"Agentes de Venta de Valores, Productos Básicos, y Servicios Financieros",,4,41,EC,0,0,NO_PERU,"corredor de bolsa, casi sin oferta"
+41-3041.00,Agentes de Viajes,Agente de viajes y turismo,3,41,ECS,1,1,,
+41-3091.00,Representantes de Ventas de Servicio,,2,41,ECS,0,0,DUPLICADO,Ejecutivo de ventas
+41-4011.00,Representantes de Ventas Mayoristas y de Productos Manufacturados Técnicos y Científicos,"Representante técnico de ventas (visitador médico, ventas técnicas)",4,41,EC,1,1,,
+41-4011.07,Representantes y Asesores de Ventas de Productos de Energía Solar,,3,41,ECR,0,0,NO_PERU,energía solar
+41-4012.00,Representantes de Ventas Mayoristas y de Productos Manufacturados,Ejecutivo de ventas,4,41,EC,1,1,,
+41-9011.00,Demostradores y Promotores de Producto,,2,41,EC,0,0,SIN_ESTUDIOS,
+41-9012.00,Modelos,,2,41,ARE,0,0,SIN_ESTUDIOS,
+41-9021.00,Corredores de Bienes Raíces,,4,41,EC,0,0,NO_CARRERA,corredor inmobiliario
+41-9022.00,Agentes de Venta de Bienes Raíces,,2,41,ECS,0,0,SIN_ESTUDIOS,
+41-9031.00,Ingenieros de Ventas,,4,41,EC,0,0,DUPLICADO,Representante técnico de ventas
+41-9041.00,Representantes de Telemercadeo,,2,41,ECS,0,0,SIN_ESTUDIOS,
+41-9091.00,"Trabajadores de Venta a Domicilio, Vendedores de Periódicos y Ambulantes y Trabajadores Relacionados",,2,41,ECR,0,0,SIN_ESTUDIOS,
+41-9099.00,"Sales and Related Workers, All Other",,,41,,0,0,RESIDUAL,
+43-1011.00,Supervisores Directos de Empleados de Oficina y de Apoyo Administrativo,,3,43,ECS,0,0,CARGO,
+43-2011.00,"Operadores de Sistema Telefónico Central, Incluye Servicio de Contestación de Llamadas",,2,43,CRE,0,0,SIN_ESTUDIOS,
+43-2021.00,Operadores Telefónicos,,2,43,CSE,0,0,SIN_ESTUDIOS,
+43-2099.00,"Communications Equipment Operators, All Other",,,43,,0,0,RESIDUAL,
+43-3011.00,Cobradores de Cuentas y Facturas,,2,43,CES,0,0,SIN_ESTUDIOS,
+43-3021.00,Oficinistas de Facturación y Registro de Facturas,,2,43,C,0,0,SIN_ESTUDIOS,
+43-3031.00,"Empleados de Teneduría de Libros, Contabilidad y Auditoría",Asistente contable (técnico en contabilidad),3,43,CE,1,1,,
+43-3041.00,Tesoreros de Salas de Juego,,2,43,CE,0,0,SIN_ESTUDIOS,
+43-3051.00,Oficinistas de Nómina y de Registro de Horas Trabajadas,,3,43,CE,0,0,DUPLICADO,Asistente contable
+43-3061.00,Oficinistas Auxiliares de Compras,,2,43,CER,0,0,SIN_ESTUDIOS,
+43-3071.00,Cajeros de Instituciones Financieras,,2,43,CE,0,0,SIN_ESTUDIOS,
+43-3099.00,"Financial Clerks, All Other",,,43,,0,0,RESIDUAL,
+43-4011.00,Oficinistas de Corretaje,,3,43,CE,0,0,NO_PERU,corretaje
+43-4021.00,Oficinistas de Correspondencia,,2,43,CE,0,0,SIN_ESTUDIOS,
+43-4031.00,"Oficinistas Judiciales, Municipales y de Otorgamiento de Licencias",,2,43,CES,0,0,SIN_ESTUDIOS,
+43-4041.00,"Autorizadores, Verificadores y Empleados de Crédito",,2,43,CES,0,0,SIN_ESTUDIOS,
+43-4051.00,Representantes del Servicio al Cliente,,2,43,CES,0,0,SIN_ESTUDIOS,
+43-4061.00,Entrevistadores de Determinación de Elegibilidad para Programas del Gobierno,,3,43,CSE,0,0,NO_PERU,
+43-4071.00,Oficinistas de Archivo,,2,43,C,0,0,SIN_ESTUDIOS,
+43-4081.00,"Empleados de Recepción de Hotel, Motel, y Centro Turístico",Recepcionista de hotel,2,43,CSE,1,1,TECNICO_PE,Hotelería (CINE 332)
+43-4111.00,Entrevistadores,,3,43,CSE,0,0,SIN_ESTUDIOS,encuestador
+43-4121.00,Asistentes de Oficina de Biblioteca,,2,43,CS,0,0,SIN_ESTUDIOS,
+43-4131.00,Entrevistadores y Empleados de Préstamos Financieros,,3,43,CES,0,0,DUPLICADO,Analista de créditos
+43-4141.00,Oficinistas de Apertura de Cuentas,,3,43,CES,0,0,SIN_ESTUDIOS,
+43-4151.00,Empleados de Órdenes de Pedido,,2,43,CE,0,0,SIN_ESTUDIOS,
+43-4161.00,Asistentes de Recursos Humanos,,3,43,CES,0,0,APOYO,
+43-4171.00,Recepcionistas y Oficinistas de Información,,2,43,CES,0,0,SIN_ESTUDIOS,
+43-4181.00,Agentes de Reservación y Venta de Boletos de Transporte y Empleados de Oficina de Viajes,,2,43,CSE,0,0,SIN_ESTUDIOS,
+43-4199.00,"Information and Record Clerks, All Other",,,43,,0,0,RESIDUAL,
+43-5011.00,Agentes de Carga y Flete,Agente de carga,2,43,CE,1,1,TECNICO_PE,Comercio exterior / gestión logística (CINE 335)
+43-5011.01,Agentes de Cargas,,2,43,CER,0,0,DUPLICADO,Agente de carga
+43-5021.00,Mensajeros y Repartidores,,2,43,CR,0,0,SIN_ESTUDIOS,
+43-5031.00,Telecomunicadores de Seguridad Pública,,2,43,CRS,0,0,SIN_ESTUDIOS,
+43-5032.00,Despachadores,,2,43,CR,0,0,SIN_ESTUDIOS,
+43-5041.00,Lectores de Medidores de Servicios Públicos,,2,43,CR,0,0,SIN_ESTUDIOS,
+43-5051.00,Oficinistas del Servicio Postal,,2,43,CR,0,0,SIN_ESTUDIOS,
+43-5052.00,Carteros del Servicio Postal,,2,43,CR,0,0,SIN_ESTUDIOS,
+43-5053.00,Clasificadores y Procesadores de Correo y Operadores de Máquinas de Procesamiento de Correo del Servicio Postal,,2,43,CR,0,0,SIN_ESTUDIOS,
+43-5061.00,"Oficinistas de Producción, Planificación, y Expedición",,2,43,CE,0,0,SIN_ESTUDIOS,
+43-5071.00,"Oficinistas de Despacho, Recibo, e Inventario",,2,43,CRE,0,0,SIN_ESTUDIOS,
+43-5111.00,"Controladores y Verificadores de Peso, Medidas, y Muestras, Mantenimiento de Registros",,2,43,CR,0,0,SIN_ESTUDIOS,
+43-6011.00,Secretarios Ejecutivos y Asistentes Administrativos Ejecutivos,Secretario(a) ejecutivo(a) / asistente administrativo,3,43,CES,1,1,,
+43-6012.00,Secretarios Legales y Asistentes Administrativos,,3,43,CE,0,0,DUPLICADO,Secretariado ejecutivo
+43-6013.00,Secretarios de Médicos y Asistentes Administrativos,,2,43,CS,0,0,SIN_ESTUDIOS,
+43-6014.00,Secretarios y Asistentes Administrativos,,2,43,CES,0,0,SIN_ESTUDIOS,
+43-9021.00,Operadores de Equipos de Ingreso de Datos,,2,43,CR,0,0,SIN_ESTUDIOS,
+43-9022.00,Procesadores de Texto y Dactilógrafos,,2,43,C,0,0,SIN_ESTUDIOS,
+43-9031.00,Autoeditores,,3,43,CAR,0,0,DUPLICADO,Diseñador gráfico
+43-9041.00,Oficinistas de Procesamiento de Reclamaciones y Pólizas de Seguro,,2,43,CE,0,0,SIN_ESTUDIOS,
+43-9051.00,Empleados de Correspondencia y Operadores de Máquinas de Correspondencia,,2,43,CR,0,0,SIN_ESTUDIOS,
+43-9061.00,"Empleados de Oficina, Tareas Generales",,2,43,C,0,0,SIN_ESTUDIOS,
+43-9071.00,Operadores de Máquinas de Oficina,,2,43,CR,0,0,SIN_ESTUDIOS,
+43-9081.00,Correctores de Pruebas y Marcadores de Copias,Corrector de estilo,4,43,CA,1,1,,
+43-9111.00,Asistentes de Estadísticas,,4,43,CI,0,0,APOYO,
+43-9199.00,"Office and Administrative Support Workers, All Other",,,43,,0,0,RESIDUAL,
+45-1011.00,"Supervisores Directos de Trabajadores de Ocupaciones Relacionadas con la Agricultura, la Pesca, y la Silvicultura",,3,45,ERC,0,0,CARGO,
+45-2011.00,Inspectores Agrícolas,,2,45,RCI,0,0,SIN_ESTUDIOS,
+45-2021.00,Criadores de Animales,,2,45,RCI,0,0,SIN_ESTUDIOS,
+45-2041.00,Evaluadores y Clasificadores de Productos Agrícolas,,2,45,RC,0,0,SIN_ESTUDIOS,
+45-2091.00,Operadores de Equipo Agrícola,,2,45,RC,0,0,SIN_ESTUDIOS,
+45-2092.00,"Trabajadores y Jornaleros Agrícolas, de Cultivos, de Viveros y de Invernaderos",,2,45,RC,0,0,SIN_ESTUDIOS,
+45-2093.00,"Trabajadores Agrícolas de Animales de Granja, Ganado, y Animales Acuáticos",,2,45,R,0,0,SIN_ESTUDIOS,
+45-2099.00,"Agricultural Workers, All Other",,,45,,0,0,RESIDUAL,
+45-3031.00,Trabajadores de Pesca y Caza,,2,45,RC,0,0,SIN_ESTUDIOS,
+45-4011.00,Trabajadores Forestales y de Conservación,,2,45,RC,0,0,SIN_ESTUDIOS,
+45-4021.00,Derribadores,,2,45,RC,0,0,SIN_ESTUDIOS,
+45-4022.00,Operadores de Equipo de Tala Forestal,,2,45,RC,0,0,SIN_ESTUDIOS,
+45-4023.00,Evaluadores y Tasadores de Árboles Talados,,2,45,CR,0,0,SIN_ESTUDIOS,
+45-4029.00,"Logging Workers, All Other",,,45,,0,0,RESIDUAL,
+47-1011.00,Supervisores Directos de Trabajadores de Oficios de Construcción y Extracción,,3,47,ECR,0,0,CARGO,
+47-1011.03,Gerentes de Instalación de Energía Solar,,3,47,REC,0,0,NO_PERU,energía solar
+47-2011.00,Caldereros,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2021.00,Albañiles de Ladrillos y Bloques,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2022.00,Albañiles de Piedras,,2,47,R,0,0,SIN_ESTUDIOS,
+47-2031.00,Carpinteros,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2041.00,Instaladores de Alfombras,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2042.00,Instaladores de Pisos,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2043.00,Pulidores y Terminadores de Pisos,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2044.00,Instaladores de Losas y Piedra,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2051.00,Albañiles de Trabajos en Cemento y Terminadores de Concreto,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2053.00,Trabajadores de Aplicación y Terminación de Terrazo,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2061.00,Obreros de la Construcción,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2071.00,"Operadores de Equipos de Pavimentación, Aplanamiento y Compactación",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2072.00,Operadores de Martinetes de Pilotes,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2073.00,Mecánicos Operadores y Otros Operadores de Equipo Pesado y Maquinaria de Construcción,Operador de maquinaria pesada,2,47,RCI,1,1,TECNICO_PE,"Operación de maquinaria pesada (Tecsup, SENCICO)"
+47-2081.00,Instaladores de Paneles de Yeso y Paneles Acústicos de Techo,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2082.00,Selladores de Paneles,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2111.00,Electricistas,Electricista industrial,3,47,RC,1,1,,
+47-2121.00,Cristaleros,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2131.00,"Trabajadores de Instalación de Pisos, Techos y Paredes Aislantes",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2132.00,Trabajadores de Instalación de Materiales Aislantes de Sistemas Mecánicos,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2141.00,"Pintores, Construcción y Mantenimiento",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2142.00,Empapeladores,,2,47,RCA,0,0,SIN_ESTUDIOS,
+47-2151.00,Instaladores de Tuberías,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2152.00,"Plomeros, Instaladores y Ajustadores de Tuberías de Agua y de Vapor",,3,47,RC,0,0,SIN_ESTUDIOS,gasfitería: CETPRO
+47-2152.04,Instaladores y Técnicos de Energía Termal Solar,,3,47,RC,0,0,NO_PERU,solar térmica
+47-2161.00,Yeseros y Estucadores,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2171.00,Trabajadores de Colocación de Refuerzos de Hierro y Varillas,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2181.00,Techadores,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2211.00,Trabajadores de Chapa Metálica,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2221.00,Trabajadores de Piezas de Hierro y Acero Estructural,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-2231.00,Instaladores de Sistema Solar Fotovoltaico,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-3011.00,"Ayudantes de Albañiles de Ladrillos, Bloques y Piedras e Instaladores de Losas y Mármol",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-3012.00,Ayudantes de Carpinteros,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-3013.00,Ayudantes de Electricistas,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-3014.00,"Ayudantes de Pintores, Empapeladores, Yeseros y Estucadores",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-3015.00,"Ayudantes de Instaladores de Tuberías, Plomeros e Instaladores y Ajustadores de Tuberías de Agua y de Vapor",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-3016.00,Ayudantes de Techadores,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-3019.00,"Helpers, Construction Trades, All Other",,,47,,0,0,RESIDUAL,
+47-4011.00,Inspectores de Construcción y Edificios,,3,47,RCI,0,0,DUPLICADO,Técnico en construcción civil
+47-4011.01,Auditores de Energía,,3,47,CRI,0,0,NO_PERU,auditoría energética
+47-4021.00,Instaladores y Reparadores de Ascensores y Escaleras Mecánicas,,3,47,RC,0,0,SIN_ESTUDIOS,ascensores
+47-4031.00,Constructores de Cercos,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-4041.00,Trabajadores de Remoción de Materiales Peligrosos,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-4051.00,Trabajadores de Mantenimiento de Carreteras,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-4061.00,Instaladores de Rieles y Operadores de Equipo de Mantenimiento de Rieles,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-4071.00,Operadores de Servicio de Tanques Sépticos y Limpiadores de Cañerías Cloacales,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-4091.00,Trabajadores de Pavimento Segmentado,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-4099.00,"Construction and Related Workers, All Other",,,47,,0,0,RESIDUAL,
+47-4099.03,Instaladores y Técnicos de Climatización,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5011.00,"Operadores de Torres de Perforación, Petróleo y Gas",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5012.00,"Operadores de Perforadoras Giratorias, Petróleo y Gas",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5013.00,"Operadores de Unidad de Servicio, Petróleo y Gas",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5022.00,"Operadores de Excavadora, Cargadora y Draga de Línea de Baldes, Minería de Superficie",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5023.00,Operadores de Perforadoras de Tierra,,2,47,RCI,0,0,SIN_ESTUDIOS,
+47-5032.00,"Trabajadores de Explosivos, Expertos en el Manejo de Artillería y Dinamiteros",,2,47,RCI,0,0,SIN_ESTUDIOS,
+47-5041.00,Operadores de Máquinas de Minería de Operación Continua,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5043.00,"Instaladores de Pernos en Techos, Minería",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5044.00,"Operadores de Máquinas de Carga y Traslado, Minería Subterránea",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5049.00,"Underground Mining Machine Operators, All Other",,,47,,0,0,RESIDUAL,
+47-5051.00,"Picapedreros, Canteras",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5071.00,"Obreros No Especializados, Petróleo y Gas",,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5081.00,Ayudantes de Trabajadores de Ocupaciones Relacionadas con la Extracción,,2,47,RC,0,0,SIN_ESTUDIOS,
+47-5099.00,"Extraction Workers, All Other",,,47,,0,0,RESIDUAL,
+49-1011.00,"Supervisores Directos de Mecánicos, Instaladores y Reparadores",,3,49,ECR,0,0,CARGO,
+49-2011.00,"Reparadores de Computadoras, Cajeros Automáticos, y Máquinas de Oficina",Técnico en reparación de computadoras,2,49,RC,1,1,TECNICO_PE,Computación e informática / soporte técnico (CINE 441)
+49-2021.00,"Instaladores y Reparadores de Equipos de Radio, Telefonía Celular y Torres",,3,49,RCI,0,0,DUPLICADO,Técnico en telecomunicaciones
+49-2022.00,Instaladores y Reparadores de Equipo de Telecomunicaciones,Técnico en telecomunicaciones,3,49,RC,1,1,,
+49-2091.00,Técnicos de Aviónica,Técnico en aviónica,3,49,RCI,1,1,,
+49-2092.00,"Reparadores de Motores Eléctricos, Herramientas Eléctricas y Otros Reparadores Relacionados",,3,49,RC,0,0,DUPLICADO,Electricista industrial
+49-2093.00,Instaladores y Reparadores de Equipo Eléctrico y Electrónico de Transporte,,3,49,RCI,0,0,DUPLICADO,Electricista automotriz
+49-2094.00,Reparadores de Equipo Eléctrico y Electrónico Comercial e Industrial,,3,49,RCI,0,0,DUPLICADO,Técnico en electricidad y electrónica
+49-2095.00,"Reparadores de Equipo Eléctrico y Electrónico de Estación Eléctrica, Subestación y Base de Retransmisión Eléctrica",,3,49,RCI,0,0,DUPLICADO,Electricista industrial
+49-2096.00,Instaladores y Reparadores de Equipo Eléctrico y Electrónico de Vehículos de Motor,Electricista automotriz,3,49,RCI,1,1,,
+49-2097.00,Instaladores y Reparadores de Equipo Audiovisual,,3,49,RC,0,0,DUPLICADO,Técnico de audio y video
+49-2098.00,Instaladores de Sistemas de Alarma de Seguridad e Incendio,,3,49,RCI,0,0,DUPLICADO,Técnico en electricidad y electrónica
+49-3011.00,Mecánicos y Técnicos de Servicio de Aeronaves,Técnico en mantenimiento de aeronaves,3,49,RCI,1,1,,
+49-3021.00,Reparadores de Carrocerías y Componentes Automotrices Relacionados,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-3022.00,Instaladores y Reparadores de Cristales Automotrices,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-3023.00,Técnicos y Mecánicos de Servicio Automotriz,Mecánico automotriz,3,49,RCI,1,1,,
+49-3031.00,Mecánicos de Autobuses y Camiones y Especialistas en Motores Diésel,,3,49,RCI,0,0,DUPLICADO,Mecánico automotriz / maquinaria pesada
+49-3041.00,Mecánicos y Técnicos de Servicio de Equipo Agrícola,,3,49,RCI,0,0,DUPLICADO,Mecánico de maquinaria pesada
+49-3042.00,Mecánicos de Equipo Pesado Móvil,Mecánico de maquinaria pesada,3,49,RCI,1,1,,
+49-3043.00,Reparadores de Carros Ferroviarios,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-3051.00,Mecánicos y Técnicos de Servicio de Motores de Lancha,,3,49,RC,0,0,DUPLICADO,Mecánico automotriz
+49-3052.00,Mecánicos de Motocicletas,,3,49,RCI,0,0,DUPLICADO,Mecánico automotriz
+49-3053.00,Mecánicos de Equipo de Uso en Exteriores y de Otros Motores Pequeños,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-3091.00,Reparadores de Bicicletas,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-3092.00,Técnicos de Servicio de Vehículos Recreativos,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-3093.00,Reparadores y Cambiadores de Neumáticos,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9011.00,Reparadores de Puertas Mecánicas,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9012.00,Instaladores y Reparadores de Válvulas y Mecanismos de Control,,3,49,RC,0,0,DUPLICADO,Mecánico de mantenimiento industrial
+49-9021.00,"Mecánicos e Instaladores de Calefacción, Aire Acondicionado y Refrigeración",Técnico en refrigeración y aire acondicionado,3,49,RC,1,1,,
+49-9031.00,Reparadores de Equipos Electrodomésticos,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9041.00,Mecánicos de Maquinaria Industrial,Mecánico de mantenimiento industrial,3,49,RCI,1,1,,
+49-9043.00,Trabajadores de Mantenimiento de Maquinaria,,3,49,RC,0,0,DUPLICADO,Mecánico de mantenimiento industrial
+49-9044.00,Armadores y Desarmadores de Maquinaria,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9045.00,Reparadores de Materiales Refractarios,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9051.00,Instaladores y Reparadores de Tendido de Líneas de Energía Eléctrica,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9052.00,Instaladores y Reparadores de Tendido de Líneas de Telecomunicaciones,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9061.00,Reparadores de Cámaras y Equipo Fotográfico,,3,49,RC,0,0,NO_CARRERA,
+49-9062.00,Reparadores de Equipos Médicos,Técnico en equipos biomédicos,3,49,RCI,1,1,,
+49-9063.00,Reparadores y Afinadores de Instrumentos Musicales,,3,49,RCA,0,0,NO_CARRERA,
+49-9064.00,Relojeros,,3,49,RC,0,0,NO_CARRERA,relojería
+49-9069.00,"Precision Instrument and Equipment Repairers, All Other",,,49,,0,0,RESIDUAL,
+49-9071.00,"Trabajadores de Mantenimiento y Reparación, General",,3,49,RC,0,0,SIN_ESTUDIOS,mantenimiento general
+49-9081.00,Técnicos de Servicio de Turbinas de Viento,,3,49,RCI,0,0,NO_PERU,energía eólica
+49-9091.00,"Reparadores y Encargados de Servicio de Máquinas de Monedas, Expendedoras, y Máquinas de Entretenimiento",,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9092.00,Buzos Comerciales,,3,49,RIC,0,0,NO_CARRERA,buceo comercial
+49-9094.00,Cerrajeros y Reparadores de Cajas de Seguridad,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9095.00,Instaladores de Estructuras Prefabricadas y de Casas Rodantes,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9096.00,Aparejadores,,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9097.00,Reparadores de Señales y Sistemas de Cambio de Vías de Ferrocarril,,3,49,RC,0,0,NO_PERU,ferrocarril
+49-9098.00,"Ayudantes de Trabajadores de Ocupaciones Relacionadas con la Instalación, Mantenimiento y Reparación",,2,49,RC,0,0,SIN_ESTUDIOS,
+49-9099.00,"Installation, Maintenance, and Repair Workers, All Other",,,49,,0,0,RESIDUAL,
+49-9099.01,Técnicos Geotérmicos,,2,49,RCI,0,0,SIN_ESTUDIOS,
+51-1011.00,Supervisores Directos de Trabajadores de Producción y Operación,,3,51,ECR,0,0,CARGO,
+51-2011.00,"Ensambladores de Estructuras, Superficies, Aparejos y Sistemas de Aeronaves",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-2021.00,"Bobinadores, Encintadores y Terminadores de Bobinas",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-2022.00,Ensambladores de Equipo Eléctrico y Electrónico,,2,51,RCI,0,0,SIN_ESTUDIOS,
+51-2023.00,Ensambladores de Equipo Electromecánico,,2,51,RCI,0,0,SIN_ESTUDIOS,
+51-2031.00,Ensambladores de Motores y Otras Máquinas,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-2041.00,Ajustadores y Fabricadores de Metal Estructural,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-2051.00,Laminadores y Fabricadores de Productos de Fibra de Vidrio,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-2061.00,Ensambladores y Ajustadores de Dispositivos de Tiempo,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-2092.00,Ensambladores en Equipo,,2,51,RCE,0,0,SIN_ESTUDIOS,
+51-2099.00,"Assemblers and Fabricators, All Other",,,51,,0,0,RESIDUAL,
+51-3011.00,Panaderos y Reposteros,Panadero y pastelero,2,51,RC,1,1,TECNICO_PE,Panadería y pastelería (institutos y CETPRO; aparece en el Anexo 13.1 de la cartilla)
+51-3021.00,Carniceros y Cortadores de Carne,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-3022.00,"Cortadores y Fileteadores de Carne, Aves y Pescados en Crudo",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-3023.00,Matarifes y Empacadores de Carne,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-3091.00,"Operadores y Encargados de Máquinas de Tostar, Hornear y Secar Alimentos y Tabaco",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-3092.00,Preparadores de Mezclas de Productos Alimenticios,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-3093.00,Operadores y Encargados de Máquinas de Cocción de Alimentos,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-3099.00,"Food Processing Workers, All Other",,,51,,0,0,RESIDUAL,
+51-4021.00,"Preparadores, Operadores y Encargados de Máquina de Extrusión y Estirado, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4022.00,"Preparadores, Operadores y Encargados de Máquina de Forjado, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4023.00,"Preparadores, Operadores y Encargados de Máquina de Laminado, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4031.00,"Preparadores, Operadores y Encargados de Máquina de Corte, Punzón y Prensado, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4032.00,"Preparadores, Operadores y Encargados de Máquina Herramienta de Taladrar y Perforar, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4033.00,"Preparadores, Operadores y Encargados de Máquina Herramienta de Lijar, Facetear, Pulir y Lustrar, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4034.00,"Preparadores, Operadores y Encargados de Máquina Herramienta de Tornear, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4035.00,"Preparadores, Operadores y Encargados de Máquina Fresadora y Alisadora, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4041.00,Maquinistas,Mecánico de producción (máquinas-herramienta),3,51,RCI,1,1,,
+51-4051.00,Operadores y Encargados de Hornos de Refinación de Metal,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4052.00,Vertedores y Fundidores de Metal,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4061.00,"Fabricadores de Moldes, Metal y Plástico",,3,51,RC,0,0,DUPLICADO,Matricero
+51-4062.00,"Fabricadores de Patrones, Metal y Plástico",,3,51,RCA,0,0,DUPLICADO,Matricero
+51-4071.00,Fabricantes de Moldes de Fundición y Hormas Matrices,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4072.00,"Preparadores, Operadores y Encargados de Máquinas para Matrices y Moldes de Fundición, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4081.00,"Preparadores, Operadores y Encargados de Diversas Máquinas Herramienta, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4111.00,Fabricadores de Herramientas y Troqueles,Matricero,3,51,RC,1,1,,
+51-4121.00,"Soldadores, Cortadores, Estañadores y Soldadores de Latón",Soldador,2,51,RC,1,1,TECNICO_PE,"Soldadura (SENATI, institutos)"
+51-4122.00,"Preparadores, Operadores y Encargados de Máquinas de Soldadura de Metal, Estaño y Latón",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4191.00,"Preparadores, Operadores y Encargados de Equipo de Tratamiento Térmico, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4192.00,"Trazadores, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4193.00,"Preparadores, Operadores y Encargados de Máquina de Enchapado, Metal y Plástico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4194.00,"Rectificadores, Limadores y Afiladores de Herramientas",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-4199.00,"Metal Workers and Plastic Workers, All Other",,,51,,0,0,RESIDUAL,
+51-5111.00,Técnicos y Trabajadores de Preimpresión,,3,51,CR,0,0,DUPLICADO,Diseñador gráfico
+51-5112.00,Operadores de Máquina de Impresión,,2,51,CR,0,0,SIN_ESTUDIOS,
+51-5113.00,Trabajadores de Encuadernación y Acabado de Imprenta,,2,51,CR,0,0,SIN_ESTUDIOS,
+51-6011.00,Trabajadores de Lavandería y Tintorería,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6021.00,"Planchadores Textiles, de Indumentaria y Materiales Relacionados",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6031.00,Operadores de Máquinas de Coser,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6041.00,Trabajadores y Reparadores de Calzado y Cuero,,2,51,RCA,0,0,SIN_ESTUDIOS,
+51-6042.00,Operadores y Encargados de Máquinas de Calzado,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6051.00,Costureros Manuales,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6052.00,"Sastres, Modistos y Costureros a Medida",,2,51,RA,0,0,SIN_ESTUDIOS,
+51-6061.00,Operadores y Encargados de Máquinas Textiles de Blanqueado y Teñido,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6062.00,"Preparadores, Operadores y Encargados de Máquinas Textiles de Corte",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6063.00,"Preparadores, Operadores y Encargados de Máquinas Textiles de Tejido y Tramado",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6064.00,"Preparadores, Operadores y Encargados de Máquinas Textiles de Devanado, Torsión y Cardado",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6091.00,"Preparadores, Operadores y Encargados de Máquinas de Extrusión y Moldeado de Fibras Sintéticas y de Vidrio",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-6092.00,Modelistas de Telas e Indumentaria,Patronista / modelista de prendas,3,51,RAC,1,1,,
+51-6093.00,Tapiceros,,2,51,RAC,0,0,SIN_ESTUDIOS,
+51-6099.00,"Textile, Apparel, and Furnishings Workers, All Other",,,51,,0,0,RESIDUAL,
+51-7011.00,Ebanistas y Carpinteros de Banco,Ebanista / carpintero industrial,2,51,RC,1,1,TECNICO_PE,Carpintería industrial / ebanistería (SENATI; Anexo 13.1 de la cartilla)
+51-7021.00,Ebanistas Encargados del Acabado de Muebles,,2,51,RAC,0,0,SIN_ESTUDIOS,
+51-7031.00,"Fabricadores de Modelos, Madera",,3,51,RCA,0,0,DUPLICADO,Ebanista
+51-7032.00,"Fabricadores de Patrones, Madera",,3,51,RAC,0,0,DUPLICADO,Ebanista
+51-7041.00,"Preparadores, Operadores y Encargados de Máquinas Aserradoras de Madera",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-7042.00,"Preparadores, Operadores y Encargados de Máquinas de Ebanistería y Carpintería",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-7099.00,"Woodworkers, All Other",,,51,,0,0,RESIDUAL,
+51-8011.00,Operadores de Reactor de Energía Nuclear,,3,51,RC,0,0,NO_PERU,nuclear
+51-8012.00,Distribuidores y Despachadores de Energía,,3,51,RC,0,0,DUPLICADO,Técnico en electricidad
+51-8013.00,Operadores de Planta de Energía Eléctrica,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-8013.03,Técnicos de Planta de Biomasa,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-8013.04,Técnicos de Plantas Hidroeléctricas,,3,51,RCI,0,0,DUPLICADO,Técnico en electricidad
+51-8021.00,Operadores de Caldera y Mecánicos de Maquinaria Fija,,3,51,RCI,0,0,DUPLICADO,Mecánico de mantenimiento industrial
+51-8031.00,Operadores de Planta y Sistema de Tratamiento de Aguas y Aguas Residuales,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-8091.00,Operadores de Planta y Sistema de Procesos Químicos,,2,51,RCI,0,0,SIN_ESTUDIOS,
+51-8092.00,Operadores de Planta de Gas,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-8093.00,"Operadores de Sistema de Bombeo de Petróleo, Operadores de Refinería y Calibradores",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-8099.00,"Plant and System Operators, All Other",,,51,,0,0,RESIDUAL,
+51-8099.01,Técnicos de Procesamiento de Biocombustibles,,2,51,RCI,0,0,SIN_ESTUDIOS,
+51-9011.00,Operadores y Encargados de Equipo Químico,,2,51,RCI,0,0,SIN_ESTUDIOS,
+51-9012.00,"Preparadores, Operadores y Encargados de Máquinas de Separación, Filtro, Depuración, Precipitación y Destilación",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9021.00,"Preparadores, Operadores y Encargados de Máquinas de Molido, Trituración y Pulido",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9022.00,Trabajadores de Molido y Pulido Manual,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9023.00,"Preparadores, Operadores y Encargados de Máquinas de Mezcla y Licuado",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9031.00,Cortadores y Rebanadores Manuales,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9032.00,"Preparadores, Operadores y Encargados de Máquinas de Cortar y Rebanar",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9041.00,"Preparadores, Operadores y Encargados de Máquinas de Extrusión, Moldeado, Prensado y Compactación",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9051.00,"Operadores y Encargados de Quemadores, Incineradores, Hornos, Estufas, Secadoras y Calderos",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9061.00,"Inspectores, Examinadores, Clasificadores, Tomadores de Muestras, y Pesadores",,2,51,RCI,0,0,SIN_ESTUDIOS,
+51-9071.00,Joyeros y Trabajadores de Piedras y Metales Preciosos,Joyero / orfebre,3,51,RAC,0,1,SOLO_CATALOGO,"joyería se forma en CETPRO, sin carrera en el catálogo"
+51-9071.06,Engastadores de Diamantes y Gemas,,3,51,RC,0,0,DUPLICADO,Joyero
+51-9081.00,Técnicos de Laboratorio Dental,Técnico en prótesis dental,2,51,RIC,1,1,TECNICO_PE,Prótesis dental (CINE 713)
+51-9082.00,Técnicos de Aparatos Médicos,,2,51,RIC,0,0,SIN_ESTUDIOS,
+51-9083.00,Técnicos de Laboratorio Oftálmico,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9111.00,Operadores y Encargados de Máquinas de Empaque y Envasado,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9123.00,"Trabajadores de Pintura, Esmaltado y Decoración",,2,51,RAC,0,0,SIN_ESTUDIOS,
+51-9124.00,"Preparadores, Operadores y Encargados de Máquinas de Revestir, Pintar y Rociar",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9141.00,Técnico de Procesamiento de Semiconductores,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9151.00,Trabajadores de Proceso Fotográfico y Operadores de Máquina de Procesamiento Fotográfico,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9161.00,Operadores de Máquinas Herramienta con Control Numérico Computadorizado,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9162.00,Programadores de Máquinas Herramienta con Control Numérico Computadorizado,Programador de máquinas CNC,2,51,CRI,1,1,TECNICO_PE,Mecánica de producción / CNC (SENATI)
+51-9191.00,Operadores y Encargados de Máquinas de Cemento Adhesivo,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9192.00,"Operadores y Encargados de Equipos de Limpieza, Lavado y Decapado Metálico",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9193.00,Operadores y Encargados de Equipos de Enfriamiento y Congelamiento,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9194.00,Grabadores y Talladores,,2,51,RAC,0,0,SIN_ESTUDIOS,
+51-9195.00,"Moldeadores, Modeladores y Fundidores",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9195.03,Escultores y Talladores de Piedra,,2,51,RAC,0,0,SIN_ESTUDIOS,
+51-9195.04,"Pulidores, Dobladores, Moldeadores y Sopladores de Vidrio",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9195.05,"Alfareros, Manufactura",,3,51,RC,0,0,DUPLICADO,Artesano
+51-9196.00,"Preparadores, Operadores y Encargados de Máquinas de Fabricación de Artículos de Papel",,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9197.00,Trabajadores de Fabricación de Neumáticos,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9198.00,Ayudantes de Trabajadores de Ocupaciones Relacionadas con la Producción,,2,51,RC,0,0,SIN_ESTUDIOS,
+51-9199.00,"Production Workers, All Other",,,51,,0,0,RESIDUAL,
+53-1041.00,Supervisores de Transporte Aéreo de Carga,,2,53,ECR,0,0,SIN_ESTUDIOS,
+53-1042.00,"Supervisores Directos de Ayudantes, Obreros y Acarreadores Manuales de Materiales",,2,53,ECS,0,0,SIN_ESTUDIOS,
+53-1042.01,Coordinadores de Reciclaje,,2,53,ECR,0,0,SIN_ESTUDIOS,
+53-1043.00,Supervisores Directos de Operadores de Máquinas y Vehículos de Transporte y de Traslado de Materiales,,3,53,ECR,0,0,CARGO,
+53-1044.00,Supervisores Directos de Auxiliares de Pasajeros,,3,53,ECS,0,0,CARGO,
+53-1049.00,"First-Line Supervisors of Transportation Workers, All Other",,,53,,0,0,RESIDUAL,
+53-2011.00,"Pilotos, Copilotos e Ingenieros de Vuelo de Aerolínea",Piloto comercial de aviación,4,53,RCE,1,1,,
+53-2012.00,Pilotos Comerciales,,3,53,CRE,0,0,DUPLICADO,Piloto comercial
+53-2021.00,Controladores de Tráfico Aéreo,Controlador de tráfico aéreo,3,53,CRE,1,1,,
+53-2022.00,Especialistas en Operaciones de Aeropuerto,,3,53,CRE,0,0,DUPLICADO,Controlador aéreo / Administración aeroportuaria
+53-2031.00,Auxiliares de Vuelo,Tripulante de cabina (auxiliar de vuelo),2,53,CSR,1,1,TECNICO_PE,Aviación comercial / tripulante de cabina (institutos)
+53-3011.00,Conductores y Asistentes de Ambulancia,,2,53,RSC,0,0,SIN_ESTUDIOS,
+53-3031.00,Conductores/Vendedores,,2,53,RCE,0,0,SIN_ESTUDIOS,
+53-3032.00,Conductores de Camión Pesado y Tractocamión,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-3033.00,Conductores de Camión Liviano,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-3051.00,"Conductores de Autobús, Escolar",,2,53,RCS,0,0,SIN_ESTUDIOS,
+53-3052.00,"Conductores de Autobús, Tránsito e Interurbano",,2,53,RCS,0,0,SIN_ESTUDIOS,
+53-3053.00,Conductores de Vehículos de Servicios de Transporte y Choferes,,2,53,RCS,0,0,SIN_ESTUDIOS,
+53-3054.00,Conductores de Taxi,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-3099.00,"Motor Vehicle Operators, All Other",,,53,,0,0,RESIDUAL,
+53-4011.00,Maquinistas de Locomotoras,,2,53,RCI,0,0,SIN_ESTUDIOS,
+53-4013.00,"Maquinistas Ferroviarios, Operadores de Locomotoras Pequeñas y Obreros de Servicio de Locomotoras",,2,53,RC,0,0,SIN_ESTUDIOS,
+53-4022.00,"Operadores de Frenos, Señales, y Cambios de Vías de Ferrocarril, y Fogoneros",,2,53,RC,0,0,SIN_ESTUDIOS,
+53-4031.00,Coordinadores y Encargados Ferroviarios,,2,53,RCE,0,0,SIN_ESTUDIOS,
+53-4041.00,Operadores de Subterráneos y Tranvías,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-4099.00,"Rail Transportation Workers, All Other",,,53,,0,0,RESIDUAL,
+53-5011.00,Marineros y Engrasadores,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-5021.00,"Capitanes, Oficiales y Pilotos de Navíos",Oficial de marina mercante,3,53,RCE,1,1,,
+53-5022.00,Operadores de Lanchas a Motor,,2,53,RCE,0,0,SIN_ESTUDIOS,
+53-5031.00,Maquinistas de Barcos,,3,53,RCE,0,0,DUPLICADO,Oficial de marina mercante
+53-6011.00,Encargados de Puentes y Compuertas,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-6021.00,Empleados de Estacionamiento,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-6031.00,Empleados de Servicio de Vehículos de Transporte,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-6032.00,Empleados de Servicio de Aeronaves,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-6041.00,Técnicos de Tráfico,,3,53,RCI,0,0,SIN_VIA_TECNICA,nivel técnico de Ingeniero de transportes
+53-6051.00,Inspectores de Transporte,,4,53,CR,0,0,NO_PERU,
+53-6051.01,Supervisores de Aviación,,3,53,CRI,0,0,CARGO,
+53-6051.07,"Inspectores de Vehículos, Equipos y Sistemas de Transporte",,2,53,RCI,0,0,SIN_ESTUDIOS,
+53-6061.00,Auxiliares de Transporte,,2,53,CSR,0,0,SIN_ESTUDIOS,
+53-6099.00,"Transportation Workers, All Other",,,53,,0,0,RESIDUAL,
+53-7011.00,Operadores y Encargados de Máquinas Transportadoras,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7021.00,Operadores de Grúas y Torres,,3,53,RC,0,0,SIN_ESTUDIOS,operador de grúa
+53-7031.00,Operadores de Dragadora,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7041.00,Operadores de Montacargas y Cabrestantes,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7051.00,Operadores de Camiones y Tractores Industriales,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7061.00,Limpiadores de Vehículos y Equipo,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7062.00,"Obreros y Trabajadores Manuales de Traslado de Carga, Mercaderías, y Materiales",,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7062.04,Trabajadores de Reciclaje y Recuperación,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7063.00,Alimentadores y Descargadores de Máquinas,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7064.00,Empacadores y Embaladores Manuales,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7065.00,Repositores y Preparadores de Órdenes de Pedido,,2,53,CRE,0,0,SIN_ESTUDIOS,
+53-7071.00,Operadores de Compresores de Gas y de Estaciones de Bombeo de Gas,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7072.00,Operadores de Bombas,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7073.00,Operadores de Sistemas de Bombeo de Pozos,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7081.00,Recolectores de Residuos y Materiales Reciclables,,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7121.00,"Cargadores de Vagones, Camiones y Barcos Tanque",,2,53,RC,0,0,SIN_ESTUDIOS,
+53-7199.00,"Material Moving Workers, All Other",,,53,,0,0,RESIDUAL,
+55-1011.00,Air Crew Officers,Oficial de la Fuerza Aérea (tripulación aérea),,55,,0,1,MILITAR,programa: 011016 Ciencias aeroespaciales – Pilotaje
+55-1012.00,Aircraft Launch and Recovery Officers,,,55,,0,0,MILITAR,sin programa CINE equivalente
+55-1013.00,Armored Assault Vehicle Officers,Oficial del Ejército (caballería blindada),,55,,0,1,MILITAR,programa: 011026 Ciencias militares – Caballería
+55-1014.00,Artillery and Missile Officers,Oficial del Ejército (artillería),,55,,0,1,MILITAR,programa: 011026 Ciencias militares – Artillería
+55-1015.00,Command and Control Center Officers,,,55,,0,0,MILITAR,sin programa CINE equivalente
+55-1016.00,Infantry Officers,Oficial del Ejército (infantería),,55,,0,1,MILITAR,programa: 011026 Ciencias militares – Infantería
+55-1017.00,Special Forces Officers,Oficial de fuerzas especiales,,55,,0,1,MILITAR,programa: 011026 Ciencias militares; 012055 Fuerzas especiales
+55-1019.00,"Military Officer Special and Tactical Operations Leaders, All Other",,,55,,0,0,RESIDUAL,sin programa CINE equivalente
+55-2011.00,First-Line Supervisors of Air Crew Members,,,55,,0,0,MILITAR,sin programa CINE equivalente
+55-2012.00,First-Line Supervisors of Weapons Specialists/Crew Members,,,55,,0,0,MILITAR,sin programa CINE equivalente
+55-2013.00,First-Line Supervisors of All Other Tactical Operations Specialists,,,55,,0,0,RESIDUAL,sin programa CINE equivalente
+55-3011.00,Air Crew Members,Suboficial de la Fuerza Aérea (tripulación),,55,,0,1,MILITAR,programa: 012125 Sensores de aviación
+55-3012.00,Aircraft Launch and Recovery Specialists,,,55,,0,0,MILITAR,sin programa CINE equivalente
+55-3013.00,Armored Assault Vehicle Crew Members,Suboficial de blindados,,55,,0,1,MILITAR,programa: 012135 Blindado antitanque
+55-3014.00,Artillery and Missile Crew Members,Suboficial de artillería,,55,,0,1,MILITAR,programa: 012025 Artillería
+55-3015.00,Command and Control Center Specialists,,,55,,0,0,MILITAR,sin programa CINE equivalente
+55-3016.00,Infantry,Suboficial de infantería,,55,,0,1,MILITAR,programa: 012065 Infantería / Infantería de marina
+55-3018.00,Special Forces,Comando de fuerzas especiales,,55,,0,1,MILITAR,programa: 012055 Fuerzas especiales; 012095 Operaciones especiales
+55-3019.00,"Military Enlisted Tactical Operations and Air/Weapons Specialists and Crew Members, All Other",,,55,,0,0,RESIDUAL,sin programa CINE equivalente

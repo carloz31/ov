@@ -1,0 +1,246 @@
+codigo,ocupacion,en_test,familia_principal,familia_principal_nombre,familias,familias_nombres,n_familias,carreras_cine_referencia,nota,revision
+11-1011.00,Director ejecutivo (gerente general),1,331,Administración de Empresas,331,Administración de Empresas,1,331036|331046|331106|331116,,
+11-1021.00,Gerente general y de operaciones,1,331,Administración de Empresas,331,Administración de Empresas,1,331016|331036|331046|331106|331116|331146,,
+11-2011.00,Gerente de publicidad (publicista),1,321,Ciencias de la Comunicación,321|322|222,Ciencias de la Comunicación|Periodismo y Locución|Diseño,3,322076|322086|222055|222205|321126,rev2: 322 tiene Publicidad (322076) y Publicidad y Multimedia; 222 tiene Publicidad (222205) y Ciencias Publicitarias. Ambas con programa nombrado para la ocupación.,MANTENER
+11-2021.00,Gerente de marketing,1,333,Marketing,333,Marketing,1,333016|333036|333025|333046|333066|333076,,
+11-2022.00,Gerente comercial y de ventas,1,333,Marketing,333|331,Marketing|Administración de Empresas,2,333065|333076|331245|331176|333016,"rev2: 331 tiene Gestión Comercial (331245) e Ingeniería Comercial (331176): el nombre forma para la ocupación. Se mantiene pese al ejemplo del contexto, porque hay programa nombrado.",MANTENER
+11-3012.00,Gerente administrativo,1,331,Administración de Empresas,331,Administración de Empresas,1,331016|331036|331095|331115|331146,,
+11-3031.00,Gerente financiero,1,342,Contabilidad y Finanzas,342|341,Contabilidad y Finanzas|Economía,2,342106|342086|342126|341076,rev2: 341 tiene Economía y Finanzas (341076).,MANTENER
+11-3121.00,Gerente de recursos humanos,1,339,Otras Carreras de Administración,339|313,Otras Carreras de Administración|Psicología,2,339056|339076|313046,rev2: 313 tiene Psicología Organizacional (313046).,MANTENER
+11-9013.00,"Administrador de empresas agropecuarias, acuícolas y forestales",1,334,Agronegocios,334|611,Agronegocios|Agropecuaria,2,334016|334036|611015|611025|611036|613016|613026,"rev2: 611 tiene Administración de Negocios Agropecuarios y Administración Rural. 613 (Acuicultura) es producción, no administración: no hay programa nombrado para administrar.",PODAR
+11-9051.00,Administrador de restaurantes y servicios de alimentación,1,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",1,332045|332055|332206|332186|332166,,
+11-9081.00,Administrador hotelero,1,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",1,332085|332106|332116|332256|332025|332036|332146,,
+11-9111.00,Administrador de servicios de salud,1,331,Administración de Empresas,331,Administración de Empresas,1,331076,,
+11-9121.02,Especialista en recursos hídricos,1,532,Ingeniería Sanitaria,532|611,Ingeniería Sanitaria|Agropecuaria,2,532016,"sin 592: Ing. Hidráulica está clasificada en Naval y Aeronáutica; rev2: Principal se queda en 532 (suministro, calidad de agua, aguas residuales y normas, decisión del usuario). 611 entra como secundaria por Gestión de Recursos Hídricos (611065), Riego y Drenaje (611145) y Conservación de Suelos y Agua (611056). 531 sale: Ing. Civil no tiene programa nombrado.",PODAR
+11-9151.00,Director de programas sociales y comunitarios,1,336,Administración Pública,336|312,Administración Pública|Trabajo Social,2,336026|336046|312036,rev2: Trabajo Social (312036) forma para la gestión de programas sociales.,MANTENER
+13-1023.00,Agente / analista de compras,1,331,Administración de Empresas,331,Administración de Empresas,1,331016|331095|331115,,
+13-1041.00,Especialista en cumplimiento normativo (compliance),1,351,Derecho,351|342,Derecho|Contabilidad y Finanzas,2,351016|351026|342016,rev2: 342 tiene Auditoría Empresarial y del Sector Público (342016).,MANTENER
+13-1041.01,Fiscalizador ambiental,1,594,Ecología y Medio Ambiente,594|532,Ecología y Medio Ambiente|Ingeniería Sanitaria,2,594056|594086|594116|594025|532026,rev2: 532 tiene Ingeniería Sanitaria y Ambiental (532026).,MANTENER
+13-1041.08,Agente de aduanas,1,335,Negocios Internacionales,335,Negocios Internacionales,1,335025|335026|335056|335116,,
+13-1051.00,Especialista en costos y presupuestos,1,531,Ingeniería Civil,531,Ingeniería Civil,1,531045|531025|521046,"rev2: 521 solo aporta Ingeniería Industrial (genérica), sin programa nombrado para costos o presupuestos.",QUITAR
+13-1071.00,Especialista en recursos humanos,1,339,Otras Carreras de Administración,339|313,Otras Carreras de Administración|Psicología,2,339056|339076|313046,rev2: 313 tiene Psicología Organizacional (313046).,MANTENER
+13-1075.00,Especialista en relaciones laborales (relaciones industriales),1,339,Otras Carreras de Administración,339,Otras Carreras de Administración,1,339076|339056|351016,rev2: Derecho laboral es especialización de posgrado; 351 no tiene programa nombrado.,QUITAR
+13-1081.00,Especialista en logística,1,521,Ingeniería Industrial,521|331|335,Ingeniería Industrial|Administración de Empresas|Negocios Internacionales,3,521036|521066|331226|335025,"rev2: 331 por Abastecimiento (331015, cargado: compras, almacenamiento, distribución e inventarios) y Administración Logística (331165, CINE); 335 por Comercio Exterior (335025), componente internacional.",MANTENER
+13-1082.00,Gestor de proyectos,1,331,Administración de Empresas,331|521,Administración de Empresas|Ingeniería Industrial,2,331226|331206|521046,"rev2: 521 por Ingeniería Industrial y Sistemas (521076), cuya descripción CINE incluye gestión de operaciones y proyectos, e Ing. Industrial y de Gestión Empresarial (521066).",MANTENER
+13-1111.00,Consultor / analista de gestión empresarial,1,331,Administración de Empresas,331,Administración de Empresas,1,331036|331206|331226|341046,rev2: Economía Gerencial (341046) es un programa aislado y la consultoría de gestión no es su salida nombrada.,QUITAR
+13-1121.00,Organizador de eventos,1,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",1,332046|332065,,
+13-1151.00,Especialista en capacitación y desarrollo,1,339,Otras Carreras de Administración,339|313,Otras Carreras de Administración|Psicología,2,339056|313046,rev2: 313 tiene Psicología Organizacional (313046).,MANTENER
+13-1161.00,Analista de marketing e investigación de mercados,1,333,Marketing,333|313,Marketing|Psicología,2,333036|333046|333025|313026|333015,rev2: 313 tiene Psicología del Consumidor (313026).,MANTENER
+13-1199.05,Especialista en sostenibilidad,1,594,Ecología y Medio Ambiente,594|341,Ecología y Medio Ambiente|Economía,2,594046|341086|594056,rev2: 341 tiene Economía y Gestión Ambiental (341086).,MANTENER
+13-1199.06,Especialista en comercio electrónico,1,333,Marketing,333,Marketing,1,333036|333015,,
+13-2011.00,Contador y auditor,1,342,Contabilidad y Finanzas,342,Contabilidad y Finanzas,1,342056|342036|342046|342096|342016|342086,,
+13-2041.00,Analista de créditos,1,342,Contabilidad y Finanzas,342|331|341,Contabilidad y Finanzas|Administración de Empresas|Economía,3,331035|331055|331085|341096|342026,rev2: Núcleo de la ocupación: análisis de estados financieros y riesgo crediticio → 342 Contabilidad y Finanzas (Banca y Seguros 342026). 331 secundaria por Administración Bancaria / Administración de Banca y Finanzas; 341 por Economía y Microfinanzas (341096).,CAMBIO_PRINCIPAL
+13-2051.00,Analista financiero y de inversiones,1,342,Contabilidad y Finanzas,342|341|331,Contabilidad y Finanzas|Economía|Administración de Empresas,3,342126|342106|331096|341076|342026,rev2: 341 tiene Economía y Finanzas (341076); 331 tiene Administración y Finanzas (331096).,MANTENER
+13-2054.00,Analista de riesgos financieros,1,342,Contabilidad y Finanzas,342|341|432,Contabilidad y Finanzas|Economía|Estadística,3,342026|341076|432016,rev2: 341 por Economía y Finanzas (341076). 432 restituida: la ocupación cuantifica riesgos con modelos estadísticos; Estadística e Informática (432026) está cargada.,MANTENER
+13-2081.00,Especialista tributario,1,342,Contabilidad y Finanzas,342|351,Contabilidad y Finanzas|Derecho,2,342136|342056|342086|351016,"rev2: 342 principal por Gestión Tributaria (342136). 351 Derecho como secundaria: la ocupación interpreta y aplica normas tributarias (determinación y cobro de impuestos), que la descripción de Derecho cubre (interpretación de normas).",MANTENER
+15-1211.00,Analista de sistemas,1,511,Ingeniería de Sistemas y Cómputo,511,Ingeniería de Sistemas y Cómputo,1,511026|511036|511056|511136|511156,,
+15-1212.00,Analista de ciberseguridad,1,511,Ingeniería de Sistemas y Cómputo,511|441,Ingeniería de Sistemas y Cómputo|Ciencias de la Computación,2,511016|441215|511056,rev2: 441 tiene Seguridad Informática (441215).,MANTENER
+15-1221.00,Científico de la computación (investigador),1,441,Ciencias de la Computación,441|431,Ciencias de la Computación|Matemática,2,441016|441036|431036,rev2: 431 tiene Matemática e Informática (431036).,MANTENER
+15-1231.00,Técnico de soporte de redes,1,441,Ciencias de la Computación,441|512,Ciencias de la Computación|Ingeniería de Telecomunicaciones,2,441165|512055|441095,rev2: 512 tiene Técnica en Ingeniería de Telemática (512055).,MANTENER
+15-1232.00,Técnico de soporte informático,1,441,Ciencias de la Computación,441,Ciencias de la Computación,1,441095|441235|441125,,
+15-1241.00,Arquitecto de redes,1,512,Ingeniería de Telecomunicaciones,512|511,Ingeniería de Telecomunicaciones|Ingeniería de Sistemas y Cómputo,2,512016|512056|511106,rev2: 511 tiene Ingeniería de Sistemas y Telemática (511106).,MANTENER
+15-1241.01,Especialista en telecomunicaciones,1,512,Ingeniería de Telecomunicaciones,512|525,Ingeniería de Telecomunicaciones|Ingeniería Electrónica,2,512046|512056|512066|525066|512025,rev2: 525 tiene Ingeniería Electrónica y Telecomunicaciones (525066).,MANTENER
+15-1242.00,Administrador de bases de datos,1,511,Ingeniería de Sistemas y Cómputo,511|441,Ingeniería de Sistemas y Cómputo|Ciencias de la Computación,2,511026|511056|511156|441016,"rev2: 441 restituida: el CINE tiene Administración de Base de Datos (441014) y Análisis de Sistemas y Modelación de Base de Datos (441055), no cargados, y la familia tiene cargados Informática y Ciencias de la Computación.",MANTENER
+15-1244.00,Administrador de redes y sistemas,1,512,Ingeniería de Telecomunicaciones,512|441,Ingeniería de Telecomunicaciones|Ciencias de la Computación,2,512016|441165|512075,rev2: 441 tiene Redes y Comunicación de Datos (441165).,MANTENER
+15-1251.00,Programador,1,511,Ingeniería de Sistemas y Cómputo,511|441,Ingeniería de Sistemas y Cómputo|Ciencias de la Computación,2,511126|511156|441016|441095|511026,"rev2: 441 tiene Computación e Informática (441095), vía técnica evidente para programar.",MANTENER
+15-1252.00,Desarrollador / ingeniero de software,1,511,Ingeniería de Sistemas y Cómputo,511|441,Ingeniería de Sistemas y Cómputo|Ciencias de la Computación,2,511126|511026|511156|511056|441016,rev2: Ciencias de la Computación (441016) es la vía alterna evidente para desarrollar software.,MANTENER
+15-1253.00,Analista de calidad de software (QA),1,511,Ingeniería de Sistemas y Cómputo,511,Ingeniería de Sistemas y Cómputo,1,511126|511016|511056,,
+15-1254.00,Desarrollador web,1,511,Ingeniería de Sistemas y Cómputo,511|441|222,Ingeniería de Sistemas y Cómputo|Ciencias de la Computación|Diseño,3,511126|441095|511086,"rev2: 441 tiene Computación e Informática. Se agrega 222 por Diseño Web y Multimedia (222185), programa nombrado para desarrollo web (lado front). Alcance: 222 vale para interfaces y productos de comunicación web, no para programación de servidores.",AGREGAR
+15-1255.00,Diseñador web y de experiencia de usuario (UX/UI),1,222,Diseño,222,Diseño,1,222185|222106|511126,rev2: Ingeniería de Software (511126) no es programa de diseño; sin programa nombrado para UX/UI en 511.,QUITAR
+15-1255.01,Diseñador de videojuegos,1,222,Diseño,222|441,Diseño|Ciencias de la Computación,2,222015|511126,"rev2: 441 por Ciencias de la Computación (441016, cargada): su ámbito laboral menciona modelos lúdicos y la industria de videojuegos. 222 sigue como principal (Animación Digital); no hay carrera específica de videojuegos en la oferta.",AGREGAR
+15-1299.02,Especialista en sistemas de información geográfica (SIG),1,593,Geografía,593|531,Geografía|Ingeniería Civil,2,531055|593036|593016|531056,rev2: 531 tiene Geomática (531055) e Ingeniería Topográfica y Agrimensura.,MANTENER
+15-2021.00,Matemático,1,431,Matemática,431,Matemática,1,431016|431026,,
+15-2031.00,Analista de investigación de operaciones,1,433,Investigación Operativa,433|521,Investigación Operativa|Ingeniería Industrial,2,433016|521046,rev2: Excepción documentada: la familia principal tiene un solo programa (Investigación Operativa). Ingeniería Industrial es la vía real y evidente; se conserva como secundaria.,MANTENER
+15-2041.00,Estadístico,1,432,Estadística,432,Estadística,1,432016|432036|432026|432046,,
+15-2051.00,Científico de datos,1,432,Estadística,432|441|511,Estadística|Ciencias de la Computación|Ingeniería de Sistemas y Cómputo,3,432026|431026|511166|432046,"rev2: 441 por Computación Científica (441036) y Ciencias de la Computación (programación, modelos, procesamiento de datos); 511 por Ingeniería Informática y Estadística (511166). 431 Matemática queda fuera por el tope de dos.",MANTENER
+15-2051.01,Analista de inteligencia de negocios,1,511,Ingeniería de Sistemas y Cómputo,511|432,Ingeniería de Sistemas y Cómputo|Estadística,2,511036|432026|511166,rev2: 432 tiene Estadística e Informática (432026).,MANTENER
+17-1011.00,Arquitecto,1,533,Arquitectura y Urbanismo,533,Arquitectura y Urbanismo,1,533026|533096|533066|533126,,
+17-1012.00,Arquitecto paisajista,1,533,Arquitectura y Urbanismo,533,Arquitectura y Urbanismo,1,533046,,
+17-1021.00,Cartógrafo / especialista en geomática,1,593,Geografía,593|531,Geografía|Ingeniería Civil,2,531055|593036|531056|413015,rev2: Descripción de 593 Geografía: «elaboración y análisis de mapas» (Ingeniería Geográfica 593036); la de 531 es obras y medición del terreno. 531 queda como secundaria por Geomática (531055). 413 sale (cartografía náutica de la Marina).,CAMBIO_PRINCIPAL
+17-1022.00,Topógrafo,1,531,Ingeniería Civil,531,Ingeniería Civil,1,531095|531105|531056,,
+17-2011.00,Ingeniero aeronáutico,1,592,Ingeniería Naval y Aeronáutica,592,Ingeniería Naval y Aeronáutica,1,592036|592016,,
+17-2021.00,Ingeniero agrícola,1,611,Agropecuaria,611,Agropecuaria,1,611076|611086|611056,sin 592: Ing. Hidráulica está clasificada en Naval y Aeronáutica,
+17-2031.00,Ingeniero biomédico,1,599,Otras Ingenierías,599,Otras Ingenierías,1,599026,,
+17-2041.00,Ingeniero químico,1,422,Química,422,Química,1,422026|422016,,
+17-2051.00,Ingeniero civil,1,531,Ingeniería Civil,531,Ingeniería Civil,1,531016|531026|531036|531046,,
+17-2051.01,Ingeniero de transportes,1,599,Otras Ingenierías,599,Otras Ingenierías,1,599046,,
+17-2051.02,Ingeniero sanitario,1,532,Ingeniería Sanitaria,532,Ingeniería Sanitaria,1,532016|532026,,
+17-2061.00,Ingeniero de computación (hardware),1,525,Ingeniería Electrónica,525|511,Ingeniería Electrónica|Ingeniería de Sistemas y Cómputo,2,511076|511106|525016,"rev2: Núcleo de 17-2061 (diseño y prueba de circuitos, microprocesadores, componentes) → 525 Ingeniería Electrónica. 511 secundaria por Ingeniería de Sistemas y Computación (511076) e Ing. de Sistemas y Telemática (511106).",CAMBIO_PRINCIPAL
+17-2071.00,Ingeniero eléctrico,1,524,Ingeniería Eléctrica,524|526,Ingeniería Eléctrica|Ingeniería Mecánica,2,524026|524036|524046|526056|524016,rev2: 526 tiene Ingeniería Mecánica Eléctrica (526056).,MANTENER
+17-2072.00,Ingeniero electrónico,1,525,Ingeniería Electrónica,525|524,Ingeniería Electrónica|Ingeniería Eléctrica,2,525016|525056|525066|524046,rev2: 524 tiene Ingeniería Eléctrica y Electrónica (524046).,MANTENER
+17-2081.00,Ingeniero ambiental,1,594,Ecología y Medio Ambiente,594|532,Ecología y Medio Ambiente|Ingeniería Sanitaria,2,594056|594066|594086|594116|532026,rev2: 532 tiene Ingeniería Sanitaria y Ambiental (532026).,MANTENER
+17-2111.00,Ingeniero de seguridad e higiene industrial,1,521,Ingeniería Industrial,521,Ingeniería Industrial,1,521026,,
+17-2112.00,Ingeniero industrial,1,521,Ingeniería Industrial,521,Ingeniería Industrial,1,521046|521036|521056|521066|521076,,
+17-2121.00,Ingeniero naval,1,592,Ingeniería Naval y Aeronáutica,592,Ingeniería Naval y Aeronáutica,1,592086|592076,,
+17-2131.00,Ingeniero de materiales,1,526,Ingeniería Mecánica,526|527,"Ingeniería Mecánica|Ingeniería Minera, Metalurgia y Petróleo",2,526016|527066,rev2: 527 tiene Ingeniería Metalúrgica y de Materiales (527066).,MANTENER
+17-2141.00,Ingeniero mecánico,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526036|526056|526026|526046,,
+17-2141.02,Ingeniero automotriz,1,599,Otras Ingenierías,599|526,Otras Ingenierías|Ingeniería Mecánica,2,599016,rev2: 526 tiene Mecánica Automotriz y Autotrónica (vía técnica nombrada).,MANTENER
+17-2151.00,Ingeniero de minas,1,527,"Ingeniería Minera, Metalurgia y Petróleo",527,"Ingeniería Minera, Metalurgia y Petróleo",1,527016|527026,,
+17-2171.00,Ingeniero de petróleo,1,527,"Ingeniería Minera, Metalurgia y Petróleo",527,"Ingeniería Minera, Metalurgia y Petróleo",1,527036|527046|527076,,
+17-2199.03,Ingeniero en energía,1,524,Ingeniería Eléctrica,524|594,Ingeniería Eléctrica|Ecología y Medio Ambiente,2,524056|524076|524016|524066|594076,rev2: 594 tiene Ingeniería de Recursos Naturales y Energías Renovables (594076).,MANTENER
+17-2199.05,Ingeniero mecatrónico,1,526,Ingeniería Mecánica,526|525,Ingeniería Mecánica|Ingeniería Electrónica,2,526076|526066|525056,rev2: 525 tiene Ingeniería Electrónica y Automatización (525056).,MANTENER
+17-3011.00,Dibujante técnico / proyectista,1,531,Ingeniería Civil,531|222,Ingeniería Civil|Diseño,2,531035|222175,rev2: 222 tiene Diseño Técnico (222175).,MANTENER
+17-3022.00,Técnico en construcción civil,1,531,Ingeniería Civil,531,Ingeniería Civil,1,531025|531045,,
+17-3023.00,Técnico en electricidad y electrónica,1,524,Ingeniería Eléctrica,524|525,Ingeniería Eléctrica|Ingeniería Electrónica,2,524045|524035|525105|525055|525065,rev2: 525 tiene Electrónica Industrial y Técnicas de Ingeniería Electrónica.,MANTENER
+17-3024.00,Técnico en electromecánica y mecatrónica,1,525,Ingeniería Electrónica,525,Ingeniería Electrónica,1,525095|525085|525065,,
+17-3026.00,Técnico en producción industrial,1,521,Ingeniería Industrial,521,Ingeniería Industrial,1,521015|521035,,
+17-3027.00,Técnico en mecánica de producción,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526185|526235|526225,,
+17-3028.00,Técnico en metrología y calibración,1,525,Ingeniería Electrónica,525,Ingeniería Electrónica,1,525105|525065|525095|525085,,
+19-1011.00,Zootecnista,1,412,Zootecnia,412|611,Zootecnia|Agropecuaria,2,412016|412026|412015|611125,rev2: 611 tiene Producción Pecuaria (611125).,MANTENER
+19-1012.00,Ingeniero en industrias alimentarias,1,522,Ingeniería en Industrias Alimentarias,522|523,Ingeniería en Industrias Alimentarias|Ingeniería en Agroindustria,2,522016|522026|522036|522025|523026|523016|591026,rev2: 523 tiene Ingeniería Agroindustrial. 591 (Ing. Pesquera) no tiene programa nombrado para alimentos.,PODAR
+19-1013.00,Ingeniero agrónomo,1,611,Agropecuaria,611,Agropecuaria,1,611016|611106|611116|611026|611036|611066,,
+19-1021.00,Bioquímico,1,411,Biología,411|716,Biología|Farmacia y Bioquímica,2,411056|411096|716026|411016,rev2: 716 tiene Farmacia y Bioquímica (716026).,MANTENER
+19-1022.00,Microbiólogo,1,411,Biología,411,Biología,1,411046|411116|411016,,
+19-1023.00,Biólogo de fauna silvestre,1,411,Biología,411,Biología,1,411016|411076|612016|411026,"rev2: Ciencias Forestales no tiene programa nombrado para fauna; la relación es por el ámbito (bosques), no por el nombre.",QUITAR
+19-1029.03,Genetista,1,411,Biología,411,Biología,1,411086|411056,,
+19-1029.04,Biólogo,1,411,Biología,411,Biología,1,411016|411076|411046,,
+19-1031.00,Especialista en conservación de recursos naturales,1,594,Ecología y Medio Ambiente,594|612,Ecología y Medio Ambiente|Ciencias Forestales,2,594036|612016|594035,rev2: Ciencias Forestales y del Ambiente (612026) y Administración de Recursos Forestales (612015): conservación de bosques es salida nombrada.,MANTENER
+19-1032.00,Ingeniero forestal,1,612,Ciencias Forestales,612,Ciencias Forestales,1,612056|612016|612026|612066|612036,,
+19-1041.00,Epidemiólogo,1,711,Medicina,711,Medicina,1,711026|711016,,
+19-1042.00,Investigador biomédico,1,711,Medicina,711|411,Medicina|Biología,2,711026|411016|411086,"rev2: Biología, Genética y Biotecnología (411086): vía evidente a la investigación biomédica.",MANTENER
+19-2012.00,Físico,1,421,Física,421,Física,1,421026|421036|421046|421016,,
+19-2021.00,Meteorólogo,1,414,Meteorología,414|594,Meteorología|Ecología y Medio Ambiente,2,414015|594126,rev2: 594 tiene un programa llamado Meteorología (594126).,MANTENER
+19-2031.00,Químico,1,422,Química,422,Química,1,422036|422016,,
+19-2041.00,Científico ambiental,1,594,Ecología y Medio Ambiente,594|593,Ecología y Medio Ambiente|Geografía,2,594036|594056|594086|593026,rev2: 593 tiene Geografía y Medio Ambiente (593026).,MANTENER
+19-2042.00,Geólogo,1,423,Geología,423,Geología,1,423056|423036|423046,,
+19-2043.00,Hidrólogo,1,423,Geología,423|611,Geología|Agropecuaria,2,611056|423036,"sin 592: Ing. Hidráulica está clasificada en Naval y Aeronáutica; rev2: Principal se queda en 423 Geología (aguas subterráneas, decisión del usuario). 611 se mantiene por Gestión de Recursos Hídricos (611065) y Conservación de Suelos y Agua (611056). 531 sale: sin programa nombrado.",PODAR
+19-3011.00,Economista,1,341,Economía,341,Economía,1,341026|341046|341056|341066|341076|341116,,
+19-3032.00,Psicólogo organizacional,1,313,Psicología,313,Psicología,1,313046|313016,,
+19-3033.00,Psicólogo clínico,1,313,Psicología,313,Psicología,1,313016,,
+19-3034.00,Psicólogo educativo,1,313,Psicología,313,Psicología,1,313016,,
+19-3041.00,Sociólogo,1,311,Servicios Sociales y Asistenciales,311,Servicios Sociales y Asistenciales,1,311016|211026,rev2: Antropología Social es otra carrera; no forma para sociólogo. Sociología (311016) está en 311.,QUITAR
+19-3051.00,Urbanista / planificador urbano,1,533,Arquitectura y Urbanismo,533,Arquitectura y Urbanismo,1,533136|533126|533096|593016,rev2: Geografía no tiene programa nombrado para urbanismo; la familia 533 ya tiene Urbanismo (533136).,QUITAR
+19-3091.00,Antropólogo y arqueólogo,1,211,Antropología y Arqueología,211,Antropología y Arqueología,1,211016|211026|211036|211046,,
+19-3092.00,Geógrafo,1,593,Geografía,593,Geografía,1,593016|593026|593036,,
+19-3093.00,Historiador,1,212,Historia,212|211,Historia|Antropología y Arqueología,2,212016|212026|211046,rev2: 211 tiene Arqueología e Historia (211046).,MANTENER
+19-3094.00,Politólogo,1,352,Ciencias Políticas,352|351,Ciencias Políticas|Derecho,2,352016|352026|351056,rev2: 351 tiene Derecho y Ciencias Políticas (351056).,MANTENER
+19-4012.00,Técnico agropecuario,1,611,Agropecuaria,611,Agropecuaria,1,611095|611105|611115|611125|611045|611075,,
+19-4013.00,Técnico en industrias alimentarias,1,522,Ingeniería en Industrias Alimentarias,522|523,Ingeniería en Industrias Alimentarias|Ingeniería en Agroindustria,2,522025|522035|522015|523015|591035,rev2: 523 tiene Agroindustrias (523015). 591 Tecnología Pesquera no está nombrada para alimentos.,PODAR
+19-4031.00,Técnico en química industrial,1,422,Química,422|527,"Química|Ingeniería Minera, Metalurgia y Petróleo",2,422025|422035|527075,rev2: 527 tiene Procesos Químicos y Metalúrgicos (527075).,MANTENER
+19-4042.00,Técnico en gestión ambiental,1,594,Ecología y Medio Ambiente,594,Ecología y Medio Ambiente,1,594025|594035,,
+19-4043.00,Técnico en exploración geológica y minera,1,527,"Ingeniería Minera, Metalurgia y Petróleo",527,"Ingeniería Minera, Metalurgia y Petróleo",1,527025|527015,,
+19-4071.00,Técnico forestal,1,612,Ciencias Forestales,612,Ciencias Forestales,1,612015,,
+19-4099.01,Analista de control de calidad,1,521,Ingeniería Industrial,521|422,Ingeniería Industrial|Química,2,521015|522025|422035,"rev2: 422 tiene Tecnología de Análisis Químico (422035), nombrado para control de calidad. 522 Industrias Alimentarias no está nombrada para la ocupación.",PODAR
+19-5011.00,Especialista en seguridad y salud ocupacional,1,521,Ingeniería Industrial,521,Ingeniería Industrial,1,521026|521046,,
+19-5012.00,Técnico en seguridad industrial y prevención de riesgos,1,521,Ingeniería Industrial,521,Ingeniería Industrial,1,521026,sin carrera técnica; por ahora vía Ing. de higiene y seguridad industrial,
+21-1012.00,Orientador educativo y vocacional,1,313,Psicología,313,Psicología,1,313016|199016,rev2: Educación (199016) es genérica; no hay programa nombrado de orientación. Psicología es la vía.,QUITAR
+21-1021.00,Trabajador social,1,312,Trabajo Social,312|311,Trabajo Social|Servicios Sociales y Asistenciales,2,312036|311015,rev2: 311 tiene Promoción Comunal (311015).,MANTENER
+23-1011.00,Abogado,1,351,Derecho,351,Derecho,1,351016|351026|351056,,
+23-1022.00,Conciliador / árbitro,1,351,Derecho,351,Derecho,1,351016|351056,,
+23-1023.00,Juez / fiscal,1,351,Derecho,351,Derecho,1,351016|351056,,
+25-1121.00,"Docente de arte, teatro y música",1,151,Educación Artística,151|221|224,Educación Artística|Artes|Música,3,151016|221016|224036|223016|221036,rev2: Artes (221016) y Música (224036) son programas que forman docentes de la materia. Danza sale por el tope de dos secundarias (la cubre Bailarín).,PODAR
+25-1124.00,Docente de idiomas,1,121,Educación Secundaria,121|214,Educación Secundaria|Idiomas,2,121025|121376|121386|121396|214016,rev2: 214 tiene Idiomas (214016).,MANTENER
+25-1126.00,Docente de filosofía y religión,1,216,Teología y Filosofía,216,Teología y Filosofía,1,216016|216026|216035|216045,,
+25-1193.00,Docente de educación física y deportes,1,131,Educación Física,131,Educación Física,1,131015|131016|131056|131046,,
+25-1194.00,"Docente de formación técnica (instituto, CETPRO)",1,161,Educación Tecnológica,161|121,Educación Tecnológica|Educación Secundaria,2,161996|161116|121035|121095,rev2: 121 tiene Educación para el Trabajo (121035) y Educación Secundaria Técnica (121095).,MANTENER
+25-2011.00,Docente de educación inicial,1,111,Educación Inicial,111,Educación Inicial,1,111015|111026|111016|111025|111056|111066,,
+25-2021.00,Docente de educación primaria,1,112,Educación Primaria,112|111,Educación Primaria|Educación Inicial,2,112015|112016|111016|112025|112046,"rev2: 111 tiene Educación Básica, Inicial y Primaria (111016).",MANTENER
+25-2031.00,Docente de educación secundaria,1,121,Educación Secundaria,121,Educación Secundaria,1,121016|121055|121065|121075|121085|121046,,
+25-2032.00,Docente de educación para el trabajo (educación técnica),1,121,Educación Secundaria,121|161,Educación Secundaria|Educación Tecnológica,2,121035|121095|161996,rev2: 161 tiene Educación Tecnológica / Técnica (161996).,MANTENER
+25-2056.00,Docente de educación especial,1,141,Educación Especial,141,Educación Especial,1,141016,,
+25-3011.00,Docente de educación básica alternativa (adultos),1,112,Educación Primaria,112,Educación Primaria,1,112026,,
+25-4011.00,Archivero,1,215,Bibliotecología y Archivo,215,Bibliotecología y Archivo,1,215016,,
+25-4012.00,Curador de museo / gestor cultural,1,212,Historia,212,Historia,1,212026|221016|217016,rev2: Ni Artes ni Humanidades tienen programa nombrado de gestión cultural; 212 ya tiene Historia y Gestión Cultural (212026).,QUITAR
+25-4013.00,Conservador y restaurador,1,534,Mantenimiento y Restauración de Obras Públicas,534|221,Mantenimiento y Restauración de Obras Públicas|Artes,2,534025|221056|211036,rev2: Principal se queda en 534 (decisión del usuario; su descripción cubre la recuperación de bienes históricos). 221 se mantiene por Conservación y Restauración universitaria (221056). 211 Arqueología sale: sin programa nombrado.,PODAR
+25-4022.00,Bibliotecario,1,215,Bibliotecología y Archivo,215,Bibliotecología y Archivo,1,215026,,
+25-9021.00,Extensionista agrario,1,611,Agropecuaria,611,Agropecuaria,1,611096|611025|611036,,
+27-1011.00,Director de arte,1,222,Diseño,222,Diseño,1,222016|222066|222106|222075|222085,,
+27-1012.00,Artesano,1,221,Artes,221,Artes,1,221025|221076|221066,"rev2: Sin cambio: las familias 535/226/719/225 no tienen programas en carreras_mtpe (verificado por el usuario). Existe la familia 226 Artesanía y Manualidades. Si carreras_mtpe tiene programas en 226, la principal debe ser 226 (221 como secundaria).",MANTENER
+27-1013.00,"Artista plástico (pintor, escultor, ilustrador)",1,221,Artes,221,Artes,1,221016|221086|221066|221076,,
+27-1014.00,Animador digital y artista de efectos visuales,1,222,Diseño,222,Diseño,1,222015|222046,,
+27-1021.00,Diseñador industrial,1,222,Diseño,222,Diseño,1,222076|222105,,
+27-1022.00,Diseñador de modas,1,222,Diseño,222|528,Diseño|Ingeniería Textil y Confecciones,2,222116|528015|528095,rev2: 528 tiene Diseño de Modas (528015).,MANTENER
+27-1024.00,Diseñador gráfico,1,222,Diseño,222,Diseño,1,222125|222106|222066|222016|222075,,
+27-1025.00,Diseñador de interiores,1,222,Diseño,222|533,Diseño|Arquitectura y Urbanismo,2,222095|222096|533015|533036|533056,rev2: 533 tiene Arquitectura de Interiores (533015/533036) y Arquitectura y Diseño de Interiores.,MANTENER
+27-1027.00,Escenógrafo,1,221,Artes,221|321,Artes|Ciencias de la Comunicación,2,221036|321045,rev2: 321 tiene Comunicación Escénica (321045).,MANTENER
+27-2011.00,Actor,1,221,Artes,221|321,Artes|Ciencias de la Comunicación,2,221036|321045,rev2: 321 tiene Comunicación Escénica (321045). Ver nota VERIFICAR sobre la familia 225 Teatro.,MANTENER
+27-2012.00,Productor y director audiovisual,1,321,Ciencias de la Comunicación,321,Ciencias de la Comunicación,1,321095|321115|321025|321035|321066,,
+27-2022.00,Entrenador deportivo,1,131,Educación Física,131,Educación Física,1,131056|131016|131015,"rev2: Sin cambio: las familias 535/226/719/225 no tienen programas en carreras_mtpe (verificado por el usuario). La familia 719 Otras Carreras de Ciencias de la Salud describe práctica deportiva (ciencias del deporte). Si carreras_mtpe tiene programas en 719, agregarla como secundaria a Entrenador deportivo y Entrenador físico.",MANTENER
+27-2031.00,Bailarín,1,223,Danza,223,Danza,1,223016,,
+27-2041.00,Director y compositor musical,1,224,Música,224,Música,1,224036,,
+27-2042.00,Músico y cantante,1,224,Música,224,Música,1,224036|224045,,
+27-3011.00,Locutor de radio y televisión,1,322,Periodismo y Locución,322|321,Periodismo y Locución|Ciencias de la Comunicación,2,322015|322065|321025,rev2: Comunicación Audiovisual (321025) es la vía evidente a la locución en TV.,MANTENER
+27-3023.00,Periodista,1,322,Periodismo y Locución,322|321,Periodismo y Locución|Ciencias de la Comunicación,2,322026|322045|322065|321116|321026,rev2: 321 tiene Comunicación y Periodismo (321116).,MANTENER
+27-3031.00,Especialista en relaciones públicas,1,321,Ciencias de la Comunicación,321|311,Ciencias de la Comunicación|Servicios Sociales y Asistenciales,2,311035|321086|321036|321136,rev2: 311 tiene un programa llamado Relaciones Públicas (311035).,MANTENER
+27-3041.00,Editor (prensa y publicaciones),1,322,Periodismo y Locución,322|213,Periodismo y Locución|Lingüística y Literatura,2,213036|213046|322026,rev2: Descripción de 322: «redacción de contenidos... su edición»; Periodismo (322026) forma editores de prensa. 213 Literatura y Lingüística queda como secundaria.,CAMBIO_PRINCIPAL
+27-3043.00,Escritor,1,213,Lingüística y Literatura,213,Lingüística y Literatura,1,213036|213046,,
+27-3091.00,Traductor e intérprete,1,214,Idiomas,214,Idiomas,1,214036|214015|214025|214016,,
+27-4011.00,Técnico de audio y video,1,321,Ciencias de la Comunicación,321|512|323,Ciencias de la Comunicación|Ingeniería de Telecomunicaciones|Operadores de Imagen y Sonido,3,321025|321035|512035,"rev2: 512 tiene Técnica en Ingeniería de Sonidos (512035). Se agrega 323 Operadores de Imagen y Sonido: su nombre y descripción («micrófonos, iluminación, equipos... grabaciones, transmisiones y eventos») corresponden a la ocupación.",AGREGAR
+27-4014.00,Técnico en ingeniería de sonido,1,512,Ingeniería de Telecomunicaciones,512|323,Ingeniería de Telecomunicaciones|Operadores de Imagen y Sonido,2,512035|224036,"rev2: Música sale (sin programa nombrado de sonido). Entra 323 Operadores de Imagen y Sonido por nombre y descripción de la familia («grabación, edición y difusión de... sonidos»).",PODAR
+27-4021.00,Fotógrafo,1,323,Operadores de Imagen y Sonido,323,Operadores de Imagen y Sonido,1,323035,,
+27-4031.00,Camarógrafo,1,323,Operadores de Imagen y Sonido,323|321|322,Operadores de Imagen y Sonido|Ciencias de la Comunicación|Periodismo y Locución,3,321025|321035|321095|322045,"rev2: Descripción de 323 Operadores de Imagen y Sonido: «manejo de cámaras... grabaciones, transmisiones y eventos»; el nombre de la familia corresponde a la ocupación. 321 (Comunicación Audiovisual) y 322 (Periodismo Audiovisual) quedan como secundarias.",CAMBIO_PRINCIPAL
+27-4032.00,Editor de video y cine,1,321,Ciencias de la Comunicación,321|323,Ciencias de la Comunicación|Operadores de Imagen y Sonido,2,321025|321035|321095|321115,"rev2: Se agrega 323 Operadores de Imagen y Sonido: su descripción nombra «edición» de imágenes y sonidos. Principal sigue 321 (Dirección y Realización de Cine y TV, Comunicación Audiovisual).",AGREGAR
+29-1021.00,Odontólogo,1,713,Odontología,713,Odontología,1,713026|713016,,
+29-1031.00,Nutricionista,1,712,Nutrición,712,Nutrición,1,712046|712056|712026|712076|712016,,
+29-1041.00,Optómetra,1,715,Tecnología Médica,715,Tecnología Médica,1,715036,,
+29-1051.00,Químico farmacéutico,1,716,Farmacia y Bioquímica,716,Farmacia y Bioquímica,1,716026,,
+29-1122.00,Terapeuta ocupacional,1,715,Tecnología Médica,715,Tecnología Médica,1,715056,,
+29-1123.00,Fisioterapeuta,1,715,Tecnología Médica,715,Tecnología Médica,1,715076|715086|715056|715015,,
+29-1127.00,Terapeuta de lenguaje,1,715,Tecnología Médica,715|141,Tecnología Médica|Educación Especial,2,715056|141016,"rev2: 141 tiene Audición, Lenguaje y Aprendizaje (141016).",MANTENER
+29-1131.00,Médico veterinario,1,621,Veterinaria,621,Veterinaria,1,621016|621026|621036,,
+29-1141.00,Enfermero(a),1,714,Enfermería,714,Enfermería,1,714016,,
+29-1212.00,Cardiólogo,1,711,Medicina,711,Medicina,1,711026|711016,,
+29-1214.00,Médico de emergencias,1,711,Medicina,711,Medicina,1,711026|711016,,
+29-1215.00,Médico general,1,711,Medicina,711,Medicina,1,711026|711016,,
+29-1218.00,Ginecólogo-obstetra,1,711,Medicina,711,Medicina,1,711026|711016,,
+29-1223.00,Psiquiatra,1,711,Medicina,711,Medicina,1,711026|711016,,
+29-1224.00,Radiólogo,1,711,Medicina,711,Medicina,1,711026|711016,,
+29-2011.00,Tecnólogo médico en laboratorio clínico,1,715,Tecnología Médica,715,Tecnología Médica,1,715016,,
+29-2012.00,Técnico en laboratorio clínico,1,715,Tecnología Médica,715,Tecnología Médica,1,715025,,
+29-2034.00,Tecnólogo médico en radiología,1,715,Tecnología Médica,715,Tecnología Médica,1,715056,,
+29-2043.00,Paramédico / técnico en emergencias médicas,1,714,Enfermería,714,Enfermería,1,714035,,
+29-2052.00,Técnico en farmacia,1,716,Farmacia y Bioquímica,716,Farmacia y Bioquímica,1,716015,,
+29-2056.00,Técnico veterinario,1,621,Veterinaria,621|412,Veterinaria|Zootecnia,2,412015|611125,"aproximación: sin carrera técnica veterinaria en el catálogo; rev2: Descripción de 621 Veterinaria: «salud, bienestar y cuidado de animales»; la de 412 Zootecnia es producción. Sigue siendo aproximación (no hay carrera técnica veterinaria): el estudiante llega a Medicina Veterinaria. 412 queda como secundaria por Zootecnia técnica (412015); 611 sale.",CAMBIO_PRINCIPAL
+29-2061.00,Técnico en enfermería,1,714,Enfermería,714,Enfermería,1,714035,,
+29-9099.01,Obstetra,1,717,Obstetricia,717,Obstetricia,1,717016|717026,,
+33-3021.00,"Policía (investigación criminal, PNP)",1,021,Oficiales de la Policía Nacional,021,Oficiales de la Policía Nacional,1,021016,,
+33-3051.00,Oficial de la Policía Nacional (PNP),1,021,Oficiales de la Policía Nacional,021,Oficiales de la Policía Nacional,1,021016,única carrera policial del catálogo (oficiales),
+35-1011.00,Chef / cocinero profesional,1,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",1,332105|332125|332166|332186|332206|332155,,
+39-5012.00,Estilista / cosmetólogo,1,812,Tratamiento de Belleza y Peluquería,812,Tratamiento de Belleza y Peluquería,1,812015,,
+39-5094.00,Cosmiatra (cuidado de la piel),1,812,Tratamiento de Belleza y Peluquería,812,Tratamiento de Belleza y Peluquería,1,812015,,
+39-7011.00,Guía oficial de turismo,1,811,Turismo,811,Turismo,1,811055|811035|811045,,
+39-9031.00,Entrenador físico (acondicionamiento),1,131,Educación Física,131,Educación Física,1,131015|131056,,
+41-3021.00,Agente de seguros,1,342,Contabilidad y Finanzas,342,Contabilidad y Finanzas,1,342026|331055|331035,rev2: Administración Bancaria no está nombrada para seguros; 342 ya tiene Banca y Seguros (342026).,QUITAR
+41-3041.00,Agente de viajes y turismo,1,811,Turismo,811|332,"Turismo|Administración de Servicios Turísticos, Hotelería y Gastronomía",2,811075|332044|332025,rev2: 332 tiene Administración Turística (332044) y Administración de Empresas Turísticas y Hoteleras.,MANTENER
+41-4011.00,"Representante técnico de ventas (visitador médico, ventas técnicas)",1,333,Marketing,333,Marketing,1,333065|333015,,
+41-4012.00,Ejecutivo de ventas,1,333,Marketing,333|331,Marketing|Administración de Empresas,2,333065|331245|333016|333076|331176|331115,rev2: 331 tiene Gestión Comercial (331245) e Ingeniería Comercial (331176).,MANTENER
+43-3031.00,Asistente contable (técnico en contabilidad),1,342,Contabilidad y Finanzas,342,Contabilidad y Finanzas,1,342075|331035,rev2: Administración Bancaria no forma para contabilidad.,QUITAR
+43-4081.00,Recepcionista de hotel,1,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",332|811,"Administración de Servicios Turísticos, Hotelería y Gastronomía|Turismo",2,332085|811085|332025,rev2: 811 tiene Operaciones Hoteleras (811085).,MANTENER
+43-5011.00,Agente de carga,1,335,Negocios Internacionales,335,Negocios Internacionales,1,335025|335026|335056,,
+43-6011.00,Secretario(a) ejecutivo(a) / asistente administrativo,1,337,Secretariado,337,Secretariado,1,337025,,
+43-9081.00,Corrector de estilo,1,213,Lingüística y Literatura,213,Lingüística y Literatura,1,213046|213036|213026,,
+47-2073.00,Operador de maquinaria pesada,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526085,,
+47-2111.00,Electricista industrial,1,524,Ingeniería Eléctrica,524,Ingeniería Eléctrica,1,524045|524035|524025,,
+49-2011.00,Técnico en reparación de computadoras,1,441,Ciencias de la Computación,441,Ciencias de la Computación,1,441095|441235,,
+49-2022.00,Técnico en telecomunicaciones,1,512,Ingeniería de Telecomunicaciones,512|441,Ingeniería de Telecomunicaciones|Ciencias de la Computación,2,512055|512025|512075|441165,rev2: 441 tiene Redes y Comunicación de Datos (441165).,MANTENER
+49-2091.00,Técnico en aviónica,1,526,Ingeniería Mecánica,526|592,Ingeniería Mecánica|Ingeniería Naval y Aeronáutica,2,526035,rev2: Principal 526 porque el programa Aviónica (526035) está ahí. Se agrega 592 Ingeniería Naval y Aeronáutica: su descripción cubre «aeronaves... funcionamiento y mantenimiento» y tiene Ingeniería Aeronáutica (592036).,AGREGAR
+49-2096.00,Electricista automotriz,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526025|526165,,
+49-3011.00,Técnico en mantenimiento de aeronaves,1,526,Ingeniería Mecánica,526|592,Ingeniería Mecánica|Ingeniería Naval y Aeronáutica,2,526135|526045|526055|526095,"rev2: Principal 526 porque los programas (Mecánica Aeronáutica, Mantenimiento de Aeronaves) están ahí. Se agrega 592 por descripción («aeronaves... mantenimiento») e Ingeniería Aeronáutica (592036).",AGREGAR
+49-3023.00,Mecánico automotriz,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526165|526105,,
+49-3042.00,Mecánico de maquinaria pesada,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526085|526195,,
+49-9021.00,Técnico en refrigeración y aire acondicionado,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526225|524035,aproximación: sin carrera propia de refrigeración; rev2: Electrotecnia Industrial no está nombrada para refrigeración. Sigue siendo aproximación (sin carrera propia).,QUITAR
+49-9041.00,Mecánico de mantenimiento industrial,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526075|526225|526155,,
+49-9062.00,Técnico en equipos biomédicos,1,525,Ingeniería Electrónica,525|599,Ingeniería Electrónica|Otras Ingenierías,2,525105|599026,aproximación: sin carrera técnica de equipos biomédicos; rev2: 599 tiene Ingeniería Biomédica (599026).,MANTENER
+51-3011.00,Panadero y pastelero,1,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",1,332155,,
+51-4041.00,Mecánico de producción (máquinas-herramienta),1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526185|526235,,
+51-4111.00,Matricero,1,526,Ingeniería Mecánica,526|527,"Ingeniería Mecánica|Ingeniería Minera, Metalurgia y Petróleo",2,526185|527065,rev2: 527 tiene Modelería y Fundición (527065): moldes y matrices.,MANTENER
+51-4121.00,Soldador,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526185|526235,aproximación: sin carrera propia de soldadura,
+51-6092.00,Patronista / modelista de prendas,1,528,Ingeniería Textil y Confecciones,528,Ingeniería Textil y Confecciones,1,528095|528015,,
+51-7011.00,Ebanista / carpintero industrial,1,221,Artes,221,Artes,1,221025,"rev2: Sin cambio: las familias 535/226/719/225 no tienen programas en carreras_mtpe (verificado por el usuario). Existe la familia 535 Carpintería y Ebanistería en campo_detallado. Si carreras_mtpe tiene programas en 535, la principal debe ser 535 (y 221 sale). Si no, se queda en 221 por Construcción de Arte en Madera (221025).",MANTENER
+51-9071.00,Joyero / orfebre,0,,,,,0,,sin carrera en el catálogo (CETPRO),
+51-9081.00,Técnico en prótesis dental,1,713,Odontología,713,Odontología,1,713015,,
+51-9162.00,Programador de máquinas CNC,1,526,Ingeniería Mecánica,526,Ingeniería Mecánica,1,526185|526235|521035,rev2: Tecnología de la Producción (521035) no está nombrada para CNC; 526 ya tiene Mecánica de Producción.,QUITAR
+53-2011.00,Piloto comercial de aviación,1,592,Ingeniería Naval y Aeronáutica,592,Ingeniería Naval y Aeronáutica,1,592016,,
+53-2021.00,Controlador de tráfico aéreo,1,512,Ingeniería de Telecomunicaciones,512|592,Ingeniería de Telecomunicaciones|Ingeniería Naval y Aeronáutica,2,512015,"programa de la FAP (Telecomunicaciones y tránsito aéreo); rev2: Principal 512 porque Control de Tránsito Aéreo (512015, FAP) está ahí. Se agrega 592 por descripción («rutas... seguridad de las operaciones en el aire») y Ciencias Aeronáuticas (592016).",AGREGAR
+53-2031.00,Tripulante de cabina (auxiliar de vuelo),1,,,,,0,,sin carrera en el catálogo (escuelas de aviación),
+53-5021.00,Oficial de marina mercante,1,592,Ingeniería Naval y Aeronáutica,592,Ingeniería Naval y Aeronáutica,1,592076|011036,rev2: Las familias de FF. AA. no se recomiendan desde el test (decisión previa: solo catálogo). 592 tiene Ingeniería Marítima (592076).,QUITAR
+55-1011.00,Oficial de la Fuerza Aérea (tripulación aérea),0,011,Oficiales de las Fuerzas Armadas,011,Oficiales de las Fuerzas Armadas,1,011016,,
+55-1013.00,Oficial del Ejército (caballería blindada),0,011,Oficiales de las Fuerzas Armadas,011,Oficiales de las Fuerzas Armadas,1,011026,,
+55-1014.00,Oficial del Ejército (artillería),0,011,Oficiales de las Fuerzas Armadas,011,Oficiales de las Fuerzas Armadas,1,011026,,
+55-1016.00,Oficial del Ejército (infantería),0,011,Oficiales de las Fuerzas Armadas,011,Oficiales de las Fuerzas Armadas,1,011026,,
+55-1017.00,Oficial de fuerzas especiales,0,011,Oficiales de las Fuerzas Armadas,011,Oficiales de las Fuerzas Armadas,1,011026,,
+55-3011.00,Suboficial de la Fuerza Aérea (tripulación),0,012,Suboficiales de las Fuerzas Armadas,012,Suboficiales de las Fuerzas Armadas,1,012125|012045,,
+55-3013.00,Suboficial de blindados,0,012,Suboficiales de las Fuerzas Armadas,012,Suboficiales de las Fuerzas Armadas,1,012135,,
+55-3014.00,Suboficial de artillería,0,012,Suboficiales de las Fuerzas Armadas,012,Suboficiales de las Fuerzas Armadas,1,012025,,
+55-3016.00,Suboficial de infantería,0,012,Suboficiales de las Fuerzas Armadas,012,Suboficiales de las Fuerzas Armadas,1,012065,,
+55-3018.00,Comando de fuerzas especiales,0,012,Suboficiales de las Fuerzas Armadas,012,Suboficiales de las Fuerzas Armadas,1,012055|012095,,
