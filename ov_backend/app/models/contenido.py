@@ -251,7 +251,5 @@ class Carrera(Base):
     busqueda: Mapped[str] = mapped_column(default=busqueda_de("nombre"))
     # Relaciones de solo lectura para las consultas del catálogo (B10); se cargan con `selectinload`.
     familia: Mapped[FamiliaCarrera] = relationship(viewonly=True, lazy="raise")
-    ocupaciones: Mapped[list["Ocupacion"]] = relationship(
-        secondary="carrera_ocupacion", viewonly=True, lazy="raise", order_by="Ocupacion.codigo")
     instituciones: Mapped[list["Institucion"]] = relationship(
         secondary="institucion_carrera", viewonly=True, lazy="raise", order_by="Institucion.codigo")

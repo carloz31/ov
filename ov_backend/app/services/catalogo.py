@@ -8,7 +8,7 @@ sus vistas no se registran (ajuste catalogo-apoderado)."""
 import random
 
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, aliased, selectinload
 
 from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import (
@@ -17,7 +17,7 @@ from app.core.parametros import (
 from app.exceptions import ErrorAccion
 from app.models import (
     Carrera, Cuenta, Dimension, EstiloTrabajo, EventoUso, FamiliaCarrera, Favorito, GestionInstitucion,
-    GrupoOcupacional, IngresoFamilia, IngresoInstitucion, Institucion, InstitucionCarrera, Ocupacion,
+    IngresoFamilia, IngresoInstitucion, Institucion, InstitucionCarrera, Ocupacion, OcupacionFamilia,
     PuntajeOcupacion, Rol, TipoEventoUso, TipoFavorito, TipoInstitucion, Ubicacion,
 )
 from app.models.base import sin_tildes
@@ -25,13 +25,15 @@ from app.schemas.acciones import (
     RespuestaAccion, VerCarreraEntrada, VerInstitucionEntrada, VerOcupacionEntrada,
 )
 from app.schemas.catalogo import (
-    CarreraDetalle, CarreraEnInstitucion, CarreraResumen, CarrerasParecidas, EstiloPublico, FamiliaPublica,
-    GrupoPublico, Inesperada, IngresoCarreraPublico, IngresoFamiliaPublico, InstitucionDetalle, InstitucionEnCarrera,
-    InstitucionResumen, OcupacionDetalle, OcupacionResumen, PaginaCarreras, PaginaInstituciones, PaginaOcupaciones,
-    Tramo, UbicacionPublica,
+    Afinidad, CarreraDetalle, CarreraEnInstitucion, CarreraResumen, CarrerasParecidas, EstiloPublico, FamiliaFicha,
+    FamiliaPublica, FamiliaResumida, FamiliaSecundaria, Inesperada, IngresoCarreraPublico, IngresoFamiliaPublico,
+    IngresoJovenes, InstitucionDetalle, InstitucionEnCarrera, InstitucionResumen, OcupacionDeFamilia,
+    OcupacionDetalle, OcupacionEnlace, OcupacionesDeLaFamilia, OcupacionResumen, PaginaCarreras,
+    PaginaInstituciones, PaginaOcupaciones, ProgramaEjemplo, Tramo, UbicacionPublica,
 )
 from app.services.comun import buscar_por_codigo, fecha_accion, responder_con_eventos
 from app.services.instrumentos.calculo import puntaje_visual
+from app.services.instrumentos.consultas import resultado_intereses
 from app.services.secciones import exigir_seccion, seccion_de_cuenta
 
 
@@ -137,10 +139,13 @@ def resumen_carrera(carrera: Carrera, favoritos: set) -> CarreraResumen:
                           es_favorita=(TipoFavorito.CARRERA, carrera.id) in favoritos)
 
 
-def resumen_ocupacion(ocupacion: Ocupacion, favoritos: set) -> OcupacionResumen:
+def resumen_ocupacion(ocupacion: Ocupacion, favoritos: set, via_familia: str | None = None) -> OcupacionResumen:
+    """Requiere `familia_principal` cargada (`selectinload`)."""
+    familia = ocupacion.familia_principal
     return OcupacionResumen(codigo=ocupacion.codigo, codigo_onet=ocupacion.codigo_onet, titulo=ocupacion.titulo,
                             resumen=ocupacion.resumen, grupo=ocupacion.grupo, riasec=_riasec(ocupacion.codigo_riasec),
-                            es_favorita=(TipoFavorito.OCUPACION, ocupacion.id) in favoritos)
+                            familia_principal=None if familia is None else familia_publica(familia),
+                            via_familia=via_familia, es_favorita=(TipoFavorito.OCUPACION, ocupacion.id) in favoritos)
 
 
 def resumen_institucion(institucion: Institucion, favoritos: set) -> InstitucionResumen:
@@ -212,8 +217,7 @@ def detalle_carrera(sesion: Session, cuenta: Cuenta, codigo: str) -> CarreraDeta
     exigir_catalogo(sesion, cuenta)
     favoritos = contexto(sesion).favoritos_de(cuenta.id)
     carrera = sesion.scalar(select(Carrera).where(Carrera.codigo == codigo).options(
-        selectinload(Carrera.familia), selectinload(Carrera.ocupaciones),
-        selectinload(Carrera.instituciones).selectinload(Institucion.ubicacion)))
+        selectinload(Carrera.familia), selectinload(Carrera.instituciones).selectinload(Institucion.ubicacion)))
     if carrera is None:
         raise _no_encontrado('Carrera')
     ingresos = {fila.institucion_id: fila for fila in sesion.scalars(select(IngresoInstitucion).where(
@@ -227,12 +231,26 @@ def detalle_carrera(sesion: Session, cuenta: Cuenta, codigo: str) -> CarreraDeta
         **resumen_carrera(carrera, favoritos).model_dump(), descripcion=carrera.descripcion,
         nombre_cine=carrera.nombre_cine,
         ambito_laboral=(carrera.ambito_laboral or '').splitlines(), ingreso=_ingreso(sesion, carrera),
-        ocupaciones=[resumen_ocupacion(o, favoritos) for o in carrera.ocupaciones],
+        ocupaciones_de_la_familia=_ocupaciones_de_la_familia(sesion, cuenta, carrera),
         instituciones=[InstitucionEnCarrera(**resumen_institucion(i, favoritos).model_dump(),
                                             ingreso=_tramo(ingresos.get(i.id)),
                                             duracion_ciclos=duraciones.get(i.id))
                        for i in sorted(carrera.instituciones, key=lambda i: (i.busqueda, i.codigo))],
         parecidas=_parecidas(sesion, carrera, favoritos))
+
+
+def _ocupaciones_de_la_familia(sesion: Session, cuenta: Cuenta, carrera: Carrera) -> OcupacionesDeLaFamilia:
+    """La relación carrera–ocupación es por familia (ajuste resultados-intereses): las del catálogo con la familia
+    de la carrera como principal o como secundaria, por título; para el estudiante, con su afinidad."""
+    afinidades, _ = _afinidades(sesion, cuenta)
+    vias = {True: [], False: []}
+    for ocupacion, es_principal in sesion.execute(select(Ocupacion, OcupacionFamilia.es_principal).join(
+            OcupacionFamilia).where(OcupacionFamilia.familia_id == carrera.familia_id, Ocupacion.en_catalogo)
+            .order_by(Ocupacion.busqueda, Ocupacion.codigo)):
+        vias[es_principal].append(OcupacionDeFamilia(codigo=ocupacion.codigo, titulo=ocupacion.titulo,
+                                                     riasec=_riasec(ocupacion.codigo_riasec),
+                                                     afinidad=afinidades.get(ocupacion.codigo)))
+    return OcupacionesDeLaFamilia(principales=vias[True], secundarias=vias[False])
 
 
 def _parecidas(sesion: Session, carrera: Carrera, favoritos: set) -> CarrerasParecidas:
@@ -245,30 +263,74 @@ def _parecidas(sesion: Session, carrera: Carrera, favoritos: set) -> CarrerasPar
 
 
 @usar_contexto
-def buscar_ocupaciones(sesion: Session, cuenta: Cuenta, buscar: str | None, grupo: str | None,
+def buscar_ocupaciones(sesion: Session, cuenta: Cuenta, buscar: str | None, area: str | None, familia: str | None,
                        riasec: str | None, solo_favoritos: bool, limite: int, desde: int) -> PaginaOcupaciones:
+    """Solo las del catálogo. `area` es la de su familia principal; `familia` trae las que la tienen como
+    principal o secundaria, primero las principales, y marca `via_familia` (ajuste resultados-intereses)."""
     exigir_catalogo(sesion, cuenta)
     _pagina(limite, desde)
     favoritos = contexto(sesion).favoritos_de(cuenta.id)
     letras = letras_riasec(riasec)
-    consulta = select(Ocupacion).where(Ocupacion.en_catalogo, *_filtros(
+    principal = aliased(OcupacionFamilia)
+    familia_area = aliased(FamiliaCarrera)
+    filtros = _filtros(
         _contiene(Ocupacion.busqueda, buscar),
-        None if grupo is None else Ocupacion.grupo == grupo,
+        None if area is None else Ocupacion.id.in_(select(principal.ocupacion_id).join(
+            familia_area, familia_area.id == principal.familia_id).where(principal.es_principal,
+                                                                          familia_area.area_codigo == area)),
         None if letras is None else Ocupacion.codigo_riasec.like(f'%{letras}%'),
         _solo_favoritos(cuenta, TipoFavorito.OCUPACION, Ocupacion.id, solo_favoritos),
-    ))
-    total, ocupaciones = _paginar(sesion, consulta, (Ocupacion.busqueda, Ocupacion.codigo), limite, desde)
+    )
+    vias = {}
+    if familia is None:
+        consulta = select(Ocupacion).where(Ocupacion.en_catalogo, *filtros)
+        orden = (Ocupacion.busqueda, Ocupacion.codigo)
+    else:
+        consulta = select(Ocupacion).join(OcupacionFamilia, OcupacionFamilia.ocupacion_id == Ocupacion.id).join(
+            FamiliaCarrera, FamiliaCarrera.id == OcupacionFamilia.familia_id).where(
+            Ocupacion.en_catalogo, FamiliaCarrera.codigo == familia, *filtros)
+        orden = (OcupacionFamilia.es_principal.desc(), Ocupacion.busqueda, Ocupacion.codigo)
+        vias = dict(sesion.execute(select(OcupacionFamilia.ocupacion_id, OcupacionFamilia.es_principal).join(
+            FamiliaCarrera).where(FamiliaCarrera.codigo == familia)).all())
+    total, ocupaciones = _paginar(sesion, consulta.options(selectinload(Ocupacion.familia_principal)), orden,
+                                  limite, desde)
     return PaginaOcupaciones(total=total, total_dominio=sesion.scalar(
                                  select(func.count()).select_from(Ocupacion).where(Ocupacion.en_catalogo)),
-                             items=[resumen_ocupacion(o, favoritos) for o in ocupaciones])
+                             items=[resumen_ocupacion(o, favoritos, None if o.id not in vias else
+                                                      'PRINCIPAL' if vias[o.id] else 'SECUNDARIA')
+                                    for o in ocupaciones])
+
+
+def _afinidades(sesion: Session, cuenta: Cuenta) -> tuple[dict[str, Afinidad], dict[str, int]]:
+    """Del resultado de intereses vigente del estudiante: la afinidad de sus ocupaciones afines y la posición de
+    sus familias recomendadas. Vacías para otras cuentas o sin resultado."""
+    resultado = resultado_intereses(sesion, cuenta)
+    if resultado is None:
+        return {}, {}
+    return ({o.codigo: Afinidad(parecido=o.parecido, banda=o.banda) for o in resultado.ocupaciones or ()},
+            {f.codigo: f.posicion for f in resultado.familias or ()})
+
+
+def _carreras_de_familias(sesion: Session, ids_familias) -> dict[int, list[Carrera]]:
+    carreras = {}
+    for carrera in sesion.scalars(select(Carrera).where(Carrera.familia_id.in_(ids_familias)).order_by(
+            Carrera.busqueda, Carrera.codigo)):
+        carreras.setdefault(carrera.familia_id, []).append(carrera)
+    return carreras
+
+
+def _tipos(carreras: list[Carrera]) -> list[TipoInstitucion]:
+    return [t for t in TipoInstitucion if any(c.tipo == t for c in carreras)]
 
 
 @usar_contexto
 def detalle_ocupacion(sesion: Session, cuenta: Cuenta, codigo: str) -> OcupacionDetalle:
+    """Cómo se llega a la ocupación: su familia principal (con un programa de ejemplo), las secundarias con los
+    programas de referencia que caen en ellas y las otras ocupaciones de su familia (ajuste resultados-intereses)."""
     exigir_catalogo(sesion, cuenta)
     favoritos = contexto(sesion).favoritos_de(cuenta.id)
     ocupacion = sesion.scalar(select(Ocupacion).where(Ocupacion.codigo == codigo).options(
-        selectinload(Ocupacion.carreras).selectinload(Carrera.familia)))
+        selectinload(Ocupacion.familia_principal)))
     if ocupacion is None:
         raise _no_encontrado('Ocupación')
     puntajes = dict(sesion.execute(select(Dimension.codigo, PuntajeOcupacion.valor).join(
@@ -276,13 +338,67 @@ def detalle_ocupacion(sesion: Session, cuenta: Cuenta, codigo: str) -> Ocupacion
         PuntajeOcupacion.ocupacion_id == ocupacion.id)).all())
     estilos = dict(sesion.execute(select(EstiloTrabajo.codigo, EstiloTrabajo.nombre).where(
         EstiloTrabajo.codigo.in_(ocupacion.estilos_trabajo))).all())
+    familias = list(sesion.scalars(select(FamiliaCarrera).join(OcupacionFamilia).where(
+        OcupacionFamilia.ocupacion_id == ocupacion.id).order_by(OcupacionFamilia.orden)))
+    carreras = _carreras_de_familias(sesion, [f.id for f in familias])
+    programas = set(ocupacion.programas_cine)
+    principal, secundarias = (familias[0], familias[1:]) if familias else (None, [])
+    ficha, ejemplo, otras, total_familia = None, None, [], 0
+    if principal is not None:
+        de_principal = carreras.get(principal.id, [])
+        ficha = FamiliaResumida(**familia_publica(principal).model_dump(), descripcion=principal.descripcion,
+                                tipos=_tipos(de_principal), total_carreras=len(de_principal))
+        ejemplo = next((ProgramaEjemplo(codigo=c.codigo, nombre=c.nombre, tipo=c.tipo, duracion=c.duracion)
+                        for cine in ocupacion.programas_cine for c in de_principal if c.codigo_cine == cine), None)
+        otras = [OcupacionEnlace(codigo=c, titulo=t) for c, t in sesion.execute(
+            select(Ocupacion.codigo, Ocupacion.titulo).join(OcupacionFamilia).where(
+                OcupacionFamilia.familia_id == principal.id, OcupacionFamilia.es_principal, Ocupacion.en_catalogo,
+                Ocupacion.id != ocupacion.id).order_by(Ocupacion.busqueda, Ocupacion.codigo))]
+        total_familia = sesion.scalar(select(func.count()).select_from(OcupacionFamilia).join(Ocupacion).where(
+            OcupacionFamilia.familia_id == principal.id, Ocupacion.en_catalogo))
+    afinidades, _ = _afinidades(sesion, cuenta)
     return OcupacionDetalle(
-        **resumen_ocupacion(ocupacion, favoritos).model_dump(), descripcion=ocupacion.descripcion,
+        **resumen_ocupacion(ocupacion, favoritos).model_dump(exclude={'familia_principal'}),
+        descripcion=ocupacion.descripcion,
         tambien_llamado=ocupacion.tambien_llamado, job_zone=ocupacion.job_zone, tareas=ocupacion.tareas,
         personalidad=ocupacion.personalidad, conocimientos=ocupacion.conocimientos, aptitudes=ocupacion.aptitudes,
         estilos_trabajo=[EstiloPublico(codigo=c, nombre=estilos[c]) for c in ocupacion.estilos_trabajo],
         puntajes={d: puntaje_visual(puntajes[d], PUNTAJE_OCUPACION_MINIMO, PUNTAJE_OCUPACION_MAXIMO) for d in LETRAS_RIASEC if d in puntajes},
-        carreras=[resumen_carrera(c, favoritos) for c in ocupacion.carreras])
+        familia_principal=ficha, programa_ejemplo=ejemplo,
+        familias_secundarias=[FamiliaSecundaria(
+            codigo=f.codigo, nombre=f.nombre, total_carreras=len(carreras.get(f.id, [])),
+            programas=list(dict.fromkeys(c.nombre for c in carreras.get(f.id, []) if c.codigo_cine in programas)))
+            for f in secundarias],
+        otras_ocupaciones_de_la_familia=otras, total_ocupaciones_familia=total_familia,
+        afinidad=afinidades.get(ocupacion.codigo))
+
+
+@usar_contexto
+def ficha_familia(sesion: Session, cuenta: Cuenta, codigo: str) -> FamiliaFicha:
+    """La familia elegida en el catálogo de carreras (ajuste resultados-intereses)."""
+    exigir_catalogo(sesion, cuenta)
+    familia = sesion.scalar(select(FamiliaCarrera).where(FamiliaCarrera.codigo == codigo))
+    if familia is None:
+        raise _no_encontrado('Familia')
+    por_tipo = dict(sesion.execute(select(Carrera.tipo, func.count()).where(Carrera.familia_id == familia.id)
+                                   .group_by(Carrera.tipo)).all())
+    vias = dict(sesion.execute(select(OcupacionFamilia.es_principal, func.count()).join(Ocupacion).where(
+        OcupacionFamilia.familia_id == familia.id, Ocupacion.en_catalogo).group_by(OcupacionFamilia.es_principal)).all())
+    ingresos = sesion.execute(select(IngresoFamilia.tipo, IngresoFamilia.promedio_jovenes).where(
+        IngresoFamilia.familia_id == familia.id, IngresoFamilia.ubicacion_id.is_(None))).all()
+    vecinas = sesion.scalars(select(FamiliaCarrera).where(
+        FamiliaCarrera.area_codigo == familia.area_codigo, FamiliaCarrera.id != familia.id,
+        FamiliaCarrera.id.in_(select(Carrera.familia_id))))
+    _, recomendadas = _afinidades(sesion, cuenta)
+    return FamiliaFicha(
+        **familia_publica(familia).model_dump(), descripcion=familia.descripcion,
+        carreras_por_tipo={t: por_tipo[t] for t in TipoInstitucion if t in por_tipo},
+        total_carreras=sum(por_tipo.values()), ocupaciones_principales=vias.get(True, 0),
+        ocupaciones_secundarias=vias.get(False, 0),
+        ingresos=[IngresoJovenes(tipo=t, promedio_jovenes=p) for t, p in sorted(
+            ingresos, key=lambda fila: list(TipoInstitucion).index(fila[0]))],
+        vecinas=[familia_publica(f) for f in sorted(vecinas, key=lambda f: (sin_tildes(f.nombre), f.codigo))],
+        recomendada_posicion=recomendadas.get(familia.codigo))
 
 
 @usar_contexto
@@ -342,15 +458,6 @@ def listar_ubicaciones(sesion: Session, cuenta: Cuenta) -> list[UbicacionPublica
     ubicaciones = sesion.scalars(select(Ubicacion).where(Ubicacion.id.in_(select(Institucion.ubicacion_id))))
     return [UbicacionPublica(codigo=u.codigo, nombre=u.nombre)
             for u in sorted(ubicaciones, key=lambda u: (sin_tildes(u.nombre), u.codigo))]
-
-
-@usar_contexto
-def listar_grupos(sesion: Session, cuenta: Cuenta) -> list[GrupoPublico]:
-    """Solo los grupos con ocupaciones, por nombre."""
-    exigir_catalogo(sesion, cuenta)
-    grupos = sesion.scalars(select(GrupoOcupacional).where(GrupoOcupacional.codigo.in_(
-        select(Ocupacion.grupo).where(Ocupacion.en_catalogo))))
-    return [GrupoPublico(codigo=g.codigo, nombre=g.nombre) for g in sorted(grupos, key=lambda g: sin_tildes(g.nombre))]
 
 
 # --- Lugar inesperado (HU-042, F06) ---------------------------------------------------------

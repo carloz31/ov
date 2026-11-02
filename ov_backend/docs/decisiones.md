@@ -17,3 +17,9 @@
 - F2 · Bajar de 0042 se detiene si algún resultado tiene más de 10 coincidencias; con 10 o menos se recalcula `ajuste` con los umbrales O*NET.
 - F2 · `por_area` se ordena por la primera aparición de cada área en la lista de ocupaciones; «Sin familia» va al final con `area_codigo` nulo.
 - F2 · Las opciones de la referencia COINCIDENCIAS pasan a ser las ocupaciones afines mostradas (de 10 a 30).
+- F3 · Migración 0043 retira `carrera_ocupacion` (al bajar vuelve vacía); carreras y ocupaciones se relacionan solo por familia. Se retiran `OCUPACIONES_CARRERA` de la ruta y el sorteo provisional.
+- F3 · La ficha de familia vive en `GET /cuentas/{c}/catalogo/familias/{codigo}`, junto al resto del catálogo, que siempre lleva cuenta. El listado `familias` no gana `descripcion`: la da la ficha.
+- F3 · Se retira `GET …/catalogo/grupos` junto con el filtro `grupo`; el grupo sigue en el resumen para el ícono.
+- F3 · `ingresos` de la ficha es el promedio nacional de jóvenes por tipo de institución (no se mezclan tipos); el front elige cómo mostrarlo.
+- F3 · El detalle de carrera ya no marca `es_favorita` en sus ocupaciones (la relación por familia trae resúmenes livianos con `afinidad`); se adapta la línea de `test_favoritos` que lo leía.
+- F3 · `programa_ejemplo` es la primera carrera (por nombre) de la familia principal cuyo `codigo_cine` aparece en `programas_cine`, en el orden de la curaduría.

@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 95
+    assert len(Base.metadata.tables) == 94
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -186,10 +186,10 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
                            # 0005 retira actividad_item_registro; sus filas pasan a item_registro. 0016 cambia
                            # `pregunta_id` de entrada_diario por `recomendacion_id` (aquí sin filas). 0018 cambia
                            # las columnas de las conversaciones (aquí sin filas). 0040 retira el porcentaje de
-                           # resultado_dimension (aquí sin filas). 0042 retira el ajuste de coincidencia (aquí sin filas).
+                           # resultado_dimension (aquí sin filas). 0042 retira el ajuste de coincidencia y 0043 retira carrera_ocupacion (aquí sin filas).
                            if nombre not in {'alembic_version', 'actividad_item_registro', 'entrada_diario',
                                              'conversacion', 'conversacion_vinculo', 'resultado_dimension',
-                                             'coincidencia'}}
+                                             'coincidencia', 'carrera_ocupacion'}}
         command.upgrade(configuracion, 'head')
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == (
@@ -311,7 +311,9 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # curado con familias de ocupaciones.
         with pytest.raises(RuntimeError, match='existen familias de ocupaciones'):
             command.downgrade(configuracion, '0002')
-        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
+        # 0043 baja y deja `carrera_ocupacion` vacía, antes de que 0041 se detenga.
+        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version',
+                                                                                      'carrera_ocupacion'}
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0041'
             for tabla in Base.metadata.sorted_tables:

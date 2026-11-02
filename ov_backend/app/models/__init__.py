@@ -40,7 +40,7 @@ _MODELOS_POR_MODULO = {
     'app.models.instrumentos': (
         'Instrumento', 'Dimension', 'EscalaRespuesta', 'OpcionEscala', 'ItemInstrumento',
         'ActividadItem', 'Aplicacion', 'AplicacionActividad', 'Ocupacion', 'PuntajeOcupacion',
-        'CarreraOcupacion', 'RespuestaItem', 'ResultadoInstrumento', 'ResultadoDimension',
+        'RespuestaItem', 'ResultadoInstrumento', 'ResultadoDimension',
         'Coincidencia',
     ),
     'app.models.registro': (
@@ -85,7 +85,7 @@ __all__ = [
     'EntrevistaAutor', 'ConversacionVinculo', 'EventoUso', 'ReglaDesbloqueo',
     'CondicionDesbloqueo', 'Desbloqueo', 'Instrumento', 'Dimension', 'EscalaRespuesta',
     'OpcionEscala', 'ItemInstrumento', 'ActividadItem', 'Aplicacion', 'AplicacionActividad',
-    'Ocupacion', 'PuntajeOcupacion', 'CarreraOcupacion', 'RespuestaItem', 'ResultadoInstrumento',
+    'Ocupacion', 'PuntajeOcupacion', 'RespuestaItem', 'ResultadoInstrumento',
     'ResultadoDimension', 'Coincidencia', 'ListaOpciones', 'OpcionLista', 'ItemRegistro',
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',

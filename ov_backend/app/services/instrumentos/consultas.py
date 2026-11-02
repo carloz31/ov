@@ -430,3 +430,19 @@ def comparacion_autopercepcion(sesion: Session, cuenta: Cuenta, instrumento: Ins
                                    llegada=llegada[i.codigo], cambio=partida[i.codigo] != llegada[i.codigo])
                    for i in items if i.dimension_id == d.id])
             for d in dimensiones])
+
+
+@usar_contexto
+def resultado_intereses(sesion: Session, cuenta: Cuenta) -> ResultadoPublico | None:
+    """El resultado vigente de intereses (COINCIDENCIAS) del estudiante, si lo tiene y no es perfil plano; el
+    catálogo lo usa para marcar afinidades y familias recomendadas."""
+    if cuenta.rol != Rol.ESTUDIANTE:
+        return None
+    definiciones = contexto(sesion).definiciones
+    instrumentos = {i.id for i in definiciones.listar(Instrumento) if i.tipo_resultado == TipoResultado.COINCIDENCIAS}
+    aplicaciones = [a.id for a in definiciones.listar(Aplicacion) if a.instrumento_id in instrumentos]
+    resultado = sesion.scalar(select(ResultadoInstrumento).where(
+        ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.aplicacion_id.in_(aplicaciones),
+        ResultadoInstrumento.anulado_en.is_(None), ResultadoInstrumento.perfil_plano.is_(False),
+    ).order_by(ResultadoInstrumento.calculado_en.desc()).limit(1))
+    return None if resultado is None else representar_resultado(sesion, resultado)

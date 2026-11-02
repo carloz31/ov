@@ -8,7 +8,7 @@ La transacción pertenece al llamador; este módulo no confirma ni migra.
 from functools import cache
 
 from argon2 import PasswordHasher
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models as modelos
@@ -203,16 +203,6 @@ DURACIONES_CICLOS = (('t-privada', 'environmental-engineering', 11),)
 # recomendadas, sugerencias) sigan demostrándose.
 TIPOS_CARRERA = (('environmental-engineering', 'IR'), ('journalism', 'AES'), ('nursing', 'S'),
                  ('civil-engineering', 'RI'), ('psychology', 'SIA'), ('veterinary-medicine', 'IRS'))
-
-# DATO DE PRUEBA: (carrera, ocupaciones). Para estas carreras reemplazan la relación provisional al azar.
-OCUPACIONES_CARRERA = (
-    ('environmental-engineering', ('environmental-engineer', 'agricultural-engineer', 'geologist', 'data-analyst')),
-    ('journalism', ('journalist', 'documentary-filmmaker', 'photographer', 'community-manager', 'translator')),
-    ('nursing', ('nurse', 'paramedic')),
-    ('civil-engineering', ('civil-engineer', 'architect', 'urban-planner', 'geologist', 'machinery-operator')),
-    ('veterinary-medicine', ('veterinarian', 'agricultural-engineer', 'biologist')),
-    ('psychology', ('psychologist', 'teacher', 'sociologist', 'social-worker')),
-)
 
 # Listas propias de una actividad: (código, nombre, ((código, texto), ...)).
 LISTAS = (('t-lista-apoyos', 'Quién te apoya', (('FAMILIA', 'Mi familia'), ('DOCENTES', 'Mis docentes'),
@@ -1020,7 +1010,6 @@ def _cargar_catalogo(sesion):
     _codigos(sesion, modelos.Ubicacion, UBICACIONES_RUTA)
     carreras = _codigos(sesion, modelos.Carrera, CARRERAS_RUTA)
     instituciones = _codigos(sesion, modelos.Institucion, INSTITUCIONES_RUTA)
-    ocupaciones = dict(sesion.execute(select(modelos.Ocupacion.codigo, modelos.Ocupacion.id)).all())
     for i, c, ciclos in DURACIONES_CICLOS:
         oferta = sesion.get(modelos.InstitucionCarrera, (instituciones[i], carreras[c]))
         if oferta is None:
@@ -1037,13 +1026,6 @@ def _cargar_catalogo(sesion):
         sesion.get(modelos.Carrera, carreras[c]).codigo_riasec = letras
         sesion.add_all(modelos.TipoCarrera(carrera_id=carreras[c], posicion=p, dimension_id=dimensiones[letra])
                        for p, letra in enumerate(letras, start=1))
-    faltantes = sorted({o for _, relaciones in OCUPACIONES_CARRERA for o in relaciones} - set(ocupaciones))
-    if faltantes:
-        raise ValueError(f'Ocupaciones de la ruta que no existen: {", ".join(faltantes)}')
-    sesion.execute(delete(modelos.CarreraOcupacion).where(
-        modelos.CarreraOcupacion.carrera_id.in_([carreras[c] for c, _ in OCUPACIONES_CARRERA])))
-    sesion.add_all(modelos.CarreraOcupacion(carrera_id=carreras[c], ocupacion_id=ocupaciones[o])
-                   for c, relaciones in OCUPACIONES_CARRERA for o in relaciones)
 
 
 def cargar(sesion: Session) -> None:

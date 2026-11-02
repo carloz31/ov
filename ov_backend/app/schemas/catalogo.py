@@ -1,20 +1,29 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 from app.models.enums import GestionInstitucion, TipoInstitucion
 
 
 class FamiliaPublica(BaseModel):
-    """Campo detallado CINE; el área es su campo de educación."""
+    """Campo detallado CINE; el área es su campo específico (2 cifras)."""
     codigo: str
     nombre: str
     area_codigo: str
     area_nombre: str
 
 
-class GrupoPublico(BaseModel):
-    """Grupo mayor O*NET (2 cifras)."""
-    codigo: str
-    nombre: str
+class FamiliaResumida(FamiliaPublica):
+    """La familia en una tarjeta: su descripción, los tipos con carreras y cuántas tiene."""
+    descripcion: str | None
+    tipos: list[TipoInstitucion]
+    total_carreras: int
+
+
+class Afinidad(BaseModel):
+    """Solo para el estudiante y solo si la ocupación está entre sus afines (ajuste resultados-intereses)."""
+    parecido: int
+    banda: Literal["MUY_AFIN", "AFIN", "CERCANA"]
 
 
 class EstiloPublico(BaseModel):
@@ -45,7 +54,11 @@ class OcupacionResumen(BaseModel):
     resumen: str | None
     grupo: str
     riasec: list[str]
-    """De 1 a 3 letras (high points), en orden de posición."""
+    """De 0 a 3 letras (high points), en orden de posición; las militares no tienen."""
+    familia_principal: FamiliaPublica | None
+    """Su área es la de la ocupación; nula si la curaduría no le da familia."""
+    via_familia: Literal["PRINCIPAL", "SECUNDARIA"] | None = None
+    """Solo al filtrar por familia: si la tiene como principal o como secundaria."""
     es_favorita: bool
 
 
@@ -101,12 +114,25 @@ class CarrerasParecidas(BaseModel):
     """Hasta 3, por nombre."""
 
 
+class OcupacionDeFamilia(BaseModel):
+    codigo: str
+    titulo: str
+    riasec: list[str]
+    afinidad: Afinidad | None
+
+
+class OcupacionesDeLaFamilia(BaseModel):
+    """Ocupaciones del catálogo a las que lleva la familia de la carrera: como principal y como secundaria."""
+    principales: list[OcupacionDeFamilia]
+    secundarias: list[OcupacionDeFamilia]
+
+
 class CarreraDetalle(CarreraResumen):
     descripcion: str | None
     nombre_cine: str | None
     """Nombre del programa CINE, solo si difiere del de la carrera."""
     ambito_laboral: list[str]
-    ocupaciones: list[OcupacionResumen]
+    ocupaciones_de_la_familia: OcupacionesDeLaFamilia
     instituciones: list[InstitucionEnCarrera]
     ingreso: IngresoCarreraPublico | None
     parecidas: CarrerasParecidas
@@ -124,7 +150,55 @@ class OcupacionDetalle(OcupacionResumen):
     aptitudes: list[str]
     puntajes: dict[str, int]
     """Cada dimensión RIASEC de 0 a 100."""
-    carreras: list[CarreraResumen]
+    familia_principal: FamiliaResumida | None
+    programa_ejemplo: "ProgramaEjemplo | None"
+    """Una carrera de la familia principal con un programa de referencia de la ocupación."""
+    familias_secundarias: list["FamiliaSecundaria"]
+    otras_ocupaciones_de_la_familia: list["OcupacionEnlace"]
+    """Las demás con la misma familia principal, por título."""
+    total_ocupaciones_familia: int
+    """Las que llegan a la familia principal, como principal o secundaria (el filtro del catálogo)."""
+    afinidad: Afinidad | None
+
+
+class ProgramaEjemplo(BaseModel):
+    codigo: str
+    nombre: str
+    tipo: TipoInstitucion
+    duracion: str | None
+
+
+class FamiliaSecundaria(BaseModel):
+    codigo: str
+    nombre: str
+    total_carreras: int
+    programas: list[str]
+    """Nombres de las carreras de la familia con un programa de referencia de la ocupación."""
+
+
+class OcupacionEnlace(BaseModel):
+    codigo: str
+    titulo: str
+
+
+class IngresoJovenes(BaseModel):
+    tipo: TipoInstitucion
+    promedio_jovenes: int
+
+
+class FamiliaFicha(FamiliaPublica):
+    """La ficha de la familia en el catálogo de carreras (ajuste resultados-intereses)."""
+    descripcion: str | None
+    carreras_por_tipo: dict[TipoInstitucion, int]
+    total_carreras: int
+    ocupaciones_principales: int
+    ocupaciones_secundarias: int
+    ingresos: list[IngresoJovenes]
+    """Promedio nacional de los egresados jóvenes por tipo de institución."""
+    vecinas: list[FamiliaPublica]
+    """Las demás familias del área con carreras, por nombre."""
+    recomendada_posicion: int | None
+    """Solo el estudiante: su posición (1–5) entre las familias recomendadas por su test."""
 
 
 class InstitucionDetalle(InstitucionResumen):
@@ -160,3 +234,7 @@ class Inesperada(BaseModel):
     """Nulo solo si el catálogo no tiene otra que la actual."""
     revisitando: bool
     """La cuenta ya las vio todas: se elige una ya vista."""
+
+
+# Los tipos de la ficha de ocupación se declaran después de ella.
+OcupacionDetalle.model_rebuild()

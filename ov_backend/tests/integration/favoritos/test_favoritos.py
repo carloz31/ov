@@ -58,7 +58,6 @@ def test_hu040_marcar_consultar_y_desmarcar(abierto):
     assert [c for c, marcada in carreras.items() if marcada] == [ENFERMERIA, PSICOLOGIA]
     detalle = pedir(abierto, 'GET', f'/cuentas/est-ana/catalogo/carreras/{PSICOLOGIA}')
     assert detalle['es_favorita'] is True
-    assert {o['codigo']: o['es_favorita'] for o in detalle['ocupaciones']}['psychologist'] is True
     assert {i['codigo']: i['es_favorita'] for i in detalle['instituciones']}[INST_UNI] is True
 
     desmarcado = pedir(abierto, 'POST', '/acciones/desmarcar-favorito', favorito('CARRERA', ENFERMERIA))

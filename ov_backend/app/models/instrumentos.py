@@ -143,8 +143,11 @@ class Ocupacion(Base):
     codigo_riasec: Mapped[str | None] = mapped_column(default=None)
     # Título y nombres alternativos sin tildes; el cargador la llena con ambos.
     busqueda: Mapped[str] = mapped_column(default=busqueda_de("titulo"))
-    carreras: Mapped[list["Carrera"]] = relationship(
-        secondary="carrera_ocupacion", viewonly=True, lazy="raise", order_by="Carrera.codigo")
+    # Familia principal de la curaduría (`ocupacion_familia`, `es_principal`); nula en las que no tienen familia.
+    familia_principal: Mapped["FamiliaCarrera | None"] = relationship(
+        "FamiliaCarrera", secondary="ocupacion_familia", viewonly=True, lazy="raise", uselist=False,
+        primaryjoin="Ocupacion.id == OcupacionFamilia.ocupacion_id",
+        secondaryjoin="and_(FamiliaCarrera.id == OcupacionFamilia.familia_id, OcupacionFamilia.es_principal)")
 
 
 class PuntajeOcupacion(Base):
@@ -152,12 +155,6 @@ class PuntajeOcupacion(Base):
     ocupacion_id: Mapped[int] = mapped_column(ForeignKey("ocupacion.id"), primary_key=True)
     dimension_id: Mapped[int] = mapped_column(ForeignKey("dimension.id"), primary_key=True)
     valor: Mapped[float]
-
-
-class CarreraOcupacion(Base):
-    __tablename__ = "carrera_ocupacion"
-    carrera_id: Mapped[int] = mapped_column(ForeignKey("carrera.id"), primary_key=True)
-    ocupacion_id: Mapped[int] = mapped_column(ForeignKey("ocupacion.id"), primary_key=True)
 
 
 class RespuestaItem(Base):

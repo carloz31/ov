@@ -19,7 +19,6 @@ Cuestionarios repartidos en actividades, cálculo de resultados y recomendación
 | `familia_carrera` | Campo detallado CINE (`codigo` de 3 cifras) con su área (`area_codigo`, `area_nombre`: el campo específico, 2 cifras) y `descripcion`. |
 | `ocupacion_familia` | Familias que llevan a una ocupación (`ocupacion_familia_v2.csv`): una principal (`orden` 0, `es_principal`) y hasta dos secundarias. Joyero y Tripulante de cabina no tienen familia. |
 | `carrera`, `tipo_carrera` | Carrera de Ponte en Carrera (`mtpe-<id>`) con `tipo` (universidad, instituto o FF. AA. y Policía), familia, `codigo_cine`, `nombre_cine` (solo si difiere), `descripcion`, `duracion`, `ambito_laboral` (líneas), `codigo_riasec` y `busqueda`; de 0 a 3 letras RIASEC cargadas por carrera, con la misma estructura que `high_point`. |
-| `carrera_ocupacion` | Ocupaciones a las que conduce cada carrera. **Provisional**: de 3 a 5 al azar con semilla fija (sin las carreras de FF. AA.), salvo las 6 carreras de la ruta, que tienen las suyas, hasta el archivo real de emparejamiento. |
 | `ubicacion`, `institucion`, `institucion_carrera` | Instituciones (`tipo` UNIVERSIDAD, INSTITUTO o FFAA_POLICIA, ubicación, página web) y las carreras que ofrecen. |
 | `favorito` | Estado: carrera, ocupación o institución (`tipo` + `id_referencia`) que marca la cuenta, única por cuenta, tipo y referencia. |
 | `ingreso_familia` | Ingreso mensual de los egresados por tipo de institución × familia × departamento (`ubicacion_id` nulo = nacional): promedio, mínimo y máximo de jóvenes y de adultos. |
@@ -114,19 +113,20 @@ Código: `app/services/catalogo.py`. Se lee de la base, no de la caché, con `se
 
 | Ruta | Respuesta |
 |---|---|
-| `carreras?buscar=&tipo=&area=&familia=&riasec=` | Página de `{codigo, nombre, tipo, familia{codigo, nombre, area_codigo, area_nombre}, riasec[0–3]}`, por nombre |
-| `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `nombre_cine`, `ambito_laboral[]`, `ocupaciones[]`, `instituciones[]` (cada una con `ingreso`: el `Tramo` de esa institución en la familia, o `null`, y `duracion_ciclos` de la carrera en ella, o `null`; F07b), `ingreso{fuente, nacional, departamentos[]}` (o `null` sin fila nacional; cada fila con `ubicacion` y `Tramo` de `jovenes` y `adultos`) y `parecidas{total, carreras[≤3]}` (misma familia y tipo) |
-| `ocupaciones?buscar=&grupo=&riasec=` | Página de `{codigo, codigo_onet, titulo, resumen, grupo, riasec[1–3]}`, por título |
-| `ocupaciones/{codigo}` | Lo anterior más `descripcion`, `tambien_llamado[]`, `job_zone`, `tareas[]`, `personalidad`, `estilos_trabajo[{codigo, nombre}]`, `conocimientos[]`, `aptitudes[]`, `puntajes{R…C: 0–100}` (enteros, con `puntaje_visual` sobre 1–7) y `carreras[]` |
+| `carreras?buscar=&tipo=&area=&familia=&riasec=` | Página de `{codigo, nombre, tipo, familia{codigo, nombre, area_codigo, area_nombre}, riasec[0–3]}`, por nombre. `area` es el campo específico (2 cifras). |
+| `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `nombre_cine`, `ambito_laboral[]`, `ocupaciones_de_la_familia{principales[], secundarias[]}` (las del catálogo con la familia de la carrera como principal o secundaria, por título, con `riasec` y, para el estudiante, `afinidad{parecido, banda}` si es una de sus afines), `instituciones[]` (cada una con `ingreso`: el `Tramo` de esa institución en la familia, o `null`, y `duracion_ciclos` de la carrera en ella, o `null`; F07b), `ingreso{fuente, nacional, departamentos[]}` (o `null` sin fila nacional; cada fila con `ubicacion` y `Tramo` de `jovenes` y `adultos`) y `parecidas{total, carreras[≤3]}` (misma familia y tipo) |
+| `ocupaciones?buscar=&area=&familia=&riasec=` | Solo las `en_catalogo`. Página de `{codigo, codigo_onet, titulo, resumen, grupo, riasec[0–3], familia_principal, via_familia}`, por título. `area` es la de su familia principal; `familia` trae las que la tienen como principal o secundaria, primero las principales, con `via_familia` PRINCIPAL o SECUNDARIA (nulo sin ese filtro). |
+| `ocupaciones/{codigo}` | Lo anterior más `descripcion`, `tambien_llamado[]`, `job_zone`, `tareas[]`, `personalidad`, `estilos_trabajo[{codigo, nombre}]`, `conocimientos[]`, `aptitudes[]`, `puntajes{R…C: 0–100}` (enteros, con `puntaje_visual` sobre 1–7), `familia_principal` (con `descripcion`, `tipos` y `total_carreras`), `programa_ejemplo` (la primera carrera de la familia principal con un `programas_cine` de la ocupación), `familias_secundarias[{codigo, nombre, total_carreras, programas[]}]`, `otras_ocupaciones_de_la_familia[]`, `total_ocupaciones_familia` y, para el estudiante, `afinidad` |
+| `familias/{codigo}` | Ficha de la familia: área, `descripcion`, `carreras_por_tipo`, `total_carreras`, `ocupaciones_principales` y `ocupaciones_secundarias` (del catálogo), `ingresos[{tipo, promedio_jovenes}]` (nacional), `vecinas[]` (otras familias del área con carreras) y `recomendada_posicion` (1–5 si está entre las familias recomendadas del estudiante; nula para otras cuentas) |
 | `instituciones?buscar=&tipo=&gestion=&ubicacion=` | Página de `{codigo, nombre, tipo, gestion, ubicacion{codigo, nombre}, distrito}`, por nombre |
 | `instituciones/{codigo}` | Lo anterior más `descripcion` (nula), `direccion`, `pagina_web` y `carreras[]` (cada una con `ingreso` de la institución en su familia, o `null`) |
-| `familias`, `ubicaciones`, `grupos` | Solo las familias con carreras (por área y nombre), los departamentos con instituciones y los grupos con ocupaciones (por nombre) |
+| `familias`, `ubicaciones` | Solo las familias con carreras (por área y nombre) y los departamentos con instituciones |
 
 - `buscar`: subcadena sobre `busqueda`, sin mayúsculas ni tildes; `%`, `_` y `\` se buscan literalmente.
 - `riasec`: de 1 a 3 letras distintas (acepta minúsculas). Coincide si `codigo_riasec` las contiene seguidas y en ese orden: `RI` encuentra RI, RIS y ARI, pero no IR ni RSI. Una letra inválida, repetida o más de 3 → 422, y lo que no tiene código no coincide nunca.
 - Cada resumen trae `es_favorita`.
 - Cada página trae `total` (lo filtrado) y `total_dominio` (todo el catálogo).
-- `familia`, `area`, `grupo` y `ubicacion` filtran por código; un `tipo` fuera de `TipoInstitucion` o una `gestion` fuera de `GestionInstitucion` → 422. Un código inexistente en el detalle → 404.
+- `familia`, `area` y `ubicacion` filtran por código; un `tipo` fuera de `TipoInstitucion` o una `gestion` fuera de `GestionInstitucion` → 422. Un código inexistente en el detalle → 404.
 - Los ingresos son de la familia y el tipo (o de la institución en la familia), no de la carrera exacta; la fuente es `FUENTE_INGRESOS`.
 
 ## Favoritos (HU-040)

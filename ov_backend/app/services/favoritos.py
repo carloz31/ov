@@ -86,7 +86,8 @@ def listar_favoritos(sesion: Session, cuenta: Cuenta) -> FavoritosCuenta:
         orden.setdefault(tipo, []).append(referencia)
     favoritos = {(tipo, referencia) for tipo, referencias in orden.items() for referencia in referencias}
     opciones = {TipoFavorito.CARRERA: (selectinload(Carrera.familia),),
-                TipoFavorito.INSTITUCION: (selectinload(Institucion.ubicacion),), TipoFavorito.OCUPACION: ()}
+                TipoFavorito.INSTITUCION: (selectinload(Institucion.ubicacion),),
+                TipoFavorito.OCUPACION: (selectinload(Ocupacion.familia_principal),)}
     entidades = {}
     for tipo, referencias in orden.items():
         modelo = CATALOGO[tipo]

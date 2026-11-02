@@ -7,7 +7,6 @@ La transacción pertenece al llamador; este módulo no confirma ni migra.
 import csv
 import json
 import logging
-import random
 import re
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -33,14 +32,9 @@ GESTIONES = {'público': modelos.GestionInstitucion.PUBLICA, 'pública': modelos
 # Departamentos: el 15 (Lima Metropolitana) se llama «Lima» porque `instituciones.csv` no distingue Lima
 # Metropolitana de Lima Provincias; el 26 (Lima Provincias) solo tiene ingresos.
 LIMA, LIMA_PROVINCIAS, NACIONAL = '15', '26', '0'
-# Campos CINE de las Fuerzas Armadas: sin ocupaciones provisionales.
-CAMPOS_SIN_OCUPACIONES = ('011', '012')
 CONECTORES = {'a', 'al', 'de', 'del', 'e', 'el', 'en', 'la', 'las', 'los', 'o', 'u', 'y', 'con', 'para', 'por'}
 SIGLAS = {'PNP', 'FAP'}
 TOPE_RESUMEN = 140
-# Relación carrera–ocupación provisional: de 3 a 5 ocupaciones por carrera, sorteadas con esta semilla.
-SEMILLA_CARRERA_OCUPACION = 2026
-OCUPACIONES_POR_CARRERA = (3, 5)
 
 
 @dataclass(frozen=True)
@@ -630,27 +624,12 @@ def reportar(catalogo: CatalogoArchivo) -> dict[str, list]:
     }
 
 
-def _relacionar_provisional(sesion, catalogo, carreras, ocupaciones):
-    """Provisional hasta el emparejamiento real: de 3 a 5 ocupaciones al azar por carrera, reproducible
-    (semilla fija, sorteo sobre los códigos ordenados), sin las carreras de las Fuerzas Armadas."""
-    azar = random.Random(SEMILLA_CARRERA_OCUPACION)
-    codigos = sorted(ocupaciones)
-    filas = []
-    for carrera in sorted(catalogo.carreras, key=lambda c: f'mtpe-{c.id}'):
-        if carrera.familia in CAMPOS_SIN_OCUPACIONES:
-            continue
-        for codigo in azar.sample(codigos, azar.randint(*OCUPACIONES_POR_CARRERA)):
-            filas.append({'carrera_id': carreras[f'mtpe-{carrera.id}'], 'ocupacion_id': ocupaciones[codigo]})
-    sesion.execute(insert(modelos.CarreraOcupacion), filas)
-
-
 def cargar(sesion: Session, dimensiones: dict, slugs: dict[str, str], carpeta: Path | None = None) -> None:
     """Carga todo el catálogo. `dimensiones` son las del test RIASEC por letra; `slugs`, código O*NET → slug."""
     catalogo = leer_catalogo(carpeta, ocultas=frozenset(slugs))
     familias, carreras = _cargar_carreras(sesion, catalogo, dimensiones)
     _cargar_instituciones(sesion, catalogo, familias, carreras)
-    ocupaciones = _cargar_ocupaciones(sesion, catalogo, dimensiones, slugs)
+    _cargar_ocupaciones(sesion, catalogo, dimensiones, slugs)
     _relacionar_familias(sesion, catalogo, familias)
-    _relacionar_provisional(sesion, catalogo, carreras, ocupaciones)
     for clave, valor in reportar(catalogo).items():
         registro.info('Catálogo · %s: %s', clave, valor)

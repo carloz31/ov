@@ -27,7 +27,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # 706 instituciones con carreras) y la relación provisional al azar. Ajuste resultados-intereses: 250
         # ocupaciones (245 curadas y las 5 ocultas de casos y testimonios; 10 militares sin puntajes) y sus familias.
         'ocupacion': 250, 'puntaje_ocupacion': 1440, 'familia_carrera': 89, 'carrera': 603,
-        'carrera_ocupacion': 2233, 'ocupacion_familia': 341, 'lista_opciones': 13, 'opcion_lista': 69, 'item_registro': 14,
+        'ocupacion_familia': 341, 'lista_opciones': 13, 'opcion_lista': 69, 'item_registro': 14,
         'criterio_completitud': 12, 'referencia': 12, 'tematica': 5,
         'actividad_tematica': 6, 'actividad_dimension': 2, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 626, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,
@@ -35,7 +35,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6,
         # B13: catálogos de investigaciones.
         'pregunta_base_guion': 3, 'tipo_reaccion': 4}
-    assert len(Base.metadata.tables) == 95
+    assert len(Base.metadata.tables) == 94
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA', 'LUMI'}
