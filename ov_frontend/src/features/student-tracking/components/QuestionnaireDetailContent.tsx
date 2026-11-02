@@ -94,8 +94,11 @@ function ResultadoServidor({ resultado, nombre }: { resultado: ResultadoFamilia;
         <p>{resultado.descripcion}</p>
       </Panel>
       <Panel title="Cómo leer este resultado">
+        {/* Ajuste resultados-intereses: el encuadre y la lectura del instrumento para el apoderado. */}
+        {resultado.mensaje && <p className="font-semibold">{resultado.mensaje}</p>}
         <p className="text-muted-foreground">
-          {`Estos resultados son exploratorios. Sirven para conversar con ${nombre} sobre lo que le gusta y en lo que destaca, no para decidir qué debe estudiar.`}
+          {resultado.lectura ||
+            `Estos resultados son exploratorios. Sirven para conversar con ${nombre} sobre lo que le gusta y en lo que destaca, no para decidir qué debe estudiar.`}
         </p>
       </Panel>
       <Panel title="Resultado por dimensión">

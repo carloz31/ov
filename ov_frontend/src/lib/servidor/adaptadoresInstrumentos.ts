@@ -95,6 +95,12 @@ export type ResultadoFamilia = {
   perfilPlano: boolean
   protagonistas: { codigo: string; nombre: string }[]
   dimensiones: { codigo: string; nombre: string; descripcion: string }[]
+  // Ajuste resultados-intereses: los textos del apoderado (con el nombre del hijo ya puesto), cuándo se calculó y
+  // el resultado del servidor, que la vista de intereses muestra completo.
+  mensaje: string
+  lectura: string
+  calculadoEn: string
+  remoto: ResultadoPublico
 }
 export function resultadoFamilia(resultado: ResultadoPublico, catalogo: InstrumentoPublico[]): ResultadoFamilia {
   const instrumento = catalogo.find((i) => i.codigo === resultado.instrumento)
@@ -112,6 +118,10 @@ export function resultadoFamilia(resultado: ResultadoPublico, catalogo: Instrume
     perfilPlano: resultado.perfil_plano,
     protagonistas: protagonistas.map(({ codigo, nombre }) => ({ codigo, nombre })),
     dimensiones,
+    mensaje: resultado.mensaje,
+    lectura: resultado.lectura,
+    calculadoEn: resultado.calculado_en,
+    remoto: resultado,
   }
 }
 

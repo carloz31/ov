@@ -23,7 +23,13 @@ test('el adaptador usa el nombre del catálogo y el código de interés en su or
   assert.equal(vista.nombre, CATALOGO.find((i) => i.codigo === 'TEST-RIASEC').nombre)
   assert.deepEqual(copia(vista.protagonistas.map((d) => d.nombre)), ['Investigativa', 'Realista', 'Artística'])
   assert.equal(vista.dimensiones.length, 6)
-  assert.ok(!JSON.stringify(vista).includes('puntaje'))
+  // Ajuste resultados-intereses: el resumen no lleva puntajes; el resultado completo (`remoto`) sí, porque la
+  // vista de intereses del apoderado muestra las barras (boceto 02).
+  const { remoto } = vista
+  assert.ok(vista.dimensiones.every((d) => !('puntaje' in d || 'puntaje_visual' in d)))
+  assert.equal(remoto, RESULTADOS[0])
+  assert.match(vista.mensaje, /Ana/)
+  assert.ok(vista.lectura && !vista.lectura.includes('{nombre}'))
   const plano = resultadoFamilia({ ...RESULTADOS[0], perfil_plano: true, codigo_interes: null }, CATALOGO)
   assert.deepEqual(copia(plano.protagonistas), [])
 })
@@ -103,6 +109,28 @@ test('la explicada del apoderado muestra qué mide, el código de interés y cad
   assert.ok(marcado.includes(vista.descripcion))
   assert.match(marcado, /Investigativa · Realista · Artística/)
   for (const d of RESULTADOS[0].dimensiones) assert.ok(marcado.includes(d.descripcion))
+  // Ajuste resultados-intereses: «Cómo leer» trae el encuadre y la lectura del apoderado; sin valores numéricos.
   assert.match(marcado, /conversar con Ana/)
-  assert.doesNotMatch(marcado, /%|puntaje/)
+  assert.ok(marcado.includes(vista.lectura.slice(0, 40)))
+  assert.doesNotMatch(marcado, /\d+ ?%|puntaje_visual/)
+})
+
+// Ajuste resultados-intereses: el resultado de intereses del hijo en el portal (boceto 02).
+test('el apoderado ve su texto, el código, la tabla de ocupaciones afines y las familias, sin favoritos ni planes', () => {
+  const app = fixtureServidor()
+  const { ResultadoInteresesPortal } = app.load('src/features/discovery/components/ResultadoInteresesPortal.tsx')
+  const { appPaths } = app.load('src/routes/paths.ts')
+  const remoto = RESULTADOS[0]
+  const marcado = html(ResultadoInteresesPortal, { remoto, nombre: 'Ana', rutas: appPaths.parent.explorar })
+  assert.match(marcado, /Qué mide este test y cómo leerlo/)
+  assert.ok(marcado.includes(remoto.lectura.replace(/«/g, '&laquo;')) || marcado.includes('Muestra gusto, no capacidad'))
+  assert.match(marcado, /Su código de interés/)
+  assert.match(marcado, /Qué significa cada tipo/)
+  assert.equal((marcado.match(/Ver ficha/g) ?? []).length, 8)
+  assert.ok(marcado.includes(`Mostrar las ${remoto.ocupaciones.length - 8} restantes`))
+  assert.ok(marcado.includes(`href="/parent/explorar/professions/${remoto.ocupaciones[0].codigo}"`))
+  assert.equal((marcado.match(/Ver en el catálogo/g) ?? []).length, remoto.familias.length)
+  assert.match(marcado, /href="\/parent\/explorar\/careers\?area=\d{2}&amp;familia=\d{3}"/)
+  assert.match(marcado, /Para conversar en casa/)
+  assert.doesNotMatch(marcado, /Guardar|Hacer mi plan|Recomendada por tu test|favorit[ao]s? (?!ni)/)
 })

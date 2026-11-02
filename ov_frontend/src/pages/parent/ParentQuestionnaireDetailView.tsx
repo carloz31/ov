@@ -9,6 +9,9 @@ import { parentGuides } from '@/data/content/guideTexts'
 import { studentProfiles, questionnaires } from '@/data/demo/studentProfiles'
 import { displayDate } from '@/features/student-tracking/lib/selectors'
 import { QuestionnaireDetailContent } from '@/features/student-tracking/components/QuestionnaireDetailContent'
+import { ResultadoInteresesPortal } from '@/features/discovery/components/ResultadoInteresesPortal'
+import { fechaServidor } from '@/lib/servidor/fechas'
+import { appPaths } from '@/routes/paths'
 import { usePrioritySettings } from '@/features/counselor/hooks/usePrioritySettings'
 import { parentChildren } from '@/features/parent/data/parentPortal'
 import { useParentPortalContext } from '@/features/parent/context/parentPortalContext'
@@ -38,14 +41,22 @@ export function ParentQuestionnaireDetailView() {
   const application = student?.questionnaires.find((item) => item.questionnaireId === definition?.id)
   // Ajuste inicio-apoderado: en api, el hijo es el de la URL entre los vinculados.
   const hijoServidor = familia?.estudiantes.find((e) => e.codigo === childId) ?? null
-  const back = parentHomeUrl(familia ? (hijoServidor?.codigo ?? '') : (child?.id ?? parentChildren[0]?.id ?? ''))
+  const back = parentHomeUrl(
+    familia ? (hijoServidor?.codigo ?? '') : (child?.id ?? parentChildren[0]?.id ?? ''),
+  )
   // F03: en api, con el diploma, el resultado del hijo sale del servidor (de partida y llegada, el de llegada
   // si existe).
   const resultadosHijo = useResultadosHijo(familia, hijoServidor?.codigo)
   const resultadoServidor = resultadoDeInstrumento(resultadosHijo.resultados, questionnaireId)
+  // Ajuste resultados-intereses: el de intereses se muestra completo (boceto 02), con la fecha en la cabecera.
+  const intereses = resultadoServidor?.remoto.ocupaciones?.length ? resultadoServidor.remoto : null
   if (hijoServidor && resultadosHijo.habilitado && (!resultadosHijo.resultados || resultadoServidor))
     return (
-      <main ref={mainRef} className="min-w-0 space-y-6 break-words p-4 sm:p-6 lg:p-8" aria-busy={!resultadoServidor}>
+      <main
+        ref={mainRef}
+        className="min-w-0 space-y-6 break-words p-4 sm:p-6 lg:p-8"
+        aria-busy={!resultadoServidor}
+      >
         <Button asChild variant="link" className="min-h-11 px-0">
           <Link to={back}>
             <ArrowLeft aria-hidden />
@@ -65,9 +76,26 @@ export function ParentQuestionnaireDetailView() {
             <StaffEntityHeader
               title={resultadoServidor.nombre}
               initials={inicialesHijo(hijoServidor.nombre)}
-              details={<p>{hijoServidor.nombre}</p>}
+              details={
+                <p>
+                  {hijoServidor.nombre} · completado el{' '}
+                  {fechaServidor(resultadoServidor.calculadoEn).toLocaleDateString('es-PE', {
+                    day: 'numeric',
+                    month: 'long',
+                    timeZone: 'America/Lima',
+                  })}
+                </p>
+              }
             />
-            <QuestionnaireDetailContent servidor={resultadoServidor} nombre={hijoServidor.nombre} />
+            {intereses ? (
+              <ResultadoInteresesPortal
+                remoto={intereses}
+                nombre={hijoServidor.nombre.split(' ')[0]}
+                rutas={appPaths.parent.explorar}
+              />
+            ) : (
+              <QuestionnaireDetailContent servidor={resultadoServidor} nombre={hijoServidor.nombre} />
+            )}
           </>
         )}
         <GuideDialogue audience="parent" text={parentGuides.questionnaire} />
@@ -75,14 +103,7 @@ export function ParentQuestionnaireDetailView() {
     )
   // En api, sin diploma, el detalle solo muestra el aviso, con el nombre real del hijo.
   const hijo = familia ? hijoServidor?.nombre : student?.nombres
-  if (
-    familia ||
-    !child ||
-    !student ||
-    !definition ||
-    !route.complete ||
-    !completeFamilyResult(application)
-  ) {
+  if (familia || !child || !student || !definition || !route.complete || !completeFamilyResult(application)) {
     // F03: con el diploma, un cuestionario que el servidor no entrega ya no espera actividades.
     const locked = familia
       ? !!hijoServidor && !familia.diploma.obtenido

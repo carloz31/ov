@@ -31,3 +31,7 @@
 - F5 · La tarjeta del libro anuncia «N familias de carreras que llevan a ellas» en api, en lugar de las carreras recomendadas, que ya no existen.
 - F5 · En la vista «Por área» se muestran todas las ocupaciones (sin el recorte de 6), como pide la regla «agrupar sin recortar».
 - F5 · En la guía, la posición se nombra en masculino para los tipos de interés («Segundo») y en femenino para inteligencias y habilidades («Segunda»); el texto de «Suele notarse cuando» se muestra tal cual llega (continúa la frase del rótulo).
+- F6 · El resultado de intereses del apoderado (boceto 02) vive en `features/discovery` (`ResultadoInteresesPortal`, con `OcupacionesAfinesPortal` y `FamiliasPortal`) porque reutiliza la guía de dimensiones del estudiante; la vista del apoderado lo usa cuando el resultado trae ocupaciones afines. Los demás tests del apoderado siguen en `QuestionnaireDetailContent`, con `mensaje` y `lectura` del apoderado en «Cómo leer este resultado».
+- F6 · El encuadre (`mensaje`) del apoderado va en negrita al inicio de «Qué mide este test y cómo leerlo»; el resumen del código usa fragmentos en tercera persona (`fragmentosResumenTercera`).
+- F6 · El adaptador `resultadoFamilia` lleva el resultado completo (`remoto`): la vista de intereses del apoderado muestra barras con puntaje, como el boceto. Se adapta la prueba que exigía «sin puntajes» en todo el adaptador (ahora solo en sus dimensiones resumidas).
+- F6 · La vista del resultado de la orientadora queda para B14 (no tiene ruta en el backend); anotado en `pendientes-interfaz.md`.

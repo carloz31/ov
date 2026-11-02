@@ -1,0 +1,328 @@
+/* Ajuste resultados-intereses: el resultado de intereses en el portal del apoderado (boceto 02). Reutiliza la guía
+   de dimensiones del estudiante con colores del portal; fuera del estudiante no hay `.sx-root`, así que aquí se
+   definen las variables que usa. */
+.sx-d-result-page.sx-r-portal {
+  --sx-gold: var(--primary);
+  --sx-gold-deep: var(--primary);
+  --sx-night: var(--foreground);
+  --sx-night-raised: var(--card);
+  --sx-night-border: var(--border);
+  --sx-night-text: var(--foreground);
+  --sx-night-muted: var(--muted-foreground);
+  --result-gold: var(--primary);
+  --result-gold-text: var(--primary);
+  --result-paper: var(--card);
+  --result-ink: var(--foreground);
+  --result-muted: var(--muted-foreground);
+  --result-edge: var(--border);
+  max-width: none;
+  gap: 20px;
+  color: var(--foreground);
+
+  .sx-r-guia {
+    border: 1px solid var(--border);
+  }
+  .sx-p-panel {
+    display: grid;
+    gap: 14px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--card);
+  }
+  .sx-p-panel h2 {
+    font-size: 17px;
+    font-weight: 800;
+  }
+  .sx-p-panel > p,
+  .sx-p-cabecera p {
+    color: var(--muted-foreground);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .sx-p-panel > .sx-p-mensaje {
+    color: var(--foreground);
+    font-weight: 700;
+  }
+  .sx-p-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .sx-p-cabecera p {
+    max-width: 760px;
+    margin-top: 4px;
+    font-size: 13px;
+  }
+  .sx-p-enlace {
+    font-size: 14px;
+    color: var(--primary);
+    font-weight: 650;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  /* Código y barras */
+  .sx-p-codigo {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .sx-p-circulos {
+    display: flex;
+    gap: 14px;
+    margin: 14px 0;
+  }
+  .sx-p-circulos button {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .sx-p-circulo {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--dimension);
+    color: var(--foreground);
+    font-size: 24px;
+    font-weight: 800;
+  }
+  .sx-p-codigo > div > p {
+    color: var(--muted-foreground);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .sx-p-barras {
+    display: grid;
+    gap: 10px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sx-p-barras li {
+    display: grid;
+    grid-template-columns: minmax(90px, 0.6fr) 1.5fr 32px;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 650;
+  }
+  .sx-p-barras strong {
+    text-align: right;
+  }
+  .sx-p-pista {
+    height: 10px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--primary) 12%, var(--card));
+    overflow: hidden;
+  }
+  .sx-p-pista > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--primary) 45%, var(--card));
+  }
+  .sx-p-barras li[data-destacada] .sx-p-pista > span {
+    background: var(--primary);
+  }
+
+  /* Tabla de ocupaciones */
+  .sx-p-segmentos {
+    display: inline-flex;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 10px;
+    background: var(--muted);
+  }
+  .sx-p-segmentos button {
+    min-height: 36px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+  }
+  .sx-p-segmentos button[aria-pressed='true'] {
+    background: var(--card);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.1);
+  }
+  .sx-p-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .sx-p-tabla th,
+  .sx-p-tabla td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .sx-p-tabla thead th {
+    color: var(--muted-foreground);
+    font-size: 12px;
+    font-weight: 650;
+  }
+  .sx-p-tabla tbody th {
+    font-weight: 700;
+  }
+  .sx-p-tabla td:first-child {
+    color: var(--muted-foreground);
+  }
+  .sx-p-tabla td:last-child {
+    text-align: right;
+  }
+  .sx-p-tabla a {
+    color: var(--primary);
+    font-weight: 650;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .sx-p-banda {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .sx-p-banda[data-banda='MUY_AFIN'] {
+    background: color-mix(in srgb, var(--primary) 14%, var(--card));
+    color: var(--primary);
+  }
+  .sx-p-area h3 {
+    margin: 10px 0 4px;
+    font-size: 15px;
+    font-weight: 750;
+  }
+  .sx-p-pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .sx-p-pie small {
+    color: var(--muted-foreground);
+    font-size: 12px;
+  }
+  .sx-p-boton-borde {
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 1px solid var(--primary);
+    border-radius: 10px;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* Familias */
+  .sx-p-familias {
+    display: grid;
+    gap: 14px;
+  }
+  .sx-p-familia,
+  .sx-p-conversar {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .sx-p-familia h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 800;
+  }
+  .sx-p-familia > p {
+    color: var(--muted-foreground);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .sx-p-numero {
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 13px;
+  }
+  .sx-p-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .sx-p-chip {
+    display: inline-block;
+    padding: 2px 10px;
+    line-height: 1.5;
+    border-radius: 999px;
+    background: var(--muted);
+    color: var(--foreground);
+    font-size: 12px;
+    font-weight: 650;
+  }
+  .sx-p-chip[data-tipo='UNIVERSIDAD'] {
+    background: color-mix(in srgb, var(--primary) 12%, var(--card));
+  }
+  .sx-p-chip[data-tipo='INSTITUTO'] {
+    background: color-mix(in srgb, var(--success) 14%, var(--card));
+  }
+  .sx-p-conversar {
+    border: 1px dashed color-mix(in srgb, var(--foreground) 25%, transparent);
+    align-content: center;
+  }
+  .sx-p-conversar h3 {
+    font-size: 15px;
+    font-weight: 750;
+  }
+  .sx-p-conversar p {
+    color: var(--muted-foreground);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+@media (min-width: 768px) {
+  .sx-d-result-page.sx-r-portal {
+    .sx-p-codigo {
+      grid-template-columns: 1fr 1fr;
+    }
+    .sx-p-familias {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+@media (max-width: 767px) {
+  .sx-d-result-page.sx-r-portal {
+    .sx-p-tabla thead {
+      display: none;
+    }
+    .sx-p-tabla tr {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .sx-p-tabla th,
+    .sx-p-tabla td {
+      padding: 0;
+      border: 0;
+    }
+    .sx-p-tabla td:last-child {
+      text-align: left;
+    }
+  }
+}

@@ -44,3 +44,13 @@ export const fragmentosResumen: Record<string, string> = {
   E: 'lideras, convences u organizas proyectos',
   C: 'ordenas información y trabajas con datos de forma precisa',
 }
+
+// Ajuste resultados-intereses: los mismos fragmentos en tercera persona, para el resultado que ve el apoderado.
+export const fragmentosResumenTercera: Record<string, string> = {
+  R: 'trabaja con las manos, con herramientas o al aire libre',
+  I: 'investiga y busca entender cómo funcionan las cosas',
+  A: 'crea y se expresa con libertad',
+  S: 'ayuda, enseña o acompaña a otras personas',
+  E: 'lidera, convence u organiza proyectos',
+  C: 'ordena información y trabaja con datos de forma precisa',
+}
