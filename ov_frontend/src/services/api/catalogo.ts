@@ -2,6 +2,7 @@ import { obtener } from './cliente'
 import type {
   CarreraDetalle,
   CarreraResumen,
+  FamiliaFicha,
   FamiliaPublica,
   GrupoPublico,
   Inesperada,
@@ -24,7 +25,6 @@ export type FiltrosCatalogo = {
   riasec?: string
   gestion?: string
   ubicacion?: string
-  grupo?: string
   favoritos?: boolean
 }
 export type ResumenCatalogo = {
@@ -78,6 +78,11 @@ export function obtenerUbicaciones(cuenta: string): Promise<RespuestaServidor<Ub
 
 export function obtenerGrupos(cuenta: string): Promise<RespuestaServidor<GrupoPublico[]>> {
   return obtener(`${base(cuenta)}/grupos`)
+}
+
+// Ajuste resultados-intereses: la ficha de la familia elegida en el catálogo de carreras.
+export function obtenerFamilia(cuenta: string, codigo: string): Promise<RespuestaServidor<FamiliaFicha>> {
+  return obtener(`${base(cuenta)}/familias/${encodeURIComponent(codigo)}`)
 }
 
 export function obtenerInesperada(

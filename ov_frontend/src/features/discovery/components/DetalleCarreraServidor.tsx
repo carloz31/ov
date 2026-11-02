@@ -112,13 +112,14 @@ export function DetalleCarreraServidor({
               tipo={carrera.tipo}
             />
           )}
-          {carrera.ocupaciones.length > 0 && (
+          {carrera.ocupaciones_de_la_familia.principales.length > 0 && (
             <Parchment title="Profesiones a las que conduce">
               <p className="sx-c-conteo">
-                {carrera.ocupaciones.length} {carrera.ocupaciones.length === 1 ? 'profesión' : 'profesiones'}
+                {carrera.ocupaciones_de_la_familia.principales.length}{' '}
+                {carrera.ocupaciones_de_la_familia.principales.length === 1 ? 'profesión' : 'profesiones'}
               </p>
               <div className="sx-d-two">
-                {carrera.ocupaciones.map((o) => (
+                {carrera.ocupaciones_de_la_familia.principales.map((o) => (
                   <Link
                     className="sx-d-related sx-c-fila-enlace"
                     key={o.codigo}

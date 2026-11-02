@@ -120,7 +120,7 @@ Código: `app/services/catalogo.py`. Se lee de la base, no de la caché, con `se
 | `familias/{codigo}` | Ficha de la familia: área, `descripcion`, `carreras_por_tipo`, `total_carreras`, `ocupaciones_principales` y `ocupaciones_secundarias` (del catálogo), `ingresos[{tipo, promedio_jovenes}]` (nacional), `vecinas[]` (otras familias del área con carreras) y `recomendada_posicion` (1–5 si está entre las familias recomendadas del estudiante; nula para otras cuentas) |
 | `instituciones?buscar=&tipo=&gestion=&ubicacion=` | Página de `{codigo, nombre, tipo, gestion, ubicacion{codigo, nombre}, distrito}`, por nombre |
 | `instituciones/{codigo}` | Lo anterior más `descripcion` (nula), `direccion`, `pagina_web` y `carreras[]` (cada una con `ingreso` de la institución en su familia, o `null`) |
-| `familias`, `ubicaciones` | Solo las familias con carreras (por área y nombre) y los departamentos con instituciones |
+| `familias`, `ubicaciones`, `grupos` | Solo las familias con carreras (por área y nombre), los departamentos con instituciones y los grupos con ocupaciones del catálogo (por nombre; ya no filtran, solo nombran el grupo) |
 
 - `buscar`: subcadena sobre `busqueda`, sin mayúsculas ni tildes; `%`, `_` y `\` se buscan literalmente.
 - `riasec`: de 1 a 3 letras distintas (acepta minúsculas). Coincide si `codigo_riasec` las contiene seguidas y en ese orden: `RI` encuentra RI, RIS y ARI, pero no IR ni RSI. Una letra inválida, repetida o más de 3 → 422, y lo que no tiene código no coincide nunca.

@@ -97,7 +97,7 @@ test('los detalles abiertos se guardan hasta un límite: el más antiguo se vuel
   assert.equal(pedidas.filter((u) => u.endsWith(`/carreras/c-${store.LIMITE_DETALLES}`)).length, 1)
 })
 
-test('un favorito confirmado se aplica a listas, detalles y resultado, y descarta la lista de favoritos', async () => {
+test('un favorito confirmado se aplica a listas y detalles, y descarta la lista de favoritos', async () => {
   const { app, almacen, store, favoritos } = catalogo()
   await store.cargarLista('carreras', {})
   store.cargarDetalle('carreras', 'psychology')
@@ -112,14 +112,12 @@ test('un favorito confirmado se aplica a listas, detalles y resultado, y descart
   await store.cargarLista('carreras', { favoritos: true })
   await favoritos.alternarFavorito('CARRERA', objetivo, carreras.items[0].es_favorita)
   assert.equal(app.mount(() => store.useListaCatalogo('carreras', { favoritos: true }, false), {}).render(), undefined)
-  const recomendada = almacen
-    .obtenerEstadoServidor()
-    .resultadoRiasec.carreras_recomendadas.find((c) => c.codigo === objetivo)
-  if (recomendada) assert.equal(recomendada.es_favorita, !carreras.items[0].es_favorita)
-  // La ocupación favorita se marca en el detalle que la lista y en las vías del resultado.
+  // Ajuste resultados-intereses: el resultado no lleva favoritos; marcar uno no lo toca.
+  const resultado = almacen.obtenerEstadoServidor().resultadoRiasec
   await favoritos.alternarFavorito('OCUPACION', 'psychologist', true)
+  assert.equal(almacen.obtenerEstadoServidor().resultadoRiasec, resultado)
   const detalle = app.mount(() => store.useDetalleCatalogo('carreras', 'psychology'), {}).render()
-  assert.equal(detalle.datos.ocupaciones.find((o) => o.codigo === 'psychologist').es_favorita, true)
+  assert.ok(detalle.datos.ocupaciones_de_la_familia.principales.some((o) => o.codigo === 'psychologist'))
   assert.deepEqual(
     copia(app.requests.filter((r) => r.url.endsWith('-favorito')).map((r) => r.body.tipo)),
     ['CARRERA', 'CARRERA', 'OCUPACION'],

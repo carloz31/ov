@@ -115,7 +115,7 @@ test('las letras pulsadas seguidas piden una sola lista, en el orden en que se p
   vista.render()
   await esperar()
   const arbol = vista.render()
-  assert.match(texto(arbol), /Tu exploración1 de 923 íconos revelados/)
+  assert.match(texto(arbol), /Tu exploración1 de 245 íconos revelados/)
   const filtros = elementos(arbol, (e) => e.type?.name === 'FiltrosCatalogo')[0]
   for (const letra of ['R', 'I', 'C']) filtros.props.onLetra(letra)
   assert.equal(app.query.get('riasec'), 'RIC')
@@ -264,7 +264,7 @@ test('los detalles del servidor muestran sus datos y registran la vista una sola
   ocupacion.render()
   await esperar()
   arbol = ocupacion.render()
-  assert.match(texto(arbol), /Psicólogos Clínicos y de Consejería/)
+  assert.match(texto(arbol), /Psicólogo clínico/)
   assert.match(texto(arbol), /Psicología/)
   const { DetalleInstitucionServidor } = app.load('src/features/discovery/components/DetalleInstitucionServidor.tsx')
   const institucion = app.mount(DetalleInstitucionServidor, { codigo: 't-uni' })

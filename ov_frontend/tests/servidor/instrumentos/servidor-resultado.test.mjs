@@ -3,7 +3,7 @@ import test from 'node:test'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter, Routes, Route } from 'react-router'
-import { copia, elementos, esperar, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
+import { copia, elementos, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
 import { iniciarMara } from '../../soporte/servidor-mara-ayudas.mjs'
 
 const codigos = (dimensiones) => Array.from(dimensiones, (d) => d.code)
@@ -13,7 +13,8 @@ function funciones(app = fixtureServidor()) {
     ...app.load('src/lib/servidor/adaptadores.ts'),
   }
 }
-async function preparar(resultado = jsonServidor('resultado-riasec'), pagina = 'intereses', ruta) {
+// Ajuste resultados-intereses: el resultado de la ruta, con ocupaciones afines, áreas y familias.
+async function preparar(resultado = jsonServidor('ruta/ruta-resultado-riasec'), pagina = 'intereses', ruta) {
   const f = await iniciarMara({ resultado, ruta })
   // F03: intereses se revela en el servidor; las páginas de ejemplo conservan su revelado local.
   libroServidor(f.app, { 'APL-RIASEC': resultado })
@@ -140,61 +141,51 @@ test('carreras se ordena por cantidad de vías y mantiene orden remoto en empate
   )
 })
 
-test('filtros de ajuste usan las etiquetas remotas y Todas conserva el conjunto', async () => {
+// Ajuste resultados-intereses: en api, el resultado trae del servidor las ocupaciones afines (con banda y
+// parecido), su agrupación por área y las familias; el front solo filtra, agrupa y muestra.
+test('en api el modelo de intereses filtra por banda, cambia de vista y muestra todas al pedirlo', async () => {
   const f = await preparar()
-  const { filtrarPorAjuste } = funciones(f.app)
-  const ocupaciones = f.model().ocupaciones
-  assert.equal(ocupaciones.length, 10)
-  assert.equal(filtrarPorAjuste(ocupaciones, 'Todas').length, 10)
-  for (const ajuste of ['Mejor ajuste', 'Gran ajuste', 'Buen ajuste']) {
-    const filtradas = filtrarPorAjuste(ocupaciones, ajuste)
-    assert.ok(filtradas.length > 0)
-    assert.ok(filtradas.every((o) => o.ajuste === ajuste))
-  }
-})
-
-// F06 (HU-026): en api, los favoritos del resultado se guardan en el servidor y se ven al confirmarse.
-test('hook filtra carreras por ocupación, guarda favoritos en el servidor y respeta los tres planes locales', async () => {
-  const f = await preparar()
-  f.app.fetch((r) =>
-    r.url.endsWith('-favorito') ? { body: { eventos_registrados: [], nuevos_desbloqueos: [] } } : f.servidor(r),
-  )
+  const remoto = jsonServidor('ruta/ruta-resultado-riasec')
   const montado = f.app.mount(() => f.hook('intereses'))
   let m = montado.render()
-  const ocupacion = m.ocupaciones[0]
-  m.setSeleccion(ocupacion.clave)
+  assert.equal(m.intereses.ocupaciones.length, remoto.ocupaciones.length)
+  assert.equal(m.intereses.familias.length, remoto.familias.length)
+  assert.equal(m.intereses.codigo, remoto.codigo_interes.codigo)
+  assert.equal(m.intereses.filtro, 'TODAS')
+  assert.equal(m.intereses.vista, 'lista')
+  m.intereses.mostrarTodas()
   m = montado.render()
-  assert.ok(m.carreras.every((c) => c.via.some((o) => o.codigo_onet === ocupacion.clave)))
-  m.guardarOcupacion(ocupacion.codigo)
-  assert.equal(montado.render().ocupacionPendiente(ocupacion.codigo), true)
-  await esperar()
-  assert.equal(montado.render().ocupaciones[0].favorita, true)
-  m.setSeleccion(null)
+  assert.equal(m.intereses.todas, true)
+  // Cambiar el filtro vuelve a recortar la lista.
+  m.intereses.filtrar('MUY_AFIN')
+  m.intereses.elegirVista('area')
   m = montado.render()
-  m.guardarCarrera(m.carreras[0].codigo)
-  await esperar()
-  assert.equal(montado.render().carreras[0].favorita, true)
-  for (let i = 0; i < 3; i++) {
-    m = montado.render()
-    assert.equal(m.siguientePlan, ['A', 'B', 'C'][i])
-    assert.equal(m.crearPlan(m.carreras[i].nombre, m.carreras[i].codigo), true)
-    assert.equal(montado.render().carreras[i].plan, ['A', 'B', 'C'][i])
-  }
+  assert.deepEqual([m.intereses.filtro, m.intereses.vista, m.intereses.todas], ['MUY_AFIN', 'area', false])
+  const { conteoBandas, filtrarBanda, agruparPorArea } = f.app.load('src/features/discovery/lib/resultadoIntereses.ts')
+  const conteos = conteoBandas(remoto.ocupaciones)
+  assert.equal(conteos.TODAS, conteos.MUY_AFIN + conteos.AFIN)
+  assert.ok(filtrarBanda(remoto.ocupaciones, 'AFIN').every((o) => o.banda === 'AFIN'))
+  const grupos = agruparPorArea(remoto.ocupaciones, remoto.por_area)
+  assert.equal(grupos.reduce((n, g) => n + g.ocupaciones.length, 0), remoto.ocupaciones.length)
+  montado.unmount()
+})
+
+test('en api el resultado no guarda favoritos ni arma planes, y las letras abren la guía resaltada', async () => {
+  const f = await preparar()
+  const montado = f.app.mount(() => f.hook('intereses'))
+  let m = montado.render()
+  assert.equal(m.carreras.length, 0)
+  // La guía de intereses arranca cerrada (`guia_abierta` falso).
+  assert.equal(m.guia, false)
+  m.abrirGuia('I')
   m = montado.render()
-  assert.equal(m.siguientePlan, undefined)
-  assert.equal(m.crearPlan('Otro', 'otro'), false)
-  assert.deepEqual(
-    copia(f.app.requests.filter((r) => r.method !== 'GET').map((r) => [r.url, r.body.tipo])),
-    [
-      ['/api/acciones/marcar-favorito', 'OCUPACION'],
-      ['/api/acciones/marcar-favorito', 'CARRERA'],
-    ],
-  )
+  assert.deepEqual([m.guia, m.resaltada], [true, 'I'])
+  assert.equal(f.app.requests.filter((r) => r.method !== 'GET').length, 0)
   montado.unmount()
 })
 
 test('hook alterna guía y descripciones y conserva filtros de ajuste', async () => {
-  const f = await preparar()
+  const f = await preparar(jsonServidor('resultado-riasec'))
   const montado = f.app.mount(() => f.hook('intereses'))
   let m = montado.render()
   m.setGuia(true)
@@ -337,19 +328,6 @@ test('intereses local conserva afinidades existentes y no usa datos del servidor
   assert.equal(app.requests.length, 0)
 })
 
-test('ocupaciones desconocidas no inventan descripción, letras, detalle ni identificador', async () => {
-  const r = copia(jsonServidor('resultado-riasec'))
-  // DATO DE PRUEBA: una ocupación de O*NET sin correspondencia en el catálogo.
-  r.coincidencias[0] = { ...r.coincidencias[0], codigo: null, titulo: 'Ocupación remota sin catálogo' }
-  const f = await preparar(r)
-  const o = f.model().ocupaciones[0]
-  assert.equal(o.titulo, r.coincidencias[0].titulo)
-  assert.equal(o.codigo, null)
-  assert.equal(o.descripcion, undefined)
-  assert.equal(o.letras, undefined)
-  assert.equal(o.href, undefined)
-})
-
 test('perfil y guía exponen aria-expanded, texto remoto y ejemplos del servidor', async () => {
   const f = await preparar(jsonServidor('ruta/ruta-resultado-riasec'))
   const { resumen } = f.model()
@@ -370,20 +348,29 @@ test('perfil y guía exponen aria-expanded, texto remoto y ejemplos del servidor
   assert.match(guia, /Suele notarse cuando<\/strong> reparar o armar objetos/)
 })
 
-test('carreras muestran duración literal y ocultan crear plan al alcanzar el límite', async () => {
+test('las familias recomendadas explican su orden, enlazan al catálogo filtrado y no guardan ni planean', async () => {
   const f = await preparar()
-  const { RecommendedCareers } = f.app.load('src/features/discovery/components/RecommendedCareers.tsx')
-  const m = f.model()
-  const marcado = html(RecommendedCareers, {
-    carreras: m.carreras,
-    verTodas() {},
-    guardar() {},
-    crearPlan() {},
+  const { FamiliasRecomendadas } = f.app.load('src/features/discovery/components/FamiliasRecomendadas.tsx')
+  const familias = copia(jsonServidor('ruta/ruta-resultado-riasec').familias)
+  // DATO DE PRUEBA: la última, con una sola ocupación afín (relleno de 0,5 en el backend).
+  familias.at(-1).ocupaciones = familias.at(-1).ocupaciones.slice(0, 1)
+  familias.at(-1).unica_ocupacion = true
+  const marcado = html(FamiliasRecomendadas, {
+    familias,
+    catalogo: { carreras: '/student/catalog/careers', profesiones: '/student/catalog/professions' },
   })
-  assert.doesNotMatch(marcado, /Hacer mi plan/)
-  assert.match(marcado, /5 años aproximadamente/)
-  assert.match(marcado, /Conduce a 4/)
-  assert.match(marcado, /Ver carrera/)
+  assert.match(marcado, /Por dónde empezar a explorar carreras/)
+  assert.match(marcado, /Por qué te la recomendamos:<\/strong> aquí llegan/)
+  assert.match(marcado, /Es la única ocupación afín de esta familia; por eso va después de las que tienen varias\./)
+  const [primera] = familias
+  assert.ok(
+    marcado.includes(
+      `href="/student/catalog/careers?area=${primera.area_codigo}&amp;familia=${primera.codigo}"`,
+    ),
+  )
+  assert.ok(marcado.includes(`href="/student/catalog/professions?familia=${primera.codigo}"`))
+  assert.match(marcado, /Ir al catálogo de carreras/)
+  assert.doesNotMatch(marcado, /Guardar|Hacer mi plan/)
 })
 
 test('siguientes pasos conserva la pregunta como prompt y enlaza familia y página I', () => {
@@ -529,18 +516,12 @@ test('resumen de intereses usa la plantilla exacta, negritas y orden del código
   assert.doesNotMatch(alternativo, /Te atraen sobre todo/)
 })
 
-test('duración conocida conserva el texto del catálogo en ambos modos y la desconocida se omite', () => {
+test('duración conocida conserva el texto del catálogo en local; en api no hay carreras recomendadas', () => {
   const app = fixtureServidor()
   const { carrerasResultado } = app.load('src/features/discovery/lib/resultCatalog.ts')
   const { careerCatalog } = app.load('src/data/catalog/careersAndInstitutions.ts')
-  const resultado = copia(jsonServidor('resultado-riasec'))
-  const remoto = carrerasResultado(resultado, true, [])
-  for (const c of remoto)
-    assert.equal(c.duracion, careerCatalog.find((entrada) => entrada.id === c.codigo)?.duration)
-  assert.equal(remoto[0].duracion, '5 años aproximadamente')
-  // DATO DE PRUEBA: código ausente del catálogo; no se inventa la duración.
-  resultado.carreras_recomendadas[0].codigo = 'carrera-desconocida'
-  assert.equal(carrerasResultado(resultado, true, [])[0].duracion, undefined)
+  // Ajuste resultados-intereses: en api el resultado recomienda familias, no carreras.
+  assert.deepEqual(copia(carrerasResultado(jsonServidor('ruta/ruta-resultado-riasec'), true, [])), [])
   const { occupationDetails } = app.load('src/features/discovery/lib/catalogDetails.ts')
   const ocupaciones = occupationDetails.map((o) => ({ codigo: o.id, clave: o.onetCode, titulo: o.name }))
   const locales = carrerasResultado(undefined, false, ocupaciones)
@@ -675,4 +656,67 @@ test('F4b: guia=1 abre la guía del resultado y permite cerrarla sin reabrirla',
   montado.render().setGuia(false)
   assert.equal(montado.render().guia, false)
   montado.unmount()
+})
+
+// Ajuste resultados-intereses: guía de dimensiones común (boceto 03) y paso 1 del resultado (boceto 01).
+test('la guía cerrada muestra las letras y «Abrir la guía»; abierta, las piezas sin rótulos vacíos', async () => {
+  const f = await preparar()
+  const { resumen } = f.model()
+  const { GuiaDimensiones } = f.app.load('src/features/discovery/components/GuiaDimensiones.tsx')
+  const cerrada = html(GuiaDimensiones, { resumen, abierta: false, resaltada: null, abrir() {}, cerrar() {} })
+  assert.match(cerrada, /Los seis tipos de interés \(RIASEC\)/)
+  assert.match(cerrada, /Abrir la guía/)
+  assert.equal((cerrada.match(/<article/g) ?? []).length, 0)
+  const abierta = html(GuiaDimensiones, { resumen, abierta: true, resaltada: 'R', abrir() {}, cerrar() {} })
+  assert.equal((abierta.match(/<article/g) ?? []).length, 6)
+  assert.match(abierta, /aria-label="Cerrar guía"/)
+  // La más fuerte va primero con su borde; la elegida, resaltada.
+  assert.match(abierta, /<article id="guia-I" class="sx-r-guia-tarjeta" data-fuerte="true"/)
+  assert.match(abierta, /id="guia-R"[^>]*data-resaltada="true"/)
+  assert.match(abierta, /Tu más fuerte · 100/)
+  assert.match(abierta, /<h4>Suele notarse cuando<\/h4><p>reparar o armar objetos/)
+  // RIASEC no trae «Para desarrollarla»: no se pinta su rótulo.
+  assert.doesNotMatch(abierta, /Para desarrollarla/)
+  // En api, las barras abren la guía y no hay botón «¿Qué significa cada tipo?».
+  const { DimensionProfile } = f.app.load('src/features/discovery/components/DimensionProfile.tsx')
+  const barras = html(DimensionProfile, {
+    resumen,
+    guia: false,
+    abrirGuia() {},
+    expandidas: [],
+    alternar() {},
+    alPulsar() {},
+  })
+  assert.doesNotMatch(barras, /¿Qué significa cada tipo\?/)
+  assert.match(barras, /aria-controls="guia-dimensiones"/)
+})
+
+test('el paso 1 muestra 6 tarjetas con «Mostrar N más», avisa el perfil poco marcado y agrupa por área sin recortar', async () => {
+  const f = await preparar()
+  const { OcupacionesAfines } = f.app.load('src/features/discovery/components/OcupacionesAfines.tsx')
+  const r = jsonServidor('ruta/ruta-resultado-riasec')
+  const props = {
+    ocupaciones: r.ocupaciones,
+    porArea: r.por_area,
+    codigo: r.codigo_interes.codigo,
+    pocoMarcado: false,
+    vista: 'lista',
+    elegirVista() {},
+    filtro: 'TODAS',
+    filtrar() {},
+    todas: false,
+    mostrarTodas() {},
+    href: (codigo) => `/student/catalog/professions/${codigo}`,
+  }
+  const lista = html(OcupacionesAfines, props)
+  assert.equal((lista.match(/<article/g) ?? []).length, 6)
+  assert.ok(lista.includes(`Mostrar ${r.ocupaciones.length - 6} más`))
+  assert.ok(lista.includes(`${r.ocupaciones[0].parecido} %`) && lista.includes('1 de ' + r.ocupaciones.length))
+  assert.match(lista, /Ver ocupación/)
+  assert.doesNotMatch(lista, /Tu perfil es poco marcado/)
+  const area = html(OcupacionesAfines, { ...props, vista: 'area' })
+  assert.equal((area.match(/<article/g) ?? []).length, r.ocupaciones.length)
+  assert.doesNotMatch(area, /Mostrar \d+ más/)
+  const poco = html(OcupacionesAfines, { ...props, pocoMarcado: true, ocupaciones: r.ocupaciones.slice(0, 10) })
+  assert.match(poco, /Tu perfil es poco marcado: estas son las 10 ocupaciones más cercanas aunque no pasen de 50 %\./)
 })

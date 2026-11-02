@@ -68,7 +68,9 @@
       "zona": "POR_TRABAJAR"
     }
   ],
+  "guia_abierta": false,
   "instrumento": "TEST-PARTIDA-LLEGADA",
-  "lectura": "Estas son las mismas afirmaciones que respondiste al empezar y al terminar el camino. No hay puntajes: cada dimensión te dice en qué zona estás y qué cambió entre el inicio y el final. Lo que sigue por trabajar no es una falla: es lo que viene después del colegio.",
+  "lectura": "Cada dimensión te muestra en qué zona estabas al empezar la ruta y en cuál estás al terminarla, en palabras y sin puntajes. No dice si decides bien o mal: muestra cómo cambió tu forma de verlo. Lo que sigue por trabajar no es una falla; es lo que viene después del colegio.",
+  "mensaje": "Lo que cambió entre las dos páginas es tuyo.",
   "perfil_plano": false
 }

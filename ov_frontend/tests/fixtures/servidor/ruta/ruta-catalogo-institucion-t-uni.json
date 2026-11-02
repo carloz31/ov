@@ -5,8 +5,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
         "codigo": "331",
         "nombre": "Administración de Empresas"
       },
@@ -24,8 +24,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
         "codigo": "336",
         "nombre": "Administración Pública"
       },
@@ -43,8 +43,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "2",
-        "area_nombre": "Humanidades y Artes",
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
         "codigo": "211",
         "nombre": "Antropología y Arqueología"
       },
@@ -62,8 +62,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "2",
-        "area_nombre": "Humanidades y Artes",
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
         "codigo": "211",
         "nombre": "Antropología y Arqueología"
       },
@@ -81,8 +81,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "53",
+        "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
         "codigo": "533",
         "nombre": "Arquitectura y Urbanismo"
       },
@@ -100,8 +100,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "4",
-        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "area_codigo": "41",
+        "area_nombre": "Ciencias de la Vida",
         "codigo": "411",
         "nombre": "Biología"
       },
@@ -119,8 +119,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "35",
+        "area_nombre": "Derecho, Ciencias Políticas y Jurídicas",
         "codigo": "352",
         "nombre": "Ciencias Políticas"
       },
@@ -138,8 +138,8 @@
       "duracion": "5 años",
       "es_favorita": true,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "32",
+        "area_nombre": "Ciencias de la Comunicación",
         "codigo": "321",
         "nombre": "Ciencias de la Comunicación"
       },
@@ -161,8 +161,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "34",
+        "area_nombre": "Ciencias Económicas y Contables",
         "codigo": "342",
         "nombre": "Contabilidad y Finanzas"
       },
@@ -180,8 +180,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "35",
+        "area_nombre": "Derecho, Ciencias Políticas y Jurídicas",
         "codigo": "351",
         "nombre": "Derecho"
       },
@@ -199,8 +199,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "34",
+        "area_nombre": "Ciencias Económicas y Contables",
         "codigo": "341",
         "nombre": "Economía"
       },
@@ -218,8 +218,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "1",
-        "area_nombre": "Educación",
+        "area_codigo": "13",
+        "area_nombre": "Educación Física",
         "codigo": "131",
         "nombre": "Educación Física"
       },
@@ -237,8 +237,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "1",
-        "area_nombre": "Educación",
+        "area_codigo": "11",
+        "area_nombre": "Educación Inicial y Primaria",
         "codigo": "111",
         "nombre": "Educación Inicial"
       },
@@ -256,8 +256,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "1",
-        "area_nombre": "Educación",
+        "area_codigo": "11",
+        "area_nombre": "Educación Inicial y Primaria",
         "codigo": "112",
         "nombre": "Educación Primaria"
       },
@@ -275,8 +275,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "1",
-        "area_nombre": "Educación",
+        "area_codigo": "12",
+        "area_nombre": "Educación Secundaria",
         "codigo": "121",
         "nombre": "Educación Secundaria"
       },
@@ -294,7 +294,7 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "7",
+        "area_codigo": "71",
         "area_nombre": "Ciencias de la Salud",
         "codigo": "714",
         "nombre": "Enfermería"
@@ -315,8 +315,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "4",
-        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "area_codigo": "43",
+        "area_nombre": "Matemáticas y Estadística",
         "codigo": "432",
         "nombre": "Estadística"
       },
@@ -330,8 +330,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "2",
-        "area_nombre": "Humanidades y Artes",
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
         "codigo": "216",
         "nombre": "Teología y Filosofía"
       },
@@ -345,8 +345,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "4",
-        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "area_codigo": "42",
+        "area_nombre": "Ciencias Físicas y Químicas",
         "codigo": "421",
         "nombre": "Física"
       },
@@ -360,8 +360,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "2",
-        "area_nombre": "Humanidades y Artes",
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
         "codigo": "212",
         "nombre": "Historia"
       },
@@ -379,8 +379,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
         "codigo": "523",
         "nombre": "Ingeniería en Agroindustria"
       },
@@ -398,8 +398,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
         "codigo": "522",
         "nombre": "Ingeniería en Industrias Alimentarias"
       },
@@ -417,8 +417,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
         "codigo": "594",
         "nombre": "Ecología y Medio Ambiente"
       },
@@ -439,8 +439,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "53",
+        "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
         "codigo": "531",
         "nombre": "Ingeniería Civil"
       },
@@ -461,8 +461,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "51",
+        "area_nombre": "Ingeniería de Sistemas y Telecomunicaciones",
         "codigo": "511",
         "nombre": "Ingeniería de Sistemas y Cómputo"
       },
@@ -480,8 +480,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "51",
+        "area_nombre": "Ingeniería de Sistemas y Telecomunicaciones",
         "codigo": "512",
         "nombre": "Ingeniería de Telecomunicaciones"
       },
@@ -499,8 +499,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
         "codigo": "599",
         "nombre": "Otras Ingenierías"
       },
@@ -518,8 +518,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
         "codigo": "525",
         "nombre": "Ingeniería Electrónica"
       },
@@ -537,8 +537,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "6",
-        "area_nombre": "Agropecuaria y Veterinaria",
+        "area_codigo": "61",
+        "area_nombre": "Agropecuaria, Forestal y Acuicultura",
         "codigo": "613",
         "nombre": "Acuicultura"
       },
@@ -552,8 +552,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
         "codigo": "594",
         "nombre": "Ecología y Medio Ambiente"
       },
@@ -571,8 +571,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
         "codigo": "593",
         "nombre": "Geografía"
       },
@@ -590,8 +590,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
         "codigo": "521",
         "nombre": "Ingeniería Industrial"
       },
@@ -609,8 +609,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "51",
+        "area_nombre": "Ingeniería de Sistemas y Telecomunicaciones",
         "codigo": "511",
         "nombre": "Ingeniería de Sistemas y Cómputo"
       },
@@ -628,8 +628,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
         "codigo": "591",
         "nombre": "Ingeniería Pesquera"
       },
@@ -647,8 +647,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "2",
-        "area_nombre": "Humanidades y Artes",
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
         "codigo": "213",
         "nombre": "Lingüística y Literatura"
       },
@@ -666,8 +666,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "2",
-        "area_nombre": "Humanidades y Artes",
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
         "codigo": "213",
         "nombre": "Lingüística y Literatura"
       },
@@ -685,8 +685,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
         "codigo": "333",
         "nombre": "Marketing"
       },
@@ -700,8 +700,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "4",
-        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "area_codigo": "43",
+        "area_nombre": "Matemáticas y Estadística",
         "codigo": "431",
         "nombre": "Matemática"
       },
@@ -715,7 +715,7 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "7",
+        "area_codigo": "71",
         "area_nombre": "Ciencias de la Salud",
         "codigo": "711",
         "nombre": "Medicina"
@@ -734,8 +734,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
         "codigo": "335",
         "nombre": "Negocios Internacionales"
       },
@@ -753,7 +753,7 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "7",
+        "area_codigo": "71",
         "area_nombre": "Ciencias de la Salud",
         "codigo": "712",
         "nombre": "Nutrición"
@@ -772,7 +772,7 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "7",
+        "area_codigo": "71",
         "area_nombre": "Ciencias de la Salud",
         "codigo": "717",
         "nombre": "Obstetricia"
@@ -791,7 +791,7 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "7",
+        "area_codigo": "71",
         "area_nombre": "Ciencias de la Salud",
         "codigo": "713",
         "nombre": "Odontología"
@@ -810,8 +810,8 @@
       "duracion": "5 años",
       "es_favorita": true,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
         "codigo": "313",
         "nombre": "Psicología"
       },
@@ -833,8 +833,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "4",
-        "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+        "area_codigo": "42",
+        "area_nombre": "Ciencias Físicas y Químicas",
         "codigo": "422",
         "nombre": "Química"
       },
@@ -848,8 +848,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
         "codigo": "311",
         "nombre": "Servicios Sociales y Asistenciales"
       },
@@ -867,7 +867,7 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "7",
+        "area_codigo": "71",
         "area_nombre": "Ciencias de la Salud",
         "codigo": "715",
         "nombre": "Tecnología Médica"
@@ -886,8 +886,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
         "codigo": "312",
         "nombre": "Trabajo Social"
       },
@@ -905,8 +905,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
         "codigo": "332",
         "nombre": "Administración de Servicios Turísticos, Hotelería y Gastronomía"
       },

@@ -6,7 +6,7 @@ from app.dependencies import CuentaConsultada, SesionBD
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.core.parametros import LIMITE_PAGINA_CATALOGO
 from app.schemas.catalogo import (
-    CarreraDetalle, FamiliaFicha, FamiliaPublica, Inesperada, InstitucionDetalle, OcupacionDetalle, PaginaCarreras,
+    CarreraDetalle, FamiliaFicha, FamiliaPublica, GrupoPublico, Inesperada, InstitucionDetalle, OcupacionDetalle, PaginaCarreras,
     PaginaInstituciones, PaginaOcupaciones, UbicacionPublica,
 )
 from app.services import catalogo as servicio_catalogo
@@ -39,6 +39,11 @@ def listar_familias(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
 @router.get("/cuentas/{cuenta}/catalogo/ubicaciones", response_model=list[UbicacionPublica])
 def listar_ubicaciones(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
     return _consultar(lambda: servicio_catalogo.listar_ubicaciones(sesion, cuenta_consultada))
+
+
+@router.get("/cuentas/{cuenta}/catalogo/grupos", response_model=list[GrupoPublico])
+def listar_grupos(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
+    return _consultar(lambda: servicio_catalogo.listar_grupos(sesion, cuenta_consultada))
 
 
 @router.get("/cuentas/{cuenta}/catalogo/familias/{codigo}", response_model=FamiliaFicha)

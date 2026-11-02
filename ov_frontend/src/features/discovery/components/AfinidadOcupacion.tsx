@@ -1,14 +1,14 @@
 import { Sparkles } from 'lucide-react'
 import { Parchment } from '@/components/student/Parchment'
-import type { CoincidenciaPublica } from '@/types/servidor'
+import type { OcupacionAfinPublica } from '@/types/servidor'
 
-// La afinidad de una ocupación con el resultado de intereses: del servidor, con posición y correlación.
+// La afinidad de una ocupación con el resultado de intereses: del servidor, con posición y parecido.
 export function AfinidadOcupacion({
   afinidad,
   coincidencia,
 }: {
   afinidad: string | undefined
-  coincidencia: CoincidenciaPublica | undefined
+  coincidencia: OcupacionAfinPublica | undefined
 }) {
   if (!afinidad) return null
   return (
@@ -18,7 +18,7 @@ export function AfinidadOcupacion({
       <p>Según lo que Helena descifró de tus intereses</p>
       {coincidencia ? (
         <small>
-          Posición {coincidencia.posicion} · correlación {coincidencia.correlacion}
+          Posición {coincidencia.posicion} · {coincidencia.parecido} %
         </small>
       ) : (
         <small>Afinidad de demostración. No se calculó a partir de tus respuestas.</small>

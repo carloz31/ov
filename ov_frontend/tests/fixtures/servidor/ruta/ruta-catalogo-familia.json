@@ -1,0 +1,40 @@
+{
+  "area_codigo": "41",
+  "area_nombre": "Ciencias de la Vida",
+  "carreras_por_tipo": {
+    "UNIVERSIDAD": 8
+  },
+  "codigo": "411",
+  "descripcion": "Se centra en los seres vivos, su funcionamiento y sus relaciones con el entorno. Incluye desde organismos muy pequeños hasta plantas y animales, así como la herencia y los cambios de la vida. Aborda la observación y el análisis de muestras, la diversidad natural y el uso de conocimientos sobre la vida en distintas actividades.",
+  "ingresos": [
+    {
+      "promedio_jovenes": 2779,
+      "tipo": "UNIVERSIDAD"
+    }
+  ],
+  "nombre": "Biología",
+  "ocupaciones_principales": 5,
+  "ocupaciones_secundarias": 1,
+  "recomendada_posicion": 1,
+  "total_carreras": 8,
+  "vecinas": [
+    {
+      "area_codigo": "41",
+      "area_nombre": "Ciencias de la Vida",
+      "codigo": "413",
+      "nombre": "Hidrografía"
+    },
+    {
+      "area_codigo": "41",
+      "area_nombre": "Ciencias de la Vida",
+      "codigo": "414",
+      "nombre": "Meteorología"
+    },
+    {
+      "area_codigo": "41",
+      "area_nombre": "Ciencias de la Vida",
+      "codigo": "412",
+      "nombre": "Zootecnia"
+    }
+  ]
+}

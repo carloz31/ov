@@ -12,8 +12,8 @@
   "duracion": "5 años",
   "es_favorita": true,
   "familia": {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+    "area_codigo": "31",
+    "area_nombre": "Ciencias Sociales y del Comportamiento",
     "codigo": "313",
     "nombre": "Psicología"
   },
@@ -915,55 +915,90 @@
   ],
   "nombre": "Psicología",
   "nombre_cine": null,
-  "ocupaciones": [
-    {
-      "codigo": "psychologist",
-      "codigo_onet": "19-3033.00",
-      "es_favorita": false,
-      "grupo": "19",
-      "resumen": "Evalúan, diagnostican y tratan trastornos mentales y emocionales de individuos a través de la observación, de entrevista y de pruebas…",
-      "riasec": [
-        "S",
-        "I"
-      ],
-      "titulo": "Psicólogos Clínicos y de Consejería"
-    },
-    {
-      "codigo": "social-worker",
-      "codigo_onet": "21-1021.00",
-      "es_favorita": false,
-      "grupo": "21",
-      "resumen": "Prestan asistencia y servicios sociales para mejorar el funcionamiento social y psicológico de los niños y de sus familias y para…",
-      "riasec": [
-        "S"
-      ],
-      "titulo": "Trabajadores Sociales Especializados en Temas de la Infancia, Familiares y Escolares"
-    },
-    {
-      "codigo": "sociologist",
-      "codigo_onet": "19-3041.00",
-      "es_favorita": false,
-      "grupo": "19",
-      "resumen": "Estudian la sociedad humana y el comportamiento social por medio del análisis de los grupos e instituciones sociales formadas por…",
-      "riasec": [
-        "I",
-        "S",
-        "A"
-      ],
-      "titulo": "Sociólogos"
-    },
-    {
-      "codigo": "teacher",
-      "codigo_onet": "25-2031.00",
-      "es_favorita": false,
-      "grupo": "25",
-      "resumen": "Enseñan una o más materias a alumnos de escuelas de nivel secundaria alta.",
-      "riasec": [
-        "S"
-      ],
-      "titulo": "Maestros de Escuela Secundaria"
-    }
-  ],
+  "ocupaciones_de_la_familia": {
+    "principales": [
+      {
+        "afinidad": null,
+        "codigo": "onet-21-1012-00",
+        "riasec": [
+          "S",
+          "C",
+          "E"
+        ],
+        "titulo": "Orientador educativo y vocacional"
+      },
+      {
+        "afinidad": null,
+        "codigo": "psychologist",
+        "riasec": [
+          "S",
+          "I"
+        ],
+        "titulo": "Psicólogo clínico"
+      },
+      {
+        "afinidad": null,
+        "codigo": "onet-19-3034-00",
+        "riasec": [
+          "S",
+          "I",
+          "C"
+        ],
+        "titulo": "Psicólogo educativo"
+      },
+      {
+        "afinidad": null,
+        "codigo": "onet-19-3032-00",
+        "riasec": [
+          "I",
+          "E",
+          "C"
+        ],
+        "titulo": "Psicólogo organizacional"
+      }
+    ],
+    "secundarias": [
+      {
+        "afinidad": null,
+        "codigo": "onet-13-1161-00",
+        "riasec": [
+          "E",
+          "C",
+          "I"
+        ],
+        "titulo": "Analista de marketing e investigación de mercados"
+      },
+      {
+        "afinidad": null,
+        "codigo": "onet-13-1151-00",
+        "riasec": [
+          "S",
+          "I"
+        ],
+        "titulo": "Especialista en capacitación y desarrollo"
+      },
+      {
+        "afinidad": null,
+        "codigo": "onet-13-1071-00",
+        "riasec": [
+          "E",
+          "C",
+          "S"
+        ],
+        "titulo": "Especialista en recursos humanos"
+      },
+      {
+        "afinidad": null,
+        "codigo": "onet-11-3121-00",
+        "riasec": [
+          "E",
+          "C",
+          "S"
+        ],
+        "titulo": "Gerente de recursos humanos"
+      }
+    ]
+  },
   "parecidas": {
     "carreras": [
       {
@@ -971,8 +1006,8 @@
         "duracion": "5 años",
         "es_favorita": false,
         "familia": {
-          "area_codigo": "3",
-          "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+          "area_codigo": "31",
+          "area_nombre": "Ciencias Sociales y del Comportamiento",
           "codigo": "313",
           "nombre": "Psicología"
         },
@@ -985,8 +1020,8 @@
         "duracion": "5 años",
         "es_favorita": false,
         "familia": {
-          "area_codigo": "3",
-          "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+          "area_codigo": "31",
+          "area_nombre": "Ciencias Sociales y del Comportamiento",
           "codigo": "313",
           "nombre": "Psicología"
         },

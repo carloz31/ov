@@ -19,7 +19,15 @@
 - F2 · Las opciones de la referencia COINCIDENCIAS pasan a ser las ocupaciones afines mostradas (de 10 a 30).
 - F3 · Migración 0043 retira `carrera_ocupacion` (al bajar vuelve vacía); carreras y ocupaciones se relacionan solo por familia. Se retiran `OCUPACIONES_CARRERA` de la ruta y el sorteo provisional.
 - F3 · La ficha de familia vive en `GET /cuentas/{c}/catalogo/familias/{codigo}`, junto al resto del catálogo, que siempre lleva cuenta. El listado `familias` no gana `descripcion`: la da la ficha.
-- F3 · Se retira `GET …/catalogo/grupos` junto con el filtro `grupo`; el grupo sigue en el resumen para el ícono.
+- F3/F4 · Se retira el filtro `grupo` de ocupaciones; `GET …/catalogo/grupos` se conserva porque el buscador de ocupación de Investigaciones muestra el nombre del grupo (la observación solo retira el filtro). El grupo sigue en el resumen para el ícono.
 - F3 · `ingresos` de la ficha es el promedio nacional de jóvenes por tipo de institución (no se mezclan tipos); el front elige cómo mostrarlo.
 - F3 · El detalle de carrera ya no marca `es_favorita` en sus ocupaciones (la relación por familia trae resúmenes livianos con `afinidad`); se adapta la línea de `test_favoritos` que lo leía.
 - F3 · `programa_ejemplo` es la primera carrera (por nombre) de la familia principal cuyo `codigo_cine` aparece en `programas_cine`, en el orden de la curaduría.
+- F4 · Los fixtures del contrato (`ruta-*`) se regeneran y se agregan `catalogo-familia`, `catalogo-ocupaciones-familia` y `catalogo-ocupacion-afin` (con el resultado revelado). Las pruebas del front que leían el fixture raíz antiguo `resultado-riasec.json` (contrato previo, ya no se genera) pasan a `ruta/ruta-resultado-riasec` cuando prueban el contrato nuevo.
+- F4–F5 · F4 (contrato del front) va en el mismo commit que F5: las pruebas que quedaban rojas eran las de la vista del resultado que se rehace en F5. El detalle de ocupación pierde «Carreras que llevan aquí» en F4 y recupera la relación por familia en F7.
+- F5 · El modo local del resultado no cambia: la guía nueva (`GuiaDimensiones`), el encuadre, «Cómo leer este resultado», las letras y barras que abren la guía y los pasos 1 y 2 son solo de api (`resumen.puntajeVisual`). `DimensionGuide`, `AffineOccupations` y `RecommendedCareers` quedan para local.
+- F5 · La línea en cursiva bajo el título es el `mensaje` del instrumento (la «línea de encuadre»), que reemplaza la frase de Helena en api. En Partida y llegada se conserva la frase de Helena: sus textos de pantalla son del front (`ov_frontend/AGENTS.md`).
+- F5 · La página de intereses es la «Página II» en el código (el boceto coincide); no cambia la numeración.
+- F5 · La tarjeta del libro anuncia «N familias de carreras que llevan a ellas» en api, en lugar de las carreras recomendadas, que ya no existen.
+- F5 · En la vista «Por área» se muestran todas las ocupaciones (sin el recorte de 6), como pide la regla «agrupar sin recortar».
+- F5 · En la guía, la posición se nombra en masculino para los tipos de interés («Segundo») y en femenino para inteligencias y habilidades («Segunda»); el texto de «Suele notarse cuando» se muestra tal cual llega (continúa la frase del rótulo).

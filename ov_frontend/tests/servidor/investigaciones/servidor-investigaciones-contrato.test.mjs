@@ -95,7 +95,7 @@ test('«Lo que cambió» cita lo que pensaba antes, y sus contenidos existen con
   const [ref] = jsonServidor('ruta/ruta-referencias-investigador-cierre').referencias
   assert.equal(
     citaReferencia(ref),
-    'Antes de tu entrevista, sobre Electricistas pensabas: «DATO DE PRUEBA: revisa instalaciones de casas y ' +
+    'Antes de tu entrevista, sobre Electricista industrial pensabas: «DATO DE PRUEBA: revisa instalaciones de casas y ' +
       'edificios.». Para ejercerla: «DATO DE PRUEBA: estudiar en un instituto y practicar.». Tu duda: «¿Es peligroso?»',
   )
   assert.equal(citaReferencia({ ...ref, estado: 'SIN_DATO' }), undefined)

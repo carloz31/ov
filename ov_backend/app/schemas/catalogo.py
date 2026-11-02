@@ -13,6 +13,12 @@ class FamiliaPublica(BaseModel):
     area_nombre: str
 
 
+class GrupoPublico(BaseModel):
+    """Grupo mayor O*NET (2 cifras); ya no filtra el catálogo, solo nombra el grupo."""
+    codigo: str
+    nombre: str
+
+
 class FamiliaResumida(FamiliaPublica):
     """La familia en una tarjeta: su descripción, los tipos con carreras y cuántas tiene."""
     descripcion: str | None

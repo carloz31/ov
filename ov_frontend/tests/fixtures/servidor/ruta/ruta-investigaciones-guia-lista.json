@@ -10,7 +10,7 @@
         "nombre": "Luis",
         "ocupacion": {
           "codigo": "electrician",
-          "titulo": "Electricistas"
+          "titulo": "Electricista industrial"
         },
         "vitrina": []
       }
@@ -34,7 +34,7 @@
     },
     "ocupacion": {
       "codigo": "electrician",
-      "titulo": "Electricistas"
+      "titulo": "Electricista industrial"
     },
     "preguntas": [
       {
@@ -43,7 +43,7 @@
       },
       {
         "origen": "SUGERIDA",
-        "texto": "¿Qué te sorprendió al empezar como Electricistas? (1)"
+        "texto": "¿Qué te sorprendió al empezar como Electricista industrial? (1)"
       }
     ],
     "sugerencias": [

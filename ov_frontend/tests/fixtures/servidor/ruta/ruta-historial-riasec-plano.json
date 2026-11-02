@@ -3,12 +3,10 @@
     "anulado_en": null,
     "aplicacion": "APL-RIASEC",
     "calculado_en": "2026-10-07T10:00:00",
-    "carreras_recomendadas": [],
     "codigo_interes": {
       "codigo": "RIA",
       "hay_empate": true
     },
-    "coincidencias": [],
     "dimensiones": [
       {
         "codigo": "R",
@@ -107,8 +105,10 @@
         "puntaje_visual": 50
       }
     ],
+    "guia_abierta": false,
     "instrumento": "TEST-RIASEC",
-    "lectura": "Este test mide qué tipo de actividades te atraen, en seis tipos de interés. No mide capacidad ni talento: mide gusto. Cada tipo va de 0 a 100, la misma escala con la que se describe cada ocupación, para que puedas compararte con ella. De aquí salen tu código de interés, las ocupaciones que se parecen a lo que te gusta y las carreras que llevan a ellas. Tómalo como punto de partida para explorar, no como una lista cerrada.",
+    "lectura": "Tu código son los tres tipos de actividad que más te atrajeron, y las barras muestran cuánto resonó cada uno, de 0 a 100. Habla de gusto, no de talento: un tipo bajo no es algo que hagas mal. Las ocupaciones afines tienen un perfil de intereses parecido al tuyo y las familias de carreras son las que llevan a ellas. Explora también lo que no salió arriba: tus gustos cambian con lo que vas conociendo.",
+    "mensaje": "Es una pista para explorar, no un veredicto.",
     "perfil_plano": true
   }
 ]

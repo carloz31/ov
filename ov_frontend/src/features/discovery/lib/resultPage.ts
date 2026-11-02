@@ -4,7 +4,11 @@ import type { ResumenPagina, ResumenResultado } from '../types'
 
 export function resumenPagina(
   page: Pick<HelenaPage, 'state' | 'perfilPlano'> & { tipoResultado?: TipoResultadoHelena; id?: InstrumentPageId },
-  resultado?: HelenaResult & { coincidencias?: unknown[] | null; carreras_recomendadas?: unknown[] | null },
+  resultado?: HelenaResult & {
+    coincidencias?: unknown[] | null
+    carreras_recomendadas?: unknown[] | null
+    familias?: unknown[] | null
+  },
   // F03: en api, el perfil plano invita a repetir las misiones en lugar de revisar los encuentros con Mara.
   opciones: { textoPlano?: string } = {},
 ): ResumenPagina {
@@ -37,7 +41,10 @@ export function resumenPagina(
   if (intereses) {
     if (resultado.coincidencias?.length)
       contenidos.push({ icono: 'ocupaciones', texto: `${resultado.coincidencias.length} ocupaciones afines` })
-    if (resultado.carreras_recomendadas?.length)
+    // Ajuste resultados-intereses: en api, el resultado recomienda familias de carreras, no carreras.
+    if (resultado.familias?.length)
+      contenidos.push({ icono: 'carreras', texto: `${resultado.familias.length} familias de carreras que llevan a ellas` })
+    else if (resultado.carreras_recomendadas?.length)
       contenidos.push({
         icono: 'carreras',
         texto: `${resultado.carreras_recomendadas.length} carreras que conducen a ellas`,
@@ -107,6 +114,8 @@ export function resumirResultado(
     tipoResultado,
     pagina: opciones.pagina,
     lectura: resultado.lectura,
+    mensaje: resultado.mensaje,
+    guiaAbierta: !!resultado.guiaAbierta,
     puntajeVisual: !!opciones.puntajeVisual,
     dimensiones,
     ordenadas: ordenarDimensiones(dimensiones),

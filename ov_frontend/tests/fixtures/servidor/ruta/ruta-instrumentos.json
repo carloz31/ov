@@ -126,7 +126,9 @@
         ]
       }
     ],
-    "lectura": "Este inventario muestra cómo te relacionas con los demás, en cinco habilidades sociales. Son conductas aprendidas: nadie nace con ellas y todas se pueden desarrollar. Las que salen arriba son tus recursos de hoy. Pero fíjate sobre todo en las que quedaron abajo: ahí está lo que puedes trabajar, y en cada una encontrarás por dónde empezar.",
+    "guia_abierta": true,
+    "lectura": "Las habilidades que salen arriba son tus recursos de hoy para relacionarte con los demás; las de abajo, lo que puedes practicar. Es cómo te ves tú, no una nota sobre tu forma de ser, y cambia con las experiencias. Fíjate sobre todo en las de abajo: cada una trae por dónde empezar.",
+    "mensaje": "Se entrenan, como cualquier otra habilidad.",
     "nombre": "Mi comportamiento con los demás",
     "tipo_resultado": "DESTACADAS"
   },
@@ -298,7 +300,9 @@
         ]
       }
     ],
-    "lectura": "Este test muestra qué inteligencias usas más en tu día a día, según el modelo de Howard Gardner. Todos tenemos las siete, unas más desarrolladas que otras; aquí ves cuáles tienes más a mano hoy. No mide cuánto vales ni qué carrera te toca: te dice cómo aprendes y resuelves mejor, y eso sirve para estudiar a tu manera y para saber qué te va a costar más en lo que elijas. Cada inteligencia se puede desarrollar.",
+    "guia_abierta": true,
+    "lectura": "Las inteligencias que salen arriba son las formas de pensar y aprender en las que hoy te sientes más cómodo; las de abajo son las que usas menos, no las que te faltan. Ninguna vale más que otra. Úsalo para estudiar a tu manera y para saber qué te costará más en lo que elijas. Cada inteligencia trae ideas para practicarla.",
+    "mensaje": "Es una foto de hoy: todas se desarrollan.",
     "nombre": "Test de las inteligencias múltiples",
     "tipo_resultado": "DESTACADAS"
   },
@@ -406,7 +410,9 @@
         ]
       }
     ],
-    "lectura": "Estas son las mismas afirmaciones que respondiste al empezar y al terminar el camino. No hay puntajes: cada dimensión te dice en qué zona estás y qué cambió entre el inicio y el final. Lo que sigue por trabajar no es una falla: es lo que viene después del colegio.",
+    "guia_abierta": false,
+    "lectura": "Cada dimensión te muestra en qué zona estabas al empezar la ruta y en cuál estás al terminarla, en palabras y sin puntajes. No dice si decides bien o mal: muestra cómo cambió tu forma de verlo. Lo que sigue por trabajar no es una falla; es lo que viene después del colegio.",
+    "mensaje": "Lo que cambió entre las dos páginas es tuyo.",
     "nombre": "Punto de partida y de llegada",
     "tipo_resultado": "COMPARACION"
   },
@@ -551,7 +557,9 @@
         ]
       }
     ],
-    "lectura": "Este test mide qué tipo de actividades te atraen, en seis tipos de interés. No mide capacidad ni talento: mide gusto. Cada tipo va de 0 a 100, la misma escala con la que se describe cada ocupación, para que puedas compararte con ella. De aquí salen tu código de interés, las ocupaciones que se parecen a lo que te gusta y las carreras que llevan a ellas. Tómalo como punto de partida para explorar, no como una lista cerrada.",
+    "guia_abierta": false,
+    "lectura": "Tu código son los tres tipos de actividad que más te atrajeron, y las barras muestran cuánto resonó cada uno, de 0 a 100. Habla de gusto, no de talento: un tipo bajo no es algo que hagas mal. Las ocupaciones afines tienen un perfil de intereses parecido al tuyo y las familias de carreras son las que llevan a ellas. Explora también lo que no salió arriba: tus gustos cambian con lo que vas conociendo.",
+    "mensaje": "Es una pista para explorar, no un veredicto.",
     "nombre": "Test de intereses",
     "tipo_resultado": "COINCIDENCIAS"
   }

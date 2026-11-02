@@ -16,6 +16,9 @@ export type HelenaDimension = {
 export type HelenaResult = {
   source: 'real' | 'demo'
   lectura?: string
+  // Ajuste resultados-intereses (api): la línea de encuadre bajo el título y si la guía arranca abierta.
+  mensaje?: string
+  guiaAbierta?: boolean
   areas: HelenaDimension[]
   dimensiones?: HelenaDimension[]
   destacadas?: HelenaDimension[]

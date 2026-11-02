@@ -7,7 +7,7 @@ import type {
   FiltrosCatalogo,
   ResumenCatalogo,
 } from '@/services/api/catalogo'
-import type { ErrorServidor, FamiliaPublica, GrupoPublico, UbicacionPublica } from '@/types/servidor'
+import type { ErrorServidor, FamiliaFicha, FamiliaPublica, GrupoPublico, UbicacionPublica } from '@/types/servidor'
 import { accionConRefresco } from './refresco'
 import { consultarCuenta, consultarCuentaSesion, sesionServidor } from './sesion'
 
@@ -49,6 +49,11 @@ export type OpcionesCatalogo = {
   ubicaciones: UbicacionPublica[]
   grupos: GrupoPublico[]
 } | null
+export type FichaFamilia = {
+  estado: 'cargando' | 'listo' | 'error'
+  datos: FamiliaFicha | null
+  error: ErrorServidor | null
+}
 
 const listas = new Map<ClaseCatalogo, Entrada>()
 const turnos = new Map<ClaseCatalogo, number>()
@@ -57,6 +62,7 @@ const peticiones = new Map<ClaseCatalogo, AbortController>()
 // Total de cada clase sin filtros (la cabecera), del último listado recibido.
 const dominios = new Map<ClaseCatalogo, number>()
 const detalles = new Map<string, Detalle>()
+const fichas = new Map<string, FichaFamilia>()
 let opciones: OpcionesCatalogo = null
 let opcionesEnCurso = false
 // Lo cargado es de una sesión de cuenta: al cambiar (cerrar sesión, otra cuenta) se vacía.
@@ -79,6 +85,7 @@ function vigente() {
   turnos.clear()
   dominios.clear()
   detalles.clear()
+  fichas.clear()
   opciones = null
   opcionesEnCurso = false
 }
@@ -223,7 +230,38 @@ export function useDetalleCatalogo<C extends ClaseCatalogo>(clase: C, codigo: st
   return detalle
 }
 
-// Familias, ubicaciones y grupos de los filtros: una vez por sesión de cuenta.
+// Ajuste resultados-intereses: la ficha de la familia elegida se pide al elegirla y se guarda por código; un
+// error se puede reintentar.
+export function cargarFichaFamilia(codigo: string, reintentar = false) {
+  vigente()
+  const actual = fichas.get(codigo)
+  if (actual && (actual.estado !== 'error' || !reintentar)) return
+  fichas.set(codigo, { estado: 'cargando', datos: null, error: null })
+  avisar()
+  const sesion = sesionServidor()
+  void consultarCuentaSesion((cuenta) => apiCatalogo.obtenerFamilia(cuenta, codigo)).then((respuesta) => {
+    if (sesion !== sesionServidor()) return
+    fichas.set(
+      codigo,
+      respuesta.tipo === 'ok'
+        ? { estado: 'listo', datos: respuesta.datos, error: null }
+        : { estado: 'error', datos: null, error: respuesta },
+    )
+    avisar()
+  })
+}
+
+export function useFichaFamilia(codigo: string | undefined): FichaFamilia | undefined {
+  const ficha = useSyncExternalStore(suscribir, () =>
+    codigo && sesionCargada === sesionServidor() ? fichas.get(codigo) : undefined,
+  )
+  useEffect(() => {
+    if (codigo) cargarFichaFamilia(codigo)
+  }, [codigo])
+  return ficha
+}
+
+// Familias, ubicaciones y grupos (que nombran el grupo de una ocupación): una vez por sesión de cuenta.
 export function useOpcionesCatalogo(activas: boolean): OpcionesCatalogo {
   const sesion = sesionServidor()
   const actuales = useSyncExternalStore(suscribir, () => (sesionCargada === sesion ? opciones : null))

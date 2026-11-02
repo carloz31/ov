@@ -352,6 +352,13 @@ def _recorrer(cliente):
         'cuenta': 'est-ana', 'instrumento': 'TEST-RIASEC', 'fecha_hora': FECHA,
     })
     fixtures['resultado-riasec'] = _pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
+    # Ajuste resultados-intereses: con el resultado, el catálogo marca la familia recomendada y las afinidades.
+    familia = fixtures['resultado-riasec']['familias'][0]['codigo']
+    afin = fixtures['resultado-riasec']['ocupaciones'][0]['codigo']
+    fixtures['catalogo-familia'] = _pedir(cliente, 'GET', f'/cuentas/est-ana/catalogo/familias/{familia}')
+    fixtures['catalogo-ocupaciones-familia'] = _pedir(
+        cliente, 'GET', f'/cuentas/est-ana/catalogo/ocupaciones?familia={familia}&limite=50')
+    fixtures['catalogo-ocupacion-afin'] = _pedir(cliente, 'GET', f'/cuentas/est-ana/catalogo/ocupaciones/{afin}')
     fixtures['referencias-t-contraste'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')
     fixtures['items-registro-t-contraste'] = _pedir(cliente, 'GET', '/actividades/t-contraste/items-registro')
     # B08: el caso falla, se reintenta y se supera; superarlo abre los testimonios y llena la colección.

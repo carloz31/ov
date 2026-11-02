@@ -74,6 +74,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'catalogo-carreras', 'catalogo-carrera-psychology', 'catalogo-ocupaciones-riasec', 'catalogo-ocupacion-psychologist',
     'catalogo-instituciones', 'catalogo-institucion-t-uni', 'ver-ocupacion', 'marcar-favorito', 'favoritos',
     'catalogo-familias', 'catalogo-ubicaciones', 'ver-carrera', 'catalogo-inesperada', 'catalogo-carreras-favoritos',
+    'catalogo-familia', 'catalogo-ocupaciones-familia', 'catalogo-ocupacion-afin',
     'diario-preguntas', 'abrir-pregunta-personal', 'pregunta-del-dia', 'escribir-entrada-fija', 'escribir-entrada-libre',
     'editar-entrada', 'diario-entradas', 'diario-amistad', 'desarchivar-pregunta', 'archivar-pregunta',
     'diario-preguntas-buzon', 'check-ins', 'tematicas',
@@ -315,6 +316,9 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert 'geologist' in [c['codigo'] for c in resultado['ocupaciones']]
     assert resultado['familias'] and resultado['por_area'] and resultado['mensaje'] and resultado['lectura']
     assert 'es_favorita' not in resultado['ocupaciones'][0] and 'carreras_recomendadas' not in resultado
+    assert datos['catalogo-familia']['recomendada_posicion'] == 1
+    assert datos['catalogo-ocupacion-afin']['afinidad']['parecido'] == resultado['ocupaciones'][0]['parecido']
+    assert {o['via_familia'] for o in datos['catalogo-ocupaciones-familia']['items']} <= {'PRINCIPAL', 'SECUNDARIA'}
     # B10: catálogo, vistas y favoritos.
     # F06: listados paginados, opciones de filtro, lugar inesperado y filtro de favoritos.
     carreras = PaginaCarreras.model_validate(datos['catalogo-carreras'])

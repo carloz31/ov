@@ -265,8 +265,8 @@
         "duracion": "5 años",
         "es_favorita": true,
         "familia": {
-          "area_codigo": "3",
-          "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+          "area_codigo": "31",
+          "area_nombre": "Ciencias Sociales y del Comportamiento",
           "codigo": "313",
           "nombre": "Psicología"
         },

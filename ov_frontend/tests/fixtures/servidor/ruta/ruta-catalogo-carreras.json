@@ -5,8 +5,8 @@
       "duracion": "3 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
         "codigo": "331",
         "nombre": "Administración de Empresas"
       },
@@ -19,8 +19,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "6",
-        "area_nombre": "Agropecuaria y Veterinaria",
+        "area_codigo": "61",
+        "area_nombre": "Agropecuaria, Forestal y Acuicultura",
         "codigo": "613",
         "nombre": "Acuicultura"
       },
@@ -33,8 +33,8 @@
       "duracion": "5 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
         "codigo": "331",
         "nombre": "Administración de Empresas"
       },
@@ -47,8 +47,8 @@
       "duracion": "3 años",
       "es_favorita": false,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
         "codigo": "331",
         "nombre": "Administración de Empresas"
       },

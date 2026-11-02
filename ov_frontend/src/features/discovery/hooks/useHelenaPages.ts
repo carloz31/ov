@@ -195,10 +195,9 @@ export function useHelenaPages() {
             p.result
               ? {
                   ...p.result,
-                  coincidencias: modoApi ? remoto?.coincidencias : ocupaciones,
-                  carreras_recomendadas: modoApi
-                    ? remoto?.carreras_recomendadas
-                    : carrerasResultado(undefined, false, ocupaciones),
+                  coincidencias: modoApi ? remoto?.ocupaciones : ocupaciones,
+                  carreras_recomendadas: modoApi ? undefined : carrerasResultado(undefined, false, ocupaciones),
+                  familias: modoApi ? remoto?.familias : undefined,
                 }
               : undefined,
             modoApi ? { textoPlano } : undefined,

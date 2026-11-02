@@ -14,7 +14,7 @@ import { Seal } from '@/components/student/Seal'
 import { useDiscovery } from '@/store/discoveryStore'
 
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
-import { textoAjuste } from '@/lib/servidor/adaptadores'
+import { textoBanda } from '@/lib/servidor/adaptadores'
 import { discoveryPaths } from '@/routes/discoveryPaths'
 import {
   careerDetails,
@@ -159,17 +159,9 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
               <article className="sx-d-parchment sx-d-atlas-card" key={o.id}>
                 <FavoriteButton
                   compact
-                  selected={
-                    catalogoDelServidor
-                      ? !!match?.es_favorita
-                      : context.profiles.some((p) => p.occupationId === o.id && p.interested)
-                  }
+                  selected={context.profiles.some((p) => p.occupationId === o.id && p.interested)}
                   pendiente={favorito.pendiente('OCUPACION', o.id)}
-                  onToggle={() =>
-                    catalogoDelServidor
-                      ? favorito.alternar('OCUPACION', o.id, !match?.es_favorita)
-                      : context.toggleOccupationInterest(o.id)
-                  }
+                  onToggle={() => context.toggleOccupationInterest(o.id)}
                 />
                 <Link to={discoveryPaths.occupation(o.id)} className="sx-d-card-link">
                   <BriefcaseBusiness aria-hidden="true" />
@@ -195,8 +187,7 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
               <article className="sx-d-parchment sx-d-atlas-card" key={match!.codigo_onet}>
                 <h2>{match!.titulo}</h2>
                 <p>
-                  Afín a tu perfil · {textoAjuste(match!.ajuste)} · posición {match!.posicion} · correlación{' '}
-                  {match!.correlacion}
+                  Afín a tu perfil · {textoBanda(match!.banda)} · posición {match!.posicion} · {match!.parecido} %
                 </p>
                 <small>Detalle aún no disponible en el catálogo.</small>
               </article>

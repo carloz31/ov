@@ -1,478 +1,10 @@
 {
   "aplicacion": "APL-RIASEC",
   "calculado_en": "2026-10-07T10:00:00",
-  "carreras_recomendadas": [
-    {
-      "codigo": "mtpe-102",
-      "es_favorita": false,
-      "familia": "411",
-      "nombre": "Biotecnología",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-3092-00",
-          "codigo_onet": "19-3092.00",
-          "correlacion": 0.917016,
-          "es_favorita": false,
-          "posicion": 1,
-          "titulo": "Geógrafos"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-196",
-      "es_favorita": false,
-      "familia": "342",
-      "nombre": "Gestión Tributaria",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-3092-00",
-          "codigo_onet": "19-3092.00",
-          "correlacion": 0.917016,
-          "es_favorita": false,
-          "posicion": 1,
-          "titulo": "Geógrafos"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-105",
-      "es_favorita": false,
-      "familia": "594",
-      "nombre": "Ingeniería de Gestión Ambiental",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-1021-00",
-          "codigo_onet": "19-1021.00",
-          "correlacion": 0.854943,
-          "es_favorita": false,
-          "posicion": 2,
-          "titulo": "Bioquímicos y Biofísicos"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-205",
-      "es_favorita": false,
-      "familia": "412",
-      "nombre": "Ingeniería Zootecnia",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-2011-00",
-          "codigo_onet": "19-2011.00",
-          "correlacion": 0.854441,
-          "es_favorita": false,
-          "posicion": 3,
-          "titulo": "Astrónomos"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-251",
-      "es_favorita": false,
-      "familia": "331",
-      "nombre": "Administracion y Emprendimiento",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-1013-00",
-          "codigo_onet": "19-1013.00",
-          "correlacion": 0.842033,
-          "es_favorita": false,
-          "posicion": 4,
-          "titulo": "Científicos Especializados en Suelos y Botánica"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-258",
-      "es_favorita": false,
-      "familia": "523",
-      "nombre": "Ingeniería Agroindustrial y Agronegocios",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-1013-00",
-          "codigo_onet": "19-1013.00",
-          "correlacion": 0.842033,
-          "es_favorita": false,
-          "posicion": 4,
-          "titulo": "Científicos Especializados en Suelos y Botánica"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-28",
-      "es_favorita": false,
-      "familia": "331",
-      "nombre": "Administración de Empresas",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-1013-00",
-          "codigo_onet": "19-1013.00",
-          "correlacion": 0.842033,
-          "es_favorita": false,
-          "posicion": 4,
-          "titulo": "Científicos Especializados en Suelos y Botánica"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-301",
-      "es_favorita": false,
-      "familia": "341",
-      "nombre": "Economía y Negocios Internacionales",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-1013-00",
-          "codigo_onet": "19-1013.00",
-          "correlacion": 0.842033,
-          "es_favorita": false,
-          "posicion": 4,
-          "titulo": "Científicos Especializados en Suelos y Botánica"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-168",
-      "es_favorita": false,
-      "familia": "612",
-      "nombre": "Ciencias Forestales y del Ambiente",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-17-1012-00",
-          "codigo_onet": "17-1012.00",
-          "correlacion": 0.83596,
-          "es_favorita": false,
-          "posicion": 5,
-          "titulo": "Arquitectos Paisajistas"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-86",
-      "es_favorita": false,
-      "familia": "511",
-      "nombre": "Ingeniería de Sistemas de Información / Ingenieria de la Información",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-17-1012-00",
-          "codigo_onet": "17-1012.00",
-          "correlacion": 0.83596,
-          "es_favorita": false,
-          "posicion": 5,
-          "titulo": "Arquitectos Paisajistas"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-502",
-      "es_favorita": false,
-      "familia": "527",
-      "nombre": "Metalurgia",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-3091-00",
-          "codigo_onet": "19-3091.00",
-          "correlacion": 0.832091,
-          "es_favorita": false,
-          "posicion": 6,
-          "titulo": "Antropólogos y Arqueólogos"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-535",
-      "es_favorita": false,
-      "familia": "339",
-      "nombre": "Aministrativo",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-3091-00",
-          "codigo_onet": "19-3091.00",
-          "correlacion": 0.832091,
-          "es_favorita": false,
-          "posicion": 6,
-          "titulo": "Antropólogos y Arqueólogos"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-106",
-      "es_favorita": true,
-      "familia": "531",
-      "nombre": "Ingeniería Civil",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "geologist",
-          "codigo_onet": "19-2042.00",
-          "correlacion": 0.826325,
-          "es_favorita": true,
-          "posicion": 7,
-          "titulo": "Científicos de la Geociencia"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-176",
-      "es_favorita": false,
-      "familia": "594",
-      "nombre": "Ingeniería Ambiental",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "geologist",
-          "codigo_onet": "19-2042.00",
-          "correlacion": 0.826325,
-          "es_favorita": true,
-          "posicion": 7,
-          "titulo": "Científicos de la Geociencia"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-397",
-      "es_favorita": false,
-      "familia": "214",
-      "nombre": "Traducción de Idiomas",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "geologist",
-          "codigo_onet": "19-2042.00",
-          "correlacion": 0.826325,
-          "es_favorita": true,
-          "posicion": 7,
-          "titulo": "Científicos de la Geociencia"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-516",
-      "es_favorita": false,
-      "familia": "525",
-      "nombre": "Electrónica Digital",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "geologist",
-          "codigo_onet": "19-2042.00",
-          "correlacion": 0.826325,
-          "es_favorita": true,
-          "posicion": 7,
-          "titulo": "Científicos de la Geociencia"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-29",
-      "es_favorita": false,
-      "familia": "411",
-      "nombre": "Ingeniería Biotecnológica",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-17-2199-07",
-          "codigo_onet": "17-2199.07",
-          "correlacion": 0.821556,
-          "es_favorita": false,
-          "posicion": 8,
-          "titulo": "Ingenieros en Fotónica"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-536",
-      "es_favorita": false,
-      "familia": "342",
-      "nombre": "Finanzas",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-17-2199-07",
-          "codigo_onet": "17-2199.07",
-          "correlacion": 0.821556,
-          "es_favorita": false,
-          "posicion": 8,
-          "titulo": "Ingenieros en Fotónica"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-242",
-      "es_favorita": false,
-      "familia": "332",
-      "nombre": "Administración y Servicios Turísticos",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-1023-00",
-          "codigo_onet": "19-1023.00",
-          "correlacion": 0.8158,
-          "es_favorita": false,
-          "posicion": 9,
-          "titulo": "Zoólogos y Biólogos de la Fauna Silvestre"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-386",
-      "es_favorita": false,
-      "familia": "333",
-      "nombre": "Marketing Empresarial",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-1011-00",
-          "codigo_onet": "19-1011.00",
-          "correlacion": 0.815156,
-          "es_favorita": false,
-          "posicion": 10,
-          "titulo": "Científicos Especializados en Animales"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-475",
-      "es_favorita": false,
-      "familia": "528",
-      "nombre": "Diseño de Modas",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-1011-00",
-          "codigo_onet": "19-1011.00",
-          "correlacion": 0.815156,
-          "es_favorita": false,
-          "posicion": 10,
-          "titulo": "Científicos Especializados en Animales"
-        }
-      ]
-    },
-    {
-      "codigo": "mtpe-494",
-      "es_favorita": false,
-      "familia": "332",
-      "nombre": "Gastronomía y Arte Culinario",
-      "via": [
-        {
-          "ajuste": "BEST_FIT",
-          "codigo": "onet-19-1011-00",
-          "codigo_onet": "19-1011.00",
-          "correlacion": 0.815156,
-          "es_favorita": false,
-          "posicion": 10,
-          "titulo": "Científicos Especializados en Animales"
-        }
-      ]
-    }
-  ],
   "codigo_interes": {
     "codigo": "IRA",
     "hay_empate": false
   },
-  "coincidencias": [
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "onet-19-3092-00",
-      "codigo_onet": "19-3092.00",
-      "correlacion": 0.917016,
-      "es_favorita": false,
-      "posicion": 1,
-      "titulo": "Geógrafos"
-    },
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "onet-19-1021-00",
-      "codigo_onet": "19-1021.00",
-      "correlacion": 0.854943,
-      "es_favorita": false,
-      "posicion": 2,
-      "titulo": "Bioquímicos y Biofísicos"
-    },
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "onet-19-2011-00",
-      "codigo_onet": "19-2011.00",
-      "correlacion": 0.854441,
-      "es_favorita": false,
-      "posicion": 3,
-      "titulo": "Astrónomos"
-    },
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "onet-19-1013-00",
-      "codigo_onet": "19-1013.00",
-      "correlacion": 0.842033,
-      "es_favorita": false,
-      "posicion": 4,
-      "titulo": "Científicos Especializados en Suelos y Botánica"
-    },
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "onet-17-1012-00",
-      "codigo_onet": "17-1012.00",
-      "correlacion": 0.83596,
-      "es_favorita": false,
-      "posicion": 5,
-      "titulo": "Arquitectos Paisajistas"
-    },
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "onet-19-3091-00",
-      "codigo_onet": "19-3091.00",
-      "correlacion": 0.832091,
-      "es_favorita": false,
-      "posicion": 6,
-      "titulo": "Antropólogos y Arqueólogos"
-    },
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "geologist",
-      "codigo_onet": "19-2042.00",
-      "correlacion": 0.826325,
-      "es_favorita": true,
-      "posicion": 7,
-      "titulo": "Científicos de la Geociencia"
-    },
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "onet-17-2199-07",
-      "codigo_onet": "17-2199.07",
-      "correlacion": 0.821556,
-      "es_favorita": false,
-      "posicion": 8,
-      "titulo": "Ingenieros en Fotónica"
-    },
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "onet-19-1023-00",
-      "codigo_onet": "19-1023.00",
-      "correlacion": 0.8158,
-      "es_favorita": false,
-      "posicion": 9,
-      "titulo": "Zoólogos y Biólogos de la Fauna Silvestre"
-    },
-    {
-      "ajuste": "BEST_FIT",
-      "codigo": "onet-19-1011-00",
-      "codigo_onet": "19-1011.00",
-      "correlacion": 0.815156,
-      "es_favorita": false,
-      "posicion": 10,
-      "titulo": "Científicos Especializados en Animales"
-    }
-  ],
   "dimensiones": [
     {
       "codigo": "R",
@@ -571,7 +103,845 @@
       "puntaje_visual": 0
     }
   ],
+  "familias": [
+    {
+      "area_codigo": "41",
+      "area_nombre": "Ciencias de la Vida",
+      "codigo": "411",
+      "descripcion": "Se centra en los seres vivos, su funcionamiento y sus relaciones con el entorno. Incluye desde organismos muy pequeños hasta plantas y animales, así como la herencia y los cambios de la vida. Aborda la observación y el análisis de muestras, la diversidad natural y el uso de conocimientos sobre la vida en distintas actividades.",
+      "nombre": "Biología",
+      "ocupaciones": [
+        {
+          "codigo": "onet-19-1021-00",
+          "parecido": 85,
+          "titulo": "Bioquímico"
+        },
+        {
+          "codigo": "onet-19-1023-00",
+          "parecido": 82,
+          "titulo": "Biólogo de fauna silvestre"
+        },
+        {
+          "codigo": "onet-19-1022-00",
+          "parecido": 79,
+          "titulo": "Microbiólogo"
+        },
+        {
+          "codigo": "onet-19-1029-03",
+          "parecido": 67,
+          "titulo": "Genetista"
+        },
+        {
+          "codigo": "biologist",
+          "parecido": 66,
+          "titulo": "Biólogo"
+        }
+      ],
+      "posicion": 1,
+      "tipos": [
+        "UNIVERSIDAD"
+      ],
+      "total_carreras": 8,
+      "total_ocupaciones": 5,
+      "unica_ocupacion": false
+    },
+    {
+      "area_codigo": "61",
+      "area_nombre": "Agropecuaria, Forestal y Acuicultura",
+      "codigo": "611",
+      "descripcion": "Se centra en el cultivo de plantas y la crianza de animales en distintos entornos rurales. Incluye la preparación del suelo, el riego, la alimentación y el manejo de la producción. Aborda el cuidado de cultivos y animales, el uso de equipos y la conservación de recursos, desde la planificación hasta la obtención de productos.",
+      "nombre": "Agropecuaria",
+      "ocupaciones": [
+        {
+          "codigo": "onet-19-1013-00",
+          "parecido": 84,
+          "titulo": "Ingeniero agrónomo"
+        },
+        {
+          "codigo": "agricultural-engineer",
+          "parecido": 79,
+          "titulo": "Ingeniero agrícola"
+        }
+      ],
+      "posicion": 2,
+      "tipos": [
+        "UNIVERSIDAD",
+        "INSTITUTO",
+        "FFAA_POLICIA"
+      ],
+      "total_carreras": 23,
+      "total_ocupaciones": 4,
+      "unica_ocupacion": false
+    },
+    {
+      "area_codigo": "42",
+      "area_nombre": "Ciencias Físicas y Químicas",
+      "codigo": "423",
+      "descripcion": "Se centra en la composición, la historia y los cambios de la Tierra. Incluye las rocas, los suelos, los minerales y los procesos que modifican el terreno. Aborda la exploración y el análisis de muestras para conocer recursos naturales, reconocer peligros y evaluar las condiciones del suelo en distintas actividades y obras.",
+      "nombre": "Geología",
+      "ocupaciones": [
+        {
+          "codigo": "geologist",
+          "parecido": 83,
+          "titulo": "Geólogo"
+        },
+        {
+          "codigo": "onet-19-2043-00",
+          "parecido": 69,
+          "titulo": "Hidrólogo"
+        }
+      ],
+      "posicion": 3,
+      "tipos": [
+        "UNIVERSIDAD"
+      ],
+      "total_carreras": 3,
+      "total_ocupaciones": 2,
+      "unica_ocupacion": false
+    },
+    {
+      "area_codigo": "59",
+      "area_nombre": "Otras Ingenierías",
+      "codigo": "599",
+      "descripcion": "Reúne aplicaciones tecnológicas relacionadas con vehículos, equipos para la atención de la salud, contenidos gráficos y transporte. Incluye el diseño y la mejora de productos, equipos y servicios. Aborda también su funcionamiento, mantenimiento y organización, mediante el uso de conocimientos científicos y herramientas para resolver necesidades concretas en estos ámbitos.",
+      "nombre": "Otras Ingenierías",
+      "ocupaciones": [
+        {
+          "codigo": "onet-17-2141-02",
+          "parecido": 77,
+          "titulo": "Ingeniero automotriz"
+        },
+        {
+          "codigo": "onet-17-2031-00",
+          "parecido": 73,
+          "titulo": "Ingeniero biomédico"
+        }
+      ],
+      "posicion": 4,
+      "tipos": [
+        "UNIVERSIDAD"
+      ],
+      "total_carreras": 4,
+      "total_ocupaciones": 3,
+      "unica_ocupacion": false
+    },
+    {
+      "area_codigo": "52",
+      "area_nombre": "Ingeniería Industrial y Producción",
+      "codigo": "526",
+      "descripcion": "Se centra en las máquinas, los motores y los mecanismos que producen o transmiten movimiento. Incluye vehículos, equipos industriales y piezas de distintos materiales. Aborda su diseño, fabricación, montaje, reparación y mantenimiento, junto con el uso de herramientas y las medidas de seguridad necesarias para que funcionen en condiciones adecuadas.",
+      "nombre": "Ingeniería Mecánica",
+      "ocupaciones": [
+        {
+          "codigo": "onet-17-2131-00",
+          "parecido": 78,
+          "titulo": "Ingeniero de materiales"
+        },
+        {
+          "codigo": "onet-17-3027-00",
+          "parecido": 67,
+          "titulo": "Técnico en mecánica de producción"
+        },
+        {
+          "codigo": "onet-17-2199-05",
+          "parecido": 67,
+          "titulo": "Ingeniero mecatrónico"
+        }
+      ],
+      "posicion": 5,
+      "tipos": [
+        "UNIVERSIDAD",
+        "INSTITUTO",
+        "FFAA_POLICIA"
+      ],
+      "total_carreras": 37,
+      "total_ocupaciones": 16,
+      "unica_ocupacion": false
+    }
+  ],
+  "guia_abierta": false,
   "instrumento": "TEST-RIASEC",
-  "lectura": "Este test mide qué tipo de actividades te atraen, en seis tipos de interés. No mide capacidad ni talento: mide gusto. Cada tipo va de 0 a 100, la misma escala con la que se describe cada ocupación, para que puedas compararte con ella. De aquí salen tu código de interés, las ocupaciones que se parecen a lo que te gusta y las carreras que llevan a ellas. Tómalo como punto de partida para explorar, no como una lista cerrada.",
-  "perfil_plano": false
+  "lectura": "Tu código son los tres tipos de actividad que más te atrajeron, y las barras muestran cuánto resonó cada uno, de 0 a 100. Habla de gusto, no de talento: un tipo bajo no es algo que hagas mal. Las ocupaciones afines tienen un perfil de intereses parecido al tuyo y las familias de carreras son las que llevan a ellas. Explora también lo que no salió arriba: tus gustos cambian con lo que vas conociendo.",
+  "mensaje": "Es una pista para explorar, no un veredicto.",
+  "ocupaciones": [
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-3092-00",
+      "codigo_onet": "19-3092.00",
+      "familia_principal": {
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
+        "codigo": "593",
+        "nombre": "Geografía"
+      },
+      "parecido": 92,
+      "posicion": 1,
+      "resumen": "Estudian la naturaleza y el uso de las áreas de la superficie terrestre por medio de la relación e interpretación de las interacciones de…",
+      "riasec": [
+        "I",
+        "R"
+      ],
+      "titulo": "Geógrafo"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-1021-00",
+      "codigo_onet": "19-1021.00",
+      "familia_principal": {
+        "area_codigo": "41",
+        "area_nombre": "Ciencias de la Vida",
+        "codigo": "411",
+        "nombre": "Biología"
+      },
+      "parecido": 85,
+      "posicion": 2,
+      "resumen": "Estudian la composición química o los principios físicos de las células y organismos vivos, su energía eléctrica y mecánica y fenómenos…",
+      "riasec": [
+        "I",
+        "R"
+      ],
+      "titulo": "Bioquímico"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-1013-00",
+      "codigo_onet": "19-1013.00",
+      "familia_principal": {
+        "area_codigo": "61",
+        "area_nombre": "Agropecuaria, Forestal y Acuicultura",
+        "codigo": "611",
+        "nombre": "Agropecuaria"
+      },
+      "parecido": 84,
+      "posicion": 3,
+      "resumen": "Realizan investigaciones sobre cultivos, fisiología, producción, rendimiento y gestión agrícola de cultivos, plantas o árboles, arbustos…",
+      "riasec": [
+        "I",
+        "R"
+      ],
+      "titulo": "Ingeniero agrónomo"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-17-1012-00",
+      "codigo_onet": "17-1012.00",
+      "familia_principal": {
+        "area_codigo": "53",
+        "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
+        "codigo": "533",
+        "nombre": "Arquitectura y Urbanismo"
+      },
+      "parecido": 84,
+      "posicion": 4,
+      "resumen": "Planifican y diseñan áreas de terreno para proyectos tales como parques y otros espacios recreativos, aeropuertos, autopistas, hospitales…",
+      "riasec": [
+        "R",
+        "I",
+        "A"
+      ],
+      "titulo": "Arquitecto paisajista"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-3091-00",
+      "codigo_onet": "19-3091.00",
+      "familia_principal": {
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
+        "codigo": "211",
+        "nombre": "Antropología y Arqueología"
+      },
+      "parecido": 83,
+      "posicion": 5,
+      "resumen": "Estudian el origen, desarrollo y comportamiento de los seres humanos.",
+      "riasec": [
+        "I",
+        "A"
+      ],
+      "titulo": "Antropólogo y arqueólogo"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "geologist",
+      "codigo_onet": "19-2042.00",
+      "familia_principal": {
+        "area_codigo": "42",
+        "area_nombre": "Ciencias Físicas y Químicas",
+        "codigo": "423",
+        "nombre": "Geología"
+      },
+      "parecido": 83,
+      "posicion": 6,
+      "resumen": "Estudian la composición, estructura y otros aspectos físicos de la Tierra.",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Geólogo"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-1023-00",
+      "codigo_onet": "19-1023.00",
+      "familia_principal": {
+        "area_codigo": "41",
+        "area_nombre": "Ciencias de la Vida",
+        "codigo": "411",
+        "nombre": "Biología"
+      },
+      "parecido": 82,
+      "posicion": 7,
+      "resumen": "Estudian los orígenes, comportamientos, enfermedades, genética y procesos vitales de los animales y de la fauna silvestre.",
+      "riasec": [
+        "I",
+        "R"
+      ],
+      "titulo": "Biólogo de fauna silvestre"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-1011-00",
+      "codigo_onet": "19-1011.00",
+      "familia_principal": {
+        "area_codigo": "41",
+        "area_nombre": "Ciencias de la Vida",
+        "codigo": "412",
+        "nombre": "Zootecnia"
+      },
+      "parecido": 82,
+      "posicion": 8,
+      "resumen": "Realizan investigaciones sobre temas de genética, nutrición, reproducción, cría y desarrollo de animales domésticos de granja.",
+      "riasec": [
+        "I",
+        "R"
+      ],
+      "titulo": "Zootecnista"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-1022-00",
+      "codigo_onet": "19-1022.00",
+      "familia_principal": {
+        "area_codigo": "41",
+        "area_nombre": "Ciencias de la Vida",
+        "codigo": "411",
+        "nombre": "Biología"
+      },
+      "parecido": 79,
+      "posicion": 9,
+      "resumen": "Investigan el crecimiento, la estructura, desarrollo y demás características de los organismos microscópicos, tales como bacterias, algas…",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Microbiólogo"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "agricultural-engineer",
+      "codigo_onet": "17-2021.00",
+      "familia_principal": {
+        "area_codigo": "61",
+        "area_nombre": "Agropecuaria, Forestal y Acuicultura",
+        "codigo": "611",
+        "nombre": "Agropecuaria"
+      },
+      "parecido": 79,
+      "posicion": 10,
+      "resumen": "Aplican conocimientos de la tecnología de la ingeniería y de las ciencias biológicas a problemas agrícolas relacionados con la energía y…",
+      "riasec": [
+        "R",
+        "I"
+      ],
+      "titulo": "Ingeniero agrícola"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-17-2131-00",
+      "codigo_onet": "17-2131.00",
+      "familia_principal": {
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
+        "codigo": "526",
+        "nombre": "Ingeniería Mecánica"
+      },
+      "parecido": 78,
+      "posicion": 11,
+      "resumen": "Evalúan y desarrollan maquinarias y procesos para la fabricación de materiales que se utilizan en la manufacturación de productos que…",
+      "riasec": [
+        "R",
+        "I",
+        "C"
+      ],
+      "titulo": "Ingeniero de materiales"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-17-2141-02",
+      "codigo_onet": "17-2141.02",
+      "familia_principal": {
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
+        "codigo": "599",
+        "nombre": "Otras Ingenierías"
+      },
+      "parecido": 77,
+      "posicion": 12,
+      "resumen": "Desarrollan diseños nuevos o mejorados para piezas estructurales de vehículos, maquinarias, transmisiones u otros sistemas de vehículos…",
+      "riasec": [
+        "R",
+        "I",
+        "C"
+      ],
+      "titulo": "Ingeniero automotriz"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-1012-00",
+      "codigo_onet": "19-1012.00",
+      "familia_principal": {
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
+        "codigo": "522",
+        "nombre": "Ingeniería en Industrias Alimentarias"
+      },
+      "parecido": 77,
+      "posicion": 13,
+      "resumen": "Utilizan la química, microbiología, ingeniería y otras ciencias para estudiar los principios básicos del procesamiento y la deterioración…",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Ingeniero en industrias alimentarias"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-2012-00",
+      "codigo_onet": "19-2012.00",
+      "familia_principal": {
+        "area_codigo": "42",
+        "area_nombre": "Ciencias Físicas y Químicas",
+        "codigo": "421",
+        "nombre": "Física"
+      },
+      "parecido": 74,
+      "posicion": 14,
+      "resumen": "Realizan investigaciones sobre fenómenos físicos, desarrollan teorías sobre la base de la observación y experimentación, y diseñan métodos…",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Físico"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-19-1042-00",
+      "codigo_onet": "19-1042.00",
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "711",
+        "nombre": "Medicina"
+      },
+      "parecido": 74,
+      "posicion": 15,
+      "resumen": "Realizan investigaciones orientadas a la comprensión de las enfermedades humanas y del mejoramiento de la salud humana.",
+      "riasec": [
+        "I",
+        "R"
+      ],
+      "titulo": "Investigador biomédico"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "meteorologist",
+      "codigo_onet": "19-2021.00",
+      "familia_principal": {
+        "area_codigo": "41",
+        "area_nombre": "Ciencias de la Vida",
+        "codigo": "414",
+        "nombre": "Meteorología"
+      },
+      "parecido": 73,
+      "posicion": 16,
+      "resumen": "Investigan los fenómenos atmosféricos e interpretan datos meteorológicos recopilados por estaciones terrestres y aéreas, satélites y…",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Meteorólogo"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-17-2031-00",
+      "codigo_onet": "17-2031.00",
+      "familia_principal": {
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
+        "codigo": "599",
+        "nombre": "Otras Ingenierías"
+      },
+      "parecido": 73,
+      "posicion": 17,
+      "resumen": "Aplican conocimientos de ingeniería, biología, química, ciencias de la computación, y principios de biomecánica para diseñar, desarrollar…",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Ingeniero biomédico"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-17-2011-00",
+      "codigo_onet": "17-2011.00",
+      "familia_principal": {
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
+        "codigo": "592",
+        "nombre": "Ingeniería Naval y Aeronáutica"
+      },
+      "parecido": 72,
+      "posicion": 18,
+      "resumen": "Realizan tareas de ingeniería en lo que se refiere al diseño, construcción, y pruebas de aviones, misiles, y naves espaciales.",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Ingeniero aeronáutico"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "onet-17-2121-00",
+      "codigo_onet": "17-2121.00",
+      "familia_principal": {
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
+        "codigo": "592",
+        "nombre": "Ingeniería Naval y Aeronáutica"
+      },
+      "parecido": 70,
+      "posicion": 19,
+      "resumen": "Diseñan, desarrollan, y evalúan la operación de embarcaciones, maquinarias, y equipos de buques, como por ejemplo, sistemas de suministro…",
+      "riasec": [
+        "R",
+        "I",
+        "C"
+      ],
+      "titulo": "Ingeniero naval"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-19-2043-00",
+      "codigo_onet": "19-2043.00",
+      "familia_principal": {
+        "area_codigo": "42",
+        "area_nombre": "Ciencias Físicas y Químicas",
+        "codigo": "423",
+        "nombre": "Geología"
+      },
+      "parecido": 69,
+      "posicion": 20,
+      "resumen": "Investigan la distribución, circulación y las propiedades físicas de las aguas terrestres y subterráneas, y estudian la forma e intensidad…",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Hidrólogo"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-17-2072-00",
+      "codigo_onet": "17-2072.00",
+      "familia_principal": {
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
+        "codigo": "525",
+        "nombre": "Ingeniería Electrónica"
+      },
+      "parecido": 69,
+      "posicion": 21,
+      "resumen": "Investigan, diseñan, desarrollan o prueban componentes y sistemas electrónicos para uso comercial, industrial, militar, o científico por…",
+      "riasec": [
+        "R",
+        "I",
+        "C"
+      ],
+      "titulo": "Ingeniero electrónico"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-19-2031-00",
+      "codigo_onet": "19-2031.00",
+      "familia_principal": {
+        "area_codigo": "42",
+        "area_nombre": "Ciencias Físicas y Químicas",
+        "codigo": "422",
+        "nombre": "Química"
+      },
+      "parecido": 68,
+      "posicion": 22,
+      "resumen": "Realizan análisis cualitativos y cuantitativos o experimentos de laboratorio con fines de control de calidad o de proceso, o para…",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Químico"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-17-2041-00",
+      "codigo_onet": "17-2041.00",
+      "familia_principal": {
+        "area_codigo": "42",
+        "area_nombre": "Ciencias Físicas y Químicas",
+        "codigo": "422",
+        "nombre": "Química"
+      },
+      "parecido": 68,
+      "posicion": 23,
+      "resumen": "Diseñan equipos para plantas químicas y dispositivos para procesar y fabricar químicos y productos tales como gasolina, caucho sintético…",
+      "riasec": [
+        "R",
+        "I",
+        "C"
+      ],
+      "titulo": "Ingeniero químico"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-19-1029-03",
+      "codigo_onet": "19-1029.03",
+      "familia_principal": {
+        "area_codigo": "41",
+        "area_nombre": "Ciencias de la Vida",
+        "codigo": "411",
+        "nombre": "Biología"
+      },
+      "parecido": 67,
+      "posicion": 24,
+      "resumen": "Investigan y estudian la herencia de las características a nivel molecular, de organismo o de población.",
+      "riasec": [
+        "I",
+        "C",
+        "R"
+      ],
+      "titulo": "Genetista"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-17-3027-00",
+      "codigo_onet": "17-3027.00",
+      "familia_principal": {
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
+        "codigo": "526",
+        "nombre": "Ingeniería Mecánica"
+      },
+      "parecido": 67,
+      "posicion": 25,
+      "resumen": "Aplican la teoría y los principios de la ingeniería mecánica para modificar, desarrollar, probar, o ajustar maquinarias y equipos bajo la…",
+      "riasec": [
+        "R",
+        "I",
+        "C"
+      ],
+      "titulo": "Técnico en mecánica de producción"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-19-2041-00",
+      "codigo_onet": "19-2041.00",
+      "familia_principal": {
+        "area_codigo": "59",
+        "area_nombre": "Otras Ingenierías",
+        "codigo": "594",
+        "nombre": "Ecología y Medio Ambiente"
+      },
+      "parecido": 67,
+      "posicion": 26,
+      "resumen": "Llevan a cabo estudios o realizan investigaciones con el propósito de identificar, mitigar o eliminar fuentes de contaminación o riesgos…",
+      "riasec": [
+        "I",
+        "R",
+        "C"
+      ],
+      "titulo": "Científico ambiental"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-17-2199-05",
+      "codigo_onet": "17-2199.05",
+      "familia_principal": {
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
+        "codigo": "526",
+        "nombre": "Ingeniería Mecánica"
+      },
+      "parecido": 67,
+      "posicion": 27,
+      "resumen": "Estudian, diseñan, desarrollan o prueban la automatización, sistemas inteligentes, dispositivos inteligentes o sistemas de control…",
+      "riasec": [
+        "R",
+        "I",
+        "C"
+      ],
+      "titulo": "Ingeniero mecatrónico"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-17-2071-00",
+      "codigo_onet": "17-2071.00",
+      "familia_principal": {
+        "area_codigo": "52",
+        "area_nombre": "Ingeniería Industrial y Producción",
+        "codigo": "524",
+        "nombre": "Ingeniería Eléctrica"
+      },
+      "parecido": 67,
+      "posicion": 28,
+      "resumen": "Investigan, diseñan, desarrollan, prueban o supervisan la fabricación e instalación de equipos, componentes o sistemas eléctricos para uso…",
+      "riasec": [
+        "R",
+        "I",
+        "C"
+      ],
+      "titulo": "Ingeniero eléctrico"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "biologist",
+      "codigo_onet": "19-1029.04",
+      "familia_principal": {
+        "area_codigo": "41",
+        "area_nombre": "Ciencias de la Vida",
+        "codigo": "411",
+        "nombre": "Biología"
+      },
+      "parecido": 66,
+      "posicion": 29,
+      "resumen": "Realizan investigaciones o estudios sobre los principios básicos de la flora y de la fauna, tal como su origen, relación, desarrollo…",
+      "riasec": [
+        "I",
+        "C",
+        "R"
+      ],
+      "titulo": "Biólogo"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "onet-15-1221-00",
+      "codigo_onet": "15-1221.00",
+      "familia_principal": {
+        "area_codigo": "44",
+        "area_nombre": "Informática",
+        "codigo": "441",
+        "nombre": "Ciencias de la Computación"
+      },
+      "parecido": 66,
+      "posicion": 30,
+      "resumen": "Realizan investigaciones sobre los fundamentos de las ciencias de la computación e información en condición de teóricos, diseñadores, o…",
+      "riasec": [
+        "I",
+        "C"
+      ],
+      "titulo": "Científico de la computación (investigador)"
+    }
+  ],
+  "perfil_plano": false,
+  "perfil_poco_marcado": false,
+  "por_area": [
+    {
+      "area_codigo": "59",
+      "area_nombre": "Otras Ingenierías",
+      "ocupaciones": [
+        "onet-19-3092-00",
+        "onet-17-2141-02",
+        "onet-17-2031-00",
+        "onet-17-2011-00",
+        "onet-17-2121-00",
+        "onet-19-2041-00"
+      ]
+    },
+    {
+      "area_codigo": "41",
+      "area_nombre": "Ciencias de la Vida",
+      "ocupaciones": [
+        "onet-19-1021-00",
+        "onet-19-1023-00",
+        "onet-19-1011-00",
+        "onet-19-1022-00",
+        "meteorologist",
+        "onet-19-1029-03",
+        "biologist"
+      ]
+    },
+    {
+      "area_codigo": "61",
+      "area_nombre": "Agropecuaria, Forestal y Acuicultura",
+      "ocupaciones": [
+        "onet-19-1013-00",
+        "agricultural-engineer"
+      ]
+    },
+    {
+      "area_codigo": "53",
+      "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
+      "ocupaciones": [
+        "onet-17-1012-00"
+      ]
+    },
+    {
+      "area_codigo": "21",
+      "area_nombre": "Humanidades",
+      "ocupaciones": [
+        "onet-19-3091-00"
+      ]
+    },
+    {
+      "area_codigo": "42",
+      "area_nombre": "Ciencias Físicas y Químicas",
+      "ocupaciones": [
+        "geologist",
+        "onet-19-2012-00",
+        "onet-19-2043-00",
+        "onet-19-2031-00",
+        "onet-17-2041-00"
+      ]
+    },
+    {
+      "area_codigo": "52",
+      "area_nombre": "Ingeniería Industrial y Producción",
+      "ocupaciones": [
+        "onet-17-2131-00",
+        "onet-19-1012-00",
+        "onet-17-2072-00",
+        "onet-17-3027-00",
+        "onet-17-2199-05",
+        "onet-17-2071-00"
+      ]
+    },
+    {
+      "area_codigo": "71",
+      "area_nombre": "Ciencias de la Salud",
+      "ocupaciones": [
+        "onet-19-1042-00"
+      ]
+    },
+    {
+      "area_codigo": "44",
+      "area_nombre": "Informática",
+      "ocupaciones": [
+        "onet-15-1221-00"
+      ]
+    }
+  ]
 }

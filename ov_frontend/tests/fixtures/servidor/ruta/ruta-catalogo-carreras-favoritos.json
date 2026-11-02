@@ -5,8 +5,8 @@
       "duracion": "5 años",
       "es_favorita": true,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "32",
+        "area_nombre": "Ciencias de la Comunicación",
         "codigo": "321",
         "nombre": "Ciencias de la Comunicación"
       },
@@ -23,8 +23,8 @@
       "duracion": "5 años",
       "es_favorita": true,
       "familia": {
-        "area_codigo": "5",
-        "area_nombre": "Ingeniería, Industria y Construcción",
+        "area_codigo": "53",
+        "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
         "codigo": "531",
         "nombre": "Ingeniería Civil"
       },
@@ -40,8 +40,8 @@
       "duracion": "5 años",
       "es_favorita": true,
       "familia": {
-        "area_codigo": "3",
-        "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
         "codigo": "313",
         "nombre": "Psicología"
       },

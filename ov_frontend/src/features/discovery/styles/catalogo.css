@@ -789,3 +789,81 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Ajuste resultados-intereses: detalle de ocupación por familias (boceto 05). */
+.sx-c-etiqueta-enlace {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.sx-c-sellos-afinidad {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.sx-c-afinidad {
+  background: color-mix(in srgb, var(--primary) 22%, var(--sx-parchment));
+  color: var(--primary);
+}
+.sx-c-familia-principal {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--primary);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary) 5%, var(--sx-parchment));
+}
+.sx-c-familia-principal h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.sx-c-familia-principal > p {
+  margin: 0;
+  color: var(--sx-parchment-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.sx-c-familia-principal > .sx-c-etiquetas {
+  display: flex;
+}
+.sx-c-rotulo-familia {
+  color: var(--primary) !important;
+  font-size: 11px !important;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.sx-c-boton-familia {
+  display: inline-flex;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--primary-foreground, #fff);
+  font-size: 14px;
+  font-weight: 750;
+}
+.sx-c-ejemplo {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-c-ejemplo strong {
+  color: var(--sx-parchment-ink);
+}
+.sx-c-enlace {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sx-c-enlace-menor {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}

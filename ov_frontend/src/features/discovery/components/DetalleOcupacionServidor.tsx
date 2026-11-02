@@ -1,13 +1,12 @@
 import { Link } from 'react-router'
 import { FavoriteButton } from '@/components/student/FavoriteButton'
 import { Parchment } from '@/components/student/Parchment'
-import { nombresTipoCarrera } from '@/lib/servidor/adaptadoresCatalogo'
-import { useOpcionesCatalogo } from '@/store/servidor/catalogo'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import { useDetalleServidor } from '../hooks/useDetalleServidor'
 import { useColeccionIconos } from '../hooks/useIconosObtenidos'
 import { useModoCatalogo } from '../hooks/useModoCatalogo'
 import { preparacionJobZone } from '../data/catalogoTextos'
+import { etiquetaAfinidad } from '../lib/resultadoIntereses'
 import { AtlasNavigation } from './AtlasNavigation'
 import { AvisoFavorito } from './AvisoFavorito'
 import { CatalogRevisitNotice } from './CatalogRevisitNotice'
@@ -16,6 +15,7 @@ import { EntrevistasOcupacionServidor } from './EntrevistasOcupacionServidor'
 import { EsperaDetalle } from './EsperaDetalle'
 import { FuentesCatalogo } from './FuentesCatalogo'
 import { IconoProfesion } from './IconoProfesion'
+import { LlegarAOcupacion } from './LlegarAOcupacion'
 import { PerfilIntereses } from './PerfilIntereses'
 import { SellosRiasec } from './SellosRiasec'
 import { UnexpectedPlace } from './UnexpectedPlace'
@@ -39,8 +39,9 @@ function Etiquetas({ titulo, items }: { titulo: string; items: string[] }) {
 }
 
 // F06 · ajuste catalogo-datos-reales (F6b): el detalle de profesión en api. Cabecera con el ícono (revelado o
-// por revelar), grupo, preparación y otros nombres; qué hacen, perfil de intereses, a quién atrae,
-// conocimientos y aptitudes; al lado, las carreras, las entrevistas del salón y el lugar inesperado.
+// por revelar), área, familia, preparación y otros nombres; qué hacen, perfil de intereses, a quién atrae,
+// conocimientos y aptitudes; al lado, cómo se llega por familias (ajuste resultados-intereses), las entrevistas
+// del salón y el lugar inesperado.
 // Ajuste catalogo-apoderado: en modo lectura, el ícono siempre visible (sin su etiqueta de revelado) y sin
 // favorito, comparación con el resultado, entrevistas ni lugar inesperado.
 export function DetalleOcupacionServidor({
@@ -53,7 +54,6 @@ export function DetalleOcupacionServidor({
   const { modoLectura, rutas } = useModoCatalogo()
   const { datos: ocupacion, favorito, ...estado } = useDetalleServidor('ocupaciones', codigo)
   const iconos = useColeccionIconos()
-  const opciones = useOpcionesCatalogo(true)
   const servidor = useEstadoServidor()
   if (!ocupacion) return <EsperaDetalle {...estado} onReintentar={estado.reintentar} variante={variante} />
   const revelado = iconos.obtenido(ocupacion.codigo)
@@ -61,7 +61,7 @@ export function DetalleOcupacionServidor({
   const tituloCaso = (servidor.actividades.datos ?? [])
     .flatMap((b) => b.actividades)
     .find((a) => a.codigo === caso)?.titulo
-  const grupo = opciones?.grupos.find((g) => g.codigo === ocupacion.grupo)?.nombre
+  const familia = ocupacion.familia_principal
   const resultado = modoLectura ? undefined : servidor.resultadoRiasec?.codigo_interes?.codigo
   return (
     <DiscoveryStage ambient="atlas" navegacion={false} variante={variante}>
@@ -72,7 +72,17 @@ export function DetalleOcupacionServidor({
           <IconoProfesion grupo={ocupacion.grupo} revelado={revelado} grande />
           <div className="sx-c-cabecera-texto">
             <div className="sx-c-etiquetas">
-              {grupo && <span className="sx-c-etiqueta sx-c-etiqueta-oscura">Grupo: {grupo}</span>}
+              {familia && (
+                <>
+                  <span className="sx-c-etiqueta sx-c-etiqueta-oscura">Área: {familia.area_nombre}</span>
+                  <Link
+                    className="sx-c-etiqueta sx-c-etiqueta-oscura sx-c-etiqueta-enlace"
+                    to={`${rutas.catalog.careers}?${new URLSearchParams({ area: familia.area_codigo, familia: familia.codigo })}`}
+                  >
+                    Familia: {familia.nombre}
+                  </Link>
+                </>
+              )}
               {ocupacion.job_zone && (
                 <span className="sx-c-etiqueta sx-c-etiqueta-oscura">
                   Preparación: {preparacionJobZone[ocupacion.job_zone]} ({ocupacion.job_zone} de 5)
@@ -94,7 +104,14 @@ export function DetalleOcupacionServidor({
                 También se le llama <strong>{ocupacion.tambien_llamado.slice(0, 4).join(', ')}</strong>
               </p>
             )}
-            <SellosRiasec letras={ocupacion.riasec} conNombres />
+            <div className="sx-c-sellos-afinidad">
+              <SellosRiasec letras={ocupacion.riasec} conNombres />
+              {!modoLectura && ocupacion.afinidad && (
+                <span className="sx-c-etiqueta sx-c-afinidad" data-banda={ocupacion.afinidad.banda}>
+                  {etiquetaAfinidad(ocupacion.afinidad).replace(' · ', ' a tu perfil · ')}
+                </span>
+              )}
+            </div>
           </div>
           {!modoLectura && (
             <div className="sx-c-cabecera-acciones">
@@ -159,24 +176,7 @@ export function DetalleOcupacionServidor({
           </div>
         </main>
         <aside className="sx-d-stack">
-          {ocupacion.carreras.length > 0 && (
-            <Parchment title="Carreras que llevan aquí" className="sx-c-panel">
-              <p className="sx-c-conteo">
-                {ocupacion.carreras.length} {ocupacion.carreras.length === 1 ? 'carrera' : 'carreras'}
-              </p>
-              {ocupacion.carreras.map((c) => (
-                <Link key={c.codigo} className="sx-d-related sx-c-fila-enlace" to={rutas.career(c.codigo)}>
-                  <span>
-                    <strong>{c.nombre}</strong>
-                    {c.duracion && <small>{c.duracion}</small>}
-                  </span>
-                  <span className="sx-c-etiqueta" data-tipo={c.tipo}>
-                    {nombresTipoCarrera[c.tipo]}
-                  </span>
-                </Link>
-              ))}
-            </Parchment>
-          )}
+          <LlegarAOcupacion ocupacion={ocupacion} rutas={rutas} />
           {!modoLectura && (
             <>
               <EntrevistasOcupacionServidor codigo={ocupacion.codigo} />

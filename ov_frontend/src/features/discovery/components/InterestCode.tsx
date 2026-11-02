@@ -1,7 +1,16 @@
 import { fragmentosResumen } from '../data/dimensionExamples'
 import type { DimensionPagina } from '../types'
 
-export function InterestCode({ dimensiones, empate }: { dimensiones: DimensionPagina[]; empate: boolean }) {
+// Ajuste resultados-intereses (api): con `alPulsar`, cada letra abre la guía en su tarjeta.
+export function InterestCode({
+  dimensiones,
+  empate,
+  alPulsar,
+}: {
+  dimensiones: DimensionPagina[]
+  empate: boolean
+  alPulsar?: (codigo: string) => void
+}) {
   const fragmentos = dimensiones.map((d) => fragmentosResumen[d.code])
   return (
     <section className="sx-d-result-protagonist" aria-labelledby="codigo-interes">
@@ -9,9 +18,21 @@ export function InterestCode({ dimensiones, empate }: { dimensiones: DimensionPa
       <div className="sx-d-result-code">
         {dimensiones.map((d, i) => (
           <div key={d.code}>
-            <span className="sx-d-result-circle" data-dimension={d.code}>
-              {d.code}
-            </span>
+            {alPulsar ? (
+              <button
+                type="button"
+                className="sx-d-result-circle"
+                data-dimension={d.code}
+                aria-label={`${d.name}: abrir la guía`}
+                onClick={() => alPulsar(d.code)}
+              >
+                {d.code}
+              </button>
+            ) : (
+              <span className="sx-d-result-circle" data-dimension={d.code}>
+                {d.code}
+              </span>
+            )}
             <h3>{d.name}</h3>
             <p>{['Más fuerte', 'Segundo', 'Tercero'][i]}</p>
           </div>

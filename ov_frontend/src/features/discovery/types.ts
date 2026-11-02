@@ -45,6 +45,9 @@ export type ResumenResultado = {
   // visual (0–100 sin «%») con las cuatro piezas de cada dimensión.
   pagina?: InstrumentPageId
   lectura?: string
+  // Ajuste resultados-intereses (api): la línea de encuadre y si la guía de dimensiones arranca abierta.
+  mensaje?: string
+  guiaAbierta: boolean
   puntajeVisual: boolean
   dimensiones: DimensionPagina[]
   ordenadas: DimensionPagina[]

@@ -1,4 +1,6 @@
 // Contratos de app/schemas/instrumentos.py de ov_backend (F03: separados de servidor.ts, que los reexporta).
+import type { FamiliaPublica, TipoInstitucionServidor } from './servidorCatalogo'
+
 // Ajuste carga-instrumentos: cuatro piezas por dimensión (descripción, ejemplos, fortalezas y desarrollo).
 export type TextosDimension = { ejemplos: string | null; fortalezas: string[]; desarrollo: string[] }
 export type DimensionPublica = { codigo: string; nombre: string; descripcion: string; orden: number } & TextosDimension
@@ -14,7 +16,10 @@ export type InstrumentoPublico = {
   codigo: string
   nombre: string
   descripcion: string
+  // Ajuste resultados-intereses: cómo leer el resultado y la línea de encuadre, del estudiante.
   lectura: string
+  mensaje: string
+  guia_abierta: boolean
   tipo_resultado: 'COINCIDENCIAS' | 'DESTACADAS' | 'COMPARACION'
   dimensiones: DimensionPublica[]
   escalas: EscalaPublica[]
@@ -65,33 +70,52 @@ export type DimensionResultado = {
   zona?: 'FUERTE' | 'EN_CAMINO' | 'POR_TRABAJAR' | null
   tematica?: string | null
 } & TextosDimension
-export type CoincidenciaPublica = {
+// Ajuste resultados-intereses: la banda y el parecido (r × 100) los calcula el backend; el r crudo no llega.
+export type BandaAfinidad = 'MUY_AFIN' | 'AFIN' | 'CERCANA'
+export type OcupacionAfinPublica = {
   posicion: number
-  codigo: string | null
+  codigo: string
   codigo_onet: string
   titulo: string
-  correlacion: number
-  ajuste: 'BEST_FIT' | 'GREAT_FIT' | 'GOOD_FIT'
-  es_favorita: boolean
+  resumen: string | null
+  riasec: string[]
+  parecido: number
+  banda: BandaAfinidad
+  familia_principal: FamiliaPublica | null
 }
-export type CarreraRecomendada = {
+// Ocupaciones mostradas por el área (campo específico) de su familia principal; «Sin familia» con código nulo.
+export type AreaOcupaciones = { area_codigo: string | null; area_nombre: string; ocupaciones: string[] }
+export type OcupacionDeFamiliaRecomendada = { codigo: string; titulo: string; parecido: number }
+// En orden de recomendación; la afinidad de la familia no se expone.
+export type FamiliaRecomendadaPublica = {
+  posicion: number
   codigo: string
   nombre: string
-  familia: string
-  via: CoincidenciaPublica[]
-  es_favorita: boolean
+  area_codigo: string
+  area_nombre: string
+  descripcion: string | null
+  tipos: TipoInstitucionServidor[]
+  total_carreras: number
+  total_ocupaciones: number
+  ocupaciones: OcupacionDeFamiliaRecomendada[]
+  unica_ocupacion: boolean
 }
+// `mensaje` y `lectura` son los de quien consulta (estudiante o apoderado, con el nombre del hijo ya puesto).
 export type ResultadoPublico = {
   instrumento: string
   aplicacion: string
   calculado_en: string
   perfil_plano: boolean
+  mensaje: string
   lectura: string
+  guia_abierta: boolean
   dimensiones: DimensionResultado[]
   dimensiones_destacadas?: DimensionResultado[] | null
   codigo_interes?: { codigo: string; hay_empate: boolean } | null
-  coincidencias?: CoincidenciaPublica[] | null
-  carreras_recomendadas?: CarreraRecomendada[] | null
+  perfil_poco_marcado?: boolean | null
+  ocupaciones?: OcupacionAfinPublica[] | null
+  por_area?: AreaOcupaciones[] | null
+  familias?: FamiliaRecomendadaPublica[] | null
 }
 export type ResultadoHistorico = ResultadoPublico & { anulado_en: string | null }
 export type ZonaDimension = 'FUERTE' | 'EN_CAMINO' | 'POR_TRABAJAR'
@@ -109,6 +133,7 @@ export type ComparacionDimension = {
 export type ComparacionAutopercepcion = {
   instrumento: string
   lectura: string
+  mensaje: string
   partida: string
   llegada: string
   dimensiones: ComparacionDimension[]

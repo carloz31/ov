@@ -18,7 +18,8 @@ PUCP = 'inst-3'
 DIRECTORES = 'onet-11-1011-00'
 RUTAS_CONSULTA = (f'{BASE}/carreras', f'{BASE}/carreras/{PSICOLOGIA}', f'{BASE}/ocupaciones',
                   f'{BASE}/ocupaciones/psychologist', f'{BASE}/instituciones', f'{BASE}/instituciones/{INST_UNI}',
-                  f'{BASE}/familias', f'{BASE}/ubicaciones', f'{BASE}/familias/313', f'{BASE}/carreras/inesperada',
+                  f'{BASE}/familias', f'{BASE}/ubicaciones', f'{BASE}/grupos', f'{BASE}/familias/313',
+                  f'{BASE}/carreras/inesperada',
                   f'{BASE}/ocupaciones/inesperada')
 VISTAS = (('ver-carrera', 'carrera', PSICOLOGIA, 'VISTA_CARRERA'),
           ('ver-ocupacion', 'ocupacion', 'psychologist', 'VISTA_OCUPACION'),
@@ -275,7 +276,9 @@ def test_f06_opciones_de_los_filtros(abierto):
     assert len(ubicaciones) == 25 and 'Lima Provincias' not in [u['nombre'] for u in ubicaciones]
     assert ubicaciones[:2] == [{'codigo': 'dep-1', 'nombre': 'Amazonas'}, {'codigo': 'dep-2', 'nombre': 'Áncash'}]
     # Ajuste resultados-intereses: sin opciones de grupo; la ficha de la familia elegida.
-    pedir(abierto, 'GET', f'{BASE}/grupos', esperado=404)
+    # Los grupos ya no filtran, pero siguen nombrando el grupo de una ocupación.
+    grupos = pedir(abierto, 'GET', f'{BASE}/grupos')
+    assert len(grupos) == 20 and grupos[0] == {'codigo': '35', 'nombre': 'Alimentos y restaurantes'}
     ficha = pedir(abierto, 'GET', f'{BASE}/familias/313')
     assert {k: ficha[k] for k in ('codigo', 'area_codigo', 'carreras_por_tipo', 'total_carreras',
                                   'ocupaciones_principales', 'ocupaciones_secundarias', 'recomendada_posicion')} == {

@@ -1,498 +1,498 @@
 [
   {
-    "area_codigo": "0",
-    "area_nombre": "Fuerzas Armadas y Policiales",
-    "codigo": "021",
-    "nombre": "Oficiales de la Policía Nacional"
-  },
-  {
-    "area_codigo": "0",
-    "area_nombre": "Fuerzas Armadas y Policiales",
+    "area_codigo": "01",
+    "area_nombre": "Fuerzas Armadas",
     "codigo": "011",
     "nombre": "Oficiales de las Fuerzas Armadas"
   },
   {
-    "area_codigo": "0",
-    "area_nombre": "Fuerzas Armadas y Policiales",
+    "area_codigo": "01",
+    "area_nombre": "Fuerzas Armadas",
     "codigo": "012",
     "nombre": "Suboficiales de las Fuerzas Armadas"
   },
   {
-    "area_codigo": "1",
-    "area_nombre": "Educación",
-    "codigo": "151",
-    "nombre": "Educación Artística"
+    "area_codigo": "02",
+    "area_nombre": "Fuerzas Policiales",
+    "codigo": "021",
+    "nombre": "Oficiales de la Policía Nacional"
   },
   {
-    "area_codigo": "1",
-    "area_nombre": "Educación",
-    "codigo": "141",
-    "nombre": "Educación Especial"
-  },
-  {
-    "area_codigo": "1",
-    "area_nombre": "Educación",
-    "codigo": "131",
-    "nombre": "Educación Física"
-  },
-  {
-    "area_codigo": "1",
-    "area_nombre": "Educación",
+    "area_codigo": "11",
+    "area_nombre": "Educación Inicial y Primaria",
     "codigo": "111",
     "nombre": "Educación Inicial"
   },
   {
-    "area_codigo": "1",
-    "area_nombre": "Educación",
+    "area_codigo": "11",
+    "area_nombre": "Educación Inicial y Primaria",
     "codigo": "112",
     "nombre": "Educación Primaria"
   },
   {
-    "area_codigo": "1",
-    "area_nombre": "Educación",
+    "area_codigo": "12",
+    "area_nombre": "Educación Secundaria",
     "codigo": "121",
     "nombre": "Educación Secundaria"
   },
   {
-    "area_codigo": "1",
-    "area_nombre": "Educación",
+    "area_codigo": "13",
+    "area_nombre": "Educación Física",
+    "codigo": "131",
+    "nombre": "Educación Física"
+  },
+  {
+    "area_codigo": "14",
+    "area_nombre": "Educación Especial",
+    "codigo": "141",
+    "nombre": "Educación Especial"
+  },
+  {
+    "area_codigo": "15",
+    "area_nombre": "Educación Artística",
+    "codigo": "151",
+    "nombre": "Educación Artística"
+  },
+  {
+    "area_codigo": "16",
+    "area_nombre": "Educación Tecnológica",
     "codigo": "161",
     "nombre": "Educación Tecnológica"
   },
   {
-    "area_codigo": "1",
-    "area_nombre": "Educación",
+    "area_codigo": "19",
+    "area_nombre": "Otras Carreras de Educación",
     "codigo": "199",
     "nombre": "Otras Carreras de Educación"
   },
   {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
+    "area_codigo": "21",
+    "area_nombre": "Humanidades",
     "codigo": "211",
     "nombre": "Antropología y Arqueología"
   },
   {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
-    "codigo": "221",
-    "nombre": "Artes"
-  },
-  {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
+    "area_codigo": "21",
+    "area_nombre": "Humanidades",
     "codigo": "215",
     "nombre": "Bibliotecología y Archivo"
   },
   {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
-    "codigo": "223",
-    "nombre": "Danza"
-  },
-  {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
-    "codigo": "222",
-    "nombre": "Diseño"
-  },
-  {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
+    "area_codigo": "21",
+    "area_nombre": "Humanidades",
     "codigo": "212",
     "nombre": "Historia"
   },
   {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
+    "area_codigo": "21",
+    "area_nombre": "Humanidades",
     "codigo": "217",
     "nombre": "Humanidades"
   },
   {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
+    "area_codigo": "21",
+    "area_nombre": "Humanidades",
     "codigo": "214",
     "nombre": "Idiomas"
   },
   {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
+    "area_codigo": "21",
+    "area_nombre": "Humanidades",
     "codigo": "213",
     "nombre": "Lingüística y Literatura"
   },
   {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
-    "codigo": "224",
-    "nombre": "Música"
-  },
-  {
-    "area_codigo": "2",
-    "area_nombre": "Humanidades y Artes",
+    "area_codigo": "21",
+    "area_nombre": "Humanidades",
     "codigo": "216",
     "nombre": "Teología y Filosofía"
   },
   {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "331",
-    "nombre": "Administración de Empresas"
+    "area_codigo": "22",
+    "area_nombre": "Artes",
+    "codigo": "221",
+    "nombre": "Artes"
   },
   {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "332",
-    "nombre": "Administración de Servicios Turísticos, Hotelería y Gastronomía"
+    "area_codigo": "22",
+    "area_nombre": "Artes",
+    "codigo": "223",
+    "nombre": "Danza"
   },
   {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "336",
-    "nombre": "Administración Pública"
+    "area_codigo": "22",
+    "area_nombre": "Artes",
+    "codigo": "222",
+    "nombre": "Diseño"
   },
   {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "334",
-    "nombre": "Agronegocios"
+    "area_codigo": "22",
+    "area_nombre": "Artes",
+    "codigo": "224",
+    "nombre": "Música"
   },
   {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "321",
-    "nombre": "Ciencias de la Comunicación"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "352",
-    "nombre": "Ciencias Políticas"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "342",
-    "nombre": "Contabilidad y Finanzas"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "351",
-    "nombre": "Derecho"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "341",
-    "nombre": "Economía"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "333",
-    "nombre": "Marketing"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "335",
-    "nombre": "Negocios Internacionales"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "323",
-    "nombre": "Operadores de Imagen y Sonido"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "339",
-    "nombre": "Otras Carreras de Administración"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "322",
-    "nombre": "Periodismo y Locución"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+    "area_codigo": "31",
+    "area_nombre": "Ciencias Sociales y del Comportamiento",
     "codigo": "313",
     "nombre": "Psicología"
   },
   {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
-    "codigo": "337",
-    "nombre": "Secretariado"
-  },
-  {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+    "area_codigo": "31",
+    "area_nombre": "Ciencias Sociales y del Comportamiento",
     "codigo": "311",
     "nombre": "Servicios Sociales y Asistenciales"
   },
   {
-    "area_codigo": "3",
-    "area_nombre": "Ciencias Sociales, Comerciales y Derecho",
+    "area_codigo": "31",
+    "area_nombre": "Ciencias Sociales y del Comportamiento",
     "codigo": "312",
     "nombre": "Trabajo Social"
   },
   {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+    "area_codigo": "32",
+    "area_nombre": "Ciencias de la Comunicación",
+    "codigo": "321",
+    "nombre": "Ciencias de la Comunicación"
+  },
+  {
+    "area_codigo": "32",
+    "area_nombre": "Ciencias de la Comunicación",
+    "codigo": "323",
+    "nombre": "Operadores de Imagen y Sonido"
+  },
+  {
+    "area_codigo": "32",
+    "area_nombre": "Ciencias de la Comunicación",
+    "codigo": "322",
+    "nombre": "Periodismo y Locución"
+  },
+  {
+    "area_codigo": "33",
+    "area_nombre": "Ciencias Administrativas y Comerciales",
+    "codigo": "331",
+    "nombre": "Administración de Empresas"
+  },
+  {
+    "area_codigo": "33",
+    "area_nombre": "Ciencias Administrativas y Comerciales",
+    "codigo": "332",
+    "nombre": "Administración de Servicios Turísticos, Hotelería y Gastronomía"
+  },
+  {
+    "area_codigo": "33",
+    "area_nombre": "Ciencias Administrativas y Comerciales",
+    "codigo": "336",
+    "nombre": "Administración Pública"
+  },
+  {
+    "area_codigo": "33",
+    "area_nombre": "Ciencias Administrativas y Comerciales",
+    "codigo": "334",
+    "nombre": "Agronegocios"
+  },
+  {
+    "area_codigo": "33",
+    "area_nombre": "Ciencias Administrativas y Comerciales",
+    "codigo": "333",
+    "nombre": "Marketing"
+  },
+  {
+    "area_codigo": "33",
+    "area_nombre": "Ciencias Administrativas y Comerciales",
+    "codigo": "335",
+    "nombre": "Negocios Internacionales"
+  },
+  {
+    "area_codigo": "33",
+    "area_nombre": "Ciencias Administrativas y Comerciales",
+    "codigo": "339",
+    "nombre": "Otras Carreras de Administración"
+  },
+  {
+    "area_codigo": "33",
+    "area_nombre": "Ciencias Administrativas y Comerciales",
+    "codigo": "337",
+    "nombre": "Secretariado"
+  },
+  {
+    "area_codigo": "34",
+    "area_nombre": "Ciencias Económicas y Contables",
+    "codigo": "342",
+    "nombre": "Contabilidad y Finanzas"
+  },
+  {
+    "area_codigo": "34",
+    "area_nombre": "Ciencias Económicas y Contables",
+    "codigo": "341",
+    "nombre": "Economía"
+  },
+  {
+    "area_codigo": "35",
+    "area_nombre": "Derecho, Ciencias Políticas y Jurídicas",
+    "codigo": "352",
+    "nombre": "Ciencias Políticas"
+  },
+  {
+    "area_codigo": "35",
+    "area_nombre": "Derecho, Ciencias Políticas y Jurídicas",
+    "codigo": "351",
+    "nombre": "Derecho"
+  },
+  {
+    "area_codigo": "41",
+    "area_nombre": "Ciencias de la Vida",
     "codigo": "411",
     "nombre": "Biología"
   },
   {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
-    "codigo": "441",
-    "nombre": "Ciencias de la Computación"
-  },
-  {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
-    "codigo": "432",
-    "nombre": "Estadística"
-  },
-  {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
-    "codigo": "421",
-    "nombre": "Física"
-  },
-  {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
-    "codigo": "423",
-    "nombre": "Geología"
-  },
-  {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+    "area_codigo": "41",
+    "area_nombre": "Ciencias de la Vida",
     "codigo": "413",
     "nombre": "Hidrografía"
   },
   {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
-    "codigo": "433",
-    "nombre": "Investigación Operativa"
-  },
-  {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
-    "codigo": "431",
-    "nombre": "Matemática"
-  },
-  {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+    "area_codigo": "41",
+    "area_nombre": "Ciencias de la Vida",
     "codigo": "414",
     "nombre": "Meteorología"
   },
   {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
-    "codigo": "422",
-    "nombre": "Química"
-  },
-  {
-    "area_codigo": "4",
-    "area_nombre": "Ciencias Naturales, Exactas y de la Computación",
+    "area_codigo": "41",
+    "area_nombre": "Ciencias de la Vida",
     "codigo": "412",
     "nombre": "Zootecnia"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
-    "codigo": "533",
-    "nombre": "Arquitectura y Urbanismo"
+    "area_codigo": "42",
+    "area_nombre": "Ciencias Físicas y Químicas",
+    "codigo": "421",
+    "nombre": "Física"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
-    "codigo": "594",
-    "nombre": "Ecología y Medio Ambiente"
+    "area_codigo": "42",
+    "area_nombre": "Ciencias Físicas y Químicas",
+    "codigo": "423",
+    "nombre": "Geología"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
-    "codigo": "593",
-    "nombre": "Geografía"
+    "area_codigo": "42",
+    "area_nombre": "Ciencias Físicas y Químicas",
+    "codigo": "422",
+    "nombre": "Química"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
-    "codigo": "531",
-    "nombre": "Ingeniería Civil"
+    "area_codigo": "43",
+    "area_nombre": "Matemáticas y Estadística",
+    "codigo": "432",
+    "nombre": "Estadística"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "43",
+    "area_nombre": "Matemáticas y Estadística",
+    "codigo": "433",
+    "nombre": "Investigación Operativa"
+  },
+  {
+    "area_codigo": "43",
+    "area_nombre": "Matemáticas y Estadística",
+    "codigo": "431",
+    "nombre": "Matemática"
+  },
+  {
+    "area_codigo": "44",
+    "area_nombre": "Informática",
+    "codigo": "441",
+    "nombre": "Ciencias de la Computación"
+  },
+  {
+    "area_codigo": "51",
+    "area_nombre": "Ingeniería de Sistemas y Telecomunicaciones",
     "codigo": "511",
     "nombre": "Ingeniería de Sistemas y Cómputo"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "51",
+    "area_nombre": "Ingeniería de Sistemas y Telecomunicaciones",
     "codigo": "512",
     "nombre": "Ingeniería de Telecomunicaciones"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "52",
+    "area_nombre": "Ingeniería Industrial y Producción",
     "codigo": "524",
     "nombre": "Ingeniería Eléctrica"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "52",
+    "area_nombre": "Ingeniería Industrial y Producción",
     "codigo": "525",
     "nombre": "Ingeniería Electrónica"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "52",
+    "area_nombre": "Ingeniería Industrial y Producción",
     "codigo": "523",
     "nombre": "Ingeniería en Agroindustria"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "52",
+    "area_nombre": "Ingeniería Industrial y Producción",
     "codigo": "522",
     "nombre": "Ingeniería en Industrias Alimentarias"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "52",
+    "area_nombre": "Ingeniería Industrial y Producción",
     "codigo": "521",
     "nombre": "Ingeniería Industrial"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "52",
+    "area_nombre": "Ingeniería Industrial y Producción",
     "codigo": "526",
     "nombre": "Ingeniería Mecánica"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "52",
+    "area_nombre": "Ingeniería Industrial y Producción",
     "codigo": "527",
     "nombre": "Ingeniería Minera, Metalurgia y Petróleo"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
-    "codigo": "592",
-    "nombre": "Ingeniería Naval y Aeronáutica"
-  },
-  {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
-    "codigo": "591",
-    "nombre": "Ingeniería Pesquera"
-  },
-  {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
-    "codigo": "532",
-    "nombre": "Ingeniería Sanitaria"
-  },
-  {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "52",
+    "area_nombre": "Ingeniería Industrial y Producción",
     "codigo": "528",
     "nombre": "Ingeniería Textil y Confecciones"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "53",
+    "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
+    "codigo": "533",
+    "nombre": "Arquitectura y Urbanismo"
+  },
+  {
+    "area_codigo": "53",
+    "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
+    "codigo": "531",
+    "nombre": "Ingeniería Civil"
+  },
+  {
+    "area_codigo": "53",
+    "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
+    "codigo": "532",
+    "nombre": "Ingeniería Sanitaria"
+  },
+  {
+    "area_codigo": "53",
+    "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
     "codigo": "534",
     "nombre": "Mantenimiento y Restauración de Obras Públicas"
   },
   {
-    "area_codigo": "5",
-    "area_nombre": "Ingeniería, Industria y Construcción",
+    "area_codigo": "59",
+    "area_nombre": "Otras Ingenierías",
+    "codigo": "594",
+    "nombre": "Ecología y Medio Ambiente"
+  },
+  {
+    "area_codigo": "59",
+    "area_nombre": "Otras Ingenierías",
+    "codigo": "593",
+    "nombre": "Geografía"
+  },
+  {
+    "area_codigo": "59",
+    "area_nombre": "Otras Ingenierías",
+    "codigo": "592",
+    "nombre": "Ingeniería Naval y Aeronáutica"
+  },
+  {
+    "area_codigo": "59",
+    "area_nombre": "Otras Ingenierías",
+    "codigo": "591",
+    "nombre": "Ingeniería Pesquera"
+  },
+  {
+    "area_codigo": "59",
+    "area_nombre": "Otras Ingenierías",
     "codigo": "599",
     "nombre": "Otras Ingenierías"
   },
   {
-    "area_codigo": "6",
-    "area_nombre": "Agropecuaria y Veterinaria",
+    "area_codigo": "61",
+    "area_nombre": "Agropecuaria, Forestal y Acuicultura",
     "codigo": "613",
     "nombre": "Acuicultura"
   },
   {
-    "area_codigo": "6",
-    "area_nombre": "Agropecuaria y Veterinaria",
+    "area_codigo": "61",
+    "area_nombre": "Agropecuaria, Forestal y Acuicultura",
     "codigo": "611",
     "nombre": "Agropecuaria"
   },
   {
-    "area_codigo": "6",
-    "area_nombre": "Agropecuaria y Veterinaria",
+    "area_codigo": "61",
+    "area_nombre": "Agropecuaria, Forestal y Acuicultura",
     "codigo": "612",
     "nombre": "Ciencias Forestales"
   },
   {
-    "area_codigo": "6",
-    "area_nombre": "Agropecuaria y Veterinaria",
+    "area_codigo": "62",
+    "area_nombre": "Veterinaria",
     "codigo": "621",
     "nombre": "Veterinaria"
   },
   {
-    "area_codigo": "7",
+    "area_codigo": "71",
     "area_nombre": "Ciencias de la Salud",
     "codigo": "714",
     "nombre": "Enfermería"
   },
   {
-    "area_codigo": "7",
+    "area_codigo": "71",
     "area_nombre": "Ciencias de la Salud",
     "codigo": "716",
     "nombre": "Farmacia y Bioquímica"
   },
   {
-    "area_codigo": "7",
+    "area_codigo": "71",
     "area_nombre": "Ciencias de la Salud",
     "codigo": "711",
     "nombre": "Medicina"
   },
   {
-    "area_codigo": "7",
+    "area_codigo": "71",
     "area_nombre": "Ciencias de la Salud",
     "codigo": "712",
     "nombre": "Nutrición"
   },
   {
-    "area_codigo": "7",
+    "area_codigo": "71",
     "area_nombre": "Ciencias de la Salud",
     "codigo": "717",
     "nombre": "Obstetricia"
   },
   {
-    "area_codigo": "7",
+    "area_codigo": "71",
     "area_nombre": "Ciencias de la Salud",
     "codigo": "713",
     "nombre": "Odontología"
   },
   {
-    "area_codigo": "7",
+    "area_codigo": "71",
     "area_nombre": "Ciencias de la Salud",
     "codigo": "715",
     "nombre": "Tecnología Médica"
   },
   {
-    "area_codigo": "8",
+    "area_codigo": "81",
     "area_nombre": "Servicios",
     "codigo": "812",
     "nombre": "Tratamiento de Belleza y Peluquería"
   },
   {
-    "area_codigo": "8",
+    "area_codigo": "81",
     "area_nombre": "Servicios",
     "codigo": "811",
     "nombre": "Turismo"

@@ -122,7 +122,7 @@ for (const { cuenta, base, coletilla } of ROLES) {
     ocupacion.render()
     await esperar()
     arbol = ocupacion.render()
-    assert.match(texto(arbol), /Psicólogos Clínicos y de Consejería/)
+    assert.match(texto(arbol), /Psicólogo clínico/)
     assert.equal(nombres(arbol, 'IconoProfesion')[0].props.revelado, true)
     assert.doesNotMatch(texto(arbol), /Ícono revelado/)
     assert.equal(nombres(arbol, 'FavoriteButton', 'EntrevistasOcupacion', 'UnexpectedPlace').length, 0)

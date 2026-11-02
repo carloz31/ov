@@ -22,7 +22,7 @@ import type {
   ItemPublico,
   RespuestaPublica,
   ResultadoPublico,
-  CoincidenciaPublica,
+  BandaAfinidad,
 } from '@/types/servidor'
 
 // Ajuste pasaporte-perfil: las páginas del pasaporte son los grupos del servidor, en su orden. Una secreta no
@@ -259,13 +259,14 @@ export function areasRiasec(resultado: ResultadoPublico | null) {
     return dimension ? [dimension] : []
   })
 }
+// Ajuste resultados-intereses: las ocupaciones afines que muestra el servidor, con su banda y parecido.
 export function coincidenciasRiasec(resultado: ResultadoPublico | null) {
   return !resultado || resultado.perfil_plano
     ? []
-    : [...(resultado.coincidencias ?? [])].sort((a, b) => a.posicion - b.posicion)
+    : [...(resultado.ocupaciones ?? [])].sort((a, b) => a.posicion - b.posicion)
 }
-export const textoAjuste = (ajuste: CoincidenciaPublica['ajuste']) =>
-  ({ BEST_FIT: 'Mejor ajuste', GREAT_FIT: 'Gran ajuste', GOOD_FIT: 'Buen ajuste' })[ajuste]
+export const textoBanda = (banda: BandaAfinidad) =>
+  ({ MUY_AFIN: 'Muy afín', AFIN: 'Afín', CERCANA: 'Cercana' })[banda]
 export function resultadoHelenaCompleto(r: ResultadoPublico, tipo: TipoResultadoHelena): HelenaResult {
   const adaptar = (d: ResultadoPublico['dimensiones'][number]) => ({
     code: d.codigo,
@@ -279,6 +280,8 @@ export function resultadoHelenaCompleto(r: ResultadoPublico, tipo: TipoResultado
   return {
     source: 'real',
     lectura: r.lectura || undefined,
+    mensaje: r.mensaje || undefined,
+    guiaAbierta: r.guia_abierta,
     dimensiones: r.dimensiones.map(adaptar),
     areas:
       tipo === 'COINCIDENCIAS' ? areasRiasec(r).map(adaptar) : (r.dimensiones_destacadas ?? []).map(adaptar),
@@ -290,7 +293,7 @@ export const ocupacionesResultadoServidor = (resultado: ResultadoPublico | null)
     clave: c.codigo_onet,
     codigo: c.codigo,
     titulo: c.titulo,
-    ajuste: textoAjuste(c.ajuste),
+    ajuste: `${textoBanda(c.banda)} · ${c.parecido} %`,
   }))
 export function paginaInteresesServidor(
   bloques: BloqueActividades[] | null,

@@ -17,7 +17,7 @@ from app.core.parametros import (
 from app.exceptions import ErrorAccion
 from app.models import (
     Carrera, Cuenta, Dimension, EstiloTrabajo, EventoUso, FamiliaCarrera, Favorito, GestionInstitucion,
-    IngresoFamilia, IngresoInstitucion, Institucion, InstitucionCarrera, Ocupacion, OcupacionFamilia,
+    GrupoOcupacional, IngresoFamilia, IngresoInstitucion, Institucion, InstitucionCarrera, Ocupacion, OcupacionFamilia,
     PuntajeOcupacion, Rol, TipoEventoUso, TipoFavorito, TipoInstitucion, Ubicacion,
 )
 from app.models.base import sin_tildes
@@ -26,7 +26,7 @@ from app.schemas.acciones import (
 )
 from app.schemas.catalogo import (
     Afinidad, CarreraDetalle, CarreraEnInstitucion, CarreraResumen, CarrerasParecidas, EstiloPublico, FamiliaFicha,
-    FamiliaPublica, FamiliaResumida, FamiliaSecundaria, Inesperada, IngresoCarreraPublico, IngresoFamiliaPublico,
+    FamiliaPublica, FamiliaResumida, FamiliaSecundaria, GrupoPublico, Inesperada, IngresoCarreraPublico, IngresoFamiliaPublico,
     IngresoJovenes, InstitucionDetalle, InstitucionEnCarrera, InstitucionResumen, OcupacionDeFamilia,
     OcupacionDetalle, OcupacionEnlace, OcupacionesDeLaFamilia, OcupacionResumen, PaginaCarreras,
     PaginaInstituciones, PaginaOcupaciones, ProgramaEjemplo, Tramo, UbicacionPublica,
@@ -458,6 +458,16 @@ def listar_ubicaciones(sesion: Session, cuenta: Cuenta) -> list[UbicacionPublica
     ubicaciones = sesion.scalars(select(Ubicacion).where(Ubicacion.id.in_(select(Institucion.ubicacion_id))))
     return [UbicacionPublica(codigo=u.codigo, nombre=u.nombre)
             for u in sorted(ubicaciones, key=lambda u: (sin_tildes(u.nombre), u.codigo))]
+
+
+@usar_contexto
+def listar_grupos(sesion: Session, cuenta: Cuenta) -> list[GrupoPublico]:
+    """Solo los grupos con ocupaciones del catálogo, por nombre. Ya no son un filtro (ajuste resultados-intereses):
+    nombran el grupo de una ocupación (el buscador de Investigaciones)."""
+    exigir_catalogo(sesion, cuenta)
+    grupos = sesion.scalars(select(GrupoOcupacional).where(GrupoOcupacional.codigo.in_(
+        select(Ocupacion.grupo).where(Ocupacion.en_catalogo))))
+    return [GrupoPublico(codigo=g.codigo, nombre=g.nombre) for g in sorted(grupos, key=lambda g: sin_tildes(g.nombre))]
 
 
 # --- Lugar inesperado (HU-042, F06) ---------------------------------------------------------

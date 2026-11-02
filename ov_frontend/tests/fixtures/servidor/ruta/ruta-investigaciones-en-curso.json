@@ -20,13 +20,13 @@
     },
     "ocupacion": {
       "codigo": "electrician",
-      "titulo": "Electricistas"
+      "titulo": "Electricista industrial"
     },
     "preguntas": [],
     "sugerencias": [
       {
         "codigo": "SUG-00000000000000000000000000000003",
-        "texto": "¿Qué te sorprendió al empezar como Electricistas? (1)"
+        "texto": "¿Qué te sorprendió al empezar como Electricista industrial? (1)"
       },
       {
         "codigo": "SUG-00000000000000000000000000000004",

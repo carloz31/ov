@@ -1,0 +1,574 @@
+/* Ajuste resultados-intereses (api): resultado de intereses del estudiante (boceto 01) y guía de dimensiones
+   común a los tres tests (boceto 03). Se apoya en las variables de `.sx-d-result-page` (result-page.css). */
+.sx-d-result-page {
+  --r-crema: var(--result-paper);
+  --r-crema-oscuro: color-mix(in srgb, var(--sx-gold) 16%, var(--result-paper));
+  --r-tinta: var(--result-ink);
+  --r-suave: var(--result-muted);
+  --r-borde: var(--result-edge);
+  --r-noche: var(--sx-night-raised);
+  --r-dorado: var(--result-gold);
+  --r-dorado-texto: var(--sx-gold-deep);
+
+  .sx-r-encuadre {
+    font-style: italic;
+    color: var(--sx-night-muted);
+  }
+  .sx-r-rotulo {
+    color: var(--r-dorado-texto);
+    font-size: 12px;
+    font-weight: 750;
+  }
+  .sx-r-oscuro .sx-r-rotulo,
+  .sx-r-lectura .sx-r-rotulo {
+    color: var(--result-gold-text);
+  }
+  .sx-r-lectura {
+    max-width: 760px;
+    padding: 16px 18px;
+    border: 1px solid var(--sx-night-border);
+    border-radius: 14px;
+    background: var(--r-noche);
+  }
+  .sx-r-lectura .sx-d-result-lectura {
+    margin-top: 6px;
+    color: var(--sx-night-text);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .sx-r-anclas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: -12px;
+  }
+  .sx-r-anclas a {
+    padding: 6px 12px;
+    border: 1px solid var(--sx-night-border);
+    border-radius: 999px;
+    color: var(--sx-night-text);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .sx-r-ancla,
+  #ocupaciones-afines,
+  #familias,
+  .sx-r-guia {
+    scroll-margin-top: 16px;
+  }
+  .sx-d-result-circle:is(button) {
+    cursor: pointer;
+  }
+
+  /* Botones y enlaces */
+  .sx-r-boton,
+  .sx-r-boton-borde,
+  .sx-r-boton-dorado {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 750;
+    cursor: pointer;
+    text-align: center;
+  }
+  .sx-r-boton {
+    background: var(--sx-night);
+    color: #fff;
+    border: 1px solid var(--sx-night);
+  }
+  .sx-r-boton-borde {
+    border: 1px solid color-mix(in srgb, var(--r-tinta) 70%, transparent);
+    color: var(--r-tinta);
+    background: transparent;
+  }
+  .sx-r-boton-dorado {
+    border: 1px solid var(--r-dorado);
+    color: var(--result-gold-text);
+    background: transparent;
+  }
+  .sx-r-enlace {
+    color: var(--r-tinta);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .sx-r-cerrar {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border: 1px solid var(--r-borde);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--r-tinta);
+    cursor: pointer;
+  }
+  .sx-r-cerrar svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Guía de dimensiones (boceto 03) */
+  .sx-r-guia {
+    display: grid;
+    gap: 18px;
+    padding: 26px 28px;
+    border-radius: 20px;
+    background: var(--r-crema);
+    color: var(--r-tinta);
+  }
+  .sx-r-guia h2 {
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+  .sx-r-guia-cerrada h2 {
+    font-size: 16px;
+  }
+  .sx-r-guia-cabecera > div > p:last-child,
+  .sx-r-guia-cerrada > div > p:last-child {
+    max-width: 740px;
+    margin-top: 4px;
+    color: var(--r-suave);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .sx-r-guia-cerrada {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    padding: 18px 24px;
+  }
+  .sx-r-guia-cabecera {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .sx-r-guia-letras {
+    display: flex;
+    gap: 8px;
+  }
+  .sx-r-guia-letra {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--dimension, var(--r-dorado));
+    color: var(--r-tinta);
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .sx-r-guia-grilla {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .sx-r-guia-tarjeta {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+    border: 1px solid var(--r-borde);
+    border-radius: 16px;
+    background: #fff;
+    color: var(--r-tinta);
+    scroll-margin-top: 80px;
+  }
+  .sx-r-guia-tarjeta[data-fuerte] {
+    border: 2px solid var(--r-dorado);
+  }
+  .sx-r-guia-tarjeta[data-resaltada] {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--r-dorado) 45%, transparent);
+  }
+  .sx-r-guia-tarjeta > header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sx-r-guia-tarjeta > header .sx-r-guia-letra {
+    width: 40px;
+    height: 40px;
+    font-size: 17px;
+  }
+  .sx-r-guia-tarjeta h3 {
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+  .sx-r-guia-tarjeta > header p {
+    color: var(--r-suave);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .sx-r-guia-tarjeta[data-fuerte] > header p {
+    color: var(--r-dorado-texto);
+  }
+  .sx-r-guia-que {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .sx-r-guia-tarjeta h4 {
+    margin: 0 0 4px;
+    color: var(--r-suave);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .sx-r-guia-tarjeta section p {
+    color: var(--r-suave);
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .sx-r-guia-tarjeta ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+  .sx-r-guia-tarjeta section:not(.sx-r-guia-desarrollo) li {
+    position: relative;
+    padding-left: 14px;
+  }
+  .sx-r-guia-tarjeta section:not(.sx-r-guia-desarrollo) li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--r-dorado);
+  }
+  .sx-r-guia-desarrollo {
+    margin-top: auto;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--r-crema-oscuro);
+  }
+  .sx-r-guia-desarrollo h4 {
+    color: var(--r-dorado-texto);
+  }
+  .sx-r-guia-desarrollo li {
+    display: flex;
+    gap: 8px;
+  }
+  .sx-r-guia-desarrollo li svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    color: var(--r-dorado-texto);
+  }
+  .sx-r-nota {
+    padding-top: 12px;
+    border-top: 1px solid var(--r-borde);
+    color: var(--r-suave);
+    font-size: 12px;
+  }
+
+  /* Paneles de los pasos */
+  .sx-r-panel {
+    display: grid;
+    gap: 14px;
+    padding: 28px;
+    border-radius: 20px;
+  }
+  .sx-r-claro {
+    background: var(--r-crema);
+    color: var(--r-tinta);
+  }
+  .sx-r-oscuro {
+    background: var(--r-noche);
+    border: 1px solid var(--sx-night-border);
+    color: var(--sx-night-text);
+  }
+  .sx-r-panel h2 {
+    font-size: clamp(22px, 2.4vw, 28px);
+    font-weight: 800;
+    line-height: 1.25;
+  }
+  .sx-r-intro {
+    max-width: 720px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .sx-r-claro .sx-r-intro {
+    color: var(--r-suave);
+  }
+  .sx-r-oscuro .sx-r-intro {
+    color: var(--sx-night-muted);
+  }
+  .sx-r-aviso {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--r-crema-oscuro);
+    font-size: 14px;
+    font-weight: 650;
+  }
+  .sx-r-controles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .sx-r-segmentos {
+    display: inline-flex;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 12px;
+    background: var(--r-crema-oscuro);
+  }
+  .sx-r-segmentos button {
+    padding: 7px 12px;
+    border-radius: 9px;
+    color: var(--r-tinta);
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+  }
+  .sx-r-segmentos button[aria-pressed='true'] {
+    background: var(--sx-night);
+    color: #fff;
+  }
+  .sx-r-grilla {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .sx-r-area h3 {
+    margin: 8px 0 10px;
+    font-size: 15px;
+    font-weight: 800;
+  }
+  .sx-r-area h3 small {
+    color: var(--r-suave);
+    font-weight: 650;
+  }
+
+  /* Tarjeta de ocupación afín */
+  .sx-r-ocupacion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    border: 1px solid var(--r-borde);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--r-tinta);
+  }
+  .sx-r-ocupacion > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .sx-r-ocupacion > header small {
+    color: var(--r-suave);
+    font-size: 11px;
+  }
+  .sx-r-banda {
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: var(--r-crema-oscuro);
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .sx-r-banda[data-banda='MUY_AFIN'] {
+    background: var(--r-dorado);
+    color: var(--r-tinta);
+  }
+  .sx-r-ocupacion h3 {
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+  .sx-r-ocupacion > p {
+    color: var(--r-suave);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .sx-r-letras {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .sx-r-letra {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--dimension, var(--r-dorado));
+    color: var(--r-tinta);
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .sx-r-letras small {
+    color: var(--r-suave);
+    font-size: 11px;
+  }
+  .sx-r-ocupacion > .sx-r-familia {
+    font-size: 12px;
+    color: var(--r-suave);
+  }
+  .sx-r-familia strong {
+    color: var(--r-tinta);
+  }
+  .sx-r-ocupacion > .sx-r-boton-borde {
+    margin-top: auto;
+    width: 100%;
+  }
+  .sx-r-pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .sx-r-pie small {
+    max-width: 560px;
+    color: var(--r-suave);
+    font-size: 11px;
+    line-height: 1.5;
+    text-align: right;
+  }
+
+  /* Familias recomendadas */
+  .sx-r-familias {
+    display: grid;
+    gap: 14px;
+  }
+  .sx-r-familia-tarjeta {
+    display: grid;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 14px;
+    background: var(--r-crema);
+    color: var(--r-tinta);
+  }
+  .sx-r-familia-tarjeta h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .sx-r-familia-tarjeta h3 small {
+    color: var(--r-suave);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .sx-r-numero {
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--r-dorado);
+    color: var(--r-tinta);
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .sx-r-familia-tarjeta > div > p {
+    margin-top: 8px;
+    color: var(--r-suave);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .sx-r-familia-tarjeta .sx-r-por-que {
+    color: var(--r-tinta);
+    font-size: 12px;
+  }
+  .sx-r-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .sx-r-chip {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--r-crema-oscuro);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .sx-r-chip[data-tipo='UNIVERSIDAD'] {
+    background: color-mix(in srgb, var(--primary) 14%, #fff);
+  }
+  .sx-r-chip[data-tipo='INSTITUTO'] {
+    background: color-mix(in srgb, var(--success) 16%, #fff);
+  }
+  .sx-r-familia-acciones {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: 10px;
+  }
+  .sx-r-familia-acciones .sx-r-boton {
+    width: 100%;
+  }
+  .sx-r-cierre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 8px;
+  }
+  .sx-r-cierre p {
+    max-width: 640px;
+    color: var(--sx-night-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .sx-r-cierre strong {
+    color: var(--sx-night-text);
+  }
+}
+
+@media (min-width: 640px) {
+  .sx-d-result-page {
+    .sx-r-guia-grilla,
+    .sx-r-grilla {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sx-r-familia-tarjeta {
+      grid-template-columns: minmax(0, 1fr) 200px;
+    }
+  }
+}
+@media (min-width: 1024px) {
+  .sx-d-result-page {
+    .sx-r-guia-grilla,
+    .sx-r-grilla {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
+@media (max-width: 639px) {
+  .sx-d-result-page {
+    .sx-r-guia-cerrada {
+      grid-template-columns: 1fr;
+    }
+    .sx-r-panel,
+    .sx-r-guia {
+      padding: 20px;
+    }
+    .sx-r-pie small {
+      text-align: left;
+    }
+  }
+}

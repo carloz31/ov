@@ -15,7 +15,11 @@ import { FlatProfileNotice } from '@/features/discovery/components/FlatProfileNo
 import { ResultNotes } from '@/features/discovery/components/ResultNotes'
 import { PartidaLlegadaResult } from '@/features/discovery/components/PartidaLlegadaResult'
 import { AvisoFavorito } from '@/features/discovery/components/AvisoFavorito'
+import { GuiaDimensiones } from '@/features/discovery/components/GuiaDimensiones'
+import { ResultadoIntereses } from '@/features/discovery/components/ResultadoIntereses'
+import { appPaths } from '@/routes/paths'
 import '@/features/discovery/styles/result-page.css'
+import '@/features/discovery/styles/resultado-intereses.css'
 
 export function HelenaResultView() {
   const { pagina } = useParams()
@@ -50,10 +54,37 @@ export function HelenaResultView() {
       </DiscoveryStage>
     )
   const { resumen } = model
+  // Ajuste resultados-intereses (api): guía común, letras y barras que la abren, encuadre y «Cómo leer».
+  const api = resumen.puntajeVisual
+  const guia = api ? (
+    <GuiaDimensiones
+      resumen={resumen}
+      abierta={model.guia}
+      resaltada={model.resaltada}
+      abrir={() => model.abrirGuia()}
+      cerrar={() => model.setGuia(false)}
+    />
+  ) : (
+    model.guia && <DimensionGuide resumen={resumen} cerrar={() => model.setGuia(false)} />
+  )
+  const perfil = (
+    <DimensionProfile
+      resumen={resumen}
+      guia={model.guia}
+      abrirGuia={() => model.setGuia(!model.guia)}
+      expandidas={model.expandidas}
+      alternar={model.alternarDimension}
+      alPulsar={api ? model.abrirGuia : undefined}
+    />
+  )
   return (
     <DiscoveryStage ambient="profile">
       <div className="sx-d-result-page">
-        <ResultHeader page={model.page} tipo={resumen.tipoResultado} />
+        <ResultHeader
+          page={model.page}
+          tipo={resumen.tipoResultado}
+          encuadre={api ? resumen.mensaje : undefined}
+        />
         {(model.errorResultado || model.errorConsulta) && (
           <div className="sx-d-warning" role="alert">
             <p>{model.errorResultado?.mensaje || model.errorConsulta}</p>
@@ -62,73 +93,99 @@ export function HelenaResultView() {
             </button>
           </div>
         )}
-        {resumen.lectura && <p className="sx-d-result-lectura">{resumen.lectura}</p>}
-        <ResultOverview>
-          {resumen.perfilPlano ? (
-            <FlatProfileNotice
-              reinicio={
-                model.reinicio && {
-                  texto: model.reinicio.texto,
-                  accion: (
-                    <>
-                      {model.reinicio.puede && (
-                        <button
-                          type="button"
-                          className="sx-d-action"
-                          disabled={model.reinicio.ocupado}
-                          onClick={model.reinicio.reiniciar}
-                        >
-                          Volver a hacer las misiones
-                        </button>
-                      )}
-                      {model.reinicio.error && <p role="alert">{model.reinicio.error}</p>}
-                    </>
-                  ),
-                }
-              }
-            />
-          ) : resumen.tipoResultado === 'COINCIDENCIAS' ? (
-            <InterestCode dimensiones={resumen.protagonistas} empate={resumen.hayEmpate} />
+        {resumen.lectura &&
+          (api ? (
+            <section className="sx-r-lectura" aria-label="Cómo leer este resultado">
+              <p className="sx-r-rotulo">Cómo leer este resultado</p>
+              <p className="sx-d-result-lectura">{resumen.lectura}</p>
+            </section>
           ) : (
-            <HighlightedDimensions
-              dimensiones={resumen.protagonistas}
-              pagina={resumen.pagina}
-              puntajeVisual={resumen.puntajeVisual}
-            />
-          )}
-          <DimensionProfile
-            resumen={resumen}
-            guia={model.guia}
-            abrirGuia={() => model.setGuia(!model.guia)}
-            expandidas={model.expandidas}
-            alternar={model.alternarDimension}
+            <p className="sx-d-result-lectura">{resumen.lectura}</p>
+          ))}
+        {model.intereses ? (
+          <ResultadoIntereses
+            modelo={model.intereses}
+            perfil={
+              <ResultOverview>
+                <InterestCode
+                  dimensiones={resumen.protagonistas}
+                  empate={resumen.hayEmpate}
+                  alPulsar={model.abrirGuia}
+                />
+                {perfil}
+              </ResultOverview>
+            }
+            guia={guia}
+            rutas={{
+              ocupacion: discoveryPaths.occupation,
+              carreras: appPaths.student.catalog.careers,
+              profesiones: appPaths.student.catalog.professions,
+            }}
           />
-        </ResultOverview>
-        {model.guia && <DimensionGuide resumen={resumen} cerrar={() => model.setGuia(false)} />}
-        {model.mostrarOcupaciones && (
-          <AffineOccupations
-            ocupaciones={model.ocupaciones}
-            ajuste={model.ajuste}
-            filtrar={model.setAjuste}
-            seleccion={model.elegida?.clave}
-            elegir={model.setSeleccion}
-            guardar={model.guardarOcupacion}
-            pendiente={model.ocupacionPendiente}
-          />
+        ) : (
+          <>
+            <ResultOverview>
+              {resumen.perfilPlano ? (
+                <FlatProfileNotice
+                  reinicio={
+                    model.reinicio && {
+                      texto: model.reinicio.texto,
+                      accion: (
+                        <>
+                          {model.reinicio.puede && (
+                            <button
+                              type="button"
+                              className="sx-d-action"
+                              disabled={model.reinicio.ocupado}
+                              onClick={model.reinicio.reiniciar}
+                            >
+                              Volver a hacer las misiones
+                            </button>
+                          )}
+                          {model.reinicio.error && <p role="alert">{model.reinicio.error}</p>}
+                        </>
+                      ),
+                    }
+                  }
+                />
+              ) : resumen.tipoResultado === 'COINCIDENCIAS' ? (
+                <InterestCode dimensiones={resumen.protagonistas} empate={resumen.hayEmpate} />
+              ) : (
+                <HighlightedDimensions
+                  dimensiones={resumen.protagonistas}
+                  pagina={resumen.pagina}
+                  puntajeVisual={resumen.puntajeVisual}
+                />
+              )}
+              {perfil}
+            </ResultOverview>
+            {guia}
+            {model.mostrarOcupaciones && (
+              <AffineOccupations
+                ocupaciones={model.ocupaciones}
+                ajuste={model.ajuste}
+                filtrar={model.setAjuste}
+                seleccion={model.elegida?.clave}
+                elegir={model.setSeleccion}
+                guardar={model.guardarOcupacion}
+                pendiente={model.ocupacionPendiente}
+              />
+            )}
+            {model.mostrarCarreras && (
+              <RecommendedCareers
+                carreras={model.carreras}
+                ocupacion={model.elegida?.titulo}
+                verTodas={() => model.setSeleccion(null)}
+                siguientePlan={model.siguientePlan}
+                guardar={model.guardarCarrera}
+                pendiente={model.carreraPendiente}
+                crearPlan={model.crearPlan}
+              />
+            )}
+            {resumen.secciones.siguientesPasos && <ResultNextSteps />}
+            <ResultNotes tipo={resumen.tipoResultado} />
+          </>
         )}
-        {model.mostrarCarreras && (
-          <RecommendedCareers
-            carreras={model.carreras}
-            ocupacion={model.elegida?.titulo}
-            verTodas={() => model.setSeleccion(null)}
-            siguientePlan={model.siguientePlan}
-            guardar={model.guardarCarrera}
-            pendiente={model.carreraPendiente}
-            crearPlan={model.crearPlan}
-          />
-        )}
-        {resumen.secciones.siguientesPasos && <ResultNextSteps />}
-        <ResultNotes tipo={resumen.tipoResultado} />
         <AvisoFavorito aviso={model.avisoFavorito} onDismiss={model.cerrarAvisoFavorito} />
       </div>
     </DiscoveryStage>
