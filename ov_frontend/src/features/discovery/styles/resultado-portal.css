@@ -153,10 +153,24 @@
     background: var(--card);
     box-shadow: 0 1px 2px rgb(15 23 42 / 0.1);
   }
+  /* Anchos fijos: en «Por área» cada grupo es su propia tabla y sus columnas deben coincidir. */
   .sx-p-tabla {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     font-size: 14px;
+  }
+  .sx-p-tabla thead th:nth-child(1) {
+    width: 56px;
+  }
+  .sx-p-tabla thead th:nth-child(2) {
+    width: 38%;
+  }
+  .sx-p-tabla thead th:nth-child(3) {
+    width: 170px;
+  }
+  .sx-p-tabla thead th:nth-child(5) {
+    width: 110px;
   }
   .sx-p-tabla th,
   .sx-p-tabla td {
