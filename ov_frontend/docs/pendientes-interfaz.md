@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-02 · Ajuste resultados-intereses · Resultado del estudiante para la orientadora
+
+- **Dato:** `mensaje_orientadora` y `lectura_orientadora` de cada instrumento (cargados en `fijos.py`) y el resultado de intereses de un estudiante (ocupaciones afines, por área y familias), que la orientadora vería con el boceto 02 y la tarjeta final «Para la tutoría».
+- **Dónde se mostraría:** la vista de cuestionario del estudiante en el portal de la orientadora (`pages/counselor/QuestionnaireDetailView.tsx`, hoy solo de demostración), con `ResultadoInteresesPortal`.
+- **Opciones:** una ruta de resultados del estudiante con la política `es_de_su_salon` y la vista del boceto 02 (B14, «Orientadora: seguimiento y configuración»); adelantarla en un ajuste; dejarla en demostración.
+- **Si no se muestra:** la orientadora no ve los resultados reales; sus textos quedan cargados sin uso.
+- **Estado:** pendiente para B14 (decisión del usuario en el ajuste).
+
 ## 2026-10-29 · B13 · Investigaciones y entrevistas
 
 - **Dato:**
