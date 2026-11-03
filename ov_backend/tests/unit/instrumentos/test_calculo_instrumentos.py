@@ -5,7 +5,7 @@ import pytest
 from app.services.instrumentos.calculo import (
     CodigoInteresCalculado, DimensionCalculada, ItemParaCalculo, OcupacionAfin, PerfilOcupacion,
     calcular_codigo_interes, calcular_coincidencias, calcular_dimension, calcular_dimensiones_destacadas,
-    calcular_parecido, calcular_pearson, calcular_puntaje_item, clasificar_banda, puntaje_visual,
+    calcular_parecido, calcular_pearson, calcular_puntaje_item, clasificar_banda, clasificar_preparacion, puntaje_visual,
     recomendar_familias, seleccionar_afines,
 )
 
@@ -43,6 +43,14 @@ def test_correlacion_negativa_del_notebook_se_descarta():
 def test_parecido_redondea_la_mitad_hacia_arriba_y_bandas_inclusivas(correlacion, parecido, banda):
     assert calcular_parecido(correlacion) == parecido
     assert clasificar_banda(parecido) == banda
+
+
+@pytest.mark.parametrize("job_zone, preparacion", [
+    (5, "AMPLIA"), (4, "AMPLIA"), (3, "INTERMEDIA"), (2, "INTERMEDIA"), (1, None), (None, None),
+])
+def test_preparacion_sale_de_la_job_zone(job_zone, preparacion):
+    # Corrección del ajuste resultados-intereses: el front filtra las afines por preparación.
+    assert clasificar_preparacion(job_zone) == preparacion
 
 
 @pytest.mark.parametrize("puntaje, minimo, maximo, inverso, esperado", [

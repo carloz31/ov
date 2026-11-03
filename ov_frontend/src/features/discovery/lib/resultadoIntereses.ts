@@ -2,30 +2,42 @@ import { textoBanda } from '@/lib/servidor/adaptadores'
 import { nombresTipoCarrera } from '@/lib/servidor/adaptadoresCatalogo'
 import type {
   AreaOcupaciones,
-  BandaAfinidad,
   FamiliaRecomendadaPublica,
   OcupacionAfinPublica,
+  PreparacionOcupacion,
 } from '@/types/servidor'
 
 // Ajuste resultados-intereses: lo que el resultado de intereses muestra con los datos del servidor. Las reglas
 // (umbral, bandas, familias) son del backend; aquí solo se filtra, agrupa y redacta.
 
-export type FiltroBanda = 'TODAS' | Extract<BandaAfinidad, 'MUY_AFIN' | 'AFIN'>
+export type FiltroPreparacion = PreparacionOcupacion | 'TODAS'
 export type VistaOcupaciones = 'lista' | 'area'
 
 export const etiquetaAfinidad = (o: Pick<OcupacionAfinPublica, 'banda' | 'parecido'>) =>
   `${textoBanda(o.banda)} · ${o.parecido} %`
 
-export function conteoBandas(ocupaciones: OcupacionAfinPublica[]) {
+// Corrección del ajuste: el filtro por la preparación que suele pedir el trabajo. Es solo del front, sobre las
+// ocupaciones ya devueltas; la posición sigue siendo la del orden global.
+export function conteoPreparacion(ocupaciones: OcupacionAfinPublica[]): Record<FiltroPreparacion, number> {
   return {
+    AMPLIA: ocupaciones.filter((o) => o.preparacion === 'AMPLIA').length,
+    INTERMEDIA: ocupaciones.filter((o) => o.preparacion === 'INTERMEDIA').length,
     TODAS: ocupaciones.length,
-    MUY_AFIN: ocupaciones.filter((o) => o.banda === 'MUY_AFIN').length,
-    AFIN: ocupaciones.filter((o) => o.banda === 'AFIN').length,
   }
 }
 
-export const filtrarBanda = (ocupaciones: OcupacionAfinPublica[], filtro: FiltroBanda) =>
-  filtro === 'TODAS' ? ocupaciones : ocupaciones.filter((o) => o.banda === filtro)
+export const filtrarPreparacion = (ocupaciones: OcupacionAfinPublica[], filtro: FiltroPreparacion) =>
+  filtro === 'TODAS' ? ocupaciones : ocupaciones.filter((o) => o.preparacion === filtro)
+
+// Por defecto, Amplia; si no tiene ninguna, Todas.
+export const filtroInicial = (ocupaciones: OcupacionAfinPublica[]): FiltroPreparacion =>
+  ocupaciones.some((o) => o.preparacion === 'AMPLIA') ? 'AMPLIA' : 'TODAS'
+
+export const pieAfinidad = (persona: 'tuyo' | 'suyo') =>
+  `Afinidad: cuánto se parece el perfil de intereses de la ocupación al ${persona} («muy afín» desde 70 %). ` +
+  'Preparación amplia: suele pedir grado universitario o posgrado; intermedia: formación técnica, capacitación ' +
+  'o experiencia práctica. Es una referencia internacional; en el Perú la ruta exacta está en su familia de ' +
+  'carreras. Fuente: O*NET Interest Profiler, adaptado a ocupaciones con formación en el Perú.'
 
 // Las letras de la ocupación que están en el código de interés del estudiante.
 export const letrasCompartidas = (riasec: string[], codigo: string) =>

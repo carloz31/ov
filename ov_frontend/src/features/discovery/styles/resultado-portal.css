@@ -150,8 +150,25 @@
     cursor: pointer;
   }
   .sx-p-segmentos button[aria-pressed='true'] {
-    background: var(--card);
+    background: var(--primary);
+    color: var(--primary-foreground);
     box-shadow: 0 1px 2px rgb(15 23 42 / 0.1);
+  }
+  /* Corrección del ajuste: cada control con su rótulo encima, en texto pequeño. */
+  .sx-p-controles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px 24px;
+  }
+  .sx-p-control {
+    display: grid;
+    gap: 6px;
+  }
+  .sx-p-control > span {
+    color: var(--foreground);
+    font-size: 12px;
+    font-weight: 650;
   }
   /* Anchos fijos: en «Por área» cada grupo es su propia tabla y sus columnas deben coincidir. */
   .sx-p-tabla {
@@ -223,8 +240,11 @@
     gap: 12px;
   }
   .sx-p-pie small {
+    flex: 1 1 360px;
+    max-width: 720px;
     color: var(--muted-foreground);
     font-size: 12px;
+    line-height: 1.5;
   }
   .sx-p-boton-borde {
     min-height: 44px;

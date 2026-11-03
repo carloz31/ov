@@ -25,8 +25,8 @@ from app.schemas.instrumentos import (
 )
 from app.schemas.catalogo import FamiliaPublica
 from app.services.instrumentos.calculo import (
-    DimensionCalculada, calcular_codigo_interes, calcular_dimensiones_destacadas, calcular_zona, puntaje_visual,
-    recomendar_familias, seleccionar_afines,
+    DimensionCalculada, calcular_codigo_interes, calcular_dimensiones_destacadas, calcular_zona,
+    clasificar_preparacion, puntaje_visual, recomendar_familias, seleccionar_afines,
 )
 
 
@@ -290,7 +290,8 @@ def ocupaciones_y_familias(sesion, afines_guardadas, principales) -> dict:
         ocupaciones.append(OcupacionAfinPublica(
             posicion=posicion, codigo=ocupacion.codigo, codigo_onet=ocupacion.codigo_onet, titulo=ocupacion.titulo,
             resumen=ocupacion.resumen, riasec=list(ocupacion.codigo_riasec or ''), parecido=afin.parecido,
-            banda=afin.banda, familia_principal=None if familia is None else familia_publica(familia)))
+            banda=afin.banda, preparacion=clasificar_preparacion(ocupacion.job_zone),
+            familia_principal=None if familia is None else familia_publica(familia)))
     areas: dict[str | None, AreaOcupaciones] = {}
     for ocupacion in ocupaciones:
         familia = ocupacion.familia_principal

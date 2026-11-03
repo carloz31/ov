@@ -72,6 +72,7 @@ export type DimensionResultado = {
 } & TextosDimension
 // Ajuste resultados-intereses: la banda y el parecido (r × 100) los calcula el backend; el r crudo no llega.
 export type BandaAfinidad = 'MUY_AFIN' | 'AFIN' | 'CERCANA'
+export type PreparacionOcupacion = 'AMPLIA' | 'INTERMEDIA'
 export type OcupacionAfinPublica = {
   posicion: number
   codigo: string
@@ -81,6 +82,8 @@ export type OcupacionAfinPublica = {
   riasec: string[]
   parecido: number
   banda: BandaAfinidad
+  // AMPLIA (job_zone 4–5) o INTERMEDIA (2–3); nula sin job_zone (solo aparece en «Todas»).
+  preparacion: PreparacionOcupacion | null
   familia_principal: FamiliaPublica | null
 }
 // Ocupaciones mostradas por el área (campo específico) de su familia principal; «Sin familia» con código nulo.

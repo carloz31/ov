@@ -1,9 +1,18 @@
 import { Link } from 'react-router'
 import type { AreaOcupaciones, OcupacionAfinPublica } from '@/types/servidor'
-import { agruparPorArea, etiquetaAfinidad, type VistaOcupaciones } from '../lib/resultadoIntereses'
+import {
+  agruparPorArea,
+  conteoPreparacion,
+  etiquetaAfinidad,
+  filtrarPreparacion,
+  pieAfinidad,
+  type FiltroPreparacion,
+  type VistaOcupaciones,
+} from '../lib/resultadoIntereses'
+import { ControlesAfines } from './ControlesAfines'
 
 // Ajuste resultados-intereses: las ocupaciones afines del hijo como tabla, en el portal (boceto 02). Las 8
-// primeras y «Mostrar las N restantes»; por área, todas.
+// primeras y «Mostrar las N restantes»; por área, todas. El filtro de preparación es el mismo del estudiante.
 export const VISIBLES_PORTAL = 8
 
 function Filas({
@@ -53,6 +62,8 @@ export function OcupacionesAfinesPortal({
   pocoMarcado,
   vista,
   elegirVista,
+  filtro,
+  filtrar,
   todas,
   mostrarTodas,
   href,
@@ -62,11 +73,14 @@ export function OcupacionesAfinesPortal({
   pocoMarcado: boolean
   vista: VistaOcupaciones
   elegirVista: (vista: VistaOcupaciones) => void
+  filtro: FiltroPreparacion
+  filtrar: (filtro: FiltroPreparacion) => void
   todas: boolean
   mostrarTodas: () => void
   href: (codigo: string) => string
 }) {
-  const recortada = vista === 'lista' && !todas && ocupaciones.length > VISIBLES_PORTAL
+  const filtradas = filtrarPreparacion(ocupaciones, filtro)
+  const recortada = vista === 'lista' && !todas && filtradas.length > VISIBLES_PORTAL
   return (
     <section className="sx-p-panel" aria-labelledby="titulo-afines-portal">
       <div className="sx-p-cabecera">
@@ -76,21 +90,21 @@ export function OcupacionesAfinesPortal({
             {pocoMarcado
               ? `Su perfil es poco marcado: estas son las ${ocupaciones.length} ocupaciones más cercanas aunque no pasen de 50 %.`
               : `${ocupaciones.length} ocupaciones cuyo perfil se parece al suyo en más de 50 %, de la más parecida a la menos.`}
-            {recortada && ` Se muestran las ${VISIBLES_PORTAL} primeras.`}
           </p>
         </div>
-        <div className="sx-p-segmentos" role="group" aria-label="Vista">
-          {(['lista', 'area'] as const).map((v) => (
-            <button key={v} type="button" aria-pressed={vista === v} onClick={() => elegirVista(v)}>
-              {v === 'lista' ? 'Lista' : 'Por área'}
-            </button>
-          ))}
-        </div>
       </div>
+      <ControlesAfines
+        prefijo="sx-p"
+        vista={vista}
+        elegirVista={elegirVista}
+        filtro={filtro}
+        filtrar={filtrar}
+        conteos={conteoPreparacion(ocupaciones)}
+      />
       {vista === 'lista' ? (
-        <Filas ocupaciones={recortada ? ocupaciones.slice(0, VISIBLES_PORTAL) : ocupaciones} href={href} />
+        <Filas ocupaciones={recortada ? filtradas.slice(0, VISIBLES_PORTAL) : filtradas} href={href} />
       ) : (
-        agruparPorArea(ocupaciones, porArea).map((area) => (
+        agruparPorArea(filtradas, porArea).map((area) => (
           <section key={area.codigo ?? 'sin-familia'} aria-label={area.nombre} className="sx-p-area">
             <h3>
               {area.nombre} <small>· {area.ocupaciones.length}</small>
@@ -102,12 +116,12 @@ export function OcupacionesAfinesPortal({
       <footer className="sx-p-pie">
         {recortada ? (
           <button type="button" className="sx-p-boton-borde" onClick={mostrarTodas}>
-            Mostrar las {ocupaciones.length - VISIBLES_PORTAL} restantes
+            Mostrar las {filtradas.length - VISIBLES_PORTAL} restantes
           </button>
         ) : (
           <span />
         )}
-        <small>Fuente: O*NET Interest Profiler, adaptado a ocupaciones con formación en el Perú.</small>
+        <small>{pieAfinidad('suyo')}</small>
       </footer>
     </section>
   )

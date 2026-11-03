@@ -277,6 +277,7 @@
         },
         "parecido": 92,
         "posicion": 1,
+        "preparacion": "AMPLIA",
         "resumen": "Estudian la naturaleza y el uso de las áreas de la superficie terrestre por medio de la relación e interpretación de las interacciones de…",
         "riasec": [
           "I",
@@ -296,6 +297,7 @@
         },
         "parecido": 85,
         "posicion": 2,
+        "preparacion": "AMPLIA",
         "resumen": "Estudian la composición química o los principios físicos de las células y organismos vivos, su energía eléctrica y mecánica y fenómenos…",
         "riasec": [
           "I",
@@ -315,6 +317,7 @@
         },
         "parecido": 84,
         "posicion": 3,
+        "preparacion": "AMPLIA",
         "resumen": "Realizan investigaciones sobre cultivos, fisiología, producción, rendimiento y gestión agrícola de cultivos, plantas o árboles, arbustos…",
         "riasec": [
           "I",
@@ -334,6 +337,7 @@
         },
         "parecido": 84,
         "posicion": 4,
+        "preparacion": "AMPLIA",
         "resumen": "Planifican y diseñan áreas de terreno para proyectos tales como parques y otros espacios recreativos, aeropuertos, autopistas, hospitales…",
         "riasec": [
           "R",
@@ -354,6 +358,7 @@
         },
         "parecido": 83,
         "posicion": 5,
+        "preparacion": "AMPLIA",
         "resumen": "Estudian el origen, desarrollo y comportamiento de los seres humanos.",
         "riasec": [
           "I",
@@ -373,6 +378,7 @@
         },
         "parecido": 83,
         "posicion": 6,
+        "preparacion": "AMPLIA",
         "resumen": "Estudian la composición, estructura y otros aspectos físicos de la Tierra.",
         "riasec": [
           "I",
@@ -393,6 +399,7 @@
         },
         "parecido": 82,
         "posicion": 7,
+        "preparacion": "AMPLIA",
         "resumen": "Estudian los orígenes, comportamientos, enfermedades, genética y procesos vitales de los animales y de la fauna silvestre.",
         "riasec": [
           "I",
@@ -412,6 +419,7 @@
         },
         "parecido": 82,
         "posicion": 8,
+        "preparacion": "AMPLIA",
         "resumen": "Realizan investigaciones sobre temas de genética, nutrición, reproducción, cría y desarrollo de animales domésticos de granja.",
         "riasec": [
           "I",
@@ -431,6 +439,7 @@
         },
         "parecido": 79,
         "posicion": 9,
+        "preparacion": "AMPLIA",
         "resumen": "Investigan el crecimiento, la estructura, desarrollo y demás características de los organismos microscópicos, tales como bacterias, algas…",
         "riasec": [
           "I",
@@ -451,6 +460,7 @@
         },
         "parecido": 79,
         "posicion": 10,
+        "preparacion": "AMPLIA",
         "resumen": "Aplican conocimientos de la tecnología de la ingeniería y de las ciencias biológicas a problemas agrícolas relacionados con la energía y…",
         "riasec": [
           "R",
@@ -470,6 +480,7 @@
         },
         "parecido": 78,
         "posicion": 11,
+        "preparacion": "AMPLIA",
         "resumen": "Evalúan y desarrollan maquinarias y procesos para la fabricación de materiales que se utilizan en la manufacturación de productos que…",
         "riasec": [
           "R",
@@ -490,6 +501,7 @@
         },
         "parecido": 77,
         "posicion": 12,
+        "preparacion": "AMPLIA",
         "resumen": "Desarrollan diseños nuevos o mejorados para piezas estructurales de vehículos, maquinarias, transmisiones u otros sistemas de vehículos…",
         "riasec": [
           "R",
@@ -510,6 +522,7 @@
         },
         "parecido": 77,
         "posicion": 13,
+        "preparacion": "AMPLIA",
         "resumen": "Utilizan la química, microbiología, ingeniería y otras ciencias para estudiar los principios básicos del procesamiento y la deterioración…",
         "riasec": [
           "I",
@@ -530,6 +543,7 @@
         },
         "parecido": 74,
         "posicion": 14,
+        "preparacion": "AMPLIA",
         "resumen": "Realizan investigaciones sobre fenómenos físicos, desarrollan teorías sobre la base de la observación y experimentación, y diseñan métodos…",
         "riasec": [
           "I",
@@ -550,6 +564,7 @@
         },
         "parecido": 74,
         "posicion": 15,
+        "preparacion": "AMPLIA",
         "resumen": "Realizan investigaciones orientadas a la comprensión de las enfermedades humanas y del mejoramiento de la salud humana.",
         "riasec": [
           "I",
@@ -569,6 +584,7 @@
         },
         "parecido": 73,
         "posicion": 16,
+        "preparacion": "AMPLIA",
         "resumen": "Investigan los fenómenos atmosféricos e interpretan datos meteorológicos recopilados por estaciones terrestres y aéreas, satélites y…",
         "riasec": [
           "I",
@@ -589,6 +605,7 @@
         },
         "parecido": 73,
         "posicion": 17,
+        "preparacion": "AMPLIA",
         "resumen": "Aplican conocimientos de ingeniería, biología, química, ciencias de la computación, y principios de biomecánica para diseñar, desarrollar…",
         "riasec": [
           "I",
@@ -609,6 +626,7 @@
         },
         "parecido": 72,
         "posicion": 18,
+        "preparacion": "AMPLIA",
         "resumen": "Realizan tareas de ingeniería en lo que se refiere al diseño, construcción, y pruebas de aviones, misiles, y naves espaciales.",
         "riasec": [
           "I",
@@ -629,6 +647,7 @@
         },
         "parecido": 70,
         "posicion": 19,
+        "preparacion": "AMPLIA",
         "resumen": "Diseñan, desarrollan, y evalúan la operación de embarcaciones, maquinarias, y equipos de buques, como por ejemplo, sistemas de suministro…",
         "riasec": [
           "R",
@@ -649,6 +668,7 @@
         },
         "parecido": 69,
         "posicion": 20,
+        "preparacion": "AMPLIA",
         "resumen": "Investigan la distribución, circulación y las propiedades físicas de las aguas terrestres y subterráneas, y estudian la forma e intensidad…",
         "riasec": [
           "I",
@@ -669,6 +689,7 @@
         },
         "parecido": 69,
         "posicion": 21,
+        "preparacion": "AMPLIA",
         "resumen": "Investigan, diseñan, desarrollan o prueban componentes y sistemas electrónicos para uso comercial, industrial, militar, o científico por…",
         "riasec": [
           "R",
@@ -689,6 +710,7 @@
         },
         "parecido": 68,
         "posicion": 22,
+        "preparacion": "AMPLIA",
         "resumen": "Realizan análisis cualitativos y cuantitativos o experimentos de laboratorio con fines de control de calidad o de proceso, o para…",
         "riasec": [
           "I",
@@ -709,6 +731,7 @@
         },
         "parecido": 68,
         "posicion": 23,
+        "preparacion": "AMPLIA",
         "resumen": "Diseñan equipos para plantas químicas y dispositivos para procesar y fabricar químicos y productos tales como gasolina, caucho sintético…",
         "riasec": [
           "R",
@@ -729,6 +752,7 @@
         },
         "parecido": 67,
         "posicion": 24,
+        "preparacion": "AMPLIA",
         "resumen": "Investigan y estudian la herencia de las características a nivel molecular, de organismo o de población.",
         "riasec": [
           "I",
@@ -749,6 +773,7 @@
         },
         "parecido": 67,
         "posicion": 25,
+        "preparacion": "INTERMEDIA",
         "resumen": "Aplican la teoría y los principios de la ingeniería mecánica para modificar, desarrollar, probar, o ajustar maquinarias y equipos bajo la…",
         "riasec": [
           "R",
@@ -769,6 +794,7 @@
         },
         "parecido": 67,
         "posicion": 26,
+        "preparacion": "AMPLIA",
         "resumen": "Llevan a cabo estudios o realizan investigaciones con el propósito de identificar, mitigar o eliminar fuentes de contaminación o riesgos…",
         "riasec": [
           "I",
@@ -789,6 +815,7 @@
         },
         "parecido": 67,
         "posicion": 27,
+        "preparacion": "AMPLIA",
         "resumen": "Estudian, diseñan, desarrollan o prueban la automatización, sistemas inteligentes, dispositivos inteligentes o sistemas de control…",
         "riasec": [
           "R",
@@ -809,6 +836,7 @@
         },
         "parecido": 67,
         "posicion": 28,
+        "preparacion": "AMPLIA",
         "resumen": "Investigan, diseñan, desarrollan, prueban o supervisan la fabricación e instalación de equipos, componentes o sistemas eléctricos para uso…",
         "riasec": [
           "R",
@@ -829,6 +857,7 @@
         },
         "parecido": 66,
         "posicion": 29,
+        "preparacion": "AMPLIA",
         "resumen": "Realizan investigaciones o estudios sobre los principios básicos de la flora y de la fauna, tal como su origen, relación, desarrollo…",
         "riasec": [
           "I",
@@ -849,6 +878,7 @@
         },
         "parecido": 66,
         "posicion": 30,
+        "preparacion": "AMPLIA",
         "resumen": "Realizan investigaciones sobre los fundamentos de las ciencias de la computación e información en condición de teóricos, diseñadores, o…",
         "riasec": [
           "I",

@@ -15,7 +15,7 @@ import { createPlanFromCareer, getOrderedPlans } from '../lib/plans'
 import { filtrarPorAjuste, ordenarCarreras, resumirResultado } from '../lib/resultPage'
 import { useHelenaPages } from './useHelenaPages'
 import { modeloPartidaLlegada } from '../lib/partidaLlegada'
-import type { FiltroBanda, VistaOcupaciones } from '../lib/resultadoIntereses'
+import { filtroInicial, type FiltroPreparacion, type VistaOcupaciones } from '../lib/resultadoIntereses'
 import { useFavoritoServidor } from './useFavoritoServidor'
 
 export function useResultPage(pagina: string | undefined, resultadoRecibido?: ResultadoPublico) {
@@ -34,7 +34,8 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
     if (new URLSearchParams(search).get('guia') === '1') setGuia(true)
   }, [pagina, search])
   const [vista, setVista] = useState<VistaOcupaciones>('lista')
-  const [filtroBanda, setFiltroBanda] = useState<FiltroBanda>('TODAS')
+  // Sin elegir, Amplia (o Todas si no hay); se calcula al llegar el resultado.
+  const [filtroPreparacion, setFiltroPreparacion] = useState<FiltroPreparacion | null>(null)
   const [todas, setTodas] = useState(false)
   const [expandidas, setExpandidas] = useState<string[]>([])
   const [ajuste, setAjuste] = useState('Todas')
@@ -99,9 +100,9 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
           pocoMarcado: !!remoto.perfil_poco_marcado,
           vista,
           elegirVista: setVista,
-          filtro: filtroBanda,
-          filtrar: (filtro: FiltroBanda) => {
-            setFiltroBanda(filtro)
+          filtro: filtroPreparacion ?? filtroInicial(remoto.ocupaciones ?? []),
+          filtrar: (filtro: FiltroPreparacion) => {
+            setFiltroPreparacion(filtro)
             setTodas(false)
           },
           todas,

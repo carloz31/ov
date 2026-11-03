@@ -126,9 +126,15 @@ test('el apoderado ve su texto, el código, la tabla de ocupaciones afines y las
   assert.ok(marcado.includes(remoto.lectura.replace(/«/g, '&laquo;')) || marcado.includes('Muestra gusto, no capacidad'))
   assert.match(marcado, /Su código de interés/)
   assert.match(marcado, /Qué significa cada tipo/)
-  assert.equal((marcado.match(/Ver ficha/g) ?? []).length, 8)
-  assert.ok(marcado.includes(`Mostrar las ${remoto.ocupaciones.length - 8} restantes`))
-  assert.ok(marcado.includes(`href="/parent/explorar/professions/${remoto.ocupaciones[0].codigo}"`))
+  // Corrección del ajuste: abre en preparación Amplia (o Todas sin ninguna), con los rótulos de cada control.
+  const amplias = remoto.ocupaciones.filter((o) => o.preparacion === 'AMPLIA')
+  const visibles = amplias.length ? amplias : remoto.ocupaciones
+  assert.match(marcado, /Cómo verlas/)
+  assert.match(marcado, /Preparación que suele pedir el trabajo/)
+  assert.equal((marcado.match(/Ver ficha/g) ?? []).length, Math.min(8, visibles.length))
+  if (visibles.length > 8) assert.ok(marcado.includes(`Mostrar las ${visibles.length - 8} restantes`))
+  assert.ok(marcado.includes(`href="/parent/explorar/professions/${visibles[0].codigo}"`))
+  assert.match(marcado, /de la ocupación al suyo/)
   assert.equal((marcado.match(/Ver en el catálogo/g) ?? []).length, remoto.familias.length)
   assert.match(marcado, /href="\/parent\/explorar\/careers\?area=\d{2}&amp;familia=\d{3}"/)
   assert.match(marcado, /Para conversar en casa/)

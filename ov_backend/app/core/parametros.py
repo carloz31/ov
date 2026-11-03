@@ -18,6 +18,10 @@ UMBRAL_AFIN_PARECIDO = 50
 FAMILIAS_RECOMENDADAS = 5
 OCUPACIONES_POR_FAMILIA = 2
 RELLENO_SEGUNDA_OCUPACION = 0.5
+# Preparación que suele pedir una ocupación afín, según su job_zone O*NET: amplia (grado universitario o
+# posgrado) o intermedia (formación técnica, capacitación o experiencia). Fuera de ambas, o sin job_zone: nula.
+ZONAS_PREPARACION_AMPLIA = (4, 5)
+ZONAS_PREPARACION_INTERMEDIA = (2, 3)
 
 # B07: zona de una dimensión de partida o llegada según su promedio (inclusivo). Provisional.
 UMBRAL_ZONA_FUERTE = 3.5

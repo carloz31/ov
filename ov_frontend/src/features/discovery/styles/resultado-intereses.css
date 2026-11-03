@@ -321,7 +321,18 @@
   .sx-r-controles {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    align-items: flex-end;
+    gap: 12px 24px;
+  }
+  /* Corrección del ajuste: cada control con su rótulo encima, en texto pequeño. */
+  .sx-r-control {
+    display: grid;
+    gap: 6px;
+  }
+  .sx-r-control > span {
+    color: var(--r-tinta);
+    font-size: 11px;
+    font-weight: 750;
   }
   .sx-r-segmentos {
     display: inline-flex;
@@ -439,11 +450,11 @@
     gap: 12px;
   }
   .sx-r-pie small {
+    flex: 1 1 320px;
     max-width: 560px;
     color: var(--r-suave);
     font-size: 11px;
     line-height: 1.5;
-    text-align: right;
   }
 
   /* Familias recomendadas */

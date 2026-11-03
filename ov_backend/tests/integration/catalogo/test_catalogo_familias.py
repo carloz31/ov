@@ -28,3 +28,12 @@ def test_sin_resultado_no_hay_afinidades(cliente):
     base = '/cuentas/est-ana/catalogo'
     assert pedir(cliente, 'GET', f'{base}/ocupaciones/psychologist')['afinidad'] is None
     assert pedir(cliente, 'GET', f'{base}/familias/313')['recomendada_posicion'] is None
+
+
+def test_cada_ocupacion_afin_trae_la_preparacion_de_su_job_zone(cliente):
+    # Corrección del ajuste resultados-intereses: AMPLIA (job_zone 4–5), INTERMEDIA (2–3) o nula.
+    ciclo(cliente)
+    esperada = {4: 'AMPLIA', 5: 'AMPLIA', 2: 'INTERMEDIA', 3: 'INTERMEDIA'}
+    for afin in resultado(cliente)['ocupaciones']:
+        detalle = pedir(cliente, 'GET', f'/cuentas/est-ana/catalogo/ocupaciones/{afin["codigo"]}')
+        assert afin['preparacion'] == esperada.get(detalle['job_zone'])

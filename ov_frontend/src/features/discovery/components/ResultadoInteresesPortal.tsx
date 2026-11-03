@@ -118,6 +118,8 @@ export function ResultadoInteresesPortal({
         pocoMarcado={m.pocoMarcado}
         vista={m.vista}
         elegirVista={m.elegirVista}
+        filtro={m.filtro}
+        filtrar={m.filtrar}
         todas={m.todas}
         mostrarTodas={m.mostrarTodas}
         href={rutas.occupation}

@@ -275,3 +275,23 @@ Para el estudiante: cómo leerlo, en segunda persona. Para el apoderado: precauc
   - cada vista se compara a la par con su PNG, a 1280 px y en móvil.
 - Se revisa a mano el reporte de carga: Agroindustria aparece sin principal, y van 234 ocupaciones al test (Tripulante de cabina incluido, sin familia).
 - Presupuesto de consultas probado en el resultado de intereses, en la ficha de familia y en los dos detalles.
+
+## Corrección · filtro de preparación en las ocupaciones afines
+
+Bocetos: «Paso 1 · filtro de preparación (estudiante)» y «Ocupaciones afines · filtro de preparación (apoderado y orientadora)».
+
+**Backend**
+
+- Cada ocupación de `ocupaciones[]` en el resultado COINCIDENCIAS agrega `preparacion`: `AMPLIA` (job_zone 4–5) o `INTERMEDIA` (job_zone 2–3), calculada en el back a partir de `job_zone`. Sin `job_zone`, va `null` y solo aparece en «Todas».
+- Los cortes van en `core/parametros.py` (`ZONAS_PREPARACION_AMPLIA = (4, 5)`).
+- No cambia nada más: el corte de ocupaciones afines (r ≥ 0,5, de 10 a 30) se sigue calculando sobre todas, y las familias del Paso 2 también.
+- Una prueba de la clasificación.
+
+**Front (estudiante y portal)**
+
+- El filtro «Todas / Muy afín / Afín» se reemplaza por «Amplia · N / Intermedia · N / Todas · N». Es solo del front y se aplica sobre las ocupaciones ya devueltas, también en la vista Por área. Por defecto, Amplia; si Amplia tiene 0, se abre en Todas.
+- Cada control lleva su rótulo encima, en texto pequeño: «Cómo verlas» (Lista / Por área) y «Preparación que suele pedir el trabajo» (Amplia / Intermedia / Todas). No van textos explicativos junto a los controles.
+- Sin chip de preparación en las tarjetas ni columna en la tabla del portal. La posición («n de 30», «#») sigue siendo la del orden global.
+- No hay fila ni botón hacia el otro nivel.
+- El pie es un solo párrafo, junto a «Mostrar más»: «Afinidad: cuánto se parece el perfil de intereses de la ocupación al tuyo («muy afín» desde 70 %). Preparación amplia: suele pedir grado universitario o posgrado; intermedia: formación técnica, capacitación o experiencia práctica. Es una referencia internacional; en el Perú la ruta exacta está en su familia de carreras. Fuente: O*NET Interest Profiler, adaptado a ocupaciones con formación en el Perú.» En el portal, «al suyo».
+- El Paso 2 (familias) no cambia.

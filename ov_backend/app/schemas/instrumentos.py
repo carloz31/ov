@@ -140,6 +140,8 @@ class OcupacionAfinPublica(BaseModel):
     riasec: list[str]
     parecido: int
     banda: BandaAfinidad
+    # AMPLIA (job_zone 4–5) o INTERMEDIA (2–3); nula sin job_zone. El front filtra con ella; no cambia el corte.
+    preparacion: Literal["AMPLIA", "INTERMEDIA"] | None
     familia_principal: FamiliaPublica | None
 
 

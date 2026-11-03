@@ -143,7 +143,7 @@ test('carreras se ordena por cantidad de vías y mantiene orden remoto en empate
 
 // Ajuste resultados-intereses: en api, el resultado trae del servidor las ocupaciones afines (con banda y
 // parecido), su agrupación por área y las familias; el front solo filtra, agrupa y muestra.
-test('en api el modelo de intereses filtra por banda, cambia de vista y muestra todas al pedirlo', async () => {
+test('en api el modelo de intereses filtra por preparación, cambia de vista y muestra todas al pedirlo', async () => {
   const f = await preparar()
   const remoto = jsonServidor('ruta/ruta-resultado-riasec')
   const montado = f.app.mount(() => f.hook('intereses'))
@@ -151,20 +151,28 @@ test('en api el modelo de intereses filtra por banda, cambia de vista y muestra 
   assert.equal(m.intereses.ocupaciones.length, remoto.ocupaciones.length)
   assert.equal(m.intereses.familias.length, remoto.familias.length)
   assert.equal(m.intereses.codigo, remoto.codigo_interes.codigo)
-  assert.equal(m.intereses.filtro, 'TODAS')
+  // Corrección del ajuste: por defecto, Amplia (o Todas si no hay ninguna).
+  const hayAmplia = remoto.ocupaciones.some((o) => o.preparacion === 'AMPLIA')
+  assert.equal(m.intereses.filtro, hayAmplia ? 'AMPLIA' : 'TODAS')
   assert.equal(m.intereses.vista, 'lista')
   m.intereses.mostrarTodas()
   m = montado.render()
   assert.equal(m.intereses.todas, true)
   // Cambiar el filtro vuelve a recortar la lista.
-  m.intereses.filtrar('MUY_AFIN')
+  m.intereses.filtrar('INTERMEDIA')
   m.intereses.elegirVista('area')
   m = montado.render()
-  assert.deepEqual([m.intereses.filtro, m.intereses.vista, m.intereses.todas], ['MUY_AFIN', 'area', false])
-  const { conteoBandas, filtrarBanda, agruparPorArea } = f.app.load('src/features/discovery/lib/resultadoIntereses.ts')
-  const conteos = conteoBandas(remoto.ocupaciones)
-  assert.equal(conteos.TODAS, conteos.MUY_AFIN + conteos.AFIN)
-  assert.ok(filtrarBanda(remoto.ocupaciones, 'AFIN').every((o) => o.banda === 'AFIN'))
+  assert.deepEqual([m.intereses.filtro, m.intereses.vista, m.intereses.todas], ['INTERMEDIA', 'area', false])
+  const lib = f.app.load('src/features/discovery/lib/resultadoIntereses.ts')
+  const { conteoPreparacion, filtrarPreparacion, filtroInicial, agruparPorArea } = lib
+  const conteos = conteoPreparacion(remoto.ocupaciones)
+  const sinPreparacion = remoto.ocupaciones.filter((o) => o.preparacion === null).length
+  assert.equal(conteos.TODAS, conteos.AMPLIA + conteos.INTERMEDIA + sinPreparacion)
+  assert.ok(filtrarPreparacion(remoto.ocupaciones, 'INTERMEDIA').every((o) => o.preparacion === 'INTERMEDIA'))
+  // Las sin preparación solo están en «Todas»; sin ninguna amplia, el filtro abre en Todas.
+  const sinAmplia = remoto.ocupaciones.map((o) => ({ ...o, preparacion: o.preparacion === 'AMPLIA' ? null : o.preparacion }))
+  assert.equal(filtroInicial(sinAmplia), 'TODAS')
+  assert.equal(filtrarPreparacion(sinAmplia, 'TODAS').length, sinAmplia.length)
   const grupos = agruparPorArea(remoto.ocupaciones, remoto.por_area)
   assert.equal(grupos.reduce((n, g) => n + g.ocupaciones.length, 0), remoto.ocupaciones.length)
   montado.unmount()
@@ -717,6 +725,17 @@ test('el paso 1 muestra 6 tarjetas con «Mostrar N más», avisa el perfil poco 
   const area = html(OcupacionesAfines, { ...props, vista: 'area' })
   assert.equal((area.match(/<article/g) ?? []).length, r.ocupaciones.length)
   assert.doesNotMatch(area, /Mostrar \d+ más/)
+  // Corrección del ajuste: los dos controles con su rótulo, el filtro de preparación con conteos y el pie único.
+  assert.match(lista, /Cómo verlas/)
+  assert.match(lista, /Preparación que suele pedir el trabajo/)
+  assert.ok(lista.includes(`Todas · ${r.ocupaciones.length}`))
+  assert.match(lista, /de la ocupación al tuyo \(«muy afín» desde 70 %\)\. Preparación amplia/)
+  assert.doesNotMatch(lista, /Muy afín · \d+<\/button>/)
+  const intermedias = r.ocupaciones.filter((o) => o.preparacion === 'INTERMEDIA')
+  const filtrada = html(OcupacionesAfines, { ...props, filtro: 'INTERMEDIA', todas: true })
+  assert.equal((filtrada.match(/<article/g) ?? []).length, intermedias.length)
+  // La posición es la del orden global, no la del filtro.
+  if (intermedias.length) assert.ok(filtrada.includes(`${intermedias[0].posicion} de ${r.ocupaciones.length}`))
   const poco = html(OcupacionesAfines, { ...props, pocoMarcado: true, ocupaciones: r.ocupaciones.slice(0, 10) })
   assert.match(poco, /Tu perfil es poco marcado: estas son las 10 ocupaciones más cercanas aunque no pasen de 50 %\./)
 })

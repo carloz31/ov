@@ -12,10 +12,12 @@ from app.core.parametros import (
     CORRELACION_MINIMA, FACTOR_PORCENTAJE, FAMILIAS_RECOMENDADAS, LONGITUD_CODIGO_INTERES,
     MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES, OCUPACIONES_POR_FAMILIA, RELLENO_SEGUNDA_OCUPACION,
     UMBRAL_AFIN, UMBRAL_AFIN_PARECIDO, UMBRAL_MUY_AFIN, UMBRAL_ZONA_EN_CAMINO, UMBRAL_ZONA_FUERTE,
+    ZONAS_PREPARACION_AMPLIA, ZONAS_PREPARACION_INTERMEDIA,
 )
 
 
 BandaAfinidad = Literal["MUY_AFIN", "AFIN", "CERCANA"]
+Preparacion = Literal["AMPLIA", "INTERMEDIA"]
 ZonaCalculada = Literal["FUERTE", "EN_CAMINO", "POR_TRABAJAR"]
 
 
@@ -184,6 +186,15 @@ def clasificar_banda(parecido: int) -> BandaAfinidad:
     if parecido >= UMBRAL_AFIN_PARECIDO:
         return "AFIN"
     return "CERCANA"
+
+
+def clasificar_preparacion(job_zone: int | None) -> Preparacion | None:
+    """La preparación que suele pedir una ocupación afín, por su job_zone; nula sin job_zone o fuera de los cortes."""
+    if job_zone in ZONAS_PREPARACION_AMPLIA:
+        return "AMPLIA"
+    if job_zone in ZONAS_PREPARACION_INTERMEDIA:
+        return "INTERMEDIA"
+    return None
 
 
 def calcular_coincidencias(

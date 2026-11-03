@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { AreaOcupaciones, FamiliaRecomendadaPublica, OcupacionAfinPublica } from '@/types/servidor'
-import type { FiltroBanda, VistaOcupaciones } from '../lib/resultadoIntereses'
+import type { FiltroPreparacion, VistaOcupaciones } from '../lib/resultadoIntereses'
 import { FamiliasRecomendadas } from './FamiliasRecomendadas'
 import { OcupacionesAfines } from './OcupacionesAfines'
 
@@ -12,8 +12,8 @@ export type ModeloIntereses = {
   pocoMarcado: boolean
   vista: VistaOcupaciones
   elegirVista: (vista: VistaOcupaciones) => void
-  filtro: FiltroBanda
-  filtrar: (filtro: FiltroBanda) => void
+  filtro: FiltroPreparacion
+  filtrar: (filtro: FiltroPreparacion) => void
   todas: boolean
   mostrarTodas: () => void
 }
