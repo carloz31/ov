@@ -6,7 +6,7 @@ Hoy el resultado del test de intereses guarda las 10 ocupaciones con mayor r. La
 
 - No hay spec en curso. Este plan se guarda como `ov_backend/docs/specs/ajuste-resultados-intereses.md`.
 - Rama: `ajuste/resultados-intereses` (ya creada).
-- Bocetos: `ov_backend/docs/specs/bocetos/resultado-intereses/`. Los nombres de archivo son los títulos de los artboards (01–06 en el texto de observaciones). Cada vista se abre junto a su PNG y se replica lo más fiel posible.
+- Bocetos: `bocetos/ (junto a esta spec)`. Los nombres de archivo son los títulos de los artboards (01–06 en el texto de observaciones). Cada vista se abre junto a su PNG y se replica lo más fiel posible.
 
 Lo que decidiste en la ronda de preguntas:
 
