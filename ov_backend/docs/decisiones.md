@@ -2,6 +2,19 @@
 
 ## Ajuste carga-casos
 
+Decisiones del usuario (documento del ajuste):
+
+- **Los seis casos se abren con la Ciudad** (COMPLETA_ACTIVIDAD b1-3), con una regla por caso; las reglas propias se agregan después.
+- **Testimonios de prueba `tc1-1`…`tc6-2`**, dos por caso; los reales se cargarán sobre esos mismos códigos en el ajuste de testimonios.
+- **Duración de cada caso:** el límite inferior del rango del catálogo de casos.
+- **El incendio forestal y sus ocupaciones fuera del catálogo salen de la plataforma:** sin ocupaciones ocultas; todo caso y testimonio nombra ocupaciones del catálogo. `ruta` pasa a jugar `hidden-plaza`.
+- **Una sola petición al entrar al caso** trae las ocupaciones de su directorio (título y hoja de vida): `ocupaciones-caso`.
+- **Las necesidades no se cargan en el servidor;** `scripts/verificar_contenido_front.py` mantiene sincronizados `CONFIGURACION_CASOS` y los JSON.
+- **El modo local se mantiene congelado** con `forestFireCase.ts` y los slugs del catálogo del front.
+- **Correcciones al aprobar el plan:** las pruebas y el exportador que resuelven casos de `ruta` usan necesidades de `hidden-plaza` (fallido 5, superado 7, máximo 8); `t-testimonio-1..4` pasan a necesidades de `hidden-plaza`; el script exige en `contenido` una actividad por caso; las 24 imágenes faltantes son aviso y pendiente; el material de referencia del formato se retiró en el cierre, después de pasar el formato a `docs/sistema/integracion.md`.
+
+Decisiones de la implementación:
+
 - **Modelo (aprobado por el documento del ajuste):** migración 0044 retira `actividad_dimension` (los casos ya no tienen tipos RIASEC; su lugar lo toma la `tematica` del JSON) y `ocupacion.en_catalogo` (solo se cargan las filas con `en_catalogo = 1` de la curaduría). Cambian los códigos de ocupación: una base cargada antes se recarga con `--vaciar`.
 - **Código de ocupación = O*NET.** Se retiran `fijos.OCUPACIONES`, `codigo_ocupacion`, el prefijo `onet-` y el parámetro `ocultas`/`slugs` de `datos/catalogo.py`. Sin ocultas, las cinco del incendio y la demo (bombero, médico internista, acomodador, guardia, cocinero) dejan de existir.
 - **La escala de `t-caso`/`t-caso-2` cambia en F1, no en F2:** sin el bombero (33-2011.00) las pruebas de casos de `ruta` no pueden quedar en verde con el incendio, así que el cambio a `hidden-plaza` (6 de 8) y las ocupaciones de `t-testimonio-1..4` (necesidades de `hidden-plaza`) se adelantan a la fase del modelo.

@@ -2,9 +2,9 @@
 
 ## Contexto
 
-La Central de casos solo juega el incendio forestal (`forestFireCase.ts`, slugs de ocupación, tipos RIASEC). Se cargan los seis casos reales en `contenido` con el formato nuevo (JSON del front + ficha del servidor), el código de ocupación pasa a ser el O*NET y la vista se generaliza para leer cualquier caso. El documento del usuario (`ajuste-carga-casos.md`) es la fuente principal y decide casi todo; este plan lo aterriza en archivos reales. No hay spec en curso (`docs/specs/` solo tiene la carpeta de fuentes `carga-casos/`): el plan aprobado se guarda en `ov_backend/docs/specs/ajuste-carga-casos.md`. Rama: `ajuste/carga-casos` (creada desde `main`).
+La Central de casos solo juega el incendio forestal (`forestFireCase.ts`, slugs de ocupación, tipos RIASEC). Se cargan los seis casos reales en `contenido` con el formato nuevo (JSON del front + ficha del servidor), el código de ocupación pasa a ser el O*NET y la vista se generaliza para leer cualquier caso. El documento del usuario (`ajuste-carga-casos.md`) es la fuente principal y decide casi todo; este plan lo aterriza en archivos reales. No había spec en curso: el plan aprobado se guarda en `ov_backend/docs/specs/ajuste-carga-casos.md`. Rama: `ajuste/carga-casos` (creada desde `main`).
 
-**Comprobado sobre los seis JSON:** totales 8/10/8/8/8/10 (iguales a la tabla del documento); todos los `onet` de `profesionales` están en el catálogo (`en_catalogo = 1`); `presupuesto` ≥ total en todos. Están en `ov_frontend/src/data/cases/` (no en `plataforma/`): se mueven con `git mv` a `src/data/cases/plataforma/`. La carpeta `docs/specs/carga-casos/` se trata según las correcciones del final.
+**Comprobado sobre los seis JSON:** totales 8/10/8/8/8/10 (iguales a la tabla del documento); todos los `onet` de `profesionales` están en el catálogo (`en_catalogo = 1`); `presupuesto` ≥ total en todos. Están en `ov_frontend/src/data/cases/` (no en `plataforma/`): se mueven con `git mv` a `src/data/cases/plataforma/`. El material de referencia del formato se trata según las correcciones del final.
 
 ## Qué cambia (hoy → pasará a)
 
@@ -64,7 +64,7 @@ Suites completas (back y front, build, lint, check:estructura), `verificar_conte
 - **`ruta.TESTIMONIOS`:** `t-testimonio-1..4` pasan a ocupaciones que `hidden-plaza` necesita (dato de prueba), para cumplir «la ocupación del testimonio es una necesidad del caso que lo regala» en ambos conjuntos: t-1 `19-3091.00`, t-2 `17-2051.00` (los regala `t-caso`), t-3 `19-3041.00`, t-4 `19-3051.00` (los regala `t-caso-2`).
 - **`verificar_contenido_front.py`:** además, en `contenido` cada caso lo juega exactamente una actividad.
 - **Imágenes:** las 24 de los casos aún no existen; van como aviso y a `pendientes-interfaz.md`.
-- **`ov_backend/docs/specs/carga-casos/`** (`contexto-carga-casos.md` y `forest-fire.json`) se queda durante el ajuste como referencia del formato; `forest-fire.json` no se borra en las primeras fases. En el cierre, antes de eliminar la carpeta completa, el formato del JSON de caso (esquema de campos y «Lo que no va en el JSON») pasa a `docs/sistema/integracion.md`, y se quita de la spec y de los documentos toda referencia a esa carpeta.
+- **Material de referencia del formato** (el contexto del ajuste y el incendio convertido como ejemplo): se queda durante el ajuste y no se borra en las primeras fases. En el cierre, el formato del JSON de caso (esquema de campos y «Lo que no va en el JSON») pasa a `docs/sistema/integracion.md` («Casos de la Central»), el material se retira del repo y la spec y los documentos dejan de nombrarlo.
 
 ## Verificación
 Por fase, el subagente `pruebas` con las carpetas de impacto más `tests/integration/escenarios` (back) o `npm run test:servidor` (front); `uv run alembic heads` con un solo head; `uv run python scripts/verificar_contenido_front.py`. Al final, suites completas de ambos y una prueba manual opcional en api abriendo `c1`.
@@ -77,7 +77,7 @@ Por fase, el subagente `pruebas` con las carpetas de impacto más `tests/integra
 
 Carga de los seis casos reales de la Central en el conjunto `contenido`, con el formato nuevo de caso (un JSON del front por caso y su ficha en el servidor), y dos testimonios de prueba por caso. Sale de `main` (spec propia: `docs/specs/` está vacío).
 
-Fuentes: `contexto-carga-casos.md` (formato del JSON, ficha del servidor y cambios de modelo), `catalogo_casos_OV.md` (los seis casos, sus umbrales y notas de implementación) y los seis JSON (`hidden-plaza`, `scholarship-mystery`, `harvest-race`, `thousand-voices-festival`, `impossible-teams-tournament`, `silent-lagoon`), que el usuario deja en `ov_frontend/src/data/cases/plataforma/` antes de empezar. `forest-fire.json` fue solo el ejemplo del formato: no entra al repo. **Donde este documento y esas fuentes choquen, gana este documento.** Los JSON de caso no se corrigen: si uno no cumple una regla, se detiene la fase y se informa.
+Fuentes: el contexto del ajuste (formato del JSON, ficha del servidor y cambios de modelo; el formato vigente está en `docs/sistema/integracion.md`, «Casos de la Central»), `catalogo_casos_OV.md` (los seis casos, sus umbrales y notas de implementación) y los seis JSON (`hidden-plaza`, `scholarship-mystery`, `harvest-race`, `thousand-voices-festival`, `impossible-teams-tournament`, `silent-lagoon`), que el usuario deja en `ov_frontend/src/data/cases/plataforma/` antes de empezar. El incendio convertido fue solo el ejemplo del formato: no entra al repo. **Donde este documento y esas fuentes choquen, gana este documento.** Los JSON de caso no se corrigen: si uno no cumple una regla, se detiene la fase y se informa.
 
 ### Criterio general
 
