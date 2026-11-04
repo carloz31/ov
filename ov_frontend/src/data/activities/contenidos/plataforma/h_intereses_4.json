@@ -1,0 +1,53 @@
+{
+  "id": "h-intereses-4",
+  "codigo": "h-intereses-4",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Mis intereses, 4 de 6",
+  "subtitulo": "La biblioteca de Sol",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 13,
+  "obligatoria": false,
+  "requisitos": [
+    "h-intereses-3"
+  ],
+  "ubicacion": "La biblioteca de Sol",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "bibliotecaria",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hin4-01",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Cuarto estante. ¿Te acuerdas de los seis refugios del volcán? Estas frases son de todos esos ambientes mezclados.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hin4-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-RIASEC",
+      "itemId": "plantilla",
+      "hablanteId": "bibliotecaria",
+      "etiqueta": "¿Cuánto te gustaría hacer esto?"
+    },
+    {
+      "id": "hin4-03",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Cuarenta de sesenta.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Cuarto estante. Faltan dos."
+  },
+  "mapa": {
+    "x": 595,
+    "y": 465,
+    "icono": "test"
+  }
+}

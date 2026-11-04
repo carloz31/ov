@@ -1,0 +1,27 @@
+{
+  "id": "b4-4",
+  "codigo": "b4-4",
+  "tipo": "instrumento",
+  "titulo": "Batalla: decidir con criterio",
+  "subtitulo": "El Eco del acantilado",
+  "escenario": "acantilado",
+  "bloque": 4,
+  "orden": 4,
+  "obligatoria": true,
+  "requisitos": [
+    "b4-3"
+  ],
+  "ubicacion": "Acantilado, el borde",
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "eco",
+    "companero"
+  ],
+  "nodos": [],
+  "desafio": "desafio-eco",
+  "mapa": {
+    "x": 430,
+    "y": 250,
+    "icono": "test"
+  }
+}

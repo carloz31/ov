@@ -1,0 +1,27 @@
+{
+  "id": "b3-9",
+  "codigo": "b3-9",
+  "tipo": "instrumento",
+  "titulo": "Batalla de los costos",
+  "subtitulo": "La pila de presupuestos de Clotilde",
+  "escenario": "playa",
+  "bloque": 3,
+  "orden": 9,
+  "obligatoria": true,
+  "requisitos": [
+    "b3-8"
+  ],
+  "ubicacion": "La pila de presupuestos de Clotilde",
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "prestamista",
+    "companero"
+  ],
+  "nodos": [],
+  "desafio": "desafio-prestamista",
+  "mapa": {
+    "x": 810,
+    "y": 240,
+    "icono": "test"
+  }
+}

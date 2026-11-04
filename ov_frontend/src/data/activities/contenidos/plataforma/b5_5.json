@@ -1,0 +1,186 @@
+{
+  "id": "b5-5",
+  "codigo": "b5-5",
+  "tipo": "encuentro",
+  "titulo": "Mi informe de viaje",
+  "subtitulo": "Lo que decía el pergamino",
+  "escenario": "faro",
+  "bloque": 5,
+  "orden": 5,
+  "obligatoria": true,
+  "requisitos": ["b5-4"],
+  "ubicacion": "Faro, la sala de la luz",
+  "duracionEstimadaMin": 8,
+  "personajeIds": ["helena", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante entiende que el pergamino es su informe de viaje, escrito por él en cada registro; por qué Helena no reveló dónde estaba; qué dice y qué no dice sobre su plan; que su orientadora lo lee y conversará con él fuera de la plataforma; y que el pergamino se sigue escribiendo.",
+  "nodos": [
+    {
+      "id": "b5-5-01",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "expresion": "neutral",
+      "texto": "Rompe la cinta. Léelo con calma. Y dime qué ves."
+    },
+    {
+      "id": "b5-5-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Desenrollas el pergamino. Está escrito con tu letra.",
+      "nota": "No se guarda.",
+      "opciones": [
+        {
+          "id": "b5-5-02a",
+          "texto": "Esto… esto lo escribí yo.",
+          "reaccion": [
+            {
+              "id": "b5-5-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "helena",
+              "texto": "Cada línea. En la cabaña, en el nevado, en el taller de Iván, en el puerto, en el acantilado. El pergamino se fue escribiendo mientras caminabas."
+            }
+          ]
+        },
+        {
+          "id": "b5-5-02b",
+          "texto": "No dice qué carrera me toca.",
+          "reaccion": [
+            {
+              "id": "b5-5-02br",
+              "tipo": "dialogo",
+              "hablanteId": "helena",
+              "texto": "No. Nunca lo dijo, de nadie. Es lo que casi todos esperan al subir y lo único que no está aquí."
+            }
+          ]
+        },
+        {
+          "id": "b5-5-02c",
+          "texto": "Es todo lo que fui descubriendo en el camino.",
+          "reaccion": [
+            {
+              "id": "b5-5-02cr",
+              "tipo": "dialogo",
+              "hablanteId": "helena",
+              "texto": "Exacto. Quién eres, qué exploraste, qué opciones armaste y qué te falta. Ordenado, para que se pueda mirar de una vez."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b5-5-03",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "etiqueta": "El pergamino",
+      "presentadorId": "helena",
+      "titulo": "Lo que es",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El pergamino no revela una ruta perfecta ni predice el futuro. Refleja quién eres, qué descubriste, qué opciones exploraste y qué planes construiste, con tus propias palabras: lo que respondiste en cada registro, lo que marcaste en el catálogo, cada página que abriste en el libro. Es tu informe de viaje. Desde hoy lo encuentras en tu perfil, y se sigue escribiendo: cada vez que cambies un plan o amplíes una respuesta, se actualiza."
+        },
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Sí dice",
+            "texto": "Dónde coincide lo que eres con lo que planeas y dónde hay fricción. Qué exploraste y qué te falta. Qué conviene conversar primero."
+          },
+          "derecha": {
+            "titulo": "No dice",
+            "texto": "Qué carrera «te toca». Que una opción esté prohibida. Que una decisión sea definitiva. Si algo de tu plan no coincide con lo que mostraron tus cuestionarios, eso no lo descarta: tus motivos cuentan, y es lo primero que conviene conversar."
+          }
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "No existe una decisión cien por ciento segura, pero conocerse, explorar opciones y reflexionar permite avanzar con mayor claridad."
+        }
+      ]
+    },
+    {
+      "id": "b5-5-04",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "texto": "Ahora sí te respondo. No te dije dónde estaba porque el pergamino, sin el recorrido, es una hoja en blanco. Quien lo encuentra el primer día no encuentra nada. Lo valioso no era encontrarlo: era construirlo. Y lo construiste."
+    },
+    {
+      "id": "b5-5-05",
+      "tipo": "pregunta",
+      "hablanteId": "helena",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un viajero que llegó antes que tú dijo, al leer el suyo: «Entonces el pergamino no sirve, porque no me dice qué estudiar». ¿Qué le responderías?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que tiene razón: sin una respuesta, el viaje fue en vano.",
+          "correcta": false,
+          "retroalimentacion": "Es la idea del tablón del muelle: que la respuesta existe en algún lugar y solo hay que encontrarla. El camino entero fue para dejarla atrás."
+        },
+        {
+          "id": "b",
+          "texto": "Que muestra lo que sí se puede saber (quién es, qué exploró, dónde hay coincidencia y fricción) y que con eso se decide mejor que con una respuesta ajena.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Nadie puede decidir por él; el pergamino le da con qué decidir, y con qué conversar."
+        },
+        {
+          "id": "c",
+          "texto": "Que vuelva a hacer los cuestionarios hasta que salga una carrera.",
+          "correcta": false,
+          "retroalimentacion": "Los cuestionarios orientan, no deciden. Repetirlos no los convierte en una sentencia."
+        }
+      ],
+      "explicacion": "El informe no recomienda una carrera: muestra coincidencias y tensiones y deja la interpretación a la conversación. Eso es lo que la vocación, que se construye y no se encuentra, necesita.",
+      "pistas": [
+        {
+          "id": "b5-5-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "¿Te acuerdas de lo primero que te dije en el muelle sobre la vocación? Aplica igual aquí."
+        }
+      ]
+    },
+    {
+      "id": "b5-5-06",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Lo que sigue, fuera de la isla",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            { "titulo": "Tu orientadora lee el mismo informe", "texto": "Y te va a llamar para conversar. No hay nada que marcar ni que entregar aquí: la conversación pasa fuera de la plataforma." },
+            { "titulo": "Tus planes salen contigo", "texto": "Los tres pasos con plazo de tu proyecto son para hacerlos afuera: hablar con alguien, revisar un temario, mostrar el presupuesto en casa." },
+            { "titulo": "Nada se cierra", "texto": "La ciudad, las voces, las misiones que quedaron, tu diario y el pergamino siguen abiertos. Vuelve cuando quieras." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b5-5-07",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Yo también entendí algo en este viaje. Llegué a esta isla sin saber qué hacer con mi futuro y me quedé por no decidir. Te vi recorrer todo el camino con tus dudas a cuestas, y me di cuenta de que esperar a que se vayan no sirve."
+    },
+    {
+      "id": "b5-5-08",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Cuando tú te vayas, yo también voy a dejar la isla. A empezar mi propio camino. Gracias por escribirme cartas; me ayudaron más de lo que crees. El diario sigue abierto, y yo sigo leyendo."
+    },
+    {
+      "id": "b5-5-09",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "expresion": "neutral",
+      "texto": "Estás listo para salir de la isla. No porque tengas todas las respuestas: porque sabes cómo seguir buscándolas. Buen viaje."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Terminaste el camino. El pergamino es tu informe de viaje, está en tu perfil y seguirá escribiéndose contigo. Todo lo demás sigue abierto."
+  },
+  "mapa": { "x": 360, "y": 150, "icono": "informativa" }
+}

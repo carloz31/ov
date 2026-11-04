@@ -1,0 +1,53 @@
+{
+  "id": "h-intereses-5",
+  "codigo": "h-intereses-5",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Mis intereses, 5 de 6",
+  "subtitulo": "La biblioteca de Sol",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 14,
+  "obligatoria": false,
+  "requisitos": [
+    "h-intereses-4"
+  ],
+  "ubicacion": "La biblioteca de Sol",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "bibliotecaria",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hin5-01",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Quinto estante. Casi al final: no aceleres justo ahora.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hin5-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-RIASEC",
+      "itemId": "plantilla",
+      "hablanteId": "bibliotecaria",
+      "etiqueta": "¿Cuánto te gustaría hacer esto?"
+    },
+    {
+      "id": "hin5-03",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Cincuenta. Uno más.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Quinto estante. Falta uno."
+  },
+  "mapa": {
+    "x": 620,
+    "y": 480,
+    "icono": "test"
+  }
+}

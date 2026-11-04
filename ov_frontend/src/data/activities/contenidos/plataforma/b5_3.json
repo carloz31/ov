@@ -1,0 +1,72 @@
+{
+  "_nota": "Registro (5.3). Apertura completa; dos consignas. Eco: primer plan y su motivación (sección Planes) o «sin opción inicial».",
+  "id": "b5-3",
+  "codigo": "b5-3",
+  "tipo": "registro",
+  "titulo": "Mirar el camino",
+  "subtitulo": "El camino visto desde la llegada",
+  "escenario": "faro",
+  "bloque": 5,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": [
+    "b5-2"
+  ],
+  "ubicacion": "Faro, el balcón",
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
+  "nodos": [
+    {
+      "id": "b5-3-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Desde el balcón del faro se ve todo: el muelle donde bajaste, el bosque, la cabaña, el nevado, la ciudad, el desierto, el volcán, el puerto, el acantilado. Cuando llegaste tenías una idea, o no tenías ninguna. Me acuerdo.",
+      "expresion": "pensativo",
+      "eco": "b5-3-ref-inicial"
+    },
+    {
+      "id": "b5-3-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Dos preguntas, nada más. Esto lo lee tu orientadora y cierra tu informe."
+    },
+    {
+      "id": "b5-3-03",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b5-3-aporto",
+      "premisa": "¿Cómo veías tu opción al inicio y cómo la ves ahora? ¿Qué te aportó el recorrido?",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b5-3-04",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b5-3-falta",
+      "premisa": "¿Qué te falta explorar todavía?",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "El camino visto desde la llegada. Falta subir al faro."
+  },
+  "promptDiario": "Cómo me siento ahora",
+  "mapa": {
+    "x": 230,
+    "y": 260,
+    "icono": "registro"
+  }
+}

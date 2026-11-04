@@ -1,0 +1,264 @@
+{
+  "id": "p2",
+  "codigo": "p2",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "Mis expectativas y temores",
+  "subtitulo": "Reconocer lo propio antes de transmitirlo",
+  "bloque": 1,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": [
+    "p1"
+  ],
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "orientacion"
+  ],
+  "objetivoAprendizaje": "Al terminar, el apoderado reconoce sus expectativas y temores sobre el futuro de su hijo o hija, identifica de dónde vienen y cómo se transmiten.",
+  "nodos": [
+    {
+      "id": "p2-01",
+      "tipo": "diapositiva",
+      "titulo": "Todos los padres esperan algo y temen algo",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El problema no es tenerlos: es no saber que los tenemos y pasárselos a los hijos sin darnos cuenta. Esta actividad es un espejo, no un examen."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Escriba, en un papel, tres expectativas y tres temores",
+              "texto": "Sobre el futuro de su hijo o hija. Seis minutos, sin corregir. Es el ejercicio del taller del Ministerio de Educación para familias."
+            },
+            {
+              "titulo": "Guárdelo",
+              "texto": "Lo va a necesitar más adelante, en la primera conversación guiada."
+            }
+          ],
+          "titulo": "Un ejercicio de seis minutos"
+        }
+      ],
+      "etiqueta": "Para empezar"
+    },
+    {
+      "id": "p2-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "De lo que escribió, ¿qué pesa más: las expectativas o los temores?",
+      "nota": "Su respuesta no se guarda ni la ve nadie. Solo sirve para mostrarle lo más útil.",
+      "opciones": [
+        {
+          "id": "p2-02a",
+          "texto": "Las expectativas: tengo claro lo que me gustaría para él o ella.",
+          "reaccion": [
+            {
+              "id": "p2-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es frecuente. La pregunta que sigue es de quién son esas expectativas: ¿suyas, de su hijo, de la familia?"
+            }
+          ]
+        },
+        {
+          "id": "p2-02b",
+          "texto": "Los temores: me preocupa más lo que puede salir mal.",
+          "reaccion": [
+            {
+              "id": "p2-02br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "También es frecuente, sobre todo el temor económico. Veamos de dónde vienen y cómo se transmiten."
+            }
+          ]
+        },
+        {
+          "id": "p2-02c",
+          "texto": "Las dos cosas por igual.",
+          "reaccion": [
+            {
+              "id": "p2-02cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Normal. Lo útil es mirar cada línea y preguntarse de dónde salió."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p2-03",
+      "tipo": "diapositiva",
+      "titulo": "Tres preguntas para cada línea",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "¿De dónde viene esto? ¿De lo que yo viví, de lo que no pude hacer, de lo que escucho, de lo que veo en la familia?",
+            "¿Mi hijo o hija comparte esta expectativa o este temor? ¿Se lo he preguntado?",
+            "¿Cómo se lo he transmitido? ¿Con palabras, con silencios, con el gesto cuando menciona algo que no me gusta?"
+          ]
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Fuente",
+            "Suena como",
+            "Riesgo"
+          ],
+          "filas": [
+            [
+              "Lo que usted no pudo hacer",
+              "«Yo quería estudiar y no pude; él sí va a poder»",
+              "Que la carrera sea el sueño de usted, no el de él"
+            ],
+            [
+              "El miedo económico",
+              "«Que estudie algo que dé plata, que no pase lo que pasamos»",
+              "Descartar opciones viables por un prejuicio sobre el ingreso"
+            ],
+            [
+              "Lo que se valora alrededor",
+              "«En esta familia todos son…», «eso no es carrera»",
+              "Reducir las opciones a las conocidas en casa"
+            ]
+          ],
+          "titulo": "Las tres fuentes más comunes"
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Ninguna de las tres es mala en sí. Lo que cambia las cosas es decirlo como preocupación propia («me da miedo que no te alcance») y no como veredicto («esa carrera no sirve»)."
+        }
+      ],
+      "etiqueta": "Concepto"
+    },
+    {
+      "id": "p2-04",
+      "tipo": "diapositiva",
+      "titulo": "Cómo se transmite una angustia",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Los adolescentes leen a sus padres mejor de lo que los padres creen. Captan la cara, el tono, el tema que se cambia. Cuando perciben angustia, muchos hacen una de dos cosas: callan lo que piensan para no preocupar, o eligen lo que calma a la familia aunque no les interese. Las dos cuestan caro después."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 3, hoja «Mis expectativas y temores acerca del futuro de mi hijo/a»."
+        }
+      ]
+    },
+    {
+      "id": "p2-05",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Una madre escribió: «Temo que estudie Arte y se muera de hambre, como mi hermano». ¿De qué fuente viene ese temor y cómo convendría decirlo?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Del miedo económico, con la experiencia del hermano; convendría decirlo como preocupación propia y buscar juntos los datos de ingresos reales de esa carrera.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. El temor es legítimo; dicho como veredicto cierra; dicho como preocupación y con datos, abre."
+        },
+        {
+          "id": "b",
+          "texto": "De lo que se valora alrededor; convendría prohibir Arte.",
+          "correcta": false,
+          "retroalimentacion": "Prohibir es el veredicto. Y la fuente aquí es el miedo económico, con un caso familiar detrás."
+        },
+        {
+          "id": "c",
+          "texto": "De nada: es un hecho que del arte no se vive.",
+          "correcta": false,
+          "retroalimentacion": "Es un caso, el del hermano, de otra época. Hay datos públicos de ingresos por carrera para contrastarlo."
+        }
+      ],
+      "explicacion": "Un temor con nombre y fuente se puede conversar; uno convertido en veredicto se transmite como angustia. Y un caso familiar no es un dato del mercado.",
+      "pistas": [
+        {
+          "id": "p2-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Hay un nombre en la frase: «mi hermano». Esa es la pista de la fuente."
+        }
+      ],
+      "transicion": "Ya conoce las tres fuentes. Un caso."
+    },
+    {
+      "id": "p2-06",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Su hijo menciona en la cena que le gustaría ser profesor. Usted no dice nada, pero cambia de tema. ¿Qué pasó?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Nada: no opinar es respetar.",
+          "correcta": false,
+          "retroalimentacion": "Callar no es neutral. El cambio de tema también habla, y él lo leyó."
+        },
+        {
+          "id": "b",
+          "texto": "Transmitió un temor o una expectativa sin palabras; él probablemente registró que esa opción no le gusta a usted.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Los silencios y los gestos transmiten tanto como las frases. Conviene volver al tema y preguntar abierto."
+        },
+        {
+          "id": "c",
+          "texto": "Lo protegió de una mala idea.",
+          "correcta": false,
+          "retroalimentacion": "No sabe todavía si es mala: no preguntó. Y él ya aprendió a no contárselo."
+        }
+      ],
+      "explicacion": "Los adolescentes leen la cara, el tono y el tema que se cambia. Lo que usted no dice también se transmite; volver al tema con una pregunta abierta repara el silencio.",
+      "pistas": [
+        {
+          "id": "p2-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Relea la tarjeta sobre cómo se transmite una angustia: ¿solo con palabras?"
+        }
+      ]
+    },
+    {
+      "id": "p2-07",
+      "tipo": "diapositiva",
+      "titulo": "Para llevarse",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Sus temores son válidos. Pero son suyos: su hijo o hija no tiene por qué cargarlos."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Guarde el papel",
+              "texto": "La primera conversación guiada con su hijo o hija trata justamente de lo que cada uno espera del futuro."
+            },
+            {
+              "titulo": "Esta semana",
+              "texto": "Elija una línea de su papel y dígala en casa como preocupación propia, no como veredicto."
+            }
+          ]
+        }
+      ],
+      "etiqueta": "Resumen",
+      "transicion": "Ya tiene una acción. Repase el resumen cuando quiera."
+    }
+  ],
+  "recompensa": {
+    "recursoIds": [
+      "FP02"
+    ],
+    "mensajeFin": "Sus temores son válidos. Pero son suyos."
+  }
+}

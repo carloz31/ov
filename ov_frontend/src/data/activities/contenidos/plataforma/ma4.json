@@ -1,0 +1,73 @@
+{
+  "id": "ma4",
+  "codigo": "ma4",
+  "tipo": "registro",
+  "titulo": "El reto de la semana",
+  "subtitulo": "Dora apunta en su libreta",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 33,
+  "obligatoria": false,
+  "requisitos": [
+    "h1"
+  ],
+  "ubicacion": "Dora apunta en su libreta",
+  "duracionEstimadaMin": 6,
+  "personajeIds": [
+    "dora",
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "ma4-01",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "texto": "Elegiste una habilidad y una acción concreta. Eso casi nadie lo hace bien. Te propongo lo que hago con mis mozos nuevos: practícala siete días y vuelve a contarme qué pasó. Yo apunto la fecha.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "ma4-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora. Vuelve dentro de una semana, o cuando lo hayas hecho; no antes.",
+      "eco": "ma4-ref-accion"
+    },
+    {
+      "id": "ma4-03",
+      "tipo": "consigna",
+      "hablanteId": "dora",
+      "item": "ma4-que-paso",
+      "premisa": "¿Qué pasó cuando practicaste tu acción? ¿Qué te costó, qué salió mejor de lo que esperabas?",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "ma4-04",
+      "tipo": "consigna",
+      "hablanteId": "dora",
+      "item": "ma4-sigue",
+      "premisa": "¿La sigues practicando o la cambiarías por otra? ¿Por qué?",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Una habilidad se desarrolla practicando. Siete días ya son un dato."
+  },
+  "mapa": {
+    "x": 0,
+    "y": 0,
+    "icono": "registro",
+    "origen": "h1",
+    "adicional": true
+  },
+  "plantilla": {
+    "tipo": "secuencial"
+  }
+}

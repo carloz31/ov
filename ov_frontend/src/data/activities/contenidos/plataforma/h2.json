@@ -1,0 +1,74 @@
+{
+  "_nota": "Registro de cierre del instrumento de inteligencias (H2). Lee el resultado con eco. Desbloquea la conversación 2 con la familia. Consignas en esqueleto.",
+  "id": "h2",
+  "codigo": "h2",
+  "tipo": "registro",
+  "titulo": "¿Me reconozco en mis inteligencias?",
+  "subtitulo": "La pregunta del maestro",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 6,
+  "obligatoria": false,
+  "requisitos": [
+    "h-inteligencias-5"
+  ],
+  "ubicacion": "Ciudad, escuela",
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "maestro",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
+  "nodos": [
+    {
+      "id": "h2-01",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "expresion": "neutral",
+      "texto": "Ya viste tu página. Ahora la pregunta que yo le hago a todos mis alumnos cuando les muestro un resultado: ¿te reconoces? Porque un perfil que no te suena de nada es un perfil que vale la pena discutir."
+    },
+    {
+      "id": "h2-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones. Además abre una conversación con tu familia: lo que ellos ven en ti.",
+      "eco": "h2-ref-resultado"
+    },
+    {
+      "id": "h2-03",
+      "tipo": "consigna",
+      "hablanteId": "maestro",
+      "item": "h2-reconozco",
+      "premisa": "Una inteligencia de tu página en la que sí te reconoces, y una situación concreta en que la usaste.",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "h2-04",
+      "tipo": "consigna",
+      "hablanteId": "maestro",
+      "item": "h2-no-refleja",
+      "premisa": "Algo que el resultado no refleja de ti, y por qué crees que no salió.",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Un resultado es una hipótesis. Tú acabas de ponerla a prueba. Se abrió la conversación «Lo que veo en ti»."
+  },
+  "promptDiario": "Lo que me dijo Helena",
+  "mapa": {
+    "x": 450,
+    "y": 300,
+    "icono": "registro",
+    "origen": "h-inteligencias-5"
+  }
+}

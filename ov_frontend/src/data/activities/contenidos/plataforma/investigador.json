@@ -1,0 +1,240 @@
+{
+  "id": "investigador",
+  "codigo": "investigador",
+  "tipo": "encuentro",
+  "titulo": "Misión del investigador: necesita tu ayuda",
+  "subtitulo": "El centro de investigación de la ciudad",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 20,
+  "obligatoria": false,
+  "requisitos": ["b3-10"],
+  "ubicacion": "Ciudad, centro de investigación",
+  "duracionEstimadaMin": 10,
+  "personajeIds": ["investigador", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe a quién buscar para entrevistar a un profesional, cómo pedirle veinte minutos, qué preguntar (los cinco temas de la cartilla más dos propias) y qué hacer durante y después; y tiene abierta la sección Investigaciones.",
+  "nodos": [
+    {
+      "id": "inv-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Al fondo de la ciudad hay un edificio con el techo medio caído y un cartel: «Centro de investigación de la isla». Adentro, entre cajas y goteras, un señor con lentes revisa un montón de papeles."
+    },
+    {
+      "id": "inv-02",
+      "tipo": "dialogo",
+      "hablanteId": "investigador",
+      "expresion": "neutral",
+      "texto": "¡Cuidado con el balde! Es la gotera del norte. Soy Anselmo, el investigador de la ciudad. O lo que queda de él: el techo se vino abajo en la última lluvia y la caja del centro está vacía."
+    },
+    {
+      "id": "inv-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "inv-03a",
+          "texto": "¿Qué investiga un centro como este?",
+          "reaccion": [
+            {
+              "id": "inv-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "investigador",
+              "texto": "A la gente que trabaja. Qué hace un día normal una enfermera, un mecánico, una diseñadora. Nadie lo sabe hasta que les pregunta, y por eso tanta gente elige a ciegas."
+            }
+          ]
+        },
+        {
+          "id": "inv-03b",
+          "texto": "¿Y cómo lo vas a arreglar sin dinero?",
+          "reaccion": [
+            {
+              "id": "inv-03br",
+              "tipo": "dialogo",
+              "hablanteId": "investigador",
+              "texto": "Con una colecta. La isla paga por cada entrevista nueva que entre al archivo. Si los viajeros investigan, el techo se repara. Por eso necesito tu ayuda."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inv-04",
+      "tipo": "dialogo",
+      "hablanteId": "investigador",
+      "texto": "Te explico cómo se investiga una ocupación, brevemente, porque es más simple de lo que parece: se le pregunta a alguien que la ejerce. Veinte minutos con la persona correcta valen más que diez videos."
+    },
+    {
+      "id": "inv-05",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "investigador",
+      "titulo": "A quién buscar y cómo pedirlo",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "titulo": "A quién buscar",
+          "items": [
+            "Familia extendida, vecinos y padres de amigos: pregunta en casa «¿conocemos a alguien que trabaje en…?». Es la red más rápida.",
+            "Docentes del colegio: muchos conocen egresados o colegas de otros campos.",
+            "Egresados del colegio y estudiantes de la carrera: saben cómo es empezar.",
+            "Colegios profesionales, universidades e institutos: suelen tener contactos de egresados.",
+            "Redes profesionales: un mensaje breve y respetuoso a alguien que publica sobre su trabajo funciona más de lo que crees."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Busca a dos personas si puedes: una que lleve pocos años y una con experiencia. Para pedirla, un mensaje de cuatro líneas: quién eres, por qué te interesa su ocupación, qué pides (20 a 30 minutos, presencial o por videollamada) y cuándo podrías. Deja claro que no pides trabajo ni prácticas: pides información. Agradece aunque te digan que no."
+        }
+      ]
+    },
+    {
+      "id": "inv-06",
+      "tipo": "diapositiva",
+      "presentadorId": "investigador",
+      "titulo": "Qué preguntar",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Antes de la entrevista, escribe qué crees que hace esa persona en un día y qué se necesita para ejercer. Después compararás. Las cinco preguntas base, más dos tuyas:"
+        },
+        {
+          "tipo": "tabla",
+          "columnas": ["Tema", "Pregunta base", "Una repregunta útil"],
+          "filas": [
+            ["Formación", "¿Qué estudió y qué le sirvió de verdad?", "¿Qué habría estudiado distinto?"],
+            ["Características personales", "¿Cómo hay que ser para que este trabajo te guste?", "¿A quién no se lo recomendaría?"],
+            ["Día a día", "¿Cómo es un día normal?", "¿Qué parte es rutinaria y cuál no?"],
+            ["Ingresos", "¿Cómo evoluciona el ingreso desde el inicio?", "¿De qué depende que suba?"],
+            ["Futuro de la ocupación", "¿Cómo cambió en diez años y hacia dónde va?", "¿Qué nuevas tareas aparecieron?"]
+          ],
+          "nota": "Tus dos preguntas propias salen de lo que escribiste antes: lo que no entiendes o lo que te da miedo de esa ocupación."
+        }
+      ]
+    },
+    {
+      "id": "inv-07",
+      "tipo": "diapositiva",
+      "presentadorId": "investigador",
+      "titulo": "Durante y después",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            { "titulo": "Escucha más de lo que hablas", "texto": "Pide ejemplos concretos: «¿cómo fue la última vez que…?»." },
+            { "titulo": "No la conviertas en interrogatorio", "texto": "Si una respuesta abre un tema interesante, síguelo." },
+            { "titulo": "Si grabas, pide permiso", "texto": "Antes, y di para qué." },
+            { "titulo": "Agradece", "texto": "Al terminar y de nuevo por escrito." },
+            { "titulo": "Contrasta", "texto": "Una entrevista es una voz. Compárala con el catálogo, con otra entrevista o con egresados." }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La mejor pregunta es la que nace de lo que ya pensabas: compara lo que creías con lo que te cuentan."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, actividades 8 y 15. CareerOneStop, Entrevista informativa (U.S. Department of Labor).",
+          "url": "https://cloudfront.careeronestop.org/TridionMultimedia/tcm24-47717_PDF_infointerviewSP.pdf"
+        }
+      ]
+    },
+    {
+      "id": "inv-08",
+      "tipo": "pregunta",
+      "hablanteId": "investigador",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un viajero le escribió a una ingeniera: «Hola, necesito prácticas en su empresa, ¿me puede ayudar?». No le respondió. ¿Qué falló?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Pidió trabajo en vez de información: una entrevista pide 20 minutos para aprender, no un puesto.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. El mensaje debe decir quién eres, por qué te interesa su ocupación, cuánto tiempo pides y cuándo; y dejar claro que no pides prácticas."
+        },
+        {
+          "id": "b",
+          "texto": "Escribió por redes: solo vale en persona.",
+          "correcta": false,
+          "retroalimentacion": "Las redes funcionan bien para esto. Lo que no funciona es pedir algo distinto a información."
+        },
+        {
+          "id": "c",
+          "texto": "Nada: a veces no responden.",
+          "correcta": false,
+          "retroalimentacion": "A veces no responden, sí. Pero este mensaje tenía un problema claro en lo que pedía."
+        }
+      ],
+      "explicacion": "Pedir información es fácil de conceder; pedir trabajo no. Un mensaje de cuatro líneas, con el tiempo y el propósito claros, abre más puertas.",
+      "pistas": [
+        {
+          "id": "inv-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Mira la última línea de «cómo pedirla»: ¿qué hay que dejar claro que no pides?"
+        }
+      ]
+    },
+    {
+      "id": "inv-09",
+      "tipo": "pregunta",
+      "hablanteId": "investigador",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Una viajera entrevistó a una contadora y salió convencida de que «la contabilidad es aburridísima». ¿Qué le faltó?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Nada: lo dijo alguien que la ejerce.",
+          "correcta": false,
+          "retroalimentacion": "Es una voz. Vale mucho y prueba poco."
+        },
+        {
+          "id": "b",
+          "texto": "Contrastar: con el catálogo, con otra entrevista o con egresados, porque una entrevista es una sola voz.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Y, de paso, comparar con lo que ella misma pensaba antes de entrevistar: eso es lo que se escribe en «lo que cambió»."
+        },
+        {
+          "id": "c",
+          "texto": "Entrevistar a diez contadores más.",
+          "correcta": false,
+          "retroalimentacion": "Dos voces, una joven y una con experiencia, ya dan contraste. Diez no hacen falta; sí hace falta comparar."
+        }
+      ],
+      "explicacion": "La última regla es contrastar: una entrevista muestra la rutina que las redes esconden, pero sigue siendo una persona. El valor está en comparar lo que creías, lo que te contaron y lo que dicen otras fuentes.",
+      "pistas": [
+        {
+          "id": "inv-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Quinto paso de «durante y después»."
+        }
+      ]
+    },
+    {
+      "id": "inv-10",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "investigador",
+      "expresion": "neutral",
+      "texto": "Ya sabes investigar. Ahora, si quieres ayudarme: elige una ocupación de tus favoritos, escribe lo que piensas hoy de ella, arma tu guion, haz la entrevista y publícala. Cada entrevista que entre al archivo suma a la colecta del techo. Y puedes hacerla con compañeros que investiguen lo mismo."
+    },
+    {
+      "id": "inv-11",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Todo eso vive en Investigaciones, que acaba de abrirse. La guía para entrevistar está en tu mochila. Cuando publiques, Anselmo vuelve a aparecer en el mapa."
+    }
+  ],
+  "recompensa": {
+    "recursoIds": ["F18"],
+    "mensajeFin": "Investigaciones está abierta. Cada entrevista publicada suma a la colecta del techo de Anselmo."
+  },
+  "mapa": { "x": 700, "y": 380, "icono": "informativa" }
+}

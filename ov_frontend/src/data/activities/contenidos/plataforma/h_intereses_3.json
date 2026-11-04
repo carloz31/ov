@@ -1,0 +1,53 @@
+{
+  "id": "h-intereses-3",
+  "codigo": "h-intereses-3",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Mis intereses, 3 de 6",
+  "subtitulo": "La biblioteca de Sol",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 12,
+  "obligatoria": false,
+  "requisitos": [
+    "h-intereses-2"
+  ],
+  "ubicacion": "La biblioteca de Sol",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "bibliotecaria",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hin3-01",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Tercer estante. Si notas que varias frases se parecen, es a propósito: cada ambiente de trabajo aparece varias veces para que no dependa de una sola.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hin3-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-RIASEC",
+      "itemId": "plantilla",
+      "hablanteId": "bibliotecaria",
+      "etiqueta": "¿Cuánto te gustaría hacer esto?"
+    },
+    {
+      "id": "hin3-03",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Mitad del camino.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tercer estante. Mitad de las frases de Sol."
+  },
+  "mapa": {
+    "x": 570,
+    "y": 450,
+    "icono": "test"
+  }
+}

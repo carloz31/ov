@@ -1,0 +1,137 @@
+{
+  "_nota": "Registro. Momento 1 completo (aptitudes, capacidades e intereses; vuelve Nico). Consignas en esqueleto: elección bien / me cuesta + texto, según la ruta base.",
+  "id": "b2-4",
+  "codigo": "b2-4",
+  "tipo": "registro",
+  "titulo": "Lo que se me da bien y lo que me cuesta",
+  "subtitulo": "Nico vuelve a aparecer",
+  "escenario": "bosque_volcan",
+  "bloque": 2,
+  "orden": 4,
+  "obligatoria": true,
+  "requisitos": ["b2-3"],
+  "ubicacion": "Bosque del volcán, taller de la brigada",
+  "duracionEstimadaMin": 8,
+  "personajeIds": ["nico", "companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b2-4-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "¡Mira quién está en el taller de la brigada! Nico desarmó la carpa de verdad."
+    },
+    {
+      "id": "b2-4-02",
+      "tipo": "dialogo",
+      "hablanteId": "nico",
+      "expresion": "contento",
+      "texto": "Subí y Rosa me puso a ayudar a Pacho con la pasarela. Y resulta que se me da bien, aunque nunca lo había pensado como algo mío. Lo raro es que lo que yo quería, que era la veterinaria… cuando me tocó ayudar con los animales del refugio, me costó horrible."
+    },
+    {
+      "id": "b2-4-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b2-4-03a",
+          "texto": "¿Entonces ya no quieres Veterinaria?",
+          "reaccion": [
+            {
+              "id": "b2-4-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "nico",
+              "expresion": "dudoso",
+              "texto": "No sé. Me sigue gustando la idea. Pero ahora sé que querer y poder no siempre van juntos, y eso no lo había separado nunca."
+            }
+          ]
+        },
+        {
+          "id": "b2-4-03b",
+          "texto": "¿Y lo de la pasarela te gustó?",
+          "reaccion": [
+            {
+              "id": "b2-4-03br",
+              "tipo": "dialogo",
+              "hablanteId": "nico",
+              "expresion": "dudoso",
+              "texto": "Me salió bien y Pacho me felicitó. Pero gustarme… no sé si me gustó o si me gustó que me saliera bien. Son dos cosas distintas, ¿no?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2-4-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Querer y poder",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Palabra", "Qué es", "Nico y la pasarela"],
+          "filas": [
+            ["Aptitud", "Lo que podrías desarrollar con práctica", "Tiene buena mano para armar cosas, aunque nunca lo entrenó"],
+            ["Capacidad", "Lo que ya haces bien hoy", "Armó la pasarela y le salió bien"],
+            ["Interés", "Lo que te atrae de forma sostenida", "Lo que le atrae son los animales, no las pasarelas"]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Querer y poder no siempre coinciden. Puedes ser muy bueno en algo que no te interesa, y al revés. Los cuestionarios de Helena miden lo que te atrae y cómo te describes; lo que de verdad se te da bien, con notas, trabajos o cosas que otros te reconocen, solo lo sabes tú."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Por eso este registro no tiene cuestionario: te pregunta en qué cursos o actividades te va bien, en cuáles te cuesta, y si eso coincide con lo que te gusta. No es para descartar nada: una capacidad baja en algo que te interesa es un plan de práctica, no un veto."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, parte 1 (aptitudes, capacidades e intereses como factores internos) y cuestionario de autopercepción, ítem 10."
+        }
+      ]
+    },
+    {
+      "id": "b2-4-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones: ahí lo que se te da bien es una fila del cuadro."
+    },
+    {
+      "id": "b2-4-06",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b2-4-bien",
+      "premisa": "¿En qué cursos o actividades te va bien? Cuenta al menos dos, con una prueba: una nota, un trabajo, algo que otros te reconocen.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b2-4-07",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b2-4-cuesta",
+      "premisa": "¿Y qué te cuesta, aunque le pongas ganas?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b2-4-08",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b2-4-coincide",
+      "premisa": "¿Lo que se te da bien coincide con lo que te gusta? Si no, ¿qué pesa más para ti hoy?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Querer y poder, separados. Eso ningún cuestionario lo mide por ti."
+  },
+  "mapa": { "x": 430, "y": 250, "icono": "registro" }
+}

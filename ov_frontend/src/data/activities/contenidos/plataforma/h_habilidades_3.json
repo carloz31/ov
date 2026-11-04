@@ -1,0 +1,53 @@
+{
+  "id": "h-habilidades-3",
+  "codigo": "h-habilidades-3",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Mi comportamiento con los demás, 3 de 4",
+  "subtitulo": "La taberna de Dora",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 3,
+  "obligatoria": false,
+  "requisitos": [
+    "h-habilidades-2"
+  ],
+  "ubicacion": "La taberna de Dora",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "dora",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hh3-01",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "texto": "Tercera visita. Estas seis son sobre lo que sientes y si lo dices o te lo guardas. Son las que más gente responde pensando en cómo debería ser; tú responde con lo que pasa.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hh3-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-HABILIDADES",
+      "itemId": "plantilla",
+      "hablanteId": "dora",
+      "etiqueta": "¿Te describe?"
+    },
+    {
+      "id": "hh3-03",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "texto": "Dieciocho. Una visita más y la página está lista.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tercera visita. Falta una."
+  },
+  "mapa": {
+    "x": 360,
+    "y": 460,
+    "icono": "test"
+  }
+}

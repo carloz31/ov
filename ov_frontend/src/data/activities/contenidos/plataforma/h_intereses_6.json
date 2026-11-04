@@ -1,0 +1,60 @@
+{
+  "id": "h-intereses-6",
+  "codigo": "h-intereses-6",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Mis intereses, 6 de 6",
+  "subtitulo": "La biblioteca de Sol",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 15,
+  "obligatoria": false,
+  "requisitos": [
+    "h-intereses-5"
+  ],
+  "ubicacion": "La biblioteca de Sol",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "bibliotecaria",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hin6-01",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Último estante. Las diez que faltan.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hin6-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-RIASEC",
+      "itemId": "plantilla",
+      "hablanteId": "bibliotecaria",
+      "etiqueta": "¿Cuánto te gustaría hacer esto?"
+    },
+    {
+      "id": "hin6-03",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Sesenta de sesenta. Lo que Helena hace con esto es comparar tus seis puntajes con el perfil de cientos de ocupaciones, medido en gente que las ejerce. Las más parecidas aparecen como afines. Y tu código de tres letras te sirve para buscar más por tu cuenta en el catálogo.",
+      "nuevoMomento": true
+    },
+    {
+      "id": "hin6-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Rompe el sello cuando quieras. Después hay un registro con Sol para contrastar lo que dice tu perfil con tu opción inicial: ahí es donde esto se vuelve útil.",
+      "expresion": "animado"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "La página de intereses está lista para abrirse en el libro de Helena."
+  },
+  "mapa": {
+    "x": 645,
+    "y": 495,
+    "icono": "test"
+  }
+}

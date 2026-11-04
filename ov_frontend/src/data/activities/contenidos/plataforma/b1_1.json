@@ -1,0 +1,177 @@
+{
+  "_nota": "Registro. Está completo el Momento 1 (apertura y contenido de la ficha F04). Las consignas son un esqueleto con los ítems propuestos; su redacción final y sus criterios se definen cuando se trabajen los registros.",
+  "id": "b1-1",
+  "codigo": "b1-1",
+  "tipo": "registro",
+  "titulo": "Mi historia personal",
+  "subtitulo": "El mirador de la cartógrafa",
+  "escenario": "nevado",
+  "bloque": 1,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": ["b0-6"],
+  "ubicacion": "Nevado, taller de la cartógrafa",
+  "duracionEstimadaMin": 10,
+  "personajeIds": ["cartografa", "companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b1-1-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "En el nevado vive Nadia, la cartógrafa. Todos los mapas de la isla salieron de su taller, incluido el que vamos a necesitar. Pero no regala mapas: los traza contigo."
+    },
+    {
+      "id": "b1-1-02",
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "expresion": "neutral",
+      "texto": "Bienvenidos. Antes de dibujar hacia dónde vas, dibujo de dónde vienes. Un mapa sin punto de origen no sirve para nada: puedes estar en cualquier lado."
+    },
+    {
+      "id": "b1-1-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b1-1-03a",
+          "texto": "¿Qué tiene que ver mi pasado con la carrera que elija?",
+          "reaccion": [
+            {
+              "id": "b1-1-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "cartografa",
+              "texto": "Más de lo que crees. Lo que disfrutabas de niño, quién te marcó y qué dificultades superaste son datos sobre ti que ningún cuestionario tiene."
+            }
+          ]
+        },
+        {
+          "id": "b1-1-03b",
+          "texto": "Mi historia no tiene nada interesante.",
+          "reaccion": [
+            {
+              "id": "b1-1-03br",
+              "tipo": "dialogo",
+              "hablanteId": "cartografa",
+              "texto": "Todas tienen datos. Lo que cambia es cuánto se mira. Esa es la trampa de descartar: ya veremos la otra, que es idealizar."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b1-1-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "cartografa",
+      "titulo": "Pensar la propia historia",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El programa del MINEDU lo llama pensamiento autobiográfico: reconstruir la historia de la propia vida. Ponerla por escrito permite tomar conciencia de lo vivido, darle sentido y recién entonces proyectarse al futuro. No es nostalgia: es una herramienta de autoconocimiento."
+        },
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Autoconcepto",
+            "texto": "La imagen que tienes de ti: qué crees que se te da bien, cómo te describes, qué «tipo de persona» piensas que eres."
+          },
+          "derecha": {
+            "titulo": "Autoestima",
+            "texto": "Cómo valoras esa imagen: si la aceptas o la rechazas."
+          }
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Alguien con un autoconcepto borroso («no sé qué se me da bien») o una autoestima baja («no voy a poder») tiende a dejar que otros decidan o a elegir lo más seguro aunque no le interese."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, parte 1 (Super, Erikson) y parte 2 (pensamiento autobiográfico, Horna 2005). Sesión de tutoría 1, «Construyo mi historia personal»."
+        }
+      ]
+    },
+    {
+      "id": "b1-1-05",
+      "tipo": "diapositiva",
+      "presentadorId": "cartografa",
+      "titulo": "Qué buscar en tu historia",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Pregunta", "Qué pista deja"],
+          "filas": [
+            ["¿Qué te gustaba hacer desde niño?", "Intereses que se sostienen en el tiempo, no modas"],
+            ["¿Qué personas influyeron en quién eres?", "Modelos que admiras y por qué"],
+            ["¿Cuál es un logro del que estás orgulloso?", "Habilidades que ya usaste, no solo que crees tener"],
+            ["¿Qué dificultad superaste y cómo?", "Recursos propios: constancia, ayuda que supiste pedir, creatividad"]
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "La clave está en los ejemplos concretos. «Me gusta el deporte» dice poco; «organizaba los partidos del barrio y armaba los equipos» dice que te gusta organizar y liderar, no solo jugar."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Dos trampas al recordar",
+          "items": [
+            "Idealizar: contar solo lo bueno. Las dificultades dicen tanto de ti como los logros.",
+            "Descartar: pensar que tu historia «no tiene nada interesante». Todas tienen datos."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b1-1-06",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo que escribas aquí lo va a leer tu orientadora, para que cuando conversen no empiecen de cero. Y vuelve más adelante: cuando cruces tu perfil con tus opciones, yo te lo voy a recordar tal cual lo escribiste."
+    },
+    {
+      "id": "b1-1-07",
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "Tres trazos y tengo tu punto de origen. Con ejemplos, por favor: un mapa hecho de generalidades no lleva a ningún lado."
+    },
+    {
+      "id": "b1-1-08",
+      "tipo": "consigna",
+      "hablanteId": "cartografa",
+      "item": "b1-1-gustos",
+      "premisa": "¿Qué querías ser a distintas edades y qué te gusta hacer desde niño?",
+      "ayuda": "Elige las edades y cuenta con un ejemplo concreto, no con una categoría.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b1-1-09",
+      "tipo": "consigna",
+      "hablanteId": "cartografa",
+      "item": "b1-1-logro",
+      "premisa": "Un logro del que estés orgulloso y qué habilidad usaste para lograrlo.",
+      "ayuda": "No tiene que ser grande; tiene que ser tuyo.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b1-1-10",
+      "tipo": "consigna",
+      "hablanteId": "cartografa",
+      "item": "b1-1-dificultad",
+      "premisa": "Una dificultad que superaste y qué hiciste tú para superarla.",
+      "ayuda": "Lo importante es lo que hiciste, no solo lo que pasó.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "recursoIds": ["F04"],
+    "mensajeFin": "Tu punto de origen está en el mapa. Lo que te gustaba a los ocho años no decide tu carrera, pero dice qué tipo de cosas te mueven."
+  },
+  "promptDiario": "Lo que me mueve del pasado",
+  "mapa": { "x": 640, "y": 170, "icono": "registro" }
+}

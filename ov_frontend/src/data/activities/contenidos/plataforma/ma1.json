@@ -1,0 +1,85 @@
+{
+  "id": "ma1",
+  "codigo": "ma1",
+  "tipo": "encuentro",
+  "titulo": "Carta al niño que fui",
+  "subtitulo": "Una carta privada",
+  "escenario": "nevado",
+  "bloque": 7,
+  "orden": 31,
+  "obligatoria": false,
+  "requisitos": [
+    "b1-1"
+  ],
+  "ubicacion": "Una carta privada",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "cartografa",
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "ma1-01",
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "Leí tu punto de origen y me quedé pensando. Hay un ejercicio que hago con los viajeros que cuentan su historia con ejemplos de verdad: escribirle una carta al niño o a la niña que fueron.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "ma1-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Horna, el autor que cita el programa del MINEDU, lo describe así: hablarle al niño que uno fue, consolarlo y darle consejo con lo que hoy sabes de ti."
+    },
+    {
+      "id": "ma1-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "ma1-03a",
+          "texto": "¿Y quién la lee?",
+          "reaccion": [
+            {
+              "id": "ma1-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Nadie más que yo, y yo solo escucho. Es una carta de tu diario: privada y voluntaria."
+            }
+          ]
+        },
+        {
+          "id": "ma1-03b",
+          "texto": "¿Qué le diría?",
+          "reaccion": [
+            {
+              "id": "ma1-03br",
+              "tipo": "dialogo",
+              "hablanteId": "cartografa",
+              "texto": "Lo que le hubiera servido saber. Lo que hoy entiendes de lo que le gustaba, de lo que le costaba, de lo que esperaban de él."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ma1-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Te dejé la carta abierta en el diario: «Carta al niño que fui». Escríbela cuando quieras, o no la escribas.",
+      "expresion": "animado",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Una carta al niño que fuiste te espera en el diario."
+  },
+  "mapa": {
+    "x": 0,
+    "y": 0,
+    "icono": "informativa",
+    "origen": "b1-1",
+    "adicional": true
+  },
+  "promptDiario": "Carta al niño que fui"
+}

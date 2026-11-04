@@ -1,0 +1,29 @@
+{
+  "id": "ma2",
+  "codigo": "ma2",
+  "tipo": "instrumento",
+  "titulo": "Batalla: profesiones sin género",
+  "subtitulo": "Aurelio, otra vez",
+  "escenario": "desierto",
+  "bloque": 7,
+  "orden": 39,
+  "obligatoria": false,
+  "requisitos": [
+    "b1-6"
+  ],
+  "ubicacion": "Aurelio, otra vez",
+  "duracionEstimadaMin": 6,
+  "personajeIds": [
+    "aurelio",
+    "companero"
+  ],
+  "nodos": [],
+  "mapa": {
+    "x": 0,
+    "y": 0,
+    "icono": "test",
+    "origen": "b1-6",
+    "adicional": true
+  },
+  "desafio": "desafio-aurelio-genero"
+}

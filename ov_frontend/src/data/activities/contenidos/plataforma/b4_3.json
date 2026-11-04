@@ -1,0 +1,211 @@
+{
+  "id": "b4-3",
+  "codigo": "b4-3",
+  "tipo": "encuentro",
+  "titulo": "Tres rutas sobre la mesa",
+  "subtitulo": "Iván sube al acantilado",
+  "escenario": "acantilado",
+  "bloque": 4,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": ["b4-2"],
+  "ubicacion": "Acantilado, la mesa de mapas",
+  "duracionEstimadaMin": 8,
+  "personajeIds": ["ivan", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué campo de su tarjeta de plan responde a qué información recogida en el camino, por qué conviene un Plan B en otra área y cómo la tarjeta lo avisa; sale a completar sus tarjetas en Planes.",
+  "nodos": [
+    {
+      "id": "b4-3-01",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "expresion": "animado",
+      "texto": "¡Los alcancé! Subí desde la ciudad con la mesa de mapas. El artefacto me avisó que ya tenían todo lo que hace falta para armar sus rutas. Vamos a ponerlas sobre la mesa."
+    },
+    {
+      "id": "b4-3-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Desde la piedra de los caminos, tu tarjeta de plan solo tenía nombre y motivación. Mira todo lo que el camino le fue abriendo."
+    },
+    {
+      "id": "b4-3-03",
+      "tipo": "diapositiva",
+      "presentadorId": "ivan",
+      "titulo": "Lo que el camino le dio a tu tarjeta",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Campo de la tarjeta", "De dónde salió la información"],
+          "filas": [
+            ["Trayecto previsto: postular directo, prepararte, estudiar y trabajar o empezar por una técnica", "Los cinco embarcaderos de Ulises y la feria del malecón"],
+            ["Institución y presupuesto (todos los rubros, primer año y toda la carrera, cómo pagarlo)", "La caseta de Clotilde y la web de cada institución"],
+            ["Fortalezas, debilidades, obstáculos y oportunidades", "El cuadro de afinidad con Helena"],
+            ["Acciones de preparación", "Tus criterios para decidir"]
+          ],
+          "nota": "La completitud de cada tarjeta es el porcentaje de campos abiertos que están llenos."
+        }
+      ]
+    },
+    {
+      "id": "b4-3-04",
+      "tipo": "diapositiva",
+      "presentadorId": "ivan",
+      "titulo": "Por qué un Plan B en otra área",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Puedes tener hasta tres planes: A, B y C. El B no es falta de compromiso con el A: es la diferencia entre poder corregir y quedarte sin opciones. Y conviene que esté en otra área: si no ingresas a la primera, si el presupuesto no cierra o si descubres que no era lo tuyo, un B casi igual al A choca con el mismo muro."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Si dos de tus planes caen en la misma familia de carreras o el mismo tipo de interés, la tarjeta te avisa: «considera abordar áreas distintas en tus planes». No te lo prohíbe; te lo señala."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Para comparar tus planes en la siguiente parada necesitas el Plan A con al menos la mitad de sus campos llenos y el Plan B iniciado. Completarlos es libre y se hace en Planes; Lumi te dirá en el mapa si falta algo."
+        }
+      ]
+    },
+    {
+      "id": "b4-3-05",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Iván pregunta: «¿Cuántos planes tienes hoy sobre la mesa?»",
+      "nota": "No se guarda.",
+      "opciones": [
+        {
+          "id": "b4-3-05a",
+          "texto": "Uno.",
+          "reaccion": [
+            {
+              "id": "b4-3-05ar",
+              "tipo": "dialogo",
+              "hablanteId": "ivan",
+              "texto": "Entonces el B es tu tarea. Busca en tus favoritos uno de otra área; si no lo tienes, el catálogo tiene un botón que te lleva a un lugar inesperado."
+            }
+          ]
+        },
+        {
+          "id": "b4-3-05b",
+          "texto": "Dos o tres.",
+          "reaccion": [
+            {
+              "id": "b4-3-05br",
+              "tipo": "dialogo",
+              "hablanteId": "ivan",
+              "texto": "Bien. Revisa que no sean casi iguales: la tarjeta te avisa si lo son."
+            }
+          ]
+        },
+        {
+          "id": "b4-3-05c",
+          "texto": "Ninguno todavía.",
+          "reaccion": [
+            {
+              "id": "b4-3-05cr",
+              "tipo": "dialogo",
+              "hablanteId": "ivan",
+              "texto": "Es momento de armar el primero: desde una carrera favorita, con nombre y motivación. Lo demás ya tienes con qué llenarlo."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b4-3-06",
+      "tipo": "pregunta",
+      "hablanteId": "ivan",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Una viajera quiere llenar el presupuesto de su tarjeta y no sabe dónde conseguir los costos exactos. ¿Qué le dices?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que los busque en la página web de la institución; el catálogo da rutas, ingresos y licencia, pero no costos.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Los rubros son los de la caseta de Clotilde; los montos, de la fuente oficial de cada institución."
+        },
+        {
+          "id": "b",
+          "texto": "Que ponga el promedio de ingresos del catálogo como costo.",
+          "correcta": false,
+          "retroalimentacion": "Ingresos y costos son cosas distintas. El catálogo tiene lo primero, no lo segundo."
+        },
+        {
+          "id": "c",
+          "texto": "Que deje el presupuesto vacío hasta ingresar.",
+          "correcta": false,
+          "retroalimentacion": "Sin presupuesto no hay con qué comparar planes ni financiamiento que pedir. Se llena antes, con montos de referencia."
+        }
+      ],
+      "explicacion": "Cada campo tiene su fuente: trayecto (rutas e instituciones), presupuesto (rubros de la ficha de costos y montos de la web de la institución), FODA (cuadro de afinidad), acciones (criterios).",
+      "pistas": [
+        {
+          "id": "b4-3-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "En la tabla, la fila del presupuesto dice de dónde sale cada parte."
+        }
+      ]
+    },
+    {
+      "id": "b4-3-07",
+      "tipo": "pregunta",
+      "hablanteId": "ivan",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un viajero tiene Plan A: Ingeniería de Sistemas, y Plan B: Ingeniería de Software. La tarjeta le muestra un aviso. ¿Por qué?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Porque dos planes en la misma familia chocan con el mismo muro: si uno falla por ingreso, costo o gusto, el otro también.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. El aviso no prohíbe: señala que le conviene un B en otra área."
+        },
+        {
+          "id": "b",
+          "texto": "Porque no se puede tener dos planes de ingeniería.",
+          "correcta": false,
+          "retroalimentacion": "Se puede. El aviso es una señal sobre la diversidad, no una regla que impida guardarlos."
+        },
+        {
+          "id": "c",
+          "texto": "Porque el Plan B debe ser siempre una carrera técnica.",
+          "correcta": false,
+          "retroalimentacion": "No hay una regla así. «Otra área» puede ser cualquier familia o tipo de interés distinto."
+        }
+      ],
+      "explicacion": "Un Plan B sirve si corrige lo que el A no puede: otra familia, otro tipo, a veces otra ruta. Si cae en la misma área, la tarjeta avisa para que lo pienses.",
+      "pistas": [
+        {
+          "id": "b4-3-07p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Relee la tarjeta de «Por qué un Plan B en otra área»: ¿qué pasa cuando el B es casi igual al A?"
+        }
+      ]
+    },
+    {
+      "id": "b4-3-08",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "expresion": "neutral",
+      "texto": "Te dejo la mesa. Una advertencia: en el borde del acantilado vive algo que se alimenta de las voces que los viajeros traen de casa. Lo llaman el Eco. No ataca con fuerza; ataca con frases conocidas. Vas a necesitar criterios para callarlo."
+    },
+    {
+      "id": "b4-3-09",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Ve a Planes cuando quieras y completa tus tarjetas. Y cuando estés listo, vamos al borde."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tus tarjetas tienen con qué llenarse. Completarlas es libre; compararlas las necesita. El Eco espera en el borde."
+  },
+  "mapa": { "x": 330, "y": 290, "icono": "informativa" }
+}

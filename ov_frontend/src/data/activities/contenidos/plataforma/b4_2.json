@@ -1,0 +1,102 @@
+{
+  "_nota": "Registro (4.2). Apertura con la presentación de los criterios (parte de F20, que se desbloquea en 4.4); consignas en esqueleto: orden de criterios (podio) con eco de 2.3, influencia externa con eco de 1.3, «¿algo cambió?» con eco de 1.6 y de las respuestas D de b0-3.",
+  "id": "b4-2",
+  "codigo": "b4-2",
+  "tipo": "registro",
+  "titulo": "Mis criterios para decidir",
+  "subtitulo": "Las reglas con las que vas a elegir",
+  "escenario": "acantilado",
+  "bloque": 4,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": ["b4-1"],
+  "ubicacion": "Acantilado, el borde",
+  "duracionEstimadaMin": 10,
+  "personajeIds": ["companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b4-2-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Desde el borde del acantilado se escucha algo raro: el viento devuelve frases. «Estudia lo que da plata.» «Tus amigos van a estar ahí.» «Esa carrera es respetada.» Son las voces que trae cada viajero; aquí rebotan. Antes de enfrentarlas, necesitas tus propias reglas."
+    },
+    {
+      "id": "b4-2-02",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Qué es un criterio",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Decidir sin criterios es elegir por impulso y justificarlo después. Un criterio es una regla que fijas antes de mirar las opciones, para que todas se midan igual. No hay que usar todos: hay que elegir los que pesan para ti y ponerlos en orden, porque dos opciones rara vez ganan en todos."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Criterios que la gente usa",
+          "items": [
+            "Interés: ¿me atrae lo que haría cada día?",
+            "Capacidad: ¿puedo con lo que exige estudiarla e ingresar?",
+            "Valores: ¿me permite vivir como quiero?",
+            "Ingresos: ¿qué rango es realista al inicio y a diez años?",
+            "Empleo: ¿hay trabajo, formal, en mi ciudad o en la que iría?",
+            "Costo: ¿puedo pagar todo el camino, con qué financiamiento?",
+            "Tiempo: ¿cuántos años y en qué horario?",
+            "Cercanía: ¿existe en mi región o tendría que mudarme?",
+            "Apoyo: ¿cuento con mi familia para esta opción?"
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Una forma rápida de revisar tu orden: ¿los dos primeros hablan de la actividad en sí (interés, capacidad, valores) o solo de lo que viene después (dinero, prestigio, aprobación)? Las decisiones que se sostienen tienen al menos un criterio intrínseco arriba."
+        }
+      ]
+    },
+    {
+      "id": "b4-2-03",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora y manda sobre lo que sigue: con estos criterios vas a comparar tus planes. Te voy a recordar tu primer valor del volcán, lo que espera tu familia y lo que dijiste de los mitos en el desierto."
+    },
+    {
+      "id": "b4-2-04",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b4-2-criterios",
+      "premisa": "Ordena los criterios con los que vas a elegir. ¿Por qué el primero es el primero?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eco": "b4-2-ref-valor",
+      "podio": { "etiquetaPrimero": "Lo que decide", "pregunta": "¿Por qué «{opcion}» es tu primer criterio?", "unidad": { "singular": "criterio", "plural": "criterios" } }
+    },
+    {
+      "id": "b4-2-05",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b4-2-influencia",
+      "premisa": "¿Qué influencia de afuera pesa en tu decisión y cuánto pesa?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eco": "b4-2-ref-familia"
+    },
+    {
+      "id": "b4-2-06",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b4-2-cambio",
+      "premisa": "Vuelve a lo que marcaste en la cabaña de Helena: quién eligió tu opción, si podrías sostener una decisión distinta a la de tu familia, si pesa más lo que harías que el prestigio o el dinero. ¿Algo cambió?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eco": ["b4-2-ref-mito", "b4-2-ref-decision"]
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tus reglas están escritas antes de mirar las opciones. Se abrieron las acciones de preparación en tu tarjeta."
+  },
+  "mapa": { "x": 230, "y": 330, "icono": "registro" }
+}

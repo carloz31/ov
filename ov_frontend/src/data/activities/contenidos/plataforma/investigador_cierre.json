@@ -1,0 +1,105 @@
+{
+  "id": "investigador-cierre",
+  "codigo": "investigador-cierre",
+  "tipo": "encuentro",
+  "titulo": "El investigador agradece",
+  "subtitulo": "Una teja más en el techo",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 21,
+  "obligatoria": false,
+  "requisitos": ["investigador"],
+  "ubicacion": "Ciudad, centro de investigación",
+  "duracionEstimadaMin": 6,
+  "personajeIds": ["investigador", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué fuentes son confiables para conocer una profesión, por qué las redes muestran imágenes parciales de algunas ocupaciones y cómo contrastar lo que escuchó en su entrevista.",
+  "nodos": [
+    {
+      "id": "invc-01",
+      "tipo": "dialogo",
+      "hablanteId": "investigador",
+      "expresion": "contento",
+      "texto": "¡Entró tu entrevista al archivo! La isla ya pagó por ella: con eso compré las tejas de la gotera del norte. Mira, ya no gotea. Gracias, de verdad."
+    },
+    {
+      "id": "invc-02",
+      "tipo": "dialogo",
+      "hablanteId": "investigador",
+      "texto": "Y ahora que tienes una voz de primera mano, te enseño lo último: qué hacer con ella. Porque una entrevista es una sola persona, y las otras fuentes también tienen sus trampas."
+    },
+    {
+      "id": "invc-03",
+      "tipo": "diapositiva",
+      "presentadorId": "investigador",
+      "titulo": "Fuentes para conocer una profesión",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Fuente", "Qué da bien", "Qué esconde"],
+          "filas": [
+            ["Una entrevista a quien la ejerce", "La rutina, lo que no se ve desde afuera, cómo se llega", "Es una sola voz, con su suerte y su contexto"],
+            ["El catálogo (MTPE, O*NET)", "Qué se hace, qué se estudia, ingresos de muchas personas, dónde", "No dice si te va a gustar"],
+            ["Egresados recientes", "Cómo es empezar, la admisión, el primer empleo", "Todavía no saben cómo sigue"],
+            ["Redes sociales e influencers de carreras", "Que una ocupación existe; la parte vistosa", "El sueldo del primer año, las horas, la rutina; muestran lo que da clics"],
+            ["Tu familia", "Lo que te conoce a ti", "Su información del mercado suele ser de cuando ellos eligieron"]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Ninguna fuente sola alcanza. Lo que creías, lo que te contaron y lo que dicen los datos, puestos lado a lado: eso es investigar."
+        }
+      ]
+    },
+    {
+      "id": "invc-04",
+      "tipo": "pregunta",
+      "hablanteId": "investigador",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un video de «un día en la vida de un piloto de drones» tiene dos millones de vistas y muestra viajes, playas y equipo caro. ¿Qué te dice y qué no?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Te dice que esa ocupación existe y qué parte es vistosa; no te dice el sueldo del primer año, las horas ni la rutina.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Es una pista para verificar en el catálogo o con una entrevista, no una prueba."
+        },
+        {
+          "id": "b",
+          "texto": "Te dice cómo es esa ocupación: dos millones de personas no se equivocan.",
+          "correcta": false,
+          "retroalimentacion": "Las vistas miden qué da clics, no qué es verdad. Lo vistoso se muestra; la rutina no."
+        },
+        {
+          "id": "c",
+          "texto": "No te dice nada; las redes no sirven para esto.",
+          "correcta": false,
+          "retroalimentacion": "Sirven para descubrir que una ocupación existe. El problema es quedarse ahí."
+        }
+      ],
+      "explicacion": "Las redes muestran imágenes parciales de algunas ocupaciones: la parte que da clics. Úsalas para descubrir y luego verifica con el catálogo, una entrevista o egresados.",
+      "pistas": [
+        {
+          "id": "invc-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "En la tabla, la fila de redes dice exactamente qué dan bien y qué esconden."
+        }
+      ]
+    },
+    {
+      "id": "invc-05",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "investigador",
+      "expresion": "contento",
+      "texto": "Tu entrevista ya la ven tus compañeros; si les sirve, lo dirán. Y si tu orientadora la destaca y junta suficientes favoritos, pasa al salón de Leyendas, donde la ve toda la isla. Sigue investigando: quedan goteras."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Una teja más en el techo de Anselmo. Lo que creías, lo que te contaron y lo que dicen los datos, lado a lado."
+  },
+  "mapa": { "x": 740, "y": 440, "icono": "informativa", "origen": "investigador" }
+}

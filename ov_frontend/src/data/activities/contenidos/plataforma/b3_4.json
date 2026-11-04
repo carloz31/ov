@@ -1,0 +1,59 @@
+{
+  "_nota": "Registro (3.4). Apertura completa; consignas en esqueleto (elección de un dato + texto). Requisito: b3-3 completada y al menos 3 favoritos, uno fuera del tipo principal o de dos tipos distintos (regla de eventos). Lee con eco los datos de la familia de su primer plan o de sus favoritos.",
+  "id": "b3-4",
+  "codigo": "b3-4",
+  "tipo": "registro",
+  "titulo": "Lo que no sabía del mercado",
+  "subtitulo": "Después del puesto de Doña Cifra",
+  "escenario": "playa",
+  "bloque": 3,
+  "orden": 4,
+  "obligatoria": true,
+  "requisitos": ["b3-3"],
+  "ubicacion": "Puerto, banca frente al mercado",
+  "duracionEstimadaMin": 8,
+  "personajeIds": ["companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b3-4-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Sentémonos un rato lejos del puesto de Doña Cifra. Con tus favoritos marcados, el catálogo ya te muestra los ingresos de su familia por lugar. Quiero que mires los de tu opción, o los de tus favoritos, con calma.",
+      "eco": "b3-4-ref-datos"
+    },
+    {
+      "id": "b3-4-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Esto lo lee tu orientadora, y vuelve al final: cuando escribas tu proyecto, en el campo de dificultades te voy a recordar qué dijiste que harías si un dato no te favorece."
+    },
+    {
+      "id": "b3-4-03",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b3-4-dato",
+      "premisa": "Elige un dato del mercado que te sorprendió. ¿Cuál y por qué?",
+      "ayuda": "Un dato concreto: un salario, un rango, una demanda, la informalidad.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b3-4-04",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b3-4-cambia",
+      "premisa": "¿Qué cambia, o no, en cómo ves tu opción? Y si el dato no te favorece, ¿qué harías con eso?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Los números frente a lo que creías. Anotado en tu bitácora."
+  },
+  "promptDiario": "Cuando el dato no ayuda",
+  "mapa": { "x": 370, "y": 260, "icono": "registro" }
+}

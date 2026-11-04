@@ -1,0 +1,90 @@
+{
+  "id": "b5-2",
+  "codigo": "b5-2",
+  "tipo": "instrumento",
+  "titulo": "Mi punto de llegada",
+  "subtitulo": "Las preguntas de Helena, otra vez",
+  "escenario": "faro",
+  "bloque": 5,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": [
+    "b5-1"
+  ],
+  "ubicacion": "Faro, la escalera",
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "b5-2-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Falta un capítulo del libro, el último. Y me acabo de dar cuenta de que sé cómo se abre: con las mismas preguntas que te hizo Helena en la cabaña, el primer día. Las recuerdo todas."
+    },
+    {
+      "id": "b5-2-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b5-2-02a",
+          "texto": "¿Las mismas? ¿Para qué repetirlas?",
+          "reaccion": [
+            {
+              "id": "b5-2-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Para ponerlas al lado. Tu punto de partida y tu punto de llegada, con el mismo instrumento. Es la única forma de ver cuánto caminaste."
+            }
+          ]
+        },
+        {
+          "id": "b5-2-02b",
+          "texto": "¿Y si respondo distinto?",
+          "reaccion": [
+            {
+              "id": "b5-2-02br",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Ojalá. Y si en algo respondes igual, también es información: dice qué quedó por trabajar."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b5-2-03",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Marca cuánto te describe cada frase hoy: bastante, regular, poco o nada. Como la primera vez: sin apuro y sin respuestas correctas."
+    },
+    {
+      "id": "b5-2-04",
+      "tipo": "item",
+      "instrumentoId": "TEST-PARTIDA-LLEGADA",
+      "itemId": "plantilla",
+      "hablanteId": "companero",
+      "etiqueta": "Marca cuánto te describe hoy:"
+    },
+    {
+      "id": "b5-2-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Listo. El último capítulo ya se puede abrir en el libro de Helena: ahí vas a ver tu partida y tu llegada lado a lado, en palabras, y cuántas actividades de cada zona completaste. Subamos al faro.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tu punto de llegada quedó registrado. Revélalo junto al de partida en el libro de Helena."
+  },
+  "mapa": {
+    "x": 160,
+    "y": 320,
+    "icono": "test"
+  }
+}

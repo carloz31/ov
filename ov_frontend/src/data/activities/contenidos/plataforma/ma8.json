@@ -1,0 +1,73 @@
+{
+  "id": "ma8",
+  "codigo": "ma8",
+  "tipo": "registro",
+  "titulo": "El abogado del diablo",
+  "subtitulo": "Discutir contra uno mismo",
+  "escenario": "acantilado",
+  "bloque": 7,
+  "orden": 35,
+  "obligatoria": false,
+  "requisitos": [
+    "b4-2"
+  ],
+  "ubicacion": "Discutir contra uno mismo",
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "eco",
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "eco-ma8-01",
+      "tipo": "dialogo",
+      "hablanteId": "eco",
+      "texto": "¿Tus criterios? Lindos. Pero ¿y si te digo que tu plan principal no se sostiene? A ver si puedes discutirlo tú, sin mí.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "ma8-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esta vez el Eco tiene razón en algo: el mejor momento para encontrarle los huecos a tu plan es ahora, no en segundo ciclo. Esto lo lee tu orientadora.",
+      "eco": "ma8-ref-plan"
+    },
+    {
+      "id": "ma8-03",
+      "tipo": "consigna",
+      "hablanteId": "eco",
+      "item": "ma8-contra",
+      "premisa": "Argumenta en contra de tu plan principal: los tres mejores motivos para no elegirlo, como si fueras otra persona.",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "ma8-04",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "ma8-respuesta",
+      "premisa": "Ahora responde a tus propios argumentos. ¿Cuál no pudiste responder? Ese es el que hay que averiguar.",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Un plan que resiste tus propios argumentos resiste casi cualquiera."
+  },
+  "mapa": {
+    "x": 0,
+    "y": 0,
+    "icono": "registro",
+    "origen": "b4-2",
+    "adicional": true
+  },
+  "plantilla": {
+    "tipo": "secuencial"
+  }
+}

@@ -1,0 +1,213 @@
+{
+  "id": "b0-4",
+  "codigo": "b0-4",
+  "tipo": "encuentro",
+  "titulo": "¿Tienes una opción en mente?",
+  "subtitulo": "La piedra de los caminos",
+  "escenario": "bosque",
+  "bloque": 0,
+  "orden": 4,
+  "obligatoria": true,
+  "requisitos": ["b0-3"],
+  "ubicacion": "Bosque, después de la cabaña",
+  "duracionEstimadaMin": 5,
+  "personajeIds": ["companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué es su «opción inicial», cómo se crea un plan (desde una carrera marcada como «me interesa» en el catálogo) y que la tarjeta de plan crece con el viaje; y sabe que no tener opción es normal.",
+  "nodos": [
+    {
+      "id": "b0-4-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esta piedra marca donde el bosque se abre en varios senderos. Los viajeros la usan para dejar una señal de hacia dónde creen que van. Algunos la dejan en blanco."
+    },
+    {
+      "id": "b0-4-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Antes de seguir: ¿desde cuándo piensas en lo que harás al terminar el colegio?",
+      "nota": "No se guarda. Es para saber cuánto camino ya recorriste por tu cuenta.",
+      "opciones": [
+        {
+          "id": "b0-4-02a",
+          "texto": "Desde hace años.",
+          "reaccion": [
+            {
+              "id": "b0-4-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Entonces traes ideas que valen. En el viaje las vamos a revisar, no a reemplazar."
+            }
+          ]
+        },
+        {
+          "id": "b0-4-02b",
+          "texto": "Desde este año, más o menos.",
+          "reaccion": [
+            {
+              "id": "b0-4-02br",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Es el momento más común para empezar. Vas a tiempo."
+            }
+          ]
+        },
+        {
+          "id": "b0-4-02c",
+          "texto": "Casi no lo he pensado.",
+          "reaccion": [
+            {
+              "id": "b0-4-02cr",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Está bien. Para eso es el camino: no se te pide una respuesta hoy."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b0-4-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "¿Y ya tienes una carrera u ocupación en mente?",
+      "opciones": [
+        {
+          "id": "b0-4-03a",
+          "texto": "Sí, tengo una.",
+          "reaccion": [
+            {
+              "id": "b0-4-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "expresion": "animado",
+              "texto": "Perfecto. A esa la vamos a llamar tu opción inicial. No tu plan: tu opción inicial. Te voy a enseñar dónde guardarla para que el viaje la vaya poniendo a prueba."
+            }
+          ]
+        },
+        {
+          "id": "b0-4-03b",
+          "texto": "Tengo varias y no me decido.",
+          "reaccion": [
+            {
+              "id": "b0-4-03br",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Elige una por ahora, la que más te suene. Será tu opción inicial, y «inicial» quiere decir justamente eso: la primera, no la definitiva."
+            }
+          ]
+        },
+        {
+          "id": "b0-4-03c",
+          "texto": "No, ninguna.",
+          "reaccion": [
+            {
+              "id": "b0-4-03cr",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Es normal, y en este bosque hay muchas piedras en blanco. Igual te explico cómo funciona, porque cuando algo te llame la atención vas a querer guardarlo."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b0-4-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Tu opción inicial y la tarjeta de plan",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Búscala en el catálogo",
+              "texto": "El catálogo separa carreras (lo que se estudia), ocupaciones (lo que se hace) e instituciones (dónde se estudia)."
+            },
+            {
+              "titulo": "Márcala con «me interesa»",
+              "texto": "Es tu lista de favoritos. Solo desde ahí se crean los planes, para que antes hayas leído su ficha."
+            },
+            {
+              "titulo": "Crea el plan con nombre y motivación",
+              "texto": "Por ahora la tarjeta solo pide eso. Lo demás se irá abriendo cuando el camino te dé con qué llenarlo."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Puedes tener hasta tres planes (A, B y C). El primero que registres antes de terminar el próximo tramo será tu opción inicial: con ella vas a comparar al final del viaje cuánto cambiaste."
+        }
+      ]
+    },
+    {
+      "id": "b0-4-05",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Cómo crece la tarjeta",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Campo de la tarjeta", "Se abre cuando…"],
+          "filas": [
+            ["Nombre y motivación", "Ahora mismo"],
+            ["Trayecto previsto (postular directo, prepararte, estudiar y trabajar, empezar por una técnica)", "Conozcas las rutas y las instituciones"],
+            ["Institución y presupuesto", "Sepas cuánto cuesta estudiar y cómo se paga"],
+            ["Fortalezas, debilidades, obstáculos y oportunidades", "Hayas cruzado tu perfil con tus opciones"],
+            ["Acciones de preparación", "Tengas tus criterios para decidir"]
+          ],
+          "nota": "La tarjeta avisa si dos de tus planes caen en la misma área, para que explores opciones distintas."
+        }
+      ]
+    },
+    {
+      "id": "b0-4-06",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Una viajera quiere crear un plan para Arquitectura. ¿Qué tiene que hacer primero?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Escribir «Arquitectura» directamente en la tarjeta.",
+          "correcta": false,
+          "retroalimentacion": "La tarjeta no se llena a mano desde cero: se crea desde una carrera del catálogo, para que la ficha se lea antes."
+        },
+        {
+          "id": "b",
+          "texto": "Buscarla en el catálogo y marcarla con «me interesa».",
+          "correcta": true,
+          "retroalimentacion": "Eso es. Desde sus favoritos crea el plan, con nombre y motivación."
+        },
+        {
+          "id": "c",
+          "texto": "Esperar a tener el resultado del test de intereses.",
+          "correcta": false,
+          "retroalimentacion": "No hace falta. Los tests vienen después y sirven para contrastar, no para autorizar un plan."
+        }
+      ],
+      "explicacion": "Un plan solo se crea desde una carrera marcada como «me interesa» en el catálogo. Así, antes de planear, ya leíste de qué trata, cuánto dura y a qué ocupaciones lleva.",
+      "pistas": [
+        {
+          "id": "b0-4-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Revisa los tres pasos: ¿cuál era el primero?"
+        }
+      ]
+    },
+    {
+      "id": "b0-4-07",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Crear el plan es libre: puedes hacerlo ahora, en la sección Planes, o más adelante. Sigamos; el bosque todavía tiene cosas que contarnos antes de la ciudad."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "La sección Planes está abierta. Tu opción inicial, si la tienes, ya tiene dónde vivir."
+  },
+  "mapa": { "x": 380, "y": 340, "icono": "informativa" }
+}

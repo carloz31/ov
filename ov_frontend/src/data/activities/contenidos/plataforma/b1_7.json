@@ -1,0 +1,189 @@
+{
+  "_nota": "Registro que cierra el Bloque 1. Momento 1 completo (el artefacto se apaga y aparece el primer guardián del pergamino; contenido de la ficha F06). Consignas en esqueleto: la tabla de hitos a 1, 3 y 5 años podría usar la plantilla matriz «linea_tiempo».",
+  "id": "b1-7",
+  "codigo": "b1-7",
+  "tipo": "registro",
+  "titulo": "Mi línea de tiempo",
+  "subtitulo": "El primer guardián",
+  "escenario": "desierto",
+  "bloque": 1,
+  "orden": 7,
+  "obligatoria": true,
+  "requisitos": ["b1-6"],
+  "ubicacion": "Desierto, el límite del tramo",
+  "duracionEstimadaMin": 10,
+  "personajeIds": ["guardian", "companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b1-7-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Espera. La aguja del artefacto dejó de moverse. Iván dijo que esto pasaría al final de cada tramo: se apaga hasta que algo o alguien lo ayude a orientarse de nuevo."
+    },
+    {
+      "id": "b1-7-02",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "expresion": "neutral",
+      "texto": "Nadie cruza este límite sin saber hacia dónde va. Soy guardián del pergamino. No lo custodio para esconderlo: lo custodio para que llegue a quien sabe qué hacer con él."
+    },
+    {
+      "id": "b1-7-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b1-7-03a",
+          "texto": "Yo sé hacia dónde voy: al faro, por el pergamino.",
+          "reaccion": [
+            {
+              "id": "b1-7-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "guardian",
+              "texto": "Eso es un lugar, no una dirección. Te pregunto por tu vida: ¿quién quieres ser dentro de cinco años? El artefacto se orienta con eso, no con el faro."
+            }
+          ]
+        },
+        {
+          "id": "b1-7-03b",
+          "texto": "Todavía no lo sé del todo.",
+          "reaccion": [
+            {
+              "id": "b1-7-03br",
+              "tipo": "dialogo",
+              "hablanteId": "guardian",
+              "texto": "Nadie lo sabe del todo. Por eso no te pido una promesa: te pido un plan, que es otra cosa. Déjame explicarte la diferencia."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b1-7-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "guardian",
+      "titulo": "Tres piezas que van juntas",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Componente", "Qué es", "Pregunta que responde"],
+          "filas": [
+            ["Autovaloración personal", "Cómo te conoces y te valoras", "¿Quién soy y qué tengo?"],
+            ["Visión de futuro", "Lo que imaginas y deseas para ti, tu familia y tu comunidad", "¿Hacia dónde quiero ir?"],
+            ["Plan de vida", "Las metas y los pasos para llegar, con criterios que guíen las decisiones", "¿Cómo llego?"]
+          ],
+          "nota": "Modelo de Orientación para el Desarrollo Personal (Oliveros, 2004), que usa el programa del MINEDU."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "El orden importa: sin autovaloración, la visión de futuro es copiada de otros; sin visión de futuro, el plan es una lista de tareas sin dirección. Lo primero ya lo trabajaste en el nevado. Hoy toca lo segundo y lo tercero."
+        }
+      ]
+    },
+    {
+      "id": "b1-7-05",
+      "tipo": "diapositiva",
+      "presentadorId": "guardian",
+      "titulo": "Por qué cinco años",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un plan a cinco años permite proyectar cambios grandes: terminar una formación, empezar a trabajar, mudarse, independizarse. Un plan solo a un año se queda en «ingresar a algún lado». Las metas se escriben como tentativas: se ajustan cuando cambian las condiciones o cambias tú. Un plan que no se revisa deja de ser plan."
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Las cuatro preguntas del plan",
+          "pasos": [
+            { "titulo": "¿Quién seré?", "texto": "Qué estaré haciendo y cómo me describiría." },
+            { "titulo": "¿Dónde estaré?", "texto": "Lugar, grupo al que perteneceré, personas alrededor." },
+            { "titulo": "¿Qué deseo más y cómo lo voy a lograr?", "texto": "Intereses, metas y el camino hacia ellas." },
+            { "titulo": "¿Qué dificultades se me pueden presentar?", "texto": "Y cómo las voy a superar." }
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "El plan de vida no es solo académico: incluye quién quieres ser como persona, cómo quieres relacionarte con los demás y qué quieres aportar."
+        }
+      ]
+    },
+    {
+      "id": "b1-7-06",
+      "tipo": "diapositiva",
+      "presentadorId": "guardian",
+      "titulo": "Una meta útil tiene cuatro partes",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Parte", "Mal escrita", "Bien escrita"],
+          "filas": [
+            ["Acción", "«Estar bien»", "«Terminar el segundo ciclo de mi carrera»"],
+            ["Plazo", "«Algún día»", "«A fines del próximo año»"],
+            ["Recurso que necesito", "—", "«Un ingreso para el pasaje y los materiales»"],
+            ["Dificultad y estrategia", "—", "«Si no ingreso a la primera, me preparo seis meses más y postulo de nuevo»"]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La diferencia entre un deseo y una meta es que la meta dice qué harías, no solo cómo te sentirías."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, parte 2 (Oliveros 2004; Horna 2005) y sesión de tutoría 4, «Mi plan de vida»."
+        }
+      ]
+    },
+    {
+      "id": "b1-7-07",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora. Y vuelve al final del viaje: cuando escribas tu proyecto, te voy a mostrar esta línea de tiempo para que la actualices y compares lo que pensabas con lo que decides."
+    },
+    {
+      "id": "b1-7-08",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "texto": "Tres trazos y el artefacto vuelve a girar. Escribe sin filtro de «qué es posible»: eso se revisa después."
+    },
+    {
+      "id": "b1-7-09",
+      "tipo": "consigna",
+      "hablanteId": "guardian",
+      "item": "b1-7-deseo",
+      "premisa": "Un deseo para tu vida en los próximos años, dicho sin pensar todavía en si es posible.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b1-7-10",
+      "tipo": "consigna",
+      "hablanteId": "guardian",
+      "item": "b1-7-hitos",
+      "premisa": "Un hito a 1 año, uno a 3 y uno a 5. Cada uno dice qué estarías haciendo, no solo cómo te sentirías.",
+      "ayuda": "«Estar bien» no es un hito; «terminar el segundo ciclo» sí.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b1-7-11",
+      "tipo": "consigna",
+      "hablanteId": "guardian",
+      "item": "b1-7-cinco",
+      "premisa": "Para el hito a 5 años: ¿qué necesitas para llegar y qué dificultad prevés? ¿Cómo la enfrentarías?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "recursoIds": ["F06"],
+    "mensajeFin": "El artefacto vuelve a girar: apunta al bosque del volcán. Un plan a cinco años no se cumple al pie de la letra; sirve porque te obliga a decidir hoy qué paso dar primero."
+  },
+  "mapa": { "x": 1120, "y": 220, "icono": "registro" }
+}

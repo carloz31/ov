@@ -1,0 +1,274 @@
+{
+  "id": "b3-1",
+  "codigo": "b3-1",
+  "tipo": "encuentro",
+  "titulo": "Caminos después del colegio",
+  "subtitulo": "Los cinco embarcaderos",
+  "escenario": "playa",
+  "bloque": 3,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": ["b2-5"],
+  "ubicacion": "Puerto, capitanía",
+  "duracionEstimadaMin": 10,
+  "personajeIds": ["practico", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante conoce las cinco rutas después de la secundaria (universidad, formación técnica, FF. AA. y Policía, trabajar, estudiar y trabajar), su duración y qué dan, sabe que se pueden encadenar y elige la ruta que calza con un perfil.",
+  "nodos": [
+    {
+      "id": "b3-1-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "El puerto. Aquí la isla se conecta con todo lo demás: mercado, feria, barcos que salen a distintos lugares. Y ese señor con la gorra es Ulises, el práctico: el que guía a cada barco por el canal correcto."
+    },
+    {
+      "id": "b3-1-02",
+      "tipo": "dialogo",
+      "hablanteId": "practico",
+      "expresion": "neutral",
+      "texto": "¿Primera vez en el puerto? Entonces mira los embarcaderos. Son cinco, y todos los días llega gente convencida de que solo existe el primero, el de los barcos grandes. Después se enteran de los otros cuatro cuando ya compraron pasaje."
+    },
+    {
+      "id": "b3-1-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Ulises pregunta: «¿De cuántos caminos después del colegio te han hablado en tu casa?»",
+      "nota": "No se guarda.",
+      "opciones": [
+        {
+          "id": "b3-1-03a",
+          "texto": "De uno: la universidad.",
+          "reaccion": [
+            {
+              "id": "b3-1-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "practico",
+              "texto": "Como casi todos. Hoy vas a conocer los otros cuatro, y no son embarcaderos de segunda."
+            }
+          ]
+        },
+        {
+          "id": "b3-1-03b",
+          "texto": "De dos: universidad o instituto.",
+          "reaccion": [
+            {
+              "id": "b3-1-03br",
+              "tipo": "dialogo",
+              "hablanteId": "practico",
+              "texto": "Ya son dos. Faltan tres, y uno de ellos paga sueldo mientras estudias."
+            }
+          ]
+        },
+        {
+          "id": "b3-1-03c",
+          "texto": "De varios, pero no sé bien en qué se diferencian.",
+          "reaccion": [
+            {
+              "id": "b3-1-03cr",
+              "tipo": "dialogo",
+              "hablanteId": "practico",
+              "texto": "Esa es la parte que importa: no cuántos hay, sino cuánto dura cada uno, qué te da y para quién conviene."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3-1-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "practico",
+      "titulo": "Las cinco rutas",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "En el Perú solo tres de cada diez jóvenes pasan a la educación superior al terminar el colegio, y en zonas rurales cuatro de cada cinco se quedan fuera (Inei 2023, Minedu 2024). No significa que haya un solo camino bueno: significa que conviene conocer todos antes de elegir uno."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": ["Ruta", "Duración referencial", "Qué se obtiene", "Conviene si…"],
+          "filas": [
+            ["Universidad (licenciada por la Sunedu)", "5 años; Medicina, 7", "Bachiller y título profesional", "Tu profesión exige ese grado, o te interesan la investigación y los estudios largos"],
+            ["Formación técnica (instituto o escuela licenciada por el Minedu)", "2 años (técnico) o 3 (profesional técnico)", "Título técnico, con el que luego puedes continuar en la universidad", "Quieres entrar pronto al trabajo, tu campo es práctico o necesitas una ruta más corta y barata"],
+            ["Fuerzas Armadas y Policía", "5 años (oficiales) o 3 (suboficiales)", "Grado y carrera militar o policial, con sueldo desde la formación", "Te atraen el servicio, la disciplina y una carrera con escalafón; hay requisitos de edad y físicos"],
+            ["Trabajar directamente (con o sin capacitación corta: CETPRO, cursos)", "Desde pocos meses", "Experiencia, ingresos y, si eliges bien, un oficio", "Necesitas ingresos ya o quieres probar un campo antes de invertir en estudios largos"],
+            ["Estudiar y trabajar (horario nocturno, semipresencial, a distancia)", "La de la carrera, a veces más larga", "Lo mismo que la ruta de estudio, más experiencia", "No puedes dejar de generar ingresos o quieres financiar tú parte de la carrera"]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3-1-05",
+      "tipo": "diapositiva",
+      "presentadorId": "practico",
+      "titulo": "Tres cosas que la gente no sabe de las rutas",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "Se pueden encadenar. La ley permite que un profesional técnico continúe estudios en la universidad convalidando parte de lo cursado. Instituto primero y universidad después es una ruta por etapas, no un desvío.",
+            "Toda ocupación puede profesionalizarse. Quien empieza trabajando puede, con cursos y formación, ir especializando lo que hace.",
+            "Las rutas técnicas no son «la opción B». Varias familias técnicas tienen ingresos promedio de egresados jóvenes por encima de muchas universitarias; lo verás en el mercado."
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Para elegir una ruta se miran cuatro cosas",
+          "pasos": [
+            { "titulo": "La ocupación que buscas", "texto": "Algunas exigen grado universitario (médico, abogado, docente de colegio); otras se ejercen con título técnico (técnico de laboratorio, mecánico de mantenimiento) y otras con oficio y experiencia." },
+            { "titulo": "El tiempo que puedes invertir", "texto": "Cinco años no es lo mismo que dos, ni en dinero ni en vida." },
+            { "titulo": "El dinero disponible", "texto": "Universidades e institutos públicos son casi gratuitos; los privados varían mucho; las escuelas de FF. AA. y PNP pagan durante la formación." },
+            { "titulo": "Tu situación hoy", "texto": "Si tienes que aportar en casa, estudiar y trabajar o una técnica corta pueden ser el camino para llegar después a la larga." }
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, actividad 8. Ley N.° 30220 y Ley N.° 30512. La República (2026), acceso a educación superior según Inei y Minedu.",
+          "url": "https://larepublica.pe/opinion/2026/05/14/y-despues-de-la-secundaria-que-por-mision-educacion-hnews-266604"
+        }
+      ]
+    },
+    {
+      "id": "b3-1-06",
+      "tipo": "dialogo",
+      "hablanteId": "practico",
+      "texto": "Ahora trabajas de práctico. Tres pasajeros en la fila. Dime a qué embarcadero mando a cada uno. No hay respuesta «mejor» en general: hay la que calza con lo que quieren y lo que pueden."
+    },
+    {
+      "id": "b3-1-07",
+      "tipo": "pregunta",
+      "hablanteId": "practico",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Pasajera 1: Brenda quiere ser médica. Su familia puede apoyarla y ella está dispuesta a prepararse un año si hace falta. ¿Qué ruta le calza?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Formación técnica, para empezar rápido.",
+          "correcta": false,
+          "retroalimentacion": "Un técnico de enfermería existe y vale, pero no es médico. La ocupación que ella busca exige grado universitario."
+        },
+        {
+          "id": "b",
+          "texto": "Universidad: su ocupación exige ese grado y tiene cómo sostener siete años.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Medicina solo se ejerce con título universitario; lo que puede variar es la preparación previa y la institución."
+        },
+        {
+          "id": "c",
+          "texto": "Trabajar directamente para ver si le gusta.",
+          "correcta": false,
+          "retroalimentacion": "Probar sirve en campos de oficio; para ejercer medicina no hay atajo sin universidad."
+        }
+      ],
+      "explicacion": "La primera pregunta es qué ocupación buscas: si exige grado universitario, la ruta está fijada por la ocupación, no por el gusto. Lo demás (tiempo, dinero, situación) decide cómo llegar.",
+      "pistas": [
+        {
+          "id": "b3-1-07p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Mira la primera de las cuatro cosas: ¿la ocupación de Brenda exige un grado en particular?"
+        }
+      ]
+    },
+    {
+      "id": "b3-1-08",
+      "tipo": "pregunta",
+      "hablanteId": "practico",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Pasajero 2: Jhonatan tiene que aportar en su casa desde el próximo año. Le gusta la electricidad y quiere trabajar pronto, pero no descarta la universidad más adelante. ¿Qué ruta?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Universidad, porque la universidad siempre da más futuro.",
+          "correcta": false,
+          "retroalimentacion": "Cinco años sin ingresos no calzan con tener que aportar en casa. Y «siempre» es un pregón de Aurelio."
+        },
+        {
+          "id": "b",
+          "texto": "Formación técnica en electricidad, y continuar después en la universidad si quiere.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Entra al trabajo en dos o tres años, en un campo con buenos ingresos, y la ley le permite convalidar después. Ruta por etapas."
+        },
+        {
+          "id": "c",
+          "texto": "Trabajar en lo que salga y dejar los estudios.",
+          "correcta": false,
+          "retroalimentacion": "Necesita ingresos, pero una técnica corta le da un oficio con título. Trabajar «en lo que salga» desperdicia lo que le gusta."
+        }
+      ],
+      "explicacion": "Tiempo y dinero mandan aquí: una ruta técnica corta en su campo, con la puerta abierta a la universidad por convalidación. Instituto primero y universidad después no es un desvío.",
+      "pistas": [
+        {
+          "id": "b3-1-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Dos pistas en su historia: «aportar en casa» y «no descarta la universidad». ¿Qué ruta cumple las dos?"
+        }
+      ]
+    },
+    {
+      "id": "b3-1-09",
+      "tipo": "pregunta",
+      "hablanteId": "practico",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Pasajera 3: Camila quiere estudiar Administración, pero no puede dejar de trabajar en la tienda de su familia, que abre de día. ¿Qué ruta?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Estudiar y trabajar: la carrera en horario nocturno o a distancia.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Alarga la carrera, pero no la obliga a elegir entre estudiar y la tienda."
+        },
+        {
+          "id": "b",
+          "texto": "Dejar la tienda y estudiar a tiempo completo.",
+          "correcta": false,
+          "retroalimentacion": "Su situación dice que no puede. La ruta tiene que calzar con lo que puede hoy, no con lo ideal."
+        },
+        {
+          "id": "c",
+          "texto": "Postular a la Policía, que paga mientras estudias.",
+          "correcta": false,
+          "retroalimentacion": "Paga, sí, pero la ocupación que ella busca es otra. La ruta se elige para llegar a lo que quieres, no solo para que pague."
+        }
+      ],
+      "explicacion": "Estudiar y trabajar es una ruta en sí misma, no un sacrificio: muchas carreras tienen horario nocturno o a distancia. Cuesta más tiempo y da más experiencia.",
+      "pistas": [
+        {
+          "id": "b3-1-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Camila no quiere cambiar de carrera ni dejar la tienda. Hay una fila de la tabla hecha exactamente para eso."
+        }
+      ]
+    },
+    {
+      "id": "b3-1-10",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "practico",
+      "expresion": "neutral",
+      "texto": "Buen práctico. Un último consejo del puerto: en el catálogo, cada carrera dice si es universitaria, técnica o de las FF. AA. y PNP, y cuánto dura. Y en tu tarjeta de plan vas a elegir cómo llegar: postular directo, prepararte, estudiar y trabajar o empezar por una técnica."
+    },
+    {
+      "id": "b3-1-11",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "La ficha de las cinco rutas ya está en tu mochila. Ahora vamos al atlas del puerto: ahí está todo lo que se puede estudiar y hacer."
+    }
+  ],
+  "recompensa": {
+    "recursoIds": ["F11"],
+    "mensajeFin": "No hay una ruta «de verdad» y otras de consuelo. Hay rutas que calzan con lo que quieres y con lo que puedes hoy."
+  },
+  "mapa": { "x": 120, "y": 400, "icono": "informativa" }
+}

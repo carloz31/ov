@@ -1,0 +1,53 @@
+{
+  "id": "h-intereses-2",
+  "codigo": "h-intereses-2",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Mis intereses, 2 de 6",
+  "subtitulo": "La biblioteca de Sol",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 11,
+  "obligatoria": false,
+  "requisitos": [
+    "h-intereses-1"
+  ],
+  "ubicacion": "La biblioteca de Sol",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "bibliotecaria",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hin2-01",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Segundo estante. Misma regla: solo si te gustaría hacerlo.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hin2-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-RIASEC",
+      "itemId": "plantilla",
+      "hablanteId": "bibliotecaria",
+      "etiqueta": "¿Cuánto te gustaría hacer esto?"
+    },
+    {
+      "id": "hin2-03",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Veinte de sesenta.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Segundo estante. Faltan cuatro."
+  },
+  "mapa": {
+    "x": 545,
+    "y": 435,
+    "icono": "test"
+  }
+}

@@ -1,0 +1,353 @@
+{
+  "id": "b2-1",
+  "codigo": "b2-1",
+  "tipo": "encuentro",
+  "titulo": "Las habilidades sociales",
+  "subtitulo": "La brigada del volcán",
+  "escenario": "bosque_volcan",
+  "bloque": 2,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": ["b1-7"],
+  "ubicacion": "Bosque del volcán, puesto de la brigada",
+  "duracionEstimadaMin": 12,
+  "personajeIds": ["rosa", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué aspectos personales pesan en una decisión, qué puede y qué no puede decir un cuestionario, qué son las siete habilidades sociales, que se aprenden, y reconoce cuál está en juego en una situación.",
+  "nodos": [
+    {
+      "id": "b2-1-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "El bosque del volcán. Aquí el aire huele a azufre y hay humo saliendo de la ladera. Ese puesto de madera es de la brigada que vigila el volcán. Y hay un aviso pegado en la puerta."
+    },
+    {
+      "id": "b2-1-02",
+      "tipo": "diapositiva",
+      "etiqueta": "Pegado en la puerta",
+      "titulo": "Se busca brigadista",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "«La brigada del volcán busca una persona con liderazgo, iniciativa, capacidad para tomar decisiones, resolver conflictos y trabajar en equipo. No se exige experiencia previa en volcanes.»"
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "El texto es casi igual al de un aviso real de la bolsa de trabajo del Estado (Empleos Perú, MTPE). Fíjate en lo que pide: ninguna de esas cosas se aprende en un curso de la carrera."
+        }
+      ]
+    },
+    {
+      "id": "b2-1-03",
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "expresion": "neutral",
+      "texto": "¿Vienen por el aviso? Soy Rosa, jefa de la brigada. No busco a alguien que sepa de volcanes: eso se enseña. Busco a alguien que, cuando la ladera tiembla y hay veinte personas asustadas, sepa qué hacer con las personas."
+    },
+    {
+      "id": "b2-1-04",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b2-1-04a",
+          "texto": "¿Y eso cómo lo evalúas en alguien?",
+          "reaccion": [
+            {
+              "id": "b2-1-04ar",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Mirándolo actuar. Y preguntándole. Hay cosas que un cuestionario sí puede ordenar, y cosas que solo se ven en la ladera."
+            }
+          ]
+        },
+        {
+          "id": "b2-1-04b",
+          "texto": "Yo no soy muy bueno para eso de liderar.",
+          "reaccion": [
+            {
+              "id": "b2-1-04br",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Nadie nace líder. Yo era la más callada de mi promoción. Estas cosas se practican, y en la brigada se practican todos los días."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2-1-05",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Esto conecta con lo que dijo Helena en la cabaña: cada capítulo de tu libro se restaura con preguntas que conserva alguien de la ciudad. Antes de responder ninguna, conviene saber qué puede decir un cuestionario sobre ti y qué no."
+    },
+    {
+      "id": "b2-1-06",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Tres tipos de cuestionarios en tu camino",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Tipo", "Qué mide", "Qué te devuelve"],
+          "filas": [
+            ["De intereses", "Qué actividades te atraen, en seis áreas", "Un perfil de intereses y ocupaciones cuyo perfil se parece al tuyo"],
+            ["De autoconocimiento", "Cómo te describes en un aspecto: habilidades sociales, inteligencias", "Un retrato de dónde estás más y menos desarrollado"],
+            ["De proceso", "Cómo vas en el camino de decidir", "Un antes y un después para compararlos (tu punto de partida y de llegada)"]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Solo el primero se relaciona con ocupaciones y carreras. Los otros dos te describen a ti; no te recomiendan nada."
+        }
+      ]
+    },
+    {
+      "id": "b2-1-07",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Lo que un cuestionario no puede saber",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "Tu esfuerzo y tu constancia, que pesan más que cualquier puntaje.",
+            "Tu contexto: cuánto puedes pagar, qué hay en tu ciudad, quién te apoya.",
+            "Si una ocupación te va a gustar en la práctica: eso se averigua probando o preguntando a quien la ejerce.",
+            "Lo que no has vivido todavía. Si nunca hiciste algo, difícilmente lo marques como interés."
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Para que un cuestionario sirva",
+          "pasos": [
+            { "titulo": "Responde lo que eres", "texto": "No lo que te gustaría ser ni lo que otros esperan." },
+            { "titulo": "No lo hagas apurado", "texto": "Un cuestionario respondido en dos minutos mide tu apuro, no tus intereses." },
+            { "titulo": "Tómalo como hipótesis", "texto": "¿Me reconozco? ¿Qué no refleja? Contrástalo con tu historia." }
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, estaciones 1 y 2. National Center for O*NET Development (2021), O*NET Interest Profiler manual.",
+          "url": "https://www.onetcenter.org/dl_files/IP_Manual.pdf"
+        }
+      ]
+    },
+    {
+      "id": "b2-1-08",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "texto": "Lo que pide mi aviso tiene nombre: habilidades sociales. Y antes de que digas que no las tienes, mira qué son, porque ya las estás usando o evitando todos los días."
+    },
+    {
+      "id": "b2-1-09",
+      "tipo": "diapositiva",
+      "presentadorId": "rosa",
+      "titulo": "Qué son las habilidades sociales",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Son conductas que nos permiten relacionarnos bien con nosotros mismos y con los demás, lograr nuestras metas y expresarnos de forma adecuada."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Cuatro rasgos de la definición",
+          "items": [
+            "Se aprenden: nadie nace asertivo ni líder.",
+            "Se pueden desarrollar toda la vida.",
+            "Son conductas, verbales y no verbales, que influyen en cómo responden los otros.",
+            "Los demás las recompensan: a quien las tiene le va mejor en los grupos."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2-1-10",
+      "tipo": "diapositiva",
+      "presentadorId": "rosa",
+      "titulo": "Las siete habilidades de la brigada",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Habilidad", "Qué es", "En la brigada se nota cuando…"],
+          "filas": [
+            ["Asertividad", "Defender tus derechos y opiniones sin ofender; poder decir «no»", "Alguien dice «no voy a subir sin el equipo completo» aunque el jefe apure"],
+            ["Empatía", "Ponerte en el lugar del otro y entender lo que siente", "Notas que un compañero está asustado y lo acompañas sin burlarte"],
+            ["Expresión de sentimientos", "Decir cómo te sientes, a la persona indicada y en el momento adecuado", "Puedes decir «eso me molestó» en vez de guardarlo para el próximo turno"],
+            ["Resolución de problemas", "Analizar una situación difícil y encontrar la salida", "Se cae un puente y en dos minutos hay un plan B"],
+            ["Liderazgo", "Actuar en representación de otros y dirigir un grupo con creatividad", "Organizas la evacuación de un refugio y la sacas adelante"],
+            ["Convivencia", "Integrarte a un grupo y permanecer en él", "Llegas nuevo y a la semana ya eres parte del turno"],
+            ["Comunicación", "Expresar y entender lo que se quiere decir, con palabras y gestos", "Das una instrucción por radio y se entiende a la primera"]
+          ],
+          "nota": "Las siete de la cartilla del MINEDU (Burga, 2000). Tu cuestionario de la ciudad mide estas mismas."
+        }
+      ]
+    },
+    {
+      "id": "b2-1-11",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Por qué importan para tu decisión",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "Dicen qué ambientes de trabajo te van a costar más o menos. Una ocupación que exige liderar grupos todo el día se vive distinto si el liderazgo es tu habilidad más desarrollada o la menos.",
+            "Una habilidad baja no es un veto. Como se aprenden, lo que hoy te cuesta puede ser tu plan de desarrollo de los próximos años, no un motivo para descartar una opción."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "No eres «tímido» o «sociable» para siempre: tienes habilidades más y menos practicadas."
+        }
+      ]
+    },
+    {
+      "id": "b2-1-12",
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "expresion": "neutral",
+      "texto": "Ahora la prueba de la brigada. No es de volcanes: son tres cosas que pasaron en mi turno esta semana. Dime qué habilidad estuvo en juego en cada una."
+    },
+    {
+      "id": "b2-1-13",
+      "tipo": "pregunta",
+      "hablanteId": "rosa",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "El lunes, un brigadista nuevo vio que el jefe de turno quería subir con la radio sin batería. Le dijo, con calma y delante de todos: «No subo sin radio cargada; es una regla y es por todos». ¿Qué habilidad usó?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Asertividad",
+          "correcta": true,
+          "retroalimentacion": "Sí. Defendió una posición correcta sin ofender, incluso frente a alguien con más rango."
+        },
+        {
+          "id": "b",
+          "texto": "Empatía",
+          "correcta": false,
+          "retroalimentacion": "No se puso en el lugar del jefe: le marcó un límite. Eso es otra habilidad."
+        },
+        {
+          "id": "c",
+          "texto": "Convivencia",
+          "correcta": false,
+          "retroalimentacion": "Integrarse al grupo no era el punto; el punto fue decir «no» con respeto."
+        }
+      ],
+      "explicacion": "La asertividad es poder decir «no» y sostener una opinión sin agredir ni callarse. En un trabajo se nota cuando alguien reclama lo justo o marca un límite con calma.",
+      "pistas": [
+        {
+          "id": "b2-1-13p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en la palabra que dijo el brigadista: «no». ¿Cuál de las siete habilidades tiene que ver con poder decirla?"
+        }
+      ]
+    },
+    {
+      "id": "b2-1-14",
+      "tipo": "pregunta",
+      "hablanteId": "rosa",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "El miércoles se cayó una pasarela y quedamos sin acceso al refugio alto. Mientras todos miraban el hueco, una brigadista separó qué dependía de nosotros (otra ruta por el lado norte) y qué no (que lleguen refuerzos), y en cinco minutos teníamos un plan. ¿Qué habilidad?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Comunicación",
+          "correcta": false,
+          "retroalimentacion": "Seguro comunicó bien el plan, pero lo central fue armarlo: analizar y encontrar la salida."
+        },
+        {
+          "id": "b",
+          "texto": "Resolución de problemas",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Analizó la situación, separó lo que dependía del grupo y encontró la salida."
+        },
+        {
+          "id": "c",
+          "texto": "Expresión de sentimientos",
+          "correcta": false,
+          "retroalimentacion": "No habló de cómo se sentía: habló de qué hacer."
+        }
+      ],
+      "explicacion": "Resolver problemas es analizar una situación difícil, separar lo que depende de uno y encontrar la salida. Se parece a lo que hiciste con las dudas de Nico: partir lo grande en pasos.",
+      "pistas": [
+        {
+          "id": "b2-1-14p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Separó «qué depende de nosotros y qué no». Esa frase está casi igual en la tabla."
+        }
+      ]
+    },
+    {
+      "id": "b2-1-15",
+      "tipo": "pregunta",
+      "hablanteId": "rosa",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "El viernes, un brigadista estaba callado y pálido antes de subir. Otra compañera se dio cuenta, se sentó a su lado y le preguntó qué le pasaba, sin presionarlo. ¿Qué habilidad?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Liderazgo",
+          "correcta": false,
+          "retroalimentacion": "No dirigió a nadie. Hizo algo más silencioso: notar y acompañar."
+        },
+        {
+          "id": "b",
+          "texto": "Empatía",
+          "correcta": true,
+          "retroalimentacion": "Sí. Notó lo que sentía el otro y se puso en su lugar, sin cuestionarlo."
+        },
+        {
+          "id": "c",
+          "texto": "Asertividad",
+          "correcta": false,
+          "retroalimentacion": "No defendió una opinión ni marcó un límite. Lo suyo fue entender al otro."
+        }
+      ],
+      "explicacion": "La empatía es ponerse en el lugar del otro y entender lo que siente. En un equipo se nota en quien se da cuenta de que un compañero está mal y le ofrece apoyo sin interrogarlo.",
+      "pistas": [
+        {
+          "id": "b2-1-15p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "La compañera no hizo nada con el volcán. Hizo algo con lo que sentía el otro."
+        }
+      ]
+    },
+    {
+      "id": "b2-1-16",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "expresion": "neutral",
+      "texto": "Aprobado. Y un consejo: en la ciudad hay una tabernera, Dora, que conserva unas preguntas sobre cómo te comportas con los demás. Son las que restauran una página del libro de Helena; te las hace en cuatro visitas, con calma."
+    },
+    {
+      "id": "b2-1-17",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Esa es la misión de Helena sobre habilidades sociales. Te muestra cuáles tienes más desarrolladas, y después eliges una con menos desarrollo para practicarla. Dos fichas nuevas en tu mochila: la de los cuestionarios y la de las habilidades."
+    }
+  ],
+  "recompensa": {
+    "recursoIds": ["F08"],
+    "mensajeFin": "Nadie nace líder. Las habilidades sociales se practican, y en la ciudad te esperan las preguntas de Dora."
+  },
+  "mapa": { "x": 160, "y": 400, "icono": "informativa" }
+}

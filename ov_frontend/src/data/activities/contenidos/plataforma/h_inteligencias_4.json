@@ -1,0 +1,53 @@
+{
+  "id": "h-inteligencias-4",
+  "codigo": "h-inteligencias-4",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Explorando mis inteligencias, 4 de 5",
+  "subtitulo": "La escuela del maestro Bruno",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 8,
+  "obligatoria": false,
+  "requisitos": [
+    "h-inteligencias-3"
+  ],
+  "ubicacion": "La escuela del maestro Bruno",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "maestro",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hi4-01",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Cuarta. Hoy hay música en el patio y los chicos no se concentran; a ti te va a servir, porque varias frases de hoy son sobre eso: ritmos, cuerpo, movimiento.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hi4-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-INTELIGENCIAS",
+      "itemId": "plantilla",
+      "hablanteId": "maestro",
+      "etiqueta": "¿Con qué frecuencia te pasa?"
+    },
+    {
+      "id": "hi4-03",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Una más y terminamos.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Cuarta clase. Falta una."
+  },
+  "mapa": {
+    "x": 490,
+    "y": 375,
+    "icono": "test"
+  }
+}

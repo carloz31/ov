@@ -1,0 +1,137 @@
+{
+  "_nota": "Registro. Momento 1 completo (valores). La consigna es un podio «top 3» como t_valores (lista de valores en el servidor); su configuración final se define con los registros.",
+  "id": "b2-3",
+  "codigo": "b2-3",
+  "tipo": "registro",
+  "titulo": "Lo que valoro en un trabajo",
+  "subtitulo": "La brújula de Rosa",
+  "escenario": "bosque_volcan",
+  "bloque": 2,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": ["b2-2"],
+  "ubicacion": "Bosque del volcán, mirador de la brigada",
+  "duracionEstimadaMin": 8,
+  "personajeIds": ["rosa", "companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b2-3-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Antes de irnos de la brigada le pregunté a Rosa por qué se quedó aquí, con el azufre y los sustos, pudiendo trabajar en la ciudad."
+    },
+    {
+      "id": "b2-3-02",
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "expresion": "neutral",
+      "texto": "Mi hermano y yo estudiamos lo mismo. Él se fue a la mina del otro lado de la isla: gana el triple y está contento. Yo me quedé porque cuando suena la alarma y las familias llegan al refugio, siento que estoy donde debo. No es mejor ni peor que lo de él. Es que valoramos cosas distintas."
+    },
+    {
+      "id": "b2-3-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b2-3-03a",
+          "texto": "¿Nunca te tentó el sueldo de la mina?",
+          "reaccion": [
+            {
+              "id": "b2-3-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Claro que sí. Pero cuando lo pensé en serio, me di cuenta de que lo que me iba a faltar allá no se compra. Eso fue saber qué valoro."
+            }
+          ]
+        },
+        {
+          "id": "b2-3-03b",
+          "texto": "¿Y tu hermano no extraña esto?",
+          "reaccion": [
+            {
+              "id": "b2-3-03br",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Él valora la estabilidad y poder ayudar a mis papás con plata. Lo tiene claro y por eso no se arrepiente. Los dos elegimos bien, porque elegimos según lo nuestro."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2-3-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Qué son los valores",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un valor es algo que te importa de verdad: lo que buscas en un trabajo más allá del nombre de la carrera. Se forman con la familia, el colegio y lo que has vivido, y en la adolescencia se cuestionan: por eso a veces lo que valoran tus padres y lo que valoras tú no coincide."
+        },
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Elegir por interés y propósito",
+            "texto": "La actividad en sí te mueve. Sostiene la decisión cuando la carrera se pone difícil."
+          },
+          "derecha": {
+            "titulo": "Elegir por salario, estatus o presión",
+            "texto": "Lo que viene después te mueve. Importa, pero solo sostiene mientras el premio llega."
+          }
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Valores que la gente busca en un trabajo",
+          "items": [
+            "Estabilidad",
+            "Ingresos",
+            "Ayudar a otros",
+            "Crear",
+            "Autonomía",
+            "Reconocimiento",
+            "Tiempo para la familia",
+            "Aprender",
+            "Aportar a mi comunidad"
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "No hay valores buenos y malos. Lo que importa es saber cuáles son los tuyos, porque dos opciones rara vez ganan en todos."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, parte 1 (los valores como factor interno de la decisión)."
+        }
+      ]
+    },
+    {
+      "id": "b2-3-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora. Y vuelve dos veces: cuando ordenes tus criterios para decidir, tu primer valor va a ser el punto de partida; y al escribir tu proyecto te lo voy a recordar."
+    },
+    {
+      "id": "b2-3-06",
+      "tipo": "consigna",
+      "hablanteId": "rosa",
+      "item": "b2-3-valores",
+      "premisa": "Ordena los tres valores que más pesan para ti en un trabajo y explica por qué el primero es el primero.",
+      "ayuda": "Liga el primero a algo que viviste o a alguien de tu vida.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "podio": {
+        "etiquetaPrimero": "Lo que más pesa",
+        "pregunta": "¿Por qué «{opcion}» es lo que más pesa para ti en un trabajo?",
+        "unidad": { "singular": "valor", "plural": "valores" }
+      }
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tu brújula tiene tres puntos. Anotado en tu bitácora."
+  },
+  "mapa": { "x": 340, "y": 290, "icono": "registro" }
+}

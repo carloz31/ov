@@ -1,0 +1,103 @@
+{
+  "id": "b5-4",
+  "codigo": "b5-4",
+  "tipo": "encuentro",
+  "titulo": "La sala de la luz",
+  "subtitulo": "Al fin, el pergamino",
+  "escenario": "faro",
+  "bloque": 5,
+  "orden": 4,
+  "obligatoria": true,
+  "requisitos": ["b5-3"],
+  "ubicacion": "Faro, la escalera y la sala de la luz",
+  "duracionEstimadaMin": 6,
+  "personajeIds": ["helena", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante llega al pergamino con el recorrido completo detrás, y la pregunta de qué va a encontrar queda abierta.",
+  "nodos": [
+    {
+      "id": "b5-4-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Última escalera. Desde abajo se escucha el mecanismo de la luz girando. Yo he pasado por este faro cien veces y nunca subí: no tenía con qué."
+    },
+    {
+      "id": "b5-4-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Antes de abrir la puerta, mira hacia atrás un segundo. El muelle y el capitán. El árbol de las voces. Helena en la cabaña. Mara, Nico, Nadia en el nevado. Iván y el artefacto. Aurelio y su puente. Rosa y la brigada. Dora, Bruno, Sol. El puerto: Ulises, Doña Cifra, el Feriante, Clotilde, Alejandra. El acantilado y el Eco. Teresa, abajo, con la luz encendida."
+    },
+    {
+      "id": "b5-4-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "¿Qué sientes antes de abrir la puerta?",
+      "nota": "No se guarda.",
+      "opciones": [
+        {
+          "id": "b5-4-03a",
+          "texto": "Nervios. Esto es lo que vine a buscar.",
+          "reaccion": [
+            {
+              "id": "b5-4-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Yo también. Aunque creo que ya no es exactamente lo mismo que viniste a buscar."
+            }
+          ]
+        },
+        {
+          "id": "b5-4-03b",
+          "texto": "Curiosidad. Quiero ver qué dice.",
+          "reaccion": [
+            {
+              "id": "b5-4-03br",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Curiosidad es la mejor forma de abrir una puerta. Nadia lo diría mejor que yo."
+            }
+          ]
+        },
+        {
+          "id": "b5-4-03c",
+          "texto": "Calma. Ya no estoy seguro de que exista una respuesta ahí adentro.",
+          "reaccion": [
+            {
+              "id": "b5-4-03cr",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Esa es, creo, la forma correcta de llegar hasta aquí."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b5-4-04",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "La sala de la luz. El mecanismo gira sobre nosotros. Y en el centro, sobre un atril de madera, un pergamino enrollado, sellado, con tu nombre escrito en la cinta. Es él. Después de todo este camino… es él."
+    },
+    {
+      "id": "b5-4-05",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "expresion": "neutral",
+      "texto": "Llegaste. Sí: siempre estuvo aquí, y sí, yo lo sabía desde el primer día en la cabaña. No me preguntes todavía por qué no te lo dije. Primero descansa un momento. Lo abrimos juntos cuando estés listo."
+    },
+    {
+      "id": "b5-4-06",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Está aquí. Toma aire. Cuando quieras, lo abrimos."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "El pergamino está frente a ti, sellado, con tu nombre. Falta abrirlo."
+  },
+  "mapa": { "x": 300, "y": 190, "icono": "informativa" }
+}
