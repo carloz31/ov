@@ -95,7 +95,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** un aviso al ingresar al portal o una marca en el menú «Conversaciones».
 - **Opciones:** notificaciones asíncronas (backend con eventos por cuenta); calcular la novedad al ingresar comparando con la última visita; dejar solo la marca «{hijo} respondió» de la lista (como hoy).
 - **Si no se muestra:** el apoderado ve lo nuevo al abrir Conversaciones (la lista se revalida al montarla).
-- **Estado:** pospuesto en F08 (notificaciones asíncronas).
+- **Estado:** resuelto en parte en el ajuste notificaciones: la primera respuesta del hijo a una conversación avisa al apoderado en la campana (RESPUESTA_CONVERSACION). Sigue sin aviso cuando el hijo habilita una conversación (`motor.md`); pendiente de decisión del usuario.
 
 ## 2026-10-28 · F08 · «Requiere atención» en el inicio del apoderado
 
@@ -119,7 +119,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** cabecera de cada tramo «{n} · {nombre} · {x} de {y} completadas» con «Ocultar / Mostrar».
 - **Opciones:** implementarlos cuando la ruta del apoderado tenga más de un bloque.
 - **Si no se muestra:** con un solo bloque (FAMILIA, la ruta actual) la spec pide la lista directa, que es lo que se ve.
-- **Estado:** pendiente hasta que la ruta real del apoderado tenga más de un bloque.
+- **Estado:** descartado por el usuario (2026-11-04).
 
 ## 2026-10-28 · F08 · Contenido de fichas del estudiante bajo demanda
 
@@ -190,7 +190,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dato:** la relación carrera → ocupaciones. Hoy es provisional: de 3 a 5 ocupaciones al azar por carrera (semilla fija), salvo las 6 carreras de la ruta; las carreras de FF. AA. no tienen ninguna.
 - **Dónde se mostraría:** «Profesiones a las que conduce» (detalle de carrera) y «Carreras que llevan aquí» (detalle de profesión).
 - **Opciones:** cargar el archivo real de emparejamiento carrera → ocupaciones cuando esté; mientras tanto, mostrar la relación provisional (como hoy) o no pintar esas secciones.
-- **Estado:** pendiente del archivo de emparejamiento.
+- **Estado:** descartado (2026-11-04): carreras y ocupaciones se relacionan por familia (`ocupacion_familia`, ajuste resultados-intereses); ya no hay un emparejamiento carrera → ocupación que esperar.
 
 ## 2026-10-25 · Ajuste pasaporte-perfil · Textos de condición en bloqueos y desbloqueos
 
@@ -263,7 +263,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** vista explicada del apoderado (`ParentQuestionnaireDetailView`), como en la demostración local («Cómo tomar estas recomendaciones»).
 - **Opciones:** listar las ocupaciones afines con su ajuste; listar también las carreras; dejarlas solo para la conversación con el estudiante.
 - **Si no se muestra:** el apoderado ve qué mide el cuestionario, el código de interés y cada dimensión con su descripción.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** resuelto en el ajuste resultados-intereses: la vista explicada del apoderado (`ParentQuestionnaireDetailView`) muestra con `ResultadoInteresesPortal` las ocupaciones afines y las familias recomendadas del hijo (familias en lugar de carreras sueltas).
 
 ## 2026-10-22 · F04d · Video incrustado en el visor de recursos
 
@@ -295,7 +295,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el reproductor de actividades (`QuestionNode`) y el de batallas (`ChallengePlayer`).
 - **Opciones:** volver a una pregunta ya resuelta en solo lectura (con su explicación); permitir un nuevo intento al volver; mantener sin retroceso.
 - **Si no se muestra:** «Anterior» no aparece en una pregunta con retroalimentación inmediata ni en el paso que la sigue (en ese paso desaparece, aunque el anterior a él sí admitiría volver), ni en las batallas.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** decidido por el usuario (2026-11-04): no se puede retroceder; se mantiene sin «Anterior» en batallas y en preguntas con retroalimentación.
 
 ## 2026-10-21 · F01 · «Anterior» en el reproductor del apoderado
 
