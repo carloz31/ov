@@ -346,7 +346,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F08"],
     "mensajeFin": "Nadie nace líder. Las habilidades sociales se practican, y en la ciudad te esperan las preguntas de Dora."
   },
   "mapa": { "x": 160, "y": 400, "icono": "informativa" }

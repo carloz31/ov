@@ -7,7 +7,7 @@ import { copia, elementos, fixtureServidor, jsonServidor } from '../../soporte/s
 const items = jsonServidor('ruta/ruta-items-registro-t-expectativas')
 const ruta = items.find((i) => i.codigo === 't-exp-ruta')
 const apoyo = items.find((i) => i.codigo === 't-exp-apoyo')
-const contenido = JSON.parse(readFileSync('src/data/activities/contenidos/t_expectativas.json', 'utf8'))
+const contenido = JSON.parse(readFileSync('src/data/activities/contenidos/ruta/t_expectativas.json', 'utf8'))
 const nodoRuta = contenido.nodos.find((n) => n.item === 't-exp-ruta')
 const nodoApoyo = contenido.nodos.find((n) => n.item === 't-exp-apoyo')
 const reglasRuta = { maxima: 2, exclusivas: ['AUN_NO_SE'] }

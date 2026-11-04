@@ -2,6 +2,22 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-04 · Ajuste carga-actividades · Imágenes de los personajes
+
+- **Dato:** `avatarUrl` y `expresiones` de los 23 personajes de `catalogo.json` (los 19 del contenido real, Helena incluida, más Lumi, Mara, Aurelio y la orientación) apuntan a `/img/personajes/*.png`, y esa carpeta no existe en `public/`.
+- **Dónde se mostraría:** el avatar de cada hablante en el reproductor (`journey/Character.tsx`).
+- **Opciones:** subir las imágenes con esos nombres; cambiar las rutas a las que existan; dejar el retrato SVG genérico.
+- **Si no se muestra:** cada hablante cae al retrato SVG de `CharacterPortrait` (ya pasaba antes del ajuste).
+- **Estado:** pendiente de las imágenes; no bloquea la carga.
+
+## 2026-11-04 · Ajuste carga-actividades · Testimonios que nombran las preguntas de `ma2`
+
+- **Dato:** las preguntas `ma2-p06` y `ma2-p07` de la batalla «Profesiones sin género» nombran los testimonios T02 y T08, que aún no existen (en `contenido` solo están los provisionales `t-testimonio-1..4`).
+- **Dónde se mostraría:** el enunciado o la explicación de esas preguntas, y la mochila («Voces de la ciudad») cuando existan.
+- **Opciones:** cargar T02 y T08 en el ajuste de testimonios; reescribir esas dos preguntas sin nombrarlos; quitarlas del pool (el de `ma2` tiene 10, el mínimo es 10).
+- **Si no se muestra:** la pregunta cita una voz que el estudiante no puede encontrar todavía.
+- **Estado:** pendiente para el ajuste de testimonios.
+
 ## 2026-11-02 · Ajuste resultados-intereses · Resultado del estudiante para la orientadora
 
 - **Dato:** `mensaje_orientadora` y `lectura_orientadora` de cada instrumento (cargados en `fijos.py`) y el resultado de intereses de un estudiante (ocupaciones afines, por área y familias), que la orientadora vería con el boceto 02 y la tarjeta final «Para la tutoría».

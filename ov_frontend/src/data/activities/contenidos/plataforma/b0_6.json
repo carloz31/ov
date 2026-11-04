@@ -345,7 +345,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F03"],
     "mensajeFin": "Una duda con nombre ya es un avance. El check-in te acompaña desde hoy."
   },
   "promptDiario": "Lo que siento ante la decisión",

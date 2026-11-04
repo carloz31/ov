@@ -182,7 +182,7 @@ test('un registro sin elecciones por referencia ni ecos no pide referencias', as
 
 test('una consigna con eco y sin ítem no pasa la validación del contenido', () => {
   const { validateActivity } = fixtureServidor().load('src/lib/activities/validation.ts')
-  const contenido = copia(jsonServidor('../../../src/data/activities/contenidos/t_eco'))
+  const contenido = copia(jsonServidor('../../../src/data/activities/contenidos/ruta/t_eco'))
   validateActivity(contenido)
   delete contenido.nodos.find((n) => n.tipo === 'consigna' && n.eco).item
   assert.throws(() => validateActivity(contenido), /cita una referencia sin ítem/)

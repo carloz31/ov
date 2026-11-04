@@ -229,9 +229,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": [
-      "FP06"
-    ],
     "mensajeFin": "Conversar no es convencer."
   }
 }

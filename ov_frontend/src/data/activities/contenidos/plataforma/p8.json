@@ -259,9 +259,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": [
-      "FP08"
-    ],
     "mensajeFin": "Su carta no decide nada. Dice que usted está."
   }
 }

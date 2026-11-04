@@ -12,7 +12,7 @@
   "ubicacion": "Puerto, sala del atlas en la capitanía",
   "duracionEstimadaMin": 10,
   "personajeIds": ["practico", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué dato de una ficha del catálogo responde qué pregunta (carrera, ocupación, institución), cómo leerla sin engañarse, y sale a marcar al menos tres favoritos, uno fuera de su tipo de interés principal.",
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué dato de una ficha del catálogo responde qué pregunta (carrera, ocupación, institución), cómo leerla sin engañarse, y sale invitado a marcar varios favoritos, mejor si alguno queda fuera de su tipo de interés principal.",
   "nodos": [
     {
       "id": "b3-2-01",
@@ -229,7 +229,7 @@
       "id": "b3-2-10",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "No tienes que justificar nada todavía: las razones las vas a escribir más adelante, cuando tengas con qué. Pero el mercado, la siguiente parada, no se abre sin esos tres favoritos. Ulises lo dirá en el mapa si te falta alguno."
+      "texto": "No tienes que justificar nada todavía: las razones las vas a escribir más adelante, cuando tengas con qué. Antes de bajar al mercado, la siguiente parada, te conviene marcar algunos favoritos: así vas a tener con qué mirar los números."
     },
     {
       "id": "b3-2-11",
@@ -239,8 +239,7 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F12"],
-    "mensajeFin": "El catálogo está abierto. Marca al menos tres favoritos, uno fuera de tu tipo principal: son la base de tus planes."
+    "mensajeFin": "El catálogo está abierto. Marca los favoritos que te llamen la atención, mejor si alguno queda fuera de tu tipo principal: son la base de tus planes."
   },
   "mapa": { "x": 200, "y": 350, "icono": "informativa" }
 }

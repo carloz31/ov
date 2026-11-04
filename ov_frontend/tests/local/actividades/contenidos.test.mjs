@@ -6,18 +6,25 @@ import { copia, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayu
 const carpeta = 'src/data/activities/contenidos'
 const app = fixtureServidor({ api: false })
 const { contenidos, contenidoPorClave } = app.load('src/data/activities/contenidos.ts')
-const jsonContenido = clave => JSON.parse(readFileSync(`${carpeta}/${clave}.json`, 'utf8'))
+// Ajuste carga-actividades: los de la ruta de prueba van en `ruta/` y los reales en `plataforma/`; los del modo
+// local siguen en la raíz.
+const SUBCARPETAS = ['', 'ruta/', 'plataforma/']
+const rutas = SUBCARPETAS.flatMap(sub =>
+  readdirSync(`${carpeta}/${sub}`).filter(nombre => nombre.endsWith('.json')).map(nombre => `${sub}${nombre}`),
+)
+const rutaDe = clave => rutas.find(ruta => ruta.split('/').at(-1) === `${clave}.json`)
+const jsonContenido = clave => JSON.parse(readFileSync(`${carpeta}/${rutaDe(clave)}`, 'utf8'))
 const actividades = fixture => jsonServidor(fixture).flatMap(bloque => bloque.actividades)
 
 test('cada JSON de contenido está registrado explícitamente y cada clave tiene su archivo', () => {
-  const archivos = readdirSync(carpeta).sort()
+  const archivos = rutas.map(ruta => ruta.split('/').at(-1)).sort()
   // Ajuste del diario de F05: suma los cinco recuerdos de Lumi (`t_lumi_*`); el ajuste mochila, `t_caso_2`; F09,
   // `t_investigador` y `t_investigador_cierre`; el ajuste carga-instrumentos, `t_mision_inteligencias` y
-  // `t_mision_habilidades`.
-  assert.equal(archivos.length, 43)
+  // `t_mision_habilidades`; el ajuste carga-actividades, los 81 de `plataforma/`.
+  assert.equal(archivos.length, 43 + 81)
   assert.deepEqual(archivos, Object.keys(contenidos).map(clave => `${clave}.json`).sort())
   const fuente = readFileSync('src/data/activities/contenidos.ts', 'utf8')
-  const imports = [...fuente.matchAll(/from '\.\/contenidos\/([^']+)\.json'/g)].map(match => match[1]).sort()
+  const imports = [...fuente.matchAll(/from '\.\/contenidos\/(?:ruta\/|plataforma\/)?([^'/]+)\.json'/g)].map(match => match[1]).sort()
   assert.deepEqual(imports, Object.keys(contenidos).sort())
   assert.doesNotMatch(fuente, /import\.meta\.glob/)
   for (const clave of Object.keys(contenidos)) {

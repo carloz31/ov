@@ -357,7 +357,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F10"],
     "mensajeFin": "Tu código dice en qué ambientes te sentirías cómodo. Qué haces ahí, lo decides tú. El artefacto apunta al puerto."
   },
   "mapa": { "x": 520, "y": 200, "icono": "informativa" }

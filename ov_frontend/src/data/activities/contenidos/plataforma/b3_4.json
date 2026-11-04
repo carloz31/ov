@@ -1,5 +1,5 @@
 {
-  "_nota": "Registro (3.4). Apertura completa; consignas en esqueleto (elección de un dato + texto). Requisito: b3-3 completada y al menos 3 favoritos, uno fuera del tipo principal o de dos tipos distintos (regla de eventos). Lee con eco los datos de la familia de su primer plan o de sus favoritos.",
+  "_nota": "Registro (3.4). Apertura completa; consignas en esqueleto (elección de un dato + texto). Se abre al completar b3-3; los favoritos ayudan, pero no son requisito. Lee con eco los datos de la familia de su primer plan o de sus favoritos.",
   "id": "b3-4",
   "codigo": "b3-4",
   "tipo": "registro",
@@ -19,7 +19,7 @@
       "id": "b3-4-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Sentémonos un rato lejos del puesto de Doña Cifra. Con tus favoritos marcados, el catálogo ya te muestra los ingresos de su familia por lugar. Quiero que mires los de tu opción, o los de tus favoritos, con calma.",
+      "texto": "Sentémonos un rato lejos del puesto de Doña Cifra. Si ya marcaste favoritos, el catálogo te muestra los ingresos de su familia por lugar. Quiero que mires los de tu opción, o los de tus favoritos, con calma.",
       "eco": "b3-4-ref-datos"
     },
     {

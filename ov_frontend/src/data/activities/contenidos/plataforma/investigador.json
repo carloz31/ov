@@ -233,7 +233,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F18"],
     "mensajeFin": "Investigaciones está abierta. Cada entrevista publicada suma a la colecta del techo de Anselmo."
   },
   "mapa": { "x": 700, "y": 380, "icono": "informativa" }

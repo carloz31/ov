@@ -286,7 +286,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F16"],
     "mensajeFin": "Antes de decidir dónde, calcula cuánto cuesta todo el camino. Clotilde tiene una pila de presupuestos con hueco esperándote."
   },
   "mapa": { "x": 720, "y": 260, "icono": "informativa" }

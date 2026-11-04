@@ -1,6 +1,6 @@
 # Contenidos de actividades
 
-Formato de los JSON de `src/data/activities/contenidos/<clave>.json`. El tipo de referencia es `Actividad` en `src/types/activities.ts`; la validación está en `src/lib/activities/validation.ts`. El backend solo conoce la clave (`actividad.contenido`) y no interpreta el contenido.
+Formato de los JSON de `src/data/activities/contenidos/`: `plataforma/<clave>.json` (contenido real), `ruta/<clave>.json` (ruta de prueba) y, en la raíz, los del modo local. El tipo de referencia es `Actividad` en `src/types/activities.ts`; la validación está en `src/lib/activities/validation.ts`. El backend solo conoce la clave (`actividad.contenido`) y no interpreta el contenido.
 
 ## Principio
 

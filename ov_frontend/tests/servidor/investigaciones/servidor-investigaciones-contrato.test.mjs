@@ -13,7 +13,7 @@ import {
 
 // F09: contrato de Investigaciones (adaptadores, eco LO_QUE_PIENSO, contenidos y almacén) con los fixtures ruta-*.
 const adaptadores = () => fixtureServidor().load('src/lib/servidor/adaptadoresInvestigaciones.ts')
-const contenido = (clave) => JSON.parse(readFileSync(`src/data/activities/contenidos/${clave}.json`, 'utf8'))
+const contenido = (clave) => JSON.parse(readFileSync(`src/data/activities/contenidos/ruta/${clave}.json`, 'utf8'))
 const sinRespuestas = { eventos_registrados: [], nuevos_desbloqueos: [] }
 
 test('el paso del asistente sale de la investigación en curso', () => {

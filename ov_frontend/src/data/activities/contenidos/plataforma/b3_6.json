@@ -337,7 +337,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F14"],
     "mensajeFin": "Licenciada es la condición para empezar a comparar. El stand del Faro Dorado sigue abierto; toca desmontarlo."
   },
   "mapa": { "x": 540, "y": 240, "icono": "informativa" }

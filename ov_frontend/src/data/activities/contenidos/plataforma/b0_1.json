@@ -276,7 +276,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F01"],
     "mensajeFin": "La vocación no se encuentra: se construye conociéndote y conociendo lo que existe afuera."
   },
   "mapa": { "x": 120, "y": 420, "icono": "informativa" }

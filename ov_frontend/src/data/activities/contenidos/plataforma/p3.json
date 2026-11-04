@@ -256,9 +256,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": [
-      "FP03"
-    ],
     "mensajeFin": "Presionar acelera una respuesta; apoyar mejora la decisión."
   }
 }

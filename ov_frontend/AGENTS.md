@@ -42,7 +42,7 @@ src/
 
 | Si agregas… | Va en… |
 |---|---|
-| Un contenido de actividad | `src/data/activities/contenidos/<clave>.json`, registrado en `contenidos.ts` con un import explícito (sin `import.meta.glob`). La clave es la que indica el backend en `contenido`. |
+| Un contenido de actividad | `src/data/activities/contenidos/plataforma/<clave>.json` si es real (conjunto `contenido` del backend), `contenidos/ruta/<clave>.json` si es de la ruta de prueba (conjunto `ruta`); los del modo local siguen en `contenidos/`. Registrado en `contenidos.ts` con un import explícito (sin `import.meta.glob`). La clave es la que indica el backend en `contenido`. |
 | Una sección nueva de datos del servidor | `services/api/<dominio>.ts` y una sección en `store/servidor/` que se pide al abrir su vista. |
 | Una ruta | `routes/AppRoutes.tsx` + su vista en `pages/<portal>/`. La vista lee parámetros, llama a hooks y compone; no contiene lógica de dominio. |
 | Un componente de un dominio | `features/<dominio>/components/`. |

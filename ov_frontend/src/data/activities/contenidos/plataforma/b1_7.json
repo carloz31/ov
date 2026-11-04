@@ -182,7 +182,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F06"],
     "mensajeFin": "El artefacto vuelve a girar: apunta al bosque del volcán. Un plan a cinco años no se cumple al pie de la letra; sirve porque te obliga a decidir hoy qué paso dar primero."
   },
   "mapa": { "x": 1120, "y": 220, "icono": "registro" }

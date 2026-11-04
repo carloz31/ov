@@ -7,7 +7,7 @@ import { copia, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayu
 // OPCION_INICIAL. Sin dato, no hay cita. Los contenidos nombran esas referencias en su consigna.
 const COMPARAR = jsonServidor('ruta/ruta-referencias-t-comparar')
 const PROYECTO = jsonServidor('ruta/ruta-referencias-t-proyecto')
-const contenido = (clave) => JSON.parse(readFileSync(`src/data/activities/contenidos/${clave}.json`, 'utf8'))
+const contenido = (clave) => JSON.parse(readFileSync(`src/data/activities/contenidos/ruta/${clave}.json`, 'utf8'))
 const ref = (respuesta, codigo) => respuesta.referencias.find((r) => r.codigo === codigo)
 
 test('las citas de los planes salen de las referencias del servidor', () => {

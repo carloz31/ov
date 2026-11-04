@@ -247,9 +247,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": [
-      "F22"
-    ],
     "mensajeFin": "A una feria se va a verificar, no a convencerse."
   },
   "promptDiario": "Después de la feria",

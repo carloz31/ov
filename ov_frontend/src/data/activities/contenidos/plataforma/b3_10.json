@@ -287,7 +287,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F17"],
     "mensajeFin": "Un giro a tiempo no es un fracaso: es la misma decisión, con mejor información. Se abrió la voz T05 y la conversación «Los trabajos de nuestra familia»."
   },
   "promptDiario": "Un viajero que ya pasó por aquí",

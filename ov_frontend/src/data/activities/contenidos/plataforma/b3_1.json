@@ -267,7 +267,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F11"],
     "mensajeFin": "No hay una ruta «de verdad» y otras de consuelo. Hay rutas que calzan con lo que quieres y con lo que puedes hoy."
   },
   "mapa": { "x": 120, "y": 400, "icono": "informativa" }

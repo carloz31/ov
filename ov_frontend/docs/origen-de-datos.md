@@ -102,7 +102,7 @@ El backend no interpreta el contenido narrativo.
 
 | Qué | Dónde |
 |---|---|
-| Nodos de las actividades (JSON con metadatos de mapa), registro por clave y catálogo local | `data/activities/contenidos/<clave>.json`, `data/activities/contenidos.ts`, `data/activities/content.ts`. Formato: `docs/contenidos-actividades.md`. |
+| Nodos de las actividades (JSON con metadatos de mapa), registro por clave y catálogo local | `data/activities/contenidos/{plataforma,ruta}/<clave>.json` (y los del modo local en la raíz), `data/activities/contenidos.ts`, `data/activities/content.ts`. Formato: `docs/contenidos-actividades.md`. |
 | Personajes, recursos e instrumentos del reproductor | `data/activities/catalogo.json`; brújula en `data/activities/standardActivities.ts` (`compassInstrument`) |
 | Configuración del piloto de reflexión | `data/activities/reflectionConfig.ts` |
 | Personajes y textos de guía | `data/content/characters.ts`, `data/content/guideTexts.ts`: `sectionIntros` (presentación de primera vez de cada sección del estudiante: su propósito, 1 o 2 pasos; la del diario, 4, con lo que era su cuadro de bienvenida), `guideSteps` (ayuda del botón «Abrir guía»: cómo se usa, 1 a 4 pasos) y `parentGuides` (guía de cada pantalla principal del apoderado, con `GuideDialogue`). Varios textos son `DATO DE PRUEBA`. |

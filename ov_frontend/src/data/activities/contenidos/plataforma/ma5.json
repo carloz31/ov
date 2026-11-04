@@ -180,7 +180,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F23"],
     "mensajeFin": "El futuro del trabajo premia a quien aprende rápido. Tu capacidad de seguir aprendiendo es la apuesta segura."
   },
   "mapa": { "x": 820, "y": 240, "icono": "informativa", "origen": "h3", "adicional": true }

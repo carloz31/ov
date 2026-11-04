@@ -305,7 +305,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": ["F13"],
     "mensajeFin": "Un salario promedio es un dato de otras personas. Doña Cifra te espera en la plaza del mercado."
   },
   "mapa": { "x": 290, "y": 300, "icono": "informativa" }

@@ -256,9 +256,6 @@
     }
   ],
   "recompensa": {
-    "recursoIds": [
-      "FP02"
-    ],
     "mensajeFin": "Sus temores son válidos. Pero son suyos."
   }
 }
