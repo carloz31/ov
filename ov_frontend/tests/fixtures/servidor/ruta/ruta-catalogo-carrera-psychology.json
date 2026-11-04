@@ -919,7 +919,7 @@
     "principales": [
       {
         "afinidad": null,
-        "codigo": "onet-21-1012-00",
+        "codigo": "21-1012.00",
         "riasec": [
           "S",
           "C",
@@ -929,7 +929,7 @@
       },
       {
         "afinidad": null,
-        "codigo": "psychologist",
+        "codigo": "19-3033.00",
         "riasec": [
           "S",
           "I"
@@ -938,7 +938,7 @@
       },
       {
         "afinidad": null,
-        "codigo": "onet-19-3034-00",
+        "codigo": "19-3034.00",
         "riasec": [
           "S",
           "I",
@@ -948,7 +948,7 @@
       },
       {
         "afinidad": null,
-        "codigo": "onet-19-3032-00",
+        "codigo": "19-3032.00",
         "riasec": [
           "I",
           "E",
@@ -960,7 +960,7 @@
     "secundarias": [
       {
         "afinidad": null,
-        "codigo": "onet-13-1161-00",
+        "codigo": "13-1161.00",
         "riasec": [
           "E",
           "C",
@@ -970,7 +970,7 @@
       },
       {
         "afinidad": null,
-        "codigo": "onet-13-1151-00",
+        "codigo": "13-1151.00",
         "riasec": [
           "S",
           "I"
@@ -979,7 +979,7 @@
       },
       {
         "afinidad": null,
-        "codigo": "onet-13-1071-00",
+        "codigo": "13-1071.00",
         "riasec": [
           "E",
           "C",
@@ -989,7 +989,7 @@
       },
       {
         "afinidad": null,
-        "codigo": "onet-11-3121-00",
+        "codigo": "11-3121.00",
         "riasec": [
           "E",
           "C",

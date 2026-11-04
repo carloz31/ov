@@ -28,6 +28,9 @@ OPCIONES_PARTIDA = {'AUTO-A': (3, 3, 3, 3), 'AUTO-B': (2, 2, 2, 2), 'AUTO-C': (2
 OPCIONES_LLEGADA = {'AUTO-A': (3, 3, 3, 3), 'AUTO-B': (4, 4, 4, 4), 'AUTO-C': (3, 3, 2, 2),
                     'AUTO-D': (3, 3, 3, 3), 'AUTO-E': (2, 2, 1)}
 CARPETA = 'ruta'
+# Los `onet` de `profesionales` de ov_frontend/src/data/cases/plataforma/hidden-plaza.json, en su orden.
+DIRECTORIO_T_CASO = ('19-3091.00', '25-4013.00', '17-2051.00', '19-3041.00', '23-1022.00', '19-3051.00',
+                     '17-1012.00', '25-4012.00', '19-3093.00', '17-1011.00', '27-4021.00', '39-7011.00')
 # Carreras e instituciones de la ruta por su papel; los nombres de los fixtures conservan el slug de prueba.
 PSICOLOGIA, PERIODISMO, ING_CIVIL, ENFERMERIA, ING_AMBIENTAL = (CARRERAS_RUTA[c] for c in (
     'psychology', 'journalism', 'civil-engineering', 'nursing', 'environmental-engineering'))
@@ -304,6 +307,9 @@ def _recorrer(cliente):
     fixtures['catalogo-carrera-psychology'] = _pedir(cliente, 'GET', f'{catalogo}/carreras/{PSICOLOGIA}')
     fixtures['catalogo-ocupaciones-riasec'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones?riasec=SI')
     fixtures['catalogo-ocupacion-psychologist'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones/19-3033.00')
+    # Ajuste carga-casos: el directorio de hidden-plaza (el caso de t-caso), en el orden de su JSON.
+    fixtures['ocupaciones-caso'] = _pedir(
+        cliente, 'GET', f'{catalogo}/ocupaciones-caso?codigos={",".join(DIRECTORIO_T_CASO)}')
     fixtures['catalogo-instituciones'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones')
     fixtures['catalogo-institucion-t-uni'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones/{INST_UNI}')
     fixtures['catalogo-familias'] = _pedir(cliente, 'GET', f'{catalogo}/familias')

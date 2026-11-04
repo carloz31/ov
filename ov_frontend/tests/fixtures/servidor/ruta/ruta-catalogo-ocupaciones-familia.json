@@ -1,7 +1,7 @@
 {
   "items": [
     {
-      "codigo": "biologist",
+      "codigo": "19-1029.04",
       "codigo_onet": "19-1029.04",
       "es_favorita": false,
       "familia_principal": {
@@ -21,7 +21,7 @@
       "via_familia": "PRINCIPAL"
     },
     {
-      "codigo": "onet-19-1023-00",
+      "codigo": "19-1023.00",
       "codigo_onet": "19-1023.00",
       "es_favorita": false,
       "familia_principal": {
@@ -40,7 +40,7 @@
       "via_familia": "PRINCIPAL"
     },
     {
-      "codigo": "onet-19-1021-00",
+      "codigo": "19-1021.00",
       "codigo_onet": "19-1021.00",
       "es_favorita": false,
       "familia_principal": {
@@ -59,7 +59,7 @@
       "via_familia": "PRINCIPAL"
     },
     {
-      "codigo": "onet-19-1029-03",
+      "codigo": "19-1029.03",
       "codigo_onet": "19-1029.03",
       "es_favorita": false,
       "familia_principal": {
@@ -79,7 +79,7 @@
       "via_familia": "PRINCIPAL"
     },
     {
-      "codigo": "onet-19-1022-00",
+      "codigo": "19-1022.00",
       "codigo_onet": "19-1022.00",
       "es_favorita": false,
       "familia_principal": {
@@ -99,7 +99,7 @@
       "via_familia": "PRINCIPAL"
     },
     {
-      "codigo": "onet-19-1042-00",
+      "codigo": "19-1042.00",
       "codigo_onet": "19-1042.00",
       "es_favorita": false,
       "familia_principal": {

@@ -112,27 +112,27 @@
       "nombre": "Biología",
       "ocupaciones": [
         {
-          "codigo": "onet-19-1021-00",
+          "codigo": "19-1021.00",
           "parecido": 85,
           "titulo": "Bioquímico"
         },
         {
-          "codigo": "onet-19-1023-00",
+          "codigo": "19-1023.00",
           "parecido": 82,
           "titulo": "Biólogo de fauna silvestre"
         },
         {
-          "codigo": "onet-19-1022-00",
+          "codigo": "19-1022.00",
           "parecido": 79,
           "titulo": "Microbiólogo"
         },
         {
-          "codigo": "onet-19-1029-03",
+          "codigo": "19-1029.03",
           "parecido": 67,
           "titulo": "Genetista"
         },
         {
-          "codigo": "biologist",
+          "codigo": "19-1029.04",
           "parecido": 66,
           "titulo": "Biólogo"
         }
@@ -153,12 +153,12 @@
       "nombre": "Agropecuaria",
       "ocupaciones": [
         {
-          "codigo": "onet-19-1013-00",
+          "codigo": "19-1013.00",
           "parecido": 84,
           "titulo": "Ingeniero agrónomo"
         },
         {
-          "codigo": "agricultural-engineer",
+          "codigo": "17-2021.00",
           "parecido": 79,
           "titulo": "Ingeniero agrícola"
         }
@@ -181,12 +181,12 @@
       "nombre": "Geología",
       "ocupaciones": [
         {
-          "codigo": "geologist",
+          "codigo": "19-2042.00",
           "parecido": 83,
           "titulo": "Geólogo"
         },
         {
-          "codigo": "onet-19-2043-00",
+          "codigo": "19-2043.00",
           "parecido": 69,
           "titulo": "Hidrólogo"
         }
@@ -207,12 +207,12 @@
       "nombre": "Otras Ingenierías",
       "ocupaciones": [
         {
-          "codigo": "onet-17-2141-02",
+          "codigo": "17-2141.02",
           "parecido": 77,
           "titulo": "Ingeniero automotriz"
         },
         {
-          "codigo": "onet-17-2031-00",
+          "codigo": "17-2031.00",
           "parecido": 73,
           "titulo": "Ingeniero biomédico"
         }
@@ -233,17 +233,17 @@
       "nombre": "Ingeniería Mecánica",
       "ocupaciones": [
         {
-          "codigo": "onet-17-2131-00",
+          "codigo": "17-2131.00",
           "parecido": 78,
           "titulo": "Ingeniero de materiales"
         },
         {
-          "codigo": "onet-17-3027-00",
+          "codigo": "17-3027.00",
           "parecido": 67,
           "titulo": "Técnico en mecánica de producción"
         },
         {
-          "codigo": "onet-17-2199-05",
+          "codigo": "17-2199.05",
           "parecido": 67,
           "titulo": "Ingeniero mecatrónico"
         }
@@ -266,7 +266,7 @@
   "ocupaciones": [
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-3092-00",
+      "codigo": "19-3092.00",
       "codigo_onet": "19-3092.00",
       "familia_principal": {
         "area_codigo": "59",
@@ -286,7 +286,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-1021-00",
+      "codigo": "19-1021.00",
       "codigo_onet": "19-1021.00",
       "familia_principal": {
         "area_codigo": "41",
@@ -306,7 +306,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-1013-00",
+      "codigo": "19-1013.00",
       "codigo_onet": "19-1013.00",
       "familia_principal": {
         "area_codigo": "61",
@@ -326,7 +326,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-17-1012-00",
+      "codigo": "17-1012.00",
       "codigo_onet": "17-1012.00",
       "familia_principal": {
         "area_codigo": "53",
@@ -347,7 +347,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-3091-00",
+      "codigo": "19-3091.00",
       "codigo_onet": "19-3091.00",
       "familia_principal": {
         "area_codigo": "21",
@@ -367,7 +367,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "geologist",
+      "codigo": "19-2042.00",
       "codigo_onet": "19-2042.00",
       "familia_principal": {
         "area_codigo": "42",
@@ -388,7 +388,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-1023-00",
+      "codigo": "19-1023.00",
       "codigo_onet": "19-1023.00",
       "familia_principal": {
         "area_codigo": "41",
@@ -408,7 +408,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-1011-00",
+      "codigo": "19-1011.00",
       "codigo_onet": "19-1011.00",
       "familia_principal": {
         "area_codigo": "41",
@@ -428,7 +428,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-1022-00",
+      "codigo": "19-1022.00",
       "codigo_onet": "19-1022.00",
       "familia_principal": {
         "area_codigo": "41",
@@ -449,7 +449,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "agricultural-engineer",
+      "codigo": "17-2021.00",
       "codigo_onet": "17-2021.00",
       "familia_principal": {
         "area_codigo": "61",
@@ -469,7 +469,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-17-2131-00",
+      "codigo": "17-2131.00",
       "codigo_onet": "17-2131.00",
       "familia_principal": {
         "area_codigo": "52",
@@ -490,7 +490,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-17-2141-02",
+      "codigo": "17-2141.02",
       "codigo_onet": "17-2141.02",
       "familia_principal": {
         "area_codigo": "59",
@@ -511,7 +511,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-1012-00",
+      "codigo": "19-1012.00",
       "codigo_onet": "19-1012.00",
       "familia_principal": {
         "area_codigo": "52",
@@ -532,7 +532,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-2012-00",
+      "codigo": "19-2012.00",
       "codigo_onet": "19-2012.00",
       "familia_principal": {
         "area_codigo": "42",
@@ -553,7 +553,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-19-1042-00",
+      "codigo": "19-1042.00",
       "codigo_onet": "19-1042.00",
       "familia_principal": {
         "area_codigo": "71",
@@ -573,7 +573,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "meteorologist",
+      "codigo": "19-2021.00",
       "codigo_onet": "19-2021.00",
       "familia_principal": {
         "area_codigo": "41",
@@ -594,7 +594,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-17-2031-00",
+      "codigo": "17-2031.00",
       "codigo_onet": "17-2031.00",
       "familia_principal": {
         "area_codigo": "59",
@@ -615,7 +615,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-17-2011-00",
+      "codigo": "17-2011.00",
       "codigo_onet": "17-2011.00",
       "familia_principal": {
         "area_codigo": "59",
@@ -636,7 +636,7 @@
     },
     {
       "banda": "MUY_AFIN",
-      "codigo": "onet-17-2121-00",
+      "codigo": "17-2121.00",
       "codigo_onet": "17-2121.00",
       "familia_principal": {
         "area_codigo": "59",
@@ -657,7 +657,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-19-2043-00",
+      "codigo": "19-2043.00",
       "codigo_onet": "19-2043.00",
       "familia_principal": {
         "area_codigo": "42",
@@ -678,7 +678,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-17-2072-00",
+      "codigo": "17-2072.00",
       "codigo_onet": "17-2072.00",
       "familia_principal": {
         "area_codigo": "52",
@@ -699,7 +699,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-19-2031-00",
+      "codigo": "19-2031.00",
       "codigo_onet": "19-2031.00",
       "familia_principal": {
         "area_codigo": "42",
@@ -720,7 +720,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-17-2041-00",
+      "codigo": "17-2041.00",
       "codigo_onet": "17-2041.00",
       "familia_principal": {
         "area_codigo": "42",
@@ -741,7 +741,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-19-1029-03",
+      "codigo": "19-1029.03",
       "codigo_onet": "19-1029.03",
       "familia_principal": {
         "area_codigo": "41",
@@ -762,7 +762,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-17-3027-00",
+      "codigo": "17-3027.00",
       "codigo_onet": "17-3027.00",
       "familia_principal": {
         "area_codigo": "52",
@@ -783,7 +783,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-19-2041-00",
+      "codigo": "19-2041.00",
       "codigo_onet": "19-2041.00",
       "familia_principal": {
         "area_codigo": "59",
@@ -804,7 +804,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-17-2199-05",
+      "codigo": "17-2199.05",
       "codigo_onet": "17-2199.05",
       "familia_principal": {
         "area_codigo": "52",
@@ -825,7 +825,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-17-2071-00",
+      "codigo": "17-2071.00",
       "codigo_onet": "17-2071.00",
       "familia_principal": {
         "area_codigo": "52",
@@ -846,7 +846,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "biologist",
+      "codigo": "19-1029.04",
       "codigo_onet": "19-1029.04",
       "familia_principal": {
         "area_codigo": "41",
@@ -867,7 +867,7 @@
     },
     {
       "banda": "AFIN",
-      "codigo": "onet-15-1221-00",
+      "codigo": "15-1221.00",
       "codigo_onet": "15-1221.00",
       "familia_principal": {
         "area_codigo": "44",
@@ -893,84 +893,84 @@
       "area_codigo": "59",
       "area_nombre": "Otras Ingenierías",
       "ocupaciones": [
-        "onet-19-3092-00",
-        "onet-17-2141-02",
-        "onet-17-2031-00",
-        "onet-17-2011-00",
-        "onet-17-2121-00",
-        "onet-19-2041-00"
+        "19-3092.00",
+        "17-2141.02",
+        "17-2031.00",
+        "17-2011.00",
+        "17-2121.00",
+        "19-2041.00"
       ]
     },
     {
       "area_codigo": "41",
       "area_nombre": "Ciencias de la Vida",
       "ocupaciones": [
-        "onet-19-1021-00",
-        "onet-19-1023-00",
-        "onet-19-1011-00",
-        "onet-19-1022-00",
-        "meteorologist",
-        "onet-19-1029-03",
-        "biologist"
+        "19-1021.00",
+        "19-1023.00",
+        "19-1011.00",
+        "19-1022.00",
+        "19-2021.00",
+        "19-1029.03",
+        "19-1029.04"
       ]
     },
     {
       "area_codigo": "61",
       "area_nombre": "Agropecuaria, Forestal y Acuicultura",
       "ocupaciones": [
-        "onet-19-1013-00",
-        "agricultural-engineer"
+        "19-1013.00",
+        "17-2021.00"
       ]
     },
     {
       "area_codigo": "53",
       "area_nombre": "Ingeniería de la Construcción, Sanitaria y Arquitectura",
       "ocupaciones": [
-        "onet-17-1012-00"
+        "17-1012.00"
       ]
     },
     {
       "area_codigo": "21",
       "area_nombre": "Humanidades",
       "ocupaciones": [
-        "onet-19-3091-00"
+        "19-3091.00"
       ]
     },
     {
       "area_codigo": "42",
       "area_nombre": "Ciencias Físicas y Químicas",
       "ocupaciones": [
-        "geologist",
-        "onet-19-2012-00",
-        "onet-19-2043-00",
-        "onet-19-2031-00",
-        "onet-17-2041-00"
+        "19-2042.00",
+        "19-2012.00",
+        "19-2043.00",
+        "19-2031.00",
+        "17-2041.00"
       ]
     },
     {
       "area_codigo": "52",
       "area_nombre": "Ingeniería Industrial y Producción",
       "ocupaciones": [
-        "onet-17-2131-00",
-        "onet-19-1012-00",
-        "onet-17-2072-00",
-        "onet-17-3027-00",
-        "onet-17-2199-05",
-        "onet-17-2071-00"
+        "17-2131.00",
+        "19-1012.00",
+        "17-2072.00",
+        "17-3027.00",
+        "17-2199.05",
+        "17-2071.00"
       ]
     },
     {
       "area_codigo": "71",
       "area_nombre": "Ciencias de la Salud",
       "ocupaciones": [
-        "onet-19-1042-00"
+        "19-1042.00"
       ]
     },
     {
       "area_codigo": "44",
       "area_nombre": "Informática",
       "ocupaciones": [
-        "onet-15-1221-00"
+        "15-1221.00"
       ]
     }
   ]

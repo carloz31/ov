@@ -24,8 +24,8 @@ from app.schemas.diario import (
 )
 from app.schemas.tematicas import AvanceTematica
 from app.schemas.catalogo import (
-    CarreraDetalle, FamiliaPublica, InstitucionDetalle, OcupacionDetalle, PaginaCarreras, PaginaInstituciones,
-    PaginaOcupaciones, UbicacionPublica,
+    CarreraDetalle, FamiliaPublica, InstitucionDetalle, OcupacionCaso, OcupacionDetalle, PaginaCarreras,
+    PaginaInstituciones, PaginaOcupaciones, UbicacionPublica,
 )
 from app.schemas.conversaciones import ConversacionesCuenta
 from app.schemas.familia import FamiliaApoderado
@@ -71,7 +71,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'ficha-t-ficha', 'ver-ficha', 'marcar-favorito-ficha', 'preguntas-batalla',
     'resolver-batalla-derrota',
     'resolver-batalla-victoria', 'batallas', 'resolver-caso', 'casos', 'coleccion',
-    'catalogo-carreras', 'catalogo-carrera-psychology', 'catalogo-ocupaciones-riasec', 'catalogo-ocupacion-psychologist',
+    'catalogo-carreras', 'catalogo-carrera-psychology', 'catalogo-ocupaciones-riasec', 'catalogo-ocupacion-psychologist', 'ocupaciones-caso',
     'catalogo-instituciones', 'catalogo-institucion-t-uni', 'ver-ocupacion', 'marcar-favorito', 'favoritos',
     'catalogo-familias', 'catalogo-ubicaciones', 'ver-carrera', 'catalogo-inesperada', 'catalogo-carreras-favoritos',
     'catalogo-familia', 'catalogo-ocupaciones-familia', 'catalogo-ocupacion-afin',
@@ -328,6 +328,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert (instituciones.total, len(instituciones.items)) == (706, 20)
     assert CarreraDetalle.model_validate(datos['catalogo-carrera-psychology']).ingreso.nacional.jovenes.promedio == 2824
     assert OcupacionDetalle.model_validate(datos['catalogo-ocupacion-psychologist']).aptitudes
+    directorio = TypeAdapter(list[OcupacionCaso]).validate_python(datos['ocupaciones-caso'])
+    assert [o.codigo for o in directorio] == list(exportador.DIRECTORIO_T_CASO) and all(o.titulo for o in directorio)
     assert InstitucionDetalle.model_validate(datos['catalogo-institucion-t-uni']).pagina_web
     assert all('SI' in ''.join(o['riasec']) for o in datos['catalogo-ocupaciones-riasec']['items'])
     TypeAdapter(list[FamiliaPublica]).validate_python(datos['catalogo-familias'])

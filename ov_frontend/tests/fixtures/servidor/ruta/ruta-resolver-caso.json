@@ -35,14 +35,14 @@
   ],
   "ocupaciones_nuevas": [
     {
-      "codigo": "firefighter",
-      "titulo": "Bomberos"
+      "codigo": "19-3091.00",
+      "titulo": "Antropólogo y arqueólogo"
     },
     {
-      "codigo": "paramedic",
-      "titulo": "Paramédico / técnico en emergencias médicas"
+      "codigo": "25-4013.00",
+      "titulo": "Conservador y restaurador"
     }
   ],
-  "puntaje_maximo": 14,
-  "puntaje_minimo": 10
+  "puntaje_maximo": 8,
+  "puntaje_minimo": 6
 }

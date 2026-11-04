@@ -10,7 +10,7 @@
     "Pensar en las ventajas y desventajas de las diferentes opciones y seleccionar la mejor",
     "Averiguar cómo debe funcionar un sistema y cómo le afectarán los cambios en el futuro"
   ],
-  "codigo": "onet-19-3092-00",
+  "codigo": "19-3092.00",
   "codigo_onet": "19-3092.00",
   "conocimientos": [
     "Geografía",
@@ -63,11 +63,11 @@
   "job_zone": 4,
   "otras_ocupaciones_de_la_familia": [
     {
-      "codigo": "onet-17-1021-00",
+      "codigo": "17-1021.00",
       "titulo": "Cartógrafo / especialista en geomática"
     },
     {
-      "codigo": "onet-15-1299-02",
+      "codigo": "15-1299.02",
       "titulo": "Especialista en sistemas de información geográfica (SIG)"
     }
   ],

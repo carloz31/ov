@@ -9,7 +9,7 @@
         },
         "nombre": "Luis",
         "ocupacion": {
-          "codigo": "electrician",
+          "codigo": "47-2111.00",
           "titulo": "Electricista industrial"
         },
         "vitrina": []
@@ -33,7 +33,7 @@
       "necesita": "DATO DE PRUEBA: estudiar en un instituto y practicar."
     },
     "ocupacion": {
-      "codigo": "electrician",
+      "codigo": "47-2111.00",
       "titulo": "Electricista industrial"
     },
     "preguntas": [

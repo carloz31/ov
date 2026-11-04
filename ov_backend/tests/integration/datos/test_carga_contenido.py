@@ -92,3 +92,42 @@ def test_referencias_de_los_json(base):
     lectura = {i.id: i.codigo for i in sesion.scalars(select(m.ItemInstrumento))}
     assert lectura[referencias['b3-8-ref-costos'].item_instrumento_id] == 'AUTO-12'
     assert lectura[referencias['b4-2-ref-decision'].item_instrumento_id] == 'AUTO-13'
+
+
+# Ajuste carga-casos: los seis casos de la Central, con su escala y temática C, al final de la ciudad.
+CASOS = {'c1': (6, 8, 15), 'c2': (8, 10, 18), 'c3': (6, 8, 15), 'c4': (6, 8, 15), 'c5': (6, 8, 15), 'c6': (8, 10, 18)}
+
+
+def test_casos_de_la_central(base):
+    _, sesion = base
+    casos = {a.codigo: a for a in sesion.scalars(select(m.Actividad).where(m.Actividad.tipo == m.TipoActividad.CASO))}
+    assert {c: (a.puntaje_minimo, a.puntaje_maximo, a.duracion_estimada_min) for c, a in casos.items()} == CASOS
+    bloque = sesion.scalar(select(m.Bloque).where(m.Bloque.codigo == 'CIUDAD'))
+    ciudad = sorted(sesion.scalars(select(m.Actividad).where(m.Actividad.bloque_id == bloque.id)),
+                    key=lambda a: a.orden)
+    assert [a.codigo for a in ciudad[-6:]] == list(CASOS)
+    assert all(not a.requerida and a.visibilidad == 'SIEMPRE' and a.contenido == a.codigo for a in casos.values())
+    tematicas = sesion.execute(select(m.Actividad.codigo, m.Tematica.codigo).join(
+        m.ActividadTematica, m.ActividadTematica.actividad_id == m.Actividad.id).join(
+        m.Tematica, m.Tematica.id == m.ActividadTematica.tematica_id)).all()
+    assert sorted(tematicas) == [(c, 'C') for c in CASOS]
+
+
+def test_testimonios_de_prueba_y_reglas_sin_t(base):
+    _, sesion = base
+    testimonios = dict(sesion.execute(select(m.Testimonio.codigo, m.Ocupacion.codigo).join(
+        m.Ocupacion, m.Ocupacion.id == m.Testimonio.ocupacion_id)).all())
+    assert set(testimonios) == {f'tc{n}-{k}' for n in range(1, 7) for k in (1, 2)}
+    assert (testimonios['tc1-1'], testimonios['tc1-2']) == ('19-3091.00', '25-4012.00')
+    nombrados = {str(c) for _, _, objetivo, _, condiciones in contenido.REGLAS
+                 for c in (objetivo, *(condicion[1] for condicion in condiciones))}
+    assert not {c for c in nombrados if c.startswith(('t-caso', 't-testimonio'))}
+
+
+def test_ocupaciones_con_su_codigo_onet(base):
+    _, sesion = base
+    codigos = sesion.execute(select(m.Ocupacion.codigo, m.Ocupacion.codigo_onet)).all()
+    assert codigos and all(codigo == onet for codigo, onet in codigos)
+    assert not any(codigo.startswith('onet-') for codigo, _ in codigos)
+    # Bombero (33-2011.00) tiene `en_catalogo = 0` en la curaduría: ya no se carga.
+    assert '33-2011.00' not in {codigo for codigo, _ in codigos}
