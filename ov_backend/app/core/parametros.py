@@ -46,7 +46,8 @@ VERSION_PROMPT_REGISTRO = "v4"
 MIN_CARACTERES_RESPALDO = 40
 # B03: preguntas de seguimiento por registro, no por ítem.
 MAXIMO_SEGUIMIENTOS_POR_REGISTRO = 2
-MAXIMO_ITEMS_REGISTRO = 3
+# Ajuste carga-actividades: 5, lo que pide el registro más largo del contenido (b4-1).
+MAXIMO_ITEMS_REGISTRO = 5
 # Reinicios del test de intereses por cuenta y aplicación, solo con perfil plano (HU-095).
 MAXIMO_REINICIOS_PERFIL_PLANO = 1
 TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
