@@ -1,0 +1,359 @@
+{
+  "id": "scholarship-mystery",
+  "tematica": "Tecnología, educación, datos y cumplimiento",
+  "intro": {
+    "narrativa": [
+      "Puerto Claro anuncia 120 becas para jóvenes que están por terminar la secundaria. Cientos de estudiantes se inscriben mediante una plataforma digital. A pocos días del cierre, algunos exhiben comprobantes válidos, pero sus solicitudes no aparecen; otros no consiguen terminar el formulario desde sus celulares.",
+      "La primera lista de beneficiarios aumenta la tensión: estudiantes con condiciones parecidas obtienen puntajes difíciles de explicar. Para empeorar las cosas, circulan enlaces que permiten abrir documentos personales de postulantes sin autorización.",
+      "La municipalidad suspende los resultados definitivos. Tu misión es formar equipos para averiguar qué está fallando, corregir el proceso, proteger la información y permitir una reapertura confiable. No basta con llamar a una sola persona que «sepa de computadoras»."
+    ],
+    "imagen": "scholarship-mystery-intro.png",
+    "alerta": "Las inscripciones no coinciden con los registros"
+  },
+  "presupuesto": 12,
+  "profesionales": [
+    {
+      "onet": "15-1211.00",
+      "persona": "Sebastián Rojas"
+    },
+    {
+      "onet": "15-1242.00",
+      "persona": "Daniela Cárdenas"
+    },
+    {
+      "onet": "15-1255.00",
+      "persona": "Martín Benavides"
+    },
+    {
+      "onet": "15-1254.00",
+      "persona": "Elena Aguilar"
+    },
+    {
+      "onet": "15-2041.00",
+      "persona": "Javier Ramos"
+    },
+    {
+      "onet": "11-9151.00",
+      "persona": "Rosa Cruz"
+    },
+    {
+      "onet": "15-1212.00",
+      "persona": "Nicolás Rojas"
+    },
+    {
+      "onet": "13-1041.00",
+      "persona": "Andrea Cárdenas"
+    },
+    {
+      "onet": "15-1253.00",
+      "persona": "Gabriel Benavides"
+    },
+    {
+      "onet": "21-1012.00",
+      "persona": "Renata Aguilar"
+    },
+    {
+      "onet": "15-1232.00",
+      "persona": "Felipe Ramos"
+    },
+    {
+      "onet": "13-2011.00",
+      "persona": "Paula Cruz"
+    },
+    {
+      "onet": "13-1161.00",
+      "persona": "Alonso Rojas"
+    },
+    {
+      "onet": "35-1011.00",
+      "persona": "Irene Cárdenas"
+    },
+    {
+      "onet": "49-3023.00",
+      "persona": "Santiago Benavides"
+    }
+  ],
+  "fases": [
+    {
+      "id": "missing-applications",
+      "nombre": "Inscripciones perdidas",
+      "subtitulo": "La plataforma entrega confirmaciones, pero algunas solicitudes no quedan registradas.",
+      "escuchar": {
+        "texto": "Estudiantes y personal municipal detectaron fallas diferentes. Escucha todos sus testimonios antes de elegir profesionales.",
+        "textoMovil": "Estudiantes y personal municipal detectaron fallas diferentes. Escucha todos sus testimonios antes de elegir profesionales."
+      },
+      "fondo": {
+        "imagen": "scholarship-mystery-phase-1.png",
+        "posicion": "55% 50%"
+      },
+      "mensajes": [
+        {
+          "id": "missing-application",
+          "quien": "Estudiante",
+          "contexto": "Fuera del colegio",
+          "mensaje": "Me salió un número de confirmación al terminar, pero cuando revisé después, mi solicitud no aparecía. Guardé una captura de la pantalla.",
+          "resumen": "Una solicitud confirmada desapareció",
+          "posicion": {
+            "x": 21,
+            "y": 29
+          }
+        },
+        {
+          "id": "duplicate-records",
+          "quien": "Encargada de inscripciones",
+          "contexto": "Oficina municipal",
+          "mensaje": "Los comprobantes dicen que se recibieron solicitudes que luego no encontramos. Al revisar los registros almacenados, algunas solicitudes están duplicadas y otras incompletas.",
+          "resumen": "Hay registros duplicados e incompletos",
+          "posicion": {
+            "x": 74,
+            "y": 32
+          }
+        },
+        {
+          "id": "mobile-form",
+          "quien": "Estudiante",
+          "contexto": "Con su celular",
+          "mensaje": "La página se ve cortada en mi teléfono. Tengo que moverla para ver los botones y, al adjuntar un archivo, ya no encuentro cómo avanzar.",
+          "resumen": "El formulario no se usa bien desde un celular",
+          "posicion": {
+            "x": 36,
+            "y": 72
+          }
+        },
+        {
+          "id": "unpublished-interface",
+          "quien": "Responsable técnico",
+          "contexto": "Sala de pruebas",
+          "mensaje": "Probamos una pantalla más clara y las personas entendieron el formulario, pero esa propuesta todavía no funciona en la versión publicada: faltan cambios en el sitio.",
+          "resumen": "La mejora de interfaz aún no está implementada",
+          "posicion": {
+            "x": 79,
+            "y": 75
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "missing-records",
+          "titulo": "Registros que se contradicen",
+          "detalle": "Investigar por qué el flujo de la inscripción produce comprobantes que no coinciden con lo almacenado y revisar la integridad de los registros de la base de datos.",
+          "resultado": "El equipo técnico identifica que el flujo de procesamiento y los registros almacenados deben revisarse por separado.",
+          "necesidades": [
+            {
+              "onet": "15-1211.00",
+              "aporte": "Analiza el proceso de información entre los componentes de la aplicación e identifica fallas de procesamiento que generan confirmaciones inconsistentes.",
+              "siFalta": "No se entendió por qué una solicitud podía figurar como enviada sin quedar correctamente registrada."
+            },
+            {
+              "onet": "15-1242.00",
+              "aporte": "Examina la base de datos, investiga duplicaciones y registros incompletos, y coordina las correcciones y recuperaciones posibles.",
+              "siFalta": "Los datos duplicados o incompletos continuaron sin una revisión especializada, dificultando recuperar inscripciones válidas."
+            }
+          ]
+        },
+        {
+          "id": "mobile-access",
+          "titulo": "Una plataforma que no funciona igual para todos",
+          "detalle": "Probar y mejorar la navegación del formulario en teléfonos y luego implementar en la aplicación los cambios acordados.",
+          "resultado": "La experiencia de uso y la implementación técnica se abordan como dos necesidades relacionadas, pero distinguibles.",
+          "necesidades": [
+            {
+              "onet": "15-1255.00",
+              "aporte": "Evalúa la compatibilidad y utilidad de la interfaz en distintos dispositivos y prepara ajustes de navegación que faciliten completar las tareas.",
+              "siFalta": "La navegación siguió siendo difícil en ciertos dispositivos y varios estudiantes no lograron avanzar con claridad."
+            },
+            {
+              "onet": "15-1254.00",
+              "aporte": "Implementa los cambios en el sitio y sus funciones interactivas para que el formulario revisado opere realmente.",
+              "siFalta": "Las mejoras quedaron como una propuesta de interfaz sin incorporarse completamente a la plataforma funcional."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "questioned-results",
+      "nombre": "Resultados bajo sospecha",
+      "subtitulo": "Los puntajes generan dudas y algunos documentos personales quedaron expuestos.",
+      "escuchar": {
+        "texto": "Hay personas preocupadas por los resultados y la seguridad de los documentos. Escucha sus testimonios antes de actuar.",
+        "textoMovil": "Hay personas preocupadas por los resultados y la seguridad de los documentos. Escucha sus testimonios antes de actuar."
+      },
+      "fondo": {
+        "imagen": "scholarship-mystery-phase-2.png",
+        "posicion": "48% 52%"
+      },
+      "mensajes": [
+        {
+          "id": "scores-differ",
+          "quien": "Estudiante",
+          "contexto": "Revisando la lista",
+          "mensaje": "Mi amigo y yo entregamos documentos parecidos y tenemos promedios similares, pero nuestros puntajes publicados son muy distintos. No entiendo cómo llegaron a esos números.",
+          "resumen": "Solicitudes parecidas recibieron puntajes distintos",
+          "posicion": {
+            "x": 26,
+            "y": 63
+          }
+        },
+        {
+          "id": "unclear-criteria",
+          "quien": "Representante de colegio",
+          "contexto": "Reunión municipal",
+          "mensaje": "Hay diferencias entre colegios que no sabemos explicar. Necesitamos revisar los cálculos y también confirmar qué criterios se suponía que debía aplicar el programa.",
+          "resumen": "Deben contrastarse los cálculos y las reglas",
+          "posicion": {
+            "x": 70,
+            "y": 27
+          }
+        },
+        {
+          "id": "leaked-documents",
+          "quien": "Padre de familia",
+          "contexto": "Oficina de atención",
+          "mensaje": "Alguien que no conocemos consiguió una copia de los documentos que presentó mi hija. No se los enviamos.",
+          "resumen": "Circulan documentos personales de postulantes",
+          "posicion": {
+            "x": 77,
+            "y": 73
+          }
+        },
+        {
+          "id": "public-file-links",
+          "quien": "Trabajador municipal",
+          "contexto": "En una computadora",
+          "mensaje": "Uno de los enlaces que circulan abre archivos sin pedir ingresar con una cuenta. Ya lo comprobamos; necesitamos saber cómo ocurrió y qué obligaciones tenemos frente a las personas afectadas.",
+          "resumen": "Un enlace deja abrir archivos sin autorización",
+          "posicion": {
+            "x": 35,
+            "y": 24
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "unexplained-scores",
+          "titulo": "Una lista que nadie comprende",
+          "detalle": "Examinar los puntajes y patrones de selección, y contrastar los resultados con las reglas y objetivos oficiales de las becas.",
+          "resultado": "Se diferencia entre investigar números y verificar las reglas con las que se administró el programa.",
+          "necesidades": [
+            {
+              "onet": "15-2041.00",
+              "aporte": "Analiza datos numéricos y métodos de cálculo para detectar inconsistencias o patrones que requieren explicación.",
+              "siFalta": "Las diferencias entre puntajes no se analizaron con herramientas apropiadas y persistieron dudas sobre los cálculos."
+            },
+            {
+              "onet": "11-9151.00",
+              "aporte": "Revisa los objetivos, criterios y procedimientos del programa y coordina correcciones institucionales conforme a sus reglas.",
+              "siFalta": "No se verificó adecuadamente la aplicación de las condiciones del programa ni se coordinaron sus correcciones."
+            }
+          ]
+        },
+        {
+          "id": "exposed-documents",
+          "titulo": "Documentos fuera de control",
+          "detalle": "Contener y corregir el acceso indebido a archivos, y revisar la conformidad de la actuación institucional con las obligaciones aplicables.",
+          "resultado": "La protección técnica y el examen de cumplimiento se tratan por separado; no se asume una norma o obligación concreta sin verificarla.",
+          "necesidades": [
+            {
+              "onet": "15-1212.00",
+              "aporte": "Investiga las fallas de protección de la información, propone medidas de contención y fortalece los controles de acceso.",
+              "siFalta": "Persistieron vulnerabilidades y no se contuvo correctamente el acceso no autorizado a los documentos."
+            },
+            {
+              "onet": "13-1041.00",
+              "aporte": "Examina las exigencias normativas que correspondan al incidente y orienta la documentación y revisión de cumplimiento de la institución.",
+              "siFalta": "La entidad careció de una revisión organizada sobre las exigencias legales y de cumplimiento aplicables al incidente."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "second-chance",
+      "nombre": "Una segunda oportunidad",
+      "subtitulo": "Antes de reabrir las becas hay que comprobar el sistema y orientar a los postulantes.",
+      "escuchar": {
+        "texto": "La reapertura preocupa a estudiantes y responsables del programa. Escucha qué necesitan antes de formar el último equipo.",
+        "textoMovil": "La reapertura preocupa a estudiantes y responsables del programa. Escucha qué necesitan antes de formar el último equipo."
+      },
+      "fondo": {
+        "imagen": "scholarship-mystery-phase-3.png",
+        "posicion": "52% 50%"
+      },
+      "mensajes": [
+        {
+          "id": "untested-flow",
+          "quien": "Responsable municipal",
+          "contexto": "Sala de pruebas",
+          "mensaje": "Cada equipo dice que corrigió su parte, pero todavía nadie ha probado el recorrido completo: registrarse, corregir datos, adjuntar documentos y recibir confirmación.",
+          "resumen": "Nadie verificó aún el recorrido completo",
+          "posicion": {
+            "x": 24,
+            "y": 28
+          }
+        },
+        {
+          "id": "interrupted-form",
+          "quien": "Estudiante",
+          "contexto": "En un teléfono diferente",
+          "mensaje": "La página parece arreglada, pero quiero saber qué pasa si interrumpo mi solicitud y regreso después. No queremos que se pierda otra vez.",
+          "resumen": "Preocupa perder solicitudes interrumpidas",
+          "posicion": {
+            "x": 73,
+            "y": 69
+          }
+        },
+        {
+          "id": "choosing-program",
+          "quien": "Estudiante",
+          "contexto": "Frente al catálogo de becas",
+          "mensaje": "Ahora que van a reabrir las inscripciones, no sé cuál programa de formación conviene a mis intereses. Hay varias opciones muy diferentes.",
+          "resumen": "Hay dudas sobre qué programa de formación elegir",
+          "posicion": {
+            "x": 43,
+            "y": 73
+          }
+        },
+        {
+          "id": "need-for-guidance",
+          "quien": "Docente",
+          "contexto": "En el colegio",
+          "mensaje": "Muchos jóvenes preguntan por las alternativas de estudio y necesitan conversar sobre sus intereses, capacidades y opciones antes de decidir.",
+          "resumen": "Los jóvenes necesitan orientación sobre sus opciones",
+          "posicion": {
+            "x": 81,
+            "y": 27
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "software-verification",
+          "titulo": "¿Resisten las correcciones?",
+          "detalle": "Probar de forma sistemática el proceso corregido antes de reabrirlo, incluyendo errores, distintos dispositivos y cambios en la solicitud.",
+          "resultado": "La reapertura técnica requiere pruebas verificables de los cambios realizados.",
+          "necesidades": [
+            {
+              "onet": "15-1253.00",
+              "aporte": "Diseña y realiza pruebas de software, documenta defectos y verifica las modificaciones antes de su implementación definitiva.",
+              "siFalta": "La plataforma reabrió sin comprobar todos sus recorridos y algunos errores podrían repetirse."
+            }
+          ]
+        },
+        {
+          "id": "educational-guidance",
+          "titulo": "¿Qué alternativa educativa elegir?",
+          "detalle": "Brindar orientación a quienes deben elegir entre programas de estudio, considerando sus intereses y objetivos educativos.",
+          "resultado": "La orientación vocacional permite que la reapertura no se limite a que el formulario funcione.",
+          "necesidades": [
+            {
+              "onet": "21-1012.00",
+              "aporte": "Aconseja y ayuda a los estudiantes a comprender y comparar sus alternativas educativas y vocacionales.",
+              "siFalta": "Varios jóvenes siguieron tomando decisiones sobre programas de formación sin apoyo para analizar sus opciones."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

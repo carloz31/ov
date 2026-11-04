@@ -1,0 +1,326 @@
+{
+  "id": "thousand-voices-festival",
+  "tematica": "Artes, medios y producción cultural",
+  "intro": {
+    "narrativa": [
+      "Puerto Claro prepara un festival juvenil gratuito de música, danza, teatro y cortometrajes. Doce agrupaciones desean participar, pero solo disponen de un escenario durante cuatro horas. Algunas actuaciones requieren decorados diferentes, mientras que las pruebas técnicas revelan problemas de equipos y sonido.",
+      "Varios cortometrajes incluyen testimonios en quechua y castellano. Los organizadores quieren conservar las voces originales y facilitar que el público comprenda las historias. A un día del evento, además, circulan publicaciones falsas sobre cobros y cancelaciones.",
+      "Tu misión es reunir a quienes puedan coordinar el festival, adaptar su presentación artística, resolver necesidades técnicas y comunicar la información oficial. Las agrupaciones ya conocen sus actuaciones: el desafío es hacer posible el espectáculo."
+    ],
+    "imagen": "thousand-voices-festival-intro.png",
+    "alerta": "El festival tiene más desafíos que tiempo disponible"
+  },
+  "presupuesto": 10,
+  "profesionales": [
+    {
+      "onet": "13-1121.00",
+      "persona": "Santiago Torres"
+    },
+    {
+      "onet": "27-1027.00",
+      "persona": "Micaela Flores"
+    },
+    {
+      "onet": "27-1011.00",
+      "persona": "Rodrigo Vega"
+    },
+    {
+      "onet": "27-4011.00",
+      "persona": "Natalia López"
+    },
+    {
+      "onet": "27-4014.00",
+      "persona": "Bruno Ponce"
+    },
+    {
+      "onet": "27-3091.00",
+      "persona": "Claudia Paredes"
+    },
+    {
+      "onet": "27-4032.00",
+      "persona": "Emilio Torres"
+    },
+    {
+      "onet": "27-3031.00",
+      "persona": "Adriana Flores"
+    },
+    {
+      "onet": "27-4031.00",
+      "persona": "Tomás Vega"
+    },
+    {
+      "onet": "27-1014.00",
+      "persona": "Verónica López"
+    },
+    {
+      "onet": "25-1121.00",
+      "persona": "Esteban Ponce"
+    },
+    {
+      "onet": "27-3011.00",
+      "persona": "Carolina Paredes"
+    },
+    {
+      "onet": "29-1021.00",
+      "persona": "Samuel Torres"
+    },
+    {
+      "onet": "53-2011.00",
+      "persona": "Sofía Flores"
+    }
+  ],
+  "fases": [
+    {
+      "id": "one-stage-for-all",
+      "nombre": "Un escenario para todos",
+      "subtitulo": "Doce agrupaciones comparten un único escenario durante cuatro horas.",
+      "escuchar": {
+        "texto": "Las agrupaciones y organizadores tienen distintas necesidades para el escenario. Escucha sus testimonios antes de reunir el equipo.",
+        "textoMovil": "Las agrupaciones y organizadores tienen distintas necesidades para el escenario. Escucha sus testimonios antes de reunir el equipo."
+      },
+      "fondo": {
+        "imagen": "thousand-voices-festival-phase-1.png",
+        "posicion": "50% 50%"
+      },
+      "mensajes": [
+        {
+          "id": "tight-transitions",
+          "quien": "Integrante de una banda",
+          "contexto": "Zona de ensayos",
+          "mensaje": "Nos pusieron justo después de una danza larga. Necesitamos entrar con instrumentos, pero no hay tiempo de cambio y casi coincide con otro grupo.",
+          "resumen": "No hay tiempo suficiente para algunos cambios entre grupos",
+          "posicion": {
+            "x": 21,
+            "y": 29
+          }
+        },
+        {
+          "id": "large-sets",
+          "quien": "Profesora de teatro",
+          "contexto": "Frente al escenario",
+          "mensaje": "Una obra ocurre en una habitación y la siguiente, en un bosque. Los decorados son grandes y apenas tendremos espacio para guardarlos.",
+          "resumen": "Los decorados son difíciles de reemplazar",
+          "posicion": {
+            "x": 74,
+            "y": 32
+          }
+        },
+        {
+          "id": "inconsistent-visuals",
+          "quien": "Estudiante",
+          "contexto": "Pantalla de proyecciones",
+          "mensaje": "Los fondos y carteles se hicieron por separado. Los tamaños de letras, colores y estilos son tan distintos que no parecen parte de un mismo festival.",
+          "resumen": "El material visual carece de unidad",
+          "posicion": {
+            "x": 36,
+            "y": 72
+          }
+        },
+        {
+          "id": "four-hour-limit",
+          "quien": "Responsable del recinto",
+          "contexto": "Reunión de coordinación",
+          "mensaje": "Solo tenemos cuatro horas. Si un grupo se demora en entrar o salir, los siguientes perderán tiempo.",
+          "resumen": "Cualquier retraso afectará al resto del programa",
+          "posicion": {
+            "x": 79,
+            "y": 75
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "festival-schedule",
+          "titulo": "Doce grupos, cuatro horas",
+          "detalle": "Ordenar horarios, intervalos de cambio, necesidades de las agrupaciones y recursos disponibles.",
+          "resultado": "Se prepara un programa factible con tiempos de transición.",
+          "necesidades": [
+            {
+              "onet": "13-1121.00",
+              "aporte": "Coordina el evento, el programa, los recursos y los intervalos necesarios para que las actuaciones no se superpongan.",
+              "siFalta": "Los cambios entre grupos generaron retrasos y algunas actuaciones quedaron recortadas."
+            }
+          ]
+        },
+        {
+          "id": "scenic-and-visual-design",
+          "titulo": "Un escenario que debe transformarse",
+          "detalle": "Diseñar decorados prácticos para las obras y un concepto visual común para pantallas y materiales del festival.",
+          "resultado": "La escenografía de cada actuación y la identidad visual general reciben respuestas diferentes.",
+          "necesidades": [
+            {
+              "onet": "27-1027.00",
+              "aporte": "Planifica elementos de escenografía adaptables a escenas diferentes y a cambios rápidos de montaje.",
+              "siFalta": "Los decorados siguieron siendo difíciles de reemplazar y algunas escenas perdieron elementos importantes."
+            },
+            {
+              "onet": "27-1011.00",
+              "aporte": "Define la dirección visual de materiales, proyecciones y presentaciones para dar coherencia estética al evento.",
+              "siFalta": "Los materiales visuales permanecieron desarticulados y confundieron al público sobre la identidad del festival."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "every-voice-heard",
+      "nombre": "Que cada voz se escuche",
+      "subtitulo": "Los equipos fallan, las voces se pierden y algunos cortometrajes necesitan subtítulos.",
+      "escuchar": {
+        "texto": "Artistas y docentes informan dificultades de audio y de comprensión. Escucha sus testimonios antes de asignar profesionales.",
+        "textoMovil": "Artistas y docentes informan dificultades de audio y de comprensión. Escucha sus testimonios antes de asignar profesionales."
+      },
+      "fondo": {
+        "imagen": "thousand-voices-festival-phase-2.png",
+        "posicion": "54% 53%"
+      },
+      "mensajes": [
+        {
+          "id": "microphone-connector",
+          "quien": "Cantante",
+          "contexto": "Durante el ensayo",
+          "mensaje": "Cuando se mueve el conector del micrófono, el sonido se corta. A veces ni se enciende el equipo.",
+          "resumen": "Un conector provoca cortes de sonido",
+          "posicion": {
+            "x": 26,
+            "y": 63
+          }
+        },
+        {
+          "id": "unbalanced-levels",
+          "quien": "Estudiante de teatro",
+          "contexto": "Sobre el escenario",
+          "mensaje": "Ya conseguimos que los micrófonos funcionen, pero durante las escenas la música tapa algunas voces. Al bajar todo el volumen, tampoco se entiende.",
+          "resumen": "La música tapa las voces pese a que funcionan los equipos",
+          "posicion": {
+            "x": 70,
+            "y": 27
+          }
+        },
+        {
+          "id": "quechua-testimony",
+          "quien": "Estudiante cineasta",
+          "contexto": "Sala de proyección",
+          "mensaje": "Mi abuela cuenta parte de su historia en quechua. Queremos conservar su voz original, pero algunos asistentes no entenderán todo el diálogo.",
+          "resumen": "Los testimonios en quechua necesitan traducción",
+          "posicion": {
+            "x": 77,
+            "y": 73
+          }
+        },
+        {
+          "id": "misaligned-subtitles",
+          "quien": "Profesora",
+          "contexto": "Revisando el video",
+          "mensaje": "Tenemos las grabaciones originales. Si ponemos toda la traducción en un solo bloque, el texto aparece fuera de tiempo y tapa las imágenes.",
+          "resumen": "Los subtítulos deben sincronizarse con el video",
+          "posicion": {
+            "x": 35,
+            "y": 24
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "audio-setup-and-mix",
+          "titulo": "La música tapa las palabras",
+          "detalle": "Revisar las conexiones y dispositivos con fallas y, por separado, preparar la mezcla de niveles de voces, música y efectos.",
+          "resultado": "La instalación operativa y la calidad de la mezcla se verifican como necesidades diferentes.",
+          "necesidades": [
+            {
+              "onet": "27-4011.00",
+              "aporte": "Instala, prueba y mantiene equipos audiovisuales, corrigiendo fallas de conexión y funcionamiento.",
+              "siFalta": "Persistieron cortes de micrófonos y fallas de los equipos durante algunas actuaciones."
+            },
+            {
+              "onet": "27-4014.00",
+              "aporte": "Opera y mezcla el sonido para equilibrar voces, música y efectos durante las presentaciones.",
+              "siFalta": "Los micrófonos funcionaban, pero la mezcla hacía difícil comprender los diálogos y escuchar la música equilibradamente."
+            }
+          ]
+        },
+        {
+          "id": "translation-and-subtitles",
+          "titulo": "Historias que no todos comprenden",
+          "detalle": "Traducir el contenido hablado entre idiomas y sincronizar subtítulos o textos con las imágenes ya filmadas.",
+          "resultado": "Los cortometrajes pueden exhibirse con sus voces originales y apoyos de lectura sincronizados.",
+          "necesidades": [
+            {
+              "onet": "27-3091.00",
+              "aporte": "Realiza traducción e interpretación entre idiomas, ayudando a conservar el sentido del testimonio original.",
+              "siFalta": "Parte del público no obtuvo una versión traducida de los testimonios y no pudo seguir su contenido."
+            },
+            {
+              "onet": "27-4032.00",
+              "aporte": "Edita las piezas audiovisuales e integra y sincroniza los textos con las imágenes y los momentos del diálogo.",
+              "siFalta": "Las traducciones quedaron separadas o desfasadas respecto de las escenas y resultaron difíciles de seguir."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trust-the-announcement",
+      "nombre": "Una ciudad que vuelve a creer",
+      "subtitulo": "Rumores sobre el acceso y el programa hacen dudar a la comunidad.",
+      "escuchar": {
+        "texto": "El público y los organizadores encontraron información contradictoria. Escucha sus testimonios antes de actuar.",
+        "textoMovil": "El público y los organizadores encontraron información contradictoria. Escucha sus testimonios antes de actuar."
+      },
+      "fondo": {
+        "imagen": "thousand-voices-festival-phase-3.png",
+        "posicion": "52% 50%"
+      },
+      "mensajes": [
+        {
+          "id": "rumored-entry-fee",
+          "quien": "Madre de familia",
+          "contexto": "Fuera del colegio",
+          "mensaje": "En un mensaje dice que hay que pagar y en otro que sigue siendo gratuito. Ya no sé a cuál creerle.",
+          "resumen": "Circulan rumores de que el festival ya no es gratuito",
+          "posicion": {
+            "x": 24,
+            "y": 28
+          }
+        },
+        {
+          "id": "inaccurate-poster",
+          "quien": "Participante",
+          "contexto": "Con su teléfono",
+          "mensaje": "Se comparte un cartel donde nuestro grupo no aparece, pero seguimos en el programa oficial.",
+          "resumen": "Un cartel omite a un grupo confirmado",
+          "posicion": {
+            "x": 73,
+            "y": 69
+          }
+        },
+        {
+          "id": "conflicting-schedules",
+          "quien": "Responsable municipal",
+          "contexto": "Oficina",
+          "mensaje": "Cada colegio responde por su cuenta, y a veces publican horarios distintos. Tenemos datos confirmados, pero no una comunicación coordinada.",
+          "resumen": "Los colegios publican horarios contradictorios",
+          "posicion": {
+            "x": 43,
+            "y": 73
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "official-information",
+          "titulo": "¿En qué información confiar?",
+          "detalle": "Preparar y coordinar mensajes públicos confiables sobre acceso, horarios y agrupaciones, utilizando canales y medios pertinentes.",
+          "resultado": "La información del evento se ordena y difunde de manera coherente antes de la inauguración.",
+          "necesidades": [
+            {
+              "onet": "27-3031.00",
+              "aporte": "Coordina la comunicación pública y prepara materiales para aclarar rumores y difundir información confirmada.",
+              "siFalta": "Las versiones contradictorias continuaron circulando y parte del público dejó de confiar en la convocatoria."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

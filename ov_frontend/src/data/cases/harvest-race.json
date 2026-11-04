@@ -1,0 +1,326 @@
+{
+  "id": "harvest-race",
+  "tematica": "Agricultura, alimentos y emprendimiento",
+  "intro": {
+    "narrativa": [
+      "Santa Aurora vive una cosecha de mangos excepcional. Las familias esperaban vender una gran parte a una empresa que, inesperadamente, cancela su pedido. Toneladas de fruta quedan sin comprador, algunas están madurando rápidamente y otras podrían esperar.",
+      "Los agricultores discuten: vender a cualquier precio, esperar una oferta mejor o transformar parte de la fruta en productos que duren más tiempo. Pero ninguna opción es gratuita ni sirve para todo el volumen de la cosecha.",
+      "Tu misión es formar equipos que ayuden a priorizar qué cosechar y vender, explorar una alternativa segura de transformación y organizar un canal comercial viable. No se promete salvar absolutamente toda la cosecha; se busca reducir pérdidas y aprender a decidir con información."
+    ],
+    "imagen": "harvest-race-intro.png",
+    "alerta": "La cosecha de mangos está en riesgo"
+  },
+  "presupuesto": 10,
+  "profesionales": [
+    {
+      "onet": "19-1013.00",
+      "persona": "Andrea Navarro"
+    },
+    {
+      "onet": "11-9013.00",
+      "persona": "Gabriel Ramírez"
+    },
+    {
+      "onet": "13-1081.00",
+      "persona": "Renata Castillo"
+    },
+    {
+      "onet": "19-1012.00",
+      "persona": "Felipe Medina"
+    },
+    {
+      "onet": "19-4099.01",
+      "persona": "Paula Valdivia"
+    },
+    {
+      "onet": "13-1051.00",
+      "persona": "Alonso Salazar"
+    },
+    {
+      "onet": "11-2021.00",
+      "persona": "Irene Navarro"
+    },
+    {
+      "onet": "13-1199.06",
+      "persona": "Santiago Ramírez"
+    },
+    {
+      "onet": "29-1031.00",
+      "persona": "Micaela Castillo"
+    },
+    {
+      "onet": "43-5011.00",
+      "persona": "Rodrigo Medina"
+    },
+    {
+      "onet": "27-1024.00",
+      "persona": "Natalia Valdivia"
+    },
+    {
+      "onet": "25-9021.00",
+      "persona": "Bruno Salazar"
+    },
+    {
+      "onet": "27-2042.00",
+      "persona": "Claudia Navarro"
+    },
+    {
+      "onet": "49-3011.00",
+      "persona": "Emilio Ramírez"
+    }
+  ],
+  "fases": [
+    {
+      "id": "time-is-running",
+      "nombre": "Los días cuentan",
+      "subtitulo": "Los mangos maduran y las familias necesitan priorizar la cosecha y las entregas.",
+      "escuchar": {
+        "texto": "Agricultores, compradores y transportistas tienen información importante. Escucha sus testimonios antes de organizar el trabajo.",
+        "textoMovil": "Agricultores, compradores y transportistas tienen información importante. Escucha sus testimonios antes de organizar el trabajo."
+      },
+      "fondo": {
+        "imagen": "harvest-race-phase-1.png",
+        "posicion": "54% 52%"
+      },
+      "mensajes": [
+        {
+          "id": "uneven-ripeness",
+          "quien": "Agricultor",
+          "contexto": "Entre los árboles",
+          "mensaje": "Algunos mangos siguen verdes, pero otros están muy maduros. Hay gente recogiendo todo junto sin saber qué conviene atender primero.",
+          "resumen": "La fruta tiene distintos estados de maduración",
+          "posicion": {
+            "x": 21,
+            "y": 29
+          }
+        },
+        {
+          "id": "unsynchronized-crews",
+          "quien": "Representante de agricultores",
+          "contexto": "Almacén comunitario",
+          "mensaje": "Las familias están trabajando por separado. Algunas cuadrillas esperan instrucciones mientras otras recogen más fruta de la que podemos manejar.",
+          "resumen": "Las cuadrillas de cosecha trabajan descoordinadas",
+          "posicion": {
+            "x": 74,
+            "y": 32
+          }
+        },
+        {
+          "id": "different-delivery-dates",
+          "quien": "Comerciante",
+          "contexto": "Mercado de la ciudad",
+          "mensaje": "Un comprador recibe cajas mañana; otro necesita menos fruta y solo podrá recibirla pasado mañana.",
+          "resumen": "Los compradores tienen fechas de entrega diferentes",
+          "posicion": {
+            "x": 36,
+            "y": 72
+          }
+        },
+        {
+          "id": "uncoordinated-trips",
+          "quien": "Transportista",
+          "contexto": "Junto al camión",
+          "mensaje": "Si cada familia pide un viaje distinto, perdemos tiempo y espacio. Tenemos los pedidos, los destinos y los vehículos, pero falta organizar las entregas y las existencias.",
+          "resumen": "Los viajes y las existencias no están organizados",
+          "posicion": {
+            "x": 79,
+            "y": 75
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "harvest-priorities",
+          "titulo": "¿Qué salvamos primero?",
+          "detalle": "Distinguir qué frutos requieren una atención prioritaria según su estado y ordenar las operaciones y equipos de cosecha.",
+          "resultado": "La prioridad técnica y la organización de las operaciones se complementan para atender la fruta más urgente.",
+          "necesidades": [
+            {
+              "onet": "19-1013.00",
+              "aporte": "Evalúa el cultivo, la maduración y las condiciones de los frutos para orientar prioridades técnicas de cosecha.",
+              "siFalta": "Se recogieron frutos sin evaluar suficientemente su estado, mientras otros más urgentes perdieron calidad."
+            },
+            {
+              "onet": "11-9013.00",
+              "aporte": "Planifica y coordina la operación agrícola, los trabajadores y los recursos para ejecutar las prioridades acordadas.",
+              "siFalta": "Las cuadrillas siguieron descoordinadas y se desaprovecharon tiempo y capacidad de trabajo."
+            }
+          ]
+        },
+        {
+          "id": "fresh-fruit-deliveries",
+          "titulo": "La fruta que sí puede salir",
+          "detalle": "Planificar el ciclo de distribución de la fruta que se venderá fresca, considerando pedidos, inventarios, destinos, vehículos y tiempos de entrega.",
+          "resultado": "Los agricultores obtienen una estrategia conjunta de distribución más ordenada.",
+          "necesidades": [
+            {
+              "onet": "13-1081.00",
+              "aporte": "Coordina los flujos logísticos y las entregas para aprovechar mejor los recursos y cumplir los pedidos dentro del tiempo disponible.",
+              "siFalta": "Se desaprovechó capacidad de transporte y algunas entregas llegaron cuando parte de la fruta ya había perdido calidad."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "second-life",
+      "nombre": "Una segunda vida para la cosecha",
+      "subtitulo": "Transformar parte de la fruta exige pruebas y una evaluación realista de costos.",
+      "escuchar": {
+        "texto": "Quienes preparan productos de mango tienen dudas sobre la fabricación y sus costos. Escucha sus testimonios antes de asignar especialistas.",
+        "textoMovil": "Quienes preparan productos de mango tienen dudas sobre la fabricación y sus costos. Escucha sus testimonios antes de asignar especialistas."
+      },
+      "fondo": {
+        "imagen": "harvest-race-phase-2.png",
+        "posicion": "50% 54%"
+      },
+      "mensajes": [
+        {
+          "id": "scaling-recipe",
+          "quien": "Joven emprendedora",
+          "contexto": "Taller de alimentos",
+          "mensaje": "En casa hacemos mermelada, pero ahora serían cientos de envases. No sabemos si el mismo procedimiento sirve a esa escala.",
+          "resumen": "Una receta casera no equivale a producción a escala",
+          "posicion": {
+            "x": 26,
+            "y": 63
+          }
+        },
+        {
+          "id": "unstable-samples",
+          "quien": "Trabajador de fábrica",
+          "contexto": "Mesa de muestras",
+          "mensaje": "Unas muestras cambiaron de color y otras de textura después de varios días. No queremos vender algo sin comprobar cómo se conserva.",
+          "resumen": "Las muestras cambiaron de color y textura",
+          "posicion": {
+            "x": 70,
+            "y": 27
+          }
+        },
+        {
+          "id": "missing-costs",
+          "quien": "Agricultora",
+          "contexto": "Asamblea",
+          "mensaje": "Antes de comprar ingredientes, frascos y horas de máquina, necesitamos saber cuánto costaría producir cada unidad.",
+          "resumen": "Falta calcular cuánto cuesta producir cada unidad",
+          "posicion": {
+            "x": 77,
+            "y": 73
+          }
+        },
+        {
+          "id": "production-options",
+          "quien": "Representante de cooperativa",
+          "contexto": "Pizarra de cotizaciones",
+          "mensaje": "Una propuesta usa máquinas más baratas pero produce menos; otra cuesta más. Necesitamos comparar costos, no solo mirar el precio inicial.",
+          "resumen": "Hay alternativas con costos y capacidades diferentes",
+          "posicion": {
+            "x": 35,
+            "y": 24
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "safe-food-processing",
+          "titulo": "No basta con cocinar mangos",
+          "detalle": "Definir un proceso de transformación apropiado para fruta apta y comprobar la calidad y estabilidad de los productos de prueba antes de producir comercialmente.",
+          "resultado": "El procesamiento se plantea como piloto sujeto a verificaciones técnicas y sanitarias previas a su venta.",
+          "necesidades": [
+            {
+              "onet": "19-1012.00",
+              "aporte": "Aplica conocimientos sobre procesamiento y deterioro de alimentos para estudiar un proceso de transformación apropiado y sus condiciones.",
+              "siFalta": "Se inició la transformación sin evaluar suficientemente su proceso y las condiciones de conservación del producto."
+            },
+            {
+              "onet": "19-4099.01",
+              "aporte": "Realiza controles de calidad y pruebas de estabilidad sobre materias primas y productos de prueba.",
+              "siFalta": "No se detectaron a tiempo diferencias de calidad o estabilidad entre muestras y lotes de prueba."
+            }
+          ]
+        },
+        {
+          "id": "processing-costs",
+          "titulo": "¿Cuánto costará realmente?",
+          "detalle": "Estimar costo total, costo por unidad y un precio mínimo de referencia para comparar alternativas de procesamiento; la demanda comercial se estudiará después.",
+          "resultado": "Las estimaciones permiten decidir qué escala de prueba tiene sentido; todavía no garantizan ventas ni rentabilidad.",
+          "necesidades": [
+            {
+              "onet": "13-1051.00",
+              "aporte": "Prepara estimaciones de costos de producción e insumos para comparar opciones y apoyar decisiones de precios.",
+              "siFalta": "Se eligió una alternativa sin entender su costo por unidad y se corrió el riesgo de gastar más de lo que podía recuperarse."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "finding-buyers",
+      "nombre": "Encontrar compradores",
+      "subtitulo": "La comunidad necesita conocer la demanda y administrar los pedidos que reciba.",
+      "escuchar": {
+        "texto": "Los posibles vendedores y la cooperativa quieren contarte sus dudas. Escúchalos antes de preparar el equipo comercial.",
+        "textoMovil": "Los posibles vendedores y la cooperativa quieren contarte sus dudas. Escúchalos antes de preparar el equipo comercial."
+      },
+      "fondo": {
+        "imagen": "harvest-race-phase-3.png",
+        "posicion": "50% 50%"
+      },
+      "mensajes": [
+        {
+          "id": "customer-preferences",
+          "quien": "Dueña de tienda",
+          "contexto": "En el centro",
+          "mensaje": "Podría vender pulpa o mermelada, pero no sé qué presentación preferirían mis clientes ni cuánto pagarían.",
+          "resumen": "No se conocen las preferencias de los compradores",
+          "posicion": {
+            "x": 24,
+            "y": 28
+          }
+        },
+        {
+          "id": "scattered-orders",
+          "quien": "Joven de la comunidad",
+          "contexto": "Mostrando su teléfono",
+          "mensaje": "Subimos unas fotos y empezaron a escribirnos. Entre comentarios y mensajes ya no sabemos quién pidió qué.",
+          "resumen": "Los pedidos por internet están dispersos",
+          "posicion": {
+            "x": 73,
+            "y": 69
+          }
+        },
+        {
+          "id": "stock-uncertainty",
+          "quien": "Representante de cooperativa",
+          "contexto": "Frente a los envases",
+          "mensaje": "No podemos fabricar a ciegas, pero tampoco prometer pedidos que no sabemos registrar o atender con nuestras existencias.",
+          "resumen": "Es difícil prometer ventas sin controlar existencias",
+          "posicion": {
+            "x": 43,
+            "y": 73
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "market-and-orders",
+          "titulo": "Un buen producto que nadie conoce",
+          "detalle": "Identificar potenciales compradores y sus preferencias, y gestionar de manera ordenada la venta minorista por internet y los pedidos disponibles.",
+          "resultado": "La comunidad puede iniciar un canal pequeño y ordenado de comercialización, sin asumir que venderá toda la cosecha original.",
+          "necesidades": [
+            {
+              "onet": "11-2021.00",
+              "aporte": "Analiza demanda, clientes potenciales y estrategia comercial para decidir a quién ofrecer el producto y cómo presentarlo.",
+              "siFalta": "La comunidad produjo presentaciones sin información suficiente sobre quién podría comprarlas."
+            },
+            {
+              "onet": "13-1199.06",
+              "aporte": "Organiza actividades de comercio electrónico, pedidos y existencias para vender por internet de forma operativa.",
+              "siFalta": "Los pedidos llegaron de forma dispersa y hubo confusiones sobre cantidades y disponibilidad."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

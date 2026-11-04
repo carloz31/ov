@@ -1,0 +1,318 @@
+{
+  "id": "hidden-plaza",
+  "tematica": "Patrimonio, urbanismo y convivencia",
+  "intro": {
+    "narrativa": [
+      "Puerto Claro lleva meses esperando una plaza para encontrarse después de clases. El proyecto contempla una pista pequeña de skate, jardines, áreas de descanso y espacios para actividades juveniles. Al iniciar la excavación, los trabajadores encuentran un piso decorado, cerámica y restos de una construcción antigua.",
+      "La obra se detiene. Parte de la comunidad exige conservar el hallazgo; otras familias reclaman que la ciudad necesita un espacio recreativo. Las tensiones crecen cuando aparecen grietas en un muro cercano a la excavación.",
+      "Tu misión es reunir equipos para estudiar y proteger lo encontrado, evaluar la seguridad y llegar a una solución que permita conservar la historia sin perder la plaza. No se trata de escoger entre patrimonio y recreación, sino de reconocer qué especialistas se necesitan para atender ambos objetivos."
+    ],
+    "imagen": "hidden-plaza-intro.png",
+    "alerta": "Un hallazgo inesperado detiene la obra"
+  },
+  "presupuesto": 10,
+  "profesionales": [
+    {
+      "onet": "19-3091.00",
+      "persona": "Camila Quispe"
+    },
+    {
+      "onet": "25-4013.00",
+      "persona": "Mateo Campos"
+    },
+    {
+      "onet": "17-2051.00",
+      "persona": "Lucía Soto"
+    },
+    {
+      "onet": "19-3041.00",
+      "persona": "Andrés Herrera"
+    },
+    {
+      "onet": "23-1022.00",
+      "persona": "Valentina Quiroz"
+    },
+    {
+      "onet": "19-3051.00",
+      "persona": "Diego Reyes"
+    },
+    {
+      "onet": "17-1012.00",
+      "persona": "Mariana Quispe"
+    },
+    {
+      "onet": "25-4012.00",
+      "persona": "Sebastián Campos"
+    },
+    {
+      "onet": "19-3093.00",
+      "persona": "Daniela Soto"
+    },
+    {
+      "onet": "17-1011.00",
+      "persona": "Martín Herrera"
+    },
+    {
+      "onet": "27-4021.00",
+      "persona": "Elena Quiroz"
+    },
+    {
+      "onet": "39-7011.00",
+      "persona": "Javier Reyes"
+    }
+  ],
+  "fases": [
+    {
+      "id": "buried-discovery",
+      "nombre": "Lo que apareció bajo tierra",
+      "subtitulo": "La excavación revela objetos antiguos y un muro cercano muestra grietas.",
+      "escuchar": {
+        "texto": "Los trabajadores y vecinos quieren contarte qué ocurrió durante la excavación. Escucha sus testimonios antes de formar el equipo.",
+        "textoMovil": "Los trabajadores y vecinos quieren contarte qué ocurrió durante la excavación. Escucha sus testimonios antes de formar el equipo."
+      },
+      "fondo": {
+        "imagen": "hidden-plaza-phase-1.png",
+        "posicion": "53% 50%"
+      },
+      "mensajes": [
+        {
+          "id": "buried-pieces",
+          "quien": "Trabajador de la obra",
+          "contexto": "En la excavación",
+          "mensaje": "Encontramos piezas que parecen parte de algo más grande. Las que siguen enterradas todavía no se han estudiado, y no sabemos qué pasaría si las sacamos de golpe.",
+          "resumen": "Hay piezas enterradas que aún no se han estudiado",
+          "posicion": {
+            "x": 21,
+            "y": 29
+          }
+        },
+        {
+          "id": "fragile-fragments",
+          "quien": "Encargada del almacén",
+          "contexto": "Junto a las cajas recuperadas",
+          "mensaje": "Algunos fragmentos ya se retiraron del terreno, pero están empezando a agrietarse. No basta con guardarlos en una caja cualquiera.",
+          "resumen": "Los fragmentos recuperados comienzan a agrietarse",
+          "posicion": {
+            "x": 74,
+            "y": 32
+          }
+        },
+        {
+          "id": "unknown-origin",
+          "quien": "Profesora",
+          "contexto": "En el perímetro de la obra",
+          "mensaje": "Unos dicen que esto tiene cientos de años y otros que es una construcción vieja. Nadie ha estudiado cómo estaban distribuidas las piezas en el terreno.",
+          "resumen": "Se desconoce la distribución original del hallazgo",
+          "posicion": {
+            "x": 36,
+            "y": 72
+          }
+        },
+        {
+          "id": "cracked-wall",
+          "quien": "Vecino",
+          "contexto": "Frente a su vivienda",
+          "mensaje": "Desde que entraron las máquinas aparecieron grietas en el muro junto a las excavaciones. Necesitamos saber si es seguro acercarnos o continuar trabajando.",
+          "resumen": "Aparecieron grietas en un muro cercano",
+          "posicion": {
+            "x": 79,
+            "y": 75
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "study-and-preserve",
+          "titulo": "¿Qué hacer antes de mover una sola pieza?",
+          "detalle": "Registrar y estudiar las estructuras que permanecen enterradas y proteger las piezas que ya se recuperaron. Son dos tareas distintas.",
+          "resultado": "La investigación del descubrimiento y la conservación de sus objetos se organizan como trabajos complementarios; el avance depende de las especialidades convocadas.",
+          "necesidades": [
+            {
+              "onet": "19-3091.00",
+              "aporte": "Analiza el contexto material del hallazgo y orienta una recuperación sistemática que preserve información sobre su origen y uso.",
+              "siFalta": "Se retiraron o movieron objetos sin documentar adecuadamente su contexto; parte de la historia del lugar quedó difícil de reconstruir."
+            },
+            {
+              "onet": "25-4013.00",
+              "aporte": "Evalúa y aplica cuidados de conservación a las piezas ya recuperadas para evitar un deterioro adicional mientras se estudian o almacenan.",
+              "siFalta": "Las piezas recuperadas siguieron agrietándose y algunas perdieron detalles que habría sido posible preservar."
+            }
+          ]
+        },
+        {
+          "id": "structural-safety",
+          "titulo": "¿Es seguro continuar trabajando cerca?",
+          "detalle": "Determinar si las excavaciones comprometieron la estabilidad del muro y qué medidas de seguridad estructural deben adoptarse antes de reanudar trabajos.",
+          "resultado": "La seguridad del perímetro se evalúa por separado de la importancia arqueológica del hallazgo.",
+          "necesidades": [
+            {
+              "onet": "17-2051.00",
+              "aporte": "Examina las condiciones de la estructura y plantea las verificaciones y medidas técnicas necesarias para decidir si es seguro continuar.",
+              "siFalta": "La comunidad careció de una evaluación técnica sobre el muro y las decisiones se tomaron con incertidumbre acerca de su estabilidad."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "divided-town",
+      "nombre": "Una ciudad dividida",
+      "subtitulo": "La comunidad discute cómo conservar el hallazgo sin renunciar a su plaza.",
+      "escuchar": {
+        "texto": "Distintas personas tienen inquietudes sobre el futuro de la plaza. Escucha sus puntos de vista antes de reunir al equipo.",
+        "textoMovil": "Distintas personas tienen inquietudes sobre el futuro de la plaza. Escucha sus puntos de vista antes de reunir al equipo."
+      },
+      "fondo": {
+        "imagen": "hidden-plaza-phase-2.png",
+        "posicion": "51% 52%"
+      },
+      "mensajes": [
+        {
+          "id": "skate-space",
+          "quien": "Estudiante",
+          "contexto": "Junto al terreno",
+          "mensaje": "Nos prometieron un espacio para hacer skate. Ahora tememos que lo cierren por completo y que jamás podamos reunirnos aquí.",
+          "resumen": "Los jóvenes temen perder su espacio recreativo",
+          "posicion": {
+            "x": 26,
+            "y": 63
+          }
+        },
+        {
+          "id": "excluded-merchants",
+          "quien": "Comerciante",
+          "contexto": "En el mercado",
+          "mensaje": "Siempre hablan las mismas personas en las reuniones. Nadie ha preguntado cómo afectaría a los negocios cambiar los accesos o cerrar el paso.",
+          "resumen": "Los comerciantes no se sienten escuchados",
+          "posicion": {
+            "x": 70,
+            "y": 27
+          }
+        },
+        {
+          "id": "failed-meetings",
+          "quien": "Vecina",
+          "contexto": "Salida del centro comunal",
+          "mensaje": "Cada reunión termina en discusiones. Algunos grupos ya ni quieren sentarse juntos a conversar.",
+          "resumen": "Las reuniones comunitarias terminan en discusiones",
+          "posicion": {
+            "x": 77,
+            "y": 73
+          }
+        },
+        {
+          "id": "shared-needs",
+          "quien": "Madre de familia",
+          "contexto": "Camino del colegio",
+          "mensaje": "Queremos conservar el hallazgo, pero también necesitamos caminos seguros, sombra, juegos y un lugar donde los jóvenes puedan estar.",
+          "resumen": "La plaza debe conservar el patrimonio y servir al barrio",
+          "posicion": {
+            "x": 35,
+            "y": 24
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "community-dialogue",
+          "titulo": "¿Cómo resolver el desacuerdo?",
+          "detalle": "Comprender las necesidades de grupos que no están siendo escuchados y facilitar una negociación entre quienes tienen prioridades diferentes.",
+          "resultado": "La comunidad obtiene un diagnóstico de necesidades y un espacio de diálogo, aunque el acuerdo final depende de los aportes presentes.",
+          "necesidades": [
+            {
+              "onet": "19-3041.00",
+              "aporte": "Investiga los intereses y la dinámica de los distintos grupos sociales, incluyendo a quienes han tenido poca participación.",
+              "siFalta": "Las decisiones siguieron basándose en opiniones de los grupos más visibles y quedaron necesidades comunitarias sin considerar."
+            },
+            {
+              "onet": "23-1022.00",
+              "aporte": "Facilita el diálogo y ayuda a que las partes construyan acuerdos mediante negociación.",
+              "siFalta": "Las reuniones continuaron bloqueadas por enfrentamientos y fue más difícil alcanzar compromisos compartidos."
+            }
+          ]
+        },
+        {
+          "id": "plaza-design",
+          "titulo": "¿Cómo aprovechar el terreno?",
+          "detalle": "Replantear accesos y recorridos para integrar la plaza con el barrio, y diseñar sus áreas verdes y recreativas; no se construirán nuevos edificios.",
+          "resultado": "El diseño urbano y el diseño paisajístico permiten elaborar una propuesta de plaza compatible con el área protegida.",
+          "necesidades": [
+            {
+              "onet": "19-3051.00",
+              "aporte": "Analiza cómo encaja la nueva plaza en la ciudad, sus conexiones, accesos y distribución respecto de los usos del entorno.",
+              "siFalta": "Los accesos y recorridos se planificaron sin considerar suficientemente la conexión de la plaza con el barrio."
+            },
+            {
+              "onet": "17-1012.00",
+              "aporte": "Diseña las áreas abiertas, jardines y zonas recreativas para que el espacio sea agradable y funcional.",
+              "siFalta": "Los espacios recreativos y verdes quedaron poco funcionales para las actividades previstas."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "history-for-all",
+      "nombre": "Un lugar para todos",
+      "subtitulo": "El descubrimiento podría convertirse en una muestra cultural para la comunidad.",
+      "escuchar": {
+        "texto": "Docentes, estudiantes y responsables municipales tienen ideas sobre la muestra. Escucha sus testimonios antes de decidir.",
+        "textoMovil": "Docentes, estudiantes y responsables municipales tienen ideas sobre la muestra. Escucha sus testimonios antes de decidir."
+      },
+      "fondo": {
+        "imagen": "hidden-plaza-phase-3.png",
+        "posicion": "50% 50%"
+      },
+      "mensajes": [
+        {
+          "id": "story-of-objects",
+          "quien": "Docente",
+          "contexto": "Frente a las piezas recuperadas",
+          "mensaje": "Los estudiantes quieren entender para qué se usaban estos objetos y cómo se relacionan entre sí. Enseñar una pieza aislada no cuenta toda la historia.",
+          "resumen": "Las piezas necesitan una historia que las conecte",
+          "posicion": {
+            "x": 24,
+            "y": 28
+          }
+        },
+        {
+          "id": "organize-exhibition",
+          "quien": "Responsable municipal",
+          "contexto": "Sala que se habilitará para una muestra",
+          "mensaje": "Tenemos piezas ya protegidas y un espacio donde mostrarlas, pero no sabemos cómo organizar la colección para que el público comprenda lo que se descubrió.",
+          "resumen": "La colección requiere una presentación organizada",
+          "posicion": {
+            "x": 73,
+            "y": 69
+          }
+        },
+        {
+          "id": "past-in-the-plaza",
+          "quien": "Estudiante",
+          "contexto": "Junto al futuro parque",
+          "mensaje": "Sería interesante que el lugar contara lo que había aquí antes, no solo que pongan unos objetos detrás de una vitrina.",
+          "resumen": "Los jóvenes quieren conocer el pasado del lugar",
+          "posicion": {
+            "x": 43,
+            "y": 73
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "cultural-exhibit",
+          "titulo": "¿Cómo hacer que la historia sea parte de la plaza?",
+          "detalle": "Gestionar y organizar una colección de objetos e información del hallazgo para una muestra cultural con un relato comprensible.",
+          "resultado": "La colección puede integrarse al proyecto de plaza mediante una muestra que explique su historia.",
+          "necesidades": [
+            {
+              "onet": "25-4012.00",
+              "aporte": "Organiza la colección y define cómo presentar y contextualizar los objetos y la información para el público.",
+              "siFalta": "Las piezas quedaron protegidas, pero sin una presentación organizada que ayudara a comprender el conjunto del hallazgo."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
