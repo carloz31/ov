@@ -39,9 +39,9 @@ app/                    solo la aplicación; no lee archivos de datos
     planes/             planes de carrera: consultas, acciones y sugerencias
     investigaciones/    investigaciones y entrevistas: consultas, acciones, sugerencias y orientadora
   core/                 parámetros, caché de definiciones y contexto de consultas
-datos/                  lo que llena la base: fijos.py, ruta.py, catalogo.py (CSV de archivos/catalogo/), cargar.py
+datos/                  lo que llena la base: fijos.py, contenido.py, ruta.py, cargador.py, catalogo.py (CSV de archivos/catalogo/), cargar.py
 migrations/             migraciones de Alembic
-scripts/                herramientas manuales (exportador de fixtures)
+scripts/                herramientas manuales (exportador de fixtures, coherencia de `contenido` con el front)
 tests/                  pruebas (ver «Pruebas»)
 docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, historico/
 ```
@@ -51,7 +51,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 | Si agregas… | Va en… |
 |---|---|
 | Una consulta para una vista | `GET /cuentas/{c}/<dominio>` en `app/api/<dominio>.py`, con su esquema y servicio del mismo nombre. No agregues campos de otro dominio a una respuesta para ahorrar una petición. |
-| Una actividad | `datos/ruta.py`, con `contenido` (la clave de su JSON en el front) y `visibilidad`. Si es del apoderado, en un bloque de audiencia `APODERADO` y espacio `PORTAL_FAMILIA`. |
+| Una actividad | Si es real, `datos/contenido.py`; si es de prueba de una mecánica, `datos/ruta.py` (código `t-...`). Con `contenido` (la clave de su JSON en el front: `contenidos/plataforma/` o `contenidos/ruta/`) y `visibilidad`. Si es del apoderado, en un bloque de audiencia `APODERADO` y espacio `PORTAL_FAMILIA`. Sus reglas siguen los principios de `motor.md` («Reglas del contenido»). |
 | Un endpoint | `app/api/<grupo>.py`. Solo valida, llama a un servicio y devuelve. Queda tras el guardia de acceso (`router.py`); si debe servir a otra cuenta además de la propia, decláralo con `@politica_acceso(...)` (`app/dependencies.py`), con una función de `app/services/acceso.py`. |
 | Lógica de negocio | `app/services/<dominio>.py`, o `app/services/<dominio>/` si el dominio ya es carpeta. |
 | Una tabla o columna | `app/models/<dominio>.py` **y** su migración en `migrations/versions/`, en el mismo commit. |
@@ -60,7 +60,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 | Un umbral o constante de método | `app/core/parametros.py`. |
 | Una variable de entorno | `app/config.py` y `.env.example`. |
 | Lo que tendrá la plataforma sea cual sea la ruta (secciones, presentaciones de primera visita, listas comunes, repreguntas por tipo de criterio, temáticas, los instrumentos, catálogo O*NET…) | `datos/fijos.py`, sin `DATO DE PRUEBA`. Nunca en `app/`. Un instrumento nuevo es datos (`DefinicionInstrumento`) y se carga con `_cargar_instrumento`. |
-| Datos de prueba de una mecánica | `datos/ruta.py`, en tuplas declarativas que interpreta el cargador, con códigos `t-...`. Nunca en `app/`. |
+| Datos de prueba de una mecánica | `datos/ruta.py`, en tuplas declarativas que interpreta el cargador común (`datos/cargador.py`), con códigos `t-...`. Nunca en `app/`. Una mecánica nueva se prueba primero en `ruta` y después se usa en `contenido`. |
 | Una tabla de estado de las cuentas | Además, en `TABLAS_DE_ESTADO` de `app/services/desarrollo.py`, para que el reinicio la vacíe (una prueba exige clasificar toda tabla como catálogo o estado). |
 | Un dominio nuevo (favoritos, planes…) | Un archivo en `services/`, `schemas/` y, si tiene tablas, `models/`. Un archivo pasa a carpeta solo cuando ya no cabe en uno; un dominio que ya nace grande (planes: consulta, cuatro guardados con efectos y sugerencias) puede nacer como carpeta. |
 
@@ -84,7 +84,11 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 
 | Conjunto | Para qué |
 |---|---|
-| `ruta` (`datos/ruta.py` + `datos/fijos.py`) | Ruta mínima de prueba: lo justo para demostrar cada mecánica (`docs/plan-iteraciones.md`, «Ruta mínima de prueba»). Todo lo de `ruta.py` es `DATO DE PRUEBA`; `fijos.py` se carga en todo conjunto. |
+| `contenido` (`datos/contenido.py` + `datos/fijos.py`) | El contenido real de la plataforma: el que se despliega y con el que se hace la prueba manual. Actividades del estudiante (B0–B5, ciudad, misiones adicionales) y del apoderado, las 31 fichas, las batallas y sus reglas definitivas. Lo que aún no tiene contenido real se toma de `ruta` y se lista en `PROVISIONALES` (qué, de dónde, qué ajuste lo reemplaza); ninguna regla de `contenido` nombra una actividad `t-` del camino. |
+| `ruta` (`datos/ruta.py` + `datos/fijos.py`) | Banco de pruebas de mecánicas, congelado: lo justo para demostrar cada mecánica (`docs/plan-iteraciones.md`, «Ruta mínima de prueba»). Todo lo de `ruta.py` es `DATO DE PRUEBA`; las pruebas existentes corren contra él. `fijos.py` se carga en todo conjunto. |
+
+- `ruta.py` y `contenido.py` son datos puros con la misma forma; el cargador común (`datos/cargador.py`) los interpreta, y una tupla que un conjunto no declara es vacía. `CONJUNTOS` (`datos/cargar.py`) los registra.
+- Las pruebas de `contenido` usan la plantilla `aplicacion_contenido` / `cliente_contenido` / `sesion_contenido` (`tests/integration/datos/` y `tests/integration/escenarios/contenido/`). La coherencia con los JSON del front se revisa con `uv run python scripts/verificar_contenido_front.py`.
 
 - La aplicación no sabe qué conjunto tiene la base. Se carga con `uv run python -m datos.cargar <conjunto>` (`--vaciar` para reemplazarlo). El cargador valida que `contenido` use solo `[a-z0-9_]`.
 - El catálogo es real y lo carga `fijos` desde los CSV de `datos/archivos/catalogo/` (`datos/catalogo.py`: carreras, instituciones e ingresos de Ponte en Carrera; ocupaciones de Mi Próximo Paso). Las pruebas nombran las carreras, instituciones y ubicaciones de la ruta por su papel (`CARRERAS_RUTA`, `INSTITUCIONES_RUTA`, `UBICACIONES_RUTA` en `ruta.py`; `tests/soporte/soporte_catalogo_ruta.py`), nunca por su código real. Carreras y ocupaciones se relacionan por familia (`ocupacion_familia`, de la curaduría).
@@ -133,6 +137,7 @@ tests/
     motor/ notificaciones/ planes/ referencias/ registro/ secciones/ tematicas/ testimonios/
     datos/ migraciones/ contrato/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
+    escenarios/contenido/  test_recorrido_contenido.py: el camino y la ruta del apoderado del conjunto `contenido`
 ```
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.

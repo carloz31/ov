@@ -9,14 +9,14 @@ Requisitos: Python 3.14 y uv. Crea `.env` a partir de [.env.example](.env.exampl
 ```powershell
 uv sync
 uv run alembic upgrade head
-uv run python -m datos.cargar plataforma
+uv run python -m datos.cargar contenido
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 La aplicación no crea tablas ni carga datos al arrancar: la migración y la carga se hacen una vez. Después basta con Uvicorn. Documentación interactiva: `http://127.0.0.1:8000/docs`.
 
 - `DATABASE_URL` elige la base (por defecto `sqlite:///ov.db` en la raíz). Para PostgreSQL: `uv sync --extra postgres` y la URL antes de migrar y cargar.
-- Conjuntos de datos: `plataforma` y `piloto` (`uv run python -m datos.cargar piloto`); `--vaciar` reemplaza los datos de la base.
+- Conjuntos de datos: `contenido` (el contenido real, el que se despliega) y `ruta` (banco de pruebas de mecánicas: `uv run python -m datos.cargar ruta`); `--vaciar` reemplaza los datos de la base.
 - `POST /desarrollo/reiniciar` (solo con `ENTORNO=desarrollo`) borra el estado de las cuentas y conserva el catálogo.
 - El evaluador de registros es `falso` por defecto. Para usar Gemini, configura `EVALUADOR=gemini` y `GEMINI_API_KEY` en `.env`; nunca publiques la clave.
 

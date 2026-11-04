@@ -78,6 +78,21 @@ Son catálogo, como las temáticas. La carga rechaza un COMPARACION prioritario 
 
 Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. En `datos/ruta.py`, el evaluador de una regla se declara en `EVALUADORES_REGLAS = {regla: (evaluador, parámetro)}`. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
 
+### Reglas del contenido
+
+Las reglas de `datos/contenido.py` siguen estos principios (ajuste carga-actividades); `tests/integration/datos/test_reglas_contenido.py` comprueba los verificables:
+
+1. **El tramo se abre con la última requerida del anterior.** Cada bloque del camino B1–B5 tiene una regla `BLOQUE` con `COMPLETA_BLOQUE` del anterior. COMPLETA_BLOQUE se registra al completar la última actividad requerida del bloque (las opcionales no cuentan), así que no hay que reescribir la regla si cambia cuál es la última. B0 no tiene regla. Única excepción, a propósito: B4 pide además el punto de partida y los instrumentos prioritarios revelados (`REVELA_RESULTADO` + `instrumentos_prioritarios`).
+2. **La primera actividad de un tramo no lleva regla propia**: queda disponible al abrirse su bloque. Solo la lleva si pide algo más que el bloque (b5-1).
+3. **Dentro del tramo, cadena lineal**: cada requerida pide la requerida anterior (COMPLETA_ACTIVIDAD, o SUPERA_BATALLA si la anterior es una batalla).
+4. **Opcionales**: se abren con su disparador y nunca son requisito de una requerida (ni de su bloque). Las misiones adicionales, con `REGISTRO_ADECUADO` del registro que las premia.
+5. **Ciudad**: todo opcional; las misiones de Helena se encadenan parte por parte y la primera parte se abre con la informativa del camino que presenta el tema.
+6. **Evaluadores**: una regla con evaluador lleva también las condiciones cuyos eventos deben reevaluarla (`ACTUALIZA_PLAN` en las de planes); si no, no vuelve a evaluarse cuando cambian los planes.
+7. **Todo objetivo cargado tiene al menos una regla** (la de su bloque cuenta para la primera actividad de un tramo), salvo los abiertos desde el inicio a propósito: B0, b0-1, LUMI (sus actividades sí tienen regla), FAMILIA, p1 y el nivel 1. Un objetivo sin regla está disponible desde el principio.
+8. Varias reglas sobre el mismo objetivo son alternativas (basta una); las condiciones de una regla se suman.
+
+Además: toda regla `CONVERSACION` lleva `ESCRIBE_CARTA`; ninguna regla nombra una actividad `t-` del camino; y toda ficha de la que sale una pregunta de batalla se obtiene con una actividad que está entre los requisitos de la batalla.
+
 ## Evaluación
 
 Cuando una acción registra eventos (`registrar_eventos`), el motor, en la misma transacción:
