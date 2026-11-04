@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-04 · Ajuste carga-casos · Textos de la Central que citan el nombre de la fase
+
+- **Dato:** el `nombre` de cada fase de los JSON de caso («¿Quién merece una oportunidad?», «Los días cuentan»…). Las plantillas de la Central se escribieron para «Emergencia»: «¿Así enfrentarás la {fase en minúsculas}?» (Revisar, `ForestFireCaseView`) y «Así respondió tu equipo a la {fase en minúsculas}» (resultado de fase, `PhaseResultScreen`), y quedan como «¿Así enfrentarás la ¿quién merece una oportunidad??».
+- **Dónde se mostraría:** el título de Revisar y el del resultado de cada fase.
+- **Opciones:** textos que no citen la fase («¿Así enfrentarás esta fase?», «Así respondió tu equipo en la fase N»); citarla entre comillas sin el artículo («Así respondió tu equipo a «{fase}»»); un campo del JSON con la frase de cada fase.
+- **Si no se muestra:** en los seis casos esos dos títulos quedan con el artículo y la puntuación del nombre de la fase.
+- **Estado:** pendiente de decisión del usuario.
+
 ## 2026-11-04 · Ajuste carga-casos · Lugar de los casos en la Ciudad
 
 - **Dato:** la posición de mapa (`mapa.x`, `mapa.y`) de `c1`…`c6` en `src/data/activities/contenidos/plataforma/`. `c1` ocupa el lugar del incendio (que ya no tiene marcador en api); `c2`…`c6` tienen posiciones provisionales, porque los otros cinco lugares de casos de la imagen siguen ocupados por los marcadores de demostración de `cityCases` («Disponible en una próxima iteración»), que una prueba exige conservar.
