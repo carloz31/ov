@@ -8,7 +8,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el título de Revisar y el del resultado de cada fase.
 - **Opciones:** textos que no citen la fase («¿Así enfrentarás esta fase?», «Así respondió tu equipo en la fase N»); citarla entre comillas sin el artículo («Así respondió tu equipo a «{fase}»»); un campo del JSON con la frase de cada fase.
 - **Si no se muestra:** en los seis casos esos dos títulos quedan con el artículo y la puntuación del nombre de la fase.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** resuelto. El usuario eligió no citar la fase: «¿Así enfrentarás esta fase?» y «Así respondió tu equipo en la fase N», en los dos modos.
 
 ## 2026-11-04 · Ajuste carga-casos · Lugar de los casos en la Ciudad
 

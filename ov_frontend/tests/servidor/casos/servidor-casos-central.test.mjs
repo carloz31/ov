@@ -92,8 +92,12 @@ function jugarFase(c, fase, equipo) {
     c.dibujar()
   }
   assert.equal(llamado(c.arbol, 'StepActions').props.label, 'Confirmar equipo')
+  // Los títulos no citan el nombre de la fase (ajuste carga-casos).
+  assert.match(textoDe(c.arbol), /¿Así enfrentarás esta fase\?/)
   llamado(c.arbol, 'StepActions').props.onNext()
   c.dibujar()
+  const resultado = llamado(c.arbol, 'PhaseResultScreen')
+  assert.match(textoDe(resultado.type(resultado.props)), new RegExp(`Así respondió tu equipo en la fase ${fase.number}`))
 }
 
 test('completar hidden-plaza con el equipo justo lo supera con la escala del servidor', async () => {

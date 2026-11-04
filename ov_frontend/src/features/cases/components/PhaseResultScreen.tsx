@@ -32,7 +32,7 @@ export function PhaseResultScreen({
       <div className="ff-dark ff-result-heading">
         <LumiMedallion />
         <p className="ff-eyebrow">Fase {phase.number} resuelta</p>
-        <h1 tabIndex={-1}>Así respondió tu equipo a la {phase.name.toLowerCase()}</h1>
+        <h1 tabIndex={-1}>Así respondió tu equipo en la fase {phase.number}</h1>
         <p>Revisa qué aportó cada persona y qué necesidades quedaron sin cubrir.</p>
         <strong>
           {getPhaseSatisfaction(phase, assignments)} de {maximum} puntos de satisfacción

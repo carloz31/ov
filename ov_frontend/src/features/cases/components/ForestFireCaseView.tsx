@@ -166,7 +166,7 @@ export function ForestFireCaseView({
             <div className="ff-dark">
               <LumiMedallion />
               <p className="ff-eyebrow">Revisa tu equipo</p>
-              <h1 tabIndex={-1}>¿Así enfrentarás la {phase.name.toLowerCase()}?</h1>
+              <h1 tabIndex={-1}>¿Así enfrentarás esta fase?</h1>
               <p>
                 Usarás {Object.values(phaseAssignments).reduce((total, ids) => total + ids.length, 0)} puntos.
                 {phaseIndex < jugado.phases.length - 1 &&
