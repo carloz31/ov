@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-04 · Ajuste carga-casos · Lugar de los casos en la Ciudad
+
+- **Dato:** la posición de mapa (`mapa.x`, `mapa.y`) de `c1`…`c6` en `src/data/activities/contenidos/plataforma/`. `c1` ocupa el lugar del incendio (que ya no tiene marcador en api); `c2`…`c6` tienen posiciones provisionales, porque los otros cinco lugares de casos de la imagen siguen ocupados por los marcadores de demostración de `cityCases` («Disponible en una próxima iteración»), que una prueba exige conservar.
+- **Dónde se mostraría:** los marcadores de la Central de casos en la Ciudad (api).
+- **Opciones:** quitar en api los marcadores de demostración de `cityCases` y poner `c2`…`c6` en sus lugares; dar posiciones definitivas a `c2`…`c6` junto a esos marcadores; reemplazar los marcadores de demostración por los casos reales uno a uno.
+- **Si no se muestra:** los seis casos se ven en la Ciudad, `c2`…`c6` en lugares provisionales.
+- **Estado:** pendiente de decisión del usuario.
+
 ## 2026-11-04 · Ajuste carga-casos · Imágenes de los seis casos
 
 - **Dato:** los JSON de `src/data/cases/plataforma/` nombran 24 imágenes (`<caso>-intro.png` y `<caso>-phase-1..3.png` de `hidden-plaza`, `scholarship-mystery`, `harvest-race`, `thousand-voices-festival`, `impossible-teams-tournament` y `silent-lagoon`) que no existen en `public/` (`scripts/verificar_contenido_front.py` las lista como aviso).

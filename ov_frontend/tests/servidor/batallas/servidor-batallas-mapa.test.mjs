@@ -30,7 +30,7 @@ test('la batalla abre su desafío y el caso, la Central de Casos', () => {
   assert.deepEqual(copia(m.contenidos.reproductorPorTipo(m.bloques, 't-caso')), {
     tipo: 'caso',
     actividad: 't-caso',
-    caso: 'forest-fire',
+    caso: 'hidden-plaza',
   })
   assert.equal(m.contenidos.reproductorPorTipo(m.bloques, 't-inicio'), undefined)
   const bloqueada = mapa({ 't-batalla': 'BLOQUEADA' })
@@ -45,7 +45,7 @@ test('en el mapa la batalla lleva la espada y no queda como contenido pendiente'
   assert.deepEqual([detalle.badge, detalle.disabled, detalle.activityId], ['Disponible', false, 't-batalla'])
   const caso = m.ciudad().find((p) => p.specActivityId === 't-caso')
   const detalleCaso = m.detalles(caso, {}, {})
-  assert.deepEqual([detalleCaso.disabled, detalleCaso.href], [false, '/student/cases/forest-fire'])
+  assert.deepEqual([detalleCaso.disabled, detalleCaso.href], [false, '/student/cases/hidden-plaza'])
 })
 
 test('la Ciudad no repite el marcador fijo del desafío ni del caso que representa el servidor', () => {

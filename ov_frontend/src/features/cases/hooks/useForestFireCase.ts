@@ -1,18 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
-import { forestFirePhases } from '@/data/content/forestFireCase'
-import { dimensionNames } from '@/features/discovery/lib/catalogDetails'
 import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
-import { superaCaso, textoPuntajeCaso, textoTiposCaso } from '@/lib/servidor/adaptadoresCasos'
+import { superaCaso, textoPuntajeCaso } from '@/lib/servidor/adaptadoresCasos'
 import { consultarCasos, resolverCaso } from '@/store/servidor/casos'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
+import type { CasoJugable } from '@/types/cases'
 import type { DesbloqueoNuevo, OcupacionNueva } from '@/types/servidor'
 
 import { finishForestFireAttempt } from '@/features/cases/lib/forestFireCaseOutcome'
 import { useAdventure, useAdventureStorageError } from '@/store/adventureStore'
 import { useExplorationError } from '@/store/explorationStore'
 import {
-  FOREST_FIRE_BUDGET_LIMIT,
+  CASO_LOCAL,
   getCorrectOccupationIds,
   getTotalSatisfaction,
   SHOW_EXTRA_PROFESSIONAL,
@@ -24,10 +23,14 @@ import {
 
 type Screen =
   'phase-intro' | 'workspace' | 'result' | 'game-over' | 'report' | 'extra-question' | 'word-cloud'
-// Resultado del intento según el servidor (F04): el umbral es el del caso.
-export type ResultadoCasoServidor = { superado: boolean; puntaje: string; tipos: string; mejor: number }
-// Con `actividad` (api), cada intento terminado se envía a resolver-caso.
-export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
+// Resultado del intento según el servidor (F04): el umbral es el del caso. Ajuste carga-casos: la temática del
+// caso reemplaza los tipos RIASEC.
+export type ResultadoCasoServidor = { superado: boolean; puntaje: string; tematica: string; mejor: number }
+// Con `actividad` (api), cada intento terminado se envía a resolver-caso. `caso`: el que se juega (local: el incendio).
+export function useForestFireCase({
+  actividad,
+  caso = CASO_LOCAL,
+}: { actividad?: string; caso?: CasoJugable } = {}) {
   const conServidor = modoApi && !!actividad
   const [enviando, setEnviando] = useState(false)
   const [errorEnvio, setErrorEnvio] = useState('')
@@ -36,7 +39,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
   // The separate case intro already introduces phase 1.
   const [screen, setScreen] = useState<Screen>('workspace')
   const [step, setStep] = useState(0)
-  const [assignments, setAssignments] = useState(createInitialAssignments)
+  const [assignments, setAssignments] = useState(() => createInitialAssignments(caso))
   const [heardByPhase, setHeardByPhase] = useState<Record<string, string[]>>({})
   const [visitedByPhase, setVisitedByPhase] = useState<Record<string, number[]>>({})
   const [dragContactId, setDragContactId] = useState<string>()
@@ -49,10 +52,10 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
   const [extraReason, setExtraReason] = useState('')
   const finalized = useRef(false)
   const main = useRef<HTMLElement>(null)
-  const phase = forestFirePhases[phaseIndex]
+  const phase = caso.phases[phaseIndex]
   const heard = heardByPhase[phase.id] ?? []
   const visited = visitedByPhase[phase.id] ?? [0]
-  const remaining = FOREST_FIRE_BUDGET_LIMIT - getBudgetSpent(assignments)
+  const remaining = caso.presupuesto - getBudgetSpent(assignments)
   const phaseAssignments = assignments[phase.id]
   const labels = ['Escuchar', ...phase.problems.map((_, i) => `Problema ${i + 1}`), 'Revisar']
   const adventure = useAdventure()
@@ -81,14 +84,14 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     setAssignments((current) =>
       current[phase.id][problemId].includes(id)
         ? current
-        : toggleAssignment(current, phase.id, problemId, id),
+        : toggleAssignment(current, phase.id, problemId, id, caso),
     )
   }
   function restart() {
     finalized.current = false
     setPhaseIndex(0)
     setStep(0)
-    setAssignments(createInitialAssignments())
+    setAssignments(createInitialAssignments(caso))
     setHeardByPhase({})
     setVisitedByPhase({})
     setDragContactId(undefined)
@@ -109,23 +112,23 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     const casos =
       respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar' ? await consultarCasos() : null
     setEnviando(false)
-    const caso = casos?.tipo === 'ok' ? casos.datos.find((c) => c.actividad === actividad) : undefined
+    const cuenta = casos?.tipo === 'ok' ? casos.datos.find((c) => c.actividad === actividad) : undefined
     if (respuesta.tipo !== 'ok' && respuesta.tipo !== 'guardado_sin_refrescar') {
       setErrorEnvio(mensajeErrorServidor(respuesta))
       return undefined
     }
-    if (!caso) {
+    if (!cuenta) {
       setErrorEnvio(casos && casos.tipo !== 'ok' ? mensajeErrorServidor(casos) : 'No se encontró el caso.')
       return undefined
     }
-    return { datos: respuesta.datos, caso }
+    return { datos: respuesta.datos, caso: cuenta }
   }
   async function showReport() {
     if (enviando) return
     if (!finalized.current && conServidor) {
       // Ajustes Central (6): puntos de satisfacción; resolver-caso da la escala y GET casos, el mejor.
-      const puntaje = getTotalSatisfaction(assignments)
-      const envio = await enviarIntento(puntaje, getCorrectOccupationIds(assignments))
+      const puntaje = getTotalSatisfaction(assignments, caso)
+      const envio = await enviarIntento(puntaje, getCorrectOccupationIds(assignments, caso))
       if (!envio) return
       finalized.current = true
       setNewIcons(envio.datos.ocupaciones_nuevas)
@@ -133,7 +136,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
       setResultadoServidor({
         superado: superaCaso(puntaje, envio.datos),
         puntaje: textoPuntajeCaso(puntaje, envio.datos),
-        tipos: textoTiposCaso(envio.caso, dimensionNames),
+        tematica: caso.tematica,
         mejor: envio.caso.mejor_puntaje ?? puntaje,
       })
     } else if (!finalized.current) {
@@ -148,7 +151,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
     setScreen('report')
   }
   async function advance() {
-    if (phaseIndex < forestFirePhases.length - 1) {
+    if (phaseIndex < caso.phases.length - 1) {
       if (remaining < 1) {
         // El presupuesto agotado cuenta como intento fallido, con puntaje 0.
         if (conServidor && !finalized.current) {
@@ -170,6 +173,7 @@ export function useForestFireCase({ actividad }: { actividad?: string } = {}) {
       ? phase.messages.every((m) => heard.includes(m.id))
       : index <= phase.problems.length && phaseAssignments[phase.problems[index - 1].id].length > 0
   return {
+    caso,
     phaseIndex,
     screen,
     setScreen,

@@ -15,8 +15,8 @@
   "nodos": [],
   "caso": "harvest-race",
   "mapa": {
-    "x": 750,
-    "y": 190,
+    "x": 600,
+    "y": 170,
     "icono": "informativa"
   }
 }

@@ -1,6 +1,7 @@
 import { forestFirePhases, forestFireProfessionals } from '@/data/content/forestFireCase'
 import type { AdventureState } from '@/types/adventure'
-import type { ForestFireAssignments, ForestFirePhase, ForestFireProblem } from '@/types/cases'
+import { getExplorationImagePath } from '@/lib/explorationAssets'
+import type { CasoJugable, ForestFireAssignments, ForestFirePhase, ForestFireProblem } from '@/types/cases'
 
 const FOREST_FIRE_BUDGET_LIMIT = 16
 const FOREST_FIRE_MAX_SATISFACTION = forestFirePhases.reduce(
@@ -12,9 +13,31 @@ const FOREST_FIRE_MAX_SATISFACTION = forestFirePhases.reduce(
 const FOREST_FIRE_PASS_SCORE = 10
 const SHOW_EXTRA_PROFESSIONAL = false
 
-function createInitialAssignments(): ForestFireAssignments {
+// Ajuste carga-casos: el incendio forestal es el caso del modo local (congelado). Cada función recibe el caso; sin
+// él, juega este. En api, el caso sale de su JSON con la escala del servidor (`casoDesdeJson`).
+const CASO_LOCAL: CasoJugable = {
+  id: 'forest-fire',
+  titulo: 'Incendio forestal',
+  tematica: '',
+  intro: {
+    narrativa: [
+      'Durante la madrugada, un incendio forestal se originó en las colinas cercanas a una pequeña localidad rural. Impulsado por el viento y la vegetación seca de la temporada, el fuego avanza sin control, amenazando viviendas, caminos y a las familias que viven en la zona. La comunidad ha dado la voz de alerta y ha solicitado apoyo urgente.',
+      'Tú has sido designado como coordinador de respuesta ante la emergencia.',
+    ],
+    imagen: getExplorationImagePath('forest-fire-case-background.png'),
+    alerta: 'Emergencia activa',
+    llama: true,
+  },
+  presupuesto: FOREST_FIRE_BUDGET_LIMIT,
+  minimo: FOREST_FIRE_PASS_SCORE,
+  maximo: FOREST_FIRE_MAX_SATISFACTION,
+  phases: forestFirePhases,
+  professionals: forestFireProfessionals,
+}
+
+function createInitialAssignments(caso: CasoJugable = CASO_LOCAL): ForestFireAssignments {
   return Object.fromEntries(
-    forestFirePhases.map((phase) => [
+    caso.phases.map((phase) => [
       phase.id,
       Object.fromEntries(phase.problems.map((problem) => [problem.id, []])),
     ]),
@@ -26,10 +49,11 @@ function toggleAssignment(
   phaseId: string,
   problemId: string,
   professionalId: string,
+  caso: CasoJugable = CASO_LOCAL,
 ) {
   const selected = assignments[phaseId]?.[problemId]
-  if (!selected || !forestFireProfessionals.some((p) => p.id === professionalId)) return assignments
-  if (!selected.includes(professionalId) && getBudgetSpent(assignments) >= FOREST_FIRE_BUDGET_LIMIT)
+  if (!selected || !caso.professionals.some((p) => p.id === professionalId)) return assignments
+  if (!selected.includes(professionalId) && getBudgetSpent(assignments) >= caso.presupuesto)
     return assignments
   return {
     ...assignments,
@@ -56,14 +80,14 @@ function canOpenPhaseStep(
   )
 }
 
-function getCorrectOccupationIds(assignments: ForestFireAssignments) {
+function getCorrectOccupationIds(assignments: ForestFireAssignments, caso: CasoJugable = CASO_LOCAL) {
   return [
     ...new Set(
-      forestFirePhases.flatMap((phase) =>
+      caso.phases.flatMap((phase) =>
         phase.problems.flatMap((problem) =>
           problem.expectedProfessionalIds
             .filter((id) => assignments[phase.id]?.[problem.id]?.includes(id))
-            .map((id) => forestFireProfessionals.find((p) => p.id === id)?.occupationId)
+            .map((id) => caso.professionals.find((p) => p.id === id)?.occupationId)
             .filter((id): id is string => !!id),
         ),
       ),
@@ -89,8 +113,8 @@ function getPhaseSatisfaction(phase: ForestFirePhase, assignments: Record<string
   )
 }
 
-function getTotalSatisfaction(assignments: ForestFireAssignments) {
-  return forestFirePhases.reduce(
+function getTotalSatisfaction(assignments: ForestFireAssignments, caso: CasoJugable = CASO_LOCAL) {
+  return caso.phases.reduce(
     (total, phase) => total + getPhaseSatisfaction(phase, assignments[phase.id] ?? {}),
     0,
   )
@@ -108,6 +132,7 @@ function getForestFireCaseStatus(adventure: Pick<AdventureState, 'solvedCaseIds'
 }
 
 export {
+  CASO_LOCAL,
   getForestFireCaseStatus,
   FOREST_FIRE_BUDGET_LIMIT,
   FOREST_FIRE_MAX_SATISFACTION,

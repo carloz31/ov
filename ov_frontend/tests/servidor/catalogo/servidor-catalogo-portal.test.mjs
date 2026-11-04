@@ -26,7 +26,7 @@ function catalogo(cuenta, ruta) {
     if (url.pathname.endsWith('/catalogo/carreras')) return { body: jsonServidor('ruta/ruta-catalogo-carreras') }
     if (url.pathname.endsWith('/catalogo/ocupaciones')) return { body: jsonServidor('ruta/ruta-catalogo-ocupaciones-riasec') }
     if (url.pathname.endsWith('/catalogo/carreras/psychology')) return { body: jsonServidor('ruta/ruta-catalogo-carrera-psychology') }
-    if (url.pathname.endsWith('/catalogo/ocupaciones/psychologist'))
+    if (url.pathname.endsWith('/catalogo/ocupaciones/19-3033.00'))
       return { body: jsonServidor('ruta/ruta-catalogo-ocupacion-psychologist') }
     if (url.pathname.endsWith('/catalogo/instituciones/t-uni')) return { body: jsonServidor('ruta/ruta-catalogo-institucion-t-uni') }
     if (url.pathname.endsWith('/familias')) return { body: jsonServidor('ruta/ruta-catalogo-familias') }
@@ -116,12 +116,12 @@ for (const { cuenta, base, coletilla } of ROLES) {
     // Ajuste resultados-intereses: las ocupaciones de la familia enlazan con las rutas del portal.
     const [familia] = nombres(arbol, 'OcupacionesDeLaFamilia')
     assert.ok(familia.props.ocupaciones.principales.length > 0)
-    assert.ok(familia.props.rutas.occupation('psychologist').startsWith(`${base}/professions/`))
+    assert.ok(familia.props.rutas.occupation('19-3033.00').startsWith(`${base}/professions/`))
     assert.ok(familia.props.rutas.catalog.professions.startsWith(base))
     carrera.unmount()
 
     const { DetalleOcupacionServidor } = app.load('src/features/discovery/components/DetalleOcupacionServidor.tsx')
-    const ocupacion = app.mount(DetalleOcupacionServidor, { codigo: 'psychologist', variante: 'portal' })
+    const ocupacion = app.mount(DetalleOcupacionServidor, { codigo: '19-3033.00', variante: 'portal' })
     ocupacion.render()
     await esperar()
     arbol = ocupacion.render()

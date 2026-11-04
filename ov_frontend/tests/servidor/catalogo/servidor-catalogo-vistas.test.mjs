@@ -28,7 +28,7 @@ function catalogo(ruta = '/student/catalog/careers') {
     if (url.pathname.endsWith('/catalogo/instituciones')) return { body: jsonServidor('ruta/ruta-catalogo-instituciones') }
     if (url.pathname.endsWith('/catalogo/ocupaciones')) return { body: jsonServidor('ruta/ruta-catalogo-ocupaciones-riasec') }
     if (url.pathname.endsWith('/catalogo/carreras/psychology')) return { body: jsonServidor('ruta/ruta-catalogo-carrera-psychology') }
-    if (url.pathname.endsWith('/catalogo/ocupaciones/psychologist'))
+    if (url.pathname.endsWith('/catalogo/ocupaciones/19-3033.00'))
       return { body: jsonServidor('ruta/ruta-catalogo-ocupacion-psychologist') }
     if (url.pathname.endsWith('/catalogo/instituciones/t-uni')) return { body: jsonServidor('ruta/ruta-catalogo-institucion-t-uni') }
     if (url.pathname.endsWith('/catalogo/carreras/no-existe'))
@@ -260,7 +260,7 @@ test('los detalles del servidor muestran sus datos y registran la vista una sola
   // se desmonta antes de montar el siguiente.
   carrera.unmount()
   const { DetalleOcupacionServidor } = app.load('src/features/discovery/components/DetalleOcupacionServidor.tsx')
-  const ocupacion = app.mount(DetalleOcupacionServidor, { codigo: 'psychologist' })
+  const ocupacion = app.mount(DetalleOcupacionServidor, { codigo: '19-3033.00' })
   ocupacion.render()
   await esperar()
   arbol = ocupacion.render()

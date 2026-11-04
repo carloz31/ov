@@ -123,10 +123,10 @@ test('un favorito confirmado se aplica a listas y detalles, y descarta la lista 
   assert.equal(app.mount(() => store.useListaCatalogo('carreras', { favoritos: true }, false), {}).render(), undefined)
   // Ajuste resultados-intereses: el resultado no lleva favoritos; marcar uno no lo toca.
   const resultado = almacen.obtenerEstadoServidor().resultadoRiasec
-  await favoritos.alternarFavorito('OCUPACION', 'psychologist', true)
+  await favoritos.alternarFavorito('OCUPACION', '19-3033.00', true)
   assert.equal(almacen.obtenerEstadoServidor().resultadoRiasec, resultado)
   const detalle = app.mount(() => store.useDetalleCatalogo('carreras', 'psychology'), {}).render()
-  assert.ok(detalle.datos.ocupaciones_de_la_familia.principales.some((o) => o.codigo === 'psychologist'))
+  assert.ok(detalle.datos.ocupaciones_de_la_familia.principales.some((o) => o.codigo === '19-3033.00'))
   assert.deepEqual(
     copia(app.requests.filter((r) => r.url.endsWith('-favorito')).map((r) => r.body.tipo)),
     ['CARRERA', 'CARRERA', 'OCUPACION'],

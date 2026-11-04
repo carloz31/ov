@@ -1,6 +1,5 @@
 import { useForestFireCase } from '@/features/cases/hooks/useForestFireCase'
 import { ArrowDown, X } from 'lucide-react'
-import { forestFireProfessionals } from '@/data/content/forestFireCase'
 import { ProfessionalDirectory } from '@/features/cases/components/ProfessionalDirectory'
 import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
 import { toggleAssignment } from '@/features/cases/lib/forestFireCaseLogic'
@@ -8,6 +7,7 @@ import { StepActions } from '@/features/cases/components/StepActions'
 import { ClueList } from '@/features/cases/components/ClueList'
 export function ForestFireWorkspace({ model }: { model: ReturnType<typeof useForestFireCase> }) {
   const {
+    caso,
     step,
     setAssignments,
     dragContactId,
@@ -20,6 +20,7 @@ export function ForestFireWorkspace({ model }: { model: ReturnType<typeof useFor
     goToStep,
     call,
   } = model
+  const forestFireProfessionals = caso.professionals
   return (
     <section className="ff-workspace" key={`${phase.id}-${step}`}>
       <div className="ff-problem-column">
@@ -74,7 +75,7 @@ export function ForestFireWorkspace({ model }: { model: ReturnType<typeof useFor
                     aria-label={`Quitar a ${person.personName}`}
                     onClick={() =>
                       setAssignments((current) =>
-                        toggleAssignment(current, phase.id, phase.problems[step - 1].id, id),
+                        toggleAssignment(current, phase.id, phase.problems[step - 1].id, id, caso),
                       )
                     }
                   >
@@ -98,6 +99,7 @@ export function ForestFireWorkspace({ model }: { model: ReturnType<typeof useFor
         />
       </div>
       <ProfessionalDirectory
+        caso={caso}
         selectedIds={phaseAssignments[phase.problems[step - 1].id]}
         budgetRemaining={remaining}
         problemTitle={phase.problems[step - 1].title}

@@ -21,13 +21,8 @@ export const LIMITE_CATALOGO = 20
 // Ajuste catalogo-datos-reales (F6): detalles abiertos que se conservan en memoria.
 export const LIMITE_DETALLES = 20
 
-// La hoja de vida de la Central pide su ocupación al abrirse.
-export function consultarOcupacion(codigo: string) {
-  return consultarCuenta((cuenta) => apiCatalogo.obtenerOcupacion(cuenta, codigo))
-}
-
 // Ajuste catalogo-apoderado: listas, detalles y opciones se piden con la cuenta de la sesión (también el apoderado y
-// la orientadora); la ocupación de la Central y el lugar inesperado siguen siendo del estudiante.
+// la orientadora); el lugar inesperado sigue siendo del estudiante.
 
 // F06 · Listas del catálogo, pedidas al mostrarse y acumuladas con «Mostrar más». Ajuste catalogo-datos-reales:
 // cada clase guarda solo su combinación de filtros activa; cambiar de búsqueda o filtro descarta las páginas

@@ -184,12 +184,12 @@ test('isAffine usa código y banda del servidor y oculta afinidades antes de rev
     resultado = jsonServidor('ruta/ruta-resultado-riasec')
   const muy = resultado.ocupaciones.find((o) => o.banda === 'MUY_AFIN')
   const afin = resultado.ocupaciones.find((o) => o.banda === 'AFIN')
-  assert.equal(s.isAffine('geologist', ['intereses'], { resultado, revelado: false }), undefined)
+  assert.equal(s.isAffine('19-2042.00', ['intereses'], { resultado, revelado: false }), undefined)
   assert.equal(s.isAffine(muy.codigo, [], { resultado, revelado: true }), 'Muy afín')
   if (afin) assert.equal(s.isAffine(afin.codigo, [], { resultado, revelado: true }), 'Afín')
   assert.equal(s.isAffine('no-es-afin', ['intereses'], { resultado, revelado: true }), undefined)
   assert.equal(
-    s.isAffine('geologist', [], { resultado: { ...resultado, perfil_plano: true }, revelado: true }),
+    s.isAffine('19-2042.00', [], { resultado: { ...resultado, perfil_plano: true }, revelado: true }),
     undefined,
   )
 })

@@ -8,6 +8,7 @@ import type {
   Inesperada,
   InstitucionDetalle,
   InstitucionResumen,
+  OcupacionCaso,
   OcupacionDetalle,
   OcupacionResumen,
   Pagina,
@@ -66,6 +67,14 @@ export function obtenerDetalleCatalogo<C extends ClaseCatalogo>(
 
 export function obtenerOcupacion(cuenta: string, codigo: string): Promise<RespuestaServidor<OcupacionDetalle>> {
   return obtener(`/cuentas/${encodeURIComponent(cuenta)}/catalogo/ocupaciones/${encodeURIComponent(codigo)}`)
+}
+
+// Ajuste carga-casos: las ocupaciones del directorio de un caso, en el orden pedido (cargo y hoja de vida).
+export function obtenerOcupacionesCaso(
+  cuenta: string,
+  codigos: string[],
+): Promise<RespuestaServidor<OcupacionCaso[]>> {
+  return obtener(`${base(cuenta)}/ocupaciones-caso?codigos=${encodeURIComponent(codigos.join(','))}`)
 }
 
 export function obtenerFamilias(cuenta: string): Promise<RespuestaServidor<FamiliaPublica[]>> {

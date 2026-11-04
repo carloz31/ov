@@ -77,7 +77,7 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
         final[0].titulo,
         final[0].cita,
         final[0].enlace,
-        'Luis Mendoza · Paramédico / técnico en emergencias médicas · 5 años de experiencia',
+        'Luis Mendoza · Antropólogo y arqueólogo · 5 años de experiencia',
         { disponible: true, pista: null, caso, casoDisponible: true, visto: true },
       ],
       [

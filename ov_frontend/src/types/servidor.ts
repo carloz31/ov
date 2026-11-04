@@ -340,7 +340,6 @@ export type RespuestaBatallaEntrada = { pregunta: string; opcion: number }
 export type CasoCuenta = {
   actividad: string
   titulo: string
-  dimensiones: string[]
   estado: EstadoActividad
   intentos: number
   superado: boolean
@@ -349,6 +348,14 @@ export type CasoCuenta = {
   mejor_puntaje: number | null
   puntaje_minimo: number
   puntaje_maximo: number
+}
+// Ajuste carga-casos: una ocupación del directorio de un caso (`GET …/catalogo/ocupaciones-caso`).
+export type OcupacionCaso = {
+  codigo: string
+  titulo: string
+  descripcion: string | null
+  conocimientos: string[]
+  aptitudes: string[]
 }
 export type OcupacionColeccion = { ocupacion: string; titulo: string; caso: string; obtenida_en: string }
 export type TestimonioEstado = {

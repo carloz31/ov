@@ -151,7 +151,7 @@ test('el almacén pide la sección y las listas con sus filtros; las acciones us
     ['/api/cuentas/est-ana/entrevistas?buscar=luz&favoritas=true&vista=SALON&limite=20&desde=0'],
   )
   app.requests.length = 0
-  assert.equal((await store.guardarLoQuePienso('electrician', 'a', 'b', 'c')).tipo, 'ok')
+  assert.equal((await store.guardarLoQuePienso('47-2111.00', 'a', 'b', 'c')).tipo, 'ok')
   assert.equal(almacen.obtenerEstadoServidor().investigaciones.estado, 'vencido')
   assert.equal((await store.pedirSugerenciasGuion()).datos.estado, 'LISTAS')
   const ficha = {
@@ -168,7 +168,7 @@ test('el almacén pide la sección y las listas con sus filtros; las acciones us
   assert.deepEqual(copia(acciones.map((r) => [r.url, r.body])), [
     [
       '/api/acciones/guardar-lo-que-pienso',
-      { cuenta: 'est-ana', ocupacion: 'electrician', dia: 'a', necesita: 'b', duda: 'c' },
+      { cuenta: 'est-ana', ocupacion: '47-2111.00', dia: 'a', necesita: 'b', duda: 'c' },
     ],
     ['/api/acciones/pedir-sugerencias-guion', { cuenta: 'est-ana' }],
     [

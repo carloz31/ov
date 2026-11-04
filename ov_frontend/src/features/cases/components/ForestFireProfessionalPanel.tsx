@@ -1,15 +1,18 @@
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
 import { forestFireProfessionals } from '@/data/content/forestFireCase'
+import type { ForestFireProfessional } from '@/types/cases'
 import { ProfessionalResume } from '@/features/cases/components/ProfessionalResume'
 export function ForestFireProfessionalPanel({
   initialProfessionalId,
   triggerLabel = 'Ver ficha',
+  professionals = forestFireProfessionals,
 }: {
   initialProfessionalId?: string
   triggerLabel?: string
+  // Ajuste carga-casos: el directorio del caso que se juega (local: el del incendio).
+  professionals?: ForestFireProfessional[]
 }) {
-  const professional =
-    forestFireProfessionals.find((p) => p.id === initialProfessionalId) ?? forestFireProfessionals[0]
+  const professional = professionals.find((p) => p.id === initialProfessionalId) ?? professionals[0]
   return (
     <Dialog>
       <DialogTrigger asChild>

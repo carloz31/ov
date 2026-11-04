@@ -39,8 +39,6 @@ export function estadoCaso(caso: CasoCuenta | undefined) {
         : null,
   }
 }
-export const textoTiposCaso = (caso: Pick<CasoCuenta, 'dimensiones'>, nombres: Record<string, string>) =>
-  `Tipo del caso: ${caso.dimensiones.map((d) => nombres[d] ?? d).join(' · ')}`
 export const ocupacionesObtenidas = (coleccion: OcupacionColeccion[] | null) =>
   new Set((coleccion ?? []).map((o) => o.ocupacion))
 // Bloqueado: la pista si la tiene; si no, el mensaje de bloqueo se consulta aparte.

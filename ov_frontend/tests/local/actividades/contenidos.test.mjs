@@ -20,8 +20,9 @@ test('cada JSON de contenido está registrado explícitamente y cada clave tiene
   const archivos = rutas.map(ruta => ruta.split('/').at(-1)).sort()
   // Ajuste del diario de F05: suma los cinco recuerdos de Lumi (`t_lumi_*`); el ajuste mochila, `t_caso_2`; F09,
   // `t_investigador` y `t_investigador_cierre`; el ajuste carga-instrumentos, `t_mision_inteligencias` y
-  // `t_mision_habilidades`; el ajuste carga-actividades, los 81 de `plataforma/`.
-  assert.equal(archivos.length, 43 + 81)
+  // `t_mision_habilidades`; el ajuste carga-actividades, los 81 de `plataforma/`, y el ajuste carga-casos, los seis
+  // casos de la Central (`c1`…`c6`).
+  assert.equal(archivos.length, 43 + 81 + 6)
   assert.deepEqual(archivos, Object.keys(contenidos).map(clave => `${clave}.json`).sort())
   const fuente = readFileSync('src/data/activities/contenidos.ts', 'utf8')
   const imports = [...fuente.matchAll(/from '\.\/contenidos\/(?:ruta\/|plataforma\/)?([^'/]+)\.json'/g)].map(match => match[1]).sort()
