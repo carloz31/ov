@@ -23,7 +23,7 @@ def base(tmp_path_factory):
 def test_carga_conteos(base):
     conteos, _ = base
     assert conteos['cuenta'] == 8
-    assert conteos['actividad'] == 81 + 7  # 81 reales + casos y recuerdos de Lumi provisionales
+    assert conteos['actividad'] == 87 + 5  # 81 reales y los seis casos (ajuste carga-casos) + recuerdos de Lumi provisionales
     assert conteos['item_registro'] == 54
 
 

@@ -1,0 +1,22 @@
+{
+  "id": "c2",
+  "codigo": "c2",
+  "tipo": "encuentro",
+  "titulo": "Las becas que nadie puede explicar",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 41,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 18,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "caso": "scholarship-mystery",
+  "mapa": {
+    "x": 460,
+    "y": 130,
+    "icono": "informativa"
+  }
+}

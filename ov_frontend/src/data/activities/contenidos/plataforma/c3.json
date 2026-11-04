@@ -1,0 +1,22 @@
+{
+  "id": "c3",
+  "codigo": "c3",
+  "tipo": "encuentro",
+  "titulo": "La cosecha contra el reloj",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 42,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 15,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "caso": "harvest-race",
+  "mapa": {
+    "x": 750,
+    "y": 190,
+    "icono": "informativa"
+  }
+}

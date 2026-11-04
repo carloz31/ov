@@ -2,6 +2,22 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-04 · Ajuste carga-casos · Imágenes de los seis casos
+
+- **Dato:** los JSON de `src/data/cases/plataforma/` nombran 24 imágenes (`<caso>-intro.png` y `<caso>-phase-1..3.png` de `hidden-plaza`, `scholarship-mystery`, `harvest-race`, `thousand-voices-festival`, `impossible-teams-tournament` y `silent-lagoon`) que no existen en `public/` (`scripts/verificar_contenido_front.py` las lista como aviso).
+- **Dónde se mostraría:** la imagen de la intro del caso (`ExplorationCaseIntroView`) y el fondo de cada fase de la Central.
+- **Opciones:** subir las imágenes con esos nombres a `public/images/`; cambiar los nombres de los JSON por imágenes que existan; dejar el respaldo.
+- **Si no se muestra:** la intro y las fases usan `exploration-case-background.png`.
+- **Estado:** pendiente de las imágenes; no bloquea la carga.
+
+## 2026-11-04 · Ajuste carga-casos · Voz T05 que anuncia `b3-10`
+
+- **Dato:** el `mensajeFin` de `b3-10` («Caminos que no van en línea recta») dice «Se abrió la voz T05», y ese testimonio no existe: en `contenido` solo están los doce de prueba `tc1-1..tc6-2`, que regalan los casos.
+- **Dónde se mostraría:** el cierre de `b3-10` y la mochila («Voces de la ciudad»).
+- **Opciones:** cargar T05 en el ajuste de testimonios con una regla que lo abra al completar `b3-10`; quitar la mención del `mensajeFin`; anunciar la voz que corresponda cuando exista.
+- **Si no se muestra:** el cierre anuncia una voz que no aparece.
+- **Estado:** pendiente para el ajuste de testimonios.
+
 ## 2026-11-04 · Ajuste carga-actividades · Imágenes de los personajes
 
 - **Dato:** `avatarUrl` y `expresiones` de los 23 personajes de `catalogo.json` (los 19 del contenido real, Helena incluida, más Lumi, Mara, Aurelio y la orientación) apuntan a `/img/personajes/*.png`, y esa carpeta no existe en `public/`.
@@ -12,7 +28,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-11-04 · Ajuste carga-actividades · Testimonios que nombran las preguntas de `ma2`
 
-- **Dato:** las preguntas `ma2-p06` y `ma2-p07` de la batalla «Profesiones sin género» nombran los testimonios T02 y T08, que aún no existen (en `contenido` solo están los provisionales `t-testimonio-1..4`).
+- **Dato:** las preguntas `ma2-p06` y `ma2-p07` de la batalla «Profesiones sin género» nombran los testimonios T02 y T08, que aún no existen (en `contenido` solo están los doce de prueba `tc1-1..tc6-2` del ajuste carga-casos).
 - **Dónde se mostraría:** el enunciado o la explicación de esas preguntas, y la mochila («Voces de la ciudad») cuando existan.
 - **Opciones:** cargar T02 y T08 en el ajuste de testimonios; reescribir esas dos preguntas sin nombrarlos; quitarlas del pool (el de `ma2` tiene 10, el mínimo es 10).
 - **Si no se muestra:** la pregunta cita una voz que el estudiante no puede encontrar todavía.

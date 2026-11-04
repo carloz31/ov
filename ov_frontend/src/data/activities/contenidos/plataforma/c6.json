@@ -1,0 +1,22 @@
+{
+  "id": "c6",
+  "codigo": "c6",
+  "tipo": "encuentro",
+  "titulo": "La laguna que amaneció en silencio",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 45,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 18,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "caso": "silent-lagoon",
+  "mapa": {
+    "x": 760,
+    "y": 510,
+    "icono": "informativa"
+  }
+}

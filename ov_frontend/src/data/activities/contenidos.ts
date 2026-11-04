@@ -125,6 +125,12 @@ import p5 from './contenidos/plataforma/p5.json'
 import p6 from './contenidos/plataforma/p6.json'
 import p7 from './contenidos/plataforma/p7.json'
 import p8 from './contenidos/plataforma/p8.json'
+import c1 from './contenidos/plataforma/c1.json'
+import c2 from './contenidos/plataforma/c2.json'
+import c3 from './contenidos/plataforma/c3.json'
+import c4 from './contenidos/plataforma/c4.json'
+import c5 from './contenidos/plataforma/c5.json'
+import c6 from './contenidos/plataforma/c6.json'
 import type { ContenidoActividad } from '@/types/activities'
 
 export const contenidos: Record<string, ContenidoActividad> = {
@@ -252,6 +258,12 @@ export const contenidos: Record<string, ContenidoActividad> = {
   p6,
   p7,
   p8,
+  c1,
+  c2,
+  c3,
+  c4,
+  c5,
+  c6,
 } as Record<string, ContenidoActividad>
 
 export function contenidoPorClave(clave: string): ContenidoActividad | undefined {

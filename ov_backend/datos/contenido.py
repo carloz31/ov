@@ -20,8 +20,7 @@ PROVISIONALES = (
     ('Cuentas, salones, vínculos y orientadoras', 'ruta.CUENTAS, SALONES, VINCULOS, ORIENTADORAS_SALONES', 'carga de cuentas del piloto'),
     ('Configuración del salón', 'ruta.SALON_INSTRUMENTOS', 'B14'),
     ('Registro prioritario del salón', "('5A', 'b1-3')", 'B14'),
-    ('Casos t-caso y t-caso-2', 'ruta.ACTIVIDADES, CONFIGURACION_CASOS, DESCRIPCIONES', 'ajuste de casos'),
-    ('Testimonios t-testimonio-1..4', 'ruta.TESTIMONIOS', 'ajuste de testimonios'),
+    ('Testimonios de prueba tc1-1..tc6-2 (dos por caso)', 'TESTIMONIOS', 'ajuste de testimonios'),
     ('Conversaciones t-conv-1 y t-conv-2', 'ruta.CONVERSACIONES', 'ajuste de conversaciones'),
     ('Diario: t-diario-fija, t-diario-tras-conversar y las DIARIA', 'ruta.PREGUNTAS_DIARIO, REFERENCIAS', 'ajuste de registros y diario'),
     ('Recuerdos de Lumi t-lumi-1..5 y sus reglas por amistad', 'ruta.ACTIVIDADES, PROPIEDADES, REGLAS', 'contenido de Lumi'),
@@ -51,8 +50,8 @@ BLOQUES = (
     ('FAMILIA', 1, 'Actividades para familias', 'PORTAL_FAMILIA', 'APODERADO'),
 )
 
-# PROVISIONAL: actividades que se toman de `ruta` (casos y recuerdos de Lumi).
-_DE_RUTA = ('t-caso', 't-caso-2', *ruta.RECUERDOS_LUMI)
+# PROVISIONAL: actividades que se toman de `ruta` (recuerdos de Lumi).
+_DE_RUTA = ruta.RECUERDOS_LUMI
 
 # (código, bloque, título, tipo, puntaje mínimo de un CASO, duración estimada en minutos). El orden es el de la
 # tupla dentro de cada bloque y el contenido es el código con guiones bajos.
@@ -138,6 +137,14 @@ ACTIVIDADES = (
     ('p6', 'FAMILIA', 'Cómo conversar con mi hijo', 'INFORMATIVA', None, 8),
     ('p7', 'FAMILIA', 'Cuando mi hijo duda o cambia de opinión', 'INFORMATIVA', None, 8),
     ('p8', 'FAMILIA', 'Mi carta para mi hijo', 'INFORMATIVA', None, 8),
+    # Ajuste carga-casos: los seis casos de la Central, al final de la ciudad. Cada uno juega el JSON de
+    # ov_frontend/src/data/cases/plataforma/ que nombra su contenido (`caso`).
+    ('c1', 'CIUDAD', 'La plaza que esconde otra historia', 'CASO', 6, 15),
+    ('c2', 'CIUDAD', 'Las becas que nadie puede explicar', 'CASO', 8, 18),
+    ('c3', 'CIUDAD', 'La cosecha contra el reloj', 'CASO', 6, 15),
+    ('c4', 'CIUDAD', 'El festival de las mil voces', 'CASO', 6, 15),
+    ('c5', 'CIUDAD', 'El torneo de los equipos imposibles', 'CASO', 6, 15),
+    ('c6', 'CIUDAD', 'La laguna que amaneció en silencio', 'CASO', 8, 18),
     *(a for a in ruta.ACTIVIDADES if a[0] in _DE_RUTA),
 )
 
@@ -179,9 +186,13 @@ PROPIEDADES = {
     'investigador-cierre': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'investigador': {'requerida': False},
     'feria': {'requerida': False},
-    # PROVISIONAL: como en `ruta`; los casos de la ciudad también son opcionales.
-    't-caso': {'requerida': False},
-    't-caso-2': ruta.PROPIEDADES['t-caso-2'],
+    # Los casos de la ciudad son opcionales, como toda la ciudad.
+    'c1': {'requerida': False},
+    'c2': {'requerida': False},
+    'c3': {'requerida': False},
+    'c4': {'requerida': False},
+    'c5': {'requerida': False},
+    'c6': {'requerida': False},
     **{c: ruta.PROPIEDADES[c] for c in ruta.RECUERDOS_LUMI},
 }
 
@@ -268,9 +279,12 @@ DESCRIPCIONES = {
     'p6': 'Preguntas que abren y preguntas que cierran, y cómo funcionan las conversaciones guiadas.',
     'p7': 'Por qué dudar o cambiar de opinión es parte del proceso, y cómo acompañar cuatro situaciones frecuentes.',
     'p8': 'Cómo escribir una carta que sirva, y qué sigue al terminar su ruta.',
-    # PROVISIONAL: casos de `ruta`.
-    't-caso': ruta.DESCRIPCIONES['t-caso'],
-    't-caso-2': ruta.DESCRIPCIONES['t-caso-2'],
+    'c1': 'Un proyecto de plaza se detiene al descubrir restos antiguos bajo el terreno.',
+    'c2': 'Un programa de becas presenta solicitudes perdidas, puntajes difíciles de explicar y documentos expuestos.',
+    'c3': 'Una cosecha abundante de mangos pierde a su principal comprador y amenaza con desperdiciarse.',
+    'c4': 'Un festival juvenil gratuito debe coordinar doce agrupaciones, resolver fallas técnicas y desmentir rumores.',
+    'c5': 'Los Juegos Juveniles presentan criterios de selección injustos, barreras de acceso, problemas de salud y choques de horarios.',
+    'c6': 'Aparecen peces muertos y agua verdosa en una laguna; circulan acusaciones sin pruebas.',
 }
 
 # (actividad, instrumento, primer ítem, último ítem). Las misiones de Helena van partidas: habilidades 4 × 6,
@@ -316,8 +330,19 @@ APLICACIONES_ACTIVIDADES = (
     ('APL-RIASEC', 'h-intereses-6'),
 )
 
-# PROVISIONAL: puntajes de los casos de `ruta`.
-CONFIGURACION_CASOS = ruta.CONFIGURACION_CASOS
+# Ajuste carga-casos: temática C (Conocimiento de las opciones) en los seis casos.
+TEMATICAS_ACTIVIDADES = tuple((c, ('C',)) for c in ('c1', 'c2', 'c3', 'c4', 'c5', 'c6'))
+
+# (puntaje máximo, necesidades por problema en orden de fase y problema) de cada CASO, leídos de su JSON de
+# ov_frontend/src/data/cases/plataforma/. Mantener sincronizado (lo comprueba scripts/verificar_contenido_front.py).
+CONFIGURACION_CASOS = {
+    'c1': (8, (2, 1, 2, 2, 1)),  # hidden-plaza
+    'c2': (10, (2, 2, 2, 2, 1, 1)),  # scholarship-mystery
+    'c3': (8, (2, 1, 2, 1, 2)),  # harvest-race
+    'c4': (8, (1, 2, 2, 2, 1)),  # thousand-voices-festival
+    'c5': (8, (2, 1, 2, 2, 1)),  # impossible-teams-tournament
+    'c6': (10, (2, 2, 2, 2, 2)),  # silent-lagoon
+}
 
 # (código, título, descripción, tema, contenido, audiencia). El contenido es markdown y no repite el título.
 FICHAS = (
@@ -576,8 +601,37 @@ REFERENCIAS = (
     *(r for r in ruta.REFERENCIAS if r[1] == ('PREGUNTA_DIARIO', 't-dia-favoritos')),
 )
 
-# PROVISIONAL: testimonios, conversaciones, diario, insignias y niveles de `ruta` (ver `PROVISIONALES`).
-TESTIMONIOS = ruta.TESTIMONIOS
+# (código, título, descripción, enlace, pista, persona, ocupación, años de experiencia, cita), como en `ruta`.
+# PENDIENTE: contenido real en el ajuste de testimonios, que lo carga sobre estos mismos códigos. Dos por caso:
+# la primera necesidad del primer problema y la primera necesidad distinta del último problema.
+TESTIMONIOS = (
+    ('tc1-1', 'Voz de prueba 1', 'Texto de prueba.', 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+     'Una voz que llega al resolver «La plaza que esconde otra historia».', 'Persona de prueba 1', '19-3091.00', 5, 'Cita de prueba.'),
+    ('tc1-2', 'Voz de prueba 2', 'Texto de prueba.', 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+     'Una voz que llega al resolver «La plaza que esconde otra historia».', 'Persona de prueba 2', '25-4012.00', 5, 'Cita de prueba.'),
+    ('tc2-1', 'Voz de prueba 3', 'Texto de prueba.', 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+     'Una voz que llega al resolver «Las becas que nadie puede explicar».', 'Persona de prueba 3', '15-1211.00', 5, 'Cita de prueba.'),
+    ('tc2-2', 'Voz de prueba 4', 'Texto de prueba.', 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+     'Una voz que llega al resolver «Las becas que nadie puede explicar».', 'Persona de prueba 4', '21-1012.00', 5, 'Cita de prueba.'),
+    ('tc3-1', 'Voz de prueba 5', 'Texto de prueba.', 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+     'Una voz que llega al resolver «La cosecha contra el reloj».', 'Persona de prueba 5', '19-1013.00', 5, 'Cita de prueba.'),
+    ('tc3-2', 'Voz de prueba 6', 'Texto de prueba.', 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+     'Una voz que llega al resolver «La cosecha contra el reloj».', 'Persona de prueba 6', '11-2021.00', 5, 'Cita de prueba.'),
+    ('tc4-1', 'Voz de prueba 7', 'Texto de prueba.', 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+     'Una voz que llega al resolver «El festival de las mil voces».', 'Persona de prueba 7', '13-1121.00', 5, 'Cita de prueba.'),
+    ('tc4-2', 'Voz de prueba 8', 'Texto de prueba.', 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+     'Una voz que llega al resolver «El festival de las mil voces».', 'Persona de prueba 8', '27-3031.00', 5, 'Cita de prueba.'),
+    ('tc5-1', 'Voz de prueba 9', 'Texto de prueba.', 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+     'Una voz que llega al resolver «El torneo de los equipos imposibles».', 'Persona de prueba 9', '27-2022.00', 5, 'Cita de prueba.'),
+    ('tc5-2', 'Voz de prueba 10', 'Texto de prueba.', 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+     'Una voz que llega al resolver «El torneo de los equipos imposibles».', 'Persona de prueba 10', '15-2031.00', 5, 'Cita de prueba.'),
+    ('tc6-1', 'Voz de prueba 11', 'Texto de prueba.', 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+     'Una voz que llega al resolver «La laguna que amaneció en silencio».', 'Persona de prueba 11', '19-2043.00', 5, 'Cita de prueba.'),
+    ('tc6-2', 'Voz de prueba 12', 'Texto de prueba.', 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+     'Una voz que llega al resolver «La laguna que amaneció en silencio».', 'Persona de prueba 12', '17-2081.00', 5, 'Cita de prueba.'),
+)
+
+# PROVISIONAL: conversaciones, diario, insignias y niveles de `ruta` (ver `PROVISIONALES`).
 CONVERSACIONES = ruta.CONVERSACIONES
 PREGUNTAS_DIARIO = tuple(p for p in ruta.PREGUNTAS_DIARIO if p[0] != 't-diario-personal')
 INSIGNIAS = ruta.INSIGNIAS
@@ -720,13 +774,26 @@ REGLAS = (
     ('R-p7', 'ACTIVIDAD', 'p7', 'Complete la actividad anterior.', (('COMPLETA_ACTIVIDAD', 'p6', 'EVENTOS', 1),)),
     ('R-p8', 'ACTIVIDAD', 'p8', 'Complete la actividad anterior.', (('COMPLETA_ACTIVIDAD', 'p7', 'EVENTOS', 1),)),
     ('R-SEC-CONVERSACIONES', 'SECCION', 'CONVERSACIONES', 'Complete su ruta de actividades.', (('COMPLETA_BLOQUE', 'FAMILIA', 'EVENTOS', 1),)),
-    # PROVISIONAL: casos, testimonios, conversaciones, diario, insignia de inicio y niveles.
-    ('R-t-caso', 'ACTIVIDAD', 't-caso', 'Completa las seis visitas a Sol para abrir este llamado.', (('COMPLETA_ACTIVIDAD', 'h-intereses-6', 'EVENTOS', 1),)),
-    ('R-t-caso-2', 'ACTIVIDAD', 't-caso-2', 'Escribe tu proyecto con la vigía para abrir este llamado.', (('COMPLETA_ACTIVIDAD', 'b5-1', 'EVENTOS', 1),)),
-    ('R-t-testimonio-1', 'TESTIMONIO', 't-testimonio-1', 'Resuelve el caso de la ciudad para conocer este testimonio.', (('SUPERA_CASO', 't-caso', 'EVENTOS', 1),)),
-    ('R-t-testimonio-2', 'TESTIMONIO', 't-testimonio-2', 'Resuelve el caso de la ciudad y escribe tu proyecto para conocer este testimonio.', (('SUPERA_CASO', 't-caso', 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b5-1', 'EVENTOS', 1))),
-    ('R-t-testimonio-3', 'TESTIMONIO', 't-testimonio-3', 'Resuelve el segundo caso para conocer este testimonio.', (('SUPERA_CASO', 't-caso-2', 'EVENTOS', 1),)),
-    ('R-t-testimonio-4', 'TESTIMONIO', 't-testimonio-4', 'Resuelve el segundo caso para conocer este testimonio.', (('SUPERA_CASO', 't-caso-2', 'EVENTOS', 1),)),
+    # Ajuste carga-casos: los casos se abren con la ciudad; cada uno regala sus dos testimonios de prueba.
+    ('R-c1', 'ACTIVIDAD', 'c1', 'Baja del nevado con Iván para llegar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c2', 'ACTIVIDAD', 'c2', 'Baja del nevado con Iván para llegar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c3', 'ACTIVIDAD', 'c3', 'Baja del nevado con Iván para llegar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c4', 'ACTIVIDAD', 'c4', 'Baja del nevado con Iván para llegar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c5', 'ACTIVIDAD', 'c5', 'Baja del nevado con Iván para llegar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c6', 'ACTIVIDAD', 'c6', 'Baja del nevado con Iván para llegar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-tc1-1', 'TESTIMONIO', 'tc1-1', 'Resuelve «La plaza que esconde otra historia» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c1', 'EVENTOS', 1),)),
+    ('R-tc1-2', 'TESTIMONIO', 'tc1-2', 'Resuelve «La plaza que esconde otra historia» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c1', 'EVENTOS', 1),)),
+    ('R-tc2-1', 'TESTIMONIO', 'tc2-1', 'Resuelve «Las becas que nadie puede explicar» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c2', 'EVENTOS', 1),)),
+    ('R-tc2-2', 'TESTIMONIO', 'tc2-2', 'Resuelve «Las becas que nadie puede explicar» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c2', 'EVENTOS', 1),)),
+    ('R-tc3-1', 'TESTIMONIO', 'tc3-1', 'Resuelve «La cosecha contra el reloj» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c3', 'EVENTOS', 1),)),
+    ('R-tc3-2', 'TESTIMONIO', 'tc3-2', 'Resuelve «La cosecha contra el reloj» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c3', 'EVENTOS', 1),)),
+    ('R-tc4-1', 'TESTIMONIO', 'tc4-1', 'Resuelve «El festival de las mil voces» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c4', 'EVENTOS', 1),)),
+    ('R-tc4-2', 'TESTIMONIO', 'tc4-2', 'Resuelve «El festival de las mil voces» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c4', 'EVENTOS', 1),)),
+    ('R-tc5-1', 'TESTIMONIO', 'tc5-1', 'Resuelve «El torneo de los equipos imposibles» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c5', 'EVENTOS', 1),)),
+    ('R-tc5-2', 'TESTIMONIO', 'tc5-2', 'Resuelve «El torneo de los equipos imposibles» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c5', 'EVENTOS', 1),)),
+    ('R-tc6-1', 'TESTIMONIO', 'tc6-1', 'Resuelve «La laguna que amaneció en silencio» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c6', 'EVENTOS', 1),)),
+    ('R-tc6-2', 'TESTIMONIO', 'tc6-2', 'Resuelve «La laguna que amaneció en silencio» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c6', 'EVENTOS', 1),)),
+    # PROVISIONAL: conversaciones, diario, insignia de inicio y niveles.
     ('R-t-conv-1', 'CONVERSACION', 't-conv-1', 'Escribe tu carta y llega a la ciudad para conversar.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1))),
     ('R-t-conv-2', 'CONVERSACION', 't-conv-2', 'Escribe tu carta y responde al maestro Bruno sobre tus inteligencias para conversar.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'h2', 'EVENTOS', 1))),
     ('R-t-diario-fija', 'PREGUNTA_DIARIO', 't-diario-fija', 'Lumi te abre el diario en el bosque de las voces.', (('COMPLETA_ACTIVIDAD', 'b0-2', 'EVENTOS', 1),)),

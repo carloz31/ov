@@ -1,0 +1,22 @@
+{
+  "id": "c1",
+  "codigo": "c1",
+  "tipo": "encuentro",
+  "titulo": "La plaza que esconde otra historia",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 40,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 15,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "caso": "hidden-plaza",
+  "mapa": {
+    "x": 180,
+    "y": 160,
+    "icono": "informativa"
+  }
+}
