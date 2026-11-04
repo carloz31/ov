@@ -88,7 +88,7 @@ Las reglas de `datos/contenido.py` siguen estos principios (ajuste carga-activid
 4. **Opcionales**: se abren con su disparador y nunca son requisito de una requerida (ni de su bloque). Las misiones adicionales, con `REGISTRO_ADECUADO` del registro que las premia.
 5. **Ciudad**: todo opcional; las misiones de Helena se encadenan parte por parte y la primera parte se abre con la informativa del camino que presenta el tema.
 6. **Evaluadores**: una regla con evaluador lleva también las condiciones cuyos eventos deben reevaluarla (`ACTUALIZA_PLAN` en las de planes); si no, no vuelve a evaluarse cuando cambian los planes.
-7. **Todo objetivo cargado tiene al menos una regla** (la de su bloque cuenta para la primera actividad de un tramo), salvo los abiertos desde el inicio a propósito: B0, b0-1, LUMI (sus actividades sí tienen regla), FAMILIA, p1 y el nivel 1. Un objetivo sin regla está disponible desde el principio.
+7. **Todo objetivo cargado tiene al menos una regla** (la de su bloque cuenta para la primera actividad de un tramo), salvo los abiertos desde el inicio a propósito: B0, b0-1, LUMI (sus actividades sí tienen regla), FAMILIA, p1 y el nivel 1 (el de partida). Las preguntas DIARIA no llevan regla: entran al sorteo del día. Un objetivo sin regla está disponible desde el principio.
 8. Varias reglas sobre el mismo objetivo son alternativas (basta una); las condiciones de una regla se suman.
 
 Además: toda regla `CONVERSACION` lleva `ESCRIBE_CARTA`; ninguna regla nombra una actividad `t-` del camino; y toda ficha de la que sale una pregunta de batalla se obtiene con una actividad que está entre los requisitos de la batalla.

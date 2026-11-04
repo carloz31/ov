@@ -44,7 +44,7 @@ Toda actividad, de cualquier rol, es el mismo objeto: metadatos, una lista orden
 | `personajeIds` | Personajes de la escena; el apoderado solo usa `orientacion` (narrador sin avatar). |
 | `objetivoAprendizaje` | Interno, en encuentros. |
 | `escenario` | Lugar de la isla (`muelle`, `bosque`, `cabana`, `nevado`, `ciudad`, `desierto`, `bosque_volcan`, `playa`, `acantilado`, `faro`): el fondo del reproductor es `/images/background/<escenario>.png`. Sin él, el fondo de la pantalla (`bosque.png` en el camino y el diario, `afueras-ciudad.png` en la Ciudad y las batallas). El apoderado no lo lleva (ajuste carga-actividades). |
-| `recompensa` | `afinidad`, `piezaLlave`, `recursoIds`, `mensajeFin` (apoderado: solo `recursoIds` y `mensajeFin`). |
+| `recompensa` | `afinidad`, `piezaLlave`, `recursoIds`, `mensajeFin` (apoderado: solo `recursoIds` y `mensajeFin`). `recursoIds` es del modo local: en api las fichas las deciden las reglas FICHA del servidor, y los JSON de `plataforma/` no lo llevan. |
 | `siguienteSugerida`, `promptDiario` | Botón al terminar; entrada de diario que se desbloquea (solo estudiante). |
 
 ## Nodos

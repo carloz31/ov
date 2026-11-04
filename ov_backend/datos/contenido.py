@@ -1,8 +1,8 @@
 """Contenido real de la plataforma. Lo provisional está en `PROVISIONALES`.
 
-Mismo formato de tuplas que `datos/ruta.py`; lo interpreta el cargador común (`datos/cargador.py`). Generado desde
-`docs/specs/carga-actividades/` (tandas, fichas) y los JSON de `ov_frontend/src/data/activities/contenidos/plataforma/`
-(ítems y referencias de los registros), con las correcciones de la spec `ajuste-carga-actividades`.
+Mismo formato de tuplas que `datos/ruta.py`; lo interpreta el cargador común (`datos/cargador.py`). Los ítems y las
+referencias de los registros salen de los JSON de `ov_frontend/src/data/activities/contenidos/plataforma/`; la
+coherencia con ellos la revisa `scripts/verificar_contenido_front.py`. Este archivo se edita a mano.
 La transacción pertenece al llamador; este módulo no confirma ni migra.
 """
 
