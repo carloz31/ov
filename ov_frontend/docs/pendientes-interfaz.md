@@ -95,7 +95,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** un aviso al ingresar al portal o una marca en el menú «Conversaciones».
 - **Opciones:** notificaciones asíncronas (backend con eventos por cuenta); calcular la novedad al ingresar comparando con la última visita; dejar solo la marca «{hijo} respondió» de la lista (como hoy).
 - **Si no se muestra:** el apoderado ve lo nuevo al abrir Conversaciones (la lista se revalida al montarla).
-- **Estado:** resuelto en parte en el ajuste notificaciones: la primera respuesta del hijo a una conversación avisa al apoderado en la campana (RESPUESTA_CONVERSACION). Sigue sin aviso cuando el hijo habilita una conversación (`motor.md`); pendiente de decisión del usuario.
+- **Estado:** resuelto en parte en el ajuste notificaciones: la primera respuesta del hijo a una conversación avisa al apoderado en la campana (RESPUESTA_CONVERSACION). Sin aviso cuando el hijo habilita una conversación, por decisión del usuario (2026-11-04): cerrado.
 
 ## 2026-10-28 · F08 · «Requiere atención» en el inicio del apoderado
 
