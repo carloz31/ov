@@ -19,6 +19,16 @@
       "texto": "Volvamos a lo que me contaste en tus expectativas. ¿Sigue igual?"
     },
     {
+      "id": "t-eco-recuerdo",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto me contaste la vez pasada.",
+      "eco": [
+        "t-ref-espera",
+        "t-ref-rutas"
+      ]
+    },
+    {
       "id": "t-eco-ruta",
       "tipo": "consigna",
       "hablanteId": "companero",

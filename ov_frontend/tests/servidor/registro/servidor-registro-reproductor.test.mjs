@@ -131,6 +131,8 @@ test('t-valores se responde con el podio y envía el mismo borrador que la elecc
   const { app } = await iniciar({ actividad: 't-valores' })
   const player = await abrir(app, 't-valores')
   elementos(player.render(), (e) => e.type?.name === 'DialogueBox')[0].props.onContinue()
+  // Ajuste carga-actividades: t-valores suma una diapositiva tras su diálogo de entrada.
+  elementos(player.render(), (e) => e.type?.name === 'SlideNode')[0].props.onContinue()
   const tree = player.render()
   const podio = consigna(tree)
   assert.equal(podio.type.name, 'RegistroPodioNode')

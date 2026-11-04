@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { actividadPorContenido, registroServidor } from '@/lib/servidor/contenidos'
+import { actividadPorContenido, encuentroConEco, registroServidor } from '@/lib/servidor/contenidos'
 import { mensajeErrorServidor, obtenerEstadoServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { consultarItemsRegistro, consultarRegistro } from '@/store/servidor/registro'
 import { consultarReferencias } from '@/store/servidor/referencias'
@@ -36,8 +36,9 @@ export function RegistroServidorPlayer({
         setError(mensajeErrorServidor(items.tipo !== 'ok' ? items : registro.tipo !== 'ok' ? registro : null))
         return
       }
-      // F02: las elecciones que retoman otra y los ecos leen lo que la cuenta respondió antes.
-      const ecos = contenido.nodos.map((n) => (n.tipo === 'consigna' ? n.eco : undefined))
+      // F02: las elecciones que retoman otra y los ecos (de consignas y, desde el ajuste carga-actividades, de
+      // diálogos) leen lo que la cuenta respondió antes.
+      const ecos = contenido.nodos.map((n) => (n.tipo === 'consigna' || n.tipo === 'dialogo' ? n.eco : undefined))
       const referencias = necesitaReferencias(items.datos, ecos)
         ? await consultarReferencias(codigo)
         : undefined
@@ -47,7 +48,8 @@ export function RegistroServidorPlayer({
         return
       }
       const resueltas = referencias?.datos.referencias ?? []
-      const completo = registroServidor(contenido, items.datos)
+      const base = registroServidor(contenido, items.datos)
+      const completo = base && encuentroConEco(base, resueltas)
       // F02: un registro cerrado se consulta en el mismo reproductor, solo con sus consignas.
       const activity = completo && esConsulta(registro.datos) ? actividadConsulta(completo) : completo
       if (!activity) {

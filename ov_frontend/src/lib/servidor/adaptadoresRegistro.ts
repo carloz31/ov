@@ -62,6 +62,18 @@ export function citaReferencia(referencia: ReferenciaResuelta | undefined): stri
   return undefined
 }
 
+// Ajuste carga-actividades: un diálogo cita además lo que la cuenta escribió (TEXTO) o eligió (ELECCION) en otro
+// registro, entre comillas; sin dato, nada. Las demás, como `citaReferencia`.
+export function citaDialogo(referencia: ReferenciaResuelta | undefined): string | undefined {
+  if (!referencia || referencia.estado === 'SIN_DATO') return undefined
+  if (referencia.tipo === 'TEXTO') return referencia.texto ? `«${referencia.texto}»` : undefined
+  if (referencia.tipo === 'ELECCION') {
+    const textos = (referencia.opciones ?? []).map((o) => o.texto).filter(Boolean)
+    return textos.length ? `«${textos.join(' · ')}»` : undefined
+  }
+  return citaReferencia(referencia)
+}
+
 // Une las citas en una burbuja: punto y espacio entre ellas, solo espacio si la anterior ya cierra con punto
 // (también dentro de las comillas: «…mío.» Tus pasos…).
 export const unirCitas = (citas: string[]) =>

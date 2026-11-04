@@ -11,7 +11,7 @@ export function ResultNode({ activity, instrumentId }: { activity: Actividad; in
   if (resultado)
     return (
       <>
-        <CharacterAvatar id="elena" size="md" />
+        <CharacterAvatar id="helena" size="md" />
         <h2 className="sx-result-title">Las pistas que hablan de ti</h2>
         {resultado.error !== undefined ? (
           <>
@@ -49,7 +49,7 @@ export function ResultNode({ activity, instrumentId }: { activity: Actividad; in
     )
   return (
     <>
-      <CharacterAvatar id="elena" size="md" />
+      <CharacterAvatar id="helena" size="md" />
       <h2 className="sx-result-title">Las pistas que hablan de ti</h2>
       {result ? (
         result.puntajes.map((score) => (

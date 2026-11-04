@@ -25,12 +25,12 @@
       }
     },
     {
-      "id": "elena",
-      "nombre": "Elena",
+      "id": "helena",
+      "nombre": "Helena",
       "rol": "npc",
       "descripcion": "Vive cerca del río. Revela el resultado del test de intereses al completar las 14 interacciones.",
       "ubicacion": "Río",
-      "avatarUrl": "/img/personajes/elena.png"
+      "avatarUrl": "/img/personajes/helena.png"
     },
     {
       "id": "aurelio",

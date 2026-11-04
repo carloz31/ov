@@ -2,7 +2,7 @@ import { contenidoPorClave } from '@/data/activities/contenidos.ts'
 import { configureStudentActivities } from '@/data/activities/reflectionConfig'
 import type { Actividad } from '@/types/activities'
 import type { BloqueActividades, ItemPublico, ItemRegistroPublico, ReferenciaResuelta } from '@/types/servidor'
-import { citaReferencia } from './adaptadoresRegistro'
+import { citaDialogo, codigosEco, unirCitas } from './adaptadoresRegistro'
 import { bloquesZona } from './adaptadores'
 
 export function actividadPorContenido(
@@ -42,6 +42,12 @@ export function reproductorPorTipo(
     return { tipo: 'desafio', actividad: codigo, desafio: contenido.desafio }
   if (actividad.tipo === 'CASO' && contenido.caso) return { tipo: 'caso', actividad: codigo, caso: contenido.caso }
   return undefined
+}
+// Ajuste carga-actividades: el escenario del contenido de una actividad (las batallas no tienen nodos y no pasan
+// por `actividadPorContenido`).
+export function escenarioDeActividad(bloques: BloqueActividades[] | null, codigo: string) {
+  const actividad = bloques?.flatMap((b) => b.actividades).find((a) => a.codigo === codigo)
+  return actividad && contenidoPorClave(actividad.contenido)?.escenario
 }
 // Actividad CASO del servidor que juega el caso `caso` del front, si la cuenta puede abrirla.
 export function actividadDeCaso(bloques: BloqueActividades[] | null, caso: string) {
@@ -103,16 +109,20 @@ export function registroServidor(contenido: Actividad, items: ItemRegistroPublic
 }
 
 // F03: un encuentro cuyos diálogos traen `eco` pide sus referencias antes de abrirse; cada diálogo dice su texto
-// seguido de la cita, o solo su texto si no hay dato.
+// seguido de sus citas, en el orden del contenido, o solo su texto si ninguna tiene dato. Los registros piden sus
+// referencias con sus ítems (`RegistroServidorPlayer`) y completan sus diálogos con esta misma función (ajuste
+// carga-actividades).
 export const conEcoEncuentro = (contenido: Actividad) =>
-  contenido.tipo !== 'registro' && contenido.nodos.some((n) => n.tipo === 'dialogo' && !!n.eco)
+  contenido.tipo !== 'registro' && contenido.nodos.some((n) => n.tipo === 'dialogo' && codigosEco(n.eco).length > 0)
 export function encuentroConEco(contenido: Actividad, referencias: ReferenciaResuelta[]): Actividad {
   return {
     ...contenido,
     nodos: contenido.nodos.map((nodo) => {
       if (nodo.tipo !== 'dialogo' || !nodo.eco) return nodo
-      const cita = citaReferencia(referencias.find((r) => r.codigo === nodo.eco))
-      return cita ? { ...nodo, texto: `${nodo.texto} ${cita}` } : nodo
+      const citas = codigosEco(nodo.eco).flatMap(
+        (codigo) => citaDialogo(referencias.find((r) => r.codigo === codigo)) ?? [],
+      )
+      return citas.length ? { ...nodo, texto: `${nodo.texto} ${unirCitas(citas)}` } : nodo
     }),
   }
 }

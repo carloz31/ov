@@ -8,6 +8,7 @@
   "obligatoria": true,
   "requisitos": [],
   "duracionEstimadaMin": 10,
+  "escenario": "bosque",
   "personajeIds": [
     "companero"
   ],
@@ -17,6 +18,18 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "texto": "Ahora piensa en lo que más valoras."
+    },
+    {
+      "id": "t-val-diapositiva",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Qué es un valor",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un valor es algo que te importa de verdad: lo que buscas en un trabajo más allá de su nombre."
+        }
+      ]
     },
     {
       "id": "t-val-orden",

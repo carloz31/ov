@@ -61,6 +61,7 @@ export function useCityAccess() {
         : undefined,
     challenge: modoApi ? desafio?.challenge : canAccessCity(adventure) ? challenge : undefined,
     desafioServidor: desafio?.servidor,
+    fondoDesafio: desafio?.imageUrl,
     // Ajuste de F03: en api, reintentar una completada de la Ciudad la recorre desde el principio, con
     // «Anterior», como en el camino. En local no cambia.
     revision: modoApi && params.get('revision') === '1',

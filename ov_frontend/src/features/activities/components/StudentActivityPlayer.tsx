@@ -5,6 +5,7 @@ import type { InstrumentoServidor } from './MaraInteractionPlayer'
 import type { RegistroServidor } from '../hooks/useRegistroServidor'
 import type { Actividad } from '@/types/activities'
 import { PlayerAmbient } from './PlayerAmbient'
+import { fondoEscenario } from '@/lib/activities/escenario'
 import { PlayerTopBar } from './PlayerTopBar'
 export function StudentActivityPlayer({
   activity,
@@ -68,7 +69,7 @@ export function StudentActivityPlayer({
       className={`fixed inset-0 z-40 sx-root sx-player location-${activity.id}`}
       data-ambient={mode}
     >
-      <PlayerAmbient mode={mode} imageUrl={imageUrl} />
+      <PlayerAmbient mode={mode} imageUrl={fondoEscenario(activity.escenario, imageUrl)} />
       <PlayerTopBar
         activity={activity}
         finished={!node && !reaction}
