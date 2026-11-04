@@ -22,11 +22,11 @@ def test_sin_resultado_hacen_falta_vistas_de_dos_tipos(cliente):
     avanzar(cliente, 't-cierre-inicio')
     assert reglas(vencer(cliente)) == set()
     # nursing y psychology son de tipo S; psychologist también, y la vista repetida no suma.
-    for clase, codigo in (('carrera', ENFERMERIA), ('carrera', PSICOLOGIA), ('ocupacion', 'psychologist'),
-                          ('ocupacion', 'psychologist')):
+    for clase, codigo in (('carrera', ENFERMERIA), ('carrera', PSICOLOGIA), ('ocupacion', '19-3033.00'),
+                          ('ocupacion', '19-3033.00')):
         assert not reglas(ver(cliente, clase, codigo)) & EXPLORAR
     assert actividades(cliente)['t-explorar'] == 'BLOQUEADA'
-    assert reglas(ver(cliente, 'ocupacion', 'civil-engineer')) & EXPLORAR == {'R-t-explorar-ocupacion'}
+    assert reglas(ver(cliente, 'ocupacion', '17-2051.00')) & EXPLORAR == {'R-t-explorar-ocupacion'}
     assert actividades(cliente)['t-explorar'] == 'DISPONIBLE'
 
 
@@ -61,9 +61,9 @@ def test_logros_ocultos_por_vistas_diversas(cliente, sesion):
         assert 'R-t-ins-familias' not in reglas(ver(cliente, 'carrera', ENFERMERIA))
     assert 'R-t-ins-familias' in reglas(ver(cliente, 'carrera', PSICOLOGIA))
     # Umbral 2: dos letras distintas en el high point 1.
-    assert 'R-t-ins-letras' not in reglas(ver(cliente, 'ocupacion', 'psychologist'))
-    assert 'R-t-ins-letras' not in reglas(ver(cliente, 'ocupacion', 'social-worker'))
-    assert 'R-t-ins-letras' in reglas(ver(cliente, 'ocupacion', 'civil-engineer'))
+    assert 'R-t-ins-letras' not in reglas(ver(cliente, 'ocupacion', '19-3033.00'))
+    assert 'R-t-ins-letras' not in reglas(ver(cliente, 'ocupacion', '21-1021.00'))
+    assert 'R-t-ins-letras' in reglas(ver(cliente, 'ocupacion', '17-2051.00'))
     # Umbral nulo: todos los tipos con al menos una institución, incluido el que se agrega ahora.
     # DATO DE PRUEBA: un instituto que la ruta no trae.
     sesion.add(m.Institucion(codigo='t-instituto', nombre='Instituto de prueba', tipo='INSTITUTO',

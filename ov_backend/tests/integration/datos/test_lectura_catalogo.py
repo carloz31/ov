@@ -103,7 +103,7 @@ def test_catalogo_real_ocupaciones(real):
 def test_curaduria_de_ocupaciones_y_familias(real):
     # Ajuste resultados-intereses: solo las del catálogo curado; 234 entran al test.
     ocupaciones = {o.codigo_onet: o for o in real.ocupaciones}
-    assert all(o.en_catalogo for o in real.ocupaciones) and sum(o.en_test for o in real.ocupaciones) == 234
+    assert sum(o.en_test for o in real.ocupaciones) == 234
     fotografo = ocupaciones['27-4021.00']
     assert fotografo.familias[0] == '323' and fotografo.programas_cine
     # Las militares no tienen RIASEC: van al catálogo sin puntajes y nunca al test.
@@ -120,10 +120,9 @@ def test_curaduria_de_ocupaciones_y_familias(real):
     assert reporte['sin_familia'] == ['51-9071.00', '53-2031.00']
 
 
-def test_ocultas_se_cargan_fuera_del_catalogo():
-    catalogo = leer_catalogo(ocultas=frozenset({'33-2011.00'}))
-    bombero = next(o for o in catalogo.ocupaciones if o.codigo_onet == '33-2011.00')
-    assert (bombero.en_catalogo, bombero.en_test) == (False, False)
+def test_solo_se_leen_las_ocupaciones_del_catalogo(real):
+    # Ajuste carga-casos: sin ocupaciones ocultas; el bombero tiene `en_catalogo = 0` y no se lee.
+    assert '33-2011.00' not in {o.codigo_onet for o in real.ocupaciones}
 
 
 @pytest.mark.parametrize('archivo, cambio, mensaje', [

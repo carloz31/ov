@@ -375,7 +375,7 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
         PERIODISMO, ENFERMERIA, VETERINARIA, PSICOLOGIA]
     pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': ENFERMERIA, 'fecha_hora': FECHA})
     assert actividades(cliente)['t-explorar'] == 'BLOQUEADA'
-    vista = pedir(cliente, 'POST', '/acciones/ver-ocupacion', {'cuenta': 'est-ana', 'ocupacion': 'civil-engineer',
+    vista = pedir(cliente, 'POST', '/acciones/ver-ocupacion', {'cuenta': 'est-ana', 'ocupacion': '17-2051.00',
                                                                 'fecha_hora': FECHA})
     assert reglas(vista) == {'R-t-explorar-ocupacion'} and actividades(cliente)['t-explorar'] == 'DISPONIBLE'
     pedir(cliente, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': ENFERMERIA,
@@ -388,19 +388,19 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
     assert testimonios[0]['pista'] and all(t['estado'] == 'BLOQUEADA' for t in testimonios)
     # Ajuste mochila: t-caso-2 se abre con el proyecto, que esta ruta no alcanza.
     caso, _ = pedir(cliente, 'GET', '/cuentas/est-ana/casos')
-    assert (caso['dimensiones'], caso['estado']) == (['R', 'S'], 'BLOQUEADA')
+    assert (caso['puntaje_minimo'], caso['puntaje_maximo'], caso['estado']) == (6, 8, 'BLOQUEADA')
     for mision in MISIONES_INTERESES:
         responder(cliente, mision)
         completar(cliente, mision)
     datos_caso = {'cuenta': 'est-ana', 'actividad': 't-caso', 'fecha_hora': FECHA}
-    fallido = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 6,
-                                                                 'ocupaciones': ['firefighter']})
+    fallido = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 5,
+                                                                 'ocupaciones': ['19-3091.00']})
     assert fallido['ocupaciones_nuevas'] == [] and actividades(cliente)['t-caso'] == 'EN_CURSO'
-    superado = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 12,
-                                                                  'ocupaciones': ['firefighter', 'paramedic']})
+    superado = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 7,
+                                                                  'ocupaciones': ['19-3091.00', '25-4013.00']})
     # Ajuste mochila: el segundo testimonio pide además cerrar el proyecto.
     assert reglas(superado) == {'R-t-testimonio-1'}
-    assert [o['ocupacion'] for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == ['firefighter', 'paramedic']
+    assert [o['ocupacion'] for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == ['19-3091.00', '25-4013.00']
     pedir(cliente, 'POST', '/acciones/ver-testimonio', {'cuenta': 'est-ana', 'testimonio': 't-testimonio-1'})
     assert [(t['estado'], t['visto']) for t in estado(cliente)['testimonios']] == [
         ('DISPONIBLE', True), ('BLOQUEADA', False), ('BLOQUEADA', False), ('BLOQUEADA', False)]
@@ -468,7 +468,7 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
     batalla = {**ana, 'actividad': 't-batalla'}
     pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'respuestas': respuestas_batalla(True, 1)})
     pedir(cliente, 'POST', '/acciones/ver-carrera', {**ana, 'carrera': ENFERMERIA})
-    pedir(cliente, 'POST', '/acciones/ver-ocupacion', {**ana, 'ocupacion': 'civil-engineer'})
+    pedir(cliente, 'POST', '/acciones/ver-ocupacion', {**ana, 'ocupacion': '17-2051.00'})
     assert 'R-PLAN-REALIDAD' in reglas(responder_registro(cliente, 't-explorar'))
     realidad = {'institucion': INST_UNI, 'camino': {'opcion': 'POSTULAR_DIRECTO'},
                 'gastos': [{'rubro': 'MATRICULA', 'monto': 600, 'frecuencia': 'POR_CICLO'}],
@@ -565,7 +565,7 @@ def test_hu057_065_100_101_investigaciones_y_entrevistas(cliente):
         return pedir(cliente, 'POST', f'/acciones/{nombre}', {'cuenta': cuenta, 'fecha_hora': FECHA, **datos},
                      esperado)
 
-    pienso = {'ocupacion': 'electrician', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas.',
+    pienso = {'ocupacion': '47-2111.00', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas.',
               'necesita': 'DATO DE PRUEBA: un instituto y mucha práctica.', 'duda': '¿Es peligroso?'}
     for cuenta in ('est-ana', 'est-luis'):
         avanzar(cliente, cuenta=cuenta)

@@ -24,14 +24,14 @@ def resolver_favoritos(aplicacion, cuenta):
 def test_favoritos_por_cuenta_y_en_orden(cliente, aplicacion):
     assert resolver_favoritos(aplicacion, 'est-ana').estado == m.EstadoReferencia.SIN_DATO
     completar(cliente, 't-inicio')
-    for tipo, codigo, hora in (('CARRERA', ING_CIVIL, 9), ('OCUPACION', 'geologist', 10),
+    for tipo, codigo, hora in (('CARRERA', ING_CIVIL, 9), ('OCUPACION', '19-2042.00', 10),
                                ('INSTITUCION', INST_UNI, 11)):
         pedir(cliente, 'POST', '/acciones/marcar-favorito',
               {'cuenta': 'est-ana', 'tipo': tipo, 'codigo': codigo, 'fecha_hora': f'2026-10-07T{hora:02d}:00:00'})
     resuelta = resolver_favoritos(aplicacion, 'est-ana')
     assert resuelta.estado == m.EstadoReferencia.DISPONIBLE and resuelta.texto is None
     with aplicacion.state.fabrica_sesiones() as sesion:
-        geologo = sesion.scalar(select(m.Ocupacion).where(m.Ocupacion.codigo == 'geologist'))
+        geologo = sesion.scalar(select(m.Ocupacion).where(m.Ocupacion.codigo == '19-2042.00'))
         institucion = sesion.scalar(select(m.Institucion).where(m.Institucion.codigo == INST_UNI))
         carrera = sesion.scalar(select(m.Carrera).where(m.Carrera.codigo == ING_CIVIL))
         esperadas = [(institucion.codigo, institucion.nombre), (geologo.codigo_onet, geologo.titulo),

@@ -303,7 +303,7 @@ def _recorrer(cliente):
     fixtures['catalogo-carreras'] = _pedir(cliente, 'GET', f'{catalogo}/carreras?limite=4')
     fixtures['catalogo-carrera-psychology'] = _pedir(cliente, 'GET', f'{catalogo}/carreras/{PSICOLOGIA}')
     fixtures['catalogo-ocupaciones-riasec'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones?riasec=SI')
-    fixtures['catalogo-ocupacion-psychologist'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones/psychologist')
+    fixtures['catalogo-ocupacion-psychologist'] = _pedir(cliente, 'GET', f'{catalogo}/ocupaciones/19-3033.00')
     fixtures['catalogo-instituciones'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones')
     fixtures['catalogo-institucion-t-uni'] = _pedir(cliente, 'GET', f'{catalogo}/instituciones/{INST_UNI}')
     fixtures['catalogo-familias'] = _pedir(cliente, 'GET', f'{catalogo}/familias')
@@ -311,10 +311,10 @@ def _recorrer(cliente):
     # Sin resultado todavía hacen falta dos tipos: una ocupación S y después una carrera R, que abre t-explorar.
     # Una sola carrera vista, para no abrir aquí la insignia de familias ni cambiar los logros.
     fixtures['ver-ocupacion'] = _pedir(cliente, 'POST', '/acciones/ver-ocupacion', {
-        'cuenta': 'est-ana', 'ocupacion': 'psychologist', 'fecha_hora': FECHA})
+        'cuenta': 'est-ana', 'ocupacion': '19-3033.00', 'fecha_hora': FECHA})
     fixtures['ver-carrera'] = _pedir(cliente, 'POST', '/acciones/ver-carrera', {
         'cuenta': 'est-ana', 'carrera': ING_CIVIL, 'fecha_hora': FECHA})
-    for tipo, codigo in (('CARRERA', ING_CIVIL), ('OCUPACION', 'geologist'), ('INSTITUCION', INST_UNI)):
+    for tipo, codigo in (('CARRERA', ING_CIVIL), ('OCUPACION', '19-2042.00'), ('INSTITUCION', INST_UNI)):
         fixtures['marcar-favorito'] = _pedir(cliente, 'POST', '/acciones/marcar-favorito', {
             'cuenta': 'est-ana', 'tipo': tipo, 'codigo': codigo, 'fecha_hora': FECHA})
     fixtures['favoritos'] = _pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')
@@ -361,11 +361,12 @@ def _recorrer(cliente):
     fixtures['catalogo-ocupacion-afin'] = _pedir(cliente, 'GET', f'/cuentas/est-ana/catalogo/ocupaciones/{afin}')
     fixtures['referencias-t-contraste'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')
     fixtures['items-registro-t-contraste'] = _pedir(cliente, 'GET', '/actividades/t-contraste/items-registro')
-    # B08: el caso falla, se reintenta y se supera; superarlo abre los testimonios y llena la colección.
+    # B08: el caso falla, se reintenta y se supera; superarlo abre los testimonios y llena la colección. t-caso
+    # juega hidden-plaza (6 de 8): arqueólogo y conservador son necesidades de su primer problema.
     caso = {'cuenta': 'est-ana', 'actividad': 't-caso', 'fecha_hora': FECHA}
-    _pedir(cliente, 'POST', '/acciones/resolver-caso', {**caso, 'puntaje': 6, 'ocupaciones': ['firefighter']})
+    _pedir(cliente, 'POST', '/acciones/resolver-caso', {**caso, 'puntaje': 5, 'ocupaciones': ['19-3091.00']})
     fixtures['resolver-caso'] = _pedir(cliente, 'POST', '/acciones/resolver-caso', {
-        **caso, 'puntaje': 12, 'ocupaciones': ['firefighter', 'paramedic']})
+        **caso, 'puntaje': 7, 'ocupaciones': ['19-3091.00', '25-4013.00']})
     fixtures['casos'] = _pedir(cliente, 'GET', '/cuentas/est-ana/casos')
     fixtures['coleccion'] = _pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')
     _pedir(cliente, 'POST', '/acciones/ver-testimonio',
@@ -562,7 +563,7 @@ def _recorrer_investigaciones(cliente):
 
 
 def _recorrido_investigaciones(cliente):
-    pienso = {'ocupacion': 'electrician', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas y edificios.',
+    pienso = {'ocupacion': '47-2111.00', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas y edificios.',
               'necesita': 'DATO DE PRUEBA: estudiar en un instituto y practicar.', 'duda': '¿Es peligroso?'}
 
     def accion(nombre, datos, cuenta='est-ana'):
@@ -599,7 +600,7 @@ def _recorrido_investigaciones(cliente):
     accion('reportar', {'reaccion': de_luis, 'motivo': 'OFENSIVO'})
     fixtures['investigaciones-luis'] = _pedir(cliente, 'GET', '/cuentas/est-luis/investigaciones')
     fixtures['entrevistas-ocupacion'] = _pedir(
-        cliente, 'GET', '/cuentas/est-luis/entrevistas?vista=SALON&ocupacion=electrician')
+        cliente, 'GET', '/cuentas/est-luis/entrevistas?vista=SALON&ocupacion=47-2111.00')
     fixtures['entrevista-detalle-propia'] = _pedir(cliente, 'GET', f'/cuentas/est-ana/entrevistas/{codigo}')
     fixtures['entrevistas-salon'] = _pedir(cliente, 'GET', '/cuentas/est-luis/entrevistas?vista=SALON')
     fixtures['entrevistas-mias'] = _pedir(cliente, 'GET', '/cuentas/est-ana/entrevistas?vista=MIAS')

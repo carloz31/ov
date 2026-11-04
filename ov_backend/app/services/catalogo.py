@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session, aliased, selectinload
 
 from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import (
-    FUENTE_INGRESOS, LIMITE_MAXIMO_CATALOGO, PUNTAJE_OCUPACION_MAXIMO, PUNTAJE_OCUPACION_MINIMO,
+    FUENTE_INGRESOS, LIMITE_MAXIMO_CATALOGO, MAXIMO_OCUPACIONES_CASO, PUNTAJE_OCUPACION_MAXIMO, PUNTAJE_OCUPACION_MINIMO,
 )
 from app.exceptions import ErrorAccion
 from app.models import (
@@ -28,7 +28,7 @@ from app.schemas.catalogo import (
     Afinidad, CarreraDetalle, CarreraEnInstitucion, CarreraResumen, CarrerasParecidas, EstiloPublico, FamiliaFicha,
     FamiliaPublica, FamiliaResumida, FamiliaSecundaria, GrupoPublico, Inesperada, IngresoCarreraPublico, IngresoFamiliaPublico,
     IngresoJovenes, InstitucionDetalle, InstitucionEnCarrera, InstitucionResumen, OcupacionDeFamilia,
-    OcupacionDetalle, OcupacionEnlace, OcupacionesDeLaFamilia, OcupacionResumen, PaginaCarreras,
+    OcupacionCaso, OcupacionDetalle, OcupacionEnlace, OcupacionesDeLaFamilia, OcupacionResumen, PaginaCarreras,
     PaginaInstituciones, PaginaOcupaciones, ProgramaEjemplo, Tramo, UbicacionPublica,
 )
 from app.services.comun import buscar_por_codigo, fecha_accion, responder_con_eventos
@@ -245,7 +245,7 @@ def _ocupaciones_de_la_familia(sesion: Session, cuenta: Cuenta, carrera: Carrera
     afinidades, _ = _afinidades(sesion, cuenta)
     vias = {True: [], False: []}
     for ocupacion, es_principal in sesion.execute(select(Ocupacion, OcupacionFamilia.es_principal).join(
-            OcupacionFamilia).where(OcupacionFamilia.familia_id == carrera.familia_id, Ocupacion.en_catalogo)
+            OcupacionFamilia).where(OcupacionFamilia.familia_id == carrera.familia_id)
             .order_by(Ocupacion.busqueda, Ocupacion.codigo)):
         vias[es_principal].append(OcupacionDeFamilia(codigo=ocupacion.codigo, titulo=ocupacion.titulo,
                                                      riasec=_riasec(ocupacion.codigo_riasec),
@@ -283,19 +283,19 @@ def buscar_ocupaciones(sesion: Session, cuenta: Cuenta, buscar: str | None, area
     )
     vias = {}
     if familia is None:
-        consulta = select(Ocupacion).where(Ocupacion.en_catalogo, *filtros)
+        consulta = select(Ocupacion).where(*filtros)
         orden = (Ocupacion.busqueda, Ocupacion.codigo)
     else:
         consulta = select(Ocupacion).join(OcupacionFamilia, OcupacionFamilia.ocupacion_id == Ocupacion.id).join(
             FamiliaCarrera, FamiliaCarrera.id == OcupacionFamilia.familia_id).where(
-            Ocupacion.en_catalogo, FamiliaCarrera.codigo == familia, *filtros)
+            FamiliaCarrera.codigo == familia, *filtros)
         orden = (OcupacionFamilia.es_principal.desc(), Ocupacion.busqueda, Ocupacion.codigo)
         vias = dict(sesion.execute(select(OcupacionFamilia.ocupacion_id, OcupacionFamilia.es_principal).join(
             FamiliaCarrera).where(FamiliaCarrera.codigo == familia)).all())
     total, ocupaciones = _paginar(sesion, consulta.options(selectinload(Ocupacion.familia_principal)), orden,
                                   limite, desde)
     return PaginaOcupaciones(total=total, total_dominio=sesion.scalar(
-                                 select(func.count()).select_from(Ocupacion).where(Ocupacion.en_catalogo)),
+                                 select(func.count()).select_from(Ocupacion)),
                              items=[resumen_ocupacion(o, favoritos, None if o.id not in vias else
                                                       'PRINCIPAL' if vias[o.id] else 'SECUNDARIA')
                                     for o in ocupaciones])
@@ -321,6 +321,24 @@ def _carreras_de_familias(sesion: Session, ids_familias) -> dict[int, list[Carre
 
 def _tipos(carreras: list[Carrera]) -> list[TipoInstitucion]:
     return [t for t in TipoInstitucion if any(c.tipo == t for c in carreras)]
+
+
+@usar_contexto
+def ocupaciones_caso(sesion: Session, cuenta: Cuenta, codigos: str | None) -> list[OcupacionCaso]:
+    """Las ocupaciones del directorio de un caso, en el orden pedido (ajuste carga-casos). No registra vistas:
+    abrir un caso no cuenta como explorar el catálogo."""
+    exigir_catalogo(sesion, cuenta)
+    pedidos = list(dict.fromkeys(c.strip() for c in (codigos or '').split(',') if c.strip()))
+    if not pedidos:
+        raise ErrorAccion('Indica los códigos de las ocupaciones en codigos', estado_http=422)
+    if len(pedidos) > MAXIMO_OCUPACIONES_CASO:
+        raise ErrorAccion(f'Se piden a lo más {MAXIMO_OCUPACIONES_CASO} ocupaciones', estado_http=422)
+    ocupaciones = {o.codigo: o for o in sesion.scalars(select(Ocupacion).where(Ocupacion.codigo.in_(pedidos)))}
+    if faltantes := [c for c in pedidos if c not in ocupaciones]:
+        raise ErrorAccion(f'Ocupaciones inexistentes: {", ".join(faltantes)}', estado_http=422)
+    return [OcupacionCaso(codigo=c, titulo=ocupaciones[c].titulo, descripcion=ocupaciones[c].descripcion,
+                          conocimientos=ocupaciones[c].conocimientos, aptitudes=ocupaciones[c].aptitudes)
+            for c in pedidos]
 
 
 @usar_contexto
@@ -352,10 +370,10 @@ def detalle_ocupacion(sesion: Session, cuenta: Cuenta, codigo: str) -> Ocupacion
                         for cine in ocupacion.programas_cine for c in de_principal if c.codigo_cine == cine), None)
         otras = [OcupacionEnlace(codigo=c, titulo=t) for c, t in sesion.execute(
             select(Ocupacion.codigo, Ocupacion.titulo).join(OcupacionFamilia).where(
-                OcupacionFamilia.familia_id == principal.id, OcupacionFamilia.es_principal, Ocupacion.en_catalogo,
+                OcupacionFamilia.familia_id == principal.id, OcupacionFamilia.es_principal,
                 Ocupacion.id != ocupacion.id).order_by(Ocupacion.busqueda, Ocupacion.codigo))]
-        total_familia = sesion.scalar(select(func.count()).select_from(OcupacionFamilia).join(Ocupacion).where(
-            OcupacionFamilia.familia_id == principal.id, Ocupacion.en_catalogo))
+        total_familia = sesion.scalar(select(func.count()).select_from(OcupacionFamilia).where(
+            OcupacionFamilia.familia_id == principal.id))
     afinidades, _ = _afinidades(sesion, cuenta)
     return OcupacionDetalle(
         **resumen_ocupacion(ocupacion, favoritos).model_dump(exclude={'familia_principal'}),
@@ -382,8 +400,8 @@ def ficha_familia(sesion: Session, cuenta: Cuenta, codigo: str) -> FamiliaFicha:
         raise _no_encontrado('Familia')
     por_tipo = dict(sesion.execute(select(Carrera.tipo, func.count()).where(Carrera.familia_id == familia.id)
                                    .group_by(Carrera.tipo)).all())
-    vias = dict(sesion.execute(select(OcupacionFamilia.es_principal, func.count()).join(Ocupacion).where(
-        OcupacionFamilia.familia_id == familia.id, Ocupacion.en_catalogo).group_by(OcupacionFamilia.es_principal)).all())
+    vias = dict(sesion.execute(select(OcupacionFamilia.es_principal, func.count()).where(
+        OcupacionFamilia.familia_id == familia.id).group_by(OcupacionFamilia.es_principal)).all())
     ingresos = sesion.execute(select(IngresoFamilia.tipo, IngresoFamilia.promedio_jovenes).where(
         IngresoFamilia.familia_id == familia.id, IngresoFamilia.ubicacion_id.is_(None))).all()
     vecinas = sesion.scalars(select(FamiliaCarrera).where(
@@ -466,7 +484,7 @@ def listar_grupos(sesion: Session, cuenta: Cuenta) -> list[GrupoPublico]:
     nombran el grupo de una ocupación (el buscador de Investigaciones)."""
     exigir_catalogo(sesion, cuenta)
     grupos = sesion.scalars(select(GrupoOcupacional).where(GrupoOcupacional.codigo.in_(
-        select(Ocupacion.grupo).where(Ocupacion.en_catalogo))))
+        select(Ocupacion.grupo))))
     return [GrupoPublico(codigo=g.codigo, nombre=g.nombre) for g in sorted(grupos, key=lambda g: sin_tildes(g.nombre))]
 
 
@@ -476,9 +494,7 @@ def _inesperada(sesion: Session, cuenta: Cuenta, modelo, evento: TipoEventoUso, 
     """Al azar entre lo que la cuenta no ha visto, sin el actual; si ya vio todo, uno distinto del actual."""
     exigir_catalogo(sesion, cuenta)
     candidatos = sesion.execute(select(modelo.id, modelo.codigo).where(*_filtros(
-        None if excluir is None else modelo.codigo != excluir,
-        # Las ocupaciones fuera del catálogo (solo de casos y testimonios) no se proponen.
-        Ocupacion.en_catalogo if modelo is Ocupacion else None))).all()
+        None if excluir is None else modelo.codigo != excluir))).all()
     vistos = set(sesion.scalars(select(EventoUso.id_referencia).where(
         EventoUso.cuenta_id == cuenta.id, EventoUso.tipo == evento, EventoUso.id_referencia.is_not(None))))
     sin_ver = [codigo for id_, codigo in candidatos if id_ not in vistos]

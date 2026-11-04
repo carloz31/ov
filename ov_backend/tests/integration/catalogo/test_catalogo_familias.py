@@ -26,7 +26,7 @@ def test_el_catalogo_marca_afinidad_y_familia_recomendada_solo_al_estudiante(cli
 def test_sin_resultado_no_hay_afinidades(cliente):
     ciclo(cliente, opcion=3)
     base = '/cuentas/est-ana/catalogo'
-    assert pedir(cliente, 'GET', f'{base}/ocupaciones/psychologist')['afinidad'] is None
+    assert pedir(cliente, 'GET', f'{base}/ocupaciones/19-3033.00')['afinidad'] is None
     assert pedir(cliente, 'GET', f'{base}/familias/313')['recomendada_posicion'] is None
 
 

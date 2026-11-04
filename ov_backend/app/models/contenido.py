@@ -76,13 +76,6 @@ class ActividadTematica(Base):
     tematica_id: Mapped[int] = mapped_column(ForeignKey("tematica.id"), primary_key=True)
 
 
-class ActividadDimension(Base):
-    """Tipos RIASEC de un caso (B08). Solo las actividades CASO las tienen; lo valida el cargador."""
-    __tablename__ = "actividad_dimension"
-    actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"), primary_key=True)
-    dimension_id: Mapped[int] = mapped_column(ForeignKey("dimension.id"), primary_key=True)
-
-
 class PreguntaBatalla(Base):
     """Pregunta del pool de una batalla (F04b). Cada una sale de una ficha; las fichas de la batalla
     se derivan de sus preguntas. `correcta` es el índice de la opción correcta en `opciones`."""

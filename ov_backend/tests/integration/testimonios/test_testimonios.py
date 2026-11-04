@@ -31,11 +31,11 @@ def test_hu041_ver_testimonio_una_sola_vez(cliente, aplicacion):
     assert filas_base(aplicacion) == antes
 
     ciclo(cliente)
-    pedir(cliente, 'POST', '/acciones/resolver-caso', {'cuenta': 'est-ana', 'actividad': 't-caso', 'puntaje': 13})
+    pedir(cliente, 'POST', '/acciones/resolver-caso', {'cuenta': 'est-ana', 'actividad': 't-caso', 'puntaje': 7})
     uno, *_ = pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')
     assert {k: uno[k] for k in ('estado', 'pista', 'enlace', 'persona', 'ocupacion', 'anios_experiencia')} == {
         'estado': 'DISPONIBLE', 'pista': None, 'enlace': 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
-        'persona': 'Luis Mendoza', 'ocupacion': {'codigo': 'paramedic', 'titulo': 'Paramédico / técnico en emergencias médicas'},
+        'persona': 'Luis Mendoza', 'ocupacion': {'codigo': '19-3091.00', 'titulo': 'Antropólogo y arqueólogo'},
         'anios_experiencia': 5}
     assert uno['cita'] and uno['descripcion'] and uno['caso'] == {'codigo': 't-caso', 'titulo': 'Caso de prueba'}
     vista = pedir(cliente, 'POST', '/acciones/ver-testimonio', ver('t-testimonio-1'))

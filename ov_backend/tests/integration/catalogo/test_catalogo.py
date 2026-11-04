@@ -15,14 +15,14 @@ from soporte_ruta import completar, filas_base, pedir
 
 BASE = '/cuentas/est-ana/catalogo'
 PUCP = 'inst-3'
-DIRECTORES = 'onet-11-1011-00'
+DIRECTORES = '11-1011.00'
 RUTAS_CONSULTA = (f'{BASE}/carreras', f'{BASE}/carreras/{PSICOLOGIA}', f'{BASE}/ocupaciones',
-                  f'{BASE}/ocupaciones/psychologist', f'{BASE}/instituciones', f'{BASE}/instituciones/{INST_UNI}',
+                  f'{BASE}/ocupaciones/19-3033.00', f'{BASE}/instituciones', f'{BASE}/instituciones/{INST_UNI}',
                   f'{BASE}/familias', f'{BASE}/ubicaciones', f'{BASE}/grupos', f'{BASE}/familias/313',
                   f'{BASE}/carreras/inesperada',
                   f'{BASE}/ocupaciones/inesperada')
 VISTAS = (('ver-carrera', 'carrera', PSICOLOGIA, 'VISTA_CARRERA'),
-          ('ver-ocupacion', 'ocupacion', 'psychologist', 'VISTA_OCUPACION'),
+          ('ver-ocupacion', 'ocupacion', '19-3033.00', 'VISTA_OCUPACION'),
           ('ver-institucion', 'institucion', INST_UNI, 'VISTA_INSTITUCION'))
 
 
@@ -127,10 +127,10 @@ def test_hu037_detalle_de_carrera(abierto):
     assert len(detalle['ambito_laboral']) > 1 and not any('¿' in linea for linea in detalle['ambito_laboral'])
     # Ajuste resultados-intereses: la relación es por familia (313), principal y secundaria, por título.
     familia = detalle['ocupaciones_de_la_familia']
-    assert codigos(familia['principales']) == ['onet-21-1012-00', 'psychologist', 'onet-19-3034-00', 'onet-19-3032-00']
-    assert codigos(familia['secundarias']) == ['onet-13-1161-00', 'onet-13-1151-00', 'onet-13-1071-00',
-                                               'onet-11-3121-00']
-    assert familia['principales'][1] == {'codigo': 'psychologist', 'titulo': 'Psicólogo clínico', 'riasec': ['S', 'I'],
+    assert codigos(familia['principales']) == ['21-1012.00', '19-3033.00', '19-3034.00', '19-3032.00']
+    assert codigos(familia['secundarias']) == ['13-1161.00', '13-1151.00', '13-1071.00',
+                                               '11-3121.00']
+    assert familia['principales'][1] == {'codigo': '19-3033.00', 'titulo': 'Psicólogo clínico', 'riasec': ['S', 'I'],
                                          'afinidad': None}
     assert len(detalle['instituciones']) == 32
     nombres = [i['nombre'] for i in detalle['instituciones']]
@@ -179,7 +179,7 @@ def test_hu038_busca_ocupaciones_por_nombre_otros_nombres_area_y_familia(abierto
 
 
 def test_hu038_detalle_de_ocupacion(abierto):
-    detalle = pedir(abierto, 'GET', f'{BASE}/ocupaciones/psychologist')
+    detalle = pedir(abierto, 'GET', f'{BASE}/ocupaciones/19-3033.00')
     assert (detalle['codigo_onet'], detalle['riasec'], detalle['job_zone'], detalle['grupo']) == (
         '19-3033.00', ['S', 'I'], 5, '19')
     assert detalle['resumen'].startswith('Evalúan, diagnostican y tratan') and detalle['resumen'].endswith('…')
@@ -248,7 +248,7 @@ def test_f06_los_listados_se_paginan(abierto):
 
 
 def test_f06_el_filtro_favoritos_se_combina_con_los_demas(abierto):
-    for tipo, codigo in (('CARRERA', PSICOLOGIA), ('CARRERA', ENFERMERIA), ('OCUPACION', 'psychologist'),
+    for tipo, codigo in (('CARRERA', PSICOLOGIA), ('CARRERA', ENFERMERIA), ('OCUPACION', '19-3033.00'),
                          ('INSTITUCION', INST_TECNICO)):
         pedir(abierto, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': tipo, 'codigo': codigo})
     favoritas = pedir(abierto, 'GET', f'{BASE}/carreras?favoritos=true')
@@ -256,7 +256,7 @@ def test_f06_el_filtro_favoritos_se_combina_con_los_demas(abierto):
     assert all(c['es_favorita'] for c in favoritas['items'])
     assert codigos(pedir(abierto, 'GET', f'{BASE}/carreras?favoritos=true&buscar=psico')) == [PSICOLOGIA]
     assert pedir(abierto, 'GET', f'{BASE}/carreras?favoritos=true&limite=1')['total'] == 2
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/ocupaciones?favoritos=true')) == ['psychologist']
+    assert codigos(pedir(abierto, 'GET', f'{BASE}/ocupaciones?favoritos=true')) == ['19-3033.00']
     assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones?favoritos=true&tipo=INSTITUTO')) == [INST_TECNICO]
     assert pedir(abierto, 'GET', f'{BASE}/instituciones?favoritos=true&tipo=FFAA_POLICIA')['total'] == 0
     # Los favoritos son de la cuenta: otra cuenta no los ve.
@@ -315,14 +315,14 @@ def test_hu042_lugar_inesperado_elige_lo_no_visto(abierto, sesion):
 
 
 def test_hu042_lugar_inesperado_de_ocupaciones(abierto, sesion):
-    elegida = pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=psychologist')
-    assert elegida['revisitando'] is False and elegida['codigo'] != 'psychologist'
-    _ver_todas_menos(sesion, m.Ocupacion, 'VISTA_OCUPACION', {'teacher'})
-    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=psychologist') == {
-        'codigo': 'teacher', 'revisitando': False}
+    elegida = pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=19-3033.00')
+    assert elegida['revisitando'] is False and elegida['codigo'] != '19-3033.00'
+    _ver_todas_menos(sesion, m.Ocupacion, 'VISTA_OCUPACION', {'25-2031.00'})
+    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=19-3033.00') == {
+        'codigo': '25-2031.00', 'revisitando': False}
     # Pedir el lugar inesperado no cuenta como vista: teacher sigue sin ver.
-    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=psychologist')['codigo'] == 'teacher'
-    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=teacher')['revisitando'] is True
+    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=19-3033.00')['codigo'] == '25-2031.00'
+    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=25-2031.00')['revisitando'] is True
 
 
 def test_las_vistas_registran_su_evento_con_referencia(abierto):

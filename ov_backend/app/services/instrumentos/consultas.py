@@ -258,8 +258,8 @@ def ocupaciones_principales_por_familia(sesion) -> Counter:
     datos = contexto(sesion)
     if not hasattr(datos, 'principales_por_familia'):
         datos.principales_por_familia = Counter(dict(sesion.execute(
-            select(OcupacionFamilia.familia_id, func.count()).join(Ocupacion).where(
-                OcupacionFamilia.es_principal, Ocupacion.en_catalogo).group_by(OcupacionFamilia.familia_id)).all()))
+            select(OcupacionFamilia.familia_id, func.count()).where(
+                OcupacionFamilia.es_principal).group_by(OcupacionFamilia.familia_id)).all()))
     return datos.principales_por_familia
 
 

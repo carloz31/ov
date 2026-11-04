@@ -6,7 +6,7 @@ from app.dependencies import CuentaConsultada, SesionBD
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.core.parametros import LIMITE_PAGINA_CATALOGO
 from app.schemas.catalogo import (
-    CarreraDetalle, FamiliaFicha, FamiliaPublica, GrupoPublico, Inesperada, InstitucionDetalle, OcupacionDetalle, PaginaCarreras,
+    CarreraDetalle, FamiliaFicha, FamiliaPublica, GrupoPublico, Inesperada, InstitucionDetalle, OcupacionCaso, OcupacionDetalle, PaginaCarreras,
     PaginaInstituciones, PaginaOcupaciones, UbicacionPublica,
 )
 from app.services import catalogo as servicio_catalogo
@@ -60,6 +60,11 @@ def carrera_inesperada(cuenta_consultada: CuentaConsultada, sesion: SesionBD, ex
 @router.get("/cuentas/{cuenta}/catalogo/ocupaciones/inesperada", response_model=Inesperada)
 def ocupacion_inesperada(cuenta_consultada: CuentaConsultada, sesion: SesionBD, excluir: str | None = None):
     return _consultar(lambda: servicio_catalogo.ocupacion_inesperada(sesion, cuenta_consultada, excluir))
+
+
+@router.get("/cuentas/{cuenta}/catalogo/ocupaciones-caso", response_model=list[OcupacionCaso])
+def ocupaciones_caso(cuenta_consultada: CuentaConsultada, sesion: SesionBD, codigos: str | None = None):
+    return _consultar(lambda: servicio_catalogo.ocupaciones_caso(sesion, cuenta_consultada, codigos))
 
 
 @router.get("/cuentas/{cuenta}/catalogo/carreras/{codigo}", response_model=CarreraDetalle)

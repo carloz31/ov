@@ -4,46 +4,6 @@ La spec está archivada en docs/historico/iteracion-1/. Si un cambio de datos ap
 modifica estos valores, se actualizan aquí en la misma tarea.
 """
 
-# (codigo del front, titulo, codigo O*NET)
-OCUPACIONES_APROBADAS = {
-    ('agricultural-engineer', 'Ingeniero/a agrónomo/a', '17-2021.00'),
-    ('architect', 'Arquitecto/a', '17-1011.00'),
-    ('biologist', 'Biólogo/a', '19-1029.04'),
-    ('civil-engineer', 'Ingeniero/a civil', '17-2051.00'),
-    ('community-manager', 'Community manager', '27-3031.00'),
-    ('cook', 'Cocinero/a', '35-2014.00'),
-    ('data-analyst', 'Analista de datos', '15-2051.00'),
-    ('documentary-filmmaker', 'Documentalista', '27-2012.00'),
-    ('electrician', 'Electricista', '47-2111.00'),
-    ('environmental-engineer', 'Ingeniero/a medioambiental', '17-2081.00'),
-    ('event-assistant', 'Asistente de eventos', '39-3031.00'),
-    ('event-coordinator', 'Coordinador/a de eventos', '13-1121.00'),
-    ('firefighter', 'Bomberos', '33-2011.00'),
-    ('geologist', 'Geólogo/a', '19-2042.00'),
-    ('graphic-designer', 'Diseñador/a gráfico/a', '27-1024.00'),
-    ('illustrator', 'Ilustrador/a', '27-1013.00'),
-    ('journalist', 'Periodista', '27-3023.00'),
-    ('lawyer', 'Abogado/a', '23-1011.00'),
-    ('logistics-coordinator', 'Coordinador/a logístico/a', '13-1081.00'),
-    ('machinery-operator', 'Operador/a de maquinaria', '47-2073.00'),
-    ('medical-specialist', 'Médico/a especialista', '29-1216.00'),
-    ('meteorologist', 'Meteorólogo/a', '19-2021.00'),
-    ('municipal-police', 'Policía municipal', '33-3051.00'),
-    ('nurse', 'Enfermero/a', '29-1141.00'),
-    ('paramedic', 'Paramédicos', '29-2043.00'),
-    ('photographer', 'Fotógrafo/a', '27-4021.00'),
-    ('psychologist', 'Psicólogos Clínicos y de Consejería', '19-3033.00'),
-    ('public-administrator', 'Gestor/a público/a', '11-3012.00'),
-    ('security-guard', 'Guardia de seguridad', '33-9032.00'),
-    ('social-worker', 'Trabajador/a social', '21-1021.00'),
-    ('sociologist', 'Sociólogo/a', '19-3041.00'),
-    ('sound-technician', 'Técnico/a de sonido', '27-4014.00'),
-    ('teacher', 'Docente', '25-2031.00'),
-    ('translator', 'Traductor/a', '27-3091.00'),
-    ('urban-planner', 'Urbanista', '19-3051.00'),
-    ('veterinarian', 'Veterinario/a', '29-1131.00'),
-}
-
 # Ajuste carga-instrumentos: O*NET Interest Profiler Short Form por dimensión, en el orden del formulario
 # (k = 1..10), con los cuatro ajustes de comprensión de la spec.
 ENUNCIADOS_RIASEC = {

@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 94
+    assert len(Base.metadata.tables) == 93
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -311,9 +311,9 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # curado con familias de ocupaciones.
         with pytest.raises(RuntimeError, match='existen familias de ocupaciones'):
             command.downgrade(configuracion, '0002')
-        # 0043 baja y deja `carrera_ocupacion` vacía, antes de que 0041 se detenga.
-        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version',
-                                                                                      'carrera_ocupacion'}
+        # 0044 baja y deja `actividad_dimension` vacía; 0043, `carrera_ocupacion`, antes de que 0041 se detenga.
+        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {
+            'alembic_version', 'carrera_ocupacion', 'actividad_dimension'}
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0041'
             for tabla in Base.metadata.sorted_tables:

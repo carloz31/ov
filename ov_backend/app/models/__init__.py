@@ -22,7 +22,7 @@ _MODELOS_POR_MODULO = {
         'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
     ),
     'app.models.contenido': (
-        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
+        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
         'GrupoInsignia', 'Insignia',
         'Nivel', 'FamiliaCarrera', 'Carrera',
     ),
@@ -79,7 +79,7 @@ __all__ = [
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
     'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
     'SalonInstrumento', 'Bloque',
-    'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio',
+    'Actividad', 'Tematica', 'ActividadTematica', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'GrupoInsignia', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
     'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn', 'Entrevista',
     'EntrevistaAutor', 'ConversacionVinculo', 'EventoUso', 'ReglaDesbloqueo',

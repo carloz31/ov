@@ -182,6 +182,15 @@ class FamiliaSecundaria(BaseModel):
     """Nombres de las carreras de la familia con un programa de referencia de la ocupación."""
 
 
+class OcupacionCaso(BaseModel):
+    """Una ocupación del directorio de un caso: el título es el cargo y el resto, la hoja de vida."""
+    codigo: str
+    titulo: str
+    descripcion: str | None
+    conocimientos: list[str]
+    aptitudes: list[str]
+
+
 class OcupacionEnlace(BaseModel):
     codigo: str
     titulo: str

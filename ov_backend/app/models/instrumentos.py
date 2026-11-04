@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import (
-    JSON, CheckConstraint, DateTime, ForeignKey, Index, Text, UniqueConstraint, column, false, text, true,
+    JSON, CheckConstraint, DateTime, ForeignKey, Index, Text, UniqueConstraint, column, false, text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -119,8 +119,6 @@ class Ocupacion(Base):
     titulo: Mapped[str]
     # Participa en el cálculo de ocupaciones afines del test de intereses.
     en_test: Mapped[bool] = mapped_column(default=False, server_default=false())
-    # Se lista en el catálogo; las que no, existen solo porque casos y testimonios las nombran.
-    en_catalogo: Mapped[bool] = mapped_column(default=True, server_default=true())
     # Códigos CINE de 6 cifras de los programas de referencia; solo para nombrar programas de ejemplo.
     programas_cine: Mapped[list[str]] = mapped_column(JSON(none_as_null=True), default=list,
                                                       server_default=text("'[]'"))

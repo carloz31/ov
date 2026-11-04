@@ -92,7 +92,7 @@ def verificar_p10_resultado(cliente):
     assert [c['posicion'] for c in coincidencias] == list(range(1, len(coincidencias) + 1))
     assert [c['parecido'] for c in coincidencias] == sorted((c['parecido'] for c in coincidencias), reverse=True)
     assert 'correlacion' not in coincidencias[0] and coincidencias[0]['banda'] == 'MUY_AFIN'
-    assert resultado['perfil_poco_marcado'] is False and 'geologist' in [c['codigo'] for c in coincidencias]
+    assert resultado['perfil_poco_marcado'] is False and '19-2042.00' in [c['codigo'] for c in coincidencias]
     assert sorted(c for a in resultado['por_area'] for c in a['ocupaciones']) == sorted(c['codigo'] for c in coincidencias)
     assert all(len(a['area_codigo']) == 2 for a in resultado['por_area'] if a['area_codigo'] is not None)
     familias = resultado['familias']

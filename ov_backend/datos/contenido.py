@@ -20,7 +20,7 @@ PROVISIONALES = (
     ('Cuentas, salones, vínculos y orientadoras', 'ruta.CUENTAS, SALONES, VINCULOS, ORIENTADORAS_SALONES', 'carga de cuentas del piloto'),
     ('Configuración del salón', 'ruta.SALON_INSTRUMENTOS', 'B14'),
     ('Registro prioritario del salón', "('5A', 'b1-3')", 'B14'),
-    ('Casos t-caso y t-caso-2', 'ruta.ACTIVIDADES, CONFIGURACION_CASOS, DIMENSIONES_ACTIVIDADES, DESCRIPCIONES', 'ajuste de casos'),
+    ('Casos t-caso y t-caso-2', 'ruta.ACTIVIDADES, CONFIGURACION_CASOS, DESCRIPCIONES', 'ajuste de casos'),
     ('Testimonios t-testimonio-1..4', 'ruta.TESTIMONIOS', 'ajuste de testimonios'),
     ('Conversaciones t-conv-1 y t-conv-2', 'ruta.CONVERSACIONES', 'ajuste de conversaciones'),
     ('Diario: t-diario-fija, t-diario-tras-conversar y las DIARIA', 'ruta.PREGUNTAS_DIARIO, REFERENCIAS', 'ajuste de registros y diario'),
@@ -316,8 +316,7 @@ APLICACIONES_ACTIVIDADES = (
     ('APL-RIASEC', 'h-intereses-6'),
 )
 
-# PROVISIONAL: dimensiones y puntajes de los casos de `ruta`.
-DIMENSIONES_ACTIVIDADES = ruta.DIMENSIONES_ACTIVIDADES
+# PROVISIONAL: puntajes de los casos de `ruta`.
 CONFIGURACION_CASOS = ruta.CONFIGURACION_CASOS
 
 # (código, título, descripción, tema, contenido, audiencia). El contenido es markdown y no repite el título.

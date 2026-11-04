@@ -75,10 +75,10 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                # sus ítems.
                ('t-mision-inteligencias', 'CIUDAD', 'Misión de inteligencias', 'CUESTIONARIO', None, 8),
                ('t-mision-habilidades', 'CIUDAD', 'Misión de habilidades sociales', 'CUESTIONARIO', None, 5),
-               ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 10, 10),
+               ('t-caso', 'CIUDAD', 'Caso de prueba', 'CASO', 6, 10),
                ('t-contraste', 'CIUDAD', 'Registro de contraste de intereses', 'REGISTRO', None, 10),
                # Ajuste mochila: un llamado que el recorrido nunca abre, para las voces que aún no se listan.
-               ('t-caso-2', 'CIUDAD', 'La traductora apurada', 'CASO', 10, 10),
+               ('t-caso-2', 'CIUDAD', 'La traductora apurada', 'CASO', 6, 10),
                # B13: la misión que abre Investigaciones y la que vuelve tras publicar la primera entrevista.
                ('t-investigador', 'CIUDAD', 'El investigador de oficios', 'INFORMATIVA', None, 5),
                ('t-investigador-cierre', 'CIUDAD', 'Lo que cambió', 'REGISTRO', None, 10),
@@ -158,8 +158,6 @@ APLICACIONES_ACTIVIDADES = (('APL-RIASEC', 't-mision-intereses'), ('APL-RIASEC',
 TEMATICAS_ACTIVIDADES = (('t-expectativas', ('A', 'B')), ('t-valores', ('B',)), ('t-eco', ('A',)),
                          ('t-mision-intereses', ('B',)), ('t-caso', ('C',)))
 
-# (caso, dimensiones RIASEC). Solo las actividades CASO llevan dimensiones; un caso puede tener varias (B08).
-DIMENSIONES_ACTIVIDADES = (('t-caso', ('R', 'S')),)
 
 # --- Catálogo (B10, F06) ---
 # El catálogo es real y lo carga `fijos` (`datos/catalogo.py`). La ruta solo nombra, por su código real, las
@@ -354,37 +352,38 @@ PREGUNTAS_BATALLA = (
 CONFIGURACION_BATALLAS = {'t-batalla': (5, 3, 7)}
 
 # DATO DE PRUEBA. (puntaje máximo, necesidades por problema) de cada CASO, en puntos de satisfacción: el
-# máximo es el total de necesidades. t-caso juega forest-fire: sus necesidades son las de
-# `expectedProfessionalIds` en ov_frontend/src/data/content/forestFireCase.ts, en orden de fase y problema.
-# Mantener sincronizado con ese archivo (lo comprueba tests/servidor/casos en el front).
-CONFIGURACION_CASOS = {'t-caso': (14, (2, 3, 3, 1, 2, 3)), 't-caso-2': (14, (2, 3, 3, 1, 2, 3))}
+# máximo es el total de necesidades. t-caso y t-caso-2 juegan hidden-plaza: sus necesidades son las de
+# ov_frontend/src/data/cases/plataforma/hidden-plaza.json, en orden de fase y problema. Mantener sincronizado
+# con ese archivo (lo comprueba scripts/verificar_contenido_front.py).
+CONFIGURACION_CASOS = {'t-caso': (8, (2, 1, 2, 2, 1)), 't-caso-2': (8, (2, 1, 2, 2, 1))}
 
 # (código, título, descripción, enlace, pista, persona, ocupación, años de experiencia, cita). La pista se
 # muestra mientras el testimonio está bloqueado (B08); la descripción es el texto completo y el enlace, el
 # video. DATO DE PRUEBA: persona, cita, texto y video adaptados de los testimonios del front
-# (`professionalTestimonials` en ov_frontend/src/data/catalog/occupations.ts).
+# (`professionalTestimonials` en ov_frontend/src/data/catalog/occupations.ts). Las ocupaciones son necesidades
+# de hidden-plaza, el caso que los regala (ajuste carga-casos).
 TESTIMONIOS = (
     ('t-testimonio-1', 'Calma y cuidado en una emergencia',
      'Mi trabajo consiste en evaluar rápidamente qué ocurre, brindar los primeros cuidados y decidir qué necesita '
      'la persona antes de llegar a un hospital. Cada situación es diferente y por eso practicamos constantemente. '
      'También aprendí que explicar con calma lo que estamos haciendo puede ayudar tanto como una intervención '
      'técnica.', 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
-     'Resuelve el caso de prueba para conocer este testimonio.', 'Luis Mendoza', 'paramedic', 5,
+     'Resuelve el caso de prueba para conocer este testimonio.', 'Luis Mendoza', '19-3091.00', 5,
      'Ayudar en una emergencia exige técnica, calma y una comunicación muy humana.'),
     ('t-testimonio-2', 'Puentes entre idiomas',
      'Trabajo con invitados, conferencistas y equipos de producción de distintos países. Antes de cada evento '
      'investigo el tema y preparo vocabulario especializado. Durante una conversación debo escuchar, comprender la '
      'intención y comunicarla con precisión, incluso cuando todo ocurre muy rápido.',
      'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
-     'Alguien que trabaja con palabras que no son las suyas. ¿Quién será?', 'Sofía Kim', 'translator', 6,
+     'Alguien que trabaja con palabras que no son las suyas. ¿Quién será?', 'Sofía Kim', '17-2051.00', 6,
      'Traducir no es reemplazar palabras: es ayudar a que dos personas realmente se comprendan.'),
     # Ajuste mochila: dos voces de un llamado que aún no se abre (t-caso-2).
     ('t-testimonio-3', 'Datos que cuentan historias', 'Texto de prueba del tercer testimonio.',
      'https://www.youtube.com/watch?v=ysz5S6PUM-U', 'Una voz que llega con un llamado futuro.', 'Ana Torres',
-     'paramedic', 3, 'Cita de prueba del tercer testimonio.'),
+     '19-3041.00', 3, 'Cita de prueba del tercer testimonio.'),
     ('t-testimonio-4', 'Un puente más', 'Texto de prueba del cuarto testimonio.',
      'https://www.youtube.com/watch?v=aqz-KE-bpKQ', 'Otra voz que llega con un llamado futuro.', 'Pedro Ríos',
-     'translator', 8, 'Cita de prueba del cuarto testimonio.'),
+     '19-3051.00', 8, 'Cita de prueba del cuarto testimonio.'),
 )
 
 # (código, orden, título, tema (chip), pregunta del estudiante, pregunta del apoderado (None: la misma), preguntas guía,

@@ -93,7 +93,6 @@ class OcupacionArchivo:
     perfil: str
     titulo_es: str = ''
     en_test: bool = False
-    en_catalogo: bool = True
     familias: tuple[str, ...] = ()
     """La principal primero y hasta dos secundarias; vacía si la curaduría no le da familia."""
     programas_cine: tuple[str, ...] = ()
@@ -371,7 +370,6 @@ def _leer_ingresos(carpeta, catalogo):
 class OcupacionCurada:
     titulo: str
     en_test: bool
-    en_catalogo: bool
     job_zone: int | None
 
 
@@ -381,18 +379,18 @@ def _bandera(nombre, numero, valor) -> bool:
     return valor == '1'
 
 
-def _leer_curaduria(carpeta, ocultas) -> dict[str, OcupacionCurada]:
-    """Las ocupaciones que existen en la plataforma: `en_catalogo = 1`, más las `ocultas` (las que nombran casos y
-    testimonios) con `en_catalogo` falso. Solo las `en_test` entran al cálculo del test."""
+def _leer_curaduria(carpeta) -> dict[str, OcupacionCurada]:
+    """Las ocupaciones que existen en la plataforma: solo las filas con `en_catalogo = 1` (ajuste carga-casos: sin
+    ocupaciones ocultas). Solo las `en_test` entran al cálculo del test."""
     nombre = 'ocupaciones_curadas.csv'
     curadas = {}
     for numero, fila in _leer(carpeta, nombre, ('codigo', 'titulo_pe', 'job_zone', 'en_test', 'en_catalogo')):
         en_test, en_catalogo = _bandera(nombre, numero, fila['en_test']), _bandera(nombre, numero, fila['en_catalogo'])
         if en_test and not en_catalogo:
             raise _error(nombre, numero, f'{fila["codigo"]} está en el test pero no en el catálogo')
-        if en_catalogo or fila['codigo'] in ocultas:
+        if en_catalogo:
             job_zone = int(fila['job_zone']) if fila['job_zone'] else None
-            curadas[fila['codigo']] = OcupacionCurada(fila['titulo_pe'], en_test, en_catalogo, job_zone)
+            curadas[fila['codigo']] = OcupacionCurada(fila['titulo_pe'], en_test, job_zone)
     return curadas
 
 
@@ -402,7 +400,7 @@ def _leer_ocupacion_familia(carpeta, catalogo, curadas) -> dict[str, tuple[tuple
     nombre = 'ocupacion_familia_v2.csv'
     relacion = {}
     for numero, fila in _leer(carpeta, nombre, ('codigo', 'familia_principal', 'familias', 'carreras_cine_referencia')):
-        if fila['codigo'] not in curadas or not curadas[fila['codigo']].en_catalogo:
+        if fila['codigo'] not in curadas:
             raise _error(nombre, numero, f'{fila["codigo"]} no está en el catálogo')
         if fila['codigo'] in relacion:
             raise _error(nombre, numero, f'{fila["codigo"]} repetida')
@@ -416,7 +414,7 @@ def _leer_ocupacion_familia(carpeta, catalogo, curadas) -> dict[str, tuple[tuple
         if any(not re.fullmatch(r'\d{6}', p) for p in programas):
             raise _error(nombre, numero, f'código CINE inválido en {fila["carreras_cine_referencia"]!r}')
         relacion[fila['codigo']] = (familias, programas)
-    faltantes = sorted(c for c, o in curadas.items() if o.en_catalogo and c not in relacion)
+    faltantes = sorted(c for c in curadas if c not in relacion)
     if faltantes:
         raise ValueError(f'{nombre}: faltan las ocupaciones del catálogo {", ".join(faltantes)}')
     return relacion
@@ -432,14 +430,14 @@ def _ocupacion_sin_riasec(nombre, numero, fila, curada, catalogo, base) -> 'Ocup
                             puntajes=(), perfil='')
 
 
-def _leer_ocupaciones(carpeta, catalogo, ocultas=frozenset()):
+def _leer_ocupaciones(carpeta, catalogo):
     catalogo.grupos = {f['codigo']: f['nombre'] for _, f in _leer(carpeta, 'grupos_ocupacionales.csv',
                                                                     ('codigo', 'nombre'))}
     traduccion = {}
     for _, fila in _leer(carpeta, 'estilos_trabajo.csv', ('valor_mpp', 'codigo', 'nombre')):
         traduccion[fila['valor_mpp']] = fila['codigo']
         catalogo.estilos[fila['codigo']] = fila['nombre']
-    curadas = _leer_curaduria(carpeta, ocultas)
+    curadas = _leer_curaduria(carpeta)
     familias = _leer_ocupacion_familia(carpeta, catalogo, curadas)
     nombre = 'ocupaciones_mpp_completo.csv'
     letras = tuple(f'riasec_{d}' for d, _ in DIMENSIONES_RIASEC)
@@ -455,7 +453,7 @@ def _leer_ocupaciones(carpeta, catalogo, ocultas=frozenset()):
             raise _error(nombre, numero, f'código O*NET o título inválido {fila["codigo"]!r}')
         de_familia, programas = familias.get(fila['codigo'], ((), ()))
         base = dict(codigo_onet=fila['codigo'], titulo=curada.titulo or fila['titulo_es'], titulo_es=fila['titulo_es'],
-                    en_test=curada.en_test, en_catalogo=curada.en_catalogo, familias=de_familia,
+                    en_test=curada.en_test, familias=de_familia,
                     programas_cine=programas)
         if not any(fila[c] for c in letras) and not curada.en_test:
             # Sin perfil RIASEC (las militares): al catálogo, nunca al test.
@@ -498,8 +496,7 @@ def _leer_ocupaciones(carpeta, catalogo, ocultas=frozenset()):
         raise ValueError(f'{nombre}: hay códigos O*NET repetidos')
 
 
-def leer_catalogo(carpeta: Path | None = None, ocultas=frozenset()) -> CatalogoArchivo:
-    """`ocultas`: códigos O*NET fuera del catálogo que igual se cargan (los que nombran casos y testimonios)."""
+def leer_catalogo(carpeta: Path | None = None) -> CatalogoArchivo:
     carpeta = carpeta or CARPETA_CATALOGO
     catalogo = CatalogoArchivo()
     _leer_familias(carpeta, catalogo)
@@ -512,13 +509,8 @@ def leer_catalogo(carpeta: Path | None = None, ocultas=frozenset()) -> CatalogoA
     catalogo.carreras, catalogo.ofertas = _fusionar_duplicadas(carreras, ofertas)
     catalogo.instituciones = instituciones
     _leer_ingresos(carpeta, catalogo)
-    _leer_ocupaciones(carpeta, catalogo, ocultas)
+    _leer_ocupaciones(carpeta, catalogo)
     return catalogo
-
-
-def codigo_ocupacion(codigo_onet: str, slugs: dict[str, str]) -> str:
-    """El slug que usan casos y testimonios, si lo tiene; si no, `onet-15-1252-00`."""
-    return slugs.get(codigo_onet) or 'onet-' + codigo_onet.replace('.', '-')
 
 
 def _ids(sesion, modelo):
@@ -572,21 +564,19 @@ def _cargar_instituciones(sesion, catalogo, familias, carreras):
         for (i, f), (p, mi, ma) in sorted(catalogo.ingresos_institucion.items())])
 
 
-def _cargar_ocupaciones(sesion, catalogo, dimensiones, slugs):
-    faltantes = sorted(set(slugs) - {o.codigo_onet for o in catalogo.ocupaciones})
-    if faltantes:
-        raise ValueError(f'Faltan en Mi Próximo Paso las ocupaciones {", ".join(faltantes)}')
+def _cargar_ocupaciones(sesion, catalogo, dimensiones):
     sesion.execute(insert(modelos.GrupoOcupacional), [{'codigo': c, 'nombre': n}
                                                        for c, n in sorted(catalogo.grupos.items())])
     sesion.execute(insert(modelos.EstiloTrabajo), [{'codigo': c, 'nombre': n}
                                                     for c, n in sorted(catalogo.estilos.items())])
     sesion.execute(insert(modelos.Ocupacion), [
-        {'codigo': codigo_ocupacion(o.codigo_onet, slugs), 'codigo_onet': o.codigo_onet, 'titulo': o.titulo,
+        # El código de la ocupación es su O*NET tal cual (ajuste carga-casos).
+        {'codigo': o.codigo_onet, 'codigo_onet': o.codigo_onet, 'titulo': o.titulo,
          'grupo': o.grupo, 'resumen': o.resumen, 'descripcion': o.descripcion, 'job_zone': o.job_zone,
          'personalidad': o.personalidad, 'tambien_llamado': list(o.tambien_llamado), 'tareas': list(o.tareas),
          'conocimientos': list(o.conocimientos), 'aptitudes': list(o.aptitudes),
          'estilos_trabajo': list(o.estilos_trabajo), 'codigo_riasec': o.perfil or None,
-         'en_test': o.en_test, 'en_catalogo': o.en_catalogo, 'programas_cine': list(o.programas_cine),
+         'en_test': o.en_test, 'programas_cine': list(o.programas_cine),
          'busqueda': sin_tildes(' '.join(dict.fromkeys((o.titulo, o.titulo_es, *o.tambien_llamado))))}
         for o in catalogo.ocupaciones])
     ocupaciones = dict(sesion.execute(select(modelos.Ocupacion.codigo_onet, modelos.Ocupacion.id)).all())
@@ -620,16 +610,16 @@ def reportar(catalogo: CatalogoArchivo) -> dict[str, list]:
         'familias_sin_principal': sorted(f for f in catalogo.familias if f not in principales),
         'test_sin_riasec': sorted(o.codigo_onet for o in catalogo.ocupaciones if o.en_test and not o.puntajes),
         'familias_sin_descripcion': sorted(f for f in catalogo.familias if f not in catalogo.descripciones_familia),
-        'sin_familia': sorted(o.codigo_onet for o in catalogo.ocupaciones if o.en_catalogo and not o.familias),
+        'sin_familia': sorted(o.codigo_onet for o in catalogo.ocupaciones if not o.familias),
     }
 
 
-def cargar(sesion: Session, dimensiones: dict, slugs: dict[str, str], carpeta: Path | None = None) -> None:
-    """Carga todo el catálogo. `dimensiones` son las del test RIASEC por letra; `slugs`, código O*NET → slug."""
-    catalogo = leer_catalogo(carpeta, ocultas=frozenset(slugs))
+def cargar(sesion: Session, dimensiones: dict, carpeta: Path | None = None) -> None:
+    """Carga todo el catálogo. `dimensiones` son las del test RIASEC por letra."""
+    catalogo = leer_catalogo(carpeta)
     familias, carreras = _cargar_carreras(sesion, catalogo, dimensiones)
     _cargar_instituciones(sesion, catalogo, familias, carreras)
-    _cargar_ocupaciones(sesion, catalogo, dimensiones, slugs)
+    _cargar_ocupaciones(sesion, catalogo, dimensiones)
     _relacionar_familias(sesion, catalogo, familias)
     for clave, valor in reportar(catalogo).items():
         registro.info('Catálogo · %s: %s', clave, valor)

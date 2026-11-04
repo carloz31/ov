@@ -8,8 +8,8 @@ from app import models as m
 from soporte_ruta import FECHA, avanzar, completar, pedir
 
 
-OCUPACION = 'electrician'
-OTRA_OCUPACION = 'translator'
+OCUPACION = '47-2111.00'
+OTRA_OCUPACION = '27-3091.00'
 PIENSO = {'dia': 'Creo que revisa instalaciones de casas y edificios.',
           'necesita': 'Creo que necesita estudiar en un instituto y practicar mucho.',
           'duda': '¿Es peligroso trabajar con electricidad todos los días?'}

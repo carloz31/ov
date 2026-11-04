@@ -46,7 +46,7 @@ def test_un_recurso_bloqueado_o_ajeno_no_se_marca(cliente, aplicacion):
 
 def test_testimonio_favorito_y_fuera_de_los_favoritos_del_catalogo(cliente):
     ciclo(cliente)
-    pedir(cliente, 'POST', '/acciones/resolver-caso', {'cuenta': 'est-ana', 'actividad': 't-caso', 'puntaje': 13})
+    pedir(cliente, 'POST', '/acciones/resolver-caso', {'cuenta': 'est-ana', 'actividad': 't-caso', 'puntaje': 7})
     marcado = pedir(cliente, 'POST', '/acciones/marcar-favorito', favorito('TESTIMONIO', 't-testimonio-1'))
     assert [(e['tipo'], e['referencia']) for e in marcado['eventos_registrados']] == [
         ('MARCA_FAVORITO_TESTIMONIO', 't-testimonio-1')]

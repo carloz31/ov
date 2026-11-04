@@ -60,11 +60,11 @@ def test_r38_integridad_catalogos_relaciones_respuestas_y_defaults(cliente, apli
         assert desbloqueo.visto is False and item.inverso is False
         assert sesion.scalar(select(m.Actividad)).visibilidad == 'SIEMPRE'
     inspector = inspect(aplicacion.state.motor_bd)
-    assert len(inspector.get_table_names()) == 94
+    assert len(inspector.get_table_names()) == 93
     columnas = {c['name']: c for c in inspector.get_columns('ocupacion')}
-    # Ajuste catalogo-datos-reales: toda ocupación tiene código (su slug o `onet-<código>`).
+    # Ajuste carga-casos: el código de toda ocupación es su O*NET.
     assert set(columnas) == {'id', 'codigo', 'codigo_onet', 'titulo', 'grupo', 'resumen', 'descripcion', 'job_zone',
                             'personalidad', 'tambien_llamado', 'tareas', 'conocimientos', 'aptitudes',
-                            'estilos_trabajo', 'codigo_riasec', 'busqueda', 'en_test', 'en_catalogo',
+                            'estilos_trabajo', 'codigo_riasec', 'busqueda', 'en_test',
                             'programas_cine'} and columnas['codigo']['nullable'] is False
     assert any(r['column_names'] == ['codigo'] for r in inspector.get_unique_constraints('ocupacion'))

@@ -38,7 +38,7 @@ def test_hu040_marcar_consultar_y_desmarcar(abierto):
                                                                     'instituciones': []}
     marcado = pedir(abierto, 'POST', '/acciones/marcar-favorito', favorito('CARRERA', ENFERMERIA, fecha_hora=FECHA))
     assert [(e['tipo'], e['referencia']) for e in marcado['eventos_registrados']] == [('MARCA_FAVORITO', None)]
-    for tipo, codigo in (('CARRERA', PSICOLOGIA), ('OCUPACION', 'psychologist'), ('INSTITUCION', INST_UNI)):
+    for tipo, codigo in (('CARRERA', PSICOLOGIA), ('OCUPACION', '19-3033.00'), ('INSTITUCION', INST_UNI)):
         pedir(abierto, 'POST', '/acciones/marcar-favorito', favorito(tipo, codigo))
     repetido = pedir(abierto, 'POST', '/acciones/marcar-favorito', favorito('CARRERA', PSICOLOGIA), 409)
     assert repetido['detail']['mensaje'] == 'Ya está entre tus favoritos'
@@ -49,7 +49,7 @@ def test_hu040_marcar_consultar_y_desmarcar(abierto):
     assert codigos(lista['carreras']) == [PSICOLOGIA, ENFERMERIA]
     ocupacion = lista['ocupaciones'][0]
     assert {k: ocupacion[k] for k in ('codigo', 'codigo_onet', 'titulo', 'riasec', 'es_favorita')} == {
-        'codigo': 'psychologist', 'codigo_onet': '19-3033.00', 'titulo': 'Psicólogo clínico',
+        'codigo': '19-3033.00', 'codigo_onet': '19-3033.00', 'titulo': 'Psicólogo clínico',
         'riasec': ['S', 'I'], 'es_favorita': True}
     assert codigos(lista['instituciones']) == [INST_UNI]
 

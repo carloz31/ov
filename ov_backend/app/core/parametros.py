@@ -101,6 +101,8 @@ MAXIMO_CARACTERES_PASO = 140
 # F06 · Catálogo: tamaño de página de los listados.
 LIMITE_PAGINA_CATALOGO = 20
 LIMITE_MAXIMO_CATALOGO = 50
+# Ocupaciones que pide de una vez el directorio de un caso (ajuste carga-casos).
+MAXIMO_OCUPACIONES_CASO = 30
 # Ajuste notificaciones: páginas de la campana, como las del catálogo.
 LIMITE_PAGINA_NOTIFICACIONES = 20
 LIMITE_MAXIMO_NOTIFICACIONES = 50

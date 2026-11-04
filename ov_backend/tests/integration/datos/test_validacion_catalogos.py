@@ -34,8 +34,7 @@ def test_r37_catalogos_invalidos_atomicos_y_excel_por_codigo(tmp_path, monkeypat
     with monkeypatch.context() as parche:
         parche.setattr(fijos, '_cargar_riasec', invertir)
         cargar.preparar_base(url, 'ruta', crear_tablas=True)
-    archivo = {o.codigo_onet: o.puntajes for o in catalogo.leer_catalogo(
-        ocultas=frozenset(onet for _, onet in fijos.OCUPACIONES)).ocupaciones if o.puntajes}
+    archivo = {o.codigo_onet: o.puntajes for o in catalogo.leer_catalogo().ocupaciones if o.puntajes}
     motor = crear_motor_bd(url)
     try:
         with Session(motor) as sesion:

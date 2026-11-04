@@ -313,7 +313,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     }
     # Ajuste resultados-intereses: ocupaciones afines con parecido y banda, por área y familias; sin favoritos.
     assert 10 <= len(resultado['ocupaciones']) <= 30 and resultado['perfil_poco_marcado'] is False
-    assert 'geologist' in [c['codigo'] for c in resultado['ocupaciones']]
+    assert '19-2042.00' in [c['codigo'] for c in resultado['ocupaciones']]
     assert resultado['familias'] and resultado['por_area'] and resultado['mensaje'] and resultado['lectura']
     assert 'es_favorita' not in resultado['ocupaciones'][0] and 'carreras_recomendadas' not in resultado
     assert datos['catalogo-familia']['recomendada_posicion'] == 1
@@ -341,7 +341,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert [e['tipo'] for e in datos['marcar-favorito']['eventos_registrados']] == ['MARCA_FAVORITO']
     favoritos = FavoritosCuenta.model_validate(datos['favoritos'])
     assert ({c.codigo for c in favoritos.carreras}, [o.codigo for o in favoritos.ocupaciones],
-            [i.codigo for i in favoritos.instituciones]) == ({ING_CIVIL, PSICOLOGIA, PERIODISMO}, ['geologist'],
+            [i.codigo for i in favoritos.instituciones]) == ({ING_CIVIL, PSICOLOGIA, PERIODISMO}, ['19-2042.00'],
                                                              [INST_UNI])
     # B09: diario, check-ins y temáticas.
     preguntas = TypeAdapter(list[PreguntaDiarioEstado]).validate_python(datos['diario-preguntas'])
@@ -418,14 +418,14 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert (batalla.vidas_enemigo, batalla.destellos) == (5, 3)
     superado = RespuestaResolverCaso.model_validate(datos['resolver-caso'])
     assert [(o.codigo, o.titulo) for o in superado.ocupaciones_nuevas] == [
-        ('firefighter', 'Bomberos'), ('paramedic', 'Paramédico / técnico en emergencias médicas')]
+        ('19-3091.00', 'Antropólogo y arqueólogo'), ('25-4013.00', 'Conservador y restaurador')]
     # Ajuste mochila: el segundo testimonio pide además el proyecto; t-caso-2 sigue cerrado.
     assert {d.regla for d in superado.nuevos_desbloqueos} == {'R-t-testimonio-1'}
     caso, otro = TypeAdapter(list[CasoCuenta]).validate_python(datos['casos'])
     assert (otro.actividad, otro.estado) == ('t-caso-2', 'BLOQUEADA')
-    assert (caso.dimensiones, caso.estado, caso.intentos, caso.superado) == (['R', 'S'], 'COMPLETADA', 2, True)
+    assert (caso.puntaje_maximo, caso.estado, caso.intentos, caso.superado) == (8, 'COMPLETADA', 2, True)
     assert [o.ocupacion for o in TypeAdapter(list[OcupacionColeccion]).validate_python(datos['coleccion'])] == [
-        'firefighter', 'paramedic']
+        '19-3091.00', '25-4013.00']
     inicial = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-inicial'])
     assert [(t.estado, t.pista is not None, t.enlace) for t in inicial] == [('BLOQUEADA', True, None)] * 4
     final = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-final'])
@@ -438,7 +438,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert [(t.persona, t.caso.codigo) for t in inicial] == [
         (None, 't-caso'), (None, 't-caso'), (None, 't-caso-2'), (None, 't-caso-2')]
     assert [(t.persona, t.ocupacion and t.ocupacion.codigo, t.anios_experiencia) for t in final] == [
-        ('Luis Mendoza', 'paramedic', 5), (None, None, None), (None, None, None), (None, None, None)]
+        ('Luis Mendoza', '19-3091.00', 5), (None, None, None), (None, None, None), (None, None, None)]
     # B11: planes con sus secciones, requisitos de comparar y proyecto, y referencias de planes.
     for nombre in ('crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
                    'medidores-plan', 'guardar-seccion-pasos', 'paso-hecho'):

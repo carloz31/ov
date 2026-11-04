@@ -550,47 +550,6 @@ HABILIDADES = DefinicionInstrumento(
 )
 INSTRUMENTOS = (INTELIGENCIAS, HABILIDADES)
 
-# (slug, código O*NET). Las ocupaciones que casos, testimonios y escenarios nombran por slug; las demás de
-# Mi Próximo Paso se codifican `onet-<código>` (`datos/catalogo.py`).
-OCUPACIONES = (
-    ('sound-technician', '27-4014.00'),
-    ('electrician', '47-2111.00'),
-    ('event-coordinator', '13-1121.00'),
-    ('translator', '27-3091.00'),
-    ('community-manager', '27-3031.00'),
-    ('graphic-designer', '27-1024.00'),
-    ('event-assistant', '39-3031.00'),
-    ('security-guard', '33-9032.00'),
-    ('paramedic', '29-2043.00'),
-    ('photographer', '27-4021.00'),
-    ('lawyer', '23-1011.00'),
-    ('cook', '35-2014.00'),
-    ('illustrator', '27-1013.00'),
-    ('firefighter', '33-2011.00'),
-    ('meteorologist', '19-2021.00'),
-    ('municipal-police', '33-3051.00'),
-    ('medical-specialist', '29-1216.00'),
-    ('veterinarian', '29-1131.00'),
-    ('biologist', '19-1029.04'),
-    ('environmental-engineer', '17-2081.00'),
-    ('civil-engineer', '17-2051.00'),
-    ('machinery-operator', '47-2073.00'),
-    ('social-worker', '21-1021.00'),
-    ('psychologist', '19-3033.00'),
-    ('logistics-coordinator', '13-1081.00'),
-    ('journalist', '27-3023.00'),
-    ('teacher', '25-2031.00'),
-    ('architect', '17-1011.00'),
-    ('geologist', '19-2042.00'),
-    ('agricultural-engineer', '17-2021.00'),
-    ('public-administrator', '11-3012.00'),
-    ('sociologist', '19-3041.00'),
-    ('data-analyst', '15-2051.00'),
-    ('urban-planner', '19-3051.00'),
-    ('documentary-filmmaker', '27-2012.00'),
-    ('nurse', '29-1141.00'),
-)
-
 PATRON_RIASEC = 'RRIIAASSEECC'
 OPCIONES_LIKERT = ('Me disgusta mucho', 'Me disgusta', 'No estoy seguro', 'Me gusta', 'Me gusta mucho')
 
@@ -772,7 +731,7 @@ def cargar(sesion: Session) -> Fijos:
     secciones_tarjeta = _cargar_tarjeta(sesion, listas)
     tematicas = _cargar_tematicas(sesion)
     dimensiones, aplicacion, items = _cargar_riasec(sesion)
-    catalogo.cargar(sesion, dimensiones, {onet: slug for slug, onet in OCUPACIONES})
+    catalogo.cargar(sesion, dimensiones)
     comparacion, items_comparacion = _cargar_partida_llegada(sesion, tematicas)
     otros = {definicion.codigo: _cargar_instrumento(sesion, definicion) for definicion in INSTRUMENTOS}
     sesion.flush()

@@ -78,7 +78,7 @@ def test_cli_sin_esquema_y_carga_tras_migracion(tmp_path, monkeypatch, capsys):
     command.upgrade(Config(str(Path(__file__).resolve().parents[3] / 'alembic.ini')), 'head')
     assert carga.main(['ruta']) == 0
     salida = capsys.readouterr().out
-    assert 'cuenta: 8' in salida and 'ocupacion: 250' in salida and 'carrera: 603' in salida
+    assert 'cuenta: 8' in salida and 'ocupacion: 245' in salida and 'carrera: 603' in salida
     with pytest.raises(SystemExit) as error:
         carga.main(['ruta'])
     assert error.value.code == 1

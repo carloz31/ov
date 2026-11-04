@@ -177,17 +177,6 @@ def _unir_tematicas(m, sesion, actividades, base: fijos.Fijos):
                    for a, tematicas in m.TEMATICAS_ACTIVIDADES for t in tematicas)
 
 
-def _unir_dimensiones(m, sesion, actividades):
-    dimensiones = {d.codigo: d for d in sesion.scalars(select(modelos.Dimension))}
-    for actividad, codigos in m.DIMENSIONES_ACTIVIDADES:
-        if actividad not in actividades or any(d not in dimensiones for d in codigos):
-            raise ValueError(f'Las dimensiones de {actividad} apuntan a una actividad o dimensión inexistente')
-        if actividades[actividad].tipo != modelos.TipoActividad.CASO:
-            raise ValueError(f'{actividad} no es un caso y no admite dimensiones')
-    sesion.add_all(modelos.ActividadDimension(actividad_id=actividades[a].id, dimension_id=dimensiones[d].id)
-                   for a, codigos in m.DIMENSIONES_ACTIVIDADES for d in codigos)
-
-
 def _cargar_preguntas_batalla(m, sesion, actividades, fichas):
     for codigo, batalla, ficha, enunciado, opciones, correcta, explicacion in m.PREGUNTAS_BATALLA:
         if batalla not in actividades or actividades[batalla].tipo != modelos.TipoActividad.BATALLA:
@@ -437,7 +426,6 @@ def cargar(sesion: Session, modulo) -> None:
                  'SECCION_PLAN': base.secciones_tarjeta}
     _unir_instrumentos(m, sesion, objetivos['ACTIVIDAD'], base)
     _unir_tematicas(m, sesion, objetivos['ACTIVIDAD'], base)
-    _unir_dimensiones(m, sesion, objetivos['ACTIVIDAD'])
     _cargar_preguntas_batalla(m, sesion, objetivos['ACTIVIDAD'], objetivos['FICHA'])
     _cargar_catalogo(m, sesion)
     _cargar_registros(m, sesion, objetivos['ACTIVIDAD'], base)
