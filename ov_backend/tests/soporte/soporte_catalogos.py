@@ -28,7 +28,7 @@ def cargar_catalogo_corrupto(sesion, variante):
 
 def completar_catalogos_vacios(sesion):
     sesion.add_all([
-        m.Testimonio(codigo='testimonio-prueba', titulo='DATO DE PRUEBA', descripcion='DATO DE PRUEBA', enlace='https://example.invalid'),
+        m.Testimonio(codigo='testimonio-prueba', titulo='DATO DE PRUEBA', descripcion='DATO DE PRUEBA', video_id='datoPrueba1'),
         m.PreguntaDiario(codigo='pregunta-prueba', nombre='DATO DE PRUEBA', pregunta='DATO DE PRUEBA',
                          uso='DESBLOQUEABLE'),
     ])

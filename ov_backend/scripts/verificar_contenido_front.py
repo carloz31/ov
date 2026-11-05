@@ -182,7 +182,7 @@ def _verificar_casos(front: Path, conjunto: str, sesion, actividades) -> tuple[l
         errores += [f'contenido · el caso {n} lo juegan varias actividades: {c}' for n, c in sorted(jugados.items())
                     if len(c) > 1]
     caso_de = {codigo: n for n, codigos in jugados.items() for codigo in codigos}
-    ocupacion_de = {c: ocupacion for c, *_, ocupacion, _anios, _cita in modulo.TESTIMONIOS}
+    ocupacion_de = {c: ocupacion for c, *_, ocupacion, _contexto, _cita in modulo.TESTIMONIOS}
     for _regla, tipo, testimonio, _mensaje, condiciones in modulo.REGLAS:
         if tipo != 'TESTIMONIO':
             continue

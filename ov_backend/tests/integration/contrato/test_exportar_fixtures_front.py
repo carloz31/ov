@@ -429,7 +429,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert [o.ocupacion for o in TypeAdapter(list[OcupacionColeccion]).validate_python(datos['coleccion'])] == [
         '19-3091.00', '25-4013.00']
     inicial = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-inicial'])
-    assert [(t.estado, t.pista is not None, t.enlace) for t in inicial] == [('BLOQUEADA', True, None)] * 4
+    assert [(t.estado, t.pista is not None, t.video_id) for t in inicial] == [('BLOQUEADA', True, None)] * 4
     final = TypeAdapter(list[TestimonioEstado]).validate_python(datos['testimonios-final'])
     # Ajuste mochila: el segundo pide además el proyecto (bloqueado con su caso disponible); los dos últimos
     # esperan un caso que el recorrido no abre.
@@ -439,8 +439,9 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     # Ajustes Central (7): quién lo cuenta, solo disponible; el caso que lo regala, siempre.
     assert [(t.persona, t.caso.codigo) for t in inicial] == [
         (None, 't-caso'), (None, 't-caso'), (None, 't-caso-2'), (None, 't-caso-2')]
-    assert [(t.persona, t.ocupacion and t.ocupacion.codigo, t.anios_experiencia) for t in final] == [
-        ('Luis Mendoza', '19-3091.00', 5), (None, None, None), (None, None, None), (None, None, None)]
+    assert [(t.persona, t.ocupacion and t.ocupacion.codigo, t.video_id, t.contexto) for t in final] == [
+        ('Luis Mendoza', '19-3091.00', 'ysz5S6PUM-U', None), (None, None, None, None),
+        (None, None, None, None), (None, None, None, None)]
     # B11: planes con sus secciones, requisitos de comparar y proyecto, y referencias de planes.
     for nombre in ('crear-plan', 'guardar-seccion-por-que', 'guardar-seccion-conocimiento', 'guardar-seccion-realidad',
                    'medidores-plan', 'guardar-seccion-pasos', 'paso-hecho'):

@@ -12,7 +12,7 @@ import {
   respuestaDominio,
 } from '../../soporte/servidor-ayudas.mjs'
 
-// F04: testimonios bloqueados con pista y disponibles con enlace.
+// F04: testimonios bloqueados con pista y disponibles con video.
 const code = ts.transpileModule(readFileSync('src/lib/servidor/adaptadoresCasos.ts', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2023 },
 }).outputText
@@ -20,18 +20,18 @@ const casos = await import(`data:text/javascript;base64,${Buffer.from(code).toSt
 const inicial = jsonServidor('ruta/ruta-testimonios-inicial')
 const final = jsonServidor('ruta/ruta-testimonios-final')
 
-test('bloqueado: solo la pista, si la tiene; disponible: descripción y enlace', () => {
+test('bloqueado: solo la pista, si la tiene; disponible: descripción y video', () => {
   const conPista = inicial.find((t) => t.codigo === 't-testimonio-1')
   assert.equal(conPista.estado, 'BLOQUEADA')
-  assert.equal(conPista.enlace, null)
+  assert.equal(conPista.video_id, null)
   assert.equal(casos.pistaTestimonio(conPista), conPista.pista)
   assert.ok(conPista.pista)
   assert.equal(casos.pistaTestimonio({ ...conPista, pista: null }), null)
   // Ajuste mochila: al final solo el primero está abierto; los demás conservan su pista.
   const disponibles = final.filter((t) => t.estado === 'DISPONIBLE')
   assert.deepEqual(copia(disponibles.map((t) => t.codigo)), ['t-testimonio-1'])
-  assert.ok(disponibles.every((t) => t.enlace && casos.pistaTestimonio(t) === null))
-  assert.ok(final.filter((t) => t.estado === 'BLOQUEADA').every((t) => !t.enlace && casos.pistaTestimonio(t)))
+  assert.ok(disponibles.every((t) => t.video_id && casos.pistaTestimonio(t) === null))
+  assert.ok(final.filter((t) => t.estado === 'BLOQUEADA').every((t) => !t.video_id && casos.pistaTestimonio(t)))
 })
 
 test('consultar y ver un testimonio usan las rutas del backend', async () => {
@@ -76,8 +76,8 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
         't-testimonio-1',
         final[0].titulo,
         final[0].cita,
-        final[0].enlace,
-        'Luis Mendoza · Antropólogo y arqueólogo · 5 años de experiencia',
+        'https://youtu.be/ysz5S6PUM-U?t=0',
+        'Luis Mendoza · Antropólogo y arqueólogo',
         { disponible: true, pista: null, caso, casoDisponible: true, visto: true },
       ],
       [
@@ -98,7 +98,7 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
   )
   // El video del testimonio se incrusta en el visor.
   assert.equal(
-    recursos.youtubeEmbedUrl(final[0].enlace),
+    recursos.youtubeEmbedUrl(voces[0].url),
     'https://www.youtube-nocookie.com/embed/ysz5S6PUM-U',
   )
 })

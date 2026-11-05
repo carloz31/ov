@@ -187,9 +187,10 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
                            # `pregunta_id` de entrada_diario por `recomendacion_id` (aquí sin filas). 0018 cambia
                            # las columnas de las conversaciones (aquí sin filas). 0040 retira el porcentaje de
                            # resultado_dimension (aquí sin filas). 0042 retira el ajuste de coincidencia y 0043 retira carrera_ocupacion (aquí sin filas).
+                           # 0045 cambia `enlace` de testimonio por `video_id` (aquí sin filas).
                            if nombre not in {'alembic_version', 'actividad_item_registro', 'entrada_diario',
                                              'conversacion', 'conversacion_vinculo', 'resultado_dimension',
-                                             'coincidencia', 'carrera_ocupacion'}}
+                                             'coincidencia', 'carrera_ocupacion', 'testimonio'}}
         command.upgrade(configuracion, 'head')
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == (
@@ -208,6 +209,29 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
         with motor.connect() as conexion:
             assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
             assert conexion.execute(text('PRAGMA foreign_key_check')).all() == []
+    finally:
+        motor.dispose()
+
+
+def test_migracion_0045_saca_el_video_del_enlace_y_lo_reconstruye_al_bajar(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "testimonio.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    command.upgrade(configuracion, '0044')
+    motor = database.crear_motor_bd(url)
+    try:
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: un testimonio con el enlace anterior.
+            conexion.execute(text("INSERT INTO testimonio (codigo, titulo, descripcion, enlace, anios_experiencia) VALUES "
+                                  "('t', 'T', 'D', 'https://www.youtube.com/watch?v=ysz5S6PUM-U', 5)"))
+        command.upgrade(configuracion, '0045')
+        with motor.connect() as conexion:
+            assert conexion.execute(text('SELECT video_id, inicio, fin, contexto FROM testimonio')).all() == [
+                ('ysz5S6PUM-U', 0, None, None)]
+        command.downgrade(configuracion, '0044')
+        with motor.connect() as conexion:
+            assert conexion.execute(text('SELECT enlace, anios_experiencia FROM testimonio')).all() == [
+                ('https://www.youtube.com/watch?v=ysz5S6PUM-U', None)]
     finally:
         motor.dispose()
 

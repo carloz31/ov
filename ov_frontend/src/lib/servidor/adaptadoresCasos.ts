@@ -44,3 +44,6 @@ export const ocupacionesObtenidas = (coleccion: OcupacionColeccion[] | null) =>
 // Bloqueado: la pista si la tiene; si no, el mensaje de bloqueo se consulta aparte.
 export const pistaTestimonio = (testimonio: TestimonioEstado) =>
   testimonio.estado === 'BLOQUEADA' ? testimonio.pista : null
+// Ajuste testimonios: el video se abre en YouTube desde el segundo de inicio del tramo.
+export const urlYoutubeTestimonio = (testimonio: Pick<TestimonioEstado, 'video_id' | 'inicio'>) =>
+  testimonio.video_id ? `https://youtu.be/${testimonio.video_id}?t=${testimonio.inicio ?? 0}` : undefined

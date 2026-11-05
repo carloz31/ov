@@ -141,11 +141,11 @@ def esperado(ruta, completo):
         casos = {'t-testimonio-3': ('t-caso-2', 'La traductora apurada'),
                  't-testimonio-4': ('t-caso-2', 'La traductora apurada')}
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'visto': False, 'pista': pista,
-                 'descripcion': None, 'enlace': None, 'persona': None, 'ocupacion': None,
-                 'anios_experiencia': None, 'cita': None,
+                 'descripcion': None, 'video_id': None, 'inicio': None, 'fin': None, 'persona': None,
+                 'ocupacion': None, 'contexto': None, 'cita': None,
                  'caso': dict(zip(('codigo', 'titulo'), casos.get(codigo, ('t-caso', 'Caso de prueba')))),
-                 'caso_disponible': False, 'es_favorita': False}
-                for codigo, titulo, _, _, pista, *_ in sorted(TESTIMONIOS)]
+                 'actividad': None, 'caso_disponible': False, 'actividad_disponible': False, 'es_favorita': False}
+                for codigo, titulo, _, _, _, _, pista, *_ in sorted(TESTIMONIOS)]
     if ruta == 'secciones':
         return [(codigo, 'DISPONIBLE' if abierta else 'BLOQUEADA', abierta) for codigo in SECCIONES_ESTUDIANTE
                 for abierta in (completo and codigo != 'INVESTIGACIONES',)]

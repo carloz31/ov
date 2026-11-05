@@ -1,6 +1,7 @@
 [
   {
-    "anios_experiencia": 5,
+    "actividad": null,
+    "actividad_disponible": false,
     "caso": {
       "codigo": "t-caso",
       "titulo": "Caso de prueba"
@@ -8,10 +9,12 @@
     "caso_disponible": true,
     "cita": "Ayudar en una emergencia exige técnica, calma y una comunicación muy humana.",
     "codigo": "t-testimonio-1",
+    "contexto": null,
     "descripcion": "Mi trabajo consiste en evaluar rápidamente qué ocurre, brindar los primeros cuidados y decidir qué necesita la persona antes de llegar a un hospital. Cada situación es diferente y por eso practicamos constantemente. También aprendí que explicar con calma lo que estamos haciendo puede ayudar tanto como una intervención técnica.",
-    "enlace": "https://www.youtube.com/watch?v=ysz5S6PUM-U",
     "es_favorita": false,
     "estado": "DISPONIBLE",
+    "fin": null,
+    "inicio": 0,
     "ocupacion": {
       "codigo": "19-3091.00",
       "titulo": "Antropólogo y arqueólogo"
@@ -19,10 +22,12 @@
     "persona": "Luis Mendoza",
     "pista": null,
     "titulo": "Calma y cuidado en una emergencia",
+    "video_id": "ysz5S6PUM-U",
     "visto": true
   },
   {
-    "anios_experiencia": null,
+    "actividad": null,
+    "actividad_disponible": false,
     "caso": {
       "codigo": "t-caso",
       "titulo": "Caso de prueba"
@@ -30,18 +35,22 @@
     "caso_disponible": true,
     "cita": null,
     "codigo": "t-testimonio-2",
+    "contexto": null,
     "descripcion": null,
-    "enlace": null,
     "es_favorita": false,
     "estado": "BLOQUEADA",
+    "fin": null,
+    "inicio": null,
     "ocupacion": null,
     "persona": null,
     "pista": "Alguien que trabaja con palabras que no son las suyas. ¿Quién será?",
     "titulo": "Puentes entre idiomas",
+    "video_id": null,
     "visto": false
   },
   {
-    "anios_experiencia": null,
+    "actividad": null,
+    "actividad_disponible": false,
     "caso": {
       "codigo": "t-caso-2",
       "titulo": "La traductora apurada"
@@ -49,18 +58,22 @@
     "caso_disponible": false,
     "cita": null,
     "codigo": "t-testimonio-3",
+    "contexto": null,
     "descripcion": null,
-    "enlace": null,
     "es_favorita": false,
     "estado": "BLOQUEADA",
+    "fin": null,
+    "inicio": null,
     "ocupacion": null,
     "persona": null,
     "pista": "Una voz que llega con un llamado futuro.",
     "titulo": "Datos que cuentan historias",
+    "video_id": null,
     "visto": false
   },
   {
-    "anios_experiencia": null,
+    "actividad": null,
+    "actividad_disponible": false,
     "caso": {
       "codigo": "t-caso-2",
       "titulo": "La traductora apurada"
@@ -68,14 +81,17 @@
     "caso_disponible": false,
     "cita": null,
     "codigo": "t-testimonio-4",
+    "contexto": null,
     "descripcion": null,
-    "enlace": null,
     "es_favorita": false,
     "estado": "BLOQUEADA",
+    "fin": null,
+    "inicio": null,
     "ocupacion": null,
     "persona": null,
     "pista": "Otra voz que llega con un llamado futuro.",
     "titulo": "Un puente más",
+    "video_id": null,
     "visto": false
   }
 ]

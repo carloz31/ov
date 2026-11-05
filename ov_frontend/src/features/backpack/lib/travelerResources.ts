@@ -2,6 +2,7 @@ import { activities, catalog } from '@/data/activities/content'
 import { modoApi } from '@/config/env'
 import { obtenerEstadoServidor } from '@/store/servidor/sesion'
 import { fichaDisponible } from '@/lib/servidor/adaptadores'
+import { urlYoutubeTestimonio } from '@/lib/servidor/adaptadoresCasos'
 import type { JourneyState } from '@/types/activities'
 import type { Recurso } from '@/types/activities'
 import { appPaths } from '@/routes/paths'
@@ -144,15 +145,11 @@ export function getTravelResources(testimonios?: TestimonioEstado[] | null): Tra
       ]
     : resources
 }
-// Ajustes Central (7): como el prototipo local. Disponible: persona, ocupación y años (`author`), la cita
+// Ajustes Central (7): como el prototipo local. Disponible: persona y ocupación (`author`), la cita
 // (`summary`), el texto completo y el video. Bloqueado: la pista como intriga y el caso que lo regala.
 export function testimonioServidor(t: TestimonioEstado): TravelResource {
   const disponible = t.estado === 'DISPONIBLE'
-  const autor = [
-    t.persona,
-    t.ocupacion?.titulo,
-    t.anios_experiencia !== null ? `${t.anios_experiencia} años de experiencia` : null,
-  ].filter(Boolean)
+  const autor = [t.persona, t.ocupacion?.titulo].filter(Boolean)
   return {
     id: t.codigo,
     title: t.titulo,
@@ -161,7 +158,7 @@ export function testimonioServidor(t: TestimonioEstado): TravelResource {
     kind: 'testimonial',
     icon: 'quote',
     requirement: { anyCase: true },
-    url: t.enlace ?? undefined,
+    url: urlYoutubeTestimonio(t),
     ...(t.persona ? { author: autor.join(' · ') } : {}),
     favorita: t.es_favorita,
     servidor: { disponible, pista: t.pista, caso: t.caso, casoDisponible: t.caso_disponible, visto: t.visto },

@@ -365,14 +365,18 @@ export type TestimonioEstado = {
   visto: boolean
   pista: string | null
   descripcion: string | null
-  enlace: string | null
-  // Ajustes Central (7): quién lo cuenta (solo disponible) y el caso que lo regala (siempre).
+  video_id: string | null
+  inicio: number | null
+  fin: number | null
+  // Ajustes Central (7): quién lo cuenta (solo disponible) y su origen, caso o actividad (siempre; nunca los dos).
   persona: string | null
   ocupacion: { codigo: string; titulo: string } | null
-  anios_experiencia: number | null
+  contexto: string | null
   cita: string | null
   caso: { codigo: string; titulo: string } | null
+  actividad: { codigo: string; titulo: string } | null
   caso_disponible: boolean
+  actividad_disponible: boolean
   es_favorita: boolean
 }
 // F04c: las respuestas en el orden en que se dieron; el servidor decide la victoria.

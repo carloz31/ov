@@ -5,6 +5,7 @@ un conjunto no declara se trata como vacía. La transacción pertenece al llamad
 """
 
 from functools import cache
+import re
 
 from argon2 import PasswordHasher
 from sqlalchemy import select
@@ -22,6 +23,9 @@ _HASHER = PasswordHasher()
 FUENTE_APLICACION = ('RESULTADO', 'COINCIDENCIAS')
 SIN_FUENTE = ('FAVORITOS', 'PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL', 'LO_QUE_PIENSO')
 REPREGUNTA_GENERICA = '¿Podrías contarme un poco más?'
+# El video de un testimonio: el ID de YouTube, sin parámetros.
+_VIDEO_YOUTUBE = re.compile(r'[A-Za-z0-9_-]{11}')
+MAXIMO_CONTEXTO_TESTIMONIO = 80
 
 # Tuplas que se leen como diccionario; las demás, como secuencia.
 _DICCIONARIOS = frozenset({
@@ -56,6 +60,25 @@ def contenido(codigo: str) -> str:
     return codigo.replace('-', '_')
 
 
+def _validar_testimonio(codigo, video, inicio, fin, contexto):
+    if not _VIDEO_YOUTUBE.fullmatch(video):
+        raise ValueError(f'El testimonio {codigo} tiene un video_id inválido: {video}')
+    if inicio < 0:
+        raise ValueError(f'El testimonio {codigo} tiene un inicio negativo: {inicio}')
+    if fin is not None and fin <= inicio:
+        raise ValueError(f'El testimonio {codigo} tiene un fin ({fin}) que no supera su inicio ({inicio})')
+    if contexto is not None and len(contexto) > MAXIMO_CONTEXTO_TESTIMONIO:
+        raise ValueError(f'El contexto del testimonio {codigo} pasa de {MAXIMO_CONTEXTO_TESTIMONIO} caracteres')
+
+
+def _validar_origen_testimonios(m):
+    """Toda voz se abre superando un caso o completando una actividad: de ahí sale su origen."""
+    origenes = {objetivo for _, tipo, objetivo, _, condiciones in m.REGLAS if tipo == 'TESTIMONIO'
+                for evento, *_ in condiciones if evento in ('SUPERA_CASO', 'COMPLETA_ACTIVIDAD')}
+    if sin_origen := {c for c, *_ in m.TESTIMONIOS} - origenes:
+        raise ValueError(f'Testimonios sin regla SUPERA_CASO ni COMPLETA_ACTIVIDAD: {sorted(sin_origen)}')
+
+
 def _cargar_estructura(m, sesion):
     salones = {c: modelos.Salon(codigo=c, nombre=n) for c, n in m.SALONES}
     sesion.add_all(salones.values())
@@ -70,12 +93,14 @@ def _cargar_estructura(m, sesion):
                                audiencia=modelos.Audiencia(a))
               for c, t, d, tema, texto, a in m.FICHAS}
     ocupaciones = {o.codigo: o for o in sesion.scalars(select(modelos.Ocupacion))}
-    for c, *_, ocupacion, _anios, _cita in m.TESTIMONIOS:
+    for c, _titulo, _descripcion, video, inicio, fin, _pista, _persona, ocupacion, contexto, _cita in m.TESTIMONIOS:
+        _validar_testimonio(c, video, inicio, fin, contexto)
         if ocupacion not in ocupaciones:
             raise ValueError(f'El testimonio {c} apunta a una ocupación inexistente: {ocupacion}')
-    testimonios = {c: modelos.Testimonio(codigo=c, titulo=t, descripcion=d, enlace=e, pista=p, persona=persona,
-                                         ocupacion_id=ocupaciones[ocupacion].id, anios_experiencia=anios, cita=cita)
-                   for c, t, d, e, p, persona, ocupacion, anios, cita in m.TESTIMONIOS}
+    testimonios = {c: modelos.Testimonio(codigo=c, titulo=t, descripcion=d, video_id=video, inicio=inicio, fin=fin,
+                                         pista=p, persona=persona, ocupacion_id=ocupaciones[ocupacion].id,
+                                         contexto=contexto, cita=cita)
+                   for c, t, d, video, inicio, fin, p, persona, ocupacion, contexto, cita in m.TESTIMONIOS}
     conversaciones = {c: modelos.Conversacion(codigo=c, orden=o, titulo=t, tema=tema, pregunta_estudiante=pe,
                                              pregunta_apoderado=pa, preguntas_guia=list(guia), mensaje_diferencias=m,
                                              algo_que_saben=saben)
@@ -360,6 +385,7 @@ def _cargar_salones(m, sesion, salones, actividades):
 
 
 def _cargar_reglas(m, sesion, objetivos):
+    _validar_origen_testimonios(m)
     referencias = {'COMPLETA_ACTIVIDAD': objetivos['ACTIVIDAD'], 'COMPLETA_BLOQUE': objetivos['BLOQUE'],
                    'REGISTRO_ADECUADO': objetivos['ACTIVIDAD'], 'REVELA_RESULTADO': objetivos['APLICACION'],
                    'SUPERA_CASO': objetivos['ACTIVIDAD'], 'SUPERA_BATALLA': objetivos['ACTIVIDAD'],

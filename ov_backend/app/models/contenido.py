@@ -130,13 +130,16 @@ class Testimonio(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     titulo: Mapped[str]
     descripcion: Mapped[str] = mapped_column(Text)
-    # El enlace es el video (YouTube) y la descripción, el texto completo del testimonio.
-    enlace: Mapped[str]
+    # El video: ID de YouTube y tramo en segundos (`fin` nulo: hasta el final). La descripción es el texto completo.
+    video_id: Mapped[str]
+    inicio: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    fin: Mapped[int | None]
     pista: Mapped[str | None] = mapped_column(Text)
-    # Ajustes Central (7): quién lo cuenta. El caso que lo regala se deduce de su regla SUPERA_CASO.
+    # Ajustes Central (7): quién lo cuenta. Su origen (caso o actividad) se deduce de su regla.
     persona: Mapped[str | None]
     ocupacion_id: Mapped[int | None] = mapped_column(ForeignKey("ocupacion.id"))
-    anios_experiencia: Mapped[int | None]
+    # El cargo o la situación de la persona, hasta 80 caracteres (lo valida la carga).
+    contexto: Mapped[str | None]
     cita: Mapped[str | None] = mapped_column(Text)
 
 

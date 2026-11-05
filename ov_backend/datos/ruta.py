@@ -357,9 +357,9 @@ CONFIGURACION_BATALLAS = {'t-batalla': (5, 3, 7)}
 # con ese archivo (lo comprueba scripts/verificar_contenido_front.py).
 CONFIGURACION_CASOS = {'t-caso': (8, (2, 1, 2, 2, 1)), 't-caso-2': (8, (2, 1, 2, 2, 1))}
 
-# (código, título, descripción, enlace, pista, persona, ocupación, años de experiencia, cita). La pista se
-# muestra mientras el testimonio está bloqueado (B08); la descripción es el texto completo y el enlace, el
-# video. DATO DE PRUEBA: persona, cita, texto y video adaptados de los testimonios del front
+# (código, título, descripción, video_id, inicio, fin, pista, persona, ocupación, contexto, cita). La pista se
+# muestra mientras el testimonio está bloqueado (B08); la descripción es el texto completo. El video es el ID de
+# YouTube con su tramo en segundos (`fin` nulo: hasta el final). DATO DE PRUEBA: persona, cita, texto y video adaptados de los testimonios del front
 # (`professionalTestimonials` en ov_frontend/src/data/catalog/occupations.ts). Las ocupaciones son necesidades
 # de hidden-plaza, el caso que los regala (ajuste carga-casos).
 TESTIMONIOS = (
@@ -367,23 +367,23 @@ TESTIMONIOS = (
      'Mi trabajo consiste en evaluar rápidamente qué ocurre, brindar los primeros cuidados y decidir qué necesita '
      'la persona antes de llegar a un hospital. Cada situación es diferente y por eso practicamos constantemente. '
      'También aprendí que explicar con calma lo que estamos haciendo puede ayudar tanto como una intervención '
-     'técnica.', 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
-     'Resuelve el caso de prueba para conocer este testimonio.', 'Luis Mendoza', '19-3091.00', 5,
+     'técnica.', 'ysz5S6PUM-U', 0, None,
+     'Resuelve el caso de prueba para conocer este testimonio.', 'Luis Mendoza', '19-3091.00', None,
      'Ayudar en una emergencia exige técnica, calma y una comunicación muy humana.'),
     ('t-testimonio-2', 'Puentes entre idiomas',
      'Trabajo con invitados, conferencistas y equipos de producción de distintos países. Antes de cada evento '
      'investigo el tema y preparo vocabulario especializado. Durante una conversación debo escuchar, comprender la '
      'intención y comunicarla con precisión, incluso cuando todo ocurre muy rápido.',
-     'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
-     'Alguien que trabaja con palabras que no son las suyas. ¿Quién será?', 'Sofía Kim', '17-2051.00', 6,
+     'aqz-KE-bpKQ', 0, None,
+     'Alguien que trabaja con palabras que no son las suyas. ¿Quién será?', 'Sofía Kim', '17-2051.00', None,
      'Traducir no es reemplazar palabras: es ayudar a que dos personas realmente se comprendan.'),
     # Ajuste mochila: dos voces de un llamado que aún no se abre (t-caso-2).
     ('t-testimonio-3', 'Datos que cuentan historias', 'Texto de prueba del tercer testimonio.',
-     'https://www.youtube.com/watch?v=ysz5S6PUM-U', 'Una voz que llega con un llamado futuro.', 'Ana Torres',
-     '19-3041.00', 3, 'Cita de prueba del tercer testimonio.'),
+     'ysz5S6PUM-U', 0, None, 'Una voz que llega con un llamado futuro.', 'Ana Torres',
+     '19-3041.00', None, 'Cita de prueba del tercer testimonio.'),
     ('t-testimonio-4', 'Un puente más', 'Texto de prueba del cuarto testimonio.',
-     'https://www.youtube.com/watch?v=aqz-KE-bpKQ', 'Otra voz que llega con un llamado futuro.', 'Pedro Ríos',
-     '19-3051.00', 8, 'Cita de prueba del cuarto testimonio.'),
+     'aqz-KE-bpKQ', 0, None, 'Otra voz que llega con un llamado futuro.', 'Pedro Ríos',
+     '19-3051.00', None, 'Cita de prueba del cuarto testimonio.'),
 )
 
 # (código, orden, título, tema (chip), pregunta del estudiante, pregunta del apoderado (None: la misma), preguntas guía,
