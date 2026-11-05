@@ -2,7 +2,7 @@ import { activities, catalog } from '@/data/activities/content'
 import { modoApi } from '@/config/env'
 import { obtenerEstadoServidor } from '@/store/servidor/sesion'
 import { fichaDisponible } from '@/lib/servidor/adaptadores'
-import { urlYoutubeTestimonio } from '@/lib/servidor/adaptadoresCasos'
+import { urlEmbedTestimonio, urlYoutubeTestimonio } from '@/lib/servidor/adaptadoresCasos'
 import type { JourneyState } from '@/types/activities'
 import type { Recurso } from '@/types/activities'
 import { appPaths } from '@/routes/paths'
@@ -25,12 +25,18 @@ export type TravelResource = {
   fileFormat?: Recurso['formatoArchivo']
   source?: string
   author?: string
-  // Testimonio del servidor (F04): si está disponible, su pista y el caso que lo regala (ajustes, 7).
+  // Ajuste testimonios: cargo o situación de la persona, debajo de `author`.
+  contexto?: string
+  // Ajuste testimonios: el video con su tramo; sin él, el embed sale de `url`.
+  embed?: string
+  // Testimonio del servidor (F04): si está disponible, su pista y su origen, caso o actividad (ajustes, 7).
   servidor?: {
     disponible: boolean
     pista: string | null
     caso: TestimonioEstado['caso']
     casoDisponible?: boolean
+    actividad?: TestimonioEstado['actividad']
+    actividadDisponible?: boolean
     visto?: boolean
   }
   // Ajuste mochila: favorita en el servidor (en local, `adventure.bookmarks`).
@@ -146,7 +152,7 @@ export function getTravelResources(testimonios?: TestimonioEstado[] | null): Tra
     : resources
 }
 // Ajustes Central (7): como el prototipo local. Disponible: persona y ocupación (`author`), la cita
-// (`summary`), el texto completo y el video. Bloqueado: la pista como intriga y el caso que lo regala.
+// (`summary`), el contexto, el texto completo y el video. Bloqueado: la pista como intriga y su origen.
 export function testimonioServidor(t: TestimonioEstado): TravelResource {
   const disponible = t.estado === 'DISPONIBLE'
   const autor = [t.persona, t.ocupacion?.titulo].filter(Boolean)
@@ -159,9 +165,19 @@ export function testimonioServidor(t: TestimonioEstado): TravelResource {
     icon: 'quote',
     requirement: { anyCase: true },
     url: urlYoutubeTestimonio(t),
+    embed: urlEmbedTestimonio(t),
+    ...(t.contexto ? { contexto: t.contexto } : {}),
     ...(t.persona ? { author: autor.join(' · ') } : {}),
     favorita: t.es_favorita,
-    servidor: { disponible, pista: t.pista, caso: t.caso, casoDisponible: t.caso_disponible, visto: t.visto },
+    servidor: {
+      disponible,
+      pista: t.pista,
+      caso: t.caso,
+      casoDisponible: t.caso_disponible,
+      actividad: t.actividad,
+      actividadDisponible: t.actividad_disponible,
+      visto: t.visto,
+    },
   }
 }
 function localTestimonials() {

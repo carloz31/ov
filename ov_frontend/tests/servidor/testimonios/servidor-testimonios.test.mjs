@@ -78,7 +78,7 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
         final[0].cita,
         'https://youtu.be/ysz5S6PUM-U?t=0',
         'Luis Mendoza · Antropólogo y arqueólogo',
-        { disponible: true, pista: null, caso, casoDisponible: true, visto: true },
+        { disponible: true, pista: null, caso, casoDisponible: true, actividad: null, actividadDisponible: false, visto: true },
       ],
       [
         't-testimonio-2',
@@ -86,7 +86,7 @@ test('en la mochila, los testimonios del servidor llevan persona, ocupación, ci
         mezcla[1].pista,
         null,
         null,
-        { disponible: false, pista: mezcla[1].pista, caso, casoDisponible: false, visto: false },
+        { disponible: false, pista: mezcla[1].pista, caso, casoDisponible: false, actividad: null, actividadDisponible: false, visto: false },
       ],
     ],
   )

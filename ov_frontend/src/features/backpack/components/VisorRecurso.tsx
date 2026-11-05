@@ -46,6 +46,7 @@ export function VisorRecurso({
                 {resource.author}
               </p>
             )}
+            {resource.contexto && <p className="text-xs text-[#7c805d]">{resource.contexto}</p>}
             <DialogDescription>{resource.description}</DialogDescription>
           </DialogHeader>
           <div className="p-6 sm:p-7">

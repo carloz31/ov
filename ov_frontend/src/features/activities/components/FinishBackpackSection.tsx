@@ -58,6 +58,7 @@ export function FinishBackpackSection({ resumen }: { resumen: ResumenCierre }) {
                 <span>
                   <small>Testimonio</small>
                   <strong>{t.persona ? `${t.persona}${t.rol ? ` · ${t.rol}` : ''}` : t.nombre}</strong>
+                  {t.contexto && <span className="sx-finish-contexto">{t.contexto}</span>}
                   {t.cita && <q>{t.cita}</q>}
                 </span>
                 <ChevronRight size={16} />

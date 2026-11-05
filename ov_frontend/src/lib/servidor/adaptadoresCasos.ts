@@ -47,3 +47,10 @@ export const pistaTestimonio = (testimonio: TestimonioEstado) =>
 // Ajuste testimonios: el video se abre en YouTube desde el segundo de inicio del tramo.
 export const urlYoutubeTestimonio = (testimonio: Pick<TestimonioEstado, 'video_id' | 'inicio'>) =>
   testimonio.video_id ? `https://youtu.be/${testimonio.video_id}?t=${testimonio.inicio ?? 0}` : undefined
+// El embed arranca en el inicio y termina en el fin, si lo hay.
+export const urlEmbedTestimonio = (testimonio: Pick<TestimonioEstado, 'video_id' | 'inicio' | 'fin'>) =>
+  testimonio.video_id
+    ? `https://www.youtube-nocookie.com/embed/${testimonio.video_id}?start=${testimonio.inicio ?? 0}${
+        testimonio.fin !== null ? `&end=${testimonio.fin}` : ''
+      }`
+    : undefined

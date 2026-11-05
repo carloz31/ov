@@ -4,7 +4,7 @@ import { appPaths } from '@/routes/paths'
 import { cityCases } from '@/data/content/adventure'
 import { hrefActividad } from '@/features/discovery/lib/helenaPagesApi'
 import { agruparFichas } from '../lib/agruparFichas'
-import { filtrar, vocesListadas } from '../lib/compartimentos'
+import { filtrar, textosVoces, vocesListadas } from '../lib/compartimentos'
 import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { verTestimonio as registrarVistaTestimonio } from '@/store/servidor/testimonios'
@@ -68,27 +68,31 @@ export function useBackpack() {
   const esNueva = (r: TravelResource) =>
     modoApi ? (r.kind === 'sheet' ? r.ficha?.visto === false : r.servidor?.visto === false) : !adventure.visits.includes(r.id)
   const fichasObtenidas = sheets.filter(isUnlocked)
-  // Una voz bloqueada se lista solo si su llamado ya está disponible (en local, si su punto se puede jugar).
+  // Una voz bloqueada se lista solo si su origen ya está disponible (en local, si su punto se puede jugar).
   const casoLocal = (r: TravelResource) => ('caseId' in r.requirement ? r.requirement.caseId : undefined)
   const casoDisponible = (r: TravelResource) =>
-    modoApi ? !!r.servidor?.casoDisponible : !!cityPoints.find((p) => p.id === casoLocal(r))?.actionEnabled
+    modoApi ? !!(r.servidor?.casoDisponible || r.servidor?.actividadDisponible) : !!cityPoints.find((p) => p.id === casoLocal(r))?.actionEnabled
   const voces = vocesListadas(voices, isUnlocked, casoDisponible)
   const criterio = { query, favoritesOnly, esFavorita, isUnlocked }
   const fichasVisibles = filtrar(fichasObtenidas, criterio),
     vocesVisibles = filtrar([...voces.abiertas, ...voces.porDescubrir], criterio)
   const vacio = kind === 'sheet' ? !fichasObtenidas.length : !voces.abiertas.length && !voces.porDescubrir.length
   const sinResultados = !vacio && !(kind === 'sheet' ? fichasVisibles : vocesVisibles).length
-  // El llamado que regala la voz y el drawer de ese llamado en la Central, sin pasar por el pop up de requisito.
-  const casoVoz = (r: TravelResource) =>
-    modoApi
+  // El origen de la voz (llamado o misión) y su drawer, sin pasar por el pop up de requisito.
+  const origenVoz = (r: TravelResource) => {
+    const origen = r.servidor?.caso ?? r.servidor?.actividad
+    return modoApi
       ? {
-          titulo: r.servidor?.caso?.titulo,
-          href: r.servidor?.caso ? hrefActividad(actividades.datos, r.servidor.caso.codigo) : undefined,
+          titulo: origen?.titulo,
+          href: origen ? hrefActividad(actividades.datos, origen.codigo) : undefined,
+          deActividad: !!r.servidor?.actividad,
         }
       : {
           titulo: cityCases.find((c) => c.id === casoLocal(r))?.title,
           href: `${appPaths.student.exploration}?punto=${encodeURIComponent(casoLocal(r) ?? '')}`,
+          deActividad: false,
         }
+  }
   const centralAbierta = modoApi ? ciudadDisponible(actividades.datos) : cityPoints.some((p) => p.actionEnabled)
   function chooseKind(next: KindFilter) {
     setParams((current) => {
@@ -171,9 +175,10 @@ export function useBackpack() {
     nuevas: fichasObtenidas.filter(esNueva).length,
     voces,
     vocesVisibles,
+    textosVoces: textosVoces(modoApi, voices.length, voces.pendientes),
     vacio,
     sinResultados,
-    casoVoz,
+    origenVoz,
     centralAbierta,
     cityPoints,
     chooseKind,

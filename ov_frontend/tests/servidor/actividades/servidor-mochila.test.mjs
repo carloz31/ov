@@ -137,7 +137,7 @@ test('voces: abiertas, por descubrir con su llamado disponible y cierre con las 
   assert.ok(voz.pista && voz.hrefCaso.includes('punto='))
   const cierre = elementos(arbol, (e) => e.type?.name === 'TarjetaPunteada')[0].props
   assert.equal(cierre.titulo, 'Más voces se suman a la ciudad')
-  assert.ok(cierre.texto.startsWith('2 voces más esperan en llamados que aún no se abren.'))
+  assert.equal(cierre.texto, '2 voces más esperan en el camino y en llamados que aún no se abren.')
   // Las voces de llamados cerrados no se listan.
   assert.equal(elementos(arbol, (e) => e.type?.name === 'VozPorDescubrir').length, 1)
 })

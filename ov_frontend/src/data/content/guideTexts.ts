@@ -105,7 +105,7 @@ export const guideSteps: Record<StudentView, string[]> = {
   resources: [
     'Esta es tu mochila. Aquí se guarda lo que reúnes en el camino.',
     'Las fichas aparecen cuando completas actividades. Puedes abrirlas también desde las actividades.',
-    'Las voces de la ciudad son personas reales que cuentan su historia. Se descubren al atender los llamados de la Central de Casos.',
+    'Las voces de la ciudad son personas reales que cuentan su historia. Se descubren al atender los llamados de la Central de Casos y en algunas misiones del camino.',
     'Marca con la estrella lo que quieras encontrar rápido.',
   ],
   'catalog-professions': [

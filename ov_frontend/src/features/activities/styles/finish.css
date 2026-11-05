@@ -160,6 +160,11 @@
   color: #805d22;
   font-weight: 700;
 }
+.sx-root .sx-finish-contexto {
+  font-size: 12px;
+  line-height: 1.3;
+  color: #626777;
+}
 .sx-root .sx-finish-testimonial q {
   display: -webkit-box;
   -webkit-line-clamp: 1;

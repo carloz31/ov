@@ -1,13 +1,15 @@
 import { Loader2, Play, Star } from 'lucide-react'
 
 // Testimonio abierto de la mochila, local y del servidor (ajustes Central, 7; ajuste mochila): iniciales,
-// nombre y ocupación, estrella, título, cita, el llamado que lo regaló y «Escuchar su historia».
+// nombre, ocupación y contexto, estrella, título, cita, su origen y «Escuchar su historia».
 export function TarjetaTestimonio({
   nombre,
   rol,
+  contexto,
   titulo,
   cita,
   regalo,
+  deActividad = false,
   nueva,
   favorita,
   pendiente = false,
@@ -16,10 +18,12 @@ export function TarjetaTestimonio({
 }: {
   nombre?: string
   rol?: string
+  contexto?: string
   titulo: string
   cita: string
-  // El llamado (caso) que lo regaló.
+  // El título de su origen: el llamado que lo regaló o, con `deActividad`, la misión que lo dejó.
   regalo: string
+  deActividad?: boolean
   nueva: boolean
   favorita: boolean
   // Ajuste mochila: el POST del favorito está en curso.
@@ -40,6 +44,7 @@ export function TarjetaTestimonio({
         <div>
           <strong>{nombre}</strong>
           <p>{rol}</p>
+          {contexto && <p>{contexto}</p>}
         </div>
         <button
           type="button"
@@ -59,7 +64,7 @@ export function TarjetaTestimonio({
       <h3>{titulo}</h3>
       {cita && <blockquote>«{cita}»</blockquote>}
       <p className="sx-b-voz-regalo">
-        Te la regaló el llamado <strong>{regalo}</strong>
+        {deActividad ? 'Te la dejó la misión' : 'Te la regaló el llamado'} <strong>{regalo}</strong>
       </p>
       <footer>
         <button type="button" className="sx-b-escuchar" onClick={onEscuchar}>
