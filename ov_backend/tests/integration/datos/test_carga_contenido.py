@@ -113,12 +113,14 @@ def test_casos_de_la_central(base):
     assert sorted(tematicas) == [(c, 'C') for c in CASOS]
 
 
-def test_testimonios_de_prueba_y_reglas_sin_t(base):
+def test_testimonios_y_reglas_sin_t(base):
     _, sesion = base
     testimonios = dict(sesion.execute(select(m.Testimonio.codigo, m.Ocupacion.codigo).join(
         m.Ocupacion, m.Ocupacion.id == m.Testimonio.ocupacion_id)).all())
-    assert set(testimonios) == {f'tc{n}-{k}' for n in range(1, 7) for k in (1, 2)}
-    assert (testimonios['tc1-1'], testimonios['tc1-2']) == ('19-3091.00', '25-4012.00')
+    # Ajuste testimonios: 11 de la Central (El festival da una sola) y 3 de actividades del puerto.
+    assert set(testimonios) == ({f'tc{n}-{k}' for n in range(1, 7) for k in (1, 2)} - {'tc4-2'}) | {
+        'tb3-1', 'tb3-8', 'tb3-10'}
+    assert (testimonios['tc1-1'], testimonios['tc1-2']) == ('19-3091.00', '17-2051.00')
     nombrados = {str(c) for _, _, objetivo, _, condiciones in contenido.REGLAS
                  for c in (objetivo, *(condicion[1] for condicion in condiciones))}
     assert not {c for c in nombrados if c.startswith(('t-caso', 't-testimonio'))}

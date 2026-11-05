@@ -125,7 +125,7 @@
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Un testimonio es una sola voz. Vale mucho y prueba poco. En la mochila vas a ir encontrando voces de personas con rutas distintas, que se abren al resolver los casos de la ciudad. Escúchalas con estas cuatro preguntas:"
+          "texto": "Un testimonio es una sola voz. Vale mucho y prueba poco. En la mochila vas a ir encontrando voces de personas con rutas distintas; la mayoría se abren al resolver los casos de la ciudad. Escúchalas con estas cuatro preguntas:"
         },
         {
           "tipo": "pasos",
@@ -231,7 +231,7 @@
       "tipo": "dialogo",
       "hablanteId": "alejandra",
       "expresion": "neutral",
-      "texto": "Gracias por escucharme sin aconsejarme. Voy a subir por el bosque a ver a mi tía. Ah, un diseñador que viajaba conmigo me dejó su historia para quien la quiera: dejó una carrera que eligieron otros. Está en tu mochila."
+      "texto": "Gracias por escucharme sin aconsejarme. Voy a subir por el bosque a ver a mi tía. Ah, un cocinero que viajaba conmigo me dejó su historia para quien la quiera: dejó una carrera que eligieron otros. Está en tu mochila."
     },
     {
       "id": "b3-10-11",
@@ -283,11 +283,11 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "La aguja gira hacia el acantilado. En tu mochila: la ficha de los caminos que no van en línea recta y la primera voz, la del diseñador. En tu diario: «Un viajero que ya pasó por aquí»."
+      "texto": "La aguja gira hacia el acantilado. En tu mochila: la ficha de los caminos que no van en línea recta y otra voz, la del cocinero. En tu diario: «Un viajero que ya pasó por aquí»."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Un giro a tiempo no es un fracaso: es la misma decisión, con mejor información. Se abrió la voz T05 y la conversación «Los trabajos de nuestra familia»."
+    "mensajeFin": "Un giro a tiempo no es un fracaso: es la misma decisión, con mejor información. Se abrió una voz nueva en tu mochila y la conversación «Los trabajos de nuestra familia»."
   },
   "promptDiario": "Un viajero que ya pasó por aquí",
   "mapa": { "x": 900, "y": 220, "icono": "informativa" }

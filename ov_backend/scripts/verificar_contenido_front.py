@@ -9,8 +9,11 @@ Carga cada conjunto en una base temporal y comprueba, sin servicios externos:
 - en los dos conjuntos, los casos: cada actividad CASO nombra un `caso` con su JSON en `src/data/cases/plataforma/`;
   el JSON cumple el formato (ver `docs/sistema/integracion.md`); cada `onet` es una ocupación cargada; el total de
   necesidades es el `puntaje_maximo` de cada actividad que lo juega y los conteos por problema son los de
-  `CONFIGURACION_CASOS`, con `puntaje_minimo` ≤ máximo; la ocupación de cada testimonio es una necesidad del caso
-  que lo regala (su regla SUPERA_CASO).
+  `CONFIGURACION_CASOS`, con `puntaje_minimo` ≤ máximo;
+- en los dos conjuntos, los testimonios: una sola regla TESTIMONIO, SUPERA_CASO (su ocupación es una necesidad de ese
+  caso) o COMPLETA_ACTIVIDAD (su ocupación está en el catálogo); `video_id` de 11 caracteres sin parámetros y `fin`
+  mayor que `inicio`, si lo hay; título y pista sin el título de la ocupación;
+- en `contenido`, que ningún texto de actividad ni pregunta de batalla nombre `T0*` ni un código `tc`/`tb`.
 Las imágenes de un caso que no están en `ov_frontend/public/` son avisos, no discrepancias.
 
 Uso: `uv run python scripts/verificar_contenido_front.py [--front ../ov_frontend]`. Sale con 1 si hay discrepancias.
@@ -31,10 +34,12 @@ from sqlalchemy.orm import Session  # noqa: E402
 
 from app import models as m  # noqa: E402
 from app.database import crear_motor_bd  # noqa: E402
+from app.models.base import sin_tildes  # noqa: E402
 from datos import contenido as datos_contenido, ruta as datos_ruta  # noqa: E402
 from datos.cargar import preparar_base  # noqa: E402
 
 MODULOS = {'contenido': datos_contenido, 'ruta': datos_ruta}
+_CODIGO_DE_VOZ = re.compile(r'\b(?:T0\d|t[cb]\d+-\d+)\b')
 
 
 def _ecos(nodo):
@@ -182,18 +187,53 @@ def _verificar_casos(front: Path, conjunto: str, sesion, actividades) -> tuple[l
         errores += [f'contenido · el caso {n} lo juegan varias actividades: {c}' for n, c in sorted(jugados.items())
                     if len(c) > 1]
     caso_de = {codigo: n for n, codigos in jugados.items() for codigo in codigos}
-    ocupacion_de = {c: ocupacion for c, *_, ocupacion, _contexto, _cita in modulo.TESTIMONIOS}
-    for _regla, tipo, testimonio, _mensaje, condiciones in modulo.REGLAS:
-        if tipo != 'TESTIMONIO':
-            continue
-        for evento, actividad, *_ in condiciones:
-            nombre = caso_de.get(actividad) if evento == 'SUPERA_CASO' else None
-            if nombre is None or verificar_formato_caso(casos[nombre]):
-                continue
-            if ocupacion_de.get(testimonio) not in {o for n in necesidades_por_problema(casos[nombre]) for o in n}:
-                errores.append(f'{conjunto} · {testimonio}: su ocupación {ocupacion_de.get(testimonio)} no es una '
-                               f'necesidad de {nombre}, el caso que lo regala')
+    errores += _verificar_testimonios(conjunto, sesion, caso_de, casos)
     return errores, avisos
+
+
+def _verificar_testimonios(conjunto: str, sesion, caso_de: dict, casos: dict) -> list[str]:
+    modulo = MODULOS[conjunto]
+    titulos = dict(sesion.execute(select(m.Ocupacion.codigo, m.Ocupacion.titulo)).all())
+    errores = []
+    for codigo, titulo, _desc, video, inicio, fin, pista, _persona, ocupacion, _contexto, _cita in modulo.TESTIMONIOS:
+        prefijo = f'{conjunto} · {codigo}'
+        reglas = [c for _, tipo, objetivo, _, c in modulo.REGLAS if tipo == 'TESTIMONIO' and objetivo == codigo]
+        if len(reglas) != 1:
+            errores.append(f'{prefijo}: tiene {len(reglas)} reglas TESTIMONIO y debe tener una')
+        condiciones = [c for regla in reglas for c in regla]
+        de_caso = [c[1] for c in condiciones if c[0] == 'SUPERA_CASO']
+        if not de_caso and not any(c[0] == 'COMPLETA_ACTIVIDAD' for c in condiciones):
+            errores.append(f'{prefijo}: su regla no es SUPERA_CASO ni COMPLETA_ACTIVIDAD')
+        if ocupacion not in titulos:
+            errores.append(f'{prefijo}: su ocupación {ocupacion} no está en el catálogo')
+        for actividad in de_caso:
+            nombre = caso_de.get(actividad)
+            if nombre and not verificar_formato_caso(casos[nombre]) and ocupacion not in {
+                    o for n in necesidades_por_problema(casos[nombre]) for o in n}:
+                errores.append(f'{prefijo}: su ocupación {ocupacion} no es una necesidad de {nombre}, '
+                               'el caso que lo regala')
+        if not re.fullmatch(r'[A-Za-z0-9_-]{11}', video):
+            errores.append(f'{prefijo}: el video_id {video} no tiene 11 caracteres sin parámetros')
+        if fin is not None and fin <= inicio:
+            errores.append(f'{prefijo}: el fin {fin} no supera el inicio {inicio}')
+        nombre_ocupacion = sin_tildes(titulos.get(ocupacion, '')).lower()
+        for campo, texto in (('título', titulo), ('pista', pista)):
+            if nombre_ocupacion and nombre_ocupacion in sin_tildes(texto or '').lower():
+                errores.append(f'{prefijo}: su {campo} nombra la ocupación que hay que llamar')
+    return errores
+
+
+def _verificar_codigos_de_voces(front: Path) -> list[str]:
+    """Los textos de `contenido` no nombran códigos internos de testimonios (`T05`, `tc1-1`, `tb3-1`)."""
+    errores = []
+    carpeta = front / 'src/data/activities/contenidos/plataforma'
+    for archivo in sorted(carpeta.glob('*.json')):
+        if encontrado := _CODIGO_DE_VOZ.search(archivo.read_text(encoding='utf-8')):
+            errores.append(f'plataforma/{archivo.name}: nombra el código interno {encontrado.group()}')
+    for codigo, _batalla, _ficha, enunciado, opciones, _correcta, explicacion in datos_contenido.PREGUNTAS_BATALLA:
+        if encontrado := _CODIGO_DE_VOZ.search(' '.join((enunciado, *opciones, explicacion))):
+            errores.append(f'contenido · {codigo}: nombra el código interno {encontrado.group()}')
+    return errores
 
 
 def verificar(front: Path) -> tuple[list[str], list[str]]:
@@ -208,6 +248,7 @@ def verificar(front: Path) -> tuple[list[str], list[str]]:
                     actividades = {a.codigo: a for a in sesion.scalars(select(m.Actividad))}
                     if conjunto == 'contenido':
                         errores += _verificar_actividades(front, sesion, actividades)
+                        errores += _verificar_codigos_de_voces(front)
                     de_casos, avisos_casos = _verificar_casos(front, conjunto, sesion, actividades)
                     errores += de_casos
                     avisos += [a for a in avisos_casos if a not in avisos]
