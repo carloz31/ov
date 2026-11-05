@@ -126,6 +126,20 @@ def test_testimonios_y_reglas_sin_t(base):
     assert not {c for c in nombrados if c.startswith(('t-caso', 't-testimonio'))}
 
 
+def test_testimonios_con_video_y_sin_codigos_antiguos(base):
+    _, sesion = base
+    testimonios = list(sesion.scalars(select(m.Testimonio)))
+    assert len(testimonios) == 14 and all(t.video_id and t.persona and t.contexto for t in testimonios)
+    assert not hasattr(m.Testimonio, 'anios_experiencia') and not hasattr(m.Testimonio, 'enlace')
+    reglas = {r[0]: r for r in contenido.REGLAS}
+    assert not {c for c in reglas if 'T05' in c or 'tc4-2' in c}
+    assert not [r for r in contenido.REGLAS for c in r[4] if c[1] == 'T05' or r[2] == 'T05']
+    assert {c: reglas[c][4] for c in ('R-tb3-1', 'R-tb3-8', 'R-tb3-10')} == {
+        'R-tb3-1': (('COMPLETA_ACTIVIDAD', 'b3-1', 'EVENTOS', 1),),
+        'R-tb3-8': (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),),
+        'R-tb3-10': (('COMPLETA_ACTIVIDAD', 'b3-10', 'EVENTOS', 1),)}
+
+
 def test_ocupaciones_con_su_codigo_onet(base):
     _, sesion = base
     codigos = sesion.execute(select(m.Ocupacion.codigo, m.Ocupacion.codigo_onet)).all()

@@ -37,3 +37,36 @@ def test_carga_rechaza_maximos_de_caso_invalidos(tmp_path, monkeypatch, valor, m
     with pytest.raises(ValueError, match=mensaje):
         cargar.preparar_base(f'sqlite:///{(tmp_path / "maximos.db").as_posix()}', 'ruta', crear_tablas=True)
 
+
+# Ajuste testimonios: posiciones de la fila de un testimonio y lo que la carga rechaza.
+VIDEO, INICIO, FIN, CONTEXTO = 3, 4, 5, 9
+
+
+@pytest.mark.parametrize(('posicion', 'valor', 'mensaje'), [
+    (VIDEO, 'ysz5S6PUM-U?si=abc', 'video_id inválido'),
+    (VIDEO, 'corto', 'video_id inválido'),
+    (INICIO, -1, 'inicio negativo'),
+    (FIN, 0, 'no supera su inicio'),
+    (CONTEXTO, 'x' * 81, 'pasa de 80'),
+])
+def test_carga_rechaza_testimonio_invalido(tmp_path, monkeypatch, posicion, valor, mensaje):
+    primero, *resto = ruta.TESTIMONIOS
+    invalido = (*primero[:posicion], valor, *primero[posicion + 1:])
+    monkeypatch.setattr(ruta, 'TESTIMONIOS', (invalido, *resto))
+    with pytest.raises(ValueError, match=mensaje):
+        cargar.preparar_base(f'sqlite:///{(tmp_path / "testimonio.db").as_posix()}', 'ruta', crear_tablas=True)
+
+
+def test_carga_acepta_testimonio_sin_fin_y_con_fin_mayor(tmp_path, monkeypatch):
+    primero, *resto = ruta.TESTIMONIOS
+    monkeypatch.setattr(ruta, 'TESTIMONIOS', ((*primero[:INICIO], 10, 20, *primero[FIN + 1:]), *resto))
+    cargar.preparar_base(f'sqlite:///{(tmp_path / "con-fin.db").as_posix()}', 'ruta', crear_tablas=True)
+    assert primero[FIN] is None
+
+
+def test_carga_rechaza_voz_sin_origen(tmp_path, monkeypatch):
+    sin_regla = tuple(r for r in ruta.REGLAS if r[2] != 't-testimonio-1')
+    monkeypatch.setattr(ruta, 'REGLAS', sin_regla)
+    with pytest.raises(ValueError, match='sin regla SUPERA_CASO ni COMPLETA_ACTIVIDAD'):
+        cargar.preparar_base(f'sqlite:///{(tmp_path / "sin-origen.db").as_posix()}', 'ruta', crear_tablas=True)
+

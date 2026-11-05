@@ -71,6 +71,23 @@ def test_superar_c1_abre_sus_dos_voces_y_solo_esas(cliente_contenido):
     assert despues['c1']['superado'] and not despues['c2']['superado']
 
 
+def test_cada_caso_abre_solo_sus_voces(cliente_contenido):
+    """Ajuste testimonios: El festival da una sola voz; El torneo, dos."""
+    cliente = cliente_contenido
+    llegar_a_la_ciudad(cliente)
+    def superar(caso):
+        cuerpo = {'cuenta': 'est-ana', 'actividad': caso, 'puntaje': 6, 'ocupaciones': [], 'fecha_hora': FECHA}
+        return {d['objetivo']['codigo'] for d in pedir(cliente, 'POST', '/acciones/resolver-caso', cuerpo)['nuevos_desbloqueos']
+                if d['tipo_objetivo'] == 'TESTIMONIO'}
+    assert superar('c4') == {'tc4-1'}
+    assert superar('c5') == {'tc5-1', 'tc5-2'}
+    voces = {t['codigo']: t for t in pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')}
+    assert {c for c, t in voces.items() if t['estado'] == 'DISPONIBLE'} == {'tc4-1', 'tc5-1', 'tc5-2'}
+    assert (voces['tc4-1']['video_id'], voces['tc4-1']['inicio'], voces['tc4-1']['fin']) == ('ayxDpxdNOjc', 180, 480)
+    assert voces['tc4-1']['contexto'] == 'Cineasta con productora propia'
+    assert voces['tc4-1']['actividad'] is None and voces['tc4-1']['caso']['codigo'] == 'c4'
+
+
 def test_ocupaciones_del_caso_en_el_orden_pedido(cliente_contenido):
     cliente = cliente_contenido
     llegar_a_la_ciudad(cliente)

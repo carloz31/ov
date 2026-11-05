@@ -14,6 +14,12 @@ REQUERIDAS = tuple(c for c, b, *_ in contenido.ACTIVIDADES
 ULTIMAS = {'b0-6': 'B1', 'b1-7': 'B2', 'b2-5': 'B3', 'b3-10': 'B4', 'b4-5': 'B5'}
 TIPOS = {c: t for c, _, _, t, *_ in contenido.ACTIVIDADES}
 PODIOS = ('b2-3-valores', 'b4-2-criterios')
+TITULOS = {c: t for c, _, t, *_ in contenido.ACTIVIDADES}
+VOCES_DE_ACTIVIDAD = {'b3-1': 'tb3-1', 'b3-8': 'tb3-8', 'b3-10': 'tb3-10'}
+
+
+def voz_de(cliente, codigo):
+    return next(t for t in pedir(cliente, 'GET', '/cuentas/est-ana/testimonios') if t['codigo'] == codigo)
 
 
 def estados(cliente, cuenta='est-ana'):
@@ -66,6 +72,7 @@ def test_camino_del_estudiante_de_punta_a_punta(cliente_contenido):
     cliente = cliente_contenido
     bloques, actividades = estados(cliente)
     assert actividades['b0-1'] == 'DISPONIBLE' and bloques['B1'] == 'BLOQUEADA'
+    assert not voz_de(cliente, 'tb3-1')['actividad_disponible']
     for actual, siguiente in zip(REQUERIDAS, (*REQUERIDAS[1:], None)):
         if actual == 'b3-10':
             revelar_para_b4(cliente)
@@ -75,7 +82,15 @@ def test_camino_del_estudiante_de_punta_a_punta(cliente_contenido):
             assert actividades[siguiente] == 'BLOQUEADA', siguiente
         if actual in ULTIMAS:
             assert bloques[ULTIMAS[actual]] == 'BLOQUEADA', actual
+        if actual in VOCES_DE_ACTIVIDAD:
+            # Ajuste testimonios: bloqueada se lista por su actividad disponible; todavía sin video.
+            voz = voz_de(cliente, VOCES_DE_ACTIVIDAD[actual])
+            assert (voz['estado'], voz['actividad_disponible'], voz['video_id']) == ('BLOQUEADA', True, None)
         completar(cliente, actual)
+        if actual in VOCES_DE_ACTIVIDAD:
+            voz = voz_de(cliente, VOCES_DE_ACTIVIDAD[actual])
+            assert (voz['estado'], voz['caso']) == ('DISPONIBLE', None) and voz['video_id']
+            assert voz['actividad'] == {'codigo': actual, 'titulo': TITULOS[actual]}
         if actual == 'b3-8':
             preparar_planes(cliente)
         bloques, actividades = estados(cliente)
