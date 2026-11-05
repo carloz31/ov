@@ -82,6 +82,8 @@ Una regla con evaluador también tiene condiciones normales: definen con qué ev
 
 Las reglas de `datos/contenido.py` siguen estos principios (ajuste carga-actividades); `tests/integration/datos/test_reglas_contenido.py` comprueba los verificables:
 
+- **Testimonios:** cada voz tiene una sola regla TESTIMONIO: SUPERA_CASO si la regala un caso (su ocupación es una necesidad de ese caso) o COMPLETA_ACTIVIDAD si la deja una actividad (`tb3-1`, `tb3-8`, `tb3-10`). De esa regla sale su origen en `GET testimonios`.
+
 1. **El tramo se abre con la última requerida del anterior.** Cada bloque del camino B1–B5 tiene una regla `BLOQUE` con `COMPLETA_BLOQUE` del anterior. COMPLETA_BLOQUE se registra al completar la última actividad requerida del bloque (las opcionales no cuentan), así que no hay que reescribir la regla si cambia cuál es la última. B0 no tiene regla. Única excepción, a propósito: B4 pide además el punto de partida y los instrumentos prioritarios revelados (`REVELA_RESULTADO` + `instrumentos_prioritarios`).
 2. **La primera actividad de un tramo no lleva regla propia**: queda disponible al abrirse su bloque. Solo la lleva si pide algo más que el bloque (b5-1).
 3. **Dentro del tramo, cadena lineal**: cada requerida pide la requerida anterior (COMPLETA_ACTIVIDAD, o SUPERA_BATALLA si la anterior es una batalla).

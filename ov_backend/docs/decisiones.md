@@ -4,4 +4,19 @@
 - La validación del video, del tramo y del contexto va en la carga (`datos/cargador.py`), sin restricciones CHECK: el documento la pide allí y los datos solo entran por la carga.
 - `fin <= inicio` se rechaza solo cuando `fin` no es nulo: la mayoría de los testimonios no tiene fin (pedido del usuario).
 - `types/servidor.ts` usa `video_id` y no `videoId`, aunque el documento lo escriba así: el contrato copia el esquema en `snake_case`. `videoId` solo se usa en la vista.
+- `sin_ids` (`tests/soporte/soporte_retiro.py`) admite `video_id`: el documento pide ese nombre y es el ID público de YouTube, no un id interno. Sigue rechazando cualquier otro `*_id`.
 - Una voz cuya regla pide caso y actividad (`t-testimonio-2`) es de caso: nunca llegan los dos orígenes.
+- 14 testimonios reales: 11 de la Central y 3 de actividades (`tb3-1`, `tb3-8`, `tb3-10`). El festival da uno solo (`tc4-1`); se elimina `tc4-2`. Decisión del usuario.
+- La ocupación de una voz de caso es una necesidad de ese caso y quien habla la ejerce, con dos excepciones aceptadas de estudiantes (Kyara en un caso y Joel en una actividad). Decisión del usuario.
+- Sin años de experiencia: una línea de contexto opcional los reemplaza. Decisión del usuario.
+- El video se reproduce embebido desde su segundo de inicio; el fin es opcional y se omite si complica el reproductor. Decisión del usuario.
+- Título y pista de una voz bloqueada no revelan la ocupación que hay que llamar. Decisión del usuario.
+- Las voces de actividad muestran su propio origen («Te la dejó la misión…»), no el de un caso. Decisión del usuario.
+- `ma2-p06` no admitía el cambio de frase (es una pregunta con opciones): su enunciado nombra a la ingeniera de sistemas y su opción correcta deja de nombrar a la mujer mecánica. Decisión del usuario.
+- `b3_a.json` también pasa de «la del diseñador» a «la del cocinero», aunque el documento no lo listaba: el diseñador ya no existe. Decisión del usuario.
+- Textos que hablaban solo de la Central, en api: encabezado y estado vacío de voces, «la mayoría se abren…» en `b3-10` y `guideTexts`. Local conserva encabezado, vacío y cierre, pero `guideTexts` es un texto común sin modo y cambia en ambos. Decisión del usuario.
+- En `b3-10` se escribe «rutas distintas; la mayoría se abren al resolver…» y no «, que la mayoría se abren…», que no concuerda: el usuario pidió «la mayoría se abren» y se ajustó solo la puntuación.
+- Los cierres leen a la persona de la sección `testimonios` (`usePersonasTestimonios`): el desbloqueo solo trae código y título, y hasta ahora el cierre en api mostraba solo el título.
+- `TestimonioEstado` pasa a `types/servidorTestimonios.ts`: `servidor.ts` superaba las 400 líneas (`AGENTS.md` lo indica así).
+- `ruta` no gana voz de actividad, porque está congelada y el documento solo la adapta: esa mecánica se prueba sobre `contenido` y con voces armadas sobre fixtures en el front.
+- El documento nombra `paramedic` y `translator` como testimonios de `ruta`, pero en el código son los del modo local; los de `ruta` son `t-testimonio-1..4`. Gana el código: se adaptan esos cuatro, con su ocupación.

@@ -160,6 +160,9 @@
   color: #805d22;
   font-weight: 700;
 }
+.sx-root .sx-finish-testimonial {
+  text-align: left;
+}
 .sx-root .sx-finish-contexto {
   font-size: 12px;
   line-height: 1.3;

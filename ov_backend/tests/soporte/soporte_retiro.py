@@ -166,7 +166,8 @@ def contestar_minimo(cliente, actividad, opciones=None):
 
 def sin_ids(datos):
     if isinstance(datos, dict):
-        assert all(k != 'id' and not k.endswith('_id') and k != 'id_referencia' for k in datos)
+        # `video_id` es el ID público de YouTube del testimonio, no un id interno (ajuste testimonios).
+        assert all(k != 'id' and (k == 'video_id' or not k.endswith('_id')) and k != 'id_referencia' for k in datos)
         for valor in datos.values():
             sin_ids(valor)
     elif isinstance(datos, list):

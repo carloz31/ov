@@ -32,7 +32,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el cierre de `b3-10` y la mochila («Voces de la ciudad»).
 - **Opciones:** cargar T05 en el ajuste de testimonios con una regla que lo abra al completar `b3-10`; quitar la mención del `mensajeFin`; anunciar la voz que corresponda cuando exista.
 - **Si no se muestra:** el cierre anuncia una voz que no aparece.
-- **Estado:** pendiente para el ajuste de testimonios.
+- **Estado:** resuelto en el ajuste testimonios: completar `b3-10` abre `tb3-10` (Gastón Acurio) y el `mensajeFin` anuncia una voz nueva en la mochila, sin códigos.
 
 ## 2026-11-04 · Ajuste carga-actividades · Imágenes de los personajes
 
@@ -48,7 +48,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el enunciado o la explicación de esas preguntas, y la mochila («Voces de la ciudad») cuando existan.
 - **Opciones:** cargar T02 y T08 en el ajuste de testimonios; reescribir esas dos preguntas sin nombrarlos; quitarlas del pool (el de `ma2` tiene 10, el mínimo es 10).
 - **Si no se muestra:** la pregunta cita una voz que el estudiante no puede encontrar todavía.
-- **Estado:** pendiente para el ajuste de testimonios.
+- **Estado:** resuelto en el ajuste testimonios: `ma2-p06` nombra a la ingeniera de sistemas (`tc2-1`) y `ma2-p07`, al fisioterapeuta (`tc5-1`), como voces de la Central, sin códigos.
 
 ## 2026-11-02 · Ajuste resultados-intereses · Resultado del estudiante para la orientadora
 
