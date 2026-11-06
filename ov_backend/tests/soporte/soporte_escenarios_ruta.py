@@ -19,7 +19,7 @@ def verificar_p01_estado_inicial(cliente):
     assert visibles[0]['requisito']
     ocultos = [i for i in inicial['insignias'] if i['codigo'] == '???']
     assert len(ocultos) == 4 and all(o['estado'] == 'BLOQUEADA' and o['requisito'] is None for o in ocultos)
-    assert inicial['secciones'] == dict.fromkeys(('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'INVESTIGACIONES', 'PLANES'), 'BLOQUEADA')
+    assert inicial['secciones'] == dict.fromkeys(('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'INVESTIGACIONES', 'LIBRO_HELENA', 'PLANES'), 'BLOQUEADA')
     assert inicial['nivel_actual']['numero'] == 1
     assert [(t['codigo'], t['estado']) for t in inicial['testimonios']] == [
         ('t-testimonio-1', 'BLOQUEADA'), ('t-testimonio-2', 'BLOQUEADA'), ('t-testimonio-3', 'BLOQUEADA'),
@@ -34,7 +34,7 @@ def verificar_p02_primer_paso(cliente):
         'R-SEC-PLANES', 'R-t-diario-fija', 'R-PLAN-POR_QUE'}
     assert estado(cliente)['secciones'] == {
         'CATALOGO': 'DISPONIBLE', 'CHECK_IN': 'BLOQUEADA', 'DIARIO': 'DISPONIBLE', 'FAMILIA': 'BLOQUEADA',
-        'INVESTIGACIONES': 'BLOQUEADA', 'PLANES': 'DISPONIBLE'}
+        'INVESTIGACIONES': 'BLOQUEADA', 'LIBRO_HELENA': 'BLOQUEADA', 'PLANES': 'DISPONIBLE'}
 
 
 def verificar_p03_cierre_de_t0(cliente):

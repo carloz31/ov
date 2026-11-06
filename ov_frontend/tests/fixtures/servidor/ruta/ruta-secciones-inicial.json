@@ -121,6 +121,29 @@
           {
             "actual": 0,
             "cumplida": false,
+            "referencia": "t-partida",
+            "requerido": 1,
+            "texto": null,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_ACTIVIDAD"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa tu punto de partida para abrir el libro de Helena.",
+        "regla": "R-SEC-LIBRO_HELENA"
+      }
+    ],
+    "codigo": "LIBRO_HELENA",
+    "estado": "BLOQUEADA",
+    "nombre": "El libro de Helena"
+  },
+  {
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
             "referencia": "t-inicio",
             "requerido": 1,
             "texto": null,

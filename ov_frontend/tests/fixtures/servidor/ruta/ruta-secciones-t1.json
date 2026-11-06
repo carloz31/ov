@@ -65,6 +65,12 @@
   },
   {
     "bloqueo": null,
+    "codigo": "LIBRO_HELENA",
+    "estado": "DISPONIBLE",
+    "nombre": "El libro de Helena"
+  },
+  {
+    "bloqueo": null,
     "codigo": "PLANES",
     "estado": "DISPONIBLE",
     "nombre": "Planes"

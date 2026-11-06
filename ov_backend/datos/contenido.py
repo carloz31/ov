@@ -867,6 +867,7 @@ REGLAS = (
     ('R-investigador-cierre', 'ACTIVIDAD', 'investigador-cierre', 'Publica una entrevista para que Anselmo vuelva.', (('PUBLICA_ENTREVISTA', None, 'EVENTOS', 1),)),
     # Secciones y secciones de la tarjeta de plan.
     ('R-SEC-DIARIO', 'SECCION', 'DIARIO', 'Lumi te abre el diario en el bosque de las voces.', (('COMPLETA_ACTIVIDAD', 'b0-2', 'EVENTOS', 1),)),
+    ('R-SEC-LIBRO_HELENA', 'SECCION', 'LIBRO_HELENA', 'Responde las preguntas de Helena en Mi punto de partida para abrir su libro.', (('COMPLETA_ACTIVIDAD', 'b0-3', 'EVENTOS', 1),)),
     ('R-SEC-CATALOGO', 'SECCION', 'CATALOGO', 'Lumi te muestra el catálogo en la piedra de los caminos.', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
     ('R-SEC-PLANES', 'SECCION', 'PLANES', 'Lumi te explica los planes en la piedra de los caminos.', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
     ('R-SEC-CHECK_IN', 'SECCION', 'CHECK_IN', 'El check-in se abre al cerrar el primer tramo.', (('COMPLETA_ACTIVIDAD', 'b0-6', 'EVENTOS', 1),)),

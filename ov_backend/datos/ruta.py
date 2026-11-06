@@ -556,6 +556,9 @@ REGLAS = (
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-SEC-CATALOGO', 'SECCION', 'CATALOGO', 'Completa el inicio para abrir el catálogo.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
+    # DATO DE PRUEBA: ajuste libro-helena-regreso, el libro se abre con el punto de partida.
+    ('R-SEC-LIBRO_HELENA', 'SECCION', 'LIBRO_HELENA', 'Completa tu punto de partida para abrir el libro de Helena.',
+     (('COMPLETA_ACTIVIDAD', 't-partida', 'EVENTOS', 1),)),
     ('R-SEC-PLANES', 'SECCION', 'PLANES', 'Completa el inicio para abrir tus planes.',
      (('COMPLETA_ACTIVIDAD', 't-inicio', 'EVENTOS', 1),)),
     ('R-SEC-CHECK_IN', 'SECCION', 'CHECK_IN', 'Completa el cierre del inicio para hacer tu check-in.',

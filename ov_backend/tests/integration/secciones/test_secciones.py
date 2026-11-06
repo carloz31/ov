@@ -6,7 +6,7 @@ from soporte_retiro import buscar, condicion, medir, regla
 from soporte_ruta import FECHA, RECORRIDO, avanzar, completar, eventos, filas_base, pedir
 
 
-SECCIONES_ESTUDIANTE = ('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'INVESTIGACIONES', 'PLANES')
+SECCIONES_ESTUDIANTE = ('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'INVESTIGACIONES', 'LIBRO_HELENA', 'PLANES')
 
 
 def secciones(cliente, cuenta='est-ana'):
@@ -16,12 +16,22 @@ def secciones(cliente, cuenta='est-ana'):
 def test_secciones_que_se_abren_en_cada_paso(cliente):
     assert secciones(cliente) == dict.fromkeys(SECCIONES_ESTUDIANTE, 'BLOQUEADA')
     abiertas = []
-    for actividad, nuevas in (('t-inicio', ('CATALOGO', 'DIARIO', 'PLANES')), ('t-partida', ()), ('t-cierre-inicio', ('CHECK_IN',)),
+    for actividad, nuevas in (('t-inicio', ('CATALOGO', 'DIARIO', 'PLANES')), ('t-partida', ('LIBRO_HELENA',)), ('t-cierre-inicio', ('CHECK_IN',)),
                               ('t-expectativas', ('FAMILIA',))):
         completar(cliente, actividad)
         abiertas += nuevas
         assert secciones(cliente) == {c: 'DISPONIBLE' if c in abiertas else 'BLOQUEADA' for c in SECCIONES_ESTUDIANTE}
     assert secciones(cliente, 'est-luis') == dict.fromkeys(SECCIONES_ESTUDIANTE, 'BLOQUEADA')
+
+
+def test_el_libro_de_helena_se_abre_con_el_punto_de_partida(cliente):
+    libro = pedir(cliente, 'GET', '/cuentas/est-ana/secciones/LIBRO_HELENA')
+    assert (libro['nombre'], libro['estado']) == ('El libro de Helena', 'BLOQUEADA')
+    assert libro['bloqueo'][0]['mensaje'] == 'Completa tu punto de partida para abrir el libro de Helena.'
+    completar(cliente, 't-inicio')
+    assert secciones(cliente)['LIBRO_HELENA'] == 'BLOQUEADA'
+    completar(cliente, 't-partida')
+    assert secciones(cliente)['LIBRO_HELENA'] == 'DISPONIBLE'
 
 
 def test_seccion_bloqueada_muestra_mensaje_y_lo_que_falta(cliente):

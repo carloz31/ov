@@ -68,6 +68,18 @@ def revelar_para_b4(cliente):
     revelar(cliente)
 
 
+def test_el_libro_de_helena_se_abre_con_mi_punto_de_partida(cliente_contenido):
+    cliente = cliente_contenido
+    libro = lambda: pedir(cliente, 'GET', '/cuentas/est-ana/secciones/LIBRO_HELENA')['estado']
+    assert libro() == 'BLOQUEADA'
+    for codigo in ('b0-1', 'b0-2'):
+        completar(cliente, codigo)
+        assert libro() == 'BLOQUEADA'
+    respuesta = completar(cliente, 'b0-3')
+    assert 'R-SEC-LIBRO_HELENA' in {d['regla'] for d in respuesta['nuevos_desbloqueos']}
+    assert libro() == 'DISPONIBLE'
+
+
 def test_camino_del_estudiante_de_punta_a_punta(cliente_contenido):
     cliente = cliente_contenido
     bloques, actividades = estados(cliente)

@@ -18,8 +18,8 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     esperados = {'colegio': 1, 'salon': 2, 'cuenta': 8, 'orientadora_salon': 1, 'vinculo_familiar': 2, 'bloque': 6,
         # Ajuste mochila: t-caso-2, t-ficha-3, t-testimonio-3 y 4, sus reglas y la condición extra de t-testimonio-2.
         # Ajuste carga-instrumentos: t-mision-inteligencias y t-mision-habilidades, con sus instrumentos reales.
-        'actividad': 30, 'seccion': 7, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 7, 'nivel': 3,
-        'regla_desbloqueo': 57, 'condicion_desbloqueo': 64, 'pregunta_diario': 8,
+        'actividad': 30, 'seccion': 8, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 7, 'nivel': 3,
+        'regla_desbloqueo': 58, 'condicion_desbloqueo': 65, 'pregunta_diario': 8,
         'instrumento': 4, 'escala_respuesta': 4, 'opcion_escala': 14, 'dimension': 23,
         'item_instrumento': 138, 'actividad_item': 157, 'aplicacion': 5, 'aplicacion_actividad': 6,
         # Ajuste catalogo-datos-reales: el catálogo real (603 carreras tras fusionar 5 duplicadas por tilde,

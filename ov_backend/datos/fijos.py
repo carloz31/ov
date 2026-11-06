@@ -20,7 +20,8 @@ from datos import catalogo
 SECCIONES = (('CATALOGO', 'Catálogo', 'ESTUDIANTE'), ('CHECK_IN', 'Check-in', 'ESTUDIANTE'),
              ('DIARIO', 'Diario', 'ESTUDIANTE'), ('FAMILIA', 'Familia', 'ESTUDIANTE'),
              ('PLANES', 'Planes', 'ESTUDIANTE'), ('CONVERSACIONES', 'Conversaciones', 'APODERADO'),
-             ('INVESTIGACIONES', 'Investigaciones', 'ESTUDIANTE'))
+             ('INVESTIGACIONES', 'Investigaciones', 'ESTUDIANTE'),
+             ('LIBRO_HELENA', 'El libro de Helena', 'ESTUDIANTE'))
 
 # (código, texto). Preguntas que siempre van en el guion de una entrevista (B13); las del front (`research.ts`).
 PREGUNTAS_BASE_GUION = (('BASE-1', '¿Cómo es un día normal en tu trabajo?'),
