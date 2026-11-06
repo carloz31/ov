@@ -70,7 +70,7 @@ Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), p
 | HU-062 | E10 · Entrevistas | Estudiante, Orientadora | consultar las entrevistas publicadas | conocer las ocupaciones desde la experiencia de los profesionales entrevistados |
 | HU-063 | E10 · Entrevistas | Estudiante | reaccionar a las entrevistas de mis compañeros con un comentario sobre mi reacción, obligatorio si aprendí algo, y consultar las reacciones y comentarios que reciben las mías | reconocer el trabajo de otros y conocer el efecto del mío |
 | HU-064 | E10 · Entrevistas | Orientadora | destacar una entrevista | reconocer los trabajos de mayor calidad |
-| HU-065 | E10 · Entrevistas | Estudiante | consultar las entrevistas reconocidas como Leyenda | aprender de los mejores trabajos de todas las aulas y promociones |
+| HU-065 | E10 · Entrevistas | Estudiante | consultar las entrevistas reconocidas como Leyenda | aprender de los mejores trabajos de todas las aulas y promociones de mi colegio |
 | HU-066 | E11 · Conversaciones familiares | Estudiante, Apoderado, Orientadora | consultar el estado de las conversaciones guiadas entre el estudiante y su apoderado | saber cuáles se han sostenido y cuáles están pendientes |
 | HU-067 | E11 · Conversaciones familiares | Apoderado | ver, al ingresar, un aviso cuando mi hijo habilita una nueva conversación | saber que ya podemos sostenerla y marcarla |
 | HU-068 | E11 · Conversaciones familiares | Estudiante, Apoderado | consultar la guía de una conversación | sostener en casa un diálogo sencillo sobre el futuro del estudiante |
@@ -204,7 +204,7 @@ Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), p
 | Testimonio | Relato de una trayectoria real de estudio o de trabajo, que se desbloquea al resolver un caso. Mientras está bloqueado muestra solo su pista. |
 | Entrevista | Video de un estudiante a un profesional sobre una ocupación, hecho con un guion fijo y publicado con un resumen y, opcionalmente, con coautores. La ven el salón de sus autores y sus orientadoras. |
 | Reacción | Valoración de un estudiante a la entrevista de un compañero: «Aprendí algo» o «Me gustó cómo se realizó», con un comentario sobre esa reacción, obligatorio si aprendió algo. |
-| Leyenda | Entrevista que alcanzó el mínimo de reacciones y fue destacada por la orientadora. La ven todas las aulas y las promociones siguientes. |
+| Leyenda | Entrevista que alcanzó el mínimo de reacciones y fue destacada por la orientadora. La ven todas las aulas de su colegio y las promociones siguientes. |
 | Conversación guiada | Conversación en casa entre el estudiante y su apoderado sobre un tema, con una guía de preguntas, que se marca como sostenida. El apoderado ve todas las guías al completar su ruta; el estudiante las habilita una por una, y solo se puede marcar como sostenida una conversación que el estudiante ya tiene habilitada. |
 | Carta | Mensaje que el estudiante y el apoderado se escriben. Cada uno lo escribe para habilitar sus conversaciones y lo recibe cuando completan todas sus conversaciones. |
 | Evento de uso | Acción de un usuario que el sistema registra con fecha y hora, como ingresar, completar una actividad o escribir en el diario. |

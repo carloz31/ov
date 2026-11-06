@@ -24,7 +24,7 @@ from app.services.investigaciones.acciones import (
 )
 from app.services.investigaciones.consultas import (
     autores_de, contar_favoritos, contiene, de_autor_en_salones, entrevista_de_sus_salones, familias_breves,
-    personas, reacciones_por_tipo, tipos_reaccion,
+    leyenda_de_su_colegio, personas, reacciones_por_tipo, tipos_reaccion,
 )
 
 
@@ -125,14 +125,14 @@ def _autores_con_salon(sesion: Session, ids) -> dict[int, list[AutorPublicacion]
 @usar_contexto
 def listar_publicaciones(sesion: Session, codigo_cuenta: str, salon: str | None, estado: str | None,
                          con_reportes: bool, buscar: str | None, limite: int, desde: int) -> PaginaPublicaciones:
-    """Las publicadas de sus salones, de la más reciente a la más antigua, y al final las Leyendas de otros salones
-    (sin filtro de salón). `con_reportes`: con reportes pendientes en la entrevista o en sus reacciones."""
+    """Las publicadas de sus salones, de la más reciente a la más antigua, y al final las Leyendas de otros salones de
+    sus colegios (sin filtro de salón). `con_reportes`: con reportes pendientes en la entrevista o en sus reacciones."""
     _, salones = exigir_orientadora(sesion, codigo_cuenta)
     if estado is not None and estado not in ESTADOS:
         raise ErrorAccion('Estado desconocido', estado_http=422)
     propias = de_autor_en_salones(salones)
     if salon is None:
-        alcance = propias | (Entrevista.leyenda_en.is_not(None))
+        alcance = propias | leyenda_de_su_colegio(salones)
     else:
         salon_id = sesion.scalar(select(Salon.id).where(Salon.codigo == salon))
         if salon_id not in salones:
@@ -180,11 +180,12 @@ def _reportes(filas) -> list[ReportePublico]:
 
 @usar_contexto
 def detalle_publicacion(sesion: Session, codigo_cuenta: str, codigo: str) -> PublicacionDetalle:
-    """De sus salones, o una Leyenda de otro (solo lectura en la práctica: las acciones exigen sus salones)."""
+    """De sus salones, o una Leyenda de otro salón de sus colegios (solo lectura en la práctica: las acciones exigen sus
+    salones)."""
     cuenta, salones = exigir_orientadora(sesion, codigo_cuenta)
     entrevista = sesion.scalar(select(Entrevista).where(
         Entrevista.codigo == codigo, Entrevista.estado == EstadoEntrevista.PUBLICADA,
-        de_autor_en_salones(salones) | Entrevista.leyenda_en.is_not(None)))
+        de_autor_en_salones(salones) | leyenda_de_su_colegio(salones)))
     if entrevista is None:
         raise ErrorAccion('Entrevista no encontrada', estado_http=404)
     propia_de_salon = sesion.scalar(select(exists().where(

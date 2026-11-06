@@ -3,14 +3,14 @@
 from uuid import uuid4
 
 from sqlalchemy import delete, insert, or_, select, update
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 
 from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import FAVORITOS_LEYENDA
 from app.exceptions import ErrorAccion
 from app.models import (
     Cuenta, Entrevista, EntrevistaAutor, EstadoEntrevista, EstadoInvestigacion, EstadoReporte, EstadoSugerenciaGuion,
-    FamiliaCarrera, Investigacion, OrigenPreguntaGuion, PreguntaGuion, Reaccion, Reporte, Rol, SugerenciaGuion,
+    FamiliaCarrera, Investigacion, OrigenPreguntaGuion, PreguntaGuion, Reaccion, Reporte, Rol, Salon, SugerenciaGuion,
     TipoEventoUso, TipoNotificacion, TipoReaccion,
 )
 from app.models.base import sin_tildes
@@ -119,8 +119,12 @@ def cancelar_investigacion(sesion: Session, entrada: CancelarInvestigacionEntrad
 # --- Publicación --------------------------------------------------------------------------------
 
 def _coautores(sesion: Session, autor: Cuenta, codigos: list[str], familia_id: int) -> list[tuple[Cuenta, Investigacion]]:
-    """Compañeros del salón del autor con guía lista sobre la misma familia (404 si no existen; 409 si no cumplen)."""
-    por_codigo = {c.codigo: c for c in sesion.scalars(select(Cuenta).where(Cuenta.codigo.in_(codigos)))}
+    """Compañeros del salón del autor con guía lista sobre la misma familia (404 si no existen o no son de su colegio;
+    409 si no cumplen)."""
+    salon_autor = aliased(Salon)
+    colegio_autor = select(salon_autor.colegio_id).where(salon_autor.id == autor.salon_id).scalar_subquery()
+    por_codigo = {c.codigo: c for c in sesion.scalars(select(Cuenta).join(Salon, Salon.id == Cuenta.salon_id).where(
+        Cuenta.codigo.in_(codigos), Salon.colegio_id == colegio_autor))}
     if any(codigo not in por_codigo for codigo in codigos):
         raise ErrorAccion('Cuenta o referencia no encontrada', estado_http=404)
     activas = {i.cuenta_id: i for i in sesion.scalars(select(Investigacion).where(

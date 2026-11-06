@@ -6,3 +6,5 @@
 - **La entrevista y la orientadora no guardan colegio:** se deriva de autor → salón → colegio y de `orientadora_salon`, para no duplicar un dato que puede contradecirse.
 - **Pruebas adaptadas (autorizadas por el plan):** `test_clasificacion_tablas.py` clasifica `colegio` como catálogo y `test_politica_y_contrasenas.py` da un colegio a sus salones; solo por la tabla nueva.
 - **Pruebas adaptadas (no listadas en el plan, misma causa):** los inventarios de tablas de `test_migraciones.py` (conteo y bajada a 0041), `test_restricciones_estado.py`, `test_integridad_catalogos.py` y `test_semilla_ruta.py` pasan a 94 tablas e incluyen `colegio`. Sin cambiar qué comprueban.
+- **Reacciones y favoritos sin filtro de lectura propio:** el límite se aplica al escribir (solo actúa quien ve la entrevista), y la migración deja todos los salones en un colegio, así que no hay datos cruzados que filtrar.
+- **Coautor de otro colegio responde 404:** igual que un código inexistente, para no revelar su nombre ni que existe; un estudiante de otro salón del mismo colegio sigue dando 409.

@@ -9,7 +9,7 @@ from app.exceptions import ErrorAccion
 from app.models import (
     Cuenta, Entrevista, EntrevistaAutor, EstadoEntrevista, EstadoInvestigacion, EstadoSugerenciaGuion, EventoUso,
     FamiliaCarrera, Favorito, Insignia, InsigniaVitrina, Investigacion, OrientadoraSalon, PreguntaBaseGuion, PreguntaGuion,
-    Reaccion, Reporte, Rol, SugerenciaGuion, TipoEventoUso, TipoFavorito, TipoReaccion,
+    Reaccion, Reporte, Rol, Salon, SugerenciaGuion, TipoEventoUso, TipoFavorito, TipoReaccion,
 )
 from app.models.base import sin_tildes
 from app.schemas.investigaciones import (
@@ -72,25 +72,37 @@ def de_autor_en_salones(salones):
                           autor.salon_id.in_(salones))
 
 
+def leyenda_de_su_colegio(salones):
+    """Condición: es Leyenda y tiene algún autor en los colegios de esos salones. Sin salones, ninguna."""
+    autor = aliased(Cuenta)
+    salon_autor = aliased(Salon)
+    colegios = select(Salon.colegio_id).where(Salon.id.in_(salones))
+    return Entrevista.leyenda_en.is_not(None) & exists().where(
+        EntrevistaAutor.entrevista_id == Entrevista.id, EntrevistaAutor.cuenta_id == autor.id,
+        autor.salon_id == salon_autor.id, salon_autor.colegio_id.in_(colegios))
+
+
 def de_autor(cuenta_id: int):
     return exists().where(EntrevistaAutor.entrevista_id == Entrevista.id, EntrevistaAutor.cuenta_id == cuenta_id)
 
 
 def condicion_vista(cuenta: Cuenta, vista: str):
-    """SALON: de algún autor de su salón; LEYENDAS: todas las Leyendas; SALON_Y_LEYENDAS: las dos sin repetir (detalle de
-    carrera); MIAS: donde es autor. Siempre publicadas: una entrevista retirada o eliminada no se lista para nadie."""
+    """SALON: de algún autor de su salón; LEYENDAS: las Leyendas de su colegio; SALON_Y_LEYENDAS: las dos sin repetir
+    (detalle de carrera); MIAS: donde es autor. Siempre publicadas: una entrevista retirada o eliminada no se lista para
+    nadie."""
     publicada = Entrevista.estado == EstadoEntrevista.PUBLICADA
     if vista == 'SALON':
         return publicada & de_autor_en_salones([cuenta.salon_id])
     if vista == 'LEYENDAS':
-        return publicada & Entrevista.leyenda_en.is_not(None)
+        return publicada & leyenda_de_su_colegio([cuenta.salon_id])
     if vista == 'SALON_Y_LEYENDAS':
         return condicion_vista(cuenta, 'SALON') | condicion_vista(cuenta, 'LEYENDAS')
     return publicada & de_autor(cuenta.id)
 
 
 def condicion_visible(cuenta: Cuenta):
-    """Lo que un estudiante puede abrir: las de su salón, las Leyendas y las suyas (estas ya son de su salón)."""
+    """Lo que un estudiante puede abrir: las de su salón, las Leyendas de su colegio y las suyas (estas ya son de su
+    salón)."""
     return condicion_vista(cuenta, 'SALON_Y_LEYENDAS')
 
 
