@@ -111,6 +111,45 @@ test('la hidratación conserva respuestas y nodos y corrige finalizaciones obsol
     '$fin',
   )
 })
+test('una pasada terminada que el servidor no conoce se borra del navegador; a medio hacer se conserva', () => {
+  const rastro = (actividadId) => ({ estudianteId: 'est-ana', actividadId, nodoId: 'n1' })
+  const conProgreso = (progreso) => ({
+    progress: { 't-inicio': { estudianteId: 'est-ana', actividadId: 't-inicio', ...progreso } },
+    attempts: [rastro('t-inicio'), rastro('otra')],
+    choices: [rastro('t-inicio'), rastro('otra')],
+    submissions: [rastro('t-inicio'), rastro('otra')],
+    drafts: { 't-inicio/n1': 'borrador', 'otra/n1': 'otro' },
+    items: [],
+    results: [],
+    rewards: [],
+    pieces: [],
+    resources: [],
+  })
+  const proyectar = (progreso, escenario = inicial) =>
+    adaptadores.proyectarJourney(escenario.bloques, conProgreso(progreso), escenario.cuenta.codigo)
+  const sinRastro = (p) => {
+    assert.equal('nodoActualId' in p.progress['t-inicio'], false)
+    assert.deepEqual(copia(p.attempts.map((a) => a.actividadId)), ['otra'])
+    assert.deepEqual(copia(p.choices.map((a) => a.actividadId)), ['otra'])
+    assert.deepEqual(copia(p.submissions.map((a) => a.actividadId)), ['otra'])
+    assert.deepEqual(copia(p.drafts), { 'otra/n1': 'otro' })
+  }
+  // Terminada antes de recargar la base.
+  sinRastro(proyectar({ estado: 'completada', nodoActualId: '$fin' }))
+  sinRastro(proyectar({ estado: 'no_iniciada', nodoActualId: '$fin' }))
+  // Lo que dejó la versión anterior en un navegador ya afectado: sin posición, pero con los intentos.
+  sinRastro(proyectar({ estado: 'no_iniciada' }))
+  // A medio hacer: retoma donde quedó, con lo suyo.
+  const enCurso = proyectar({ estado: 'no_iniciada', nodoActualId: 'n2' })
+  assert.equal(enCurso.progress['t-inicio'].nodoActualId, 'n2')
+  assert.equal(enCurso.attempts.length, 2)
+  assert.equal(enCurso.choices.length, 2)
+  assert.equal(Object.keys(enCurso.drafts).length, 2)
+  // Completada en el servidor: nada se borra.
+  const completa = proyectar({ estado: 'completada', nodoActualId: '$fin' }, ciudad)
+  assert.equal(completa.progress['t-inicio'].nodoActualId, '$fin')
+  assert.equal(completa.attempts.length, 2)
+})
 test('los cierres enumeran únicamente los desbloqueos del servidor, incluidos nivel y ciudad', () => {
   const inicio = adaptadores.textosDesbloqueos(jsonServidor('ruta/ruta-completar-t-inicio').nuevos_desbloqueos)
   // F04b: t-inicio también da t-ficha-2.

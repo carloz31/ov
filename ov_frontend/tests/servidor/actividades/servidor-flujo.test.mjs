@@ -311,6 +311,36 @@ test('repetir una informativa llega nuevamente al servidor sin fabricar logros',
   assert.equal(store.getJourneySnapshot().resources.length, 0)
   assert.equal(store.getJourneySnapshot().rewards.length, 0)
 })
+test('rehacer una informativa abre en el primer paso y termina aunque sus intentos no estén en este navegador', async () => {
+  const { app } = await iniciar()
+  let completadas = 0
+  app.fetch((r) => {
+    if (r.url === '/api/acciones/completar-actividad') {
+      completadas++
+      return { body: { ...jsonServidor('ruta/ruta-completar-t-inicio'), nuevos_desbloqueos: [] } }
+    }
+    if (esConsultaDominio(r)) return respuestaDominio(r, escenarioRuta('t1'))
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
+  })
+  await cargarAlmacen(app).refrescar()
+  const activity = actividadRuta(app)
+  const store = app.load('src/store/journeyStore.ts')
+  assert.equal(store.getJourneySnapshot().attempts.length, 0)
+  const { StudentActivityPlayer } = app.load('src/features/activities/components/StudentActivityPlayer.tsx')
+  const player = app.mount(StudentActivityPlayer, { activity, edit: true, onClose() {} })
+  const conContinuar = () => elementos(player.render(), (e) => typeof e.props?.onContinue === 'function')[0]
+  const primero = conContinuar()
+  assert.equal(primero.props.text ?? primero.props.node?.texto, activity.nodos[0].texto)
+  for (let paso = 0; paso < activity.nodos.length && !completadas; paso++) {
+    conContinuar().props.onContinue()
+    await esperar()
+  }
+  assert.equal(completadas, 1)
+  assert.doesNotMatch(texto(player.render()), /Completa las respuestas y comprobaciones pendientes/)
+  // Rehacer no guarda intentos ni repite logros en el navegador.
+  assert.equal(store.getJourneySnapshot().attempts.length, 0)
+  player.unmount()
+})
 test('el mapa y los enlaces directos no usan límites de demo ni abren TIP o desafíos', async () => {
   const { app } = await iniciar({ ruta: '/student/exploration?actividad=el-rumor' })
   const journey = app.load('src/store/journeyStore.ts'),

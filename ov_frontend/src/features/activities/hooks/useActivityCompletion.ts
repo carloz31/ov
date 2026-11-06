@@ -1,6 +1,6 @@
 import { modoApi } from '@/config/env'
 import { completarActividad } from '@/store/servidor/operaciones'
-import { textoBloqueo } from '@/lib/servidor/adaptadores'
+import { actividadServidor, textoBloqueo } from '@/lib/servidor/adaptadores'
 import { mensajeErrorServidor, obtenerEstadoServidor } from '@/store/servidor/sesion'
 import { applyCompletion, isActivityComplete, studentId } from '@/lib/activities/logic'
 import type { JourneyState } from '@/types/activities'
@@ -61,7 +61,9 @@ export function useActivityCompletion({
       }
       const completa = instrumentoServidor
         ? instrumentoServidor.items.every((item) => respuestasConfirmadas.current[item.codigo] !== undefined)
-        : isActivityComplete(activity, candidato)
+        : // Al rehacer, las comprobaciones no se guardan: si los intentos no están en este navegador, no frenan.
+          actividadServidor(obtenerEstadoServidor().actividades.datos, activity.id)?.estado === 'COMPLETADA' ||
+          isActivityComplete(activity, candidato)
       if (!confirmacion.current && !completa) {
         setErrorServidor('Completa las respuestas y comprobaciones pendientes antes de cerrar la actividad.')
         return
