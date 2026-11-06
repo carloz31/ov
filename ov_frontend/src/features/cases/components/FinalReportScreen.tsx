@@ -1,18 +1,16 @@
 import { LockKeyhole } from 'lucide-react'
-import { forestFirePhases } from '@/data/content/forestFireCase'
 
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
 
 import {
-  FOREST_FIRE_MAX_SATISFACTION,
-  FOREST_FIRE_PASS_SCORE,
+  CASO_LOCAL,
   SHOW_EXTRA_PROFESSIONAL,
   getPhaseSatisfaction,
   getProblemSatisfaction,
   getTotalSatisfaction,
 } from '@/features/cases/lib/forestFireCaseLogic'
-import type { ForestFireAssignments } from '@/types/cases'
+import type { CasoJugable, ForestFireAssignments } from '@/types/cases'
 import type { OcupacionNueva } from '@/types/servidor'
 import type { ReactNode } from 'react'
 import type { ResultadoCasoServidor } from '@/features/cases/hooks/useForestFireCase'
@@ -30,6 +28,7 @@ export function FinalReportScreen({
   extraReason,
   extraProfessionalId,
   servidor,
+  caso = CASO_LOCAL,
 }: {
   assignments: ForestFireAssignments
   bestScore: number
@@ -43,9 +42,12 @@ export function FinalReportScreen({
   extraProfessionalId: string
   // F04 (api): aprobado según el umbral del servidor.
   servidor?: ResultadoCasoServidor
+  // Ajuste carga-casos: el caso jugado (local: el incendio); su máximo y su umbral son los del servidor en api.
+  caso?: CasoJugable
 }) {
-  const score = getTotalSatisfaction(assignments)
-  const passed = servidor ? servidor.superado : score >= FOREST_FIRE_PASS_SCORE
+  const { phases: forestFirePhases, maximo: FOREST_FIRE_MAX_SATISFACTION } = caso
+  const score = getTotalSatisfaction(assignments, caso)
+  const passed = servidor ? servidor.superado : score >= caso.minimo
   return (
     <section className="ff-content ff-report">
       <div className="ff-light ff-final-heading">
@@ -65,10 +67,10 @@ export function FinalReportScreen({
         {servidor && (
           <>
             <p>{servidor.puntaje}</p>
-            <p>{servidor.tipos}</p>
+            {servidor.tematica && <p>Temática: {servidor.tematica}</p>}
           </>
         )}
-        <SatisfactionBar score={score} bestScore={bestScore} />
+        <SatisfactionBar score={score} bestScore={bestScore} maximo={caso.maximo} minimo={caso.minimo} />
       </div>
       <div className="ff-phase-summaries">
         {forestFirePhases.map((phase) => (

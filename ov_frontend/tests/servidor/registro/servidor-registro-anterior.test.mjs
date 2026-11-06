@@ -112,7 +112,7 @@ async function partida({ soloLectura = false } = {}) {
   Object.assign(t0[1], { estado: 'DISPONIBLE', bloqueo: null })
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/responder-items'))
       return {
         body: {
@@ -187,6 +187,8 @@ test('al volver al podio desde el ítem siguiente, se muestra completo con su ex
   const { app } = await iniciar({ actividad: 't-valores' })
   const player = await abrir(app, 't-valores')
   de(player.render(), 'DialogueBox').props.onContinue()
+  // Ajuste carga-actividades: t-valores suma una diapositiva tras su diálogo de entrada.
+  elementos(player.render(), (e) => e.type?.name === 'SlideNode')[0].props.onContinue()
   const podio = consigna(player.render())
   assert.equal(podio.type.name, 'RegistroPodioNode')
   const elegidas = [{ codigo: 'CREAR' }, { codigo: 'LIBERTAD' }, { codigo: 'ESTABILIDAD' }]

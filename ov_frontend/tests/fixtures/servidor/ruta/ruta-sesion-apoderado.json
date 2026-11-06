@@ -11,6 +11,12 @@
       "nombre": "Ana",
       "parentesco": "madre",
       "salon": "5A"
+    },
+    {
+      "codigo": "est-luis",
+      "nombre": "Luis",
+      "parentesco": "madre",
+      "salon": "5A"
     }
   ],
   "salones": []

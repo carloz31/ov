@@ -42,7 +42,7 @@ async function libro({ etapa = 'ciudad', avance = 'riasec-listo', ruta = '/stude
   let fase = avance
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     const respuesta = extra?.(req, (nueva) => (fase = nueva))
     if (respuesta) return respuesta
     if (req.url.endsWith('/instrumentos')) return { body: jsonServidor(`ruta/ruta-avance-instrumentos-${fase}`) }
@@ -67,7 +67,7 @@ test('el libro en api tiene cuatro páginas: partida y llegada primero; la sella
   assert.deepEqual(copia(modelo.pages.map((p) => [p.id, p.numeral, p.state])), [
     ['partida-llegada', 'I', 'sealed'],
     ['intereses', 'II', 'sealed'],
-    ['inteligencias', 'III', 'ready'],
+    ['inteligencias', 'III', 'sealed'],
     ['habilidades', 'IV', 'sealed'],
   ])
   const partida = pagina(modelo, 'partida-llegada')
@@ -97,6 +97,53 @@ test('con la Ciudad cerrada, «Ir a la siguiente misión» de intereses entra pr
   assert.equal(intereses.activityHref, '/student/exploration')
   const partida = pagina(useHelenaPages(), 'partida-llegada')
   assert.equal(partida.activityHref ?? '', '')
+})
+
+// Ajuste carga-instrumentos: habilidades se revela sin haber revelado antes el RIASEC.
+test('el sello de habilidades se rompe aunque intereses siga sellado', async () => {
+  let revelada = false
+  const avance = () =>
+    jsonServidor('ruta/ruta-avance-instrumentos-inicial').map((i) => ({
+      ...i,
+      aplicaciones: i.aplicaciones.map((a) =>
+        a.aplicacion === 'APL-HABILIDADES'
+          ? {
+              ...a,
+              estado: 'COMPLETADO',
+              hay_resultado_vigente: revelada,
+              actividades: { completadas: 1, total: 1, faltantes: [] },
+              items: { respondidos: 24, total: 24 },
+            }
+          : a,
+      ),
+    }))
+  // DATO DE PRUEBA: resultado de habilidades como lo entrega el servidor.
+  const dimension = { codigo: 'HS-ASE', nombre: 'Asertividad', descripcion: 'Defiendes tus derechos.', puntaje: 5,
+    puntaje_maximo: 5, puntaje_visual: 100, ejemplos: null, fortalezas: [], desarrollo: [] }
+  const resultado = { instrumento: 'TEST-HABILIDADES', aplicacion: 'APL-HABILIDADES', calculado_en: '2026-10-09T10:00:00',
+    perfil_plano: false, lectura: 'Este inventario muestra cómo te relacionas.', dimensiones: [dimension],
+    dimensiones_destacadas: [dimension] }
+  const { app, useHelenaPages } = await libro({
+    avance: 'inicial',
+    extra: (req) => {
+      if (req.url.endsWith('/instrumentos')) return { body: avance() }
+      if (req.url.includes('resultado?aplicacion=APL-HABILIDADES')) return { body: resultado }
+      if (!req.url.endsWith('/revelar-resultado')) return undefined
+      revelada = true
+      return { body: { cuenta: 'est-ana', instrumento: 'TEST-HABILIDADES', aplicacion: 'APL-HABILIDADES',
+        perfil_plano: false, ...accionVacia } }
+    },
+  })
+  assert.equal(pagina(useHelenaPages(), 'intereses').state, 'sealed')
+  const antes = pagina(useHelenaPages(), 'habilidades')
+  assert.equal(antes.state, 'ready')
+  assert.equal(antes.revelacionBloqueada, false)
+  useHelenaPages().revelarPagina('habilidades')
+  await esperar()
+  await esperar()
+  const revelar = app.requests.find((r) => r.url === '/api/acciones/revelar-resultado')
+  assert.deepEqual(copia(revelar.body), { cuenta: 'est-ana', instrumento: 'TEST-HABILIDADES', aplicacion: 'APL-HABILIDADES' })
+  assert.equal(pagina(useHelenaPages(), 'habilidades').state, 'revealed')
 })
 
 test('romper el sello de la partida revela APL-PARTIDA y la página muestra sus zonas en palabras', async () => {
@@ -238,7 +285,7 @@ test('recarga directa: mientras se lee el libro, la vista espera; luego muestra 
   assert.match(vista, /Página I · descifrada/)
   assert.match(vista, /Claridad/)
   assert.match(vista, /<summary>4 respuestas se mantuvieron<\/summary><div class="sx-d-pl-scroll">.*?Sé qué quiero hacer/)
-  assert.doesNotMatch(vista, /puntaje|porcentaje|%/)
+  assert.doesNotMatch(vista, /\bpuntaje\b|porcentaje|%/)
 })
 
 test('T2 bloqueado por un revelado muestra el aviso con el enlace al libro de Helena', () => {

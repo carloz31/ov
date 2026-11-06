@@ -4,7 +4,7 @@ import { RegistroLumi } from './RegistroLumi'
 
 // Lumi sobre una consigna de registro, con la burbuja de los registros guiados: el recuerdo del eco (F02)
 // y, en la consulta, la pista del ítem por ampliar, resaltada, en una sola burbuja. Sin nada que decir, solo
-// el avatar.
+// el avatar. F07b: los chips del eco (motivos del plan A) van justo tras su cita y antes del resto del recuerdo.
 export function RegistroEco({
   eco,
   pista,
@@ -22,6 +22,16 @@ export function RegistroEco({
       texto={
         <>
           {partes.recuerdo}
+          {partes.recuerdo && !!eco?.chips?.length && (
+            <span className="sx-eco-chips">
+              {eco.chips.map((chip) => (
+                <span className="sx-eco-chip" key={chip}>
+                  {chip}
+                </span>
+              ))}
+            </span>
+          )}
+          {partes.recuerdo && eco?.citaTras && <span className="sx-eco-tras">{eco.citaTras}</span>}
           {partes.recuerdo && partes.pista && ' '}
           {partes.pista && (
             <>

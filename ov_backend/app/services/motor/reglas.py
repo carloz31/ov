@@ -8,11 +8,12 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto, usar_contexto
 from app.models import (
     Actividad, Bloque, CondicionDesbloqueo, Cuenta, Desbloqueo, EventoUso, Nivel, ReglaDesbloqueo,
-    Rol, TipoConteo, TipoEventoUso, TipoObjetivo,
+    Rol, TipoConteo, TipoEventoUso, TipoNotificacion, TipoObjetivo,
 )
 from app.schemas.motor import (
     DesbloqueoNuevo, MotivoBloqueo, ProgresoCondicion, ResultadoEvaluador, ResultadoRegla,
 )
+from app.services.notificaciones import crear_varias, se_anuncia
 from app.services.motor.evaluadores import EVALUADORES
 from app.services.motor.referencias import (
     MODELOS_OBJETIVO, objetivo_legible, precargar_referencias, referencia_legible,
@@ -42,6 +43,7 @@ def evaluar_regla(sesion: Session, cuenta: Cuenta, regla: ReglaDesbloqueo) -> Re
             referencia=referencia_legible(sesion, condicion.tipo_evento, condicion.id_referencia),
             tipo_conteo=condicion.tipo_conteo, actual=actual,
             requerido=condicion.cantidad_minima, cumplida=actual >= condicion.cantidad_minima,
+            texto=condicion.texto,
         ))
     especial = None
     if regla.evaluador_especial is not None:
@@ -178,6 +180,10 @@ def registrar_eventos(
             sesion.execute(insert(Desbloqueo.__table__), nuevas_filas)
         else:
             pendientes.extend(nuevas_filas)
+        # Ajuste notificaciones: los logros que se anuncian llegan a la campana en la misma transacción.
+        crear_varias(sesion, cuenta, [
+            (TipoNotificacion.DESBLOQUEO, nuevo.objetivo.codigo, nuevo.objetivo.nombre, nuevo.tipo_objetivo.value)
+            for nuevo in nuevos if se_anuncia(nuevo.tipo_objetivo, nuevo.objetivo.codigo)], fecha_hora)
     if preguntas:
         # La pregunta desbloqueada llega al diario en la misma transacción (B09).
         from app.services.diario.acciones import crear_desbloqueadas

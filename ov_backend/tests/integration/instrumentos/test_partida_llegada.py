@@ -23,7 +23,7 @@ def sin_numeros(datos):
     texto = json.dumps(datos)
     assert '"diferencia"' not in texto
     for dimension in datos.get('dimensiones', []):
-        assert dimension.get('puntaje') is None and dimension.get('porcentaje') is None
+        assert dimension.get('puntaje') is None and dimension.get('puntaje_visual') is None
         assert dimension.get('puntaje_maximo') is None
 
 

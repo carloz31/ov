@@ -1,0 +1,294 @@
+{
+  "id": "b3-10",
+  "codigo": "b3-10",
+  "tipo": "encuentro",
+  "titulo": "Caminos que no van en línea recta",
+  "subtitulo": "Alejandra llega al puerto",
+  "escenario": "playa",
+  "bloque": 3,
+  "orden": 10,
+  "obligatoria": true,
+  "requisitos": ["b3-9"],
+  "ubicacion": "Puerto, el malecón al atardecer",
+  "duracionEstimadaMin": 10,
+  "personajeIds": ["alejandra", "guardian", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante entiende que las trayectorias reales tienen giros, conoce los giros más frecuentes y su costo, sabe escuchar un testimonio sin copiarlo y qué tienen en común quienes cambiaron bien.",
+  "nodos": [
+    {
+      "id": "b3-10-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Acaba de atracar el barco de la tarde. Y entre los que bajan hay una chica con una mochila enorme que mira el tablón del muelle como si lo conociera. Espera… Mara nos habló de ella."
+    },
+    {
+      "id": "b3-10-02",
+      "tipo": "dialogo",
+      "hablanteId": "alejandra",
+      "expresion": "neutral",
+      "texto": "Hola. Soy Alejandra, la sobrina de Mara. Sí: la que entró a Contabilidad porque sus amigas decían que había trabajo. Dejé el segundo ciclo hace un mes y vine a la isla. Mi tía me escribió que aquí se entiende."
+    },
+    {
+      "id": "b3-10-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b3-10-03a",
+          "texto": "¿Te arrepientes de haber entrado?",
+          "reaccion": [
+            {
+              "id": "b3-10-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "alejandra",
+              "texto": "Me arrepiento de cómo decidí, no de haberlo intentado. Perdí un ciclo, pero ahora sé exactamente qué me faltó mirar. Eso vale algo."
+            }
+          ]
+        },
+        {
+          "id": "b3-10-03b",
+          "texto": "¿Y qué vas a hacer ahora?",
+          "reaccion": [
+            {
+              "id": "b3-10-03br",
+              "tipo": "dialogo",
+              "hablanteId": "alejandra",
+              "texto": "Averiguar antes de saltar. Esta vez hablé con dos personas que trabajan en lo que me gusta y vi cuánto se convalida. Un giro a tiempo cuesta menos que aguantar por no decepcionar."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3-10-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Dos giros, dos razones",
+      "bloques": [
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Alejandra",
+            "texto": "Entró a Contabilidad porque le dijeron que había trabajo. Se dio cuenta en el primer ciclo de que no era lo suyo. Su giro corrige una decisión tomada con poca información. Costo: un ciclo."
+          },
+          "derecha": {
+            "titulo": "Gastón Acurio",
+            "texto": "Estudió Derecho para cumplir con lo que su familia esperaba, mientras leía libros de cocina. Su giro recupera una vocación que había escondido. Costo: varios años."
+          }
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Las dos historias terminan en un cambio, pero el costo fue distinto. Cuanto antes se mira con honestidad, menos cuesta corregir."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Menos de la mitad de los egresados en el Perú trabaja en algo vinculado a lo que estudió. Entre los demás, parte cambió de rumbo a propósito; otra parte no encontró trabajo en su campo."
+        }
+      ]
+    },
+    {
+      "id": "b3-10-05",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Los giros más frecuentes y lo que cuestan",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Giro", "Cómo se ve", "Qué cuesta"],
+          "filas": [
+            ["Cambio de carrera", "Traslado interno o externo, con convalidación de cursos comunes", "Entre uno y cuatro ciclos, según cuánto se convalide"],
+            ["Ruta por etapas", "Instituto primero, universidad después", "Tiempo total mayor, pero con título y trabajo en el camino"],
+            ["Postular varias veces", "Un año de preparación más, a veces dos", "Tiempo y dinero; muchos trabajan mientras tanto"],
+            ["Estudiar y trabajar", "Una carrera más larga en horario nocturno o a distancia", "Menos tiempo libre; más experiencia al egresar"],
+            ["Emprender", "Un negocio, con o sin estudios previos", "Ingresos inestables al inicio; en el Perú siete de cada diez emprendedores empiezan por falta de empleo"]
+          ],
+          "nota": "Ninguno es gratis. El objetivo no es evitar todo giro, sino tomarlo informado y a tiempo."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Lo que tienen en común quienes cambiaron bien",
+          "items": [
+            "Reconocieron pronto que algo no encajaba, en lugar de aguantar por no decepcionar.",
+            "Averiguaron antes de saltar: hablaron con gente del nuevo campo, vieron costos y convalidaciones.",
+            "Conservaron lo que sí servía: habilidades, contactos, cursos aprobados."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3-10-06",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Cómo escuchar un testimonio",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un testimonio es una sola voz. Vale mucho y prueba poco. En la mochila vas a ir encontrando voces de personas con rutas distintas; la mayoría se abren al resolver los casos de la ciudad. Escúchalas con estas cuatro preguntas:"
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            { "titulo": "Separa qué decidió la persona de qué le pasó", "texto": "La suerte y el contexto también estaban ahí." },
+            { "titulo": "Pregúntate si su situación se parece a la tuya", "texto": "Ciudad, recursos, año en que decidió." },
+            { "titulo": "Fíjate en el momento del giro", "texto": "Qué señal vio, cuánto tardó en actuar y qué le costó." },
+            { "titulo": "Quédate con el aprendizaje, no con la carrera", "texto": "Que a alguien le fue bien en un campo no dice nada sobre ti en ese campo." }
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, actividad 2 (Alejandra), actividad 10 (testimonios) y Anexo 12.2 (El sueño del chef). Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú. Andina (2026), GEM Perú 2025/2026.",
+          "url": "https://andina.pe/agencia/noticia-jovenes-estan-escogiendo-mejor-sus-carreras-que-favorecera-adecuacion-ocupacional-1032314.aspx"
+        }
+      ]
+    },
+    {
+      "id": "b3-10-07",
+      "tipo": "dialogo",
+      "hablanteId": "alejandra",
+      "texto": "Pruébalo conmigo. Te cuento dos cosas que me dijeron en el barco y me dices cómo las escuchaste."
+    },
+    {
+      "id": "b3-10-08",
+      "tipo": "pregunta",
+      "hablanteId": "alejandra",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un pasajero me dijo: «Yo dejé Ingeniería en tercer año, abrí una pollería y hoy tengo tres locales. Deja de estudiar y emprende». ¿Qué conviene hacer con ese testimonio?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Seguirlo: si a él le funcionó, funciona.",
+          "correcta": false,
+          "retroalimentacion": "Es una sola voz, y además hay que separar qué decidió de qué le pasó: ¿tenía local, capital, familia en el rubro?"
+        },
+        {
+          "id": "b",
+          "texto": "Quedarse con el aprendizaje (reconoció pronto que algo no encajaba), separar su suerte y su contexto de su decisión, y no copiar la carrera ni el giro.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Y recordar el dato: la mayoría emprende por falta de empleo, y solo una minoría consolida un negocio."
+        },
+        {
+          "id": "c",
+          "texto": "Ignorarlo: los que dejan la carrera siempre terminan mal.",
+          "correcta": false,
+          "retroalimentacion": "Tampoco. El testimonio tiene valor; lo que no tiene es fuerza de prueba general."
+        }
+      ],
+      "explicacion": "Las cuatro preguntas sirven justo para esto: separar decisión de suerte, comparar contextos, mirar el momento del giro y quedarse con el aprendizaje, no con la carrera.",
+      "pistas": [
+        {
+          "id": "b3-10-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Cuarta pregunta: ¿con qué te quedas de un testimonio, con la carrera o con el aprendizaje?"
+        }
+      ]
+    },
+    {
+      "id": "b3-10-09",
+      "tipo": "pregunta",
+      "hablanteId": "alejandra",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Otra pasajera, en segundo ciclo de Derecho, me dijo: «Creo que no es lo mío, pero ya invertí un año y no quiero decepcionar a mis papás; voy a aguantar hasta terminar». Según lo que vimos, ¿qué le dirías?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que aguante: ya invirtió un año.",
+          "correcta": false,
+          "retroalimentacion": "Aguantar por no decepcionar es exactamente lo que hizo Acurio, y le costó años. Lo invertido no se recupera aguantando más."
+        },
+        {
+          "id": "b",
+          "texto": "Que averigüe antes de saltar: hable con gente del campo que le interesa, vea convalidaciones y costos, y decida con eso, cuanto antes.",
+          "correcta": true,
+          "retroalimentacion": "Eso es. Reconocer pronto, averiguar antes de saltar y conservar lo que sirve: lo que tienen en común quienes cambiaron bien."
+        },
+        {
+          "id": "c",
+          "texto": "Que deje Derecho mañana mismo.",
+          "correcta": false,
+          "retroalimentacion": "Un giro sin información es otra decisión apurada. Primero averiguar; después decidir."
+        }
+      ],
+      "explicacion": "Un giro a tiempo no es un fracaso: es la misma decisión, con mejor información. El costo sube con cada ciclo que se aguanta por no decepcionar.",
+      "pistas": [
+        {
+          "id": "b3-10-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Mira la lista de «quienes cambiaron bien»: tres cosas. ¿Cuál opción las cumple?"
+        }
+      ]
+    },
+    {
+      "id": "b3-10-10",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "alejandra",
+      "expresion": "neutral",
+      "texto": "Gracias por escucharme sin aconsejarme. Voy a subir por el bosque a ver a mi tía. Ah, un cocinero que viajaba conmigo me dejó su historia para quien la quiera: dejó una carrera que eligieron otros. Está en tu mochila."
+    },
+    {
+      "id": "b3-10-11",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "La aguja se detuvo. Tercer tramo. Y ahí está, en el extremo del malecón."
+    },
+    {
+      "id": "b3-10-12",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "expresion": "neutral",
+      "texto": "Ya conoces el mundo tal como es: las rutas, el mercado, las instituciones, lo que cuesta y lo que cambia. Lo que sigue, en el acantilado, es ponerlo frente a ti. Antes de eso, tu orientadora decide qué páginas del libro de Helena necesitas abiertas. Y en casa hay una conversación esperando: los cambios de rumbo de tu familia."
+    },
+    {
+      "id": "b3-10-13",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b3-10-13a",
+          "texto": "¿Por qué los trabajos de mi familia?",
+          "reaccion": [
+            {
+              "id": "b3-10-13ar",
+              "tipo": "dialogo",
+              "hablanteId": "guardian",
+              "texto": "Porque lo que tu familia estudió, o no pudo estudiar, explica muchas de sus expectativas. Escucharlo cambia cómo las oyes."
+            }
+          ]
+        },
+        {
+          "id": "b3-10-13b",
+          "texto": "¿Y si todavía no abrí las páginas de Helena?",
+          "reaccion": [
+            {
+              "id": "b3-10-13br",
+              "tipo": "dialogo",
+              "hablanteId": "guardian",
+              "texto": "Entonces la ciudad te espera antes que el acantilado. Lumi te dirá en el mapa cuáles faltan."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3-10-14",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "La aguja gira hacia el acantilado. En tu mochila: la ficha de los caminos que no van en línea recta y otra voz, la del cocinero. En tu diario: «Un viajero que ya pasó por aquí»."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Un giro a tiempo no es un fracaso: es la misma decisión, con mejor información. Se abrió una voz nueva en tu mochila y la conversación «Los caminos también cambian»."
+  },
+  "promptDiario": "Un viajero que ya pasó por aquí",
+  "mapa": { "x": 900, "y": 220, "icono": "informativa" }
+}

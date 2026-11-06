@@ -23,7 +23,7 @@ async function iniciarPartida({ ruta = '/student/missions' } = {}) {
   const respuestas = new Map()
   const servidor = (req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/items')) return { body: items }
     // DATO DE PRUEBA: respuestas guardadas de t-partida, con el contrato de RespuestasActividad.
     if (req.url.endsWith('/respuestas'))
@@ -107,7 +107,7 @@ test('t-partida usa los ítems y la escala del servidor entre los diálogos del 
   const item = elementos(player.render(), (e) => e.type?.name === 'ItemNode')[0]
   assert.deepEqual(
     Array.from(item.props.options, (o) => o.text),
-    items[0].escala.opciones.map((o) => o.etiqueta),
+    [...items[0].escala.opciones].sort((a, b) => b.puntaje - a.puntaje).map((o) => o.etiqueta),
   )
   item.props.onAnswer(3)
   await esperar()

@@ -1,0 +1,281 @@
+{
+  "id": "p1",
+  "codigo": "p1",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "Acompañar no es decidir",
+  "subtitulo": "El rol de la familia",
+  "bloque": 1,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": [],
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "orientacion"
+  ],
+  "objetivoAprendizaje": "Al terminar, el apoderado distingue acompañar, informar y respetar; sabe qué dice la evidencia sobre el apoyo familiar y reconoce qué ayuda y qué no.",
+  "nodos": [
+    {
+      "id": "p1-01",
+      "tipo": "diapositiva",
+      "titulo": "Su hijo o hija está por tomar una decisión importante",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "En el último año de secundaria, muchos jóvenes sienten que deben saber qué harán con su vida. Es una etapa de dudas, ilusiones y presión. Usted va a estar al lado. La pregunta no es si influye, porque influye de todas maneras, sino cómo."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Reconocer el rol que el programa de orientación propone a la familia.",
+            "Distinguir lo que ayuda de lo que no.",
+            "Llevarse una idea concreta para la primera conversación en casa."
+          ],
+          "titulo": "En esta actividad usted podrá:"
+        }
+      ],
+      "etiqueta": "Para empezar"
+    },
+    {
+      "id": "p1-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Cuando piensa en el futuro de su hijo o hija, ¿qué le preocupa más en este momento?",
+      "nota": "Su respuesta no se guarda ni la ve nadie. Solo sirve para mostrarle lo más útil.",
+      "opciones": [
+        {
+          "id": "p1-02a",
+          "texto": "Que no consiga trabajo.",
+          "reaccion": [
+            {
+              "id": "p1-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es la preocupación más frecuente. Hoy hay información pública sobre empleo e ingresos por carrera; la verá en una actividad más adelante."
+            }
+          ]
+        },
+        {
+          "id": "p1-02b",
+          "texto": "Que elija algo que no le convenga.",
+          "reaccion": [
+            {
+              "id": "p1-02br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es natural. Lo que muestra la evidencia es que la mejor forma de que su opinión cuente es que su hijo o hija sienta que usted escucha."
+            }
+          ]
+        },
+        {
+          "id": "p1-02c",
+          "texto": "Que no sepa qué quiere.",
+          "reaccion": [
+            {
+              "id": "p1-02cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "La indecisión a esta edad es normal; una actividad más adelante trata justamente de eso."
+            }
+          ]
+        },
+        {
+          "id": "p1-02d",
+          "texto": "Que elija solo para darme gusto.",
+          "reaccion": [
+            {
+              "id": "p1-02dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Esa preocupación habla bien de usted. Esta actividad le da herramientas para que eso no pase."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p1-03",
+      "tipo": "diapositiva",
+      "titulo": "Lo que dice la evidencia",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Los estudios sobre familia y elección de carrera coinciden: el apoyo de los padres, entendido como interés, conversación y respaldo, se asocia con jóvenes más seguros y con decisiones más maduras (Whiston y Keller, 2004)."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Un estudio con 652 estudiantes de secundaria (Söner y Gültekin, 2024) muestra el mecanismo: cuando los hijos sienten apoyo, crece su confianza en sus propias capacidades, y con esa confianza sus planes se acercan más a lo que la familia espera, sin necesidad de imponerlos."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "El camino más corto para que su hijo o hija tome en cuenta lo que usted piensa es que sienta que usted lo escucha."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Whiston y Keller (2004), The Counseling Psychologist. Söner y Gültekin (2024), International Journal for Educational and Vocational Guidance.",
+          "url": "https://link.springer.com/article/10.1007/s10775-024-09658-7"
+        }
+      ],
+      "etiqueta": "Concepto"
+    },
+    {
+      "id": "p1-04",
+      "tipo": "diapositiva",
+      "titulo": "Tres verbos",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Verbo",
+            "Qué significa en la práctica"
+          ],
+          "filas": [
+            [
+              "Acompañar",
+              "Estar disponible, preguntar, escuchar sin juzgar las dudas; no desaparecer ni ocupar todo el espacio"
+            ],
+            [
+              "Informar",
+              "Compartir lo que usted sabe del trabajo y de la vida, y ayudar a conseguir información que no tienen"
+            ],
+            [
+              "Respetar",
+              "Aceptar que la decisión final es de su hijo o hija, aunque no sea la que usted habría tomado"
+            ]
+          ],
+          "nota": "Así resume el programa de orientación vocacional del Ministerio de Educación el rol de la familia."
+        },
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Ayuda",
+            "texto": "Preguntar «¿qué has pensado?» antes de opinar. Contar su propia historia, con las dudas y los cambios de rumbo. Acompañar a buscar datos en lugar de opinar de memoria."
+          },
+          "derecha": {
+            "titulo": "No ayuda",
+            "texto": "Decidir por él o ella «porque usted sabe lo que le conviene». Condicionar el cariño o el apoyo a una carrera. Comparar con primos, vecinos o con lo que usted hizo a su edad."
+          }
+        }
+      ]
+    },
+    {
+      "id": "p1-05",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Daniela le cuenta a su papá que le interesa estudiar Gastronomía. Él responde: «Eso no es carrera; vas a estudiar Administración como tu primo». ¿Qué verbo está faltando?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Informar: debió darle datos sobre Administración.",
+          "correcta": false,
+          "retroalimentacion": "Dar datos sirve, pero el problema de la frase es otro: decide por ella y la compara."
+        },
+        {
+          "id": "b",
+          "texto": "Respetar: la decisión final es de Daniela; comparar con el primo y decidir por ella no acompaña.",
+          "correcta": true,
+          "retroalimentacion": "Así es. Puede expresar su preocupación; lo que no ayuda es resolverla por ella."
+        },
+        {
+          "id": "c",
+          "texto": "Ninguno: el papá tiene experiencia y sabe lo que le conviene.",
+          "correcta": false,
+          "retroalimentacion": "La experiencia vale, pero es de otro momento y de otra persona. Decidir por ella resuelve hoy y cuesta después."
+        }
+      ],
+      "explicacion": "Decidir por el hijo y compararlo con otros son dos de las cosas que no ayudan. La preocupación del padre es legítima; la forma de decirla es lo que cambia el resultado.",
+      "pistas": [
+        {
+          "id": "p1-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Fíjese en dos palabras del padre: «vas a» y «como tu primo»."
+        }
+      ],
+      "transicion": "Ya conoce los tres verbos. Ahora, un caso."
+    },
+    {
+      "id": "p1-06",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Su hijo le dice: «Creo que quiero estudiar Diseño Gráfico». ¿Cuáles de estas respuestas acompañan? Marque todas las que correspondan.",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "«¿Qué te llama la atención de eso?»",
+          "correcta": true,
+          "retroalimentacion": "Pregunta abierta: acompaña."
+        },
+        {
+          "id": "b",
+          "texto": "«¿Y eso en qué vas a trabajar?»",
+          "correcta": false,
+          "retroalimentacion": "Suena a pregunta, pero cierra: ya trae el veredicto."
+        },
+        {
+          "id": "c",
+          "texto": "«Me da curiosidad. ¿Buscamos juntos qué hace un diseñador y cuánto gana al inicio?»",
+          "correcta": true,
+          "retroalimentacion": "Informar sin decidir: acompaña."
+        },
+        {
+          "id": "d",
+          "texto": "«Primero termina el colegio y después hablamos.»",
+          "correcta": false,
+          "retroalimentacion": "Posponer la conversación es dejar de acompañar justo cuando él la abrió."
+        }
+      ],
+      "explicacion": "Acompañar es preguntar abierto y ayudar a buscar datos. Las frases que cierran o posponen cortan la conversación que su hijo acaba de empezar.",
+      "pistas": [
+        {
+          "id": "p1-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Pregúntese de cada frase: ¿la respuesta la conozco yo de antemano? Si sí, cierra."
+        }
+      ]
+    },
+    {
+      "id": "p1-07",
+      "tipo": "diapositiva",
+      "titulo": "Para llevarse",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Puede darles su amor, pero no sus pensamientos: ellos tienen los suyos (Khalil Gibrán, El profeta). Es la lectura con la que el programa abre su taller con familias."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Esta semana",
+              "texto": "Pregúntele a su hijo o hija «¿qué has pensado?» y escuche hasta el final antes de opinar."
+            },
+            {
+              "titulo": "En las siguientes actividades",
+              "texto": "Revisará sus propias expectativas, practicará cómo conversar y, al final, escribirá una carta para su hijo o hija."
+            }
+          ],
+          "titulo": "Una acción concreta"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Todo lo que usted lea aquí queda guardado en Mis actividades, para volver cuando quiera."
+        }
+      ],
+      "etiqueta": "Resumen",
+      "transicion": "Ya tiene una acción para esta semana. Repase el resumen cuando quiera."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Acompañar, informar, respetar. La decisión es de su hijo o hija; usted es el soporte."
+  }
+}

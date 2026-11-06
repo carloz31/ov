@@ -9,6 +9,9 @@ import { useParentProfile } from '@/features/parent/hooks/useParentProfile'
 import { PantallaCargaPortal } from '@/components/staff/PantallaCargaPortal'
 import type { ParentPortalContext } from '@/features/parent/context/parentPortalContext'
 import { useParentActivities } from '@/features/parent/hooks/useParentActivities'
+import { useModoCatalogo } from '@/features/discovery/hooks/useModoCatalogo'
+import { useCampanaPortal } from '@/hooks/useCampanaNotificaciones'
+import { CampanaApoderado } from '@/features/parent/components/CampanaApoderado'
 
 function ParentPortalModule() {
   const navigate = useNavigate()
@@ -17,6 +20,9 @@ function ParentPortalModule() {
   const parentProfile = useParentProfile()
   const context = { ...source, completedActivityIds } satisfies ParentPortalContext
   const routeState = getParentRouteState(location.pathname)
+  // Ajuste catalogo-apoderado: en api, «Explorar opciones» abre directo el catálogo; en local, la guía de siempre.
+  const { catalogoEnPortal } = useModoCatalogo()
+  const campana = useCampanaPortal()
   const navigationGroups = useMemo<AppNavigationGroup[]>(
     () => [
       {
@@ -44,12 +50,13 @@ function ParentPortalModule() {
             id: 'careers',
             icon: Compass,
             label: 'Explorar opciones',
-            onSelect: () => navigate(appPaths.parent.careers),
+            onSelect: () =>
+              navigate(catalogoEnPortal ? appPaths.parent.explorar.catalog.careers : appPaths.parent.careers),
           },
         ],
       },
     ],
-    [navigate],
+    [navigate, catalogoEnPortal],
   )
 
   if (source.pantallaCarga)
@@ -69,7 +76,8 @@ function ParentPortalModule() {
       </ThemeProvider>
     )
 
-  if (/^\/parent\/activities\/[^/]+\/?$/.test(location.pathname))
+  // Una actividad abierta va sin menú; el diploma (F08), dentro del portal.
+  if (/^\/parent\/activities\/(?!diploma\/?$)[^/]+\/?$/.test(location.pathname))
     return (
       <ThemeProvider theme="staff">
         <div className="theme-staff min-h-svh bg-background text-foreground" data-audience="parent">
@@ -83,6 +91,7 @@ function ParentPortalModule() {
       theme="staff"
       audience="parent"
       activeItemId={routeState.activeItemId}
+      campana={campana.activa ? <CampanaApoderado /> : undefined}
       navigationGroups={navigationGroups}
       onLogout={() => {
         cerrarSesion()
@@ -101,11 +110,14 @@ function ParentPortalModule() {
 function getParentRouteState(pathname: string) {
   if (pathname.includes('/conversations'))
     return { activeItemId: 'conversations', title: 'Conversaciones en familia' }
+  if (pathname.includes('/activities/diploma'))
+    return { activeItemId: 'activities', title: 'Actividades para familias · Diploma' }
   if (pathname.includes('/activities')) {
     return { activeItemId: 'activities', title: 'Actividades para familias' }
   }
   if (pathname.includes('/children')) return { activeItemId: 'overview', title: 'Inicio' }
-  if (pathname.includes('/careers')) return { activeItemId: 'careers', title: 'Explorar opciones' }
+  if (pathname.includes('/careers') || pathname.includes('/explorar'))
+    return { activeItemId: 'careers', title: 'Explorar opciones' }
   return { activeItemId: 'overview', title: 'Inicio' }
 }
 

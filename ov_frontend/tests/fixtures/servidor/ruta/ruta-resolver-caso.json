@@ -11,6 +11,7 @@
       "tipo": "SUPERA_CASO"
     }
   ],
+  "nuevas_notificaciones": [],
   "nuevos_desbloqueos": [
     {
       "condiciones": [
@@ -19,6 +20,7 @@
           "cumplida": true,
           "referencia": "t-caso",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "SUPERA_CASO"
         }
@@ -29,36 +31,18 @@
       },
       "regla": "R-t-testimonio-1",
       "tipo_objetivo": "TESTIMONIO"
-    },
-    {
-      "condiciones": [
-        {
-          "actual": 1,
-          "cumplida": true,
-          "referencia": "t-caso",
-          "requerido": 1,
-          "tipo_conteo": "EVENTOS",
-          "tipo_evento": "SUPERA_CASO"
-        }
-      ],
-      "objetivo": {
-        "codigo": "t-testimonio-2",
-        "nombre": "Puentes entre idiomas"
-      },
-      "regla": "R-t-testimonio-2",
-      "tipo_objetivo": "TESTIMONIO"
     }
   ],
   "ocupaciones_nuevas": [
     {
-      "codigo": "firefighter",
-      "titulo": "Bombero/a"
+      "codigo": "19-3091.00",
+      "titulo": "Antropólogo y arqueólogo"
     },
     {
-      "codigo": "paramedic",
-      "titulo": "Paramédico/a"
+      "codigo": "25-4013.00",
+      "titulo": "Conservador y restaurador"
     }
   ],
-  "puntaje_maximo": 14,
-  "puntaje_minimo": 10
+  "puntaje_maximo": 8,
+  "puntaje_minimo": 6
 }

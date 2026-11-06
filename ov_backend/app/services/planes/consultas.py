@@ -18,13 +18,12 @@ from app.models import (
     PreguntaConocimiento, ReferenciaCamino, ReferenciaRubro, SeccionTarjeta, SugerenciaTarjeta, TarjetaCarrera,
     TipoObjetivo,
 )
-from app.schemas.catalogo import FamiliaPublica
 from app.schemas.planes import (
-    AvisoPlanes, CaminoTarjeta, ComplicacionPublica, DudaPublica, Elegida, GastoPublico, Medidores, MotivoPublico,
-    OpcionesTarjeta, OpcionTarjeta, OrigenPasoPublico, OrigenSugerenciaPublico, PasoPublico, PlanCarrera,
+    AvisoPlanes, CaminoTarjeta, ComplicacionPublica, DudaPublica, Elegida, GastoPublico, InstitucionPlan, Medidores,
+    MotivoPublico, OpcionesTarjeta, OpcionTarjeta, OrigenPasoPublico, OrigenSugerenciaPublico, PasoPublico, PlanCarrera,
     PlanesCuenta, PreguntaTarjeta, RubroTarjeta, SeccionPlan, SugerenciaPublica,
 )
-from app.services.catalogo import resumen_carrera, resumen_institucion
+from app.services.catalogo import familia_publica, resumen_carrera, resumen_institucion
 from app.services.motor.reglas import motivos_bloqueo, objetivo_disponible
 from app.services.secciones import exigir_seccion, seccion_de_cuenta
 
@@ -101,6 +100,7 @@ def opciones_tarjeta(sesion: Session) -> OpcionesTarjeta:
         dudas_sugeridas=simples('DUDAS_SUGERIDAS'),
         preguntas=[PreguntaTarjeta(codigo=o.codigo, texto=o.texto, texto_duda=dudas[o.codigo])
                    for o in opciones_lista(sesion, 'PREGUNTAS_CONOCIMIENTO')],
+        ciclos_por_anio=CICLOS_POR_ANIO,
     )
 
 
@@ -122,7 +122,7 @@ class DatosPlanes:
 
 def cargar_planes(sesion: Session, cuenta: Cuenta) -> DatosPlanes:
     datos = DatosPlanes(tarjetas=list(sesion.scalars(select(TarjetaCarrera).where(
-        TarjetaCarrera.cuenta_id == cuenta.id).order_by(TarjetaCarrera.prioridad))))
+        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.activa).order_by(TarjetaCarrera.prioridad))))
     ids = [tarjeta.id for tarjeta in datos.tarjetas]
     if not ids:
         return datos
@@ -204,8 +204,7 @@ def _avisos(tarjetas, carreras) -> list[AvisoPlanes]:
     for tarjeta in tarjetas:
         por_familia.setdefault(carreras[tarjeta.carrera_id].familia_id, []).append(tarjeta)
     return [AvisoPlanes(tipo='MISMA_FAMILIA', planes=[LETRAS[t.prioridad - 1] for t in grupo],
-                        familia=FamiliaPublica(codigo=carreras[grupo[0].carrera_id].familia.codigo,
-                                               nombre=carreras[grupo[0].carrera_id].familia.nombre))
+                        familia=familia_publica(carreras[grupo[0].carrera_id].familia))
             for grupo in por_familia.values() if len(grupo) > 1]
 
 
@@ -236,8 +235,9 @@ def _plan(sesion, cuenta, tarjeta, datos, carreras, instituciones, duraciones, f
     return PlanCarrera(
         prioridad=LETRAS[tarjeta.prioridad - 1],
         carrera=resumen_carrera(carreras[tarjeta.carrera_id], favoritos),
-        institucion=None if tarjeta.institucion_id is None else resumen_institucion(
-            instituciones[tarjeta.institucion_id], favoritos),
+        institucion=None if tarjeta.institucion_id is None else InstitucionPlan(
+            **resumen_institucion(instituciones[tarjeta.institucion_id], favoritos).model_dump(),
+            duracion_ciclos=duraciones.get((tarjeta.institucion_id, tarjeta.carrera_id))),
         idea_origen=tarjeta.idea_origen,
         motivos=[MotivoPublico(posicion=m.posicion, **_elegida(sesion, m.opcion_id, m.texto_otro).model_dump())
                  for m in datos.motivos.get(tarjeta.id, [])],

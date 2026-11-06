@@ -66,7 +66,8 @@ export function useServerSession() {
     view,
     isMap,
     activityOpen,
-    esperandoIngreso: modoApi && (!servidor.actividades.datos || !servidor.resumen.datos),
+    // Ajuste del panel (F05): el mapa tampoco se muestra sin el avance del panel.
+    esperandoIngreso: modoApi && (!servidor.actividades.datos || !servidor.resumen.datos || !servidor.avance.datos),
     errorIngreso: servidor.error,
     errorConsulta: modoApi ? (servidor.error ?? errorSeccionesActivas()) : null,
     cargando: servidor.cargando,

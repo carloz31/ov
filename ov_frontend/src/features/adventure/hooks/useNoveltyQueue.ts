@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { useEstadoServidor } from '@/store/servidor/sesion'
-import { avisosPendientes, mostrarAviso } from '@/store/servidor/avisos'
-import { marcarVistos } from '@/store/servidor/operaciones'
+import { marcarPresentacionVista } from '@/store/servidor/operaciones'
+import {
+  cargarNotificaciones,
+  marcarNotificacionesVistas,
+  useNotificaciones,
+} from '@/store/servidor/notificaciones'
+import { notificacionLegible } from '@/lib/servidor/adaptadoresNotificaciones'
 
 import { useNavigate } from 'react-router'
 import { useAdventure } from '@/store/adventureStore'
@@ -15,6 +20,7 @@ import type { StudentView } from '@/lib/studentViews'
 
 import { localDateKey, useCheckInDay } from '@/features/adventure/lib/checkIn'
 import { useSenalServidor } from '@/features/adventure/hooks/useSenalServidor'
+import { useSeccionesAcceso, type CodigoSeccion } from '@/features/adventure/hooks/useSeccionesAcceso'
 
 import { getNextBadge } from '@/features/adventure/lib/unlocks'
 import { useReflections } from '@/store/reflectionStore'
@@ -25,23 +31,59 @@ import {
   type ManualOverlay,
 } from '@/features/adventure/context/overlayContext'
 
+// Vistas que `AppRoutes` envuelve en `SeccionProtegida`: con la sección cerrada se ve su tarjeta de bloqueo,
+// no la sección, y la presentación no se muestra ni se marca como vista.
+const seccionDeVista: Partial<Record<StudentView, CodigoSeccion>> = {
+  journal: 'DIARIO',
+  'journal-signals': 'CHECK_IN',
+  'catalog-professions': 'CATALOGO',
+  'catalog-careers': 'CATALOGO',
+  'catalog-institutions': 'CATALOGO',
+  'catalog-detail': 'CATALOGO',
+  'profile-decisions': 'PLANES',
+  conversations: 'FAMILIA',
+  investigations: 'INVESTIGACIONES',
+}
+
 export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   const adventure = useAdventure()
   const journey = useJourney()
-  const ui = useStudentUi()
+  const uiLocal = useStudentUi()
   const reflections = useReflections()
   const navigate = useNavigate()
   const today = useCheckInDay()
   const servidor = useEstadoServidor()
   const senal = useSenalServidor()
   const checkInPendiente = senal.activo ? senal.pendiente : undefined
+  const acceso = useSeccionesAcceso()
+  const seccion = seccionDeVista[view]
+  const seccionBloqueada = !!seccion && !!acceso(seccion).pasos
+  // Presentaciones-vistas: en api, las presentaciones vistas son las del servidor más las cerradas en esta
+  // visita (si su POST falla, vuelven a salir al recargar); sin datos del servidor, la presentación espera.
+  const [cerradas, setCerradas] = useState<StudentView[]>([])
+  const vistasServidor = servidor.presentaciones.datos?.vistas
+  const ui = useMemo(
+    () =>
+      modoApi
+        ? {
+            ...uiLocal,
+            introsSeen: Object.fromEntries([...(vistasServidor ?? []), ...cerradas].map((v) => [v, true])),
+          }
+        : uiLocal,
+    [uiLocal, vistasServidor, cerradas],
+  )
+  const introEnEspera = seccionBloqueada || (modoApi && !vistasServidor)
   // F04d: con una ficha (o su requisito) abierta, p. ej. al entrar a la mochila con `?ficha=`, los avisos
   // automáticos esperan a que se cierre; como no llegan a mostrarse, tampoco se marcan como vistos.
   const fichaAbierta = useFichaEnPantalla()
-  const [avisosManual, setAvisosManual] = useState(false)
+  const notificaciones = useNotificaciones()
   useEffect(() => {
-    setAvisosManual(false)
+    setCerradas([])
   }, [servidor.resumen.datos?.cuenta.codigo])
+  // Ajuste notificaciones: al volver al mapa se vuelve a pedir la campana (sin polling).
+  useEffect(() => {
+    if (modoApi && view === 'missions') void cargarNotificaciones()
+  }, [view])
   const [arrivalDismissed, setArrivalDismissed] = useState(false)
   const [automatic, setAutomatic] = useState<AutomaticOverlay | null>(null)
   const [manual, setManual] = useState<ManualOverlay | null>(null)
@@ -64,7 +106,15 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     })
     return () => observer.disconnect()
   }, [])
-  const next = getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed, checkInPendiente })
+  const next = getNextOverlay({
+    adventure,
+    ui,
+    view,
+    activityOpen,
+    arrivalDismissed,
+    checkInPendiente,
+    introEnEspera,
+  })
   const nextKey =
     next?.kind === 'intro'
       ? `intro:${next.view}`
@@ -73,14 +123,15 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
         : (next?.kind ?? '')
   useEffect(() => {
     // Opening only after mounting keeps static route rendering free of dialogs.
-    setAutomatic(getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed, checkInPendiente }))
-  }, [adventure, ui, view, activityOpen, arrivalDismissed, today, nextKey, checkInPendiente])
+    setAutomatic(
+      getNextOverlay({ adventure, ui, view, activityOpen, arrivalDismissed, checkInPendiente, introEnEspera }),
+    )
+  }, [adventure, ui, view, activityOpen, arrivalDismissed, today, nextKey, checkInPendiente, introEnEspera])
   const active = activityOpen ? null : (manual ?? (fichaAbierta ? null : automatic))
   const announcementBlocked = activityOpen || overlayAbierto || !!active || !!next
   const context = useMemo(
     () => ({
       announcementBlocked,
-      openServerNotices: () => setAvisosManual(true),
       openGuide: (steps: string[]) => setManual({ kind: 'guide', steps }),
       openCheckIn: (onReturnFocus?: () => void) => setManual({ kind: 'signal', onReturnFocus }),
     }),
@@ -94,22 +145,13 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   const badge = modoApi
     ? undefined
     : getNextBadge(adventure, ui, activityOpen, announcementBlocked || additionalPending, journey)
-  const habilitarAvisos =
-    modoApi && !announcementBlocked && (view === 'missions' || view === 'central' || avisosManual)
-  const aviso = habilitarAvisos && !servidor.errorAvisos ? avisosPendientes()[0] : undefined
-  useEffect(() => {
-    if (
-      habilitarAvisos &&
-      !aviso &&
-      servidor.avisosMostrados.length &&
-      !servidor.procesandoAvisos &&
-      !servidor.errorAvisos
-    ) {
-      void marcarVistos().then((r) => {
-        if (r.tipo === 'ok' && r.datos === 'terminado') setAvisosManual(false)
-      })
-    }
-  }, [habilitarAvisos, aviso, servidor.avisosMostrados, servidor.procesandoAvisos, servidor.errorAvisos])
+  // Ajuste notificaciones: los toasts son solo lo que llegó de acciones sin cierre, uno por vez; cada uno se marca
+  // visto al cerrarlo, pulsarlo o vencer su tiempo.
+  const habilitarAvisos = modoApi && !announcementBlocked && (view === 'missions' || view === 'central')
+  const aviso = habilitarAvisos
+    ? notificaciones.colaToast.map((n) => notificacionLegible(n)).find((a) => a !== null)
+    : undefined
+  const descartarAviso = (codigo: string) => void marcarNotificacionesVistas([codigo])
   const guide =
     active?.kind === 'guide'
       ? active.steps
@@ -125,10 +167,14 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     }
     if (active?.kind === 'intro') {
       const closedView = active.view
-      updateStudentUi((current) => ({
-        ...current,
-        introsSeen: { ...current.introsSeen, [closedView]: true },
-      }))
+      if (modoApi) {
+        setCerradas((current) => [...current, closedView])
+        void marcarPresentacionVista(closedView)
+      } else
+        updateStudentUi((current) => ({
+          ...current,
+          introsSeen: { ...current.introsSeen, [closedView]: true },
+        }))
     }
     // Closing arrival without finishing dismisses only this visit; the final action records it.
     if (active?.kind === 'arrival') setArrivalDismissed(true)
@@ -152,9 +198,7 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     guide,
     closeGuide,
     dismissSignal,
-    mostrarAviso,
-    marcarVistos,
-    errorAvisos: habilitarAvisos ? servidor.errorAvisos : null,
+    descartarAviso,
     senal,
   }
 }

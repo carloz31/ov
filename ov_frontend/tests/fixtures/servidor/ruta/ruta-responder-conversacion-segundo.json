@@ -1,0 +1,65 @@
+{
+  "por_cuenta": {
+    "apo-rosa": {
+      "eventos_registrados": [
+        {
+          "fecha_hora": "2026-10-07T10:00:00",
+          "referencia": "t-conv-1",
+          "tipo": "COMPLETA_CONVERSACION"
+        }
+      ],
+      "nuevas_notificaciones": [],
+      "nuevos_desbloqueos": []
+    },
+    "est-ana": {
+      "entradas_desbloqueadas": [
+        {
+          "codigo": "t-diario-tras-conversar",
+          "nombre": "Lo que conversamos",
+          "personalizada": false,
+          "texto": "¿Qué te llevas de la conversación con tu familia?"
+        }
+      ],
+      "eventos_registrados": [
+        {
+          "fecha_hora": "2026-10-07T10:00:00",
+          "referencia": "t-conv-1",
+          "tipo": "COMPLETA_CONVERSACION"
+        }
+      ],
+      "nuevas_notificaciones": [
+        {
+          "codigo": "NOT-0000000000000000000000000000000d",
+          "creada_en": "2026-10-07T10:00:00",
+          "detalle": null,
+          "estudiante": null,
+          "nombre": "Primera conversación",
+          "referencia": "t-conv-1",
+          "tipo": "RESPUESTA_CONVERSACION",
+          "vista": false
+        }
+      ],
+      "nuevos_desbloqueos": [
+        {
+          "condiciones": [
+            {
+              "actual": 1,
+              "cumplida": true,
+              "referencia": "t-conv-1",
+              "requerido": 1,
+              "texto": null,
+              "tipo_conteo": "EVENTOS",
+              "tipo_evento": "COMPLETA_CONVERSACION"
+            }
+          ],
+          "objetivo": {
+            "codigo": "t-diario-tras-conversar",
+            "nombre": "Lo que conversamos"
+          },
+          "regla": "R-t-diario-tras-conversar",
+          "tipo_objetivo": "PREGUNTA_DIARIO"
+        }
+      ]
+    }
+  }
+}

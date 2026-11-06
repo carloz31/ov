@@ -67,7 +67,7 @@ async function drawer({ codigo = 't-expectativas', estado = 'COMPLETADA', regist
   Object.assign(actividad, { estado })
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, escenario)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/items-registro')) return { body: itemsExpectativas }
     if (req.url.endsWith('/registro')) return { body: registro }
     throw Error(`Solicitud no configurada: ${req.url}`)

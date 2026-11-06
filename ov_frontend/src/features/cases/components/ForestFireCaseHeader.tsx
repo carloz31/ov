@@ -11,6 +11,8 @@ export function ForestFireCaseHeader({
   children,
   onAyuda,
   onClose,
+  titulo = 'Incendio forestal',
+  presupuesto = 16,
 }: {
   label: string
   progress: number
@@ -19,6 +21,9 @@ export function ForestFireCaseHeader({
   children?: React.ReactNode
   onAyuda?: () => void
   onClose: () => void
+  // Ajuste carga-casos: el título del caso (el de la actividad en api) y su presupuesto total.
+  titulo?: string
+  presupuesto?: number
 }) {
   const [exitOpen, setExitOpen] = useState(false)
   const exitButton = useRef<HTMLButtonElement>(null)
@@ -35,13 +40,15 @@ export function ForestFireCaseHeader({
             <X />
           </button>
           <div className="ff-heading">
-            <span>Central de casos · Incendio forestal</span>
+            <span>Central de casos · {titulo}</span>
             <strong>{label}</strong>
           </div>
           {children}
           <div className="ff-budget">
             <span>Presupuesto</span>
-            <strong>{budgetRemaining} de 16</strong>
+            <strong>
+              {budgetRemaining} de {presupuesto}
+            </strong>
           </div>
           {onAyuda && (
             <button className="ff-icon-button" aria-label="Abrir guía" onClick={onAyuda}>

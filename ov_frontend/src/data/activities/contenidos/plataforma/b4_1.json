@@ -1,0 +1,174 @@
+{
+  "_nota": "Registro (4.1). Momento 1 completo (F19); las consignas son el cuadro de afinidad con una fila por aspecto del perfil (precargada con eco: 1.1, H3, H1, H2, 2.4, 2.6). Esqueleto; la plantilla matriz se define con los registros. Requisito de bloque: B3 completo + instrumentos prioritarios (evaluador existente).",
+  "id": "b4-1",
+  "codigo": "b4-1",
+  "tipo": "registro",
+  "titulo": "Mi perfil y mis carreras afines",
+  "subtitulo": "El libro abierto frente al mapa",
+  "escenario": "acantilado",
+  "bloque": 4,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": ["b3-10"],
+  "ubicacion": "Acantilado, el mirador de piedra",
+  "duracionEstimadaMin": 12,
+  "personajeIds": ["helena", "companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b4-1-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "El acantilado. Desde aquí se ve el mar de un lado y, del otro, todo lo que caminamos: el puerto, el volcán, el desierto, la ciudad. Y hay alguien sentada en el mirador de piedra con un libro en las rodillas."
+    },
+    {
+      "id": "b4-1-02",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "expresion": "neutral",
+      "texto": "Subo aquí cuando un viajero llega con las páginas abiertas. Ya tienes tu historia, lo que valoras, lo que se te da bien, y lo que dijeron Dora, Bruno y Sol. Ahora toca ponerlo frente a tus opciones. No para que el libro decida: para ver dónde coincide y dónde hay fricción."
+    },
+    {
+      "id": "b4-1-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b4-1-03a",
+          "texto": "¿Y si mi perfil no coincide con lo que quiero?",
+          "reaccion": [
+            {
+              "id": "b4-1-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "helena",
+              "texto": "Entonces sabrás que tendrás que esforzarte en algo, o que te gusta por razones que ningún cuestionario mide. Las dos cosas son información, no sentencias."
+            }
+          ]
+        },
+        {
+          "id": "b4-1-03b",
+          "texto": "¿Y si coincide perfectamente?",
+          "reaccion": [
+            {
+              "id": "b4-1-03br",
+              "tipo": "dialogo",
+              "hablanteId": "helena",
+              "texto": "Tampoco garantiza nada. Dice que el ambiente te sería cómodo; ingresar, pagar y terminar siguen en pie. Por eso el cruce no elige: muestra."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b4-1-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "helena",
+      "titulo": "El cuadro de afinidad",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Aspecto del perfil", "De dónde sale", "Qué buscar en una opción"],
+          "filas": [
+            ["Intereses", "Tu historia y tu código de intereses", "¿Las tareas del día a día se parecen a lo que te atrae?"],
+            ["Habilidades sociales", "Tu resultado y la habilidad que elegiste trabajar", "¿Cuánto contacto, liderazgo o negociación exige?"],
+            ["Inteligencias", "Tus inteligencias más desarrolladas", "¿Qué tipo de problemas resuelve esa ocupación?"],
+            ["Lo que se te da bien", "Tus cursos y actividades fuertes", "¿Qué cursos pesan en la carrera?"],
+            ["Rasgos", "Cómo te describes en distintos contextos", "¿Qué ambiente de trabajo tendría?"]
+          ],
+          "nota": "El cuadro del programa del MINEDU (actividad 14). Para cada fila, una opción de mayor afinidad y una de menor, con una razón corta."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La razón es lo importante: «me gusta» no es una razón; «pasaría el día analizando datos, y eso es lo que más disfruto» sí."
+        }
+      ]
+    },
+    {
+      "id": "b4-1-05",
+      "tipo": "diapositiva",
+      "presentadorId": "helena",
+      "titulo": "Tres reglas para cruzar sin engañarte",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            { "titulo": "Coincidencia en dos aspectos, no en uno", "texto": "Una opción que calza solo con tu código pero choca con lo que se te da bien y con tus valores no es afín: es atractiva." },
+            { "titulo": "La menor afinidad también enseña", "texto": "Justificar por qué una opción no te calza aclara qué sí buscas. A veces descubre que la descartaste por un prejuicio." },
+            { "titulo": "Anota lo que el perfil no resuelve", "texto": "Costos, distancia, oferta en tu ciudad, lo que piensa tu familia: nada de eso sale del cruce, y todo pesa. Ese vacío es la agenda de lo que sigue." }
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, actividad 14, cuadro «Mi perfil personal y carreras afines»."
+        }
+      ]
+    },
+    {
+      "id": "b4-1-06",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Cada fila llega con tu resultado y con lo que escribiste antes, solo para leer; tú pones las opciones, de tus favoritos o del catálogo, y la razón. Esto lo lee tu orientadora y vuelve cuando compares tus planes."
+    },
+    {
+      "id": "b4-1-07",
+      "tipo": "consigna",
+      "hablanteId": "helena",
+      "item": "b4-1-intereses",
+      "premisa": "Intereses: una opción de mayor afinidad y una de menor, con una razón corta cada una.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eco": ["b4-1-ref-historia", "b4-1-ref-codigo"]
+    },
+    {
+      "id": "b4-1-08",
+      "tipo": "consigna",
+      "hablanteId": "helena",
+      "item": "b4-1-habilidades",
+      "premisa": "Habilidades sociales: una opción de mayor afinidad y una de menor, con su razón.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora",
+      "eco": "b4-1-ref-h1"
+    },
+    {
+      "id": "b4-1-09",
+      "tipo": "consigna",
+      "hablanteId": "helena",
+      "item": "b4-1-inteligencias",
+      "premisa": "Inteligencias: una opción de mayor afinidad y una de menor, con su razón.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora",
+      "eco": "b4-1-ref-h2"
+    },
+    {
+      "id": "b4-1-10",
+      "tipo": "consigna",
+      "hablanteId": "helena",
+      "item": "b4-1-bien",
+      "premisa": "Lo que se te da bien: una opción de mayor afinidad y una de menor, con su razón.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora",
+      "eco": "b4-1-ref-bien"
+    },
+    {
+      "id": "b4-1-11",
+      "tipo": "consigna",
+      "hablanteId": "helena",
+      "item": "b4-1-no-resuelve",
+      "premisa": "¿Qué no resuelve tu perfil? Costos, distancia, oferta, familia: anota lo que queda por averiguar.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "El cruce no elige por ti: muestra coincidencia, fricción y lo que falta averiguar. Se abrieron fortalezas, debilidades, obstáculos y oportunidades en tu tarjeta."
+  },
+  "mapa": { "x": 140, "y": 380, "icono": "registro" }
+}

@@ -1,0 +1,90 @@
+{
+  "id": "h-inteligencias-1",
+  "codigo": "h-inteligencias-1",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Explorando mis inteligencias, 1 de 5",
+  "subtitulo": "La escuela del maestro Bruno",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 5,
+  "obligatoria": false,
+  "requisitos": [
+    "b2-2"
+  ],
+  "ubicacion": "La escuela del maestro Bruno",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "maestro",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hi1-01",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "¿De parte de la brigada? Pasa, que acaban de salir los chicos. Soy Bruno. Helena me confió las preguntas sobre las inteligencias porque un maestro es quien más veces ha visto a alguien ser inteligente de una forma que el examen no mide.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hi1-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "hi1-02a",
+          "texto": "¿Son muchas preguntas?",
+          "reaccion": [
+            {
+              "id": "hi1-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "maestro",
+              "texto": "Bastantes, y van intercaladas: una de cada inteligencia y vuelta a empezar. Por eso las partimos en cinco clases cortas, como un horario."
+            }
+          ]
+        },
+        {
+          "id": "hi1-02b",
+          "texto": "¿Y si en algunas no me reconozco?",
+          "reaccion": [
+            {
+              "id": "hi1-02br",
+              "tipo": "dialogo",
+              "hablanteId": "maestro",
+              "texto": "Entonces marcas que casi nunca te pasa. No hay respuesta que reste: todo dibuja tu perfil."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hi1-03",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Piensa en lo que haces de verdad, en tu vida de todos los días, no en lo que te gustaría. Primera clase."
+    },
+    {
+      "id": "hi1-04",
+      "tipo": "item",
+      "instrumentoId": "TEST-INTELIGENCIAS",
+      "itemId": "plantilla",
+      "hablanteId": "maestro",
+      "etiqueta": "¿Con qué frecuencia te pasa?"
+    },
+    {
+      "id": "hi1-05",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Hasta aquí la primera. Vuelve cuando quieras; la página se abre al terminar las cinco.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Primera clase con el maestro Bruno. Faltan cuatro."
+  },
+  "mapa": {
+    "x": 400,
+    "y": 330,
+    "icono": "test"
+  }
+}

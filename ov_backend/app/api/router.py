@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 
 from app.api import (
-    acciones, actividades, batallas, casos, catalogo, conversaciones, cuentas, desarrollo, diario, familia, favoritos,
-    fichas, instrumentos, logros, planes, referencias, registro, secciones, sesion, tematicas, testimonios,
+    acciones, actividades, avance, batallas, casos, catalogo, conversaciones, cuentas, desarrollo, diario, familia, favoritos,
+    fichas, instrumentos, investigaciones, logros, notificaciones, planes, presentaciones, referencias, registro, secciones, sesion, tematicas, testimonios,
 )
 from app.dependencies import guardia, habilitar_fecha_cliente
 
@@ -14,6 +14,7 @@ def crear_router(entorno: str) -> APIRouter:
     protegido = APIRouter()
     protegido.include_router(sesion.router)
     protegido.include_router(cuentas.router)
+    protegido.include_router(notificaciones.router)
     protegido.include_router(actividades.router)
     protegido.include_router(fichas.router)
     protegido.include_router(testimonios.router)
@@ -22,12 +23,15 @@ def crear_router(entorno: str) -> APIRouter:
     protegido.include_router(conversaciones.router)
     protegido.include_router(familia.router)
     protegido.include_router(planes.router)
+    protegido.include_router(investigaciones.router)
     protegido.include_router(batallas.router)
     protegido.include_router(casos.router)
     protegido.include_router(secciones.router)
     protegido.include_router(diario.router)
     protegido.include_router(logros.router)
+    protegido.include_router(presentaciones.router)
     protegido.include_router(tematicas.router)
+    protegido.include_router(avance.router)
     protegido.include_router(acciones.router)
     protegido.include_router(instrumentos.router)
     protegido.include_router(registro.router)

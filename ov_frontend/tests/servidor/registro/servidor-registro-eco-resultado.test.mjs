@@ -80,7 +80,7 @@ async function abrirLectura(referencias, { edit, completada } = {}) {
   Object.assign(lee, { estado: completada ? 'COMPLETADA' : 'DISPONIBLE', visible: true, bloqueo: null })
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/t-lee-cuestionario/referencias')) return { body: referencias }
     throw Error(`Solicitud no configurada: ${req.url}`)
   })
@@ -121,7 +121,7 @@ test('en la Ciudad, t-contraste se abre con el reproductor de registros del serv
   Object.assign(contraste, { estado: 'DISPONIBLE', visible: true, bloqueo: null })
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     throw Error(`Solicitud no configurada: ${req.url}`)
   })
   const almacen = cargarAlmacen(app)

@@ -4,7 +4,7 @@
 import pytest
 from soporte_acceso import ClienteConToken as TestClient
 
-from app.core.parametros import DESCRIPCIONES_RIASEC
+from datos.fijos import TEXTOS_RIASEC
 from soporte_ruta import MISIONES_INTERESES, avanzar, revelar
 
 
@@ -36,7 +36,7 @@ def test_resultado_riasec_incluye_las_seis_descripciones_reales(request, fixture
         assert respuesta.status_code == 200, respuesta.text
         dimensiones = respuesta.json()['dimensiones']
         assert len(dimensiones) == 6
-        assert {d['codigo']: d['descripcion'] for d in dimensiones} == DESCRIPCIONES_RIASEC
+        assert {d['codigo']: d['descripcion'] for d in dimensiones} == {c: t[0] for c, t in TEXTOS_RIASEC.items()}
         assert all(d['descripcion'] and not d['descripcion'].startswith('Dimensión de demostración:')
                    for d in dimensiones)
         historial = cliente.get('/cuentas/est-ana/instrumentos/TEST-RIASEC/historial')

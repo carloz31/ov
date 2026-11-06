@@ -31,7 +31,7 @@ export async function iniciar({
   const items = jsonServidor(`ruta/ruta-items-registro-${actividad}`)
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/items-registro')) return { body: items }
     if (req.url.endsWith('/registro'))
       return {

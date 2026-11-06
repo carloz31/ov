@@ -4,6 +4,313 @@
       {
         "actividades": [
           {
+            "codigo": "t-mision-habilidades",
+            "orden": 4,
+            "titulo": "Misión de habilidades sociales"
+          }
+        ],
+        "codigo": "APL-HABILIDADES",
+        "momento": "UNICA",
+        "nombre": "Habilidades sociales"
+      }
+    ],
+    "codigo": "TEST-HABILIDADES",
+    "descripcion": "Descubre cómo te relacionas con los demás y qué habilidades sociales tienes más a mano hoy.",
+    "dimensiones": [
+      {
+        "codigo": "HS-ASE",
+        "desarrollo": [
+          "practica decir «no» en cosas pequeñas",
+          "habla en primera persona: «yo pienso», «a mí me molesta»",
+          "antes de reclamar, respira y di solo el hecho y lo que pides"
+        ],
+        "descripcion": "Defiendes tus derechos y dices lo que piensas sin ofender: puedes decir «no», expresar una queja con calma y escuchar cuando toca.",
+        "ejemplos": "pides que te expliquen una nota que te parece injusta, dices que no a un plan sin inventar excusas, pones un límite cuando alguien se pasa contigo o escuchas una crítica sin ponerte a la defensiva.",
+        "fortalezas": [
+          "decir lo que piensas sin ofender",
+          "decir «no» cuando no estás de acuerdo",
+          "reclamar con calma cuando algo es injusto",
+          "hacerte respetar sin pasar sobre nadie"
+        ],
+        "nombre": "Asertividad",
+        "orden": 1
+      },
+      {
+        "codigo": "HS-EMP",
+        "desarrollo": [
+          "pregunta «¿cómo te sientes?» y escucha sin interrumpir",
+          "intenta explicar la postura del otro con tus palabras",
+          "fíjate en lo no verbal: gestos, silencios"
+        ],
+        "descripcion": "Te pones en el lugar del otro y comprendes lo que siente, tanto con la emoción como con la cabeza.",
+        "ejemplos": "te das cuenta de que un compañero anda mal aunque no lo diga, entiendes por qué alguien reaccionó así aunque no estés de acuerdo, te afecta lo que les pasa a otros o te quedas a acompañar a quien lo necesita.",
+        "fortalezas": [
+          "notar cuando alguien está triste o preocupado",
+          "comprender antes de juzgar",
+          "inspirar confianza: la gente te cuenta sus cosas",
+          "ayudar sin que te lo pidan"
+        ],
+        "nombre": "Empatía",
+        "orden": 2
+      },
+      {
+        "codigo": "HS-EXP",
+        "desarrollo": [
+          "ponle nombre a lo que sientes: alegría, fastidio, miedo",
+          "escríbelo antes de decirlo",
+          "dilo a tiempo, con calma y a quien corresponde"
+        ],
+        "descripcion": "Reconoces lo que sientes, identificas de dónde viene y eliges el momento para decirlo a la persona indicada.",
+        "ejemplos": "puedes decir «estoy molesto» sin estallar, sabes explicar qué te puso así, eliges el momento para hablar en vez de soltarlo en caliente o la gente sabe cómo estás sin tener que adivinarlo.",
+        "fortalezas": [
+          "reconocer qué emoción sientes",
+          "identificar de dónde viene",
+          "elegir el momento y la persona para decirlo",
+          "ser honesto con lo que sientes"
+        ],
+        "nombre": "Expresión de sentimientos",
+        "orden": 3
+      },
+      {
+        "codigo": "HS-RES",
+        "desarrollo": [
+          "escribe el problema en una frase y sus posibles causas",
+          "lista tres salidas antes de elegir una",
+          "revisa después qué funcionó y qué no"
+        ],
+        "descripcion": "Analizas una situación difícil, identificas sus causas y buscas con creatividad la mejor salida.",
+        "ejemplos": "cuando algo sale mal buscas qué pasó en vez de a quién culpar, propones una salida cuando el grupo se traba, piensas en qué podría fallar antes de empezar o sigues probando alternativas hasta que funciona.",
+        "fortalezas": [
+          "analizar el problema antes de actuar",
+          "identificar causas y consecuencias",
+          "buscar alternativas con creatividad",
+          "no soltar hasta resolverlo"
+        ],
+        "nombre": "Resolución de problemas",
+        "orden": 4
+      },
+      {
+        "codigo": "HS-LID",
+        "desarrollo": [
+          "ofrécete a coordinar algo pequeño: un trabajo, una actividad",
+          "reparte tareas y pregunta cómo va cada uno",
+          "ante un desacuerdo, busca lo que une al grupo"
+        ],
+        "descripcion": "Actúas en representación de otros y diriges grupos: planificas, orientas y guías con creatividad ante lo nuevo.",
+        "ejemplos": "te eligen para hablar por el grupo, organizas quién hace qué en un trabajo, mantienes al grupo animado cuando algo se complica o pones orden cuando una discusión se desvía.",
+        "fortalezas": [
+          "tomar la iniciativa",
+          "planificar y orientar al grupo",
+          "convencer con ideas, no con imposición",
+          "manejar las fricciones del grupo"
+        ],
+        "nombre": "Liderazgo",
+        "orden": 5
+      }
+    ],
+    "escalas": [
+      {
+        "codigo": "ESC-CASI2",
+        "nombre": "Casi siempre o casi nunca",
+        "opciones": [
+          {
+            "etiqueta": "Casi nunca",
+            "orden": 1,
+            "puntaje": 0.0
+          },
+          {
+            "etiqueta": "Casi siempre",
+            "orden": 2,
+            "puntaje": 1.0
+          }
+        ]
+      }
+    ],
+    "guia_abierta": true,
+    "lectura": "Las habilidades que salen arriba son tus recursos de hoy para relacionarte con los demás; las de abajo, lo que puedes practicar. Es cómo te ves tú, no una nota sobre tu forma de ser, y cambia con las experiencias. Fíjate sobre todo en las de abajo: cada una trae por dónde empezar.",
+    "mensaje": "Se entrenan, como cualquier otra habilidad.",
+    "nombre": "Mi comportamiento con los demás",
+    "tipo_resultado": "DESTACADAS"
+  },
+  {
+    "aplicaciones": [
+      {
+        "actividades": [
+          {
+            "codigo": "t-mision-inteligencias",
+            "orden": 3,
+            "titulo": "Misión de inteligencias"
+          }
+        ],
+        "codigo": "APL-INTELIGENCIAS",
+        "momento": "UNICA",
+        "nombre": "Inteligencias"
+      }
+    ],
+    "codigo": "TEST-INTELIGENCIAS",
+    "descripcion": "Descubre cuáles de las siete inteligencias usas más hoy y cómo aprendes y resuelves mejor.",
+    "dimensiones": [
+      {
+        "codigo": "INT-LIN",
+        "desarrollo": [
+          "elige una palabra del diccionario al azar y úsala en situaciones normales",
+          "propicia un debate amistoso sobre un tema: pregunta, discute, escucha",
+          "prepara una presentación oral sobre algo que te interese: un hobby, un libro, alguien que conoces"
+        ],
+        "descripcion": "Usas las palabras con eficacia, al hablar y al escribir: traduces lo que piensas en palabras precisas, sea en una conversación, un debate o una carta.",
+        "ejemplos": "te fijas en cómo están dichas las cosas y no solo en qué dicen, te sale fácil redactar un trabajo o un mensaje delicado, recuerdas frases exactas de lo que leíste o escuchaste o prefieres explicar algo con palabras antes que mostrarlo.",
+        "fortalezas": [
+          "expresar con precisión lo que piensas",
+          "entender rápido lo que lees y escuchas",
+          "argumentar y convencer con palabras",
+          "disfrutar escribir y contar"
+        ],
+        "nombre": "Verbal-lingüística",
+        "orden": 1
+      },
+      {
+        "codigo": "INT-LOG",
+        "desarrollo": [
+          "toma doce objetos al azar y crea un criterio para clasificarlos (color, forma, tamaño, uso)",
+          "prepara un argumento lógico y convincente para algo ridículo",
+          "inventa una secuencia de números con un patrón escondido y ve si otro lo descubre"
+        ],
+        "descripcion": "Usas los números con eficacia y razonas con lógica: encuentras patrones y conexiones entre datos, como en el pensamiento científico.",
+        "ejemplos": "detectas cuando un argumento no cierra, resuelves un problema por pasos antes de pedir ayuda, sabes al toque si el vuelto está bien o te gusta ordenar las cosas con un criterio.",
+        "fortalezas": [
+          "calcular y estimar con rapidez",
+          "detectar patrones y relaciones",
+          "razonar paso a paso y comprobar",
+          "encontrar conexiones entre datos sueltos"
+        ],
+        "nombre": "Lógico-matemática",
+        "orden": 2
+      },
+      {
+        "codigo": "INT-ESP",
+        "desarrollo": [
+          "mira las nubes con amigos y busca animales o caras escondidas",
+          "imagina con detalle que vives en otra época o conversas con un personaje histórico",
+          "organiza una búsqueda del tesoro y dibuja el mapa para que otros lo sigan"
+        ],
+        "descripcion": "Percibes el mundo visual y espacial con precisión y te formas un modelo mental de él: imaginas, dibujas, decoras y te mueves en el espacio con ese mapa en la cabeza.",
+        "ejemplos": "recuerdas lugares y caras mejor que nombres, notas cuando algo está desalineado o mal combinado, armas un rompecabezas o un mueble con facilidad o imaginas cómo quedaría un cuarto antes de mover nada.",
+        "fortalezas": [
+          "imaginar objetos y lugares en tres dimensiones",
+          "captar color, forma y proporción",
+          "orientarte y leer mapas y planos",
+          "expresar ideas con dibujos y esquemas"
+        ],
+        "nombre": "Visual-espacial",
+        "orden": 3
+      },
+      {
+        "codigo": "INT-CIN",
+        "desarrollo": [
+          "camina, baila o trota según tu estado de ánimo, y prueba a cambiarlo con el movimiento",
+          "usa la mano que no sueles usar para lavarte los dientes o abotonarte",
+          "representa con mímica una idea, una opinión o un sentimiento"
+        ],
+        "descripcion": "Usas el cuerpo para expresar ideas y sentimientos y para resolver problemas o crear cosas: equilibrio, coordinación y destreza con las manos.",
+        "ejemplos": "aprendes un movimiento con verlo una vez, pruebas las cosas con las manos antes de leer cómo se hacen, te cuesta quedarte quieto cuando piensas o imitas gestos y posturas sin esfuerzo.",
+        "fortalezas": [
+          "coordinación, equilibrio y velocidad",
+          "aprender haciendo más que escuchando",
+          "habilidad manual para armar, reparar o crear",
+          "expresar emociones con el cuerpo"
+        ],
+        "nombre": "Corporal-cinestésica",
+        "orden": 4
+      },
+      {
+        "codigo": "INT-MUS",
+        "desarrollo": [
+          "escucha unos minutos de cada tipo de música que tengas y anota qué sentimientos, imágenes o recuerdos te trae",
+          "expresa un sentimiento (miedo, alegría, rabia) solo con la voz, cambiando volumen, tono y timbre",
+          "lee una historia y ponle efectos de sonido, como en los antiguos programas de radio"
+        ],
+        "descripcion": "Percibes, distingues y expresas formas musicales: la música te calma o te activa, se te queda en la cabeza y la usas para expresarte.",
+        "ejemplos": "reconoces una canción con los primeros segundos, te molesta cuando alguien desafina, te concentras mejor con música o inventas ritmos con lo que tengas a mano.",
+        "fortalezas": [
+          "captar ritmo, melodía y tono con facilidad",
+          "memorizar mejor lo que tiene sonido o ritmo",
+          "distinguir matices de voz y sonido",
+          "expresarte a través de la música"
+        ],
+        "nombre": "Musical-rítmica",
+        "orden": 5
+      },
+      {
+        "codigo": "INT-INTRA",
+        "desarrollo": [
+          "dibuja la curva de tu ánimo durante un día, con sus puntos altos, bajos y medios, y anota qué pasó en cada uno",
+          "anota los hechos importantes del día y expresa lo que sentiste con pintura, música o un poema",
+          "obsérvate como si fueras otra persona: qué patrón aparece cuando te enojas, te distraes o te pones nervioso"
+        ],
+        "descripcion": "Te comprendes a ti mismo y actúas a partir de eso: reconoces tus sentimientos y tu forma de pensar, y sabes cuáles son tus lados brillantes y cuáles los opacos.",
+        "ejemplos": "te das cuenta de cuándo necesitas parar, decides sin dejarte arrastrar por el grupo, tienes claro qué es importante para ti aunque otros no lo compartan o prefieres entender un error tuyo antes que taparlo.",
+        "fortalezas": [
+          "saber cómo te sientes y por qué",
+          "conocer tus virtudes y tus límites",
+          "ponerte metas propias y sostenerlas",
+          "aprender de lo que te pasa"
+        ],
+        "nombre": "Intrapersonal",
+        "orden": 6
+      },
+      {
+        "codigo": "INT-INTER",
+        "desarrollo": [
+          "pregunta y escucha antes de opinar",
+          "súmate a un equipo, un voluntariado o la organización de algo",
+          "fíjate en gestos y tono de voz, no solo en palabras"
+        ],
+        "descripcion": "Captas con rapidez los estados de ánimo, intenciones y sentimientos de los demás y respondes a ellos: empatía y trabajo en equipo, sin perder lo tuyo.",
+        "ejemplos": "calmas una discusión entre amigos, sabes a quién pedirle qué en un trabajo en grupo, la gente nueva se te acerca con facilidad o te buscan para contarte sus cosas.",
+        "fortalezas": [
+          "leer el ánimo y las intenciones de los demás",
+          "escuchar y responder con empatía",
+          "trabajar en equipo y llegar a acuerdos",
+          "convencer e influir en positivo"
+        ],
+        "nombre": "Interpersonal",
+        "orden": 7
+      }
+    ],
+    "escalas": [
+      {
+        "codigo": "ESC-VERDAD3",
+        "nombre": "Verdadero, falso o no estoy seguro",
+        "opciones": [
+          {
+            "etiqueta": "Falso",
+            "orden": 1,
+            "puntaje": 0.0
+          },
+          {
+            "etiqueta": "No estoy seguro",
+            "orden": 2,
+            "puntaje": 0.5
+          },
+          {
+            "etiqueta": "Verdadero",
+            "orden": 3,
+            "puntaje": 1.0
+          }
+        ]
+      }
+    ],
+    "guia_abierta": true,
+    "lectura": "Las inteligencias que salen arriba son las formas de pensar y aprender en las que hoy te sientes más cómodo; las de abajo son las que usas menos, no las que te faltan. Ninguna vale más que otra. Úsalo para estudiar a tu manera y para saber qué te costará más en lo que elijas. Cada inteligencia trae ideas para practicarla.",
+    "mensaje": "Es una foto de hoy: todas se desarrollan.",
+    "nombre": "Test de las inteligencias múltiples",
+    "tipo_resultado": "DESTACADAS"
+  },
+  {
+    "aplicaciones": [
+      {
+        "actividades": [
+          {
             "codigo": "t-llegada",
             "orden": 1,
             "titulo": "Punto de llegada"
@@ -31,31 +338,46 @@
     "dimensiones": [
       {
         "codigo": "AUTO-A",
+        "desarrollo": [],
         "descripcion": "Qué tan claro tienes lo que quieres hacer después del colegio.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Claridad",
         "orden": 1
       },
       {
         "codigo": "AUTO-B",
+        "desarrollo": [],
         "descripcion": "Qué tanto reconoces tus intereses, habilidades y valores.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Conocimiento de mí",
         "orden": 2
       },
       {
         "codigo": "AUTO-C",
+        "desarrollo": [],
         "descripcion": "Qué tanto conoces las carreras, los caminos y lo que piden.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Conocimiento de las opciones",
         "orden": 3
       },
       {
         "codigo": "AUTO-D",
+        "desarrollo": [],
         "descripcion": "Qué tanto sientes que la decisión es tuya y no de otros.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Decisión propia",
         "orden": 4
       },
       {
         "codigo": "AUTO-E",
+        "desarrollo": [],
         "descripcion": "Qué tan seguro te sientes de poder tomar y sostener tu decisión.",
+        "ejemplos": null,
+        "fortalezas": [],
         "nombre": "Confianza",
         "orden": 5
       }
@@ -88,6 +410,9 @@
         ]
       }
     ],
+    "guia_abierta": false,
+    "lectura": "Cada dimensión te muestra en qué zona estabas al empezar la ruta y en cuál estás al terminarla, en palabras y sin puntajes. No dice si decides bien o mal: muestra cómo cambió tu forma de verlo. Lo que sigue por trabajar no es una falla; es lo que viene después del colegio.",
+    "mensaje": "Lo que cambió entre las dos páginas es tuyo.",
     "nombre": "Punto de partida y de llegada",
     "tipo_resultado": "COMPARACION"
   },
@@ -112,41 +437,89 @@
       }
     ],
     "codigo": "TEST-RIASEC",
-    "descripcion": "Versión de prueba para la iteración 1.",
+    "descripcion": "Descubre qué tipo de actividades te atraen y qué ocupaciones se parecen a ti.",
     "dimensiones": [
       {
         "codigo": "R",
+        "desarrollo": [],
         "descripcion": "Te atraen las actividades prácticas: trabajar con las manos, usar herramientas o máquinas y estar al aire libre.",
+        "ejemplos": "reparar o armar objetos, cultivar, construir, manejar equipos o trabajar al aire libre.",
+        "fortalezas": [
+          "ser práctico y persistente: resolver con hechos, no con palabras",
+          "preferir trabajar por tu cuenta, sin tener que dirigir ni destacar",
+          "manejar herramientas, máquinas, materiales o animales",
+          "sentirte a gusto en el campo, el taller, la obra o la cancha más que en una oficina"
+        ],
         "nombre": "Realista",
         "orden": 1
       },
       {
         "codigo": "I",
+        "desarrollo": [],
         "descripcion": "Te atrae observar, preguntar y analizar para entender cómo y por qué funcionan las cosas.",
+        "ejemplos": "hacer experimentos, resolver acertijos, investigar un tema o entender cómo funciona algo.",
+        "fortalezas": [
+          "preferir pensar antes que actuar: observar, analizar, comprobar",
+          "trabajar con ideas, datos y símbolos",
+          "ser curioso y creativo para resolver problemas",
+          "rendir mejor en un laboratorio, una biblioteca o un centro de investigación que dirigiendo gente"
+        ],
         "nombre": "Investigativa",
         "orden": 2
       },
       {
         "codigo": "A",
+        "desarrollo": [],
         "descripcion": "Te atrae crear, imaginar y expresarte con libertad, sin reglas rígidas.",
+        "ejemplos": "dibujar, escribir, actuar, componer, diseñar o crear contenido.",
+        "fortalezas": [
+          "expresar sentimientos, emociones e imaginación en lo que haces",
+          "usar muchos medios: la palabra, la imagen, el sonido, el cuerpo",
+          "relacionarte con los demás a través de tus creaciones",
+          "preferir el tiempo de crear y reflexionar antes que las rutinas y las reglas fijas"
+        ],
         "nombre": "Artística",
         "orden": 3
       },
       {
         "codigo": "S",
+        "desarrollo": [],
         "descripcion": "Te atrae ayudar, enseñar, cuidar o acompañar a otras personas.",
+        "ejemplos": "enseñar a alguien, cuidar, escuchar, hacer voluntariado o trabajar en equipo.",
+        "fortalezas": [
+          "disfrutar el trabajo con personas",
+          "enseñar, orientar y acompañar",
+          "manejar grupos: conversar, debatir, escuchar",
+          "sentirte a gusto en colegios, consultorios y servicios a la comunidad"
+        ],
         "nombre": "Social",
         "orden": 4
       },
       {
         "codigo": "E",
+        "desarrollo": [],
         "descripcion": "Te atrae liderar, convencer, organizar proyectos y tomar decisiones.",
+        "ejemplos": "dirigir un grupo, convencer, vender una idea u organizar un evento.",
+        "fortalezas": [
+          "expresar tus ideas con facilidad y convencer",
+          "organizar y dirigir grupos, y sobresalir",
+          "preferir la acción y los resultados antes que la teoría",
+          "interesarte por los negocios, lo económico y las metas ambiciosas"
+        ],
         "nombre": "Emprendedora",
         "orden": 5
       },
       {
         "codigo": "C",
+        "desarrollo": [],
         "descripcion": "Te atrae ordenar información, seguir procedimientos claros y trabajar con datos de forma precisa.",
+        "ejemplos": "ordenar información, llevar registros, planificar con detalle o trabajar con números.",
+        "fortalezas": [
+          "ser ordenado, eficiente y responsable",
+          "cumplir normas y procedimientos con precisión",
+          "trabajar con datos, registros y números",
+          "sentirte a gusto en oficinas, administración y comercio, donde se valora la exactitud"
+        ],
         "nombre": "Convencional",
         "orden": 6
       }
@@ -184,7 +557,10 @@
         ]
       }
     ],
-    "nombre": "Test de intereses (RIASEC)",
+    "guia_abierta": false,
+    "lectura": "Tu código son los tres tipos de actividad que más te atrajeron, y las barras muestran cuánto resonó cada uno, de 0 a 100. Habla de gusto, no de talento: un tipo bajo no es algo que hagas mal. Las ocupaciones afines tienen un perfil de intereses parecido al tuyo y las familias de carreras son las que llevan a ellas. Explora también lo que no salió arriba: tus gustos cambian con lo que vas conociendo.",
+    "mensaje": "Es una pista para explorar, no un veredicto.",
+    "nombre": "Test de intereses",
     "tipo_resultado": "COINCIDENCIAS"
   }
 ]

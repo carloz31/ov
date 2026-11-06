@@ -1,26 +1,50 @@
-"""Favoritos de carreras, ocupaciones e instituciones (B10 · HU-040). Ninguna regla ni logro depende de ellos."""
+"""Favoritos de carreras, ocupaciones e instituciones (B10 · HU-040), de fichas y testimonios de la mochila (ajuste
+mochila) y de entrevistas (B13, cuentan para la Leyenda)."""
 
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
-from app.models import Carrera, Cuenta, Favorito, Institucion, Ocupacion, TipoEventoUso, TipoFavorito
+from app.models import (
+    Carrera, Cuenta, Favorito, Ficha, Institucion, Ocupacion, Testimonio, TipoEventoUso, TipoFavorito, TipoObjetivo,
+)
 from app.schemas.acciones import RespuestaAccion
 from app.schemas.favoritos import FavoritoEntrada, FavoritosCuenta
-from app.services.catalogo import exigir_catalogo, resumen_carrera, resumen_institucion, resumen_ocupacion
-from app.services.comun import buscar_por_codigo, fecha_accion, responder_con_eventos
+from app.services.catalogo import exigir_seccion_catalogo, resumen_carrera, resumen_institucion, resumen_ocupacion
+from app.services.comun import buscar_por_codigo, exigir_disponible, fecha_accion, responder_con_eventos
+from app.services.investigaciones.acciones import entrevista_para_favorito, evaluar_leyenda
+from app.services.motor.reglas import objetivo_corresponde_a_cuenta
 
 
-MODELOS = {TipoFavorito.CARRERA: Carrera, TipoFavorito.OCUPACION: Ocupacion,
-           TipoFavorito.INSTITUCION: Institucion}
+CATALOGO = {TipoFavorito.CARRERA: Carrera, TipoFavorito.OCUPACION: Ocupacion,
+            TipoFavorito.INSTITUCION: Institucion}
+# Recursos de la mochila: su objetivo de desbloqueo y su propio evento al marcarlos (no MARCA_FAVORITO).
+MOCHILA = {TipoFavorito.FICHA: (Ficha, TipoObjetivo.FICHA, TipoEventoUso.MARCA_FAVORITO_FICHA),
+           TipoFavorito.TESTIMONIO: (Testimonio, TipoObjetivo.TESTIMONIO, TipoEventoUso.MARCA_FAVORITO_TESTIMONIO)}
 
 
 def _preparar(sesion: Session, entrada: FavoritoEntrada):
+    """El catálogo exige su sección abierta; una ficha o un testimonio, solo estar desbloqueado (409 si no)."""
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
-    entidad = buscar_por_codigo(sesion, MODELOS[entrada.tipo], entrada.codigo)
-    exigir_catalogo(sesion, cuenta)
+    if entrada.tipo == TipoFavorito.ENTREVISTA:
+        return cuenta, entrevista_para_favorito(sesion, cuenta, entrada.codigo)
+    if entrada.tipo in MOCHILA:
+        modelo, objetivo, _ = MOCHILA[entrada.tipo]
+        entidad = buscar_por_codigo(sesion, modelo, entrada.codigo)
+        if not objetivo_corresponde_a_cuenta(sesion, cuenta, objetivo, entidad.id):
+            raise ErrorAccion("Cuenta o referencia no encontrada", estado_http=404)
+        exigir_disponible(sesion, cuenta, objetivo, entidad)
+        return cuenta, entidad
+    entidad = buscar_por_codigo(sesion, CATALOGO[entrada.tipo], entrada.codigo)
+    exigir_seccion_catalogo(sesion, cuenta)
     return cuenta, entidad
+
+
+def _evento_marcar(tipo, entidad):
+    if tipo == TipoFavorito.ENTREVISTA:
+        return TipoEventoUso.MARCA_FAVORITO_ENTREVISTA, entidad.id
+    return (MOCHILA[tipo][2], entidad.id) if tipo in MOCHILA else (TipoEventoUso.MARCA_FAVORITO, None)
 
 
 @usar_contexto
@@ -32,7 +56,10 @@ def marcar_favorito(sesion: Session, entrada: FavoritoEntrada) -> RespuestaAccio
     sesion.add(Favorito(cuenta_id=cuenta.id, tipo=entrada.tipo, id_referencia=entidad.id, fecha_hora=fecha))
     sesion.flush()
     contexto(sesion).favoritos.pop(cuenta.id, None)
-    return responder_con_eventos(sesion, cuenta, [(TipoEventoUso.MARCA_FAVORITO, None)], fecha)
+    respuesta = responder_con_eventos(sesion, cuenta, [_evento_marcar(entrada.tipo, entidad)], fecha)
+    if entrada.tipo == TipoFavorito.ENTREVISTA:
+        evaluar_leyenda(sesion, entidad, fecha)
+    return respuesta
 
 
 @usar_contexto
@@ -50,18 +77,20 @@ def desmarcar_favorito(sesion: Session, entrada: FavoritoEntrada) -> RespuestaAc
 
 @usar_contexto
 def listar_favoritos(sesion: Session, cuenta: Cuenta) -> FavoritosCuenta:
-    exigir_catalogo(sesion, cuenta)
+    exigir_seccion_catalogo(sesion, cuenta)
     orden = {}
     for tipo, referencia in sesion.execute(select(Favorito.tipo, Favorito.id_referencia).where(
         Favorito.cuenta_id == cuenta.id,
+        Favorito.tipo.in_(CATALOGO),
     ).order_by(Favorito.fecha_hora.desc(), Favorito.id.desc())):
         orden.setdefault(tipo, []).append(referencia)
     favoritos = {(tipo, referencia) for tipo, referencias in orden.items() for referencia in referencias}
     opciones = {TipoFavorito.CARRERA: (selectinload(Carrera.familia),),
-                TipoFavorito.INSTITUCION: (selectinload(Institucion.ubicacion),), TipoFavorito.OCUPACION: ()}
+                TipoFavorito.INSTITUCION: (selectinload(Institucion.ubicacion),),
+                TipoFavorito.OCUPACION: (selectinload(Ocupacion.familia_principal),)}
     entidades = {}
     for tipo, referencias in orden.items():
-        modelo = MODELOS[tipo]
+        modelo = CATALOGO[tipo]
         entidades[tipo] = {e.id: e for e in sesion.scalars(select(modelo).where(modelo.id.in_(referencias)).options(
             *opciones[tipo]))}
 

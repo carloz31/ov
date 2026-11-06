@@ -1,78 +1,62 @@
-[
-  {
-    "codigo": "civil-engineering",
-    "es_favorita": false,
-    "familia": {
-      "codigo": "family-civil-engineering",
-      "nombre": "Ingeniería e infraestructura"
+{
+  "items": [
+    {
+      "codigo": "mtpe-537",
+      "duracion": "3 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
+        "codigo": "331",
+        "nombre": "Administración de Empresas"
+      },
+      "nombre": "Abastecimiento",
+      "riasec": [],
+      "tipo": "FFAA_POLICIA"
     },
-    "nombre": "Ingeniería Civil",
-    "riasec": [
-      "R",
-      "I"
-    ]
-  },
-  {
-    "codigo": "environmental-engineering",
-    "es_favorita": false,
-    "familia": {
-      "codigo": "family-environmental-engineering",
-      "nombre": "Ingeniería y ambiente"
+    {
+      "codigo": "mtpe-99",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "61",
+        "area_nombre": "Agropecuaria, Forestal y Acuicultura",
+        "codigo": "613",
+        "nombre": "Acuicultura"
+      },
+      "nombre": "Acuicultura",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
     },
-    "nombre": "Ingeniería Ambiental",
-    "riasec": [
-      "I",
-      "R"
-    ]
-  },
-  {
-    "codigo": "journalism",
-    "es_favorita": false,
-    "familia": {
-      "codigo": "family-journalism",
-      "nombre": "Comunicación"
+    {
+      "codigo": "mtpe-275",
+      "duracion": "5 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
+        "codigo": "331",
+        "nombre": "Administración de Empresas"
+      },
+      "nombre": "Administración",
+      "riasec": [],
+      "tipo": "UNIVERSIDAD"
     },
-    "nombre": "Periodismo",
-    "riasec": [
-      "A",
-      "E",
-      "S"
-    ]
-  },
-  {
-    "codigo": "nursing",
-    "es_favorita": false,
-    "familia": {
-      "codigo": "family-nursing",
-      "nombre": "Salud"
-    },
-    "nombre": "Enfermería",
-    "riasec": [
-      "S"
-    ]
-  },
-  {
-    "codigo": "psychology",
-    "es_favorita": false,
-    "familia": {
-      "codigo": "family-psychology",
-      "nombre": "Ciencias sociales y salud"
-    },
-    "nombre": "Psicología",
-    "riasec": [
-      "S",
-      "I",
-      "A"
-    ]
-  },
-  {
-    "codigo": "veterinary-medicine",
-    "es_favorita": false,
-    "familia": {
-      "codigo": "family-veterinary-medicine",
-      "nombre": "Salud y ciencias naturales"
-    },
-    "nombre": "Medicina Veterinaria",
-    "riasec": []
-  }
-]
+    {
+      "codigo": "mtpe-601",
+      "duracion": "3 años",
+      "es_favorita": false,
+      "familia": {
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
+        "codigo": "331",
+        "nombre": "Administración de Empresas"
+      },
+      "nombre": "Administración",
+      "riasec": [],
+      "tipo": "FFAA_POLICIA"
+    }
+  ],
+  "total": 603,
+  "total_dominio": 603
+}

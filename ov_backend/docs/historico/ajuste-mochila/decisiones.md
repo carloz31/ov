@@ -1,0 +1,33 @@
+# Decisiones de la spec en curso
+
+- **Spec:** `ov_backend/docs/specs/ajuste-mochila.md`.
+- «Nueva» se apoya en un evento `VISTA_FICHA` por ficha (como `VISTA_TESTIMONIO`) y no en `Desbloqueo.visto`, que sigue significando «ya te avisamos»: el front marca todos los desbloqueos vistos al mostrar los toasts, y así ninguna ficha llegaría nueva a la mochila (decidido con el usuario).
+- Cambio de modelo aprobado: `ficha.tema` y `ficha.descripcion` (nullable) y el valor `VISTA_FICHA` de `TipoEventoUso`, al final del enumerado para que el CHECK de la migración 0030 coincida con el modelo.
+- `GET /fichas` y `GET /testimonios` siguen siendo listas, sin `total`: ya traen todos los de la audiencia (también bloqueados y de misiones opcionales), así que M es su largo (decidido con el usuario).
+- `contenido` de la ficha viaja completo en `GET /fichas` (solo obtenidas); aceptado para el alcance actual.
+- Las batallas siguen con `ContenidoEstado` para sus fichas; solo `GET /fichas` usa `FichaCuenta`.
+- `ver-ficha` responde 404 para una ficha de otra audiencia y 409 si está bloqueada; registra el evento una sola vez.
+- `t-testimonio-2` pide `SUPERA_CASO t-caso` y además `COMPLETA_ACTIVIDAD t-proyecto`, en lugar de superar dos veces el caso: SUPERA_CASO se registra una sola vez por cuenta y referencia, así que «×2» nunca se cumpliría. Atarlo a otro caso disponible exigía un segundo caso nuevo; su tarjeta apunta a `t-caso`, ya superado una vez.
+- `t-caso-2` («La traductora apurada») es un CASO opcional de la Ciudad que abre `t-proyecto` (el recorrido no lo alcanza): da `t-testimonio-3` y `t-testimonio-4`. Suma una actividad a la Ciudad, así que el total de la afinidad pasa de 4 a 5 en `ruta`; usa la configuración y el contenido de `forest-fire` como dato de prueba.
+- Fichas de prueba: se conservan los títulos de `t-ficha` y `t-ficha-2` (los usan las batallas); el contenido markdown y los temas son nuevos.
+- En local, abrir el modal de ficha la marca leída (`journey.readResourceIds`) y visitada, en lugar del botón «Leí la ficha»: las recompensas locales de desafío leen esas lecturas.
+- El parámetro `modo` de `abrirRecurso` se conserva por compatibilidad, pero el modal ya no lo distingue.
+- El nombre de la actividad de origen es enlace solo en la mochila (`enlazarActividad`); desde el host global va como texto (pedido del usuario).
+- La tarjeta de ficha y la voz por descubrir son clicables enteras con un enlace o botón cuyo `::after` cubre la tarjeta, y la estrella o «Ir a la Central» quedan encima; así no hay un botón dentro de un enlace (HTML inválido), con el mismo comportamiento que pide el texto.
+- El modal de ficha no muestra «Fuente:» de los recursos del catálogo local: el boceto no la incluye.
+- «Limpiar filtros» ya no vuelve a la pestaña de fichas: deja la pestaña actual.
+- Estado «sin resultados» con «Ninguna ficha/voz coincide con tu búsqueda» y «Limpiar filtros» (pedido del usuario al aprobar el plan).
+- El botón «Ir al mapa» del vacío de fichas va a `appPaths.student.exploration`, como dice el texto.
+- Sin dependencias nuevas: `ResourceText` amplía su lector de markdown (`###`, listas, citas, enlaces https).
+- Favoritos de fichas y testimonios en el servidor (cambio de modelo aprobado): `TipoFavorito` suma FICHA y TESTIMONIO (migración 0031, sin tablas nuevas) y se reutilizan `marcar-favorito` y `desmarcar-favorito`. Reemplaza la decisión anterior de dejar los favoritos de testimonio (y de ficha) en local: en api se leen de `es_favorita` (`GET fichas` y `GET testimonios`) y en local siguen en `adventure.bookmarks`.
+- Para FICHA y TESTIMONIO, marcar y desmarcar no exigen la sección CATALOGO: basta que el recurso sea de la audiencia de la cuenta (404 si no) y esté desbloqueado (409 si no).
+- Marcar una ficha registra MARCA_FAVORITO_FICHA y un testimonio, MARCA_FAVORITO_TESTIMONIO, con su id como referencia (uno por tipo, como VISTA_FICHA y VISTA_TESTIMONIO), y no MARCA_FAVORITO; desmarcar no registra eventos. Ninguna regla de la semilla los usa. `MARCA_FAVORITO_TESTIMONIO` alarga la columna del enumerado de eventos de 22 a 25 caracteres (en la misma migración).
+- `GET /favoritos` y la referencia FAVORITOS siguen siendo solo del catálogo.
+- El modal de ficha se dibuja en un portal fuera de `.sx-root`: define sus propios tokens `--sx-parchment`, `--sx-parchment-edge` y `--sx-gold` (los mismos valores de `student-base.css`); sin ellos su fondo quedaba transparente.
+- Favoritos en api sin optimismo: mientras corre el POST, la estrella muestra un cargador, no se deshabilita (como la vitrina) e ignora un segundo clic; cambia al confirmar el servidor y se mantiene hasta que llega la consulta nueva (pedido del usuario).
+- `FichaCuenta` vive en `types/servidorFichas.ts`, reexportado por `servidor.ts`, para no pasar de 400 líneas.
+- Tras `ver-ficha`, `marcar-favorito` o `desmarcar-favorito` confirmados, el front actualiza la ficha o el testimonio ya cargados (`actualizarFicha` en `store/servidor/fichas.ts`; los testimonios, en la mochila) en lugar de volver a pedir `GET fichas` o `GET testimonios`: el 200 basta y se ahorra una consulta por clic (pedido del usuario).
+- El contenido de la ficha sale de `GET /fichas` y va en `GET /cuentas/{c}/fichas/{codigo}` (`FichaDetalle`): la lista trae solo lo de la tarjeta y el modal pide el texto al abrirse, una vez por sesión, con cabecera y esqueleto mientras llega, desde cualquier sección. Reemplaza la decisión anterior de que `contenido` viaje completo en la lista (pedido del usuario, pensando en producción).
+- Si el detalle falla, el cuerpo del modal muestra `mensajeErrorServidor` y un botón «Reintentar».
+- Los testimonios pasan a ser una sección del almacén (`useTestimoniosServidor`): un solo pedido, también con StrictMode, que se conserva entre pantallas. Los vencen los desbloqueos de TESTIMONIO y de ACTIVIDAD (un llamado abierto cambia `caso_disponible`); por eso se adapta la prueba que esperaba que ACTIVIDAD no venciera nada.
+- Cuatro reglas de datos del servidor en el front (la cuarta, pedida por el usuario: lo que puede cambiar otra cuenta, como las conversaciones con el apoderado, se revalida al abrir su vista), escritas en `integracion.md` y en el `AGENTS.md` del front para todo lote siguiente: todo pasa por el almacén, las listas solo con lo de sus tarjetas y el detalle aparte, una acción confirmada actualiza lo cargado y lo compartido entre cuentas se revalida al abrir su vista.

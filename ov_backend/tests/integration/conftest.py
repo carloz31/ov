@@ -30,6 +30,35 @@ def url_base_ruta(plantillas_bd, tmp_path):
     return copiar_plantilla(plantillas_bd['ruta'], tmp_path / 'ruta.db')
 
 
+@pytest.fixture(scope='session')
+def plantilla_contenido(tmp_path_factory):
+    """Ajuste carga-actividades: plantilla del conjunto `contenido`, solo para sus pruebas (las demás usan `ruta`)."""
+    archivo = tmp_path_factory.mktemp('plantillas-contenido') / 'plantilla-contenido.db'
+    preparar_base(f'sqlite:///{archivo.as_posix()}', 'contenido', crear_tablas=True)
+    return archivo
+
+
+@pytest.fixture
+def aplicacion_contenido(plantilla_contenido, tmp_path):
+    aplicacion = crear_aplicacion(copiar_plantilla(plantilla_contenido, tmp_path / 'contenido.db'))
+    try:
+        yield aplicacion
+    finally:
+        aplicacion.state.motor_bd.dispose()
+
+
+@pytest.fixture
+def cliente_contenido(aplicacion_contenido):
+    with ClienteConToken(aplicacion_contenido) as cliente:
+        yield cliente
+
+
+@pytest.fixture
+def sesion_contenido(aplicacion_contenido):
+    with aplicacion_contenido.state.fabrica_sesiones() as sesion:
+        yield sesion
+
+
 @pytest.fixture
 def aplicacion(url_base_ruta):
     aplicacion = crear_aplicacion(url_base_ruta)

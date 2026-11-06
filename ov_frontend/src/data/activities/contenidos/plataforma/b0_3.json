@@ -1,0 +1,112 @@
+{
+  "id": "b0-3",
+  "codigo": "b0-3",
+  "tipo": "instrumento",
+  "titulo": "Mi punto de partida",
+  "subtitulo": "La cabaña de Helena",
+  "escenario": "cabana",
+  "bloque": 0,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": ["b0-2"],
+  "ubicacion": "Cabaña de Helena",
+  "duracionEstimadaMin": 10,
+  "personajeIds": ["helena", "companero"],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "b0-3-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Helena recibe a todos los que llegan buscando el pergamino. Dicen que estuvo ahí cuando lo escribieron. Pero nunca dice dónde está."
+    },
+    {
+      "id": "b0-3-02",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "expresion": "neutral",
+      "texto": "Pasa. Lumi, hacía tiempo que no traías a nadie. Siéntate, viajero. Antes de que preguntes por el pergamino: no te voy a decir dónde está. La travesía es parte de lo que permite entender lo que dice."
+    },
+    {
+      "id": "b0-3-03",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "texto": "Lo que sí te doy es esto: un libro de autoconocimiento. Lo fabrico yo. Sus capítulos están sellados; se restauran respondiendo preguntas. Sirve aunque abandones la búsqueda."
+    },
+    {
+      "id": "b0-3-04",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b0-3-04a",
+          "texto": "¿Y cómo se abre el primer capítulo?",
+          "reaccion": [
+            {
+              "id": "b0-3-04ar",
+              "tipo": "dialogo",
+              "hablanteId": "helena",
+              "texto": "Con las preguntas que te voy a hacer ahora. Son tu punto de partida, no un examen."
+            }
+          ]
+        },
+        {
+          "id": "b0-3-04b",
+          "texto": "¿Qué pasa si respondo mal?",
+          "reaccion": [
+            {
+              "id": "b0-3-04br",
+              "tipo": "dialogo",
+              "hablanteId": "helena",
+              "texto": "No hay respuestas malas. Son frases sobre ti, hoy. Marca cuánto te describe cada una: bastante, regular, poco o nada."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b0-3-05",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "texto": "Si todavía no tienes una opción en mente, responde igual: marcar «nada» es información útil, no un error. Y no te apures: una página respondida en dos minutos no dice nada de ti."
+    },
+    {
+      "id": "b0-3-06",
+      "tipo": "item",
+      "instrumentoId": "TEST-PARTIDA-LLEGADA",
+      "itemId": "plantilla",
+      "hablanteId": "helena",
+      "etiqueta": "Marca cuánto te describe hoy:"
+    },
+    {
+      "id": "b0-3-07",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "texto": "Gracias. El primer capítulo ya tiene con qué abrirse: lo encontrarás en el libro, en tu perfil, cuando quieras revelarlo. No muestra puntajes: muestra en palabras dónde estás y dónde este viaje te va a servir más."
+    },
+    {
+      "id": "b0-3-08",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "texto": "Los demás capítulos los restauran otras personas de la isla, que conservan sus preguntas y disfrutan conversar con recién llegados. Las encontrarás en la ciudad."
+    },
+    {
+      "id": "b0-3-09",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "texto": "Allá vive mi primo Iván. Él puede ayudarte con el mapa. Pero el camino a la ciudad no es corto, y lo que pase en él importa tanto como llegar."
+    },
+    {
+      "id": "b0-3-10",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Al final del viaje volveremos a estas mismas preguntas. Ya verás por qué."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tu punto de partida quedó registrado. Revélalo en el libro de Helena cuando quieras."
+  },
+  "mapa": { "x": 300, "y": 300, "icono": "test" }
+}

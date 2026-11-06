@@ -35,7 +35,7 @@ def test_r20_ciclos_planos_historial_vigentes_y_otra_cuenta(cliente, aplicacion)
     for n in range(2):
         historial = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/historial')
         assert len(historial) == n+1 and sum(r['anulado_en'] is None for r in historial) == 1
-        assert all(r['perfil_plano'] and r['coincidencias'] == [] for r in historial)
+        assert all(r['perfil_plano'] and 'ocupaciones' not in r for r in historial)
         assert resultado(cliente, cuenta='est-luis') == ajeno
         if n == 0:
             reinicio = reiniciar(cliente)

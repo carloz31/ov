@@ -1,6 +1,6 @@
 import type { InstrumentPageId } from '@/types/discovery'
 import { careerDetails, occupationDetails, institutionDetails, careerFamilies } from './catalogDetails'
-import { coincidenciasRiasec, textoAjuste } from '@/lib/servidor/adaptadores'
+import { coincidenciasRiasec, textoBanda } from '@/lib/servidor/adaptadores'
 import type { ResultadoPublico } from '@/types/servidor'
 export const getCareer = (id: string) => careerDetails.find((c) => c.id === id)
 export const getOccupation = (id: string) => occupationDetails.find((o) => o.id === id)
@@ -33,7 +33,7 @@ export const isAffine = (
     const coincidencia = resultadoServidor.revelado
       ? coincidenciasRiasec(resultadoServidor.resultado).find((c) => c.codigo === id)
       : undefined
-    return coincidencia ? textoAjuste(coincidencia.ajuste) : undefined
+    return coincidencia ? textoBanda(coincidencia.banda) : undefined
   }
   return revealedPages.includes('intereses') && getOccupation(id)?.contentStatus !== 'pending'
     ? demoAffinity[id]

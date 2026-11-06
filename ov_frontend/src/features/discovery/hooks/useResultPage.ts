@@ -15,17 +15,28 @@ import { createPlanFromCareer, getOrderedPlans } from '../lib/plans'
 import { filtrarPorAjuste, ordenarCarreras, resumirResultado } from '../lib/resultPage'
 import { useHelenaPages } from './useHelenaPages'
 import { modeloPartidaLlegada } from '../lib/partidaLlegada'
+import { filtroInicial, type FiltroPreparacion, type VistaOcupaciones } from '../lib/resultadoIntereses'
+import { useFavoritoServidor } from './useFavoritoServidor'
 
 export function useResultPage(pagina: string | undefined, resultadoRecibido?: ResultadoPublico) {
   const libro = useHelenaPages()
   const servidor = useEstadoServidor()
   const discovery = useDiscovery()
   const exploration = useExploration()
+  const favorito = useFavoritoServidor()
   const { search } = useLocation()
-  const [guia, setGuia] = useState(() => new URLSearchParams(search).get('guia') === '1')
+  // Ajuste resultados-intereses: en api, sin elección del estudiante, la guía arranca como dice el servidor.
+  const [guiaElegida, setGuia] = useState<boolean | null>(() =>
+    new URLSearchParams(search).get('guia') === '1' ? true : null,
+  )
+  const [resaltada, setResaltada] = useState<string | null>(null)
   useEffect(() => {
     if (new URLSearchParams(search).get('guia') === '1') setGuia(true)
   }, [pagina, search])
+  const [vista, setVista] = useState<VistaOcupaciones>('lista')
+  // Sin elegir, Amplia (o Todas si no hay); se calcula al llegar el resultado.
+  const [filtroPreparacion, setFiltroPreparacion] = useState<FiltroPreparacion | null>(null)
+  const [todas, setTodas] = useState(false)
   const [expandidas, setExpandidas] = useState<string[]>([])
   const [ajuste, setAjuste] = useState('Todas')
   const [seleccion, setSeleccion] = useState<string | null>(null)
@@ -60,7 +71,7 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
             cargandoItems: !modelo.completo && respuestas.estado !== 'listo' && respuestas.estado !== 'error',
             errorItems: modelo.completo ? '' : mensajeErrorServidor(respuestas.error),
             reintentarItems: () => void cargarRespuestasPartida(true),
-            guia,
+            guia: !!guiaElegida,
             setGuia,
           },
         } as const)
@@ -72,15 +83,48 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
   const resumen = resumirResultado(configuracion.tipoResultado, resultado, {
     perfilPlano: remoto?.perfil_plano ?? page.perfilPlano,
     hayEmpate: remoto?.codigo_interes?.hay_empate,
-    ejemplos: ejemplosDimension,
+    // Ajuste carga-instrumentos: en api los ejemplos llegan del servidor; el mapa fijo queda para local.
+    ejemplos: modoApi ? undefined : ejemplosDimension,
+    puntajeVisual: modoApi,
+    pagina: page.id,
   })
+  const guia = guiaElegida ?? (modoApi && resumen.guiaAbierta)
+  // Ajuste resultados-intereses: en api, el resultado de intereses muestra ocupaciones afines y familias.
+  const intereses =
+    modoApi && remoto && !remoto.perfil_plano && configuracion.tipoResultado === 'COINCIDENCIAS'
+      ? {
+          codigo: remoto.codigo_interes?.codigo ?? '',
+          ocupaciones: remoto.ocupaciones ?? [],
+          porArea: remoto.por_area ?? [],
+          familias: remoto.familias ?? [],
+          pocoMarcado: !!remoto.perfil_poco_marcado,
+          vista,
+          elegirVista: setVista,
+          filtro: filtroPreparacion ?? filtroInicial(remoto.ocupaciones ?? []),
+          filtrar: (filtro: FiltroPreparacion) => {
+            setFiltroPreparacion(filtro)
+            setTodas(false)
+          },
+          todas,
+          mostrarTodas: () => setTodas(true),
+        }
+      : null
+  // F06 (HU-026): en api, los favoritos del propio resultado son los del servidor y el corazón escribe allí;
+  // con el catálogo cerrado no hay corazones.
+  const favoritosServidor = modoApi && !resultadoRecibido
+  const catalogoAbierto =
+    !favoritosServidor || servidor.secciones.datos?.find((s) => s.codigo === 'CATALOGO')?.estado !== 'BLOQUEADA'
+  // Ajuste resultados-intereses: el resultado del servidor no lleva favoritos.
+  const ocupacionFavorita = (_codigo: string) => false
+  const carreraFavorita = (codigo: string) =>
+    !favoritosServidor && exploration.careerInterestIds.includes(codigo)
   const ocupaciones = resumen.secciones.ocupaciones
     ? ocupacionesResultado(
         remoto,
         modoApi || !!resultadoRecibido,
         discovery.revealedPages,
         resumen.protagonistas.map((d) => d.code),
-        exploration.profiles.filter((p) => p.interested).map((p) => p.occupationId),
+        favoritosServidor ? [] : exploration.profiles.filter((p) => p.interested).map((p) => p.occupationId),
       )
     : []
   const elegida = ocupaciones.find((o) => o.clave === seleccion)
@@ -93,7 +137,7 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
           const indicePlan = planes.findIndex((p) => p.sourceId === c.codigo)
           return {
             ...c,
-            favorita: exploration.careerInterestIds.includes(c.codigo),
+            favorita: carreraFavorita(c.codigo),
             plan: indicePlan >= 0 ? ['A', 'B', 'C'][indicePlan] : undefined,
           }
         })
@@ -116,6 +160,13 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
       : undefined,
     guia,
     setGuia,
+    resaltada,
+    // Pulsar una letra o una barra abre la guía en esa tarjeta.
+    abrirGuia: (codigo?: string) => {
+      setGuia(true)
+      setResaltada(codigo ?? null)
+    },
+    intereses,
     expandidas,
     alternarDimension: (codigo: string) =>
       setExpandidas((actual) =>
@@ -130,8 +181,20 @@ export function useResultPage(pagina: string | undefined, resultadoRecibido?: Re
     setSeleccion,
     carreras,
     siguientePlan: cantidadPlanes < 3 ? ['A', 'B', 'C'][cantidadPlanes] : undefined,
-    guardarOcupacion: toggleOccupationInterest,
-    guardarCarrera: toggleCareerInterest,
+    guardarOcupacion: !catalogoAbierto
+      ? undefined
+      : favoritosServidor
+        ? (codigo: string) => favorito.alternar('OCUPACION', codigo, !ocupacionFavorita(codigo))
+        : toggleOccupationInterest,
+    guardarCarrera: !catalogoAbierto
+      ? undefined
+      : favoritosServidor
+        ? (codigo: string) => favorito.alternar('CARRERA', codigo, !carreraFavorita(codigo))
+        : toggleCareerInterest,
+    ocupacionPendiente: (codigo: string) => favorito.pendiente('OCUPACION', codigo),
+    carreraPendiente: (codigo: string) => favorito.pendiente('CARRERA', codigo),
+    avisoFavorito: favorito.aviso,
+    cerrarAvisoFavorito: favorito.cerrarAviso,
     crearPlan: createPlanFromCareer,
   }
 }

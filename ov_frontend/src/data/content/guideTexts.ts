@@ -40,6 +40,12 @@ export const textosBloqueo = {
     adelanto: 'Este será un espacio para conversar con tu familia sobre lo que vas descubriendo.',
     final: 'Todavía no se abre.',
   },
+  // F09
+  INVESTIGACIONES: {
+    adelanto:
+      'Aquí podrás investigar una familia de carreras entrevistando a alguien que trabaja en ella, y ver las entrevistas de tu salón.',
+    final: 'Todavía no puedes investigar.',
+  },
 }
 export type CodigoBloqueo = keyof typeof textosBloqueo
 export const pasosBloqueo = (codigo: CodigoBloqueo, mensaje: string) => [
@@ -53,6 +59,14 @@ export const guiaCaminoApi = [
   'A la izquierda está tu panel: tu siguiente paso, cómo te sientes hoy y los accesos a tu diario, tu familia y todo lo que vas reuniendo. Puedes plegarlo cuando quieras.',
   'En el camino se abre la ciudad, donde podrás elegir tus actividades y ayudar a sus habitantes. Arriba puedes cambiar entre el camino y la ciudad.',
   'Si en algún momento no sabes qué hacer, toca el botón de ayuda y vendré.',
+]
+
+// F09 (solo api): la ayuda del «?» en Investigaciones, con la sección abierta.
+export const investigacionesGuideSteps = [
+  'Aquí ves las entrevistas que hicieron tus compañeros a personas que trabajan en lo que les intriga. Elige una vista: tu salón, las Leyendas o las tuyas.',
+  'Para investigar, eliges una familia de carreras, escribes lo que piensas hoy de ese trabajo y armamos juntos tu guion de preguntas.',
+  'La entrevista ocurre fuera de aquí. Cuando la subas a YouTube como «No listado», vuelve a publicarla, sola o con tus compañeros.',
+  'Deja tu reacción en las entrevistas de otros y guarda en favoritos las que quieras volver a ver. Las mejores llegan al Salón de Leyendas.',
 ]
 
 export const guideSteps: Record<StudentView, string[]> = {
@@ -91,7 +105,7 @@ export const guideSteps: Record<StudentView, string[]> = {
   resources: [
     'Esta es tu mochila. Aquí se guarda lo que reúnes en el camino.',
     'Las fichas aparecen cuando completas actividades. Puedes abrirlas también desde las actividades.',
-    'Las voces de la ciudad son personas reales que cuentan su historia. Se descubren al atender los llamados de la Central de Casos.',
+    'Las voces de la ciudad son personas reales que cuentan su historia. Se descubren al atender los llamados de la Central de Casos y en algunas misiones del camino.',
     'Marca con la estrella lo que quieras encontrar rápido.',
   ],
   'catalog-professions': [
@@ -161,10 +175,12 @@ export const sectionIntros: Record<StudentView, string[]> = {
   'journal-signals': [
     'Tu señal muestra cómo te has sentido día a día. Mirarla con calma te ayuda a notar qué te da energía y qué te pesa.',
   ],
+  // Ajuste del diario: el contenido del antiguo cuadro «Un espacio para ti y Lumi», dicho por Lumi.
   journal: [
-    'Este es nuestro cuaderno. Solo tú puedes leerlo: ni tu orientadora ni tu familia ven lo que escribes.',
-    // DATO DE PRUEBA
-    'Escribir lo que piensas y sientes te ayuda a ordenar tus ideas y a reconocer lo que de verdad te importa.',
+    'Este es un espacio para ti y para mí: tu diario se convierte en conversaciones con tu compañera de viaje. No hay respuestas automáticas: tú decides qué contar.',
+    'Es privado para siempre. Nadie lee lo que escribes aquí. Ni tu orientadora, ni nadie del programa. Nunca.',
+    'Escríbelo a tu manera: no hay respuestas correctas. Puedes escribir una frase o una página.',
+    'Y hay una señal separada: de vez en cuando te preguntaremos qué tan seguro te sientes de tu próximo paso. Tu orientadora ve solo esa respuesta corta, nunca lo que escribes.',
   ],
   // DATO DE PRUEBA
   research: [
@@ -226,6 +242,12 @@ export const parentGuides = {
     'Este es el resultado de un cuestionario que tu hijo o hija completó. Describe sus intereses o fortalezas, no lo que debe elegir: úsalo para conversar juntos.',
 }
 
+// F07a: la guía de Mis planes con la tarjeta v4 (api); en local sigue la de `profile-decisions`.
+export const planesGuideSteps = [
+  'Tus planes son las opciones que estás considerando. Puedes tener hasta tres: A, B y C.',
+  'Cada tarjeta tiene cuatro secciones que se abren con tu camino: por qué la eliges, qué tanto la conoces, cómo la harías realidad y tus próximos pasos.',
+  'Puedes cambiar el orden o eliminar un plan cuando quieras.',
+]
 export const passportGuideSteps = [
   'Este es tu pasaporte. Cada sello cuenta una parte de tu viaje.',
   'Arriba ves tu título de viajero y qué te falta para el siguiente.',

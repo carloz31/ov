@@ -15,7 +15,6 @@ import { HistoriaLumi } from '@/features/journal/components/HistoriaLumi'
 import { StudentActivityPlayer } from '@/features/activities/components/StudentActivityPlayer'
 function StudentJournalView() {
   const {
-    state,
     now,
     bond,
     screen,
@@ -43,7 +42,6 @@ function StudentJournalView() {
     usedTags,
     openEditor,
     startBlankEntry,
-    startOnboardingEntry,
     addTag,
     saveEntry,
     editEntry,
@@ -63,11 +61,16 @@ function StudentJournalView() {
         <StudentActivityPlayer
           key={capitulo.id}
           activity={capitulo}
-          imageUrl="/images/background/forest.png"
+          imageUrl="/images/background/bosque.png"
           onClose={cerrarCapitulo}
+          desdeInicio
           salida={{
             texto: 'Volver al diario',
             titulo: 'Lumi te contó un recuerdo.',
+            aviso: {
+              titulo: '¿Quieres volver al diario?',
+              descripcion: 'Podrás volver a ver este recuerdo cuando quieras desde la historia de Lumi.',
+            },
             onClick: cerrarCapitulo,
           }}
         />
@@ -96,8 +99,6 @@ function StudentJournalView() {
       )}
       {screen === 'home' && (
         <JournalHome
-          onboarding={!state.journalOnboardingSeen}
-          onBegin={startOnboardingEntry}
           hoy={<DailyQuestionCard now={now} hoy={hoy} onRespond={openEditor} onFree={startBlankEntry} />}
           buzon={
             <BuzonLumi

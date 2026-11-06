@@ -1,6 +1,7 @@
 """Ayudas para las pruebas de planes de carrera (B11); los textos son DATO DE PRUEBA."""
 
 from soporte_ruta import completar, pedir
+from soporte_catalogo_ruta import INST_UNI
 
 
 RELATO = 'Cuando ayudé a mi primo con sus tareas sentí que explicar me hace feliz.'  # DATO DE PRUEBA
@@ -20,7 +21,15 @@ def abrir_secciones(cliente, *secciones, cuenta='est-ana'):
                                             'referencia': ABRE_SECCION[seccion]})
 
 
-def crear(cliente, carrera, cuenta='est-ana', esperado=200):
+def marcar_favorita(cliente, carrera, cuenta='est-ana'):
+    """F07a: un plan se crea desde una carrera favorita. Sin aserción: puede no existir o estar ya marcada."""
+    cliente.post('/acciones/marcar-favorito', json={'cuenta': cuenta, 'tipo': 'CARRERA', 'codigo': carrera})
+
+
+def crear(cliente, carrera, cuenta='est-ana', esperado=200, favorita=True):
+    """Crea el plan; con `favorita`, antes marca la carrera como favorita (F07a)."""
+    if favorita:
+        marcar_favorita(cliente, carrera, cuenta)
     return pedir(cliente, 'POST', '/acciones/planes/crear', {'cuenta': cuenta, 'carrera': carrera}, esperado)
 
 
@@ -45,7 +54,7 @@ def por_que_lista():
     return {'idea_origen': 'MIA', 'motivos': [{'opcion': 'AYUDAR'}, {'otro': 'Me gusta explicar'}], 'relato': RELATO}
 
 
-def realidad_lista(institucion='t-uni', **cambios):
+def realidad_lista(institucion=INST_UNI, **cambios):
     return {'institucion': institucion, 'camino': {'opcion': 'PREPARARME'},
             'gastos': [{'rubro': 'MATRICULA', 'monto': 600, 'frecuencia': 'POR_CICLO'}],
             'financiamiento': [{'opcion': 'FAMILIA'}], **cambios}

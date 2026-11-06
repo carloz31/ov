@@ -1,0 +1,56 @@
+{
+  "_nota": "Registro opcional (3.A). Apertura completa; consigna en esqueleto (elección de un testimonio desbloqueado + texto). Se dibuja fuera del camino con origen b3-10.",
+  "id": "b3-a",
+  "codigo": "b3-a",
+  "tipo": "registro",
+  "titulo": "Lo que aprendí de una trayectoria",
+  "subtitulo": "Una voz de la mochila",
+  "escenario": "playa",
+  "bloque": 3,
+  "orden": 11,
+  "obligatoria": false,
+  "requisitos": ["b3-10"],
+  "ubicacion": "Puerto, el malecón de noche",
+  "duracionEstimadaMin": 8,
+  "personajeIds": ["companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b3-a-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Antes de subir al acantilado, si escuchaste alguna voz de tu mochila, la del cocinero o cualquiera que hayas abierto en la Central, quiero que la pongas al lado de tu propia decisión."
+    },
+    {
+      "id": "b3-a-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Acuérdate de las cuatro preguntas de Alejandra: qué decidió y qué le pasó, si se parece a ti, el momento del giro, y con qué te quedas. Esto lo lee tu orientadora y va a tu informe de viaje."
+    },
+    {
+      "id": "b3-a-03",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b3-a-testimonio",
+      "premisa": "Elige una voz que hayas escuchado. ¿Qué decisión o dificultad te llamó la atención?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b3-a-04",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "b3-a-aprendizaje",
+      "premisa": "¿En qué te identificas o te diferencias de esa persona? ¿Qué aprendizaje aplica a tu propia decisión?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Una voz es una sola voz. Lo que te llevas de ella sí es tuyo."
+  },
+  "mapa": { "x": 940, "y": 320, "icono": "registro", "origen": "b3-10" }
+}

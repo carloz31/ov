@@ -1,0 +1,53 @@
+{
+  "id": "h-inteligencias-3",
+  "codigo": "h-inteligencias-3",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Explorando mis inteligencias, 3 de 5",
+  "subtitulo": "La escuela del maestro Bruno",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 7,
+  "obligatoria": false,
+  "requisitos": [
+    "h-inteligencias-2"
+  ],
+  "ubicacion": "La escuela del maestro Bruno",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "maestro",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hi3-01",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Tercera. Un consejo antes de empezar: si una frase te hace dudar, la duda es una respuesta válida. No la fuerces hacia el sí.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hi3-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-INTELIGENCIAS",
+      "itemId": "plantilla",
+      "hablanteId": "maestro",
+      "etiqueta": "¿Con qué frecuencia te pasa?"
+    },
+    {
+      "id": "hi3-03",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Tres de cinco. Vas bien.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tercera clase. Faltan dos."
+  },
+  "mapa": {
+    "x": 460,
+    "y": 360,
+    "icono": "test"
+  }
+}

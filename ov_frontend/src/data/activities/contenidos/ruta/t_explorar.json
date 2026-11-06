@@ -1,0 +1,41 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-explorar",
+  "tipo": "registro",
+  "titulo": "Explorar carreras",
+  "bloque": 2,
+  "orden": 8,
+  "obligatoria": true,
+  "requisitos": [],
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-explorar-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Miraste opciones que no estaban en tu perfil. Cuéntame qué encontraste."
+    },
+    {
+      "id": "t-explorar-sorpresa",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-explorar-sorpresa",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "mapa": {
+    "x": 700,
+    "y": 110,
+    "icono": "registro",
+    "origen": "t-batalla"
+  }
+}

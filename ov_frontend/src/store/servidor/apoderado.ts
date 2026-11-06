@@ -7,9 +7,11 @@ import { obtenerCatalogo } from '@/services/api/instrumentos'
 import { proyectarJourney } from '@/lib/servidor/adaptadores'
 import { hidratarParentJourney } from '../parentJourneyStore'
 import { cuentaApoderado } from './cuenta'
+import { cargarNotificaciones, incorporarNotificaciones } from './notificaciones'
 import type { Seccion } from './sesion'
 import type {
   BloqueActividades,
+  DesbloqueoNuevo,
   ErrorServidor,
   FamiliaApoderado,
   RespuestaAccion,
@@ -24,6 +26,8 @@ type AlmacenApoderado = {
   familia: Seccion<FamiliaApoderado>
   error: ErrorServidor | null
   enviando: string | null
+  // F08: lo que abrió la última actividad completada, para su cierre (la vista se vuelve a montar al refrescar).
+  cierre: { actividad: string; desbloqueos: DesbloqueoNuevo[] } | null
 }
 const inicial = (): AlmacenApoderado => ({
   cuenta: null,
@@ -31,6 +35,7 @@ const inicial = (): AlmacenApoderado => ({
   familia: { datos: null, estado: 'sin_cargar', error: null },
   error: null,
   enviando: null,
+  cierre: null,
 })
 let estado = inicial()
 let revisionSesion = 0
@@ -90,7 +95,11 @@ export function ingresarApoderado(): Promise<RespuestaServidor<RespuestaAccion>>
         // B17: la cuenta del apoderado sale de la sesión.
         const cuenta = cuentaApoderado()
         if (!cuenta) {
-          const error: ErrorServidor = { tipo: 'http', estado: 401, detalle: 'No hay una sesión de apoderado.' }
+          const error: ErrorServidor = {
+            tipo: 'http',
+            estado: 401,
+            detalle: 'No hay una sesión de apoderado.',
+          }
           publicar({ error })
           return error
         }
@@ -102,6 +111,8 @@ export function ingresarApoderado(): Promise<RespuestaServidor<RespuestaAccion>>
           return respuesta
         }
         ingresoRegistrado = respuesta.datos
+        // Ajuste notificaciones: la campana del apoderado se pide con el ingreso.
+        void cargarNotificaciones()
       }
       const [actividades, familia] = await Promise.all([
         asegurarActividadesApoderado(),
@@ -221,6 +232,9 @@ export function completarActividadApoderado(
       const respuesta = await completarActividad(cuenta, codigo)
       if (sesion !== revisionSesion || cuenta !== estado.cuenta) return cambioSesion()
       if (respuesta.tipo !== 'ok') return respuesta
+      publicar({ cierre: { actividad: codigo, desbloqueos: respuesta.datos.nuevos_desbloqueos } })
+      // «Se abrió para usted» anuncia lo desbloqueado: sus notificaciones se marcan vistas, sin toast.
+      incorporarNotificaciones(respuesta.datos.nuevas_notificaciones, true)
       revisionActividades++
       publicar({ actividades: { ...estado.actividades, estado: 'vencido', error: null } })
       // El avance de la familia cambia con cada actividad completada.
@@ -242,10 +256,11 @@ export function completarActividadApoderado(
 
 // F03 (HU-022, HU-023): resultados vigentes del hijo visibles al apoderado, con el catálogo para sus nombres.
 // Se piden al abrir la vista que los muestra; sin diploma, el servidor responde 409 con su mensaje.
-export async function consultarResultadosHijo() {
+// Ajuste inicio-apoderado: del hijo elegido (`estudiante`).
+export async function consultarResultadosHijo(estudiante?: string) {
   const cuenta = estado.cuenta
   if (!modoApi || !cuenta) return sinCuenta()
-  const [resultados, catalogo] = await Promise.all([obtenerResultadosHijo(cuenta), obtenerCatalogo()])
+  const [resultados, catalogo] = await Promise.all([obtenerResultadosHijo(cuenta, estudiante), obtenerCatalogo()])
   if (resultados.tipo !== 'ok') return resultados
   if (catalogo.tipo !== 'ok') return catalogo
   return { tipo: 'ok' as const, datos: { resultados: resultados.datos, catalogo: catalogo.datos } }

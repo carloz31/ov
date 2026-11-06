@@ -1,0 +1,252 @@
+{
+  "id": "p5",
+  "codigo": "p5",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "El panorama de hoy",
+  "subtitulo": "Lo que cambió desde que usted eligió",
+  "bloque": 1,
+  "orden": 5,
+  "obligatoria": true,
+  "requisitos": [
+    "p4"
+  ],
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "orientacion"
+  ],
+  "objetivoAprendizaje": "Al terminar, el apoderado conoce las rutas actuales después del colegio, los datos públicos del mercado, el licenciamiento, los costos reales y las becas del Estado, y detecta ideas desactualizadas.",
+  "nodos": [
+    {
+      "id": "p5-01",
+      "tipo": "diapositiva",
+      "titulo": "Muchas ideas de casa son de hace veinte o treinta años",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Algunas siguen valiendo; otras ya no. Esta actividad repasa cinco cosas que cambiaron desde que usted terminó el colegio, con datos públicos, para que su experiencia y los datos de hoy acompañen juntos."
+        }
+      ],
+      "etiqueta": "Para empezar"
+    },
+    {
+      "id": "p5-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "¿Cuál de estas frases ha dicho o escuchado en su casa?",
+      "nota": "Su respuesta no se guarda ni la ve nadie. Solo sirve para mostrarle lo más útil.",
+      "opciones": [
+        {
+          "id": "p5-02a",
+          "texto": "«Solo la universidad da futuro.»",
+          "reaccion": [
+            {
+              "id": "p5-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es la más común. Los datos del Ministerio de Trabajo la discuten; lo verá en un momento."
+            }
+          ]
+        },
+        {
+          "id": "p5-02b",
+          "texto": "«Con título hay trabajo seguro.»",
+          "reaccion": [
+            {
+              "id": "p5-02br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Hoy menos de la mitad de los egresados trabaja en algo vinculado a lo que estudió. Veamos qué significa."
+            }
+          ]
+        },
+        {
+          "id": "p5-02c",
+          "texto": "«Estudiar es muy caro.»",
+          "reaccion": [
+            {
+              "id": "p5-02cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Depende de dónde: la diferencia entre una pública y una privada es de un orden de magnitud, y hay becas del Estado."
+            }
+          ]
+        },
+        {
+          "id": "p5-02d",
+          "texto": "Ninguna: en mi casa no hablamos de esto.",
+          "reaccion": [
+            {
+              "id": "p5-02dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Entonces esta actividad le da con qué empezar."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p5-03",
+      "tipo": "diapositiva",
+      "titulo": "Las rutas y el mercado",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Además de la universidad y el instituto, hoy la educación técnica permite continuar en la universidad convalidando, hay carreras en horario nocturno y a distancia, y las escuelas de las Fuerzas Armadas y la Policía pagan una asignación durante la formación. Solo tres de cada diez jóvenes pasan a la educación superior (Inei 2023, Minedu 2024): combinar estudio y trabajo o empezar por una ruta corta es frecuente y razonable."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Lo que se creía",
+            "Lo que muestran los datos"
+          ],
+          "filas": [
+            [
+              "Solo la universidad paga",
+              "Varias familias técnicas, como minería o ingeniería eléctrica, superan al promedio universitario al inicio (Mi Carrera, MTPE)"
+            ],
+            [
+              "Una carrera «segura» garantiza empleo",
+              "Menos de la mitad de los egresados trabaja en una ocupación vinculada a lo que estudió (Minedu y UNESCO, 2026)"
+            ],
+            [
+              "Con título hay trabajo formal",
+              "El 84,8 % de los ocupados de 14 a 24 años tiene empleo informal (INEI, abril 2025–marzo 2026); el título ayuda a entrar al empleo formal, pero no lo garantiza"
+            ]
+          ]
+        }
+      ],
+      "etiqueta": "Concepto"
+    },
+    {
+      "id": "p5-04",
+      "tipo": "diapositiva",
+      "titulo": "Instituciones, costos y becas",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "alerta",
+          "texto": "Desde 2014 las universidades necesitan licencia de la Sunedu y los institutos, del Minedu. En el primer proceso, 46 universidades no la obtuvieron y sus estudiantes tuvieron que trasladarse. Antes de que su hijo o hija postule, verifique la licencia en gob.pe; toma cinco minutos."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Los costos van más allá de la pensión: matrícula por ciclo, materiales, transporte, alimentación y, si estudia en otra ciudad, vivienda. Una carrera privada de cinco años puede pasar los S/ 100 000; en una pública, el primer año cuesta materiales, transporte y trámites. Pedir a su hijo o hija el total del primer año, y no solo la pensión, es la mejor conversación sobre dinero que pueden tener."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Beca 18 ofrece para 2026 veinte mil becas integrales en diez modalidades; la ordinaria pide buen rendimiento en los dos últimos años de secundaria, condición de pobreza según el Sisfoh y menos de 22 años. El crédito educativo es deuda: calcule la cuota contra el ingreso real de los egresados jóvenes de esa carrera."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Mi Carrera (MTPE). Sunedu, consulta de licenciamiento. Pronabec, Beca 18 convocatoria 2026. La República (2026), acceso a educación superior. INEI (2026), mercado laboral, abril 2025–marzo 2026. Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú.",
+          "url": "https://micarrera.trabajo.gob.pe/"
+        }
+      ]
+    },
+    {
+      "id": "p5-05",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un padre dice: «Mi hija quiere estudiar en un instituto. Yo le digo que mejor universidad, porque un técnico siempre gana menos». ¿Qué le muestra el panorama de hoy?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que tiene razón.",
+          "correcta": false,
+          "retroalimentacion": "Es la idea de hace treinta años. Los datos de planilla del MTPE la contradicen en varias familias."
+        },
+        {
+          "id": "b",
+          "texto": "Que varias familias técnicas pagan más al inicio que muchas universitarias, que la técnica dura menos y cuesta menos, y que luego puede continuar en la universidad convalidando.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. La ruta técnica no es «la opción B»; y no cierra la puerta a la universidad."
+        },
+        {
+          "id": "c",
+          "texto": "Que los institutos no dan título.",
+          "correcta": false,
+          "retroalimentacion": "Dan título de técnico o profesional técnico, con el que se puede continuar en la universidad."
+        }
+      ],
+      "explicacion": "«Solo la universidad paga» es la idea desactualizada más frecuente. Hoy hay cinco rutas con datos de ingreso públicos, y se pueden encadenar.",
+      "pistas": [
+        {
+          "id": "p5-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Primera fila de la tabla «Lo que se creía»."
+        }
+      ],
+      "transicion": "Dos ideas para revisar."
+    },
+    {
+      "id": "p5-06",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Su hijo le dice que le interesa una universidad privada nueva, con mucha publicidad y pensión «desde S/ 500». ¿Qué conviene hacer primero?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Verificar en gob.pe que esté licenciada por la Sunedu, incluida la sede, y pedir el costo total del primer año, no la pensión «desde».",
+          "correcta": true,
+          "retroalimentacion": "Sí. Cinco minutos de verificación evitan un título sin valor; y el total del primer año evita la sorpresa del segundo mes."
+        },
+        {
+          "id": "b",
+          "texto": "Matricularlo pronto, antes de que se acaben las vacantes.",
+          "correcta": false,
+          "retroalimentacion": "La urgencia es un recurso de la publicidad. Primero la licencia, luego el costo completo."
+        },
+        {
+          "id": "c",
+          "texto": "Descartarla por nueva.",
+          "correcta": false,
+          "retroalimentacion": "Nueva no es mala; sin licencia sí. Verificar es lo que distingue una de otra."
+        }
+      ],
+      "explicacion": "Dos cosas que no existían cuando usted eligió: la licencia obligatoria y los costos públicos por rubro. Las dos se revisan antes de decidir.",
+      "pistas": [
+        {
+          "id": "p5-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "La tarjeta de alerta y el párrafo de costos tienen las dos acciones."
+        }
+      ]
+    },
+    {
+      "id": "p5-07",
+      "tipo": "diapositiva",
+      "titulo": "Para llevarse",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Su experiencia vale; los datos del mercado de hoy también. Juntos acompañan mejor que cualquiera de los dos solo."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Esta semana",
+              "texto": "Entre con su hijo o hija a Mi Carrera (MTPE) y miren juntos los ingresos de la familia de carreras que le interesa, por región."
+            }
+          ]
+        }
+      ],
+      "etiqueta": "Resumen",
+      "transicion": "Ya tiene una acción. Repase el resumen cuando quiera."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Su experiencia vale; los datos de hoy también."
+  }
+}

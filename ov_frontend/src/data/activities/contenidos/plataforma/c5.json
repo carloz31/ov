@@ -1,0 +1,22 @@
+{
+  "id": "c5",
+  "codigo": "c5",
+  "tipo": "encuentro",
+  "titulo": "El torneo de los equipos imposibles",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 44,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 15,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "caso": "impossible-teams-tournament",
+  "mapa": {
+    "x": 620,
+    "y": 280,
+    "icono": "informativa"
+  }
+}

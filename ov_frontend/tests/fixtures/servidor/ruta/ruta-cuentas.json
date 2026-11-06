@@ -20,6 +20,21 @@
     "rol": "ESTUDIANTE"
   },
   {
+    "codigo": "est-mia",
+    "nombre": "Mía",
+    "rol": "ESTUDIANTE"
+  },
+  {
+    "codigo": "est-sol",
+    "nombre": "Sol",
+    "rol": "ESTUDIANTE"
+  },
+  {
+    "codigo": "est-teo",
+    "nombre": "Teo",
+    "rol": "ESTUDIANTE"
+  },
+  {
     "codigo": "ori-carmen",
     "nombre": "Carmen",
     "rol": "ORIENTADORA"

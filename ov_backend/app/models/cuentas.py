@@ -7,11 +7,19 @@ from app.models.base import Base, enumerado
 from app.models.enums import Rol
 
 
+class Colegio(Base):
+    __tablename__ = "colegio"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
+    nombre: Mapped[str]
+
+
 class Salon(Base):
     __tablename__ = "salon"
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
+    colegio_id: Mapped[int] = mapped_column(ForeignKey("colegio.id"))
 
 
 class Cuenta(Base):

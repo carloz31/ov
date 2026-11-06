@@ -2,6 +2,206 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-04 · Ajuste carga-casos · Textos de la Central que citan el nombre de la fase
+
+- **Dato:** el `nombre` de cada fase de los JSON de caso («¿Quién merece una oportunidad?», «Los días cuentan»…). Las plantillas de la Central se escribieron para «Emergencia»: «¿Así enfrentarás la {fase en minúsculas}?» (Revisar, `ForestFireCaseView`) y «Así respondió tu equipo a la {fase en minúsculas}» (resultado de fase, `PhaseResultScreen`), y quedan como «¿Así enfrentarás la ¿quién merece una oportunidad??».
+- **Dónde se mostraría:** el título de Revisar y el del resultado de cada fase.
+- **Opciones:** textos que no citen la fase («¿Así enfrentarás esta fase?», «Así respondió tu equipo en la fase N»); citarla entre comillas sin el artículo («Así respondió tu equipo a «{fase}»»); un campo del JSON con la frase de cada fase.
+- **Si no se muestra:** en los seis casos esos dos títulos quedan con el artículo y la puntuación del nombre de la fase.
+- **Estado:** resuelto. El usuario eligió no citar la fase: «¿Así enfrentarás esta fase?» y «Así respondió tu equipo en la fase N», en los dos modos.
+
+## 2026-11-04 · Ajuste carga-casos · Lugar de los casos en la Ciudad
+
+- **Dato:** la posición de mapa (`mapa.x`, `mapa.y`) de `c1`…`c6` en `src/data/activities/contenidos/plataforma/`. `c1` ocupa el lugar del incendio (que ya no tiene marcador en api); `c2`…`c6` tienen posiciones provisionales, porque los otros cinco lugares de casos de la imagen siguen ocupados por los marcadores de demostración de `cityCases` («Disponible en una próxima iteración»), que una prueba exige conservar.
+- **Dónde se mostraría:** los marcadores de la Central de casos en la Ciudad (api).
+- **Opciones:** quitar en api los marcadores de demostración de `cityCases` y poner `c2`…`c6` en sus lugares; dar posiciones definitivas a `c2`…`c6` junto a esos marcadores; reemplazar los marcadores de demostración por los casos reales uno a uno.
+- **Si no se muestra:** los seis casos se ven en la Ciudad, `c2`…`c6` en lugares provisionales.
+- **Estado:** decidido: las posiciones provisionales se quedan por ahora y el usuario las ajustará en los JSON de `c2`…`c6`.
+
+## 2026-11-04 · Ajuste carga-casos · Imágenes de los seis casos
+
+- **Dato:** los JSON de `src/data/cases/plataforma/` nombran 24 imágenes (`<caso>-intro.png` y `<caso>-phase-1..3.png` de `hidden-plaza`, `scholarship-mystery`, `harvest-race`, `thousand-voices-festival`, `impossible-teams-tournament` y `silent-lagoon`) que no existen en `public/` (`scripts/verificar_contenido_front.py` las lista como aviso).
+- **Dónde se mostraría:** la imagen de la intro del caso (`ExplorationCaseIntroView`) y el fondo de cada fase de la Central.
+- **Opciones:** subir las imágenes con esos nombres a `public/images/`; cambiar los nombres de los JSON por imágenes que existan; dejar el respaldo.
+- **Si no se muestra:** la intro y las fases usan `exploration-case-background.png`.
+- **Estado:** pendiente de las imágenes; no bloquea la carga.
+
+## 2026-11-04 · Ajuste carga-casos · Voz T05 que anuncia `b3-10`
+
+- **Dato:** el `mensajeFin` de `b3-10` («Caminos que no van en línea recta») dice «Se abrió la voz T05», y ese testimonio no existe: en `contenido` solo están los doce de prueba `tc1-1..tc6-2`, que regalan los casos.
+- **Dónde se mostraría:** el cierre de `b3-10` y la mochila («Voces de la ciudad»).
+- **Opciones:** cargar T05 en el ajuste de testimonios con una regla que lo abra al completar `b3-10`; quitar la mención del `mensajeFin`; anunciar la voz que corresponda cuando exista.
+- **Si no se muestra:** el cierre anuncia una voz que no aparece.
+- **Estado:** resuelto en el ajuste testimonios: completar `b3-10` abre `tb3-10` (Gastón Acurio) y el `mensajeFin` anuncia una voz nueva en la mochila, sin códigos.
+
+## 2026-11-04 · Ajuste carga-actividades · Imágenes de los personajes
+
+- **Dato:** `avatarUrl` y `expresiones` de los 23 personajes de `catalogo.json` (los 19 del contenido real, Helena incluida, más Lumi, Mara, Aurelio y la orientación) apuntan a `/img/personajes/*.png`, y esa carpeta no existe en `public/`.
+- **Dónde se mostraría:** el avatar de cada hablante en el reproductor (`journey/Character.tsx`).
+- **Opciones:** subir las imágenes con esos nombres; cambiar las rutas a las que existan; dejar el retrato SVG genérico.
+- **Si no se muestra:** cada hablante cae al retrato SVG de `CharacterPortrait` (ya pasaba antes del ajuste).
+- **Estado:** pendiente de las imágenes; no bloquea la carga.
+
+## 2026-11-04 · Ajuste carga-actividades · Testimonios que nombran las preguntas de `ma2`
+
+- **Dato:** las preguntas `ma2-p06` y `ma2-p07` de la batalla «Profesiones sin género» nombran los testimonios T02 y T08, que aún no existen (en `contenido` solo están los doce de prueba `tc1-1..tc6-2` del ajuste carga-casos).
+- **Dónde se mostraría:** el enunciado o la explicación de esas preguntas, y la mochila («Voces de la ciudad») cuando existan.
+- **Opciones:** cargar T02 y T08 en el ajuste de testimonios; reescribir esas dos preguntas sin nombrarlos; quitarlas del pool (el de `ma2` tiene 10, el mínimo es 10).
+- **Si no se muestra:** la pregunta cita una voz que el estudiante no puede encontrar todavía.
+- **Estado:** resuelto en el ajuste testimonios: `ma2-p06` nombra a la ingeniera de sistemas (`tc2-1`) y `ma2-p07`, al fisioterapeuta (`tc5-1`), como voces de la Central, sin códigos.
+
+## 2026-11-02 · Ajuste resultados-intereses · Resultado del estudiante para la orientadora
+
+- **Dato:** `mensaje_orientadora` y `lectura_orientadora` de cada instrumento (cargados en `fijos.py`) y el resultado de intereses de un estudiante (ocupaciones afines, por área y familias), que la orientadora vería con el boceto 02 y la tarjeta final «Para la tutoría».
+- **Dónde se mostraría:** la vista de cuestionario del estudiante en el portal de la orientadora (`pages/counselor/QuestionnaireDetailView.tsx`, hoy solo de demostración), con `ResultadoInteresesPortal`.
+- **Opciones:** una ruta de resultados del estudiante con la política `es_de_su_salon` y la vista del boceto 02 (B14, «Orientadora: seguimiento y configuración»); adelantarla en un ajuste; dejarla en demostración.
+- **Si no se muestra:** la orientadora no ve los resultados reales; sus textos quedan cargados sin uso.
+- **Estado:** pendiente para B14 (decisión del usuario en el ajuste).
+
+## 2026-10-29 · B13 · Investigaciones y entrevistas
+
+- **Dato:**
+  - `GET /cuentas/{c}/investigaciones`: investigación en curso (lo que pienso, guion, sugerencias pendientes), aliados del salón, preguntas base, tipos de reacción, `favoritos_leyenda` y conteos por vista;
+  - `GET /cuentas/{c}/entrevistas` (vistas SALON, LEYENDAS y MIAS con filtros, orden y paginado) y `/entrevistas/{e}` (detalle con reacciones y comentarios de la orientadora);
+  - acciones `guardar-lo-que-pienso`, `pedir-sugerencias-guion`, `guardar-guion`, `cancelar-investigacion`, `publicar-entrevista` (cuerpo nuevo, con `cuenta` y `coautores`), `editar-entrevista`, `retirar-entrevista`, `ver-entrevista`, `reaccionar-entrevista`, `eliminar-reaccion`, `reportar` y `marcar-favorito` con `tipo: ENTREVISTA`;
+  - de la orientadora, `GET /cuentas/{c}/publicaciones` y `/publicaciones/{e}`, y las acciones `destacar-entrevista`, `comentar-entrevista`, `eliminar-entrevista` y `descartar-reporte`;
+  - la misión `t-investigador` (abre la sección INVESTIGACIONES) y `t-investigador-cierre` (registro con la referencia LO_QUE_PIENSO), sin contenido en el front;
+  - la sección INVESTIGACIONES en `/secciones` y las insignias `t-ins-entrevista` y `t-ins-leyenda` en los logros.
+- **Dónde se mostraría:** las pantallas de Investigaciones del estudiante y de Publicaciones de la orientadora, que conecta F09. Los contenidos `t_investigador` y `t_investigador_cierre` también los agrega F09.
+- **Opciones:** las define la spec de F09 con sus bocetos.
+- **Si no se muestra:** en modo `api`, las investigaciones existen solo en el servidor. Las dos misiones nuevas no se muestran porque su contenido no existe en el front.
+- **Pruebas:** mientras falte su contenido, `tests/servidor/mapa/servidor-siguiente-paso.test.mjs` (`SIN_CONTENIDO_HASTA_F09`) y la prueba del aviso «Actividad sin contenido» de `servidor-mapa.test.mjs` ignoran `t-investigador` y `t-investigador-cierre`. F09, al crear `t_investigador.json` y `t_investigador_cierre.json`, quita esos dos filtros.
+- **Estado:** resuelto en F09: las pantallas de la spec (listado con sus tres vistas, en curso y aliados, asistente del guion, publicar, detalle con reacciones y reportes, y la tabla y el detalle de la orientadora), con `t_investigador` y `t_investigador_cierre`; se quitaron los dos filtros de las pruebas.
+
+## 2026-10-29 · F09 · Aviso a los autores cuando la orientadora elimina
+
+- **Dato:** que la orientadora eliminó la entrevista o un comentario de un autor (la spec pide «un aviso genérico»).
+- **Dónde se mostraría:** un aviso al entrar a Investigaciones o en el detalle de la entrevista propia.
+- **Opciones:** un evento por autor que el backend exponga como aviso no visto (como los desbloqueos); una marca en Mis investigaciones al faltar una entrevista que estaba; no avisar.
+- **Si no se muestra:** la entrevista eliminada desaparece de Mis investigaciones y su detalle responde 404; el comentario eliminado deja de verse.
+- **Estado:** pendiente de decisión del usuario (el backend no guarda el aviso).
+
+## 2026-10-29 · F09 · Insignias de la vitrina de los aliados
+
+- **Dato:** los códigos de las insignias que cada aliado tiene en su vitrina (`aliados[].vitrina`).
+- **Dónde se mostraría:** los círculos del panel «Aliados en tu salón» (boceto 03), cada uno con el ícono de su insignia.
+- **Opciones:** el servidor entrega nombre e ícono por insignia en la vitrina; el front busca cada código en `GET logros` del propio estudiante (las secretas que no tiene salen enmascaradas); un ícono genérico de sello (como hoy).
+- **Si no se muestra:** cada insignia se ve como un sello genérico, con el total en la etiqueta accesible.
+- **Estado:** resuelto en F09 a pedido del usuario: cada sello se ve con el mismo ícono que el pasaporte y la vitrina propia (en api, el sello de `achievementIcons`) y su nombre sale de `GET logros` del propio estudiante (título al pasar el puntero y texto para lectores); una secreta que no tiene se nombra «Sello secreto».
+
+## 2026-10-28 · F08 · Avisos al apoderado (HU-067)
+
+- **Dato:** cuándo el hijo habilita una conversación (`abierta_para_hijo` pasa a verdadero) o responde una que el apoderado espera.
+- **Dónde se mostraría:** un aviso al ingresar al portal o una marca en el menú «Conversaciones».
+- **Opciones:** notificaciones asíncronas (backend con eventos por cuenta); calcular la novedad al ingresar comparando con la última visita; dejar solo la marca «{hijo} respondió» de la lista (como hoy).
+- **Si no se muestra:** el apoderado ve lo nuevo al abrir Conversaciones (la lista se revalida al montarla).
+- **Estado:** resuelto en parte en el ajuste notificaciones: la primera respuesta del hijo a una conversación avisa al apoderado en la campana (RESPUESTA_CONVERSACION). Sin aviso cuando el hijo habilita una conversación, por decisión del usuario (2026-11-04): cerrado.
+
+## 2026-10-28 · F08 · «Requiere atención» en el inicio del apoderado
+
+- **Dato:** temas en «Le toca responder» del hijo activo.
+- **Dónde se mostraría:** la tarjeta de Conversaciones del inicio (estilo de alerta que ya tiene la tarjeta en local).
+- **Opciones:** resaltar la tarjeta cuando hay temas por responder; un contador en el menú; no resaltar.
+- **Si no se muestra:** el inicio muestra conversadas y por conversar del hijo activo, sin alerta.
+- **Estado:** resuelto en el ajuste inicio-apoderado: la tarjeta «Conversaciones con {hijo}» lleva «{hijo} te espera en N» y «Seguir conversando» como acción principal.
+
+## 2026-10-28 · F08 · Varios hijos en el inicio del apoderado
+
+- **Dato:** `GET /sesion` trae todos los hijos; `GET /familia` solo el primer vínculo (`estudiante`).
+- **Dónde se mostraría:** «Mis hijos», el avance del hijo y sus resultados en el inicio (hoy, solo el primero).
+- **Opciones:** `familia?estudiante=` como en Conversaciones (ajuste sin modelo); un selector en el inicio; mantener el primero.
+- **Si no se muestra:** con dos hijos, el inicio muestra al primero; Conversaciones ya permite elegir.
+- **Estado:** resuelto en el ajuste inicio-apoderado: `GET /familia` entrega `estudiantes` y el inicio tiene un selector compartido con Conversaciones.
+
+## 2026-10-28 · F08 · Tramos colapsables en Mis actividades
+
+- **Dato:** el bloque de cada actividad del apoderado (nombre y número).
+- **Dónde se mostraría:** cabecera de cada tramo «{n} · {nombre} · {x} de {y} completadas» con «Ocultar / Mostrar».
+- **Opciones:** implementarlos cuando la ruta del apoderado tenga más de un bloque.
+- **Si no se muestra:** con un solo bloque (FAMILIA, la ruta actual) la spec pide la lista directa, que es lo que se ve.
+- **Estado:** descartado por el usuario (2026-11-04).
+
+## 2026-10-28 · F08 · Contenido de fichas del estudiante bajo demanda
+
+- **Dato:** la mochila del estudiante ya pide el contenido de cada ficha al abrir el modal (`GET /fichas/{codigo}`, ajuste mochila); la lista no trae el contenido.
+- **Estado:** verificado en F08; no hace falta cambio.
+
+## 2026-10-28 · F07b · Planes fuera de los lotes F07
+
+- **Dato:** lo que B11 dejó fuera y ningún lote F07 implementa: HU-049 (sugerir revisar los planes al completar un cuestionario, un caso o una comprobación, o al publicar una entrevista); «Es a propósito» en el aviso de misma familia (guardar que el estudiante ya respondió); lo que ve la orientadora de las tarjetas (HU-086, B14).
+- **Dónde se mostraría:** el cierre de actividad o un aviso en Mis planes (HU-049); la franja del aviso de misma familia; el perfil del estudiante en el portal de la orientadora (F10).
+- **Opciones:** HU-049 como aviso en el cierre de actividad con enlace a Mis planes, o como franja en Mis planes; «Es a propósito» como botón en el aviso, con su campo en el backend; las tarjetas en la vista de la orientadora cuando llegue B14.
+- **Si no se muestra:** el estudiante no recibe el recordatorio de revisar sus planes y el aviso de misma familia sigue apareciendo.
+- **Estado:** pendiente de su lote (backend sin implementar para HU-049 y «Es a propósito»; B14 para la orientadora).
+
+## 2026-10-28 · Ajuste F07a v4.2 · Compartir o imprimir el plan
+
+- **Dato:** el plan completo (secciones, dudas y, desde F07b, presupuesto y pasos) ya está en `GET /planes`; no hay forma de compartirlo ni imprimirlo para verlo en familia.
+- **Dónde se mostraría:** Mis planes o el plan abierto (una acción «Compartir» o «Imprimir»), o el portal del apoderado.
+- **Opciones:** vista de impresión del plan abierto; compartir con el apoderado desde F08; o dejarlo para la revisión final.
+- **Si no se muestra:** el estudiante comenta su plan en casa sin tenerlo a la vista.
+- **Estado:** pendiente de decisión del usuario (F08 o revisión final).
+
+## 2026-10-28 · F07a · «De tu camino» en «Por qué la elijo»
+
+- **Dato:** la tarjeta v4 cita en POR_QUE lo que el estudiante escribió en la actividad 1.7 («De tu camino»); el backend no entrega esa cita en `GET /planes`.
+- **Dónde se mostraría:** sección 1 del plan abierto, sobre «¿De quién fue la idea?», en lectura y en edición.
+- **Opciones:** una referencia con la respuesta de 1.7 en `GET /planes` (ajuste sin modelo); reutilizar `GET /actividades/{a}/referencias` desde la tarjeta; o dejar la sección sin la cita.
+- **Si no se muestra:** el estudiante escribe su relato sin ver lo que ya contó en 1.7.
+- **Estado:** pendiente de decisión del usuario; no se implementa en F07a.
+
+## 2026-10-28 · F07a · Valores del registro 2.3 primero
+
+- **Dato:** la tarjeta v4 ordena los chips de VALORES en POR_QUE con los que el estudiante marcó en el registro «Lo que valoro» (2.3) primero; `opciones.valores` no indica cuáles marcó.
+- **Dónde se mostraría:** «¿Qué te mueve a elegirla?» de la sección 1 del plan abierto (orden de los chips y, quizá, una marca «de Lo que valoro»).
+- **Opciones:** `opciones.valores[].de_registro` en `GET /planes` (ajuste sin modelo); leer las respuestas del registro desde la tarjeta; o mantener el orden de la lista común.
+- **Si no se muestra:** los chips siguen el orden de la lista común VALORES.
+- **Estado:** pendiente de decisión del usuario; no se implementa en F07a.
+
+## 2026-10-26 · F06 · Datos del catálogo local que el servidor no entrega
+
+- **Dato:** el catálogo local muestra, y el servidor no entrega:
+  - en la ocupación, `interestScores` (las seis barras RIASEC);
+  - en la institución, dirección, distrito y provincia (el servidor tiene `ubicacion` con código y nombre);
+  - en la carrera, ingresos por ámbito (Lima, nacional) y por edad (jóvenes, adultos) con su ranking (el servidor tiene `ingreso` con promedio, fuente, año y tramos con porcentaje);
+  - en la tarjeta de carrera de la lista, la duración y la descripción (`CarreraResumen` no las trae; el detalle sí).
+- **Dónde se mostraría:** detalle de ocupación («A qué tipo de persona le suele atraer»), detalle de institución («Dónde queda»), detalle de carrera («Cuánto se gana») y tarjetas del catálogo de carreras.
+- **Opciones:**
+  1. Agregar esos campos al backend (puntajes O*NET por dimensión, dirección, ingresos por ámbito y edad, duración en el resumen).
+  2. Dejar las vistas de api con lo que hoy entrega el servidor.
+- **Si no se muestra:** en api, la ocupación muestra sus sellos sin barras, la institución solo su ubicación, la carrera su ingreso promedio con tramos y la tarjeta de carrera, nombre, familia y sellos. En local no cambia.
+- **Estado:** resuelto en el ajuste catalogo-datos-reales (2026-10-27): el servidor entrega los puntajes por dimensión (`puntajes`, 0–100), la dirección y el distrito (la provincia se descarta), los ingresos de la familia por departamento y por edad (`ingreso.nacional` y `ingreso.departamentos`, con jóvenes y adultos) y por institución, y la duración en el resumen de carrera. Las pantallas que los muestran son F6 de ese ajuste.
+
+## 2026-10-27 · Ajuste catalogo-datos-reales · Planes en los detalles del catálogo
+
+- **Dato:** desde F07a, los planes del front en api son los del servidor, pero la institución del plan se elige en REALIDAD (F07b); el perfil del estudiante en api no tiene departamento.
+- **Dónde se mostraría:** «Usarla en un presupuesto» (debería abrir el plan con la institución precargada en REALIDAD), «En tus planes» del detalle de institución («Aquí estudiarías X en tu Plan A») y el chip inicial de «Dónde estudiarla» (el departamento del estudiante).
+- **Hoy:** «Usarla en un presupuesto» lleva a Mis planes sin precarga; «En tus planes» no se pinta en la institución; «Dónde estudiarla» arranca en Lima. En api, «Armar un plan» crea el plan en el servidor (solo si la carrera es favorita) y abre su sección 1; «Ver mi tarjeta» abre el plan de esa carrera (F07a).
+- **Opciones:** precargar la institución al llegar a REALIDAD (F07b); o mantenerlo así hasta la revisión estética.
+- **Estado:** reescrito en F07a; «Usarla en un presupuesto» y «En tus planes» esperan REALIDAD (F07b). El departamento sigue pendiente de decisión del usuario.
+
+## 2026-10-27 · Ajuste catalogo-datos-reales · Contador de exploración en carreras e instituciones
+
+- **Dato:** cuántas carreras o instituciones vio la cuenta («Tu exploración: N descubiertas» en los bocetos).
+- **Estado:** descartado por el usuario: el progreso va en el pasaporte. El bloque no se pinta en esos listados (sí en profesiones, como «N de M íconos revelados»). Si más adelante se quiere un empujón ahí, que tenga mecánica (por ejemplo, familias visitadas hacia la insignia), no un conteo de vistas.
+
+## 2026-10-27 · Ajuste catalogo-datos-reales · Ocupaciones reales por carrera
+
+- **Dato:** la relación carrera → ocupaciones. Hoy es provisional: de 3 a 5 ocupaciones al azar por carrera (semilla fija), salvo las 6 carreras de la ruta; las carreras de FF. AA. no tienen ninguna.
+- **Dónde se mostraría:** «Profesiones a las que conduce» (detalle de carrera) y «Carreras que llevan aquí» (detalle de profesión).
+- **Opciones:** cargar el archivo real de emparejamiento carrera → ocupaciones cuando esté; mientras tanto, mostrar la relación provisional (como hoy) o no pintar esas secciones.
+- **Estado:** descartado (2026-11-04): carreras y ocupaciones se relacionan por familia (`ocupacion_familia`, ajuste resultados-intereses); ya no hay un emparejamiento carrera → ocupación que esperar.
+
+## 2026-10-25 · Ajuste pasaporte-perfil · Textos de condición en bloqueos y desbloqueos
+
+- **Dato:** cada condición trae `texto` (lo que pide, redactado en el servidor) también en `bloqueo.condiciones_faltantes` de actividades y secciones y en `nuevos_desbloqueos[].condiciones`.
+- **Dónde se mostraría:** el diálogo de Lumi ante algo cerrado, el drawer de una actividad bloqueada o el cierre de actividad.
+- **Opciones:**
+  1. Listar las condiciones faltantes con su texto bajo el mensaje de bloqueo.
+  2. Dejarlo solo en el pasaporte (modal de insignia y siguiente título), como hoy.
+- **Si no se muestra:** esas vistas siguen con el mensaje de bloqueo de la regla; el texto de cada condición solo se ve en el pasaporte y el perfil.
+- **Estado:** pendiente; ninguna vista lo pinta fuera del pasaporte por decisión del usuario al aprobar el ajuste.
+
 ## 2026-10-23 · F05 · «Hoy ya contaron tus 3 conversaciones» en el panel de amistad
 
 - **Dato:** `GET diario/amistad` trae `puntos`, `nivel` y `siguiente_en`, pero no cuántas escrituras contaron hoy (tope `TOPE_ENTRADAS_AMISTAD_DIA`).
@@ -39,7 +239,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se muestra:** hoja de vida del paso Problema (`ProfessionalResume`).
 - **Opciones:** completar esas ocupaciones en `datos/fijos.py`; que el backend entregue un estado «ficha en preparación»; dejarlo así.
 - **Si no se muestra:** en api, una sección vacía no se pinta (queda el nombre, la inicial y la ocupación). En local no cambia.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** resuelto en F06 con la primera opción: `datos/fijos.py` completa la descripción, los lugares de trabajo y las habilidades de las ocupaciones de las seis carreras, y `ruta` sus conocimientos. Las que siguen sin texto lo tendrán con la carga real.
 
 ## 2026-10-22 · F03 · «Sorpresas nuevas» en la línea de actividades del inicio
 
@@ -63,7 +263,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** vista explicada del apoderado (`ParentQuestionnaireDetailView`), como en la demostración local («Cómo tomar estas recomendaciones»).
 - **Opciones:** listar las ocupaciones afines con su ajuste; listar también las carreras; dejarlas solo para la conversación con el estudiante.
 - **Si no se muestra:** el apoderado ve qué mide el cuestionario, el código de interés y cada dimensión con su descripción.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** resuelto en el ajuste resultados-intereses: la vista explicada del apoderado (`ParentQuestionnaireDetailView`) muestra con `ResultadoInteresesPortal` las ocupaciones afines y las familias recomendadas del hijo (familias en lugar de carreras sueltas).
 
 ## 2026-10-22 · F04d · Video incrustado en el visor de recursos
 
@@ -95,7 +295,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el reproductor de actividades (`QuestionNode`) y el de batallas (`ChallengePlayer`).
 - **Opciones:** volver a una pregunta ya resuelta en solo lectura (con su explicación); permitir un nuevo intento al volver; mantener sin retroceso.
 - **Si no se muestra:** «Anterior» no aparece en una pregunta con retroalimentación inmediata ni en el paso que la sigue (en ese paso desaparece, aunque el anterior a él sí admitiría volver), ni en las batallas.
-- **Estado:** pendiente de decisión del usuario.
+- **Estado:** decidido por el usuario (2026-11-04): no se puede retroceder; se mantiene sin «Anterior» en batallas y en preguntas con retroalimentación.
 
 ## 2026-10-21 · F01 · «Anterior» en el reproductor del apoderado
 
@@ -103,7 +303,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el reproductor del portal del apoderado.
 - **Opciones:** el mismo «Anterior» del estudiante; un índice de pasos; mantener sin retroceso.
 - **Si no se muestra:** el apoderado solo avanza en sus actividades, como hasta ahora.
-- **Estado:** revisar en F08.
+- **Estado:** revisado en F08 sin cambios: la spec de pantallas no lo incluye; queda para la revisión estética.
 
 ## 2026-10-21 · F00 · Carta del apoderado (`t_apo_carta`)
 
@@ -111,7 +311,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** lista «Mis actividades» del portal y su reproductor; en F08 se completa escribiendo la carta.
 - **Opciones:** conectar la escritura de la carta (B12) en F08; mostrarla como informativa hasta entonces; ocultarla.
 - **Si no se muestra:** F00 la lista con `t_apo_carta.json` sin nodos (`DATO DE PRUEBA`). Bloqueada, la tarjeta dice «Bloqueada» y la entrada por URL muestra el mensaje del servidor. Abierta, el portal la sigue tratando como no disponible y no se puede iniciar: así FAMILIA no se cierra sin la carta.
-- **Estado:** pendiente de F08.
+- **Estado:** resuelto en F08: la carta no es una actividad; se escribe en Conversaciones (A3) y `t-apo-carta` sale de la ruta (la reemplaza `t-apo-2`, de prueba).
 
 ## 2026-10-19 · B17 · Hijos y salones de la sesión
 
@@ -122,7 +322,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - mostrar solo el nombre del hijo en la cabecera del portal del apoderado;
   - no mostrarlos hasta tener las rutas propias de la orientadora.
 - **Si no se muestra:** el portal del apoderado sigue mostrando hijos de demostración en modo `api`, aunque sus actividades sí son de la cuenta con sesión.
-- **Estado:** en parte: el portal del apoderado ya muestra al hijo desde `familia` (F00); `hijos` de la sesión y los salones de la orientadora siguen sin vista (F08, F10).
+- **Estado:** hijos resuelto en F08: el portal usa `GET /sesion` para el parentesco del perfil, el selector «Con {nombre}» de Conversaciones (en la lista, no al escribir la carta) y el hijo activo; los salones de la orientadora siguen pendientes (F10). El inicio y «Mis hijos» siguen mostrando un solo hijo (el de `familia`): ver «F08 · Varios hijos en el inicio».
 
 ## 2026-10-15 · B12 · Familia: conversaciones, cartas y ruta del apoderado
 
@@ -134,20 +334,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** sección Familia del estudiante (carta y conversaciones), portal del apoderado (conversaciones, carta, diploma, avance y resultados del hijo). Hoy el diploma del apoderado se calcula en el front con el estado remoto de sus actividades.
 - **Opciones:** conectar familia en su lote F con estas consultas; mientras tanto, el portal del apoderado sigue con sus actividades y su diploma actuales.
 - **Si no se muestra:** en modo `api` las conversaciones, las cartas y los resultados visibles al apoderado existen solo en el servidor. El aviso al apoderado cuando el hijo habilita una conversación (HU-067) queda fuera de B12.
-- **Estado:** pendiente del lote F de familia; no se toca la interfaz en B12.
-
-## 2026-10-15 · B11 · Planes de carrera
-
-- **Dato:**
-  - `GET /cuentas/{c}/planes`: hasta tres tarjetas por prioridad (A, B, C) con sus cuatro secciones (POR_QUE, CONOCIMIENTO, REALIDAD, PASOS), el estado de cada una (`BLOQUEADA`, `POR_EMPEZAR`, `EN_PROCESO`, `LISTA`, con el motivo de bloqueo que nombra la actividad que la abre), `lista_para_comparar`, dudas, gastos con `totales_por_frecuencia`, `total_primer_anio` y `total_carrera`, financiamiento, complicaciones, sugerencias, pasos, medidores (1–3), `avisos` de misma familia, `opcion_inicial` y `opciones` (las listas de la tarjeta);
-  - `POST /acciones/planes/crear`, `guardar-seccion`, `medidores`, `paso-hecho`, `ordenar` y `eliminar`. Dudas, complicaciones, sugerencias y pasos se identifican por `numero` dentro de la tarjeta;
-  - `gestion` (PUBLICA, PRIVADA o nula) en `InstitucionResumen` del catálogo.
-  - referencias nuevas en `GET /cuentas/{c}/actividades/{a}/referencias`: PLANES (carreras por prioridad), PLAN (plan A: `texto` con la carrera, `cita` con el relato y `opciones` con los motivos), PASOS_PLAN_A y OPCION_INICIAL. `cita` es un campo nuevo de la referencia que el front no consume todavía.
-- **Precarga de gastos (responsabilidad del front):** el backend no inserta gastos ni devuelve una propuesta. Con `opciones.rubros` (`frecuencia_recomendada`, `monto_referencia`, `cero_si_publica`, `solo_si_camino_prepara`), `opciones.caminos` (`incluye_preparacion`) y la `gestion` de la institución elegida, el front arma en vivo los gastos precargados: Pensión en 0 si la institución es pública (con su monto de referencia si no tiene gestión), Preparación solo si el camino incluye prepararse, y Alimentación y Vivienda a mano. Al guardar REALIDAD envía los gastos que el estudiante dejó.
-- **Dónde se mostraría:** la sección Planes del estudiante (tarjeta por secciones, medidores, orden A/B/C, aviso de misma familia), el detalle de institución del catálogo (pública o privada) y las actividades 4.5 y 5.1 (`t-comparar` y `t-proyecto` en `ruta`), que citan los planes, el relato del plan A, sus pasos y la opción inicial.
-- **Opciones:** conectar Planes en su lote F con la tarjeta v4; mantener los planes locales actuales (`DecisionSheet`), que no coinciden con este modelo, hasta diseñar la vista.
-- **Si no se muestra:** en modo `api` los planes, la opción inicial y los requisitos de `t-comparar` y `t-proyecto` existen solo en el servidor.
-- **Estado:** pendiente del lote F de planes; no se toca la interfaz en B11.
+- **Estado:** resuelto en F08: Familia del estudiante (E2–E8), Conversaciones del apoderado (A1–A6), diploma (A9) y avance; el contrato cambió (conversada al responder el segundo, lista completa con tramo y bloqueo, `otro`, `cartas_disponibles`, código del diploma). El aviso HU-067 queda en «F08 · Avisos al apoderado».
 
 ## 2026-10-14 · B09 · Avance por temática
 
@@ -158,7 +345,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   2. Junto a la comparación partida–llegada del libro de Helena.
   3. Solo en el panel de la orientadora (F10/F11).
 - **Si no se muestra:** el avance por temática solo existe en el servidor; el front no lo pide (no hay cliente).
-- **Estado:** pendiente, sin vista por decisión del usuario (F05), para un lote posterior. HU-075 queda parcial (nivel y afinidad).
+- **Estado:** pendiente, sin vista por decisión del usuario (F05), para un lote posterior. HU-075 queda parcial (nivel y afinidad). El ajuste pasaporte-perfil rediseñó el perfil y el pasaporte sin incluirlo: sigue sin vista.
 
 ## 2026-10-13 · B08 · Batallas, casos y testimonios
 
@@ -275,7 +462,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** confirmación del recorrido o diploma; el evento no tiene una vista propia.
 - **Opciones:** mantener el diploma derivado de la ruta completa; mostrar el evento en un historial futuro; definir una confirmación específica del bloque.
 - **Si no se muestra:** el backend registra el evento y el diploma existente se muestra desde `route.complete`, calculado con las actividades completadas del servidor.
-- **Estado:** pendiente de una presentación propia del evento; se conserva el diploma actual sin nuevos elementos.
+- **Estado:** resuelto en F08: el diploma sale del servidor (`familia.diploma`, con fecha y código) y se ve en Mis actividades y en su pantalla (A9).
 
 ## 2026-10-09 · Anexo F2 · Descripciones fuera del resumen de Helena
 
@@ -349,7 +536,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   2. Mostrarla al abrir el detalle de una conversación.
   3. Mantener el acceso de próxima iteración hasta integrar lectura y acciones.
 - **Si no se muestra:** el estado sigue disponible en el backend; el front no solicita la consulta y conserva su presentación actual de próxima iteración.
-- **Estado:** pendiente. B2 solo registra el dato; no implementa ninguna opción.
+- **Estado:** resuelto en F08: el estado de cada conversación (y `bloqueada` con su mensaje) organiza las pestañas de Familia y Conversaciones.
 
 ## 2026-10-08 · F4 · Señal de hoy todavía local
 
@@ -385,7 +572,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** tarjetas de carreras del resultado completo de intereses.
 - **Opciones:** incorporar duración validada al contrato en su iteración; mantenerla solo en el detalle local que ya dispone de ese catálogo; omitirla del resultado completo.
 - **Si no se muestra:** las tarjetas conservan nombre, familia, vías, favorito y plan, sin atribuir duración a la respuesta remota ni copiar años de demostración.
-- **Estado:** resuelto por instrucción directa del usuario en la corrección de F4 del 9 de octubre: se muestra el texto literal de `careerCatalog.duration`, por `codigo`/`id`, en ambos modos. Se omite si no hay coincidencia. Se mantiene fuera del contrato; esta decisión sustituye la omisión inicial de la línea 331 del anexo.
+- **Estado:** resuelto por instrucción directa del usuario en la corrección de F4 del 9 de octubre: se muestra el texto literal de `careerCatalog.duration`, por `codigo`/`id`, en ambos modos. Se omite si no hay coincidencia. Se mantiene fuera del contrato; esta decisión sustituye la omisión inicial de la línea 331 del anexo. F06: el detalle de carrera del catálogo en api muestra la `duracion` del servidor; las tarjetas del resultado siguen con la de `careerCatalog`.
 
 ## 2026-10-09 · Anexo F4 · Descripciones de intereses como lista
 
@@ -401,7 +588,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** descripción, letras, detalle y corazón de las tarjetas de ocupaciones afines.
 - **Opciones:** completar el catálogo y la correspondencia por código; definir favoritos de ocupaciones sin correspondencia en una iteración posterior; conservar únicamente los datos y acciones que tienen soporte actual.
 - **Si no se muestra:** una ocupación sin catálogo conserva título y ajuste remotos y permite filtrar sus carreras por O*NET; no muestra descripción, letras o enlace inventados. Sin código local tampoco se presenta el corazón, porque los favoritos actuales guardan ese identificador. Una ocupación con contenido pendiente omite el marcador provisional y conserva su detalle existente con sus candados actuales.
-- **Estado:** faltantes registrados; no se inventa correspondencia ni contenido. El fixture actual tiene códigos locales para sus diez coincidencias. La ausencia de código queda cubierta con un escenario DATO DE PRUEBA.
+- **Estado:** resuelto en F06: en api, el corazón de las ocupaciones afines marca en el servidor cualquier coincidencia con `codigo` y su detalle se lee del catálogo del servidor; una coincidencia sin `codigo` sigue sin corazón ni enlace.
 
 
 ## 2026-10-09 · Corrección F4 · Íconos obtenidos en la Central de Casos
@@ -450,4 +637,19 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** portal del apoderado (no tiene vista de fichas).
 - **Opciones:** una sección de recursos en el portal; mostrarlas dentro de cada actividad; no mostrarlas todavía.
 - **Si no se muestra:** las fichas del apoderado se obtienen sin que se vean.
-- **Estado:** pendiente (lote F).
+- **Estado:** resuelto en F08: chips por actividad en Mis actividades (A7) y el modal compartido sin favorito (A8), con el contenido pedido al abrir.
+
+## 2026-10-28 · Ajuste inicio-apoderado · Comparación partida → llegada para el apoderado
+
+- **Dato:** los dos resultados de partida y llegada del hijo (`GET /cuentas/{c}/familia/resultados`, uno por aplicación con el mismo instrumento), si el salón llegara a compartir ese cuestionario con la familia.
+- **Dónde se mostraría:** la vista explicada del apoderado (`ParentQuestionnaireDetailView`), con el cambio de zona por dimensión.
+- **Opciones:** reutilizar la comparación del libro de Helena en modo lectura; una tabla sencilla «partida / llegada» por dimensión; no mostrarla (solo el resultado más reciente).
+- **Si no se muestra:** el inicio y la vista explicada usan el resultado de llegada si existe y, si no, el de partida. Hoy ningún salón de `ruta` lo comparte (mide también la presión de la familia).
+- **Estado:** pendiente.
+
+## 2026-11-01 · Ajuste carga-instrumentos · Puntaje visual en la vista de la orientadora
+
+- **Dato:** cada dimensión del resultado trae `puntaje_visual` (0–100 entero), `puntaje` y `puntaje_maximo`. La spec pide que la orientadora vea el 0–100 como dato principal y «27 de 40» como secundario.
+- **Dónde se mostraría:** el detalle de cuestionario de la orientadora (`QuestionnaireBars` / `QuestionnaireDetailContent`), que en api todavía no existe: hoy solo pinta datos de demostración y llega con B14.
+- **Opciones:** el número 0–100 junto a la barra con «27 de 40» debajo en gris; o el 0–100 en la barra y «27 de 40» en una nota al pie de la tarjeta.
+- **Estado:** pendiente de B14 (vista de resultados de la orientadora).

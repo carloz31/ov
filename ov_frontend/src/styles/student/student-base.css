@@ -280,6 +280,38 @@ body:has([data-student-experience] .sx-shell) {
   outline: 3px solid var(--ring);
   outline-offset: -3px;
 }
+/* Ajuste notificaciones: lo que llega de otra cuenta tiene su propio acento; lo visto queda atenuado. */
+.sx-root .sx-novelty.is-asincrona {
+  background: color-mix(in srgb, var(--sx-lumi) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--sx-lumi);
+}
+.sx-root .sx-novelty.is-asincrona > svg {
+  color: var(--sx-lumi);
+}
+.sx-root .sx-novelty.is-vista {
+  opacity: 0.72;
+}
+.sx-root .sx-novelties-todas {
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 4px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.sx-root.sx-novelties-modal .sx-novelties-lista {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx-root.sx-novelties-modal .sx-novelties-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
 .sx-root .sx-novelties-empty {
   margin: 8px;
   font-size: 14px;
@@ -844,6 +876,10 @@ body:has([data-student-experience] .sx-shell) {
   min-height: 0;
   overflow: hidden;
 }
+/* El mapa espera a su imagen: imagen, camino y nodos aparecen juntos (MapCanvas). */
+.sx-root .sx-map-viewport[data-cargando] .sx-map-canvas {
+  visibility: hidden;
+}
 .sx-root .sx-map-viewport {
   position: absolute;
   inset: 0;
@@ -1117,26 +1153,9 @@ body:has([data-student-experience] .sx-shell) {
   font-size: 12px;
   font-weight: 700;
 }
-.sx-root .sx-panel-user > div {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.sx-root .sx-panel-user > div > span {
-  font-size: 12px;
-  color: var(--muted-foreground);
-}
 .sx-root .sx-panel-user strong {
   font-size: 14px;
   font-weight: 700;
-}
-.sx-root .sx-panel-level {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: var(--sx-panel-summary-height);
-  margin: 10px 0 12px;
-  color: var(--primary);
 }
 .sx-root .sx-level-medallion {
   display: flex;
@@ -1287,23 +1306,6 @@ body:has([data-student-experience] .sx-shell) {
   color: var(--primary);
   text-decoration: underline;
 }
-.sx-root .sx-panel-signal {
-  display: flex;
-  align-items: baseline;
-  gap: 2px;
-  flex-shrink: 0;
-  padding: 2px 7px;
-  border: 1px solid var(--data-secondary);
-  border-radius: 10px 4px 10px 4px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 10px;
-}
-.sx-root .sx-panel-signal strong {
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.2;
-}
 .sx-root .sx-signal-heading {
   display: flex;
   align-items: center;
@@ -1317,13 +1319,6 @@ body:has([data-student-experience] .sx-shell) {
   margin: 6px 0 0;
   font-size: 11px;
   line-height: 1.35;
-}
-.sx-root .sx-signal-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
 }
 .sx-root .sx-signal-edit {
   display: flex;
@@ -2086,6 +2081,16 @@ body:has([data-student-experience] .sx-shell) {
   background: var(--destructive-soft);
   color: var(--destructive);
   font-size: 14px;
+}
+/* Guardar la actividad en el servidor: un cargador simple al centro, sin bloquear la lectura. */
+.sx-root .sx-player-cargando {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  color: var(--sx-lumi);
 }
 .sx-root .sx-content-reading {
   display: grid;

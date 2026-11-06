@@ -1,0 +1,301 @@
+{
+  "id": "b2-2",
+  "codigo": "b2-2",
+  "tipo": "encuentro",
+  "titulo": "Muchas formas de ser inteligente",
+  "subtitulo": "El reparto de tareas",
+  "escenario": "bosque_volcan",
+  "bloque": 2,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": ["b2-1"],
+  "ubicacion": "Bosque del volcán, campamento de la brigada",
+  "duracionEstimadaMin": 10,
+  "personajeIds": ["rosa", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante conoce la idea de inteligencias múltiples de Gardner, las siete que mide su cuestionario con ejemplos de personajes, y entiende que todos tenemos varias con distinto desarrollo.",
+  "nodos": [
+    {
+      "id": "b2-2-01",
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "expresion": "neutral",
+      "texto": "Ya que están, ayúdenme con el reparto de tareas de la semana. Tengo seis brigadistas y seis tareas, y cada vez que las reparto mal, alguien termina frustrado. Miren la pizarra."
+    },
+    {
+      "id": "b2-2-02",
+      "tipo": "diapositiva",
+      "etiqueta": "La pizarra de la brigada",
+      "titulo": "Seis brigadistas, seis tareas",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Brigadista", "Lo que hace mejor", "Tarea de la semana"],
+          "filas": [
+            ["Teo", "Lee los mapas del terreno y se orienta en la niebla", "Trazar la ruta de evacuación nueva"],
+            ["Lía", "Calma a la gente y se da cuenta de quién está mal", "Recibir a las familias en el refugio"],
+            ["Pacho", "Arregla la bomba de agua con las manos y aprende haciendo", "Reparar la pasarela caída"],
+            ["Inés", "Escribe los informes que todos entienden", "Redactar el aviso para la ciudad"],
+            ["Mateo", "Calcula cuánto tarda la lava según la pendiente", "Estimar los tiempos de alerta"],
+            ["Juana", "Dirige las señales de tambor entre refugios", "Entrenar el código de señales"]
+          ],
+          "nota": "Rosa, la jefa, se reserva una tarea: pensar qué le pasa al equipo y a ella misma cuando hay un susto grande."
+        }
+      ]
+    },
+    {
+      "id": "b2-2-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "¿Quién de la brigada dirías que es «el más inteligente»?",
+      "nota": "No se guarda.",
+      "opciones": [
+        {
+          "id": "b2-2-03a",
+          "texto": "Mateo, el que calcula.",
+          "reaccion": [
+            {
+              "id": "b2-2-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Es lo que responde casi todo el mundo: el de los números. Pero Mateo se pierde en la niebla y no sabe calmar a nadie. Sin Teo y Lía, sus cálculos no sirven de nada."
+            }
+          ]
+        },
+        {
+          "id": "b2-2-03b",
+          "texto": "Inés, la que escribe.",
+          "reaccion": [
+            {
+              "id": "b2-2-03br",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "La de las palabras, la otra respuesta clásica. Pero Inés no arreglaría la pasarela ni en una semana. Pacho lo hace en una tarde."
+            }
+          ]
+        },
+        {
+          "id": "b2-2-03c",
+          "texto": "Ninguno: cada uno es bueno en algo distinto.",
+          "reaccion": [
+            {
+              "id": "b2-2-03cr",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Esa es la respuesta que me gustaría que diera el colegio. Lumi, cuéntales de dónde viene esa idea."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2-2-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Una inteligencia o varias",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Durante mucho tiempo se pensó que la inteligencia era una sola: la que miden las notas en matemática y lenguaje. Howard Gardner propuso en 1983 que hay varias, que todos las tenemos y que cada persona las desarrolla en una combinación propia."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Qué cambia con esta idea",
+          "items": [
+            "Nadie es «inteligente» o «no inteligente» en general; cada uno tiene un perfil con puntos más y menos desarrollados.",
+            "Las inteligencias se usan según el problema: para arreglar una bomba de agua no sirve la misma que para calmar una discusión.",
+            "Se desarrollan con práctica. El perfil de hoy no es el de dentro de cinco años."
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, actividad 6 y Anexo 6.2 (basado en CCEC, 2005). Gardner (1999), Intelligence reframed."
+        }
+      ]
+    },
+    {
+      "id": "b2-2-05",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Las siete que mide tu cuestionario",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Inteligencia", "Capacidad para…", "Personas que la muestran"],
+          "filas": [
+            ["Lingüística", "Usar las palabras con eficacia, al hablar y al escribir", "Ricardo Palma, Mario Vargas Llosa, Gabriel García Márquez"],
+            ["Lógico-matemática", "Razonar, usar números, ver patrones y relaciones", "Pedro Ruiz Gallo, Julio C. Tello, Deysi Cori"],
+            ["Espacial", "Percibir el mundo visual y transformar esas imágenes", "Miguel Grau, Leonardo da Vinci, Salvador Dalí"],
+            ["Cinestésico-corporal", "Usar el cuerpo para expresar ideas y producir cosas con las manos", "Sofía Mulanovich, Kina Malpartida, Teófilo Cubillas"],
+            ["Musical", "Percibir, distinguir y expresar formas musicales", "Juan Diego Flórez, Ima Súmac, Gian Marco"],
+            ["Interpersonal", "Percibir estados de ánimo e intenciones de otros y responder a ellos", "José Carlos Mariátegui, Teresa de Calcuta, Carl Rogers"],
+            ["Intrapersonal", "Conocerte a ti mismo y actuar según ese conocimiento", "César Vallejo, Sócrates, Carl Jung"]
+          ],
+          "nota": "Gardner luego agregó otras; el cuestionario de la plataforma mide estas siete, que son las del programa del MINEDU."
+        }
+      ]
+    },
+    {
+      "id": "b2-2-06",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Cómo leer un perfil sin equivocarte",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "Mira el conjunto, no una sola. Las ocupaciones reales combinan varias: un arquitecto usa la espacial y la lógico-matemática; un docente, la lingüística y la interpersonal.",
+            "Una inteligencia alta dice qué tipo de tareas te cuestan menos y disfrutas más; no dice qué carrera.",
+            "Una baja no cierra puertas. Dice dónde tendrías que esforzarte más, y eso se decide con los demás factores.",
+            "Pregunta a quien te conoce en cuál te ve destacar. A veces los demás ven lo que uno da por sentado."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Todos tenemos las siete. Lo que te distingue es cómo las combinas."
+        }
+      ]
+    },
+    {
+      "id": "b2-2-07",
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "texto": "Ahora sí, ayúdenme con el reparto. Si entendieron la tabla, esto sale solo."
+    },
+    {
+      "id": "b2-2-08",
+      "tipo": "pregunta",
+      "hablanteId": "rosa",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Teo se orienta en la niebla y traza rutas de memoria; Deysi Cori ve veinte jugadas adelante en un tablero de ajedrez. ¿Qué inteligencia muestra cada uno?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Teo, espacial; Deysi Cori, lógico-matemática.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Orientarse e imaginar el terreno es espacial; calcular jugadas y patrones es lógico-matemática."
+        },
+        {
+          "id": "b",
+          "texto": "Los dos, lógico-matemática.",
+          "correcta": false,
+          "retroalimentacion": "Teo no calcula: ve el terreno en su cabeza y lo transforma. Eso es espacial."
+        },
+        {
+          "id": "c",
+          "texto": "Teo, cinestésico-corporal; Deysi Cori, intrapersonal.",
+          "correcta": false,
+          "retroalimentacion": "Teo no destaca por usar el cuerpo sino por imaginar el espacio; y el ajedrez es razonamiento, no autoconocimiento."
+        }
+      ],
+      "explicacion": "La espacial es percibir el mundo visual y transformarlo en la cabeza (mapas, niebla, rutas); la lógico-matemática es razonar con patrones y relaciones (jugadas, cálculos). Pueden parecerse, pero resuelven problemas distintos.",
+      "pistas": [
+        {
+          "id": "b2-2-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Teo trabaja con imágenes del terreno; Deysi, con relaciones entre piezas. Busca esas dos palabras en la tabla."
+        }
+      ]
+    },
+    {
+      "id": "b2-2-09",
+      "tipo": "pregunta",
+      "hablanteId": "rosa",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Lía se da cuenta de quién está mal en el refugio y sabe qué decirle. ¿A quién de la tabla se parece más?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "A Sofía Mulanovich: usa el cuerpo con destreza.",
+          "correcta": false,
+          "retroalimentacion": "Lo de Lía no es con el cuerpo: es con lo que sienten los otros."
+        },
+        {
+          "id": "b",
+          "texto": "A César Vallejo: se conoce a sí misma.",
+          "correcta": false,
+          "retroalimentacion": "Conocerse a uno mismo es la intrapersonal. Lía lee a los demás: es la otra."
+        },
+        {
+          "id": "c",
+          "texto": "A Teresa de Calcuta: percibe lo que sienten los otros y responde.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Es la inteligencia interpersonal: percibir estados de ánimo e intenciones de otros y responder a ellos."
+        }
+      ],
+      "explicacion": "Interpersonal (los demás) e intrapersonal (uno mismo) se confunden por el nombre. Lía y Rosa son el par perfecto: una lee al equipo, la otra se lee a sí misma.",
+      "pistas": [
+        {
+          "id": "b2-2-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "¿Lía se fija en lo que siente ella o en lo que sienten los demás? «Inter» quiere decir «entre»."
+        }
+      ]
+    },
+    {
+      "id": "b2-2-10",
+      "tipo": "pregunta",
+      "hablanteId": "rosa",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Pacho sacó malas notas en matemática y lenguaje en el colegio, y le dijeron que «no era inteligente». Hoy repara cualquier máquina de la brigada. Según Gardner, ¿qué pasó?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "El colegio midió dos inteligencias y Pacho destaca en otra: la cinestésico-corporal.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Las notas miden sobre todo la lingüística y la lógico-matemática. Aprender haciendo y producir cosas con las manos es otra inteligencia, igual de real."
+        },
+        {
+          "id": "b",
+          "texto": "Pacho no es inteligente, pero tiene suerte con las máquinas.",
+          "correcta": false,
+          "retroalimentacion": "Eso es la idea de la inteligencia única, la que Gardner discutió. Reparar una bomba de agua exige coordinación, destreza y aprendizaje: no es suerte."
+        },
+        {
+          "id": "c",
+          "texto": "Pacho se volvió inteligente después del colegio.",
+          "correcta": false,
+          "retroalimentacion": "Ya lo era; solo que lo que se le daba bien no estaba en el examen."
+        }
+      ],
+      "explicacion": "Nadie es inteligente o no en general. Las notas miden dos inteligencias; las otras cinco existen igual, y una ocupación puede apoyarse en cualquiera de ellas.",
+      "pistas": [
+        {
+          "id": "b2-2-10p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Acuérdate de la primera tarjeta: ¿qué dos inteligencias miden las notas del colegio?"
+        }
+      ]
+    },
+    {
+      "id": "b2-2-11",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "expresion": "neutral",
+      "texto": "Reparto listo. En la ciudad, el maestro Bruno, el de la escuela, conserva las preguntas sobre inteligencias que restauran otra página del libro de Helena. Dile que vas de parte de la brigada."
+    },
+    {
+      "id": "b2-2-12",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Tu perfil de inteligencias se revela en el libro de Helena, con cómo desarrollar cada una. Y después hay un registro para decir en cuáles te reconoces y en cuál no. La ficha de las siete inteligencias ya está en tu mochila."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Todos tenemos las siete. Lo que te distingue es cómo las combinas. El maestro Bruno te espera en la ciudad."
+  },
+  "mapa": { "x": 250, "y": 340, "icono": "informativa" }
+}

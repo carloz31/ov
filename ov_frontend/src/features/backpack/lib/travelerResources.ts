@@ -2,13 +2,15 @@ import { activities, catalog } from '@/data/activities/content'
 import { modoApi } from '@/config/env'
 import { obtenerEstadoServidor } from '@/store/servidor/sesion'
 import { fichaDisponible } from '@/lib/servidor/adaptadores'
+import { urlEmbedTestimonio, urlYoutubeTestimonio } from '@/lib/servidor/adaptadoresCasos'
 import type { JourneyState } from '@/types/activities'
 import type { Recurso } from '@/types/activities'
 import { appPaths } from '@/routes/paths'
 import { cityCases, resourceReading } from '@/data/content/adventure'
 import { professionalTestimonials } from '@/data/catalog/occupations'
 import type { AdventureState } from '@/types/adventure'
-import type { TestimonioEstado } from '@/types/servidor'
+import type { FichaCuenta, TestimonioEstado } from '@/types/servidor'
+import type { OrigenFicha } from './agruparFichas'
 
 export type TravelResource = {
   id: string
@@ -23,8 +25,26 @@ export type TravelResource = {
   fileFormat?: Recurso['formatoArchivo']
   source?: string
   author?: string
-  // Testimonio del servidor (F04): si está disponible, su pista y el caso que lo regala (ajustes, 7).
-  servidor?: { disponible: boolean; pista: string | null; caso: TestimonioEstado['caso'] }
+  // Ajuste testimonios: cargo o situación de la persona, debajo de `author`.
+  contexto?: string
+  // Ajuste testimonios: el video con su tramo; sin él, el embed sale de `url`.
+  embed?: string
+  // Testimonio del servidor (F04): si está disponible, su pista y su origen, caso o actividad (ajustes, 7).
+  servidor?: {
+    disponible: boolean
+    pista: string | null
+    caso: TestimonioEstado['caso']
+    casoDisponible?: boolean
+    actividad?: TestimonioEstado['actividad']
+    actividadDisponible?: boolean
+    visto?: boolean
+  }
+  // Ajuste mochila: favorita en el servidor (en local, `adventure.bookmarks`).
+  favorita?: boolean
+  // Ajuste mochila: ficha del servidor; su contenido lo pide el modal al abrirse (GET de una ficha).
+  contenidoRemoto?: boolean
+  // Ajuste mochila: tema, origen y si ya se abrió (en local, solo la actividad de origen).
+  ficha?: OrigenFicha & { tema?: string; visto?: boolean }
 }
 
 const sheetDetails: Record<
@@ -70,11 +90,17 @@ function desdeRecurso(resource: Recurso, requirement: TravelResource['requiremen
       resource.resumen ??
       'Revisa las pistas que reuniste durante esta actividad.',
     requirement,
+    ficha: origenLocal(requirement),
     content: resource.contenido ?? details?.content,
     url: resource.url,
     fileFormat: resource.formatoArchivo,
     source: resource.fuente,
   }
+}
+function origenLocal(requirement: TravelResource['requirement']): TravelResource['ficha'] {
+  if (!('activityId' in requirement)) return undefined
+  const activity = activities.find((item) => item.id === requirement.activityId)
+  return { actividad: { codigo: requirement.activityId, titulo: activity?.titulo ?? requirement.activityId } }
 }
 // F04d: cualquier recurso del catálogo por su código, aunque no lo use una actividad local (las fichas de
 // `ruta`, los enlaces de una diapositiva). Con `titulo`, el del servidor.
@@ -108,6 +134,7 @@ export function getTravelResources(testimonios?: TestimonioEstado[] | null): Tra
       kind: 'sheet',
       icon: 'compass',
       requirement: { activityId: 'mission-welcome' },
+      ficha: origenLocal({ activityId: 'mission-welcome' }),
       content: `## Tu primera brújula\n\n${resourceReading}\n\n## Tres pistas\n\n**Observa:** reconoce qué disfrutas, qué te cuesta y qué despierta tu curiosidad.\n\n**Conversa:** pregunta a personas de distintas profesiones cómo viven su trabajo.\n\n**Prueba:** elige una experiencia pequeña que te permita conocer algo nuevo.`,
     },
     ...sheets,
@@ -117,22 +144,18 @@ export function getTravelResources(testimonios?: TestimonioEstado[] | null): Tra
   // contenido del catálogo del front; aparecen en cuanto se desbloquean, sin «guardarlas».
   return modoApi
     ? [
-        ...(obtenerEstadoServidor().fichas.datos ?? []).flatMap(
-          (f) => recursoDeFicha(f.codigo, f.titulo) ?? [],
+        ...(obtenerEstadoServidor().fichas.datos ?? []).flatMap((f) =>
+          f.estado === 'DISPONIBLE' ? fichaServidor(f) : (recursoDeFicha(f.codigo, f.titulo) ?? []),
         ),
         ...(testimonios ?? []).map(testimonioServidor),
       ]
     : resources
 }
-// Ajustes Central (7): como el prototipo local. Disponible: persona, ocupación y años (`author`), la cita
-// (`summary`), el texto completo y el video. Bloqueado: la pista como intriga y el caso que lo regala.
+// Ajustes Central (7): como el prototipo local. Disponible: persona y ocupación (`author`), la cita
+// (`summary`), el contexto, el texto completo y el video. Bloqueado: la pista como intriga y su origen.
 export function testimonioServidor(t: TestimonioEstado): TravelResource {
   const disponible = t.estado === 'DISPONIBLE'
-  const autor = [
-    t.persona,
-    t.ocupacion?.titulo,
-    t.anios_experiencia !== null ? `${t.anios_experiencia} años de experiencia` : null,
-  ].filter(Boolean)
+  const autor = [t.persona, t.ocupacion?.titulo].filter(Boolean)
   return {
     id: t.codigo,
     title: t.titulo,
@@ -141,9 +164,20 @@ export function testimonioServidor(t: TestimonioEstado): TravelResource {
     kind: 'testimonial',
     icon: 'quote',
     requirement: { anyCase: true },
-    url: t.enlace ?? undefined,
+    url: urlYoutubeTestimonio(t),
+    embed: urlEmbedTestimonio(t),
+    ...(t.contexto ? { contexto: t.contexto } : {}),
     ...(t.persona ? { author: autor.join(' · ') } : {}),
-    servidor: { disponible, pista: t.pista, caso: t.caso },
+    favorita: t.es_favorita,
+    servidor: {
+      disponible,
+      pista: t.pista,
+      caso: t.caso,
+      casoDisponible: t.caso_disponible,
+      actividad: t.actividad,
+      actividadDisponible: t.actividad_disponible,
+      visto: t.visto,
+    },
   }
 }
 function localTestimonials() {
@@ -249,6 +283,27 @@ export function resourceFileUrl(raw: string | undefined) {
     return url.protocol === 'https:' ? url.href : null
   } catch {
     return null
+  }
+}
+// Ajuste mochila: una ficha obtenida en api, con su contenido, tema y origen del servidor.
+export function fichaServidor(f: FichaCuenta): TravelResource {
+  return {
+    id: f.codigo,
+    title: f.titulo,
+    kind: 'sheet',
+    icon: 'scroll',
+    summary: f.descripcion ?? '',
+    description: f.descripcion ?? '',
+    requirement: { anyCase: true },
+    contenidoRemoto: true,
+    favorita: f.es_favorita,
+    ficha: {
+      tema: f.tema ?? undefined,
+      actividad: f.actividad ?? undefined,
+      tramo: f.tramo ?? undefined,
+      obtenidaEn: f.obtenida_en ?? undefined,
+      visto: f.visto,
+    },
   }
 }
 // Una ficha del servidor sin contenido en el front se abre igual: el visor avisa que llegará pronto.

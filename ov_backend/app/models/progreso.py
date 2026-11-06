@@ -143,20 +143,6 @@ class CheckIn(Base):
     nivel_seguridad: Mapped[int]
 
 
-class Entrevista(Base):
-    __tablename__ = "entrevista"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    codigo: Mapped[str] = mapped_column(unique=True)
-    resumen: Mapped[str] = mapped_column(Text)
-    fecha_hora: Mapped[datetime] = mapped_column(DateTime)
-
-
-class EntrevistaAutor(Base):
-    __tablename__ = "entrevista_autor"
-    entrevista_id: Mapped[int] = mapped_column(ForeignKey("entrevista.id"), primary_key=True)
-    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"), primary_key=True)
-
-
 class ConversacionVinculo(Base):
     __tablename__ = "conversacion_vinculo"
     __table_args__ = (UniqueConstraint("vinculo_id", "conversacion_id"),)
@@ -181,3 +167,23 @@ class Favorito(Base):
     tipo: Mapped[TipoFavorito] = mapped_column(enumerado(TipoFavorito))
     id_referencia: Mapped[int]
     fecha_hora: Mapped[datetime] = mapped_column(DateTime)
+
+
+class InsigniaVitrina(Base):
+    """Insignias obtenidas que el estudiante muestra a sus compañeros (ajuste pasaporte-perfil), hasta 3, por `orden`."""
+    __tablename__ = "insignia_vitrina"
+    __table_args__ = (
+        UniqueConstraint("cuenta_id", "orden"),
+        CheckConstraint("orden BETWEEN 1 AND 3", name="orden_vitrina_valido"),
+    )
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"), primary_key=True)
+    insignia_id: Mapped[int] = mapped_column(ForeignKey("insignia.id"), primary_key=True)
+    orden: Mapped[int]
+
+
+class PresentacionVista(Base):
+    """Presentaciones de primera visita que la cuenta ya cerró; `vista_en` es la primera vez."""
+    __tablename__ = "presentacion_vista"
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"), primary_key=True)
+    presentacion_id: Mapped[int] = mapped_column(ForeignKey("presentacion.id"), primary_key=True)
+    vista_en: Mapped[datetime] = mapped_column(DateTime)

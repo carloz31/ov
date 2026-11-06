@@ -13,6 +13,7 @@
       "pista": "Sobre lo que contaste: ¿Por qué lo piensas así?"
     }
   ],
+  "nuevas_notificaciones": [],
   "nuevos_desbloqueos": [
     {
       "condiciones": [
@@ -21,6 +22,7 @@
           "cumplida": true,
           "referencia": "t-valores",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }

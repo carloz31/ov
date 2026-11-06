@@ -9,7 +9,8 @@ import {
   vencerSeccion,
   vencerErroresActivos,
 } from './secciones'
-import { consultarNoVistos, encolarPorRevelar, incorporarDesbloqueos } from './avisos'
+import { encolarPorRevelar, revelarDesbloqueos } from './revelado'
+import { incorporarNotificaciones } from './notificaciones'
 import { cargarResultadoRiasec } from './resultado'
 import type {
   BloqueActividades,
@@ -35,11 +36,16 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
   // F00: lo que una acción vuelve visible (una opcional que se abre con su bloque) se revela en el mapa.
   const visiblesAntes = visibles(obtenerEstadoServidor().actividades.datos)
   vencerSeccion('actividades')
+  // Ajuste del panel (F05): el avance cambia con cada actividad; se vence y se pide con ellas (conserva el último).
+  vencerSeccion('avance')
   // F00: las secciones del perfil se ven siempre (accesos del panel): van con el ingreso, como el resumen.
   const nombres =
     desbloqueos === undefined ? (['resumen', 'secciones'] as const) : seccionesPorDesbloqueos(desbloqueos)
   nombres.forEach(vencerSeccion)
-  const pedidos: Promise<RespuestaServidor<unknown>>[] = [asegurarSeccion('actividades'), consultarNoVistos()]
+  const pedidos: Promise<RespuestaServidor<unknown>>[] = [
+    asegurarSeccion('actividades'),
+    asegurarSeccion('avance'),
+  ]
   if (
     desbloqueos === undefined ||
     nombres.includes('resumen') ||
@@ -52,6 +58,9 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
     obtenerEstadoServidor().secciones.estado !== 'listo'
   )
     pedidos.push(asegurarSeccion('secciones'))
+  // Ajuste presentaciones-vistas: deciden la presentación de la vista al entrar; ninguna acción las cambia.
+  if (obtenerEstadoServidor().presentaciones.estado === 'error') vencerSeccion('presentaciones')
+  if (obtenerEstadoServidor().presentaciones.estado !== 'listo') pedidos.push(asegurarSeccion('presentaciones'))
   pedidos.push(...cargarVencidasMontadas())
   const respuestas = await Promise.all(pedidos)
   if (!vigente()) return cambioCuenta()
@@ -74,8 +83,12 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
     const resultado = await cargarResultadoRiasec()
     if (!vigente()) return cambioCuenta()
     if (resultado.tipo !== 'ok') return resultado
-  } else if (!obtenerEstadoServidor().instrumentos.resultados['APL-RIASEC'])
-    // F03: en `ruta` no hay act-tip-final; un resultado RIASEC ya leído por el libro se conserva.
+  } else if (
+    obtenerEstadoServidor().instrumentos.estado === 'listo' &&
+    !obtenerEstadoServidor().instrumentos.resultados['APL-RIASEC']
+  )
+    // F03: en `ruta` no hay act-tip-final; un resultado RIASEC ya leído por el libro se conserva. Solo el libro
+    // cargado dice que no hay resultado: sin él, el que pidió el catálogo tampoco se borra.
     publicar({ resultadoRiasec: null, estadoResultado: 'pendiente', errorResultado: null })
   return { tipo: 'ok', datos: null }
 }
@@ -83,10 +96,12 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
 export type AccionConRefresco<T extends RespuestaAccion> =
   RespuestaServidor<T> | { tipo: 'guardado_sin_refrescar'; datos: T; error: ErrorServidor }
 // Una acción con eventos y desbloqueos refresca el camino como completar: toasts y revelado de opcionales.
-// Con `confirmada`, solo se reintenta el refresco de una acción que el servidor ya guardó.
+// Con `confirmada`, solo se reintenta el refresco de una acción que el servidor ya guardó. Con `conCierre` (batalla
+// y caso), su pantalla de cierre anuncia lo desbloqueado: las notificaciones se marcan vistas, sin toast.
 export async function accionConRefresco<T extends RespuestaAccion>(
   accion: (cuenta: string) => Promise<RespuestaServidor<T>>,
   confirmada?: T,
+  conCierre = false,
 ): Promise<AccionConRefresco<T>> {
   const cuenta = cuentaActiva()
   const sesion = sesionServidor()
@@ -98,7 +113,8 @@ export async function accionConRefresco<T extends RespuestaAccion>(
   if (respuesta.tipo !== 'ok') return respuesta
   if (cuenta !== cuentaActiva() || sesion !== sesionServidor())
     return { tipo: 'http', estado: 409, detalle: 'La cuenta activa cambió durante la acción.' }
-  incorporarDesbloqueos(respuesta.datos.nuevos_desbloqueos)
+  revelarDesbloqueos(respuesta.datos.nuevos_desbloqueos)
+  incorporarNotificaciones(respuesta.datos.nuevas_notificaciones, conCierre)
   const estado = await refrescar(respuesta.datos.nuevos_desbloqueos)
   return estado.tipo === 'ok'
     ? respuesta

@@ -223,7 +223,7 @@ test('base map is the source of order, predecessor requirements, nine mandatory 
   assert.equal(points[7].status, 'locked')
   assert.equal(points[8].status, 'locked')
   assert.equal(map.getPointDetails(points[7], adventure, journey).badge, 'Contenido pendiente')
-  assert.equal(map.getZoneProgress('missions', adventure, journey).value, (7 / 9) * 100)
+  assert.equal(map.getZoneProgress('missions', adventure, journey).porcentaje, (7 / 9) * 100)
   journey.progress['mission-expectations'] = { estado: 'completada' }
   assert.equal(
     map.getCaminoPoints(adventure, journey)[7].status,
@@ -604,7 +604,7 @@ test('alternative unlocks are hidden until developed, never affect mandatory pro
   const extras = map.getCaminoPoints(adventure, state).filter((p) => p.additional)
   assert.equal(extras.length, 3)
   assert.equal(extras.filter((p) => p.revealQueued).length, 2)
-  const before = map.getZoneProgress('missions', adventure, state).value
+  const before = map.getZoneProgress('missions', adventure, state).porcentaje
   app.journey.updateJourney((s) => ({
     ...s,
     progress: {
@@ -613,7 +613,7 @@ test('alternative unlocks are hidden until developed, never affect mandatory pro
     },
   }))
   state = app.journey.getJourneySnapshot()
-  assert.equal(map.getZoneProgress('missions', adventure, state).value, before)
+  assert.equal(map.getZoneProgress('missions', adventure, state).porcentaje, before)
   assert.deepEqual(copy(map.getMissionsToSync(adventure, state)), [])
   const passport = app.load('src/features/discovery/lib/passport.ts').getStudentAchievementGroups(adventure, state)
   assert.equal(

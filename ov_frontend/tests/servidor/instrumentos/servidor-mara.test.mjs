@@ -46,7 +46,7 @@ test('la reanudación usa el primer ítem sin responder e ignora el nodo y las r
   assert.equal(item.props.text, f.items[3].enunciado)
   assert.deepEqual(
     Array.from(item.props.options, (o) => o.text),
-    f.items[3].escala.opciones.map((o) => o.etiqueta),
+    [...f.items[3].escala.opciones].sort((a, b) => b.puntaje - a.puntaje).map((o) => o.etiqueta),
   )
   assert.equal(journey.getJourneySnapshot().drafts.prueba, 'DATO DE PRUEBA: borrador')
   assert.equal(f.app.requests.filter((r) => r.method === 'POST').length, 0)

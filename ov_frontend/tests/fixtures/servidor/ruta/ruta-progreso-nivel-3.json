@@ -1,0 +1,34 @@
+{
+  "disponible": false,
+  "objetivo": {
+    "codigo": "N3",
+    "tipo": "NIVEL"
+  },
+  "reglas": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "T0",
+          "requerido": 1,
+          "texto": "Termina el bloque de inicio",
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_BLOQUE"
+        },
+        {
+          "actual": 1,
+          "cumplida": false,
+          "referencia": null,
+          "requerido": 3,
+          "texto": "Mira tres carreras distintas",
+          "tipo_conteo": "REFERENCIAS_DISTINTAS",
+          "tipo_evento": "VISTA_CARRERA"
+        }
+      ],
+      "cumplida": false,
+      "mensaje_bloqueo": "Termina el bloque de inicio y mira tres carreras para subir de nivel.",
+      "regla": "R-NIV-3"
+    }
+  ]
+}

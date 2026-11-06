@@ -18,5 +18,10 @@ export function resolverBatalla(
   respuestas: RespuestaBatallaEntrada[],
   confirmada?: RespuestaResolverBatalla,
 ) {
-  return accionConRefresco((cuenta) => apiAcciones.resolverBatalla({ cuenta, actividad, respuestas }), confirmada)
+  // Ajuste notificaciones: CierreBatalla anuncia lo desbloqueado (sin toast).
+  return accionConRefresco(
+    (cuenta) => apiAcciones.resolverBatalla({ cuenta, actividad, respuestas }),
+    confirmada,
+    true,
+  )
 }

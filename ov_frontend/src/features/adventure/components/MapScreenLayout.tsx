@@ -146,7 +146,7 @@ export function MapScreenLayout({
           {ui.panelCollapsed && (
             <CollapsedAdventurePanel
               iniciales={iniciales}
-              progress={progress.value}
+              progress={progress.porcentaje ?? 0}
               recommended={
                 siguiente === undefined
                   ? recommended

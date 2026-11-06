@@ -10,33 +10,35 @@ from app import models as modelos
 FECHA = datetime(2026, 10, 1, 10)
 TABLAS_ESTADO = {
     "progreso_actividad", "resultado_caso", "resultado_batalla", "respuesta_batalla", "coleccion_ocupacion", "recomendacion", "entrada_diario",
-    "contador_diario", "check_in",
+    "contador_diario", "check_in", "insignia_vitrina", "presentacion_vista",
     "entrevista", "entrevista_autor", "conversacion_vinculo", "evento_uso", "desbloqueo",
     "respuesta_item", "resultado_instrumento", "resultado_dimension", "coincidencia",
     "respuesta_registro", "turno_seguimiento", "evaluacion_respuesta", "favorito",
     "tarjeta_carrera", "motivo_tarjeta", "conocimiento_tarjeta", "duda_tarjeta", "gasto_tarjeta",
     "financiamiento_tarjeta", "complicacion_tarjeta", "sugerencia_tarjeta", "paso_tarjeta",
+    "investigacion", "pregunta_guion", "sugerencia_guion", "reaccion", "reporte", "notificacion",
 }
 
 
 def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
     inspector = inspect(aplicacion.state.motor_bd)
     esperadas = {
-        "salon", "salon_instrumento", "salon_actividad_prioritaria", "cuenta", "orientadora_salon", "vinculo_familiar", "bloque", "actividad", "tematica", "actividad_tematica", "actividad_dimension", "pregunta_batalla", "seccion", "ficha",
+        "colegio", "salon", "salon_instrumento", "salon_actividad_prioritaria", "cuenta", "orientadora_salon", "vinculo_familiar", "bloque", "actividad", "tematica", "actividad_tematica", "pregunta_batalla", "seccion", "presentacion", "ficha",
         "testimonio",
-        "pregunta_diario", "conversacion", "insignia", "nivel", "familia_carrera",
+        "pregunta_diario", "conversacion", "grupo_insignia", "insignia", "nivel", "familia_carrera",
         "carrera", "regla_desbloqueo", "condicion_desbloqueo",
     } | TABLAS_ESTADO
     esperadas |= {
         "instrumento", "dimension", "escala_respuesta", "opcion_escala", "item_instrumento",
         "actividad_item", "aplicacion", "aplicacion_actividad", "ocupacion", "puntaje_ocupacion",
-        "carrera_ocupacion",
+        "ocupacion_familia",
         "lista_opciones", "opcion_lista", "item_registro", "criterio_completitud", "referencia",
-        "high_point", "tipo_carrera", "ubicacion", "institucion", "institucion_carrera", "ingreso_carrera",
-        "rango_ingreso", "seccion_tarjeta", "referencia_rubro", "referencia_camino",
+        "high_point", "tipo_carrera", "ubicacion", "institucion", "institucion_carrera", "grupo_ocupacional",
+        "estilo_trabajo", "ingreso_familia", "ingreso_institucion", "seccion_tarjeta", "referencia_rubro",
+        "referencia_camino", "pregunta_base_guion", "tipo_reaccion",
     }
     assert set(inspector.get_table_names()) == esperadas
-    assert len(esperadas) == 80
+    assert len(esperadas) == 94
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]

@@ -1,14 +1,16 @@
 import type { ReactNode } from 'react'
 import type { DesbloqueoNuevo } from '@/types/servidor'
+import type { CasoJugable } from '@/types/cases'
 import { ForestFireWorkspace } from '@/features/cases/components/ForestFireWorkspace'
 import { useForestFireCase } from '@/features/cases/hooks/useForestFireCase'
 import { ArrowRight, Check } from 'lucide-react'
-import { ayudaCentral, forestFirePhases, forestFireProfessionals } from '@/data/content/forestFireCase'
+import { ayudaCentral } from '@/data/content/forestFireCase'
 import { ForestFireCaseHeader } from './ForestFireCaseHeader'
 import { ListenScreen } from './ForestFireScene'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
 import { SHOW_EXTRA_PROFESSIONAL, canOpenPhaseStep } from '@/features/cases/lib/forestFireCaseLogic'
+import { fondoFase } from '@/features/cases/lib/casoDesdeJson'
 import { ExtraProfessionalQuestionScreen } from '@/features/cases/components/ExtraProfessionalQuestionScreen'
 import { ProfessionalWordCloudScreen } from '@/features/cases/components/ProfessionalWordCloudScreen'
 import '../styles/forest-fire.css'
@@ -18,6 +20,7 @@ import { PhaseResultScreen } from '@/features/cases/components/PhaseResultScreen
 import { FinalReportScreen } from '@/features/cases/components/FinalReportScreen'
 export function ForestFireCaseView({
   actividad,
+  caso,
   onAyuda,
   etiquetaVolver = 'Volver a la ciudad',
   renderDesbloqueos,
@@ -25,6 +28,8 @@ export function ForestFireCaseView({
   onComplete,
 }: {
   actividad?: string
+  // Ajuste carga-casos: el caso que se juega; sin él, el incendio forestal (local).
+  caso?: CasoJugable
   // La página monta el diálogo de Lumi: la Central está fuera del shell del estudiante.
   onAyuda?: (pasos: string[]) => void
   // Botón del cierre superado: según desde dónde se abrió el caso.
@@ -34,8 +39,9 @@ export function ForestFireCaseView({
   onClose: () => void
   onComplete?: () => void
 }) {
-  const model = useForestFireCase({ actividad })
+  const model = useForestFireCase({ actividad, caso })
   const {
+    caso: jugado,
     phaseIndex,
     screen,
     setScreen,
@@ -72,17 +78,19 @@ export function ForestFireCaseView({
       // Revisar no ocupa la pantalla fija de la escena: su lista hace scroll en el main.
       className={`sx-root ff-case ff-play ${screen === 'workspace' && step <= phase.problems.length ? 'ff-workspace-active' : ''}`}
       style={{
-        backgroundImage: `url(${phase.backgroundImage})`,
+        backgroundImage: fondoFase(phase),
         backgroundPosition: phase.backgroundPosition,
       }}
     >
       <ForestFireCaseHeader
+        titulo={jugado.titulo}
+        presupuesto={jugado.presupuesto}
         label={
           screen === 'report'
             ? 'Cierre del caso'
-            : `Fase ${phase.number} de ${forestFirePhases.length} · ${phase.name}`
+            : `Fase ${phase.number} de ${jugado.phases.length} · ${phase.name}`
         }
-        progress={(phase.number / forestFirePhases.length) * 100}
+        progress={(phase.number / jugado.phases.length) * 100}
         budgetRemaining={remaining}
         finished={screen === 'report'}
         onAyuda={
@@ -123,7 +131,7 @@ export function ForestFireCaseView({
           <section
             className="ff-intro"
             style={{
-              backgroundImage: `url(${phase.backgroundImage})`,
+              backgroundImage: fondoFase(phase),
               backgroundPosition: phase.backgroundPosition,
             }}
           >
@@ -158,10 +166,10 @@ export function ForestFireCaseView({
             <div className="ff-dark">
               <LumiMedallion />
               <p className="ff-eyebrow">Revisa tu equipo</p>
-              <h1 tabIndex={-1}>¿Así enfrentarás la {phase.name.toLowerCase()}?</h1>
+              <h1 tabIndex={-1}>¿Así enfrentarás esta fase?</h1>
               <p>
                 Usarás {Object.values(phaseAssignments).reduce((total, ids) => total + ids.length, 0)} puntos.
-                {phaseIndex < forestFirePhases.length - 1 &&
+                {phaseIndex < jugado.phases.length - 1 &&
                   ` Te quedarán ${remaining} para las fases siguientes.`}
               </p>
             </div>
@@ -170,7 +178,7 @@ export function ForestFireCaseView({
                 <h2>{problem.title}</h2>
                 <ul>
                   {phaseAssignments[problem.id].map((id) => {
-                    const person = forestFireProfessionals.find((p) => p.id === id)!
+                    const person = jugado.professionals.find((p) => p.id === id)!
                     return (
                       <li key={id}>
                         {person.personName} ({getOccupation(person.occupationId)?.name ?? person.name})
@@ -205,6 +213,7 @@ export function ForestFireCaseView({
         )}
         {screen === 'result' && (
           <PhaseResultScreen
+            caso={jugado}
             phase={phase}
             assignments={phaseAssignments}
             remaining={remaining}
@@ -212,13 +221,13 @@ export function ForestFireCaseView({
           />
         )}
         {screen === 'game-over' && (
-          <section className="ff-intro" style={{ backgroundImage: `url(${phase.backgroundImage})` }}>
+          <section className="ff-intro" style={{ backgroundImage: fondoFase(phase) }}>
             <div className="ff-dark">
               <LumiMedallion />
               <h1 tabIndex={-1}>El presupuesto se agotó</h1>
               <p>
-                Usaste los 16 puntos antes de completar todas las fases. Vuelve a intentarlo con un nuevo
-                equipo.
+                Usaste los {jugado.presupuesto} puntos antes de completar todas las fases. Vuelve a intentarlo
+                con un nuevo equipo.
               </p>
               <button className="ff-primary" onClick={restart}>
                 Intentar de nuevo
@@ -247,6 +256,7 @@ export function ForestFireCaseView({
         )}
         {screen === 'report' && (
           <FinalReportScreen
+            caso={jugado}
             assignments={assignments}
             bestScore={resultadoServidor?.mejor ?? adventure.caseBestScores['forest-fire'] ?? 0}
             newIcons={newIcons}

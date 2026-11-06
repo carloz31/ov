@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { modoApi } from '@/config/env'
-import { quitarPorRevelar } from '@/store/servidor/avisos'
+import { quitarPorRevelar } from '@/store/servidor/revelado'
 import type { StudentMapPoint } from '../lib/mapPoints'
 
 // Solo api: al volver al Camino, las opcionales recién desbloqueadas se revelan una por una con la

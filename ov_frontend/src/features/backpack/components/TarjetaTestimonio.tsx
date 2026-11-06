@@ -1,27 +1,40 @@
-import { Play } from 'lucide-react'
+import { Loader2, Play, Star } from 'lucide-react'
 
-// Testimonio desbloqueado de la mochila, local y del servidor (ajustes Central, 7). Va dentro de un
-// `article.sx-b-card.sx-b-voice.sx-b-unlocked`.
+// Testimonio abierto de la mochila, local y del servidor (ajustes Central, 7; ajuste mochila): iniciales,
+// nombre, ocupación y contexto, estrella, título, cita, su origen y «Escuchar su historia».
 export function TarjetaTestimonio({
   nombre,
   rol,
+  contexto,
   titulo,
   cita,
   regalo,
+  deActividad = false,
+  nueva,
+  favorita,
+  pendiente = false,
   onEscuchar,
+  onFavorite,
 }: {
   nombre?: string
   rol?: string
+  contexto?: string
   titulo: string
   cita: string
-  // El llamado (caso) que lo regaló.
+  // El título de su origen: el llamado que lo regaló o, con `deActividad`, la misión que lo dejó.
   regalo: string
+  deActividad?: boolean
+  nueva: boolean
+  favorita: boolean
+  // Ajuste mochila: el POST del favorito está en curso.
+  pendiente?: boolean
   onEscuchar: () => void
+  onFavorite: () => void
 }) {
   return (
-    <>
-      <div className="sx-b-author">
-        <span>
+    <article className="sx-b-voz">
+      <div className="sx-b-voz-autor">
+        <span aria-hidden="true">
           {nombre
             ?.split(' ')
             .slice(0, 2)
@@ -31,17 +44,35 @@ export function TarjetaTestimonio({
         <div>
           <strong>{nombre}</strong>
           <p>{rol}</p>
+          {contexto && <p>{contexto}</p>}
         </div>
+        <button
+          type="button"
+          className="sx-b-estrella"
+          aria-label={favorita ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          aria-pressed={favorita}
+          aria-busy={pendiente}
+          onClick={onFavorite}
+        >
+          {pendiente ? (
+            <Loader2 aria-hidden="true" className="animate-spin" />
+          ) : (
+            <Star aria-hidden="true" fill={favorita ? 'currentColor' : 'none'} />
+          )}
+        </button>
       </div>
       <h3>{titulo}</h3>
-      <blockquote>“{cita}”</blockquote>
-      <p>
-        Te la regaló el llamado <strong>{regalo}</strong>
+      {cita && <blockquote>«{cita}»</blockquote>}
+      <p className="sx-b-voz-regalo">
+        {deActividad ? 'Te la dejó la misión' : 'Te la regaló el llamado'} <strong>{regalo}</strong>
       </p>
-      <button type="button" className="sx-d-action sx-d-action-gold" onClick={onEscuchar}>
-        <Play aria-hidden="true" size={18} />
-        Escuchar su historia
-      </button>
-    </>
+      <footer>
+        <button type="button" className="sx-b-escuchar" onClick={onEscuchar}>
+          <Play aria-hidden="true" size={16} fill="currentColor" />
+          Escuchar su historia
+        </button>
+        {nueva && <span className="sx-b-nueva">Nueva</span>}
+      </footer>
+    </article>
   )
 }

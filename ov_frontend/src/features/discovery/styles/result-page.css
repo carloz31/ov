@@ -241,6 +241,17 @@
     margin-top: 18px !important;
     color: var(--result-muted);
   }
+  /* Ajuste carga-instrumentos: cómo leer el resultado y las listas de cada dimensión. */
+  .sx-d-result-lectura {
+    max-width: 72ch;
+    margin: 0 0 18px;
+    line-height: 1.6;
+  }
+  .sx-d-result-pieces {
+    list-style: disc;
+    padding-left: 20px;
+    line-height: 1.5;
+  }
   .sx-d-result-overview .sx-d-result-note,
   .sx-d-result-careers > p {
     color: var(--sx-night-muted);

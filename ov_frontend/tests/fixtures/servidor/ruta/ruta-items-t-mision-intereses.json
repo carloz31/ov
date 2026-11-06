@@ -2,7 +2,7 @@
   {
     "codigo": "RIASEC-01",
     "dimension": "R",
-    "enunciado": "Reparar una bicicleta o un electrodoméstico.",
+    "enunciado": "Construir gabinetes de cocina",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -42,7 +42,7 @@
   {
     "codigo": "RIASEC-02",
     "dimension": "R",
-    "enunciado": "Armar muebles siguiendo un plano.",
+    "enunciado": "Conducir un camión para entregar paquetes a oficinas y casas",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -82,7 +82,7 @@
   {
     "codigo": "RIASEC-03",
     "dimension": "I",
-    "enunciado": "Hacer experimentos en un laboratorio.",
+    "enunciado": "Desarrollar un nuevo medicamento",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -122,7 +122,7 @@
   {
     "codigo": "RIASEC-04",
     "dimension": "I",
-    "enunciado": "Investigar por qué ocurre un fenómeno natural.",
+    "enunciado": "Investigar la causa de un incendio",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -162,7 +162,7 @@
   {
     "codigo": "RIASEC-05",
     "dimension": "A",
-    "enunciado": "Dibujar o pintar.",
+    "enunciado": "Escribir libros u obras de teatro",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -202,7 +202,7 @@
   {
     "codigo": "RIASEC-06",
     "dimension": "A",
-    "enunciado": "Escribir cuentos, poemas o guiones.",
+    "enunciado": "Pintar la escenografía de una obra de teatro",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -242,7 +242,7 @@
   {
     "codigo": "RIASEC-07",
     "dimension": "S",
-    "enunciado": "Enseñar algo a un niño o a un compañero.",
+    "enunciado": "Enseñar a una persona una rutina de ejercicios",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -282,7 +282,7 @@
   {
     "codigo": "RIASEC-08",
     "dimension": "S",
-    "enunciado": "Escuchar y aconsejar a alguien que tiene un problema.",
+    "enunciado": "Enseñar a los niños a practicar deportes",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -322,7 +322,7 @@
   {
     "codigo": "RIASEC-09",
     "dimension": "E",
-    "enunciado": "Vender un producto o una idea.",
+    "enunciado": "Comprar y vender acciones y bonos",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -362,7 +362,7 @@
   {
     "codigo": "RIASEC-10",
     "dimension": "E",
-    "enunciado": "Liderar un equipo para cumplir una meta.",
+    "enunciado": "Negociar contratos comerciales",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -402,7 +402,7 @@
   {
     "codigo": "RIASEC-11",
     "dimension": "C",
-    "enunciado": "Ordenar y clasificar documentos.",
+    "enunciado": "Desarrollar una hoja de cálculo usando software de computadora",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -442,7 +442,7 @@
   {
     "codigo": "RIASEC-12",
     "dimension": "C",
-    "enunciado": "Llevar las cuentas de ingresos y gastos.",
+    "enunciado": "Calcular los salarios de los empleados",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -482,7 +482,7 @@
   {
     "codigo": "RIASEC-13",
     "dimension": "R",
-    "enunciado": "Cultivar un huerto o cuidar plantas.",
+    "enunciado": "Colocar ladrillos o baldosas",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -522,7 +522,7 @@
   {
     "codigo": "RIASEC-14",
     "dimension": "R",
-    "enunciado": "Manejar maquinaria o herramientas eléctricas.",
+    "enunciado": "Probar la calidad de piezas antes del envío",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -562,7 +562,7 @@
   {
     "codigo": "RIASEC-15",
     "dimension": "I",
-    "enunciado": "Resolver problemas de matemáticas o de lógica.",
+    "enunciado": "Estudiar formas de reducir la contaminación del agua",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -602,7 +602,7 @@
   {
     "codigo": "RIASEC-16",
     "dimension": "I",
-    "enunciado": "Analizar datos para encontrar patrones.",
+    "enunciado": "Desarrollar un método para predecir mejor el clima",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -642,7 +642,7 @@
   {
     "codigo": "RIASEC-17",
     "dimension": "A",
-    "enunciado": "Tocar un instrumento o componer música.",
+    "enunciado": "Tocar un instrumento musical",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -682,7 +682,7 @@
   {
     "codigo": "RIASEC-18",
     "dimension": "A",
-    "enunciado": "Actuar en una obra de teatro.",
+    "enunciado": "Escribir guiones para películas o programas de televisión",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -722,7 +722,7 @@
   {
     "codigo": "RIASEC-19",
     "dimension": "S",
-    "enunciado": "Cuidar a personas enfermas o mayores.",
+    "enunciado": "Ayudar a personas con problemas personales o emocionales",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -762,7 +762,7 @@
   {
     "codigo": "RIASEC-20",
     "dimension": "S",
-    "enunciado": "Organizar actividades para ayudar a la comunidad.",
+    "enunciado": "Enseñar lengua de señas a personas sordas",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -802,7 +802,7 @@
   {
     "codigo": "RIASEC-21",
     "dimension": "E",
-    "enunciado": "Iniciar un negocio propio.",
+    "enunciado": "Administrar una tienda minorista",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -842,7 +842,7 @@
   {
     "codigo": "RIASEC-22",
     "dimension": "E",
-    "enunciado": "Convencer a otros en un debate.",
+    "enunciado": "Representar a un cliente en un juicio",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -882,7 +882,7 @@
   {
     "codigo": "RIASEC-23",
     "dimension": "C",
-    "enunciado": "Registrar datos en una hoja de cálculo.",
+    "enunciado": "Revisar registros o formularios",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -922,7 +922,7 @@
   {
     "codigo": "RIASEC-24",
     "dimension": "C",
-    "enunciado": "Revisar un texto para corregir errores.",
+    "enunciado": "Hacer inventario con un dispositivo portátil",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -962,7 +962,7 @@
   {
     "codigo": "RIASEC-25",
     "dimension": "R",
-    "enunciado": "Instalar el cableado eléctrico de una casa.",
+    "enunciado": "Reparar electrodomésticos del hogar",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -1002,7 +1002,7 @@
   {
     "codigo": "RIASEC-26",
     "dimension": "R",
-    "enunciado": "Construir una maqueta o una estructura de madera.",
+    "enunciado": "Reparar e instalar cerraduras",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -1042,7 +1042,7 @@
   {
     "codigo": "RIASEC-27",
     "dimension": "I",
-    "enunciado": "Leer sobre descubrimientos científicos.",
+    "enunciado": "Realizar experimentos químicos",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -1082,7 +1082,7 @@
   {
     "codigo": "RIASEC-28",
     "dimension": "I",
-    "enunciado": "Estudiar cómo funciona el cuerpo humano.",
+    "enunciado": "Trabajar en un laboratorio de biología",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -1122,7 +1122,7 @@
   {
     "codigo": "RIASEC-29",
     "dimension": "A",
-    "enunciado": "Diseñar un afiche o la portada de una revista.",
+    "enunciado": "Componer o arreglar música",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",
@@ -1162,7 +1162,7 @@
   {
     "codigo": "RIASEC-30",
     "dimension": "A",
-    "enunciado": "Tomar fotografías o grabar videos creativos.",
+    "enunciado": "Bailar jazz o tap",
     "escala": {
       "codigo": "ESC-LIKERT5",
       "nombre": "Preferencia en cinco opciones",

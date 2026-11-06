@@ -2,18 +2,22 @@
   "avisos": [],
   "maximo_planes": 3,
   "opcion_inicial": {
-    "codigo": "psychology",
-    "es_favorita": false,
+    "codigo": "mtpe-369",
+    "duracion": "5 años",
+    "es_favorita": true,
     "familia": {
-      "codigo": "family-psychology",
-      "nombre": "Ciencias sociales y salud"
+      "area_codigo": "31",
+      "area_nombre": "Ciencias Sociales y del Comportamiento",
+      "codigo": "313",
+      "nombre": "Psicología"
     },
     "nombre": "Psicología",
     "riasec": [
       "S",
       "I",
       "A"
-    ]
+    ],
+    "tipo": "UNIVERSIDAD"
   },
   "opciones": {
     "caminos": [
@@ -48,6 +52,7 @@
         "texto": "Tomarme un tiempo"
       }
     ],
+    "ciclos_por_anio": 2,
     "dificultades": [
       {
         "codigo": "ECONOMICAS",
@@ -184,7 +189,7 @@
         "cero_si_publica": false,
         "codigo": "MATRICULA",
         "frecuencia_recomendada": "POR_CICLO",
-        "monto_referencia": 600,
+        "monto_referencia": null,
         "solo_si_camino_prepara": false,
         "texto": "Matrícula"
       },
@@ -192,7 +197,7 @@
         "cero_si_publica": true,
         "codigo": "PENSION",
         "frecuencia_recomendada": "MENSUAL",
-        "monto_referencia": 1800,
+        "monto_referencia": null,
         "solo_si_camino_prepara": false,
         "texto": "Pensión"
       },
@@ -276,18 +281,22 @@
         "otro": null
       },
       "carrera": {
-        "codigo": "psychology",
-        "es_favorita": false,
+        "codigo": "mtpe-369",
+        "duracion": "5 años",
+        "es_favorita": true,
         "familia": {
-          "codigo": "family-psychology",
-          "nombre": "Ciencias sociales y salud"
+          "area_codigo": "31",
+          "area_nombre": "Ciencias Sociales y del Comportamiento",
+          "codigo": "313",
+          "nombre": "Psicología"
         },
         "nombre": "Psicología",
         "riasec": [
           "S",
           "I",
           "A"
-        ]
+        ],
+        "tipo": "UNIVERSIDAD"
       },
       "complicaciones": [
         {
@@ -373,14 +382,16 @@
       ],
       "idea_origen": "MIA",
       "institucion": {
-        "codigo": "t-uni",
+        "codigo": "inst-63",
+        "distrito": "Lima",
+        "duracion_ciclos": 10,
         "es_favorita": true,
         "gestion": "PUBLICA",
-        "nombre": "Universidad Nacional de Prueba",
+        "nombre": "Universidad Nacional Federico Villarreal",
         "tipo": "UNIVERSIDAD",
         "ubicacion": {
-          "codigo": "t-lima",
-          "nombre": "Lima de prueba"
+          "codigo": "dep-15",
+          "nombre": "Lima"
         }
       },
       "lista_para_comparar": true,
@@ -521,7 +532,7 @@
           "tipo": "conversar"
         }
       ],
-      "total_carrera": null,
+      "total_carrera": 7300,
       "total_primer_anio": 2500,
       "totales_por_frecuencia": {
         "ANUAL": 0,
@@ -537,18 +548,22 @@
         "otro": null
       },
       "carrera": {
-        "codigo": "journalism",
-        "es_favorita": false,
+        "codigo": "mtpe-291",
+        "duracion": "5 años",
+        "es_favorita": true,
         "familia": {
-          "codigo": "family-journalism",
-          "nombre": "Comunicación"
+          "area_codigo": "32",
+          "area_nombre": "Ciencias de la Comunicación",
+          "codigo": "321",
+          "nombre": "Ciencias de la Comunicación"
         },
-        "nombre": "Periodismo",
+        "nombre": "Ciencias de la Comunicación",
         "riasec": [
           "A",
           "E",
           "S"
-        ]
+        ],
+        "tipo": "UNIVERSIDAD"
       },
       "complicaciones": [
         {
@@ -597,14 +612,16 @@
       ],
       "idea_origen": "MIA",
       "institucion": {
-        "codigo": "t-uni",
+        "codigo": "inst-63",
+        "distrito": "Lima",
+        "duracion_ciclos": 10,
         "es_favorita": true,
         "gestion": "PUBLICA",
-        "nombre": "Universidad Nacional de Prueba",
+        "nombre": "Universidad Nacional Federico Villarreal",
         "tipo": "UNIVERSIDAD",
         "ubicacion": {
-          "codigo": "t-lima",
-          "nombre": "Lima de prueba"
+          "codigo": "dep-15",
+          "nombre": "Lima"
         }
       },
       "lista_para_comparar": true,
@@ -672,7 +689,7 @@
           "tipo": "conversar"
         }
       ],
-      "total_carrera": null,
+      "total_carrera": 7300,
       "total_primer_anio": 2500,
       "totales_por_frecuencia": {
         "ANUAL": 0,

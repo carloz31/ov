@@ -30,7 +30,12 @@ export function NodeRenderer({
   activity: Actividad
   edit: boolean
   direct: boolean
-  salida?: { texto: string; titulo?: string; onClick: () => void }
+  salida?: {
+    texto: string
+    titulo?: string
+    aviso?: { titulo: string; descripcion: string }
+    onClick: () => void
+  }
 }) {
   const {
     nodes,
@@ -57,7 +62,7 @@ export function NodeRenderer({
     setErrorServidor,
     revisionInstrumento,
     itemOcupado,
-    itemAlElegir,
+    itemConfirmar,
     itemSoloLectura,
     itemCambiar,
     itemFijas,
@@ -178,7 +183,10 @@ export function NodeRenderer({
       text={itemServidor?.enunciado ?? item?.texto ?? 'Este ítem aún no está disponible.'}
       options={
         itemServidor
-          ? itemServidor.escala.opciones.map((o) => ({ value: o.orden, text: o.etiqueta }))
+          ? // Ajuste carga-instrumentos: en lista vertical, de mayor a menor puntaje; se sigue enviando el orden.
+            [...itemServidor.escala.opciones]
+              .sort((a, b) => b.puntaje - a.puntaje)
+              .map((o) => ({ value: o.orden, text: o.etiqueta }))
           : itemOptions
       }
       existing={
@@ -189,7 +197,7 @@ export function NodeRenderer({
           : existingItemAnswer
       }
       busy={itemOcupado}
-      inmediato={itemAlElegir}
+      confirmar={itemConfirmar}
       readOnly={itemSoloLectura}
       fijas={itemFijas}
       onCambiar={itemCambiar}

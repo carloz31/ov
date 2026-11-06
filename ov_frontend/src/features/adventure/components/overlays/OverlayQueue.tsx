@@ -16,7 +16,6 @@ import { BadgeToast } from './BadgeToast'
 import { markBadgeAnnounced } from '../../lib/unlocks'
 
 import { StudentOverlayContext } from '../../context/overlayContext'
-import { TriangleAlert } from 'lucide-react'
 
 export function OverlayQueue({
   view,
@@ -40,9 +39,7 @@ export function OverlayQueue({
     guide,
     closeGuide,
     dismissSignal,
-    mostrarAviso,
-    marcarVistos,
-    errorAvisos,
+    descartarAviso,
     senal,
   } = useNoveltyQueue(view, activityOpen)
   const [errorSenal, setErrorSenal] = useState('')
@@ -100,20 +97,7 @@ export function OverlayQueue({
           onDismiss={() => updateStudentUi((current) => markBadgeAnnounced(current, badge.code))}
         />
       )}
-      {aviso && <UnlockToast key={aviso.id} aviso={aviso} onDismiss={() => mostrarAviso(aviso.id)} />}
-      {errorAvisos && (
-        <aside className="sx-root sx-glass sx-badge-toast" role="alert">
-          <span className="sx-toast-icon" aria-hidden="true">
-            <TriangleAlert size={18} />
-          </span>
-          <div className="sx-badge-copy">
-            <p>{mensajeErrorServidor(errorAvisos)}</p>
-            <button className="sx-secondary-button sx-toast-action" onClick={() => void marcarVistos()}>
-              Reintentar avisos
-            </button>
-          </div>
-        </aside>
-      )}
+      {aviso && <UnlockToast key={aviso.id} aviso={aviso} onDismiss={() => descartarAviso(aviso.id)} />}
     </StudentOverlayContext.Provider>
   )
 }

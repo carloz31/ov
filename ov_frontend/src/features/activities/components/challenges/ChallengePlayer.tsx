@@ -9,10 +9,12 @@ import type { DesafioServidor } from '@/features/activities/hooks/useChallengePl
 export function ChallengePlayer({
   challenge: c,
   servidor,
+  imageUrl = '/images/background/afueras-ciudad.png',
   onClose,
 }: {
   challenge: Challenge
   servidor?: DesafioServidor
+  imageUrl?: string
   onClose: () => void
 }) {
   const model = useChallengePlayer({ challenge: c, servidor })
@@ -33,7 +35,7 @@ export function ChallengePlayer({
     >
       <PlayerAmbient
         mode={stage === 'result' && victory ? 'sunrise' : 'night'}
-        imageUrl="/images/background/afueras.png"
+        imageUrl={imageUrl}
       />
       <header className="sx-player-topbar sx-challenge-topbar">
         <button

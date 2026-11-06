@@ -11,16 +11,19 @@ def verificar_p01_estado_inicial(cliente):
     assert all(estados[c] == 'BLOQUEADA' for c in ('t-partida', 't-cierre-inicio', 't-expectativas', INTERESES, INTERESES_FINAL, 't-caso'))
     assert {b['codigo']: b['estado'] for b in inicial['bloques']} == {
         'T0': 'DISPONIBLE', 'T1': 'BLOQUEADA', 'T2': 'BLOQUEADA', 'CIUDAD': 'BLOQUEADA', 'LUMI': 'DISPONIBLE'}
-    assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA')]
+    assert [(f['codigo'], f['estado']) for f in inicial['fichas']] == [
+        ('t-ficha', 'BLOQUEADA'), ('t-ficha-2', 'BLOQUEADA'), ('t-ficha-3', 'BLOQUEADA')]
     visibles = [i for i in inicial['insignias'] if i['codigo'] != '???']
-    assert [(i['codigo'], i['estado']) for i in visibles] == [('t-ins-1', 'BLOQUEADA')]
+    assert [(i['codigo'], i['estado']) for i in visibles] == [
+        ('t-ins-1', 'BLOQUEADA'), ('t-ins-entrevista', 'BLOQUEADA'), ('t-ins-leyenda', 'BLOQUEADA')]
     assert visibles[0]['requisito']
     ocultos = [i for i in inicial['insignias'] if i['codigo'] == '???']
     assert len(ocultos) == 4 and all(o['estado'] == 'BLOQUEADA' and o['requisito'] is None for o in ocultos)
-    assert inicial['secciones'] == dict.fromkeys(('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'PLANES'), 'BLOQUEADA')
+    assert inicial['secciones'] == dict.fromkeys(('CATALOGO', 'CHECK_IN', 'DIARIO', 'FAMILIA', 'INVESTIGACIONES', 'PLANES'), 'BLOQUEADA')
     assert inicial['nivel_actual']['numero'] == 1
     assert [(t['codigo'], t['estado']) for t in inicial['testimonios']] == [
-        ('t-testimonio-1', 'BLOQUEADA'), ('t-testimonio-2', 'BLOQUEADA')]
+        ('t-testimonio-1', 'BLOQUEADA'), ('t-testimonio-2', 'BLOQUEADA'), ('t-testimonio-3', 'BLOQUEADA'),
+        ('t-testimonio-4', 'BLOQUEADA')]
     assert inicial['preguntas_diario'] is None
 
 
@@ -31,7 +34,7 @@ def verificar_p02_primer_paso(cliente):
         'R-SEC-PLANES', 'R-t-diario-fija', 'R-PLAN-POR_QUE'}
     assert estado(cliente)['secciones'] == {
         'CATALOGO': 'DISPONIBLE', 'CHECK_IN': 'BLOQUEADA', 'DIARIO': 'DISPONIBLE', 'FAMILIA': 'BLOQUEADA',
-        'PLANES': 'DISPONIBLE'}
+        'INVESTIGACIONES': 'BLOQUEADA', 'PLANES': 'DISPONIBLE'}
 
 
 def verificar_p03_cierre_de_t0(cliente):
@@ -81,18 +84,25 @@ def verificar_p10_resultado(cliente):
     assert revelado['eventos_registrados'][0]['referencia'] == 'APL-RIASEC'
     assert reglas(revelado) == {'R-t-contraste'}
     resultado = pedir(cliente, 'GET', '/cuentas/est-ana/instrumentos/TEST-RIASEC/resultado')
-    assert {d['codigo']: d['porcentaje'] for d in resultado['dimensiones']} == {'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0}
+    assert {d['codigo']: d['puntaje_visual'] for d in resultado['dimensiones']} == {'I': 100, 'R': 75, 'A': 50, 'S': 0, 'E': 0, 'C': 0}
     assert resultado['codigo_interes'] == {'codigo': 'IRA', 'hay_empate': False}
-    coincidencias = resultado['coincidencias']
-    assert len(coincidencias) == 10 and all(c['codigo'] for c in coincidencias)
-    assert [c['posicion'] for c in coincidencias] == list(range(1, 11))
-    assert [c['correlacion'] for c in coincidencias] == sorted((c['correlacion'] for c in coincidencias), reverse=True)
-    assert coincidencias[0]['codigo'] == 'geologist' and coincidencias[0]['ajuste'] == 'BEST_FIT'
-    carreras = resultado['carreras_recomendadas']
-    assert {c['codigo'] for c in carreras} == {'environmental-engineering', 'civil-engineering', 'veterinary-medicine'}
-    assert all(c['via'] and all(v in coincidencias for v in c['via']) for c in carreras)
+    # Ajuste resultados-intereses: ocupaciones afines (de 10 a 30, por parecido), por área y 5 familias.
+    coincidencias = resultado['ocupaciones']
+    assert 10 <= len(coincidencias) <= 30 and all(c['codigo'] for c in coincidencias)
+    assert [c['posicion'] for c in coincidencias] == list(range(1, len(coincidencias) + 1))
+    assert [c['parecido'] for c in coincidencias] == sorted((c['parecido'] for c in coincidencias), reverse=True)
+    assert 'correlacion' not in coincidencias[0] and coincidencias[0]['banda'] == 'MUY_AFIN'
+    assert resultado['perfil_poco_marcado'] is False and '19-2042.00' in [c['codigo'] for c in coincidencias]
+    assert sorted(c for a in resultado['por_area'] for c in a['ocupaciones']) == sorted(c['codigo'] for c in coincidencias)
+    assert all(len(a['area_codigo']) == 2 for a in resultado['por_area'] if a['area_codigo'] is not None)
+    familias = resultado['familias']
+    assert [f['posicion'] for f in familias] == list(range(1, len(familias) + 1)) and len(familias) <= 5
+    principal = {c['codigo']: (c['familia_principal'] or {}).get('codigo') for c in coincidencias}
+    assert all(principal[o['codigo']] == f['codigo'] for f in familias for o in f['ocupaciones'])
+    assert all(f['unica_ocupacion'] == (len(f['ocupaciones']) == 1) for f in familias)
+    assert 'carreras_recomendadas' not in resultado and 'es_favorita' not in coincidencias[0]
     # B06: revelar abre t-contraste, que cita el resultado y las coincidencias.
     assert actividades(cliente)['t-contraste'] == 'DISPONIBLE'
     citas = {r['codigo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-contraste/referencias')['referencias']}
     assert [o['codigo'] for o in citas['t-ref-resultado']['opciones']] == ['I', 'R', 'A']
-    assert citas['t-ref-coincidencias']['opciones'][0]['codigo'] == 'geologist'
+    assert citas['t-ref-coincidencias']['opciones'][0]['codigo'] == coincidencias[0]['codigo']

@@ -1,0 +1,57 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-investigador-cierre",
+  "tipo": "registro",
+  "titulo": "Lo que cambió",
+  "bloque": 4,
+  "orden": 7,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-investigador-cierre-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Publicaste tu entrevista. Antes de hacerla escribiste lo que pensabas de la ocupación; compáralo con lo que aprendiste."
+    },
+    {
+      "id": "t-cierre-cambio",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-cierre-cambio",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eco": [
+        "t-ref-lo-que-pienso"
+      ]
+    },
+    {
+      "id": "t-cierre-lista",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-cierre-lista",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "mapa": {
+    "x": 230,
+    "y": 330,
+    "icono": "registro",
+    "origen": "t-investigador"
+  }
+}

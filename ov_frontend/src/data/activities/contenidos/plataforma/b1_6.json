@@ -1,0 +1,55 @@
+{
+  "_nota": "Registro. Apertura completa; consigna en esqueleto (elección de un mito + texto). La sugerencia de mitos según la dimensión «decisión propia» de b0-3 es un eco del servidor, pendiente de definir con los registros.",
+  "id": "b1-6",
+  "codigo": "b1-6",
+  "tipo": "registro",
+  "titulo": "Mi postura frente a los mitos",
+  "subtitulo": "Lo que quedó del puente",
+  "escenario": "desierto",
+  "bloque": 1,
+  "orden": 6,
+  "obligatoria": true,
+  "requisitos": ["b1-5"],
+  "ubicacion": "Desierto, la otra orilla",
+  "duracionEstimadaMin": 8,
+  "personajeIds": ["aurelio", "companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b1-6-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Cruzamos. Mira hacia atrás: las tablas que no se rompieron son los pregones que no te creíste."
+    },
+    {
+      "id": "b1-6-02",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "expresion": "contento",
+      "texto": "Bien cruzado. Pero te confieso algo: a mí, de todos mis pregones, hay uno que todavía me suena verdadero aunque ya vi los datos. ¿A ti no te pasa? ¿No hay uno que escuchaste tanto en tu casa que te cuesta soltarlo?"
+    },
+    {
+      "id": "b1-6-03",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto sí se guarda, y lo lee tu orientadora: le sirve saber qué frases pesan en tu casa. Y vuelve más adelante, cuando ordenes tus criterios: ahí te voy a recordar cómo dijiste que ese mito podía afectar tu decisión."
+    },
+    {
+      "id": "b1-6-04",
+      "tipo": "consigna",
+      "hablanteId": "aurelio",
+      "item": "b1-6-mito",
+      "premisa": "Elige el mito que más has escuchado o creído. ¿Dónde lo escuchaste, qué piensas tú de él ahora y cómo podría afectar tu decisión?",
+      "ayuda": "Toma postura y sostenla con un argumento o un dato del puente.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Un mito con nombre pesa menos. Anotado en tu bitácora."
+  },
+  "promptDiario": "Mitos que me tocaron",
+  "mapa": { "x": 1040, "y": 260, "icono": "registro" }
+}

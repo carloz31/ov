@@ -2,10 +2,11 @@
   "eventos_registrados": [
     {
       "fecha_hora": "2026-10-07T10:00:00",
-      "referencia": "journalism",
+      "referencia": "mtpe-291",
       "tipo": "ACTUALIZA_PLAN"
     }
   ],
+  "nuevas_notificaciones": [],
   "nuevos_desbloqueos": [
     {
       "condiciones": [
@@ -14,6 +15,7 @@
           "cumplida": true,
           "referencia": null,
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "ACTUALIZA_PLAN"
         }

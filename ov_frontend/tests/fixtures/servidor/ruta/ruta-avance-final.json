@@ -1,0 +1,50 @@
+{
+  "camino": {
+    "completadas": 9,
+    "porcentaje": 64.29,
+    "total": 14
+  },
+  "camino_completo": false,
+  "ciudad": {
+    "completadas": 3,
+    "porcentaje": 33.33,
+    "total": 9
+  },
+  "requeridas": {
+    "completadas": 6,
+    "total": 7
+  },
+  "tramo_actual": {
+    "codigo": "T2",
+    "completadas": 2,
+    "nombre": "Decisión",
+    "numero": 3,
+    "total": 3
+  },
+  "tramos": [
+    {
+      "codigo": "T0",
+      "completadas": 3,
+      "estado": "COMPLETO",
+      "nombre": "Inicio",
+      "numero": 1,
+      "total": 3
+    },
+    {
+      "codigo": "T1",
+      "completadas": 1,
+      "estado": "COMPLETO",
+      "nombre": "Camino",
+      "numero": 2,
+      "total": 1
+    },
+    {
+      "codigo": "T2",
+      "completadas": 2,
+      "estado": "ACTUAL",
+      "nombre": "Decisión",
+      "numero": 3,
+      "total": 3
+    }
+  ]
+}

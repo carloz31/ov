@@ -7,7 +7,7 @@ import { FinishExtrasSection } from '../FinishExtrasSection'
 import { ChipsFicha } from './ChipsFicha'
 
 // F04b (api): cierres de la batalla del servidor. Victoria con sus desbloqueos, práctica sin ellos y
-// derrota con el repaso como acción principal. Nunca muestra las respuestas correctas. F04c: el cierre sale de
+// derrota con «Intentar de nuevo» como acción principal y «Volver al mapa» como secundaria. Nunca muestra las respuestas correctas. F04c: el cierre sale de
 // la respuesta del servidor al intento; mientras llega, un estado de carga, y si falla, «Reintentar».
 export function CierreBatalla({
   model,
@@ -62,6 +62,9 @@ export function CierreBatalla({
         {/* F04d: las fichas de las preguntas falladas, según el servidor; se sale con la X. */}
         <ChipsFicha etiqueta="Para la próxima, repasa:" fichas={resultado.fichas_repaso} />
         <div className="sx-player-actions">
+          <button type="button" className="sx-secondary-button" onClick={onClose}>
+            Volver al mapa
+          </button>
           <button type="button" className="sx-primary-button" onClick={start}>
             Intentar de nuevo
           </button>

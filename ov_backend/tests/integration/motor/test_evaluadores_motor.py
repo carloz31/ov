@@ -9,7 +9,8 @@ from soporte_retiro import FECHA_BD, agregar_eventos, buscar, condicion, regla
 def test_r05_familias_distintas_y_parametro_por_regla(sesion):
     ana = buscar(sesion, m.Cuenta, 'est-ana')
     carreras = list(sesion.scalars(select(m.Carrera).order_by(m.Carrera.id)))
-    otra = m.Carrera(codigo='carrera-prueba', nombre='DATO DE PRUEBA', familia_id=carreras[0].familia_id)
+    otra = m.Carrera(codigo='carrera-prueba', nombre='DATO DE PRUEBA', familia_id=carreras[0].familia_id,
+                     tipo='UNIVERSIDAD', codigo_cine='000000')
     sesion.add(otra)
     sesion.flush()
     ficha = sesion.scalar(select(m.Ficha))

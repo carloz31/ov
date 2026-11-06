@@ -20,8 +20,8 @@ def consultar_familia(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
 
 @router.get("/cuentas/{cuenta}/familia/resultados", response_model=list[ResultadoPublico],
             response_model_exclude_unset=True)
-def consultar_resultados_hijo(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
+def consultar_resultados_hijo(cuenta_consultada: CuentaConsultada, sesion: SesionBD, estudiante: str | None = None):
     try:
-        return servicio_familia.resultados_hijo(sesion, cuenta_consultada)
+        return servicio_familia.resultados_hijo(sesion, cuenta_consultada, estudiante)
     except ErrorAccion as error:
         raise traducir_error_accion(error) from error

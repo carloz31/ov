@@ -34,16 +34,12 @@ export function ocupacionesResultado(
 }
 
 export function carrerasResultado(
-  resultado: ResultadoPublico | undefined,
+  _resultado: ResultadoPublico | undefined,
   api: boolean,
   ocupaciones: OcupacionResultado[],
 ): Omit<CarreraResultado, 'favorita' | 'plan'>[] {
-  if (api)
-    return (resultado?.carreras_recomendadas ?? []).map((c) => ({
-      ...c,
-      duracion: careerCatalog.find((entrada) => entrada.id === c.codigo)?.duration,
-      familia: getFamily(c.familia)?.name ?? c.familia,
-    }))
+  // Ajuste resultados-intereses: en api el resultado recomienda familias, no carreras.
+  if (api) return []
   return careerDetails.flatMap((c) => {
     const via = ocupaciones
       .filter((o) => o.codigo && c.occupationIds.includes(o.codigo))

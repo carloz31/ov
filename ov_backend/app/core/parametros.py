@@ -4,11 +4,24 @@ Los umbrales son los criterios de §5.4, no una atribución bibliográfica
 adicional. Las opciones persistidas siguen siendo la fuente de sus puntajes.
 """
 
-# §5.4: ajuste inclusivo y cantidad máxima de coincidencias guardadas.
-UMBRAL_BEST_FIT = 0.729
-UMBRAL_GREAT_FIT = 0.608
+# Se guardan todas las coincidencias con r ≥ CORRELACION_MINIMA, sin tope (ajuste resultados-intereses).
 CORRELACION_MINIMA = 0
-LIMITE_COINCIDENCIAS = 10
+# Ocupaciones afines que se muestran: r ≥ UMBRAL_AFIN, de MINIMO a MAXIMO (si menos pasan el umbral, se
+# completan hasta el mínimo y el perfil es «poco marcado»). Banda «muy afín» desde UMBRAL_MUY_AFIN de parecido.
+UMBRAL_AFIN = 0.5
+MAXIMO_OCUPACIONES_AFINES = 30
+MINIMO_OCUPACIONES_AFINES = 10
+UMBRAL_MUY_AFIN = 70
+UMBRAL_AFIN_PARECIDO = 50
+# Familias recomendadas: media de las 2 mejores r de sus ocupaciones afines con esa familia principal; si solo
+# tiene una, el segundo cupo vale RELLENO_SEGUNDA_OCUPACION.
+FAMILIAS_RECOMENDADAS = 5
+OCUPACIONES_POR_FAMILIA = 2
+RELLENO_SEGUNDA_OCUPACION = 0.5
+# Preparación que suele pedir una ocupación afín, según su job_zone O*NET: amplia (grado universitario o
+# posgrado) o intermedia (formación técnica, capacitación o experiencia). Fuera de ambas, o sin job_zone: nula.
+ZONAS_PREPARACION_AMPLIA = (4, 5)
+ZONAS_PREPARACION_INTERMEDIA = (2, 3)
 
 # B07: zona de una dimensión de partida o llegada según su promedio (inclusivo). Provisional.
 UMBRAL_ZONA_FUERTE = 3.5
@@ -33,7 +46,8 @@ VERSION_PROMPT_REGISTRO = "v4"
 MIN_CARACTERES_RESPALDO = 40
 # B03: preguntas de seguimiento por registro, no por ítem.
 MAXIMO_SEGUIMIENTOS_POR_REGISTRO = 2
-MAXIMO_ITEMS_REGISTRO = 3
+# Ajuste carga-actividades: 5, lo que pide el registro más largo del contenido (b4-1).
+MAXIMO_ITEMS_REGISTRO = 5
 # Reinicios del test de intereses por cuenta y aplicación, solo con perfil plano (HU-095).
 MAXIMO_REINICIOS_PERFIL_PLANO = 1
 TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
@@ -73,16 +87,6 @@ DIMENSIONES_RIASEC = (
     ("S", "Social"), ("E", "Emprendedora"), ("C", "Convencional"),
 )
 
-# Iteración 1, anexo de cierre, perfil y resultados · F2.
-DESCRIPCIONES_RIASEC: dict[str, str] = {
-    "R": "Te atraen las actividades prácticas: trabajar con las manos, usar herramientas o máquinas y estar al aire libre.",
-    "I": "Te atrae observar, preguntar y analizar para entender cómo y por qué funcionan las cosas.",
-    "A": "Te atrae crear, imaginar y expresarte con libertad, sin reglas rígidas.",
-    "S": "Te atrae ayudar, enseñar, cuidar o acompañar a otras personas.",
-    "E": "Te atrae liderar, convencer, organizar proyectos y tomar decisiones.",
-    "C": "Te atrae ordenar información, seguir procedimientos claros y trabajar con datos de forma precisa.",
-}
-
 # B11 · Planes de carrera.
 MAXIMO_PLANES = 3
 CICLOS_POR_ANIO = 2
@@ -93,3 +97,30 @@ MINIMO_CARACTERES_RELATO = MIN_CARACTERES_RESPALDO
 MAXIMO_LLAMADAS_SUGERENCIAS_POR_PLAN = 6
 MAXIMO_PASOS_POR_DUDA = 2
 MAXIMO_CARACTERES_PASO = 140
+
+# F06 · Catálogo: tamaño de página de los listados.
+LIMITE_PAGINA_CATALOGO = 20
+LIMITE_MAXIMO_CATALOGO = 50
+# Ocupaciones que pide de una vez el directorio de un caso (ajuste carga-casos).
+MAXIMO_OCUPACIONES_CASO = 30
+# Ajuste notificaciones: páginas de la campana, como las del catálogo.
+LIMITE_PAGINA_NOTIFICACIONES = 20
+LIMITE_MAXIMO_NOTIFICACIONES = 50
+
+# Ajuste catalogo-datos-reales: fuente de los ingresos de egresados, que toda respuesta con ingresos muestra.
+FUENTE_INGRESOS = "Ponte en Carrera (MTPE)"
+# Escala de los puntajes RIASEC de las ocupaciones (Mi Próximo Paso); el detalle los entrega de 0 a 100 con
+# `puntaje_visual` (calculo.py).
+PUNTAJE_OCUPACION_MINIMO = 1
+PUNTAJE_OCUPACION_MAXIMO = 7
+
+# F08: código del diploma del apoderado, EXP-AP-{año}-{id con ceros}-{dígito verificador}. El prefijo cambia si
+# cambia el nombre de la plataforma.
+PREFIJO_DIPLOMA = 'EXP-AP'
+CIFRAS_CUENTA_DIPLOMA = 5
+
+# B13: favoritos de estudiantes que, con el destacado de la orientadora, vuelven Leyenda una entrevista.
+FAVORITOS_LEYENDA = 3
+# B13: sugerencias de preguntas para el guion de una entrevista (una llamada al LLM por versión de «lo que pienso»).
+MAXIMO_SUGERENCIAS_GUION = 3
+MAXIMO_CARACTERES_PREGUNTA_GUION = 160

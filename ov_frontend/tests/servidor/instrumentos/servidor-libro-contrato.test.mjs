@@ -53,7 +53,7 @@ function servidorLibro(app, { momento = 'final', plano = false } = {}) {
   let fase = momento
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/instrumentos')) return { body: avance(fase) }
     const aplicacion = req.url.match(/resultado\?aplicacion=([A-Z-]+)/)?.[1]
     if (aplicacion) return { body: resultados[aplicacion] }

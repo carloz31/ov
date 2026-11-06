@@ -38,9 +38,8 @@ export function CheckInContent({
       <CharacterAvatar id="companero" size="md" />
       <DialogTitle>Registra tu señal de hoy</DialogTitle>
       <DialogDescription>
-        {servidor
-          ? '¿Qué tan seguro te sientes de tu próximo paso?'
-          : '¿Qué tan seguro te sientes de tu próximo paso? Puedes cambiar esta respuesta durante el día.'}
+        {/* Ajuste del panel (F05): también en api la señal se puede cambiar durante el día. */}
+        ¿Qué tan seguro te sientes de tu próximo paso? Puedes cambiar esta respuesta durante el día.
       </DialogDescription>
       <div className="sx-signal-values" role="group" aria-label={`Seguridad de 1 a ${escala}`}>
         {Array.from({ length: escala }, (_, i) => (i + 1) as ReadinessCheckIn['value']).map((value) => (

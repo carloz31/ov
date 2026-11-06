@@ -32,7 +32,7 @@ Bloques: `T0` Inicio, `T1` Camino y `T2` Decisión (desde B07), `CIUDAD` y `FAMI
 
 Cuentas:
 - `est-ana` y `est-luis` en el salón `5A`, y `est-beto` en el `5B`;
-- `apo-rosa`, vinculada con Ana;
+- `apo-rosa`, vinculada con Ana (y con Luis desde F08, para el selector de hijo);
 - `ori-carmen`, orientadora principal del `5A` (desde B01).
 
 | Código | Tipo | Dónde | Desde | Qué prueba |
@@ -53,8 +53,8 @@ Cuentas:
 | `t-explorar` | R | T1 | B10 | Se abre con `favoritos_diversos`. B11: abre la sección REALIDAD de la tarjeta. |
 | `t-comparar` | R | T2 | B11 | Se abre con `planes_listos_para_comparar` (dos planes); cita PLANES y abre la sección PASOS. |
 | `t-proyecto` | R | T2 | B11 | Se abre con `pasos_plan_a` (un paso); cita PLAN, PASOS_PLAN_A y OPCION_INICIAL; cierra T2. |
-| `t-investigador`, `t-investigador-cierre` | I | CIUDAD | B13 | Sección INVESTIGACIONES; el cierre se abre con PUBLICA_ENTREVISTA. |
-| `t-apo-1`, `t-apo-carta` | I | FAMILIA | B00 | Ruta del apoderado. B01: `t-apo-1` da la ficha `t-ficha-apo`; cerrar FAMILIA abre la sección CONVERSACIONES. B12: carta y diploma. |
+| `t-investigador`, `t-investigador-cierre` | I, R | CIUDAD | B13 | Sección INVESTIGACIONES; el cierre es un registro que se abre con PUBLICA_ENTREVISTA y cita LO_QUE_PIENSO. |
+| `t-apo-1`, `t-apo-2` | I | FAMILIA | B00 | Ruta del apoderado. B01: `t-apo-1` da la ficha `t-ficha-apo`; cerrar FAMILIA abre la sección CONVERSACIONES. B12: diploma. F08: `t-apo-2` reemplaza a `t-apo-carta` (la carta se escribe en Conversaciones). |
 | `t-conv-1`, `t-conv-2` | Conversación | — | B00 | B12: `t-conv-1` con `t-expectativas` + carta; `t-conv-2` con `t-contraste`; entrada de diario al conversar. |
 | `t-ins-1`, `t-ins-oculta`, niveles 1 y 2 | Logros | — | B00 | Progreso de logros, insignia oculta y nivel. |
 
@@ -77,7 +77,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B10 | Catálogo, instituciones y favoritos · **Implementado** | 026, 037–040 | M | B06 | `t-explorar` bloqueado hasta tener favoritos diversos |
 | B11 | Planes de carrera · **Implementado** | 043–048, 050, 097–099, 109, 110 | M | B07, B08, B10 | Secciones que se habilitan, presupuesto, dudas con pasos sugeridos y requisitos de comparar y proyecto |
 | B12 | Familia: ruta del apoderado, conversaciones y cartas · **Implementado** | 066–071, 078–080 | M | B09, B11 | Conversaciones que se abren una por una; cartas al completar todas |
-| B13 | Investigaciones y entrevistas | 057–065, 100, 101 | M | B10 | Investigación completa, con aliados, reacciones y Leyenda |
+| B13 | Investigaciones y entrevistas · **Implementado** | 057–065, 100, 101 | M | B10 | Investigación completa, con aliados, reacciones y Leyenda |
 | B14 | Orientadora: seguimiento y configuración | 081–089 (108 si entra) | M | B07, B11, B12 | Sus estudiantes, sus registros, la configuración y las seis alertas |
 | B15 | Informe de viaje y temas para conversar | 034, 102–105 | — | B11–B13 | Bitácora desde el primer día; las siete reglas de temas; endgame |
 | B16 | Orientadora: vista del salón | 090–093, 107 | — | B14 | Capa 1 del panel |
@@ -197,7 +197,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - `t-lee-cuestionario` cita la respuesta del cuestionario.
 - **Comprueba:** sección 11; los tres sentidos de «prioritario»; apertura del Bloque 4.
 
-**B08 · Batallas, casos y testimonios (M)**
+**B08 · Batallas, casos y testimonios (M) · Implementado**
 - **Modelo:**
   - `TipoActividad.BATALLA`, `ResultadoBatalla` y `SUPERA_BATALLA`;
   - `Actividad.dimension_id` y `ColeccionOcupacion`;
@@ -256,7 +256,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Ninguna actividad escribe en los planes.
 - **Comprueba:** regla 1; la tarjeta que crece; opción inicial; requisitos de 4.5 y 5.1.
 
-**B12 · Familia (M)**
+**B12 · Familia (M) · Implementado**
 - **Modelo:** `TipoObjetivo.CONVERSACION`.
 - **Pruebas:**
   - El apoderado ve todas las guías tras completar su ruta y su carta; el estudiante las abre una por una.
@@ -278,7 +278,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Coautoría y «lo que cambió».
   - El investigador vuelve al publicar.
   - «Aprendí algo» sin comentario responde 422; una reacción por estudiante.
-  - Leyenda con `MINIMO_REACCIONES_LEYENDA` reacciones y el destacado de la orientadora.
+  - Leyenda con `FAVORITOS_LEYENDA` favoritos y el destacado de la orientadora.
 - **Comprueba:** investigaciones (sección 8).
 
 **B14 · Orientadora: seguimiento y configuración (M)**
@@ -331,7 +331,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 - **Pantallas antes que código.** Si existe `docs/specs/<lote>-pantallas.md` (insumo preparado con el usuario), el plan parte de él y no decide pantallas fuera de él. En todo caso, el plan de cada lote F lleva una sección **«Pantallas»**: por vista, qué cambia (elementos, textos, componentes que reutiliza) y, si es nueva, un boceto. Lo aprobado en el plan queda autorizado; lo que no esté ahí sigue la regla de `pendientes-interfaz.md`.
 - **El backend se puede ajustar, pero declarado.** Si una pantalla necesita un dato que no existe (un campo, una lectura), el plan lo lista en **«Ajustes al backend»**. Si toca el modelo, el lote se marca **M** y sigue `/cambio-modelo` (migración, `ruta`, escenario, fixtures). Nunca dos **M** a la vez, tampoco con B13–B16.
 - **Contenidos de prueba.** Los `t_*.json` son mínimos: lo justo para recorrer la mecánica. El contenido real se carga después con la numeración de la ruta base.
-- **Pruebas.** Cada lote mueve su área de `tests/servidor/` a los `ruta-*` y, si cambia el contrato, regenera los fixtures en la misma tarea. Al cerrar F08 se retiran los fixtures de la raíz.
+- **Pruebas.** Cada lote mueve su área de `tests/servidor/` a los `ruta-*` y, si cambia el contrato, regenera los fixtures en la misma tarea. En F08 se retiraron los fixtures de la raíz del portal del apoderado; los que siguen allí los usan pruebas locales y las de Mara.
 - **Modo local congelado (desde F00).** `VITE_DATOS=local` conserva lo que hace hoy y no recibe funciones nuevas. Lo que agrega un lote F existe solo en `api`: el hook del dominio expone una bandera con nombre del dominio (`puedeEditarRegistro`, `muestraComparacion`) y en local la vista se comporta como antes. `tests/local/` no se amplía; solo debe seguir pasando. Excepción: cambios solo visuales aprobados por el usuario, que no alteran textos, orden ni momento (F00: avisos como toasts).
 - **Pendientes.** Cada lote cierra (o reescribe) las entradas de `pendientes-interfaz.md` que le tocan.
 
@@ -345,11 +345,11 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 | F03 | Instrumentos y libro de Helena · **Implementado** | 022–024, 027, 094, 095 | F02 | B06, B07, F5 recarga | Libro: Revelar, perfil plano, comparación partida–llegada |
 | F04 | Batallas, casos y testimonios · **Implementado** | 017, 041, 051–056 | F00 | B08, B2 testimonios, F3 testimonios, F4 íconos | Testimonios (vista nueva o en mochila); Central de Casos |
 | F05 | Diario, pregunta del día y check-in · **Implementado** | 028–033, 035, 036, 075 | F01 | B09, B2 diario, F4 señal | Diario; cierre de actividad; pasaporte |
-| F06 | Catálogo y favoritos | 026, 037–040 | F03 | — | Catálogo y detalles |
-| F07a | Planes: tarjeta, orden y primeras secciones | 043, 044, 047, 048, 050, 098, 099, 109 | F02, F06 | B11 (parte) | Mis planes: lista A/B/C, estados por sección, POR_QUE, CONOCIMIENTO con dudas |
-| F07b | Planes: realidad, pasos y actividades que los citan | 045, 046, 097, 110 | F07a | B11 | REALIDAD con presupuesto, PASOS con sugerencias, medidores |
-| F08 | Familia: estudiante y apoderado | 066–071, 078–080 | F05, F07b | B12, B17 hijos, AP-F3 (×4), B01 fichas apoderado, B2 conversaciones | Familia del estudiante; portal del apoderado |
-| F09 | Investigaciones y entrevistas | 057–065, 100, 101 | B13 | — | Investigaciones, comunidad, Leyendas |
+| F06 | Catálogo y favoritos · **Implementado** | 026, 037–040, 042 | F03 | B11 `gestion`, F2 hoja de vida, F4 ocupaciones sin código | Catálogo y detalles |
+| F07a | Planes: tarjeta, orden y primeras secciones · **Implementado** | 043, 044, 047, 048, 050, 098, 099, 109 | F02, F06 | B11 (parte) | Mis planes: lista A/B/C, estados por sección, POR_QUE, CONOCIMIENTO con dudas |
+| F07b | Planes: realidad, pasos y actividades que los citan (M) · **Implementado** | 045, 046, 097, 110 | F07a | B11 | REALIDAD con presupuesto, PASOS con sugerencias, medidores |
+| F08 | Familia: estudiante y apoderado (M) · **Implementado** | 066–071, 078–080 | F05, F07b | B12, B17 hijos, AP-F3 (×4), B01 fichas apoderado, B2 conversaciones | Familia del estudiante; portal del apoderado |
+| F09 | Investigaciones y entrevistas · **Implementado** | 057–065, 100, 101 | B13 | B13 | Investigaciones, Leyendas, publicaciones de la orientadora |
 | F10 | Orientadora: seguimiento y configuración | 081–089 | B14 | B17 salones | Mis estudiantes, perfil, prioritarios, alertas |
 | F11 | Informe de viaje, temas y vista del salón | 034, 090–093, 102–105, 107 | B15, B16 | — | Informe; panel del salón |
 
@@ -398,45 +398,56 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **F04b · Preguntas de batalla en el servidor (M) · Implementado:** pool de preguntas por batalla con su ficha, intentos al azar con opciones mezcladas, respuestas guardadas, fichas derivadas de las preguntas; drawer «Se alimenta de» y cierres de victoria, práctica y derrota.
 - **F04c · Vidas y destellos en el servidor (M) · Implementado:** la batalla configura vidas del enemigo y destellos; el servidor decide la victoria con las respuestas y el cierre sale de su respuesta.
 - **F04d · Ficha única y cierre de la batalla · Implementado:** el visor de la mochila es la única presentación de una ficha; la mochila lista las fichas del servidor; intro con «Tu luz viene de», feedback con su ficha y cierre con `fichas_repaso`.
+- **Ajuste mochila (M) · Implementado:** la mochila rediseñada (fichas solo obtenidas por tramo, voces por descubrir solo con su llamado disponible), un modal de ficha único con el contenido pedido aparte (`GET /cuentas/{c}/fichas/{codigo}`), `VISTA_FICHA`, tema y descripción de la ficha (migración 0030) y favoritos de fichas y testimonios en el servidor (migración 0031). Fijó las cuatro reglas de los datos del servidor en el front (`integracion.md`).
 
 #### F05 · Diario, pregunta del día y check-in · **Implementado**
 - **Ajuste del diario (M) · Implementado:** portada en tres zonas («Hoy», buzón, tarjeta de Lumi y cuaderno), «Cartas de Lumi» con archivo y remitente (migración 0026), recuerdos como actividades del bloque LUMI con conteo de tope diario (migración 0027) y cierre de la pregunta del día al borrar su respuesta.
+- **Ajuste presentaciones-vistas (S) · Implementado:** la bienvenida del diario pasa a la presentación de Lumi de la sección, y en api las presentaciones de primera visita ya cerradas se guardan por cuenta en el servidor (`presentacion`, `presentacion_vista`, migración 0032). Queda unir presentación y ayuda del «?» en un solo texto.
 - **Quedó:** HU-075 parcial (nivel y afinidad); el avance por temática, sin vista, en `pendientes-interfaz.md`. La afinidad cuenta las misiones adicionales en el total y `check-ins` suma `registrado_hoy`.
 - **Hace:** diario desde el servidor (preguntas fijas y personalizadas, entradas con título opcional, editar y borrar, pregunta del día vigente, amistad con Lumi); aviso en el cierre de actividad cuando deja una pregunta; check-in al ingresar si no hay uno del día y su evolución; temáticas y afinidad en el pasaporte.
 - **Pantallas a decidir:** aviso «Lumi te dejó una pregunta en tu diario» en el cierre (no existe); estado «Lumi está escribiendo…» al abrir una personalizada; dónde va la pregunta del día dentro del diario; dónde se ven evolución, temáticas y afinidad.
 - **Ajustes al backend posibles:** si el check-in al ingresar necesita saber «ya hizo el de hoy» sin traer la serie, un campo en el resumen.
 
-#### F06 · Catálogo y favoritos
+#### F06 · Catálogo y favoritos · **Implementado**
+- **Quedó:** listados paginados con filtro de favoritos, opciones de filtro y lugar inesperado en el servidor (HU-042, que se implementa aquí); en api, catálogo, detalles, vistas y favoritos (también los del resultado RIASEC, Mis planes y el perfil) del servidor. «Explorando familias» se retiró del detalle de carrera en api (la cubre `t-ins-familias`). Lo que el catálogo local muestra y el servidor no entrega (barras RIASEC, dirección, ingresos por ámbito y edad, duración en la tarjeta) queda en `pendientes-interfaz.md`.
 - **Hace:** búsqueda y detalle de carreras, ocupaciones e instituciones desde el servidor (filtro RIASEC por combinación), favoritos en el servidor, eventos de vista (que abren `t-explorar`), `gestion` de la institución. La presentación (imágenes, colores, videos) sigue en el front, buscada por código.
 - **Contenidos:** `t_explorar`.
 - **Riesgo:** el detalle del front muestra cosas que el backend quizá no tiene (o al revés). El plan debe cruzar campo por campo el detalle actual con la respuesta de `catalogo/*`.
 - **Ajustes al backend posibles:** campos faltantes del detalle (es el lote con más probabilidad de agregar columnas).
 
-#### F07 · Planes de carrera (tarjeta v4)
+#### F07 · Planes de carrera (tarjeta v4) · **Implementado**
 - **Hace:** reemplaza `DecisionSheet` por la tarjeta v4 (`caso-tarjeta-plan-v4.md`): crear desde favoritos, solo la sección elegida a la vista, editar y guardar por sección, estados homogéneos, medidores, dudas → pasos sugeridos, presupuesto con precarga armada en el front (`opciones.rubros`, `caminos`, `gestion`), pasos pendiente/hecho, orden A/B/C, aviso de misma familia, opción inicial. `t-comparar` y `t-proyecto` citan los planes.
 - **Contenidos:** `t_comparar`, `t_proyecto`.
 - **Partido en dos (decidido):**
-  - **F07a:** crear desde favoritos, ordenar A/B/C, eliminar, estado de cada sección y qué actividad la abre, aviso de misma familia, opción inicial, POR_QUE y CONOCIMIENTO (las dudas se crean y se cierran; todavía sin sugerencias).
-  - **F07b:** REALIDAD (presupuesto con precarga y totales, financiamiento, complicaciones), pasos sugeridos por el LLM desde dudas y complicaciones (aceptar, editar, descartar, respaldo), PASOS (pendiente/hecho), medidores y las actividades `t-comparar` y `t-proyecto`.
-- **Pantallas a decidir:** lista de planes y tarjeta con una sola sección a la vista (F07a); presupuesto y medidores (F07b).
+  - **F07a · Implementado:** crear desde favoritos, ordenar A/B/C, eliminar, estado de cada sección y qué actividad la abre, aviso de misma familia, opción inicial, POR_QUE y CONOCIMIENTO (las dudas se crean y se cierran; todavía sin sugerencias).
+    - **Quedó:** en api, Mis planes con la tarjeta v4 (`features/plans`), el diálogo de crear desde favoritas, el plan abierto (`profile/decisions/:carrera`) con menú de secciones y lectura/edición de POR_QUE y CONOCIMIENTO, el bloque de plan del detalle de carrera y el capítulo III del perfil con los planes del servidor. Ajuste al backend sin modelo: `crear` exige que la carrera sea favorita (409). Las acciones vencen `planes` y un desbloqueo `SECCION_PLAN` también. Pendientes nuevos: «De tu camino» (cita de 1.7) y los valores de 2.3 primero.
+  - **F07b · Implementado:** REALIDAD (presupuesto con precarga y totales, financiamiento, complicaciones), pasos sugeridos por el LLM desde dudas y complicaciones (aceptar, editar, descartar, respaldo), PASOS (pendiente/hecho), medidores y las actividades `t-comparar` y `t-proyecto`.
+    - **Quedó:** en api, la sección 3 (institución entre las que ofrecen la carrera, camino, tabla de gastos con precarga la primera vez y totales en vivo, financiamiento y complicaciones en dos filas de chips; en lectura, los totales del servidor), la sección 4 (sugerencias con «Agregar», «Editar» en sitio y «Ahora no»; pasos pendientes y hechos; «Lo hice» con hallazgo al instante; en lectura, la franja «{m} sugerencias esperan tu decisión»), el aviso de sugerencias al guardar 2 y 3, «Cómo me siento» con su control segmentado y las mini tarjetas del plan A, «1.er año» en el frente de la tarjeta y los nodos de `t_comparar` y `t_proyecto` con la zona de eco citando PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL. Ajustes al backend: `opciones.ciclos_por_anio`, `institucion.duracion_ciclos` en el plan y `duracion_ciclos` en las instituciones del detalle de carrera (sin modelo); en el ajuste posterior de «Cuánto costaría», `referencia_rubro.monto_referencia` pasa a nullable (migración 0034, **M**) y eliminar un plan lo deja inactivo para recuperarlo al volver a crearlo (`tarjeta_carrera.activa`, migración 0035, **M**). Pendiente nuevo: HU-049, «Es a propósito» y la vista de la orientadora, fuera de los lotes F07.
+- **Pantallas:** decididas e implementadas en F07a y F07b.
 - **Ajustes al backend posibles:** los que salgan al aterrizar los textos y listas de la tarjeta.
 
-#### F08 · Familia
+#### F08 · Familia (M) · **Implementado**
 - **Hace:**
   - Estudiante: sección Familia con su carta primero y después las conversaciones por estado (`sin_responder`, `esperando_al_otro`, `te_toca`, `por_conversar`, `conversada`); responder, ver la del otro con la guía y marcar conversada.
   - Apoderado: hijos reales (`GET /sesion`), conversaciones con el mismo flujo, carta, diploma y avance desde `familia`, sus fichas, avisos de carga y error del portal.
 - **Contenidos:** `t_apo_1`, `t_apo_carta`.
 - **Pantallas a decidir:** reemplazo de la doble marca por responder → ver → conversar; dónde ve el apoderado sus fichas; aviso de carga y error del portal.
 - **Al cerrar:** se retiran los fixtures congelados de la raíz y los datos de demostración de hijos.
+- **Quedó:** en api, Familia del estudiante (carta pendiente con el sobre, carta editable hasta la entrega, lista por pestañas sin «Conversadas», responder, esperando, listas para conversar con puente, preguntas, «Algo que ya saben» y entrada de diario, y el regalo como pantalla propia) y Conversaciones del apoderado con las mismas pantallas en claro, bloqueo con su avance y selector de hijo; Mis actividades del apoderado con anillo, diploma y fichas por actividad (modal compartido sin favorito, contenido al abrir) y el diploma imprimible. Ajustes al backend: `conversacion.algo_que_saben` (migración 0036, **M**); conversada al responder el segundo (sin `completar-conversacion` ni `por_conversar`); lista completa con tramo, bloqueo y `abierta_para_hijo`; `?estudiante=` para el apoderado; diploma con código; fichas bloqueadas con su actividad. `ruta`: `t-apo-2` reemplaza a `t-apo-carta` y Rosa tiene un segundo hijo (Luis). Pendientes nuevos: avisos al apoderado, «requiere atención», varios hijos en el inicio y tramos colapsables.
 
-#### F09 a F11
-Se detallan al cerrar sus lotes B (B13, B14, B15–B16), con la misma estructura. Sus vistas ya existen en el prototipo (investigaciones, comunidad, panel de la orientadora), así que serán sobre todo conexión, con los ajustes que dejen sus lotes B en `pendientes-interfaz.md`.
+#### F09 · Investigaciones y entrevistas · **Implementado**
+- **Hace:** en api, Investigaciones con un solo selector (De mi salón · Leyendas · Mis investigaciones, con conteos), buscador, chips Favoritas · No vistas · Destacadas y orden; la investigación en curso con sus aliados; el asistente del guion (lo que pienso con el buscador de ocupación, mis preguntas con las sugerencias de Lumi, guía lista con consejos y camino a Leyenda); publicar y editar la ficha con coautores; el detalle con video, favorito, reacciones, reportes y retirar; y Publicaciones de la orientadora (tabla y detalle con destacar, moderar y comentar). La sección INVESTIGACIONES protege las rutas y el acceso rápido del panel.
+- **Contenidos:** `t_investigador` y `t_investigador_cierre` (con la cita de LO_QUE_PIENSO).
+- **Quedó:** ajustes al backend sin modelo: filtro `ocupacion` en `/entrevistas` («Entrevistas de tu salón» del detalle de ocupación), salón del autor y catálogo de reacciones en el detalle de la orientadora, y `guardar-guion` acepta una sugerida ya agregada sin código; textos de reacciones y preguntas base de los bocetos en `fijos.py`. `/student/community` sigue solo en local. Pendientes nuevos: aviso a los autores cuando la orientadora elimina e íconos de la vitrina de los aliados.
+
+#### F10 y F11
+Se detallan al cerrar sus lotes B (B14, B15–B16), con la misma estructura. Sus vistas ya existen en el prototipo (investigaciones, comunidad, panel de la orientadora), así que serán sobre todo conexión, con los ajustes que dejen sus lotes B en `pendientes-interfaz.md`.
 
 ## Constantes provisionales
 
 | Constante | Valor |
 |---|---|
-| `MINIMO_REACCIONES_LEYENDA` | 3, de compañeros distintos (B13) |
+| `FAVORITOS_LEYENDA` | 3 favoritos de estudiantes (B13) |
 | `DIAS_SIN_INGRESO_ALERTA` | 7 (B14) |
 | `DIAS_FAMILIA_SIN_RUTA_ALERTA` | 14, desde que se abre la sección FAMILIA (B14) |
 | `DIFERENCIA_AVANCE_ALERTA` | 20 puntos porcentuales bajo la mediana del salón (B14) |

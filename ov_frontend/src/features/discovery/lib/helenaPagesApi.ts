@@ -1,10 +1,14 @@
 // F03: páginas del libro de Helena en api, leídas del avance y los resultados del servidor.
-// Orden: I Partida y llegada, II Intereses, III Inteligencias, IV Habilidades (estas dos siguen de ejemplo).
+// Orden: I Partida y llegada, II Intereses, III Inteligencias, IV Habilidades (ajuste carga-instrumentos: las
+// cuatro, del servidor).
 import { actividadServidor, ciudadDisponible, resultadoHelenaCompleto } from '@/lib/servidor/adaptadores'
 import {
+  APLICACION_HABILIDADES,
+  APLICACION_INTELIGENCIAS,
   APLICACION_LLEGADA,
   APLICACION_PARTIDA,
   APLICACION_RIASEC,
+  type AplicacionInstrumento,
   avanceAplicacion,
   estadoAplicacion,
   reinicioUsado,
@@ -17,7 +21,6 @@ import type {
   ResultadoHistorico,
   ResultadoPublico,
 } from '@/types/servidor'
-import type { InstrumentPageId } from '@/types/discovery'
 import { getHelenaPagesApi } from './helenaPages'
 import { idPuntoContenido } from '@/features/adventure/lib/puntosServidor'
 
@@ -113,13 +116,58 @@ export function paginaInteresesApi(
   }
 }
 
-// Las cuatro páginas del libro en api; las de ejemplo conservan su revelado local.
-export function paginasLibroApi(
+// Ajuste carga-instrumentos: inteligencias y habilidades sociales (DESTACADAS), sin reinicio. Son opcionales: el
+// único prioritario es el RIASEC.
+function paginaDestacadasApi(
   bloques: BloqueActividades[] | null,
   libro: LibroServidor,
-  reveladasEjemplo: InstrumentPageId[],
-) {
-  const servidor = [paginaPartidaLlegada(bloques, libro), paginaInteresesApi(bloques, libro)]
-  const extras = (id: string) => servidor.find((p) => p.id === id)
-  return getHelenaPagesApi(servidor, reveladasEjemplo).map((p) => ({ ...p, ...extras(p.id) }))
+  pagina: Pick<HelenaPage, 'id' | 'title' | 'subtitle' | 'teaser'>,
+  aplicacion: AplicacionInstrumento,
+): HelenaPage & ExtrasPaginaApi {
+  const estado = estadoAplicacion(libro.avance, libro.resultados, aplicacion.aplicacion)
+  const resultado = libro.resultados[aplicacion.aplicacion]
+  return {
+    ...pagina,
+    numeral: 'I',
+    required: false,
+    state: estado,
+    missions: misiones(libro, aplicacion.aplicacion),
+    demo: false,
+    result: estado === 'revealed' && resultado ? resultadoHelenaCompleto(resultado, 'DESTACADAS') : undefined,
+    aplicacionSello: estado === 'ready' ? aplicacion : undefined,
+    faltante: faltanteDe(bloques, libro, aplicacion.aplicacion),
+    selloLlegada: false,
+    conComparacion: false,
+    puedeReiniciar: false,
+  }
+}
+
+// Las cuatro páginas del libro en api.
+export function paginasLibroApi(bloques: BloqueActividades[] | null, libro: LibroServidor) {
+  return getHelenaPagesApi([
+    paginaPartidaLlegada(bloques, libro),
+    paginaInteresesApi(bloques, libro),
+    paginaDestacadasApi(
+      bloques,
+      libro,
+      {
+        id: 'inteligencias',
+        title: 'Tus formas de ser inteligente',
+        subtitle: 'Tus inteligencias',
+        teaser: 'Esta página guarda formas de aprender y resolver.',
+      },
+      APLICACION_INTELIGENCIAS,
+    ),
+    paginaDestacadasApi(
+      bloques,
+      libro,
+      {
+        id: 'habilidades',
+        title: 'Cómo te relacionas',
+        subtitle: 'Tus habilidades sociales',
+        teaser: 'Esta página aún guarda algo sobre cómo te relacionas con los demás.',
+      },
+      APLICACION_HABILIDADES,
+    ),
+  ])
 }

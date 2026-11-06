@@ -1,8 +1,5 @@
 import { useState } from 'react'
 import { modoApi } from '@/config/env'
-import { useEstadoServidor } from '@/store/servidor/sesion'
-import { avisosPendientes } from '@/store/servidor/avisos'
-import { useStudentOverlays } from '@/features/adventure/context/overlayContext'
 
 import { useDiscovery } from '@/store/discoveryStore'
 
@@ -23,12 +20,6 @@ export function useNovelties() {
   const [open, setOpen] = useState(false)
   const unread = ordered.length
 
-  return { ordered, open, setOpen, unread, loteAvisos: modoApi ? avisosPendientes() : undefined }
-}
-export function useServerNovelties() {
-  const [open, setOpen] = useState(false)
-  const servidor = useEstadoServidor()
-  const { openServerNotices } = useStudentOverlays()
-  const pendientes = avisosPendientes().length
-  return { open, setOpen, openServerNotices, pendientes, errorAvisos: servidor.errorAvisos }
+  // Ajuste notificaciones: en api, la campana lista las notificaciones del servidor.
+  return { ordered, open, setOpen, unread, campanaServidor: modoApi }
 }

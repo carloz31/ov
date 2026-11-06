@@ -1,0 +1,60 @@
+{
+  "id": "h-inteligencias-5",
+  "codigo": "h-inteligencias-5",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Explorando mis inteligencias, 5 de 5",
+  "subtitulo": "La escuela del maestro Bruno",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 9,
+  "obligatoria": false,
+  "requisitos": [
+    "h-inteligencias-4"
+  ],
+  "ubicacion": "La escuela del maestro Bruno",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "maestro",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hi5-01",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Última clase. Las frases que quedan son sobre los demás y sobre ti mismo: a quién lees mejor, si a la gente o a lo que te pasa por dentro.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hi5-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-INTELIGENCIAS",
+      "itemId": "plantilla",
+      "hablanteId": "maestro",
+      "etiqueta": "¿Con qué frecuencia te pasa?"
+    },
+    {
+      "id": "hi5-03",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Listo. Yo no te digo el resultado: eso lo hace el libro de Helena, con la explicación de cada inteligencia y cómo desarrollarla. Mi consejo de maestro: cuando lo veas, mira el conjunto y no una sola.",
+      "nuevoMomento": true
+    },
+    {
+      "id": "hi5-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Cuando rompas el sello hay un registro con el maestro, para decir en cuál te reconoces y en cuál no. Esa respuesta vale tanto como el resultado.",
+      "expresion": "animado"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "La página de inteligencias está lista para abrirse en el libro de Helena."
+  },
+  "mapa": {
+    "x": 520,
+    "y": 390,
+    "icono": "test"
+  }
+}

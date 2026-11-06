@@ -11,6 +11,7 @@ export function PlayerTopBar({
   total,
   progress,
   nuevoMomento = false,
+  salida,
   onClose,
 }: {
   activity: Actividad
@@ -19,6 +20,8 @@ export function PlayerTopBar({
   total: number
   progress: number
   nuevoMomento?: boolean
+  // Ajuste del diario (F05): el aviso de la X cuando la actividad no vuelve al mapa (un recuerdo vuelve al diario).
+  salida?: { titulo: string; descripcion: string; accion: string }
   onClose: () => void
 }) {
   const [exitOpen, setExitOpen] = useState(false)
@@ -88,16 +91,17 @@ export function PlayerTopBar({
           }}
         >
           <ShieldCheck className="sx-exit-icon" size={48} />
-          <DialogTitle>¿Quieres volver al mapa?</DialogTitle>
+          <DialogTitle>{salida?.titulo ?? '¿Quieres volver al mapa?'}</DialogTitle>
           <DialogDescription>
-            Tu avance ya está guardado. Podrás retomar la actividad desde este punto.
+            {salida?.descripcion ??
+              'Tu avance ya está guardado. Podrás retomar la actividad desde este punto.'}
           </DialogDescription>
           <div className="sx-player-actions">
             <button type="button" className="sx-secondary-button" onClick={() => setExitOpen(false)}>
               Seguir en la actividad
             </button>
             <button type="button" className="sx-primary-button" onClick={onClose}>
-              Volver al mapa
+              {salida?.accion ?? 'Volver al mapa'}
             </button>
           </div>
         </DialogContent>

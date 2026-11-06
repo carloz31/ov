@@ -1,0 +1,72 @@
+{
+  "_nota": "Registro (4.5). Apertura completa; consignas en esqueleto: matriz plan × criterio (plantilla a definir con los registros), una línea por plan y cierre con cuál queda primero. Requisito: b4-4 superada, Plan A con la mitad de los campos llenos y Plan B iniciado (evaluador planes_listos_para_comparar). Ecos: criterios de b4-2, planes, y lo que justificó en b4-1.",
+  "id": "b4-5",
+  "codigo": "b4-5",
+  "tipo": "registro",
+  "titulo": "Comparo mis planes",
+  "subtitulo": "Poner las rutas sobre la mesa",
+  "escenario": "acantilado",
+  "bloque": 4,
+  "orden": 5,
+  "obligatoria": true,
+  "requisitos": ["b4-4"],
+  "ubicacion": "Acantilado, la mesa de mapas",
+  "duracionEstimadaMin": 12,
+  "personajeIds": ["ivan", "guardian", "companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b4-5-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "El Eco se calló. Y el artefacto, como en cada tramo, se detuvo. Pero esta vez el guardián no está solo: Iván lo acompaña en la mesa de mapas."
+    },
+    {
+      "id": "b4-5-02",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "expresion": "neutral",
+      "texto": "Cuarto tramo. Hasta aquí exploraste; desde aquí tomas posición. No te pido una decisión definitiva: te pido que pongas tus planes contra tus propias reglas y digas cuál queda primero, sabiendo que siempre puedes tener otro en mente."
+    },
+    {
+      "id": "b4-5-03",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Así funciona la mesa: cada plan, contra cada criterio tuyo. Lo cumple, en parte o no. Sin «me gusta más»: con los criterios que tú mismo escribiste. Y una línea por plan.",
+      "eco": "b4-5-ref-criterios"
+    },
+    {
+      "id": "b4-5-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora y es la base de tu proyecto. Al cerrar te voy a recordar lo que justificaste en el cuadro de afinidad para el plan que quede primero, o lo que dijiste que tu perfil no resuelve.",
+      "eco": "b4-5-ref-afinidad"
+    },
+    {
+      "id": "b4-5-05",
+      "tipo": "consigna",
+      "hablanteId": "ivan",
+      "item": "b4-5-matriz",
+      "premisa": "Por cada plan y cada criterio: ¿lo cumple, en parte o no? Y una línea por plan que mencione un criterio.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b4-5-06",
+      "tipo": "consigna",
+      "hablanteId": "guardian",
+      "item": "b4-5-primero",
+      "premisa": "¿Cuál queda primero y por qué, según tus criterios? Si no coincide con tus intereses medidos, ¿qué piensas de eso?",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tomaste posición por un plan, sabiendo que no es definitivo. El artefacto apunta al faro."
+  },
+  "promptDiario": "Después de elegir",
+  "mapa": { "x": 520, "y": 210, "icono": "registro" }
+}

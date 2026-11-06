@@ -1,0 +1,363 @@
+{
+  "id": "b2-5",
+  "codigo": "b2-5",
+  "tipo": "encuentro",
+  "titulo": "Intereses y ambientes de trabajo",
+  "subtitulo": "Los seis refugios del volcán",
+  "escenario": "bosque_volcan",
+  "bloque": 2,
+  "orden": 5,
+  "obligatoria": true,
+  "requisitos": ["b2-4"],
+  "ubicacion": "Bosque del volcán, ronda de los refugios",
+  "duracionEstimadaMin": 12,
+  "personajeIds": ["rosa", "guardian", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante conoce los seis tipos de Holland, el ambiente de trabajo de cada uno y ejemplos de ocupaciones, sabe leer un código de tres letras y recuerda que el resultado del test sugiere áreas para explorar, no una carrera.",
+  "nodos": [
+    {
+      "id": "b2-5-01",
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "expresion": "neutral",
+      "texto": "Última ronda antes de que sigan al puerto. Alrededor del volcán hay seis refugios y en cada uno trabaja gente muy distinta. Vengan, que esto les va a servir para entender algo que se mide en la ciudad."
+    },
+    {
+      "id": "b2-5-02",
+      "tipo": "diapositiva",
+      "etiqueta": "La ronda de Rosa",
+      "titulo": "Seis refugios, seis ambientes",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "El taller: Pacho y dos mecánicos arreglan bombas, motores y pasarelas. Herramientas, grasa, resultados que se ven.",
+            "El laboratorio de gases: una química mide el azufre y predice erupciones. Datos, hipótesis, mucho pensar antes de actuar.",
+            "La escuela de señales: Juana y un muralista inventan códigos de tambor y pintan las rutas en las rocas. Poca rutina, mucha creación.",
+            "La posta: Lía y una enfermera reciben a las familias asustadas. Cuidar, enseñar, acompañar.",
+            "La cantina: una pareja vende comida y convence a la ciudad de donar equipos. Negociar, vender, decidir rápido.",
+            "La oficina: Inés y un contador llevan los registros de cada alerta y cada gasto. Orden, procedimiento, detalle."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2-5-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Si tuvieras que pasar una semana en uno de los seis refugios, ¿cuál elegirías?",
+      "nota": "No se guarda. Es para que sientas de qué va esto antes de la teoría.",
+      "opciones": [
+        {
+          "id": "b2-5-03a",
+          "texto": "El taller o el laboratorio.",
+          "reaccion": [
+            {
+              "id": "b2-5-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Cosas y datos. Fíjate más adelante en las letras R e I: son vecinas en el hexágono."
+            }
+          ]
+        },
+        {
+          "id": "b2-5-03b",
+          "texto": "La escuela de señales o la posta.",
+          "reaccion": [
+            {
+              "id": "b2-5-03br",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Crear y cuidar. Fíjate en las letras A y S: también son vecinas."
+            }
+          ]
+        },
+        {
+          "id": "b2-5-03c",
+          "texto": "La cantina o la oficina.",
+          "reaccion": [
+            {
+              "id": "b2-5-03cr",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Negociar y ordenar. Las letras E y C, vecinas en el hexágono."
+            }
+          ]
+        },
+        {
+          "id": "b2-5-03d",
+          "texto": "No sabría, me llaman dos muy distintos.",
+          "reaccion": [
+            {
+              "id": "b2-5-03dr",
+              "tipo": "dialogo",
+              "hablanteId": "rosa",
+              "texto": "Eso también pasa, y no es un error. Hay ocupaciones que combinan ambientes opuestos; ya verás."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2-5-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Los seis tipos de Holland",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El psicólogo John Holland observó algo simple: las personas buscan ambientes de trabajo donde se sienten cómodas, y esos ambientes se pueden ordenar en seis tipos. La mayoría de la gente se parece a dos o tres a la vez."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": ["Tipo", "Les gusta…", "Ambiente", "Ocupaciones de ejemplo"],
+          "filas": [
+            ["Realista (R)", "Trabajar con objetos, herramientas, máquinas, plantas o animales; ver resultados concretos", "Campo, taller, planta, obra", "Técnico agropecuario, mecánico de mantenimiento, ingeniero civil, piloto"],
+            ["Investigador (I)", "Observar, analizar, entender cómo funcionan las cosas; pensar más que actuar", "Laboratorio, centro de investigación, hospital", "Microbiólogo, médico, analista de datos, químico"],
+            ["Artístico (A)", "Crear y expresarse con palabras, imágenes, sonidos o movimiento; poca rutina", "Estudio, taller creativo, escenario", "Diseñador gráfico, músico, arquitecto, comunicador audiovisual"],
+            ["Social (S)", "Ayudar, enseñar, cuidar, orientar a otras personas", "Colegio, consultorio, comunidad", "Docente, enfermera, psicólogo, trabajador social"],
+            ["Emprendedor (E)", "Dirigir, convencer, negociar, tomar decisiones; lo económico importa", "Empresa, negocio propio, ventas", "Administrador, especialista en marketing, abogado, oficial de la PNP"],
+            ["Convencional (C)", "Organizar datos, seguir procedimientos, cuidar el detalle", "Oficina, banco, área administrativa", "Contador, asistente administrativo, auditor, estadístico"]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2-5-05",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "El hexágono y el código de tres letras",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Holland dibujó los seis tipos en un hexágono, en el orden R-I-A-S-E-C. Los tipos vecinos se parecen (Realista con Investigador, Social con Emprendedor) y los opuestos se parecen poco (Realista con Social, Investigador con Emprendedor, Artístico con Convencional). Un perfil con tipos opuestos no es un error: significa que te atraen cosas distintas y conviene buscar ocupaciones que las combinen."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Tu resultado se resume en tus tres tipos más altos, en orden. «SIA», por ejemplo, es alguien que sobre todo quiere trabajar con personas, le gusta entender y analizar, y valora crear. Las ocupaciones también tienen su código, medido en personas que las ejercen."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Las recomendaciones del test no usan solo esas tres letras: comparan tus seis puntajes completos con el perfil de cada ocupación. El código es tu herramienta para explorar: en el catálogo puedes filtrar ocupaciones y carreras por una letra o por una combinación (S, SI, SIA)."
+        }
+      ]
+    },
+    {
+      "id": "b2-5-06",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Lo que el resultado no hace",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "No te asigna una carrera. Sugiere áreas donde explorar.",
+            "No mide capacidad: mide qué te atrae. Puedes ser muy bueno en algo que no te interesa, y al revés (acuérdate de Nico y la pasarela).",
+            "No es fijo. Los intereses cambian con la experiencia, sobre todo cuando pruebas cosas nuevas."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Tu código dice en qué ambientes te sentirías cómodo. Qué haces ahí, lo decides tú."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, Anexos 7.1, 7.2 y 13.1 (Holland). National Center for O*NET Development, Mi Próximo Paso.",
+          "url": "https://www.miproximopaso.org"
+        }
+      ]
+    },
+    {
+      "id": "b2-5-07",
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "texto": "Ahora la ronda al revés: yo te digo quién llegó a pedir trabajo y tú me dices en qué refugio lo pongo."
+    },
+    {
+      "id": "b2-5-08",
+      "tipo": "pregunta",
+      "hablanteId": "rosa",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Llegó una microbióloga: quiere analizar muestras de agua de los refugios y entender por qué cambian los gases. ¿Qué tipo es y a qué refugio va?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Realista: al taller.",
+          "correcta": false,
+          "retroalimentacion": "Trabaja con muestras, sí, pero lo suyo no es reparar ni construir: es analizar y entender."
+        },
+        {
+          "id": "b",
+          "texto": "Investigador: al laboratorio de gases.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Observar, analizar y entender cómo funcionan las cosas es el tipo Investigador."
+        },
+        {
+          "id": "c",
+          "texto": "Convencional: a la oficina.",
+          "correcta": false,
+          "retroalimentacion": "No viene a ordenar registros sino a hacerse preguntas sobre los gases. Eso es otro ambiente."
+        }
+      ],
+      "explicacion": "El tipo Investigador prefiere pensar antes que actuar: laboratorio, datos, hipótesis. Es vecino del Realista en el hexágono, por eso ambos se sienten bien con cosas concretas, pero uno las analiza y el otro las construye.",
+      "pistas": [
+        {
+          "id": "b2-5-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Dos verbos de la frase: «analizar» y «entender». Búscalos en la tabla."
+        }
+      ]
+    },
+    {
+      "id": "b2-5-09",
+      "tipo": "pregunta",
+      "hablanteId": "rosa",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Cuatro personas llegaron a la vez. ¿Cuáles van a la cantina (tipo Emprendedor)? Marca todas las que correspondan.",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Una vendedora que convence a cualquiera de donar un generador.",
+          "correcta": true,
+          "retroalimentacion": "Sí: convencer y negociar es Emprendedor."
+        },
+        {
+          "id": "b",
+          "texto": "Un muralista que pinta las rutas de escape en las rocas.",
+          "correcta": false,
+          "retroalimentacion": "Crear con imágenes es Artístico: a la escuela de señales."
+        },
+        {
+          "id": "c",
+          "texto": "Un administrador que quiere abrir un segundo puesto de comida y dirigirlo.",
+          "correcta": true,
+          "retroalimentacion": "Sí: dirigir y tomar decisiones con lo económico en mente es Emprendedor."
+        },
+        {
+          "id": "d",
+          "texto": "Una enfermera que atiende a las familias del refugio.",
+          "correcta": false,
+          "retroalimentacion": "Cuidar y ayudar es Social: a la posta."
+        }
+      ],
+      "explicacion": "Emprendedor es dirigir, convencer, negociar y decidir; lo económico importa. La vendedora y el administrador comparten ese ambiente; el muralista es Artístico y la enfermera, Social.",
+      "pistas": [
+        {
+          "id": "b2-5-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Busca a los que convencen, venden o dirigen. Los que crean o cuidan van a otro refugio."
+        }
+      ]
+    },
+    {
+      "id": "b2-5-10",
+      "tipo": "pregunta",
+      "hablanteId": "rosa",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un brigadista sacó en el test el código «RAC»: Realista, Artístico y Convencional. Artístico y Convencional son opuestos en el hexágono. ¿Qué significa eso?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que el test falló: nadie puede ser opuesto a sí mismo.",
+          "correcta": false,
+          "retroalimentacion": "No falló. Un perfil con tipos opuestos existe y es información útil."
+        },
+        {
+          "id": "b",
+          "texto": "Que le atraen cosas distintas y conviene buscar ocupaciones que las combinen.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Un muralista que además lleva el inventario de pinturas combina crear con ordenar. Existen ocupaciones así."
+        },
+        {
+          "id": "c",
+          "texto": "Que debe elegir una de las dos y olvidar la otra.",
+          "correcta": false,
+          "retroalimentacion": "El código no obliga a renunciar a nada: describe dónde te sentirías cómodo, y puede ser en más de un lugar."
+        }
+      ],
+      "explicacion": "Un perfil con tipos vecinos suele ser más claro; uno con opuestos no es un error: dice que te atraen ambientes distintos. En el catálogo puedes filtrar por combinaciones y descubrir ocupaciones que los juntan.",
+      "pistas": [
+        {
+          "id": "b2-5-10p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Relee la tarjeta del hexágono: ahí dice qué pasa con los tipos opuestos."
+        }
+      ]
+    },
+    {
+      "id": "b2-5-11",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "expresion": "neutral",
+      "texto": "Ya conoces los seis ambientes mejor que algunos de mi brigada. En la ciudad, Sol, la bibliotecaria, conserva las preguntas de intereses: son sesenta, por eso te las hace en seis visitas. Dile que te mando yo."
+    },
+    {
+      "id": "b2-5-12",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Espera… la aguja del artefacto se detuvo otra vez. Y hay alguien en el límite del bosque."
+    },
+    {
+      "id": "b2-5-13",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "expresion": "neutral",
+      "texto": "Segundo tramo. Ya sabes de dónde vienes y hacia dónde quieres ir; ahora sabes también cómo te describes y en qué ambientes te sentirías cómodo. Lo que sigue, en el puerto, es el mundo tal como es: rutas, mercado, instituciones y dinero."
+    },
+    {
+      "id": "b2-5-14",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b2-5-14a",
+          "texto": "¿Tengo que hacer los cuestionarios de la ciudad antes de seguir?",
+          "reaccion": [
+            {
+              "id": "b2-5-14ar",
+              "tipo": "dialogo",
+              "hablanteId": "guardian",
+              "texto": "El puerto no te los exige. Pero más adelante, antes de poner tus opciones sobre la mesa, tu orientadora decide cuáles sí. Hazlos cuando quieras; con calma."
+            }
+          ]
+        },
+        {
+          "id": "b2-5-14b",
+          "texto": "¿Qué calibra el artefacto esta vez?",
+          "reaccion": [
+            {
+              "id": "b2-5-14br",
+              "tipo": "dialogo",
+              "hablanteId": "guardian",
+              "texto": "Que ya no busques la respuesta en un solo refugio. La aguja se mueve cuando el viajero está listo para mirar afuera. Y tú lo estás."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2-5-15",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Gira de nuevo: apunta al mar. La ficha de los seis tipos ya está en tu mochila, y Sol te espera en la biblioteca. Al puerto."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tu código dice en qué ambientes te sentirías cómodo. Qué haces ahí, lo decides tú. El artefacto apunta al puerto."
+  },
+  "mapa": { "x": 520, "y": 200, "icono": "informativa" }
+}

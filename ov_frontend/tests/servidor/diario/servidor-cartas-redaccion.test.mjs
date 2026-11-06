@@ -22,7 +22,7 @@ async function preparar(abrir) {
   let lecturas = 0
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, escenarioRuta('t1'))
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/check-ins')) return { body: jsonServidor('ruta/ruta-check-ins') }
     if (req.url.endsWith('/diario/preguntas')) return { body: lecturas++ ? redactada : preguntas }
     if (req.url.endsWith('/abrir-pregunta')) return abrir

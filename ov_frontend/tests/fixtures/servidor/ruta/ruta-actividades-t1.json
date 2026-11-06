@@ -76,6 +76,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -120,6 +121,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "REGISTRO_ADECUADO"
               }
@@ -150,6 +152,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -208,6 +211,7 @@
                 "cumplida": false,
                 "referencia": "t-batalla",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "SUPERA_BATALLA"
               },
@@ -216,6 +220,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "VISTA_CARRERA"
               }
@@ -234,6 +239,7 @@
                 "cumplida": false,
                 "referencia": "t-batalla",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "SUPERA_BATALLA"
               },
@@ -242,6 +248,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "VISTA_OCUPACION"
               }
@@ -285,6 +292,7 @@
                 "cumplida": false,
                 "referencia": "T1",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -318,6 +326,7 @@
                 "cumplida": false,
                 "referencia": "T1",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -351,6 +360,7 @@
                 "cumplida": false,
                 "referencia": "T1",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_BLOQUE"
               }
@@ -384,6 +394,7 @@
             "cumplida": false,
             "referencia": "T1",
             "requerido": 1,
+            "texto": null,
             "tipo_conteo": "EVENTOS",
             "tipo_evento": "COMPLETA_BLOQUE"
           }
@@ -413,6 +424,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -443,6 +455,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -473,6 +486,69 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa el registro de expectativas para llegar a la ciudad.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "t-mision-inteligencias",
+        "contenido": "t_mision_inteligencias",
+        "descripcion": "Descubre qué inteligencias usas más hoy.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Misión de inteligencias",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa el registro de expectativas para llegar a la ciudad.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "t-mision-habilidades",
+        "contenido": "t_mision_habilidades",
+        "descripcion": "Descubre cómo te relacionas con los demás.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Misión de habilidades sociales",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -487,7 +563,7 @@
         "descripcion": "Ayuda a resolver un caso de la ciudad.",
         "duracion_estimada_min": 10,
         "estado": "BLOQUEADA",
-        "orden": 3,
+        "orden": 5,
         "requerida": true,
         "tipo": "CASO",
         "titulo": "Caso de prueba",
@@ -503,6 +579,7 @@
                 "cumplida": false,
                 "referencia": "t-expectativas",
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS",
                 "tipo_evento": "COMPLETA_ACTIVIDAD"
               }
@@ -517,12 +594,105 @@
         "descripcion": "Contrasta tu resultado de intereses con lo que esperabas.",
         "duracion_estimada_min": 10,
         "estado": "BLOQUEADA",
-        "orden": 4,
+        "orden": 6,
         "requerida": true,
         "tipo": "REGISTRO",
         "titulo": "Registro de contraste de intereses",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa el registro de expectativas para llegar a la ciudad.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "t-caso-2",
+        "contenido": "t_caso_2",
+        "descripcion": "Un llamado que la Central todavía no publica.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 7,
+        "requerida": false,
+        "tipo": "CASO",
+        "titulo": "La traductora apurada",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa el registro de expectativas para llegar a la ciudad.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "t-investigador",
+        "contenido": "t_investigador",
+        "descripcion": "Conoce cómo investigar una ocupación entrevistando a quien la ejerce.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 8,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "El investigador de oficios",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa el registro de expectativas para llegar a la ciudad.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "t-investigador-cierre",
+        "contenido": "t_investigador_cierre",
+        "descripcion": "Compara lo que pensabas antes de tu entrevista con lo que aprendiste.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 9,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Lo que cambió",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
       }
     ],
     "bloqueo": [
@@ -533,6 +703,7 @@
             "cumplida": false,
             "referencia": "t-expectativas",
             "requerido": 1,
+            "texto": null,
             "tipo_conteo": "EVENTOS",
             "tipo_evento": "COMPLETA_ACTIVIDAD"
           }
@@ -559,6 +730,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 1,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -589,6 +761,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 5,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -619,6 +792,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 12,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -649,6 +823,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 25,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
@@ -679,6 +854,7 @@
                 "cumplida": false,
                 "referencia": null,
                 "requerido": 45,
+                "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }

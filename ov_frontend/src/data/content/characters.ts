@@ -3,7 +3,7 @@ import { catalog } from '@/data/activities/content'
 const characterEmoji: Record<string, string> = {
   companero: '🌟',
   mara: '👩🏽‍🌾',
-  elena: '👩🏽',
+  helena: '👩🏽',
   aurelio: '👴🏽',
 }
 

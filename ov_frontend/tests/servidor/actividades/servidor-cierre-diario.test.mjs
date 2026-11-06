@@ -43,6 +43,12 @@ test('carta fija: su pregunta, «Respóndela cuando quieras» y «Leer en el dia
   assert.match(html, new RegExp(`“${entrada.texto.replace(/[?¿]/g, '.')}”`))
   assert.match(html, /Respóndela cuando quieras, desde tu diario/)
   assert.match(html, /href="\/student\/journal\?pregunta=t-diario-fija"[^>]*>Leer en el diario/)
+  // La fila: sobre con punto dorado, el texto y el enlace con flecha a la derecha, fuera del texto.
+  assert.match(
+    html,
+    /class="sx-finish-letter-icon"[^]*class="sx-finish-letter-dot"[^]*class="sx-finish-letter-copy"[^]*<\/div><a class="sx-finish-letter-link"/,
+  )
+  assert.match(html, /Leer en el diario<svg[^>]*lucide-arrow-right/)
   assert.doesNotMatch(html, /<button|Nueva|Escribir en mi diario/)
 })
 

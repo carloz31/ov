@@ -5,8 +5,17 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 
 import { appPaths } from '@/routes/paths'
+import { SeAbrioParaUsted } from './servidor/SeAbrioParaUsted'
 
-export function ParentActivityFinish({ model }: { model: ReturnType<typeof useParentActivitySession> }) {
+// F08: en api (`cierreServidor`) el cierre muestra lo que abrió el servidor («Se abrió para usted», con la ficha
+// que se lee en el modal compartido) y vuelve a Mis actividades; en local, como antes.
+export function ParentActivityFinish({
+  model,
+  onAbrirFicha,
+}: {
+  model: ReturnType<typeof useParentActivitySession>
+  onAbrirFicha?: (codigo: string) => void
+}) {
   const {
     navigate,
     setResources,
@@ -17,6 +26,9 @@ export function ParentActivityFinish({ model }: { model: ReturnType<typeof usePa
     route,
     activity,
     review,
+    cierreServidor,
+    desbloqueos,
+    diploma,
   } = model
   return (
     <Card className="parent-finish-card">
@@ -73,9 +85,34 @@ export function ParentActivityFinish({ model }: { model: ReturnType<typeof usePa
         <p className="mt-4">
           {review
             ? `Repasó «${activity.titulo}». Puede volver a consultar su ficha cuando quiera.`
-            : `Terminó «${activity.titulo}». La ficha quedó guardada en su material de consulta.`}
+            : cierreServidor
+              ? `Terminó «${activity.titulo}». Lo que obtuvo queda en Mis actividades.`
+              : `Terminó «${activity.titulo}». La ficha quedó guardada en su material de consulta.`}
         </p>
-        {!review && (
+        {!review && cierreServidor && (
+          <>
+            <section className="parent-route-progress" aria-label="Avance hacia el diploma">
+              <p>Su avance hacia el diploma de compromiso</p>
+              <strong>
+                {route.completed} de {route.total} actividades
+              </strong>
+              <div className="parent-route-segments" aria-hidden>
+                {route.assigned.map((entry) => (
+                  <span key={entry.id} data-completed={completedIds.includes(entry.id)} />
+                ))}
+              </div>
+            </section>
+            <SeAbrioParaUsted
+              desbloqueos={desbloqueos}
+              diploma={diploma}
+              onAbrirActividad={(codigo) => navigate(appPaths.parent.activity(codigo))}
+              onAbrirFicha={(codigo) => onAbrirFicha?.(codigo)}
+              onConversaciones={() => navigate(appPaths.parent.conversations)}
+              onDiploma={() => navigate(appPaths.parent.diploma)}
+            />
+          </>
+        )}
+        {!review && !cierreServidor && (
           <>
             <section className="parent-route-progress" aria-label="Avance hacia el diploma">
               <p>Su avance hacia el diploma «Conozco mi rol»</p>
@@ -111,7 +148,7 @@ export function ParentActivityFinish({ model }: { model: ReturnType<typeof usePa
           </>
         )}
         <div className="parent-finish-actions">
-          {!!activity.recompensa?.recursoIds?.length && (
+          {!cierreServidor && !!activity.recompensa?.recursoIds?.length && (
             <Button
               variant="outline"
               onClick={(event) => {
@@ -122,9 +159,15 @@ export function ParentActivityFinish({ model }: { model: ReturnType<typeof usePa
               <BookOpen aria-hidden /> Abrir ficha
             </Button>
           )}
-          <Button variant="outline" onClick={() => navigate(appPaths.parent.overview)}>
-            Volver al inicio
-          </Button>
+          {cierreServidor ? (
+            <Button variant="outline" onClick={() => navigate(appPaths.parent.activities)}>
+              Volver a Mis actividades
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={() => navigate(appPaths.parent.overview)}>
+              Volver al inicio
+            </Button>
+          )}
         </div>
       </div>
     </Card>

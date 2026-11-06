@@ -1,0 +1,1095 @@
+/* F07a: tarjeta v4 de los planes (api). Cambios ligeros sobre el marcado de Mis planes; la revisión estética va
+   al final, aparte. */
+
+.sx-p-pildora {
+  display: inline-block;
+  flex: none;
+  margin-left: auto;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--sx-parchment-muted) 18%, var(--sx-parchment));
+  color: var(--sx-parchment-ink);
+}
+.sx-p-pildora[data-estado='LISTA'] {
+  background: color-mix(in srgb, var(--success) 22%, var(--sx-parchment));
+}
+.sx-p-pildora[data-estado='EN_PROCESO'] {
+  background: color-mix(in srgb, var(--sx-gold) 28%, var(--sx-parchment));
+}
+.sx-p-pildora[data-estado='BLOQUEADA'] {
+  background: color-mix(in srgb, var(--primary) 14%, var(--sx-parchment));
+}
+
+.sx-p-cambio {
+  margin: 12px 0 0;
+  font-size: 12px;
+  text-align: right;
+  color: var(--sx-parchment-muted);
+}
+
+/* Ajuste v4.2: el plan A a la izquierda, «Rutas alternas» (B, C y los espacios libres) a la derecha. */
+.sx-p-mis-planes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+@media (min-width: 900px) {
+  .sx-p-mis-planes {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}
+.sx-p-alternas {
+  display: grid;
+  gap: 16px;
+}
+.sx-p-alternas > h2,
+.sx-p-principal > h2 {
+  margin: 0;
+  color: var(--sx-night-text);
+}
+/* Ajuste de Mis planes: «Ruta principal» sobre el plan A, que estira su tarjeta al alto de las rutas alternas
+   (el pie «Último cambio» baja al fondo). */
+.sx-p-principal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+@media (min-width: 900px) {
+  .sx-p-mis-planes {
+    align-items: stretch;
+  }
+  .sx-p-principal > .sx-p-tarjeta,
+  .sx-p-principal > .sx-p-espacio {
+    flex: 1;
+  }
+  .sx-p-principal > .sx-p-tarjeta > .sx-d-parchment {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .sx-p-principal > .sx-p-tarjeta .sx-p-cambio {
+    margin-top: auto;
+  }
+}
+.sx-p-tarjeta > .sx-d-parchment {
+  display: grid;
+  gap: 16px;
+}
+.sx-p-tarjeta-cabecera {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.sx-p-tarjeta-cabecera > div {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.sx-p-tarjeta-cabecera h2,
+.sx-p-tarjeta-cabecera p {
+  margin: 0;
+}
+.sx-p-tarjeta[data-principal='false'] h2 {
+  font-size: 17px;
+}
+.sx-p-tarjeta-cabecera p {
+  font-size: 14px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-rotulo {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--sx-gold) 70%, var(--sx-parchment-ink));
+}
+.sx-p-sello {
+  display: inline-block;
+  padding: 5px 12px;
+  border: 2px solid var(--success);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--success);
+  transform: rotate(-3deg);
+}
+.sx-p-casillas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.sx-p-casilla {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 12px;
+  background: var(--card);
+  font-size: 13px;
+}
+.sx-p-tarjeta[data-principal='false'] .sx-p-casilla {
+  place-items: center;
+  padding: 8px;
+}
+.sx-p-casilla small {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-casilla-icono {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sx-p-casilla[data-estado='LISTA'] {
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  background: color-mix(in srgb, var(--success) 14%, var(--sx-parchment));
+}
+.sx-p-casilla[data-estado='LISTA'] .sx-p-casilla-icono {
+  background: var(--success);
+  color: var(--card);
+}
+.sx-p-casilla[data-estado='EN_PROCESO'] {
+  border-color: color-mix(in srgb, var(--sx-gold) 50%, transparent);
+  background: color-mix(in srgb, var(--sx-gold) 12%, var(--sx-parchment));
+}
+.sx-p-casilla[data-estado='EN_PROCESO'] .sx-p-casilla-icono {
+  color: color-mix(in srgb, var(--sx-gold) 75%, var(--sx-parchment-ink));
+}
+.sx-p-casilla[data-estado='POR_EMPEZAR'] {
+  border-style: dashed;
+}
+.sx-p-casilla[data-estado='POR_EMPEZAR'] .sx-p-casilla-icono {
+  border: 2px dashed currentColor;
+}
+.sx-p-casilla[data-estado='BLOQUEADA'] {
+  background: color-mix(in srgb, var(--primary) 8%, var(--sx-parchment));
+  color: var(--sx-parchment-muted);
+}
+.sx-p-casilla[data-estado='BLOQUEADA'] .sx-p-casilla-icono {
+  background: color-mix(in srgb, var(--sx-parchment-muted) 20%, transparent);
+}
+.sx-p-tarjeta-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.sx-p-tarjeta[data-principal='true'] .sx-p-tarjeta-acciones > .sx-d-action {
+  flex: 1;
+}
+.sx-p-tarjeta[data-principal='false'] .sx-p-tarjeta-acciones > a {
+  flex: 1;
+}
+.sx-p-espacio {
+  display: grid;
+  gap: 12px;
+  min-height: 0;
+  padding: 18px 20px;
+  align-items: stretch;
+  text-align: left;
+}
+.sx-p-espacio h2 {
+  margin: 0;
+  font-size: 17px;
+}
+.sx-p-espacio p {
+  margin: 0;
+  font-size: 13px;
+}
+.sx-p-espacio .sx-d-plan-letter {
+  width: 40px;
+  height: 40px;
+}
+.sx-p-tarjeta[data-principal='false'] {
+  border-width: 5px;
+}
+.sx-p-tarjeta[data-principal='false'] .sx-d-plan-letter {
+  width: 40px;
+  height: 40px;
+}
+@media (max-width: 480px) {
+  .sx-p-tarjeta[data-principal='true'] .sx-p-casillas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.sx-p-aviso {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 0 0 24px;
+  padding: 16px 20px;
+  border-radius: 18px;
+  background: var(--sx-parchment);
+  color: var(--sx-parchment-ink);
+}
+.sx-p-aviso > svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.sx-p-favoritas {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  display: grid;
+  gap: 10px;
+}
+.sx-p-favoritas li {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid var(--sx-night-border);
+  border-radius: 14px;
+  background: var(--card);
+}
+.sx-p-favoritas li[data-plan='true'] {
+  opacity: 0.6;
+  background: transparent;
+}
+.sx-p-favoritas li > div {
+  display: grid;
+  gap: 2px;
+}
+.sx-p-favoritas small,
+.sx-p-ayuda {
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-ya-plan {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, var(--sx-parchment));
+}
+
+/* Plan abierto: menú de secciones a la izquierda y una sola sección a la derecha (apilados en el teléfono). */
+.sx-p-migas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  margin-bottom: 20px;
+  color: var(--sx-night-text);
+}
+.sx-p-migas a {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: inherit;
+}
+.sx-p-plan {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .sx-p-plan {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+}
+.sx-p-menu {
+  display: grid;
+  gap: 10px;
+  color: var(--sx-night-text);
+}
+.sx-p-menu-cabecera {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.sx-p-menu-cabecera > div {
+  display: grid;
+}
+.sx-p-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+.sx-p-menu .sx-p-cambio {
+  margin: 0;
+  color: inherit;
+  opacity: 0.8;
+}
+.sx-p-menu-entrada {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  text-align: left;
+  color: inherit;
+}
+.sx-p-menu-entrada[aria-current='true'] {
+  background: var(--sx-parchment);
+  color: var(--sx-parchment-ink);
+}
+.sx-p-menu-titulo {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.sx-p-menu-entrada small {
+  font-size: 13px;
+  opacity: 0.85;
+}
+.sx-p-panel {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+  border: 2px solid transparent;
+  border-radius: 22px;
+  background: var(--sx-parchment);
+  color: var(--sx-parchment-ink);
+}
+.sx-p-panel[data-editando='true'] {
+  border-color: var(--primary);
+}
+.sx-p-panel > header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.sx-p-panel > header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+.sx-p-panel > header .sx-p-pildora {
+  margin-left: 0;
+}
+.sx-p-panel > header > :last-child {
+  margin-left: auto;
+}
+.sx-p-numero {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--sx-night-raised);
+  color: var(--sx-night-text);
+  font-weight: 700;
+}
+.sx-p-editando {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, var(--sx-parchment));
+}
+.sx-p-encaje,
+.sx-p-repregunta {
+  padding: 14px 18px;
+  border: 1px solid color-mix(in srgb, var(--sx-gold) 60%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--sx-gold) 10%, var(--sx-parchment));
+}
+.sx-p-encaje p {
+  margin: 4px 0 0;
+}
+.sx-p-repregunta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+.sx-p-repregunta p {
+  margin: 0;
+}
+.sx-p-campo {
+  display: grid;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.sx-p-campo legend {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.sx-p-opciones,
+.sx-p-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sx-p-opciones button,
+.sx-p-chip {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 7px 14px;
+  border: 1px solid var(--sx-night-border);
+  border-radius: 999px;
+  background: var(--card);
+  font-weight: 600;
+}
+.sx-p-opciones button {
+  border-radius: 10px;
+}
+.sx-p-opciones button[aria-pressed='true'] {
+  background: var(--sx-night-raised);
+  color: var(--sx-night-text);
+}
+.sx-p-chip[data-elegido='true'] {
+  border-color: var(--sx-gold);
+  background: color-mix(in srgb, var(--sx-gold) 22%, var(--sx-parchment));
+}
+.sx-p-chip-nuevo {
+  border-style: dashed;
+  background: transparent;
+  color: var(--primary);
+}
+.sx-p-orden {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--sx-gold);
+  color: var(--sx-night);
+  font-size: 12px;
+}
+/* Todos los chips con el mismo alto (los de «Para elegir» son botones de 44 px, `.sx-discovery button`): la «✕» y
+   el campo de «Otro» no lo estiran. */
+.sx-p-chip {
+  min-height: 44px;
+  line-height: 1.2;
+}
+.sx-p-otro {
+  width: min(240px, 100%);
+  height: 44px;
+  border-radius: 999px;
+  padding: 0 14px;
+}
+.sx-discovery .sx-p-quitar {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0 -6px 0 2px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  line-height: 0;
+}
+.sx-p-elegibles {
+  display: grid;
+  gap: 10px;
+}
+.sx-p-fila {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 14px;
+  background: var(--card);
+}
+.sx-p-fila[data-fila='elegidos'] {
+  border-color: color-mix(in srgb, var(--sx-gold) 55%, transparent);
+  background: color-mix(in srgb, var(--sx-gold) 10%, var(--sx-parchment));
+}
+.sx-p-fila .sx-p-ayuda {
+  margin: 0;
+}
+.sx-p-fila-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-lectura {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px 24px;
+  margin: 0;
+}
+@media (min-width: 700px) {
+  .sx-p-lectura {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sx-p-lectura .sx-p-ancho {
+    grid-column: 1 / -1;
+  }
+}
+.sx-p-lectura dt {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.sx-p-lectura dd {
+  margin: 0;
+}
+.sx-p-dato {
+  padding: 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 12px;
+  background: var(--card);
+}
+.sx-p-intro {
+  margin: 0;
+}
+.sx-p-preguntas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+}
+.sx-p-preguntas li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 16px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+}
+.sx-p-preguntas li > span:first-child {
+  display: grid;
+  gap: 2px;
+}
+/* Ajuste: las respuestas siempre a la derecha, sin partirse; en un teléfono pasan debajo, alineadas a la derecha. */
+.sx-p-preguntas .sx-p-opciones {
+  flex-wrap: nowrap;
+  justify-self: end;
+}
+@media (max-width: 600px) {
+  .sx-p-preguntas li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.sx-p-preguntas small {
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-respuesta {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sx-parchment-muted) 18%, var(--sx-parchment));
+}
+.sx-p-subtitulo {
+  margin: 8px 0 0;
+  font-size: 17px;
+}
+.sx-p-dudas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.sx-p-dudas li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 14px;
+  background: var(--card);
+}
+.sx-p-dudas li > div {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+}
+.sx-p-dudas li > svg {
+  flex: none;
+  margin-top: 2px;
+}
+.sx-p-dudas li[data-estado='CERRADA'] {
+  background: color-mix(in srgb, var(--success) 10%, var(--sx-parchment));
+}
+.sx-p-dudas li[data-efecto='resolver'] s {
+  opacity: 0.7;
+}
+.sx-p-dudas small {
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-dudas p {
+  margin: 4px 0 0;
+}
+.sx-p-acciones {
+  justify-content: flex-end;
+}
+.sx-p-acciones > .sx-p-ayuda {
+  margin: 0 auto 0 0;
+}
+
+/* F07b · Sección 3 (lienzos «sección 3 en edición» y «en lectura»). */
+.sx-p-dos {
+  display: grid;
+  gap: 18px 24px;
+}
+@media (min-width: 700px) {
+  .sx-p-dos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+.sx-p-campo > .sx-p-ayuda {
+  margin: -4px 0 4px;
+}
+.sx-p-campo button[role='combobox'] {
+  min-height: 44px;
+  background: var(--card);
+}
+.sx-p-gastos {
+  width: 100%;
+  border-collapse: collapse;
+}
+.sx-p-gastos thead th {
+  padding: 0 8px 8px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--sx-parchment-muted);
+  border-bottom: 1px solid color-mix(in srgb, var(--sx-gold) 40%, transparent);
+}
+.sx-p-gastos tbody th,
+.sx-p-gastos td {
+  padding: 8px 8px 8px 0;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 20%, transparent);
+}
+.sx-p-gastos tbody th {
+  font-weight: 400;
+}
+.sx-p-gastos tbody th small {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-gastos td input,
+.sx-p-gastos td button[role='combobox'] {
+  min-height: 40px;
+  background: var(--card);
+}
+.sx-p-gastos:not([data-lectura]) td:nth-child(2) {
+  width: 110px;
+}
+.sx-p-gastos:not([data-lectura]) td:nth-child(3) {
+  width: 130px;
+}
+.sx-p-gastos td:last-child:not(:nth-child(3)) {
+  width: 40px;
+}
+.sx-p-costo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--sx-night);
+  color: var(--sx-night-text);
+}
+.sx-p-costo[data-en-vivo='false'] {
+  align-items: flex-start;
+  height: 100%;
+}
+.sx-p-costo small {
+  display: block;
+  font-size: 13px;
+}
+.sx-p-costo strong {
+  display: block;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.sx-p-costo p {
+  margin: 2px 0 0;
+  font-size: 13px;
+}
+.sx-p-costo .sx-p-costo-casa {
+  margin-top: 14px;
+  font-weight: 700;
+  color: var(--sx-gold);
+}
+.sx-p-costo .sx-p-costo-formula {
+  max-width: 240px;
+  color: var(--sx-night-muted);
+  font-size: 12px;
+}
+.sx-p-realidad .sx-p-dato small {
+  display: block;
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-primer-anio {
+  margin: 2px 0 0;
+  font-weight: 700;
+}
+
+/* F07b · Sección 4 (lienzo «Mis próximos pasos»: edición, lectura y diálogo «Lo hice»). */
+.sx-p-pasos {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sx-p-paso {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 14px;
+  background: var(--card);
+}
+.sx-p-paso > div {
+  flex: 1;
+  min-width: 0;
+}
+.sx-p-paso p {
+  margin: 0;
+}
+.sx-p-paso small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-paso > small {
+  flex-basis: 100%;
+  margin-top: 0;
+}
+.sx-p-paso[data-editando='true'] {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  background: color-mix(in srgb, var(--primary) 6%, var(--card));
+}
+.sx-p-paso[data-nuevo='true'] {
+  border-style: dashed;
+  background: transparent;
+}
+.sx-p-paso-fila {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.sx-p-paso-fila > p {
+  flex: 1;
+  min-width: 200px;
+}
+.sx-p-paso-fila > input {
+  flex: 1;
+  min-width: 180px;
+  min-height: 40px;
+}
+.sx-p-select-tipo {
+  width: 200px;
+  min-height: 40px;
+  background: var(--card);
+}
+.sx-p-paso-botones {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: auto;
+}
+.sx-p-mini {
+  padding: 6px 10px;
+  border: 1px solid var(--sx-night-border);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: 13px;
+  font-weight: 700;
+}
+.sx-p-mini[data-principal='true'] {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.sx-p-mas {
+  justify-self: center;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-tipo {
+  display: inline-block;
+  padding: 1px 8px;
+  margin-right: 4px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--primary) 12%, var(--card));
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  vertical-align: 2px;
+}
+/* `.sx-discovery button` da 44 px a todo botón: la casilla del lienzo mide 22. */
+.sx-discovery .sx-p-casilla-paso,
+.sx-p-casilla-paso {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin-top: 2px;
+  border: 2px solid var(--sx-gold-deep, var(--sx-gold));
+  border-radius: 6px;
+  background: transparent;
+}
+.sx-p-paso[data-estado='HECHO'] .sx-p-casilla-paso {
+  border-color: var(--success);
+  background: var(--success);
+  color: var(--card);
+}
+.sx-p-paso[data-estado='HECHO'] s {
+  color: var(--sx-parchment-muted);
+}
+.sx-p-paso[data-estado='HECHO'] small strong {
+  color: var(--success);
+}
+.sx-p-franja {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--sx-gold) 60%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--sx-gold) 10%, var(--sx-parchment));
+}
+.sx-p-franja p {
+  margin: 0;
+}
+
+/* F07b · «Cómo me siento» y medidores del plan A (lienzos «Cómo me siento» y Mis planes v4.2). */
+.sx-p-menu-entrada[data-medidores='true'] {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.sx-p-medidores {
+  display: grid;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sx-p-medidores li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 14px;
+  align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 20%, transparent);
+}
+.sx-p-medidores li:first-child {
+  border-top: 0;
+}
+.sx-p-medidores li > div {
+  flex: 1;
+  min-width: 180px;
+}
+.sx-p-medidores small {
+  display: block;
+  color: var(--sx-parchment-muted);
+}
+.sx-p-medidor-icono {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid color-mix(in srgb, var(--sx-gold) 60%, transparent);
+  border-radius: 10px;
+  color: var(--sx-gold-deep);
+}
+.sx-p-segmentado > button {
+  min-width: 96px;
+  min-height: 44px;
+  border-radius: 0;
+  background: var(--card);
+  font-weight: 700;
+}
+.sx-p-segmentado > button:first-child {
+  border-radius: 10px 0 0 10px;
+}
+.sx-p-segmentado > button:last-child {
+  border-radius: 0 10px 10px 0;
+}
+.sx-p-segmentado > button[aria-pressed='true'] {
+  background: var(--sx-gold);
+  color: var(--sx-night);
+}
+.sx-p-mini-medidores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+@media (max-width: 480px) {
+  .sx-p-mini-medidores {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.sx-p-mini-medidores li {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 30%, transparent);
+  border-radius: 12px;
+  background: var(--card);
+}
+.sx-p-mini-medidores small {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sx-p-mini-medidores small svg {
+  color: var(--sx-gold-deep);
+}
+.sx-p-barra {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.sx-p-barra > span {
+  height: 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sx-parchment-muted) 25%, transparent);
+}
+.sx-p-barra > span[data-lleno='true'] {
+  background: var(--sx-gold);
+}
+.sx-p-mini-medidores li[data-valorado='false'] .sx-p-barra > span {
+  border: 1px dashed var(--sx-parchment-muted);
+  background: transparent;
+}
+.sx-p-sin-valorar {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sx-parchment-muted);
+}
+/* En lectura, la tarjeta del costo ocupa el alto de su fila, junto a la tabla (lienzo de la sección 3). */
+.sx-p-realidad > div {
+  display: flex;
+  flex-direction: column;
+}
+.sx-p-realidad > div > dd:has(> .sx-p-costo) {
+  flex: 1;
+}
+
+/* Ajuste de «Cuánto costaría»: chips de rubros y «Restablecer predeterminados» bajo la tabla; aviso de montos
+   vacíos junto al primer año. */
+.sx-p-gastos-pie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+.sx-p-restablecer {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid color-mix(in srgb, var(--sx-parchment-muted) 45%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sx-parchment-muted) 12%, var(--sx-parchment));
+  font-weight: 700;
+}
+.sx-p-restablecer:disabled {
+  opacity: 0.5;
+}
+.sx-p-costo strong .sx-p-faltan {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sx-gold);
+}
+.sx-p-campo .sx-p-ayuda a {
+  color: var(--primary);
+  text-decoration: underline;
+  white-space: nowrap;
+}
+.sx-p-campo .sx-p-ayuda a svg {
+  display: inline;
+  vertical-align: -1px;
+}
+
+/* Ajuste: mientras se guarda, el cuerpo de la sección queda atenuado y sin acciones; el menú tampoco cambia. */
+.sx-p-cuerpo {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.sx-p-panel[aria-busy='true'] .sx-p-cuerpo {
+  opacity: 0.55;
+  cursor: progress;
+}
+.sx-p-menu-entrada:disabled {
+  cursor: progress;
+}
+.sx-p-campo input[role='combobox'] {
+  min-height: 44px;
+  background: var(--card);
+}
+
+/* Ajuste: el texto de un paso o de una sugerencia en edición puede ser largo (hasta 140 caracteres): área que
+   crece con el texto; en la sugerencia, «Agregar así» / «Cancelar» bajan a su propia línea. */
+.sx-p-paso-fila > textarea {
+  flex: 1;
+  min-width: 220px;
+  min-height: 44px;
+  field-sizing: content;
+  resize: vertical;
+  line-height: 1.4;
+  background: var(--card);
+}
+.sx-p-paso[data-editando='true'] .sx-p-paso-botones {
+  flex-basis: 100%;
+  justify-content: flex-end;
+}

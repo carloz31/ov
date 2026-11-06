@@ -1,6 +1,10 @@
 import { LoginRoute } from '@/pages/auth/LoginRoute'
 import { PortalDeCuenta } from './PortalDeCuenta'
 import { SoloLocal } from './SoloLocal'
+import { SegunModo } from './SegunModo'
+import { subrutasFamilia } from './SubrutasFamilia'
+import { rutasInvestigaciones } from './SubrutasInvestigaciones'
+import { subrutasExplorar } from './SubrutasExplorar'
 import { SeccionProtegida } from '@/features/adventure/components/SeccionProtegida'
 import { Navigate, Route, Routes } from 'react-router'
 import { CounselorDashboardView } from '@/pages/counselor/CounselorDashboardView'
@@ -8,6 +12,8 @@ import { CounselorPortalModule } from '@/pages/counselor/CounselorPortalModule'
 import { CounselorSettingsView } from '@/pages/counselor/CounselorSettingsView'
 import { PrioritiesView } from '@/pages/counselor/PrioritiesView'
 import { PublicationsView } from '@/pages/counselor/PublicationsView'
+import { PublicacionesServidorView } from '@/pages/counselor/PublicacionesServidorView'
+import { PublicacionServidorView } from '@/pages/counselor/PublicacionServidorView'
 import { StudentDetailView } from '@/pages/counselor/StudentDetailView'
 import { QuestionnaireDetailView } from '@/pages/counselor/QuestionnaireDetailView'
 import { StudentRecordDetailView } from '@/pages/counselor/StudentRecordDetailView'
@@ -21,6 +27,7 @@ import { CareerDetailView } from '@/pages/student/CareerDetailView'
 import { OccupationDetailView } from '@/pages/student/OccupationDetailView'
 import { InstitutionDetailView } from '@/pages/student/InstitutionDetailView'
 import { StudentPlansView } from '@/pages/student/StudentPlansView'
+import { StudentPlanView } from '@/pages/student/StudentPlanView'
 import { ProfileRoute } from '@/pages/student/ProfileRoute'
 import { HelenaBookView } from '@/pages/student/HelenaBookView'
 import { HelenaResultView } from '@/pages/student/HelenaResultView'
@@ -30,6 +37,10 @@ import { StudentActivitiesView } from '@/pages/student/StudentActivitiesView'
 import { CaminoScreen } from '@/pages/student/CaminoScreen'
 import { CiudadScreen } from '@/pages/student/CiudadScreen'
 import { StudentFamilyConversationsView } from '@/pages/student/StudentFamilyConversationsView'
+import { StudentFamiliaView } from '@/pages/student/StudentFamiliaView'
+import { ParentFamiliaView } from '@/pages/parent/ParentFamiliaView'
+import { ParentMisActividadesView } from '@/pages/parent/ParentMisActividadesView'
+import { ParentDiplomaView } from '@/pages/parent/ParentDiplomaView'
 import { ParentActivitiesView } from '@/pages/parent/ParentActivitiesView'
 import { ParentActivityView } from '@/pages/parent/ParentActivityView'
 import { ParentCareerGuideView } from '@/pages/parent/ParentCareerGuideView'
@@ -115,25 +126,17 @@ function AppRoutes() {
             path="community"
           />
           <Route element={<StudentResourcesView />} path="resources" />
-          <Route
-            element={
-              <SoloLocal>
-                <ResearchRoute />
-              </SoloLocal>
-            }
-            path="investigations"
-          />
+          {rutasInvestigaciones(<ResearchRoute />)}
           <Route element={<Navigate replace to={appPaths.student.passport} />} path="achievements" />
           <Route
             element={
               <SeccionProtegida seccion="FAMILIA" titulo="Un espacio para conversar en familia">
-                <SoloLocal>
-                  <StudentFamilyConversationsView />
-                </SoloLocal>
+                <SegunModo api={<StudentFamiliaView />} local={<StudentFamilyConversationsView />} />
               </SeccionProtegida>
             }
             path="conversations"
           />
+          {subrutasFamilia('estudiante')}
           <Route
             element={
               <SeccionProtegida seccion="CATALOGO">
@@ -194,6 +197,14 @@ function AppRoutes() {
             }
             path="profile/decisions"
           />
+          <Route
+            element={
+              <SeccionProtegida seccion="PLANES">
+                <StudentPlanView />
+              </SeccionProtegida>
+            }
+            path="profile/decisions/:carrera"
+          />
           <Route element={<Navigate replace to={appPaths.student.exploration} />} path="*" />
         </Route>
         <Route element={<ExplorationCaseIntroPage />} path="cases/:caseId" />
@@ -203,8 +214,26 @@ function AppRoutes() {
       <Route element={<ParentPortalModule />} path="/parent">
         <Route element={<Navigate replace to={appPaths.parent.overview} />} index />
         <Route element={<ParentOverviewView />} path="overview" />
-        <Route element={<ParentActivitiesView />} path="activities" />
-        <Route element={<FamilyConversationsView audience="parent" />} path="conversations" />
+        <Route
+          element={<SegunModo api={<ParentMisActividadesView />} local={<ParentActivitiesView />} />}
+          path="activities"
+        />
+        <Route
+          element={
+            <SegunModo
+              api={<ParentDiplomaView />}
+              local={<Navigate replace to={appPaths.parent.activities} />}
+            />
+          }
+          path="activities/diploma"
+        />
+        <Route
+          element={
+            <SegunModo api={<ParentFamiliaView />} local={<FamilyConversationsView audience="parent" />} />
+          }
+          path="conversations"
+        />
+        {subrutasFamilia('apoderado')}
         <Route element={<ParentActivityView />} path="activities/:activityId" />
         <Route
           element={<Navigate replace to={appPaths.parent.child(parentChildren[0].id)} />}
@@ -215,7 +244,16 @@ function AppRoutes() {
           element={<ParentQuestionnaireDetailView />}
           path="children/:childId/questionnaires/:questionnaireId"
         />
-        <Route element={<ParentCareerGuideView />} path="careers" />
+        <Route
+          element={
+            <SegunModo
+              api={<Navigate replace to={appPaths.parent.explorar.catalog.careers} />}
+              local={<ParentCareerGuideView />}
+            />
+          }
+          path="careers"
+        />
+        {subrutasExplorar('apoderado')}
         <Route element={<Navigate replace to={appPaths.parent.overview} />} path="*" />
       </Route>
 
@@ -231,10 +269,17 @@ function AppRoutes() {
         <Route element={<StudentDetailView />} path="students/:studentId" />
         <Route element={<StudentRecordDetailView />} path="students/:studentId/records/:recordId" />
         <Route element={<FamilyRecordDetailView />} path="students/:studentId/family-records/:activityId" />
-        <Route element={<PublicationsView />} path="publications" />
-        <Route element={<PublicationsView />} path="publications/interviews/:interviewId" />
+        <Route
+          element={<SegunModo api={<PublicacionesServidorView />} local={<PublicationsView />} />}
+          path="publications"
+        />
+        <Route
+          element={<SegunModo api={<PublicacionServidorView />} local={<PublicationsView />} />}
+          path="publications/interviews/:interviewId"
+        />
         <Route element={<PrioritiesView />} path="priorities" />
         <Route element={<CounselorSettingsView />} path="settings" />
+        {subrutasExplorar('orientadora')}
         <Route element={<Navigate replace to={appPaths.counselor.home} />} path="dashboard" />
         <Route element={<Navigate replace to={appPaths.counselor.students} />} path="classrooms" />
         <Route element={<Navigate replace to={appPaths.counselor.students} />} path="families" />

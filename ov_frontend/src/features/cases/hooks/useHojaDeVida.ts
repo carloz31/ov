@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
-import { consultarOcupacion } from '@/store/servidor/catalogo'
-import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { ForestFireProfessional } from '@/types/cases'
 
 export type HojaDeVida = {
@@ -15,35 +12,20 @@ export type HojaDeVida = {
 }
 type Estado = { tipo: 'cargando' } | { tipo: 'error'; mensaje: string } | { tipo: 'lista'; hoja: HojaDeVida }
 
-// En api, la ocupación sale del catálogo del servidor; en local, del catálogo del front.
+// En api, la ocupación viene con el caso (ajuste carga-casos: `ocupaciones-caso`, pedida una vez al entrar); en
+// local, del catálogo del front.
 export function useHojaDeVida(professional: ForestFireProfessional): Estado | undefined {
-  const [servidor, setServidor] = useState<Estado>({ tipo: 'cargando' })
-  useEffect(() => {
-    if (!modoApi) return
-    let vigente = true
-    setServidor({ tipo: 'cargando' })
-    void consultarOcupacion(professional.occupationId).then((respuesta) => {
-      if (!vigente) return
-      setServidor(
-        respuesta.tipo === 'ok'
-          ? {
-              tipo: 'lista',
-              hoja: {
-                ocupacion: respuesta.datos.titulo,
-                preparando: false,
-                queHacen: respuesta.datos.descripcion ?? '',
-                conocimientos: respuesta.datos.conocimientos,
-                habilidades: respuesta.datos.habilidades,
-              },
-            }
-          : { tipo: 'error', mensaje: mensajeErrorServidor(respuesta) },
-      )
-    })
-    return () => {
-      vigente = false
+  if (modoApi)
+    return {
+      tipo: 'lista',
+      hoja: {
+        ocupacion: professional.name,
+        preparando: false,
+        queHacen: professional.description,
+        conocimientos: professional.knowledge ?? [],
+        habilidades: professional.skills,
+      },
     }
-  }, [professional.occupationId])
-  if (modoApi) return servidor
   const occupation = getOccupation(professional.occupationId)
   return occupation
     ? {

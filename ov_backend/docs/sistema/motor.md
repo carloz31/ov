@@ -6,14 +6,14 @@ Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, 
 
 | Grupo | Tablas |
 |---|---|
-| Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash` (Argon2id), `activa`, `intentos_fallidos` y `bloqueada_hasta` para el bloqueo temporal de ingreso, B17), `salon`, `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
-| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD, PORTAL_FAMILIA o LUMI, este último para los recuerdos de Lumi: el mapa no lo pinta y sus actividades son opcionales, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` y `puntaje_maximo` solo en CASO, en puntos de satisfacción: el máximo es el total de necesidades del caso, y el cargador lo valida contra `CONFIGURACION_CASOS` de `ruta.py`), `actividad_dimension` (tipos RIASEC de un caso, uno o varios; solo CASO, lo valida el cargador), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado; `persona`, `ocupacion_id`, `anios_experiencia` y `cita`; el caso que lo regala no es columna: se deduce de su regla SUPERA_CASO), `pregunta_diario` (ver «Diario»), `conversacion` (`orden`, preguntas de cada rol, `preguntas_guia`, `mensaje_diferencias`; ver «Conversaciones»), `insignia` (`es_oculta`, audiencia), `nivel`, `familia_carrera`, `carrera` |
-| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` y `respuesta_batalla` (cada intento y sus respuestas: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo`, las tablas de la tarjeta de carrera y `cuenta.opcion_inicial_id` (B11; ver «Secciones de la tarjeta») |
-| Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo`, `desbloqueo` (único por cuenta y regla; `visto`) |
+| Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash` (Argon2id), `activa`, `intentos_fallidos` y `bloqueada_hasta` para el bloqueo temporal de ingreso, B17), `colegio` (`codigo`, `nombre`), `salon` (`colegio_id`, obligatorio; su `codigo` es único en toda la base, y dos colegios pueden repetir `nombre`), `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
+| Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD, PORTAL_FAMILIA o LUMI, este último para los recuerdos de Lumi: el mapa no lo pinta y sus actividades son opcionales, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` y `puntaje_maximo` solo en CASO, en puntos de satisfacción: el máximo es el total de necesidades del caso, y el cargador lo valida contra `CONFIGURACION_CASOS` de `ruta.py`), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado; `video_id`, `inicio` y `fin`, el tramo del video; `persona`, `ocupacion_id`, `contexto` y `cita`; su origen no es columna: se deduce de su regla, SUPERA_CASO si es de un caso o COMPLETA_ACTIVIDAD si es de una actividad, y la carga rechaza una voz sin ninguna de las dos), `pregunta_diario` (ver «Diario»), `conversacion` (`orden`, `titulo`, `tema` opcional (chip de la tarjeta), preguntas de cada rol, `preguntas_guia`, `mensaje_diferencias`, `algo_que_saben` opcional; ver «Conversaciones»), `presentacion` (presentación de primera visita de una vista del front: `codigo` es el id de la vista, audiencia; ver «Presentaciones»), `grupo_insignia` (página del pasaporte: `codigo`, `nombre`, `orden`), `insignia` (`es_oculta`, audiencia, `grupo_id`, `orden` dentro del grupo, `pista`, que se muestra mientras una oculta no se obtiene, `descripcion` (su historia), `requisito` (lo que pide), `frase` (la frase destacada) y `logro` (cómo se consiguió, en pasado)), `nivel` (`titulo`, `descripcion`, `cita_lumi`), `familia_carrera`, `carrera` |
+| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA, `posicion`), `resultado_caso`, `resultado_batalla` y `respuesta_batalla` (cada intento y sus respuestas: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo`, las tablas de la tarjeta de carrera y `cuenta.opcion_inicial_id` (B11; ver «Secciones de la tarjeta»), `insignia_vitrina` (hasta 3 insignias obtenidas que la cuenta muestra, con `orden` 1–3; ver «Vitrina»), `presentacion_vista` (presentaciones de primera visita que la cuenta ya cerró, con `vista_en`; ver «Presentaciones») |
+| Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo` (`texto`: lo que pide, para mostrarlo tal cual; nulo si no tiene), `desbloqueo` (único por cuenta y regla; `fecha_hora`, `visto`) |
 
 `id_objetivo` de una regla e `id_referencia` de un evento o condición son referencias polimórficas sin FK; los cargadores resuelven códigos a ids. `id_objetivo` nunca es nulo.
 
-**Secciones.** Partes del perfil que se abren con reglas como cualquier objetivo (`SECCION`). Las fijas están en `datos/fijos.py`: DIARIO, CHECK_IN, CATALOGO, PLANES y FAMILIA del estudiante, y CONVERSACIONES del apoderado. Cada ruta decide con sus reglas cuándo se abre cada una. La migración `0004` convirtió las reglas del antiguo objetivo CONVERSACIONES en reglas de esa sección.
+**Secciones.** Partes del perfil que se abren con reglas como cualquier objetivo (`SECCION`). Las fijas están en `datos/fijos.py`: DIARIO, CHECK_IN, CATALOGO, PLANES, FAMILIA e INVESTIGACIONES (B13) del estudiante, y CONVERSACIONES del apoderado. Cada ruta decide con sus reglas cuándo se abre cada una. La migración `0004` convirtió las reglas del antiguo objetivo CONVERSACIONES en reglas de esa sección.
 
 **Secciones de la tarjeta (B11).** Cada tarjeta de carrera tiene cuatro secciones, fijas en `seccion_tarjeta` (`datos/fijos.py`): POR_QUE, CONOCIMIENTO, REALIDAD y PASOS (`para_comparar` en POR_QUE y REALIDAD). Se abren por cuenta, para todas sus tarjetas, con reglas del objetivo `SECCION_PLAN`, solo del estudiante; cada ruta decide con qué actividad. Los medidores, la carrera y la prioridad no son secciones. Las tablas de la tarjeta (`tarjeta_carrera` y sus motivos, conocimiento, dudas, gastos, financiamiento, complicaciones, sugerencias y pasos) son estado y las vacía el reinicio, que además pone `cuenta.opcion_inicial_id` en nulo.
 
@@ -29,12 +29,16 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | ESCRIBE_ENTRADA_DIARIO, ESCRIBE_ENTRADA_LIBRE | entrada de diario (se expone como `null`: no tiene código público) |
 | REGISTRA_CHECK_IN | check-in (se expone como `null`) |
 | VISTA_CARRERA | carrera |
-| PUBLICA_ENTREVISTA | entrevista |
+| PUBLICA_ENTREVISTA, EDITA_ENTREVISTA, VISTA_ENTREVISTA, MARCA_FAVORITO_ENTREVISTA, REACCIONA_ENTREVISTA, ENTREVISTA_DESTACADA, ENTREVISTA_LEYENDA | entrevista (ver `investigaciones.md`) |
+| INICIA_INVESTIGACION, TERMINA_GUION | ocupación investigada (la investigación puede borrarse; la ocupación no) |
 | ESCRIBE_CARTA | vínculo familiar |
 | COMPLETA_CONVERSACION | conversación |
 | REINICIA_INSTRUMENTO | instrumento |
 | REVELA_RESULTADO | aplicación (el resultado es por cuenta y aplicación; ver `instrumentos.md`) |
 | VISTA_TESTIMONIO | testimonio |
+| VISTA_FICHA | ficha |
+| MARCA_FAVORITO_FICHA | ficha |
+| MARCA_FAVORITO_TESTIMONIO | testimonio |
 | CREA_PLAN, ACTUALIZA_PLAN, ELIMINA_PLAN | carrera del plan (la tarjeta puede borrarse; la carrera no) |
 
 ## Reglas
@@ -74,6 +78,23 @@ Son catálogo, como las temáticas. La carga rechaza un COMPARACION prioritario 
 
 Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. En `datos/ruta.py`, el evaluador de una regla se declara en `EVALUADORES_REGLAS = {regla: (evaluador, parámetro)}`. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
 
+### Reglas del contenido
+
+Las reglas de `datos/contenido.py` siguen estos principios (ajuste carga-actividades); `tests/integration/datos/test_reglas_contenido.py` comprueba los verificables:
+
+- **Testimonios:** cada voz tiene una sola regla TESTIMONIO: SUPERA_CASO si la regala un caso (su ocupación es una necesidad de ese caso) o COMPLETA_ACTIVIDAD si la deja una actividad (`tb3-1`, `tb3-8`, `tb3-10`). De esa regla sale su origen en `GET testimonios`.
+
+1. **El tramo se abre con la última requerida del anterior.** Cada bloque del camino B1–B5 tiene una regla `BLOQUE` con `COMPLETA_BLOQUE` del anterior. COMPLETA_BLOQUE se registra al completar la última actividad requerida del bloque (las opcionales no cuentan), así que no hay que reescribir la regla si cambia cuál es la última. B0 no tiene regla. Única excepción, a propósito: B4 pide además el punto de partida y los instrumentos prioritarios revelados (`REVELA_RESULTADO` + `instrumentos_prioritarios`).
+2. **La primera actividad de un tramo no lleva regla propia**: queda disponible al abrirse su bloque. Solo la lleva si pide algo más que el bloque (b5-1).
+3. **Dentro del tramo, cadena lineal**: cada requerida pide la requerida anterior (COMPLETA_ACTIVIDAD, o SUPERA_BATALLA si la anterior es una batalla).
+4. **Opcionales**: se abren con su disparador y nunca son requisito de una requerida (ni de su bloque). Las misiones adicionales, con `REGISTRO_ADECUADO` del registro que las premia.
+5. **Ciudad**: todo opcional; las misiones de Helena se encadenan parte por parte y la primera parte se abre con la informativa del camino que presenta el tema.
+6. **Evaluadores**: una regla con evaluador lleva también las condiciones cuyos eventos deben reevaluarla (`ACTUALIZA_PLAN` en las de planes); si no, no vuelve a evaluarse cuando cambian los planes.
+7. **Todo objetivo cargado tiene al menos una regla** (la de su bloque cuenta para la primera actividad de un tramo), salvo los abiertos desde el inicio a propósito: B0, b0-1, LUMI (sus actividades sí tienen regla), FAMILIA, p1 y el nivel 1 (el de partida). Las preguntas DIARIA no llevan regla: entran al sorteo del día. Un objetivo sin regla está disponible desde el principio.
+8. Varias reglas sobre el mismo objetivo son alternativas (basta una); las condiciones de una regla se suman.
+
+Además: toda regla `CONVERSACION` lleva `ESCRIBE_CARTA`; ninguna regla nombra una actividad `t-` del camino; y toda ficha de la que sale una pregunta de batalla se obtiene con una actividad que está entre los requisitos de la batalla.
+
 ## Evaluación
 
 Cuando una acción registra eventos (`registrar_eventos`), el motor, en la misma transacción:
@@ -111,11 +132,19 @@ Toda condición cuenta eventos de la cuenta evaluada: ningún objetivo del apode
 
 **Nivel actual:** el de mayor `numero` disponible. El nivel 1 no tiene reglas. Las reglas de cada nivel repiten las condiciones del anterior, así que el nivel nunca baja ni se salta. Para un apoderado es `null`.
 
-**Insignia oculta no obtenida:** se muestra con código `???`, nombre «Logro oculto» y sin descripción ni requisito; al obtenerla se muestra completa.
+**Insignia oculta no obtenida:** se muestra con código `???`, nombre «Logro oculto» y sin descripción ni requisito, pero con su grupo, su orden y su pista (sin frase ni logro); al obtenerla se muestra completa.
+
+**Fecha de obtención:** la de su primer desbloqueo, entre todas las reglas de la insignia.
+
+**Textos para mostrar.** El front muestra tal cual llegan el `texto` de cada condición, la `descripcion` y la `cita_lumi` del nivel, y la `frase`, la `descripcion` (historia), el `logro` y el `requisito` de una insignia: no redacta ninguno. En la semilla, ningún texto de insignia nombra códigos de actividad.
+
+**Vitrina** (ajuste pasaporte-perfil): `POST /acciones/vitrina` con `cuenta` y `codigos` reemplaza la lista completa, en el orden recibido; `[]` la vacía. Solo estudiante (409 si no). 422 con más de 3 códigos, repetidos o inexistentes; 409 si alguna no está obtenida. Sin eventos. Responde `{vitrina: [codigo]}`. Sin elección, la vitrina está vacía.
+
+**Presentaciones** (ajuste presentaciones-vistas): `presentacion` lista, en `datos/fijos.py`, las vistas del estudiante que tienen presentación de primera visita; el código es el id de la vista en el front (`journal`, `missions`, `resources`…) y el texto vive en el front. `GET /cuentas/{c}/presentaciones` responde `{vistas: [codigo]}` por código. `POST /acciones/presentacion-vista` con `cuenta` y `codigo` la marca como vista y responde lo mismo; es idempotente (conserva la primera `vista_en`). Solo estudiante (409 si no); 422 si el código no existe o es de otra audiencia. No mira si la sección está abierta: lo decide el front antes de mostrarla. Sin eventos. La migración `0032` no siembra el catálogo (lo llena el conjunto al recargarse, como el resto de `fijos`) y su downgrade se detiene si hay presentaciones vistas.
 
 ## Acciones
 
-Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados` y `nuevos_desbloqueos`. Las que afectan a varias cuentas devuelven `{"por_cuenta": {codigo: {...}}}`.
+Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados`, `nuevos_desbloqueos` y `nuevas_notificaciones` (las creadas en esa acción para la cuenta; ver «Notificaciones»). Las que afectan a varias cuentas devuelven `{"por_cuenta": {codigo: {...}}}`.
 
 | Acción (POST) | Valida | Efecto y eventos |
 |---|---|---|
@@ -124,18 +153,18 @@ Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados
 | `/acciones/resolver-caso` | Actividad CASO disponible; puntaje entero entre 0 y el `puntaje_maximo` del caso (422 si lo supera); `ocupaciones` (códigos de las bien asignadas) existentes, si no 422 | Guarda el intento. Con puntaje ≥ `puntaje_minimo`: completa la actividad (COMPLETA_ACTIVIDAD), SUPERA_CASO la primera vez y agrega a `coleccion_ocupacion` las ocupaciones que la cuenta no tenía (`ocupaciones_nuevas` en la respuesta, con `codigo` y `titulo`). Con menos, queda EN_CURSO, sin eventos. Responde también `puntaje_minimo` y `puntaje_maximo`; el mejor puntaje se lee en `GET casos`. |
 | `/acciones/resolver-batalla` | Actividad BATALLA disponible; `respuestas` (`pregunta`, `opcion`: el índice de la opción), en el orden en que se dieron, al menos una, sin repetir, todas preguntas de esa batalla y con una opción existente; el intento debe terminar justo en la última respuesta (si no, 422) | El servidor recorre las respuestas con las vidas y los destellos de la batalla: cada acierto quita una vida al enemigo y cada error, un destello; gana si el enemigo queda sin vidas y pierde si se agotan los destellos (F04c). Guarda el intento en `resultado_batalla` (victoria, aciertos y preguntas) y cada respuesta en `respuesta_batalla`. La primera victoria completa la actividad (COMPLETA_ACTIVIDAD) y registra SUPERA_BATALLA, y VENCE_DESAFIO_INTACTO si terminó con todos los destellos. Perder deja la batalla EN_CURSO; los intentos posteriores a la victoria son práctica, sin eventos. Responde los campos de la acción más `victoria`, `practica` (ya estaba superada), `aciertos`, `preguntas`, `destellos_restantes` y `fichas_repaso` (F04d: `codigo` y `titulo` de las fichas de las preguntas falladas en el intento, sin repetir, de más a menos fallos; si empatan, la de la primera fallada; sin fallos, vacía). El primer intento es el que cuenta para la métrica de conocimiento. Las preguntas de cada intento las da `GET /cuentas/{c}/batallas/{a}/preguntas`. |
 | `/acciones/ver-testimonio` | Solo estudiante; testimonio disponible (si no, 409 con su mensaje) | VISTA_TESTIMONIO solo la primera vez. |
+| `/acciones/ver-ficha` | Ficha de la audiencia de la cuenta (si no, 404) y disponible (si no, 409 con su mensaje). La registra el modal de ficha al abrirse (ajuste mochila) | VISTA_FICHA solo la primera vez. |
 | `/acciones/responder-registro` | Clasificación ADECUADA o POCO_DESARROLLADA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
 | `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; `titulo` opcional y `texto`; `pregunta` (código) o `del_dia`, no ambos; sin ninguno es LIBRE. Con pregunta: su recomendación existe, ya tiene texto y no tiene entrada; la del día, además, vigente (si no, 409). | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
 | `/acciones/editar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404); sin límite de tiempo ni sección | Cambia `texto` y, si se envía, `titulo`; fija `actualizada_en`. Sin eventos. |
 | `/acciones/borrar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404) | Borrado físico. La recomendación que respondía queda archivada (carta) o cerrada (pregunta del día): no vuelve a quedar por responder. Sin eventos. |
 | `/acciones/diario/archivar-pregunta`, `/acciones/diario/desarchivar-pregunta` | Solo estudiante; sección DIARIO; `codigo` de una carta recibida (DESBLOQUEABLE; una del día responde 409). Archivar: redactada, sin responder y no archivada; desarchivar: archivada (si no, 409) | Fija o borra `archivada_en`; responde su `PreguntaDiarioEstado`. Sin eventos. |
-| `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día; nivel 1–5 | REGISTRA_CHECK_IN |
-| `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
-| `/acciones/marcar-favorito` | Sección CATALOGO abierta; aún no es favorito | MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan) |
-| `/acciones/publicar-entrevista` | Autores: lista no vacía, sin repetidos, todos estudiantes | PUBLICA_ENTREVISTA en cada autor. Código `ENT-<uuid>`. |
+| `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día, editable ese día (el segundo sobrescribe el nivel y no emite evento); nivel 1–5 | REGISTRA_CHECK_IN (solo el primero del día) |
+| `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta (estudiante). Una cuenta de apoderado u orientadora recibe 200 sin eventos ni desbloqueos: la exploración se mide solo en el estudiante (ajuste catalogo-apoderado) | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
+| `/acciones/marcar-favorito` | Carrera, ocupación o institución: sección CATALOGO abierta. Ficha o testimonio (ajuste mochila): de la audiencia de la cuenta (si no, 404) y desbloqueado (si no, 409), sin exigir el catálogo. En ambos casos, aún no es favorito | Catálogo: MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan). Ficha: MARCA_FAVORITO_FICHA; testimonio: MARCA_FAVORITO_TESTIMONIO, con la ficha o el testimonio como referencia. Entrevista (B13): ver `investigaciones.md` |
+| `/acciones/publicar-entrevista` y las demás de investigaciones | Ver `investigaciones.md` (B13) | PUBLICA_ENTREVISTA en cada autor; el resto, en `investigaciones.md`. |
 | `/acciones/escribir-carta` | Sección de su rol (ver «Conversaciones») y vínculo activo; la carta aún no entregada | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
-| `/acciones/responder-conversacion` | Ver «Conversaciones» | Guarda la respuesta de su rol. Sin eventos. |
-| `/acciones/completar-conversacion` | Ver «Conversaciones» | Marca la conversación del vínculo; COMPLETA_CONVERSACION solo en el estudiante, la primera vez. |
+| `/acciones/responder-conversacion` | Ver «Conversaciones» | Guarda la respuesta de su rol. Si con ella están las dos, la conversación queda conversada y COMPLETA_CONVERSACION va a las dos cuentas, la primera vez (`RespuestaAgrupada`). |
 | `/eventos` (depuración) | Solo que existan cuenta y referencia | Registra un evento crudo y evalúa reglas, sin validaciones de dominio ni cambios de estado. |
 
 Las acciones de instrumentos (`responder-items`, `revelar-resultado`, `reiniciar-instrumento`) están en `instrumentos.md`, y las de registro, en `registro.md`.
@@ -148,10 +177,11 @@ Un objetivo bloqueado responde 409 con `detail.mensaje` = el mensaje de bloqueo 
 |---|---|
 | `/reglas` | Todas las reglas, legibles, por código, con su `mensaje_bloqueo`. No evalúa. |
 | `/cuentas` | Cuentas. |
-| `/cuentas/{c}/progreso/{tipo}/{codigo}` | Cada regla del objetivo con su `mensaje_bloqueo` y el avance de cada condición (`actual`, `requerido`, `cumplida`) y del evaluador. Niveles con código `N1`…`N5`. Insignia oculta no obtenida: 403. Tipo inválido: 422. |
+| `/cuentas/{c}/progreso/{tipo}/{codigo}` | Cada regla del objetivo con su `mensaje_bloqueo` y el avance de cada condición (`actual`, `requerido`, `cumplida`, `texto`) y del evaluador. Niveles con código `N1`…`N5`. Insignia oculta no obtenida: 403. Tipo inválido: 422. |
 | `/cuentas/{c}/eventos` | Línea de tiempo, del más reciente al más antiguo. |
-| `/cuentas/{c}/desbloqueos?solo_no_vistos=true` | Desbloqueos con fecha y objetivo. |
-| POST `/cuentas/{c}/desbloqueos/marcar-vistos` | Marca los pendientes; devuelve `{"marcados": n}`. |
+| `/cuentas/{c}/desbloqueos` | Desbloqueos con fecha y objetivo, del más reciente al más antiguo (línea de tiempo). Lo visto no vive aquí, sino en las notificaciones. |
+| `/cuentas/{c}/notificaciones?limite&desde` | La campana: `{total, no_vistas, items}`, ver «Notificaciones». |
+| POST `/cuentas/{c}/notificaciones/marcar-vistas` | `{codigos}`; ver «Notificaciones». |
 
 Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logros`…) están en `integracion.md`.
 
@@ -160,9 +190,9 @@ Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logro
 1. Nunca hay dos desbloqueos para la misma cuenta y regla, y ninguno se elimina.
 2. Una actividad bloqueada no se puede completar: 409 sin eventos.
 3. Una cuenta nunca ve objetivos de otra audiencia.
-4. COMPLETA_BLOQUE, SUPERA_CASO, SUPERA_BATALLA, VENCE_DESAFIO_INTACTO, VISTA_TESTIMONIO, ESCRIBE_CARTA y COMPLETA_CONVERSACION se registran solo la primera vez por referencia y cuenta; COMPLETA_ACTIVIDAD, en cada finalización.
+4. COMPLETA_BLOQUE, SUPERA_CASO, SUPERA_BATALLA, VENCE_DESAFIO_INTACTO, VISTA_TESTIMONIO, VISTA_FICHA, ESCRIBE_CARTA y COMPLETA_CONVERSACION se registran solo la primera vez por referencia y cuenta; COMPLETA_ACTIVIDAD, en cada finalización.
 5. Repetir una actividad no cambia su estado COMPLETADA.
-6. Un check-in por día y una entrada por recomendación (desbloqueada o del día).
+6. Un check-in por día (editable ese día) y una entrada por recomendación (desbloqueada o del día).
 7. El nivel actual nunca baja.
 
 ## Diario
@@ -192,25 +222,56 @@ El registro recoge lo que el estudiante piensa o decide, y lo ve la orientadora.
 
 ## Conversaciones
 
-Conversaciones guiadas entre el estudiante y su apoderado, con una carta de cada uno (B12). Código: `app/services/conversaciones.py`. El estado es del vínculo activo de la cuenta (`conversacion_vinculo` y las cartas de `vinculo_familiar`).
+Conversaciones guiadas entre el estudiante y su apoderado, con una carta de cada uno (B12, F08). Código: `app/services/conversaciones.py`. El estado es del vínculo de la cuenta (`conversacion_vinculo` y las cartas de `vinculo_familiar`).
 
 - **Acceso:** el estudiante, con la sección FAMILIA; el apoderado, con CONVERSACIONES (su ruta completa). Sin la sección, 409 con su mensaje; sin vínculo activo, 409; la orientadora, 404.
-- **Carta:** cada uno escribe la suya y la puede editar hasta la entrega (todas las conversaciones del catálogo conversadas); después, 409. La carta del otro solo se lee entregada.
-- **Disponibilidad:** sin carta propia, ninguna. Con ella, el apoderado tiene todas; el estudiante, las que le abren sus reglas `CONVERSACION` (cada una pide ESCRIBE_CARTA y su condición).
+- **Vínculo:** el del estudiante. El apoderado elige el hijo con `estudiante` (parámetro del GET y campo opcional de `escribir-carta` y `responder-conversacion`); sin él, su primer vínculo activo por código. Un estudiante que no es su hijo, 404. Carta y conversaciones son por vínculo.
+- **Carta:** cada uno escribe la suya y la puede editar hasta la entrega (todas las conversaciones del catálogo conversadas, `cartas_disponibles`); después, 409. La carta del otro (`carta_recibida`) solo viaja entregada; `otro` (`codigo`, `nombre`, `parentesco` del vínculo) da su remitente.
+- **Disponibilidad:** sin carta propia, ninguna. Con ella, el apoderado tiene todas; el estudiante, las que le abren sus reglas `CONVERSACION` (cada una pide ESCRIBE_CARTA y su condición). En `contenido`, esa condición es siempre una actividad requerida del camino: si colgara de una opcional, las cartas podrían no entregarse nunca.
 - **Responder** (`responder-conversacion`, texto libre, sin LLM): solo una conversación disponible para quien responde (si no, 409 con su mensaje). El apoderado puede responder aunque el hijo aún no la tenga. La propia respuesta se edita mientras el otro no haya respondido; después, 409.
-- **Marcar** (`completar-conversacion`): cualquiera de los dos, solo con ambas respuestas (si no, 409). Basta una marca (`conversada_en`, `conversada_por`); marcar de nuevo no cambia nada. COMPLETA_CONVERSACION va solo al estudiante y le abre su pregunta del diario.
-- **Estado** para quien consulta: `sin_responder`, `esperando_al_otro` (solo yo respondí; también si el hijo aún no la habilitó), `te_toca`, `por_conversar` o `conversada`. La respuesta del otro, las `preguntas_guia` y el `mensaje_diferencias` se ven solo con las dos respuestas.
+- **Conversada** (F08): al responder el segundo, sin marca aparte. Se fijan `conversada_en` y `conversada_por` (quien respondió segundo) y COMPLETA_CONVERSACION va a las dos cuentas; en el estudiante abre su pregunta del diario. No existe `completar-conversacion`.
+- **Lista:** siempre todas, por `orden`, con `titulo`, `tema` (el chip de su tarjeta, columna propia de la conversación; nulo, sin chip) y `estado` para quien consulta: `bloqueada` (sin carta propia o, para el estudiante, sin su regla; `bloqueo_mensaje` dice por qué), `sin_responder`, `esperando_al_otro` (solo yo respondí; también si el hijo aún no la habilitó), `te_toca` o `conversada`. El apoderado ve además `abierta_para_hijo`. Con las dos respuestas se ven la pregunta y la respuesta del otro (`pregunta_otro`, `respuesta_otro`), `preguntas_guia`, `mensaje_diferencias` (el puente) y `algo_que_saben`; el estudiante, además, `entrada_diario` (`codigo`, `nombre`, `pregunta`) si la pregunta del diario que abre conversarla ya está desbloqueada.
 - **Pregunta:** cada rol ve la suya; con `pregunta_apoderado` nula, el apoderado responde la del estudiante.
-- **Sin avisos:** no hay notificaciones entre cuentas. El apoderado no recibe aviso cuando el hijo habilita una conversación (HU-067), y si el apoderado marca, el estudiante ve su nueva pregunta del diario solo al consultarlo. Quedan para las notificaciones asíncronas.
+- **Avisos:** la primera respuesta de cada uno a una conversación notifica al otro del vínculo (RESPUESTA_CONVERSACION, ver «Notificaciones»). El apoderado no recibe aviso cuando el hijo habilita una conversación (HU-067), y el estudiante ve su nueva pregunta del diario al consultarlo.
+
+## Notificaciones
+
+Lo que lista la campana (ajuste notificaciones). Código: `app/services/notificaciones.py`; tabla de estado `notificacion` (se vacía con el reinicio). Es la única verdad de «visto»: `desbloqueo.visto` ya no se usa.
+
+- **Criterio:** un logro se anuncia una sola vez, en su lugar más ceremonial; la campana es el historial. Se crean en la transacción de la acción que las origina, y la respuesta de esa acción trae las de la cuenta que actúa en `nuevas_notificaciones` (en `RespuestaAgrupada`, por cuenta). En una acción de varias cuentas se insertan en un solo lote.
+- **Tipos** (`TipoNotificacion`; `nombre` es una foto del nombre al crearla):
+
+| Tipo | Se crea | Para | `referencia` | `nombre` | `detalle` |
+|---|---|---|---|---|---|
+| DESBLOQUEO | En `registrar_eventos`, con el desbloqueo, solo si el objetivo es INSIGNIA, FICHA, NIVEL o el BLOQUE `CIUDAD` (el resto se revela en su vista) | La cuenta que desbloquea (estudiante o apoderado; la audiencia ya la filtra el motor) | Código del objetivo (niveles, `N2`…) | Nombre del objetivo | Tipo de objetivo: `INSIGNIA`, `FICHA`, `NIVEL` o `BLOQUE` |
+| RESPUESTA_CONVERSACION | `responder-conversacion`, la primera respuesta de cada uno (cambiarla no vuelve a avisar) | El otro del vínculo | Código de la conversación | Su título | Para el apoderado, el código del hijo, que la respuesta expone como `estudiante` (con `detalle` nulo); para el hijo, nulo |
+| ENTREVISTA_DESTACADA | `destacar-entrevista` al destacar, una vez por autor y entrevista (como el evento) | Cada autor | Código de la entrevista | Su título | Nulo |
+| ENTREVISTA_LEYENDA | Al pasar a Leyenda, una vez por autor y entrevista | Cada autor | Código de la entrevista | Su título | Nulo |
+| REACCION_ENTREVISTA | `reaccionar-entrevista`, solo la primera reacción de cada cuenta (como REACCIONA_ENTREVISTA) | Cada autor | Código de la entrevista | Su título | Nombre del tipo de reacción |
+
+- Nadie se notifica a sí mismo (un autor no puede reaccionar a su entrevista). La orientadora no recibe notificaciones. No hay notificaciones de secciones, comentarios de la orientadora, publicaciones de compañeros, favoritos ni de actividades, testimonios o preguntas del diario.
+- **Consulta:** `GET /cuentas/{c}/notificaciones?limite=20&desde=0` (tope 50; fuera de rango, 422) → `{total, no_vistas, items}`, de la más reciente a la más antigua. Ítem: `codigo` (`NOT-<uuid>`), `tipo`, `referencia`, `nombre`, `detalle`, `creada_en`, `vista` y `estudiante` (solo RESPUESTA_CONVERSACION del apoderado).
+- **Marcado:** `POST /cuentas/{c}/notificaciones/marcar-vistas` con `{codigos: [...]}`; sin códigos, todas las pendientes. Responde `{marcadas}`. Idempotente: las ya vistas, ajenas o inexistentes se ignoran. Sin eventos.
+- Solo la cuenta propia (guardia por defecto).
+
+## Avance del estudiante
+
+Código: `app/services/avance.py` (`GET /cuentas/{c}/avance`, ajuste del panel de F05). Solo estudiante; otros roles, 404.
+
+- **Camino:** todas las actividades (requeridas y opcionales) de los bloques `MISIONES_CAMPO` de audiencia ESTUDIANTE, con total fijo leído de las definiciones, nunca de lo visible o desbloqueado. Terminar las requeridas no es llegar al 100 %.
+- **Tramo actual:** el primer bloque de `MISIONES_CAMPO` por `numero` con una requerida sin completar; cuenta solo sus requeridas. `null` y `camino_completo` cuando no queda ninguna, sea cual sea el porcentaje.
+- **Tramos** (ajuste pasaporte-perfil): cada bloque de `MISIONES_CAMPO` por `numero`, con sus requeridas completadas y su total fijo, y `estado` COMPLETO (todas sus requeridas), ACTUAL (el tramo actual) o PENDIENTE. `requeridas` suma las de todos los tramos.
+- **Ciudad:** todas las actividades del bloque `CIUDAD`, total fijo. Su porcentaje es la afinidad de `/logros` (`logros.afinidad` delega en `avance_ciudad`).
+- LUMI y PORTAL_FAMILIA no cuentan. Porcentajes con `porcentaje()` de `services/tematicas.py`.
 
 ## Ruta del apoderado
 
 Código: `app/services/familia.py`. Solo para cuentas APODERADO; otras, 404.
 
-- **Avance** (`avance_ruta`, común a ambos roles): actividades requeridas COMPLETADAS sobre las requeridas de los bloques de la audiencia de la cuenta; las opcionales no cuentan.
+- **Avance** (`avance_ruta`, común a ambos roles): actividades requeridas COMPLETADAS sobre las requeridas de los bloques de la audiencia de la cuenta; las opcionales no cuentan. Es el avance que ve la familia; el del panel del estudiante es otro (ver «Avance del estudiante»).
 - **Diploma:** se obtiene al completar todos los bloques de su audiencia (COMPLETA_BLOQUE de cada uno); `obtenido_en` es la fecha del último.
-- **Hijo:** el estudiante del vínculo activo, con su avance y su nivel actual.
-- **Resultados del hijo:** solo con el diploma (si no, 409) y vínculo activo (si no, 409); los resultados vigentes del hijo en los cuestionarios que `salon_instrumento` marca `visible_apoderado` en su salón, con la misma forma que la consulta de resultado del estudiante.
+- **Hijos:** los estudiantes de sus vínculos activos, por código de vínculo, cada uno con su avance, su nivel actual y sus cuestionarios: los que `salon_instrumento` marca `visible_apoderado` en su salón, con cada aplicación (partida antes que llegada) y la fecha de su resultado vigente (`calculado_en`, nulo sin él). Los cuestionarios y su estado se entregan sin diploma; los puntajes no (ajuste inicio-apoderado).
+- **Resultados del hijo:** solo con el diploma (si no, 409, antes de mirar el hijo); del hijo elegido (`estudiante`; uno ajeno, 404) o del primer vínculo activo (sin vínculo, 409); los resultados vigentes del hijo en esos cuestionarios, en el mismo orden, con la misma forma que la consulta de resultado del estudiante.
 
 ## Preguntas de batalla (F04b)
 

@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 80
+    assert len(Base.metadata.tables) == 94
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,7 +129,7 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 82
+    assert sql.count('CREATE TABLE ') == 100
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -137,8 +137,10 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     assert "WHERE origen = 'GUIADA'" in sql
     assert "WHERE tipo = 'DIARIA'" in sql and "WHERE tipo = 'DESBLOQUEADA'" in sql
     assert 'WHERE anulado_en IS NULL' in sql
-    # B17: 15 desde que 0017 usa sa.false(); un booleano con DEFAULT 0 no se crea en PostgreSQL.
-    assert sql.count('BOOLEAN DEFAULT false') == 15
+    # B17: 15 desde que 0017 usa sa.false(); un booleano con DEFAULT 0 no se crea en PostgreSQL. B13: 16, con
+    # `investigacion.sugerencias_vigentes`. Ajuste resultados-intereses: 18, con `instrumento.guia_abierta` y
+    # `ocupacion.en_test`.
+    assert sql.count('BOOLEAN DEFAULT false') == 18
     assert 'BOOLEAN DEFAULT 0' not in sql and 'BOOLEAN DEFAULT 1' not in sql
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:
@@ -183,9 +185,12 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
                            for nombre, tabla in anteriores.tables.items()
                            # 0005 retira actividad_item_registro; sus filas pasan a item_registro. 0016 cambia
                            # `pregunta_id` de entrada_diario por `recomendacion_id` (aquí sin filas). 0018 cambia
-                           # las columnas de las conversaciones (aquí sin filas).
+                           # las columnas de las conversaciones (aquí sin filas). 0040 retira el porcentaje de
+                           # resultado_dimension (aquí sin filas). 0042 retira el ajuste de coincidencia y 0043 retira carrera_ocupacion (aquí sin filas).
+                           # 0045 cambia `enlace` de testimonio por `video_id` (aquí sin filas).
                            if nombre not in {'alembic_version', 'actividad_item_registro', 'entrada_diario',
-                                             'conversacion', 'conversacion_vinculo'}}
+                                             'conversacion', 'conversacion_vinculo', 'resultado_dimension',
+                                             'coincidencia', 'carrera_ocupacion', 'testimonio'}}
         command.upgrade(configuracion, 'head')
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == (
@@ -206,6 +211,106 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
             assert conexion.execute(text('PRAGMA foreign_key_check')).all() == []
     finally:
         motor.dispose()
+
+
+def test_migracion_0045_saca_el_video_del_enlace_y_lo_reconstruye_al_bajar(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "testimonio.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    command.upgrade(configuracion, '0044')
+    motor = database.crear_motor_bd(url)
+    try:
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: un testimonio con el enlace anterior.
+            conexion.execute(text("INSERT INTO testimonio (codigo, titulo, descripcion, enlace, anios_experiencia) VALUES "
+                                  "('t', 'T', 'D', 'https://www.youtube.com/watch?v=ysz5S6PUM-U', 5)"))
+        command.upgrade(configuracion, '0045')
+        with motor.connect() as conexion:
+            assert conexion.execute(text('SELECT video_id, inicio, fin, contexto FROM testimonio')).all() == [
+                ('ysz5S6PUM-U', 0, None, None)]
+        command.downgrade(configuracion, '0044')
+        with motor.connect() as conexion:
+            assert conexion.execute(text('SELECT enlace, anios_experiencia FROM testimonio')).all() == [
+                ('https://www.youtube.com/watch?v=ysz5S6PUM-U', None)]
+    finally:
+        motor.dispose()
+
+
+def test_migracion_0046_vacia_las_entrevistas_y_conserva_el_resto(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "entrevistas.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    command.upgrade(configuracion, '0045')
+    motor = database.crear_motor_bd(url)
+    fecha = '2026-10-07 10:00:00'
+    try:
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: una entrevista sobre una ocupación, con su investigación, y lo que no debe borrarse.
+            conexion.execute(text("INSERT INTO salon (id, codigo, nombre) VALUES (1, '5A', 'Quinto A')"))
+            conexion.execute(text("INSERT INTO cuenta (id, codigo, nombre, rol, salon_id, activa) "
+                                  "VALUES (1, 'est', 'E', 'ESTUDIANTE', 1, 1)"))
+            conexion.execute(text("INSERT INTO grupo_ocupacional (codigo, nombre) VALUES ('15', 'G')"))
+            conexion.execute(text("INSERT INTO ocupacion (id, codigo, codigo_onet, titulo, grupo, busqueda) "
+                                  "VALUES (1, 'o', 'o', 'O', '15', 'o')"))
+            conexion.execute(text(
+                "INSERT INTO entrevista (id, codigo, ocupacion_id, titulo, profesional, duracion, enlace, resumen, "
+                f"busqueda, estado, fecha_hora) VALUES (1, 'ENT', 1, 'T', 'P', 'D', 'E', 'R', 'B', 'PUBLICADA', '{fecha}')"))
+            conexion.execute(text(
+                "INSERT INTO investigacion (id, codigo, cuenta_id, ocupacion_id, estado, piensa_dia, piensa_necesita, "
+                f"piensa_duda, creada_en, entrevista_id) VALUES (1, 'INV', 1, 1, 'PUBLICADA', 'a', 'b', 'c', '{fecha}', 1)"))
+            conexion.execute(text("INSERT INTO entrevista_autor (entrevista_id, cuenta_id) VALUES (1, 1)"))
+            conexion.execute(text(f"INSERT INTO favorito (cuenta_id, tipo, id_referencia, fecha_hora) VALUES "
+                                  f"(1, 'ENTREVISTA', 1, '{fecha}'), (1, 'OCUPACION', 1, '{fecha}')"))
+            conexion.execute(text(f"INSERT INTO evento_uso (cuenta_id, tipo, fecha_hora, id_referencia) VALUES "
+                                  f"(1, 'PUBLICA_ENTREVISTA', '{fecha}', 1), (1, 'VISTA_OCUPACION', '{fecha}', 1)"))
+        command.upgrade(configuracion, '0046')
+        with motor.connect() as conexion:
+            for tabla in ('entrevista', 'investigacion', 'entrevista_autor'):
+                assert conexion.execute(text(f'SELECT count(*) FROM {tabla}')).scalar() == 0, tabla
+            assert conexion.execute(text('SELECT tipo FROM favorito')).scalars().all() == ['OCUPACION']
+            assert conexion.execute(text('SELECT tipo FROM evento_uso')).scalars().all() == ['VISTA_OCUPACION']
+            columnas = {c['name'] for c in inspect(conexion).get_columns('entrevista')}
+            assert {'familia_id', 'dedicacion'} <= columnas and 'ocupacion_id' not in columnas
+        command.downgrade(configuracion, '0045')
+        with motor.connect() as conexion:
+            assert 'ocupacion_id' in {c['name'] for c in inspect(conexion).get_columns('investigacion')}
+    finally:
+        motor.dispose()
+
+
+def test_migracion_0047_pone_los_salones_en_un_colegio_y_lo_quita_al_bajar(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "colegio.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    command.upgrade(configuracion, '0046')
+    motor = database.crear_motor_bd(url)
+    try:
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: dos salones y una cuenta que debe conservar el suyo.
+            conexion.execute(text("INSERT INTO salon (id, codigo, nombre) VALUES (1, '5A', 'Quinto A'), (2, '5B', 'Quinto B')"))
+            conexion.execute(text("INSERT INTO cuenta (id, codigo, nombre, rol, salon_id, activa) "
+                                  "VALUES (1, 'est', 'E', 'ESTUDIANTE', 2, 1)"))
+        command.upgrade(configuracion, '0047')
+        with motor.connect() as conexion:
+            colegio, = conexion.execute(text('SELECT id, codigo, nombre FROM colegio')).all()
+            assert colegio[1:] == ('col-piloto', 'Technology School - Sede Palao')
+            assert conexion.execute(text('SELECT colegio_id FROM salon')).scalars().all() == [colegio[0]] * 2
+            assert conexion.scalar(text('SELECT salon_id FROM cuenta')) == 2
+        with pytest.raises(IntegrityError), motor.begin() as conexion:
+            conexion.execute(text("INSERT INTO salon (codigo, nombre) VALUES ('5C', 'Sin colegio')"))
+        command.downgrade(configuracion, '0046')
+        with motor.connect() as conexion:
+            assert 'colegio' not in inspect(conexion).get_table_names()
+            assert 'colegio_id' not in {c['name'] for c in inspect(conexion).get_columns('salon')}
+            assert conexion.execute(text('SELECT codigo FROM salon ORDER BY id')).scalars().all() == ['5A', '5B']
+    finally:
+        motor.dispose()
+
+
+def test_migracion_0047_en_base_vacia_no_crea_colegios(base_migrada):
+    _, _, motor = base_migrada
+    with motor.connect() as conexion:
+        assert conexion.scalar(text('SELECT count(*) FROM colegio')) == 0
 
 
 @pytest.mark.parametrize('contenido, visibilidad', [(None, 'SIEMPRE'), ('prueba', None), ('prueba', 'INVALIDA')])
@@ -279,10 +384,13 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
     aplicacion = crear_aplicacion(url)
     try:
         with TestClient(aplicacion) as cliente:
-            for actividad in ('t-apo-1', 't-apo-carta'):
+            for actividad in ('t-apo-1', 't-apo-2'):
                 assert cliente.post('/acciones/completar-actividad', json={
                     'cuenta': 'apo-rosa', 'actividad': actividad,
                 }).status_code == 200
+            assert cliente.post('/acciones/presentacion-vista', json={
+                'cuenta': 'est-ana', 'codigo': 'missions',
+            }).status_code == 200
         with motor.connect() as conexion:
             anteriores = {tabla.name: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).mappings().all()
                           for tabla in Base.metadata.sorted_tables}
@@ -294,13 +402,25 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # F04c: 0021 se detiene antes, porque `t-batalla` tiene vidas y destellos configurados. F02: 0022 se detiene
         # antes, porque `t-eco-ruta` retoma una elección con su lista. Ajustes Central (6): 0024 se detiene antes,
         # porque `t-caso` tiene puntaje máximo 14 (en puntos de satisfacción). Ajuste del diario (F05): 0027 se
-        # detiene antes, porque `ruta` tiene el bloque LUMI y condiciones con tope diario.
-        with pytest.raises(RuntimeError, match='existen bloques LUMI o condiciones con tope diario'):
+        # detiene antes, porque `ruta` tiene el bloque LUMI y condiciones con tope diario. Ajuste pasaporte-perfil:
+        # 0028 se detiene antes, porque `ruta` tiene grupos de insignia. Ajuste presentaciones-vistas: 0032 se detiene
+        # antes, porque est-ana ya cerró una presentación. Ajuste catalogo-datos-reales: 0033 se detiene antes, porque
+        # `ruta` tiene el catálogo real cargado. Ajuste F07b: 0034 se detiene antes, porque Matrícula y Pensión no tienen
+        # monto de referencia. B13: 0038 se detiene antes, porque `ruta` tiene la referencia LO_QUE_PIENSO y una regla
+        # con ENTREVISTA_LEYENDA. Ajuste notificaciones: 0039 se detiene antes, porque `t-apo-1` le dio una
+        # notificación a apo-rosa. Ajuste resultados-intereses: 0041 se detiene antes, porque `ruta` tiene el catálogo
+        # curado con familias de ocupaciones.
+        with pytest.raises(RuntimeError, match='existen familias de ocupaciones'):
             command.downgrade(configuracion, '0002')
-        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
+        # 0047 baja y quita `colegio`; 0044 deja `actividad_dimension` vacía; 0043, `carrera_ocupacion`, antes de que
+        # 0041 se detenga.
+        assert set(inspect(motor).get_table_names()) == (set(Base.metadata.tables) - {'colegio'}) | {
+            'alembic_version', 'carrera_ocupacion', 'actividad_dimension'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0027'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0041'
             for tabla in Base.metadata.sorted_tables:
+                if tabla.name == 'colegio':
+                    continue
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]
                 assert conexion.execute(select(*columnas).order_by(*tabla.primary_key.columns)).mappings().all() == [

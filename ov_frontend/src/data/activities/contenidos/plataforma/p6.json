@@ -1,0 +1,234 @@
+{
+  "id": "p6",
+  "codigo": "p6",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "Cómo conversar con mi hijo",
+  "subtitulo": "Escuchar antes de opinar",
+  "bloque": 1,
+  "orden": 6,
+  "obligatoria": true,
+  "requisitos": [
+    "p5"
+  ],
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "orientacion"
+  ],
+  "objetivoAprendizaje": "Al terminar, el apoderado distingue preguntas que abren de preguntas que cierran, conoce cuatro reglas para una conversación que sirve y sabe cómo funcionan las conversaciones guiadas de la plataforma.",
+  "nodos": [
+    {
+      "id": "p6-01",
+      "tipo": "diapositiva",
+      "titulo": "La pregunta más repetida en quinto de secundaria",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "«¿Ya sabes qué vas a estudiar?» es la pregunta más frecuente y la que menos información produce. Conversar sobre el futuro es una habilidad, y se puede practicar. El orden que funciona: preguntar, escuchar hasta el final, pedir un ejemplo, y recién entonces decir lo que usted piensa, como opinión y no como veredicto."
+        }
+      ],
+      "etiqueta": "Para empezar"
+    },
+    {
+      "id": "p6-02",
+      "tipo": "diapositiva",
+      "titulo": "Preguntas que cierran y preguntas que abren",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Cierran",
+            "Abren"
+          ],
+          "filas": [
+            [
+              "¿Ya decidiste?",
+              "¿Qué cosas te han llamado la atención últimamente?"
+            ],
+            [
+              "¿Estás seguro?",
+              "¿Qué te atrae de eso? ¿Qué te preocupa?"
+            ],
+            [
+              "¿Y eso en qué vas a trabajar?",
+              "¿Cómo sería un día normal en ese trabajo? ¿Qué te falta averiguar?"
+            ],
+            [
+              "¿Por qué no mejor…?",
+              "¿Qué otras opciones has mirado? ¿Qué te hizo descartarlas?"
+            ],
+            [
+              "Eso no da plata",
+              "¿Has visto cuánto ganan al inicio? ¿Cómo lo pagaríamos?"
+            ]
+          ],
+          "nota": "Las de la derecha no son trucos: son preguntas cuya respuesta usted no conoce. Esa es la diferencia."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Un tema por conversación",
+              "texto": "De quince o veinte minutos. Las conversaciones largas sobre «el futuro» agotan a los dos."
+            },
+            {
+              "titulo": "Sin público",
+              "texto": "Ni delante de hermanos ni en una reunión familiar."
+            },
+            {
+              "titulo": "Las dudas no se juzgan",
+              "texto": "«No sé» es una respuesta válida; se sigue con «¿qué te ayudaría a saberlo?»."
+            },
+            {
+              "titulo": "Termine con un acuerdo pequeño",
+              "texto": "Averiguar un dato, visitar un lugar, hablar con alguien."
+            }
+          ],
+          "titulo": "Cuatro reglas"
+        }
+      ],
+      "etiqueta": "Concepto"
+    },
+    {
+      "id": "p6-03",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Su hija dice: «No sé qué quiero». ¿Qué respuesta abre?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "«¿Cómo que no sabes? Ya estás en quinto.»",
+          "correcta": false,
+          "retroalimentacion": "Juzga la duda. Ella aprende a no decir «no sé» delante de usted."
+        },
+        {
+          "id": "b",
+          "texto": "«Está bien no saber todavía. ¿Qué te ayudaría a saberlo?»",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Acepta la duda como respuesta válida y propone un paso."
+        },
+        {
+          "id": "c",
+          "texto": "«Entonces estudia Administración, que sirve para todo.»",
+          "correcta": false,
+          "retroalimentacion": "Llena el vacío con una sugerencia. Ella no dijo que quería una sugerencia."
+        }
+      ],
+      "explicacion": "«No sé» es una respuesta válida. La regla tres: las dudas no se juzgan, y se sigue con una pregunta que proponga un paso.",
+      "pistas": [
+        {
+          "id": "p6-03p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Tercera regla."
+        }
+      ],
+      "transicion": "Dos situaciones."
+    },
+    {
+      "id": "p6-04",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "De estas preguntas, ¿cuáles abren? Marque todas las que correspondan.",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "¿Qué otras opciones has mirado?",
+          "correcta": true,
+          "retroalimentacion": "Abre: usted no conoce la respuesta."
+        },
+        {
+          "id": "b",
+          "texto": "¿Estás seguro de eso?",
+          "correcta": false,
+          "retroalimentacion": "Cierra: ya trae la duda de usted."
+        },
+        {
+          "id": "c",
+          "texto": "¿Cómo sería un día normal en ese trabajo?",
+          "correcta": true,
+          "retroalimentacion": "Abre: y de paso lo lleva a averiguarlo si no lo sabe."
+        },
+        {
+          "id": "d",
+          "texto": "¿Y eso en qué vas a trabajar?",
+          "correcta": false,
+          "retroalimentacion": "Cierra: es un veredicto con signo de interrogación."
+        }
+      ],
+      "explicacion": "Una pregunta abre cuando usted no conoce la respuesta y la quiere conocer. Las otras son opiniones disfrazadas.",
+      "pistas": [
+        {
+          "id": "p6-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Pregúntese de cada una: ¿sé ya lo que quiero que me responda?"
+        }
+      ]
+    },
+    {
+      "id": "p6-05",
+      "tipo": "diapositiva",
+      "titulo": "Las conversaciones guiadas",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "La plataforma le propone diez conversaciones con su hijo o hija, una por tema: lo que disfruta, lo que les gustaría mejorar a su alrededor, las ideas sobre las profesiones, el futuro que imaginan, lo que significa vivir bien, sus fortalezas, su trabajo, los cambios de rumbo, lo que hace posible un plan y cómo acompañarlo."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Cada uno responde una pregunta por su lado",
+              "texto": "Usted tiene la suya; su hijo o hija, la suya, en su propia pantalla."
+            },
+            {
+              "titulo": "Luego ven la respuesta del otro",
+              "texto": "Con una guía para conversarla en casa, con preguntas sugeridas y un consejo."
+            },
+            {
+              "titulo": "Se habilitan conforme su hijo o hija avanza",
+              "texto": "Las encuentra en Conversaciones al terminar su ruta y escribir su carta; su hijo o hija las va abriendo con su avance."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Conversar no es convencer. Es enterarse de lo que su hijo o hija piensa, y que se entere de lo que usted siente."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, actividad 3 (taller 1) y actividad 12 (taller 2) con madres y padres de familia."
+        }
+      ]
+    },
+    {
+      "id": "p6-06",
+      "tipo": "diapositiva",
+      "titulo": "Para llevarse",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Esta semana",
+              "texto": "Una conversación de quince minutos, un solo tema, sin público, con una pregunta de la columna derecha. Termine con un acuerdo pequeño."
+            }
+          ]
+        }
+      ],
+      "etiqueta": "Resumen",
+      "transicion": "Ya tiene una acción. Repase el resumen cuando quiera."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Conversar no es convencer."
+  }
+}

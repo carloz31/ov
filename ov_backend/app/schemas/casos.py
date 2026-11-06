@@ -7,8 +7,6 @@ from pydantic import BaseModel
 class CasoCuenta(BaseModel):
     actividad: str
     titulo: str
-    # Tipos RIASEC del caso, por el orden de la dimensión.
-    dimensiones: list[str]
     estado: Literal["BLOQUEADA", "DISPONIBLE", "EN_CURSO", "COMPLETADA"]
     intentos: int
     superado: bool

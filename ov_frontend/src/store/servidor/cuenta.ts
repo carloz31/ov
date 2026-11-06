@@ -8,3 +8,7 @@ function cuentaDeRol(rol: RolCuenta) {
 }
 export const cuentaActiva = () => cuentaDeRol('ESTUDIANTE')
 export const cuentaApoderado = () => cuentaDeRol('APODERADO')
+
+// Ajuste catalogo-apoderado: lo que sirve a cualquier rol (el catálogo) usa la cuenta y el rol de la sesión.
+export const cuentaSesion = () => sesionActual()?.cuenta?.codigo ?? null
+export const rolSesion = (): RolCuenta | null => sesionActual()?.cuenta?.rol ?? null

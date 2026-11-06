@@ -223,10 +223,14 @@ def registrar_check_in(sesion: Session, entrada: CheckInEntrada) -> RespuestaAcc
     exigir_estudiante(cuenta)
     exigir_seccion(sesion, cuenta, "CHECK_IN")
     fecha = fecha_accion(entrada)
-    if sesion.scalar(select(CheckIn.id).where(
+    # Ajuste del panel (F05): uno por día, editable ese día. Sobrescribir no emite evento (no cuenta dos veces).
+    existente = sesion.scalar(select(CheckIn).where(
         CheckIn.cuenta_id == cuenta.id, CheckIn.fecha == fecha.date(),
-    ).limit(1)) is not None:
-        raise ErrorAccion("La cuenta ya tiene un check-in en esta fecha")
+    ).limit(1))
+    if existente is not None:
+        existente.nivel_seguridad = entrada.nivel_seguridad
+        sesion.flush()
+        return RespuestaAccion(eventos_registrados=[], nuevos_desbloqueos=[])
     registro = CheckIn(cuenta_id=cuenta.id, fecha=fecha.date(), nivel_seguridad=entrada.nivel_seguridad)
     sesion.add(registro)
     sesion.flush()

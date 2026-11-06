@@ -9,6 +9,16 @@ import React from 'react'
 const nativeRequire = createRequire(import.meta.url)
 export const jsonServidor = (name) => JSON.parse(readFileSync(`tests/fixtures/servidor/${name}.json`, 'utf8'))
 export const copia = (value) => JSON.parse(JSON.stringify(value))
+const comoModulo = (ruta) =>
+  `data:text/javascript;base64,${Buffer.from(
+    ts
+      .transpileModule(readFileSync(ruta, 'utf8'), {
+        compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2023 },
+      })
+      .outputText.replace(/from '\.\/fechas'/g, () => `from '${comoModulo('src/lib/servidor/fechas.ts')}'`),
+  ).toString('base64')}`
+// Un adaptador de lib/servidor cargado aislado: solo importa tipos y, si lo usa, `fechas.ts` (fechaServidor).
+export const importarAislado = (ruta) => import(comoModulo(ruta))
 export const esperar = async () => {
   for (let i = 0; i < 15; i++) await new Promise((resolve) => setImmediate(resolve))
 }
@@ -137,6 +147,8 @@ export function fixtureServidor({
         method: options?.method ?? 'GET',
         headers: options?.headers ?? {},
         body: options?.body ? JSON.parse(options.body) : undefined,
+        // Ajuste catalogo-datos-reales: para comprobar que una consulta se canceló.
+        signal: options?.signal,
       }
       requests.push(request)
       const result = await handler(request)
@@ -287,7 +299,7 @@ export function servidorInicial(app, inicial = escenarioRuta('inicial')) {
         ...inicial,
         cuenta: { ...inicial.cuenta, codigo: request.url.split('/')[3] },
       })
-    if (request.url.includes('/desbloqueos?')) return { body: [] }
+    if (request.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     throw Error(`Solicitud no configurada: ${request.url}`)
   })
 }
@@ -305,6 +317,14 @@ export function escenarioServidor(etapa) {
     bloques: jsonServidor('actividades-' + etapa),
     fichas: jsonServidor('fichas-' + etapa),
     ...logros,
+    // Ajuste pasaporte-perfil: los fixtures de la raíz (congelados) no traen páginas ni vitrina; las insignias y
+    // la vitrina se toman de la ruta.
+    insignias: jsonServidor('ruta/ruta-logros-final').insignias,
+    vitrina: jsonServidor('ruta/ruta-logros-final').vitrina,
+    // DATO DE PRUEBA: estos fixtures no traen `/avance` (ajuste del panel, F05); se usa el inicial de la ruta.
+    avance: jsonServidor('ruta/ruta-avance-inicial'),
+    // Ajuste presentaciones-vistas: tampoco traen presentaciones; se usa la inicial de la ruta (ninguna vista).
+    presentaciones: jsonServidor('ruta/ruta-presentaciones-inicial'),
   }
 }
 // F00: escenario de la ruta mínima (ruta-*). Las actividades tienen etapas inicial, t1, t2 y ciudad;
@@ -317,9 +337,11 @@ export function escenarioRuta(etapa) {
     fichas: jsonServidor('ruta/ruta-fichas-' + final),
     ...jsonServidor('ruta/ruta-logros-' + final),
     secciones: jsonServidor('ruta/ruta-secciones-' + (etapa === 'inicial' ? 'inicial' : 't1')),
+    avance: jsonServidor('ruta/ruta-avance-' + etapa),
+    presentaciones: jsonServidor('ruta/ruta-presentaciones-inicial'),
   }
 }
-export const esConsultaDominio = (r) => /\/(resumen|actividades|fichas|logros|secciones)$/.test(r.url)
+export const esConsultaDominio = (r) => /\/(resumen|actividades|avance|fichas|logros|secciones|presentaciones)$/.test(r.url)
 export function respuestaDominio(r, escenario) {
   switch (r.url.split('/').at(-1)) {
     case 'resumen':
@@ -329,9 +351,13 @@ export function respuestaDominio(r, escenario) {
     case 'fichas':
       return { body: escenario.fichas }
     case 'logros':
-      return { body: { insignias: escenario.insignias, niveles: escenario.niveles } }
+      return { body: { insignias: escenario.insignias, niveles: escenario.niveles, vitrina: escenario.vitrina ?? [] } }
     case 'secciones':
       return { body: escenario.secciones ?? [] }
+    case 'avance':
+      return { body: escenario.avance }
+    case 'presentaciones':
+      return { body: escenario.presentaciones ?? { vistas: [] } }
     default:
       throw Error('Consulta de dominio inesperada: ' + r.url)
   }
@@ -340,7 +366,7 @@ export function respuestaDominio(r, escenario) {
 export function cargarAlmacen(app) {
   return Object.assign(
     {},
-    ...['sesion', 'secciones', 'avisos', 'resultado', 'consultas', 'refresco'].map((n) =>
+    ...['sesion', 'secciones', 'revelado', 'notificaciones', 'resultado', 'consultas', 'refresco'].map((n) =>
       app.load('src/store/servidor/' + n + '.ts'),
     ),
   )

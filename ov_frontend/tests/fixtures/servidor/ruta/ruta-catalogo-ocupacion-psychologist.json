@@ -1,39 +1,109 @@
 {
-  "carreras": [
-    {
-      "codigo": "psychology",
-      "es_favorita": false,
-      "familia": {
-        "codigo": "family-psychology",
-        "nombre": "Ciencias sociales y salud"
-      },
-      "nombre": "Psicología",
-      "riasec": [
-        "S",
-        "I",
-        "A"
-      ]
-    }
+  "afinidad": null,
+  "aptitudes": [
+    "Lectura de la información relacionada con el trabajo",
+    "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+    "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+    "Comprender las reacciones de las personas",
+    "Buscar maneras de ayudar a las personas"
   ],
-  "codigo": "psychologist",
+  "codigo": "19-3033.00",
   "codigo_onet": "19-3033.00",
   "conocimientos": [
+    "Terapia y consejería",
     "Psicología",
-    "Terapia y orientación"
+    "Sociología y antropología",
+    "Idioma inglés",
+    "Enseñanza y diseño de cursos"
   ],
-  "descripcion": "Escucha, evalúa necesidades emocionales y diseña estrategias de acompañamiento.",
+  "descripcion": "Evalúan, diagnostican y tratan trastornos mentales y emocionales de individuos a través de la observación, de entrevista y de pruebas psicológicas. Ayudan a personas con angustia o disfunción a comprender sus problemas por medio de su conocimiento del historial del caso, las entrevistas con los pacientes, y la teoría. Proveen servicios de consejería individual o grupal para ayudar a las personas a lograr un desarrollo y una adaptación más efectivos a nivel personal, social, educativo y vocacional. Pueden diseñar programas de modificación del comportamiento y consultar con el personal médico sobre el mejor tratamiento para los pacientes.",
   "es_favorita": false,
-  "habilidades": [
-    "Escucha activa",
-    "Contención emocional",
-    "Evaluación",
-    "Empatía"
+  "estilos_trabajo": [
+    {
+      "codigo": "sinceridad",
+      "nombre": "Sinceridad"
+    },
+    {
+      "codigo": "empatia",
+      "nombre": "Empatía"
+    },
+    {
+      "codigo": "tolerancia-estres",
+      "nombre": "Tolerancia al estrés"
+    },
+    {
+      "codigo": "autocontrol",
+      "nombre": "Autocontrol"
+    },
+    {
+      "codigo": "orientacion-social",
+      "nombre": "Orientación social"
+    },
+    {
+      "codigo": "logro",
+      "nombre": "Orientación al logro"
+    }
   ],
-  "lugares_trabajo": "Centros de salud, colegios, organizaciones, empresas y consulta privada.",
+  "familia_principal": {
+    "area_codigo": "31",
+    "area_nombre": "Ciencias Sociales y del Comportamiento",
+    "codigo": "313",
+    "descripcion": "Aborda cómo las personas piensan, sienten, aprenden y se relacionan. Incluye el desarrollo a lo largo de la vida, la conducta y las dificultades emocionales. Trata la escucha, la evaluación y el acompañamiento, así como las relaciones en familias, escuelas, organizaciones y otros entornos donde influyen las decisiones y el comportamiento humano.",
+    "nombre": "Psicología",
+    "tipos": [
+      "UNIVERSIDAD"
+    ],
+    "total_carreras": 3
+  },
+  "familias_secundarias": [],
+  "grupo": "19",
+  "job_zone": 5,
+  "otras_ocupaciones_de_la_familia": [
+    {
+      "codigo": "21-1012.00",
+      "titulo": "Orientador educativo y vocacional"
+    },
+    {
+      "codigo": "19-3034.00",
+      "titulo": "Psicólogo educativo"
+    },
+    {
+      "codigo": "19-3032.00",
+      "titulo": "Psicólogo organizacional"
+    }
+  ],
+  "personalidad": "A las personas interesadas en este trabajo les gustan actividades que incluyan ayudar a las personas, enseñar y hablar.",
+  "programa_ejemplo": {
+    "codigo": "mtpe-369",
+    "duracion": "5 años",
+    "nombre": "Psicología",
+    "tipo": "UNIVERSIDAD"
+  },
+  "puntajes": {
+    "A": 34,
+    "C": 42,
+    "E": 28,
+    "I": 76,
+    "R": 1,
+    "S": 93
+  },
+  "resumen": "Evalúan, diagnostican y tratan trastornos mentales y emocionales de individuos a través de la observación, de entrevista y de pruebas…",
   "riasec": [
     "S",
-    "I",
-    "C"
+    "I"
   ],
-  "titulo": "Psicólogo/a"
+  "tambien_llamado": [
+    "Psicólogo",
+    "Psicólogo Clínico",
+    "Psicólogo Consejero",
+    "Psicoterapeuta"
+  ],
+  "tareas": [
+    "Realizar evaluaciones del riesgo de los pacientes de hacerse daño a sí mismo oa otros.",
+    "Documento de información para el paciente incluido notas de la sesión, notas de progreso, recomendaciones y planes de tratamiento.",
+    "Identificar problemas psicológicos, emocionales o de comportamiento y diagnosticar trastornos, usando información obtenida de entrevistas, exámenes, registros o materiales de referencia."
+  ],
+  "titulo": "Psicólogo clínico",
+  "total_ocupaciones_familia": 8,
+  "via_familia": null
 }

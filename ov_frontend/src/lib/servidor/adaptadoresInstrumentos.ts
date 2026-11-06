@@ -20,6 +20,15 @@ export const APLICACION_LLEGADA: AplicacionInstrumento = {
   instrumento: 'TEST-PARTIDA-LLEGADA',
   aplicacion: 'APL-LLEGADA',
 }
+// Ajuste carga-instrumentos: las páginas III y IV del libro.
+export const APLICACION_INTELIGENCIAS: AplicacionInstrumento = {
+  instrumento: 'TEST-INTELIGENCIAS',
+  aplicacion: 'APL-INTELIGENCIAS',
+}
+export const APLICACION_HABILIDADES: AplicacionInstrumento = {
+  instrumento: 'TEST-HABILIDADES',
+  aplicacion: 'APL-HABILIDADES',
+}
 export const MAXIMO_REINICIOS_PERFIL_PLANO = 1
 
 export type EstadoAplicacion = 'sealed' | 'ready' | 'revealed'
@@ -86,6 +95,12 @@ export type ResultadoFamilia = {
   perfilPlano: boolean
   protagonistas: { codigo: string; nombre: string }[]
   dimensiones: { codigo: string; nombre: string; descripcion: string }[]
+  // Ajuste resultados-intereses: los textos del apoderado (con el nombre del hijo ya puesto), cuándo se calculó y
+  // el resultado del servidor, que la vista de intereses muestra completo.
+  mensaje: string
+  lectura: string
+  calculadoEn: string
+  remoto: ResultadoPublico
 }
 export function resultadoFamilia(resultado: ResultadoPublico, catalogo: InstrumentoPublico[]): ResultadoFamilia {
   const instrumento = catalogo.find((i) => i.codigo === resultado.instrumento)
@@ -103,6 +118,10 @@ export function resultadoFamilia(resultado: ResultadoPublico, catalogo: Instrume
     perfilPlano: resultado.perfil_plano,
     protagonistas: protagonistas.map(({ codigo, nombre }) => ({ codigo, nombre })),
     dimensiones,
+    mensaje: resultado.mensaje,
+    lectura: resultado.lectura,
+    calculadoEn: resultado.calculado_en,
+    remoto: resultado,
   }
 }
 

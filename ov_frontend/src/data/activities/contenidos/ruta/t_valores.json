@@ -1,0 +1,94 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-valores",
+  "tipo": "registro",
+  "titulo": "Mis valores",
+  "bloque": 2,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": [],
+  "duracionEstimadaMin": 10,
+  "escenario": "bosque",
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-val-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Ahora piensa en lo que más valoras."
+    },
+    {
+      "id": "t-val-diapositiva",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Qué es un valor",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un valor es algo que te importa de verdad: lo que buscas en un trabajo más allá de su nombre."
+        }
+      ]
+    },
+    {
+      "id": "t-val-orden",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-val-orden",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "podio": {
+        "etiquetaPrimero": "Lo más importante",
+        "pregunta": "¿Por qué «{opcion}» es lo más importante para ti?",
+        "unidad": {
+          "singular": "valor",
+          "plural": "valores"
+        },
+        "iconos": {
+          "SERVIR": "ayudar",
+          "CREAR": "idea",
+          "ESTABILIDAD": "escudo",
+          "RECONOCIMIENTO": "medalla",
+          "LIBERTAD": "libertad"
+        }
+      }
+    },
+    {
+      "id": "t-val-libre",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-val-libre",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "t-val-breve",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-val-breve",
+      "premisa": "",
+      "placeholder": "Escribe aquí…",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "mapa": {
+    "x": 330,
+    "y": 50,
+    "icono": "registro",
+    "origen": "t-cierre-inicio"
+  }
+}

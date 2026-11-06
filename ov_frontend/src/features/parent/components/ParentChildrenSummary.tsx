@@ -16,12 +16,9 @@ import { parentChildren } from '@/features/parent/data/parentPortal'
 import { completeFamilyResult, parentResultUrl } from '@/features/parent/lib/selectors'
 import { displayDate } from '@/features/student-tracking/lib/selectors'
 import { QuestionnaireBars } from '@/features/student-tracking/components/QuestionnaireBars'
-import { ParentChildServerSummary } from './ParentChildServerSummary'
 
 export function ParentChildrenSummary({ model }: { model: ReturnType<typeof useParentOverview> }) {
   const { params, setParams, child, route, shared, student, progress } = model
-  if (model.familia)
-    return <ParentChildServerSummary familia={model.familia} resultados={model.resultadosHijo} />
   return (
     <section className="space-y-5" aria-labelledby="family-children">
       <div className="flex flex-wrap items-center justify-between gap-4">

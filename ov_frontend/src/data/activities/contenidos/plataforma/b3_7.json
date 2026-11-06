@@ -1,0 +1,27 @@
+{
+  "id": "b3-7",
+  "codigo": "b3-7",
+  "tipo": "instrumento",
+  "titulo": "Batalla de las instituciones",
+  "subtitulo": "Desmontar el stand del Faro Dorado",
+  "escenario": "playa",
+  "bloque": 3,
+  "orden": 7,
+  "obligatoria": true,
+  "requisitos": [
+    "b3-6"
+  ],
+  "ubicacion": "Desmontar el stand del Faro Dorado",
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "feriante",
+    "companero"
+  ],
+  "nodos": [],
+  "desafio": "desafio-feriante",
+  "mapa": {
+    "x": 630,
+    "y": 210,
+    "icono": "test"
+  }
+}

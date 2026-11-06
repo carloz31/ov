@@ -12,15 +12,16 @@ from app import models as modelos
 
 
 MODELOS_FIJOS = (
-    modelos.Bloque, modelos.Actividad, modelos.Seccion, modelos.Ficha, modelos.Testimonio,
-    modelos.PreguntaDiario, modelos.Conversacion, modelos.Insignia, modelos.Nivel,
+    modelos.Bloque, modelos.Actividad, modelos.Seccion, modelos.Presentacion, modelos.Ficha, modelos.Testimonio,
+    modelos.PreguntaDiario, modelos.Conversacion, modelos.GrupoInsignia, modelos.Insignia, modelos.Nivel,
     modelos.FamiliaCarrera, modelos.Carrera, modelos.ReglaDesbloqueo,
     modelos.CondicionDesbloqueo, modelos.Instrumento, modelos.Dimension,
     modelos.EscalaRespuesta, modelos.OpcionEscala, modelos.ItemInstrumento,
     modelos.ActividadItem, modelos.Aplicacion, modelos.AplicacionActividad,
     modelos.ListaOpciones, modelos.OpcionLista, modelos.ItemRegistro, modelos.CriterioCompletitud,
-    modelos.Referencia, modelos.Tematica, modelos.ActividadTematica, modelos.ActividadDimension, modelos.SalonInstrumento,
+    modelos.Referencia, modelos.Tematica, modelos.ActividadTematica, modelos.SalonInstrumento,
     modelos.SalonActividadPrioritaria, modelos.SeccionTarjeta, modelos.ReferenciaRubro, modelos.ReferenciaCamino,
+    modelos.PreguntaBaseGuion, modelos.TipoReaccion,
 )
 
 

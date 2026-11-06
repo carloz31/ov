@@ -1,0 +1,184 @@
+{
+  "id": "b0-2",
+  "codigo": "b0-2",
+  "tipo": "encuentro",
+  "titulo": "Lo que siento al terminar el colegio y mi diario",
+  "subtitulo": "El bosque de las voces",
+  "escenario": "bosque",
+  "bloque": 0,
+  "orden": 2,
+  "obligatoria": true,
+  "requisitos": ["b0-1"],
+  "ubicacion": "Bosque, camino a la cabaña",
+  "duracionEstimadaMin": 5,
+  "personajeIds": ["companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe que sentir ilusión, miedo, alivio o confusión al terminar el colegio es normal y que todas valen; conoce el diario como espacio privado sin respuestas correctas, donde escribir es hablarle a Lumi.",
+  "nodos": [
+    {
+      "id": "b0-2-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Este bosque tiene una costumbre: los que suben hacia la cabaña van dejando frases talladas en los troncos. Mira este árbol."
+    },
+    {
+      "id": "b0-2-02",
+      "tipo": "diapositiva",
+      "etiqueta": "El árbol de las voces",
+      "titulo": "Lo que sintieron otros al terminar el colegio",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "«Por fin. Ya quiero empezar lo que viene.»",
+            "«Tengo miedo de equivocarme y perder años.»",
+            "«Alivio. Se acabó el colegio, lo demás lo veré.»",
+            "«No entiendo por qué todos parecen saber qué quieren, menos yo.»",
+            "«Ilusión y miedo a la vez. No sé cuál gana.»"
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Cinco personas distintas, cinco sentimientos distintos frente al mismo momento. Ninguno es el correcto ni el equivocado."
+        }
+      ]
+    },
+    {
+      "id": "b0-2-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Si tuvieras que tallar una frase hoy, ¿cuál se parecería más a la tuya?",
+      "nota": "No se guarda. Solo quiero saber cómo llegas.",
+      "opciones": [
+        {
+          "id": "b0-2-03a",
+          "texto": "Ilusión: ya quiero empezar.",
+          "reaccion": [
+            {
+              "id": "b0-2-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "expresion": "animado",
+              "texto": "Qué bueno. Guarda esa energía: en el camino va a haber días en que la ilusión baje, y es normal que baje."
+            }
+          ]
+        },
+        {
+          "id": "b0-2-03b",
+          "texto": "Miedo a equivocarme.",
+          "reaccion": [
+            {
+              "id": "b0-2-03br",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Es de las frases más talladas en este bosque. El miedo a equivocarse suele venir de creer que solo hay una decisión correcta. Ya veremos que no es así."
+            }
+          ]
+        },
+        {
+          "id": "b0-2-03c",
+          "texto": "Alivio: se acabó el colegio.",
+          "reaccion": [
+            {
+              "id": "b0-2-03cr",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "También vale. Cerrar una etapa descansa. Lo que viene no tiene por qué pesar igual que lo que terminó."
+            }
+          ]
+        },
+        {
+          "id": "b0-2-03d",
+          "texto": "Confusión: todos parecen saber, menos yo.",
+          "reaccion": [
+            {
+              "id": "b0-2-03dr",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Te cuento un secreto del bosque: la mayoría de los que «parecen saber» talló la misma frase que tú, pero en voz baja."
+            }
+          ]
+        },
+        {
+          "id": "b0-2-03e",
+          "texto": "Las dos cosas a la vez.",
+          "reaccion": [
+            {
+              "id": "b0-2-03er",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Ilusión y miedo juntos es, de hecho, lo más frecuente. Significa que te importa."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b0-2-04",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Yo también tallé una frase, hace tiempo. Llegué a esta isla desde otro lugar, y cuando dejé el mío sentí que me había bajado de mi propio cielo sin saber a dónde iba."
+    },
+    {
+      "id": "b0-2-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "No le conté a nadie. Me lo guardé tanto tiempo que terminé quedándome aquí, sin decidir nada. Por eso te quiero proponer algo que a mí me faltó."
+    },
+    {
+      "id": "b0-2-06",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Tu diario: cartas para Lumi",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "En este viaje vas a tener un diario. Escribir ahí es hablarme a mí: yo leo y no juzgo. No tiene respuestas correctas, no hay mínimo de palabras y nadie más lo lee: ni tu orientadora, ni tu familia, ni los personajes de la isla."
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo funciona",
+          "pasos": [
+            {
+              "titulo": "Entradas que se abren",
+              "texto": "Algunas actividades del camino abren una pregunta nueva en tu diario. La escribes cuando quieras, o no la escribes."
+            },
+            {
+              "titulo": "Entradas libres",
+              "texto": "Puedes escribir lo que quieras, cuando quieras, sin pregunta."
+            },
+            {
+              "titulo": "Lo que siento y lo que pienso",
+              "texto": "Lo que sientes va al diario. Lo que piensas o decides sobre tu futuro va a tus registros, que sí lee tu orientadora: así cuando conversen no empiezan de cero."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Escribir sobre lo que uno siente ayuda a ordenarlo. Lo que da vueltas en la cabeza no se puede mirar; lo escrito, sí."
+        }
+      ]
+    },
+    {
+      "id": "b0-2-07",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Cada carta que me escribas me ayuda a mí también. Con el tiempo te iré contando mi historia, un pedazo a la vez."
+    },
+    {
+      "id": "b0-2-08",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Al terminar este tramo vas a encontrar tu primera carta lista: «Cómo llego a este mundo». No hace falta que sea larga. Ahora sí, sigamos: la cabaña de Helena está cerca."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tu diario está abierto. Lo que sientes va ahí; lo que piensas, a tus registros."
+  },
+  "promptDiario": "Cómo llego a este mundo",
+  "mapa": { "x": 210, "y": 360, "icono": "informativa" }
+}

@@ -24,9 +24,80 @@ export const codigosEco = (eco: string | string[] | undefined) => (eco === undef
 export function citaReferencia(referencia: ReferenciaResuelta | undefined): string | undefined {
   if (referencia?.estado !== 'DISPONIBLE') return undefined
   const textos = (referencia.opciones ?? []).map((o) => o.texto)
-  if (referencia.tipo === 'RESULTADO') return textos.length ? `Tu código de interés: ${textos.join(' · ')}` : undefined
+  if (referencia.tipo === 'RESULTADO')
+    return textos.length ? `Tu código de interés: ${textos.join(' · ')}` : undefined
   if (referencia.tipo === 'COINCIDENCIAS')
     return textos.length ? `Ocupaciones afines: ${textos.slice(0, 3).join(', ')}` : undefined
-  if (referencia.tipo === 'RESPUESTA_CUESTIONARIO') return referencia.texto ? `«${referencia.texto}»` : undefined
+  if (referencia.tipo === 'RESPUESTA_CUESTIONARIO')
+    return referencia.texto ? `«${referencia.texto}»` : undefined
+  // F07b: las referencias de los planes. PLANES por prioridad (A, B, C); PLAN, la carrera del plan A con su relato
+  // (sus motivos van como chips, `chipsReferencia`); PASOS_PLAN_A, sus pasos; OPCION_INICIAL, la carrera.
+  if (referencia.tipo === 'PLANES')
+    return textos.length
+      ? `Tus planes: ${textos.map((t, i) => `${'ABC'[i] ?? ''} · ${t}`).join(', ')}`
+      : undefined
+  if (referencia.tipo === 'PLAN') {
+    if (!referencia.texto) return undefined
+    return referencia.cita
+      ? `Tu plan A, ${referencia.texto}: «${referencia.cita}»`
+      : `Tu plan A, ${referencia.texto}`
+  }
+  if (referencia.tipo === 'PASOS_PLAN_A')
+    return textos.length ? `Tus pasos: ${textos.map((t) => `«${t}»`).join(', ')}` : undefined
+  if (referencia.tipo === 'OPCION_INICIAL')
+    return referencia.texto ? `Tu primer interés: ${referencia.texto}` : undefined
+  // F09: lo que pensaba de la familia de carreras antes de su primera entrevista (día, lo que se necesita y su duda).
+  if (referencia.tipo === 'LO_QUE_PIENSO') {
+    const parte = (codigo: string) => referencia.opciones?.find((o) => o.codigo === codigo)?.texto
+    const [dia, necesita, duda] = [parte('DIA'), parte('NECESITA'), parte('DUDA')]
+    if (!referencia.texto || !dia) return undefined
+    return [
+      `Antes de tu entrevista, sobre ${referencia.texto} pensabas: «${dia}»`,
+      necesita && `Para trabajar en esto: «${necesita}»`,
+      duda && `Tu duda: «${duda}»`,
+    ]
+      .filter(Boolean)
+      .join('. ')
+  }
   return undefined
+}
+
+// Ajuste carga-actividades: un diálogo cita además lo que la cuenta escribió (TEXTO) o eligió (ELECCION) en otro
+// registro, entre comillas; sin dato, nada. Las demás, como `citaReferencia`.
+export function citaDialogo(referencia: ReferenciaResuelta | undefined): string | undefined {
+  if (!referencia || referencia.estado === 'SIN_DATO') return undefined
+  if (referencia.tipo === 'TEXTO') return referencia.texto ? `«${referencia.texto}»` : undefined
+  if (referencia.tipo === 'ELECCION') {
+    const textos = (referencia.opciones ?? []).map((o) => o.texto).filter(Boolean)
+    return textos.length ? `«${textos.join(' · ')}»` : undefined
+  }
+  return citaReferencia(referencia)
+}
+
+// Une las citas en una burbuja: punto y espacio entre ellas, solo espacio si la anterior ya cierra con punto
+// (también dentro de las comillas: «…mío.» Tus pasos…).
+export const unirCitas = (citas: string[]) =>
+  citas.reduce((texto, cita) => (!texto ? cita : `${texto}${/[.!?]»?$/.test(texto) ? ' ' : '. '}${cita}`), '')
+
+// F07b: la zona de eco de las referencias que no son TEXTO, en el orden del contenido. Los motivos del plan A van
+// como chips justo tras su cita (`cita`), y lo que sigue, después de los chips (`citaTras`). Sin dato, nada.
+export function ecoDeReferencias(referencias: ReferenciaResuelta[]) {
+  const corte = referencias.findIndex((r) => chipsReferencia(r).length > 0)
+  const citas = (lista: ReferenciaResuelta[]) =>
+    unirCitas(lista.map(citaReferencia).filter((c): c is string => !!c))
+  const cita = citas(corte < 0 ? referencias : referencias.slice(0, corte + 1))
+  const citaTras = corte < 0 ? '' : citas(referencias.slice(corte + 1))
+  if (!cita && !citaTras) return undefined
+  const chips = corte < 0 ? [] : chipsReferencia(referencias[corte])
+  return {
+    cita: cita || citaTras,
+    ...(chips.length && cita ? { chips } : {}),
+    ...(citaTras && cita ? { citaTras } : {}),
+  }
+}
+
+// F07b: los motivos del plan A (referencia PLAN), que la zona de eco muestra como chips.
+export function chipsReferencia(referencia: ReferenciaResuelta | undefined): string[] {
+  if (referencia?.estado !== 'DISPONIBLE' || referencia.tipo !== 'PLAN') return []
+  return (referencia.opciones ?? []).map((o) => o.texto)
 }

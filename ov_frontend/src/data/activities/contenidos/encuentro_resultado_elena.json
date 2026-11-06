@@ -24,13 +24,13 @@
   "ubicacion": "Río",
   "duracionEstimadaMin": 5,
   "personajeIds": [
-    "elena"
+    "helena"
   ],
   "nodos": [
     {
       "id": "tip-resultado",
       "tipo": "resultado",
-      "hablanteId": "elena",
+      "hablanteId": "helena",
       "instrumentoId": "tip"
     }
   ],

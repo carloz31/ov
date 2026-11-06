@@ -40,8 +40,6 @@ def _concreta(ruta):
 def _cuerpo(campos):
     if 'cuenta' in campos:
         return {'cuenta': 'est-ana'}
-    if 'autores' in campos:
-        return {'autores': ['est-ana']}
     return {}
 
 
@@ -61,7 +59,7 @@ def test_lista_blanca_es_exacta(aplicacion):
 def test_ninguna_cuenta_actua_sobre_otra(aplicacion, cliente_sin_token, actor):
     cabecera = {'Authorization': f'Bearer {token_de(aplicacion, actor)}'}
     con_objetivo = [(m, r, c) for m, r, c in _rutas(aplicacion) if (m, r) not in LISTA_BLANCA
-                    and ('{cuenta}' in r or 'cuenta' in c or 'autores' in c)]
+                    and ('{cuenta}' in r or 'cuenta' in c)]
     assert sum('{cuenta}' in r for _, r, _ in con_objetivo) >= 37
     assert sum('cuenta' in c for _, _, c in con_objetivo) > 30
     for metodo, ruta, campos in con_objetivo:

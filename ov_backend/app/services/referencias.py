@@ -8,6 +8,7 @@ RESPUESTA_CUESTIONARIO: la etiqueta elegida en un ítem de la aplicación fuente
 FAVORITOS: las carreras, ocupaciones e instituciones marcadas, de la más reciente a la más antigua.
 PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL (B11): los planes por prioridad, el plan A (carrera, relato y
 motivos), los pasos del plan A y la carrera de la opción inicial.
+LO_QUE_PIENSO (B13): lo que el estudiante pensaba de la familia de carreras antes de su primera entrevista publicada.
 """
 
 from sqlalchemy import select
@@ -16,8 +17,8 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import LONGITUD_CODIGO_INTERES
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, EstadoProgreso, EvaluacionRespuesta,
-    Favorito, Institucion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
+    Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, Entrevista, EstadoInvestigacion, FamiliaCarrera,
+    EstadoProgreso, EvaluacionRespuesta, Favorito, Institucion, Investigacion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
     ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol, TarjetaCarrera, TipoFavorito,
 )
 from app.models.enums import (
@@ -87,7 +88,7 @@ def _opciones_de_resultado(tipo, resultado):
     if resultado.perfil_plano:
         return []
     if tipo == TipoReferencia.COINCIDENCIAS:
-        return [OpcionReferida(codigo=c.codigo or c.codigo_onet, texto=c.titulo) for c in resultado.coincidencias or ()]
+        return [OpcionReferida(codigo=c.codigo or c.codigo_onet, texto=c.titulo) for c in resultado.ocupaciones or ()]
     if resultado.dimensiones_destacadas is not None:
         dimensiones = resultado.dimensiones_destacadas
     else:
@@ -98,7 +99,10 @@ def _opciones_de_resultado(tipo, resultado):
 
 
 def _leer_favoritos(sesion, cuenta):
-    filas = sesion.execute(select(Favorito.tipo, Favorito.id_referencia).where(Favorito.cuenta_id == cuenta.id).order_by(
+    # Solo el catálogo: las fichas y los testimonios favoritos (ajuste mochila) no son opciones de la referencia.
+    catalogo = (TipoFavorito.CARRERA, TipoFavorito.OCUPACION, TipoFavorito.INSTITUCION)
+    filas = sesion.execute(select(Favorito.tipo, Favorito.id_referencia).where(
+        Favorito.cuenta_id == cuenta.id, Favorito.tipo.in_(catalogo)).order_by(
         Favorito.fecha_hora.desc(), Favorito.id.desc())).all()
     por_tipo = {}
     for tipo, referencia in filas:
@@ -121,8 +125,8 @@ def _leer_planes(sesion, cuenta, tipos):
     """Datos de las referencias de planes por tipo, solo de esta cuenta; un tipo sin dato no aparece."""
     definiciones = contexto(sesion).definiciones
     planes = sesion.execute(select(TarjetaCarrera, Carrera.codigo, Carrera.nombre).join(
-        Carrera, Carrera.id == TarjetaCarrera.carrera_id).where(TarjetaCarrera.cuenta_id == cuenta.id).order_by(
-        TarjetaCarrera.prioridad)).all()
+        Carrera, Carrera.id == TarjetaCarrera.carrera_id).where(
+        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.activa).order_by(TarjetaCarrera.prioridad)).all()
 
     def opcion(opcion_id, texto_otro=None, texto=None):
         if opcion_id is None:
@@ -151,6 +155,23 @@ def _leer_planes(sesion, cuenta, tipos):
     return datos
 
 
+def _leer_lo_que_pienso(sesion, cuenta):
+    """La investigación de la primera entrevista publicada: nombre de la familia y los tres textos (DIA, NECESITA,
+    DUDA). La entrevista puede haberse retirado después: lo que pensaba no cambia."""
+    fila = sesion.execute(select(Investigacion, FamiliaCarrera.nombre).join(
+        Entrevista, Entrevista.id == Investigacion.entrevista_id).join(
+        FamiliaCarrera, FamiliaCarrera.id == Investigacion.familia_id).where(
+        Investigacion.cuenta_id == cuenta.id, Investigacion.estado == EstadoInvestigacion.PUBLICADA).order_by(
+        Entrevista.fecha_hora, Entrevista.id).limit(1)).first()
+    if fila is None:
+        return None
+    investigacion, titulo = fila
+    return dict(texto=titulo, opciones=[
+        OpcionReferida(codigo='DIA', texto=investigacion.piensa_dia),
+        OpcionReferida(codigo='NECESITA', texto=investigacion.piensa_necesita),
+        OpcionReferida(codigo='DUDA', texto=investigacion.piensa_duda)])
+
+
 def resolver(sesion, cuenta, referencias):
     """{código: ReferenciaResuelta} para `referencias` (filas del catálogo), con datos de `cuenta`."""
     definiciones = contexto(sesion).definiciones
@@ -164,6 +185,8 @@ def resolver(sesion, cuenta, referencias):
                  else [])
     tipos_planes = {r.tipo for r in referencias if r.tipo in DE_PLANES}
     planes = _leer_planes(sesion, cuenta, tipos_planes) if tipos_planes else {}
+    lo_que_pienso = (_leer_lo_que_pienso(sesion, cuenta)
+                     if any(r.tipo == TipoReferencia.LO_QUE_PIENSO for r in referencias) else None)
     resueltas = {}
     for referencia in referencias:
         base = dict(codigo=referencia.codigo, tipo=referencia.tipo)
@@ -175,6 +198,11 @@ def resolver(sesion, cuenta, referencias):
             resueltas[referencia.codigo] = (
                 ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, **planes[referencia.tipo])
                 if referencia.tipo in planes else ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO))
+            continue
+        if referencia.tipo == TipoReferencia.LO_QUE_PIENSO:
+            resueltas[referencia.codigo] = (
+                ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO) if lo_que_pienso is None else
+                ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, **lo_que_pienso))
             continue
         if referencia.tipo == TipoReferencia.FAVORITOS:
             resueltas[referencia.codigo] = (

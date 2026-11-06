@@ -5,6 +5,7 @@ import type { JournalEntry } from '@/types/adventure'
 import { Parchment } from '@/components/student/Parchment'
 
 import { JournalTags } from '@/features/journal/components/JournalTags'
+import { fechaServidor } from '@/lib/servidor/fechas'
 
 export function JournalDetail({
   entry,
@@ -25,7 +26,7 @@ export function JournalDetail({
       </button>
       <Parchment className="sx-j-notebook sx-j-detail">
         <time>
-          {new Date(entry.createdAt).toLocaleDateString('es-PE', {
+          {fechaServidor(entry.createdAt).toLocaleDateString('es-PE', {
             dateStyle: 'long',
             timeZone: 'America/Lima',
           })}

@@ -3,13 +3,14 @@
 from importlib import import_module
 
 from app.models.enums import (
-    Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso, NivelAjuste,
+    Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso,
     TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
     ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion, TipoCriterio,
     TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion, TipoFavorito,
     UsoPreguntaDiario, TipoRecomendacion, OrigenRedaccion, GestionInstitucion, FrecuenciaGasto, OrigenIdea,
     PreguntaConocimiento, RespuestaConocimiento, OrigenDuda, EstadoDuda, EstadoSugerencia, OrigenSugerencia,
-    EstadoPaso, OrigenSesion,
+    EstadoPaso, OrigenSesion, EstadoInvestigacion, OrigenPreguntaGuion, EstadoSugerenciaGuion, EstadoEntrevista,
+    MotivoReporte, EstadoReporte, TipoNotificacion,
 )
 
 
@@ -18,24 +19,28 @@ _MODELOS_POR_MODULO = {
         'Base',
     ),
     'app.models.cuentas': (
-        'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
+        'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
     ),
     'app.models.contenido': (
-        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
-        'Insignia',
+        'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
+        'GrupoInsignia', 'Insignia',
         'Nivel', 'FamiliaCarrera', 'Carrera',
     ),
     'app.models.progreso': (
         'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'Recomendacion', 'EntradaDiario', 'ContadorDiario',
-        'CheckIn', 'Entrevista', 'EntrevistaAutor', 'ConversacionVinculo', 'Favorito',
+        'CheckIn', 'ConversacionVinculo', 'Favorito', 'InsigniaVitrina', 'PresentacionVista',
+    ),
+    'app.models.investigaciones': (
+        'PreguntaBaseGuion', 'TipoReaccion', 'Investigacion', 'PreguntaGuion', 'SugerenciaGuion', 'Entrevista',
+        'EntrevistaAutor', 'Reaccion', 'Reporte',
     ),
     'app.models.motor': (
-        'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo',
+        'EventoUso', 'ReglaDesbloqueo', 'CondicionDesbloqueo', 'Desbloqueo', 'Notificacion',
     ),
     'app.models.instrumentos': (
         'Instrumento', 'Dimension', 'EscalaRespuesta', 'OpcionEscala', 'ItemInstrumento',
         'ActividadItem', 'Aplicacion', 'AplicacionActividad', 'Ocupacion', 'PuntajeOcupacion',
-        'CarreraOcupacion', 'RespuestaItem', 'ResultadoInstrumento', 'ResultadoDimension',
+        'RespuestaItem', 'ResultadoInstrumento', 'ResultadoDimension',
         'Coincidencia',
     ),
     'app.models.registro': (
@@ -46,8 +51,8 @@ _MODELOS_POR_MODULO = {
         'Referencia',
     ),
     'app.models.catalogo': (
-        'HighPoint', 'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera',
-        'RangoIngreso',
+        'HighPoint', 'TipoCarrera', 'OcupacionFamilia', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion',
+        'InstitucionCarrera', 'IngresoFamilia', 'IngresoInstitucion',
     ),
     'app.models.planes': (
         'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta',
@@ -70,25 +75,28 @@ def __getattr__(nombre):
 
 __all__ = [
     'Base', 'Rol', 'Espacio', 'Audiencia', 'TipoActividad', 'Visibilidad', 'EstadoProgreso',
-    'TipoEventoUso', 'NivelAjuste', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
+    'TipoEventoUso', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
-    'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
+    'OrigenEvaluacion', 'TipoCriterio', 'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
     'SalonInstrumento', 'Bloque',
-    'Actividad', 'Tematica', 'ActividadTematica', 'ActividadDimension', 'PreguntaBatalla', 'Seccion', 'Ficha', 'Testimonio',
-    'PreguntaDiario', 'Conversacion', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
+    'Actividad', 'Tematica', 'ActividadTematica', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio',
+    'PreguntaDiario', 'Conversacion', 'GrupoInsignia', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
     'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn', 'Entrevista',
     'EntrevistaAutor', 'ConversacionVinculo', 'EventoUso', 'ReglaDesbloqueo',
     'CondicionDesbloqueo', 'Desbloqueo', 'Instrumento', 'Dimension', 'EscalaRespuesta',
     'OpcionEscala', 'ItemInstrumento', 'ActividadItem', 'Aplicacion', 'AplicacionActividad',
-    'Ocupacion', 'PuntajeOcupacion', 'CarreraOcupacion', 'RespuestaItem', 'ResultadoInstrumento',
+    'Ocupacion', 'PuntajeOcupacion', 'RespuestaItem', 'ResultadoInstrumento',
     'ResultadoDimension', 'Coincidencia', 'ListaOpciones', 'OpcionLista', 'ItemRegistro',
     'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
-    'TipoCarrera', 'Ubicacion', 'Institucion', 'InstitucionCarrera', 'IngresoCarrera', 'RangoIngreso',
-    'TipoFavorito', 'Favorito', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
+    'TipoCarrera', 'OcupacionFamilia', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion', 'InstitucionCarrera',
+    'IngresoFamilia', 'IngresoInstitucion',
+    'TipoFavorito', 'Favorito', 'InsigniaVitrina', 'PresentacionVista', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
     'ContadorDiario', 'GestionInstitucion', 'FrecuenciaGasto', 'OrigenIdea', 'PreguntaConocimiento',
     'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'EstadoPaso',
     'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',
     'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta', 'SugerenciaTarjeta', 'PasoTarjeta',
-    'OrigenSesion',
+    'OrigenSesion', 'EstadoInvestigacion', 'OrigenPreguntaGuion', 'EstadoSugerenciaGuion', 'EstadoEntrevista',
+    'MotivoReporte', 'EstadoReporte', 'PreguntaBaseGuion', 'TipoReaccion', 'Investigacion', 'PreguntaGuion',
+    'SugerenciaGuion', 'Reaccion', 'Reporte',
 ]

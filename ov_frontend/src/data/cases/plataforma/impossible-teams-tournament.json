@@ -1,0 +1,322 @@
+{
+  "id": "impossible-teams-tournament",
+  "tematica": "Deporte, salud y educación",
+  "intro": {
+    "narrativa": [
+      "La ciudad organiza sus Juegos Juveniles: fútbol, baloncesto, relevos y actividades recreativas entre colegios. Los ganadores recibirán equipamiento para sus instituciones. Sin embargo, algunas escuelas eligieron a todos los participantes mediante una única prueba de velocidad, aun para deportes donde importan otras habilidades.",
+      "Una estudiante que utiliza silla de ruedas quiere participar en un circuito recreativo, pero varias estaciones no pueden completarse tal como están diseñadas. Otros jóvenes presentan cansancio persistente o están regresando de lesiones. Cuando los equipos finalmente se preparan, el calendario muestra partidos simultáneos y descansos desiguales.",
+      "Tu misión es organizar equipos para mejorar los criterios de selección, crear condiciones de participación, proteger la salud y ordenar las competencias. No se pretende que todos ganen ni que nadie necesite atención especializada: se busca un torneo justo y seguro."
+    ],
+    "imagen": "impossible-teams-tournament-intro.png",
+    "alerta": "Los Juegos Juveniles necesitan reglas y condiciones más justas"
+  },
+  "presupuesto": 10,
+  "profesionales": [
+    {
+      "onet": "27-2022.00",
+      "persona": "Adriana León"
+    },
+    {
+      "onet": "25-1193.00",
+      "persona": "Tomás Delgado"
+    },
+    {
+      "onet": "29-1122.00",
+      "persona": "Verónica Chávez"
+    },
+    {
+      "onet": "39-9031.00",
+      "persona": "Esteban Espinoza"
+    },
+    {
+      "onet": "29-1215.00",
+      "persona": "Carolina Mendoza"
+    },
+    {
+      "onet": "29-1123.00",
+      "persona": "Samuel Vargas"
+    },
+    {
+      "onet": "19-3034.00",
+      "persona": "Sofía León"
+    },
+    {
+      "onet": "15-2031.00",
+      "persona": "Ricardo Delgado"
+    },
+    {
+      "onet": "19-3033.00",
+      "persona": "Ariana Chávez"
+    },
+    {
+      "onet": "15-2051.00",
+      "persona": "Luis Espinoza"
+    },
+    {
+      "onet": "29-1214.00",
+      "persona": "Teresa Mendoza"
+    },
+    {
+      "onet": "51-9071.00",
+      "persona": "Iván Vargas"
+    },
+    {
+      "onet": "13-1041.08",
+      "persona": "Noelia León"
+    }
+  ],
+  "fases": [
+    {
+      "id": "who-gets-a-chance",
+      "nombre": "¿Quién merece una oportunidad?",
+      "subtitulo": "La selección de participantes y algunas estaciones recreativas dejan fuera a varios jóvenes.",
+      "escuchar": {
+        "texto": "Estudiantes, docentes y voluntarios tienen preocupaciones sobre la participación. Escucha sus testimonios antes de convocar al equipo.",
+        "textoMovil": "Estudiantes, docentes y voluntarios tienen preocupaciones sobre la participación. Escucha sus testimonios antes de convocar al equipo."
+      },
+      "fondo": {
+        "imagen": "impossible-teams-tournament-phase-1.png",
+        "posicion": "52% 50%"
+      },
+      "mensajes": [
+        {
+          "id": "speed-only-selection",
+          "quien": "Estudiante",
+          "contexto": "Cancha de baloncesto",
+          "mensaje": "En el último torneo jugué muy bien, pero esta vez no me eligieron porque quedé entre los últimos en una carrera. Ni siquiera nos vieron jugar.",
+          "resumen": "La selección solo midió velocidad, no habilidades deportivas",
+          "posicion": {
+            "x": 21,
+            "y": 29
+          }
+        },
+        {
+          "id": "nonselected-students",
+          "quien": "Directora de colegio",
+          "contexto": "Reunión deportiva",
+          "mensaje": "También prometimos talleres para quienes no clasificaran. Algunos estudiantes piensan que, si no están en el equipo principal, no habrá ninguna actividad para ellos.",
+          "resumen": "Faltan actividades para quienes no clasifican",
+          "posicion": {
+            "x": 74,
+            "y": 32
+          }
+        },
+        {
+          "id": "inaccessible-tables",
+          "quien": "Estudiante",
+          "contexto": "Frente al circuito recreativo",
+          "mensaje": "Uso silla de ruedas. Puedo desplazarme por gran parte del circuito, pero hay mesas muy juntas y una estación donde los objetos están demasiado altos.",
+          "resumen": "Algunas estaciones dificultan la participación en silla de ruedas",
+          "posicion": {
+            "x": 36,
+            "y": 72
+          }
+        },
+        {
+          "id": "adapted-tasks",
+          "quien": "Voluntaria",
+          "contexto": "Área de pruebas",
+          "mensaje": "Mover una mesa no resolvió todo. Quizá haya que cambiar cómo se realiza una tarea o colocar los elementos de otra forma, sin reconstruir las instalaciones.",
+          "resumen": "Adaptar tareas requiere más que mover una mesa",
+          "posicion": {
+            "x": 79,
+            "y": 75
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "fair-selection-and-training",
+          "titulo": "Los mejores no siempre son los más rápidos",
+          "detalle": "Revisar las habilidades pertinentes a cada deporte y organizar talleres formativos y de acondicionamiento para quienes no participarán en equipos competitivos.",
+          "resultado": "La competencia y la participación formativa se consideran objetivos compatibles pero distintos.",
+          "necesidades": [
+            {
+              "onet": "27-2022.00",
+              "aporte": "Evalúa habilidades deportivas relacionadas con cada disciplina y orienta la selección y preparación para competir.",
+              "siFalta": "Los equipos continuaron seleccionándose mediante pruebas poco pertinentes para sus disciplinas."
+            },
+            {
+              "onet": "25-1193.00",
+              "aporte": "Organiza actividades formativas sobre recreación y acondicionamiento físico para ampliar la participación de distintos niveles.",
+              "siFalta": "Quienes no clasificaron carecieron de actividades formativas y recreativas adecuadamente organizadas."
+            }
+          ]
+        },
+        {
+          "id": "accessible-circuit",
+          "titulo": "Un circuito que no funciona para todos",
+          "detalle": "Identificar barreras funcionales y adaptar tareas y objetos del circuito para facilitar que estudiantes con diferentes capacidades puedan participar.",
+          "resultado": "Las actividades recreativas se revisan para permitir otras formas de realizar las tareas, sin requerir nuevas estructuras.",
+          "necesidades": [
+            {
+              "onet": "29-1122.00",
+              "aporte": "Evalúa las dificultades de participación y propone adaptaciones de actividades y elementos del entorno para favorecer la autonomía.",
+              "siFalta": "Varias estaciones conservaron obstáculos evitables que impidieron participar a algunos estudiantes."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "training-and-health",
+      "nombre": "Entrenar no es resistir hasta caer",
+      "subtitulo": "El cansancio, las lesiones y la convivencia escolar requieren respuestas distintas.",
+      "escuchar": {
+        "texto": "Varias personas describen problemas de entrenamiento, salud y retorno a clases. Escucha sus testimonios antes de formar los equipos.",
+        "textoMovil": "Varias personas describen problemas de entrenamiento, salud y retorno a clases. Escucha sus testimonios antes de formar los equipos."
+      },
+      "fondo": {
+        "imagen": "impossible-teams-tournament-phase-2.png",
+        "posicion": "50% 52%"
+      },
+      "mensajes": [
+        {
+          "id": "overtraining",
+          "quien": "Capitán",
+          "contexto": "Después del entrenamiento",
+          "mensaje": "Al principio mejoramos. Ahora entrenamos dos veces al día y cada vez corremos más lento; muchos acabamos agotados.",
+          "resumen": "Entrenar demasiado está empeorando el rendimiento",
+          "posicion": {
+            "x": 26,
+            "y": 63
+          }
+        },
+        {
+          "id": "unexplained-fatigue",
+          "quien": "Madre",
+          "contexto": "Centro deportivo",
+          "mensaje": "Mi hijo se cansa incluso cuando no entrena. Eso antes no le pasaba. No quiero aumentar su actividad sin saber qué tiene.",
+          "resumen": "Un estudiante siente cansancio incluso sin ejercitarse",
+          "posicion": {
+            "x": 70,
+            "y": 27
+          }
+        },
+        {
+          "id": "ankle-rehabilitation",
+          "quien": "Estudiante",
+          "contexto": "Al lado de la cancha",
+          "mensaje": "Me lesioné el tobillo. Ya recibí evaluación médica y me autorizaron a iniciar rehabilitación, pero todavía no recupero bien el movimiento.",
+          "resumen": "La movilidad del tobillo aún necesita rehabilitación",
+          "posicion": {
+            "x": 77,
+            "y": 73
+          }
+        },
+        {
+          "id": "school-bullying",
+          "quien": "Profesora",
+          "contexto": "Sala de docentes",
+          "mensaje": "Una compañera que se lesionó está evitando las actividades y recibe burlas en clase. Está faltando los días en los que hay deporte y eso empieza a afectar su vida escolar.",
+          "resumen": "Las burlas afectan el regreso a la vida escolar",
+          "posicion": {
+            "x": 35,
+            "y": 24
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "training-load-and-health",
+          "titulo": "Más entrenamiento, peores resultados",
+          "detalle": "Ajustar el acondicionamiento físico de los grupos y evaluar médicamente a quienes presentan fatiga persistente que no puede explicarse solo por el entrenamiento.",
+          "resultado": "La planificación del ejercicio y la evaluación clínica se atienden como tareas diferentes.",
+          "necesidades": [
+            {
+              "onet": "39-9031.00",
+              "aporte": "Observa la condición física y modifica las rutinas de acondicionamiento para evitar cargas desproporcionadas.",
+              "siFalta": "Los participantes continuaron rutinas demasiado exigentes sin ajustes apropiados a sus capacidades."
+            },
+            {
+              "onet": "29-1215.00",
+              "aporte": "Examina los síntomas persistentes y determina si hay problemas de salud que requieren atención o derivación.",
+              "siFalta": "El cansancio inusual permaneció sin evaluación clínica y algunos jóvenes siguieron entrenando sin conocer sus causas."
+            }
+          ]
+        },
+        {
+          "id": "rehabilitation-and-school",
+          "titulo": "Volver no significa estar preparado",
+          "detalle": "Facilitar la recuperación de la movilidad tras una lesión y atender las dificultades de convivencia y participación escolar relacionadas con el regreso.",
+          "resultado": "La recuperación física no implica automáticamente que todas las dificultades escolares se hayan resuelto.",
+          "necesidades": [
+            {
+              "onet": "29-1123.00",
+              "aporte": "Planifica y realiza rehabilitación física para recuperar movilidad, fuerza y función después de una lesión, conforme a la atención médica indicada.",
+              "siFalta": "La recuperación física quedó sin un plan de rehabilitación especializado."
+            },
+            {
+              "onet": "19-3034.00",
+              "aporte": "Desarrolla intervenciones en el contexto escolar para abordar burlas, evitación y otras dificultades que afectan la participación educativa.",
+              "siFalta": "Las dificultades de convivencia y adaptación escolar siguieron afectando la participación de la estudiante."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "impossible-calendar",
+      "nombre": "El calendario imposible",
+      "subtitulo": "Las canchas, los partidos y los descansos no encajan en el calendario.",
+      "escuchar": {
+        "texto": "Quienes programan las pruebas detectaron cruces de horarios y descansos. Escucha sus testimonios antes de decidir a quién llamar.",
+        "textoMovil": "Quienes programan las pruebas detectaron cruces de horarios y descansos. Escucha sus testimonios antes de decidir a quién llamar."
+      },
+      "fondo": {
+        "imagen": "impossible-teams-tournament-phase-3.png",
+        "posicion": "50% 50%"
+      },
+      "mensajes": [
+        {
+          "id": "overlapping-matches",
+          "quien": "Responsable deportivo",
+          "contexto": "Frente a una pizarra",
+          "mensaje": "Cuando muevo un partido, coincide con una carrera donde participan algunos de los mismos estudiantes.",
+          "resumen": "Mover un partido genera conflictos con otras pruebas",
+          "posicion": {
+            "x": 24,
+            "y": 28
+          }
+        },
+        {
+          "id": "court-constraints",
+          "quien": "Voluntario",
+          "contexto": "En coordinación",
+          "mensaje": "Tenemos las tres canchas, las duraciones de pruebas, los equipos y sus horarios. El problema es encontrar una combinación sin choques.",
+          "resumen": "Es necesario combinar horarios, equipos y canchas",
+          "posicion": {
+            "x": 73,
+            "y": 69
+          }
+        },
+        {
+          "id": "unequal-rest",
+          "quien": "Delegada",
+          "contexto": "Reunión de colegios",
+          "mensaje": "Un equipo tiene tres encuentros seguidos y otro descansa toda la mañana. Debemos respetar las pausas y las reglas de participación.",
+          "resumen": "Los descansos entre encuentros están desequilibrados",
+          "posicion": {
+            "x": 43,
+            "y": 73
+          }
+        }
+      ],
+      "problemas": [
+        {
+          "id": "schedule-constraints",
+          "titulo": "Tres canchas para demasiados partidos",
+          "detalle": "Organizar una programación viable que respete simultáneamente canchas, participantes, duración de pruebas y pausas.",
+          "resultado": "Una programación consistente permite iniciar el torneo respetando las restricciones principales.",
+          "necesidades": [
+            {
+              "onet": "15-2031.00",
+              "aporte": "Emplea modelos matemáticos y técnicas de optimización para evaluar combinaciones de horarios y recursos.",
+              "siFalta": "Persistieron choques de horario y descansos desiguales que obligaron a cambios improvisados."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

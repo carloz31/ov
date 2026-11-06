@@ -1,0 +1,90 @@
+{
+  "id": "h-intereses-1",
+  "codigo": "h-intereses-1",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Mis intereses, 1 de 6",
+  "subtitulo": "La biblioteca de Sol",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 10,
+  "obligatoria": false,
+  "requisitos": [
+    "b2-5"
+  ],
+  "ubicacion": "La biblioteca de Sol",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "bibliotecaria",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hin1-01",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Bienvenidos a la biblioteca. Soy Sol. Helena me dejó las preguntas de intereses porque son sesenta, y en una biblioteca hay tiempo. Las repartimos en seis visitas de diez, como seis estantes.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hin1-02",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Cada frase es una actividad de trabajo. Tú dices cuánto te gustaría hacerla, nada más. No pienses en si sabrías, ni en si paga bien, ni en qué dirían en tu casa."
+    },
+    {
+      "id": "hin1-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "hin1-03a",
+          "texto": "¿Y si nunca he hecho esa actividad?",
+          "reaccion": [
+            {
+              "id": "hin1-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "bibliotecaria",
+              "texto": "Imagínala. Casi nadie ha hecho las sesenta. Lo que mide es la atracción, no la experiencia."
+            }
+          ]
+        },
+        {
+          "id": "hin1-03b",
+          "texto": "Entendido, empecemos.",
+          "reaccion": [
+            {
+              "id": "hin1-03br",
+              "tipo": "dialogo",
+              "hablanteId": "bibliotecaria",
+              "texto": "Primer estante. Con calma."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hin1-04",
+      "tipo": "item",
+      "instrumentoId": "TEST-RIASEC",
+      "itemId": "plantilla",
+      "hablanteId": "bibliotecaria",
+      "etiqueta": "¿Cuánto te gustaría hacer esto?"
+    },
+    {
+      "id": "hin1-05",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Diez de sesenta. El estante siguiente te espera cuando quieras; la página se abre al terminar los seis.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Primer estante de Sol. Faltan cinco."
+  },
+  "mapa": {
+    "x": 520,
+    "y": 420,
+    "icono": "test"
+  }
+}

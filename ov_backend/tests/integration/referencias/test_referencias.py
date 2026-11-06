@@ -237,8 +237,9 @@ def test_resultado_y_coincidencias_solo_despues_de_revelar(cliente):
                      for d in obtenido['dimensiones'] if d['codigo'] == codigo]}
     assert citadas['t-ref-coincidencias']['estado'] == 'DISPONIBLE'
     assert citadas['t-ref-coincidencias']['opciones'] == [
-        {'codigo': c['codigo'], 'texto': c['titulo']} for c in obtenido['coincidencias']]
-    assert len(citadas['t-ref-coincidencias']['opciones']) == 10
+        {'codigo': c['codigo'], 'texto': c['titulo']} for c in obtenido['ocupaciones']]
+    # Ajuste resultados-intereses: las afines mostradas, de 10 a 30.
+    assert 10 <= len(citadas['t-ref-coincidencias']['opciones']) <= 30
 
 
 def test_perfil_plano_disponible_sin_opciones_y_tras_reiniciar_sin_dato(cliente):

@@ -1,0 +1,124 @@
+{
+  "_nota": "Registro. Apertura completa (llegada a la ciudad, Iván y el artefacto). Las consignas son un esqueleto; la tabla guiada (familia, amigos, yo) se define con los registros. Ojo: en api el registro termina en la última consigna, por eso el cierre narrativo (artefacto activado, ciudad abierta) se cuenta al inicio de b1-4.",
+  "id": "b1-3",
+  "codigo": "b1-3",
+  "tipo": "registro",
+  "titulo": "Lo que esperan de mí",
+  "subtitulo": "El taller de Iván",
+  "escenario": "ciudad",
+  "bloque": 1,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": ["b1-2"],
+  "ubicacion": "Ciudad, taller de Iván",
+  "duracionEstimadaMin": 10,
+  "personajeIds": ["ivan", "companero"],
+  "plantilla": { "tipo": "secuencial" },
+  "nodos": [
+    {
+      "id": "b1-3-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "¡La ciudad! Aquí vive la mayoría de los que llegaron a la isla y se quedaron. Y en ese taller con humo en la ventana vive Iván, el primo de Helena."
+    },
+    {
+      "id": "b1-3-02",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "expresion": "neutral",
+      "texto": "¿Helena los manda? Entonces vienen por el pergamino. Pasen, pasen, cuidado con los cables. Les voy a mostrar algo que llevo años afinando."
+    },
+    {
+      "id": "b1-3-03",
+      "tipo": "diapositiva",
+      "etiqueta": "El invento de Iván",
+      "titulo": "El artefacto que se acopla al mapa",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Una caja de latón con una aguja que no apunta al norte: apunta hacia donde podría estar el pergamino. Se engancha al mapa de Nadia y, cuando funciona, marca la siguiente zona que conviene recorrer. Lumi sabe leer sus señales."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Lo que Iván advierte",
+          "items": [
+            "No muestra el destino: muestra la dirección. El camino hay que caminarlo igual.",
+            "Al final de cada tramo se apaga, y vuelve a orientarse solo cuando alguien o algo lo ayuda a calibrarse.",
+            "Se calibra con lo que el viajero lleva dentro, no con pilas."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b1-3-04",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b1-3-04a",
+          "texto": "¿Por qué te quedaste en la ciudad si tienes esto?",
+          "reaccion": [
+            {
+              "id": "b1-3-04ar",
+              "tipo": "dialogo",
+              "hablanteId": "ivan",
+              "texto": "Porque le tomé cariño a la gente de aquí. Tienen problemas que resolver y me gusta ayudar. Tú también puedes: hay casos esperando en la Central, y a los habitantes les encanta conversar con recién llegados."
+            }
+          ]
+        },
+        {
+          "id": "b1-3-04b",
+          "texto": "¿Y qué más hay en la ciudad?",
+          "reaccion": [
+            {
+              "id": "b1-3-04br",
+              "tipo": "dialogo",
+              "hablanteId": "ivan",
+              "texto": "Gente que conserva las preguntas para restaurar otros capítulos del libro de Helena. Casos que resolver en la Central. Un centro de investigación. Nada de eso es obligatorio, pero el pergamino se entiende mejor con todo eso recorrido."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b1-3-05",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Ahora, el artefacto. Para calibrarlo necesito saber con qué voces llegas. Todo viajero trae expectativas encima: las de su familia, las de sus amigos y las suyas. Si no las separas, la aguja gira sin parar."
+    },
+    {
+      "id": "b1-3-06",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora, para que cuando conversen sepa qué pesa en casa. Y vuelve más adelante, cuando ordenes tus criterios para decidir: ahí te voy a citar lo que escribas sobre tu familia."
+    },
+    {
+      "id": "b1-3-07",
+      "tipo": "consigna",
+      "hablanteId": "ivan",
+      "item": "b1-3-expectativas",
+      "premisa": "¿Qué espera tu familia que hagas al terminar el colegio? ¿Qué esperan tus amigos? ¿Y qué esperas tú?",
+      "ayuda": "Una línea por cada voz. Vale decir «no lo sé» en alguna.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b1-3-08",
+      "tipo": "consigna",
+      "hablanteId": "ivan",
+      "item": "b1-3-contraste",
+      "premisa": "¿Dónde coinciden esas voces y dónde chocan?",
+      "ayuda": "Una coincidencia o una tensión concreta basta.",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "El artefacto está calibrado y la ciudad, abierta. También tu sección de familia: tu carta para tu apoderado te espera ahí."
+  },
+  "promptDiario": "Después de comparar",
+  "mapa": { "x": 800, "y": 200, "icono": "registro" }
+}

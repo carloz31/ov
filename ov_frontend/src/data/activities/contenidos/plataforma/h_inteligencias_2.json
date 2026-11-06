@@ -1,0 +1,53 @@
+{
+  "id": "h-inteligencias-2",
+  "codigo": "h-inteligencias-2",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Explorando mis inteligencias, 2 de 5",
+  "subtitulo": "La escuela del maestro Bruno",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 6,
+  "obligatoria": false,
+  "requisitos": [
+    "h-inteligencias-1"
+  ],
+  "ubicacion": "La escuela del maestro Bruno",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "maestro",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hi2-01",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Segunda clase. Hoy hay dibujos en la pizarra de los chicos: palabras, números, mapas. Las frases de hoy van por ahí. Con lo que haces, no con lo que te gustaría.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hi2-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-INTELIGENCIAS",
+      "itemId": "plantilla",
+      "hablanteId": "maestro",
+      "etiqueta": "¿Con qué frecuencia te pasa?"
+    },
+    {
+      "id": "hi2-03",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Dos de cinco.",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Segunda clase. Faltan tres."
+  },
+  "mapa": {
+    "x": 430,
+    "y": 345,
+    "icono": "test"
+  }
+}

@@ -1,12 +1,13 @@
 // Contratos de app/schemas/ de ov_backend.
 import type { AvanceAplicacion, AvanceInstrumento } from './servidorInstrumentos'
+import type { NotificacionPublica } from './servidorNotificaciones'
 export type TipoObjetivo =
   | 'ACTIVIDAD'
   | 'BLOQUE'
   | 'FICHA'
   | 'INSIGNIA'
   | 'NIVEL'
-  | 'CONVERSACIONES'
+  | 'CONVERSACION'
   | 'TESTIMONIO'
   | 'PREGUNTA_DIARIO'
   | 'SECCION'
@@ -27,8 +28,7 @@ export type SesionRespuesta = {
   hijos: HijoSesion[]
   salones: SalonSesion[]
 }
-export type NivelActual = { numero: number; titulo: string }
-export type DesbloqueosMarcados = { marcados: number }
+export type NivelActual = { numero: number; titulo: string; descripcion: string | null; cita_lumi: string | null }
 export type ActividadEstado = { codigo: string; titulo: string; estado: EstadoActividad }
 export type BloqueEstado = {
   codigo: string
@@ -39,13 +39,6 @@ export type BloqueEstado = {
   actividades: ActividadEstado[]
 }
 export type ContenidoEstado = { codigo: string; titulo: string; estado: EstadoDisponibilidad }
-export type InsigniaEstado = {
-  codigo: string
-  nombre: string
-  descripcion: string | null
-  requisito: string | null
-  estado: 'BLOQUEADA' | 'OBTENIDA'
-}
 export type TipoEventoUso =
   | 'INGRESO'
   | 'COMPLETA_ACTIVIDAD'
@@ -55,16 +48,31 @@ export type TipoEventoUso =
   | 'ESCRIBE_ENTRADA_LIBRE'
   | 'REGISTRA_CHECK_IN'
   | 'VISTA_CARRERA'
+  | 'VISTA_OCUPACION'
+  | 'VISTA_INSTITUCION'
+  | 'MARCA_FAVORITO'
   | 'PUBLICA_ENTREVISTA'
   | 'SUPERA_CASO'
   | 'SUPERA_BATALLA'
   | 'VISTA_TESTIMONIO'
+  | 'VISTA_FICHA'
+  | 'MARCA_FAVORITO_FICHA'
+  | 'MARCA_FAVORITO_TESTIMONIO'
   | 'ESCRIBE_CARTA'
   | 'COMPLETA_CONVERSACION'
   | 'REINICIA_INSTRUMENTO'
   | 'INVITA_A_CREW'
   | 'FORMA_CREW'
   | 'VENCE_DESAFIO_INTACTO'
+  // B13 (F09)
+  | 'INICIA_INVESTIGACION'
+  | 'TERMINA_GUION'
+  | 'EDITA_ENTREVISTA'
+  | 'VISTA_ENTREVISTA'
+  | 'MARCA_FAVORITO_ENTREVISTA'
+  | 'REACCIONA_ENTREVISTA'
+  | 'ENTREVISTA_DESTACADA'
+  | 'ENTREVISTA_LEYENDA'
 export type ProgresoCondicion = {
   tipo_evento: TipoEventoUso
   referencia: string | null
@@ -72,6 +80,7 @@ export type ProgresoCondicion = {
   actual: number
   requerido: number
   cumplida: boolean
+  texto: string | null
 }
 export type ResultadoEvaluador = { nombre: string; cumplido: boolean }
 export type ObjetivoLegible = { codigo: string; nombre: string }
@@ -87,7 +96,6 @@ export type DesbloqueoLegible = {
   tipo_objetivo: TipoObjetivo
   objetivo: ObjetivoLegible
   fecha_hora: string
-  visto: boolean
 }
 // app/schemas/diario.py
 export type EntradaDesbloqueada = { codigo: string; nombre: string; personalizada: boolean; texto: string | null }
@@ -129,6 +137,8 @@ export type CheckInsCuenta = { dias_registrados: number; registrado_hoy: boolean
 export type RespuestaAccion = {
   eventos_registrados: { tipo: TipoEventoUso; referencia: string | null; fecha_hora: string }[]
   nuevos_desbloqueos: DesbloqueoNuevo[]
+  // Ajuste notificaciones: las creadas en esta acción para la cuenta.
+  nuevas_notificaciones?: NotificacionPublica[]
   entradas_desbloqueadas?: EntradaDesbloqueada[]
 }
 export type RespuestaCompletarActividad = RespuestaAccion
@@ -146,11 +156,14 @@ export type SeccionEstado = {
   estado: EstadoDisponibilidad
   bloqueo: MotivoBloqueo[] | null
 }
+// app/schemas/presentaciones.py (ajuste presentaciones-vistas): ids de las vistas del estudiante.
+export type PresentacionesCuenta = { vistas: string[] }
 export type ProgresoObjetivo = {
   objetivo: { tipo: TipoObjetivo; codigo: string }
   disponible: boolean
   reglas: {
     regla: string
+    mensaje_bloqueo: string
     cumplida: boolean
     condiciones: ProgresoCondicion[]
     evaluador_especial?: ResultadoEvaluador | null
@@ -169,6 +182,20 @@ export type ErrorServidor =
 export type RespuestaServidor<T> = { tipo: 'ok'; datos: T } | ErrorServidor
 // app/schemas/instrumentos.py vive en servidorInstrumentos.ts (F03), para que este archivo no pase de 400 líneas.
 export * from './servidorInstrumentos'
+// app/schemas/fichas.py vive en servidorFichas.ts (ajuste mochila), por el mismo límite.
+export * from './servidorFichas'
+// app/schemas/logros.py vive en servidorLogros.ts (ajuste pasaporte-perfil).
+export * from './servidorLogros'
+// app/schemas/catalogo.py y favoritos.py viven en servidorCatalogo.ts (F06).
+export * from './servidorCatalogo'
+// app/schemas/planes.py vive en servidorPlanes.ts (F07a).
+export * from './servidorPlanes'
+// app/schemas/familia.py y conversaciones.py viven en servidorFamilia.ts (F08).
+export * from './servidorFamilia'
+// app/schemas/investigaciones.py vive en servidorInvestigaciones.ts (F09).
+export * from './servidorInvestigaciones'
+// app/schemas/notificaciones.py vive en servidorNotificaciones.ts (ajuste notificaciones).
+export * from './servidorNotificaciones'
 type AccionInstrumento = RespuestaAccion & { cuenta: string; instrumento: string; aplicacion: string }
 export type RespuestaRevelarResultado = AccionInstrumento & { perfil_plano: boolean }
 export type RespuestaReiniciarInstrumento = AccionInstrumento & {
@@ -192,19 +219,19 @@ export type BloqueActividades = Omit<BloqueEstado, 'actividades'> & {
   bloqueo: MotivoBloqueo[] | null
   actividades: ActividadCuenta[]
 }
-export type NivelEstado = NivelActual & { estado: 'BLOQUEADO' | 'OBTENIDO' }
-// `afinidad`: solo el estudiante (F05: completadas de la Ciudad sobre todas sus actividades).
-export type LogrosCuenta = { insignias: InsigniaEstado[]; niveles: NivelEstado[]; afinidad?: number | null }
-// app/schemas/familia.py · GET /cuentas/{c}/familia (B12)
-export type AvanceRuta = { completadas: number; total: number; porcentaje: number }
-export type Diploma = { obtenido: boolean; obtenido_en: string | null }
-export type EstudianteVinculado = {
-  codigo: string
-  nombre: string
-  avance: AvanceRuta
-  nivel_actual: NivelActual | null
+// app/schemas/avance.py · GET /cuentas/{c}/avance (ajuste del panel, F05): total fijo; el tramo, solo requeridas.
+export type ConteoAvance = { completadas: number; total: number; porcentaje: number }
+export type TramoActual = { codigo: string; nombre: string; numero: number; completadas: number; total: number }
+export type AvanceEstudiante = {
+  camino: ConteoAvance
+  tramo_actual: TramoActual | null
+  camino_completo: boolean
+  ciudad: ConteoAvance
+  // Ajuste pasaporte-perfil: cada bloque del camino con sus requeridas, y la suma de todos.
+  tramos: Tramo[]
+  requeridas: { completadas: number; total: number }
 }
-export type FamiliaApoderado = { avance: AvanceRuta; diploma: Diploma; estudiante: EstudianteVinculado | null }
+export type Tramo = TramoActual & { estado: 'COMPLETO' | 'ACTUAL' | 'PENDIENTE' }
 // app/schemas/registro.py (B02–B04; F01)
 export type EstadoRespuestaRegistro = 'BORRADOR' | 'PENDIENTE_SEGUIMIENTO' | 'FINAL'
 export type OpcionElegida = { codigo: string; texto?: string | null }
@@ -270,6 +297,7 @@ export type TipoReferencia =
   | 'PLAN'
   | 'PASOS_PLAN_A'
   | 'OPCION_INICIAL'
+  | 'LO_QUE_PIENSO'
 export type EstadoReferencia = 'DISPONIBLE' | 'POR_DESARROLLAR' | 'SIN_DATO'
 export type OpcionReferida = { codigo: string; texto: string }
 export type ReferenciaResuelta = {
@@ -312,7 +340,6 @@ export type RespuestaBatallaEntrada = { pregunta: string; opcion: number }
 export type CasoCuenta = {
   actividad: string
   titulo: string
-  dimensiones: string[]
   estado: EstadoActividad
   intentos: number
   superado: boolean
@@ -322,38 +349,17 @@ export type CasoCuenta = {
   puntaje_minimo: number
   puntaje_maximo: number
 }
-// app/schemas/catalogo.py (solo lo que usa la hoja de vida de la Central de casos).
-export type CarreraResumen = {
-  codigo: string
-  nombre: string
-  familia: { codigo: string; nombre: string }
-  riasec: string[]
-  es_favorita: boolean
-}
-export type OcupacionResumen = { codigo: string; codigo_onet: string; titulo: string; riasec: string[]; es_favorita: boolean }
-export type OcupacionDetalle = OcupacionResumen & {
-  descripcion: string | null
-  lugares_trabajo: string | null
-  conocimientos: string[]
-  habilidades: string[]
-  carreras: CarreraResumen[]
-}
-export type OcupacionColeccion = { ocupacion: string; titulo: string; caso: string; obtenida_en: string }
-export type TestimonioEstado = {
+// Ajuste carga-casos: una ocupación del directorio de un caso (`GET …/catalogo/ocupaciones-caso`).
+export type OcupacionCaso = {
   codigo: string
   titulo: string
-  estado: EstadoDisponibilidad
-  visto: boolean
-  pista: string | null
   descripcion: string | null
-  enlace: string | null
-  // Ajustes Central (7): quién lo cuenta (solo disponible) y el caso que lo regala (siempre).
-  persona: string | null
-  ocupacion: { codigo: string; titulo: string } | null
-  anios_experiencia: number | null
-  cita: string | null
-  caso: { codigo: string; titulo: string } | null
+  conocimientos: string[]
+  aptitudes: string[]
 }
+export type OcupacionColeccion = { ocupacion: string; titulo: string; caso: string; obtenida_en: string }
+// app/schemas/testimonios.py vive en servidorTestimonios.ts (ajuste testimonios), por el mismo límite.
+export * from './servidorTestimonios'
 // F04c: las respuestas en el orden en que se dieron; el servidor decide la victoria.
 export type ResolverBatallaEntrada = {
   cuenta: string

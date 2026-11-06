@@ -1,12 +1,16 @@
 """Contrato de las consultas por dominio."""
 
+from unittest.mock import ANY
+
 import pytest
 from sqlalchemy import select
 
 from app.models import Actividad, Bloque, Cuenta, EstadoProgreso, ProgresoActividad, Visibilidad
 from datos.fijos import SECCIONES
 from datos.ruta import (
-    ACTIVIDADES, BLOQUES, DESCRIPCIONES, FICHAS, INSIGNIAS, NIVELES, PREGUNTAS_DIARIO, PROPIEDADES, RECUERDOS_LUMI,
+    ACTIVIDADES, BLOQUES, DESCRIPCIONES, FICHAS, CITAS_LUMI, GRUPOS_INSIGNIA, INSIGNIAS, NIVELES, PAGINAS_INSIGNIAS, PISTAS_INSIGNIAS,
+    TEXTOS_INSIGNIAS,
+    PREGUNTAS_DIARIO, PROPIEDADES, RECUERDOS_LUMI,
     REGLAS, TESTIMONIOS, contenido,
 )
 from soporte_ruta import BLOQUE_FAMILIA, avanzar, completar, pedir, responder
@@ -26,13 +30,28 @@ ESTADOS = {
 # Ajuste del diario (F05): los recuerdos de Lumi siguen bloqueados mientras no se escriba en el diario.
 for _estados in ESTADOS.values():
     _estados.update(dict.fromkeys(RECUERDOS_LUMI, 'BLOQUEADA'))
-# Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas).
+    # Ajuste mochila: el segundo caso se abre con el proyecto, que esta ruta no alcanza.
+    _estados['t-caso-2'] = 'BLOQUEADA'
+    # B13: el cierre del investigador espera una entrevista publicada.
+    _estados['t-investigador-cierre'] = 'BLOQUEADA'
+ESTADOS[False]['t-investigador'], ESTADOS[True]['t-investigador'] = 'BLOQUEADA', 'DISPONIBLE'
+# Ajuste carga-instrumentos: las misiones de inteligencias y habilidades se abren con la Ciudad.
+for _mision in ('t-mision-inteligencias', 't-mision-habilidades'):
+    ESTADOS[False][_mision], ESTADOS[True][_mision] = 'BLOQUEADA', 'DISPONIBLE'
+# Secciones del estudiante abiertas con la Ciudad abierta (al inicio, todas bloqueadas). B13: INVESTIGACIONES espera
+# la misión del investigador.
 SECCIONES_ESTUDIANTE = [codigo for codigo, _, audiencia in sorted(SECCIONES) if audiencia == 'ESTUDIANTE']
 MENSAJES = {objetivo: mensaje for _, tipo, objetivo, mensaje, _ in REGLAS if tipo == 'SECCION'}
 
 
 RUTAS = ('resumen', 'actividades', 'fichas', 'logros', 'testimonios', 'diario/preguntas', 'secciones')
 
+
+
+# F08: la actividad que da cada ficha del estudiante, también mientras está bloqueada.
+ACTIVIDADES_FICHA = {'t-ficha': {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'},
+                     't-ficha-2': {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'},
+                     't-ficha-3': {'codigo': 't-opcional', 'titulo': 'Actividad opcional'}}
 
 def consultar(cliente, ruta, cuenta='est-ana'):
     respuesta = cliente.get(f'/cuentas/{cuenta}/{ruta}')
@@ -59,7 +78,8 @@ def esperado(ruta, completo):
     if ruta == 'resumen':
         numero = 2 if completo else 1
         return {'cuenta': {'codigo': 'est-ana', 'nombre': 'Ana', 'rol': 'ESTUDIANTE'},
-                'nivel_actual': {'numero': numero, 'titulo': NIVELES[numero - 1][1]}}
+                'nivel_actual': {'numero': numero, 'titulo': NIVELES[numero - 1][1],
+                                 'descripcion': NIVELES[numero - 1][2], 'cita_lumi': CITAS_LUMI[numero]}}
     if ruta == 'actividades':
         return [{
             'codigo': bloque, 'nombre': nombre, 'numero': numero, 'espacio': espacio,
@@ -79,30 +99,56 @@ def esperado(ruta, completo):
             ],
         } for bloque, numero, nombre, espacio, audiencia in BLOQUES if audiencia == 'ESTUDIANTE']
     if ruta == 'fichas':
-        return [{'codigo': codigo, 'titulo': titulo, 'estado': 'DISPONIBLE' if completo else 'BLOQUEADA'}
-                for codigo, titulo, _, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
+        # Ajuste mochila: las dos de t-inicio (T0) se obtienen; la de t-opcional sigue bloqueada y sin detalle.
+        bloque = next(fila for fila in BLOQUES if fila[0] == 'T0')
+        return [{'codigo': codigo, 'titulo': titulo, 'estado': 'DISPONIBLE', 'tema': tema, 'descripcion': descripcion,
+                 'obtenida_en': ANY, 'visto': False, 'es_favorita': False,
+                 'actividad': {'codigo': 't-inicio', 'titulo': 'Inicio de prueba'},
+                 'tramo': {'codigo': 'T0', 'nombre': bloque[2], 'numero': bloque[1]}}
+                if completo and codigo != 't-ficha-3' else
+                {'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'tema': None, 'descripcion': None,
+                 'obtenida_en': None, 'visto': False, 'es_favorita': False,
+                 # F08: la bloqueada también trae la actividad que la da.
+                 'actividad': ACTIVIDADES_FICHA[codigo], 'tramo': None}
+                for codigo, titulo, descripcion, tema, _texto, audiencia in sorted(FICHAS) if audiencia == 'ESTUDIANTE']
     if ruta == 'logros':
+        # Ajuste pasaporte-perfil: por página y orden; la oculta conserva su página, su orden y su pista.
+        grupos = {codigo: {'codigo': codigo, 'nombre': nombre, 'orden': orden} for codigo, nombre, orden in GRUPOS_INSIGNIA}
         insignias = []
-        for codigo, nombre, descripcion, requisito, oculta in sorted(INSIGNIAS):
+        for codigo, nombre, descripcion, requisito, oculta in sorted(
+                INSIGNIAS, key=lambda fila: (grupos[PAGINAS_INSIGNIAS[fila[0]][0]]['orden'], PAGINAS_INSIGNIAS[fila[0]][1])):
+            grupo, orden = PAGINAS_INSIGNIAS[codigo]
+            obtenida = completo and codigo == 't-ins-1'
+            comunes = {'grupo': grupos[grupo], 'orden': orden, 'pista': PISTAS_INSIGNIAS.get(codigo),
+                       'obtenida_en': ANY if obtenida else None}
+            frase, logro = TEXTOS_INSIGNIAS[codigo]
             insignias.append(
-                {'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA'}
+                {'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA',
+                 'frase': None, 'logro': None, **comunes}
                 if oculta else {'codigo': codigo, 'nombre': nombre, 'descripcion': descripcion,
-                                'requisito': requisito, 'estado': 'OBTENIDA' if completo and codigo == 't-ins-1' else 'BLOQUEADA'}
+                                'requisito': requisito, 'estado': 'OBTENIDA' if obtenida else 'BLOQUEADA',
+                                'frase': frase, 'logro': logro, **comunes}
             )
         return {'insignias': insignias, 'niveles': [
-            {'numero': numero, 'titulo': titulo, 'estado': 'OBTENIDO' if numero <= (2 if completo else 1) else 'BLOQUEADO'}
-            for numero, titulo in NIVELES
-        ], 'afinidad': 0.0}
+            {'numero': numero, 'titulo': titulo, 'descripcion': descripcion, 'cita_lumi': CITAS_LUMI[numero],
+             'estado': 'OBTENIDO' if numero <= (2 if completo else 1) else 'BLOQUEADO'}
+            for numero, titulo, descripcion in NIVELES
+        ], 'vitrina': [], 'afinidad': 0.0}
     if ruta == 'testimonios':
         # Se abren al superar el caso, que en este recorrido sigue sin resolverse.
         # Ajustes Central (7): bloqueados, sin quién lo cuenta y con el caso que los regala.
+        # Ajuste mochila: el tercero y el cuarto los regala el segundo caso; ningún caso está disponible aún.
+        casos = {'t-testimonio-3': ('t-caso-2', 'La traductora apurada'),
+                 't-testimonio-4': ('t-caso-2', 'La traductora apurada')}
         return [{'codigo': codigo, 'titulo': titulo, 'estado': 'BLOQUEADA', 'visto': False, 'pista': pista,
-                 'descripcion': None, 'enlace': None, 'persona': None, 'ocupacion': None,
-                 'anios_experiencia': None, 'cita': None,
-                 'caso': {'codigo': 't-caso', 'titulo': 'Caso de prueba'}}
-                for codigo, titulo, _, _, pista, *_ in sorted(TESTIMONIOS)]
+                 'descripcion': None, 'video_id': None, 'inicio': None, 'fin': None, 'persona': None,
+                 'ocupacion': None, 'contexto': None, 'cita': None,
+                 'caso': dict(zip(('codigo', 'titulo'), casos.get(codigo, ('t-caso', 'Caso de prueba')))),
+                 'actividad': None, 'caso_disponible': False, 'actividad_disponible': False, 'es_favorita': False}
+                for codigo, titulo, _, _, _, _, pista, *_ in sorted(TESTIMONIOS)]
     if ruta == 'secciones':
-        return [(codigo, 'DISPONIBLE' if completo else 'BLOQUEADA', completo) for codigo in SECCIONES_ESTUDIANTE]
+        return [(codigo, 'DISPONIBLE' if abierta else 'BLOQUEADA', abierta) for codigo in SECCIONES_ESTUDIANTE
+                for abierta in (completo and codigo != 'INVESTIGACIONES',)]
     if ruta == 'diario/preguntas':
         if not completo:
             return MENSAJES['DIARIO']
@@ -136,11 +182,15 @@ def test_apoderado_sin_listas_estudiantiles(cliente, ruta):
     if ruta == 'resumen':
         assert respuesta == {'cuenta': {'codigo': 'apo-rosa', 'nombre': 'Rosa', 'rol': 'APODERADO'}, 'nivel_actual': None}
     elif ruta == 'logros':
-        assert respuesta == {'insignias': [], 'niveles': []}
+        assert respuesta == {'insignias': [], 'niveles': [], 'vitrina': []}
     elif ruta == 'secciones':
         assert respuesta == [('CONVERSACIONES', 'BLOQUEADA', False)]
     elif ruta == 'fichas':
-        assert respuesta == [{'codigo': 't-ficha-apo', 'titulo': 'Ficha del apoderado', 'estado': 'BLOQUEADA'}]
+        assert respuesta == [{'codigo': 't-ficha-apo', 'titulo': 'Ficha del apoderado', 'estado': 'BLOQUEADA',
+                              'tema': None, 'descripcion': None, 'obtenida_en': None,
+                              'visto': False, 'es_favorita': False,
+                              'actividad': {'codigo': 't-apo-1', 'titulo': 'Primera actividad del apoderado'},
+                              'tramo': None}]
     elif ruta == 'actividades':
         assert respuesta == [{**{clave: valor for clave, valor in BLOQUE_FAMILIA.items() if clave != 'bloqueo'},
                               'actividades': [{clave: valor for clave, valor in actividad.items() if clave != 'bloqueo'}
@@ -221,7 +271,10 @@ def test_orden_por_numero_y_codigo_y_por_orden_y_codigo(sesion, cliente):
 def test_insignia_oculta_solo_se_revela_al_obtenerse(cliente):
     ocultas = [i for i in consultar(cliente, 'logros')['insignias'] if i['codigo'] == '???']
     # B10: además de t-ins-oculta, tres logros ocultos por vistas diversas del catálogo.
-    assert ocultas == [{'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None, 'estado': 'BLOQUEADA'}] * 4
+    assert [{clave: valor for clave, valor in i.items() if clave in ('codigo', 'nombre', 'descripcion', 'requisito', 'estado')}
+            for i in ocultas] == [{'codigo': '???', 'nombre': 'Logro oculto', 'descripcion': None, 'requisito': None,
+                                   'estado': 'BLOQUEADA'}] * 4
+    assert all(i['pista'] and i['grupo'] for i in ocultas)
     pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'VENCE_DESAFIO_INTACTO'})
     insignias = consultar(cliente, 'logros')['insignias']
     assert len([i for i in insignias if i['codigo'] == '???']) == 3

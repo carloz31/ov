@@ -14,6 +14,7 @@ from app.exceptions import ErrorAccion, traducir_error_accion
 from app.models import Cuenta
 from app.services import cuentas as servicio_cuentas
 from app.services.acceso import Actor, TokenInvalido, es_propia, leer_token
+from app.services.notificaciones import olvidar_nuevas
 
 
 SesionBD = Annotated[Session, Depends(obtener_sesion)]
@@ -50,15 +51,13 @@ async def _cuerpo_json(request: Request):
         return None
 
 
-def _autorizar(sesion: Session, datos: dict, objetivo: str | None, autores, politicas) -> Actor:
+def _autorizar(sesion: Session, datos: dict, objetivo: str | None, politicas) -> Actor:
     try:
         fila = sesion.execute(select(Cuenta.id, Cuenta.codigo, Cuenta.rol, Cuenta.activa)
                               .where(Cuenta.codigo == datos["sub"])).first()
         if fila is None or not fila.activa:
             raise _no_autenticado()
         actor = Actor(fila.id, fila.codigo, fila.rol, datetime.fromtimestamp(datos["exp"], UTC))
-        if autores is not None and actor.codigo not in autores:
-            raise _no_encontrada()
         if objetivo is not None and objetivo != actor.codigo:
             objetivo_id = None if politicas == POLITICA_PROPIA else sesion.scalar(
                 select(Cuenta.id).where(Cuenta.codigo == objetivo))
@@ -82,16 +81,12 @@ async def guardia(request: Request, sesion: SesionBD) -> None:
     except TokenInvalido:
         raise _no_autenticado() from None
     objetivo = request.path_params.get("cuenta")
-    autores = None
     cuerpo = await _cuerpo_json(request)
-    if objetivo is None and isinstance(cuerpo, dict):
-        if isinstance(cuerpo.get("cuenta"), str):
-            objetivo = cuerpo["cuenta"]
-        elif isinstance(cuerpo.get("autores"), list):
-            autores = cuerpo["autores"]
+    if objetivo is None and isinstance(cuerpo, dict) and isinstance(cuerpo.get("cuenta"), str):
+        objetivo = cuerpo["cuenta"]
     ruta = request.scope.get("route")
     politicas = getattr(getattr(ruta, "endpoint", None), "politicas_acceso", POLITICA_PROPIA)
-    request.state.actor = await run_in_threadpool(_autorizar, sesion, datos, objetivo, autores, politicas)
+    request.state.actor = await run_in_threadpool(_autorizar, sesion, datos, objetivo, politicas)
 
 
 async def habilitar_fecha_cliente() -> None:
@@ -123,6 +118,8 @@ CuentaConsultada = Annotated[Cuenta, Depends(obtener_cuenta)]
 
 
 def ejecutar_accion(sesion: Session, operacion: Callable):
+    # Las notificaciones nuevas son de una sola acción; las que no entraron en su respuesta no pasan a la siguiente.
+    olvidar_nuevas(sesion)
     try:
         with sesion.begin():
             return operacion()

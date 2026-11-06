@@ -7,5 +7,6 @@ export const resultPages: Partial<
 > = {
   'partida-llegada': { instrumento: 'TEST-PARTIDA-LLEGADA', tipoResultado: 'COMPARACION' },
   intereses: { instrumento: 'TEST-RIASEC', tipoResultado: 'COINCIDENCIAS' },
-  inteligencias: { instrumento: 'TEST-INT', tipoResultado: 'DESTACADAS' },
+  inteligencias: { instrumento: 'TEST-INTELIGENCIAS', tipoResultado: 'DESTACADAS' },
+  habilidades: { instrumento: 'TEST-HABILIDADES', tipoResultado: 'DESTACADAS' },
 }

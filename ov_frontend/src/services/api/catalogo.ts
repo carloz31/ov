@@ -1,6 +1,103 @@
 import { obtener } from './cliente'
-import type { OcupacionDetalle, RespuestaServidor } from '@/types/servidor'
+import type {
+  CarreraDetalle,
+  CarreraResumen,
+  FamiliaFicha,
+  FamiliaPublica,
+  GrupoPublico,
+  Inesperada,
+  InstitucionDetalle,
+  InstitucionResumen,
+  OcupacionCaso,
+  OcupacionDetalle,
+  OcupacionResumen,
+  Pagina,
+  RespuestaServidor,
+  UbicacionPublica,
+} from '@/types/servidor'
+
+// F06: las tres clases del catálogo, con el nombre de su ruta.
+export type ClaseCatalogo = 'carreras' | 'ocupaciones' | 'instituciones'
+export type FiltrosCatalogo = {
+  buscar?: string
+  tipo?: string
+  area?: string
+  familia?: string
+  riasec?: string
+  gestion?: string
+  ubicacion?: string
+  favoritos?: boolean
+}
+export type ResumenCatalogo = {
+  carreras: CarreraResumen
+  ocupaciones: OcupacionResumen
+  instituciones: InstitucionResumen
+}
+export type DetalleCatalogo = {
+  carreras: CarreraDetalle
+  ocupaciones: OcupacionDetalle
+  instituciones: InstitucionDetalle
+}
+
+const base = (cuenta: string) => `/cuentas/${encodeURIComponent(cuenta)}/catalogo`
+
+export function buscarCatalogo<C extends ClaseCatalogo>(
+  cuenta: string,
+  clase: C,
+  filtros: FiltrosCatalogo,
+  limite: number,
+  desde: number,
+  senal?: AbortSignal,
+): Promise<RespuestaServidor<Pagina<ResumenCatalogo[C]>>> {
+  const parametros = new URLSearchParams()
+  for (const [nombre, valor] of Object.entries(filtros))
+    if (valor !== undefined && valor !== '' && valor !== false) parametros.set(nombre, String(valor))
+  parametros.set('limite', String(limite))
+  parametros.set('desde', String(desde))
+  return obtener(`${base(cuenta)}/${clase}?${parametros}`, senal)
+}
+
+export function obtenerDetalleCatalogo<C extends ClaseCatalogo>(
+  cuenta: string,
+  clase: C,
+  codigo: string,
+): Promise<RespuestaServidor<DetalleCatalogo[C]>> {
+  return obtener(`${base(cuenta)}/${clase}/${encodeURIComponent(codigo)}`)
+}
 
 export function obtenerOcupacion(cuenta: string, codigo: string): Promise<RespuestaServidor<OcupacionDetalle>> {
   return obtener(`/cuentas/${encodeURIComponent(cuenta)}/catalogo/ocupaciones/${encodeURIComponent(codigo)}`)
+}
+
+// Ajuste carga-casos: las ocupaciones del directorio de un caso, en el orden pedido (cargo y hoja de vida).
+export function obtenerOcupacionesCaso(
+  cuenta: string,
+  codigos: string[],
+): Promise<RespuestaServidor<OcupacionCaso[]>> {
+  return obtener(`${base(cuenta)}/ocupaciones-caso?codigos=${encodeURIComponent(codigos.join(','))}`)
+}
+
+export function obtenerFamilias(cuenta: string): Promise<RespuestaServidor<FamiliaPublica[]>> {
+  return obtener(`${base(cuenta)}/familias`)
+}
+
+export function obtenerUbicaciones(cuenta: string): Promise<RespuestaServidor<UbicacionPublica[]>> {
+  return obtener(`${base(cuenta)}/ubicaciones`)
+}
+
+export function obtenerGrupos(cuenta: string): Promise<RespuestaServidor<GrupoPublico[]>> {
+  return obtener(`${base(cuenta)}/grupos`)
+}
+
+// Ajuste resultados-intereses: la ficha de la familia elegida en el catálogo de carreras.
+export function obtenerFamilia(cuenta: string, codigo: string): Promise<RespuestaServidor<FamiliaFicha>> {
+  return obtener(`${base(cuenta)}/familias/${encodeURIComponent(codigo)}`)
+}
+
+export function obtenerInesperada(
+  cuenta: string,
+  clase: 'carreras' | 'ocupaciones',
+  excluir: string,
+): Promise<RespuestaServidor<Inesperada>> {
+  return obtener(`${base(cuenta)}/${clase}/inesperada?excluir=${encodeURIComponent(excluir)}`)
 }

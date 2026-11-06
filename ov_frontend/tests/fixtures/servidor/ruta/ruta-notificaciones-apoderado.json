@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "codigo": "NOT-0000000000000000000000000000000e",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": null,
+      "estudiante": "est-ana",
+      "nombre": "Segunda conversación",
+      "referencia": "t-conv-2",
+      "tipo": "RESPUESTA_CONVERSACION",
+      "vista": false
+    },
+    {
+      "codigo": "NOT-0000000000000000000000000000000c",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": null,
+      "estudiante": "est-ana",
+      "nombre": "Primera conversación",
+      "referencia": "t-conv-1",
+      "tipo": "RESPUESTA_CONVERSACION",
+      "vista": false
+    },
+    {
+      "codigo": "NOT-0000000000000000000000000000000b",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": "FICHA",
+      "estudiante": null,
+      "nombre": "Ficha del apoderado",
+      "referencia": "t-ficha-apo",
+      "tipo": "DESBLOQUEO",
+      "vista": false
+    }
+  ],
+  "no_vistas": 3,
+  "total": 3
+}

@@ -29,7 +29,7 @@ def perfiles_de_ocupaciones(sesion: Session, dimensiones: dict[str, int]) -> Ite
                                    PuntajeOcupacion.dimension_id, PuntajeOcupacion.valor).outerjoin(
         PuntajeOcupacion, (PuntajeOcupacion.ocupacion_id == Ocupacion.id)
         & PuntajeOcupacion.dimension_id.in_(dimensiones.values()),
-    ).order_by(Ocupacion.codigo_onet)).all()
+    ).where(Ocupacion.en_test).order_by(Ocupacion.codigo_onet)).all()
     if not filas:
         raise ValueError("El catálogo de ocupaciones está vacío")
     ocupaciones, puntajes = {}, {}
@@ -105,10 +105,10 @@ def guardar_resultados(sesion, calculos):
     for cabecera, calculadas, afines in calculos:
         resultado_id = ids_resultados[cabecera['aplicacion_id']]
         dimensiones.extend(dict(resultado_id=resultado_id, dimension_id=dimension_id, puntaje=dimension.puntaje,
-                                puntaje_maximo=dimension.puntaje_maximo, porcentaje=dimension.porcentaje)
+                                puntaje_maximo=dimension.puntaje_maximo)
                            for dimension_id, dimension in calculadas.items())
         coincidencias.extend(dict(resultado_id=resultado_id, ocupacion_id=ocupaciones[afin.codigo_onet],
-                                  posicion=afin.posicion, correlacion=afin.correlacion, ajuste=afin.ajuste)
+                                  posicion=afin.posicion, correlacion=afin.correlacion)
                              for afin in afines)
     sesion.execute(insert(ResultadoDimension.__table__), dimensiones)
     if coincidencias:

@@ -31,13 +31,11 @@ def test_dos_resultados_vigentes_prohibidos(sesion):
     assert sesion.scalar(select(func.count()).select_from(modelos.ResultadoInstrumento)) == 2
 
 
-@pytest.mark.parametrize("correlacion, ajuste, posicion", [
-    (-0.1, "GOOD_FIT", 1), (0.7, "BEST_FIT", 1), (0.729, "GREAT_FIT", 1),
-    (0.607, "GREAT_FIT", 1), (0.608, "GOOD_FIT", 1), (0.9, "BEST_FIT", 0), (0.9, "BEST_FIT", 11),
-])
-def test_coincidencias_rechazan_ajustes_y_posiciones_invalidas(sesion, correlacion, ajuste, posicion):
-    # Ocupación independiente del Excel, únicamente para probar restricciones SQL.
-    ocupacion = modelos.Ocupacion(codigo_onet="PRUEBA", titulo="Prueba SQL")
+# Ajuste resultados-intereses: sin nivel de ajuste ni tope de 10; r entre 0 y 1 y posición desde 1.
+@pytest.mark.parametrize("correlacion, posicion", [(-0.1, 1), (1.01, 1), (0.9, 0)])
+def test_coincidencias_rechazan_correlaciones_y_posiciones_invalidas(sesion, correlacion, posicion):
+    # Ocupación independiente del catálogo, únicamente para probar restricciones SQL.
+    ocupacion = modelos.Ocupacion(codigo="prueba", codigo_onet="PRUEBA", titulo="Prueba SQL", grupo="15")
     sesion.add(ocupacion)
     resultado = modelos.ResultadoInstrumento(cuenta_id=buscar(sesion, modelos.Cuenta, "est-ana").id,
                                              aplicacion_id=buscar(sesion, modelos.Aplicacion, "APL-RIASEC").id,
@@ -47,5 +45,5 @@ def test_coincidencias_rechazan_ajustes_y_posiciones_invalidas(sesion, correlaci
     with pytest.raises(IntegrityError):
         with sesion.begin_nested():
             sesion.add(modelos.Coincidencia(resultado_id=resultado.id, ocupacion_id=ocupacion.id,
-                                          posicion=posicion, correlacion=correlacion, ajuste=ajuste))
+                                          posicion=posicion, correlacion=correlacion))
             sesion.flush()

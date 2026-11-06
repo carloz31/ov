@@ -1,0 +1,18 @@
+{
+  "id": "b1-5",
+  "codigo": "b1-5",
+  "tipo": "instrumento",
+  "titulo": "Batalla: el puente de los mitos",
+  "subtitulo": "Cruzar sin repetir un pregón",
+  "escenario": "desierto",
+  "bloque": 1,
+  "orden": 5,
+  "obligatoria": true,
+  "requisitos": ["b1-4"],
+  "ubicacion": "Desierto, puente de los mitos",
+  "duracionEstimadaMin": 8,
+  "personajeIds": ["aurelio", "companero"],
+  "nodos": [],
+  "desafio": "desafio-puente-mitos",
+  "mapa": { "x": 960, "y": 300, "icono": "test" }
+}

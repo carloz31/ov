@@ -9,6 +9,7 @@ import { useJourney } from '@/store/journeyStore'
 import { additionalMissions } from '@/data/activities/reflectionConfig'
 import { appPaths } from '@/routes/paths'
 import { resumirCierre } from '../lib/finishSummary'
+import { usePersonasTestimonios } from './usePersonasTestimonios'
 import { useVolverAlMapa } from './useVolverAlMapa'
 
 export function useActivityFinish(
@@ -21,6 +22,7 @@ export function useActivityFinish(
   const servidor = useEstadoServidor()
   const navigate = useNavigate()
   const volverAlMapa = useVolverAlMapa(activity.id)
+  const personas = usePersonasTestimonios(modoApi)
   const completada = modoApi
     ? actividadServidor(servidor.actividades.datos, activity.id)?.estado === 'COMPLETADA'
     : state.progress[activity.id]?.estado === 'completada'
@@ -65,7 +67,7 @@ export function useActivityFinish(
           ?.split('\n')
           .find((linea) => linea.trim() && !linea.trim().startsWith('#'))
           ?.trim()
-        return [d.objetivo.codigo, cita ? { cita } : {}]
+        return [d.objetivo.codigo, { ...(cita ? { cita } : {}), ...personas[d.objetivo.codigo] }]
       }),
   )
   const resumen = resumirCierre({

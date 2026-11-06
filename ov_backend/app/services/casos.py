@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import (
-    Actividad, ActividadDimension, ColeccionOcupacion, Cuenta, Dimension, Ocupacion, ProgresoActividad,
+    Actividad, ColeccionOcupacion, Cuenta, Ocupacion, ProgresoActividad,
     ResultadoCaso, Rol, TipoActividad,
 )
 from app.schemas.casos import CasoCuenta, OcupacionColeccion
@@ -17,9 +17,6 @@ def listar_casos_cuenta(sesion: Session, cuenta: Cuenta) -> list[CasoCuenta]:
     definiciones = contexto(sesion).definiciones
     casos = sorted((a for a in definiciones.listar(Actividad) if a.tipo == TipoActividad.CASO),
                    key=lambda actividad: (actividad.orden, actividad.codigo))
-    dimensiones = {}
-    for fila in definiciones.listar(ActividadDimension):
-        dimensiones.setdefault(fila.actividad_id, []).append(definiciones.obtener(Dimension, fila.dimension_id))
     puntajes = {}
     for actividad_id, puntaje in sesion.execute(
         select(ProgresoActividad.actividad_id, ResultadoCaso.puntaje)
@@ -33,7 +30,6 @@ def listar_casos_cuenta(sesion: Session, cuenta: Cuenta) -> list[CasoCuenta]:
         propios = puntajes.get(caso.id, [])
         respuesta.append(CasoCuenta(
             actividad=caso.codigo, titulo=caso.titulo,
-            dimensiones=[d.codigo for d in sorted(dimensiones.get(caso.id, []), key=lambda d: (d.orden, d.codigo))],
             estado=estado_actividad(sesion, cuenta, caso), intentos=len(propios),
             superado=any(puntaje >= caso.puntaje_minimo for puntaje in propios),
             ultimo_puntaje=propios[-1] if propios else None, mejor_puntaje=max(propios, default=None),

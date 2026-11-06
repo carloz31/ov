@@ -1,47 +1,56 @@
 """Semilla de la ruta mínima con lo fijo."""
 
 import pytest
-from soporte_datos_aprobados import ENUNCIADOS_RIASEC, OCUPACIONES_APROBADAS
+from soporte_datos_aprobados import ENUNCIADOS_RIASEC
 from soporte_ruta import MISIONES_INTERESES, avanzar, filas_base, pedir
 from sqlalchemy import func, select, text
 from app import models as modelos
 from app.main import crear_aplicacion
 from app.models.base import Base
-from datos import ocupaciones as datos_ocupaciones
-from datos import fijos
+from datos import catalogo as datos_catalogo
 from datos import ruta as semilla_ruta
 from datos.cargar import preparar_base
-from datos.ocupaciones import leer_ocupaciones, validar_distribucion_items
+from datos.fijos import validar_distribucion_items
 
 
 
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
-    esperados = {'salon': 2, 'cuenta': 5, 'orientadora_salon': 1, 'vinculo_familiar': 1, 'bloque': 6,
-        'actividad': 25, 'seccion': 6, 'ficha': 3, 'testimonio': 2, 'conversacion': 2, 'insignia': 5, 'nivel': 2,
-        'regla_desbloqueo': 48, 'condicion_desbloqueo': 53, 'pregunta_diario': 8,
-        'instrumento': 2, 'escala_respuesta': 2, 'opcion_escala': 9, 'dimension': 11,
-        'item_instrumento': 79, 'actividad_item': 98, 'aplicacion': 3, 'aplicacion_actividad': 4,
-        'ocupacion': 36, 'puntaje_ocupacion': 216, 'familia_carrera': 6, 'carrera': 6,
-        'carrera_ocupacion': 23, 'lista_opciones': 12, 'opcion_lista': 66, 'item_registro': 12,
-        'criterio_completitud': 10, 'referencia': 11, 'tematica': 5,
-        'actividad_tematica': 6, 'actividad_dimension': 2, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
-        'high_point': 72, 'tipo_carrera': 11, 'ubicacion': 2, 'institucion': 3, 'institucion_carrera': 6,
-        'ingreso_carrera': 2, 'rango_ingreso': 5,
-        'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6}
-    assert len(Base.metadata.tables) == 80
+    esperados = {'colegio': 1, 'salon': 2, 'cuenta': 8, 'orientadora_salon': 1, 'vinculo_familiar': 2, 'bloque': 6,
+        # Ajuste mochila: t-caso-2, t-ficha-3, t-testimonio-3 y 4, sus reglas y la condición extra de t-testimonio-2.
+        # Ajuste carga-instrumentos: t-mision-inteligencias y t-mision-habilidades, con sus instrumentos reales.
+        'actividad': 30, 'seccion': 7, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 7, 'nivel': 3,
+        'regla_desbloqueo': 57, 'condicion_desbloqueo': 64, 'pregunta_diario': 8,
+        'instrumento': 4, 'escala_respuesta': 4, 'opcion_escala': 14, 'dimension': 23,
+        'item_instrumento': 138, 'actividad_item': 157, 'aplicacion': 5, 'aplicacion_actividad': 6,
+        # Ajuste catalogo-datos-reales: el catálogo real (603 carreras tras fusionar 5 duplicadas por tilde,
+        # 706 instituciones con carreras) y la relación provisional al azar. Ajuste carga-casos: 245
+        # ocupaciones, solo las curadas (sin ocultas; 10 militares sin puntajes), y sus familias.
+        'ocupacion': 245, 'puntaje_ocupacion': 1410, 'familia_carrera': 89, 'carrera': 603,
+        'ocupacion_familia': 341, 'lista_opciones': 13, 'opcion_lista': 69, 'item_registro': 14,
+        'criterio_completitud': 12, 'referencia': 12, 'tematica': 5,
+        'actividad_tematica': 6, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
+        'high_point': 614, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,
+        'grupo_ocupacional': 23, 'estilo_trabajo': 21, 'ingreso_familia': 716, 'ingreso_institucion': 1096,
+        'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6,
+        # B13: catálogos de investigaciones.
+        'pregunta_base_guion': 3, 'tipo_reaccion': 4}
+    assert len(Base.metadata.tables) == 94
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA', 'LUMI'}
-    assert sesion.scalars(select(modelos.Instrumento.codigo).order_by(modelos.Instrumento.codigo)).all() == ['TEST-PARTIDA-LLEGADA', 'TEST-RIASEC']
+    assert sesion.scalars(select(modelos.Instrumento.codigo).order_by(modelos.Instrumento.codigo)).all() == [
+        'TEST-HABILIDADES', 'TEST-INTELIGENCIAS', 'TEST-PARTIDA-LLEGADA', 'TEST-RIASEC']
     assert sesion.execute(text('PRAGMA foreign_key_check')).all() == []
-    ocupaciones = OCUPACIONES_APROBADAS
-    assert set(sesion.execute(select(modelos.Ocupacion.codigo, modelos.Ocupacion.titulo, modelos.Ocupacion.codigo_onet))) == ocupaciones
-    excel = {fila.codigo_onet: fila.valores for fila in leer_ocupaciones(datos_ocupaciones.RUTA_OCUPACIONES)}
+    # Ajuste carga-casos: el código de la ocupación es su O*NET y solo se cargan las del catálogo.
+    codigos = dict(sesion.execute(select(modelos.Ocupacion.codigo_onet, modelos.Ocupacion.codigo)).all())
+    assert all(codigo == onet for onet, codigo in codigos.items())
+    assert '33-2011.00' not in codigos
+    archivo = {o.codigo_onet: o.puntajes for o in datos_catalogo.leer_catalogo().ocupaciones if o.puntajes}
     puntajes = list(sesion.execute(select(modelos.Ocupacion.codigo_onet, modelos.Dimension.codigo, modelos.PuntajeOcupacion.valor)
         .join(modelos.PuntajeOcupacion, modelos.PuntajeOcupacion.ocupacion_id == modelos.Ocupacion.id)
         .join(modelos.Dimension, modelos.Dimension.id == modelos.PuntajeOcupacion.dimension_id)))
-    assert all(valor == excel[onet]['RIASEC'.index(d)] for onet, d, valor in puntajes)
-    assert not any(c == 'drone-operator' for c, _, _ in ocupaciones)
+    assert all(valor == archivo[onet]['RIASEC'.index(d)] for onet, d, valor in puntajes)
+    assert 'drone-operator' not in codigos.values()
 
 
 def test_riasec_enunciados_y_distribucion_exactos(sesion, cliente):
@@ -63,20 +72,32 @@ def test_riasec_enunciados_y_distribucion_exactos(sesion, cliente):
 
 
 @pytest.mark.parametrize('fallo', ['ausente', 'invalido', 'referencia_ausente'])
-def test_excel_erroneo_revierte_carga_explicita(cliente, aplicacion, tmp_path, monkeypatch, fallo):
+def test_catalogo_erroneo_revierte_carga_explicita(cliente, aplicacion, tmp_path, monkeypatch, fallo):
     avanzar(cliente, 't-inicio')
     antes = filas_base(aplicacion)
     cache = aplicacion.state.motor_bd.cache_definiciones.actual
     if fallo == 'referencia_ausente':
-        filas = leer_ocupaciones(datos_ocupaciones.RUTA_OCUPACIONES)
-        monkeypatch.setattr(fijos, 'leer_ocupaciones', lambda ruta: [f for f in filas if f.codigo_onet != '19-2042.00'])
-        mensaje = 'Falta la ocupación O*NET 19-2042.00, requerida por geologist'
+        original = datos_catalogo.leer_catalogo
+        # Ajuste carga-casos: sin ocupaciones ocultas, la referencia que falta es la de un testimonio.
+        def sin_arqueologo(carpeta=None):
+            catalogo = original(carpeta)
+            catalogo.ocupaciones = [o for o in catalogo.ocupaciones if o.codigo_onet != '19-3091.00']
+            return catalogo
+        monkeypatch.setattr(datos_catalogo, 'leer_catalogo', sin_arqueologo)
+        mensaje = 'El testimonio t-testimonio-1 apunta a una ocupación inexistente: 19-3091.00'
     else:
-        ruta_excel = tmp_path / 'fallo.xlsx'
+        carpeta = tmp_path / 'catalogo'
+        carpeta.mkdir()
+        for archivo in datos_catalogo.CARPETA_CATALOGO.glob('*.csv'):
+            (carpeta / archivo.name).write_bytes(archivo.read_bytes())
         if fallo == 'invalido':
-            ruta_excel.write_text('archivo inválido', encoding='utf-8')
-        monkeypatch.setattr(fijos, 'RUTA_OCUPACIONES', ruta_excel)
-        mensaje = f'{"Falta" if fallo == "ausente" else "No se puede leer"} el archivo de ocupaciones: {ruta_excel}'
+            (carpeta / 'instituciones.csv').write_text('id,nombre\n1,Sin columnas\n', encoding='utf-8')
+            mensaje = ('instituciones.csv: faltan las columnas tipo_institucion_id, institucion_nombre, departamento, '
+                       'distrito, tipo_gestion_nombre, direccion, pagina_web')
+        else:
+            (carpeta / 'carreras_mtpe.csv').unlink()
+            mensaje = f'Falta el archivo del catálogo: {carpeta / "carreras_mtpe.csv"}'
+        monkeypatch.setattr(datos_catalogo, 'CARPETA_CATALOGO', carpeta)
     with pytest.raises(ValueError) as error:
         preparar_base(str(aplicacion.state.motor_bd.url), 'ruta', vaciar=True)
     assert str(error.value) == mensaje

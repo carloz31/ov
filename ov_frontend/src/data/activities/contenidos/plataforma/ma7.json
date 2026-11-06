@@ -1,0 +1,127 @@
+{
+  "id": "ma7",
+  "codigo": "ma7",
+  "tipo": "encuentro",
+  "titulo": "Más allá del promedio",
+  "subtitulo": "Doña Cifra y las regiones",
+  "escenario": "playa",
+  "bloque": 7,
+  "orden": 37,
+  "obligatoria": false,
+  "requisitos": [
+    "b3-4"
+  ],
+  "ubicacion": "Doña Cifra y las regiones",
+  "duracionEstimadaMin": 6,
+  "personajeIds": [
+    "cifra",
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "ma7-01",
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "texto": "Volviste. Tu registro del mercado estuvo bien hecho, lo admito. Entonces te muestro lo que no muestro a nadie: los números por región, por edad y por formalidad. Ahí es donde los promedios mienten de verdad.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "ma7-02",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Tres brechas que el promedio esconde",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Brecha",
+            "Qué pasa",
+            "Cómo leerla"
+          ],
+          "filas": [
+            [
+              "Lima y regiones",
+              "Una misma familia de carreras paga distinto en Arequipa, Loreto o Lima; también cambia la oferta de trabajo",
+              "Mira el ingreso del departamento donde vas a trabajar, no el nacional"
+            ],
+            [
+              "Jóvenes y adultos",
+              "La diferencia es el crecimiento típico de la carrera: en Geología se duplica y más; en Obstetricia casi no cambia",
+              "Jóvenes para pensar el primer año, adultos para pensar a diez"
+            ],
+            [
+              "Formal e informal",
+              "Las tablas son de la minoría en planilla; más de ocho de cada diez ocupados de 14 a 24 años tienen empleo informal",
+              "El título vale por la puerta al empleo formal, no solo por la cifra"
+            ]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Un promedio nacional de jóvenes y adultos, formales, es cuatro promedios mezclados. Léelo por partes."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Catálogo de la plataforma (Ponte en Carrera, MTPE). INEI (2026), mercado laboral, abril 2025–marzo 2026."
+        }
+      ]
+    },
+    {
+      "id": "ma7-03",
+      "tipo": "pregunta",
+      "hablanteId": "cifra",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un viajero de Loreto mira el ingreso nacional de su familia de carreras y arma su presupuesto con ese dato. ¿Qué le falta?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Mirar el ingreso de Loreto, o del departamento donde trabajaría: Lima no es el Perú",
+          "correcta": true,
+          "retroalimentacion": "Exacto. El catálogo lo muestra por lugar."
+        },
+        {
+          "id": "b",
+          "texto": "Nada: el nacional es el más confiable",
+          "correcta": false,
+          "retroalimentacion": "Es el más agregado, no el más útil para él."
+        },
+        {
+          "id": "c",
+          "texto": "Mirar el de Lima, que es más alto",
+          "correcta": false,
+          "retroalimentacion": "Más alto no es más real si no va a trabajar en Lima."
+        }
+      ],
+      "explicacion": "La brecha entre Lima y regiones puede ser grande en la misma familia. El dato útil es el del lugar donde se va a trabajar.",
+      "pistas": [
+        {
+          "id": "ma7-03p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Primera fila de la tabla."
+        }
+      ]
+    },
+    {
+      "id": "ma7-04",
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "texto": "Ahora sí, la revancha de verdad: en la plaza, con las brechas. Si las lees bien, te quedas con el puesto.",
+      "expresion": "neutral",
+      "nuevoMomento": true
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Un promedio nacional es cuatro promedios mezclados. Doña Cifra te espera con las brechas."
+  },
+  "mapa": {
+    "x": 0,
+    "y": 0,
+    "icono": "informativa",
+    "origen": "b3-4",
+    "adicional": true
+  }
+}

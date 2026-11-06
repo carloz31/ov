@@ -1,4 +1,4 @@
-import { PenLine } from 'lucide-react'
+import { ArrowRight, Sun } from 'lucide-react'
 import { LumiQuestion } from '@/features/journal/components/LumiQuestion'
 import type { EstadoHoy } from '@/features/journal/hooks/usePreguntaDeHoy'
 
@@ -33,7 +33,9 @@ export function DailyQuestionCard({
   return (
     <section aria-label="Hoy" className="sx-j-hoy" data-state={hoy.estado}>
       <header className="sx-j-hoy-header">
-        <p className="sx-j-hoy-date">Hoy · {fecha}</p>
+        <p className="sx-j-hoy-date">
+          <Sun aria-hidden="true" size={16} /> Hoy · {fecha}
+        </p>
         {conPregunta && <span className="sx-j-chip">La pregunta vence hoy</span>}
       </header>
       {hoy.estado === 'cargando' ? (
@@ -52,7 +54,7 @@ export function DailyQuestionCard({
       <div className="sx-j-hoy-actions">
         {conPregunta && (
           <button type="button" className="sx-d-action" onClick={() => onRespond(hoy.editor!)}>
-            Responder a Lumi
+            Responder a Lumi <ArrowRight aria-hidden="true" size={16} />
           </button>
         )}
         <button
@@ -60,10 +62,10 @@ export function DailyQuestionCard({
           className={conPregunta ? 'sx-d-action sx-d-action-ghost' : 'sx-d-action'}
           onClick={onFree}
         >
-          <PenLine aria-hidden="true" size={16} /> Escribir algo libre
+          Escribir algo libre
         </button>
+        <p className="sx-j-hoy-help">No necesitas una pregunta para contarle algo.</p>
       </div>
-      <p className="sx-j-hoy-help">No necesitas una pregunta para contarle algo.</p>
     </section>
   )
 }

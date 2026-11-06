@@ -19,6 +19,7 @@ export function CiudadScreen() {
     interaccion,
     challenge,
     desafioServidor,
+    fondoDesafio,
     activity,
     registro,
     revision,
@@ -40,7 +41,7 @@ export function CiudadScreen() {
         <RegistroServidorPlayer
           key={registro}
           codigo={registro}
-          imageUrl="/images/background/afueras.png"
+          imageUrl="/images/background/afueras-ciudad.png"
           onClose={() => setParams({})}
         />
       </div>
@@ -51,6 +52,7 @@ export function CiudadScreen() {
         key={challenge.id}
         challenge={challenge}
         servidor={desafioServidor}
+        imageUrl={fondoDesafio}
         onClose={() => setParams({})}
       />
     )
@@ -59,7 +61,7 @@ export function CiudadScreen() {
       <div className="sx-player-host">
         <StudentActivityPlayer
           activity={activity}
-          imageUrl="/images/background/afueras.png"
+          imageUrl="/images/background/afueras-ciudad.png"
           direct={params.get('modo') === 'directa'}
           edit={revision}
           onClose={() => setParams({})}

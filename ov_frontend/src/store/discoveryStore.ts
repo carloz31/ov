@@ -33,8 +33,8 @@ export function validDiscoveryState(v: unknown): v is StudentDiscoveryState {
           typeof p.profileBadgesConfigured === 'boolean' &&
           isStrings(p.profileBadges) &&
           p.profileBadges.length <= 3 &&
-          new Set(p.profileBadges).size === p.profileBadges.length &&
-          p.profileBadges.every((c) => /^I\d+$/.test(c)),
+          // Ajuste pasaporte-perfil: sin `/^I\d+$/`; la clave solo la usaba el modo api, que ya no la lee.
+          new Set(p.profileBadges).size === p.profileBadges.length,
       ))
   )
     return false

@@ -18,9 +18,14 @@ async function abrirEco(referencias) {
   return { app, player: await abrir(app, 't-eco') }
 }
 
-// Avanza del diálogo de entrada a la consigna pedida, guardando lo que haga falta.
+// Avanza de los diálogos de entrada a la consigna pedida, guardando lo que haga falta. Ajuste carga-actividades:
+// t-eco suma un diálogo con eco de lista tras el de entrada.
 async function hasta(player, id) {
-  elementos(player.render(), (e) => e.type?.name === 'DialogueBox')[0]?.props.onContinue()
+  for (;;) {
+    const dialogo = elementos(player.render(), (e) => e.type?.name === 'DialogueBox')[0]
+    if (!dialogo || consigna(player.render())) break
+    dialogo.props.onContinue()
+  }
   for (;;) {
     const nodo = consigna(player.render())
     if (nodo.props.node.id === id) return nodo
@@ -177,8 +182,8 @@ test('un registro sin elecciones por referencia ni ecos no pide referencias', as
 
 test('una consigna con eco y sin ítem no pasa la validación del contenido', () => {
   const { validateActivity } = fixtureServidor().load('src/lib/activities/validation.ts')
-  const contenido = copia(jsonServidor('../../../src/data/activities/contenidos/t_eco'))
+  const contenido = copia(jsonServidor('../../../src/data/activities/contenidos/ruta/t_eco'))
   validateActivity(contenido)
-  delete contenido.nodos.find((n) => n.eco).item
+  delete contenido.nodos.find((n) => n.tipo === 'consigna' && n.eco).item
   assert.throws(() => validateActivity(contenido), /cita una referencia sin ítem/)
 })

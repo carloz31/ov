@@ -4,7 +4,7 @@ import { canAccessFamilyConversations } from '@/store/adventureStore'
 import { useEstadoServidor } from '@/store/servidor/sesion'
 import type { AdventureState } from '@/types/adventure'
 
-export type CodigoSeccion = 'DIARIO' | 'CHECK_IN' | 'CATALOGO' | 'PLANES' | 'FAMILIA'
+export type CodigoSeccion = 'DIARIO' | 'CHECK_IN' | 'CATALOGO' | 'PLANES' | 'FAMILIA' | 'INVESTIGACIONES'
 export type AccesoSeccion = {
   bloqueada: boolean
   mensaje?: string

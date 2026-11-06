@@ -1,0 +1,41 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-mision-habilidades",
+  "tipo": "instrumento",
+  "titulo": "Misión de habilidades sociales",
+  "bloque": 4,
+  "orden": 4,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 5,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-mision-habilidades-entrada",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Ahora veamos cómo te relacionas con los demás. Responde con lo que sueles hacer."
+    },
+    {
+      "id": "t-mision-habilidades-item",
+      "tipo": "item",
+      "instrumentoId": "TEST-HABILIDADES",
+      "itemId": "plantilla",
+      "hablanteId": "companero",
+      "etiqueta": "¿Te describe?"
+    },
+    {
+      "id": "t-mision-habilidades-cierre",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Listo. Helena ya puede leer tus respuestas en su libro."
+    }
+  ],
+  "mapa": {
+    "x": 700,
+    "y": 450,
+    "icono": "test"
+  }
+}

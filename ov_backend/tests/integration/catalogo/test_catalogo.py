@@ -1,19 +1,29 @@
-"""B10 · HU-037 a HU-039: búsquedas y detalle del catálogo, y vistas para «qué exploré». DATO DE PRUEBA."""
+"""B10 · HU-037 a HU-039 y ajuste catalogo-datos-reales: búsquedas, filtros y detalle del catálogo real, y
+vistas para «qué exploré»."""
+
+from datetime import datetime
 
 import pytest
 from sqlalchemy import select
 
 from app import models as m
+from soporte_catalogo_ruta import ENFERMERIA, INST_TECNICO, INST_UNI, PSICOLOGIA, UBIC_CUSCO, UBIC_LIMA
+from soporte_acceso import token_de
 from soporte_retiro import buscar, medir
 from soporte_ruta import completar, filas_base, pedir
 
 
 BASE = '/cuentas/est-ana/catalogo'
-RUTAS_CONSULTA = (f'{BASE}/carreras', f'{BASE}/carreras/psychology', f'{BASE}/ocupaciones',
-                  f'{BASE}/ocupaciones/psychologist', f'{BASE}/instituciones', f'{BASE}/instituciones/t-uni')
-VISTAS = (('ver-carrera', 'carrera', 'psychology', 'VISTA_CARRERA'),
-          ('ver-ocupacion', 'ocupacion', 'psychologist', 'VISTA_OCUPACION'),
-          ('ver-institucion', 'institucion', 't-uni', 'VISTA_INSTITUCION'))
+PUCP = 'inst-3'
+DIRECTORES = '11-1011.00'
+RUTAS_CONSULTA = (f'{BASE}/carreras', f'{BASE}/carreras/{PSICOLOGIA}', f'{BASE}/ocupaciones',
+                  f'{BASE}/ocupaciones/19-3033.00', f'{BASE}/instituciones', f'{BASE}/instituciones/{INST_UNI}',
+                  f'{BASE}/familias', f'{BASE}/ubicaciones', f'{BASE}/grupos', f'{BASE}/familias/313',
+                  f'{BASE}/carreras/inesperada',
+                  f'{BASE}/ocupaciones/inesperada')
+VISTAS = (('ver-carrera', 'carrera', PSICOLOGIA, 'VISTA_CARRERA'),
+          ('ver-ocupacion', 'ocupacion', '19-3033.00', 'VISTA_OCUPACION'),
+          ('ver-institucion', 'institucion', INST_UNI, 'VISTA_INSTITUCION'))
 
 
 @pytest.fixture
@@ -23,7 +33,9 @@ def abierto(cliente):
 
 
 def codigos(respuesta):
-    return [fila['codigo'] for fila in respuesta]
+    """Códigos de una lista o de los `items` de una página (F06)."""
+    filas = respuesta['items'] if isinstance(respuesta, dict) else respuesta
+    return [fila['codigo'] for fila in filas]
 
 
 def test_catalogo_cerrado_responde_409_en_cada_ruta(cliente, aplicacion):
@@ -34,41 +46,71 @@ def test_catalogo_cerrado_responde_409_en_cada_ruta(cliente, aplicacion):
     for accion, campo, codigo, _ in VISTAS:
         pedir(cliente, 'POST', f'/acciones/{accion}', {'cuenta': 'est-ana', campo: codigo}, 409)
     assert filas_base(aplicacion) == antes
+
+
+@pytest.mark.parametrize('cuenta', ['apo-rosa', 'ori-carmen'])
+def test_apoderado_y_orientadora_leen_el_catalogo_sin_seccion_y_sin_registrar_vistas(cliente, aplicacion, cuenta):
+    """Ajuste catalogo-apoderado: el catálogo se lee sin la sección CATALOGO (es del estudiante) y la vista de otro
+    rol se ignora: 200 sin eventos ni filas nuevas."""
+    antes = filas_base(aplicacion)
     for ruta in RUTAS_CONSULTA:
-        pedir(cliente, 'GET', ruta.replace('est-ana', 'apo-rosa'), esperado=404)
+        pedir(cliente, 'GET', ruta.replace('est-ana', cuenta))
+    carreras = pedir(cliente, 'GET', f'/cuentas/{cuenta}/catalogo/carreras')
+    assert carreras['items'] and not any(c['es_favorita'] for c in carreras['items'])
+    for accion, campo, codigo, _ in VISTAS:
+        vista = pedir(cliente, 'POST', f'/acciones/{accion}', {'cuenta': cuenta, campo: codigo})
+        assert vista['eventos_registrados'] == [] and vista['nuevos_desbloqueos'] == []
+    assert filas_base(aplicacion) == antes
 
 
-def test_hu037_busca_carreras_por_nombre_familia_y_letras(abierto):
+def test_el_catalogo_de_otra_cuenta_responde_404_aunque_sea_el_mismo(cliente, aplicacion):
+    token = token_de(aplicacion, 'apo-rosa')
+    for ruta in RUTAS_CONSULTA:
+        respuesta = cliente.get(ruta, headers={'Authorization': f'Bearer {token}'})
+        assert respuesta.status_code == 404
+
+
+def test_hu037_busca_carreras_por_nombre_tipo_area_familia_y_letras(abierto):
     todas = pedir(abierto, 'GET', f'{BASE}/carreras')
-    assert codigos(todas) == ['civil-engineering', 'environmental-engineering', 'journalism', 'nursing',
-                              'psychology', 'veterinary-medicine']
-    assert todas[0] == {'codigo': 'civil-engineering', 'nombre': 'Ingeniería Civil', 'riasec': ['R', 'I'],
-                        'familia': {'codigo': 'family-civil-engineering', 'nombre': 'Ingeniería e infraestructura'},
-                        'es_favorita': False}
-    assert todas[-1]['riasec'] == []
-    for texto in ('INGENIERIA', 'ingeniería', ' Ingenier '):
-        assert codigos(pedir(abierto, 'GET', f'{BASE}/carreras?buscar={texto}')) == [
-            'civil-engineering', 'environmental-engineering']
+    assert (todas['total'], todas['total_dominio'], len(todas['items'])) == (603, 603, 20)
+    nombres = [c['nombre'] for c in todas['items']]
+    assert nombres[0].startswith('Abastecimiento')
+    # «admin» distingue la carrera universitaria de la de las Fuerzas Armadas por el tipo.
+    admin = pedir(abierto, 'GET', f'{BASE}/carreras?buscar=ADMINISTRACION&limite=50')
+    administracion = [(c['codigo'], c['tipo']) for c in admin['items'] if c['nombre'] == 'Administración']
+    assert sorted(administracion) == [('mtpe-275', 'UNIVERSIDAD'), ('mtpe-601', 'FFAA_POLICIA')]
+    assert admin['total_dominio'] == 603
+    psicologia = next(c for c in pedir(abierto, 'GET', f'{BASE}/carreras?buscar=psicologia')['items']
+                      if c['codigo'] == PSICOLOGIA)
+    assert psicologia == {
+        'codigo': PSICOLOGIA, 'nombre': 'Psicología', 'tipo': 'UNIVERSIDAD', 'duracion': '5 años', 'riasec': ['S', 'I', 'A'],
+        'es_favorita': False,
+        'familia': {'codigo': '313', 'nombre': 'Psicología', 'area_codigo': '31',
+                    'area_nombre': 'Ciencias Sociales y del Comportamiento'}}
+    institutos = pedir(abierto, 'GET', f'{BASE}/carreras?tipo=INSTITUTO&area=52&limite=50')
+    assert institutos['total'] == 30
+    assert all(c['tipo'] == 'INSTITUTO' and c['familia']['area_codigo'] == '52' for c in institutos['items'])
+    familia = pedir(abierto, 'GET', f'{BASE}/carreras?familia=313&tipo=UNIVERSIDAD')
+    assert PSICOLOGIA in codigos(familia) and familia['total'] == 3
     for texto in ('%25', '_'):
-        assert pedir(abierto, 'GET', f'{BASE}/carreras?buscar={texto}') == []
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/carreras?familia=family-nursing')) == ['nursing']
-    assert pedir(abierto, 'GET', f'{BASE}/carreras?familia=no-existe') == []
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/carreras?riasec=ri')) == ['civil-engineering']
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/carreras?buscar=ingenieria&riasec=I')) == [
-        'civil-engineering', 'environmental-engineering']
+        assert pedir(abierto, 'GET', f'{BASE}/carreras?buscar={texto}')['total'] == 0
+    assert pedir(abierto, 'GET', f'{BASE}/carreras?familia=no-existe')['total'] == 0
+    error = pedir(abierto, 'GET', f'{BASE}/carreras?tipo=ESCUELA', esperado=422)
+    assert error['detail']['mensaje'].startswith('Filtro tipo inválido')
 
 
 def test_filtro_riasec_exige_letras_seguidas_y_en_orden(abierto, sesion):
-    # DATO DE PRUEBA: carreras con códigos elegidos para recorrer los ejemplos de la spec.
+    # DATO DE PRUEBA: carreras con códigos elegidos para recorrer los ejemplos de la spec (las reales aún no traen
+    # letras RIASEC).
     familia = sesion.scalars(select(m.FamiliaCarrera)).first()
     for codigo in ('I', 'RI', 'IS', 'RIS', 'ARI', 'IR', 'RSI'):
-        sesion.add(m.Carrera(codigo=f'zz-{codigo.lower()}', nombre=f'Carrera {codigo}', familia_id=familia.id,
-                             codigo_riasec=codigo))
+        sesion.add(m.Carrera(codigo=f'zz-{codigo.lower()}', nombre=f'Zz Carrera {codigo}', familia_id=familia.id,
+                             tipo='UNIVERSIDAD', codigo_cine='000000', codigo_riasec=codigo))
     sesion.commit()
 
     def con(letras):
-        encontradas = codigos(pedir(abierto, 'GET', f'{BASE}/carreras?riasec={letras}'))
-        return [c.removeprefix('zz-').upper() for c in encontradas if c.startswith('zz-')]
+        encontradas = codigos(pedir(abierto, 'GET', f'{BASE}/carreras?riasec={letras}&limite=50'))
+        return sorted(c.removeprefix('zz-').upper() for c in encontradas if c.startswith('zz-'))
 
     assert con('I') == ['ARI', 'I', 'IR', 'IS', 'RI', 'RIS', 'RSI']
     assert con('RI') == ['ARI', 'RI', 'RIS']
@@ -79,57 +121,208 @@ def test_filtro_riasec_exige_letras_seguidas_y_en_orden(abierto, sesion):
 
 
 def test_hu037_detalle_de_carrera(abierto):
-    detalle = pedir(abierto, 'GET', f'{BASE}/carreras/psychology')
-    assert detalle['descripcion'].startswith('Comprende el comportamiento humano')
-    assert detalle['duracion'] == '5 años aproximadamente'
-    assert detalle['riasec'] == ['S', 'I', 'A']
-    assert codigos(detalle['ocupaciones']) == ['psychologist', 'social-worker', 'sociologist', 'teacher']
-    assert detalle['instituciones'] == [{'codigo': 't-uni', 'nombre': 'Universidad Nacional de Prueba',
-                                         'tipo': 'UNIVERSIDAD', 'gestion': 'PUBLICA', 'es_favorita': False,
-                                         'ubicacion': {'codigo': 't-lima', 'nombre': 'Lima de prueba'}}]
-    assert detalle['ingreso'] == {'promedio_mensual': 3200, 'fuente': 'Fuente de prueba', 'anio': 2025, 'rangos': [
-        {'minimo': 0, 'maximo': 2000, 'porcentaje': 30.0}, {'minimo': 2000, 'maximo': 4000, 'porcentaje': 50.0},
-        {'minimo': 4000, 'maximo': None, 'porcentaje': 20.0}]}
-    sin_datos = pedir(abierto, 'GET', f'{BASE}/carreras/veterinary-medicine')
-    assert (sin_datos['riasec'], sin_datos['instituciones'], sin_datos['ingreso']) == ([], [], None)
+    detalle = pedir(abierto, 'GET', f'{BASE}/carreras/{PSICOLOGIA}')
+    assert detalle['descripcion'].startswith('Estudia el comportamiento humano')
+    assert (detalle['duracion'], detalle['nombre_cine'], detalle['riasec']) == ('5 años', None, ['S', 'I', 'A'])
+    assert len(detalle['ambito_laboral']) > 1 and not any('¿' in linea for linea in detalle['ambito_laboral'])
+    # Ajuste resultados-intereses: la relación es por familia (313), principal y secundaria, por título.
+    familia = detalle['ocupaciones_de_la_familia']
+    assert codigos(familia['principales']) == ['21-1012.00', '19-3033.00', '19-3034.00', '19-3032.00']
+    assert codigos(familia['secundarias']) == ['13-1161.00', '13-1151.00', '13-1071.00',
+                                               '11-3121.00']
+    assert familia['principales'][1] == {'codigo': '19-3033.00', 'titulo': 'Psicólogo clínico', 'riasec': ['S', 'I'],
+                                         'afinidad': None}
+    assert len(detalle['instituciones']) == 32
+    nombres = [i['nombre'] for i in detalle['instituciones']]
+    assert nombres == sorted(nombres, key=lambda n: n.lower().replace('ú', 'u').replace('í', 'i'))
+    unfv = next(i for i in detalle['instituciones'] if i['codigo'] == INST_UNI)
+    assert unfv == {'codigo': INST_UNI, 'nombre': 'Universidad Nacional Federico Villarreal', 'tipo': 'UNIVERSIDAD',
+                    'gestion': 'PUBLICA', 'distrito': 'Lima', 'es_favorita': False,
+                    'ubicacion': {'codigo': UBIC_LIMA, 'nombre': 'Lima'},
+                    'ingreso': {'promedio': 4130, 'minimo': 1223, 'maximo': 9200}, 'duracion_ciclos': 10}
+    ingreso = detalle['ingreso']
+    assert ingreso['fuente'] == 'Ponte en Carrera (MTPE)'
+    assert ingreso['nacional'] == {'ubicacion': None, 'jovenes': {'promedio': 2824, 'minimo': 1240, 'maximo': 5359},
+                                   'adultos': {**ingreso['nacional']['adultos'], 'promedio': 5033}}
+    departamentos = [d['ubicacion']['nombre'] for d in ingreso['departamentos']]
+    assert len(departamentos) == 19 and 'Lima' in departamentos
+    assert departamentos == sorted(departamentos, key=lambda n: n.lower().replace('á', 'a').replace('í', 'i'))
+    assert detalle['parecidas']['total'] == 2 and len(detalle['parecidas']['carreras']) == 2
+    assert all(c['familia']['codigo'] == '313' and c['codigo'] != PSICOLOGIA
+               for c in detalle['parecidas']['carreras'])
+    # Las carreras de FF. AA. y Policía no tienen ingreso; las de los campos 011 y 012 llevan a las militares.
+    assert pedir(abierto, 'GET', f'{BASE}/carreras/mtpe-601')['ingreso'] is None
+    oficiales = pedir(abierto, 'GET', f'{BASE}/carreras/mtpe-518')
+    assert (oficiales['familia']['codigo'], oficiales['ingreso']) == ('011', None)
+    assert all(not o['riasec'] for o in oficiales['ocupaciones_de_la_familia']['principales'])
     assert pedir(abierto, 'GET', f'{BASE}/carreras/no-existe', esperado=404)['detail']['mensaje'] == (
         'Carrera no encontrada en el catálogo')
 
 
-def test_hu038_busca_ocupaciones_y_consulta_su_detalle(abierto, sesion):
-    # DATO DE PRUEBA: una ocupación O*NET sin código del front no aparece en el catálogo.
-    sesion.add(m.Ocupacion(codigo=None, codigo_onet='99-0000.00', titulo='Psicólogo sin código'))
-    sesion.commit()
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/ocupaciones?buscar=PSICOLOGO')) == ['psychologist']
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/ocupaciones?riasec=RIC')) == [
-        'agricultural-engineer', 'civil-engineer', 'veterinarian']
-    detalle = pedir(abierto, 'GET', f'{BASE}/ocupaciones/psychologist')
-    assert detalle == {
-        'codigo': 'psychologist', 'codigo_onet': '19-3033.00', 'titulo': 'Psicólogo/a', 'riasec': ['S', 'I', 'C'],
-        'es_favorita': False,
-        'descripcion': 'Escucha, evalúa necesidades emocionales y diseña estrategias de acompañamiento.',
-        'lugares_trabajo': 'Centros de salud, colegios, organizaciones, empresas y consulta privada.',
-        'conocimientos': ['Psicología', 'Terapia y orientación'],
-        'habilidades': ['Escucha activa', 'Contención emocional', 'Evaluación', 'Empatía'],
-        'carreras': [{'codigo': 'psychology', 'nombre': 'Psicología', 'riasec': ['S', 'I', 'A'],
-                      'familia': {'codigo': 'family-psychology', 'nombre': 'Ciencias sociales y salud'},
-                      'es_favorita': False}]}
-    sin_texto = pedir(abierto, 'GET', f'{BASE}/ocupaciones/firefighter')
-    assert (sin_texto['descripcion'], sin_texto['conocimientos'], sin_texto['habilidades']) == (None, [], [])
+def test_hu038_busca_ocupaciones_por_nombre_otros_nombres_area_y_familia(abierto):
+    todas = pedir(abierto, 'GET', f'{BASE}/ocupaciones')
+    # Ajuste resultados-intereses: solo las 245 del catálogo curado (las 5 ocultas no se listan).
+    assert (todas['total'], todas['total_dominio']) == (245, 245)
+    # «presidente» encuentra a Directores Ejecutivos por sus otros nombres.
+    assert DIRECTORES in codigos(pedir(abierto, 'GET', f'{BASE}/ocupaciones?buscar=PRESIDENTE'))
+    # Ajuste resultados-intereses: el filtro de grupo se retira; el área es la de la familia principal.
+    area = pedir(abierto, 'GET', f'{BASE}/ocupaciones?area=31&limite=50')
+    assert area['total'] == 6 and all(o['familia_principal']['area_codigo'] == '31' for o in area['items'])
+    assert all(o['via_familia'] is None for o in area['items'])
+    # Por familia: las que la tienen como principal o secundaria, primero las principales.
+    familia = pedir(abierto, 'GET', f'{BASE}/ocupaciones?familia=313&limite=50')
+    assert [o['via_familia'] for o in familia['items']] == ['PRINCIPAL'] * 4 + ['SECUNDARIA'] * 4
+    assert familia['items'][4]['familia_principal']['codigo'] != '313'
+    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones?familia=313&buscar=psicologo')['total'] == 3
+    assert all('SI' in ''.join(o['riasec']) for o in pedir(abierto, 'GET', f'{BASE}/ocupaciones?riasec=SI')['items'])
+    assert all(len(o['resumen']) <= 140 for o in area['items'])
+
+
+def test_hu038_detalle_de_ocupacion(abierto):
+    detalle = pedir(abierto, 'GET', f'{BASE}/ocupaciones/19-3033.00')
+    assert (detalle['codigo_onet'], detalle['riasec'], detalle['job_zone'], detalle['grupo']) == (
+        '19-3033.00', ['S', 'I'], 5, '19')
+    assert detalle['resumen'].startswith('Evalúan, diagnostican y tratan') and detalle['resumen'].endswith('…')
+    assert detalle['puntajes'] == {'R': 1, 'I': 76, 'A': 34, 'S': 93, 'E': 28, 'C': 42}
+    # Ajuste resultados-intereses: cómo se llega, por su familia principal (313) y su programa de referencia.
+    assert 'carreras' not in detalle
+    principal = detalle['familia_principal']
+    assert (principal['codigo'], principal['area_codigo'], principal['tipos']) == ('313', '31', ['UNIVERSIDAD'])
+    assert principal['descripcion'] and principal['total_carreras'] == 3
+    assert detalle['programa_ejemplo'] == {'codigo': PSICOLOGIA, 'nombre': 'Psicología', 'tipo': 'UNIVERSIDAD',
+                                           'duracion': '5 años'}
+    assert detalle['familias_secundarias'] == []
+    assert [o['titulo'] for o in detalle['otras_ocupaciones_de_la_familia']] == [
+        'Orientador educativo y vocacional', 'Psicólogo educativo', 'Psicólogo organizacional']
+    assert detalle['total_ocupaciones_familia'] == 8 and detalle['afinidad'] is None
+    assert 'lugares_trabajo' not in detalle and 'habilidades' not in detalle
+    directores = pedir(abierto, 'GET', f'{BASE}/ocupaciones/{DIRECTORES}')
+    assert directores['titulo'] == 'Director ejecutivo (gerente general)' and 'Presidente' in directores['tambien_llamado']
+    assert directores['estilos_trabajo'][0] == {'codigo': 'tolerancia-ambiguedad',
+                                                'nombre': directores['estilos_trabajo'][0]['nombre']}
+    assert all(e['nombre'] for e in directores['estilos_trabajo'])
+    assert directores['tareas'] and directores['aptitudes'] and directores['conocimientos'][:2] == [
+        'Administración', 'Recursos humanos']
+    assert directores['personalidad'].startswith('A las personas interesadas en este trabajo')
     pedir(abierto, 'GET', f'{BASE}/ocupaciones/no-existe', esperado=404)
 
 
-def test_hu039_busca_instituciones_por_nombre_tipo_y_ubicacion(abierto):
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones')) == ['t-ffaa', 't-privada', 't-uni']
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones?buscar=universidad')) == ['t-uni']
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones?tipo=FFAA_POLICIA')) == ['t-ffaa']
-    assert pedir(abierto, 'GET', f'{BASE}/instituciones?tipo=INSTITUTO') == []
-    assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones?ubicacion=t-cusco')) == ['t-ffaa']
-    pedir(abierto, 'GET', f'{BASE}/instituciones?tipo=ESCUELA', esperado=422)
-    detalle = pedir(abierto, 'GET', f'{BASE}/instituciones/t-ffaa')
-    assert (detalle['tipo'], detalle['pagina_web'], codigos(detalle['carreras'])) == (
-        'FFAA_POLICIA', 'https://example.test/escuela', ['civil-engineering', 'nursing'])
+def test_hu039_busca_instituciones_por_nombre_tipo_gestion_y_ubicacion(abierto):
+    todas = pedir(abierto, 'GET', f'{BASE}/instituciones')
+    assert (todas['total'], todas['total_dominio']) == (706, 706)
+    assert INST_UNI in codigos(pedir(abierto, 'GET', f'{BASE}/instituciones?buscar=villarreal'))
+    assert pedir(abierto, 'GET', f'{BASE}/instituciones?gestion=PUBLICA')['total'] == 359
+    cusco = pedir(abierto, 'GET', f'{BASE}/instituciones?ubicacion={UBIC_CUSCO}&tipo=UNIVERSIDAD')
+    assert cusco['total'] == 3 and all(i['ubicacion']['codigo'] == UBIC_CUSCO for i in cusco['items'])
+    publicas = pedir(abierto, 'GET', f'{BASE}/instituciones?ubicacion={UBIC_LIMA}&gestion=PUBLICA&limite=50')
+    assert all(i['gestion'] == 'PUBLICA' and i['ubicacion']['codigo'] == UBIC_LIMA for i in publicas['items'])
+    for filtro in ('tipo=ESCUELA', 'gestion=MIXTA'):
+        pedir(abierto, 'GET', f'{BASE}/instituciones?{filtro}', esperado=422)
     pedir(abierto, 'GET', f'{BASE}/instituciones/no-existe', esperado=404)
+
+
+def test_hu039_detalle_de_institucion_con_ingreso_por_familia(abierto):
+    pucp = pedir(abierto, 'GET', f'{BASE}/instituciones/{PUCP}')
+    assert (pucp['nombre'], pucp['gestion'], pucp['distrito']) == (
+        'Pontificia Universidad Católica del Perú', 'PRIVADA', 'San Miguel')
+    assert pucp['direccion'] == 'Av. Universitaria N° 1801' and pucp['pagina_web'] == 'https://www.pucp.edu.pe/'
+    con_ingreso = [c for c in pucp['carreras'] if c['ingreso'] is not None]
+    assert con_ingreso and all(c['ingreso']['minimo'] <= c['ingreso']['maximo'] for c in con_ingreso)
+    administracion = [c for c in pucp['carreras'] if c['familia']['codigo'] == '331']
+    assert all(c['ingreso'] == {'promedio': 10812, 'minimo': 1500, 'maximo': 29627} for c in administracion)
+    nombres = [c['nombre'] for c in pucp['carreras']]
+    assert len(nombres) == len(set(c['codigo'] for c in pucp['carreras']))
+
+
+def test_f06_los_listados_se_paginan(abierto):
+    primera = pedir(abierto, 'GET', f'{BASE}/carreras?limite=4')
+    segunda = pedir(abierto, 'GET', f'{BASE}/carreras?limite=4&desde=4')
+    assert (primera['total'], segunda['total']) == (603, 603)
+    assert codigos(primera) + codigos(segunda) == codigos(pedir(abierto, 'GET', f'{BASE}/carreras?limite=8'))
+    assert pedir(abierto, 'GET', f'{BASE}/carreras?desde=700')['items'] == []
+    # El total cuenta los filtros, no la página.
+    assert pedir(abierto, 'GET', f'{BASE}/instituciones?tipo=FFAA_POLICIA&limite=1')['total'] == 8
+    for consulta in ('limite=0', 'limite=51', 'desde=-1'):
+        for lista in ('carreras', 'ocupaciones', 'instituciones'):
+            pedir(abierto, 'GET', f'{BASE}/{lista}?{consulta}', esperado=422)
+
+
+def test_f06_el_filtro_favoritos_se_combina_con_los_demas(abierto):
+    for tipo, codigo in (('CARRERA', PSICOLOGIA), ('CARRERA', ENFERMERIA), ('OCUPACION', '19-3033.00'),
+                         ('INSTITUCION', INST_TECNICO)):
+        pedir(abierto, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': tipo, 'codigo': codigo})
+    favoritas = pedir(abierto, 'GET', f'{BASE}/carreras?favoritos=true')
+    assert (favoritas['total'], codigos(favoritas)) == (2, [ENFERMERIA, PSICOLOGIA])
+    assert all(c['es_favorita'] for c in favoritas['items'])
+    assert codigos(pedir(abierto, 'GET', f'{BASE}/carreras?favoritos=true&buscar=psico')) == [PSICOLOGIA]
+    assert pedir(abierto, 'GET', f'{BASE}/carreras?favoritos=true&limite=1')['total'] == 2
+    assert codigos(pedir(abierto, 'GET', f'{BASE}/ocupaciones?favoritos=true')) == ['19-3033.00']
+    assert codigos(pedir(abierto, 'GET', f'{BASE}/instituciones?favoritos=true&tipo=INSTITUTO')) == [INST_TECNICO]
+    assert pedir(abierto, 'GET', f'{BASE}/instituciones?favoritos=true&tipo=FFAA_POLICIA')['total'] == 0
+    # Los favoritos son de la cuenta: otra cuenta no los ve.
+    completar(abierto, 't-inicio', cuenta='est-luis')
+    assert pedir(abierto, 'GET', '/cuentas/est-luis/catalogo/carreras?favoritos=true')['total'] == 0
+
+
+def test_f06_opciones_de_los_filtros(abierto):
+    familias = pedir(abierto, 'GET', f'{BASE}/familias')
+    # Solo las familias con carreras, por área y nombre; de ellas salen las 28 áreas (campo específico).
+    assert len(familias) == 83 and len({f['area_codigo'] for f in familias}) == 28
+    assert [f['area_codigo'] for f in familias] == sorted(f['area_codigo'] for f in familias)
+    assert {'codigo': '313', 'nombre': 'Psicología', 'area_codigo': '31',
+            'area_nombre': 'Ciencias Sociales y del Comportamiento'} in familias
+    # Solo los departamentos con instituciones: Lima Provincias solo tiene ingresos.
+    ubicaciones = pedir(abierto, 'GET', f'{BASE}/ubicaciones')
+    assert len(ubicaciones) == 25 and 'Lima Provincias' not in [u['nombre'] for u in ubicaciones]
+    assert ubicaciones[:2] == [{'codigo': 'dep-1', 'nombre': 'Amazonas'}, {'codigo': 'dep-2', 'nombre': 'Áncash'}]
+    # Ajuste resultados-intereses: sin opciones de grupo; la ficha de la familia elegida.
+    # Los grupos ya no filtran, pero siguen nombrando el grupo de una ocupación.
+    grupos = pedir(abierto, 'GET', f'{BASE}/grupos')
+    assert len(grupos) == 20 and grupos[0] == {'codigo': '35', 'nombre': 'Alimentos y restaurantes'}
+    ficha = pedir(abierto, 'GET', f'{BASE}/familias/313')
+    assert {k: ficha[k] for k in ('codigo', 'area_codigo', 'carreras_por_tipo', 'total_carreras',
+                                  'ocupaciones_principales', 'ocupaciones_secundarias', 'recomendada_posicion')} == {
+        'codigo': '313', 'area_codigo': '31', 'carreras_por_tipo': {'UNIVERSIDAD': 3}, 'total_carreras': 3,
+        'ocupaciones_principales': 4, 'ocupaciones_secundarias': 4, 'recomendada_posicion': None}
+    assert ficha['descripcion'] and [i['tipo'] for i in ficha['ingresos']] == ['UNIVERSIDAD']
+    assert [v['codigo'] for v in ficha['vecinas']] == ['311', '312']
+    pedir(abierto, 'GET', f'{BASE}/familias/999', esperado=404)
+
+
+def _ver_todas_menos(sesion, modelo, evento, quedan):
+    """DATO DE PRUEBA: registra vistas de est-ana de todo el catálogo salvo `quedan`, sin pedirlas una a una."""
+    cuenta = buscar(sesion, m.Cuenta, 'est-ana')
+    sesion.add_all(m.EventoUso(cuenta_id=cuenta.id, tipo=evento, fecha_hora=datetime(2026, 10, 7, 10),
+                               id_referencia=id_)
+                   for id_, codigo in sesion.execute(select(modelo.id, modelo.codigo)) if codigo not in quedan)
+    sesion.commit()
+
+
+def test_hu042_lugar_inesperado_elige_lo_no_visto(abierto, sesion):
+    elegida = pedir(abierto, 'GET', f'{BASE}/carreras/inesperada?excluir={PSICOLOGIA}')
+    assert elegida['revisitando'] is False and elegida['codigo'] != PSICOLOGIA
+    _ver_todas_menos(sesion, m.Carrera, 'VISTA_CARRERA', {PSICOLOGIA, ENFERMERIA})
+    assert pedir(abierto, 'GET', f'{BASE}/carreras/inesperada?excluir={PSICOLOGIA}') == {
+        'codigo': ENFERMERIA, 'revisitando': False}
+    pedir(abierto, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': ENFERMERIA})
+    # Vio todas menos la actual: revisita una distinta de la actual.
+    for _ in range(5):
+        revisita = pedir(abierto, 'GET', f'{BASE}/carreras/inesperada?excluir={PSICOLOGIA}')
+        assert revisita['revisitando'] is True and revisita['codigo'] != PSICOLOGIA
+    # Sin la actual vista, la actual sí es candidata desde otra.
+    assert pedir(abierto, 'GET', f'{BASE}/carreras/inesperada?excluir={ENFERMERIA}') == {
+        'codigo': PSICOLOGIA, 'revisitando': False}
+
+
+def test_hu042_lugar_inesperado_de_ocupaciones(abierto, sesion):
+    elegida = pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=19-3033.00')
+    assert elegida['revisitando'] is False and elegida['codigo'] != '19-3033.00'
+    _ver_todas_menos(sesion, m.Ocupacion, 'VISTA_OCUPACION', {'25-2031.00'})
+    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=19-3033.00') == {
+        'codigo': '25-2031.00', 'revisitando': False}
+    # Pedir el lugar inesperado no cuenta como vista: teacher sigue sin ver.
+    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=19-3033.00')['codigo'] == '25-2031.00'
+    assert pedir(abierto, 'GET', f'{BASE}/ocupaciones/inesperada?excluir=25-2031.00')['revisitando'] is True
 
 
 def test_las_vistas_registran_su_evento_con_referencia(abierto):
@@ -140,25 +333,25 @@ def test_las_vistas_registran_su_evento_con_referencia(abierto):
 
 
 def catalogo_extra(sesion, cantidad):
-    # DATO DE PRUEBA: carreras, ocupaciones e instituciones propias para medir pocas contra muchas.
-    familia = sesion.scalars(select(m.FamiliaCarrera)).first()
-    ubicacion = buscar(sesion, m.Ubicacion, 't-lima')
-    psicologia = buscar(sesion, m.Carrera, 'psychology')
-    uni = buscar(sesion, m.Institucion, 't-uni')
-    psicologo = buscar(sesion, m.Ocupacion, 'psychologist')
+    # DATO DE PRUEBA: carreras, ocupaciones, instituciones e ingresos propios para medir pocas contra muchas.
+    psicologia = buscar(sesion, m.Carrera, PSICOLOGIA)
+    ubicacion = buscar(sesion, m.Ubicacion, UBIC_LIMA)
+    uni = buscar(sesion, m.Institucion, INST_UNI)
     for n in range(cantidad):
-        carrera = m.Carrera(codigo=f'extra-{n}', nombre=f'Carrera extra {n}', familia_id=familia.id,
-                            codigo_riasec='S')
+        carrera = m.Carrera(codigo=f'extra-{n}', nombre=f'Carrera extra {n}', familia_id=psicologia.familia_id,
+                            tipo='UNIVERSIDAD', codigo_cine='313016', codigo_riasec='S')
         ocupacion = m.Ocupacion(codigo=f'extra-{n}', codigo_onet=f'99-{n:04}.00', titulo=f'Ocupación extra {n}',
-                                codigo_riasec='S')
+                                grupo='19', codigo_riasec='S', estilos_trabajo=['iniciativa'])
         institucion = m.Institucion(codigo=f'extra-{n}', nombre=f'Institución extra {n}', tipo='INSTITUTO',
                                     ubicacion_id=ubicacion.id)
         sesion.add_all([carrera, ocupacion, institucion])
         sesion.flush()
-        sesion.add_all([m.CarreraOcupacion(carrera_id=carrera.id, ocupacion_id=psicologo.id),
-                        m.CarreraOcupacion(carrera_id=psicologia.id, ocupacion_id=ocupacion.id),
+        sesion.add_all([m.OcupacionFamilia(ocupacion_id=ocupacion.id, familia_id=psicologia.familia_id,
+                                           es_principal=True, orden=0),
                         m.InstitucionCarrera(institucion_id=institucion.id, carrera_id=psicologia.id),
-                        m.InstitucionCarrera(institucion_id=uni.id, carrera_id=carrera.id)])
+                        m.InstitucionCarrera(institucion_id=uni.id, carrera_id=carrera.id),
+                        m.IngresoInstitucion(institucion_id=institucion.id, familia_id=psicologia.familia_id,
+                                             promedio=1000, minimo=500, maximo=2000)])
 
 
 def test_presupuesto_de_consultas_del_catalogo(tmp_path, base_aislada):
@@ -169,5 +362,11 @@ def test_presupuesto_de_consultas_del_catalogo(tmp_path, base_aislada):
                 catalogo_extra(sesion, extra)
             completar(cliente, 't-inicio')
             # B17: +1 por la cuenta del actor que carga el guardia.
-            conteos.append([medir(cliente, aplicacion, 'GET', ruta, limite=11)[1].cantidad for ruta in RUTAS_CONSULTA])
+            pedir(cliente, 'POST', '/acciones/marcar-favorito',
+                  {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': PSICOLOGIA})
+            rutas = (*RUTAS_CONSULTA, f'{BASE}/carreras?favoritos=true',
+                     f'{BASE}/carreras?tipo=UNIVERSIDAD&area=31&familia=313',
+                     f'{BASE}/instituciones?gestion=PUBLICA&ubicacion={UBIC_LIMA}', f'{BASE}/ocupaciones?area=31&familia=313',
+                     f'{BASE}/instituciones/{PUCP}', f'{BASE}/ocupaciones/{DIRECTORES}')
+            conteos.append([medir(cliente, aplicacion, 'GET', ruta, limite=18)[1].cantidad for ruta in rutas])
     assert conteos[0] == conteos[1]

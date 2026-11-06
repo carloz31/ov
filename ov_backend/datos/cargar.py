@@ -10,12 +10,13 @@ from sqlalchemy.orm import Session
 from app.config import cargar_configuracion
 from app.database import comprobar_tablas, crear_motor_bd
 from app.models import Actividad, Base, ItemRegistro
-from datos import ruta
+from datos import contenido, ruta
 
 
-CONJUNTOS = {'ruta': ruta.cargar}
+CONJUNTOS = {'ruta': ruta.cargar, 'contenido': contenido.cargar}
 TABLAS_PRINCIPALES = (
-    'cuenta', 'actividad', 'regla_desbloqueo', 'item_instrumento', 'ocupacion', 'item_registro',
+    'cuenta', 'actividad', 'regla_desbloqueo', 'item_instrumento', 'ocupacion', 'item_registro', 'carrera',
+    'institucion',
 )
 MENSAJE_SIN_ESQUEMA_CARGA = (
     'La base no tiene el esquema. Ejecuta `uv run alembic upgrade head`.'

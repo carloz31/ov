@@ -1,0 +1,87 @@
+{
+  "_nota": "Registro de cierre del instrumento de habilidades (H1). Se abre al revelar la página en el libro de Helena. Lee el resultado con eco (RESULTADO de la aplicación). Consignas en esqueleto.",
+  "id": "h1",
+  "codigo": "h1",
+  "tipo": "registro",
+  "titulo": "Mi plan para fortalecer una habilidad",
+  "subtitulo": "De vuelta en la taberna",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 5,
+  "obligatoria": false,
+  "requisitos": [
+    "h-habilidades-4"
+  ],
+  "ubicacion": "Ciudad, taberna de Dora",
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "dora",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
+  "nodos": [
+    {
+      "id": "h1-01",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "expresion": "neutral",
+      "texto": "Volviste con la página abierta. Yo ya vi muchas de esas: lo que importa no es cuál habilidad salió más alta, sino qué haces con la que salió más baja. Rosa, la de la brigada, era la más callada de su promoción."
+    },
+    {
+      "id": "h1-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones: la habilidad que elijas y tu acción aparecen en la fila de habilidades sociales.",
+      "eco": "h1-ref-resultado"
+    },
+    {
+      "id": "h1-03",
+      "tipo": "consigna",
+      "hablanteId": "dora",
+      "item": "h1-habilidad",
+      "premisa": "Elige una habilidad con menor desarrollo en tu página y cuenta por qué la elegiste.",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "h1-04",
+      "tipo": "consigna",
+      "hablanteId": "dora",
+      "item": "h1-accion",
+      "premisa": "Una acción concreta y cotidiana para practicarla: qué harías, dónde o con quién.",
+      "ayuda": "Pequeña y repetible: «decir una vez al día algo que pienso y suelo callar».",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "h1-05",
+      "tipo": "consigna",
+      "hablanteId": "dora",
+      "item": "h1-senal",
+      "premisa": "¿Cómo sabrás que mejoró?",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Una habilidad baja no es un veto: es tu plan de práctica. Anotado en tu bitácora."
+  },
+  "promptDiario": "Lo que me dijo Helena",
+  "mapa": {
+    "x": 330,
+    "y": 480,
+    "icono": "registro",
+    "origen": "h-habilidades-4"
+  }
+}

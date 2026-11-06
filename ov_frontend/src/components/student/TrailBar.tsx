@@ -1,19 +1,27 @@
+import type { ReactNode } from 'react'
+
 export function TrailBar({
   label,
   value,
   text,
   muted = false,
+  detalle,
 }: {
   label: string
   value: number
   text?: string
   muted?: boolean
+  // Lo que acompaña al rótulo visible (la mochila: «· n nuevas»); la barra conserva `label` como nombre.
+  detalle?: ReactNode
 }) {
   const bounded = Math.max(0, Math.min(100, value))
   return (
     <div className={`sx-d-trail ${muted ? 'sx-d-trail-muted' : ''}`}>
       <div>
-        <span>{label}</span>
+        <span>
+          {label}
+          {detalle}
+        </span>
         <strong>{text ?? `${Math.round(bounded)} %`}</strong>
       </div>
       <div

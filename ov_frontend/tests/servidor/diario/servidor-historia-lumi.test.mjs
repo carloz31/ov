@@ -102,7 +102,7 @@ test('el diario dice «carta» en el editor y en los avisos, y el aviso no corta
   assert.match(css, /\[data-ambient='journal'\] \.sx-badge-copy \.sx-toast-linea \{[^}]*white-space: normal/)
 })
 
-test('LUMI queda fuera del mapa, del avance y de las novedades; la apertura es automática al desbloquear', () => {
+test('LUMI queda fuera del mapa, del avance y de las novedades; un capítulo nunca se abre solo al desbloquearse', () => {
   const app = conActividades()
   const { progresoBloque } = app.load('src/lib/servidor/contenidos.ts')
   const sinLumi = inicial.filter((b) => b.espacio !== 'LUMI')
@@ -112,19 +112,108 @@ test('LUMI queda fuera del mapa, del avance y de las novedades; la apertura es a
   assert.ok(!bloquesZona(inicial, 'CIUDAD').some((b) => b.espacio === 'LUMI'))
   const contenidos = app.load('src/data/activities/contenidos.ts')
   for (const n of [1, 2, 3, 4, 5]) assert.equal(contenidos.contenidoPorClave(`t_lumi_${n}`).mapa, undefined)
-  const sesion = app.load('src/store/servidor/sesion.ts')
-  sesion.publicar({
-    desbloqueosAccion: [
-      {
-        regla: 'R-t-lumi-1',
-        tipo_objetivo: 'ACTIVIDAD',
-        objetivo: { codigo: 't-lumi-1', nombre: 'Cómo llegué' },
-        condiciones: [],
-      },
-    ],
-  })
-  assert.deepEqual(copia(app.load('src/store/servidor/avisos.ts').avisosPendientes()), [])
+  // Ajuste notificaciones: un recuerdo (ACTIVIDAD) nunca llega como notificación; el adaptador no lo anuncia.
+  const { notificacionLegible } = app.load('src/lib/servidor/adaptadoresNotificaciones.ts')
+  const recuerdo = {
+    codigo: 'NOT-1',
+    tipo: 'DESBLOQUEO',
+    referencia: 't-lumi-1',
+    nombre: 'Cómo llegué',
+    detalle: 'ACTIVIDAD',
+    creada_en: '2026-10-07T10:00:00',
+    vista: false,
+    estudiante: null,
+  }
+  assert.equal(notificacionLegible(recuerdo), null)
   const pagina = readFileSync('src/features/journal/hooks/useJournalPage.ts', 'utf8')
-  assert.match(pagina, /historia\.esRecuerdo\(d\.objetivo\.codigo\)/)
-  assert.match(pagina, /if \(screen !== 'home' \|\| !capituloPendiente\) return/)
+  assert.doesNotMatch(pagina, /capituloPendiente|nuevos_desbloqueos/)
+})
+
+test('un capítulo recién desbloqueado es nuevo hasta verlo: brilla con «Nuevo recuerdo» y deja de serlo al completarlo', () => {
+  const conEstado = (estado) =>
+    inicial.map((b) =>
+      b.espacio === 'LUMI'
+        ? { ...b, actividades: b.actividades.map((a, i) => (i === 0 ? { ...a, estado, bloqueo: null } : a)) }
+        : b,
+    )
+  const nuevo = useHistoriaDePrueba(conActividades(conEstado('DISPONIBLE'))).capitulos[0]
+  assert.deepEqual([nuevo.desbloqueado, nuevo.nuevo], [true, true])
+  const visto = useHistoriaDePrueba(conActividades(conEstado('COMPLETADA'))).capitulos[0]
+  assert.deepEqual([visto.desbloqueado, visto.nuevo], [true, false])
+  const app = conActividades()
+  const { HistoriaLumi } = app.load('src/features/journal/components/HistoriaLumi.tsx')
+  const html = renderToStaticMarkup(
+    React.createElement(HistoriaLumi, { capitulos: [nuevo, visto], onVer() {} }),
+  )
+  assert.match(html, /data-estado="nuevo"[^]*Nuevo recuerdo · Toca para verlo/)
+  assert.match(html, /data-estado="abierto"[^]*Volver a ver/)
+})
+
+test('local: un capítulo abierto por la amistad es nuevo mientras no esté en seenLumiMemories', () => {
+  const app = fixtureServidor({ api: false })
+  const ui = app.load('src/store/studentUiStore.ts')
+  assert.deepEqual(copia(useHistoriaDePrueba(app, 6).capitulos.map((c) => c.nuevo)), [
+    true,
+    true,
+    false,
+    false,
+    false,
+  ])
+  ui.updateStudentUi((s) => ({ ...s, seenLumiMemories: [1] }))
+  assert.deepEqual(copia(useHistoriaDePrueba(app, 6).capitulos.map((c) => c.nuevo)), [
+    false,
+    true,
+    false,
+    false,
+    false,
+  ])
+})
+
+test('tarjeta de Lumi en singular y cuaderno como línea de tiempo con su origen', () => {
+  const app = conActividades()
+  const { LumiBondPanel } = app.load('src/features/journal/components/LumiBondPanel.tsx')
+  const bond = { conversations: 1, progress: 20, nextMemoryAt: 5, levelIndex: 0, level: 'Conociéndonos' }
+  const panel = renderToStaticMarkup(React.createElement(LumiBondPanel, { bond }))
+  assert.match(panel, /1 carta enviada/)
+  assert.match(panel, /Faltan <strong>4 cartas<\/strong>/)
+  const { JournalCard } = app.load('src/features/journal/components/JournalCard.tsx')
+  const entrada = {
+    id: 'servidor-1',
+    title: 'Fútbol con amigos',
+    body: 'Hoy jugué fútbol.',
+    createdAt: '2026-10-21T15:00:00Z',
+    kind: 'guided',
+    etiqueta: 'Pregunta del día',
+    topicTags: [],
+  }
+  const html = renderToStaticMarkup(React.createElement(JournalCard, { entry: entrada, onOpen() {} }))
+  assert.match(
+    html,
+    /<li class="sx-j-entry" data-kind="daily"><button type="button" class="sx-j-entry-open">/,
+  )
+  assert.match(html, /21 de octubre[^]*Pregunta del día[^]*<h3>Fútbol con amigos<\/h3>[^]*Hoy jugué fútbol\./)
+  assert.doesNotMatch(html, /Leer completa/)
+})
+
+test('un recuerdo ya visto se vuelve a ver desde su primer nodo, no desde el cierre', () => {
+  const vista = readFileSync('src/pages/student/StudentJournalView.tsx', 'utf8')
+  assert.match(vista, /<StudentActivityPlayer[^>]*\bdesdeInicio\b/)
+  // Saltos de línea normalizados: en un checkout de Windows el archivo puede tener CRLF.
+  const reproductor = readFileSync('src/features/activities/hooks/useActivityPlayer.ts', 'utf8').replace(/\r\n/g, '\n')
+  assert.match(reproductor, /if \(edit \|\| desdeInicio\) return nodes\[0\]\?\.id/)
+  // La regla va antes de la que abre en el cierre una actividad COMPLETADA.
+  assert.ok(
+    reproductor.indexOf('edit || desdeInicio') < reproductor.indexOf("?.estado === 'COMPLETADA'\n    )"),
+  )
+})
+
+test('salir de un recuerdo con la X avisa que se vuelve al diario; las demás actividades siguen volviendo al mapa', () => {
+  const vista = readFileSync('src/pages/student/StudentJournalView.tsx', 'utf8')
+  assert.match(vista, /titulo: '¿Quieres volver al diario\?'/)
+  assert.match(vista, /Podrás volver a ver este recuerdo cuando quieras desde la historia de Lumi\./)
+  const reproductor = readFileSync('src/features/activities/components/StudentActivityPlayer.tsx', 'utf8')
+  assert.match(reproductor, /salida=\{salida\?\.aviso && \{ \.\.\.salida\.aviso, accion: salida\.texto \}\}/)
+  const barra = readFileSync('src/features/activities/components/PlayerTopBar.tsx', 'utf8')
+  assert.match(barra, /salida\?\.titulo \?\? '¿Quieres volver al mapa\?'/)
+  assert.match(barra, /salida\?\.accion \?\? 'Volver al mapa'/)
 })

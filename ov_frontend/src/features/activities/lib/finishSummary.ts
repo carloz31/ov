@@ -5,6 +5,8 @@ export type RecursoCierre = {
   nombre: string
   persona?: string
   rol?: string
+  // Ajuste testimonios: cargo o situación de la persona, debajo de su nombre.
+  contexto?: string
   cita?: string
 }
 // Filas de «Se abrió para ti». Las secciones van juntas en una fila, con un enlace por nombre.
@@ -27,7 +29,7 @@ export type EntradaCierre = {
   completada: boolean
   tienePreguntaDiario: boolean
   modoApi?: boolean
-  testimonios?: Record<string, Pick<RecursoCierre, 'persona' | 'rol' | 'cita'>>
+  testimonios?: Record<string, Pick<RecursoCierre, 'persona' | 'rol' | 'contexto' | 'cita'>>
   pieza?: { nombre: string; codigo: string; obtenidas: number; necesarias: number }
 }
 export type ResumenCierre = {
@@ -95,7 +97,7 @@ export function resumirCierre(entrada: EntradaCierre): ResumenCierre {
       codigo: 'actividades',
       texto: actividades === 1 ? '1 actividad nueva en el mapa' : `${actividades} actividades nuevas en el mapa`,
     })
-  if (de('CONVERSACIONES').length)
+  if (de('CONVERSACION').length)
     extras.push({ tipo: 'CONVERSACIONES', codigo: 'conversaciones', texto: 'Conversaciones disponibles' })
   if (entrada.pieza) {
     const { codigo, nombre, obtenidas, necesarias } = entrada.pieza

@@ -6,7 +6,7 @@ import { copia, elementos, fixtureServidor, jsonServidor } from '../../soporte/s
 const items = jsonServidor('ruta/ruta-items-registro-t-valores')
 const orden = items.find((i) => i.codigo === 't-val-orden')
 const contenido = JSON.parse(
-  (await import('node:fs')).readFileSync('src/data/activities/contenidos/t_valores.json', 'utf8'),
+  (await import('node:fs')).readFileSync('src/data/activities/contenidos/ruta/t_valores.json', 'utf8'),
 )
 const nodo = contenido.nodos.find((n) => n.item === 't-val-orden')
 

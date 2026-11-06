@@ -17,13 +17,13 @@ const texto = (node) =>
         ? texto(node.props.children)
         : ''
 
-test('el resultado conserva IRA y sus porcentajes en el orden del código, sin ordenar puntajes localmente', async () => {
+test('el resultado conserva IRA y sus puntajes visuales en el orden del código, sin ordenar puntajes localmente', async () => {
   const f = await iniciarMara({ resultado: jsonServidor('resultado-riasec') }),
     a = f.app.load('src/lib/servidor/adaptadores.ts')
   const resultado = copia(jsonServidor('resultado-riasec'))
   resultado.dimensiones.reverse()
   assert.deepEqual(
-    Array.from(a.areasRiasec(resultado), (d) => [d.codigo, d.porcentaje]),
+    Array.from(a.areasRiasec(resultado), (d) => [d.codigo, d.puntaje_visual]),
     [
       ['I', 100],
       ['R', 75],
@@ -32,9 +32,10 @@ test('el resultado conserva IRA y sus porcentajes en el orden del código, sin o
   )
   const node = f.app.load('src/features/activities/components/nodes/ResultNode.tsx').ResultNode
   const tree = node({ activity: f.activity, instrumentId: 'TEST-RIASEC' })
-  assert.match(texto(tree), /100\s*%/)
-  assert.match(texto(tree), /75\s*%/)
-  assert.match(texto(tree), /50\s*%/)
+  assert.match(texto(tree), /Investigativa\s*:\s*100\b/)
+  assert.match(texto(tree), /Realista\s*:\s*75\b/)
+  assert.doesNotMatch(texto(tree), /%/)
+  assert.match(texto(tree), /Artística\s*:\s*50\b/)
   assert.equal(f.app.load('src/store/journeyStore.ts').getJourneySnapshot().results.length, 0)
   assert.equal(f.app.requests.filter((r) => r.method === 'POST').length, 0)
 })
@@ -153,7 +154,7 @@ test('al fallar la consulta del resultado después del POST 14 se reintenta solo
   // F00: sin resultados_generados el cierre no anuncia el libro; el aviso vuelve con Revelar (F03).
   assert.doesNotMatch(texto(tree), /Elena tiene algo que mostrarte/)
   assert.equal(
-    f.app.requests.some((r) => r.url.includes('marcar-vistos')),
+    f.app.requests.some((r) => r.url.includes('/notificaciones/marcar-vistas')),
     false,
   )
 })
@@ -176,32 +177,27 @@ test('perfil plano no inventa dimensiones destacadas, coincidencias ni carreras 
   assert.equal(elementos(tree, (e) => e.props.to === '/student/exploration?punto=mara-test').length, 1)
 })
 
-test('isAffine usa código y ajuste del servidor y oculta afinidades antes de revelar', async () => {
+test('isAffine usa código y banda del servidor y oculta afinidades antes de revelar', async () => {
+  // Ajuste resultados-intereses: la banda (Muy afín, Afín) reemplaza al nivel de ajuste O*NET.
   const f = await iniciarMara(),
     s = f.app.load('src/features/discovery/lib/catalogSelectors.ts'),
-    resultado = jsonServidor('resultado-riasec')
-  assert.equal(s.isAffine('geologist', ['intereses'], { resultado, revelado: false }), undefined)
-  assert.equal(s.isAffine('geologist', [], { resultado, revelado: true }), 'Mejor ajuste')
-  assert.equal(s.isAffine('civil-engineer', [], { resultado, revelado: true }), 'Gran ajuste')
-  assert.equal(s.isAffine('architect', [], { resultado, revelado: true }), 'Buen ajuste')
-  assert.equal(s.isAffine('psychologist', ['intereses'], { resultado, revelado: true }), undefined)
+    resultado = jsonServidor('ruta/ruta-resultado-riasec')
+  const muy = resultado.ocupaciones.find((o) => o.banda === 'MUY_AFIN')
+  const afin = resultado.ocupaciones.find((o) => o.banda === 'AFIN')
+  assert.equal(s.isAffine('19-2042.00', ['intereses'], { resultado, revelado: false }), undefined)
+  assert.equal(s.isAffine(muy.codigo, [], { resultado, revelado: true }), 'Muy afín')
+  if (afin) assert.equal(s.isAffine(afin.codigo, [], { resultado, revelado: true }), 'Afín')
+  assert.equal(s.isAffine('no-es-afin', ['intereses'], { resultado, revelado: true }), undefined)
   assert.equal(
-    s.isAffine('geologist', [], { resultado: { ...resultado, perfil_plano: true }, revelado: true }),
+    s.isAffine('19-2042.00', [], { resultado: { ...resultado, perfil_plano: true }, revelado: true }),
     undefined,
   )
 })
 
-test('el catálogo respeta posición y correlación e incluye códigos desconocidos sin enlace', async () => {
-  // DATO DE PRUEBA: nurse y código nulo sin detalle del catálogo del front.
+// Ajuste catalogo-datos-reales (F6a): en api, `?afines=1` ya no es un modo aparte con las coincidencias del
+// resultado: es un filtro del catálogo del servidor (las letras del código de interés).
+test('en api, «afines» abre el catálogo del servidor con el filtro', async () => {
   const resultado = jsonServidor('resultado-riasec')
-  resultado.coincidencias.push({
-    ...resultado.coincidencias[0],
-    codigo: 'nurse',
-    codigo_onet: '29-1141.00',
-    titulo: 'Enfermero/a',
-    posicion: 2,
-  })
-  resultado.coincidencias.reverse()
   const f = await iniciarMara({ resultado, ruta: '/student/catalog/professions?afines=1' })
   const context = f.app.load('src/context/occupationExplorationContext.ts')
   context.useOccupationExplorationContext = () => ({
@@ -209,20 +205,15 @@ test('el catálogo respeta posición y correlación e incluye códigos desconoci
     careerInterestIds: [],
     institutionInterestIds: [],
   })
-  const discovery = f.app.load('src/store/discoveryStore.ts')
-  discovery.revelarPaginaApi('est-ana', resultado.calculado_en, 'intereses')
   const View = f.app.load('src/pages/student/StudentCatalogView.tsx').StudentCatalogView
-  const tree = View({ section: 'professions' }),
-    cards = elementos(tree, (e) => e.type === 'article')
-  assert.match(texto(cards[0]), /Geólogo/)
-  const nurse = cards.find((c) => texto(c).includes('Enfermero/a'))
-  assert.ok(nurse)
-  assert.match(texto(nurse), /correlación/)
-  assert.equal(elementos(nurse, (e) => !!e.props.to).length, 0)
+  const tree = View({ section: 'professions' })
+  const [catalogo] = elementos(tree, (e) => e.type?.name === 'CatalogoServidor')
+  assert.equal(catalogo.props.section, 'professions')
+  assert.equal(elementos(tree, (e) => e.type === 'article').length, 0)
 })
 
 test('el libro resume las dimensiones remotas y anuncia contenidos, con enlaces al resultado y la guía', async () => {
-  const resultado = jsonServidor('resultado-riasec'),
+  const resultado = jsonServidor('ruta/ruta-resultado-riasec'),
     f = await iniciarMara({ resultado })
   // F03: intereses revelada en el servidor.
   libroServidor(f.app, { 'APL-RIASEC': resultado })
@@ -232,10 +223,12 @@ test('el libro resume las dimensiones remotas y anuncia contenidos, con enlaces 
   assert.match(marcado, /Tu código de interés · IRA/)
   for (const codigo of resultado.codigo_interes.codigo)
     assert.ok(marcado.includes(resultado.dimensiones.find((dimension) => dimension.codigo === codigo).descripcion))
-  assert.match(marcado, /10 ocupaciones afines/)
-  assert.match(marcado, /3 carreras que conducen a ellas/)
+  // Ajuste resultados-intereses: las ocupaciones afines y las familias de carreras del servidor.
+  assert.ok(marcado.includes(`${resultado.ocupaciones.length} ocupaciones afines`))
+  assert.ok(marcado.includes(`${resultado.familias.length} familias de carreras que llevan a ellas`))
   assert.doesNotMatch(marcado, /100\s*%|Geólogo|Carreras que conducen a ellas/)
-  assert.match(marcado, /Disponible en una próxima iteración/)
+  // Ajuste carga-instrumentos: en api ya no hay páginas de ejemplo.
+  assert.doesNotMatch(marcado, /Disponible en una próxima iteración/)
   assert.match(marcado, /href="\/student\/profile\/helena\/intereses"/)
   assert.doesNotMatch(marcado, /\?guia=1/)
   assert.doesNotMatch(marcado, /act-tip-final&amp;revision=1|catalog\/careers\/civil-engineering|catalog\/professions\/geologist/)

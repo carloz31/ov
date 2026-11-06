@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { forestFireProfessionals } from '@/data/content/forestFireCase'
+import type { ForestFireProfessional } from '@/types/cases'
 export function useProfessionalDirectory({
   selectedIds,
   budgetRemaining,
   onCall,
   onDragContact,
+  professionals = forestFireProfessionals,
 }: {
   selectedIds: string[]
   budgetRemaining: number
   onCall: (id: string) => void
   onDragContact: (id?: string, overTeam?: boolean) => void
+  // Ajuste carga-casos: el directorio del caso que se juega (local: el del incendio).
+  professionals?: ForestFireProfessional[]
 }) {
   const [resumeId, setResumeId] = useState<string>()
   const [desktop, setDesktop] = useState(
@@ -22,7 +26,7 @@ export function useProfessionalDirectory({
   )
   const suppressClick = useRef(false)
   const [dragGhost, setDragGhost] = useState<{ id: string; x: number; y: number }>()
-  const professional = forestFireProfessionals.find((p) => p.id === resumeId)
+  const professional = professionals.find((p) => p.id === resumeId)
   const called = !!resumeId && selectedIds.includes(resumeId)
   useEffect(() => {
     const media = window.matchMedia('(min-width: 1024px)')

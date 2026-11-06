@@ -1,5 +1,9 @@
-import { useIconosObtenidos } from '@/features/discovery/hooks/useIconosObtenidos'
+import { useColeccionIconos } from '@/features/discovery/hooks/useIconosObtenidos'
 import { useCatalogAffinity } from '@/features/discovery/hooks/useCatalogAffinity'
+import { useCatalogoDelServidor } from '@/features/discovery/hooks/useCatalogoServidor'
+import { CatalogoServidor } from '@/features/discovery/components/CatalogoServidor'
+import { AvisoFavorito } from '@/features/discovery/components/AvisoFavorito'
+import { useFavoritoServidor } from '@/features/discovery/hooks/useFavoritoServidor'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Search, GraduationCap, BriefcaseBusiness, School } from 'lucide-react'
@@ -10,9 +14,15 @@ import { Seal } from '@/components/student/Seal'
 import { useDiscovery } from '@/store/discoveryStore'
 
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
-import { textoAjuste } from '@/lib/servidor/adaptadores'
+import { textoBanda } from '@/lib/servidor/adaptadores'
 import { discoveryPaths } from '@/routes/discoveryPaths'
-import { careerDetails, occupationDetails, institutionDetails, dimensionNames, institutionTypeNames } from '@/features/discovery/lib/catalogDetails'
+import {
+  careerDetails,
+  occupationDetails,
+  institutionDetails,
+  dimensionNames,
+  institutionTypeNames,
+} from '@/features/discovery/lib/catalogDetails'
 import { getFamily, matchesName } from '@/features/discovery/lib/catalogSelectors'
 const sectionCopy = {
   professions: {
@@ -36,10 +46,25 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
     discovery = useDiscovery(),
     [params] = useSearchParams()
   const [query, setQuery] = useState('')
-  const { coincidencias, coincidenciasAdicionales, ordenarOcupaciones, afinidadPara, textoAfinidad,
-    errorAfinidad, perfilPlano, necesitaRevelar, reintentarAfinidad } = useCatalogAffinity(discovery, params.get('afines') === '1')
+  const {
+    coincidencias,
+    coincidenciasAdicionales,
+    ordenarOcupaciones,
+    afinidadPara,
+    textoAfinidad,
+    errorAfinidad,
+    perfilPlano,
+    necesitaRevelar,
+    reintentarAfinidad,
+  } = useCatalogAffinity(discovery, params.get('afines') === '1')
   const copy = sectionCopy[section]
-  const obtained = useIconosObtenidos()
+  const { obtenido: obtained, cantidad: iconosRevelados } = useColeccionIconos()
+  // F06: en api, la pestaña lee el catálogo del servidor. Ajuste catalogo-datos-reales (F6a): `?afines=1` es un
+  // filtro más de esa lista, no un modo aparte.
+  const { catalogoDelServidor } = useCatalogoDelServidor()
+  const servidor = catalogoDelServidor
+  // En api, las afines son las del resultado (hasta 10) y su corazón es el del servidor.
+  const favorito = useFavoritoServidor()
   const obtainedCount = occupationDetails.filter((o) => obtained(o.id)).length
   const occupations = [
     ...occupationDetails.map((occupation) => ({
@@ -48,6 +73,7 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
     })),
     ...coincidenciasAdicionales.map((match) => ({ occupation: undefined, match })),
   ]
+    .filter(({ match }) => !catalogoDelServidor || !!match)
     .filter(({ occupation, match }) => matchesName(occupation?.name ?? match?.titulo ?? '', query))
     .sort(ordenarOcupaciones)
   const careers = careerDetails.filter((c) => matchesName(c.name, query)),
@@ -58,6 +84,12 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
       : section === 'careers'
         ? !careers.length
         : !institutions.length
+  if (servidor)
+    return (
+      <DiscoveryStage ambient="atlas">
+        <CatalogoServidor section={section} obtenido={obtained} iconosRevelados={iconosRevelados} />
+      </DiscoveryStage>
+    )
   return (
     <DiscoveryStage ambient="atlas">
       <header className="sx-d-header">
@@ -128,6 +160,7 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
                 <FavoriteButton
                   compact
                   selected={context.profiles.some((p) => p.occupationId === o.id && p.interested)}
+                  pendiente={favorito.pendiente('OCUPACION', o.id)}
                   onToggle={() => context.toggleOccupationInterest(o.id)}
                 />
                 <Link to={discoveryPaths.occupation(o.id)} className="sx-d-card-link">
@@ -142,11 +175,7 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
                   </div>
                   <p className="sx-d-clamp-two">{o.whatTheyDo}</p>
                   {obtained(o.id) && <span className="sx-d-tag">Ícono obtenido</span>}
-                  {params.get('afines') === '1' && afinidadPara(o.id) && (
-                    <p>
-                      {textoAfinidad(match)}
-                    </p>
-                  )}
+                  {params.get('afines') === '1' && afinidadPara(o.id) && <p>{textoAfinidad(match)}</p>}
                   <small>
                     {o.contentStatus === 'pending'
                       ? 'Ficha en preparación desde O*NET'
@@ -158,8 +187,7 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
               <article className="sx-d-parchment sx-d-atlas-card" key={match!.codigo_onet}>
                 <h2>{match!.titulo}</h2>
                 <p>
-                  Afín a tu perfil · {textoAjuste(match!.ajuste)} · posición {match!.posicion} · correlación{' '}
-                  {match!.correlacion}
+                  Afín a tu perfil · {textoBanda(match!.banda)} · posición {match!.posicion} · {match!.parecido} %
                 </p>
                 <small>Detalle aún no disponible en el catálogo.</small>
               </article>
@@ -193,6 +221,7 @@ export function StudentCatalogView({ section }: { section: 'professions' | 'care
           </section>
         )}
       </div>
+      <AvisoFavorito aviso={favorito.aviso} onDismiss={favorito.cerrarAviso} />
     </DiscoveryStage>
   )
 }

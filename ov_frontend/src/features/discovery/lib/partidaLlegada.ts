@@ -24,6 +24,8 @@ export type DimensionPartidaLlegada = {
 }
 export type ModeloPartidaLlegada = {
   completo: boolean
+  // Ajuste carga-instrumentos: cómo leer el resultado, arriba de las zonas.
+  lectura: string
   dimensiones: DimensionPartidaLlegada[]
   // Nombres de las dimensiones cuya zona de llegada es mayor que la de partida.
   avanzaron: string[]
@@ -88,6 +90,7 @@ export function modeloPartidaLlegada(
         }))
   return {
     completo: !!comparacion,
+    lectura: comparacion?.lectura ?? partida.lectura,
     dimensiones,
     avanzaron: dimensiones.filter(subio).map((d) => d.nombre),
     conteoZonas: [...ZONAS]

@@ -1,7 +1,8 @@
 import { useProfessionalDirectory } from '@/features/cases/hooks/useProfessionalDirectory'
 import { ArrowLeft, Check, GripVertical, Plus } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/Dialog'
-import { forestFireProfessionals } from '@/data/content/forestFireCase'
+import { CASO_LOCAL } from '@/features/cases/lib/forestFireCaseLogic'
+import type { CasoJugable } from '@/types/cases'
 import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
 import { ProfessionalResume } from '@/features/cases/components/ProfessionalResume'
 export function ProfessionalDirectory({
@@ -10,13 +11,16 @@ export function ProfessionalDirectory({
   problemTitle,
   onCall,
   onDragContact,
+  caso = CASO_LOCAL,
 }: {
   selectedIds: string[]
   budgetRemaining: number
   problemTitle: string
   onCall: (id: string) => void
   onDragContact: (id?: string, overTeam?: boolean) => void
+  caso?: CasoJugable
 }) {
+  const forestFireProfessionals = caso.professionals
   const {
     setResumeId,
     desktop,
@@ -31,7 +35,13 @@ export function ProfessionalDirectory({
     startDrag,
     moveDrag,
     finishDrag,
-  } = useProfessionalDirectory({ selectedIds, budgetRemaining, onCall, onDragContact })
+  } = useProfessionalDirectory({
+    selectedIds,
+    budgetRemaining,
+    onCall,
+    onDragContact,
+    professionals: forestFireProfessionals,
+  })
   const addButton = professional && (
     <button
       className="ff-primary ff-resume-add"

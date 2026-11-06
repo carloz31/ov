@@ -1,0 +1,108 @@
+{
+  "afinidad": {
+    "banda": "MUY_AFIN",
+    "parecido": 92
+  },
+  "aptitudes": [
+    "Lectura de la información relacionada con el trabajo",
+    "Escribir cosas para compañeros de trabajo o clientes",
+    "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+    "Pensar en las ventajas y desventajas de las diferentes opciones y seleccionar la mejor",
+    "Averiguar cómo debe funcionar un sistema y cómo le afectarán los cambios en el futuro"
+  ],
+  "codigo": "19-3092.00",
+  "codigo_onet": "19-3092.00",
+  "conocimientos": [
+    "Geografía",
+    "Sociología y antropología",
+    "Idioma inglés",
+    "Computadoras y equipos electrónicos",
+    "Enseñanza y diseño de cursos"
+  ],
+  "descripcion": "Estudian la naturaleza y el uso de las áreas de la superficie terrestre por medio de la relación e interpretación de las interacciones de fenómenos físicos y culturales. Llevan a cabo investigaciones sobre los aspectos físicos de una región lo cual incluye el estudio de las formas del terreno, climas, suelos, plantas y animales, e investigan las implicancias espaciales de las actividades humanas dentro de un área determinada, lo cual comprende las características sociales, actividades económicas y organización política, como así también la investigación de la interdependencia entre distintas regiones que abarca desde la escala local a la global.",
+  "es_favorita": false,
+  "estilos_trabajo": [
+    {
+      "codigo": "innovacion",
+      "nombre": "Innovación"
+    },
+    {
+      "codigo": "curiosidad",
+      "nombre": "Curiosidad intelectual"
+    },
+    {
+      "codigo": "atencion-detalle",
+      "nombre": "Atención al detalle"
+    },
+    {
+      "codigo": "confiabilidad",
+      "nombre": "Confiabilidad"
+    },
+    {
+      "codigo": "logro",
+      "nombre": "Orientación al logro"
+    },
+    {
+      "codigo": "adaptabilidad",
+      "nombre": "Adaptabilidad"
+    }
+  ],
+  "familia_principal": {
+    "area_codigo": "59",
+    "area_nombre": "Otras Ingenierías",
+    "codigo": "593",
+    "descripcion": "Se centra en cómo se organizan los territorios y en la relación entre las personas y su entorno. Incluye el relieve, el clima, la población y las actividades económicas. Aborda la elaboración y el análisis de mapas, los cambios en el uso del suelo y la planificación de espacios y recursos en distintas regiones.",
+    "nombre": "Geografía",
+    "tipos": [
+      "UNIVERSIDAD"
+    ],
+    "total_carreras": 3
+  },
+  "familias_secundarias": [],
+  "grupo": "19",
+  "job_zone": 4,
+  "otras_ocupaciones_de_la_familia": [
+    {
+      "codigo": "17-1021.00",
+      "titulo": "Cartógrafo / especialista en geomática"
+    },
+    {
+      "codigo": "15-1299.02",
+      "titulo": "Especialista en sistemas de información geográfica (SIG)"
+    }
+  ],
+  "personalidad": "A las personas interesadas en este trabajo les gustan actividades que incluyan ideas, pensar y resolver asuntos.",
+  "programa_ejemplo": {
+    "codigo": "mtpe-199",
+    "duracion": "5 años",
+    "nombre": "Geografía",
+    "tipo": "UNIVERSIDAD"
+  },
+  "puntajes": {
+    "A": 45,
+    "C": 45,
+    "E": 18,
+    "I": 96,
+    "R": 69,
+    "S": 29
+  },
+  "resumen": "Estudian la naturaleza y el uso de las áreas de la superficie terrestre por medio de la relación e interpretación de las interacciones de…",
+  "riasec": [
+    "I",
+    "R"
+  ],
+  "tambien_llamado": [
+    "Científico de Observaciones de la Tierra",
+    "Coordinador de Sistemas de Información Geográficos",
+    "Geógrafo",
+    "Geógrafo Especializado en Sistemas de Información Geográfica"
+  ],
+  "tareas": [
+    "Crear y modificar mapas, gráficos o diagramas, utilizando software de información geográfica y equipo relacionado, y principios de cartografía, tales como sistemas de coordenadas, longitud, latitud, elevación, topografía y escalas de mapas.",
+    "Reúna y compile datos geográficos de fuentes como censos, observaciones de campo, imágenes de satélite, fotografías aéreas y mapas existentes.",
+    "Enseñar geografía."
+  ],
+  "titulo": "Geógrafo",
+  "total_ocupaciones_familia": 4,
+  "via_familia": null
+}

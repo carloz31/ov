@@ -1,0 +1,17 @@
+[
+  {
+    "actividad": {
+      "codigo": "t-apo-1",
+      "titulo": "Primera actividad del apoderado"
+    },
+    "codigo": "t-ficha-apo",
+    "descripcion": null,
+    "es_favorita": false,
+    "estado": "BLOQUEADA",
+    "obtenida_en": null,
+    "tema": null,
+    "titulo": "Ficha del apoderado",
+    "tramo": null,
+    "visto": false
+  }
+]

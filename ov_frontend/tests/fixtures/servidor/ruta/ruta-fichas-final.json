@@ -1,12 +1,55 @@
 [
   {
+    "actividad": {
+      "codigo": "t-inicio",
+      "titulo": "Inicio de prueba"
+    },
     "codigo": "t-ficha",
+    "descripcion": "Creencias frecuentes sobre las carreras y qué dicen los datos.",
+    "es_favorita": true,
     "estado": "DISPONIBLE",
-    "titulo": "Ficha de prueba"
+    "obtenida_en": "2026-10-07T10:00:00",
+    "tema": "Mitos y creencias",
+    "titulo": "Ficha de prueba",
+    "tramo": {
+      "codigo": "T0",
+      "nombre": "Inicio",
+      "numero": 1
+    },
+    "visto": true
   },
   {
+    "actividad": {
+      "codigo": "t-inicio",
+      "titulo": "Inicio de prueba"
+    },
     "codigo": "t-ficha-2",
+    "descripcion": "Tres preguntas para distinguir lo que te gusta de lo que se te da bien.",
+    "es_favorita": false,
     "estado": "DISPONIBLE",
-    "titulo": "Segunda ficha de prueba"
+    "obtenida_en": "2026-10-07T10:00:00",
+    "tema": "Proyecto de vida",
+    "titulo": "Segunda ficha de prueba",
+    "tramo": {
+      "codigo": "T0",
+      "nombre": "Inicio",
+      "numero": 1
+    },
+    "visto": false
+  },
+  {
+    "actividad": {
+      "codigo": "t-opcional",
+      "titulo": "Actividad opcional"
+    },
+    "codigo": "t-ficha-3",
+    "descripcion": null,
+    "es_favorita": false,
+    "estado": "BLOQUEADA",
+    "obtenida_en": null,
+    "tema": null,
+    "titulo": "Carrera, ocupación e institución",
+    "tramo": null,
+    "visto": false
   }
 ]

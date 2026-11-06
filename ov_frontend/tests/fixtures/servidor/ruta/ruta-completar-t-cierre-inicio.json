@@ -11,6 +11,18 @@
       "tipo": "COMPLETA_BLOQUE"
     }
   ],
+  "nuevas_notificaciones": [
+    {
+      "codigo": "NOT-00000000000000000000000000000004",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": "NIVEL",
+      "estudiante": null,
+      "nombre": "Recolector de pistas",
+      "referencia": "N2",
+      "tipo": "DESBLOQUEO",
+      "vista": false
+    }
+  ],
   "nuevos_desbloqueos": [
     {
       "condiciones": [
@@ -19,13 +31,14 @@
           "cumplida": true,
           "referencia": "T0",
           "requerido": 1,
+          "texto": "Termina el bloque de inicio",
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_BLOQUE"
         }
       ],
       "objetivo": {
         "codigo": "N2",
-        "nombre": "Nivel 2 de prueba"
+        "nombre": "Recolector de pistas"
       },
       "regla": "R-NIV-2",
       "tipo_objetivo": "NIVEL"
@@ -37,6 +50,7 @@
           "cumplida": true,
           "referencia": "t-cierre-inicio",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }
@@ -55,6 +69,7 @@
           "cumplida": true,
           "referencia": "T0",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_BLOQUE"
         }

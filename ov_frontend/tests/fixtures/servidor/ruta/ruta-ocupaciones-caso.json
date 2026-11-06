@@ -1,0 +1,234 @@
+[
+  {
+    "aptitudes": [
+      "Hablar con otras personas",
+      "Escribir cosas para compañeros de trabajo o clientes",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+      "Pensar en las ventajas y desventajas de las diferentes opciones y seleccionar la mejor",
+      "Averiguar cómo debe funcionar un sistema y cómo le afectarán los cambios en el futuro"
+    ],
+    "codigo": "19-3091.00",
+    "conocimientos": [
+      "Sociología y antropología",
+      "Geografía",
+      "Idioma inglés",
+      "Historia y arqueología",
+      "Enseñanza y diseño de cursos",
+      "Multimedios"
+    ],
+    "descripcion": "Estudian el origen, desarrollo y comportamiento de los seres humanos. Pueden estudiar el modo de vida, idioma o características físicas de las personas de diversas partes del mundo. Pueden participar en tareas de recuperación sistemática y análisis de pruebas materiales, tales como restos de herramientas, piezas de alfarería o cerámica de culturas pasadas a fin de determinar la historia, costumbre y hábitos de vida de civilizaciones anteriores.",
+    "titulo": "Antropólogo y arqueólogo"
+  },
+  {
+    "aptitudes": [
+      "Lectura de la información relacionada con el trabajo",
+      "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo"
+    ],
+    "codigo": "25-4013.00",
+    "conocimientos": [
+      "Química",
+      "Música, danza, artes visuales, teatro o escultura",
+      "Historia y arqueología",
+      "Enseñanza y diseño de cursos",
+      "Servicios administrativos"
+    ],
+    "descripcion": "Restauran, mantienen o preparan objetos de colecciones de museos para su almacenamiento, investigación o exhibición. Pueden trabajar con especímenes tales como fósiles, partes de esqueletos o plantas botánicas; o artefactos, piezas textiles o de arte. Pueden identificar y registrar objetos o instalarlos y organizarlos para su exposición. Incluye a los conservadores de libros o documentos.",
+    "titulo": "Conservador y restaurador"
+  },
+  {
+    "aptitudes": [
+      "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+      "Lectura de la información relacionada con el trabajo",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+      "Averiguar cómo debe funcionar un sistema y cómo le afectarán los cambios en el futuro",
+      "Pensar en las ventajas y desventajas de las diferentes opciones y seleccionar la mejor"
+    ],
+    "codigo": "17-2051.00",
+    "conocimientos": [
+      "Diseño",
+      "Productos y servicios de desarrollo",
+      "Aritmética, álgebra, geometría, cálculo o estadísticas",
+      "Física",
+      "Idioma inglés",
+      "Administración"
+    ],
+    "descripcion": "Realizan tareas de ingeniería en la planificación, diseño, y supervisión en lo que se refiere a la construcción y mantenimiento de estructuras de edificios e instalaciones tales como carreteras, ferrocarriles, aeropuertos, puentes, puertos, canales, represas, proyectos de riego, oleoductos, plantas eléctricas, y sistemas de agua y alcantarillado.",
+    "titulo": "Ingeniero civil"
+  },
+  {
+    "aptitudes": [
+      "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+      "Hablar con otras personas",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+      "Pensar en las ventajas y desventajas de las diferentes opciones y seleccionar la mejor",
+      "Averiguar cómo debe funcionar un sistema y cómo le afectarán los cambios en el futuro"
+    ],
+    "codigo": "19-3041.00",
+    "conocimientos": [
+      "Sociología y antropología",
+      "Aritmética, álgebra, geometría, cálculo o estadísticas",
+      "Idioma inglés",
+      "Historia y arqueología",
+      "Enseñanza y diseño de cursos",
+      "Computadoras y equipos electrónicos"
+    ],
+    "descripcion": "Estudian la sociedad humana y el comportamiento social por medio del análisis de los grupos e instituciones sociales formadas por personas, como también diversas organizaciones sociales, religiosas, políticas y comerciales. Pueden estudiar el comportamiento e interacción de grupos, reseñar sus orígenes y crecimiento y analizar la influencia de las actividades grupales sobre los miembros individuales.",
+    "titulo": "Sociólogo"
+  },
+  {
+    "aptitudes": [
+      "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+      "Escribir cosas para compañeros de trabajo o clientes",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+      "Unir a las personas para resolver las diferencias",
+      "Convencer a las personas a que cambien de opinión o comportamiento"
+    ],
+    "codigo": "23-1022.00",
+    "conocimientos": [
+      "Idioma inglés",
+      "Leyes y gobierno",
+      "Recursos humanos",
+      "Administración"
+    ],
+    "descripcion": "Facilitan la negociación y resolución de conflictos por medio del diálogo. Resuelven conflictos fuera del ámbito del sistema judicial por medio del consentimiento mutuo entre las partes involucradas.",
+    "titulo": "Conciliador / árbitro"
+  },
+  {
+    "aptitudes": [
+      "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+      "Hablar con otras personas",
+      "Pensar en las ventajas y desventajas de las diferentes opciones y seleccionar la mejor",
+      "Averiguar cómo debe funcionar un sistema y cómo le afectarán los cambios en el futuro",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo"
+    ],
+    "codigo": "19-3051.00",
+    "conocimientos": [
+      "Leyes y gobierno",
+      "Idioma inglés",
+      "Geografía",
+      "Sociología y antropología",
+      "Transporte de personas o mercancías por aire, tren, mar o por carretera"
+    ],
+    "descripcion": "Desarrollan planes y programas integrales para su aplicación en áreas e instalaciones físicas de jurisdicciones tales como pueblos, ciudades, condados y áreas metropolitanas.",
+    "titulo": "Urbanista / planificador urbano"
+  },
+  {
+    "aptitudes": [
+      "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+      "Lectura de la información relacionada con el trabajo",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+      "Pensar en las ventajas y desventajas de las diferentes opciones y seleccionar la mejor",
+      "Averiguar cómo debe funcionar un sistema y cómo le afectarán los cambios en el futuro"
+    ],
+    "codigo": "17-1012.00",
+    "conocimientos": [
+      "Diseño",
+      "Edificación y construcción",
+      "Geografía",
+      "Biología",
+      "Idioma inglés",
+      "Servicio al cliente"
+    ],
+    "descripcion": "Planifican y diseñan áreas de terreno para proyectos tales como parques y otros espacios recreativos, aeropuertos, autopistas, hospitales, escuelas, subdivisiones de terreno, y locales comerciales, industriales, y residenciales.",
+    "titulo": "Arquitecto paisajista"
+  },
+  {
+    "aptitudes": [
+      "Lectura de la información relacionada con el trabajo",
+      "Hablar con otras personas",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+      "Pensar en las ventajas y desventajas de las diferentes opciones y seleccionar la mejor",
+      "Averiguar cómo debe funcionar un sistema y cómo le afectarán los cambios en el futuro"
+    ],
+    "codigo": "25-4012.00",
+    "conocimientos": [
+      "Idioma inglés",
+      "Historia y arqueología",
+      "Administración",
+      "Servicios administrativos",
+      "Sociología y antropología",
+      "Geografía",
+      "Multimedios"
+    ],
+    "descripcion": "Administran colecciones de obras de arte, objetos antiguos, artículos históricos o especímenes científicos de museos o de otras instituciones. Pueden participar de actividades de capacitación, investigación o servicio público de una institución.",
+    "titulo": "Curador de museo / gestor cultural"
+  },
+  {
+    "aptitudes": [
+      "Lectura de la información relacionada con el trabajo",
+      "Pensar en las ventajas y desventajas de las diferentes opciones para resolver un problema",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo"
+    ],
+    "codigo": "19-3093.00",
+    "conocimientos": [
+      "Historia y arqueología",
+      "Idioma inglés",
+      "Sociología y antropología",
+      "Geografía",
+      "Servicios administrativos",
+      "Enseñanza y diseño de cursos"
+    ],
+    "descripcion": "Investigan, analizan, registran e interpretan el pasado de acuerdo a los registros de fuentes tales como archivos gubernamentales e institucionales, periódicos de noticias y otras publicaciones periódicas, fotografías, entrevistas, películas, medios electrónicos y manuscritos inéditos, tales como diarios y cartas personales.",
+    "titulo": "Historiador"
+  },
+  {
+    "aptitudes": [
+      "Pensar en las ventajas y desventajas de las diferentes opciones para resolver un problema",
+      "Lectura de la información relacionada con el trabajo",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+      "Pensar en las ventajas y desventajas de las diferentes opciones y seleccionar la mejor",
+      "Averiguar cómo debe funcionar un sistema y cómo le afectarán los cambios en el futuro"
+    ],
+    "codigo": "17-1011.00",
+    "conocimientos": [
+      "Diseño",
+      "Edificación y construcción",
+      "Servicio al cliente",
+      "Administración",
+      "Seguridad pública y protección",
+      "Leyes y gobierno",
+      "Idioma inglés"
+    ],
+    "descripcion": "Planifican, proyectan y diseñan estructuras tales como residencias privadas, edificios de oficinas, teatros, fábricas y otras propiedades estructurales.",
+    "titulo": "Arquitecto"
+  },
+  {
+    "aptitudes": [
+      "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+      "Hablar con otras personas",
+      "Darse cuenta de un problema y averiguar la mejor manera de resolverlo",
+      "Buscar maneras de ayudar a las personas",
+      "Comprender las reacciones de las personas"
+    ],
+    "codigo": "27-4021.00",
+    "conocimientos": [
+      "Servicio al cliente",
+      "Ventas y mercadotecnia",
+      "Computadoras y equipos electrónicos",
+      "Idioma inglés",
+      "Música, danza, artes visuales, teatro o escultura",
+      "Multimedios"
+    ],
+    "descripcion": "Fotografían personas, paisajes, mercadería u otras temáticas. Pueden usar equipo de iluminación para mejorar la apariencia de un sujeto. Pueden utilizar programas de edición para producir imágenes e impresiones terminadas. Incluye a los fotógrafos comerciales e industriales, fotógrafos científicos, y fotoperiodistas.",
+    "titulo": "Fotógrafo"
+  },
+  {
+    "aptitudes": [
+      "Hablar con otras personas",
+      "Escuchar a los demás, no interrumpir y hacer buenas preguntas",
+      "Comprender las reacciones de las personas",
+      "Buscar maneras de ayudar a las personas"
+    ],
+    "codigo": "39-7011.00",
+    "conocimientos": [
+      "Servicio al cliente",
+      "Idioma inglés",
+      "Historia y arqueología",
+      "Multimedios",
+      "Enseñanza y diseño de cursos"
+    ],
+    "descripcion": "Escoltan personas o grupos de personas durante las excursiones a lugares de interés o a través de lugares de interés, como por ejemplo, en visitas guiadas a establecimientos industriales, edificios públicos y galerías de arte.",
+    "titulo": "Guía oficial de turismo"
+  }
+]

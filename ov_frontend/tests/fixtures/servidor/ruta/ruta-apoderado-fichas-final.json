@@ -1,0 +1,17 @@
+[
+  {
+    "actividad": {
+      "codigo": "t-apo-1",
+      "titulo": "Primera actividad del apoderado"
+    },
+    "codigo": "t-ficha-apo",
+    "descripcion": "Cómo acompañar sin decidir por tu hijo.",
+    "es_favorita": false,
+    "estado": "DISPONIBLE",
+    "obtenida_en": "2026-10-07T10:00:00",
+    "tema": "Acompañamiento",
+    "titulo": "Ficha del apoderado",
+    "tramo": null,
+    "visto": false
+  }
+]

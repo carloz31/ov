@@ -5,7 +5,11 @@ import { catalog } from '@/data/activities/content'
 import type { Actividad, IntentoPregunta } from '@/types/activities'
 
 import { useParentActivities } from './useParentActivities'
-import { completarActividadApoderado, obtenerEstadoApoderado } from '@/store/servidor/apoderado'
+import {
+  completarActividadApoderado,
+  obtenerEstadoApoderado,
+  useEstadoApoderado,
+} from '@/store/servidor/apoderado'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { parentRoute } from '@/features/parent/lib/selectors'
 import { avanceConFamilia } from '@/features/parent/lib/familia'
@@ -34,6 +38,10 @@ export function useParentActivitySession(activity: Actividad, review: boolean) {
   const opciones = { disponible, servidor: serverCompletion }
   const storageError = useParentJourneyError()
   const [serverError, setServerError] = useState('')
+  // F08: lo que abrió completar en el servidor (actividad, ficha, sección), para el cierre en api. Vive en el
+  // almacén: al refrescar las actividades la vista se vuelve a montar.
+  const cierre = useEstadoApoderado().cierre
+  const desbloqueos = cierre?.actividad === activity.id ? cierre.desbloqueos : []
   const enviando = useRef(false)
   const montado = useRef(true)
   const [nodeId, setNodeId] = useState(() =>
@@ -218,6 +226,12 @@ export function useParentActivitySession(activity: Actividad, review: boolean) {
     activity,
     review,
     navigate,
+    // F08: en api el cierre muestra lo que se abrió y la X pide confirmación mientras la actividad está en curso;
+    // en local, como antes.
+    cierreServidor: serverCompletion,
+    confirmarSalida: serverCompletion && !review && !!node,
+    desbloqueos,
+    diploma: familia?.diploma ?? null,
     error: serverError || storageError,
     retrySaving: () =>
       serverError

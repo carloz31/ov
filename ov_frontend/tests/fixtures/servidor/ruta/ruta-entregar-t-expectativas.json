@@ -26,6 +26,18 @@
     }
   ],
   "items_por_ampliar": [],
+  "nuevas_notificaciones": [
+    {
+      "codigo": "NOT-00000000000000000000000000000005",
+      "creada_en": "2026-10-07T10:00:00",
+      "detalle": "BLOQUE",
+      "estudiante": null,
+      "nombre": "La ciudad",
+      "referencia": "CIUDAD",
+      "tipo": "DESBLOQUEO",
+      "vista": false
+    }
+  ],
   "nuevos_desbloqueos": [
     {
       "condiciones": [
@@ -34,6 +46,7 @@
           "cumplida": true,
           "referencia": "t-expectativas",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }
@@ -52,6 +65,7 @@
           "cumplida": true,
           "referencia": "t-expectativas",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }
@@ -70,6 +84,7 @@
           "cumplida": true,
           "referencia": "t-expectativas",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "REGISTRO_ADECUADO"
         }
@@ -88,6 +103,7 @@
           "cumplida": true,
           "referencia": "t-expectativas",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }
@@ -106,6 +122,7 @@
           "cumplida": true,
           "referencia": "t-expectativas",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }
@@ -124,6 +141,7 @@
           "cumplida": true,
           "referencia": "t-expectativas",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "COMPLETA_ACTIVIDAD"
         }

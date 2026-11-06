@@ -10,10 +10,15 @@ import { getInstitution, careersOfInstitution, getFamily } from '@/features/disc
 import { institutionTypeNames } from '@/features/discovery/lib/catalogDetails'
 import { AtlasNavigation } from '@/features/discovery/components/AtlasNavigation'
 import { MissingAtlasPage } from '@/features/discovery/components/MissingAtlasPage'
+import { DetalleInstitucionServidor } from '@/features/discovery/components/DetalleInstitucionServidor'
+import { useCatalogoDelServidor } from '@/features/discovery/hooks/useCatalogoServidor'
 export function InstitutionDetailView() {
   const { institutionId = '' } = useParams(),
     context = useOccupationExplorationContext()
   const institution = getInstitution(institutionId)
+  // F06: en api, el detalle sale del servidor, que registra su vista.
+  const { catalogoDelServidor } = useCatalogoDelServidor()
+  if (catalogoDelServidor) return <DetalleInstitucionServidor codigo={institutionId} />
   if (!institution)
     return (
       <DiscoveryStage ambient="atlas">

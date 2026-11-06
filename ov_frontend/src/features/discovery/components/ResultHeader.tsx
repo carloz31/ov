@@ -7,10 +7,13 @@ export function ResultHeader({
   page,
   tipo,
   soloPartida = false,
+  encuadre,
 }: {
   page: HelenaPage & { etiquetaDemo: string }
   tipo: TipoResultadoHelena
   soloPartida?: boolean
+  // Ajuste resultados-intereses (api): la línea de encuadre del instrumento reemplaza la de Helena.
+  encuadre?: string
 }) {
   return (
     <header className="sx-d-result-header">
@@ -22,15 +25,19 @@ export function ResultHeader({
         Página {page.numeral} · descifrada · {page.subtitle}
       </p>
       <h1>{page.title}</h1>
-      <p>
-        {tipo === 'COINCIDENCIAS'
-          ? 'Helena leyó tus respuestas y encontró los tipos de actividad que más te llaman. No es un veredicto: es una pista para explorar ocupaciones y carreras que podrías no haber considerado.'
-          : tipo === 'COMPARACION'
-            ? soloPartida
-              ? 'Helena leyó cómo te sientes al empezar el camino. Son zonas, no notas: muestran desde dónde partes. Al final volverás a responder y verás qué cambió.'
-              : 'Helena leyó cómo te sentías al empezar el camino y cómo te sientes al llegar. Son zonas, no notas: muestran dónde estás hoy y qué puedes seguir trabajando.'
-            : 'No hay una sola forma de ser inteligente. Helena leyó tus respuestas y encontró las capacidades que más usas para aprender, crear y resolver. Todas se pueden desarrollar.'}
-      </p>
+      {encuadre ? (
+        <p className="sx-r-encuadre">{encuadre}</p>
+      ) : (
+        <p>
+          {tipo === 'COINCIDENCIAS'
+            ? 'Helena leyó tus respuestas y encontró los tipos de actividad que más te llaman. No es un veredicto: es una pista para explorar ocupaciones y carreras que podrías no haber considerado.'
+            : tipo === 'COMPARACION'
+              ? soloPartida
+                ? 'Helena leyó cómo te sientes al empezar el camino. Son zonas, no notas: muestran desde dónde partes. Al final volverás a responder y verás qué cambió.'
+                : 'Helena leyó cómo te sentías al empezar el camino y cómo te sientes al llegar. Son zonas, no notas: muestran dónde estás hoy y qué puedes seguir trabajando.'
+              : 'No hay una sola forma de ser inteligente. Helena leyó tus respuestas y encontró las capacidades que más usas para aprender, crear y resolver. Todas se pueden desarrollar.'}
+        </p>
+      )}
       {page.demo && (
         <p className="sx-d-demo">
           {page.etiquetaDemo}

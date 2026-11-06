@@ -1,0 +1,292 @@
+{
+  "id": "b3-8",
+  "codigo": "b3-8",
+  "tipo": "encuentro",
+  "titulo": "Cuánto cuesta estudiar",
+  "subtitulo": "La caseta de Clotilde",
+  "escenario": "playa",
+  "bloque": 3,
+  "orden": 8,
+  "obligatoria": true,
+  "requisitos": ["b3-7"],
+  "ubicacion": "Puerto, caseta de préstamos junto al muelle",
+  "duracionEstimadaMin": 12,
+  "personajeIds": ["prestamista", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante conoce todos los rubros de costo de estudiar, el costo de oportunidad y las opciones de financiamiento (instituciones públicas, Beca 18 y otras becas, crédito educativo, estudiar y trabajar), y reconoce los tres errores frecuentes al presupuestar.",
+  "nodos": [
+    {
+      "id": "b3-8-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Junto al muelle hay una caseta con un letrero: «Préstamos para estudiar. Fácil, rápido, sin preguntas». La señora de la ventanilla es Clotilde.",
+      "eco": "b3-8-ref-costos"
+    },
+    {
+      "id": "b3-8-02",
+      "tipo": "dialogo",
+      "hablanteId": "prestamista",
+      "expresion": "neutral",
+      "texto": "¿Pensión de S/ 1 800 y no la puedes pagar? No hay problema, mi amor. Yo te presto. Firmas hoy, estudias mañana, y ya veremos después cómo pagas. Todo el mundo lo hace."
+    },
+    {
+      "id": "b3-8-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b3-8-03a",
+          "texto": "¿Y cuánto tendría que devolver en total?",
+          "reaccion": [
+            {
+              "id": "b3-8-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "prestamista",
+              "expresion": "dudoso",
+              "texto": "Eso se ve después, cuando ya seas profesional y ganes bien. ¿Para qué preocuparte ahora?"
+            }
+          ]
+        },
+        {
+          "id": "b3-8-03b",
+          "texto": "¿Y la pensión es todo lo que cuesta estudiar?",
+          "reaccion": [
+            {
+              "id": "b3-8-03br",
+              "tipo": "dialogo",
+              "hablanteId": "prestamista",
+              "expresion": "dudoso",
+              "texto": "Bueno… lo demás son cositas. Pasajes, fotocopias. Nada que un préstamo más no arregle."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3-8-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "«Cositas». Un presupuesto que solo mira la pensión se queda corto en el segundo mes. Antes de firmar nada con Clotilde, veamos todo lo que cuesta de verdad."
+    },
+    {
+      "id": "b3-8-05",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Todo lo que cuesta",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Rubro", "Frecuencia", "Qué incluye"],
+          "filas": [
+            ["Preparación", "Una vez", "Academia, CEPRE, materiales de repaso"],
+            ["Inscripción y admisión", "Una vez", "Derecho de postulación, carpeta, exámenes médicos"],
+            ["Matrícula", "Por ciclo", "En públicas, un derecho bajo; en privadas, una cuota por ciclo"],
+            ["Pensión", "Mensual", "Cero en públicas; en privadas, por escala"],
+            ["Materiales", "Por ciclo", "Libros, fotocopias, software, uniforme o instrumental"],
+            ["Transporte", "Mensual", "Pasajes de ida y vuelta, todos los días de clase"],
+            ["Alimentación", "Mensual", "Lo que comas fuera de casa"],
+            ["Vivienda", "Mensual", "Solo si estudias en otra ciudad: alquiler, servicios"]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Un ejemplo: una carrera privada de cinco años con pensión de S/ 1 800, matrícula de S/ 600 por ciclo, materiales de S/ 300 por ciclo y transporte de S/ 150 al mes cuesta cerca de S/ 21 600 el primer año y más de S/ 100 000 en total. La misma carrera en una pública cuesta el primer año unos S/ 3 000 a S/ 5 000. La diferencia es de un orden de magnitud, no de porcentaje."
+        }
+      ]
+    },
+    {
+      "id": "b3-8-06",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "El costo que no se ve",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El costo de oportunidad es lo que dejas de ganar por estudiar. Cinco años de universidad a tiempo completo son cinco años sin un sueldo que, en un trabajo sin estudios superiores, podría ser de S/ 1 000 a S/ 1 300 al mes. No es un argumento contra estudiar: la mayoría de las carreras recupera esa diferencia con creces. Es un argumento para elegir con cuidado y terminar."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Tres errores frecuentes",
+          "ordenada": true,
+          "items": [
+            "Mirar solo la pensión y descubrir el transporte, los materiales y la alimentación en el segundo mes.",
+            "Planear solo el primer año. Una carrera de cinco años son diez ciclos de pensión y matrícula.",
+            "Tomar un crédito sin saber cuánto se gana en esa carrera al inicio. La cuota se paga con ese ingreso, no con el promedio de los adultos."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3-8-07",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Cómo pagarlo",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Opción", "Qué es", "Qué debes saber"],
+          "filas": [
+            ["Instituciones públicas", "Universidades e institutos del Estado, sin pensión", "La competencia para ingresar es alta; se pagan trámites y materiales"],
+            ["Beca 18 (Pronabec)", "Beca integral del Estado: para 2026, 20 000 becas en diez modalidades", "Rendimiento en los dos últimos años de secundaria y, en la ordinaria, condición de pobreza según el Sisfoh y menos de 22 años; postulación gratuita y virtual, en setiembre"],
+            ["Otras becas de Pronabec", "Beca Permanencia, Beca Continuidad, becas para técnicos", "Cada una con convocatoria y requisitos propios"],
+            ["Becas de las instituciones", "Descuentos por rendimiento, deporte o condición económica", "Se piden en la institución; muchas se pierden si bajas el promedio"],
+            ["Crédito educativo", "Un préstamo (Pronabec o bancos) que se paga después de egresar", "Es deuda: calcula la cuota contra el ingreso de egresados jóvenes de tu familia de carreras antes de firmar"],
+            ["Estudiar y trabajar", "Medio tiempo, o la carrera en horario nocturno o a distancia", "Alarga la carrera, pero evita deuda y da experiencia"]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Antes de decidir dónde, calcula cuánto cuesta todo el camino y de dónde saldría cada sol."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, parte 1. Lamoreaux, Más allá de la matrícula (LibreTexts). Pronabec, Beca 18 convocatoria 2026. Mi Carrera (MTPE), becas y créditos.",
+          "url": "https://www.gob.pe/institucion/pronabec/campa%C3%B1as/117075-beca-18-convocatoria-2026"
+        }
+      ]
+    },
+    {
+      "id": "b3-8-08",
+      "tipo": "dialogo",
+      "hablanteId": "prestamista",
+      "expresion": "neutral",
+      "texto": "Ay, qué desconfiado. Mira, te pongo tres casos de clientes míos. Si me dices qué les faltó, te dejo ir sin firmar."
+    },
+    {
+      "id": "b3-8-09",
+      "tipo": "pregunta",
+      "hablanteId": "prestamista",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Paola calculó su primer año así: pensión S/ 900 × 10 meses = S/ 9 000. Estudia en otra ciudad. ¿Qué le faltó?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Nada: la pensión es el costo de estudiar.",
+          "correcta": false,
+          "retroalimentacion": "Es el error 1. La pensión es un rubro entre ocho."
+        },
+        {
+          "id": "b",
+          "texto": "Matrícula, materiales, transporte, alimentación y, sobre todo, vivienda: estudia en otra ciudad.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. La vivienda sola puede costar más que la pensión. Su presupuesto real es por lo menos el doble."
+        },
+        {
+          "id": "c",
+          "texto": "Solo el transporte.",
+          "correcta": false,
+          "retroalimentacion": "El transporte es uno más. Fíjate en «otra ciudad»: hay un rubro que solo aparece en ese caso."
+        }
+      ],
+      "explicacion": "Un presupuesto tiene ocho rubros, y la vivienda aparece solo si te mudas, pero cuando aparece suele ser el mayor. Planear solo la pensión es descubrir el resto en el segundo mes.",
+      "pistas": [
+        {
+          "id": "b3-8-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Repasa la tabla de rubros: ¿cuál dice «solo si estudias en otra ciudad»?"
+        }
+      ]
+    },
+    {
+      "id": "b3-8-10",
+      "tipo": "pregunta",
+      "hablanteId": "prestamista",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Renzo quiere tomar un crédito de S/ 60 000 para una carrera cuyos egresados jóvenes ganan en promedio S/ 1 900. Dice: «Cuando sea adulto voy a ganar S/ 5 000; la cuota la pago fácil». ¿Qué error comete?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Ninguno: los adultos de esa carrera sí ganan S/ 5 000.",
+          "correcta": false,
+          "retroalimentacion": "Pero la cuota empieza al egresar, cuando es un joven con S/ 1 900, no un adulto con S/ 5 000."
+        },
+        {
+          "id": "b",
+          "texto": "Calcula la cuota contra el ingreso de los adultos, cuando se paga con el de los jóvenes.",
+          "correcta": true,
+          "retroalimentacion": "Eso es. Error 3: la cuota se paga con el ingreso del inicio. Con S/ 1 900 al mes, S/ 60 000 de deuda es muy pesada."
+        },
+        {
+          "id": "c",
+          "texto": "Tomar un crédito; los créditos siempre son malos.",
+          "correcta": false,
+          "retroalimentacion": "Un crédito puede ser razonable si la cuota cabe en el ingreso del inicio. El problema no es el crédito, es el cálculo."
+        }
+      ],
+      "explicacion": "Un crédito es deuda que se paga desde el primer sueldo. La cuenta correcta es cuota contra ingreso de egresados jóvenes de esa familia, que está en el catálogo, no contra el promedio de los adultos.",
+      "pistas": [
+        {
+          "id": "b3-8-10p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "¿En qué momento empieza a pagar Renzo: de joven o de adulto? El error 3 de la lista habla de eso."
+        }
+      ]
+    },
+    {
+      "id": "b3-8-11",
+      "tipo": "pregunta",
+      "hablanteId": "prestamista",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Milagros tiene buen promedio en 4.° y 5.°, su familia está en el Sisfoh y tiene 17 años. Quiere una universidad privada y piensa pedirme un préstamo. ¿Qué opción debería mirar antes?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Beca 18: cumple los requisitos de la modalidad ordinaria y la postulación es gratuita.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Rendimiento, Sisfoh y menos de 22 años: es el perfil de Beca 18. Antes de endeudarse, hay que postular."
+        },
+        {
+          "id": "b",
+          "texto": "El préstamo de Clotilde, que es más rápido.",
+          "correcta": false,
+          "retroalimentacion": "Rápido y caro. Hay una beca integral del Estado hecha para su caso."
+        },
+        {
+          "id": "c",
+          "texto": "Nada: con buen promedio la universidad privada la beca sola.",
+          "correcta": false,
+          "retroalimentacion": "Las becas de las instituciones existen, pero no son automáticas ni suelen ser integrales. Beca 18 sí lo es."
+        }
+      ],
+      "explicacion": "Antes de un crédito se revisan las opciones que no son deuda: instituciones públicas, Beca 18 y otras becas de Pronabec, becas de la institución. El crédito es la última, y con la cuota calculada.",
+      "pistas": [
+        {
+          "id": "b3-8-11p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Mira los requisitos de la segunda fila de «Cómo pagarlo». Milagros los cumple todos."
+        }
+      ]
+    },
+    {
+      "id": "b3-8-12",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "prestamista",
+      "expresion": "dudoso",
+      "texto": "Está bien, está bien, vete sin firmar. Pero en mi caseta tengo una pila de presupuestos de jóvenes que sí firmaron, y todos tienen un hueco. Si crees que sabes tanto, ven a encontrarlos."
+    },
+    {
+      "id": "b3-8-13",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Ya van tres desafíos en este puerto. La ficha de costos y financiamiento está en tu mochila, y en tu tarjeta de plan se abrieron la institución y el presupuesto: tiene estos mismos rubros y calcula el total del primer año y de toda la carrera. Los costos exactos están en la web de cada institución."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Antes de decidir dónde, calcula cuánto cuesta todo el camino. Clotilde tiene una pila de presupuestos con hueco esperándote."
+  },
+  "mapa": { "x": 720, "y": 260, "icono": "informativa" }
+}

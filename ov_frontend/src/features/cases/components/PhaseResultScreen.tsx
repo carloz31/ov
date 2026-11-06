@@ -1,25 +1,30 @@
 import { ArrowRight, CheckCircle2, Minus, Star, TriangleAlert } from 'lucide-react'
 
-import { forestFirePhases, forestFireProfessionals } from '@/data/content/forestFireCase'
-
 import { ForestFireProfessionalPanel } from '@/features/cases/components/ForestFireProfessionalPanel'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { getOccupation } from '@/features/discovery/lib/catalogSelectors'
 
-import { getPhaseSatisfaction, getProblemSatisfaction } from '@/features/cases/lib/forestFireCaseLogic'
-import type { ForestFirePhase } from '@/types/cases'
+import {
+  CASO_LOCAL,
+  getPhaseSatisfaction,
+  getProblemSatisfaction,
+} from '@/features/cases/lib/forestFireCaseLogic'
+import type { CasoJugable, ForestFirePhase } from '@/types/cases'
 
 export function PhaseResultScreen({
   phase,
   assignments,
   remaining,
   onContinue,
+  caso = CASO_LOCAL,
 }: {
   phase: ForestFirePhase
   assignments: Record<string, string[]>
   remaining: number
   onContinue: () => void
+  caso?: CasoJugable
 }) {
+  const { phases: forestFirePhases, professionals: forestFireProfessionals } = caso
   const maximum = phase.problems.reduce((total, p) => total + p.expectedProfessionalIds.length, 0)
   const next = forestFirePhases.find((p) => p.number === phase.number + 1)
   return (
@@ -27,7 +32,7 @@ export function PhaseResultScreen({
       <div className="ff-dark ff-result-heading">
         <LumiMedallion />
         <p className="ff-eyebrow">Fase {phase.number} resuelta</p>
-        <h1 tabIndex={-1}>Así respondió tu equipo a la {phase.name.toLowerCase()}</h1>
+        <h1 tabIndex={-1}>Así respondió tu equipo en la fase {phase.number}</h1>
         <p>Revisa qué aportó cada persona y qué necesidades quedaron sin cubrir.</p>
         <strong>
           {getPhaseSatisfaction(phase, assignments)} de {maximum} puntos de satisfacción
@@ -68,7 +73,12 @@ export function PhaseResultScreen({
                         ? problem.professionalContributions[id]
                         : 'Participó, pero su especialidad no respondía a la necesidad principal de este problema. Usó 1 punto de presupuesto.'}
                     </p>
-                    {contributed && <ForestFireProfessionalPanel initialProfessionalId={id} />}
+                    {contributed && (
+                      <ForestFireProfessionalPanel
+                        initialProfessionalId={id}
+                        professionals={forestFireProfessionals}
+                      />
+                    )}
                   </div>
                 </div>
               )

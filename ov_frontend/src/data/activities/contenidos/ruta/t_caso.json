@@ -1,0 +1,21 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-caso",
+  "tipo": "encuentro",
+  "titulo": "Caso",
+  "bloque": 4,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": [],
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "caso": "hidden-plaza",
+  "mapa": {
+    "x": 800,
+    "y": 250,
+    "icono": "informativa"
+  }
+}

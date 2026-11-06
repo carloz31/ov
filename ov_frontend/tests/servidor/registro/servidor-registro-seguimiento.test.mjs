@@ -24,7 +24,7 @@ async function abrirValores(registro) {
   const items = jsonServidor('ruta/ruta-items-registro-t-valores')
   app.fetch((req) => {
     if (esConsultaDominio(req)) return respuestaDominio(req, estado)
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/items-registro')) return { body: items }
     if (req.url.endsWith('/registro')) return { body: registro }
     if (req.url.endsWith('/guardar-borrador')) return { body: { item: req.body.item, estado: 'BORRADOR' } }

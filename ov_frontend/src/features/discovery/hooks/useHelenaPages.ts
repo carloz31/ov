@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 
 import { useJourney } from '@/store/journeyStore'
 
-import { useDiscovery, updateDiscovery, revelarPaginaApi, paginasReveladasApi } from '@/store/discoveryStore'
+import { useDiscovery, updateDiscovery } from '@/store/discoveryStore'
 
 import type { InstrumentPageId } from '@/types/discovery'
 import { getHelenaPages } from '@/features/discovery/lib/helenaPages'
@@ -62,11 +62,7 @@ export function useHelenaPages() {
   const cuenta = servidor.resumen.datos?.cuenta.codigo
   const libro = servidor.instrumentos
   const pages: (ReturnType<typeof getHelenaPages>[number] & Partial<ExtrasPaginaApi>)[] = modoApi
-    ? paginasLibroApi(
-        servidor.actividades.datos,
-        libro,
-        paginasReveladasApi(discovery, cuenta, servidor.resultadoRiasec?.calculado_en),
-      )
+    ? paginasLibroApi(servidor.actividades.datos, libro)
     : getHelenaPages(journey, discovery)
   const [requisitoCiudad, setRequisitoCiudad] = useState('')
   const [errorConsulta, setErrorConsulta] = useState('')
@@ -117,18 +113,12 @@ export function useHelenaPages() {
   }
   function revelarPagina(id: InstrumentPageId) {
     const sello = pages.find((p) => p.id === id)?.aplicacionSello
-    if (modoApi && sello) {
-      void accion(
-        () => revelarResultado(sello.instrumento, sello.aplicacion),
-        () => abrir(id),
-      )
-      return
-    }
     if (modoApi) {
-      // Páginas de ejemplo: su revelado sigue siendo local.
-      if (!servidor.resultadoRiasec || !cuenta) return
-      revelarPaginaApi(cuenta, servidor.resultadoRiasec.calculado_en, id)
-      abrir(id)
+      if (sello)
+        void accion(
+          () => revelarResultado(sello.instrumento, sello.aplicacion),
+          () => abrir(id),
+        )
       return
     }
     abrir(id)
@@ -143,7 +133,7 @@ export function useHelenaPages() {
       () => {
         // Tras el reinicio, el libro ya se volvió a leer: la misión que falta es la primera de intereses.
         const estado = obtenerEstadoServidor()
-        const href = paginasLibroApi(estado.actividades.datos, estado.instrumentos, []).find(
+        const href = paginasLibroApi(estado.actividades.datos, estado.instrumentos).find(
           (p) => p.id === 'intereses',
         )?.faltante?.href
         navigate(href ?? '/student/exploration')
@@ -179,7 +169,9 @@ export function useHelenaPages() {
               [],
             )
           : []
-      const servidorPagina = modoApi && (coincidencias || comparacion)
+      // Ajuste carga-instrumentos: en api las cuatro páginas son del servidor (también inteligencias y
+      // habilidades): su sello depende de su propia aplicación, no del resultado RIASEC.
+      const servidorPagina = modoApi
       // En api, la misión que falta (o, en intereses con la Ciudad cerrada, lo que pide la Ciudad).
       const requisito =
         coincidencias && requisitoCiudad
@@ -203,10 +195,9 @@ export function useHelenaPages() {
             p.result
               ? {
                   ...p.result,
-                  coincidencias: modoApi ? remoto?.coincidencias : ocupaciones,
-                  carreras_recomendadas: modoApi
-                    ? remoto?.carreras_recomendadas
-                    : carrerasResultado(undefined, false, ocupaciones),
+                  coincidencias: modoApi ? remoto?.ocupaciones : ocupaciones,
+                  carreras_recomendadas: modoApi ? undefined : carrerasResultado(undefined, false, ocupaciones),
+                  familias: modoApi ? remoto?.familias : undefined,
                 }
               : undefined,
             modoApi ? { textoPlano } : undefined,

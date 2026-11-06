@@ -1,13 +1,297 @@
-[
-  {
-    "codigo": "psychologist",
-    "codigo_onet": "19-3033.00",
-    "es_favorita": false,
-    "riasec": [
-      "S",
-      "I",
-      "C"
-    ],
-    "titulo": "Psicólogo/a"
-  }
-]
+{
+  "items": [
+    {
+      "codigo": "25-4022.00",
+      "codigo_onet": "25-4022.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
+        "codigo": "215",
+        "nombre": "Bibliotecología y Archivo"
+      },
+      "grupo": "25",
+      "resumen": "Administran y mantienen bibliotecas y colecciones de información, para acceso público o privado a través de referencias o préstamos.",
+      "riasec": [
+        "C",
+        "S",
+        "I"
+      ],
+      "titulo": "Bibliotecario",
+      "via_familia": null
+    },
+    {
+      "codigo": "25-2056.00",
+      "codigo_onet": "25-2056.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "14",
+        "area_nombre": "Educación Especial",
+        "codigo": "141",
+        "nombre": "Educación Especial"
+      },
+      "grupo": "25",
+      "resumen": "Enseñan destrezas académicas, sociales, y de la vida diaria a alumnos de escuela primaria con discapacidades de aprendizaje, emocionales…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Docente de educación especial",
+      "via_familia": null
+    },
+    {
+      "codigo": "25-1193.00",
+      "codigo_onet": "25-1193.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "13",
+        "area_nombre": "Educación Física",
+        "codigo": "131",
+        "nombre": "Educación Física"
+      },
+      "grupo": "25",
+      "resumen": "Imparten cursos relacionados con el estudio de la recreación, esparcimiento y acondicionamiento físico, incluidos la fisiología del…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Docente de educación física y deportes",
+      "via_familia": null
+    },
+    {
+      "codigo": "25-1126.00",
+      "codigo_onet": "25-1126.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
+        "codigo": "216",
+        "nombre": "Teología y Filosofía"
+      },
+      "grupo": "25",
+      "resumen": "Imparten cursos de filosofía, religión y teología.",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Docente de filosofía y religión",
+      "via_familia": null
+    },
+    {
+      "codigo": "25-1194.00",
+      "codigo_onet": "25-1194.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "16",
+        "area_nombre": "Educación Tecnológica",
+        "codigo": "161",
+        "nombre": "Educación Tecnológica"
+      },
+      "grupo": "25",
+      "resumen": "Enseñan cursos vocacionales dirigidos a proveer capacitación ocupacional a un nivel por debajo de una licenciatura en materias de…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Docente de formación técnica (instituto, CETPRO)",
+      "via_familia": null
+    },
+    {
+      "codigo": "25-1124.00",
+      "codigo_onet": "25-1124.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "12",
+        "area_nombre": "Educación Secundaria",
+        "codigo": "121",
+        "nombre": "Educación Secundaria"
+      },
+      "grupo": "25",
+      "resumen": "Imparten cursos de lengua y literatura en idiomas extranjeros.",
+      "riasec": [
+        "S",
+        "I",
+        "A"
+      ],
+      "titulo": "Docente de idiomas",
+      "via_familia": null
+    },
+    {
+      "codigo": "13-1151.00",
+      "codigo_onet": "13-1151.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
+        "codigo": "339",
+        "nombre": "Otras Carreras de Administración"
+      },
+      "grupo": "13",
+      "resumen": "Diseñan o llevan a cabo programas de capacitación y desarrollo relacionados al trabajo para mejorar las destrezas individuales o el…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Especialista en capacitación y desarrollo",
+      "via_familia": null
+    },
+    {
+      "codigo": "25-9021.00",
+      "codigo_onet": "25-9021.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "61",
+        "area_nombre": "Agropecuaria, Forestal y Acuicultura",
+        "codigo": "611",
+        "nombre": "Agropecuaria"
+      },
+      "grupo": "25",
+      "resumen": "Capacitan y asesoran a individuos y familias que se dedican a la agricultura, a procesos relacionados con la agricultura, o a actividades…",
+      "riasec": [
+        "S",
+        "I",
+        "R"
+      ],
+      "titulo": "Extensionista agrario",
+      "via_familia": null
+    },
+    {
+      "codigo": "29-1123.00",
+      "codigo_onet": "29-1123.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "715",
+        "nombre": "Tecnología Médica"
+      },
+      "grupo": "29",
+      "resumen": "Evalúan planifican, organizan y participan de programas de rehabilitación que tienen por fin mejorar la movilidad, aliviar el dolor…",
+      "riasec": [
+        "S",
+        "I",
+        "R"
+      ],
+      "titulo": "Fisioterapeuta",
+      "via_familia": null
+    },
+    {
+      "codigo": "29-1215.00",
+      "codigo_onet": "29-1215.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "711",
+        "nombre": "Medicina"
+      },
+      "grupo": "29",
+      "resumen": "Diagnostican, tratan y proveen cuidado preventivo a individuos y familias a lo largo de sus vidas.",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Médico general",
+      "via_familia": null
+    },
+    {
+      "codigo": "29-1031.00",
+      "codigo_onet": "29-1031.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "712",
+        "nombre": "Nutrición"
+      },
+      "grupo": "29",
+      "resumen": "Planifican y dirigen servicios de comidas o programas nutricionales para colaborar con la promoción de la salud y control de enfermedades.",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Nutricionista",
+      "via_familia": null
+    },
+    {
+      "codigo": "19-3033.00",
+      "codigo_onet": "19-3033.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
+        "codigo": "313",
+        "nombre": "Psicología"
+      },
+      "grupo": "19",
+      "resumen": "Evalúan, diagnostican y tratan trastornos mentales y emocionales de individuos a través de la observación, de entrevista y de pruebas…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Psicólogo clínico",
+      "via_familia": null
+    },
+    {
+      "codigo": "19-3034.00",
+      "codigo_onet": "19-3034.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
+        "codigo": "313",
+        "nombre": "Psicología"
+      },
+      "grupo": "19",
+      "resumen": "Diagnostican e implementan, de manera individual o en toda la escuela, intervenciones o estrategias para abordar problemas educativos, de…",
+      "riasec": [
+        "S",
+        "I",
+        "C"
+      ],
+      "titulo": "Psicólogo educativo",
+      "via_familia": null
+    },
+    {
+      "codigo": "29-1127.00",
+      "codigo_onet": "29-1127.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "715",
+        "nombre": "Tecnología Médica"
+      },
+      "grupo": "29",
+      "resumen": "Evalúan y tratan a personas con trastornos del habla, lenguaje, voz y fluidez de palabra.",
+      "riasec": [
+        "S",
+        "I",
+        "C"
+      ],
+      "titulo": "Terapeuta de lenguaje",
+      "via_familia": null
+    },
+    {
+      "codigo": "29-1122.00",
+      "codigo_onet": "29-1122.00",
+      "es_favorita": false,
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "715",
+        "nombre": "Tecnología Médica"
+      },
+      "grupo": "29",
+      "resumen": "Evalúan, planifican y organizan programas de rehabilitación que tiene por fin ayudar a generar o restaurar aptitudes y capacidades…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Terapeuta ocupacional",
+      "via_familia": null
+    }
+  ],
+  "total": 15,
+  "total_dominio": 245
+}

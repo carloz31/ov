@@ -61,9 +61,9 @@ def agregar_veinte_resultados(sesion):
         sesion.add(nuevo)
         sesion.flush()
         sesion.add_all([m.ResultadoDimension(resultado_id=nuevo.id, dimension_id=d.dimension_id,
-            puntaje=d.puntaje, puntaje_maximo=d.puntaje_maximo, porcentaje=n) for d in dimensiones])
+            puntaje=n, puntaje_maximo=d.puntaje_maximo) for d in dimensiones])
         sesion.add_all([m.Coincidencia(resultado_id=nuevo.id, ocupacion_id=c.ocupacion_id,
-            posicion=c.posicion, correlacion=c.correlacion, ajuste=c.ajuste) for c in coincidencias])
+            posicion=c.posicion, correlacion=c.correlacion) for c in coincidencias])
 
 
 def renombrar_e_invertir_dimensiones(sesion):
@@ -77,7 +77,8 @@ def renombrar_e_invertir_dimensiones(sesion):
 def agregar_ocupaciones(sesion, extra):
     dimensiones = list(sesion.scalars(select(m.Dimension).order_by(m.Dimension.orden)))
     for n in range(extra):
-        ocupacion = m.Ocupacion(codigo_onet=f'PRUEBA-{n}', titulo='DATO DE PRUEBA')
+        ocupacion = m.Ocupacion(codigo=f'prueba-{n}', codigo_onet=f'PRUEBA-{n}', titulo='DATO DE PRUEBA', grupo='15',
+                                en_test=True)
         sesion.add(ocupacion)
         sesion.flush()
         sesion.add_all([m.PuntajeOcupacion(ocupacion_id=ocupacion.id, dimension_id=d.id, valor=i+1)
@@ -111,8 +112,10 @@ def preparar_validacion(sesion):
 
 def insignia_por_evento(sesion, codigo, evento):
     """La ruta no premia todos los eventos; la prueba crea la insignia que necesita."""
+    grupo = sesion.scalar(select(m.GrupoInsignia).order_by(m.GrupoInsignia.orden))
     insignia = m.Insignia(codigo=codigo, nombre='DATO DE PRUEBA', descripcion='DATO DE PRUEBA',
-                          requisito='DATO DE PRUEBA', es_oculta=False, audiencia='ESTUDIANTE')
+                          requisito='DATO DE PRUEBA', es_oculta=False, audiencia='ESTUDIANTE',
+                          grupo_id=grupo.id, orden=99)
     sesion.add(insignia)
     sesion.flush()
     regla(sesion, f'R-{codigo}', 'INSIGNIA', insignia.id, [condicion(evento)])

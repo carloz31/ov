@@ -4,6 +4,8 @@ import type {
   HelenaResult,
   TipoResultadoHelena,
   AchievementGroup,
+  CondicionesPasaporte,
+  CondicionPasaporte,
   PassportBadge,
 } from '@/types/profile'
 import type { StudentDiscoveryState } from '@/types/discovery'
@@ -20,133 +22,57 @@ import type {
   ItemPublico,
   RespuestaPublica,
   ResultadoPublico,
-  CoincidenciaPublica,
-  DesbloqueoLegible,
+  BandaAfinidad,
 } from '@/types/servidor'
 
-export type AvisoServidor = {
-  id: string
-  kind: 'badge' | 'ficha' | 'ciudad' | 'nivel'
-  title: string
-  description: string
-  href: string
-}
-export const claveDesbloqueo = (d: DesbloqueoNuevo | DesbloqueoLegible) =>
-  `${d.regla}/${d.tipo_objetivo}/${d.objetivo.codigo}`
-export function avisosServidor(desbloqueos: (DesbloqueoNuevo | DesbloqueoLegible)[]): AvisoServidor[] {
-  const encontrados = new Set<string>()
-  return desbloqueos.flatMap<AvisoServidor>((d) => {
-    const id = claveDesbloqueo(d)
-    if (encontrados.has(id)) return []
-    encontrados.add(id)
-    const base = { id, title: d.objetivo.nombre }
-    switch (d.tipo_objetivo) {
-      case 'INSIGNIA':
-        return [
-          {
-            ...base,
-            kind: 'badge',
-            description: 'Un nuevo sello cuenta una parte de tu viaje.',
-            href: '/student/profile?section=passport',
-          },
-        ]
-      case 'FICHA':
-        return [
-          {
-            ...base,
-            kind: 'ficha',
-            description: 'Una nueva ficha viaja en tu mochila.',
-            href: '/student/resources',
-          },
-        ]
-      case 'NIVEL':
-        return [
-          {
-            ...base,
-            kind: 'nivel',
-            description: `Subiste a ${d.objetivo.nombre}.`,
-            href: '/student/profile?section=passport#nivel',
-          },
-        ]
-      case 'BLOQUE':
-        return d.objetivo.codigo === 'CIUDAD'
-          ? [
-              {
-                ...base,
-                kind: 'ciudad',
-                title: 'La ciudad te espera',
-                description: 'Tu camino abrió nuevas posibilidades.',
-                href: '/student/exploration',
-              },
-            ]
-          : []
-      default:
-        return []
-    }
-  })
-}
-export const insigniasOcultasPendientes = (logros: LogrosCuenta | null) =>
-  logros?.insignias.filter((i) => i.codigo === '???' && i.estado !== 'OBTENIDA').length ?? 0
-export function insigniasServidor(
-  logros: LogrosCuenta | null,
-  presentaciones: AchievementGroup[],
-): AchievementGroup[] {
-  const publicas = logros?.insignias.filter((i) => i.estado === 'OBTENIDA' || i.codigo !== '???') ?? []
-  const conocidas = new Set(presentaciones.flatMap((g) => g.items.map((i) => i.code)))
-  const grupos = presentaciones
-    .map((g) => ({
-      ...g,
-      items: g.items.flatMap((p) => {
-        const i = publicas.find((i) => i.codigo === p.code)
-        return i
-          ? [
-              {
-                ...p,
-                title: i.nombre,
-                description: i.requisito ?? i.descripcion ?? '',
-                done: i.estado === 'OBTENIDA',
-              },
-            ]
-          : []
-      }),
-    }))
-    .filter((g) => g.items.length)
-  const otras = publicas
-    .filter((i) => !conocidas.has(i.codigo as PassportBadge['code']))
-    .map((i): PassportBadge => ({
-      code: i.codigo as PassportBadge['code'],
+// Ajuste pasaporte-perfil: las páginas del pasaporte son los grupos del servidor, en su orden. Una secreta no
+// obtenida llega como `???`: su código local la distingue por página y posición, sin exponer el real.
+export function insigniasServidor(logros: LogrosCuenta | null): AchievementGroup[] {
+  const grupos: AchievementGroup[] = []
+  for (const i of logros?.insignias ?? []) {
+    let grupo = grupos.find((g) => g.title === i.grupo.nombre)
+    if (!grupo) grupos.push((grupo = { title: i.grupo.nombre, description: '', icon: 'key', items: [] }))
+    const secreta = i.codigo === '???'
+    grupo.items.push({
+      code: (secreta ? `???-${i.grupo.codigo}-${grupo.items.length + 1}` : i.codigo) as PassportBadge['code'],
       title: i.nombre,
+      hidden: secreta,
       done: i.estado === 'OBTENIDA',
       icon: 'sparkles',
-      description: i.requisito ?? i.descripcion ?? '',
-      message: i.descripcion ?? 'Un nuevo descubrimiento acompaña tu viaje.',
-      metaphor: 'Una nueva mirada viaja contigo.',
-      vocationalMeaning: i.descripcion ?? 'Cada descubrimiento amplía tus posibilidades.',
-    }))
-  if (otras.length)
-    grupos.push({
-      title: 'La luz que despeja caminos',
-      description: 'Descubrimientos que aparecen durante el viaje.',
-      icon: 'key',
-      items: otras,
+      description: i.requisito ?? '',
+      message: i.descripcion ?? '',
+      // F5: la frase destacada y la historia del sello, como `metaphor` y `vocationalMeaning` en local.
+      metaphor: i.frase ?? '',
+      vocationalMeaning: i.descripcion ?? '',
+      pista: i.pista,
+      obtenidaEn: i.obtenida_en,
+      logro: i.logro,
     })
+  }
   return grupos
 }
-export function textoRequisitoInsignia(
+// Todas las reglas (alternativas) con sus condiciones; el resumen cuenta la regla más avanzada. Una condición sin
+// texto muestra el respaldo: el requisito de la insignia o el mensaje de bloqueo de la regla.
+export function condicionesObjetivo(
   progreso: ProgresoObjetivo,
-  bloques: BloqueActividades[] | null,
-  codigo: string,
-  logros: LogrosCuenta | null,
-) {
-  const requisito =
-    logros?.insignias.find((i) => i.codigo === codigo)?.requisito ?? 'El requisito sigue pendiente.'
-  if (progreso.reglas.some((r) => r.evaluador_especial)) {
-    const completadas = bloquesZona(bloques, 'CAMINO')
-      .flatMap((b) => b.actividades)
-      .filter((a) => a.codigo !== 'mission-welcome' && a.estado === 'COMPLETADA').length
-    return `${requisito} · ${Math.min(3, completadas)} de 3 misiones.`
+  respaldo?: string | null,
+): CondicionesPasaporte {
+  const bloques = progreso.reglas.map((r) =>
+    r.condiciones.map((c) => ({
+      texto: c.texto ?? respaldo ?? r.mensaje_bloqueo,
+      cumplida: c.cumplida,
+      ...(c.requerido > 1 ? { actual: Math.min(c.actual, c.requerido), requerido: c.requerido } : {}),
+    })),
+  )
+  const proporcion = (b: CondicionPasaporte[]) => b.filter((c) => c.cumplida).length / (b.length || 1)
+  const indice = bloques.reduce((m, b, i) => (proporcion(b) > proporcion(bloques[m]) ? i : m), 0)
+  const mejor: CondicionPasaporte[] | undefined = bloques[indice]
+  return {
+    bloques,
+    cumplidas: mejor?.filter((c) => c.cumplida).length ?? 0,
+    total: mejor?.length ?? 0,
+    mejor: indice,
   }
-  return requisito
 }
 
 // El Camino son los bloques de MISIONES_CAMPO (T0, T1, T2); 'CAMINO' los nombra juntos.
@@ -203,7 +129,12 @@ export function proyectarJourney(
             ? 'en_curso'
             : 'no_iniciada',
     }
-    if (actividad.estado !== 'COMPLETADA') delete progress[actividad.codigo].completadaEn
+    if (actividad.estado !== 'COMPLETADA') {
+      delete progress[actividad.codigo].completadaEn
+      // Un `$fin` de una finalización que el servidor no conoce (la base se reinició o se volvió a cargar) dejaría
+      // el reproductor en el último paso: la actividad no completada en el servidor vuelve a empezar.
+      if (progress[actividad.codigo].nodoActualId === '$fin') delete progress[actividad.codigo].nodoActualId
+    }
   }
   // Las actividades ausentes del servidor nunca conservan una finalización autoritativa.
   for (const codigo of Object.keys(progress)) {
@@ -328,22 +259,29 @@ export function areasRiasec(resultado: ResultadoPublico | null) {
     return dimension ? [dimension] : []
   })
 }
+// Ajuste resultados-intereses: las ocupaciones afines que muestra el servidor, con su banda y parecido.
 export function coincidenciasRiasec(resultado: ResultadoPublico | null) {
   return !resultado || resultado.perfil_plano
     ? []
-    : [...(resultado.coincidencias ?? [])].sort((a, b) => a.posicion - b.posicion)
+    : [...(resultado.ocupaciones ?? [])].sort((a, b) => a.posicion - b.posicion)
 }
-export const textoAjuste = (ajuste: CoincidenciaPublica['ajuste']) =>
-  ({ BEST_FIT: 'Mejor ajuste', GREAT_FIT: 'Gran ajuste', GOOD_FIT: 'Buen ajuste' })[ajuste]
+export const textoBanda = (banda: BandaAfinidad) =>
+  ({ MUY_AFIN: 'Muy afín', AFIN: 'Afín', CERCANA: 'Cercana' })[banda]
 export function resultadoHelenaCompleto(r: ResultadoPublico, tipo: TipoResultadoHelena): HelenaResult {
   const adaptar = (d: ResultadoPublico['dimensiones'][number]) => ({
     code: d.codigo,
     name: d.nombre,
-    score: d.porcentaje ?? 0,
+    score: d.puntaje_visual ?? 0,
     description: d.descripcion,
+    ejemplos: d.ejemplos ?? undefined,
+    fortalezas: d.fortalezas,
+    desarrollo: d.desarrollo,
   })
   return {
     source: 'real',
+    lectura: r.lectura || undefined,
+    mensaje: r.mensaje || undefined,
+    guiaAbierta: r.guia_abierta,
     dimensiones: r.dimensiones.map(adaptar),
     areas:
       tipo === 'COINCIDENCIAS' ? areasRiasec(r).map(adaptar) : (r.dimensiones_destacadas ?? []).map(adaptar),
@@ -355,7 +293,7 @@ export const ocupacionesResultadoServidor = (resultado: ResultadoPublico | null)
     clave: c.codigo_onet,
     codigo: c.codigo,
     titulo: c.titulo,
-    ajuste: textoAjuste(c.ajuste),
+    ajuste: `${textoBanda(c.banda)} · ${c.parecido} %`,
   }))
 export function paginaInteresesServidor(
   bloques: BloqueActividades[] | null,

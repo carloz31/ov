@@ -16,6 +16,11 @@ export function getTodayCheckIn(state: Pick<AdventureState, 'readinessCheckIns'>
   )
 }
 
+// Ajuste del panel (F05): la etiqueta de un valor; en una escala mayor que 5 (local, 1–10), por proporción.
+const etiquetasSenal = ['Nada seguro', 'Poco seguro', 'Algo seguro', 'Bastante seguro', 'Muy seguro']
+export const etiquetaSenal = (valor: number, escala: number) =>
+  etiquetasSenal[Math.min(4, Math.max(0, Math.ceil((valor * 5) / escala) - 1))]
+
 export function saveTodayCheckIn(value: ReadinessCheckIn['value']) {
   if (!Number.isInteger(value) || value < 1 || value > 10) return
   updateAdventure((current) => {

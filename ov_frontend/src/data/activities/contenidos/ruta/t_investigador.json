@@ -1,0 +1,58 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-investigador",
+  "tipo": "encuentro",
+  "titulo": "El investigador de oficios",
+  "bloque": 4,
+  "orden": 6,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 5,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-investigador-1",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "En la ciudad hay gente que vive de oficios que quizá no conoces. La mejor forma de saber cómo son es preguntarles."
+    },
+    {
+      "id": "t-investigador-slide",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Cómo se investiga una ocupación",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Elige",
+              "texto": "Una ocupación que te intrigue y lo que piensas hoy de ella."
+            },
+            {
+              "titulo": "Prepara",
+              "texto": "Un guion de preguntas para una persona que la ejerce."
+            },
+            {
+              "titulo": "Comparte",
+              "texto": "Publica la entrevista para que tu salón aprenda contigo."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t-investigador-2",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Desde ahora tienes abierta la sección Investigaciones."
+    }
+  ],
+  "mapa": {
+    "x": 360,
+    "y": 420,
+    "icono": "informativa"
+  }
+}

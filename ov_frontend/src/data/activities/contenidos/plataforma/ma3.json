@@ -1,0 +1,62 @@
+{
+  "id": "ma3",
+  "codigo": "ma3",
+  "tipo": "registro",
+  "titulo": "De la meta a los pasos",
+  "subtitulo": "El guardián vuelve a hablar",
+  "escenario": "desierto",
+  "bloque": 7,
+  "orden": 32,
+  "obligatoria": false,
+  "requisitos": [
+    "b1-7"
+  ],
+  "ubicacion": "El guardián vuelve a hablar",
+  "duracionEstimadaMin": 6,
+  "personajeIds": [
+    "guardian",
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "ma3-01",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "texto": "Tu línea de tiempo tenía hitos de verdad, no deseos. Por eso vuelvo: un hito a un año se cumple en meses, y los meses se olvidan. Vamos a partir el primero.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "ma3-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora. Es la práctica de la meta útil: acción, plazo, recurso.",
+      "eco": "ma3-ref-hito"
+    },
+    {
+      "id": "ma3-03",
+      "tipo": "consigna",
+      "hablanteId": "guardian",
+      "item": "ma3-pasos",
+      "premisa": "Descompón tu hito a un año en pasos mensuales: qué harías cada mes, empezando por el próximo.",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "ayuda": "No hacen falta doce: con los primeros tres o cuatro ya se ve si el hito cabe en un año."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Un hito partido en meses deja de ser un deseo."
+  },
+  "mapa": {
+    "x": 0,
+    "y": 0,
+    "icono": "registro",
+    "origen": "b1-7",
+    "adicional": true
+  },
+  "plantilla": {
+    "tipo": "secuencial"
+  }
+}

@@ -7,7 +7,7 @@ import {
   type TravelResource,
 } from '@/features/backpack/lib/travelerResources'
 export function ResourceContent({ resource }: { resource: TravelResource }) {
-  const videoUrl = youtubeEmbedUrl(resource.url)
+  const videoUrl = resource.embed ?? youtubeEmbedUrl(resource.url)
   const fileUrl = resourceFileUrl(resource.url)
   const isPdf = fileUrl && (resource.fileFormat === 'pdf' || /\.pdf(?:[?#]|$)/i.test(fileUrl))
   const placeholderUrl = fileUrl && /^https:\/\/example\.com(?:\/|$)/.test(fileUrl)

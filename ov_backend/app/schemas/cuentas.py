@@ -17,6 +17,8 @@ class CuentaResumen(BaseModel):
 class NivelActual(BaseModel):
     numero: int
     titulo: str
+    descripcion: str | None
+    cita_lumi: str | None
 
 
 class ResumenCuenta(BaseModel):
@@ -54,8 +56,3 @@ class DesbloqueoLegible(BaseModel):
     tipo_objetivo: TipoObjetivo
     objetivo: ObjetivoLegible
     fecha_hora: datetime
-    visto: bool
-
-
-class DesbloqueosMarcados(BaseModel):
-    marcados: int

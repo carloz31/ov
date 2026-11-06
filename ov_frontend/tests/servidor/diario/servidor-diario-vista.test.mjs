@@ -52,16 +52,18 @@ test('cartas: recibidas, de la más reciente a la más antigua, selladas sin pre
   )
 })
 
-test('buzón: hasta 3 filas, fecha, remitente, responder y archivar; sin pendientes, el estado vacío', () => {
+test('buzón: hasta 3 filas con remitente, fecha y una sola acción («Responder»); sin pendientes, el estado vacío', () => {
   const muchas = ['a', 'b', 'c', 'd'].map((codigo) => carta({ codigo }))
   const html = render('BuzonLumi', { cartas: muchas, ahora, enRedaccion: [], acciones, limite: 3 })
   assert.match(html, /Buzón/)
   assert.match(html, /4 por responder/)
   assert.equal((html.match(/class="sx-j-carta"/g) ?? []).length, 3)
   assert.match(html, /hace 2 días/)
-  assert.match(html, /De: Inicio de prueba/)
+  assert.match(html, /De: Inicio de prueba · hace 2 días/)
   assert.match(html, /“¿Qué te gustaría descubrir de ti en este camino\?”/)
-  assert.match(html, /Archivar sin responder/)
+  // En la portada cada carta tiene una sola acción a la derecha; archivar queda en «Cartas de Lumi».
+  assert.equal((html.match(/>Responder<\/button>/g) ?? []).length, 3)
+  assert.doesNotMatch(html, /Archivar sin responder/)
   assert.match(html, /Cartas que Lumi te dejó al terminar una actividad\. Responde cuando quieras\./)
   assert.doesNotMatch(html, /Actualizar/)
   const vacio = render('BuzonLumi', {
@@ -131,12 +133,12 @@ test('tarjeta de Lumi: nivel, cartas enviadas, siguiente nivel y el texto fijo d
   assert.match(html, /Nivel 1 · Conociéndonos/)
   assert.match(html, /3 cartas enviadas/)
   assert.match(html, /Siguiente nivel: 5/)
-  assert.match(html, /Faltan 2 cartas para que Lumi te cuente su siguiente recuerdo\./)
+  assert.match(html, /Faltan <strong>2 cartas<\/strong> para que Lumi te cuente su siguiente recuerdo\./)
   assert.match(html, /Hoy cuentan hasta 3 cartas · la amistad nunca se pierde/)
   assert.doesNotMatch(html, /conversaciones|Guardar en mi memoria/)
   assert.match(
     render('LumiBondPanel', { bond, siguienteRecuerdo: 'Cómo llegué' }),
-    /Faltan 2 cartas para que Lumi te cuente «Cómo llegué»\./,
+    /Faltan <strong>2 cartas<\/strong> para que Lumi te cuente <em>«Cómo llegué»<\/em>\./,
   )
 })
 

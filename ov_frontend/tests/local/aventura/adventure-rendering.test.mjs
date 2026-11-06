@@ -641,7 +641,8 @@ test('adventure keeps the original mission route and switches between path and c
   assert.match(city, /Afinidad con la ciudad/)
   assert.match(city, /role="progressbar" aria-label="Afinidad con la ciudad"/)
   assert.match(city, /Una vuelta por el molino/)
-  assert.match(city, /Test · Interacción 1 de 14/)
+  // Ajuste del panel (F05): sin lista de disponibles, el subtítulo de la recomendada va en el siguiente paso.
+  assert.match(city, /class="sx-next-meta"/)
   assert.match(city, /Cambiar zona de la aventura/)
 })
 test('immersive maps expose the panel, recommendations and one block sign', () => {
@@ -680,8 +681,8 @@ test('student point calculations preserve progress, recommendations and every dr
   adventure.completedMissionIds = []
   adventure.solvedCaseIds = ['forest-fire', 'river-mystery']
   const points = getCaminoPoints(adventure, journey)
-  assert.equal(getZoneProgress('missions', adventure, journey).value, 0)
-  assert.equal(getZoneProgress('central', adventure, journey).value, 33)
+  assert.equal(getZoneProgress('missions', adventure, journey).porcentaje, 0)
+  assert.equal(getZoneProgress('central', adventure, journey).porcentaje, 33)
   assert.equal(getRecommendedPoint(points).id, 'welcome')
   const welcome = points.find(point => point.id === 'welcome')
   assert.equal(getPointDetails(welcome, adventure, journey).actionLabel, 'Iniciar actividad')
@@ -694,7 +695,7 @@ test('student point calculations preserve progress, recommendations and every dr
   assert.equal(replay.actionLabel, 'Volver a realizar esta misión')
   assert.equal(replay.revision, true)
   assert.equal(replay.journal.completed, true)
-  assert.equal(getZoneProgress('missions', adventure, journey).value, 100 / fieldMissions.length)
+  assert.equal(getZoneProgress('missions', adventure, journey).porcentaje, 100 / fieldMissions.length)
   assert.equal(getRecommendedPoint(completed).id, 'beliefs')
   const locked = getPointDetails({ ...completed[1], status: 'locked' }, adventure, journey)
   assert.equal(locked.actionLabel, 'Actividad bloqueada')
@@ -879,11 +880,10 @@ test('student signal panel offers registration or editing and retains evolution 
   assert.doesNotMatch(empty, />Cambiar</)
   const today = { id: 'current', createdAt: new Date().toISOString(), linkedActivityId: 'daily-check-in', value: 8 }
   const answered = render('/student/missions', { readinessCheckIns: [today] })
-  assert.match(answered, /class="sx-panel-signal" aria-label="8 de 10"/)
-  assert.match(answered, /<strong>8<\/strong><span>\/10<\/span>/)
-  assert.match(answered, />Cambiar</)
-  assert.match(answered, /class="sx-signal-edit"[\s\S]*?>Cambiar<\/button>/)
-  assert.match(answered, /class="sx-signal-history" href="\/student\/journal\/signal"[\s\S]*?>Ver evolución<\/a>/)
+  // Ajuste del panel (F05): etiqueta del valor y «Cambiar» como enlace; «Ver evolución» pasa a botón.
+  assert.match(answered, /<span aria-label="8 de 10"><strong>Bastante seguro<\/strong> · 8 de 10<\/span>/)
+  assert.match(answered, /class="sx-signal-change"[^>]*>Cambiar<\/button>/)
+  assert.match(answered, /class="sx-signal-history" data-variante="boton" href="\/student\/journal\/signal"[^>]*>Ver evolución<\/a>/)
   assert.doesNotMatch(answered, /Registrar mi señal/)
   assert.doesNotMatch(answered, /role="dialog"/)
 })
@@ -1153,7 +1153,8 @@ test('the passport lives inside the profile with five narrative levels and group
   // Tras F05 (pedido del usuario): las insignias muestran ícono y nombre, sin su código (I1…I9).
   assert.ok((html.match(/class="sx-p-badge"/g) ?? []).length >= 9)
   assert.doesNotMatch(html, /sx-p-badge-code/)
-  assert.match(html, /Pulsa una insignia para descubrir la historia que guarda/)
+  // Ajuste pasaporte-perfil (excepción nº 16 al modo local congelado): textos del rediseño.
+  assert.match(html, /Pulsa uno para leer la historia que guarda/)
   const menu = render('/student/missions')
   assert.doesNotMatch(menu, />Mi pasaporte<\/span>/)
 })
@@ -1181,12 +1182,12 @@ test('student resources show only the backpack and retain the testimonials route
   const html = render('/student/resources')
   assert.match(html, /Tu mochila de viaje/)
   assert.match(html, /Mi mochila/)
-  assert.match(html, /Testimonios/)
   assert.doesNotMatch(html, /Investigaciones|>Comunidad</)
   assert.match(html, /Lo que aprendiste en el camino/)
   assert.match(html, /Voces de la ciudad/)
-  assert.match(html, /Bloqueado/)
-  assert.match(html, /La plaza de los rumores/)
+  // Ajuste mochila: sin fichas bloqueadas; sin fichas obtenidas, el compartimento vacío lleva al mapa.
+  assert.doesNotMatch(html, /Bloqueado/)
+  assert.match(html, /Tu mochila está lista, pero todavía vacía/)
   // Sin pestaña «Todo»: los testimonios, con su caso, en su propia pestaña.
   assert.match(render('/student/resources?kind=testimonial'), /Incendio forestal/)
   assert.doesNotMatch(html, /Recursos y novedades|Héroes de la ciudad|Investigaciones de los viajeros/)
@@ -2424,8 +2425,9 @@ test('saved resources and counselor submissions appear in their respective desti
   }))
   const resources = render('/student/resources')
   assert.match(resources, /Ficha: Mitos y realidades del futuro profesional/)
-  assert.match(resources, /Abrir ficha/)
-  assert.match(resources, /Guardar en favoritos/)
+  // Ajuste mochila: la tarjeta entera abre la ficha; la estrella es su propio botón.
+  assert.match(resources, /De la misión <strong>La plaza de los rumores<\/strong>/)
+  assert.match(resources, /aria-label="Agregar a favoritos"/)
   assert.doesNotMatch(resources, /No visto|Visto/)
   assert.match(render('/counselor/reviews'), /Registros observados/)
   assert.doesNotMatch(render('/parent/activities'), /Consejo de ejemplo compartido con orientación/)
@@ -2690,7 +2692,7 @@ test('phase 8 path sequence respects completion records within the current demo 
   assert.deepEqual(Array.from(fieldMissions, mission => mission.id), Array.from(originalIds))
   assert.equal(store.prototypeAllUnlocked, true)
   assert.equal(store.isCityUnlocked({ ...adventure, completedMissionIds: ['welcome', 'beliefs', 'pregones', 'story'] }), false)
-  assert.equal(logic.getZoneProgress('missions', { ...adventure, completedMissionIds: ['welcome'] }, journey).value, 400 / fieldMissions.length)
+  assert.equal(logic.getZoneProgress('missions', { ...adventure, completedMissionIds: ['welcome'] }, journey).porcentaje, 400 / fieldMissions.length)
 })
 
 test('phase 8 direct links open blocked details instead of starting unavailable players', () => {
@@ -2818,6 +2820,7 @@ test('phase 8 map labels contain names only and use activity icons or a question
   assert.doesNotMatch(render('/student/missions'), /Arrastra el mapa para explorar/)
 })
 
+// Ajuste del panel (F05): ya no hay lista de disponibles; sin recomendada, «Explora las actividades» lleva a la lista.
 test('phase 8 available panel caps four pending implemented actions and links to the full list', () => {
   const { AdventurePanel } = load(path.resolve('src/features/adventure/components/AdventurePanel.tsx'))
   const points = Array.from({ length: 7 }, (_, index) => ({ id: 'p' + index, title: 'Disponible ' + index, subtitle: 'En progreso', status: 'available', actionEnabled: true }))
@@ -2825,9 +2828,9 @@ test('phase 8 available panel caps four pending implemented actions and links to
   const html = renderToStaticMarkup(React.createElement(MemoryRouter, {}, React.createElement(AdventurePanel, {
     points, adventure: store.createInitialAdventure(), progress: { label: 'Progreso', value: 0 }, onSelect() {}, onCheckIn() {},
   })))
-  assert.equal((html.match(/sx-available-dot/g) ?? []).length, 4)
-  assert.match(html, /href="\/student\/activities"[^>]*>Ver más/)
-  assert.doesNotMatch(html, /sx-panel-pagination|Disponible 4|Disponible 5|Disponible 6/)
+  assert.equal((html.match(/sx-available-dot/g) ?? []).length, 0)
+  assert.match(html, /class="sx-next-step" href="\/student\/activities"[^>]*>[\s\S]*?Explora las actividades/)
+  assert.doesNotMatch(html, /Actividades disponibles|Disponible 0|Ver más/)
 })
 
 test('phase 8 activities combine zones, classify publications and return to the matching map', () => {
@@ -2999,21 +3002,25 @@ test('phase 9 panel has five direct links, a compact next-step action and the re
   let selected
   let tree = panel.draw({ adventure, points, recommended: points[0], progress: { label: 'Recorrido', value: 0 }, onSelect: id => { selected = id }, onCheckIn() {} })
   const links = panel.find(tree, element => element.props['aria-label'] === 'Accesos rápidos').props.children
-  assert.deepEqual(Array.from(links, element => panel.text(element)), ['Mi perfil', 'Mi diario', 'En familia', 'Recursos', 'Investigaciones', 'Información'])
-  assert.deepEqual(Array.from(links, element => element.props.to), ['/student/profile', '/student/journal', '/student/conversations', '/student/resources', '/student/investigations', '/student/catalog/professions'])
+  // Ajuste del panel (F05): Mi perfil es la cabecera; entra Mis planes.
+  assert.deepEqual(Array.from(links, element => panel.text(element)), ['Mis planes', 'Mi diario', 'En familia', 'Recursos', 'Investigaciones', 'Información'])
+  assert.deepEqual(Array.from(links, element => element.props.to), ['/student/profile/decisions', '/student/journal', '/student/conversations', '/student/resources', '/student/investigations', '/student/catalog/professions'])
   assert.ok(links.every(element => element.type !== 'button'))
-  const next = panel.button(tree, 'Siguiente paso')
+  // Ajuste del panel (F05): el siguiente paso es su propio componente (también en local); se pinta aparte.
+  const paso = t => { const e = panel.find(t, element => element.type?.name === 'SiguientePasoServidor'); return e.type(e.props) }
+  const next = panel.button(paso(tree), 'Siguiente paso')
   assert.ok(next); assert.match(panel.text(next), /El inicio del viaje/)
-  assert.doesNotMatch(panel.text(next), /Ver misión|Informativa|4 min/)
+  // Ajuste del panel (F05): subtítulo con tipo y duración.
+  assert.doesNotMatch(panel.text(next), /Ver misión/); assert.match(panel.text(next), /Informativa · 4 min/)
   next.props.onClick(); assert.equal(selected, 'welcome')
   let rank = panel.find(tree, element => element.props.className === 'sx-panel-level')
   assert.equal(rank.props['aria-label'], `Nivel ${store.getTravelerLevel(adventure).number}: ${store.getTravelerLevel(adventure).label}`)
-  assert.match(panel.text(rank), /NIVEL01/)
+  assert.match(panel.text(rank), /^Nivel 1/)
   adventure.completedMissionIds = fieldMissions.map(mission => mission.id)
   tree = panel.draw({ adventure, points: [], progress: { label: 'Recorrido', value: 100 }, onSelect() {}, onCheckIn() {} })
   rank = panel.find(tree, element => element.props.className === 'sx-panel-level')
-  assert.match(panel.text(rank), /NIVEL03Cartógrafo de posibilidades/)
-  assert.equal(panel.button(tree, 'Siguiente paso'), undefined)
+  assert.match(panel.text(rank), /Nivel 3Cartógrafo de posibilidades/)
+  assert.equal(panel.button(paso(tree), 'Siguiente paso'), undefined)
   panel.dispose()
 })
 
@@ -3133,7 +3140,8 @@ test('student favorites remain separate from explicit decision sheets', () => {
 
 test('discovery profile exposes the three chapters and keeps its passport route', () => {
   const html = render('/student/profile')
-  for (const text of ['Lo que he logrado', 'Lo que Helena descubre de mí', 'Hacia dónde voy', 'Recorrido', 'Logros recientes']) assert.ok(html.includes(text), text)
+  // Ajuste pasaporte-perfil (excepción nº 16): la línea de ruta y la tira de sellos reemplazan «Recorrido» y «Logros recientes».
+  for (const text of ['Lo que he logrado', 'Lo que Helena descubre de mí', 'Hacia dónde voy', 'Tu ruta', 'Sellos del pasaporte']) assert.ok(html.includes(text), text)
   assert.doesNotMatch(html, /Ver mi progreso|Mi punto de partida|Ver mis favoritos/)
   assert.match(render('/student/profile?section=passport'), /Pasaporte vocacional/)
   assert.doesNotMatch(html, /role="dialog"/)
@@ -3331,7 +3339,7 @@ test('discovery plan actions create explicitly, reorder and archive only on conf
   const d = load(path.resolve('src/store/discoveryStore.ts'))
   const e = load(path.resolve('src/store/explorationStore.ts'))
   const savedD = d.getDiscovery(), savedE = e.getExploration()
-  const page = immersivePlayerHarness('src/pages/student/StudentPlansView', {
+  const page = immersivePlayerHarness('src/features/discovery/components/MisPlanesLocales', {
     '@/hooks/useReturnFocus': { useReturnFocus: () => ({}) },
     '@/context/occupationExplorationContext': { useOccupationExplorationContext: () => ({ ...e.getExploration(), setDecisionSheets: e.setDecisionSheets }) },
     'react-router': { Link: 'a' },
@@ -3430,14 +3438,15 @@ test('collapsed student map reserves its strip and keeps the recommended point v
  }
  const html=render('/student/missions')
  assert.match(html, /class="sx-panel-traveler" href="\/student\/profile"/)
- for(const text of ['Nivel de recorrido','Tu título de viajero','Crece con cada misión del camino.','Tu señal de hoy','Actividades disponibles'])assert.ok(html.includes(text))
+ for(const text of ['Nivel de recorrido','>Camino<','<strong class="sx-progress-line">0 de ','Siguiente paso','Tu señal de hoy','Accesos rápidos'])assert.ok(html.includes(text))
+ for(const text of ['Tu título de viajero','Crece con cada misión del camino.','Actividades disponibles','¡Qué bueno verte!<'])assert.ok(!html.includes(text))
 })
 
 
 test('new backpack separates provisions, protects locked identities and navigates its resource tabs', () => {
  // Sin pestaña «Todo»: por defecto, las fichas; los testimonios, en su pestaña.
  const fichas=render('/student/resources')
- for(const text of ['Tu mochila de viaje','Lo que aprendiste en el camino','Mis favoritos'])assert.ok(fichas.includes(text))
+ for(const text of ['Tu mochila de viaje','Lo que aprendiste en el camino','Solo favoritos'])assert.ok(fichas.includes(text))
  assert.ok(!fichas.includes('Compartimento de testimonios')&&!fichas.includes('>Todo<'))
  const html=render('/student/resources?kind=testimonial')
  for(const text of ['Voces de la ciudad','Una voz por descubrir'])assert.ok(html.includes(text))
@@ -3448,7 +3457,9 @@ test('new backpack separates provisions, protects locked identities and navigate
  const page=immersivePlayerHarness('src/pages/student/StudentBackpackView',{'react-router':{useNavigate:()=>href=>{navigated=href},useSearchParams:()=>[params,update=>{params=update(params)}]}})
  try{
   let tree=page.draw({})
-  const tab=(tree,id)=>page.find(tree,e=>e.props.id===`sx-backpack-tab-${id}`)
+  // Ajuste mochila: las pestañas viven en BarraMochila, que no usa hooks; se dibuja con sus props.
+  const barra=tree=>{const b=page.find(tree,e=>e.type?.name==='BarraMochila');return b.type(b.props)}
+  const tab=(tree,id)=>page.find(barra(tree),e=>e.props?.id===`sx-backpack-tab-${id}`)
   tab(tree,'sheet').props.onKeyDown({key:'End',preventDefault(){}})
   assert.equal(params.get('kind'),'testimonial');assert.equal(params.get('keep'),'1')
   tree=page.draw({});tab(tree,'testimonial').props.onKeyDown({key:'ArrowRight',preventDefault(){}})
@@ -3480,12 +3491,13 @@ test('Lumi bond counts Lima days without loss and opens memories at exact bounda
  }
 })
 
-test('journal uses conversations, inline onboarding and private titled saving without automatic windows', () => {
+test('journal uses conversations, Lumi onboarding and private titled saving without automatic windows', () => {
  const html=render('/student/journal',{journalOnboardingSeen:true})
  // Ajuste del diario de F05 (autorizado por la spec): «Hoy» reemplaza la página en blanco y la tarjeta de Lumi es compacta.
  for(const text of ['Amistad con Lumi','Escribir algo libre','Lo que le has contado a Lumi','la amistad nunca se pierde'])assert.ok(html.includes(text),text)
  assert.doesNotMatch(html,/puntos de amistad|baja 1 punto|role="dialog"/)
- const intro=render('/student/journal',{journalOnboardingSeen:false});assert.match(intro,/Un espacio para ti y Lumi/);assert.doesNotMatch(intro,/role="dialog"/)
+ // Ajuste diario-lumi (autorizado): la bienvenida pasó a la presentación de Lumi; la portada ya no la muestra.
+ const intro=render('/student/journal',{journalOnboardingSeen:false});assert.doesNotMatch(intro,/Un espacio para ti y Lumi|Entendido, empezar a escribir/);assert.match(intro,/Escribir algo libre/);assert.doesNotMatch(intro,/role="dialog"/)
  const page=immersivePlayerHarness('src/pages/student/StudentJournalView',{'react-router':{useSearchParams:()=>[new URLSearchParams()]},'@/hooks/useLumiNow':{useLumiNow:()=>new Date()},'@/hooks/useReturnFocus':{useReturnFocus:()=>({})}})
  const before=store.useAdventure()
  try{
@@ -3541,10 +3553,12 @@ test('passport hides pending meanings, respects the profile limit and starts wit
   const pending=groups.flatMap(g=>g.items).find(b=>!b.done)
   let tree=page.draw({badge:pending,group:'Prueba',groupIndex:1,onClose(){}})
   assert.ok(!page.text(tree).includes(pending.metaphor));assert.ok(!page.text(tree).includes(pending.vocationalMeaning))
-  assert.match(page.text(tree),/Se revela cuando obtengas/);assert.equal(page.button(tree,'Mostrar en mi perfil'),undefined)
+  // Ajuste pasaporte-perfil (excepción nº 16): textos del modal rediseñado.
+  assert.match(page.text(tree),/Su historia se revela cuando la consigas/);assert.equal(page.button(tree,'Añadir a tu vitrina'),undefined)
   const earned=groups.flatMap(g=>g.items).find(b=>b.code==='I7')
   tree=page.draw({badge:earned,group:'Prueba',groupIndex:2,onClose(){}})
-  assert.ok(page.text(tree).includes(earned.vocationalMeaning));assert.equal(page.button(tree,'Mostrar en mi perfil').props.disabled,true)
+  // F5: el modal obtenido vuelve a mostrar la frase (metaphor) y la historia (vocationalMeaning).
+  assert.ok(page.text(tree).includes(earned.vocationalMeaning));assert.equal(page.button(tree,'Añadir a tu vitrina').props.disabled,true)
   tree=page.draw({badge:{...pending,hidden:true},group:'Prueba',groupIndex:1,onClose(){}})
   assert.ok(!page.text(tree).includes(pending.description));assert.ok(!page.text(tree).includes(pending.title))
  }finally{page.dispose()}
@@ -3707,10 +3721,12 @@ test('daily journal question shows its prompt in «Hoy», recognizes today and l
       journalOnboardingSeen: true, journal: [{ ...answer, linkedActivityId: `daily-prompt-${yesterday}` }],
     }))
     assert.ok(newDay.includes(daily.prompt))
-    assert.equal(card(render('/student/journal', { journalOnboardingSeen: false })), undefined)
+    // Ajuste diario-lumi: sin el cuadro de bienvenida, «Hoy» se ve también en la primera visita.
+    assert.ok(card(render('/student/journal', { journalOnboardingSeen: false })).includes(daily.prompt))
     // El cuaderno completo (`?cuaderno=completo`) lista todas las entradas, también las de demostración más antiguas.
     const legacy = render('/student/journal?cuaderno=completo', { journalOnboardingSeen: true })
-    assert.match(legacy, /<article class="sx-j-entry" data-kind="daily">[\s\S]*?Pregunta del día<\/span><h3>Tema del día/)
+    // Ajuste del diario de F05 (pedido del usuario): cada entrada es un punto de la línea de tiempo del cuaderno.
+    assert.match(legacy, /<li class="sx-j-entry" data-kind="daily">[\s\S]*?Pregunta del día<\/span><\/span><h3>Tema del día/)
     assert.match(legacy, /data-kind="open"/)
     assert.match(legacy, /Carta de Lumi/)
   } finally {

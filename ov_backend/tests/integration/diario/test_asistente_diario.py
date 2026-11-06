@@ -9,6 +9,7 @@ from sqlalchemy import select
 
 from app import models as m
 from soporte_ruta import FECHA, avanzar, completar, pedir
+from soporte_catalogo_ruta import ING_CIVIL
 
 
 PERSONAL = 't-diario-personal'
@@ -126,7 +127,7 @@ def sembrar_partida(sesion, puntajes):
         dimension = sesion.scalar(select(m.Dimension).where(m.Dimension.codigo == codigo))
         items = len(sesion.scalars(select(m.ItemInstrumento.id).where(m.ItemInstrumento.dimension_id == dimension.id)).all())
         sesion.add(m.ResultadoDimension(resultado_id=resultado.id, dimension_id=dimension.id, puntaje=promedio * items,
-                                        puntaje_maximo=4 * items, porcentaje=promedio * 25))
+                                        puntaje_maximo=4 * items))
     sesion.commit()
 
 
@@ -159,7 +160,7 @@ def test_no_repite_las_recientes_ni_elige_una_sin_datos(cliente, sesion):
 
 def test_la_diaria_de_favoritos_cita_los_favoritos(cliente, sesion, asistente, monkeypatch):
     completar(cliente, 't-inicio')
-    pedir(cliente, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': 'civil-engineering'})
+    pedir(cliente, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': ING_CIVIL})
     sorteadas = dimensiones_sorteadas(sesion, cliente, 12)
     assert ('t-dia-favoritos', 'AUTO-B') in sorteadas
     favoritos = next(r for r in recomendaciones(sesion, 'DIARIA') if r.origen == m.OrigenRedaccion.LLM)

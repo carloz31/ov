@@ -1,0 +1,90 @@
+﻿codigo,nombre,cod_campo_especifico
+011,Oficiales de las Fuerzas Armadas,01
+012,Suboficiales de las Fuerzas Armadas,01
+021,Oficiales de la Policía Nacional,02
+022,Suboficiales de la Policía Nacional,02
+111,Educación Inicial,11
+112,Educación Primaria,11
+121,Educación Secundaria,12
+131,Educación Física,13
+141,Educación Especial,14
+151,Educación Artística,15
+161,Educación Tecnológica,16
+199,Otras Carreras de Educación,19
+211,Antropología y Arqueología,21
+212,Historia,21
+213,Lingüística y Literatura,21
+214,Idiomas,21
+215,Bibliotecología y Archivo,21
+216,Teología y Filosofía,21
+217,Humanidades,21
+221,Artes,22
+222,Diseño,22
+223,Danza,22
+224,Música,22
+225,Teatro,22
+226,Artesanía y Manualidades,22
+311,Servicios Sociales y Asistenciales,31
+312,Trabajo Social,31
+313,Psicología,31
+321,Ciencias de la Comunicación,32
+322,Periodismo y Locución,32
+323,Operadores de Imagen y Sonido,32
+331,Administración de Empresas,33
+332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",33
+333,Marketing,33
+334,Agronegocios,33
+335,Negocios Internacionales,33
+336,Administración Pública,33
+337,Secretariado,33
+339,Otras Carreras de Administración,33
+341,Economía,34
+342,Contabilidad y Finanzas,34
+351,Derecho,35
+352,Ciencias Políticas,35
+411,Biología,41
+412,Zootecnia,41
+413,Hidrografía,41
+414,Meteorología,41
+421,Física,42
+422,Química,42
+423,Geología,42
+431,Matemática,43
+432,Estadística,43
+433,Investigación Operativa,43
+441,Ciencias de la Computación,44
+511,Ingeniería de Sistemas y Cómputo,51
+512,Ingeniería de Telecomunicaciones,51
+521,Ingeniería Industrial,52
+522,Ingeniería en Industrias Alimentarias,52
+523,Ingeniería en Agroindustria,52
+524,Ingeniería Eléctrica,52
+525,Ingeniería Electrónica,52
+526,Ingeniería Mecánica,52
+527,"Ingeniería Minera, Metalurgia y Petróleo",52
+528,Ingeniería Textil y Confecciones,52
+531,Ingeniería Civil,53
+532,Ingeniería Sanitaria,53
+533,Arquitectura y Urbanismo,53
+534,Mantenimiento y Restauración de Obras Públicas,53
+535,Carpintería y Ebanistería,53
+591,Ingeniería Pesquera,59
+592,Ingeniería Naval y Aeronáutica,59
+593,Geografía,59
+594,Ecología y Medio Ambiente,59
+599,Otras Ingenierías,59
+611,Agropecuaria,61
+612,Ciencias Forestales,61
+613,Acuicultura,61
+621,Veterinaria,62
+711,Medicina,71
+712,Nutrición,71
+713,Odontología,71
+714,Enfermería,71
+715,Tecnología Médica,71
+716,Farmacia y Bioquímica,71
+717,Obstetricia,71
+719,Otras Carreras de Ciencias de la Salud,71
+811,Turismo,81
+812,Tratamiento de Belleza y Peluquería,81
+821,Servicio de Transporte,82

@@ -2,12 +2,13 @@
 
 B00 comprueba sobre `ruta` las HU 004, 011, 013, 014, 015, 021, 073 y 074; B02, las HU 006 y 010; B03, las HU 007
 y 016; B07, la HU 094; B08, las HU 017, 041 y 051 a 056; B09, las HU 028 a 033, 035, 036 y 075; B11, las HU 043
-a 048, 050, 097 a 099, 109 y 110; B12, las HU 066, 068 a 071 y 078 a 080; B17, la HU 001 (el recorrido empieza con
-el ingreso real, como el front). Cada lote extiende este recorrido con su tramo.
+a 048, 050, 097 a 099, 109 y 110; B12, las HU 066, 068 a 071 y 078 a 080; B13, las HU 057 a 065, 100 y 101; B17, la
+HU 001 (el recorrido empieza con el ingreso real, como el front). Cada lote extiende este recorrido con su tramo.
 """
 
 import soporte_escenarios_ruta as escenarios
 from soporte_ruta import FECHA, avanzar, INTERESES, INTERESES_FINAL, MISIONES_INTERESES, actividades, completar, estado, eventos, filas_base, pedir, reglas, responder, responder_registro, revelar, respuestas_batalla
+from soporte_catalogo_ruta import ENFERMERIA, INST_UNI, PERIODISMO, PSICOLOGIA, VETERINARIA
 
 
 def siguiente(cliente, cuenta='est-ana'):
@@ -52,7 +53,8 @@ def test_hu004_013_015_informativa_con_ficha_y_retroalimentacion(cliente):
         ('INSIGNIA', 't-ins-1'),
         ('SECCION', 'DIARIO'), ('SECCION', 'CATALOGO'), ('SECCION', 'PLANES'), ('PREGUNTA_DIARIO', 't-diario-fija'),
         ('SECCION_PLAN', 'POR_QUE')}
-    assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE')]
+    assert [(f['codigo'], f['estado']) for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')] == [
+        ('t-ficha', 'DISPONIBLE'), ('t-ficha-2', 'DISPONIBLE'), ('t-ficha-3', 'BLOQUEADA')]
     assert siguiente(cliente) == 't-partida'
 
 
@@ -249,29 +251,33 @@ def test_perfil_plano(cliente):
     assert revelar(cliente, cuenta='est-luis')['perfil_plano'] is True
     resultado = pedir(cliente, 'GET', '/cuentas/est-luis/instrumentos/TEST-RIASEC/resultado')
     assert resultado['perfil_plano'] is True
-    assert resultado['coincidencias'] == resultado['carreras_recomendadas'] == []
+    # Ajuste resultados-intereses: sin ocupaciones ni familias con perfil plano.
+    assert 'ocupaciones' not in resultado and 'familias' not in resultado
 
 
 def test_hu073_avisos_de_desbloqueo(cliente):
-    ruta = '/cuentas/est-ana/desbloqueos?solo_no_vistos=true'
-    completar(cliente, 't-inicio')
-    no_vistos = pedir(cliente, 'GET', ruta)
-    assert {d['regla'] for d in no_vistos} == {
-        'R-t-partida', 'R-t-batalla', 'R-t-ficha', 'R-t-ficha-2', 'R-t-ins-1', 'R-SEC-DIARIO', 'R-SEC-CATALOGO', 'R-SEC-PLANES',
-        'R-t-diario-fija', 'R-PLAN-POR_QUE'}
-    assert all(d['visto'] is False for d in no_vistos)
-    assert pedir(cliente, 'POST', '/cuentas/est-ana/desbloqueos/marcar-vistos')['marcados'] == 10
-    assert pedir(cliente, 'GET', ruta) == []
+    """Ajuste notificaciones: los logros llegan a la campana (las actividades, secciones y preguntas no), se marcan
+    vistos uno a uno o todos, y los siguientes llegan sin ver."""
+    ruta = '/cuentas/est-ana/notificaciones'
+    nuevas = completar(cliente, 't-inicio')['nuevas_notificaciones']
+    campana = pedir(cliente, 'GET', ruta)
+    assert {n['referencia'] for n in campana['items']} == {n['referencia'] for n in nuevas} == {
+        't-ficha', 't-ficha-2', 't-ins-1'}
+    assert campana['no_vistas'] == 3
+    assert pedir(cliente, 'POST', f'{ruta}/marcar-vistas', {'codigos': [nuevas[0]['codigo']]})['marcadas'] == 1
+    assert pedir(cliente, 'POST', f'{ruta}/marcar-vistas', {'codigos': []})['marcadas'] == 2
+    assert pedir(cliente, 'GET', ruta)['no_vistas'] == 0
     completar(cliente, 't-partida')
     completar(cliente, 't-cierre-inicio')
-    assert {d['regla'] for d in pedir(cliente, 'GET', ruta)} == {'R-t-cierre-inicio', 'R-T1', 'R-NIV-2', 'R-SEC-CHECK_IN'}
+    campana = pedir(cliente, 'GET', ruta)
+    assert [(n['detalle'], n['vista']) for n in campana['items'] if not n['vista']] == [('NIVEL', False)]
 
 
 def test_hu074_logros_obtenidos_y_condiciones(cliente):
     logros = pedir(cliente, 'GET', '/cuentas/est-ana/logros')
     visible = next(i for i in logros['insignias'] if i['codigo'] == 't-ins-1')
     oculto = next(i for i in logros['insignias'] if i['codigo'] == '???')
-    assert (visible['codigo'], visible['estado'], visible['requisito']) == ('t-ins-1', 'BLOQUEADA', 'Completa t-inicio.')
+    assert (visible['codigo'], visible['estado'], visible['requisito']) == ('t-ins-1', 'BLOQUEADA', 'Completa la introducción de tu viaje.')
     assert (oculto['codigo'], oculto['requisito']) == ('???', None)
     condicion, = pedir(cliente, 'GET', '/cuentas/est-ana/progreso/INSIGNIA/t-ins-1')['reglas'][0]['condiciones']
     assert (condicion['referencia'], condicion['actual'], condicion['requerido']) == ('t-inicio', 0, 1)
@@ -281,7 +287,7 @@ def test_hu074_logros_obtenidos_y_condiciones(cliente):
     completar(cliente, 't-cierre-inicio')
     logros = pedir(cliente, 'GET', '/cuentas/est-ana/logros')
     assert logros['insignias'][0]['estado'] == 'OBTENIDA'
-    assert [(n['numero'], n['estado']) for n in logros['niveles']] == [(1, 'OBTENIDO'), (2, 'OBTENIDO')]
+    assert [(n['numero'], n['estado']) for n in logros['niveles']] == [(1, 'OBTENIDO'), (2, 'OBTENIDO'), (3, 'BLOQUEADO')]
     assert estado(cliente)['nivel_actual']['numero'] == 2
 
 
@@ -298,13 +304,13 @@ def test_hu004_ruta_del_apoderado(cliente):
     rosa = estado(cliente, 'apo-rosa')
     familia, = rosa['bloques']
     assert [(a['codigo'], a['estado']) for a in familia['actividades']] == [
-        ('t-apo-1', 'DISPONIBLE'), ('t-apo-carta', 'BLOQUEADA')]
+        ('t-apo-1', 'DISPONIBLE'), ('t-apo-2', 'BLOQUEADA')]
     assert [(f['codigo'], f['estado']) for f in rosa['fichas']] == [('t-ficha-apo', 'BLOQUEADA')]
     assert rosa['insignias'] == [] and rosa['nivel_actual'] is None
     assert rosa['secciones'] == {'CONVERSACIONES': 'BLOQUEADA'} and rosa['preguntas_diario'] == []
     assert siguiente(cliente, 'apo-rosa') == 't-apo-1'
-    assert reglas(completar(cliente, 't-apo-1', 'apo-rosa')) == {'R-t-apo-carta', 'R-t-ficha-apo'}
-    respuesta = completar(cliente, 't-apo-carta', 'apo-rosa')
+    assert reglas(completar(cliente, 't-apo-1', 'apo-rosa')) == {'R-t-apo-2', 'R-t-ficha-apo'}
+    respuesta = completar(cliente, 't-apo-2', 'apo-rosa')
     assert respuesta['eventos_registrados'][-1]['tipo'] == 'COMPLETA_BLOQUE'
     assert reglas(respuesta) == {'R-SEC-CONVERSACIONES'}
     assert estado(cliente, 'apo-rosa')['secciones'] == {'CONVERSACIONES': 'DISPONIBLE'}
@@ -365,37 +371,39 @@ def test_hu017_hu041_hu051_056_batalla_caso_y_testimonios(cliente):
     assert (ganada['victoria'], ganada['practica'], ganada['aciertos'], ganada['destellos_restantes']) == (True, False, 5, 2)
     assert perdida['victoria'] is False and perdida['destellos_restantes'] == 0
     # B10: catálogo, vistas y favoritos. Sin resultado RIASEC, t-explorar pide vistas de dos tipos principales.
-    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras?riasec=s')] == [
-        'journalism', 'nursing', 'psychology']
-    pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': 'nursing', 'fecha_hora': FECHA})
+    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/catalogo/carreras?riasec=s')['items']] == [
+        PERIODISMO, ENFERMERIA, VETERINARIA, PSICOLOGIA]
+    pedir(cliente, 'POST', '/acciones/ver-carrera', {'cuenta': 'est-ana', 'carrera': ENFERMERIA, 'fecha_hora': FECHA})
     assert actividades(cliente)['t-explorar'] == 'BLOQUEADA'
-    vista = pedir(cliente, 'POST', '/acciones/ver-ocupacion', {'cuenta': 'est-ana', 'ocupacion': 'civil-engineer',
+    vista = pedir(cliente, 'POST', '/acciones/ver-ocupacion', {'cuenta': 'est-ana', 'ocupacion': '17-2051.00',
                                                                 'fecha_hora': FECHA})
     assert reglas(vista) == {'R-t-explorar-ocupacion'} and actividades(cliente)['t-explorar'] == 'DISPONIBLE'
-    pedir(cliente, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': 'nursing',
+    pedir(cliente, 'POST', '/acciones/marcar-favorito', {'cuenta': 'est-ana', 'tipo': 'CARRERA', 'codigo': ENFERMERIA,
                                                           'fecha_hora': FECHA})
-    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')['carreras']] == ['nursing']
+    assert [c['codigo'] for c in pedir(cliente, 'GET', '/cuentas/est-ana/favoritos')['carreras']] == [ENFERMERIA]
     fila, = pedir(cliente, 'GET', '/cuentas/est-ana/batallas')
     assert (fila['estado'], fila['intentos'], fila['primer_intento']['victoria']) == ('COMPLETADA', 2, False)
 
     testimonios = estado(cliente)['testimonios']
     assert testimonios[0]['pista'] and all(t['estado'] == 'BLOQUEADA' for t in testimonios)
-    caso, = pedir(cliente, 'GET', '/cuentas/est-ana/casos')
-    assert (caso['dimensiones'], caso['estado']) == (['R', 'S'], 'BLOQUEADA')
+    # Ajuste mochila: t-caso-2 se abre con el proyecto, que esta ruta no alcanza.
+    caso, _ = pedir(cliente, 'GET', '/cuentas/est-ana/casos')
+    assert (caso['puntaje_minimo'], caso['puntaje_maximo'], caso['estado']) == (6, 8, 'BLOQUEADA')
     for mision in MISIONES_INTERESES:
         responder(cliente, mision)
         completar(cliente, mision)
     datos_caso = {'cuenta': 'est-ana', 'actividad': 't-caso', 'fecha_hora': FECHA}
-    fallido = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 6,
-                                                                 'ocupaciones': ['firefighter']})
+    fallido = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 5,
+                                                                 'ocupaciones': ['19-3091.00']})
     assert fallido['ocupaciones_nuevas'] == [] and actividades(cliente)['t-caso'] == 'EN_CURSO'
-    superado = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 12,
-                                                                  'ocupaciones': ['firefighter', 'paramedic']})
-    assert reglas(superado) == {'R-t-testimonio-1', 'R-t-testimonio-2'}
-    assert [o['ocupacion'] for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == ['firefighter', 'paramedic']
+    superado = pedir(cliente, 'POST', '/acciones/resolver-caso', {**datos_caso, 'puntaje': 7,
+                                                                  'ocupaciones': ['19-3091.00', '25-4013.00']})
+    # Ajuste mochila: el segundo testimonio pide además cerrar el proyecto.
+    assert reglas(superado) == {'R-t-testimonio-1'}
+    assert [o['ocupacion'] for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == ['19-3091.00', '25-4013.00']
     pedir(cliente, 'POST', '/acciones/ver-testimonio', {'cuenta': 'est-ana', 'testimonio': 't-testimonio-1'})
     assert [(t['estado'], t['visto']) for t in estado(cliente)['testimonios']] == [
-        ('DISPONIBLE', True), ('DISPONIBLE', False)]
+        ('DISPONIBLE', True), ('BLOQUEADA', False), ('BLOQUEADA', False), ('BLOQUEADA', False)]
 
 
 def test_hu028_036_075_diario_check_in_y_avance(cliente):
@@ -439,31 +447,35 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
 
     completar(cliente, 't-inicio')
     # La opción inicial es el primer plan, registrado antes de terminar el camino.
-    for carrera in ('psychology', 'journalism'):
+    # F07a: un plan se crea desde una carrera favorita.
+    assert pedir(cliente, 'POST', '/acciones/planes/crear', {**ana, 'carrera': PSICOLOGIA}, 409)['detail'][
+        'mensaje'] == 'Primero guarda la carrera en tus favoritos'
+    for carrera in (PSICOLOGIA, PERIODISMO):
+        pedir(cliente, 'POST', '/acciones/marcar-favorito', {**ana, 'tipo': 'CARRERA', 'codigo': carrera})
         pedir(cliente, 'POST', '/acciones/planes/crear', {**ana, 'carrera': carrera})
         seccion(carrera, 'POR_QUE', {'idea_origen': 'MIA', 'motivos': [{'opcion': 'AYUDAR'}],
                                      'relato': 'DATO DE PRUEBA: un día expliqué un tema y sentí que era lo mío.'})
-    bloqueada = seccion('psychology', 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'}}, esperado=409)['detail']
+    bloqueada = seccion(PSICOLOGIA, 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'}}, esperado=409)['detail']
     assert bloqueada['mensaje'] == 'Completa el registro de valores para revisar qué tanto conoces esta carrera.'
-    assert [s['estado'] for s in plan('psychology')['secciones']] == ['LISTA', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA']
+    assert [s['estado'] for s in plan(PSICOLOGIA)['secciones']] == ['LISTA', 'BLOQUEADA', 'BLOQUEADA', 'BLOQUEADA']
     avanzar(cliente)
     assert reglas(completar(cliente, 't-valores')) >= {'R-PLAN-CONOCIMIENTO'}
-    seccion('psychology', 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'},
+    seccion(PSICOLOGIA, 'CONOCIMIENTO', {'respuestas': {'CURSOS': 'NO'},
                                            'dudas': [{'origen': 'PROPIA', 'texto': '¿Hay trabajo en Lima?'}]})
-    assert [(s['origen']['duda'], s['generada_por']) for s in plan('psychology')['sugerencias']] == [
+    assert [(s['origen']['duda'], s['generada_por']) for s in plan(PSICOLOGIA)['sugerencias']] == [
         (1, 'LLM'), (2, 'LLM')]
     # t-explorar abre REALIDAD; con dos planes listos para comparar se abre t-comparar.
     batalla = {**ana, 'actividad': 't-batalla'}
     pedir(cliente, 'POST', '/acciones/resolver-batalla', {**batalla, 'respuestas': respuestas_batalla(True, 1)})
-    pedir(cliente, 'POST', '/acciones/ver-carrera', {**ana, 'carrera': 'nursing'})
-    pedir(cliente, 'POST', '/acciones/ver-ocupacion', {**ana, 'ocupacion': 'civil-engineer'})
+    pedir(cliente, 'POST', '/acciones/ver-carrera', {**ana, 'carrera': ENFERMERIA})
+    pedir(cliente, 'POST', '/acciones/ver-ocupacion', {**ana, 'ocupacion': '17-2051.00'})
     assert 'R-PLAN-REALIDAD' in reglas(responder_registro(cliente, 't-explorar'))
-    realidad = {'institucion': 't-uni', 'camino': {'opcion': 'POSTULAR_DIRECTO'},
+    realidad = {'institucion': INST_UNI, 'camino': {'opcion': 'POSTULAR_DIRECTO'},
                 'gastos': [{'rubro': 'MATRICULA', 'monto': 600, 'frecuencia': 'POR_CICLO'}],
                 'financiamiento': [{'opcion': 'BECA'}], 'complicaciones': [{'opcion': 'ECONOMICAS'}]}
-    assert 'R-t-comparar' not in reglas(seccion('psychology', 'REALIDAD', realidad))
-    assert 'R-t-comparar' in reglas(seccion('journalism', 'REALIDAD', {**realidad, 'complicaciones': []}))
-    assert plan('psychology')['total_primer_anio'] == 1200 and plan('psychology')['lista_para_comparar'] is True
+    assert 'R-t-comparar' not in reglas(seccion(PSICOLOGIA, 'REALIDAD', realidad))
+    assert 'R-t-comparar' in reglas(seccion(PERIODISMO, 'REALIDAD', {**realidad, 'complicaciones': []}))
+    assert plan(PSICOLOGIA)['total_primer_anio'] == 1200 and plan(PSICOLOGIA)['lista_para_comparar'] is True
     # T2 se abre con la partida y el RIASEC revelados; comparar cita los planes y abre los pasos.
     revelar(cliente, instrumento='TEST-PARTIDA-LLEGADA', aplicacion='APL-PARTIDA')
     for mision in MISIONES_INTERESES:
@@ -471,14 +483,14 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
         completar(cliente, mision)
     assert 'R-T2' in reglas(revelar(cliente))
     planes_citados, = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-comparar/referencias')['referencias']
-    assert [o['codigo'] for o in planes_citados['opciones']] == ['psychology', 'journalism']
+    assert [o['codigo'] for o in planes_citados['opciones']] == [PSICOLOGIA, PERIODISMO]
     assert 'R-PLAN-PASOS' in reglas(responder_registro(cliente, 't-comparar'))
-    pasos = seccion('psychology', 'PASOS', {'pasos': [{'sugerencia': 1}], 'sugerencias_descartadas': [2]})
+    pasos = seccion(PSICOLOGIA, 'PASOS', {'pasos': [{'sugerencia': 1}], 'sugerencias_descartadas': [2]})
     assert 'R-t-proyecto' in reglas(pasos)
     hecho = pedir(cliente, 'POST', '/acciones/planes/paso-hecho', {
-        **ana, 'carrera': 'psychology', 'paso': 1, 'hallazgo': 'DATO DE PRUEBA: estadística en segundo año.'})
+        **ana, 'carrera': PSICOLOGIA, 'paso': 1, 'hallazgo': 'DATO DE PRUEBA: estadística en segundo año.'})
     assert hecho['eventos_registrados'][0]['tipo'] == 'ACTUALIZA_PLAN'
-    assert plan('psychology')['dudas'][0]['estado'] == 'CERRADA'
+    assert plan(PSICOLOGIA)['dudas'][0]['estado'] == 'CERRADA'
     proyecto = {r['tipo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-proyecto/referencias')[
         'referencias']}
     assert (proyecto['PLAN']['texto'], proyecto['OPCION_INICIAL']['texto']) == ('Psicología', 'Psicología')
@@ -488,17 +500,18 @@ def test_hu043_050_097_099_109_110_planes_de_carrera(cliente):
     completar(cliente, 't-llegada')
     responder_registro(cliente, 't-proyecto')
     assert any(e['tipo'] == 'COMPLETA_BLOQUE' and e['referencia'] == 'T2' for e in eventos(cliente))
-    assert pedir(cliente, 'GET', planes)['opcion_inicial']['codigo'] == 'psychology'
+    assert pedir(cliente, 'GET', planes)['opcion_inicial']['codigo'] == PSICOLOGIA
 
 
 def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):
     # B12: la ruta del apoderado da su diploma; las cartas habilitan las conversaciones de cada uno.
     avanzar(cliente)
-    for actividad in ('t-apo-1', 't-apo-carta'):
+    for actividad in ('t-apo-1', 't-apo-2'):
         completar(cliente, actividad, 'apo-rosa')
     familia = pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')
     assert familia['diploma']['obtenido'] is True and familia['avance']['porcentaje'] == 100.0
-    assert familia['estudiante']['codigo'] == 'est-ana' and familia['estudiante']['avance']['completadas'] == 4
+    ana, luis = familia['estudiantes']
+    assert ana['codigo'] == 'est-ana' and ana['avance']['completadas'] == 4 and luis['codigo'] == 'est-luis'
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados') == []
     assert pedir(cliente, 'GET', '/cuentas/est-ana/conversaciones')['carta_pendiente'] is True
 
@@ -511,23 +524,24 @@ def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):
             'cuenta': cuenta, 'conversacion': conversacion, 'texto': 'DATO DE PRUEBA: mi respuesta.',
             'fecha_hora': FECHA})
 
-    def marcar(cuenta, conversacion):
-        return pedir(cliente, 'POST', '/acciones/completar-conversacion',
-                     {'cuenta': cuenta, 'conversacion': conversacion, 'fecha_hora': FECHA})
-
     def vista(cuenta):
         return pedir(cliente, 'GET', f'/cuentas/{cuenta}/conversaciones')
 
     assert reglas(carta('est-ana')) == {'R-t-conv-1'}
     carta('apo-rosa')
-    assert [c['codigo'] for c in vista('est-ana')['conversaciones']] == ['t-conv-1']
+    assert [c['estado'] for c in vista('est-ana')['conversaciones']] == ['sin_responder', 'bloqueada']
     assert [c['estado'] for c in vista('apo-rosa')['conversaciones']] == ['sin_responder', 'sin_responder']
     responder_conversacion('apo-rosa', 't-conv-2')
     responder_conversacion('est-ana', 't-conv-1')
     assert [c['estado'] for c in vista('apo-rosa')['conversaciones']] == ['te_toca', 'esperando_al_otro']
-    responder_conversacion('apo-rosa', 't-conv-1')
-    respuesta = marcar('apo-rosa', 't-conv-1')['por_cuenta']['est-ana']
-    assert [e['codigo'] for e in respuesta['entradas_desbloqueadas']] == ['t-diario-tras-conversar']
+    # F08: responde el apoderado, segundo; la conversación queda conversada en ambas cuentas y la entrada de
+    # diario del estudiante se abre igual que con la marca de antes (ninguna regla dependía de quién marcaba).
+    respuesta = responder_conversacion('apo-rosa', 't-conv-1')['por_cuenta']
+    assert [e['codigo'] for e in respuesta['est-ana']['entradas_desbloqueadas']] == ['t-diario-tras-conversar']
+    for cuenta in ('est-ana', 'apo-rosa'):
+        assert [(e['tipo'], e['referencia']) for e in respuesta[cuenta]['eventos_registrados']] == [
+            ('COMPLETA_CONVERSACION', 't-conv-1')]
+    assert vista('est-ana')['conversaciones'][0]['entrada_diario']['codigo'] == 't-diario-tras-conversar'
     assert vista('est-ana')['carta_recibida'] is None
     # Revelar el RIASEC y contrastarlo habilita la segunda; el hijo responde la que su madre ya respondió.
     for actividad in (INTERESES, INTERESES_FINAL):
@@ -537,8 +551,62 @@ def test_hu066_071_078_080_familia_conversaciones_y_cartas(cliente):
     responder_registro(cliente, 't-contraste')
     assert vista('est-ana')['conversaciones'][1]['estado'] == 'te_toca'
     responder_conversacion('est-ana', 't-conv-2')
-    marcar('est-ana', 't-conv-2')
     final = vista('est-ana')
-    assert (final['completadas'], final['carta_recibida']) == (2, 'DATO DE PRUEBA: carta de apo-rosa.')
+    assert (final['completadas'], final['cartas_disponibles']) == (2, True)
+    assert final['carta_recibida'] == 'DATO DE PRUEBA: carta de apo-rosa.'
+    assert (final['otro']['nombre'], final['otro']['parentesco']) == ('Rosa', 'madre')
     assert vista('apo-rosa')['carta_recibida'] == 'DATO DE PRUEBA: carta de est-ana.'
     assert [r['instrumento'] for r in pedir(cliente, 'GET', '/cuentas/apo-rosa/familia/resultados')] == ['TEST-RIASEC']
+
+
+def test_hu057_065_100_101_investigaciones_y_entrevistas(cliente):
+    # B13: la misión del investigador abre la sección; Ana y Luis investigan la misma ocupación y publican juntos.
+    def accion(nombre, datos, cuenta='est-ana', esperado=200):
+        return pedir(cliente, 'POST', f'/acciones/{nombre}', {'cuenta': cuenta, 'fecha_hora': FECHA, **datos},
+                     esperado)
+
+    pienso = {'familia': '524', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas.',
+              'necesita': 'DATO DE PRUEBA: un instituto y mucha práctica.', 'duda': '¿Es peligroso?'}
+    for cuenta in ('est-ana', 'est-luis'):
+        avanzar(cliente, cuenta=cuenta)
+        assert pedir(cliente, 'GET', f'/cuentas/{cuenta}/secciones/INVESTIGACIONES')['estado'] == 'BLOQUEADA'
+        assert 'R-SEC-INVESTIGACIONES' in reglas(completar(cliente, 't-investigador', cuenta))
+        accion('guardar-lo-que-pienso', pienso, cuenta)
+    # Paso 2: base + duda + una sugerida; Luis termina sin pedir sugerencias.
+    sugerencias = accion('pedir-sugerencias-guion', {})
+    assert sugerencias['estado'] == 'LISTAS'
+    sugerida = sugerencias['sugerencias'][0]
+    preguntas = [{'origen': 'DUDA', 'texto': pienso['duda']},
+                 {'origen': 'SUGERIDA', 'texto': sugerida['texto'], 'sugerencia': sugerida['codigo']}]
+    accion('guardar-guion', {'preguntas': preguntas, 'terminar': True})
+    accion('guardar-guion', {'preguntas': preguntas[:1], 'terminar': True}, 'est-luis')
+    vista = pedir(cliente, 'GET', '/cuentas/est-ana/investigaciones')
+    assert vista['en_curso']['estado'] == 'GUIA_LISTA'
+    assert [a['codigo'] for a in vista['aliados']['misma_familia']] == ['est-luis']
+    # La misión de cierre espera la publicación.
+    assert actividades(cliente)['t-investigador-cierre'] == 'BLOQUEADA'
+    publicada = accion('publicar-entrevista', {
+        'titulo': 'DATO DE PRUEBA: un día con un electricista', 'profesional': 'DATO DE PRUEBA', 'dedicacion': 'DATO DE PRUEBA',
+        'duracion': '20 minutos', 'enlace': 'https://youtu.be/dQw4w9WgXcQ',
+        'resumen': 'DATO DE PRUEBA: nos contó cómo empezó.', 'coautores': ['est-luis'], 'permiso': True})
+    codigo = publicada['por_cuenta']['est-ana']['eventos_registrados'][0]['referencia']
+    for cuenta in ('est-ana', 'est-luis'):
+        assert {'R-t-investigador-cierre', 'R-t-ins-entrevista'} <= reglas(publicada['por_cuenta'][cuenta])
+    # Luis, coautor, la ve como propia y no reacciona.
+    assert pedir(cliente, 'GET', f'/cuentas/est-luis/entrevistas/{codigo}')['propia'] is True
+    accion('reaccionar-entrevista', {'entrevista': codigo, 'tipo': 'ME_GUSTO'}, 'est-luis', 409)
+    # La orientadora la ve en su tabla, comenta y la destaca.
+    tabla = pedir(cliente, 'GET', '/cuentas/ori-carmen/publicaciones')
+    assert [f['codigo'] for f in tabla['items']] == [codigo]
+    accion('comentar-entrevista', {'entrevista': codigo, 'texto': 'DATO DE PRUEBA: buen trabajo.'}, 'ori-carmen')
+    accion('destacar-entrevista', {'entrevista': codigo, 'destacada': True}, 'ori-carmen')
+    tarjeta, = pedir(cliente, 'GET', '/cuentas/est-ana/entrevistas?vista=MIAS')['items']
+    assert tarjeta['destacada'] and not tarjeta['leyenda'] and tarjeta['favoritos'] == 0
+    # HU-101: la misión de cierre retoma lo que Ana pensaba antes.
+    referencias = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-investigador-cierre/referencias')
+    eco, = referencias['referencias']
+    assert eco['tipo'] == 'LO_QUE_PIENSO' and eco['estado'] == 'DISPONIBLE'
+    assert [o['codigo'] for o in eco['opciones']] == ['DIA', 'NECESITA', 'DUDA']
+    assert eco['opciones'][2]['texto'] == pienso['duda']
+    responder_registro(cliente, 't-investigador-cierre')
+    assert actividades(cliente)['t-investigador-cierre'] == 'COMPLETADA'

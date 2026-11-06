@@ -1,0 +1,167 @@
+import assert from 'node:assert/strict'
+import test from 'node:test'
+import {
+  cargarAlmacen,
+  copia,
+  escenarioRuta,
+  esConsultaDominio,
+  esperar,
+  fixtureServidor,
+  jsonServidor,
+  respuestaDominio,
+} from '../../soporte/servidor-ayudas.mjs'
+
+// F06: el almacén del catálogo con los fixtures ruta-*: listas paginadas por clase y filtros, detalle en caché,
+// opciones de filtro, vistas y favoritos aplicados a lo cargado.
+// Ajuste catalogo-datos-reales: el fixture es la primera página (4) de 603; aquí se finge un catálogo de 6.
+const carreras = { ...jsonServidor('ruta/ruta-catalogo-carreras'), total: 6 }
+const psicologia = jsonServidor('ruta/ruta-catalogo-carrera-psychology')
+const accion = { eventos_registrados: [], nuevos_desbloqueos: [] }
+
+function catalogo({ pagina = () => carreras } = {}) {
+  const app = fixtureServidor({ ruta: '/student/catalog/careers' })
+  app.fetch((r) => {
+    if (/\/catalogo\/carreras\?/.test(r.url)) return { body: pagina(new URL(r.url, 'http://x').searchParams) }
+    if (r.url.endsWith('/catalogo/carreras/psychology')) return { body: psicologia }
+    if (r.url.endsWith('/catalogo/familias')) return { body: jsonServidor('ruta/ruta-catalogo-familias') }
+    if (r.url.endsWith('/catalogo/ubicaciones')) return { body: jsonServidor('ruta/ruta-catalogo-ubicaciones') }
+    if (r.url.includes('/inesperada?')) return { body: jsonServidor('ruta/ruta-catalogo-inesperada') }
+    if (r.url.endsWith('-favorito') || r.url.includes('/acciones/ver-')) return { body: accion }
+    return { body: [] }
+  })
+  const almacen = cargarAlmacen(app)
+  almacen.publicar({ consultasHabilitadas: true })
+  const store = app.load('src/store/servidor/catalogo.ts')
+  return { app, almacen, store, favoritos: app.load('src/store/servidor/favoritos.ts') }
+}
+const listas = (app) => app.requests.filter((r) => /\/catalogo\/carreras\?/.test(r.url)).map((r) => r.url)
+
+test('la lista se pide al mostrarse, con filtros y página, y «Mostrar más» acumula', async () => {
+  const { app, store } = catalogo({
+    pagina: (p) => (p.get('desde') === '0' ? carreras : { total: 6, items: ['zz', 'zy'].map((codigo) => ({ ...carreras.items[0], codigo })) }),
+  })
+  const oculta = app.mount(() => store.useListaCatalogo('carreras', { buscar: ' psi ' }, false), {})
+  assert.equal(oculta.render(), undefined)
+  assert.equal(listas(app).length, 0)
+  const hook = app.mount(() => store.useListaCatalogo('carreras', { buscar: ' psi ', familia: '' }, true), {})
+  hook.render()
+  await esperar()
+  let lista = hook.render()
+  assert.deepEqual([lista.estado, lista.total, lista.items.length], ['listo', 6, 4])
+  assert.deepEqual(listas(app), ['/api/cuentas/est-ana/catalogo/carreras?buscar=psi&limite=20&desde=0'])
+  await store.cargarLista('carreras', { buscar: 'psi' }, true)
+  lista = hook.render()
+  assert.deepEqual(copia(lista.items.map((c) => c.codigo)), [...carreras.items.map((c) => c.codigo), 'zz', 'zy'])
+  assert.match(listas(app)[1], /desde=4$/)
+  // Con todo cargado, «Mostrar más» no pide nada.
+  await store.cargarLista('carreras', { buscar: 'psi' }, true)
+  assert.equal(listas(app).length, 2)
+})
+
+test('una respuesta vieja no pisa la nueva y solo se guarda la combinación activa', async () => {
+  let soltar
+  const { app, store } = catalogo({ pagina: () => carreras })
+  const lenta = new Promise((resolve) => (soltar = resolve))
+  app.fetch((r) => (r.url.includes('buscar=psi&') ? lenta.then(() => ({ body: { total: 0, items: [] } })) : { body: carreras }))
+  void store.cargarLista('carreras', { buscar: 'psi' })
+  await store.cargarLista('carreras', { buscar: 'psico' })
+  // La nueva búsqueda cancela la que seguía en vuelo; la vieja, además, se descarta si llega.
+  const [vieja, nueva] = app.requests.filter((r) => r.url.includes('/catalogo/carreras?'))
+  assert.deepEqual([vieja.signal.aborted, nueva.signal.aborted], [true, false])
+  soltar()
+  await esperar()
+  const hook = app.mount(() => store.useListaCatalogo('carreras', { buscar: 'psico' }, true), {})
+  assert.equal(hook.render().total, 6)
+  // Ajuste catalogo-datos-reales: la lista de «psi» ya no se guarda; volver a ella la pide de nuevo.
+  assert.equal(app.mount(() => store.useListaCatalogo('carreras', { buscar: 'psi' }, false), {}).render(), undefined)
+})
+
+test('el detalle se pide una vez por código y las opciones de filtro una vez por sesión', async () => {
+  const { app, store } = catalogo()
+  const detalle = app.mount(() => store.useDetalleCatalogo('carreras', 'psychology'), {})
+  detalle.render()
+  await esperar()
+  assert.equal(detalle.render().datos.ingreso.nacional.jovenes.promedio, 2824)
+  app.mount(() => store.useDetalleCatalogo('carreras', 'psychology'), {}).render()
+  const opciones = app.mount(() => store.useOpcionesCatalogo(true), {})
+  opciones.render()
+  await esperar()
+  app.mount(() => store.useOpcionesCatalogo(true), {}).render()
+  await esperar()
+  assert.equal(opciones.render().ubicaciones.length, 25)
+  const pedidas = app.requests.map((r) => r.url)
+  assert.equal(pedidas.filter((u) => u.endsWith('/carreras/psychology')).length, 1)
+  assert.equal(pedidas.filter((u) => u.endsWith('/familias')).length, 1)
+  assert.equal(pedidas.filter((u) => u.endsWith('/grupos')).length, 1)
+})
+
+test('los detalles abiertos se guardan hasta un límite: el más antiguo se vuelve a pedir', async () => {
+  const { app, store } = catalogo()
+  for (let n = 0; n <= store.LIMITE_DETALLES; n++) store.cargarDetalle('carreras', `c-${n}`)
+  await esperar()
+  store.cargarDetalle('carreras', `c-${store.LIMITE_DETALLES}`)
+  store.cargarDetalle('carreras', 'c-0')
+  const pedidas = app.requests.map((r) => r.url)
+  assert.equal(pedidas.filter((u) => u.endsWith('/carreras/c-0')).length, 2)
+  assert.equal(pedidas.filter((u) => u.endsWith(`/carreras/c-${store.LIMITE_DETALLES}`)).length, 1)
+})
+
+test('un favorito confirmado se aplica a listas y detalles, y descarta la lista de favoritos', async () => {
+  const { app, almacen, store, favoritos } = catalogo()
+  await store.cargarLista('carreras', {})
+  store.cargarDetalle('carreras', 'psychology')
+  await esperar()
+  almacen.publicar({ resultadoRiasec: jsonServidor('ruta/ruta-resultado-riasec') })
+  const objetivo = carreras.items[0].codigo
+  const respuesta = await favoritos.alternarFavorito('CARRERA', objetivo, !carreras.items[0].es_favorita)
+  assert.equal(respuesta.tipo, 'ok')
+  const lista = app.mount(() => store.useListaCatalogo('carreras', {}, false), {}).render()
+  assert.equal(lista.items[0].es_favorita, !carreras.items[0].es_favorita)
+  // La lista filtrada por favoritos se descarta al cambiar un favorito: se vuelve a pedir.
+  await store.cargarLista('carreras', { favoritos: true })
+  await favoritos.alternarFavorito('CARRERA', objetivo, carreras.items[0].es_favorita)
+  assert.equal(app.mount(() => store.useListaCatalogo('carreras', { favoritos: true }, false), {}).render(), undefined)
+  // Ajuste resultados-intereses: el resultado no lleva favoritos; marcar uno no lo toca.
+  const resultado = almacen.obtenerEstadoServidor().resultadoRiasec
+  await favoritos.alternarFavorito('OCUPACION', '19-3033.00', true)
+  assert.equal(almacen.obtenerEstadoServidor().resultadoRiasec, resultado)
+  const detalle = app.mount(() => store.useDetalleCatalogo('carreras', 'psychology'), {}).render()
+  assert.ok(detalle.datos.ocupaciones_de_la_familia.principales.some((o) => o.codigo === '19-3033.00'))
+  assert.deepEqual(
+    copia(app.requests.filter((r) => r.url.endsWith('-favorito')).map((r) => r.body.tipo)),
+    ['CARRERA', 'CARRERA', 'OCUPACION'],
+  )
+})
+
+test('ver un detalle registra la vista y refresca; el lugar inesperado es una lectura', async () => {
+  const { app, store } = catalogo()
+  app.fetch((r) => {
+    if (r.url.includes('/acciones/ver-carrera')) return { body: jsonServidor('ruta/ruta-ver-carrera') }
+    if (r.url.includes('/inesperada?')) return { body: jsonServidor('ruta/ruta-catalogo-inesperada') }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
+    return { body: [] }
+  })
+  await store.verEnCatalogo('carreras', 'civil-engineering')
+  const vista = app.requests.find((r) => r.url.endsWith('/acciones/ver-carrera'))
+  assert.deepEqual(copia(vista.body), { cuenta: 'est-ana', carrera: 'civil-engineering' })
+  const inesperada = await store.pedirInesperada('carreras', 'psychology')
+  assert.deepEqual(copia(inesperada.datos), { codigo: 'mtpe-1', revisitando: false })
+  assert.ok(app.requests.some((r) => r.url.endsWith('/catalogo/carreras/inesperada?excluir=psychology')))
+})
+
+test('el refresco del camino no borra el resultado que pidió el catálogo si el libro no se cargó', async () => {
+  // Con el resultado en el almacén y el libro sin cargar, «Afines a mi resultado» debe seguir disponible.
+  const app = fixtureServidor({ ruta: '/student/catalog/professions' })
+  app.fetch((r) => (esConsultaDominio(r) ? respuestaDominio(r, escenarioRuta('t1')) : { body: [] }))
+  const almacen = cargarAlmacen(app)
+  const resultado = jsonServidor('ruta/ruta-resultado-riasec')
+  almacen.publicar({ consultasHabilitadas: true, resultadoRiasec: resultado, estadoResultado: 'listo' })
+  await almacen.refrescar()
+  assert.equal(almacen.obtenerEstadoServidor().resultadoRiasec, resultado)
+  // Con el libro cargado y sin resultado RIASEC, el refresco sí lo deja pendiente.
+  const libro = almacen.obtenerEstadoServidor().instrumentos
+  almacen.publicar({ instrumentos: { ...libro, estado: 'listo', resultados: {} } })
+  await almacen.refrescar()
+  assert.equal(almacen.obtenerEstadoServidor().resultadoRiasec, null)
+  assert.equal(almacen.obtenerEstadoServidor().estadoResultado, 'pendiente')
+})

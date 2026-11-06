@@ -1,0 +1,60 @@
+{
+  "id": "h-habilidades-4",
+  "codigo": "h-habilidades-4",
+  "tipo": "instrumento",
+  "titulo": "Misión de Helena: Mi comportamiento con los demás, 4 de 4",
+  "subtitulo": "La taberna de Dora",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 4,
+  "obligatoria": false,
+  "requisitos": [
+    "h-habilidades-3"
+  ],
+  "ubicacion": "La taberna de Dora",
+  "duracionEstimadaMin": 4,
+  "personajeIds": [
+    "dora",
+    "companero"
+  ],
+  "presentacion": "narrativa",
+  "nodos": [
+    {
+      "id": "hh4-01",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "texto": "Última visita. Las seis que faltan, sobre cómo te integras y cómo diriges cuando toca.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "hh4-02",
+      "tipo": "item",
+      "instrumentoId": "TEST-HABILIDADES",
+      "itemId": "plantilla",
+      "hablanteId": "dora",
+      "etiqueta": "¿Te describe?"
+    },
+    {
+      "id": "hh4-03",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "texto": "Veinticuatro de veinticuatro. Lo que dijiste ya está en camino al libro de Helena. Cuando rompas el sello verás cuáles de las siete habilidades tienes más practicadas, y cuáles menos.",
+      "nuevoMomento": true
+    },
+    {
+      "id": "hh4-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Revélala en tu perfil cuando quieras. Después hay un registro corto con Dora: eliges una habilidad con menos desarrollo y propones cómo practicarla.",
+      "expresion": "animado"
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "La página de habilidades está lista para abrirse en el libro de Helena."
+  },
+  "mapa": {
+    "x": 400,
+    "y": 480,
+    "icono": "test"
+  }
+}

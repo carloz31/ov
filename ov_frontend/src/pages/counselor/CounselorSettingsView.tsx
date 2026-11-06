@@ -3,7 +3,7 @@ import { PageHeader } from '@/components/common/PageHeader'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 
-import { counselorProfile } from '@/features/counselor/data/counselorPortal'
+import { useCounselorProfile } from '@/features/counselor/hooks/useCounselorProfile'
 
 const notificationOptions = [
   'Nueva alerta prioritaria',
@@ -14,6 +14,7 @@ const notificationOptions = [
 ]
 
 function CounselorSettingsView() {
+  const counselorProfile = useCounselorProfile()
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-4 sm:p-6 lg:p-8">
       <PageHeader eyebrow="Preferencias" title="Configuración" />

@@ -1,0 +1,29 @@
+{
+  "id": "ma7-b",
+  "codigo": "ma7-b",
+  "tipo": "instrumento",
+  "titulo": "Batalla: más allá del promedio",
+  "subtitulo": "Doña Cifra y las brechas",
+  "escenario": "playa",
+  "bloque": 7,
+  "orden": 38,
+  "obligatoria": false,
+  "requisitos": [
+    "ma7"
+  ],
+  "ubicacion": "Doña Cifra y las brechas",
+  "duracionEstimadaMin": 6,
+  "personajeIds": [
+    "cifra",
+    "companero"
+  ],
+  "nodos": [],
+  "mapa": {
+    "x": 0,
+    "y": 0,
+    "icono": "test",
+    "origen": "ma7",
+    "adicional": true
+  },
+  "desafio": "desafio-cifra-brechas"
+}

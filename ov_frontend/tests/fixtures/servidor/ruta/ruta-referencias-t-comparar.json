@@ -5,12 +5,12 @@
       "estado": "DISPONIBLE",
       "opciones": [
         {
-          "codigo": "psychology",
+          "codigo": "mtpe-369",
           "texto": "Psicología"
         },
         {
-          "codigo": "journalism",
-          "texto": "Periodismo"
+          "codigo": "mtpe-291",
+          "texto": "Ciencias de la Comunicación"
         }
       ],
       "tipo": "PLANES"

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import TipoJSON
 from app.models.base import Base, busqueda_de, enumerado
-from app.models.enums import Audiencia, Espacio, TipoActividad, UsoPreguntaDiario, Visibilidad
+from app.models.enums import Audiencia, Espacio, TipoActividad, TipoInstitucion, UsoPreguntaDiario, Visibilidad
 
 
 class Bloque(Base):
@@ -76,13 +76,6 @@ class ActividadTematica(Base):
     tematica_id: Mapped[int] = mapped_column(ForeignKey("tematica.id"), primary_key=True)
 
 
-class ActividadDimension(Base):
-    """Tipos RIASEC de un caso (B08). Solo las actividades CASO las tienen; lo valida el cargador."""
-    __tablename__ = "actividad_dimension"
-    actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"), primary_key=True)
-    dimension_id: Mapped[int] = mapped_column(ForeignKey("dimension.id"), primary_key=True)
-
-
 class PreguntaBatalla(Base):
     """Pregunta del pool de una batalla (F04b). Cada una sale de una ficha; las fichas de la batalla
     se derivan de sus preguntas. `correcta` es el índice de la opción correcta en `opciones`."""
@@ -109,11 +102,22 @@ class Seccion(Base):
     audiencia: Mapped[Audiencia] = mapped_column(enumerado(Audiencia))
 
 
+class Presentacion(Base):
+    """Presentación de primera visita de una vista del front; `codigo` es el id de la vista (`journal`, `missions`…)."""
+    __tablename__ = "presentacion"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
+    audiencia: Mapped[Audiencia] = mapped_column(enumerado(Audiencia))
+
+
 class Ficha(Base):
     __tablename__ = "ficha"
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
     titulo: Mapped[str]
+    # Resumen de la tarjeta y tema del chip (ajuste mochila); el contenido es markdown sin repetir el título.
+    descripcion: Mapped[str | None] = mapped_column(Text)
+    tema: Mapped[str | None]
     contenido: Mapped[str] = mapped_column(Text)
     audiencia: Mapped[Audiencia] = mapped_column(
         enumerado(Audiencia), default=Audiencia.ESTUDIANTE, server_default=text("'ESTUDIANTE'"),
@@ -126,13 +130,16 @@ class Testimonio(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     titulo: Mapped[str]
     descripcion: Mapped[str] = mapped_column(Text)
-    # El enlace es el video (YouTube) y la descripción, el texto completo del testimonio.
-    enlace: Mapped[str]
+    # El video: ID de YouTube y tramo en segundos (`fin` nulo: hasta el final). La descripción es el texto completo.
+    video_id: Mapped[str]
+    inicio: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    fin: Mapped[int | None]
     pista: Mapped[str | None] = mapped_column(Text)
-    # Ajustes Central (7): quién lo cuenta. El caso que lo regala se deduce de su regla SUPERA_CASO.
+    # Ajustes Central (7): quién lo cuenta. Su origen (caso o actividad) se deduce de su regla.
     persona: Mapped[str | None]
     ocupacion_id: Mapped[int | None] = mapped_column(ForeignKey("ocupacion.id"))
-    anios_experiencia: Mapped[int | None]
+    # El cargo o la situación de la persona, hasta 80 caracteres (lo valida la carga).
+    contexto: Mapped[str | None]
     cita: Mapped[str | None] = mapped_column(Text)
 
 
@@ -160,11 +167,24 @@ class Conversacion(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     orden: Mapped[int] = mapped_column(unique=True)
     titulo: Mapped[str]
+    # El tema del chip de la tarjeta (como `Ficha.tema`); nulo, sin chip.
+    tema: Mapped[str | None]
     pregunta_estudiante: Mapped[str] = mapped_column(Text)
     # Nula: el apoderado responde la misma pregunta que el estudiante.
     pregunta_apoderado: Mapped[str | None] = mapped_column(Text)
     preguntas_guia: Mapped[list[str]] = mapped_column(JSON)
     mensaje_diferencias: Mapped[str] = mapped_column(Text)
+    # F08: «Algo que ya saben», que acompaña la guía cuando están las dos respuestas.
+    algo_que_saben: Mapped[str | None] = mapped_column(Text)
+
+
+class GrupoInsignia(Base):
+    """Página del pasaporte (ajuste pasaporte-perfil): agrupa insignias por `orden`."""
+    __tablename__ = "grupo_insignia"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    codigo: Mapped[str] = mapped_column(unique=True)
+    nombre: Mapped[str]
+    orden: Mapped[int]
 
 
 class Insignia(Base):
@@ -176,6 +196,14 @@ class Insignia(Base):
     requisito: Mapped[str] = mapped_column(Text)
     es_oculta: Mapped[bool]
     audiencia: Mapped[Audiencia] = mapped_column(enumerado(Audiencia))
+    grupo_id: Mapped[int] = mapped_column(ForeignKey("grupo_insignia.id"))
+    orden: Mapped[int]
+    # Pista de Lumi mientras una oculta no se obtiene; se muestra aunque esté enmascarada.
+    pista: Mapped[str | None] = mapped_column(Text, default=None)
+    # Ajuste pasaporte-perfil (F5): la frase destacada del sello y cómo se consiguió, en pasado. `descripcion` es
+    # su historia y `requisito`, lo que pide.
+    frase: Mapped[str | None] = mapped_column(Text, default=None)
+    logro: Mapped[str | None] = mapped_column(Text, default=None)
 
 
 class Nivel(Base):
@@ -183,13 +211,20 @@ class Nivel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     numero: Mapped[int] = mapped_column(unique=True)
     titulo: Mapped[str]
+    descripcion: Mapped[str | None] = mapped_column(Text, default=None)
+    # Ajuste pasaporte-perfil (F5): la cita de Lumi de cada nivel.
+    cita_lumi: Mapped[str | None] = mapped_column(Text, default=None)
 
 
 class FamiliaCarrera(Base):
+    """Campo detallado CINE (3 cifras); el área es su campo específico (2 cifras), desnormalizado."""
     __tablename__ = "familia_carrera"
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
+    area_codigo: Mapped[str]
+    area_nombre: Mapped[str]
+    descripcion: Mapped[str | None] = mapped_column(Text, default=None)
 
 
 class Carrera(Base):
@@ -198,15 +233,19 @@ class Carrera(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
     familia_id: Mapped[int] = mapped_column(ForeignKey("familia_carrera.id"))
+    tipo: Mapped[TipoInstitucion] = mapped_column(enumerado(TipoInstitucion))
+    # Código CINE de 6 cifras; no es único entre carreras.
+    codigo_cine: Mapped[str]
+    # Nombre del programa CINE, solo si difiere del nombre de la carrera.
+    nombre_cine: Mapped[str | None] = mapped_column(default=None)
     descripcion: Mapped[str | None] = mapped_column(Text, default=None)
     duracion: Mapped[str | None] = mapped_column(default=None)
+    # Una línea por lugar de trabajo, separadas por saltos de línea.
+    ambito_laboral: Mapped[str | None] = mapped_column(Text, default=None)
     # Letras de `tipo_carrera` en orden de posición («RIS»); lo calcula el cargador.
     codigo_riasec: Mapped[str | None] = mapped_column(default=None)
     busqueda: Mapped[str] = mapped_column(default=busqueda_de("nombre"))
     # Relaciones de solo lectura para las consultas del catálogo (B10); se cargan con `selectinload`.
     familia: Mapped[FamiliaCarrera] = relationship(viewonly=True, lazy="raise")
-    ocupaciones: Mapped[list["Ocupacion"]] = relationship(
-        secondary="carrera_ocupacion", viewonly=True, lazy="raise", order_by="Ocupacion.codigo")
     instituciones: Mapped[list["Institucion"]] = relationship(
         secondary="institucion_carrera", viewonly=True, lazy="raise", order_by="Institucion.codigo")
-    ingreso: Mapped["IngresoCarrera | None"] = relationship(viewonly=True, lazy="raise")

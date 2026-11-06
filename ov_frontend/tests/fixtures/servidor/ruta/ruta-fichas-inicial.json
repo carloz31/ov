@@ -1,12 +1,47 @@
 [
   {
+    "actividad": {
+      "codigo": "t-inicio",
+      "titulo": "Inicio de prueba"
+    },
     "codigo": "t-ficha",
+    "descripcion": null,
+    "es_favorita": false,
     "estado": "BLOQUEADA",
-    "titulo": "Ficha de prueba"
+    "obtenida_en": null,
+    "tema": null,
+    "titulo": "Ficha de prueba",
+    "tramo": null,
+    "visto": false
   },
   {
+    "actividad": {
+      "codigo": "t-inicio",
+      "titulo": "Inicio de prueba"
+    },
     "codigo": "t-ficha-2",
+    "descripcion": null,
+    "es_favorita": false,
     "estado": "BLOQUEADA",
-    "titulo": "Segunda ficha de prueba"
+    "obtenida_en": null,
+    "tema": null,
+    "titulo": "Segunda ficha de prueba",
+    "tramo": null,
+    "visto": false
+  },
+  {
+    "actividad": {
+      "codigo": "t-opcional",
+      "titulo": "Actividad opcional"
+    },
+    "codigo": "t-ficha-3",
+    "descripcion": null,
+    "es_favorita": false,
+    "estado": "BLOQUEADA",
+    "obtenida_en": null,
+    "tema": null,
+    "titulo": "Carrera, ocupación e institución",
+    "tramo": null,
+    "visto": false
   }
 ]

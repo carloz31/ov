@@ -2,10 +2,20 @@ import { useBadgeDetail } from '../hooks/useBadgeDetail'
 import { Link } from 'react-router'
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
-import { Eye, LockKeyhole } from 'lucide-react'
+import { ArrowRight, Check, Lightbulb, LoaderCircle } from 'lucide-react'
 
+import { ConditionList } from './ConditionList'
+import { numeroPagina } from '../lib/passport'
 import type { PassportBadge } from '@/types/profile'
+import { fechaServidor } from '@/lib/servidor/fechas'
 
+const fechaLarga = (fecha: string) =>
+  fechaServidor(fecha).toLocaleDateString('es-PE', {
+    dateStyle: 'long',
+    timeZone: 'America/Lima',
+  })
+
+// Ajuste pasaporte-perfil: tres estados (secreta, por descubrir, obtenida) con la misma cabecera.
 export function PassportBadgeDialog({
   badge,
   group,
@@ -19,18 +29,19 @@ export function PassportBadgeDialog({
 }) {
   const {
     returnFocus,
-    error,
-    setIntento,
-    selected,
-    visible,
-    hidden,
+    estado,
+    condiciones,
     destination,
     Icon,
-    date,
-    notaFecha,
-    descripcionRequisito,
-    alternarInsignia,
+    fecha,
+    enVitrina,
+    enUso,
+    vitrinaLlena,
+    guardando,
+    errorVitrina,
+    alternarVitrina,
   } = useBadgeDetail(badge)
+  const secreta = estado === 'secreta'
 
   return (
     <Dialog
@@ -40,79 +51,96 @@ export function PassportBadgeDialog({
       }}
     >
       {badge && (
-        <DialogContent
-          {...returnFocus}
-          className="sx-root sx-p-badge-dialog"
-          data-earned={badge.done}
-          data-group={groupIndex % 3}
-        >
+        <DialogContent {...returnFocus} className="sx-root sx-p-badge-dialog" data-state-badge={estado}>
           <DialogHeader>
             <span className="sx-p-badge-seal sx-p-badge-seal-large" aria-hidden="true">
-              {hidden ? '?' : <Icon size={52} />}
+              {secreta ? '?' : <Icon size={48} />}
             </span>
-            <p className="sx-p-badge-code">{group}</p>
-            <DialogTitle>{hidden ? 'Insignia por descubrir' : badge.title}</DialogTitle>
+            <p className="sx-p-badge-code">
+              Página {numeroPagina(groupIndex)} · {group}
+            </p>
+            <DialogTitle>{secreta ? '???' : badge.title}</DialogTitle>
             <DialogDescription>
-              <span className="sx-p-state">{badge.done ? 'Obtenida' : 'Por descubrir'}</span>
+              <span className="sx-p-state">
+                {secreta
+                  ? 'Insignia secreta'
+                  : badge.done
+                    ? fecha
+                      ? `Sellada el ${fechaLarga(fecha)}`
+                      : 'Obtenida'
+                    : 'Por descubrir'}
+              </span>
             </DialogDescription>
           </DialogHeader>
           {badge.done ? (
             <>
-              <section>
-                <h3>Lo que lograste</h3>
-                <p>{badge.message}</p>
+              <section className="sx-p-box sx-p-keeps">
+                <h3>Lo que guarda este sello</h3>
+                {badge.metaphor && <blockquote>«{badge.metaphor}»</blockquote>}
+                {badge.vocationalMeaning && <p>{badge.vocationalMeaning}</p>}
               </section>
-              <section className="sx-p-discovered">
-                <h3>Cómo la descubriste</h3>
-                <p>{badge.description}</p>
-                {date && (
-                  <p className="sx-p-date">
-                    Obtenida el{' '}
-                    {new Date(date).toLocaleDateString('es-PE', {
-                      dateStyle: 'long',
-                      timeZone: 'America/Lima',
-                    })}{' '}
-                    {notaFecha}
-                  </p>
-                )}
-              </section>
-              <section className="sx-p-meaning">
-                <h3>Qué significa</h3>
-                <blockquote>“{badge.metaphor}”</blockquote>
-                <p>{badge.vocationalMeaning}</p>
-              </section>
+              <p className="sx-p-how">
+                <Check aria-hidden="true" size={16} />
+                <span>
+                  <strong>Cómo la conseguiste:</strong> {badge.logro ?? badge.description}
+                </span>
+              </p>
+              {/* F5: mientras guarda conserva su estilo (aria-disabled, no disabled) y muestra el cargador. */}
               <button
                 className="sx-p-profile-choice"
                 type="button"
-                aria-pressed={visible}
-                disabled={!visible && selected.length >= 3}
-                onClick={() => alternarInsignia()}
+                aria-pressed={enVitrina}
+                aria-busy={guardando}
+                aria-disabled={guardando || undefined}
+                disabled={vitrinaLlena}
+                onClick={() => {
+                  if (!guardando) alternarVitrina()
+                }}
               >
-                <Eye aria-hidden="true" size={18} />
-                Mostrar en mi perfil
+                {guardando ? (
+                  <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                ) : (
+                  enVitrina && <Check aria-hidden="true" size={18} />
+                )}
+                {enVitrina ? 'En tu vitrina' : 'Añadir a tu vitrina'}
               </button>
-              {!visible && selected.length >= 3 && (
-                <p>Ya muestras 3 insignias. Quita una para elegir esta.</p>
-              )}
-              <p className="sx-p-choice-help">
-                {visible
-                  ? 'Tus compañeros la ven junto a tu nivel. Toca para quitarla.'
-                  : `Puedes mostrar hasta 3 insignias a tus compañeros (${selected.length} de 3).`}
+              <p className="sx-p-choice-help" role={errorVitrina ? 'alert' : undefined}>
+                {errorVitrina ||
+                  (vitrinaLlena
+                    ? 'Ya tienes 3 sellos en tu vitrina. Quita uno para elegir este.'
+                    : `Tus compañeros ven hasta 3 sellos en tu perfil · ${enUso} de 3 en uso.`)}
               </p>
             </>
           ) : (
             <>
-              {!hidden && (
-                <section className="sx-p-requirement">
-                  <h3>Cómo se descubre</h3>
-                  <p>{descripcionRequisito}</p>
-                  {error && (
-                    <>
-                      <p role="alert">{error}</p>
-                      <button className="sx-d-action" onClick={() => setIntento((i) => i + 1)}>
-                        Reintentar requisito
-                      </button>
-                    </>
+              {secreta ? (
+                <section className="sx-p-box sx-p-hint">
+                  <h3>
+                    <Lightbulb aria-hidden="true" size={16} />
+                    Pista de Lumi
+                  </h3>
+                  <p>
+                    {badge.pista
+                      ? `«${badge.pista}»`
+                      : 'Lumi todavía no quiere contarte nada de este sello.'}
+                  </p>
+                </section>
+              ) : (
+                <section className="sx-p-box sx-p-requirement">
+                  <h3>
+                    Cómo se consigue
+                    {condiciones && condiciones.total > 0 && ` · ${condiciones.cumplidas} de ${condiciones.total} cumplidas`}
+                  </h3>
+                  {condiciones && condiciones.total > 0 ? (
+                    <ConditionList condiciones={condiciones} />
+                  ) : (
+                    <p>{badge.description}</p>
+                  )}
+                  {destination && (
+                    <Link className="sx-d-action" to={destination.href} onClick={onClose}>
+                      {destination.label}
+                      <ArrowRight aria-hidden="true" size={16} />
+                    </Link>
                   )}
                 </section>
               )}
@@ -121,14 +149,12 @@ export function PassportBadgeDialog({
                 <p aria-hidden="true" className="sx-p-blur">
                   Una historia guardada entre las páginas del viaje.
                 </p>
-                <p>Se revela cuando obtengas esta insignia.</p>
+                <p>
+                  {secreta
+                    ? 'Su nombre y su historia se revelan cuando la consigas.'
+                    : 'Su historia se revela cuando la consigas.'}
+                </p>
               </section>
-              {!hidden && destination && (
-                <Link className="sx-d-action sx-d-action-gold" to={destination.href} onClick={onClose}>
-                  <LockKeyhole aria-hidden="true" size={16} />
-                  {destination.label}
-                </Link>
-              )}
             </>
           )}
         </DialogContent>

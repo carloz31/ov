@@ -2,16 +2,10 @@ from fastapi import APIRouter, HTTPException
 
 from app.dependencies import CuentaConsultada, SesionBD
 from app.models import TipoObjetivo
-from app.schemas.cuentas import (
-    DesbloqueoLegible, DesbloqueosMarcados, EventoLegible,
-    ProgresoObjetivo, ResumenCuenta,
-)
+from app.schemas.cuentas import DesbloqueoLegible, EventoLegible, ProgresoObjetivo, ResumenCuenta
 from app.schemas.motor import ReglaLegible
 from app.services import cuentas as servicio_cuentas
-from app.services.cuentas import (
-    listar_desbloqueos, listar_eventos, listar_reglas,
-    marcar_desbloqueos_vistos, progreso_objetivo,
-)
+from app.services.cuentas import listar_desbloqueos, listar_eventos, listar_reglas, progreso_objetivo
 
 
 router = APIRouter(tags=["Consultas"])
@@ -46,12 +40,5 @@ def consultar_eventos(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
 
 
 @router.get("/cuentas/{cuenta}/desbloqueos", response_model=list[DesbloqueoLegible])
-def consultar_desbloqueos(cuenta_consultada: CuentaConsultada, sesion: SesionBD, solo_no_vistos: bool = False):
-    return listar_desbloqueos(sesion, cuenta_consultada, solo_no_vistos)
-
-
-@router.post("/cuentas/{cuenta}/desbloqueos/marcar-vistos", response_model=DesbloqueosMarcados)
-def marcar_vistos(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
-    cantidad = marcar_desbloqueos_vistos(sesion, cuenta_consultada)
-    sesion.commit()
-    return DesbloqueosMarcados(marcados=cantidad)
+def consultar_desbloqueos(cuenta_consultada: CuentaConsultada, sesion: SesionBD):
+    return listar_desbloqueos(sesion, cuenta_consultada)

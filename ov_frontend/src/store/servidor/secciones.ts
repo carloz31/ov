@@ -1,16 +1,22 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { modoApi } from '@/config/env'
 import { obtenerResumen } from '@/services/api/cuentas'
 import { obtenerActividades } from '@/services/api/actividades'
+import { obtenerAvance } from '@/services/api/avance'
 import { obtenerFichas } from '@/services/api/fichas'
+import { obtenerTestimonios } from '@/services/api/testimonios'
 import { obtenerLogros } from '@/services/api/logros'
 import { obtenerSecciones } from '@/services/api/secciones'
+import { obtenerPresentaciones } from '@/services/api/presentaciones'
 import {
   obtenerAmistad,
   obtenerCheckIns,
   obtenerEntradasDiario,
   obtenerPreguntasDiario,
 } from '@/services/api/diario'
+import { obtenerPlanes } from '@/services/api/planes'
+import { obtenerConversaciones } from '@/services/api/conversaciones'
+import { obtenerInvestigaciones } from '@/services/api/investigaciones'
 import { hidratarJourneyServidor } from '../journeyStore'
 import { hidratarAdventureServidor } from '../adventureStore'
 import { baseRoute } from '@/data/activities/reflectionConfig'
@@ -32,23 +38,35 @@ const consultas = {
   resumen: obtenerResumen,
   actividades: obtenerActividades,
   fichas: obtenerFichas,
+  testimonios: obtenerTestimonios,
   logros: obtenerLogros,
+  avance: obtenerAvance,
   secciones: obtenerSecciones,
+  presentaciones: obtenerPresentaciones,
   diarioPreguntas: obtenerPreguntasDiario,
   diarioEntradas: obtenerEntradasDiario,
   amistad: obtenerAmistad,
   checkIns: obtenerCheckIns,
+  planes: obtenerPlanes,
+  conversaciones: (cuenta: string) => obtenerConversaciones(cuenta),
+  investigaciones: obtenerInvestigaciones,
 }
 const contadores = (): Record<NombreSeccion, number> => ({
   resumen: 0,
   actividades: 0,
   fichas: 0,
+  testimonios: 0,
   logros: 0,
+  avance: 0,
   secciones: 0,
+  presentaciones: 0,
   diarioPreguntas: 0,
   diarioEntradas: 0,
   amistad: 0,
   checkIns: 0,
+  planes: 0,
+  conversaciones: 0,
+  investigaciones: 0,
 })
 const revisiones = contadores()
 const consumidores = contadores()
@@ -128,10 +146,16 @@ export function seccionesPorDesbloqueos(desbloqueos: DesbloqueoNuevo[]): NombreS
   const nombres = new Set<NombreSeccion>()
   for (const d of desbloqueos) {
     if (d.tipo_objetivo === 'FICHA') nombres.add('fichas')
+    // Un testimonio abierto, o una actividad (un llamado de la Central) que cambia `caso_disponible`.
+    if (d.tipo_objetivo === 'TESTIMONIO' || d.tipo_objetivo === 'ACTIVIDAD') nombres.add('testimonios')
     if (d.tipo_objetivo === 'INSIGNIA' || d.tipo_objetivo === 'NIVEL') nombres.add('logros')
     if (d.tipo_objetivo === 'NIVEL') nombres.add('resumen')
     if (d.tipo_objetivo === 'SECCION') nombres.add('secciones')
     if (d.tipo_objetivo === 'PREGUNTA_DIARIO') nombres.add('diarioPreguntas')
+    // F07a: una sección de la tarjeta se abre al completar una actividad (t-valores abre CONOCIMIENTO).
+    if (d.tipo_objetivo === 'SECCION_PLAN') nombres.add('planes')
+    // F08: una conversación habilitada (o la sección Familia) cambia la lista de conversaciones.
+    if (d.tipo_objetivo === 'CONVERSACION') nombres.add('conversaciones')
   }
   return [...nombres]
 }
@@ -162,24 +186,27 @@ function useSeccion<N extends NombreSeccion>(nombre: N, activo = true): Seccion<
 export const useResumenServidor = (activo = true) => useSeccion('resumen', activo)
 export const useActividadesServidor = (activo = true) => useSeccion('actividades', activo)
 export const useFichasServidor = (activo = true) => useSeccion('fichas', activo)
+export const useTestimoniosServidor = (activo = true) => useSeccion('testimonios', activo)
 export const useLogrosServidor = (activo = true) => useSeccion('logros', activo)
-// F05: la afinidad (en `logros`) cambia con cada actividad de la Ciudad, aunque no haya insignias nuevas. Las
-// vistas que la muestran la vuelven a pedir al montarse y cuando cambian las actividades.
-export function useAfinidadServidor(activo = true) {
-  const seccion = useSeccion('logros', activo)
-  const actividades = useEstadoServidor().actividades.datos
-  const vistas = useRef<typeof actividades | undefined>(undefined)
-  useEffect(() => {
-    if (!modoApi || !activo) return
-    if (vistas.current !== actividades) vencerSeccion('logros')
-    vistas.current = actividades
-  }, [activo, actividades])
-  return seccion
-}
 export const useSeccionesServidor = (activo = true) => useSeccion('secciones', activo)
 export const useDiarioPreguntasServidor = (activo = true) => useSeccion('diarioPreguntas', activo)
 export const useDiarioEntradasServidor = (activo = true) => useSeccion('diarioEntradas', activo)
 export const useAmistadServidor = (activo = true) => useSeccion('amistad', activo)
+export const usePlanesServidorSeccion = (activo = true) => useSeccion('planes', activo)
+// F08: lo que puede cambiar el apoderado se revalida al montar la vista (regla 4): se muestra lo ya cargado y
+// se vuelve a pedir.
+function useSeccionRevalidada<N extends 'conversaciones' | 'investigaciones'>(nombre: N, activo: boolean) {
+  const seccion = useSeccion(nombre, activo),
+    sesion = sesionServidor()
+  useEffect(() => {
+    if (!modoApi || !activo) return
+    if (obtenerEstadoServidor()[nombre].estado === 'listo') vencerSeccion(nombre)
+  }, [nombre, activo, sesion])
+  return seccion
+}
+export const useConversacionesServidorSeccion = (activo = true) => useSeccionRevalidada('conversaciones', activo)
+// F09: un coautor cierra la investigación en curso de otro al publicar; se revalida al montar, como Familia.
+export const useInvestigacionesServidorSeccion = (activo = true) => useSeccionRevalidada('investigaciones', activo)
 
 export function errorSeccionesActivas() {
   return (

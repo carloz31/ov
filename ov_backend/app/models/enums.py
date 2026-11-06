@@ -70,6 +70,18 @@ class TipoEventoUso(StrEnum):
     CREA_PLAN = "CREA_PLAN"
     ACTUALIZA_PLAN = "ACTUALIZA_PLAN"
     ELIMINA_PLAN = "ELIMINA_PLAN"
+    VISTA_FICHA = "VISTA_FICHA"
+    MARCA_FAVORITO_FICHA = "MARCA_FAVORITO_FICHA"
+    MARCA_FAVORITO_TESTIMONIO = "MARCA_FAVORITO_TESTIMONIO"
+    # B13: investigaciones y entrevistas. ENTREVISTA_DESTACADA y ENTREVISTA_LEYENDA se registran en cada autor.
+    INICIA_INVESTIGACION = "INICIA_INVESTIGACION"
+    TERMINA_GUION = "TERMINA_GUION"
+    EDITA_ENTREVISTA = "EDITA_ENTREVISTA"
+    VISTA_ENTREVISTA = "VISTA_ENTREVISTA"
+    MARCA_FAVORITO_ENTREVISTA = "MARCA_FAVORITO_ENTREVISTA"
+    REACCIONA_ENTREVISTA = "REACCIONA_ENTREVISTA"
+    ENTREVISTA_DESTACADA = "ENTREVISTA_DESTACADA"
+    ENTREVISTA_LEYENDA = "ENTREVISTA_LEYENDA"
 
 
 class TipoInstitucion(StrEnum):
@@ -87,12 +99,11 @@ class TipoFavorito(StrEnum):
     CARRERA = "CARRERA"
     OCUPACION = "OCUPACION"
     INSTITUCION = "INSTITUCION"
-
-
-class NivelAjuste(StrEnum):
-    BEST_FIT = "BEST_FIT"
-    GREAT_FIT = "GREAT_FIT"
-    GOOD_FIT = "GOOD_FIT"
+    # Ajuste mochila: recursos de la mochila, ya desbloqueados.
+    FICHA = "FICHA"
+    TESTIMONIO = "TESTIMONIO"
+    # B13: entrevistas publicadas; cuentan para la Leyenda.
+    ENTREVISTA = "ENTREVISTA"
 
 
 class TipoResultado(StrEnum):
@@ -192,6 +203,7 @@ class TipoReferencia(StrEnum):
     PLANES = "PLANES"
     PASOS_PLAN_A = "PASOS_PLAN_A"
     OPCION_INICIAL = "OPCION_INICIAL"
+    LO_QUE_PIENSO = "LO_QUE_PIENSO"
 
 
 class EstadoReferencia(StrEnum):
@@ -256,3 +268,52 @@ class OrigenSugerencia(StrEnum):
 class EstadoPaso(StrEnum):
     PENDIENTE = "PENDIENTE"
     HECHO = "HECHO"
+
+
+class EstadoInvestigacion(StrEnum):
+    """B13. Cancelar borra la investigación; no hay estado CANCELADA."""
+    EN_CURSO = "EN_CURSO"
+    GUIA_LISTA = "GUIA_LISTA"
+    PUBLICADA = "PUBLICADA"
+
+
+class OrigenPreguntaGuion(StrEnum):
+    """Las preguntas base son catálogo y no se guardan por investigación."""
+    DUDA = "DUDA"
+    SUGERIDA = "SUGERIDA"
+    PROPIA = "PROPIA"
+
+
+class EstadoSugerenciaGuion(StrEnum):
+    PENDIENTE = "PENDIENTE"
+    AGREGADA = "AGREGADA"
+    DESCARTADA = "DESCARTADA"
+
+
+class EstadoEntrevista(StrEnum):
+    PUBLICADA = "PUBLICADA"
+    RETIRADA = "RETIRADA"
+    ELIMINADA = "ELIMINADA"
+
+
+class MotivoReporte(StrEnum):
+    OFENSIVO = "OFENSIVO"
+    VIDEO = "VIDEO"
+    DATOS_PRIVADOS = "DATOS_PRIVADOS"
+    OTRO = "OTRO"
+
+
+class EstadoReporte(StrEnum):
+    PENDIENTE = "PENDIENTE"
+    DESCARTADO = "DESCARTADO"
+    RESUELTO = "RESUELTO"
+
+
+class TipoNotificacion(StrEnum):
+    """Ajuste notificaciones: lo que se anuncia en la campana. Los logros (DESBLOQUEO) son de la propia cuenta;
+    el resto llega de otra cuenta."""
+    DESBLOQUEO = "DESBLOQUEO"
+    RESPUESTA_CONVERSACION = "RESPUESTA_CONVERSACION"
+    ENTREVISTA_DESTACADA = "ENTREVISTA_DESTACADA"
+    ENTREVISTA_LEYENDA = "ENTREVISTA_LEYENDA"
+    REACCION_ENTREVISTA = "REACCION_ENTREVISTA"

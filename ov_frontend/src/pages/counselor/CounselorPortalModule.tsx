@@ -1,12 +1,14 @@
-import { BookOpenCheck, LayoutDashboard, Megaphone, Users } from 'lucide-react'
+import { BookOpenCheck, Compass, LayoutDashboard, Megaphone, Users } from 'lucide-react'
 import { useMemo } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { AppShell, type AppNavigationGroup } from '@/components/layout/AppShell'
 import { appPaths } from '@/routes/paths'
 import { cerrarSesion } from '@/store/accesoStore'
 import { CounselorPortalProvider } from '@/features/counselor/store/CounselorPortalState'
-import { counselorProfile } from '@/features/counselor/data/counselorPortal'
+import { useCounselorProfile } from '@/features/counselor/hooks/useCounselorProfile'
 import type { CounselorView } from '@/features/counselor/types'
+import { useModoCatalogo } from '@/features/discovery/hooks/useModoCatalogo'
+import { useCampanaPortal } from '@/hooks/useCampanaNotificaciones'
 
 const labels: Record<CounselorView, string> = {
   home: 'Inicio',
@@ -15,12 +17,18 @@ const labels: Record<CounselorView, string> = {
   publications: 'Publicaciones',
   priorities: 'Prioritarios',
   settings: 'Configuración',
+  explorar: 'Explorar opciones',
 }
 
 function CounselorPortalModule() {
   const navigate = useNavigate()
   const location = useLocation()
+  const counselorProfile = useCounselorProfile()
   const view = getView(location.pathname)
+  // Ajuste catalogo-apoderado: el catálogo de solo lectura, solo en api.
+  const { catalogoEnPortal } = useModoCatalogo()
+  // Ajuste notificaciones: la orientadora no recibe notificaciones; en api no ve campana.
+  const campana = useCampanaPortal()
   const navigationGroups = useMemo<AppNavigationGroup[]>(
     () => [
       {
@@ -50,10 +58,20 @@ function CounselorPortalModule() {
             label: 'Prioritarios',
             onSelect: () => navigate(appPaths.counselor.priorities),
           },
+          ...(catalogoEnPortal
+            ? [
+                {
+                  id: 'explorar',
+                  icon: Compass,
+                  label: 'Explorar opciones',
+                  onSelect: () => navigate(appPaths.counselor.explorar.catalog.careers),
+                },
+              ]
+            : []),
         ],
       },
     ],
-    [navigate],
+    [navigate, catalogoEnPortal],
   )
   return (
     <CounselorPortalProvider>
@@ -61,11 +79,12 @@ function CounselorPortalModule() {
         theme="staff"
         audience="counselor"
         activeItemId={view}
+        campana={campana.activa ? null : undefined}
         navigationGroups={navigationGroups}
         onLogout={() => {
-        cerrarSesion()
-        navigate(appPaths.login, { replace: true })
-      }}
+          cerrarSesion()
+          navigate(appPaths.login, { replace: true })
+        }}
         onOpenProfile={() => navigate(appPaths.counselor.settings)}
         title={labels[view]}
         userName={counselorProfile.name}
@@ -85,6 +104,7 @@ function getView(pathname: string): CounselorView {
   if (section === 'publications') return 'publications'
   if (section === 'priorities') return 'priorities'
   if (section === 'settings') return 'settings'
+  if (section === 'explorar') return 'explorar'
   return 'home'
 }
 

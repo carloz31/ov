@@ -1,0 +1,264 @@
+{
+  "id": "p8",
+  "codigo": "p8",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "Mi carta para mi hijo",
+  "subtitulo": "El cierre de la ruta",
+  "bloque": 1,
+  "orden": 8,
+  "obligatoria": true,
+  "requisitos": [
+    "p7"
+  ],
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "orientacion"
+  ],
+  "objetivoAprendizaje": "Al terminar, el apoderado sabe cómo escribir una carta que sirva (lo que ve, lo que siente, una acción concreta), qué evitar, que su hijo o hija la leerá sin saber cuándo, y qué sigue: las conversaciones guiadas, el diploma y los resultados visibles.",
+  "nodos": [
+    {
+      "id": "p8-01",
+      "tipo": "diapositiva",
+      "titulo": "El regalo del taller",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El taller del Ministerio de Educación para familias termina con un regalo: cada madre o padre escribe una acción concreta de apoyo al proyecto de vida de su hijo o hija. En la plataforma, ese regalo es una carta."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Su hijo o hija la va a leer. Usted no sabe cuándo: la plataforma decide el momento. Escríbala pensando en que la lea en un día en que la necesite."
+        }
+      ],
+      "etiqueta": "Para empezar"
+    },
+    {
+      "id": "p8-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Si tuviera que decirle una sola cosa a su hijo o hija sobre este proceso, ¿cuál sería?",
+      "nota": "Su respuesta no se guarda ni la ve nadie. Solo sirve para mostrarle lo más útil.",
+      "opciones": [
+        {
+          "id": "p8-02a",
+          "texto": "Algo que admiro de él o ella.",
+          "reaccion": [
+            {
+              "id": "p8-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Buen comienzo: con un ejemplo concreto, es la primera parte de la carta."
+            }
+          ]
+        },
+        {
+          "id": "p8-02b",
+          "texto": "Que no tenga miedo de equivocarse.",
+          "reaccion": [
+            {
+              "id": "p8-02br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Dígalo como suyo: «yo también tuve miedo». Es la segunda parte."
+            }
+          ]
+        },
+        {
+          "id": "p8-02c",
+          "texto": "Que cuente conmigo.",
+          "reaccion": [
+            {
+              "id": "p8-02cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Conviértalo en una acción concreta: la tercera parte."
+            }
+          ]
+        },
+        {
+          "id": "p8-02d",
+          "texto": "No sé por dónde empezar.",
+          "reaccion": [
+            {
+              "id": "p8-02dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Para eso están las tres partes que siguen."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p8-03",
+      "tipo": "diapositiva",
+      "titulo": "Una carta que sirve",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Lo que ve en él o ella",
+              "texto": "Una cualidad concreta, con un ejemplo que usted recuerde. No «eres inteligente» sino «cuando armaste el negocio de la kermés, nadie te lo pidió»."
+            },
+            {
+              "titulo": "Lo que usted siente con este proceso",
+              "texto": "Si tiene miedo, dígalo como suyo. Los hijos agradecen la honestidad más que la tranquilidad fingida."
+            },
+            {
+              "titulo": "Una acción concreta de apoyo",
+              "texto": "Algo que usted hará: acompañar a la feria, sentarse a ver el presupuesto, buscar a alguien que trabaje en lo que le interesa, respetar la decisión aunque no sea la suya."
+            }
+          ],
+          "titulo": "Tres partes bastan"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Comparar con otros.",
+            "Condicionar el apoyo a una carrera.",
+            "Usar la carta para decir qué debería estudiar."
+          ],
+          "titulo": "Evite tres cosas"
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, actividad 3 (cierre: el regalo) y parte 2."
+        }
+      ],
+      "etiqueta": "Concepto"
+    },
+    {
+      "id": "p8-04",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Cuál de estos fragmentos cumple con la primera parte, «lo que ve en él o ella»?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "«Eres muy inteligente y puedes lograr lo que quieras.»",
+          "correcta": false,
+          "retroalimentacion": "Es un elogio general. Sin ejemplo, se lee como frase hecha."
+        },
+        {
+          "id": "b",
+          "texto": "«Cuando organizaste la rifa del salón y nadie te lo pidió, vi que sabes convencer y sostener algo hasta el final.»",
+          "correcta": true,
+          "retroalimentacion": "Exacto: una cualidad con un ejemplo que solo usted recuerda. Eso es lo que se queda."
+        },
+        {
+          "id": "c",
+          "texto": "«Eres mejor que tu primo en matemática.»",
+          "correcta": false,
+          "retroalimentacion": "Compara. Es una de las tres cosas que la carta debe evitar."
+        }
+      ],
+      "explicacion": "Una cualidad con un ejemplo concreto vale más que diez adjetivos. Y nunca una comparación.",
+      "pistas": [
+        {
+          "id": "p8-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "La primera parte dice «con un ejemplo que usted recuerde»."
+        }
+      ],
+      "transicion": "Antes de escribir, dos comprobaciones."
+    },
+    {
+      "id": "p8-05",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un padre escribe: «Te apoyaré en todo, siempre que elijas una carrera con futuro, como Ingeniería». ¿Qué falla?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Nada: es apoyo con sentido común.",
+          "correcta": false,
+          "retroalimentacion": "Es apoyo condicionado, y además dice qué estudiar. Dos de las tres cosas que la carta debe evitar."
+        },
+        {
+          "id": "b",
+          "texto": "Condiciona el apoyo a una carrera y usa la carta para decir qué estudiar.",
+          "correcta": true,
+          "retroalimentacion": "Sí. El apoyo que sirve es el que no depende de la opción."
+        },
+        {
+          "id": "c",
+          "texto": "Debió nombrar más carreras.",
+          "correcta": false,
+          "retroalimentacion": "El problema no es cuántas, sino que la carta no es el lugar para decir cuál."
+        }
+      ],
+      "explicacion": "La carta no decide nada. Dice que usted está. Condicionarla a una opción la convierte en otra forma de presión.",
+      "pistas": [
+        {
+          "id": "p8-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Las tres cosas a evitar."
+        }
+      ]
+    },
+    {
+      "id": "p8-06",
+      "tipo": "diapositiva",
+      "titulo": "Qué pasa después",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Al guardar la carta",
+              "texto": "Se habilitan las conversaciones guiadas, que irán apareciendo conforme su hijo o hija avanza en su camino."
+            },
+            {
+              "titulo": "Con su ruta completa",
+              "texto": "Recibe el diploma «Conozco mi rol» y puede ver los resultados de los cuestionarios de su hijo o hija que la orientadora haya marcado como visibles, con una explicación de cómo leerlos."
+            },
+            {
+              "titulo": "Cómo tomar esos resultados",
+              "texto": "Un resultado de intereses sugiere áreas para explorar; no dice qué carrera «le toca». Si una carrera que su hijo o hija quiere no aparece entre las afines, eso no la descarta: es un tema para conversar. Lo que vaya más allá, consúltelo con la orientadora."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Su carta no decide nada. Dice que usted está. Eso es lo que su hijo o hija necesita leer."
+        }
+      ]
+    },
+    {
+      "id": "p8-07",
+      "tipo": "diapositiva",
+      "titulo": "Escriba su carta",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "La carta se escribe en Conversaciones, para el hijo o hija que elija, y puede editarla después. Al completar esta actividad, su ruta queda terminada."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Ahora",
+              "texto": "Vaya a Conversaciones y escriba la carta: lo que ve, lo que siente, una acción concreta."
+            }
+          ]
+        }
+      ],
+      "etiqueta": "Resumen",
+      "transicion": "Su ruta termina aquí. La carta la espera en Conversaciones."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Su carta no decide nada. Dice que usted está."
+  }
+}

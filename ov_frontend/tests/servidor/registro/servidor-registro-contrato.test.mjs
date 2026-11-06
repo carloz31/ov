@@ -24,7 +24,7 @@ async function preparar({ fallarRefresco = false } = {}) {
       if (req.url.endsWith('/actividades') && refrescos++ && fallarRefresco) return { status: 500, body: {} }
       return respuestaDominio(req, estado)
     }
-    if (req.url.includes('/desbloqueos?')) return { body: [] }
+    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
     if (req.url.endsWith('/items-registro')) return { body: itemsValores }
     if (req.url.endsWith('/registro')) return { body: jsonServidor('ruta/ruta-registro-t-valores-pendiente') }
     if (req.url.endsWith('/guardar-borrador')) return { body: { item: req.body.item, estado: 'BORRADOR' } }

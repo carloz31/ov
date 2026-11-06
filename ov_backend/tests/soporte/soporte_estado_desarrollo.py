@@ -28,10 +28,17 @@ def llenar_estado(aplicacion):
         pregunta = sesion.scalar(select(modelos.PreguntaDiario))
         ocupacion = sesion.scalar(select(modelos.Ocupacion))
         if ocupacion is None:
-            ocupacion = modelos.Ocupacion(codigo_onet='PRUEBA-REINICIO', titulo='DATO DE PRUEBA')
+            ocupacion = modelos.Ocupacion(codigo='prueba-reinicio', codigo_onet='PRUEBA-REINICIO',
+                                          titulo='DATO DE PRUEBA', grupo='15')
             sesion.add(ocupacion)
+        familia = sesion.scalar(select(modelos.FamiliaCarrera))
         progreso = modelos.ProgresoActividad(cuenta_id=cuenta.id, actividad_id=actividad.id, estado='EN_CURSO')
-        entrevista = modelos.Entrevista(codigo='ENT-REINICIO', resumen='DATO DE PRUEBA', fecha_hora=fecha)
+        sesion.flush()
+        entrevista = modelos.Entrevista(codigo='ENT-REINICIO', familia_id=familia.id, dedicacion='DATO DE PRUEBA',
+                                        titulo='DATO DE PRUEBA',
+                                        profesional='DATO DE PRUEBA', duracion='DATO DE PRUEBA',
+                                        enlace='https://youtu.be/datoPrueba1', resumen='DATO DE PRUEBA',
+                                        busqueda='dato de prueba', estado='PUBLICADA', fecha_hora=fecha)
         resultado = modelos.ResultadoInstrumento(cuenta_id=cuenta.id, aplicacion_id=aplicacion_instrumento.id, calculado_en=fecha)
         sesion.add_all([progreso, entrevista, resultado])
         sesion.flush()
@@ -56,8 +63,8 @@ def llenar_estado(aplicacion):
             modelos.EventoUso(cuenta_id=cuenta.id, tipo='INGRESO', fecha_hora=fecha),
             modelos.Desbloqueo(cuenta_id=cuenta.id, regla_id=regla.id, fecha_hora=fecha),
             modelos.RespuestaItem(progreso_id=progreso.id, item_id=item.id, opcion_id=opcion.id, creada_en=fecha, actualizada_en=fecha),
-            modelos.ResultadoDimension(resultado_id=resultado.id, dimension_id=dimension.id, puntaje=1, puntaje_maximo=5, porcentaje=20),
-            modelos.Coincidencia(resultado_id=resultado.id, ocupacion_id=ocupacion.id, posicion=1, correlacion=0.9, ajuste='BEST_FIT'),
+            modelos.ResultadoDimension(resultado_id=resultado.id, dimension_id=dimension.id, puntaje=1, puntaje_maximo=5),
+            modelos.Coincidencia(resultado_id=resultado.id, ocupacion_id=ocupacion.id, posicion=1, correlacion=0.9),
             modelos.TurnoSeguimiento(respuesta_id=respuesta.id, orden=1, pregunta='DATO DE PRUEBA', criterios_objetivo=['C1'], creado_en=fecha),
             modelos.EvaluacionRespuesta(respuesta_id=respuesta.id, numero=1, origen='EXTENSION_MINIMA', clasificacion='POCO_DESARROLLADA',
                 criterios_faltantes=['C1'], texto_evaluado='DATO DE PRUEBA', fecha_hora=fecha),
@@ -69,6 +76,7 @@ def llenar_estado(aplicacion):
         sesion.add(modelos.RespuestaBatalla(resultado_batalla_id=batalla.id, pregunta_batalla_id=pregunta.id,
                                             opcion=pregunta.correcta, correcta=True))
         _llenar_planes(sesion, cuenta, fecha)
+        _llenar_investigaciones(sesion, cuenta, entrevista, fecha)
 
 
 def _llenar_planes(sesion, cuenta, fecha):
@@ -102,6 +110,26 @@ def _llenar_planes(sesion, cuenta, fecha):
         modelos.GastoTarjeta(tarjeta_id=tarjeta.id, posicion=1, rubro_otro='DATO DE PRUEBA', monto=10,
                              frecuencia='UNICA'),
         modelos.FinanciamientoTarjeta(tarjeta_id=tarjeta.id, posicion=1, texto_otro='DATO DE PRUEBA'),
+    ])
+
+
+def _llenar_investigaciones(sesion, cuenta, entrevista, fecha):
+    """B13: una investigación publicada con su guion, una sugerencia, una reacción y un reporte."""
+    tipo = sesion.scalar(select(modelos.TipoReaccion))
+    investigacion = modelos.Investigacion(codigo='INV-REINICIO', cuenta_id=cuenta.id, familia_id=entrevista.familia_id,
+                                          estado='PUBLICADA', piensa_dia='DATO DE PRUEBA', piensa_necesita='DATO DE PRUEBA',
+                                          piensa_duda='DATO DE PRUEBA', creada_en=fecha, guia_lista_en=fecha,
+                                          entrevista_id=entrevista.id)
+    reaccion = modelos.Reaccion(codigo='REA-REINICIO', entrevista_id=entrevista.id, cuenta_id=cuenta.id,
+                                tipo_reaccion_id=tipo.id, comentario='DATO DE PRUEBA', creada_en=fecha)
+    sesion.add_all([investigacion, reaccion])
+    sesion.flush()
+    sesion.add_all([
+        modelos.PreguntaGuion(investigacion_id=investigacion.id, posicion=1, origen='PROPIA', texto='DATO DE PRUEBA'),
+        modelos.SugerenciaGuion(codigo='SUG-REINICIO', investigacion_id=investigacion.id, texto='DATO DE PRUEBA',
+                                estado='DESCARTADA'),
+        modelos.Reporte(codigo='REP-REINICIO', cuenta_id=cuenta.id, reaccion_id=reaccion.id, motivo='OTRO',
+                        estado='PENDIENTE', fecha_hora=fecha),
     ])
 
 

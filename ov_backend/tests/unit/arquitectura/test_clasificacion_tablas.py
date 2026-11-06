@@ -5,25 +5,27 @@ from app.services.desarrollo import TABLAS_DE_ESTADO
 
 
 CATALOGO = {
-    'salon', 'salon_instrumento', 'salon_actividad_prioritaria', 'cuenta', 'orientadora_salon', 'vinculo_familiar', 'bloque', 'actividad', 'tematica', 'actividad_tematica', 'actividad_dimension', 'pregunta_batalla', 'seccion', 'ficha', 'testimonio',
-    'pregunta_diario', 'conversacion', 'insignia', 'nivel', 'familia_carrera', 'carrera',
+    'colegio', 'salon', 'salon_instrumento', 'salon_actividad_prioritaria', 'cuenta', 'orientadora_salon', 'vinculo_familiar', 'bloque', 'actividad', 'tematica', 'actividad_tematica', 'pregunta_batalla', 'seccion', 'presentacion', 'ficha', 'testimonio',
+    'pregunta_diario', 'conversacion', 'grupo_insignia', 'insignia', 'nivel', 'familia_carrera', 'carrera',
     'regla_desbloqueo', 'condicion_desbloqueo', 'instrumento', 'dimension',
     'escala_respuesta', 'opcion_escala', 'item_instrumento', 'actividad_item',
     'aplicacion', 'aplicacion_actividad', 'ocupacion', 'puntaje_ocupacion',
-    'carrera_ocupacion', 'lista_opciones', 'opcion_lista', 'item_registro', 'criterio_completitud',
+    'ocupacion_familia', 'lista_opciones', 'opcion_lista', 'item_registro', 'criterio_completitud',
     'referencia', 'high_point', 'tipo_carrera', 'ubicacion', 'institucion', 'institucion_carrera',
-    'ingreso_carrera', 'rango_ingreso', 'seccion_tarjeta', 'referencia_rubro', 'referencia_camino',
+    'grupo_ocupacional', 'estilo_trabajo', 'ingreso_familia', 'ingreso_institucion', 'seccion_tarjeta', 'referencia_rubro',
+    'referencia_camino', 'pregunta_base_guion', 'tipo_reaccion',
 }
 
 
 ESTADO = {
-    'progreso_actividad', 'resultado_caso', 'resultado_batalla', 'respuesta_batalla', 'coleccion_ocupacion', 'recomendacion', 'entrada_diario', 'contador_diario', 'check_in',
+    'progreso_actividad', 'resultado_caso', 'resultado_batalla', 'respuesta_batalla', 'coleccion_ocupacion', 'recomendacion', 'entrada_diario', 'contador_diario', 'check_in', 'insignia_vitrina', 'presentacion_vista',
     'entrevista',
     'entrevista_autor', 'conversacion_vinculo', 'evento_uso', 'desbloqueo',
     'respuesta_item', 'resultado_instrumento', 'resultado_dimension', 'coincidencia',
     'respuesta_registro', 'turno_seguimiento', 'evaluacion_respuesta', 'favorito',
     'tarjeta_carrera', 'motivo_tarjeta', 'conocimiento_tarjeta', 'duda_tarjeta', 'gasto_tarjeta',
     'financiamiento_tarjeta', 'complicacion_tarjeta', 'sugerencia_tarjeta', 'paso_tarjeta',
+    'investigacion', 'pregunta_guion', 'sugerencia_guion', 'reaccion', 'reporte', 'notificacion',
 }
 
 

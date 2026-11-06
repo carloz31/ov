@@ -1,0 +1,282 @@
+{
+  "id": "b0-1",
+  "codigo": "b0-1",
+  "tipo": "encuentro",
+  "titulo": "Bienvenida: la vocación se construye",
+  "subtitulo": "El muelle de la isla",
+  "escenario": "muelle",
+  "bloque": 0,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": [],
+  "ubicacion": "Muelle",
+  "duracionEstimadaMin": 5,
+  "personajeIds": ["capitan", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante distingue vocación, profesión y ocupación, y sabe que la vocación no es innata ni la revela un test: se construye conociéndose y conociendo el entorno.",
+  "nodos": [
+    {
+      "id": "b0-1-01",
+      "tipo": "dialogo",
+      "hablanteId": "capitan",
+      "expresion": "neutral",
+      "texto": "Fin del viaje. Esta es la isla de la que tanto hablan. Yo no bajo: ya traje a demasiada gente y a casi nadie lo he vuelto a ver en el muelle."
+    },
+    {
+      "id": "b0-1-02",
+      "tipo": "dialogo",
+      "hablanteId": "capitan",
+      "texto": "Mira ese tablón. Cada viajero escribe ahí a qué vino. Léelo antes de subir por el camino; te ahorra tiempo saber que no eres la primera persona que llega con esa idea."
+    },
+    {
+      "id": "b0-1-03",
+      "tipo": "diapositiva",
+      "etiqueta": "El tablón del muelle",
+      "titulo": "A qué vinieron los que llegaron antes",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "«Vengo a descubrir mi vocación. Dicen que un pergamino la revela.»",
+            "«Quiero saber qué carrera es la mía antes de que termine el año.»",
+            "«Mis papás ya saben lo que debo estudiar. Yo vine a confirmarlo.»",
+            "«No tengo idea de nada. Alguien me dijo que aquí se entiende.»"
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Cuatro frases, cuatro formas de buscar lo mismo. Ninguna está mal, pero todas suponen que la respuesta ya existe en algún lugar y solo hay que encontrarla."
+        }
+      ]
+    },
+    {
+      "id": "b0-1-04",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "¿Cuál de las frases se parece más a lo que tú escribirías?",
+      "nota": "No se guarda. Es solo para saber con qué idea llegas.",
+      "opciones": [
+        {
+          "id": "b0-1-04a",
+          "texto": "La del pergamino: quiero descubrir mi vocación.",
+          "reaccion": [
+            {
+              "id": "b0-1-04ar",
+              "tipo": "dialogo",
+              "hablanteId": "capitan",
+              "texto": "La más escrita. Ojalá sea tan fácil como encontrarlo. Suerte."
+            }
+          ]
+        },
+        {
+          "id": "b0-1-04b",
+          "texto": "La de la carrera: necesito saberlo este año.",
+          "reaccion": [
+            {
+              "id": "b0-1-04br",
+              "tipo": "dialogo",
+              "hablanteId": "capitan",
+              "texto": "Con prisa. Aquí la isla tiene su ritmo; no te apures más de lo que te pide."
+            }
+          ]
+        },
+        {
+          "id": "b0-1-04c",
+          "texto": "La de los papás: vine a confirmar lo que ya me dijeron.",
+          "reaccion": [
+            {
+              "id": "b0-1-04cr",
+              "tipo": "dialogo",
+              "hablanteId": "capitan",
+              "texto": "Muchos llegan así. Algunos confirman; otros descubren que la pregunta era de ellos y no de sus padres."
+            }
+          ]
+        },
+        {
+          "id": "b0-1-04d",
+          "texto": "La última: no tengo idea de nada.",
+          "reaccion": [
+            {
+              "id": "b0-1-04dr",
+              "tipo": "dialogo",
+              "hablanteId": "capitan",
+              "texto": "Esa es la más honesta. Y, según me han contado, no es la peor forma de empezar."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b0-1-05",
+      "tipo": "dialogo",
+      "hablanteId": "capitan",
+      "texto": "Bueno, yo me voy. Y ten cuidado con las luces que flotan por el muelle: no todas son faroles."
+    },
+    {
+      "id": "b0-1-06",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "¡No soy un farol! Soy Lumi. Vivo aquí desde hace… bastante. Te vi leer el tablón entero. Casi nadie lo lee entero."
+    },
+    {
+      "id": "b0-1-07",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Si vienes por el pergamino, te aviso: muchos lo buscaron y se rindieron. Algunos regresaron a casa, otros se quedaron a vivir en la isla y otros simplemente perdieron el interés."
+    },
+    {
+      "id": "b0-1-08",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Pero antes de subir hay algo que conviene aclarar, porque en el tablón todos usan la palabra «vocación» como si fuera una cosa escondida bajo una piedra. Y no lo es."
+    },
+    {
+      "id": "b0-1-09",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Tres palabras que se confunden",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": ["Palabra", "Qué es", "Ejemplo"],
+          "filas": [
+            ["Vocación", "El conjunto de motivos e intereses que te orientan hacia lo que quieres ser y hacer", "Querer ayudar a que la gente se sienta mejor"],
+            ["Profesión", "Una actividad laboral que se ejerce después de un periodo de formación", "Enfermería, psicología, fisioterapia"],
+            ["Ocupación", "La actividad concreta que realiza una persona para trabajar", "Enfermero de emergencias, psicóloga escolar"]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Una misma vocación puede expresarse en varias profesiones, y una profesión lleva a muchas ocupaciones. Por eso «¿qué quiero estudiar?» llega después de una pregunta más grande: «¿qué quiero hacer en la vida y por qué?»."
+        }
+      ]
+    },
+    {
+      "id": "b0-1-10",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "La vocación no nace contigo",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El programa de orientación vocacional del MINEDU lo dice sin rodeos: la vocación no es un aspecto innato ni predeterminado, ni algo que se decide en un momento puntual. Se forma a lo largo de la vida, reconociendo habilidades y resolviendo situaciones."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Tres consecuencias prácticas",
+          "items": [
+            "Nadie puede «no tener vocación». Lo que puede faltar es información sobre uno mismo o sobre las opciones.",
+            "Ningún test te la revela. Un test ordena información que ya tienes; no agrega lo que no has vivido.",
+            "Cambia con el tiempo. Lo que te atrae a los 17 puede ampliarse o girar a los 25, y eso no es un error."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Y toda ocupación puede profesionalizarse: quien empieza atendiendo un negocio, reparando equipos o cocinando puede, con cursos, un instituto o una carrera, ir especializando lo que hace. La profesionalización no exige entrar a la universidad al día siguiente de terminar el colegio."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ministerio de Educación (2013), Orientación vocacional: cartilla para tutores, parte 1."
+        }
+      ]
+    },
+    {
+      "id": "b0-1-11",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Mira: hay cuatro frases del tablón con la palabra «vocación» mal puesta o bien puesta. Antes de subir, revisemos dos. Si las lees con calma, ya vas a entender mejor a qué viniste."
+    },
+    {
+      "id": "b0-1-12",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un viajero escribió: «Mi vocación es ser enfermero de emergencias». ¿Qué palabra está usando en realidad?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Vocación: ser enfermero de emergencias es un conjunto de motivos.",
+          "correcta": false,
+          "retroalimentacion": "«Enfermero de emergencias» no es un motivo: es el trabajo concreto que haría. Los motivos serían, por ejemplo, querer atender a gente en el peor momento de su día."
+        },
+        {
+          "id": "b",
+          "texto": "Profesión: es lo que se estudia para ejercer.",
+          "correcta": false,
+          "retroalimentacion": "Cerca. La profesión sería Enfermería, lo que se estudia. «De emergencias» ya describe un puesto concreto."
+        },
+        {
+          "id": "c",
+          "texto": "Ocupación: es la actividad concreta con la que se trabaja.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Su vocación podría ser atender a personas en situaciones críticas; su profesión, Enfermería; y su ocupación, enfermero de emergencias."
+        }
+      ],
+      "explicacion": "Una vocación (ayudar en momentos críticos) puede expresarse en varias profesiones (Enfermería, Medicina, Psicología) y cada profesión lleva a muchas ocupaciones (enfermero de emergencias, enfermera de cuidados intensivos, enfermero escolar).",
+      "pistas": [
+        {
+          "id": "b0-1-12p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en lo concreta que es la frase: dice un puesto específico, no un motivo ni una carrera."
+        }
+      ]
+    },
+    {
+      "id": "b0-1-13",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "verdadero_falso",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Otro viajero escribió: «Cuando encuentre mi vocación, la voy a reconocer de inmediato, porque uno nace con ella». ¿Es cierto?",
+      "opciones": [
+        {
+          "id": "v",
+          "texto": "Verdadero",
+          "correcta": false,
+          "retroalimentacion": "Es la idea más común del tablón, y la que más gente deja atrapada en la isla: esperar a reconocer algo que en realidad se va armando."
+        },
+        {
+          "id": "f",
+          "texto": "Falso",
+          "correcta": true,
+          "retroalimentacion": "Así es. La vocación no es innata: se construye con lo que haces, lo que aprendes y lo que vas conociendo del mundo."
+        }
+      ],
+      "explicacion": "Nadie nace con una vocación lista. Se forma a lo largo de la vida y cambia; por eso este viaje no busca «encontrarla», sino construirla con información sobre ti y sobre lo que existe afuera.",
+      "pistas": [
+        {
+          "id": "b0-1-13p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Acuérdate de la tarjeta de hace un momento: ¿la vocación nace contigo o se forma?"
+        }
+      ]
+    },
+    {
+      "id": "b0-1-14",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Listo. Si entiendes eso, ya no vas a buscar el pergamino como quien busca una llave perdida. Vas a construir tu respuesta mientras caminamos. Yo te acompaño."
+    },
+    {
+      "id": "b0-1-15",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo primero: hay alguien que recibe a todos los que llegan, en una cabaña subiendo por el bosque. Se llama Helena. Vamos."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "La vocación no se encuentra: se construye conociéndote y conociendo lo que existe afuera."
+  },
+  "mapa": { "x": 120, "y": 420, "icono": "informativa" }
+}

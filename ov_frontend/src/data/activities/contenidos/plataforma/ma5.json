@@ -1,0 +1,186 @@
+{
+  "id": "ma5",
+  "codigo": "ma5",
+  "tipo": "encuentro",
+  "titulo": "Ocupaciones nuevas y emprender",
+  "subtitulo": "El taller de Iván, después de hora",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 30,
+  "obligatoria": false,
+  "requisitos": ["h3"],
+  "ubicacion": "Ciudad, taller de Iván",
+  "duracionEstimadaMin": 8,
+  "personajeIds": ["ivan", "companero"],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe hacia dónde se mueve el trabajo, cómo leer una lista de «carreras del futuro» y qué significa emprender en el Perú (por necesidad y por oportunidad).",
+  "nodos": [
+    {
+      "id": "ma5-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Sol vio tu registro de intereses y me pidió que te mandara al taller de Iván: dice que lo que escribiste merece una vuelta más. Iván, además de inventor, es el único de la ciudad que vive de un negocio propio."
+    },
+    {
+      "id": "ma5-02",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "expresion": "animado",
+      "texto": "¡Pasa! Me dijeron que contrastaste tu perfil con tu opción en serio. Entonces te cuento dos cosas que las listas no dicen: hacia dónde se mueve el trabajo, y qué es emprender de verdad, no en los videos."
+    },
+    {
+      "id": "ma5-03",
+      "tipo": "diapositiva",
+      "presentadorId": "ivan",
+      "titulo": "Hacia dónde se mueve el trabajo",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El Foro Económico Mundial estima que cerca del 44 % de las competencias básicas de los trabajos cambiará en cinco años. Las ocupaciones que crecen se agrupan en pocas tendencias:"
+        },
+        {
+          "tipo": "tabla",
+          "columnas": ["Tendencia", "Ocupaciones que impulsa", "Carreras que llevan ahí"],
+          "filas": [
+            ["Inteligencia artificial y datos", "Especialistas en IA, analistas de datos, desarrolladores", "Ciencias de la computación, sistemas, estadística, matemática"],
+            ["Seguridad digital", "Ciberseguridad, redes", "Sistemas, redes y telecomunicaciones"],
+            ["Sostenibilidad y clima", "Energía renovable, gestión ambiental, civil adaptada al clima", "Ambiental, energía, civil, agronomía"],
+            ["Salud y envejecimiento", "Enfermería, terapia física, gerontología, informática médica", "Ciencias de la salud, tecnología médica"],
+            ["Agricultura tecnificada", "Drones y maquinaria autónoma, agronomía de precisión", "Agronomía, agrícola, mecatrónica"],
+            ["Comercio electrónico", "E-commerce, marketing digital, logística", "Administración, marketing, industrial"]
+          ]
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Cómo leer una lista de carreras del futuro",
+          "items": [
+            "Del futuro de quién: una lista europea habla de su mercado. En el Perú, minería, agroindustria, salud y construcción siguen pesando.",
+            "Crecer no es pagar bien ni dar empleo formal.",
+            "Muchas no son carreras sino especializaciones: «especialista en IA» se llega desde computación, matemática o ingeniería.",
+            "Lo que no cambia: resolver problemas, aprender rápido, comunicarse y trabajar con otros."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ma5-04",
+      "tipo": "diapositiva",
+      "presentadorId": "ivan",
+      "titulo": "Emprender en el Perú",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "El Perú está entre los países con más emprendimiento en fase temprana del mundo: el 12,8 % de los adultos está iniciando un negocio (GEM 2025/2026). Pero el 71,6 % empezó por falta de empleo, solo el 5,3 % llega a consolidar un negocio, y el 44,9 % reconoce el miedo al fracaso como freno."
+        },
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Por necesidad",
+            "texto": "No encontré trabajo, abro algo. Sobrevive menos."
+          },
+          "derecha": {
+            "titulo": "Por oportunidad",
+            "texto": "Vi una necesidad que sé resolver. Se prepara: con una formación que te dé una habilidad vendible, experiencia en el sector y alguien que ya lo hizo."
+          }
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Yo abrí el taller después de años arreglando artefactos para otros. Si te atrae emprender, trátalo como una carrera más: ¿qué sabrías hacer que otros pagarían?, ¿qué formación lo respalda?, ¿con qué dinero empiezas y cuánto aguantas sin ganar? Un negocio después de una carrera técnica o universitaria tiene mejores probabilidades que uno abierto por no haber ingresado a ningún lado."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Santander (2023), Las 10 profesiones del futuro, con datos del Foro Económico Mundial 2023. Mi Carrera (MTPE), carreras del futuro. Andina (2026), GEM Perú 2025/2026.",
+          "url": "https://micarrera.trabajo.gob.pe/"
+        }
+      ]
+    },
+    {
+      "id": "ma5-05",
+      "tipo": "pregunta",
+      "hablanteId": "ivan",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un viajero leyó que «especialista en inteligencia artificial» es la carrera del futuro y la busca en el catálogo. No la encuentra. ¿Por qué?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Porque es una especialización, no una carrera de pregrado: se llega desde computación, matemática o ingeniería.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. En el catálogo busca la ocupación y mira qué carreras llevan a ella."
+        },
+        {
+          "id": "b",
+          "texto": "Porque el catálogo está desactualizado.",
+          "correcta": false,
+          "retroalimentacion": "El catálogo tiene las carreras que se ofrecen en el Perú; la IA se estudia dentro de varias de ellas."
+        },
+        {
+          "id": "c",
+          "texto": "Porque en el Perú no existe.",
+          "correcta": false,
+          "retroalimentacion": "Existe, como especialización después de una carrera base."
+        }
+      ],
+      "explicacion": "Muchas «carreras del futuro» son especializaciones. La pregunta útil es qué formación de pregrado las sostiene, y eso sí está en el catálogo.",
+      "pistas": [
+        {
+          "id": "ma5-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Tercer punto de «cómo leer una lista»."
+        }
+      ]
+    },
+    {
+      "id": "ma5-06",
+      "tipo": "pregunta",
+      "hablanteId": "ivan",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Una viajera dice: «No ingresé a ningún lado, así que voy a emprender». Según los datos del GEM, ¿qué le conviene saber?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que ese es el emprendimiento por necesidad, el que menos sobrevive; emprender por oportunidad se prepara con formación, experiencia y alguien que ya lo hizo.",
+          "correcta": true,
+          "retroalimentacion": "Sí. No es que no pueda: es que conviene tratarlo como una ruta, no como un escape."
+        },
+        {
+          "id": "b",
+          "texto": "Que tiene razón: en el Perú todo el mundo emprende y le va bien.",
+          "correcta": false,
+          "retroalimentacion": "Todo el mundo empieza; solo el 5,3 % consolida. La diferencia está en la preparación."
+        },
+        {
+          "id": "c",
+          "texto": "Que emprender es imposible sin una carrera.",
+          "correcta": false,
+          "retroalimentacion": "No es imposible; es más probable con una habilidad vendible y experiencia. Hay voces en tu mochila que lo cuentan."
+        }
+      ],
+      "explicacion": "Emprender por oportunidad sobrevive más que por necesidad, y se prepara. Tratarlo como carrera: qué sabrías hacer que otros pagarían, qué formación lo respalda, con qué dinero empiezas.",
+      "pistas": [
+        {
+          "id": "ma5-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Mira las dos columnas: ¿de cuál es «no encontré trabajo, abro algo»?"
+        }
+      ]
+    },
+    {
+      "id": "ma5-07",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "expresion": "animado",
+      "texto": "Si una ocupación «del futuro» te interesa, búscala en el catálogo y mira qué formación la sostiene. Y si algún día abres un taller, avísame: te presto el soldador."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "El futuro del trabajo premia a quien aprende rápido. Tu capacidad de seguir aprendiendo es la apuesta segura."
+  },
+  "mapa": { "x": 820, "y": 240, "icono": "informativa", "origen": "h3", "adicional": true }
+}

@@ -102,7 +102,7 @@ export interface NodoDialogo extends NodoBase {
   hablanteId: ID
   texto: string
   expresion?: string
-  eco?: ID // en api, referencia que el diálogo cita tras su texto (F03)
+  eco?: ID | ID[] // en api, referencias que el diálogo cita tras su texto, en orden (F03; lista: ajuste carga-actividades)
 }
 
 /** Respuesta RPG del jugador. No se evalúa. Por defecto no se guarda. */
@@ -237,9 +237,13 @@ export type Plantilla = PlantillaMatriz | { tipo: 'secuencial' } // secuencial =
 
 export type TipoActividad = 'encuentro' | 'registro' | 'instrumento'
 
+// Ajuste carga-actividades: lugar de la isla donde ocurre la actividad; da el fondo `/images/background/<escenario>.png`.
+export type Escenario = 'muelle' | 'bosque' | 'cabana' | 'nevado' | 'ciudad' | 'desierto' | 'bosque_volcan'
+  | 'playa' | 'acantilado' | 'faro'
+
 export const NODOS_PERMITIDOS: Record<TipoActividad, Nodo['tipo'][]> = {
   encuentro: ['dialogo', 'eleccion', 'diapositiva', 'pregunta'],
-  registro: ['dialogo', 'eleccion', 'consigna'],
+  registro: ['dialogo', 'eleccion', 'diapositiva', 'consigna'],
   instrumento: ['dialogo', 'eleccion', 'item', 'resultado'],
 }
 
@@ -255,6 +259,7 @@ export interface Actividad {
   obligatoria: boolean
   requisitos: ID[]
   ubicacion?: string
+  escenario?: Escenario
   duracionEstimadaMin: number
   personajeIds: ID[]
   objetivoAprendizaje?: string // encuentros: qué debe saber al terminar

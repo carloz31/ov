@@ -1,0 +1,22 @@
+{
+  "id": "c4",
+  "codigo": "c4",
+  "tipo": "encuentro",
+  "titulo": "El festival de las mil voces",
+  "escenario": "ciudad",
+  "bloque": 7,
+  "orden": 43,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 15,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [],
+  "caso": "thousand-voices-festival",
+  "mapa": {
+    "x": 140,
+    "y": 300,
+    "icono": "informativa"
+  }
+}

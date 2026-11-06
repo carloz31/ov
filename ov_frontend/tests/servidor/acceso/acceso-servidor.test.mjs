@@ -28,7 +28,7 @@ test('el ingreso guarda token y cuenta en ov.acceso.v1 y GET /sesion trae hijos 
     await acceso.validarSesionGuardada()
     assert.equal(app.requests[1].headers.Authorization, 'Bearer TOKEN-DE-PRUEBA')
     const datos = acceso.datosSesion()
-    assert.deepEqual(datos.hijos.map((h) => h.codigo), rol === 'apoderado' ? ['est-ana'] : [])
+    assert.deepEqual(datos.hijos.map((h) => h.codigo), rol === 'apoderado' ? ['est-ana', 'est-luis'] : [])
     assert.deepEqual(datos.salones.map((s) => s.codigo), rol === 'orientadora' ? ['5A'] : [])
     assert.equal(app.sesion.get('ov.cuenta-servidor.v1'), undefined)
   }

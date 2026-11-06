@@ -1,0 +1,261 @@
+{
+  "id": "p3",
+  "codigo": "p3",
+  "tipo": "encuentro",
+  "audiencia": "apoderado",
+  "titulo": "Acompañar o presionar",
+  "subtitulo": "La presión que no parece presión",
+  "bloque": 1,
+  "orden": 3,
+  "obligatoria": true,
+  "requisitos": [
+    "p2"
+  ],
+  "duracionEstimadaMin": 8,
+  "personajeIds": [
+    "orientacion"
+  ],
+  "objetivoAprendizaje": "Al terminar, el apoderado distingue apoyo, interferencia y falta de involucramiento, reconoce las formas de presión implícita y sabe qué actitud ayuda.",
+  "nodos": [
+    {
+      "id": "p3-01",
+      "tipo": "diapositiva",
+      "titulo": "Casi ningún padre cree que presiona",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "La presión que daña rara vez es un grito: suele ser una frase repetida con cariño. Esta actividad presenta situaciones cotidianas para reconocerla."
+        }
+      ],
+      "etiqueta": "Para empezar"
+    },
+    {
+      "id": "p3-02",
+      "tipo": "diapositiva",
+      "titulo": "Tres comportamientos, tres resultados",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Comportamiento",
+            "Qué hacen los padres",
+            "Qué pasa con los hijos"
+          ],
+          "filas": [
+            [
+              "Apoyo",
+              "Se interesan, conversan, ayudan a buscar información, alientan a explorar",
+              "Exploran más y deciden con más seguridad"
+            ],
+            [
+              "Interferencia",
+              "Opinan sin que se lo pidan, insisten en una opción, critican las otras",
+              "Más indecisión y menos exploración"
+            ],
+            [
+              "Falta de involucramiento",
+              "No preguntan, no opinan, dejan todo «para que decida solo»",
+              "Tanta indecisión como con la interferencia"
+            ]
+          ],
+          "nota": "Dietrich y Kracke (2009), investigación con adolescentes."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "No se trata de intervenir menos, sino de intervenir de otra manera. Desentenderse tampoco ayuda."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Dietrich y Kracke (2009), Career-specific parental behaviors in adolescents' development, Journal of Vocational Behavior. MINEDU (2013), cartilla, parte 2."
+        }
+      ],
+      "etiqueta": "Concepto"
+    },
+    {
+      "id": "p3-03",
+      "tipo": "diapositiva",
+      "titulo": "Presión que no parece presión",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "Proyectar lo propio: «Yo siempre quise ser médico; tú tienes la oportunidad».",
+            "«Yo sé lo que te conviene»: la experiencia de usted es real, pero de otro momento y otra persona.",
+            "Fijarse en una sola aptitud: porque canta bien o desarma aparatos, «ya se sabe» lo que va a estudiar.",
+            "La comparación: «Mira a tu prima, ella sí sabe lo que quiere».",
+            "El apoyo condicionado: «Si estudias eso, cuenta conmigo; si no, arréglatelas».",
+            "La pregunta de todos los días: «¿Ya sabes qué vas a estudiar?» repetida cada semana se convierte en reclamo."
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Preguntar abierto",
+              "texto": "«¿Qué te llama la atención de eso?» en lugar de «¿Estás seguro?»."
+            },
+            {
+              "titulo": "Separar la preocupación del juicio",
+              "texto": "«Me preocupa el costo» es distinto de «esa carrera no da»."
+            },
+            {
+              "titulo": "Aceptar que explore opciones que a usted no le gustan",
+              "texto": "Explorar no es decidir."
+            },
+            {
+              "titulo": "Ofrecer ayuda concreta",
+              "texto": "Acompañar a una feria, buscar a alguien que ejerza esa ocupación, revisar costos juntos."
+            },
+            {
+              "titulo": "Recordar que la indecisión a esta edad es normal",
+              "texto": "No es falta de carácter ni de responsabilidad."
+            }
+          ],
+          "titulo": "Lo que sí ayuda"
+        }
+      ]
+    },
+    {
+      "id": "p3-04",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Situación 1. Desde niño, Marco arma y desarma aparatos. Su papá dice a todos: «Este va a ser ingeniero, está decidido». Marco últimamente habla de otras cosas, pero no delante de su papá. ¿Qué pasa?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Nada: el papá reconoce su talento.",
+          "correcta": false,
+          "retroalimentacion": "Reconocer el talento ayuda; cerrar las demás puertas con «está decidido» es otra cosa."
+        },
+        {
+          "id": "b",
+          "texto": "Interferencia por fijarse en una sola aptitud: cerró las otras opciones y Marco dejó de contarle.",
+          "correcta": true,
+          "retroalimentacion": "Así es. Una habilidad temprana es una pista, no una sentencia. Y Marco ya aprendió a no hablar de lo demás delante de él."
+        },
+        {
+          "id": "c",
+          "texto": "Falta de involucramiento: debería decidir por él.",
+          "correcta": false,
+          "retroalimentacion": "Al revés: está demasiado decidido por él. Lo que falta es preguntar."
+        }
+      ],
+      "explicacion": "Fijarse en una sola aptitud es presión que no parece presión. Lo que ayuda es preguntar abierto y aceptar que explore opciones que a usted no le gustan.",
+      "pistas": [
+        {
+          "id": "p3-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Busque en la lista de presiones la que habla de «una sola aptitud»."
+        }
+      ],
+      "transicion": "Tres situaciones de la vida real."
+    },
+    {
+      "id": "p3-05",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Situación 2. Rosa le dice a su hija: «Yo no te voy a decir nada; es tu vida, decide tú sola». Y no vuelve a preguntar en meses. ¿Qué comportamiento es?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Apoyo: respeta la decisión.",
+          "correcta": false,
+          "retroalimentacion": "Respetar es aceptar la decisión final, no desaparecer del proceso."
+        },
+        {
+          "id": "b",
+          "texto": "Falta de involucramiento: produce tanta indecisión como la interferencia.",
+          "correcta": true,
+          "retroalimentacion": "Sí. La hija queda sola con la decisión. Apoyar es preguntar, conversar y ayudar a buscar, sin decidir."
+        },
+        {
+          "id": "c",
+          "texto": "Interferencia: está presionando con el silencio.",
+          "correcta": false,
+          "retroalimentacion": "No insiste en nada; simplemente no está. Eso es falta de involucramiento."
+        }
+      ],
+      "explicacion": "Dejar todo «para que decida sola» no es respeto: es ausencia. La investigación muestra que produce tanta indecisión como opinar de más.",
+      "pistas": [
+        {
+          "id": "p3-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Tercera fila de la tabla."
+        }
+      ]
+    },
+    {
+      "id": "p3-06",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Situación 3. Luis le cuenta a su mamá que le interesa Enfermería. Ella responde: «Me da curiosidad. ¿Qué te atrae de eso? Si quieres, busco a la vecina que es enfermera para que conversen». ¿Qué comportamiento es?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Apoyo: pregunta abierta y ayuda concreta.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Se interesa, no juzga y ofrece algo que él no puede conseguir solo."
+        },
+        {
+          "id": "b",
+          "texto": "Interferencia: ya está metiendo a la vecina.",
+          "correcta": false,
+          "retroalimentacion": "Ofrecer un contacto que él acepta o no es ayuda concreta, no insistencia."
+        },
+        {
+          "id": "c",
+          "texto": "Falta de involucramiento: debería darle su opinión.",
+          "correcta": false,
+          "retroalimentacion": "Su opinión puede venir después; primero preguntó y escuchó. Eso es apoyo."
+        }
+      ],
+      "explicacion": "Apoyar es interesarse, preguntar abierto y ofrecer ayuda concreta sin decidir. Es la actitud que la investigación asocia con hijos que exploran más y deciden con más seguridad.",
+      "pistas": [
+        {
+          "id": "p3-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Compare la respuesta de la mamá con la lista «Lo que sí ayuda»."
+        }
+      ]
+    },
+    {
+      "id": "p3-07",
+      "tipo": "diapositiva",
+      "titulo": "Para llevarse",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Presionar acelera una respuesta; apoyar mejora la decisión."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Esta semana",
+              "texto": "Si tiene la costumbre de preguntar «¿ya sabes qué vas a estudiar?», cámbiela una vez por «¿qué te ha llamado la atención últimamente?»."
+            }
+          ]
+        }
+      ],
+      "etiqueta": "Resumen",
+      "transicion": "Ya tiene una acción. Repase el resumen cuando quiera."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Presionar acelera una respuesta; apoyar mejora la decisión."
+  }
+}

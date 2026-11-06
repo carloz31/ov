@@ -1,0 +1,227 @@
+{
+  "_nota": "Registro (5.1). Momento 1 completo (F21, la vigía del faro); campos en esqueleto. Ecos: opción inicial, orden de b4-5, valores de b2-3, planes y b3-4 (qué haría si un dato no favorece). Al cerrar, Lumi invita a actualizar la línea de tiempo de b1-7.",
+  "id": "b5-1",
+  "codigo": "b5-1",
+  "tipo": "registro",
+  "titulo": "Mi proyecto vocacional",
+  "subtitulo": "La vigía del faro",
+  "escenario": "faro",
+  "bloque": 5,
+  "orden": 1,
+  "obligatoria": true,
+  "requisitos": [
+    "b4-5"
+  ],
+  "ubicacion": "Faro, la casa de la vigía",
+  "duracionEstimadaMin": 12,
+  "personajeIds": [
+    "vigia",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
+  "nodos": [
+    {
+      "id": "b5-1-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "El faro. Se ve desde el nevado, ¿te acuerdas? Ahora estamos debajo. En la casa de la base vive Teresa, la vigía: la que enciende la luz cada noche para los que todavía están en el mar.",
+      "expresion": "animado"
+    },
+    {
+      "id": "b5-1-02",
+      "tipo": "dialogo",
+      "hablanteId": "vigia",
+      "texto": "Llegaron. Casi nadie llega. Antes de que suban, una cosa que les digo a todos: lo que van a escribir hoy no es una promesa ni una sentencia. Es la ruta que eligen, por ahora. Yo enciendo esta luz cada noche porque los barcos cambian de rumbo; nadie navega en línea recta.",
+      "expresion": "neutral"
+    },
+    {
+      "id": "b5-1-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b5-1-03a",
+          "texto": "¿Y si me equivoco?",
+          "reaccion": [
+            {
+              "id": "b5-1-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "vigia",
+              "texto": "Vas a saber más de tu carrera cuando la estudies que ahora; el mercado cambia; tú cambias. Una decisión vocacional es provisional y revisable. Tener un plan B no es falta de compromiso: es poder corregir."
+            }
+          ]
+        },
+        {
+          "id": "b5-1-03b",
+          "texto": "¿Qué pasa después de decidir?",
+          "reaccion": [
+            {
+              "id": "b5-1-03br",
+              "tipo": "dialogo",
+              "hablanteId": "vigia",
+              "texto": "Meses de preparación, admisión y ajustes. Conviene saber desde hoy cómo se ven. Mira."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b5-1-04",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "vigia",
+      "titulo": "Lo que suele pasar en los meses siguientes",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Mes",
+            "Qué pasa",
+            "Qué conviene"
+          ],
+          "filas": [
+            [
+              "Ahora",
+              "Terminar el colegio con el mejor promedio posible",
+              "Algunas modalidades de admisión y Beca 18 lo miran"
+            ],
+            [
+              "Verano",
+              "Preparación: academia, CEPRE o estudio por tu cuenta",
+              "Averiguar temario y calendario en la página oficial"
+            ],
+            [
+              "Marzo a abril",
+              "Primeros exámenes de admisión y convocatorias de becas",
+              "Tener los documentos listos y un plan B"
+            ],
+            [
+              "Agosto",
+              "Segunda vuelta de admisión en muchas instituciones",
+              "Si no ingresaste, volver a postular con lo aprendido"
+            ],
+            [
+              "Todo el año",
+              "Mantener la opción en revisión",
+              "Hablar con gente de la carrera, revisar el presupuesto"
+            ]
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, estación 5 y actividad 17. Pronabec, Beca 18. Leyes 30220 y 30512 (traslados y convalidación)."
+        }
+      ]
+    },
+    {
+      "id": "b5-1-05",
+      "tipo": "diapositiva",
+      "presentadorId": "vigia",
+      "titulo": "Y si no ingreso",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "No ingresar a la primera es lo más común en las universidades públicas más demandadas, y le pasa a mucha gente que luego termina la carrera. Lo que marca la diferencia es qué haces con ese año."
+        },
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Postular de nuevo",
+              "texto": "Con una preparación más larga. La mayoría de postulantes a públicas lo hace."
+            },
+            {
+              "titulo": "Otra modalidad o institución",
+              "texto": "Donde sí ingresas, y evaluar luego un traslado."
+            },
+            {
+              "titulo": "Empezar por la ruta técnica",
+              "texto": "Y continuar en la universidad convalidando."
+            },
+            {
+              "titulo": "Un año de transición con sentido",
+              "texto": "Trabajar, un idioma, un curso corto, la entrevista que no hiciste. Lo que no sirve es un año sin estructura."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Elegir es el primer paso de un camino, no el último. Lo que hagas en los próximos seis meses pesa más que la elección misma. Un proyecto sin pasos es un deseo: tres acciones con plazo."
+        }
+      ]
+    },
+    {
+      "id": "b5-1-06",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Esto lo lee tu orientadora y es el corazón de tu informe de viaje. Te voy a recordar tu opción inicial, tu orden de la mesa, tus valores y lo que dijiste que harías si un dato no te favorece.",
+      "eco": [
+        "b5-1-ref-inicial",
+        "b5-1-ref-orden",
+        "b5-1-ref-valores"
+      ]
+    },
+    {
+      "id": "b5-1-07",
+      "tipo": "consigna",
+      "hablanteId": "vigia",
+      "item": "b5-1-opcion",
+      "premisa": "Tu opción elegida, por ahora, y tus razones: algo de tu perfil y algo de la información que recogiste. Si cambió respecto a tu opción inicial, ¿por qué?",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b5-1-08",
+      "tipo": "consigna",
+      "hablanteId": "vigia",
+      "item": "b5-1-dificultades",
+      "premisa": "Las dificultades que prevés, cada una con su estrategia.",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eco": "b5-1-ref-dato"
+    },
+    {
+      "id": "b5-1-09",
+      "tipo": "consigna",
+      "hablanteId": "vigia",
+      "item": "b5-1-donde",
+      "premisa": "Dónde estudiarías y dónde esperas trabajar.",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": false,
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "b5-1-10",
+      "tipo": "consigna",
+      "hablanteId": "vigia",
+      "item": "b5-1-pasos",
+      "premisa": "Tres próximos pasos con plazo: uno para informarte, uno para prepararte y uno para conversar en casa.",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "ayuda": "Acciones concretas: «hablar con alguien de la carrera antes de diciembre»; no «ver qué hago»."
+    }
+  ],
+  "recompensa": {
+    "mensajeFin": "Tu ruta, por ahora, con pasos y plazos. Lumi te invita a actualizar tu línea de tiempo del desierto. Se abrió la conversación «Ayúdame como lo necesito»."
+  },
+  "promptDiario": "Mi proyecto, en voz baja",
+  "mapa": {
+    "x": 100,
+    "y": 400,
+    "icono": "registro"
+  }
+}

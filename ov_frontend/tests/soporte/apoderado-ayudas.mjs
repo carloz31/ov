@@ -12,8 +12,9 @@ const nativeRequire = createRequire(import.meta.url)
 export function fixtureApoderado(opciones = {}) {
   const app = fixtureServidor({ cuenta: 'apo-rosa', ...opciones })
   const cache = new Map()
+  // La actividad de la ruta que leen useParams y useLocation; se cambia con setActivityId.
   let activo = null,
-    activityId = 'pad-01-rol'
+    activityId = 't-apo-1'
   function posicion() {
     return activo ? activo.cursor++ : -1
   }

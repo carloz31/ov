@@ -1,9 +1,20 @@
 import {
-  FOREST_FIRE_MAX_SATISFACTION,
-  FOREST_FIRE_PASS_SCORE,
+  FOREST_FIRE_MAX_SATISFACTION as MAXIMO_LOCAL,
+  FOREST_FIRE_PASS_SCORE as MINIMO_LOCAL,
 } from '@/features/cases/lib/forestFireCaseLogic'
 
-export function SatisfactionBar({ score, bestScore }: { score: number; bestScore?: number }) {
+// Ajuste carga-casos: la escala del caso jugado (local: la del incendio).
+export function SatisfactionBar({
+  score,
+  bestScore,
+  maximo: FOREST_FIRE_MAX_SATISFACTION = MAXIMO_LOCAL,
+  minimo: FOREST_FIRE_PASS_SCORE = MINIMO_LOCAL,
+}: {
+  score: number
+  bestScore?: number
+  maximo?: number
+  minimo?: number
+}) {
   return (
     <div className="ff-satisfaction">
       <div className="ff-score-label">

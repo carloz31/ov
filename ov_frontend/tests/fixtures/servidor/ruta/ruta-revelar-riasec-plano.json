@@ -9,6 +9,7 @@
     }
   ],
   "instrumento": "TEST-RIASEC",
+  "nuevas_notificaciones": [],
   "nuevos_desbloqueos": [
     {
       "condiciones": [
@@ -17,6 +18,7 @@
           "cumplida": true,
           "referencia": "APL-RIASEC",
           "requerido": 1,
+          "texto": null,
           "tipo_conteo": "EVENTOS",
           "tipo_evento": "REVELA_RESULTADO"
         }
