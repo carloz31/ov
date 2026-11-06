@@ -32,3 +32,4 @@
 - Entrevistas de ejemplo en `scripts/sembrar_entrevistas_ejemplo.py` y no en `contenido`, porque ese conjunto se despliega; los videos son de los testimonios, solo para que el reproductor funcione.
 - Sin decidir: F18 y `investigador.json` hablan de «cinco preguntas base» y el guion usa 3 (`PREGUNTAS_BASE_GUION`); ya existía antes de este ajuste.
 - La descripción de la reacción «Aprendí algo» pasa a «sobre este trabajo», porque decía «la ocupación»; se encontró en la prueba real.
+- La barra y Configuración de la orientadora muestran, en api, el nombre de la cuenta con sesión, como ya hace el apoderado (`useCounselorProfile`); la sesión no trae correo, así que ese campo queda vacío en api, y local conserva su perfil de demostración.

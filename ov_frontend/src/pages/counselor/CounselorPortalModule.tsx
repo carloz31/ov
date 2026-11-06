@@ -5,7 +5,7 @@ import { AppShell, type AppNavigationGroup } from '@/components/layout/AppShell'
 import { appPaths } from '@/routes/paths'
 import { cerrarSesion } from '@/store/accesoStore'
 import { CounselorPortalProvider } from '@/features/counselor/store/CounselorPortalState'
-import { counselorProfile } from '@/features/counselor/data/counselorPortal'
+import { useCounselorProfile } from '@/features/counselor/hooks/useCounselorProfile'
 import type { CounselorView } from '@/features/counselor/types'
 import { useModoCatalogo } from '@/features/discovery/hooks/useModoCatalogo'
 import { useCampanaPortal } from '@/hooks/useCampanaNotificaciones'
@@ -23,6 +23,7 @@ const labels: Record<CounselorView, string> = {
 function CounselorPortalModule() {
   const navigate = useNavigate()
   const location = useLocation()
+  const counselorProfile = useCounselorProfile()
   const view = getView(location.pathname)
   // Ajuste catalogo-apoderado: el catálogo de solo lectura, solo en api.
   const { catalogoEnPortal } = useModoCatalogo()

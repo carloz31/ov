@@ -103,3 +103,15 @@ test('el resumen del apoderado en api usa GET /familia: hijo elegido, título, a
   assert.equal(nombreHijo(familia, 'Gabriela', 'est-luis'), 'Luis')
   assert.equal(nombreHijo(null, 'Gabriela'), 'Gabriela')
 })
+
+// El arnés no carga `features/counselor`: se revisa la fuente, como las pruebas de cerrar sesión del portal.
+test('la barra y la configuración de la orientadora toman el perfil del hook, que en api es el de la sesión', () => {
+  const hook = readFileSync('src/features/counselor/hooks/useCounselorProfile.ts', 'utf8')
+  assert.match(hook, /if \(!modoApi\) return counselorProfile/)
+  assert.match(hook, /name: sesion\?\.cuenta\.nombre \?\? ''/)
+  for (const archivo of ['src/pages/counselor/CounselorPortalModule.tsx', 'src/pages/counselor/CounselorSettingsView.tsx']) {
+    const fuente = readFileSync(archivo, 'utf8')
+    assert.match(fuente, /const counselorProfile = useCounselorProfile\(\)/, archivo)
+    assert.doesNotMatch(fuente, /data\/counselorPortal/, archivo)
+  }
+})
