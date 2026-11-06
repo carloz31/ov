@@ -1,4 +1,5 @@
 import type { InstrumentPageId } from '@/types/discovery'
+import type { ZonaDimension } from '@/types/servidor'
 
 export type HelenaPageState = 'sealed' | 'ready' | 'revealed'
 export type TipoResultadoHelena = 'COINCIDENCIAS' | 'DESTACADAS' | 'COMPARACION'
@@ -22,6 +23,8 @@ export type HelenaResult = {
   areas: HelenaDimension[]
   dimensiones?: HelenaDimension[]
   destacadas?: HelenaDimension[]
+  // Ajuste perfil-capitulos (COMPARACION): la zona de cada dimensión, en su orden; sin puntajes.
+  zonas?: { partida: ZonaDimension; llegada?: ZonaDimension }[]
 }
 
 export type HelenaPage = {

@@ -1,20 +1,24 @@
 import { Link } from 'react-router'
-import { Lightbulb, LockKeyhole, Sparkles } from 'lucide-react'
+import { Brain, Compass, Flag, Lightbulb, LockKeyhole, Sparkles, Users, type LucideIcon } from 'lucide-react'
 import { discoveryPaths } from '@/routes/discoveryPaths'
 import { Parchment } from '@/components/student/Parchment'
 import { Seal } from '@/components/student/Seal'
 import type { HelenaPage } from '@/types/profile'
+import { TEXTO_ROMPER_SELLO } from '../lib/resultPage'
+import type { HallazgoPagina, IconoPagina } from '../types'
+import { PageFinding } from './PageFinding'
 
-type Pagina = HelenaPage & { llegadaPendiente: boolean }
+type Pagina = HelenaPage & { icono: IconoPagina; hallazgo: HallazgoPagina | null }
 
-// Ajuste pasaporte-perfil: capítulo II, la página lista para romper destacada y el resto con su avance.
+const ICONOS: Record<IconoPagina, LucideIcon> = { Flag, Compass, Brain, Users, Sparkles }
+
+// Ajuste perfil-capitulos: capítulo II, las páginas en el orden del libro; cada una con su sello y su avance,
+// el enlace para romper el sello o su hallazgo.
 export function ProfileHelena({
-  destacada,
   pages,
   bloqueo,
   onBloqueado,
 }: {
-  destacada?: Pagina
   pages: Pagina[]
   // Ajuste libro-helena-regreso: con el libro cerrado, el enlace lleva candado y Lumi explica qué falta.
   bloqueo?: string
@@ -22,42 +26,35 @@ export function ProfileHelena({
 }) {
   return (
     <Parchment label="Capítulo II" title="Lo que Helena descubre de mí" className="sx-d-highlight sx-d-chapter">
-      {destacada && (
-        <div className="sx-d-helena-ready">
-          <Seal state="ready" icono={<Lightbulb />} />
-          <div>
-            <p className="sx-d-eyebrow">Helena terminó de leer</p>
-            <strong>{destacada.title}</strong>
-            <Link to={discoveryPaths.helena}>Romper el sello →</Link>
+      {pages.map((p) => {
+        const Icono = ICONOS[p.icono]
+        return (
+          <div className="sx-d-row sx-d-helena-page" key={p.id}>
+            <Seal state={p.state} icono={<Lightbulb />}>
+              <Icono />
+            </Seal>
+            <div>
+              <strong>{p.title}</strong>
+              {p.state === 'sealed' ? (
+                <div className="sx-d-mini-bar">
+                  <span>
+                    <span style={{ width: `${p.missions.total ? (p.missions.done / p.missions.total) * 100 : 0}%` }} />
+                  </span>
+                  <small>
+                    {p.missions.done} de {p.missions.total} misiones
+                  </small>
+                </div>
+              ) : p.state === 'ready' ? (
+                <Link className="sx-d-finding-reveal" to={discoveryPaths.helena}>
+                  {TEXTO_ROMPER_SELLO}
+                </Link>
+              ) : (
+                p.hallazgo && <PageFinding hallazgo={p.hallazgo} />
+              )}
+            </div>
           </div>
-        </div>
-      )}
-      {pages.map((p) => (
-        <div className="sx-d-row sx-d-helena-page" key={p.id}>
-          <Seal state={p.state}>{p.result?.areas.map((a) => a.code).join('') ?? <Sparkles />}</Seal>
-          <div>
-            <strong>{p.title}</strong>
-            {p.state === 'sealed' ? (
-              <div className="sx-d-mini-bar">
-                <span>
-                  <span style={{ width: `${p.missions.total ? (p.missions.done / p.missions.total) * 100 : 0}%` }} />
-                </span>
-                <small>
-                  {p.missions.done} de {p.missions.total} misiones
-                </small>
-              </div>
-            ) : (
-              <p className="sx-d-muted">
-                {p.state === 'ready'
-                  ? 'Lista para revelar'
-                  : p.llegadaPendiente
-                    ? 'Descifrada · la llegada se escribe al final'
-                    : 'Descifrada'}
-              </p>
-            )}
-          </div>
-        </div>
-      ))}
+        )
+      })}
       <Link
         className="sx-d-action sx-d-action-gold"
         to={discoveryPaths.helena}

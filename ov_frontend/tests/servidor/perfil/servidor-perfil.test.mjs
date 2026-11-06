@@ -3,8 +3,8 @@ import test from 'node:test'
 import { copia, elementos, esperar, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
 import { iniciarMara } from '../../soporte/servidor-mara-ayudas.mjs'
 
-// Ajuste pasaporte-perfil: la página lista para romper va destacada; aquí se vuelven a juntar en su orden.
-const paginas = (p) => [p.destacada, ...p.pages].filter(Boolean).sort((a, b) => a.numeral.localeCompare(b.numeral))
+// Ajuste perfil-capitulos: la página lista para romper se queda en su fila, en el orden del libro.
+const paginas = (p) => p.pages
 // Los capítulos son componentes sin hooks: se expanden para leer su marcado (Parchment queda sin expandir).
 const PROPIOS = new Set(['ProfileHeader', 'ProfileAchievements', 'ProfileHelena', 'ProfilePlans', 'RouteLine'])
 const expandir = (n) =>
@@ -41,7 +41,7 @@ test('perfil API lee las páginas del libro del servidor: partida y llegada prim
   const todas = paginas(p)
   assert.equal(todas[1].state, 'revealed')
   assert.equal(todas[0].state, 'ready')
-  assert.equal(p.destacada.id, 'partida-llegada')
+  assert.equal('destacada' in p, false)
   assert.deepEqual(
     Array.from(todas[1].result.areas, (a) => a.code),
     ['I', 'R', 'A'],
@@ -155,7 +155,9 @@ test('los planes y los favoritos son locales solo en local, y local conserva Ale
       assert.deepEqual(
         copia(
           paginas(p).map((pagina) =>
-            Object.fromEntries(Object.entries(pagina).filter(([clave]) => clave !== 'llegadaPendiente')),
+            Object.fromEntries(
+              Object.entries(pagina).filter(([clave]) => !['tipoResultado', 'icono', 'hallazgo'].includes(clave)),
+            ),
           ),
         ),
         copia(
@@ -213,4 +215,113 @@ test('en api, los conteos de favoritos del perfil salen del servidor con el cat�
   assert.equal(carreras.length, 3)
   assert.equal(f.app.requests.filter((r) => r.url.endsWith('/favoritos')).length, 1)
   montado.unmount()
+})
+
+// Ajuste perfil-capitulos: el hallazgo de cada página depende solo del tipo de resultado y de los datos.
+const dimension = (code, name = `Nombre ${code}`) => ({ code, name, score: 50, description: '' })
+function resultadoDe(extras) {
+  return { source: 'real', areas: [], ...extras }
+}
+const zonasDe = (partida, llegada) => partida.map((z, i) => ({ partida: z, llegada: llegada?.[i] }))
+
+test('hallazgoPagina: COINCIDENCIAS da letras, etiquetas o parejo según los datos', () => {
+  const { hallazgoPagina } = fixtureServidor().load('src/features/discovery/lib/resultPage.ts')
+  const tipo = { tipoResultado: 'COINCIDENCIAS' }
+  const conAreas = (...codigos) => resultadoDe({ areas: codigos.map((c) => dimension(c)) })
+  assert.deepEqual(copia(hallazgoPagina(tipo, conAreas('S', 'I', 'A'))), {
+    forma: 'letras',
+    letras: ['S', 'I', 'A'],
+    nombres: ['Nombre S', 'Nombre I', 'Nombre A'],
+  })
+  // La cantidad sale del código, no de un 3 fijo.
+  assert.equal(hallazgoPagina(tipo, conAreas('S', 'I', 'A', 'R')).letras.length, 4)
+  assert.deepEqual(copia(hallazgoPagina(tipo, conAreas('INT-A', 'INT-B', 'INT-C'))), {
+    forma: 'etiquetas',
+    nombres: ['Nombre INT-A', 'Nombre INT-B'],
+    resto: 1,
+  })
+  assert.deepEqual(copia(hallazgoPagina({ ...tipo, perfilPlano: true }, conAreas('S'))), { forma: 'parejo' })
+  assert.equal(hallazgoPagina(tipo, conAreas()), null)
+})
+
+test('hallazgoPagina: DESTACADAS lee solo `destacadas`, hasta 2 y el resto', () => {
+  const { hallazgoPagina } = fixtureServidor().load('src/features/discovery/lib/resultPage.ts')
+  const tipo = { tipoResultado: 'DESTACADAS' }
+  const conDestacadas = (n) => resultadoDe({ destacadas: Array.from({ length: n }, (_, i) => dimension(`D${i}`)) })
+  assert.deepEqual(copia(hallazgoPagina(tipo, conDestacadas(1))), {
+    forma: 'etiquetas',
+    nombres: ['Nombre D0'],
+    resto: 0,
+  })
+  assert.equal(hallazgoPagina(tipo, conDestacadas(2)).resto, 0)
+  assert.deepEqual(copia(hallazgoPagina(tipo, conDestacadas(4))), {
+    forma: 'etiquetas',
+    nombres: ['Nombre D0', 'Nombre D1'],
+    resto: 2,
+  })
+  // `areas` no reemplaza a `destacadas`: podría ser la lista completa.
+  assert.equal(hallazgoPagina(tipo, resultadoDe({ areas: [dimension('A'), dimension('B')] })), null)
+})
+
+test('hallazgoPagina: COMPARACION solo partida cuenta las zonas de los datos y omite los ceros', () => {
+  const { hallazgoPagina } = fixtureServidor().load('src/features/discovery/lib/resultPage.ts')
+  const tipo = { tipoResultado: 'COMPARACION' }
+  const cinco = ['FUERTE', 'FUERTE', 'EN_CAMINO', 'EN_CAMINO', 'POR_TRABAJAR']
+  assert.deepEqual(copia(hallazgoPagina(tipo, resultadoDe({ zonas: zonasDe(cinco) }))), {
+    forma: 'zonas',
+    partida: cinco,
+    llegada: null,
+    frase: '2 fuertes · 2 en camino · 1 por trabajar',
+    llegadaLista: false,
+  })
+  const tres = hallazgoPagina(tipo, resultadoDe({ zonas: zonasDe(['FUERTE', 'POR_TRABAJAR', 'POR_TRABAJAR']) }))
+  assert.equal(tres.partida.length, 3)
+  assert.equal(tres.frase, '1 fuerte · 2 por trabajar')
+  assert.equal(hallazgoPagina(tipo, resultadoDe({})), null)
+})
+
+test('hallazgoPagina: COMPARACION completa dice qué cambió, en singular y en plural', () => {
+  const { hallazgoPagina } = fixtureServidor().load('src/features/discovery/lib/resultPage.ts')
+  const tipo = { tipoResultado: 'COMPARACION' }
+  const plural = hallazgoPagina(
+    tipo,
+    resultadoDe({
+      zonas: zonasDe(
+        ['POR_TRABAJAR', 'EN_CAMINO', 'FUERTE', 'FUERTE', 'FUERTE', 'EN_CAMINO'],
+        ['EN_CAMINO', 'FUERTE', 'FUERTE', 'FUERTE', 'EN_CAMINO', 'POR_TRABAJAR'],
+      ),
+    }),
+  )
+  assert.equal(plural.frase, '2 subieron · 2 se mantuvieron · 2 bajaron')
+  assert.equal(plural.llegada.length, 6)
+  assert.equal(plural.llegadaLista, false)
+  const singular = hallazgoPagina(
+    tipo,
+    resultadoDe({ zonas: zonasDe(['EN_CAMINO', 'EN_CAMINO', 'EN_CAMINO'], ['FUERTE', 'EN_CAMINO', 'POR_TRABAJAR']) }),
+  )
+  assert.equal(singular.frase, '1 subió · 1 se mantuvo · 1 bajó')
+  const sinCambios = hallazgoPagina(tipo, resultadoDe({ zonas: zonasDe(['FUERTE'], ['FUERTE']) }))
+  assert.equal(sinCambios.frase, '1 se mantuvo')
+})
+
+test('hallazgoPagina: la llegada lista para revelar lleva su indicador, y un tipo desconocido no da hallazgo', () => {
+  const { hallazgoPagina } = fixtureServidor().load('src/features/discovery/lib/resultPage.ts')
+  const lista = hallazgoPagina(
+    { tipoResultado: 'COMPARACION', selloLlegada: true },
+    resultadoDe({ zonas: zonasDe(['FUERTE', 'EN_CAMINO']) }),
+  )
+  assert.equal(lista.llegadaLista, true)
+  assert.equal(lista.llegada, null)
+  assert.equal(lista.frase, '1 fuerte · 1 en camino')
+  assert.equal(hallazgoPagina({ tipoResultado: 'NUEVO' }, resultadoDe({ areas: [dimension('A')] })), null)
+  assert.equal(hallazgoPagina({ tipoResultado: 'DESTACADAS' }, undefined), null)
+})
+
+test('iconoPagina: el ícono propio de la página y, sin él, el de su tipo de resultado', () => {
+  const { iconoPagina } = fixtureServidor().load('src/features/discovery/lib/resultPage.ts')
+  assert.equal(iconoPagina({ icono: 'Brain', tipoResultado: 'DESTACADAS' }), 'Brain')
+  assert.equal(iconoPagina({ tipoResultado: 'COMPARACION' }), 'Flag')
+  assert.equal(iconoPagina({ tipoResultado: 'COINCIDENCIAS' }), 'Compass')
+  assert.equal(iconoPagina({ tipoResultado: 'DESTACADAS' }), 'Sparkles')
+  assert.equal(iconoPagina({ tipoResultado: 'NUEVO' }), 'Sparkles')
 })

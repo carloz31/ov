@@ -1521,6 +1521,156 @@ textarea.sx-d-input {
   width: 16px;
   height: 16px;
 }
+/* Ajuste perfil-capitulos: el sello lleva un ícono fijo; el hallazgo va debajo del nombre. */
+.sx-d-helena-page {
+  --sx-zona-fuerte: var(--primary);
+  --sx-zona-en-camino: var(--sx-gold);
+  --sx-zona-por-trabajar: var(--sx-parchment);
+  align-items: flex-start;
+}
+.sx-d-helena-page + .sx-d-helena-page {
+  border-top: 1px solid var(--sx-parchment-edge);
+}
+.sx-d-helena-page > div {
+  min-width: 0;
+}
+.sx-d-helena-page .sx-d-seal[data-state='ready'] {
+  border: 0;
+  background: var(--sx-gold);
+  color: var(--sx-parchment-ink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sx-gold) 30%, transparent);
+  animation: none;
+}
+.sx-d-helena-page .sx-d-seal[data-state='revealed'] {
+  border: 2px solid white;
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 0 0 2px var(--primary);
+}
+.sx-d-helena-page .sx-d-seal svg {
+  width: 18px;
+  height: 18px;
+}
+.sx-d-finding-reveal {
+  display: block;
+  margin-top: 4px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.sx-d-finding-reveal:hover {
+  text-decoration: underline;
+}
+.sx-d-finding-letters,
+.sx-d-finding-tags {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  min-width: 0;
+}
+.sx-d-finding-tags {
+  gap: 6px;
+}
+.sx-d-finding-letter {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--sx-night);
+  color: var(--sx-parchment);
+  font-size: 13px;
+  font-weight: 800;
+}
+.sx-d-finding-letters small {
+  margin-left: 6px;
+  overflow: hidden;
+  color: var(--sx-parchment-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sx-d-finding-tag {
+  overflow: hidden;
+  min-width: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, white);
+  color: color-mix(in srgb, var(--primary) 75%, black);
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sx-d-finding-tag[data-parejo='true'] {
+  border: 1px dashed color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+  background: transparent;
+  color: var(--sx-parchment-muted);
+}
+.sx-d-finding-more {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, white);
+  border-radius: 999px;
+  color: var(--sx-parchment-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+.sx-d-finding-zones {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+}
+.sx-d-finding-zones > div {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+.sx-d-finding-zones > div > span:first-child {
+  color: var(--sx-parchment-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+.sx-d-finding-zones small {
+  margin-top: 2px;
+  color: var(--sx-parchment-muted);
+  font-size: 12px;
+}
+.sx-d-finding-zones .sx-d-finding-reveal {
+  margin-top: 0;
+  font-size: 12px;
+  line-height: 1.25;
+}
+.sx-d-zone-strip {
+  display: flex;
+  gap: 3px;
+}
+.sx-d-zone-strip > span {
+  flex: 1;
+  height: 10px;
+  border-radius: 3px;
+}
+.sx-d-zone-strip > span[data-zona='FUERTE'] {
+  background: var(--sx-zona-fuerte);
+}
+.sx-d-zone-strip > span[data-zona='EN_CAMINO'] {
+  background: var(--sx-zona-en-camino);
+}
+.sx-d-zone-strip > span[data-zona='POR_TRABAJAR'] {
+  border: 1px solid color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+  background: var(--sx-zona-por-trabajar);
+}
+.sx-d-zone-pending {
+  display: block;
+  height: 10px;
+  border: 1px dashed color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+  border-radius: 3px;
+}
 .sx-d-mini-bar {
   display: flex;
   align-items: center;

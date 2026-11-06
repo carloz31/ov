@@ -27,7 +27,6 @@ export function StudentProfileView() {
       <div className="sx-d-columns">
         <ProfileAchievements sellos={perfil.sellos} obtenidas={perfil.badges.length} siguiente={perfil.siguiente} />
         <ProfileHelena
-          destacada={perfil.destacada}
           pages={perfil.pages}
           bloqueo={libro.bloqueada ? libro.mensaje : undefined}
           onBloqueado={libro.pasos ? () => openGuide(libro.pasos!) : undefined}

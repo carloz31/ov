@@ -11,7 +11,10 @@ import { useEstadoServidor } from '@/store/servidor/sesion'
 import { cargarInstrumentos } from '@/store/servidor/instrumentos'
 import { getHelenaPages } from '../lib/helenaPages'
 import { paginasLibroApi } from '../lib/helenaPagesApi'
+import { modeloPartidaLlegada } from '../lib/partidaLlegada'
 import { getStudentAchievementGroups, titulosViaje, vitrinaPasaporte } from '../lib/passport'
+import { hallazgoPagina, iconoPagina } from '../lib/resultPage'
+import { resultPages } from '../data/resultPages'
 import { getOrderedPlans, getPlanCompleteness } from '../lib/plans'
 import { useProgresoNivel } from './useProgresoNivel'
 import { useFavoritosCatalogo } from './useFavoritosCatalogo'
@@ -79,16 +82,30 @@ export function useStudentProfile() {
   const titulos = titulosViaje(level?.number, modoApi ? (logros?.niveles ?? []) : undefined)
   const siguiente = level ? titulos.find((t) => t.numero === level.number + 1) : undefined
   const condiciones = useProgresoNivel(siguiente?.numero, level?.nextStep)
+  // Ajuste perfil-capitulos: el hallazgo sale del mismo resultado que el libro, sin peticiones propias.
+  const modeloZonas = modoApi ? modeloPartidaLlegada(servidor.instrumentos) : null
   const pages = (
     modoApi
       ? paginasLibroApi(servidor.actividades.datos, servidor.instrumentos)
       : getHelenaPages(journey, discovery)
-  ).map((p) => ({
-    ...p,
-    // Partida revelada sin la llegada (sin comparación): «la llegada se escribe al final».
-    llegadaPendiente: p.id === 'partida-llegada' && 'conComparacion' in p && !p.conComparacion,
-  }))
-  const destacada = pages.find((p) => p.state === 'ready')
+  ).map((p) => {
+    const { tipoResultado, icono } = resultPages[p.id] ?? {}
+    const zonas =
+      tipoResultado === 'COMPARACION'
+        ? modeloZonas?.dimensiones.map((d) => ({ partida: d.zonaPartida, llegada: d.zonaLlegada }))
+        : undefined
+    // En local, los resultados de ejemplo no traen `destacadas`: ahí `areas` es esa lista.
+    const destacadas = !modoApi && tipoResultado === 'DESTACADAS' ? p.result?.areas : p.result?.destacadas
+    return {
+      ...p,
+      tipoResultado,
+      icono: iconoPagina({ icono, tipoResultado }),
+      hallazgo: hallazgoPagina(
+        { tipoResultado, perfilPlano: p.perfilPlano, selloLlegada: 'selloLlegada' in p && !!p.selloLlegada },
+        p.result && { ...p.result, destacadas, zonas },
+      ),
+    }
+  })
   // F07a (ajuste v4.2): en api, los planes del servidor con «Plan completo» o «N de 4 secciones listas».
   const plans = planesServidor.usaTarjetaV4
     ? (planesServidor.datos?.planes ?? []).map((p) => ({
@@ -111,8 +128,7 @@ export function useStudentProfile() {
     sellos,
     visibleBadges,
     siguiente: siguiente && { titulo: siguiente.titulo, condiciones },
-    destacada,
-    pages: pages.filter((p) => p !== destacada),
+    pages,
     plans,
     espacioLibre: planesServidor.usaTarjetaV4 ? 'Espacio libre' : undefined,
     // F06: en api, los conteos salen de los favoritos del servidor.

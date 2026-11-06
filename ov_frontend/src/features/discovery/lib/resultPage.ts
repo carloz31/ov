@@ -1,6 +1,7 @@
 import type { HelenaDimension, HelenaPage, HelenaResult, TipoResultadoHelena } from '@/types/profile'
 import type { InstrumentPageId } from '@/types/discovery'
-import type { ResumenPagina, ResumenResultado } from '../types'
+import type { HallazgoPagina, IconoPagina, ResumenPagina, ResumenResultado } from '../types'
+import { posicionZona } from './partidaLlegada'
 
 export function resumenPagina(
   page: Pick<HelenaPage, 'state' | 'perfilPlano'> & { tipoResultado?: TipoResultadoHelena; id?: InstrumentPageId },
@@ -75,6 +76,77 @@ export function resumenPagina(
         : 'Destacan por igual. Ninguna es mejor que otra: describen cómo te gusta aprender y resolver.',
     contenidos,
   }
+}
+
+// Ajuste perfil-capitulos: el hallazgo de una página en el perfil. Decide solo por `tipoResultado` y los datos,
+// nunca por el instrumento ni por el id de la página.
+export const TEXTO_ROMPER_SELLO = 'Helena terminó de leer · Romper el sello →'
+const MAXIMO_ETIQUETAS = 2
+
+const RESPALDO_ICONO: Record<TipoResultadoHelena, IconoPagina> = {
+  COMPARACION: 'Flag',
+  COINCIDENCIAS: 'Compass',
+  DESTACADAS: 'Sparkles',
+}
+export function iconoPagina(pagina: { icono?: IconoPagina; tipoResultado?: TipoResultadoHelena }): IconoPagina {
+  return pagina.icono ?? (pagina.tipoResultado && RESPALDO_ICONO[pagina.tipoResultado]) ?? 'Sparkles'
+}
+
+const etiquetas = (nombres: string[]): HallazgoPagina => ({
+  forma: 'etiquetas',
+  nombres: nombres.slice(0, MAXIMO_ETIQUETAS),
+  resto: Math.max(nombres.length - MAXIMO_ETIQUETAS, 0),
+})
+// Los conteos en cero no se dicen.
+const frase = (conteos: [number, string, string][]) =>
+  conteos
+    .filter(([n]) => n > 0)
+    .map(([n, uno, varios]) => `${n} ${n === 1 ? uno : varios}`)
+    .join(' · ')
+function fraseZonas(zonas: NonNullable<HelenaResult['zonas']>, conLlegada: boolean) {
+  const cuantas = (cumple: (z: (typeof zonas)[number]) => boolean) => zonas.filter(cumple).length
+  if (!conLlegada)
+    return frase([
+      [cuantas((z) => z.partida === 'FUERTE'), 'fuerte', 'fuertes'],
+      [cuantas((z) => z.partida === 'EN_CAMINO'), 'en camino', 'en camino'],
+      [cuantas((z) => z.partida === 'POR_TRABAJAR'), 'por trabajar', 'por trabajar'],
+    ])
+  const cambio = (z: (typeof zonas)[number]) => posicionZona(z.llegada!) - posicionZona(z.partida)
+  return frase([
+    [cuantas((z) => cambio(z) > 0), 'subió', 'subieron'],
+    [cuantas((z) => cambio(z) === 0), 'se mantuvo', 'se mantuvieron'],
+    [cuantas((z) => cambio(z) < 0), 'bajó', 'bajaron'],
+  ])
+}
+
+export function hallazgoPagina(
+  pagina: { tipoResultado?: TipoResultadoHelena; perfilPlano?: boolean; selloLlegada?: boolean },
+  resultado?: HelenaResult,
+): HallazgoPagina | null {
+  if (!resultado) return null
+  if (pagina.tipoResultado === 'COINCIDENCIAS') {
+    if (pagina.perfilPlano) return { forma: 'parejo' }
+    if (!resultado.areas.length) return null
+    const nombres = resultado.areas.map((d) => d.name)
+    return resultado.areas.every((d) => [...d.code].length === 1)
+      ? { forma: 'letras', letras: resultado.areas.map((d) => d.code), nombres }
+      : etiquetas(nombres)
+  }
+  if (pagina.tipoResultado === 'DESTACADAS')
+    return resultado.destacadas?.length ? etiquetas(resultado.destacadas.map((d) => d.name)) : null
+  if (pagina.tipoResultado === 'COMPARACION') {
+    const zonas = resultado.zonas
+    if (!zonas?.length) return null
+    const conLlegada = zonas.every((z) => z.llegada)
+    return {
+      forma: 'zonas',
+      partida: zonas.map((z) => z.partida),
+      llegada: conLlegada ? zonas.map((z) => z.llegada!) : null,
+      frase: fraseZonas(zonas, conLlegada),
+      llegadaLista: !conLlegada && !!pagina.selloLlegada,
+    }
+  }
+  return null
 }
 
 export function ordenarDimensiones<T extends HelenaDimension>(dimensiones: T[]): T[] {

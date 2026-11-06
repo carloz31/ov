@@ -1,5 +1,6 @@
 import type { HelenaDimension, TipoResultadoHelena } from '@/types/profile'
 import type { InstrumentPageId } from '@/types/discovery'
+import type { ZonaDimension } from '@/types/servidor'
 
 export type DimensionPagina = HelenaDimension
 export type FilaResumenPagina = {
@@ -19,6 +20,20 @@ export type ResumenPagina = {
   cierre: string
   contenidos: ContenidoPagina[]
 }
+// Ajuste perfil-capitulos: el ícono del sello y el hallazgo de una página en el perfil.
+export type IconoPagina = 'Flag' | 'Compass' | 'Brain' | 'Users' | 'Sparkles'
+export type HallazgoPagina =
+  | { forma: 'letras'; letras: string[]; nombres: string[] }
+  | { forma: 'etiquetas'; nombres: string[]; resto: number }
+  | {
+      forma: 'zonas'
+      partida: ZonaDimension[]
+      llegada: ZonaDimension[] | null
+      frase: string
+      // La llegada espera su revelado: en su lugar va el enlace para romper el sello.
+      llegadaLista: boolean
+    }
+  | { forma: 'parejo' }
 export type OcupacionResultado = {
   clave: string
   codigo: string | null
