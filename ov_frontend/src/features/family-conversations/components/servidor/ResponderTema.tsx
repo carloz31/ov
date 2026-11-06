@@ -53,7 +53,7 @@ export function ResponderTema({
             onChange={(e) => setTexto(e.target.value)}
           />
           <div className="fam-papel-pie">
-            <span className="fam-nota">{t.respuestaNota}</span>
+            <span className="fam-nota">{c.estado === 'te_toca' ? t.respuestaNotaFinal : t.respuestaNota}</span>
             <button
               className="fam-btn"
               disabled={guardando || !texto.trim()}

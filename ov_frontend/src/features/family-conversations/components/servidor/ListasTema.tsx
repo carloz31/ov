@@ -80,7 +80,7 @@ export function ListasTema({ m, c }: { m: ModeloFamilia; c: ConversacionCuenta }
         <div className="fam-tema-listo">
           <PuntosRegalo chicos puntos={puntosRegalo(datos)} />
           <div>
-            <h3>{t.temaListo(c.orden, datos.total)}</h3>
+            <h3>{t.temaListo(datos.completadas, datos.total)}</h3>
             <p>{t.temaListoTexto(enLetras(datos.total))}</p>
           </div>
         </div>

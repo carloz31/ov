@@ -96,6 +96,7 @@ export function textosEstudiante() {
     tuMirada: 'Tu mirada',
     respuestaPlaceholder: 'Escribe desde tu propia mirada… no hay respuestas correctas.',
     respuestaNota: 'Podrás editarla mientras tu familia no haya respondido.',
+    respuestaNotaFinal: 'Cuando la guardes, ya no podrás editarla.',
     guardarRespuesta: 'Guardar mi respuesta',
     otroRespondio: 'Tu familia ya respondió',
     otroRespondioTexto:
@@ -113,7 +114,7 @@ export function textosEstudiante() {
     algoQueSaben: 'Conectando nuestros caminos',
     diarioKicker: 'Se abrió una entrada en tu diario',
     diarioBoton: 'Ir al diario',
-    temaListo: (n: number, total: number) => `Tema ${n} de ${total} listo`,
+    temaListo: (hechas: number, total: number) => `${hechas} de ${total} temas listos`,
     temaListoTexto: (n: string) =>
       `Cuando los ${n} estén así, se rompe el sello… y descubres qué había guardado. Ahora les toca conversar fuera de la pantalla.`,
     regaloPantallaKicker: (n: string) => `Respondieron los ${n} temas`,
@@ -209,6 +210,7 @@ export function textosApoderado(hijo: string) {
       `${h} aún no llega a este tema en su camino. Puede adelantar su respuesta: lo verá cuando lo abra y responda.`,
     respuestaPlaceholder: 'Escriba desde su propia mirada… no hay respuestas correctas.',
     respuestaNota: `Podrá editarla mientras ${hijo} no haya respondido.`,
+    respuestaNotaFinal: 'Cuando la guarde, ya no podrá editarla.',
     otroRespondio: `${hijo} ya respondió`,
     otroRespondioTexto:
       'Su mirada se revela en cuanto guarde la suya. Así ninguno responde pensando en el otro.',
