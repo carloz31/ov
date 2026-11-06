@@ -29,6 +29,7 @@
     {
       "id": "hi1-02",
       "tipo": "eleccion",
+      "enunciado": "¿Qué le respondes?",
       "registrar": false,
       "opciones": [
         {
