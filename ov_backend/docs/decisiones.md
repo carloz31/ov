@@ -8,3 +8,4 @@
 - **Pruebas adaptadas (no listadas en el plan, misma causa):** los inventarios de tablas de `test_migraciones.py` (conteo y bajada a 0041), `test_restricciones_estado.py`, `test_integridad_catalogos.py` y `test_semilla_ruta.py` pasan a 94 tablas e incluyen `colegio`. Sin cambiar qué comprueban.
 - **Reacciones y favoritos sin filtro de lectura propio:** el límite se aplica al escribir (solo actúa quien ve la entrevista), y la migración deja todos los salones en un colegio, así que no hay datos cruzados que filtrar.
 - **Coautor de otro colegio responde 404:** igual que un código inexistente, para no revelar su nombre ni que existe; un estudiante de otro salón del mismo colegio sigue dando 409.
+- **Nombre del colegio:** `col-piloto` se llama «Technology School - Sede Palao», por pedido del usuario; se corrigió en la propia 0047 porque aún no está en `main`. El código interno no cambia, porque no se muestra.

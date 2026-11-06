@@ -15,8 +15,8 @@ from datos.cargador import contenido  # noqa: F401  (clave de contenido de cada 
 from datos.fijos import validar_distribucion_items
 
 
-# DATO DE PRUEBA (Ajuste colegio). (código, nombre)
-COLEGIOS = (('col-piloto', 'Colegio piloto'),)
+# Ajuste colegio: el colegio real del piloto; `contenido` lo toma de aquí. (código, nombre)
+COLEGIOS = (('col-piloto', 'Technology School - Sede Palao'),)
 
 # (código, nombre, colegio)
 SALONES = (('5A', 'Quinto A', 'col-piloto'), ('5B', 'Quinto B', 'col-piloto'))

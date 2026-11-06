@@ -30,7 +30,7 @@ def upgrade() -> None:
     with op.batch_alter_table('salon', schema=None) as batch_op:
         batch_op.add_column(sa.Column('colegio_id', sa.Integer(), nullable=True))
     # Sin leer la base en Python: también debe compilar en modo desconectado (`--sql`).
-    op.execute("INSERT INTO colegio (codigo, nombre) SELECT 'col-piloto', 'Colegio piloto' "
+    op.execute("INSERT INTO colegio (codigo, nombre) SELECT 'col-piloto', 'Technology School - Sede Palao' "
                "WHERE EXISTS (SELECT 1 FROM salon)")
     op.execute("UPDATE salon SET colegio_id = (SELECT id FROM colegio WHERE codigo = 'col-piloto')")
     with op.batch_alter_table('salon', schema=None) as batch_op:

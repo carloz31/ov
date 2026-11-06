@@ -293,7 +293,7 @@ def test_migracion_0047_pone_los_salones_en_un_colegio_y_lo_quita_al_bajar(tmp_p
         command.upgrade(configuracion, '0047')
         with motor.connect() as conexion:
             colegio, = conexion.execute(text('SELECT id, codigo, nombre FROM colegio')).all()
-            assert colegio[1:] == ('col-piloto', 'Colegio piloto')
+            assert colegio[1:] == ('col-piloto', 'Technology School - Sede Palao')
             assert conexion.execute(text('SELECT colegio_id FROM salon')).scalars().all() == [colegio[0]] * 2
             assert conexion.scalar(text('SELECT salon_id FROM cuenta')) == 2
         with pytest.raises(IntegrityError), motor.begin() as conexion:

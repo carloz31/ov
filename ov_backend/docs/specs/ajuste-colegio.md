@@ -46,7 +46,7 @@ Se sigue `/cambio-modelo`.
 
 **Migración `0047`, revisada a mano y con `downgrade`:**
 1. Crea `colegio`.
-2. Si ya hay salones, inserta `('col-piloto', 'Colegio piloto')`. En una base vacía no inserta nada, para no chocar con la carga de datos.
+2. Si ya hay salones, inserta `('col-piloto', 'Technology School - Sede Palao')`. En una base vacía no inserta nada, para no chocar con la carga de datos.
 3. Agrega `colegio_id` nulable, asigna todos los salones a ese colegio y lo pasa a NOT NULL.
 
 Como todos los salones quedan en un solo colegio, **no pueden existir datos cruzados** entre colegios (reacciones o favoritos): no hace falta limpiar nada.
@@ -66,7 +66,7 @@ def leyenda_de_su_colegio(salones):
 
 ## Datos
 
-- `datos/ruta.py`: `COLEGIOS = (('col-piloto', 'Colegio piloto'),)` con `DATO DE PRUEBA`, y `SALONES` gana el colegio: `('5A', 'Quinto A', 'col-piloto')`.
+- `datos/ruta.py`: `COLEGIOS = (('col-piloto', 'Technology School - Sede Palao'),)`, el colegio real del piloto, y `SALONES` gana el colegio: `('5A', 'Quinto A', 'col-piloto')`.
 - `datos/contenido.py`: `COLEGIOS = ruta.COLEGIOS` y actualizar la fila correspondiente de `PROVISIONALES`.
 - `datos/cargador.py` · `_cargar_estructura`: crea los colegios antes que los salones.
 - Ruta y contenido siguen con **un solo colegio**, con las mismas cuentas. El segundo colegio solo existe dentro de las pruebas.
