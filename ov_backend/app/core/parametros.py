@@ -50,6 +50,9 @@ MAXIMO_SEGUIMIENTOS_POR_REGISTRO = 2
 MAXIMO_ITEMS_REGISTRO = 5
 # Reinicios del test de intereses por cuenta y aplicación, solo con perfil plano (HU-095).
 MAXIMO_REINICIOS_PERFIL_PLANO = 1
+# Aviso de velocidad (HU-096), por intento: tope de avisos e ítems contados entre el primero y el segundo.
+MAX_AVISOS_VELOCIDAD = 2
+ITEMS_ENTRE_AVISOS_VELOCIDAD = 10
 TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
 MODELO_LLM_REGISTRO = "gemini-3.8-flash"
 TEMPERATURA_REGISTRO = 0.2

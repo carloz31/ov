@@ -42,7 +42,7 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    assert len(Base.metadata.tables) == 94
+    assert len(Base.metadata.tables) == 95
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -129,7 +129,7 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    assert sql.count('CREATE TABLE ') == 100
+    assert sql.count('CREATE TABLE ') == 101
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -412,14 +412,14 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # curado con familias de ocupaciones.
         with pytest.raises(RuntimeError, match='existen familias de ocupaciones'):
             command.downgrade(configuracion, '0002')
-        # 0047 baja y quita `colegio`; 0044 deja `actividad_dimension` vacía; 0043, `carrera_ocupacion`, antes de que
+        # 0048 baja y quita `ritmo_aplicacion`; 0047, `colegio`; 0044 deja `actividad_dimension` vacía; 0043, `carrera_ocupacion`, antes de que
         # 0041 se detenga.
-        assert set(inspect(motor).get_table_names()) == (set(Base.metadata.tables) - {'colegio'}) | {
+        assert set(inspect(motor).get_table_names()) == (set(Base.metadata.tables) - {'colegio', 'ritmo_aplicacion'}) | {
             'alembic_version', 'carrera_ocupacion', 'actividad_dimension'}
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0041'
             for tabla in Base.metadata.sorted_tables:
-                if tabla.name == 'colegio':
+                if tabla.name in {'colegio', 'ritmo_aplicacion'}:
                     continue
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]
@@ -660,5 +660,33 @@ def test_migracion_0018_pasa_el_tema_a_pregunta_y_conserva_lo_conversado(tmp_pat
                 'Tema 1', 'Tema 2']
             assert conexion.execute(text("SELECT conversado FROM conversacion_vinculo ORDER BY id")).scalars().all() == [
                 1, 1]
+    finally:
+        motor.dispose()
+
+
+def test_migracion_0048_deja_el_umbral_segun_las_opciones_de_la_escala(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "velocidad.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    command.upgrade(configuracion, '0047')
+    motor = database.crear_motor_bd(url)
+    try:
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: un instrumento con escala de 2 opciones y otro con escala de 3.
+            conexion.execute(text("INSERT INTO instrumento (id, codigo, nombre, descripcion, tipo_resultado) VALUES "
+                                  "(1, 'DOS', 'Dos', 'D', 'DESTACADAS'), (2, 'TRES', 'Tres', 'T', 'DESTACADAS')"))
+            conexion.execute(text("INSERT INTO escala_respuesta (id, codigo, nombre) VALUES (1, 'E2', 'E'), (2, 'E3', 'E')"))
+            conexion.execute(text("INSERT INTO opcion_escala (escala_id, orden, etiqueta, puntaje) VALUES "
+                                  "(1, 1, 'a', 0), (1, 2, 'b', 1), (2, 1, 'a', 0), (2, 2, 'b', 1), (2, 3, 'c', 2)"))
+            conexion.execute(text("INSERT INTO item_instrumento (instrumento_id, codigo, numero, enunciado, escala_id) VALUES "
+                                  "(1, 'I1', 1, 'Uno', 1), (1, 'I2', 2, 'Dos', 1), (2, 'I3', 1, 'Tres', 2)"))
+        command.upgrade(configuracion, '0048')
+        with motor.connect() as conexion:
+            assert conexion.execute(text('SELECT codigo, ms_por_palabra, ms_respuesta, racha_aviso FROM instrumento '
+                                         'ORDER BY id')).all() == [('DOS', 150, 800, 4), ('TRES', 150, 1200, 4)]
+        command.downgrade(configuracion, '0047')
+        with motor.connect() as conexion:
+            assert 'ritmo_aplicacion' not in inspect(conexion).get_table_names()
+            assert 'ms_respuesta' not in {c['name'] for c in inspect(conexion).get_columns('instrumento')}
     finally:
         motor.dispose()

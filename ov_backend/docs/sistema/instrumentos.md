@@ -6,7 +6,7 @@ Cuestionarios repartidos en actividades, cálculo de resultados y recomendación
 
 | Tabla | Qué guarda |
 |---|---|
-| `instrumento` | `tipo_resultado`: COINCIDENCIAS (RIASEC), DESTACADAS (inteligencias, habilidades sociales) o COMPARACION (autopercepción); `descripcion` (frase corta antes de responder); por audiencia (estudiante, apoderado, orientadora) `lectura_*` (cómo leer el resultado y qué cuidar, no cómo es el test) y `mensaje_*` (una línea de encuadre), con `{nombre}` en las del apoderado (el nombre de pila del hijo, resuelto al leer) y, en el apoderado de habilidades sociales, `{habilidades}` armado al cargar con los nombres de sus dimensiones; `guia_abierta` (la guía de dimensiones arranca abierta: inteligencias y habilidades). Partida y llegada no se muestra al apoderado y deja vacíos sus textos. |
+| `instrumento` | `tipo_resultado`: COINCIDENCIAS (RIASEC), DESTACADAS (inteligencias, habilidades sociales) o COMPARACION (autopercepción); `descripcion` (frase corta antes de responder); por audiencia (estudiante, apoderado, orientadora) `lectura_*` (cómo leer el resultado y qué cuidar, no cómo es el test) y `mensaje_*` (una línea de encuadre), con `{nombre}` en las del apoderado (el nombre de pila del hijo, resuelto al leer) y, en el apoderado de habilidades sociales, `{habilidades}` armado al cargar con los nombres de sus dimensiones; `guia_abierta` (la guía de dimensiones arranca abierta: inteligencias y habilidades); `ms_por_palabra`, `ms_respuesta` y `racha_aviso` (ver «Aviso de velocidad»). Partida y llegada no se muestra al apoderado y deja vacíos sus textos. |
 | `dimension` | Dimensiones con `orden`, cuatro piezas para el estudiante —`descripcion` (qué es), `ejemplos` («Suele notarse cuando …», nulo si no hay), `fortalezas` («Suele venir con …») y `desarrollo` («Para desarrollarla», vacío en RIASEC), estas dos listas JSON— y, en el cuestionario de partida y llegada, su `tematica_id`. |
 | `tematica`, `actividad_tematica` | Las cinco temáticas (A–E) del cuestionario de partida y llegada, y las actividades asociadas a cada una. |
 | `escala_respuesta`, `opcion_escala` | Opciones con `orden`, `etiqueta` y `puntaje`. |
@@ -23,7 +23,8 @@ Cuestionarios repartidos en actividades, cálculo de resultados y recomendación
 | `favorito` | Estado: carrera, ocupación o institución (`tipo` + `id_referencia`) que marca la cuenta, única por cuenta, tipo y referencia. |
 | `ingreso_familia` | Ingreso mensual de los egresados por tipo de institución × familia × departamento (`ubicacion_id` nulo = nacional): promedio, mínimo y máximo de jóvenes y de adultos. |
 | `ingreso_institucion` | Ingreso mensual de los egresados de una institución en una familia: promedio, mínimo y máximo. |
-| `respuesta_item` | Respuesta por progreso de actividad e ítem (única). |
+| `respuesta_item` | Respuesta por progreso de actividad e ítem (única), con `tiempo_ms` de su primera respuesta (nulo si no llegó). |
+| `ritmo_aplicacion` | Estado: el aviso de velocidad por cuenta y aplicación (`racha_rapida`, `items_desde_aviso`, `avisos_velocidad`). |
 | `resultado_instrumento`, `resultado_dimension`, `coincidencia` | Resultado calculado, con `anulado_en` y `perfil_plano`; cada dimensión guarda `puntaje` y `puntaje_maximo` (el 0–100 no se guarda). A lo sumo uno vigente por cuenta y aplicación; los anulados quedan como historial. |
 
 Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente una actividad; la carga lo valida (`validar_distribucion_items`).
@@ -40,11 +41,22 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 
 ## Responder ítems — `POST /acciones/responder-items`
 
-- Cuerpo: `cuenta`, `actividad`, `respuestas: [{item, opcion}]` (opción por su `orden`).
+- Cuerpo: `cuenta`, `actividad`, `respuestas: [{item, opcion, tiempo_ms?}]` (opción por su `orden`; `tiempo_ms`, entero ≥ 0 o nulo).
+- La respuesta trae `aviso_velocidad`: `null`, 1 o 2 (ver «Aviso de velocidad»).
 - Lote no vacío, sin ítems repetidos, opciones enteras de la escala del ítem: si no, 422. Un ítem que la actividad no presenta: 409. Actividad no disponible: 409 con su progreso. Apoderado: 404.
 - Se valida todo el lote antes de escribir. La primera respuesta crea el progreso en EN_CURSO; reemplazar una respuesta conserva su fila y `creada_en`.
 - Las respuestas quedan **fijas** (409) si alguna aplicación de la actividad tiene resultado vigente (es decir, desde que se revela); en COMPARACION, cuando la actividad está COMPLETADA. Antes de revelar se pueden cambiar.
 - No registra eventos.
+
+## Aviso de velocidad
+
+Lumi avisa con un toast si se responde más rápido de lo que se puede leer (HU-096). No bloquea nada y no cambia el cálculo de resultados. El backend decide cuándo avisar, porque el estado debe sobrevivir entre misiones, recargas y dispositivos; el front mide `tiempo_ms` y el backend confía en él, porque no hay nada en juego. Regla pura: `evaluar_ritmo` en `calculo.py`.
+
+- **Umbral por ítem:** `palabras(enunciado) × ms_por_palabra + ms_respuesta`. Un ítem es rápido si `tiempo_ms` es menor que el umbral. `ms_por_palabra` es 150. `ms_respuesta` cubre decidir y los dos toques (la opción y «Continuar»): 800 con una escala de 2 opciones y 1200 con 3 o más; las opciones no se cuentan como lectura, porque son fijas en todo el instrumento.
+- **Intento:** cuenta + aplicación (`ritmo_aplicacion`). Partida y llegada son intentos distintos, y la racha cruza las actividades de una misma aplicación. El reinicio por perfil plano borra la fila, así que un intento anulado no conserva sus avisos.
+- **Qué cuenta:** solo la primera respuesta de cada ítem en el intento. Reenviar un ítem ya respondido no suma, no rompe la racha y conserva su `tiempo_ms`. Sin `tiempo_ms`, el ítem no cambia ningún contador.
+- **Disparo:** con `racha_rapida ≥ racha_aviso` (4), menos de `MAX_AVISOS_VELOCIDAD` (2) avisos y, desde el segundo, `items_desde_aviso ≥ ITEMS_ENTRE_AVISOS_VELOCIDAD` (10). Avisar deja racha e ítems en 0. Un lote da a lo más un aviso.
+- `avisos_velocidad` queda como registro del intento; hoy ninguna consulta lo entrega.
 
 ## Completar y revelar — `POST /acciones/revelar-resultado`
 

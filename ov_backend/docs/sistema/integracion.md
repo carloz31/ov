@@ -127,6 +127,7 @@ El portal del apoderado tiene su propia sesión en `ov_frontend/src/store/servid
 - El apoderado sigue la misma regla de confirmación remota en api: al terminar el último nodo, `useParentActivitySession` envía `completar-actividad` y espera la nueva consulta de `actividades` antes de mostrar el cierre. Con error conserva el nodo y permite reintentar; repasar una actividad ya completada no envía otra finalización.
 - La disponibilidad, los candados y el diploma del apoderado usan el estado remoto. Los nodos JSON siguen en el front; `ov.parent-missions.v1` conserva nodo, intentos y elecciones en `accounts[codigo]`, proyectando el estado del servidor sin alterar esos datos. En local conserva `apo-prototipo`, los requisitos del JSON y la completitud local.
 - Mara: cada interacción guarda sus respuestas con `responder-items` y se puede retomar. El resultado se revela cuando existe un resultado vigente en el servidor.
+- Aviso de velocidad: en un cuestionario, `responder-items` recibe `tiempo_ms` por ítem (solo en su primera respuesta; lo mide el front desde que el ítem se puede responder hasta «Continuar») y devuelve `aviso_velocidad` (`null`, 1 o 2). El front muestra el toast de Lumi con sus propios textos, dentro de la actividad y fuera de la cola de novedades (`instrumentos.md`, «Aviso de velocidad»).
 
 ## Conjuntos de datos
 

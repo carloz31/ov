@@ -1,4 +1,5 @@
 import { LoaderCircle } from 'lucide-react'
+import { AvisoVelocidad } from './AvisoVelocidad'
 import { NodeRenderer } from './NodeRenderer'
 import { useActivityPlayer } from '../hooks/useActivityPlayer'
 import type { InstrumentoServidor } from './MaraInteractionPlayer'
@@ -57,6 +58,8 @@ export function StudentActivityPlayer({
     errorServidor,
     respuestaPendiente,
     itemResponse,
+    avisoVelocidad,
+    cerrarAvisoVelocidad,
     soloLectura,
     advance,
     move,
@@ -118,6 +121,14 @@ export function StudentActivityPlayer({
       <main className="sx-player-stage">
         <NodeRenderer model={model} activity={activity} edit={edit} direct={direct} salida={salida} />
       </main>
+      {avisoVelocidad && (
+        <AvisoVelocidad
+          key={avisoVelocidad.numero}
+          numero={avisoVelocidad.numero}
+          hablanteId={avisoVelocidad.hablanteId}
+          onDismiss={cerrarAvisoVelocidad}
+        />
+      )}
     </div>
   )
 }

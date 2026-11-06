@@ -368,6 +368,9 @@ body:has([data-student-experience] .sx-shell) {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.sx-root .sx-badge-copy .sx-toast-parrafo {
+  margin-bottom: 0;
+}
 .sx-root .sx-badge-copy .sx-toast-action {
   display: inline-flex;
   align-items: center;
@@ -423,6 +426,21 @@ body:has([data-student-experience] .sx-shell) {
   right: 4px;
   width: 28px;
   height: 28px;
+}
+@media (max-width: 767px) {
+  /* Aviso de velocidad en la actividad: abajo, sobre el diálogo, sin tapar la pregunta, las opciones ni «Continuar». */
+  .sx-aviso-velocidad .sx-root.sx-badge-toast {
+    top: auto;
+    bottom: 16px;
+  }
+  .sx-aviso-velocidad .sx-root .sx-badge-copy,
+  .sx-aviso-velocidad .sx-badge-copy {
+    padding-right: 32px;
+  }
+  .sx-aviso-velocidad .sx-badge-close {
+    width: 44px;
+    height: 44px;
+  }
 }
 .sx-root .sx-module-tabs {
   display: flex;

@@ -28,6 +28,11 @@ class Instrumento(Base):
     # La guía de dimensiones del resultado arranca abierta.
     guia_abierta: Mapped[bool] = mapped_column(default=False, server_default=false())
     tipo_resultado: Mapped[TipoResultado] = mapped_column(enumerado(TipoResultado), default=TipoResultado.DESTACADAS)
+    # Aviso de velocidad (HU-096): umbral = palabras × ms_por_palabra + ms_respuesta, que cubre decidir y los dos
+    # toques (la opción y «Continuar»); racha_aviso es cuántos ítems rápidos seguidos disparan el aviso.
+    ms_por_palabra: Mapped[int] = mapped_column(default=150, server_default=text("150"))
+    ms_respuesta: Mapped[int] = mapped_column(default=1200, server_default=text("1200"))
+    racha_aviso: Mapped[int] = mapped_column(default=4, server_default=text("4"))
 
 
 class Dimension(Base):
@@ -164,6 +169,21 @@ class RespuestaItem(Base):
     opcion_id: Mapped[int] = mapped_column(ForeignKey("opcion_escala.id"))
     creada_en: Mapped[datetime] = mapped_column(DateTime)
     actualizada_en: Mapped[datetime] = mapped_column(DateTime)
+    # Solo de la primera respuesta del ítem; nulo si el front no lo envió.
+    tiempo_ms: Mapped[int | None]
+
+
+class RitmoAplicacion(Base):
+    """Estado del aviso de velocidad por intento: cuenta + aplicación. El reinicio por perfil plano borra la fila."""
+    __tablename__ = "ritmo_aplicacion"
+    __table_args__ = (UniqueConstraint("cuenta_id", "aplicacion_id"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
+    aplicacion_id: Mapped[int] = mapped_column(ForeignKey("aplicacion.id"))
+    racha_rapida: Mapped[int] = mapped_column(default=0)
+    items_desde_aviso: Mapped[int] = mapped_column(default=0)
+    avisos_velocidad: Mapped[int] = mapped_column(default=0)
+    actualizado_en: Mapped[datetime] = mapped_column(DateTime)
 
 
 class ResultadoInstrumento(Base):
