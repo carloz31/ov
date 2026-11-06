@@ -139,6 +139,13 @@ test('una pasada terminada que el servidor no conoce se borra del navegador; a m
   sinRastro(proyectar({ estado: 'no_iniciada', nodoActualId: '$fin' }))
   // Lo que dejó la versión anterior en un navegador ya afectado: sin posición, pero con los intentos.
   sinRastro(proyectar({ estado: 'no_iniciada' }))
+  // Se estaba rehaciendo al recargar la base: retoma donde iba, pero sin las respuestas de antes.
+  const rehaciendo = proyectar({ estado: 'completada', nodoActualId: 'n3' })
+  assert.equal(rehaciendo.progress['t-inicio'].nodoActualId, 'n3')
+  assert.deepEqual(copia(rehaciendo.attempts.map((a) => a.actividadId)), ['otra'])
+  assert.deepEqual(copia(rehaciendo.choices.map((a) => a.actividadId)), ['otra'])
+  assert.equal(rehaciendo.submissions.length, 2)
+  assert.equal(Object.keys(rehaciendo.drafts).length, 2)
   // A medio hacer: retoma donde quedó, con lo suyo.
   const enCurso = proyectar({ estado: 'no_iniciada', nodoActualId: 'n2' })
   assert.equal(enCurso.progress['t-inicio'].nodoActualId, 'n2')

@@ -117,6 +117,7 @@ export function proyectarJourney(
 ): JourneyState {
   const progress = { ...actual.progress }
   const sinRastro = new Set<string>()
+  const sinRespuestas = new Set<string>()
   for (const actividad of bloques.flatMap((b) => b.actividades)) {
     const anterior = progress[actividad.codigo]
     progress[actividad.codigo] = {
@@ -138,7 +139,10 @@ export function proyectarJourney(
       if (anterior && (anterior.nodoActualId === '$fin' || !anterior.nodoActualId)) {
         delete progress[actividad.codigo].nodoActualId
         sinRastro.add(actividad.codigo)
+        sinRespuestas.add(actividad.codigo)
       }
+      // Completada antes y con posición: se estaba rehaciendo. Retoma donde iba, pero sin las respuestas de antes.
+      else if (anterior?.estado === 'completada') sinRespuestas.add(actividad.codigo)
     }
   }
   // Las actividades ausentes del servidor nunca conservan una finalización autoritativa.
@@ -146,12 +150,16 @@ export function proyectarJourney(
     if (!actividadServidor(bloques, codigo))
       progress[codigo] = { ...progress[codigo], estado: 'no_iniciada', completadaEn: undefined }
   }
-  if (!sinRastro.size) return { ...actual, progress }
+  if (!sinRespuestas.size) return { ...actual, progress }
+  const respuestas = {
+    attempts: actual.attempts.filter((a) => !sinRespuestas.has(a.actividadId)),
+    choices: actual.choices.filter((c) => !sinRespuestas.has(c.actividadId)),
+  }
+  if (!sinRastro.size) return { ...actual, progress, ...respuestas }
   return {
     ...actual,
     progress,
-    attempts: actual.attempts.filter((a) => !sinRastro.has(a.actividadId)),
-    choices: actual.choices.filter((c) => !sinRastro.has(c.actividadId)),
+    ...respuestas,
     // El estado del apoderado puede no traer entregas ni borradores. Los borradores se guardan como `<actividad>/<nodo>`.
     submissions: actual.submissions?.filter((s) => !sinRastro.has(s.actividadId)),
     drafts:

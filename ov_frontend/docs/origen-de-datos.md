@@ -147,7 +147,7 @@ Todas en `localStorage`, salvo donde se indica. No se cambian sin una migración
 | Clave | Almacén | Contenido |
 |---|---|---|
 | `ov.acceso.v1` | `store/accesoStore.ts` | sesión `{token, expira_en, cuenta}`. En modo local, `token` es nulo y la cuenta sale de los usuarios de prueba (`data/demo/usuariosPrueba.ts`). En api, la cuenta activa del estudiante y la del apoderado salen de aquí. Reemplazó en B17 a `ov.demo-access.v1` y `ov.cuenta-servidor.v1` (`sessionStorage`) sin migración: eran claves de sesión y basta volver a ingresar. |
-| `ov.missions.v2` / `ov.missions.v2.api` | `store/journeyStore.ts` | progreso, intentos, entregas y borradores |
+| `ov.missions.v2` / `ov.missions.v2.api` | `store/journeyStore.ts` | progreso, intentos, entregas y borradores. En api, `proyectarJourney` borra lo de una actividad que el servidor no tiene completada si en el navegador quedó terminada (posición `$fin`) o sin posición, para que empiece como nueva; si se estaba rehaciendo, retoma donde iba sin los intentos ni elecciones de antes, y una a medio hacer se conserva (ajuste libro-helena-regreso) |
 | `ov.mission-files` (IndexedDB) | `store/journeyStore.ts` | archivos adjuntos |
 | `ov.student-adventure.v1` / `ov.student-adventure.v1.api` | `store/adventureStore.ts` | aventura, diario, casos, investigación, conversaciones |
 | `ov.student-discovery.v1` | `store/discoveryStore.ts` | visitas (solo local desde F06), favoritos, publicaciones, páginas reveladas |
