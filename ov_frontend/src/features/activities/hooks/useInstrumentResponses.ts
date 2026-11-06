@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { modoApi } from '@/config/env'
 import { responderItems } from '@/store/servidor/operaciones'
 import { textoBloqueo } from '@/lib/servidor/adaptadores'
@@ -55,8 +55,14 @@ export function useInstrumentResponses({
   const [editando, setEditando] = useState(false)
   const lecturaRevision = revisionInstrumento && !editando
   const respuestaPendiente = useRef<
-    { item: string; valor: number; confirmada?: RespuestaItemsGuardados } | undefined
+    { item: string; valor: number; tiempoMs?: number; confirmada?: RespuestaItemsGuardados } | undefined
   >(undefined)
+  // HU-096: el tiempo corre desde que el ítem se puede responder; los diálogos son nodos aparte y no cuentan.
+  const inicioItem = useRef(0)
+  const [avisoVelocidad, setAvisoVelocidad] = useState<{ numero: number; hablanteId: string }>()
+  useEffect(() => {
+    if (node?.tipo === 'item') inicioItem.current = Date.now()
+  }, [node?.id, node?.tipo])
   function itemResponse(value: string | number) {
     if (node?.tipo !== 'item') return
     if (modoApi && instrumentoServidor) {
@@ -69,8 +75,14 @@ export function useInstrumentResponses({
           ?.escala.opciones.some((o) => o.orden === valor)
       )
         return
-      const pendiente = respuestaPendiente.current ?? { item: itemId, valor }
+      // Un reintento conserva el tiempo de la primera pulsación; un ítem ya respondido no envía tiempo.
+      const pendiente = respuestaPendiente.current ?? {
+        item: itemId,
+        valor,
+        tiempoMs: respuestasConfirmadas.current[itemId] === undefined ? Date.now() - inicioItem.current : undefined,
+      }
       respuestaPendiente.current = pendiente
+      const hablanteId = node.hablanteId
       enviando.current = true
       setGuardando(true)
       setErrorServidor('')
@@ -78,7 +90,13 @@ export function useInstrumentResponses({
         try {
           const respuesta = await responderItems(
             activity.id,
-            [{ item: pendiente.item, opcion: pendiente.valor }],
+            [
+              {
+                item: pendiente.item,
+                opcion: pendiente.valor,
+                ...(pendiente.tiempoMs === undefined ? {} : { tiempo_ms: pendiente.tiempoMs }),
+              },
+            ],
             pendiente.confirmada,
           )
           if (!montado.current) return
@@ -94,6 +112,9 @@ export function useInstrumentResponses({
             } else {
               respuestaPendiente.current = undefined
               enviando.current = false
+              // Esta rama ocurre una vez por guardado, también tras reintentar un `guardado_sin_refrescar`.
+              if (respuesta.datos.aviso_velocidad)
+                setAvisoVelocidad({ numero: respuesta.datos.aviso_velocidad, hablanteId })
               move(nodes[index + 1])
             }
           } else if (respuesta.tipo === 'bloqueado') {
@@ -192,6 +213,8 @@ export function useInstrumentResponses({
     respuestasFijas: lecturaRevision && !soloLectura && !instrumentoServidor?.puedeCambiar,
     respuestaPendiente,
     itemResponse,
+    avisoVelocidad,
+    cerrarAvisoVelocidad: () => setAvisoVelocidad(undefined),
     item,
     itemServidor,
     valorServidor,

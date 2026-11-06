@@ -112,7 +112,11 @@ test('t-partida usa los ítems y la escala del servidor entre los diálogos del 
   item.props.onAnswer(3)
   await esperar()
   const post = app.requests.find((r) => r.url.endsWith('/responder-items'))
-  assert.deepEqual(post.body.respuestas, [{ item: items[0].codigo, opcion: 3 }])
+  // Ajuste aviso-velocidad: la primera respuesta lleva además el tiempo que tomó.
+  assert.equal(post.body.respuestas.length, 1)
+  const [{ tiempo_ms, ...respuesta }] = post.body.respuestas
+  assert.equal(typeof tiempo_ms, 'number')
+  assert.deepEqual(respuesta, { item: items[0].codigo, opcion: 3 })
   assert.equal(post.body.actividad, 't-partida')
   player.unmount()
 })
