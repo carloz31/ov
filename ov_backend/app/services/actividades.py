@@ -5,10 +5,10 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import MAXIMO_REINICIOS_PERFIL_PLANO
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, ActividadItem, AplicacionActividad, Bloque, ColeccionOcupacion, Cuenta, Dimension, EstadoProgreso,
-    EstadoRespuestaRegistro, Instrumento, ItemInstrumento, Ocupacion, OpcionEscala, ProgresoActividad, RespuestaItem,
-    Ficha, PreguntaBatalla, RespuestaBatalla, RespuestaRegistro, ResultadoBatalla, ResultadoCaso, ResultadoInstrumento, Rol,
-    TipoActividad, TipoEventoUso,
+    Actividad, ActividadItem, Aplicacion, AplicacionActividad, Bloque, ColeccionOcupacion, Cuenta, Dimension,
+    EstadoProgreso, EstadoRespuestaRegistro, Instrumento, ItemInstrumento, Ocupacion, OpcionEscala, ProgresoActividad,
+    RespuestaItem, Ficha, PreguntaBatalla, RespuestaBatalla, RespuestaRegistro, ResultadoBatalla, ResultadoCaso,
+    ResultadoInstrumento, RitmoAplicacion, Rol, TipoActividad, TipoEventoUso,
     TipoObjetivo, TipoResultado, Visibilidad,
 )
 from app.schemas.acciones import (
@@ -23,6 +23,7 @@ from app.schemas.batallas import FichaPregunta
 from app.services.comun import (
     buscar_por_codigo, exigir_disponible, existe_evento, fecha_accion, responder_con_eventos,
 )
+from app.services.instrumentos.calculo import EstadoRitmo, evaluar_ritmo
 from app.services.instrumentos.consultas import actividades_de_aplicacion, seleccionar_aplicacion
 from app.services.instrumentos.resultados import generar_resultado
 from app.services.motor.reglas import motivos_bloqueo, objetivo_disponible
@@ -75,6 +76,39 @@ def progreso_de_actividad(sesion: Session, cuenta: Cuenta, actividad: Actividad)
     return contexto(sesion).progresos_de(cuenta.id).get(actividad.id)
 
 
+def _evaluar_ritmo_items(sesion: Session, cuenta: Cuenta, actividad: Actividad, primeras, fecha) -> int | None:
+    """Actualiza el ritmo del intento con `primeras`, (ítem, tiempo_ms) de los ítems sin respuesta previa, en orden.
+    Devuelve el aviso de velocidad, a lo más uno por llamada."""
+    primeras = [(item, tiempo) for item, tiempo in primeras if tiempo is not None]
+    if not primeras:
+        return None
+    definiciones = contexto(sesion).definiciones
+    aplicacion_de = {definiciones.obtener(Aplicacion, fila.aplicacion_id).instrumento_id: fila.aplicacion_id
+                     for fila in definiciones.listar(AplicacionActividad) if fila.actividad_id == actividad.id}
+    ritmos = {ritmo.aplicacion_id: ritmo for ritmo in sesion.scalars(select(RitmoAplicacion).where(
+        RitmoAplicacion.cuenta_id == cuenta.id, RitmoAplicacion.aplicacion_id.in_(aplicacion_de.values()),
+    ))}
+    aviso = None
+    for item, tiempo in primeras:
+        aplicacion_id = aplicacion_de.get(item.instrumento_id)
+        if aplicacion_id is None:
+            continue
+        ritmo = ritmos.get(aplicacion_id)
+        if ritmo is None:
+            ritmo = ritmos[aplicacion_id] = RitmoAplicacion(
+                cuenta_id=cuenta.id, aplicacion_id=aplicacion_id, racha_rapida=0, items_desde_aviso=0,
+                avisos_velocidad=0, actualizado_en=fecha)
+            sesion.add(ritmo)
+        estado, nuevo = evaluar_ritmo(
+            EstadoRitmo(ritmo.racha_rapida, ritmo.items_desde_aviso, ritmo.avisos_velocidad), item, tiempo,
+            definiciones.obtener(Instrumento, item.instrumento_id), permitir_aviso=aviso is None)
+        ritmo.racha_rapida, ritmo.items_desde_aviso = estado.racha_rapida, estado.items_desde_aviso
+        ritmo.avisos_velocidad, ritmo.actualizado_en = estado.avisos_velocidad, fecha
+        aviso = aviso or nuevo
+    sesion.flush()
+    return aviso
+
+
 @usar_contexto
 def responder_items(sesion: Session, entrada: ResponderItemsEntrada) -> RespuestaItemsGuardados:
     cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
@@ -107,7 +141,7 @@ def responder_items(sesion: Session, entrada: ResponderItemsEntrada) -> Respuest
         opcion = opciones.get((item.escala_id, respuesta.opcion))
         if opcion is None:
             raise ErrorAccion(f"La opción {respuesta.opcion} no pertenece a la escala de {item.codigo}", estado_http=422)
-        validadas.append((item, opcion))
+        validadas.append((item, opcion, respuesta.tiempo_ms))
     # Todo el lote se valida antes de crear progreso o modificar respuestas.
     fecha = fecha_accion(entrada)
     if progreso is None:
@@ -118,12 +152,13 @@ def responder_items(sesion: Session, entrada: ResponderItemsEntrada) -> Respuest
     existentes = {respuesta.item_id: respuesta for respuesta in sesion.scalars(select(RespuestaItem).where(
         RespuestaItem.progreso_id == progreso.id,
     ))}
-    nuevas, actualizadas = [], []
-    for item, opcion in validadas:
+    nuevas, actualizadas, primeras = [], [], []
+    for item, opcion, tiempo_ms in validadas:
         respuesta = existentes.get(item.id)
         if respuesta is None:
             nuevas.append(dict(progreso_id=progreso.id, item_id=item.id, opcion_id=opcion.id,
-                               creada_en=fecha, actualizada_en=fecha))
+                               creada_en=fecha, actualizada_en=fecha, tiempo_ms=tiempo_ms))
+            primeras.append((item, tiempo_ms))
         else:
             actualizadas.append(dict(respuesta_id=respuesta.id, nueva_opcion=opcion.id, nueva_fecha=fecha))
     if nuevas:
@@ -132,11 +167,14 @@ def responder_items(sesion: Session, entrada: ResponderItemsEntrada) -> Respuest
         sesion.execute(update(RespuestaItem.__table__).where(RespuestaItem.id == bindparam('respuesta_id')).values(
             opcion_id=bindparam('nueva_opcion'), actualizada_en=bindparam('nueva_fecha'),
         ), actualizadas)
-    respondidos = len((set(existentes) | {item.id for item, _ in validadas}) & {item.id for item in items.values()})
+    aviso_velocidad = _evaluar_ritmo_items(sesion, cuenta, actividad, primeras, fecha)
+    respondidos = len((set(existentes) | {item.id for item, _, _ in validadas}) & {item.id for item in items.values()})
     return RespuestaItemsGuardados(
         cuenta=cuenta.codigo, actividad=actividad.codigo,
-        respuestas_guardadas=[RespuestaItemGuardada(item=item.codigo, opcion=opcion.orden) for item, opcion in validadas],
+        respuestas_guardadas=[RespuestaItemGuardada(item=item.codigo, opcion=opcion.orden)
+                              for item, opcion, _ in validadas],
         progreso=ProgresoRespuestas(estado=progreso.estado, respondidos=respondidos, total=len(items)),
+        aviso_velocidad=aviso_velocidad,
     )
 
 
@@ -246,6 +284,10 @@ def reiniciar_instrumento(sesion: Session, entrada: ReiniciarInstrumentoEntrada)
     anulado = ResultadoAnulado(instrumento=instrumento.codigo, aplicacion=aplicacion.codigo,
                               calculado_en=resultado.calculado_en, anulado_en=fecha)
     sesion.execute(delete(RespuestaItem).where(*filtro_respuestas))
+    # Un intento nuevo empieza sin racha ni avisos.
+    sesion.execute(delete(RitmoAplicacion).where(
+        RitmoAplicacion.cuenta_id == cuenta.id, RitmoAplicacion.aplicacion_id == aplicacion.id,
+    ))
     for progreso in progresos:
         progreso.estado = EstadoProgreso.EN_CURSO
     sesion.flush()

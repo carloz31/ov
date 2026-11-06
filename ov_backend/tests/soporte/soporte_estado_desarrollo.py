@@ -40,7 +40,9 @@ def llenar_estado(aplicacion):
                                         enlace='https://youtu.be/datoPrueba1', resumen='DATO DE PRUEBA',
                                         busqueda='dato de prueba', estado='PUBLICADA', fecha_hora=fecha)
         resultado = modelos.ResultadoInstrumento(cuenta_id=cuenta.id, aplicacion_id=aplicacion_instrumento.id, calculado_en=fecha)
-        sesion.add_all([progreso, entrevista, resultado])
+        # Ajuste aviso-velocidad: el ritmo del intento también es estado.
+        ritmo = modelos.RitmoAplicacion(cuenta_id=cuenta.id, aplicacion_id=aplicacion_instrumento.id, actualizado_en=fecha)
+        sesion.add_all([progreso, entrevista, resultado, ritmo])
         sesion.flush()
         respuesta = modelos.RespuestaRegistro(progreso_id=progreso.id, item_registro_id=item_registro.id,
             texto_inicial='DATO DE PRUEBA', estado='PENDIENTE_SEGUIMIENTO', creada_en=fecha, actualizada_en=fecha)

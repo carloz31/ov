@@ -44,12 +44,13 @@ export type RespuestaPublica = {
   actualizada_en: string
 }
 export type RespuestasActividad = { cuenta: string; actividad: string; respuestas: RespuestaPublica[] }
-export type RespuestaItemEntrada = { item: string; opcion: number }
+export type RespuestaItemEntrada = { item: string; opcion: number; tiempo_ms?: number | null }
 export type RespuestaItemsGuardados = {
   cuenta: string
   actividad: string
-  respuestas_guardadas: RespuestaItemEntrada[]
+  respuestas_guardadas: { item: string; opcion: number }[]
   progreso: { estado: 'EN_CURSO' | 'COMPLETADA'; respondidos: number; total: number }
+  aviso_velocidad?: number | null
 }
 export type AvanceAplicacion = {
   aplicacion: string

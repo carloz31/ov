@@ -9,8 +9,8 @@ from math import isfinite
 from typing import Literal
 
 from app.core.parametros import (
-    CORRELACION_MINIMA, FACTOR_PORCENTAJE, FAMILIAS_RECOMENDADAS, LONGITUD_CODIGO_INTERES,
-    MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES, OCUPACIONES_POR_FAMILIA, RELLENO_SEGUNDA_OCUPACION,
+    CORRELACION_MINIMA, FACTOR_PORCENTAJE, FAMILIAS_RECOMENDADAS, ITEMS_ENTRE_AVISOS_VELOCIDAD,
+    LONGITUD_CODIGO_INTERES, MAX_AVISOS_VELOCIDAD, MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES, OCUPACIONES_POR_FAMILIA, RELLENO_SEGUNDA_OCUPACION,
     UMBRAL_AFIN, UMBRAL_AFIN_PARECIDO, UMBRAL_MUY_AFIN, UMBRAL_ZONA_EN_CAMINO, UMBRAL_ZONA_FUERTE,
     ZONAS_PREPARACION_AMPLIA, ZONAS_PREPARACION_INTERMEDIA,
 )
@@ -19,6 +19,32 @@ from app.core.parametros import (
 BandaAfinidad = Literal["MUY_AFIN", "AFIN", "CERCANA"]
 Preparacion = Literal["AMPLIA", "INTERMEDIA"]
 ZonaCalculada = Literal["FUERTE", "EN_CAMINO", "POR_TRABAJAR"]
+
+
+@dataclass(frozen=True)
+class EstadoRitmo:
+    racha_rapida: int = 0
+    items_desde_aviso: int = 0
+    avisos_velocidad: int = 0
+
+
+def umbral_ms(enunciado: str, ms_por_palabra: int, ms_respuesta: int) -> int:
+    return len(enunciado.split()) * ms_por_palabra + ms_respuesta
+
+
+def evaluar_ritmo(estado: EstadoRitmo, item, tiempo_ms: int | None, instrumento,
+                  permitir_aviso: bool = True) -> tuple[EstadoRitmo, int | None]:
+    """Cuenta la primera respuesta de un ítem. Sin tiempo, no cuenta. `permitir_aviso=False`: el lote ya dio el suyo."""
+    if tiempo_ms is None:
+        return estado, None
+    rapido = tiempo_ms < umbral_ms(item.enunciado, instrumento.ms_por_palabra, instrumento.ms_respuesta)
+    racha = estado.racha_rapida + 1 if rapido else 0
+    desde_aviso = estado.items_desde_aviso + 1
+    if (permitir_aviso and racha >= instrumento.racha_aviso and estado.avisos_velocidad < MAX_AVISOS_VELOCIDAD
+            and (estado.avisos_velocidad == 0 or desde_aviso >= ITEMS_ENTRE_AVISOS_VELOCIDAD)):
+        aviso = estado.avisos_velocidad + 1
+        return EstadoRitmo(avisos_velocidad=aviso), aviso
+    return EstadoRitmo(racha, desde_aviso, estado.avisos_velocidad), None
 
 
 def orden_canonico_riasec():

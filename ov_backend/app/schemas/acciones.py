@@ -36,6 +36,8 @@ class RevelarResultadoEntrada(AccionCuenta):
 class RespuestaItemEntrada(BaseModel):
     item: str
     opcion: int = Field(ge=1, strict=True)
+    # Lo mide el front, desde que el ítem se puede responder hasta «Continuar».
+    tiempo_ms: int | None = Field(default=None, ge=0, strict=True)
 
 
 class ResponderItemsEntrada(CompletarActividadEntrada):
@@ -64,6 +66,8 @@ class RespuestaItemsGuardados(BaseModel):
     actividad: str
     respuestas_guardadas: list[RespuestaItemGuardada]
     progreso: ProgresoRespuestas
+    # Número de aviso de velocidad (1 o 2) si este guardado lo disparó.
+    aviso_velocidad: int | None = None
 
 
 class RespuestaBatallaEntrada(BaseModel):

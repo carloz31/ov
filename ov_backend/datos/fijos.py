@@ -566,10 +566,16 @@ class Fijos:
     secciones_tarjeta: dict[str, modelos.SeccionTarjeta]
 
 
+def _ms_respuesta(opciones) -> int:
+    """Aviso de velocidad: decidir y los dos toques (la opción y «Continuar»), según las opciones de la escala."""
+    return 800 if len(opciones) == 2 else 1200
+
+
 def _cargar_riasec(sesion):
     instrumento = modelos.Instrumento(codigo='TEST-RIASEC', nombre='Test de intereses',
         descripcion='Descubre qué tipo de actividades te atraen y qué ocupaciones se parecen a ti.',
-        tipo_resultado=modelos.TipoResultado.COINCIDENCIAS, **textos_instrumento('TEST-RIASEC'))
+        tipo_resultado=modelos.TipoResultado.COINCIDENCIAS, ms_respuesta=_ms_respuesta(OPCIONES_LIKERT),
+        **textos_instrumento('TEST-RIASEC'))
     escala = modelos.EscalaRespuesta(codigo='ESC-LIKERT5', nombre='Preferencia en cinco opciones')
     sesion.add_all([instrumento, escala])
     sesion.flush()
@@ -600,6 +606,7 @@ def _cargar_instrumento(sesion, definicion: DefinicionInstrumento):
     """Carga cualquier instrumento definido como datos; devuelve su aplicación y sus ítems por número."""
     instrumento = modelos.Instrumento(codigo=definicion.codigo, nombre=definicion.nombre,
         descripcion=definicion.descripcion, tipo_resultado=definicion.tipo_resultado,
+        ms_respuesta=_ms_respuesta(definicion.opciones),
         **textos_instrumento(definicion.codigo, [n for _, n, *_ in definicion.dimensiones]))
     escala = modelos.EscalaRespuesta(codigo=definicion.escala[0], nombre=definicion.escala[1])
     sesion.add_all([instrumento, escala])
@@ -634,7 +641,8 @@ def _cargar_tematicas(sesion):
 def _cargar_partida_llegada(sesion, tematicas):
     instrumento = modelos.Instrumento(codigo='TEST-PARTIDA-LLEGADA', nombre='Punto de partida y de llegada',
         descripcion='Las mismas afirmaciones al inicio y al cierre, para ver cuánto cambiaste.',
-        tipo_resultado=modelos.TipoResultado.COMPARACION, **textos_instrumento('TEST-PARTIDA-LLEGADA'))
+        tipo_resultado=modelos.TipoResultado.COMPARACION, ms_respuesta=_ms_respuesta(OPCIONES_ACUERDO),
+        **textos_instrumento('TEST-PARTIDA-LLEGADA'))
     escala = modelos.EscalaRespuesta(codigo='ESC-ACUERDO4', nombre='Acuerdo en cuatro opciones')
     sesion.add_all([instrumento, escala])
     sesion.flush()
