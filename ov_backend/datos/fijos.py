@@ -30,7 +30,7 @@ PREGUNTAS_BASE_GUION = (('BASE-1', '¿Cómo es un día normal en tu trabajo?'),
 # (código, nombre, descripción, pregunta, comentario obligatorio, ícono). Reacciones a una entrevista (B13); el ícono
 # es un nombre que el front traduce.
 TIPOS_REACCION = (
-    ('APRENDI', 'Aprendí algo', 'Me llevo una idea nueva sobre la ocupación.', '¿Qué aprendiste?', True, 'bombilla'),
+    ('APRENDI', 'Aprendí algo', 'Me llevo una idea nueva sobre este trabajo.', '¿Qué aprendiste?', True, 'bombilla'),
     ('ME_GUSTO', 'Me gustó cómo se realizó', 'Las preguntas, la conversación, la edición.',
      '¿Qué te gustó de cómo la hicieron?', False, 'estrella'),
     ('CURIOSIDAD', 'Me dio curiosidad', 'Me quedé con una pregunta para esa persona.', '¿Qué le preguntarías tú?', True,

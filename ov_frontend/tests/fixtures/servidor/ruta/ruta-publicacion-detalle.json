@@ -80,7 +80,7 @@
     {
       "codigo": "APRENDI",
       "comentario_obligatorio": true,
-      "descripcion": "Me llevo una idea nueva sobre la ocupación.",
+      "descripcion": "Me llevo una idea nueva sobre este trabajo.",
       "icono": "bombilla",
       "nombre": "Aprendí algo",
       "pregunta": "¿Qué aprendiste?"

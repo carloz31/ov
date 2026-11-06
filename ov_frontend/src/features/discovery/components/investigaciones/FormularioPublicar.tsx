@@ -81,7 +81,7 @@ export function FormularioPublicar({ m }: { m: ModeloPublicar }) {
             m={m}
             campo="dedicacion"
             etiqueta="¿A qué se dedica?"
-            placeholder="Ej.: contadora en una empresa de transporte"
+            placeholder="Ej.: contadora en un banco"
             error="Escribe a qué se dedica."
           />
         </div>
