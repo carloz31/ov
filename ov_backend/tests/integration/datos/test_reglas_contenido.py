@@ -4,6 +4,7 @@
 from sqlalchemy import select
 
 from app import models as m
+from datos import contenido
 
 
 # Principio 7: objetivos abiertos desde el inicio a propósito. El nivel 1 es el de partida y las preguntas DIARIA
@@ -16,6 +17,8 @@ EXCEPCIONES_OPCIONALES = {'R-B4'}
 CAMINO = ('B0', 'B1', 'B2', 'B3', 'B4', 'B5')
 EVENTOS_DE_ACTIVIDAD = ('COMPLETA_ACTIVIDAD', 'REGISTRO_ADECUADO', 'SUPERA_BATALLA', 'SUPERA_CASO')
 EVALUADORES_DE_PLANES = ('planes_listos_para_comparar', 'pasos_plan_a')
+APERTURA_CONVERSACIONES = {'conv-1': 'b1-3', 'conv-2': 'b1-3', 'conv-3': 'b1-6', 'conv-4': 'b1-7', 'conv-5': 'b2-3',
+                           'conv-6': 'b2-4', 'conv-7': 'b3-3', 'conv-8': 'b3-10', 'conv-9': 'b4-3', 'conv-10': 'b5-1'}
 
 
 def _datos(sesion):
@@ -84,6 +87,27 @@ def test_toda_conversacion_pide_la_carta(sesion_contenido):
     assert conversaciones
     for regla in conversaciones:
         assert 'ESCRIBE_CARTA' in {c.tipo_evento.value for c in condiciones[regla.id]}, regla.codigo
+
+
+def test_cada_conversacion_se_abre_con_la_carta_y_una_requerida(sesion_contenido):
+    _, actividades, reglas, condiciones = _datos(sesion_contenido)
+    codigos = {c.id: c.codigo for c in sesion_contenido.scalars(select(m.Conversacion))}
+    apertura = {}
+    for regla in reglas:
+        if regla.tipo_objetivo == m.TipoObjetivo.CONVERSACION:
+            assert codigos[regla.id_objetivo] not in apertura, regla.codigo
+            eventos = {c.tipo_evento.value: c.id_referencia for c in condiciones[regla.id]}
+            assert set(eventos) == {'ESCRIBE_CARTA', 'COMPLETA_ACTIVIDAD'}, regla.codigo
+            actividad = actividades[eventos['COMPLETA_ACTIVIDAD']]
+            assert actividad.requerida, regla.codigo
+            apertura[codigos[regla.id_objetivo]] = actividad.codigo
+    assert apertura == APERTURA_CONVERSACIONES
+
+
+def test_ninguna_regla_nombra_lo_retirado_de_ruta():
+    for codigo, _, objetivo, _, condiciones in contenido.REGLAS:
+        nombrados = {codigo, objetivo, *(c[1] for c in condiciones)}
+        assert not any(str(n).startswith(('t-conv', 'R-t-conv')) or 'tras-conversar' in str(n) for n in nombrados), codigo
 
 
 def test_ninguna_regla_nombra_una_actividad_de_prueba_del_camino(sesion_contenido):
