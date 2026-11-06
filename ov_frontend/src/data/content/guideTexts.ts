@@ -43,7 +43,7 @@ export const textosBloqueo = {
   // F09
   INVESTIGACIONES: {
     adelanto:
-      'Aquí podrás investigar una ocupación entrevistando a alguien que la ejerce, y ver las entrevistas de tu salón.',
+      'Aquí podrás investigar una familia de carreras entrevistando a alguien que trabaja en ella, y ver las entrevistas de tu salón.',
     final: 'Todavía no puedes investigar.',
   },
 }
@@ -64,7 +64,7 @@ export const guiaCaminoApi = [
 // F09 (solo api): la ayuda del «?» en Investigaciones, con la sección abierta.
 export const investigacionesGuideSteps = [
   'Aquí ves las entrevistas que hicieron tus compañeros a personas que trabajan en lo que les intriga. Elige una vista: tu salón, las Leyendas o las tuyas.',
-  'Para investigar, eliges una ocupación, escribes lo que piensas hoy de ella y armamos juntos tu guion de preguntas.',
+  'Para investigar, eliges una familia de carreras, escribes lo que piensas hoy de ese trabajo y armamos juntos tu guion de preguntas.',
   'La entrevista ocurre fuera de aquí. Cuando la subas a YouTube como «No listado», vuelve a publicarla, sola o con tus compañeros.',
   'Deja tu reacción en las entrevistas de otros y guarda en favoritos las que quieras volver a ver. Las mejores llegan al Salón de Leyendas.',
 ]

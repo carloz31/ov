@@ -25,7 +25,7 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | PLAN | El plan A: su carrera, su relato y sus motivos (sin fuente) | B11 |
 | PASOS_PLAN_A | Los pasos del plan A (sin fuente) | B11 |
 | OPCION_INICIAL | La carrera de la opción inicial (sin fuente) | B11 |
-| LO_QUE_PIENSO | Lo que el estudiante pensaba de la ocupación antes de su primera entrevista publicada (sin fuente) | B13 |
+| LO_QUE_PIENSO | Lo que el estudiante pensaba de la familia de carreras antes de su primera entrevista publicada (sin fuente) | B13 |
 
 Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola dirección (`motor.md`, «Diario»).
 

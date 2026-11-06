@@ -62,7 +62,7 @@
       "id": "inv-04",
       "tipo": "dialogo",
       "hablanteId": "investigador",
-      "texto": "Te explico cómo se investiga una ocupación, brevemente, porque es más simple de lo que parece: se le pregunta a alguien que la ejerce. Veinte minutos con la persona correcta valen más que diez videos."
+      "texto": "Te explico cómo se investiga una familia de carreras, brevemente, porque es más simple de lo que parece: se le pregunta a alguien que trabaja en ella. Veinte minutos con la persona correcta valen más que diez videos."
     },
     {
       "id": "inv-05",
@@ -222,7 +222,7 @@
       "tipo": "dialogo",
       "hablanteId": "investigador",
       "expresion": "neutral",
-      "texto": "Ya sabes investigar. Ahora, si quieres ayudarme: elige una ocupación de tus favoritos, escribe lo que piensas hoy de ella, arma tu guion, haz la entrevista y publícala. Cada entrevista que entre al archivo suma a la colecta del techo. Y puedes hacerla con compañeros que investiguen lo mismo."
+      "texto": "Ya sabes investigar. Ahora, si quieres ayudarme: elige una familia de carreras que te interese, escribe lo que piensas hoy de ese trabajo, arma tu guion, haz la entrevista y publícala. Cada entrevista que entre al archivo suma a la colecta del techo. Y puedes hacerla con compañeros que investiguen lo mismo."
     },
     {
       "id": "inv-11",
