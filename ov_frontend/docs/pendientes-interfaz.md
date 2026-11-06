@@ -16,7 +16,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** los marcadores de la Central de casos en la Ciudad (api).
 - **Opciones:** quitar en api los marcadores de demostración de `cityCases` y poner `c2`…`c6` en sus lugares; dar posiciones definitivas a `c2`…`c6` junto a esos marcadores; reemplazar los marcadores de demostración por los casos reales uno a uno.
 - **Si no se muestra:** los seis casos se ven en la Ciudad, `c2`…`c6` en lugares provisionales.
-- **Estado:** decidido: las posiciones provisionales se quedan por ahora y el usuario las ajustará en los JSON de `c2`…`c6`.
+- **Estado:** resuelto en el ajuste limpiar-casos-antiguos-e-icono. El usuario eligió quitar en api los marcadores de demostración y poner `c2`…`c6` en sus lugares; `c4` queda en (505, 335) para no tocar las misiones de inteligencias.
 
 ## 2026-11-04 · Ajuste carga-casos · Imágenes de los seis casos
 

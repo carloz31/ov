@@ -48,11 +48,21 @@ test('en el mapa la batalla lleva la espada y no queda como contenido pendiente'
   assert.deepEqual([detalleCaso.disabled, detalleCaso.href], [false, '/student/cases/hidden-plaza'])
 })
 
-test('la Ciudad no repite el marcador fijo del desafío ni del caso que representa el servidor', () => {
-  const ids = mapa().ciudad().map((p) => p.id)
-  assert.equal(ids.includes('forest-fire'), false)
-  assert.equal(ids.includes('desafio-rumor'), false)
-  assert.ok(ids.includes('neighborhood-radio'))
+test('en la Ciudad solo está lo que entrega el servidor: ningún caso ni desafío fijo del front', () => {
+  const m = mapa()
+  const ids = m.ciudad().map((p) => p.id)
+  const { cityCases } = m.app.load('src/data/content/adventure.ts')
+  const { challenges } = m.app.load('src/data/content/challenges.ts')
+  assert.ok(ids.length > 0)
+  for (const fijo of [...cityCases, ...challenges]) assert.equal(ids.includes(fijo.id), false, fijo.id)
+  assert.equal(ids.includes('neighborhood-radio'), false)
+})
+
+test('en el mapa el caso lleva la antena, y bloqueado sigue siendo un punto bloqueado', () => {
+  const disponible = mapa({ 't-caso': 'DISPONIBLE' }).ciudad().find((p) => p.specActivityId === 't-caso')
+  assert.equal(disponible.icon.displayName ?? disponible.icon.name, 'RadioTower')
+  const bloqueado = mapa({ 't-caso': 'BLOQUEADA' }).ciudad().find((p) => p.specActivityId === 't-caso')
+  assert.equal(bloqueado.status, 'locked')
 })
 
 test('las fichas de la batalla salen del servidor y tienen contenido de prueba en el catálogo', () => {

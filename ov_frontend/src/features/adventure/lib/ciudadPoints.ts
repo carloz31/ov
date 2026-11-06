@@ -8,42 +8,10 @@ import { cityCases } from '@/data/content/adventure'
 import type { AdventureState } from '@/types/adventure'
 import type { StudentMapPoint } from './mapPoints'
 import { puntosServidor } from './puntosServidor'
-import { referenciasServidor } from '@/lib/servidor/contenidos'
 export function getCiudadPoints(adventure: AdventureState, journey: JourneyState): StudentMapPoint[] {
   if (modoApi) {
-    // Los desafíos y casos que ya representa una actividad del servidor no repiten su marcador (F04). Ajuste
-    // carga-casos: el incendio forestal salió de la plataforma y ya no tiene marcador en api.
-    const bloques = obtenerEstadoServidor().actividades.datos,
-      representados = referenciasServidor(bloques)
-    return [
-      ...cityCases
-        .filter((c) => !representados.casos.has(c.id) && c.id !== 'forest-fire')
-        .map((c): StudentMapPoint => ({
-          id: c.id,
-          title: c.title,
-          x: c.x,
-          y: c.y,
-          zone: 'ciudad',
-          subtitle: 'Disponible en una próxima iteración',
-          icon: Building2,
-          status: 'locked',
-          actionEnabled: false,
-        })),
-      ...puntosServidor(bloques, 'CIUDAD', 'ciudad'),
-      ...challenges
-        .filter((c) => !representados.desafios.has(c.id))
-        .map((c, i): StudentMapPoint => ({
-          id: c.id,
-          title: c.titulo,
-          subtitle: 'Disponible en una próxima iteración',
-          x: 710 + i * 90,
-          y: 365,
-          zone: 'ciudad',
-          icon: Swords,
-          status: 'locked',
-          actionEnabled: false,
-        })),
-    ]
+    // En api, la Ciudad solo muestra lo que entrega el servidor (ajuste limpiar-casos-antiguos-e-icono).
+    return puntosServidor(obtenerEstadoServidor().actividades.datos, 'CIUDAD', 'ciudad')
   }
   const testCompleted = journey.progress['act-tip-01']?.estado === 'completada'
   const points: StudentMapPoint[] = [

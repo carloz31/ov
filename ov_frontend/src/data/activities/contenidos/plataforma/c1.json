@@ -15,8 +15,8 @@
   "nodos": [],
   "caso": "hidden-plaza",
   "mapa": {
-    "x": 180,
-    "y": 160,
+    "x": 350,
+    "y": 240,
     "icono": "informativa"
   }
 }

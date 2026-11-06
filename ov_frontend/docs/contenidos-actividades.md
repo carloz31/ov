@@ -29,7 +29,7 @@ Toda actividad, de cualquier rol, es el mismo objeto: metadatos, una lista orden
 - **Textos en api:** título, descripción, duración y bloque los da el servidor; los campos del JSON (`titulo`, `duracionEstimadaMin`, `bloque`…) quedan porque los exige el tipo `Actividad` y los usa el modo local.
 - `presentacion` (solo instrumentos): `narrativa` dibuja todos los nodos; `directa`, solo `item` y `resultado`.
 - `plantilla` (solo registros): `secuencial` (una consigna tras otra) o `matriz` (celdas `columna.fila`; sirve para línea de tiempo o FODA).
-- `mapa` (opcional): `{ x, y, icono, origen? }` para dibujar la actividad como punto del mapa. Sin `mapa`, no se dibuja.
+- `mapa` (opcional): `{ x, y, icono, origen? }` para dibujar la actividad como punto del mapa. Sin `mapa`, no se dibuja. En api, una BATALLA y un CASO llevan el ícono de su tipo (espada y antena) y no usan `icono`.
   - `origen`: código de la actividad desde la que sale la línea propia de una opcional. En api, una opcional con `origen` se dibuja fuera del camino principal, como las misiones adicionales: con línea punteada mientras está pendiente y verde al completarse. Sin `origen`, queda en el camino.
   - `adicional`: con `origen`, marca una misión adicional (`t_adicional`); el nodo dice «Misión adicional». Sin él, el nodo de la opcional dice «Opcional».
   - `etiqueta`: solo la usan los contenidos de `plataforma`. En api, la etiqueta del punto se arma con el tipo y la duración del servidor.

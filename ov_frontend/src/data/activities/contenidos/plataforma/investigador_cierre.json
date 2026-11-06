@@ -101,5 +101,5 @@
   "recompensa": {
     "mensajeFin": "Una teja más en el techo de Anselmo. Lo que creías, lo que te contaron y lo que dicen los datos, lado a lado."
   },
-  "mapa": { "x": 740, "y": 440, "icono": "informativa", "origen": "investigador" }
+  "mapa": { "x": 180, "y": 160, "icono": "informativa", "origen": "investigador" }
 }

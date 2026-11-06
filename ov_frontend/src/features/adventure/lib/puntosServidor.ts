@@ -1,4 +1,4 @@
-import { Swords } from 'lucide-react'
+import { RadioTower, Swords } from 'lucide-react'
 import { contenidoPorClave } from '@/data/activities/contenidos.ts'
 import { baseRoute } from '@/data/activities/reflectionConfig'
 import { bloquesZona, estadoPunto } from '@/lib/servidor/adaptadores'
@@ -59,8 +59,13 @@ export function puntosServidor(
           grupo.length > 1
             ? `Test · Interacción ${grupo.indexOf(actividad) + 1} de ${grupo.length}`
             : etiquetaActividad(actividad),
-        // El ícono de una batalla va por su tipo, esté en el camino o en la Ciudad (F04).
-        icon: actividad.tipo === 'BATALLA' ? Swords : iconosMapa[mapa.icono],
+        // El ícono de una batalla o un caso va por su tipo, esté en el camino o en la Ciudad (F04).
+        icon:
+          actividad.tipo === 'BATALLA'
+            ? Swords
+            : actividad.tipo === 'CASO'
+              ? RadioTower
+              : iconosMapa[mapa.icono],
         status: estadoPunto(actividad),
         zone,
         bloque: bloque.numero,

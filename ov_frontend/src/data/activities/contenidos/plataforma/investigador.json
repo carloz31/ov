@@ -236,5 +236,5 @@
   "recompensa": {
     "mensajeFin": "Investigaciones está abierta. Cada entrevista publicada suma a la colecta del techo de Anselmo."
   },
-  "mapa": { "x": 700, "y": 380, "icono": "informativa" }
+  "mapa": { "x": 100, "y": 180, "icono": "informativa" }
 }

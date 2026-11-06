@@ -56,14 +56,6 @@ export function actividadDeCaso(bloques: BloqueActividades[] | null, caso: strin
     .map((a) => reproductorPorTipo(bloques, a.codigo))
     .find((r) => r?.tipo === 'caso' && r.caso === caso)?.actividad
 }
-// Desafíos y casos del front que ya representa una actividad del servidor.
-export function referenciasServidor(bloques: BloqueActividades[] | null) {
-  const contenidos = (bloques ?? []).flatMap((b) => b.actividades).map((a) => contenidoPorClave(a.contenido))
-  return {
-    desafios: new Set(contenidos.flatMap((c) => c?.desafio ?? [])),
-    casos: new Set(contenidos.flatMap((c) => c?.caso ?? [])),
-  }
-}
 
 // Cuestionario cuyo contenido trae un nodo `item` con itemId "plantilla": ese nodo se repite
 // con los ítems del servidor, en su orden, entre los diálogos de entrada y de cierre del contenido.

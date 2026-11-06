@@ -84,8 +84,8 @@
     "mensajeFin": "Primera visita a la taberna. Faltan tres."
   },
   "mapa": {
-    "x": 280,
-    "y": 420,
+    "x": 700,
+    "y": 300,
     "icono": "test"
   }
 }
