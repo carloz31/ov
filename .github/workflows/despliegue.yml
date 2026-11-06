@@ -9,6 +9,11 @@ on:
   push:
     branches: [deploy]
   workflow_dispatch:
+    inputs:
+      recargar_contenido:
+        description: 'BORRA TODA LA BASE (cuentas, progreso y catálogo) y carga el conjunto contenido. Solo sin datos reales.'
+        type: boolean
+        default: false
 
 concurrency:
   group: despliegue-${{ github.ref }}
@@ -93,10 +98,15 @@ jobs:
           printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/ec2
           chmod 600 ~/.ssh/ec2
           ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
-      - name: Actualizar, migrar y reiniciar
+      - name: Actualizar, migrar y reiniciar (o recargar la base)
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
-        run: ssh -i ~/.ssh/ec2 ubuntu@"$EC2_HOST" 'sudo bash /opt/ov/despliegue/ec2/actualizar.sh'
+          RECARGAR: ${{ inputs.recargar_contenido && '--recargar' || '' }}
+        # Primero trae el código, para que se ejecute el actualizar.sh nuevo y no el que estaba en la EC2.
+        run: |
+          ssh -i ~/.ssh/ec2 ubuntu@"$EC2_HOST" \
+            "sudo -u ov git -C /opt/ov fetch origin deploy && sudo -u ov git -C /opt/ov reset --hard origin/deploy \
+             && sudo bash /opt/ov/despliegue/ec2/actualizar.sh $RECARGAR"
       - name: Comprobar la API por HTTPS
         env:
           API_DOMINIO: ${{ secrets.API_DOMINIO }}

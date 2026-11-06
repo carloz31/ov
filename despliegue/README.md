@@ -22,7 +22,7 @@ Archivos de esta carpeta:
 | `../amplify.yml` | Build del front (monorepo, `appRoot: ov_frontend`, Node 22). |
 | `amplify/reescrituras.json` | Reglas de Amplify: `/api` → EC2 y la regla SPA de react-router. |
 | `ec2/instalar.sh` | Preparación única de la instancia. |
-| `ec2/actualizar.sh` | Cada nueva versión: pull de `deploy`, `uv sync`, migraciones y reinicio. |
+| `ec2/actualizar.sh` | Cada nueva versión: pull de `deploy`, `uv sync`, migraciones y reinicio. Con `--recargar`, borra la base y carga `contenido`. |
 | `ec2/ov-backend.service` | Servicio systemd (uvicorn, 2 workers). |
 | `ec2/nginx-ov.conf` | Proxy inverso de nginx hacia uvicorn. |
 | `ec2/env.produccion.example` | Plantilla del `.env` de producción. |
@@ -90,12 +90,12 @@ psql "postgresql://ov_admin:CONTRASENA@ENDPOINT:5432/ov?sslmode=require" -c "sel
 ## 5. Migrar, cargar datos y arrancar (una sola vez)
 
 ```bash
-sudo -u ov bash -c 'cd /opt/ov/ov_backend && ~/.local/bin/uv run --no-sync alembic upgrade head && ~/.local/bin/uv run --no-sync python -m datos.cargar ruta'
+sudo -u ov bash -c 'cd /opt/ov/ov_backend && ~/.local/bin/uv run --no-sync alembic upgrade head && ~/.local/bin/uv run --no-sync python -m datos.cargar contenido'
 sudo systemctl start ov-backend
 curl -s -o /dev/null -w "%{http_code}\n" https://3-91-20-15.sslip.io/docs   # 200
 ```
 
-`datos.cargar ruta` crea también los usuarios de `datos/usuarios_prueba.txt`. Sirven para la primera prueba; antes de abrirlo a estudiantes reales, cambia esas contraseñas o crea cuentas propias.
+`datos.cargar contenido` crea también los usuarios de `datos/usuarios_prueba.txt`. Sirven para la primera prueba; antes de abrirlo a estudiantes reales, cambia esas contraseñas o crea cuentas propias.
 
 ## 6. Amplify (front)
 
@@ -154,6 +154,16 @@ git checkout deploy && git merge main && git push
 ```
 
 El avance se ve en la pestaña **Actions** del repo. Para desplegar a mano sin Actions, en la EC2: `sudo bash /opt/ov/despliegue/ec2/actualizar.sh`.
+
+Un push **conserva los datos**: solo migra la estructura. Si cambiaste datos que viven en la base (`datos/contenido.py`, reglas, ítems, fichas) o una migración exige la base vacía, recarga:
+
+### 7.5 Recargar el contenido (borra la base)
+
+Actions > **Pruebas y despliegue** > **Run workflow** > rama `deploy` > marca **recargar_contenido** > Run. Corre las pruebas y, si pasan, en la EC2: detiene el backend, elimina el esquema completo (cuentas, progreso y catálogo), crea las tablas con `alembic upgrade head`, carga `contenido` (con los usuarios de `datos/usuarios_prueba.txt`), reinicia y publica el front.
+
+A mano, en la EC2: `sudo bash /opt/ov/despliegue/ec2/actualizar.sh --recargar`.
+
+Úsalo solo mientras no haya datos reales de estudiantes ni apoderados.
 
 ## Diagnóstico
 
