@@ -137,9 +137,10 @@ test('los planes y los favoritos son locales solo en local, y local conserva Ale
     contexto.decisionSheets = [plan]
     contexto.careerInterestIds = ['psychology', 'nursing']
     const p = perfil()
-    // Ajuste pasaporte-perfil: cada plan lleva su «% armado» y los favoritos van en chips con su conteo.
-    assert.deepEqual(copia(p.plans), api ? [] : copia([{ ...plan, armado: 0 }]))
-    assert.equal(p.espacioLibre, api ? 'Espacio libre' : undefined)
+    // Ajuste perfil-capitulos: cada plan lleva sus casillas de secciones, sin «Espacio libre».
+    const resumen = { casillas: [false, false, false, false], listas: 0, total: 4, completo: false }
+    assert.deepEqual(copia(p.plans), api ? [] : copia([{ ...plan, ...resumen }]))
+    assert.equal('espacioLibre' in p, false)
     assert.equal(p.favoritos.carreras, api ? 0 : 2)
     if (!api) {
       assert.equal(p.nombre, 'Alex')
@@ -315,6 +316,29 @@ test('hallazgoPagina: la llegada lista para revelar lleva su indicador, y un tip
   assert.equal(lista.frase, '1 fuerte · 1 en camino')
   assert.equal(hallazgoPagina({ tipoResultado: 'NUEVO' }, resultadoDe({ areas: [dimension('A')] })), null)
   assert.equal(hallazgoPagina({ tipoResultado: 'DESTACADAS' }, undefined), null)
+})
+
+test('resumenPlanPerfil: casillas independientes y su cantidad sale de las secciones del plan', () => {
+  const { resumenPlanPerfil } = fixtureServidor().load('src/features/discovery/lib/plans.ts')
+  const plan = (...estados) => ({ secciones: estados.map((estado) => ({ estado })) })
+  assert.deepEqual(copia(resumenPlanPerfil(plan('POR_EMPEZAR', 'BLOQUEADA', 'POR_EMPEZAR', 'BLOQUEADA'))), {
+    casillas: [false, false, false, false],
+    listas: 0,
+    total: 4,
+    completo: false,
+  })
+  assert.deepEqual(copia(resumenPlanPerfil(plan('LISTA', 'EN_PROCESO', 'LISTA', 'LISTA'))), {
+    casillas: [true, false, true, true],
+    listas: 3,
+    total: 4,
+    completo: false,
+  })
+  assert.equal(resumenPlanPerfil(plan('LISTA', 'LISTA', 'LISTA', 'LISTA')).completo, true)
+  const cinco = resumenPlanPerfil(plan('LISTA', 'LISTA', 'LISTA', 'LISTA', 'POR_EMPEZAR'))
+  assert.equal(cinco.total, 5)
+  assert.equal(cinco.completo, false)
+  assert.equal(resumenPlanPerfil(plan('LISTA', 'LISTA')).completo, true)
+  assert.equal(resumenPlanPerfil(plan()).completo, false)
 })
 
 test('iconoPagina: el ícono propio de la página y, sin él, el de su tipo de resultado', () => {

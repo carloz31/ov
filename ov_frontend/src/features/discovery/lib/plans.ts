@@ -16,6 +16,13 @@ export function getPlanSections(sheet: DecisionSheet) {
 export function getPlanCompleteness(sheet: DecisionSheet) {
   return getPlanSections(sheet).filter(Boolean).length
 }
+// Ajuste perfil-capitulos: las casillas del capítulo III, de las secciones que trae el plan. `completo` es el
+// mismo criterio de «Plan completo» de Mis planes: todas las secciones listas.
+export function resumenPlanPerfil(plan: { secciones: { estado: string }[] }) {
+  const casillas = plan.secciones.map((s) => s.estado === 'LISTA')
+  const listas = casillas.filter(Boolean).length
+  return { casillas, listas, total: casillas.length, completo: casillas.length > 0 && listas === casillas.length }
+}
 export function getOrderedPlans(sheets: DecisionSheet[], order: string[]) {
   const active = sheets
     .filter((s) => s.status !== 'archived')

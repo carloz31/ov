@@ -15,11 +15,10 @@ import { modeloPartidaLlegada } from '../lib/partidaLlegada'
 import { getStudentAchievementGroups, titulosViaje, vitrinaPasaporte } from '../lib/passport'
 import { hallazgoPagina, iconoPagina } from '../lib/resultPage'
 import { resultPages } from '../data/resultPages'
-import { getOrderedPlans, getPlanCompleteness } from '../lib/plans'
+import { getOrderedPlans, getPlanSections, resumenPlanPerfil } from '../lib/plans'
 import { useProgresoNivel } from './useProgresoNivel'
 import { useFavoritosCatalogo } from './useFavoritosCatalogo'
 import { usePlanesServidor } from '@/features/plans/hooks/usePlanesServidor'
-import { planCompleto, seccionesListas } from '@/lib/servidor/adaptadoresPlanes'
 import type { RouteLineTramo } from '@/components/student/RouteLine'
 
 export function useStudentProfile() {
@@ -106,17 +105,18 @@ export function useStudentProfile() {
       ),
     }
   })
-  // F07a (ajuste v4.2): en api, los planes del servidor con «Plan completo» o «N de 4 secciones listas».
+  // Ajuste perfil-capitulos: las casillas salen de las secciones de cada plan, del servidor o del navegador.
   const plans = planesServidor.usaTarjetaV4
     ? (planesServidor.datos?.planes ?? []).map((p) => ({
         id: p.carrera.codigo,
         name: p.carrera.nombre,
-        armado: Math.round((seccionesListas(p) / 4) * 100),
-        resumen: planCompleto(p) ? 'Plan completo' : `${seccionesListas(p)} de 4 secciones listas`,
+        ...resumenPlanPerfil(p),
       }))
     : getOrderedPlans(context.decisionSheets, discovery.planOrder).map((p) => ({
         ...p,
-        armado: Math.round((getPlanCompleteness(p) / 4) * 100),
+        ...resumenPlanPerfil({
+          secciones: getPlanSections(p).map((lista) => ({ estado: lista ? 'LISTA' : 'POR_EMPEZAR' })),
+        }),
       }))
   return {
     nombre,
@@ -130,7 +130,6 @@ export function useStudentProfile() {
     siguiente: siguiente && { titulo: siguiente.titulo, condiciones },
     pages,
     plans,
-    espacioLibre: planesServidor.usaTarjetaV4 ? 'Espacio libre' : undefined,
     // F06: en api, los conteos salen de los favoritos del servidor.
     favoritos: favoritosCatalogo.favoritosDelServidor
       ? {

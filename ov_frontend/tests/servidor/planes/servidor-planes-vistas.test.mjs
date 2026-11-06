@@ -325,20 +325,23 @@ test('en local, Mis planes sigue con los planes del navegador', () => {
   assert.equal(elementos(arbol, (e) => e.type?.name === 'MisPlanes').length, 0)
 })
 
-test('perfil en api: la píldora del plan en lugar de la barra y «Espacio libre» en los vacíos', () => {
+test('perfil: las casillas del plan con «x de y secciones» o «Plan completo», y los textos por posición en los vacíos', () => {
   const { app } = misPlanes()
   const { ProfilePlans } = app.load('src/features/discovery/components/ProfilePlans.tsx')
   const props = {
     plans: [
-      { id: 'mtpe-369', name: 'Psicología', armado: 25, resumen: '1 de 4 secciones listas' },
-      { id: 'mtpe-87', name: 'Otra', armado: 100, resumen: 'Plan completo' },
+      { id: 'mtpe-369', name: 'Psicología', casillas: [true, false, false, false], listas: 1, total: 4, completo: false },
+      { id: 'mtpe-87', name: 'Otra', casillas: [true, true, true, true], listas: 4, total: 4, completo: true },
     ],
-    espacioLibre: 'Espacio libre',
-    favoritos: { carreras: 3, ocupaciones: 1, instituciones: 1 },
+    favoritos: { carreras: 3, ocupaciones: 1, instituciones: 0 },
   }
   const marcado = texto(ProfilePlans(props))
-  assert.match(marcado, /Psicología1 de 4 secciones listas/)
-  assert.doesNotMatch(marcado, /% armado|Tu primer camino/)
+  assert.match(marcado, /Psicología1 de 4 secciones/)
+  assert.doesNotMatch(marcado, /% armado|secciones listas|Espacio libre|Tu primer camino/)
   assert.match(marcado, /OtraPlan completo/)
-  assert.equal((marcado.match(/Espacio libre/g) ?? []).length, 1)
+  assert.match(marcado, /Un plan por si acaso/)
+  assert.match(marcado, /3carreras1ocupación0instituciones/)
+  const vacio = texto(ProfilePlans({ ...props, plans: [] }))
+  assert.match(vacio, /Tu primer caminoEmpieza por un interés/)
+  assert.match(vacio, /Un segundo caminoSe abre al guardar otro interés/)
 })

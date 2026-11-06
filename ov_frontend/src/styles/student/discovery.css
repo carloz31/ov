@@ -1733,32 +1733,97 @@ textarea.sx-d-input {
   background: transparent;
   color: inherit;
 }
-.sx-d-chips {
+/* Ajuste perfil-capitulos: el nombre en una línea, las casillas de secciones y la grilla de favoritos. */
+.sx-d-plan-row[data-complete='true'] {
+  border-color: var(--sx-gold);
+}
+.sx-d-plan-row > div > strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sx-d-plan-progress {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.sx-d-plan-progress small {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sx-d-plan-cells {
+  display: flex;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+}
+.sx-d-plan-cells > span {
+  flex: 1;
+  height: 8px;
+  border-radius: 3px;
+  border: 1px dashed color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+}
+.sx-d-plan-cells > span[data-lista='true'] {
+  border: 0;
+  background: var(--primary);
+}
+.sx-d-plan-complete {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  color: var(--sx-gold-deep);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.sx-d-saved {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
-.sx-d-chip {
+.sx-d-saved a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 44px;
+  padding: 10px 4px;
+  border: 1px solid var(--sx-parchment-edge);
+  border-radius: 12px;
+  background: white;
+  color: var(--sx-parchment-ink);
+  text-decoration: none;
+}
+.sx-d-saved a > span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 36px;
-  padding: 6px 14px;
-  border: 1px solid var(--sx-parchment-edge);
-  border-radius: 999px;
-  background: white;
-  color: var(--sx-parchment-ink);
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
 }
-.sx-d-chip svg {
+.sx-d-saved a svg {
   color: var(--sx-gold-deep);
 }
-.sx-d-chip[data-empty='true'] {
+.sx-d-saved strong {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.sx-d-saved small {
+  font-size: 12px;
+  font-weight: 600;
+}
+.sx-d-saved a[data-empty='true'] {
   border-style: dashed;
+  border-color: color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
   background: transparent;
   color: var(--sx-parchment-muted);
+}
+.sx-d-saved a[data-empty='true'] svg {
+  color: inherit;
 }
 .sx-d-chapter {
   display: flex;
