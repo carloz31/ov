@@ -20,8 +20,8 @@
   "nodos": [],
   "desafio": "desafio-eco",
   "mapa": {
-    "x": 430,
-    "y": 250,
+    "x": 300,
+    "y": 340,
     "icono": "test"
   }
 }

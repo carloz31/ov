@@ -1625,11 +1625,18 @@ textarea.sx-d-input {
   .sx-d-showcase {
     flex-basis: 100%;
   }
+  /* Como la línea de títulos del pasaporte: con muchos tramos, scroll horizontal y no nombres encimados. */
   .sx-route-track {
-    padding: 0 28px 34px;
+    margin-top: 8px;
+    padding: 6px 48px 52px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .sx-route-tramo {
+    flex: 1 0 104px;
   }
   .sx-route-name {
-    max-width: 64px;
+    max-width: 96px;
     font-size: 11px;
   }
 }

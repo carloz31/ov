@@ -182,5 +182,5 @@
   "recompensa": {
     "mensajeFin": "Terminaste el camino. El pergamino es tu informe de viaje, está en tu perfil y seguirá escribiéndose contigo. Todo lo demás sigue abierto."
   },
-  "mapa": { "x": 360, "y": 150, "icono": "informativa" }
+  "mapa": { "x": 80, "y": 250, "icono": "informativa" }
 }

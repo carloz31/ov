@@ -133,5 +133,5 @@
   "recompensa": {
     "mensajeFin": "Tu brújula tiene tres puntos. Anotado en tu bitácora."
   },
-  "mapa": { "x": 340, "y": 290, "icono": "registro" }
+  "mapa": { "x": 720, "y": 380, "icono": "registro" }
 }

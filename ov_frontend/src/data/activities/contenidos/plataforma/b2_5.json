@@ -359,5 +359,5 @@
   "recompensa": {
     "mensajeFin": "Tu código dice en qué ambientes te sentirías cómodo. Qué haces ahí, lo decides tú. El artefacto apunta al puerto."
   },
-  "mapa": { "x": 520, "y": 200, "icono": "informativa" }
+  "mapa": { "x": 700, "y": 500, "icono": "informativa" }
 }

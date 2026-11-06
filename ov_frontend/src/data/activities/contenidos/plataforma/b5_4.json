@@ -99,5 +99,5 @@
   "recompensa": {
     "mensajeFin": "El pergamino está frente a ti, sellado, con tu nombre. Falta abrirlo."
   },
-  "mapa": { "x": 300, "y": 190, "icono": "informativa" }
+  "mapa": { "x": 150, "y": 230, "icono": "informativa" }
 }

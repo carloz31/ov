@@ -180,5 +180,5 @@
     "mensajeFin": "Tu diario está abierto. Lo que sientes va ahí; lo que piensas, a tus registros."
   },
   "promptDiario": "Cómo llego a este mundo",
-  "mapa": { "x": 210, "y": 360, "icono": "informativa" }
+  "mapa": { "x": 290, "y": 120, "icono": "informativa" }
 }

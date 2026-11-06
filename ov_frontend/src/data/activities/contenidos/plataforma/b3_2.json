@@ -241,5 +241,5 @@
   "recompensa": {
     "mensajeFin": "El catálogo está abierto. Marca los favoritos que te llamen la atención, mejor si alguno queda fuera de tu tipo principal: son la base de tus planes."
   },
-  "mapa": { "x": 200, "y": 350, "icono": "informativa" }
+  "mapa": { "x": 650, "y": 600, "icono": "informativa" }
 }

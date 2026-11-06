@@ -108,5 +108,5 @@
   "recompensa": {
     "mensajeFin": "Tu punto de partida quedó registrado. Revélalo en el libro de Helena cuando quieras."
   },
-  "mapa": { "x": 300, "y": 300, "icono": "test" }
+  "mapa": { "x": 350, "y": 160, "icono": "test" }
 }

@@ -348,5 +348,5 @@
     "mensajeFin": "Una duda con nombre ya es un avance. El check-in te acompaña desde hoy."
   },
   "promptDiario": "Lo que siento ante la decisión",
-  "mapa": { "x": 560, "y": 230, "icono": "informativa" }
+  "mapa": { "x": 590, "y": 200, "icono": "informativa" }
 }

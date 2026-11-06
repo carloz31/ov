@@ -209,5 +209,5 @@
   "recompensa": {
     "mensajeFin": "La sección Planes está abierta. Tu opción inicial, si la tienes, ya tiene dónde vivir."
   },
-  "mapa": { "x": 380, "y": 340, "icono": "informativa" }
+  "mapa": { "x": 450, "y": 110, "icono": "informativa" }
 }

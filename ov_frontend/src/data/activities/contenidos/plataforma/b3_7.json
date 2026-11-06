@@ -20,8 +20,8 @@
   "nodos": [],
   "desafio": "desafio-feriante",
   "mapa": {
-    "x": 630,
-    "y": 210,
+    "x": 370,
+    "y": 500,
     "icono": "test"
   }
 }

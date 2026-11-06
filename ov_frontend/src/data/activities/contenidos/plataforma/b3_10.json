@@ -290,5 +290,5 @@
     "mensajeFin": "Un giro a tiempo no es un fracaso: es la misma decisión, con mejor información. Se abrió una voz nueva en tu mochila y la conversación «Los caminos también cambian»."
   },
   "promptDiario": "Un viajero que ya pasó por aquí",
-  "mapa": { "x": 900, "y": 220, "icono": "informativa" }
+  "mapa": { "x": 250, "y": 420, "icono": "informativa" }
 }

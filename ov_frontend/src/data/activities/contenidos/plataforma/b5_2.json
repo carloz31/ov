@@ -83,8 +83,8 @@
     "mensajeFin": "Tu punto de llegada quedó registrado. Revélalo junto al de partida en el libro de Helena."
   },
   "mapa": {
-    "x": 160,
-    "y": 320,
+    "x": 240,
+    "y": 260,
     "icono": "test"
   }
 }

@@ -120,5 +120,5 @@
     "mensajeFin": "El artefacto está calibrado y la ciudad, abierta. También tu sección de familia: tu carta para tu apoderado te espera ahí."
   },
   "promptDiario": "Después de comparar",
-  "mapa": { "x": 800, "y": 200, "icono": "registro" }
+  "mapa": { "x": 800, "y": 160, "icono": "registro" }
 }

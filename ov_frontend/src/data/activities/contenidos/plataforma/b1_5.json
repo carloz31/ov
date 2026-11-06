@@ -14,5 +14,5 @@
   "personajeIds": ["aurelio", "companero"],
   "nodos": [],
   "desafio": "desafio-puente-mitos",
-  "mapa": { "x": 960, "y": 300, "icono": "test" }
+  "mapa": { "x": 1020, "y": 450, "icono": "test" }
 }

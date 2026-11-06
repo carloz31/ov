@@ -52,5 +52,5 @@
   "recompensa": {
     "mensajeFin": "Una voz es una sola voz. Lo que te llevas de ella sí es tuyo."
   },
-  "mapa": { "x": 940, "y": 320, "icono": "registro", "origen": "b3-10" }
+  "mapa": { "x": 180, "y": 500, "icono": "registro", "origen": "b3-10" }
 }

@@ -128,7 +128,6 @@ export function NodeRenderer({
         key={node.id}
         speakerId={node.hablanteId}
         text={node.texto}
-        hint="Una conversación, un paso más."
         onContinue={advance}
         onAnterior={onAnterior}
         typewriter={node.id !== alRetroceder}

@@ -307,5 +307,5 @@
   "recompensa": {
     "mensajeFin": "Un salario promedio es un dato de otras personas. Doña Cifra te espera en la plaza del mercado."
   },
-  "mapa": { "x": 290, "y": 300, "icono": "informativa" }
+  "mapa": { "x": 550, "y": 590, "icono": "informativa" }
 }

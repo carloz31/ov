@@ -170,5 +170,5 @@
   "recompensa": {
     "mensajeFin": "El cruce no elige por ti: muestra coincidencia, fricción y lo que falta averiguar. Se abrieron fortalezas, debilidades, obstáculos y oportunidades en tu tarjeta."
   },
-  "mapa": { "x": 140, "y": 380, "icono": "registro" }
+  "mapa": { "x": 140, "y": 450, "icono": "registro" }
 }

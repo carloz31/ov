@@ -98,5 +98,5 @@
   "recompensa": {
     "mensajeFin": "Tus reglas están escritas antes de mirar las opciones. Se abrieron las acciones de preparación en tu tarjeta."
   },
-  "mapa": { "x": 230, "y": 330, "icono": "registro" }
+  "mapa": { "x": 90, "y": 350, "icono": "registro" }
 }

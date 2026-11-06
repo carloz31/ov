@@ -207,5 +207,5 @@
   "recompensa": {
     "mensajeFin": "Tus tarjetas tienen con qué llenarse. Completarlas es libre; compararlas las necesita. El Eco espera en el borde."
   },
-  "mapa": { "x": 330, "y": 290, "icono": "informativa" }
+  "mapa": { "x": 200, "y": 350, "icono": "informativa" }
 }

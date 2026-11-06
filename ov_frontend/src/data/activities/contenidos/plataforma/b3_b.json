@@ -20,8 +20,8 @@
   "nodos": [],
   "desafio": "desafio-cifra-rutas",
   "mapa": {
-    "x": 660,
-    "y": 360,
+    "x": 280,
+    "y": 590,
     "icono": "test",
     "origen": "b3-5"
   }

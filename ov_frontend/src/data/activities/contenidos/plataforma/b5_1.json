@@ -220,8 +220,8 @@
   },
   "promptDiario": "Mi proyecto, en voz baja",
   "mapa": {
-    "x": 100,
-    "y": 400,
+    "x": 400,
+    "y": 250,
     "icono": "registro"
   }
 }
