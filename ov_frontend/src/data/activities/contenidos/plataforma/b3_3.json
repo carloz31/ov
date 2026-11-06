@@ -196,11 +196,11 @@
         {
           "tipo": "destacado",
           "variante": "dato",
-          "texto": "En el Perú, el 75,7 % de los trabajadores era informal en 2022 (MTPE) y, entre los menores de 25 años, más del 85 % (Inei). Trabajar informal es sin contrato, sin seguro, sin aporte para pensión y sin vacaciones pagadas. Los salarios que ves son los de la minoría formal, y un título que te abre la puerta al empleo formal vale más que la diferencia de sueldo que muestre."
+          "texto": "En el Perú, cerca de siete de cada diez personas que trabajan tienen empleo informal y, entre los de 14 a 24 años, más de ocho de cada diez (INEI, 2025–2026). Informal es sin seguridad social; suele venir sin contrato, sin pensión y sin vacaciones pagadas. Los salarios que ves son los de la minoría formal, y un título que te abre la puerta al empleo formal vale más que la diferencia de sueldo que muestre."
         },
         {
           "tipo": "fuente",
-          "texto": "Catálogo de la plataforma con datos de Ponte en Carrera (MTPE). Mi Carrera (MTPE). INEI, mercado laboral, citado por ProActivo (2024).",
+          "texto": "Catálogo de la plataforma con datos de Ponte en Carrera (MTPE). Mi Carrera (MTPE). INEI (2026), mercado laboral, abril 2025–marzo 2026.",
           "url": "https://micarrera.trabajo.gob.pe/"
         }
       ]
@@ -257,7 +257,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Otro me preguntó: «Si el 85 % de los jóvenes trabaja informal, ¿para qué estudiar, si igual voy a ganar menos de lo que dice la tabla?». ¿Qué le responderías?",
+      "enunciado": "Otro me preguntó: «Si más de ocho de cada diez jóvenes que trabajan lo hacen en la informalidad, ¿para qué estudiar, si igual voy a ganar menos de lo que dice la tabla?». ¿Qué le responderías?",
       "opciones": [
         {
           "id": "a",
@@ -275,7 +275,7 @@
           "id": "c",
           "texto": "Que la informalidad es un invento de las estadísticas.",
           "correcta": false,
-          "retroalimentacion": "Es un dato del MTPE y del Inei, y es de los más sólidos que hay sobre el trabajo en el Perú."
+          "retroalimentacion": "Es un dato del INEI, y es de los más sólidos que hay sobre el trabajo en el Perú."
         }
       ],
       "explicacion": "Las tablas de salario son de la minoría formal. Para tu decisión implica dos cosas: no esperar ese sueldo sin empleo formal, y valorar lo que te lleva a él.",

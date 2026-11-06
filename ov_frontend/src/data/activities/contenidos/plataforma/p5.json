@@ -56,7 +56,7 @@
               "id": "p5-02br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Hoy siete de cada diez profesionales trabajan en algo distinto a lo que estudiaron. Veamos qué significa."
+              "texto": "Hoy menos de la mitad de los egresados trabaja en algo vinculado a lo que estudió. Veamos qué significa."
             }
           ]
         },
@@ -108,11 +108,11 @@
             ],
             [
               "Una carrera «segura» garantiza empleo",
-              "Siete de cada diez profesionales trabajan en algo distinto a lo que estudiaron (MTPE, 2022)"
+              "Menos de la mitad de los egresados trabaja en una ocupación vinculada a lo que estudió (Minedu y UNESCO, 2026)"
             ],
             [
               "Con título hay trabajo formal",
-              "Más del 85 % de los menores de 25 años trabaja sin contrato ni seguro (Inei); el título ayuda a entrar al empleo formal, pero no lo garantiza"
+              "El 84,8 % de los ocupados de 14 a 24 años tiene empleo informal (INEI, abril 2025–marzo 2026); el título ayuda a entrar al empleo formal, pero no lo garantiza"
             ]
           ]
         }
@@ -140,7 +140,7 @@
         },
         {
           "tipo": "fuente",
-          "texto": "Mi Carrera (MTPE). Sunedu, consulta de licenciamiento. Pronabec, Beca 18 convocatoria 2026. La República (2026), acceso a educación superior. Andina (2025), inadecuación ocupacional.",
+          "texto": "Mi Carrera (MTPE). Sunedu, consulta de licenciamiento. Pronabec, Beca 18 convocatoria 2026. La República (2026), acceso a educación superior. INEI (2026), mercado laboral, abril 2025–marzo 2026. Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú.",
           "url": "https://micarrera.trabajo.gob.pe/"
         }
       ]
