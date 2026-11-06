@@ -104,6 +104,15 @@ test('Mis planes v4.2: A como ruta principal, B y C como rutas alternas compacta
   assert.doesNotMatch(texto(b), /tu ruta principal/)
 })
 
+test('la vista general de Mis planes lleva «Mi perfil» sobre el encabezado', async () => {
+  const { app } = misPlanes()
+  const vista = await montar(app, 'src/features/plans/components/MisPlanes.tsx')
+  const regreso = elementos(vista.render(), (e) => e.props?.className === 'sx-d-back')
+  assert.equal(regreso.length, 1)
+  assert.equal(regreso[0].props.to, '/student/profile')
+  assert.match(texto(regreso[0]), /Mi perfil/)
+})
+
 test('«Tu primer interés» y el sello «Plan completo» con las cuatro secciones listas; «Ver mi plan»', async () => {
   const { app } = misPlanes({ planes: completos })
   const vista = await montar(app, 'src/features/plans/components/MisPlanes.tsx')

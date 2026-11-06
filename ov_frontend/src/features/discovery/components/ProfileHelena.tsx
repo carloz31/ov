@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Lightbulb, Sparkles } from 'lucide-react'
+import { Lightbulb, LockKeyhole, Sparkles } from 'lucide-react'
 import { discoveryPaths } from '@/routes/discoveryPaths'
 import { Parchment } from '@/components/student/Parchment'
 import { Seal } from '@/components/student/Seal'
@@ -8,7 +8,18 @@ import type { HelenaPage } from '@/types/profile'
 type Pagina = HelenaPage & { llegadaPendiente: boolean }
 
 // Ajuste pasaporte-perfil: capítulo II, la página lista para romper destacada y el resto con su avance.
-export function ProfileHelena({ destacada, pages }: { destacada?: Pagina; pages: Pagina[] }) {
+export function ProfileHelena({
+  destacada,
+  pages,
+  bloqueo,
+  onBloqueado,
+}: {
+  destacada?: Pagina
+  pages: Pagina[]
+  // Ajuste libro-helena-regreso: con el libro cerrado, el enlace lleva candado y Lumi explica qué falta.
+  bloqueo?: string
+  onBloqueado?: () => void
+}) {
   return (
     <Parchment label="Capítulo II" title="Lo que Helena descubre de mí" className="sx-d-highlight sx-d-chapter">
       {destacada && (
@@ -47,8 +58,26 @@ export function ProfileHelena({ destacada, pages }: { destacada?: Pagina; pages:
           </div>
         </div>
       ))}
-      <Link className="sx-d-action sx-d-action-gold" to={discoveryPaths.helena}>
+      <Link
+        className="sx-d-action sx-d-action-gold"
+        to={discoveryPaths.helena}
+        title={bloqueo}
+        onClick={
+          onBloqueado
+            ? (event) => {
+                event.preventDefault()
+                onBloqueado()
+              }
+            : undefined
+        }
+      >
         Abrir el libro de Helena
+        {bloqueo && (
+          <>
+            <small className="sr-only">{bloqueo}</small>
+            <LockKeyhole className="sx-quick-lock" size={12} aria-hidden="true" />
+          </>
+        )}
       </Link>
     </Parchment>
   )

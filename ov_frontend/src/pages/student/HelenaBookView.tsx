@@ -1,8 +1,10 @@
 import { HelenaBookPages } from '@/features/discovery/components/HelenaBookPages'
 import { useHelenaPages } from '@/features/discovery/hooks/useHelenaPages'
-import { Eye } from 'lucide-react'
+import { Link } from 'react-router'
+import { ArrowLeft, Eye } from 'lucide-react'
 import { DiscoveryStage } from '@/features/discovery/components/DiscoveryStage'
 import { Seal } from '@/components/student/Seal'
+import { appPaths } from '@/routes/paths'
 import '@/features/discovery/styles/helena-book.css'
 
 export function HelenaBookView() {
@@ -12,6 +14,10 @@ export function HelenaBookView() {
   return (
     <DiscoveryStage ambient="profile">
       <div className="sx-d-helena-book">
+        <Link className="sx-d-back" to={appPaths.student.profile}>
+          <ArrowLeft aria-hidden="true" />
+          Mi perfil
+        </Link>
         <header className="sx-d-header">
           <div>
             <h1>El libro de Helena</h1>

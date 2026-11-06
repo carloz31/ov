@@ -10,7 +10,9 @@ import { ProfilePlans } from '@/features/discovery/components/ProfilePlans'
 
 export function StudentProfileView() {
   const perfil = useStudentProfile()
-  const planes = useSeccionesAcceso()('PLANES')
+  const acceso = useSeccionesAcceso()
+  const planes = acceso('PLANES')
+  const libro = acceso('LIBRO_HELENA')
   const { openGuide } = useStudentOverlays()
   return (
     <DiscoveryStage ambient="profile">
@@ -24,7 +26,12 @@ export function StudentProfileView() {
       />
       <div className="sx-d-columns">
         <ProfileAchievements sellos={perfil.sellos} obtenidas={perfil.badges.length} siguiente={perfil.siguiente} />
-        <ProfileHelena destacada={perfil.destacada} pages={perfil.pages} />
+        <ProfileHelena
+          destacada={perfil.destacada}
+          pages={perfil.pages}
+          bloqueo={libro.bloqueada ? libro.mensaje : undefined}
+          onBloqueado={libro.pasos ? () => openGuide(libro.pasos!) : undefined}
+        />
         <ProfilePlans
           plans={perfil.plans}
           espacioLibre={perfil.espacioLibre}

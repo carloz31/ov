@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { CircleAlert, Eye } from 'lucide-react'
+import { ArrowLeft, CircleAlert, Eye } from 'lucide-react'
 import { useReturnFocus } from '@/hooks/useReturnFocus'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { PantallaCarga } from '@/components/student/PantallaCarga'
@@ -84,6 +84,10 @@ export function MisPlanes() {
   )
   return (
     <>
+      <Link className="sx-d-back" to={appPaths.student.profile}>
+        <ArrowLeft aria-hidden="true" />
+        Mi perfil
+      </Link>
       <header className="sx-d-header">
         <div>
           <h1>Mis planes</h1>

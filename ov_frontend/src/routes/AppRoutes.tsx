@@ -4,6 +4,7 @@ import { SoloLocal } from './SoloLocal'
 import { SegunModo } from './SegunModo'
 import { subrutasFamilia } from './SubrutasFamilia'
 import { rutasInvestigaciones } from './SubrutasInvestigaciones'
+import { rutasLibroHelena } from './SubrutasLibroHelena'
 import { subrutasExplorar } from './SubrutasExplorar'
 import { SeccionProtegida } from '@/features/adventure/components/SeccionProtegida'
 import { Navigate, Route, Routes } from 'react-router'
@@ -29,8 +30,6 @@ import { InstitutionDetailView } from '@/pages/student/InstitutionDetailView'
 import { StudentPlansView } from '@/pages/student/StudentPlansView'
 import { StudentPlanView } from '@/pages/student/StudentPlanView'
 import { ProfileRoute } from '@/pages/student/ProfileRoute'
-import { HelenaBookView } from '@/pages/student/HelenaBookView'
-import { HelenaResultView } from '@/pages/student/HelenaResultView'
 import { StudentShell } from '@/pages/student/StudentShell'
 import { StudentThemeScope } from '@/pages/student/StudentThemeScope'
 import { StudentActivitiesView } from '@/pages/student/StudentActivitiesView'
@@ -187,8 +186,7 @@ function AppRoutes() {
             path="catalog/institutions/:institutionId"
           />
           <Route element={<ProfileRoute />} path="profile" />
-          <Route element={<HelenaBookView />} path="profile/helena" />
-          <Route element={<HelenaResultView />} path="profile/helena/:pagina" />
+          {rutasLibroHelena()}
           <Route
             element={
               <SeccionProtegida seccion="PLANES">

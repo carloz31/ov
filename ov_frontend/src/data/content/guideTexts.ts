@@ -46,6 +46,12 @@ export const textosBloqueo = {
       'Aquí podrás investigar una familia de carreras entrevistando a alguien que trabaja en ella, y ver las entrevistas de tu salón.',
     final: 'Todavía no puedes investigar.',
   },
+  // Ajuste libro-helena-regreso
+  LIBRO_HELENA: {
+    adelanto:
+      'Helena guarda un libro con lo que va descubriendo de ti. Se abre cuando respondes sus primeras preguntas.',
+    final: 'Todavía no puedes abrirlo.',
+  },
 }
 export type CodigoBloqueo = keyof typeof textosBloqueo
 export const pasosBloqueo = (codigo: CodigoBloqueo, mensaje: string) => [

@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import { CircleHelp, ClipboardList, KeyRound, LayoutGrid, Map, MessageCircle } from 'lucide-react'
 import { Link } from 'react-router'
+import { discoveryPaths } from '@/routes/discoveryPaths'
 import { appPaths } from '@/routes/paths'
 import type { ExtraCierre } from '../lib/finishSummary'
 
@@ -19,6 +20,7 @@ const rutasSeccion: Record<string, string> = {
   CATALOGO: appPaths.student.catalog.professions,
   PLANES: appPaths.student.decisions,
   FAMILIA: appPaths.student.conversations,
+  LIBRO_HELENA: discoveryPaths.helena,
 }
 // Las actividades nuevas y las zonas del camino no llevan enlace: «Volver al mapa» ya cumple esa función. La
 // sección de planes y las conversaciones tampoco: el usuario las quiere como filas informativas. Solo la Ciudad lleva «Ir».
