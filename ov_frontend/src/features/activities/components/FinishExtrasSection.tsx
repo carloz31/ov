@@ -21,10 +21,9 @@ const rutasSeccion: Record<string, string> = {
   FAMILIA: appPaths.student.conversations,
 }
 // Las actividades nuevas y las zonas del camino no llevan enlace: «Volver al mapa» ya cumple esa función. La
-// sección de planes tampoco: el usuario la quiere como fila informativa. Solo la Ciudad lleva «Ir».
+// sección de planes y las conversaciones tampoco: el usuario las quiere como filas informativas. Solo la Ciudad lleva «Ir».
 function enlace(e: ExtraCierre) {
   if (e.tipo === 'BLOQUE') return e.codigo === 'CIUDAD' ? appPaths.student.exploration : undefined
-  if (e.tipo === 'CONVERSACIONES') return appPaths.student.conversations
   return undefined
 }
 

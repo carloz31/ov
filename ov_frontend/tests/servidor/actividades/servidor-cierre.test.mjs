@@ -252,7 +252,8 @@ test('«Se abrió para ti» enlaza cada sección y la zona; las filas de planes 
   assert.match(filas[2], /La ciudad te espera.*href="\/student\/exploration"/)
   assert.match(filas[3], /2 actividades nuevas en el mapa/)
   assert.doesNotMatch(filas[3], /<a /)
-  assert.match(filas[4], /Conversaciones disponibles.*href="\/student\/conversations"/)
+  assert.match(filas[4], /Conversaciones disponibles/)
+  assert.doesNotMatch(filas[4], /<a /)
 })
 
 test('el número de recursos de la mochila decide en qué columna va «Se abrió para ti»', () => {
