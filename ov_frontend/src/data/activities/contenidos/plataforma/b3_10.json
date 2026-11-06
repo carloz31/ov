@@ -30,6 +30,7 @@
     {
       "id": "b3-10-03",
       "tipo": "eleccion",
+      "enunciado": "¿Qué le respondes?",
       "registrar": false,
       "opciones": [
         {
@@ -250,6 +251,7 @@
     {
       "id": "b3-10-13",
       "tipo": "eleccion",
+      "enunciado": "¿Qué le respondes?",
       "registrar": false,
       "opciones": [
         {

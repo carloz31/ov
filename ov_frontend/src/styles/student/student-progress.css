@@ -103,7 +103,6 @@
   border-top: 3px solid var(--est-panel-acento);
 }
 .sx-root .sx-scene-space:has(.sx-check-panel) {
-  align-items: flex-start;
   padding-bottom: 16px;
 }
 .sx-root .sx-check-panel :is(h1, h2, h3) {

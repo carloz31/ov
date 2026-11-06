@@ -1890,10 +1890,14 @@ body:has([data-student-experience] .sx-shell) {
   display: flex;
   flex: 1;
   min-height: 0;
-  align-items: center;
+  /* Centrado con márgenes del panel: con align-items: center, lo que desborda por arriba no se alcanza con scroll. */
+  align-items: flex-start;
   justify-content: center;
   overflow-y: auto;
   padding: 8px 0 48px;
+}
+.sx-root .sx-scene-space > .sx-scene-panel:not(.sx-check-panel) {
+  margin-block: auto;
 }
 .sx-root .sx-scene-panel {
   width: min(640px, 100%);
@@ -2776,6 +2780,41 @@ body:has([data-student-experience] .sx-shell) {
   .sx-root.sx-player .sx-dialogue-box footer > .sx-primary-button {
     width: calc((100% - 8px) * 2 / 3);
     margin-left: auto;
+  }
+  /* Cuestionario del servidor con 5 opciones: pregunta, opciones y botones a la vista en 375×812. */
+  .sx-root .sx-player-scene.sx-item-compacto .sx-scene-space {
+    padding: 0 0 20px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-scene-panel {
+    padding: 12px 16px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-scene-panel h2 {
+    font-size: 20px;
+    margin: 0 0 4px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-player-options {
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-player-option {
+    min-height: 44px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-player-note {
+    font-size: 13px;
+    line-height: 1.35;
+    margin: 8px 0 0;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-step-footer {
+    margin-top: 8px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-dialogue-box {
+    min-height: 0;
+    padding: 12px 16px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-dialogue-box footer {
+    display: none;
   }
 }
 @container (max-width: 320px) {

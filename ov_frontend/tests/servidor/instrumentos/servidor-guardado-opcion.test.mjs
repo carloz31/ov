@@ -46,6 +46,27 @@ test('mientras guarda, «Continuar» lleva el cargador y todas las opciones qued
   assert.doesNotMatch(libre, /sx-player-option[^>]*disabled/)
 })
 
+test('la escena compacta es solo de un ítem del servidor con 5 opciones', () => {
+  const { ItemNode } = fixtureServidor().load('src/features/activities/components/nodes/ItemNode.tsx')
+  const conOpciones = (n) => Array.from({ length: n }, (_, i) => ({ value: i + 1, text: `Opción ${i + 1}` }))
+  const escena = (n, confirmar) =>
+    renderToStaticMarkup(
+      React.createElement(ItemNode, {
+        node: { ...nodo, hablanteId: 'lumi' },
+        text: ITEM.enunciado,
+        options: conOpciones(n),
+        direct: false,
+        confirmar,
+        onAnswer() {},
+        onContinue() {},
+      }),
+    )
+  assert.match(escena(5, true), /class="sx-player-scene sx-item-compacto"/)
+  assert.match(escena(4, true), /class="sx-player-scene"/)
+  // Sin confirmar (modo local), el marcado no cambia aunque tenga 5 opciones.
+  assert.match(escena(5, false), /class="sx-player-scene"/)
+})
+
 test('con confirmar, elegir solo marca; «Continuar» envía la elegida (o avanza si no cambió); sin él, el lapso local', async () => {
   const app = fixtureServidor()
   const { ItemNode } = app.load('src/features/activities/components/nodes/ItemNode.tsx')

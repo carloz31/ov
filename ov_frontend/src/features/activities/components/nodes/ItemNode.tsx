@@ -142,7 +142,8 @@ export function ItemNode({
       <section className="sx-glass-dark sx-player-card sx-item-card case-scrollbar">{panel}</section>
     </div>
   ) : (
-    <div className="sx-player-scene">
+    // Api, celular: con 5 opciones, la pregunta, las opciones y los botones caben sin scroll (.sx-item-compacto).
+    <div className={`sx-player-scene${confirmar && options.length >= 5 ? ' sx-item-compacto' : ''}`}>
       <div className="sx-scene-space">
         <section className="sx-glass-dark sx-scene-panel">{panel}</section>
       </div>

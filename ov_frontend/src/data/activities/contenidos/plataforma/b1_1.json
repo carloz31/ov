@@ -31,6 +31,7 @@
     {
       "id": "b1-1-03",
       "tipo": "eleccion",
+      "enunciado": "¿Qué le respondes?",
       "registrar": false,
       "opciones": [
         {
