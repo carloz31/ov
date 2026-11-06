@@ -10,6 +10,7 @@ import { AtlasNavigation } from './AtlasNavigation'
 import { AvisoFavorito } from './AvisoFavorito'
 import { BloquePlanCarrera } from './BloquePlanCarrera'
 import { CarrerasParecidas } from './CarrerasParecidas'
+import { EntrevistasFamilia } from './EntrevistasFamilia'
 import { CatalogRevisitNotice } from './CatalogRevisitNotice'
 import { DiscoveryStage } from './DiscoveryStage'
 import { DondeEstudiarla } from './DondeEstudiarla'
@@ -23,7 +24,7 @@ import '../styles/catalogo.css'
 
 // F06 · ajuste catalogo-datos-reales (F6b): el detalle de carrera en api. Cabecera con tipo, área y familia,
 // «Guardar» y «Hacer mi plan» (ajuste resultados-intereses); qué trata, dónde trabajar e ingresos; al lado, dónde
-// estudiarla, las parecidas y el lugar inesperado; debajo, las ocupaciones a las que lleva su familia; al pie, las
+// estudiarla, las parecidas, las entrevistas de su familia y el lugar inesperado; debajo, las ocupaciones a las que lleva su familia; al pie, las
 // fuentes.
 // Ajuste catalogo-apoderado: en modo lectura, sin favorito, plan ni lugar inesperado.
 export function DetalleCarreraServidor({
@@ -124,6 +125,7 @@ export function DetalleCarreraServidor({
         <aside className="sx-d-stack">
           <DondeEstudiarla instituciones={carrera.instituciones} />
           <CarrerasParecidas parecidas={carrera.parecidas} familia={carrera.familia} />
+          {!modoLectura && <EntrevistasFamilia codigo={carrera.familia.codigo} />}
           {!modoLectura && <UnexpectedPlace kind="career" currentId={carrera.codigo} />}
         </aside>
       </div>

@@ -24,7 +24,7 @@ export function TarjetaEnCurso({
           Cancelar investigación
         </button>
       </div>
-      <h2 id="en-curso-titulo">{enCurso.ocupacion.titulo}</h2>
+      <h2 id="en-curso-titulo">{enCurso.familia.nombre}</h2>
       <ol className="sx-i-pasos">
         <li className="sx-i-paso" data-hecho={lista || undefined}>
           {lista ? <Check aria-hidden="true" size={18} /> : <span className="sx-i-paso-numero">1</span>}

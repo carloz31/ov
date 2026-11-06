@@ -188,12 +188,12 @@ def test_leyenda_con_destacado_y_favoritos(cliente, aplicacion):
 def entrevistas_directas(sesion, cantidad):
     """DATO DE PRUEBA: entrevistas de Ana escritas en la base, con una reacción, un favorito y un reporte cada una."""
     ana, luis = (sesion.scalar(select(modelos.Cuenta).where(modelos.Cuenta.codigo == c)) for c in ('est-ana', 'est-luis'))
-    ocupacion = sesion.scalar(select(modelos.Ocupacion.id).where(modelos.Ocupacion.codigo == '47-2111.00'))
+    familia = sesion.scalar(select(modelos.FamiliaCarrera.id).where(modelos.FamiliaCarrera.codigo == '524'))
     tipo = sesion.scalar(select(modelos.TipoReaccion.id).where(modelos.TipoReaccion.codigo == 'ME_GUSTO'))
     fecha = datetime.fromisoformat(FECHA)
     for n in range(cantidad):
-        entrevista = modelos.Entrevista(codigo=f'ENT-EXTRA-{n}', ocupacion_id=ocupacion, titulo='DATO DE PRUEBA',
-                                        profesional='DATO DE PRUEBA', duracion='10 min', enlace=ENLACE,
+        entrevista = modelos.Entrevista(codigo=f'ENT-EXTRA-{n}', familia_id=familia, titulo='DATO DE PRUEBA',
+                                        profesional='DATO DE PRUEBA', dedicacion='DATO DE PRUEBA', duracion='10 min', enlace=ENLACE,
                                         resumen='DATO DE PRUEBA', busqueda='dato de prueba', estado='PUBLICADA',
                                         fecha_hora=fecha)
         sesion.add(entrevista)

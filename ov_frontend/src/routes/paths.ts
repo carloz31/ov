@@ -22,10 +22,11 @@ const appPaths = {
     research: '/student/research',
     // F09 (api): Investigaciones, el asistente del guion (paso 1–3), publicar o editar la ficha y una entrevista.
     investigations: '/student/investigations',
-    investigationGuide: (paso?: number, ocupacion?: string) =>
-      `/student/investigations/guion${paso || ocupacion ? '?' : ''}${[
+    investigationsFamily: (familia: string) => `/student/investigations?familia=${encodeURIComponent(familia)}`,
+    investigationGuide: (paso?: number, familia?: string) =>
+      `/student/investigations/guion${paso || familia ? '?' : ''}${[
         paso ? `paso=${paso}` : '',
-        ocupacion ? `ocupacion=${encodeURIComponent(ocupacion)}` : '',
+        familia ? `familia=${encodeURIComponent(familia)}` : '',
       ]
         .filter(Boolean)
         .join('&')}`,

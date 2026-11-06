@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { pasoInvestigacion, sellosVitrina } from '@/lib/servidor/adaptadoresInvestigaciones'
+import { useOpcionesCatalogo } from '@/store/servidor/catalogo'
 import { cuentaActiva } from '@/store/servidor/cuenta'
 import {
   cargarListaEntrevistas,
@@ -23,7 +24,8 @@ const VISTAS: Record<string, VistaEntrevistas> = { salon: 'SALON', leyendas: 'LE
 export type Chip = 'favoritas' | 'no_vistas' | 'destacadas'
 
 // F09 (api): el listado de Investigaciones. La vista va en la URL (`?vista=leyendas|mias`) para volver a ella
-// desde un detalle; la búsqueda espera 300 ms; los chips y el orden no aplican a Mis investigaciones.
+// desde un detalle; la búsqueda espera 300 ms; los chips y el orden no aplican a Mis investigaciones. `?familia=`
+// (desde el detalle de una carrera) filtra las tres vistas y se quita con su chip.
 export function useInvestigacionesListado() {
   const seccion = useInvestigacionesServidorSeccion(true)
   // Los nombres de los sellos de la vitrina de los aliados salen de los logros propios.
@@ -31,6 +33,9 @@ export function useInvestigacionesListado() {
   const [params, setParams] = useSearchParams()
   const navegar = useNavigate()
   const vista = VISTAS[params.get('vista') ?? ''] ?? 'SALON'
+  const familia = params.get('familia') ?? undefined
+  const familias = useOpcionesCatalogo(!!familia)?.familias
+  const nombreFamilia = familias?.find((f) => f.codigo === familia)?.nombre ?? null
   const [texto, setTexto] = useState('')
   const [buscar, setBuscar] = useState('')
   const [chips, setChips] = useState<Record<Chip, boolean>>({
@@ -46,14 +51,17 @@ export function useInvestigacionesListado() {
     return () => clearTimeout(espera)
   }, [texto])
   const filtros: FiltrosEntrevistas =
-    vista === 'MIAS' ? { vista, buscar } : { vista, buscar, ...chips, orden }
+    vista === 'MIAS' ? { vista, buscar, familia } : { vista, buscar, familia, ...chips, orden }
   const lista = useListaEntrevistas('entrevistas', filtros, true)
   const datos = seccion.datos
   const enCurso = datos?.en_curso ?? null
 
   const elegirVista = (siguiente: VistaEntrevistas) => {
     const clave = Object.keys(VISTAS).find((k) => VISTAS[k] === siguiente)!
-    setParams(siguiente === 'SALON' ? {} : { vista: clave }, { replace: true })
+    setParams(
+      { ...(siguiente === 'SALON' ? {} : { vista: clave }), ...(familia ? { familia } : {}) },
+      { replace: true },
+    )
   }
   async function alternarFavorito(codigo: string, marcar: boolean) {
     if (favoritosPendientes.includes(codigo)) return
@@ -84,6 +92,12 @@ export function useInvestigacionesListado() {
     pasoGuion: pasoInvestigacion(enCurso),
     vista,
     elegirVista,
+    familia,
+    nombreFamilia,
+    quitarFamilia: () => {
+      const clave = Object.keys(VISTAS).find((k) => VISTAS[k] === vista)!
+      setParams(vista === 'SALON' ? {} : { vista: clave }, { replace: true })
+    },
     texto,
     buscarTexto: setTexto,
     chips,

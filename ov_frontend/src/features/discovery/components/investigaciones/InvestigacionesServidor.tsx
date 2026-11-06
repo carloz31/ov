@@ -85,6 +85,8 @@ export function InvestigacionesServidor() {
         onChip={v.alternarChip}
         orden={v.orden}
         onOrden={v.setOrden}
+        familia={v.familia ? (v.nombreFamilia ?? 'la elegida') : null}
+        onQuitarFamilia={v.quitarFamilia}
       />
       <div className="sx-i-grilla" aria-busy={v.buscando || v.cargandoMas}>
         {mias && enCurso && (
@@ -113,8 +115,8 @@ export function InvestigacionesServidor() {
           <section className="sx-i-invitacion">
             <h2>¿Y la tuya?</h2>
             <p>
-              Investiga una ocupación que te intrigue y compártela con tu salón. Las mejores llegan al Salón
-              de Leyendas y ayudan a las promociones que vienen.
+              Investiga una familia de carreras que te intrigue y comparte la entrevista con tu salón. Las
+              mejores llegan al Salón de Leyendas y ayudan a las promociones que vienen.
             </p>
           </section>
         )}
@@ -129,7 +131,7 @@ export function InvestigacionesServidor() {
       )}
       {!mias && lista?.estado === 'listo' && lista.items.length === 0 && (
         <p className="sx-i-nota">
-          {v.texto.trim() || Object.values(v.chips).some(Boolean)
+          {v.texto.trim() || v.familia || Object.values(v.chips).some(Boolean)
             ? 'No hay entrevistas que coincidan con tu búsqueda o tus filtros.'
             : v.vista === 'LEYENDAS'
               ? 'Todavía no hay Leyendas.'
@@ -160,7 +162,7 @@ export function InvestigacionesServidor() {
       <ConfirmarInvestigacion
         abierto={confirmar}
         titulo="¿Cancelar tu investigación?"
-        descripcion="Se borran tu guion y lo que pensabas de la ocupación, y dejas de aparecer como aliado. No se puede deshacer."
+        descripcion="Se borran tu guion y lo que pensabas de este trabajo, y dejas de aparecer como aliado. No se puede deshacer."
         confirmar="Cancelar investigación"
         ocupado={v.cancelando}
         onConfirmar={() => void v.cancelar().then((ok) => ok && setConfirmar(false))}

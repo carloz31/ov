@@ -236,6 +236,48 @@ def test_migracion_0045_saca_el_video_del_enlace_y_lo_reconstruye_al_bajar(tmp_p
         motor.dispose()
 
 
+def test_migracion_0046_vacia_las_entrevistas_y_conserva_el_resto(tmp_path, monkeypatch):
+    url = f'sqlite:///{(tmp_path / "entrevistas.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    command.upgrade(configuracion, '0045')
+    motor = database.crear_motor_bd(url)
+    fecha = '2026-10-07 10:00:00'
+    try:
+        with motor.begin() as conexion:
+            # DATO DE PRUEBA: una entrevista sobre una ocupación, con su investigación, y lo que no debe borrarse.
+            conexion.execute(text("INSERT INTO salon (id, codigo, nombre) VALUES (1, '5A', 'Quinto A')"))
+            conexion.execute(text("INSERT INTO cuenta (id, codigo, nombre, rol, salon_id, activa) "
+                                  "VALUES (1, 'est', 'E', 'ESTUDIANTE', 1, 1)"))
+            conexion.execute(text("INSERT INTO grupo_ocupacional (codigo, nombre) VALUES ('15', 'G')"))
+            conexion.execute(text("INSERT INTO ocupacion (id, codigo, codigo_onet, titulo, grupo, busqueda) "
+                                  "VALUES (1, 'o', 'o', 'O', '15', 'o')"))
+            conexion.execute(text(
+                "INSERT INTO entrevista (id, codigo, ocupacion_id, titulo, profesional, duracion, enlace, resumen, "
+                f"busqueda, estado, fecha_hora) VALUES (1, 'ENT', 1, 'T', 'P', 'D', 'E', 'R', 'B', 'PUBLICADA', '{fecha}')"))
+            conexion.execute(text(
+                "INSERT INTO investigacion (id, codigo, cuenta_id, ocupacion_id, estado, piensa_dia, piensa_necesita, "
+                f"piensa_duda, creada_en, entrevista_id) VALUES (1, 'INV', 1, 1, 'PUBLICADA', 'a', 'b', 'c', '{fecha}', 1)"))
+            conexion.execute(text("INSERT INTO entrevista_autor (entrevista_id, cuenta_id) VALUES (1, 1)"))
+            conexion.execute(text(f"INSERT INTO favorito (cuenta_id, tipo, id_referencia, fecha_hora) VALUES "
+                                  f"(1, 'ENTREVISTA', 1, '{fecha}'), (1, 'OCUPACION', 1, '{fecha}')"))
+            conexion.execute(text(f"INSERT INTO evento_uso (cuenta_id, tipo, fecha_hora, id_referencia) VALUES "
+                                  f"(1, 'PUBLICA_ENTREVISTA', '{fecha}', 1), (1, 'VISTA_OCUPACION', '{fecha}', 1)"))
+        command.upgrade(configuracion, '0046')
+        with motor.connect() as conexion:
+            for tabla in ('entrevista', 'investigacion', 'entrevista_autor'):
+                assert conexion.execute(text(f'SELECT count(*) FROM {tabla}')).scalar() == 0, tabla
+            assert conexion.execute(text('SELECT tipo FROM favorito')).scalars().all() == ['OCUPACION']
+            assert conexion.execute(text('SELECT tipo FROM evento_uso')).scalars().all() == ['VISTA_OCUPACION']
+            columnas = {c['name'] for c in inspect(conexion).get_columns('entrevista')}
+            assert {'familia_id', 'dedicacion'} <= columnas and 'ocupacion_id' not in columnas
+        command.downgrade(configuracion, '0045')
+        with motor.connect() as conexion:
+            assert 'ocupacion_id' in {c['name'] for c in inspect(conexion).get_columns('investigacion')}
+    finally:
+        motor.dispose()
+
+
 @pytest.mark.parametrize('contenido, visibilidad', [(None, 'SIEMPRE'), ('prueba', None), ('prueba', 'INVALIDA')])
 def test_columnas_de_actividad_rechazan_nulos_y_visibilidad_invalida(base_migrada, contenido, visibilidad):
     _, _, motor = base_migrada

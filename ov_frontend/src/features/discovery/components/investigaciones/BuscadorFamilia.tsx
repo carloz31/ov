@@ -1,27 +1,28 @@
 import { Loader2, Search } from 'lucide-react'
-import type { OcupacionBreve } from '@/types/servidor'
-import { useBuscadorOcupacion } from '../../hooks/useBuscadorOcupacion'
+import type { FamiliaBreve } from '@/types/servidor'
+import { useBuscadorFamilia } from '../../hooks/useBuscadorFamilia'
 
-// F09 (boceto 09): la ocupación a investigar, solo del catálogo. Elegida, queda como chip con «Cambiar».
-export function BuscadorOcupacion({
-  ocupacion,
+// Ajuste entrevistas por familia: la familia de carreras a investigar, solo del catálogo. Elegida, queda como chip
+// con «Cambiar».
+export function BuscadorFamilia({
+  familia,
   onElegir,
   onCambiar,
 }: {
-  ocupacion: OcupacionBreve | null
-  onElegir: (ocupacion: OcupacionBreve) => void
+  familia: FamiliaBreve | null
+  onElegir: (familia: FamiliaBreve) => void
   onCambiar: () => void
 }) {
-  const b = useBuscadorOcupacion(onElegir)
+  const b = useBuscadorFamilia(onElegir)
   const abierto = b.estado !== 'inactivo'
   return (
     <div className="sx-i-buscador">
       <label className="sx-i-buscador-campo">
         <Search aria-hidden="true" size={18} />
-        <span className="sr-only">Busca la ocupación</span>
-        {ocupacion ? (
-          <span className="sx-i-chip-ocupacion">
-            {ocupacion.titulo}
+        <span className="sr-only">Busca la familia de carreras</span>
+        {familia ? (
+          <span className="sx-i-chip-familia">
+            {familia.nombre}
             <button type="button" onClick={onCambiar}>
               Cambiar
             </button>
@@ -30,24 +31,24 @@ export function BuscadorOcupacion({
           <input
             role="combobox"
             aria-expanded={b.estado === 'listo'}
-            aria-controls="ocupaciones-resultados"
-            aria-activedescendant={b.estado === 'listo' ? `ocupacion-${b.activo}` : undefined}
+            aria-controls="familias-resultados"
+            aria-activedescendant={b.estado === 'listo' ? `familia-${b.activo}` : undefined}
             value={b.texto}
-            placeholder="Escribe una ocupación…"
+            placeholder="Escribe una familia de carreras…"
             onChange={(e) => b.escribir(e.target.value)}
             onKeyDown={b.alTeclear}
           />
         )}
         {b.estado === 'escribiendo' && <Loader2 aria-hidden="true" size={16} className="animate-spin" />}
       </label>
-      {!ocupacion && abierto && (
+      {!familia && abierto && (
         <div className="sx-i-resultados" aria-live="polite">
           {b.estado === 'listo' && (
-            <ul id="ocupaciones-resultados" role="listbox">
+            <ul id="familias-resultados" role="listbox">
               {b.resultados.map((r, i) => (
                 <li
                   key={r.codigo}
-                  id={`ocupacion-${i}`}
+                  id={`familia-${i}`}
                   role="option"
                   aria-selected={i === b.activo}
                   onMouseEnter={() => b.setActivo(i)}
@@ -56,14 +57,14 @@ export function BuscadorOcupacion({
                     b.elegir(r)
                   }}
                 >
-                  <span>{r.titulo}</span>
-                  <small>{b.grupo(r.grupo)}</small>
+                  <span>{r.nombre}</span>
+                  <small>{r.area_nombre}</small>
                 </li>
               ))}
             </ul>
           )}
           {b.estado === 'listo' && <small>Máximo 8 resultados · flechas y Enter para elegir</small>}
-          {b.estado === 'sin_resultados' && <p>No encontramos esa ocupación. Prueba con otra palabra.</p>}
+          {b.estado === 'sin_resultados' && <p>No encontramos esa familia. Prueba con otra palabra.</p>}
           {b.estado === 'error' && (
             <p>
               No pudimos buscar ahora.{' '}

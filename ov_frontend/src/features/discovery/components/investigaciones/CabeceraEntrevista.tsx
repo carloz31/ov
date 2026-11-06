@@ -2,7 +2,6 @@ import { Crown, Loader2, Star } from 'lucide-react'
 import { Link } from 'react-router'
 import { fechaCorta, ordenarAutores } from '@/lib/servidor/adaptadoresInvestigaciones'
 import { appPaths } from '@/routes/paths'
-import { discoveryPaths } from '@/routes/discoveryPaths'
 import type { ModeloDetalle } from '../../hooks/useEntrevistaDetalle'
 import { AutorEntrevista } from './AutorEntrevista'
 import { MenuOpciones } from './MenuOpciones'
@@ -79,14 +78,20 @@ export function CabeceraEntrevista({ m }: { m: ModeloDetalle }) {
         </div>
         <p className="sx-i-kicker">
           Entrevista ·{' '}
-          <Link className="sx-i-enlace-ocupacion" to={discoveryPaths.occupation(e.ocupacion.codigo)}>
-            {e.ocupacion.titulo}
+          <Link
+            className="sx-i-enlace-familia"
+            to={`${appPaths.student.catalog.careers}?${new URLSearchParams({
+              area: e.familia.area_codigo,
+              familia: e.familia.codigo,
+            })}`}
+          >
+            {e.familia.nombre}
           </Link>{' '}
           · Publicada el {fechaCorta(e.fecha_hora)}
         </p>
         <h1>{e.titulo}</h1>
         <p className="sx-i-meta">
-          Entrevista a <strong>{e.profesional}</strong> · {e.duracion}
+          Entrevista a <strong>{e.profesional}</strong> · {e.dedicacion} · {e.duracion}
         </p>
         <p className="sx-i-resumen">{e.resumen}</p>
         <div className="sx-i-autores">

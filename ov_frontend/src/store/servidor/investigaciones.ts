@@ -44,26 +44,12 @@ const propia =
     return respuesta.tipo === 'ok' ? { tipo: 'ok', datos: respuesta.datos.por_cuenta[cuenta] } : respuesta
   }
 
-// Paso 1: el buscador de ocupación (hasta 8, del catálogo). Una búsqueda nueva cancela la anterior con `senal`.
-export const MAXIMO_OCUPACIONES_BUSCADOR = 8
-export const buscarOcupaciones = (texto: string, senal: AbortSignal) =>
-  consultarCuenta((cuenta) =>
-    apiCatalogo.buscarCatalogo(
-      cuenta,
-      'ocupaciones',
-      { buscar: texto },
-      MAXIMO_OCUPACIONES_BUSCADOR,
-      0,
-      senal,
-    ),
-  )
-// «Investigarla» desde el detalle de una ocupación: su título.
-export const consultarOcupacionInvestigar = (codigo: string) =>
-  consultarCuenta((cuenta) => apiCatalogo.obtenerOcupacion(cuenta, codigo))
+// Paso 1: las familias de carreras del catálogo, para buscar o para nombrar la que llega por la URL.
+export const consultarFamiliasInvestigar = () => consultarCuenta((cuenta) => apiCatalogo.obtenerFamilias(cuenta))
 
-export const guardarLoQuePienso = (ocupacion: string, dia: string, necesita: string, duda: string) =>
+export const guardarLoQuePienso = (familia: string, dia: string, necesita: string, duda: string) =>
   accionInvestigacion((cuenta) =>
-    apiInvestigaciones.guardarLoQuePienso(cuenta, ocupacion, dia, necesita, duda),
+    apiInvestigaciones.guardarLoQuePienso(cuenta, familia, dia, necesita, duda),
   )
 
 // Una lectura con efecto: las sugerencias quedan guardadas y `sugerencias_vigentes` pasa a verdadero.

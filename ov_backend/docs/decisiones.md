@@ -20,3 +20,12 @@
 - `TipoObjetivo` del front decía `CONVERSACIONES` y el backend envía `CONVERSACION`, así que la fila «Conversaciones disponibles» del cierre nunca salía. Se corrige el tipo y el filtro de `finishSummary`, y se adapta la entrada de tres pruebas de `servidor-cierre`, que usaban ese nombre directamente o por los fixtures antiguos `completar-mission-next-step.json` y `desbloqueos-no-vistos.json` (no generados, no se editan); lo encontró la prueba en la aplicación real.
 - Tres textos encontrados en la prueba real (aprobado por el usuario): con el otro ya respondido, la nota al responder dice que no se podrá editar, porque la anterior prometía lo contrario; «Tema N de M listo» pasa a «X de M temas listos», porque usaba el orden del tema y no lo respondido; `p6.json` deja de decir «la primera se abre», porque el apoderado las ve todas.
 - «Conversaciones disponibles» en el cierre es una fila informativa, sin «Ir», por pedido del usuario al verla en pantalla; se adapta la prueba que exigía el enlace.
+
+## Ajuste entrevistas por familia
+
+- Modelo (migración 0046): `investigacion` y `entrevista` apuntan a `familia_carrera` en lugar de `ocupacion`, y `entrevista` suma `dedicacion`, para que más estudiantes coincidan en un tema y tengan más profesionales a quienes buscar; sin `dedicacion` se perdía a qué se dedica la persona.
+- Los datos anteriores se eliminan por decisión del usuario, porque solo eran de prueba; también sus eventos, para que su referencia no se lea como una familia.
+- Nueva `vista=SALON_Y_LEYENDAS`, porque el detalle de carrera muestra las dos y las vistas existentes eran excluyentes.
+- El buscador del paso 1 busca solo por nombre de familia, por decisión del usuario.
+- Las F6 y F7 del plan van en un solo commit, porque la regla del repo pide el cambio de modelo junto con su contrato.
+

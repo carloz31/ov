@@ -46,14 +46,14 @@ export function citaReferencia(referencia: ReferenciaResuelta | undefined): stri
     return textos.length ? `Tus pasos: ${textos.map((t) => `«${t}»`).join(', ')}` : undefined
   if (referencia.tipo === 'OPCION_INICIAL')
     return referencia.texto ? `Tu primer interés: ${referencia.texto}` : undefined
-  // F09: lo que pensaba de la ocupación antes de su primera entrevista (día, lo que se necesita y su duda).
+  // F09: lo que pensaba de la familia de carreras antes de su primera entrevista (día, lo que se necesita y su duda).
   if (referencia.tipo === 'LO_QUE_PIENSO') {
     const parte = (codigo: string) => referencia.opciones?.find((o) => o.codigo === codigo)?.texto
     const [dia, necesita, duda] = [parte('DIA'), parte('NECESITA'), parte('DUDA')]
     if (!referencia.texto || !dia) return undefined
     return [
       `Antes de tu entrevista, sobre ${referencia.texto} pensabas: «${dia}»`,
-      necesita && `Para ejercerla: «${necesita}»`,
+      necesita && `Para trabajar en esto: «${necesita}»`,
       duda && `Tu duda: «${duda}»`,
     ]
       .filter(Boolean)

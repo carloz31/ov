@@ -1,4 +1,4 @@
-import { Crown, Search, Star } from 'lucide-react'
+import { Crown, Search, Star, X } from 'lucide-react'
 import type { ConteosEntrevistas, OrdenEntrevistas, VistaEntrevistas } from '@/types/servidor'
 import type { Chip } from '../../hooks/useInvestigacionesListado'
 
@@ -25,6 +25,8 @@ export function FiltrosInvestigaciones({
   onChip,
   orden,
   onOrden,
+  familia,
+  onQuitarFamilia,
 }: {
   vista: VistaEntrevistas
   conteos: ConteosEntrevistas | null
@@ -35,9 +37,11 @@ export function FiltrosInvestigaciones({
   onChip: (chip: Chip) => void
   orden: OrdenEntrevistas
   onOrden: (orden: OrdenEntrevistas) => void
+  familia: string | null
+  onQuitarFamilia: () => void
 }) {
   const mias = vista === 'MIAS'
-  const placeholder = mias ? 'Buscar en mis investigaciones…' : 'Buscar por título, ocupación o profesional…'
+  const placeholder = mias ? 'Buscar en mis investigaciones…' : 'Buscar por título, familia o profesional…'
   return (
     <>
       <div className="sx-i-selector">
@@ -91,6 +95,16 @@ export function FiltrosInvestigaciones({
           </>
         )}
       </div>
+      {familia !== null && (
+        <p className="sx-i-filtro-familia">
+          <span className="sx-i-chip-familia">
+            Familia: {familia}
+            <button type="button" aria-label="Quitar el filtro de familia" onClick={onQuitarFamilia}>
+              <X aria-hidden="true" size={14} />
+            </button>
+          </span>
+        </p>
+      )}
     </>
   )
 }

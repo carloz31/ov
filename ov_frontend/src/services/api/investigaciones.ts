@@ -67,12 +67,12 @@ export function obtenerPublicacion(
 // --- Acciones del estudiante ---
 export function guardarLoQuePienso(
   cuenta: string,
-  ocupacion: string,
+  familia: string,
   dia: string,
   necesita: string,
   duda: string,
 ): Promise<RespuestaServidor<RespuestaAccion>> {
-  return enviar('/acciones/guardar-lo-que-pienso', { cuenta, ocupacion, dia, necesita, duda })
+  return enviar('/acciones/guardar-lo-que-pienso', { cuenta, familia, dia, necesita, duda })
 }
 
 export function pedirSugerenciasGuion(cuenta: string): Promise<RespuestaServidor<SugerenciasGuion>> {

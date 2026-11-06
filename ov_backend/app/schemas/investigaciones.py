@@ -34,7 +34,7 @@ def _sin_repetidos(valores: list[str]) -> list[str]:
 
 class GuardarLoQuePiensoEntrada(AccionCuenta):
     """Crea la investigación o edita la que está en curso (HU-057 y HU-100)."""
-    ocupacion: str
+    familia: str
     dia: Texto
     necesita: Texto
     duda: Texto
@@ -81,6 +81,7 @@ class GuardarGuionEntrada(AccionCuenta):
 class FichaEntrevistaEntrada(AccionCuenta):
     titulo: Texto
     profesional: Texto
+    dedicacion: Texto
     duracion: Texto
     enlace: EnlaceYoutube
     resumen: Texto
@@ -163,9 +164,11 @@ class ReporteEntrada(AccionCuenta):
 
 # --- Salidas ------------------------------------------------------------------------------------
 
-class OcupacionBreve(BaseModel):
+class FamiliaBreve(BaseModel):
+    """La familia de carreras de una investigación o entrevista; `area_codigo` arma su enlace al catálogo."""
     codigo: str
-    titulo: str
+    nombre: str
+    area_codigo: str
 
 
 class NivelBreve(BaseModel):
@@ -201,7 +204,7 @@ class InvestigacionEnCurso(BaseModel):
     """`sugerencias`: las pendientes. `sugerencias_vigentes` falso: pedirlas llamará al LLM."""
     codigo: str
     estado: EstadoInvestigacion
-    ocupacion: OcupacionBreve
+    familia: FamiliaBreve
     lo_que_pienso: LoQuePienso
     preguntas: list[PreguntaGuionPublica]
     sugerencias: list[SugerenciaGuionPublica]
@@ -211,12 +214,12 @@ class InvestigacionEnCurso(BaseModel):
 
 
 class Aliado(PersonaInvestigacion):
-    ocupacion: OcupacionBreve
+    familia: FamiliaBreve
 
 
 class Aliados(BaseModel):
-    """Compañeros del salón con guía lista: los de la misma ocupación que la mía y los demás."""
-    misma_ocupacion: list[Aliado]
+    """Compañeros del salón con guía lista: los de la misma familia que la mía y los demás."""
+    misma_familia: list[Aliado]
     otras: list[Aliado]
 
 
@@ -260,8 +263,9 @@ class TarjetaEntrevista(BaseModel):
     """Lo que muestra la tarjeta de una entrevista. `reacciones_por_tipo` solo en la vista MIAS y en el detalle."""
     codigo: str
     titulo: str
-    ocupacion: OcupacionBreve
+    familia: FamiliaBreve
     profesional: str
+    dedicacion: str
     duracion: str
     resumen: str
     fecha_hora: datetime
@@ -322,7 +326,8 @@ class FilaPublicacion(BaseModel):
     codigo: str
     titulo: str
     autores: list[AutorPublicacion]
-    ocupacion: OcupacionBreve
+    familia: FamiliaBreve
+    dedicacion: str
     fecha_hora: datetime
     reacciones: int
     favoritos: int
@@ -367,8 +372,9 @@ class PublicacionDetalle(BaseModel):
     reportadas primero, luego de la más reciente a la más antigua)."""
     codigo: str
     titulo: str
-    ocupacion: OcupacionBreve
+    familia: FamiliaBreve
     profesional: str
+    dedicacion: str
     duracion: str
     enlace: str
     resumen: str

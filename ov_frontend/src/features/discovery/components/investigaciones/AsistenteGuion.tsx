@@ -66,7 +66,7 @@ export function AsistenteGuion() {
       ) : m.paso === 2 ? (
         <PasoMisPreguntas
           p={p}
-          ocupacion={m.enCurso?.ocupacion.titulo ?? ''}
+          familia={m.enCurso?.familia.nombre ?? ''}
           onVolver={async () => {
             if (await p.guardarAlVolver()) m.irA(1)
           }}

@@ -17,8 +17,8 @@ export function TarjetaEnCursoMia({
   ahora: Date
 }) {
   const lista = enCurso.estado === 'GUIA_LISTA'
-  const total = aliados.misma_ocupacion.length + aliados.otras.length
-  const misma = aliados.misma_ocupacion.length
+  const total = aliados.misma_familia.length + aliados.otras.length
+  const misma = aliados.misma_familia.length
   const iniciada = haceDias(enCurso.creada_en, ahora)
   return (
     <article className="sx-i-tarjeta" data-destacada="en-curso">
@@ -29,7 +29,7 @@ export function TarjetaEnCursoMia({
         <small>Iniciada {iniciada}</small>
       </div>
       <div className="sx-i-cuerpo">
-        <p className="sx-i-kicker">Investigación · {enCurso.ocupacion.titulo}</p>
+        <p className="sx-i-kicker">Investigación · {enCurso.familia.nombre}</p>
         <h2>Todavía sin entrevista</h2>
         <p>
           Tu guion tiene {base.length + enCurso.preguntas.length} preguntas.{' '}

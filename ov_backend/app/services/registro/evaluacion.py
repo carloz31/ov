@@ -452,6 +452,6 @@ class EvaluadorFalso:
             return {'preguntas': []}
         n = self.llamadas_guion
         return {'preguntas': [contexto.preguntas_base[0],
-                              f'¿Qué te sorprendió al empezar como {contexto.ocupacion}? ({n})',
+                              f'¿Qué te sorprendió al empezar en {contexto.familia}? ({n})',
                               f'¿Qué parte de tu trabajo casi nadie conoce? ({n})',
                               f'¿Qué harías distinto si empezaras hoy? ({n})']}

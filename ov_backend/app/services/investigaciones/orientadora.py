@@ -23,7 +23,7 @@ from app.services.investigaciones.acciones import (
     evaluar_leyenda, exigir_orientadora, registrar_en_autores, resolver_reportes,
 )
 from app.services.investigaciones.consultas import (
-    autores_de, contar_favoritos, contiene, de_autor_en_salones, entrevista_de_sus_salones, ocupaciones_breves,
+    autores_de, contar_favoritos, contiene, de_autor_en_salones, entrevista_de_sus_salones, familias_breves,
     personas, reacciones_por_tipo, tipos_reaccion,
 )
 
@@ -158,7 +158,7 @@ def listar_publicaciones(sesion: Session, codigo_cuenta: str, salon: str | None,
         de_sus_salones, Entrevista.fecha_hora.desc(), Entrevista.id.desc()).limit(limite).offset(desde)).tuples())
     ids = [e.id for e, _ in filas]
     autores = _autores_con_salon(sesion, ids)
-    ocupaciones = ocupaciones_breves(sesion, [e.ocupacion_id for e, _ in filas])
+    familias = familias_breves(sesion, [e.familia_id for e, _ in filas])
     reacciones = reacciones_por_tipo(sesion, ids)
     favoritos = contar_favoritos(sesion, ids)
     de_entrevista = dict(sesion.execute(select(Reporte.entrevista_id, func.count()).where(
@@ -168,8 +168,8 @@ def listar_publicaciones(sesion: Session, codigo_cuenta: str, salon: str | None,
         Reaccion.entrevista_id.in_(ids), Reporte.estado == EstadoReporte.PENDIENTE, Reaccion.eliminada_en.is_(None))
         .group_by(Reaccion.entrevista_id)).all())
     return PaginaPublicaciones(total=total, favoritos_leyenda=FAVORITOS_LEYENDA, items=[FilaPublicacion(
-        codigo=e.codigo, titulo=e.titulo, autores=autores.get(e.id, []), ocupacion=ocupaciones[e.ocupacion_id],
-        fecha_hora=e.fecha_hora, reacciones=sum(reacciones.get(e.id, {}).values()), favoritos=favoritos.get(e.id, 0),
+        codigo=e.codigo, titulo=e.titulo, autores=autores.get(e.id, []), familia=familias[e.familia_id],
+        dedicacion=e.dedicacion, fecha_hora=e.fecha_hora, reacciones=sum(reacciones.get(e.id, {}).values()), favoritos=favoritos.get(e.id, 0),
         estado=_estado(e), reportes_pendientes=de_entrevista.get(e.id, 0),
         comentarios_reportados=de_reacciones.get(e.id, 0), de_sus_salones=orden == 0) for e, orden in filas])
 
@@ -217,8 +217,8 @@ def detalle_publicacion(sesion: Session, codigo_cuenta: str, codigo: str) -> Pub
         reportes=_reportes(por_reaccion.get(r.id, []))) for r, c in filas]
     return PublicacionDetalle(
         codigo=entrevista.codigo, titulo=entrevista.titulo,
-        ocupacion=ocupaciones_breves(sesion, [entrevista.ocupacion_id])[entrevista.ocupacion_id],
-        profesional=entrevista.profesional, duracion=entrevista.duracion, enlace=entrevista.enlace,
+        familia=familias_breves(sesion, [entrevista.familia_id])[entrevista.familia_id],
+        profesional=entrevista.profesional, dedicacion=entrevista.dedicacion, duracion=entrevista.duracion, enlace=entrevista.enlace,
         resumen=entrevista.resumen, fecha_hora=entrevista.fecha_hora, editada_en=entrevista.editada_en,
         estado=_estado(entrevista), de_sus_salones=propia_de_salon,
         favoritos=contar_favoritos(sesion, [entrevista.id]).get(entrevista.id, 0), favoritos_leyenda=FAVORITOS_LEYENDA,

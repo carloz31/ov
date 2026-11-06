@@ -95,8 +95,8 @@ test('«Lo que cambió» cita lo que pensaba antes, y sus contenidos existen con
   const [ref] = jsonServidor('ruta/ruta-referencias-investigador-cierre').referencias
   assert.equal(
     citaReferencia(ref),
-    'Antes de tu entrevista, sobre Electricista industrial pensabas: «DATO DE PRUEBA: revisa instalaciones de casas y ' +
-      'edificios.». Para ejercerla: «DATO DE PRUEBA: estudiar en un instituto y practicar.». Tu duda: «¿Es peligroso?»',
+    'Antes de tu entrevista, sobre Ingeniería Eléctrica pensabas: «DATO DE PRUEBA: revisa instalaciones de casas y ' +
+      'edificios.». Para trabajar en esto: «DATO DE PRUEBA: estudiar en un instituto y practicar.». Tu duda: «¿Es peligroso?»',
   )
   assert.equal(citaReferencia({ ...ref, estado: 'SIN_DATO' }), undefined)
   const cierre = contenido('t_investigador_cierre')
@@ -151,7 +151,7 @@ test('el almacén pide la sección y las listas con sus filtros; las acciones us
     ['/api/cuentas/est-ana/entrevistas?buscar=luz&favoritas=true&vista=SALON&limite=20&desde=0'],
   )
   app.requests.length = 0
-  assert.equal((await store.guardarLoQuePienso('47-2111.00', 'a', 'b', 'c')).tipo, 'ok')
+  assert.equal((await store.guardarLoQuePienso('524', 'a', 'b', 'c')).tipo, 'ok')
   assert.equal(almacen.obtenerEstadoServidor().investigaciones.estado, 'vencido')
   assert.equal((await store.pedirSugerenciasGuion()).datos.estado, 'LISTAS')
   const ficha = {
@@ -168,7 +168,7 @@ test('el almacén pide la sección y las listas con sus filtros; las acciones us
   assert.deepEqual(copia(acciones.map((r) => [r.url, r.body])), [
     [
       '/api/acciones/guardar-lo-que-pienso',
-      { cuenta: 'est-ana', ocupacion: '47-2111.00', dia: 'a', necesita: 'b', duda: 'c' },
+      { cuenta: 'est-ana', familia: '524', dia: 'a', necesita: 'b', duda: 'c' },
     ],
     ['/api/acciones/pedir-sugerencias-guion', { cuenta: 'est-ana' }],
     [

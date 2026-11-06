@@ -103,7 +103,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'entrevistas-salon', 'entrevistas-mias', 'entrevista-detalle', 'publicaciones', 'publicacion-detalle',
     'referencias-investigador-cierre',
     # F09: en curso con sugerencias, Luis con guía lista, por ocupación y el detalle propio.
-    'investigaciones-en-curso', 'investigaciones-luis', 'entrevistas-ocupacion', 'entrevista-detalle-propia',
+    'investigaciones-en-curso', 'investigaciones-luis', 'entrevistas-familia', 'entrevista-detalle-propia',
 )}
 
 
@@ -511,7 +511,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert inicial.en_curso is None and inicial.favoritos_leyenda == 3 and len(inicial.tipos_reaccion) == 4
     assert SugerenciasGuion.model_validate(datos['sugerencias-guion']).estado == 'LISTAS'
     guia = InvestigacionesCuenta.model_validate(datos['investigaciones-guia-lista'])
-    assert guia.en_curso.estado == 'GUIA_LISTA' and [a.codigo for a in guia.aliados.misma_ocupacion] == ['est-luis']
+    assert guia.en_curso.estado == 'GUIA_LISTA' and [a.codigo for a in guia.aliados.misma_familia] == ['est-luis']
     entrevista = RespuestaAgrupada.model_validate(datos['publicar-entrevista']).por_cuenta['est-ana']
     codigo = entrevista.eventos_registrados[0].referencia
     salon = PaginaEntrevistas.model_validate(datos['entrevistas-salon'])
@@ -530,7 +530,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert en_curso.estado == 'EN_CURSO' and en_curso.sugerencias and en_curso.sugerencias_vigentes
     luis = InvestigacionesCuenta.model_validate(datos['investigaciones-luis'])
     assert luis.en_curso.estado == 'GUIA_LISTA' and luis.conteos.mias == 0 and luis.conteos.salon == 1
-    assert [t.codigo for t in PaginaEntrevistas.model_validate(datos['entrevistas-ocupacion']).items] == [codigo]
+    assert [t.codigo for t in PaginaEntrevistas.model_validate(datos['entrevistas-familia']).items] == [codigo]
     propia = EntrevistaDetalle.model_validate(datos['entrevista-detalle-propia'])
     assert propia.propia and [r.reportada_por_mi for r in propia.lista_reacciones if r.tipo] == [True]
     eco, = ReferenciasConsultadas.model_validate(datos['referencias-investigador-cierre']).referencias

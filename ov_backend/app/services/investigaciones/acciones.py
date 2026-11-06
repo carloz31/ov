@@ -10,7 +10,7 @@ from app.core.parametros import FAVORITOS_LEYENDA
 from app.exceptions import ErrorAccion
 from app.models import (
     Cuenta, Entrevista, EntrevistaAutor, EstadoEntrevista, EstadoInvestigacion, EstadoReporte, EstadoSugerenciaGuion,
-    Investigacion, Ocupacion, OrigenPreguntaGuion, PreguntaGuion, Reaccion, Reporte, Rol, SugerenciaGuion,
+    FamiliaCarrera, Investigacion, OrigenPreguntaGuion, PreguntaGuion, Reaccion, Reporte, Rol, SugerenciaGuion,
     TipoEventoUso, TipoNotificacion, TipoReaccion,
 )
 from app.models.base import sin_tildes
@@ -41,24 +41,24 @@ def cuenta_estudiante(sesion: Session, codigo: str) -> Cuenta:
 
 @usar_contexto
 def guardar_lo_que_pienso(sesion: Session, entrada: GuardarLoQuePiensoEntrada) -> RespuestaAccion:
-    """Sin investigación activa, la crea (INICIA_INVESTIGACION); con ella, cambia ocupación y textos sin cambiar su
+    """Sin investigación activa, la crea (INICIA_INVESTIGACION); con ella, cambia familia y textos sin cambiar su
     estado. Si cambia algo, las sugerencias pendientes dejan de valer y la próxima petición llama al LLM."""
     cuenta = cuenta_estudiante(sesion, entrada.cuenta)
-    ocupacion = buscar_por_codigo(sesion, Ocupacion, entrada.ocupacion)
+    familia = buscar_por_codigo(sesion, FamiliaCarrera, entrada.familia)
     fecha = fecha_accion(entrada)
     textos = (entrada.dia, entrada.necesita, entrada.duda)
     investigacion = investigacion_activa(sesion, cuenta.id)
     if investigacion is None:
         sesion.add(Investigacion(
-            codigo=f'INV-{uuid4().hex}', cuenta_id=cuenta.id, ocupacion_id=ocupacion.id,
+            codigo=f'INV-{uuid4().hex}', cuenta_id=cuenta.id, familia_id=familia.id,
             estado=EstadoInvestigacion.EN_CURSO, piensa_dia=textos[0], piensa_necesita=textos[1],
             piensa_duda=textos[2], creada_en=fecha))
         sesion.flush()
-        return responder_con_eventos(sesion, cuenta, [(TipoEventoUso.INICIA_INVESTIGACION, ocupacion.id)], fecha)
-    anteriores = (investigacion.ocupacion_id, investigacion.piensa_dia, investigacion.piensa_necesita,
+        return responder_con_eventos(sesion, cuenta, [(TipoEventoUso.INICIA_INVESTIGACION, familia.id)], fecha)
+    anteriores = (investigacion.familia_id, investigacion.piensa_dia, investigacion.piensa_necesita,
                   investigacion.piensa_duda)
-    if anteriores != (ocupacion.id, *textos):
-        investigacion.ocupacion_id = ocupacion.id
+    if anteriores != (familia.id, *textos):
+        investigacion.familia_id = familia.id
         investigacion.piensa_dia, investigacion.piensa_necesita, investigacion.piensa_duda = textos
         investigacion.sugerencias_vigentes = False
         sesion.execute(delete(SugerenciaGuion).where(SugerenciaGuion.investigacion_id == investigacion.id,
@@ -95,7 +95,7 @@ def guardar_guion(sesion: Session, entrada: GuardarGuionEntrada) -> RespuestaAcc
     if entrada.terminar:
         if investigacion.guia_lista_en is None:
             investigacion.guia_lista_en = fecha
-            eventos.append((TipoEventoUso.TERMINA_GUION, investigacion.ocupacion_id))
+            eventos.append((TipoEventoUso.TERMINA_GUION, investigacion.familia_id))
         investigacion.estado = EstadoInvestigacion.GUIA_LISTA
     elif investigacion.estado == EstadoInvestigacion.GUIA_LISTA and not any(
             p.origen != OrigenPreguntaGuion.SUGERIDA for p in entrada.preguntas):
@@ -118,8 +118,8 @@ def cancelar_investigacion(sesion: Session, entrada: CancelarInvestigacionEntrad
 
 # --- Publicación --------------------------------------------------------------------------------
 
-def _coautores(sesion: Session, autor: Cuenta, codigos: list[str], ocupacion_id: int) -> list[tuple[Cuenta, Investigacion]]:
-    """Compañeros del salón del autor con guía lista sobre la misma ocupación (404 si no existen; 409 si no cumplen)."""
+def _coautores(sesion: Session, autor: Cuenta, codigos: list[str], familia_id: int) -> list[tuple[Cuenta, Investigacion]]:
+    """Compañeros del salón del autor con guía lista sobre la misma familia (404 si no existen; 409 si no cumplen)."""
     por_codigo = {c.codigo: c for c in sesion.scalars(select(Cuenta).where(Cuenta.codigo.in_(codigos)))}
     if any(codigo not in por_codigo for codigo in codigos):
         raise ErrorAccion('Cuenta o referencia no encontrada', estado_http=404)
@@ -131,15 +131,15 @@ def _coautores(sesion: Session, autor: Cuenta, codigos: list[str], ocupacion_id:
         cuenta = por_codigo[codigo]
         investigacion = activas.get(cuenta.id)
         if (cuenta.id == autor.id or cuenta.rol != Rol.ESTUDIANTE or cuenta.salon_id != autor.salon_id
-                or investigacion is None or investigacion.ocupacion_id != ocupacion_id):
-            raise ErrorAccion(f'{cuenta.nombre} no tiene una guía lista sobre esta ocupación en tu salón')
+                or investigacion is None or investigacion.familia_id != familia_id):
+            raise ErrorAccion(f'{cuenta.nombre} no tiene una guía lista sobre esta familia en tu salón')
         resultado.append((cuenta, investigacion))
     return resultado
 
 
 def _busqueda(sesion: Session, entrevista: Entrevista) -> str:
-    titulo = sesion.scalar(select(Ocupacion.titulo).where(Ocupacion.id == entrevista.ocupacion_id))
-    return sin_tildes(f'{entrevista.titulo} {entrevista.profesional} {titulo}')
+    familia = sesion.scalar(select(FamiliaCarrera.nombre).where(FamiliaCarrera.id == entrevista.familia_id))
+    return sin_tildes(f'{entrevista.titulo} {entrevista.profesional} {entrevista.dedicacion} {familia}')
 
 
 def _sumar_autores(sesion: Session, entrevista: Entrevista, autores: list[tuple[Cuenta, Investigacion]]) -> None:
@@ -161,10 +161,11 @@ def publicar_entrevista(sesion: Session, entrada: PublicarEntrevistaEntrada) -> 
     propia = exigir_investigacion_activa(sesion, cuenta)
     if propia.estado != EstadoInvestigacion.GUIA_LISTA:
         raise ErrorAccion('Termina tu guion antes de publicar tu entrevista')
-    autores = [(cuenta, propia), *_coautores(sesion, cuenta, entrada.coautores, propia.ocupacion_id)]
+    autores = [(cuenta, propia), *_coautores(sesion, cuenta, entrada.coautores, propia.familia_id)]
     fecha = fecha_accion(entrada)
-    entrevista = Entrevista(codigo=f'ENT-{uuid4().hex}', ocupacion_id=propia.ocupacion_id, titulo=entrada.titulo,
-                            profesional=entrada.profesional, duracion=entrada.duracion, enlace=entrada.enlace,
+    entrevista = Entrevista(codigo=f'ENT-{uuid4().hex}', familia_id=propia.familia_id, titulo=entrada.titulo,
+                            profesional=entrada.profesional, dedicacion=entrada.dedicacion,
+                            duracion=entrada.duracion, enlace=entrada.enlace,
                             resumen=entrada.resumen, busqueda='', estado=EstadoEntrevista.PUBLICADA, fecha_hora=fecha)
     entrevista.busqueda = _busqueda(sesion, entrevista)
     sesion.add(entrevista)
@@ -190,7 +191,8 @@ def editar_entrevista(sesion: Session, entrada: EditarEntrevistaEntrada) -> Resp
     entrevista = entrevista_propia(sesion, cuenta, entrada.entrevista)
     fecha = fecha_accion(entrada)
     entrevista.titulo, entrevista.profesional, entrevista.duracion = entrada.titulo, entrada.profesional, entrada.duracion
-    entrevista.enlace, entrevista.resumen, entrevista.editada_en = entrada.enlace, entrada.resumen, fecha
+    entrevista.dedicacion, entrevista.enlace = entrada.dedicacion, entrada.enlace
+    entrevista.resumen, entrevista.editada_en = entrada.resumen, fecha
     entrevista.busqueda = _busqueda(sesion, entrevista)
     sesion.flush()
     return responder_varias_cuentas(sesion, [cuenta], {cuenta.id: [(TipoEventoUso.EDITA_ENTREVISTA, entrevista.id)]},

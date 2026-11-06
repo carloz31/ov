@@ -31,11 +31,11 @@ function FilaPregunta({ fila, indice, p }: { fila: Fila; indice: number; p: Mode
 // seguido. Sin tope; mínimo, las base y una tuya.
 export function PasoMisPreguntas({
   p,
-  ocupacion,
+  familia,
   onVolver,
 }: {
   p: ModeloPreguntas
-  ocupacion: string
+  familia: string
   onVolver: () => void | Promise<void>
 }) {
   const indices = p.guion.propias.map((fila, indice) => ({ fila, indice }))
@@ -44,7 +44,7 @@ export function PasoMisPreguntas({
   return (
     <div className="sx-i-asistente">
       <section className="sx-i-panel">
-        <p className="sx-i-kicker">Paso 2 de 3 · {ocupacion}</p>
+        <p className="sx-i-kicker">Paso 2 de 3 · {familia}</p>
         <div className="sx-i-panel-cabecera">
           <h2>Mi lista de preguntas</h2>
           <span>

@@ -1,10 +1,10 @@
 import { Loader2 } from 'lucide-react'
 import type { ModeloGuion } from '../../hooks/useGuionInvestigacion'
-import { BuscadorOcupacion } from './BuscadorOcupacion'
+import { BuscadorFamilia } from './BuscadorFamilia'
 
-// F09 (boceto 09 · HU-057 y HU-100): la ocupación y lo que pienso hoy de ella, en tres campos sin Lumi.
+// F09 (boceto 09 · HU-057 y HU-100): la familia de carreras y lo que pienso hoy de ese trabajo, en tres campos sin Lumi.
 export function PasoLoQuePienso({ m }: { m: ModeloGuion }) {
-  const conOcupacion = !!m.ocupacion
+  const conFamilia = !!m.familia
   return (
     <div className="sx-i-asistente">
       <section className="sx-i-panel">
@@ -12,21 +12,21 @@ export function PasoLoQuePienso({ m }: { m: ModeloGuion }) {
         <h2>Antes de la entrevista</h2>
         <fieldset className="sx-i-fieldset" data-guardando={m.guardando || undefined} disabled={m.guardando}>
           <div className="sx-i-campo">
-            <span className="sx-i-etiqueta">¿A quién vas a entrevistar? Busca la ocupación</span>
-            <BuscadorOcupacion
-              ocupacion={m.ocupacion}
-              onElegir={m.elegirOcupacion}
-              onCambiar={m.quitarOcupacion}
+            <span className="sx-i-etiqueta">¿En qué familia de carreras trabaja la persona que vas a entrevistar?</span>
+            <BuscadorFamilia
+              familia={m.familia}
+              onElegir={m.elegirFamilia}
+              onCambiar={m.quitarFamilia}
             />
             <small className="sx-i-letra-chica">
-              Escribe y te vamos mostrando coincidencias (con pausa de medio segundo). Solo ocupaciones del
-              catálogo; si no está, elige la más parecida.
+              Escribe y te vamos mostrando coincidencias. Solo familias del catálogo; si no está, elige la
+              más parecida.
             </small>
           </div>
           <hr className="sx-i-separador" />
-          <fieldset className="sx-i-fieldset" disabled={!conOcupacion}>
+          <fieldset className="sx-i-fieldset" disabled={!conFamilia}>
             <legend>
-              <h3>Lo que pienso hoy de esta ocupación</h3>
+              <h3>Lo que pienso hoy de este trabajo</h3>
               <small className="sx-i-letra-chica">
                 Tres respuestas cortas. No hay respuestas incorrectas: después de la entrevista las vas a
                 comparar con lo que descubriste. Las ve tu orientadora, no tu salón.
@@ -43,7 +43,7 @@ export function PasoLoQuePienso({ m }: { m: ModeloGuion }) {
               />
             </label>
             <label className="sx-i-campo">
-              <span className="sx-i-etiqueta">¿Qué crees que se necesita para ejercerla?</span>
+              <span className="sx-i-etiqueta">¿Qué crees que se necesita para trabajar en esto?</span>
               <textarea
                 className="sx-d-input"
                 rows={2}
@@ -78,7 +78,7 @@ export function PasoLoQuePienso({ m }: { m: ModeloGuion }) {
             Seguir con las preguntas
           </button>
           <small className="sx-i-letra-chica">
-            Se habilita al elegir ocupación y responder las tres. Se guarda al seguir.
+            Se habilita al elegir la familia y responder las tres. Se guarda al seguir.
           </small>
         </div>
       </section>

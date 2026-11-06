@@ -53,9 +53,9 @@ export function FichaPublicacion({
         <Fila etiqueta="Autores">
           {datos.autores.map((a) => `${a.nombre} (${nombreSalon(a.salon)})`).join(', ')}
         </Fila>
-        <Fila etiqueta="Profesión u ocupación">{datos.ocupacion.titulo}</Fila>
+        <Fila etiqueta="Familia de carreras">{datos.familia.nombre}</Fila>
         <Fila etiqueta="Profesional entrevistado">
-          {datos.profesional} · {datos.duracion}
+          {datos.profesional} · {datos.dedicacion} · {datos.duracion}
         </Fila>
         <Fila etiqueta="Fecha de publicación">{fechaNumerica(datos.fecha_hora)}</Fila>
         <Fila etiqueta="En pocas palabras">{datos.resumen}</Fila>

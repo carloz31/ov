@@ -8,13 +8,13 @@ from app.core.parametros import FAVORITOS_LEYENDA
 from app.exceptions import ErrorAccion
 from app.models import (
     Cuenta, Entrevista, EntrevistaAutor, EstadoEntrevista, EstadoInvestigacion, EstadoSugerenciaGuion, EventoUso,
-    Favorito, Insignia, InsigniaVitrina, Investigacion, Ocupacion, OrientadoraSalon, PreguntaBaseGuion, PreguntaGuion,
+    FamiliaCarrera, Favorito, Insignia, InsigniaVitrina, Investigacion, OrientadoraSalon, PreguntaBaseGuion, PreguntaGuion,
     Reaccion, Reporte, Rol, SugerenciaGuion, TipoEventoUso, TipoFavorito, TipoReaccion,
 )
 from app.models.base import sin_tildes
 from app.schemas.investigaciones import (
-    Aliado, Aliados, ConteosEntrevistas, EntrevistaDetalle, InvestigacionEnCurso, InvestigacionesCuenta,
-    LoQuePienso, NivelBreve, OcupacionBreve, PaginaEntrevistas, PersonaInvestigacion, PreguntaBasePublica,
+    Aliado, Aliados, ConteosEntrevistas, EntrevistaDetalle, FamiliaBreve, InvestigacionEnCurso, InvestigacionesCuenta,
+    LoQuePienso, NivelBreve, PaginaEntrevistas, PersonaInvestigacion, PreguntaBasePublica,
     PreguntaGuionPublica, ReaccionPublica, SugerenciaGuionPublica, TarjetaEntrevista, TipoReaccionPublico,
 )
 from app.services.motor.reglas import nivel_actual
@@ -77,19 +77,21 @@ def de_autor(cuenta_id: int):
 
 
 def condicion_vista(cuenta: Cuenta, vista: str):
-    """SALON: de algún autor de su salón; LEYENDAS: todas las Leyendas; MIAS: donde es autor. Siempre publicadas:
-    una entrevista retirada o eliminada no se lista para nadie."""
+    """SALON: de algún autor de su salón; LEYENDAS: todas las Leyendas; SALON_Y_LEYENDAS: las dos sin repetir (detalle de
+    carrera); MIAS: donde es autor. Siempre publicadas: una entrevista retirada o eliminada no se lista para nadie."""
     publicada = Entrevista.estado == EstadoEntrevista.PUBLICADA
     if vista == 'SALON':
         return publicada & de_autor_en_salones([cuenta.salon_id])
     if vista == 'LEYENDAS':
         return publicada & Entrevista.leyenda_en.is_not(None)
+    if vista == 'SALON_Y_LEYENDAS':
+        return condicion_vista(cuenta, 'SALON') | condicion_vista(cuenta, 'LEYENDAS')
     return publicada & de_autor(cuenta.id)
 
 
 def condicion_visible(cuenta: Cuenta):
     """Lo que un estudiante puede abrir: las de su salón, las Leyendas y las suyas (estas ya son de su salón)."""
-    return condicion_vista(cuenta, 'SALON') | condicion_vista(cuenta, 'LEYENDAS')
+    return condicion_vista(cuenta, 'SALON_Y_LEYENDAS')
 
 
 # --- Personas -----------------------------------------------------------------------------------
@@ -113,21 +115,22 @@ def personas(sesion: Session, cuentas: list[Cuenta]) -> dict[int, PersonaInvesti
     return resultado
 
 
-def ocupaciones_breves(sesion: Session, ids) -> dict[int, OcupacionBreve]:
-    return {fila.id: OcupacionBreve(codigo=fila.codigo, titulo=fila.titulo) for fila in sesion.execute(
-        select(Ocupacion.id, Ocupacion.codigo, Ocupacion.titulo).where(Ocupacion.id.in_(set(ids))))}
+def familias_breves(sesion: Session, ids) -> dict[int, FamiliaBreve]:
+    return {fila.id: FamiliaBreve(codigo=fila.codigo, nombre=fila.nombre, area_codigo=fila.area_codigo)
+            for fila in sesion.execute(select(FamiliaCarrera.id, FamiliaCarrera.codigo, FamiliaCarrera.nombre,
+                                              FamiliaCarrera.area_codigo).where(FamiliaCarrera.id.in_(set(ids))))}
 
 
 # --- Consulta de la vista -----------------------------------------------------------------------
 
-def _en_curso(sesion: Session, investigacion: Investigacion, ocupacion: OcupacionBreve) -> InvestigacionEnCurso:
+def _en_curso(sesion: Session, investigacion: Investigacion, familia: FamiliaBreve) -> InvestigacionEnCurso:
     preguntas = sesion.scalars(select(PreguntaGuion).where(PreguntaGuion.investigacion_id == investigacion.id)
                                .order_by(PreguntaGuion.posicion))
     sugerencias = sesion.scalars(select(SugerenciaGuion).where(
         SugerenciaGuion.investigacion_id == investigacion.id,
         SugerenciaGuion.estado == EstadoSugerenciaGuion.PENDIENTE).order_by(SugerenciaGuion.id))
     return InvestigacionEnCurso(
-        codigo=investigacion.codigo, estado=investigacion.estado, ocupacion=ocupacion,
+        codigo=investigacion.codigo, estado=investigacion.estado, familia=familia,
         lo_que_pienso=LoQuePienso(dia=investigacion.piensa_dia, necesita=investigacion.piensa_necesita,
                                   duda=investigacion.piensa_duda),
         preguntas=[PreguntaGuionPublica(origen=p.origen, texto=p.texto) for p in preguntas],
@@ -137,11 +140,11 @@ def _en_curso(sesion: Session, investigacion: Investigacion, ocupacion: Ocupacio
 
 
 def _aliados(sesion: Session, cuenta: Cuenta, propia: Investigacion | None) -> tuple[list, list]:
-    filas = list(sesion.execute(select(Cuenta, Investigacion.ocupacion_id).join(
+    filas = list(sesion.execute(select(Cuenta, Investigacion.familia_id).join(
         Investigacion, Investigacion.cuenta_id == Cuenta.id).where(
         Investigacion.estado == EstadoInvestigacion.GUIA_LISTA, Cuenta.salon_id == cuenta.salon_id,
         Cuenta.id != cuenta.id).order_by(Cuenta.nombre, Cuenta.codigo)).tuples())
-    return filas, [ocupacion_id for _, ocupacion_id in filas] + ([] if propia is None else [propia.ocupacion_id])
+    return filas, [familia_id for _, familia_id in filas] + ([] if propia is None else [propia.familia_id])
 
 
 def tipos_reaccion(sesion: Session) -> list[TipoReaccionPublico]:
@@ -155,19 +158,19 @@ def tipos_reaccion(sesion: Session) -> list[TipoReaccionPublico]:
 def consultar_investigaciones(sesion: Session, cuenta: Cuenta) -> InvestigacionesCuenta:
     exigir_seccion_investigaciones(sesion, cuenta)
     propia = investigacion_activa(sesion, cuenta.id)
-    filas, ids_ocupacion = _aliados(sesion, cuenta, propia)
-    ocupaciones = ocupaciones_breves(sesion, ids_ocupacion)
+    filas, ids_familia = _aliados(sesion, cuenta, propia)
+    familias = familias_breves(sesion, ids_familia)
     gente = personas(sesion, [fila for fila, _ in filas])
     misma, otras = [], []
-    for aliado, ocupacion_id in filas:
-        destino = misma if propia is not None and ocupacion_id == propia.ocupacion_id else otras
-        destino.append(Aliado(**gente[aliado.id].model_dump(), ocupacion=ocupaciones[ocupacion_id]))
+    for aliado, familia_id in filas:
+        destino = misma if propia is not None and familia_id == propia.familia_id else otras
+        destino.append(Aliado(**gente[aliado.id].model_dump(), familia=familias[familia_id]))
     definiciones = contexto(sesion).definiciones
     conteos = {vista: sesion.scalar(select(func.count()).select_from(Entrevista).where(
         condicion_vista(cuenta, vista))) for vista in ('SALON', 'LEYENDAS', 'MIAS')}
     return InvestigacionesCuenta(
-        en_curso=None if propia is None else _en_curso(sesion, propia, ocupaciones[propia.ocupacion_id]),
-        aliados=Aliados(misma_ocupacion=misma, otras=otras),
+        en_curso=None if propia is None else _en_curso(sesion, propia, familias[propia.familia_id]),
+        aliados=Aliados(misma_familia=misma, otras=otras),
         preguntas_base=[PreguntaBasePublica(codigo=p.codigo, texto=p.texto) for p in sorted(
             definiciones.listar(PreguntaBaseGuion), key=lambda p: p.orden)],
         tipos_reaccion=tipos_reaccion(sesion),
@@ -177,7 +180,7 @@ def consultar_investigaciones(sesion: Session, cuenta: Cuenta) -> Investigacione
 
 # --- Entrevistas ----------------------------------------------------------------------------------
 
-VISTAS = ('SALON', 'LEYENDAS', 'MIAS')
+VISTAS = ('SALON', 'LEYENDAS', 'MIAS', 'SALON_Y_LEYENDAS')
 ORDENES = ('RECIENTES', 'REACCIONADAS')
 
 
@@ -235,7 +238,7 @@ def tarjetas(sesion: Session, cuenta: Cuenta, entrevistas: list[Entrevista], *,
     ids = [e.id for e in entrevistas]
     autores = autores_de(sesion, ids)
     gente = personas(sesion, [c for lista in autores.values() for c in {c.id: c for c in lista}.values()])
-    ocupaciones = ocupaciones_breves(sesion, [e.ocupacion_id for e in entrevistas])
+    familias = familias_breves(sesion, [e.familia_id for e in entrevistas])
     reacciones = reacciones_por_tipo(sesion, ids)
     favoritos = contar_favoritos(sesion, ids)
     mis_favoritos = set(sesion.scalars(select(Favorito.id_referencia).where(
@@ -244,8 +247,8 @@ def tarjetas(sesion: Session, cuenta: Cuenta, entrevistas: list[Entrevista], *,
         EventoUso.cuenta_id == cuenta.id, EventoUso.tipo == TipoEventoUso.VISTA_ENTREVISTA,
         EventoUso.id_referencia.in_(ids))))
     return [TarjetaEntrevista(
-        codigo=e.codigo, titulo=e.titulo, ocupacion=ocupaciones[e.ocupacion_id], profesional=e.profesional,
-        duracion=e.duracion, resumen=e.resumen, fecha_hora=e.fecha_hora,
+        codigo=e.codigo, titulo=e.titulo, familia=familias[e.familia_id], profesional=e.profesional,
+        dedicacion=e.dedicacion, duracion=e.duracion, resumen=e.resumen, fecha_hora=e.fecha_hora,
         autores=[gente[c.id] for c in autores.get(e.id, [])], destacada=e.destacada_en is not None,
         leyenda=e.leyenda_en is not None, reacciones=sum(reacciones.get(e.id, {}).values()),
         favoritos=favoritos.get(e.id, 0), favorita=e.id in mis_favoritos, vista=e.id in vistas,
@@ -257,9 +260,9 @@ def tarjetas(sesion: Session, cuenta: Cuenta, entrevistas: list[Entrevista], *,
 @usar_contexto
 def listar_entrevistas(sesion: Session, cuenta: Cuenta, vista: str, buscar: str | None, favoritas: bool,
                        no_vistas: bool, destacadas: bool, orden: str, limite: int, desde: int,
-                       ocupacion: str | None = None) -> PaginaEntrevistas:
-    """Una página de la vista. Los filtros no aplican a MIAS (la spec no los muestra ahí). `ocupacion` (F09) sí
-    aplica a todas: las entrevistas de una ocupación del catálogo; un código desconocido no trae ninguna."""
+                       familia: str | None = None) -> PaginaEntrevistas:
+    """Una página de la vista. Los filtros no aplican a MIAS (la spec no los muestra ahí). `familia` sí aplica a
+    todas: las entrevistas de una familia de carreras; un código desconocido no trae ninguna."""
     exigir_seccion_investigaciones(sesion, cuenta)
     if vista not in VISTAS or orden not in ORDENES:
         raise ErrorAccion('Vista u orden desconocidos', estado_http=422)
@@ -267,9 +270,9 @@ def listar_entrevistas(sesion: Session, cuenta: Cuenta, vista: str, buscar: str 
     texto = contiene(Entrevista.busqueda, buscar)
     if texto is not None:
         condiciones.append(texto)
-    if ocupacion is not None:
-        condiciones.append(Entrevista.ocupacion_id == select(Ocupacion.id).where(
-            Ocupacion.codigo == ocupacion).scalar_subquery())
+    if familia is not None:
+        condiciones.append(Entrevista.familia_id == select(FamiliaCarrera.id).where(
+            FamiliaCarrera.codigo == familia).scalar_subquery())
     if vista != 'MIAS':
         if favoritas:
             condiciones.append(exists().where(Favorito.cuenta_id == cuenta.id, Favorito.tipo == TipoFavorito.ENTREVISTA,

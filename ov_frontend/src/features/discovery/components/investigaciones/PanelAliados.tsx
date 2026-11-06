@@ -4,10 +4,10 @@ import { achievementIcons } from '../../lib/passport'
 
 type Sellos = (codigos: string[]) => { codigo: string; nombre: string }[]
 
-// F09 (boceto 03): compañeros del salón con guía lista, los de la misma ocupación primero y resaltados. Solo
+// F09 (boceto 03): compañeros del salón con guía lista, los de la misma familia primero y resaltados. Solo
 // informativo: sin mensajería.
 export function PanelAliados({ aliados, sellos }: { aliados: Aliados; sellos: Sellos }) {
-  const total = aliados.misma_ocupacion.length + aliados.otras.length
+  const total = aliados.misma_familia.length + aliados.otras.length
   return (
     <section className="sx-i-panel" aria-labelledby="aliados-titulo">
       <div className="sx-i-panel-cabecera">
@@ -15,14 +15,14 @@ export function PanelAliados({ aliados, sellos }: { aliados: Aliados; sellos: Se
         <small className="sx-i-meta">Compañeros con guía lista</small>
       </div>
       <p className="sx-i-meta">
-        Si alguien investiga la misma ocupación, pónganse de acuerdo fuera de la plataforma: pueden
+        Si alguien investiga la misma familia, pónganse de acuerdo fuera de la plataforma: pueden
         entrevistar juntos y publicar como coautores.
       </p>
       {total === 0 && <p>Nadie de tu salón tiene una guía lista todavía.</p>}
-      {aliados.misma_ocupacion.length > 0 && (
+      {aliados.misma_familia.length > 0 && (
         <>
           <p className="sx-i-grupo">Investigan lo mismo que tú</p>
-          {aliados.misma_ocupacion.map((a) => (
+          {aliados.misma_familia.map((a) => (
             <FilaAliado key={a.codigo} aliado={a} sellos={sellos} misma />
           ))}
         </>
@@ -53,7 +53,7 @@ function FilaAliado({ aliado, sellos, misma = false }: { aliado: Aliado; sellos:
       </span>
       <div>
         <strong>{aliado.nombre}</strong>
-        <small>{[nivel, aliado.ocupacion.titulo].filter(Boolean).join(' · ')}</small>
+        <small>{[nivel, aliado.familia.nombre].filter(Boolean).join(' · ')}</small>
       </div>
       {aliado.vitrina.length ? (
         <ul className="sx-i-vitrina" aria-label={`Vitrina de ${aliado.nombre}`}>

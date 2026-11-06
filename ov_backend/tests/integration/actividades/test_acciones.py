@@ -46,9 +46,9 @@ def test_ingresar_repite_eventos_y_usa_hora_actual_de_lima(cliente):
     ("responder-registro", {"clasificacion": "OTRA", "ampliada": False}),
     ("ingresar", {"fecha_hora": "fecha-invalida"}),
     # B13: enlace que no es de YouTube, sin permiso del entrevistado y coautores repetidos.
-    ("publicar-entrevista", {"titulo": "T", "profesional": "P", "duracion": "20 min", "resumen": "R", "enlace": "https://vimeo.com/1", "permiso": True}),
-    ("publicar-entrevista", {"titulo": "T", "profesional": "P", "duracion": "20 min", "resumen": "R", "enlace": "https://youtu.be/dQw4w9WgXcQ", "permiso": False}),
-    ("publicar-entrevista", {"titulo": "T", "profesional": "P", "duracion": "20 min", "resumen": "R", "enlace": "https://youtu.be/dQw4w9WgXcQ", "permiso": True,
+    ("publicar-entrevista", {"titulo": "T", "profesional": "P", "dedicacion": "D", "duracion": "20 min", "resumen": "R", "enlace": "https://vimeo.com/1", "permiso": True}),
+    ("publicar-entrevista", {"titulo": "T", "profesional": "P", "dedicacion": "D", "duracion": "20 min", "resumen": "R", "enlace": "https://youtu.be/dQw4w9WgXcQ", "permiso": False}),
+    ("publicar-entrevista", {"titulo": "T", "profesional": "P", "dedicacion": "D", "duracion": "20 min", "resumen": "R", "enlace": "https://youtu.be/dQw4w9WgXcQ", "permiso": True,
                              "coautores": ["est-luis", "est-luis"]}),
 ])
 def test_entradas_invalidas_no_generan_estado(cliente, sesion, nombre, cuerpo):

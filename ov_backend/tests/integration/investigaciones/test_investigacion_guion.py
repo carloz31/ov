@@ -2,7 +2,7 @@
 
 from app import models as modelos
 from soporte_investigaciones import (
-    OCUPACION, OTRA_OCUPACION, PIENSO, abrir_investigaciones, accion, guia_lista, guion, investigaciones, pensar,
+    FAMILIA, OTRA_FAMILIA, PIENSO, abrir_investigaciones, accion, guia_lista, guion, investigaciones, pensar,
 )
 from soporte_ruta import avanzar, eventos, pedir
 
@@ -20,7 +20,7 @@ def test_vista_inicial_con_catalogos_y_sin_investigacion(cliente):
     abrir_investigaciones(cliente)
     vista = investigaciones(cliente)
     assert vista['en_curso'] is None
-    assert vista['aliados'] == {'misma_ocupacion': [], 'otras': []}
+    assert vista['aliados'] == {'misma_familia': [], 'otras': []}
     assert [p['codigo'] for p in vista['preguntas_base']] == ['BASE-1', 'BASE-2', 'BASE-3']
     assert [(t['codigo'], t['comentario_obligatorio'], t['icono']) for t in vista['tipos_reaccion']] == [
         ('APRENDI', True, 'bombilla'), ('ME_GUSTO', False, 'estrella'), ('CURIOSIDAD', True, 'pregunta'),
@@ -33,17 +33,17 @@ def test_iniciar_editar_y_una_sola_en_curso(cliente):
     abrir_investigaciones(cliente)
     respuesta = pensar(cliente)
     assert [e['tipo'] for e in respuesta['eventos_registrados']] == ['INICIA_INVESTIGACION']
-    assert respuesta['eventos_registrados'][0]['referencia'] == OCUPACION
+    assert respuesta['eventos_registrados'][0]['referencia'] == FAMILIA
     en_curso = investigaciones(cliente)['en_curso']
-    assert en_curso['estado'] == 'EN_CURSO' and en_curso['ocupacion']['codigo'] == OCUPACION
+    assert en_curso['estado'] == 'EN_CURSO' and en_curso['familia']['codigo'] == FAMILIA
     assert en_curso['lo_que_pienso'] == PIENSO and en_curso['preguntas'] == []
     # Guardar de nuevo edita la misma (cambia ocupación y textos), sin otro evento.
-    otra = pensar(cliente, ocupacion=OTRA_OCUPACION, dia='Traduce documentos y conversa con clientes de otros países.')
+    otra = pensar(cliente, familia=OTRA_FAMILIA, dia='Traduce documentos y conversa con clientes de otros países.')
     assert otra['eventos_registrados'] == []
     editada = investigaciones(cliente)['en_curso']
-    assert editada['codigo'] == en_curso['codigo'] and editada['ocupacion']['codigo'] == OTRA_OCUPACION
+    assert editada['codigo'] == en_curso['codigo'] and editada['familia']['codigo'] == OTRA_FAMILIA
     pensar(cliente, esperado=422, dia='   ')
-    pensar(cliente, ocupacion='no-existe', esperado=404)
+    pensar(cliente, familia='no-existe', esperado=404)
 
 
 def test_guion_minimo_y_guia_lista(cliente, sesion):
@@ -77,7 +77,7 @@ def test_cancelar_borra_la_investigacion_y_deja_el_evento(cliente, sesion):
         assert sesion.query(modelo).count() == 0
     assert {'INICIA_INVESTIGACION', 'TERMINA_GUION'} <= {e['tipo'] for e in eventos(cliente)}
     # Se puede iniciar otra.
-    pensar(cliente, ocupacion=OTRA_OCUPACION)
+    pensar(cliente, familia=OTRA_FAMILIA)
 
 
 def test_sugerencias_se_piden_una_vez_y_se_agregan_o_descartan(cliente, aplicacion):
@@ -88,7 +88,7 @@ def test_sugerencias_se_piden_una_vez_y_se_agregan_o_descartan(cliente, aplicaci
     assert primera['estado'] == 'LISTAS' and len(primera['sugerencias']) == 3
     assert evaluador.llamadas_guion == 1
     contexto = evaluador.contextos_guion[0]
-    assert contexto.ocupacion and contexto.duda == PIENSO['duda'] and len(contexto.preguntas_base) == 3
+    assert contexto.familia and contexto.duda == PIENSO['duda'] and len(contexto.preguntas_base) == 3
     # Reabrir el paso no vuelve a llamar.
     assert accion(cliente, 'pedir-sugerencias-guion', {}) == primera and evaluador.llamadas_guion == 1
     agregada, descartada, _ = (s['codigo'] for s in primera['sugerencias'])
@@ -138,15 +138,15 @@ def test_aliados_del_mismo_salon_con_guia_lista(cliente):
     abrir_investigaciones(cliente)
     # Sin investigación propia, Luis está entre los que investigan otra cosa; Beto es de otro salón.
     sin_propia = investigaciones(cliente)['aliados']
-    assert sin_propia['misma_ocupacion'] == [] and [a['codigo'] for a in sin_propia['otras']] == ['est-luis']
+    assert sin_propia['misma_familia'] == [] and [a['codigo'] for a in sin_propia['otras']] == ['est-luis']
     pensar(cliente)
     aliados = investigaciones(cliente)['aliados']
-    luis, = aliados['misma_ocupacion']
-    assert luis['codigo'] == 'est-luis' and luis['ocupacion']['codigo'] == OCUPACION
+    luis, = aliados['misma_familia']
+    assert luis['codigo'] == 'est-luis' and luis['familia']['codigo'] == FAMILIA
     assert luis['nivel'] == {'numero': 2, 'titulo': 'Recolector de pistas'} and luis['vitrina'] == []
     assert aliados['otras'] == []
-    pensar(cliente, ocupacion=OTRA_OCUPACION)
+    pensar(cliente, familia=OTRA_FAMILIA)
     assert [a['codigo'] for a in investigaciones(cliente)['aliados']['otras']] == ['est-luis']
     # Un aliado desaparece al cancelar.
     accion(cliente, 'cancelar-investigacion', {}, cuenta='est-luis')
-    assert investigaciones(cliente)['aliados'] == {'misma_ocupacion': [], 'otras': []}
+    assert investigaciones(cliente)['aliados'] == {'misma_familia': [], 'otras': []}

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto, usar_contexto
 from app.core.definiciones import MODELOS_FIJOS
 from app.models import (
-    Actividad, Aplicacion, Bloque, Carrera, Conversacion, Entrevista, Ficha, Insignia, Institucion, Instrumento,
+    Actividad, Aplicacion, Bloque, Carrera, Conversacion, Entrevista, FamiliaCarrera, Ficha, Insignia, Institucion, Instrumento,
     Nivel, Ocupacion, PreguntaDiario, ReglaDesbloqueo, Seccion, SeccionTarjeta, Testimonio, TipoEventoUso, TipoObjetivo,
     VinculoFamiliar,
 )
@@ -34,9 +34,9 @@ MODELOS_REFERENCIA = {
     TipoEventoUso.VISTA_OCUPACION: Ocupacion,
     TipoEventoUso.VISTA_INSTITUCION: Institucion,
     TipoEventoUso.PUBLICA_ENTREVISTA: Entrevista,
-    # B13: la investigación se borra al cancelar; sus eventos apuntan a la ocupación, que no cambia.
-    TipoEventoUso.INICIA_INVESTIGACION: Ocupacion,
-    TipoEventoUso.TERMINA_GUION: Ocupacion,
+    # B13: la investigación se borra al cancelar; sus eventos apuntan a la familia, que no cambia.
+    TipoEventoUso.INICIA_INVESTIGACION: FamiliaCarrera,
+    TipoEventoUso.TERMINA_GUION: FamiliaCarrera,
     TipoEventoUso.EDITA_ENTREVISTA: Entrevista,
     TipoEventoUso.VISTA_ENTREVISTA: Entrevista,
     TipoEventoUso.MARCA_FAVORITO_ENTREVISTA: Entrevista,

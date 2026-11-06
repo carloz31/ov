@@ -32,10 +32,10 @@ RECORRIDO = ('t-inicio', 't-partida', 't-cierre-inicio', 't-expectativas', 't-in
 CUESTIONARIOS = ('t-partida',)
 REGISTROS = ('t-expectativas',)
 # DATO DE PRUEBA: la investigación y la ficha.
-PIENSO = {'ocupacion': '47-2111.00', 'dia': 'Creo que revisa instalaciones de casas y edificios.',
+PIENSO = {'familia': '524', 'dia': 'Creo que revisa instalaciones de casas y edificios.',
           'necesita': 'Creo que necesita estudiar en un instituto y practicar mucho.',
           'duda': '¿Es peligroso trabajar con electricidad todos los días?'}
-FICHA = {'titulo': 'Un día con una electricista', 'profesional': 'Rosa Quispe', 'duracion': '20 minutos',
+FICHA = {'titulo': 'Un día con una electricista', 'profesional': 'Rosa Quispe', 'dedicacion': 'Electricista industrial', 'duracion': '20 minutos',
          'enlace': 'https://youtu.be/dQw4w9WgXcQ', 'resumen': 'Nos contó cómo empezó y qué cuidados toma cada día.',
          'permiso': True}
 

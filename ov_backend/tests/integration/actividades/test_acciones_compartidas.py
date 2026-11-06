@@ -2,7 +2,7 @@
 
 from soporte_datos_ports import agregar_autores
 from soporte_datos_ports import insignia_por_evento, preparar_conversacion
-from soporte_investigaciones import FICHA, OCUPACION, guia_lista, guias_listas_directas, guion, pensar
+from soporte_investigaciones import FICHA, FAMILIA, guia_lista, guias_listas_directas, guion, pensar
 import pytest
 from app.services import comun
 from soporte_ruta import avanzar, completar, filas_base, pedir
@@ -62,7 +62,7 @@ def test_r34_coautoria_independiente_y_sql_de_dos_a_veinte(tmp_path, base_aislad
             autores = ['est-ana', 'est-luis']
             with aplicacion.state.fabrica_sesiones.begin() as sesion:
                 agregar_autores(sesion, cantidad, autores)
-                guias_listas_directas(sesion, autores[1:], OCUPACION)
+                guias_listas_directas(sesion, autores[1:], FAMILIA)
             respuesta, contador = medir(cliente, aplicacion, 'POST', '/acciones/publicar-entrevista',
                 {'cuenta': 'est-ana', **FICHA, 'coautores': autores[1:]}, limite=40)
             assert set(respuesta['por_cuenta']) == set(autores)

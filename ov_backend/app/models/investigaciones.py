@@ -34,14 +34,16 @@ class TipoReaccion(Base):
 
 
 class Entrevista(Base):
-    """Entrevista publicada. `busqueda`: título, profesional y ocupación sin tildes (la escribe el servicio)."""
+    """Entrevista publicada sobre una familia de carreras. `dedicacion`: a qué se dedica la persona entrevistada.
+    `busqueda`: título, profesional, dedicación y familia sin tildes (la escribe el servicio)."""
     __tablename__ = "entrevista"
     __table_args__ = (CheckConstraint("leyenda_en IS NULL OR destacada_en IS NOT NULL", name="leyenda_destacada"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
-    ocupacion_id: Mapped[int] = mapped_column(ForeignKey("ocupacion.id"))
+    familia_id: Mapped[int] = mapped_column(ForeignKey("familia_carrera.id"))
     titulo: Mapped[str]
     profesional: Mapped[str]
+    dedicacion: Mapped[str]
     duracion: Mapped[str]
     enlace: Mapped[str]
     resumen: Mapped[str] = mapped_column(Text)
@@ -61,7 +63,7 @@ class EntrevistaAutor(Base):
 
 
 class Investigacion(Base):
-    """Investigación de un estudiante sobre una ocupación. Una sola EN_CURSO o GUIA_LISTA por cuenta."""
+    """Investigación de un estudiante sobre una familia de carreras. Una sola EN_CURSO o GUIA_LISTA por cuenta."""
     __tablename__ = "investigacion"
     __table_args__ = (
         Index("investigacion_activa_unica", "cuenta_id", unique=True,
@@ -72,7 +74,7 @@ class Investigacion(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
     cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
-    ocupacion_id: Mapped[int] = mapped_column(ForeignKey("ocupacion.id"))
+    familia_id: Mapped[int] = mapped_column(ForeignKey("familia_carrera.id"))
     estado: Mapped[EstadoInvestigacion] = mapped_column(enumerado(EstadoInvestigacion))
     # Lo que pienso hoy (HU-100): lo ven el estudiante y su orientadora, no el salón.
     piensa_dia: Mapped[str] = mapped_column(Text)

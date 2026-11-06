@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 from app import models as modelos
 from app.services import comun
 from soporte_investigaciones import (
-    ENLACE, FICHA, OCUPACION, OTRA_OCUPACION, accion, codigo_publicado, detalle, entrevistas, guia_lista,
+    ENLACE, FICHA, FAMILIA, OTRA_FAMILIA, accion, codigo_publicado, detalle, entrevistas, guia_lista,
     guias_listas_directas, guion, investigaciones, pensar, publicar,
 )
 from soporte_retiro import medir
@@ -21,10 +21,10 @@ def favorito(cliente, codigo, cuenta, esperado=200, accion_favorito='marcar-favo
 def test_publicar_exige_guia_lista_y_cierra_la_de_cada_autor(cliente):
     guia_lista(cliente, 'est-luis')
     guia_lista(cliente)
-    pensar(cliente, 'est-luis', OTRA_OCUPACION)
-    # Luis cambió de ocupación: no puede ser coautor de la de Ana.
+    pensar(cliente, 'est-luis', OTRA_FAMILIA)
+    # Luis cambió de familia: no puede ser coautor de la de Ana.
     publicar(cliente, coautores=['est-luis'], esperado=409)
-    pensar(cliente, 'est-luis', OCUPACION)
+    pensar(cliente, 'est-luis', FAMILIA)
     publicar(cliente, coautores=['est-beto'], esperado=409)
     publicar(cliente, coautores=['est-ana'], esperado=409)
     publicar(cliente, coautores=['no-existe'], esperado=404)
@@ -40,7 +40,7 @@ def test_publicar_exige_guia_lista_y_cierra_la_de_cada_autor(cliente):
     assert investigaciones(cliente)['conteos'] == {'salon': 1, 'leyendas': 0, 'mias': 1}
     # Sin investigación activa no hay nada que publicar; otra investigación sí se puede iniciar.
     publicar(cliente, esperado=409)
-    pensar(cliente, ocupacion=OTRA_OCUPACION)
+    pensar(cliente, familia=OTRA_FAMILIA)
     publicar(cliente, esperado=409)
 
 
@@ -49,6 +49,7 @@ def test_validacion_del_enlace_y_del_permiso(cliente):
     publicar(cliente, enlace='https://vimeo.com/12345', esperado=422)
     publicar(cliente, permiso=False, esperado=422)
     publicar(cliente, titulo='  ', esperado=422)
+    publicar(cliente, dedicacion='  ', esperado=422)
     publicar(cliente, enlace='https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 
 
@@ -83,7 +84,7 @@ def test_editar_no_cambia_autores_y_cualquier_autor_retira(cliente):
 
 def test_listados_por_vista_filtros_y_orden(cliente):
     guia_lista(cliente, 'est-beto')
-    guia_lista(cliente, 'est-luis', OTRA_OCUPACION)
+    guia_lista(cliente, 'est-luis', OTRA_FAMILIA)
     guia_lista(cliente)
     de_ana = codigo_publicado(publicar(cliente, titulo='Electricidad en casa'))
     de_luis = codigo_publicado(publicar(cliente, 'est-luis', titulo='Traducir para vivir'), 'est-luis')
@@ -95,7 +96,7 @@ def test_listados_por_vista_filtros_y_orden(cliente):
     assert ana['propia'] and not luis['propia'] and luis['reacciones_por_tipo'] is None
     assert ana['autores'][0] == {'codigo': 'est-ana', 'nombre': 'Ana', 'nivel': {'numero': 2,
                                  'titulo': 'Recolector de pistas'}, 'vitrina': []}
-    assert ana['ocupacion']['codigo'] == OCUPACION and not luis['vista']
+    assert ana['familia']['codigo'] == FAMILIA and not luis['vista']
     assert entrevistas(cliente, vista='LEYENDAS')['total'] == 0
     mias = entrevistas(cliente, vista='MIAS')
     assert [t['codigo'] for t in mias['items']] == [de_ana] and mias['items'][0]['reacciones_por_tipo'] == {}
@@ -113,9 +114,9 @@ def test_listados_por_vista_filtros_y_orden(cliente):
     pagina = entrevistas(cliente, limite=1, desde=1)
     assert pagina['total'] == 2 and [t['codigo'] for t in pagina['items']] == [de_ana]
     assert entrevistas(cliente, orden='REACCIONADAS')['total'] == 2
-    # F09: por ocupación, para el detalle de la ocupación del catálogo; un código desconocido no trae ninguna.
-    assert [t['codigo'] for t in entrevistas(cliente, ocupacion=OTRA_OCUPACION)['items']] == [de_luis]
-    assert entrevistas(cliente, ocupacion='no-existe')['total'] == 0
+    # Por familia, para el detalle de la carrera del catálogo; un código desconocido no trae ninguna.
+    assert [t['codigo'] for t in entrevistas(cliente, familia=OTRA_FAMILIA)['items']] == [de_luis]
+    assert entrevistas(cliente, familia='no-existe')['total'] == 0
     entrevistas(cliente, vista='OTRA', esperado=422)
     entrevistas(cliente, limite=0, esperado=422)
 
@@ -188,3 +189,40 @@ def test_listado_no_crece_en_consultas_con_las_entrevistas(tmp_path, base_aislad
             _, contador = medir(cliente, aplicacion, 'GET', '/cuentas/est-ana/entrevistas?vista=MIAS', limite=30)
             cantidades.append(contador.cantidad)
     assert cantidades[0] == cantidades[1]
+
+
+def test_la_ficha_lleva_familia_y_dedicacion_y_se_busca_por_las_dos(cliente):
+    guia_lista(cliente)
+    codigo = codigo_publicado(publicar(cliente))
+    tarjeta, = entrevistas(cliente)['items']
+    assert tarjeta['familia']['codigo'] == FAMILIA and tarjeta['familia']['nombre'] and tarjeta['familia']['area_codigo']
+    assert tarjeta['dedicacion'] == FICHA['dedicacion']
+    assert detalle(cliente, codigo)['dedicacion'] == FICHA['dedicacion']
+    for buscado in (tarjeta['familia']['nombre'], 'electricista industrial', 'INGENIERIA ELECTRICA'):
+        assert entrevistas(cliente, buscar=buscado.replace(' ', '%20'))['total'] == 1, buscado
+    assert entrevistas(cliente, buscar='Idiomas')['total'] == 0
+    nueva = {k: v for k, v in FICHA.items() if k != 'permiso'}
+    accion(cliente, 'editar-entrevista', {**nueva, 'entrevista': codigo, 'dedicacion': 'Supervisora de obra'})
+    assert entrevistas(cliente, buscar='supervisora')['total'] == 1
+    assert entrevistas(cliente, buscar='electricista%20industrial')['total'] == 0
+
+
+def test_salon_y_leyendas_junta_las_dos_sin_repetir_y_sin_otras(cliente, sesion):
+    guia_lista(cliente)
+    de_ana = codigo_publicado(publicar(cliente))
+    guia_lista(cliente, 'est-beto')
+    de_beto = codigo_publicado(publicar(cliente, 'est-beto'), 'est-beto')
+    guia_lista(cliente, 'est-luis')
+    de_luis = codigo_publicado(publicar(cliente, 'est-luis'), 'est-luis')
+    # Para Ana, la de Beto (5B) no es de su salón ni Leyenda: no sale.
+    vista = entrevistas(cliente, vista='SALON_Y_LEYENDAS', familia=FAMILIA)
+    assert {t['codigo'] for t in vista['items']} == {de_ana, de_luis} and vista['total'] == 2
+    # Una Leyenda de otro salón sí sale; una del propio salón que además es Leyenda no se repite.
+    for entrevista in sesion.scalars(select(modelos.Entrevista).where(modelos.Entrevista.codigo.in_([de_beto, de_luis]))):
+        entrevista.destacada_en = entrevista.leyenda_en = entrevista.fecha_hora
+    sesion.commit()
+    vista = entrevistas(cliente, vista='SALON_Y_LEYENDAS', familia=FAMILIA, limite=2)
+    assert vista['total'] == 3 and len(vista['items']) == 2
+    assert {t['codigo'] for t in entrevistas(cliente, vista='SALON_Y_LEYENDAS')['items']} == {de_ana, de_beto, de_luis}
+    assert entrevistas(cliente, vista='SALON_Y_LEYENDAS', familia=OTRA_FAMILIA)['total'] == 0
+

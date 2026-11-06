@@ -565,7 +565,7 @@ def test_hu057_065_100_101_investigaciones_y_entrevistas(cliente):
         return pedir(cliente, 'POST', f'/acciones/{nombre}', {'cuenta': cuenta, 'fecha_hora': FECHA, **datos},
                      esperado)
 
-    pienso = {'ocupacion': '47-2111.00', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas.',
+    pienso = {'familia': '524', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas.',
               'necesita': 'DATO DE PRUEBA: un instituto y mucha práctica.', 'duda': '¿Es peligroso?'}
     for cuenta in ('est-ana', 'est-luis'):
         avanzar(cliente, cuenta=cuenta)
@@ -582,11 +582,11 @@ def test_hu057_065_100_101_investigaciones_y_entrevistas(cliente):
     accion('guardar-guion', {'preguntas': preguntas[:1], 'terminar': True}, 'est-luis')
     vista = pedir(cliente, 'GET', '/cuentas/est-ana/investigaciones')
     assert vista['en_curso']['estado'] == 'GUIA_LISTA'
-    assert [a['codigo'] for a in vista['aliados']['misma_ocupacion']] == ['est-luis']
+    assert [a['codigo'] for a in vista['aliados']['misma_familia']] == ['est-luis']
     # La misión de cierre espera la publicación.
     assert actividades(cliente)['t-investigador-cierre'] == 'BLOQUEADA'
     publicada = accion('publicar-entrevista', {
-        'titulo': 'DATO DE PRUEBA: un día con un electricista', 'profesional': 'DATO DE PRUEBA',
+        'titulo': 'DATO DE PRUEBA: un día con un electricista', 'profesional': 'DATO DE PRUEBA', 'dedicacion': 'DATO DE PRUEBA',
         'duracion': '20 minutos', 'enlace': 'https://youtu.be/dQw4w9WgXcQ',
         'resumen': 'DATO DE PRUEBA: nos contó cómo empezó.', 'coautores': ['est-luis'], 'permiso': True})
     codigo = publicada['por_cuenta']['est-ana']['eventos_registrados'][0]['referencia']

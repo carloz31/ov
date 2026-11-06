@@ -569,7 +569,7 @@ def _recorrer_investigaciones(cliente):
 
 
 def _recorrido_investigaciones(cliente):
-    pienso = {'ocupacion': '47-2111.00', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas y edificios.',
+    pienso = {'familia': '524', 'dia': 'DATO DE PRUEBA: revisa instalaciones de casas y edificios.',
               'necesita': 'DATO DE PRUEBA: estudiar en un instituto y practicar.', 'duda': '¿Es peligroso?'}
 
     def accion(nombre, datos, cuenta='est-ana'):
@@ -591,6 +591,7 @@ def _recorrido_investigaciones(cliente):
     fixtures['investigaciones-guia-lista'] = _pedir(cliente, 'GET', '/cuentas/est-ana/investigaciones')
     publicada = fixtures['publicar-entrevista'] = accion('publicar-entrevista', {
         'titulo': 'DATO DE PRUEBA: un día con un electricista', 'profesional': 'DATO DE PRUEBA: Rosa Quispe',
+        'dedicacion': 'DATO DE PRUEBA: electricista industrial',
         'duracion': '20 minutos', 'enlace': 'https://youtu.be/dQw4w9WgXcQ',
         'resumen': 'DATO DE PRUEBA: nos contó cómo empezó y qué cuidados toma.', 'coautores': [], 'permiso': True})
     codigo = publicada['por_cuenta']['est-ana']['eventos_registrados'][0]['referencia']
@@ -605,8 +606,8 @@ def _recorrido_investigaciones(cliente):
         'lista_reacciones'] if r['autor']['codigo'] == 'est-luis')
     accion('reportar', {'reaccion': de_luis, 'motivo': 'OFENSIVO'})
     fixtures['investigaciones-luis'] = _pedir(cliente, 'GET', '/cuentas/est-luis/investigaciones')
-    fixtures['entrevistas-ocupacion'] = _pedir(
-        cliente, 'GET', '/cuentas/est-luis/entrevistas?vista=SALON&ocupacion=47-2111.00')
+    fixtures['entrevistas-familia'] = _pedir(
+        cliente, 'GET', '/cuentas/est-luis/entrevistas?vista=SALON_Y_LEYENDAS&familia=524')
     fixtures['entrevista-detalle-propia'] = _pedir(cliente, 'GET', f'/cuentas/est-ana/entrevistas/{codigo}')
     fixtures['entrevistas-salon'] = _pedir(cliente, 'GET', '/cuentas/est-luis/entrevistas?vista=SALON')
     fixtures['entrevistas-mias'] = _pedir(cliente, 'GET', '/cuentas/est-ana/entrevistas?vista=MIAS')

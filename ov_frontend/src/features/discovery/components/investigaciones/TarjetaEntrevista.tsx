@@ -67,10 +67,10 @@ export function TarjetaEntrevista({
         )}
       </div>
       <div className="sx-i-cuerpo">
-        <p className="sx-i-kicker">Entrevista · {tarjeta.ocupacion.titulo}</p>
+        <p className="sx-i-kicker">Entrevista · {tarjeta.familia.nombre}</p>
         <h2>{tarjeta.titulo}</h2>
         <p className="sx-i-meta">
-          {tarjeta.profesional} · {tarjeta.duracion}
+          {tarjeta.profesional} · {tarjeta.dedicacion} · {tarjeta.duracion}
         </p>
         {!mia && <p className="sx-i-resumen">{tarjeta.resumen}</p>}
         {mia ? (

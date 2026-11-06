@@ -54,7 +54,7 @@ export function FormularioPublicar({ m }: { m: ModeloPublicar }) {
       }}
     >
       <p className="sx-i-kicker">
-        {m.editar ? 'Editar ficha' : 'Publicar'} · {m.ocupacion?.titulo}
+        {m.editar ? 'Editar ficha' : 'Publicar'} · {m.familia?.nombre}
       </p>
       <h2>Comparte lo que descubriste</h2>
       <small className="sx-i-letra-chica">
@@ -79,12 +79,19 @@ export function FormularioPublicar({ m }: { m: ModeloPublicar }) {
           />
           <Campo
             m={m}
-            campo="duracion"
-            etiqueta="Duración aproximada"
-            placeholder="7 min"
-            error="Escribe la duración."
+            campo="dedicacion"
+            etiqueta="¿A qué se dedica?"
+            placeholder="Ej.: contadora en una empresa de transporte"
+            error="Escribe a qué se dedica."
           />
         </div>
+        <Campo
+          m={m}
+          campo="duracion"
+          etiqueta="Duración aproximada"
+          placeholder="7 min"
+          error="Escribe la duración."
+        />
         <Campo
           m={m}
           campo="enlace"
@@ -97,7 +104,7 @@ export function FormularioPublicar({ m }: { m: ModeloPublicar }) {
           m={m}
           campo="resumen"
           etiqueta="En pocas palabras"
-          placeholder="Qué aprendiste, qué te sorprendió, qué le recomendarías a alguien que quiera esta ocupación."
+          placeholder="Qué aprendiste, qué te sorprendió, qué le recomendarías a alguien que quiera dedicarse a esto."
           ayuda="Entre 2 y 5 líneas. Sin repreguntas de Lumi aquí: lo que escribas se publica tal cual."
           error="Cuenta en pocas palabras lo que descubriste."
           largo
@@ -145,7 +152,7 @@ export function FormularioPublicar({ m }: { m: ModeloPublicar }) {
                         </button>
                       ))
                     ) : (
-                      <small>Nadie con ese nombre tiene una guía lista sobre esta ocupación.</small>
+                      <small>Nadie con ese nombre tiene una guía lista sobre esta familia.</small>
                     )}
                   </span>
                 )}
@@ -155,7 +162,7 @@ export function FormularioPublicar({ m }: { m: ModeloPublicar }) {
           <small className="sx-i-letra-chica">
             {m.editar
               ? 'Los coautores se eligen al publicar y no cambian después.'
-              : 'Solo aparecen los de tu salón que tienen guía lista para esta misma ocupación. Al publicar, su investigación en curso se cierra y la entrevista les aparece como suya. Después de publicar, los coautores ya no cambian.'}
+              : 'Solo aparecen los de tu salón que tienen guía lista para esta misma familia. Al publicar, su investigación en curso se cierra y la entrevista les aparece como suya. Después de publicar, los coautores ya no cambian.'}
           </small>
         </div>
         {!m.editar && (

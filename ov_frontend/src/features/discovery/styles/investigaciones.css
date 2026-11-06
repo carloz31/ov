@@ -645,7 +645,7 @@
   font: inherit;
   outline: none;
 }
-.sx-i-chip-ocupacion {
+.sx-i-chip-familia {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -654,7 +654,14 @@
   background: color-mix(in srgb, var(--case-mint) 22%, var(--card));
   font-weight: 700;
 }
-.sx-i-chip-ocupacion button {
+.sx-i-filtro-familia {
+  margin: 0 0 12px;
+}
+.sx-i-chip-familia {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.sx-i-chip-familia button {
   min-height: 32px;
   padding: 4px 12px;
   border: 0;
@@ -1004,7 +1011,7 @@
   flex-wrap: wrap;
   gap: 8px;
 }
-.sx-i-enlace-ocupacion {
+.sx-i-enlace-familia {
   color: inherit;
   text-decoration: underline;
 }

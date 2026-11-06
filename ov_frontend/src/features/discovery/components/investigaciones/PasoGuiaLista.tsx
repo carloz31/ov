@@ -14,7 +14,7 @@ const CONSEJOS: [string, string][] = [
   ['Cierra agradeciendo', 'y pregunta si puedes compartirlo con tu salón.'],
 ]
 
-// F09 (boceto 11): la guía lista, con los cuatro pasos (los aliados de la misma ocupación en línea), las preguntas
+// F09 (boceto 11): la guía lista, con los cuatro pasos (los aliados de la misma familia en línea), las preguntas
 // que llevará (con copiar), los consejos y la regla de la Leyenda.
 export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuenta; onEditar: () => void }) {
   const enCurso = datos.en_curso!
@@ -37,7 +37,7 @@ export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuent
           <div>
             <h2>Tu guía de entrevista está lista</h2>
             <p className="sx-i-meta">
-              {enCurso.ocupacion.titulo} · {guion.total} preguntas · guardada, la encuentras en «Ver mi guion»
+              {enCurso.familia.nombre} · {guion.total} preguntas · guardada, la encuentras en «Ver mi guion»
             </p>
           </div>
         </div>
@@ -49,16 +49,16 @@ export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuent
                 <strong>Mira si alguien de tu salón investiga lo mismo.</strong> Pueden entrevistar juntos y
                 publicar como coautores. Se coordinan fuera de la plataforma.
               </p>
-              {datos.aliados.misma_ocupacion.length > 0 ? (
+              {datos.aliados.misma_familia.length > 0 ? (
                 <div className="sx-i-autores">
                   <small className="sx-i-meta">Ahora mismo:</small>
-                  {datos.aliados.misma_ocupacion.map((a) => (
+                  {datos.aliados.misma_familia.map((a) => (
                     <AutorEntrevista key={a.codigo} autor={a} nota={lineaNivel(a.nivel, false)} />
                   ))}
                 </div>
               ) : (
                 <small className="sx-i-meta">
-                  Ahora mismo nadie más investiga {enCurso.ocupacion.titulo}.
+                  Ahora mismo nadie más investiga {enCurso.familia.nombre}.
                 </small>
               )}
               {otras > 0 && (
@@ -66,8 +66,8 @@ export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuent
                   {' '}
                   Y {otras}{' '}
                   {otras === 1
-                    ? 'compañero más investiga otra ocupación'
-                    : 'compañeros más investigan otras ocupaciones'}
+                    ? 'compañero más investiga otra familia'
+                    : 'compañeros más investigan otras familias'}
                   .
                 </small>
               )}
@@ -76,7 +76,7 @@ export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuent
           <li>
             <span className="sx-i-numero-redondo">2</span>
             <p>
-              <strong>Busca a alguien que ejerza esta ocupación:</strong> un familiar, un conocido o alguien
+              <strong>Busca a alguien que trabaje en {enCurso.familia.nombre}:</strong> un familiar, un conocido o alguien
               que te recomienden. Pídele unos 15 minutos.
             </p>
           </li>
@@ -137,7 +137,7 @@ export function PasoGuiaLista({ datos, onEditar }: { datos: InvestigacionesCuent
           </p>
           <p>
             Lo que hace Leyenda a una entrevista no es la cámara: es que se sienta como una conversación de
-            verdad y que quien la vea aprenda algo que no sabía de esa ocupación.
+            verdad y que quien la vea aprenda algo que no sabía de ese trabajo.
           </p>
         </section>
       </aside>

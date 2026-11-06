@@ -25,7 +25,7 @@ const ANCHOS = ['w-[17%]', 'w-[10%]', 'w-[15%]', 'w-[12%]', 'w-[10%]', 'w-[9%]',
 const COLUMNAS = [
   'Autores',
   'Salón',
-  'Profesión u ocupación',
+  'Familia y a qué se dedica',
   'Fecha de publicación',
   'Reacciones',
   'Favoritos',
@@ -51,7 +51,10 @@ function Fila({
       <TableCell className="px-2.5 py-3 whitespace-normal">
         {fila.de_sus_salones ? salones.map(m.nombreSalon).join(', ') : 'Promoción anterior'}
       </TableCell>
-      <TableCell className="px-2.5 py-3 whitespace-normal break-words">{fila.ocupacion.titulo}</TableCell>
+      <TableCell className="px-2.5 py-3 whitespace-normal break-words"><strong>{fila.familia.nombre}</strong>
+        <br />
+        {fila.dedicacion}
+      </TableCell>
       <TableCell className="px-2.5 py-3">{fechaNumerica(fila.fecha_hora)}</TableCell>
       <TableCell className="px-2.5 py-3 text-center">{fila.reacciones}</TableCell>
       <TableCell className="px-2.5 py-3 text-center">
@@ -98,10 +101,10 @@ export function TablaPublicaciones({ m }: { m: ModeloPublicaciones }) {
             className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden="true"
           />
-          <span className="sr-only">Buscar por autor, ocupación o título</span>
+          <span className="sr-only">Buscar por autor, familia o título</span>
           <Input
             className="min-h-11 bg-card pl-9"
-            placeholder="Buscar por autor, ocupación o título…"
+            placeholder="Buscar por autor, familia o título…"
             value={m.texto}
             onChange={(e) => m.buscarTexto(e.target.value)}
           />

@@ -8,7 +8,7 @@ RESPUESTA_CUESTIONARIO: la etiqueta elegida en un ítem de la aplicación fuente
 FAVORITOS: las carreras, ocupaciones e instituciones marcadas, de la más reciente a la más antigua.
 PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL (B11): los planes por prioridad, el plan A (carrera, relato y
 motivos), los pasos del plan A y la carrera de la opción inicial.
-LO_QUE_PIENSO (B13): lo que el estudiante pensaba de la ocupación antes de su primera entrevista publicada.
+LO_QUE_PIENSO (B13): lo que el estudiante pensaba de la familia de carreras antes de su primera entrevista publicada.
 """
 
 from sqlalchemy import select
@@ -17,7 +17,7 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import LONGITUD_CODIGO_INTERES
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, Entrevista, EstadoInvestigacion,
+    Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, Entrevista, EstadoInvestigacion, FamiliaCarrera,
     EstadoProgreso, EvaluacionRespuesta, Favorito, Institucion, Investigacion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
     ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol, TarjetaCarrera, TipoFavorito,
 )
@@ -156,11 +156,11 @@ def _leer_planes(sesion, cuenta, tipos):
 
 
 def _leer_lo_que_pienso(sesion, cuenta):
-    """La investigación de la primera entrevista publicada: título de la ocupación y los tres textos (DIA, NECESITA,
+    """La investigación de la primera entrevista publicada: nombre de la familia y los tres textos (DIA, NECESITA,
     DUDA). La entrevista puede haberse retirado después: lo que pensaba no cambia."""
-    fila = sesion.execute(select(Investigacion, Ocupacion.titulo).join(
+    fila = sesion.execute(select(Investigacion, FamiliaCarrera.nombre).join(
         Entrevista, Entrevista.id == Investigacion.entrevista_id).join(
-        Ocupacion, Ocupacion.id == Investigacion.ocupacion_id).where(
+        FamiliaCarrera, FamiliaCarrera.id == Investigacion.familia_id).where(
         Investigacion.cuenta_id == cuenta.id, Investigacion.estado == EstadoInvestigacion.PUBLICADA).order_by(
         Entrevista.fecha_hora, Entrevista.id).limit(1)).first()
     if fila is None:

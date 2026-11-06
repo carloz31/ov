@@ -71,12 +71,13 @@ export function PublicarEntrevista() {
             <section className="sx-i-panel">
               <p className="sx-i-kicker">Así se verá tu tarjeta</p>
               <div className="sx-i-previa-banda" aria-hidden="true" />
-              <p className="sx-i-kicker">Entrevista · {m.ocupacion?.titulo}</p>
+              <p className="sx-i-kicker">Entrevista · {m.familia?.nombre}</p>
               <h3 data-vacio={!m.ficha.titulo.trim() || undefined}>
                 {m.ficha.titulo.trim() || '[Título de tu entrevista]'}
               </h3>
               <p className="sx-i-meta">
-                {m.ficha.profesional.trim() || '[Profesional]'} · {m.ficha.duracion.trim() || '[Duración]'}
+                {m.ficha.profesional.trim() || '[Profesional]'} · {m.ficha.dedicacion.trim() || '[A qué se dedica]'} ·{' '}
+                {m.ficha.duracion.trim() || '[Duración]'}
               </p>
               <p className="sx-i-meta">{m.ficha.resumen.trim() || '[En pocas palabras…]'}</p>
               <p className="sx-i-meta">

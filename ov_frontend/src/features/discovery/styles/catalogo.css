@@ -1049,3 +1049,12 @@
   color: var(--sx-parchment-muted);
   font-size: 13px;
 }
+
+/* Ajuste entrevistas por familia: en la columna derecha del detalle de carrera, los títulos largos cortan línea. */
+.sx-c-entrevista-familia {
+  min-width: 0;
+}
+.sx-c-entrevista-familia strong,
+.sx-c-entrevista-familia small {
+  overflow-wrap: anywhere;
+}

@@ -31,9 +31,11 @@ def llenar_estado(aplicacion):
             ocupacion = modelos.Ocupacion(codigo='prueba-reinicio', codigo_onet='PRUEBA-REINICIO',
                                           titulo='DATO DE PRUEBA', grupo='15')
             sesion.add(ocupacion)
+        familia = sesion.scalar(select(modelos.FamiliaCarrera))
         progreso = modelos.ProgresoActividad(cuenta_id=cuenta.id, actividad_id=actividad.id, estado='EN_CURSO')
         sesion.flush()
-        entrevista = modelos.Entrevista(codigo='ENT-REINICIO', ocupacion_id=ocupacion.id, titulo='DATO DE PRUEBA',
+        entrevista = modelos.Entrevista(codigo='ENT-REINICIO', familia_id=familia.id, dedicacion='DATO DE PRUEBA',
+                                        titulo='DATO DE PRUEBA',
                                         profesional='DATO DE PRUEBA', duracion='DATO DE PRUEBA',
                                         enlace='https://youtu.be/datoPrueba1', resumen='DATO DE PRUEBA',
                                         busqueda='dato de prueba', estado='PUBLICADA', fecha_hora=fecha)
@@ -114,7 +116,7 @@ def _llenar_planes(sesion, cuenta, fecha):
 def _llenar_investigaciones(sesion, cuenta, entrevista, fecha):
     """B13: una investigación publicada con su guion, una sugerencia, una reacción y un reporte."""
     tipo = sesion.scalar(select(modelos.TipoReaccion))
-    investigacion = modelos.Investigacion(codigo='INV-REINICIO', cuenta_id=cuenta.id, ocupacion_id=entrevista.ocupacion_id,
+    investigacion = modelos.Investigacion(codigo='INV-REINICIO', cuenta_id=cuenta.id, familia_id=entrevista.familia_id,
                                           estado='PUBLICADA', piensa_dia='DATO DE PRUEBA', piensa_necesita='DATO DE PRUEBA',
                                           piensa_duda='DATO DE PRUEBA', creada_en=fecha, guia_lista_en=fecha,
                                           entrevista_id=entrevista.id)

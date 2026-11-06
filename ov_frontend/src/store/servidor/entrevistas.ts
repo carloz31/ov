@@ -12,14 +12,14 @@ import type {
 } from '@/types/servidor'
 import { consultarCuenta, consultarCuentaSesion, sesionServidor } from './sesion'
 
-// F09 · Listas de entrevistas (del estudiante: la vista activa y las de una ocupación; de la orientadora: su tabla)
+// F09 · Listas de entrevistas (del estudiante: la vista activa y las de una familia de carreras; de la orientadora: su tabla)
 // y detalles. Como el catálogo (F06), cada espacio guarda solo su combinación de filtros, se acumula con «Mostrar
 // más» y un turno descarta las respuestas viejas. Lo que cambian otras cuentas (reacciones, favoritos, destacado)
 // se revalida al montar la vista: se muestra lo cargado mientras llega lo nuevo (regla 4).
 export const LIMITE_ENTREVISTAS = 20
 type Espacios = {
   entrevistas: TarjetaEntrevista
-  ocupacion: TarjetaEntrevista
+  familia: TarjetaEntrevista
   publicaciones: FilaPublicacion
 }
 export type EspacioLista = keyof Espacios
@@ -184,7 +184,7 @@ export function actualizarEntrevista(
   codigo: string,
   cambio: (t: TarjetaEntrevista) => Partial<TarjetaEntrevista>,
 ) {
-  for (const espacio of ['entrevistas', 'ocupacion'] as const) {
+  for (const espacio of ['entrevistas', 'familia'] as const) {
     const lista = listas.get(espacio)
     if (!lista) continue
     const items = (lista.items as TarjetaEntrevista[]).map((t) =>

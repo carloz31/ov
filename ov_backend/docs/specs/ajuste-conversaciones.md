@@ -333,3 +333,126 @@ Backend con `contenido` sobre una base temporal en el scratchpad (`DATABASE_URL`
 8. **Apoderado:** tarjeta de Inicio y Conversaciones con los textos nuevos, en celular y en escritorio.
 
 Se usa una configuración temporal en `.claude/launch.json` si hace falta, sin versionarla, y al terminar se apagan los servidores y se borra lo temporal.
+
+## Ajuste · entrevistas por familia
+
+### Contexto
+
+Hoy cada investigación y entrevista apunta a una **ocupación**. Pasarán a apuntar a una **familia de carreras** (código de 3 dígitos), para que más estudiantes coincidan en un tema y tengan más profesionales a quienes buscar. Las entrevistas dejan de verse en el detalle de la ocupación y se ven en el detalle de la carrera, como «Entrevistas de esta familia».
+
+Va como fases F6–F9 de la spec en curso (`ajuste-conversaciones.md`), en la rama `ajuste/conversaciones`, porque esa spec sigue sin cerrar. Es un **cambio de modelo**: se sigue `/cambio-modelo`.
+
+### Decisiones tomadas por el usuario
+
+- **Oficio:** familia más un campo obligatorio «a qué se dedica» en la ficha.
+- **Datos actuales:** se eliminan y se generan entrevistas de ejemplo.
+- **Buscador:** solo por nombre de familia.
+- **Detalle de carrera:** salón y Leyendas, limitado a unas pocas, con enlace «ver completo» a la sección de entrevistas.
+
+### Implicaciones que encontré
+
+Además de las dos que ya viste (texto de la actividad y catálogo):
+
+| Implicación | Hoy | Pasará a |
+|---|---|---|
+| **Migración destructiva** | — | Vacía entrevistas e investigaciones y **también tu base de desarrollo** al correr `alembic upgrade head`: guion, sugerencias, reacciones, reportes, favoritos de entrevista, sus notificaciones y sus eventos. |
+| **Eventos** | `INICIA_INVESTIGACION` y `TERMINA_GUION` referencian una ocupación (`motor/referencias.py`) | Referencian una familia. Los anteriores se borran: su id significaría otra cosa. |
+| **Sugerencias del LLM** | «una persona que trabaja como {ocupacion}» | `PROMPT_GUION_V2`: trabaja en el campo de {familia}, a partir de lo que escribió el estudiante. |
+| **Coautores y aliados** | Misma ocupación; `aliados.misma_ocupacion` | Misma familia; `aliados.misma_familia`. Pueden publicar juntos aunque entrevisten oficios distintos de la familia. |
+| **Búsqueda de entrevistas** | `busqueda`: título, profesional y ocupación | Título, profesional, a qué se dedica y familia. Así «contador» sigue encontrando entrevistas. |
+| **Registro de cierre (`LO_QUE_PIENSO`)** | «Antes de tu entrevista, sobre {ocupación} pensabas» | Dice el nombre de la familia (`referencias.py`). |
+| **Portal de la orientadora** | Tabla, detalle y búsqueda con ocupación | Con familia y a qué se dedica. |
+| **Enlace de la cabecera de la entrevista** | Lleva al detalle de la ocupación | Lleva al catálogo de carreras filtrado por esa familia, que ya muestra `FichaFamilia` (`?area=&familia=`). |
+| **Técnicas y universitarias juntas** | — | Una familia cruza los dos tipos: una entrevista a un técnico también sale en la carrera universitaria de esa familia, y al revés. |
+| **«Investigarla» desde la ocupación** | Atajo en el detalle de ocupación | Desaparece con el bloque. El atajo pasa al detalle de carrera («Investigar esta familia»). |
+| **Contrato** | `ocupacion` en respuestas y acciones | `familia` (`codigo`, `nombre`, `area_codigo`) en esquemas, `types/servidorInvestigaciones.ts`, `services/api/`, adaptadores y unos 10 componentes. Se regeneran fixtures. |
+
+**Qué no se pierde:** los textos que hablan de «su ocupación» dentro de la entrevista siguen siendo ciertos (la persona entrevistada tiene un oficio), así que la tabla de preguntas no cambia.
+
+### Ficha F18 «Cómo entrevistar a un profesional»
+
+La revisé completa. **Necesita un solo cambio**, en «Para tu viaje»:
+
+> Puedes hacerla con compañeros que investigan la misma ~~ocupación~~ **familia de carreras**.
+
+Va en `datos/contenido.py` y lo tendrás que replicar en `fichas-plataforma.md`. Se quedan igual, porque hablan del oficio de la persona: «Verás dos etapas de la misma ocupación», «por qué te interesa su ocupación», «Futuro de la ocupación», «te da miedo de esa ocupación» y «algunas ocupaciones».
+
+**Inconsistencia que ya existía, y que no toco:** la ficha y `investigador.json` hablan de «cinco preguntas base», pero el guion usa 3 (`PREGUNTAS_BASE_GUION`). Te la dejo anotada para que decidas aparte.
+
+### Qué no cambia
+
+- `Leyenda`, reacciones, reportes, reglas `PUBLICA_ENTREVISTA`, sección INVESTIGACIONES y `t-ins-leyenda`.
+- El modo local: `EntrevistasOcupacion`, `StudentResearchView` y `data/content/research.ts` siguen por ocupación. Tampoco cambian `ocupacion_familia` ni el catálogo de ocupaciones.
+- `ov_frontend` `OcupacionesDeLaFamilia`: el detalle de carrera sigue mostrando sus ocupaciones.
+
+### Modelo de datos (decisión aprobada por el usuario)
+
+Migración `0046`, revisada a mano:
+
+- `investigacion.ocupacion_id` → `familia_id` (FK `familia_carrera`).
+- `entrevista.ocupacion_id` → `familia_id`, y columna nueva `dedicacion` (texto, obligatoria).
+- Antes de cambiar columnas, vacía: `reporte`, `reaccion`, `sugerencia_guion`, `pregunta_guion`, `investigacion`, `entrevista_autor`, `entrevista`; los `favorito` de tipo ENTREVISTA; los `evento_uso` de eventos de investigación y entrevista, y las notificaciones de entrevistas. Los desbloqueos ya obtenidos se conservan, porque son permanentes.
+- Una entrada sobre el motivo en `decisiones.md`, y el documento `investigaciones.md` actualizado en el mismo commit.
+
+### Backend
+
+| Dónde | Cambio |
+|---|---|
+| `POST /acciones/guardar-lo-que-pienso` | Recibe `familia` en lugar de `ocupacion`. |
+| `POST /acciones/publicar-entrevista`, `editar-entrevista` | Agregan `dedicacion` (no vacía, 422). Coautores por familia. |
+| `GET /cuentas/{c}/entrevistas` | `ocupacion` → `familia`. Nuevo `vista=SALON_Y_LEYENDAS`: las del salón y las Leyendas sin repetir, para el detalle de carrera. |
+| `GET /cuentas/{c}/investigaciones` | `aliados.misma_familia`; `en_curso.familia`. |
+| `GET /cuentas/{c}/publicaciones`, `/{e}` | `familia` y `dedicacion`; `buscar` los incluye. |
+| `consultas.py`, `orientadora.py`, `acciones.py`, `sugerencias.py`, `referencias.py`, `motor/referencias.py` | `ocupaciones_breves` → `familias_breves`, y lo que se lista arriba. |
+
+### Entrevistas de ejemplo
+
+Script manual `ov_backend/scripts/sembrar_entrevistas_ejemplo.py`, no parte del conjunto `contenido`: ese conjunto es el que se despliega y `POST /desarrollo/reiniciar` borraría las entrevistas igualmente. Se puede volver a correr tras un reinicio.
+
+- 6 entrevistas `DATO DE PRUEBA`, con personas inventadas: 4 de `5A` (Ana y Luis, una de ellas con coautor, para ver la familia repetida) y 2 de `5B` (Beto), que son Leyendas para que el salón `5A` las vea. Dos entrevistas en la misma familia (Psicología, 313) para probar el límite y «ver completo».
+- Con reacciones y los favoritos de Mía, Teo y Sol, para que las Leyendas sean coherentes.
+- **Video:** reusa los `video_id` de los testimonios de `contenido`, para que el reproductor funcione. Los videos no corresponderán a las personas inventadas: es solo para ver la pantalla.
+
+### Frontend (modo api)
+
+- **Paso 1 del guion:** `BuscadorOcupacion` → `BuscadorFamilia`, sobre `GET /catalogo/familias`, filtrando en el navegador sin tildes. `?ocupacion=` → `?familia=`. Etiqueta: «¿En qué familia de carreras trabaja la persona que vas a entrevistar?».
+- **Publicar y editar:** campo nuevo «¿A qué se dedica?» en `FormularioPublicar`, debajo de quién es la persona entrevistada.
+- **Tarjeta y cabecera:** «Entrevista · {familia}» y «Entrevista a {profesional} · {dedicacion}».
+- **Detalle de carrera:** `EntrevistasFamilia`, en la **columna derecha** (`aside` de `DetalleCarreraServidor`, después de «Carreras parecidas»), como estaba en ocupaciones, con el mismo `Parchment` y `sx-d-related`. Títulos largos cortan línea, sin desbordar:
+  - Título «Entrevistas de esta familia». Muestra las **3** más recientes de salón y Leyendas; solo con la sección INVESTIGACIONES abierta y fuera del modo lectura.
+  - Con más de 3: enlace «Ver las {total} entrevistas», a Investigaciones filtrado por esa familia.
+  - Sin entrevistas: «Todavía no hay entrevistas de esta familia.» y «Investigar esta familia».
+- **Investigaciones:** el buscador encuentra por nombre de familia («Buscar por título, familia o profesional…»). Además acepta `?familia=` y lo aplica a las tres vistas, con un chip «Familia: {nombre}» y una X para quitarlo; es el único elemento nuevo del listado.
+- **Detalle de ocupación:** se quita `EntrevistasOcupacionServidor` y su hook.
+- **Orientadora:** la columna y la ficha pasan a familia y a qué se dedica.
+
+### Textos
+
+- `investigador.json`: línea 65 («cómo se investiga una ocupación» → «cómo se investiga una familia de carreras»: se le pregunta a alguien que trabaja en ella); línea 225 («elige una ocupación de tus favoritos» → «elige una familia de carreras que te interese»).
+- `guideTexts.ts`, solo lo que usa el modo api: `INVESTIGACIONES`, `investigacionesGuideSteps`, el paso de «lo que pienso» y las presentaciones de `investigations`. Si un texto lo comparten los dos modos y habla de elegir una ocupación, lo cambio en ambos y lo anoto, como en el ajuste testimonios; las vistas solo locales no se tocan.
+- `PanelAliados`, `PasoGuiaLista`, `TarjetaEnCurso`, `ConfirmarInvestigacion`: «investiga lo mismo» sigue valiendo; lo demás, a familia.
+- `F18`: el cambio de arriba.
+
+### Fases (un commit por fase, `Ajuste conversaciones · F<n>: …`)
+
+1. **F6 · Modelo y backend:** migración, modelos, esquemas, servicios, `sugerencias.py`, `referencias`, documento `investigaciones.md`, pruebas adaptadas (autorizado). Pruebas: `tests/integration/investigaciones`, `migraciones`, `datos`, `contrato`, `escenarios`, `tests/unit/motor`. Fixtures regenerados.
+2. **F7 · Front de investigaciones:** contrato, guion, publicar, tarjeta, cabecera, orientadora y filtro `?familia=`. Pruebas: `npm run test:servidor`, `tests/local/aventura`, `tests/local/portales`.
+3. **F8 · Catálogo y textos:** bloque del detalle de carrera, salida del detalle de ocupación, textos. Pruebas: `tests/servidor/catalogo`, `investigaciones`, `actividades`, `verificar_contenido_front.py`.
+4. **F9 · Ejemplos y cierre:** script de ejemplos, `integracion.md`, `origen-de-datos.md`, `ov_frontend/AGENTS.md`, `decisiones.md`. Suite completa.
+
+### Verificación
+
+- `uv run alembic heads` con un solo head; migración probada también sobre una base con entrevistas previas.
+- Suite completa: `uv run pytest -n auto -q`; `npm test`, `npm run build`, `npm run lint`, `npm run check:estructura`.
+- **En la aplicación real**, en puertos propios (8010 y 5180) y con base temporal, sin tocar tus servidores, con capturas:
+  1. **Buscar por familia:** en Investigaciones, escribir el nombre de una familia encuentra sus entrevistas en las vistas de salón, Leyendas y mías; el chip filtra y se puede quitar.
+  2. **Guion sin rastro de ocupación:** paso 1 (buscar y elegir familia), «lo que pienso», mis preguntas y guía lista, incluidos aliados, tarjeta en curso y confirmaciones. Reviso el texto de cada pantalla buscando «ocupación»; donde quede, debe referirse al oficio de la persona.
+  3. **Publicación sin rastro de ocupación:** formulario de publicar y editar con «¿A qué se dedica?», y que sea obligatorio.
+  4. **Catálogo:** el bloque sale en la columna derecha del detalle de carrera; hasta 3 entrevistas con salón y Leyendas; «Ver las N entrevistas» lleva al listado filtrado. Sin desborde en escritorio ni en celular, con títulos largos y comprobando que no haya scroll horizontal. Una carrera técnica y una universitaria de la misma familia muestran las mismas. El detalle de ocupación ya no muestra entrevistas.
+  5. **Ciclo completo:** Ana publica con Luis como coautor (uno de otra familia no puede serlo); se ve en tarjeta y detalle con video; Mía reacciona y comenta; la orientadora ve familia y a qué se dedica, comenta y destaca; se edita y se retira.
+- Los textos de prueba serán legibles, sin marcas tipo `RESPUESTA-ANA-CONV1`.
+- Sin push. **No se corre Gemini real:** el prompt nuevo se prueba con el evaluador falso, así que no veré la calidad real de sus sugerencias.
+
+### Lo que te tocará a ti
+
+Al subir tu servidor con esta rama, `alembic upgrade head` borrará las entrevistas de tu base de desarrollo; después puedes correr el script de ejemplos.

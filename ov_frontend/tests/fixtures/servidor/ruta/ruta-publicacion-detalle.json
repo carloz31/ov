@@ -13,17 +13,19 @@
   ],
   "codigo": "ENT-00000000000000000000000000000006",
   "de_sus_salones": true,
+  "dedicacion": "DATO DE PRUEBA: electricista industrial",
   "duracion": "20 minutos",
   "editada_en": null,
   "enlace": "https://youtu.be/dQw4w9WgXcQ",
   "estado": "DESTACADA",
+  "familia": {
+    "area_codigo": "52",
+    "codigo": "524",
+    "nombre": "Ingeniería Eléctrica"
+  },
   "favoritos": 1,
   "favoritos_leyenda": 3,
   "fecha_hora": "2026-10-07T10:00:00",
-  "ocupacion": {
-    "codigo": "47-2111.00",
-    "titulo": "Electricista industrial"
-  },
   "profesional": "DATO DE PRUEBA: Rosa Quispe",
   "reacciones": [
     {

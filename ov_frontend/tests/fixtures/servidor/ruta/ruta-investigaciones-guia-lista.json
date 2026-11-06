@@ -1,17 +1,18 @@
 {
   "aliados": {
-    "misma_ocupacion": [
+    "misma_familia": [
       {
         "codigo": "est-luis",
+        "familia": {
+          "area_codigo": "52",
+          "codigo": "524",
+          "nombre": "Ingeniería Eléctrica"
+        },
         "nivel": {
           "numero": 2,
           "titulo": "Recolector de pistas"
         },
         "nombre": "Luis",
-        "ocupacion": {
-          "codigo": "47-2111.00",
-          "titulo": "Electricista industrial"
-        },
         "vitrina": []
       }
     ],
@@ -26,15 +27,16 @@
     "codigo": "INV-00000000000000000000000000000002",
     "creada_en": "2026-10-07T10:00:00",
     "estado": "GUIA_LISTA",
+    "familia": {
+      "area_codigo": "52",
+      "codigo": "524",
+      "nombre": "Ingeniería Eléctrica"
+    },
     "guia_lista_en": "2026-10-07T10:00:00",
     "lo_que_pienso": {
       "dia": "DATO DE PRUEBA: revisa instalaciones de casas y edificios.",
       "duda": "¿Es peligroso?",
       "necesita": "DATO DE PRUEBA: estudiar en un instituto y practicar."
-    },
-    "ocupacion": {
-      "codigo": "47-2111.00",
-      "titulo": "Electricista industrial"
     },
     "preguntas": [
       {
@@ -43,7 +45,7 @@
       },
       {
         "origen": "SUGERIDA",
-        "texto": "¿Qué te sorprendió al empezar como Electricista industrial? (1)"
+        "texto": "¿Qué te sorprendió al empezar en Ingeniería Eléctrica? (1)"
       }
     ],
     "sugerencias": [

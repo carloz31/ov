@@ -11,7 +11,6 @@ import { AtlasNavigation } from './AtlasNavigation'
 import { AvisoFavorito } from './AvisoFavorito'
 import { CatalogRevisitNotice } from './CatalogRevisitNotice'
 import { DiscoveryStage } from './DiscoveryStage'
-import { EntrevistasOcupacionServidor } from './EntrevistasOcupacionServidor'
 import { EsperaDetalle } from './EsperaDetalle'
 import { FuentesCatalogo } from './FuentesCatalogo'
 import { IconoProfesion } from './IconoProfesion'
@@ -40,10 +39,10 @@ function Etiquetas({ titulo, items }: { titulo: string; items: string[] }) {
 
 // F06 · ajuste catalogo-datos-reales (F6b): el detalle de profesión en api. Cabecera con el ícono (revelado o
 // por revelar), área, familia, preparación y otros nombres; qué hacen, perfil de intereses, a quién atrae,
-// conocimientos y aptitudes; al lado, cómo se llega por familias (ajuste resultados-intereses), las entrevistas
-// del salón y el lugar inesperado.
+// conocimientos y aptitudes; al lado, cómo se llega por familias (ajuste resultados-intereses)
+// y el lugar inesperado.
 // Ajuste catalogo-apoderado: en modo lectura, el ícono siempre visible (sin su etiqueta de revelado) y sin
-// favorito, comparación con el resultado, entrevistas ni lugar inesperado.
+// favorito, comparación con el resultado ni lugar inesperado.
 export function DetalleOcupacionServidor({
   codigo,
   variante,
@@ -177,12 +176,7 @@ export function DetalleOcupacionServidor({
         </main>
         <aside className="sx-d-stack">
           <LlegarAOcupacion ocupacion={ocupacion} rutas={rutas} />
-          {!modoLectura && (
-            <>
-              <EntrevistasOcupacionServidor codigo={ocupacion.codigo} />
-              <UnexpectedPlace kind="occupation" currentId={ocupacion.codigo} />
-            </>
-          )}
+          {!modoLectura && <UnexpectedPlace kind="occupation" currentId={ocupacion.codigo} />}
         </aside>
       </div>
       <FuentesCatalogo de="profesion" />

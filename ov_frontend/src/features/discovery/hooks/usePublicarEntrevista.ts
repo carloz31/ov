@@ -11,10 +11,17 @@ import type { Aliado, FichaEntrevistaEntrada } from '@/types/servidor'
 import { mostrarAvisoInvestigacion } from '../store/avisoInvestigaciones'
 import { avisarRechazoInvestigacion } from './cierreInvestigacion'
 
-const VACIA: FichaEntrevistaEntrada = { titulo: '', profesional: '', duracion: '', enlace: '', resumen: '' }
+const VACIA: FichaEntrevistaEntrada = {
+  titulo: '',
+  profesional: '',
+  dedicacion: '',
+  duracion: '',
+  enlace: '',
+  resumen: '',
+}
 
 // F09 (boceto 04 · HU-060 y HU-061): publicar la entrevista con la guía lista, o editar la ficha (`?editar=`). Los
-// coautores son compañeros del salón con guía lista en la misma ocupación y se eligen solo al publicar: después, los
+// coautores son compañeros del salón con guía lista en la misma familia y se eligen solo al publicar: después, los
 // autores no cambian.
 export function usePublicarEntrevista() {
   const [params] = useSearchParams()
@@ -24,7 +31,7 @@ export function usePublicarEntrevista() {
   const detalle = useDetalleEntrevista('entrevista', editar)
   const datos = seccion.datos
   const entrevista = editar ? (detalle?.datos ?? null) : null
-  const ocupacion = editar ? entrevista?.ocupacion : datos?.en_curso?.ocupacion
+  const familia = editar ? entrevista?.familia : datos?.en_curso?.familia
   const [ficha, setFicha] = useState<FichaEntrevistaEntrada>(VACIA)
   const [coautores, setCoautores] = useState<Aliado[]>([])
   const [buscar, setBuscar] = useState('')
@@ -36,12 +43,12 @@ export function usePublicarEntrevista() {
   useEffect(() => {
     if (!entrevista || iniciado.current) return
     iniciado.current = true
-    const { titulo, profesional, duracion, enlace, resumen } = entrevista
-    setFicha({ titulo, profesional, duracion, enlace, resumen })
+    const { titulo, profesional, dedicacion, duracion, enlace, resumen } = entrevista
+    setFicha({ titulo, profesional, dedicacion, duracion, enlace, resumen })
   }, [entrevista])
 
-  const aliados = [...(datos?.aliados.misma_ocupacion ?? []), ...(datos?.aliados.otras ?? [])].filter(
-    (a) => a.ocupacion.codigo === ocupacion?.codigo,
+  const aliados = [...(datos?.aliados.misma_familia ?? []), ...(datos?.aliados.otras ?? [])].filter(
+    (a) => a.familia.codigo === familia?.codigo,
   )
   const candidatos = aliados.filter(
     (a) =>
@@ -51,6 +58,7 @@ export function usePublicarEntrevista() {
   const errores = {
     titulo: !ficha.titulo.trim(),
     profesional: !ficha.profesional.trim(),
+    dedicacion: !ficha.dedicacion.trim(),
     duracion: !ficha.duracion.trim(),
     enlace: !esEnlaceYoutube(ficha.enlace),
     resumen: !ficha.resumen.trim(),
@@ -104,7 +112,7 @@ export function usePublicarEntrevista() {
     // Publicar exige la guía lista; editar, ser autor de la entrevista.
     disponible: editar ? !!entrevista?.propia : datos?.en_curso?.estado === 'GUIA_LISTA',
     sinInvestigacion: !editar && !!datos && !datos.en_curso,
-    ocupacion,
+    familia,
     autoresActuales: entrevista?.autores ?? [],
     ficha,
     cambiar: (campo: keyof FichaEntrevistaEntrada, valor: string) =>
