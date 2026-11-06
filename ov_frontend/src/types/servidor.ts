@@ -7,7 +7,7 @@ export type TipoObjetivo =
   | 'FICHA'
   | 'INSIGNIA'
   | 'NIVEL'
-  | 'CONVERSACIONES'
+  | 'CONVERSACION'
   | 'TESTIMONIO'
   | 'PREGUNTA_DIARIO'
   | 'SECCION'

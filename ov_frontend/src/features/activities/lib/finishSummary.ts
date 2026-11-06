@@ -97,7 +97,7 @@ export function resumirCierre(entrada: EntradaCierre): ResumenCierre {
       codigo: 'actividades',
       texto: actividades === 1 ? '1 actividad nueva en el mapa' : `${actividades} actividades nuevas en el mapa`,
     })
-  if (de('CONVERSACIONES').length)
+  if (de('CONVERSACION').length)
     extras.push({ tipo: 'CONVERSACIONES', codigo: 'conversaciones', texto: 'Conversaciones disponibles' })
   if (entrada.pieza) {
     const { codigo, nombre, obtenidas, necesarias } = entrada.pieza

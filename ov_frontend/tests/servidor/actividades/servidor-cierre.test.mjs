@@ -40,6 +40,7 @@ test('clasifica los ocho tipos y ordena los extras independientemente del recibo
       desbloqueo('TESTIMONIO', 'voz'),
       desbloqueo('PREGUNTA_DIARIO', 'pregunta'),
       desbloqueo('FICHA', 'ficha'),
+      desbloqueo('CONVERSACION', 'conv-1'),
     ],
     { pieza: { codigo: 'pieza', nombre: 'Molino', obtenidas: 2, necesarias: 4 } },
   )
@@ -169,6 +170,7 @@ test('deduplica por tipo y código conservando objetivos de distintos tipos', ()
     desbloqueo('TESTIMONIO', 'igual'),
     ...ciudad(),
     ...ciudad(),
+    desbloqueo('CONVERSACION', 'conv-1'),
   ])
   assert.equal(r.totalRecursos, 2)
   assert.equal(r.extras.length, 2)
@@ -228,7 +230,7 @@ test('«Se abrió para ti» enlaza cada sección y la zona; las filas de planes 
     desbloqueo('BLOQUE', 'CIUDAD', 'La ciudad'),
     desbloqueo('ACTIVIDAD', 'a'),
     desbloqueo('ACTIVIDAD', 'b'),
-    desbloqueo('CONVERSACIONES', '-', 'Conversaciones'),
+    desbloqueo('CONVERSACION', 'conv-1', 'Conversaciones'),
   ])
   const html = renderToStaticMarkup(
     React.createElement(

@@ -17,3 +17,4 @@
 - Las pruebas de recorrido van en `test_recorrido_contenido.py` y no en un archivo nuevo, porque usan sus ayudas y ninguna prueba importa un `test_*.py`.
 - `claude/fichas-plataforma.md` no está en el repo: lo actualiza el usuario en su proyecto.
 - Pendiente de revisar aparte (población, periodo y fuente): «siete de cada diez emprendedores empiezan por falta de empleo» (F17 y `b3_10.json`) y «solo tres de cada diez jóvenes pasan a educación superior» (`b3-5-p12`, `b3-b-p08`).
+- `TipoObjetivo` del front decía `CONVERSACIONES` y el backend envía `CONVERSACION`, así que la fila «Conversaciones disponibles» del cierre nunca salía. Se corrige el tipo y el filtro de `finishSummary`, y se adapta la entrada de tres pruebas de `servidor-cierre`, que usaban ese nombre directamente o por los fixtures antiguos `completar-mission-next-step.json` y `desbloqueos-no-vistos.json` (no generados, no se editan); lo encontró la prueba en la aplicación real.
