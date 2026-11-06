@@ -2763,6 +2763,41 @@ body:has([data-student-experience] .sx-shell) {
     width: calc((100% - 8px) * 2 / 3);
     margin-left: auto;
   }
+  /* Cuestionario del servidor con 5 opciones: pregunta, opciones y botones a la vista en 375×812. */
+  .sx-root .sx-player-scene.sx-item-compacto .sx-scene-space {
+    padding: 0 0 20px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-scene-panel {
+    padding: 12px 16px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-scene-panel h2 {
+    font-size: 20px;
+    margin: 0 0 4px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-player-options {
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-player-option {
+    min-height: 44px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-player-note {
+    font-size: 13px;
+    line-height: 1.35;
+    margin: 8px 0 0;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-step-footer {
+    margin-top: 8px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-dialogue-box {
+    min-height: 0;
+    padding: 12px 16px;
+  }
+  .sx-root .sx-player-scene.sx-item-compacto .sx-dialogue-box footer {
+    display: none;
+  }
 }
 @container (max-width: 320px) {
   .sx-root .sx-prev-label {
