@@ -15,7 +15,7 @@ from datos.fijos import validar_distribucion_items
 
 
 def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
-    esperados = {'salon': 2, 'cuenta': 8, 'orientadora_salon': 1, 'vinculo_familiar': 2, 'bloque': 6,
+    esperados = {'colegio': 1, 'salon': 2, 'cuenta': 8, 'orientadora_salon': 1, 'vinculo_familiar': 2, 'bloque': 6,
         # Ajuste mochila: t-caso-2, t-ficha-3, t-testimonio-3 y 4, sus reglas y la condición extra de t-testimonio-2.
         # Ajuste carga-instrumentos: t-mision-inteligencias y t-mision-habilidades, con sus instrumentos reales.
         'actividad': 30, 'seccion': 7, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 7, 'nivel': 3,
@@ -34,7 +34,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6,
         # B13: catálogos de investigaciones.
         'pregunta_base_guion': 3, 'tipo_reaccion': 4}
-    assert len(Base.metadata.tables) == 93
+    assert len(Base.metadata.tables) == 94
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA', 'LUMI'}

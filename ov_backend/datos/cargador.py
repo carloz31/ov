@@ -80,7 +80,10 @@ def _validar_origen_testimonios(m):
 
 
 def _cargar_estructura(m, sesion):
-    salones = {c: modelos.Salon(codigo=c, nombre=n) for c, n in m.SALONES}
+    colegios = {c: modelos.Colegio(codigo=c, nombre=n) for c, n in m.COLEGIOS}
+    sesion.add_all(colegios.values())
+    sesion.flush()
+    salones = {c: modelos.Salon(codigo=c, nombre=n, colegio_id=colegios[colegio].id) for c, n, colegio in m.SALONES}
     sesion.add_all(salones.values())
     sesion.flush()
     cuentas = {c: modelos.Cuenta(codigo=c, nombre=n, rol=modelos.Rol(r),

@@ -30,7 +30,11 @@ def sesion():
     m.Base.metadata.create_all(motor_bd)
     with Session(motor_bd) as sesion:
         # DATO DE PRUEBA: dos salones, dos estudiantes, un apoderado y una orientadora.
-        salones = [m.Salon(codigo='5A', nombre='5A'), m.Salon(codigo='5B', nombre='5B')]
+        colegio = m.Colegio(codigo='col', nombre='Colegio')
+        sesion.add(colegio)
+        sesion.flush()
+        salones = [m.Salon(codigo='5A', nombre='5A', colegio_id=colegio.id),
+                   m.Salon(codigo='5B', nombre='5B', colegio_id=colegio.id)]
         sesion.add_all(salones)
         sesion.flush()
         ana = m.Cuenta(codigo='ana', nombre='Ana', rol=m.Rol.ESTUDIANTE, salon_id=salones[0].id)

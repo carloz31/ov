@@ -17,7 +17,7 @@ from datos.fijos import validar_distribucion_items
 # Lo que `contenido` toma de `ruta` mientras no tenga contenido real: (qué, de dónde, qué ajuste lo reemplaza).
 # Sus reglas apuntan a actividades de `contenido`; ninguna nombra una actividad `t-` del camino.
 PROVISIONALES = (
-    ('Cuentas, salones, vínculos y orientadoras', 'ruta.CUENTAS, SALONES, VINCULOS, ORIENTADORAS_SALONES', 'carga de cuentas del piloto'),
+    ('Cuentas, colegios, salones, vínculos y orientadoras', 'ruta.CUENTAS, COLEGIOS, SALONES, VINCULOS, ORIENTADORAS_SALONES', 'carga de cuentas del piloto'),
     ('Configuración del salón', 'ruta.SALON_INSTRUMENTOS', 'B14'),
     ('Registro prioritario del salón', "('5A', 'b1-3')", 'B14'),
     ('Diario: t-diario-fija y las DIARIA', 'ruta.PREGUNTAS_DIARIO, REFERENCIAS', 'ajuste de registros y diario'),
@@ -27,6 +27,7 @@ PROVISIONALES = (
     ('Ítems de registro sin criterios y listas de los podios', 'JSON de plataforma/', 'ajuste de registros'),
 )
 
+COLEGIOS = ruta.COLEGIOS
 SALONES = ruta.SALONES
 CUENTAS = ruta.CUENTAS
 ORIENTADORAS_SALONES = ruta.ORIENTADORAS_SALONES

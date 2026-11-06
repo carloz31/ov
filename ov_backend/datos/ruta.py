@@ -15,8 +15,11 @@ from datos.cargador import contenido  # noqa: F401  (clave de contenido de cada 
 from datos.fijos import validar_distribucion_items
 
 
-# (código, nombre)
-SALONES = (('5A', 'Quinto A'), ('5B', 'Quinto B'))
+# DATO DE PRUEBA (Ajuste colegio). (código, nombre)
+COLEGIOS = (('col-piloto', 'Colegio piloto'),)
+
+# (código, nombre, colegio)
+SALONES = (('5A', 'Quinto A', 'col-piloto'), ('5B', 'Quinto B', 'col-piloto'))
 
 # (código, nombre, rol, salón, correo, contraseña). B17: credenciales de prueba, iguales a las de
 # `datos/usuarios_prueba.txt` y a los usuarios del modo local del front. Los correos usan example.com (reservado).

@@ -19,7 +19,7 @@ _MODELOS_POR_MODULO = {
         'Base',
     ),
     'app.models.cuentas': (
-        'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
+        'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
     ),
     'app.models.contenido': (
         'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
@@ -77,7 +77,7 @@ __all__ = [
     'Base', 'Rol', 'Espacio', 'Audiencia', 'TipoActividad', 'Visibilidad', 'EstadoProgreso',
     'TipoEventoUso', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
     'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
-    'OrigenEvaluacion', 'TipoCriterio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
+    'OrigenEvaluacion', 'TipoCriterio', 'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
     'SalonInstrumento', 'Bloque',
     'Actividad', 'Tematica', 'ActividadTematica', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'GrupoInsignia', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
