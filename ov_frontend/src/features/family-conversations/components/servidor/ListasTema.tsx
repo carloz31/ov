@@ -6,7 +6,7 @@ import { enLetras } from '../../data/textosFamilia'
 import type { ModeloFamilia } from '../../types'
 import { PuntosRegalo } from './PuntosRegalo'
 
-// F08 (E7/A5): las dos miradas, el puente, las preguntas para conversar en casa y «Algo que ya saben» (todo del
+// F08 (E7/A5): las dos miradas, el puente, las preguntas para conversar en casa y «Conectando nuestros caminos» (todo del
 // servidor). Cierre sin marca: la entrada del diario (solo el estudiante, si el servidor la abrió) y el avance del
 // regalo. El apoderado vuelve a la lista con un botón.
 export function ListasTema({ m, c }: { m: ModeloFamilia; c: ConversacionCuenta }) {

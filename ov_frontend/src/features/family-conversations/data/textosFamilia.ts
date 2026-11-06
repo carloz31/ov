@@ -35,7 +35,7 @@ export function textosEstudiante() {
       },
       {
         titulo: 'Conversan… y al final, un regalo',
-        texto: `Con las dos respuestas aparece una guía para hablar en casa. Cuando los ${n} estén conversados, se rompe un sello. Qué hay detrás, aún no lo sabes.`,
+        texto: `Con las dos respuestas aparece una guía para hablar en casa. Cuando respondan los ${n}, se rompe un sello. Qué hay detrás, aún no lo sabes.`,
       },
     ],
     candado: 'Las conversaciones se abren cuando guardes tu carta',
@@ -79,7 +79,7 @@ export function textosEstudiante() {
     letraEstudiante: 'E',
     temaNoAbierto: null as string | null,
     regaloTexto: (n: string) =>
-      `Hay algo guardado para ti, y todavía no sabes qué es. El sello se rompe cuando hayan conversado los ${n} temas.`,
+      `Hay algo guardado para ti, y todavía no sabes qué es. El sello se rompe cuando hayan respondido los ${n} temas.`,
     regaloRoto: 'El sello se rompió',
     regaloRotoTexto: 'Hay algo esperándote aquí desde el primer día. Ya puedes abrirlo.',
     regaloAbrir: 'Abrir el regalo',
@@ -92,7 +92,7 @@ export function textosEstudiante() {
     ver: 'Ver',
     adelantarNota: null as ((hijo: string) => string) | null,
     volverLista: 'Volver a las conversaciones',
-    dosMiradas: (tema: string) => `Dos miradas sobre ${tema.charAt(0).toLowerCase()}${tema.slice(1)}`,
+    dosMiradas: 'Dos miradas al respecto',
     tuMirada: 'Tu mirada',
     respuestaPlaceholder: 'Escribe desde tu propia mirada… no hay respuestas correctas.',
     respuestaNota: 'Podrás editarla mientras tu familia no haya respondido.',
@@ -110,13 +110,13 @@ export function textosEstudiante() {
     miradaOtro: 'La mirada de tu familia',
     puente: 'Un puente entre ambas miradas',
     preguntasCasa: 'Preguntas para conversar en casa',
-    algoQueSaben: 'Algo que ya saben',
+    algoQueSaben: 'Conectando nuestros caminos',
     diarioKicker: 'Se abrió una entrada en tu diario',
     diarioBoton: 'Ir al diario',
     temaListo: (n: number, total: number) => `Tema ${n} de ${total} listo`,
     temaListoTexto: (n: string) =>
       `Cuando los ${n} estén así, se rompe el sello… y descubres qué había guardado. Ahora les toca conversar fuera de la pantalla.`,
-    regaloPantallaKicker: (n: string) => `Conversaron los ${n} temas`,
+    regaloPantallaKicker: (n: string) => `Respondieron los ${n} temas`,
     regaloPantallaTexto:
       'Hay algo esperándote aquí desde el primer día. Todavía no sabes qué es… pero ya puedes abrirlo.',
     eraCarta: 'Era una carta',
@@ -149,7 +149,7 @@ export function textosApoderado(hijo: string) {
     subtituloPendiente: `Antes de los temas, le pedimos escribir unas líneas que ${hijo} leerá en algún momento del camino.`,
     subtituloLista: `Responden por separado. Con las dos respuestas aparece una guía para conversar en casa. ${hijo} va abriendo los temas con su avance; usted puede adelantar los suyos.`,
     enlaceCarta: 'Ver o editar mi carta',
-    regaloConteo: (hechas: number, total: number) => `${hechas} de ${total} temas conversados`,
+    regaloConteo: (hechas: number, total: number) => `${hechas} de ${total} temas respondidos`,
     cartaEnRegalo: true,
     letraEstudiante: hijo.charAt(0).toUpperCase(),
     temaNoAbierto: `Tema aún no abierto para ${hijo}`,
@@ -169,7 +169,7 @@ export function textosApoderado(hijo: string) {
       },
       {
         titulo: 'Conversan… y al final, un regalo',
-        texto: `Con las dos respuestas aparece una guía para hablar en casa. Cuando los ${n} estén conversados, se rompe un sello. Qué hay detrás, lo descubrirá entonces.`,
+        texto: `Con las dos respuestas aparece una guía para hablar en casa. Cuando respondan los ${n}, se rompe un sello. Qué hay detrás, lo descubrirá entonces.`,
       },
     ],
     candado: 'Las conversaciones se abren cuando guarde su carta',
@@ -203,7 +203,7 @@ export function textosApoderado(hijo: string) {
       por_abrir: 'Por abrir',
     } as Record<PestanaConversacion, string>,
     regaloTexto: (n: string) =>
-      `Hay algo guardado para usted, y todavía no sabe qué es. El sello se rompe cuando hayan conversado los ${n} temas.`,
+      `Hay algo guardado para usted, y todavía no sabe qué es. El sello se rompe cuando hayan respondido los ${n} temas.`,
     regaloRotoTexto: 'Hay algo esperándole aquí desde el primer día. Ya puede abrirlo.',
     adelantarNota: (h: string) =>
       `${h} aún no llega a este tema en su camino. Puede adelantar su respuesta: lo verá cuando lo abra y responda.`,

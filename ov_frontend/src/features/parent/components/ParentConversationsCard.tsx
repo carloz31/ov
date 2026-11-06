@@ -61,7 +61,7 @@ export function ParentConversationsCard({
           </Badge>
         }
       >
-        <p className="text-muted-foreground">Conversaron sobre todo. Hay un regalo esperándolos.</p>
+        <p className="text-muted-foreground">Respondieron todos los temas. Hay un regalo esperándolos.</p>
         <Accion enlace={appPaths.parent.conversationGift} texto="Abrir el regalo" principal />
       </Tarjeta>
     )

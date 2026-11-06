@@ -1,5 +1,5 @@
 {
-  "_nota": "Registro de cierre del instrumento de inteligencias (H2). Lee el resultado con eco. Desbloquea la conversación 2 con la familia. Consignas en esqueleto.",
+  "_nota": "Registro de cierre del instrumento de inteligencias (H2). Lee el resultado con eco. Consignas en esqueleto.",
   "id": "h2",
   "codigo": "h2",
   "tipo": "registro",
@@ -33,7 +33,7 @@
       "id": "h2-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones. Además abre una conversación con tu familia: lo que ellos ven en ti.",
+      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones.",
       "eco": "h2-ref-resultado"
     },
     {
@@ -62,7 +62,7 @@
     }
   ],
   "recompensa": {
-    "mensajeFin": "Un resultado es una hipótesis. Tú acabas de ponerla a prueba. Se abrió la conversación «Lo que veo en ti»."
+    "mensajeFin": "Un resultado es una hipótesis. Tú acabas de ponerla a prueba."
   },
   "promptDiario": "Lo que me dijo Helena",
   "mapa": {

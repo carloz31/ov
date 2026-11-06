@@ -38,7 +38,7 @@ export function ResponderTema({
         </button>
       )}
       <p className="fam-kicker">{c.titulo}</p>
-      <h2>{t.dosMiradas(c.titulo)}</h2>
+      <h2>{t.dosMiradas}</h2>
       <div className="fam-grid-2">
         <div className="fam-respuesta">
           <p className="fam-pregunta">{c.pregunta}</p>

@@ -65,7 +65,7 @@
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tomaste posición por un plan, sabiendo que no es definitivo. El artefacto apunta al faro. Se abrió la conversación «Lo que cuesta y cómo lo haremos»."
+    "mensajeFin": "Tomaste posición por un plan, sabiendo que no es definitivo. El artefacto apunta al faro."
   },
   "promptDiario": "Después de elegir",
   "mapa": { "x": 520, "y": 210, "icono": "registro" }

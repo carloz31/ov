@@ -147,7 +147,7 @@ test('«Conversaciones con {hijo}»: textos y acción de cada estado del boceto 
   assert.doesNotMatch(enCurso, /te espera/)
   const completas = tarjeta({ tipo: 'completas', total: 6 })
   assert.match(completas, /6 de 6/)
-  assert.match(completas, /Conversaron sobre todo\. Hay un regalo esperándolos\./)
+  assert.match(completas, /Respondieron todos los temas\. Hay un regalo esperándolos\./)
   assert.match(completas, /href="\/parent\/conversations\/regalo"[^>]*>Abrir el regalo/)
   const error = tarjeta({ tipo: 'error' })
   assert.match(error, /No pudimos cargar las conversaciones\. Revisa tu conexión e inténtalo de nuevo\./)

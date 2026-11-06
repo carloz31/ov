@@ -245,7 +245,7 @@
       "tipo": "dialogo",
       "hablanteId": "guardian",
       "expresion": "neutral",
-      "texto": "Ya conoces el mundo tal como es: las rutas, el mercado, las instituciones, lo que cuesta y lo que cambia. Lo que sigue, en el acantilado, es ponerlo frente a ti. Antes de eso, tu orientadora decide qué páginas del libro de Helena necesitas abiertas. Y en casa hay una conversación esperando: los trabajos de tu familia."
+      "texto": "Ya conoces el mundo tal como es: las rutas, el mercado, las instituciones, lo que cuesta y lo que cambia. Lo que sigue, en el acantilado, es ponerlo frente a ti. Antes de eso, tu orientadora decide qué páginas del libro de Helena necesitas abiertas. Y en casa hay una conversación esperando: los cambios de rumbo de tu familia."
     },
     {
       "id": "b3-10-13",
@@ -287,7 +287,7 @@
     }
   ],
   "recompensa": {
-    "mensajeFin": "Un giro a tiempo no es un fracaso: es la misma decisión, con mejor información. Se abrió una voz nueva en tu mochila y la conversación «Los trabajos de nuestra familia»."
+    "mensajeFin": "Un giro a tiempo no es un fracaso: es la misma decisión, con mejor información. Se abrió una voz nueva en tu mochila y la conversación «Los caminos también cambian»."
   },
   "promptDiario": "Un viajero que ya pasó por aquí",
   "mapa": { "x": 900, "y": 220, "icono": "informativa" }
