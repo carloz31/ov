@@ -1,11 +1,1 @@
 # Decisiones de la spec en curso
-
-- **Modelo (Ajuste colegio):** tabla `colegio` y `salon.colegio_id` obligatorio, porque el sistema debe separar datos por colegio y nada estaba por encima del salón. Aprobado por el usuario en el plan.
-- **Migración 0047:** los salones existentes quedan en `col-piloto`; en una base sin salones no se inserta nada, para no chocar con la carga de datos.
-- **`Salon.codigo` sigue único en toda la base:** es el identificador que expone la API; dos colegios pueden repetir `nombre`, no `codigo`.
-- **La entrevista y la orientadora no guardan colegio:** se deriva de autor → salón → colegio y de `orientadora_salon`, para no duplicar un dato que puede contradecirse.
-- **Pruebas adaptadas (autorizadas por el plan):** `test_clasificacion_tablas.py` clasifica `colegio` como catálogo y `test_politica_y_contrasenas.py` da un colegio a sus salones; solo por la tabla nueva.
-- **Pruebas adaptadas (no listadas en el plan, misma causa):** los inventarios de tablas de `test_migraciones.py` (conteo y bajada a 0041), `test_restricciones_estado.py`, `test_integridad_catalogos.py` y `test_semilla_ruta.py` pasan a 94 tablas e incluyen `colegio`. Sin cambiar qué comprueban.
-- **Reacciones y favoritos sin filtro de lectura propio:** el límite se aplica al escribir (solo actúa quien ve la entrevista), y la migración deja todos los salones en un colegio, así que no hay datos cruzados que filtrar.
-- **Coautor de otro colegio responde 404:** igual que un código inexistente, para no revelar su nombre ni que existe; un estudiante de otro salón del mismo colegio sigue dando 409.
-- **Nombre del colegio:** `col-piloto` se llama «Technology School - Sede Palao», por pedido del usuario; se corrigió en la propia 0047 porque aún no está en `main`. El código interno no cambia, porque no se muestra.

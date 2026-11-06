@@ -93,6 +93,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 - La aplicación no sabe qué conjunto tiene la base. Se carga con `uv run python -m datos.cargar <conjunto>` (`--vaciar` para reemplazarlo). El cargador valida que `contenido` use solo `[a-z0-9_]`.
 - El catálogo es real y lo carga `fijos` desde los CSV de `datos/archivos/catalogo/` (`datos/catalogo.py`: carreras, instituciones e ingresos de Ponte en Carrera; ocupaciones de Mi Próximo Paso). Las pruebas nombran las carreras, instituciones y ubicaciones de la ruta por su papel (`CARRERAS_RUTA`, `INSTITUCIONES_RUTA`, `UBICACIONES_RUTA` en `ruta.py`; `tests/soporte/soporte_catalogo_ruta.py`), nunca por su código real. Carreras y ocupaciones se relacionan por familia (`ocupacion_familia`, de la curaduría).
 - Una base con el catálogo anterior a la migración 0033 no sube: se vacía (el esquema completo) y se vuelve a migrar y cargar.
+- El colegio del piloto es `col-piloto`, «Technology School - Sede Palao» (`COLEGIOS` en `ruta.py`, que `contenido` reutiliza). La migración 0047 pone en él los salones que ya existían; en una base sin salones no inserta nada. No hay ruta para crear colegios ni para mover salones entre ellos.
 - `POST /desarrollo/reiniciar`, solo con `ENTORNO=desarrollo`, borra el estado de las cuentas y conserva el catálogo.
 - Los datos inventados se marcan con `DATO DE PRUEBA`.
 
