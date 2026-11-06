@@ -349,3 +349,38 @@ test('iconoPagina: el ícono propio de la página y, sin él, el de su tipo de r
   assert.equal(iconoPagina({ tipoResultado: 'DESTACADAS' }), 'Sparkles')
   assert.equal(iconoPagina({ tipoResultado: 'NUEVO' }), 'Sparkles')
 })
+
+test('el perfil en api deriva las zonas del mismo resultado que el libro; sin llegada revelada, la llegada está lista', async () => {
+  const f = await iniciarMara()
+  const { perfil } = prepararPerfil(f.app)
+  const partida = jsonServidor('ruta/ruta-resultado-partida')
+  libroServidor(f.app, { 'APL-PARTIDA': partida })
+  const conPartida = perfil().pages[0].hallazgo
+  assert.equal(conPartida.forma, 'zonas')
+  assert.deepEqual(
+    copia(conPartida.partida),
+    partida.dimensiones.filter((d) => d.zona).map((d) => d.zona),
+  )
+  assert.equal(conPartida.llegada, null)
+  assert.equal(conPartida.llegadaLista, true)
+  libroServidor(
+    f.app,
+    { 'APL-PARTIDA': partida, 'APL-LLEGADA': jsonServidor('ruta/ruta-resultado-llegada') },
+    { comparacion: jsonServidor('ruta/ruta-comparacion-partida-llegada') },
+  )
+  const completo = perfil().pages[0].hallazgo
+  // En `ruta`: A y E no cambian de zona, B y C suben y D baja.
+  assert.equal(completo.frase, '2 subieron · 2 se mantuvieron · 1 bajó')
+  assert.equal(completo.llegada.length, completo.partida.length)
+  assert.equal(completo.llegadaLista, false)
+})
+
+test('en local, las páginas de DESTACADAS toman sus `areas` y las selladas no tienen hallazgo', () => {
+  const app = fixtureServidor({ api: false })
+  const { perfil } = prepararPerfil(app)
+  assert.equal(perfil().pages.every((p) => p.hallazgo === null), true)
+  app.load('src/store/discoveryStore.ts').updateDiscovery((s) => ({ ...s, revealedPages: ['inteligencias'] }))
+  const pagina = perfil().pages.find((p) => p.id === 'inteligencias')
+  assert.equal(pagina.icono, 'Brain')
+  assert.deepEqual(copia(pagina.hallazgo), { forma: 'etiquetas', nombres: ['Lingüística', 'Interpersonal'], resto: 0 })
+})

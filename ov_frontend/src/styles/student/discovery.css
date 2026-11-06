@@ -1588,16 +1588,16 @@ textarea.sx-d-input {
 }
 .sx-d-finding-letters small {
   margin-left: 6px;
-  overflow: hidden;
   color: var(--sx-parchment-muted);
   font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.25;
 }
 .sx-d-finding-tag {
   overflow: hidden;
-  min-width: 0;
+  /* Un nombre largo se corta sin dejar ilegible al corto que va a su lado. */
+  min-width: 72px;
   padding: 3px 10px;
+  text-align: center;
   border-radius: 999px;
   background: color-mix(in srgb, var(--primary) 14%, white);
   color: color-mix(in srgb, var(--primary) 75%, black);
@@ -1607,7 +1607,7 @@ textarea.sx-d-input {
   white-space: nowrap;
 }
 .sx-d-finding-tag[data-parejo='true'] {
-  border: 1px dashed color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+  border: 1px dashed color-mix(in srgb, var(--sx-gold-deep) 60%, var(--sx-parchment-edge));
   background: transparent;
   color: var(--sx-parchment-muted);
 }
@@ -1662,13 +1662,13 @@ textarea.sx-d-input {
   background: var(--sx-zona-en-camino);
 }
 .sx-d-zone-strip > span[data-zona='POR_TRABAJAR'] {
-  border: 1px solid color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+  border: 1px solid color-mix(in srgb, var(--sx-gold-deep) 60%, var(--sx-parchment-edge));
   background: var(--sx-zona-por-trabajar);
 }
 .sx-d-zone-pending {
   display: block;
   height: 10px;
-  border: 1px dashed color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+  border: 1px dashed color-mix(in srgb, var(--sx-gold-deep) 60%, var(--sx-parchment-edge));
   border-radius: 3px;
 }
 .sx-d-mini-bar {
@@ -1724,7 +1724,7 @@ textarea.sx-d-input {
 }
 .sx-d-plan-row[data-empty='true'] {
   border-style: dashed;
-  border-color: color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+  border-color: color-mix(in srgb, var(--sx-gold-deep) 60%, var(--sx-parchment-edge));
   background: transparent;
   color: var(--sx-parchment-muted);
 }
@@ -1765,7 +1765,7 @@ textarea.sx-d-input {
   flex: 1;
   height: 8px;
   border-radius: 3px;
-  border: 1px dashed color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+  border: 1px dashed color-mix(in srgb, var(--sx-gold-deep) 60%, var(--sx-parchment-edge));
 }
 .sx-d-plan-cells > span[data-lista='true'] {
   border: 0;
@@ -1776,7 +1776,7 @@ textarea.sx-d-input {
   flex-shrink: 0;
   align-items: center;
   gap: 4px;
-  color: var(--sx-gold-deep);
+  color: color-mix(in srgb, var(--sx-gold-deep) 60%, var(--foreground));
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
@@ -1818,7 +1818,7 @@ textarea.sx-d-input {
 }
 .sx-d-saved a[data-empty='true'] {
   border-style: dashed;
-  border-color: color-mix(in srgb, var(--sx-gold) 55%, var(--sx-parchment-edge));
+  border-color: color-mix(in srgb, var(--sx-gold-deep) 60%, var(--sx-parchment-edge));
   background: transparent;
   color: var(--sx-parchment-muted);
 }
