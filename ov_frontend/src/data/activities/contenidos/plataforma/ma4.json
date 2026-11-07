@@ -37,6 +37,10 @@
       "tipo": "consigna",
       "hablanteId": "dora",
       "item": "ma4-probe",
+      "dialogo": "Dijiste que ibas a practicarla. Volvamos a eso.",
+      "preguntaEleccion": "¿La probaste?",
+      "preguntaTexto": "¿Qué pasó exactamente: cómo reaccionaron, qué sentiste después?",
+      "entrada": "Pasó que…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -49,7 +53,6 @@
           "inicio": "¿Lo hiciste, a medias o todavía no?",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Lo que pasó fue…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       },
@@ -60,6 +63,10 @@
       "tipo": "consigna",
       "hablanteId": "dora",
       "item": "ma4-sigo",
+      "dialogo": "Una cosa más.",
+      "preguntaEleccion": "¿La sigues o la cambias?",
+      "preguntaTexto": "¿Por qué?",
+      "entrada": "Porque…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -72,7 +79,6 @@
           "inicio": "¿La sigues o la cambias?",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Porque…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }

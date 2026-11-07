@@ -42,6 +42,10 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b3-4-dato",
+      "dialogo": "Estos son los datos de la carrera de tu Plan A.",
+      "preguntaEleccion": "¿Qué aspecto no conocías?",
+      "preguntaTexto": "¿Qué dice ese dato? Con tus palabras basta.",
+      "entrada": "No sabía que…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -54,7 +58,6 @@
           "inicio": "Marca el aspecto que no sabías.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«De esta carrera, no sabía que…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       },
@@ -65,6 +68,10 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b3-4-cambia",
+      "dialogo": "Un dato puede mover un plan o no moverlo.",
+      "preguntaEleccion": "¿Cuánto cambia lo que pensabas?",
+      "preguntaTexto": "¿Qué sería lo primero que averiguarías?",
+      "entrada": "Voy a averiguar…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -77,7 +84,6 @@
           "inicio": "Mucho, un poco o nada.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Con eso voy a…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }

@@ -39,6 +39,10 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b3-a-testimonio",
+      "dialogo": "De las historias que desbloqueaste, una te quedó.",
+      "preguntaEleccion": "¿Cuál?",
+      "preguntaTexto": "¿Qué momento de su historia te quedó: una decisión, algo que le pasó?",
+      "entrada": "Me quedó cuando…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -51,7 +55,6 @@
           "inicio": "Marca el testimonio que te quedó dando vueltas.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Me llamó la atención cuando…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }
@@ -61,6 +64,10 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b3-a-identifico",
+      "dialogo": "Ahora tú frente a esa persona.",
+      "preguntaEleccion": "¿Te identificas?",
+      "preguntaTexto": "¿En qué te pareces y en qué no?",
+      "entrada": "Me parezco en… pero…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -73,7 +80,6 @@
           "inicio": "¿Te identificas, en parte o te diferencias?",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«De su historia me llevo…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }

@@ -126,6 +126,10 @@
       "tipo": "consigna",
       "hablanteId": "rosa",
       "item": "b2-3-valores",
+      "dialogo": "En la brigada cada quien valora algo distinto del trabajo.",
+      "preguntaEleccion": "De estos, ¿cuáles son tus tres más importantes? Ordénalos.",
+      "preguntaTexto": "¿De dónde te viene el primero? Una persona, algo que viviste o algo que quieres para tu vida.",
+      "entrada": "Puse … primero porque…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -134,7 +138,6 @@
       "visibilidad": "estudiante_orientadora",
       "podio": {
         "etiquetaPrimero": "Lo que más pesa",
-        "pregunta": "«Puse «{opcion}» primero porque…» ¿De dónde te viene?",
         "unidad": {
           "singular": "valor",
           "plural": "valores"

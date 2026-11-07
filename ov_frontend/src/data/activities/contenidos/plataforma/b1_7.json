@@ -210,6 +210,11 @@
       "tipo": "consigna",
       "hablanteId": "guardian",
       "item": "b1-7-dia",
+      "dialogo": "Imagina un día cualquiera a tus 23 años, si todo salió bien.",
+      "preguntaEleccion": "¿Qué áreas de tu vida aparecieron en ese día?",
+      "preguntaTexto": "Cuéntalo como una escena: ¿dónde estás, qué haces, con quién?",
+      "entrada": "Me despierto en…",
+      "orden": "texto-primero",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -219,10 +224,9 @@
       "eleccion": {
         "etiquetaElegida": "Lo que aparece",
         "mensajes": {
-          "inicio": "Marca qué áreas de tu vida aparecen (de una a tres).",
-          "una": "Anotado. Ahora cuéntame."
+          "inicio": "Marca qué áreas de tu vida aparecen.",
+          "una": "Anotado."
         },
-        "pregunta": "«Me despierto en…» ¿Dónde estás, qué haces, con quién?",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }
@@ -232,6 +236,9 @@
       "tipo": "consigna",
       "hablanteId": "guardian",
       "item": "b1-7-hito",
+      "dialogo": "Ese día está lejos. Acerquémoslo.",
+      "preguntaTexto": "¿Qué estarás haciendo dentro de un año que te acerque a ese día?",
+      "entrada": "Dentro de un año estaré…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -244,6 +251,10 @@
       "tipo": "consigna",
       "hablanteId": "guardian",
       "item": "b1-7-freno",
+      "dialogo": "Casi ningún camino sale como se planeó.",
+      "preguntaEleccion": "¿Qué podría frenarte?",
+      "preguntaTexto": "Si te pasara eso, ¿qué sería lo primero que harías?",
+      "entrada": "Si me pasa eso, entonces yo…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -253,10 +264,8 @@
       "eleccion": {
         "etiquetaElegida": "Lo que podría frenarte",
         "mensajes": {
-          "inicio": "Marca una.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Si me pasa eso, entonces yo…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }

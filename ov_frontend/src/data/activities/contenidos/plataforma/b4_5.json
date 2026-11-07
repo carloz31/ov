@@ -59,6 +59,10 @@
       "tipo": "consigna",
       "hablanteId": "ivan",
       "item": "b4-5-orden",
+      "dialogo": "Este es tu orden de planes, con tus reglas al lado.",
+      "preguntaEleccion": "Frente a tus reglas, ¿lo mantienes o lo cambiarías?",
+      "preguntaTexto": "¿Qué regla tuya pesa aquí?",
+      "entrada": "Según mi regla de…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -71,7 +75,6 @@
           "inicio": "¿Lo mantienes o lo cambiarías?",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Según mi primera regla, …»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       },
@@ -82,6 +85,10 @@
       "tipo": "consigna",
       "hablanteId": "ivan",
       "item": "b4-5-debil",
+      "dialogo": "Hasta un buen Plan A tiene un punto débil.",
+      "preguntaEleccion": "¿Con cuál de tus reglas cumple menos?",
+      "preguntaTexto": "¿Qué vas a ver, dónde o con quién? Una sola cosa esta semana.",
+      "entrada": "Voy a…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -94,7 +101,6 @@
           "inicio": "Marca la regla que tu Plan A cumple menos.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«No lo cumple del todo en … y voy a…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }
@@ -104,6 +110,10 @@
       "tipo": "consigna",
       "hablanteId": "ivan",
       "item": "b4-5-plan-b",
+      "dialogo": "Y si el Plan A no se da…",
+      "preguntaEleccion": "¿Qué tan tranquilo te irías al Plan B?",
+      "preguntaTexto": "Si el Plan A no se diera, ¿qué sería lo primero que harías al día siguiente?",
+      "entrada": "Al día siguiente yo…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -116,7 +126,6 @@
           "inicio": "¿El Plan B te sirve de verdad?",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Si no entro o no alcanza, entonces…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }

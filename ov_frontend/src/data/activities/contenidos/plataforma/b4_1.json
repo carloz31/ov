@@ -170,6 +170,10 @@
       "tipo": "consigna",
       "hablanteId": "helena",
       "item": "b4-1-respalda",
+      "dialogo": "Mira tu perfil junto a tu Plan A. Nada aquí mide si puedes: muestra cómo eres.",
+      "preguntaEleccion": "¿Qué parte de tu perfil respalda más tu plan?",
+      "preguntaTexto": "¿Qué de eso se nota en ti fuera del test: algo que haces, que te sale, que buscas?",
+      "entrada": "Lo respalda porque…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -182,7 +186,6 @@
           "inicio": "Marca una parte de tu perfil.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Lo respalda porque…» Con algo tuyo.",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       },
@@ -198,6 +201,10 @@
       "tipo": "consigna",
       "hablanteId": "helena",
       "item": "b4-1-menos",
+      "dialogo": "Una parte que hoy no te respalda no decide por ti: se entrena, se comprueba o se compensa.",
+      "preguntaEleccion": "¿Qué parte lo respalda menos?",
+      "preguntaTexto": "¿Cuál es la diferencia, y qué piensas de ella?",
+      "entrada": "Lo respalda menos porque…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -210,7 +217,6 @@
           "inicio": "Marca una parte de tu perfil.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«…y eso me hace pensar que…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }
@@ -220,6 +226,10 @@
       "tipo": "consigna",
       "hablanteId": "helena",
       "item": "b4-1-familia",
+      "dialogo": "Tus familias recomendadas siguen ahí.",
+      "preguntaEleccion": "¿Cuál mirarías con más calma?",
+      "preguntaTexto": "¿Qué te llama de ella?",
+      "entrada": "Me llama…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -232,7 +242,6 @@
           "inicio": "Marca la familia que todavía no has mirado.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«La miraría porque…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }

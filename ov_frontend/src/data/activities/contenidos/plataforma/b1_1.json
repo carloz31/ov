@@ -162,6 +162,9 @@
       "tipo": "consigna",
       "hablanteId": "cartografa",
       "item": "b1-1-gustos",
+      "dialogo": "Todo mapa empieza por donde uno ya estuvo.",
+      "preguntaTexto": "¿Qué te encantaba hacer de niño o niña? Una cosa concreta: a qué jugabas, qué armabas, con quién.",
+      "entrada": "De niño me encantaba…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -174,6 +177,11 @@
       "tipo": "consigna",
       "hablanteId": "cartografa",
       "item": "b1-1-logro",
+      "dialogo": "Hay cosas que ya lograste, aunque te parezcan pequeñas.",
+      "preguntaEleccion": "¿Qué habilidades se notan en ese logro?",
+      "preguntaTexto": "Cuenta un logro tuyo: algo que pasó, no algo que eres.",
+      "entrada": "Una vez logré…",
+      "orden": "texto-primero",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -183,10 +191,9 @@
       "eleccion": {
         "etiquetaElegida": "Lo que usaste",
         "mensajes": {
-          "inicio": "Marca la habilidad que usaste (una o dos).",
-          "una": "Anotado. Ahora cuéntame."
+          "inicio": "Marca la habilidad que usaste.",
+          "una": "Anotado."
         },
-        "pregunta": "«Logré…» Cuéntame qué pasó.",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }
@@ -196,6 +203,9 @@
       "tipo": "consigna",
       "hablanteId": "cartografa",
       "item": "b1-1-dificultad",
+      "dialogo": "Y también hubo algo que no salió a la primera.",
+      "preguntaTexto": "¿Qué hiciste para superar una dificultad? Con verbo: qué cambiaste, a quién pediste ayuda.",
+      "entrada": "Me costaba… y entonces yo…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"

@@ -171,6 +171,10 @@
       "tipo": "consigna",
       "hablanteId": "vigia",
       "item": "b5-1-decision",
+      "dialogo": "Desde aquí se ve todo el camino. Es hora de decir tu decisión.",
+      "preguntaEleccion": "¿Cuál es tu proyecto hoy?",
+      "preguntaTexto": "¿Por qué? Algo de ti y algo de lo que averiguaste en el camino.",
+      "entrada": "Elijo … porque…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -183,7 +187,6 @@
           "inicio": "Tu Plan A llega marcado. Cámbialo si hoy es otro.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Si tuviera que explicar mi decisión en tres líneas a alguien que no me conoce: …»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }
@@ -193,6 +196,9 @@
       "tipo": "consigna",
       "hablanteId": "vigia",
       "item": "b5-1-senal",
+      "dialogo": "Una decisión se revisa. Para eso sirve una señal.",
+      "preguntaTexto": "¿Qué te diría que vas bien, o que toca volver a pensarlo? Algo que puedas mirar.",
+      "entrada": "Sabré que voy bien si…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -206,6 +212,10 @@
       "tipo": "consigna",
       "hablanteId": "vigia",
       "item": "b5-1-apoyo",
+      "dialogo": "Nadie llega solo.",
+      "preguntaEleccion": "¿A quién necesitas?",
+      "preguntaTexto": "¿Apoyarte cómo: con plata, con tiempo, con no presionar, con ir contigo a averiguar?",
+      "entrada": "Necesito que…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -218,7 +228,6 @@
           "inicio": "Marca a esa persona.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Le pediría que…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }

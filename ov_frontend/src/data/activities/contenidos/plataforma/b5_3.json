@@ -46,6 +46,10 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b5-3-inicial",
+      "dialogo": "Llegaste al muelle con una idea. Mírala desde aquí.",
+      "preguntaEleccion": "¿Cómo la ves hoy?",
+      "preguntaTexto": "¿Qué sabes hoy que al llegar no sabías?",
+      "entrada": "Hoy sé que…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -58,7 +62,6 @@
           "inicio": "¿La ves igual, distinta o la dejaste?",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Ahora veo…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }
@@ -68,6 +71,10 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b5-3-explorar",
+      "dialogo": "Te vas de la isla, pero el camino sigue.",
+      "preguntaEleccion": "¿Qué te falta explorar?",
+      "preguntaTexto": "¿Con quién, dónde o cuándo?",
+      "entrada": "Voy a…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -77,10 +84,8 @@
       "eleccion": {
         "etiquetaElegida": "Lo que falta",
         "mensajes": {
-          "inicio": "Marca una o dos cosas.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Voy a…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }

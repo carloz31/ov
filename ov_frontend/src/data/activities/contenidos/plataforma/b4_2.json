@@ -71,6 +71,11 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b4-2-estilo",
+      "dialogo": "Antes de las reglas, cómo decides de verdad.",
+      "preguntaEleccion": "¿Qué estilo se parece más a lo que contaste?",
+      "preguntaTexto": "Cuenta la última decisión importante que tomaste: qué decidiste y cómo.",
+      "entrada": "La última vez decidí…",
+      "orden": "texto-primero",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -80,10 +85,8 @@
       "eleccion": {
         "etiquetaElegida": "Cómo decides",
         "mensajes": {
-          "inicio": "Marca una o dos formas.",
-          "una": "Anotado. Ahora cuéntame."
+          "una": "Anotado."
         },
-        "pregunta": "«La última vez que decidí algo importante…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }
@@ -93,6 +96,10 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b4-2-criterios",
+      "dialogo": "Tus valores ya los ordenaste. Ahora, reglas para elegir carrera.",
+      "preguntaEleccion": "¿Qué pesa más al elegir? Ordena tus tres.",
+      "preguntaTexto": "¿Por qué la primera? Importante para qué: para ti, para tu casa, para algo que quieres tener.",
+      "entrada": "Mi primera regla es … porque…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -101,7 +108,6 @@
       "visibilidad": "estudiante_orientadora",
       "podio": {
         "etiquetaPrimero": "Tu primera regla",
-        "pregunta": "«Mi primera regla es «{opcion}» porque…»",
         "unidad": {
           "singular": "regla",
           "plural": "reglas"
@@ -113,6 +119,10 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b4-2-linea-roja",
+      "dialogo": "Hay reglas que se negocian y una que no.",
+      "preguntaEleccion": "¿Cuál es tu línea roja?",
+      "preguntaTexto": "¿Por qué esa no se negocia?",
+      "entrada": "No la negocio porque…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -125,7 +135,6 @@
           "inicio": "Marca tu línea roja.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Si un plan no cumple …, lo descarto aunque cumpla el resto, porque…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }

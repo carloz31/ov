@@ -47,6 +47,10 @@
       "tipo": "consigna",
       "hablanteId": "aurelio",
       "item": "b1-6-mito",
+      "dialogo": "Ya cruzaste el puente. Pero algunos mitos uno los trae de casa.",
+      "preguntaEleccion": "¿Cuál de estos has escuchado o creído más?",
+      "preguntaTexto": "¿De dónde te viene y qué piensas hoy? Una frase para cada cosa.",
+      "entrada": "Lo escuché de… Hoy pienso…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
@@ -59,7 +63,6 @@
           "inicio": "Marca el mito que más has escuchado o creído.",
           "una": "Anotado. Ahora cuéntame."
         },
-        "pregunta": "«Lo escuché de… / Hoy pienso…»",
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
       }
