@@ -1,5 +1,5 @@
 {
-  "_nota": "Registro (3.4). Apertura completa; consignas en esqueleto (elección de un dato + texto). Se abre al completar b3-3; los favoritos ayudan, pero no son requisito. Lee con eco los datos de la familia de su primer plan o de sus favoritos.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b3-4",
   "codigo": "b3-4",
   "tipo": "registro",
@@ -9,51 +9,99 @@
   "bloque": 3,
   "orden": 4,
   "obligatoria": true,
-  "requisitos": ["b3-3"],
+  "requisitos": [
+    "b3-3"
+  ],
   "ubicacion": "Puerto, banca frente al mercado",
   "duracionEstimadaMin": 8,
-  "personajeIds": ["companero"],
-  "plantilla": { "tipo": "secuencial" },
+  "personajeIds": [
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
   "nodos": [
     {
       "id": "b3-4-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Sentémonos un rato lejos del puesto de Doña Cifra. Si ya marcaste favoritos, el catálogo te muestra los ingresos de su familia por lugar. Quiero que mires los de tu opción, o los de tus favoritos, con calma.",
-      "eco": "b3-4-ref-datos"
+      "texto": "Sentémonos un rato lejos del puesto de Doña Cifra. Si ya marcaste favoritos, el catálogo te muestra los ingresos de su familia por lugar. Quiero que mires los de tu opción, o los de tus favoritos, con calma."
     },
     {
       "id": "b3-4-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Esto lo lee tu orientadora, y vuelve al final: cuando escribas tu proyecto, en el campo de dificultades te voy a recordar qué dijiste que harías si un dato no te favorece."
+      "texto": "Esto lo lee tu orientadora, y vuelve al final: cuando escribas tu proyecto, en el campo de dificultades te voy a recordar qué dijiste que harías si un dato no te favorece.",
+      "eco": [
+        "b3-4-ref-plan"
+      ]
     },
     {
-      "id": "b3-4-03",
+      "id": "b3-4-dato",
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b3-4-dato",
-      "premisa": "Elige un dato del mercado que te sorprendió. ¿Cuál y por qué?",
-      "ayuda": "Un dato concreto: un salario, un rango, una demanda, la informalidad.",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "El dato",
+        "mensajes": {
+          "inicio": "Marca el aspecto que no sabías.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«De esta carrera, no sabía que…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      },
+      "eco": "b3-4-ref-datos-carrera"
     },
     {
-      "id": "b3-4-04",
+      "id": "b3-4-cambia",
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b3-4-cambia",
-      "premisa": "¿Qué cambia, o no, en cómo ves tu opción? Y si el dato no te favorece, ¿qué harías con eso?",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Cuánto cambia",
+        "mensajes": {
+          "inicio": "Mucho, un poco o nada.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Con eso voy a…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {
-    "mensajeFin": "Los números frente a lo que creías. Anotado en tu bitácora."
+    "mensajeFin": "Los números frente a lo que creías. Anotado en tu bitácora. Hay una carta nueva de Lumi en tu buzón del diario."
   },
   "promptDiario": "Cuando el dato no ayuda",
-  "mapa": { "x": 550, "y": 480, "icono": "registro" }
+  "mapa": {
+    "x": 550,
+    "y": 480,
+    "icono": "registro"
+  },
+  "destinos": [
+    {
+      "item": "b3-4-cambia",
+      "opcion": "MUCHO",
+      "ruta": "plan-a-dudas"
+    },
+    {
+      "item": "b3-4-cambia",
+      "opcion": "UN_POCO",
+      "ruta": "plan-a-dudas"
+    }
+  ]
 }

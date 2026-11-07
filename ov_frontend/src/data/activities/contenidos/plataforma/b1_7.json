@@ -1,19 +1,26 @@
 {
-  "_nota": "Registro que cierra el Bloque 1. Momento 1 completo (el artefacto se apaga y aparece el primer guardián del pergamino; contenido de la ficha F06). Consignas en esqueleto: la tabla de hitos a 1, 3 y 5 años podría usar la plantilla matriz «linea_tiempo».",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b1-7",
   "codigo": "b1-7",
   "tipo": "registro",
-  "titulo": "Mi línea de tiempo",
+  "titulo": "Mi futuro",
   "subtitulo": "El primer guardián",
   "escenario": "desierto",
   "bloque": 1,
   "orden": 7,
   "obligatoria": true,
-  "requisitos": ["b1-6"],
+  "requisitos": [
+    "b1-6"
+  ],
   "ubicacion": "Desierto, el límite del tramo",
   "duracionEstimadaMin": 10,
-  "personajeIds": ["guardian", "companero"],
-  "plantilla": { "tipo": "secuencial" },
+  "personajeIds": [
+    "guardian",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
   "nodos": [
     {
       "id": "b1-7-01",
@@ -70,11 +77,27 @@
       "bloques": [
         {
           "tipo": "tabla",
-          "columnas": ["Componente", "Qué es", "Pregunta que responde"],
+          "columnas": [
+            "Componente",
+            "Qué es",
+            "Pregunta que responde"
+          ],
           "filas": [
-            ["Autovaloración personal", "Cómo te conoces y te valoras", "¿Quién soy y qué tengo?"],
-            ["Visión de futuro", "Lo que imaginas y deseas para ti, tu familia y tu comunidad", "¿Hacia dónde quiero ir?"],
-            ["Plan de vida", "Las metas y los pasos para llegar, con criterios que guíen las decisiones", "¿Cómo llego?"]
+            [
+              "Autovaloración personal",
+              "Cómo te conoces y te valoras",
+              "¿Quién soy y qué tengo?"
+            ],
+            [
+              "Visión de futuro",
+              "Lo que imaginas y deseas para ti, tu familia y tu comunidad",
+              "¿Hacia dónde quiero ir?"
+            ],
+            [
+              "Plan de vida",
+              "Las metas y los pasos para llegar, con criterios que guíen las decisiones",
+              "¿Cómo llego?"
+            ]
           ],
           "nota": "Modelo de Orientación para el Desarrollo Personal (Oliveros, 2004), que usa el programa del MINEDU."
         },
@@ -99,10 +122,22 @@
           "tipo": "pasos",
           "titulo": "Las cuatro preguntas del plan",
           "pasos": [
-            { "titulo": "¿Quién seré?", "texto": "Qué estaré haciendo y cómo me describiría." },
-            { "titulo": "¿Dónde estaré?", "texto": "Lugar, grupo al que perteneceré, personas alrededor." },
-            { "titulo": "¿Qué deseo más y cómo lo voy a lograr?", "texto": "Intereses, metas y el camino hacia ellas." },
-            { "titulo": "¿Qué dificultades se me pueden presentar?", "texto": "Y cómo las voy a superar." }
+            {
+              "titulo": "¿Quién seré?",
+              "texto": "Qué estaré haciendo y cómo me describiría."
+            },
+            {
+              "titulo": "¿Dónde estaré?",
+              "texto": "Lugar, grupo al que perteneceré, personas alrededor."
+            },
+            {
+              "titulo": "¿Qué deseo más y cómo lo voy a lograr?",
+              "texto": "Intereses, metas y el camino hacia ellas."
+            },
+            {
+              "titulo": "¿Qué dificultades se me pueden presentar?",
+              "texto": "Y cómo las voy a superar."
+            }
           ]
         },
         {
@@ -119,12 +154,32 @@
       "bloques": [
         {
           "tipo": "tabla",
-          "columnas": ["Parte", "Mal escrita", "Bien escrita"],
+          "columnas": [
+            "Parte",
+            "Mal escrita",
+            "Bien escrita"
+          ],
           "filas": [
-            ["Acción", "«Estar bien»", "«Terminar el segundo ciclo de mi carrera»"],
-            ["Plazo", "«Algún día»", "«A fines del próximo año»"],
-            ["Recurso que necesito", "—", "«Un ingreso para el pasaje y los materiales»"],
-            ["Dificultad y estrategia", "—", "«Si no ingreso a la primera, me preparo seis meses más y postulo de nuevo»"]
+            [
+              "Acción",
+              "«Estar bien»",
+              "«Terminar el segundo ciclo de mi carrera»"
+            ],
+            [
+              "Plazo",
+              "«Algún día»",
+              "«A fines del próximo año»"
+            ],
+            [
+              "Recurso que necesito",
+              "—",
+              "«Un ingreso para el pasaje y los materiales»"
+            ],
+            [
+              "Dificultad y estrategia",
+              "—",
+              "«Si no ingreso a la primera, me preparo seis meses más y postulo de nuevo»"
+            ]
           ]
         },
         {
@@ -151,39 +206,68 @@
       "texto": "Tres trazos y el artefacto vuelve a girar. Escribe sin filtro de «qué es posible»: eso se revisa después."
     },
     {
-      "id": "b1-7-09",
+      "id": "b1-7-dia",
       "tipo": "consigna",
       "hablanteId": "guardian",
-      "item": "b1-7-deseo",
-      "premisa": "Un deseo para tu vida en los próximos años, dicho sin pensar todavía en si es posible.",
-      "entregable": { "tipo": "texto" },
+      "item": "b1-7-dia",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Lo que aparece",
+        "mensajes": {
+          "inicio": "Marca qué áreas de tu vida aparecen (de una a tres).",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Me despierto en…» ¿Dónde estás, qué haces, con quién?",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
+    },
+    {
+      "id": "b1-7-hito",
+      "tipo": "consigna",
+      "hablanteId": "guardian",
+      "item": "b1-7-hito",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora"
     },
     {
-      "id": "b1-7-10",
+      "id": "b1-7-freno",
       "tipo": "consigna",
       "hablanteId": "guardian",
-      "item": "b1-7-hitos",
-      "premisa": "Un hito a 1 año, uno a 3 y uno a 5. Cada uno dice qué estarías haciendo, no solo cómo te sentirías.",
-      "ayuda": "«Estar bien» no es un hito; «terminar el segundo ciclo» sí.",
-      "entregable": { "tipo": "texto" },
+      "item": "b1-7-freno",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
-    },
-    {
-      "id": "b1-7-11",
-      "tipo": "consigna",
-      "hablanteId": "guardian",
-      "item": "b1-7-cinco",
-      "premisa": "Para el hito a 5 años: ¿qué necesitas para llegar y qué dificultad prevés? ¿Cómo la enfrentarías?",
-      "entregable": { "tipo": "texto" },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Lo que podría frenarte",
+        "mensajes": {
+          "inicio": "Marca una.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Si me pasa eso, entonces yo…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {
     "mensajeFin": "El artefacto vuelve a girar: apunta al bosque del volcán. Un plan a cinco años no se cumple al pie de la letra; sirve porque te obliga a decidir hoy qué paso dar primero."
   },
-  "mapa": { "x": 920, "y": 520, "icono": "registro" }
+  "mapa": {
+    "x": 920,
+    "y": 520,
+    "icono": "registro"
+  }
 }

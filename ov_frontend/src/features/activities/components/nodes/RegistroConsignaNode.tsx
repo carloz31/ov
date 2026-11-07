@@ -93,7 +93,7 @@ export function RegistroConsignaNode({
         submit()
       }}
     >
-      <RegistroEco eco={eco} pista={consulta?.pista} hablanteId={node.hablanteId} />
+      <RegistroEco eco={eco} pista={consulta?.pista} abierto={consulta?.abierto} hablanteId={node.hablanteId} />
       {eleccion ? (
         <>
           <p className="sx-submission-label">

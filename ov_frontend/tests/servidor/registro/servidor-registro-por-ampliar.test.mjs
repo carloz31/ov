@@ -34,8 +34,9 @@ test('el texto de Lumi usa singular y plural, y el cierre suma la invitación a 
   assert.match(textoPorAmpliar(1, { volver: true }), /Puedes volver a ella ahora/)
 })
 
-test('el nombre humano usa la etiqueta corta, si no la consigna recortada, nunca el código; sin pista, el respaldo', () => {
-  const { nombreItem, filasPorAmpliar, PISTA_POR_DEFECTO } = helper()
+// Ajuste registros: la pista es lo que le faltó (`falta`); sin ella queda vacía y basta el nombre.
+test('el nombre humano usa la etiqueta corta, si no la consigna recortada, nunca el código; la pista es lo que faltó', () => {
+  const { nombreItem, filasPorAmpliar } = helper()
   assert.equal(nombreItem({ nombre: 'Breve', consigna: '¿Algo?' }), 'Breve')
   const larga = 'Describe un momento en que actuaste según tus valores y qué aprendiste de eso'
   const recortada = nombreItem({ nombre: '', consigna: larga })
@@ -43,8 +44,8 @@ test('el nombre humano usa la etiqueta corta, si no la consigna recortada, nunca
   assert.equal(nombreItem(undefined), 'Una de tus respuestas')
   const filas = filasPorAmpliar(
     [
-      { item: 't-exp-ruta', pista: '' },
-      { item: 't-desconocido', pista: '¿Por qué?' },
+      { item: 't-exp-ruta', pista: '¿Por qué?' },
+      { item: 't-desconocido', pista: '¿Por qué?', falta: 'Por qué lo piensa' },
     ],
     itemsExpectativas,
   )
@@ -52,10 +53,10 @@ test('el nombre humano usa la etiqueta corta, si no la consigna recortada, nunca
     {
       item: 't-exp-ruta',
       nombre: 'Tu ruta después del colegio',
-      pista: PISTA_POR_DEFECTO,
+      pista: '',
       conEleccion: true,
     },
-    { item: 't-desconocido', nombre: 'Una de tus respuestas', pista: '¿Por qué?', conEleccion: false },
+    { item: 't-desconocido', nombre: 'Una de tus respuestas', pista: 'Por qué lo piensa', conEleccion: false },
   ])
   assert.ok(filas.every((f) => !/^t-/.test(f.nombre)))
 })

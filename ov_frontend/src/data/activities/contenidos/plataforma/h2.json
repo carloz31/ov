@@ -1,9 +1,9 @@
 {
-  "_nota": "Registro de cierre del instrumento de inteligencias (H2). Lee el resultado con eco. Consignas en esqueleto.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "h2",
   "codigo": "h2",
   "tipo": "registro",
-  "titulo": "¿Me reconozco en mis inteligencias?",
+  "titulo": "¿Me reconozco?",
   "subtitulo": "La pregunta del maestro",
   "escenario": "ciudad",
   "bloque": 7,
@@ -37,28 +37,48 @@
       "eco": "h2-ref-resultado"
     },
     {
-      "id": "h2-03",
+      "id": "h2-reconozco",
       "tipo": "consigna",
       "hablanteId": "maestro",
       "item": "h2-reconozco",
-      "premisa": "Una inteligencia de tu página en la que sí te reconoces, y una situación concreta en que la usaste.",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Donde te reconoces",
+        "mensajes": {
+          "inicio": "Marca la forma en que te reconoces más.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Una vez la usé cuando…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     },
     {
-      "id": "h2-04",
+      "id": "h2-no-refleja",
       "tipo": "consigna",
       "hablanteId": "maestro",
       "item": "h2-no-refleja",
-      "premisa": "Algo que el resultado no refleja de ti, y por qué crees que no salió.",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Lo que no vio",
+        "mensajes": {
+          "inicio": "Marca la forma.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«El test no vio que yo…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {

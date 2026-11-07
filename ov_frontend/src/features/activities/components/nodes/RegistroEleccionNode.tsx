@@ -1,7 +1,13 @@
 import { useState, type ReactNode } from 'react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
-import { errorConsulta, pieConsulta, type ConsultaRegistro } from '../../lib/edicionRegistro'
+import { errorConsulta, pieConsulta, type ConsultaRegistro, type EcoRegistro } from '../../lib/edicionRegistro'
+import {
+  cierraSinSeguimiento,
+  conGuardadas,
+  exclusivasPropias,
+  preguntasPropias,
+} from '@/lib/servidor/adaptadoresRegistro'
 import { RegistroEco } from './RegistroEco'
 import { RespuestaConsulta } from './RespuestaConsulta'
 import { ChoiceReveal } from './ChoiceReveal'
@@ -36,6 +42,7 @@ export function RegistroEleccionNode({
   consulta,
   salida,
   anteriores = [],
+  eco,
 }: {
   node: NodoConsigna
   item: ItemRegistroPublico
@@ -51,15 +58,26 @@ export function RegistroEleccionNode({
   salida?: ReactNode
   // F02: lo elegido la vez pasada, cuando el ítem retoma una elección.
   anteriores?: OpcionElegida[]
+  // Ajuste registros: lo que esta consigna retoma de otra actividad.
+  eco?: EcoRegistro
 }) {
   const eleccion = item.eleccion!
-  const config = { ...ELECCION_POR_DEFECTO, ...node.eleccion }
+  // Ajuste registros: las exclusivas y las preguntas propias de las opciones del servidor se suman a las del contenido.
+  const config = {
+    ...ELECCION_POR_DEFECTO,
+    ...node.eleccion,
+    preguntas: { ...preguntasPropias(item), ...node.eleccion?.preguntas },
+  }
   const mensajes = { ...ELECCION_POR_DEFECTO.mensajes, ...node.eleccion?.mensajes }
-  const reglas = { maxima: eleccion.maxima, exclusivas: config.exclusivas ?? [] }
-  const opciones = [
-    ...eleccion.opciones,
-    ...(eleccion.permite_otra ? [{ codigo: 'OTRA', texto: 'Otra' }] : []),
-  ]
+  const reglas = {
+    maxima: eleccion.maxima,
+    exclusivas: [...new Set([...(config.exclusivas ?? []), ...exclusivasPropias(item)])],
+  }
+  // Una opción guardada que la referencia ya no ofrece se ve con su texto y «ya no está en tu lista».
+  const opciones = conGuardadas(
+    [...eleccion.opciones, ...(eleccion.permite_otra ? [{ codigo: 'OTRA', texto: 'Otra' }] : [])],
+    inicial.opciones,
+  )
   const [seleccion, setSeleccion] = useState(inicial.opciones)
   const [text, setText] = useState(inicial.texto)
   const [bloqueada, setBloqueada] = useState(false)
@@ -75,9 +93,11 @@ export function RegistroEleccionNode({
     const siguientes = {
       seleccion: seleccion.length < Math.max(1, eleccion.minima) ? config.errorSeleccion : undefined,
       otra: otra && !otra.texto?.trim() ? config.errorOtra : undefined,
-      texto: seleccion.length
-        ? errorTexto(item, text) || (consulta && errorConsulta(consulta, text, seleccion)) || undefined
-        : undefined,
+      // Una opción que cierra el ítem sin seguimiento deja el texto opcional.
+      texto:
+        seleccion.length && !cierraSinSeguimiento(item, seleccion)
+          ? errorTexto(item, text) || (consulta && errorConsulta(consulta, text, seleccion)) || undefined
+          : undefined,
     }
     setErrores(siguientes)
     if (!siguientes.seleccion && !siguientes.otra && !siguientes.texto)
@@ -90,7 +110,16 @@ export function RegistroEleccionNode({
     <RegistroGuiado
       hablanteId={node.hablanteId}
       mensaje={mensajeEleccion(mensajes, seleccion, reglas, bloqueada, codigosAnteriores)}
-      lumi={consulta && <RegistroEco pista={consulta.pista} hablanteId={node.hablanteId ?? 'companero'} />}
+      lumi={
+        (consulta || eco) && (
+          <RegistroEco
+            eco={eco}
+            pista={consulta?.pista}
+            abierto={consulta?.abierto}
+            hablanteId={node.hablanteId ?? 'companero'}
+          />
+        )
+      }
       consigna={item.consigna}
       ultimo={ultimo}
       ocupado={ocupado}

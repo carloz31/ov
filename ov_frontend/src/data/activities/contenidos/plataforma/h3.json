@@ -1,9 +1,9 @@
 {
-  "_nota": "Registro de cierre del instrumento de intereses (H3), hoy t-contraste en ruta.py. Lee con eco el RESULTADO (código), las COINCIDENCIAS (ocupaciones afines) y el PLAN u OPCION_INICIAL. Consignas en esqueleto; revela la misión adicional MA5.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "h3",
   "codigo": "h3",
   "tipo": "registro",
-  "titulo": "Lo que dicen mis intereses",
+  "titulo": "Mis familias",
   "subtitulo": "El contraste de Sol",
   "escenario": "ciudad",
   "bloque": 7,
@@ -34,48 +34,51 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "texto": "Esto lo lee tu orientadora y aparece en tu informe de viaje. Vuelve en el puerto, cuando busques intereses en el catálogo, y al cruzar tu perfil con tus opciones.",
-      "eco": [
-        "h3-ref-resultado",
-        "h3-ref-coincidencias",
-        "h3-ref-plan"
-      ]
+      "eco": "h3-ref-resultado"
     },
     {
-      "id": "h3-03",
+      "id": "h3-sorprende",
       "tipo": "consigna",
       "hablanteId": "bibliotecaria",
-      "item": "h3-opcion",
-      "premisa": "¿Tu opción inicial (o lo que te venía llamando la atención) coincide con tu perfil? ¿Qué piensas de eso?",
+      "item": "h3-sorprende",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "La familia",
+        "mensajes": {
+          "inicio": "Marca la familia que no esperabas ver.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Me sorprende porque…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     },
     {
-      "id": "h3-04",
-      "tipo": "consigna",
-      "hablanteId": "bibliotecaria",
-      "item": "h3-nueva",
-      "premisa": "Una ocupación sugerida que no conocías y qué te llamó la atención de ella.",
-      "ayuda": "Ábrela en el catálogo antes de responder: ahí dice qué hace y a qué carreras conduce.",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
-    },
-    {
-      "id": "h3-05",
+      "id": "h3-descarto",
       "tipo": "consigna",
       "hablanteId": "bibliotecaria",
       "item": "h3-descarto",
-      "premisa": "Una ocupación sugerida que descartas, y una razón.",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "La que descartas",
+        "mensajes": {
+          "inicio": "Marca la que descartarías hoy.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«No va conmigo porque…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {
@@ -87,5 +90,17 @@
     "y": 500,
     "icono": "registro",
     "origen": "h-intereses-6"
-  }
+  },
+  "destinos": [
+    {
+      "item": "h3-sorprende",
+      "opcion": "NINGUNA",
+      "ruta": "catalogo"
+    },
+    {
+      "item": "h3-sorprende",
+      "opcion": "*",
+      "ruta": "catalogo-familia"
+    }
+  ]
 }

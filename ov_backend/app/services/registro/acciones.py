@@ -103,6 +103,12 @@ def propia_elegida(item, elegidas):
     return next((propias[e['codigo']] for e in elegidas or () if e['codigo'] in propias), None)
 
 
+def sin_seguimiento(item, elegidas):
+    """La opción propia elegida tiene `criterio: null`: el ítem cumple sin seguimiento y su texto es opcional."""
+    propia = propia_elegida(item, elegidas)
+    return propia is not None and 'criterio' in propia and propia['criterio'] is None
+
+
 def criterio_y_guia(sesion, item, elegidas):
     """Criterios y campos de seguimiento con los que se evalúa el ítem según la opción elegida.
 
@@ -416,7 +422,8 @@ def preparar_entrega(sesion, entrada):
     if registro.entregado:
         raise ErrorAccion("El registro ya fue entregado")
     con_texto = {item.id: registro.respuestas[item.id] for item in items
-                 if item.id in registro.respuestas and registro.respuestas[item.id].texto_inicial.strip()}
+                 if item.id in registro.respuestas and (registro.respuestas[item.id].texto_inicial.strip()
+                                                        or sin_seguimiento(item, registro.respuestas[item.id].opciones_elegidas))}
     faltantes = [item.codigo for item in items if item.obligatorio and item.id not in con_texto]
     if faltantes:
         raise ErrorAccion("Faltan ítems por responder antes de entregar", items_faltantes=faltantes)
@@ -449,11 +456,14 @@ def preparar_edicion(sesion, entrada):
     codigos = [edicion.item for edicion in entrada.items]
     if len(codigos) != len(set(codigos)):
         raise invalida("Un ítem no puede editarse dos veces en la misma petición")
-    if any(not edicion.texto.strip() for edicion in entrada.items):
-        raise invalida("La respuesta no puede estar vacía")
     por_codigo = {item.codigo: item for item in items}
     if any(codigo not in por_codigo for codigo in codigos):
         raise invalida("El ítem no pertenece a esta actividad")
+    # Una opción con `criterio: null` cierra el ítem sin texto (ajuste registros).
+    if any(not edicion.texto.strip() and not sin_seguimiento(
+            por_codigo[edicion.item], [o.model_dump(exclude_none=True) for o in edicion.opciones or ()])
+           for edicion in entrada.items):
+        raise invalida("La respuesta no puede estar vacía")
     registro = leer_registro(sesion, cuenta, actividad)
     exigir_cerrado(registro)
     elecciones = {}

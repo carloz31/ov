@@ -333,3 +333,15 @@ def test_la_carta_se_valida_como_carta():
             raise RuntimeError('DATO DE PRUEBA')
     assert redactar(Fallido(), 'Base', [{'tipo': 'TEXTO', 'texto': 'x'}], tiempo_maximo_segundos=8,
                     carta=True) == ('Base', m.OrigenRedaccion.FIJA)
+
+
+def test_opcion_sin_seguimiento_cierra_el_item_sin_texto(cliente):
+    """§3: una opción con `criterio: null` cierra el ítem con texto opcional (también al editar)."""
+    preparar(cliente)
+    borrador(cliente, 't-refe-plan', '', [{'codigo': 'PREFIERO_NO'}])
+    borrador(cliente, 't-refe-retoma', ADECUADO, [{'codigo': ENFERMERIA}])
+    borrador(cliente, 't-refe-duda', ADECUADO)
+    cierre = pedir(cliente, 'POST', '/acciones/registro/entregar', accion())
+    assert cierre['estado'] == 'COMPLETADA' and respuesta(cierre, 't-refe-plan')['estado'] == 'FINAL'
+    pedir(cliente, 'POST', '/acciones/registro/editar', {**accion(), 'items': [
+        {'item': 't-refe-plan', 'texto': '', 'opciones': [{'codigo': ENFERMERIA}]}]}, 422)

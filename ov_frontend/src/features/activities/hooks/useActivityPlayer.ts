@@ -205,6 +205,7 @@ export function useActivityPlayer({
   }
   const registro = useRegistroServidor({
     actividad: activity.id,
+    contenido: activity,
     registroServidor: modoApi ? registroServidor : undefined,
     nodes,
     montado,

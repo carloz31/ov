@@ -1,19 +1,26 @@
 {
-  "_nota": "Registro. Apertura completa (llegada a la ciudad, Iván y el artefacto). Las consignas son un esqueleto; la tabla guiada (familia, amigos, yo) se define con los registros. Ojo: en api el registro termina en la última consigna, por eso el cierre narrativo (artefacto activado, ciudad abierta) se cuenta al inicio de b1-4.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b1-3",
   "codigo": "b1-3",
   "tipo": "registro",
-  "titulo": "Lo que esperan de mí",
+  "titulo": "Las voces y la mía",
   "subtitulo": "El taller de Iván",
   "escenario": "ciudad",
   "bloque": 1,
   "orden": 3,
   "obligatoria": true,
-  "requisitos": ["b1-2"],
+  "requisitos": [
+    "b1-2"
+  ],
   "ubicacion": "Ciudad, taller de Iván",
   "duracionEstimadaMin": 10,
-  "personajeIds": ["ivan", "companero"],
-  "plantilla": { "tipo": "secuencial" },
+  "personajeIds": [
+    "ivan",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
   "nodos": [
     {
       "id": "b1-3-01",
@@ -94,31 +101,86 @@
       "texto": "Esto lo lee tu orientadora, para que cuando conversen sepa qué pesa en casa. Y vuelve más adelante, cuando ordenes tus criterios para decidir: ahí te voy a citar lo que escribas sobre tu familia."
     },
     {
-      "id": "b1-3-07",
+      "id": "b1-3-voz",
       "tipo": "consigna",
       "hablanteId": "ivan",
-      "item": "b1-3-expectativas",
-      "premisa": "¿Qué espera tu familia que hagas al terminar el colegio? ¿Qué esperan tus amigos? ¿Y qué esperas tú?",
-      "ayuda": "Una línea por cada voz. Vale decir «no lo sé» en alguna.",
-      "entregable": { "tipo": "texto" },
+      "item": "b1-3-voz",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Esa voz",
+        "mensajes": {
+          "inicio": "Marca a esa persona.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Espera que yo…» Escríbelo con sus palabras.",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     },
     {
-      "id": "b1-3-08",
+      "id": "b1-3-mia",
+      "tipo": "consigna",
+      "hablanteId": "ivan",
+      "item": "b1-3-mia",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Tu ruta",
+        "mensajes": {
+          "inicio": "Marca una ruta.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Yo quiero… porque…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
+    },
+    {
+      "id": "b1-3-contraste",
       "tipo": "consigna",
       "hablanteId": "ivan",
       "item": "b1-3-contraste",
-      "premisa": "¿Dónde coinciden esas voces y dónde chocan?",
-      "ayuda": "Una coincidencia o una tensión concreta basta.",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Las dos voces",
+        "mensajes": {
+          "inicio": "¿Coinciden, coinciden en parte o chocan?",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "¿En qué exactamente?",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {
-    "mensajeFin": "El artefacto está calibrado y la ciudad, abierta. También tu sección de familia: tu carta para tu apoderado te espera ahí."
+    "mensajeFin": "El artefacto está calibrado y la ciudad, abierta. También tu sección de familia: tu carta para tu apoderado te espera ahí. Hay una carta nueva de Lumi en tu buzón del diario."
   },
   "promptDiario": "Después de comparar",
-  "mapa": { "x": 800, "y": 160, "icono": "registro" }
+  "mapa": {
+    "x": 800,
+    "y": 160,
+    "icono": "registro"
+  },
+  "destinos": [
+    {
+      "item": "b1-3-contraste",
+      "opcion": "CHOCAN",
+      "ruta": "familia"
+    }
+  ]
 }

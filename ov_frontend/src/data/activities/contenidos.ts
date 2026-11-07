@@ -63,7 +63,6 @@ import b2_2 from './contenidos/plataforma/b2_2.json'
 import b2_3 from './contenidos/plataforma/b2_3.json'
 import b2_4 from './contenidos/plataforma/b2_4.json'
 import b2_5 from './contenidos/plataforma/b2_5.json'
-import b2_6 from './contenidos/plataforma/b2_6.json'
 import b3_1 from './contenidos/plataforma/b3_1.json'
 import b3_2 from './contenidos/plataforma/b3_2.json'
 import b3_3 from './contenidos/plataforma/b3_3.json'
@@ -81,7 +80,6 @@ import b4_2 from './contenidos/plataforma/b4_2.json'
 import b4_3 from './contenidos/plataforma/b4_3.json'
 import b4_4 from './contenidos/plataforma/b4_4.json'
 import b4_5 from './contenidos/plataforma/b4_5.json'
-import b4_a from './contenidos/plataforma/b4_a.json'
 import b5_1 from './contenidos/plataforma/b5_1.json'
 import b5_2 from './contenidos/plataforma/b5_2.json'
 import b5_3 from './contenidos/plataforma/b5_3.json'
@@ -113,11 +111,9 @@ import ma2 from './contenidos/plataforma/ma2.json'
 import ma3 from './contenidos/plataforma/ma3.json'
 import ma4 from './contenidos/plataforma/ma4.json'
 import ma5 from './contenidos/plataforma/ma5.json'
-import ma6 from './contenidos/plataforma/ma6.json'
 import ma7 from './contenidos/plataforma/ma7.json'
 import ma7_b from './contenidos/plataforma/ma7_b.json'
 import ma8 from './contenidos/plataforma/ma8.json'
-import ma9 from './contenidos/plataforma/ma9.json'
 import p1 from './contenidos/plataforma/p1.json'
 import p2 from './contenidos/plataforma/p2.json'
 import p3 from './contenidos/plataforma/p3.json'
@@ -197,7 +193,6 @@ export const contenidos: Record<string, ContenidoActividad> = {
   b2_3,
   b2_4,
   b2_5,
-  b2_6,
   b3_1,
   b3_2,
   b3_3,
@@ -215,7 +210,6 @@ export const contenidos: Record<string, ContenidoActividad> = {
   b4_3,
   b4_4,
   b4_5,
-  b4_a,
   b5_1,
   b5_2,
   b5_3,
@@ -247,11 +241,9 @@ export const contenidos: Record<string, ContenidoActividad> = {
   ma3,
   ma4,
   ma5,
-  ma6,
   ma7,
   ma7_b,
   ma8,
-  ma9,
   p1,
   p2,
   p3,

@@ -276,7 +276,11 @@ export interface Actividad {
   }
   siguienteSugerida?: ID
   promptDiario?: string
+  // Ajuste registros (api): destino sugerido al cerrar, por prioridad; gana la primera coincidencia.
+  destinos?: { item: ID; opcion: string; ruta: RutaDestino }[]
+  destino_por_defecto?: RutaDestino
 }
+export type RutaDestino = 'familia' | 'catalogo' | 'catalogo-familia' | 'catalogo-instituciones' | 'plan-a' | 'plan-a-dudas' | 'plan-b' | 'mis-planes' | 'investigaciones' | 'ciudad' | null
 
 export interface ContenidoActividad extends Actividad {
   mapa?: {

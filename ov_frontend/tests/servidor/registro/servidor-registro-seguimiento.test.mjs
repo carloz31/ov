@@ -100,7 +100,8 @@ test('«Entregar» en la última consigna guarda, entrega y muestra la pregunta;
     {
       item: 't-val-orden',
       nombre: 'Tus valores',
-      pista: cierreFx.items_por_ampliar[0].pista,
+      // Ajuste registros: la pista del cierre es lo que faltó.
+      pista: cierreFx.items_por_ampliar[0].falta,
       conEleccion: true,
     },
   ])

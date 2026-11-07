@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-07 · Ajuste registros · «Requiere atención» de las respuestas sensibles
+
+- **Dato:** `respuesta_registro.requiere_atencion` (y la marca `sensible` de cada evaluación): una respuesta de registro en la que el estudiante reveló algo delicado; un adulto debe leerla pronto. La marca no se borra al editar. No se expone en ninguna respuesta de la API del estudiante.
+- **Dónde se mostraría:** en la vista de la orientadora (lotes de orientadora), junto a las respuestas de registro de cada estudiante de su salón.
+- **Opciones:** una etiqueta «Requiere atención» en la fila del estudiante y en la respuesta; un filtro o una bandeja de respuestas marcadas; un aviso en el inicio de la orientadora con el conteo.
+- **Si no se muestra:** la marca queda guardada y solo se ve en la base; el protocolo del piloto define quién revisa y en cuánto tiempo.
+- **Estado:** pendiente (lotes de orientadora).
+
 ## 2026-11-04 · Ajuste carga-casos · Textos de la Central que citan el nombre de la fase
 
 - **Dato:** el `nombre` de cada fase de los JSON de caso («¿Quién merece una oportunidad?», «Los días cuentan»…). Las plantillas de la Central se escribieron para «Emergencia»: «¿Así enfrentarás la {fase en minúsculas}?» (Revisar, `ForestFireCaseView`) y «Así respondió tu equipo a la {fase en minúsculas}» (resultado de fase, `PhaseResultScreen`), y quedan como «¿Así enfrentarás la ¿quién merece una oportunidad??».

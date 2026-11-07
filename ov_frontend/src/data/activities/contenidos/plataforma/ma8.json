@@ -33,11 +33,11 @@
       "eco": "ma8-ref-plan"
     },
     {
-      "id": "ma8-03",
+      "id": "ma8-motivos",
       "tipo": "consigna",
       "hablanteId": "eco",
-      "item": "ma8-contra",
-      "premisa": "Argumenta en contra de tu plan principal: los tres mejores motivos para no elegirlo, como si fueras otra persona.",
+      "item": "ma8-motivos",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
@@ -45,11 +45,11 @@
       "visibilidad": "estudiante_orientadora"
     },
     {
-      "id": "ma8-04",
+      "id": "ma8-respuesta",
       "tipo": "consigna",
-      "hablanteId": "companero",
+      "hablanteId": "eco",
       "item": "ma8-respuesta",
-      "premisa": "Ahora responde a tus propios argumentos. ¿Cuál no pudiste responder? Ese es el que hay que averiguar.",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
@@ -69,5 +69,6 @@
   },
   "plantilla": {
     "tipo": "secuencial"
-  }
+  },
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido."
 }

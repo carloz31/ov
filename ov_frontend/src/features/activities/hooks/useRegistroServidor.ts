@@ -10,8 +10,8 @@ import {
 } from '@/store/servidor/registro'
 import { mensajeErrorServidor, obtenerEstadoServidor } from '@/store/servidor/sesion'
 import { actividadServidor } from '@/lib/servidor/adaptadores'
-import { anterioresDe, codigosEco, ecoDeReferencias } from '@/lib/servidor/adaptadoresRegistro'
-import type { Nodo } from '@/types/activities'
+import { anterioresDe, codigosEco, ecoDeReferencias, premarcadoDe } from '@/lib/servidor/adaptadoresRegistro'
+import type { Actividad, Nodo } from '@/types/activities'
 import type {
   ItemRegistroPublico,
   OpcionElegida,
@@ -29,6 +29,7 @@ import {
   type CambioRegistro,
   type EcoRegistro,
 } from '../lib/edicionRegistro'
+import { destinoDe } from '../lib/destinoRegistro'
 
 export type RegistroServidor = {
   items: ItemRegistroPublico[]
@@ -67,8 +68,17 @@ export function turnosRegistro(respuesta: RespuestaRegistroPublica) {
   return { textoInicial: borradorRegistro(respuesta).texto, turnos, pendiente, borrador }
 }
 
+// Ajuste registros: el aviso fijo de Lumi ante una respuesta sensible es el último mensaje de su conversación.
+const avisoDe = (respuesta: RespuestaRegistroPublica) => {
+  const ultimo = respuesta.conversacion.at(-1)
+  return ultimo?.tipo === 'aviso' ? ultimo.texto : undefined
+}
+// Un aviso se reconoce por el ítem y su texto: al editar a otro texto sensible, vuelve a mostrarse.
+const claveAviso = (respuesta: RespuestaRegistroPublica) => `${respuesta.item}|${borradorRegistro(respuesta).texto}`
+
 export function useRegistroServidor({
   actividad,
+  contenido,
   registroServidor,
   nodes,
   montado,
@@ -78,6 +88,8 @@ export function useRegistroServidor({
   volver,
 }: {
   actividad: string
+  // Ajuste registros: los `destinos` del contenido, para sugerir a dónde ir al cerrar.
+  contenido?: Pick<Actividad, 'destinos' | 'destino_por_defecto'>
   registroServidor?: RegistroServidor
   nodes: Nodo[]
   montado: { current: boolean }
@@ -93,11 +105,24 @@ export function useRegistroServidor({
   const [cierre, setCierre] = useState<RespuestaRegistroAccion>()
   const [ocupado, setOcupado] = useState<'' | 'guardando' | 'evaluando'>('')
   const [error, setError] = useState('')
+  // Ajuste registros: los avisos de respuestas sensibles ya leídos; los que ya estaban al abrir no se repiten.
+  const [avisosVistos, setAvisosVistos] = useState<string[]>(() =>
+    (registroServidor?.registro.respuestas ?? []).filter((r) => avisoDe(r)).map(claveAviso),
+  )
   // Acción que el servidor ya guardó pero cuyo refresco falló: el reintento solo vuelve a refrescar.
   const confirmada = useRef<{ accion: string; datos: RespuestaRegistroAccion }>(undefined)
   const enCurso = useRef(false)
   const ultima = useRef<() => Promise<void>>(undefined)
   const pendiente = registro?.respuestas.find((r) => r.estado === 'PENDIENTE_SEGUIMIENTO')
+  // Un aviso por leer solo existe durante el seguimiento (tras entregar o editar), en el orden de los ítems.
+  const conAviso =
+    pendiente || cierre
+      ? (registroServidor?.items ?? []).flatMap((i) => {
+        const respuesta = registro?.respuestas.find((r) => r.item === i.codigo)
+        const texto = respuesta && avisoDe(respuesta)
+        return texto && !avisosVistos.includes(claveAviso(respuesta)) ? [{ clave: claveAviso(respuesta), texto }] : []
+      })[0]
+    : undefined
   const ultimaConsigna = nodes.findLast((n) => n.tipo === 'consigna')?.id
 
   async function accion(
@@ -254,6 +279,13 @@ export function useRegistroServidor({
     // También si el servidor guardó la acción y solo falta refrescar: no se vuelve a la consigna ya entregada.
     enSeguimiento:
       !!registroServidor && (!!pendiente || !!cierre || ocupado === 'evaluando' || !!confirmada.current),
+    // Ajuste registros: antes de la siguiente pregunta o del cierre, Lumi acoge la respuesta sensible con su texto
+    // fijo y solo «Continuar».
+    aviso: conAviso?.texto,
+    leerAviso: () => conAviso && setAvisosVistos((vistos) => [...vistos, conAviso.clave]),
+    // Ajuste registros: a dónde sugiere ir el cierre, según lo que eligió.
+    destino:
+      contenido && registro ? destinoDe(contenido, registro.respuestas, registroServidor?.referencias) : undefined,
     esUltimaConsigna: (id: string) => id === ultimaConsigna,
     respuestaDe: (item: string) => registro?.respuestas.find((r) => r.item === item),
     // Lo que muestra una consigna al abrirla: el borrador o, en la consulta, el texto cambiado o la consolidada.
@@ -265,9 +297,13 @@ export function useRegistroServidor({
           cambios[item] ?? { texto: consolidada(respuesta), opciones: respuesta?.opciones_elegidas ?? [] }
         )
       const definido = registroServidor?.items.find((i) => i.codigo === item)
-      return respuesta || !definido
-        ? borradorRegistro(respuesta)
-        : { texto: '', opciones: anterioresDe(definido, registroServidor?.referencias ?? []) }
+      if (respuesta || !definido) return borradorRegistro(respuesta)
+      // Ajuste registros: sin nada guardado, lo de la vez pasada o el premarcado condicionado.
+      const anteriores = anterioresDe(definido, registroServidor?.referencias ?? [])
+      return {
+        texto: '',
+        opciones: anteriores.length ? anteriores : premarcadoDe(definido, registro?.respuestas ?? []),
+      }
     },
     anterioresDe: (item: ItemRegistroPublico) => anterioresDe(item, registroServidor?.referencias ?? []),
     consultaDe: (item: ItemRegistroPublico) =>
@@ -282,13 +318,16 @@ export function useRegistroServidor({
         (c) => registroServidor?.referencias?.find((r) => r.codigo === c) ?? [],
       )
       const referencia = referencias.find((r) => r.tipo === 'TEXTO')
+      const origen = (codigo?: string | null) =>
+        actividadServidor(obtenerEstadoServidor().actividades.datos, codigo ?? '')?.titulo ?? ''
       if (!referencia) {
-        const eco = ecoDeReferencias(referencias)
+        // Ajuste registros: lo elegido en otro registro se cita con su actividad de origen.
+        const eco = ecoDeReferencias(referencias, (r) => origen(r.actividad))
         return eco && { estado: 'DISPONIBLE', texto: '', titulo: '', ...eco }
       }
-      if (referencia.estado === 'SIN_DATO' || referencia.estado === 'ABIERTA') return undefined
-      const origen = actividadServidor(obtenerEstadoServidor().actividades.datos, referencia.actividad ?? '')
-      return { estado: referencia.estado, texto: referencia.texto ?? '', titulo: origen?.titulo ?? '' }
+      if (referencia.estado === 'SIN_DATO') return undefined
+      // Ajuste registros: un texto abierto no se cita; la zona de eco lo dice.
+      return { estado: referencia.estado, texto: referencia.texto ?? '', titulo: origen(referencia.actividad) }
     },
     guardar,
     retroceder,

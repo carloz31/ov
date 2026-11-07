@@ -1,5 +1,5 @@
 {
-  "_nota": "Registro. Momento 1 completo (aptitudes, capacidades e intereses; vuelve Nico). Consignas en esqueleto: elección bien / me cuesta + texto, según la ruta base.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b2-4",
   "codigo": "b2-4",
   "tipo": "registro",
@@ -9,11 +9,18 @@
   "bloque": 2,
   "orden": 4,
   "obligatoria": true,
-  "requisitos": ["b2-3"],
+  "requisitos": [
+    "b2-3"
+  ],
   "ubicacion": "Bosque del volcán, taller de la brigada",
   "duracionEstimadaMin": 8,
-  "personajeIds": ["nico", "companero"],
-  "plantilla": { "tipo": "secuencial" },
+  "personajeIds": [
+    "nico",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
   "nodos": [
     {
       "id": "b2-4-01",
@@ -72,11 +79,27 @@
       "bloques": [
         {
           "tipo": "tabla",
-          "columnas": ["Palabra", "Qué es", "Nico y la pasarela"],
+          "columnas": [
+            "Palabra",
+            "Qué es",
+            "Nico y la pasarela"
+          ],
           "filas": [
-            ["Aptitud", "Lo que podrías desarrollar con práctica", "Tiene buena mano para armar cosas, aunque nunca lo entrenó"],
-            ["Capacidad", "Lo que ya haces bien hoy", "Armó la pasarela y le salió bien"],
-            ["Interés", "Lo que te atrae de forma sostenida", "Lo que le atrae son los animales, no las pasarelas"]
+            [
+              "Aptitud",
+              "Lo que podrías desarrollar con práctica",
+              "Tiene buena mano para armar cosas, aunque nunca lo entrenó"
+            ],
+            [
+              "Capacidad",
+              "Lo que ya haces bien hoy",
+              "Armó la pasarela y le salió bien"
+            ],
+            [
+              "Interés",
+              "Lo que te atrae de forma sostenida",
+              "Lo que le atrae son los animales, no las pasarelas"
+            ]
           ]
         },
         {
@@ -101,32 +124,58 @@
       "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones: ahí lo que se te da bien es una fila del cuadro."
     },
     {
-      "id": "b2-4-06",
+      "id": "b2-4-bien",
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b2-4-bien",
-      "premisa": "¿En qué cursos o actividades te va bien? Cuenta al menos dos, con una prueba: una nota, un trabajo, algo que otros te reconocen.",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Donde te va bien",
+        "mensajes": {
+          "inicio": "Marca hasta cuatro.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Por ejemplo, en … yo…» Cuéntame una prueba.",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     },
     {
-      "id": "b2-4-07",
+      "id": "b2-4-cuesta",
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b2-4-cuesta",
-      "premisa": "¿Y qué te cuesta, aunque le pongas ganas?",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Lo que te cuesta",
+        "mensajes": {
+          "inicio": "Marca una o dos.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Me cuesta … porque…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     },
     {
-      "id": "b2-4-08",
+      "id": "b2-4-antes",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b2-4-coincide",
-      "premisa": "¿Lo que se te da bien coincide con lo que te gusta? Si no, ¿qué pesa más para ti hoy?",
-      "entregable": { "tipo": "texto" },
+      "item": "b2-4-antes",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora"
     }
@@ -134,5 +183,9 @@
   "recompensa": {
     "mensajeFin": "Querer y poder, separados. Eso ningún cuestionario lo mide por ti."
   },
-  "mapa": { "x": 650, "y": 430, "icono": "registro" }
+  "mapa": {
+    "x": 650,
+    "y": 430,
+    "icono": "registro"
+  }
 }

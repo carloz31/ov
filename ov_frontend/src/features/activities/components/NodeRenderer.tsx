@@ -16,7 +16,7 @@ import { RegistroEleccionNode } from '@/features/activities/components/nodes/Reg
 import { esTopN } from '@/features/activities/lib/podio'
 import { esEleccionGuiada } from '@/features/activities/lib/eleccionGuiada'
 import { turnosRegistro } from '@/features/activities/hooks/useRegistroServidor'
-import { filasPorAmpliar } from '@/features/activities/lib/porAmpliar'
+import { filasPorAmpliar, textoAbiertos } from '@/features/activities/lib/porAmpliar'
 import { RegistroSeguimiento } from '@/features/activities/components/followup/RegistroSeguimiento'
 import { VolverAlMapa } from './VolverAlMapa'
 export function NodeRenderer({
@@ -98,6 +98,9 @@ export function NodeRenderer({
           ocupado={registro.ocupado === 'evaluando'}
           error={registro.error}
           porAmpliar={cierre && filasPorAmpliar(cierre.items_por_ampliar ?? [], registro.items)}
+          abiertos={cierre && textoAbiertos(cierre.items_abiertos ?? [], registro.items)}
+          aviso={registro.aviso}
+          onLeerAviso={registro.leerAviso}
           onResponder={(texto) => void registro.responder(texto)}
           onOmitir={() => void registro.omitir()}
           onReintentar={() => void registro.reintentar()}
@@ -112,6 +115,7 @@ export function NodeRenderer({
       desbloqueosServidor={cierreServidor?.nuevos_desbloqueos}
       entradasDiario={cierreServidor?.entradas_desbloqueadas}
       salida={salida}
+      destino={registro.destino}
     />
   ) : matrix ? (
     <MatrixNode
@@ -234,7 +238,9 @@ export function NodeRenderer({
               consulta={registro.consultaDe(itemRegistro)}
               salida={<VolverAlMapa actividad={activity.id} />}
               {...(Nodo === RegistroConsignaNode ? { eco: registro.ecoDe(node) } : {})}
-              {...(Nodo === RegistroEleccionNode ? { anteriores: registro.anterioresDe(itemRegistro) } : {})}
+              {...(Nodo === RegistroEleccionNode
+                ? { anteriores: registro.anterioresDe(itemRegistro), eco: registro.ecoDe(node) }
+                : {})}
             />
           )
         })()}

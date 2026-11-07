@@ -1,5 +1,5 @@
 {
-  "_nota": "Registro opcional (3.A). Apertura completa; consigna en esqueleto (elección de un testimonio desbloqueado + texto). Se dibuja fuera del camino con origen b3-10.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b3-a",
   "codigo": "b3-a",
   "tipo": "registro",
@@ -9,11 +9,17 @@
   "bloque": 3,
   "orden": 11,
   "obligatoria": false,
-  "requisitos": ["b3-10"],
+  "requisitos": [
+    "b3-10"
+  ],
   "ubicacion": "Puerto, el malecón de noche",
   "duracionEstimadaMin": 8,
-  "personajeIds": ["companero"],
-  "plantilla": { "tipo": "secuencial" },
+  "personajeIds": [
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
   "nodos": [
     {
       "id": "b3-a-01",
@@ -29,28 +35,57 @@
       "texto": "Acuérdate de las cuatro preguntas de Alejandra: qué decidió y qué le pasó, si se parece a ti, el momento del giro, y con qué te quedas. Esto lo lee tu orientadora y va a tu informe de viaje."
     },
     {
-      "id": "b3-a-03",
+      "id": "b3-a-testimonio",
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b3-a-testimonio",
-      "premisa": "Elige una voz que hayas escuchado. ¿Qué decisión o dificultad te llamó la atención?",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "El testimonio",
+        "mensajes": {
+          "inicio": "Marca el testimonio que te quedó dando vueltas.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Me llamó la atención cuando…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     },
     {
-      "id": "b3-a-04",
+      "id": "b3-a-identifico",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b3-a-aprendizaje",
-      "premisa": "¿En qué te identificas o te diferencias de esa persona? ¿Qué aprendizaje aplica a tu propia decisión?",
-      "entregable": { "tipo": "texto" },
+      "item": "b3-a-identifico",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Esa persona y tú",
+        "mensajes": {
+          "inicio": "¿Te identificas, en parte o te diferencias?",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«De su historia me llevo…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {
     "mensajeFin": "Una voz es una sola voz. Lo que te llevas de ella sí es tuyo."
   },
-  "mapa": { "x": 180, "y": 500, "icono": "registro", "origen": "b3-10" }
+  "mapa": {
+    "x": 180,
+    "y": 500,
+    "icono": "registro",
+    "origen": "b3-10"
+  }
 }

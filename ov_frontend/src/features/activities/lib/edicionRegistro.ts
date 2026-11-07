@@ -7,12 +7,15 @@ import type {
   RespuestaRegistroPublica,
 } from '@/types/servidor'
 import { reflectionCopy } from '@/data/activities/reflectionConfig'
+import { TEXTO_ABIERTO } from '@/lib/servidor/adaptadoresRegistro'
 
 // Consulta de un registro entregado (F02): el mismo reproductor, precargado con la respuesta consolidada y
 // en modo lectura; «Modificar» abre el componente de siempre. Cambiar el texto o la elección es editar; si
 // cambia la elección, la justificación se reescribe.
 export type ConsultaRegistro = {
   pista?: string
+  // Ajuste registros: el ítem quedó abierto; la lectura lo dice y se edita como cualquiera.
+  abierto?: boolean
   original: string
   opcionesOriginales: OpcionElegida[]
   // Sin orden, elegir lo mismo en otro orden no es un cambio.
@@ -56,6 +59,7 @@ export function consultaDe(
   const original = consolidada(respuesta)
   return {
     pista: registro.items_por_ampliar?.find((p) => p.item === item)?.pista,
+    ...(registro.items_abiertos?.includes(item) ? { abierto: true } : {}),
     original,
     opcionesOriginales: respuesta?.opciones_elegidas ?? [],
     ordenada: !!definido.eleccion?.ordenada,
@@ -127,7 +131,7 @@ export function pieConsulta(
 // F03: `cita` es el recuerdo completo de un resultado (código de interés, ocupaciones), sin registro de origen.
 // F07b: `chips`, los motivos del plan A justo tras su cita, y `citaTras`, lo que sigue después de ellos.
 export type EcoRegistro = {
-  estado: 'DISPONIBLE' | 'POR_DESARROLLAR'
+  estado: 'DISPONIBLE' | 'POR_DESARROLLAR' | 'ABIERTA'
   texto: string
   titulo: string
   cita?: string
@@ -135,13 +139,19 @@ export type EcoRegistro = {
   citaTras?: string
 }
 export const INTRO_PISTA = 'Aquí podrías contar un poco más:'
-export function burbujaRegistro(eco?: EcoRegistro, pista?: string) {
+// Ajuste registros: en la lectura, un ítem abierto lo recuerda (y se edita como cualquiera).
+export const LECTURA_ABIERTA = 'Lo dejaste abierto. Puedes volver cuando lo tengas.'
+export function burbujaRegistro(eco?: EcoRegistro, pista?: string, abierto = false) {
   const recuerdo = !eco
-    ? undefined
+    ? abierto
+      ? LECTURA_ABIERTA
+      : undefined
     : eco.cita
       ? eco.cita
-      : eco.estado === 'POR_DESARROLLAR'
-        ? 'La vez pasada lo contaste en pocas palabras. Aquí puedes tomarte tu tiempo.'
-        : `${reflectionCopy.memory(eco.titulo)}: «${eco.texto}»`
+      : eco.estado === 'ABIERTA'
+        ? TEXTO_ABIERTO
+        : eco.estado === 'POR_DESARROLLAR'
+          ? 'La vez pasada lo contaste en pocas palabras. Aquí puedes tomarte tu tiempo.'
+          : `${reflectionCopy.memory(eco.titulo)}: «${eco.texto}»`
   return recuerdo || pista ? { recuerdo, pista: pista || undefined } : undefined
 }

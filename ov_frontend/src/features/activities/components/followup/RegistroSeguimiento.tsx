@@ -14,6 +14,9 @@ export function RegistroSeguimiento({
   ocupado,
   error,
   porAmpliar,
+  abiertos,
+  aviso,
+  onLeerAviso,
   onResponder,
   onOmitir,
   onReintentar,
@@ -24,13 +27,32 @@ export function RegistroSeguimiento({
   ocupado: boolean
   error: string
   porAmpliar?: FilaPorAmpliar[]
+  // Ajuste registros: «Lo dejaste abierto: …» al cerrar, y el aviso fijo ante una respuesta sensible.
+  abiertos?: string
+  aviso?: string
+  onLeerAviso?: () => void
   onResponder: (texto: string) => void
   onOmitir: () => void
   onReintentar: () => void
   onContinuar: () => void
 }) {
   const [response, setResponse] = useState(hilo?.borrador ?? '')
-  const pregunta = !ocupado && !porAmpliar ? hilo?.pendiente : undefined
+  const pregunta = !ocupado && !porAmpliar && !aviso ? hilo?.pendiente : undefined
+  // Ajuste registros: ante una respuesta sensible, Lumi solo acoge con su texto fijo y «Continuar».
+  if (aviso && !ocupado)
+    return (
+      <section className="sx-followup" aria-label="Seguimiento de Lumi">
+        <div role="status">
+          <InlineDialogue speakerId="companero" text={aviso} light />
+        </div>
+        <div className="sx-player-actions">
+          <button type="button" className="sx-primary-button" onClick={onLeerAviso}>
+            Continuar
+            <ArrowRight size={18} />
+          </button>
+        </div>
+      </section>
+    )
   return (
     <section className="sx-followup" aria-label="Seguimiento de Lumi">
       {error && (
@@ -113,6 +135,7 @@ export function RegistroSeguimiento({
                 filas={porAmpliar}
                 conPista
               />
+              {abiertos && <p className="sx-followup-abiertos">{abiertos}</p>}
             </div>
             <button
               type="button"

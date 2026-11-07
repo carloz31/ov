@@ -36,7 +36,7 @@ export function BloquePorAmpliar({
                 <Icon size={18} aria-hidden="true" />
                 <span>
                   <strong>{f.nombre}</strong>
-                  {conPista && <small>{f.pista}</small>}
+                  {conPista && f.pista && <small>{f.pista}</small>}
                 </span>
               </li>
             )

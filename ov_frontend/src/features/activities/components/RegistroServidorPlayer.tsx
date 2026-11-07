@@ -3,7 +3,7 @@ import { actividadPorContenido, encuentroConEco, registroServidor } from '@/lib/
 import { mensajeErrorServidor, obtenerEstadoServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { consultarItemsRegistro, consultarRegistro } from '@/store/servidor/registro'
 import { consultarReferencias } from '@/store/servidor/referencias'
-import { necesitaReferencias } from '@/lib/servidor/adaptadoresRegistro'
+import { itemsConOpciones, necesitaReferencias } from '@/lib/servidor/adaptadoresRegistro'
 import type { Actividad } from '@/types/activities'
 import type { RegistroServidor } from '../hooks/useRegistroServidor'
 import { actividadConsulta, esConsulta } from '../lib/edicionRegistro'
@@ -48,7 +48,9 @@ export function RegistroServidorPlayer({
         return
       }
       const resueltas = referencias?.datos.referencias ?? []
-      const base = registroServidor(contenido, items.datos)
+      // Ajuste registros: las opciones de cada ítem, con las de su referencia (en vivo) y las propias.
+      const conOpciones = itemsConOpciones(items.datos, resueltas)
+      const base = registroServidor(contenido, conOpciones)
       const completo = base && encuentroConEco(base, resueltas)
       // F02: un registro cerrado se consulta en el mismo reproductor, solo con sus consignas.
       const activity = completo && esConsulta(registro.datos) ? actividadConsulta(completo) : completo
@@ -58,7 +60,7 @@ export function RegistroServidorPlayer({
       }
       setCarga({
         activity,
-        registro: { items: items.datos, registro: registro.datos, referencias: resueltas },
+        registro: { items: conOpciones, registro: registro.datos, referencias: resueltas },
       })
       setError('')
     })()

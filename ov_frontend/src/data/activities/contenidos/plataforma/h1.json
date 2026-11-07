@@ -1,9 +1,9 @@
 {
-  "_nota": "Registro de cierre del instrumento de habilidades (H1). Se abre al revelar la página en el libro de Helena. Lee el resultado con eco (RESULTADO de la aplicación). Consignas en esqueleto.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "h1",
   "codigo": "h1",
   "tipo": "registro",
-  "titulo": "Mi plan para fortalecer una habilidad",
+  "titulo": "Mi reto",
   "subtitulo": "De vuelta en la taberna",
   "escenario": "ciudad",
   "bloque": 7,
@@ -37,41 +37,48 @@
       "eco": "h1-ref-resultado"
     },
     {
-      "id": "h1-03",
+      "id": "h1-habilidad",
       "tipo": "consigna",
       "hablanteId": "dora",
       "item": "h1-habilidad",
-      "premisa": "Elige una habilidad con menor desarrollo en tu página y cuenta por qué la elegiste.",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Tu habilidad",
+        "mensajes": {
+          "inicio": "Marca la habilidad que quieres fortalecer.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Elegí … porque…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     },
     {
-      "id": "h1-04",
+      "id": "h1-accion",
       "tipo": "consigna",
       "hablanteId": "dora",
       "item": "h1-accion",
-      "premisa": "Una acción concreta y cotidiana para practicarla: qué harías, dónde o con quién.",
-      "ayuda": "Pequeña y repetible: «decir una vez al día algo que pienso y suelo callar».",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
-    },
-    {
-      "id": "h1-05",
-      "tipo": "consigna",
-      "hablanteId": "dora",
-      "item": "h1-senal",
-      "premisa": "¿Cómo sabrás que mejoró?",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Dónde",
+        "mensajes": {
+          "inicio": "Marca un lugar.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Cuando esté en … y pase …, voy a…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {

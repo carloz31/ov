@@ -1,5 +1,5 @@
 {
-  "_nota": "Registro. Está completo el Momento 1 (apertura y contenido de la ficha F04). Las consignas son un esqueleto con los ítems propuestos; su redacción final y sus criterios se definen cuando se trabajen los registros.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b1-1",
   "codigo": "b1-1",
   "tipo": "registro",
@@ -9,11 +9,18 @@
   "bloque": 1,
   "orden": 1,
   "obligatoria": true,
-  "requisitos": ["b0-6"],
+  "requisitos": [
+    "b0-6"
+  ],
   "ubicacion": "Nevado, taller de la cartógrafa",
   "duracionEstimadaMin": 10,
-  "personajeIds": ["cartografa", "companero"],
-  "plantilla": { "tipo": "secuencial" },
+  "personajeIds": [
+    "cartografa",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
   "nodos": [
     {
       "id": "b1-1-01",
@@ -101,12 +108,27 @@
       "bloques": [
         {
           "tipo": "tabla",
-          "columnas": ["Pregunta", "Qué pista deja"],
+          "columnas": [
+            "Pregunta",
+            "Qué pista deja"
+          ],
           "filas": [
-            ["¿Qué te gustaba hacer desde niño?", "Intereses que se sostienen en el tiempo, no modas"],
-            ["¿Qué personas influyeron en quién eres?", "Modelos que admiras y por qué"],
-            ["¿Cuál es un logro del que estás orgulloso?", "Habilidades que ya usaste, no solo que crees tener"],
-            ["¿Qué dificultad superaste y cómo?", "Recursos propios: constancia, ayuda que supiste pedir, creatividad"]
+            [
+              "¿Qué te gustaba hacer desde niño?",
+              "Intereses que se sostienen en el tiempo, no modas"
+            ],
+            [
+              "¿Qué personas influyeron en quién eres?",
+              "Modelos que admiras y por qué"
+            ],
+            [
+              "¿Cuál es un logro del que estás orgulloso?",
+              "Habilidades que ya usaste, no solo que crees tener"
+            ],
+            [
+              "¿Qué dificultad superaste y cómo?",
+              "Recursos propios: constancia, ayuda que supiste pedir, creatividad"
+            ]
           ]
         },
         {
@@ -136,35 +158,48 @@
       "texto": "Tres trazos y tengo tu punto de origen. Con ejemplos, por favor: un mapa hecho de generalidades no lleva a ningún lado."
     },
     {
-      "id": "b1-1-08",
+      "id": "b1-1-gustos",
       "tipo": "consigna",
       "hablanteId": "cartografa",
       "item": "b1-1-gustos",
-      "premisa": "¿Qué querías ser a distintas edades y qué te gusta hacer desde niño?",
-      "ayuda": "Elige las edades y cuenta con un ejemplo concreto, no con una categoría.",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora"
     },
     {
-      "id": "b1-1-09",
+      "id": "b1-1-logro",
       "tipo": "consigna",
       "hablanteId": "cartografa",
       "item": "b1-1-logro",
-      "premisa": "Un logro del que estés orgulloso y qué habilidad usaste para lograrlo.",
-      "ayuda": "No tiene que ser grande; tiene que ser tuyo.",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Lo que usaste",
+        "mensajes": {
+          "inicio": "Marca la habilidad que usaste (una o dos).",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Logré…» Cuéntame qué pasó.",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     },
     {
-      "id": "b1-1-10",
+      "id": "b1-1-dificultad",
       "tipo": "consigna",
       "hablanteId": "cartografa",
       "item": "b1-1-dificultad",
-      "premisa": "Una dificultad que superaste y qué hiciste tú para superarla.",
-      "ayuda": "Lo importante es lo que hiciste, no solo lo que pasó.",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora"
     }
@@ -173,5 +208,9 @@
     "mensajeFin": "Tu punto de origen está en el mapa. Lo que te gustaba a los ocho años no decide tu carrera, pero dice qué tipo de cosas te mueven."
   },
   "promptDiario": "Lo que me mueve del pasado",
-  "mapa": { "x": 640, "y": 170, "icono": "registro" }
+  "mapa": {
+    "x": 640,
+    "y": 170,
+    "icono": "registro"
+  }
 }

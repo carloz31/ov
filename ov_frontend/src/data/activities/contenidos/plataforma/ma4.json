@@ -33,28 +33,49 @@
       "eco": "ma4-ref-accion"
     },
     {
-      "id": "ma4-03",
+      "id": "ma4-probe",
       "tipo": "consigna",
       "hablanteId": "dora",
-      "item": "ma4-que-paso",
-      "premisa": "¿Qué pasó cuando practicaste tu acción? ¿Qué te costó, qué salió mejor de lo que esperabas?",
+      "item": "ma4-probe",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Tu reto",
+        "mensajes": {
+          "inicio": "¿Lo hiciste, a medias o todavía no?",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Lo que pasó fue…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      },
+      "eco": "ma4-ref-accion"
     },
     {
-      "id": "ma4-04",
+      "id": "ma4-sigo",
       "tipo": "consigna",
       "hablanteId": "dora",
-      "item": "ma4-sigue",
-      "premisa": "¿La sigues practicando o la cambiarías por otra? ¿Por qué?",
+      "item": "ma4-sigo",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Tu reto",
+        "mensajes": {
+          "inicio": "¿La sigues o la cambias?",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Porque…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {
@@ -69,5 +90,6 @@
   },
   "plantilla": {
     "tipo": "secuencial"
-  }
+  },
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido."
 }

@@ -1,19 +1,26 @@
 {
-  "_nota": "Registro (4.1). Momento 1 completo (F19); las consignas son el cuadro de afinidad con una fila por aspecto del perfil (precargada con eco: 1.1, H3, H1, H2, 2.4, 2.6). Esqueleto; la plantilla matriz se define con los registros. Requisito de bloque: B3 completo + instrumentos prioritarios (evaluador existente).",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b4-1",
   "codigo": "b4-1",
   "tipo": "registro",
-  "titulo": "Mi perfil y mis carreras afines",
+  "titulo": "Mi perfil frente a mi Plan A",
   "subtitulo": "El libro abierto frente al mapa",
   "escenario": "acantilado",
   "bloque": 4,
   "orden": 1,
   "obligatoria": true,
-  "requisitos": ["b3-10"],
+  "requisitos": [
+    "b3-10"
+  ],
   "ubicacion": "Acantilado, el mirador de piedra",
   "duracionEstimadaMin": 12,
-  "personajeIds": ["helena", "companero"],
-  "plantilla": { "tipo": "secuencial" },
+  "personajeIds": [
+    "helena",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
   "nodos": [
     {
       "id": "b4-1-01",
@@ -70,13 +77,37 @@
       "bloques": [
         {
           "tipo": "tabla",
-          "columnas": ["Aspecto del perfil", "De dónde sale", "Qué buscar en una opción"],
+          "columnas": [
+            "Aspecto del perfil",
+            "De dónde sale",
+            "Qué buscar en una opción"
+          ],
           "filas": [
-            ["Intereses", "Tu historia y tu código de intereses", "¿Las tareas del día a día se parecen a lo que te atrae?"],
-            ["Habilidades sociales", "Tu resultado y la habilidad que elegiste trabajar", "¿Cuánto contacto, liderazgo o negociación exige?"],
-            ["Inteligencias", "Tus inteligencias más desarrolladas", "¿Qué tipo de problemas resuelve esa ocupación?"],
-            ["Lo que se te da bien", "Tus cursos y actividades fuertes", "¿Qué cursos pesan en la carrera?"],
-            ["Rasgos", "Cómo te describes en distintos contextos", "¿Qué ambiente de trabajo tendría?"]
+            [
+              "Intereses",
+              "Tu historia y tu código de intereses",
+              "¿Las tareas del día a día se parecen a lo que te atrae?"
+            ],
+            [
+              "Habilidades sociales",
+              "Tu resultado y la habilidad que elegiste trabajar",
+              "¿Cuánto contacto, liderazgo o negociación exige?"
+            ],
+            [
+              "Inteligencias",
+              "Tus inteligencias más desarrolladas",
+              "¿Qué tipo de problemas resuelve esa ocupación?"
+            ],
+            [
+              "Lo que se te da bien",
+              "Tus cursos y actividades fuertes",
+              "¿Qué cursos pesan en la carrera?"
+            ],
+            [
+              "Rasgos",
+              "Cómo te describes en distintos contextos",
+              "¿Qué ambiente de trabajo tendría?"
+            ]
           ],
           "nota": "El cuadro del programa del MINEDU (actividad 14). Para cada fila, una opción de mayor afinidad y una de menor, con una razón corta."
         },
@@ -96,9 +127,18 @@
         {
           "tipo": "pasos",
           "pasos": [
-            { "titulo": "Coincidencia en dos aspectos, no en uno", "texto": "Una opción que calza solo con tu código pero choca con lo que se te da bien y con tus valores no es afín: es atractiva." },
-            { "titulo": "La menor afinidad también enseña", "texto": "Justificar por qué una opción no te calza aclara qué sí buscas. A veces descubre que la descartaste por un prejuicio." },
-            { "titulo": "Anota lo que el perfil no resuelve", "texto": "Costos, distancia, oferta en tu ciudad, lo que piensa tu familia: nada de eso sale del cruce, y todo pesa. Ese vacío es la agenda de lo que sigue." }
+            {
+              "titulo": "Coincidencia en dos aspectos, no en uno",
+              "texto": "Una opción que calza solo con tu código pero choca con lo que se te da bien y con tus valores no es afín: es atractiva."
+            },
+            {
+              "titulo": "La menor afinidad también enseña",
+              "texto": "Justificar por qué una opción no te calza aclara qué sí buscas. A veces descubre que la descartaste por un prejuicio."
+            },
+            {
+              "titulo": "Anota lo que el perfil no resuelve",
+              "texto": "Costos, distancia, oferta en tu ciudad, lo que piensa tu familia: nada de eso sale del cruce, y todo pesa. Ese vacío es la agenda de lo que sigue."
+            }
           ]
         },
         {
@@ -111,65 +151,111 @@
       "id": "b4-1-06",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Cada fila llega con tu resultado y con lo que escribiste antes, solo para leer; tú pones las opciones, de tus favoritos o del catálogo, y la razón. Esto lo lee tu orientadora y vuelve cuando compares tus planes."
+      "texto": "Cada fila llega con tu resultado y con lo que escribiste antes, solo para leer; tú pones las opciones, de tus favoritos o del catálogo, y la razón. Esto lo lee tu orientadora y vuelve cuando compares tus planes.",
+      "eco": [
+        "b4-1-ref-plan",
+        "b4-1-ref-intereses",
+        "b4-1-ref-inteligencias",
+        "b4-1-ref-habilidades"
+      ]
     },
     {
-      "id": "b4-1-07",
+      "id": "b4-1-principio",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "texto": "Una parte que hoy no te respalda no decide por ti: se entrena, se comprueba o se compensa con otra."
+    },
+    {
+      "id": "b4-1-respalda",
       "tipo": "consigna",
       "hablanteId": "helena",
-      "item": "b4-1-intereses",
-      "premisa": "Intereses: una opción de mayor afinidad y una de menor, con una razón corta cada una.",
-      "entregable": { "tipo": "texto" },
+      "item": "b4-1-respalda",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora",
-      "eco": ["b4-1-ref-historia", "b4-1-ref-codigo"]
+      "eleccion": {
+        "etiquetaElegida": "Lo que respalda",
+        "mensajes": {
+          "inicio": "Marca una parte de tu perfil.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Lo respalda porque…» Con algo tuyo.",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      },
+      "eco": [
+        "b4-1-ref-logro",
+        "b4-1-ref-valores",
+        "b4-1-ref-bien",
+        "b4-1-ref-reconozco"
+      ]
     },
     {
-      "id": "b4-1-08",
+      "id": "b4-1-menos",
       "tipo": "consigna",
       "hablanteId": "helena",
-      "item": "b4-1-habilidades",
-      "premisa": "Habilidades sociales: una opción de mayor afinidad y una de menor, con su razón.",
-      "entregable": { "tipo": "texto" },
-      "obligatoria": false,
-      "visibilidad": "estudiante_orientadora",
-      "eco": "b4-1-ref-h1"
-    },
-    {
-      "id": "b4-1-09",
-      "tipo": "consigna",
-      "hablanteId": "helena",
-      "item": "b4-1-inteligencias",
-      "premisa": "Inteligencias: una opción de mayor afinidad y una de menor, con su razón.",
-      "entregable": { "tipo": "texto" },
-      "obligatoria": false,
-      "visibilidad": "estudiante_orientadora",
-      "eco": "b4-1-ref-h2"
-    },
-    {
-      "id": "b4-1-10",
-      "tipo": "consigna",
-      "hablanteId": "helena",
-      "item": "b4-1-bien",
-      "premisa": "Lo que se te da bien: una opción de mayor afinidad y una de menor, con su razón.",
-      "entregable": { "tipo": "texto" },
-      "obligatoria": false,
-      "visibilidad": "estudiante_orientadora",
-      "eco": "b4-1-ref-bien"
-    },
-    {
-      "id": "b4-1-11",
-      "tipo": "consigna",
-      "hablanteId": "helena",
-      "item": "b4-1-no-resuelve",
-      "premisa": "¿Qué no resuelve tu perfil? Costos, distancia, oferta, familia: anota lo que queda por averiguar.",
-      "entregable": { "tipo": "texto" },
+      "item": "b4-1-menos",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Lo que respalda menos",
+        "mensajes": {
+          "inicio": "Marca una parte de tu perfil.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«…y eso me hace pensar que…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
+    },
+    {
+      "id": "b4-1-familia",
+      "tipo": "consigna",
+      "hablanteId": "helena",
+      "item": "b4-1-familia",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "La familia",
+        "mensajes": {
+          "inicio": "Marca la familia que todavía no has mirado.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«La miraría porque…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {
-    "mensajeFin": "El cruce no elige por ti: muestra coincidencia, fricción y lo que falta averiguar. Se abrieron fortalezas, debilidades, obstáculos y oportunidades en tu tarjeta."
+    "mensajeFin": "El cruce no elige por ti: muestra coincidencia, fricción y lo que falta averiguar. Se abrieron fortalezas, debilidades, obstáculos y oportunidades en tu tarjeta. Hay una carta nueva de Lumi en tu buzón del diario."
   },
-  "mapa": { "x": 140, "y": 450, "icono": "registro" }
+  "mapa": {
+    "x": 140,
+    "y": 450,
+    "icono": "registro"
+  },
+  "destinos": [
+    {
+      "item": "b4-1-familia",
+      "opcion": "TODAS",
+      "ruta": null
+    },
+    {
+      "item": "b4-1-familia",
+      "opcion": "*",
+      "ruta": "catalogo-familia"
+    }
+  ]
 }

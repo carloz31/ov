@@ -1,5 +1,5 @@
 {
-  "_nota": "Registro (5.3). Apertura completa; dos consignas. Eco: primer plan y su motivación (sección Planes) o «sin opción inicial».",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b5-3",
   "codigo": "b5-3",
   "tipo": "registro",
@@ -26,47 +26,110 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "texto": "Desde el balcón del faro se ve todo: el muelle donde bajaste, el bosque, la cabaña, el nevado, la ciudad, el desierto, el volcán, el puerto, el acantilado. Cuando llegaste tenías una idea, o no tenías ninguna. Me acuerdo.",
-      "expresion": "pensativo",
-      "eco": "b5-3-ref-inicial"
+      "expresion": "pensativo"
     },
     {
       "id": "b5-3-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Dos preguntas, nada más. Esto lo lee tu orientadora y cierra tu informe."
+      "texto": "Dos preguntas, nada más. Esto lo lee tu orientadora y cierra tu informe.",
+      "eco": [
+        "b5-3-ref-inicial",
+        "b5-3-ref-dia",
+        "b5-3-ref-freno",
+        "b5-3-ref-mia",
+        "b5-3-ref-mito"
+      ]
     },
     {
-      "id": "b5-3-03",
+      "id": "b5-3-inicial",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b5-3-aporto",
-      "premisa": "¿Cómo veías tu opción al inicio y cómo la ves ahora? ¿Qué te aportó el recorrido?",
+      "item": "b5-3-inicial",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Cómo la ves",
+        "mensajes": {
+          "inicio": "¿La ves igual, distinta o la dejaste?",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Ahora veo…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     },
     {
-      "id": "b5-3-04",
+      "id": "b5-3-explorar",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b5-3-falta",
-      "premisa": "¿Qué te falta explorar todavía?",
+      "item": "b5-3-explorar",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Lo que falta",
+        "mensajes": {
+          "inicio": "Marca una o dos cosas.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Voy a…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {
-    "mensajeFin": "El camino visto desde la llegada. Falta subir al faro."
+    "mensajeFin": "El camino visto desde la llegada. Falta subir al faro. Hay una carta nueva de Lumi en tu buzón del diario."
   },
   "promptDiario": "Cómo me siento ahora",
   "mapa": {
     "x": 210,
     "y": 160,
     "icono": "registro"
-  }
+  },
+  "destinos": [
+    {
+      "item": "b5-3-explorar",
+      "opcion": "CARRERAS",
+      "ruta": "catalogo"
+    },
+    {
+      "item": "b5-3-explorar",
+      "opcion": "PROFESIONALES",
+      "ruta": "investigaciones"
+    },
+    {
+      "item": "b5-3-explorar",
+      "opcion": "INSTITUCIONES",
+      "ruta": "catalogo-instituciones"
+    },
+    {
+      "item": "b5-3-explorar",
+      "opcion": "COSTOS_BECAS",
+      "ruta": "plan-a"
+    },
+    {
+      "item": "b5-3-explorar",
+      "opcion": "FAMILIA",
+      "ruta": "familia"
+    },
+    {
+      "item": "b5-3-explorar",
+      "opcion": "CONOCERME",
+      "ruta": "ciudad"
+    },
+    {
+      "item": "b5-3-explorar",
+      "opcion": "NADA",
+      "ruta": null
+    }
+  ]
 }

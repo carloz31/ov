@@ -29,3 +29,9 @@
 - Las opciones propias entre llaves de §2.3 (las de «ninguno» con pregunta propia o `∅`) son exclusivas; las demás, no. Las listas de `h1` y `h2` (dimensiones de sus instrumentos) no admiten «otra»: son conjuntos cerrados (principio 6 del documento; decisión del usuario).
 - El contexto de cada carta lee los TEXTO de los ítems de §2.6 (más la ELECCION de `b1-3-voz` y PLAN, PLANES u OPCION_INICIAL según la tabla).
 - `soporte_ruta.eleccion_minima` toma también las opciones de la referencia y las propias (para responder registros desde las pruebas).
+- F3 (front): las opciones de cada ítem se arman al abrir el registro (`itemsConOpciones`: lista o referencia en vivo, más las propias), así las vistas de elección siguen leyendo `eleccion.opciones`; las exclusivas y preguntas propias del servidor se suman a las del JSON.
+- Una opción con `criterio: null` deja el texto opcional en el front y en el backend (entrega y edición la aceptan sin texto).
+- `b3-4` y `b5-3` declaran PLANES: el destino «tarjeta del Plan A» necesita el código de la carrera.
+- El aviso sensible se muestra una vez por ítem y texto durante el seguimiento (los que ya estaban al abrir no se repiten). «Lo dejaste abierto: …» va bajo el bloque de cierre; en la consulta, la burbuja de Lumi lo recuerda.
+- Destinos: claves de ruta del front (`familia`, `catalogo`, `catalogo-familia`, `plan-a-dudas`…) resueltas en `features/activities/lib/destinoRegistro.ts`; el botón «Ir a …» va a la izquierda de «Volver al mapa».
+- JSON: se conserva toda la apertura (diálogos, diapositivas, elecciones) y se reemplazan las consignas; los ecos de apertura van en el último diálogo antes de las consignas; la frase de b4-1 («una parte que hoy no te respalda…») es un diálogo antes de sus consignas; los seis registros con carta suman al `mensajeFin` «Hay una carta nueva de Lumi en tu buzón del diario.».

@@ -1,5 +1,5 @@
 {
-  "_nota": "Registro. Momento 1 completo (valores). La consigna es un podio «top 3» como t_valores (lista de valores en el servidor); su configuración final se define con los registros.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b2-3",
   "codigo": "b2-3",
   "tipo": "registro",
@@ -9,11 +9,18 @@
   "bloque": 2,
   "orden": 3,
   "obligatoria": true,
-  "requisitos": ["b2-2"],
+  "requisitos": [
+    "b2-2"
+  ],
   "ubicacion": "Bosque del volcán, mirador de la brigada",
   "duracionEstimadaMin": 8,
-  "personajeIds": ["rosa", "companero"],
-  "plantilla": { "tipo": "secuencial" },
+  "personajeIds": [
+    "rosa",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
   "nodos": [
     {
       "id": "b2-3-01",
@@ -115,24 +122,32 @@
       "texto": "Esto lo lee tu orientadora. Y vuelve dos veces: cuando ordenes tus criterios para decidir, tu primer valor va a ser el punto de partida; y al escribir tu proyecto te lo voy a recordar."
     },
     {
-      "id": "b2-3-06",
+      "id": "b2-3-valores",
       "tipo": "consigna",
       "hablanteId": "rosa",
       "item": "b2-3-valores",
-      "premisa": "Ordena los tres valores que más pesan para ti en un trabajo y explica por qué el primero es el primero.",
-      "ayuda": "Liga el primero a algo que viviste o a alguien de tu vida.",
-      "entregable": { "tipo": "texto" },
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora",
       "podio": {
         "etiquetaPrimero": "Lo que más pesa",
-        "pregunta": "¿Por qué «{opcion}» es lo que más pesa para ti en un trabajo?",
-        "unidad": { "singular": "valor", "plural": "valores" }
+        "pregunta": "«Puse «{opcion}» primero porque…» ¿De dónde te viene?",
+        "unidad": {
+          "singular": "valor",
+          "plural": "valores"
+        }
       }
     }
   ],
   "recompensa": {
     "mensajeFin": "Tu brújula tiene tres puntos. Anotado en tu bitácora."
   },
-  "mapa": { "x": 720, "y": 380, "icono": "registro" }
+  "mapa": {
+    "x": 720,
+    "y": 380,
+    "icono": "registro"
+  }
 }

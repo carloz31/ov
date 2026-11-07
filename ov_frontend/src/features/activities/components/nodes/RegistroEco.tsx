@@ -9,12 +9,15 @@ export function RegistroEco({
   eco,
   pista,
   hablanteId,
+  abierto,
 }: {
   eco?: EcoRegistro
   pista?: string
   hablanteId?: string
+  // Ajuste registros: en la consulta, el ítem quedó abierto.
+  abierto?: boolean
 }) {
-  const partes = burbujaRegistro(eco, pista)
+  const partes = burbujaRegistro(eco, pista, abierto)
   if (!partes) return hablanteId ? <CharacterAvatar id={hablanteId} size="sm" /> : null
   return (
     <RegistroLumi

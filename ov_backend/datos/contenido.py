@@ -949,6 +949,8 @@ REFERENCIAS = (
     ('b3-2-ref-codigo', ('ACTIVIDAD', 'b3-2'), 'RESULTADO', 'APL-RIASEC'),
     ('b3-4-ref-plan', ('ACTIVIDAD', 'b3-4'), 'PLAN', None),
     ('b3-4-ref-datos-carrera', ('ACTIVIDAD', 'b3-4'), 'DATOS_CARRERA_PLAN_A', None),
+    # El destino «tarjeta del Plan A» (§3) necesita el código de la carrera: lo da PLANES.
+    ('b3-4-ref-planes', ('ACTIVIDAD', 'b3-4'), 'PLANES', None),
     ('b3-8-ref-costos', ('ACTIVIDAD', 'b3-8'), 'RESPUESTA_CUESTIONARIO', ('APL-PARTIDA', 'AUTO-12')),
     ('b3-a-ref-testimonios', ('ACTIVIDAD', 'b3-a'), 'TESTIMONIOS', None),
     ('b4-1-ref-plan', ('ACTIVIDAD', 'b4-1'), 'PLAN', None),
@@ -983,6 +985,7 @@ REFERENCIAS = (
     ('b5-3-ref-freno', ('ACTIVIDAD', 'b5-3'), 'ELECCION', 'b1-7-freno'),
     ('b5-3-ref-mia', ('ACTIVIDAD', 'b5-3'), 'ELECCION', 'b1-3-mia'),
     ('b5-3-ref-mito', ('ACTIVIDAD', 'b5-3'), 'ELECCION', 'b1-6-mito'),
+    ('b5-3-ref-planes', ('ACTIVIDAD', 'b5-3'), 'PLANES', None),
     # §2.6: el contexto de las seis cartas del diario.
     ('C1-ref-voz', ('PREGUNTA_DIARIO', 'C1'), 'ELECCION', 'b1-3-voz'),
     ('C1-ref-voz-texto', ('PREGUNTA_DIARIO', 'C1'), 'TEXTO', 'b1-3-voz'),

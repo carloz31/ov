@@ -58,6 +58,9 @@ def _verificar_actividades(front: Path, sesion, actividades) -> list[str]:
                               (front / 'src/data/content/challenges.ts').read_text(encoding='utf-8')))
     items = {i.codigo: i for i in sesion.scalars(select(m.ItemRegistro))}
     referencias = {(r.codigo, r.actividad_id) for r in sesion.scalars(select(m.Referencia))}
+    opciones_por_lista = {}
+    for opcion in sesion.scalars(select(m.OpcionLista)):
+        opciones_por_lista.setdefault(opcion.lista_id, set()).add(opcion.codigo)
     errores = []
     for codigo, actividad in sorted(actividades.items()):
         archivo = _json_actividad(contenidos, actividad)
@@ -81,10 +84,38 @@ def _verificar_actividades(front: Path, sesion, actividades) -> list[str]:
             for eco in _ecos(nodo):
                 if (eco, actividad.id) not in referencias:
                     errores.append(f'{codigo}: la referencia {eco} ({nodo["id"]}) no está cargada')
+            # Ajuste registros: las exclusivas y preguntas que nombra el JSON son opciones del ítem (lista o propias).
+            item = items.get(nodo.get('item'))
+            if item is not None and 'eleccion' in nodo:
+                nombradas = set(nodo['eleccion'].get('exclusivas', ())) | set(nodo['eleccion'].get('preguntas', {}))
+                ajenas = nombradas - _opciones_item(opciones_por_lista, item) - {'OTRA'}
+                if item.fuente_opciones != m.FuenteOpciones.REFERENCIA and ajenas:
+                    errores.append(f'{codigo}: {nodo["item"]} nombra opciones que no tiene: {sorted(ajenas)}')
+        # Ajuste registros: cada destino apunta a un ítem de la actividad y a una de sus opciones (o «*»).
+        for destino in datos.get('destinos', ()):
+            item = items.get(destino.get('item'))
+            if item is None or item.actividad_id != actividad.id:
+                errores.append(f'{codigo}: el destino nombra el ítem {destino.get("item")}, que no es de esta actividad')
+            elif destino.get('opcion') != '*' and item.fuente_opciones != m.FuenteOpciones.REFERENCIA and (
+                    destino.get('opcion') not in _opciones_item(opciones_por_lista, item)):
+                errores.append(f'{codigo}: el destino nombra la opción {destino.get("opcion")}, que {item.codigo} no tiene')
+            if destino.get('ruta') not in RUTAS_DESTINO:
+                errores.append(f'{codigo}: el destino {destino.get("ruta")} no es una ruta del front')
+        if datos.get('destino_por_defecto') not in (None, *RUTAS_DESTINO):
+            errores.append(f'{codigo}: el destino por defecto {datos["destino_por_defecto"]} no es una ruta del front')
     sobrantes = {p.stem for p in (contenidos / 'plataforma').glob('*.json')} - {
         a.contenido for a in actividades.values()}
     errores += [f'plataforma/{s}.json no corresponde a ninguna actividad' for s in sorted(sobrantes)]
     return errores
+
+
+# Las rutas que el front sabe resolver (`features/activities/lib/destinoRegistro.ts`).
+RUTAS_DESTINO = (None, 'familia', 'catalogo', 'catalogo-familia', 'catalogo-instituciones', 'plan-a', 'plan-a-dudas',
+                 'plan-b', 'mis-planes', 'investigaciones', 'ciudad')
+
+
+def _opciones_item(opciones_por_lista, item):
+    return set(opciones_por_lista.get(item.lista_id, ())) | {o['codigo'] for o in item.opciones_propias or ()}
 
 
 def _textos(valor, ruta=''):

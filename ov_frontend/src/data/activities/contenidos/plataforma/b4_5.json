@@ -1,19 +1,27 @@
 {
-  "_nota": "Registro (4.5). Apertura completa; consignas en esqueleto: matriz plan × criterio (plantilla a definir con los registros), una línea por plan y cierre con cuál queda primero. Requisito: b4-4 superada, Plan A con la mitad de los campos llenos y Plan B iniciado (evaluador planes_listos_para_comparar). Ecos: criterios de b4-2, planes, y lo que justificó en b4-1.",
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b4-5",
   "codigo": "b4-5",
   "tipo": "registro",
-  "titulo": "Comparo mis planes",
+  "titulo": "Pongo a prueba mi orden",
   "subtitulo": "Poner las rutas sobre la mesa",
   "escenario": "acantilado",
   "bloque": 4,
   "orden": 5,
   "obligatoria": true,
-  "requisitos": ["b4-4"],
+  "requisitos": [
+    "b4-4"
+  ],
   "ubicacion": "Acantilado, la mesa de mapas",
   "duracionEstimadaMin": 12,
-  "personajeIds": ["ivan", "guardian", "companero"],
-  "plantilla": { "tipo": "secuencial" },
+  "personajeIds": [
+    "ivan",
+    "guardian",
+    "companero"
+  ],
+  "plantilla": {
+    "tipo": "secuencial"
+  },
   "nodos": [
     {
       "id": "b4-5-01",
@@ -33,40 +41,111 @@
       "id": "b4-5-03",
       "tipo": "dialogo",
       "hablanteId": "ivan",
-      "texto": "Así funciona la mesa: cada plan, contra cada criterio tuyo. Lo cumple, en parte o no. Sin «me gusta más»: con los criterios que tú mismo escribiste. Y una línea por plan.",
-      "eco": "b4-5-ref-criterios"
+      "texto": "Así funciona la mesa: cada plan, contra cada criterio tuyo. Lo cumple, en parte o no. Sin «me gusta más»: con los criterios que tú mismo escribiste. Y una línea por plan."
     },
     {
       "id": "b4-5-04",
       "tipo": "dialogo",
       "hablanteId": "companero",
       "texto": "Esto lo lee tu orientadora y es la base de tu proyecto. Al cerrar te voy a recordar lo que justificaste en el cuadro de afinidad para el plan que quede primero, o lo que dijiste que tu perfil no resuelve.",
-      "eco": "b4-5-ref-afinidad"
+      "eco": [
+        "b4-5-ref-planes",
+        "b4-5-ref-criterios",
+        "b4-5-ref-linea-roja"
+      ]
     },
     {
-      "id": "b4-5-05",
+      "id": "b4-5-orden",
       "tipo": "consigna",
       "hablanteId": "ivan",
-      "item": "b4-5-matriz",
-      "premisa": "Por cada plan y cada criterio: ¿lo cumple, en parte o no? Y una línea por plan que mencione un criterio.",
-      "entregable": { "tipo": "texto" },
+      "item": "b4-5-orden",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Tu orden",
+        "mensajes": {
+          "inicio": "¿Lo mantienes o lo cambiarías?",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Según mi primera regla, …»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      },
+      "eco": "b4-5-ref-respalda"
     },
     {
-      "id": "b4-5-06",
+      "id": "b4-5-debil",
       "tipo": "consigna",
-      "hablanteId": "guardian",
-      "item": "b4-5-primero",
-      "premisa": "¿Cuál queda primero y por qué, según tus criterios? Si no coincide con tus intereses medidos, ¿qué piensas de eso?",
-      "entregable": { "tipo": "texto" },
+      "hablanteId": "ivan",
+      "item": "b4-5-debil",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "La regla",
+        "mensajes": {
+          "inicio": "Marca la regla que tu Plan A cumple menos.",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«No lo cumple del todo en … y voy a…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
+    },
+    {
+      "id": "b4-5-plan-b",
+      "tipo": "consigna",
+      "hablanteId": "ivan",
+      "item": "b4-5-plan-b",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": {
+        "etiquetaElegida": "Tu Plan B",
+        "mensajes": {
+          "inicio": "¿El Plan B te sirve de verdad?",
+          "una": "Anotado. Ahora cuéntame."
+        },
+        "pregunta": "«Si no entro o no alcanza, entonces…»",
+        "errorSeleccion": "Elige una opción para continuar.",
+        "errorOtra": "Escribe cuál es tu otra opción."
+      }
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tomaste posición por un plan, sabiendo que no es definitivo. El artefacto apunta al faro."
+    "mensajeFin": "Tomaste posición por un plan, sabiendo que no es definitivo. El artefacto apunta al faro. Hay una carta nueva de Lumi en tu buzón del diario."
   },
   "promptDiario": "Después de elegir",
-  "mapa": { "x": 420, "y": 320, "icono": "registro" }
+  "mapa": {
+    "x": 420,
+    "y": 320,
+    "icono": "registro"
+  },
+  "destinos": [
+    {
+      "item": "b4-5-orden",
+      "opcion": "LO_CAMBIARIA",
+      "ruta": "mis-planes"
+    },
+    {
+      "item": "b4-5-plan-b",
+      "opcion": "RELLENO",
+      "ruta": "catalogo"
+    },
+    {
+      "item": "b4-5-plan-b",
+      "opcion": "A_MEDIAS",
+      "ruta": "plan-b"
+    }
+  ]
 }

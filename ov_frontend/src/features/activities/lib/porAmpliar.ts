@@ -1,10 +1,10 @@
 import type { ItemPorAmpliar, ItemRegistroPublico } from '@/types/servidor'
 import { enPalabras } from './podio'
+import { enumerar } from './finishSummary'
 
 // Ítems por ampliar de un registro cerrado (F01): textos y nombres que comparten el cierre del registro y
 // el drawer de la actividad, para que siempre digan lo mismo. «Ampliar» llega con la edición (F02).
 export const TITULO_CIERRE_REGISTRO = '¡Listo! Tu registro quedó guardado.'
-export const PISTA_POR_DEFECTO = 'Cuéntame un ejemplo o un poco más de por qué.'
 const LARGO_NOMBRE = 48
 
 export type FilaPorAmpliar = { item: string; nombre: string; pista: string; conEleccion: boolean }
@@ -33,6 +33,7 @@ export function nombreItem(item: Pick<ItemRegistroPublico, 'nombre' | 'consigna'
   return `${corte.slice(0, corte.lastIndexOf(' ') > 0 ? corte.lastIndexOf(' ') : LARGO_NOMBRE)}…`
 }
 
+// Ajuste registros: la pista es lo que le faltó (`falta`); sin ella, basta el nombre del ítem.
 export function filasPorAmpliar(
   porAmpliar: ItemPorAmpliar[],
   items: ItemRegistroPublico[],
@@ -42,8 +43,15 @@ export function filasPorAmpliar(
     return {
       item: p.item,
       nombre: nombreItem(item),
-      pista: p.pista?.trim() || PISTA_POR_DEFECTO,
+      pista: p.falta?.trim() ?? '',
       conEleccion: !!item?.eleccion,
     }
   })
+}
+
+// Ajuste registros: los ítems que dejó abiertos, nombrados aparte al cerrar.
+export function textoAbiertos(abiertos: string[], items: ItemRegistroPublico[]) {
+  if (!abiertos.length) return undefined
+  const nombres = abiertos.map((codigo) => nombreItem(items.find((i) => i.codigo === codigo)))
+  return `Lo dejaste abierto: ${enumerar(nombres)}. Puedes volver cuando lo tengas.`
 }

@@ -30,20 +30,34 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "texto": "Esto lo lee tu orientadora. Es la práctica de la meta útil: acción, plazo, recurso.",
-      "eco": "ma3-ref-hito"
+      "eco": [
+        "ma3-ref-dia",
+        "ma3-ref-hito"
+      ]
     },
     {
-      "id": "ma3-03",
+      "id": "ma3-pasos",
       "tipo": "consigna",
       "hablanteId": "guardian",
       "item": "ma3-pasos",
-      "premisa": "Descompón tu hito a un año en pasos mensuales: qué harías cada mes, empezando por el próximo.",
+      "premisa": "",
       "entregable": {
         "tipo": "texto"
       },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "ayuda": "No hacen falta doce: con los primeros tres o cuatro ya se ve si el hito cabe en un año."
+      "visibilidad": "estudiante_orientadora"
+    },
+    {
+      "id": "ma3-falta",
+      "tipo": "consigna",
+      "hablanteId": "guardian",
+      "item": "ma3-falta",
+      "premisa": "",
+      "entregable": {
+        "tipo": "texto"
+      },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
     }
   ],
   "recompensa": {
@@ -58,5 +72,6 @@
   },
   "plantilla": {
     "tipo": "secuencial"
-  }
+  },
+  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido."
 }
