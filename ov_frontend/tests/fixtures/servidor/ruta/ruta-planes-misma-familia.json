@@ -70,6 +70,22 @@
       {
         "codigo": "DISTANCIA",
         "texto": "Distancia"
+      },
+      {
+        "codigo": "NO_INGRESAR",
+        "texto": "No ingresar"
+      },
+      {
+        "codigo": "CAMBIAR_OPINION",
+        "texto": "Cambiar de opinión"
+      },
+      {
+        "codigo": "TIEMPO",
+        "texto": "El tiempo"
+      },
+      {
+        "codigo": "SALUD",
+        "texto": "Mi salud o la de alguien cercano"
       }
     ],
     "dudas_sugeridas": [

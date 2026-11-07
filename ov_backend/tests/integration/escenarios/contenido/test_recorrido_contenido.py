@@ -42,7 +42,8 @@ def completar(cliente, codigo, cuenta='est-ana'):
         return ganar_batalla(cliente, codigo)
     if tipo == 'REGISTRO':
         if any(i[1] in PODIOS for i in contenido.ITEMS_REGISTRO if i[0] == codigo):
-            podio, = [i for i in pedir(cliente, 'GET', f'/actividades/{codigo}/items-registro') if i['eleccion']]
+            # Ajuste registros: los registros tienen más ítems con elección; el podio es el de PODIOS.
+            podio, = [i for i in pedir(cliente, 'GET', f'/actividades/{codigo}/items-registro') if i['codigo'] in PODIOS]
             # El podio se completa eligiendo exactamente tres opciones (`eleccion_minima` toma las tres primeras).
             assert (podio['eleccion']['minima'], podio['eleccion']['maxima']) == (3, 3)
         return responder_registro(cliente, codigo, cuenta)

@@ -16,7 +16,8 @@ SIN_REGLA = {('BLOQUE', 'B0'), ('ACTIVIDAD', 'b0-1'), ('BLOQUE', 'LUMI'), ('BLOQ
 EXCEPCIONES_OPCIONALES = {'R-B4'}
 CAMINO = ('B0', 'B1', 'B2', 'B3', 'B4', 'B5')
 EVENTOS_DE_ACTIVIDAD = ('COMPLETA_ACTIVIDAD', 'REGISTRO_ADECUADO', 'SUPERA_BATALLA', 'SUPERA_CASO')
-EVALUADORES_DE_PLANES = ('planes_listos_para_comparar', 'pasos_plan_a')
+# Ajuste registros (adaptación autorizada para `contenido`): b4-1 y b4-5 piden planes con evaluadores parametrizados.
+EVALUADORES_DE_PLANES = ('planes_listos_para_comparar', 'planes_con_por_que', 'planes_creados', 'pasos_plan_a')
 APERTURA_CONVERSACIONES = {'conv-1': 'b1-3', 'conv-2': 'b1-3', 'conv-3': 'b1-6', 'conv-4': 'b1-7', 'conv-5': 'b2-3',
                            'conv-6': 'b2-4', 'conv-7': 'b3-3', 'conv-8': 'b3-10', 'conv-9': 'b4-3', 'conv-10': 'b5-1'}
 
@@ -53,7 +54,8 @@ def test_todo_objetivo_tiene_regla_salvo_los_abiertos_a_proposito(sesion_conteni
     assert sin_regla == SIN_REGLA
     primeras = {a.codigo for a in actividades.values() if ('ACTIVIDAD', a.id) not in con_regla
                 and bloques[a.bloque_id].codigo in CAMINO}
-    assert primeras == {'b0-1', 'b1-1', 'b2-1', 'b3-1', 'b4-1'}
+    # Ajuste registros (adaptación autorizada para `contenido`): b4-1 lleva regla propia (pide el Plan A con «Por qué», además del bloque).
+    assert primeras == {'b0-1', 'b1-1', 'b2-1', 'b3-1'}
 
 
 def test_ninguna_requerida_depende_de_una_opcional(sesion_contenido):
@@ -68,7 +70,8 @@ def test_ninguna_requerida_depende_de_una_opcional(sesion_contenido):
         if not de_requerida or regla.codigo in EXCEPCIONES_OPCIONALES:
             continue
         for c in condiciones[regla.id]:
-            if c.tipo_evento.value in EVENTOS_DE_ACTIVIDAD and not actividades[c.id_referencia].requerida:
+            if (c.tipo_evento.value in EVENTOS_DE_ACTIVIDAD and c.id_referencia is not None
+                    and not actividades[c.id_referencia].requerida):
                 infracciones.append((regla.codigo, actividades[c.id_referencia].codigo))
     assert infracciones == []
 
@@ -76,7 +79,7 @@ def test_ninguna_requerida_depende_de_una_opcional(sesion_contenido):
 def test_reglas_con_evaluador_de_planes_se_reevaluan_al_actualizar_un_plan(sesion_contenido):
     _, _, reglas, condiciones = _datos(sesion_contenido)
     de_planes = [r for r in reglas if r.evaluador_especial in EVALUADORES_DE_PLANES]
-    assert {r.codigo for r in de_planes} == {'R-b4-5', 'R-b5-1'}
+    assert {r.codigo for r in de_planes} == {'R-b4-1', 'R-b4-5', 'R-b5-1'}
     for regla in de_planes:
         assert 'ACTUALIZA_PLAN' in {c.tipo_evento.value for c in condiciones[regla.id]}, regla.codigo
 
@@ -116,7 +119,9 @@ def test_ninguna_regla_nombra_una_actividad_de_prueba_del_camino(sesion_contenid
                  if a.codigo.startswith('t-') and bloques[a.bloque_id].codigo in CAMINO}
     assert de_prueba == set()
     for regla in reglas:
-        nombradas = {c.id_referencia for c in condiciones[regla.id] if c.tipo_evento.value in EVENTOS_DE_ACTIVIDAD}
+        # SUPERA_CASO sin referencia (b3-a: cualquier caso) no nombra actividad.
+        nombradas = {c.id_referencia for c in condiciones[regla.id]
+                     if c.tipo_evento.value in EVENTOS_DE_ACTIVIDAD and c.id_referencia is not None}
         if regla.tipo_objetivo == m.TipoObjetivo.ACTIVIDAD:
             nombradas.add(regla.id_objetivo)
         assert all(not actividades[a].codigo.startswith('t-') or bloques[actividades[a].bloque_id].codigo
@@ -136,7 +141,8 @@ def test_las_fichas_de_una_batalla_se_obtienen_antes_de_abrirla(sesion_contenido
                       *reglas_de.get((m.TipoObjetivo.BLOQUE, actividad.bloque_id), [])]
         for regla in pendientes:
             for c in condiciones[regla.id]:
-                if c.tipo_evento.value in EVENTOS_DE_ACTIVIDAD and c.id_referencia not in vistos:
+                if (c.tipo_evento.value in EVENTOS_DE_ACTIVIDAD and c.id_referencia is not None
+                        and c.id_referencia not in vistos):
                     vistos.add(c.id_referencia)
                     requisitos(c.id_referencia, vistos)
                 elif c.tipo_evento.value == 'COMPLETA_BLOQUE':

@@ -46,19 +46,33 @@ def pedir(cliente, metodo, ruta, datos=None, esperado=200):
     return respuesta.json()
 
 
-def eleccion_minima(item):
-    """Las primeras opciones de la lista, tantas como pide el mínimo del ítem."""
+def eleccion_minima(item, opciones_referencia=()):
+    """Las primeras opciones, tantas como pide el mínimo del ítem: las de su lista o su referencia (ajuste
+    registros: resueltas para la cuenta) y luego las propias que no son exclusivas, y por último las exclusivas."""
     eleccion = item['eleccion']
-    return [] if eleccion is None else [{'codigo': o['codigo']} for o in eleccion['opciones'][:eleccion['minima']]]
+    if eleccion is None:
+        return []
+    propias = sorted(eleccion.get('opciones_propias', ()), key=lambda o: o['exclusiva'])
+    disponibles = [*eleccion['opciones'], *opciones_referencia, *propias]
+    return [{'codigo': o['codigo']} for o in disponibles[:eleccion['minima']]]
+
+
+def opciones_de_referencias(cliente, actividad, cuenta='est-ana'):
+    """{código de referencia: opciones} de la actividad, para los ítems que eligen de una referencia."""
+    return {r['codigo']: r.get('opciones') or [] for r in pedir(
+        cliente, 'GET', f'/cuentas/{cuenta}/actividades/{actividad}/referencias')['referencias']}
 
 
 def responder_registro(cliente, actividad, cuenta='est-ana'):
     """Guarda cada ítem con un texto adecuado para el evaluador falso y entrega el registro (B03)."""
-    for item in pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro'):
+    items = pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro')
+    referencias = opciones_de_referencias(cliente, actividad, cuenta) if any(
+        (i['eleccion'] or {}).get('referencia_opciones') for i in items) else {}
+    for item in items:
         pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
             'cuenta': cuenta, 'actividad': actividad, 'item': item['codigo'], 'fecha_hora': FECHA,
             'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.',
-            'opciones': eleccion_minima(item)})
+            'opciones': eleccion_minima(item, referencias.get((item['eleccion'] or {}).get('referencia_opciones'), ()))})
     return pedir(cliente, 'POST', '/acciones/registro/entregar',
                  {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA})
 

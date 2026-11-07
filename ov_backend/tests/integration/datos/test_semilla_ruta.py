@@ -26,7 +26,8 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # 706 instituciones con carreras) y la relación provisional al azar. Ajuste carga-casos: 245
         # ocupaciones, solo las curadas (sin ocultas; 10 militares sin puntajes), y sus familias.
         'ocupacion': 245, 'puntaje_ocupacion': 1410, 'familia_carrera': 89, 'carrera': 603,
-        'ocupacion_familia': 341, 'lista_opciones': 13, 'opcion_lista': 69, 'item_registro': 17,
+        # Ajuste registros: 14 listas comunes de los registros y 4 opciones nuevas en DIFICULTADES (de `fijos`).
+        'ocupacion_familia': 341, 'lista_opciones': 27, 'opcion_lista': 174, 'item_registro': 17,
         'criterio_completitud': 15, 'referencia': 14, 'tematica': 5,
         'actividad_tematica': 6, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 614, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,

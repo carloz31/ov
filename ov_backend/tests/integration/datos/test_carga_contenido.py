@@ -23,8 +23,9 @@ def base(tmp_path_factory):
 def test_carga_conteos(base):
     conteos, _ = base
     assert conteos['cuenta'] == 8
-    assert conteos['actividad'] == 87 + 5  # 81 reales y los seis casos (ajuste carga-casos) + recuerdos de Lumi provisionales
-    assert conteos['item_registro'] == 54
+    # Ajuste registros (adaptación autorizada para `contenido`): salen b2-6, ma6, b4-a y ma9; los 19 registros tienen 44 ítems.
+    assert conteos['actividad'] == 83 + 5  # 77 reales y los seis casos (ajuste carga-casos) + recuerdos de Lumi provisionales
+    assert conteos['item_registro'] == 44
 
 
 def test_actividades_bloques_y_propiedades(base):
@@ -36,7 +37,7 @@ def test_actividades_bloques_y_propiedades(base):
     assert 'favoritos' not in actividades['b3-2'].descripcion
     assert all(a.contenido == a.codigo.replace('-', '_') for a in actividades.values())
     camino = {'B0', 'B1', 'B2', 'B3', 'B4', 'B5', 'FAMILIA'}
-    opcionales = {'b2-6', 'b3-a', 'b3-b', 'b4-a', 'ma7-b', *(f'ma{n}' for n in range(1, 10))}
+    opcionales = {'b3-a', 'b3-b', 'ma7-b', *(f'ma{n}' for n in range(1, 10) if n not in (6, 9))}
     for codigo, actividad in actividades.items():
         bloque = bloques[actividad.bloque_id].codigo
         esperada = bloque in camino and codigo not in opcionales
@@ -78,20 +79,23 @@ def test_podios_eligen_tres_de_su_lista(base):
         item = items[codigo]
         assert (item.eleccion_minima, item.eleccion_maxima, item.eleccion_ordenada, item.permite_otra) == (
             3, 3, True, False)
-    sin_eleccion = [c for c, i in items.items() if c not in ('b2-3-valores', 'b4-2-criterios')]
-    assert all(items[c].lista_id is None for c in sin_eleccion)
-    assert not sesion.scalars(select(m.CriterioCompletitud)).all()
+    # Ajuste registros (adaptación autorizada para `contenido`): todas las listas son comunes y cada ítem con criterio tiene sus campos de seguimiento.
+    listas = {l.id: l for l in sesion.scalars(select(m.ListaOpciones))}
+    assert all(listas[i.lista_id].comun for i in items.values() if i.lista_id is not None)
+    con_criterio = {c.item_registro_id for c in sesion.scalars(select(m.CriterioCompletitud))}
+    assert {i.id for i in items.values() if i.seguimiento} == con_criterio
+    assert len(con_criterio) == 40
 
 
 def test_referencias_de_los_json(base):
     _, sesion = base
     referencias = {r.codigo: r for r in sesion.scalars(select(m.Referencia))}
-    assert len(referencias) == len(contenido.REFERENCIAS) == 31  # 30 de los JSON + la del diario
+    assert len(referencias) == len(contenido.REFERENCIAS)
     items = {i.id: i.codigo for i in sesion.scalars(select(m.ItemRegistro))}
     assert items[referencias['b4-5-ref-criterios'].item_registro_id] == 'b4-2-criterios'
     lectura = {i.id: i.codigo for i in sesion.scalars(select(m.ItemInstrumento))}
     assert lectura[referencias['b3-8-ref-costos'].item_instrumento_id] == 'AUTO-12'
-    assert lectura[referencias['b4-2-ref-decision'].item_instrumento_id] == 'AUTO-13'
+    assert 'b4-2-ref-decision' not in referencias
 
 
 # Ajuste carga-casos: los seis casos de la Central, con su escala y temática C, al final de la ciudad.

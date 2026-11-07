@@ -63,9 +63,12 @@ LISTAS_COMUNES = (
     ('RUTAS_DESPUES_COLEGIO', 'Rutas después del colegio',
      (('UNIVERSIDAD', 'Estudiar en una universidad'), ('INSTITUTO', 'Estudiar en un instituto'),
       ('TRABAJAR', 'Trabajar'), ('EMPRENDER', 'Emprender un negocio'), ('AUN_NO_SE', 'Aún no lo sé'))),
+    # Ajuste registros: también la de `b1-7-freno`; se le agregan cuatro opciones al final, sin quitar ninguna.
     ('DIFICULTADES', 'Dificultades',
      (('ECONOMICAS', 'Económicas'), ('ACADEMICAS', 'Académicas'), ('FAMILIARES', 'Familiares'),
-      ('INFORMACION', 'Falta de información'), ('DISTANCIA', 'Distancia'))),
+      ('INFORMACION', 'Falta de información'), ('DISTANCIA', 'Distancia'), ('NO_INGRESAR', 'No ingresar'),
+      ('CAMBIAR_OPINION', 'Cambiar de opinión'), ('TIEMPO', 'El tiempo'),
+      ('SALUD', 'Mi salud o la de alguien cercano'))),
     # B11 · Tarjeta de carrera. VALORES es también la lista del registro 2.3.
     ('VALORES', 'Valores',
      (('ESTABILIDAD', 'Estabilidad'), ('INGRESOS', 'Ingresos'), ('AYUDAR', 'Ayudar a otros'), ('CREAR', 'Crear'),
@@ -98,6 +101,59 @@ LISTAS_COMUNES = (
       ('CURSOS', '¿Sabes qué cursos se llevan en {carrera}?'),
       ('INGRESO', '¿Sabes cómo se ingresa a {carrera}?'),
       ('CONOCE_ALGUIEN', '¿Conoces a alguien que estudie o trabaje en {carrera}?'))),
+    # Ajuste registros: listas comunes de los registros definitivos (la «otra» la decide cada ítem).
+    ('HABILIDADES', 'Habilidades',
+     (('ORGANIZAR', 'Organizar'), ('EXPLICAR', 'Explicar o enseñar'), ('CREAR', 'Crear o diseñar'),
+      ('RESOLVER', 'Resolver problemas'), ('PERSISTIR', 'Persistir'), ('LIDERAR', 'Liderar'),
+      ('ESCUCHAR', 'Escuchar y acompañar'), ('NEGOCIAR', 'Negociar o convencer'), ('CONSTRUIR', 'Construir o armar'),
+      ('INVESTIGAR', 'Investigar'))),
+    ('PERSONAS', 'Personas',
+     (('MAMA', 'Mamá'), ('PAPA', 'Papá'), ('HERMANO', 'Hermano/a'), ('ABUELO', 'Abuelo/a'),
+      ('OTRO_FAMILIAR', 'Otro familiar'), ('PROFESOR', 'Profesor/a'), ('AMIGO', 'Amigo/a'), ('PAREJA', 'Pareja'))),
+    # Un mito por cada uno de la ficha F05 y la batalla `b1-5`.
+    ('MITOS', 'Mitos',
+     (('PADRES_SABEN', 'Mis padres saben qué me conviene estudiar'),
+      ('TEST_DECIDE', 'El test me dirá qué estudiar'),
+      ('SOLO_UNIVERSIDAD', 'Solo la universidad da futuro'),
+      ('GUSTO_GANA_POCO', 'Si estudio lo que me gusta voy a ganar poco'),
+      ('CARRERA_DECIDE', 'La carrera decide toda mi vida'),
+      ('TRABAJOS_GENERO', 'Hay trabajos de hombres y trabajos de mujeres'))),
+    ('AREAS_VIDA', 'Áreas de la vida',
+     (('TRABAJO', 'Trabajo'), ('ESTUDIO', 'Estudio'), ('FAMILIA', 'Familia'), ('AMIGOS', 'Amigos'),
+      ('PAREJA', 'Pareja'), ('SALUD_DEPORTE', 'Salud y deporte'), ('DINERO', 'Dinero'),
+      ('LUGAR', 'Lugar donde vivo'), ('TIEMPO_LIBRE', 'Tiempo libre'), ('AYUDAR', 'Ayudar a otros'))),
+    ('RUTAS', 'Rutas',
+     (('UNIVERSIDAD', 'Universidad'), ('INSTITUTO', 'Instituto técnico'), ('TRABAJAR', 'Trabajar'),
+      ('TRABAJAR_ESTUDIAR', 'Trabajar y estudiar'), ('PREPARARME', 'Prepararme un año'),
+      ('FFAA_POLICIA', 'Fuerzas Armadas o Policía'), ('EMPRENDER', 'Emprender'))),
+    ('CURSOS_ACTIVIDADES', 'Cursos y actividades',
+     (('MATEMATICA', 'Matemática'), ('COMUNICACION', 'Comunicación'), ('CIENCIAS', 'Ciencias'),
+      ('HISTORIA', 'Historia y sociales'), ('INGLES', 'Inglés'), ('ARTE', 'Arte'),
+      ('DEPORTE', 'Educación física o deporte'), ('COMPUTACION', 'Computación'),
+      ('TRABAJOS_GRUPO', 'Trabajos en grupo'), ('EXPONER', 'Exponer'), ('ORGANIZAR', 'Organizar actividades'))),
+    ('LUGARES', 'Lugares',
+     (('CASA', 'Casa'), ('COLEGIO', 'Colegio'), ('AMIGOS', 'Amigos'), ('DEPORTE_TALLER', 'Deporte o taller'),
+      ('REDES', 'Redes'))),
+    # Sin demanda: la plataforma no la considera.
+    ('ASPECTOS_CARRERA', 'Aspectos de una carrera',
+     (('SALARIO', 'Salario'), ('DURACION', 'Duración'), ('DIA_A_DIA', 'Qué se hace en el día a día'),
+      ('DONDE', 'Dónde se estudia'), ('COSTO', 'Costo'))),
+    ('CRITERIOS', 'Criterios para decidir',
+     (('INTERES', 'Interés'), ('CAPACIDAD', 'Capacidad'), ('VALORES', 'Valores'), ('INGRESOS', 'Ingresos'),
+      ('EMPLEO', 'Empleo'), ('COSTO', 'Costo'), ('TIEMPO', 'Tiempo'), ('CERCANIA', 'Cercanía'),
+      ('APOYO', 'Apoyo'))),
+    ('POR_EXPLORAR', 'Lo que falta explorar',
+     (('CARRERAS', 'Conocer más carreras'), ('PROFESIONALES', 'Hablar con profesionales'),
+      ('INSTITUCIONES', 'Visitar instituciones'), ('COSTOS_BECAS', 'Averiguar costos y becas'),
+      ('FAMILIA', 'Conversar con mi familia'), ('CONOCERME', 'Conocerme más'))),
+    ('DIMENSIONES_PERFIL', 'Dimensiones de mi perfil',
+     (('INTERESES', 'Lo que me interesa'), ('APRENDO', 'Cómo aprendo y resuelvo mejor'),
+      ('RELACIONO', 'Cómo me relaciono'), ('ME_SALE_BIEN', 'Lo que ya me sale bien'), ('VALORO', 'Lo que valoro'))),
+    ('ESTILOS', 'Cómo decido',
+     (('ULTIMO_MOMENTO', 'Lo dejo para el último momento'), ('PREGUNTO', 'Pregunto a muchos'),
+      ('LO_QUE_ESPERAN', 'Hago lo que esperan de mí'), ('LO_PRIMERO', 'Me quedo con lo primero que me convence'),
+      ('CUESTA_DESCARTAR', 'Me cuesta descartar'), ('MIEDO', 'Me da miedo equivocarme'),
+      ('RAPIDO_DUDO', 'Decido rápido y después dudo'))),
     ('DUDAS_CONOCIMIENTO', 'Dudas de las preguntas de conocimiento',
      (('DIA_NORMAL', '¿Cómo es un día normal de alguien de {carrera}?'),
       ('DONDE_TRABAJAR', '¿Dónde podría trabajar si estudio {carrera}?'),
@@ -556,6 +612,12 @@ HABILIDADES = DefinicionInstrumento(
     aplicacion=('APL-HABILIDADES', 'Habilidades sociales'),
 )
 INSTRUMENTOS = (INTELIGENCIAS, HABILIDADES)
+
+# Ajuste registros: las listas de `h1` y `h2` son las dimensiones de sus instrumentos.
+LISTAS_COMUNES += (
+    ('DIMENSIONES_HABILIDADES', 'Mis habilidades sociales', tuple((c, n) for c, n, *_ in HABILIDADES.dimensiones)),
+    ('DIMENSIONES_INTELIGENCIAS', 'Mis inteligencias', tuple((c, n) for c, n, *_ in INTELIGENCIAS.dimensiones)),
+)
 
 PATRON_RIASEC = 'RRIIAASSEECC'
 OPCIONES_LIKERT = ('Me disgusta mucho', 'Me disgusta', 'No estoy seguro', 'Me gusta', 'Me gusta mucho')

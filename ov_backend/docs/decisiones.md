@@ -23,3 +23,9 @@
 - Las opciones de un ítem con fuente REFERENCIA no salen en `items-registro` (no es por cuenta): el front las lee de las referencias de la actividad.
 - Los tipos del registro del front pasan a `types/servidorRegistro.ts` (límite de 400 líneas de `servidor.ts`).
 - `t-val-orden` (ruta) declara `max_repreguntas: 2` sin guía: conserva su flujo de dos repreguntas (exportador y fixtures del front sin cambios) y prueba la mecánica de `b5-1-decision`.
+- `contenido` (F2): `registros-definicion.md` no está en el repo, así que las descripciones cortas, las consignas funcionales y el texto fijo de las cartas se redactaron a partir de §2.3 y de las descripciones anteriores.
+- R-b4-5 lleva además `CREA_PLAN`: con `planes_creados` crear el segundo plan debe reevaluarla (si no, quedaría cerrada hasta otra edición).
+- b4-5 declara también la referencia PLAN (`b4-5-ref-plan`): es el eco de `b4-5-debil` para el LLM y §2.4 no la listaba.
+- Las opciones propias entre llaves de §2.3 (las de «ninguno» con pregunta propia o `∅`) son exclusivas; las demás, no. Las listas de `h1` y `h2` (dimensiones de sus instrumentos) admiten «otra», como todas salvo las indicadas.
+- El contexto de cada carta lee los TEXTO de los ítems de §2.6 (más la ELECCION de `b1-3-voz` y PLAN, PLANES u OPCION_INICIAL según la tabla).
+- `soporte_ruta.eleccion_minima` toma también las opciones de la referencia y las propias (para responder registros desde las pruebas).
