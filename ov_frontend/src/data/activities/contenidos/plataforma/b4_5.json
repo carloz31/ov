@@ -123,7 +123,7 @@
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tomaste posición por un plan, sabiendo que no es definitivo. El artefacto apunta al faro. Hay una carta nueva de Lumi en tu buzón del diario."
+    "mensajeFin": "Tomaste posición por un plan, sabiendo que no es definitivo. El artefacto apunta al faro."
   },
   "promptDiario": "Después de elegir",
   "mapa": {
