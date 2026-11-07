@@ -38,3 +38,17 @@
 - F4: los ayudantes del recorrido de `contenido` pasan a `tests/soporte/soporte_contenido.py`, que comparten `escenarios/contenido` y la carpeta nueva `tests/integration/registros/`. Los casos de la tabla §4.6 que dependen solo de la mecánica (contrato, `ecos_llm`, respaldo, edición, referencias en vivo, instrucciones en el texto) se prueban en `ruta` (`registro/test_registro_referencia.py`); en `contenido` se prueban los que dependen de sus ítems (salidas, abierto, sensible fuera de su actividad, reglas de planes y cartas).
 - La coherencia front–back corre también como prueba (`datos/test_carga_registros_definitivos.py`, con `verificar_contenido_front.verificar`).
 - La colección de evaluación es `scripts/evaluar_registros.py` (CSV con clasificación, repregunta, `falta` y `sensible`); con `EVALUADOR=gemini` llama a la API real y solo se corre cuando se decida revisar el modelo.
+
+## Ajuste vista del ítem de registro
+
+- Inventario «hoy → dónde va» aprobado por el usuario (en la spec). Nada se quita salvo lo aprobado: los íconos de opción (chips sin ícono, spec §1.3), el `inicio` sin nada marcado y «Arma tu podio…» con el podio vacío.
+- «Siguiente» en todos los ítems salvo el último («Entregar»); «Paso anterior» se conserva junto al botón; la consulta conserva sus textos (`pieConsulta`).
+- La pantalla de fin no cambia; la consulta usa la nueva estructura (decisión del usuario; queda en `pendientes-interfaz.md`).
+- La reacción del personaje (`eleccion.mensajes`, `mensajeLumi`) va bajo las opciones, también con eco o en la consulta al modificar; en la lectura de la consulta no se muestra (antes tampoco: la burbuja del eco ocupaba su lugar).
+- `inicio` solo saluda lo que llegó marcado (la vez pasada o `premarcar_si`) mientras no cambie; el hook expone `premarcadasDe` para saberlo.
+- JSON de `ruta` sin campos de presentación: la consigna del servidor va sobre las opciones (o sobre el campo, si no hay elección) y la pregunta de la elección (`eleccion.pregunta`, `podio.pregunta`) sobre el campo; sin nada elegido, `{opciones}` se lee «esa opción» y `{opcion}` del podio, «…».
+- `entradaPropia` es un mapa `{código de opción: placeholder}` en el nodo; vale con esa opción elegida sola.
+- `errorTexto` exige al menos 1 carácter aunque el ítem no sea obligatorio (ningún ítem se guarda vacío); solo la opción sin seguimiento lo deja opcional.
+- El marco recibe los bloques ya ordenados como hijos (`enOrden`), para que el arnés de pruebas los recorra; `RegistroEco` sin nada que decir no dibuja nada.
+- Se borró `features/activities/data/iconosRegistro.ts` (sin uso) y los campos `iconos` de `ConfigPodio` y `ConfigEleccion`; los `iconos` que traen los JSON de `ruta` quedan sin efecto.
+- Pruebas adaptadas (autorizadas por este ajuste): marcado de `eleccion`, `podio`, `reproductor`, `consulta` y `eco` de `tests/servidor/registro/` (campo siempre visible, reacción bajo las opciones, eco como hijo, leyenda en el pie, `inicio` sin selección).

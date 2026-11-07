@@ -5,10 +5,10 @@ import { enumerar } from './finishSummary'
 // Se usa en toda elección sin orden de lista propia o común, también si retoma una anterior (F02).
 export const esEleccionGuiada = (item: ItemRegistroPublico) => !!item.eleccion && !item.eleccion.ordenada
 
-// Validación común de los registros guiados: el texto debe llegar al mínimo del ítem (o 1 si es
-// obligatorio y no tiene mínimo).
+// Validación común de los registros: el texto debe llegar al mínimo del ítem. Ningún ítem se guarda vacío
+// (ajuste vista del ítem): sin mínimo, 1. La opción que cierra sin seguimiento se resuelve antes de llamar aquí.
 export function errorTexto(item: ItemRegistroPublico, texto: string) {
-  const minimo = item.min_caracteres ?? (item.obligatorio ? 1 : 0)
+  const minimo = Math.max(1, item.min_caracteres ?? 1)
   return texto.trim().length < minimo ? `Escribe al menos ${minimo} caracteres.` : undefined
 }
 
@@ -59,6 +59,8 @@ export function preguntaEleccion(
   const segun = anteriores.length ? (mismo ? textos.preguntaMantiene : textos.preguntaCambia) : undefined
   if (!segun && seleccion.length === 1 && textos.preguntas?.[seleccion[0].codigo])
     return textos.preguntas[seleccion[0].codigo]
+  // Ajuste vista del ítem: el campo se ve antes de elegir; sin nada elegido, la pregunta nombra «esa opción».
+  if (!seleccion.length) return (segun ?? textos.pregunta).replace('{opciones}', 'esa opción')
   const nombres = seleccion.map((o) =>
     o.codigo === 'OTRA'
       ? enFrase(o.texto?.trim() || 'otra opción')
@@ -74,15 +76,17 @@ export type MensajesEleccion = {
   bloqueada?: string // al tocar una más con el máximo alcanzado
   exclusiva?: string
 }
+// La reacción del personaje bajo las opciones (ajuste vista del ítem): sin nada marcado no hay reacción;
+// `inicio` solo saluda lo que llegó marcado (la vez pasada o el premarcado) mientras no se cambie.
 export function mensajeEleccion(
   mensajes: MensajesEleccion,
   seleccion: OpcionElegida[],
   reglas: ReglasEleccion,
   bloqueada: boolean,
-  // F02: si el ítem retoma una elección, lo de la vez pasada llega marcado y se saluda con `inicio`.
-  anteriores: string[] = [],
-) {
-  if (!seleccion.length || (anteriores.length && mismaEleccion(seleccion, anteriores))) return mensajes.inicio
+  premarcadas: string[] = [],
+): string | undefined {
+  if (!seleccion.length) return undefined
+  if (premarcadas.length && mismaEleccion(seleccion, premarcadas)) return mensajes.inicio
   if (seleccion.some((o) => reglas.exclusivas.includes(o.codigo)) && mensajes.exclusiva)
     return mensajes.exclusiva
   if (bloqueada && mensajes.bloqueada) return mensajes.bloqueada

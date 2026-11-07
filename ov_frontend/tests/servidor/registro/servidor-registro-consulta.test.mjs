@@ -68,9 +68,9 @@ test('en lectura, el podio va marcado y fijo, el texto como cita con «Modificar
   assert.equal(ranking.props.soloLectura, true)
   assert.deepEqual(copia(ranking.props.puestos), ['CREAR', 'LIBERTAD', 'ESTABILIDAD'])
   const guiado = elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0]
-  // Una sola burbuja de Lumi con la pista resaltada, en lugar de los mensajes del podio.
-  assert.equal(guiado.props.lumi.type.name, 'RegistroEco')
-  const burbuja = app.mount(guiado.props.lumi.type, guiado.props.lumi.props).render()
+  // Una sola burbuja de Lumi con la pista resaltada, en la zona del eco (ajuste vista del ítem).
+  const zonaEco = elementos(tree, (e) => e.type?.name === 'RegistroEco')[0]
+  const burbuja = app.mount(zonaEco.type, zonaEco.props).render()
   assert.equal(burbuja.type.name, 'RegistroLumi')
   assert.ok(JSON.stringify(burbuja.props.texto).includes('Aquí podrías contar un poco más:'))
   assert.equal(
@@ -79,8 +79,9 @@ test('en lectura, el podio va marcado y fijo, el texto como cita con «Modificar
   )
   assert.equal(guiado.props.etiqueta, 'Continuar')
   assert.equal(guiado.props.salida, undefined)
-  assert.equal(elementos(tree, (e) => e.type?.name === 'RegistroExplicacion').length, 0)
-  const lectura = elementos(tree, (e) => e.type?.name === 'RespuestaConsulta')[0]
+  // Ajuste vista del ítem: en lectura, el bloque de texto muestra la respuesta en lugar del campo.
+  const lectura = elementos(tree, (e) => e.type?.name === 'RegistroExplicacion')[0].props.lectura
+  assert.equal(lectura.type.name, 'RespuestaConsulta')
   assert.equal(lectura.props.texto, consolidadaDe('t-val-orden'))
   const vistaLectura = app.mount(lectura.type, lectura.props).render()
   assert.equal(
@@ -94,7 +95,7 @@ test('en lectura, el podio va marcado y fijo, el texto como cita con «Modificar
   lectura.props.onModificar()
   tree = form.render()
   assert.equal(elementos(tree, (e) => e.type?.name === 'RankingPodium')[0].props.soloLectura, false)
-  assert.equal(elementos(tree, (e) => e.type?.name === 'RegistroExplicacion').length, 1)
+  assert.equal(elementos(tree, (e) => e.type?.name === 'RegistroExplicacion')[0].props.lectura, false)
   assert.equal(
     elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0].props.etiqueta,
     'Guardar y continuar',
@@ -108,7 +109,10 @@ test('sin cambios, la última consigna sale como la pantalla de fin y no edita n
   assert.equal(ultima.props.salida.type.name, 'VolverAlMapa')
   player.unmount()
   const form = app.mount(ultima.type, ultima.props)
-  const tree = form.render()
+  // Ajuste vista del ítem: la salida va en el pie del marco común, en lugar del botón.
+  const guiado = elementos(form.render(), (e) => e.type?.name === 'RegistroGuiado')[0]
+  assert.equal(guiado.props.salida.type.name, 'VolverAlMapa')
+  const tree = app.mount(guiado.type, guiado.props).render()
   assert.equal(elementos(tree, (e) => e.type?.name === 'VolverAlMapa').length, 1)
   assert.equal(elementos(tree, (e) => e.type === 'button' && e.props.type === 'submit').length, 0)
   assert.equal(
@@ -196,7 +200,7 @@ test('un ítem no obligatorio en blanco se lee vacío, con «Modificar», y su p
   ])
   player.unmount()
   const tree = app.mount(ultima.type, ultima.props).render()
-  const lectura = elementos(tree, (e) => e.type?.name === 'RespuestaConsulta')[0]
+  const lectura = elementos(tree, (e) => e.type?.name === 'RegistroExplicacion')[0].props.lectura
   assert.equal(lectura.props.texto, '')
   assert.equal(typeof lectura.props.onModificar, 'function')
   const vista = app.mount(lectura.type, lectura.props).render()
@@ -214,10 +218,10 @@ test('la elección guiada de t-expectativas se consulta con sus tarjetas, marcad
   const tarjetas = elementos(tree, (e) => e.type?.name === 'ChoiceReveal')[0]
   assert.equal(tarjetas.props.soloLectura, true)
   assert.deepEqual(copia(tarjetas.props.seleccion), [{ codigo: 'UNIVERSIDAD' }])
-  // Sin pista, Lumi no habla en la consulta (ni con los mensajes de la elección guiada).
-  const guiado = elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0]
-  const sinPista = app.mount(guiado.props.lumi.type, guiado.props.lumi.props).render()
-  assert.equal(sinPista.type.name, 'CharacterAvatar')
+  // Sin pista, Lumi no habla en la consulta: la zona del eco queda vacía y, en lectura, no hay reacción.
+  const zonaEco = elementos(tree, (e) => e.type?.name === 'RegistroEco')[0]
+  assert.equal(app.mount(zonaEco.type, zonaEco.props).render(), null)
+  assert.equal(tarjetas.props.reaccion, false)
   const vista = app.mount(tarjetas.type, tarjetas.props).render()
   const universidad = elementos(vista, (e) => e.key === 'UNIVERSIDAD')[0]
   assert.equal(universidad.props['aria-disabled'], true)
@@ -321,7 +325,8 @@ test('el eco y la pista de un mismo ítem van en una sola burbuja: primero el re
   assert.equal(negritas[0].props.children, '¿Por qué lo crees?')
   const soloEco = app.mount(RegistroEco, { eco, hablanteId: 'companero' }).render()
   assert.equal(elementos(soloEco.props.texto, (e) => e.type === 'strong').length, 0)
-  assert.equal(app.mount(RegistroEco, { hablanteId: 'companero' }).render().type.name, 'CharacterAvatar')
+  // Ajuste vista del ítem: sin nada que decir no hay zona del eco (el personaje tiene su propio bloque).
+  assert.equal(app.mount(RegistroEco, { hablanteId: 'companero' }).render(), null)
 })
 
 test('con la actividad completada, la consulta conserva «Anterior» desde la segunda consigna', async () => {

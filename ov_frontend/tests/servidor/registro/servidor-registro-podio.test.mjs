@@ -45,17 +45,15 @@ test('colocar llena el primer puesto libre; devolver e intercambiar respetan el 
 test('los mensajes de Lumi siguen el estado y el N del podio', () => {
   const { podio } = cargar()
   const unidad = { singular: 'valor', plural: 'valores' }
-  assert.equal(
-    podio.mensajeLumi([null, null, null], unidad),
-    'Arma tu podio: toca los tres valores que más te importan, empezando por el primero.',
-  )
+  // Ajuste vista del ítem: con el podio vacío no hay reacción.
+  assert.equal(podio.mensajeLumi([null, null, null], unidad), undefined)
   assert.equal(podio.mensajeLumi(['A', null, null], unidad), 'Bien. Te faltan 2 valores.')
   assert.equal(podio.mensajeLumi(['A', 'B', null], unidad), 'Bien. Te falta 1 valor.')
   assert.equal(
     podio.mensajeLumi(['A', 'B', 'C'], unidad),
     '¡Tu podio está listo! Ahora cuéntame por qué elegiste tu primer lugar.',
   )
-  assert.match(podio.mensajeLumi([null, null, null, null, null], unidad), /toca los cinco valores/)
+  assert.equal(podio.mensajeLumi(['A', null, null, null, null], unidad), 'Bien. Te faltan 4 valores.')
 })
 
 test('solo la elección ordenada de N fijo y sin «otra» usa el podio', () => {
@@ -74,12 +72,11 @@ test('el podio coloca, devuelve y oculta la grilla al completarse; cada puesto d
     opciones: orden.eleccion.opciones,
     puestos,
     etiquetaPrimero: 'Lo más importante',
-    iconos: nodo.podio.iconos,
     onChange: (p) => (puestos = p),
   })
   const vista = app.mount(RankingPodium, props())
   const ficha = (tree, nombre) =>
-    elementos(tree, (e) => e.props?.className === 'sx-podium-chip' && e.key === nombre)[0]
+    elementos(tree, (e) => /(^| )sx-podium-chip( |$)/.test(e.props?.className ?? '') && e.key === nombre)[0]
   ficha(vista.render(), 'CREAR').props.onClick()
   assert.deepEqual(copia(puestos), ['CREAR', null, null])
   vista.unmount()
@@ -97,7 +94,7 @@ test('el podio coloca, devuelve y oculta la grilla al completarse; cada puesto d
   assert.deepEqual(copia(puestos), [null, null, null])
   puestos = ['CREAR', 'LIBERTAD', 'SERVIR']
   tree = app.mount(RankingPodium, props()).render()
-  assert.equal(elementos(tree, (e) => e.props?.className === 'sx-podium-chips').length, 0)
+  assert.equal(elementos(tree, (e) => /(^| )sx-podium-chips( |$)/.test(e.props?.className ?? '')).length, 0)
   // Arrastrar el puesto 3 sobre el 1 los intercambia.
   const [primero, , tercero] = elementos(
     tree,
@@ -125,14 +122,14 @@ const explicacion = (tree) => elementos(tree, (e) => e.type?.name === 'RegistroE
 const escribir = (tree, valor) => explicacion(tree).props.onTexto(valor)
 const enviar = (tree) => elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0].props.onEnviar()
 
-test('al completar aparece la explicación del primer lugar; quitar una ficha la oculta sin borrar el texto', () => {
+// Ajuste vista del ítem: el campo se ve desde el inicio (antes aparecía con el podio completo).
+test('el campo se ve desde el inicio; al completar pregunta por el primer lugar; quitar una ficha no borra el texto', () => {
   const { app, RegistroPodioNode } = cargar()
   const vista = montarNodo(app, RegistroPodioNode, { texto: '', opciones: [] })
   let tree = vista.render()
-  assert.equal(explicacion(tree), undefined)
+  assert.ok(explicacion(tree))
   podioDe(tree).props.onChange(['CREAR', 'LIBERTAD', 'ESTABILIDAD'])
   tree = vista.render()
-  assert.ok(explicacion(tree))
   assert.equal(
     explicacion(tree).props.pregunta,
     '¿Por qué «Crear cosas nuevas» es lo más importante para ti?',
@@ -140,7 +137,7 @@ test('al completar aparece la explicación del primer lugar; quitar una ficha la
   escribir(tree, 'Me gusta inventar')
   podioDe(vista.render()).props.onChange([null, 'LIBERTAD', 'ESTABILIDAD'])
   tree = vista.render()
-  assert.equal(explicacion(tree), undefined)
+  assert.equal(explicacion(tree).props.texto, 'Me gusta inventar')
   podioDe(tree).props.onChange(['CREAR', 'LIBERTAD', 'ESTABILIDAD'])
   assert.equal(explicacion(vista.render()).props.texto, 'Me gusta inventar')
   vista.unmount()

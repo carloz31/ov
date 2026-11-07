@@ -1059,3 +1059,367 @@ Si el estudiante revela espontáneamente una experiencia delicada —violencia, 
 | Mínimos que invitan a inventar; criterio ≠ propósito; `que_busca` por opción; ecos del LLM ≠ ecos del front | Aplicadas (spec §1.1, §1.4, §2.3) |
 | Contenido sensible | Aplicada (§9), con alcance acotado a lo que se cita o reutiliza |
 | Lista compartida con la tarjeta | Aplicada: DIFICULTADES única, ampliada sin quitar (principio 15) |
+
+---
+
+## Ajuste · vista del ítem de registro
+
+
+### Contexto
+
+Observaciones en `ajuste-vista-item-registro.md` (versión con «no se pierde nada del ítem», anexada tal cual a la spec) y cuatro capturas. Se agrega como fase nueva de la spec en curso `ov_backend/docs/specs/ajuste-registros.md` (sección `## Ajuste · vista del ítem de registro`). Rama `ajuste/vista-item-registro` (creada desde `main`). **Solo reacomoda**: no cambia el motor, el backend de la aplicación, el modelo ni los fixtures.
+
+### Inventario: hoy → dónde va (para aprobar antes de F1)
+
+Componentes de hoy: `RegistroGuiado` (marco), `RegistroEleccionNode` + `ChoiceReveal` (elección), `RegistroPodioNode` + `RankingPodium` (podio), `RegistroConsignaNode` + `RegistroOpciones` (solo texto y elección ordenada no podio), `RegistroEco`, `RespuestaConsulta`, lógica en `lib/eleccionGuiada.ts`, `lib/podio.ts`, `lib/edicionRegistro.ts`.
+
+#### Personaje y textos
+
+| Hoy | Dónde va |
+|---|---|
+| Avatar grande + nombre + globo con el mensaje reactivo, arriba (`RegistroLumi`, `aria-live`) | Arriba: avatar 40 px, nombre encima, globo con `dialogo` (fijo). Sin `dialogo`, el bloque no se muestra. |
+| `eleccion.mensajes.inicio` (sin selección, o con lo de la vez pasada intacto) | Reacción bajo las opciones (avatar 28 px, globo pequeño, `aria-live`), misma lógica (`mensajeEleccion`). Ver tabla de mensajes abajo. |
+| `mensajes.una` «Anotado. Ahora cuéntame.» (con selección) | Reacción bajo las opciones, igual. |
+| `mensajes.maximo` / `bloqueada` / `exclusiva` (solo `ruta`; `contenido` no los declara) | Reacción bajo las opciones, igual. |
+| Mensajes por defecto (`ELECCION_POR_DEFECTO.mensajes`) para nodos sin `mensajes` | Igual, en la reacción. |
+| Podio: `mensajeLumi` («Arma tu podio: toca los tres…», «Bien. Te faltan 2 valores.», «¡Tu podio está listo! Ahora cuéntame por qué…») | Reacción bajo el podio; con el podio vacío no hay reacción (ver «Cuándo sale la reacción»). |
+| Premisa: `item.consigna` del servidor (una sola frase con todo) | Se reparte en `preguntaEleccion` + `preguntaTexto` + `entrada` (tabla de Fase 3 de la spec). En `ruta`, sin campos nuevos: `item.consigna` pasa a ser la pregunta del texto (respaldo). |
+| `eleccion.pregunta` (pregunta del campo con la frase de entrada, p. ej. «“Espera que yo…” Escríbelo con sus palabras.») | `preguntaTexto` + `entrada` de la spec. En `ruta` se sigue usando como pregunta del texto. |
+| `eleccion.preguntas[código]`, `preguntaExclusiva`, `preguntaMantiene`/`preguntaCambia` (`preguntaEleccion`), `pregunta_propia` del servidor | Reemplazan a `preguntaTexto` en el `label` del campo con la misma precedencia de hoy; `criterio: null` sin pregunta propia → «Si quieres, cuéntame un poco más». |
+| Podio: `podio.pregunta` con `{opcion}` («¿Puse “{opcion}” primero porque…?») | `preguntaTexto`/`entrada` de la spec en `contenido`; en `ruta`, la de hoy. |
+| `node.ayuda` / `node.placeholder` (solo `RegistroConsignaNode`; `contenido` no los usa) | `ayuda` bajo la pregunta del texto; `placeholder` como respaldo de `entrada`. |
+| Leyenda «Visible para ti y tu orientadora. Se guarda en tu cuenta.» bajo la consigna | Pie a la izquierda: «Lo ven tú y tu orientadora» (texto de la spec). |
+
+#### Opciones
+
+| Hoy | Dónde va |
+|---|---|
+| Tarjetas 54 px en dos columnas con ícono (`iconos` del JSON o el ícono por defecto) | Chips sin ícono (spec §1.3). Ningún JSON de `contenido` declara `iconos`; en `ruta`, sí (`t_eco`, `t_expectativas`…): **se dejan de mostrar** (lo pide la spec). |
+| `etiquetaElegida` en cada opción marcada (p. ej. «LAS DOS VOCES») | Píldora pequeña dentro del chip, a la derecha del texto, `nowrap`, misma lógica. |
+| `etiquetaAnterior` en lo elegido la vez pasada (prevalece sobre `etiquetaElegida`) | Igual, píldora dentro del chip. (En `contenido` ningún nodo la declara; está en `ruta`.) |
+| Premarcado (`premarcar_si`, «la vez pasada») | Chip marcado al abrir, misma lógica (`inicialDe`). |
+| «Otra» + campo «¿Cuál?» dentro de la tarjeta, `errorOtra` | Chip «+ Otra» punteado; su campo «¿Cuál?» y `errorOtra` debajo de las opciones. |
+| Exclusivas (JSON ∪ propias del servidor), desmarcan las demás | Fila aparte bajo una línea fina, misma lógica (`alternar`). |
+| Con el máximo alcanzado: las no elegidas atenuadas (`is-dimmed`); al tocar una más, bloqueada | Igual en los chips. |
+| Animación al tocar (`is-toggled`) | Igual en los chips. |
+| «ya no está en tu lista» (`conGuardadas`) | Igual, dentro del chip. |
+| Podio: tres puestos + grilla de fichas con ícono; `etiquetaPrimero`; arrastrar intercambia | Tres huecos numerados arriba + chips debajo; `etiquetaPrimero` en el hueco 1; arrastrar entre huecos se conserva. |
+| `errorSeleccion`, error de podio («Completa tu podio: te falta…») | Bajo las opciones, igual. |
+
+#### Campo, validaciones y pie
+
+| Hoy | Dónde va |
+|---|---|
+| El campo aparece solo tras elegir (elección) o con el podio completo | Siempre visible (spec §1.1). |
+| Texto opcional mientras no hay selección; `errorTexto` (mínimo del ítem) | Obligatorio siempre (`errorTexto`), salvo opción `criterio: null` marcada. |
+| `RegistroConsignaNode`: `validar` propio («Escribe al menos 1 caracteres.», «Elige N opciones.») | Mismos mensajes; el de texto pasa a `errorTexto` (respeta `min_caracteres`). |
+| Podio: aviso «Cambiaste tu primer valor. Revisa si…» | Bajo el campo, igual. |
+| Error del servidor | Sobre el pie, igual. |
+| «Paso anterior» | Pie, a la derecha junto al botón. |
+| «Guardar y continuar» / «Entregar» / «Guardando…» | «Siguiente» / «Entregar» / «Guardando…». |
+| Consulta: «Continuar», «Guardar y continuar», «Entregar cambios», salida de fin (`pieConsulta`) | Igual (solo la consulta). |
+| Consulta: `errorConsulta` («Escribe tu respuesta para guardar lo que elegiste.») | Igual. |
+
+#### Ecos y consulta
+
+| Hoy | Dónde va |
+|---|---|
+| Eco (`RegistroEco`: recuerdo, chips del eco, `citaTras`) en el lugar del mensaje de Lumi | Zona propia entre el personaje y la primera pregunta. |
+| Consulta: pista del ítem por ampliar y «lo dejaste abierto» en esa burbuja | Igual, en la zona del eco. |
+| Con eco o en consulta, los mensajes reactivos no se ven (el eco ocupa su lugar) | Ahora se ven también, bajo las opciones (se agrega, no se quita). |
+| Consulta: opciones de solo lectura + `RespuestaConsulta` («Modificar») | Chips de solo lectura + respuesta en el bloque de texto, en el orden del ítem. |
+
+#### Mensajes de `contenido` que repiten la cantidad
+
+Solo la parte de cantidad pasa al indicador; lo demás se conserva.
+
+| Ítem | `inicio` hoy | Queda |
+|---|---|---|
+| b1-1-logro | «Marca la habilidad que usaste (una o dos).» | «Marca la habilidad que usaste.» |
+| b1-7-dia | «Marca qué áreas de tu vida aparecen (de una a tres).» | «Marca qué áreas de tu vida aparecen.» |
+| b1-7-freno | «Marca una.» | (nada: sin `inicio`, no hay reacción antes de elegir) |
+| b2-4-bien | «Marca hasta cuatro.» | (nada) |
+| b2-4-cuesta | «Marca una o dos.» | (nada) |
+| b4-2-estilo | «Marca una o dos formas.» | (nada) |
+| b5-3-explorar | «Marca una o dos cosas.» | (nada) |
+
+El resto de `inicio` se conserva tal cual (también los siete que repiten la pregunta de elección). `una` pasa a «Anotado.» en los tres ítems `texto-primero` (b1-1-logro, b1-7-dia, b4-2-estilo); en el resto sigue «Anotado. Ahora cuéntame.» (aprobado).
+
+#### Cuándo sale la reacción (aprobado)
+
+- Sin nada marcado no hay reacción: `inicio` ya no se muestra con la selección vacía.
+- `inicio` sale solo cuando hay una opción premarcada («la vez pasada» o `premarcar_si`) que el estudiante no ha cambiado.
+- Con selección: `una` / `exclusiva` / `maximo` / `bloqueada` como hoy.
+- Podio: vacío, sin reacción («Arma tu podio…» no se muestra); «Te faltan…» y «¡Tu podio está listo!…» se conservan.
+- Cambio en `mensajeEleccion` (`lib/eleccionGuiada.ts`): selección vacía → sin mensaje; igual a lo premarcado (anteriores o `premarcar_si`) → `inicio`. En `mensajeLumi` (`lib/podio.ts`): podio vacío → sin mensaje.
+
+### Qué cambia en el código (hoy → pasará a)
+
+- `nodes/RegistroGuiado.tsx`: marco con personaje (`dialogo`), zona de eco, bloques en orden (`orden`) con numeral solo si hay dos, error del servidor y pie (leyenda | Paso anterior + Siguiente/Entregar).
+- Nuevos: `nodes/RegistroPersonaje.tsx` (avatar 40 px + nombre + globo); `nodes/RegistroReaccion.tsx` (avatar 28 px + globo pequeño, `aria-live`); `lib/presentacionItem.ts` (`indicadorEleccion`, `preguntaTextoVigente`, `entradaVigente`, `bloquesEnOrden`, respaldos de `ruta`).
+- `nodes/RegistroEleccionNode.tsx`, `RegistroPodioNode.tsx`, `RegistroConsignaNode.tsx`: pasan sus piezas al marco; el campo siempre visible y obligatorio.
+- `nodes/ChoiceReveal.tsx` y `RankingPodium.tsx`: chips (exclusivas en fila aparte, etiqueta dentro del chip, «+ Otra» punteada).
+- `types/activities.ts` `NodoConsigna`: `dialogo?`, `preguntaEleccion?`, `preguntaTexto?`, `entrada?`, `orden?`, `entradaPropia?: Record<string, string>`.
+- CSS en `features/activities/styles/registro-guiado.css`.
+
+### Qué no cambia
+
+Backend de la aplicación, `consigna` del ítem en el servidor (la usa el LLM), criterios, seguimiento (`RegistroSeguimiento`), referencias, destinos, guardado, `FinishScreen` (resumen al cerrar: queda en `pendientes-interfaz.md`), modo local (`SubmissionNode`, `ChoiceNode`), pruebas de `contenido` y `ruta` del backend.
+
+### Fases (un commit cada una: `Ajuste vista-item-registro · F<n>: …`)
+
+1. **F1 · Componente con `t-referencia`**: lo de arriba + campos nuevos en `ruta/t_referencia.json`. Prueba nueva `tests/servidor/registro/servidor-registro-vista.test.mjs` (elección primero, texto primero con nodo alterado, pregunta propia, `criterio: null`, podio, premarcado, «la vez pasada», exclusiva que desmarca, «Otra», contador solo con máx > 1, reacción bajo las opciones, etiqueta dentro del chip, texto vacío rechazado). Se adaptan aserciones de marcado de `eleccion`, `podio`, `reproductor`, `consulta` (botón, leyenda, campo siempre visible), anotado en `decisiones.md`. Corren `tests/local/actividades`, `tests/servidor/actividades`, `tests/servidor/registro`, `npm run test:servidor`.
+2. **F2 · JSON de `contenido` y coherencia**: los 19 JSON (todos se tocan: cada ítem gana `dialogo`, `preguntaTexto` y `entrada`; el «18» anterior era un error de conteo: 16 tienen `mensajes`, y ma3, ma8 —solo texto— y b2-3 —podio— no los tienen) con `dialogo`, `preguntaEleccion`, `preguntaTexto`, `entrada`, `orden` (texto primero solo en b1-1-logro, b1-7-dia, b4-2-estilo); `eleccion.pregunta` y `podio.pregunta` reemplazados por los campos nuevos; `mensajes` conservados con el recorte de la tabla. `scripts/verificar_contenido_front.py`: `preguntaTexto` y `entrada` siempre; `preguntaEleccion` sii el ítem tiene elección; `texto-primero` prohibido con podio, `premarcar_si`, referencia que retoma, opciones propias con `pregunta_propia` o `criterio: null`; prueba unitaria de la regla. Corren `tests/integration/datos`, `escenarios`, `registros` y `tests/servidor/registro`.
+3. **F3 · Documentos y verificación**: `ov_frontend/docs/contenidos-actividades.md` (nodo de ítem), una línea en `ov_backend/docs/sistema/registro.md`, `pendientes-interfaz.md` (resumen al cerrar), `decisiones.md`. Suite completa de ambos repos. Navegador: b1-7-dia, b1-3-voz, b1-3-contraste (reacción + etiqueta), b2-3-valores (podio), un ítem T y una consulta.
+
+### Decisiones (a `decisiones.md`)
+
+- «Siguiente» salvo el último ítem («Entregar»); «Paso anterior» se conserva.
+- La pantalla de fin no cambia; la consulta usa la nueva estructura.
+- JSON de `ruta` sin campos nuevos: `item.consigna` / `eleccion.pregunta` como pregunta del texto; sin `dialogo`, no hay bloque de personaje arriba; la reacción sale igual.
+- `entradaPropia` es un mapa `{código de opción: placeholder}` en el nodo.
+- Los íconos de opción dejan de mostrarse (chips sin ícono, spec §1.3).
+
+# Anexo · Observaciones del ajuste vista del ítem de registro (texto completo)
+
+## Ajuste · vista del ítem de registro
+
+Ajusta cómo se presenta un ítem de registro en el reproductor (modo api) y cómo se redacta su consigna. Sucede a `claude/ajuste-registros.md` (ya implementado) y **no cambia nada del motor** (ítems, criterios, seguimiento, referencias, destinos). Cambia el JSON de presentación de los 19 registros y el componente del front que muestra un ítem.
+
+Fuente de diseño: `claude/registros-definicion.md` (v2.3), consignas funcionales por ítem. Maqueta: lienzo «Ítem de registro · propuesta de vista» (hoy / propuesta / pregunta propia / texto primero).
+
+### Qué se observó
+
+1. El bloque del personaje (avatar grande + nombre + una línea) ocupa tanto como la consigna, que es lo que el estudiante tiene que leer.
+2. En los ítems de elección + texto la consigna dice «imagina…, escribe…, después marca…», pero la pantalla muestra primero las opciones y después el campo de texto: el texto le dice una cosa y la pantalla otra.
+3. Las listas (tarjetas de 54 px en dos columnas, todas con el mismo ícono) empujan el campo de texto fuera de la primera vista.
+
+### Criterio general
+
+- **El personaje dice una cosa; cada control tiene su pregunta.** La consigna de un ítem deja de ser un solo texto y pasa a tres piezas: lo que dice el personaje (globo), la pregunta de la elección (encima de las opciones) y la pregunta del texto (encima del campo). El orden de lectura y el orden de los controles coinciden siempre.
+- **Se conserva el estilo de los registros**: voz del personaje de la actividad, segunda persona, una pregunta por control, la frase de entrada («Me despierto en…») como texto de ayuda dentro del campo, y la salida neutral («Nadie me lo ha dicho claramente») como opción visible, ya no como «si…, márcalo» dentro de la consigna.
+- **Ningún ítem se guarda vacío.** Que un ítem no tenga criterio significa que no pasa por el LLM, no que el texto sea opcional: el campo es obligatorio en todos los ítems, con la longitud mínima de hoy como única validación. La única excepción es la opción con `criterio: null` (`ajuste-registros.md` §1.1), que cierra el ítem con texto opcional.
+- **Capa narrativa después.** Lo que dice el personaje en este documento es funcional y corto; el ajuste de contenido que afine la narrativa solo edita ese campo.
+- **Mecánica primero**: el componente se prueba con `t-referencia` de `ruta` antes de reescribir los JSON de `contenido`.
+
+### Principio: no se pierde nada del ítem
+
+Este ajuste **reacomoda** lo que ya tienen los ítems; no quita comportamientos ni textos. Antes de tocar el componente, Claude Code hace un **inventario** de todo lo que hoy muestra o hace un ítem de registro (mensaje inicial del personaje, mensajes reactivos por opción y por estado premarcado o sin cambio, `etiquetaAnterior`, `errorSeleccion`, `errorOtra`, `exclusivas`, «Otra», premisa, leyenda, botones, validaciones, ecos) y lo entrega como tabla «hoy → dónde va en la vista nueva». Ninguna fila puede quedar en «se quita» sin que el usuario lo apruebe. La única pieza que se reubica por redundante es la instrucción de cantidad dentro de un mensaje («marca de una a tres»), que pasa al indicador «Elige 1 a 3»; si ese mensaje dice algo más, eso se conserva.
+
+### Fase 1 · Componente del ítem (front)
+
+#### 1.1 Estructura de la pantalla de un ítem
+
+De arriba abajo, dentro de la tarjeta del ítem:
+
+1. **Personaje**: avatar pequeño (40 px) con el nombre encima del globo y el texto de `dialogo` dentro. Sin recuadro aparte. Si `dialogo` está vacío, el bloque no se muestra.
+2. **Eco en consigna** (solo en los ítems que lo tienen: b4-1-respalda, b4-5-orden, b5-1-senal, b3-4-dato, ma4-probe): la zona de eco como hoy, entre el personaje y la primera pregunta.
+3. **Bloque de elección** (ítems E y P): numeral, `preguntaEleccion`, indicador a la derecha: «Elige 1» u «Ordena tus 3»; con máximo mayor que 1, «Elige 1 a 3 · 2/3» (el contador solo aparece en ese caso); debajo, las opciones; debajo de las opciones, la **reacción del personaje**: los mensajes reactivos de hoy (`eleccion.mensajes`), con la misma lógica de hoy (al seleccionar, y la reacción a una opción premarcada si existe), en un globo más pequeño con un avatar de 28 px. Si hoy no corresponde mensaje, no se muestra nada. Va siempre al final del bloque de elección, también con `texto-primero`.
+4. **Bloque de texto**: numeral, `preguntaTexto` como `label` del campo; campo con `entrada` como placeholder. Obligatorio salvo que esté marcada una opción con `criterio: null`.
+5. **Pie**: «Lo ven tú y tu orientadora» a la izquierda, «Siguiente» a la derecha. La leyenda sale de debajo de la consigna.
+
+Los ítems de solo texto (T) tienen 1, 2 si aplica, 4 y 5. El numeral solo aparece cuando hay dos bloques.
+
+#### 1.2 Orden de los bloques
+
+Campo `orden` en la pantalla del ítem: `eleccion-primero` (por defecto) o `texto-primero`. Con `texto-primero` el bloque 4 va antes que el 3 y los numerales se invierten. El guardado no cambia: el ítem sigue guardando opciones + texto.
+
+**Regla de carga (script de coherencia front–back)**: un ítem con `texto-primero` no puede tener opciones propias con `pregunta_propia`, ni opciones con `criterio: null`, ni `premarcar_si`, ni ser podio, ni «retomar». En todos esos casos la elección cambia lo que se escribe y tiene que ir antes.
+
+#### 1.3 Opciones como chips
+
+- Botones píldora de 40 px de alto, texto 15 px, sin ícono, en filas que se acomodan (`flex-wrap`). Seleccionada: fondo del color de acento, texto blanco, ✓ delante. Área táctil ≥ 40 px; separación 8 px.
+- «Otra» con borde punteado y «+ Otra»; al marcarla aparece un campo corto debajo de las opciones, como hoy.
+- **Opciones exclusivas** (NADIE, NINGUNA, TODAVIA, NADA, SIN_NUEVO, TODO, TODAS, TODOS, SIN_OPCION, AUN_NO, SIN_COMPARAR, NADA_QUE_CORREGIR): en una fila aparte, debajo de una línea fina. Marcarla desmarca las demás, como hoy.
+- **Podio**: tres huecos numerados arriba (1 · 2 · 3) y los chips debajo; tocar un chip lo manda al primer hueco libre; tocar un hueco lo libera. Mismo guardado que hoy (elección ordenada de 3).
+- **Opciones desde referencia** (familias, planes, testimonios): mismo chip; el texto es el título del objeto.
+- **Opción que llega marcada** («la vez pasada», `premarcar_si` o cualquier precarga con `etiquetaAnterior`): la etiqueta de hoy (p. ej. «LAS DOS VOCES») va **dentro** del chip, a la derecha del texto, como una píldora pequeña blanca con texto en mayúsculas de 11 px, sin cortar el texto de la opción (`white-space: nowrap`). Nunca superpuesta al borde. Cuándo aparece, si se queda al cambiar la selección y qué reacción dispara una opción premarcada (incluido un mensaje del tipo «parece que no ha cambiado») siguen exactamente como hoy.
+- Opción con `pregunta_propia`: al marcarla, `preguntaTexto` se reemplaza por esa pregunta (y `entrada` por `entradaPropia` si la opción la declara); al desmarcarla, vuelve. Opción con `criterio: null`: `preguntaTexto` se reemplaza por su `pregunta_propia` si la tiene y, si no, por «Si quieres, cuéntame un poco más»; el campo queda opcional y «Siguiente» se habilita sin texto.
+
+#### 1.4 Resumen, lectura y edición
+
+La vista de lectura (consulta) usa la misma división: chips de solo lectura y la respuesta, en el orden del ítem. La pantalla de fin no cambia (decisión del usuario; queda en `pendientes-interfaz.md`). La edición reutiliza el componente con `orden` incluido.
+
+### Fase 2 · JSON de presentación
+
+En cada nodo de ítem de los JSON de registro, el campo único de consigna se reemplaza por:
+
+| Campo | Qué es | Obligatorio |
+|---|---|---|
+| `dialogo` | Lo que dice el personaje arriba, fijo. Una o dos frases; sin instrucciones de uso («marca», «escribe») | no |
+| `eleccion.mensajes` | Se conserva: la reacción del personaje debajo de las opciones, según lo marcado | no |
+| `preguntaEleccion` | La pregunta encima de las opciones. Termina en «?» | en ítems E y P |
+| `preguntaTexto` | La pregunta encima del campo. Termina en «?» o es una invitación («Cuéntalo como una escena») | sí |
+| `entrada` | Placeholder del campo: la frase de entrada actual («Me despierto en…») | sí |
+| `orden` | `eleccion-primero` (defecto) / `texto-primero` | no |
+
+El indicador de cantidad («Elige 1 a 3») lo arma el front con el mínimo y el máximo del ítem, no se escribe. Las opciones propias ya llevan `pregunta_propia` en el backend; se agrega `entradaPropia` opcional en el JSON.
+
+### Fase 3 · Consignas por ítem
+
+Convenciones: **D** diálogo del personaje · **E** pregunta de elección · **T** pregunta de texto · **⌨** entrada. Orden `texto-primero` marcado con ⇅. Las preguntas propias de las opciones exclusivas son las de `ajuste-registros.md` §2.3 y no se repiten. El personaje es el de la actividad en `contexto-carga-actividades.md` §5. El texto es obligatorio en todos los ítems, también en los que no tienen criterio.
+
+#### b1-1 Mi historia personal (Nadia la cartógrafa)
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b1-1-gustos (T) | Todo mapa empieza por donde uno ya estuvo. | — | ¿Qué te encantaba hacer de niño o niña? Una cosa concreta: a qué jugabas, qué armabas, con quién. | De niño me encantaba… |
+| b1-1-logro (E) ⇅ | Hay cosas que ya lograste, aunque te parezcan pequeñas. | ¿Qué habilidades se notan en ese logro? (1 a 2) | Cuenta un logro tuyo: algo que pasó, no algo que eres. | Una vez logré… |
+| b1-1-dificultad (T) | Y también hubo algo que no salió a la primera. | — | ¿Qué hiciste para superar una dificultad? Con verbo: qué cambiaste, a quién pediste ayuda. | Me costaba… y entonces yo… |
+
+#### b1-3 Las voces y la mía (Iván)
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b1-3-voz (E) | Casi siempre alguien cercano tiene una idea de lo que deberías hacer al salir del colegio. | ¿Quién te lo ha dicho con más fuerza? (1) · exclusiva: Nadie me lo ha dicho claramente | ¿Qué espera que hagas? Con sus palabras, aunque sea una frase. | Espera que yo… |
+| b1-3-mia (E) | Ahora tu voz. | Y tú, ¿qué quieres hacer al terminar? (1) · exclusiva: Aún no lo sé | ¿Por qué eso? Algo tuyo: lo que te pasa, lo que te gusta. | Yo quiero… porque… |
+| b1-3-contraste (E) | Pongamos las dos voces juntas. | ¿Coinciden, coinciden en parte o chocan? (1) · exclusiva: No hay con qué comparar (premarcada si NADIE) | ¿En qué punto exactamente: la carrera, el lugar, el momento, el dinero? | Coincidimos / chocamos en… |
+
+#### b1-6 Mi postura (Aurelio)
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b1-6-mito (E) | Ya cruzaste el puente. Pero algunos mitos uno los trae de casa. | ¿Cuál de estos has escuchado o creído más? (1) · exclusiva: Ninguno me suena | ¿De dónde te viene y qué piensas hoy? Una frase para cada cosa. | Lo escuché de… Hoy pienso… |
+
+#### b1-7 Mi futuro (Guardián del pergamino)
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b1-7-dia (E) ⇅ | Imagina un día cualquiera a tus 23 años, si todo salió bien. | ¿Qué áreas de tu vida aparecieron en ese día? (1 a 3) | Cuéntalo como una escena: ¿dónde estás, qué haces, con quién? | Me despierto en… |
+| b1-7-hito (T) | Ese día está lejos. Acerquémoslo. | — | ¿Qué estarás haciendo dentro de un año que te acerque a ese día? | Dentro de un año estaré… |
+| b1-7-freno (E) | Casi ningún camino sale como se planeó. | ¿Qué podría frenarte? (1) | Si te pasara eso, ¿qué sería lo primero que harías? | Si me pasa eso, entonces yo… |
+
+#### ma3 De la meta a los pasos (Guardián) — eco de apertura: b1-7-dia, b1-7-hito
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| ma3-pasos (T) | Un hito sin pasos es solo un deseo. | — | Hacia tu hito de un año —o, si todavía no lo tienes claro, hacia ese día que imaginaste—, ¿cuáles serían tus primeros pasos? | El próximo mes…; al siguiente… |
+| ma3-falta (T) | Para dar esos pasos hace falta algo. | — | ¿Qué necesitas que todavía no tienes: una cosa o una persona? | Me falta… |
+
+#### b2-3 Lo que valoro en un trabajo (Rosa)
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b2-3-valores (P) | En la brigada cada quien valora algo distinto del trabajo. | De estos, ¿cuáles son tus tres más importantes? Ordénalos. | ¿De dónde te viene el primero? Una persona, algo que viviste o algo que quieres para tu vida. | Puse … primero porque… |
+
+#### b2-4 Lo que me sale bien y lo que me cuesta (Nico)
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b2-4-bien (E) | Separemos lo que te gusta de lo que te sale. | ¿En qué te va bien? (1 a 4) | ¿Qué prueba tienes? Una nota, un trabajo, algo que te dijeron. | Por ejemplo, en … yo… |
+| b2-4-cuesta (E) | Y lo que cuesta también cuenta. | ¿Qué te cuesta aunque le pongas ganas? (1 a 2) · exclusiva: Nada en especial | ¿Por qué crees que te cuesta? | Me cuesta … porque… |
+| b2-4-antes (T) | Hay cosas que hoy haces sin pensar y antes no podías. | — | Cuenta una: ¿qué no te salía antes y ahora sí? | Antes no podía… y ahora… |
+
+#### h1 Mi reto (Dora)
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| h1-habilidad (E) | Helena te mostró cómo te relacionas. Elige una para trabajarla. | ¿Qué habilidad quieres fortalecer? (1) | ¿Hay una situación reciente en la que te hubiera servido tenerla más? | La elegí porque… |
+| h1-accion (E) | Una habilidad se practica en un lugar y en un momento. | ¿Dónde la vas a practicar? (1) | ¿En qué momento, y qué harás distinto? | Cuando… voy a… |
+
+#### h2 ¿Me reconozco? (maestro Bruno)
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| h2-reconozco (E) | El libro muestra formas de aprender y resolver. Algunas te sonarán. | ¿En cuál te reconoces más? (1) | ¿Una vez concreta en que la usaste: un problema, un juego, algo que armaste? | Me reconozco porque una vez… |
+| h2-no-refleja (E) | Ningún resultado te ve completo. | ¿Cuál no refleja algo tuyo? (1) · exclusiva: No hay nada que quiera corregir | ¿Qué cosa que haces, y que te sale, no aparece ahí? | El resultado no vio que yo… |
+
+#### h3 Mis familias (Sol, bibliotecaria) — eco de apertura: RESULTADO, FAMILIAS_RECOMENDADAS, OPCION_INICIAL
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| h3-sorprende (E) | Estas son las cinco familias que salieron de tus intereses. | ¿Cuál no esperabas? (1) · exclusiva: Ninguna me sorprende | ¿Qué te abre o qué te llama de esa familia? | Me sorprende porque… |
+| h3-descarto (E) | No hace falta quedarse con todas. | ¿Cuál descartarías por ahora? (1) · exclusiva: Todavía no descarto ninguna | ¿Por qué esa? | La descarto porque… |
+
+#### ma4 El reto de la semana (Dora) — eco en consigna: h1-accion
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| ma4-probe (E) | Dijiste que ibas a practicarla. Volvamos a eso. | ¿La probaste? (1): Lo hice · A medias · Todavía no | ¿Qué pasó exactamente: cómo reaccionaron, qué sentiste después? | Pasó que… |
+| ma4-sigo (E) | Una cosa más. | ¿La sigues o la cambias? (1) | ¿Por qué? | Porque… |
+
+#### b3-4 Lo que no sabía del mercado (Lumi) — eco en consigna: DATOS_CARRERA_PLAN_A
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b3-4-dato (E) | Estos son los datos de la carrera de tu Plan A. | ¿Qué aspecto no conocías? (1) · exclusiva: No encontré información nueva | ¿Qué dice ese dato? Con tus palabras basta. | No sabía que… |
+| b3-4-cambia (E) | Un dato puede mover un plan o no moverlo. | ¿Cuánto cambia lo que pensabas? (1): Mucho · Un poco · Nada | ¿Qué sería lo primero que averiguarías? | Voy a averiguar… |
+
+#### b3-a Lo que aprendí de una trayectoria (Lumi)
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b3-a-testimonio (E) | De las historias que desbloqueaste, una te quedó. | ¿Cuál? (1) | ¿Qué momento de su historia te quedó: una decisión, algo que le pasó? | Me quedó cuando… |
+| b3-a-identifico (E) | Ahora tú frente a esa persona. | ¿Te identificas? (1): Me identifico · En parte · Me diferencio | ¿En qué te pareces y en qué no? | Me parezco en… pero… |
+
+#### b4-1 Mi perfil frente a mi Plan A (Helena) — eco de apertura: PLAN + RESULTADO; eco en consigna: elecciones propias
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b4-1-respalda (E) | Mira tu perfil junto a tu Plan A. Nada aquí mide si puedes: muestra cómo eres. | ¿Qué parte de tu perfil respalda más tu plan? (1) | ¿Qué de eso se nota en ti fuera del test: algo que haces, que te sale, que buscas? | Lo respalda porque… |
+| b4-1-menos (E) | Una parte que hoy no te respalda no decide por ti: se entrena, se comprueba o se compensa. | ¿Qué parte lo respalda menos? (1) · exclusiva: Todo lo respalda | ¿Cuál es la diferencia, y qué piensas de ella? | Lo respalda menos porque… |
+| b4-1-familia (E) | Tus familias recomendadas siguen ahí. | ¿Cuál mirarías con más calma? (1) · exclusiva: Ya las miré todas | ¿Qué te llama de ella? | Me llama… |
+
+#### b4-2 Mis reglas para decidir (Lumi) — eco en consigna: b2-3-valores
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b4-2-estilo (E) ⇅ | Antes de las reglas, cómo decides de verdad. | ¿Qué estilo se parece más a lo que contaste? (1 a 2) | Cuenta la última decisión importante que tomaste: qué decidiste y cómo. | La última vez decidí… |
+| b4-2-criterios (P) | Tus valores ya los ordenaste. Ahora, reglas para elegir carrera. | ¿Qué pesa más al elegir? Ordena tus tres. | ¿Por qué la primera? Importante para qué: para ti, para tu casa, para algo que quieres tener. | Mi primera regla es … porque… |
+| b4-2-linea-roja (E) | Hay reglas que se negocian y una que no. | ¿Cuál es tu línea roja? (1) · exclusiva: No tengo una | ¿Por qué esa no se negocia? | No la negocio porque… |
+
+#### b4-5 Pongo a prueba mi orden (Iván y el Guardián) — eco de apertura: PLANES, criterios, línea roja; eco en consigna: b4-1-respalda
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b4-5-orden (E) | Este es tu orden de planes, con tus reglas al lado. | Frente a tus reglas, ¿lo mantienes o lo cambiarías? (1) | ¿Qué regla tuya pesa aquí? | Según mi regla de… |
+| b4-5-debil (E) | Hasta un buen Plan A tiene un punto débil. | ¿Con cuál de tus reglas cumple menos? (1) · exclusiva: Los cumple todos | ¿Qué vas a ver, dónde o con quién? Una sola cosa esta semana. | Voy a… |
+| b4-5-plan-b (E) | Y si el Plan A no se da… | ¿Qué tan tranquilo te irías al Plan B? (1): Tranquilo · A medias · Es relleno | Si el Plan A no se diera, ¿qué sería lo primero que harías al día siguiente? | Al día siguiente yo… |
+
+#### ma8 El abogado del diablo (el Eco) — eco en consigna: PLAN
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| ma8-motivos (T) | Yo soy la voz que duda. Préstamela. | — | Si alguien quisiera convencerte de no elegir tu Plan A, ¿qué dos motivos distintos usaría? | Diría que no porque… y porque… |
+| ma8-respuesta (T) | Ahora respóndele. | — | ¿Qué responderías a cada motivo? Si alguno no supiste responderlo, dilo. | A lo primero respondo… A lo segundo… |
+
+#### b5-1 Mi proyecto (Teresa, la vigía) — eco de apertura: OPCION_INICIAL, PLANES, b4-1-respalda, b4-2-criterios
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b5-1-decision (E) | Desde aquí se ve todo el camino. Es hora de decir tu decisión. | ¿Cuál es tu proyecto hoy? (1; «la vez pasada» = Plan A) | ¿Por qué? Algo de ti y algo de lo que averiguaste en el camino. | Elijo … porque… |
+| b5-1-senal (T) | Una decisión se revisa. Para eso sirve una señal. | — | ¿Qué te diría que vas bien, o que toca volver a pensarlo? Algo que puedas mirar. | Sabré que voy bien si… |
+| b5-1-apoyo (E) | Nadie llega solo. | ¿A quién necesitas? (1) · exclusiva: Aún no sé a quién pedirle | ¿Apoyarte cómo: con plata, con tiempo, con no presionar, con ir contigo a averiguar? | Necesito que… |
+
+#### b5-3 Mirar el camino (Lumi) — eco de apertura: OPCION_INICIAL, b1-7-dia, b1-7-freno, b1-3-mia, b1-6-mito
+
+| Ítem | D | E | T | ⌨ |
+|---|---|---|---|---|
+| b5-3-inicial (E) | Llegaste al muelle con una idea. Mírala desde aquí. | ¿Cómo la ves hoy? (1): La veo igual · La veo distinta · La dejé · exclusiva: Empecé sin opción | ¿Qué sabes hoy que al llegar no sabías? | Hoy sé que… |
+| b5-3-explorar (E) | Te vas de la isla, pero el camino sigue. | ¿Qué te falta explorar? (1 a 2) · exclusiva: Por ahora nada | ¿Con quién, dónde o cuándo? | Voy a… |
+
+**Resumen del orden**: `texto-primero` solo en b1-1-logro, b1-7-dia y b4-2-estilo. Los tres eligen de una lista común, sin opciones propias, sin premarcado y sin podio.
+
+### Fase 4 · Pruebas y documentos
+
+- Front: pruebas del componente con `t-referencia` en `ruta` (elección primero, texto primero, opción con pregunta propia, opción con `criterio: null`, podio, premarcado, «la vez pasada», exclusiva que desmarca, «Otra»). Captura de las cuatro variantes del lienzo.
+- Front: un ítem sin criterio no se puede entregar con el texto vacío (salvo opción `criterio: null` marcada); el contador «n/máx» solo con máximo > 1.
+- Script de coherencia front–back: cada nodo de ítem tiene `preguntaTexto` y `entrada`; `preguntaEleccion` si y solo si el ítem es E o P; `orden: texto-primero` solo donde la regla de 1.2 lo permite.
+- Las pruebas de `contenido` y de `ruta` del backend no cambian.
+- Documentos: `docs/sistema/` del reproductor de registros (estructura del ítem, campos de presentación, regla de orden), `pendientes-interfaz.md` si queda algo fuera.
+
+### Decisiones del usuario
+
+- El personaje pasa a globo con avatar pequeño; la consigna se divide en pregunta de elección y pregunta de texto, cada una junto a su control.
+- Las listas se muestran como chips; las exclusivas en fila aparte.
+- Orden `texto-primero` como vista alterna, solo en b1-1-logro, b1-7-dia y b4-2-estilo, con la regla de carga que lo prohíbe donde la elección cambia el texto.
+- La capa narrativa de `dialogo` se afina después; aquí va funcional.
+- Los mensajes reactivos (`eleccion.mensajes`) se conservan con su lógica de hoy (al seleccionar y ante una opción premarcada): el personaje vuelve a hablar debajo de las opciones; si hoy no corresponde mensaje, no aparece. `dialogo` es lo fijo de arriba, la reacción es lo que cambia abajo. Si algún mensaje solo repite la instrucción de cantidad («marca de una a tres»), esa parte pasa al indicador y lo demás del mensaje se conserva.
+- La etiqueta de una opción que llega marcada (`etiquetaAnterior`) se conserva, dentro del chip; su lógica y la reacción a lo premarcado no cambian.
+- Principio del ajuste: solo se reacomoda lo que hay. Inventario previo «hoy → dónde va»; nada se quita sin aprobación del usuario.
+- Los ítems sin criterio (b2-4-cuesta, h3-descarto, ma4-sigo, b4-1-familia) no se guardan vacíos: el texto es obligatorio igual que en los demás; sin criterio solo significa sin LLM.
+- El contador «n/máx» se muestra solo cuando el máximo de selección es mayor que 1.
+
+### Preguntas abiertas
+
+Ninguna.

@@ -306,6 +306,11 @@ export function useRegistroServidor({
       }
     },
     anterioresDe: (item: ItemRegistroPublico) => anterioresDe(item, registroServidor?.referencias ?? []),
+    // Ajuste vista del ítem: lo que llega marcado al abrir (la vez pasada o el premarcado), para la reacción.
+    premarcadasDe: (item: ItemRegistroPublico) => {
+      const anteriores = anterioresDe(item, registroServidor?.referencias ?? [])
+      return anteriores.length ? anteriores : premarcadoDe(item, registro?.respuestas ?? [])
+    },
     consultaDe: (item: ItemRegistroPublico) =>
       consulta && registro ? consultaDe(registro, item, cambios) : undefined,
     puedeEditarRegistro: modoApi && consulta,

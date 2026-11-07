@@ -115,12 +115,11 @@ test('la elección ordenada numera las opciones en el orden elegido y no deja pa
   const servir = elementos(elementos(tree, (e) => e.key === 'SERVIR')[0], (e) => e.type === 'input')[0]
   assert.equal(servir.props.disabled, true)
   // Sin texto en un ítem obligatorio no se guarda.
-  elementos(form.render(), (e) => e.type === 'form')[0].props.onSubmit({ preventDefault() {} })
+  elementos(form.render(), (e) => e.type?.name === 'RegistroGuiado')[0].props.onEnviar()
   assert.equal(guardado, undefined)
-  elementos(form.render(), (e) => e.type === 'textarea')[0].props.onChange({
-    target: { value: 'Crear me mueve' },
-  })
-  elementos(form.render(), (e) => e.type === 'form')[0].props.onSubmit({ preventDefault() {} })
+  // Ajuste vista del ítem: el campo es el del bloque de texto común.
+  elementos(form.render(), (e) => e.type?.name === 'RegistroExplicacion')[0].props.onTexto('Crear me mueve')
+  elementos(form.render(), (e) => e.type?.name === 'RegistroGuiado')[0].props.onEnviar()
   assert.deepEqual(copia(guardado), {
     texto: 'Crear me mueve',
     opciones: [{ codigo: 'CREAR' }, { codigo: 'LIBERTAD' }, { codigo: 'ESTABILIDAD' }],

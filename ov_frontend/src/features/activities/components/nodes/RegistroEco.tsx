@@ -1,10 +1,8 @@
-import { CharacterAvatar } from '@/components/student/CharacterAvatar'
 import { INTRO_PISTA, burbujaRegistro, type EcoRegistro } from '../../lib/edicionRegistro'
 import { RegistroLumi } from './RegistroLumi'
 
-// Lumi sobre una consigna de registro, con la burbuja de los registros guiados: el recuerdo del eco (F02)
-// y, en la consulta, la pista del ítem por ampliar, resaltada, en una sola burbuja. Sin nada que decir, solo
-// el avatar. F07b: los chips del eco (motivos del plan A) van justo tras su cita y antes del resto del recuerdo.
+// Zona del eco de una consigna de registro: el recuerdo del eco (F02) y, en la consulta, la pista del ítem por
+// ampliar, resaltada, en una sola burbuja. F07b: los chips del eco (motivos del plan A) van justo tras su cita y antes del resto del recuerdo.
 export function RegistroEco({
   eco,
   pista,
@@ -18,7 +16,8 @@ export function RegistroEco({
   abierto?: boolean
 }) {
   const partes = burbujaRegistro(eco, pista, abierto)
-  if (!partes) return hablanteId ? <CharacterAvatar id={hablanteId} size="sm" /> : null
+  // Ajuste vista del ítem: sin nada que decir no hay zona de eco (el personaje va en su propio bloque).
+  if (!partes) return null
   return (
     <RegistroLumi
       hablanteId={hablanteId}

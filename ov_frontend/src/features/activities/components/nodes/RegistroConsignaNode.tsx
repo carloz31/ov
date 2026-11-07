@@ -1,5 +1,4 @@
 import { useState, type ReactNode } from 'react'
-import { Check } from 'lucide-react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
 import {
@@ -8,13 +7,23 @@ import {
   type ConsultaRegistro,
   type EcoRegistro,
 } from '../../lib/edicionRegistro'
+import { errorTexto } from '../../lib/eleccionGuiada'
+import {
+  entradaVigente,
+  indicadorEleccion,
+  numerales,
+  preguntaDeEleccion,
+  enOrden,
+} from '../../lib/presentacionItem'
 import { RegistroOpciones } from './RegistroOpciones'
 import { RegistroEco } from './RegistroEco'
 import { RespuestaConsulta } from './RespuestaConsulta'
-import { PasoAnterior } from '../PasoAnterior'
-import '../../styles/registro-guiado.css'
+import { RegistroGuiado } from './RegistroGuiado'
+import { RegistroBloqueEleccion } from './RegistroBloqueEleccion'
+import { RegistroExplicacion } from './RegistroExplicacion'
 
-// Consigna de un registro del servidor (F01): mismo formulario que SubmissionNode, con la elección del ítem.
+// Consigna de un registro del servidor (F01; ajuste vista del ítem): el ítem de solo texto y, en `ruta`, la
+// elección ordenada que no es podio. Mismo marco que los registros guiados.
 export function RegistroConsignaNode({
   node,
   item,
@@ -51,6 +60,7 @@ export function RegistroConsignaNode({
   const lectura = !!consulta && !modificando
   const eleccion = item.eleccion
   const pie = consulta && pieConsulta(consulta, ultimo, modificando, text, selection)
+  const numero = numerales(node, !!eleccion)
   function submit() {
     const mensaje = lectura
       ? ''
@@ -62,82 +72,61 @@ export function RegistroConsignaNode({
         selection.map((o) => (o.codigo === 'OTRA' ? { ...o, texto: o.texto?.trim() } : o)),
       )
   }
-  // Como en los registros guiados, el rótulo de visibilidad va bajo la pregunta.
-  const premisa = (
-    <>
-      <span className="sx-submission-premise">{item.consigna}</span>
-      <span className="sx-submission-visibility">
-        Visible para ti y tu orientadora. Se guarda en tu cuenta.
-      </span>
-    </>
-  )
-  const campo = lectura ? (
-    <RespuestaConsulta
-      texto={text}
-      onModificar={() => setModificando(true)}
-    />
-  ) : (
-    <textarea
-      className="sx-submission-textarea"
-      value={text}
-      placeholder={node.placeholder}
-      aria-label={eleccion ? item.nombre : undefined}
-      onChange={(event) => setText(event.target.value)}
-    />
-  )
   return (
-    <form
-      className="sx-submission-form"
-      onSubmit={(event) => {
-        event.preventDefault()
-        submit()
-      }}
+    <RegistroGuiado
+      hablanteId={node.hablanteId}
+      dialogo={node.dialogo}
+      ultimo={ultimo}
+      ocupado={ocupado}
+      error={aviso || error}
+      onEnviar={submit}
+      etiqueta={pie?.etiqueta}
+      salida={pie?.salir ? salida : undefined}
+      onAnterior={onAnterior && (() => onAnterior(text, selection))}
     >
-      <RegistroEco eco={eco} pista={consulta?.pista} abierto={consulta?.abierto} hablanteId={node.hablanteId} />
-      {eleccion ? (
-        <>
-          <p className="sx-submission-label">
-            {premisa}
-            {node.ayuda && <span className="sx-submission-help">{node.ayuda}</span>}
-          </p>
-          <RegistroOpciones
-            nodo={node.id}
-            eleccion={eleccion}
-            selection={selection}
-            onChange={setSelection}
-            soloLectura={lectura}
-          />
-          {campo}
-        </>
-      ) : (
-        <label className="sx-submission-label">
-          {premisa}
-          {node.ayuda && <span className="sx-submission-help">{node.ayuda}</span>}
-          {campo}
-        </label>
+      <RegistroEco
+        eco={eco}
+        pista={consulta?.pista}
+        abierto={consulta?.abierto}
+        hablanteId={node.hablanteId}
+      />
+      {enOrden(
+        node,
+        eleccion && (
+          <RegistroBloqueEleccion
+            key="eleccion"
+            numeral={numero.eleccion}
+            pregunta={preguntaDeEleccion(node, item)}
+            indicador={indicadorEleccion(eleccion, selection.length, eleccion.ordenada)}
+          >
+            <RegistroOpciones
+              nodo={node.id}
+              eleccion={eleccion}
+              selection={selection}
+              onChange={setSelection}
+              soloLectura={lectura}
+            />
+          </RegistroBloqueEleccion>
+        ),
+        <RegistroExplicacion
+          key="texto"
+          numeral={numero.texto}
+          pregunta={node.preguntaTexto ?? (eleccion ? undefined : item.consigna)}
+          entrada={entradaVigente(node)}
+          ayuda={node.ayuda}
+          etiqueta={item.nombre}
+          texto={text}
+          onTexto={setText}
+          lectura={lectura && <RespuestaConsulta texto={text} onModificar={() => setModificando(true)} />}
+        />,
       )}
-      {(aviso || error) && (
-        <p role="alert" className="sx-submission-error">
-          {aviso || error}
-        </p>
-      )}
-      <div className="sx-player-actions sx-step-footer">
-        {onAnterior && <PasoAnterior disabled={ocupado} onClick={() => onAnterior(text, selection)} />}
-        {pie?.salir ? (
-          salida
-        ) : (
-          <button type="submit" className="sx-primary-button" disabled={ocupado}>
-            {ocupado ? 'Guardando…' : (pie?.etiqueta ?? (ultimo ? 'Entregar' : 'Guardar y continuar'))}
-            <Check size={18} />
-          </button>
-        )}
-      </div>
-    </form>
+    </RegistroGuiado>
   )
 }
 
 function validar(item: ItemRegistroPublico, texto: string, seleccion: OpcionElegida[]) {
-  if (item.obligatorio && !texto.trim()) return 'Escribe al menos 1 caracteres.'
+  const sinTexto = errorTexto(item, texto)
+  if (sinTexto) return sinTexto
   const eleccion = item.eleccion
   if (!eleccion || (!item.obligatorio && !seleccion.length)) return ''
   if (seleccion.length < eleccion.minima)

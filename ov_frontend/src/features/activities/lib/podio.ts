@@ -42,10 +42,11 @@ const NUMEROS = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete
 export const enPalabras = (n: number) => NUMEROS[n] ?? String(n)
 
 export type UnidadPodio = { singular: string; plural: string }
-export function mensajeLumi(puestos: Puestos, unidad: UnidadPodio) {
+// La reacción bajo el podio (ajuste vista del ítem): con el podio vacío no hay reacción («Ordena tus 3» ya
+// lo pide).
+export function mensajeLumi(puestos: Puestos, unidad: UnidadPodio): string | undefined {
   const pendientes = faltan(puestos)
-  if (pendientes === puestos.length)
-    return `Arma tu podio: toca los ${enPalabras(puestos.length)} ${unidad.plural} que más te importan, empezando por el primero.`
+  if (pendientes === puestos.length) return undefined
   if (pendientes === 0) return '¡Tu podio está listo! Ahora cuéntame por qué elegiste tu primer lugar.'
   return pendientes === 1
     ? `Bien. Te falta 1 ${unidad.singular}.`

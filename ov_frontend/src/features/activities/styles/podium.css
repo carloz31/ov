@@ -17,8 +17,8 @@
   align-content: start;
   gap: 6px;
   width: 100%;
-  min-height: 120px;
-  padding: 12px 8px;
+  min-height: 88px;
+  padding: 10px 8px;
   border: 2px dashed var(--input);
   border-radius: 14px;
   background: var(--card);
@@ -27,8 +27,8 @@
   cursor: default;
 }
 .sx-root .sx-podium-slot.is-first {
-  min-height: 148px;
-  padding-top: 18px;
+  min-height: 100px;
+  padding-top: 14px;
 }
 .sx-root .sx-podium-slot.is-filled {
   border: 2px solid var(--primary);
@@ -100,32 +100,7 @@
     display: none;
   }
 }
-.sx-root .sx-podium-chips {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
-}
-.sx-root .sx-podium-chip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 52px;
-  padding: 12px 14px;
-  border: 1px solid var(--input);
-  border-radius: 14px;
-  background: var(--card);
-  color: var(--foreground);
-  font-size: 14px;
-  text-align: left;
-  cursor: pointer;
-}
-.sx-root .sx-podium-chip:hover {
-  border-color: var(--primary);
-}
-.sx-root .sx-podium-chip > svg {
-  flex-shrink: 0;
-  color: var(--primary);
-}
+/* Ajuste vista del ítem: las fichas son los chips de la elección (registro-guiado.css). */
 .sx-root :is(.sx-podium-slot, .sx-podium-chip):focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;

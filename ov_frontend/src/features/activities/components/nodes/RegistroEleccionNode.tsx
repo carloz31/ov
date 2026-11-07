@@ -1,7 +1,12 @@
 import { useState, type ReactNode } from 'react'
 import type { NodoConsigna } from '@/types/activities'
 import type { ItemRegistroPublico, OpcionElegida } from '@/types/servidor'
-import { errorConsulta, pieConsulta, type ConsultaRegistro, type EcoRegistro } from '../../lib/edicionRegistro'
+import {
+  errorConsulta,
+  pieConsulta,
+  type ConsultaRegistro,
+  type EcoRegistro,
+} from '../../lib/edicionRegistro'
 import {
   cierraSinSeguimiento,
   conGuardadas,
@@ -13,6 +18,8 @@ import { RespuestaConsulta } from './RespuestaConsulta'
 import { ChoiceReveal } from './ChoiceReveal'
 import { RegistroGuiado } from './RegistroGuiado'
 import { RegistroExplicacion } from './RegistroExplicacion'
+import { RegistroBloqueEleccion } from './RegistroBloqueEleccion'
+import { RegistroPersonaje } from './RegistroPersonaje'
 import {
   alternar,
   conTextoOtra,
@@ -20,6 +27,14 @@ import {
   mensajeEleccion,
   preguntaEleccion,
 } from '../../lib/eleccionGuiada'
+import {
+  entradaVigente,
+  indicadorEleccion,
+  numerales,
+  preguntaDeEleccion,
+  preguntaSinSeguimiento,
+  enOrden,
+} from '../../lib/presentacionItem'
 
 const ELECCION_POR_DEFECTO = {
   mensajes: { inicio: 'Elige la opción que más se acerque a lo que piensas.', una: 'Cuéntame un poco más.' },
@@ -28,8 +43,9 @@ const ELECCION_POR_DEFECTO = {
   errorOtra: 'Escribe cuál es tu otra opción.',
 }
 
-// Consigna de un registro con elección guiada sin orden (F01): tarjetas + explicación revelada.
-// Guarda lo mismo que antes: las opciones elegidas (con el texto de «Otra») y el texto.
+// Consigna de un registro con elección guiada sin orden (F01; ajuste vista del ítem): bloque de elección (chips
+// y reacción del personaje) y bloque de texto, en el orden del nodo. Guarda las opciones elegidas (con el texto
+// de «Otra») y el texto.
 export function RegistroEleccionNode({
   node,
   item,
@@ -42,6 +58,7 @@ export function RegistroEleccionNode({
   consulta,
   salida,
   anteriores = [],
+  premarcadas = [],
   eco,
 }: {
   node: NodoConsigna
@@ -58,6 +75,8 @@ export function RegistroEleccionNode({
   salida?: ReactNode
   // F02: lo elegido la vez pasada, cuando el ítem retoma una elección.
   anteriores?: OpcionElegida[]
+  // Lo que llegó marcado al abrir (la vez pasada o el premarcado): mientras no cambie, el personaje lo saluda.
+  premarcadas?: OpcionElegida[]
   // Ajuste registros: lo que esta consigna retoma de otra actividad.
   eco?: EcoRegistro
 }) {
@@ -66,6 +85,8 @@ export function RegistroEleccionNode({
   const config = {
     ...ELECCION_POR_DEFECTO,
     ...node.eleccion,
+    // Ajuste vista del ítem: con `preguntaTexto`, esa es la pregunta del campo salvo la propia de una opción.
+    pregunta: node.preguntaTexto ?? node.eleccion?.pregunta ?? ELECCION_POR_DEFECTO.pregunta,
     preguntas: { ...preguntasPropias(item), ...node.eleccion?.preguntas },
   }
   const mensajes = { ...ELECCION_POR_DEFECTO.mensajes, ...node.eleccion?.mensajes }
@@ -84,20 +105,21 @@ export function RegistroEleccionNode({
   const [errores, setErrores] = useState<{ seleccion?: string; otra?: string; texto?: string }>({})
   const otra = seleccion.find((o) => o.codigo === 'OTRA')
   const codigosAnteriores = anteriores.map((o) => o.codigo)
-  // En la consulta (F02) se empieza leyendo; «Modificar» abre las tarjetas y la explicación de siempre.
+  // En la consulta (F02) se empieza leyendo; «Modificar» abre los chips y el campo de siempre.
   const [modificando, setModificando] = useState(!consulta || consulta.cambiado)
   const lectura = !!consulta && !modificando
   const pie = consulta && pieConsulta(consulta, ultimo, modificando, text, seleccion)
+  const sinSeguimiento = cierraSinSeguimiento(item, seleccion)
+  const numero = numerales(node, true)
   function submit() {
     if (lectura) return onGuardar(text, seleccion)
     const siguientes = {
       seleccion: seleccion.length < Math.max(1, eleccion.minima) ? config.errorSeleccion : undefined,
       otra: otra && !otra.texto?.trim() ? config.errorOtra : undefined,
-      // Una opción que cierra el ítem sin seguimiento deja el texto opcional.
-      texto:
-        seleccion.length && !cierraSinSeguimiento(item, seleccion)
-          ? errorTexto(item, text) || (consulta && errorConsulta(consulta, text, seleccion)) || undefined
-          : undefined,
+      // Ningún ítem se guarda vacío; una opción que cierra el ítem sin seguimiento deja el texto opcional.
+      texto: sinSeguimiento
+        ? undefined
+        : errorTexto(item, text) || (consulta && errorConsulta(consulta, text, seleccion)) || undefined,
     }
     setErrores(siguientes)
     if (!siguientes.seleccion && !siguientes.otra && !siguientes.texto)
@@ -106,21 +128,17 @@ export function RegistroEleccionNode({
         seleccion.map((o) => (o.codigo === 'OTRA' ? { codigo: 'OTRA', texto: o.texto?.trim() } : o)),
       )
   }
+  const reaccion = mensajeEleccion(
+    mensajes,
+    seleccion,
+    reglas,
+    bloqueada,
+    premarcadas.map((o) => o.codigo),
+  )
   return (
     <RegistroGuiado
       hablanteId={node.hablanteId}
-      mensaje={mensajeEleccion(mensajes, seleccion, reglas, bloqueada, codigosAnteriores)}
-      lumi={
-        (consulta || eco) && (
-          <RegistroEco
-            eco={eco}
-            pista={consulta?.pista}
-            abierto={consulta?.abierto}
-            hablanteId={node.hablanteId ?? 'companero'}
-          />
-        )
-      }
-      consigna={item.consigna}
+      dialogo={node.dialogo}
       ultimo={ultimo}
       ocupado={ocupado}
       error={error}
@@ -129,42 +147,63 @@ export function RegistroEleccionNode({
       salida={pie?.salir ? salida : undefined}
       onAnterior={onAnterior && (() => onAnterior(text, seleccion))}
     >
-      <ChoiceReveal
-        opciones={opciones}
-        seleccion={seleccion}
-        reglas={reglas}
-        etiquetaElegida={config.etiquetaElegida}
-        iconos={config.iconos}
-        error={errores.seleccion}
-        errorOtra={errores.otra}
-        soloLectura={lectura}
-        anteriores={codigosAnteriores}
-        etiquetaAnterior={config.etiquetaAnterior}
-        onAlternar={(codigo) => {
-          const resultado = alternar(seleccion, codigo, reglas)
-          setSeleccion(resultado.seleccion)
-          setBloqueada(resultado.bloqueada)
-          if (resultado.seleccion.length) setErrores((e) => ({ ...e, seleccion: undefined }))
-        }}
-        onTextoOtra={(texto) => {
-          setSeleccion(conTextoOtra(seleccion, texto))
-          setBloqueada(false)
-        }}
-      />
-      {lectura ? (
-        <RespuestaConsulta
-          texto={text}
-          onModificar={() => setModificando(true)}
+      {(consulta || eco) && (
+        <RegistroEco
+          eco={eco}
+          pista={consulta?.pista}
+          abierto={consulta?.abierto}
+          hablanteId={node.hablanteId ?? 'companero'}
         />
-      ) : (
-        seleccion.length > 0 && (
-          <RegistroExplicacion
-            pregunta={preguntaEleccion(config, seleccion, opciones, reglas.exclusivas, codigosAnteriores)}
-            texto={text}
-            error={errores.texto}
-            onTexto={setText}
+      )}
+      {enOrden(
+        node,
+        <RegistroBloqueEleccion
+          key="eleccion"
+          numeral={numero.eleccion}
+          pregunta={preguntaDeEleccion(node, item)}
+          indicador={indicadorEleccion(
+            eleccion,
+            seleccion.filter((o) => !reglas.exclusivas.includes(o.codigo)).length,
+          )}
+        >
+          <ChoiceReveal
+            opciones={opciones}
+            seleccion={seleccion}
+            reglas={reglas}
+            etiquetaElegida={config.etiquetaElegida}
+            error={errores.seleccion}
+            errorOtra={errores.otra}
+            soloLectura={lectura}
+            anteriores={codigosAnteriores}
+            etiquetaAnterior={config.etiquetaAnterior}
+            reaccion={
+              !lectura && <RegistroPersonaje hablanteId={node.hablanteId} texto={reaccion} reaccion />
+            }
+            onAlternar={(codigo) => {
+              const resultado = alternar(seleccion, codigo, reglas)
+              setSeleccion(resultado.seleccion)
+              setBloqueada(resultado.bloqueada)
+              if (resultado.seleccion.length) setErrores((e) => ({ ...e, seleccion: undefined }))
+            }}
+            onTextoOtra={(texto) => {
+              setSeleccion(conTextoOtra(seleccion, texto))
+              setBloqueada(false)
+            }}
           />
-        )
+        </RegistroBloqueEleccion>,
+        <RegistroExplicacion
+          key="texto"
+          numeral={numero.texto}
+          pregunta={
+            preguntaSinSeguimiento(item, seleccion) ??
+            preguntaEleccion(config, seleccion, opciones, reglas.exclusivas, codigosAnteriores)
+          }
+          entrada={entradaVigente(node, seleccion)}
+          texto={text}
+          error={errores.texto}
+          onTexto={setText}
+          lectura={lectura && <RespuestaConsulta texto={text} onModificar={() => setModificando(true)} />}
+        />,
       )}
     </RegistroGuiado>
   )

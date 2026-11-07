@@ -63,9 +63,11 @@ test('la pregunta nombra lo elegido en minúsculas, usa «Otra» escrita, la exc
 
 test('los mensajes de Lumi siguen el estado, incluido el intento de una tercera ruta', () => {
   const { lib } = cargar()
-  const m = (sel, bloqueada = false) =>
-    lib.mensajeEleccion(nodoRuta.eleccion.mensajes, sel, reglasRuta, bloqueada)
-  assert.match(m([]), /^Llegaste a una encrucijada/)
+  const m = (sel, bloqueada = false, premarcadas = []) =>
+    lib.mensajeEleccion(nodoRuta.eleccion.mensajes, sel, reglasRuta, bloqueada, premarcadas)
+  // Ajuste vista del ítem: sin nada marcado no hay reacción; `inicio` solo saluda lo que llegó marcado.
+  assert.equal(m([]), undefined)
+  assert.match(m([{ codigo: 'TRABAJAR' }], false, ['TRABAJAR']), /^Llegaste a una encrucijada/)
   assert.equal(m([{ codigo: 'TRABAJAR' }]), 'Buena elección. Si quieres, puedes sumar una ruta más.')
   const dos = [{ codigo: 'TRABAJAR' }, { codigo: 'EMPRENDER' }]
   assert.equal(m(dos), 'Dos rutas en el mapa. Cuéntame qué te atrae de ellas.')
@@ -82,7 +84,6 @@ test('las tarjetas son botones con aria-pressed; «Otra» muestra su campo y esc
     seleccion,
     reglas: reglasRuta,
     etiquetaElegida: 'Tu ruta',
-    iconos: nodoRuta.eleccion.iconos,
     onAlternar: (c) => alternadas.push(c),
     onTextoOtra() {},
   })
@@ -102,12 +103,10 @@ test('las tarjetas son botones con aria-pressed; «Otra» muestra su campo y esc
   assert.ok(elementos(elegida, (e) => e.props?.children === 'Tu ruta').length)
   // Con el máximo, las no elegidas se atenúan pero siguen pulsables.
   assert.match(elementos(tree, (e) => e.key === 'UNIVERSIDAD')[0].props.className, /is-dimmed/)
+  // Ajuste vista del ítem: el campo de «Otra» va debajo de las opciones, fuera del chip.
   const campo = elementos(tree, (e) => e.props?.['aria-label'] === '¿Cuál?')[0]
   assert.equal(campo.props.value, 'Viajar')
-  let detenido = 0
-  campo.props.onClick({ stopPropagation: () => detenido++ })
-  campo.props.onKeyDown({ key: ' ', stopPropagation: () => detenido++ })
-  assert.equal(detenido, 2)
+  assert.equal(elementos(elementos(tree, (e) => e.key === 'OTRA')[0], (e) => e === campo).length, 0)
   assert.deepEqual(alternadas, ['INSTITUTO'])
   vista.unmount()
 })
@@ -125,17 +124,18 @@ function montar(app, Nodo, nodo, item, inicial, guardados = []) {
 }
 const de = (tree, nombre) => elementos(tree, (e) => e.type?.name === nombre)[0]
 
-test('la explicación aparece al elegir y se oculta al vaciar, conservando el texto', () => {
+// Ajuste vista del ítem: el campo se ve desde el inicio (antes aparecía al elegir) y conserva el texto al cambiar.
+test('el campo se ve desde el inicio y conserva el texto al vaciar y volver a elegir', () => {
   const { app, componente } = cargar()
   const vista = montar(app, componente('RegistroEleccionNode'), nodoRuta, ruta, { texto: '', opciones: [] })
   let tree = vista.render()
-  assert.equal(de(tree, 'RegistroExplicacion'), undefined)
-  assert.match(de(tree, 'RegistroGuiado').props.mensaje, /encrucijada/)
+  assert.ok(de(tree, 'RegistroExplicacion'))
+  assert.equal(de(tree, 'ChoiceReveal').props.reaccion.props.texto, undefined)
   de(tree, 'ChoiceReveal').props.onAlternar('UNIVERSIDAD')
   tree = vista.render()
   de(tree, 'RegistroExplicacion').props.onTexto('Quiero investigar')
   de(vista.render(), 'ChoiceReveal').props.onAlternar('UNIVERSIDAD')
-  assert.equal(de(vista.render(), 'RegistroExplicacion'), undefined)
+  assert.equal(de(vista.render(), 'RegistroExplicacion').props.texto, 'Quiero investigar')
   de(vista.render(), 'ChoiceReveal').props.onAlternar('EMPRENDER')
   tree = vista.render()
   assert.equal(de(tree, 'RegistroExplicacion').props.texto, 'Quiero investigar')
@@ -200,7 +200,7 @@ test('avanzar valida selección, «Otra» y texto junto a cada control; el enví
     },
     anteriores,
   )
-  elementos(consigna.render(), (e) => e.type === 'form')[0].props.onSubmit({ preventDefault() {} })
+  de(consigna.render(), 'RegistroGuiado').props.onEnviar()
   consigna.unmount()
   assert.deepEqual(copia(guardados), copia(anteriores))
   assert.deepEqual(copia(guardados[0]), {
@@ -213,10 +213,8 @@ test('Apoyo usa la misma elección como radio, con su etiqueta y sin lenguaje de
   const { app, componente } = cargar()
   const vista = montar(app, componente('RegistroEleccionNode'), nodoApoyo, apoyo, { texto: '', opciones: [] })
   let tree = vista.render()
-  assert.equal(
-    de(tree, 'RegistroGuiado').props.mensaje,
-    'Nadie decide solo. ¿Quién te acompaña en esta decisión?',
-  )
+  // Ajuste vista del ítem: sin nada marcado no hay reacción bajo las opciones.
+  assert.equal(de(tree, 'ChoiceReveal').props.reaccion.props.texto, undefined)
   assert.equal(de(tree, 'ChoiceReveal').props.etiquetaElegida, 'Te acompaña')
   assert.deepEqual(
     copia(de(tree, 'ChoiceReveal').props.opciones.map((o) => o.codigo)),
@@ -227,7 +225,7 @@ test('Apoyo usa la misma elección como radio, con su etiqueta y sin lenguaje de
   tree = vista.render()
   assert.deepEqual(codigos(de(tree, 'ChoiceReveal').props.seleccion), ['DOCENTES'])
   assert.equal(
-    de(tree, 'RegistroGuiado').props.mensaje,
+    de(tree, 'ChoiceReveal').props.reaccion.props.texto,
     'Qué bueno contar con alguien. Cuéntame cómo te apoya.',
   )
   assert.equal(

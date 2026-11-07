@@ -83,9 +83,9 @@ test('«La vez pasada» marca lo elegido antes; mantenerlo o cambiarlo decide la
   player.unmount()
   const form = app.mount(ruta.type, ruta.props)
   let tree = form.render()
-  const guiado = elementos(tree, (e) => e.type?.name === 'RegistroGuiado')[0]
-  assert.equal(guiado.props.mensaje, ruta.props.node.eleccion.mensajes.inicio)
   const tarjetas = elementos(tree, (e) => e.type?.name === 'ChoiceReveal')[0]
+  // Ajuste vista del ítem: lo de la vez pasada llega marcado y el personaje lo saluda bajo las opciones.
+  assert.equal(tarjetas.props.reaccion.props.texto, ruta.props.node.eleccion.mensajes.inicio)
   assert.deepEqual(copia(tarjetas.props.anteriores), ['UNIVERSIDAD'])
   assert.equal(tarjetas.props.etiquetaAnterior, 'La vez pasada')
   const pregunta = () =>
@@ -134,18 +134,13 @@ test('con la respuesta disponible, la consigna cita el texto y nombra la activid
     tree.props.texto.props.children[0],
     `Lumi recuerda lo que escribiste en «${titulo}»: «${REFERENCIAS.disponible.referencias[0].texto}»`,
   )
-  // La consigna no supone que haya cita, y el rótulo de visibilidad va bajo la pregunta.
+  // La consigna no supone que haya cita. Ajuste vista del ítem: sin campos de presentación (ruta), la consigna es
+  // la pregunta del campo y la leyenda va en el pie del marco.
   assert.equal(espera.props.item.consigna, '¿Qué esperan de ti las personas cercanas hoy? ¿Ha cambiado algo?')
   const form = app.mount(espera.type, espera.props).render()
-  const etiqueta = elementos(
-    form,
-    (e) => e.type === 'label' && e.props.className === 'sx-submission-label',
-  )[0]
-  const partes = elementos(etiqueta, (e) => typeof e.props?.className === 'string').map(
-    (e) => e.props.className,
-  )
-  assert.ok(partes.indexOf('sx-submission-premise') < partes.indexOf('sx-submission-visibility'))
-  assert.ok(partes.indexOf('sx-submission-visibility') < partes.indexOf('sx-submission-textarea'))
+  const bloque = elementos(form, (e) => e.type?.name === 'RegistroExplicacion')[0]
+  assert.equal(bloque.props.pregunta, espera.props.item.consigna)
+  assert.equal(elementos(form, (e) => e.type?.name === 'RegistroGuiado').length, 1)
   assert.equal(elementos(form, (e) => e.type?.name === 'RegistroEco').length, 1)
   assert.equal(elementos(form, (e) => e.type?.name === 'CharacterAvatar').length, 0)
 })

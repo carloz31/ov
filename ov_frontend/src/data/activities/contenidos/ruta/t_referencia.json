@@ -24,10 +24,21 @@
       "hablanteId": "companero",
       "item": "t-refe-plan",
       "premisa": "",
-      "entregable": { "tipo": "texto" },
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora",
-      "eleccion": { "etiquetaElegida": "Tu plan" }
+      "eleccion": {
+        "etiquetaElegida": "Tu plan"
+      },
+      "dialogo": "Miremos tus planes uno por uno.",
+      "preguntaEleccion": "¿Cuál de tus planes eliges?",
+      "preguntaTexto": "¿Qué te atrae de ese plan?",
+      "entrada": "Me atrae porque…",
+      "entradaPropia": {
+        "OTRO_PLAN": "El plan es… y me atrae porque…"
+      }
     },
     {
       "id": "t-refe-retoma",
@@ -35,10 +46,23 @@
       "hablanteId": "companero",
       "item": "t-refe-retoma",
       "premisa": "",
-      "entregable": { "tipo": "texto" },
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
       "visibilidad": "estudiante_orientadora",
-      "eleccion": { "etiquetaElegida": "Tu plan", "etiquetaAnterior": "La vez pasada" }
+      "eleccion": {
+        "etiquetaElegida": "Tu plan",
+        "etiquetaAnterior": "La vez pasada",
+        "mensajes": {
+          "inicio": "Tu plan llega marcado. Cámbialo si hoy es otro.",
+          "una": "Anotado. Ahora cuéntame."
+        }
+      },
+      "dialogo": "Volvamos a tu plan.",
+      "preguntaEleccion": "¿Sigues con el mismo plan?",
+      "preguntaTexto": "¿Por qué lo mantienes o lo cambias?",
+      "entrada": "Sigo con… porque…"
     },
     {
       "id": "t-refe-duda",
@@ -46,9 +70,14 @@
       "hablanteId": "companero",
       "item": "t-refe-duda",
       "premisa": "",
-      "entregable": { "tipo": "texto" },
+      "entregable": {
+        "tipo": "texto"
+      },
       "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "visibilidad": "estudiante_orientadora",
+      "dialogo": "Una última cosa.",
+      "preguntaTexto": "¿Qué te gustaría tener claro de tu plan A?",
+      "entrada": "Me gustaría saber…"
     }
   ],
   "mapa": {

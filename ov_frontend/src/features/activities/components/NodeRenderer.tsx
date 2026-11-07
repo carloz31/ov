@@ -239,7 +239,11 @@ export function NodeRenderer({
               salida={<VolverAlMapa actividad={activity.id} />}
               {...(Nodo === RegistroConsignaNode ? { eco: registro.ecoDe(node) } : {})}
               {...(Nodo === RegistroEleccionNode
-                ? { anteriores: registro.anterioresDe(itemRegistro), eco: registro.ecoDe(node) }
+                ? {
+                    anteriores: registro.anterioresDe(itemRegistro),
+                    premarcadas: registro.premarcadasDe(itemRegistro),
+                    eco: registro.ecoDe(node),
+                  }
                 : {})}
             />
           )

@@ -1,17 +1,16 @@
 import type { ReactNode } from 'react'
 import { Check } from 'lucide-react'
-import { RegistroLumi } from './RegistroLumi'
-import { CharacterAvatar } from '@/components/student/CharacterAvatar'
+import { RegistroPersonaje } from './RegistroPersonaje'
 import { PasoAnterior } from '../PasoAnterior'
+import { LEYENDA_ITEM } from '../../lib/presentacionItem'
 import '../../styles/registro-guiado.css'
 
-// Marco común de los registros guiados (podio y elección): Lumi, consigna con su leyenda, el contenido
-// propio, el error del servidor y el botón de avanzar, que nunca se deshabilita por validación.
+// Marco común de un ítem de registro (ajuste vista del ítem): el personaje con lo fijo del ítem; el contenido (la
+// zona del eco y los bloques de elección y de texto, ya en el orden del nodo); el error del servidor y el pie con
+// la leyenda a la izquierda y el botón de avanzar, que nunca se deshabilita por validación.
 export function RegistroGuiado({
   hablanteId,
-  mensaje,
-  lumi,
-  consigna,
+  dialogo,
   ultimo,
   ocupado,
   error,
@@ -22,11 +21,7 @@ export function RegistroGuiado({
   children,
 }: {
   hablanteId?: string
-  // Sin mensaje (en la consulta, un ítem sin pista), Lumi no habla: solo su avatar.
-  mensaje?: string
-  // Consulta (F02): la burbuja de la consigna (pista resaltada) en lugar de los mensajes de la elección.
-  lumi?: ReactNode
-  consigna: string
+  dialogo?: string
   ultimo: boolean
   ocupado: boolean
   error: string
@@ -46,32 +41,24 @@ export function RegistroGuiado({
         onEnviar()
       }}
     >
-      {lumi ??
-        (mensaje ? (
-          <RegistroLumi hablanteId={hablanteId} texto={mensaje} />
-        ) : (
-          <CharacterAvatar id={hablanteId ?? 'companero'} size="sm" />
-        ))}
-      <p className="sx-submission-label">
-        <span className="sx-submission-premise">{consigna}</span>
-        <span className="sx-submission-visibility">
-          Visible para ti y tu orientadora. Se guarda en tu cuenta.
-        </span>
-      </p>
+      <RegistroPersonaje hablanteId={hablanteId} texto={dialogo} />
       {children}
       {error && (
         <p role="alert" className="sx-submission-error">
           {error}
         </p>
       )}
-      <div className="sx-player-actions sx-step-footer">
-        {onAnterior && <PasoAnterior disabled={ocupado} onClick={onAnterior} />}
-        {salida ?? (
-          <button type="submit" className="sx-primary-button" disabled={ocupado}>
-            {ocupado ? 'Guardando…' : (etiqueta ?? (ultimo ? 'Entregar' : 'Guardar y continuar'))}
-            <Check size={18} />
-          </button>
-        )}
+      <div className="sx-player-actions sx-step-footer sx-item-pie">
+        <span className="sx-item-leyenda">{LEYENDA_ITEM}</span>
+        <div className="sx-item-acciones">
+          {onAnterior && <PasoAnterior disabled={ocupado} onClick={onAnterior} />}
+          {salida ?? (
+            <button type="submit" className="sx-primary-button" disabled={ocupado}>
+              {ocupado ? 'Guardando…' : (etiqueta ?? (ultimo ? 'Entregar' : 'Siguiente'))}
+              <Check size={18} />
+            </button>
+          )}
+        </div>
       </div>
     </form>
   )

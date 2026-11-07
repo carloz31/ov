@@ -17,48 +17,156 @@
   color: var(--warning-text);
   font-size: 13px;
 }
-/* Elección guiada: tarjetas que se alternan, sin casillas. */
-.sx-root .sx-choice-wrap {
-  display: grid;
-  gap: 8px;
-}
-.sx-root .sx-choice-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-}
-.sx-root .sx-choice-card {
-  position: relative;
+/* Ajuste vista del ítem de registro: personaje, bloques, chips y pie. */
+.sx-root .sx-item-personaje {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
-  min-height: 64px;
-  padding: 12px 14px;
-  border: 1px solid var(--input);
+}
+.sx-root .sx-item-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--muted);
+  font-size: 22px;
+}
+.sx-root .sx-item-dice {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.sx-root .sx-item-nombre {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted-foreground);
+}
+.sx-root .sx-item-globo {
+  margin: 0;
+  padding: 10px 16px;
   border-radius: 14px;
   background: var(--card);
   color: var(--foreground);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.sx-root .sx-item-personaje.is-reaccion {
+  align-items: center;
+  gap: 10px;
+}
+.sx-root .sx-item-personaje.is-reaccion .sx-item-avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 15px;
+}
+.sx-root .sx-item-personaje.is-reaccion .sx-item-globo {
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--muted);
   font-size: 14px;
+  font-weight: 500;
+}
+.sx-root .sx-item-bloque {
+  display: grid;
+  gap: 10px;
+}
+.sx-root .sx-item-bloque.sx-guided-explain {
+  padding-top: 0;
+  border-top: 0;
+}
+.sx-root .sx-item-cabeza {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sx-root .sx-item-pregunta {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--foreground);
+}
+.sx-root .sx-item-numeral {
+  margin-right: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.sx-root .sx-item-indicador {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.sx-root .sx-item-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sx-root .sx-item-leyenda {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.sx-root .sx-item-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+/* Elección guiada: chips que se alternan, sin casillas ni íconos. */
+.sx-root .sx-choice-wrap {
+  display: grid;
+  gap: 10px;
+}
+.sx-root .sx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sx-root .sx-chips-exclusivas {
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.sx-root .sx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--input);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 15px;
   cursor: pointer;
   transition: opacity 150ms ease;
 }
-.sx-root .sx-choice-card:hover {
+.sx-root .sx-chip:hover {
   border-color: var(--primary);
 }
-.sx-root .sx-choice-card:focus-visible {
+.sx-root .sx-chip:focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
 }
-.sx-root .sx-choice-card.is-selected {
-  border: 2px solid var(--primary);
-  padding: 11px 13px;
-  background: var(--primary-soft);
+.sx-root .sx-chip.is-selected {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 700;
 }
-.sx-root .sx-choice-card.is-dimmed {
+.sx-root .sx-chip.is-otra:not(.is-selected) {
+  border-style: dashed;
+  color: var(--muted-foreground);
+}
+.sx-root .sx-chip.is-dimmed {
   opacity: 0.45;
 }
-.sx-root .sx-choice-card.is-toggled {
+.sx-root .sx-chip.is-toggled {
   animation: sx-choice-pop 150ms ease-out;
 }
 @keyframes sx-choice-pop {
@@ -70,50 +178,30 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sx-root .sx-choice-card.is-toggled {
+  .sx-root .sx-chip.is-toggled {
     animation: none;
   }
 }
-.sx-root .sx-choice-icon {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  background: var(--muted);
-  color: var(--primary);
-}
-.sx-root .sx-choice-card.is-selected .sx-choice-icon {
-  background: var(--primary);
-  color: var(--primary-foreground);
-}
 .sx-root .sx-choice-name {
-  flex: 1;
-  min-width: 0;
-  font-weight: 600;
-  line-height: 1.3;
-}
-.sx-root .sx-choice-card.has-badge .sx-choice-name {
-  padding-right: 64px;
+  line-height: 1.2;
 }
 .sx-root .sx-choice-badge {
-  position: absolute;
-  top: 6px;
-  right: 8px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-size: 10px;
+  background: var(--card);
+  color: var(--primary);
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.sx-root .sx-chip:not(.is-selected) .sx-choice-badge {
+  background: var(--primary-soft);
 }
 .sx-root .sx-choice-other {
   display: grid;
   gap: 4px;
-  flex-basis: 100%;
 }
 .sx-root .sx-choice-other input {
   min-height: 40px;

@@ -1,16 +1,14 @@
 import { useRef, useState } from 'react'
 import { completo, faltan, quitar, colocar, intercambiar, type Puestos } from '../../lib/podio'
-import { iconoRegistro } from '../../data/iconosRegistro'
 import '../../styles/podium.css'
 
-// Podio genérico de «elegir y ordenar top N» (F01): N puestos, el primero más grande, y las opciones
-// como fichas. Tocar una ficha la coloca en el primer puesto libre; tocar un puesto la devuelve;
+// Podio genérico de «elegir y ordenar top N» (F01; ajuste vista del ítem): N huecos numerados arriba y las
+// opciones como chips debajo. Tocar una ficha la coloca en el primer puesto libre; tocar un puesto la devuelve;
 // en desktop, arrastrar un puesto sobre otro los intercambia (atajo, nunca la única forma).
 export function RankingPodium({
   opciones,
   puestos,
   etiquetaPrimero,
-  iconos,
   error,
   onChange,
   soloLectura,
@@ -18,7 +16,6 @@ export function RankingPodium({
   opciones: { codigo: string; texto: string }[]
   puestos: Puestos
   etiquetaPrimero: string
-  iconos?: Record<string, string>
   error?: string
   onChange: (puestos: Puestos) => void
   // Consulta (F02): el podio se ve completo y no se cambia; sin la ayuda para cambiarlo.
@@ -59,7 +56,6 @@ export function RankingPodium({
     <div className="sx-podium-wrap">
       <ol className="sx-podium" style={{ gridTemplateColumns: `1.25fr repeat(${puestos.length - 1}, 1fr)` }}>
         {puestos.map((codigo, i) => {
-          const Icon = codigo ? iconoRegistro(iconos?.[codigo]) : undefined
           const etiqueta = i === 0 ? etiquetaPrimero : `${i + 1}º lugar`
           return (
             <li key={i}>
@@ -85,9 +81,8 @@ export function RankingPodium({
               >
                 <span className="sx-podium-number">{i + 1}</span>
                 <small>{etiqueta}</small>
-                {codigo && Icon && (
+                {codigo && (
                   <span className="sx-podium-value">
-                    <Icon size={20} aria-hidden="true" />
                     <strong>{texto(codigo)}</strong>
                   </span>
                 )}
@@ -108,22 +103,20 @@ export function RankingPodium({
         </p>
       )}
       {!lleno && (
-        <div className="sx-podium-chips">
+        <div className="sx-podium-chips sx-chips">
           {opciones.map((o) => {
-            const Icon = iconoRegistro(iconos?.[o.codigo])
             const colocada = puestos.includes(o.codigo)
             return (
               <button
                 type="button"
                 key={o.codigo}
-                className="sx-podium-chip"
+                className="sx-podium-chip sx-chip"
                 aria-label={o.texto}
                 style={colocada ? { visibility: 'hidden' } : undefined}
                 aria-hidden={colocada || undefined}
                 tabIndex={colocada ? -1 : undefined}
                 onClick={() => elegir(o.codigo)}
               >
-                <Icon size={20} aria-hidden="true" />
                 <span>{o.texto}</span>
               </button>
             )
