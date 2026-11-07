@@ -300,7 +300,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         ('t-mision-intereses', 'DISPONIBLE'), ('t-mision-intereses-2', 'BLOQUEADA'),
         ('t-mision-inteligencias', 'DISPONIBLE'), ('t-mision-habilidades', 'DISPONIBLE'), ('t-caso', 'BLOQUEADA'),
         ('t-contraste', 'BLOQUEADA'), ('t-caso-2', 'BLOQUEADA'), ('t-investigador', 'DISPONIBLE'),
-        ('t-investigador-cierre', 'BLOQUEADA')]
+        # Ajuste registros: `t-referencia`, sin regla propia.
+        ('t-investigador-cierre', 'BLOQUEADA'), ('t-referencia', 'DISPONIBLE')]
     assert next(b for b in datos['actividades-inicial'] if b['codigo'] == 'CIUDAD')['bloqueo'][0]['mensaje']
     items = datos['items-t-mision-intereses']
     assert [i['codigo'] for i in items] == [f'RIASEC-{n:02}' for n in range(1, 31)]

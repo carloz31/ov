@@ -4,6 +4,7 @@
     "consigna": "Ordena los tres valores más importantes para ti y explica el primero.",
     "eleccion": {
       "comun": false,
+      "fuente": "LISTA",
       "lista": "t-lista-valores",
       "maxima": 3,
       "minima": 3,
@@ -29,9 +30,12 @@
           "texto": "Tener libertad"
         }
       ],
+      "opciones_propias": [],
       "ordenada": true,
       "permite_otra": false,
-      "referencia": null
+      "premarcar_si": null,
+      "referencia": null,
+      "referencia_opciones": null
     },
     "min_caracteres": null,
     "nombre": "Tus valores",

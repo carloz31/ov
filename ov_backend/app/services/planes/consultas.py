@@ -171,10 +171,12 @@ def estado_seccion(codigo: str, abierta: bool, tarjeta, datos: DatosPlanes) -> s
 
 
 @usar_contexto
-def contar_listos_para_comparar(sesion: Session, cuenta: Cuenta) -> int:
-    """Cuántos planes tienen en LISTA todas las secciones `para_comparar`."""
+def contar_listos_para_comparar(sesion: Session, cuenta: Cuenta, secciones=None) -> int:
+    """Cuántos planes tienen en LISTA todas las `secciones` (por defecto, las `para_comparar`); sin secciones,
+    cuántos planes hay."""
     abiertas = secciones_abiertas(sesion, cuenta)
-    para_comparar = [s.codigo for s in contexto(sesion).definiciones.listar(SeccionTarjeta) if s.para_comparar]
+    para_comparar = ([s.codigo for s in contexto(sesion).definiciones.listar(SeccionTarjeta) if s.para_comparar]
+                     if secciones is None else list(secciones))
     datos = cargar_planes(sesion, cuenta)
     return sum(all(estado_seccion(c, abiertas[c], t, datos) == 'LISTA' for c in para_comparar)
                for t in datos.tarjetas)

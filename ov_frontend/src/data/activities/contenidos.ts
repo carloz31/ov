@@ -34,6 +34,7 @@ import tComparar from './contenidos/ruta/t_comparar.json'
 import tProyecto from './contenidos/ruta/t_proyecto.json'
 import tInvestigador from './contenidos/ruta/t_investigador.json'
 import tInvestigadorCierre from './contenidos/ruta/t_investigador_cierre.json'
+import tReferencia from './contenidos/ruta/t_referencia.json'
 import tApo1 from './contenidos/ruta/t_apo_1.json'
 import tApo2 from './contenidos/ruta/t_apo_2.json'
 import tMisionIntereses from './contenidos/ruta/t_mision_intereses.json'
@@ -168,6 +169,7 @@ export const contenidos: Record<string, ContenidoActividad> = {
   t_proyecto: tProyecto,
   t_investigador: tInvestigador,
   t_investigador_cierre: tInvestigadorCierre,
+  t_referencia: tReferencia,
   t_apo_1: tApo1,
   t_apo_2: tApo2,
   t_mision_intereses: tMisionIntereses,

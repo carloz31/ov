@@ -9,10 +9,10 @@ from google import genai
 from google.genai import errors, types
 from app.config import Configuracion
 from app.services.registro.evaluacion import (
-    CriterioEvaluacion, ItemPorEvaluar, RespuestaOtroItem, TurnoEvaluacion, procesar_entrega, procesar_seguimiento,
+    CriterioEvaluacion, ItemPorEvaluar, TurnoEvaluacion, procesar_entrega, procesar_seguimiento,
 )
 from app.services.registro.gemini import EvaluadorGemini, razonamiento_minimo
-from app.services.registro.prompt import PROMPT_ENTREGA_V4, PROMPT_SEGUIMIENTO_V4
+from app.services.registro.prompt import PROMPT_ENTREGA_V5, PROMPT_SEGUIMIENTO_V5
 from soporte_red import impedir_red
 
 
@@ -23,10 +23,12 @@ CRITERIOS = (CriterioEvaluacion('C1', 'ACCION', 'Acción concreta', '¿Qué podr
 ITEM = ItemPorEvaluar('I1', '¿Qué harás para practicarla?', CRITERIOS, ('Asertividad',),
                       'En el trabajo de Comunicación del jueves voy a decir mi opinión al menos una vez.', 40,
                       'Cuéntame más')
-ADECUADA = {'items': [{'item': 'I1', 'clasificacion': 'ADECUADA', 'criterios_faltantes': [], 'pregunta': None}]}
-VAGA = {'items': [{'item': 'I1', 'clasificacion': 'POCO_DESARROLLADA', 'criterios_faltantes': ['C2'],
-                   'pregunta': '¿En qué trabajo de Comunicación lo harías?'}]}
-SEGUIMIENTO = {'clasificacion': 'ADECUADA', 'criterios_faltantes': [], 'pregunta': None,
+# Contrato v5 (ajuste registros): `{cumple, abierto, sensible, falta, repregunta[, consolidada]}`.
+ADECUADA = {'items': [{'item': 'I1', 'cumple': True, 'abierto': False, 'sensible': False, 'falta': None,
+                       'repregunta': None}]}
+VAGA = {'items': [{'item': 'I1', 'cumple': False, 'abierto': False, 'sensible': False,
+                   'falta': 'Una situación concreta', 'repregunta': '¿En qué trabajo de Comunicación lo harías?'}]}
+SEGUIMIENTO = {'cumple': True, 'abierto': False, 'sensible': False, 'falta': None, 'repregunta': None,
                'consolidada': 'Voy a decir mi opinión el jueves en Comunicación.'}
 
 
@@ -73,7 +75,7 @@ def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
     cliente = ClienteSimulado()
     resultado = entregar(cliente)
     assert resultado.origen == 'LLM' and resultado.clasificacion == 'ADECUADA'
-    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v4'
+    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v5'
     llamada, = cliente.llamadas
     datos = json.loads(llamada['contents'])
     assert set(datos) == {'titulo_actividad', 'items'}
@@ -82,7 +84,7 @@ def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
                                                  'repregunta': '¿Qué podrías hacer al respecto?'}
     assert CLAVE_SIMULADA not in llamada['contents']
     configuracion = llamada['config']
-    assert configuracion.system_instruction == PROMPT_ENTREGA_V4
+    assert configuracion.system_instruction == PROMPT_ENTREGA_V5
     assert configuracion.temperature == 0.2 and configuracion.response_mime_type == 'application/json'
     assert 'items' in configuracion.response_json_schema['required']
     assert configuracion.thinking_config.thinking_level == 'LOW'
@@ -96,7 +98,7 @@ def test_modelo_por_defecto_es_gemini_3_8_flash():
 
 def test_entrega_poco_desarrollada_usa_la_pregunta_redactada():
     resultado = entregar(ClienteSimulado(respuesta_sdk(VAGA)))
-    assert resultado.criterios_faltantes == ('C2',)
+    assert resultado.criterios_faltantes == ('C1', 'C2') and resultado.falta == 'Una situación concreta'
     assert resultado.pregunta == '¿En qué trabajo de Comunicación lo harías?'
 
 
@@ -104,17 +106,16 @@ def test_seguimiento_consolida_con_su_instruccion():
     cliente = ClienteSimulado(respuesta_sdk(SEGUIMIENTO))
     adaptador = EvaluadorGemini(CONFIGURACION, cliente=cliente)
     try:
-        resultado = procesar_seguimiento('Mi plan', ITEM, (TurnoEvaluacion('¿Cuándo?', 'El jueves'),), ('C2',),
-                                         (RespuestaOtroItem('¿Qué habilidad?', 'Asertividad'),), adaptador,
+        resultado = procesar_seguimiento('Mi plan', ITEM, (TurnoEvaluacion('¿Cuándo?', 'El jueves'),), adaptador,
                                          pregunta_generica=False)
     finally:
         adaptador.cerrar()
     assert resultado.origen == 'LLM' and resultado.consolidada == SEGUIMIENTO['consolidada']
     llamada, = cliente.llamadas
-    assert llamada['config'].system_instruction == PROMPT_SEGUIMIENTO_V4
+    assert llamada['config'].system_instruction == PROMPT_SEGUIMIENTO_V5
     datos = json.loads(llamada['contents'])
     assert datos['turnos'] == [{'pregunta': '¿Cuándo?', 'respuesta': 'El jueves'}]
-    assert datos['criterios_faltantes_previos'] == ['C2']
+    assert datos['ecos'] == [] and 'otras_respuestas' not in datos
     assert 'consolidada' in llamada['config'].response_json_schema['required']
 
 
@@ -139,10 +140,10 @@ def test_modelo_desconocido_sin_supuestos_ni_descubrimiento():
 
 
 @pytest.mark.parametrize('datos', [
-    {}, {'items': []}, {'items': [{**ADECUADA['items'][0], 'clasificacion': 'NO_EVALUADA'}]},
+    {}, {'items': []}, {'items': [{**ADECUADA['items'][0], 'cumple': 'sí'}]},
     {'items': [{**ADECUADA['items'][0], 'extra': CLAVE_SIMULADA}]},
-    {'items': [{**ADECUADA['items'][0], 'criterios_faltantes': ['C1']}]},
-    {'items': [{**VAGA['items'][0], 'criterios_faltantes': ['inexistente']}]},
+    {'items': [{**ADECUADA['items'][0], 'item': 'I2'}]},
+    {'items': [{k: v for k, v in VAGA['items'][0].items() if k != 'sensible'}]},
 ])
 def test_resultados_invalidos_se_convierten_en_fallo(datos):
     cliente = ClienteSimulado(respuesta_sdk(datos))
@@ -242,13 +243,13 @@ def test_sdk_con_transporte_simulado_envia_esquema_y_razonamiento(monkeypatch):
     finally:
         adaptador.cerrar()
         cliente_http.close()
-    assert resultado.origen == 'LLM' and resultado.criterios_faltantes == ('C2',)
+    assert resultado.origen == 'LLM' and resultado.criterios_faltantes == ('C1', 'C2')
     configuracion = llamadas[0]['generationConfig']
     assert configuracion['temperature'] == 0.2 and configuracion['candidateCount'] == 1
     pensamiento = configuracion['thinkingConfig']
     # ProtoJSON admite el nombre original y su equivalente lowerCamelCase.
     assert pensamiento.get('thinkingLevel', pensamiento.get('thinking_level')) == 'LOW'
-    assert llamadas[0]['systemInstruction']['parts'][0]['text'] == PROMPT_ENTREGA_V4
+    assert llamadas[0]['systemInstruction']['parts'][0]['text'] == PROMPT_ENTREGA_V5
     assert CLAVE_SIMULADA not in json.dumps(llamadas[0])
 
 

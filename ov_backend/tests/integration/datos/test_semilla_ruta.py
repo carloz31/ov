@@ -18,7 +18,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
     esperados = {'colegio': 1, 'salon': 2, 'cuenta': 8, 'orientadora_salon': 1, 'vinculo_familiar': 2, 'bloque': 6,
         # Ajuste mochila: t-caso-2, t-ficha-3, t-testimonio-3 y 4, sus reglas y la condición extra de t-testimonio-2.
         # Ajuste carga-instrumentos: t-mision-inteligencias y t-mision-habilidades, con sus instrumentos reales.
-        'actividad': 30, 'seccion': 8, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 7, 'nivel': 3,
+        'actividad': 31, 'seccion': 8, 'presentacion': 18, 'ficha': 4, 'testimonio': 4, 'conversacion': 2, 'grupo_insignia': 2, 'insignia': 7, 'nivel': 3,
         'regla_desbloqueo': 58, 'condicion_desbloqueo': 65, 'pregunta_diario': 8,
         'instrumento': 4, 'escala_respuesta': 4, 'opcion_escala': 14, 'dimension': 23,
         'item_instrumento': 138, 'actividad_item': 157, 'aplicacion': 5, 'aplicacion_actividad': 6,
@@ -26,15 +26,17 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # 706 instituciones con carreras) y la relación provisional al azar. Ajuste carga-casos: 245
         # ocupaciones, solo las curadas (sin ocultas; 10 militares sin puntajes), y sus familias.
         'ocupacion': 245, 'puntaje_ocupacion': 1410, 'familia_carrera': 89, 'carrera': 603,
-        'ocupacion_familia': 341, 'lista_opciones': 13, 'opcion_lista': 69, 'item_registro': 14,
-        'criterio_completitud': 12, 'referencia': 12, 'tematica': 5,
+        'ocupacion_familia': 341, 'lista_opciones': 13, 'opcion_lista': 69, 'item_registro': 17,
+        'criterio_completitud': 15, 'referencia': 14, 'tematica': 5,
         'actividad_tematica': 6, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 614, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,
         'grupo_ocupacional': 23, 'estilo_trabajo': 21, 'ingreso_familia': 716, 'ingreso_institucion': 1096,
         'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6,
         # B13: catálogos de investigaciones.
-        'pregunta_base_guion': 3, 'tipo_reaccion': 4}
-    assert len(Base.metadata.tables) == 95
+        'pregunta_base_guion': 3, 'tipo_reaccion': 4,
+        # Ajuste registros: `t-referencia` (3 ítems, 3 criterios, 2 referencias) y `LUMI_SENSIBLE`.
+        'texto_fijo': 1}
+    assert len(Base.metadata.tables) == 96
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA', 'LUMI'}

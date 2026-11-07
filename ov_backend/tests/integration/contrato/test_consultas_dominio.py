@@ -34,6 +34,8 @@ for _estados in ESTADOS.values():
     _estados['t-caso-2'] = 'BLOQUEADA'
     # B13: el cierre del investigador espera una entrevista publicada.
     _estados['t-investigador-cierre'] = 'BLOQUEADA'
+# Ajuste registros: `t-referencia` está en la Ciudad, sin regla propia.
+ESTADOS[False]['t-referencia'], ESTADOS[True]['t-referencia'] = 'BLOQUEADA', 'DISPONIBLE'
 ESTADOS[False]['t-investigador'], ESTADOS[True]['t-investigador'] = 'BLOQUEADA', 'DISPONIBLE'
 # Ajuste carga-instrumentos: las misiones de inteligencias y habilidades se abren con la Ciudad.
 for _mision in ('t-mision-inteligencias', 't-mision-habilidades'):

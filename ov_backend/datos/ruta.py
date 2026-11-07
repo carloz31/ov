@@ -85,6 +85,9 @@ ACTIVIDADES = (('t-inicio', 'T0', 'Inicio de prueba', 'INFORMATIVA', None, 5),
                # B13: la misión que abre Investigaciones y la que vuelve tras publicar la primera entrevista.
                ('t-investigador', 'CIUDAD', 'El investigador de oficios', 'INFORMATIVA', None, 5),
                ('t-investigador-cierre', 'CIUDAD', 'Lo que cambió', 'REGISTRO', None, 10),
+               # Ajuste registros: elección desde una referencia con opciones propias, premarcado, seguimiento
+               # por ítem y estado abierto.
+               ('t-referencia', 'CIUDAD', 'Registro desde tus planes', 'REGISTRO', None, 10),
                ('t-apo-1', 'FAMILIA', 'Primera actividad del apoderado', 'INFORMATIVA', None, 10),
                ('t-apo-2', 'FAMILIA', 'Segunda actividad del apoderado', 'INFORMATIVA', None, 10),
                # DATO DE PRUEBA: un recuerdo de Lumi por nivel de amistad (ajuste del diario de F05).
@@ -110,6 +113,7 @@ PROPIEDADES = {'t-opcional': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR
                't-mision-inteligencias': {'requerida': False},
                't-mision-habilidades': {'requerida': False},
                't-investigador-cierre': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+               't-referencia': {'requerida': False},
                **{codigo: {'requerida': False} for codigo in RECUERDOS_LUMI}}
 
 # Texto de presentación de cada actividad (`descripcion`): el front lo muestra tal cual en el mapa y en
@@ -129,6 +133,7 @@ DESCRIPCIONES = {
     't-llegada': 'Responde de nuevo para ver cuánto avanzaste desde el punto de partida.',
     't-comparar': 'Compara tus planes de carrera.',
     't-proyecto': 'Escribe tu proyecto con tu plan y tus próximos pasos.',
+    't-referencia': 'Elige uno de tus planes y cuéntame por qué.',
     't-mision-intereses': 'Descubre qué actividades te interesan.',
     't-mision-intereses-2': 'Sigue descubriendo tus intereses.',
     't-mision-inteligencias': 'Descubre qué inteligencias usas más hoy.',
@@ -243,7 +248,44 @@ ITEMS_REGISTRO = (
      (('C1', 'CONTRASTE', 'Compara lo que pensaba antes con lo que aprendió'),)),
     ('t-investigador-cierre', 't-cierre-lista', 'En tu lista', '¿La ocupación sube o baja en tu lista? ¿Por qué?',
      ('t-lista-cambio', 1, 1, False, False), (('C1', 'RAZON', 'Por qué sube, baja o se queda igual'),)),
+    # Ajuste registros (DATO DE PRUEBA): elección desde PLANES con tres opciones propias (criterio informado,
+    # criterio null y una no exclusiva con texto base propio), otra que retoma sobre la misma referencia, un
+    # premarcado y un texto con seguimiento completo, abierto y ecos de una referencia y de un ítem anterior.
+    ('t-referencia', 't-refe-plan', 'El plan que elegiste', '¿Cuál de tus planes eliges y por qué?',
+     {'fuente': 'REFERENCIA', 'referencia': 't-ref-refe-planes', 'minima': 1, 'maxima': 2,
+      'propias': ({'codigo': 'NINGUNO_AUN', 'texto': 'Ninguno todavía', 'exclusiva': True,
+                   'pregunta_propia': '¿Qué te falta para elegir uno?', 'criterio': 'ACCION',
+                   'que_busca': 'Una acción concreta para poder elegir', 'texto_base': '¿Qué harías primero?',
+                   'cumple': ('Voy a hablar con mi tío esta semana',), 'no_cumple': ('Ya veré (sin acción)',)},
+                  {'codigo': 'PREFIERO_NO', 'texto': 'Prefiero no decir', 'exclusiva': True, 'criterio': None},
+                  {'codigo': 'OTRO_PLAN', 'texto': 'Uno que aún no anoto',
+                   'texto_base': '¿Qué plan es y qué te atrae de él?'})},
+     (('C1', 'RAZON', 'Por qué elige ese plan'),)),
+    ('t-referencia', 't-refe-retoma', 'Tu plan, hoy', '¿Sigues con el mismo plan? Cuéntame por qué.',
+     {'fuente': 'REFERENCIA', 'referencia': 't-ref-refe-planes', 'minima': 1, 'maxima': 1,
+      'retoma': 't-ref-refe-planes',
+      'propias': ({'codigo': 'SIN_PLAN', 'texto': 'Todavía no tengo uno', 'exclusiva': True, 'criterio': None},),
+      'premarcar_si': {'item': 't-refe-plan', 'opcion': 'PREFIERO_NO', 'marca': 'SIN_PLAN'}},
+     (('C1', 'RAZON', 'Por qué mantiene o cambia su plan'),)),
+    ('t-referencia', 't-refe-duda', 'Lo que aún no sabes', '¿Qué te gustaría tener claro de tu plan A?', None,
+     (('C1', 'EJEMPLO', 'Algo concreto que quiere saber'),)),
 )
+
+# Ajuste registros: campos de seguimiento por ítem (solo con criterio). `ecos_llm`: (tipo, código) con tipo
+# REFERENCIA (de la actividad), TEXTO o ELECCION (de un ítem anterior de la misma actividad). DATO DE PRUEBA.
+SEGUIMIENTOS = {
+    # Dos repreguntas al mismo ítem (como b5-1-decision en `contenido`); sin guía, conserva su respaldo de ruta.
+    't-val-orden': {'max_repreguntas': 2},
+    't-refe-plan': {'que_busca': 'Un motivo propio para elegir ese plan', 'texto_base': '¿Qué te atrae de ese plan?',
+                    'cumple': ('Lo elijo porque me gusta construir cosas', 'Porque mi tía lo estudió y me contó'),
+                    'no_cumple': ('Porque sí (sin motivo)', 'Es el mejor (sin motivo propio)'),
+                    'admite_abierto': True},
+    't-refe-duda': {'que_busca': 'Algo concreto que quiere averiguar', 'texto_base': '¿Qué dato te falta?',
+                    'cumple': ('Cuánto cuesta el primer año', 'Si hay turno noche'),
+                    'no_cumple': ('Todo (nada concreto)', 'No sé (sin dato)'),
+                    'evitar': 'Sugerir qué averiguar', 'admite_abierto': True,
+                    'ecos_llm': (('REFERENCIA', 't-ref-refe-plan-a'), ('TEXTO', 't-refe-plan'))},
+}
 
 # Referencias: (código, (tipo de dueño, dueño), tipo, fuente). Dueño: ('ACTIVIDAD', código) o
 # ('PREGUNTA_DIARIO', código). El tipo es uno de `TipoReferencia`; ELECCION y TEXTO leen un ítem de registro
@@ -261,7 +303,10 @@ REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera')
                ('t-ref-plan-a', ('ACTIVIDAD', 't-proyecto'), 'PLAN', None),
                ('t-ref-pasos-plan-a', ('ACTIVIDAD', 't-proyecto'), 'PASOS_PLAN_A', None),
                ('t-ref-opcion-inicial', ('ACTIVIDAD', 't-proyecto'), 'OPCION_INICIAL', None),
-               ('t-ref-lo-que-pienso', ('ACTIVIDAD', 't-investigador-cierre'), 'LO_QUE_PIENSO', None))
+               ('t-ref-lo-que-pienso', ('ACTIVIDAD', 't-investigador-cierre'), 'LO_QUE_PIENSO', None),
+               # Ajuste registros (DATO DE PRUEBA): las opciones en vivo de t-referencia y su eco para el LLM.
+               ('t-ref-refe-planes', ('ACTIVIDAD', 't-referencia'), 'PLANES', None),
+               ('t-ref-refe-plan-a', ('ACTIVIDAD', 't-referencia'), 'PLAN', None))
 
 # Lo que cambia los valores por defecto de un ítem (obligatorio, sin longitud mínima).
 PROPIEDADES_ITEMS = {'t-val-breve': {'min_caracteres': 40}}
@@ -482,6 +527,10 @@ PREGUNTAS_DIARIO = (
     ('t-dia-favoritos', 'Mis favoritos', '¿Qué te atrae de lo que marcaste como favorito?', 'DIARIA', True, 'AUTO-B'),
     ('t-dia-libre', 'Un momento', '¿Qué momento de hoy quieres recordar?', 'DIARIA', False, None),
 )
+
+# Ajuste registros (DATO DE PRUEBA): si la cuenta eligió esa opción en ese ítem, la pregunta personalizada usa su
+# base sin LLM: {pregunta: (ítem, opción)}.
+RESPALDOS_DIARIO = {'t-diario-personal': ('t-exp-ruta', 'EMPRENDER')}
 
 # (código, tipo de objetivo, objetivo, mensaje de bloqueo, condiciones); cada condición:
 # (evento, referencia, conteo, mínimo).

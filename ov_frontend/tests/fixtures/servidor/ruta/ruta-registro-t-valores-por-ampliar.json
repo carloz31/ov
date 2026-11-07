@@ -1,7 +1,9 @@
 {
   "estado": "COMPLETADA",
+  "items_abiertos": [],
   "items_por_ampliar": [
     {
+      "falta": "Por qué el primero es el más importante",
       "item": "t-val-orden",
       "pista": "Sobre lo que contaste: ¿Por qué lo piensas así?"
     }

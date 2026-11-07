@@ -113,6 +113,10 @@ def test_items_listas_y_criterios_cargados(tmp_path):
                 ('t-investigador-cierre', 't-cierre-cambio', 1, None, None),
                 ('t-investigador-cierre', 't-cierre-lista', 2, 't-lista-cambio', False),
                 ('t-proyecto', 't-proyecto-paso', 1, None, None),
+                # Ajuste registros: elige desde una referencia o de sus opciones propias, sin lista.
+                ('t-referencia', 't-refe-plan', 1, None, None),
+                ('t-referencia', 't-refe-retoma', 2, None, None),
+                ('t-referencia', 't-refe-duda', 3, None, None),
                 ('t-valores', 't-val-orden', 1, 't-lista-valores', False),
                 ('t-valores', 't-val-libre', 2, None, None),
                 ('t-valores', 't-val-breve', 3, None, None),

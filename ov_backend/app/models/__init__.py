@@ -10,7 +10,7 @@ from app.models.enums import (
     UsoPreguntaDiario, TipoRecomendacion, OrigenRedaccion, GestionInstitucion, FrecuenciaGasto, OrigenIdea,
     PreguntaConocimiento, RespuestaConocimiento, OrigenDuda, EstadoDuda, EstadoSugerencia, OrigenSugerencia,
     EstadoPaso, OrigenSesion, EstadoInvestigacion, OrigenPreguntaGuion, EstadoSugerenciaGuion, EstadoEntrevista,
-    MotivoReporte, EstadoReporte, TipoNotificacion,
+    MotivoReporte, EstadoReporte, TipoNotificacion, FuenteOpciones,
 )
 
 
@@ -45,7 +45,7 @@ _MODELOS_POR_MODULO = {
     ),
     'app.models.registro': (
         'ListaOpciones', 'OpcionLista', 'ItemRegistro', 'CriterioCompletitud', 'RespuestaRegistro',
-        'TurnoSeguimiento', 'EvaluacionRespuesta',
+        'TurnoSeguimiento', 'EvaluacionRespuesta', 'TextoFijo',
     ),
     'app.models.referencias': (
         'Referencia',
@@ -87,7 +87,7 @@ __all__ = [
     'OpcionEscala', 'ItemInstrumento', 'ActividadItem', 'Aplicacion', 'AplicacionActividad',
     'Ocupacion', 'PuntajeOcupacion', 'RespuestaItem', 'RitmoAplicacion', 'ResultadoInstrumento',
     'ResultadoDimension', 'Coincidencia', 'ListaOpciones', 'OpcionLista', 'ItemRegistro',
-    'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta',
+    'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta', 'TextoFijo', 'FuenteOpciones',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
     'TipoCarrera', 'OcupacionFamilia', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion', 'InstitucionCarrera',
     'IngresoFamilia', 'IngresoInstitucion',

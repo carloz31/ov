@@ -5,16 +5,19 @@ from types import SimpleNamespace
 import pytest
 
 from app.exceptions import ErrorAccion
-from app.services.registro.eleccion import validar_eleccion
+from app.services.registro.eleccion import OpcionItem, validar_eleccion
 
 
 # DATO DE PRUEBA: una lista de tres opciones.
-OPCIONES = tuple(SimpleNamespace(codigo=c) for c in ('A', 'B', 'C'))
+OPCIONES = tuple(OpcionItem(c, f'Opción {c}') for c in ('A', 'B', 'C'))
 
 
 def item(**cambios):
-    return SimpleNamespace(**{'lista_id': 1, 'referencia_id': None, 'eleccion_minima': 1, 'eleccion_maxima': 2,
-                              'eleccion_ordenada': False, 'permite_otra': True, **cambios})
+    # Ajuste registros: la fuente de opciones reemplaza a `lista_id` como señal de que el ítem tiene elección.
+    datos = {'lista_id': 1, 'referencia_id': None, 'eleccion_minima': 1, 'eleccion_maxima': 2,
+             'eleccion_ordenada': False, 'permite_otra': True, **cambios}
+    datos.setdefault('fuente_opciones', None if datos['lista_id'] is None else 'LISTA')
+    return SimpleNamespace(**datos)
 
 
 def elegidas(*pares):
@@ -50,3 +53,14 @@ def test_rechazos_con_422(cambios, pares, minimo):
 
 def test_el_borrador_no_exige_el_minimo():
     assert validar_eleccion(item(), OPCIONES, [], False) == []
+
+
+def test_exclusiva_va_sola_y_la_de_referencia_guarda_su_texto():
+    """Ajuste registros: una opción propia exclusiva no se combina; una de referencia guarda el texto vigente."""
+    opciones = (OpcionItem('mtpe-1', 'DATO DE PRUEBA: Enfermería', de_referencia=True),
+                OpcionItem('NINGUNO', 'Ninguno', exclusiva=True))
+    referencia = item(lista_id=None, fuente_opciones='REFERENCIA', permite_otra=False)
+    assert validar_eleccion(referencia, opciones, elegidas(('mtpe-1', 'se ignora')), True) == [
+        {'codigo': 'mtpe-1', 'texto': 'DATO DE PRUEBA: Enfermería'}]
+    with pytest.raises(ErrorAccion):
+        validar_eleccion(referencia, opciones, elegidas(('mtpe-1', None), ('NINGUNO', None)), True)

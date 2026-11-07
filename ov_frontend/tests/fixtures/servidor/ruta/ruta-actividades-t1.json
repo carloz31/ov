@@ -693,6 +693,37 @@
         "titulo": "Lo que cambió",
         "visibilidad": "AL_DESBLOQUEAR",
         "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "t-expectativas",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa el registro de expectativas para llegar a la ciudad.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "t-referencia",
+        "contenido": "t_referencia",
+        "descripcion": "Elige uno de tus planes y cuéntame por qué.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 10,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Registro desde tus planes",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": [

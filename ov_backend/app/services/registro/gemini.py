@@ -15,14 +15,16 @@ from pydantic import ValidationError
 
 from app.config import Configuracion, ErrorConfiguracionRegistro
 from app.core.parametros import TEMPERATURA_REGISTRO
-from app.services.diario.asistente import PROMPT_DIARIO_V1, PreguntaPersonalizada, validar_personalizacion
+from app.services.diario.asistente import (
+    PROMPT_CARTA_V1, PROMPT_DIARIO_V1, ContextoCarta, PreguntaPersonalizada, validar_personalizacion,
+)
 from app.services.investigaciones.sugerencias import RespuestaGuion, prompt_guion
 from app.services.planes.sugerencias import RespuestaSugerencias, prompt_sugerencias
 from app.services.registro.evaluacion import (
     ContextoEntrega, ContextoSeguimiento, ErrorResultadoEvaluacion, ResultadoEntrega, ResultadoSeguimiento,
     validar_entrega, validar_seguimiento,
 )
-from app.services.registro.prompt import PROMPT_ENTREGA_V4, PROMPT_SEGUIMIENTO_V4
+from app.services.registro.prompt import PROMPT_ENTREGA_V5, PROMPT_SEGUIMIENTO_V5
 
 
 class ErrorClienteGemini(RuntimeError):
@@ -87,13 +89,14 @@ class EvaluadorGemini:
             raise ErrorClienteGemini('No se pudo inicializar el cliente Gemini') from None
 
     def evaluar_entrega(self, contexto: ContextoEntrega) -> ResultadoEntrega:
-        return self._medir(contexto, PROMPT_ENTREGA_V4, ResultadoEntrega, validar_entrega)
+        return self._medir(contexto, PROMPT_ENTREGA_V5, ResultadoEntrega, validar_entrega)
 
     def evaluar_seguimiento(self, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
-        return self._medir(contexto, PROMPT_SEGUIMIENTO_V4, ResultadoSeguimiento, validar_seguimiento)
+        return self._medir(contexto, PROMPT_SEGUIMIENTO_V5, ResultadoSeguimiento, validar_seguimiento)
 
     def personalizar_entrada(self, contexto):
-        return self._medir(contexto, PROMPT_DIARIO_V1, PreguntaPersonalizada, validar_personalizacion)
+        prompt = PROMPT_CARTA_V1 if isinstance(contexto, ContextoCarta) else PROMPT_DIARIO_V1
+        return self._medir(contexto, prompt, PreguntaPersonalizada, validar_personalizacion)
 
     def sugerir_pasos(self, contexto):
         # El servicio filtra los pasos (tipos, números, longitud); aquí solo se exige el esquema.

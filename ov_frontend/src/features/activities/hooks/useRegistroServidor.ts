@@ -58,7 +58,8 @@ export function turnosRegistro(respuesta: RespuestaRegistroPublica) {
       if (ultimo && ultimo.respuesta === undefined) ultimo.omitida = true
       turnos.push({ orden: mensaje.orden, pregunta: mensaje.texto, omitida: false })
       borrador = ''
-    } else if (mensaje.borrador) borrador = mensaje.texto
+    } else if (mensaje.tipo === 'aviso') continue
+    else if (mensaje.borrador) borrador = mensaje.texto
     else if (ultimo) ultimo.respuesta = mensaje.texto
   }
   const pendiente = respuesta.estado === 'PENDIENTE_SEGUIMIENTO' ? turnos.at(-1) : undefined
@@ -285,7 +286,7 @@ export function useRegistroServidor({
         const eco = ecoDeReferencias(referencias)
         return eco && { estado: 'DISPONIBLE', texto: '', titulo: '', ...eco }
       }
-      if (referencia.estado === 'SIN_DATO') return undefined
+      if (referencia.estado === 'SIN_DATO' || referencia.estado === 'ABIERTA') return undefined
       const origen = actividadServidor(obtenerEstadoServidor().actividades.datos, referencia.actividad ?? '')
       return { estado: referencia.estado, texto: referencia.texto ?? '', titulo: origen?.titulo ?? '' }
     },

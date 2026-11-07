@@ -76,7 +76,7 @@ def _verificar_actividades(front: Path, sesion, actividades) -> list[str]:
                 item = items.get(nodo['item'])
                 if item is None or item.actividad_id != actividad.id:
                     errores.append(f'{codigo}: el ítem {nodo["item"]} no está cargado en esta actividad')
-                elif ('podio' in nodo or 'eleccion' in nodo) != (item.lista_id is not None):
+                elif ('podio' in nodo or 'eleccion' in nodo) != (item.fuente_opciones is not None):
                     errores.append(f'{codigo}: el ítem {nodo["item"]} no es del tipo de su nodo')
             for eco in _ecos(nodo):
                 if (eco, actividad.id) not in referencias:

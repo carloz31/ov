@@ -48,6 +48,12 @@ PRESENTACIONES = tuple((codigo, 'ESTUDIANTE') for codigo in (
     'profile-general', 'profile-helena', 'research', 'research-guide', 'resources',
 ))
 
+# Ajuste registros: textos de la plataforma iguales en todas las actividades (tabla `texto_fijo`).
+TEXTOS_FIJOS = (
+    ('LUMI_SENSIBLE', 'Gracias por contarme esto. No tienes que escribir más sobre eso aquí. Si quieres hablarlo '
+                      'con alguien, tu orientadora o tu tutor están para eso.'),
+)
+
 # Código reservado para la opción «otra»; ninguna lista puede usarlo.
 CODIGO_OTRA = 'OTRA'
 
@@ -733,6 +739,7 @@ def _cargar_tarjeta(sesion, listas):
 
 
 def cargar(sesion: Session) -> Fijos:
+    sesion.add_all(modelos.TextoFijo(codigo=c, texto=t) for c, t in TEXTOS_FIJOS)
     secciones = _cargar_secciones(sesion)
     _cargar_presentaciones(sesion)
     _cargar_investigaciones(sesion)

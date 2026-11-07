@@ -245,6 +245,7 @@ class LecturaPregunta:
     base: str
     datos: list | None
     texto: str | None
+    carta: bool = False
 
 
 @usar_contexto
@@ -257,7 +258,8 @@ def _leer_desbloqueada(sesion: Session, entrada: AbrirPreguntaEntrada) -> Lectur
     if recomendacion is None:
         exigir_disponible(sesion, cuenta, TipoObjetivo.PREGUNTA_DIARIO, pregunta)
         raise ErrorAccion("Esta pregunta todavía no está en tu diario")
-    return LecturaPregunta(recomendacion.id, pregunta.pregunta, recomendacion.contexto, recomendacion.texto)
+    return LecturaPregunta(recomendacion.id, pregunta.pregunta, recomendacion.contexto, recomendacion.texto,
+                           carta=pregunta.personalizada)
 
 
 def _guardar_texto(sesion: Session, recomendacion_id: int, texto: str, origen: OrigenRedaccion) -> None:
@@ -280,7 +282,8 @@ def abrir_pregunta(fabrica_sesiones, entrada: AbrirPreguntaEntrada, evaluador, *
     with fabrica_sesiones.begin() as sesion:
         lectura = _leer_desbloqueada(sesion, entrada)
     if lectura.texto is None:
-        texto, origen = redactar(evaluador, lectura.base, lectura.datos, tiempo_maximo_segundos=tiempo_maximo_segundos)
+        texto, origen = redactar(evaluador, lectura.base, lectura.datos, tiempo_maximo_segundos=tiempo_maximo_segundos,
+                                 carta=lectura.carta)
         with fabrica_sesiones.begin() as sesion:
             _guardar_texto(sesion, lectura.recomendacion_id, texto, origen)
     with fabrica_sesiones.begin() as sesion:

@@ -396,6 +396,20 @@
         "titulo": "Lo que cambió",
         "visibilidad": "AL_DESBLOQUEAR",
         "visible": false
+      },
+      {
+        "bloqueo": null,
+        "codigo": "t-referencia",
+        "contenido": "t_referencia",
+        "descripcion": "Elige uno de tus planes y cuéntame por qué.",
+        "duracion_estimada_min": 10,
+        "estado": "DISPONIBLE",
+        "orden": 10,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Registro desde tus planes",
+        "visibilidad": "SIEMPRE",
+        "visible": true
       }
     ],
     "bloqueo": null,

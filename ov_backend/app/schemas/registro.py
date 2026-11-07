@@ -5,7 +5,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 
 from app.models import EstadoProgreso
-from app.models.enums import EstadoRespuestaRegistro
+from app.models.enums import EstadoRespuestaRegistro, FuenteOpciones
 from app.schemas.acciones import CompletarActividadEntrada, RespuestaAccion
 
 
@@ -68,7 +68,14 @@ class MensajePreguntaRegistro(BaseModel):
     texto: str
 
 
-MensajeRegistro = Annotated[MensajeRespuestaRegistro | MensajePreguntaRegistro, Field(discriminator='tipo')]
+class MensajeAvisoRegistro(BaseModel):
+    """Ajuste registros: Lumi acoge una respuesta sensible con un texto fijo y no repregunta (solo «Continuar»)."""
+    tipo: Literal['aviso'] = 'aviso'
+    texto: str
+
+
+MensajeRegistro = Annotated[MensajeRespuestaRegistro | MensajePreguntaRegistro | MensajeAvisoRegistro,
+                            Field(discriminator='tipo')]
 
 
 class OpcionListaPublica(BaseModel):
@@ -76,16 +83,40 @@ class OpcionListaPublica(BaseModel):
     texto: str
 
 
+class OpcionPropiaPublica(BaseModel):
+    """Una opción propia del ítem, con solo lo que la pantalla necesita: nunca su criterio ni sus ejemplos."""
+    codigo: str
+    texto: str
+    exclusiva: bool
+    # Reemplaza la consigna del texto cuando se elige.
+    pregunta_propia: str | None
+    # Con `criterio: null`: la opción cumple sin seguimiento y el texto es opcional en la pantalla.
+    sin_seguimiento: bool
+
+
+class PremarcarPublico(BaseModel):
+    """Si en `item` (anterior, misma actividad) se eligió `opcion`, este ítem llega con `marca` marcada."""
+    item: str
+    opcion: str
+    marca: str
+
+
 class EleccionPublica(BaseModel):
-    """`referencia` (F02): la ELECCION que marca lo elegido la vez pasada; las opciones son las de la lista."""
+    """`fuente` (ajuste registros): LISTA (opciones de `lista`), REFERENCIA (las de `referencia_opciones`, que se
+    leen con las referencias de la cuenta) o PROPIAS. `opciones_propias` se suman a la fuente o son la única.
+    `referencia` (F02): la que marca lo elegido la vez pasada."""
+    fuente: FuenteOpciones
     lista: str | None
     referencia: str | None
+    referencia_opciones: str | None
     comun: bool
     minima: int
     maxima: int
     ordenada: bool
     permite_otra: bool
     opciones: list[OpcionListaPublica]
+    opciones_propias: list[OpcionPropiaPublica]
+    premarcar_si: PremarcarPublico | None
 
 
 class ItemRegistroPublico(BaseModel):
@@ -108,6 +139,8 @@ class RespuestaRegistroPublica(EstadoItemRegistro):
 class ItemPorAmpliar(BaseModel):
     item: str
     pista: str
+    # Ajuste registros: lo que le faltó según el evaluador; el front lo muestra antes que la pista o el nombre.
+    falta: str | None = None
 
 
 class RegistroConsultado(BaseModel):
@@ -116,6 +149,8 @@ class RegistroConsultado(BaseModel):
     respuestas: list[RespuestaRegistroPublica]
     # Solo con el registro cerrado: ítems que quedaron poco desarrollados y la pregunta que los ampliaría.
     items_por_ampliar: list[ItemPorAmpliar] | None = None
+    # Solo con el registro cerrado (ajuste registros): ítems que el estudiante dejó abiertos.
+    items_abiertos: list[str] | None = None
 
 
 class RespuestaRegistroAccion(RegistroConsultado, RespuestaAccion):

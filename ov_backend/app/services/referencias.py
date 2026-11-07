@@ -9,6 +9,10 @@ FAVORITOS: las carreras, ocupaciones e instituciones marcadas, de la más recien
 PLANES, PLAN, PASOS_PLAN_A y OPCION_INICIAL (B11): los planes por prioridad, el plan A (carrera, relato y
 motivos), los pasos del plan A y la carrera de la opción inicial.
 LO_QUE_PIENSO (B13): lo que el estudiante pensaba de la familia de carreras antes de su primera entrevista publicada.
+FAMILIAS_RECOMENDADAS, TESTIMONIOS y DATOS_CARRERA_PLAN_A (ajuste registros): las cinco familias del resultado de
+intereses, los testimonios desbloqueados (solo su título) y la duración, el tipo y la referencia de ingresos de la
+familia de la carrera del plan A. Se resuelven en vivo: lo guardado en una respuesta conserva su texto.
+Un TEXTO marcado sensible no se cita (SIN_DATO) y uno ABIERTA tampoco (ABIERTA); su ELECCION sí.
 """
 
 from sqlalchemy import select
@@ -18,7 +22,7 @@ from app.core.parametros import LONGITUD_CODIGO_INTERES
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, Entrevista, EstadoInvestigacion, FamiliaCarrera,
-    EstadoProgreso, EvaluacionRespuesta, Favorito, Institucion, Investigacion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
+    EstadoProgreso, EvaluacionRespuesta, IngresoFamilia, Testimonio, TipoObjetivo, Favorito, Institucion, Investigacion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
     ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol, TarjetaCarrera, TipoFavorito,
 )
 from app.models.enums import (
@@ -50,9 +54,10 @@ def _leer_fuentes(sesion, cuenta, items_fuente):
 
 
 def _opciones(sesion, item, elegidas):
+    """La OTRA y las opciones tomadas de una referencia guardan su texto; las de lista y las propias, su código."""
     textos = {o.codigo: o.texto for o in contexto(sesion).definiciones.opciones_por_lista.get(item.lista_id, ())}
-    return [OpcionReferida(codigo=e['codigo'],
-                           texto=e.get('texto', '') if e['codigo'] == CODIGO_OTRA else textos.get(e['codigo'], e['codigo']))
+    textos.update({o['codigo']: o['texto'] for o in item.opciones_propias or ()})
+    return [OpcionReferida(codigo=e['codigo'], texto=e['texto'] if 'texto' in e else textos.get(e['codigo'], e['codigo']))
             for e in elegidas or ()]
 
 
@@ -172,6 +177,47 @@ def _leer_lo_que_pienso(sesion, cuenta):
         OpcionReferida(codigo='DUDA', texto=investigacion.piensa_duda)])
 
 
+TEXTO_TIPO_CARRERA = {'UNIVERSIDAD': 'Universitaria', 'INSTITUTO': 'Técnica', 'FFAA_POLICIA': 'Pública'}
+
+
+def _leer_familias_recomendadas(sesion, cuenta):
+    from app.services.instrumentos.consultas import resultado_intereses
+    resultado = resultado_intereses(sesion, cuenta)
+    return [OpcionReferida(codigo=f.codigo, texto=f.nombre) for f in (resultado.familias or ())] if resultado else []
+
+
+def _leer_testimonios(sesion, cuenta):
+    # Importación diferida: el motor resuelve reglas que a su vez usan referencias en las preguntas del diario.
+    from app.services.motor.reglas import objetivo_disponible
+    testimonios = sorted(contexto(sesion).definiciones.listar(Testimonio), key=lambda t: t.codigo)
+    return [OpcionReferida(codigo=t.codigo, texto=t.titulo) for t in testimonios
+            if objetivo_disponible(sesion, cuenta, TipoObjetivo.TESTIMONIO, t.id)]
+
+
+def _leer_datos_carrera(sesion, cuenta):
+    """De la carrera del plan A: duración y tipo, y el promedio de ingresos de jóvenes de su familia y tipo (sin
+    ubicación), que es una referencia de la familia, no el sueldo de la carrera. Un campo sin dato se omite."""
+    fila = sesion.execute(select(Carrera).join(TarjetaCarrera, TarjetaCarrera.carrera_id == Carrera.id).where(
+        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.activa).order_by(TarjetaCarrera.prioridad).limit(1)
+    ).scalar_one_or_none()
+    if fila is None:
+        return None
+    ingreso = sesion.scalar(select(IngresoFamilia.promedio_jovenes).where(
+        IngresoFamilia.familia_id == fila.familia_id, IngresoFamilia.tipo == fila.tipo,
+        IngresoFamilia.ubicacion_id.is_(None)).limit(1))
+    opciones = []
+    if ingreso is not None:
+        opciones.append(OpcionReferida(codigo='INGRESO_FAMILIA',
+                                       texto=f'S/ {ingreso:,}'.replace(',', ' ') + ' al mes: referencia de carreras de esta familia'))
+    if fila.duracion:
+        opciones.append(OpcionReferida(codigo='DURACION', texto=fila.duracion))
+    opciones.append(OpcionReferida(codigo='TIPO', texto=TEXTO_TIPO_CARRERA[fila.tipo.value]))
+    return dict(texto=fila.nombre, opciones=opciones)
+
+
+EN_VIVO = (TipoReferencia.FAMILIAS_RECOMENDADAS, TipoReferencia.TESTIMONIOS, TipoReferencia.DATOS_CARRERA_PLAN_A)
+
+
 def resolver(sesion, cuenta, referencias):
     """{código: ReferenciaResuelta} para `referencias` (filas del catálogo), con datos de `cuenta`."""
     definiciones = contexto(sesion).definiciones
@@ -187,6 +233,16 @@ def resolver(sesion, cuenta, referencias):
     planes = _leer_planes(sesion, cuenta, tipos_planes) if tipos_planes else {}
     lo_que_pienso = (_leer_lo_que_pienso(sesion, cuenta)
                      if any(r.tipo == TipoReferencia.LO_QUE_PIENSO for r in referencias) else None)
+    tipos = {r.tipo for r in referencias}
+    en_vivo = {}
+    if TipoReferencia.FAMILIAS_RECOMENDADAS in tipos:
+        familias = _leer_familias_recomendadas(sesion, cuenta)
+        en_vivo[TipoReferencia.FAMILIAS_RECOMENDADAS] = dict(opciones=familias) if familias else None
+    if TipoReferencia.TESTIMONIOS in tipos:
+        testimonios = _leer_testimonios(sesion, cuenta)
+        en_vivo[TipoReferencia.TESTIMONIOS] = dict(opciones=testimonios) if testimonios else None
+    if TipoReferencia.DATOS_CARRERA_PLAN_A in tipos:
+        en_vivo[TipoReferencia.DATOS_CARRERA_PLAN_A] = _leer_datos_carrera(sesion, cuenta)
     resueltas = {}
     for referencia in referencias:
         base = dict(codigo=referencia.codigo, tipo=referencia.tipo)
@@ -198,6 +254,12 @@ def resolver(sesion, cuenta, referencias):
             resueltas[referencia.codigo] = (
                 ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, **planes[referencia.tipo])
                 if referencia.tipo in planes else ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO))
+            continue
+        if referencia.tipo in EN_VIVO:
+            datos = en_vivo[referencia.tipo]
+            resueltas[referencia.codigo] = (
+                ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO) if datos is None else
+                ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE, **datos))
             continue
         if referencia.tipo == TipoReferencia.LO_QUE_PIENSO:
             resueltas[referencia.codigo] = (
@@ -235,10 +297,13 @@ def resolver(sesion, cuenta, referencias):
                     opciones=_opciones(sesion, item, respuesta.opciones_elegidas))
         else:
             clasificacion = vigentes.get(respuesta.id)
-            if clasificacion is None:
+            if clasificacion is None or respuesta.sensible:
+                # Sensible: no se cita en ninguna actividad (ajuste registros).
                 resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO)
             elif clasificacion == ClasificacionRespuesta.POCO_DESARROLLADA:
                 resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.POR_DESARROLLAR)
+            elif clasificacion == ClasificacionRespuesta.ABIERTA:
+                resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.ABIERTA)
             else:
                 resueltas[referencia.codigo] = ReferenciaResuelta(
                     **base, estado=EstadoReferencia.DISPONIBLE, texto=respuesta.texto_consolidado)

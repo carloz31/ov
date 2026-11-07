@@ -1,0 +1,59 @@
+{
+  "_dato_de_prueba": true,
+  "id": "t-referencia",
+  "tipo": "registro",
+  "titulo": "Registro desde tus planes",
+  "bloque": 4,
+  "orden": 12,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 10,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "t-referencia-intro",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Miremos tus planes juntos."
+    },
+    {
+      "id": "t-refe-plan",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-refe-plan",
+      "premisa": "",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": { "etiquetaElegida": "Tu plan" }
+    },
+    {
+      "id": "t-refe-retoma",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-refe-retoma",
+      "premisa": "",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora",
+      "eleccion": { "etiquetaElegida": "Tu plan", "etiquetaAnterior": "La vez pasada" }
+    },
+    {
+      "id": "t-refe-duda",
+      "tipo": "consigna",
+      "hablanteId": "companero",
+      "item": "t-refe-duda",
+      "premisa": "",
+      "entregable": { "tipo": "texto" },
+      "obligatoria": true,
+      "visibilidad": "estudiante_orientadora"
+    }
+  ],
+  "mapa": {
+    "x": 1100,
+    "y": 450,
+    "icono": "registro"
+  }
+}

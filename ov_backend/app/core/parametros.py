@@ -41,11 +41,15 @@ OPCION_ONET_MAXIMA = 5
 PUNTAJE_ONET_MINIMO = 0
 
 # Registro §3 y §6: valores iniciales; el adaptador leerá el timeout del entorno.
-VERSION_PROMPT_REGISTRO = "v4"
+VERSION_PROMPT_REGISTRO = "v5"
 # Respaldo por longitud de un ítem sin `min_caracteres`. Provisional (B02).
 MIN_CARACTERES_RESPALDO = 40
-# B03: preguntas de seguimiento por registro, no por ítem.
+# B03: preguntas de seguimiento por intento de un registro; es el valor por defecto de `actividad.maximo_seguimientos`.
 MAXIMO_SEGUIMIENTOS_POR_REGISTRO = 2
+# Ajuste registros: repreguntas por ítem y por intento, salvo que el ítem declare `max_repreguntas`.
+MAXIMO_REPREGUNTAS_POR_ITEM = 1
+# Ajuste registros: ítems ABIERTA que un registro admite sin dejar de ser adecuado.
+MAXIMO_ABIERTOS_ADECUADO = 1
 # Ajuste carga-actividades: 5, lo que pide el registro más largo del contenido (b4-1).
 MAXIMO_ITEMS_REGISTRO = 5
 # Reinicios del test de intereses por cuenta y aplicación, solo con perfil plano (HU-095).

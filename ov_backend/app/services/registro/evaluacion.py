@@ -1,8 +1,10 @@
-"""Evaluación de registros (B03); sin base de datos, routers ni configuración de red.
+"""Evaluación de registros (B03; contrato v5 del ajuste registros); sin base de datos, routers ni red.
 
-Una llamada al entregar el registro (todos los ítems con criterios) y una por cada respuesta a
-una pregunta de seguimiento (reevalúa el ítem y lo consolida). Lo que no pasa por el LLM se
-resuelve en código con origen EXTENSION_MINIMA.
+Una llamada al entregar el registro (todos los ítems con criterio) y una por cada respuesta a una repregunta
+(reevalúa el ítem y lo consolida). Por ítem, el evaluador propone `{cumple, abierto, sensible, falta, repregunta}`
+(y `consolidada` en el seguimiento); la clasificación la decide el código: sensible → ADECUADA (marcada), cumple →
+ADECUADA, si no POCO_DESARROLLADA con la repregunta o el `texto_base`. ABIERTA la asigna la acción, que sabe si el
+ítem ya tuvo una repregunta. Lo que no pasa por el LLM se resuelve en código con origen EXTENSION_MINIMA.
 """
 
 import json
@@ -11,7 +13,7 @@ import unicodedata
 from dataclasses import asdict, dataclass
 from math import isfinite
 from time import perf_counter
-from typing import Literal, Protocol
+from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
@@ -31,6 +33,23 @@ class CriterioEvaluacion:
 
 
 @dataclass(frozen=True, slots=True)
+class GuiaSeguimiento:
+    """Los campos de seguimiento del ítem (o de la opción propia elegida) que recibe el evaluador."""
+    que_busca: str
+    texto_base: str
+    cumple: tuple[str, ...] = ()
+    no_cumple: tuple[str, ...] = ()
+    evitar: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class EcoEvaluacion:
+    """Lo único de fuera del ítem que ve el evaluador: lo declarado en `ecos_llm`."""
+    nombre: str
+    texto: str
+
+
+@dataclass(frozen=True, slots=True)
 class TurnoEvaluacion:
     pregunta: str
     respuesta: str | None
@@ -41,7 +60,9 @@ class ItemEntrega:
     item: str
     consigna: str
     criterios: tuple[CriterioEvaluacion, ...]
+    guia: GuiaSeguimiento | None
     opciones_elegidas: tuple[str, ...]
+    ecos: tuple[EcoEvaluacion, ...]
     texto: str
 
 
@@ -52,21 +73,15 @@ class ContextoEntrega:
 
 
 @dataclass(frozen=True, slots=True)
-class RespuestaOtroItem:
-    consigna: str
-    texto: str
-
-
-@dataclass(frozen=True, slots=True)
 class ContextoSeguimiento:
     titulo_actividad: str
     consigna: str
     criterios: tuple[CriterioEvaluacion, ...]
-    criterios_faltantes_previos: tuple[str, ...]
+    guia: GuiaSeguimiento | None
     opciones_elegidas: tuple[str, ...]
+    ecos: tuple[EcoEvaluacion, ...]
     texto_inicial: str
     turnos: tuple[TurnoEvaluacion, ...]
-    otras_respuestas: tuple[RespuestaOtroItem, ...]
 
 
 class _Estricto(BaseModel):
@@ -75,9 +90,11 @@ class _Estricto(BaseModel):
 
 class ResultadoItemEntrega(_Estricto):
     item: str
-    clasificacion: Literal["ADECUADA", "POCO_DESARROLLADA"]
-    criterios_faltantes: list[str]
-    pregunta: str | None
+    cumple: bool
+    abierto: bool
+    sensible: bool
+    falta: str | None
+    repregunta: str | None
 
 
 class ResultadoEntrega(_Estricto):
@@ -85,10 +102,12 @@ class ResultadoEntrega(_Estricto):
 
 
 class ResultadoSeguimiento(_Estricto):
-    clasificacion: Literal["ADECUADA", "POCO_DESARROLLADA"]
-    criterios_faltantes: list[str]
-    pregunta: str | None
-    consolidada: str
+    cumple: bool
+    abierto: bool
+    sensible: bool
+    falta: str | None
+    repregunta: str | None
+    consolidada: str | None
 
 
 class EvaluadorRespuestas(Protocol):
@@ -113,11 +132,16 @@ class EvaluacionProcesada:
     error: str | None
     texto_evaluado: str
     consolidada: str | None = None
+    sensible: bool = False
+    # Lo propuso el evaluador; la acción decide si el ítem queda ABIERTA.
+    abierto: bool = False
+    falta: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class ItemPorEvaluar:
-    """Lo que la acción sabe de un ítem; `criterios` vacío significa que se evalúa en código."""
+    """Lo que la acción sabe de un ítem. `criterios` vacío (sin criterio, o una opción propia con `criterio: null`)
+    significa que se evalúa en código, sin llamada."""
     codigo: str
     consigna: str
     criterios: tuple[CriterioEvaluacion, ...]
@@ -125,6 +149,8 @@ class ItemPorEvaluar:
     texto: str
     min_caracteres: int | None
     repregunta_generica: str
+    guia: GuiaSeguimiento | None = None
+    ecos: tuple[EcoEvaluacion, ...] = ()
 
 
 # --- Textos ---------------------------------------------------------------------------------
@@ -147,13 +173,24 @@ def pregunta_valida(pregunta) -> bool:
     return not any(sin_tildes(palabra) in normal for palabra in PALABRAS_EVALUATIVAS)
 
 
-def repregunta_base(criterios, faltantes) -> str:
-    """La repregunta del primer criterio faltante, por orden de criterio."""
-    return next(c.repregunta for c in criterios if c.codigo in faltantes)
+def texto_base(item) -> str:
+    """La repregunta fija del ítem: su `texto_base` o, sin campos de seguimiento (ruta), la de su primer criterio."""
+    if item.guia is not None:
+        return item.guia.texto_base
+    return item.criterios[0].repregunta if item.criterios else item.repregunta_generica
 
 
-def pregunta_o_base(pregunta, criterios, faltantes) -> str:
-    return pregunta.strip() if pregunta_valida(pregunta) else repregunta_base(criterios, faltantes)
+def pregunta_o_base(pregunta, item) -> str:
+    return pregunta.strip() if pregunta_valida(pregunta) else texto_base(item)
+
+
+def texto_respaldo(item) -> str:
+    """La repregunta sin modelo: el `texto_base` o, sin campos de seguimiento (ruta), la genérica (B03)."""
+    return item.guia.texto_base if item.guia is not None else item.repregunta_generica
+
+
+def falta_valida(falta) -> str | None:
+    return falta.strip() if isinstance(falta, str) and falta.strip() else None
 
 
 def concatenar(texto_inicial: str, turnos) -> str:
@@ -175,19 +212,6 @@ def serializar_conversacion(texto_inicial: str, turnos=()) -> str:
 
 # --- Validación -----------------------------------------------------------------------------
 
-def _validar_faltantes(clasificacion, faltantes, codigos, previos):
-    if len(faltantes) != len(set(faltantes)):
-        raise ErrorResultadoEvaluacion("Los criterios faltantes no pueden repetirse")
-    if any(codigo not in codigos for codigo in faltantes):
-        raise ErrorResultadoEvaluacion("Los criterios faltantes no pertenecen al ítem")
-    if not set(faltantes).issubset(previos):
-        raise ErrorResultadoEvaluacion("No pueden faltar criterios ya cumplidos")
-    if clasificacion == "ADECUADA" and faltantes:
-        raise ErrorResultadoEvaluacion("Una respuesta adecuada no puede tener criterios faltantes")
-    if clasificacion == "POCO_DESARROLLADA" and not faltantes:
-        raise ErrorResultadoEvaluacion("Una respuesta poco desarrollada requiere criterios faltantes")
-
-
 def _revalidar(modelo, resultado):
     # Validar también instancias construidas sin validación o listas mutadas.
     datos = resultado.model_dump(warnings=False) if isinstance(resultado, BaseModel) else resultado
@@ -199,21 +223,15 @@ def _revalidar(modelo, resultado):
 
 def validar_entrega(resultado, contexto: ContextoEntrega) -> ResultadoEntrega:
     validado = _revalidar(ResultadoEntrega, resultado)
-    enviados = {item.item: item for item in contexto.items}
+    enviados = {item.item for item in contexto.items}
     recibidos = [r.item for r in validado.items]
-    if len(recibidos) != len(set(recibidos)) or set(recibidos) != set(enviados):
+    if len(recibidos) != len(set(recibidos)) or set(recibidos) != enviados:
         raise ErrorResultadoEvaluacion("El resultado no corresponde a los ítems enviados")
-    for r in validado.items:
-        codigos = {c.codigo for c in enviados[r.item].criterios}
-        _validar_faltantes(r.clasificacion, r.criterios_faltantes, codigos, codigos)
     return validado
 
 
 def validar_seguimiento(resultado, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
-    validado = _revalidar(ResultadoSeguimiento, resultado)
-    _validar_faltantes(validado.clasificacion, validado.criterios_faltantes,
-                       {c.codigo for c in contexto.criterios}, set(contexto.criterios_faltantes_previos))
-    return validado
+    return _revalidar(ResultadoSeguimiento, resultado)
 
 
 # --- Procesamiento --------------------------------------------------------------------------
@@ -257,6 +275,18 @@ def evaluar_por_extension(texto: str, min_caracteres: int | None, repregunta_gen
     return _en_codigo(ClasificacionRespuesta.ADECUADA, None, texto_evaluado, consolidada=consolidada)
 
 
+def _desde_resultado(r, item, modelo, version_prompt, latencia_ms, texto_evaluado, consolidada=None):
+    """Del resultado del evaluador a la evaluación: sensible manda, luego cumple; si no, poco desarrollada."""
+    if r.sensible or r.cumple:
+        return EvaluacionProcesada(OrigenEvaluacion.LLM, ClasificacionRespuesta.ADECUADA, (), None, modelo,
+                                   version_prompt, latencia_ms, None, texto_evaluado, consolidada,
+                                   sensible=r.sensible)
+    return EvaluacionProcesada(OrigenEvaluacion.LLM, ClasificacionRespuesta.POCO_DESARROLLADA,
+                               tuple(c.codigo for c in item.criterios), pregunta_o_base(r.repregunta, item), modelo,
+                               version_prompt, latencia_ms, None, texto_evaluado, consolidada, abierto=r.abierto,
+                               falta=falta_valida(r.falta))
+
+
 def procesar_entrega(titulo_actividad: str, items: tuple[ItemPorEvaluar, ...], evaluador: EvaluadorRespuestas, *,
                      modelo: str | None = None, version_prompt: str = VERSION_PROMPT_REGISTRO,
                      tiempo_maximo_segundos: float = TIEMPO_MAXIMO_EVALUACION_SEGUNDOS,
@@ -272,35 +302,32 @@ def procesar_entrega(titulo_actividad: str, items: tuple[ItemPorEvaluar, ...], e
     if not con_criterios:
         return evaluaciones
     contexto = ContextoEntrega(titulo_actividad, tuple(
-        ItemEntrega(i.codigo, i.consigna, i.criterios, i.opciones_elegidas, i.texto) for i in con_criterios))
+        ItemEntrega(i.codigo, i.consigna, i.criterios, i.guia, i.opciones_elegidas, i.ecos, i.texto)
+        for i in con_criterios))
     resultado, error, latencia_ms = _llamar(evaluador.evaluar_entrega, validar_entrega, contexto, tiempo_maximo_segundos)
     por_item = {r.item: r for r in resultado.items} if resultado is not None else {}
     for item in con_criterios:
         texto_evaluado = serializar_conversacion(item.texto)
         if error is not None:
+            # Respaldo: sin detección de sensible; la repregunta es el texto base y decide la longitud.
             minimo = MIN_CARACTERES_RESPALDO if item.min_caracteres is None else item.min_caracteres
             corto = len(item.texto.strip()) < minimo
             evaluaciones[item.codigo] = _en_codigo(
                 ClasificacionRespuesta.POCO_DESARROLLADA if corto else ClasificacionRespuesta.NO_EVALUADA,
-                item.repregunta_generica if corto else None, texto_evaluado,
+                texto_respaldo(item) if corto else None, texto_evaluado,
                 faltantes=tuple(c.codigo for c in item.criterios) if corto else (), error=error,
                 latencia_ms=latencia_ms, modelo=modelo, version_prompt=version_prompt)
             continue
-        r = por_item[item.codigo]
-        poco = r.clasificacion == "POCO_DESARROLLADA"
-        evaluaciones[item.codigo] = EvaluacionProcesada(
-            OrigenEvaluacion.LLM, ClasificacionRespuesta(r.clasificacion), tuple(r.criterios_faltantes),
-            pregunta_o_base(r.pregunta, item.criterios, r.criterios_faltantes) if poco else None,
-            modelo, version_prompt, latencia_ms, None, texto_evaluado)
+        evaluaciones[item.codigo] = _desde_resultado(por_item[item.codigo], item, modelo, version_prompt,
+                                                     latencia_ms, texto_evaluado)
     return evaluaciones
 
 
 def procesar_seguimiento(titulo_actividad: str, item: ItemPorEvaluar, turnos: tuple[TurnoEvaluacion, ...],
-                         criterios_faltantes_previos: tuple[str, ...], otras_respuestas: tuple[RespuestaOtroItem, ...],
                          evaluador: EvaluadorRespuestas, *, pregunta_generica: bool, modelo: str | None = None,
                          version_prompt: str = VERSION_PROMPT_REGISTRO,
                          tiempo_maximo_segundos: float = TIEMPO_MAXIMO_EVALUACION_SEGUNDOS) -> EvaluacionProcesada:
-    """Reevalúa un ítem tras responder su pregunta y devuelve también la consolidada.
+    """Reevalúa un ítem tras responder su repregunta y devuelve también la consolidada.
 
     `item.texto` es el texto inicial y `turnos` incluye la respuesta recién escrita.
     """
@@ -312,20 +339,16 @@ def procesar_seguimiento(titulo_actividad: str, item: ItemPorEvaluar, turnos: tu
                                      consolidada=concatenacion)
     if pregunta_generica:
         return _en_codigo(ClasificacionRespuesta.NO_EVALUADA, None, texto_evaluado, consolidada=concatenacion)
-    contexto = ContextoSeguimiento(titulo_actividad, item.consigna, item.criterios, criterios_faltantes_previos,
-                                   item.opciones_elegidas, item.texto, turnos, otras_respuestas)
+    contexto = ContextoSeguimiento(titulo_actividad, item.consigna, item.criterios, item.guia, item.opciones_elegidas,
+                                   item.ecos, item.texto, turnos)
     resultado, error, latencia_ms = _llamar(evaluador.evaluar_seguimiento, validar_seguimiento, contexto,
                                             tiempo_maximo_segundos)
     if error is not None:
         return _en_codigo(ClasificacionRespuesta.NO_EVALUADA, None, texto_evaluado, error=error,
                           latencia_ms=latencia_ms, modelo=modelo, version_prompt=version_prompt,
                           consolidada=concatenacion)
-    poco = resultado.clasificacion == "POCO_DESARROLLADA"
-    return EvaluacionProcesada(
-        OrigenEvaluacion.LLM, ClasificacionRespuesta(resultado.clasificacion), tuple(resultado.criterios_faltantes),
-        pregunta_o_base(resultado.pregunta, item.criterios, resultado.criterios_faltantes) if poco else None,
-        modelo, version_prompt, latencia_ms, None, texto_evaluado,
-        consolidada_o_concatenacion(resultado.consolidada, item.texto, turnos))
+    return _desde_resultado(resultado, item, modelo, version_prompt, latencia_ms, texto_evaluado,
+                            consolidada_o_concatenacion(resultado.consolidada, item.texto, turnos))
 
 
 # --- Evaluador falso ------------------------------------------------------------------------
@@ -333,9 +356,11 @@ def procesar_seguimiento(titulo_actividad: str, item: ItemPorEvaluar, turnos: tu
 class EvaluadorFalso:
     """Determinista, por marcas en el texto más reciente de cada ítem.
 
-    Sin marca: ADECUADA. `[vaga]`: faltan los criterios que faltaban. `[falta:C2]` o `[falta:RAZON]`:
-    faltan esos códigos o los criterios de ese tipo. `[falla]`: lanza error (toda la llamada).
-    `[pregunta-invalida]`: pregunta con código y sin «?». `[consolidada-invalida]`: consolidada demasiado larga.
+    Sin marca: cumple. `[vaga]`: no cumple. `[falta:RAZON]` (o un código de criterio): no cumple y la repregunta
+    sale del criterio de ese tipo o código. `[abierto]`: no cumple y propone abierto. `[sensible]`: marca sensible
+    (junto a cualquier otra marca). `[falla]`: lanza error (toda la llamada). `[json-invalido]`: devuelve algo
+    fuera del esquema. `[pregunta-invalida]`: repregunta con código y sin «?». `[consolidada-invalida]`:
+    consolidada demasiado larga.
     """
 
     def __init__(self):
@@ -355,33 +380,41 @@ class EvaluadorFalso:
         self.llamadas_guion = 0
 
     @staticmethod
-    def _clasificar(texto, criterios, previos):
-        marcas = re.findall(r"\[falta:([^\]]*)\]", texto)
-        if not marcas and "[vaga]" not in texto:
-            return "ADECUADA", [], None
-        faltantes = list(previos)
-        if marcas:
-            por_tipo = {}
-            for criterio in criterios:
-                por_tipo.setdefault(criterio.tipo, []).append(criterio.codigo)
-            tokens = [t.strip() for marca in marcas for t in marca.split(',') if t.strip()]
-            faltantes = list(dict.fromkeys(c for t in tokens for c in por_tipo.get(t, [t])))
+    def _clasificar(texto, criterios, guia):
+        """(cumple, abierto, sensible, falta, repregunta)."""
+        sensible = "[sensible]" in texto
+        marcas = [t.strip() for marca in re.findall(r"\[falta:([^\]]*)\]", texto) for t in marca.split(',')
+                  if t.strip()]
+        abierto = "[abierto]" in texto
+        if not marcas and "[vaga]" not in texto and not abierto:
+            return True, False, sensible, None, None
         if "[pregunta-invalida]" in texto:
-            return "POCO_DESARROLLADA", faltantes, f"Falta {', '.join(faltantes)}"
-        base = next((c.repregunta for c in criterios if c.codigo in faltantes), "¿Podrías contarme más?")
-        return "POCO_DESARROLLADA", faltantes, f"Sobre lo que contaste: {base}"
+            return False, abierto, sensible, None, "Falta C1"
+        elegido = next((c for c in criterios if c.tipo in marcas or c.codigo in marcas), None)
+        if elegido is not None:
+            base = elegido.repregunta
+        elif guia is not None:
+            base = guia.texto_base
+        else:
+            base = criterios[0].repregunta if criterios else "¿Podrías contarme más?"
+        if guia is not None:
+            falta = guia.que_busca
+        else:
+            falta = (elegido or criterios[0]).descripcion if criterios else None
+        return False, abierto, sensible, falta, f"Sobre lo que contaste: {base}"
 
     def evaluar_entrega(self, contexto: ContextoEntrega) -> ResultadoEntrega:
         self.llamadas_entrega += 1
         self.contextos.append(contexto)
         if any("[falla]" in item.texto for item in contexto.items):
             raise RuntimeError("Fallo simulado del evaluador")
+        if any("[json-invalido]" in item.texto for item in contexto.items):
+            return {"items": "DATO DE PRUEBA"}
         resultados = []
         for item in contexto.items:
-            clasificacion, faltantes, pregunta = self._clasificar(
-                item.texto, item.criterios, [c.codigo for c in item.criterios])
-            resultados.append(ResultadoItemEntrega(item=item.item, clasificacion=clasificacion,
-                                                   criterios_faltantes=faltantes, pregunta=pregunta))
+            cumple, abierto, sensible, falta, repregunta = self._clasificar(item.texto, item.criterios, item.guia)
+            resultados.append(ResultadoItemEntrega(item=item.item, cumple=cumple, abierto=abierto, sensible=sensible,
+                                                   falta=falta, repregunta=repregunta))
         return ResultadoEntrega(items=resultados)
 
     def evaluar_seguimiento(self, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
@@ -390,13 +423,14 @@ class EvaluadorFalso:
         texto = contexto.turnos[-1].respuesta or ""
         if "[falla]" in texto:
             raise RuntimeError("Fallo simulado del evaluador")
-        clasificacion, faltantes, pregunta = self._clasificar(
-            texto, contexto.criterios, contexto.criterios_faltantes_previos)
+        if "[json-invalido]" in texto:
+            return {"cumple": "DATO DE PRUEBA"}
+        cumple, abierto, sensible, falta, repregunta = self._clasificar(texto, contexto.criterios, contexto.guia)
         consolidada = concatenar(contexto.texto_inicial, contexto.turnos)
         if "[consolidada-invalida]" in texto:
             consolidada = consolidada * 3
-        return ResultadoSeguimiento(clasificacion=clasificacion, criterios_faltantes=faltantes,
-                                    pregunta=pregunta, consolidada=consolidada)
+        return ResultadoSeguimiento(cumple=cumple, abierto=abierto, sensible=sensible, falta=falta,
+                                    repregunta=repregunta, consolidada=consolidada)
 
     def personalizar_entrada(self, contexto) -> dict:
         """Retoma el primer dato del contexto delante de la pregunta base."""

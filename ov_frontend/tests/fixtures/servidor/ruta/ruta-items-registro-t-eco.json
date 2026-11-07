@@ -4,6 +4,7 @@
     "consigna": "La vez pasada elegiste una ruta. ¿Sigues pensando igual o cambiaste de idea? Cuéntame por qué.",
     "eleccion": {
       "comun": true,
+      "fuente": "LISTA",
       "lista": "RUTAS_DESPUES_COLEGIO",
       "maxima": 2,
       "minima": 1,
@@ -29,9 +30,12 @@
           "texto": "Aún no lo sé"
         }
       ],
+      "opciones_propias": [],
       "ordenada": false,
       "permite_otra": true,
-      "referencia": "t-ref-rutas"
+      "premarcar_si": null,
+      "referencia": "t-ref-rutas",
+      "referencia_opciones": null
     },
     "min_caracteres": null,
     "nombre": "Tu ruta, hoy",

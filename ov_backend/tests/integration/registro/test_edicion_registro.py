@@ -92,12 +92,13 @@ def test_la_pista_tras_omitir_es_la_pregunta_omitida(cliente):
 
 
 def test_la_pista_tras_agotar_el_seguimiento_es_la_siguiente_pregunta(cliente):
+    # Ajuste registros (adaptación autorizada): una repregunta por ítem; la segunda pasa al siguiente ítem.
     entregar(cliente, t_exp_ruta=f'{CORTO} [vaga]', t_exp_espera=f'{CORTO} [falta:EJEMPLO]')
-    responder(cliente, 't-exp-ruta', 'Porque sí [vaga]')
     responder(cliente, 't-exp-ruta', 'Sigo sin saber [falta:RAZON] [pregunta-invalida]')
+    omitir(cliente, 't-exp-espera')
     registro = consultar(cliente)
     # La siguiente pregunta de `t-exp-ruta` no pasó la validación: queda la repregunta base de RAZON.
-    # `t-exp-espera` nunca recibió su pregunta: la pista es la de la entrega.
+    # `t-exp-espera` recibió su pregunta y la omitió: la pista es la de la entrega.
     assert pistas(registro) == {'t-exp-ruta': '¿Por qué lo piensas así?',
                                 't-exp-espera': 'Sobre lo que contaste: ¿Podrías darme un ejemplo concreto?'}
     assert sin_claves_privadas(registro)
@@ -186,14 +187,13 @@ def test_los_items_no_modificados_o_identicos_no_van_al_evaluador(cliente, aplic
 
 
 def test_el_tope_de_preguntas_cuenta_por_intento(cliente, aplicacion):
+    # Ajuste registros (adaptación autorizada): una repregunta por ítem; la segunda pasa al siguiente ítem.
     entregar(cliente, t_exp_ruta=f'{CORTO} [vaga]')
-    responder(cliente, 't-exp-ruta', 'Porque sí [vaga]')
-    assert pendiente(responder(cliente, 't-exp-ruta', 'Sigo sin saber [vaga]')) is None
+    assert pendiente(responder(cliente, 't-exp-ruta', 'Porque sí [vaga]')) is None
     assert pendiente(editar(cliente, t_exp_ruta='Nueva idea [vaga]')) == ('t-exp-ruta', 1)
-    assert pendiente(responder(cliente, 't-exp-ruta', 'Tampoco [vaga]')) == ('t-exp-ruta', 2)
     final = responder(cliente, 't-exp-ruta', 'Nada [vaga]')
     assert pendiente(final) is None and list(pistas(final)) == ['t-exp-ruta']
-    assert evaluador(aplicacion).llamadas_seguimiento == 4
+    assert evaluador(aplicacion).llamadas_seguimiento == 2
 
 
 def test_el_get_muestra_solo_los_turnos_del_intento_vigente(cliente, sesion):
@@ -202,10 +202,11 @@ def test_el_get_muestra_solo_los_turnos_del_intento_vigente(cliente, sesion):
     responder(cliente, 't-exp-ruta', 'Porque me gusta [vaga]')
     registro = consultar(cliente)
     ruta = conversacion(registro, 't-exp-ruta')
-    assert [tipo for tipo, _ in ruta] == ['respuesta', 'pregunta', 'respuesta', 'pregunta']
+    # Ajuste registros (adaptación autorizada): una repregunta por ítem; la segunda pasa al siguiente ítem.
+    assert [tipo for tipo, _ in ruta] == ['respuesta', 'pregunta', 'respuesta']
     assert ruta[0] == ('respuesta', 'Nueva idea [vaga]')
     assert conversacion(registro, 't-exp-apoyo') == [('respuesta', ADECUADO)]
-    assert sesion.scalars(select(m.TurnoSeguimiento.intento).order_by(m.TurnoSeguimiento.id)).all() == [1, 2, 2]
+    assert sesion.scalars(select(m.TurnoSeguimiento.intento).order_by(m.TurnoSeguimiento.id)).all() == [1, 2]
 
 
 def test_la_pista_tras_editar_es_la_pregunta_de_la_edicion(cliente):

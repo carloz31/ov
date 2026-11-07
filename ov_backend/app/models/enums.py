@@ -171,6 +171,8 @@ class ClasificacionRespuesta(StrEnum):
     ADECUADA = "ADECUADA"
     POCO_DESARROLLADA = "POCO_DESARROLLADA"
     NO_EVALUADA = "NO_EVALUADA"
+    # Ajuste registros: duda sincera tras una repregunta, en un ítem que lo admite; la asigna el backend.
+    ABIERTA = "ABIERTA"
 
 
 class EstadoRespuestaRegistro(StrEnum):
@@ -204,12 +206,24 @@ class TipoReferencia(StrEnum):
     PASOS_PLAN_A = "PASOS_PLAN_A"
     OPCION_INICIAL = "OPCION_INICIAL"
     LO_QUE_PIENSO = "LO_QUE_PIENSO"
+    FAMILIAS_RECOMENDADAS = "FAMILIAS_RECOMENDADAS"
+    TESTIMONIOS = "TESTIMONIOS"
+    DATOS_CARRERA_PLAN_A = "DATOS_CARRERA_PLAN_A"
 
 
 class EstadoReferencia(StrEnum):
     DISPONIBLE = "DISPONIBLE"
     POR_DESARROLLAR = "POR_DESARROLLAR"
     SIN_DATO = "SIN_DATO"
+    # Ajuste registros: el TEXTO de un ítem que quedó ABIERTA (no se cita; el front dice «esto lo dejaste abierto»).
+    ABIERTA = "ABIERTA"
+
+
+class FuenteOpciones(StrEnum):
+    """De dónde salen las opciones de un ítem de elección (ajuste registros)."""
+    LISTA = "LISTA"
+    REFERENCIA = "REFERENCIA"
+    PROPIAS = "PROPIAS"
 
 
 # --- Planes de carrera (B11) ---------------------------------------------------------------------

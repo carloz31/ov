@@ -58,6 +58,8 @@ class Actividad(Base):
     requerida: Mapped[bool] = mapped_column(default=True, server_default=true())
     duracion_estimada_min: Mapped[int | None]
     descripcion: Mapped[str | None] = mapped_column(Text)
+    # Ajuste registros: preguntas de seguimiento por intento de un registro (b5-3 lo baja a 1).
+    maximo_seguimientos: Mapped[int] = mapped_column(default=2, server_default=text("2"))
 
 
 class Tematica(Base):
@@ -159,6 +161,8 @@ class PreguntaDiario(Base):
     personalizada: Mapped[bool] = mapped_column(default=False, server_default=false())
     uso: Mapped[UsoPreguntaDiario] = mapped_column(enumerado(UsoPreguntaDiario))
     dimension_id: Mapped[int | None] = mapped_column(ForeignKey("dimension.id"))
+    # Ajuste registros: {item, opcion}; si la cuenta eligió esa opción en ese ítem, se usa la pregunta base sin LLM.
+    respaldo_si: Mapped[dict | None] = mapped_column(JSON(none_as_null=True), default=None)
 
 
 class Conversacion(Base):

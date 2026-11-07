@@ -12,7 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models as modelos
-from app.core.parametros import MAXIMO_ITEMS_REGISTRO
+from app.core.parametros import MAXIMO_ITEMS_REGISTRO, MAXIMO_SEGUIMIENTOS_POR_REGISTRO
 from datos import fijos
 
 
@@ -21,7 +21,14 @@ _HASHER = PasswordHasher()
 
 # Tipos de referencia que leen el resultado de una aplicación y los que no llevan fuente.
 FUENTE_APLICACION = ('RESULTADO', 'COINCIDENCIAS')
-SIN_FUENTE = ('FAVORITOS', 'PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL', 'LO_QUE_PIENSO')
+SIN_FUENTE = ('FAVORITOS', 'PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL', 'LO_QUE_PIENSO',
+              'FAMILIAS_RECOMENDADAS', 'TESTIMONIOS', 'DATOS_CARRERA_PLAN_A')
+# Ajuste registros: referencias que pueden dar las opciones de un ítem (resueltas en vivo).
+FUENTES_DE_OPCIONES = ('PLANES', 'FAMILIAS_RECOMENDADAS', 'ELECCION', 'TESTIMONIOS')
+CAMPOS_SEGUIMIENTO = frozenset({'que_busca', 'texto_base', 'cumple', 'no_cumple', 'evitar', 'admite_abierto',
+                                'ecos_llm', 'max_repreguntas'})
+CAMPOS_PROPIA = frozenset({'codigo', 'texto', 'exclusiva', 'pregunta_propia', 'criterio', 'que_busca', 'texto_base',
+                           'cumple', 'no_cumple'})
 REPREGUNTA_GENERICA = '¿Podrías contarme un poco más?'
 # El video de un testimonio: el ID de YouTube, sin parámetros.
 _VIDEO_YOUTUBE = re.compile(r'[A-Za-z0-9_-]{11}')
@@ -31,7 +38,8 @@ MAXIMO_CONTEXTO_TESTIMONIO = 80
 _DICCIONARIOS = frozenset({
     'PROPIEDADES', 'DESCRIPCIONES', 'CONFIGURACION_BATALLAS', 'CONFIGURACION_CASOS', 'PROPIEDADES_ITEMS',
     'TEXTOS_INSIGNIAS', 'PAGINAS_INSIGNIAS', 'PISTAS_INSIGNIAS', 'CITAS_LUMI', 'TEXTOS_CONDICIONES',
-    'EVALUADORES_REGLAS', 'CARRERAS_RUTA', 'INSTITUCIONES_RUTA', 'UBICACIONES_RUTA',
+    'EVALUADORES_REGLAS', 'CARRERAS_RUTA', 'INSTITUCIONES_RUTA', 'UBICACIONES_RUTA', 'SEGUIMIENTOS',
+    'RESPALDOS_DIARIO',
 })
 
 
@@ -147,6 +155,7 @@ def _cargar_estructura(m, sesion):
             **dict(zip(('vidas_enemigo', 'destellos', 'preguntas_por_intento'),
                        m.CONFIGURACION_BATALLAS.get(codigo, (None, None, None)))),
             duracion_estimada_min=duracion, requerida=propiedades.get('requerida', True),
+            maximo_seguimientos=propiedades.get('maximo_seguimientos', MAXIMO_SEGUIMIENTOS_POR_REGISTRO),
             visibilidad=modelos.Visibilidad(propiedades.get('visibilidad', 'SIEMPRE')),
             descripcion=m.DESCRIPCIONES.get(codigo))
     sesion.add_all(actividades.values())
@@ -181,9 +190,15 @@ def _preguntas_diario(m, sesion):
             raise ValueError(f'La pregunta de diario {codigo} no tiene nombre')
         if dimension is not None and (uso != 'DIARIA' or dimension not in dimensiones):
             raise ValueError(f'La pregunta de diario {codigo} tiene una dimensión que no corresponde: {dimension}')
+        respaldo = m.RESPALDOS_DIARIO.get(codigo)
+        if respaldo is not None and not personalizada:
+            raise ValueError(f'La pregunta de diario {codigo} tiene respaldo_si y no es personalizada')
         preguntas[codigo] = modelos.PreguntaDiario(
             codigo=codigo, nombre=nombre, pregunta=pregunta, uso=modelos.UsoPreguntaDiario(uso),
-            personalizada=personalizada, dimension_id=None if dimension is None else dimensiones[dimension].id)
+            personalizada=personalizada, dimension_id=None if dimension is None else dimensiones[dimension].id,
+            respaldo_si=None if respaldo is None else {'item': respaldo[0], 'opcion': respaldo[1]})
+    if set(m.RESPALDOS_DIARIO) - set(preguntas):
+        raise ValueError(f'Respaldos de preguntas de diario inexistentes: {sorted(set(m.RESPALDOS_DIARIO) - set(preguntas))}')
     return preguntas
 
 
@@ -232,23 +247,65 @@ def _cargar_preguntas_batalla(m, sesion, actividades, fichas):
         for codigo, batalla, ficha, enunciado, opciones, correcta, explicacion in m.PREGUNTAS_BATALLA)
 
 
+def _normalizar_eleccion(eleccion):
+    """La elección de `ITEMS_REGISTRO`: None, la tupla de B02/F02 `(lista, mínima, máxima, ordenada, otra[,
+    referencia])` o un diccionario (ajuste registros) con `fuente` (LISTA, REFERENCIA o PROPIAS), `lista` o
+    `referencia`, `minima`, `maxima`, `ordenada`, `otra`, `propias`, `premarcar_si` y `retoma`."""
+    if eleccion is None or isinstance(eleccion, dict):
+        return eleccion
+    lista, minima, maxima, ordenada, otra, retoma = (*eleccion, None)[:6]
+    return dict(fuente='LISTA', lista=lista, minima=minima, maxima=maxima, ordenada=ordenada, otra=otra,
+                retoma=retoma)
+
+
+def _validar_propias(codigo, propias, codigos_base, seguimiento):
+    vistos = set(codigos_base)
+    for opcion in propias:
+        if set(opcion) - CAMPOS_PROPIA or not {'codigo', 'texto'} <= set(opcion):
+            raise ValueError(f'El ítem {codigo} tiene una opción propia con campos inválidos')
+        if opcion['codigo'] == fijos.CODIGO_OTRA or opcion['codigo'] in vistos:
+            raise ValueError(f'El ítem {codigo} repite el código de opción {opcion["codigo"]} o usa el reservado')
+        vistos.add(opcion['codigo'])
+        criterio = opcion.get('criterio', 'HEREDA')
+        if criterio not in ('HEREDA', None) and criterio not in modelos.TipoCriterio.__members__:
+            raise ValueError(f'La opción {opcion["codigo"]} de {codigo} tiene un criterio fuera del catálogo')
+        if criterio not in ('HEREDA', None) and not (opcion.get('que_busca') and opcion.get('texto_base')):
+            raise ValueError(f'La opción {opcion["codigo"]} de {codigo} tiene criterio y le falta que_busca o texto_base')
+        con_criterio = criterio not in ('HEREDA', None) or (criterio == 'HEREDA' and seguimiento is not None)
+        if con_criterio and opcion.get('pregunta_propia') and not opcion.get('texto_base'):
+            raise ValueError(f'La opción {opcion["codigo"]} de {codigo} tiene pregunta propia y criterio sin texto_base')
+    return vistos
+
+
 def _validar_eleccion(codigo, eleccion, listas):
     if eleccion is None:
         return
-    lista, minima, maxima, _, permite_otra = eleccion[:5]
-    if lista not in listas:
-        raise ValueError(f'El ítem {codigo} usa la lista inexistente {lista}')
-    disponibles = len(listas[lista][2]) + (1 if permite_otra else 0)
-    if not 0 <= minima <= maxima or not 1 <= maxima <= disponibles:
+    if eleccion['fuente'] not in modelos.FuenteOpciones.__members__:
+        raise ValueError(f'El ítem {codigo} tiene la fuente de opciones {eleccion["fuente"]}, fuera del catálogo')
+    minima, maxima = eleccion['minima'], eleccion['maxima']
+    if eleccion['fuente'] == 'LISTA':
+        if eleccion.get('lista') not in listas:
+            raise ValueError(f'El ítem {codigo} usa la lista inexistente {eleccion.get("lista")}')
+        disponibles = len(listas[eleccion['lista']][2]) + len(eleccion.get('propias', ())) + (
+            1 if eleccion.get('otra') else 0)
+        if not 1 <= maxima <= disponibles:
+            raise ValueError(f'El ítem {codigo} tiene una elección mínima o máxima incoherente')
+    if eleccion['fuente'] == 'PROPIAS' and not eleccion.get('propias'):
+        raise ValueError(f'El ítem {codigo} elige de sus opciones propias y no tiene ninguna')
+    if not 0 <= minima <= maxima or maxima < 1:
         raise ValueError(f'El ítem {codigo} tiene una elección mínima o máxima incoherente')
+    # Ningún mínimo de selección mayor que 1 salvo los podios (elección ordenada).
+    if minima > 1 and not eleccion.get('ordenada'):
+        raise ValueError(f'El ítem {codigo} exige elegir más de una opción y no es un podio')
 
 
 def _cargar_registros(m, sesion, actividades, base: fijos.Fijos):
     listas = {codigo: (codigo, nombre, opciones) for codigo, nombre, opciones in (*fijos.LISTAS_COMUNES, *m.LISTAS)}
     cargadas = {**base.listas, **fijos.cargar_listas(sesion, m.LISTAS, comun=False)}
     ordenes, vistos = {}, set()
-    items = {}
+    items, definiciones_items = {}, {}
     for actividad, codigo, nombre, consigna, eleccion, criterios in m.ITEMS_REGISTRO:
+        eleccion = _normalizar_eleccion(eleccion)
         if codigo in vistos:
             raise ValueError(f'El ítem {codigo} aparece en dos actividades')
         vistos.add(codigo)
@@ -258,22 +315,78 @@ def _cargar_registros(m, sesion, actividades, base: fijos.Fijos):
         if ordenes[actividad] > MAXIMO_ITEMS_REGISTRO:
             raise ValueError(f'El registro {actividad} tiene más de {MAXIMO_ITEMS_REGISTRO} ítems')
         _validar_eleccion(codigo, eleccion, listas)
-        lista, minima, maxima, ordenada, otra, referencia = (*eleccion, None)[:6] if eleccion else (
-            None, None, None, False, False, None)
+        seguimiento = m.SEGUIMIENTOS.get(codigo)
+        _validar_seguimiento(codigo, seguimiento, criterios)
+        eleccion = eleccion or {}
+        lista = eleccion.get('lista')
+        propias = [dict(o) for o in eleccion.get('propias', ())]
+        codigos_base = [c for c, _ in listas[lista][2]] if lista else []
+        _validar_propias(codigo, propias, codigos_base, seguimiento)
         propiedades = m.PROPIEDADES_ITEMS.get(codigo, {})
         item = modelos.ItemRegistro(
             codigo=codigo, actividad_id=actividades[actividad].id, orden=ordenes[actividad], nombre=nombre,
             consigna=consigna, min_caracteres=propiedades.get('min_caracteres'),
             obligatorio=propiedades.get('obligatorio', True),
             repregunta_generica=m.REPREGUNTA_GENERICA, lista_id=None if lista is None else cargadas[lista].id,
-            eleccion_minima=minima, eleccion_maxima=maxima, eleccion_ordenada=ordenada, permite_otra=otra)
-        items[codigo] = (item, criterios, referencia)
+            fuente_opciones=None if not eleccion else modelos.FuenteOpciones(eleccion['fuente']),
+            opciones_propias=propias or None, premarcar_si=eleccion.get('premarcar_si'),
+            seguimiento=None if seguimiento is None else _seguimiento_guardado(seguimiento),
+            eleccion_minima=eleccion.get('minima'), eleccion_maxima=eleccion.get('maxima'),
+            eleccion_ordenada=eleccion.get('ordenada', False), permite_otra=eleccion.get('otra', False))
+        items[codigo] = (item, criterios, eleccion.get('retoma'), eleccion.get('referencia'))
+        definiciones_items[codigo] = (actividad, ordenes[actividad], eleccion, set(codigos_base) | {
+            o['codigo'] for o in propias})
+    _validar_premarcar_y_ecos(m, items, definiciones_items)
     referencias = _validar_referencias(m, sesion, actividades, items, base)
     _insertar_en_orden(sesion, items, referencias)
     sesion.add_all(modelos.CriterioCompletitud(item_registro_id=item.id, codigo=c, tipo=modelos.TipoCriterio(tipo),
                                                descripcion=d, repregunta=fijos.REPREGUNTAS_CRITERIO[tipo], orden=orden)
-                   for item, criterios, _ in items.values()
+                   for item, criterios, *_ in items.values()
                    for orden, (c, tipo, d) in enumerate(criterios, start=1))
+
+
+def _validar_seguimiento(codigo, seguimiento, criterios):
+    """Los campos de seguimiento existen solo con criterio y traen al menos `que_busca` y `texto_base`."""
+    if seguimiento is None:
+        return
+    if not criterios:
+        raise ValueError(f'El ítem {codigo} no tiene criterio y declara seguimiento')
+    # Solo `max_repreguntas` (ruta): cambia el presupuesto del ítem sin campos de guía.
+    guia = set(seguimiento) - {'max_repreguntas'}
+    if set(seguimiento) - CAMPOS_SEGUIMIENTO or (guia and not (seguimiento.get('que_busca') and seguimiento.get('texto_base'))):
+        raise ValueError(f'El seguimiento de {codigo} tiene campos inválidos o le falta que_busca o texto_base')
+    if seguimiento.get('max_repreguntas', 1) not in (1, 2):
+        raise ValueError(f'El ítem {codigo} admite 1 o 2 repreguntas')
+
+
+def _seguimiento_guardado(seguimiento):
+    """Como se guarda en `item_registro.seguimiento` (JSON): listas en vez de tuplas."""
+    return {clave: [list(e) for e in valor] if clave == 'ecos_llm' else list(valor)
+            if isinstance(valor, tuple) else valor for clave, valor in seguimiento.items()}
+
+
+def _validar_premarcar_y_ecos(m, items, definiciones_items):
+    """`premarcar_si` y los ecos de ítem de `ecos_llm` apuntan a un ítem anterior de la misma actividad."""
+    def anterior(codigo, otro):
+        actividad, orden, *_ = definiciones_items[codigo]
+        return otro in definiciones_items and definiciones_items[otro][0] == actividad and (
+            definiciones_items[otro][1] < orden)
+
+    for codigo, (actividad, _, eleccion, opciones) in definiciones_items.items():
+        premarcar = (eleccion or {}).get('premarcar_si')
+        if premarcar is not None:
+            if set(premarcar) != {'item', 'opcion', 'marca'} or not anterior(codigo, premarcar['item']):
+                raise ValueError(f'El premarcado de {codigo} no apunta a un ítem anterior de su actividad')
+            if (premarcar['opcion'] not in definiciones_items[premarcar['item']][3]
+                    or premarcar['marca'] not in {o['codigo'] for o in eleccion.get('propias', ())}):
+                raise ValueError(f'El premarcado de {codigo} nombra una opción inexistente')
+        for tipo, fuente in (m.SEGUIMIENTOS.get(codigo) or {}).get('ecos_llm', ()):
+            if tipo == 'REFERENCIA':
+                continue
+            if tipo not in ('TEXTO', 'ELECCION') or not anterior(codigo, fuente):
+                raise ValueError(f'El eco {tipo} {fuente} de {codigo} no es un ítem anterior de su actividad')
+            if tipo == 'ELECCION' and not definiciones_items[fuente][2]:
+                raise ValueError(f'El eco ELECCION {fuente} de {codigo} es de un ítem sin elección')
 
 
 def _validar_referencias(m, sesion, actividades, items, base: fijos.Fijos):
@@ -326,12 +439,26 @@ def _validar_referencias(m, sesion, actividades, items, base: fijos.Fijos):
         item_fuente = items[fuente][0]
         if item_fuente.actividad_id == dueno_id.get('actividad_id'):
             raise ValueError(f'La referencia {codigo} lee un ítem de su propia actividad')
-        if tipo == 'ELECCION' and item_fuente.lista_id is None:
-            raise ValueError(f'La referencia {codigo} lee la elección de {fuente}, que no tiene lista')
+        if tipo == 'ELECCION' and item_fuente.fuente_opciones is None:
+            raise ValueError(f'La referencia {codigo} lee la elección de {fuente}, que no tiene lista ni opciones')
         referencias[codigo] = (modelos.Referencia(codigo=codigo, tipo=modelos.TipoReferencia(tipo), **dueno_id),
                                fuente)
-    for codigo, (item, _, referencia) in items.items():
+    for codigo, (item, _, _, de_opciones) in items.items():
+        if de_opciones is None:
+            if item.fuente_opciones == modelos.FuenteOpciones.REFERENCIA:
+                raise ValueError(f'El ítem {codigo} elige de una referencia y no la declara')
+            continue
+        if item.fuente_opciones != modelos.FuenteOpciones.REFERENCIA:
+            raise ValueError(f'El ítem {codigo} declara una referencia de opciones y no elige de ella')
+        if (de_opciones not in referencias or referencias[de_opciones][0].actividad_id != item.actividad_id
+                or referencias[de_opciones][0].tipo.value not in FUENTES_DE_OPCIONES):
+            raise ValueError(f'El ítem {codigo} toma sus opciones de {de_opciones}, que no es una referencia de su '
+                             f'actividad que dé opciones')
+    for codigo, (item, _, referencia, de_opciones) in items.items():
         if referencia is None:
+            continue
+        # Retomar sobre la misma referencia que da las opciones (b5-1-decision sobre PLANES): marca el plan A.
+        if referencia == de_opciones:
             continue
         if (referencia not in referencias or referencias[referencia][0].tipo != modelos.TipoReferencia.ELECCION
                 or referencias[referencia][0].actividad_id != item.actividad_id):
@@ -350,12 +477,14 @@ def _insertar_en_orden(sesion, items, referencias):
     items_pendientes = dict(items)
     referencias_pendientes = dict(referencias)
     while items_pendientes or referencias_pendientes:
-        listos = [codigo for codigo, (_, _, referencia) in items_pendientes.items()
-                  if referencia is None or referencia not in referencias_pendientes]
+        listos = [codigo for codigo, (_, _, referencia, de_opciones) in items_pendientes.items()
+                  if all(r is None or r not in referencias_pendientes for r in (referencia, de_opciones))]
         for codigo in listos:
-            item, _, referencia = items_pendientes.pop(codigo)
+            item, _, referencia, de_opciones = items_pendientes.pop(codigo)
             if referencia is not None:
                 item.referencia_id = referencias[referencia][0].id
+            if de_opciones is not None:
+                item.referencia_opciones_id = referencias[de_opciones][0].id
             sesion.add(item)
         sesion.flush()
         listas = [codigo for codigo, (_, fuente) in referencias_pendientes.items() if fuente not in items_pendientes]

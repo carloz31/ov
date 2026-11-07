@@ -232,59 +232,8 @@ export type AvanceEstudiante = {
   requeridas: { completadas: number; total: number }
 }
 export type Tramo = TramoActual & { estado: 'COMPLETO' | 'ACTUAL' | 'PENDIENTE' }
-// app/schemas/registro.py (B02–B04; F01)
-export type EstadoRespuestaRegistro = 'BORRADOR' | 'PENDIENTE_SEGUIMIENTO' | 'FINAL'
-export type OpcionElegida = { codigo: string; texto?: string | null }
-export type BorradorRegistroEntrada = {
-  cuenta: string
-  actividad: string
-  item: string
-  texto: string
-  opciones: OpcionElegida[]
-  posicion?: string | null
-}
-export type OpcionListaPublica = { codigo: string; texto: string }
-export type EleccionPublica = {
-  lista: string | null
-  referencia: string | null
-  comun: boolean
-  minima: number
-  maxima: number
-  ordenada: boolean
-  permite_otra: boolean
-  opciones: OpcionListaPublica[]
-}
-export type ItemRegistroPublico = {
-  codigo: string
-  nombre: string
-  consigna: string
-  min_caracteres: number | null
-  obligatorio: boolean
-  eleccion: EleccionPublica | null
-}
-export type EstadoItemRegistro = { item: string; estado: EstadoRespuestaRegistro }
-export type MensajeRespuestaRegistro = {
-  tipo: 'respuesta'
-  texto: string
-  orden?: number | null
-  borrador?: boolean | null
-}
-export type MensajePreguntaRegistro = { tipo: 'pregunta'; orden: number; texto: string }
-export type MensajeRegistro = MensajeRespuestaRegistro | MensajePreguntaRegistro
-export type RespuestaRegistroPublica = EstadoItemRegistro & {
-  opciones_elegidas: OpcionElegida[]
-  conversacion: MensajeRegistro[]
-  texto_consolidado?: string | null
-}
-export type ItemPorAmpliar = { item: string; pista: string }
-export type RegistroConsultado = {
-  posicion: string | null
-  estado: 'EN_CURSO' | 'COMPLETADA' | null
-  respuestas: RespuestaRegistroPublica[]
-  items_por_ampliar?: ItemPorAmpliar[] | null
-}
-export type RespuestaRegistroAccion = RegistroConsultado & RespuestaAccion
-export type ItemEdicion = { item: string; texto: string; opciones?: OpcionElegida[] | null }
+// app/schemas/registro.py vive en servidorRegistro.ts (ajuste registros), por el límite de 400 líneas.
+export * from './servidorRegistro'
 // app/schemas/referencias.py (B05; F02: `actividad` de origen en ELECCION y TEXTO)
 export type TipoReferencia =
   | 'ELECCION'
@@ -298,7 +247,10 @@ export type TipoReferencia =
   | 'PASOS_PLAN_A'
   | 'OPCION_INICIAL'
   | 'LO_QUE_PIENSO'
-export type EstadoReferencia = 'DISPONIBLE' | 'POR_DESARROLLAR' | 'SIN_DATO'
+  | 'FAMILIAS_RECOMENDADAS'
+  | 'TESTIMONIOS'
+  | 'DATOS_CARRERA_PLAN_A'
+export type EstadoReferencia = 'DISPONIBLE' | 'POR_DESARROLLAR' | 'SIN_DATO' | 'ABIERTA'
 export type OpcionReferida = { codigo: string; texto: string }
 export type ReferenciaResuelta = {
   codigo: string

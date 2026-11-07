@@ -164,12 +164,13 @@ def _parametro_positivo(datos, descripcion: str) -> int:
 
 
 @usar_contexto
-def planes_listos_para_comparar(sesion: Session, cuenta: Cuenta) -> bool:
-    """B11 · `t-comparar`: al menos `parametro` planes con todas sus secciones `para_comparar` en LISTA."""
+def planes_listos_para_comparar(sesion: Session, cuenta: Cuenta, secciones=None) -> bool:
+    """B11 · `t-comparar`: al menos `parametro` planes con sus `secciones` en LISTA; por defecto, las
+    `para_comparar`. Con `secciones` vacía basta que existan los planes (ajuste registros: b4-5)."""
     # Importación diferida: el dominio de planes usa el motor para saber qué secciones están abiertas.
     from app.services.planes.consultas import contar_listos_para_comparar
     minimo = _parametro_positivo(contexto(sesion), 'planes listos para comparar')
-    return contar_listos_para_comparar(sesion, cuenta) >= minimo
+    return contar_listos_para_comparar(sesion, cuenta, secciones) >= minimo
 
 
 @usar_contexto
@@ -190,5 +191,8 @@ EVALUADORES: dict[str, Callable[[Session, Cuenta], bool]] = {
     "misiones_camino_sin_inicio": misiones_camino_sin_inicio,
     "instrumentos_prioritarios": instrumentos_prioritarios,
     "planes_listos_para_comparar": planes_listos_para_comparar,
+    # Ajuste registros: b4-1 pide el plan A con «Por qué» y b4-5, dos planes creados.
+    "planes_con_por_que": partial(planes_listos_para_comparar, secciones=('POR_QUE',)),
+    "planes_creados": partial(planes_listos_para_comparar, secciones=()),
     "pasos_plan_a": pasos_plan_a,
 }

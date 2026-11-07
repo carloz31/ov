@@ -26,6 +26,9 @@ Una referencia es un dato de la cuenta que una actividad o una pregunta de diari
 | PASOS_PLAN_A | Los pasos del plan A (sin fuente) | B11 |
 | OPCION_INICIAL | La carrera de la opción inicial (sin fuente) | B11 |
 | LO_QUE_PIENSO | Lo que el estudiante pensaba de la familia de carreras antes de su primera entrevista publicada (sin fuente) | B13 |
+| FAMILIAS_RECOMENDADAS | Las cinco familias del resultado de intereses revelado (sin fuente) | Ajuste registros |
+| TESTIMONIOS | Los testimonios desbloqueados por la cuenta, solo con su título (sin fuente) | Ajuste registros |
+| DATOS_CARRERA_PLAN_A | Duración, tipo y referencia de ingresos de la familia de la carrera del plan A (sin fuente) | Ajuste registros |
 
 Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola dirección (`motor.md`, «Diario»).
 
@@ -36,7 +39,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 | Tipo | DISPONIBLE | POR_DESARROLLAR | SIN_DATO |
 |---|---|---|---|
 | ELECCION | Desde la primera entrega del ítem fuente (`clasificacion_inicial` no nula), sea cual sea su estado o su clasificación. `opciones`: `[{codigo, texto}]` en el orden guardado; el texto es el de la lista o, en OTRA, el escrito. | — | Sin respuesta, en borrador o sin entregar. |
-| TEXTO | Si la última evaluación no es POCO_DESARROLLADA (incluye NO_EVALUADA por un fallo). `texto`: `texto_consolidado`. | Si la última evaluación es POCO_DESARROLLADA, también mientras espera una respuesta de seguimiento. | Sin respuesta, en borrador o nunca evaluada (p. ej., un ítem opcional entregado sin texto). |
+| TEXTO | Si la última evaluación es ADECUADA o NO_EVALUADA y la respuesta no es sensible. `texto`: `texto_consolidado`. | Si la última evaluación es POCO_DESARROLLADA, también mientras espera una respuesta de seguimiento. ABIERTA (estado propio): la última es ABIERTA; el front dice «esto lo dejaste abierto». | Sin respuesta, en borrador, nunca evaluada (p. ej., un ítem opcional entregado sin texto) o **sensible** (no se cita en ninguna actividad). |
 | RESULTADO | Con resultado vigente (revelado) de la aplicación fuente. `opciones`: `[{codigo, texto}]` de las dimensiones del código de interés (COINCIDENCIAS) o de las destacadas (DESTACADAS), con el nombre de la dimensión. Con perfil plano, `[]`. | — | Sin revelar, o tras reiniciar. |
 | COINCIDENCIAS | Igual que RESULTADO. `opciones`: las ocupaciones por posición, con `codigo` (o `codigo_onet` si no tiene) y su título. Con perfil plano, `[]`. | — | Igual que RESULTADO. |
 | RESPUESTA_CUESTIONARIO | La actividad de la aplicación fuente que presenta el ítem está COMPLETADA (la respuesta ya no cambia). `texto`: la etiqueta de la opción, sin puntaje. | — | Sin respuesta o con la actividad sin completar. |
@@ -45,12 +48,18 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 | PLAN | Con al menos un plan. `texto`: la carrera del plan A; `cita`: su relato (nulo si no lo escribió); `opciones`: sus motivos por posición, con el código de VALORES o `OTRA` y el texto escrito. | — | Sin planes. |
 | PASOS_PLAN_A | El plan A tiene pasos. `opciones`: `[{codigo, texto}]` por posición, con el código del tipo de paso. | — | Sin planes o sin pasos. |
 | OPCION_INICIAL | La cuenta tiene opción inicial. `texto`: el nombre de la carrera. | — | Sin opción inicial. |
+| FAMILIAS_RECOMENDADAS | Con resultado de intereses revelado. `opciones`: las familias por posición, `{codigo, nombre}`. | — | Sin resultado o con perfil plano. |
+| TESTIMONIOS | Con al menos un testimonio disponible. `opciones`: `{codigo, titulo}` por código. | — | Ninguno desbloqueado. |
+| DATOS_CARRERA_PLAN_A | Con plan A. `texto`: la carrera; `opciones`: `INGRESO_FAMILIA` («S/ … al mes: referencia de carreras de esta familia», el promedio de jóvenes de su familia y tipo, sin ubicación), `DURACION` y `TIPO` (Universitaria, Técnica o Pública); un campo sin dato se omite. | — | Sin planes. |
 | LO_QUE_PIENSO | La cuenta publicó al menos una entrevista. `texto`: el título de la ocupación de la primera; `opciones`: `DIA`, `NECESITA` y `DUDA` con lo que escribió antes (aunque la entrevista se haya retirado). | — | Sin entrevistas publicadas. |
 
 **Reglas:**
 - Desde F02 la elección se puede editar, y entonces la justificación se reescribe (`registro.md`); ELECCION cita siempre la elección vigente. Lo que puede quedar poco desarrollado es la justificación, no la decisión; por eso ELECCION no depende de la clasificación.
 - Durante una edición, la pregunta de seguimiento queda solo en el ítem preguntado, que sale POR_DESARROLLAR. Los demás ítems editados ya se citan con su texto nuevo, y los no editados conservan su consolidada.
-- Los textos de una referencia TEXTO nunca van al evaluador: son respuestas de otra actividad (RNF-13).
+- Al evaluador solo van las referencias e ítems que el ítem declara en `ecos_llm` (`registro.md`); nunca las demás.
+- La ELECCION de un ítem sensible sí se cita; solo su TEXTO pasa a SIN_DATO.
+- Las referencias de objetos que cambian (PLANES, TESTIMONIOS, FAMILIAS_RECOMENDADAS) se resuelven en vivo; lo guardado en una respuesta conserva el texto de la opción elegida en su momento.
+- **Opciones desde una referencia (ajuste registros):** un ítem con `fuente_opciones = REFERENCIA` toma sus opciones de una referencia de su actividad (PLANES, FAMILIAS_RECOMENDADAS, ELECCION o TESTIMONIOS) y puede retomar sobre la misma referencia (`b5-1-decision`: marca el plan A actual).
 - **Elección que retoma una anterior (F02):** las opciones válidas son las de la lista del ítem, como en cualquier elección; la referencia no las cambia. El front marca de entrada lo elegido la vez pasada (la ELECCION resuelta, con el texto de su OTRA) y el estudiante lo mantiene o lo cambia. Se guarda y se evalúa como cualquier elección: la OTRA lleva el texto escrito en este ítem. Ningún texto de la fuente va al evaluador.
 
 ## Consulta (GET)
@@ -66,11 +75,12 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 `REFERENCIAS`: `(código, (tipo de dueño, dueño), tipo, fuente)`; la fuente es un ítem de registro en ELECCION y TEXTO, un código de aplicación en RESULTADO y COINCIDENCIAS, `(aplicación, ítem)` en RESPUESTA_CUESTIONARIO y `None` en FAVORITOS. Una pregunta de diario solo es dueña si es personalizada. En `ITEMS_REGISTRO`, la elección que retoma una anterior agrega la referencia como sexto campo: `(lista, mínima, máxima, ordenada, otra, referencia)`. El cargador inserta ítems y referencias en el orden en que se leen entre sí, y rechaza con `ValueError`:
 - un tipo fuera del catálogo;
 - un dueño inexistente, o una pregunta de diario no personalizada;
-- una fuente en FAVORITOS, PLANES, PLAN, PASOS_PLAN_A, OPCION_INICIAL o LO_QUE_PIENSO;
+- una fuente en FAVORITOS, PLANES, PLAN, PASOS_PLAN_A, OPCION_INICIAL, LO_QUE_PIENSO, FAMILIAS_RECOMENDADAS, TESTIMONIOS o DATOS_CARRERA_PLAN_A;
 - una fuente inexistente o de la propia actividad dueña;
 - en RESULTADO o COINCIDENCIAS, una aplicación de un instrumento de COMPARACION;
 - en RESPUESTA_CUESTIONARIO, un ítem que la aplicación no presenta;
-- una ELECCION cuya fuente no tiene lista;
+- una ELECCION cuya fuente no tiene elección;
+- un ítem que elige de una referencia que no es de su actividad o que no da opciones;
 - una elección que retoma una referencia que no es una ELECCION de su propia actividad, que lee otra lista o cuyo máximo u «otra» no admiten lo que pudo elegirse en la fuente;
 - una mínima o máxima mayor que la de la fuente;
 - un ciclo entre ítems y referencias.

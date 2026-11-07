@@ -3,31 +3,38 @@
 Cada edición es un nuevo intento (B04): el mismo flujo de la entrega, con su propio tope de preguntas.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import exists, insert, select, update
 
 from app.core.contexto import contexto, usar_contexto
-from app.core.parametros import MAXIMO_SEGUIMIENTOS_POR_REGISTRO
+from app.core.parametros import MAXIMO_ABIERTOS_ADECUADO, MAXIMO_REPREGUNTAS_POR_ITEM
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, Bloque, Cuenta, EstadoProgreso, EvaluacionRespuesta, EventoUso, ProgresoActividad,
-    Referencia, RespuestaRegistro, Rol, TipoEventoUso, TipoObjetivo, TurnoSeguimiento,
+    Referencia, RespuestaRegistro, Rol, TextoFijo, TipoEventoUso, TipoObjetivo, TurnoSeguimiento,
 )
-from app.models.enums import ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion
+from app.models.enums import (
+    ClasificacionRespuesta, EstadoReferencia, EstadoRespuestaRegistro, FuenteOpciones, OrigenEvaluacion,
+)
 from app.schemas.registro import (
-    EstadoItemRegistro, ItemPorAmpliar, MensajePreguntaRegistro, MensajeRespuestaRegistro, OpcionElegida,
+    EstadoItemRegistro, ItemPorAmpliar, MensajeAvisoRegistro, MensajePreguntaRegistro, MensajeRespuestaRegistro,
+    OpcionElegida,
     RespuestaRegistroAccion, RespuestaRegistroPublica,
 )
 from app.services.actividades import completar_progreso
 from app.services.comun import (
     buscar_por_codigo, exigir_disponible, fecha_accion, responder_con_eventos,
 )
-from app.services.registro.eleccion import invalida, validar_eleccion
+from app.services.referencias import resolver
+from app.services.registro.eleccion import OpcionItem, invalida, validar_eleccion
 from app.services.registro.evaluacion import (
-    CriterioEvaluacion, ItemPorEvaluar, RespuestaOtroItem, TurnoEvaluacion, procesar_entrega, procesar_seguimiento,
+    CriterioEvaluacion, EcoEvaluacion, GuiaSeguimiento, ItemPorEvaluar, TurnoEvaluacion, procesar_entrega,
+    procesar_seguimiento,
 )
+
+TEXTO_SENSIBLE = 'LUMI_SENSIBLE'
 
 
 def validar_registro(sesion, codigo_actividad, codigo_cuenta=None, disponible=False):
@@ -58,10 +65,25 @@ def opciones_de(sesion, item):
     return contexto(sesion).definiciones.opciones_por_lista.get(item.lista_id, ())
 
 
-def opciones_por_item(sesion, items):
-    """{id del ítem: opciones de su lista}. La referencia de un ítem solo marca lo elegido antes (F02): no cambia
-    sus opciones."""
-    return {item.id: opciones_de(sesion, item) for item in items}
+def opciones_por_item(sesion, cuenta, items):
+    """{id del ítem: opciones que ofrece}: las de su lista o las de su referencia resuelta en vivo para la cuenta,
+    más sus opciones propias. La referencia que retoma (F02) solo marca lo elegido antes: no cambia las opciones."""
+    definiciones = contexto(sesion).definiciones
+    de_referencia = {item.id: definiciones.obtener(Referencia, item.referencia_opciones_id) for item in items
+                     if item.fuente_opciones == FuenteOpciones.REFERENCIA}
+    resueltas = resolver(sesion, cuenta, list(de_referencia.values())) if de_referencia else {}
+    opciones = {}
+    for item in items:
+        if item.id in de_referencia:
+            resuelta = resueltas[de_referencia[item.id].codigo]
+            base = [OpcionItem(o.codigo, o.texto, de_referencia=True) for o in resuelta.opciones or ()
+                    ] if resuelta.estado == EstadoReferencia.DISPONIBLE else []
+        else:
+            base = [OpcionItem(o.codigo, o.texto) for o in opciones_de(sesion, item)]
+        propias = [OpcionItem(o['codigo'], o['texto'], exclusiva=o.get('exclusiva', False))
+                   for o in item.opciones_propias or ()]
+        opciones[item.id] = tuple(base + propias)
+    return opciones
 
 
 def criterios_de(sesion, item):
@@ -73,6 +95,64 @@ def textos_elegidos(opciones, elegidas):
     """Textos de las opciones elegidas, para el evaluador (RNF-13); la OTRA lleva el texto escrito."""
     textos = {opcion.codigo: opcion.texto for opcion in opciones}
     return tuple(e['texto'] if 'texto' in e else textos.get(e['codigo'], e['codigo']) for e in elegidas or ())
+
+
+def propia_elegida(item, elegidas):
+    """La primera opción propia elegida, si alguna: puede cambiar el criterio y el texto base del ítem."""
+    propias = {o['codigo']: o for o in item.opciones_propias or ()}
+    return next((propias[e['codigo']] for e in elegidas or () if e['codigo'] in propias), None)
+
+
+def criterio_y_guia(sesion, item, elegidas):
+    """Criterios y campos de seguimiento con los que se evalúa el ítem según la opción elegida.
+
+    Opción propia con `criterio: null`: sin criterio (cumple sin llamada). Con criterio informado: el de la opción,
+    con su `que_busca`, `texto_base` y ejemplos. Omitido: los del ítem, salvo el `texto_base` de la opción."""
+    seguimiento = item.seguimiento or {}
+    propia = propia_elegida(item, elegidas)
+    if propia is not None and 'criterio' in propia:
+        if propia['criterio'] is None:
+            return (), None
+        criterio = CriterioEvaluacion('C1', propia['criterio'], propia['que_busca'], propia['texto_base'])
+        return (criterio,), GuiaSeguimiento(
+            propia['que_busca'], propia['texto_base'], tuple(propia.get('cumple') or seguimiento.get('cumple', ())),
+            tuple(propia.get('no_cumple') or seguimiento.get('no_cumple', ())), seguimiento.get('evitar'))
+    criterios = criterios_de(sesion, item)
+    if not seguimiento.get('que_busca') or not criterios:
+        return criterios, None
+    return criterios, GuiaSeguimiento(
+        seguimiento['que_busca'], (propia or {}).get('texto_base') or seguimiento['texto_base'],
+        tuple(seguimiento.get('cumple', ())), tuple(seguimiento.get('no_cumple', ())), seguimiento.get('evitar'))
+
+
+def ecos_de(sesion, cuenta, item, items, textos, elecciones, opciones):
+    """Lo que el evaluador recibe además del ítem: solo `ecos_llm` (RNF-13). Una referencia de la actividad o un
+    ítem anterior de la misma actividad; un texto sensible, abierto o poco desarrollado no se envía."""
+    ecos_llm = (item.seguimiento or {}).get('ecos_llm', ())
+    if not ecos_llm:
+        return ()
+    definiciones = contexto(sesion).definiciones
+    referencias = [definiciones.por_codigo(Referencia, codigo) for tipo, codigo in ecos_llm if tipo == 'REFERENCIA']
+    resueltas = resolver(sesion, cuenta, referencias) if referencias else {}
+    por_codigo = {otro.codigo: otro for otro in items}
+    ecos = []
+    for tipo, codigo in ecos_llm:
+        if tipo == 'REFERENCIA':
+            resuelta = resueltas[codigo]
+            if resuelta.estado != EstadoReferencia.DISPONIBLE:
+                continue
+            partes = [resuelta.texto] if resuelta.texto else []
+            partes += [o.texto for o in resuelta.opciones or ()]
+            if partes:
+                ecos.append(EcoEvaluacion(resuelta.tipo.value, ' · '.join(partes)))
+            continue
+        otro = por_codigo[codigo]
+        if tipo == 'TEXTO' and textos.get(codigo):
+            ecos.append(EcoEvaluacion(otro.nombre, textos[codigo]))
+        elif tipo == 'ELECCION' and elecciones.get(codigo):
+            ecos.append(EcoEvaluacion(otro.nombre, ', '.join(textos_elegidos(opciones.get(otro.id, ()),
+                                                                             elecciones[codigo]))))
+    return tuple(ecos)
 
 
 @dataclass(frozen=True, slots=True)
@@ -93,6 +173,7 @@ class EvaluacionLeida:
     clasificacion: ClasificacionRespuesta
     criterios_faltantes: tuple[str, ...]
     pregunta: str | None
+    falta: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -134,11 +215,18 @@ class RegistroLeido:
         ultima = self.ultima_evaluacion(respuesta)
         return ultima.clasificacion if ultima is not None else None
 
+    def con_clasificacion(self, items, clasificacion):
+        return [item for item in items if item.id in self.respuestas
+                and self.clasificacion_vigente(self.respuestas[item.id]) == clasificacion]
+
     def por_ampliar(self, items):
-        """Ítems que quedaron poco desarrollados, con la pregunta de su evaluación vigente como pista."""
-        return [ItemPorAmpliar(item=item.codigo, pista=self.ultima_evaluacion(self.respuestas[item.id]).pregunta)
-                for item in items if item.id in self.respuestas and self.clasificacion_vigente(
-                    self.respuestas[item.id]) == ClasificacionRespuesta.POCO_DESARROLLADA]
+        """Ítems que quedaron poco desarrollados: la pregunta de su evaluación vigente y lo que les faltó."""
+        return [ItemPorAmpliar(item=item.codigo, pista=self.ultima_evaluacion(self.respuestas[item.id]).pregunta,
+                               falta=self.ultima_evaluacion(self.respuestas[item.id]).falta)
+                for item in self.con_clasificacion(items, ClasificacionRespuesta.POCO_DESARROLLADA)]
+
+    def abiertos(self, items):
+        return [item.codigo for item in self.con_clasificacion(items, ClasificacionRespuesta.ABIERTA)]
 
 
 def leer_registro(sesion, cuenta, actividad):
@@ -163,42 +251,57 @@ def leer_registro(sesion, cuenta, actividad):
         for fila in sesion.execute(select(
                 EvaluacionRespuesta.respuesta_id, EvaluacionRespuesta.numero, EvaluacionRespuesta.origen,
                 EvaluacionRespuesta.clasificacion, EvaluacionRespuesta.criterios_faltantes,
-                EvaluacionRespuesta.pregunta_generada).where(EvaluacionRespuesta.respuesta_id.in_(
+                EvaluacionRespuesta.pregunta_generada, EvaluacionRespuesta.falta).where(EvaluacionRespuesta.respuesta_id.in_(
                     [r.id for r in respuestas.values()])).order_by(EvaluacionRespuesta.numero)):
             evaluaciones.setdefault(fila.respuesta_id, []).append(EvaluacionLeida(
-                fila.numero, fila.origen, fila.clasificacion, tuple(fila.criterios_faltantes), fila.pregunta_generada))
+                fila.numero, fila.origen, fila.clasificacion, tuple(fila.criterios_faltantes), fila.pregunta_generada,
+                fila.falta))
     return RegistroLeido(filas[0][0] if filas else None, respuestas,
                          {identificador: tuple(t.values()) for identificador, t in turnos.items()},
                          {identificador: tuple(e) for identificador, e in evaluaciones.items()})
 
 
-def conversacion_publica(texto_inicial, turnos):
+def conversacion_publica(texto_inicial, turnos, aviso=None):
+    """El texto base y sus turnos; con `aviso` (respuesta sensible), el texto fijo de Lumi al final."""
     mensajes = [MensajeRespuestaRegistro(tipo='respuesta', texto=texto_inicial)]
     for turno in turnos:
         mensajes.append(MensajePreguntaRegistro(tipo='pregunta', orden=turno.orden, texto=turno.pregunta))
         if turno.respuesta is not None:
             mensajes.append(MensajeRespuestaRegistro(tipo='respuesta', orden=turno.orden, texto=turno.respuesta,
                                                      borrador=turno.respondido_en is None))
+    if aviso is not None:
+        mensajes.append(MensajeAvisoRegistro(tipo='aviso', texto=aviso))
     return mensajes
 
 
-def respuesta_publica(registro, item, consolidada):
+def texto_sensible(sesion):
+    fila = contexto(sesion).definiciones.por_codigo(TextoFijo, TEXTO_SENSIBLE)
+    return fila.texto if fila is not None else None
+
+
+def respuesta_publica(registro, item, consolidada, aviso=None):
     respuesta = registro.respuestas[item.id]
     # La consolidada es la respuesta final: solo la consulta la muestra, y con el registro cerrado.
     final = dict(texto_consolidado=respuesta.texto_consolidado) if consolidada and registro.cerrado else {}
     return RespuestaRegistroPublica(item=item.codigo, estado=respuesta.estado,
         opciones_elegidas=respuesta.opciones_elegidas,
-        conversacion=conversacion_publica(respuesta.texto_inicial, registro.turnos_vigentes(respuesta)), **final)
+        conversacion=conversacion_publica(respuesta.texto_inicial, registro.turnos_vigentes(respuesta),
+                                          aviso if respuesta.sensible else None), **final)
 
 
-def registro_publico(registro, items, consolidada=False):
+def registro_publico(registro, items, consolidada=False, aviso=None):
     progreso = registro.progreso
-    cierre = dict(items_por_ampliar=registro.por_ampliar(items)) if registro.cerrado else {}
+    cierre = dict(items_por_ampliar=registro.por_ampliar(items),
+                  items_abiertos=registro.abiertos(items)) if registro.cerrado else {}
     return dict(posicion=progreso.posicion if progreso is not None else None,
                 estado=progreso.estado if progreso is not None else None,
-                respuestas=[respuesta_publica(registro, item, consolidada)
+                respuestas=[respuesta_publica(registro, item, consolidada, aviso)
                             for item in items if item.id in registro.respuestas],
                 **cierre)
+
+
+def publico(sesion, cuenta, actividad, items, consolidada=False):
+    return registro_publico(leer_registro(sesion, cuenta, actividad), items, consolidada, texto_sensible(sesion))
 
 
 def crear_progreso(sesion, cuenta, actividad):
@@ -256,7 +359,7 @@ def guardar_borrador(sesion, entrada):
     if pendiente and entrada.opciones:
         raise invalida("La elección se guarda con la respuesta inicial, no con el seguimiento")
     elegidas = None if pendiente else validar_eleccion(
-        item, opciones_por_item(sesion, (item,))[item.id], entrada.opciones, False)
+        item, opciones_por_item(sesion, cuenta, (item,))[item.id], entrada.opciones, False)
     marca = marca_actualizacion(respuesta.actualizada_en if respuesta is not None else None)
     progreso = registro.progreso or crear_progreso(sesion, cuenta, actividad)
     if entrada.posicion is not None:
@@ -292,9 +395,17 @@ class LecturaEntrega:
     intento: int = 1
 
 
-def item_por_evaluar(sesion, item, opciones, elegidas, texto):
-    return ItemPorEvaluar(item.codigo, item.consigna, criterios_de(sesion, item),
-                          textos_elegidos(opciones, elegidas), texto, item.min_caracteres, item.repregunta_generica)
+def item_por_evaluar(sesion, item, opciones, elegidas, texto, ecos=()):
+    criterios, guia = criterio_y_guia(sesion, item, elegidas)
+    return ItemPorEvaluar(item.codigo, item.consigna, criterios, textos_elegidos(opciones, elegidas), texto,
+                          item.min_caracteres, item.repregunta_generica, guia, ecos)
+
+
+def por_evaluar_con_ecos(sesion, cuenta, items, codigos, textos, elecciones, opciones):
+    """Los ítems de `codigos` en orden, cada uno con sus ecos para el evaluador (ítems anteriores y referencias)."""
+    return tuple(item_por_evaluar(sesion, item, opciones[item.id], elecciones[item.codigo], textos[item.codigo],
+                                  ecos_de(sesion, cuenta, item, items, textos, elecciones, opciones))
+                 for item in items if item.codigo in codigos)
 
 
 @usar_contexto
@@ -309,17 +420,17 @@ def preparar_entrega(sesion, entrada):
     faltantes = [item.codigo for item in items if item.obligatorio and item.id not in con_texto]
     if faltantes:
         raise ErrorAccion("Faltan ítems por responder antes de entregar", items_faltantes=faltantes)
-    por_evaluar, elecciones = [], {}
-    opciones = opciones_por_item(sesion, [item for item in items if item.id in con_texto])
+    elecciones, textos = {}, {}
+    opciones = opciones_por_item(sesion, cuenta, items)
     for item in items:
         if item.id not in con_texto:
             continue
         respuesta = con_texto[item.id]
-        elegidas = validar_eleccion(item, opciones[item.id],
-                                    [OpcionElegida(**e) for e in respuesta.opciones_elegidas or ()], True)
-        elecciones[item.codigo] = elegidas
-        por_evaluar.append(item_por_evaluar(sesion, item, opciones[item.id], elegidas, respuesta.texto_inicial))
-    return LecturaEntrega(actividad.titulo, tuple(por_evaluar), elecciones, version(registro))
+        elecciones[item.codigo] = validar_eleccion(item, opciones[item.id],
+                                                   [OpcionElegida(**e) for e in respuesta.opciones_elegidas or ()], True)
+        textos[item.codigo] = respuesta.texto_inicial
+    return LecturaEntrega(actividad.titulo, por_evaluar_con_ecos(sesion, cuenta, items, elecciones, textos, elecciones,
+                                                                 opciones), elecciones, version(registro))
 
 
 def exigir_cerrado(registro):
@@ -345,8 +456,14 @@ def preparar_edicion(sesion, entrada):
         raise invalida("El ítem no pertenece a esta actividad")
     registro = leer_registro(sesion, cuenta, actividad)
     exigir_cerrado(registro)
-    por_evaluar, elecciones = [], {}
-    opciones = opciones_por_item(sesion, [item for item in items if item.codigo in codigos])
+    elecciones = {}
+    opciones = opciones_por_item(sesion, cuenta, items)
+    # Los ecos de un ítem editado leen los ítems anteriores tal como quedan: editados o como estaban.
+    textos = {item.codigo: registro.respuestas[item.id].texto_consolidado for item in items
+              if item.id in registro.respuestas and registro.respuestas[item.id].texto_consolidado
+              and not registro.respuestas[item.id].sensible}
+    vigentes = {item.codigo: registro.respuestas[item.id].opciones_elegidas for item in items
+                if item.id in registro.respuestas}
     for item in items:
         edicion = next((e for e in entrada.items if e.item == item.codigo), None)
         if edicion is None:
@@ -355,9 +472,8 @@ def preparar_edicion(sesion, entrada):
         if respuesta is None or respuesta.clasificacion_inicial is None:
             # Primera respuesta de un ítem que quedó en blanco (sin fila o con un borrador vacío): se evalúa
             # como en la entrega, con su elección (si la tiene, se exige la mínima).
-            elegidas = validar_eleccion(item, opciones[item.id], edicion.opciones or [], True)
-            elecciones[item.codigo] = elegidas
-            por_evaluar.append(item_por_evaluar(sesion, item, opciones[item.id], elegidas, edicion.texto))
+            elecciones[item.codigo] = validar_eleccion(item, opciones[item.id], edicion.opciones or [], True)
+            textos[item.codigo] = edicion.texto
             continue
         elegidas = respuesta.opciones_elegidas if edicion.opciones is None else validar_eleccion(
             item, opciones[item.id], edicion.opciones, True)
@@ -367,18 +483,19 @@ def preparar_edicion(sesion, entrada):
                 raise invalida("Si cambias tu elección, reescribe tu respuesta")
             continue  # Sin cambios: no abre intento ni va al evaluador.
         elecciones[item.codigo] = elegidas
-        por_evaluar.append(item_por_evaluar(sesion, item, opciones[item.id], elegidas, edicion.texto))
-    if not por_evaluar:
+        textos[item.codigo] = edicion.texto
+    if not elecciones:
         raise invalida("La edición no tiene cambios")
-    return LecturaEntrega(actividad.titulo, tuple(por_evaluar), elecciones, version(registro),
-                          registro.intento_vigente + 1)
+    por_evaluar = por_evaluar_con_ecos(sesion, cuenta, items, elecciones, textos, {**vigentes, **elecciones}, opciones)
+    return LecturaEntrega(actividad.titulo, por_evaluar, elecciones, version(registro), registro.intento_vigente + 1)
 
 
 def insertar_evaluacion(sesion, respuesta_id, numero, evaluacion, fecha, opciones):
     sesion.execute(insert(EvaluacionRespuesta.__table__), dict(respuesta_id=respuesta_id, numero=numero,
         origen=evaluacion.origen, clasificacion=evaluacion.clasificacion,
         criterios_faltantes=list(evaluacion.criterios_faltantes), pregunta_generada=evaluacion.pregunta,
-        requiere_atencion=False, modelo=evaluacion.modelo, version_prompt=evaluacion.version_prompt,
+        requiere_atencion=evaluacion.sensible, sensible=evaluacion.sensible, falta=evaluacion.falta,
+        modelo=evaluacion.modelo, version_prompt=evaluacion.version_prompt,
         latencia_ms=evaluacion.latencia_ms, error=evaluacion.error, texto_evaluado=evaluacion.texto_evaluado,
         opciones_evaluadas=list(opciones or ()), fecha_hora=fecha))
 
@@ -400,8 +517,11 @@ def persistir_entrega(sesion, entrada, lectura, evaluaciones):
         if evaluacion is None:
             continue
         respuesta = registro.respuestas.get(item.id)
+        # Sensible: la marca de atención no se borra al editar (queda también en la evaluación anterior).
         valores = dict(estado=EstadoRespuestaRegistro.FINAL, intento=lectura.intento, texto_inicial=textos[item.codigo],
-                       texto_consolidado=textos[item.codigo], opciones_elegidas=lectura.elecciones[item.codigo])
+                       texto_consolidado=textos[item.codigo], opciones_elegidas=lectura.elecciones[item.codigo],
+                       sensible=evaluacion.sensible,
+                       requiere_atencion=evaluacion.sensible or (respuesta is not None and respuesta.requiere_atencion))
         # La primera evaluación de un ítem es su clasificación inicial: en la entrega o, para uno que quedó en
         # blanco, en la edición que le da su primera respuesta (F02).
         if respuesta is None or respuesta.clasificacion_inicial is None:
@@ -437,16 +557,18 @@ def avanzar(sesion, cuenta, actividad, items, fecha, *, intento, eventos=()):
     """Abre la siguiente pregunta del intento o cierra el registro.
 
     Solo preguntan los ítems respondidos en este intento (en una edición, los editados). La pregunta va al
-    primero, por orden, que sigue poco desarrollado y tiene turnos libres: así se repite en el mismo ítem
-    mientras siga así y, si no, pasa al siguiente. `eventos` son los ya ganados en esta acción.
+    primero, por orden, que sigue poco desarrollado y tiene repreguntas libres: una por ítem salvo que declare
+    `max_repreguntas` (ajuste registros), hasta `actividad.maximo_seguimientos` por intento. Un ítem ADECUADA
+    (también el sensible) o ABIERTA no pregunta. `eventos` son los ya ganados en esta acción.
     """
     registro = leer_registro(sesion, cuenta, actividad)
-    if registro.turnos_del_intento(intento) < MAXIMO_SEGUIMIENTOS_POR_REGISTRO:
+    if registro.turnos_del_intento(intento) < actividad.maximo_seguimientos:
         for item in items:
             respuesta = registro.respuestas.get(item.id)
+            maximo = (item.seguimiento or {}).get('max_repreguntas', MAXIMO_REPREGUNTAS_POR_ITEM)
             if (respuesta is None or respuesta.intento != intento
                     or registro.clasificacion_vigente(respuesta) != ClasificacionRespuesta.POCO_DESARROLLADA
-                    or len(registro.turnos_vigentes(respuesta)) >= MAXIMO_SEGUIMIENTOS_POR_REGISTRO):
+                    or len(registro.turnos_vigentes(respuesta)) >= maximo):
                 continue
             ultima = registro.ultima_evaluacion(respuesta)
             sesion.execute(update(RespuestaRegistro.__table__).where(RespuestaRegistro.id == respuesta.id).values(
@@ -456,8 +578,7 @@ def avanzar(sesion, cuenta, actividad, items, fecha, *, intento, eventos=()):
                 orden=len(registro.turnos_vigentes(respuesta)) + 1, pregunta=ultima.pregunta,
                 criterios_objetivo=list(ultima.criterios_faltantes), creado_en=fecha))
             ganados = responder_con_eventos(sesion, cuenta, list(eventos), fecha)
-            return RespuestaRegistroAccion(**registro_publico(leer_registro(sesion, cuenta, actividad), items),
-                                           **ganados.campos())
+            return RespuestaRegistroAccion(**publico(sesion, cuenta, actividad, items), **ganados.campos())
     return cerrar(sesion, cuenta, actividad, items, registro, fecha, intento=intento, eventos=eventos)
 
 
@@ -473,11 +594,12 @@ def cerrar(sesion, cuenta, actividad, items, registro, fecha, *, intento, evento
     if intento == 1:
         _, completa = completar_progreso(sesion, cuenta, actividad)
         eventos = completa + eventos
-    if not registro.por_ampliar(items) and not registro_adecuado_emitido(sesion, cuenta, actividad):
+    # Adecuado: nada poco desarrollado y a lo mucho un ítem abierto; uno sensible cuenta como desarrollado.
+    if (not registro.por_ampliar(items) and len(registro.abiertos(items)) <= MAXIMO_ABIERTOS_ADECUADO
+            and not registro_adecuado_emitido(sesion, cuenta, actividad)):
         eventos.append((TipoEventoUso.REGISTRO_ADECUADO, actividad.id))
     respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
-    return RespuestaRegistroAccion(**registro_publico(leer_registro(sesion, cuenta, actividad), items),
-                                   **respuesta.campos())
+    return RespuestaRegistroAccion(**publico(sesion, cuenta, actividad, items), **respuesta.campos())
 
 
 @dataclass(frozen=True, slots=True)
@@ -485,8 +607,6 @@ class LecturaSeguimiento:
     titulo: str
     item: ItemPorEvaluar
     turnos: tuple[TurnoEvaluacion, ...]
-    previos: tuple[str, ...]
-    otras: tuple[RespuestaOtroItem, ...]
     pregunta_generica: bool
     version: dict
 
@@ -507,17 +627,18 @@ def preparar_seguimiento(sesion, entrada):
     item = validar_item(items, entrada.item)
     registro = leer_registro(sesion, cuenta, actividad)
     respuesta, turnos, turno = pendiente_de(registro, item)
-    criterios = criterios_de(sesion, item)
     conversacion = tuple(TurnoEvaluacion(t.pregunta, entrada.texto if t.id == turno.id else t.respuesta)
                          for t in turnos)
-    otras = tuple(RespuestaOtroItem(otro.consigna, registro.respuestas[otro.id].texto_consolidado)
-                  for otro in items if otro.id != item.id and otro.id in registro.respuestas
-                  and registro.respuestas[otro.id].clasificacion_inicial is not None)
+    respondidas = {otro.codigo: registro.respuestas[otro.id] for otro in items if otro.id in registro.respuestas
+                   and registro.respuestas[otro.id].clasificacion_inicial is not None}
+    textos = {codigo: r.texto_consolidado for codigo, r in respondidas.items() if not r.sensible}
+    elecciones = {codigo: r.opciones_elegidas for codigo, r in respondidas.items()}
+    opciones = opciones_por_item(sesion, cuenta, items)
     ultima = registro.ultima_evaluacion(respuesta)
-    return LecturaSeguimiento(actividad.titulo, ItemPorEvaluar(item.codigo, item.consigna, criterios,
-        textos_elegidos(opciones_por_item(sesion, (item,))[item.id], respuesta.opciones_elegidas),
-        respuesta.texto_inicial, item.min_caracteres,
-        item.repregunta_generica), conversacion, turno.criterios_objetivo, otras,
+    por_evaluar = item_por_evaluar(sesion, item, opciones[item.id], respuesta.opciones_elegidas,
+                                   respuesta.texto_inicial,
+                                   ecos_de(sesion, cuenta, item, items, textos, elecciones, opciones))
+    return LecturaSeguimiento(actividad.titulo, por_evaluar, conversacion,
         ultima is not None and ultima.origen == OrigenEvaluacion.EXTENSION_MINIMA, version(registro))
 
 
@@ -529,6 +650,10 @@ def persistir_seguimiento(sesion, entrada, lectura, evaluacion):
     exigir_sin_cambios(registro, lectura.version)
     respuesta, turnos, turno = pendiente_de(registro, item)
     fecha = fecha_accion(entrada)
+    # ABIERTA la decide el backend: el evaluador la propone y el ítem la admite tras una repregunta respondida.
+    if (evaluacion.abierto and evaluacion.clasificacion == ClasificacionRespuesta.POCO_DESARROLLADA
+            and (item.seguimiento or {}).get('admite_abierto')):
+        evaluacion = replace(evaluacion, clasificacion=ClasificacionRespuesta.ABIERTA, pregunta=None)
     sesion.execute(update(TurnoSeguimiento.__table__).where(TurnoSeguimiento.id == turno.id)
                    .values(respuesta=entrada.texto, respondido_en=fecha))
     # Respuesta reflexiva: pasó de poco desarrollada a adecuada gracias a un turno; una vez por respuesta.
@@ -537,7 +662,8 @@ def persistir_seguimiento(sesion, entrada, lectura, evaluacion):
                  and evaluacion.clasificacion == ClasificacionRespuesta.ADECUADA)
     comprobar_cambio(sesion, respuesta, dict(estado=EstadoRespuestaRegistro.FINAL, ampliada=True,
         texto_consolidado=evaluacion.consolidada, actualizada_en=marca_actualizacion(respuesta.actualizada_en),
-        reflexiva_registrada=respuesta.reflexiva_registrada or reflexiva))
+        reflexiva_registrada=respuesta.reflexiva_registrada or reflexiva, sensible=evaluacion.sensible,
+        requiere_atencion=respuesta.requiere_atencion or evaluacion.sensible))
     insertar_evaluacion(sesion, respuesta.id, len(registro.evaluaciones.get(respuesta.id, ())) + 1, evaluacion, fecha,
                         respuesta.opciones_elegidas)
     return avanzar(sesion, cuenta, actividad, items, fecha, intento=respuesta.intento,
@@ -547,8 +673,8 @@ def persistir_seguimiento(sesion, entrada, lectura, evaluacion):
 def responder_seguimiento(fabrica_sesiones, entrada, evaluador, **opciones_evaluacion):
     with fabrica_sesiones.begin() as sesion:
         lectura = preparar_seguimiento(sesion, entrada)
-    evaluacion = procesar_seguimiento(lectura.titulo, lectura.item, lectura.turnos, lectura.previos, lectura.otras,
-                                      evaluador, pregunta_generica=lectura.pregunta_generica, **opciones_evaluacion)
+    evaluacion = procesar_seguimiento(lectura.titulo, lectura.item, lectura.turnos, evaluador,
+                                      pregunta_generica=lectura.pregunta_generica, **opciones_evaluacion)
     with fabrica_sesiones.begin() as sesion:
         return persistir_seguimiento(sesion, entrada, lectura, evaluacion)
 

@@ -133,7 +133,8 @@ def test_los_items_sin_criterios_no_llegan_al_llm(cliente, aplicacion):
     assert evaluador(aplicacion).llamadas_seguimiento == 0
 
 
-def test_la_pregunta_se_repite_en_el_mismo_item_y_nunca_hay_una_tercera(cliente, aplicacion, sesion):
+def test_una_pregunta_por_item_y_la_segunda_pasa_al_siguiente(cliente, aplicacion, sesion):
+    # Ajuste registros (adaptación autorizada): una repregunta por ítem; la segunda pasa al siguiente ítem.
     preparar(cliente, t_exp_ruta=f'{CORTO} [vaga]', t_exp_espera=f'{CORTO} [vaga]')
     primera = entregar(cliente)
     item, orden, pregunta = pendiente(primera)
@@ -141,20 +142,18 @@ def test_la_pregunta_se_repite_en_el_mismo_item_y_nunca_hay_una_tercera(cliente,
     assert pregunta == 'Sobre lo que contaste: ¿Por qué lo piensas así?'
     assert primera['estado'] == 'EN_CURSO' and 'items_por_ampliar' not in primera
     segunda = responder(cliente, 't-exp-ruta', 'Porque sí [vaga]')
-    assert pendiente(segunda)[:2] == ('t-exp-ruta', 2)
-    cierre = responder(cliente, 't-exp-ruta', 'Sigo sin saber [vaga]')
+    assert pendiente(segunda)[:2] == ('t-exp-espera', 1)
+    cierre = responder(cliente, 't-exp-espera', 'Sigo sin saber [vaga]')
     # Ampliar sin quedar adecuada no es una respuesta reflexiva.
     assert reflexivas(segunda) == reflexivas(cierre) == 0
     assert pendiente(cierre) is None and cierre['estado'] == 'COMPLETADA'
     assert por_ampliar(cierre) == ['t-exp-ruta', 't-exp-espera']
     assert ('REGISTRO_ADECUADO', 't-expectativas') not in eventos(cierre)
-    assert sesion.scalar(select(m.TurnoSeguimiento.id).join(m.RespuestaRegistro).join(m.ItemRegistro).where(
-        m.ItemRegistro.codigo == 't-exp-espera')) is None
     assert evaluador(aplicacion).llamadas_seguimiento == 2
     assert actividades(cliente)['t-adicional'] == 'BLOQUEADA'
     respuesta, evaluaciones = respuestas_bd(sesion, 't-exp-ruta')
-    assert [e.numero for e in evaluaciones] == [1, 2, 3]
-    assert respuesta.texto_consolidado == f'{CORTO} [vaga]\n\nPorque sí [vaga]\n\nSigo sin saber [vaga]'
+    assert [e.numero for e in evaluaciones] == [1, 2]
+    assert respuesta.texto_consolidado == f'{CORTO} [vaga]\n\nPorque sí [vaga]'
     assert sin_claves_privadas(cierre)
 
 

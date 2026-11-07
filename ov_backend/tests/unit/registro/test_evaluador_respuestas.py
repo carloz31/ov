@@ -1,4 +1,5 @@
-"""Registro B03: evaluación pura de la entrega y del seguimiento, sin sesiones, HTTP ni red."""
+"""Registro B03 (contrato v5 del ajuste registros): evaluación pura de la entrega y del seguimiento, sin sesiones,
+HTTP ni red. Las pruebas del contrato anterior se adaptaron al nuevo (autorizado por el ajuste)."""
 
 import json
 import subprocess
@@ -12,8 +13,8 @@ from app.core.parametros import (
 )
 from app.models.enums import ClasificacionRespuesta, OrigenEvaluacion
 from app.services.registro.evaluacion import (
-    ContextoEntrega, ContextoSeguimiento, CriterioEvaluacion, ErrorResultadoEvaluacion, EvaluadorFalso,
-    ItemEntrega, ItemPorEvaluar, ResultadoEntrega, ResultadoItemEntrega, ResultadoSeguimiento, RespuestaOtroItem,
+    ContextoEntrega, ContextoSeguimiento, CriterioEvaluacion, EcoEvaluacion, ErrorResultadoEvaluacion, EvaluadorFalso,
+    GuiaSeguimiento, ItemEntrega, ItemPorEvaluar, ResultadoEntrega, ResultadoItemEntrega, ResultadoSeguimiento,
     TurnoEvaluacion, concatenar, consolidada_o_concatenacion, pregunta_o_base, pregunta_valida, procesar_entrega,
     procesar_seguimiento, validar_entrega, validar_seguimiento,
 )
@@ -25,8 +26,11 @@ GENERICA = "¿Podrías contarme un poco más?"
 LARGO = "Una respuesta suficientemente larga para superar el mínimo de respaldo."
 
 
-def item(codigo="I1", texto=LARGO, criterios=(EJEMPLO, RAZON), minimo=None, opciones=()):
-    return ItemPorEvaluar(codigo, f"Consigna de {codigo}", criterios, opciones, texto, minimo, GENERICA)
+GUIA = GuiaSeguimiento("Un ejemplo propio", "¿Recuerdas una vez concreta?", ("Cuando armé…",), ("Siempre (sin vez)",))
+
+
+def item(codigo="I1", texto=LARGO, criterios=(EJEMPLO, RAZON), minimo=None, opciones=(), guia=None, ecos=()):
+    return ItemPorEvaluar(codigo, f"Consigna de {codigo}", criterios, opciones, texto, minimo, GENERICA, guia, ecos)
 
 
 class EvaluadorDePrueba:
@@ -47,9 +51,9 @@ class EvaluadorDePrueba:
         return self.seguimiento
 
 
-def resultado_item(codigo="I1", clasificacion="ADECUADA", faltantes=(), pregunta=None):
-    return ResultadoItemEntrega(item=codigo, clasificacion=clasificacion, criterios_faltantes=list(faltantes),
-                                pregunta=pregunta)
+def resultado_item(codigo="I1", cumple=True, abierto=False, sensible=False, falta=None, repregunta=None):
+    return ResultadoItemEntrega(item=codigo, cumple=cumple, abierto=abierto, sensible=sensible, falta=falta,
+                                repregunta=repregunta)
 
 
 def test_interfaz_no_importa_sqlalchemy_fastapi_ni_modelos():
@@ -64,16 +68,17 @@ def test_interfaz_no_importa_sqlalchemy_fastapi_ni_modelos():
 
 
 def test_constantes_de_registro_centralizadas():
-    assert VERSION_PROMPT_REGISTRO == "v4"
+    assert VERSION_PROMPT_REGISTRO == "v5"
     assert MAXIMO_SEGUIMIENTOS_POR_REGISTRO == 2
 
 
 def test_contextos_solo_llevan_lo_que_pide_rnf13():
     assert {c.name for c in fields(ContextoEntrega)} == {"titulo_actividad", "items"}
-    assert {c.name for c in fields(ItemEntrega)} == {"item", "consigna", "criterios", "opciones_elegidas", "texto"}
+    assert {c.name for c in fields(ItemEntrega)} == {
+        "item", "consigna", "criterios", "guia", "opciones_elegidas", "ecos", "texto"}
     assert {c.name for c in fields(ContextoSeguimiento)} == {
-        "titulo_actividad", "consigna", "criterios", "criterios_faltantes_previos", "opciones_elegidas",
-        "texto_inicial", "turnos", "otras_respuestas"}
+        "titulo_actividad", "consigna", "criterios", "guia", "opciones_elegidas", "ecos", "texto_inicial", "turnos"}
+    assert {c.name for c in fields(EcoEvaluacion)} == {"nombre", "texto"}
     assert {c.name for c in fields(CriterioEvaluacion)} == {"codigo", "tipo", "descripcion", "repregunta"}
 
 
@@ -102,10 +107,11 @@ def test_pregunta_compara_sin_tildes_ni_mayusculas():
     assert not pregunta_valida("¿Sientes que quedó INCOMPLÉTA?")
 
 
-def test_pregunta_invalida_se_reemplaza_por_la_base_del_primer_faltante():
-    assert pregunta_o_base("Falta C2", (EJEMPLO, RAZON), ("C2",)) == RAZON.repregunta
-    assert pregunta_o_base(None, (EJEMPLO, RAZON), ("C2", "C1")) == EJEMPLO.repregunta
-    assert pregunta_o_base("  ¿Qué te dijo tu mamá?  ", (EJEMPLO,), ("C1",)) == "¿Qué te dijo tu mamá?"
+def test_pregunta_invalida_se_reemplaza_por_el_texto_base():
+    assert pregunta_o_base("Falta C2", item(guia=GUIA)) == GUIA.texto_base
+    # Sin campos de seguimiento (ruta): la repregunta de su primer criterio.
+    assert pregunta_o_base(None, item()) == EJEMPLO.repregunta
+    assert pregunta_o_base("  ¿Qué te dijo tu mamá?  ", item()) == "¿Qué te dijo tu mamá?"
 
 
 def test_consolidada_valida_o_concatenacion():
@@ -123,7 +129,7 @@ def test_consolidada_valida_o_concatenacion():
 # --- Validación de esquemas ------------------------------------------------------------------
 
 def contexto_entrega(*items):
-    return ContextoEntrega("Actividad", tuple(ItemEntrega(i.codigo, i.consigna, i.criterios, (), i.texto)
+    return ContextoEntrega("Actividad", tuple(ItemEntrega(i.codigo, i.consigna, i.criterios, None, (), (), i.texto)
                                               for i in (items or (item(),))))
 
 
@@ -131,12 +137,10 @@ def contexto_entrega(*items):
     ResultadoEntrega(items=[]),
     ResultadoEntrega(items=[resultado_item(), resultado_item()]),
     ResultadoEntrega(items=[resultado_item("OTRO")]),
-    ResultadoEntrega(items=[resultado_item(faltantes=["C1"])]),
-    ResultadoEntrega(items=[resultado_item(clasificacion="POCO_DESARROLLADA")]),
-    ResultadoEntrega(items=[resultado_item(clasificacion="POCO_DESARROLLADA", faltantes=["C9"])]),
-    ResultadoEntrega(items=[resultado_item(clasificacion="POCO_DESARROLLADA", faltantes=["C1", "C1"])]),
-    {"items": [{"item": "I1", "clasificacion": "NO_EVALUADA", "criterios_faltantes": [], "pregunta": None}]},
-    {"items": [{"item": "I1", "clasificacion": "ADECUADA", "criterios_faltantes": []}]},
+    {"items": [{"item": "I1", "cumple": "sí", "abierto": False, "sensible": False, "falta": None,
+                "repregunta": None}]},
+    {"items": [{"item": "I1", "cumple": True, "abierto": False, "falta": None, "repregunta": None}]},
+    {"items": [{"item": "I1", "clasificacion": "ADECUADA", "criterios_faltantes": [], "pregunta": None}]},
     {"items": [], "extra": 1},
 ])
 def test_entrega_invalida_es_error(resultado):
@@ -144,13 +148,13 @@ def test_entrega_invalida_es_error(resultado):
         validar_entrega(resultado, contexto_entrega())
 
 
-def test_seguimiento_no_admite_criterios_ya_cumplidos():
-    contexto = ContextoSeguimiento("A", "C", (EJEMPLO, RAZON), ("C2",), (), "Inicial",
-                                   (TurnoEvaluacion("¿Por qué?", "Porque sí"),), ())
-    for faltantes in (["C1"], ["C1", "C2"]):
+def test_seguimiento_fuera_del_esquema_es_error():
+    contexto = ContextoSeguimiento("A", "C", (EJEMPLO, RAZON), None, (), (), "Inicial",
+                                   (TurnoEvaluacion("¿Por qué?", "Porque sí"),))
+    for resultado in ({"cumple": "DATO DE PRUEBA"}, {"clasificacion": "ADECUADA", "criterios_faltantes": [],
+                                                     "pregunta": None, "consolidada": "x"}):
         with pytest.raises(ErrorResultadoEvaluacion):
-            validar_seguimiento(ResultadoSeguimiento(clasificacion="POCO_DESARROLLADA", criterios_faltantes=faltantes,
-                                                     pregunta="¿Y?", consolidada="x"), contexto)
+            validar_seguimiento(resultado, contexto)
 
 
 # --- Entrega ---------------------------------------------------------------------------------
@@ -169,7 +173,7 @@ def test_entrega_hace_una_sola_llamada_y_solo_con_items_con_criterios():
     assert (i1.origen, i1.clasificacion, i1.criterios_faltantes) == (
         OrigenEvaluacion.LLM, ClasificacionRespuesta.POCO_DESARROLLADA, ("C1", "C2"))
     assert i1.pregunta == f"Sobre lo que contaste: {EJEMPLO.repregunta}"
-    assert (i1.modelo, i1.version_prompt) == ("m", "v4")
+    assert (i1.modelo, i1.version_prompt) == ("m", "v5")
     # Sin criterios: en código, con extensión mínima como único criterio.
     i2, i3 = evaluaciones["I2"], evaluaciones["I3"]
     assert (i2.origen, i2.clasificacion, i2.pregunta, i2.error) == (
@@ -186,19 +190,49 @@ def test_entrega_sin_items_con_criterios_no_llama():
     assert falso.llamadas_entrega == 0
 
 
-@pytest.mark.parametrize("marca,faltantes", [
-    ("[falta:C2]", ("C2",)), ("[falta:RAZON]", ("C2",)), ("[falta:EJEMPLO,RAZON]", ("C1", "C2")),
-    ("[vaga]", ("C1", "C2")),
+@pytest.mark.parametrize("marca,base", [
+    ("[falta:C2]", RAZON.repregunta), ("[falta:RAZON]", RAZON.repregunta), ("[falta:EJEMPLO,RAZON]", EJEMPLO.repregunta),
+    ("[vaga]", EJEMPLO.repregunta),
 ])
-def test_falso_marcas_por_codigo_y_por_tipo(marca, faltantes):
+def test_falso_marcas_por_codigo_y_por_tipo(marca, base):
     evaluacion = procesar_entrega("A", (item(texto=f"{LARGO} {marca}"),), EvaluadorFalso())["I1"]
-    assert evaluacion.criterios_faltantes == faltantes
+    # El contrato v5 no distingue criterios: si no cumple, faltan todos los del ítem.
+    assert evaluacion.criterios_faltantes == ("C1", "C2") and evaluacion.pregunta.endswith(base)
 
 
-def test_falso_pregunta_invalida_cae_en_la_base():
+def test_falso_pregunta_invalida_cae_en_el_texto_base():
     evaluacion = procesar_entrega("A", (item(texto=f"{LARGO} [falta:RAZON] [pregunta-invalida]"),),
                                   EvaluadorFalso())["I1"]
-    assert evaluacion.pregunta == RAZON.repregunta
+    assert evaluacion.pregunta == EJEMPLO.repregunta
+    con_guia = procesar_entrega("A", (item(texto=f"{LARGO} [vaga] [pregunta-invalida]", guia=GUIA),),
+                                EvaluadorFalso())["I1"]
+    assert con_guia.pregunta == GUIA.texto_base
+
+
+def test_sensible_gana_sobre_cumple_y_abierto_se_propone():
+    evaluaciones = procesar_entrega("A", (item("S", f"{LARGO} [sensible] [vaga]"), item("B", f"{LARGO} [abierto]")),
+                                    EvaluadorFalso())
+    sensible, abierto = evaluaciones["S"], evaluaciones["B"]
+    assert (sensible.clasificacion, sensible.sensible, sensible.pregunta) == (
+        ClasificacionRespuesta.ADECUADA, True, None)
+    # La entrega no decide ABIERTA: queda poco desarrollada con la propuesta, para que la acción la valide.
+    assert (abierto.clasificacion, abierto.abierto) == (ClasificacionRespuesta.POCO_DESARROLLADA, True)
+    assert abierto.falta == EJEMPLO.descripcion
+
+
+def test_el_contexto_lleva_guia_y_ecos():
+    falso = EvaluadorFalso()
+    eco = EcoEvaluacion("PLAN", "DATO DE PRUEBA: Enfermería")
+    procesar_entrega("A", (item(guia=GUIA, ecos=(eco,)),), falso)
+    enviado, = falso.contextos[0].items
+    assert enviado.guia == GUIA and enviado.ecos == (eco,)
+
+
+def test_json_invalido_aplica_respaldo_sin_sensible():
+    evaluacion = procesar_entrega("A", (item("I1", "Breve [json-invalido] [sensible]", guia=GUIA),),
+                                  EvaluadorFalso())["I1"]
+    assert (evaluacion.clasificacion, evaluacion.pregunta, evaluacion.sensible) == (
+        ClasificacionRespuesta.POCO_DESARROLLADA, GUIA.texto_base, False)
 
 
 @pytest.mark.parametrize("error,mensaje", [
@@ -240,9 +274,8 @@ def test_tiempo_maximo_invalido_no_llama(tiempo):
 
 def seguir(respuesta, evaluador=None, generica=False, criterios=(EJEMPLO, RAZON), minimo=None):
     turnos = (TurnoEvaluacion("¿Por qué?", respuesta),)
-    return procesar_seguimiento("A", item(texto="Inicial", criterios=criterios, minimo=minimo), turnos, ("C2",),
-                                (RespuestaOtroItem("Otra consigna", "Otra respuesta"),), evaluador or EvaluadorFalso(),
-                                pregunta_generica=generica)
+    return procesar_seguimiento("A", item(texto="Inicial", criterios=criterios, minimo=minimo), turnos,
+                                evaluador or EvaluadorFalso(), pregunta_generica=generica)
 
 
 def test_seguimiento_reevalua_y_consolida():
@@ -250,8 +283,8 @@ def test_seguimiento_reevalua_y_consolida():
     evaluacion = seguir("Porque me gusta", falso)
     assert falso.llamadas_seguimiento == 1
     contexto, = falso.contextos
-    assert contexto.criterios_faltantes_previos == ("C2",) and contexto.texto_inicial == "Inicial"
-    assert contexto.otras_respuestas == (RespuestaOtroItem("Otra consigna", "Otra respuesta"),)
+    # Solo lo declarado en `ecos_llm` (aquí nada): nunca las demás respuestas de la actividad.
+    assert contexto.texto_inicial == "Inicial" and contexto.ecos == ()
     assert (evaluacion.origen, evaluacion.clasificacion, evaluacion.pregunta) == (
         OrigenEvaluacion.LLM, ClasificacionRespuesta.ADECUADA, None)
     assert evaluacion.consolidada == "Inicial\n\nPorque me gusta"
@@ -260,7 +293,7 @@ def test_seguimiento_reevalua_y_consolida():
 def test_seguimiento_sigue_poco_desarrollado_con_nueva_pregunta():
     evaluacion = seguir("Porque sí [vaga]")
     assert evaluacion.clasificacion == ClasificacionRespuesta.POCO_DESARROLLADA
-    assert evaluacion.criterios_faltantes == ("C2",) and evaluacion.pregunta.endswith(RAZON.repregunta)
+    assert evaluacion.criterios_faltantes == ("C1", "C2") and evaluacion.pregunta.endswith(EJEMPLO.repregunta)
 
 
 def test_seguimiento_consolidada_invalida_usa_concatenacion():
