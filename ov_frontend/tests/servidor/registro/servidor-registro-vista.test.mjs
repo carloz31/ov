@@ -125,8 +125,11 @@ test('una opción con pregunta propia cambia la pregunta del texto y su entrada;
   const texto = () => de(vista.render(), 'RegistroExplicacion').props
   de(vista.render(), 'ChoiceReveal').props.onAlternar('NINGUNO_AUN')
   assert.equal(texto().pregunta, '¿Qué te falta para elegir uno?')
+  // Sin entrada propia, la entrada del ítem ya no encaja: el campo pasa a una libre.
+  assert.equal(texto().entrada, 'Escribe aquí…')
   de(vista.render(), 'ChoiceReveal').props.onAlternar('NINGUNO_AUN')
   assert.equal(texto().pregunta, '¿Qué te atrae de ese plan?')
+  assert.equal(texto().entrada, 'Me atrae porque…')
   de(vista.render(), 'ChoiceReveal').props.onAlternar('OTRO_PLAN')
   assert.equal(texto().entrada, 'El plan es… y me atrae porque…')
   vista.unmount()

@@ -128,6 +128,9 @@ export function RegistroEleccionNode({
         seleccion.map((o) => (o.codigo === 'OTRA' ? { codigo: 'OTRA', texto: o.texto?.trim() } : o)),
       )
   }
+  const preguntaTexto =
+    preguntaSinSeguimiento(item, seleccion) ??
+    preguntaEleccion(config, seleccion, opciones, reglas.exclusivas, codigosAnteriores)
   const reaccion = mensajeEleccion(
     mensajes,
     seleccion,
@@ -194,11 +197,8 @@ export function RegistroEleccionNode({
         <RegistroExplicacion
           key="texto"
           numeral={numero.texto}
-          pregunta={
-            preguntaSinSeguimiento(item, seleccion) ??
-            preguntaEleccion(config, seleccion, opciones, reglas.exclusivas, codigosAnteriores)
-          }
-          entrada={entradaVigente(node, seleccion)}
+          pregunta={preguntaTexto}
+          entrada={entradaVigente(node, seleccion, !!node.preguntaTexto && preguntaTexto !== node.preguntaTexto)}
           texto={text}
           error={errores.texto}
           onTexto={setText}

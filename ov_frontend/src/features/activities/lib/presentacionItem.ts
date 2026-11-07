@@ -44,8 +44,13 @@ export function preguntaSinSeguimiento(item: ItemRegistroPublico, seleccion: Opc
   return propia?.pregunta_propia || PREGUNTA_SIN_SEGUIMIENTO
 }
 
-// El placeholder del campo: el de la opción propia elegida sola, si lo declara; si no, la entrada del ítem.
-export function entradaVigente(node: NodoConsigna, seleccion: OpcionElegida[] = []) {
+export const ENTRADA_LIBRE = 'Escribe aquí…'
+
+// El placeholder del campo: el de la opción propia elegida sola, si lo declara; si la opción cambió la pregunta del
+// campo y no declara el suyo, uno libre (la entrada del ítem ya no encaja); si no, la entrada del ítem.
+export function entradaVigente(node: NodoConsigna, seleccion: OpcionElegida[] = [], cambiaPregunta = false) {
   const propia = seleccion.length === 1 ? node.entradaPropia?.[seleccion[0].codigo] : undefined
-  return propia ?? node.entrada ?? node.placeholder ?? ENTRADA_POR_DEFECTO
+  if (propia) return propia
+  if (cambiaPregunta) return ENTRADA_LIBRE
+  return node.entrada ?? node.placeholder ?? ENTRADA_POR_DEFECTO
 }
