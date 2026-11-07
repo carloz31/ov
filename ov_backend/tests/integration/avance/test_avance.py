@@ -28,8 +28,8 @@ def test_total_fijo_desde_el_inicio_aunque_la_opcional_siga_oculta(cliente):
         'tramo_actual': {'codigo': 'T0', 'nombre': 'Inicio', 'numero': 1, 'completadas': 0, 'total': 3},
         'camino_completo': False,
         # Ajuste mochila: la Ciudad suma t-caso-2. B13: también t-investigador y t-investigador-cierre.
-        # Ajuste carga-instrumentos: también t-mision-inteligencias y t-mision-habilidades.
-        'ciudad': {'completadas': 0, 'total': 9, 'porcentaje': 0.0},
+        # Ajuste carga-instrumentos: también t-mision-inteligencias y t-mision-habilidades. Ajuste registros: t-referencia.
+        'ciudad': {'completadas': 0, 'total': 10, 'porcentaje': 0.0},
         'tramos': [
             {'codigo': 'T0', 'nombre': 'Inicio', 'numero': 1, 'completadas': 0, 'total': 3, 'estado': 'ACTUAL'},
             {'codigo': 'T1', 'nombre': 'Camino', 'numero': 2, 'completadas': 0, 'total': 1, 'estado': 'PENDIENTE'},
@@ -69,7 +69,8 @@ def test_la_ciudad_es_la_afinidad_de_logros(cliente, sesion):
     avanzar(cliente)
     marcar_completadas(sesion, 't-caso')
     ciudad = avance(cliente)['ciudad']
-    assert ciudad == {'completadas': 1, 'total': 9, 'porcentaje': 11.11}
+    # Ajuste registros: la Ciudad suma t-referencia.
+    assert ciudad == {'completadas': 1, 'total': 10, 'porcentaje': 10.0}
     assert pedir(cliente, 'GET', '/cuentas/est-ana/logros')['afinidad'] == ciudad['porcentaje']
 
 

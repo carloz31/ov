@@ -1,19 +1,15 @@
 """Ajuste carga-actividades: el camino del estudiante y la ruta del apoderado del conjunto `contenido`, de punta a
 punta, con las peticiones del front (evaluador falso)."""
 
-from soporte_catalogo_ruta import PERIODISMO, PSICOLOGIA
-from soporte_planes import crear, guardar, por_que_lista, realidad_lista
-from soporte_ruta import FECHA, eventos, pedir, responder, responder_registro, revelar
+from soporte_catalogo_ruta import PSICOLOGIA
+from soporte_contenido import CAMINO, REQUERIDAS, avanzar, completar, preparar_planes, revelar_para_b4
+from soporte_planes import guardar
+from soporte_ruta import FECHA, eventos, pedir
 
 from datos import contenido
 
 
-CAMINO = ('B0', 'B1', 'B2', 'B3', 'B4', 'B5')
-REQUERIDAS = tuple(c for c, b, *_ in contenido.ACTIVIDADES
-                   if b in CAMINO and contenido.PROPIEDADES.get(c, {}).get('requerida', True))
 ULTIMAS = {'b0-6': 'B1', 'b1-7': 'B2', 'b2-5': 'B3', 'b3-10': 'B4', 'b4-5': 'B5'}
-TIPOS = {c: t for c, _, _, t, *_ in contenido.ACTIVIDADES}
-PODIOS = ('b2-3-valores', 'b4-2-criterios')
 TITULOS = {c: t for c, _, t, *_ in contenido.ACTIVIDADES}
 VOCES_DE_ACTIVIDAD = {'b3-1': 'tb3-1', 'b3-8': 'tb3-8', 'b3-10': 'tb3-10'}
 
@@ -28,45 +24,12 @@ def estados(cliente, cuenta='est-ana'):
             {a['codigo']: a['estado'] for b in bloques for a in b['actividades']})
 
 
-def ganar_batalla(cliente, codigo):
-    vidas, _, _ = contenido.CONFIGURACION_BATALLAS[codigo]
-    pool = [p for p in contenido.PREGUNTAS_BATALLA if p[1] == codigo]
-    respuestas = [{'pregunta': p[0], 'opcion': p[5]} for p in pool[:vidas]]
-    return pedir(cliente, 'POST', '/acciones/resolver-batalla',
-                 {'cuenta': 'est-ana', 'actividad': codigo, 'fecha_hora': FECHA, 'respuestas': respuestas})
 
 
-def completar(cliente, codigo, cuenta='est-ana'):
-    tipo = TIPOS[codigo]
-    if tipo == 'BATALLA':
-        return ganar_batalla(cliente, codigo)
-    if tipo == 'REGISTRO':
-        if any(i[1] in PODIOS for i in contenido.ITEMS_REGISTRO if i[0] == codigo):
-            # Ajuste registros: los registros tienen más ítems con elección; el podio es el de PODIOS.
-            podio, = [i for i in pedir(cliente, 'GET', f'/actividades/{codigo}/items-registro') if i['codigo'] in PODIOS]
-            # El podio se completa eligiendo exactamente tres opciones (`eleccion_minima` toma las tres primeras).
-            assert (podio['eleccion']['minima'], podio['eleccion']['maxima']) == (3, 3)
-        return responder_registro(cliente, codigo, cuenta)
-    if tipo == 'CUESTIONARIO':
-        responder(cliente, codigo, cuenta, opcion=3 if codigo in ('b0-3', 'b5-2') else None)
-    return pedir(cliente, 'POST', '/acciones/completar-actividad',
-                 {'cuenta': cuenta, 'actividad': codigo, 'fecha_hora': FECHA})
 
 
-def preparar_planes(cliente):
-    """Dos planes desde favoritos, con «Por qué» y «Qué tan real es» listos (REALIDAD se abre con b3-8)."""
-    for carrera in (PSICOLOGIA, PERIODISMO):
-        crear(cliente, carrera)
-        guardar(cliente, carrera, 'POR_QUE', por_que_lista())
-        guardar(cliente, carrera, 'REALIDAD', realidad_lista())
 
 
-def revelar_para_b4(cliente):
-    """B4 pide el punto de partida y los instrumentos prioritarios del salón (5A: intereses) revelados."""
-    revelar(cliente, instrumento='TEST-PARTIDA-LLEGADA', aplicacion='APL-PARTIDA')
-    for parte in range(1, 7):
-        completar(cliente, f'h-intereses-{parte}')
-    revelar(cliente)
 
 
 def test_el_libro_de_helena_se_abre_con_mi_punto_de_partida(cliente_contenido):
@@ -140,16 +103,6 @@ def test_ruta_del_apoderado(cliente_contenido):
 
 
 # Ajuste conversaciones: se abren con la carta y el camino; el regalo pide las diez.
-def avanzar(cliente, desde, hasta):
-    """Completa las requeridas del camino de `desde` a `hasta`, con lo que cada tramo pide además."""
-    for codigo in REQUERIDAS[REQUERIDAS.index(desde):REQUERIDAS.index(hasta) + 1]:
-        if codigo == 'b3-10':
-            revelar_para_b4(cliente)
-        completar(cliente, codigo)
-        if codigo == 'b3-8':
-            preparar_planes(cliente)
-        if codigo == 'b4-5':
-            guardar(cliente, PSICOLOGIA, 'PASOS', {'pasos': [{'tipo': 'conversar', 'texto': 'Hablar con una psicóloga.'}]})
 
 
 def apoderado_listo(cliente):
