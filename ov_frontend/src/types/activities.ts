@@ -188,7 +188,7 @@ export interface ConfigPodio {
 
 // Elección guiada «elegir entre mínima y máxima sin orden + explicar» (F01); sin textos propios, los genéricos.
 export interface ConfigEleccion {
-  etiquetaElegida?: string // «Tu ruta», «Te acompaña»; sin ella, la tarjeta elegida no lleva etiqueta
+  etiquetaElegida?: string // ya no se muestra (ajuste vista del ítem): el ✓ marca lo elegido
   etiquetaAnterior?: string // F02: «La vez pasada», en lo elegido antes cuando el ítem retoma una elección
   exclusivas?: string[] // códigos que quitan a las demás («AUN_NO_SE»)
   mensajes?: { inicio?: string; una?: string; maximo?: string; bloqueada?: string; exclusiva?: string }

@@ -104,23 +104,20 @@ export function RankingPodium({
       )}
       {!lleno && (
         <div className="sx-podium-chips sx-chips">
-          {opciones.map((o) => {
-            const colocada = puestos.includes(o.codigo)
-            return (
+          {/* Ajuste vista del ítem: el chip colocado sale de la lista y los demás se reacomodan (sin huecos). */}
+          {opciones
+            .filter((o) => !puestos.includes(o.codigo))
+            .map((o) => (
               <button
                 type="button"
                 key={o.codigo}
                 className="sx-podium-chip sx-chip"
                 aria-label={o.texto}
-                style={colocada ? { visibility: 'hidden' } : undefined}
-                aria-hidden={colocada || undefined}
-                tabIndex={colocada ? -1 : undefined}
                 onClick={() => elegir(o.codigo)}
               >
                 <span>{o.texto}</span>
               </button>
-            )
-          })}
+            ))}
         </div>
       )}
       <p className="sr-only" aria-live="polite">

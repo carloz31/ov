@@ -105,7 +105,8 @@ test('«La vez pasada» marca lo elegido antes; mantenerlo o cambiarlo decide la
       (e) => e.props?.className === 'sx-choice-badge',
     )[0]?.props.children
   assert.equal(conInstituto('UNIVERSIDAD'), 'La vez pasada')
-  assert.equal(conInstituto('INSTITUTO'), 'Tu ruta')
+  // Ajuste vista del ítem: solo lo de la vez pasada lleva etiqueta; lo nuevo, el ✓.
+  assert.equal(conInstituto('INSTITUTO'), undefined)
   assert.match(pregunta(), /^Ahora te atrae .*¿Qué te hizo cambiar de idea\?$/)
   elementos(vista(despues), (e) => e.key === 'AUN_NO_SE')[0].props.onClick()
   assert.equal(pregunta(), ruta.props.node.eleccion.preguntaExclusiva)

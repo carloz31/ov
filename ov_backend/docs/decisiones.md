@@ -57,3 +57,5 @@
 - F2: la regla de carga es `errores_presentacion` de `scripts/verificar_contenido_front.py` y solo mira los JSON de `plataforma/` (los de `ruta` usan el respaldo); su prueba unitaria va en `tests/unit/registro/test_presentacion_item_front.py`.
 - Prueba en el navegador: el nombre del personaje va sobre el globo y el avatar se centra con el globo, no con el nombre (referencia del usuario).
 - Prueba en el navegador: cuando una opción cambia la pregunta del campo (pregunta propia o sin seguimiento) y no declara `entradaPropia`, el placeholder pasa a «Escribe aquí…» (la entrada del ítem ya no encaja; así se ve en la referencia del usuario de b1-3-voz con «Nadie»).
+- Prueba en el navegador (aprobado por el usuario): en el podio, el chip colocado sale de la lista y los demás se reacomodan (antes dejaba un hueco invisible; en móvil, una fila en blanco).
+- Prueba en el navegador (aprobado por el usuario): `etiquetaElegida` deja de mostrarse; solo lo elegido la vez pasada lleva etiqueta (`etiquetaAnterior`). La etiqueta agrandaba el chip y movía la fila bajo el dedo, y en las exclusivas no tenía sentido («Nadie… · ESA VOZ»). El ✓ marca lo elegido.

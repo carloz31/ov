@@ -83,7 +83,6 @@ test('las tarjetas son botones con aria-pressed; «Otra» muestra su campo y esc
     opciones: [...ruta.eleccion.opciones, { codigo: 'OTRA', texto: 'Otra' }],
     seleccion,
     reglas: reglasRuta,
-    etiquetaElegida: 'Tu ruta',
     onAlternar: (c) => alternadas.push(c),
     onTextoOtra() {},
   })
@@ -100,7 +99,8 @@ test('las tarjetas son botones con aria-pressed; «Otra» muestra su campo y esc
   tree = vista.render()
   const elegida = elementos(tree, (e) => e.key === 'TRABAJAR')[0]
   assert.equal(elegida.props['aria-pressed'], true)
-  assert.ok(elementos(elegida, (e) => e.props?.children === 'Tu ruta').length)
+  // Ajuste vista del ítem: lo elegido lleva el ✓, sin etiqueta (no agranda el chip).
+  assert.equal(elementos(elegida, (e) => e.props?.className === 'sx-choice-badge').length, 0)
   // Con el máximo, las no elegidas se atenúan pero siguen pulsables.
   assert.match(elementos(tree, (e) => e.key === 'UNIVERSIDAD')[0].props.className, /is-dimmed/)
   // Ajuste vista del ítem: el campo de «Otra» va debajo de las opciones, fuera del chip.
@@ -215,7 +215,6 @@ test('Apoyo usa la misma elección como radio, con su etiqueta y sin lenguaje de
   let tree = vista.render()
   // Ajuste vista del ítem: sin nada marcado no hay reacción bajo las opciones.
   assert.equal(de(tree, 'ChoiceReveal').props.reaccion.props.texto, undefined)
-  assert.equal(de(tree, 'ChoiceReveal').props.etiquetaElegida, 'Te acompaña')
   assert.deepEqual(
     copia(de(tree, 'ChoiceReveal').props.opciones.map((o) => o.codigo)),
     apoyo.eleccion.opciones.map((o) => o.codigo),

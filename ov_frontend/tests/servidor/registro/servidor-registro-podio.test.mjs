@@ -81,8 +81,8 @@ test('el podio coloca, devuelve y oculta la grilla al completarse; cada puesto d
   assert.deepEqual(copia(puestos), ['CREAR', null, null])
   vista.unmount()
   let tree = app.mount(RankingPodium, props()).render()
-  // La ficha colocada deja su hueco en la grilla, sin desplazar a las demás.
-  assert.equal(ficha(tree, 'CREAR').props.style.visibility, 'hidden')
+  // Ajuste vista del ítem: la ficha colocada sale de la lista (sin dejar hueco).
+  assert.equal(ficha(tree, 'CREAR'), undefined)
   const slots = elementos(tree, (e) => e.type === 'button' && /sx-podium-slot/.test(e.props.className))
   assert.equal(slots[0].props['aria-label'], 'Puesto 1: Crear cosas nuevas. Pulsa para quitar')
   assert.equal(slots[1].props['aria-label'], 'Puesto 2: vacío')

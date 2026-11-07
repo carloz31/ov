@@ -173,7 +173,6 @@ export function RegistroEleccionNode({
             opciones={opciones}
             seleccion={seleccion}
             reglas={reglas}
-            etiquetaElegida={config.etiquetaElegida}
             error={errores.seleccion}
             errorOtra={errores.otra}
             soloLectura={lectura}

@@ -6,12 +6,11 @@ import '../../styles/registro-guiado.css'
 // Elección guiada (F01; ajuste vista del ítem): las opciones como chips que se alternan al tocarlas, en filas
 // que se acomodan; las exclusivas en una fila aparte bajo una línea fina. Con el máximo alcanzado, las demás se
 // atenúan pero siguen siendo pulsables. «+ Otra» muestra su campo debajo de las opciones. La etiqueta de lo
-// elegido (o de lo elegido la vez pasada) va dentro del chip, a la derecha del texto. Debajo, `reaccion`.
+// elegido la vez pasada va dentro del chip, a la derecha del texto. Debajo, `reaccion`.
 export function ChoiceReveal({
   opciones,
   seleccion,
   reglas,
-  etiquetaElegida,
   error,
   errorOtra,
   onAlternar,
@@ -24,7 +23,6 @@ export function ChoiceReveal({
   opciones: { codigo: string; texto: string }[]
   seleccion: OpcionElegida[]
   reglas: ReglasEleccion
-  etiquetaElegida?: string
   error?: string
   errorOtra?: string
   onAlternar: (codigo: string) => void
@@ -48,8 +46,9 @@ export function ChoiceReveal({
   function chip(o: { codigo: string; texto: string }) {
     const elegida = seleccion.some((s) => s.codigo === o.codigo)
     const esOtra = o.codigo === 'OTRA'
-    const etiqueta =
-      etiquetaAnterior && anteriores.includes(o.codigo) ? etiquetaAnterior : elegida ? etiquetaElegida : undefined
+    // Ajuste vista del ítem (prueba en el navegador): solo lo elegido la vez pasada lleva etiqueta; la de lo
+    // elegido agrandaba el chip y movía la fila bajo el dedo (y no encajaba en las exclusivas). El ✓ ya lo marca.
+    const etiqueta = etiquetaAnterior && anteriores.includes(o.codigo) ? etiquetaAnterior : undefined
     return (
       <div
         key={o.codigo}

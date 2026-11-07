@@ -191,7 +191,7 @@ test('la reacción: nada sin marcar; `inicio` solo con lo premarcado intacto; `u
   assert.match(podio.mensajeLumi(['A', 'B', 'C'], unidad), /^¡Tu podio está listo!/)
 })
 
-test('el premarcado llega marcado, con su reacción bajo las opciones y la etiqueta de la vez pasada en el chip', () => {
+test('el premarcado llega marcado, con su reacción bajo las opciones; solo lo de la vez pasada lleva etiqueta', () => {
   const { app, componente } = cargar()
   const inicial = { texto: '', opciones: [{ codigo: 'mtpe-308' }] }
   const { vista } = montar(app, componente('RegistroEleccionNode'), nodo('t-refe-retoma'), retoma, inicial, {
@@ -209,7 +209,6 @@ test('el premarcado llega marcado, con su reacción bajo las opciones y la etiqu
     opciones: retoma.eleccion.opciones,
     seleccion: [{ codigo: 'mtpe-291' }],
     reglas: { maxima: 1, exclusivas: ['SIN_PLAN'] },
-    etiquetaElegida: 'Tu plan',
     anteriores: ['mtpe-308'],
     etiquetaAnterior: 'La vez pasada',
     onAlternar() {},
@@ -217,9 +216,9 @@ test('el premarcado llega marcado, con su reacción bajo las opciones y la etiqu
   })
   const tree = chips.render()
   const chip = (codigo) => elementos(tree, (e) => e.key === codigo)[0]
-  // La etiqueta va dentro del chip: la de la vez pasada en lo de antes, la de lo elegido en lo nuevo.
+  // La etiqueta de la vez pasada va dentro del chip; lo elegido ahora lleva solo el ✓ (el chip no cambia de ancho).
   assert.ok(elementos(chip('mtpe-308'), (e) => e.props?.children === 'La vez pasada').length)
-  assert.ok(elementos(chip('mtpe-291'), (e) => e.props?.children === 'Tu plan').length)
+  assert.equal(elementos(chip('mtpe-291'), (e) => e.props?.className === 'sx-choice-badge').length, 0)
   chips.unmount()
 })
 
