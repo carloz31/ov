@@ -4,6 +4,8 @@ Actividades de registro cuyas respuestas evalúa un LLM (Gemini) para pedir, com
 
 Estado actual: el backend implementa todo lo de este documento y `ruta` tiene los registros `t-expectativas`, `t-valores`, `t-eco` (este, con una elección que retoma la de `t-expectativas`; `referencias.md`) y `t-referencia` (elección desde PLANES con opciones propias, premarcado, seguimiento por ítem y abierto); en api, el front responde los registros del Camino con el servidor desde F01 (elección, borradores, entrega y seguimiento; `ov_frontend/docs/origen-de-datos.md`). Desde F02, también la consulta y la edición del registro entregado y la zona de eco.
 
+La `consigna` de un ítem es el texto que lee el LLM (y el respaldo de los JSON de `ruta`); lo que ve el estudiante (lo que dice el personaje, la pregunta de cada control, la frase de entrada y el orden de los bloques) está en el JSON del front (`ov_frontend/docs/contenidos-actividades.md`, «Vista del ítem de registro»).
+
 ## Configuración
 
 | Variable | Por defecto | Uso |

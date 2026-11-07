@@ -2,6 +2,14 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-07 · Ajuste vista del ítem de registro · Respuestas en la pantalla de fin
+
+- **Dato:** lo que el estudiante eligió y escribió en cada ítem del registro que acaba de entregar (ya está en el registro del servidor).
+- **Dónde se mostraría:** en la pantalla de fin del registro (`FinishScreen`), debajo de cada ítem: «Elegiste: …» y la respuesta, en el orden del ítem.
+- **Opciones:** un resumen por ítem en la pantalla de fin; un enlace «Ver lo que respondiste» que abra la consulta; dejarlo solo en la consulta.
+- **Si no se muestra:** las respuestas se leen al volver a abrir el registro (consulta), que ya usa la vista nueva.
+- **Estado:** pendiente. El usuario decidió no cambiar la pantalla de fin en este ajuste.
+
 ## 2026-11-07 · Ajuste registros · «Requiere atención» de las respuestas sensibles
 
 - **Dato:** `respuesta_registro.requiere_atencion` (y la marca `sensible` de cada evaluación): una respuesta de registro en la que el estudiante reveló algo delicado; un adulto debe leerla pronto. La marca no se borra al editar. No se expone en ninguna respuesta de la API del estudiante.
