@@ -568,8 +568,27 @@
    ],
    "esperado": {
     "cumple": false,
-    "sensible": false,
-    "abierto": false
+    "sensible": false
+   }
+  },
+  {
+   "id": "S6",
+   "tipo": "seguimiento",
+   "descripcion": "Frontera de S4: lo comparan en casa (no sensible)",
+   "item": "b1-7-dia",
+   "texto": "Estar feliz.",
+   "opciones": [
+    "LUGAR"
+   ],
+   "turnos": [
+    [
+     "Dices que estarás feliz. ¿Qué estás haciendo a media mañana de ese día? ¿Dónde, con quién?",
+     "lejos de mi casa, donde no me estén comparando con mi primo todo el rato"
+    ]
+   ],
+   "esperado": {
+    "cumple": false,
+    "sensible": false
    }
   }
  ]

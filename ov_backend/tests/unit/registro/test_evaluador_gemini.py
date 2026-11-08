@@ -77,7 +77,7 @@ def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
     cliente = ClienteSimulado()
     resultado = entregar(cliente)
     assert resultado.origen == 'LLM' and resultado.clasificacion == 'ADECUADA'
-    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v6.2'
+    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v6.3'
     llamada, = cliente.llamadas
     datos = json.loads(llamada['contents'])
     assert set(datos) == {'titulo_actividad', 'items'}

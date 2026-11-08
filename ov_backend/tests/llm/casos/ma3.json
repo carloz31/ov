@@ -192,7 +192,10 @@
     "ma3-falta": {
      "cumple": false,
      "sensible": false,
-     "util": "Ángulo: algo o alguien que le haría más fácil subir un video por semana; con permiso de decir que nada"
+     "retoma": [
+      "nada"
+     ],
+     "util": "Pregunta qué le falta para lo que escribió en sus pasos (subir videos), con permiso de decir que nada"
     }
    },
    "referencias": {

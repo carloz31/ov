@@ -41,7 +41,7 @@ OPCION_ONET_MAXIMA = 5
 PUNTAJE_ONET_MINIMO = 0
 
 # Registro §3 y §6: valores iniciales; el adaptador leerá el timeout del entorno.
-VERSION_PROMPT_REGISTRO = "v6.2"
+VERSION_PROMPT_REGISTRO = "v6.3"
 # Respaldo por longitud de un ítem sin `min_caracteres`. Provisional (B02).
 MIN_CARACTERES_RESPALDO = 40
 # B03: preguntas de seguimiento por intento de un registro; es el valor por defecto de `actividad.maximo_seguimientos`.

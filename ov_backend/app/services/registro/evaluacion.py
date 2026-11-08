@@ -275,20 +275,23 @@ def evaluar_por_extension(texto: str, min_caracteres: int | None, repregunta_gen
     return _en_codigo(ClasificacionRespuesta.ADECUADA, None, texto_evaluado, consolidada=consolidada)
 
 
-def _desde_resultado(r, item, modelo, version_prompt, latencia_ms, texto_evaluado, consolidada=None):
+def _desde_resultado(r, item, modelo, version_prompt, latencia_ms, texto_evaluado, consolidada=None, en_entrega=False):
     """Del resultado del evaluador a la evaluación: sensible manda, luego cumple; si no, poco desarrollada.
 
     Ajuste pruebas llm: `repregunta: null` sin cumplir (respuesta emocional) deja la poco desarrollada sin
-    pregunta: `avanzar` no le abre turno. Una repregunta no nula pero inválida se reemplaza por el `texto_base`."""
+    pregunta: `avanzar` no le abre turno. Una repregunta no nula pero inválida se reemplaza por el `texto_base`.
+    En la entrega aún no hubo repregunta: el `abierto` del modelo se ignora y, si vino con `repregunta: null`, no es
+    una respuesta emocional: se usa el `texto_base`."""
     if r.sensible or r.cumple:
         return EvaluacionProcesada(OrigenEvaluacion.LLM, ClasificacionRespuesta.ADECUADA, (), None, modelo,
                                    version_prompt, latencia_ms, None, texto_evaluado, consolidada,
                                    sensible=r.sensible)
-    pregunta = None if r.repregunta is None else pregunta_o_base(r.repregunta, item)
+    abierto_ignorado = en_entrega and r.abierto
+    pregunta = None if r.repregunta is None and not abierto_ignorado else pregunta_o_base(r.repregunta, item)
     return EvaluacionProcesada(OrigenEvaluacion.LLM, ClasificacionRespuesta.POCO_DESARROLLADA,
                                tuple(c.codigo for c in item.criterios), pregunta, modelo,
-                               version_prompt, latencia_ms, None, texto_evaluado, consolidada, abierto=r.abierto,
-                               falta=falta_valida(r.falta))
+                               version_prompt, latencia_ms, None, texto_evaluado, consolidada,
+                               abierto=r.abierto and not en_entrega, falta=falta_valida(r.falta))
 
 
 def procesar_entrega(titulo_actividad: str, items: tuple[ItemPorEvaluar, ...], evaluador: EvaluadorRespuestas, *,
@@ -323,7 +326,7 @@ def procesar_entrega(titulo_actividad: str, items: tuple[ItemPorEvaluar, ...], e
                 latencia_ms=latencia_ms, modelo=modelo, version_prompt=version_prompt)
             continue
         evaluaciones[item.codigo] = _desde_resultado(por_item[item.codigo], item, modelo, version_prompt,
-                                                     latencia_ms, texto_evaluado)
+                                                     latencia_ms, texto_evaluado, en_entrega=True)
     return evaluaciones
 
 

@@ -300,8 +300,7 @@
    ],
    "esperado": {
     "cumple": false,
-    "sensible": false,
-    "abierto": false
+    "sensible": false
    }
   },
   {

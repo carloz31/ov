@@ -68,7 +68,7 @@ def test_interfaz_no_importa_sqlalchemy_fastapi_ni_modelos():
 
 
 def test_constantes_de_registro_centralizadas():
-    assert VERSION_PROMPT_REGISTRO == "v6.2"
+    assert VERSION_PROMPT_REGISTRO == "v6.3"
     assert MAXIMO_SEGUIMIENTOS_POR_REGISTRO == 2
 
 
@@ -173,7 +173,7 @@ def test_entrega_hace_una_sola_llamada_y_solo_con_items_con_criterios():
     assert (i1.origen, i1.clasificacion, i1.criterios_faltantes) == (
         OrigenEvaluacion.LLM, ClasificacionRespuesta.POCO_DESARROLLADA, ("C1", "C2"))
     assert i1.pregunta == f"Sobre lo que contaste: {EJEMPLO.repregunta}"
-    assert (i1.modelo, i1.version_prompt) == ("m", "v6.2")
+    assert (i1.modelo, i1.version_prompt) == ("m", "v6.3")
     # Sin criterios: en código, con extensión mínima como único criterio.
     i2, i3 = evaluaciones["I2"], evaluaciones["I3"]
     assert (i2.origen, i2.clasificacion, i2.pregunta, i2.error) == (
@@ -209,14 +209,14 @@ def test_falso_pregunta_invalida_cae_en_el_texto_base():
     assert con_guia.pregunta == GUIA.texto_base
 
 
-def test_sensible_gana_sobre_cumple_y_abierto_se_propone():
+def test_sensible_gana_sobre_cumple_y_en_la_entrega_abierto_se_ignora():
     evaluaciones = procesar_entrega("A", (item("S", f"{LARGO} [sensible] [vaga]"), item("B", f"{LARGO} [abierto]")),
                                     EvaluadorFalso())
     sensible, abierto = evaluaciones["S"], evaluaciones["B"]
     assert (sensible.clasificacion, sensible.sensible, sensible.pregunta) == (
         ClasificacionRespuesta.ADECUADA, True, None)
-    # La entrega no decide ABIERTA: queda poco desarrollada con la propuesta, para que la acción la valide.
-    assert (abierto.clasificacion, abierto.abierto) == (ClasificacionRespuesta.POCO_DESARROLLADA, True)
+    # En la entrega aún no hubo repregunta: la propuesta del modelo no cuenta.
+    assert (abierto.clasificacion, abierto.abierto) == (ClasificacionRespuesta.POCO_DESARROLLADA, False)
     assert abierto.falta == EJEMPLO.descripcion
 
 
@@ -351,6 +351,17 @@ def test_falso_emocional_no_cumple_con_falta_y_sin_repregunta():
                                        (TurnoEvaluacion("¿Cuándo?", "No quiero [emocional]"),), EvaluadorFalso(),
                                        pregunta_generica=False)
     assert (seguimiento.clasificacion, seguimiento.pregunta) == (ClasificacionRespuesta.POCO_DESARROLLADA, None)
+
+
+def test_en_la_entrega_abierto_sin_repregunta_usa_el_texto_base_y_no_es_emocional():
+    entrega = procesar_entrega("A", (item(texto=f"{LARGO} [abierto] [emocional]", guia=GUIA),), EvaluadorFalso())["I1"]
+    assert (entrega.clasificacion, entrega.abierto, entrega.pregunta) == (
+        ClasificacionRespuesta.POCO_DESARROLLADA, False, GUIA.texto_base)
+    # En el seguimiento la propuesta sí cuenta y no hay otra repregunta.
+    seguimiento = procesar_seguimiento("A", item(texto="Inicial", guia=GUIA),
+                                       (TurnoEvaluacion("¿Cuándo?", "No sé [abierto] [emocional]"),), EvaluadorFalso(),
+                                       pregunta_generica=False)
+    assert (seguimiento.abierto, seguimiento.pregunta) == (True, None)
 
 
 def test_consolidada_con_margen_para_respuestas_cortas():
