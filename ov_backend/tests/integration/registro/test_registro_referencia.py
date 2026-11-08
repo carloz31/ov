@@ -231,7 +231,9 @@ def test_sensible_es_desarrollado_sin_repregunta_con_aviso_y_marca_de_atencion(c
     assert retoma['estado'] == 'FINAL' and not any(m_['tipo'] == 'pregunta' for m_ in retoma['conversacion'])
     assert registro['estado'] == 'COMPLETADA'
     por_ampliar = registro['items_por_ampliar']
-    assert [i['item'] for i in por_ampliar] == ['t-refe-retoma'] and por_ampliar[0]['pista'].startswith('Sobre lo que contaste')
+    # La pista es su falta, no la pregunta guardada (que podría citar lo sensible).
+    assert por_ampliar == [{'item': 't-refe-retoma', 'pista': 'Por qué mantiene o cambia su plan',
+                            'falta': 'Por qué mantiene o cambia su plan'}]
     assert not any(e['tipo'] == 'REGISTRO_ADECUADO' for e in registro['eventos_registrados'])
     with aplicacion.state.fabrica_sesiones() as sesion:
         guardada = fila(sesion, 't-refe-duda')
@@ -402,4 +404,5 @@ def test_un_sensible_en_el_seguimiento_corta_los_turnos_del_intento(cliente):
     assert cierre['estado'] == 'COMPLETADA'
     duda = respuesta(cierre, 't-refe-duda')
     assert duda['estado'] == 'FINAL' and not any(m_['tipo'] == 'pregunta' for m_ in duda['conversacion'])
-    assert [i['item'] for i in cierre['items_por_ampliar']] == ['t-refe-duda']
+    ampliar, = cierre['items_por_ampliar']
+    assert ampliar['item'] == 't-refe-duda' and ampliar['pista'] == ampliar['falta'] and ampliar['falta']

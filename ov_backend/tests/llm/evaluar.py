@@ -50,7 +50,7 @@ TITULOS = {a[0]: a[2] for a in ACTIVIDADES}  # el título de la actividad, como 
 PROHIBIDAS = ('explica más', 'desarrolla', 'por qué crees que', 'criterio', 'inteligencia artificial')
 FUTURO = re.compile(r'\b(harías|harás|podrías hacer|si pasara mañana|si tuvieras que)\b')
 GENERICA = '¿podrías darme un ejemplo concreto'
-CALIFICA = re.compile(r'pero|suena a')
+CALIFICA = (('suena', 'a'), ('eso', 'no', 'es'))  # frases que califican, por palabras y sin puntuación
 
 
 
@@ -176,7 +176,8 @@ def chequeos(r, guia, esperado):
             fallas.append('R5_texto_base')
         if any(p in baja for p in PROHIBIDAS):
             fallas.append('R8_prohibida')
-        if CALIFICA.search(baja):
+        palabras = re.findall(r'\w+', baja)
+        if any(palabras[i:i + len(f)] == list(f) for f in CALIFICA for i in range(len(palabras))):
             fallas.append('R9_califica')
         if any(p in baja for p in esperado.get('no_contiene', ())):
             fallas.append('R6_otro_item')

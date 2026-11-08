@@ -239,12 +239,18 @@ class RegistroLeido:
     def por_ampliar(self, items, pista_sin_repregunta=None):
         """Ítems que quedaron poco desarrollados: la pregunta de su evaluación vigente y lo que les faltó.
 
-        Sin pregunta (respuesta emocional, ajuste pruebas llm), la pista es el texto fijo `PISTA_SIN_REPREGUNTA`
+        Ajuste pruebas llm: en un intento con un ítem sensible, la pista es la `falta` (o el nombre): la pregunta
+        guardada puede citar lo sensible. Sin pregunta (respuesta emocional), el texto fijo `PISTA_SIN_REPREGUNTA`
         (o, si no está cargado, el nombre del ítem)."""
+        con_sensible = {r.intento for r in self.respuestas.values() if r.sensible}
         por_ampliar = []
         for item in self.con_clasificacion(items, ClasificacionRespuesta.POCO_DESARROLLADA):
-            ultima = self.ultima_evaluacion(self.respuestas[item.id])
-            pista = ultima.pregunta or pista_sin_repregunta or item.nombre
+            respuesta = self.respuestas[item.id]
+            ultima = self.ultima_evaluacion(respuesta)
+            if respuesta.intento in con_sensible:
+                pista = ultima.falta or item.nombre
+            else:
+                pista = ultima.pregunta or pista_sin_repregunta or item.nombre
             por_ampliar.append(ItemPorAmpliar(item=item.codigo, pista=pista, falta=ultima.falta))
         return por_ampliar
 

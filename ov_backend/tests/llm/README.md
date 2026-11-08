@@ -58,7 +58,7 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 | `R5_texto_base` | Copia el `texto_base` literal |
 | `R6_otro_item` | Pregunta por lo que pide otro ítem |
 | `R8_prohibida` | «explica más», «desarrolla», «por qué crees que», criterios, IA |
-| `R9_califica` | Califica la respuesta o la corrige: «pero» o «suena a» en la repregunta |
+| `R9_califica` | Califica la respuesta: «suena a» o «eso no es» en la repregunta (por palabras, sin puntuación) |
 | `R10_falta` | `falta` con pregunta, demasiado larga o como pedido («Necesito…», «Cuéntame…») |
 | `fuera_de_tema` | No retoma la palabra con la que se fue del tema |
 | `C3_consolidada_larga` | La consolidada supera `FACTOR_MAXIMO_CONSOLIDADA` (el backend concatena) |
