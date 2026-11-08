@@ -18,7 +18,7 @@ from typing import Protocol
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from app.core.parametros import (
-    FACTOR_MAXIMO_CONSOLIDADA, MAXIMO_CARACTERES_PREGUNTA, MIN_CARACTERES_RESPALDO, PALABRAS_EVALUATIVAS,
+    FACTOR_MAXIMO_CONSOLIDADA, MARGEN_CONSOLIDADA, MAXIMO_CARACTERES_PREGUNTA, MIN_CARACTERES_RESPALDO, PALABRAS_EVALUATIVAS,
     TIEMPO_MAXIMO_EVALUACION_SEGUNDOS, VERSION_PROMPT_REGISTRO,
 )
 from app.models.enums import ClasificacionRespuesta, OrigenEvaluacion
@@ -201,7 +201,7 @@ def concatenar(texto_inicial: str, turnos) -> str:
 def consolidada_o_concatenacion(consolidada, texto_inicial: str, turnos) -> str:
     concatenacion = concatenar(texto_inicial, turnos)
     if isinstance(consolidada, str) and consolidada.strip() and (
-            len(consolidada.strip()) <= FACTOR_MAXIMO_CONSOLIDADA * len(concatenacion)):
+            len(consolidada.strip()) <= FACTOR_MAXIMO_CONSOLIDADA * len(concatenacion) + MARGEN_CONSOLIDADA):
         return consolidada.strip()
     return concatenacion
 
@@ -436,7 +436,7 @@ class EvaluadorFalso:
         cumple, abierto, sensible, falta, repregunta = self._clasificar(texto, contexto.criterios, contexto.guia)
         consolidada = concatenar(contexto.texto_inicial, contexto.turnos)
         if "[consolidada-invalida]" in texto:
-            consolidada = consolidada * 3
+            consolidada = consolidada * 3 + '.' * (MARGEN_CONSOLIDADA + 1)
         return ResultadoSeguimiento(cumple=cumple, abierto=abierto, sensible=sensible, falta=falta,
                                     repregunta=repregunta, consolidada=consolidada)
 

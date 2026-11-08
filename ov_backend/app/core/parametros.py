@@ -68,6 +68,8 @@ MAXIMO_CARACTERES_PREGUNTA = 200
 PALABRAS_EVALUATIVAS = ("adecuad", "poco desarrollad", "criterio", "incomplet", "insuficient")
 # B03: la consolidada no puede superar este factor del largo de lo escrito.
 FACTOR_MAXIMO_CONSOLIDADA = 1.5
+# Ajuste pruebas llm: margen fijo sobre el factor, en caracteres (las respuestas cortas necesitan conectores).
+MARGEN_CONSOLIDADA = 60
 PAUSA_CASOS_GEMINI_SEGUNDOS = 5
 
 # B09 · Diario. Cambiar el prompt de personalización exige subir `VERSION_PROMPT_DIARIO`.

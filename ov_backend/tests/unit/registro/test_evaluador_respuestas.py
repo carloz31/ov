@@ -9,7 +9,7 @@ from dataclasses import asdict, fields
 import pytest
 
 from app.core.parametros import (
-    FACTOR_MAXIMO_CONSOLIDADA, MAXIMO_CARACTERES_PREGUNTA, MAXIMO_SEGUIMIENTOS_POR_REGISTRO, VERSION_PROMPT_REGISTRO,
+    FACTOR_MAXIMO_CONSOLIDADA, MARGEN_CONSOLIDADA, MAXIMO_CARACTERES_PREGUNTA, MAXIMO_SEGUIMIENTOS_POR_REGISTRO, VERSION_PROMPT_REGISTRO,
 )
 from app.models.enums import ClasificacionRespuesta, OrigenEvaluacion
 from app.services.registro.evaluacion import (
@@ -118,7 +118,7 @@ def test_consolidada_valida_o_concatenacion():
     turnos = (TurnoEvaluacion("¿Por qué?", "Porque me gusta"), TurnoEvaluacion("¿Cuándo?", None))
     assert concatenar(" Inicial ", turnos) == "Inicial\n\nPorque me gusta"
     concatenacion = concatenar("Inicial", turnos)
-    limite = int(FACTOR_MAXIMO_CONSOLIDADA * len(concatenacion))
+    limite = int(FACTOR_MAXIMO_CONSOLIDADA * len(concatenacion) + MARGEN_CONSOLIDADA)  # ajuste pruebas llm
     assert consolidada_o_concatenacion("Inicial, porque me gusta", "Inicial", turnos) == "Inicial, porque me gusta"
     assert consolidada_o_concatenacion("x" * limite, "Inicial", turnos) == "x" * limite
     assert consolidada_o_concatenacion("x" * (limite + 1), "Inicial", turnos) == concatenacion
@@ -351,3 +351,12 @@ def test_falso_emocional_no_cumple_con_falta_y_sin_repregunta():
                                        (TurnoEvaluacion("¿Cuándo?", "No quiero [emocional]"),), EvaluadorFalso(),
                                        pregunta_generica=False)
     assert (seguimiento.clasificacion, seguimiento.pregunta) == (ClasificacionRespuesta.POCO_DESARROLLADA, None)
+
+
+def test_consolidada_con_margen_para_respuestas_cortas():
+    corto = (TurnoEvaluacion("¿Con quién?", "x" * 20),)
+    assert len(concatenar("y" * 14, corto)) == 36
+    assert consolidada_o_concatenacion("z" * 72, "y" * 14, corto) == "z" * 72  # 72 <= 1.5 × 36 + 60
+    largo = (TurnoEvaluacion("¿Con quién?", "x" * 48),)
+    assert len(concatenar("y" * 50, largo)) == 100
+    assert consolidada_o_concatenacion("z" * 300, "y" * 50, largo) == concatenar("y" * 50, largo)  # 300 > 210

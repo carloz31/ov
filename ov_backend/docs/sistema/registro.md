@@ -88,7 +88,7 @@ Las cuatro últimas devuelven el registro (como el GET: `posicion`, `estado` del
 **Validaciones** (`evaluacion.py`):
 - **Esquema:** el JSON estricto del contrato y, en la entrega, exactamente los ítems enviados. Si no se cumple, se trata como fallo.
 - **Pregunta:** un solo «?», al final, como mucho `MAXIMO_CARACTERES_PREGUNTA`, sin códigos `C\d+` ni `PALABRAS_EVALUATIVAS` (se compara en minúsculas y sin tildes). Si no se cumple, se usa el `texto_base`.
-- **Consolidada:** no vacía y como mucho `FACTOR_MAXIMO_CONSOLIDADA` veces el largo de lo escrito. Si no se cumple, se usa la concatenación del texto inicial y los turnos respondidos, separados por línea en blanco.
+- **Consolidada:** no vacía y como mucho `FACTOR_MAXIMO_CONSOLIDADA` veces el largo de lo escrito más `MARGEN_CONSOLIDADA` (60) caracteres, para que una respuesta corta admita conectores. Si no se cumple, se usa la concatenación del texto inicial y los turnos respondidos, separados por línea en blanco.
 
 **Respaldo**, si la llamada falla, tarda demasiado o devuelve algo inválido (se guarda con `error`):
 - en la entrega, ítem por ítem: un texto con menos de `min_caracteres` (o `MIN_CARACTERES_RESPALDO`) queda POCO_DESARROLLADA con el `texto_base`; uno que lo alcanza, NO_EVALUADA; sin detección de sensible;

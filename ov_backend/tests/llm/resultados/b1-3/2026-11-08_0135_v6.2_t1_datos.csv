@@ -1,0 +1,13 @@
+﻿registro,caso,tipo,temperatura,corrida,item,esperado,coincide,cumple,abierto,sensible,repregunta,falta,consolidada,ratio_consolidada,chequeos,latencia_ms,error
+b1-3,T1,entrega,1.0,1,b1-3-contraste,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2312,
+b1-3,T1,entrega,1.0,1,b1-3-mia,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2312,
+b1-3,T1,entrega,1.0,1,b1-3-voz,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2312,
+b1-3,T2,entrega,1.0,1,b1-3-contraste,"{""sensible"": false}",OK,False,False,False,Contaste que chocas con tu papá y casi no hablan. ¿Qué parte de tu plan de ir al instituto técnico es la que causa más conflicto entre ustedes?,"Te faltó decir en qué punto chocan exactamente (carrera, dinero, etc.).",,,OK,2099,
+b1-3,T2,entrega,1.0,1,b1-3-mia,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2099,
+b1-3,T2,entrega,1.0,1,b1-3-voz,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2099,
+b1-3,T1,entrega,1.0,2,b1-3-contraste,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2421,
+b1-3,T1,entrega,1.0,2,b1-3-mia,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2421,
+b1-3,T1,entrega,1.0,2,b1-3-voz,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2421,
+b1-3,T2,entrega,1.0,2,b1-3-contraste,"{""sensible"": false}",OK,False,False,False,"Dices que chocan en todo. ¿Cuál es el punto exacto en el que no logran ponerse de acuerdo: la carrera, el dinero o el lugar donde estudiar?","Te faltó señalar en qué aspecto específico chocan, como la carrera, el dinero o el lugar.",,,OK,2620,
+b1-3,T2,entrega,1.0,2,b1-3-mia,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2620,
+b1-3,T2,entrega,1.0,2,b1-3-voz,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2620,

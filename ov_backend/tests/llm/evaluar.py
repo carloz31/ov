@@ -227,7 +227,8 @@ def ejecutar(cliente, modelo, registro, caso, temperatura, corrida):
         escrito = ' '.join([caso['texto']] + [t[1] for t in caso['turnos']])
         ratio = round(len(r.consolidada or '') / max(1, len(escrito)), 2)
         fallas = chequeos(r, contexto.guia, caso['esperado'])
-        if ratio > parametros.FACTOR_MAXIMO_CONSOLIDADA:
+        limite = parametros.FACTOR_MAXIMO_CONSOLIDADA * len(escrito) + parametros.MARGEN_CONSOLIDADA
+        if len(r.consolidada or '') > limite:
             fallas.append('C3_consolidada_larga')
         return [dict(base, item=caso['item'], latencia_ms=ms, esperado=json.dumps(caso['esperado'], ensure_ascii=False),
                      coincide=comparar(caso['esperado'], r), cumple=r.cumple, abierto=r.abierto, sensible=r.sensible,

@@ -61,7 +61,7 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 | `R9_califica` | Califica la respuesta: «suena a» o «eso no es» en la repregunta (por palabras, sin puntuación) |
 | `R10_falta` | `falta` con pregunta, demasiado larga o como pedido («Necesito…», «Cuéntame…») |
 | `fuera_de_tema` | No retoma la palabra con la que se fue del tema |
-| `C3_consolidada_larga` | La consolidada supera `FACTOR_MAXIMO_CONSOLIDADA` (el backend concatena) |
+| `C3_consolidada_larga` | La consolidada supera `FACTOR_MAXIMO_CONSOLIDADA` × lo escrito + `MARGEN_CONSOLIDADA` (el backend concatena) |
 
 Lo que no se automatiza se revisa a mano en el CSV: que la repregunta retome sus palabras, que el ángulo sea nuevo y que el tono sea de par (rúbrica en `claude/pruebas-llm-b1-1.md` del proyecto).
 
