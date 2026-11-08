@@ -522,15 +522,15 @@ def _c(tipo, que_busca):
 ITEMS_REGISTRO = (
     # b1-1 Mi historia personal
     ('b1-1', 'b1-1-gustos', 'Lo que te encantaba de niño',
-     '«Cuando tenía … años, me encantaba…» ¿Qué te encantaba hacer de niño o niña? Si lo recuerdas, cuenta también qué querías ser.', None,
+     '«Cuando tenía … años, me encantaba…» ¿Qué te encantaba hacer de niño o niña?', None,
      _c('EJEMPLO', 'Una actividad concreta que hacía de niño, no una categoría ni un gusto general.')),
     ('b1-1', 'b1-1-logro', 'Tu logro',
      '«Logré…» Cuenta algo que lograste, por pequeño que parezca, y marca qué habilidad usaste (1–2).',
      _lista('HABILIDADES', 2, propias=(_op('NO_RECUERDO', 'No se me ocurre ninguno', exclusiva=True,
                                            texto_base='Piensa en algo pequeño que aprendiste a hacer solo o que antes no te salía. ¿Qué fue?'),)),
-     _c('EJEMPLO', 'Un hecho que muestre el logro (algo que pasó), no una cualidad. Cualquier hecho vale, aunque parezca pequeño.')),
+     _c('EJEMPLO', 'Algo que pasó y que él cuenta como logro (un hecho), no una cualidad. Cualquier hecho vale, aunque parezca pequeño.')),
     ('b1-1', 'b1-1-dificultad', 'Lo que hiciste ante una dificultad',
-     '«Una vez se me complicó… y lo que hice fue…» Cuenta una dificultad y qué hiciste para superarla.', None,
+     '«Una vez se me complicó… y lo que me ayudó a salir adelante fue…» Cuenta una dificultad y cómo la fuiste superando: lo que hiciste o quién te ayudó.', None,
      _c('ACCION', 'Cómo atravesó la dificultad: algo que hizo o cómo se apoyó en otros, no solo que la superó.')),
     # b1-3 Las voces y la mía
     ('b1-3', 'b1-3-voz', 'Quién espera qué',
@@ -743,11 +743,11 @@ ITEMS_REGISTRO = (
 # Campos de seguimiento por ítem con criterio (§1.4). `ecos_llm`: (tipo, código) con REFERENCIA de la actividad o
 # TEXTO/ELECCION de un ítem anterior de la misma actividad; siempre va además la elección del propio ítem.
 SEGUIMIENTOS = {
-    'b1-1-gustos': {'que_busca': 'Una actividad concreta que hacía de niño. Si nombra una actividad general o una categoría (jugar, el arte, la música, los deportes), lo que hacía dentro de ella; no basta la categoría ni un gusto general.',
+    'b1-1-gustos': {'que_busca': 'Una actividad concreta que hacía de niño. Una actividad nombrada en una palabra cumple (el vóley, dibujar, bailar). Si nombra una categoría amplia (los deportes, la música, el arte), lo que hacía dentro de ella; no basta un gusto general.',
                     'texto_base': '¿Qué hacías, y con quién?',
                     'cumple': ('Hacer barquitos de papel y echarlos a flotar cuando llovía', 'Hacer obras de títeres con mis vecinas, yo ponía las voces', 'Dibujar personajes de anime en todos mis cuadernos', 'Saltaba soga'),
-                    'no_cumple': ('«Los juegos» (actividad general; ángulo: el juego concreto y con quién lo jugaba)', '«Los deportes» (categoría; ángulo: lo que hacía dentro de eso o lo que le gustaba de eso)', '«De grande iba a ser piloto», solo lo que quería ser (ángulo: lo que hacía o jugaba relacionado con eso)', '«Era muy chico, ya ni sé» (ángulo: lo que le cuentan en casa o lo que ve en fotos)')},
-    'b1-1-logro': {'que_busca': 'Un hecho que muestre el logro (algo que pasó), no una cualidad. Cualquier hecho vale, aunque parezca pequeño.',
+                    'no_cumple': ('«Los juegos» (actividad general; ángulo: el juego concreto y con quién lo jugaba)', '«Los deportes» (categoría; ángulo: lo que hacía dentro de eso o lo que le gustaba de eso)', '«De grande iba a ser piloto», solo lo que quería ser (ángulo: lo que le encantaba hacer en esa época; puede tener que ver con eso o no, sin suponerlo)', '«Era muy chico, ya ni sé» (ángulo: lo que le cuentan en casa o lo que ve en fotos)')},
+    'b1-1-logro': {'que_busca': 'Algo que pasó y que él cuenta como logro (un hecho), no una cualidad. Cualquier hecho vale, aunque parezca pequeño.',
                    'texto_base': '¿Qué pasó: un examen, un concurso, algo que armaste?',
                    'cumple': ('Me eligieron para representar a mi salón en la feria de ciencias', 'Junté a mis vecinos para limpiar el parque y lo dejamos listo', 'Subí mi promedio de comunicación después de un mal bimestre', 'Aprendí a tocar guitarra solo, viendo videos', 'Hice mi propia cometa y la volé'),
                    'no_cumple': ('«Se me da bien el dibujo» (opinión, no hecho; ángulo: un momento en que lo notó)', '«Tengo un montón de logros» (sin hecho; ángulo: uno de esos logros y lo que pasó)', '«Tener paciencia» (cualidad, no hecho; ángulo: una situación en que la usó)', '«Ahorita no se me viene nada» (ángulo: pistas pequeñas, como algo que aprendió solo, algo que antes no le salía o alguien a quien ayudó, sin volver a pedir un «logro»; si tras la repregunta sigue sin encontrar, abierto)'),

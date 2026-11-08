@@ -1,4 +1,4 @@
-"""Instrucciones de sistema v6.9 del registro (ajuste pruebas llm): entrega y seguimiento.
+"""Instrucciones de sistema v6.10 del registro (ajuste pruebas llm): entrega y seguimiento.
 
 Cambiar cualquiera de las dos exige subir `VERSION_PROMPT_REGISTRO`. `PROMPT_ENTREGA` y `PROMPT_SEGUIMIENTO` son las
 vigentes (las usan el adaptador y `tests/llm`).
@@ -20,7 +20,7 @@ Cómo decidir "cumple":
 La repregunta, qué preguntar:
 1. Identifica qué parte de "que_busca" todavía no aparece en su respuesta.
 2. Si su respuesta es del mismo tipo que un ejemplo de "no_cumple" que trae "(ángulo: …)", ese ángulo es el tema de tu pregunta, no su redacción: adáptalo a lo que escribió o marcó, con tus propias palabras. Si ningún ejemplo es del mismo tipo, no uses sus ángulos.
-3. Céntrala en la opción que marcó (un freno, una habilidad, un área): nómbrala o usa lo que significa. Si algo solo lo marcó, di "marcaste", no "mencionaste".
+3. Si marcó una opción (un freno, una habilidad, un área), úsala cuando haga la pregunta más concreta, con tus palabras; no cites su etiqueta como si fuera algo que él contó ("resolviste ese problema" cuando solo marcó "Resolver problemas"). Si algo solo lo marcó, di "marcaste", no "mencionaste".
 4. Elige un único foco y pregunta por él.
 Si la guía ofrece alternativas ("X o Y"), elige la que encaja con lo que contó y pregunta solo por esa.
 

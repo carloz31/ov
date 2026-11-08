@@ -162,7 +162,7 @@
   {
    "id": "E5",
    "tipo": "entrega",
-   "descripcion": "Las tres vagas (mínimo esfuerzo) · F21: util en dificultad y gustos",
+   "descripcion": "Las tres vagas (mínimo esfuerzo) · F21: util en dificultad y gustos · F27: util de logro",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -188,7 +188,8 @@
      "util": "Retoma \"jugar\" y pregunta a qué jugaba y con quién"
     },
     "b1-1-logro": {
-     "cumple": false
+     "cumple": false,
+     "util": "Lleva el mate a un momento propio, sin citar la etiqueta de la habilidad como si la hubiera contado"
     },
     "b1-1-dificultad": {
      "cumple": false,
@@ -238,7 +239,7 @@
   {
    "id": "E7",
    "tipo": "entrega",
-   "descripcion": "Solo «qué quería ser», logro grupal, dificultad sin acción · F21: util en gustos",
+   "descripcion": "Solo «qué quería ser», logro grupal, dificultad sin acción · F21: util en gustos · F27: util de gustos",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -261,7 +262,7 @@
    "esperado": {
     "b1-1-gustos": {
      "cumple": false,
-     "util": "Usa \"bombero\": qué hacía o a qué jugaba relacionado con eso"
+     "util": "Reconoce lo que quería ser y pide qué le encantaba hacer en esa época; puede tender un puente con eso, sin forzarlo"
     },
     "b1-1-logro": {
      "cumple": true
@@ -510,7 +511,7 @@
   {
    "id": "E14",
    "tipo": "entrega",
-   "descripcion": "nuevo F21: apoyo con lo que hizo; logro pequeño; gustos «El fútbol» es caso límite (sin cumple fijo)",
+   "descripcion": "nuevo F21: apoyo con lo que hizo; logro pequeño; gustos «El fútbol» es caso límite (sin cumple fijo) · F27: gustos espera cumple true (una actividad nombrada en una palabra cumple)",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -531,7 +532,9 @@
     }
    ],
    "esperado": {
-    "b1-1-gustos": {},
+    "b1-1-gustos": {
+     "cumple": true
+    },
     "b1-1-logro": {
      "cumple": true
     },
@@ -659,7 +662,7 @@
   {
    "id": "E18",
    "tipo": "entrega",
-   "descripcion": "nuevo F21: repitió y estuvo solo, sin acción. Gustos y logro son relleno, para mantener la entrega de tres ítems",
+   "descripcion": "nuevo F21: repitió y estuvo solo, sin acción. Gustos y logro son relleno, para mantener la entrega de tres ítems · F27: dificultad pasa a caso límite (cumple no se compara)",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -687,7 +690,6 @@
      "cumple": true
     },
     "b1-1-dificultad": {
-     "cumple": false,
      "sensible": false,
      "sin_futuro": true,
      "util": "Pregunta qué hizo él por su cuenta, sin juzgar que estuvo solo"

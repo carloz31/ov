@@ -68,7 +68,7 @@ def test_interfaz_no_importa_sqlalchemy_fastapi_ni_modelos():
 
 
 def test_constantes_de_registro_centralizadas():
-    assert VERSION_PROMPT_REGISTRO == "v6.9"
+    assert VERSION_PROMPT_REGISTRO == "v6.10"
     assert MAXIMO_SEGUIMIENTOS_POR_REGISTRO == 2
 
 
@@ -173,7 +173,7 @@ def test_entrega_hace_una_sola_llamada_y_solo_con_items_con_criterios():
     assert (i1.origen, i1.clasificacion, i1.criterios_faltantes) == (
         OrigenEvaluacion.LLM, ClasificacionRespuesta.POCO_DESARROLLADA, ("C1", "C2"))
     assert i1.pregunta == f"Sobre lo que contaste: {EJEMPLO.repregunta}"
-    assert (i1.modelo, i1.version_prompt) == ("m", "v6.9")
+    assert (i1.modelo, i1.version_prompt) == ("m", "v6.10")
     # Sin criterios: en código, con extensión mínima como único criterio.
     i2, i3 = evaluaciones["I2"], evaluaciones["I3"]
     assert (i2.origen, i2.clasificacion, i2.pregunta, i2.error) == (
