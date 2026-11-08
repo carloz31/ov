@@ -10,3 +10,6 @@
 | 2026-11-08 03:49 | v6.7 | gemini-3.1-flash-lite | 1 | 2 | 26/28 | 28/28 | 0 | 2026-11-08_0349_v6.7_t1_ronda-5.csv |
 | 2026-11-08 03:58 | v6.7 | gemini-3.1-flash-lite | 1 | 4 | 4/4 | 4/4 | 0 | 2026-11-08_0358_v6.7_t1_cierre.csv |
 | 2026-11-08 04:05 | v6.7 | gemini-3.1-flash-lite | 1 | 4 | 4/4 | 4/4 | 0 | 2026-11-08_0405_v6.7_t1_cierre-variante.csv |
+| 2026-11-08 04:28 | v6.7 | gemini-3.5-flash-lite · low | 1 | 2 | 2/2 | 2/2 | 0 | 2026-11-08_0428_v6.7_t1_rlow_cmp-C.csv |
+| 2026-11-08 04:29 | v6.7 | gemini-3.1-flash-lite · minimal | 1 | 2 | 2/2 | 2/2 | 0 | 2026-11-08_0429_v6.7_t1_rminimal_cmp-A.csv |
+| 2026-11-08 04:30 | v6.7 | gemini-3.1-flash-lite · low | 1 | 2 | 2/2 | 2/2 | 0 | 2026-11-08_0430_v6.7_t1_rlow_cmp-B.csv |

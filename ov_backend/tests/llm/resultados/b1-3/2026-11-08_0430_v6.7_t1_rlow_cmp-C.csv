@@ -1,0 +1,13 @@
+﻿registro,caso,tipo,temperatura,razonamiento,corrida,item,esperado,util,coincide,cumple,abierto,emocional,sensible,repregunta,falta,consolidada,ratio_consolidada,chequeos,latencia_ms,tokens_entrada,tokens_razonamiento,tokens_salida,error
+b1-3,T5,entrega,1.0,low,1,b1-3-contraste,"{""sensible"": false}",,OK,True,False,False,False,,,,,OK,2178,2391,,163,
+b1-3,T5,entrega,1.0,low,1,b1-3-mia,"{""sensible"": false, ""repregunta_nula"": true, ""emocional"": true}",,OK,False,False,True,False,,Te faltó contar qué te hace dudar entre qué cosas.,,,OK,2178,2391,,163,
+b1-3,T5,entrega,1.0,low,1,b1-3-voz,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,,,OK,2178,2391,,163,
+b1-3,T6,entrega,1.0,low,1,b1-3-contraste,{},,OK,False,False,False,False,"Contaste que a él le importa que tengas trabajo seguro, ¿en qué punto exacto coinciden o chocan los dos?",Te faltó decir en qué chocan o coinciden exactamente.,,,OK,2208,2365,,255,
+b1-3,T6,entrega,1.0,low,1,b1-3-mia,"{""sensible"": true, ""repregunta_nula"": true}",,OK,False,False,True,True,,,,,OK,2208,2365,,255,
+b1-3,T6,entrega,1.0,low,1,b1-3-voz,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,,,OK,2208,2365,,255,
+b1-3,T5,entrega,1.0,low,2,b1-3-contraste,"{""sensible"": false}",,OK,True,False,False,False,,,,,OK,4530,2391,,165,
+b1-3,T5,entrega,1.0,low,2,b1-3-mia,"{""sensible"": false, ""repregunta_nula"": true, ""emocional"": true}",,OK,False,False,True,False,,Te faltó contar qué te hace dudar o qué te falta saber.,,,OK,4530,2391,,165,
+b1-3,T5,entrega,1.0,low,2,b1-3-voz,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,,,OK,4530,2391,,165,
+b1-3,T6,entrega,1.0,low,2,b1-3-contraste,{},,OK,True,False,False,False,,,,,OK,2173,2365,,217,
+b1-3,T6,entrega,1.0,low,2,b1-3-mia,"{""sensible"": true, ""repregunta_nula"": true}",,OK,False,False,False,True,,,,,OK,2173,2365,,217,
+b1-3,T6,entrega,1.0,low,2,b1-3-voz,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,,,OK,2173,2365,,217,

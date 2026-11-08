@@ -1,0 +1,3 @@
+﻿registro,caso,tipo,temperatura,razonamiento,corrida,item,esperado,util,coincide,cumple,abierto,emocional,sensible,repregunta,falta,consolidada,ratio_consolidada,chequeos,latencia_ms,tokens_entrada,tokens_razonamiento,tokens_salida,error
+ma3,SM1,seguimiento,1.0,low,1,ma3-pasos,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,Inscribirme en una academia y luego dar el examen de San Marcos en marzo,1.01,OK,2131,1971,,77,
+ma3,SM1,seguimiento,1.0,low,2,ma3-pasos,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,Inscribirme en una academia y luego dar el examen de San Marcos en marzo.,1.03,OK,2206,1971,,77,
