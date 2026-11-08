@@ -1,4 +1,4 @@
-"""Instrucciones de sistema v6.5 del registro (ajuste pruebas llm): entrega y seguimiento.
+"""Instrucciones de sistema v6.6 del registro (ajuste pruebas llm): entrega y seguimiento.
 
 Cambiar cualquiera de las dos exige subir `VERSION_PROMPT_REGISTRO`. `PROMPT_ENTREGA` y `PROMPT_SEGUIMIENTO` son las
 vigentes (las usan el adaptador y `tests/llm`).
@@ -45,7 +45,7 @@ Devuelve un elemento por cada ítem recibido, con su código en "item". Responde
 
 PROMPT_SEGUIMIENTO_V6 = _COMUN + '''
 
-Recibes un ítem con su respuesta inicial y las respuestas del estudiante a las repreguntas. Evalúa todo el conjunto.
+Recibes un ítem con su respuesta inicial y las respuestas del estudiante a las repreguntas. Evalúa todo el conjunto. Si el ítem dice que algo se acepta tras una repregunta y el estudiante lo sostiene, cumple true. Una molestia con la pregunta no es emocional.
 
 Además, escribe en "consolidada" un único texto que integre la respuesta inicial y las respuestas a las repreguntas, en primera persona y con las palabras del estudiante: no agregues ideas, datos ni valoraciones que él no haya escrito, y no lo alargues innecesariamente. Responde solo con el JSON pedido.'''
 

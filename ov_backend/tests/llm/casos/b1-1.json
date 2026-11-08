@@ -152,7 +152,7 @@
      ]
     },
     "b1-1-dificultad": {
-     "cumple": true,
+     "cumple": false,
      "sin_futuro": true
     }
    }
