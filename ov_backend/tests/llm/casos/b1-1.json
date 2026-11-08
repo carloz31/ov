@@ -77,7 +77,7 @@
   {
    "id": "E3",
    "tipo": "entrega",
-   "descripcion": "Largas que no cumplen",
+   "descripcion": "Largas que no cumplen · F21: util en dificultad y gustos",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -100,21 +100,23 @@
    ],
    "esperado": {
     "b1-1-gustos": {
-     "cumple": false
+     "cumple": false,
+     "util": "Pregunta qué hacía dentro del arte (dibujar, pintar…), no \"a qué jugabas\""
     },
     "b1-1-logro": {
      "cumple": false
     },
     "b1-1-dificultad": {
      "cumple": false,
-     "sin_futuro": true
+     "sin_futuro": true,
+     "util": "Retoma el esfuerzo y pregunta qué empezó a hacer distinto con esos cursos"
     }
    }
   },
   {
    "id": "E4",
    "tipo": "entrega",
-   "descripcion": "Caso real del 7 nov: logro «no recuerdo» con «Ninguna» en Otra",
+   "descripcion": "Caso real del 7 nov: logro «no recuerdo» con «Ninguna» en Otra · F21: dificultad espera cumple true (apoyarse en otros y contar qué cambió cumple)",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -152,7 +154,7 @@
      ]
     },
     "b1-1-dificultad": {
-     "cumple": false,
+     "cumple": true,
      "sin_futuro": true
     }
    }
@@ -160,7 +162,7 @@
   {
    "id": "E5",
    "tipo": "entrega",
-   "descripcion": "Las tres vagas (mínimo esfuerzo)",
+   "descripcion": "Las tres vagas (mínimo esfuerzo) · F21: util en dificultad y gustos",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -182,14 +184,16 @@
    ],
    "esperado": {
     "b1-1-gustos": {
-     "cumple": false
+     "cumple": false,
+     "util": "Retoma \"jugar\" y pregunta a qué jugaba y con quién"
     },
     "b1-1-logro": {
      "cumple": false
     },
     "b1-1-dificultad": {
      "cumple": false,
-     "sin_futuro": true
+     "sin_futuro": true,
+     "util": "Pregunta cómo lo ayudaron sus papás o qué cambió con esa ayuda, sin reclamarle qué hizo él"
     }
    }
   },
@@ -234,7 +238,7 @@
   {
    "id": "E7",
    "tipo": "entrega",
-   "descripcion": "Solo «qué quería ser», logro grupal, dificultad sin acción",
+   "descripcion": "Solo «qué quería ser», logro grupal, dificultad sin acción · F21: util en gustos",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -256,7 +260,8 @@
    ],
    "esperado": {
     "b1-1-gustos": {
-     "cumple": false
+     "cumple": false,
+     "util": "Usa \"bombero\": qué hacía o a qué jugaba relacionado con eso"
     },
     "b1-1-logro": {
      "cumple": true
@@ -458,7 +463,7 @@
   {
    "id": "E13",
    "tipo": "entrega",
-   "descripcion": "Logro con la salida neutral NO_RECUERDO (nueva en este ajuste)",
+   "descripcion": "Logro con la salida neutral NO_RECUERDO (nueva en este ajuste) · F21: util en logro",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -490,10 +495,197 @@
       "costó",
       "costado",
       "dificultad"
-     ]
+     ],
+     "util": "Da pistas pequeñas (algo que aprendió solo, algo que antes no le salía, alguien a quien ayudó) sin volver a pedir un logro"
     },
     "b1-1-dificultad": {
      "cumple": true
+    }
+   }
+  },
+  {
+   "id": "E14",
+   "tipo": "entrega",
+   "descripcion": "nuevo F21: apoyo con lo que hizo; logro pequeño; gustos «El fútbol» es caso límite (sin cumple fijo)",
+   "items": [
+    {
+     "item": "b1-1-gustos",
+     "texto": "El fútbol",
+     "opciones": []
+    },
+    {
+     "item": "b1-1-logro",
+     "texto": "Aprendí a montar bicicleta",
+     "opciones": [
+      "PERSISTIR"
+     ]
+    },
+    {
+     "item": "b1-1-dificultad",
+     "texto": "Me costaba mate, le pedí ayuda a mi primo y practicábamos antes de los exámenes",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "b1-1-gustos": {},
+    "b1-1-logro": {
+     "cumple": true
+    },
+    "b1-1-dificultad": {
+     "cumple": true,
+     "sin_futuro": true
+    }
+   }
+  },
+  {
+   "id": "E15",
+   "tipo": "entrega",
+   "descripcion": "nuevo F21: categoría (música), ayuda habitual sin una vez concreta, ayuda sin cómo",
+   "items": [
+    {
+     "item": "b1-1-gustos",
+     "texto": "La música",
+     "opciones": []
+    },
+    {
+     "item": "b1-1-logro",
+     "texto": "Siempre ayudo a los demás",
+     "opciones": [
+      "ESCUCHAR"
+     ]
+    },
+    {
+     "item": "b1-1-dificultad",
+     "texto": "Mis amigos me ayudaron",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "b1-1-gustos": {
+     "cumple": false,
+     "util": "Pregunta qué hacía con la música (cantar, tocar, escuchar con alguien)"
+    },
+    "b1-1-logro": {
+     "cumple": false,
+     "util": "Pregunta por una vez concreta en que ayudó"
+    },
+    "b1-1-dificultad": {
+     "cumple": false,
+     "sin_futuro": true,
+     "util": "Pregunta cómo lo ayudaron o qué cambió con esa ayuda"
+    }
+   }
+  },
+  {
+   "id": "E16",
+   "tipo": "entrega",
+   "descripcion": "nuevo F21: gusto concreto; «no soy bueno en nada» (emocional sin esperado fijo, para observar); esfuerzo sin cómo",
+   "items": [
+    {
+     "item": "b1-1-gustos",
+     "texto": "Ver tele con mi abuela",
+     "opciones": []
+    },
+    {
+     "item": "b1-1-logro",
+     "texto": "Nada, no soy bueno en nada",
+     "opciones": [
+      "NO_RECUERDO"
+     ]
+    },
+    {
+     "item": "b1-1-dificultad",
+     "texto": "Me esforcé mucho y lo logré",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "b1-1-gustos": {
+     "cumple": true
+    },
+    "b1-1-logro": {
+     "sensible": false,
+     "util": "No contradice ni insiste en «logro»; si repregunta, da pistas pequeñas y amables"
+    },
+    "b1-1-dificultad": {
+     "cumple": false,
+     "sin_futuro": true,
+     "util": "Pregunta en qué se notó ese esfuerzo, qué empezó a hacer"
+    }
+   }
+  },
+  {
+   "id": "E17",
+   "tipo": "entrega",
+   "descripcion": "nuevo F21: qué quería ser con actividad; separación de los papás con apoyo (no es crisis grave). El logro es relleno, para mantener la entrega de tres ítems",
+   "items": [
+    {
+     "item": "b1-1-gustos",
+     "texto": "Quería ser doctora y curaba a mis muñecas",
+     "opciones": []
+    },
+    {
+     "item": "b1-1-logro",
+     "texto": "Aprendí a cocinar",
+     "opciones": [
+      "PERSISTIR"
+     ]
+    },
+    {
+     "item": "b1-1-dificultad",
+     "texto": "Cuando se separaron mis papás me costó concentrarme; hablé con la psicóloga del colegio",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "b1-1-gustos": {
+     "cumple": true
+    },
+    "b1-1-logro": {
+     "cumple": true
+    },
+    "b1-1-dificultad": {
+     "cumple": true,
+     "sensible": false,
+     "sin_futuro": true
+    }
+   }
+  },
+  {
+   "id": "E18",
+   "tipo": "entrega",
+   "descripcion": "nuevo F21: repitió y estuvo solo, sin acción. Gustos y logro son relleno, para mantener la entrega de tres ítems",
+   "items": [
+    {
+     "item": "b1-1-gustos",
+     "texto": "Legos con mi hermano",
+     "opciones": []
+    },
+    {
+     "item": "b1-1-logro",
+     "texto": "Aprendí a cocinar",
+     "opciones": [
+      "PERSISTIR"
+     ]
+    },
+    {
+     "item": "b1-1-dificultad",
+     "texto": "Repetí de año y nadie me ayudó, me tocó solo",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "b1-1-gustos": {
+     "cumple": true
+    },
+    "b1-1-logro": {
+     "cumple": true
+    },
+    "b1-1-dificultad": {
+     "cumple": false,
+     "sensible": false,
+     "sin_futuro": true,
+     "util": "Pregunta qué hizo él por su cuenta, sin juzgar que estuvo solo"
     }
    }
   },
@@ -653,6 +845,24 @@
    "esperado": {
     "cumple": false,
     "abierto": true
+   }
+  },
+  {
+   "id": "S9",
+   "tipo": "seguimiento",
+   "descripcion": "nuevo F21: la repregunta por la ayuda trae cómo lo ayudaron y qué cambió",
+   "item": "b1-1-dificultad",
+   "texto": "Mis amigos me ayudaron",
+   "opciones": [],
+   "turnos": [
+    [
+     "¿Cómo te ayudaron tus amigos y qué cambió con eso?",
+     "me explicaban antes de los exámenes y ya no me trababa"
+    ]
+   ],
+   "esperado": {
+    "cumple": true,
+    "sin_futuro": true
    }
   }
  ]
