@@ -140,12 +140,13 @@ tests/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
     escenarios/contenido/  test_recorrido_contenido.py: el camino y la ruta del apoderado del conjunto `contenido`
     registros/        los registros definitivos de `contenido` recorridos con el evaluador falso (ajuste registros)
+  llm/               validación del LLM de registros contra Gemini real (`evaluar.py`, casos y resultados versionados); no es pytest, se corre a mano (ver su README)
 ```
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.
 - Las pruebas nuevas usan los fixtures de plantilla (`aplicacion` con `ruta`, `cliente`, `sesion`, `base_aislada`) y las ayudas de `soporte_ruta.py`. Solo las pruebas de carga, migraciones y atomicidad de la carga preparan bases propias.
 - `cliente` es un `ClienteConToken` (`soporte_acceso.py`): firma con `emitir_token` el token de la cuenta que nombra la petición (la ruta o `cuenta`; est-ana si no nombra ninguna o si no existe), así que el guardia real corre en todas las pruebas. Las pruebas de rechazo usan `cliente_sin_token`. Quien cree su propio cliente usa `ClienteConToken` en vez de `TestClient`. `tests/integration/acceso/test_cobertura_rutas.py` recorre todas las rutas publicadas (401 sin token, 404 sobre otra cuenta).
-- Solo se crean carpetas con pruebas. Los nombres `test_*.py` son únicos en todo `tests/` (`--import-mode=importlib`).
+- Solo se crean carpetas con pruebas (salvo `tests/llm/`, que no tiene `test_*.py` y pytest no recoge). Los nombres `test_*.py` son únicos en todo `tests/` (`--import-mode=importlib`).
 
 | Si cambias… | Corre primero |
 |---|---|

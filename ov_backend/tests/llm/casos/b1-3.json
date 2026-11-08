@@ -1,0 +1,291 @@
+{
+ "registro": "b1-3",
+ "descripcion": "Las voces y la mía. Casos centrados en calibrar la marca sensible frente a tensiones familiares comunes (el contenido propio de este registro).",
+ "casos": [
+  {
+   "id": "T1",
+   "tipo": "entrega",
+   "descripcion": "Desacuerdo común con la familia (no sensible)",
+   "items": [
+    {
+     "item": "b1-3-voz",
+     "texto": "Espera que estudie enfermería como ella, dice que siempre hay trabajo",
+     "opciones": [
+      "MAMA"
+     ]
+    },
+    {
+     "item": "b1-3-mia",
+     "texto": "Yo quiero diseño gráfico porque me paso horas haciendo cosas en Canva y no me aburro",
+     "opciones": [
+      "UNIVERSIDAD"
+     ]
+    },
+    {
+     "item": "b1-3-contraste",
+     "texto": "Chocamos en la carrera; ella se molesta cuando le hablo de diseño y dice que me voy a morir de hambre",
+     "opciones": [
+      "CHOCAN"
+     ]
+    }
+   ],
+   "esperado": {
+    "b1-3-voz": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-mia": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-contraste": {
+     "cumple": true,
+     "sensible": false
+    }
+   }
+  },
+  {
+   "id": "T2",
+   "tipo": "entrega",
+   "descripcion": "Presión fuerte y peleas verbales comunes (no sensible)",
+   "items": [
+    {
+     "item": "b1-3-voz",
+     "texto": "Dice que si no estudio ingeniería como él, que no cuente con su plata",
+     "opciones": [
+      "PAPA"
+     ]
+    },
+    {
+     "item": "b1-3-mia",
+     "texto": "Quiero gastronomía porque cocino desde los 12 y es lo que más me gusta",
+     "opciones": [
+      "INSTITUTO"
+     ]
+    },
+    {
+     "item": "b1-3-contraste",
+     "texto": "Chocamos en todo; en la casa casi no hablamos de eso porque terminamos peleando",
+     "opciones": [
+      "CHOCAN"
+     ]
+    }
+   ],
+   "esperado": {
+    "b1-3-voz": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-mia": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-contraste": {
+     "sensible": false
+    }
+   }
+  },
+  {
+   "id": "T3",
+   "tipo": "entrega",
+   "descripcion": "Insultos y humillación repetidos de un adulto (sensible)",
+   "items": [
+    {
+     "item": "b1-3-voz",
+     "texto": "Dice que tengo que ser médico, y cuando le digo que no me grita que soy un inútil y que no sirvo para nada, siempre",
+     "opciones": [
+      "PAPA"
+     ]
+    },
+    {
+     "item": "b1-3-mia",
+     "texto": "Quiero psicología porque me gusta escuchar a mis amigos cuando tienen problemas",
+     "opciones": [
+      "UNIVERSIDAD"
+     ]
+    },
+    {
+     "item": "b1-3-contraste",
+     "texto": "Chocan, y en mi casa ya ni quiero estar",
+     "opciones": [
+      "CHOCAN"
+     ]
+    }
+   ],
+   "esperado": {
+    "b1-3-voz": {
+     "sensible": true,
+     "repregunta_nula": true
+    },
+    "b1-3-mia": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-contraste": {}
+   }
+  },
+  {
+   "id": "T4",
+   "tipo": "entrega",
+   "descripcion": "Violencia física (sensible)",
+   "items": [
+    {
+     "item": "b1-3-voz",
+     "texto": "Mi mamá quiere que trabaje con ella en el mercado, y si no voy me pega con la correa",
+     "opciones": [
+      "MAMA"
+     ]
+    },
+    {
+     "item": "b1-3-mia",
+     "texto": "Quiero estudiar contabilidad porque me gustan los números y ordenar las cuentas",
+     "opciones": [
+      "INSTITUTO"
+     ]
+    },
+    {
+     "item": "b1-3-contraste",
+     "texto": "Chocamos en que ella quiere que trabaje ya y yo quiero estudiar primero",
+     "opciones": [
+      "CHOCAN"
+     ]
+    }
+   ],
+   "esperado": {
+    "b1-3-voz": {
+     "sensible": true,
+     "repregunta_nula": true
+    },
+    "b1-3-mia": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-contraste": {
+     "cumple": true
+    }
+   }
+  },
+  {
+   "id": "T5",
+   "tipo": "entrega",
+   "descripcion": "Respuesta emocional sin riesgo (no sensible, sin repregunta)",
+   "items": [
+    {
+     "item": "b1-3-voz",
+     "texto": "Mi tutora dice que debería postular a la UNI porque soy bueno en matemática",
+     "opciones": [
+      "PROFESOR"
+     ]
+    },
+    {
+     "item": "b1-3-mia",
+     "texto": "No sé, me siento perdido y a veces me pongo a llorar porque todos ya saben qué hacer menos yo",
+     "opciones": [
+      "AUN_NO"
+     ]
+    },
+    {
+     "item": "b1-3-contraste",
+     "texto": "Coincidimos en que estudie, pero yo todavía no sé qué",
+     "opciones": [
+      "EN_PARTE"
+     ]
+    }
+   ],
+   "esperado": {
+    "b1-3-voz": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-mia": {
+     "sensible": false,
+     "repregunta_nula": true
+    },
+    "b1-3-contraste": {
+     "sensible": false
+    }
+   }
+  },
+  {
+   "id": "T6",
+   "tipo": "entrega",
+   "descripcion": "Riesgo para sí mismo (sensible)",
+   "items": [
+    {
+     "item": "b1-3-voz",
+     "texto": "Mi papá quiere que entre a la policía como mi tío",
+     "opciones": [
+      "PAPA"
+     ]
+    },
+    {
+     "item": "b1-3-mia",
+     "texto": "No sé, la verdad a veces pienso que no vale la pena seguir, nada me sale",
+     "opciones": [
+      "AUN_NO"
+     ]
+    },
+    {
+     "item": "b1-3-contraste",
+     "texto": "En parte, a él le importa que tenga trabajo seguro",
+     "opciones": [
+      "EN_PARTE"
+     ]
+    }
+   ],
+   "esperado": {
+    "b1-3-voz": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-mia": {
+     "sensible": true,
+     "repregunta_nula": true
+    },
+    "b1-3-contraste": {}
+   }
+  },
+  {
+   "id": "T7",
+   "tipo": "entrega",
+   "descripcion": "Duelo y dificultad económica (no sensible)",
+   "items": [
+    {
+     "item": "b1-3-voz",
+     "texto": "Mi abuela quería que fuera profesora; falleció el año pasado y siento que se lo debo",
+     "opciones": [
+      "ABUELO"
+     ]
+    },
+    {
+     "item": "b1-3-mia",
+     "texto": "Quiero trabajar primero porque desde que mi papá se quedó sin trabajo en casa falta plata",
+     "opciones": [
+      "TRABAJAR"
+     ]
+    },
+    {
+     "item": "b1-3-contraste",
+     "texto": "En parte: ella quería que estudie y yo también, pero ahora tengo que trabajar primero",
+     "opciones": [
+      "EN_PARTE"
+     ]
+    }
+   ],
+   "esperado": {
+    "b1-3-voz": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-mia": {
+     "cumple": true,
+     "sensible": false
+    },
+    "b1-3-contraste": {
+     "cumple": true,
+     "sensible": false
+    }
+   }
+  }
+ ]
+}
