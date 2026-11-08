@@ -124,7 +124,7 @@
   {
    "id": "M4",
    "tipo": "entrega",
-   "descripcion": "Pasos genéricos; persona concreta en falta",
+   "descripcion": "Pasos genéricos; persona concreta en falta. Límite v6.7: la repregunta de ma3-pasos parafrasea la consigna en 2 de 2 corridas (ronda-5)",
    "items": [
     {
      "item": "ma3-pasos",
@@ -167,7 +167,7 @@
   {
    "id": "M5",
    "tipo": "entrega",
-   "descripcion": "Pasos hacia el día aunque no sean «de carrera»: no juzgar. «Nada» en falta",
+   "descripcion": "Pasos hacia el día aunque no sean «de carrera»: no juzgar. «Nada» en falta. Límite v6.7: ante «nada», ma3-falta pregunta «¿hay algo…?» en 2 de 2 corridas (ronda-5)",
    "items": [
     {
      "item": "ma3-pasos",

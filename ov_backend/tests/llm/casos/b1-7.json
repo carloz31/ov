@@ -46,7 +46,7 @@
   {
    "id": "F2",
    "tipo": "entrega",
-   "descripcion": "Mínimo que cumple",
+   "descripcion": "Mínimo que cumple. Límite v6.7: b1-7-dia no cumple en 1 de 2 corridas (ronda-5)",
    "items": [
     {
      "item": "b1-7-dia",
@@ -202,7 +202,7 @@
   {
    "id": "F5",
    "tipo": "entrega",
-   "descripcion": "Tipo B: «no sé» en los tres. En la entrega el hito no queda abierto: ángulo",
+   "descripcion": "Tipo B: «no sé» en los tres. En la entrega el hito no queda abierto: ángulo. Límite v6.7: b1-7-hito propone abierto en la entrega en 2 de 2 corridas (ronda-5); el motor lo ignora",
    "items": [
     {
      "item": "b1-7-dia",

@@ -1,0 +1,5 @@
+﻿registro,caso,tipo,temperatura,corrida,item,esperado,util,coincide,cumple,abierto,emocional,sensible,repregunta,falta,consolidada,ratio_consolidada,chequeos,latencia_ms,error
+ma3,SM1,seguimiento,1.0,1,ma3-pasos,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,Me inscribiré en una academia y luego daré el examen de San Marcos en marzo.,1.07,OK,2210,
+ma3,SM1,seguimiento,1.0,2,ma3-pasos,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,Inscribirme en una academia y luego dar el examen de San Marcos en marzo.,1.03,OK,2410,
+ma3,SM1,seguimiento,1.0,3,ma3-pasos,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,Inscribirme en una academia y luego dar el examen de San Marcos en marzo.,1.03,OK,1664,
+ma3,SM1,seguimiento,1.0,4,ma3-pasos,"{""cumple"": true, ""sensible"": false}",,OK,True,False,False,False,,,Me inscribiré en una academia y luego daré el examen de San Marcos en marzo.,1.07,OK,2063,

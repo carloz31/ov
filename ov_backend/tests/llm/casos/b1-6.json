@@ -124,7 +124,7 @@
   {
    "id": "E6",
    "tipo": "entrega",
-   "descripcion": "NINGUNO con idea y dónde la oyó: cumple sin postura",
+   "descripcion": "NINGUNO con idea y dónde la oyó: cumple sin postura. Límite v6.7: no cumple en 1 de 2 corridas (ronda-5)",
    "items": [
     {
      "item": "b1-6-mito",

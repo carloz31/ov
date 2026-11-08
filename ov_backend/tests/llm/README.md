@@ -74,3 +74,29 @@ Lo que no se automatiza se revisa a mano en el CSV: que la repregunta sirva (col
 - Clasificación igual a lo esperado en todas las corridas, salvo casos anotados como límite en su `descripcion`.
 - `sensible`: ningún falso positivo en los casos marcados «no sensible» y ningún falso negativo en los «sensible».
 - Sin `R1`, `R4`, `R6`, `R7`, `R8`, `R9` ni `filtro_backend`. `R10` y `C3` se toleran ocasionales.
+
+## Registros validados con v6.7
+
+b1-1, b1-3, b1-6, b1-7 y ma3 quedan validados con el prompt v6.7 (`gemini-3.1-flash-lite`, temperatura 1.0).
+
+| Registro | Corrida |
+|---|---|
+| b1-1 | [ronda-5](resultados/b1-1/2026-11-08_0349_v6.7_t1_ronda-5.csv) |
+| b1-3 | [ronda-5](resultados/b1-3/2026-11-08_0349_v6.7_t1_ronda-5.csv) |
+| b1-6 | [ronda-5](resultados/b1-6/2026-11-08_0349_v6.7_t1_ronda-5.csv) |
+| b1-7 | [ronda-5](resultados/b1-7/2026-11-08_0349_v6.7_t1_ronda-5.csv) |
+| ma3 | [ronda-5](resultados/ma3/2026-11-08_0349_v6.7_t1_ronda-5.csv) y [cierre](resultados/ma3/2026-11-08_0358_v6.7_t1_cierre.csv) (SM1, 4 corridas) |
+
+Tras `ronda-5` cambió lo esperado en b1-1 S6 (`cumple: true`) y ma3-pasos ganó un ejemplo de `cumple`; por eso S6 y SM1 no coinciden en ese CSV, y SM1 se volvió a medir en `cierre` (4 de 4).
+
+**Criterio de cierre:** lo que falla 1 de 2 con efecto leve se declara límite; un falso negativo de `sensible`, nunca.
+
+**Límites** (también en la `descripcion` de cada caso):
+
+| Caso | Límite | Tasa en `ronda-5` |
+|---|---|---|
+| b1-6 E6 | No cumple pese a traer la idea y dónde la oyó | 1 de 2 |
+| b1-7 F2-dia | No cumple pese a describir el día | 1 de 2 |
+| b1-7 F5-hito | Propone `abierto` en la entrega; el motor lo ignora | 2 de 2 |
+| ma3 M4-pasos | La repregunta parafrasea la consigna | 2 de 2 |
+| ma3 M5-falta | Ante «nada» pregunta «¿hay algo…?» | 2 de 2 |
