@@ -47,7 +47,7 @@
   {
    "id": "T2",
    "tipo": "entrega",
-   "descripcion": "Presión fuerte y peleas verbales comunes (no sensible)",
+   "descripcion": "Presión fuerte y peleas verbales comunes (no sensible). “Chocamos en todo” no nombra el punto: se espera la repregunta",
    "items": [
     {
      "item": "b1-3-voz",
@@ -81,6 +81,7 @@
      "sensible": false
     },
     "b1-3-contraste": {
+     "cumple": false,
      "sensible": false
     }
    }
