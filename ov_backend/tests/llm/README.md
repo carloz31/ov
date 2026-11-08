@@ -66,9 +66,15 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 | `R7_no_retoma` | La repregunta no contiene ninguna de las palabras de `retoma` |
 | `R8_prohibida` | «explica más», «desarrolla», «por qué crees que», criterios, IA |
 | `R9_califica` | Califica la respuesta: «suena a» o «eso no es» en la repregunta (por palabras, sin puntuación) |
-| `R10_falta` | `falta` con pregunta, demasiado larga o como pedido («Necesito…», «Cuéntame…») |
+| `R10_falta` | `falta` con pregunta, demasiado larga, como pedido («Necesito…», «Cuéntame…») o que no empieza por «Podrías» |
+| `R11_truncada` | La repregunta contiene «…» o «...» |
+| `R12_pero` | «, pero» o «pero ¿» en la repregunta |
+| `R13_examen` | «exactamente», «punto exacto» o «específicamente» |
+| `R14_eco_vacio` | Cita como contenido «no sé», «nada», «ninguno» o «no me acuerdo», también en segunda persona o con «no recuerdas» («Dices que no sabes», «Contaste que nada»). No detecta paráfrasis como «no te falta nada» |
 | `fuera_de_tema` | No retoma la palabra con la que se fue del tema |
 | `C3_consolidada_larga` | La consolidada supera `FACTOR_MAXIMO_CONSOLIDADA` × lo escrito + `MARGEN_CONSOLIDADA` (el backend concatena) |
+
+La columna `sino` es informativa y no falla: vale `sí` cuando la pregunta se responde con sí o no (empieza por «¿Recuerdas», «¿Hay», «¿Alguna vez», «¿Te…?», «¿Has…?», «¿Es…?» o similar).
 
 Lo que no se automatiza se revisa a mano en el CSV: que la repregunta sirva (columna `util`), que el ángulo sea nuevo y que el tono sea de par (rúbrica en `claude/pruebas-llm-b1-1.md` del proyecto).
 

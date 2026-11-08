@@ -53,6 +53,13 @@ PROHIBIDAS = ('explica más', 'desarrolla', 'por qué crees que', 'criterio', 'i
 FUTURO = re.compile(r'\b(harías|harás|podrías hacer|si pasara mañana|si tuvieras que)\b')
 GENERICA = '¿podrías darme un ejemplo concreto'
 CALIFICA = (('suena', 'a'), ('eso', 'no', 'es'))  # frases que califican, por palabras y sin puntuación
+PERO = re.compile(r',\s*pero\b|\bpero\s*¿')
+EXAMEN = ('exactamente', 'punto exacto', 'específicamente')
+# Citar como contenido lo que no lo es; en segunda persona también («Dices que no sabes»).
+ECO_VACIO = re.compile(r'\b(?:dices|dijiste|contaste|cuentas|mencionas|mencionaste|comentas) que '
+                       r'(?:no sé\b|no sabes\b|nada\b|ningun[oa]\b|no me acuerdo\b|no te acuerdas\b|no recuerd[oa]s?\b'
+                       r'|no se (?:me|te) ocurre)')
+SINO = re.compile(r'¿\s*(?:recuerdas|hay|alguna vez|te|has|es|tienes|puedes|podrías|crees|sabes|conoces|existe|fue)\b')
 
 
 
@@ -186,6 +193,25 @@ def llamar(cliente, modelo, razonamiento, contexto, prompt, esquema, temperatura
     return esquema.model_validate_json(texto), latencia, tokens
 
 
+def chequeos_redaccion(pregunta):
+    """R11–R14: lo que el prompt v6.8 prohíbe en la redacción (también se aplica a corridas anteriores)."""
+    baja, fallas = pregunta.lower(), []
+    if '…' in pregunta or '...' in pregunta:
+        fallas.append('R11_truncada')
+    if PERO.search(baja):
+        fallas.append('R12_pero')
+    if any(p in baja for p in EXAMEN):
+        fallas.append('R13_examen')
+    if ECO_VACIO.search(baja):
+        fallas.append('R14_eco_vacio')
+    return fallas
+
+
+def es_sino(pregunta):
+    """Informativo: la pregunta se responde con sí o no. No cuenta como falla."""
+    return bool(pregunta and SINO.search(pregunta.lower()))
+
+
 def chequeos(r, guia, esperado):
     """Lo automatizable de la rúbrica; el ángulo, el tono y si la repregunta sirve (`util`) se revisan a mano."""
     fallas, pregunta, falta = [], r.repregunta, r.falta
@@ -214,7 +240,9 @@ def chequeos(r, guia, esperado):
             fallas.append('fuera_de_tema')
         if esperado.get('retoma') and not any(p in baja for p in esperado['retoma']):
             fallas.append('R7_no_retoma')
-    if falta and ('?' in falta or len(falta.split()) > 20 or falta.lower().startswith(('necesito', 'cuéntame'))):
+        fallas.extend(chequeos_redaccion(pregunta))
+    if falta and ('?' in falta or len(falta.split()) > 20 or falta.lower().startswith(('necesito', 'cuéntame'))
+                  or not falta.strip().lower().startswith('podrías')):
         fallas.append('R10_falta')
     return fallas
 
@@ -255,7 +283,8 @@ def ejecutar(cliente, modelo, razonamiento, registro, caso, temperatura, corrida
                                   util=esperado.get('util', ''),
                                   coincide=comparar(esperado, r), cumple=r.cumple, abierto=r.abierto, emocional=r.emocional,
                                   sensible=r.sensible, repregunta=r.repregunta, falta=r.falta,
-                                  chequeos=' '.join(chequeos(r, guias.get(r.item), esperado)) or 'OK'))
+                                  chequeos=' '.join(chequeos(r, guias.get(r.item), esperado)) or 'OK',
+                                  sino='sí' if es_sino(r.repregunta) else ''))
             return filas
         contexto = contexto_seguimiento(registro, caso)
         r, ms, tokens = llamar(cliente, modelo, razonamiento, contexto, PROMPT_SEGUIMIENTO, ResultadoSeguimiento,
@@ -271,13 +300,13 @@ def ejecutar(cliente, modelo, razonamiento, registro, caso, temperatura, corrida
                      util=caso['esperado'].get('util', ''),
                      coincide=comparar(caso['esperado'], r), cumple=r.cumple, abierto=r.abierto, emocional=r.emocional, sensible=r.sensible,
                      repregunta=r.repregunta, falta=r.falta, consolidada=r.consolidada, ratio_consolidada=ratio,
-                     chequeos=' '.join(fallas) or 'OK')]
+                     chequeos=' '.join(fallas) or 'OK', sino='sí' if es_sino(r.repregunta) else '')]
     except Exception as error:  # noqa: BLE001 — una falla de red o de esquema se registra y la corrida sigue
         return [dict(base, item=caso.get('item', '-'), error=repr(error)[:300])]
 
 
 CAMPOS = ['registro', 'caso', 'tipo', 'temperatura', 'razonamiento', 'corrida', 'item', 'esperado', 'util', 'coincide', 'cumple',
-          'abierto', 'emocional', 'sensible', 'repregunta', 'falta', 'consolidada', 'ratio_consolidada', 'chequeos', 'latencia_ms',
+          'abierto', 'emocional', 'sensible', 'repregunta', 'falta', 'consolidada', 'ratio_consolidada', 'chequeos', 'sino', 'latencia_ms',
           'tokens_entrada', 'tokens_razonamiento', 'tokens_salida', 'error']
 
 

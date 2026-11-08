@@ -15,3 +15,5 @@
 | 2026-11-08 04:29 | v6.7 | gemini-3.1-flash-lite · low | 1 | 2 | 10/12 | 11/12 | 0 | 2026-11-08_0429_v6.7_t1_rlow_cmp-B.csv |
 | 2026-11-08 04:30 | v6.7 | gemini-3.5-flash-lite · low | 1 | 2 | 12/12 | 12/12 | 0 | 2026-11-08_0430_v6.7_t1_rlow_cmp-C.csv |
 | 2026-11-08 04:48 | v6.7 | gemini-3.5-flash-lite · low | 1 | 2 | 40/42 | 42/42 | 0 | 2026-11-08_0448_v6.7_t1_rlow_regresion-3.5-low.csv |
+| 2026-11-08 05:49 | v6.8 | gemini-3.5-flash-lite · low | 1 | 2 | 41/42 | 38/42 | 0 | 2026-11-08_0549_v6.8_t1_rlow_v6.8.csv |
+| 2026-11-08 05:50 | v6.8 | gemini-3.5-flash-lite · low | 1 | 5 | 15/15 | 15/15 | 0 | 2026-11-08_0550_v6.8_t1_rlow_v6.8-sensible.csv |
