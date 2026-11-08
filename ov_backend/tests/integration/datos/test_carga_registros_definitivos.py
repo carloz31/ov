@@ -11,7 +11,7 @@ from datos import contenido
 from scripts import verificar_contenido_front
 
 
-ADMITEN_ABIERTO = {'b1-7-hito', 'b2-4-antes', 'b4-1-respalda', 'b4-1-menos', 'b4-2-estilo', 'b5-1-senal',
+ADMITEN_ABIERTO = {'b1-1-logro', 'b1-7-hito', 'b2-4-antes', 'b4-1-respalda', 'b4-1-menos', 'b4-2-estilo', 'b5-1-senal',
                    'b5-3-inicial'}
 REGISTROS = {'b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'h1', 'h2', 'h3', 'b3-4', 'b4-1', 'b4-2', 'b4-5', 'b5-1',
              'b5-3', 'ma3', 'ma4', 'b3-a', 'ma8'}

@@ -81,7 +81,7 @@ Las cuatro últimas devuelven el registro (como el GET: `posicion`, `estado` del
 
 ## Evaluación
 
-**Entrega:** una sola llamada al LLM con todos los ítems **con criterios**. Por cada ítem envía consigna, criterios, la guía de seguimiento (`que_busca`, `texto_base`, `cumple`, `no_cumple`, `evitar`; la de la opción propia elegida si la tiene), los textos de las opciones elegidas, sus `ecos` (solo lo de `ecos_llm`, nunca las demás respuestas) y el texto. Devuelve, por ítem, `{cumple, abierto, sensible, falta, repregunta}`; el código decide: sensible → ADECUADA marcada; cumple → ADECUADA; si no, POCO_DESARROLLADA con la repregunta (si es inválida, el `texto_base`). Los ítems sin criterios (o con una opción propia de `criterio: null`) no van al LLM: si tienen `min_caracteres` y no lo alcanzan, quedan POCO_DESARROLLADA con `repregunta_generica`; si no, ADECUADA. En los ítems con criterios, `min_caracteres` solo sirve de respaldo.
+**Entrega:** una sola llamada al LLM con todos los ítems **con criterios**. Por cada ítem envía consigna, criterios, la guía de seguimiento (`que_busca`, `texto_base`, `cumple`, `no_cumple`, `evitar`; la de la opción propia elegida si la tiene), los textos de las opciones elegidas, sus `ecos` (solo lo de `ecos_llm`, nunca las demás respuestas) y el texto. Devuelve, por ítem, `{cumple, abierto, sensible, falta, repregunta}`; el código decide: sensible → ADECUADA marcada; cumple → ADECUADA; si no, POCO_DESARROLLADA con la repregunta (si es inválida, el `texto_base`). **Respuesta emocional:** `repregunta: null` sin cumplir ni sensible deja la POCO_DESARROLLADA sin pregunta: no se le abre turno y el presupuesto pasa al siguiente ítem; no cuenta como desarrollada (impide REGISTRO_ADECUADO) y su pista es el texto fijo `PISTA_SIN_REPREGUNTA`. En el seguimiento no cambia nada (ya no hay otro turno en ese ítem) salvo con `max_repreguntas: 2`, donde tampoco se abre el segundo. Los ítems sin criterios (o con una opción propia de `criterio: null`) no van al LLM: si tienen `min_caracteres` y no lo alcanzan, quedan POCO_DESARROLLADA con `repregunta_generica`; si no, ADECUADA. En los ítems con criterios, `min_caracteres` solo sirve de respaldo.
 
 **Seguimiento:** una llamada sobre el ítem, con consigna, criterios, guía, opciones, ecos y texto inicial con sus turnos. Devuelve `{cumple, abierto, sensible, falta, repregunta, consolidada}`. Si la pregunta era la genérica, no hay llamada: queda NO_EVALUADA y la consolidada es la concatenación. En un ítem que solo tiene mínimo, se mide el largo de la concatenación.
 
@@ -100,12 +100,13 @@ Toda evaluación se guarda en `evaluacion_respuesta` (`numero` 1 al entregar y l
 
 **Evaluadores** (`evaluacion.py`, protocolo `EvaluadorRespuestas` con `evaluar_entrega` y `evaluar_seguimiento`, sin SQLAlchemy ni FastAPI):
 
-- `EvaluadorGemini` (`gemini.py`): salida JSON estructurada, temperatura 0.2, un intento y tiempo máximo configurado. Usa el razonamiento mínimo del modelo: `gemini-3.8-flash` no admite apagarlo, así que va en `low`. La clave debe ser de un proyecto con nivel de pago.
+- `EvaluadorGemini` (`gemini.py`): salida JSON estructurada, temperatura `TEMPERATURA_REGISTRO` (1.0, recomendada por Google para Gemini 3) en entrega y seguimiento y `TEMPERATURA_ASISTENTES` (0.2) en el diario, las cartas, las sugerencias de pasos y el guion, un intento y tiempo máximo configurado. Usa el razonamiento mínimo del modelo: `gemini-3.8-flash` no admite apagarlo, así que va en `low`. La clave debe ser de un proyecto con nivel de pago.
 - `EvaluadorFalso`: determinista, por marcas en el texto más reciente de cada ítem:
   - sin marca, cumple;
   - `[vaga]`: no cumple;
   - `[falta:C2]` o `[falta:RAZON]`: no cumple y la repregunta sale de ese criterio;
   - `[abierto]`: no cumple y propone abierto;
+  - `[emocional]`: no cumple, con `falta` y `repregunta: null` (respuesta emocional);
   - `[sensible]`: marca sensible (con cualquier otra marca);
   - `[falla]` (falla toda la llamada) y `[json-invalido]` (sale del esquema);
   - `[pregunta-invalida]`;
@@ -115,7 +116,11 @@ Toda evaluación se guarda en `evaluacion_respuesta` (`numero` 1 al entregar y l
 
 Nunca se envían nombres, códigos de cuenta ni otros datos que identifiquen al estudiante (RNF-13). De otras actividades solo va lo declarado en `ecos_llm`.
 
-**Prompts:** las instrucciones de entrega y de seguimiento vigentes están en `app/services/registro/prompt.py`. Cambiarlas exige subir `VERSION_PROMPT_REGISTRO`.
+**Mensaje:** `mensaje_evaluador(contexto)` (`gemini.py`) arma el JSON que recibe el modelo. En un ítem con guía, los criterios van sin su `repregunta` genérica (`REPREGUNTAS_CRITERIO`): el modelo la copiaba en vez de retomar las palabras del estudiante. Sin guía (`ruta`) va completa. El evaluador falso y `texto_base()` siguen usando esa repregunta.
+
+**Prompts:** las instrucciones vigentes son `PROMPT_ENTREGA` y `PROMPT_SEGUIMIENTO` de `app/services/registro/prompt.py` (v6). Cambiarlas exige subir `VERSION_PROMPT_REGISTRO`. La v6: `falta` empieza por «Te faltó» y no es pedido; la repregunta retoma sus palabras («Dices que…», sin «pero»), no copia la consigna ni el `texto_base`, no pregunta por lo de otros ítems y en ACCION pregunta qué hizo si la consigna mira al pasado; `sensible` solo con violencia, maltrato, abuso, riesgo o crisis familiar grave, nunca por desacuerdos con la familia, presión, tristeza, duelo o dificultades económicas; fuera de `ecos`, no usa lo que escribió en otros ítems aunque lo vea.
+
+**Validación con Gemini real:** `tests/llm/` (fuera de pytest; ver su `README.md`). Se corre a mano al cambiar el prompt, la temperatura, el modelo o los campos de seguimiento de un ítem; sus CSV y `resumen.md` se versionan. Una corrida se acepta con la clasificación igual a lo esperado en todas las corridas, sin falsos `sensible` y sin `R1`, `R4`, `R6`, `R8` ni `filtro_backend`.
 
 ## Transacciones
 
@@ -130,7 +135,7 @@ La llamada al LLM nunca ocurre dentro de una transacción ni con una conexión t
 | Ruta | Devuelve |
 |---|---|
 | `/actividades/{a}/items-registro` | Ítems en orden, con consigna, `min_caracteres` (puede ser nulo), obligatoriedad y `eleccion` (`null` o `fuente`, `lista`, `referencia`, `referencia_opciones`, `comun`, mínima, máxima, `ordenada`, `permite_otra`, opciones de la lista, `opciones_propias` con `codigo`, `texto`, `exclusiva`, `pregunta_propia` y `sin_seguimiento`, y `premarcar_si`; las opciones de una referencia se leen con las referencias de la cuenta). Sin criterios ni campos de seguimiento. |
-| `/cuentas/{c}/actividades/{a}/registro` | Posición, estado del progreso y, por ítem, estado, `opciones_elegidas` y conversación del intento vigente (incluidos los borradores). Con el registro cerrado (progreso COMPLETADA y nada pendiente), además `texto_consolidado` por ítem e `items_por_ampliar`: los ítems con POCO_DESARROLLADA vigente, cada uno con `pista` (el `falta` de su evaluación vigente o, si no lo hay, su `nombre`), e `items_abiertos` (los ABIERTA). La conversación de una respuesta sensible termina con el aviso `LUMI_SENSIBLE`. |
+| `/cuentas/{c}/actividades/{a}/registro` | Posición, estado del progreso y, por ítem, estado, `opciones_elegidas` y conversación del intento vigente (incluidos los borradores). Con el registro cerrado (progreso COMPLETADA y nada pendiente), además `texto_consolidado` por ítem e `items_por_ampliar`: los ítems con POCO_DESARROLLADA vigente, cada uno con `pista` (la repregunta de su evaluación vigente; sin repregunta, el texto fijo `PISTA_SIN_REPREGUNTA`) y `falta` (el front muestra `falta` o, si no hay, el `nombre`), e `items_abiertos` (los ABIERTA). La conversación de una respuesta sensible termina con el aviso `LUMI_SENSIBLE`. |
 
 Apoderados y cuentas o actividades inexistentes: 404. Completar una actividad de registro exige todos sus ítems obligatorios en FINAL (`motor.md`).
 

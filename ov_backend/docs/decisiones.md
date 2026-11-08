@@ -70,3 +70,6 @@
 - `mensaje_evaluador` (gemini.py) quita `repregunta` de los criterios solo en ítems con guía; los demás contextos van igual que antes.
 - `guia_para` (acciones.py) es la parte pura de `criterio_y_guia`; `criterio_y_guia` solo lee los criterios cuando la opción propia no los reemplaza.
 - Pruebas adaptadas (autorizadas): versión `v6`, `PROMPT_ENTREGA`/`PROMPT_SEGUIMIENTO` en lugar de los `_V5`, temperatura 1.0 en las del adaptador.
+- F2: `NO_RECUERDO` de b1-1-logro hereda el criterio y solo cambia el `texto_base`, **sin `pregunta_propia`** (decisión del usuario): 2.1 la pedía, pero b1-1-logro es `texto-primero` y la regla de carga de esa vista prohíbe una opción que cambie la pregunta del campo; el ángulo va en `mensajes.exclusiva`; b1-1-logro pasa a `admite_abierto` (ocho ítems; la prueba de carga se adapta, autorizado).
+- F2: `mensajes.exclusiva` de `b1_1.json` = «Está bien, a veces cuesta verlos. Si se te ocurre algo pequeño —algo que aprendiste solo, en casa, en un deporte o con amigos—, puedes agregarlo arriba.» (texto del usuario; la clave ya existía y sin ella la exclusiva mostraba «Anotado.»).
+- F2: el eco ELECCION de b1-1-logro en b4-1 cita la exclusiva aunque el ítem quede ABIERTA (regla vigente de referencias); queda en `pendientes-interfaz.md`, sin cambiar la regla (observación del usuario).

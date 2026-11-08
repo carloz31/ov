@@ -669,3 +669,11 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el detalle de cuestionario de la orientadora (`QuestionnaireBars` / `QuestionnaireDetailContent`), que en api todavía no existe: hoy solo pinta datos de demostración y llega con B14.
 - **Opciones:** el número 0–100 junto a la barra con «27 de 40» debajo en gris; o el 0–100 en la barra y «27 de 40» en una nota al pie de la tarjeta.
 - **Estado:** pendiente de B14 (vista de resultados de la orientadora).
+
+## 2026-11-08 · Ajuste pruebas llm · Eco de «No se me ocurre ninguno» (b1-1-logro) en b4-1
+
+- **Dato:** b1-1-logro gana la exclusiva `NO_RECUERDO` («No se me ocurre ninguno») y admite ABIERTA. La referencia `b4-1-ref-logro` es de tipo ELECCION, y una ELECCION se cita siempre (`referencias.md`: solo la TEXTO pasa a ABIERTA o SIN_DATO), así que llega DISPONIBLE con esa opción aunque el ítem haya quedado ABIERTA.
+- **Dónde se ve:** la zona de eco de b4-1 (`citaReferencia`, ELECCION) muestra «En «Tu logro» elegiste: No se me ocurre ninguno»; el LLM de b4-1-respalda recibe el eco «ELECCION · No se me ocurre ninguno». No sale «Esto lo dejaste abierto».
+- **Opciones:** que el backend resuelva una ELECCION de ítem ABIERTA (o de exclusiva sin hecho) como ABIERTA, y el front ya muestra `TEXTO_ABIERTO`; que una exclusiva «ninguno» se resuelva como SIN_DATO (el eco no dice nada); dejarlo como hoy.
+- **Si no se muestra:** el eco cita la exclusiva tal cual. Cambiar la regla toca `referencias.md` y `ecos_de`, fuera de este ajuste.
+- **Estado:** pendiente.

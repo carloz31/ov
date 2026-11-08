@@ -192,7 +192,8 @@
         "etiquetaElegida": "Lo que usaste",
         "mensajes": {
           "inicio": "Marca la habilidad que usaste.",
-          "una": "Anotado."
+          "una": "Anotado.",
+          "exclusiva": "Está bien, a veces cuesta verlos. Si se te ocurre algo pequeño —algo que aprendiste solo, en casa, en un deporte o con amigos—, puedes agregarlo arriba."
         },
         "errorSeleccion": "Elige una opción para continuar.",
         "errorOtra": "Escribe cuál es tu otra opción."
