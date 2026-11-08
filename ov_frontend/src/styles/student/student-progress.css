@@ -599,7 +599,10 @@
   animation: float 3s ease-in-out infinite;
 }
 @media (max-width: 600px) {
-  .sx-root .sx-player-topbar {
+  /* Mismo selector que la regla general (con el ambiente): si no, el alto y el relleno de móvil no se aplican y
+     el contador de pasos cae sobre la barra de progreso. La barra de las batallas tiene sus propias reglas. */
+  .sx-root .sx-player-topbar:not(.sx-challenge-topbar),
+  .sx-root.sx-player[data-ambient='sunrise'] .sx-player-topbar:not(.sx-challenge-topbar) {
     min-height: 112px;
     flex-basis: 112px;
     flex-wrap: wrap;

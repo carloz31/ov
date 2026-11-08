@@ -133,6 +133,28 @@
   gap: 8px;
   margin-left: auto;
 }
+/* En móvil el pie del reproductor es una rejilla 1fr / 2fr para los botones: la leyenda va en su propia fila, a la
+   izquierda, y los botones conservan ese reparto (el principal, a la derecha). */
+@media (max-width: 767px) {
+  .sx-root.sx-player .sx-step-footer.sx-item-pie {
+    grid-template-columns: 1fr;
+  }
+  .sx-root.sx-player .sx-item-pie > :is(.sx-item-leyenda, .sx-item-acciones) {
+    grid-column: 1;
+  }
+  .sx-root.sx-player .sx-item-acciones {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    margin-left: 0;
+  }
+  .sx-root.sx-player .sx-item-acciones > * {
+    width: 100%;
+    min-width: 0;
+  }
+  .sx-root.sx-player .sx-item-acciones > :not(.sx-prev-button) {
+    grid-column: 2;
+  }
+}
 /* Elección guiada: chips que se alternan, sin casillas ni íconos. */
 .sx-root .sx-choice-wrap {
   display: grid;
