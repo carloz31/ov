@@ -69,12 +69,18 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 | `R10_falta` | `falta` con pregunta, demasiado larga, como pedido («Necesito…», «Cuéntame…») o que no empieza por «Podrías» |
 | `R11_truncada` | La repregunta contiene «…» o «...» |
 | `R12_pero` | «, pero» o «pero ¿» en la repregunta |
-| `R13_examen` | «exactamente», «punto exacto» o «específicamente» |
 | `R14_eco_vacio` | Cita como contenido «no sé», «nada», «ninguno» o «no me acuerdo», también en segunda persona o con «no recuerdas» («Dices que no sabes», «Contaste que nada»). No detecta paráfrasis como «no te falta nada» |
 | `fuera_de_tema` | No retoma la palabra con la que se fue del tema |
 | `C3_consolidada_larga` | La consolidada supera `FACTOR_MAXIMO_CONSOLIDADA` × lo escrito + `MARGEN_CONSOLIDADA` (el backend concatena) |
 
-La columna `sino` es informativa y no falla: vale `sí` cuando la pregunta se responde con sí o no (empieza por «¿Recuerdas», «¿Hay», «¿Alguna vez», «¿Te…?», «¿Has…?», «¿Es…?» o similar).
+Estas columnas son informativas (se cuentan, pero no fallan) y valen `sí` cuando corresponde:
+
+| Columna | Qué detecta |
+|---|---|
+| `sino` | La pregunta se responde con sí o no: empieza por «¿Recuerdas», «¿Hay», «¿Alguna vez», «¿Te…?», «¿Has…?», «¿Es…?» o similar |
+| `r13_examen` | «exactamente», «punto exacto» o «específicamente» en la repregunta |
+| `copia_guia` | La repregunta contiene 5 o más palabras seguidas (sin tildes ni mayúsculas) de un ángulo, del `texto_base` o del `que_busca` del ítem |
+| `disyuntiva` | En la parte que va desde el último «¿», hay «o» o «u» seguida de un interrogativo con tilde (qué, quién, cómo, cuándo, dónde, cuál, cuánto; con preposición o sin ella) o de una palabra terminada en -aste, -iste, -abas o -ías. No cuenta listas de pistas («algo que aprendiste o que antes no te salía») ni un interrogativo escrito sin tilde |
 
 Lo que no se automatiza se revisa a mano en el CSV: que la repregunta sirva (columna `util`), que el ángulo sea nuevo y que el tono sea de par (rúbrica en `claude/pruebas-llm-b1-1.md` del proyecto).
 

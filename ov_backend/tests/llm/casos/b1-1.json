@@ -388,7 +388,7 @@
   {
    "id": "E11",
    "tipo": "entrega",
-   "descripcion": "Fuera de tema",
+   "descripcion": "Fuera de tema · F25: logro espera no mencionar el partido y anclarse en «Liderar»",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -414,9 +414,13 @@
     },
     "b1-1-logro": {
      "cumple": false,
-     "contiene_alguno": [
+     "no_contiene": [
       "partido"
-     ]
+     ],
+     "retoma": [
+      "lider"
+     ],
+     "util": "No menciona el partido (no tiene relación con el ítem); se ancla en \"Liderar\""
     },
     "b1-1-dificultad": {
      "cumple": true,
@@ -579,7 +583,7 @@
   {
    "id": "E16",
    "tipo": "entrega",
-   "descripcion": "nuevo F21: gusto concreto; «no soy bueno en nada» (emocional sin esperado fijo, para observar); esfuerzo sin cómo",
+   "descripcion": "nuevo F21: gusto concreto; «no soy bueno en nada» (emocional sin esperado fijo, para observar); esfuerzo sin cómo · F25: logro espera emocional false y cambia util",
    "items": [
     {
      "item": "b1-1-gustos",
@@ -604,8 +608,9 @@
      "cumple": true
     },
     "b1-1-logro": {
+     "emocional": false,
      "sensible": false,
-     "util": "No contradice ni insiste en «logro»; si repregunta, da pistas pequeñas y amables"
+     "util": "Otro ángulo con pistas pequeñas, sin contradecir ni pedir un \"logro\""
     },
     "b1-1-dificultad": {
      "cumple": false,

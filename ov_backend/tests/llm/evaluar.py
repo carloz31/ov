@@ -34,6 +34,7 @@ from dotenv import dotenv_values  # noqa: E402  (ya es dependencia del backend: 
 
 from app.config import RUTA_ENV  # noqa: E402
 from app.core import parametros  # noqa: E402
+from app.models.base import sin_tildes  # noqa: E402
 from app.services.registro import gemini as adaptador  # noqa: E402
 from app.services.registro.acciones import NOMBRES_ECO_REFERENCIA, guia_para  # noqa: E402
 from app.services.registro.evaluacion import (  # noqa: E402
@@ -60,6 +61,10 @@ ECO_VACIO = re.compile(r'\b(?:dices|dijiste|contaste|cuentas|mencionas|mencionas
                        r'(?:no sé\b|no sabes\b|nada\b|ningun[oa]\b|no me acuerdo\b|no te acuerdas\b|no recuerd[oa]s?\b'
                        r'|no se (?:me|te) ocurre)')
 SINO = re.compile(r'¿\s*(?:recuerdas|hay|alguna vez|te|has|es|tienes|puedes|podrías|crees|sabes|conoces|existe|fue)\b')
+ANGULO = re.compile(r'ángulo:\s*([^)]*)\)')
+# «o» o «u» seguida de un interrogativo con tilde (con preposición o sin ella) o de un verbo en segunda persona de pasado.
+DISYUNTIVA = re.compile(r'\b[ou]\s+(?:(?:(?:a|al|con|de|en|por|para|sobre)\s+)?(?:qué|quién|quiénes|cómo|cuándo|dónde|cuál|cuáles|cuánto|cuánta)\b'
+                        r'|\w+(?:aste|iste|abas|ías)\b)')
 
 
 
@@ -194,14 +199,12 @@ def llamar(cliente, modelo, razonamiento, contexto, prompt, esquema, temperatura
 
 
 def chequeos_redaccion(pregunta):
-    """R11–R14: lo que el prompt v6.8 prohíbe en la redacción (también se aplica a corridas anteriores)."""
+    """R11, R12 y R14: lo que el prompt prohíbe en la redacción (también se aplica a corridas anteriores)."""
     baja, fallas = pregunta.lower(), []
     if '…' in pregunta or '...' in pregunta:
         fallas.append('R11_truncada')
     if PERO.search(baja):
         fallas.append('R12_pero')
-    if any(p in baja for p in EXAMEN):
-        fallas.append('R13_examen')
     if ECO_VACIO.search(baja):
         fallas.append('R14_eco_vacio')
     return fallas
@@ -210,6 +213,37 @@ def chequeos_redaccion(pregunta):
 def es_sino(pregunta):
     """Informativo: la pregunta se responde con sí o no. No cuenta como falla."""
     return bool(pregunta and SINO.search(pregunta.lower()))
+
+
+def es_examen(pregunta):
+    """Informativo (R13): usa una palabra de examen."""
+    return bool(pregunta and any(p in pregunta.lower() for p in EXAMEN))
+
+
+def palabras_de(texto):
+    return re.findall(r'\w+', sin_tildes(texto).lower())
+
+
+def copia_guia(pregunta, guia):
+    """Informativo: 5 o más palabras seguidas de un ángulo, del `texto_base` o del `que_busca` del ítem."""
+    if not pregunta or guia is None:
+        return False
+    propias = palabras_de(pregunta)
+    tramos = {tuple(propias[i:i + 5]) for i in range(len(propias) - 4)}
+    fuentes = [guia.texto_base, guia.que_busca, *(a for t in guia.no_cumple for a in ANGULO.findall(t))]
+    return any(tuple(f[i:i + 5]) in tramos for f in map(palabras_de, fuentes) for i in range(len(f) - 4))
+
+
+def es_disyuntiva(pregunta):
+    """Informativo: pregunta por dos alternativas unidas por «o» (se mira solo la parte interrogativa)."""
+    return bool(pregunta and '¿' in pregunta and DISYUNTIVA.search(pregunta.rsplit('¿', 1)[1].lower()))
+
+
+def informativos(pregunta, guia):
+    """Columnas que se cuentan, pero no son fallas."""
+    marca = lambda valor: 'sí' if valor else ''  # noqa: E731
+    return dict(sino=marca(es_sino(pregunta)), r13_examen=marca(es_examen(pregunta)),
+                copia_guia=marca(copia_guia(pregunta, guia)), disyuntiva=marca(es_disyuntiva(pregunta)))
 
 
 def chequeos(r, guia, esperado):
@@ -284,7 +318,7 @@ def ejecutar(cliente, modelo, razonamiento, registro, caso, temperatura, corrida
                                   coincide=comparar(esperado, r), cumple=r.cumple, abierto=r.abierto, emocional=r.emocional,
                                   sensible=r.sensible, repregunta=r.repregunta, falta=r.falta,
                                   chequeos=' '.join(chequeos(r, guias.get(r.item), esperado)) or 'OK',
-                                  sino='sí' if es_sino(r.repregunta) else ''))
+                                  **informativos(r.repregunta, guias.get(r.item))))
             return filas
         contexto = contexto_seguimiento(registro, caso)
         r, ms, tokens = llamar(cliente, modelo, razonamiento, contexto, PROMPT_SEGUIMIENTO, ResultadoSeguimiento,
@@ -300,13 +334,13 @@ def ejecutar(cliente, modelo, razonamiento, registro, caso, temperatura, corrida
                      util=caso['esperado'].get('util', ''),
                      coincide=comparar(caso['esperado'], r), cumple=r.cumple, abierto=r.abierto, emocional=r.emocional, sensible=r.sensible,
                      repregunta=r.repregunta, falta=r.falta, consolidada=r.consolidada, ratio_consolidada=ratio,
-                     chequeos=' '.join(fallas) or 'OK', sino='sí' if es_sino(r.repregunta) else '')]
+                     chequeos=' '.join(fallas) or 'OK', **informativos(r.repregunta, contexto.guia))]
     except Exception as error:  # noqa: BLE001 — una falla de red o de esquema se registra y la corrida sigue
         return [dict(base, item=caso.get('item', '-'), error=repr(error)[:300])]
 
 
 CAMPOS = ['registro', 'caso', 'tipo', 'temperatura', 'razonamiento', 'corrida', 'item', 'esperado', 'util', 'coincide', 'cumple',
-          'abierto', 'emocional', 'sensible', 'repregunta', 'falta', 'consolidada', 'ratio_consolidada', 'chequeos', 'sino', 'latencia_ms',
+          'abierto', 'emocional', 'sensible', 'repregunta', 'falta', 'consolidada', 'ratio_consolidada', 'chequeos', 'sino', 'r13_examen', 'copia_guia', 'disyuntiva', 'latencia_ms',
           'tokens_entrada', 'tokens_razonamiento', 'tokens_salida', 'error']
 
 
