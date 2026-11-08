@@ -11,7 +11,7 @@ tests/llm/
   evaluar.py                     arma los mensajes, llama, compara y guarda
   casos/<registro>.json          casos y lo esperado por ítem
   resultados/<registro>/
-    <fecha>_<prompt>_t<temp>[_<etiqueta>].csv   una fila por caso, corrida e ítem
+    <fecha>_<prompt>_t<temp>_r<nivel>[_<etiqueta>].csv   una fila por caso, corrida e ítem
     resumen.md                   una línea por corrida (se agrega sola)
 ```
 
@@ -23,8 +23,11 @@ Los CSV y los `resumen.md` **se versionan**: son la evidencia de la validación 
 uv run python tests/llm/evaluar.py b1-1 b1-3                     # todos los casos, 2 corridas
 uv run python tests/llm/evaluar.py b1-1 --solo E4 S1 --corridas 3
 uv run python tests/llm/evaluar.py b1-1 --temperaturas 0.2 1.0   # comparar temperaturas
+uv run python tests/llm/evaluar.py b1-1 --razonamiento low       # minimal|low|medium|high; sin él, el del backend
 uv run python tests/llm/evaluar.py b1-1 --mostrar E4             # el mensaje exacto, sin llamar
 ```
+
+El CSV guarda `razonamiento`, `tokens_entrada`, `tokens_razonamiento` y `tokens_salida`. En una entrega, latencia y tokens son de la llamada completa y se repiten en cada ítem: para promediar, cuenta una vez por caso y corrida.
 
 Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no está en el entorno, la toma del `.env` del backend, igual que `GEMINI_MODELO` (sin imprimirlas). Por defecto hace 8 llamadas en paralelo (`--hilos`).
 

@@ -11,6 +11,7 @@ Uso, desde ov_backend (GEMINI_API_KEY y GEMINI_MODELO del entorno o, si faltan, 
     uv run python tests/llm/evaluar.py b1-1 b1-3                  # todos los casos, 2 corridas
     uv run python tests/llm/evaluar.py b1-1 --solo E4 S1 --corridas 3
     uv run python tests/llm/evaluar.py b1-1 --temperaturas 0.2 1.0
+    uv run python tests/llm/evaluar.py b1-1 --modelo gemini-3.1-flash-lite --razonamiento low  # sin él, el del backend
     uv run python tests/llm/evaluar.py b1-1 --mostrar E4          # imprime el mensaje, sin llamar al modelo
 """
 
@@ -150,19 +151,37 @@ def contexto_seguimiento(registro, caso):
 
 # --- Llamada y chequeos ---------------------------------------------------------------------
 
-def llamar(cliente, modelo, contexto, prompt, esquema, temperatura):
+def config_razonamiento(modelo, nivel):
+    """Con `--razonamiento`, ese nivel; sin él, el mismo que usa el backend."""
+    return adaptador.types.ThinkingConfig(thinking_level=nivel) if nivel else adaptador.razonamiento_minimo(modelo)
+
+
+def nombre_razonamiento(config):
+    """El nivel como se escribe en el CSV y en resumen.md (`minimal`, `low`…; `b<n>` en los modelos con presupuesto)."""
+    if config is None:
+        return 'defecto'
+    if config.thinking_level is not None:
+        return str(getattr(config.thinking_level, 'value', config.thinking_level)).lower()
+    return f'b{config.thinking_budget}'
+
+
+def llamar(cliente, modelo, razonamiento, contexto, prompt, esquema, temperatura):
     inicio = time.perf_counter()
     respuesta = cliente.models.generate_content(
         model=modelo, contents=mensaje(contexto),
         config=adaptador.types.GenerateContentConfig(
             system_instruction=prompt, temperature=temperatura, candidate_count=1,
             response_mime_type='application/json', response_json_schema=esquema.model_json_schema(),
-            thinking_config=adaptador.razonamiento_minimo(modelo),
+            thinking_config=razonamiento,
             automatic_function_calling=adaptador.types.AutomaticFunctionCallingConfig(disable=True)))
     latencia = round((time.perf_counter() - inicio) * 1000)
     partes = respuesta.candidates[0].content.parts if respuesta.candidates else []
     texto = ''.join(p.text for p in partes or [] if p.text and not p.thought)
-    return esquema.model_validate_json(texto), latencia
+    uso = respuesta.usage_metadata
+    tokens = dict(tokens_entrada=getattr(uso, 'prompt_token_count', None),
+                  tokens_razonamiento=getattr(uso, 'thoughts_token_count', None),
+                  tokens_salida=getattr(uso, 'candidates_token_count', None))
+    return esquema.model_validate_json(texto), latencia, tokens
 
 
 def chequeos(r, guia, esperado):
@@ -215,33 +234,38 @@ def tareas(registro, casos, temperaturas, corridas):
                 yield registro, caso, temperatura, corrida
 
 
-def ejecutar(cliente, modelo, registro, caso, temperatura, corrida):
-    base = dict(registro=registro, caso=caso['id'], tipo=caso['tipo'], temperatura=temperatura, corrida=corrida)
+def ejecutar(cliente, modelo, razonamiento, registro, caso, temperatura, corrida):
+    base = dict(registro=registro, caso=caso['id'], tipo=caso['tipo'], temperatura=temperatura, corrida=corrida,
+                razonamiento=nombre_razonamiento(razonamiento))
     try:
         if caso['tipo'] == 'entrega':
             contexto, sin_llm = contexto_entrega(registro, caso)
             filas = [dict(base, item=i, coincide='sin LLM', chequeos='') for i in sin_llm]
             if not contexto.items:
                 return filas
-            resultado, ms = llamar(cliente, modelo, contexto, PROMPT_ENTREGA, ResultadoEntrega, temperatura)
+            resultado, ms, tokens = llamar(cliente, modelo, razonamiento, contexto, PROMPT_ENTREGA, ResultadoEntrega,
+                                           temperatura)
             guias = {i.item: i.guia for i in contexto.items}
             for r in resultado.items:
                 esperado = caso['esperado'].get(r.item, {})
-                filas.append(dict(base, item=r.item, latencia_ms=ms, esperado=json.dumps(esperado, ensure_ascii=False),
+                filas.append(dict(base, item=r.item, latencia_ms=ms, **tokens,
+                                  esperado=json.dumps(esperado, ensure_ascii=False),
                                   util=esperado.get('util', ''),
                                   coincide=comparar(esperado, r), cumple=r.cumple, abierto=r.abierto, emocional=r.emocional,
                                   sensible=r.sensible, repregunta=r.repregunta, falta=r.falta,
                                   chequeos=' '.join(chequeos(r, guias.get(r.item), esperado)) or 'OK'))
             return filas
         contexto = contexto_seguimiento(registro, caso)
-        r, ms = llamar(cliente, modelo, contexto, PROMPT_SEGUIMIENTO, ResultadoSeguimiento, temperatura)
+        r, ms, tokens = llamar(cliente, modelo, razonamiento, contexto, PROMPT_SEGUIMIENTO, ResultadoSeguimiento,
+                               temperatura)
         escrito = ' '.join([caso['texto']] + [t[1] for t in caso['turnos']])
         ratio = round(len(r.consolidada or '') / max(1, len(escrito)), 2)
         fallas = chequeos(r, contexto.guia, caso['esperado'])
         limite = parametros.FACTOR_MAXIMO_CONSOLIDADA * len(escrito) + parametros.MARGEN_CONSOLIDADA
         if len(r.consolidada or '') > limite:
             fallas.append('C3_consolidada_larga')
-        return [dict(base, item=caso['item'], latencia_ms=ms, esperado=json.dumps(caso['esperado'], ensure_ascii=False),
+        return [dict(base, item=caso['item'], latencia_ms=ms, **tokens,
+                     esperado=json.dumps(caso['esperado'], ensure_ascii=False),
                      util=caso['esperado'].get('util', ''),
                      coincide=comparar(caso['esperado'], r), cumple=r.cumple, abierto=r.abierto, emocional=r.emocional, sensible=r.sensible,
                      repregunta=r.repregunta, falta=r.falta, consolidada=r.consolidada, ratio_consolidada=ratio,
@@ -250,15 +274,16 @@ def ejecutar(cliente, modelo, registro, caso, temperatura, corrida):
         return [dict(base, item=caso.get('item', '-'), error=repr(error)[:300])]
 
 
-CAMPOS = ['registro', 'caso', 'tipo', 'temperatura', 'corrida', 'item', 'esperado', 'util', 'coincide', 'cumple', 'abierto', 'emocional',
-          'sensible', 'repregunta', 'falta', 'consolidada', 'ratio_consolidada', 'chequeos', 'latencia_ms', 'error']
+CAMPOS = ['registro', 'caso', 'tipo', 'temperatura', 'razonamiento', 'corrida', 'item', 'esperado', 'util', 'coincide', 'cumple',
+          'abierto', 'emocional', 'sensible', 'repregunta', 'falta', 'consolidada', 'ratio_consolidada', 'chequeos', 'latencia_ms',
+          'tokens_entrada', 'tokens_razonamiento', 'tokens_salida', 'error']
 
 
-def guardar(registro, filas, modelo, temperaturas, corridas, etiqueta):
+def guardar(registro, filas, modelo, nivel, temperaturas, corridas, etiqueta):
     carpeta = AQUI / 'resultados' / registro
     carpeta.mkdir(parents=True, exist_ok=True)
     temps = '-'.join(f'{t:g}' for t in temperaturas)
-    nombre = f"{datetime.now():%Y-%m-%d_%H%M}_{parametros.VERSION_PROMPT_REGISTRO}_t{temps}"
+    nombre = f"{datetime.now():%Y-%m-%d_%H%M}_{parametros.VERSION_PROMPT_REGISTRO}_t{temps}_r{nivel}"
     destino = carpeta / f"{nombre}{'_' + etiqueta if etiqueta else ''}.csv"
     filas.sort(key=lambda f: (f['temperatura'], f['corrida'], f['caso'], f['item']))
     with destino.open('w', newline='', encoding='utf-8-sig') as archivo:
@@ -271,7 +296,7 @@ def guardar(registro, filas, modelo, temperaturas, corridas, etiqueta):
         errores = sum(1 for f in filas if f['temperatura'] == t and f.get('error'))
         ok = sum(f['coincide'] == 'OK' for f in de_t)
         limpias = sum(f['chequeos'] == 'OK' for f in de_t)
-        lineas.append(f"| {datetime.now():%Y-%m-%d %H:%M} | {parametros.VERSION_PROMPT_REGISTRO} | {modelo} | {t:g} | "
+        lineas.append(f"| {datetime.now():%Y-%m-%d %H:%M} | {parametros.VERSION_PROMPT_REGISTRO} | {modelo} · {nivel} | {t:g} | "
                       f"{corridas} | {ok}/{len(de_t)} | {limpias}/{len(de_t)} | {errores} | {destino.name} |")
     resumen = carpeta / 'resumen.md'
     if not resumen.exists():
@@ -290,6 +315,8 @@ def main():
     parser.add_argument('--corridas', type=int, default=2)
     parser.add_argument('--temperaturas', type=float, nargs='+', default=[parametros.TEMPERATURA_REGISTRO])
     parser.add_argument('--modelo', help='por defecto, GEMINI_MODELO del entorno o del .env (el del backend)')
+    parser.add_argument('--razonamiento', choices=('minimal', 'low', 'medium', 'high'),
+                        help='por defecto, el del backend (`razonamiento_minimo` del modelo)')
     parser.add_argument('--hilos', type=int, default=8, help='llamadas en paralelo (Tier 1 admite de sobra)')
     parser.add_argument('--etiqueta', default='', help='sufijo del CSV, p. ej. «tras-ajuste»')
     parser.add_argument('--mostrar')
@@ -313,12 +340,14 @@ def main():
     if not clave:
         sys.exit('Falta GEMINI_API_KEY (en el entorno o en el .env del backend)')
     cliente = adaptador.genai.Client(api_key=clave)
+    razonamiento = config_razonamiento(args.modelo, args.razonamiento)
+    nivel = nombre_razonamiento(razonamiento)
     for registro, casos in por_registro.items():
         lista = list(tareas(registro, casos, args.temperaturas, args.corridas))
         print(f'{registro}: {len(lista)} llamadas')
         with ThreadPoolExecutor(max_workers=args.hilos) as pool:
-            filas = [f for grupo in pool.map(lambda t: ejecutar(cliente, args.modelo, *t), lista) for f in grupo]
-        destino, lineas = guardar(registro, filas, args.modelo, args.temperaturas, args.corridas, args.etiqueta)
+            filas = [f for grupo in pool.map(lambda t: ejecutar(cliente, args.modelo, razonamiento, *t), lista) for f in grupo]
+        destino, lineas = guardar(registro, filas, args.modelo, nivel, args.temperaturas, args.corridas, args.etiqueta)
         print(destino.relative_to(RAIZ))
         print('\n'.join(lineas))
 
