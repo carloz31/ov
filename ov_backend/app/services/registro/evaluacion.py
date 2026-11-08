@@ -89,11 +89,12 @@ class _Estricto(BaseModel):
 
 
 class ResultadoItemEntrega(_Estricto):
+    """El orden de los campos es el del esquema que recibe Gemini: decide primero `sensible`."""
     item: str
+    sensible: bool
+    emocional: bool
     cumple: bool
     abierto: bool
-    emocional: bool
-    sensible: bool
     falta: str | None
     repregunta: str | None
 
@@ -103,10 +104,11 @@ class ResultadoEntrega(_Estricto):
 
 
 class ResultadoSeguimiento(_Estricto):
+    """El orden de los campos es el del esquema que recibe Gemini: decide primero `sensible`."""
+    sensible: bool
+    emocional: bool
     cumple: bool
     abierto: bool
-    emocional: bool
-    sensible: bool
     falta: str | None
     repregunta: str | None
     consolidada: str | None

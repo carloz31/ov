@@ -265,6 +265,26 @@
    }
   },
   {
+   "id": "E12",
+   "tipo": "entrega",
+   "descripcion": "Estrés común: emocional, no sensible",
+   "items": [
+    {
+     "item": "b1-6-mito",
+     "texto": "uff, me estresa este tema, en mi casa todos opinan de lo que debo estudiar",
+     "opciones": [
+      "PADRES_SABEN"
+     ]
+    }
+   ],
+   "esperado": {
+    "b1-6-mito": {
+     "sensible": false,
+     "emocional": true
+    }
+   }
+  },
+  {
    "id": "S1",
    "tipo": "seguimiento",
    "descripcion": "Da el origen tras la repregunta",

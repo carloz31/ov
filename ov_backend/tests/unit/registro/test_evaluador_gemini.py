@@ -12,7 +12,9 @@ from app.services.registro.evaluacion import (
     CriterioEvaluacion, ItemPorEvaluar, TurnoEvaluacion, procesar_entrega, procesar_seguimiento,
 )
 from app.services.diario.asistente import ContextoPersonalizacion, DatoPersonalizacion
-from app.services.registro.evaluacion import ContextoEntrega, ContextoSeguimiento, GuiaSeguimiento, ItemEntrega
+from app.services.registro.evaluacion import (
+    ContextoEntrega, ContextoSeguimiento, GuiaSeguimiento, ItemEntrega, ResultadoSeguimiento,
+)
 from app.services.registro.gemini import EvaluadorGemini, mensaje_evaluador, razonamiento_minimo
 from app.services.registro.prompt import PROMPT_ENTREGA, PROMPT_SEGUIMIENTO
 from soporte_red import impedir_red
@@ -77,7 +79,7 @@ def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
     cliente = ClienteSimulado()
     resultado = entregar(cliente)
     assert resultado.origen == 'LLM' and resultado.clasificacion == 'ADECUADA'
-    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v6.4'
+    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v6.5'
     llamada, = cliente.llamadas
     datos = json.loads(llamada['contents'])
     assert set(datos) == {'titulo_actividad', 'items'}
@@ -93,6 +95,14 @@ def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
     assert configuracion.thinking_config.thinking_level == 'LOW'
     assert configuracion.automatic_function_calling.disable is True
     assert cliente.cierres == 0  # El cliente inyectado pertenece al llamador.
+
+
+def test_gemini_recibe_sensible_antes_que_emocional_y_cumple():
+    cliente = ClienteSimulado()
+    entregar(cliente)
+    esquema = cliente.llamadas[0]['config'].response_json_schema
+    assert list(esquema['$defs']['ResultadoItemEntrega']['properties'])[:4] == ['item', 'sensible', 'emocional', 'cumple']
+    assert list(ResultadoSeguimiento.model_json_schema()['properties'])[:3] == ['sensible', 'emocional', 'cumple']
 
 
 def test_modelo_por_defecto_es_gemini_3_8_flash():
