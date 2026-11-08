@@ -299,6 +299,33 @@
     "cumple": true,
     "sensible": false
    }
+  },
+  {
+   "id": "SM3",
+   "tipo": "seguimiento",
+   "descripcion": "Generalización de SM1: da el segundo paso tras la repregunta",
+   "item": "ma3-pasos",
+   "texto": "Entrar a un preu.",
+   "opciones": [],
+   "turnos": [
+    [
+     "Dices que entrarías a un preu. ¿Y qué harías después de eso?",
+     "después postulo a la UNI en agosto"
+    ]
+   ],
+   "esperado": {
+    "cumple": true
+   },
+   "referencias": {
+    "ma3-ref-hito": {
+     "tipo": "TEXTO",
+     "texto": "Estaré en una academia preparándome para postular a Medicina en San Marcos."
+    },
+    "ma3-ref-dia": {
+     "tipo": "TEXTO",
+     "texto": "Me despierto en Lima, voy al hospital donde hago mi internado y en la noche estudio con mis amigas."
+    }
+   }
   }
  ]
 }

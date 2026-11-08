@@ -89,6 +89,13 @@ b1-1, b1-3, b1-6, b1-7 y ma3 quedan validados con el prompt v6.7 (`gemini-3.1-fl
 
 Tras `ronda-5` cambió lo esperado en b1-1 S6 (`cumple: true`) y ma3-pasos ganó un ejemplo de `cumple`; por eso S6 y SM1 no coinciden en ese CSV, y SM1 se volvió a medir en `cierre` (4 de 4).
 
+**Ejemplos de `cumple` tomados de su propio caso** (que ese caso pase no prueba que el modelo generalice):
+
+- b1-6 E2 («Mis papás. Ya no lo creo.»).
+- b1-7 F2-freno («Si no ingreso, vuelvo a postular»).
+- b1-1 E10-gustos («Jugaba con plastilina»).
+- ma3 SM1 («Inscribirme en una academia y luego dar el examen de San Marcos en marzo»). Tiene una variante que no está entre los ejemplos, SM3, que generaliza 4 de 4 ([cierre-variante](resultados/ma3/2026-11-08_0405_v6.7_t1_cierre-variante.csv)).
+
 **Criterio de cierre:** lo que falla 1 de 2 con efecto leve se declara límite; un falso negativo de `sensible`, nunca.
 
 **Límites** (también en la `descripcion` de cada caso):

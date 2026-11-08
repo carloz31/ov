@@ -1,0 +1,5 @@
+﻿registro,caso,tipo,temperatura,corrida,item,esperado,util,coincide,cumple,abierto,emocional,sensible,repregunta,falta,consolidada,ratio_consolidada,chequeos,latencia_ms,error
+ma3,SM3,seguimiento,1.0,1,ma3-pasos,"{""cumple"": true}",,OK,True,False,False,False,,,Entro a un preu y después postulo a la UNI en agosto.,1.02,OK,2036,
+ma3,SM3,seguimiento,1.0,2,ma3-pasos,"{""cumple"": true}",,OK,True,False,False,False,,,Entro a un preu y después postulo a la UNI en agosto.,1.02,OK,2489,
+ma3,SM3,seguimiento,1.0,3,ma3-pasos,"{""cumple"": true}",,OK,True,False,False,False,,,Entro a un preu y después postulo a la UNI en agosto.,1.02,OK,2075,
+ma3,SM3,seguimiento,1.0,4,ma3-pasos,"{""cumple"": true}",,OK,True,False,False,False,,,Entro a un preu y después postulo a la UNI en agosto.,1.02,OK,2131,
