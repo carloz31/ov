@@ -34,17 +34,18 @@ from dotenv import dotenv_values  # noqa: E402  (ya es dependencia del backend: 
 from app.config import RUTA_ENV  # noqa: E402
 from app.core import parametros  # noqa: E402
 from app.services.registro import gemini as adaptador  # noqa: E402
-from app.services.registro.acciones import guia_para  # noqa: E402
+from app.services.registro.acciones import NOMBRES_ECO_REFERENCIA, guia_para  # noqa: E402
 from app.services.registro.evaluacion import (  # noqa: E402
     ContextoEntrega, ContextoSeguimiento, CriterioEvaluacion, EcoEvaluacion, ItemEntrega, ResultadoEntrega,
     ResultadoSeguimiento, TurnoEvaluacion, pregunta_valida,
 )
 from app.services.registro.gemini import mensaje_evaluador as mensaje  # noqa: E402
 from app.services.registro.prompt import PROMPT_ENTREGA, PROMPT_SEGUIMIENTO  # noqa: E402
-from datos.contenido import ACTIVIDADES, ITEMS_REGISTRO, SEGUIMIENTOS  # noqa: E402
+from datos.contenido import ACTIVIDADES, ITEMS_REGISTRO, REFERENCIAS, SEGUIMIENTOS  # noqa: E402
 from datos.fijos import LISTAS_COMUNES, REPREGUNTAS_CRITERIO  # noqa: E402
 
 ITEMS = {i[1]: i for i in ITEMS_REGISTRO}
+FUENTES_REFERENCIA = {r[0]: r[3] for r in REFERENCIAS}  # ítem fuente, aplicación o None, según el tipo
 LISTAS = {codigo: dict(opciones) for codigo, _nombre, opciones in LISTAS_COMUNES}
 TITULOS = {a[0]: a[2] for a in ACTIVIDADES}  # el título de la actividad, como lo envía el backend
 PROHIBIDAS = ('explica más', 'desarrolla', 'por qué crees que', 'criterio', 'inteligencia artificial')
@@ -93,13 +94,20 @@ def criterio_y_guia(codigo_item, elegidas):
     return guia_para(SEGUIMIENTOS.get(codigo_item), eleccion.get('propias', ()), criterios, elegidas)
 
 
+def nombre_eco_referencia(codigo, tipo):
+    """Como `acciones.ecos_de`: el nombre del ítem fuente o, sin ítem fuente, el nombre legible del tipo."""
+    fuente = FUENTES_REFERENCIA.get(codigo)
+    return ITEMS[fuente][2] if fuente in ITEMS else NOMBRES_ECO_REFERENCIA.get(tipo, tipo)
+
+
 def ecos_de(codigo_item, otros, referencias):
     """`otros`: {código: {'texto', 'opciones'}} de la misma actividad; `referencias`: {código: {'tipo', 'texto'}}."""
     ecos = []
     for tipo, codigo in SEGUIMIENTOS.get(codigo_item, {}).get('ecos_llm', ()):
         if tipo == 'REFERENCIA':
             if codigo in referencias:
-                ecos.append(EcoEvaluacion(referencias[codigo]['tipo'], referencias[codigo]['texto']))
+                ecos.append(EcoEvaluacion(nombre_eco_referencia(codigo, referencias[codigo]['tipo']),
+                                          referencias[codigo]['texto']))
             continue
         otro = otros.get(codigo)
         if otro is None:
@@ -158,7 +166,7 @@ def llamar(cliente, modelo, contexto, prompt, esquema, temperatura):
 
 
 def chequeos(r, guia, esperado):
-    """Lo automatizable de la rúbrica; retomar sus palabras, el ángulo y el tono se revisan a mano."""
+    """Lo automatizable de la rúbrica; el ángulo, el tono y si la repregunta sirve (`util`) se revisan a mano."""
     fallas, pregunta, falta = [], r.repregunta, r.falta
     if pregunta:
         baja = pregunta.lower()
@@ -183,6 +191,8 @@ def chequeos(r, guia, esperado):
             fallas.append('R6_otro_item')
         if esperado.get('contiene_alguno') and not any(p in baja for p in esperado['contiene_alguno']):
             fallas.append('fuera_de_tema')
+        if esperado.get('retoma') and not any(p in baja for p in esperado['retoma']):
+            fallas.append('R7_no_retoma')
     if falta and ('?' in falta or len(falta.split()) > 20 or falta.lower().startswith(('necesito', 'cuéntame'))):
         fallas.append('R10_falta')
     return fallas
@@ -218,6 +228,7 @@ def ejecutar(cliente, modelo, registro, caso, temperatura, corrida):
             for r in resultado.items:
                 esperado = caso['esperado'].get(r.item, {})
                 filas.append(dict(base, item=r.item, latencia_ms=ms, esperado=json.dumps(esperado, ensure_ascii=False),
+                                  util=esperado.get('util', ''),
                                   coincide=comparar(esperado, r), cumple=r.cumple, abierto=r.abierto,
                                   sensible=r.sensible, repregunta=r.repregunta, falta=r.falta,
                                   chequeos=' '.join(chequeos(r, guias.get(r.item), esperado)) or 'OK'))
@@ -231,6 +242,7 @@ def ejecutar(cliente, modelo, registro, caso, temperatura, corrida):
         if len(r.consolidada or '') > limite:
             fallas.append('C3_consolidada_larga')
         return [dict(base, item=caso['item'], latencia_ms=ms, esperado=json.dumps(caso['esperado'], ensure_ascii=False),
+                     util=caso['esperado'].get('util', ''),
                      coincide=comparar(caso['esperado'], r), cumple=r.cumple, abierto=r.abierto, sensible=r.sensible,
                      repregunta=r.repregunta, falta=r.falta, consolidada=r.consolidada, ratio_consolidada=ratio,
                      chequeos=' '.join(fallas) or 'OK')]
@@ -238,7 +250,7 @@ def ejecutar(cliente, modelo, registro, caso, temperatura, corrida):
         return [dict(base, item=caso.get('item', '-'), error=repr(error)[:300])]
 
 
-CAMPOS = ['registro', 'caso', 'tipo', 'temperatura', 'corrida', 'item', 'esperado', 'coincide', 'cumple', 'abierto',
+CAMPOS = ['registro', 'caso', 'tipo', 'temperatura', 'corrida', 'item', 'esperado', 'util', 'coincide', 'cumple', 'abierto',
           'sensible', 'repregunta', 'falta', 'consolidada', 'ratio_consolidada', 'chequeos', 'latencia_ms', 'error']
 
 

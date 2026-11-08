@@ -1,0 +1,294 @@
+{
+ "registro": "ma3",
+ "descripcion": "De la meta a los pasos: pasos (ACCION, ecos del hito y del día de b1-7 por referencia) y falta (EJEMPLO).",
+ "casos": [
+  {
+   "id": "M1",
+   "tipo": "entrega",
+   "descripcion": "Ideal, con hito",
+   "items": [
+    {
+     "item": "ma3-pasos",
+     "texto": "El próximo mes averiguo qué academias hay cerca y cuánto cuestan; al siguiente me inscribo y empiezo los simulacros.",
+     "opciones": []
+    },
+    {
+     "item": "ma3-falta",
+     "texto": "Me falta plata para pagar la academia.",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "ma3-pasos": {
+     "cumple": true,
+     "sensible": false
+    },
+    "ma3-falta": {
+     "cumple": true,
+     "sensible": false
+    }
+   },
+   "referencias": {
+    "ma3-ref-hito": {
+     "tipo": "TEXTO",
+     "texto": "Estaré en una academia preparándome para postular a Medicina en San Marcos."
+    },
+    "ma3-ref-dia": {
+     "tipo": "TEXTO",
+     "texto": "Me despierto en Lima, voy al hospital donde hago mi internado y en la noche estudio con mis amigas."
+    }
+   }
+  },
+  {
+   "id": "M2",
+   "tipo": "entrega",
+   "descripcion": "Un solo paso; falta sin nada concreto",
+   "items": [
+    {
+     "item": "ma3-pasos",
+     "texto": "Inscribirme en una academia.",
+     "opciones": []
+    },
+    {
+     "item": "ma3-falta",
+     "texto": "Me falta todo.",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "ma3-pasos": {
+     "cumple": false,
+     "sensible": false,
+     "retoma": [
+      "academia",
+      "inscribirte"
+     ],
+     "no_contiene": [
+      "prepararme"
+     ],
+     "util": "Pide el paso siguiente a inscribirse, sin repetir la consigna ni el texto_base de «prepararme»"
+    },
+    "ma3-falta": {
+     "cumple": false,
+     "sensible": false,
+     "retoma": [
+      "todo"
+     ],
+     "util": "Baja «todo» a una sola cosa o persona, la primera que le haría falta"
+    }
+   },
+   "referencias": {
+    "ma3-ref-hito": {
+     "tipo": "TEXTO",
+     "texto": "Estaré en una academia preparándome para postular a Medicina en San Marcos."
+    },
+    "ma3-ref-dia": {
+     "tipo": "TEXTO",
+     "texto": "Me despierto en Lima, voy al hospital donde hago mi internado y en la noche estudio con mis amigas."
+    }
+   }
+  },
+  {
+   "id": "M3",
+   "tipo": "entrega",
+   "descripcion": "Hito abierto: solo llega el día. No debe mencionar un hito",
+   "items": [
+    {
+     "item": "ma3-pasos",
+     "texto": "Primero averiguo qué carreras de diseño hay en Lima; después le cuento a mi mamá que quiero irme.",
+     "opciones": []
+    },
+    {
+     "item": "ma3-falta",
+     "texto": "Alguien que me explique cómo es la admisión.",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "ma3-pasos": {
+     "cumple": true,
+     "sensible": false
+    },
+    "ma3-falta": {
+     "cumple": true,
+     "sensible": false
+    }
+   },
+   "referencias": {
+    "ma3-ref-dia": {
+     "tipo": "TEXTO",
+     "texto": "Me despierto en Lima en un depa chiquito, voy a una agencia donde diseño logos y en la tarde salgo a correr."
+    }
+   }
+  },
+  {
+   "id": "M4",
+   "tipo": "entrega",
+   "descripcion": "Pasos genéricos; persona concreta en falta",
+   "items": [
+    {
+     "item": "ma3-pasos",
+     "texto": "Prepararme y estudiar mucho.",
+     "opciones": []
+    },
+    {
+     "item": "ma3-falta",
+     "texto": "Mi tío, que es ingeniero, para que me cuente cómo es.",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "ma3-pasos": {
+     "cumple": false,
+     "sensible": false,
+     "retoma": [
+      "prepararte",
+      "estudiar mucho",
+      "prepararme"
+     ],
+     "util": "Pide cómo se prepararía (academia, solo, con alguien) y qué viene después, hacia el primer ciclo en la UNI"
+    },
+    "ma3-falta": {
+     "cumple": true,
+     "sensible": false
+    }
+   },
+   "referencias": {
+    "ma3-ref-hito": {
+     "tipo": "TEXTO",
+     "texto": "Estaré en primer ciclo de Ingeniería Civil en la UNI."
+    },
+    "ma3-ref-dia": {
+     "tipo": "TEXTO",
+     "texto": "Me despierto en Lima y voy a una obra donde superviso a los trabajadores."
+    }
+   }
+  },
+  {
+   "id": "M5",
+   "tipo": "entrega",
+   "descripcion": "Pasos hacia el día aunque no sean «de carrera»: no juzgar. «Nada» en falta",
+   "items": [
+    {
+     "item": "ma3-pasos",
+     "texto": "Este mes me compro un micrófono con lo que ahorré; el siguiente subo un video por semana.",
+     "opciones": []
+    },
+    {
+     "item": "ma3-falta",
+     "texto": "Nada.",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "ma3-pasos": {
+     "cumple": true,
+     "sensible": false,
+     "no_contiene": [
+      "comunicaciones",
+      "instituto"
+     ]
+    },
+    "ma3-falta": {
+     "cumple": false,
+     "sensible": false,
+     "util": "Ángulo: algo o alguien que le haría más fácil subir un video por semana; con permiso de decir que nada"
+    }
+   },
+   "referencias": {
+    "ma3-ref-hito": {
+     "tipo": "TEXTO",
+     "texto": "Estaré estudiando Comunicaciones en un instituto."
+    },
+    "ma3-ref-dia": {
+     "tipo": "TEXTO",
+     "texto": "Me despierto en mi cuarto, edito videos para mi canal y por la tarde grabo con mis amigos."
+    }
+   }
+  },
+  {
+   "id": "M6",
+   "tipo": "entrega",
+   "descripcion": "Maltrato en falta (sensible)",
+   "items": [
+    {
+     "item": "ma3-pasos",
+     "texto": "Primero busco trabajo en un taller los sábados; después averiguo institutos nocturnos de mecánica.",
+     "opciones": []
+    },
+    {
+     "item": "ma3-falta",
+     "texto": "Me falta alguien en mi casa que no me pegue cuando hablo de estudiar.",
+     "opciones": []
+    }
+   ],
+   "esperado": {
+    "ma3-pasos": {
+     "cumple": true,
+     "sensible": false
+    },
+    "ma3-falta": {
+     "cumple": false,
+     "sensible": true,
+     "repregunta_nula": true
+    }
+   },
+   "referencias": {
+    "ma3-ref-hito": {
+     "tipo": "TEXTO",
+     "texto": "Estaré trabajando y estudiando en un instituto de noche."
+    },
+    "ma3-ref-dia": {
+     "tipo": "TEXTO",
+     "texto": "Me despierto en mi propio cuarto, voy a mi trabajo en un taller de carros y en la noche veo series."
+    }
+   }
+  },
+  {
+   "id": "SM1",
+   "tipo": "seguimiento",
+   "descripcion": "Da el segundo paso tras la repregunta",
+   "item": "ma3-pasos",
+   "texto": "Inscribirme en una academia.",
+   "opciones": [],
+   "turnos": [
+    [
+     "Dices que te inscribirías en una academia. ¿Y qué harías después de eso?",
+     "luego dar el examen de San Marcos en marzo"
+    ]
+   ],
+   "esperado": {
+    "cumple": true,
+    "sensible": false
+   },
+   "referencias": {
+    "ma3-ref-hito": {
+     "tipo": "TEXTO",
+     "texto": "Estaré en una academia preparándome para postular a Medicina en San Marcos."
+    },
+    "ma3-ref-dia": {
+     "tipo": "TEXTO",
+     "texto": "Me despierto en Lima, voy al hospital donde hago mi internado y en la noche estudio con mis amigas."
+    }
+   }
+  },
+  {
+   "id": "SM2",
+   "tipo": "seguimiento",
+   "descripcion": "«Nada» sostenido tras el ángulo: se acepta (lo dice no_cumple)",
+   "item": "ma3-falta",
+   "texto": "Nada.",
+   "opciones": [],
+   "turnos": [
+    [
+     "Dices que nada. ¿Hay alguna cosa o persona que te haría el camino más fácil?",
+     "en serio nada, mis papás me apoyan en todo"
+    ]
+   ],
+   "esperado": {
+    "cumple": true,
+    "sensible": false
+   }
+  }
+ ]
+}

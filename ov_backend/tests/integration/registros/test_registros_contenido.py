@@ -117,9 +117,21 @@ def test_un_abierto_es_adecuado_y_ma3_trabaja_con_el_dia(cliente_contenido, apli
     assert referencia(cliente, 'ma3', 'ma3-ref-dia')['estado'] == 'DISPONIBLE'
     final = entregar(cliente, 'ma3', {'ma3-pasos': (ADECUADO, []), 'ma3-falta': (ADECUADO, [])})
     # El hito abierto no llega al evaluador: solo el día que imaginó.
-    assert [e.texto for e in enviado(aplicacion_contenido, 'ma3-pasos').ecos] == [
-        'DATO DE PRUEBA: me despierto en Lima y voy a mi taller']
+    assert [(e.nombre, e.texto) for e in enviado(aplicacion_contenido, 'ma3-pasos').ecos] == [
+        ('Tu día a los 23', 'DATO DE PRUEBA: me despierto en Lima y voy a mi taller')]
     assert final['estado'] == 'COMPLETADA'
+
+
+def test_ma3_recibe_hito_y_dia_con_el_nombre_de_su_item_fuente(cliente_contenido, aplicacion_contenido):
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b1-6')
+    entregar(cliente, 'b1-7', {'b1-7-dia': ('DATO DE PRUEBA: me despierto en Lima y voy a mi taller', ['TRABAJO']),
+                               'b1-7-hito': ('DATO DE PRUEBA: estaré en un instituto de mecánica', []),
+                               'b1-7-freno': (ADECUADO, ['ECONOMICAS'])})
+    entregar(cliente, 'ma3', {'ma3-pasos': (ADECUADO, []), 'ma3-falta': (ADECUADO, [])})
+    assert [(e.nombre, e.texto) for e in enviado(aplicacion_contenido, 'ma3-pasos').ecos] == [
+        ('Tu hito a un año', 'DATO DE PRUEBA: estaré en un instituto de mecánica'),
+        ('Tu día a los 23', 'DATO DE PRUEBA: me despierto en Lima y voy a mi taller')]
 
 
 def test_duda_sin_admite_abierto_queda_poco_desarrollada(cliente_contenido):

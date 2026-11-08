@@ -160,7 +160,7 @@ def test_el_evaluador_recibe_solo_los_ecos_declarados(cliente, aplicacion):
     preparar(cliente)
     entregar(cliente, plan='DATO DE PRUEBA eco-del-plan', retoma='DATO DE PRUEBA texto-de-retoma')
     duda = item_enviado(aplicacion, 't-refe-duda')
-    assert [e.nombre for e in duda.ecos] == ['PLAN', 'El plan que elegiste']
+    assert [e.nombre for e in duda.ecos] == ['Tu Plan A', 'El plan que elegiste']
     assert duda.ecos[1].texto == 'DATO DE PRUEBA eco-del-plan'
     assert not any('texto-de-retoma' in e.texto for e in duda.ecos)
     # Un ítem sin `ecos_llm` no recibe nada más que su propia elección.
@@ -173,7 +173,7 @@ def test_una_instruccion_en_el_texto_es_dato(cliente, aplicacion):
     registro = entregar(cliente, duda=malicioso)
     assert respuesta(registro, 't-refe-duda')['conversacion'][-1]['tipo'] == 'pregunta'
     duda = item_enviado(aplicacion, 't-refe-duda')
-    assert duda.texto == malicioso and [e.nombre for e in duda.ecos] == ['PLAN', 'El plan que elegiste']
+    assert duda.texto == malicioso and [e.nombre for e in duda.ecos] == ['Tu Plan A', 'El plan que elegiste']
 
 
 # --- Abierto -------------------------------------------------------------------------------

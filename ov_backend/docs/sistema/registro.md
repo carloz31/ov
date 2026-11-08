@@ -114,7 +114,7 @@ Toda evaluación se guarda en `evaluacion_respuesta` (`numero` 1 al entregar y l
 
   Cuenta `llamadas_entrega` y `llamadas_seguimiento`. Lo usan todas las pruebas.
 
-Nunca se envían nombres, códigos de cuenta ni otros datos que identifiquen al estudiante (RNF-13). De otras actividades solo va lo declarado en `ecos_llm`.
+Nunca se envían nombres, códigos de cuenta ni otros datos que identifiquen al estudiante (RNF-13). De otras actividades solo va lo declarado en `ecos_llm`. El `nombre` de un eco es el del ítem (propio o fuente de la referencia: «Tu hito a un año»); una referencia sin ítem fuente usa `NOMBRES_ECO_REFERENCIA` (`acciones.py`, «Tu Plan A») y, si su tipo no está ahí, el tipo.
 
 **Mensaje:** `mensaje_evaluador(contexto)` (`gemini.py`) arma el JSON que recibe el modelo. En un ítem con guía, los criterios van sin su `repregunta` genérica (`REPREGUNTAS_CRITERIO`): el modelo la copiaba en vez de retomar las palabras del estudiante. Sin guía (`ruta`) va completa. El evaluador falso y `texto_base()` siguen usando esa repregunta.
 

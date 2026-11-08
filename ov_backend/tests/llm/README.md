@@ -33,7 +33,8 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 ```json
 {"id": "E4", "tipo": "entrega", "descripcion": "…",
  "items": [{"item": "b1-1-logro", "texto": "…", "opciones": ["PERSISTIR", {"codigo": "OTRA", "texto": "Ninguna"}]}],
- "esperado": {"b1-1-logro": {"cumple": false, "no_contiene": ["costaba"]}}}
+ "esperado": {"b1-1-logro": {"cumple": false, "no_contiene": ["costaba"], "retoma": ["logré", "logro"],
+                             "util": "Pide qué hizo él, partiendo de lo que dijo"}}}
 
 {"id": "S1", "tipo": "seguimiento", "item": "b1-1-logro", "texto": "texto inicial", "opciones": [],
  "turnos": [["repregunta", "respuesta del estudiante"]],
@@ -45,7 +46,9 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 - `opciones`: códigos de la lista o de las opciones propias del ítem; «otra» como objeto.
 - `entrega`: los ítems de la actividad juntos (una llamada, como en la plataforma). Los ítems sin criterio, o con una opción `criterio: null`, no van al modelo y salen como «sin LLM».
 - `contexto` y `referencias`: solo si el ítem declara `ecos_llm` que los necesiten.
-- `esperado` por ítem. Claves que se comparan: `cumple`, `abierto`, `sensible` (bool; si falta, vale cualquiera), `repregunta_nula`. Claves que solo alimentan chequeos: `sin_futuro` (ítems que preguntan por el pasado), `no_contiene` (palabras de otro ítem), `contiene_alguno` (retomar lo que se fue del tema).
+- `esperado` por ítem. Claves que se comparan: `cumple`, `abierto`, `sensible` (bool; si falta, vale cualquiera), `repregunta_nula`. Claves que solo alimentan chequeos: `sin_futuro` (ítems que preguntan por el pasado), `no_contiene` (palabras de otro ítem), `contiene_alguno` (retomar lo que se fue del tema), `retoma` (palabras del estudiante: la repregunta debe contener alguna).
+- `util` en `esperado`: una frase con lo que haría provechosa la repregunta en ese caso (a qué apunta, qué ángulo da). No se compara: sale en la columna `util` del CSV, junto a la repregunta, para revisarla a mano.
+- `referencias`: el `nombre` del eco no viene del caso. Se toma, como en el backend, del ítem fuente de la referencia en `REFERENCIAS` o, sin ítem fuente, de `NOMBRES_ECO_REFERENCIA` según el `tipo`.
 
 ## Chequeos automáticos (columna `chequeos`)
 
@@ -57,16 +60,17 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 | `R4_futuro` | Pregunta qué haría en un ítem que pregunta por lo que hizo |
 | `R5_texto_base` | Copia el `texto_base` literal |
 | `R6_otro_item` | Pregunta por lo que pide otro ítem |
+| `R7_no_retoma` | La repregunta no contiene ninguna de las palabras de `retoma` |
 | `R8_prohibida` | «explica más», «desarrolla», «por qué crees que», criterios, IA |
 | `R9_califica` | Califica la respuesta: «suena a» o «eso no es» en la repregunta (por palabras, sin puntuación) |
 | `R10_falta` | `falta` con pregunta, demasiado larga o como pedido («Necesito…», «Cuéntame…») |
 | `fuera_de_tema` | No retoma la palabra con la que se fue del tema |
 | `C3_consolidada_larga` | La consolidada supera `FACTOR_MAXIMO_CONSOLIDADA` × lo escrito + `MARGEN_CONSOLIDADA` (el backend concatena) |
 
-Lo que no se automatiza se revisa a mano en el CSV: que la repregunta retome sus palabras, que el ángulo sea nuevo y que el tono sea de par (rúbrica en `claude/pruebas-llm-b1-1.md` del proyecto).
+Lo que no se automatiza se revisa a mano en el CSV: que la repregunta sirva (columna `util`), que el ángulo sea nuevo y que el tono sea de par (rúbrica en `claude/pruebas-llm-b1-1.md` del proyecto).
 
 ## Criterio de aceptación de una corrida
 
 - Clasificación igual a lo esperado en todas las corridas, salvo casos anotados como límite en su `descripcion`.
 - `sensible`: ningún falso positivo en los casos marcados «no sensible» y ningún falso negativo en los «sensible».
-- Sin `R1`, `R4`, `R6`, `R8`, `R9` ni `filtro_backend`. `R10` y `C3` se toleran ocasionales.
+- Sin `R1`, `R4`, `R6`, `R7`, `R8`, `R9` ni `filtro_backend`. `R10` y `C3` se toleran ocasionales.

@@ -12,7 +12,7 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import MAXIMO_ABIERTOS_ADECUADO, MAXIMO_REPREGUNTAS_POR_ITEM
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, Bloque, Cuenta, EstadoProgreso, EvaluacionRespuesta, EventoUso, ProgresoActividad,
+    Actividad, Bloque, Cuenta, EstadoProgreso, EvaluacionRespuesta, EventoUso, ItemRegistro, ProgresoActividad,
     Referencia, RespuestaRegistro, Rol, TextoFijo, TipoEventoUso, TipoObjetivo, TurnoSeguimiento,
 )
 from app.models.enums import (
@@ -36,6 +36,11 @@ from app.services.registro.evaluacion import (
 
 TEXTO_SENSIBLE = 'LUMI_SENSIBLE'
 TEXTO_PISTA_SIN_REPREGUNTA = 'PISTA_SIN_REPREGUNTA'
+# Nombre del eco de una referencia sin ítem fuente (también lo usa `tests/llm/evaluar.py`); otro tipo conserva su valor.
+NOMBRES_ECO_REFERENCIA = {
+    'PLAN': 'Tu Plan A', 'PLANES': 'Tus planes', 'PASOS_PLAN_A': 'Los pasos de tu Plan A',
+    'OPCION_INICIAL': 'Tu opción inicial', 'DATOS_CARRERA_PLAN_A': 'Datos de la carrera de tu Plan A',
+}
 
 
 def validar_registro(sesion, codigo_actividad, codigo_cuenta=None, disponible=False):
@@ -151,6 +156,7 @@ def ecos_de(sesion, cuenta, item, items, textos, elecciones, opciones):
     definiciones = contexto(sesion).definiciones
     referencias = [definiciones.por_codigo(Referencia, codigo) for tipo, codigo in ecos_llm if tipo == 'REFERENCIA']
     resueltas = resolver(sesion, cuenta, referencias) if referencias else {}
+    filas = {referencia.codigo: referencia for referencia in referencias}
     por_codigo = {otro.codigo: otro for otro in items}
     ecos = []
     for tipo, codigo in ecos_llm:
@@ -161,7 +167,10 @@ def ecos_de(sesion, cuenta, item, items, textos, elecciones, opciones):
             partes = [resuelta.texto] if resuelta.texto else []
             partes += [o.texto for o in resuelta.opciones or ()]
             if partes:
-                ecos.append(EcoEvaluacion(resuelta.tipo.value, ' · '.join(partes)))
+                fuente_id = filas[codigo].item_registro_id
+                nombre = (definiciones.obtener(ItemRegistro, fuente_id).nombre if fuente_id is not None
+                          else NOMBRES_ECO_REFERENCIA.get(resuelta.tipo.value, resuelta.tipo.value))
+                ecos.append(EcoEvaluacion(nombre, ' · '.join(partes)))
             continue
         otro = por_codigo[codigo]
         if tipo == 'TEXTO' and textos.get(codigo):
