@@ -12,7 +12,7 @@ La `consigna` de un ítem es el texto que lee el LLM (y el respaldo de los JSON 
 |---|---|---|
 | `EVALUADOR` | `falso` | `gemini` usa la API real; `falso`, el evaluador determinista. |
 | `GEMINI_API_KEY` | — | Obligatoria si `EVALUADOR=gemini`; sin ella la aplicación no arranca. |
-| `GEMINI_MODELO` | `gemini-3.8-flash` (`MODELO_LLM_REGISTRO`) | Modelo. |
+| `GEMINI_MODELO` | `gemini-3.5-flash-lite` (`MODELO_LLM_REGISTRO`) | Modelo. |
 | `GEMINI_TIMEOUT_SEGUNDOS` | `8` | Tiempo máximo por evaluación. |
 
 ## Modelo
@@ -100,7 +100,8 @@ Toda evaluación se guarda en `evaluacion_respuesta` (`numero` 1 al entregar y l
 
 **Evaluadores** (`evaluacion.py`, protocolo `EvaluadorRespuestas` con `evaluar_entrega` y `evaluar_seguimiento`, sin SQLAlchemy ni FastAPI):
 
-- `EvaluadorGemini` (`gemini.py`): salida JSON estructurada, temperatura `TEMPERATURA_REGISTRO` (1.0, recomendada por Google para Gemini 3) en entrega y seguimiento y `TEMPERATURA_ASISTENTES` (0.2) en el diario, las cartas, las sugerencias de pasos y el guion, un intento y tiempo máximo configurado. Usa el razonamiento mínimo del modelo: `gemini-3.8-flash` no admite apagarlo, así que va en `low`. La clave debe ser de un proyecto con nivel de pago.
+- `EvaluadorGemini` (`gemini.py`): salida JSON estructurada, temperatura `TEMPERATURA_REGISTRO` (1.0, recomendada por Google para Gemini 3) en entrega y seguimiento y `TEMPERATURA_ASISTENTES` (0.2) en el diario, las cartas, las sugerencias de pasos y el guion, un intento y tiempo máximo configurado. El razonamiento es `NIVEL_RAZONAMIENTO_REGISTRO` (`low`) en entrega y seguimiento y `NIVEL_RAZONAMIENTO_ASISTENTES` (`minimal`) en los asistentes; si el modelo no admite ese nivel, usa su mínimo (`gemini-3.8-flash` no tiene `minimal`, los 2.5 usan `thinking_budget`), y a un modelo desconocido no le envía `thinking_config`. La clave debe ser de un proyecto con nivel de pago.
+- Con 3.5 Flash-Lite la temperatura se ignora.
 - `EvaluadorFalso`: determinista, por marcas en el texto más reciente de cada ítem:
   - sin marca, cumple;
   - `[vaga]`: no cumple;

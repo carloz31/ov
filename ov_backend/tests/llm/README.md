@@ -23,7 +23,7 @@ Los CSV y los `resumen.md` **se versionan**: son la evidencia de la validación 
 uv run python tests/llm/evaluar.py b1-1 b1-3                     # todos los casos, 2 corridas
 uv run python tests/llm/evaluar.py b1-1 --solo E4 S1 --corridas 3
 uv run python tests/llm/evaluar.py b1-1 --temperaturas 0.2 1.0   # comparar temperaturas
-uv run python tests/llm/evaluar.py b1-1 --razonamiento low       # minimal|low|medium|high; sin él, el del backend
+uv run python tests/llm/evaluar.py b1-1 --razonamiento low       # minimal|low|medium|high; sin él, NIVEL_RAZONAMIENTO_REGISTRO adaptado al modelo
 uv run python tests/llm/evaluar.py b1-1 --mostrar E4             # el mensaje exacto, sin llamar
 ```
 

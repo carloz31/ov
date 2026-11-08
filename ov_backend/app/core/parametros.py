@@ -58,11 +58,16 @@ MAXIMO_REINICIOS_PERFIL_PLANO = 1
 MAX_AVISOS_VELOCIDAD = 2
 ITEMS_ENTRE_AVISOS_VELOCIDAD = 10
 TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
-MODELO_LLM_REGISTRO = "gemini-3.8-flash"
+MODELO_LLM_REGISTRO = "gemini-3.5-flash-lite"
 # Ajuste pruebas llm: 1.0 en el registro (recomendación de Google para Gemini 3); los asistentes (diario, cartas,
-# sugerencias de pasos, guion) conservan 0.2.
+# sugerencias de pasos, guion) conservan 0.2. gemini-3.5-flash-lite la ignora; se conserva para los modelos que la usan.
 TEMPERATURA_REGISTRO = 1.0
 TEMPERATURA_ASISTENTES = 0.2
+# Ajuste pruebas llm: entrega y seguimiento van en `low` (config C de tests/llm/resultados/comparativa-razonamiento.md,
+# elegida por el usuario); los asistentes conservan el razonamiento mínimo que ya tenían. Si el modelo no admite el
+# nivel, `gemini.razonamiento_para` usa su mínimo.
+NIVEL_RAZONAMIENTO_REGISTRO = "low"
+NIVEL_RAZONAMIENTO_ASISTENTES = "minimal"
 # B03: validación de la pregunta redactada por el LLM; se compara en minúsculas y sin tildes.
 MAXIMO_CARACTERES_PREGUNTA = 200
 PALABRAS_EVALUATIVAS = ("adecuad", "poco desarrollad", "criterio", "incomplet", "insuficient")

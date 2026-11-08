@@ -14,7 +14,9 @@ from google.genai import errors, types
 from pydantic import ValidationError
 
 from app.config import Configuracion, ErrorConfiguracionRegistro
-from app.core.parametros import TEMPERATURA_ASISTENTES, TEMPERATURA_REGISTRO
+from app.core.parametros import (
+    NIVEL_RAZONAMIENTO_ASISTENTES, NIVEL_RAZONAMIENTO_REGISTRO, TEMPERATURA_ASISTENTES, TEMPERATURA_REGISTRO,
+)
 from app.services.diario.asistente import (
     PROMPT_CARTA_V1, PROMPT_DIARIO_V1, ContextoCarta, PreguntaPersonalizada, validar_personalizacion,
 )
@@ -61,13 +63,16 @@ class FiltroSecretos(logging.Filter):
         return True
 
 
-def razonamiento_minimo(modelo):
+def razonamiento_para(modelo, nivel):
+    """El nivel pedido o, si el modelo no lo admite, su mínimo; `None` si el modelo es desconocido."""
     nombre = modelo.removeprefix('models/')
-    if nombre in ('gemini-3.1-flash-lite', 'gemini-3.1-flash-lite-preview', 'gemini-3-flash-preview'):
-        return types.ThinkingConfig(thinking_level='minimal')
+    if nombre in ('gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.1-flash-lite-preview',
+                  'gemini-3-flash-preview'):
+        return types.ThinkingConfig(thinking_level=nivel)
     # gemini-3.8-flash no admite `minimal` ni apagar el razonamiento: `low` es su mínimo.
     if nombre in ('gemini-3.8-flash', 'gemini-3.1-pro-preview', 'gemini-3-pro-preview'):
-        return types.ThinkingConfig(thinking_level='low')
+        return types.ThinkingConfig(thinking_level='low' if nivel == 'minimal' else nivel)
+    # Los 2.5 no tienen niveles: siempre su presupuesto mínimo.
     if nombre in ('gemini-2.5-flash', 'gemini-2.5-flash-lite'):
         return types.ThinkingConfig(thinking_budget=0)
     if nombre == 'gemini-2.5-pro':
@@ -134,9 +139,10 @@ class EvaluadorGemini:
         return getattr(self._metricas, 'latencia_ms', None)
 
     def _evaluar(self, contexto, instruccion, esquema, validar):
-        # La temperatura del registro (1.0, Gemini 3) no se extiende a los asistentes (diario, planes, guion).
+        # La temperatura y el razonamiento del registro no se extienden a los asistentes (diario, planes, guion).
         registro = isinstance(contexto, (ContextoEntrega, ContextoSeguimiento))
         temperatura = TEMPERATURA_REGISTRO if registro else TEMPERATURA_ASISTENTES
+        nivel = NIVEL_RAZONAMIENTO_REGISTRO if registro else NIVEL_RAZONAMIENTO_ASISTENTES
         try:
             respuesta = self._cliente.models.generate_content(
                 model=self.configuracion.modelo,
@@ -146,7 +152,7 @@ class EvaluadorGemini:
                     temperature=temperatura, candidate_count=1,
                     response_mime_type='application/json',
                     response_json_schema=esquema.model_json_schema(),
-                    thinking_config=razonamiento_minimo(self.configuracion.modelo),
+                    thinking_config=razonamiento_para(self.configuracion.modelo, nivel),
                     automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
                 ),
             )

@@ -152,8 +152,10 @@ def contexto_seguimiento(registro, caso):
 # --- Llamada y chequeos ---------------------------------------------------------------------
 
 def config_razonamiento(modelo, nivel):
-    """Con `--razonamiento`, ese nivel; sin él, el mismo que usa el backend."""
-    return adaptador.types.ThinkingConfig(thinking_level=nivel) if nivel else adaptador.razonamiento_minimo(modelo)
+    """Con `--razonamiento`, ese nivel; sin él, el del backend para el registro, adaptado al modelo."""
+    if nivel:
+        return adaptador.types.ThinkingConfig(thinking_level=nivel)
+    return adaptador.razonamiento_para(modelo, parametros.NIVEL_RAZONAMIENTO_REGISTRO)
 
 
 def nombre_razonamiento(config):
@@ -316,7 +318,7 @@ def main():
     parser.add_argument('--temperaturas', type=float, nargs='+', default=[parametros.TEMPERATURA_REGISTRO])
     parser.add_argument('--modelo', help='por defecto, GEMINI_MODELO del entorno o del .env (el del backend)')
     parser.add_argument('--razonamiento', choices=('minimal', 'low', 'medium', 'high'),
-                        help='por defecto, el del backend (`razonamiento_minimo` del modelo)')
+                        help='por defecto, el del backend para el registro (`NIVEL_RAZONAMIENTO_REGISTRO` adaptado al modelo)')
     parser.add_argument('--hilos', type=int, default=8, help='llamadas en paralelo (Tier 1 admite de sobra)')
     parser.add_argument('--etiqueta', default='', help='sufijo del CSV, p. ej. «tras-ajuste»')
     parser.add_argument('--mostrar')

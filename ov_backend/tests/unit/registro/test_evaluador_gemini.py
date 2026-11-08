@@ -2,11 +2,12 @@
 
 import json
 import logging
-from dataclasses import replace
+from dataclasses import dataclass, replace
 import httpx
 import pytest
 from google import genai
 from google.genai import errors, types
+from pydantic import BaseModel
 from app.config import Configuracion
 from app.services.registro.evaluacion import (
     CriterioEvaluacion, ItemPorEvaluar, TurnoEvaluacion, procesar_entrega, procesar_seguimiento,
@@ -15,7 +16,7 @@ from app.services.diario.asistente import ContextoPersonalizacion, DatoPersonali
 from app.services.registro.evaluacion import (
     ContextoEntrega, ContextoSeguimiento, GuiaSeguimiento, ItemEntrega, ResultadoSeguimiento,
 )
-from app.services.registro.gemini import EvaluadorGemini, mensaje_evaluador, razonamiento_minimo
+from app.services.registro.gemini import EvaluadorGemini, mensaje_evaluador, razonamiento_para
 from app.services.registro.prompt import PROMPT_ENTREGA, PROMPT_SEGUIMIENTO
 from soporte_red import impedir_red
 
@@ -105,8 +106,8 @@ def test_gemini_recibe_sensible_antes_que_emocional_y_cumple():
     assert list(ResultadoSeguimiento.model_json_schema()['properties'])[:3] == ['sensible', 'emocional', 'cumple']
 
 
-def test_modelo_por_defecto_es_gemini_3_8_flash():
-    assert CONFIGURACION.modelo == 'gemini-3.8-flash'
+def test_modelo_por_defecto_es_gemini_3_5_flash_lite():
+    assert CONFIGURACION.modelo == 'gemini-3.5-flash-lite'
 
 
 def test_entrega_poco_desarrollada_usa_la_pregunta_redactada():
@@ -132,21 +133,52 @@ def test_seguimiento_consolida_con_su_instruccion():
     assert 'consolidada' in llamada['config'].response_json_schema['required']
 
 
-@pytest.mark.parametrize('modelo,campo,valor', [
-    ('gemini-3.8-flash', 'thinking_level', 'LOW'),
-    ('models/gemini-3.8-flash', 'thinking_level', 'LOW'),
-    ('gemini-3.1-flash-lite', 'thinking_level', 'MINIMAL'),
-    ('gemini-3-flash-preview', 'thinking_level', 'MINIMAL'),
-    ('gemini-3.1-pro-preview', 'thinking_level', 'LOW'),
-    ('gemini-2.5-flash', 'thinking_budget', 0),
-    ('gemini-2.5-pro', 'thinking_budget', 128),
+@pytest.mark.parametrize('modelo,nivel,campo,valor', [
+    ('gemini-3.5-flash-lite', 'low', 'thinking_level', 'LOW'),
+    ('gemini-3.5-flash-lite', 'minimal', 'thinking_level', 'MINIMAL'),
+    ('models/gemini-3.5-flash-lite', 'low', 'thinking_level', 'LOW'),
+    ('gemini-3.8-flash', 'low', 'thinking_level', 'LOW'),
+    ('gemini-3.8-flash', 'minimal', 'thinking_level', 'LOW'),
+    ('models/gemini-3.8-flash', 'minimal', 'thinking_level', 'LOW'),
+    ('gemini-3.1-flash-lite', 'minimal', 'thinking_level', 'MINIMAL'),
+    ('gemini-3.1-flash-lite', 'low', 'thinking_level', 'LOW'),
+    ('gemini-3-flash-preview', 'minimal', 'thinking_level', 'MINIMAL'),
+    ('gemini-3.1-pro-preview', 'minimal', 'thinking_level', 'LOW'),
+    ('gemini-2.5-flash', 'minimal', 'thinking_budget', 0),
+    ('gemini-2.5-flash', 'low', 'thinking_budget', 0),
+    ('gemini-2.5-pro', 'minimal', 'thinking_budget', 128),
+    ('gemini-2.5-pro', 'low', 'thinking_budget', 128),
 ])
-def test_razonamiento_minimo_compatible(modelo, campo, valor):
-    assert getattr(razonamiento_minimo(modelo), campo) == valor
+def test_razonamiento_minimo_compatible(modelo, nivel, campo, valor):
+    assert getattr(razonamiento_para(modelo, nivel), campo) == valor
+
+
+class SalidaAsistente(BaseModel):
+    ok: bool
+
+
+@dataclass(frozen=True)
+class ContextoAsistente:
+    texto: str
+
+
+def test_registro_en_low_y_asistentes_en_minimal():
+    configuracion = replace(CONFIGURACION, modelo='gemini-3.5-flash-lite')
+    registro, asistente = ClienteSimulado(), ClienteSimulado(respuesta_sdk({'ok': True}))
+    entregar(registro, configuracion)
+    adaptador = EvaluadorGemini(configuracion, cliente=asistente)
+    try:
+        adaptador._evaluar(ContextoAsistente('hola'), 'instrucción', SalidaAsistente, lambda resultado, _contexto: resultado)
+    finally:
+        adaptador.cerrar()
+    assert registro.llamadas[0]['config'].thinking_config.thinking_level == 'LOW'
+    assert registro.llamadas[0]['config'].temperature == 1.0
+    assert asistente.llamadas[0]['config'].thinking_config.thinking_level == 'MINIMAL'
+    assert asistente.llamadas[0]['config'].temperature == 0.2
 
 
 def test_modelo_desconocido_sin_supuestos_ni_descubrimiento():
-    assert razonamiento_minimo('modelo-desconocido') is None
+    assert razonamiento_para('modelo-desconocido', 'low') is None
     cliente = ClienteSimulado()
     entregar(cliente, replace(CONFIGURACION, modelo='modelo-desconocido'))
     assert cliente.llamadas[0]['config'].thinking_config is None
