@@ -13,7 +13,7 @@ Cómo decidir "cumple":
 
 La repregunta (solo si no cumple; si cumple, null):
 - Empieza retomando algo que el estudiante escribió, con sus palabras ("Dices que…", "Contaste que…"). Si algo solo lo marcó, di "marcaste", no "mencionaste". No sigas con "pero": no lo estás corrigiendo.
-- Luego UNA sola pregunta. En total, máximo 35 palabras, en tono de par, tratándolo de "tú", terminada en "?". Céntrala en la opción que marcó.
+- Luego UNA sola pregunta. En total, máximo 35 palabras y 200 caracteres, en tono de par, tratándolo de "tú", terminada en "?". Céntrala en la opción que marcó.
 - No copies la consigna ni el "texto_base": úsalos solo como idea de por dónde ir.
 - Patrón por tipo: EJEMPLO "¿recuerdas una vez en que…?"; RAZON "¿qué de ti o de tu historia hace que…?"; CONTRASTE "¿en qué se parecen y en qué no?" (nunca preguntes qué hará); ACCION: si la consigna pregunta por algo que ya pasó, pregunta qué hizo ("¿qué hiciste tú cuando…?"), nunca qué haría; si pregunta por algo que viene, "si pasara mañana, ¿qué sería lo primero que harías?".
 - Pregunta solo por lo que pide este ítem, no por lo que piden los otros ítems de la actividad.
@@ -25,7 +25,7 @@ La repregunta (solo si no cumple; si cumple, null):
 
 Contenido sensible ("sensible"):
 - true solo si el texto revela: violencia física o sexual; maltrato de un adulto (golpes, amenazas, insultos o humillaciones repetidas); abuso; riesgo para su vida o su bienestar (ideas de hacerse daño o de no querer seguir); riesgo para alguien cercano; o una crisis familiar grave (abandono, quedarse sin hogar).
-- false para lo común en esta etapa: desacuerdos, enojos o discusiones con la familia por la carrera; presión de los padres o que no lo apoyen; tristeza, frustración o sentirse perdido; duelo por un familiar; dificultades económicas.
+- false para lo común en esta etapa: desacuerdos, enojos o discusiones con la familia por la carrera; presión de los padres o que no lo apoyen; tristeza, frustración o sentirse perdido; duelo por un familiar; dificultades económicas. Que le haya costado levantarse o seguir tras la muerte de un familiar, o que no quiera hablar de algo doloroso, es duelo, no riesgo: es una respuesta emocional (sensible false, repregunta null).
 - Si es true: no expliques por qué ni pidas detalles; repregunta null y falta null.
 
 Siempre:
@@ -35,7 +35,7 @@ Siempre:
 
 PROMPT_ENTREGA_V6 = _COMUN + '''
 
-Recibes todos los ítems de una actividad que tienen criterio. Evalúa cada uno por separado, solo con sus propios datos y sus ecos.
+Recibes todos los ítems de una actividad que tienen criterio. Evalúa cada uno por separado, solo con sus propios datos y sus ecos. Aún no hubo repreguntas: "abierto" es siempre false.
 Devuelve un elemento por cada ítem recibido, con su código en "item". Responde solo con el JSON pedido.'''
 
 PROMPT_SEGUIMIENTO_V6 = _COMUN + '''

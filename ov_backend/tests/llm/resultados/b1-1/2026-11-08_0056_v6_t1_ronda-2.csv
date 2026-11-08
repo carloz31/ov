@@ -1,0 +1,7 @@
+﻿registro,caso,tipo,temperatura,corrida,item,esperado,coincide,cumple,abierto,sensible,repregunta,falta,consolidada,ratio_consolidada,chequeos,latencia_ms,error
+b1-1,E8,entrega,1.0,1,b1-1-dificultad,"{""sensible"": false, ""repregunta_nula"": true}",OK,True,False,False,,,,,OK,2490,
+b1-1,E8,entrega,1.0,1,b1-1-gustos,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2490,
+b1-1,E8,entrega,1.0,1,b1-1-logro,"{""cumple"": true}",OK,True,False,False,,,,,OK,2490,
+b1-1,E8,entrega,1.0,2,b1-1-dificultad,"{""sensible"": false, ""repregunta_nula"": true}",OK,True,False,False,,,,,OK,2571,
+b1-1,E8,entrega,1.0,2,b1-1-gustos,"{""cumple"": true, ""sensible"": false}",OK,True,False,False,,,,,OK,2571,
+b1-1,E8,entrega,1.0,2,b1-1-logro,"{""cumple"": true}",OK,True,False,False,,,,,OK,2571,
