@@ -50,6 +50,7 @@ TITULOS = {a[0]: a[2] for a in ACTIVIDADES}  # el título de la actividad, como 
 PROHIBIDAS = ('explica más', 'desarrolla', 'por qué crees que', 'criterio', 'inteligencia artificial')
 FUTURO = re.compile(r'\b(harías|harás|podrías hacer|si pasara mañana|si tuvieras que)\b')
 GENERICA = '¿podrías darme un ejemplo concreto'
+CALIFICA = re.compile(r'pero|suena a')
 
 
 
@@ -175,6 +176,8 @@ def chequeos(r, guia, esperado):
             fallas.append('R5_texto_base')
         if any(p in baja for p in PROHIBIDAS):
             fallas.append('R8_prohibida')
+        if CALIFICA.search(baja):
+            fallas.append('R9_califica')
         if any(p in baja for p in esperado.get('no_contiene', ())):
             fallas.append('R6_otro_item')
         if esperado.get('contiene_alguno') and not any(p in baja for p in esperado['contiene_alguno']):

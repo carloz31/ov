@@ -58,6 +58,7 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 | `R5_texto_base` | Copia el `texto_base` literal |
 | `R6_otro_item` | Pregunta por lo que pide otro ítem |
 | `R8_prohibida` | «explica más», «desarrolla», «por qué crees que», criterios, IA |
+| `R9_califica` | Califica la respuesta o la corrige: «pero» o «suena a» en la repregunta |
 | `R10_falta` | `falta` con pregunta, demasiado larga o como pedido («Necesito…», «Cuéntame…») |
 | `fuera_de_tema` | No retoma la palabra con la que se fue del tema |
 | `C3_consolidada_larga` | La consolidada supera `FACTOR_MAXIMO_CONSOLIDADA` (el backend concatena) |
@@ -68,4 +69,4 @@ Lo que no se automatiza se revisa a mano en el CSV: que la repregunta retome sus
 
 - Clasificación igual a lo esperado en todas las corridas, salvo casos anotados como límite en su `descripcion`.
 - `sensible`: ningún falso positivo en los casos marcados «no sensible» y ningún falso negativo en los «sensible».
-- Sin `R1`, `R4`, `R6`, `R8` ni `filtro_backend`. `R10` y `C3` se toleran ocasionales.
+- Sin `R1`, `R4`, `R6`, `R8`, `R9` ni `filtro_backend`. `R10` y `C3` se toleran ocasionales.

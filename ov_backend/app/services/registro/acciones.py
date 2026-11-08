@@ -591,10 +591,14 @@ def avanzar(sesion, cuenta, actividad, items, fecha, *, intento, eventos=()):
     Solo preguntan los ítems respondidos en este intento (en una edición, los editados). La pregunta va al
     primero, por orden, que sigue poco desarrollado y tiene repreguntas libres: una por ítem salvo que declare
     `max_repreguntas` (ajuste registros), hasta `actividad.maximo_seguimientos` por intento. Un ítem ADECUADA
-    (también el sensible) o ABIERTA no pregunta. `eventos` son los ya ganados en esta acción.
+    (también el sensible) o ABIERTA no pregunta, y con un ítem sensible en el intento nadie más pregunta.
+    `eventos` son los ya ganados en esta acción.
     """
     registro = leer_registro(sesion, cuenta, actividad)
-    if registro.turnos_del_intento(intento) < actividad.maximo_seguimientos:
+    # Ajuste pruebas llm: si algún ítem salió sensible en este intento (entrega o seguimiento), no se abren más
+    # turnos; los demás quedan con su clasificación y su pista.
+    sensible = any(r.intento == intento and r.sensible for r in registro.respuestas.values())
+    if not sensible and registro.turnos_del_intento(intento) < actividad.maximo_seguimientos:
         for item in items:
             respuesta = registro.respuestas.get(item.id)
             maximo = (item.seguimiento or {}).get('max_repreguntas', MAXIMO_REPREGUNTAS_POR_ITEM)

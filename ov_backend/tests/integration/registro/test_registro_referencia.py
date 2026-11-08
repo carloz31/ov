@@ -226,11 +226,13 @@ def test_sensible_es_desarrollado_sin_repregunta_con_aviso_y_marca_de_atencion(c
     assert duda['estado'] == 'FINAL'
     assert duda['conversacion'][-1] == {'tipo': 'aviso', 'texto': SENSIBLE_TEXTO}
     assert not any(m_['tipo'] == 'pregunta' for m_ in duda['conversacion'])
-    # El presupuesto pasa al siguiente ítem poco desarrollado.
-    assert respuesta(registro, 't-refe-retoma')['estado'] == 'PENDIENTE_SEGUIMIENTO'
-    cierre = responder(cliente, 't-refe-retoma', 'DATO DE PRUEBA: porque sigo queriendo cuidar personas')
-    assert 't-refe-duda' not in [i['item'] for i in cierre['items_por_ampliar']]
-    assert any(e['tipo'] == 'REGISTRO_ADECUADO' for e in cierre['eventos_registrados'])
+    # Ajuste pruebas llm: con un ítem sensible en el intento no se abren más turnos; el otro queda con su pista.
+    retoma = respuesta(registro, 't-refe-retoma')
+    assert retoma['estado'] == 'FINAL' and not any(m_['tipo'] == 'pregunta' for m_ in retoma['conversacion'])
+    assert registro['estado'] == 'COMPLETADA'
+    por_ampliar = registro['items_por_ampliar']
+    assert [i['item'] for i in por_ampliar] == ['t-refe-retoma'] and por_ampliar[0]['pista'].startswith('Sobre lo que contaste')
+    assert not any(e['tipo'] == 'REGISTRO_ADECUADO' for e in registro['eventos_registrados'])
     with aplicacion.state.fabrica_sesiones() as sesion:
         guardada = fila(sesion, 't-refe-duda')
         assert guardada.sensible and guardada.requiere_atencion
@@ -389,3 +391,15 @@ def test_pregunta_invalida_sigue_usando_el_texto_base(cliente):
     registro = entregar(cliente, duda='DATO DE PRUEBA [vaga] [pregunta-invalida]')
     assert respuesta(registro, 't-refe-duda')['conversacion'][-1] == {
         'tipo': 'pregunta', 'orden': 1, 'texto': '¿Qué dato te falta?'}
+
+
+def test_un_sensible_en_el_seguimiento_corta_los_turnos_del_intento(cliente):
+    preparar(cliente)
+    registro = entregar(cliente, plan='DATO DE PRUEBA [vaga]', duda='DATO DE PRUEBA [vaga]')
+    assert respuesta(registro, 't-refe-plan')['estado'] == 'PENDIENTE_SEGUIMIENTO'
+    cierre = responder(cliente, 't-refe-plan', 'DATO DE PRUEBA algo delicado [sensible] [vaga]')
+    # La segunda repregunta (a t-refe-duda) ya no se abre.
+    assert cierre['estado'] == 'COMPLETADA'
+    duda = respuesta(cierre, 't-refe-duda')
+    assert duda['estado'] == 'FINAL' and not any(m_['tipo'] == 'pregunta' for m_ in duda['conversacion'])
+    assert [i['item'] for i in cierre['items_por_ampliar']] == ['t-refe-duda']
