@@ -299,7 +299,8 @@
     },
     "b1-1-dificultad": {
      "sensible": false,
-     "repregunta_nula": true
+     "repregunta_nula": true,
+     "emocional": true
     }
    }
   },

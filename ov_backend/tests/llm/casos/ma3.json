@@ -288,6 +288,13 @@
      "en serio nada, mis papás me apoyan en todo"
     ]
    ],
+   "contexto": [
+    {
+     "item": "ma3-pasos",
+     "texto": "Este mes me compro un micrófono con lo que ahorré; el siguiente subo un video por semana.",
+     "opciones": []
+    }
+   ],
    "esperado": {
     "cumple": true,
     "sensible": false

@@ -116,7 +116,8 @@
     "b1-6-mito": {
      "cumple": false,
      "sensible": false,
-     "util": "Ángulo pequeño y concreto: quién de su entorno lo repite o dónde lo oyó; con permiso de no saber"
+     "util": "Ángulo pequeño y concreto: quién de su entorno lo repite o dónde lo oyó; con permiso de no saber",
+     "emocional": false
     }
    }
   },

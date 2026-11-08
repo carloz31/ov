@@ -92,6 +92,7 @@ class ResultadoItemEntrega(_Estricto):
     item: str
     cumple: bool
     abierto: bool
+    emocional: bool
     sensible: bool
     falta: str | None
     repregunta: str | None
@@ -104,6 +105,7 @@ class ResultadoEntrega(_Estricto):
 class ResultadoSeguimiento(_Estricto):
     cumple: bool
     abierto: bool
+    emocional: bool
     sensible: bool
     falta: str | None
     repregunta: str | None
@@ -278,16 +280,14 @@ def evaluar_por_extension(texto: str, min_caracteres: int | None, repregunta_gen
 def _desde_resultado(r, item, modelo, version_prompt, latencia_ms, texto_evaluado, consolidada=None, en_entrega=False):
     """Del resultado del evaluador a la evaluación: sensible manda, luego cumple; si no, poco desarrollada.
 
-    Ajuste pruebas llm: `repregunta: null` sin cumplir (respuesta emocional) deja la poco desarrollada sin
-    pregunta: `avanzar` no le abre turno. Una repregunta no nula pero inválida se reemplaza por el `texto_base`.
-    En la entrega aún no hubo repregunta: el `abierto` del modelo se ignora y, si vino con `repregunta: null`, no es
-    una respuesta emocional: se usa el `texto_base`."""
+    Ajuste pruebas llm: `emocional` deja la poco desarrollada sin pregunta: `avanzar` no le abre turno. Si no es
+    emocional, una repregunta nula o inválida se reemplaza por el `texto_base`. En la entrega aún no hubo repregunta:
+    el `abierto` del modelo se ignora."""
     if r.sensible or r.cumple:
         return EvaluacionProcesada(OrigenEvaluacion.LLM, ClasificacionRespuesta.ADECUADA, (), None, modelo,
                                    version_prompt, latencia_ms, None, texto_evaluado, consolidada,
                                    sensible=r.sensible)
-    abierto_ignorado = en_entrega and r.abierto
-    pregunta = None if r.repregunta is None and not abierto_ignorado else pregunta_o_base(r.repregunta, item)
+    pregunta = None if r.emocional else pregunta_o_base(r.repregunta, item)
     return EvaluacionProcesada(OrigenEvaluacion.LLM, ClasificacionRespuesta.POCO_DESARROLLADA,
                                tuple(c.codigo for c in item.criterios), pregunta, modelo,
                                version_prompt, latencia_ms, None, texto_evaluado, consolidada,
@@ -389,16 +389,16 @@ class EvaluadorFalso:
 
     @staticmethod
     def _clasificar(texto, criterios, guia):
-        """(cumple, abierto, sensible, falta, repregunta)."""
+        """(cumple, abierto, emocional, sensible, falta, repregunta)."""
         sensible = "[sensible]" in texto
         marcas = [t.strip() for marca in re.findall(r"\[falta:([^\]]*)\]", texto) for t in marca.split(',')
                   if t.strip()]
         abierto = "[abierto]" in texto
         emocional = "[emocional]" in texto
         if not marcas and "[vaga]" not in texto and not abierto and not emocional:
-            return True, False, sensible, None, None
+            return True, False, False, sensible, None, None
         if "[pregunta-invalida]" in texto:
-            return False, abierto, sensible, None, "Falta C1"
+            return False, abierto, emocional, sensible, None, "Falta C1"
         elegido = next((c for c in criterios if c.tipo in marcas or c.codigo in marcas), None)
         if elegido is not None:
             base = elegido.repregunta
@@ -411,8 +411,8 @@ class EvaluadorFalso:
         else:
             falta = (elegido or criterios[0]).descripcion if criterios else None
         if emocional:
-            return False, abierto, sensible, falta, None
-        return False, abierto, sensible, falta, f"Sobre lo que contaste: {base}"
+            return False, abierto, True, sensible, falta, None
+        return False, abierto, False, sensible, falta, f"Sobre lo que contaste: {base}"
 
     def evaluar_entrega(self, contexto: ContextoEntrega) -> ResultadoEntrega:
         self.llamadas_entrega += 1
@@ -423,9 +423,10 @@ class EvaluadorFalso:
             return {"items": "DATO DE PRUEBA"}
         resultados = []
         for item in contexto.items:
-            cumple, abierto, sensible, falta, repregunta = self._clasificar(item.texto, item.criterios, item.guia)
-            resultados.append(ResultadoItemEntrega(item=item.item, cumple=cumple, abierto=abierto, sensible=sensible,
-                                                   falta=falta, repregunta=repregunta))
+            cumple, abierto, emocional, sensible, falta, repregunta = self._clasificar(
+                item.texto, item.criterios, item.guia)
+            resultados.append(ResultadoItemEntrega(item=item.item, cumple=cumple, abierto=abierto, emocional=emocional,
+                                                   sensible=sensible, falta=falta, repregunta=repregunta))
         return ResultadoEntrega(items=resultados)
 
     def evaluar_seguimiento(self, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
@@ -436,12 +437,13 @@ class EvaluadorFalso:
             raise RuntimeError("Fallo simulado del evaluador")
         if "[json-invalido]" in texto:
             return {"cumple": "DATO DE PRUEBA"}
-        cumple, abierto, sensible, falta, repregunta = self._clasificar(texto, contexto.criterios, contexto.guia)
+        cumple, abierto, emocional, sensible, falta, repregunta = self._clasificar(
+            texto, contexto.criterios, contexto.guia)
         consolidada = concatenar(contexto.texto_inicial, contexto.turnos)
         if "[consolidada-invalida]" in texto:
             consolidada = consolidada * 3 + '.' * (MARGEN_CONSOLIDADA + 1)
-        return ResultadoSeguimiento(cumple=cumple, abierto=abierto, sensible=sensible, falta=falta,
-                                    repregunta=repregunta, consolidada=consolidada)
+        return ResultadoSeguimiento(cumple=cumple, abierto=abierto, emocional=emocional, sensible=sensible,
+                                    falta=falta, repregunta=repregunta, consolidada=consolidada)
 
     def personalizar_entrada(self, contexto) -> dict:
         """Retoma el primer dato del contexto delante de la pregunta base."""

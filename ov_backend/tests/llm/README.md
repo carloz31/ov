@@ -46,7 +46,7 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 - `opciones`: códigos de la lista o de las opciones propias del ítem; «otra» como objeto.
 - `entrega`: los ítems de la actividad juntos (una llamada, como en la plataforma). Los ítems sin criterio, o con una opción `criterio: null`, no van al modelo y salen como «sin LLM».
 - `contexto` y `referencias`: solo si el ítem declara `ecos_llm` que los necesiten.
-- `esperado` por ítem. Claves que se comparan: `cumple`, `abierto`, `sensible` (bool; si falta, vale cualquiera), `repregunta_nula`. Claves que solo alimentan chequeos: `sin_futuro` (ítems que preguntan por el pasado), `no_contiene` (palabras de otro ítem), `contiene_alguno` (retomar lo que se fue del tema), `retoma` (palabras del estudiante: la repregunta debe contener alguna).
+- `esperado` por ítem. Claves que se comparan: `cumple`, `abierto`, `emocional`, `sensible` (bool; si falta, vale cualquiera), `repregunta_nula`. Claves que solo alimentan chequeos: `sin_futuro` (ítems que preguntan por el pasado), `no_contiene` (palabras de otro ítem), `contiene_alguno` (retomar lo que se fue del tema), `retoma` (palabras del estudiante: la repregunta debe contener alguna).
 - `util` en `esperado`: una frase con lo que haría provechosa la repregunta en ese caso (a qué apunta, qué ángulo da). No se compara: sale en la columna `util` del CSV, junto a la repregunta, para revisarla a mano.
 - `referencias`: el `nombre` del eco no viene del caso. Se toma, como en el backend, del ítem fuente de la referencia en `REFERENCIAS` o, sin ítem fuente, de `NOMBRES_ECO_REFERENCIA` según el `tipo`.
 

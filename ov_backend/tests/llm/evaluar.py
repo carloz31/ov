@@ -199,7 +199,7 @@ def chequeos(r, guia, esperado):
 
 
 def comparar(esperado, r):
-    distintos = [f'{k}≠{v}' for k, v in esperado.items() if k in ('cumple', 'abierto', 'sensible')
+    distintos = [f'{k}≠{v}' for k, v in esperado.items() if k in ('cumple', 'abierto', 'emocional', 'sensible')
                  and getattr(r, k) != v]
     if esperado.get('repregunta_nula') and r.repregunta is not None:
         distintos.append('repregunta≠null')
@@ -229,7 +229,7 @@ def ejecutar(cliente, modelo, registro, caso, temperatura, corrida):
                 esperado = caso['esperado'].get(r.item, {})
                 filas.append(dict(base, item=r.item, latencia_ms=ms, esperado=json.dumps(esperado, ensure_ascii=False),
                                   util=esperado.get('util', ''),
-                                  coincide=comparar(esperado, r), cumple=r.cumple, abierto=r.abierto,
+                                  coincide=comparar(esperado, r), cumple=r.cumple, abierto=r.abierto, emocional=r.emocional,
                                   sensible=r.sensible, repregunta=r.repregunta, falta=r.falta,
                                   chequeos=' '.join(chequeos(r, guias.get(r.item), esperado)) or 'OK'))
             return filas
@@ -243,14 +243,14 @@ def ejecutar(cliente, modelo, registro, caso, temperatura, corrida):
             fallas.append('C3_consolidada_larga')
         return [dict(base, item=caso['item'], latencia_ms=ms, esperado=json.dumps(caso['esperado'], ensure_ascii=False),
                      util=caso['esperado'].get('util', ''),
-                     coincide=comparar(caso['esperado'], r), cumple=r.cumple, abierto=r.abierto, sensible=r.sensible,
+                     coincide=comparar(caso['esperado'], r), cumple=r.cumple, abierto=r.abierto, emocional=r.emocional, sensible=r.sensible,
                      repregunta=r.repregunta, falta=r.falta, consolidada=r.consolidada, ratio_consolidada=ratio,
                      chequeos=' '.join(fallas) or 'OK')]
     except Exception as error:  # noqa: BLE001 — una falla de red o de esquema se registra y la corrida sigue
         return [dict(base, item=caso.get('item', '-'), error=repr(error)[:300])]
 
 
-CAMPOS = ['registro', 'caso', 'tipo', 'temperatura', 'corrida', 'item', 'esperado', 'util', 'coincide', 'cumple', 'abierto',
+CAMPOS = ['registro', 'caso', 'tipo', 'temperatura', 'corrida', 'item', 'esperado', 'util', 'coincide', 'cumple', 'abierto', 'emocional',
           'sensible', 'repregunta', 'falta', 'consolidada', 'ratio_consolidada', 'chequeos', 'latencia_ms', 'error']
 
 

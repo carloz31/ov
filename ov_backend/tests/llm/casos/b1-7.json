@@ -132,7 +132,8 @@
       "te sientes",
       "te sentirías"
      ],
-     "util": "Pasa del sentimiento a qué estará haciendo (un día cualquiera dentro de un año)"
+     "util": "Pasa del sentimiento a qué estará haciendo (un día cualquiera dentro de un año)",
+     "emocional": false
     },
     "b1-7-freno": {
      "cumple": false,
@@ -409,7 +410,8 @@
     "b1-7-dia": {
      "cumple": false,
      "sensible": false,
-     "repregunta_nula": true
+     "repregunta_nula": true,
+     "emocional": true
     },
     "b1-7-hito": {
      "cumple": true,

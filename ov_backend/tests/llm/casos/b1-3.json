@@ -200,7 +200,8 @@
     },
     "b1-3-mia": {
      "sensible": false,
-     "repregunta_nula": true
+     "repregunta_nula": true,
+     "emocional": true
     },
     "b1-3-contraste": {
      "sensible": false

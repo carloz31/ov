@@ -51,9 +51,9 @@ class EvaluadorDePrueba:
         return self.seguimiento
 
 
-def resultado_item(codigo="I1", cumple=True, abierto=False, sensible=False, falta=None, repregunta=None):
-    return ResultadoItemEntrega(item=codigo, cumple=cumple, abierto=abierto, sensible=sensible, falta=falta,
-                                repregunta=repregunta)
+def resultado_item(codigo="I1", cumple=True, abierto=False, sensible=False, falta=None, repregunta=None, emocional=False):
+    return ResultadoItemEntrega(item=codigo, cumple=cumple, abierto=abierto, emocional=emocional, sensible=sensible,
+                                falta=falta, repregunta=repregunta)
 
 
 def test_interfaz_no_importa_sqlalchemy_fastapi_ni_modelos():
@@ -68,7 +68,7 @@ def test_interfaz_no_importa_sqlalchemy_fastapi_ni_modelos():
 
 
 def test_constantes_de_registro_centralizadas():
-    assert VERSION_PROMPT_REGISTRO == "v6.3"
+    assert VERSION_PROMPT_REGISTRO == "v6.4"
     assert MAXIMO_SEGUIMIENTOS_POR_REGISTRO == 2
 
 
@@ -173,7 +173,7 @@ def test_entrega_hace_una_sola_llamada_y_solo_con_items_con_criterios():
     assert (i1.origen, i1.clasificacion, i1.criterios_faltantes) == (
         OrigenEvaluacion.LLM, ClasificacionRespuesta.POCO_DESARROLLADA, ("C1", "C2"))
     assert i1.pregunta == f"Sobre lo que contaste: {EJEMPLO.repregunta}"
-    assert (i1.modelo, i1.version_prompt) == ("m", "v6.3")
+    assert (i1.modelo, i1.version_prompt) == ("m", "v6.4")
     # Sin criterios: en código, con extensión mínima como único criterio.
     i2, i3 = evaluaciones["I2"], evaluaciones["I3"]
     assert (i2.origen, i2.clasificacion, i2.pregunta, i2.error) == (
@@ -331,16 +331,21 @@ def test_contexto_sin_datos_de_la_cuenta():
 
 # --- Ajuste pruebas llm: respuesta emocional ------------------------------------------------
 
-def test_repregunta_nula_sin_cumplir_queda_poco_desarrollada_sin_pregunta():
+def test_emocional_queda_sin_pregunta_y_una_repregunta_nula_sin_emocional_usa_el_texto_base():
     evaluador = EvaluadorDePrueba(entrega=ResultadoEntrega(items=[
-        resultado_item("I1", cumple=False, falta="Te faltó contar qué hiciste tú."),
-        resultado_item("I2", cumple=False, repregunta="Falta C1")]))
-    evaluaciones = procesar_entrega("A", (item("I1", guia=GUIA), item("I2", guia=GUIA)), evaluador)
-    emocional, invalida = evaluaciones["I1"], evaluaciones["I2"]
-    assert (emocional.clasificacion, emocional.pregunta, emocional.falta) == (
+        resultado_item("I1", cumple=False, emocional=True, falta="Te faltó contar qué hiciste tú."),
+        resultado_item("I2", cumple=False, emocional=True, repregunta="Dices que te cansa. ¿Qué hiciste?"),
+        resultado_item("I3", cumple=False, repregunta="Falta C1"),
+        resultado_item("I4", cumple=False),
+        resultado_item("I5", cumple=False, abierto=True)]))
+    evaluaciones = procesar_entrega("A", tuple(item(f"I{n}", guia=GUIA) for n in range(1, 6)), evaluador)
+    assert (evaluaciones["I1"].clasificacion, evaluaciones["I1"].pregunta, evaluaciones["I1"].falta) == (
         ClasificacionRespuesta.POCO_DESARROLLADA, None, "Te faltó contar qué hiciste tú.")
-    # Una repregunta no nula pero inválida sigue reemplazándose por el texto base.
-    assert invalida.pregunta == GUIA.texto_base
+    # `emocional` manda aunque el modelo escriba una repregunta.
+    assert evaluaciones["I2"].pregunta is None
+    # Inválida o nula sin `emocional`, también con el `abierto` que se ignora en la entrega: el texto base.
+    assert [evaluaciones[c].pregunta for c in ("I3", "I4", "I5")] == [GUIA.texto_base] * 3
+    assert evaluaciones["I5"].abierto is False
 
 
 def test_falso_emocional_no_cumple_con_falta_y_sin_repregunta():
@@ -353,15 +358,12 @@ def test_falso_emocional_no_cumple_con_falta_y_sin_repregunta():
     assert (seguimiento.clasificacion, seguimiento.pregunta) == (ClasificacionRespuesta.POCO_DESARROLLADA, None)
 
 
-def test_en_la_entrega_abierto_sin_repregunta_usa_el_texto_base_y_no_es_emocional():
-    entrega = procesar_entrega("A", (item(texto=f"{LARGO} [abierto] [emocional]", guia=GUIA),), EvaluadorFalso())["I1"]
-    assert (entrega.clasificacion, entrega.abierto, entrega.pregunta) == (
-        ClasificacionRespuesta.POCO_DESARROLLADA, False, GUIA.texto_base)
-    # En el seguimiento la propuesta sí cuenta y no hay otra repregunta.
-    seguimiento = procesar_seguimiento("A", item(texto="Inicial", guia=GUIA),
-                                       (TurnoEvaluacion("¿Cuándo?", "No sé [abierto] [emocional]"),), EvaluadorFalso(),
-                                       pregunta_generica=False)
-    assert (seguimiento.abierto, seguimiento.pregunta) == (True, None)
+def test_seguimiento_repregunta_nula_sin_emocional_usa_el_texto_base_y_conserva_abierto():
+    evaluador = EvaluadorDePrueba(seguimiento=ResultadoSeguimiento(
+        cumple=False, abierto=True, emocional=False, sensible=False, falta=None, repregunta=None, consolidada="Inicial"))
+    evaluacion = procesar_seguimiento("A", item(texto="Inicial", guia=GUIA), (TurnoEvaluacion("¿Cuándo?", "No sé"),),
+                                      evaluador, pregunta_generica=False)
+    assert (evaluacion.abierto, evaluacion.pregunta) == (True, GUIA.texto_base)
 
 
 def test_consolidada_con_margen_para_respuestas_cortas():

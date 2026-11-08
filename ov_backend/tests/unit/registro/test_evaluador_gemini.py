@@ -26,11 +26,11 @@ ITEM = ItemPorEvaluar('I1', '¿Qué harás para practicarla?', CRITERIOS, ('Aser
                       'En el trabajo de Comunicación del jueves voy a decir mi opinión al menos una vez.', 40,
                       'Cuéntame más')
 # Contrato v5 (ajuste registros): `{cumple, abierto, sensible, falta, repregunta[, consolidada]}`.
-ADECUADA = {'items': [{'item': 'I1', 'cumple': True, 'abierto': False, 'sensible': False, 'falta': None,
+ADECUADA = {'items': [{'item': 'I1', 'cumple': True, 'abierto': False, 'emocional': False, 'sensible': False, 'falta': None,
                        'repregunta': None}]}
-VAGA = {'items': [{'item': 'I1', 'cumple': False, 'abierto': False, 'sensible': False,
+VAGA = {'items': [{'item': 'I1', 'cumple': False, 'abierto': False, 'emocional': False, 'sensible': False,
                    'falta': 'Una situación concreta', 'repregunta': '¿En qué trabajo de Comunicación lo harías?'}]}
-SEGUIMIENTO = {'cumple': True, 'abierto': False, 'sensible': False, 'falta': None, 'repregunta': None,
+SEGUIMIENTO = {'cumple': True, 'abierto': False, 'emocional': False, 'sensible': False, 'falta': None, 'repregunta': None,
                'consolidada': 'Voy a decir mi opinión el jueves en Comunicación.'}
 
 
@@ -77,7 +77,7 @@ def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
     cliente = ClienteSimulado()
     resultado = entregar(cliente)
     assert resultado.origen == 'LLM' and resultado.clasificacion == 'ADECUADA'
-    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v6.3'
+    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v6.4'
     llamada, = cliente.llamadas
     datos = json.loads(llamada['contents'])
     assert set(datos) == {'titulo_actividad', 'items'}
