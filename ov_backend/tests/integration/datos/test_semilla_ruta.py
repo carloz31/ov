@@ -36,7 +36,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # B13: catálogos de investigaciones.
         'pregunta_base_guion': 3, 'tipo_reaccion': 4,
         # Ajuste registros: `t-referencia` (3 ítems, 3 criterios, 2 referencias) y `LUMI_SENSIBLE`.
-        'texto_fijo': 1}
+        'texto_fijo': 2}  # LUMI_SENSIBLE y PISTA_SIN_REPREGUNTA (ajuste pruebas llm)
     assert len(Base.metadata.tables) == 96
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name

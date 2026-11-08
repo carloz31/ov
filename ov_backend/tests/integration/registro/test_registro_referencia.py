@@ -345,3 +345,47 @@ def test_opcion_sin_seguimiento_cierra_el_item_sin_texto(cliente):
     assert cierre['estado'] == 'COMPLETADA' and respuesta(cierre, 't-refe-plan')['estado'] == 'FINAL'
     pedir(cliente, 'POST', '/acciones/registro/editar', {**accion(), 'items': [
         {'item': 't-refe-plan', 'texto': '', 'opciones': [{'codigo': ENFERMERIA}]}]}, 422)
+
+
+# --- Respuesta emocional (ajuste pruebas llm) ------------------------------------------------
+
+PISTA_SIN_REPREGUNTA = 'Si en algún momento quieres, puedes volver a esto y contar un poco más.'
+
+
+def test_emocional_no_repregunta_y_el_turno_va_al_siguiente_poco_desarrollado(cliente):
+    preparar(cliente)
+    registro = entregar(cliente, plan='DATO DE PRUEBA estoy cansado de todo esto [emocional]',
+                        duda='DATO DE PRUEBA [vaga]')
+    plan = respuesta(registro, 't-refe-plan')
+    assert plan['estado'] == 'FINAL' and not any(m_['tipo'] == 'pregunta' for m_ in plan['conversacion'])
+    assert respuesta(registro, 't-refe-duda')['estado'] == 'PENDIENTE_SEGUIMIENTO'
+    cierre = responder(cliente, 't-refe-duda', 'DATO DE PRUEBA: quiero saber cuánto cuesta el primer año')
+    assert cierre['items_por_ampliar'] == [{'item': 't-refe-plan', 'pista': PISTA_SIN_REPREGUNTA,
+                                            'falta': cierre['items_por_ampliar'][0]['falta']}]
+    assert cierre['items_por_ampliar'][0]['falta']
+    assert not any(e['tipo'] == 'REGISTRO_ADECUADO' for e in cierre['eventos_registrados'])
+
+
+def test_solo_un_emocional_cierra_sin_turnos_poco_desarrollado_y_sin_registro_adecuado(cliente, aplicacion):
+    preparar(cliente)
+    cierre = entregar(cliente, retoma='DATO DE PRUEBA me frustra pensar en esto [emocional]')
+    assert cierre['estado'] == 'COMPLETADA'
+    assert all(r['estado'] == 'FINAL' for r in cierre['respuestas'])
+    assert not any(m_['tipo'] == 'pregunta' for r in cierre['respuestas'] for m_ in r['conversacion'])
+    # No repreguntar no equivale a aprobar: queda poco desarrollado, con la pista fija, y no da REGISTRO_ADECUADO.
+    assert [(i['item'], i['pista']) for i in cierre['items_por_ampliar']] == [('t-refe-retoma', PISTA_SIN_REPREGUNTA)]
+    assert not any(e['tipo'] == 'REGISTRO_ADECUADO' for e in cierre['eventos_registrados'])
+    with aplicacion.state.fabrica_sesiones() as sesion:
+        evaluacion = sesion.scalar(select(m.EvaluacionRespuesta).where(
+            m.EvaluacionRespuesta.respuesta_id == fila(sesion, 't-refe-retoma').id))
+        assert evaluacion.clasificacion == m.ClasificacionRespuesta.POCO_DESARROLLADA
+        assert evaluacion.pregunta_generada is None
+    consulta = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-referencia/registro')
+    assert consulta['items_por_ampliar'][0]['pista'] == PISTA_SIN_REPREGUNTA
+
+
+def test_pregunta_invalida_sigue_usando_el_texto_base(cliente):
+    preparar(cliente)
+    registro = entregar(cliente, duda='DATO DE PRUEBA [vaga] [pregunta-invalida]')
+    assert respuesta(registro, 't-refe-duda')['conversacion'][-1] == {
+        'tipo': 'pregunta', 'orden': 1, 'texto': '¿Qué dato te falta?'}

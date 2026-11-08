@@ -276,13 +276,17 @@ def evaluar_por_extension(texto: str, min_caracteres: int | None, repregunta_gen
 
 
 def _desde_resultado(r, item, modelo, version_prompt, latencia_ms, texto_evaluado, consolidada=None):
-    """Del resultado del evaluador a la evaluación: sensible manda, luego cumple; si no, poco desarrollada."""
+    """Del resultado del evaluador a la evaluación: sensible manda, luego cumple; si no, poco desarrollada.
+
+    Ajuste pruebas llm: `repregunta: null` sin cumplir (respuesta emocional) deja la poco desarrollada sin
+    pregunta: `avanzar` no le abre turno. Una repregunta no nula pero inválida se reemplaza por el `texto_base`."""
     if r.sensible or r.cumple:
         return EvaluacionProcesada(OrigenEvaluacion.LLM, ClasificacionRespuesta.ADECUADA, (), None, modelo,
                                    version_prompt, latencia_ms, None, texto_evaluado, consolidada,
                                    sensible=r.sensible)
+    pregunta = None if r.repregunta is None else pregunta_o_base(r.repregunta, item)
     return EvaluacionProcesada(OrigenEvaluacion.LLM, ClasificacionRespuesta.POCO_DESARROLLADA,
-                               tuple(c.codigo for c in item.criterios), pregunta_o_base(r.repregunta, item), modelo,
+                               tuple(c.codigo for c in item.criterios), pregunta, modelo,
                                version_prompt, latencia_ms, None, texto_evaluado, consolidada, abierto=r.abierto,
                                falta=falta_valida(r.falta))
 
@@ -357,7 +361,8 @@ class EvaluadorFalso:
     """Determinista, por marcas en el texto más reciente de cada ítem.
 
     Sin marca: cumple. `[vaga]`: no cumple. `[falta:RAZON]` (o un código de criterio): no cumple y la repregunta
-    sale del criterio de ese tipo o código. `[abierto]`: no cumple y propone abierto. `[sensible]`: marca sensible
+    sale del criterio de ese tipo o código. `[abierto]`: no cumple y propone abierto. `[emocional]`: no cumple, con
+    `falta` y sin repregunta (respuesta emocional). `[sensible]`: marca sensible
     (junto a cualquier otra marca). `[falla]`: lanza error (toda la llamada). `[json-invalido]`: devuelve algo
     fuera del esquema. `[pregunta-invalida]`: repregunta con código y sin «?». `[consolidada-invalida]`:
     consolidada demasiado larga.
@@ -386,7 +391,8 @@ class EvaluadorFalso:
         marcas = [t.strip() for marca in re.findall(r"\[falta:([^\]]*)\]", texto) for t in marca.split(',')
                   if t.strip()]
         abierto = "[abierto]" in texto
-        if not marcas and "[vaga]" not in texto and not abierto:
+        emocional = "[emocional]" in texto
+        if not marcas and "[vaga]" not in texto and not abierto and not emocional:
             return True, False, sensible, None, None
         if "[pregunta-invalida]" in texto:
             return False, abierto, sensible, None, "Falta C1"
@@ -401,6 +407,8 @@ class EvaluadorFalso:
             falta = guia.que_busca
         else:
             falta = (elegido or criterios[0]).descripcion if criterios else None
+        if emocional:
+            return False, abierto, sensible, falta, None
         return False, abierto, sensible, falta, f"Sobre lo que contaste: {base}"
 
     def evaluar_entrega(self, contexto: ContextoEntrega) -> ResultadoEntrega:

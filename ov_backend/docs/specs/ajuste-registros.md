@@ -1423,3 +1423,185 @@ Convenciones: **D** diálogo del personaje · **E** pregunta de elección · **T
 ### Preguntas abiertas
 
 Ninguna.
+
+## Ajuste · pruebas llm
+
+### Contexto
+La primera validación contra Gemini real (8 nov, b1-1, 19 casos × 3 corridas × T 0.2/1.0) mostró fallos de prompt (falsos `sensible`, ACCION en futuro, repregunta genérica copiada, `falta` como pedido), un hueco del motor (respuesta emocional con `repregunta: null` igual abre turno) y un hueco de datos (b1-1-logro sin salida «no recuerdo»). El texto de observaciones `ajuste-seguimiento-llm.md` decide todo; aquí solo se aterriza en código. Se agrega como sección nueva de la spec en curso `docs/specs/ajuste-registros.md`. Rama `ajuste/pruebas-llm` (ya creada desde `main`; git no admite espacios).
+
+### Qué cambia (hoy → pasará a)
+**F1 · Motor y prompt**
+- `evaluacion._desde_resultado`: hoy `pregunta_o_base(r.repregunta, item)` convierte `null` en `texto_base` → pasará a: `repregunta is None` con `cumple: false` y sin `sensible` ⇒ POCO_DESARROLLADA con `pregunta=None`. Repregunta no nula pero inválida sigue → `texto_base`. Respaldo sin cambios. `pregunta_o_base` no cambia (su prueba unitaria sigue).
+- `acciones.avanzar`: hoy abre turno a todo POCO_DESARROLLADA con repreguntas libres → pasará a saltar el que tiene `ultima.pregunta is None` (el presupuesto pasa al siguiente).
+- `acciones.Registro.por_ampliar`: `pista` hoy = pregunta vigente → pasará a `pregunta or falta or item.nombre` (el esquema `ItemPorAmpliar.pista: str` no cambia; el front no se toca).
+- `EvaluadorFalso._clasificar`: marca nueva `[emocional]` → `cumple False`, `repregunta None`, `falta` del ítem (`que_busca` o descripción del criterio).
+- `gemini.py`: nueva función pública `mensaje_evaluador(contexto) -> str`: `asdict` + `json.dumps`; en `ContextoEntrega`/`ContextoSeguimiento`, quita `repregunta` de cada criterio de un ítem con `guia` no nula. `_evaluar` la usa para todos los contextos (los demás tipos quedan idénticos a hoy).
+- `prompt.py`: `PROMPT_ENTREGA_V6` / `PROMPT_SEGUIMIENTO_V6` con el texto de 1.3 (secciones «falta», «La repregunta», «Contenido sensible» y la frase de «Siempre»), alias `PROMPT_ENTREGA` / `PROMPT_SEGUIMIENTO`; se borran los V5. `parametros.VERSION_PROMPT_REGISTRO = 'v6'`.
+- Temperatura: `TEMPERATURA_REGISTRO = 1.0`. Hoy `_evaluar` usa esa constante para **todas** las llamadas (diario, cartas, sugerencias de pasos, guion); como 1.4 dice «solo afecta al seguimiento de registros», `_medir` recibe la temperatura: entrega/seguimiento usan `TEMPERATURA_REGISTRO`, el resto una constante nueva `TEMPERATURA_ASISTENTES = 0.2` (mismo valor que hoy).
+- `acciones.criterio_y_guia(sesion, item, elegidas)` → se separa la parte pura `guia_para(seguimiento, opciones_propias, criterios, elegidas)` en `acciones.py`; `criterio_y_guia` lee los criterios con `criterios_de` y la llama.
+
+**F2 · Datos de `contenido` y documentos**
+- `datos/contenido.py` b1-1-logro: propia exclusiva `NO_RECUERDO` «No se me ocurre ninguno» con `pregunta_propia` y `texto_base` de 2.1, sin `criterio` (hereda); `SEGUIMIENTOS['b1-1-logro']`: `admite_abierto: True`, `cumple` + «Aprendí a cocinar», `no_cumple` + el de 2.1, `evitar` de 2.1. b1-1-dificultad: `no_cumple` + «“Mis papás me ayudaron” (falta lo que hizo él)».
+- Front `b1_1.json`: `eleccion.mensajes.exclusiva` = «Está bien, a veces cuesta verlos. Vamos por algo pequeño.» (la clave ya existe en `MensajesEleccion`; hoy la exclusiva mostraría «Anotado.»). Sin otro cambio de vista.
+- `docs/sistema/registro.md`: prompt v6, regla de la respuesta emocional (entrega y seguimiento), `mensaje_evaluador`, temperaturas, marca `[emocional]`, pista de por ampliar. `integracion.md` si cita los ítems con abierto. `decisiones.md` (nueva sección «Ajuste pruebas llm»).
+
+**F3 · `tests/llm`** (copia del zip tal cual + ajustes de 3)
+- `evaluar.py`: importa `mensaje_evaluador`, `PROMPT_ENTREGA/SEGUIMIENTO` y `guia_para` (borra su `criterio_y_guia` copiada, conserva el armado de opciones/ecos sin base); carga `GEMINI_API_KEY` y `GEMINI_MODELO` del `.env` con `dotenv_values` si faltan en el entorno, sin imprimirlos; modelo por defecto = el de la configuración.
+- pytest no la recoge (no hay `test_*.py`; `testpaths`/`--import-mode` se verifican); `AGENTS.md` del backend: `tests/llm/` en el árbol de pruebas y en «Estructura» como excepción a «solo carpetas con pruebas».
+- `registro.md`: referencia a `tests/llm/README.md` y su criterio de aceptación.
+- Limpieza: borro `scripts/gemini/` y `scripts/salidas/` (lo de la medición anterior, nunca versionado) y revierto la línea de `.gitignore`; el CSV base del zip es esa misma corrida.
+
+**F4 · Corrida real** (36 llamadas, `--hilos 8`): los dos comandos de la fase 4; si algo falla, solo texto de prompt / `evitar` / ejemplos, máx. dos rondas con su CSV. Informe: líneas de `resumen.md`, tabla de filas que no pasan, repreguntas y `falta` de E4, E5, E11, E12, E13 y `sensible` de b1-3.
+
+### Qué no cambia
+Contrato `{cumple, abierto, sensible, falta, repregunta}` (+`consolidada`), esquemas de API, modelo de datos (sin migración), orden sensible → cumple → abierto → poco desarrollado, prompts de cartas/diario/sugerencias/guion y su temperatura (0.2), `pregunta_valida`, respaldo, `scripts/evaluar_registros.py`, modo local del front.
+
+### Pruebas (adaptaciones autorizadas por el texto)
+- Nuevas (unit/registro e integration/registro, en `ruta` con `t-referencia`): entrega `[emocional]` + `[vaga]` → turno al `[vaga]`; solo `[emocional]` → cierra sin turnos con pista = `falta`; `[pregunta-invalida]` sigue con `texto_base`; `mensaje_evaluador` con/sin guía; temperatura 1.0 en registro y 0.2 en diario.
+- Adaptadas: `VERSION_PROMPT_REGISTRO == "v6"`, `PROMPT_*_V5` → `PROMPT_*`, temperatura en `test_evaluador_gemini`; `ADMITEN_ABIERTO` + `b1-1-logro` (ocho).
+- Por fase: `tests/unit/registro`, `tests/integration/registro`, `tests/integration/registros`, `tests/integration/datos`, más `tests/integration/escenarios`; F2 además `npm run test:servidor` y el verificador de contenido. Cierre: suite completa de ambos.
+
+### Observaciones del usuario a este plan (aprobado con ellas)
+1. `dotenv_values` solo porque `python-dotenv` ya es dependencia (lo importa `app/config.py`); sin dependencias nuevas.
+2. Eco de b1-1-logro en b4-1 (`b4-1-ref-logro`, ELECCION): con NO_RECUERDO llega «No se me ocurre ninguno» al front de b4-1 y al LLM de b4-1-respalda. Verificar cómo se ve en la zona de eco de b4-1; si el ítem quedó ABIERTA, que muestre «esto lo dejaste abierto» como cualquier abierto. Si hace falta algo más, se anota en `pendientes-interfaz.md` y no se resuelve aquí.
+3. La prueba de `[emocional]` comprueba también que el ítem queda POCO_DESARROLLADA con su pista (no cuenta como adecuado) y que el registro con solo ese ítem no emite REGISTRO_ADECUADO.
+
+### Commits
+`Ajuste pruebas llm · F1: motor y prompt v6`, `· F2: b1-1 y documentos`, `· F3: carpeta tests/llm`, `· F4: corrida de validación` (CSV + `resumen.md`). Sin push.
+
+# Anexo · Observaciones del ajuste pruebas llm (texto completo)
+
+## Ajuste · seguimiento-llm
+
+Corrige el seguimiento de registros con lo que mostró la primera validación del LLM contra Gemini real (8 nov 2026, registro b1-1, 19 casos × 3 corridas × temperaturas 0.2 y 1.0; CSV en `tests/llm/resultados/b1-1/2026-11-08_v5_t0.2-1.0_base.csv`), y deja en el repo una carpeta permanente para esa validación. Se agrega como fase nueva de la spec en curso (`ajuste-registros`). Fuente de diseño: `claude/ajuste-registros.md` §1.4–1.5 y `claude/registros-definicion.md` §2 y §9; donde choquen con este documento, gana este.
+
+### Qué mostró la prueba
+
+| Hallazgo | Evidencia | Se corrige en |
+|---|---|---|
+| Falso positivo de `sensible` en una tensión familiar común («dibujaba a escondidas porque mi papá se enoja…») | 6/6 corridas. El estudiante recibiría `LUMI_SENSIBLE`, la orientadora una alerta, y el ítem dejaría de citarse. En b1-3 (voces de casa) sería frecuente | 1.3 (prompt) |
+| ACCION pide «qué harías» en b1-1-dificultad, que pregunta qué hizo | 11/12 repreguntas con 0.2, 6/12 con 1.0 | 1.3 (prompt) |
+| Copia la repregunta genérica del criterio («¿Podrías darme un ejemplo concreto?») o el `texto_base` literal, sin retomar las palabras del estudiante | E5, E9, E10, E12 y el caso real E4 | 1.2 y 1.3 |
+| La repregunta del logro pregunta por «algo que te costaba» (terreno de la dificultad) | E4, 3/3 con 0.2 | 2.1 (`evitar`) |
+| Respuesta emocional: el modelo devuelve `repregunta: null` pero el backend pone el `texto_base` y repregunta igual | Código: `evaluacion._desde_resultado` → `pregunta_o_base` | 1.1 |
+| El logro no tiene salida: el estudiante escribió «Ninguna» en «Otra»; tras la repregunta la duda sigue y el modelo propone `abierto` (6/6), pero el ítem no lo admite → registro no adecuado → no se abre ma1 | Caso real del 7 nov y S1 | 2.1 |
+| «Aprendí a cocinar» no cumple (pide el momento), aunque `que_busca` dice «cualquier hecho vale» | 6/6 | 2.1 |
+| `falta` como pedido o pregunta («Necesito que me cuentes…», «Cuéntame…») | varios | 1.3 |
+| Clasificación igual con 0.2 y 1.0 (123/129); repreguntas mejores con 1.0; Google recomienda 1.0 en Gemini 3 (AI Studio ya no deja bajarla) | resumen de la corrida | 1.4 |
+
+Lo que salió bien y no se toca: idea y no longitud (E2, E3), inyección ignorada (E10), sensible real detectado en entrega y seguimiento (E9, S5), insistencia aceptada (S6), ángulos del «no sé» (E6), consolidadas fieles (S2, S3, S7).
+
+### Criterio general
+
+- **Mecánica primero**: los cambios de motor se prueban con el evaluador falso y `t-referencia` en `ruta`.
+- **El modelo propone, el backend decide**: no cambia el orden sensible → cumple → abierto → poco desarrollado.
+- **No cambia el contrato** `{cumple, abierto, sensible, falta, repregunta}` (+ `consolidada`) ni el modelo de datos.
+- Las pruebas de `contenido` y de `ruta` se adaptan solo donde este ajuste cambia un número o un comportamiento declarado aquí (autorizado).
+
+### Fase 1 · Motor y prompt
+
+#### 1.1 Respuesta emocional: `repregunta: null` sin cumplir no abre turno
+Hoy `_desde_resultado` usa `pregunta_o_base(r.repregunta, item)`: con `null` pone el `texto_base` y `avanzar` abre el turno. Pasa a:
+- `repregunta: null` explícito con `cumple: false` (y sin `sensible`) → POCO_DESARROLLADA **sin pregunta**; `avanzar` salta ese ítem (no abre turno) y el presupuesto pasa al siguiente ítem poco desarrollado. Al cerrar, la pista es la `falta` (o el `nombre`).
+- Una repregunta **no nula pero inválida** (no pasa `pregunta_valida`) sigue reemplazándose por el `texto_base`, como hoy.
+- Sin modelo (falla o JSON inválido): igual que hoy.
+- En el seguimiento ya no hay turno siguiente en ese ítem (una repregunta por ítem), así que no cambia nada ahí; documentarlo.
+- Evaluador falso: marca nueva `[emocional]` → `cumple: false`, `repregunta: null`, `falta` del ítem.
+- Pruebas: entrega con un ítem `[emocional]` y otro `[vaga]` → el turno va al `[vaga]`; registro con solo el `[emocional]` → cierra sin turnos, con pista; `[pregunta-invalida]` sigue usando el `texto_base`.
+
+#### 1.2 El modelo deja de recibir la repregunta genérica del criterio
+`CriterioEvaluacion.repregunta` (los textos fijos de B03, `REPREGUNTAS_CRITERIO`) viaja hoy dentro de `criterios[]` en el mensaje. Cuando el ítem tiene guía (`guia` no nula), el mensaje no incluye ese campo. Sin guía (datos de `ruta`), se mantiene.
+- Extraer en `gemini.py` una función pública `mensaje_evaluador(contexto) -> str` que arma el texto enviado (hoy `json.dumps(asdict(contexto))`) y aplica esta regla; `_evaluar` la usa. El script de `tests/llm` la usa también (ya la busca por ese nombre).
+- El evaluador falso y `texto_base()` siguen usando `CriterioEvaluacion.repregunta` como hoy (es solo el mensaje lo que cambia).
+- Prueba unitaria del adaptador: con guía, el JSON enviado no tiene `repregunta` en `criterios`; sin guía, sí.
+
+#### 1.3 Prompt v6
+`VERSION_PROMPT_REGISTRO = 'v6'`. Exponer `PROMPT_ENTREGA` y `PROMPT_SEGUIMIENTO` como los vigentes (alias de los v6) para que `tests/llm` no dependa del número. Las colas de entrega y seguimiento no cambian. En `_COMUN`, reemplazar las secciones «falta», «La repregunta» y «Contenido sensible» por este texto (el resto queda igual):
+
+```
+- "falta": si no cumple, una frase corta en segunda persona que nombra lo que le faltó, empezando por "Te faltó" (por ejemplo: "Te faltó contar qué hiciste tú."). No es una pregunta ni un pedido: no uses "necesito" ni "cuéntame". Si cumple, null.
+
+La repregunta (solo si no cumple; si cumple, null):
+- Empieza retomando algo que el estudiante escribió, con sus palabras ("Dices que…", "Contaste que…"). Si algo solo lo marcó, di "marcaste", no "mencionaste". No sigas con "pero": no lo estás corrigiendo.
+- Luego UNA sola pregunta. En total, máximo 35 palabras, en tono de par, tratándolo de "tú", terminada en "?". Céntrala en la opción que marcó.
+- No copies la consigna ni el "texto_base": úsalos solo como idea de por dónde ir.
+- Patrón por tipo: EJEMPLO "¿recuerdas una vez en que…?"; RAZON "¿qué de ti o de tu historia hace que…?"; CONTRASTE "¿en qué se parecen y en qué no?" (nunca preguntes qué hará); ACCION: si la consigna pregunta por algo que ya pasó, pregunta qué hizo ("¿qué hiciste tú cuando…?"), nunca qué haría; si pregunta por algo que viene, "si pasara mañana, ¿qué sería lo primero que harías?".
+- Pregunta solo por lo que pide este ítem, no por lo que piden los otros ítems de la actividad.
+- Si dice "no sé" o que no recuerda: ofrece un ángulo nuevo y pequeño, una vez, con permiso de dejarlo. Si ya hubo una repregunta y la duda sigue, propón "abierto": true.
+- Si se va del tema: retoma la palabra suya con la que se fue del tema y vuelve al ítem, una vez.
+- Si la respuesta es emocional (tristeza, frustración, cansancio, enojo): no repreguntes en ese ítem (repregunta null) y evalúa "cumple" como siempre.
+- Si contradice algo de sus ecos: no lo señales ni lo uses para desacreditarlo.
+- Respeta "evitar" del ítem.
+
+Contenido sensible ("sensible"):
+- true solo si el texto revela: violencia física o sexual; maltrato de un adulto (golpes, amenazas, insultos o humillaciones repetidas); abuso; riesgo para su vida o su bienestar (ideas de hacerse daño o de no querer seguir); riesgo para alguien cercano; o una crisis familiar grave (abandono, quedarse sin hogar).
+- false para lo común en esta etapa: desacuerdos, enojos o discusiones con la familia por la carrera; presión de los padres o que no lo apoyen; tristeza, frustración o sentirse perdido; duelo por un familiar; dificultades económicas.
+- Si es true: no expliques por qué ni pidas detalles; repregunta null y falta null.
+```
+
+En «Siempre», cambiar «Usa solo lo que recibes en "ecos"…» por: «Usa solo lo que recibes en "ecos": no uses lo que escribió en otros ítems de la actividad, aunque lo veas en el mismo mensaje. Si un eco solo da un título…» (resto igual). Decisión: aunque en la prueba una repregunta que usó otro ítem salió buena, el principio de `ecos_llm` se mantiene.
+
+Nada del prompt de cartas ni del diario cambia.
+
+#### 1.4 Temperatura
+`TEMPERATURA_REGISTRO = 1.0` (recomendación de Google para Gemini 3; la clasificación no cambió y las repreguntas mejoraron). Solo afecta al seguimiento de registros.
+
+#### 1.5 Lógica de guía reutilizable
+`acciones.criterio_y_guia` necesita la sesión solo para leer los criterios. Separar la parte pura (`guia_para(item_seguimiento, opciones_propias, criterios, elegidas)` o similar) para que la use también `tests/llm/evaluar.py`, que hoy la replica sin base de datos. Al terminar, el script importa esa función en lugar de su copia.
+
+### Fase 2 · Datos de `contenido`
+
+#### 2.1 b1-1
+- **b1-1-logro**:
+  - Opción propia exclusiva nueva `NO_RECUERDO` «No se me ocurre ninguno», `pregunta_propia`: «¿Algo que hoy te sale y antes no, aunque sea pequeño: en casa, en un deporte, con amigos?»; criterio **heredado** (se omite); `texto_base`: «Piensa en algo pequeño que aprendiste a hacer solo o que antes no te salía. ¿Qué fue?».
+  - `admite_abierto: True` (pasan a ser **ocho** ítems; actualizar la prueba de carga que exige siete y los documentos que dicen «siete»).
+  - `cumple`: agregar «Aprendí a cocinar».
+  - `no_cumple`: agregar «“No se me ocurre ninguno” (ángulo: algo pequeño fuera del colegio; si sigue sin encontrar, abierto)».
+  - `evitar`: «Preguntar por algo que le costó o por una dificultad (eso es el ítem siguiente).»
+- **b1-1-dificultad**: `no_cumple`: agregar «“Mis papás me ayudaron” (falta lo que hizo él)».
+- Front: el JSON de presentación de b1-1 no necesita cambios para mostrar la exclusiva (las opciones vienen del backend), salvo que la vista del ítem requiera un mensaje reactivo para `NO_RECUERDO`: en ese caso, «Está bien, a veces cuesta verlos. Vamos por algo pequeño.».
+
+#### 2.2 Documentos
+`docs/sistema/` del dominio de registros (prompt v6, regla de la respuesta emocional, `mensaje_evaluador`, temperatura, ocho ítems con abierto) y `decisiones.md`. Los documentos del proyecto (`registros-definicion.md`, `ajuste-registros.md`) los actualiza el usuario fuera del repo.
+
+### Fase 3 · Carpeta permanente `tests/llm`
+
+Se agrega tal como viene adjunta (`evaluar.py`, `README.md`, `casos/b1-1.json`, `casos/b1-3.json`, `resultados/b1-1/2026-11-08_v5_t0.2-1.0_base.csv`). Ajustes al integrarla:
+- Que pytest no la recoja (no hay `test_*.py`; verificar que la suite no la importa ni falla por ella).
+- `evaluar.py` usa `mensaje_evaluador` (1.2) y la función pura de guía (1.5).
+- Cargar `GEMINI_API_KEY` desde el `.env` del backend si no está en el entorno (sin imprimirla).
+- Los CSV y `resumen.md` se versionan.
+- Referencia en `docs/sistema/` del dominio de registros a esta carpeta y a su criterio de aceptación.
+
+### Fase 4 · Corrida de validación (Gemini real, proyecto con facturación Tier 1)
+
+Solo lo necesario para comprobar este ajuste: **36 llamadas**, en paralelo.
+
+```
+uv run python tests/llm/evaluar.py b1-1 --solo E3 E4 E5 E7 E8 E9 E11 E12 E13 S1 S8 --corridas 2 --etiqueta tras-ajuste
+uv run python tests/llm/evaluar.py b1-3 --corridas 2 --etiqueta tras-ajuste
+```
+
+Aceptación:
+- Clasificación OK en todas las filas, en las 2 corridas.
+- `sensible`: false en E8 (los dos ítems) y en b1-3 T1, T2, T5, T7; true en T3-voz, T4-voz, T6-mia.
+- E8-dificultad, T5-mia: `repregunta` null.
+- S1 y S8: `abierto: true`. E13: `cumple: false`, `abierto: false`, repregunta sin «costaba».
+- Ningún `R1_generica`, `R4_futuro`, `R6_otro_item`, `R8_prohibida`, `filtro_backend`.
+
+Si algo no pasa, se ajusta **solo** el texto del prompt (o el `evitar`/ejemplos del ítem) y se repite la corrida de los casos que fallaron, como máximo dos rondas; cada ronda deja su CSV. Si tras dos rondas sigue fallando, se para y se informa. Informe al usuario: las líneas de `resumen.md`, la tabla de filas que no pasan (caso, ítem, corridas que fallan) y, tal cual, las repreguntas y `falta` de E4, E5, E11, E12, E13 y las `sensible` de b1-3.
+
+### Decisiones del usuario
+
+- Respuesta emocional: sin repregunta en ese ítem y el presupuesto pasa al siguiente; sin campo nuevo en el contrato (no se muestra frase de acogida).
+- Calibración de `sensible` con lista de lo que sí y lo que no; se retira «es mejor marcar de más».
+- ACCION en pasado para ítems que preguntan por lo que hizo.
+- El modelo no recibe la repregunta genérica del criterio cuando hay guía.
+- El modelo no usa otros ítems de la actividad fuera de `ecos_llm`, aunque los vea.
+- Temperatura 1.0.
+- b1-1-logro con salida `NO_RECUERDO` y estado abierto; «Aprendí a cocinar» cumple.
+- Validación del LLM en `tests/llm`, fuera de pytest, con resultados versionados.
+
+### Preguntas abiertas
+
+Ninguna.

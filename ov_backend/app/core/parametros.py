@@ -41,7 +41,7 @@ OPCION_ONET_MAXIMA = 5
 PUNTAJE_ONET_MINIMO = 0
 
 # Registro §3 y §6: valores iniciales; el adaptador leerá el timeout del entorno.
-VERSION_PROMPT_REGISTRO = "v5"
+VERSION_PROMPT_REGISTRO = "v6"
 # Respaldo por longitud de un ítem sin `min_caracteres`. Provisional (B02).
 MIN_CARACTERES_RESPALDO = 40
 # B03: preguntas de seguimiento por intento de un registro; es el valor por defecto de `actividad.maximo_seguimientos`.
@@ -59,7 +59,10 @@ MAX_AVISOS_VELOCIDAD = 2
 ITEMS_ENTRE_AVISOS_VELOCIDAD = 10
 TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
 MODELO_LLM_REGISTRO = "gemini-3.8-flash"
-TEMPERATURA_REGISTRO = 0.2
+# Ajuste pruebas llm: 1.0 en el registro (recomendación de Google para Gemini 3); los asistentes (diario, cartas,
+# sugerencias de pasos, guion) conservan 0.2.
+TEMPERATURA_REGISTRO = 1.0
+TEMPERATURA_ASISTENTES = 0.2
 # B03: validación de la pregunta redactada por el LLM; se compara en minúsculas y sin tildes.
 MAXIMO_CARACTERES_PREGUNTA = 200
 PALABRAS_EVALUATIVAS = ("adecuad", "poco desarrollad", "criterio", "incomplet", "insuficient")

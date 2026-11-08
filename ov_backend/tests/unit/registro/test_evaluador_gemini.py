@@ -11,8 +11,10 @@ from app.config import Configuracion
 from app.services.registro.evaluacion import (
     CriterioEvaluacion, ItemPorEvaluar, TurnoEvaluacion, procesar_entrega, procesar_seguimiento,
 )
-from app.services.registro.gemini import EvaluadorGemini, razonamiento_minimo
-from app.services.registro.prompt import PROMPT_ENTREGA_V5, PROMPT_SEGUIMIENTO_V5
+from app.services.diario.asistente import ContextoPersonalizacion, DatoPersonalizacion
+from app.services.registro.evaluacion import ContextoEntrega, ContextoSeguimiento, GuiaSeguimiento, ItemEntrega
+from app.services.registro.gemini import EvaluadorGemini, mensaje_evaluador, razonamiento_minimo
+from app.services.registro.prompt import PROMPT_ENTREGA, PROMPT_SEGUIMIENTO
 from soporte_red import impedir_red
 
 
@@ -75,7 +77,7 @@ def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
     cliente = ClienteSimulado()
     resultado = entregar(cliente)
     assert resultado.origen == 'LLM' and resultado.clasificacion == 'ADECUADA'
-    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v5'
+    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v6'
     llamada, = cliente.llamadas
     datos = json.loads(llamada['contents'])
     assert set(datos) == {'titulo_actividad', 'items'}
@@ -84,8 +86,9 @@ def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
                                                  'repregunta': '¿Qué podrías hacer al respecto?'}
     assert CLAVE_SIMULADA not in llamada['contents']
     configuracion = llamada['config']
-    assert configuracion.system_instruction == PROMPT_ENTREGA_V5
-    assert configuracion.temperature == 0.2 and configuracion.response_mime_type == 'application/json'
+    assert configuracion.system_instruction == PROMPT_ENTREGA
+    # Ajuste pruebas llm: 1.0 en el registro.
+    assert configuracion.temperature == 1.0 and configuracion.response_mime_type == 'application/json'
     assert 'items' in configuracion.response_json_schema['required']
     assert configuracion.thinking_config.thinking_level == 'LOW'
     assert configuracion.automatic_function_calling.disable is True
@@ -112,7 +115,7 @@ def test_seguimiento_consolida_con_su_instruccion():
         adaptador.cerrar()
     assert resultado.origen == 'LLM' and resultado.consolidada == SEGUIMIENTO['consolidada']
     llamada, = cliente.llamadas
-    assert llamada['config'].system_instruction == PROMPT_SEGUIMIENTO_V5
+    assert llamada['config'].system_instruction == PROMPT_SEGUIMIENTO
     datos = json.loads(llamada['contents'])
     assert datos['turnos'] == [{'pregunta': '¿Cuándo?', 'respuesta': 'El jueves'}]
     assert datos['ecos'] == [] and 'otras_respuestas' not in datos
@@ -245,11 +248,11 @@ def test_sdk_con_transporte_simulado_envia_esquema_y_razonamiento(monkeypatch):
         cliente_http.close()
     assert resultado.origen == 'LLM' and resultado.criterios_faltantes == ('C1', 'C2')
     configuracion = llamadas[0]['generationConfig']
-    assert configuracion['temperature'] == 0.2 and configuracion['candidateCount'] == 1
+    assert configuracion['temperature'] == 1.0 and configuracion['candidateCount'] == 1
     pensamiento = configuracion['thinkingConfig']
     # ProtoJSON admite el nombre original y su equivalente lowerCamelCase.
     assert pensamiento.get('thinkingLevel', pensamiento.get('thinking_level')) == 'LOW'
-    assert llamadas[0]['systemInstruction']['parts'][0]['text'] == PROMPT_ENTREGA_V5
+    assert llamadas[0]['systemInstruction']['parts'][0]['text'] == PROMPT_ENTREGA
     assert CLAVE_SIMULADA not in json.dumps(llamadas[0])
 
 
@@ -265,3 +268,36 @@ def test_cliente_propio_se_cierra_y_error_inicial_saneado(monkeypatch):
     with pytest.raises(RuntimeError, match='No se pudo inicializar') as error:
         EvaluadorGemini(CONFIGURACION)
     assert CLAVE_SIMULADA not in str(error.value)
+
+
+# --- Ajuste pruebas llm ---------------------------------------------------------------------
+
+GUIA = GuiaSeguimiento('Un hecho concreto', '¿Hay un momento que lo muestre?', ('Gané el concurso',), ('Soy bueno',))
+
+
+def test_mensaje_sin_repregunta_generica_si_el_item_tiene_guia():
+    con_guia = ItemEntrega('I1', 'Consigna', CRITERIOS, GUIA, (), (), 'Texto')
+    sin_guia = ItemEntrega('I2', 'Consigna', CRITERIOS, None, (), (), 'Texto')
+    datos = json.loads(mensaje_evaluador(ContextoEntrega('Mi plan', (con_guia, sin_guia))))
+    assert all('repregunta' not in c for c in datos['items'][0]['criterios'])
+    assert [c['repregunta'] for c in datos['items'][1]['criterios']] == [c.repregunta for c in CRITERIOS]
+    assert datos['items'][0]['guia']['texto_base'] == GUIA.texto_base
+    seguimiento = ContextoSeguimiento('Mi plan', 'Consigna', CRITERIOS, GUIA, (), (), 'Texto',
+                                      (TurnoEvaluacion('¿Cuándo?', 'Ayer'),))
+    assert all('repregunta' not in c for c in json.loads(mensaje_evaluador(seguimiento))['criterios'])
+    # El adaptador envía ese mismo texto.
+    cliente = ClienteSimulado()
+    entregar(cliente, item=replace(ITEM, guia=GUIA))
+    assert cliente.llamadas[0]['contents'] == mensaje_evaluador(
+        ContextoEntrega('Mi plan', (ItemEntrega('I1', ITEM.consigna, CRITERIOS, GUIA, ITEM.opciones_elegidas, (),
+                                                ITEM.texto),)))
+
+
+def test_los_asistentes_conservan_su_temperatura():
+    cliente = ClienteSimulado(respuesta_sdk({'pregunta': '¿Qué te gustó de eso?'}))
+    adaptador = EvaluadorGemini(CONFIGURACION, cliente=cliente)
+    try:
+        adaptador.personalizar_entrada(ContextoPersonalizacion('¿Qué te gustó?', (DatoPersonalizacion('TEXTO', 'x', ()),)))
+    finally:
+        adaptador.cerrar()
+    assert cliente.llamadas[0]['config'].temperature == 0.2

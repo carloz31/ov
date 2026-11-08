@@ -14,7 +14,7 @@ from google.genai import errors, types
 from pydantic import ValidationError
 
 from app.config import Configuracion, ErrorConfiguracionRegistro
-from app.core.parametros import TEMPERATURA_REGISTRO
+from app.core.parametros import TEMPERATURA_ASISTENTES, TEMPERATURA_REGISTRO
 from app.services.diario.asistente import (
     PROMPT_CARTA_V1, PROMPT_DIARIO_V1, ContextoCarta, PreguntaPersonalizada, validar_personalizacion,
 )
@@ -24,7 +24,22 @@ from app.services.registro.evaluacion import (
     ContextoEntrega, ContextoSeguimiento, ErrorResultadoEvaluacion, ResultadoEntrega, ResultadoSeguimiento,
     validar_entrega, validar_seguimiento,
 )
-from app.services.registro.prompt import PROMPT_ENTREGA_V5, PROMPT_SEGUIMIENTO_V5
+from app.services.registro.prompt import PROMPT_ENTREGA, PROMPT_SEGUIMIENTO
+
+
+def mensaje_evaluador(contexto) -> str:
+    """El texto que recibe Gemini: el contexto en JSON (ajuste pruebas llm).
+
+    En el registro, un ítem con guía no envía la repregunta genérica de sus criterios (`REPREGUNTAS_CRITERIO`): el
+    modelo la copiaba en vez de retomar las palabras del estudiante. Sin guía (datos de `ruta`) se conserva. Los
+    demás contextos (diario, cartas, sugerencias, guion) van tal cual."""
+    datos = asdict(contexto)
+    if isinstance(contexto, (ContextoEntrega, ContextoSeguimiento)):
+        for item in datos['items'] if isinstance(contexto, ContextoEntrega) else (datos,):
+            if item['guia'] is not None:
+                for criterio in item['criterios']:
+                    criterio.pop('repregunta', None)
+    return json.dumps(datos, ensure_ascii=False)
 
 
 class ErrorClienteGemini(RuntimeError):
@@ -89,10 +104,10 @@ class EvaluadorGemini:
             raise ErrorClienteGemini('No se pudo inicializar el cliente Gemini') from None
 
     def evaluar_entrega(self, contexto: ContextoEntrega) -> ResultadoEntrega:
-        return self._medir(contexto, PROMPT_ENTREGA_V5, ResultadoEntrega, validar_entrega)
+        return self._medir(contexto, PROMPT_ENTREGA, ResultadoEntrega, validar_entrega)
 
     def evaluar_seguimiento(self, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
-        return self._medir(contexto, PROMPT_SEGUIMIENTO_V5, ResultadoSeguimiento, validar_seguimiento)
+        return self._medir(contexto, PROMPT_SEGUIMIENTO, ResultadoSeguimiento, validar_seguimiento)
 
     def personalizar_entrada(self, contexto):
         prompt = PROMPT_CARTA_V1 if isinstance(contexto, ContextoCarta) else PROMPT_DIARIO_V1
@@ -119,13 +134,16 @@ class EvaluadorGemini:
         return getattr(self._metricas, 'latencia_ms', None)
 
     def _evaluar(self, contexto, instruccion, esquema, validar):
+        # La temperatura del registro (1.0, Gemini 3) no se extiende a los asistentes (diario, planes, guion).
+        registro = isinstance(contexto, (ContextoEntrega, ContextoSeguimiento))
+        temperatura = TEMPERATURA_REGISTRO if registro else TEMPERATURA_ASISTENTES
         try:
             respuesta = self._cliente.models.generate_content(
                 model=self.configuracion.modelo,
-                contents=json.dumps(asdict(contexto), ensure_ascii=False),
+                contents=mensaje_evaluador(contexto),
                 config=types.GenerateContentConfig(
                     system_instruction=instruccion,
-                    temperature=TEMPERATURA_REGISTRO, candidate_count=1,
+                    temperature=temperatura, candidate_count=1,
                     response_mime_type='application/json',
                     response_json_schema=esquema.model_json_schema(),
                     thinking_config=razonamiento_minimo(self.configuracion.modelo),

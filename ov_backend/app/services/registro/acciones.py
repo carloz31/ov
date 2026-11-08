@@ -35,6 +35,7 @@ from app.services.registro.evaluacion import (
 )
 
 TEXTO_SENSIBLE = 'LUMI_SENSIBLE'
+TEXTO_PISTA_SIN_REPREGUNTA = 'PISTA_SIN_REPREGUNTA'
 
 
 def validar_registro(sesion, codigo_actividad, codigo_cuenta=None, disponible=False):
@@ -109,13 +110,16 @@ def sin_seguimiento(item, elegidas):
     return propia is not None and 'criterio' in propia and propia['criterio'] is None
 
 
-def criterio_y_guia(sesion, item, elegidas):
-    """Criterios y campos de seguimiento con los que se evalúa el ítem según la opción elegida.
+def guia_para(seguimiento, opciones_propias, criterios, elegidas):
+    """Criterios y campos de seguimiento con los que se evalúa el ítem según la opción elegida (sin base de datos;
+    también la usa `tests/llm/evaluar.py`).
 
-    Opción propia con `criterio: null`: sin criterio (cumple sin llamada). Con criterio informado: el de la opción,
-    con su `que_busca`, `texto_base` y ejemplos. Omitido: los del ítem, salvo el `texto_base` de la opción."""
-    seguimiento = item.seguimiento or {}
-    propia = propia_elegida(item, elegidas)
+    `seguimiento` y `opciones_propias` son los del ítem; `criterios`, los suyos (`CriterioEvaluacion`). Opción propia
+    con `criterio: null`: sin criterio (cumple sin llamada). Con criterio informado: el de la opción, con su
+    `que_busca`, `texto_base` y ejemplos. Omitido: los del ítem, salvo el `texto_base` de la opción."""
+    seguimiento = seguimiento or {}
+    propias = {o['codigo']: o for o in opciones_propias or ()}
+    propia = next((propias[e['codigo']] for e in elegidas or () if e['codigo'] in propias), None)
     if propia is not None and 'criterio' in propia:
         if propia['criterio'] is None:
             return (), None
@@ -123,12 +127,19 @@ def criterio_y_guia(sesion, item, elegidas):
         return (criterio,), GuiaSeguimiento(
             propia['que_busca'], propia['texto_base'], tuple(propia.get('cumple') or seguimiento.get('cumple', ())),
             tuple(propia.get('no_cumple') or seguimiento.get('no_cumple', ())), seguimiento.get('evitar'))
-    criterios = criterios_de(sesion, item)
+    criterios = tuple(criterios)
     if not seguimiento.get('que_busca') or not criterios:
         return criterios, None
     return criterios, GuiaSeguimiento(
         seguimiento['que_busca'], (propia or {}).get('texto_base') or seguimiento['texto_base'],
         tuple(seguimiento.get('cumple', ())), tuple(seguimiento.get('no_cumple', ())), seguimiento.get('evitar'))
+
+
+def criterio_y_guia(sesion, item, elegidas):
+    """Criterios y guía del ítem según la opción elegida (`guia_para`); lee los criterios solo si hacen falta."""
+    propia = propia_elegida(item, elegidas)
+    criterios = () if propia is not None and 'criterio' in propia else criterios_de(sesion, item)
+    return guia_para(item.seguimiento, item.opciones_propias, criterios, elegidas)
 
 
 def ecos_de(sesion, cuenta, item, items, textos, elecciones, opciones):
@@ -225,11 +236,17 @@ class RegistroLeido:
         return [item for item in items if item.id in self.respuestas
                 and self.clasificacion_vigente(self.respuestas[item.id]) == clasificacion]
 
-    def por_ampliar(self, items):
-        """Ítems que quedaron poco desarrollados: la pregunta de su evaluación vigente y lo que les faltó."""
-        return [ItemPorAmpliar(item=item.codigo, pista=self.ultima_evaluacion(self.respuestas[item.id]).pregunta,
-                               falta=self.ultima_evaluacion(self.respuestas[item.id]).falta)
-                for item in self.con_clasificacion(items, ClasificacionRespuesta.POCO_DESARROLLADA)]
+    def por_ampliar(self, items, pista_sin_repregunta=None):
+        """Ítems que quedaron poco desarrollados: la pregunta de su evaluación vigente y lo que les faltó.
+
+        Sin pregunta (respuesta emocional, ajuste pruebas llm), la pista es el texto fijo `PISTA_SIN_REPREGUNTA`
+        (o, si no está cargado, el nombre del ítem)."""
+        por_ampliar = []
+        for item in self.con_clasificacion(items, ClasificacionRespuesta.POCO_DESARROLLADA):
+            ultima = self.ultima_evaluacion(self.respuestas[item.id])
+            pista = ultima.pregunta or pista_sin_repregunta or item.nombre
+            por_ampliar.append(ItemPorAmpliar(item=item.codigo, pista=pista, falta=ultima.falta))
+        return por_ampliar
 
     def abiertos(self, items):
         return [item.codigo for item in self.con_clasificacion(items, ClasificacionRespuesta.ABIERTA)]
@@ -280,9 +297,13 @@ def conversacion_publica(texto_inicial, turnos, aviso=None):
     return mensajes
 
 
-def texto_sensible(sesion):
-    fila = contexto(sesion).definiciones.por_codigo(TextoFijo, TEXTO_SENSIBLE)
+def texto_fijo(sesion, codigo):
+    fila = contexto(sesion).definiciones.por_codigo(TextoFijo, codigo)
     return fila.texto if fila is not None else None
+
+
+def texto_sensible(sesion):
+    return texto_fijo(sesion, TEXTO_SENSIBLE)
 
 
 def respuesta_publica(registro, item, consolidada, aviso=None):
@@ -295,9 +316,9 @@ def respuesta_publica(registro, item, consolidada, aviso=None):
                                           aviso if respuesta.sensible else None), **final)
 
 
-def registro_publico(registro, items, consolidada=False, aviso=None):
+def registro_publico(registro, items, consolidada=False, aviso=None, pista_sin_repregunta=None):
     progreso = registro.progreso
-    cierre = dict(items_por_ampliar=registro.por_ampliar(items),
+    cierre = dict(items_por_ampliar=registro.por_ampliar(items, pista_sin_repregunta),
                   items_abiertos=registro.abiertos(items)) if registro.cerrado else {}
     return dict(posicion=progreso.posicion if progreso is not None else None,
                 estado=progreso.estado if progreso is not None else None,
@@ -307,7 +328,8 @@ def registro_publico(registro, items, consolidada=False, aviso=None):
 
 
 def publico(sesion, cuenta, actividad, items, consolidada=False):
-    return registro_publico(leer_registro(sesion, cuenta, actividad), items, consolidada, texto_sensible(sesion))
+    return registro_publico(leer_registro(sesion, cuenta, actividad), items, consolidada, texto_sensible(sesion),
+                            texto_fijo(sesion, TEXTO_PISTA_SIN_REPREGUNTA))
 
 
 def crear_progreso(sesion, cuenta, actividad):
@@ -581,6 +603,8 @@ def avanzar(sesion, cuenta, actividad, items, fecha, *, intento, eventos=()):
                     or len(registro.turnos_vigentes(respuesta)) >= maximo):
                 continue
             ultima = registro.ultima_evaluacion(respuesta)
+            if ultima.pregunta is None:
+                continue  # respuesta emocional: no se repregunta y el presupuesto pasa al siguiente
             sesion.execute(update(RespuestaRegistro.__table__).where(RespuestaRegistro.id == respuesta.id).values(
                 estado=EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO,
                 actualizada_en=marca_actualizacion(respuesta.actualizada_en)))

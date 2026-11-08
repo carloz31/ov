@@ -61,3 +61,12 @@
 - Prueba en el navegador (aprobado por el usuario): `etiquetaElegida` deja de mostrarse; solo lo elegido la vez pasada lleva etiqueta (`etiquetaAnterior`). La etiqueta agrandaba el chip y movía la fila bajo el dedo, y en las exclusivas no tenía sentido («Nadie… · ESA VOZ»). El ✓ marca lo elegido.
 - Prueba en el navegador: en móvil, la regla que da alto a la barra superior del reproductor no se aplicaba con el ambiente `sunrise` (un selector más específico la anulaba) y el contador de pasos caía sobre la barra de progreso; la regla de móvil usa ahora el mismo selector (sin tocar la barra de las batallas). Afecta a todo el reproductor, no solo a los registros.
 - Prueba en el navegador: en móvil, el pie del ítem pone la leyenda en su propia fila, a la izquierda, y los botones en la rejilla 1fr / 2fr de siempre (antes la leyenda caía centrada en la columna del botón).
+
+## Ajuste pruebas llm
+
+- Respuesta emocional (`repregunta: null` sin cumplir ni sensible): POCO_DESARROLLADA sin pregunta; `avanzar` la salta y el presupuesto pasa al siguiente ítem. Una repregunta no nula pero inválida sigue → `texto_base`.
+- Su pista al cerrar y en la consulta es el texto fijo `PISTA_SIN_REPREGUNTA` (tabla `texto_fijo`, como `LUMI_SENSIBLE`; decisión del usuario); los demás poco desarrollados conservan su repregunta como pista. `ItemPorAmpliar.pista` sigue siendo `str`. La prueba de la semilla de `ruta` pasa a esperar 2 textos fijos.
+- `TEMPERATURA_REGISTRO = 1.0` solo en entrega y seguimiento: el adaptador usaba esa constante en todas sus llamadas, así que diario, cartas, sugerencias de pasos y guion pasan a `TEMPERATURA_ASISTENTES` (0.2, su valor de hoy).
+- `mensaje_evaluador` (gemini.py) quita `repregunta` de los criterios solo en ítems con guía; los demás contextos van igual que antes.
+- `guia_para` (acciones.py) es la parte pura de `criterio_y_guia`; `criterio_y_guia` solo lee los criterios cuando la opción propia no los reemplaza.
+- Pruebas adaptadas (autorizadas): versión `v6`, `PROMPT_ENTREGA`/`PROMPT_SEGUIMIENTO` en lugar de los `_V5`, temperatura 1.0 en las del adaptador.

@@ -68,7 +68,7 @@ def test_interfaz_no_importa_sqlalchemy_fastapi_ni_modelos():
 
 
 def test_constantes_de_registro_centralizadas():
-    assert VERSION_PROMPT_REGISTRO == "v5"
+    assert VERSION_PROMPT_REGISTRO == "v6"
     assert MAXIMO_SEGUIMIENTOS_POR_REGISTRO == 2
 
 
@@ -173,7 +173,7 @@ def test_entrega_hace_una_sola_llamada_y_solo_con_items_con_criterios():
     assert (i1.origen, i1.clasificacion, i1.criterios_faltantes) == (
         OrigenEvaluacion.LLM, ClasificacionRespuesta.POCO_DESARROLLADA, ("C1", "C2"))
     assert i1.pregunta == f"Sobre lo que contaste: {EJEMPLO.repregunta}"
-    assert (i1.modelo, i1.version_prompt) == ("m", "v5")
+    assert (i1.modelo, i1.version_prompt) == ("m", "v6")
     # Sin criterios: en código, con extensión mínima como único criterio.
     i2, i3 = evaluaciones["I2"], evaluaciones["I3"]
     assert (i2.origen, i2.clasificacion, i2.pregunta, i2.error) == (
@@ -327,3 +327,27 @@ def test_contexto_sin_datos_de_la_cuenta():
     procesar_entrega("A", (item(),), falso)
     serializado = json.dumps(asdict(falso.contextos[0]), ensure_ascii=False)
     assert "est-ana" not in serializado and "Ana" not in serializado
+
+
+# --- Ajuste pruebas llm: respuesta emocional ------------------------------------------------
+
+def test_repregunta_nula_sin_cumplir_queda_poco_desarrollada_sin_pregunta():
+    evaluador = EvaluadorDePrueba(entrega=ResultadoEntrega(items=[
+        resultado_item("I1", cumple=False, falta="Te faltó contar qué hiciste tú."),
+        resultado_item("I2", cumple=False, repregunta="Falta C1")]))
+    evaluaciones = procesar_entrega("A", (item("I1", guia=GUIA), item("I2", guia=GUIA)), evaluador)
+    emocional, invalida = evaluaciones["I1"], evaluaciones["I2"]
+    assert (emocional.clasificacion, emocional.pregunta, emocional.falta) == (
+        ClasificacionRespuesta.POCO_DESARROLLADA, None, "Te faltó contar qué hiciste tú.")
+    # Una repregunta no nula pero inválida sigue reemplazándose por el texto base.
+    assert invalida.pregunta == GUIA.texto_base
+
+
+def test_falso_emocional_no_cumple_con_falta_y_sin_repregunta():
+    evaluacion = procesar_entrega("A", (item(texto=f"{LARGO} [emocional]", guia=GUIA),), EvaluadorFalso())["I1"]
+    assert (evaluacion.clasificacion, evaluacion.pregunta, evaluacion.falta) == (
+        ClasificacionRespuesta.POCO_DESARROLLADA, None, GUIA.que_busca)
+    seguimiento = procesar_seguimiento("A", item(texto="Inicial", guia=GUIA),
+                                       (TurnoEvaluacion("¿Cuándo?", "No quiero [emocional]"),), EvaluadorFalso(),
+                                       pregunta_generica=False)
+    assert (seguimiento.clasificacion, seguimiento.pregunta) == (ClasificacionRespuesta.POCO_DESARROLLADA, None)

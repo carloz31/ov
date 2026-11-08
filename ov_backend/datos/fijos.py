@@ -52,6 +52,8 @@ PRESENTACIONES = tuple((codigo, 'ESTUDIANTE') for codigo in (
 TEXTOS_FIJOS = (
     ('LUMI_SENSIBLE', 'Gracias por contarme esto. No tienes que escribir más sobre eso aquí. Si quieres hablarlo '
                       'con alguien, tu orientadora o tu tutor están para eso.'),
+    # Ajuste pruebas llm: la pista de un ítem poco desarrollado sin repregunta (respuesta emocional).
+    ('PISTA_SIN_REPREGUNTA', 'Si en algún momento quieres, puedes volver a esto y contar un poco más.'),
 )
 
 # Código reservado para la opción «otra»; ninguna lista puede usarlo.
