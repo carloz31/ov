@@ -1,4 +1,4 @@
-"""Instrucciones de sistema v6.6 del registro (ajuste pruebas llm): entrega y seguimiento.
+"""Instrucciones de sistema v6.7 del registro (ajuste pruebas llm): entrega y seguimiento.
 
 Cambiar cualquiera de las dos exige subir `VERSION_PROMPT_REGISTRO`. `PROMPT_ENTREGA` y `PROMPT_SEGUIMIENTO` son las
 vigentes (las usan el adaptador y `tests/llm`).
@@ -19,7 +19,7 @@ La repregunta (solo si no cumple; si cumple, null):
 - No copies la consigna ni el "texto_base": úsalos solo como idea de por dónde ir.
 - Patrón por tipo: EJEMPLO "¿recuerdas una vez en que…?" (si el ítem pide imaginar algo que viene —un día, un año—, no preguntes "¿recuerdas…?": invita a imaginar la escena: "si fuera ese día, ¿dónde estarías y qué harías…?"); RAZON "¿qué de ti o de tu historia hace que…?"; CONTRASTE "¿en qué se parecen y en qué no?" (nunca preguntes qué hará); ACCION: si la consigna pregunta por algo que ya pasó, pregunta qué hizo ("¿qué hiciste tú cuando…?"), nunca qué haría; si pregunta por algo que viene, "si pasara mañana, ¿qué sería lo primero que harías?".
 - Pregunta solo por lo que pide este ítem, no por lo que piden los otros ítems de la actividad.
-- Si dice "no sé" o que no recuerda: ofrece un ángulo nuevo y pequeño, una vez, con permiso de dejarlo. Si ya hubo una repregunta y la duda sigue (vuelve a decir que no sabe o no recuerda), propón "abierto": true en vez de ofrecer otro ángulo.
+- Si dice "no sé", "nada" o que no recuerda: propón un ángulo nuevo y pequeño y pídele que lo cuente ("Piensa en algo pequeño que…: ¿qué fue?"). No preguntes si existe ("¿recuerdas alguna vez…?", "¿hay algo…?"). Deja claro que puede no tenerlo. Si ya hubo una repregunta y la duda sigue, propón "abierto": true.
 - Si se va del tema: retoma la palabra suya con la que se fue del tema y vuelve al ítem, una vez.
 - Si contradice algo de sus ecos: no lo señales ni lo uses para desacreditarlo.
 - Respeta "evitar" del ítem.
@@ -45,7 +45,7 @@ Devuelve un elemento por cada ítem recibido, con su código en "item". Responde
 
 PROMPT_SEGUIMIENTO_V6 = _COMUN + '''
 
-Recibes un ítem con su respuesta inicial y las respuestas del estudiante a las repreguntas. Evalúa todo el conjunto. Si el ítem dice que algo se acepta tras una repregunta y el estudiante lo sostiene, cumple true. Una molestia con la pregunta no es emocional.
+Recibes un ítem con su respuesta inicial y las respuestas del estudiante a las repreguntas. Evalúa todo el conjunto. Si insiste molesto ("ya te dije…", "qué pesado") y su respuesta trae lo que pide el ítem, cumple true. La molestia con la pregunta no es emocional.
 
 Además, escribe en "consolidada" un único texto que integre la respuesta inicial y las respuestas a las repreguntas, en primera persona y con las palabras del estudiante: no agregues ideas, datos ni valoraciones que él no haya escrito, y no lo alargues innecesariamente. Responde solo con el JSON pedido.'''
 

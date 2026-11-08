@@ -612,7 +612,8 @@
     ]
    ],
    "esperado": {
-    "cumple": true,
+    "cumple": false,
+    "abierto": true,
     "sin_futuro": true
    }
   },
