@@ -219,8 +219,10 @@ def filtrar(repregunta, tipo, item, etiquetas, filtrar_etiqueta, permitidas):
     return texto, reglas
 
 
-def repregunta_de(r, caso, respuestas):
-    """(repregunta final, origen, reglas incumplidas, si se agregó «¿»). Sin repregunta: (None, '', [], False)."""
+def repregunta_de(r, caso, respuestas, seguimiento=False):
+    """(repregunta final, origen, reglas incumplidas, si se agregó «¿»). Sin repregunta: (None, '', [], False).
+
+    Si el filtro rechaza la del seguimiento, el respaldo es la base de `no_sabe / vacio`: la del `tipo` repetiría lo que ya vio."""
     if r.sensible or r.tipo not in CON_REPREGUNTA:
         return None, '', [], False
     respaldo = bases_de(caso)[r.tipo]
@@ -229,7 +231,7 @@ def repregunta_de(r, caso, respuestas):
     permitidas = palabras_permitidas(respuestas, caso['etiquetas'], caso.get('ecos', {}))
     texto, reglas = filtrar(r.repregunta, r.tipo, caso['item'], caso['etiquetas'], ficha_de(caso)['filtrar_etiqueta'], permitidas)
     if reglas:
-        return respaldo, 'base_por_filtro', reglas, False
+        return bases_de(caso)['no_sabe'] if seguimiento else respaldo, 'base_por_filtro', reglas, False
     return texto, 'llm', [], texto != r.repregunta.strip()
 
 
@@ -299,8 +301,8 @@ def con_reintento(funcion, intentos=3):
             time.sleep(2)
 
 
-def campos_repregunta(r, caso, respuestas):
-    repregunta, origen, reglas, apertura = repregunta_de(r, caso, respuestas)
+def campos_repregunta(r, caso, respuestas, seguimiento=False):
+    repregunta, origen, reglas, apertura = repregunta_de(r, caso, respuestas, seguimiento)
     return repregunta, dict(repregunta_llm=r.repregunta, repregunta=repregunta, origen=origen, filtro=' '.join(reglas),
                             apertura='sí' if apertura else '', ignorada='sí' if r.repregunta and repregunta is None else '')
 
@@ -322,7 +324,7 @@ def ejecutar(llamada, caso, comun, corrida):
         s, uso = con_reintento(lambda: llamada(mensaje(caso, caso['respuesta_seguimiento'], caso['texto'], invitacion)))
         final, sensible, estado = estado_final(r, s)
         # La repregunta del seguimiento no se muestra: es la pista que se guarda para cuando edite el ítem.
-        _, campos = campos_repregunta(s, caso, [caso['texto'], caso['respuesta_seguimiento']])
+        _, campos = campos_repregunta(s, caso, [caso['texto'], caso['respuesta_seguimiento']], seguimiento=True)
         filas.append(dict(fila_base, **uso, **campos, turno='seguimiento', texto=caso['respuesta_seguimiento'], motivo=s.motivo, tipo=s.tipo,
                           sensible=s.sensible, invitacion=invitacion, invitacion_respaldo='sí' if respaldo else '', tipo_final=final,
                           sensible_final=sensible, estado=estado))
