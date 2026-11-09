@@ -6,6 +6,7 @@ del B) se lee de la línea `BASE:` de la tarjeta, para que no haya dos copias. `
 
 TARJETAS = {
     'b1-1-gustos': {
+        'filtrar_etiqueta': False,
         'pregunta': '¿Qué te encantaba hacer de niño o niña? Puede ser un juego, algo que armabas o algo que hacías con alguien.',
         'tarjeta': '''NÚCLEO: una actividad que hacía de niño CON al menos un detalle suyo: qué hacía dentro
   de ella, con quién, dónde o cómo.
@@ -46,6 +47,7 @@ REPREGUNTA
   fuera_de_tema · BASE: «Volvamos a cuando eras niño o niña: ¿qué te encantaba hacer?»''',
     },
     'b1-1-logro': {
+        'filtrar_etiqueta': True,
         'pregunta': 'Cuenta un logro tuyo: algo que pasó, no algo que eres.',
         'tarjeta': '''NÚCLEO: cuenta algo que pasó o que hizo (un hecho), por pequeño que sea: aprendió algo,
   ganó, organizó, terminó, ayudó a alguien una vez, pasó de año, armó algo.
@@ -76,6 +78,7 @@ REPREGUNTA
   fuera_de_tema · BASE: «Volvamos a lo que marcaste, {opción}: cuéntame algo que lograste en que se haya notado.»''',
     },
     'b1-1-dificultad': {
+        'filtrar_etiqueta': False,
         'pregunta': 'Cuenta algo que te costó y cómo lo fuiste superando: lo que hiciste o quién te ayudó.',
         'tarjeta': '''NÚCLEO: dice cómo la atravesó: algo que hizo (verbo de acción) o una ayuda que tuvo.
 NO EXIGIR: que nombre qué fue lo difícil, que la haya superado del todo, ni que lo

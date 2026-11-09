@@ -33,15 +33,16 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 
 ## Prueba de tarjetas (v7.x)
 
-`evaluar_tarjetas.py` prueba la clasificación nueva por `tipo` con el método **B**: el LLM clasifica y redacta la repregunta, y un filtro decide si se usa o si va la base de la tarjeta. Hoy corre b1-3 (v7.2). No toca el backend, el prompt vigente ni `evaluar.py`: tiene su prompt (`prompt_tarjetas.py`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`) y sus casos (`casos/b1-3-tarjetas.json`).
+`evaluar_tarjetas.py` prueba la clasificación nueva por `tipo` con el método **B**: el LLM clasifica y redacta la repregunta, y un filtro decide si se usa o si va la base de la tarjeta. Hoy corre b1-3 (v7.2b). No toca el backend, el prompt vigente ni `evaluar.py`: lee su prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, solo datos y copia exacta de `tarjetas-registros.md`), sus casos (`casos/b1-3-tarjetas-v7.2b.json`) y su léxico (`lexico/es_ES.dic` y `.aff`, hunspell de [LibreOffice/dictionaries](https://github.com/LibreOffice/dictionaries), con `spylls`, dependencia de desarrollo).
 
 ```
-uv run python tests/llm/evaluar_tarjetas.py --mostrar 16        # el prompt y el mensaje, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --revisar           # solapamiento y filtro sobre v7 y v7.2, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --mostrar 20        # el prompt y el mensaje, sin llamar
 uv run python tests/llm/evaluar_tarjetas.py                     # una corrida: CSV e informe
 uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe desde un CSV, sin llamar
 ```
 
-El informe es `resultados/b1-3/v7.2.md`; rehacerlo reemplaza la sección de notas, que se escribe a mano. Las corridas de b1-1 (`resultados/b1-1/v7-tarjetas.md` y `v7.1-gustos.md`, con los casos `casos/b1-1-tarjetas*.json`) quedan como evidencia: el código, el prompt y las tarjetas con que corrieron están en el historial de git.
+Antes de llamar, el runner se detiene si un caso coincide con los EJEMPLOS o con las frases de GENERAL SI de su tarjeta. El informe es `resultados/b1-3/v7.2b.md` y anota el `git hash-object` de cada archivo usado; rehacerlo reemplaza las secciones escritas a mano. Las corridas anteriores (`resultados/b1-1/v7-tarjetas.md`, `v7.1-gustos.md` y `resultados/b1-3/v7.2.md`, con los casos `casos/b1-*-tarjetas*.json`) quedan como evidencia: el código, el prompt y las tarjetas con que corrieron están en el historial de git.
 
 ## Formato de un caso
 

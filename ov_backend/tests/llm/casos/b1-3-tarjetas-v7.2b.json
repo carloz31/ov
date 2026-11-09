@@ -1,0 +1,33 @@
+{
+  "registro": "b1-3",
+  "descripcion": "Prueba de tarjetas v7.2b (método B). Los casos con «caso» T… remiten a b1-3.json; los «nuevo» traen su texto. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 1, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["MAMA"], "texto": "Que estudie enfermería como ella", "tipo_esperado": "propio"},
+    {"numero": 2, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["PAPA"], "texto": "Que salga adelante", "tipo_esperado": "general"},
+    {"numero": 3, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["MAMA"], "texto": "Que siga estudiando", "tipo_esperado": "general"},
+    {"numero": 4, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["ABUELO"], "texto": "No sé, nunca me lo ha dicho bien", "tipo_esperado": "no_sabe"},
+    {"numero": 5, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["PAPA"], "texto": "Mi papá se enoja cuando hablo de arte, quiere que sea ingeniero", "tipo_esperado": "propio", "sensible_esperado": false},
+    {"numero": 6, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["UNIVERSIDAD"], "texto": "Porque me llama", "tipo_esperado": "general"},
+    {"numero": 7, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["TRABAJAR"], "texto": "Porque en mi casa hace falta plata y quiero ayudar", "tipo_esperado": "propio"},
+    {"numero": 8, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["UNIVERSIDAD"], "texto": "Porque es lo normal", "tipo_esperado": "general"},
+    {"numero": 9, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["AUN_NO"], "texto": "Ni idea", "tipo_esperado": "no_sabe"},
+    {"numero": 10, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["AUN_NO"], "texto": "Dudo entre diseño y sistemas", "tipo_esperado": "propio"},
+    {"numero": 11, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["CHOCAN"], "texto": "Cada uno piensa una cosa", "tipo_esperado": "general",
+     "ecos": {"voz": {"opcion": "MAMA", "texto": "Que estudie enfermería como ella"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero estudiar diseño porque me paso horas en Canva"}}},
+    {"numero": 12, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["CHOCAN"], "texto": "En la carrera: ella quiere enfermería y yo diseño", "tipo_esperado": "propio",
+     "ecos": {"voz": {"opcion": "MAMA", "texto": "Que estudie enfermería como ella"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero estudiar diseño porque me paso horas en Canva"}}},
+    {"numero": 13, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["EN_PARTE"], "texto": "En que estudie sí, en dónde no", "tipo_esperado": "propio",
+     "ecos": {"voz": {"opcion": "PAPA", "texto": "Que me quede en Arequipa y entre a la UNSA"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero irme a Lima porque allá está lo que quiero estudiar"}}},
+    {"numero": 14, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["COINCIDEN"], "texto": "Igualito", "tipo_esperado": "general",
+     "ecos": {"voz": {"opcion": "MAMA", "texto": "Que vaya a la universidad"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Porque quiero ser abogada"}}},
+    {"numero": 15, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["CHOCAN"], "texto": "Me da miedo decirle lo que quiero, siempre terminamos peleando", "tipo_esperado": "emocional", "sensible_esperado": false,
+     "ecos": {"voz": {"opcion": "MAMA", "texto": "Que estudie enfermería como ella"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero estudiar diseño porque me paso horas en Canva"}}},
+    {"numero": 16, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["CHOCAN"], "texto": "Chocamos bastante", "respuesta_seguimiento": "En que ella quiere que me quede en Arequipa", "tipo_esperado": "general", "conjunto_esperado": "propio", "final_esperado": "propio",
+     "ecos": {"voz": {"opcion": "PAPA", "texto": "Que me quede en Arequipa y entre a la UNSA"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero irme a Lima porque allá está lo que quiero estudiar"}}},
+    {"numero": 17, "caso": "T5", "item": "b1-3-mia", "tipo_esperado": "emocional", "sensible_esperado": false},
+    {"numero": 18, "caso": "T6", "item": "b1-3-mia", "sensible_esperado": true},
+    {"numero": 19, "caso": "T7", "item": "b1-3-voz", "tipo_esperado": "propio", "sensible_esperado": false},
+    {"numero": 20, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["MAMA"], "texto": "Que tenga una carrera", "respuesta_seguimiento": "Eso nomás dice, que tenga una carrera", "tipo_esperado": "general", "conjunto_esperado": "general", "final_esperado": "general"}
+  ]
+}

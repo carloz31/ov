@@ -1,11 +1,12 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.2): método B, repregunta guiada con la base como respaldo, en b1-3.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.2b): método B, repregunta guiada con la base como respaldo, en b1-3.
 
-No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y tiene su
-propio prompt (`prompt_tarjetas.py`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`) y sus casos
-(`casos/b1-3-tarjetas.json`). Las corridas anteriores (v7 y v7.1) quedan en sus CSV e informes y este runner ya no las rehace.
+No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`), sus casos (`casos/b1-3-tarjetas-v7.2b.json`)
+y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
-    uv run python tests/llm/evaluar_tarjetas.py --mostrar 16        # el prompt y el mensaje, sin llamar
+    uv run python tests/llm/evaluar_tarjetas.py --revisar           # solapamiento y filtro sobre v7 y v7.2, sin llamar
+    uv run python tests/llm/evaluar_tarjetas.py --mostrar 20        # el prompt y el mensaje, sin llamar
     uv run python tests/llm/evaluar_tarjetas.py                     # una corrida; CSV e informe
     uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe desde un CSV, sin llamar
 """
@@ -14,27 +15,41 @@ import argparse
 import csv
 import json
 import re
+import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
+import httpx
 from pydantic import BaseModel
+from spylls.hunspell import Dictionary
 
 import evaluar as base  # agrega el backend a sys.path
 import tarjetas_b1_1
 import tarjetas_b1_3
-from prompt_tarjetas import PROMPT, VERSION
 
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
+VERSION = 'v7.2b'
 REGISTRO = 'b1-3'
 AQUI = Path(__file__).resolve().parent
+RAIZ = AQUI.parents[1]
 CARPETA = AQUI / 'resultados' / REGISTRO
-INFORME = CARPETA / 'v7.2.md'
+INFORME = CARPETA / 'v7.2b.md'
+CASOS = AQUI / 'casos' / f'{REGISTRO}-tarjetas-v7.2b.json'
+RUTA_PROMPT = AQUI / 'prompts' / 'v7.md'
+PROMPT = RUTA_PROMPT.read_text(encoding='utf-8')
+LEXICO = AQUI / 'lexico' / 'es_ES'
+ARCHIVOS = (AQUI / 'tarjetas_b1_3.py', AQUI / 'tarjetas_b1_1.py', RUTA_PROMPT, CASOS, LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
+# (corrida, registro, CSV, casos de los que salen los ecos)
+PREVIOS = (('v7', 'b1-1', '2026-11-08_2054_v7-tarjetas_t1_rlow.csv', None),
+           ('v7.2', 'b1-3', '2026-11-08_2219_v7.2_t1_rlow.csv', 'b1-3-tarjetas.json'))
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS}
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
@@ -44,6 +59,7 @@ PROHIBIDAS = ('pero', 'exactamente', 'específicamente', '¿podrías', 'desarrol
 PERMITIDOS = re.compile(r'''[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.,;:¿?¡!()«»"'“”‘’…–—-]*''')
 _TIPO_BASE = '(?:general|no_sabe|vacio|fuera_de_tema)'
 BASE_DE = re.compile(rf'^[ \t]*({_TIPO_BASE}(?: / {_TIPO_BASE})*) ·(?:.*\n)??.*?BASE: «(.+?)»', re.M)
+PALABRA = re.compile(r'[^\W\d_]+')
 
 
 class Resultado(BaseModel):
@@ -58,7 +74,7 @@ class Resultado(BaseModel):
 def cargar_casos():
     """Los casos de la prueba; los que remiten a `b1-3.json` toman de ahí su texto y sus opciones."""
     existentes = {c['id']: c for c in json.loads((AQUI / 'casos' / f'{REGISTRO}.json').read_text(encoding='utf-8'))['casos']}
-    casos = json.loads((AQUI / 'casos' / f'{REGISTRO}-tarjetas.json').read_text(encoding='utf-8'))['casos']
+    casos = json.loads(CASOS.read_text(encoding='utf-8'))['casos']
     for caso in casos:
         if caso['caso'] != 'nuevo':
             item = next(i for i in existentes[caso['caso']]['items'] if i['item'] == caso['item'])
@@ -115,7 +131,55 @@ def mensaje(caso, texto, anterior=None, invitacion=None):
     return '\n'.join(f'<{nombre}>{valor}</{nombre}>' for nombre, valor in partes if valor)
 
 
+# --- Chequeos previos ------------------------------------------------------------------------
+
+def _forma_comparable(texto):
+    """Sin mayúsculas ni tildes y con espacios en los bordes, para comparar respetando los límites de palabra."""
+    return f" {' '.join(re.findall(r'\w+', sin_tildes(texto)))} "
+
+
+def frases_de(tarjeta):
+    """Los EJEMPLOS y las frases entre comillas de GENERAL SI."""
+    general = re.search(r'^GENERAL SI:(.*?)^(?:MATICES|EJEMPLOS):', tarjeta, re.S | re.M).group(1)
+    ejemplos = re.search(r'^EJEMPLOS:(.*?)^REPREGUNTA', tarjeta, re.S | re.M).group(1)
+    return re.findall(r'"([^"]+)"', general) + re.findall(r'^\s*"([^"]+)"', ejemplos, re.M)
+
+
+def solapamientos(casos):
+    """(número, texto del caso, frase de la tarjeta) de cada caso que coincide con su tarjeta o contiene una de sus frases."""
+    hallados = []
+    for caso in casos:
+        frases = frases_de(ficha_de(caso)['tarjeta'])
+        for texto in filter(None, (caso['texto'], caso.get('respuesta_seguimiento'))):
+            hallados += [(caso['numero'], texto, f) for f in frases if _forma_comparable(f) in _forma_comparable(texto)]
+    return hallados
+
+
+def hashes():
+    """{ruta relativa: `git hash-object`} de cada archivo que usa la corrida."""
+    return {ruta.relative_to(RAIZ).as_posix(): subprocess.run(['git', 'hash-object', str(ruta)], capture_output=True, text=True, check=True, cwd=RAIZ).stdout.strip()
+            for ruta in ARCHIVOS}
+
+
 # --- Filtro y estado final -------------------------------------------------------------------
+
+@lru_cache(maxsize=1)
+def lexico():
+    return Dictionary.from_files(str(LEXICO))
+
+
+@lru_cache(maxsize=None)
+def en_lexico(palabra):
+    return lexico().lookup(palabra)
+
+
+def palabras_permitidas(respuestas, etiquetas, ecos):
+    """Lo que escribió o marcó el estudiante vale aunque no esté en el léxico (nombres propios, lugares, carreras)."""
+    fuentes = [*respuestas, *etiquetas]
+    for clave, eco in ecos.items():
+        fuentes += [base.textos_elegidos(f'b1-3-{clave}', [eco['opcion']])[0], eco['texto']]
+    return {p.lower() for texto in fuentes if texto for p in PALABRA.findall(texto)}
+
 
 def abrir_interrogacion(texto):
     """Con «?» y sin «¿», agrega el «¿» al inicio de la oración interrogativa."""
@@ -127,7 +191,7 @@ def abrir_interrogacion(texto):
     return f'{texto[:inicio]}¿{texto[inicio:]}'
 
 
-def filtrar(repregunta, tipo, item, etiquetas):
+def filtrar(repregunta, tipo, item, etiquetas, filtrar_etiqueta, permitidas):
     """(texto, reglas incumplidas). El texto puede volver con el «¿» agregado; sin reglas, la repregunta pasa."""
     texto = abrir_interrogacion(repregunta.strip())
     normal, reglas = sin_tildes(texto), []
@@ -135,7 +199,7 @@ def filtrar(repregunta, tipo, item, etiquetas):
         if re.search(rf'(?<!\w){re.escape(sin_tildes(palabra))}(?!\w)', normal):
             reglas.append(f'prohibida:{palabra}')
     excepcion = tipo == 'fuera_de_tema' and item == 'b1-1-logro'
-    if not excepcion and any(sin_tildes(e) in normal for e in etiquetas):
+    if filtrar_etiqueta and not excepcion and any(sin_tildes(e) in normal for e in etiquetas):
         reglas.append('etiqueta_opcion')
     if len(texto.split()) > 30:
         reglas.append('mas_de_30_palabras')
@@ -145,17 +209,20 @@ def filtrar(repregunta, tipo, item, etiquetas):
         reglas.append('no_termina_en_interrogacion_ni_punto')
     if not PERMITIDOS.fullmatch(texto):
         reglas.append('caracteres')
+    # Con la mayúscula original: el léxico solo conoce los nombres propios así («Arequipa»).
+    reglas += [f'palabra_extrana:{p}' for p in PALABRA.findall(texto) if p.lower() not in permitidas and not en_lexico(p)]
     return texto, reglas
 
 
-def repregunta_de(r, caso):
+def repregunta_de(r, caso, respuestas):
     """(repregunta final, origen, reglas incumplidas, si se agregó «¿»). Sin repregunta: (None, '', [], False)."""
     if r.sensible or r.tipo not in CON_REPREGUNTA:
         return None, '', [], False
     respaldo = bases_de(caso)[r.tipo]
     if not (r.repregunta or '').strip():
         return respaldo, 'base_sin_redactar', [], False
-    texto, reglas = filtrar(r.repregunta, r.tipo, caso['item'], caso['etiquetas'])
+    permitidas = palabras_permitidas(respuestas, caso['etiquetas'], caso.get('ecos', {}))
+    texto, reglas = filtrar(r.repregunta, r.tipo, caso['item'], caso['etiquetas'], ficha_de(caso)['filtrar_etiqueta'], permitidas)
     if reglas:
         return respaldo, 'base_por_filtro', reglas, False
     return texto, 'llm', [], texto != r.repregunta.strip()
@@ -174,6 +241,30 @@ def estado_final(primera, conjunto):
 
 # --- Corrida ---------------------------------------------------------------------------------
 
+_http = threading.local()  # los bytes de la última respuesta de este hilo
+
+
+def _guardar_bytes(respuesta):
+    respuesta.read()
+    _http.bytes = respuesta.content
+
+
+def cliente_gemini(clave):
+    """El cliente del SDK con un `httpx` que deja ver los bytes de cada respuesta."""
+    tipos = base.adaptador.types
+    http = httpx.Client(timeout=120, event_hooks={'response': [_guardar_bytes]})
+    return base.adaptador.genai.Client(api_key=clave, http_options=tipos.HttpOptions(httpx_client=http))
+
+
+def revisar_bytes(texto_sdk):
+    """`igual` si los bytes HTTP, leídos como UTF-8 estricto, dan el mismo texto que entregó el SDK."""
+    crudo = getattr(_http, 'bytes', None)
+    if crudo is None:
+        return 'sin bytes'
+    partes = json.loads(crudo.decode('utf-8'))['candidates'][0]['content']['parts']
+    return 'igual' if ''.join(p.get('text', '') for p in partes if not p.get('thought')) == texto_sdk else 'distinto'
+
+
 def llamar(cliente, modelo, razonamiento, contenido, temperatura):
     tipos = base.adaptador.types
     inicio = time.perf_counter()
@@ -188,7 +279,7 @@ def llamar(cliente, modelo, razonamiento, contenido, temperatura):
     texto = ''.join(p.text for p in partes or [] if p.text and not p.thought)
     uso = respuesta.usage_metadata
     return Resultado.model_validate_json(texto), dict(
-        latencia_ms=latencia, tokens_entrada=getattr(uso, 'prompt_token_count', None),
+        latencia_ms=latencia, bytes_http=revisar_bytes(texto), tokens_entrada=getattr(uso, 'prompt_token_count', None),
         tokens_razonamiento=getattr(uso, 'thoughts_token_count', None), tokens_salida=getattr(uso, 'candidates_token_count', None))
 
 
@@ -203,8 +294,8 @@ def con_reintento(funcion, intentos=3):
             time.sleep(2)
 
 
-def campos_repregunta(r, caso):
-    repregunta, origen, reglas, apertura = repregunta_de(r, caso)
+def campos_repregunta(r, caso, respuestas):
+    repregunta, origen, reglas, apertura = repregunta_de(r, caso, respuestas)
     return repregunta, dict(repregunta_llm=r.repregunta, repregunta=repregunta, origen=origen, filtro=' '.join(reglas),
                             apertura='sí' if apertura else '', ignorada='sí' if r.repregunta and repregunta is None else '')
 
@@ -212,11 +303,11 @@ def campos_repregunta(r, caso):
 def ejecutar(llamada, caso, comun):
     """Las filas de un caso: la primera respuesta y, si tiene, el seguimiento."""
     fila_base = dict(comun, numero=caso['numero'], caso=caso['caso'], item=caso['item'], opciones=', '.join(caso['etiquetas']),
-                     tipo_esperado=caso.get('tipo_esperado', ''), final_esperado=caso.get('final_esperado', ''),
+                     tipo_esperado=caso.get('tipo_esperado', ''), conjunto_esperado=caso.get('conjunto_esperado', ''), final_esperado=caso.get('final_esperado', ''),
                      sensible_esperado=caso.get('sensible_esperado', ''))
     try:
         r, uso = con_reintento(lambda: llamada(mensaje(caso, caso['texto'])))
-        repregunta, campos = campos_repregunta(r, caso)
+        repregunta, campos = campos_repregunta(r, caso, [caso['texto']])
         filas = [dict(fila_base, **uso, **campos, turno='primera', texto=caso['texto'], motivo=r.motivo, tipo=r.tipo, sensible=r.sensible)]
         if 'respuesta_seguimiento' not in caso:
             return filas
@@ -226,7 +317,7 @@ def ejecutar(llamada, caso, comun):
         s, uso = con_reintento(lambda: llamada(mensaje(caso, caso['respuesta_seguimiento'], caso['texto'], invitacion)))
         final, sensible, estado = estado_final(r, s)
         # La repregunta del seguimiento no se muestra: es la pista que se guarda para cuando edite el ítem.
-        _, campos = campos_repregunta(s, caso)
+        _, campos = campos_repregunta(s, caso, [caso['texto'], caso['respuesta_seguimiento']])
         filas.append(dict(fila_base, **uso, **campos, turno='seguimiento', texto=caso['respuesta_seguimiento'], motivo=s.motivo, tipo=s.tipo,
                           sensible=s.sensible, invitacion=invitacion, invitacion_respaldo='sí' if respaldo else '', tipo_final=final,
                           sensible_final=sensible, estado=estado))
@@ -235,9 +326,9 @@ def ejecutar(llamada, caso, comun):
         return [dict(fila_base, turno='primera', texto=caso['texto'], error=repr(error)[:300])]
 
 
-CAMPOS = ['numero', 'caso', 'item', 'turno', 'texto', 'opciones', 'tipo_esperado', 'final_esperado', 'sensible_esperado', 'motivo', 'tipo',
+CAMPOS = ['numero', 'caso', 'item', 'turno', 'texto', 'opciones', 'tipo_esperado', 'conjunto_esperado', 'final_esperado', 'sensible_esperado', 'motivo', 'tipo',
           'sensible', 'repregunta_llm', 'repregunta', 'origen', 'filtro', 'apertura', 'ignorada', 'invitacion', 'invitacion_respaldo', 'tipo_final',
-          'sensible_final', 'estado', 'modelo', 'razonamiento', 'temperatura', 'latencia_ms', 'tokens_entrada', 'tokens_razonamiento', 'tokens_salida', 'error']
+          'sensible_final', 'estado', 'modelo', 'razonamiento', 'temperatura', 'latencia_ms', 'bytes_http', 'tokens_entrada', 'tokens_razonamiento', 'tokens_salida', 'archivos', 'error']
 
 
 def guardar(filas, nivel, temperatura, etiqueta):
@@ -289,6 +380,8 @@ def acierta(por_caso):
         return False
     if primera['final_esperado'] and not (seguimiento and seguimiento['tipo_final'] == primera['final_esperado']):
         return False
+    if primera['conjunto_esperado'] and not (seguimiento and seguimiento['tipo'] == primera['conjunto_esperado']):
+        return False
     return primera['tipo'] == primera['tipo_esperado']
 
 
@@ -296,6 +389,8 @@ def esperado_de(primera):
     if primera['sensible_esperado'] == 'True':
         return '`sensible: true`'
     salida = primera['tipo_esperado']
+    if primera['conjunto_esperado']:
+        salida += f" → conjunto {primera['conjunto_esperado']}"
     if primera['final_esperado']:
         salida += f" → final {primera['final_esperado']}"
     return salida + (' · `sensible: false`' if primera['sensible_esperado'] == 'False' else '')
@@ -305,7 +400,7 @@ def obtenido_de(por_caso):
     primera, seguimiento = por_caso['primera'], por_caso.get('seguimiento')
     if primera['error']:
         return 'error'
-    salida = primera['tipo'] + (f" → final {seguimiento['tipo_final']}" if seguimiento else '')
+    salida = primera['tipo'] + (f" → conjunto {seguimiento['tipo']} → final {seguimiento['tipo_final']}" if seguimiento else '')
     return salida + (' · sensible' if sensible_de(por_caso) else '')
 
 
@@ -348,15 +443,47 @@ def repregunta_mostrada(fila):
     return celda(fila['repregunta'] if fila['origen'] == 'llm' else fila['repregunta_llm'] or fila['repregunta']) or '—'
 
 
+def seccion_repaso():
+    """El filtro actual sobre las repreguntas de B guardadas en v7 y v7.2 (no gasta llamadas)."""
+    resumen, rechazadas = [], []
+    for corrida, registro, archivo, casos_json in PREVIOS:
+        with (AQUI / 'resultados' / registro / archivo).open(encoding='utf-8-sig', newline='') as entrada:
+            filas = [f for f in csv.DictReader(entrada) if f.get('metodo', 'B') == 'B']
+        primeras = {f['numero']: f['texto'] for f in filas if f['turno'] == 'primera'}
+        ecos = {str(c['numero']): c.get('ecos', {}) for c in json.loads((AQUI / 'casos' / casos_json).read_text(encoding='utf-8'))['casos']} if casos_json else {}
+        guardadas = [f for f in filas if f['repregunta_llm']]
+        antes = sum(1 for f in guardadas if f['origen'] == 'base_por_filtro')
+        rechazadas_aqui = []
+        for f in guardadas:
+            etiquetas = f['opciones'].split(', ') if f['opciones'] else []
+            permitidas = palabras_permitidas([primeras[f['numero']], f['texto']], etiquetas, ecos.get(f['numero'], {}))
+            _, reglas = filtrar(f['repregunta_llm'], f['tipo'], f['item'], etiquetas, TARJETAS[f['item']]['filtrar_etiqueta'], permitidas)
+            if reglas:
+                rechazadas_aqui.append((corrida, f, reglas))
+        resumen.append(f'- **{corrida}:** de {len(guardadas)} repreguntas guardadas pasan {len(guardadas) - len(rechazadas_aqui)} y se rechazan {len(rechazadas_aqui)} (en su corrida, el filtro rechazó {antes}).')
+        rechazadas += rechazadas_aqui
+    lineas = ['## 3. Filtro nuevo aplicado a v7 y v7.2, sin API', '', *resumen]
+    if rechazadas:
+        lineas += ['', '| Corrida | # | Turno | Repregunta | Regla |', '|---|---|---|---|---|']
+        lineas += [f"| {corrida} | {f['numero']} | {f['turno']} | {celda(f['repregunta_llm'])} | `{' '.join(reglas)}` |" for corrida, f, reglas in rechazadas]
+    return lineas
+
+
 def escribir_informe(ruta_csv):
     filas, casos = leer_csv(ruta_csv)
     primera = filas[0]
     medidas = medir(casos)
     llamadas = sum(1 for f in filas if not f['error'])
-    lineas = [f'# {REGISTRO} con tarjetas (v7.2, método B)', '',
+    con_bytes = [f for f in filas if f['bytes_http']]
+    iguales = sum(f['bytes_http'] == 'igual' for f in con_bytes)
+    lineas = [f'# {REGISTRO} con tarjetas (v7.2b, método B)', '',
               f"`{primera['modelo']}` · {primera['razonamiento']}, temperatura {primera['temperatura']}, una corrida, {llamadas} llamadas con respuesta, "
               f"{medidas['errores']} con error. CSV: [{Path(ruta_csv).name}]({Path(ruta_csv).name}).", '',
-              '## 1. Casos', '', '| # | Ítem · opción | Texto | Esperado | Obtenido | ¿Coincide? | `motivo` | Repregunta | ¿Pasó el filtro? |',
+              '## 1. Archivos', '', '| Ruta | `git hash-object` |', '|---|---|',
+              *[f'| `{ruta}` | `{valor}` |' for ruta, valor in json.loads(primera['archivos']).items()], '',
+              '## 2. Codificación', '', f'En esta corrida, los bytes HTTP leídos como UTF-8 estricto dieron el mismo texto que el SDK en {iguales} de {len(con_bytes)} respuestas.', '',
+              '_Pendiente: origen._', '', *seccion_repaso(), '',
+              '## 4. Casos', '', '| # | Ítem · opción | Texto | Esperado | Obtenido | ¿Coincide? | `motivo` | Repregunta | ¿Pasó el filtro? |',
               '|---|---|---|---|---|---|---|---|---|']
     for numero, por_caso in casos.items():
         f = por_caso['primera']
@@ -369,12 +496,12 @@ def escribir_informe(ruta_csv):
             lineas += ['', f'**Seguimiento de #{numero}:** respondió «{celda(s["texto"])}».', '',
                        '| Invitación que vio | `tipo` del conjunto | `tipo` final | Pista guardada | ¿Pasó el filtro? | `motivo` |', '|---|---|---|---|---|---|',
                        f"| {invitacion} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} | {celda(s['motivo'])} |"]
-    lineas += ['', '## 2. Totales', '', '| Medida | Resultado |', '|---|---|', f"| Acierto | {medidas['aciertos']}/{medidas['total']} |",
+    lineas += ['', '## 5. Totales', '', '| Medida | Resultado |', '|---|---|', f"| Acierto | {medidas['aciertos']}/{medidas['total']} |",
                f"| Invitaciones de más (`propio` → otro tipo) | {lista_casos(medidas['invitaciones'])} |",
                f"| Pases de menos (`vacio` o `fuera_de_tema` → `propio`) | {lista_casos(medidas['pases'])} |",
                f"| `sensible`: falsos negativos | {lista_casos(medidas['fn'])} |", f"| `sensible`: falsos positivos | {lista_casos(medidas['fp'])} |",
                f"| `emocional`: esperado y no obtenido | {lista_casos(medidas['emocional_fn'])} |", f"| `emocional`: obtenido y no esperado | {lista_casos(medidas['emocional_fp'])} |",
-               '', '## 3. Notas', '', '_Pendiente._', '']
+               '', '## 6. Notas', '', '_Pendiente: notas._', '']
     INFORME.write_text('\n'.join(lineas), encoding='utf-8')
     return medidas
 
@@ -388,6 +515,7 @@ def main():
     parser.add_argument('--etiqueta', default='')
     parser.add_argument('--informe', help='rehace el informe desde este CSV, sin llamar al modelo')
     parser.add_argument('--mostrar', type=int, metavar='NUMERO', help='imprime el prompt y el mensaje, sin llamar')
+    parser.add_argument('--revisar', action='store_true', help='chequeo de solapamiento y filtro sobre v7 y v7.2, sin llamar')
     args = parser.parse_args()
 
     if args.informe:
@@ -400,15 +528,22 @@ def main():
         caso = next(c for c in casos if c['numero'] == args.mostrar)
         print(PROMPT, '\n----\n', mensaje(caso, caso['texto']), sep='')
         return
+    hallados = solapamientos(casos)
+    if hallados:
+        sys.exit('Casos que se solapan con su tarjeta:\n' + '\n'.join(f'#{n}: «{texto}» contiene «{frase}»' for n, texto, frase in hallados))
+    print(f'Solapamiento: ninguno en {len(casos)} casos')
+    print('\n'.join(seccion_repaso()))
+    if args.revisar:
+        return
 
     clave, _ = base.entorno()
     if not clave:
         sys.exit('Falta GEMINI_API_KEY (en el entorno o en el .env del backend)')
-    cliente = base.adaptador.genai.Client(api_key=clave)
+    cliente = cliente_gemini(clave)
     razonamiento = base.config_razonamiento(args.modelo, args.razonamiento)
     nivel = base.nombre_razonamiento(razonamiento)
     temperatura = parametros.TEMPERATURA_REGISTRO
-    comun = dict(modelo=args.modelo, razonamiento=nivel, temperatura=temperatura)
+    comun = dict(modelo=args.modelo, razonamiento=nivel, temperatura=temperatura, archivos=json.dumps(hashes()))
     llamada = lambda contenido: llamar(cliente, args.modelo, razonamiento, contenido, temperatura)  # noqa: E731
     print(f'{len(casos)} casos (método B)')
     with ThreadPoolExecutor(max_workers=args.hilos) as pool:
