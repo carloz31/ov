@@ -48,7 +48,8 @@ REPREGUNTA
     tendría que ver en un trabajo para saberlo (Tiempo para la familia: los horarios, los
     turnos, si hay que viajar). Si fue vago, pregunta qué le haría pensar que le conviene.
     No le preguntes cuánto quiere ganar, no pidas una cifra ni digas si una carrera da o
-    no ese valor.
+    no ese valor. En el seguimiento, si insiste en el mismo tema, no repitas las
+    posibilidades que ya le ofreciste: usa la base de no_sabe / vacio.
   no_sabe / vacio · BASE: «Imagina que ya trabajas en algo que te gusta. ¿Qué querrías que fuera de una forma y no de otra: el horario, el sueldo o con quién trabajas?»
   fuera_de_tema · BASE: «Volvamos a lo que pusiste primero: ¿qué tendrías que saber de una carrera para saber si te da eso?»''',
     },
@@ -82,11 +83,14 @@ EJEMPLOS:
 REPREGUNTA
   general · QUÉ PEDIR: qué le hace pensar que esa persona podría contarle cómo es.
     BASE: «¿Qué te hace pensar que esa persona te podría contar cómo es: algo en lo que trabaja, algo que estudió o algo que vivió?»
-    CÓMO ADAPTARLA: nombra a la persona por cómo la marcó. Si dijo solo el vínculo o la
-    confianza, reconócelo en pocas palabras y pregunta qué sabe o vivió esa persona. Si
-    dijo que no es fácil hablarle o que no lo apoya, no comentes eso ni preguntes por la
-    relación: pregunta qué le hace pensar que podría ayudarlo. No sugieras que elija a
-    otra persona.
+    CÓMO ADAPTARLA: nombra a la persona por cómo la marcó; si la etiqueta no dice el
+    género (Amigo/a, Hermano/a), no lo supongas: di "tu amigo o amiga" o "esa persona".
+    Si dijo solo el vínculo o la confianza, reconócelo primero en pocas palabras y luego
+    pregunta qué sabe o vivió esa persona ("que le tengas confianza ya cuenta; ¿qué sabe o
+    vivió que te sirva?"). Si retomas lo que quiere saber, dilo en una frase natural ("¿qué sabe
+    tu amigo o amiga de cuánto hay que estudiar?"). Si dijo que no es fácil hablarle o que
+    no lo apoya, no comentes eso ni preguntes por la relación: pregunta qué le hace pensar
+    que podría ayudarlo. No sugieras que elija a otra persona.
   no_sabe / vacio · BASE: «Piensa en lo que esa persona hace o ha hecho: ¿algo de eso tiene que ver con lo que quieres saber?»
   fuera_de_tema · BASE: «Volvamos a esa persona: ¿qué sabe o vivió que te podría servir?»''',
         'por_opcion': {
