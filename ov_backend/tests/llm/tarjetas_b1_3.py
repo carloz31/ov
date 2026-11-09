@@ -1,4 +1,4 @@
-"""Tarjetas de b1-3 (v7.2b). Solo datos: el texto es copia exacta de `tarjetas-registros.md`, y aquí no se edita a mano.
+"""Tarjetas de b1-3. Solo datos: el texto viene de `tarjetas-registros.md` y se copia tal cual.
 
 `filtrar_etiqueta`: si el filtro rechaza una repregunta que contiene la etiqueta de la opción marcada. `por_opcion`: una opción con pregunta y tarjeta propias reemplaza a las del ítem. `general_por_opcion`: la base de
 `general` (y de `fuera_de_tema`, que usa la misma) depende de la opción marcada. Las demás bases se leen de las líneas
@@ -70,11 +70,16 @@ REPREGUNTA
                 'tarjeta': '''NÚCLEO: qué lo hace dudar: entre qué opciones, o qué le falta saber o resolver.
 NO EXIGIR: que tenga opciones claras ni que esté cerca de decidir.
 GENERAL SI: "todo", "muchas cosas", "no estoy seguro" sin decir de qué.
+MATICES: si expresa sobre todo un malestar fuerte (llora, se angustia, se siente mal
+  consigo mismo) y no dice de qué viene la duda = emocional. Sentirse "perdido" o
+  "confundido", sin más, es la duda misma = no_sabe.
 EJEMPLOS:
   "Me gustan dos cosas muy distintas" → propio (nombra la duda)
   "No sé si mis notas me alcanzan" → propio
   "No estoy seguro" → general
   "Cero idea de qué hacer" → no_sabe
+  "Estoy hecha un lío" → no_sabe
+  "Me pongo mal cada vez que pienso en eso, siento que todos avanzan menos yo" → emocional
 REPREGUNTA
   general / no_sabe / vacio · QUÉ PEDIR: de qué viene la duda.
     BASE: «¿Entre qué cosas dudas, o qué te falta saber para decidir? Puede ser algo pequeño.»
@@ -105,8 +110,9 @@ REPREGUNTA
       COINCIDEN: «¿En qué coinciden: la carrera, el lugar, el momento?»
       EN_PARTE: «¿En qué sí y en qué no?»
       CHOCAN: «¿En qué punto chocan: la carrera, el lugar, el momento, el dinero?»
-    CÓMO ADAPTARLA: puedes usar lo que dicen los ecos para ofrecer el punto como opción
-    ("¿chocan en la carrera o en el lugar?"), sin afirmar que ese es el punto.
+    CÓMO ADAPTARLA: si los ecos muestran una diferencia, ofrece primero ese punto como
+    posibilidad, con sus palabras, y deja abierta otra opción ("¿es lo de Medicina y
+    Arte, o algo más?"). Nunca lo afirmes.
   no_sabe / vacio · BASE: «Mira lo que escribiste arriba sobre las dos voces. Elige una cosa, la carrera, el lugar o el momento, y cuéntame si ahí coinciden o no.»
   fuera_de_tema · BASE: la de `general` de la opción marcada.''',
         'general_por_opcion': {

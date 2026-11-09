@@ -1,0 +1,13 @@
+{
+  "registro": "b1-3",
+  "descripcion": "Mini corrida v7.2c (método B, dos veces cada caso). Conserva la numeración de v7.2b; #21 es nuevo. Los casos con «caso» T… remiten a b1-3.json. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 16, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["CHOCAN"], "texto": "Chocamos bastante", "respuesta_seguimiento": "En que ella quiere que me quede en Arequipa", "tipo_esperado": "general", "conjunto_esperado": "propio", "final_esperado": "propio",
+     "ecos": {"voz": {"opcion": "PAPA", "texto": "Que me quede en Arequipa y entre a la UNSA"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero irme a Lima porque allá está lo que quiero estudiar"}}},
+    {"numero": 17, "caso": "T5", "item": "b1-3-mia", "tipo_esperado": "emocional", "sensible_esperado": false},
+    {"numero": 18, "caso": "T6", "item": "b1-3-mia", "sensible_esperado": true},
+    {"numero": 20, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["MAMA"], "texto": "Que tenga una carrera", "respuesta_seguimiento": "Eso nomás dice, que tenga una carrera", "tipo_esperado": "general", "conjunto_esperado": "general", "final_esperado": "general"},
+    {"numero": 21, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["AUN_NO"], "texto": "Me siento perdido", "tipo_esperado": "no_sabe", "sensible_esperado": false}
+  ]
+}
