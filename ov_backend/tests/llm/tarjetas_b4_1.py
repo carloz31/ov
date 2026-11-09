@@ -1,4 +1,4 @@
-"""Tarjetas de b4-1. Solo datos: las tres vienen de §1 de la spec v7.8e (finales) y se copian tal cual.
+"""Tarjetas de b4-1. Solo datos: respalda viene de §1 de la spec v7.8f (candidata); menos y TODO, de §1 de la v7.8e; se copian tal cual.
 
 `filtrar_etiqueta`: si el filtro rechaza una repregunta que contiene la etiqueta de la opción marcada. `por_opcion`: una opción con pregunta y tarjeta propias reemplaza a las del ítem. `ecos`: cómo se nombra cada eco y si va ordenado. `{carrera}` en la pregunta y en la tarjeta es un marcador que declara cada caso. Las bases se leen de las líneas `BASE:` de la tarjeta.
 """
@@ -12,14 +12,15 @@ TARJETAS = {
   al que lleva: una tarea, un curso, un lugar, algo que se hace o se produce, o una
   condición de ese trabajo (que haya empleo, el horario, el contrato, las vacaciones,
   trabajar por su cuenta, cómo se paga: por turnos, por proyecto, cómo sube con los años).
-  Lo de la carrera tiene que tener que ver con la pieza: usarla, necesitarla o dársela.
+  Basta con que se entienda que lo de la carrera tiene que ver con la pieza, aunque no lo
+  diga con todas las palabras.
 NO EXIGIR: que la relación sea correcta o completa, que sepa mucho de la carrera, que la
-  diga con todas las palabras (basta que se entienda), una cifra, ni más de una relación.
+  diga con todas las palabras, una cifra, ni más de una relación.
 GENERAL SI:
   - repite la pieza o habla solo de sí, sin nada de la carrera ("porque soy así", "se me
     da bien eso");
-  - nombra algo de la carrera que no tiene que ver con la pieza (con "ayudar o cuidar a
-    otros" en Arquitectura: "se hacen maquetas");
+  - nombra algo de la carrera que no tiene nada que ver con la pieza (con "ayudar o cuidar
+    a otros" en Arquitectura: "se hacen maquetas");
   - una relación que vale para cualquier carrera ("en todo trabajo se resuelven
     problemas", "toda carrera necesita esfuerzo");
   - solo que le gusta o que es lo suyo ("me gusta", "es lo mío");
@@ -28,50 +29,61 @@ GENERAL SI:
     se lo da;
   - dice quién eligió la carrera o lo que otra persona espera de él, sin nada suyo frente
     a la carrera ("mi tía me la recomendó", "en mi casa quieren eso").
-MATICES: "no sé qué se hace en esa carrera" o "no sé cómo se relaciona" = no_sabe: le falta
-  el dato para relacionarlo. Una duda sobre sí ("creo que no soy capaz", "no sé si me
-  alcanza") = no_sabe: no ve nada suyo que vaya con la carrera; no la contradigas. Hablar
-  de quién eligió la carrera o de lo que dice su familia nunca es fuera_de_tema, y no se
-  juzga ni se comenta. No se juzga si la pieza de verdad respalda la carrera ni si la
-  carrera le conviene. Con un valor, una condición del trabajo cuenta igual que una
-  tarea. Si lo de la carrera tiene que ver con la pieza aunque no lo diga ("en mecánica
-  se desarman motores", con trabajar con las manos) = propio. Si relaciona otra cosa suya
-  y no la pieza marcada = propio (no le pidas la marcada). Lo escrito en "Otra" es una
-  pieza más. Una pieza no es una aptitud: no la presentes como algo que lo hace capaz o
-  no.
+MATICES: si la pieza es algo que hacía de niño, basta con que lo de la carrera tenga que ver
+  con ese tipo de actividad (cocinar, armar, estar en el campo), no con la escena. Si
+  cuenta algo suyo del mismo tipo que la pieza y algo de la carrera que lo usa = propio.
+  Hay dos tipos de valores: los que se cumplen en el trabajo mismo (Ayudar a otros, Aportar
+  a mi comunidad, Crear, Aprender, Reconocimiento) se relacionan con una tarea; los que se
+  cumplen en las condiciones (Estabilidad, Ingresos, Tiempo para la familia, Autonomía),
+  con una condición del trabajo. "No sé qué se hace en esa carrera" o "no sé cómo se
+  relaciona" = no_sabe: le falta el dato para relacionarlo. Una duda sobre sí ("creo que
+  no soy capaz", "no sé si me alcanza") = no_sabe: no la contradigas. Si dice quién eligió
+  la carrera y además que no sabe = no_sabe. Si expresa sobre todo miedo o angustia sin
+  nada de la carrera = emocional, y eso manda sobre la duda. Hablar de quién eligió la
+  carrera o de lo que dice su familia nunca es fuera_de_tema, y no se juzga ni se comenta.
+  No se juzga si la pieza de verdad respalda la carrera ni si la carrera le conviene. Si
+  relaciona otra cosa suya y no la pieza marcada = propio (no le pidas la marcada). Lo
+  escrito en "Otra" es una pieza más. Una pieza no es una aptitud: no la presentes como
+  algo que lo hace capaz o no.
 EJEMPLOS:
   "En Enfermería pasas el día atendiendo pacientes y a mí me nace cuidar" → propio (pieza: ayudar, cuidar o acompañar)
   "Los contadores revisan que los números cuadren, como cuando ordeno las cuentas de la bodega" → propio
   "En mecánica se desarman motores" → propio (pieza: trabajar con las manos; relación implícita)
+  "Juego fútbol desde chico y en la carrera se aprende a entrenar equipos" → propio (pieza: usar el cuerpo; algo suyo del mismo tipo)
+  "En Administración se manejan ventas y caja" → propio (pieza de niño: jugar a la tiendita; mismo tipo de actividad)
+  "En Medicina nunca se deja de estudiar" → propio (pieza: Aprender; valor que se cumple en el trabajo)
   "Todas las empresas necesitan un contador, hasta las chiquitas" → propio (pieza: Estabilidad; condición: hay empleo)
   "Un traductor puede trabajar desde su casa y acomodar sus horas" → propio (pieza: Tiempo para la familia; condición: horario)
   "Porque me gusta cuidar a las personas" → general (repite la pieza)
-  "En Medicina se estudian muchos años" → general (pieza: ayudar o cuidar; lo de la carrera no tiene que ver con ella)
+  "En Medicina se estudian muchos años" → general (pieza: ayudar o cuidar; no tiene nada que ver con ella)
   "En cualquier trabajo hay que resolver problemas" → general (vale para cualquier carrera)
   "Porque da estabilidad" → general (solo el valor)
   "Es lo mío" → general
   "No sé bien qué hace un diseñador gráfico" → no_sabe
+  "Me angustia pensar que elegí mal" → emocional
 REPREGUNTA
   general · QUÉ PEDIR: en qué momento de la carrera o de su trabajo aparecería la pieza.
     BASE: «¿En qué momento de {carrera} usarías lo que marcaste? Puede ser una tarea, un curso o algo del día a día de ese trabajo.»
     CÓMO ADAPTARLA: la pregunta une la pieza con la carrera: nombra la pieza por lo que
-    dice (no por el test de donde viene, ni "eso que te gusta") y pregunta en qué momento
-    de la carrera aparecería, con dos o tres posibilidades dentro de la misma pregunta
-    (con "te pones en el lugar del otro" en Enfermería: "¿en qué momento de Enfermería te
-    tocaría ponerte en el lugar del otro: con un paciente asustado, con su familia, en una
-    noche de guardia?"). No preguntes por partes de la carrera sueltas ("¿qué parte de ser
-    abogado usarías más?"). Las posibilidades son momentos de la carrera, nunca la pieza
-    misma. Si nombró algo de la carrera sin relación con la pieza, retoma eso con sus
-    palabras y pregunta qué tiene que ver con la pieza ("Dijiste que …: ¿qué tiene que
-    ver eso con …?"); no preguntes por la pieza desde cero. Si la pieza es un valor, no
-    preguntes por tareas: pregunta qué de ese trabajo se lo daría, y ofrece tipos de
-    condición (el horario, las vacaciones, el contrato, cómo se paga), no respuestas
-    hechas; sin pedir cifras. Si dio una relación que vale para cualquier carrera, pregunta
-    dónde se vería en esta. Si dijo algo negativo de sí, no repitas esas palabras: retoma
-    la pieza. Si dijo quién eligió la carrera o lo que espera otra persona, no lo comentes
-    ni preguntes por esa persona: pasa a él o ella ("Y tú…") y pregunta en qué momento de
-    la carrera aparecería la pieza. No digas si la pieza encaja o no, no afirmes lo que
-    pide la carrera ni la compares con otras.
+    dice (no por el test de donde viene, ni "eso que te gusta"); si la pieza es larga,
+    nómbrala en dos o tres palabras. Pregunta en qué momento de la carrera aparecería, con
+    dos o tres posibilidades cortas dentro de la misma pregunta (con "te pones en el lugar
+    del otro" en Enfermería: "¿en qué momento de Enfermería te tocaría ponerte en el lugar
+    del otro: con un paciente asustado, con su familia, en una guardia?"). Con una pieza de
+    la niñez, toma el tipo de actividad, no la escena (no "cocinar con tu abuela"). No
+    preguntes por partes de la carrera sueltas ("¿qué parte de ser abogado usarías más?").
+    Las posibilidades son momentos de la carrera, nunca la pieza misma. Si nombró algo de
+    la carrera sin relación con la pieza, retoma eso con sus palabras y pregunta qué tiene
+    que ver con la pieza ("Dijiste que …: ¿qué tiene que ver eso con …?"). Con un valor
+    que se cumple en el trabajo mismo, pregunta en qué tarea lo encontraría; con un valor
+    de condiciones, no preguntes por tareas: pregunta qué de ese trabajo se lo daría y
+    ofrece tipos de condición (el horario, las vacaciones, el contrato, cómo se paga), no
+    respuestas hechas; sin pedir cifras. Si dio una relación que vale para cualquier
+    carrera, pregunta dónde se vería en esta. Si dijo algo negativo de sí, no repitas esas
+    palabras: retoma la pieza. Si dijo quién eligió la carrera o lo que espera otra
+    persona, no lo comentes ni preguntes por esa persona: pasa a él o ella ("Y tú…") y
+    pregunta en qué momento de la carrera aparecería la pieza. No digas si la pieza encaja
+    o no, no afirmes lo que pide la carrera ni la compares con otras.
   no_sabe / vacio · BASE: «Imagina a alguien que ya trabaja en {carrera}: ¿qué hace en un día normal que se parezca a lo que marcaste?»
   fuera_de_tema · BASE: «Volvamos a lo que marcaste: ¿qué tiene que ver con {carrera}?»''',
     },

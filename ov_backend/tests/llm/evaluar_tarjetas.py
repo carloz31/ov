@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.8e): método B, repregunta guiada con la base como respaldo, en b4-1.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.8f): método B, repregunta guiada con la base como respaldo, en b4-1.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`), sus casos (`casos/b4-1-tarjetas-v7.8e.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`), sus casos (`casos/b4-1-tarjetas-v7.8f.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -42,7 +42,7 @@ import tarjetas_b4_1
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.8e'
+VERSION = 'v7.8f'
 REGISTRO = 'b4-1'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
@@ -58,9 +58,9 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'b3-4')  # los q
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS, **tarjetas_b4_1.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Las tres tarjetas son las finales de §1 de la spec v7.8e, copiadas sin retocar el texto. R23 corre 3 veces y el resto, una.',
-    '- **Runner.** Igual que en v7.8d; se agregan las repeticiones por caso, las claves de la spec (R1, M1, T1…) en las tablas y, en los totales, el acierto por ítem y las caídas del filtro.',
-    '- **Solapamiento (§2.4).** T2 y TS1 se aceptan declarados, como en v7.8. Los demás, sin solapamiento. La spec nombra a R34 entre los textos ya ajustados con «Porque disfruto entender…»; ese texto es el de RS1, y R34 va como en su tabla.',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. La tarjeta de respalda es la candidata de §1 de la spec v7.8f, copiada sin retocar el texto; menos y TODO quedan como en v7.8e y no se corren. Las claves son las de v7.8e; F1 y F2 son nuevos.',
+    '- **Runner.** Igual que en v7.8e; los pases de menos ahora incluyen el `general` que pasa a `propio`, en la primera respuesta o en el conjunto.',
+    '- **Solapamiento (§2.3).** No saltó en ningún caso.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -533,7 +533,9 @@ def seccion_totales(casos, medidas):
     caidas = [f"{etiquetas[n]} ({f['turno']}): `{f['filtro']}`" for n, por_corrida in casos.items() for c in por_corrida.values() for f in c.values() if f['filtro']]
     seguimiento_no_propio = lambda c: c['primera']['conjunto_esperado'] == 'propio' and c.get('seguimiento', {}).get('tipo') != 'propio'  # noqa: E731
     de_mas = [n for n, c in filas if (c['primera']['tipo_esperado'] == 'propio' and c['primera']['tipo'] != 'propio') or seguimiento_no_propio(c)]
-    de_menos = [n for n, c in filas if set(c['primera']['tipo_esperado'].split(' o ')) & {'vacio', 'fuera_de_tema'} and c['primera']['tipo'] == 'propio']
+    no_debia_ser_propio = lambda c: 'propio' not in c['primera']['tipo_esperado'] and c['primera']['tipo_esperado'] in ('general', 'vacio', 'fuera_de_tema') and c['primera']['tipo'] == 'propio'  # noqa: E731
+    conjunto_de_menos = lambda c: c['primera']['conjunto_esperado'] not in ('', 'propio') and c.get('seguimiento', {}).get('tipo') == 'propio'  # noqa: E731
+    de_menos = [n for n, c in filas if no_debia_ser_propio(c) or conjunto_de_menos(c)]
     falsos_pos = [n for n, c in filas if c['primera']['sensible_esperado'] != 'True' and sensible_de(c)]
     falsos_neg = [n for n, c in filas if c['primera']['sensible_esperado'] == 'True' and not sensible_de(c)]
     emocional = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional']
@@ -541,7 +543,7 @@ def seccion_totales(casos, medidas):
     emocional_de_mas = [n for n, c in filas if c['primera']['tipo_esperado'] and 'emocional' not in c['primera']['tipo_esperado'] and c['primera']['tipo'] == 'emocional']
     return ['## 3. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']} ({por_item}).",
             f'- **Invitaciones de más** (`propio` clasificado como otro tipo): {len(de_mas)} ({lista(de_mas)}).',
-            f'- **Pases de menos** (`vacio` o `fuera_de_tema` clasificados como `propio`): {len(de_menos)} ({lista(de_menos)}).',
+            f'- **Pases de menos** (`general`, `vacio` o `fuera_de_tema` clasificados como `propio`):{len(de_menos)} ({lista(de_menos)}).',
             f'- **`sensible`:** {len(falsos_pos)} falsos positivos ({lista(falsos_pos)}), {len(falsos_neg)} falsos negativos ({lista(falsos_neg)}).',
             f'- **`emocional`:** {len(emocional_ok)}/{len(emocional)} ({lista(emocional_ok)}); clasificados `emocional` sin esperarlo: {len(emocional_de_mas)} ({lista(emocional_de_mas)}).',
             f"- **Caídas por el filtro:** {len(caidas)} ({'; '.join(caidas) or 'ninguna'})."]
