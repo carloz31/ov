@@ -8,3 +8,4 @@
 | 2026-11-09 14:28 | v7.8d | gemini-3.5-flash-lite · low | 1 | 1 | 9/11 | — | 0 | 2026-11-09_1428_v7.8d_t1_rlow.csv |
 | 2026-11-09 15:10 | v7.8e | gemini-3.5-flash-lite · low | 1 | 1 | 65/70 | — | 0 | 2026-11-09_1510_v7.8e_t1_rlow.csv |
 | 2026-11-09 15:25 | v7.8f | gemini-3.5-flash-lite · low | 1 | 1 | 16/20 | — | 0 | 2026-11-09_1525_v7.8f_t1_rlow.csv |
+| 2026-11-09 15:38 | v7.8g | gemini-3.5-flash-lite · low | 1 | 1 | 7/8 | — | 0 | 2026-11-09_1538_v7.8g_t1_rlow.csv |
