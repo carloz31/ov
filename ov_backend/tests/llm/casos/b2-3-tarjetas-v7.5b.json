@@ -1,0 +1,19 @@
+{
+  "registro": "b2-3",
+  "descripcion": "Mini corrida v7.5b (método B, una corrida). `de` toma el caso, con su número, de b2-3-tarjetas-v7.5.json; #17 es S1 y #18 es S2. #19 a #21 son nuevos. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"de": 1},
+    {"de": 4},
+    {"de": 5},
+    {"de": 6},
+    {"de": 7},
+    {"de": 9},
+    {"de": 16},
+    {"de": 17},
+    {"de": 18},
+    {"numero": 19, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["AUTONOMIA", "CREAR", "INGRESOS"], "texto": "En el colegio siempre me dicen qué hacer y quiero un trabajo donde yo decida", "tipo_esperado": "propio"},
+    {"numero": 20, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["INGRESOS", "ESTABILIDAD", "APRENDER"], "texto": "Si no tengo mi propia plata siento que nunca voy a poder decidir nada", "tipo_esperado": "propio"},
+    {"numero": 21, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["RECONOCIMIENTO", "INGRESOS", "APRENDER"], "texto": "Todos quieren que los reconozcan", "tipo_esperado": "general"}
+  ]
+}

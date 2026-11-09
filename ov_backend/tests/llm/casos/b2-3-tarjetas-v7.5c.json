@@ -1,0 +1,14 @@
+{
+  "registro": "b2-3",
+  "descripcion": "Mini corrida v7.5c (método B, una corrida). `de` y `corrida` toman el caso, con su número, del JSON de esa corrida. #26 es S3. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"de": 1, "corrida": "v7.5"},
+    {"de": 20, "corrida": "v7.5b"},
+    {"numero": 22, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["ESTABILIDAD", "INGRESOS", "APRENDER"], "texto": "Me daría tranquilidad", "tipo_esperado": "general"},
+    {"numero": 23, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["INGRESOS", "ESTABILIDAD", "TIEMPO_FAMILIA"], "texto": "Para vivir bien", "tipo_esperado": "general"},
+    {"numero": 24, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["ESTABILIDAD", "TIEMPO_FAMILIA", "INGRESOS"], "texto": "Tranquilidad de saber que a fin de mes no va a faltar para la comida", "tipo_esperado": "propio"},
+    {"numero": 25, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["AYUDAR", "APRENDER", "CREAR"], "texto": "Porque es más importante que los otros dos", "tipo_esperado": "general"},
+    {"numero": 26, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["ESTABILIDAD", "INGRESOS", "TIEMPO_FAMILIA"], "texto": "Es lo que más pesa para mí", "respuesta_seguimiento": "Tranquilidad", "tipo_esperado": "general", "conjunto_esperado": "general", "final_esperado": "general"}
+  ]
+}

@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.5): método B, repregunta guiada con la base como respaldo, en b2-3.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.5c): método B, repregunta guiada con la base como respaldo, en b2-3.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`), sus casos (`casos/b2-3-tarjetas-v7.5.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`), sus casos (`casos/b2-3-tarjetas-v7.5c.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -39,24 +39,25 @@ import tarjetas_b2_3
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.5'
+VERSION = 'v7.5c'
 REGISTRO = 'b2-3'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
 CARPETA = AQUI / 'resultados' / REGISTRO
 INFORME = CARPETA / f'{VERSION}.md'
 CASOS = AQUI / 'casos' / f'{REGISTRO}-tarjetas-{VERSION}.json'
+CASOS_ANTERIORES = {v: AQUI / 'casos' / f'{REGISTRO}-tarjetas-{v}.json' for v in ('v7.5', 'v7.5b')}  # de donde salen los casos con `de`
 RUTA_PROMPT = AQUI / 'prompts' / 'v7.md'
 PROMPT = RUTA_PROMPT.read_text(encoding='utf-8')
 LEXICO = AQUI / 'lexico' / 'es_ES'
-ARCHIVOS = (AQUI / 'tarjetas_b2_3.py', RUTA_PROMPT, CASOS, LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
+ARCHIVOS = (AQUI / 'tarjetas_b2_3.py', RUTA_PROMPT, CASOS, *CASOS_ANTERIORES.values(), LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
 REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7')  # los que tienen corridas v7.x guardadas
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: la tarjeta se copió del adjunto `tarjetas-registros (7).md` y se comparó carácter por carácter. En las tablas, #17 es S1 y #18 es S2.',
+    '- **Alcance.** Mini corrida sobre v7.5b: cambian solo la pregunta mostrada y la tarjeta. Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. La tarjeta se copió del adjunto `tarjetas-registros (9).md` y se comparó carácter por carácter. En las tablas, #26 es S3.',
     '- **Podio en `<opcion_marcada>` (§1.2).** Lleva los tres valores con su lugar, por ejemplo `1.º Ingresos, 2.º Estabilidad, 3.º Aprender`; la tabla los muestra en ese orden, sin el número. Solo aplica a los ítems con elección ordenada. El backend actual manda la lista sin números.',
-    '- **Etiquetas (§1.3).** Las de `VALORES` en `datos/fijos.py` coinciden con las de los casos. `evaluar.py` ya conocía `b2-3-valores`, así que no se agregó nada.',)
+    '- **Casos.** #1 viene de v7.5 y #20 de v7.5b, tomados por número de su JSON, sin copiar el texto; #22 a #26 son nuevos. Las corridas v7.5 y v7.5b no se rehicieron ni se borraron.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -82,7 +83,8 @@ def cargar_casos():
     """Los casos de la prueba; los que remiten a `b1-3.json` toman de ahí su texto y sus opciones."""
     ruta = AQUI / 'casos' / f'{REGISTRO}.json'
     existentes = {c['id']: c for c in json.loads(ruta.read_text(encoding='utf-8'))['casos']} if ruta.exists() else {}
-    casos = json.loads(CASOS.read_text(encoding='utf-8'))['casos']
+    anteriores = {v: {c['numero']: c for c in json.loads(ruta_v.read_text(encoding='utf-8'))['casos'] if 'numero' in c} for v, ruta_v in CASOS_ANTERIORES.items()}
+    casos = [dict(anteriores[c['corrida']][c['de']]) if 'de' in c else c for c in json.loads(CASOS.read_text(encoding='utf-8'))['casos']]
     for caso in casos:
         if caso['caso'] != 'nuevo':
             item = next(i for i in existentes[caso['caso']]['items'] if i['item'] == caso['item'])
@@ -523,7 +525,7 @@ def escribir_informe(ruta_csv):
             if s:
                 invitacion = celda(s['invitacion']) + (' *(respaldo)*' if s['invitacion_respaldo'] else '')
                 lineas.append(f"| {numero} | {corrida} | {invitacion} | {celda(s['texto'])} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} |")
-    lineas += ['', *seccion_totales(casos, medidas), '', '## 4. Atención especial', '', '_Pendiente: origen, dos caminos y valor nombrado._', '', '## 5. Notas', '', '_Pendiente: notas._', '']
+    lineas += ['', *seccion_totales(casos, medidas)[:5], '', '## 4. Atención especial', '', '_Pendiente: #22, #23, #25, origen y controles._', '', '## 5. Notas', '', '_Pendiente: notas._', '']  # [:5]: acierto, invitaciones y pases
     INFORME.write_text('\n'.join(lineas), encoding='utf-8')
     return medidas
 

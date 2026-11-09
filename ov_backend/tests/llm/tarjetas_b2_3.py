@@ -6,45 +6,51 @@
 TARJETAS = {
     'b2-3-valores': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué significa para ti el que pusiste primero? Cuéntalo con algo concreto: cómo se vería en tu trabajo o en tu vida.',
-        'tarjeta': '''NÚCLEO: qué significa en concreto para él o ella uno de sus valores (la pregunta es por
-  el primero), con algo suyo: cómo se vería en un trabajo (un sueldo fijo, que nadie
-  lo mande, ver a quién ayudó), para qué lo quiere (ayudar en su casa, tener su casa)
-  o algo que vivió o vio que lo explica.
-NO EXIGIR: de dónde le viene el valor, que lo justifique, que sea realista ni que lo
+        'pregunta': '¿Por qué te importa tanto el que pusiste primero? Puede ser algo que viviste, algo que viste en otros o una idea tuya.',
+        'tarjeta': '''NÚCLEO: una razón con algo suyo para uno de sus valores (la pregunta es por el primero):
+  algo que vivió o vio, lo que le daría o le evitaría, o una idea suya que dice algo de
+  él o de su situación (lo que quiere, lo que teme, lo que necesita).
+NO EXIGIR: de dónde le viene el valor, que la razón sea buena o realista, ni que lo
   relacione con una carrera.
 GENERAL SI:
-  - repite el valor con otras palabras ("algo estable", "ganar bien");
-  - solo dice que es importante o que va primero ("es lo principal", "sin eso no hay
-    nada");
-  - solo dice de dónde le viene, sin qué significa para él o ella ("así me criaron",
-    "en mi casa piensan igual");
+  - repite el valor con otras palabras ("porque quiero algo estable", "porque crear es
+    lo mío");
+  - solo dice que es importante, que va primero o que pesa más que los otros ("es lo
+    principal", "sin eso no hay nada");
+  - una razón genérica que cualquiera diría de ese valor, sin nada suyo ("me hace
+    sentir seguro", "para estar contento");
+  - una máxima sobre el mundo, sin nada de él o de su situación ("el que no estudia no
+    es nadie", "la plata manda");
+  - solo dice quién lo piensa, sin una razón suya ("así me criaron", "en mi casa piensan
+    igual");
   - no da ninguna razón ("porque sí").
-MATICES: la pregunta es por el primero, pero si describe con algo concreto otro de sus
-  tres valores = propio (no le pidas el primero). "No sé" o que no sabe explicarlo =
-  no_sabe. Elegir por ingresos o por lo que piensa su familia no se juzga. Algo
-  doloroso sin riesgo que explica el valor (un duelo, la falta de plata en casa) =
-  propio. Violencia, abuso o riesgo = sensible.
+MATICES: la pregunta es por el primero, pero si da una razón suya para otro de sus tres
+  valores = propio (no le pidas el primero). "No sé" o que no sabe explicarlo = no_sabe.
+  Elegir por ingresos o por lo que piensa su familia no se juzga. Algo doloroso sin
+  riesgo que explica el valor (un duelo, la falta de plata en casa) = propio. Violencia,
+  abuso o riesgo = sensible.
 EJEMPLOS:
-  "Un sueldo que llegue todos los meses, sin estar pensando si me botan" → propio (Estabilidad: cómo se vería)
-  "Que me alcance para darle a mi mamá y pagar mis cosas" → propio (Ingresos: para qué)
+  "Un sueldo que llegue todos los meses, sin estar pensando si me botan" → propio (Estabilidad: lo que le evitaría)
+  "Que me alcance para darle a mi mamá y pagar mis cosas" → propio (Ingresos: lo que le daría)
   "Cuando mi abuela estuvo internada vi cómo la trataban las enfermeras" → propio (Ayudar a otros: algo que vio)
-  "Organizar yo mi día, sin alguien encima" → propio (Autonomía: cómo se vería)
+  "Siento que si dejo de aprender me quedo atrás" → propio (Aprender: idea suya)
   "Que sea estable" → general (Estabilidad: repite el valor)
   "Es lo más importante de todo" → general (Ingresos: solo importancia)
-  "Así me enseñaron en mi casa" → general (Crear: solo el origen)
+  "El que tiene plata manda" → general (Ingresos: máxima)
+  "Así me enseñaron en mi casa" → general (Crear: solo quién lo piensa)
   "No sabría decirlo" → no_sabe
 REPREGUNTA
-  general · QUÉ PEDIR: cómo se vería ese valor en su trabajo o en su vida.
-    BASE: «¿Cómo se vería eso en tu trabajo? Piensa en algo concreto: qué tendría ese trabajo o qué te permitiría hacer.»
+  general · QUÉ PEDIR: qué hace que ese valor le importe a él o ella.
+    BASE: «¿Qué hace que eso te importe tanto? Puede ser algo que viviste, algo que viste en otros o lo que te daría.»
     CÓMO ADAPTARLA: nombra el valor del que habló (si no habló de ninguno, el que puso
-    primero), nunca los tres, y pregunta cómo se vería en un trabajo, con dos o tres
-    posibilidades concretas de ese valor (estabilidad: un sueldo fijo, un contrato, no
-    tener que mudarse). Si dijo de dónde le viene (su familia, cómo lo criaron), no
-    preguntes más por eso: pregunta qué significa para él o ella. Si dijo que es lo más
-    importante, no lo discutas. Pregunta solo por el significado: nunca de dónde le
-    viene ni por qué lo eligió, y no ofrezcas dos caminos en la misma pregunta.
-  no_sabe / vacio · BASE: «Imagina un trabajo que te guste mucho. ¿Qué tendría que tener para que sientas que ahí está lo que pusiste primero?»
-  fuera_de_tema · BASE: «Volvamos a lo que pusiste primero: ¿cómo se vería eso en un trabajo tuyo?»''',
+    primero), nunca los tres. Si repitió el valor ("porque me gusta"), pregunta qué
+    le gusta de eso o qué le da. Si dijo una máxima o que es lo más importante, no la
+    discutas: pregunta qué le daría a él o ella ("¿y a ti qué te daría tenerla?"). Si
+    dio una razón genérica ("me hace sentir seguro"), pregunta frente a qué o para qué,
+    en su caso ("¿seguro frente a qué?"). Si dijo quién lo piensa (su familia), no
+    preguntes por esa persona: pregunta qué piensa él o ella. No preguntes de dónde le
+    viene el valor ni uses "por qué crees que".
+  no_sabe / vacio · BASE: «Imagina un trabajo sin lo que pusiste primero. ¿Qué es lo que más extrañarías?»
+  fuera_de_tema · BASE: «Volvamos a lo que pusiste primero: ¿qué hace que te importe tanto?»''',
     },
 }
