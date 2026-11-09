@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.4b): método B, repregunta guiada con la base como respaldo, en b1-7.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.5): método B, repregunta guiada con la base como respaldo, en b2-3.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`), sus casos (`casos/b1-7-tarjetas-v7.4b.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`), sus casos (`casos/b2-3-tarjetas-v7.5.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -34,12 +34,13 @@ import tarjetas_b1_1
 import tarjetas_b1_3
 import tarjetas_b1_6
 import tarjetas_b1_7
+import tarjetas_b2_3
 
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.4b'
-REGISTRO = 'b1-7'
+VERSION = 'v7.5'
+REGISTRO = 'b2-3'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
 CARPETA = AQUI / 'resultados' / REGISTRO
@@ -48,14 +49,14 @@ CASOS = AQUI / 'casos' / f'{REGISTRO}-tarjetas-{VERSION}.json'
 RUTA_PROMPT = AQUI / 'prompts' / 'v7.md'
 PROMPT = RUTA_PROMPT.read_text(encoding='utf-8')
 LEXICO = AQUI / 'lexico' / 'es_ES'
-ARCHIVOS = (AQUI / 'tarjetas_b1_7.py', RUTA_PROMPT, CASOS, LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
+ARCHIVOS = (AQUI / 'tarjetas_b2_3.py', RUTA_PROMPT, CASOS, LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
 REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7')  # los que tienen corridas v7.x guardadas
-TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS}
+TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Las tarjetas se copiaron del adjunto `tarjetas-registros (6).md` y se compararon carácter por carácter. En las tablas, #25 es S2, #27 es S3 y #28 es S4.',
-    '- **Filtro.** «pero» deja de ser palabra prohibida en todos los registros; «exactamente» sigue prohibida.',
-    '- **Hashes.** El prompt no cambia. `tarjetas_b1_7.py` sí, así que el hash citado en `v7.4.md` (`423c04f9…`) corresponde a la versión anterior de hito y freno.',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: la tarjeta se copió del adjunto `tarjetas-registros (7).md` y se comparó carácter por carácter. En las tablas, #17 es S1 y #18 es S2.',
+    '- **Podio en `<opcion_marcada>` (§1.2).** Lleva los tres valores con su lugar, por ejemplo `1.º Ingresos, 2.º Estabilidad, 3.º Aprender`; la tabla los muestra en ese orden, sin el número. Solo aplica a los ítems con elección ordenada. El backend actual manda la lista sin números.',
+    '- **Etiquetas (§1.3).** Las de `VALORES` en `datos/fijos.py` coinciden con las de los casos. `evaluar.py` ya conocía `b2-3-valores`, así que no se agregó nada.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -79,7 +80,8 @@ class Resultado(BaseModel):
 
 def cargar_casos():
     """Los casos de la prueba; los que remiten a `b1-3.json` toman de ahí su texto y sus opciones."""
-    existentes = {c['id']: c for c in json.loads((AQUI / 'casos' / f'{REGISTRO}.json').read_text(encoding='utf-8'))['casos']}
+    ruta = AQUI / 'casos' / f'{REGISTRO}.json'
+    existentes = {c['id']: c for c in json.loads(ruta.read_text(encoding='utf-8'))['casos']} if ruta.exists() else {}
     casos = json.loads(CASOS.read_text(encoding='utf-8'))['casos']
     for caso in casos:
         if caso['caso'] != 'nuevo':
@@ -129,10 +131,17 @@ def texto_ecos(caso):
     return '\n'.join(lineas)
 
 
+def opcion_marcada(caso):
+    """Las etiquetas elegidas; en una elección ordenada (podio), cada una con su lugar."""
+    if (base.ITEMS[caso['item']][4] or {}).get('ordenada'):
+        return ', '.join(f'{lugar}.º {etiqueta}' for lugar, etiqueta in enumerate(caso['etiquetas'], 1))
+    return ', '.join(caso['etiquetas'])
+
+
 def mensaje(caso, texto, anterior=None, invitacion=None):
     """Las etiquetas del prompt; las vacías se omiten."""
     partes = (('tarjeta', tarjeta_de(caso)), ('pregunta_mostrada', ficha_de(caso)['pregunta']),
-              ('opcion_marcada', ', '.join(caso['etiquetas'])), ('ecos', texto_ecos(caso)),
+              ('opcion_marcada', opcion_marcada(caso)), ('ecos', texto_ecos(caso)),
               ('respuesta_anterior', anterior), ('invitacion', invitacion), ('respuesta', texto))
     return '\n'.join(f'<{nombre}>{valor}</{nombre}>' for nombre, valor in partes if valor)
 
@@ -479,7 +488,7 @@ def seccion_totales(casos, medidas):
     emocional = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional']
     emocional_ok = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional' and c['primera']['tipo'] == 'emocional']
     emocional_de_mas = [n for n, c in filas if c['primera']['tipo_esperado'] and 'emocional' not in c['primera']['tipo_esperado'] and c['primera']['tipo'] == 'emocional']
-    return ['## 4. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']}.",
+    return ['## 3. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']}.",
             f'- **Invitaciones de más** (`propio` clasificado como otro tipo): {len(de_mas)} ({lista(de_mas)}).',
             f'- **Pases de menos** (`vacio` o `fuera_de_tema` clasificados como `propio`): {len(de_menos)} ({lista(de_menos)}).',
             f'- **`sensible`:** {len(falsos_pos)} falsos positivos ({lista(falsos_pos)}), {len(falsos_neg)} falsos negativos ({lista(falsos_neg)}).',
@@ -499,8 +508,8 @@ def escribir_informe(ruta_csv):
               f"`{primera['modelo']}` · {primera['razonamiento']}, temperatura {primera['temperatura']}, {medidas['corridas']} corridas de cada caso, {llamadas} llamadas con respuesta, "
               f"{medidas['errores']} con error. Bytes HTTP iguales al texto del SDK en {iguales} de {len(con_bytes)} respuestas. CSV: [{Path(ruta_csv).name}]({Path(ruta_csv).name}).", '',
               '## 1. Archivos', '', '| Ruta | `git hash-object` |', '|---|---|',
-              *[f'| `{ruta}` | `{valor}` |' for ruta, valor in json.loads(primera['archivos']).items()], '', *OPCIONES_INFORME, '', *seccion_repaso(), '',
-              '## 3. Casos', '', '| # | Ítem · opción | Texto | Esperado | Corrida | Obtenido | ¿Coincide? | Repregunta | ¿Pasó el filtro? | `motivo` |',
+              *[f'| `{ruta}` | `{valor}` |' for ruta, valor in json.loads(primera['archivos']).items()], '', *OPCIONES_INFORME, '',
+              '## 2. Casos', '', '| # | Ítem · opción | Texto | Esperado | Corrida | Obtenido | ¿Coincide? | Repregunta | ¿Pasó el filtro? | `motivo` |',
               '|---|---|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
         for corrida, por_caso in sorted(por_corrida.items()):
@@ -514,7 +523,7 @@ def escribir_informe(ruta_csv):
             if s:
                 invitacion = celda(s['invitacion']) + (' *(respaldo)*' if s['invitacion_respaldo'] else '')
                 lineas.append(f"| {numero} | {corrida} | {invitacion} | {celda(s['texto'])} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} |")
-    lineas += ['', *seccion_totales(casos, medidas)[:5], '', '## 5. Notas', '', '_Pendiente: notas._', '']  # [:5]: acierto, invitaciones y pases
+    lineas += ['', *seccion_totales(casos, medidas), '', '## 4. Atención especial', '', '_Pendiente: origen, dos caminos y valor nombrado._', '', '## 5. Notas', '', '_Pendiente: notas._', '']
     INFORME.write_text('\n'.join(lineas), encoding='utf-8')
     return medidas
 

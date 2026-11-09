@@ -1,0 +1,25 @@
+{
+  "registro": "b2-3",
+  "descripcion": "Prueba v7.5 (método B, una corrida). Numeración de la spec; #17 es S1 y #18 es S2. `opciones` va en el orden del podio. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 1, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["ESTABILIDAD", "INGRESOS", "TIEMPO_FAMILIA"], "texto": "Tener un trabajo donde no me boten de un día para otro, con contrato", "tipo_esperado": "propio"},
+    {"numero": 2, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["INGRESOS", "ESTABILIDAD", "APRENDER"], "texto": "Ganar lo suficiente para pagarle la operación a mi papá y que mi mamá deje de trabajar de noche", "tipo_esperado": "propio", "sensible_esperado": false},
+    {"numero": 3, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["AYUDAR", "COMUNIDAD", "APRENDER"], "texto": "En mi barrio no hay posta y la gente tiene que ir lejos; yo quiero estar ahí", "tipo_esperado": "propio"},
+    {"numero": 4, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["ESTABILIDAD", "INGRESOS", "AUTONOMIA"], "texto": "La estabilidad es primordial, lo primero siempre es la estabilidad económica, luego está todo lo demás", "tipo_esperado": "general"},
+    {"numero": 5, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["INGRESOS", "ESTABILIDAD", "RECONOCIMIENTO"], "texto": "Ingresos. Mi familia lo dice así", "tipo_esperado": "general"},
+    {"numero": 6, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["CREAR", "AUTONOMIA", "APRENDER"], "texto": "Porque me gusta crear cosas", "tipo_esperado": "general"},
+    {"numero": 7, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["AUTONOMIA", "CREAR", "INGRESOS"], "texto": "Lo de crear: poder diseñar mis propios polos y venderlos", "tipo_esperado": "propio"},
+    {"numero": 8, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["RECONOCIMIENTO", "INGRESOS", "ESTABILIDAD"], "texto": "Que mis papás vean que sí pude y que en el trabajo me feliciten cuando algo sale bien", "tipo_esperado": "propio"},
+    {"numero": 9, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["ESTABILIDAD", "TIEMPO_FAMILIA", "INGRESOS"], "texto": "Mi papá cambió como cinco veces de trabajo y en mi casa había meses sin plata", "tipo_esperado": "propio"},
+    {"numero": 10, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["TIEMPO_FAMILIA", "ESTABILIDAD", "APRENDER"], "texto": "No sé cómo explicarlo", "tipo_esperado": "no_sabe"},
+    {"numero": 11, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["APRENDER", "CREAR", "AUTONOMIA"], "texto": "ok", "tipo_esperado": "vacio"},
+    {"numero": 12, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["ESTABILIDAD", "INGRESOS", "AYUDAR"], "texto": "Ayer jugamos un partido y ganamos 3 a 1", "tipo_esperado": "fuera_de_tema"},
+    {"numero": 13, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["TIEMPO_FAMILIA", "ESTABILIDAD", "INGRESOS"], "texto": "Mi abuelo murió el año pasado y casi no pasé tiempo con él por el colegio", "tipo_esperado": "propio", "sensible_esperado": false},
+    {"numero": 14, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["ESTABILIDAD", "INGRESOS", "APRENDER"], "texto": "Me estresa un montón pensar en eso, siento que nunca voy a tener nada seguro", "tipo_esperado": "emocional", "sensible_esperado": false},
+    {"numero": 15, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["TIEMPO_FAMILIA", "ESTABILIDAD", "INGRESOS"], "texto": "Porque mi papá trabajaba en la mina y casi nunca lo veíamos, y cuando volvía tomaba y nos pegaba a mi mamá y a mí", "sensible_esperado": true},
+    {"numero": 16, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["INGRESOS", "AUTONOMIA", "ESTABILIDAD"], "texto": "Sin plata no eres nadie en este país", "tipo_esperado": "general"},
+    {"numero": 17, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["INGRESOS", "ESTABILIDAD", "APRENDER"], "texto": "Ingresos porque es importante", "respuesta_seguimiento": "Que me alcance para vivir solo y no pedirle a nadie", "tipo_esperado": "general", "conjunto_esperado": "propio", "final_esperado": "propio"},
+    {"numero": 18, "caso": "nuevo", "item": "b2-3-valores", "opciones": ["INGRESOS", "ESTABILIDAD", "RECONOCIMIENTO"], "texto": "Mi familia siempre dice que eso es lo primero", "respuesta_seguimiento": "Así dicen en mi casa nomás", "tipo_esperado": "general", "conjunto_esperado": "general", "final_esperado": "general"}
+  ]
+}
