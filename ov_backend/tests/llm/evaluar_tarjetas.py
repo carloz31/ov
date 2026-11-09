@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.7): método B, repregunta guiada con la base como respaldo, en b3-4.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.7b): método B, repregunta guiada con la base como respaldo, en b3-4.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`), sus casos (`casos/b3-4-tarjetas-v7.7.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`), sus casos (`casos/b3-4-tarjetas-v7.7b.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -41,7 +41,7 @@ import tarjetas_b3_4
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.7'
+VERSION = 'v7.7b'
 REGISTRO = 'b3-4'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
@@ -57,10 +57,9 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7')  # los que tienen corridas v7.x 
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: las tres tarjetas se generaron desde el adjunto `tarjetas-registros (13).md`, sección b3-4, sin retocar el texto. En las tablas, S1, S2 y S3 son #27, #28 y #29.',
-    '- **Pregunta de «necesito» (§1.2).** `Pusiste Estabilidad primero. ¿Qué tendrías que saber de la carrera que elijas para saber si te da eso?`, con la etiqueta de `VALORES` tal cual. Ítem de texto: no lleva `<opcion_marcada>`.',
-    '- **Ecos (§1.3).** En «necesito»: `Lo que valoras: 1.º Estabilidad, 2.º Ingresos, 3.º Aprender`. En «quién» y NADIE: `Lo que necesitarías saber: Si hay turnos de noche`. Van por el camino general de ecos del runner, sin registro atado.',
-    '- **Opción en «quién» (§1.4).** `<opcion_marcada>` lleva la etiqueta de `PERSONAS` («Mamá»); en «Otra», lo escrito en «¿Cuál?» («Mi vecino»); con NADIE, «Todavía no conozco a nadie», con su tarjeta y su pregunta propias.',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: las tarjetas de «necesito» y «quién» se generaron desde el adjunto `tarjetas-registros (14).md`, sección b3-4, sin retocar el texto. La de NADIE no cambia y no se corre. En las tablas, S1 y S2 son #18 y #19.',
+    '- **Eco de «necesito» (§1.2).** Una línea con el primer valor: `Lo que pusiste primero: Estabilidad`. La pregunta se arma con ese mismo valor.',
+    '- **Pregunta de «quién» (§1.3).** `¿Qué sabe o vivió esa persona que te podría servir?`. `<opcion_marcada>` y los ecos (`Lo que necesitarías saber: …`) quedan como en v7.7.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos

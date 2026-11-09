@@ -8,23 +8,24 @@ TARJETAS = {
         'filtrar_etiqueta': False,
         'pregunta': 'Pusiste {valor 1} primero. ¿Qué tendrías que saber de la carrera que elijas para saber si te da eso?',
         'ecos': {
-            'valores': {'nombre': 'Lo que valoras', 'ordenado': True},
+            'valores': {'nombre': 'Lo que pusiste primero', 'ordenado': False},
         },
         'lista_ecos': 'VALORES',
         'tarjeta': '''NÚCLEO: algo concreto que tendría que saber de una carrera o del trabajo al que lleva para
   ver si le da lo que valora: cómo son los horarios o los turnos, si hay que viajar o
   mudarse, si suele haber contrato, si se puede trabajar por cuenta propia, si se trata
   con personas, cuánto se gana al empezar, en su región o con los años.
-NO EXIGIR: una carrera concreta, dónde lo averiguaría, que sea un dato del catálogo, que
-  hable del primer valor (vale otro de sus tres), ni que lo que pregunta encaje con el valor.
+NO EXIGIR: una carrera concreta, dónde lo averiguaría, que sea un dato del catálogo, ni que
+  lo que pregunta encaje con su valor.
 GENERAL SI:
   - solo un tema, sin decir qué querría saber de él ("los horarios", "el trabajo");
   - una pregunta vaga que sirve para cualquiera ("si es buena", "cómo es");
   - repite el valor como pregunta ("si tiene estabilidad", "si me deja crear");
   - quiere saber "todo" o "más información".
-MATICES: si cuenta algo que ya sabe de una carrera o de alguien que trabaja en eso = propio.
-  "No sé qué tendría que saber" = no_sabe. No se juzga el valor, si lo que pregunta encaja
-  con él, ni si una carrera se lo daría. Querer irse de su casa, sin violencia ni riesgo,
+MATICES: si lo que pregunta va más con otro valor o con ninguno, igual es propio si es
+  concreto: no lo devuelvas a su valor. Si cuenta algo que ya sabe de una carrera o de
+  alguien que trabaja en eso = propio. "No sé qué tendría que saber" = no_sabe. No se juzga
+  el valor ni si una carrera se lo daría. Querer irse de su casa, sin violencia ni riesgo,
   NO es sensible.
 EJEMPLOS:
   "Si los médicos tienen que hacer guardias de noche" → propio (Tiempo para la familia)
@@ -32,6 +33,7 @@ EJEMPLOS:
   "Cuánto gana un contador en Arequipa, no en Lima" → propio (Ingresos)
   "Si en enfermería te hacen contrato o es por recibos" → propio (Estabilidad)
   "Si hay que viajar mucho por trabajo" → propio (Estabilidad: no se juzga si encaja)
+  "Si se puede ascender rápido" → propio (Estabilidad: va más con otro tema, igual vale)
   "Sé que en las fábricas hay turnos rotativos porque mi tío trabaja en una" → propio (lo que ya sabe)
   "Los horarios" → general (solo el tema)
   "Si es una buena carrera" → general (vaga)
@@ -40,49 +42,53 @@ EJEMPLOS:
 REPREGUNTA
   general · QUÉ PEDIR: algo concreto de ese trabajo que le diría si le da lo que valora.
     BASE: «Piensa en un día de trabajo: ¿qué tendría que pasar, o no pasar, para que te dé lo que pusiste primero?»
-    CÓMO ADAPTARLA: nombra el valor del que habló (si no habló de ninguno, el que puso
-    primero), nunca los tres. Si nombró un tema, pregunta qué de ese tema, con dos o tres
-    posibilidades ligadas a su valor (Estabilidad y el sueldo: que llegue fijo cada mes,
-    cuánto es al empezar). Si repitió el valor, pregunta qué tendría que ver en un trabajo
-    para saberlo (Tiempo para la familia: los horarios, los turnos, si hay que viajar). Si
-    fue vago, pregunta qué le haría pensar que le conviene. No pidas una cifra ni digas si
-    una carrera da o no ese valor.
+    CÓMO ADAPTARLA: si nombró un tema, pregunta qué querría averiguar de ese tema, con dos
+    o tres posibilidades de lo que un promedio no dice (el sueldo: si sube con los años, si
+    es igual en tu región, si llega fijo cada mes). Si repitió el valor, pregunta qué
+    tendría que ver en un trabajo para saberlo (Tiempo para la familia: los horarios, los
+    turnos, si hay que viajar). Si fue vago, pregunta qué le haría pensar que le conviene.
+    No le preguntes cuánto quiere ganar, no pidas una cifra ni digas si una carrera da o
+    no ese valor.
   no_sabe / vacio · BASE: «Imagina que ya trabajas en algo que te gusta. ¿Qué querrías que fuera de una forma y no de otra: el horario, el sueldo o con quién trabajas?»
   fuera_de_tema · BASE: «Volvamos a lo que pusiste primero: ¿qué tendrías que saber de una carrera para saber si te da eso?»''',
     },
     'b3-4-quien': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué le preguntarías?',
+        'pregunta': '¿Qué sabe o vivió esa persona que te podría servir?',
         'ecos': {
             'necesito': {'nombre': 'Lo que necesitarías saber', 'ordenado': False},
         },
-        'tarjeta': '''NÚCLEO: una pregunta concreta que le haría a esa persona sobre una carrera, cómo la estudió
-  o su trabajo (puede ser lo mismo que escribió antes).
-NO EXIGIR: que ya haya hablado con ella, que la conozca bien, que trabaje exactamente en lo
-  que le interesa, ni que la pregunta sea distinta de la anterior.
+        'tarjeta': '''NÚCLEO: una razón concreta para preguntarle a esa persona: algo que la une con lo que
+  quiere saber o con una carrera o trabajo (trabaja o trabajó en eso, lo estudió, conoce a
+  gente de ese rubro, vivió algo parecido, le ha contado cosas de su trabajo).
+NO EXIGIR: que trabaje justo en lo que le interesa, que sepa todo, que ya hayan hablado,
+  ni que sea la persona más adecuada.
 GENERAL SI:
-  - una pregunta que sirve para cualquier trabajo, sin nada de este ni de lo que busca
-    ("cómo es", "qué tal le va", "si está contento");
-  - dice que le preguntaría "todo" o "de todo", sin qué;
-  - habla de esa persona sin decir qué le preguntaría.
-MATICES: retomar lo que escribió antes ("lo mismo de arriba") = propio. "No sé qué le
-  preguntaría" = no_sabe. Que en casa no apoyen una carrera o discutan por eso, sin
+  - solo el vínculo o la confianza ("porque es mi hermana", "porque confío en ella");
+  - dice que sabe o que tiene experiencia, sin decir de qué ("porque sabe mucho");
+  - habla de esa persona o de lo que pasa con ella (que no lo apoya, que no es fácil
+    hablarle) sin decir por qué podría ayudarlo.
+MATICES: si da una razón concreta y además dice que no es fácil hablarle = propio. "No sé
+  por qué la marqué" = no_sabe. Hablar de esa persona nunca es fuera_de_tema. No se juzga
+  si es la persona más adecuada. Que en casa no apoyen una carrera o discutan por eso, sin
   violencia ni riesgo, NO es sensible.
 EJEMPLOS:
-  "Si tuvo que mudarse para conseguir trabajo" → propio
-  "Cuánto ganaba cuando empezó" → propio
-  "Si estudiar en un instituto le sirvió igual que la universidad" → propio
-  "Cómo es" → general
-  "De todo un poco" → general
-  "No sé qué le preguntaría" → no_sabe
+  "Trabajó diez años en una fábrica y sabe cómo son los turnos" → propio
+  "Estudió en un instituto y después se pasó a la universidad" → propio
+  "Conoce a varios contadores por su trabajo" → propio
+  "Porque es mi hermana" → general (solo el vínculo)
+  "Porque sabe mucho" → general (sin de qué)
+  "Ni idea, la marqué por marcar" → no_sabe
 REPREGUNTA
-  general · QUÉ PEDIR: una pregunta concreta sobre su trabajo o cómo llegó a él.
-    BASE: «Si tuvieras cinco minutos con esa persona, ¿qué es lo primero que le preguntarías de su trabajo?»
-    CÓMO ADAPTARLA: nombra a la persona por cómo la marcó. Puedes ofrecer lo que escribió
-    antes como posibilidad, sin afirmarlo ("¿lo de los turnos, o algo más?"). Si habló de
-    esa persona sin preguntarle nada, no comentes lo que contó: pregunta qué le preguntaría.
-  no_sabe / vacio · BASE: «Puedes empezar por lo que escribiste antes: ¿qué te gustaría que te contara de eso?»
-  fuera_de_tema · BASE: «Volvamos a esa persona: ¿qué le preguntarías de su trabajo?»''',
+  general · QUÉ PEDIR: qué le hace pensar que esa persona podría contarle cómo es.
+    BASE: «¿Qué te hace pensar que esa persona te podría contar cómo es: algo en lo que trabaja, algo que estudió o algo que vivió?»
+    CÓMO ADAPTARLA: nombra a la persona por cómo la marcó. Si dijo solo el vínculo o la
+    confianza, reconócelo en pocas palabras y pregunta qué sabe o vivió esa persona. Si
+    dijo que no es fácil hablarle o que no lo apoya, no comentes eso ni preguntes por la
+    relación: pregunta qué le hace pensar que podría ayudarlo. No sugieras que elija a
+    otra persona.
+  no_sabe / vacio · BASE: «Piensa en lo que esa persona hace o ha hecho: ¿algo de eso tiene que ver con lo que quieres saber?»
+  fuera_de_tema · BASE: «Volvamos a esa persona: ¿qué sabe o vivió que te podría servir?»''',
         'por_opcion': {
             'NADIE': {
                 'filtrar_etiqueta': False,

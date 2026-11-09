@@ -1,0 +1,26 @@
+{
+  "registro": "b3-4",
+  "descripcion": "Prueba v7.7b (método B, una corrida). Numeración de la spec; S1 y S2 son #18 y #19. Los ítems b3-4-necesito y b3-4-quien existen solo en esta prueba. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 1, "caso": "nuevo", "item": "b3-4-necesito", "opciones": [], "ecos_cruce": {"valores": ["ESTABILIDAD"]}, "texto": "Si puedo ganar mucho dinero rápidamente", "tipo_esperado": "propio"},
+    {"numero": 2, "caso": "nuevo", "item": "b3-4-necesito", "opciones": [], "ecos_cruce": {"valores": ["APRENDER"]}, "texto": "Si te dejan proponer tus propias ideas o solo haces lo que te mandan", "tipo_esperado": "propio"},
+    {"numero": 3, "caso": "nuevo", "item": "b3-4-necesito", "opciones": [], "ecos_cruce": {"valores": ["TIEMPO_FAMILIA"]}, "texto": "Si en ese trabajo hay que quedarse hasta tarde seguido", "tipo_esperado": "propio"},
+    {"numero": 4, "caso": "nuevo", "item": "b3-4-necesito", "opciones": [], "ecos_cruce": {"valores": ["ESTABILIDAD"]}, "texto": "El salario", "tipo_esperado": "general"},
+    {"numero": 5, "caso": "nuevo", "item": "b3-4-necesito", "opciones": [], "ecos_cruce": {"valores": ["INGRESOS"]}, "texto": "La plata", "tipo_esperado": "general"},
+    {"numero": 6, "caso": "nuevo", "item": "b3-4-necesito", "opciones": [], "ecos_cruce": {"valores": ["TIEMPO_FAMILIA"]}, "texto": "Si me da tiempo para estar con mi familia", "tipo_esperado": "general"},
+    {"numero": 7, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "MAMA", "texto": "Mamá"}], "ecos_cruce": {"necesito": [{"texto": "Si hay turnos de noche"}]}, "texto": "Es enfermera y hace guardias en el hospital", "tipo_esperado": "propio"},
+    {"numero": 8, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "OTRA", "texto": "Mi tío"}], "ecos_cruce": {"necesito": [{"texto": "Si se puede tener un negocio propio"}]}, "texto": "Tiene su taller de carpintería hace años", "tipo_esperado": "propio"},
+    {"numero": 9, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "PROFESOR", "texto": "Profesor/a"}], "ecos_cruce": {"necesito": [{"texto": "Si se puede trabajar en mi provincia"}]}, "texto": "Antes trabajó en la municipalidad de aquí", "tipo_esperado": "propio"},
+    {"numero": 10, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "PAPA", "texto": "Papá"}], "ecos_cruce": {"necesito": [{"texto": "Si te hacen contrato"}]}, "texto": "Porque es mi papá y lo quiero", "tipo_esperado": "general"},
+    {"numero": 11, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "AMIGO", "texto": "Amigo/a"}], "ecos_cruce": {"necesito": [{"texto": "Si hay que viajar mucho"}]}, "texto": "Porque siempre me ayuda en todo", "tipo_esperado": "general"},
+    {"numero": 12, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "HERMANO", "texto": "Hermano/a"}], "ecos_cruce": {"necesito": [{"texto": "Cuánto se gana al empezar"}]}, "texto": "Porque es inteligente", "tipo_esperado": "general"},
+    {"numero": 13, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "MAMA", "texto": "Mamá"}], "ecos_cruce": {"necesito": [{"texto": "Si se puede estudiar y trabajar a la vez"}]}, "texto": "Mi mamá no quiere que estudie eso y siempre peleamos cuando lo hablo", "tipo_esperado": "general", "sensible_esperado": false},
+    {"numero": 14, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "MAMA", "texto": "Mamá"}], "ecos_cruce": {"necesito": [{"texto": "Si hay contrato"}]}, "texto": "Ella trabaja en un banco y sabe de contratos, pero no es fácil hablar con ella", "tipo_esperado": "propio"},
+    {"numero": 15, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "ABUELO", "texto": "Abuelo/a"}], "ecos_cruce": {"necesito": [{"texto": "Cuánto se gana al empezar"}]}, "texto": "Sé que podría ayudarme, pero es difícil hablar con él", "tipo_esperado": "general"},
+    {"numero": 16, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "OTRO_FAMILIAR", "texto": "Otro familiar"}], "ecos_cruce": {"necesito": [{"texto": "Si se puede ascender"}]}, "texto": "Lo puse sin pensarlo mucho", "tipo_esperado": "no_sabe"},
+    {"numero": 17, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "PAPA", "texto": "Papá"}], "ecos_cruce": {"necesito": [{"texto": "Si hay guardias"}]}, "texto": "Mañana tengo examen de mate", "tipo_esperado": "fuera_de_tema"},
+    {"numero": 18, "caso": "nuevo", "item": "b3-4-necesito", "opciones": [], "ecos_cruce": {"valores": ["INGRESOS"]}, "texto": "El sueldo", "tipo_esperado": "general", "respuesta_seguimiento": "Eso nomás, el sueldo", "conjunto_esperado": "general", "final_esperado": "general"},
+    {"numero": 19, "caso": "nuevo", "item": "b3-4-quien", "opciones": [{"codigo": "AMIGO", "texto": "Amigo/a"}], "ecos_cruce": {"necesito": [{"texto": "Si hay que estudiar mucho"}]}, "texto": "Porque es mi mejor amigo", "tipo_esperado": "general", "respuesta_seguimiento": "Su hermana estudia eso en la universidad y le cuenta cómo es", "conjunto_esperado": "propio"}
+  ]
+}
