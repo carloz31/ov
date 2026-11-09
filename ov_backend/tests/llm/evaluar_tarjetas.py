@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.8d): método B, repregunta guiada con la base como respaldo, en b4-1.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.8e): método B, repregunta guiada con la base como respaldo, en b4-1.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`), sus casos (`casos/b4-1-tarjetas-v7.8d.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`), sus casos (`casos/b4-1-tarjetas-v7.8e.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -42,7 +42,7 @@ import tarjetas_b4_1
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.8d'
+VERSION = 'v7.8e'
 REGISTRO = 'b4-1'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
@@ -58,9 +58,9 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'b3-4')  # los q
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS, **tarjetas_b4_1.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. La tarjeta de respalda es la candidata de §1 de la spec v7.8d, copiada sin retocar el texto; menos y TODO quedan como en v7.8c y no se corren. En las tablas, S1 y S2 son #10 y #11.',
-    '- **Runner.** Igual que en v7.8c.',
-    '- **Solapamiento (§2.3).** No saltó en ningún caso.',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Las tres tarjetas son las finales de §1 de la spec v7.8e, copiadas sin retocar el texto. R23 corre 3 veces y el resto, una.',
+    '- **Runner.** Igual que en v7.8d; se agregan las repeticiones por caso, las claves de la spec (R1, M1, T1…) en las tablas y, en los totales, el acierto por ítem y las caídas del filtro.',
+    '- **Solapamiento (§2.4).** T2 y TS1 se aceptan declarados, como en v7.8. Los demás, sin solapamiento. La spec nombra a R34 entre los textos ya ajustados con «Porque disfruto entender…»; ese texto es el de RS1, y R34 va como en su tabla.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -365,7 +365,7 @@ def campos_repregunta(r, caso, respuestas, seguimiento=False):
 
 def ejecutar(llamada, caso, comun, corrida):
     """Las filas de un caso en una corrida: la primera respuesta y, si tiene, el seguimiento."""
-    fila_base = dict(comun, corrida=corrida, numero=caso['numero'], caso=caso['caso'], tipo_caso=caso.get('tipo_caso', ''), item=caso['item'], opciones=', '.join(caso['etiquetas']), ecos=texto_ecos(caso),
+    fila_base = dict(comun, corrida=corrida, numero=caso['numero'], clave=caso.get('clave', ''), caso=caso['caso'], tipo_caso=caso.get('tipo_caso', ''), item=caso['item'], opciones=', '.join(caso['etiquetas']), ecos=texto_ecos(caso),
                      tipo_esperado=caso.get('tipo_esperado', ''), conjunto_esperado=caso.get('conjunto_esperado', ''), final_esperado=caso.get('final_esperado', ''),
                      sensible_esperado=caso.get('sensible_esperado', ''))
     try:
@@ -389,7 +389,7 @@ def ejecutar(llamada, caso, comun, corrida):
         return [dict(fila_base, turno='primera', texto=caso['texto'], error=repr(error)[:300])]
 
 
-CAMPOS = ['corrida', 'numero', 'caso', 'tipo_caso', 'item', 'turno', 'texto', 'opciones', 'ecos', 'tipo_esperado', 'conjunto_esperado', 'final_esperado', 'sensible_esperado', 'motivo', 'tipo',
+CAMPOS = ['corrida', 'numero', 'clave', 'caso', 'tipo_caso', 'item', 'turno', 'texto', 'opciones', 'ecos', 'tipo_esperado', 'conjunto_esperado', 'final_esperado', 'sensible_esperado', 'motivo', 'tipo',
           'sensible', 'repregunta_llm', 'repregunta', 'origen', 'filtro', 'apertura', 'ignorada', 'invitacion', 'invitacion_respaldo', 'tipo_final',
           'sensible_final', 'estado', 'modelo', 'razonamiento', 'temperatura', 'latencia_ms', 'bytes_http', 'tokens_entrada', 'tokens_razonamiento', 'tokens_salida', 'archivos', 'error']
 
@@ -522,7 +522,15 @@ def seccion_repaso():
 def seccion_totales(casos, medidas):
     """Los totales de la spec v7.3 §3.3, con los números de caso de cada grupo."""
     filas = [(n, c) for n, por_corrida in casos.items() for c in por_corrida.values() if not c['primera']['error']]
-    lista = lambda numeros: ', '.join(f'#{n}' for n in numeros) or 'ninguno'  # noqa: E731
+    etiquetas = {n: next(iter(por_corrida.values()))['primera'].get('clave') or f'#{n}' for n, por_corrida in casos.items()}
+    lista = lambda numeros: ', '.join(etiquetas[n] for n in numeros) or 'ninguno'  # noqa: E731
+    grupo = lambda primera: 'TODO' if primera['opciones'] == 'Todo va con mi plan' else primera['item'].removeprefix(f'{REGISTRO}-')  # noqa: E731
+    grupos = {}
+    for por_corrida in casos.values():
+        for c in por_corrida.values():
+            grupos.setdefault(grupo(c['primera']), []).append(acierta(c))
+    por_item = ' · '.join(f'{nombre}: {sum(valores)}/{len(valores)}' for nombre, valores in grupos.items())
+    caidas = [f"{etiquetas[n]} ({f['turno']}): `{f['filtro']}`" for n, por_corrida in casos.items() for c in por_corrida.values() for f in c.values() if f['filtro']]
     seguimiento_no_propio = lambda c: c['primera']['conjunto_esperado'] == 'propio' and c.get('seguimiento', {}).get('tipo') != 'propio'  # noqa: E731
     de_mas = [n for n, c in filas if (c['primera']['tipo_esperado'] == 'propio' and c['primera']['tipo'] != 'propio') or seguimiento_no_propio(c)]
     de_menos = [n for n, c in filas if set(c['primera']['tipo_esperado'].split(' o ')) & {'vacio', 'fuera_de_tema'} and c['primera']['tipo'] == 'propio']
@@ -531,11 +539,12 @@ def seccion_totales(casos, medidas):
     emocional = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional']
     emocional_ok = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional' and c['primera']['tipo'] == 'emocional']
     emocional_de_mas = [n for n, c in filas if c['primera']['tipo_esperado'] and 'emocional' not in c['primera']['tipo_esperado'] and c['primera']['tipo'] == 'emocional']
-    return ['## 3. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']}.",
+    return ['## 3. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']} ({por_item}).",
             f'- **Invitaciones de más** (`propio` clasificado como otro tipo): {len(de_mas)} ({lista(de_mas)}).',
             f'- **Pases de menos** (`vacio` o `fuera_de_tema` clasificados como `propio`): {len(de_menos)} ({lista(de_menos)}).',
             f'- **`sensible`:** {len(falsos_pos)} falsos positivos ({lista(falsos_pos)}), {len(falsos_neg)} falsos negativos ({lista(falsos_neg)}).',
-            f'- **`emocional`:** {len(emocional_ok)}/{len(emocional)} ({lista(emocional_ok)}); clasificados `emocional` sin esperarlo: {len(emocional_de_mas)} ({lista(emocional_de_mas)}).']
+            f'- **`emocional`:** {len(emocional_ok)}/{len(emocional)} ({lista(emocional_ok)}); clasificados `emocional` sin esperarlo: {len(emocional_de_mas)} ({lista(emocional_de_mas)}).',
+            f"- **Caídas por el filtro:** {len(caidas)} ({'; '.join(caidas) or 'ninguna'})."]
 
 
 def escribir_informe(ruta_csv):
@@ -543,7 +552,7 @@ def escribir_informe(ruta_csv):
     primera = filas[0]
     corridas = [por_caso for por_corrida in casos.values() for por_caso in por_corrida.values()]
     medidas = dict(aciertos=sum(acierta(c) for c in corridas), total=len(corridas), errores=sum(bool(c['primera']['error']) for c in corridas),
-                   corridas=len({f['corrida'] for f in filas}))
+                   corridas=min(len(por_corrida) for por_corrida in casos.values()))
     llamadas = sum(1 for f in filas if not f['error'])
     con_bytes = [f for f in filas if f['bytes_http']]
     iguales = sum(f['bytes_http'] == 'igual' for f in con_bytes)
@@ -557,7 +566,7 @@ def escribir_informe(ruta_csv):
     for numero, por_corrida in casos.items():
         for corrida, por_caso in sorted(por_corrida.items()):
             f = por_caso['primera']
-            lineas.append(f"| {numero} | {f['item'].removeprefix(f'{REGISTRO}-')} | {celda(f.get('tipo_caso')) or '—'} | {celda(f.get('ecos')).split(': ', 1)[-1] or '—'} | {celda(f['opciones']) or '—'} | {celda(f['texto'])} | {esperado_de(f)} | {corrida} | {obtenido_de(por_caso)} | "
+            lineas.append(f"| {f.get('clave') or numero} | {f['item'].removeprefix(f'{REGISTRO}-')} | {celda(f.get('tipo_caso')) or '—'} | {celda(f.get('ecos')).split(': ', 1)[-1] or '—'} | {celda(f['opciones']) or '—'} | {celda(f['texto'])} | {esperado_de(f)} | {corrida} | {obtenido_de(por_caso)} | "
                           f"{'sí' if acierta(por_caso) else '**no**'} | {repregunta_mostrada(f)} | {filtro_de_fila(f)} | {celda(f['motivo'])} |")
     lineas += ['', '### Seguimientos', '', '| # | Corrida | Invitación que vio | Respondió | `tipo` del conjunto | `tipo` final | Pista guardada | ¿Pasó el filtro? |', '|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
@@ -565,7 +574,7 @@ def escribir_informe(ruta_csv):
             s = por_caso.get('seguimiento')
             if s:
                 invitacion = celda(s['invitacion']) + (' *(respaldo)*' if s['invitacion_respaldo'] else '')
-                lineas.append(f"| {numero} | {corrida} | {invitacion} | {celda(s['texto'])} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} |")
+                lineas.append(f"| {s.get('clave') or numero} | {corrida} | {invitacion} | {celda(s['texto'])} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} |")
     lineas += ['', *seccion_totales(casos, medidas), '', '## 4. Atención especial', '', '_Pendiente: atención especial._', '', '## 5. Notas', '', '_Pendiente: notas._', '']
     INFORME.write_text('\n'.join(lineas), encoding='utf-8')
     return medidas
@@ -611,7 +620,7 @@ def main():
     temperatura = parametros.TEMPERATURA_REGISTRO
     comun = dict(modelo=args.modelo, razonamiento=nivel, temperatura=temperatura, archivos=json.dumps(hashes()))
     llamada = lambda contenido: llamar(cliente, args.modelo, razonamiento, contenido, temperatura)  # noqa: E731
-    tareas = [(caso, corrida) for corrida in range(1, args.corridas + 1) for caso in casos]
+    tareas = [(caso, corrida) for caso in casos for corrida in range(1, caso.get('repeticiones', args.corridas) + 1)]
     print(f'{len(casos)} casos × {args.corridas} corridas (método B)')
     with ThreadPoolExecutor(max_workers=args.hilos) as pool:
         filas = [f for grupo in pool.map(lambda t: ejecutar(llamada, t[0], comun, t[1]), tareas) for f in grupo]
