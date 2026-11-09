@@ -1,4 +1,4 @@
-"""Tarjetas de b4-1. Solo datos: respalda viene de §1 de la spec v7.8f (candidata); menos y TODO, de §1 de la v7.8e; se copian tal cual.
+"""Tarjetas de b4-1. Solo datos: respalda viene de §1 de la spec v7.8g (candidata); menos y TODO, de §1 de la v7.8e; se copian tal cual.
 
 `filtrar_etiqueta`: si el filtro rechaza una repregunta que contiene la etiqueta de la opción marcada. `por_opcion`: una opción con pregunta y tarjeta propias reemplaza a las del ítem. `ecos`: cómo se nombra cada eco y si va ordenado. `{carrera}` en la pregunta y en la tarjeta es un marcador que declara cada caso. Las bases se leen de las líneas `BASE:` de la tarjeta.
 """
@@ -28,7 +28,8 @@ GENERAL SI:
     estabilidad", "paga bien", "deja tiempo libre"), sin qué de la carrera o de su trabajo
     se lo da;
   - dice quién eligió la carrera o lo que otra persona espera de él, sin nada suyo frente
-    a la carrera ("mi tía me la recomendó", "en mi casa quieren eso").
+    a la carrera ("mi tía me la recomendó", "en mi casa quieren eso"); si además dice que
+    no sabe, es no_sabe.
 MATICES: si la pieza es algo que hacía de niño, basta con que lo de la carrera tenga que ver
   con ese tipo de actividad (cocinar, armar, estar en el campo), no con la escena. Si
   cuenta algo suyo del mismo tipo que la pieza y algo de la carrera que lo usa = propio.
@@ -56,10 +57,12 @@ EJEMPLOS:
   "Un traductor puede trabajar desde su casa y acomodar sus horas" → propio (pieza: Tiempo para la familia; condición: horario)
   "Porque me gusta cuidar a las personas" → general (repite la pieza)
   "En Medicina se estudian muchos años" → general (pieza: ayudar o cuidar; no tiene nada que ver con ella)
+  "Se calculan estructuras y se revisan planos" → general (pieza: ponerte en el lugar del otro, en Ingeniería Civil; tarea real que no tiene que ver con la pieza)
   "En cualquier trabajo hay que resolver problemas" → general (vale para cualquier carrera)
   "Porque da estabilidad" → general (solo el valor)
   "Es lo mío" → general
   "No sé bien qué hace un diseñador gráfico" → no_sabe
+  "Mi tío me dijo que la estudie, pero no sé por qué" → no_sabe (quién eligió y además no sabe)
   "Me angustia pensar que elegí mal" → emocional
 REPREGUNTA
   general · QUÉ PEDIR: en qué momento de la carrera o de su trabajo aparecería la pieza.

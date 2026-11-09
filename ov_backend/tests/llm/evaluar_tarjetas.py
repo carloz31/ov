@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.8f): método B, repregunta guiada con la base como respaldo, en b4-1.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.8g): método B, repregunta guiada con la base como respaldo, en b4-1.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`), sus casos (`casos/b4-1-tarjetas-v7.8f.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`), sus casos (`casos/b4-1-tarjetas-v7.8g.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -42,7 +42,7 @@ import tarjetas_b4_1
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.8f'
+VERSION = 'v7.8g'
 REGISTRO = 'b4-1'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
@@ -58,8 +58,8 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'b3-4')  # los q
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS, **tarjetas_b4_1.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. La tarjeta de respalda es la candidata de §1 de la spec v7.8f, copiada sin retocar el texto; menos y TODO quedan como en v7.8e y no se corren. Las claves son las de v7.8e; F1 y F2 son nuevos.',
-    '- **Runner.** Igual que en v7.8e; los pases de menos ahora incluyen el `general` que pasa a `propio`, en la primera respuesta o en el conjunto.',
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. La tarjeta de respalda es la candidata de §1 de la spec v7.8g, copiada sin retocar el texto; menos y TODO quedan como en v7.8e y no se corren. Las claves son las de v7.8e y v7.8f. R31 y RS5 mantienen `general` como esperado; si salen `propio`, la spec los acepta como frontera.',
+    '- **Runner.** Igual que en v7.8f.',
     '- **Solapamiento (§2.3).** No saltó en ningún caso.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
@@ -543,7 +543,7 @@ def seccion_totales(casos, medidas):
     emocional_de_mas = [n for n, c in filas if c['primera']['tipo_esperado'] and 'emocional' not in c['primera']['tipo_esperado'] and c['primera']['tipo'] == 'emocional']
     return ['## 3. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']} ({por_item}).",
             f'- **Invitaciones de más** (`propio` clasificado como otro tipo): {len(de_mas)} ({lista(de_mas)}).',
-            f'- **Pases de menos** (`general`, `vacio` o `fuera_de_tema` clasificados como `propio`):{len(de_menos)} ({lista(de_menos)}).',
+            f'- **Pases de menos** (`general`, `vacio` o `fuera_de_tema` clasificados como `propio`): {len(de_menos)} ({lista(de_menos)}).',
             f'- **`sensible`:** {len(falsos_pos)} falsos positivos ({lista(falsos_pos)}), {len(falsos_neg)} falsos negativos ({lista(falsos_neg)}).',
             f'- **`emocional`:** {len(emocional_ok)}/{len(emocional)} ({lista(emocional_ok)}); clasificados `emocional` sin esperarlo: {len(emocional_de_mas)} ({lista(emocional_de_mas)}).',
             f"- **Caídas por el filtro:** {len(caidas)} ({'; '.join(caidas) or 'ninguna'})."]
