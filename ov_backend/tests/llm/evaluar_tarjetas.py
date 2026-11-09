@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.7c): método B, repregunta guiada con la base como respaldo, en b3-4.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.8): método B, repregunta guiada con la base como respaldo, en b4-1.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`), sus casos (`casos/b3-4-tarjetas-v7.7c.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`), sus casos (`casos/b4-1-tarjetas-v7.8.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -37,12 +37,13 @@ import tarjetas_b1_7
 import tarjetas_b2_3
 import tarjetas_b2_4
 import tarjetas_b3_4
+import tarjetas_b4_1
 
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.7c'
-REGISTRO = 'b3-4'
+VERSION = 'v7.8'
+REGISTRO = 'b4-1'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
 CARPETA = AQUI / 'resultados' / REGISTRO
@@ -52,14 +53,16 @@ CASOS_ANTERIORES = {v: AQUI / 'casos' / f'{REGISTRO}-tarjetas-{v}.json' for v in
 RUTA_PROMPT = AQUI / 'prompts' / 'v7.md'
 PROMPT = RUTA_PROMPT.read_text(encoding='utf-8')
 LEXICO = AQUI / 'lexico' / 'es_ES'
-ARCHIVOS = (AQUI / 'tarjetas_b3_4.py', RUTA_PROMPT, Path(__file__).resolve(), CASOS, *CASOS_ANTERIORES.values(), LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
+ARCHIVOS = (AQUI / 'tarjetas_b4_1.py', RUTA_PROMPT, Path(__file__).resolve(), CASOS, *CASOS_ANTERIORES.values(), LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
 REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'b3-4')  # los que tienen corridas v7.x guardadas
-TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS}
+TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS, **tarjetas_b4_1.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: las tarjetas de «necesito» y «quién» se generaron desde el adjunto `tarjetas-registros (15).md`, sección b3-4, sin retocar el texto. La de NADIE no cambia y no se corre. En las tablas, S1, S2 y S3 son #8, #9 y #10.',
-    '- **Filtro (§1.1).** «exactamente» deja de ser palabra prohibida, para todos los registros; está en `PROHIBIDAS` de `evaluar_tarjetas.py`. Las demás reglas no cambian.',
-    '- **Ecos, preguntas y opción (§1.4).** Como en v7.7b.',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: las tres tarjetas se generaron desde el adjunto `tarjetas-registros (16).md`, sección b4-1, sin retocar el texto. En las tablas, S1 a S5 son #35 a #39.',
+    '- **`{carrera}` (§1.2 y §1.3).** Cada caso declara sus marcadores; el runner los reemplaza en la pregunta y en la tarjeta, y por eso las bases ya van con la carrera. Preguntas: `¿Qué tiene que ver eso con {carrera}?` (respalda), `¿Qué de {carrera} no calza del todo con eso?` (menos) y `Qué bueno que todo vaya. Aun así, ¿qué parte de {carrera} crees que te costaría más?` (TODO).',
+    '- **Opción marcada (§1.4).** La pieza con su origen entre paréntesis, tal como viene en el caso. En «Otra», lo escrito con `(otra cosa tuya)`. Con TODO, `Todo va con mi plan` y su tarjeta propia.',
+    '- **Eco (§1.5).** Una línea: `Tu Plan A: <carrera>`.',
+    '- **Solapamiento (§1.7).** Saltó en #32, S1, S4 y S5. Con el visto bueno del usuario: S1 pasa a «Porque disfruto entender cómo funcionan las cosas», S4 a «Me cuesta hablar en público», y #32 y S5 se aceptan declarados en sus casos, porque «nada» es lo que se prueba y la tarjeta lo nombra a propósito.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -111,10 +114,17 @@ def ficha_de(caso):
     return ficha.get('por_opcion', {}).get(codigo_opcion(caso), ficha)
 
 
+def con_marcadores(texto, caso):
+    """El texto con los marcadores que declara el caso (`{carrera}`) ya reemplazados."""
+    for marcador, valor in caso.get('marcadores', {}).items():
+        texto = texto.replace(f'{{{marcador}}}', valor)
+    return texto
+
+
 def tarjeta_de(caso):
-    """La tarjeta con la opción marcada en lugar de `{opción}`."""
+    """La tarjeta con la opción marcada en lugar de `{opción}` y con los marcadores del caso."""
     opcion = ' y '.join(caso['etiquetas'])
-    return ficha_de(caso)['tarjeta'].replace(', {opción}', f', {opcion}' if opcion else '')
+    return con_marcadores(ficha_de(caso)['tarjeta'].replace(', {opción}', f', {opcion}' if opcion else ''), caso)
 
 
 def bases_de(caso):
@@ -169,7 +179,7 @@ def pregunta_de(caso):
         pregunta = pregunta.replace('{primera}', base.LISTAS[ficha['lista_ecos']][caso['ecos_cruce']['bien'][0]].lower())
     if '{valor 1}' in pregunta:
         pregunta = pregunta.replace('{valor 1}', base.LISTAS[TARJETAS[caso['item']]['lista_ecos']][caso['ecos_cruce']['valores'][0]])
-    return pregunta
+    return con_marcadores(pregunta, caso)
 
 
 def mensaje(caso, texto, anterior=None, invitacion=None):
@@ -197,7 +207,7 @@ def frases_de(tarjeta):
 def solapamientos(casos):
     """(número, texto del caso, frase de la tarjeta) de cada caso que coincide con su tarjeta o contiene una de sus frases."""
     hallados = []
-    for caso in casos:
+    for caso in (c for c in casos if not c.get('solapamiento_aceptado')):  # un caso aceptado por el usuario lo declara en sus datos
         frases = frases_de(ficha_de(caso)['tarjeta'])
         for texto in filter(None, (caso['texto'], caso.get('respuesta_seguimiento'))):
             hallados += [(caso['numero'], texto, f) for f in frases if _forma_comparable(f) in _forma_comparable(texto)]
@@ -523,7 +533,7 @@ def seccion_totales(casos, medidas):
     emocional = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional']
     emocional_ok = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional' and c['primera']['tipo'] == 'emocional']
     emocional_de_mas = [n for n, c in filas if c['primera']['tipo_esperado'] and 'emocional' not in c['primera']['tipo_esperado'] and c['primera']['tipo'] == 'emocional']
-    return ['## 4. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']}.",
+    return ['## 3. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']}.",
             f'- **Invitaciones de más** (`propio` clasificado como otro tipo): {len(de_mas)} ({lista(de_mas)}).',
             f'- **Pases de menos** (`vacio` o `fuera_de_tema` clasificados como `propio`): {len(de_menos)} ({lista(de_menos)}).',
             f'- **`sensible`:** {len(falsos_pos)} falsos positivos ({lista(falsos_pos)}), {len(falsos_neg)} falsos negativos ({lista(falsos_neg)}).',
@@ -544,12 +554,12 @@ def escribir_informe(ruta_csv):
               f"{medidas['errores']} con error. Bytes HTTP iguales al texto del SDK en {iguales} de {len(con_bytes)} respuestas. CSV: [{Path(ruta_csv).name}]({Path(ruta_csv).name}).", '',
               '## 1. Archivos', '', '| Ruta | `git hash-object` |', '|---|---|',
               *[f'| `{ruta}` | `{valor}` |' for ruta, valor in json.loads(primera['archivos']).items()], '', *OPCIONES_INFORME, '',
-              *seccion_repaso(), '', '## 3. Casos', '', '| # | Ítem · opción | Valores o eco | Texto | Esperado | Corrida | Obtenido | ¿Coincide? | Repregunta | ¿Pasó el filtro? | `motivo` |',
-              '|---|---|---|---|---|---|---|---|---|---|---|']
+              '## 2. Casos', '', '| # | Ítem | Carrera | Pieza marcada | Texto | Esperado | Corrida | Obtenido | ¿Coincide? | Repregunta | ¿Pasó el filtro? | `motivo` |',
+              '|---|---|---|---|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
         for corrida, por_caso in sorted(por_corrida.items()):
             f = por_caso['primera']
-            lineas.append(f"| {numero} | {f['item'].removeprefix(f'{REGISTRO}-')} ·{celda(f['opciones']) or '—'} | {celda(f.get('ecos')).split(': ', 1)[-1] or '—'} | {celda(f['texto'])} | {esperado_de(f)} | {corrida} | {obtenido_de(por_caso)} | "
+            lineas.append(f"| {numero} | {f['item'].removeprefix(f'{REGISTRO}-')} | {celda(f.get('ecos')).split(': ', 1)[-1] or '—'} | {celda(f['opciones']) or '—'} | {celda(f['texto'])} | {esperado_de(f)} | {corrida} | {obtenido_de(por_caso)} | "
                           f"{'sí' if acierta(por_caso) else '**no**'} | {repregunta_mostrada(f)} | {filtro_de_fila(f)} | {celda(f['motivo'])} |")
     lineas += ['', '### Seguimientos', '', '| # | Corrida | Invitación que vio | Respondió | `tipo` del conjunto | `tipo` final | Pista guardada | ¿Pasó el filtro? |', '|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
@@ -558,7 +568,7 @@ def escribir_informe(ruta_csv):
             if s:
                 invitacion = celda(s['invitacion']) + (' *(respaldo)*' if s['invitacion_respaldo'] else '')
                 lineas.append(f"| {numero} | {corrida} | {invitacion} | {celda(s['texto'])} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} |")
-    lineas += ['', *seccion_totales(casos, medidas), '', '## 5. Atención especial', '', '_Pendiente: atención especial._', '', '## 6. Notas', '', '_Pendiente: notas._', '']
+    lineas += ['', *seccion_totales(casos, medidas), '', '## 4. Atención especial', '', '_Pendiente: atención especial._', '', '## 5. Notas', '', '_Pendiente: notas._', '']
     INFORME.write_text('\n'.join(lineas), encoding='utf-8')
     return medidas
 
