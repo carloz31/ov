@@ -7,31 +7,42 @@ del B) se lee de la línea `BASE:` de la tarjeta, para que no haya dos copias. `
 TARJETAS = {
     'b1-1-gustos': {
         'pregunta': '¿Qué te encantaba hacer de niño o niña? Puede ser un juego, algo que armabas o algo que hacías con alguien.',
-        'tarjeta': '''NÚCLEO: nombra al menos una actividad o cosa que hacía o le gustaba hacer de niño
-  (un juego, un deporte, algo que armaba, dibujaba, cantaba, cuidaba…).
-NO EXIGIR: con quién, dónde, detalles ni una escena. Una palabra basta si es una actividad.
-GENERAL SI: solo una categoría o un rasgo ("el arte", "la creatividad", "jugar",
-  "los deportes"), o habla de su niñez sin decir algo que hacía (lo que quería ser,
-  cómo era él o ella).
-MATICES: "no me acuerdo" = no_sabe.
+        'tarjeta': '''NÚCLEO: nombra al menos una actividad que hacía o le gustaba hacer de niño. Vale aunque
+  la nombre con una sola palabra o un sustantivo: un juego, un deporte en particular,
+  algo que armaba, dibujaba, cuidaba o hacía con alguien.
+NO EXIGIR: con quién, dónde, detalles ni una escena.
+GENERAL SI:
+  - nombra un CAMPO que abarca muchas actividades distintas, sin decir cuál hacía
+    ("el arte", "la música", "los deportes", "la creatividad", "jugar");
+  - nombra solo una necesidad o rutina que hace todo el mundo, sin nada propio
+    ("dormir", "comer", "descansar");
+  - habla de su niñez sin decir algo que hacía (lo que quería ser, cómo era).
+MATICES: si a una rutina le agrega algo suyo, es propio ("comer los dulces que hacía
+  mi abuela"). "No me acuerdo" = no_sabe.
 EJEMPLOS:
-  "Dibujar" → propio (actividad)
-  "Jugar" → general (categoría)
-  "Jugar a las escondidas en el pasaje" → propio
-  "Todo lo artístico, siempre fui creativa" → general (categoría y rasgo)
-  "Quería ser policía" → general (aspiración, no actividad)
-  "Quería ser profesora y les enseñaba a mis peluches" → propio (enseñar a los peluches)
+  "Montar bicicleta" → propio (actividad)
+  "Las canicas" → propio (un juego nombrado con un sustantivo)
+  "Todo lo artístico" → general (campo)
+  "Las cosas de deporte" → general (campo)
+  "Comer" → general (rutina sin nada propio)
+  "Ver dibujos de dinosaurios" → propio (algo suyo)
+  "Quería ser policía" → general (aspiración)
+  "Quería ser profesora y les enseñaba a mis peluches" → propio
   "No me acuerdo de chiquito" → no_sabe
-  "Muchas cosas" → vacio
+  "Cosas de niños" → vacio
 REPREGUNTA
   general · QUÉ PEDIR: una actividad que hacía.
     BASE: «Cuéntame una cosa que hacías, aunque sea muy simple: un juego, algo que armabas o algo que hacías con alguien.»
-    CÓMO ADAPTARLA: si nombró una categoría (arte, música, deportes), pregunta qué hacía
-    dentro de ella (dibujar, cantar, armar…), sin "a qué jugabas". Si dijo "jugar",
-    pregunta a qué y, si encaja, con quién. Si habló de lo que quería ser, reconócelo en
-    pocas palabras y pregunta qué le encantaba hacer en esa época, sin forzar el puente.
-  no_sabe · QUÉ PEDIR: una actividad, por otra vía.
-    BASE: «Está bien si no te acuerdas mucho. A veces ayuda lo que te cuentan en casa o alguna foto. ¿Qué te dicen que hacías?»
+    CÓMO ADAPTARLA:
+      - si nombró un campo (arte, música, deportes), pregunta qué hacía relacionado con
+        ese campo (por ejemplo, para la música: cantar, tocar algo, bailar), sin
+        "a qué jugabas";
+      - si dijo "jugar", pregunta a qué y, si encaja, con quién;
+      - si nombró una rutina (dormir, comer), tómalo con naturalidad, sin corregir, y
+        pregunta qué más le encantaba hacer, algo que hiciera porque le gustaba;
+      - si habló de lo que quería ser, reconócelo en pocas palabras y pregunta qué le
+        encantaba hacer en esa época.
+  no_sabe · BASE: «Está bien si no te acuerdas mucho. A veces ayuda lo que te cuentan en casa o alguna foto. ¿Qué te dicen que hacías?»
     CÓMO ADAPTARLA: no repitas que no se acuerda; ofrece lo que cuentan en casa o las fotos.
   vacio · BASE: «Piensa en una tarde cualquiera cuando tenías unos ocho años. ¿Qué estabas haciendo?»
   fuera_de_tema · BASE: «Volvamos a cuando eras niño o niña: ¿qué te encantaba hacer?»

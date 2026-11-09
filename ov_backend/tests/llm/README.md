@@ -33,15 +33,16 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 
 ## Prueba de tarjetas (v7, solo b1-1)
 
-`evaluar_tarjetas.py` compara dos formas de repreguntar con la clasificación nueva por `tipo`: **A** (el LLM clasifica y la repregunta es el texto fijo del `tipo`) y **B** (el LLM también redacta y un filtro decide si se usa). No toca el backend, el prompt vigente ni `evaluar.py`: tiene su prompt (`prompt_tarjetas.py`), sus tarjetas (`tarjetas_b1_1.py`) y sus casos (`casos/b1-1-tarjetas.json`, que remiten a `casos/b1-1.json` y agregan lo esperado).
+`evaluar_tarjetas.py` prueba la clasificación nueva por `tipo`. En v7 comparó **A** (el LLM clasifica y la repregunta es el texto fijo del `tipo`) con **B** (el LLM también redacta y un filtro decide si se usa); desde v7.1 solo corre B, con los casos de gustos. No toca el backend, el prompt vigente ni `evaluar.py`: tiene su prompt (`prompt_tarjetas.py`), sus tarjetas (`tarjetas_b1_1.py`) y sus casos (`casos/b1-1-tarjetas-v7.1.json`; los de v7 están en `casos/b1-1-tarjetas.json`). Ambos remiten a `casos/b1-1.json` y agregan lo esperado.
 
 ```
-uv run python tests/llm/evaluar_tarjetas.py --mostrar 15 B      # el prompt y el mensaje, sin llamar
-uv run python tests/llm/evaluar_tarjetas.py                     # una corrida por método: CSV e informe
-uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe desde un CSV, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --mostrar 6 B       # el prompt y el mensaje, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --filtro-v7         # el filtro actual sobre el CSV de v7, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py                     # una corrida de B: CSV e informe
+uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe v7.1 desde un CSV, sin llamar
 ```
 
-El informe es `resultados/b1-1/v7-tarjetas.md`. Rehacerlo reemplaza la sección de notas, que se escribe a mano.
+Los informes son `resultados/b1-1/v7-tarjetas.md` y `v7.1-gustos.md`. Rehacerlos reemplaza la sección de notas, que se escribe a mano. El prompt y la tarjeta con que corrió v7 quedan en el historial de git.
 
 ## Formato de un caso
 

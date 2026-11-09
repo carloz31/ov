@@ -1,12 +1,14 @@
-"""Prueba de tarjetas y clasificación nueva en b1-1: método A (texto fijo) frente a B (repregunta guiada).
+"""Prueba de tarjetas y clasificación nueva en b1-1. Hoy corre v7.1: solo el método B (repregunta guiada) en gustos.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y tiene su
-propio prompt (`prompt_tarjetas.py`), sus tarjetas (`tarjetas_b1_1.py`) y sus casos (`casos/b1-1-tarjetas.json`).
+propio prompt (`prompt_tarjetas.py`), sus tarjetas (`tarjetas_b1_1.py`) y sus casos (`casos/b1-1-tarjetas-v7.1.json`).
 
 Uso, desde ov_backend:
-    uv run python tests/llm/evaluar_tarjetas.py --mostrar 8 B       # el prompt y el mensaje, sin llamar
-    uv run python tests/llm/evaluar_tarjetas.py                     # una corrida por método; CSV e informe
-    uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe desde un CSV, sin llamar
+    uv run python tests/llm/evaluar_tarjetas.py --mostrar 6 B       # el prompt y el mensaje, sin llamar
+    uv run python tests/llm/evaluar_tarjetas.py --filtro-v7         # el filtro actual sobre el CSV de v7, sin llamar
+    uv run python tests/llm/evaluar_tarjetas.py                     # una corrida de B; CSV e informe v7.1
+    uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe v7.1 desde un CSV, sin llamar
+    uv run python tests/llm/evaluar_tarjetas.py --informe-v7 <csv>  # rehace el informe de v7 (A y B), sin llamar
 """
 
 import argparse
@@ -35,6 +37,9 @@ REGISTRO = 'b1-1'
 AQUI = Path(__file__).resolve().parent
 CARPETA = AQUI / 'resultados' / REGISTRO
 INFORME = CARPETA / 'v7-tarjetas.md'
+INFORME_V7_1 = CARPETA / 'v7.1-gustos.md'
+CSV_V7 = CARPETA / '2026-11-08_2054_v7-tarjetas_t1_rlow.csv'
+CASOS = 'b1-1-tarjetas-v7.1.json'
 REFERENCIA_V6_10 = CARPETA / '2026-11-08_1030_v6.10_t1_rlow_b1-1-v6.10.csv'
 SEMILLA = 20261108
 
@@ -64,7 +69,7 @@ ESQUEMAS = {'A': ResultadoA, 'B': ResultadoB}
 def cargar_casos():
     """Los casos de la prueba con su texto, sus opciones y su seguimiento leídos de `b1-1.json`."""
     existentes = {c['id']: c for c in json.loads((AQUI / 'casos' / 'b1-1.json').read_text(encoding='utf-8'))['casos']}
-    casos = json.loads((AQUI / 'casos' / 'b1-1-tarjetas.json').read_text(encoding='utf-8'))['casos']
+    casos = json.loads((AQUI / 'casos' / CASOS).read_text(encoding='utf-8'))['casos']
     for caso in casos:
         if caso['caso'] != 'nuevo':
             origen = existentes[caso['caso']]
@@ -118,8 +123,10 @@ def filtrar(repregunta, tipo, item, etiquetas):
         reglas.append('mas_de_30_palabras')
     if texto.count('?') > 1:
         reglas.append('mas_de_una_pregunta')
-    if not texto.endswith('?'):
-        reglas.append('no_termina_en_interrogacion')
+    if not texto.endswith(('?', '.')):
+        reglas.append('no_termina_en_interrogacion_ni_punto')
+    if '?' in texto and '¿' not in texto:
+        reglas.append('interrogacion_sin_apertura')
     if not PERMITIDOS.fullmatch(texto):
         reglas.append('caracteres')
     return reglas
@@ -198,14 +205,17 @@ def ejecutar(llamada, metodo, caso, comun):
             return filas
         # Sin invitación propia (el modelo no pidió repregunta) se usa el texto fijo del tipo esperado, y se informa.
         respaldo = repregunta is None
-        invitacion = repregunta or bases_de(caso['item'], caso['etiquetas'])[caso['final_esperado']]
+        invitacion = repregunta or bases_de(caso['item'], caso['etiquetas'])[caso.get('tipo_esperado') or caso['final_esperado']]
         contenido = mensaje(caso['item'], caso['etiquetas'], caso['respuesta_seguimiento'], caso['texto'], invitacion)
         s, uso = con_reintento(lambda: llamada(metodo, contenido))
         final, sensible, estado = estado_final(r, s)
+        # La repregunta del seguimiento no se muestra: es la pista que se guarda para cuando edite el ítem.
+        pista, origen_pista, reglas_pista = repregunta_de(metodo, s, caso)
+        crudo_pista = getattr(s, 'repregunta', None)
         filas.append(dict(fila_base, **uso, turno='seguimiento', texto=caso['respuesta_seguimiento'], motivo=s.motivo, tipo=s.tipo,
-                          sensible=s.sensible, repregunta_llm=getattr(s, 'repregunta', None), invitacion=invitacion,
-                          invitacion_respaldo='sí' if respaldo else '', tipo_final=final, sensible_final=sensible, estado=estado,
-                          ignorada='sí' if getattr(s, 'repregunta', None) else ''))
+                          sensible=s.sensible, repregunta_llm=crudo_pista, repregunta=pista, origen=origen_pista,
+                          filtro=' '.join(reglas_pista), invitacion=invitacion, invitacion_respaldo='sí' if respaldo else '',
+                          tipo_final=final, sensible_final=sensible, estado=estado, ignorada='sí' if crudo_pista and pista is None else ''))
         return filas
     except Exception as error:  # noqa: BLE001
         return [dict(fila_base, turno='primera', texto=caso['texto'], error=repr(error)[:300])]
@@ -446,21 +456,77 @@ def escribir_informe(ruta_csv, semilla, notas=None):
     return medidas
 
 
+def seccion_filtro_v7():
+    """El filtro actual sobre las repreguntas de B guardadas en el CSV de v7 (no gasta llamadas)."""
+    with CSV_V7.open(encoding='utf-8-sig', newline='') as archivo:
+        guardadas = [f for f in csv.DictReader(archivo) if f['metodo'] == 'B' and f['repregunta_llm']]
+    evaluadas = [(f, filtrar(f['repregunta_llm'], f['tipo'], f['item'], f['opciones'].split(', ') if f['opciones'] else [])) for f in guardadas]
+    rechazadas = [(f, reglas) for f, reglas in evaluadas if reglas]
+    antes = [f for f, reglas in evaluadas if f['origen'] == 'base_por_filtro' and not reglas]
+    lineas = ['## 1. Filtro nuevo sobre v7 (sin API)', '',
+              f'De las {len(evaluadas)} repreguntas de B guardadas en v7 (16 de la primera respuesta y 2 de seguimiento, que entonces se descartaron), '
+              f'**pasan {len(evaluadas) - len(rechazadas)}** y se rechazan {len(rechazadas)}. '
+              f"De las 5 rechazadas en v7, ahora pasan {len(antes)}" + (f" (v7 #{', #'.join(f['numero'] for f in antes)})." if antes else '.')]
+    if rechazadas:
+        lineas += ['', '| v7 # | Turno | Repregunta | Regla |', '|---|---|---|---|']
+        lineas += [f"| {f['numero']} | {f['turno']} | {celda(f['repregunta_llm'])} | `{' '.join(reglas)}` |" for f, reglas in rechazadas]
+    return lineas
+
+
+def filtro_de_fila(fila):
+    if fila['origen'] == 'base_sin_redactar':
+        return 'no redactó (se usa la base)'
+    if fila['filtro']:
+        return f"no: `{fila['filtro']}` (se usa la base)"
+    return 'sí' if fila['repregunta_llm'] else '—'
+
+
+def escribir_informe_v7_1(ruta_csv):
+    filas, casos = leer_csv(ruta_csv)
+    primera = filas[0]
+    lineas = ['# b1-1-gustos con la tarjeta v7.1 (método B)', '',
+              f"`{primera['modelo']}` · {primera['razonamiento']}, temperatura {primera['temperatura']}, una corrida. "
+              f"CSV: [{Path(ruta_csv).name}]({Path(ruta_csv).name}).", ''] + seccion_filtro_v7()
+    lineas += ['', '## 2. Casos', '', '| # | Texto | `tipo` esperado | `tipo` obtenido | ¿Coincide? | `motivo` | Repregunta | ¿Pasó el filtro? |',
+               '|---|---|---|---|---|---|---|---|']
+    for numero, por_caso in casos.items():
+        por_metodo = por_caso['B']
+        f = por_metodo['primera']
+        lineas.append(f"| {numero} | {celda(f['texto'])} | {esperado_de(f)} | {obtenido_de(por_metodo)} | {'sí' if acierta(por_metodo) else '**no**'} | "
+                      f"{celda(f['motivo'])} | {celda(f['repregunta_llm'] or f['repregunta']) or '—'} | {filtro_de_fila(f)} |")
+    for numero, por_caso in casos.items():
+        s = por_caso['B'].get('seguimiento')
+        if s:
+            lineas += ['', f'**Seguimiento de #{numero}:** respondió «{celda(s["texto"])}».', '',
+                       '| Invitación que vio | `tipo` del conjunto | `tipo` final | Pista guardada | ¿Pasó el filtro? | `motivo` |', '|---|---|---|---|---|---|',
+                       f"| {celda(s['invitacion'])} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} | {celda(s['motivo'])} |"]
+    lineas += ['', '## 3. Notas', '', '_Pendiente._', '']
+    INFORME_V7_1.write_text('\n'.join(lineas), encoding='utf-8')
+    return {'B': medir(casos, 'B')}
+
+
 def main():
     sys.stdout.reconfigure(encoding='utf-8')
     parser = argparse.ArgumentParser()
-    parser.add_argument('--metodos', nargs='+', choices=('A', 'B'), default=['A', 'B'])
     parser.add_argument('--modelo', default=parametros.MODELO_LLM_REGISTRO)
     parser.add_argument('--razonamiento', default=parametros.NIVEL_RAZONAMIENTO_REGISTRO, choices=('minimal', 'low', 'medium', 'high'))
     parser.add_argument('--semilla', type=int, default=SEMILLA, help='baraja de X e Y en la tabla ciega')
     parser.add_argument('--hilos', type=int, default=8)
     parser.add_argument('--etiqueta', default='')
-    parser.add_argument('--informe', help='rehace el informe desde este CSV, sin llamar al modelo')
+    parser.add_argument('--informe', help='rehace el informe v7.1 desde este CSV, sin llamar al modelo')
+    parser.add_argument('--informe-v7', help='rehace el informe de v7 (A y B) desde este CSV, sin llamar al modelo')
+    parser.add_argument('--filtro-v7', action='store_true', help='aplica el filtro actual al CSV de v7, sin llamar al modelo')
     parser.add_argument('--mostrar', nargs=2, metavar=('NUMERO', 'METODO'), help='imprime el prompt y el mensaje, sin llamar')
     args = parser.parse_args()
 
     if args.informe:
-        print(escribir_informe(args.informe, args.semilla))
+        print(escribir_informe_v7_1(args.informe))
+        return
+    if args.informe_v7:
+        print(escribir_informe(args.informe_v7, args.semilla))
+        return
+    if args.filtro_v7:
+        print('\n'.join(seccion_filtro_v7()))
         return
     casos = cargar_casos()
     for caso in casos:
@@ -479,12 +545,13 @@ def main():
     temperatura = parametros.TEMPERATURA_REGISTRO
     comun = dict(modelo=args.modelo, razonamiento=nivel, temperatura=temperatura)
     llamada = lambda metodo, contenido: llamar(cliente, args.modelo, razonamiento, metodo, contenido, temperatura)  # noqa: E731
-    tareas = [(m, c) for m in args.metodos for c in casos]
-    print(f'{len(tareas)} casos ({len(args.metodos)} métodos)')
+    print('\n'.join(seccion_filtro_v7()))  # la spec pide ver esto antes de gastar llamadas
+    tareas = [('B', c) for c in casos]
+    print(f'{len(tareas)} casos (método B)')
     with ThreadPoolExecutor(max_workers=args.hilos) as pool:
         filas = [f for grupo in pool.map(lambda t: ejecutar(llamada, *t, comun), tareas) for f in grupo]
     destino = guardar(filas, args.modelo, nivel, temperatura, args.etiqueta)
-    medidas = escribir_informe(destino, args.semilla)
+    medidas = escribir_informe_v7_1(destino)
     print(destino.name)
     print('\n'.join(agregar_resumen(destino, args.modelo, nivel, temperatura, medidas)))
 

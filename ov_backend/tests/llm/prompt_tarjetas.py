@@ -5,7 +5,7 @@ cambia es «emocional true» por «tipo emocional», porque aquí `emocional` es
 Las etiquetas con los datos del caso (`<tarjeta>`, `<respuesta>`…) las arma el runner y van en el mensaje.
 """
 
-VERSION = 'v7-tarjetas'
+VERSION = 'v7.1-gustos'
 
 PROMPT_BASE = '''Eres un clasificador de respuestas de estudiantes de 5.º de secundaria (16-17 años, Perú)
 en una actividad de orientación vocacional. No evalúas si la respuesta es buena ni la
@@ -46,7 +46,9 @@ Responde solo con JSON: {"motivo": "...", "tipo": "...", "sensible": false}
 
 CIERRE_B = '''
 Si el tipo es general, vacio, no_sabe o fuera_de_tema, y sensible es false, escribe una
-repregunta. En otro caso, repregunta = null. Si hay <respuesta_anterior>, repregunta = null.
+repregunta; en otro caso, repregunta = null.
+Si hay <respuesta_anterior>, escribe la repregunta sobre lo que dicen las dos juntas y no
+pidas nada que ya esté en alguna de ellas.
 
 Cómo escribirla:
 - Para cada tipo, la tarjeta te da QUÉ PEDIR, una BASE y CÓMO ADAPTARLA. La base muestra
@@ -57,8 +59,7 @@ Cómo escribirla:
   note que lo leíste. Si es fuera_de_tema, no retomes nada de lo que escribió. Si es
   no_sabe o vacio, no repitas lo que dijo no tener: ofrece el ángulo de la tarjeta.
 - Nunca pidas lo que ya dijo. Nunca presentes la opción marcada como algo que él contó.
-- Una sola pregunta, en segunda persona, en tono de par, de hasta 30 palabras, que
-  termine en "?".
+- Una sola pregunta o invitación, en segunda persona, en tono de par, de hasta 30 palabras.
 - No uses: "pero", "exactamente", "específicamente", "¿Podrías", "desarrolla",
   "explica", "demuestra" ni "demostraste". No califiques ("muy bien", "interesante").
 

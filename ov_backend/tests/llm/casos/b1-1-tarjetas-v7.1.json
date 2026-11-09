@@ -1,0 +1,12 @@
+{
+  "registro": "b1-1",
+  "descripcion": "Prueba v7.1 (b1-1-gustos, método B). Los casos E remiten a b1-1.json; los marcados con «nuevo» traen su texto. Lo corre evaluar_tarjetas.py.",
+  "casos": [
+    {"numero": 1, "caso": "E14", "item": "b1-1-gustos", "tipo_esperado": "propio", "por_que": "el fallo de v7"},
+    {"numero": 2, "caso": "E15", "item": "b1-1-gustos", "tipo_esperado": "general", "por_que": "campo; la repregunta pregunta qué hacía con la música"},
+    {"numero": 3, "caso": "nuevo", "item": "b1-1-gustos", "texto": "Los deportes", "opciones": [], "tipo_esperado": "general", "por_que": "campo, frente a #1", "_dato_de_prueba": true},
+    {"numero": 4, "caso": "nuevo", "item": "b1-1-gustos", "texto": "Me gustaba dormir", "opciones": [], "tipo_esperado": "general", "por_que": "rutina; la repregunta no corrige", "_dato_de_prueba": true},
+    {"numero": 5, "caso": "E5", "item": "b1-1-gustos", "tipo_esperado": "general", "por_que": "regresión"},
+    {"numero": 6, "caso": "nuevo", "item": "b1-1-gustos", "texto": "Jugar", "opciones": [], "respuesta_seguimiento": "A la pelota con mis primos en la calle", "tipo_esperado": "general", "final_esperado": "propio", "por_que": "el conjunto sube a propio; se guarda la pista", "_dato_de_prueba": true}
+  ]
+}
