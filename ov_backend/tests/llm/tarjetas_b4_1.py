@@ -1,4 +1,4 @@
-"""Tarjetas de b4-1. Solo datos: respalda viene de §1 de la spec v7.8g (candidata); menos y TODO, de §1 de la v7.8e; se copian tal cual.
+"""Tarjetas de b4-1. Solo datos: las tres vienen de `tarjetas-registros-2.md`, sección b4-1, y se copian tal cual.
 
 `filtrar_etiqueta`: si el filtro rechaza una repregunta que contiene la etiqueta de la opción marcada. `por_opcion`: una opción con pregunta y tarjeta propias reemplaza a las del ítem. `ecos`: cómo se nombra cada eco y si va ordenado. `{carrera}` en la pregunta y en la tarjeta es un marcador que declara cada caso. Las bases se leen de las líneas `BASE:` de la tarjeta.
 """
@@ -50,6 +50,7 @@ EJEMPLOS:
   "En Enfermería pasas el día atendiendo pacientes y a mí me nace cuidar" → propio (pieza: ayudar, cuidar o acompañar)
   "Los contadores revisan que los números cuadren, como cuando ordeno las cuentas de la bodega" → propio
   "En mecánica se desarman motores" → propio (pieza: trabajar con las manos; relación implícita)
+  "Hay física y estadística en todos los ciclos" → propio (pieza: Matemática; el curso usa la pieza)
   "Juego fútbol desde chico y en la carrera se aprende a entrenar equipos" → propio (pieza: usar el cuerpo; algo suyo del mismo tipo)
   "En Administración se manejan ventas y caja" → propio (pieza de niño: jugar a la tiendita; mismo tipo de actividad)
   "En Medicina nunca se deja de estudiar" → propio (pieza: Aprender; valor que se cumple en el trabajo)
@@ -57,7 +58,7 @@ EJEMPLOS:
   "Un traductor puede trabajar desde su casa y acomodar sus horas" → propio (pieza: Tiempo para la familia; condición: horario)
   "Porque me gusta cuidar a las personas" → general (repite la pieza)
   "En Medicina se estudian muchos años" → general (pieza: ayudar o cuidar; no tiene nada que ver con ella)
-  "Se calculan estructuras y se revisan planos" → general (pieza: ponerte en el lugar del otro, en Ingeniería Civil; tarea real que no tiene que ver con la pieza)
+  "Se calculan estructuras y se revisan planos" → general (pieza: ponerte en el lugar del otro, en Ingeniería Civil; tarea real que no tiene que ver con ponerse en el lugar del otro)
   "En cualquier trabajo hay que resolver problemas" → general (vale para cualquier carrera)
   "Porque da estabilidad" → general (solo el valor)
   "Es lo mío" → general
