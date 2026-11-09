@@ -1,13 +1,13 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.2c): método B, repregunta guiada con la base como respaldo, en b1-3.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.3c): método B, repregunta guiada con la base como respaldo, en b1-6.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`), sus casos (`casos/b1-3-tarjetas-v7.2c.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`), sus casos (`casos/b1-6-tarjetas-v7.3c.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
     uv run python tests/llm/evaluar_tarjetas.py --revisar           # solapamiento y filtro sobre v7 y v7.2, sin llamar
     uv run python tests/llm/evaluar_tarjetas.py --mostrar 20        # el prompt y el mensaje, sin llamar
-    uv run python tests/llm/evaluar_tarjetas.py                     # dos corridas de cada caso; CSV e informe
+    uv run python tests/llm/evaluar_tarjetas.py                     # una corrida de cada caso, sin reintentos; CSV e informe
     uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe desde un CSV, sin llamar
 """
 
@@ -32,25 +32,33 @@ from spylls.hunspell import Dictionary
 import evaluar as base  # agrega el backend a sys.path
 import tarjetas_b1_1
 import tarjetas_b1_3
+import tarjetas_b1_6
 
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.2c'
-REGISTRO = 'b1-3'
+VERSION = 'v7.3c'
+REGISTRO = 'b1-6'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
 CARPETA = AQUI / 'resultados' / REGISTRO
-INFORME = CARPETA / 'v7.2c.md'
-CASOS = AQUI / 'casos' / f'{REGISTRO}-tarjetas-v7.2c.json'
+INFORME = CARPETA / f'{VERSION}.md'
+CASOS = AQUI / 'casos' / f'{REGISTRO}-tarjetas-{VERSION}.json'
 RUTA_PROMPT = AQUI / 'prompts' / 'v7.md'
 PROMPT = RUTA_PROMPT.read_text(encoding='utf-8')
 LEXICO = AQUI / 'lexico' / 'es_ES'
-ARCHIVOS = (AQUI / 'tarjetas_b1_3.py', AQUI / 'tarjetas_b1_1.py', RUTA_PROMPT, CASOS, LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
+ARCHIVOS = (AQUI / 'tarjetas_b1_6.py', RUTA_PROMPT, CASOS, LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
 # (corrida, registro, CSV, casos de los que salen los ecos)
 PREVIOS = (('v7', 'b1-1', '2026-11-08_2054_v7-tarjetas_t1_rlow.csv', None),
            ('v7.2', 'b1-3', '2026-11-08_2219_v7.2_t1_rlow.csv', 'b1-3-tarjetas.json'))
-TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS}
+TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS}
+# Lo que el informe de esta corrida dice sobre su alcance y sobre «Otra».
+OPCIONES_INFORME = (
+    '- **Alcance.** Prueba exploratoria pedida por el usuario: basura o algo sin relación en «¿Cuál?» (#21 a #27). No reemplaza a `v7.3.md` ni a `v7.3b.md`.',
+    '- **Cómo se trata «Otra» (decisión del usuario).** Como en el backend actual: la idea escrita en «¿Cuál?» va como `<opcion_marcada>` en lugar de la etiqueta, el origen va como `<respuesta>` y se evalúa con la tarjeta y la pregunta del mito marcado. La tarjeta OTRO no se usa.',
+    '- **Textos y esperado, de Claude.** La tarjeta no define qué hacer con una idea sin sentido. El esperado es su lectura literal (solo juzga cómo le llegó), no un criterio aprobado: un «no» significa que el modelo se apartó de esa lectura.',
+    '- **Sin cambios respecto de v7.3.** El prompt y las tarjetas son los mismos archivos, con los mismos hashes.',
+)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -86,7 +94,7 @@ def cargar_casos():
 
 def codigo_opcion(caso):
     primera = caso['opciones'][0] if caso['opciones'] else None
-    return primera if isinstance(primera, str) else None
+    return primera['codigo'] if isinstance(primera, dict) else primera
 
 
 def ficha_de(caso):
@@ -290,8 +298,8 @@ def llamar(cliente, modelo, razonamiento, contenido, temperatura):
         tokens_razonamiento=getattr(uso, 'thoughts_token_count', None), tokens_salida=getattr(uso, 'candidates_token_count', None))
 
 
-def con_reintento(funcion, intentos=3):
-    """Una falla de red o de esquema se reintenta para no dejar huecos en la única corrida."""
+def con_reintento(funcion, intentos=1):
+    """Sin reintentos por defecto (v7.3): un error de API debe verse en el CSV y detener la prueba, no quedar oculto."""
     for intento in range(intentos):
         try:
             return funcion()
@@ -452,6 +460,25 @@ def seccion_repaso():
     return lineas
 
 
+def seccion_totales(casos, medidas):
+    """Los totales de la spec v7.3 §3.3, con los números de caso de cada grupo."""
+    filas = [(n, c) for n, por_corrida in casos.items() for c in por_corrida.values() if not c['primera']['error']]
+    lista = lambda numeros: ', '.join(f'#{n}' for n in numeros) or 'ninguno'  # noqa: E731
+    seguimiento_no_propio = lambda c: c['primera']['conjunto_esperado'] == 'propio' and c.get('seguimiento', {}).get('tipo') != 'propio'  # noqa: E731
+    de_mas = [n for n, c in filas if (c['primera']['tipo_esperado'] == 'propio' and c['primera']['tipo'] != 'propio') or seguimiento_no_propio(c)]
+    de_menos = [n for n, c in filas if c['primera']['tipo_esperado'] in ('vacio', 'fuera_de_tema') and c['primera']['tipo'] == 'propio']
+    falsos_pos = [n for n, c in filas if c['primera']['sensible_esperado'] != 'True' and sensible_de(c)]
+    falsos_neg = [n for n, c in filas if c['primera']['sensible_esperado'] == 'True' and not sensible_de(c)]
+    emocional = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional']
+    emocional_ok = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional' and c['primera']['tipo'] == 'emocional']
+    emocional_de_mas = [n for n, c in filas if c['primera']['tipo_esperado'] not in ('emocional', '') and c['primera']['tipo'] == 'emocional']
+    return ['## 4. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']}.",
+            f'- **Invitaciones de más** (`propio` clasificado como otro tipo): {len(de_mas)} ({lista(de_mas)}).',
+            f'- **Pases de menos** (`vacio` o `fuera_de_tema` clasificados como `propio`): {len(de_menos)} ({lista(de_menos)}).',
+            f'- **`sensible`:** {len(falsos_pos)} falsos positivos ({lista(falsos_pos)}), {len(falsos_neg)} falsos negativos ({lista(falsos_neg)}).',
+            f'- **`emocional`:** {len(emocional_ok)}/{len(emocional)} ({lista(emocional_ok)}); clasificados `emocional` sin esperarlo: {len(emocional_de_mas)} ({lista(emocional_de_mas)}).']
+
+
 def escribir_informe(ruta_csv):
     filas, casos = leer_csv(ruta_csv)
     primera = filas[0]
@@ -461,17 +488,17 @@ def escribir_informe(ruta_csv):
     llamadas = sum(1 for f in filas if not f['error'])
     con_bytes = [f for f in filas if f['bytes_http']]
     iguales = sum(f['bytes_http'] == 'igual' for f in con_bytes)
-    lineas = [f'# {REGISTRO} con tarjetas (v7.2c, método B)', '',
+    lineas = [f'# {REGISTRO} con tarjetas ({VERSION}, método B)', '',
               f"`{primera['modelo']}` · {primera['razonamiento']}, temperatura {primera['temperatura']}, {medidas['corridas']} corridas de cada caso, {llamadas} llamadas con respuesta, "
               f"{medidas['errores']} con error. Bytes HTTP iguales al texto del SDK en {iguales} de {len(con_bytes)} respuestas. CSV: [{Path(ruta_csv).name}]({Path(ruta_csv).name}).", '',
               '## 1. Archivos', '', '| Ruta | `git hash-object` |', '|---|---|',
-              *[f'| `{ruta}` | `{valor}` |' for ruta, valor in json.loads(primera['archivos']).items()], '',
+              *[f'| `{ruta}` | `{valor}` |' for ruta, valor in json.loads(primera['archivos']).items()], '', *OPCIONES_INFORME, '',
               '## 2. Casos', '', '| # | Ítem · opción | Texto | Esperado | Corrida | Obtenido | ¿Coincide? | Repregunta | ¿Pasó el filtro? | `motivo` |',
               '|---|---|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
         for corrida, por_caso in sorted(por_corrida.items()):
             f = por_caso['primera']
-            lineas.append(f"| {numero} | {f['item'].removeprefix('b1-3-')} · {celda(f['opciones']) or '—'} | {celda(f['texto'])} | {esperado_de(f)} | {corrida} | {obtenido_de(por_caso)} | "
+            lineas.append(f"| {numero} | {f['item'].removeprefix(f'{REGISTRO}-')} ·{celda(f['opciones']) or '—'} | {celda(f['texto'])} | {esperado_de(f)} | {corrida} | {obtenido_de(por_caso)} | "
                           f"{'sí' if acierta(por_caso) else '**no**'} | {repregunta_mostrada(f)} | {filtro_de_fila(f)} | {celda(f['motivo'])} |")
     lineas += ['', '## 3. Pistas de los seguimientos', '', '| # | Corrida | Invitación que vio | Respondió | `tipo` del conjunto | `tipo` final | Pista guardada | ¿Pasó el filtro? |', '|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
@@ -480,7 +507,7 @@ def escribir_informe(ruta_csv):
             if s:
                 invitacion = celda(s['invitacion']) + (' *(respaldo)*' if s['invitacion_respaldo'] else '')
                 lineas.append(f"| {numero} | {corrida} | {invitacion} | {celda(s['texto'])} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} |")
-    lineas += ['', '## 4. Notas', '', '_Pendiente: notas._', '']
+    lineas += ['', *seccion_totales(casos, medidas), '', '## 5. Notas', '', '_Pendiente: notas._', '']
     INFORME.write_text('\n'.join(lineas), encoding='utf-8')
     return medidas
 
@@ -490,7 +517,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--modelo', default=parametros.MODELO_LLM_REGISTRO)
     parser.add_argument('--razonamiento', default=parametros.NIVEL_RAZONAMIENTO_REGISTRO, choices=('minimal', 'low', 'medium', 'high'))
-    parser.add_argument('--corridas', type=int, default=2)
+    parser.add_argument('--corridas', type=int, default=1)
     parser.add_argument('--hilos', type=int, default=8)
     parser.add_argument('--etiqueta', default='')
     parser.add_argument('--informe', help='rehace el informe desde este CSV, sin llamar al modelo')

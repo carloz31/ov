@@ -1,0 +1,14 @@
+{
+  "registro": "b1-6",
+  "descripcion": "Prueba exploratoria v7.3c (método B, una corrida): «Otra» con basura o algo sin relación en «¿Cuál?», tratada como en el backend. El esperado es la lectura literal de la tarjeta del mito (solo juzga cómo le llegó la idea), no un criterio aprobado. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 21, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "xd"}], "texto": "Lo dice mi tío cada vez que nos vemos", "tipo_esperado": "propio"},
+    {"numero": 22, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "asdfgh"}], "texto": "Lo vi en un video de TikTok", "tipo_esperado": "propio"},
+    {"numero": 23, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "Me gusta el fútbol"}], "texto": "Mi hermano siempre habla de eso", "tipo_esperado": "propio"},
+    {"numero": 24, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "Mi perro se llama Rocky"}], "texto": "En mi colegio", "tipo_esperado": "propio"},
+    {"numero": 25, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "xd"}], "texto": "xd", "tipo_esperado": "vacio"},
+    {"numero": 26, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "no sé"}], "texto": "ni idea", "tipo_esperado": "no_sabe"},
+    {"numero": 27, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "Me gusta el fútbol"}], "texto": "Me gusta salir con mis amigos los sábados", "tipo_esperado": "fuera_de_tema"}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "registro": "b1-6",
+  "descripcion": "Prueba v7.3 (método B, una corrida). Numeración de la spec; #19 es S1 y #20 es S2. La opción «otra» usa el código OTRA del repo con la etiqueta «Otra idea», solo en esta prueba. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 1, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["SOLO_UNIVERSIDAD"], "texto": "Lo repiten mucho los profes en tutoría", "tipo_esperado": "propio"},
+    {"numero": 2, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["TRABAJOS_GENERO"], "texto": "Mi papá se molesta y dice que mecánica no es para chicas", "tipo_esperado": "propio", "sensible_esperado": false},
+    {"numero": 3, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["CARRERA_DECIDE"], "texto": "Lo vi en varios videos de Instagram", "tipo_esperado": "propio"},
+    {"numero": 4, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["GUSTO_GANA_POCO"], "texto": "Mi prima estudió música y ahora trabaja en un call center", "tipo_esperado": "propio"},
+    {"numero": 5, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["PADRES_SABEN"], "texto": "Así dice la gente", "tipo_esperado": "general"},
+    {"numero": 6, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["GUSTO_GANA_POCO"], "texto": "Hoy ya no lo creo tanto, depende de la carrera", "tipo_esperado": "general"},
+    {"numero": 7, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["SOLO_UNIVERSIDAD"], "texto": "Yo solo lo pensaba, nadie me lo dijo", "tipo_esperado": "general"},
+    {"numero": 8, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["TEST_DECIDE"], "texto": "Ya ni me acuerdo", "tipo_esperado": "no_sabe"},
+    {"numero": 9, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["CARRERA_DECIDE"], "texto": "xd", "tipo_esperado": "vacio"},
+    {"numero": 10, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["PADRES_SABEN"], "texto": "Me gusta el fútbol y salir con mis amigos", "tipo_esperado": "fuera_de_tema"},
+    {"numero": 11, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["NINGUNO"], "texto": "Que derecho es para los que hablan bonito", "tipo_esperado": "propio"},
+    {"numero": 12, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["NINGUNO"], "texto": "En mi casa no hablan de eso", "tipo_esperado": "no_sabe"},
+    {"numero": 13, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["NINGUNO"], "texto": "Siempre sale el tema del sueldo", "tipo_esperado": "general"},
+    {"numero": 14, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "Otra idea"}], "texto": "Que si no entras a la primera eres un fracasado, eso dicen en la academia", "tipo_esperado": "propio"},
+    {"numero": 15, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "Otra idea"}], "texto": "Que estudiar en Lima es mejor que en provincia", "tipo_esperado": "general"},
+    {"numero": 16, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "Otra idea"}], "texto": "Lo escucho en mi barrio", "tipo_esperado": "general"},
+    {"numero": 17, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["TRABAJOS_GENERO"], "texto": "Mi papá dice que las mujeres no son para ingeniería y cuando le digo que quiero estudiarla me pega", "sensible_esperado": true},
+    {"numero": 18, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["PADRES_SABEN"], "texto": "Me da cólera, siento que nunca me escuchan y no puedo decidir nada", "tipo_esperado": "emocional", "sensible_esperado": false},
+    {"numero": 19, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["SOLO_UNIVERSIDAD"], "texto": "Todos dicen eso", "respuesta_seguimiento": "En mi casa, sobre todo mi abuela", "tipo_esperado": "general", "conjunto_esperado": "propio", "final_esperado": "propio"},
+    {"numero": 20, "caso": "nuevo", "item": "b1-6-mito", "opciones": ["GUSTO_GANA_POCO"], "texto": "Así me dijeron", "respuesta_seguimiento": "Pero así dicen pues", "tipo_esperado": "general", "conjunto_esperado": "general", "final_esperado": "general"}
+  ]
+}

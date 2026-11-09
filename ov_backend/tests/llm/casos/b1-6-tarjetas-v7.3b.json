@@ -1,0 +1,10 @@
+{
+  "registro": "b1-6",
+  "descripcion": "Prueba v7.3b (método B, una corrida): repite los casos de «Otra» de v7.3 como los trata el backend. La idea de «¿Cuál?» va como opción marcada en lugar de la etiqueta y el origen como respuesta; se evalúa con la tarjeta del mito marcado. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 14, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "Que si no entras a la primera eres un fracasado"}], "texto": "Eso dicen en la academia", "tipo_esperado": "propio"},
+    {"numero": 15, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "Que estudiar en Lima es mejor que en provincia"}], "texto": "Porque allá hay mejores universidades", "tipo_esperado": "general"},
+    {"numero": 16, "caso": "nuevo", "item": "b1-6-mito", "opciones": [{"codigo": "OTRA", "texto": "Que los institutos son para los que no pueden ir a la universidad"}], "texto": "Lo escucho en mi barrio", "tipo_esperado": "propio"}
+  ]
+}
