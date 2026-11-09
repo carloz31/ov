@@ -31,18 +31,17 @@ El CSV guarda `razonamiento`, `tokens_entrada`, `tokens_razonamiento` y `tokens_
 
 Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no está en el entorno, la toma del `.env` del backend, igual que `GEMINI_MODELO` (sin imprimirlas). Por defecto hace 8 llamadas en paralelo (`--hilos`).
 
-## Prueba de tarjetas (v7, solo b1-1)
+## Prueba de tarjetas (v7.x)
 
-`evaluar_tarjetas.py` prueba la clasificación nueva por `tipo`. En v7 comparó **A** (el LLM clasifica y la repregunta es el texto fijo del `tipo`) con **B** (el LLM también redacta y un filtro decide si se usa); desde v7.1 solo corre B, con los casos de gustos. No toca el backend, el prompt vigente ni `evaluar.py`: tiene su prompt (`prompt_tarjetas.py`), sus tarjetas (`tarjetas_b1_1.py`) y sus casos (`casos/b1-1-tarjetas-v7.1.json`; los de v7 están en `casos/b1-1-tarjetas.json`). Ambos remiten a `casos/b1-1.json` y agregan lo esperado.
+`evaluar_tarjetas.py` prueba la clasificación nueva por `tipo` con el método **B**: el LLM clasifica y redacta la repregunta, y un filtro decide si se usa o si va la base de la tarjeta. Hoy corre b1-3 (v7.2). No toca el backend, el prompt vigente ni `evaluar.py`: tiene su prompt (`prompt_tarjetas.py`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`) y sus casos (`casos/b1-3-tarjetas.json`).
 
 ```
-uv run python tests/llm/evaluar_tarjetas.py --mostrar 6 B       # el prompt y el mensaje, sin llamar
-uv run python tests/llm/evaluar_tarjetas.py --filtro-v7         # el filtro actual sobre el CSV de v7, sin llamar
-uv run python tests/llm/evaluar_tarjetas.py                     # una corrida de B: CSV e informe
-uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe v7.1 desde un CSV, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --mostrar 16        # el prompt y el mensaje, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py                     # una corrida: CSV e informe
+uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe desde un CSV, sin llamar
 ```
 
-Los informes son `resultados/b1-1/v7-tarjetas.md` y `v7.1-gustos.md`. Rehacerlos reemplaza la sección de notas, que se escribe a mano. El prompt y la tarjeta con que corrió v7 quedan en el historial de git.
+El informe es `resultados/b1-3/v7.2.md`; rehacerlo reemplaza la sección de notas, que se escribe a mano. Las corridas de b1-1 (`resultados/b1-1/v7-tarjetas.md` y `v7.1-gustos.md`, con los casos `casos/b1-1-tarjetas*.json`) quedan como evidencia: el código, el prompt y las tarjetas con que corrieron están en el historial de git.
 
 ## Formato de un caso
 

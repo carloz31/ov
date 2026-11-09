@@ -7,46 +7,43 @@ del B) se lee de la línea `BASE:` de la tarjeta, para que no haya dos copias. `
 TARJETAS = {
     'b1-1-gustos': {
         'pregunta': '¿Qué te encantaba hacer de niño o niña? Puede ser un juego, algo que armabas o algo que hacías con alguien.',
-        'tarjeta': '''NÚCLEO: nombra al menos una actividad que hacía o le gustaba hacer de niño. Vale aunque
-  la nombre con una sola palabra o un sustantivo: un juego, un deporte en particular,
-  algo que armaba, dibujaba, cuidaba o hacía con alguien.
-NO EXIGIR: con quién, dónde, detalles ni una escena.
+        'tarjeta': '''NÚCLEO: una actividad que hacía de niño CON al menos un detalle suyo: qué hacía dentro
+  de ella, con quién, dónde o cómo.
+NO EXIGIR: una escena completa ni más de un detalle.
 GENERAL SI:
-  - nombra un CAMPO que abarca muchas actividades distintas, sin decir cuál hacía
-    ("el arte", "la música", "los deportes", "la creatividad", "jugar");
-  - nombra solo una necesidad o rutina que hace todo el mundo, sin nada propio
-    ("dormir", "comer", "descansar");
+  - una actividad nombrada sola, en una palabra o con un sustantivo ("el fútbol",
+    "dibujar", "las muñecas");
+  - un campo que abarca muchas actividades ("la música", "los deportes", "el arte", "jugar");
+  - una rutina que hace todo el mundo, sin nada propio ("dormir", "comer");
   - habla de su niñez sin decir algo que hacía (lo que quería ser, cómo era).
-MATICES: si a una rutina le agrega algo suyo, es propio ("comer los dulces que hacía
-  mi abuela"). "No me acuerdo" = no_sabe.
+MATICES: "no me acuerdo" = no_sabe.
 EJEMPLOS:
-  "Montar bicicleta" → propio (actividad)
-  "Las canicas" → propio (un juego nombrado con un sustantivo)
+  "Montar bicicleta en el parque con mi hermano" → propio (con quién, dónde)
+  "Montar bicicleta" → general (actividad sola)
+  "Jugar canicas en el recreo" → propio
+  "Las canicas" → general (actividad sola)
   "Todo lo artístico" → general (campo)
-  "Las cosas de deporte" → general (campo)
-  "Comer" → general (rutina sin nada propio)
-  "Ver dibujos de dinosaurios" → propio (algo suyo)
+  "Comer" → general (rutina)
+  "Ver dibujos de dinosaurios" → propio (detalle suyo)
   "Quería ser policía" → general (aspiración)
   "Quería ser profesora y les enseñaba a mis peluches" → propio
   "No me acuerdo de chiquito" → no_sabe
   "Cosas de niños" → vacio
 REPREGUNTA
-  general · QUÉ PEDIR: una actividad que hacía.
+  general · QUÉ PEDIR: algo más de esa actividad, o una actividad si no la nombró.
     BASE: «Cuéntame una cosa que hacías, aunque sea muy simple: un juego, algo que armabas o algo que hacías con alguien.»
     CÓMO ADAPTARLA:
-      - si nombró un campo (arte, música, deportes), pregunta qué hacía relacionado con
-        ese campo (por ejemplo, para la música: cantar, tocar algo, bailar), sin
-        "a qué jugabas";
+      - si nombró una actividad sola, pregunta qué hacía en ella o qué le gustaba de
+        eso; puedes ofrecer dos o tres opciones concretas (fútbol: meter goles, atajar,
+        jugar en la calle);
+      - si nombró un campo, pregunta qué hacía relacionado con él, sin "a qué jugabas";
       - si dijo "jugar", pregunta a qué y, si encaja, con quién;
-      - si nombró una rutina (dormir, comer), tómalo con naturalidad, sin corregir, y
-        pregunta qué más le encantaba hacer, algo que hiciera porque le gustaba;
+      - si nombró una rutina, tómalo con naturalidad y pregunta qué más le encantaba hacer;
       - si habló de lo que quería ser, reconócelo en pocas palabras y pregunta qué le
         encantaba hacer en esa época.
   no_sabe · BASE: «Está bien si no te acuerdas mucho. A veces ayuda lo que te cuentan en casa o alguna foto. ¿Qué te dicen que hacías?»
-    CÓMO ADAPTARLA: no repitas que no se acuerda; ofrece lo que cuentan en casa o las fotos.
   vacio · BASE: «Piensa en una tarde cualquiera cuando tenías unos ocho años. ¿Qué estabas haciendo?»
-  fuera_de_tema · BASE: «Volvamos a cuando eras niño o niña: ¿qué te encantaba hacer?»
-    CÓMO ADAPTARLA: no menciones lo que escribió.''',
+  fuera_de_tema · BASE: «Volvamos a cuando eras niño o niña: ¿qué te encantaba hacer?»''',
     },
     'b1-1-logro': {
         'pregunta': 'Cuenta un logro tuyo: algo que pasó, no algo que eres.',
@@ -68,7 +65,7 @@ EJEMPLOS:
   "No soy buena en nada" → no_sabe
 REPREGUNTA
   general · QUÉ PEDIR: una vez concreta en que eso se vio.
-    BASE: «¿Qué pasó una vez que lo muestre? Puede ser algo pequeño, del colegio, de tu casa o de tu barrio.»
+    BASE: «Cuéntame una vez en que eso se haya visto. Puede ser algo pequeño, del colegio, de tu casa o de tu barrio.»
     CÓMO ADAPTARLA: retoma lo que dijo (la materia, ayudar, ser responsable) y pregunta
     por una vez concreta. No uses la etiqueta de la habilidad como si él la hubiera
     contado (no "resolviste ese problema"). Si dijo "muchas cosas", pide una.
@@ -76,9 +73,7 @@ REPREGUNTA
     BASE: «Puede ser algo pequeño: algo que aprendiste solo, algo que antes no te salía y ahora sí, o alguien a quien ayudaste. Cuéntame uno, aunque te parezca poca cosa.»
     CÓMO ADAPTARLA: no uses la palabra "logro" ni contradigas una autovaloración
     negativa; ofrece las pistas.
-  fuera_de_tema · BASE: «Volvamos a lo que marcaste, {opción}: cuéntame algo que lograste en que se haya notado.»
-    CÓMO ADAPTARLA: no menciones lo que escribió; puedes nombrar la habilidad como
-    "lo que marcaste".''',
+  fuera_de_tema · BASE: «Volvamos a lo que marcaste, {opción}: cuéntame algo que lograste en que se haya notado.»''',
     },
     'b1-1-dificultad': {
         'pregunta': 'Cuenta algo que te costó y cómo lo fuiste superando: lo que hiciste o quién te ayudó.',

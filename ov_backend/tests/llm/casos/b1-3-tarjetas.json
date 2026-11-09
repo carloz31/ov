@@ -1,0 +1,32 @@
+{
+  "registro": "b1-3",
+  "descripcion": "Prueba de tarjetas v7.2 (método B). Los casos con «caso» T… remiten a b1-3.json (regresión de los que fallaron en v6.x); los «nuevo» traen su texto. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 1, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["MAMA"], "texto": "Que estudie enfermería como ella", "tipo_esperado": "propio", "por_que": "control"},
+    {"numero": 2, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["PAPA"], "texto": "Que me vaya bien", "tipo_esperado": "general", "por_que": "deseo"},
+    {"numero": 3, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["MAMA"], "texto": "Que estudie", "tipo_esperado": "general", "por_que": "dirección sin nada concreto"},
+    {"numero": 4, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["ABUELO"], "texto": "No sé, nunca me lo ha dicho bien", "tipo_esperado": "no_sabe", "por_que": "no_sabe"},
+    {"numero": 5, "caso": "nuevo", "item": "b1-3-voz", "opciones": ["PAPA"], "texto": "Mi papá se enoja cuando hablo de arte, quiere que sea ingeniero", "tipo_esperado": "propio", "sensible_esperado": false, "por_que": "falso positivo plausible"},
+    {"numero": 6, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["UNIVERSIDAD"], "texto": "Porque me gusta", "tipo_esperado": "general", "por_que": "razón suya sin contenido"},
+    {"numero": 7, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["TRABAJAR"], "texto": "Porque en mi casa hace falta plata y quiero ayudar", "tipo_esperado": "propio", "por_que": "necesidad suya"},
+    {"numero": 8, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["UNIVERSIDAD"], "texto": "Porque es lo normal", "tipo_esperado": "general", "por_que": "razón ajena"},
+    {"numero": 9, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["AUN_NO"], "texto": "No sé", "tipo_esperado": "no_sabe", "por_que": "tarjeta de opción"},
+    {"numero": 10, "caso": "nuevo", "item": "b1-3-mia", "opciones": ["AUN_NO"], "texto": "Dudo entre diseño y sistemas", "tipo_esperado": "propio", "por_que": "tarjeta de opción"},
+    {"numero": 11, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["CHOCAN"], "texto": "No estamos de acuerdo", "tipo_esperado": "general", "por_que": "veredicto; la repregunta puede ofrecer «la carrera»",
+     "ecos": {"voz": {"opcion": "MAMA", "texto": "Que estudie enfermería como ella"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero estudiar diseño porque me paso horas en Canva"}}},
+    {"numero": 12, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["CHOCAN"], "texto": "En la carrera: ella quiere enfermería y yo diseño", "tipo_esperado": "propio", "por_que": "punto nombrado",
+     "ecos": {"voz": {"opcion": "MAMA", "texto": "Que estudie enfermería como ella"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero estudiar diseño porque me paso horas en Canva"}}},
+    {"numero": 13, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["EN_PARTE"], "texto": "En que estudie sí, en dónde no", "tipo_esperado": "propio", "por_que": "punto con matiz",
+     "ecos": {"voz": {"opcion": "PAPA", "texto": "Que me quede en Arequipa y entre a la UNSA"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero irme a Lima porque allá está lo que quiero estudiar"}}},
+    {"numero": 14, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["COINCIDEN"], "texto": "Sí", "tipo_esperado": "general", "por_que": "veredicto mínimo",
+     "ecos": {"voz": {"opcion": "MAMA", "texto": "Que vaya a la universidad"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Porque quiero ser abogada"}}},
+    {"numero": 15, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["CHOCAN"], "texto": "Me da miedo decirle lo que quiero, siempre terminamos peleando", "tipo_esperado": "emocional", "sensible_esperado": false, "por_que": "emocional, no sensible",
+     "ecos": {"voz": {"opcion": "MAMA", "texto": "Que estudie enfermería como ella"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero estudiar diseño porque me paso horas en Canva"}}},
+    {"numero": 16, "caso": "nuevo", "item": "b1-3-contraste", "opciones": ["CHOCAN"], "texto": "Chocan", "respuesta_seguimiento": "En que ella quiere que me quede en Arequipa", "tipo_esperado": "general", "final_esperado": "propio", "por_que": "seguimiento",
+     "ecos": {"voz": {"opcion": "PAPA", "texto": "Que me quede en Arequipa y entre a la UNSA"}, "mia": {"opcion": "UNIVERSIDAD", "texto": "Quiero irme a Lima porque allá está lo que quiero estudiar"}}},
+    {"numero": 17, "caso": "T5", "item": "b1-3-mia", "tipo_esperado": "emocional", "sensible_esperado": false, "por_que": "regresión: repregunta de más en v6.x (6/22)"},
+    {"numero": 18, "caso": "T6", "item": "b1-3-mia", "sensible_esperado": true, "por_que": "regresión: falso negativo de sensible en v6.x (3/31)"},
+    {"numero": 19, "caso": "T7", "item": "b1-3-voz", "tipo_esperado": "propio", "sensible_esperado": false, "por_que": "regresión: no cumplía en v6.x (3/16)"}
+  ]
+}
