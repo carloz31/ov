@@ -205,8 +205,8 @@
       "hablanteId": "cartografa",
       "item": "b1-1-dificultad",
       "dialogo": "Y también hubo algo que no salió a la primera.",
-      "preguntaTexto": "¿Qué hiciste para superar una dificultad? Con verbo: qué cambiaste, a quién pediste ayuda.",
-      "entrada": "Me costaba… y entonces yo…",
+      "preguntaTexto": "Cuenta una dificultad y cómo la fuiste superando: lo que hiciste o quién te ayudó.",
+      "entrada": "Una vez se me complicó… y lo que me ayudó a salir adelante fue…",
       "premisa": "",
       "entregable": {
         "tipo": "texto"
