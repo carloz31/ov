@@ -1,0 +1,27 @@
+{
+  "registro": "b1-1",
+  "descripcion": "Prueba de tarjetas v7 (métodos A y B). Cada caso remite a un caso de b1-1.json (texto, opciones y turnos se leen de ahí) y agrega lo esperado; los marcados con «nuevo» traen su texto. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "casos": [
+    {"numero": 1, "caso": "E5", "item": "b1-1-gustos", "tipo_esperado": "general", "por_que": "categoría"},
+    {"numero": 2, "caso": "E3", "item": "b1-1-gustos", "tipo_esperado": "general", "por_que": "categoría larga"},
+    {"numero": 3, "caso": "E7", "item": "b1-1-gustos", "tipo_esperado": "general", "por_que": "aspiración (falló en v6.10)"},
+    {"numero": 4, "caso": "E6", "item": "b1-1-gustos", "tipo_esperado": "no_sabe", "por_que": "no_sabe"},
+    {"numero": 5, "caso": "E14", "item": "b1-1-gustos", "tipo_esperado": "propio", "por_que": "falló 0/2 en v6.10"},
+    {"numero": 6, "caso": "E17", "item": "b1-1-gustos", "tipo_esperado": "propio", "por_que": "falló en v6.10"},
+    {"numero": 7, "caso": "nuevo", "item": "b1-1-gustos", "texto": "Muchas cosas", "opciones": [], "tipo_esperado": "vacio", "por_que": "vacío", "_dato_de_prueba": true},
+    {"numero": 8, "caso": "S4", "item": "b1-1-gustos", "tipo_esperado": "general", "final_esperado": "general", "por_que": "seguimiento sin núcleo"},
+    {"numero": 9, "caso": "E1", "item": "b1-1-logro", "tipo_esperado": "propio", "por_que": "control de invitaciones de más (cumple 2/2 en v6.10)"},
+    {"numero": 10, "caso": "E5", "item": "b1-1-logro", "tipo_esperado": "general", "por_que": "opinión con etiqueta tentadora"},
+    {"numero": 11, "caso": "E10", "item": "b1-1-logro", "tipo_esperado": "general", "por_que": "inyección"},
+    {"numero": 12, "caso": "E11", "item": "b1-1-logro", "tipo_esperado": "fuera_de_tema", "por_que": "fuera de tema con opción"},
+    {"numero": 13, "caso": "E13", "item": "b1-1-logro", "tipo_esperado": "no_sabe", "por_que": "exclusiva"},
+    {"numero": 14, "caso": "E16", "item": "b1-1-logro", "tipo_esperado": "no_sabe", "por_que": "autovaloración negativa"},
+    {"numero": 15, "caso": "S1", "item": "b1-1-logro", "final_esperado": "no_sabe", "estado_esperado": "abierto", "por_que": "abierto en seguimiento (1/2 en v6.10)"},
+    {"numero": 16, "caso": "E5", "item": "b1-1-dificultad", "tipo_esperado": "propio", "por_que": "la ayuda de otros vale"},
+    {"numero": 17, "caso": "E18", "item": "b1-1-dificultad", "tipo_esperado": "propio", "por_que": "lo hizo solo"},
+    {"numero": 18, "caso": "E7", "item": "b1-1-dificultad", "tipo_esperado": "general", "por_que": "sin el cómo"},
+    {"numero": 19, "caso": "E16", "item": "b1-1-dificultad", "tipo_esperado": "general", "por_que": "esfuerzo sin cómo"},
+    {"numero": 20, "caso": "E6", "item": "b1-1-dificultad", "tipo_esperado": "no_sabe", "por_que": "no_sabe"},
+    {"numero": 21, "caso": "E9", "item": "b1-1-dificultad", "sensible_esperado": true, "por_que": "control de sensible"}
+  ]
+}
