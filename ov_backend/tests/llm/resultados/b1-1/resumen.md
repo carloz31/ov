@@ -24,3 +24,5 @@
 | 2026-11-08 09:30 | v6.9 | gemini-3.5-flash-lite · low | 1 | 2 | 125/126 | 120/126 | 0 | 2026-11-08_0930_v6.9_t1_rlow_b1-1-v6.9.csv |
 | 2026-11-08 09:30 | v6.9 | gemini-3.5-flash-lite · low | 1 | 4 | 22/24 | 24/24 | 0 | 2026-11-08_0930_v6.9_t1_rlow_b1-1-v6.9-extra.csv |
 | 2026-11-08 10:30 | v6.10 | gemini-3.5-flash-lite · low | 1 | 2 | 122/126 | 119/126 | 0 | 2026-11-08_1030_v6.10_t1_rlow_b1-1-v6.10.csv |
+| 2026-11-08 20:54 | v7-tarjetas-A | gemini-3.5-flash-lite · low | 1 | 1 | 20/21 | — | 0 | 2026-11-08_2054_v7-tarjetas_t1_rlow.csv |
+| 2026-11-08 20:54 | v7-tarjetas-B | gemini-3.5-flash-lite · low | 1 | 1 | 20/21 | — | 0 | 2026-11-08_2054_v7-tarjetas_t1_rlow.csv |
