@@ -1,11 +1,11 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.3c): método B, repregunta guiada con la base como respaldo, en b1-6.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.4b): método B, repregunta guiada con la base como respaldo, en b1-7.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`), sus casos (`casos/b1-6-tarjetas-v7.3c.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`), sus casos (`casos/b1-7-tarjetas-v7.4b.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
-    uv run python tests/llm/evaluar_tarjetas.py --revisar           # solapamiento y filtro sobre v7 y v7.2, sin llamar
+    uv run python tests/llm/evaluar_tarjetas.py --revisar           # solapamiento y filtro sobre las corridas v7.x, sin llamar
     uv run python tests/llm/evaluar_tarjetas.py --mostrar 20        # el prompt y el mensaje, sin llamar
     uv run python tests/llm/evaluar_tarjetas.py                     # una corrida de cada caso, sin reintentos; CSV e informe
     uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe desde un CSV, sin llamar
@@ -33,12 +33,13 @@ import evaluar as base  # agrega el backend a sys.path
 import tarjetas_b1_1
 import tarjetas_b1_3
 import tarjetas_b1_6
+import tarjetas_b1_7
 
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.3c'
-REGISTRO = 'b1-6'
+VERSION = 'v7.4b'
+REGISTRO = 'b1-7'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
 CARPETA = AQUI / 'resultados' / REGISTRO
@@ -47,23 +48,19 @@ CASOS = AQUI / 'casos' / f'{REGISTRO}-tarjetas-{VERSION}.json'
 RUTA_PROMPT = AQUI / 'prompts' / 'v7.md'
 PROMPT = RUTA_PROMPT.read_text(encoding='utf-8')
 LEXICO = AQUI / 'lexico' / 'es_ES'
-ARCHIVOS = (AQUI / 'tarjetas_b1_6.py', RUTA_PROMPT, CASOS, LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
-# (corrida, registro, CSV, casos de los que salen los ecos)
-PREVIOS = (('v7', 'b1-1', '2026-11-08_2054_v7-tarjetas_t1_rlow.csv', None),
-           ('v7.2', 'b1-3', '2026-11-08_2219_v7.2_t1_rlow.csv', 'b1-3-tarjetas.json'))
-TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS}
-# Lo que el informe de esta corrida dice sobre su alcance y sobre «Otra».
+ARCHIVOS = (AQUI / 'tarjetas_b1_7.py', RUTA_PROMPT, CASOS, LEXICO.with_suffix('.dic'), LEXICO.with_suffix('.aff'))
+REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7')  # los que tienen corridas v7.x guardadas
+TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS}
+# Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Prueba exploratoria pedida por el usuario: basura o algo sin relación en «¿Cuál?» (#21 a #27). No reemplaza a `v7.3.md` ni a `v7.3b.md`.',
-    '- **Cómo se trata «Otra» (decisión del usuario).** Como en el backend actual: la idea escrita en «¿Cuál?» va como `<opcion_marcada>` en lugar de la etiqueta, el origen va como `<respuesta>` y se evalúa con la tarjeta y la pregunta del mito marcado. La tarjeta OTRO no se usa.',
-    '- **Textos y esperado, de Claude.** La tarjeta no define qué hacer con una idea sin sentido. El esperado es su lectura literal (solo juzga cómo le llegó), no un criterio aprobado: un «no» significa que el modelo se apartó de esa lectura.',
-    '- **Sin cambios respecto de v7.3.** El prompt y las tarjetas son los mismos archivos, con los mismos hashes.',
-)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Las tarjetas se copiaron del adjunto `tarjetas-registros (6).md` y se compararon carácter por carácter. En las tablas, #25 es S2, #27 es S3 y #28 es S4.',
+    '- **Filtro.** «pero» deja de ser palabra prohibida en todos los registros; «exactamente» sigue prohibida.',
+    '- **Hashes.** El prompt no cambia. `tarjetas_b1_7.py` sí, así que el hash citado en `v7.4.md` (`423c04f9…`) corresponde a la versión anterior de hito y freno.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
 CON_REPREGUNTA = ('general', 'vacio', 'no_sabe', 'fuera_de_tema')
-PROHIBIDAS = ('pero', 'exactamente', 'específicamente', '¿podrías', 'desarrolla', 'explica', 'demuestra', 'demostraste')
+PROHIBIDAS = ('exactamente', 'específicamente', '¿podrías', 'desarrolla', 'explica', 'demuestra', 'demostraste')
 PERMITIDOS = re.compile(r'''[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.,;:¿?¡!()«»"'“”‘’…–—-]*''')
 _TIPO_BASE = '(?:general|no_sabe|vacio|fuera_de_tema)'
 BASE_DE = re.compile(rf'^[ \t]*({_TIPO_BASE}(?: / {_TIPO_BASE})*) ·(?:.*\n)??.*?BASE: «(.+?)»', re.M)
@@ -397,7 +394,7 @@ def acierta(por_caso):
         return False
     if primera['conjunto_esperado'] and not (seguimiento and seguimiento['tipo'] == primera['conjunto_esperado']):
         return False
-    return primera['tipo'] == primera['tipo_esperado']
+    return primera['tipo'] in primera['tipo_esperado'].split(' o ')  # «vacio o emocional»: frontera sin esperado fijo
 
 
 def esperado_de(primera):
@@ -434,29 +431,39 @@ def repregunta_mostrada(fila):
     return celda(fila['repregunta'] if fila['origen'] == 'llm' else fila['repregunta_llm'] or fila['repregunta']) or '—'
 
 
+def casos_de_corrida(registro, version):
+    """Los casos de una corrida anterior, de donde salen sus ecos; las primeras rondas usan el archivo sin versión."""
+    for nombre in (f'{registro}-tarjetas-{version}.json', f'{registro}-tarjetas.json'):
+        if (AQUI / 'casos' / nombre).exists():
+            return json.loads((AQUI / 'casos' / nombre).read_text(encoding='utf-8'))['casos']
+    return []
+
+
 def seccion_repaso():
-    """El filtro actual sobre las repreguntas de B guardadas en v7 y v7.2 (no gasta llamadas)."""
-    resumen, rechazadas = [], []
-    for corrida, registro, archivo, casos_json in PREVIOS:
-        with (AQUI / 'resultados' / registro / archivo).open(encoding='utf-8-sig', newline='') as entrada:
-            filas = [f for f in csv.DictReader(entrada) if f.get('metodo', 'B') == 'B']
-        primeras = {f['numero']: f['texto'] for f in filas if f['turno'] == 'primera'}
-        ecos = {str(c['numero']): c.get('ecos', {}) for c in json.loads((AQUI / 'casos' / casos_json).read_text(encoding='utf-8'))['casos']} if casos_json else {}
-        guardadas = [f for f in filas if f['repregunta_llm']]
-        antes = sum(1 for f in guardadas if f['origen'] == 'base_por_filtro')
-        rechazadas_aqui = []
-        for f in guardadas:
-            etiquetas = f['opciones'].split(', ') if f['opciones'] else []
-            permitidas = palabras_permitidas([primeras[f['numero']], f['texto']], etiquetas, ecos.get(f['numero'], {}))
-            _, reglas = filtrar(f['repregunta_llm'], f['tipo'], f['item'], etiquetas, TARJETAS[f['item']]['filtrar_etiqueta'], permitidas)
-            if reglas:
-                rechazadas_aqui.append((corrida, f, reglas))
-        resumen.append(f'- **{corrida}:** de {len(guardadas)} repreguntas guardadas pasan {len(guardadas) - len(rechazadas_aqui)} y se rechazan {len(rechazadas_aqui)} (en su corrida, el filtro rechazó {antes}).')
-        rechazadas += rechazadas_aqui
-    lineas = ['## 3. Filtro nuevo aplicado a v7 y v7.2, sin API', '', *resumen]
-    if rechazadas:
-        lineas += ['', '| Corrida | # | Turno | Repregunta | Regla |', '|---|---|---|---|---|']
-        lineas += [f"| {corrida} | {f['numero']} | {f['turno']} | {celda(f['repregunta_llm'])} | `{' '.join(reglas)}` |" for corrida, f, reglas in rechazadas]
+    """El filtro actual sobre las repreguntas que en su corrida cayeron por «pero», en todas las v7.x (no gasta llamadas)."""
+    corridas, revisadas, filas_salida = 0, 0, []
+    for registro in REGISTROS_V7:
+        for ruta in sorted((AQUI / 'resultados' / registro).glob('*_v7*.csv')):
+            version = re.search(r'_(v7[^_-]*)', ruta.name).group(1)
+            if version == VERSION:
+                continue
+            corridas += 1
+            with ruta.open(encoding='utf-8-sig', newline='') as entrada:
+                filas = [f for f in csv.DictReader(entrada) if f.get('metodo', 'B') == 'B']
+            primeras = {f['numero']: f['texto'] for f in filas if f['turno'] == 'primera'}
+            ecos = {str(c['numero']): c.get('ecos', {}) for c in casos_de_corrida(registro, version)}
+            revisadas += sum(1 for f in filas if f['repregunta_llm'])
+            for f in (f for f in filas if 'prohibida:pero' in f['filtro']):
+                etiquetas = f['opciones'].split(', ') if f['opciones'] else []
+                permitidas = palabras_permitidas([primeras.get(f['numero']), f['texto']], etiquetas, ecos.get(f['numero'], {}))
+                _, reglas = filtrar(f['repregunta_llm'], f['tipo'], f['item'], etiquetas, TARJETAS[f['item']]['filtrar_etiqueta'], permitidas)
+                filas_salida.append((version, f, reglas))
+    siguen = sum(1 for *_, reglas in filas_salida if reglas)
+    lineas = ['## 2. Filtro sin API (§1.3)', '',
+              f'De {revisadas} repreguntas guardadas en {corridas} corridas v7.x, {len(filas_salida)} caían por «pero»: ahora pasan {len(filas_salida) - siguen} y {siguen} siguen cayendo por otra regla.']
+    if filas_salida:
+        lineas += ['', '| Corrida | Ítem | # | Turno | Texto del estudiante | Repregunta | Ahora |', '|---|---|---|---|---|---|---|']
+        lineas += [f"| {version} | {f['item']} | {f['numero']} | {f['turno']} | {celda(f['texto'])} | {celda(f['repregunta_llm'])} | {'sigue cayendo: `' + ' '.join(reglas) + '`' if reglas else 'pasa'} |" for version, f, reglas in filas_salida]
     return lineas
 
 
@@ -466,12 +473,12 @@ def seccion_totales(casos, medidas):
     lista = lambda numeros: ', '.join(f'#{n}' for n in numeros) or 'ninguno'  # noqa: E731
     seguimiento_no_propio = lambda c: c['primera']['conjunto_esperado'] == 'propio' and c.get('seguimiento', {}).get('tipo') != 'propio'  # noqa: E731
     de_mas = [n for n, c in filas if (c['primera']['tipo_esperado'] == 'propio' and c['primera']['tipo'] != 'propio') or seguimiento_no_propio(c)]
-    de_menos = [n for n, c in filas if c['primera']['tipo_esperado'] in ('vacio', 'fuera_de_tema') and c['primera']['tipo'] == 'propio']
+    de_menos = [n for n, c in filas if set(c['primera']['tipo_esperado'].split(' o ')) & {'vacio', 'fuera_de_tema'} and c['primera']['tipo'] == 'propio']
     falsos_pos = [n for n, c in filas if c['primera']['sensible_esperado'] != 'True' and sensible_de(c)]
     falsos_neg = [n for n, c in filas if c['primera']['sensible_esperado'] == 'True' and not sensible_de(c)]
     emocional = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional']
     emocional_ok = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional' and c['primera']['tipo'] == 'emocional']
-    emocional_de_mas = [n for n, c in filas if c['primera']['tipo_esperado'] not in ('emocional', '') and c['primera']['tipo'] == 'emocional']
+    emocional_de_mas = [n for n, c in filas if c['primera']['tipo_esperado'] and 'emocional' not in c['primera']['tipo_esperado'] and c['primera']['tipo'] == 'emocional']
     return ['## 4. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']}.",
             f'- **Invitaciones de más** (`propio` clasificado como otro tipo): {len(de_mas)} ({lista(de_mas)}).',
             f'- **Pases de menos** (`vacio` o `fuera_de_tema` clasificados como `propio`): {len(de_menos)} ({lista(de_menos)}).',
@@ -492,22 +499,22 @@ def escribir_informe(ruta_csv):
               f"`{primera['modelo']}` · {primera['razonamiento']}, temperatura {primera['temperatura']}, {medidas['corridas']} corridas de cada caso, {llamadas} llamadas con respuesta, "
               f"{medidas['errores']} con error. Bytes HTTP iguales al texto del SDK en {iguales} de {len(con_bytes)} respuestas. CSV: [{Path(ruta_csv).name}]({Path(ruta_csv).name}).", '',
               '## 1. Archivos', '', '| Ruta | `git hash-object` |', '|---|---|',
-              *[f'| `{ruta}` | `{valor}` |' for ruta, valor in json.loads(primera['archivos']).items()], '', *OPCIONES_INFORME, '',
-              '## 2. Casos', '', '| # | Ítem · opción | Texto | Esperado | Corrida | Obtenido | ¿Coincide? | Repregunta | ¿Pasó el filtro? | `motivo` |',
+              *[f'| `{ruta}` | `{valor}` |' for ruta, valor in json.loads(primera['archivos']).items()], '', *OPCIONES_INFORME, '', *seccion_repaso(), '',
+              '## 3. Casos', '', '| # | Ítem · opción | Texto | Esperado | Corrida | Obtenido | ¿Coincide? | Repregunta | ¿Pasó el filtro? | `motivo` |',
               '|---|---|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
         for corrida, por_caso in sorted(por_corrida.items()):
             f = por_caso['primera']
             lineas.append(f"| {numero} | {f['item'].removeprefix(f'{REGISTRO}-')} ·{celda(f['opciones']) or '—'} | {celda(f['texto'])} | {esperado_de(f)} | {corrida} | {obtenido_de(por_caso)} | "
                           f"{'sí' if acierta(por_caso) else '**no**'} | {repregunta_mostrada(f)} | {filtro_de_fila(f)} | {celda(f['motivo'])} |")
-    lineas += ['', '## 3. Pistas de los seguimientos', '', '| # | Corrida | Invitación que vio | Respondió | `tipo` del conjunto | `tipo` final | Pista guardada | ¿Pasó el filtro? |', '|---|---|---|---|---|---|---|---|']
+    lineas += ['', '### Seguimientos', '', '| # | Corrida | Invitación que vio | Respondió | `tipo` del conjunto | `tipo` final | Pista guardada | ¿Pasó el filtro? |', '|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
         for corrida, por_caso in sorted(por_corrida.items()):
             s = por_caso.get('seguimiento')
             if s:
                 invitacion = celda(s['invitacion']) + (' *(respaldo)*' if s['invitacion_respaldo'] else '')
                 lineas.append(f"| {numero} | {corrida} | {invitacion} | {celda(s['texto'])} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} |")
-    lineas += ['', *seccion_totales(casos, medidas), '', '## 5. Notas', '', '_Pendiente: notas._', '']
+    lineas += ['', *seccion_totales(casos, medidas)[:5], '', '## 5. Notas', '', '_Pendiente: notas._', '']  # [:5]: acierto, invitaciones y pases
     INFORME.write_text('\n'.join(lineas), encoding='utf-8')
     return medidas
 

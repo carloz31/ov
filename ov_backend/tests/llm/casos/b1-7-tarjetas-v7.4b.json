@@ -1,0 +1,17 @@
+{
+  "registro": "b1-7",
+  "descripcion": "Prueba v7.4b (método B, una corrida): ajuste del hito, del freno y del filtro. Numeración de la spec; #25 es S2, #27 es S3 y #28 es S4. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 9, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Postulando", "tipo_esperado": "general"},
+    {"numero": 10, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "En la academia", "tipo_esperado": "general"},
+    {"numero": 11, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Estudiando mecánica automotriz en el Senati", "tipo_esperado": "propio"},
+    {"numero": 14, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Si ingreso, en la universidad; si no, en una academia", "tipo_esperado": "propio"},
+    {"numero": 17, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "Que mis papás no puedan pagarme la academia", "tipo_esperado": "propio"},
+    {"numero": 18, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "Lo económico", "tipo_esperado": "general"},
+    {"numero": 25, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "La familia", "respuesta_seguimiento": "Eso, la familia nomás", "tipo_esperado": "general", "conjunto_esperado": "general", "final_esperado": "general"},
+    {"numero": 26, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "La situación del país", "tipo_esperado": "general"},
+    {"numero": 27, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Postulando", "respuesta_seguimiento": "A alguna universidad, todavía no sé cuál", "tipo_esperado": "general", "conjunto_esperado": "propio", "final_esperado": "propio"},
+    {"numero": 28, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "En la academia", "respuesta_seguimiento": "Para entrar a una universidad complicada", "tipo_esperado": "general", "conjunto_esperado": "propio", "final_esperado": "propio"}
+  ]
+}

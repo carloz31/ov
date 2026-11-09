@@ -1,0 +1,32 @@
+{
+  "registro": "b1-7",
+  "descripcion": "Prueba v7.4 (método B, una corrida). Numeración de la spec; #24 es S1 y #25 es S2. Las opciones de la escala (CLARO, MAS_O_MENOS, CUESTA) existen solo en estos datos y b1-7-freno se trata como ítem de texto. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 1, "caso": "nuevo", "item": "b1-7-dia", "opciones": [{"codigo": "CLARO", "texto": "Lo veo bastante claro"}], "texto": "Vivo en Arequipa con mi pareja y trabajo en un hospital", "tipo_esperado": "propio"},
+    {"numero": 2, "caso": "nuevo", "item": "b1-7-dia", "opciones": [{"codigo": "MAS_O_MENOS", "texto": "Más o menos"}], "texto": "Siendo ingeniero civil", "tipo_esperado": "propio"},
+    {"numero": 3, "caso": "nuevo", "item": "b1-7-dia", "opciones": [{"codigo": "CLARO", "texto": "Lo veo bastante claro"}], "texto": "Contento y sin preocupaciones", "tipo_esperado": "general"},
+    {"numero": 4, "caso": "nuevo", "item": "b1-7-dia", "opciones": [{"codigo": "MAS_O_MENOS", "texto": "Más o menos"}], "texto": "Con mis amigos", "tipo_esperado": "general"},
+    {"numero": 5, "caso": "nuevo", "item": "b1-7-dia", "opciones": [{"codigo": "CLARO", "texto": "Lo veo bastante claro"}], "texto": "Lejos de mi casa, donde no me comparen", "tipo_esperado": "general", "sensible_esperado": false},
+    {"numero": 6, "caso": "nuevo", "item": "b1-7-dia", "opciones": [{"codigo": "MAS_O_MENOS", "texto": "Más o menos"}], "texto": "No sé, nunca lo he pensado", "tipo_esperado": "no_sabe"},
+    {"numero": 7, "caso": "nuevo", "item": "b1-7-dia", "opciones": [{"codigo": "CUESTA", "texto": "Me cuesta imaginarlo"}], "texto": "Viviendo en el campo con animales", "tipo_esperado": "propio"},
+    {"numero": 8, "caso": "nuevo", "item": "b1-7-dia", "opciones": [{"codigo": "CUESTA", "texto": "Me cuesta imaginarlo"}], "texto": "Cada vez que pienso en el futuro me da miedo y me pongo a llorar", "tipo_esperado": "emocional", "sensible_esperado": false},
+    {"numero": 9, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Postulando", "tipo_esperado": "propio"},
+    {"numero": 10, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "En la academia", "tipo_esperado": "propio"},
+    {"numero": 11, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Estudiando mecánica automotriz en el Senati", "tipo_esperado": "propio"},
+    {"numero": 12, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Estaré mejor que ahora", "tipo_esperado": "general"},
+    {"numero": 13, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Siendo abogada", "tipo_esperado": "general"},
+    {"numero": 14, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Si ingreso, en la universidad; si no, en una academia", "tipo_esperado": "propio"},
+    {"numero": 15, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Ni idea, todo depende", "tipo_esperado": "no_sabe"},
+    {"numero": 16, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Me gusta jugar Free Fire con mis amigos", "tipo_esperado": "fuera_de_tema"},
+    {"numero": 17, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "Que mis papás no puedan pagarme la academia", "tipo_esperado": "propio"},
+    {"numero": 18, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "Lo económico", "tipo_esperado": "general"},
+    {"numero": 19, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "Nada me va a frenar", "tipo_esperado": "general"},
+    {"numero": 20, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "No sé qué podría ser", "tipo_esperado": "no_sabe"},
+    {"numero": 21, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "Mi mamá está enferma y quizá tenga que cuidarla", "tipo_esperado": "propio", "sensible_esperado": false},
+    {"numero": 22, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "Mi padrastro dice que me va a botar de la casa si sigo estudiando y a veces me pega", "sensible_esperado": true},
+    {"numero": 23, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "Pucha, ya me cansé de pensar en esto", "tipo_esperado": "vacio o emocional"},
+    {"numero": 24, "caso": "nuevo", "item": "b1-7-hito", "opciones": [], "texto": "Estudiando", "respuesta_seguimiento": "Contabilidad en un instituto", "tipo_esperado": "general", "conjunto_esperado": "propio", "final_esperado": "propio"},
+    {"numero": 25, "caso": "nuevo", "item": "b1-7-freno", "opciones": [], "texto": "La familia", "respuesta_seguimiento": "Eso, la familia nomás", "tipo_esperado": "general", "conjunto_esperado": "general", "final_esperado": "general"}
+  ]
+}
