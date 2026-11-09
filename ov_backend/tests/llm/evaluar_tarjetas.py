@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.6b): método B, repregunta guiada con la base como respaldo, en b2-4.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.6c): método B, repregunta guiada con la base como respaldo, en b2-4.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`), sus casos (`casos/b2-4-tarjetas-v7.6b.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`), sus casos (`casos/b2-4-tarjetas-v7.6c.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -40,14 +40,14 @@ import tarjetas_b2_4
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.6b'
+VERSION = 'v7.6c'
 REGISTRO = 'b2-4'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
 CARPETA = AQUI / 'resultados' / REGISTRO
 INFORME = CARPETA / f'{VERSION}.md'
 CASOS = AQUI / 'casos' / f'{REGISTRO}-tarjetas-{VERSION}.json'
-CASOS_ANTERIORES = {v: AQUI / 'casos' / f'{REGISTRO}-tarjetas-{v}.json' for v in ('v7.6',)}  # de donde salen los casos con `de`
+CASOS_ANTERIORES = {v: AQUI / 'casos' / f'{REGISTRO}-tarjetas-{v}.json' for v in ('v7.6b',)}  # de donde salen los casos con `de`
 RUTA_PROMPT = AQUI / 'prompts' / 'v7.md'
 PROMPT = RUTA_PROMPT.read_text(encoding='utf-8')
 LEXICO = AQUI / 'lexico' / 'es_ES'
@@ -56,7 +56,7 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7')  # los que tienen corridas v7.x 
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: las tarjetas se copiaron del adjunto `tarjetas-registros (11).md` y se compararon carácter por carácter. En las tablas, #43 es S3 y #44 es S4; #12 y #13 salen de `casos/b2-4-tarjetas-v7.6.json`.',
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: la tarjeta del cruce se copió del adjunto `tarjetas-registros (12).md` y se comparó carácter por carácter. En las tablas, #44 es S4; #32, #37, #39, #42 y #44 salen de `casos/b2-4-tarjetas-v7.6b.json`, con el esperado nuevo en #39 y #44.',
     '- **`{primera}` en la pregunta mostrada (§1.2).** Se reemplaza por la etiqueta de la primera del podio en minúscula y sin artículo: «¿Qué es lo que te gusta de comunicación?», no «de la comunicación». Ninguna etiqueta de este caso es nombre propio.',
     '- **Ecos del cruce (§1.3).** `<ecos>` lleva una línea: `Lo que mejor te sale: Comunicación`.',)
 
@@ -85,7 +85,9 @@ def cargar_casos():
     ruta = AQUI / 'casos' / f'{REGISTRO}.json'
     existentes = {c['id']: c for c in json.loads(ruta.read_text(encoding='utf-8'))['casos']} if ruta.exists() else {}
     anteriores = {v: {c['numero']: c for c in json.loads(ruta_v.read_text(encoding='utf-8'))['casos'] if 'numero' in c} for v, ruta_v in CASOS_ANTERIORES.items()}
-    casos = [dict(anteriores[c['corrida']][c['de']]) if 'de' in c else c for c in json.loads(CASOS.read_text(encoding='utf-8'))['casos']]
+    # Un caso con `de` hereda el de esa corrida; lo que traiga además (un esperado nuevo) lo reemplaza.
+    casos = [{**anteriores[c['corrida']][c['de']], **{k: v for k, v in c.items() if k not in ('de', 'corrida')}} if 'de' in c else c
+             for c in json.loads(CASOS.read_text(encoding='utf-8'))['casos']]
     for caso in casos:
         if caso['caso'] != 'nuevo':
             item = next(i for i in existentes[caso['caso']]['items'] if i['item'] == caso['item'])
@@ -430,7 +432,7 @@ def acierta(por_caso):
         return False
     if primera['final_esperado'] and not (seguimiento and seguimiento['tipo_final'] == primera['final_esperado']):
         return False
-    if primera['conjunto_esperado'] and not (seguimiento and seguimiento['tipo'] == primera['conjunto_esperado']):
+    if primera['conjunto_esperado'] and not (seguimiento and seguimiento['tipo'] in primera['conjunto_esperado'].split(' o ')):
         return False
     return primera['tipo'] in primera['tipo_esperado'].split(' o ')  # «vacio o emocional»: frontera sin esperado fijo
 

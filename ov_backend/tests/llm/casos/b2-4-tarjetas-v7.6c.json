@@ -1,0 +1,14 @@
+{
+  "registro": "b2-4",
+  "descripcion": "Mini corrida v7.6c (método B, una corrida). Numeración de la spec; #44 es S4. Los casos con `de` se toman de la corrida v7.6b; lo que traen además reemplaza a lo que tenían allí. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"de": 32, "corrida": "v7.6b"},
+    {"de": 37, "corrida": "v7.6b"},
+    {"de": 39, "corrida": "v7.6b", "tipo_esperado": "general"},
+    {"de": 42, "corrida": "v7.6b"},
+    {"de": 44, "corrida": "v7.6b", "conjunto_esperado": "general o no_sabe"},
+    {"numero": 45, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "NO_MUCHO", "texto": "No mucho"}], "ecos_cruce": {"bien": ["COMUNICACION"]}, "texto": "Escribir resúmenes me aburre un montón", "tipo_esperado": "propio"},
+    {"numero": 46, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "NO_MUCHO", "texto": "No mucho"}], "ecos_cruce": {"bien": ["ARTE"]}, "texto": "Prefiero mil veces jugar básquet", "tipo_esperado": "general"}
+  ]
+}

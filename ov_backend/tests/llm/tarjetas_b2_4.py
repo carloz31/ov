@@ -63,23 +63,27 @@ REPREGUNTA
   gusta, según la opción que marcó:
   - SI: qué le gusta de ella: una parte, un momento, algo que hace ahí;
   - MAS_O_MENOS: una parte concreta que le gusta o una que no; basta una;
-  - NO_MUCHO: qué no le gusta de ella, o qué preferiría hacer en su lugar.
+  - NO_MUCHO: qué no le gusta de ella: una parte o algo concreto de cómo la vive.
 NO EXIGIR: por qué le gusta o no, las dos partes en MAS_O_MENOS, qué hará, ni que lo
   relacione con una carrera.
 GENERAL SI:
   - solo confirma la opción o repite el nombre de la actividad ("sí, me gusta harto",
     "me gusta el arte");
-  - un gusto o un rechazo sin nada de la actividad ("es bacán", "me aburre", "todo me gusta").
+  - un gusto o un rechazo sin nada de la actividad ("es bacán", "es aburrido", "todo
+    me gusta");
+  - en NO_MUCHO, solo lo que prefiere hacer o que la hace por obligación, sin decir qué
+    no le gusta de ella.
 MATICES: que no le guste lo que mejor le sale no se juzga ni se presenta como un
-  problema; no le sugieras que debería gustarle. Si habla de otra actividad que
-  prefiere, vale en MAS_O_MENOS y NO_MUCHO. "No sé si me gusta" = no_sabe. Que en casa
-  lo hagan estudiar eso, sin violencia ni riesgo, NO es sensible. Si expresa sobre todo
-  frustración o pena, sin nombrar nada = emocional.
+  problema; no le sugieras que debería gustarle. Lo que diga de otra actividad que
+  prefiere no se discute: pregunta qué parte de esta no le gusta. "No sé si me gusta" =
+  no_sabe. Que en casa lo hagan estudiar eso, sin violencia ni riesgo, NO es sensible.
+  Si expresa sobre todo frustración o pena, sin nombrar nada = emocional.
 EJEMPLOS:
   "Que puedo inventar mis propios diseños" → propio (SI, Arte)
   "Cuando por fin sale el resultado después de intentarlo varias veces" → propio (SI, Matemática)
   "Exponer sí, preparar las diapositivas me aburre" → propio (MAS_O_MENOS, Exponer)
-  "Lo hago porque toca, preferiría estar dibujando" → propio (NO_MUCHO)
+  "Me estresa tener que hablar delante de todos" → propio (NO_MUCHO, Exponer)
+  "Prefiero el vóley" → general (NO_MUCHO: solo lo que prefiere)
   "Es bacán" → general (sin nada de la actividad)
   "Me gusta el arte" → general (repite la actividad)
   "No sé si me gusta" → no_sabe
@@ -91,9 +95,11 @@ REPREGUNTA
       NO_MUCHO: «¿Qué parte de eso no te gusta? Puede ser algo que haces ahí o cómo te sientes haciéndolo.»
     CÓMO ADAPTARLA: nombra la actividad y ofrece dos o tres partes posibles de ella
     (comunicación: hablar, escribir, convencer a otros). Si dijo "me gusta" o "me
-    aburre" sin más, pregunta qué parte. No le sugieras que debería gustarle ni
-    preguntes por qué. Una sola pregunta.
+    aburre" sin más, pregunta qué parte. Si habló de otra cosa que prefiere, no la
+    discutas: pregunta qué parte de esta no le gusta. Las partes posibles van dentro de
+    la misma pregunta, no como otra pregunta. No le sugieras que debería gustarle ni
+    preguntes por qué.
   no_sabe / vacio · BASE: «Piensa en la última vez que lo hiciste: ¿qué parte disfrutaste o cuál te aburrió?»
-  fuera_de_tema · BASE: la de `general` de la opción marcada.''',
+  fuera_de_tema · BASE: «Volvamos a lo que mejor te sale: ¿qué parte te gusta o no te gusta?»''',
     },
 }
