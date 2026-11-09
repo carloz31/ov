@@ -1,0 +1,24 @@
+{
+  "registro": "b2-4",
+  "descripcion": "Mini corrida v7.6b (método B, una corrida). Numeración de la spec; #43 es S3 y #44 es S4. #12 y #13 se toman de la corrida v7.6. El ítem b2-4-cruce existe solo en estos datos, y su eco es la primera del podio. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"de": 12, "corrida": "v7.6"},
+    {"de": 13, "corrida": "v7.6"},
+    {"numero": 30, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "SI", "texto": "Sí, me gusta"}], "ecos_cruce": {"bien": ["MATEMATICA"]}, "texto": "Me gusta resolver problemas que parecen difíciles", "tipo_esperado": "propio"},
+    {"numero": 31, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "SI", "texto": "Sí, me gusta"}], "ecos_cruce": {"bien": ["COMUNICACION"]}, "texto": "Sí me gusta", "tipo_esperado": "general"},
+    {"numero": 32, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "SI", "texto": "Sí, me gusta"}], "ecos_cruce": {"bien": ["COMPUTACION"]}, "texto": "Me encanta la computación", "tipo_esperado": "general"},
+    {"numero": 33, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "SI", "texto": "Sí, me gusta"}], "ecos_cruce": {"bien": ["ORGANIZAR"]}, "texto": "Me gusta ver que todo sale como lo planeé", "tipo_esperado": "propio"},
+    {"numero": 34, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "MAS_O_MENOS", "texto": "Más o menos"}], "ecos_cruce": {"bien": ["MATEMATICA"]}, "texto": "Me gusta álgebra pero geometría no tanto", "tipo_esperado": "propio"},
+    {"numero": 35, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "MAS_O_MENOS", "texto": "Más o menos"}], "ecos_cruce": {"bien": ["EXPONER"]}, "texto": "Más o menos nomás", "tipo_esperado": "general"},
+    {"numero": 36, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "MAS_O_MENOS", "texto": "Más o menos"}], "ecos_cruce": {"bien": ["INGLES"]}, "texto": "Las canciones sí, la gramática no la soporto", "tipo_esperado": "propio"},
+    {"numero": 37, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "NO_MUCHO", "texto": "No mucho"}], "ecos_cruce": {"bien": ["MATEMATICA"]}, "texto": "Hacer tantos ejercicios iguales", "tipo_esperado": "propio"},
+    {"numero": 38, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "NO_MUCHO", "texto": "No mucho"}], "ecos_cruce": {"bien": ["ORGANIZAR"]}, "texto": "No me llama", "tipo_esperado": "general"},
+    {"numero": 39, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "NO_MUCHO", "texto": "No mucho"}], "ecos_cruce": {"bien": ["CIENCIAS"]}, "texto": "Lo hago bien porque mis papás me hacen estudiar, pero lo que me gusta es el fútbol", "tipo_esperado": "propio", "sensible_esperado": false},
+    {"numero": 40, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "MAS_O_MENOS", "texto": "Más o menos"}], "ecos_cruce": {"bien": ["ARTE"]}, "texto": "No sé si de verdad me gusta o solo me sale", "tipo_esperado": "no_sabe"},
+    {"numero": 41, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "NO_MUCHO", "texto": "No mucho"}], "ecos_cruce": {"bien": ["EXPONER"]}, "texto": "Me frustra un montón, ni sé qué decir", "tipo_esperado": "emocional", "sensible_esperado": false},
+    {"numero": 42, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "SI", "texto": "Sí, me gusta"}], "ecos_cruce": {"bien": ["DEPORTE"]}, "texto": "Hoy almorcé pollo", "tipo_esperado": "fuera_de_tema"},
+    {"numero": 43, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "SI", "texto": "Sí, me gusta"}], "ecos_cruce": {"bien": ["COMUNICACION"]}, "texto": "Sí me gusta", "respuesta_seguimiento": "Cuando debatimos y logro que los demás cambien de opinión", "tipo_esperado": "general", "conjunto_esperado": "propio", "final_esperado": "propio"},
+    {"numero": 44, "caso": "nuevo", "item": "b2-4-cruce", "opciones": [{"codigo": "NO_MUCHO", "texto": "No mucho"}], "ecos_cruce": {"bien": ["MATEMATICA"]}, "texto": "No me gusta", "respuesta_seguimiento": "No sé, nomás", "tipo_esperado": "general", "conjunto_esperado": "general", "final_esperado": "general"}
+  ]
+}

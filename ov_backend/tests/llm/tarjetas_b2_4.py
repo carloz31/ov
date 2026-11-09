@@ -40,62 +40,60 @@ REPREGUNTA
     te guste ya cuenta") y pregunta cómo nota que le sale bien. Si dijo que otros lo
     dicen, pregunta qué ven ellos o en qué se lo notan. No pidas una nota exacta ni lo
     compares con otros.
-  no_sabe / vacio · BASE: «Piensa en la última vez que te fue bien en eso: ¿qué pasó?»
+  no_sabe / vacio · BASE: «Puede ser algo pequeño: en lo que pusiste primero, ¿qué te sale un poco mejor que lo demás?»
   fuera_de_tema · BASE: «Volvamos a lo que pusiste primero: ¿cómo notas que te va bien ahí?»''',
     },
     'b2-4-cruce': {
         'filtrar_etiqueta': False,
         'pregunta_por_opcion': {
-            'COINCIDEN': '¿En qué coinciden?',
-            'EN_PARTE': '¿En qué sí y en qué no?',
-            'NO_MUCHO': '¿En qué no coinciden? Puede ser algo que te gusta y te cuesta, o algo que te sale y no te gusta.',
+            'SI': '¿Qué es lo que te gusta de {primera}?',
+            'MAS_O_MENOS': '¿Qué parte de {primera} te gusta y qué parte no tanto?',
+            'NO_MUCHO': '¿Qué es lo que no te gusta de {primera}?',
         },
         'general_por_opcion': {
-            'COINCIDEN': '¿En qué coinciden? Puede ser un curso o algo que haces.',
-            'EN_PARTE': '¿Y en qué no coincide? Puede ser algo que te gusta y te cuesta, o algo que te sale y no te gusta.',
-            'NO_MUCHO': '¿En qué no coinciden? Puede ser algo que te gusta y te cuesta, o algo que te sale y no te gusta.',
+            'SI': '¿Qué parte de eso te gusta más? Puede ser algo que haces ahí o un momento en que la pasas bien.',
+            'MAS_O_MENOS': '¿Qué parte de eso te gusta y cuál no tanto? Con una basta.',
+            'NO_MUCHO': '¿Qué parte de eso no te gusta? Puede ser algo que haces ahí o cómo te sientes haciéndolo.',
         },
         'ecos': {
-            'bien': {'nombre': 'En qué te va mejor', 'ordenado': True},
-            'cuesta': {'nombre': 'Lo que te cuesta', 'ordenado': False},
+            'bien': {'nombre': 'Lo que mejor te sale', 'ordenado': False},
         },
         'lista_ecos': 'CURSOS_ACTIVIDADES',
-        'tarjeta': '''NÚCLEO: nombra algo concreto de la relación entre lo que le gusta y lo que le sale (un
-  curso, una actividad, un tema), según la opción que marcó:
-  - COINCIDEN: algo que le gusta y le sale bien;
-  - EN_PARTE: el punto en que NO coincide (algo que le gusta y le cuesta, o algo que
-    le sale y no le gusta), con o sin el punto en que sí;
-  - NO_MUCHO: un punto en que no coincide.
-NO EXIGIR: por qué no coinciden, que lo resuelva, que diga qué hará, ni que lo que nombra
-  esté en los ecos.
+        'tarjeta': '''NÚCLEO: algo concreto de esa actividad (la primera de su podio) que le gusta o no le
+  gusta, según la opción que marcó:
+  - SI: qué le gusta de ella: una parte, un momento, algo que hace ahí;
+  - MAS_O_MENOS: una parte concreta que le gusta o una que no; basta una;
+  - NO_MUCHO: qué no le gusta de ella, o qué preferiría hacer en su lugar.
+NO EXIGIR: por qué le gusta o no, las dos partes en MAS_O_MENOS, qué hará, ni que lo
+  relacione con una carrera.
 GENERAL SI:
-  - solo el veredicto, sin nada concreto ("más o menos nomás", "sí, igualito");
-  - en EN_PARTE, solo el punto en que sí coincide;
-  - algo que abarca todo, sin nombrar nada ("todo lo que me gusta me sale", "nada me
-    sale").
-MATICES: los ecos sirven para entender la respuesta y anclar la repregunta, nunca para
-  corregirla: si nombra algo que no marcó, vale. Con COINCIDEN, un gusto que se refiere a
-  algo de su podio ya es el punto. Que le guste algo en que le va mal no se juzga ni se
-  presenta como un problema. "No sé qué me gusta" = no_sabe. Si expresa sobre todo
+  - solo confirma la opción o repite el nombre de la actividad ("sí, me gusta harto",
+    "me gusta el arte");
+  - un gusto o un rechazo sin nada de la actividad ("es bacán", "me aburre", "todo me gusta").
+MATICES: que no le guste lo que mejor le sale no se juzga ni se presenta como un
+  problema; no le sugieras que debería gustarle. Si habla de otra actividad que
+  prefiere, vale en MAS_O_MENOS y NO_MUCHO. "No sé si me gusta" = no_sabe. Que en casa
+  lo hagan estudiar eso, sin violencia ni riesgo, NO es sensible. Si expresa sobre todo
   frustración o pena, sin nombrar nada = emocional.
 EJEMPLOS:
-  "Me encanta dibujar y en arte siempre saco buena nota" → propio (COINCIDEN)
-  "Me gusta biología, pero los exámenes de química me matan" → propio (EN_PARTE: el no)
-  "Coincide en que me gusta el inglés" → general (EN_PARTE: solo el sí)
-  "Soy bueno organizando, pero no me gusta nada" → propio (NO_MUCHO)
-  "Más o menos nomás" → general (veredicto)
-  "No sé bien qué me gusta" → no_sabe
+  "Que puedo inventar mis propios diseños" → propio (SI, Arte)
+  "Cuando por fin sale el resultado después de intentarlo varias veces" → propio (SI, Matemática)
+  "Exponer sí, preparar las diapositivas me aburre" → propio (MAS_O_MENOS, Exponer)
+  "Lo hago porque toca, preferiría estar dibujando" → propio (NO_MUCHO)
+  "Es bacán" → general (sin nada de la actividad)
+  "Me gusta el arte" → general (repite la actividad)
+  "No sé si me gusta" → no_sabe
 REPREGUNTA
-  general · QUÉ PEDIR: el punto concreto que pide la opción marcada.
+  general · QUÉ PEDIR: una parte concreta de esa actividad que le gusta, o que no, según la opción.
     BASE por opción:
-      COINCIDEN: «¿En qué coinciden? Puede ser un curso o algo que haces.»
-      EN_PARTE: «¿Y en qué no coincide? Puede ser algo que te gusta y te cuesta, o algo que te sale y no te gusta.»
-      NO_MUCHO: «¿En qué no coinciden? Puede ser algo que te gusta y te cuesta, o algo que te sale y no te gusta.»
-    CÓMO ADAPTARLA: si los ecos ayudan, ofrece un punto como posibilidad, con sus
-    palabras, y deja otra opción abierta ("¿es lo de Matemática, o algo más?"); nunca lo
-    afirmes. En EN_PARTE, si ya dijo en qué sí, reconócelo y pregunta solo en qué no. No
-    preguntes por qué ni qué hará con eso.
-  no_sabe / vacio · BASE: «Piensa en algo que esperas con ganas, aunque no te salga tan bien. ¿Cómo te va en eso?»
+      SI: «¿Qué parte de eso te gusta más? Puede ser algo que haces ahí o un momento en que la pasas bien.»
+      MAS_O_MENOS: «¿Qué parte de eso te gusta y cuál no tanto? Con una basta.»
+      NO_MUCHO: «¿Qué parte de eso no te gusta? Puede ser algo que haces ahí o cómo te sientes haciéndolo.»
+    CÓMO ADAPTARLA: nombra la actividad y ofrece dos o tres partes posibles de ella
+    (comunicación: hablar, escribir, convencer a otros). Si dijo "me gusta" o "me
+    aburre" sin más, pregunta qué parte. No le sugieras que debería gustarle ni
+    preguntes por qué. Una sola pregunta.
+  no_sabe / vacio · BASE: «Piensa en la última vez que lo hiciste: ¿qué parte disfrutaste o cuál te aburrió?»
   fuera_de_tema · BASE: la de `general` de la opción marcada.''',
     },
 }

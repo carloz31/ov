@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.6): método B, repregunta guiada con la base como respaldo, en b2-4.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.6b): método B, repregunta guiada con la base como respaldo, en b2-4.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`), sus casos (`casos/b2-4-tarjetas-v7.6.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`), sus casos (`casos/b2-4-tarjetas-v7.6b.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -40,14 +40,14 @@ import tarjetas_b2_4
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.6'
+VERSION = 'v7.6b'
 REGISTRO = 'b2-4'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
 CARPETA = AQUI / 'resultados' / REGISTRO
 INFORME = CARPETA / f'{VERSION}.md'
 CASOS = AQUI / 'casos' / f'{REGISTRO}-tarjetas-{VERSION}.json'
-CASOS_ANTERIORES = {v: AQUI / 'casos' / f'{REGISTRO}-tarjetas-{v}.json' for v in ()}  # de donde salen los casos con `de`
+CASOS_ANTERIORES = {v: AQUI / 'casos' / f'{REGISTRO}-tarjetas-{v}.json' for v in ('v7.6',)}  # de donde salen los casos con `de`
 RUTA_PROMPT = AQUI / 'prompts' / 'v7.md'
 PROMPT = RUTA_PROMPT.read_text(encoding='utf-8')
 LEXICO = AQUI / 'lexico' / 'es_ES'
@@ -56,9 +56,9 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7')  # los que tienen corridas v7.x 
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: las tarjetas se copiaron del adjunto `tarjetas-registros (10).md` y se compararon carácter por carácter. `b2-4-cuesta` no lleva tarjeta ni LLM. En las tablas, #26 es S1 y #27 es S2.',
-    '- **Podio con «Otra» (§1.2).** En `b2-4-bien`, `<opcion_marcada>` lleva las tres con su lugar (`1.º Matemática, 2.º Ciencias, 3.º Computación`), y lo escrito en «¿Cuál?» reemplaza a la etiqueta en su lugar (`1.º Cocinar, 2.º Organizar actividades, 3.º Arte`). Hoy ese ítem no es podio en el backend y `_podio` tiene `otra: False`: es solo de la prueba. La tabla las muestra en orden, sin el número.',
-    '- **Pregunta por opción y ecos (§1.3 y §1.4).** `b2-4-cruce` no existe en el backend. Su `<pregunta_mostrada>` y su base de `general` cambian con la opción (`pregunta_por_opcion` y `general_por_opcion`). `<ecos>` lleva dos líneas, solo con las elecciones: `En qué te va mejor: 1.º …, 2.º …, 3.º …` y `Lo que te cuesta: …` (o «Nada en especial»).',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. `claude/` no está en el repo: las tarjetas se copiaron del adjunto `tarjetas-registros (11).md` y se compararon carácter por carácter. En las tablas, #43 es S3 y #44 es S4; #12 y #13 salen de `casos/b2-4-tarjetas-v7.6.json`.',
+    '- **`{primera}` en la pregunta mostrada (§1.2).** Se reemplaza por la etiqueta de la primera del podio en minúscula y sin artículo: «¿Qué es lo que te gusta de comunicación?», no «de la comunicación». Ninguna etiqueta de este caso es nombre propio.',
+    '- **Ecos del cruce (§1.3).** `<ecos>` lleva una línea: `Lo que mejor te sale: Comunicación`.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -161,7 +161,10 @@ def opcion_marcada(caso):
 def pregunta_de(caso):
     """La pregunta mostrada; si cambia con la opción marcada, la de esa opción."""
     ficha = ficha_de(caso)
-    return ficha['pregunta_por_opcion'][codigo_opcion(caso)] if 'pregunta_por_opcion' in ficha else ficha['pregunta']
+    pregunta = ficha['pregunta_por_opcion'][codigo_opcion(caso)] if 'pregunta_por_opcion' in ficha else ficha['pregunta']
+    if '{primera}' in pregunta:
+        pregunta = pregunta.replace('{primera}', base.LISTAS[ficha['lista_ecos']][caso['ecos_cruce']['bien'][0]].lower())
+    return pregunta
 
 
 def mensaje(caso, texto, anterior=None, invitacion=None):
@@ -535,12 +538,12 @@ def escribir_informe(ruta_csv):
               f"{medidas['errores']} con error. Bytes HTTP iguales al texto del SDK en {iguales} de {len(con_bytes)} respuestas. CSV: [{Path(ruta_csv).name}]({Path(ruta_csv).name}).", '',
               '## 1. Archivos', '', '| Ruta | `git hash-object` |', '|---|---|',
               *[f'| `{ruta}` | `{valor}` |' for ruta, valor in json.loads(primera['archivos']).items()], '', *OPCIONES_INFORME, '',
-              '## 2. Casos', '', '| # | Ítem · opción | Ecos | Texto | Esperado | Corrida | Obtenido | ¿Coincide? | Repregunta | ¿Pasó el filtro? | `motivo` |',
+              '## 2. Casos', '', '| # | Ítem · opción | Primera del podio | Texto | Esperado | Corrida | Obtenido | ¿Coincide? | Repregunta | ¿Pasó el filtro? | `motivo` |',
               '|---|---|---|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
         for corrida, por_caso in sorted(por_corrida.items()):
             f = por_caso['primera']
-            lineas.append(f"| {numero} | {f['item'].removeprefix(f'{REGISTRO}-')} ·{celda(f['opciones']) or '—'} | {celda(f.get('ecos')) or '—'} | {celda(f['texto'])} | {esperado_de(f)} | {corrida} | {obtenido_de(por_caso)} | "
+            lineas.append(f"| {numero} | {f['item'].removeprefix(f'{REGISTRO}-')} ·{celda(f['opciones']) or '—'} | {celda(f.get('ecos')).removeprefix('Lo que mejor te sale: ') or '—'} | {celda(f['texto'])} | {esperado_de(f)} | {corrida} | {obtenido_de(por_caso)} | "
                           f"{'sí' if acierta(por_caso) else '**no**'} | {repregunta_mostrada(f)} | {filtro_de_fila(f)} | {celda(f['motivo'])} |")
     lineas += ['', '### Seguimientos', '', '| # | Corrida | Invitación que vio | Respondió | `tipo` del conjunto | `tipo` final | Pista guardada | ¿Pasó el filtro? |', '|---|---|---|---|---|---|---|---|']
     for numero, por_corrida in casos.items():
@@ -549,7 +552,7 @@ def escribir_informe(ruta_csv):
             if s:
                 invitacion = celda(s['invitacion']) + (' *(respaldo)*' if s['invitacion_respaldo'] else '')
                 lineas.append(f"| {numero} | {corrida} | {invitacion} | {celda(s['texto'])} | {s['tipo']} | {s['tipo_final']} | {celda(s['repregunta']) or '— (ninguna)'} | {filtro_de_fila(s)} |")
-    lineas += ['', *seccion_totales(casos, medidas), '', '## 4. Atención especial', '', '_Pendiente: gusto, familia, autovaloración, veredicto y cruce._', '', '## 5. Notas', '', '_Pendiente: notas._', '']
+    lineas += ['', *seccion_totales(casos, medidas), '', '## 4. Atención especial', '', '_Pendiente: atención especial._', '', '## 5. Notas', '', '_Pendiente: notas._', '']
     INFORME.write_text('\n'.join(lineas), encoding='utf-8')
     return medidas
 
