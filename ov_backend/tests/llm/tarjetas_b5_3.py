@@ -1,4 +1,4 @@
-"""Tarjetas de b5-3. Solo datos: las dos son provisionales y vienen de la spec v7.12b (§2), que reemplazan a las de v7.12, copiadas tal cual; al cerrar b5-3 pasan a `claude/tarjetas-registros-3.md`.
+"""Tarjetas de b5-3. Solo datos: las dos son provisionales y vienen de la spec v7.12b (§2), que reemplazan a las de v7.12, copiadas tal cual, con el bloque `general` de REPREGUNTA de las piezas reemplazado por el de la spec v7.12c (§2); al cerrar b5-3 pasan a `claude/tarjetas-registros-3.md`.
 
 `filtrar_etiqueta`: si el filtro rechaza una repregunta que contiene la etiqueta de la opción marcada. `por_opcion`: la exclusiva «Lo veo todo igual» (`IGUAL`) tiene pregunta y tarjeta propias. `ecos`: ninguno (la variante B de v7.12 mostró que el eco «Hoy» no suma); `lineas_ecos` lo sigue admitiendo. Las bases se leen de las líneas `BASE:` de la tarjeta.
 """
@@ -62,15 +62,16 @@ EJEMPLOS:
   "Ahora no duermo pensando en el examen, antes ni me preocupaba" → emocional
 REPREGUNTA
   general · QUÉ PEDIR: una cosa que vio, supo o le pasó que lo hizo ver distinto lo que marcó, o por qué sigue igual.
-    BASE: «¿Qué viste, supiste o te pasó que te hizo verlo distinto?»
+    BASE: «¿Recuerdas cuándo empezaste a verlo distinto? Cuéntame qué pasó: algo que viste, que supiste o que te dijeron.»
     CÓMO ADAPTARLA: hay tres formas y ninguna otra. (1) Si dijo lo que piensa o quiere hoy,
-    pon antes de la base una sola frase corta y afirmativa que lo retome con sus palabras
-    ("Hoy piensas en un instituto.") y luego la base tal cual. (2) Si dijo que sigue
-    igual, que sigue pensando lo mismo, que sigue sin saber, o repitió lo que marcó,
-    devuelve solo: «¿Qué crees que hizo que siga igual?». (3) En todo lo demás (solo dijo
-    que cambió, dio una razón que no nombra nada, dijo que se dio cuenta sin decir de qué,
-    dijo algo negativo de sí o nombró una emoción), devuelve la base tal cual, sin retomar
-    nada. Nunca preguntes por qué piensa lo de hoy, ni cuál actividad fue, ni pidas algo
+    escribe una sola frase corta y afirmativa que lo retome con sus palabras ("Hoy piensas
+    en un instituto.") y después, tal cual, esta pregunta: «¿Qué viste, supiste o te pasó
+    que te hizo verlo distinto?». (2) Si dijo que sigue igual, que sigue pensando lo
+    mismo, que sigue sin saber, o repitió lo que marcó, devuelve solo: «¿Qué crees que
+    hizo que siga igual?». (3) En todo lo demás (solo dijo que cambió, dio una razón que
+    no nombra nada, dijo que se dio cuenta sin decir de qué, dijo algo negativo de sí o
+    nombró una emoción), devuelve la base tal cual, sin retomar nada y sin cambiarle una
+    palabra. Nunca preguntes por qué piensa lo de hoy, ni cuál actividad fue, ni pidas algo
     "exacto". No des por hecho que la plataforma le sirvió, no califiques el cambio, no
     sugieras que debió cambiar, no comentes a su familia y no ofrezcas respuestas hechas.
   no_sabe / vacio · BASE: «Mira lo que marcaste: ¿recuerdas algo que viste, supiste o te pasó que te hizo verlo distinto?»

@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.12b): método B, repregunta guiada con la base como respaldo, en b5-3.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.12c): método B, repregunta guiada con la base como respaldo, en b5-3.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`, `tarjetas_b4_5.py`, `tarjetas_b5_1.py`, `tarjetas_b5_3.py`), sus casos (`casos/b5-3-tarjetas-v7.12b.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`, `tarjetas_b4_5.py`, `tarjetas_b5_1.py`, `tarjetas_b5_3.py`), sus casos (`casos/b5-3-tarjetas-v7.12c.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -46,7 +46,7 @@ import tarjetas_b5_3
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.12b'
+VERSION = 'v7.12c'
 REGISTRO = 'b5-3'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
@@ -62,10 +62,10 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'b3-4')  # los q
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS, **tarjetas_b4_1.TARJETAS, **tarjetas_b4_2.TARJETAS, **tarjetas_b4_5.TARJETAS, **tarjetas_b5_1.TARJETAS, **tarjetas_b5_3.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Mini corrida de `b5-3-cambio`: las dos tarjetas provisionales de §2 de la spec v7.12b (la de las piezas y «Otra», y la de `IGUAL` en `por_opcion`) reemplazan a las de v7.12, copiadas carácter por carácter, incluido SEGUIMIENTO, y `filtrar_etiqueta: false` en las dos. Casos nuevos; S1 y S2 son 14 y 15.',
-    '- **Pregunta, opción marcada y ecos (§1.2).** Como en la corrida principal de v7.12: la pieza con su origen entre paréntesis en `<opcion_marcada>` y `<ecos>` vacío. Estudiantes de §3.1 de la spec v7.12.',
-    '- **Runner.** Como en v7.12. #12 y #13 esperan «general o vacio» (`vacio` se acepta como frontera). La forma de cada repregunta (frase + base, «¿Qué crees que hizo que siga igual?» o la base tal cual) se calcula.',
-    '- **Solapamiento (§1.4).** #12 coincide en «nada» con el ejemplo nuevo de `IGUAL` y va con `solapamiento_aceptado`. Saltó además S1 («Sigo pensando igual que antes» contiene el ejemplo «Sigo pensando igual»); a pedido del usuario pasó a «Lo sigo viendo como antes».',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Mini corrida de la repregunta de `b5-3-cambio`: en la tarjeta de las piezas solo cambia el bloque `general` de REPREGUNTA, reemplazado por el de §2 de la spec v7.12c carácter por carácter; la tarjeta de `IGUAL` y lo demás quedan como en v7.12b. Casos nuevos; S1 a S5 son 6 a 10.',
+    '- **Pregunta, opción marcada y ecos (§1.2).** Como en v7.12b: la pieza con su origen entre paréntesis y `<ecos>` vacío.',
+    '- **Runner.** Como en v7.12b. La forma (3) es la BASE nueva tal cual; la forma (1), una frase seguida de «¿Qué viste, supiste o te pasó que te hizo verlo distinto?»; esa pregunta sola, sin frase, ya no es ninguna de las tres. S5 espera el conjunto «general o no_sabe».',
+    '- **Solapamiento (§1.4).** No saltó en ningún caso.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -561,7 +561,7 @@ def seccion_totales(casos, medidas):
             f"- **Caídas por el filtro:** {len(caidas)} ({'; '.join(caidas) or 'ninguna'})."]
 
 
-PREGUNTA_ADAPTADA = '¿Qué viste, supiste o te pasó que te hizo verlo distinto?'  # CÓMO ADAPTARLA de b5-3-cambio
+PREGUNTA_ADAPTADA = '¿Qué viste, supiste o te pasó que te hizo verlo distinto?'  # la de la forma (1) de b5-3-cambio (v7.12c)
 SIGA_IGUAL = '¿Qué crees que hizo que siga igual?'
 
 
@@ -586,7 +586,7 @@ def forma_de(fila, texto):
     elif not igual and texto.endswith(PREGUNTA_ADAPTADA) and texto != PREGUNTA_ADAPTADA:
         forma = 'frase + base'
     elif not igual and texto == PREGUNTA_ADAPTADA:
-        forma = 'pregunta sola, sin frase'
+        forma = '**la pregunta de la forma (1), sin frase**'
     else:
         forma = '**otra forma**'
     clave = 'te lo confirm' if igual else 'te hizo verlo distinto'
