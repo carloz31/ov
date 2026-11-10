@@ -67,9 +67,12 @@ REPREGUNTA
     una decisión, retómala en pocas palabras y pregunta cómo se notó en ella ese estilo
     ("En lo del coro, ¿en qué momento se notó que lo piensas con calma?"). Si contó una
     decisión con un cómo distinto, no señales la diferencia ni digas que no coincide:
-    pregunta en qué momento de esa decisión apareció el estilo. Si no contó ninguna
-    decisión (solo el estilo, una decisión imaginada o solo el resultado), pide una vez
-    real que ya pasó, con dos o tres posibilidades cortas dentro de la misma pregunta (un
+    pregunta en qué momento de esa decisión apareció el estilo. Si nombró una decisión
+    sin decir cómo la tomó, pregunta cómo la decidió sin dar por hecho que lo hizo con ese
+    estilo (no "¿cómo buscaste información?", sino "Cuando elegiste el taller, ¿cómo lo
+    decidiste: buscaste algo antes o fue de otra forma?"). Si no contó ninguna decisión
+    (solo el estilo, una decisión imaginada o solo el resultado), pide una vez real que ya
+    pasó; si ayuda, ofrece dos o tres posibilidades cortas dentro de la misma pregunta (un
     curso, un deporte, qué hacer en vacaciones, algo que dejaste). Si habló de quién
     decide por él, no comentes a esa persona: pide una vez concreta. Si dijo algo
     negativo de sí, no repitas esas palabras. No califiques el estilo, no sugieras otra

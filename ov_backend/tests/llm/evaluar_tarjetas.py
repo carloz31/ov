@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.9): método B, repregunta guiada con la base como respaldo, en b4-2.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.9b): método B, repregunta guiada con la base como respaldo, en b4-2.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`), sus casos (`casos/b4-2-tarjetas-v7.9.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`), sus casos (`casos/b4-2-tarjetas-v7.9b.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -43,7 +43,7 @@ import tarjetas_b4_2
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.9'
+VERSION = 'v7.9b'
 REGISTRO = 'b4-2'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
@@ -59,10 +59,9 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'b3-4')  # los q
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS, **tarjetas_b4_1.TARJETAS, **tarjetas_b4_2.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Un solo ítem, `b4-2-estilo`, con la tarjeta de `tarjetas-registros-2.md` (sección b4-2) copiada carácter por carácter, incluido el bloque SEGUIMIENTO, y `filtrar_etiqueta: false`. Los casos de b4-2 de rondas anteriores no se reutilizan. S1 a S5 son #30 a #34.',
-    '- **Pregunta, opción marcada y «Otra» (§1.2 y §1.3).** Pregunta: «Cuenta una vez en que decidiste así: qué tenías que decidir y qué hiciste.», sin marcadores. `<opcion_marcada>`: la etiqueta del estilo tal cual; con «Otra» (#10), lo escrito en «¿Cuál?» («Le rezo a Dios y espero sentir qué hacer») reemplaza a la etiqueta. Sin ecos: el mensaje omite `<ecos>` porque el runner no la exige.',
-    '- **Runner.** Igual que en v7.8g; la tabla de casos cambia la carrera y la pieza por el estilo marcado.',
-    '- **Solapamiento (§2.3).** No saltó en ningún caso.',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Mini corrida de `b4-2-estilo` con la tarjeta vigente de `tarjetas-registros-2.md` (sección b4-2), copiada carácter por carácter; respecto de v7.9 solo cambia el CÓMO ADAPTARLA de `general` (no dar por hecho el estilo; posibilidades «si ayuda»). Pregunta, opción marcada y ecos, igual que en v7.9.',
+    '- **Runner.** Igual que en v7.9; el chequeo de solapamiento revisa también las frases entre comillas del bloque SEGUIMIENTO.',
+    '- **Solapamiento (§1.3).** No saltó en ningún caso.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -198,10 +197,12 @@ def _forma_comparable(texto):
 
 
 def frases_de(tarjeta):
-    """Los EJEMPLOS y las frases entre comillas de GENERAL SI."""
+    """Los EJEMPLOS y las frases entre comillas de GENERAL SI y, si la tarjeta lo tiene, del bloque SEGUIMIENTO (v7.9b)."""
     general = re.search(r'^GENERAL SI:(.*?)^(?:MATICES|EJEMPLOS):', tarjeta, re.S | re.M).group(1)
     ejemplos = re.search(r'^EJEMPLOS:(.*?)^REPREGUNTA', tarjeta, re.S | re.M).group(1)
-    return re.findall(r'"([^"]+)"', general) + re.findall(r'^\s*"([^"]+)"', ejemplos, re.M)
+    seguimiento = re.search(r'^SEGUIMIENTO:(.*)', tarjeta, re.S | re.M)
+    return (re.findall(r'"([^"]+)"', general) + re.findall(r'^\s*"([^"]+)"', ejemplos, re.M)
+            + (re.findall(r'"([^"]+)"', seguimiento.group(1)) if seguimiento else []))
 
 
 def solapamientos(casos):

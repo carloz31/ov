@@ -1,0 +1,15 @@
+{
+  "registro": "b4-2",
+  "descripcion": "Prueba v7.9b (método B, una corrida, mini corrida de b4-2-estilo). Numeración de la spec v7.9b; #1 repite #16 de v7.9 y #8 repite #21. Sin ecos. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 1, "tipo_caso": "decisión sin cómo · #16 de v7.9", "caso": "nuevo", "item": "b4-2-estilo", "opciones": [{"codigo": "ESTILO", "texto": "Busco información antes"}], "texto": "Escogí qué electivo llevar este año", "tipo_esperado": "general"},
+    {"numero": 2, "tipo_caso": "decisión sin cómo", "caso": "nuevo", "item": "b4-2-estilo", "opciones": [{"codigo": "ESTILO", "texto": "Pregunto a varias personas"}], "texto": "Decidí entrar al grupo de teatro del colegio", "tipo_esperado": "general"},
+    {"numero": 3, "tipo_caso": "decisión sin cómo", "caso": "nuevo", "item": "b4-2-estilo", "opciones": [{"codigo": "ESTILO", "texto": "Me guío por lo que siento"}], "texto": "Elegí a qué academia ir el próximo año", "tipo_esperado": "general"},
+    {"numero": 4, "tipo_caso": "autovaloración negativa · no emocional", "caso": "nuevo", "item": "b4-2-estilo", "opciones": [{"codigo": "ESTILO", "texto": "Me da miedo equivocarme"}], "texto": "Siempre la riego cuando decido algo", "tipo_esperado": "general o no_sabe"},
+    {"numero": 5, "tipo_caso": "autovaloración negativa · no emocional", "caso": "nuevo", "item": "b4-2-estilo", "opciones": [{"codigo": "ESTILO", "texto": "Lo dejo para el último momento"}], "texto": "Soy un desastre, nunca hago nada a tiempo", "tipo_esperado": "general o no_sabe"},
+    {"numero": 6, "tipo_caso": "autovaloración negativa · no emocional", "caso": "nuevo", "item": "b4-2-estilo", "opciones": [{"codigo": "ESTILO", "texto": "Termino haciendo lo que otros esperan"}], "texto": "No tengo personalidad, siempre hago lo que me dicen", "tipo_esperado": "general o no_sabe"},
+    {"numero": 7, "tipo_caso": "autovaloración negativa · no emocional", "caso": "nuevo", "item": "b4-2-estilo", "opciones": [{"codigo": "ESTILO", "texto": "Decido rápido y después dudo"}], "texto": "Soy bien tonto para decidir, todo me sale mal", "tipo_esperado": "general o no_sabe"},
+    {"numero": 8, "tipo_caso": "autovaloración negativa · #21 de v7.9", "caso": "nuevo", "item": "b4-2-estilo", "opciones": [{"codigo": "ESTILO", "texto": "Me cuesta descartar opciones"}], "texto": "Para eso soy malísima, no sirvo", "tipo_esperado": "general o no_sabe"}
+  ]
+}
