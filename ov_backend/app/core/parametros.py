@@ -76,6 +76,17 @@ FACTOR_MAXIMO_CONSOLIDADA = 1.5
 # Ajuste pruebas llm: margen fijo sobre el factor, en caracteres (las respuestas cortas necesitan conectores).
 MARGEN_CONSOLIDADA = 60
 PAUSA_CASOS_GEMINI_SEGUNDOS = 5
+# Ajuste registros llm (lote 1): capa del LLM v7 (`app/services/registro/llm/`), aún sin conectar al flujo.
+MODELO_LLM_REGISTRO_V7 = "claude-haiku-5-5"
+ESFUERZO_LLM_REGISTRO_V7 = "low"
+# Topes por llamada: el máximo medido en los pilotos fue 1164 tokens de salida (razonamiento incluido) y 8,3 s
+# (mediana 2,1 s, p95 5,5 s).
+MAXIMO_TOKENS_SALIDA_LLM = 2048
+TIEMPO_MAXIMO_LLM_SEGUNDOS = 12
+# Largo máximo de la respuesta y de lo escrito en «¿Cuál?» (no había uno para los registros).
+MAXIMO_CARACTERES_TEXTO_LLM = 1000
+MAXIMO_PALABRAS_REPREGUNTA_LLM = 30
+MAXIMO_PALABRAS_ARRANQUE = 10
 
 # B09 · Diario. Cambiar el prompt de personalización exige subir `VERSION_PROMPT_DIARIO`.
 VERSION_PROMPT_DIARIO = "v1"

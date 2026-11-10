@@ -33,6 +33,8 @@ class Configuracion:
     timeout_segundos: float = TIEMPO_MAXIMO_EVALUACION_SEGUNDOS
     clave: str | None = field(default=None, repr=False)
     jwt_secreto: str = field(default=JWT_SECRETO_DESARROLLO, repr=False)
+    # Ajuste registros llm: la capa v7 (Claude) aún no está conectada; sin clave la aplicación arranca igual.
+    clave_anthropic: str | None = field(default=None, repr=False)
 
 
 def cargar_configuracion(
@@ -79,8 +81,9 @@ def cargar_configuracion(
         if not ruta.is_absolute():
             ruta = RAIZ_PROYECTO / ruta
         url_bd = url.set(database=ruta.as_posix()).render_as_string(hide_password=False)
+    clave_anthropic = (leer('ANTHROPIC_API_KEY', '') or '').strip() or None
     return Configuracion(url_bd, ambiente, proveedor, modelo, timeout, clave,
-                         jwt_secreto or JWT_SECRETO_DESARROLLO)
+                         jwt_secreto or JWT_SECRETO_DESARROLLO, clave_anthropic)
 
 
 def crear_evaluador_registro(configuracion: Configuracion):

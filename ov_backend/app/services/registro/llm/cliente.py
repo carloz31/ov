@@ -1,0 +1,87 @@
+"""La llamada al LLM: protocolo, cliente de Claude (SDK `anthropic`) y cliente falso para las pruebas."""
+
+import time
+from collections.abc import Callable, Sequence
+from dataclasses import dataclass
+from typing import Protocol
+
+from app.core.parametros import (ESFUERZO_LLM_REGISTRO_V7, MAXIMO_TOKENS_SALIDA_LLM, MODELO_LLM_REGISTRO_V7,
+                                 TIEMPO_MAXIMO_LLM_SEGUNDOS)
+
+
+class LlamadaFallida(Exception):
+    """Error de la API o tiempo agotado. `causa`: `tiempo_agotado` o `error`."""
+
+    def __init__(self, causa: str, detalle: str = ''):
+        super().__init__(causa)
+        self.causa, self.detalle = causa, detalle
+
+
+@dataclass(frozen=True, slots=True)
+class RespuestaCruda:
+    texto: str
+    parada: str
+    detalle_parada: str = ''
+    tokens_entrada: int | None = None
+    tokens_razonamiento: int | None = None
+    tokens_salida: int | None = None
+    latencia_ms: int | None = None
+
+
+class ClienteLLM(Protocol):
+    modelo: str
+
+    def llamar(self, sistema: str, mensaje: str, esquema: dict) -> RespuestaCruda: ...
+
+
+class ClienteClaude:
+    """`claude-haiku-5-5`, esfuerzo `low`, salida con esquema JSON, sin temperatura y sin reintentos."""
+
+    def __init__(self, clave: str, modelo: str = MODELO_LLM_REGISTRO_V7, esfuerzo: str = ESFUERZO_LLM_REGISTRO_V7,
+                 maximo_tokens: int = MAXIMO_TOKENS_SALIDA_LLM, tiempo: float = TIEMPO_MAXIMO_LLM_SEGUNDOS):
+        import anthropic
+        self._anthropic = anthropic
+        self.cliente = anthropic.Anthropic(api_key=clave, timeout=tiempo, max_retries=0)
+        self.modelo, self.esfuerzo, self.maximo_tokens, self.tiempo = modelo, esfuerzo, maximo_tokens, tiempo
+
+    def llamar(self, sistema: str, mensaje: str, esquema: dict) -> RespuestaCruda:
+        inicio = time.perf_counter()
+        try:
+            respuesta = self.cliente.messages.create(
+                model=self.modelo, max_tokens=self.maximo_tokens, system=sistema,
+                messages=[{'role': 'user', 'content': mensaje}],
+                output_config={'effort': self.esfuerzo, 'format': {'type': 'json_schema', 'schema': esquema}})
+        except self._anthropic.APITimeoutError:
+            raise LlamadaFallida('tiempo_agotado') from None
+        except self._anthropic.APIError as error:
+            raise LlamadaFallida('error', type(error).__name__) from None
+        latencia = round((time.perf_counter() - inicio) * 1000)
+        uso = respuesta.usage
+        detalles = getattr(uso, 'output_tokens_details', None)
+        pensar = getattr(detalles, 'thinking_tokens', None) if detalles else None
+        detalle = getattr(respuesta, 'stop_details', None)
+        return RespuestaCruda(
+            texto=''.join(b.text for b in respuesta.content if b.type == 'text'), parada=respuesta.stop_reason or '',
+            detalle_parada=f'{detalle.category or ""} {detalle.explanation or ""}'.strip() if detalle else '',
+            tokens_entrada=uso.input_tokens, tokens_razonamiento=pensar,
+            tokens_salida=uso.output_tokens - (pensar or 0), latencia_ms=latencia)
+
+
+class ClienteFalso:
+    """Devuelve, en orden, las respuestas que recibe: un `RespuestaCruda`, un `str` (JSON con parada `end_turn`) o una
+    excepción, que se levanta. Guarda cada llamada en `llamadas`."""
+
+    modelo = 'falso'
+
+    def __init__(self, respuestas: Sequence[RespuestaCruda | str | Exception | Callable[[], RespuestaCruda]]):
+        self._respuestas = list(respuestas)
+        self.llamadas: list[tuple[str, str, dict]] = []
+
+    def llamar(self, sistema: str, mensaje: str, esquema: dict) -> RespuestaCruda:
+        self.llamadas.append((sistema, mensaje, esquema))
+        respuesta = self._respuestas.pop(0)
+        if isinstance(respuesta, Exception):
+            raise respuesta
+        if isinstance(respuesta, str):
+            return RespuestaCruda(texto=respuesta, parada='end_turn')
+        return respuesta() if callable(respuesta) else respuesta

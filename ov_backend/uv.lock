@@ -770,6 +770,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "alembic" },
+    { name = "anthropic" },
     { name = "argon2-cffi" },
     { name = "fastapi" },
     { name = "google-genai" },
@@ -778,6 +779,7 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "pyjwt" },
     { name = "python-dotenv" },
+    { name = "spylls" },
     { name = "sqlalchemy" },
     { name = "uvicorn" },
 ]
@@ -789,16 +791,15 @@ postgres = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "anthropic" },
     { name = "httpx" },
     { name = "pytest" },
     { name = "pytest-xdist" },
-    { name = "spylls" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.20.0" },
+    { name = "anthropic", specifier = ">=2.8.0" },
     { name = "argon2-cffi", specifier = ">=25.1.0" },
     { name = "fastapi", specifier = ">=0.142.2" },
     { name = "google-genai", specifier = ">=2.26.0" },
@@ -808,6 +809,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.15.0" },
     { name = "pyjwt", specifier = ">=2.15.1" },
     { name = "python-dotenv", specifier = ">=1.2.4" },
+    { name = "spylls", specifier = ">=0.1.7" },
     { name = "sqlalchemy", specifier = ">=2.0,<2.1" },
     { name = "uvicorn", specifier = ">=0.54.0" },
 ]
@@ -815,11 +817,9 @@ provides-extras = ["postgres"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "anthropic", specifier = ">=2.8.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
-    { name = "spylls", specifier = ">=0.1.7" },
 ]
 
 [[package]]
