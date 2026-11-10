@@ -33,16 +33,17 @@ Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no est�
 
 ## Prueba de tarjetas (v7.x)
 
-`evaluar_tarjetas.py` prueba la clasificación nueva por `tipo` con el método **B**: el LLM clasifica y redacta la repregunta, y un filtro decide si se usa o si va la base de la tarjeta. Hoy corre b1-3 (v7.2c, dos corridas de cada caso). No toca el backend, el prompt vigente ni `evaluar.py`: lee su prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, solo datos y copia de `tarjetas-registros.md`), sus casos (`casos/b1-3-tarjetas-v7.2c.json`) y su léxico (`lexico/es_ES.dic` y `.aff`, hunspell de [LibreOffice/dictionaries](https://github.com/LibreOffice/dictionaries), con `spylls`, dependencia de desarrollo).
+`evaluar_tarjetas.py` corre los casos de las tarjetas v7 (método **B**: el LLM clasifica por `tipo` y redacta la repregunta, y un filtro decide si se usa o si va la base) **a través de la capa del LLM del backend** (`app/services/registro/llm`, ajuste registros llm, lote 1): el armado del mensaje, la llamada a `claude-haiku-5-5`, la validación (`sin_evaluar`), el filtro, el arranque y la línea del seguimiento, el estado final y el texto citable son los del backend, y las tarjetas son las de `datos/tarjetas_registros`. El runner solo resuelve cada caso (opción marcada, pregunta mostrada, ecos y marcadores), revisa el solapamiento con la tarjeta, calcula la forma de las repreguntas y escribe el CSV y el informe en `resultados/capa-llm/`. Requiere `ANTHROPIC_API_KEY` en el `.env` del backend (no como variable global de la máquina).
 
 ```
-uv run python tests/llm/evaluar_tarjetas.py --revisar           # solapamiento y filtro sobre v7 y v7.2, sin llamar
-uv run python tests/llm/evaluar_tarjetas.py --mostrar 20        # el prompt y el mensaje, sin llamar
-uv run python tests/llm/evaluar_tarjetas.py                     # una corrida: CSV e informe
-uv run python tests/llm/evaluar_tarjetas.py --informe <csv>     # rehace el informe desde un CSV, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --casos b5-3-tarjetas-v7.12c.json --revisar     # solapamiento, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --manifiesto piloto-claude-3 --mostrar P33       # prompt y mensaje, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --manifiesto piloto-claude-3 --repeticiones 3    # una corrida: CSV e informe
+uv run python tests/llm/evaluar_tarjetas.py --seguimientos                                   # todos los seguimientos, sin repetidos
+uv run python tests/llm/evaluar_tarjetas.py --informe <csv> --anterior <csv>                  # rehace el informe, sin llamar
 ```
 
-Antes de llamar, el runner se detiene si un caso coincide con los EJEMPLOS o con las frases de GENERAL SI de su tarjeta. El informe es `resultados/b1-3/v7.2c.md` y anota el `git hash-object` de cada archivo usado; rehacerlo reemplaza las secciones escritas a mano. Las corridas anteriores (`resultados/b1-1/v7-tarjetas.md`, `v7.1-gustos.md` y `resultados/b1-3/v7.2.md`, `v7.2b.md`, con los casos `casos/b1-*-tarjetas*.json`) quedan como evidencia: el código, el prompt y las tarjetas con que corrieron están en el historial de git.
+Con `--casos` o `--manifiesto`, el runner se detiene antes de llamar si un caso coincide con los EJEMPLOS o con las frases de GENERAL SI o SEGUIMIENTO de su tarjeta (salvo `solapamiento_aceptado`); con `--seguimientos`, que junta casos que ya corrieron en su ronda, solo lo informa. El informe anota el `git hash-object` de cada archivo usado y el hash del prompt. Las corridas anteriores (v7.x con Gemini y `piloto-claude-*`, en `resultados/<registro>/` y `resultados/piloto-claude/`) quedan como evidencia: el código, el prompt, las tarjetas y el brazo Gemini con que corrieron están en el historial de git.
 
 ## Formato de un caso
 
