@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.10b): método B, repregunta guiada con la base como respaldo, en b4-5.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.10c): método B, repregunta guiada con la base como respaldo, en b4-5.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`, `tarjetas_b4_5.py`), sus casos (`casos/b4-5-tarjetas-v7.10b.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`, `tarjetas_b4_5.py`), sus casos (`casos/b4-5-tarjetas-v7.10c.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -44,7 +44,7 @@ import tarjetas_b4_5
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.10b'
+VERSION = 'v7.10c'
 REGISTRO = 'b4-5'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
@@ -60,9 +60,9 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'b3-4')  # los q
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS, **tarjetas_b4_1.TARJETAS, **tarjetas_b4_2.TARJETAS, **tarjetas_b4_5.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Mini corrida de `b4-5-moneda` con la tarjeta provisional de §2 de la spec v7.10b, que reemplaza entera a la de v7.10, copiada carácter por carácter. Marcadores, opción marcada y ecos, igual que en v7.10. S1 es #13.',
-    '- **Runner.** Igual que en v7.10.',
-    '- **Solapamiento (§1.3).** Solo saltó #4 («Nada, Derecho era más idea de mi mamá») por «nada», que la spec acepta; va con `solapamiento_aceptado`.',)
+    '- **Alcance.** Solo es prueba. Corrida de detalle de `b4-5-moneda`: la tarjeta es la de v7.10b con el párrafo CÓMO ADAPTARLA de `general` reemplazado por el de §2 de la spec v7.10c, carácter por carácter. Lo demás no cambia. S1 es #4.',
+    '- **Runner.** Igual que en v7.10b.',
+    '- **Solapamiento.** No saltó en ningún caso.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos

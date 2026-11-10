@@ -1,4 +1,4 @@
-"""Tarjeta de b4-5. Solo datos: viene de §2 de la spec v7.10b (`prueba-tarjetas-b4-5-v7.10b.md`), provisional, y se copia tal cual, con su bloque SEGUIMIENTO.
+"""Tarjeta de b4-5. Solo datos: viene de §2 de la spec v7.10b (`prueba-tarjetas-b4-5-v7.10b.md`) con el CÓMO ADAPTARLA de `general` de §2 de la spec v7.10c, provisional, y se copia tal cual, con su bloque SEGUIMIENTO.
 
 `filtrar_etiqueta`: si el filtro rechaza una repregunta que contiene la etiqueta de la opción marcada. `{plan_a}` y `{plan_b}` en la pregunta y en la tarjeta son marcadores que declara cada caso. `ecos`: cómo se nombra cada eco (los dos planes con sus motivos y su relato). Las bases se leen de las líneas `BASE:` de la tarjeta.
 """
@@ -64,18 +64,19 @@ REPREGUNTA
     CÓMO ADAPTARLA: la repregunta siempre pregunta qué le haría falta de {plan_a} o por qué
     no le haría falta nada; no preguntes qué le atrae o le gusta de {plan_a}, ni por qué
     siente lo que siente. Usa "hacer falta", como la pregunta, y un solo verbo por pregunta.
-    Di "si estudiaras {plan_b}", no "si terminaras en". Si dijo "nada" o que le da igual,
-    sin por qué, pregunta por qué no le haría falta nada de {plan_a}, sin suponer si es
-    porque le gustan las dos o porque ninguna lo convence ("¿Por qué crees que no te haría
-    falta nada de {plan_a}?"). Si dijo "todo", solo un sentimiento o que prefiere {plan_a},
-    pide una cosa de {plan_a}; si ayuda, ofrece dos o tres tipos de cosas dentro de la misma
-    pregunta (algo que se hace, un lugar, el sueldo), nunca respuestas hechas. Si repitió un
-    motivo de los ecos, retómalo y pregunta en qué momento o parte de {plan_a} lo tendría.
-    Si dijo que son casi lo mismo, pregunta qué tienen las dos que le importa. Si dijo solo
-    quién eligió {plan_a}, no comentes a esa persona: pasa a él o ella ("Y a ti…"). No pidas
-    algo "exacto" o "específico". Nunca preguntes qué le da {plan_b} ni por qué le gustaría,
-    no preguntes qué no le convence, no sugieras cambiar el orden, no califiques la reacción
-    que marcó y no repitas palabras negativas.
+    Si nombras {plan_b}, di "si estudiaras {plan_b}", no "si terminaras en". Si dijo "nada"
+    o que le da igual, sin por qué, pregunta por qué no le haría falta nada de {plan_a}, sin
+    suponer si es porque le gustan las dos o porque ninguna lo convence ("¿Por qué crees que
+    no te haría falta nada de {plan_a}?"). Si dijo "todo", solo un sentimiento o que
+    prefiere {plan_a}, pide una cosa de {plan_a}; si ayuda, ofrece dos o tres tipos de cosas
+    dentro de la misma pregunta (algo que se hace, un lugar, el sueldo), nunca respuestas
+    hechas. Si repitió un motivo de los ecos, haz una pregunta corta que retome el motivo
+    con sus palabras y pregunte qué de {plan_a} se lo daría, sin nombrar {plan_b} ("Dijiste
+    …: ¿qué de {plan_a} te lo daría?"). Si dijo que son casi lo mismo, pregunta qué tienen
+    las dos que le importa. Si dijo solo quién eligió {plan_a}, no comentes a esa persona:
+    pasa a él o ella ("Y a ti…"). No pidas algo "exacto" o "específico". Nunca preguntes qué
+    le da {plan_b} ni por qué le gustaría, no preguntes qué no le convence, no sugieras
+    cambiar el orden, no califiques la reacción que marcó y no repitas palabras negativas.
   no_sabe / vacio · BASE: «Imagina tu primer año en {plan_b}. ¿Hay algo de {plan_a} que te gustaría estar haciendo?»
   fuera_de_tema · BASE: «Volvamos a la moneda: si estudiaras {plan_b}, ¿qué te haría falta de {plan_a}?»
 SEGUIMIENTO: el conjunto es propio si la segunda respuesta da una cosa de {plan_a} o una

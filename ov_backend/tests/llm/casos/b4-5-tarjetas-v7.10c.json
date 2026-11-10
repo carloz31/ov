@@ -1,0 +1,11 @@
+{
+  "registro": "b4-5",
+  "descripcion": "Prueba v7.10c (método B, una corrida, corrida de detalle de b4-5-moneda). Numeración de la spec v7.10c; S1 es #4. Marcadores y ecos como en v7.10. Lo corre evaluar_tarjetas.py, no evaluar.py.",
+  "_dato_de_prueba": true,
+  "casos": [
+    {"numero": 1, "tipo_caso": "repite el motivo · (v7.10b #7)", "caso": "nuevo", "item": "b4-5-moneda", "opciones": [{"codigo": "DESANIME", "texto": "Me desanimé"}], "marcadores": {"plan_a": "Educación Inicial", "plan_b": "Contabilidad"}, "ecos_cruce": {"plan_a": [{"texto": "Educación Inicial · lo que te mueve: Ayudar a otros"}], "plan_b": [{"texto": "Contabilidad · lo que te mueve: Ingresos"}]}, "texto": "Ayudar a otros", "tipo_esperado": "general"},
+    {"numero": 2, "tipo_caso": "motivo de condiciones · (v7.10b #8)", "caso": "nuevo", "item": "b4-5-moneda", "opciones": [{"codigo": "DESANIME", "texto": "Me desanimé"}], "marcadores": {"plan_a": "Administración", "plan_b": "Turismo"}, "ecos_cruce": {"plan_a": [{"texto": "Administración · lo que te mueve: Ingresos, Autonomía"}], "plan_b": [{"texto": "Turismo · lo que te mueve: Aprender"}]}, "texto": "Los ingresos", "tipo_esperado": "general"},
+    {"numero": 3, "tipo_caso": "motivo en una sola palabra", "caso": "nuevo", "item": "b4-5-moneda", "opciones": [{"codigo": "DESANIME", "texto": "Me desanimé"}], "marcadores": {"plan_a": "Arquitectura", "plan_b": "Ingeniería Civil"}, "ecos_cruce": {"plan_a": [{"texto": "Arquitectura · lo que te mueve: Crear, Reconocimiento"}], "plan_b": [{"texto": "Ingeniería Civil · lo que te mueve: Estabilidad"}]}, "texto": "Crear", "tipo_esperado": "general"},
+    {"numero": 4, "clave": "S1", "tipo_caso": "seguimiento · (v7.10b S1)", "caso": "nuevo", "item": "b4-5-moneda", "opciones": [{"codigo": "DESANIME", "texto": "Me desanimé"}], "marcadores": {"plan_a": "Enfermería", "plan_b": "Administración"}, "ecos_cruce": {"plan_a": [{"texto": "Enfermería · lo que te mueve: Ayudar a otros"}], "plan_b": [{"texto": "Administración · lo que te mueve: Ingresos"}]}, "texto": "Ayudar a otros", "tipo_esperado": "general", "respuesta_seguimiento": "Atender a los pacientes en la posta", "conjunto_esperado": "propio"}
+  ]
+}
