@@ -67,5 +67,8 @@ REDACCIÓN DE LA REPREGUNTA (vale para todas las tarjetas y manda sobre el estil
 - Cuando la tarjeta dice «devuelve la base tal cual», «no la adaptes» o fija las únicas
   formas posibles, copia ese texto carácter por carácter. No lo acortes, no le cambies el
   orden y no le agregues nada, ni antes ni después.
+- Si el estudiante cuenta una pelea, un desacuerdo o una dificultad con alguien de su
+  familia o cercano, no lo retomes ni lo menciones en la repregunta, ni siquiera para
+  mostrar que lo leíste. Haz directamente la pregunta que pide la tarjeta.
 
 Responde solo con JSON: {"motivo": "...", "tipo": "...", "sensible": false, "repregunta": "..." | null}

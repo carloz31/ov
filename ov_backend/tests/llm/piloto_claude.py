@@ -5,10 +5,11 @@ esquema, filtro y respaldo a la base que `evaluar_tarjetas.py`, de donde se reut
 detrás de `Brazo.llamar(sistema, mensaje)`. Los casos salen de `casos/piloto-claude-1.json` (manifiesto), que remite a
 los casos ya escritos de cada corrida v7.x.
 
-Con `--piloto 2` corre piloto-claude-2: solo `haiku-low`, con `prompts/v7-haiku.md`, 3 repeticiones, el manifiesto
-`casos/piloto-claude-2.json` y las reglas de respaldo que hará el backend (base fija en b5-1, formas cerradas en b5-3).
+Con `--piloto 2` o `--piloto 3` corre esa ronda: solo `haiku-low`, con `prompts/v7-haiku.md`, 3 repeticiones y el manifiesto
+`casos/piloto-claude-<n>.json`. Las reglas de respaldo con que corrió piloto-claude-2 se quitaron en piloto-claude-3: su CSV y
+su informe quedan como evidencia, y el código con que corrió está en el historial de git.
 
-Uso, desde ov_backend (agrega `--piloto 2` para la segunda ronda):
+Uso, desde ov_backend (agrega `--piloto 2` o `--piloto 3` para las rondas siguientes):
     uv run python tests/llm/piloto_claude.py --revisar      # manifiesto y solapamiento, sin llamar
     uv run python tests/llm/piloto_claude.py --humo         # un caso `propio` y uno `general` por brazo
     uv run python tests/llm/piloto_claude.py                # los dos brazos, 2 repeticiones por caso; CSV e informe
@@ -49,16 +50,15 @@ TOPE_SALIDA = 8192  # tokens de salida (razonamiento incluido), igual en los dos
 TIEMPO = 120  # segundos por llamada, igual en los dos brazos (el `httpx` de `cliente_gemini` ya usa 120)
 RUTA_PROMPT, PROMPT = et.RUTA_PROMPT, et.PROMPT
 PREFIJO_CSV = ''  # piloto-claude-1 guarda `gemini-low.csv` y `haiku-low.csv`
-RESPALDO = False  # piloto-claude-2: base fija (b5-1) y formas cerradas (b5-3) después del filtro, como hará el backend
 NOMBRES_BRAZOS = ('gemini-low', 'haiku-low')
 ARCHIVOS = (RUTA_PROMPT, *sorted(AQUI.glob('tarjetas_*.py')), Path(__file__).resolve(), Path(et.__file__).resolve(), MANIFIESTO)
 
 
 def configurar(piloto):
-    """Fija la versión: 1 (los dos brazos, `v7.md`) o 2 (solo `haiku-low`, `v7-haiku.md`, 3 repeticiones y reglas de respaldo)."""
-    global VERSION, INFORME, CIEGA, CLAVE, MANIFIESTO, REPETICIONES, RUTA_PROMPT, PROMPT, PREFIJO_CSV, RESPALDO, NOMBRES_BRAZOS, ARCHIVOS
-    if piloto == 2:
-        VERSION, REPETICIONES, RESPALDO, NOMBRES_BRAZOS = 'piloto-claude-2', 3, True, ('haiku-low',)
+    """Fija la versión: 1 (los dos brazos, `v7.md`), 2 o 3 (solo `haiku-low`, `v7-haiku.md`, 3 repeticiones)."""
+    global VERSION, INFORME, CIEGA, CLAVE, MANIFIESTO, REPETICIONES, RUTA_PROMPT, PROMPT, PREFIJO_CSV, NOMBRES_BRAZOS, ARCHIVOS
+    if piloto in (2, 3):
+        VERSION, REPETICIONES, NOMBRES_BRAZOS = f'piloto-claude-{piloto}', 3, ('haiku-low',)
         RUTA_PROMPT = AQUI / 'prompts' / 'v7-haiku.md'
         PROMPT = RUTA_PROMPT.read_text(encoding='utf-8')
         PREFIJO_CSV = f'{VERSION}-'
@@ -269,36 +269,38 @@ CAMPOS = ['brazo', 'id', 'archivo_origen', 'numero_origen', 'regla', *et.CAMPOS,
           'tras_filtro', 'respaldo', 'cruda_valida']
 
 
-def forma_cerrada_valida(texto, caso, bases):
-    """b5-3, tipo `general`: la BASE tal cual, «¿Qué crees que hizo que siga igual?» tal cual o (solo piezas y «Otra») una frase
-    afirmativa seguida, tal cual, de la pregunta de la forma (1)."""
-    if texto in (bases['general'], et.SIGA_IGUAL):
-        return True
-    if et.codigo_opcion(caso) == 'IGUAL' or not texto.endswith(et.PREGUNTA_ADAPTADA):
-        return False
-    frase = texto[:-len(et.PREGUNTA_ADAPTADA)].strip()
-    return bool(frase) and '?' not in frase and '¿' not in frase
-
-
 def campos_repregunta(r, caso, respuestas, seguimiento=False):
-    """Los de `evaluar_tarjetas` y, en piloto-claude-2, las reglas de respaldo después del filtro (§3 de su spec).
+    """Los de `evaluar_tarjetas`: lo mostrado es la repregunta del modelo si pasa el filtro y la base si no.
 
-    `repregunta` es lo que se muestra; `repregunta_llm`, la cruda del modelo; `tras_filtro`, lo que quedaba tras el filtro."""
+    Las reglas de respaldo de piloto-claude-2 (`base_fija`, `forma_cerrada`) se quitaron en piloto-claude-3 por decisión del
+    usuario; sus columnas (`respaldo`, `cruda_valida`) quedan vacías y siguen en el CSV de piloto-claude-2."""
     repregunta, campos = et.campos_repregunta(r, caso, respuestas, seguimiento)
     campos.update(tras_filtro=repregunta or '', respaldo='', cruda_valida='')
-    if not RESPALDO or repregunta is None or caso['item'] not in ('b5-1-seguridad', 'b5-3-cambio'):
-        return repregunta, campos
+    return repregunta, campos
+
+
+CONSIGNA = '¿Qué viste, supiste o te pasó que te hizo verlo distinto?'  # la pregunta que la tarjeta de b5-3 ya no usa (piloto-claude-3)
+
+
+def forma_b53(fila, texto):
+    """Forma de una repregunta de b5-3 con la tarjeta de piloto-claude-3: «BASE», «frase + BASE», «siga igual», «consigna repetida» u «otra»."""
+    texto = (texto or '').strip()
+    if not texto:
+        return '—'
+    caso = cargar_casos_por_id()[fila['id']]
     bases = et.bases_de(caso)
-    cruda = (r.repregunta or '').strip()
-    if caso['item'] == 'b5-1-seguridad':
-        mostrar, valida, regla = bases[r.tipo], cruda == bases[r.tipo], 'base_fija'
-    elif r.tipo == 'general':
-        valida = forma_cerrada_valida(cruda, caso, bases)
-        mostrar, regla = (repregunta if valida and campos['origen'] == 'llm' else bases['general']), 'forma_cerrada'
-    else:
-        mostrar, valida, regla = bases[r.tipo], cruda == bases[r.tipo], 'forma_cerrada'
-    campos.update(repregunta=mostrar, cruda_valida='sí' if valida else 'no', respaldo=regla if mostrar != repregunta else 'ninguna')
-    return mostrar, campos
+    for tipo, base_ in bases.items():
+        if texto == base_:
+            return 'BASE' if tipo == 'general' else f'base de `{tipo}`'
+    if texto == et.SIGA_IGUAL:
+        return 'siga igual'
+    if et.codigo_opcion(caso) != 'IGUAL' and texto.endswith(bases['general']):
+        frase = texto[:-len(bases['general'])].strip()
+        if frase and '?' not in frase and '¿' not in frase:
+            return 'frase + BASE'
+    if CONSIGNA[1:-1].lower() in texto.lower():
+        return 'consigna repetida'
+    return 'otra'
 
 
 def fila_de_llamada(datos, r=None):
@@ -725,6 +727,109 @@ def escribir_informe_2(ruta):
     return m
 
 
+# --- Informe de piloto-claude-3 (solo haiku-low, contra piloto-claude-2) --------------------
+
+FAMILIA = re.compile(r'pele|discut|desacuerdo|compar|no quiere|tu mam[aá] (dice|piensa|quiere|cree)|dice tu|lo que dice|tu t[ií]o|tu pap[aá] (dice|piensa|quiere)|termina en|no te apoya|no es f[aá]cil hablar', re.I)
+FORMAS_VALIDAS = ('BASE', 'frase + BASE', 'siga igual')
+
+
+def palabras(texto):
+    return len((texto or '').split())
+
+
+def celda_rep3(f):
+    if not f:
+        return '—'
+    if f['error']:
+        return f['falla'] or 'error'
+    cruda, mostrada_ = (f['repregunta_llm'] or '').strip(), (f['repregunta'] or '').strip()
+    cabeza = f"`{f['tipo']}`{' · sensible' if f['sensible'] == 'True' else ''}"
+    if f['turno'] == 'seguimiento':
+        cabeza += f" (conjunto `{f['tipo']}`, final `{f['tipo_final']}`)"
+    if not cruda and not mostrada_:
+        return cabeza + ', sin repregunta'
+    forma = f" [{forma_b53(f, mostrada_)}]" if f['item'] == 'b5-3-cambio' else ''
+    cuerpo = celda(cruda) if cruda else '(no redactó)'
+    cuerpo += ' → =' if mostrada_ == cruda or (f['origen'] == 'llm' and mostrada_ == f['tras_filtro'].strip()) else f' → {celda(mostrada_)}'
+    return f"{cabeza}: {cuerpo}{forma}" + (f" (filtro: `{f['filtro']}`)" if f['filtro'] else '')
+
+
+def escribir_informe_3(ruta):
+    filas, casos = leer(ruta)
+    _, casos2 = leer(CARPETA / 'piloto-claude-2-haiku-low.csv')
+    _, casos1 = leer(CARPETA / 'haiku-low.csv')
+    actual, antes2, antes1 = por_id(casos), por_id(casos2), por_id(casos1)
+    ids = list(actual)
+    m = medidas('haiku-low', filas, casos)
+    comparables = [i for i in ids if i in antes2]
+    pc2 = [c for i in comparables for c in antes2[i].values()]
+    aciertos2 = sum(acierta(c) for c in pc2)
+    archivos = json.loads(next(f['archivos'] for f in filas if f['archivos']))
+    grupo = lambda i: next(iter(actual[i].values()))['primera']['grupo']  # noqa: E731
+    pct = lambda a, b: f'{a}/{b} ({100 * a / b:.0f} %)' if b else '—'  # noqa: E731
+    def formas_de(igual, turno):
+        conj = [f for f in filas if f['item'] == 'b5-3-cambio' and f['tipo'] == 'general' and f['repregunta'] and f['turno'] == turno
+                and (f['opciones'] == 'Lo veo todo igual') == igual]
+        cuenta = {}
+        for f in conj:
+            cuenta[forma_b53(f, f['repregunta'])] = cuenta.get(forma_b53(f, f['repregunta']), 0) + 1
+        return f"{', '.join(f'{k}: {v}' for k, v in sorted(cuenta.items())) or '—'} (de {len(conj)})"
+    fuera_de_forma = [f for f in filas if f['item'] == 'b5-3-cambio' and f['repregunta_llm']
+                      and (forma_b53(f, f['repregunta_llm']) not in FORMAS_VALIDAS if f['tipo'] == 'general'
+                           else f['repregunta_llm'].strip() != et.bases_de(cargar_casos_por_id()[f['id']]).get(f['tipo']))]
+    familia = [f for f in filas if f['id'] in ('P69', 'P70', 'P01', 'P61') and FAMILIA.search(f['repregunta_llm'] or '')]
+    L = [f'# Piloto Claude 3: mini corrida de cierre, b5-3 sin respaldo y P69 ({VERSION})', '',
+         f'{len(ids)} casos × {REPETICIONES} repeticiones, solo `haiku-low`, con `prompts/v7-haiku.md` (más la línea nueva) y la tarjeta de b5-3 con la forma (1) = frase + BASE. '
+         f'Sin reglas de respaldo: lo mostrado es la repregunta del modelo si pasa el filtro, y la base si no. CSV: [{Path(ruta).name}]({Path(ruta).name}).', '',
+         '## 1. Archivos', '', '| Ruta | `git hash-object` |', '|---|---|', *[f'| `{r}` | `{h}` |' for r, h in archivos.items()], '',
+         f"Brazo: `{filas[0]['modelo']}`, {filas[0]['parametros']}.", '',
+         '## 2. Resumen', '', '| | piloto-claude-2 | piloto-claude-3 |', '|---|---|---|',
+         f"| Acierto de clasificación (casos en las dos rondas: {len(comparables)}) | {pct(aciertos2, len(pc2))} | {pct(sum(acierta(c) for i in comparables for c in actual[i].values()), sum(len(actual[i]) for i in comparables))} |",
+         f"| Acierto de clasificación (todo el set) | — | {pct(m['aciertos'], m['total'])} |",
+         f"| Casos inestables | — | {len(m['inestables'])} ({', '.join(casos[i][1]['primera']['id'] for i in m['inestables']) or '—'}) |",
+         f"| Repreguntas que no pasaron el filtro, por regla | — | {', '.join(f'{r}: {k}' for r, k in sorted(m['caidas'].items())) or '0'} |",
+         f"| b5-3, `general` de piezas: formas de la repregunta mostrada | — | {formas_de(False, 'primera')} |",
+         f"| · y de la pista del seguimiento | — | {formas_de(False, 'seguimiento')} |",
+         f"| b5-3, `general` de «Lo veo todo igual»: repregunta mostrada | — | {formas_de(True, 'primera')} |",
+         f"| · y pista del seguimiento | — | {formas_de(True, 'seguimiento')} |",
+         f"| Rechazos / JSON inválidos / otros errores | — | {m['rechazos']} / {m['json_invalidos']} / {m['errores']} |",
+         '| Latencia mediana / p95 (ms) | — | {:.0f} / {} |'.format(*m['latencia']),
+         '| Tokens por llamada: entrada / salida (con razonamiento) / razonamiento | — | {:.0f} / {:.0f} / {:.0f} |'.format(*m['tokens']),
+         '| Costo total / por llamada (USD) | — | {:.4f} / {:.6f} |'.format(*m['costo']), '',
+         'Formas de b5-3 (§1.4 de la spec): «frase + BASE» es una frase afirmativa seguida de la BASE tal cual; «BASE», la BASE sola; «consigna repetida», '
+         'toda repregunta con «¿Qué viste, supiste o te pasó que te hizo verlo distinto?», sola o con algo delante. Los casos que no estaban en piloto-claude-2 (P25, P37) solo cuentan en la segunda fila.', '',
+         '## 3. Casos', '', 'Por caso y turno, por repetición: `tipo` (en el seguimiento, conjunto y final), la cruda → lo mostrado («=» si es la misma) y, en b5-3, la forma de lo mostrado; el filtro si actuó. '
+         'En el seguimiento, lo mostrado es la pista.', '',
+         '| Caso | Grupo | Turno | Texto | Rep. 1 | Rep. 2 | Rep. 3 |', '|---|---|---|---|---|---|---|']
+    for i in ids:
+        for turno in ('primera', 'seguimiento'):
+            reps = [actual[i].get(r, {}).get(turno) for r in (1, 2, 3)]
+            if not any(reps):
+                continue
+            p = next(f for f in reps if f)
+            L.append(f"| {i} | {grupo(i)} | {turno} | {celda(p['texto'])} | " + ' | '.join(celda_rep3(f) for f in reps) + ' |')
+    L += ['', '## 4. Atención especial', '', '### b5-3: crudas que no son una de las tres formas', '',
+          'Con `general`, toda cruda que no sea BASE, frase + BASE ni «siga igual»; con otro tipo, toda cruda que no sea la base de su tipo. Se copian completas.', '',
+          *([f"- {f['id']} rep. {f['corrida']} ({f['turno']}, `{f['tipo']}`, {forma_b53(f, f['repregunta_llm'])}): «{f['repregunta_llm']}» → mostrada: «{f['repregunta']}»" for f in fuera_de_forma] or ['- Ninguna.']), '',
+          '### P33 y P41: palabras de cada «frase + BASE»', '', '| Caso | Rep. | Mostrada | Forma | Palabras | Filtro |', '|---|---|---|---|---|---|']
+    for i in ('P33', 'P41'):
+        for r, c in sorted(actual.get(i, {}).items()):
+            f = c['primera']
+            L.append(f"| {i} | {r} | {celda(f['repregunta'] or f['repregunta_llm'])} | {forma_b53(f, f['repregunta'])} | {palabras(f['repregunta_llm'])} | {f['filtro'] or 'pasó'} |")
+    L += ['', '### P69, P70, P01 y P61: menciones de la pelea, el desacuerdo, lo que dice otra persona o las comparaciones', '',
+          'Búsqueda automática sobre las crudas (pelea, discusión, desacuerdo, comparar, «no quiere», «tu mamá dice»…) y revisión a mano (§5).', '',
+          *([f"- {f['id']} rep. {f['corrida']} ({f['turno']}): «{f['repregunta_llm']}»" for f in familia] or ['- Ninguna.']), '',
+          '### Cambios de `tipo` frente a piloto-claude-2', '', '| Caso | Esperado | piloto-claude-2 | piloto-claude-3 | ¿Aparece un `tipo` nuevo? |', '|---|---|---|---|---|']
+    for i in ids:
+        previo = antes2.get(i) or antes1.get(i)
+        origen = 'piloto-claude-2' if i in antes2 else 'piloto-claude-1'
+        t1, t2 = tipos_de(previo), tipos_de(actual[i])
+        L.append(f"| {i} | {esperado(actual[i][1]['primera'])} | {' · '.join(t1)}{'' if origen == 'piloto-claude-2' else ' *(de piloto-claude-1)*'} | {' · '.join(t2)} | {'**sí**' if set(t2) - set(t1) else 'no'} |")
+    L += ['', '## 5. Revisión a mano', '', '_Pendiente._', '', '## 6. Notas', '', '_Pendiente._', '']
+    INFORME.write_text('\n'.join(L), encoding='utf-8')
+    return m
+
+
 # --- Entrada ---------------------------------------------------------------------------------
 
 def main():
@@ -734,13 +839,13 @@ def main():
     parser.add_argument('--humo', action='store_true', help='un caso `propio` y uno `general` por brazo; no guarda CSV del set')
     parser.add_argument('--informe', action='store_true', help='rehace informe, tabla ciega y clave desde los CSV')
     parser.add_argument('--hilos', type=int, default=8)
-    parser.add_argument('--piloto', type=int, choices=(1, 2), default=1, help='1: los dos brazos con v7.md; 2: haiku-low con v7-haiku.md y respaldo')
+    parser.add_argument('--piloto', type=int, choices=(1, 2, 3), default=1, help='1: los dos brazos con v7.md; 2 y 3: haiku-low con v7-haiku.md')
     args = parser.parse_args()
     configurar(args.piloto)
 
     if args.informe:
-        if args.piloto == 2:
-            print(escribir_informe_2(CARPETA / f'{PREFIJO_CSV}haiku-low.csv'))
+        if args.piloto in (2, 3):
+            print((escribir_informe_2 if args.piloto == 2 else escribir_informe_3)(CARPETA / f'{PREFIJO_CSV}haiku-low.csv'))
         else:
             print(escribir_informe({n: CARPETA / f'{n}.csv' for n in BRAZOS}))
         return
@@ -761,7 +866,10 @@ def main():
         return
     rutas, parametros_brazos = correr(casos, list(NOMBRES_BRAZOS), REPETICIONES, args.hilos)
     print({n: r.name for n, r in rutas.items()})
-    m = {'haiku-low': escribir_informe_2(rutas['haiku-low'])} if args.piloto == 2 else escribir_informe(rutas, parametros_brazos)
+    if args.piloto in (2, 3):
+        m = {'haiku-low': (escribir_informe_2 if args.piloto == 2 else escribir_informe_3)(rutas['haiku-low'])}
+    else:
+        m = escribir_informe(rutas, parametros_brazos)
     for n, v in m.items():
         print(n, f"{v['aciertos']}/{v['total']}", 'rechazos', v['rechazos'], 'json_invalidos', v['json_invalidos'], 'errores', v['errores'])
 
