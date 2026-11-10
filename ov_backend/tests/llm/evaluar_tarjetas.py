@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.11): método B, repregunta guiada con la base como respaldo, en b5-1.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.11b): método B, repregunta guiada con la base como respaldo, en b5-1.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`, `tarjetas_b4_5.py`, `tarjetas_b5_1.py`), sus casos (`casos/b5-1-tarjetas-v7.11.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`, `tarjetas_b4_5.py`, `tarjetas_b5_1.py`), sus casos (`casos/b5-1-tarjetas-v7.11b.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -45,7 +45,7 @@ import tarjetas_b5_1
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.11'
+VERSION = 'v7.11b'
 REGISTRO = 'b5-1'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
@@ -61,10 +61,10 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'b3-4')  # los q
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS, **tarjetas_b4_1.TARJETAS, **tarjetas_b4_2.TARJETAS, **tarjetas_b4_5.TARJETAS, **tarjetas_b5_1.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Un solo ítem, `b5-1-seguridad`, con la tarjeta provisional de §2 de la spec v7.11 copiada carácter por carácter, incluido el bloque SEGUIMIENTO, y `filtrar_etiqueta: false`. Sin marcadores. No hay casos de b5-1 de rondas anteriores. S1 a S5 son #33 a #37.',
-    '- **Opción marcada y ecos (§1.4 y §1.5).** `<opcion_marcada>`: la etiqueta tal cual («Bastante seguro/a», «Más o menos» o «Poco seguro/a»). `<ecos>`: una línea, «Tu proyecto hoy: Enfermería · UNMSM · Prepararme primero · pasos pendientes: …; … · pasos hechos: …», sin institución ni camino cuando el proyecto no los tiene (P3 y P5). Los caminos van con las etiquetas reales de CAMINOS (`datos/fijos.py`): «Prepararme primero» y «Postular directamente» en vez de «Prepararme y postular» y «Postular directo». La señal del check-in no se manda.',
-    '- **Runner.** Igual que en v7.10c; la tabla de casos muestra el nivel y el proyecto. #8 espera «propio o general» (frontera floja).',
-    '- **Solapamiento (§1.7).** No saltó en ningún caso.',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Mini corrida de `b5-1-seguridad` con la tarjeta provisional de §2 de la spec v7.11b, que reemplaza a la de v7.11, copiada carácter por carácter, incluido el bloque SEGUIMIENTO, y `filtrar_etiqueta: false`. Casos nuevos; S1 a S4 son #19 a #22.',
+    '- **Pregunta y ecos (§1.2 a §1.4).** Pregunta: «¿Qué te da seguridad en tu proyecto, o qué te la quita?». `<opcion_marcada>`: la etiqueta tal cual, como en v7.11. `<ecos>`: una línea, «Tu proyecto: Enfermería · UNMSM», sin institución cuando el caso no la trae, y sin camino ni pasos.',
+    '- **Runner.** Igual que en v7.11; los totales cuentan además los `fuera_de_tema` de más y de menos. #18 espera «fuera_de_tema o propio» (frontera floja).',
+    '- **Solapamiento (§1.6).** No saltó en ningún caso.',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -547,11 +547,16 @@ def seccion_totales(casos, medidas):
     emocional = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional']
     emocional_ok = [n for n, c in filas if c['primera']['tipo_esperado'] == 'emocional' and c['primera']['tipo'] == 'emocional']
     emocional_de_mas = [n for n, c in filas if c['primera']['tipo_esperado'] and 'emocional' not in c['primera']['tipo_esperado'] and c['primera']['tipo'] == 'emocional']
+    # `fuera_de_tema` de más y de menos (v7.11b): en la primera respuesta y, si hay seguimiento, en el conjunto.
+    pares = lambda c: [(c['primera']['tipo_esperado'], c['primera']['tipo'])] + ([(c['primera']['conjunto_esperado'], c['seguimiento']['tipo'])] if c.get('seguimiento') and c['primera']['conjunto_esperado'] else [])  # noqa: E731
+    ft_de_mas = [n for n, c in filas if any(o == 'fuera_de_tema' and 'fuera_de_tema' not in e.split(' o ') for e, o in pares(c))]
+    ft_de_menos = [n for n, c in filas if any('fuera_de_tema' in e.split(' o ') and o not in e.split(' o ') for e, o in pares(c))]
     return ['## 3. Totales', '', f"- **Acierto:** {medidas['aciertos']}/{medidas['total']} ({por_item}).",
             f'- **Invitaciones de más** (`propio` clasificado como otro tipo): {len(de_mas)} ({lista(de_mas)}).',
             f'- **Pases de menos** (`general`, `vacio` o `fuera_de_tema` clasificados como `propio`): {len(de_menos)} ({lista(de_menos)}).',
             f'- **`sensible`:** {len(falsos_pos)} falsos positivos ({lista(falsos_pos)}), {len(falsos_neg)} falsos negativos ({lista(falsos_neg)}).',
             f'- **`emocional`:** {len(emocional_ok)}/{len(emocional)} ({lista(emocional_ok)}); clasificados `emocional` sin esperarlo: {len(emocional_de_mas)} ({lista(emocional_de_mas)}).',
+            f'- **`fuera_de_tema`:** de más {len(ft_de_mas)} ({lista(ft_de_mas)}), de menos {len(ft_de_menos)} ({lista(ft_de_menos)}).',
             f"- **Caídas por el filtro:** {len(caidas)} ({'; '.join(caidas) or 'ninguna'})."]
 
 
