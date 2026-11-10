@@ -1,7 +1,7 @@
-"""Prueba de tarjetas y clasificación por `tipo` (v7.12): método B, repregunta guiada con la base como respaldo, en b5-3.
+"""Prueba de tarjetas y clasificación por `tipo` (v7.12b): método B, repregunta guiada con la base como respaldo, en b5-3.
 
 No es pytest y no toca el backend ni el prompt vigente: reutiliza de `evaluar.py` el entorno y las opciones, y lee su
-prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`, `tarjetas_b4_5.py`, `tarjetas_b5_1.py`, `tarjetas_b5_3.py`), sus casos (`casos/b5-3-tarjetas-v7.12.json`)
+prompt (`prompts/v7.md`), sus tarjetas (`tarjetas_b1_1.py`, `tarjetas_b1_3.py`, `tarjetas_b1_6.py`, `tarjetas_b1_7.py`, `tarjetas_b2_3.py`, `tarjetas_b2_4.py`, `tarjetas_b3_4.py`, `tarjetas_b4_1.py`, `tarjetas_b4_2.py`, `tarjetas_b4_5.py`, `tarjetas_b5_1.py`, `tarjetas_b5_3.py`), sus casos (`casos/b5-3-tarjetas-v7.12b.json`)
 y su léxico (`lexico/es_ES`, hunspell con spylls). Las corridas anteriores quedan en sus CSV e informes y este runner no las rehace.
 
 Uso, desde ov_backend:
@@ -46,7 +46,7 @@ import tarjetas_b5_3
 from app.core import parametros  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
 
-VERSION = 'v7.12'
+VERSION = 'v7.12b'
 REGISTRO = 'b5-3'
 AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[1]
@@ -62,10 +62,10 @@ REGISTROS_V7 = ('b1-1', 'b1-3', 'b1-6', 'b1-7', 'b2-3', 'b2-4', 'b3-4')  # los q
 TARJETAS = {**tarjetas_b1_1.TARJETAS, **tarjetas_b1_3.TARJETAS, **tarjetas_b1_6.TARJETAS, **tarjetas_b1_7.TARJETAS, **tarjetas_b2_3.TARJETAS, **tarjetas_b2_4.TARJETAS, **tarjetas_b3_4.TARJETAS, **tarjetas_b4_1.TARJETAS, **tarjetas_b4_2.TARJETAS, **tarjetas_b4_5.TARJETAS, **tarjetas_b5_1.TARJETAS, **tarjetas_b5_3.TARJETAS}
 # Lo que el informe de esta corrida dice sobre su alcance.
 OPCIONES_INFORME = (
-    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Un solo ítem, `b5-3-cambio`, con las dos tarjetas provisionales de §2 de la spec v7.12 (la de las piezas y «Otra», y la de `IGUAL` en `por_opcion`) copiadas carácter por carácter, incluido SEGUIMIENTO, y `filtrar_etiqueta: false` en las dos. Sin marcadores. S1 a S8 son 52 a 59; X1 a X14, 60 a 73; la variante B, 101 a 112 (clave con «e»).',
-    '- **Pregunta, opción marcada y ecos (§1.3 a §1.5).** Pregunta de las piezas y «Otra»: «¿Qué te hizo verlo distinto? Puede ser algo que viste, que supiste o que te pasó.»; de `IGUAL`: «¿Qué viste o supiste que te lo confirmó?». `<opcion_marcada>`: la pieza con su origen entre paréntesis (`Medicina (tu primera opción)`, `"El puntaje" (lo que dijiste que podía frenarte)`, `Cómo me llevo con mi mamá (otra cosa que cambió)`) o `Lo veo todo igual`. `<ecos>`: vacío en la corrida principal y en los exploratorios; en la variante B, una línea `Hoy: Gastronomía · un instituto` (sin institución si la columna «Hoy» no la trae).',
-    '- **Runner.** Como en v7.11b, con el grupo de cada caso (principal, exploratorio, variante B): los exploratorios y la variante B no cuentan en el acierto ni en los totales y van en tablas aparte. #35 espera «propio o general» (frontera floja). La sección de repreguntas clasifica la forma y si conserva «…que te hizo verlo distinto?» de forma automática.',
-    '- **Solapamiento (§1.7).** Saltó en #32, #36 (y 36e), S5 y X1, que solo coinciden en «nada» de la tarjeta `IGUAL`, y en #46 («No sé», idéntico a un ejemplo). El usuario aceptó los de «nada» (`solapamiento_aceptado`) y #46 pasó a «No lo sé, la verdad».',)
+    '- **Alcance.** Solo es prueba: `datos/contenido.py`, el front y el backend no se tocaron. Mini corrida de `b5-3-cambio`: las dos tarjetas provisionales de §2 de la spec v7.12b (la de las piezas y «Otra», y la de `IGUAL` en `por_opcion`) reemplazan a las de v7.12, copiadas carácter por carácter, incluido SEGUIMIENTO, y `filtrar_etiqueta: false` en las dos. Casos nuevos; S1 y S2 son 14 y 15.',
+    '- **Pregunta, opción marcada y ecos (§1.2).** Como en la corrida principal de v7.12: la pieza con su origen entre paréntesis en `<opcion_marcada>` y `<ecos>` vacío. Estudiantes de §3.1 de la spec v7.12.',
+    '- **Runner.** Como en v7.12. #12 y #13 esperan «general o vacio» (`vacio` se acepta como frontera). La forma de cada repregunta (frase + base, «¿Qué crees que hizo que siga igual?» o la base tal cual) se calcula.',
+    '- **Solapamiento (§1.4).** #12 coincide en «nada» con el ejemplo nuevo de `IGUAL` y va con `solapamiento_aceptado`. Saltó además S1 («Sigo pensando igual que antes» contiene el ejemplo «Sigo pensando igual»); a pedido del usuario pasó a «Lo sigo viendo como antes».',)
 
 Tipo = Literal['propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema', 'emocional']
 ORDEN = ('propio', 'general', 'no_sabe', 'vacio', 'fuera_de_tema')  # `emocional` no está en el orden: pierde con todos
@@ -584,11 +584,11 @@ def forma_de(fila, texto):
     elif texto == SIGA_IGUAL:
         forma = '«¿Qué crees que hizo que siga igual?»'
     elif not igual and texto.endswith(PREGUNTA_ADAPTADA) and texto != PREGUNTA_ADAPTADA:
-        forma = 'frase + pregunta'
+        forma = 'frase + base'
     elif not igual and texto == PREGUNTA_ADAPTADA:
         forma = 'pregunta sola, sin frase'
     else:
-        forma = 'otra forma'
+        forma = '**otra forma**'
     clave = 'te lo confirm' if igual else 'te hizo verlo distinto'
     conserva = 'sí' if tipo or clave in texto or texto == SIGA_IGUAL else 'no'  # una base tal cual es la tarjeta
     return forma, conserva
@@ -643,20 +643,23 @@ def escribir_informe(ruta_csv):
                     if f['origen'] == 'base_por_filtro':
                         forma += ' *(cayó por el filtro; se mostró la base)*'
                     lineas.append(f"| {f.get('clave') or numero} | {turno} | {f['tipo']} | {celda(texto)} | {forma} | {conserva} |")
-    lineas += ['', '## 5. Atención especial', '', '_Pendiente: atención especial._', '',
-               '## 6. Exploratorios', '', '| # | Est. | Pieza | Texto | Qué se mira | Tipo | `sensible` | `motivo` | Repregunta | Lectura |', '|---|---|---|---|---|---|---|---|---|---|']
-    for numero, por_corrida in exploratorios.items():
-        for _, por_caso in sorted(por_corrida.items()):
-            f = por_caso['primera']
-            lineas.append(f"| {f['clave']} | {f['estudiante']} | {celda(f['opciones'])} | {celda(f['texto'])} | {celda(f['tipo_caso'])} | {f['tipo'] or 'error'} | {f['sensible']} | {celda(f['motivo'])} | {repregunta_mostrada(f)} | _pendiente_ |")
-    lineas += ['', '## 7. Variante B: ¿el eco de «Hoy» suma?', '', '| # | Eco | Esperado | Tipo sin eco | Tipo con eco | Repregunta sin eco | Repregunta con eco |', '|---|---|---|---|---|---|---|']
-    por_clave = {next(iter(pc.values()))['primera'].get('clave') or str(n): pc for n, pc in todos.items()}
-    for numero, por_corrida in variante.items():
-        for corrida, con_eco in sorted(por_corrida.items()):
-            f = con_eco['primera']
-            sin_eco = por_clave[f['clave'].removesuffix('e')][corrida]
-            lineas.append(f"| {f['clave'].removesuffix('e')} | {celda(f['ecos'])} | {esperado_de(f)} | {obtenido_de(sin_eco)} | {obtenido_de(con_eco)} | {repregunta_mostrada(sin_eco['primera'])} | {repregunta_mostrada(f)} |")
-    lineas += ['', '_Pendiente: conclusión._', '', '## 8. Notas', '', '_Pendiente: notas._', '']
+    lineas += ['', '## 5. Atención especial', '', '_Pendiente: atención especial._', '']
+    if exploratorios:
+        lineas += ['## 6. Exploratorios', '', '| # | Est. | Pieza | Texto | Qué se mira | Tipo | `sensible` | `motivo` | Repregunta | Lectura |', '|---|---|---|---|---|---|---|---|---|---|']
+        for numero, por_corrida in exploratorios.items():
+            for _, por_caso in sorted(por_corrida.items()):
+                f = por_caso['primera']
+                lineas.append(f"| {f['clave']} | {f['estudiante']} | {celda(f['opciones'])} | {celda(f['texto'])} | {celda(f['tipo_caso'])} | {f['tipo'] or 'error'} | {f['sensible']} | {celda(f['motivo'])} | {repregunta_mostrada(f)} | _pendiente_ |")
+    if variante:
+        lineas += ['', '## 7. Variante B: ¿el eco de «Hoy» suma?', '', '| # | Eco | Esperado | Tipo sin eco | Tipo con eco | Repregunta sin eco | Repregunta con eco |', '|---|---|---|---|---|---|---|']
+        por_clave = {next(iter(pc.values()))['primera'].get('clave') or str(n): pc for n, pc in todos.items()}
+        for numero, por_corrida in variante.items():
+            for corrida, con_eco in sorted(por_corrida.items()):
+                f = con_eco['primera']
+                sin_eco = por_clave[f['clave'].removesuffix('e')][corrida]
+                lineas.append(f"| {f['clave'].removesuffix('e')} | {celda(f['ecos'])} | {esperado_de(f)} | {obtenido_de(sin_eco)} | {obtenido_de(con_eco)} | {repregunta_mostrada(sin_eco['primera'])} | {repregunta_mostrada(f)} |")
+        lineas += ['', '_Pendiente: conclusión._']
+    lineas += ['', '## 8. Notas' if exploratorios or variante else '## 6. Notas', '', '_Pendiente: notas._', '']
     INFORME.write_text(chr(10).join(lineas), encoding='utf-8')
     return medidas
 
