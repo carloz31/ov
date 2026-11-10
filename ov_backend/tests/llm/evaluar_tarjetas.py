@@ -584,7 +584,7 @@ def forma_de(fila, texto):
     elif texto == SIGA_IGUAL:
         forma = '«¿Qué crees que hizo que siga igual?»'
     elif not igual and texto.endswith(PREGUNTA_ADAPTADA) and texto != PREGUNTA_ADAPTADA:
-        forma = 'frase + base'
+        forma = 'frase + pregunta de la forma (1)'
     elif not igual and texto == PREGUNTA_ADAPTADA:
         forma = '**la pregunta de la forma (1), sin frase**'
     else:
