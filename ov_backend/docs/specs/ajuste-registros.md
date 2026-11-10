@@ -1605,3 +1605,300 @@ Si algo no pasa, se ajusta **solo** el texto del prompt (o el `evitar`/ejemplos 
 ### Preguntas abiertas
 
 Ninguna.
+
+## Ajuste · registros llm (lote 1)
+
+### Contexto
+La lógica del LLM de registros que se validó con Haiku (esquema v7, método B, `piloto-claude-3`) vive hoy solo en el runner de `tests/llm` (`evaluar_tarjetas.py` + `piloto_claude.py` + `tarjetas_*.py`). El texto de observaciones `ajuste-llm-registros-lote1.md` (versión actual, 10 nov) pide llevarla al backend como un módulo sin base de datos ni endpoints, sumarle sus decisiones (fallo `sin_evaluar`, arranque y línea del seguimiento, estado final con `emocional`, texto citable) y hacer que el runner use ese módulo. El flujo actual de registros (Gemini, v6.10) no se toca hasta el lote 3.
+
+- Spec en curso: `docs/specs/ajuste-registros.md` → el plan se agrega como sección `## Ajuste · registros llm (lote 1)` y el texto de observaciones como anexo, como en los ajustes anteriores.
+- Rama: `ajuste/registros-llm` (ya creada desde `ajuste/pruebas-llm`, como pide el texto; git no admite el espacio).
+
+### F0 · Comparación de tarjetas (hecha, sin escribir nada)
+Se comparó carácter por carácter el bloque de cada tarjeta de los tres adjuntos (`tarjetas-registros (17).md`, `tarjetas-registros-2 (4).md`, `tarjetas-registros-3.md`) con `TARJETAS` de `tests/llm/tarjetas_*.py`: **las 27 son idénticas** (21 de ítem + 6 de opción: AUN_NO, NINGUNO, CUESTA, NADIE, TODO, IGUAL). b2-4-cuesta no tiene tarjeta en el documento ni en el repo (sin LLM). `filtrar_etiqueta` es verdadero solo en b1-1-logro, y `general_por_opcion` está solo en b1-3-contraste y b2-4-cruce, como dicen el texto y los documentos. La fuente de F1 es el repo. En F1 se vuelve a correr la comparación como verificación y queda en la prueba de hashes.
+
+Lo que los documentos dicen y el backend no hará (lo decide §6 del texto): «en `fuera_de_tema`, la repregunta es la base tal cual», «devuelve la base tal cual» (b5-1, b5-3) y «la pista es la base del tipo que quedó» (b5-1) quedan como instrucciones al modelo; el backend no las impone. Los encabezados «admite abierto» ya no tienen efecto (§8: abierto vale en cualquier ítem).
+
+### Qué cambia (hoy → pasará a)
+
+**Tarjetas (F1)**
+- Hoy: 12 archivos `tests/llm/tarjetas_b*.py`; las bases se sacan con la regex `BASE_DE` del texto (`evaluar_tarjetas.bases_de`), con herencia de `fuera_de_tema` → `general` y `general_por_opcion` en b1-3-contraste y b2-4-cruce.
+- Pasará a: paquete de datos `datos/tarjetas_registros/` (un archivo por registro, `__init__.py` con `TARJETAS`). Cada tarjeta: `texto` (copiado por script, idéntico), `bases` separadas `{general, no_sabe, vacio, fuera_de_tema?}` (`no_sabe` y `vacio` iguales donde dice «no_sabe / vacio»; distintas en b1-1-gustos), `general_por_opcion` donde aplica, `filtrar_etiqueta` (solo b1-1-logro) y `por_opcion` para AUN_NO, NINGUNO, CUESTA, NADIE, TODO e IGUAL. Los datos de presentación que usa solo el runner (`pregunta`, `pregunta_por_opcion`, `ecos`, `lista_ecos`, `podio`) quedan en el mismo dict; el lote 2 decide qué va a la base.
+- `datos/` no importa `app/services`; la capa convierte el dict con `Tarjeta.desde_datos(...)`. `app/` no importa `datos` (quien llama pasa la tarjeta).
+- Prueba `tests/unit/registro/test_llm_tarjetas.py`: cada base aparece tal cual en el texto de su tarjeta (marcadores sin reemplazar), las bases que extrae hoy `BASE_DE` son iguales a las separadas, y un `HASHES` por tarjeta (sha256 del texto) en el paquete: cambiar una tarjeta exige cambiar su hash.
+
+**Módulo de la capa (F2)** — subcarpeta nueva `app/services/registro/llm/` (decisión de estructura a aprobar: el dominio ya es carpeta y la capa no cabe en un archivo):
+- `tarjeta.py`: `Tarjeta` (dataclass), `resolver(tarjeta, marcadores)` reemplaza `{carrera}`, `{plan_a}`, `{plan_b}` y `{opción}` en texto y bases (`{opción}` como hoy: `', {opción}'` → `', X'` o nada sin opción); `bases_para(tarjeta, codigo_opcion)` con la herencia.
+- `mensaje.py`: `Entrada` (tarjeta resuelta, pregunta mostrada, `etiquetas` ya resueltas —etiqueta, lo de «¿Cuál?» o «pieza (origen)»—, `ordenada`, líneas de ecos, respuesta; en el seguimiento, además respuesta anterior y repregunta mostrada). Saneo: largo máximo `MAXIMO_CARACTERES_TEXTO_LLM = 1000` (aprobado) sobre respuesta, respuesta anterior y cada etiqueta → `EntradaInvalida` (el lote 3 la traduce a 422); quita caracteres de control (salvo salto de línea); neutraliza `<tarjeta>`, `<pregunta_mostrada>`, `<opcion_marcada>`, `<ecos>`, `<respuesta_anterior>`, `<invitacion>`, `<respuesta>` (abiertas o cerradas, sin importar mayúsculas) cambiando `<`/`>` por `‹`/`›`. Los ecos reciben el mismo saneo, pero no el largo (vienen de textos que ya lo pasaron y llevan el nombre delante). Armado igual que `evaluar_tarjetas.mensaje`: podio «1.º …, 2.º …», etiquetas vacías omitidas. Ningún dato de cuenta entra en `Entrada`.
+- `cliente.py`: protocolo `ClienteLLM.llamar(sistema, mensaje) -> RespuestaCruda(texto, parada, tokens…, latencia_ms)`; `ClienteClaude` con SDK `anthropic`, `claude-haiku-5-5`, `output_config.effort='low'`, `output_config.format` json_schema (con `additionalProperties: false`), sin temperatura, `max_retries=0`. Topes nuevos en `parametros.py`: `MAXIMO_TOKENS_SALIDA_LLM = 2048` (el máximo medido en los pilotos, razonamiento incluido, fue 1164) y `TIEMPO_MAXIMO_LLM_SEGUNDOS = 12` (p95 5,5 s; máximo medido 8,3 s). `ClienteFalso` para pruebas (salidas fijas o excepción).
+- `prompt-v7-haiku-arranque.md` junto al módulo: `tests/llm/prompts/v7-haiku.md` + el bloque ARRANQUE de §7 tal cual; la última línea («Responde solo con JSON…») suma `"arranque"`, porque el esquema cambia. `VERSION_PROMPT_LLM = 'v7-haiku-arranque'` y `HASH_PROMPT` (sha256 al cargar). `prompt.py` no se toca.
+- `validacion.py`: esquema `{motivo, tipo, sensible, repregunta, arranque}` en ese orden. `sin_evaluar` con su causa ante: excepción o tiempo agotado del SDK, `stop_reason` `refusal`, `max_tokens` o cualquiera distinto de `end_turn`, JSON inválido o fuera del esquema. Sin reintento ni base. Coherencia: `propio`/`emocional`/`sensible` → repregunta descartada; tocaba repregunta y vino vacía → base del tipo; en la primera llamada el `arranque` se descarta.
+- `filtro.py`: el de `evaluar_tarjetas.filtrar` sin cambios (prohibidas, etiqueta donde `filtrar_etiqueta`, >30 palabras, >1 pregunta, termina en «?» o «.», caracteres permitidos, léxico es_ES con las palabras permitidas, truncamientos), más: `html.unescape` antes de filtrar, rechazo por etiqueta o marca de formato (`<…>`, `**`, `__`, `` ` ``, `#`, `[..](..)`) y por enlace (`http`, `www.`, dominio). Respaldo: primera → base del tipo; seguimiento → base de `no_sabe` (la que usa hoy el runner donde difiere de `vacio`). Mayúscula inicial en repregunta y pista. El léxico (`es_ES.dic/.aff`) se mueve de `tests/llm/lexico/` a `app/services/registro/llm/lexico/`.
+- `arranque.py` (chequeo simplificado, decisión del usuario): se quitan los dos puntos finales y las comillas si los trae; luego, máximo 10 palabras y sin enlaces, etiquetas ni signos de pregunta. Sin comparación palabra por palabra ni lista de conectores. `linea_seguimiento(arranque_valido, segunda)`: «Arranque con mayúscula inicial: segunda respuesta tal cual»; sin arranque válido (o `null`), la segunda respuesta sola. Se genera y arma en todo seguimiento, con cualquier tipo y también con `sensible`.
+- `estado.py` (pura): `ORDEN` propio > general > emocional > no_sabe > vacio > fuera_de_tema; `estado_final(primera, seguimiento|None)` → tipo final, sensible (de cualquiera), abierto (`no_sabe`), adecuado (propio/general/emocional, sensible o abierto), pista (§8), `linea_registro` (la línea del seguimiento si respondió la repregunta, sea cual sea la clasificación: lo que ve el estudiante en su registro) y `texto_citable` (0–2 líneas según la tabla de §8: la línea solo si el conjunto quedó `propio`/`general` y mejor que la primera; nada con sensible en alguna). `sin_evaluar` como estado del ítem es solo el fallo de la **primera** llamada: no adecuado, sin pista ni cita. Si falla la del **seguimiento** (decisión del usuario), el ítem conserva el tipo de la primera, como cuando no responde la repregunta: la pista es la repregunta mostrada, `linea_registro` es la segunda respuesta sola, no se cita nada del seguimiento y el resultado lleva la marca `seguimiento_sin_evaluar` con su causa.
+- `__init__.py`: `evaluar_primera(entrada, cliente)` y `evaluar_seguimiento(entrada, cliente)` → `Evaluacion(motivo, tipo, sensible, repregunta, uso_base, causa_base, sin_evaluar, causa_fallo, uso de la llamada)`; el seguimiento suma `arranque`, `arranque_paso`, `causa_arranque` y `linea`. Y `estado_final`.
+- Config: `ANTHROPIC_API_KEY` opcional en `app/config.py` (`Configuracion.anthropic_api_key`, leída de `.env` como la de Gemini; la app arranca sin ella) y en `.env.example`. Nunca se imprime.
+
+**Runner (F3)**
+- Hoy: `evaluar_tarjetas.py` (armado, filtro, estado, cliente Gemini) y `piloto_claude.py` (brazos Gemini/Haiku, manifiestos, informes) duplican la lógica.
+- Pasará a: un solo runner `tests/llm/evaluar_tarjetas.py` que llama al módulo (Haiku): conserva carga de casos y manifiestos (`casos_de_archivo` con `de`), variantes, exploratorios, `solapamientos`, `forma_de`/`forma_b53`, hashes e informes, y suma al CSV e informe el arranque, si pasó el chequeo, la línea armada y lo citable. Salen `piloto_claude.py`, el brazo Gemini y los `tarjetas_*.py` (aprobado; quedan en git y sus informes citan sus hashes). `evaluar.py` (v6, Gemini) no se toca. README al día.
+
+### Qué no cambia
+El flujo de registros (`acciones.py`, `evaluacion.py`, `gemini.py`, `prompt.py`, v6.10, `EvaluadorFalso`), esquemas y endpoints, modelo de datos (sin migración), `datos/contenido.py`, el front, las sugerencias de pasos y el guion con Gemini, los CSV e informes ya versionados.
+
+### Diferencias runner ↔ documento (se conserva el runner, salvo lo que el texto decide)
+- Decide el texto: `emocional` entra al orden (en el runner perdía con todos); fallo = `sin_evaluar` (el runner levantaba `FalloModelo`); `max_tokens` cuenta como fallo; mayúscula inicial; los tres cuidados nuevos del filtro; arranque y línea.
+- Se conserva el runner: el «¿» que falta se agrega (`abrir_interrogacion`); lo que queda fuera es mover un «¿» mal puesto. Repregunta vacía en el seguimiento → base del tipo (el filtro, en cambio, cae a `no_sabe`). La excepción de etiqueta en `fuera_de_tema`, que hoy nombra b1-1-logro, pasa a «toda tarjeta con `filtrar_etiqueta` en `fuera_de_tema`»: hoy es la única, así que da lo mismo.
+- Solo del runner (no va al módulo): la invitación de respaldo con la base del tipo esperado cuando el modelo no repreguntó.
+
+### Modelo de datos
+Sin cambios.
+
+### Dependencias (aviso)
+`anthropic` y `spylls` pasan de `dev` a dependencias del backend (`uv add`), porque el módulo vive en `app/`. `app/` lee dos archivos propios junto al módulo (el prompt y el léxico): excepción a «app no lee archivos de datos» que pide el texto (§4) y el filtro sin cambios (§6).
+
+### Pruebas
+- Unitarias nuevas en `tests/unit/registro/test_llm_*.py` con `ClienteFalso` (sin red), las de §10: armado (etiquetas omitidas, podio, pieza con origen, marcadores, saneo); cada causa de `sin_evaluar`; coherencia (incluido el arranque descartado en la primera); cada regla del filtro, los tres cuidados y los dos respaldos; herencia de bases y base por opción; toda la tabla del estado final (incluidos `vacio`→`emocional`, `general`→`emocional`, `vacio`→`no_sabe` abierto, sensible en la segunda); pista y cada fila del citable; arranque: pasa, cae por largo, cae por enlace, etiqueta o «?», se le quitan los dos puntos finales y las comillas, línea con y sin arranque, se genera también con `sensible`; seguimiento fallido: primera `general` + seguimiento fallido → `general`, adecuado; primera `vacio` + seguimiento fallido → `vacio`, no adecuado (pista = repregunta mostrada, línea = segunda respuesta sola, sin cita, con la marca y su causa).
+- Ninguna prueba existente se adapta. Por fase: `tests/unit/registro`, `tests/unit` (config, arquitectura) y `tests/integration/escenarios`.
+
+### Fases (commit `Ajuste registros llm · F<n>: …`)
+0. **Comparación de tarjetas** con los adjuntos: hecha, 27/27 idénticas.
+1. **Tarjetas como datos**: paquete `datos/tarjetas_registros/`, prueba de bases y hashes.
+2. **Módulo de la capa**: `app/services/registro/llm/`, prompt con arranque, léxico, config, dependencias, unitarias.
+3. **Runner sobre el módulo**: `evaluar_tarjetas.py` reescrito; fuera `piloto_claude.py`, Gemini y `tarjetas_*.py`; README.
+4. **Mini corrida con Haiku real** (la pides en §10):
+   - Equivalencia: `piloto-claude-3` (20 × 3 = 60 llamadas) por el módulo, medida contra el **tipo esperado** de cada caso; las diferencias con `piloto-claude-3-haiku-low.csv` solo se reportan.
+   - Seguimiento: todos los casos con `respuesta_seguimiento` de los `casos/*-tarjetas*.json` de los 12 registros, sin repetidos (mismo ítem, opciones y textos; con el esperado más reciente), una vez (~2 llamadas cada uno; informo el total antes de correr). Conjunto comparado con `conjunto_esperado`, para ver que el bloque del arranque no lo movió.
+   - Tabla de arranques (primera respuesta, repregunta mostrada, segunda respuesta, arranque, chequeo, línea armada, citable), revisada a ojo: basta con que la línea se entienda; dejo mi propuesta sí/no por línea para que confirmes, y cuántos arranques cayeron en el chequeo y por qué. Si un criterio falla, se ajusta el bloque o el chequeo y se repite solo esa parte.
+5. **Documentos**: `docs/sistema/registro.md` (sección nueva de la capa v7, sin conectar), `decisiones.md`, `AGENTS.md` del backend (subcarpeta `llm/`, `tests/llm`). Suite completa del backend (el front no cambia).
+
+### Verificación
+`pruebas` corre las carpetas de impacto por fase y la suite completa al cierre; F4 deja CSV e informe en `tests/llm/resultados/capa-llm/` con hashes del prompt, las tarjetas y el módulo.
+
+# Anexo · Observaciones del ajuste registros llm (texto completo)
+
+## Ajuste · capa del LLM de registros (lote 1 de 3)
+
+Observaciones para `/ajuste`, 10 nov 2026. Rama de trabajo: la que indique el usuario, partiendo de `ajuste/pruebas-llm`, que tiene el runner y las tarjetas.
+
+**Qué es.** Mover al backend la lógica del LLM de registros que hoy vive en el runner de `ov_backend/tests/llm` (esquema v7, método B, Claude Haiku), sumarle las decisiones de abajo y hacer que el runner use ese mismo módulo.
+
+**Qué manda.**
+- Este documento manda sobre `claude/estado-validacion-llm.md`, `claude/cambio-modelo-haiku.md` y `claude/cambios-pendientes-registros.md` (§0) donde choquen.
+- Las tarjetas son las de `claude/tarjetas-registros.md`, `-2.md` y `-3.md`. El usuario las adjunta.
+- **El comportamiento validado es el del runner.** Si un documento y el runner difieren en algo que este documento no decide, se conserva lo que hace el runner y se reporta la diferencia al usuario. No se «corrige» en silencio.
+
+### Los tres lotes
+
+1. **Lote 1 (este): capa del LLM.** Un módulo sin base de datos ni endpoints, y el runner sobre él.
+2. **Lote 2: modelo de datos y contenido.** Mecánicas nuevas (marcadores, piezas, podio con «Otra», ecos) y carga de los 19 registros con sus tarjetas.
+3. **Lote 3: flujo y pruebas.** Endpoints secuenciales, edición, eco cambiado, regla de adecuado y corrida corta de punta a punta.
+
+### Alcance del lote 1
+
+**Entra:**
+- el módulo de la capa del LLM (tarjetas, armado del mensaje, llamada, validación, filtro, arranque, estado final y texto citable);
+- las tarjetas como fuente única en un módulo de datos del backend;
+- el runner de `tests/llm` usando ese módulo, sin lógica propia duplicada;
+- pruebas unitarias con un cliente falso y una mini corrida con Haiku real.
+
+**No entra:**
+- conectar el módulo al flujo actual de registros: el flujo de hoy sigue funcionando como está hasta el lote 3;
+- tablas, migraciones y carga de contenido (lote 2);
+- front, informe y cartas;
+- retirar Gemini: lo siguen usando las sugerencias de pasos de la tarjeta de plan y las preguntas sugeridas de Investigaciones;
+- la pasada final para la tesis.
+
+### 1. Tarjetas
+
+- **Fuente única:** pasan de `tests/llm/tarjetas_<actividad>.py` a un módulo de datos del backend. El runner y, desde el lote 2, la carga leen de ahí. El texto de cada tarjeta se copia carácter por carácter.
+- **A qué pertenece:** una tarjeta es de un ítem o de una opción de ese ítem. Hay seis tarjetas de opción: AUN_NO (b1-3-mia), NINGUNO (b1-6-mito), CUESTA (b1-7-dia), NADIE (b3-4-quien), TODO (b4-1-menos) e IGUAL (b5-3-cambio). Las demás opciones usan la del ítem.
+- **Campos de cada tarjeta:**
+  - el texto completo que se manda al modelo;
+  - las bases, separadas del texto: `general`, `no_sabe`, `vacio` y `fuera_de_tema`. Son cuatro: en b1-1-gustos, `no_sabe` y `vacio` tienen bases distintas; donde la tarjeta dice «no_sabe / vacio», las dos llevan la misma;
+  - `filtrar_etiqueta` (hoy verdadero solo en b1-1-logro).
+- **Herencia de bases:**
+  - si una tarjeta no tiene base de `fuera_de_tema`, usa la de `general`;
+  - en b1-3-contraste y b2-4-cruce, la base de `general` depende de la opción marcada.
+- **Marcadores en las bases:** `{carrera}`, `{plan_a}`, `{plan_b}` y `{opción}` (la etiqueta de la opción marcada, en b1-1-logro y b1-3-mia). El módulo recibe los valores y los reemplaza en la tarjeta y en las bases antes de usarlas.
+- **Verificación:** una prueba comprueba que cada base separada aparece tal cual dentro del texto de su tarjeta, y deja un hash por tarjeta.
+
+### 2. Qué recibe y qué devuelve el módulo
+
+**Recibe**, ya resuelto por quien lo llama (el runner hoy, el flujo en el lote 3):
+- la tarjeta que corresponde al ítem y a la opción;
+- la pregunta mostrada;
+- la opción marcada, en el formato del runner: etiqueta, lo escrito en «¿Cuál?», podio con su orden («1.º …, 2.º …, 3.º …») o pieza con su origen entre paréntesis;
+- los ecos para el LLM, ya redactados en líneas;
+- los valores de los marcadores;
+- la respuesta; en el seguimiento, además la primera respuesta y la repregunta que vio el estudiante.
+
+**Tres funciones:**
+- evaluar la primera respuesta;
+- evaluar el seguimiento (las dos respuestas juntas);
+- calcular el estado final del ítem: función pura, sin llamada.
+
+**Cada evaluación devuelve:** `motivo`, `tipo`, `sensible`, la repregunta ya filtrada (o la base), si se usó la base y por qué y, si falló, la marca de fallo con su causa. El seguimiento devuelve además el `arranque` y la línea del seguimiento ya armada (§7). El `motivo` se devuelve siempre: desde el lote 2 se guarda en la base de datos para auditar.
+
+### 3. Cuidados con lo que entra al LLM
+
+Se aplican a la respuesta, a lo escrito en «¿Cuál?» y a los ecos de texto (también los escribió el estudiante):
+- largo máximo por texto, validado en el servidor: el que ya tenga el backend para los registros; si no hay, proponer uno;
+- se quitan los caracteres de control;
+- se neutralizan las etiquetas del mensaje (`<respuesta>`, `<ecos>`, `<tarjeta>` y las demás) si aparecen dentro del texto;
+- no se manda ningún dato que identifique al estudiante.
+
+El prompt ya trata lo escrito como dato y no como instrucción. Las etiquetas vacías se omiten, como en el runner.
+
+### 4. Llamada
+
+- **Cliente y parámetros:** los de `claude/cambio-modelo-haiku.md` y el runner: SDK `anthropic`, `claude-haiku-5-5`, esfuerzo `low`, salida con esquema JSON, sin temperatura.
+- **Topes:** máximo de tokens de salida (el JSON es corto) y tiempo máximo por llamada. Proponer los valores con la latencia medida (mediana 2,1 s, p95 5,5 s).
+- **Clave:** `ANTHROPIC_API_KEY` en la configuración del backend y del despliegue, fuera del repo. No como variable global de la máquina de desarrollo.
+- **Prompt:** `prompts/v7-haiku.md` más el bloque del arranque (§7), como archivo nuevo con su hash. El prompt pasa a vivir junto al módulo; `app/services/registro/prompt.py` no se toca en este lote.
+
+### 5. Validación de la salida
+
+- **Esquema:** `{motivo, tipo, sensible, repregunta, arranque}`, en ese orden. `tipo` es uno de `propio` · `general` · `no_sabe` · `vacio` · `fuera_de_tema` · `emocional`.
+- **Fallo de la llamada** (reemplaza «mostrar la base»): error o tiempo agotado, parada por rechazo o por tope de tokens, JSON inválido o fuera del esquema. El resultado es **`sin_evaluar`**: no se muestra ninguna base ni se reintenta en silencio. El flujo (lote 3) guarda el texto, pasa al siguiente ítem y deja el registro como no adecuado hasta que se reenvíe.
+- **Coherencia:**
+  - si `tipo` es `propio` o `emocional`, o `sensible` es verdadero, la repregunta se descarta aunque venga;
+  - si tocaba repregunta y vino vacía, se usa la base del tipo;
+  - en la primera llamada, el `arranque` se descarta aunque venga.
+
+### 6. Filtro de la repregunta
+
+- **El del runner, sin cambios:** palabras prohibidas, etiqueta de la opción donde `filtrar_etiqueta`, más de 30 palabras o más de una pregunta, léxico es_ES y truncamientos conocidos.
+- **Tres cuidados nuevos:**
+  - decodificar las entidades HTML antes de filtrar;
+  - rechazar si trae etiquetas o marcas de formato;
+  - rechazar si trae un enlace.
+- **Respaldo:** en la primera llamada, la base del tipo. En el seguimiento (la pista), la base de `no_sabe / vacio`; donde las dos difieren, la que use hoy el runner.
+- **Mayúscula inicial** en la repregunta y en la pista.
+- **El backend no impone bases** por lo que diga la tarjeta («tal cual», formas cerradas). Quedan descartadas las dos reglas de `estado-validacion-llm.md`.
+- **Fuera:** corrección automática de tildes, léxico de carreras y mover el «¿».
+
+### 7. Arranque y línea del seguimiento (nuevo)
+
+**Qué es.** Para que lo que el estudiante respondió a la repregunta se lea solo, el modelo escribe un **arranque**: el comienzo de una oración que dice qué preguntaba la repregunta. El backend le pega la segunda respuesta tal como la escribió el estudiante.
+
+- Repregunta: «Hoy quieres ser chef. ¿Qué viste, supiste o te pasó que te hizo verlo distinto?»
+- Segunda respuesta: «fui a un taller de cocina y me gusto»
+- Arranque (modelo): «Lo que me hizo verlo distinto»
+- Línea del seguimiento (backend): «Lo que me hizo verlo distinto: fui a un taller de cocina y me gusto»
+
+**El modelo nunca reescribe las palabras del estudiante.** No se corrige la ortografía de la segunda respuesta, igual que no se corrige la primera.
+
+**Cuándo se genera.** En todo seguimiento, sea cual sea el tipo y también si `sensible` es verdadero: el arranque sale solo de la pregunta, no de lo que el estudiante contestó. No se pide en la primera llamada por dos razones:
+- la repregunta que se muestra a veces es la base (cuando el filtro rechaza), y el arranque tiene que salir de lo que el estudiante vio. En el seguimiento el modelo recibe esa repregunta en `<invitacion>`;
+- la primera llamada, que es la más validada, queda sin tocar.
+
+**Bloque para el prompt** (borrador; se afina en la mini corrida):
+
+```
+ARRANQUE (solo cuando hay <respuesta_anterior>; escríbelo siempre, sea cual sea el tipo)
+- Escribe en "arranque" el comienzo de una oración, en primera persona, que diga qué
+  pregunta la <invitacion>, para que la respuesta del estudiante se lea a continuación.
+  Ejemplo: invitación «¿Qué viste, supiste o te pasó que te hizo verlo distinto?» →
+  arranque «Lo que me hizo verlo distinto».
+- Sale solo de la pregunta de la invitación. Si la invitación empieza con una frase que
+  retoma algo del estudiante, no la uses. No uses nada de la respuesta ni de la respuesta
+  anterior: el arranque es el mismo sea cual sea la respuesta.
+- Máximo 8 palabras. Sin dos puntos al final, sin comillas y sin signos de pregunta.
+```
+
+**Chequeo del backend.**
+- Máximo 10 palabras, sin enlaces, etiquetas ni signos de pregunta.
+- Cada palabra debe estar en la repregunta mostrada o en la pregunta del ítem, o en una lista corta de conectores (artículos, preposiciones, pronombres, «lo», «que»).
+- La comparación ignora mayúsculas, tildes y puntuación. Evaluar en la mini corrida cómo tolerar el paso a primera persona («te hizo» → «me hizo», «fuiste» → «fui»).
+- **Si no pasa, la línea del seguimiento es la segunda respuesta sola, sin arranque.**
+
+**Armado de la línea:** arranque con mayúscula inicial, dos puntos, un espacio y la segunda respuesta tal cual.
+
+**Dónde se usa la línea:**
+- **en el registro del propio estudiante, siempre** que haya respondido la repregunta, sea cual sea la clasificación (§8);
+- **como texto citable en otras actividades,** solo cuando la segunda respuesta mejoró el resultado (§8). Esa regla vive en el backend y se puede cambiar sin tocar el prompt.
+
+### 8. Estado final y texto citable
+
+**Orden de los tipos** (de mejor a peor): `propio` > `general` > `emocional` > `no_sabe` > `vacio` > `fuera_de_tema`.
+
+- **Tipo final:** el mejor entre el de la primera respuesta y el del conjunto. Si no hubo segunda respuesta, el de la primera.
+- **`sensible`:** verdadero si salió en cualquiera de las dos llamadas. Manda sobre todo.
+- **Abierto:** tipo final `no_sabe`. Vale para cualquier ítem; `admite_abierto` deja de existir.
+- **Ítem adecuado:** tipo final `propio`, `general` o `emocional`, o `sensible`, o abierto. La regla por registro (un abierto vale, dos no; ninguno `vacio`, `fuera_de_tema` ni `sin_evaluar`) va en el lote 3.
+- **Sin repregunta:** `propio`, `emocional` y `sensible`. El mensaje de Lumi para los dos últimos lo pone el front según el resultado de la llamada.
+
+**Pista** (se muestra solo al editar):
+- si respondió la repregunta y el tipo final no es `propio`: la repregunta que generó el seguimiento;
+- si no respondió la repregunta: esa misma repregunta;
+- ninguna si el tipo final es `propio` o `emocional`, o si es sensible.
+
+**Texto citable** (lo que se muestra como eco o pieza en otras actividades). La línea del seguimiento se cita solo si la segunda respuesta **mejoró** el resultado: el conjunto quedó `propio` o `general` y es mejor que el tipo de la primera.
+
+| Primera | Conjunto | Se cita |
+|---|---|---|
+| `propio` | — | la primera |
+| `general` | `propio` | la primera y la línea del seguimiento |
+| `general` | `general` o peor | la primera |
+| `no_sabe`, `vacio` o `fuera_de_tema` | `propio` o `general` | la línea del seguimiento |
+| cualquiera | sensible en alguna | nada |
+| otros casos | | nada |
+
+La función devuelve una lista de una o dos líneas, o vacía. Las dos respuestas originales se conservan siempre.
+
+**Qué ve cada quien** (para los lotes 2 y 3):
+- **en otras actividades:** solo el texto citable;
+- **el estudiante en su propio registro:** siempre lo que respondió, sea cual sea la clasificación y sin ninguna marca: su primera respuesta y, debajo, la línea del seguimiento si respondió la repregunta. Desde ahí puede editar, y la respuesta nueva se evalúa otra vez;
+- **la orientadora:** siempre las dos respuestas originales, con su tipo y las marcas.
+
+### 9. El runner
+
+- Deja de tener su propia copia del armado, el filtro, el estado final y las tarjetas: llama al módulo.
+- Conserva lo suyo: casos, variantes, casos exploratorios, chequeo de solapamiento con los ejemplos, forma de las repreguntas e informes.
+- Suma al informe el arranque, si pasó el chequeo y la línea armada.
+
+### 10. Pruebas
+
+**Unitarias, con cliente falso:**
+- armado del mensaje: etiquetas omitidas, podio, pieza con origen, marcadores, saneo de la entrada;
+- cada causa de `sin_evaluar`;
+- coherencia de la salida;
+- filtro: cada regla, los tres cuidados nuevos y los dos respaldos;
+- herencia de bases y base por opción;
+- estado final: toda la tabla de tipos, incluidos `vacio` → `emocional`, `general` → `emocional`, `vacio` → `no_sabe` (abierto) y sensible en la segunda;
+- pista y texto citable: cada fila de la tabla;
+- arranque: pasa, cae por palabra de fuera, cae por largo; armado de la línea con y sin arranque; se genera también con `sensible`.
+
+**Mini corrida con Haiku real:**
+- **Equivalencia:** el set de `piloto-claude-3` (20 casos × 3) corrido a través del módulo. Debe dar la misma clasificación que antes.
+- **Seguimiento:** todos los casos de seguimiento que ya existen en los 12 registros requeridos, una vez. Se compara la clasificación del conjunto con la anterior, para ver que el bloque del arranque no la movió.
+- **Arranques:** una tabla con primera respuesta, repregunta mostrada, segunda respuesta, arranque, si pasó el chequeo, la línea armada y lo que quedaría citable.
+
+**Criterios:**
+- la clasificación no empeora respecto de las corridas anteriores;
+- cada línea armada se entiende y dice lo que preguntaba la repregunta. Claude deja una propuesta marcada (sí o no por línea) y el usuario la confirma;
+- ningún arranque usa palabras de la respuesta del estudiante;
+- se reporta cuántos arranques cayeron en el chequeo y por qué.
+
+Si un criterio falla, se ajusta el bloque del arranque o el chequeo y se repite solo esa parte.
+
+### 11. Decisiones tomadas en esta sesión que cambian lo anterior
+
+- **Fallo de la llamada:** `sin_evaluar`, no la base.
+- **Adecuado:** se mantiene la regla (sin `vacio` ni `fuera_de_tema`; `general` cuenta; un abierto vale). `emocional` y `sensible` cuentan y no se citan.
+- **`emocional` entra al orden del estado final,** entre `general` y `no_sabe`.
+- **Edición:** es volver a iniciar el ítem. La pista es solo visual y la respuesta nueva se evalúa como primera (lote 3).
+- **Sale el tope de repreguntas por registro:** hay una por ítem.
+- **Salen los criterios** (RAZON, EJEMPLO, ACCION, CONTRASTE), el bloque `seguimiento` y `admite_abierto` (lote 2).
+- **No se consolida con el LLM:** la primera respuesta tal cual y la línea del seguimiento (arranque del modelo más la segunda respuesta tal cual). El estudiante las ve siempre en su registro; en otras actividades la línea se cita solo si mejoró el resultado.
+- **Se guarda el `motivo`** (lote 2).
+
+### 12. Pendiente para los lotes 2 y 3
+
+- b1-1-logro, «No se me ocurre ninguno»: propuesto mostrar directo la base de `no_sabe`, sin llamada.
+- Pieza de b1-6 en b5-3 cuando marcó «Ninguno me suena» o «Otra».
+- Cartas C2 a C6: referencias a ítems que salen.
+- h1: las cinco habilidades como opciones propias con su pregunta.
+- ma3: apertura si el día a los 23 quedó abierto.
+- Casos de regresión anotados (R3 y R14 de b4-1, seguimiento de b1-3, dos de b5-1 y tres de b5-3): van en la corrida corta del lote 3.
