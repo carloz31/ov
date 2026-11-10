@@ -1,13 +1,14 @@
 """Prompt del LLM de registros, esquema v7 con Claude Haiku (lote 1 del ajuste registros llm).
 
-Es `tests/llm/prompts/v7-haiku.md` (piloto-claude-3) más el bloque ARRANQUE del texto de observaciones (§7), tal cual,
+Es `tests/llm/prompts/v7-haiku.md` (piloto-claude-3) más el bloque ARRANQUE del texto de observaciones (§7), tal cual
+salvo la línea de las dos cosas unidas con «o» (pedida por el usuario tras F4; v7-haiku-arranque.2),
 antes de la última línea, que suma `"arranque"` porque el esquema cambia. Cambiar el texto exige cambiar
 `VERSION_PROMPT_LLM`; `HASH_PROMPT` va en el informe de cada corrida.
 """
 
 import hashlib
 
-VERSION_PROMPT_LLM = 'v7-haiku-arranque'
+VERSION_PROMPT_LLM = 'v7-haiku-arranque.2'
 
 PROMPT = '''Eres un clasificador de respuestas de estudiantes de 5.º de secundaria (16-17 años, Perú)
 en una actividad de orientación vocacional. No evalúas si la respuesta es buena ni la
@@ -91,6 +92,7 @@ ARRANQUE (solo cuando hay <respuesta_anterior>; escríbelo siempre, sea cual sea
 - Sale solo de la pregunta de la invitación. Si la invitación empieza con una frase que
   retoma algo del estudiante, no la uses. No uses nada de la respuesta ni de la respuesta
   anterior: el arranque es el mismo sea cual sea la respuesta.
+- Si la invitación pregunta por dos cosas unidas con “o” (“qué te da seguridad, o qué te la quita”), el arranque nombra las dos (“Lo que me da o me quita seguridad”).
 - Máximo 8 palabras. Sin dos puntos al final, sin comillas y sin signos de pregunta.
 
 Responde solo con JSON: {"motivo": "...", "tipo": "...", "sensible": false, "repregunta": "..." | null, "arranque": "..." | null}

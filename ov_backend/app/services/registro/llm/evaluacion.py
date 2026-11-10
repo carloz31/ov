@@ -111,7 +111,8 @@ def evaluar_seguimiento(entrada: Entrada, cliente: ClienteLLM, sistema: str = PR
     salida, causa, cruda = _llamar(entrada, cliente, sistema)
     if salida is None:
         return Evaluacion(sin_evaluar=True, causa_fallo=causa, llamada=cruda, linea=arranques.linea(None, entrada.respuesta))
-    arranque, causa_arranque = arranques.revisar(salida.arranque)
+    arranque, causa_arranque = arranques.revisar(salida.arranque, (entrada.respuesta_anterior, entrada.respuesta),
+                                                 entrada.invitacion, entrada.etiquetas)
     return Evaluacion(sin_evaluar=False, motivo=salida.motivo, tipo=salida.tipo, sensible=salida.sensible,
                       repregunta_modelo=salida.repregunta, llamada=cruda, arranque_modelo=salida.arranque,
                       arranque=arranque, causa_arranque=causa_arranque, linea=arranques.linea(arranque, entrada.respuesta),

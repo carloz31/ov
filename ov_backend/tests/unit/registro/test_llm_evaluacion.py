@@ -159,7 +159,8 @@ def test_arranque_que_pasa_y_su_linea():
 
 
 @pytest.mark.parametrize(('arranque', 'causa'), [
-    ('uno dos tres cuatro cinco seis siete ocho nueve diez once', 'mas_de_10_palabras'),
+    ('uno dos tres cuatro cinco seis siete ocho nueve diez once doce trece', 'mas_de_12_palabras'),
+    ('Jugaba en el parque con mi primo', 'palabras_de_la_respuesta'),
     ('Lo que vi en www.ejemplo.com', 'enlace'),
     ('Lo que <b>vi</b>', 'formato'),
     ('Qué me hizo verlo distinto?', 'signo_de_pregunta'),
@@ -176,6 +177,36 @@ def test_arranque_que_cae(arranque, causa):
 def test_se_le_quitan_los_dos_puntos_finales_y_las_comillas():
     assert limpiar('«Lo que me hizo verlo distinto»:') == 'Lo que me hizo verlo distinto'
     assert revisar('"Lo que me gustaba" : ') == ('Lo que me gustaba', None)
+
+
+@pytest.mark.parametrize(('crudo', 'limpio'), [
+    ('El punto en el que chocamos es', 'El punto en el que chocamos'),
+    ('Lo que me da seguridad es que', 'Lo que me da seguridad'),
+    ('Lo que decidí fue:', 'Lo que decidí'),
+    ('Lo que me exigiría más sería', 'Lo que me exigiría más'),
+    ('Empecé a verlo distinto cuando', 'Empecé a verlo distinto'),
+    ('No me haría falta nada porque', 'No me haría falta nada'),
+    ('Lo que pienso es, porque', 'Lo que pienso'),
+    ('Cuando empecé a verlo distinto', 'Cuando empecé a verlo distinto'),  # solo se quita del final
+])
+def test_se_quitan_las_colas_del_final(crudo, limpio):
+    assert limpiar(crudo) == limpio
+
+
+def test_doce_palabras_pasan():
+    assert revisar('uno dos tres cuatro cinco seis siete ocho nueve diez once doce')[1] is None
+
+
+def test_palabras_de_la_respuesta_que_no_estan_en_la_repregunta_ni_en_la_opcion():
+    respuestas = ('Jugaba a la pelota', 'Con mis primos en la calle')
+    # Dos palabras de contenido de las respuestas: cae.
+    assert revisar('Jugaba a la pelota con mis primos', respuestas, '¿A qué jugabas y con quién?')[1] == 'palabras_de_la_respuesta'
+    # Una sola, o las que también están en la repregunta o en la opción, no cuentan.
+    assert revisar('Lo que jugaba', respuestas, '¿A qué jugabas y con quién?')[1] is None
+    assert revisar('A lo que jugaba con la pelota', respuestas, '¿Jugabas a la pelota?')[1] is None
+    assert revisar('Mi pelota y mis primos', respuestas, '¿Con quién?', ('Pelota', 'Primos'))[1] is None
+    # Las palabras de función no cuentan.
+    assert revisar('Lo que es para mí', ('Es para mí',), '¿Qué buscas?')[1] is None
 
 
 def test_linea_con_y_sin_arranque():

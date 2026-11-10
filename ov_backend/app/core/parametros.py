@@ -86,7 +86,9 @@ TIEMPO_MAXIMO_LLM_SEGUNDOS = 12
 # Largo máximo de la respuesta y de lo escrito en «¿Cuál?» (no había uno para los registros).
 MAXIMO_CARACTERES_TEXTO_LLM = 1000
 MAXIMO_PALABRAS_REPREGUNTA_LLM = 30
-MAXIMO_PALABRAS_ARRANQUE = 10
+MAXIMO_PALABRAS_ARRANQUE = 12
+# El arranque cae si trae estas palabras de contenido (o más) de las respuestas que no están en la repregunta ni en la opción.
+MINIMO_PALABRAS_AJENAS_ARRANQUE = 2
 
 # B09 · Diario. Cambiar el prompt de personalización exige subir `VERSION_PROMPT_DIARIO`.
 VERSION_PROMPT_DIARIO = "v1"
