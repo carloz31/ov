@@ -35,11 +35,11 @@ app/                    solo la aplicación; no lee archivos de datos
   services/             lógica de negocio por dominio
     motor/              núcleo de desbloqueos
     instrumentos/       cálculo, consultas y resultados
-    registro/           registro con evaluador de respuestas
+    registro/           registro con evaluador de respuestas; `llm/`: capa del LLM v7 (Claude), aún sin conectar
     planes/             planes de carrera: consultas, acciones y sugerencias
     investigaciones/    investigaciones y entrevistas: consultas, acciones, sugerencias y orientadora
   core/                 parámetros, caché de definiciones y contexto de consultas
-datos/                  lo que llena la base: fijos.py, contenido.py, ruta.py, cargador.py, catalogo.py (CSV de archivos/catalogo/), cargar.py
+datos/                  lo que llena la base: fijos.py, contenido.py, ruta.py, cargador.py, catalogo.py (CSV de archivos/catalogo/), cargar.py; tarjetas_registros/ (tarjetas del LLM v7)
 migrations/             migraciones de Alembic
 scripts/                herramientas manuales (exportador de fixtures, coherencia de `contenido` con el front, entrevistas de ejemplo, colección de evaluación de registros)
 tests/                  pruebas (ver «Pruebas»)
@@ -140,7 +140,7 @@ tests/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
     escenarios/contenido/  test_recorrido_contenido.py: el camino y la ruta del apoderado del conjunto `contenido`
     registros/        los registros definitivos de `contenido` recorridos con el evaluador falso (ajuste registros)
-  llm/               validación del LLM de registros contra Gemini real (`evaluar.py`, casos y resultados versionados); no es pytest, se corre a mano (ver su README)
+  llm/               validación del LLM de registros contra el modelo real (`evaluar.py`, v6 con Gemini; `evaluar_tarjetas.py`, v7 sobre `app/services/registro/llm`), casos y resultados versionados; no es pytest, se corre a mano (ver su README)
 ```
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.
