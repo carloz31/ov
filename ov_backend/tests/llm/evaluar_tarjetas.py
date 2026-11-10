@@ -590,7 +590,7 @@ def forma_de(fila, texto):
     else:
         forma = 'otra forma'
     clave = 'te lo confirm' if igual else 'te hizo verlo distinto'
-    conserva = 'sí' if clave in texto or texto == SIGA_IGUAL else 'no'
+    conserva = 'sí' if tipo or clave in texto or texto == SIGA_IGUAL else 'no'  # una base tal cual es la tarjeta
     return forma, conserva
 
 
