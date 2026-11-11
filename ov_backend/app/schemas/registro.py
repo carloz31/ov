@@ -128,6 +128,8 @@ class OpcionOfrecida(BaseModel):
     sin_llm: bool
     pregunta: str | None
     arranque: str | None
+    # Una pieza que cita un texto: sus líneas por separado (`texto` las une con « / »); vacío en las demás.
+    lineas: list[str] = []
 
 
 class RespuestaVigente(BaseModel):

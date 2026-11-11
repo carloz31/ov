@@ -76,7 +76,8 @@ def _item_cuenta(sesion, cuenta, item, respuesta):
         opciones=[] if hoy is None else [OpcionOfrecida(
             codigo=o.codigo, texto=o.texto, origen=o.origen, grupo=o.grupo, exclusiva=o.exclusiva, sin_llm=o.sin_llm,
             # Cada opción lleva su pregunta: en los ítems con pregunta por opción, se sirve siempre la de la opción.
-            pregunta=hoy.pregunta_para(o.codigo), arranque=hoy.arranque_para(o.codigo)) for o in hoy.opciones],
+            pregunta=hoy.pregunta_para(o.codigo), arranque=hoy.arranque_para(o.codigo), lineas=list(o.lineas))
+            for o in hoy.opciones],
         ecos=[] if hoy is None else [dict(e) for e in hoy.ecos_mostrar],
         respuesta=None if respuesta is None else _respuesta(item, respuesta, hoy))
 

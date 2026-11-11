@@ -7,7 +7,8 @@ import pytest
 from soporte_catalogo_ruta import PERIODISMO, PSICOLOGIA
 from soporte_contenido import REQUERIDAS, avanzar
 from soporte_llm import salida
-from soporte_ruta import FECHA, eleccion_minima, item_de, leer_registro, pedir, responder_item, responder_registro
+from soporte_ruta import (FECHA, eleccion_minima, item_de, leer_registro, pedir, responder_item, responder_registro,
+                          seguir)
 
 TEXTO = 'DATO DE PRUEBA: una respuesta con su ejemplo.'
 PROHIBIDOS = {'tipo', 'motivo', 'sensible', 'tipo_final', 'primera_tipo', 'conjunto_tipo', 'abierto', 'intento',
@@ -173,3 +174,44 @@ def test_un_item_vacio_no_se_cita(cliente_contenido, llm):
     referencias = {r['codigo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/ma3/referencias')[
         'referencias']}
     assert 'texto' not in referencias['ma3-ref-dia']
+
+
+# --- Dos líneas citables (lote 3, decisión del usuario): se unen con « / » y la lectura las da por separado --------
+
+def dos_lineas(cliente, llm, actividad, item, primera, seguimiento, arranque):
+    # La repregunta repite las palabras del arranque, para que el chequeo del arranque lo deje pasar.
+    llm.encolar(salida('general', f'¿{arranque}?'), salida('propio', arranque=arranque))
+    responder_item(cliente, actividad, item, [], primera)
+    seguir(cliente, actividad, item, seguimiento)
+    return f'{arranque}: {seguimiento}'
+
+
+def test_pieza_y_eco_con_dos_lineas(cliente_contenido, llm):
+    cliente = cliente_contenido
+    hasta(cliente, 'b4-1')
+    linea = dos_lineas(cliente, llm, 'b1-1', 'b1-1-gustos', 'jugar fútbol', 'de arquero en la canchita',
+                       'Lo que hacía en el fútbol')
+    gusto = next(o for o in item_de(leer_registro(cliente, 'b4-1'), 'b4-1-respalda')['opciones']
+                 if o['codigo'] == 'GUSTO')
+    assert gusto['texto'] == f'«jugar fútbol / {linea}»' and gusto['lineas'] == ['jugar fútbol', linea]
+    responder_item(cliente, 'b4-1', 'b4-1-respalda', [{'codigo': 'GUSTO', 'texto': gusto['texto']}], TEXTO)
+    assert f'jugar fútbol / {linea}' in llm.llamadas[-1][1]
+    # Un eco de texto de un ítem anterior de la misma actividad (b3-4-necesito → b3-4-quien).
+    linea = dos_lineas(cliente, llm, 'b3-4', 'b3-4-necesito', 'los sueldos', 'si suben con los años',
+                       'Lo que querría saber de los sueldos')
+    eco, = [e for e in item_de(leer_registro(cliente, 'b3-4'), 'b3-4-quien')['ecos'] if e['codigo'] == 'b3-4-necesito']
+    assert eco['texto'] == ['los sueldos', linea]
+    responder(cliente, 'b3-4', 'b3-4-quien')
+    assert f'los sueldos / {linea}' in llm.llamadas[-1][1]
+
+
+def test_referencia_de_texto_con_dos_lineas(cliente_contenido, llm):
+    cliente = cliente_contenido
+    hasta(cliente, 'b1-7')
+    llm.encolar(salida('general', '¿Qué haces ahí?'), salida('propio', arranque='Lo que hago ahí'))
+    responder_item(cliente, 'b1-7', 'b1-7-dia', [{'codigo': 'CLARO'}], 'Estoy en una planta')
+    seguir(cliente, 'b1-7', 'b1-7-dia', 'reviso las máquinas')
+    dia = next(r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/ma3/referencias')['referencias']
+               if r['codigo'] == 'ma3-ref-dia')
+    assert dia['texto'] == 'Estoy en una planta / Lo que hago ahí: reviso las máquinas'
+    assert dia['lineas'] == ['Estoy en una planta', 'Lo que hago ahí: reviso las máquinas']

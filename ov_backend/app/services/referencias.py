@@ -29,6 +29,10 @@ from app.schemas.referencias import OpcionReferida, PlanReferido, ReferenciaResu
 from app.services.comun import buscar_por_codigo
 from app.services.instrumentos.consultas import cargar_representaciones, representar_resultado
 
+# Ajuste registros llm (lote 3, decisión del usuario): las líneas citables de un ítem (la primera respuesta y la del
+# seguimiento) se unen con « / » en el texto; `lineas` las trae por separado.
+SEPARADOR_LINEAS = ' / '
+
 
 CODIGO_OTRA = 'OTRA'
 
@@ -316,7 +320,8 @@ def resolver(sesion, cuenta, referencias):
                 opciones=_opciones(sesion, item, respuesta.opciones_elegidas))
         elif respuesta.texto_citable:
             resueltas[referencia.codigo] = ReferenciaResuelta(
-                **base, estado=EstadoReferencia.DISPONIBLE, texto=' '.join(respuesta.texto_citable))
+                **base, estado=EstadoReferencia.DISPONIBLE, texto=SEPARADOR_LINEAS.join(respuesta.texto_citable),
+                lineas=list(respuesta.texto_citable))
         else:
             resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO)
     return resueltas

@@ -79,7 +79,8 @@ def test_se_cita_el_texto_citable_del_intento_vigente(cliente, aplicacion):
     citar(aplicacion, AMPLIADO, 'DATO DE PRUEBA: segunda línea.')
     assert referencias(cliente)['t-ref-espera'] == {
         'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
-        'texto': f'{AMPLIADO} DATO DE PRUEBA: segunda línea.'}
+        # Lote 3 (decisión del usuario): las dos líneas se unen con « / » y van también por separado.
+        'texto': f'{AMPLIADO} / DATO DE PRUEBA: segunda línea.', 'lineas': [AMPLIADO, 'DATO DE PRUEBA: segunda línea.']}
 
 
 # --- ELECCION -------------------------------------------------------------------------------

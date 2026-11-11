@@ -36,7 +36,7 @@ from app.models.enums import EstadoReferencia, FuenteOpciones, TipoReferencia
 from app.services.comun import buscar_por_codigo
 from app.services.instrumentos.calculo import DimensionCalculada, calcular_dimensiones_destacadas
 from app.services.instrumentos.consultas import resultado_intereses
-from app.services.referencias import _leer_planes, referenciable, resolver
+from app.services.referencias import SEPARADOR_LINEAS, _leer_planes, referenciable, resolver
 from app.services.registro.eleccion import CODIGO_OTRA
 from app.services.registro.llm import Entrada, armar, tarjeta_para
 
@@ -80,6 +80,8 @@ class OpcionContexto:
     texto_llm: str | None = None
     # Una opción de una referencia resuelta en vivo: se guarda con su texto de hoy (lote 3).
     de_referencia: bool = False
+    # Una pieza que cita un texto: sus líneas citables por separado (el texto las une con « / », lote 3).
+    lineas: tuple[str, ...] = ()
 
     @property
     def para_llm(self):
@@ -195,12 +197,12 @@ def _texto_fijo(sesion, codigo):
     return fila.texto
 
 
-def _pieza(sesion, codigo, clave, texto, grupo, texto_llm=None, origen=None):
+def _pieza(sesion, codigo, clave, texto, grupo, texto_llm=None, origen=None, lineas=()):
     """Una pieza con su origen que se muestra (`PIEZA_ORIGEN_<clave>_MOSTRAR`, o `origen`) y el que va al LLM."""
     return OpcionContexto(
         codigo=codigo, texto=texto, grupo=None if grupo is None else _texto_fijo(sesion, f'PIEZA_GRUPO_{grupo}'),
         origen=origen or _texto_fijo(sesion, f'PIEZA_ORIGEN_{clave}_MOSTRAR'),
-        origen_llm=_texto_fijo(sesion, f'PIEZA_ORIGEN_{clave}_LLM'), texto_llm=texto_llm)
+        origen_llm=_texto_fijo(sesion, f'PIEZA_ORIGEN_{clave}_LLM'), texto_llm=texto_llm, lineas=tuple(lineas))
 
 
 def _escrito(sesion, codigo_item, respuesta, elegida, comillas_llm):
@@ -260,7 +262,7 @@ def piezas_perfil(sesion, cuenta, con_cuesta=False):
                                  ' y '.join(l or t for t, l in textos)))
     gusto = _citable(vigentes[ITEM_GUSTOS]) if ITEM_GUSTOS in vigentes else []
     if gusto:
-        piezas.append(_pieza(sesion, 'GUSTO', 'GUSTO', _comillas(' '.join(gusto)), 'ANTES'))
+        piezas.append(_pieza(sesion, 'GUSTO', 'GUSTO', _comillas(SEPARADOR_LINEAS.join(gusto)), 'ANTES', lineas=gusto))
     return piezas
 
 
@@ -281,8 +283,8 @@ def piezas_inicio(sesion, cuenta):
     for codigo_item, codigo in ((ITEM_DIA, 'INI-DIA'), (ITEM_FRENO, 'INI-FRENO')):
         lineas = _citable(vigentes[codigo_item]) if codigo_item in vigentes else []
         if lineas:
-            texto = ' '.join(lineas)
-            piezas.append(_pieza(sesion, codigo, codigo, _comillas(texto), None, _comillas_inicio(texto)))
+            texto = SEPARADOR_LINEAS.join(lineas)
+            piezas.append(_pieza(sesion, codigo, codigo, _comillas(texto), None, _comillas_inicio(texto), lineas=lineas))
     orden = ('INI-OPCION', 'INI-RUTA', 'INI-DIA', 'INI-FRENO', 'INI-MITO')
     return sorted(piezas, key=lambda p: orden.index(p.codigo))
 
@@ -384,7 +386,7 @@ def _ecos_de_items(sesion, cuenta, item, ecos):
 def _linea_item(eco_datos):
     """Una línea por ítem: «Nombre: elección. «texto»» (b1-3), «Nombre: elección» o «Nombre: texto»."""
     eleccion = ', '.join(eco_datos.get('eleccion', ()))
-    texto = ' '.join(eco_datos.get('texto', ()))
+    texto = SEPARADOR_LINEAS.join(eco_datos.get('texto', ()))
     if eleccion and texto:
         return f"{eco_datos['nombre']}: {eleccion}. {_comillas(texto)}"
     return f"{eco_datos['nombre']}: {eleccion or texto}"
@@ -452,6 +454,8 @@ def _ecos(sesion, cuenta, item, ecos, para_llm):
             datos = {'codigo': eco['codigo'], 'nombre': nombre, 'tipo': resuelta.tipo.value}
             if resuelta.texto:
                 datos['texto'] = resuelta.texto
+            if resuelta.lineas:
+                datos['lineas'] = list(resuelta.lineas)
             if resuelta.opciones:
                 datos['opciones'] = [o.texto for o in resuelta.opciones]
             if para_llm:

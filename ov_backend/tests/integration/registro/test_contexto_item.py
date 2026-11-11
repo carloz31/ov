@@ -288,8 +288,9 @@ def test_piezas_del_inicio_en_su_orden(ana):
     # Se muestra entre «»; al LLM va entre comillas rectas, como en el runner (v7.12).
     dia = _pieza(cambio, 'INI-DIA')
     assert (dia.texto, dia.para_llm) == ('«Trabajando en un hospital»', '"Trabajando en un hospital" (tu día a los 23)')
-    # Dos líneas citables van unidas con un espacio.
-    assert _pieza(cambio, 'INI-FRENO').texto == '«El puntaje No ingresar a la primera»'
+    # Dos líneas citables van unidas con « / » y, además, por separado (lote 3, decisión del usuario).
+    assert _pieza(cambio, 'INI-FRENO').texto == '«El puntaje / No ingresar a la primera»'
+    assert _pieza(cambio, 'INI-FRENO').lineas == ('El puntaje', 'No ingresar a la primera')
     # Un mito de la lista va aunque su texto no sea citable.
     assert _pieza(cambio, 'INI-MITO').texto == 'El test me dirá qué estudiar'
 
@@ -360,7 +361,7 @@ def test_seguimiento_sin_evaluar_cita_solo_la_primera(ana):
     # Un intento nuevo ya evaluado se cita según su tipo.
     ana.intento('b1-7-dia', ('CLARO',), texto='En un hospital', tipo='general',
                 seguimiento=('propio', 'Atendiendo pacientes de noche'))
-    assert _pieza(ana.contexto('b5-3-cambio'), 'INI-DIA').texto == '«En un hospital Atendiendo pacientes de noche»'
+    assert _pieza(ana.contexto('b5-3-cambio'), 'INI-DIA').texto == '«En un hospital / Atendiendo pacientes de noche»'
 
 
 # --- Ecos -------------------------------------------------------------------------------------

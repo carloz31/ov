@@ -704,3 +704,10 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - mientras el backend evalúa, el front espera la respuesta;
   - el ítem en curso lo conserva el front; no hay borradores en el backend.
 - **Estado:** pendiente del ajuste del front de registros.
+
+## 2026-11-11 · Ajuste registros llm (lote 3) · Piezas y ecos de dos líneas
+
+- **Dato:** cuando un ítem deja dos líneas citables (la primera respuesta y la línea del seguimiento), el backend las une con « / » en el `texto` de la pieza (GUSTO en b4-1; «tu día a los 23» y «lo que podía frenarte» en b5-3) y en el `texto` de una referencia TEXTO (ma3), y las entrega además por separado: `lineas` en cada opción de pieza del registro de la cuenta y en la referencia TEXTO de la consulta de referencias. Los ecos de un ítem anterior (b3-4-quien, b1-3-contraste) ya traen `texto` como lista.
+- **Dónde se ve:** las piezas de b4-1 y b5-3, la zona de ecos de b3-4, b1-3 y ma3.
+- **Opciones:** mostrar las líneas una debajo de la otra dentro de la misma pieza o eco (lo pedido por el usuario); mostrar el `texto` con « / » tal cual; mostrar solo la primera línea.
+- **Estado:** pendiente del ajuste del front de registros.

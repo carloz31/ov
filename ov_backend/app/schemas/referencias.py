@@ -37,6 +37,8 @@ class ReferenciaResuelta(BaseModel):
     """ELECCION y TEXTO (F02): código de la actividad del ítem fuente, en todo estado."""
     planes: list[PlanReferido] | None = None
     """PLANES (todos) y PLAN (solo el A), con institución, camino, motivos, relato e idea (lote 2)."""
+    lineas: list[str] | None = None
+    """TEXTO disponible (lote 3): las líneas citables por separado; `texto` las une con « / »."""
 
 
 class ReferenciasConsultadas(BaseModel):
