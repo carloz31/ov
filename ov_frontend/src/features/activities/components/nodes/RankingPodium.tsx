@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { completo, faltan, quitar, colocar, intercambiar, type Puestos } from '../../lib/podio'
+import { useRef, useState, type ReactNode } from 'react'
+import { completo, faltan, quitar, colocar, intercambiar, rotuloPuesto, type Puestos } from '../../lib/podio'
 import '../../styles/podium.css'
 
 // Podio genérico de «elegir y ordenar top N» (F01; ajuste vista del ítem): N huecos numerados arriba y las
@@ -12,6 +12,8 @@ export function RankingPodium({
   error,
   onChange,
   soloLectura,
+  otra,
+  bajoPodio,
 }: {
   opciones: { codigo: string; texto: string }[]
   puestos: Puestos
@@ -20,6 +22,10 @@ export function RankingPodium({
   onChange: (puestos: Puestos) => void
   // Consulta (F02): el podio se ve completo y no se cambia; sin la ayuda para cambiarlo.
   soloLectura?: boolean
+  // Ajuste front de registros (lote 2): «+ Otra» entre las fichas (ocupa el siguiente puesto libre, con el código que
+  // da `codigo`) y, debajo del podio, los campos de las «Otra» colocadas.
+  otra?: { etiqueta: string; codigo: () => string | undefined }
+  bajoPodio?: ReactNode
 }) {
   const [anuncio, setAnuncio] = useState('')
   const [nuevo, setNuevo] = useState<number>()
@@ -56,7 +62,7 @@ export function RankingPodium({
     <div className="sx-podium-wrap">
       <ol className="sx-podium" style={{ gridTemplateColumns: `1.25fr repeat(${puestos.length - 1}, 1fr)` }}>
         {puestos.map((codigo, i) => {
-          const etiqueta = i === 0 ? etiquetaPrimero : `${i + 1}º lugar`
+          const etiqueta = i === 0 ? etiquetaPrimero : rotuloPuesto(i)
           return (
             <li key={i}>
               <button
@@ -91,6 +97,7 @@ export function RankingPodium({
           )
         })}
       </ol>
+      {bajoPodio}
       {!soloLectura && (
         <p className="sx-podium-hint">
           Toca un puesto para devolver la ficha
@@ -118,6 +125,19 @@ export function RankingPodium({
                 <span>{o.texto}</span>
               </button>
             ))}
+          {otra && (
+            <button
+              type="button"
+              className="sx-podium-chip sx-chip is-otra"
+              disabled={!otra.codigo()}
+              onClick={() => {
+                const codigo = otra.codigo()
+                if (codigo) elegir(codigo)
+              }}
+            >
+              <span>{`+ ${otra.etiqueta}`}</span>
+            </button>
+          )}
         </div>
       )}
       <p className="sr-only" aria-live="polite">

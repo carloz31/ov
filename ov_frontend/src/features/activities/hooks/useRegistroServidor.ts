@@ -35,7 +35,8 @@ export type RegistroServidor = {
   referencias?: ReferenciaResuelta[]
 }
 export type VistaItem = 'por_responder' | 'lectura' | 'edicion' | 'lumi'
-type Lumi = { item: string; eleccion: string; texto: string; estado: EstadoLumi }
+// `seguimiento`: lo respondido a la repregunta, que va debajo de la primera respuesta (lote 2, §2).
+type Lumi = { item: string; eleccion: string; texto: string; seguimiento?: string; estado: EstadoLumi }
 
 const VACIO: BorradorItem = { opciones: [], texto: '' }
 const textoEleccion = (item: ItemRegistroCuenta, opciones: OpcionElegida[]) =>
@@ -143,12 +144,12 @@ export function useRegistroServidor({
   async function responderRepregunta(texto: string) {
     if (!lumi || lumi.estado.tipo !== 'repregunta') return
     const repregunta = lumi.estado
-    setLumi({ ...lumi, estado: { tipo: 'esperando' } })
+    setLumi({ ...lumi, seguimiento: texto, estado: { tipo: 'esperando' } })
     const respuesta = await pedir(() => responderSeguimientoRegistro(actividad, lumi.item, texto))
     if (!respuesta || !montado.current) return
     const paso = pasoDe(respuesta)
     if (!paso) {
-      setLumi((l) => l && { ...l, estado: repregunta })
+      setLumi((l) => l && { ...l, seguimiento: undefined, estado: repregunta })
       setError(errorDe(respuesta))
       return
     }

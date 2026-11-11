@@ -1,18 +1,22 @@
-import { PenLine, RotateCw } from 'lucide-react'
 import type { ItemRegistroCuenta } from '@/types/servidor'
-import { avisoDe, textoEco } from '@/lib/servidor/adaptadoresRegistro'
+import { avisoDe } from '@/lib/servidor/adaptadoresRegistro'
 import { RegistroGuiado } from './RegistroGuiado'
+import { EcosItem } from './EcosItem'
+import { PistaLumi } from './PistaLumi'
+import { ElegidoLectura } from './ElegidoLectura'
 import {
   AVISO_ECO_CAMBIADO,
   AVISO_SIN_EVALUAR,
   BOTONES,
   ROTULO_PISTA_LECTURA,
+  TU_RESPUESTA,
 } from '../../lib/textosRegistro'
 
-// Un ítem con respuesta vigente, en lectura (ajuste front de registros, lote 1): igual al retroceder en una
-// actividad a medias que al volver a una completada. Nada se puede mover: la elección va como texto, la primera
-// respuesta y, debajo, la línea del seguimiento; «Modificar» junto a la respuesta. Un solo aviso: sin evaluar (con
-// «Volver a enviar»), eco cambiado o la pista. Abajo solo se navega.
+// Un ítem con respuesta vigente, en lectura (ajuste front de registros, lotes 1 y 2): igual al retroceder en una
+// actividad a medias que al volver a una completada. Los ecos, la burbuja del personaje, la cabecera «Tu respuesta»
+// con «Modificar», lo elegido (sin nada que mover: fichas sin acción, el podio con lo escrito en sus «Otra», o la
+// pieza con su origen), la pregunta de texto con un solo bloque (la primera respuesta y, debajo, la línea del
+// seguimiento) y un solo aviso: sin evaluar (con «Volver a enviar»), eco cambiado o la pista. Abajo solo se navega.
 export function RegistroLecturaNode({
   item,
   hablanteId,
@@ -35,49 +39,48 @@ export function RegistroLecturaNode({
   const respuesta = item.respuesta!
   const aviso = avisoDe(respuesta)
   const consigna = item.consigna
+  const elegidas = respuesta.opciones_elegidas
+  const numerar = elegidas.length > 0 && !!consigna?.pregunta_texto
+  const pregunta = (numeral: number, texto: string) => (
+    <span className="sx-item-pregunta">
+      {numerar && <span className="sx-item-numeral">{numeral}</span>}
+      {texto}
+    </span>
+  )
   return (
     <RegistroGuiado
       hablanteId={hablanteId}
       dialogo={consigna?.dialogo}
       ocupado={ocupado}
       error={error}
+      ecos={<EcosItem ecos={item.ecos} />}
       onEnviar={onContinuar}
       onAnterior={onAnterior}
       etiqueta={BOTONES.continuar}
     >
-      {item.ecos.length > 0 && (
-        <ul className="sx-item-ecos">
-          {item.ecos.map((eco, i) => (
-            <li key={`${eco.codigo ?? ''}-${i}`}>{textoEco(eco)}</li>
-          ))}
-        </ul>
+      <div className="sx-item-cabecera-respuesta">
+        <span className="sx-item-rotulo">{TU_RESPUESTA}</span>
+        <button type="button" className="sx-secondary-button sx-boton-pequeno" disabled={ocupado} onClick={onModificar}>
+          {BOTONES.modificar}
+        </button>
+      </div>
+      {elegidas.length > 0 && (
+        <div className="sx-item-bloque sx-registro-lectura">
+          {consigna?.pregunta_eleccion && pregunta(1, consigna.pregunta_eleccion)}
+          <ElegidoLectura item={item} />
+        </div>
       )}
       <div className="sx-item-bloque sx-registro-lectura">
-        {respuesta.opciones_elegidas.length > 0 && (
-          <>
-            {consigna?.pregunta_eleccion && <span className="sx-item-pregunta">{consigna.pregunta_eleccion}</span>}
-            <p className="sx-item-eleccion-leida">{respuesta.opciones_elegidas.map((o) => o.texto).join(' · ')}</p>
-          </>
-        )}
-        {consigna && <span className="sx-item-pregunta">{consigna.pregunta_texto}</span>}
+        {consigna && pregunta(2, consigna.pregunta_texto)}
         <div className="sx-item-respuesta">
-          {respuesta.primera_respuesta.trim() && (
-            <blockquote className="sx-followup-original">{respuesta.primera_respuesta}</blockquote>
-          )}
-          {respuesta.linea_seguimiento && (
-            <p className="sx-item-linea-seguimiento">{respuesta.linea_seguimiento}</p>
-          )}
-          <button type="button" className="sx-secondary-button" disabled={ocupado} onClick={onModificar}>
-            <PenLine size={16} aria-hidden="true" />
-            {BOTONES.modificar}
-          </button>
+          {respuesta.primera_respuesta.trim() && <p>{respuesta.primera_respuesta}</p>}
+          {respuesta.linea_seguimiento && <p className="sx-item-linea-seguimiento">{respuesta.linea_seguimiento}</p>}
         </div>
       </div>
       {aviso?.tipo === 'reenviable' && (
         <div className="sx-item-aviso" role="status">
           <p>{AVISO_SIN_EVALUAR}</p>
-          <button type="button" className="sx-secondary-button" disabled={ocupado} onClick={onReenviar}>
-            <RotateCw size={16} aria-hidden="true" />
+          <button type="button" className="sx-secondary-button sx-boton-pequeno" disabled={ocupado} onClick={onReenviar}>
             {BOTONES.volverAEnviar}
           </button>
         </div>
@@ -87,12 +90,7 @@ export function RegistroLecturaNode({
           <p>{AVISO_ECO_CAMBIADO}</p>
         </div>
       )}
-      {aviso?.tipo === 'pista' && (
-        <div className="sx-item-pista">
-          <span className="sx-item-pista-rotulo">{ROTULO_PISTA_LECTURA}</span>
-          <p>{aviso.texto}</p>
-        </div>
-      )}
+      {aviso?.tipo === 'pista' && <PistaLumi rotulo={ROTULO_PISTA_LECTURA} texto={aviso.texto} />}
     </RegistroGuiado>
   )
 }

@@ -133,26 +133,12 @@
   gap: 8px;
   margin-left: auto;
 }
-/* En móvil el pie del reproductor es una rejilla 1fr / 2fr para los botones: la leyenda va en su propia fila, a la
-   izquierda, y los botones conservan ese reparto (el principal, a la derecha). */
+/* Lote 2: en móvil el pie sigue en una fila (volver a la izquierda, la principal a la derecha); la leyenda va
+   debajo, fuera del pie. */
 @media (max-width: 767px) {
   .sx-root.sx-player .sx-step-footer.sx-item-pie {
-    grid-template-columns: 1fr;
-  }
-  .sx-root.sx-player .sx-item-pie > :is(.sx-item-leyenda, .sx-item-acciones) {
-    grid-column: 1;
-  }
-  .sx-root.sx-player .sx-item-acciones {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    margin-left: 0;
-  }
-  .sx-root.sx-player .sx-item-acciones > * {
-    width: 100%;
-    min-width: 0;
-  }
-  .sx-root.sx-player .sx-item-acciones > :not(.sx-prev-button) {
-    grid-column: 2;
+    display: flex;
+    justify-content: space-between;
   }
 }
 /* Elección guiada: chips que se alternan, sin casillas ni íconos. */
@@ -237,8 +223,13 @@
   background: var(--primary-soft);
 }
 .sx-root .sx-choice-other {
-  display: grid;
-  gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sx-root .sx-choice-other input {
+  flex: 1;
+  min-width: 0;
 }
 .sx-root .sx-choice-other input {
   min-height: 40px;
@@ -391,4 +382,88 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Ajuste front de registros (lote 2): la disposición de los bocetos. */
+.sx-root .sx-item-volver {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.sx-root .sx-item-cabecera-respuesta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sx-root .sx-item-rotulo {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sx-root .sx-boton-pequeno {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+.sx-root .sx-item-respuesta {
+  display: grid;
+  gap: 6px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--primary);
+  border-radius: 0 12px 12px 0;
+  background: var(--muted);
+}
+.sx-root .sx-item-respuesta p {
+  margin: 0;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+.sx-root .sx-item-pista {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--primary-soft);
+}
+.sx-root .sx-item-pista > div {
+  display: grid;
+  gap: 2px;
+}
+.sx-root .sx-item-pista-rotulo {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.sx-root .sx-item-avatar.is-pequeno {
+  width: 32px;
+  height: 32px;
+  font-size: 17px;
+  background: var(--card);
+}
+.sx-root .sx-item-aviso {
+  background: var(--warning-soft);
+  color: var(--warning-text);
+}
+.sx-root .sx-lumi-tu-respuesta {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--muted);
+}
+.sx-root .sx-lumi-tu-respuesta p {
+  margin: 0;
+  line-height: 1.45;
+}
+.sx-root .sx-lumi-repregunta {
+  display: grid;
+  gap: 12px;
+}
+.sx-root .sx-lumi-repregunta .sx-followup-input {
+  min-height: 56px;
+}
+.sx-root .sx-chip.is-escrita {
+  cursor: default;
 }

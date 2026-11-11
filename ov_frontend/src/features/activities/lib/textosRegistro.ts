@@ -39,3 +39,37 @@ export const BOTONES = {
 export const ERROR_ELECCION = 'Elige una opción para continuar.'
 export const ERROR_OTRA = 'Escribe cuál es tu otra opción.'
 export const ETIQUETA_OTRA = 'Otra'
+
+// Ajuste front de registros (lote 2, §6): los rótulos de las formas de eco. La línea del resultado de test se elige
+// aquí, por el nombre que entrega el backend, en una sola tabla.
+const LINEA_RESULTADO: Record<string, string> = { 'Tu test de intereses': 'Tu código, en orden' }
+export const ECOS = {
+  planes: ['Tu Plan A', 'Tu Plan B'],
+  proyecto: 'Tu proyecto hoy',
+  hoy: 'Hoy',
+  porQue: 'Por qué:',
+  camino: 'Camino:',
+  ideaFue: 'La idea fue',
+  hecho: 'hecho',
+  hechos: 'hechos',
+  pendiente: 'pendiente',
+  pendientes: 'pendientes',
+  pasoHecho: 'Hecho',
+  pasoPendiente: 'Pendiente',
+  verCompleto: 'ver completo',
+  verPasos: (n: number) => `ver los ${n} pasos`,
+  verMenos: 'ver menos',
+  lineaResultado: (nombre?: string) => (nombre && LINEA_RESULTADO[nombre]) || 'Lo que salió más alto',
+} as const
+
+// Ajuste front de registros (lote 2, §5): la elección con varias «Otra» y el selector de piezas.
+export const ELECCION = {
+  agregarOtra: (etiqueta: string) => `+ ${etiqueta}`,
+  cual: '¿Cuál?',
+  cualPuesto: (puesto: number) => `${puesto}.º · ¿Cuál?`,
+  eligeUna: 'Elige una',
+  cerrar: 'Cerrar',
+  verPieza: 'ver completa',
+  segundo: '2.º lugar',
+  tercero: '3.er lugar',
+} as const

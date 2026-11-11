@@ -1,0 +1,199 @@
+/* Ajuste front de registros (lote 2, §6): las formas de eco. Bloques de datos con borde fino, sin avatar. */
+.sx-root .sx-ecos {
+  display: grid;
+  gap: 10px;
+}
+.sx-root .sx-eco {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  min-width: 0;
+}
+.sx-root .sx-eco-rotulo {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.sx-root .sx-eco-titulo {
+  font-size: 17px;
+  font-weight: 800;
+}
+.sx-root .sx-eco-linea {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.sx-root .sx-eco-origen {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.sx-root .sx-eco-enlace {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.sx-root .sx-eco-textos {
+  gap: 0;
+}
+.sx-root .sx-eco-texto {
+  display: grid;
+  gap: 4px;
+  padding: 8px 0;
+}
+.sx-root .sx-eco-texto:first-child {
+  padding-top: 0;
+}
+.sx-root .sx-eco-texto:last-child {
+  padding-bottom: 0;
+}
+.sx-root .sx-eco-texto + .sx-eco-texto {
+  border-top: 1px solid var(--border);
+}
+.sx-root .sx-eco-pasos {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.sx-root .sx-eco-pasos li {
+  display: flex;
+  gap: 8px;
+}
+.sx-root .sx-eco-pasos b {
+  flex: none;
+  width: 72px;
+  font-size: 12px;
+  color: var(--primary);
+}
+.sx-root .sx-eco-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.sx-root .sx-eco-etiqueta {
+  padding: 3px 12px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+.sx-root .sx-ecos-par {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sx-root .sx-ecos-hoy {
+  display: grid;
+  gap: 8px;
+}
+@media (max-width: 560px) {
+  .sx-root .sx-ecos-par {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ajuste front de registros (lote 2, §5): el selector de piezas y su ventana. */
+.sx-root .sx-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 14px;
+  border: 1px solid var(--input);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+.sx-root .sx-selector.is-elegida {
+  border: 2px solid var(--primary);
+  background: var(--primary-soft);
+  color: var(--foreground);
+}
+.sx-root .sx-selector > svg {
+  flex: none;
+  color: var(--primary);
+}
+.sx-root .sx-selector-cuerpo,
+.sx-root .sx-pieza-elegir {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.sx-root .sx-selector-cuerpo small,
+.sx-root .sx-pieza-elegir small {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.sx-root.sx-ventana-piezas {
+  display: grid;
+  gap: 14px;
+}
+.sx-root .sx-ventana-cabeza {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.sx-root .sx-ventana-titulo {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.sx-root .sx-ventana-grupo {
+  display: grid;
+  gap: 8px;
+}
+.sx-root .sx-ventana-grupo .sx-eco-rotulo {
+  margin: 0;
+}
+.sx-root .sx-pieza {
+  display: grid;
+  gap: 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--input);
+  border-radius: 12px;
+  background: var(--card);
+}
+.sx-root .sx-pieza.is-elegida {
+  border: 2px solid var(--primary);
+  background: var(--primary-soft);
+}
+.sx-root .sx-pieza-elegir {
+  width: 100%;
+  min-height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}

@@ -105,3 +105,12 @@
   outline: 3px solid var(--primary);
   outline-offset: 2px;
 }
+/* Ajuste front de registros (lote 2): el campo de cada «Otra» del podio, etiquetado con su puesto. */
+.sx-root .sx-podium-cual {
+  flex: none;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}

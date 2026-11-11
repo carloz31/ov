@@ -113,13 +113,8 @@ test('el desenlace sale del paso; tras la repregunta, la pista del ítem decide'
   assert.deepEqual(copia(desenlace(contenido('reenviar-b1-1'), false)), { tipo: 'confirmacion' })
 })
 
-test('los ecos se muestran como texto simple, con su nombre', () => {
-  const { textoEco } = registro()
-  assert.equal(textoEco({ codigo: 'x', nombre: 'Tu Plan A', forma: 'carrera', carrera: 'Psicología' }),
-    'Tu Plan A: Psicología')
-  assert.equal(textoEco({ codigo: 'x', forma: 'pasos', pendientes: ['Uno'], hechos: ['Dos'] }), 'Uno · Dos')
-  assert.equal(textoEco({ codigo: 'x', nombre: 'Lo tuyo', texto: 'a / b', lineas: ['a', 'b'] }), 'Lo tuyo: a · b')
-})
+// Ajuste front de registros (lote 2): los ecos ya no son texto simple; sus formas se prueban en
+// servidor-registro-ecos.test.mjs.
 
 test('los 19 registros de `plataforma/` guardan en cada consigna solo lo que el backend no entrega', async () => {
   const { readdirSync, readFileSync } = await import('node:fs')

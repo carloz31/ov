@@ -27,6 +27,7 @@ export function RegistroItemServidor({
         key={`${item.codigo}-${lumi.estado.tipo}`}
         eleccion={lumi.eleccion}
         texto={lumi.texto}
+        seguimiento={lumi.seguimiento}
         estado={lumi.estado}
         ocupado={ocupado}
         error={error}

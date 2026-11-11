@@ -15,7 +15,11 @@ const textos = (tree) => {
   const visitar = (n) => {
     if (typeof n === 'string') salida.push(n)
     else if (Array.isArray(n)) n.forEach(visitar)
-    else if (n?.props) visitar(n.props.children)
+    else if (n?.props) {
+      // Lote 2: la pista (PistaLumi) lleva su rótulo y su texto como props.
+      for (const clave of ['rotulo', 'texto']) if (typeof n.props[clave] === 'string') salida.push(n.props[clave])
+      visitar(n.props.children)
+    }
   }
   visitar(tree)
   return salida.join(' ')
@@ -61,14 +65,42 @@ test('lectura: un solo aviso, sin evaluar (con su botón) antes que eco cambiado
   assert.ok(!eco.includes('Volver a enviar') && !eco.includes('Lumi aún quiere saber'))
 })
 
-test('lectura: la elección como texto y, debajo de la primera respuesta, la línea del seguimiento', () => {
+test('lectura: la elección sin acción y un solo bloque con la primera respuesta y la línea del seguimiento', () => {
   const gustos = contenido('registro-b1-1-completado').items[0]
   const logro = contenido('registro-b1-1-completado').items[1]
   const tree = montar('RegistroLecturaNode', 'RegistroLecturaNode', { ...lecturaProps({}), item: logro }).render()
-  assert.ok(textos(tree).includes(logro.respuesta.opciones_elegidas.map((o) => o.texto).join(' · ')))
-  const conLinea = textos(montar('RegistroLecturaNode', 'RegistroLecturaNode', { ...lecturaProps({}), item: gustos })
-    .render())
-  assert.ok(conLinea.indexOf(gustos.respuesta.primera_respuesta) < conLinea.indexOf(gustos.respuesta.linea_seguimiento))
+  assert.equal(de(tree, 'ElegidoLectura').length, 1)
+  const fichas = montar('ElegidoLectura', 'ElegidoLectura', { item: logro }).render()
+  assert.deepEqual(elementos(fichas, (e) => e.type === 'span').map((e) => e.props.children),
+    logro.respuesta.opciones_elegidas.map((o) => o.texto))
+  assert.equal(elementos(fichas, (e) => e.type === 'button' || e.props?.onClick).length, 0)
+  const conLinea = montar('RegistroLecturaNode', 'RegistroLecturaNode', { ...lecturaProps({}), item: gustos }).render()
+  // Observación de la prueba manual: las dos líneas van dentro del mismo bloque.
+  const [bloque] = elementos(conLinea, (e) => e.props?.className === 'sx-item-respuesta')
+  const texto = textos(bloque)
+  assert.ok(texto.indexOf(gustos.respuesta.primera_respuesta) >= 0)
+  assert.ok(texto.indexOf(gustos.respuesta.primera_respuesta) < texto.indexOf(gustos.respuesta.linea_seguimiento))
+  // «Modificar» va en la cabecera «Tu respuesta», antes de la pregunta.
+  const [cabecera] = elementos(conLinea, (e) => e.props?.className === 'sx-item-cabecera-respuesta')
+  assert.ok(textos(cabecera).includes('Tu respuesta') && textos(cabecera).includes('Modificar'))
+})
+
+test('lectura: una «Otra» de una lista muestra lo escrito; el podio, sus puestos con lo escrito; la pieza, su origen', () => {
+  const logro = contenido('registro-b1-1-completado').items[1]
+  const conOtra = { ...logro, respuesta: { ...logro.respuesta, opciones_elegidas: [
+    { codigo: 'ORGANIZAR', texto: 'Organizar' }, { codigo: 'OTRA-1', texto: 'Cocinar para muchos' }] } }
+  const fichas = montar('ElegidoLectura', 'ElegidoLectura', { item: conOtra }).render()
+  assert.ok(elementos(fichas, (e) => e.type === 'span').some((e) => e.props.children === 'Cocinar para muchos'))
+  const podio = { codigo: 'b2-4-bien', eleccion: { minima: 3, maxima: 3, ordenada: true, permite_otra: true,
+    etiqueta_otra: null }, opciones: [], respuesta: { opciones_elegidas: [{ codigo: 'MAT', texto: 'Matemática' },
+    { codigo: 'OTRA-1', texto: 'Arreglar celulares' }, { codigo: 'OTRA-2', texto: 'Vender por internet' }] } }
+  const [ranking] = de(montar('ElegidoLectura', 'ElegidoLectura', { item: podio }).render(), 'RankingPodium')
+  assert.equal(ranking.props.soloLectura, true)
+  assert.deepEqual(copia(ranking.props.puestos), ['MAT', 'OTRA-1', 'OTRA-2'])
+  assert.ok(ranking.props.opciones.some((o) => o.texto === 'Arreglar celulares'))
+  const menos = contenido('registro-b4-1-completado').items.find((i) => i.codigo === 'b4-1-menos')
+  const pieza = textos(montar('ElegidoLectura', 'ElegidoLectura', { item: menos }).render())
+  assert.ok(pieza.includes('Matemática') && pieza.includes('¿Qué te cuesta?'))
 })
 
 const itemProps = (extra = {}) => ({
@@ -104,7 +136,7 @@ test('por responder: «Anterior» y «Enviar» (apagado con el texto vacío); en
   assert.ok(texto.indexOf('Podrías contar más sobre esto') >= 0)
   // La pista va arriba de la caja.
   const hijos = [tree.props.children].flat(2).filter(Boolean)
-  const pista = hijos.findIndex((h) => h.props?.className === 'sx-item-pista')
+  const pista = hijos.findIndex((h) => h.type?.name === 'PistaLumi')
   const caja = hijos.findIndex((h) => h.type?.name === 'RegistroExplicacion')
   assert.ok(pista >= 0 && pista < caja)
 })
@@ -146,13 +178,18 @@ test('la exclusiva va aparte y desmarca el resto; la «Otra» lleva el código d
   assert.deepEqual(copia(chips.reglas.exclusivas), ['NINGUNO'])
   chips.onAlternar('NINGUNO')
   assert.deepEqual(copia(elegidas), [{ codigo: 'NINGUNO' }])
-  if (item.eleccion.permite_otra) assert.ok(chips.opciones.some((o) => o.codigo === (item.eleccion.maxima > 1 ? 'OTRA-1' : 'OTRA')))
+  // Lote 2: la «Otra» ya no es una opción más: se agrega con «+ Otra» (OTRA u OTRA-1…).
+  if (item.eleccion.permite_otra) {
+    chips.otra.onAgregar()
+    assert.ok(elegidas.some((o) => o.codigo === (item.eleccion.maxima > 1 ? 'OTRA-1' : 'OTRA')))
+  }
   const chipsOrigen = chips.opciones.filter((o) => o.origen)
   assert.ok(chipsOrigen.every((o) => typeof o.origen === 'string'))
 })
 
 test('pantalla de Lumi: «Tu respuesta» recortada, puntos al esperar, sin «Anterior» y el pie', () => {
-  const base = { eleccion: 'Organizar', texto: 'Mi respuesta', ocupado: false, error: '', onResponder: nada, onSeguir: nada,
+  // DATO DE PRUEBA: una respuesta larga, que se recorta con «ver completa».
+  const base = { eleccion: 'Organizar', texto: 'Mi respuesta '.repeat(20), ocupado: false, error: '', onResponder: nada, onSeguir: nada,
     onContinuar: nada }
   let tree = montar('PantallaLumi', 'PantallaLumi', { ...base, estado: { tipo: 'esperando' } }).render()
   let texto = textos(tree)

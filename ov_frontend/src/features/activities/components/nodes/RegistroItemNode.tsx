@@ -4,10 +4,12 @@ import {
   consignaVigente,
   errorSeleccion,
   requiereTexto,
-  textoEco,
+  textoVisible,
   type ErrorSeleccion,
 } from '@/lib/servidor/adaptadoresRegistro'
 import { RegistroGuiado } from './RegistroGuiado'
+import { EcosItem } from './EcosItem'
+import { PistaLumi } from './PistaLumi'
 import { RegistroEleccionNode } from './RegistroEleccionNode'
 import { RegistroPodioNode } from './RegistroPodioNode'
 import { RegistroExplicacion } from './RegistroExplicacion'
@@ -49,6 +51,9 @@ export function RegistroItemNode({
   const consigna = consignaVigente(item, borrador.opciones)
   const conTexto = requiereTexto(item, borrador.opciones)
   const Eleccion = esTopN(item) ? RegistroPodioNode : RegistroEleccionNode
+  const conCaja = textoVisible(item, borrador.opciones)
+  // Las preguntas van numeradas cuando el ítem tiene las dos (§ «Reglas comunes»).
+  const numerar = !!item.eleccion && !!consigna.preguntaTexto
   function cambiarOpciones(opciones: OpcionElegida[]) {
     onBorrador({ ...borrador, opciones })
     if (errorEleccion && !errorSeleccion(item, opciones)) setErrorEleccion(undefined)
@@ -64,22 +69,17 @@ export function RegistroItemNode({
       dialogo={consigna.dialogo}
       ocupado={ocupado}
       error={error}
+      ecos={<EcosItem ecos={item.ecos} />}
       onEnviar={enviar}
       deshabilitado={conTexto && !borrador.texto.trim()}
       onAnterior={edicion ? undefined : onAnterior}
       onCancelar={edicion ? onCancelar : undefined}
     >
       {edicion && <p className="sx-item-rotulo">{ROTULO_EDICION}</p>}
-      {item.ecos.length > 0 && (
-        <ul className="sx-item-ecos">
-          {item.ecos.map((eco, i) => (
-            <li key={`${eco.codigo ?? ''}-${i}`}>{textoEco(eco)}</li>
-          ))}
-        </ul>
-      )}
       {item.eleccion && (
         <Eleccion
           item={item}
+          numeral={numerar ? 1 : undefined}
           pregunta={consigna.preguntaEleccion}
           seleccion={borrador.opciones}
           error={errorEleccion === 'eleccion' ? ERROR_ELECCION : undefined}
@@ -87,18 +87,16 @@ export function RegistroItemNode({
           onCambiar={cambiarOpciones}
         />
       )}
-      {edicion?.pista && (
-        <div className="sx-item-pista">
-          <span className="sx-item-pista-rotulo">{ROTULO_PISTA_EDICION}</span>
-          <p>{edicion.pista}</p>
-        </div>
+      {conCaja && edicion?.pista && <PistaLumi rotulo={ROTULO_PISTA_EDICION} texto={edicion.pista} />}
+      {conCaja && (
+        <RegistroExplicacion
+          numeral={numerar ? 2 : undefined}
+          pregunta={consigna.preguntaTexto}
+          entrada={consigna.arranque ?? ENTRADA_POR_DEFECTO}
+          texto={borrador.texto}
+          onTexto={(texto) => onBorrador({ ...borrador, texto })}
+        />
       )}
-      <RegistroExplicacion
-        pregunta={consigna.preguntaTexto}
-        entrada={consigna.arranque ?? ENTRADA_POR_DEFECTO}
-        texto={borrador.texto}
-        onTexto={(texto) => onBorrador({ ...borrador, texto })}
-      />
     </RegistroGuiado>
   )
 }

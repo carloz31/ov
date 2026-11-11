@@ -1,5 +1,4 @@
 import type {
-  EcoMostrado,
   ItemRegistroCuenta,
   OpcionElegida,
   OpcionOfrecida,
@@ -37,6 +36,13 @@ export function consignaVigente(item: ItemRegistroCuenta, marcadas: OpcionElegid
 export function requiereTexto(item: ItemRegistroCuenta, marcadas: OpcionElegida[]) {
   const primera = marcadas[0] && item.opciones.find((o) => o.codigo === marcadas[0].codigo)
   return !primera?.sin_llm
+}
+
+// Lote 2 (§1 y §7): cuando la pregunta de texto depende de lo que se marque (alguna opción trae una pregunta distinta
+// de la del ítem, como en b1-7-dia), la pregunta y su caja aparecen al marcar. Lo escrito se conserva igual.
+export function textoVisible(item: ItemRegistroCuenta, marcadas: OpcionElegida[]) {
+  const propia = (o: OpcionOfrecida) => !!o.pregunta && o.pregunta !== item.consigna?.pregunta_texto
+  return marcadas.length > 0 || !item.opciones.some(propia)
 }
 
 // El ítem o la opción marcada no pasan por el LLM: la pantalla de Lumi no espera.
@@ -86,30 +92,6 @@ export function desenlace(paso: PasoRegistro, trasRepregunta: boolean): Desenlac
   if (paso.paso === 'REPREGUNTA' && !trasRepregunta) return { tipo: 'repregunta', texto: paso.repregunta ?? '' }
   const respuesta = itemDe(paso.registro, paso.item)?.respuesta
   return trasRepregunta && respuesta?.pista ? { tipo: 'con_pista' } : { tipo: 'confirmacion' }
-}
-
-// Los ecos que se muestran, como texto simple (el lote 2 les da sus formas): el nombre y los valores que traiga.
-export function textoEco(eco: EcoMostrado): string {
-  const valores: string[] = []
-  const agregar = (v: unknown): void => {
-    if (typeof v === 'string' && v.trim()) valores.push(v)
-    else if (Array.isArray(v)) v.forEach(agregar)
-    else if (v && typeof v === 'object')
-      agregar(
-        Object.entries(v as Record<string, unknown>)
-          .filter(([k]) => k !== 'codigo')
-          .map(([, x]) => x)
-          .filter((x) => typeof x === 'string')
-          .join(' · '),
-      )
-  }
-  // Una cita de dos líneas trae `lineas` (y `texto`, unido con « / »): se muestran las líneas.
-  const conLineas = Array.isArray(eco.lineas) && eco.lineas.length > 0
-  for (const clave of [conLineas ? 'lineas' : 'texto', 'opciones', 'carrera', 'institucion', 'camino', 'motivos', 'planes',
-    'pendientes', 'hechos'])
-    agregar(eco[clave])
-  const cuerpo = valores.join(' · ')
-  return eco.nombre ? `${eco.nombre}: ${cuerpo}` : cuerpo
 }
 
 // Las referencias que pide un registro: solo las que citan sus diálogos (la apertura).
