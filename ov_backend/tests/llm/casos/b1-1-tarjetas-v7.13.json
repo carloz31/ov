@@ -1,0 +1,164 @@
+{
+  "registro": "b1-1",
+  "descripcion": "Mini corrida del lote 2 (§8): la tarjeta nueva de b1-1-logro · NINGUNO y cuatro casos de control con una habilidad marcada. Lo corre evaluar_tarjetas.py, una vez.",
+  "casos": [
+    {
+      "numero": 1,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Ayer cociné arroz con pollo para todos en mi casa",
+      "opciones": [
+        "NINGUNO"
+      ],
+      "tipo_esperado": "propio",
+      "por_que": "§8 del lote 2: tarjeta nueva de NINGUNO",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 2,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Acabé un dibujo que tenía a medias desde hace meses",
+      "opciones": [
+        "NINGUNO"
+      ],
+      "tipo_esperado": "propio",
+      "por_que": "§8 del lote 2: tarjeta nueva de NINGUNO",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 3,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Soy bien chambeador",
+      "opciones": [
+        "NINGUNO"
+      ],
+      "tipo_esperado": "general",
+      "por_que": "§8 del lote 2: tarjeta nueva de NINGUNO (antes «Soy tranquilo nomás», que se solapaba con GENERAL SI; cambio del usuario)",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 4,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Siempre saco a pasear a mi perro",
+      "opciones": [
+        "NINGUNO"
+      ],
+      "tipo_esperado": "general",
+      "por_que": "§8 del lote 2: tarjeta nueva de NINGUNO",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 5,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Mi tío me llevó al estadio",
+      "opciones": [
+        "NINGUNO"
+      ],
+      "tipo_esperado": "general",
+      "por_que": "§8 del lote 2: tarjeta nueva de NINGUNO",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 6,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Nada",
+      "opciones": [
+        "NINGUNO"
+      ],
+      "tipo_esperado": "no_sabe",
+      "por_que": "§8 del lote 2: tarjeta nueva de NINGUNO",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 7,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "No hago nada bien",
+      "opciones": [
+        "NINGUNO"
+      ],
+      "tipo_esperado": "no_sabe",
+      "por_que": "§8 del lote 2: tarjeta nueva de NINGUNO",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 8,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Me siento un inútil, todos hacen cosas menos yo y me da rabia",
+      "opciones": [
+        "NINGUNO"
+      ],
+      "tipo_esperado": "emocional",
+      "por_que": "§8 del lote 2: tarjeta nueva de NINGUNO",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 9,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Nada",
+      "opciones": [
+        "NINGUNO"
+      ],
+      "tipo_esperado": "no_sabe",
+      "por_que": "§8 del lote 2: tarjeta nueva de NINGUNO",
+      "_dato_de_prueba": true,
+      "respuesta_seguimiento": "bueno, le ayudé a mi mamá a cargar las bolsas del mercado",
+      "conjunto_esperado": "propio"
+    },
+    {
+      "numero": 10,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Gané un campeonato de fulbito con mi salón",
+      "opciones": [
+        "LIDERAR"
+      ],
+      "tipo_esperado": "propio",
+      "por_que": "§8 del lote 2: la pregunta nueva no mueve la tarjeta de logro",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 11,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Soy bueno dibujando",
+      "opciones": [
+        "CREAR"
+      ],
+      "tipo_esperado": "general",
+      "por_que": "§8 del lote 2: la pregunta nueva no mueve la tarjeta de logro",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 12,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "No se me ocurre",
+      "opciones": [
+        "ORGANIZAR"
+      ],
+      "tipo_esperado": "no_sabe",
+      "por_que": "§8 del lote 2: la pregunta nueva no mueve la tarjeta de logro",
+      "_dato_de_prueba": true
+    },
+    {
+      "numero": 13,
+      "caso": "nuevo",
+      "item": "b1-1-logro",
+      "texto": "Mañana tengo examen de inglés",
+      "opciones": [
+        "EXPLICAR"
+      ],
+      "tipo_esperado": "fuera_de_tema",
+      "por_que": "§8 del lote 2: la pregunta nueva no mueve la tarjeta de logro",
+      "_dato_de_prueba": true
+    }
+  ]
+}

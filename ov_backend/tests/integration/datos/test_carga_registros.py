@@ -177,3 +177,23 @@ def test_marcadores_reconocidos_y_el_arranque_con_puntos_suspensivos():
     assert marcadores_de('Puse … primero porque…') == set()
     assert marcadores_de('Me haría falta… / No me haría falta nada porque…') == set()
     assert {'valor 1', 'opción', 'carrera', 'plan_a', 'plan_b', 'primera', 'habilidad'} == MARCADORES
+
+
+@pytest.mark.parametrize('falta', ['PIEZA_FRASE_HS-LID', 'PIEZA_ORIGEN_GUSTO_LLM', 'PIEZA_GRUPO_CUESTA'])
+def test_la_carga_falla_si_falta_un_texto_de_las_piezas(tmp_path, monkeypatch, falta):
+    """Ajuste registros llm (lote 2): cada dimensión de los tres tests tiene su frase, y cada pieza sus orígenes."""
+    monkeypatch.setattr(fijos, 'TEXTOS_FIJOS', tuple(t for t in fijos.TEXTOS_FIJOS if t[0] != falta))
+    with pytest.raises(ValueError, match=f'Faltan textos de piezas: .*{falta}'):
+        cargar.preparar_base(f'sqlite:///{(tmp_path / "ruta.db").as_posix()}', 'ruta', crear_tablas=True)
+
+
+@pytest.mark.parametrize(('cambio', 'mensaje'), [
+    ({'b9-9-nada': ('LISTA', 1, 1, False, None)}, 'Falta el ítem b9-9-nada'),
+    ({'b2-4-bien': ('LISTA', 1, 4, False, None)}, 'no tiene la forma que esperan las piezas'),
+    ({'b1-1-logro': ('LISTA', 1, 2, False, 'NO_RECUERDO')}, 'no tiene la exclusiva NO_RECUERDO'),
+])
+def test_la_carga_de_contenido_falla_si_un_item_de_las_piezas_no_calza(tmp_path, monkeypatch, cambio, mensaje):
+    from datos import contenido
+    monkeypatch.setattr(contenido, 'ITEMS_PIEZAS', {**contenido.ITEMS_PIEZAS, **cambio})
+    with pytest.raises(ValueError, match=mensaje):
+        cargar.preparar_base(f'sqlite:///{(tmp_path / "contenido.db").as_posix()}', 'contenido', crear_tablas=True)

@@ -12,7 +12,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models as modelos
-from app.core.parametros import DIMENSIONES_RIASEC, transformar_opcion_onet
+from app.core.parametros import (
+    DIMENSIONES_RIASEC, GRUPOS_PIEZAS, INSTRUMENTO_HABILIDADES, INSTRUMENTO_INTELIGENCIAS, INSTRUMENTO_INTERESES,
+    PIEZAS_CON_ORIGEN, PIEZAS_SOLO_ORIGEN_LLM, transformar_opcion_onet,
+)
 from datos import catalogo
 
 
@@ -54,6 +57,60 @@ TEXTOS_FIJOS = (
                       'con alguien, tu orientadora o tu tutor están para eso.'),
     # Ajuste pruebas llm: la pista de un ítem poco desarrollado sin repregunta (respuesta emocional).
     ('PISTA_SIN_REPREGUNTA', 'Si en algún momento quieres, puedes volver a esto y contar un poco más.'),
+    # Ajuste registros llm (lote 2), §4: las piezas que arma `app/services/registro/contexto.py`. Los grupos; el
+    # origen que se muestra (`_MOSTRAR`) y el que va al LLM (`_LLM`, el que validó el runner en v7.8 y v7.12); y la
+    # frase de cada dimensión de los tres tests (`PIEZA_FRASE_<dimensión>`), que es el texto de su pieza.
+    ('PIEZA_GRUPO_INTERESES', 'Tu test de intereses'),
+    ('PIEZA_GRUPO_TESTS', 'Tus otros tests'),
+    ('PIEZA_GRUPO_ANTES', 'Lo que escribiste y elegiste antes'),
+    ('PIEZA_GRUPO_CUESTA', 'Lo que te cuesta'),
+    # El origen que se muestra de una pieza de intereses es el nombre de su dimensión (§4).
+    ('PIEZA_ORIGEN_INT_LLM', 'tu test de intereses'),
+    ('PIEZA_ORIGEN_INTEL_MOSTRAR', 'tu test de inteligencias'),
+    ('PIEZA_ORIGEN_INTEL_LLM', 'tu test de inteligencias'),
+    ('PIEZA_ORIGEN_HAB_MOSTRAR', 'tu test de habilidades'),
+    ('PIEZA_ORIGEN_HAB_LLM', 'tu test de habilidades sociales'),
+    ('PIEZA_ORIGEN_BIEN-1_MOSTRAR', '¿En qué te va mejor? (1.º)'),
+    ('PIEZA_ORIGEN_BIEN-1_LLM', '¿En qué te va mejor? 1.º'),
+    ('PIEZA_ORIGEN_VAL-1_MOSTRAR', '¿Qué valoras en un trabajo? (1.º)'),
+    ('PIEZA_ORIGEN_VAL-1_LLM', 'lo que más valoras, 1.º'),
+    ('PIEZA_ORIGEN_LOGRO-HAB_MOSTRAR', '¿Qué habilidades tuyas se notaron ahí?'),
+    ('PIEZA_ORIGEN_LOGRO-HAB_LLM', 'la habilidad que usaste en tu logro'),
+    ('PIEZA_ORIGEN_GUSTO_MOSTRAR', '¿Qué te encantaba hacer de niño o niña?'),
+    ('PIEZA_ORIGEN_GUSTO_LLM', 'lo que te encantaba de niño'),
+    ('PIEZA_ORIGEN_CUESTA_MOSTRAR', '¿Qué te cuesta?'),
+    ('PIEZA_ORIGEN_CUESTA_LLM', 'lo que te cuesta'),
+    ('PIEZA_ORIGEN_OTRA-PERFIL_LLM', 'otra cosa tuya'),
+    ('PIEZA_ORIGEN_INI-OPCION_MOSTRAR', 'tu primera opción'),
+    ('PIEZA_ORIGEN_INI-OPCION_LLM', 'tu primera opción'),
+    ('PIEZA_ORIGEN_INI-RUTA_MOSTRAR', 'la ruta que querías al terminar el colegio'),
+    ('PIEZA_ORIGEN_INI-RUTA_LLM', 'la ruta que querías al terminar el colegio'),
+    ('PIEZA_ORIGEN_INI-DIA_MOSTRAR', 'tu día a los 23'),
+    ('PIEZA_ORIGEN_INI-DIA_LLM', 'tu día a los 23'),
+    ('PIEZA_ORIGEN_INI-FRENO_MOSTRAR', 'lo que dijiste que podía frenarte'),
+    ('PIEZA_ORIGEN_INI-FRENO_LLM', 'lo que dijiste que podía frenarte'),
+    ('PIEZA_ORIGEN_INI-MITO_MOSTRAR', 'una idea que habías escuchado o creído'),
+    ('PIEZA_ORIGEN_INI-MITO_LLM', 'una idea que habías escuchado o creído'),
+    ('PIEZA_ORIGEN_OTRA-INICIO_LLM', 'otra cosa que cambió'),
+    # Frases de los tests: las que validó el runner (v7.8) y, las que no tenía, las del usuario (lote 2).
+    ('PIEZA_FRASE_R', 'Trabajar con las manos, usar herramientas o máquinas'),
+    ('PIEZA_FRASE_I', 'Observar, preguntar y analizar para entender cómo funcionan las cosas'),
+    ('PIEZA_FRASE_A', 'Crear, imaginar y expresarte con libertad, sin reglas rígidas'),
+    ('PIEZA_FRASE_S', 'Ayudar, enseñar, cuidar o acompañar a otras personas'),
+    ('PIEZA_FRASE_E', 'Liderar, convencer, organizar proyectos y tomar decisiones'),
+    ('PIEZA_FRASE_C', 'Ordenar información y seguir procedimientos claros'),
+    ('PIEZA_FRASE_INT-LIN', 'Usas las palabras con eficacia, al hablar y al escribir'),
+    ('PIEZA_FRASE_INT-LOG', 'Usas los números con eficacia y razonas con lógica'),
+    ('PIEZA_FRASE_INT-ESP', 'Ver formas, planos y estructuras en tu cabeza'),
+    ('PIEZA_FRASE_INT-CIN', 'Usas el cuerpo para expresar ideas y para resolver problemas o crear cosas'),
+    ('PIEZA_FRASE_INT-MUS', 'Percibes, distingues y expresas formas musicales'),
+    ('PIEZA_FRASE_INT-INTRA', 'Entender lo que te pasa y decidir a partir de eso'),
+    ('PIEZA_FRASE_INT-INTER', 'Captas los estados de ánimo y los sentimientos de los demás'),
+    ('PIEZA_FRASE_HS-ASE', 'Defiendes tus derechos y dices lo que piensas sin ofender'),
+    ('PIEZA_FRASE_HS-EMP', 'Te pones en el lugar del otro y comprendes lo que siente'),
+    ('PIEZA_FRASE_HS-EXP', 'Reconocer lo que sientes y elegir el momento para decirlo'),
+    ('PIEZA_FRASE_HS-RES', 'No quedarte tranquilo hasta resolver un problema'),
+    ('PIEZA_FRASE_HS-LID', 'Organizar a un grupo y hablar en su nombre'),
 )
 
 # Código reservado para la opción «otra»; ninguna lista puede usarlo.
@@ -781,10 +838,29 @@ def cargar(sesion: Session) -> Fijos:
     comparacion, items_comparacion = _cargar_partida_llegada(sesion, tematicas)
     otros = {definicion.codigo: _cargar_instrumento(sesion, definicion) for definicion in INSTRUMENTOS}
     sesion.flush()
+    validar_textos_piezas(sesion)
     return Fijos(aplicaciones={a.codigo: a for a in (aplicacion, *comparacion, *(a for a, _ in otros.values()))},
                  items={'TEST-RIASEC': items, 'TEST-PARTIDA-LLEGADA': items_comparacion,
                         **{codigo: i for codigo, (_, i) in otros.items()}}, secciones=secciones,
                  listas=listas, tematicas=tematicas, secciones_tarjeta=secciones_tarjeta)
+
+
+def validar_textos_piezas(sesion: Session) -> None:
+    """Ajuste registros llm (lote 2): los textos de las piezas (`PIEZA_*`) están completos: cada grupo, los dos
+    orígenes de cada pieza y la frase de cada dimensión de los tres tests del perfil. Si falta uno, la carga falla."""
+    textos = {c for c, _ in TEXTOS_FIJOS}
+    requeridos = {f'PIEZA_GRUPO_{g}' for g in GRUPOS_PIEZAS}
+    requeridos |= {f'PIEZA_ORIGEN_{p}_{d}' for p in PIEZAS_CON_ORIGEN for d in ('MOSTRAR', 'LLM')}
+    requeridos |= {f'PIEZA_ORIGEN_{p}_LLM' for p in PIEZAS_SOLO_ORIGEN_LLM}
+    instrumentos = {i.id: i.codigo for i in sesion.scalars(select(modelos.Instrumento).where(modelos.Instrumento.codigo.in_(
+        (INSTRUMENTO_INTERESES, INSTRUMENTO_INTELIGENCIAS, INSTRUMENTO_HABILIDADES))))}
+    if len(instrumentos) != 3:
+        raise ValueError('Faltan instrumentos de las piezas del perfil')
+    requeridos |= {f'PIEZA_FRASE_{d.codigo}' for d in sesion.scalars(select(modelos.Dimension).where(
+        modelos.Dimension.instrumento_id.in_(instrumentos)))}
+    faltan = sorted(requeridos - textos)
+    if faltan:
+        raise ValueError(f'Faltan textos de piezas: {faltan}')
 
 
 def validar_distribucion_items(sesion: Session) -> None:

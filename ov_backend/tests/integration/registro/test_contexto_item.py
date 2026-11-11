@@ -6,6 +6,8 @@ inicial y su check-in. DATO DE PRUEBA: todos los textos.
 """
 
 import importlib.util
+import json
+import re
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -220,15 +222,24 @@ def test_piezas_del_perfil_en_sus_tres_grupos(ana):
                                   'LOGRO-HAB', 'GUSTO']
     assert {o.grupo for o in contexto.opciones} == {'Tu test de intereses', 'Tus otros tests',
                                                     'Lo que escribiste y elegiste antes'}
+    # El texto de una pieza de test es su frase corta; solo el origen cambia entre lo que se muestra y el LLM.
     social = _pieza(contexto, 'INT-S')
-    assert social.origen == riasec['S'].nombre and social.texto == riasec['S'].descripcion.rstrip('.')
-    espacial = _pieza(contexto, 'INTEL-ESP')
-    assert espacial.para_llm == f"{inteligencias['INT-ESP'].descripcion.rstrip('.')} (tu test de inteligencias)"
-    assert _pieza(contexto, 'HAB-EMP').texto == habilidades['HS-EMP'].nombre
-    assert _pieza(contexto, 'BIEN-1').para_llm == 'Matemática (¿En qué te va mejor? 1.º)'
-    assert _pieza(contexto, 'VAL-1').texto == 'Ayudar a otros'
-    assert _pieza(contexto, 'LOGRO-HAB').texto == 'Organizar y Liderar'
-    assert _pieza(contexto, 'GUSTO').texto == '«Armar casitas de cartón con mi primo»'
+    assert (social.texto, social.origen) == ('Ayudar, enseñar, cuidar o acompañar a otras personas', riasec['S'].nombre)
+    assert social.para_llm == 'Ayudar, enseñar, cuidar o acompañar a otras personas (tu test de intereses)'
+    assert _pieza(contexto, 'INTEL-ESP').para_llm == 'Ver formas, planos y estructuras en tu cabeza (tu test de inteligencias)'
+    empatia = _pieza(contexto, 'HAB-EMP')
+    assert (empatia.texto, empatia.origen) == ('Te pones en el lugar del otro y comprendes lo que siente',
+                                               'tu test de habilidades')
+    assert empatia.para_llm.endswith('(tu test de habilidades sociales)')
+    bien = _pieza(contexto, 'BIEN-1')
+    assert (bien.origen, bien.para_llm) == ('¿En qué te va mejor? (1.º)', 'Matemática (¿En qué te va mejor? 1.º)')
+    valor = _pieza(contexto, 'VAL-1')
+    assert (valor.origen, valor.para_llm) == ('¿Qué valoras en un trabajo? (1.º)', 'Ayudar a otros (lo que más valoras, 1.º)')
+    logro = _pieza(contexto, 'LOGRO-HAB')
+    assert logro.para_llm == 'Organizar y Liderar (la habilidad que usaste en tu logro)'
+    gusto = _pieza(contexto, 'GUSTO')
+    assert gusto.texto == '«Armar casitas de cartón con mi primo»'
+    assert gusto.para_llm == '«Armar casitas de cartón con mi primo» (lo que te encantaba de niño)'
 
 
 def test_test_sin_revelar_texto_no_citable_y_logro_sin_ninguno(ana):
@@ -274,7 +285,9 @@ def test_piezas_del_inicio_en_su_orden(ana):
     assert _codigos(cambio) == ['INI-OPCION', 'INI-RUTA', 'INI-DIA', 'INI-FRENO', 'INI-MITO', 'IGUAL']
     assert _pieza(cambio, 'INI-OPCION').para_llm == f'{inicial} (tu primera opción)'
     assert _pieza(cambio, 'INI-RUTA').texto == 'Aún no lo sé'
-    assert _pieza(cambio, 'INI-DIA').para_llm == '«Trabajando en un hospital» (tu día a los 23)'
+    # Se muestra entre «»; al LLM va entre comillas rectas, como en el runner (v7.12).
+    dia = _pieza(cambio, 'INI-DIA')
+    assert (dia.texto, dia.para_llm) == ('«Trabajando en un hospital»', '"Trabajando en un hospital" (tu día a los 23)')
     # Dos líneas citables van unidas con un espacio.
     assert _pieza(cambio, 'INI-FRENO').texto == '«El puntaje No ingresar a la primera»'
     # Un mito de la lista va aunque su texto no sea citable.
@@ -443,6 +456,13 @@ def test_formatos_de_la_opcion_marcada(ana):
     respalda = ana.contexto('b4-1-respalda')
     pieza = _pieza(respalda, 'INTEL-ESP')
     assert entrada_llm(respalda, [{'codigo': 'INTEL-ESP'}], 'x').etiquetas == (f'{pieza.texto} (tu test de inteligencias)',)
+    # La «Otra» de un ítem de piezas va con su origen al LLM y sin comillas (runner v7.8 y v7.12).
+    assert entrada_llm(respalda, [{'codigo': 'OTRA', 'texto': 'Soy paciente con los niños'}], 'x').etiquetas == (
+        'Soy paciente con los niños (otra cosa tuya)',)
+    ana.intento('b1-3-mia', ('UNIVERSIDAD',))
+    cambio = ana.contexto('b5-3-cambio')
+    assert entrada_llm(cambio, [{'codigo': 'OTRA', 'texto': 'Las ganas'}], 'x').etiquetas == (
+        'Las ganas (otra cosa que cambió)',)
 
 
 def test_entrada_usa_la_tarjeta_de_la_opcion_y_rechaza_lo_que_va_sin_llm(ana):
@@ -459,7 +479,11 @@ def test_entrada_usa_la_tarjeta_de_la_opcion_y_rechaza_lo_que_va_sin_llm(ana):
         entrada_llm(ana.contexto('b2-4-cuesta'), [{'codigo': 'EXPONER'}], 'x')
 
 
-# --- La Entrada coincide con la del runner, un caso por registro requerido ------------------------
+# --- La Entrada coincide con la del runner, sin tocar sus casos ---------------------------------
+#
+# Cada caso se usa tal como está en `tests/llm/casos`. Lo que trae (las piezas con su origen, los planes, los ecos y
+# los marcadores) se reproduce en la base: se siembran los intentos, los resultados y los planes, y se renombran una
+# carrera y una institución de la copia de prueba con los nombres del caso. Luego se compara el mensaje armado.
 
 def _runner():
     ruta = RAIZ / 'tests' / 'llm' / 'evaluar_tarjetas.py'
@@ -471,35 +495,93 @@ def _runner():
     return sys.modules['evaluar_tarjetas_contexto']
 
 
-def _caso(archivo, item, condicion=lambda caso: True):
-    runner = _runner()
-    return next(c for c in runner.casos_del_archivo(archivo) if c['item'] == item and condicion(c))
+ORIGEN_DE = re.compile(r'^(.*) \(([^()]*)\)$')
 
 
-def _codigos_caso(caso):
-    return [o['codigo'] if isinstance(o, dict) else o for o in caso['opciones']]
+def _casos(archivo, item=None):
+    return [c for c in _runner().casos_del_archivo(archivo) if item is None or c['item'] == item]
 
 
-CASOS_RUNNER = (
-    ('b1-1', 'b1-1-tarjetas-v7.1.json', 'b1-1-gustos'),
-    ('b1-3', 'b1-3-tarjetas-v7.2c.json', 'b1-3-contraste'),
-    ('b1-6', 'b1-6-tarjetas-v7.3c.json', 'b1-6-mito'),
-    ('b1-7', 'b1-7-tarjetas-v7.4b.json', 'b1-7-hito'),
-    ('b2-3', 'b2-3-tarjetas-v7.5c.json', 'b2-3-valores'),
-    ('b2-4', 'b2-4-tarjetas-v7.6c.json', 'b2-4-cruce'),
-    ('b3-4', 'b3-4-tarjetas-v7.7c.json', 'b3-4-necesito'),
-    ('b4-1', 'b4-1-tarjetas-v7.8e.json', 'b4-1-menos'),
-    ('b4-2', 'b4-2-tarjetas-v7.9b.json', 'b4-2-estilo'),
-    ('b4-5', 'b4-5-tarjetas-v7.10b.json', 'b4-5-moneda'),
-    ('b5-1', 'b5-1-tarjetas-v7.11b.json', 'b5-1-seguridad'),
-    ('b5-3', 'b5-3-tarjetas-v7.12c.json', 'b5-3-cambio'),
-    ('b5-3-igual', 'b5-3-tarjetas-v7.12b.json', 'b5-3-cambio'),
-)
+def _unicos(casos):
+    vistos, salida = set(), []
+    for caso in casos:
+        clave = json.dumps([caso['item'], caso['opciones'], caso.get('marcadores'), caso.get('ecos_cruce'),
+                            caso.get('ecos')], ensure_ascii=False, sort_keys=True)
+        if clave not in vistos:
+            vistos.add(clave)
+            salida.append(caso)
+    return salida
+
+
+def _casos_runner():
+    uno = {'b1-1-tarjetas-v7.1.json': 'b1-1-gustos', 'b1-3-tarjetas-v7.2c.json': 'b1-3-contraste',
+           'b1-6-tarjetas-v7.3c.json': 'b1-6-mito', 'b1-7-tarjetas-v7.4b.json': 'b1-7-hito',
+           'b2-3-tarjetas-v7.5c.json': 'b2-3-valores', 'b2-4-tarjetas-v7.6c.json': 'b2-4-cruce',
+           'b3-4-tarjetas-v7.7c.json': 'b3-4-necesito', 'b4-2-tarjetas-v7.9b.json': 'b4-2-estilo',
+           'b4-5-tarjetas-v7.10b.json': 'b4-5-moneda', 'b5-1-tarjetas-v7.11b.json': 'b5-1-seguridad'}
+    casos = [_casos(archivo, item)[0] for archivo, item in uno.items()]
+    # Todas las piezas, la «Otra» y las exclusivas de b4-1 y b5-3, cada combinación una vez.
+    casos += _unicos(_casos('b4-1-tarjetas-v7.8e.json'))
+    casos += _unicos([c for a in ('b5-3-tarjetas-v7.12.json', 'b5-3-tarjetas-v7.12b.json', 'b5-3-tarjetas-v7.12c.json')
+                      for c in _casos(a) if 'ecos_cruce' not in c])
+    return casos
+
+
+CASOS_RUNNER = _casos_runner()
+
+
+def _renombrar_carrera(ana, indice, nombre):
+    ana.carreras[indice].nombre = nombre
+    ana.sesion.flush()
+
+
+def _codigo_por_texto(ana, codigo_item, texto):
+    return next(c for c, t in ana._etiquetas(ana._de(m.ItemRegistro, codigo_item)).items() if t == texto)
+
+
+def _sembrar_pieza(ana, texto, origen):
+    """Lo que hace aparecer la pieza «texto (origen)» de un caso: el intento, el resultado o la opción inicial."""
+    frases = {t.texto: t.codigo.removeprefix('PIEZA_FRASE_') for t in ana.sesion.scalars(
+        select(m.TextoFijo).where(m.TextoFijo.codigo.like('PIEZA_FRASE_%')))}
+    if origen == 'tu test de intereses':
+        ana.resultado('APL-RIASEC', {frases[texto]: 9})
+    elif origen == 'tu test de inteligencias':
+        ana.resultado('APL-INTELIGENCIAS', {frases[texto]: 9})
+    elif origen == 'tu test de habilidades sociales':
+        ana.resultado('APL-HABILIDADES', {frases[texto]: 9})
+    elif origen == '¿En qué te va mejor? 1.º':
+        ana.intento('b2-4-bien', (_codigo_por_texto(ana, 'b2-4-bien', texto), 'HISTORIA', 'DEPORTE'))
+    elif origen == 'lo que más valoras, 1.º':
+        valor = _codigo_por_texto(ana, 'b2-3-valores', texto)
+        ana.intento('b2-3-valores', (valor, *[v for v in ('RECONOCIMIENTO', 'COMUNIDAD', 'CREAR') if v != valor][:2]))
+    elif origen == 'la habilidad que usaste en tu logro':
+        ana.intento('b1-1-logro', (_codigo_por_texto(ana, 'b1-1-logro', texto),))
+    elif origen == 'lo que te encantaba de niño':
+        ana.intento('b1-1-gustos', (), texto=texto.strip('«»'))
+    elif origen == 'lo que te cuesta':
+        ana.intento('b2-4-cuesta', (_codigo_por_texto(ana, 'b2-4-cuesta', texto),), tipo=None)
+    elif origen == 'tu primera opción':
+        _renombrar_carrera(ana, 2, texto)
+        ana.opcion_inicial()
+    elif origen == 'la ruta que querías al terminar el colegio':
+        ana.intento('b1-3-mia', (_codigo_por_texto(ana, 'b1-3-mia', texto),))
+    elif origen == 'tu día a los 23':
+        ana.intento('b1-7-dia', ('CLARO',), texto=texto.strip('"'))
+    elif origen == 'lo que dijiste que podía frenarte':
+        ana.intento('b1-7-freno', (), texto=texto.strip('"'))
+    elif origen == 'una idea que habías escuchado o creído':
+        ana.intento('b1-6-mito', (_codigo_por_texto(ana, 'b1-6-mito', texto),))
+    elif origen not in ('otra cosa tuya', 'otra cosa que cambió'):
+        raise AssertionError(f'Pieza sin siembra: {texto} ({origen})')
+
+
+def _plan_del_eco(texto):
+    """«Carrera · lo que te mueve: M1, M2» → (carrera, [motivos])."""
+    carrera, _, resto = texto.partition(' · lo que te mueve: ')
+    return carrera, [motivo.strip() for motivo in resto.split(',')] if resto else []
 
 
 def _sembrar_para(ana, caso):
-    """Siembra lo que el caso trae como ecos y marcadores, y ajusta el caso a los nombres sembrados (el catálogo de
-    prueba tiene otras carreras): así el runner y la función de contexto reciben lo mismo."""
     item = caso['item']
     if item == 'b1-3-contraste':
         for clave, eco in caso['ecos'].items():
@@ -508,41 +590,48 @@ def _sembrar_para(ana, caso):
         ana.intento('b2-4-bien', (*caso['ecos_cruce']['bien'], 'ARTE', 'INGLES')[:3])
     elif item == 'b3-4-necesito':
         ana.intento('b2-3-valores', (*caso['ecos_cruce']['valores'], 'INGRESOS', 'APRENDER')[:3])
-    elif item in ('b4-1-menos', 'b4-1-respalda'):
-        plan_a, _ = ana.plan(1)
-        caso['marcadores'] = {'carrera': plan_a}
-        caso['ecos_lineas'] = [f'Tu Plan A: {plan_a}']
+    elif item in ('b4-1-respalda', 'b4-1-menos'):
+        _renombrar_carrera(ana, 0, caso['marcadores']['carrera'])
+        ana.plan(1)
     elif item == 'b4-5-moneda':
-        plan_a, _ = ana.plan(1, motivos=('APRENDER',))
-        plan_b, _ = ana.plan(2, motivos=('CREAR',))
-        caso['marcadores'] = {'plan_a': plan_a, 'plan_b': plan_b}
-        caso['ecos_lineas'] = [f'Plan A: {plan_a} · lo que te mueve: Aprender', f'Plan B: {plan_b} · lo que te mueve: Crear']
+        for prioridad, clave in ((1, 'plan_a'), (2, 'plan_b')):
+            carrera, motivos = _plan_del_eco(caso['ecos_cruce'][clave][0]['texto'])
+            assert carrera == caso['marcadores'][clave]
+            _renombrar_carrera(ana, prioridad - 1, carrera)
+            ana.plan(prioridad, motivos=[_codigo_por_texto(ana, 'b2-3-valores', t) for t in motivos])
     elif item == 'b5-1-seguridad':
-        plan_a, institucion = ana.plan(1, con_institucion=True)
-        caso['ecos_lineas'] = [f'Tu proyecto: {plan_a} · {institucion}']
+        carrera, _, institucion = caso['ecos_cruce']['proyecto'][0]['texto'].partition(' · ')
+        _renombrar_carrera(ana, 0, carrera)
+        ana.sesion.scalar(select(m.Institucion).order_by(m.Institucion.id).limit(1)).nombre = institucion
+        ana.plan(1, con_institucion=True)
     elif item == 'b5-3-cambio':
         ana.plan(1)
-        ana.intento('b1-3-mia', ('UNIVERSIDAD',))
-        idea = next((o['texto'] for o in caso['opciones'] if isinstance(o, dict) and o.get('codigo') == 'IDEA'), None)
-        if idea is not None:
-            etiqueta = idea.removesuffix(' (una idea que habías escuchado o creído)')
-            mito = next(c for c, t in ana._etiquetas(ana._de(m.ItemRegistro, 'b1-6-mito')).items() if t == etiqueta)
-            ana.intento('b1-6-mito', (mito,))
+    for opcion in caso['opciones']:
+        if isinstance(opcion, dict) and ORIGEN_DE.match(opcion['texto']):
+            _sembrar_pieza(ana, *ORIGEN_DE.match(opcion['texto']).groups())
 
 
-@pytest.mark.parametrize(('registro', 'archivo', 'item'), CASOS_RUNNER, ids=[c[0] for c in CASOS_RUNNER])
-def test_la_entrada_coincide_con_la_del_runner(ana, registro, archivo, item):
-    condiciones = {'b4-1': lambda c: _codigos_caso(c) == ['TODO'], 'b5-3': lambda c: _codigos_caso(c) == ['IDEA'],
-                   'b5-3-igual': lambda c: _codigos_caso(c) == ['IGUAL'] and 'ecos_cruce' not in c}
-    caso = dict(_caso(archivo, item, condiciones.get(registro, lambda c: True)))
-    _sembrar_para(ana, caso)
-    runner = _runner()
-    esperado = armar(runner.entrada_de(caso, caso['texto']))
-    contexto = ana.contexto(item)
-    elegidas = [o if isinstance(o, dict) else {'codigo': o} for o in caso['opciones']]
-    # Los casos nombran el estilo de b4-2 (`ESTILO`) y la pieza de b5-3 (`IDEA`) por su texto: es el de la opción
-    # que se ofrece (la etiqueta, o la pieza con su origen).
+def _elegidas(contexto, caso):
+    """Lo marcado en el caso, como lo marcaría el estudiante: una pieza por el texto que llega al LLM; la «Otra»
+    con lo escrito (sin el origen que el runner le agrega); el estilo de b4-2 por su etiqueta."""
     por_texto = {t: o.codigo for o in contexto.opciones for t in (o.texto, o.para_llm)}
-    elegidas = [{'codigo': por_texto[e['texto']]} if e['codigo'] in ('ESTILO', 'IDEA') else e for e in elegidas]
-    obtenido = armar(entrada_llm(contexto, elegidas, caso['texto']))
-    assert obtenido == esperado
+    elegidas = []
+    for opcion in caso['opciones']:
+        if not isinstance(opcion, dict):
+            elegidas.append({'codigo': opcion})
+        elif opcion['codigo'] == 'OTRA':
+            texto = ORIGEN_DE.match(opcion['texto']).group(1) if contexto.origen_otra_llm else opcion['texto']
+            elegidas.append({'codigo': 'OTRA', 'texto': texto})
+        elif contexto.opcion(opcion['codigo']) is not None:
+            elegidas.append({'codigo': opcion['codigo']})
+        else:
+            elegidas.append({'codigo': por_texto[opcion['texto']]})
+    return elegidas
+
+
+@pytest.mark.parametrize('caso', CASOS_RUNNER, ids=[c['id'] for c in CASOS_RUNNER])
+def test_la_entrada_coincide_con_la_del_runner(ana, caso):
+    _sembrar_para(ana, caso)
+    esperado = armar(_runner().entrada_de(caso, caso['texto']))
+    contexto = ana.contexto(caso['item'])
+    assert armar(entrada_llm(contexto, _elegidas(contexto, caso), caso['texto'])) == esperado

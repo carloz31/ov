@@ -73,6 +73,35 @@ MAXIMO_PALABRAS_REPREGUNTA_LLM = 30
 MAXIMO_PALABRAS_ARRANQUE = 12
 # El arranque cae si trae estas palabras de contenido (o más) de las respuestas que no están en la repregunta ni en la opción.
 MINIMO_PALABRAS_AJENAS_ARRANQUE = 2
+# Ajuste registros llm (lote 2), §2 y §4: los ítems de los que salen los marcadores y las piezas, con la forma que
+# `contexto.py` espera de cada uno; la carga de `contenido` lo valida (`datos/contenido.validar_piezas`). Las
+# exclusivas no dan pieza. Los textos de las piezas (grupos, orígenes y frases) están en `texto_fijo` (`PIEZA_*`).
+ITEMS_PIEZAS = {
+    # código: (fuente de opciones, mínima, máxima, ordenada, exclusiva que no da pieza o None)
+    'b2-4-bien': ('LISTA', 3, 3, True, None),
+    'b2-3-valores': ('LISTA', 3, 3, True, None),
+    'b1-1-logro': ('LISTA', 1, 2, False, 'NINGUNO'),
+    'b1-1-gustos': (None, None, None, False, None),
+    'b2-4-cuesta': ('LISTA', 1, 2, False, 'NADA'),
+    'b1-3-mia': ('LISTA', 1, 1, False, None),
+    'b1-7-dia': ('PROPIAS', 1, 1, False, None),
+    'b1-7-freno': (None, None, None, False, None),
+    'b1-6-mito': ('LISTA', 1, 1, False, 'NINGUNO'),
+    'h1-reto': ('PROPIAS', 1, 1, False, None),
+}
+ITEM_BIEN, ITEM_VALORES, ITEM_LOGRO, ITEM_GUSTOS = 'b2-4-bien', 'b2-3-valores', 'b1-1-logro', 'b1-1-gustos'
+ITEM_CUESTA, ITEM_MIA, ITEM_DIA, ITEM_FRENO, ITEM_MITO = 'b2-4-cuesta', 'b1-3-mia', 'b1-7-dia', 'b1-7-freno', 'b1-6-mito'
+ITEM_RETO = 'h1-reto'
+# Los tres tests de las piezas del perfil: cada dimensión debe tener su frase (`PIEZA_FRASE_<dimensión>`).
+INSTRUMENTO_INTERESES = 'TEST-RIASEC'
+INSTRUMENTO_INTELIGENCIAS = 'TEST-INTELIGENCIAS'
+INSTRUMENTO_HABILIDADES = 'TEST-HABILIDADES'
+# Piezas con origen que se muestra y origen al LLM (`PIEZA_ORIGEN_<pieza>_MOSTRAR` / `_LLM`). Las de intereses
+# muestran el nombre de su dimensión; las «Otra» muestran la etiqueta del ítem: solo llevan `_LLM`.
+PIEZAS_CON_ORIGEN = ('INTEL', 'HAB', 'BIEN-1', 'VAL-1', 'LOGRO-HAB', 'GUSTO', 'CUESTA', 'INI-OPCION', 'INI-RUTA',
+                     'INI-DIA', 'INI-FRENO', 'INI-MITO')
+PIEZAS_SOLO_ORIGEN_LLM = ('INT', 'OTRA-PERFIL', 'OTRA-INICIO')
+GRUPOS_PIEZAS = ('INTERESES', 'TESTS', 'ANTES', 'CUESTA')
 
 # B09 · Diario. Cambiar el prompt de personalización exige subir `VERSION_PROMPT_DIARIO`.
 VERSION_PROMPT_DIARIO = "v1"

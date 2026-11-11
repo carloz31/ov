@@ -8,7 +8,11 @@ La transacción pertenece al llamador; este módulo no confirma ni migra.
 
 import sys
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+from app import models as m
+from app.core.parametros import ITEMS_PIEZAS
 
 from datos import cargador, ruta, tarjetas_registros
 from datos.fijos import validar_distribucion_items
@@ -1158,6 +1162,24 @@ EVALUADORES_REGLAS = {
 }
 
 
+def validar_piezas(sesion: Session) -> None:
+    """Ajuste registros llm (lote 2): los ítems de los que salen marcadores y piezas (`parametros.ITEMS_PIEZAS`)
+    existen y tienen la forma que espera `app/services/registro/contexto.py`; si no, la carga falla."""
+    items = {i.codigo: i for i in sesion.scalars(select(m.ItemRegistro).where(m.ItemRegistro.codigo.in_(ITEMS_PIEZAS)))}
+    for codigo, (fuente, minima, maxima, ordenada, exclusiva) in ITEMS_PIEZAS.items():
+        item = items.get(codigo)
+        if item is None:
+            raise ValueError(f'Falta el ítem {codigo}, del que salen marcadores o piezas')
+        forma = (None if item.fuente_opciones is None else item.fuente_opciones.value, item.eleccion_minima,
+                 item.eleccion_maxima, item.eleccion_ordenada)
+        if forma != (fuente, minima, maxima, ordenada):
+            raise ValueError(f'El ítem {codigo} no tiene la forma que esperan las piezas: {forma}')
+        if exclusiva is not None and not any(o['codigo'] == exclusiva and o.get('exclusiva')
+                                             for o in item.opciones_propias or ()):
+            raise ValueError(f'El ítem {codigo} no tiene la exclusiva {exclusiva}')
+
+
 def cargar(sesion: Session) -> None:
     cargador.cargar(sesion, sys.modules[__name__])
     validar_distribucion_items(sesion)
+    validar_piezas(sesion)

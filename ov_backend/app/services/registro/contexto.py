@@ -23,9 +23,13 @@ from dataclasses import dataclass, field
 from sqlalchemy import select
 
 from app.core.contexto import contexto, usar_contexto
+from app.core.parametros import (
+    INSTRUMENTO_HABILIDADES, INSTRUMENTO_INTELIGENCIAS, ITEM_BIEN, ITEM_CUESTA, ITEM_DIA, ITEM_FRENO, ITEM_GUSTOS,
+    ITEM_LOGRO, ITEM_MIA, ITEM_MITO, ITEM_RETO, ITEM_VALORES, ITEMS_PIEZAS,
+)
 from app.models import (
     Aplicacion, Cuenta, Dimension, Instrumento, ItemRegistro, ProgresoActividad, Referencia, RespuestaRegistro,
-    ResultadoDimension, ResultadoInstrumento,
+    ResultadoDimension, ResultadoInstrumento, TextoFijo,
 )
 from app.models.enums import EstadoReferencia, FuenteOpciones, TipoReferencia
 from app.services.comun import buscar_por_codigo
@@ -49,29 +53,13 @@ class OpcionSinLLM(ValueError):
     """Lo marcado no pasa por el LLM (ítem sin tarjeta u opción `sin_llm`)."""
 
 
-# §2: los ítems de los que salen los marcadores y las piezas (el contenido los define; aquí se nombran).
-ITEM_BIEN, ITEM_VALORES, ITEM_LOGRO, ITEM_GUSTOS = 'b2-4-bien', 'b2-3-valores', 'b1-1-logro', 'b1-1-gustos'
-ITEM_CUESTA, ITEM_MIA, ITEM_DIA, ITEM_FRENO, ITEM_MITO = 'b2-4-cuesta', 'b1-3-mia', 'b1-7-dia', 'b1-7-freno', 'b1-6-mito'
-ITEM_RETO = 'h1-reto'
-EXCLUSIVAS_SIN_PIEZA = {ITEM_LOGRO: 'NINGUNO', ITEM_CUESTA: 'NADA', ITEM_MITO: 'NINGUNO'}
-INSTRUMENTO_INTELIGENCIAS, INSTRUMENTO_HABILIDADES = 'TEST-INTELIGENCIAS', 'TEST-HABILIDADES'
 CON_CITA = ('propio', 'general')
 _MARCADOR = re.compile(r'\{([^{}\n]+)\}')
 # `{opción}` lo resuelve la tarjeta con lo marcado en el mismo ítem (lote 1).
 DE_LA_TARJETA = {'opción'}
-
-GRUPO_INTERESES, GRUPO_TESTS = 'Tu test de intereses', 'Tus otros tests'
-GRUPO_ANTES, GRUPO_CUESTA = 'Lo que escribiste y elegiste antes', 'Lo que te cuesta'
-# Orígenes de las piezas de registros (§4): la pregunta del ítem, en segunda persona.
-ORIGEN_BIEN, ORIGEN_VALORES = '¿En qué te va mejor? 1.º', '¿Qué valoras en un trabajo? 1.º'
-ORIGEN_LOGRO, ORIGEN_GUSTO = '¿Qué habilidades tuyas se notaron ahí?', '¿Qué te encantaba hacer de niño o niña?'
-ORIGEN_CUESTA = '¿Qué te cuesta?'
-ORIGENES_INICIO = {
-    'INI-OPCION': 'tu primera opción', 'INI-RUTA': 'la ruta que querías al terminar el colegio',
-    'INI-DIA': 'tu día a los 23', 'INI-FRENO': 'lo que dijiste que podía frenarte',
-    'INI-MITO': 'una idea que habías escuchado o creído',
-}
-ORIGEN_OTRA_INICIO = 'otra cosa que cambió'
+# Las fuentes de piezas y el texto fijo del origen al LLM de su «Otra».
+ORIGEN_OTRA = {FuenteOpciones.PIEZAS_PERFIL: 'OTRA-PERFIL', FuenteOpciones.PIEZAS_PERFIL_MENOS: 'OTRA-PERFIL',
+               FuenteOpciones.PIEZAS_INICIO: 'OTRA-INICIO'}
 
 
 @dataclass(frozen=True, slots=True)
@@ -86,11 +74,14 @@ class OpcionContexto:
     pregunta: str | None = None
     arranque: str | None = None
     tarjeta: Mapping | None = None
+    # Solo en las piezas: el origen al LLM y, si cambia la forma de las comillas, el texto al LLM.
+    origen_llm: str | None = None
+    texto_llm: str | None = None
 
     @property
     def para_llm(self):
-        """La opción como va en `<opcion_marcada>`: con una pieza, su origen entre paréntesis (§4)."""
-        return f'{self.texto} ({self.origen})' if self.origen else self.texto
+        """La opción como va en `<opcion_marcada>`: con una pieza, su texto con el origen al LLM entre paréntesis."""
+        return f'{self.texto_llm or self.texto} ({self.origen_llm})' if self.origen_llm else self.texto
 
 
 @dataclass(frozen=True, slots=True)
@@ -109,6 +100,9 @@ class ContextoItem:
     etiqueta_otra: str | None = None
     tarjeta: Mapping | None = None
     sin_llm: bool = field(default=False)
+    fuente: str | None = None
+    # El origen al LLM de la «Otra» en un ítem de piezas («otra cosa tuya», «otra cosa que cambió»).
+    origen_otra_llm: str | None = None
 
     def opcion(self, codigo):
         return next((o for o in self.opciones if o.codigo == codigo), None)
@@ -134,6 +128,11 @@ def _vigentes(sesion, cuenta, codigos):
         ProgresoActividad, ProgresoActividad.id == RespuestaRegistro.progreso_id).where(
         ProgresoActividad.cuenta_id == cuenta.id, RespuestaRegistro.vigente,
         RespuestaRegistro.item_registro_id.in_(ids)))}
+
+
+def _exclusiva(codigo_item):
+    """La exclusiva del ítem que no da pieza (`parametros.ITEMS_PIEZAS`)."""
+    return ITEMS_PIEZAS[codigo_item][4]
 
 
 def _es_otra(codigo):
@@ -181,16 +180,42 @@ def _destacadas(sesion, cuenta, codigo_instrumento):
 
 
 # --- Piezas (§4) -----------------------------------------------------------------------------
+#
+# Lo que va al LLM es lo que validó el runner (v7.8 de b4-1 y v7.12 de b5-3): el origen al LLM, la frase de cada
+# test, las comillas («» en las del perfil, "" en las del inicio) y la «Otra» del ítem con su origen y sin comillas.
+# Lo que se muestra lleva el origen de §4 y lo escrito por el estudiante entre «».
 
-def _pieza(codigo, texto, origen, grupo):
-    return OpcionContexto(codigo=codigo, texto=texto, origen=origen, grupo=grupo)
+def _texto_fijo(sesion, codigo):
+    fila = contexto(sesion).definiciones.por_codigo(TextoFijo, codigo)
+    if fila is None:
+        raise LookupError(f'Falta el texto fijo {codigo}')
+    return fila.texto
 
 
-def _texto_de_eleccion(sesion, codigo_item, respuesta, elegida):
-    """El texto de una elección como pieza: la etiqueta, o lo escrito en «¿Cuál?» entre comillas (regla 3)."""
+def _pieza(sesion, codigo, clave, texto, grupo, texto_llm=None, origen=None):
+    """Una pieza con su origen que se muestra (`PIEZA_ORIGEN_<clave>_MOSTRAR`, o `origen`) y el que va al LLM."""
+    return OpcionContexto(
+        codigo=codigo, texto=texto, grupo=None if grupo is None else _texto_fijo(sesion, f'PIEZA_GRUPO_{grupo}'),
+        origen=origen or _texto_fijo(sesion, f'PIEZA_ORIGEN_{clave}_MOSTRAR'),
+        origen_llm=_texto_fijo(sesion, f'PIEZA_ORIGEN_{clave}_LLM'), texto_llm=texto_llm)
+
+
+def _escrito(sesion, codigo_item, respuesta, elegida, comillas_llm):
+    """(texto que se muestra, texto al LLM) de una elección como pieza: la etiqueta, o lo escrito en «¿Cuál?» entre
+    comillas (regla 3: si el ítem quedó `propio` o `general`, o siempre si va sin LLM); None si no va."""
     if not _es_otra(elegida['codigo']):
-        return elegida['texto']
-    return _comillas(elegida['texto']) if _otra_citable(sesion, codigo_item, respuesta) else None
+        return elegida['texto'], None
+    if not _otra_citable(sesion, codigo_item, respuesta):
+        return None, None
+    return _comillas(elegida['texto']), comillas_llm(elegida['texto'])
+
+
+def _comillas_perfil(texto):
+    return _comillas(texto)
+
+
+def _comillas_inicio(texto):
+    return f'"{texto}"'
 
 
 def piezas_perfil(sesion, cuenta, con_cuesta=False):
@@ -201,38 +226,38 @@ def piezas_perfil(sesion, cuenta, con_cuesta=False):
     if con_cuesta and ITEM_CUESTA in vigentes:
         respuesta = vigentes[ITEM_CUESTA]
         for elegida in _elegidas(respuesta):
-            texto = _texto_de_eleccion(sesion, ITEM_CUESTA, respuesta, elegida)
-            if elegida['codigo'] != EXCLUSIVAS_SIN_PIEZA[ITEM_CUESTA] and texto:
-                piezas.append(_pieza(f"CUESTA-{elegida['codigo']}", texto, ORIGEN_CUESTA, GRUPO_CUESTA))
+            texto, texto_llm = _escrito(sesion, ITEM_CUESTA, respuesta, elegida, _comillas_perfil)
+            if elegida['codigo'] != _exclusiva(ITEM_CUESTA) and texto:
+                piezas.append(_pieza(sesion, f"CUESTA-{elegida['codigo']}", 'CUESTA', texto, 'CUESTA', texto_llm))
     intereses = resultado_intereses(sesion, cuenta)
     if intereses is not None and intereses.codigo_interes is not None:
         por_codigo = {d.codigo: d for d in intereses.dimensiones}
         for letra in intereses.codigo_interes.codigo:
-            dimension = por_codigo.get(letra)
-            if dimension is not None:
-                piezas.append(_pieza(f'INT-{letra}', dimension.descripcion.rstrip('.'), dimension.nombre,
-                                     GRUPO_INTERESES))
-    for d in _destacadas(sesion, cuenta, INSTRUMENTO_INTELIGENCIAS):
-        piezas.append(_pieza(f"INTEL-{d.codigo.split('-', 1)[-1]}", d.descripcion.rstrip('.'),
-                             'tu test de inteligencias', GRUPO_TESTS))
-    for d in _destacadas(sesion, cuenta, INSTRUMENTO_HABILIDADES):
-        piezas.append(_pieza(f"HAB-{d.codigo.split('-', 1)[-1]}", d.nombre, 'tu test de habilidades', GRUPO_TESTS))
-    for codigo_item, codigo, origen in ((ITEM_BIEN, 'BIEN-1', ORIGEN_BIEN), (ITEM_VALORES, 'VAL-1', ORIGEN_VALORES)):
+            if letra in por_codigo:
+                piezas.append(_pieza(sesion, f'INT-{letra}', 'INT', _texto_fijo(sesion, f'PIEZA_FRASE_{letra}'),
+                                     'INTERESES', origen=por_codigo[letra].nombre))
+    for clave, instrumento in (('INTEL', INSTRUMENTO_INTELIGENCIAS), ('HAB', INSTRUMENTO_HABILIDADES)):
+        for d in _destacadas(sesion, cuenta, instrumento):
+            piezas.append(_pieza(sesion, f"{clave}-{d.codigo.split('-', 1)[-1]}", clave,
+                                 _texto_fijo(sesion, f'PIEZA_FRASE_{d.codigo}'), 'TESTS'))
+    for codigo_item, codigo in ((ITEM_BIEN, 'BIEN-1'), (ITEM_VALORES, 'VAL-1')):
         respuesta = vigentes.get(codigo_item)
         elegidas = _elegidas(respuesta) if respuesta else []
-        texto = _texto_de_eleccion(sesion, codigo_item, respuesta, elegidas[0]) if elegidas else None
-        if texto:
-            piezas.append(_pieza(codigo, texto, origen, GRUPO_ANTES))
+        if elegidas:
+            texto, texto_llm = _escrito(sesion, codigo_item, respuesta, elegidas[0], _comillas_perfil)
+            if texto:
+                piezas.append(_pieza(sesion, codigo, codigo, texto, 'ANTES', texto_llm))
     logro = vigentes.get(ITEM_LOGRO)
     if logro is not None:
-        textos = [_texto_de_eleccion(sesion, ITEM_LOGRO, logro, e) for e in _elegidas(logro)
-                  if e['codigo'] != EXCLUSIVAS_SIN_PIEZA[ITEM_LOGRO]]
-        textos = [t for t in textos if t]
+        textos = [_escrito(sesion, ITEM_LOGRO, logro, e, _comillas_perfil) for e in _elegidas(logro)
+                  if e['codigo'] != _exclusiva(ITEM_LOGRO)]
+        textos = [(t, l) for t, l in textos if t]
         if textos:
-            piezas.append(_pieza('LOGRO-HAB', ' y '.join(textos), ORIGEN_LOGRO, GRUPO_ANTES))
+            piezas.append(_pieza(sesion, 'LOGRO-HAB', 'LOGRO-HAB', ' y '.join(t for t, _ in textos), 'ANTES',
+                                 ' y '.join(l or t for t, l in textos)))
     gusto = _citable(vigentes[ITEM_GUSTOS]) if ITEM_GUSTOS in vigentes else []
     if gusto:
-        piezas.append(_pieza('GUSTO', _comillas(' '.join(gusto)), ORIGEN_GUSTO, GRUPO_ANTES))
+        piezas.append(_pieza(sesion, 'GUSTO', 'GUSTO', _comillas(' '.join(gusto)), 'ANTES'))
     return piezas
 
 
@@ -242,24 +267,21 @@ def piezas_inicio(sesion, cuenta):
     piezas = []
     inicial = _leer_planes(sesion, cuenta, {TipoReferencia.OPCION_INICIAL}).get(TipoReferencia.OPCION_INICIAL)
     if inicial:
-        piezas.append(_pieza('INI-OPCION', inicial['texto'], ORIGENES_INICIO['INI-OPCION'], None))
-    mia = vigentes.get(ITEM_MIA)
-    elegidas = _elegidas(mia) if mia else []
-    if elegidas:
-        texto = _texto_de_eleccion(sesion, ITEM_MIA, mia, elegidas[0])
-        if texto:
-            piezas.append(_pieza('INI-RUTA', texto, ORIGENES_INICIO['INI-RUTA'], None))
+        piezas.append(_pieza(sesion, 'INI-OPCION', 'INI-OPCION', inicial['texto'], None))
+    for codigo_item, codigo in ((ITEM_MIA, 'INI-RUTA'), (ITEM_MITO, 'INI-MITO')):
+        respuesta = vigentes.get(codigo_item)
+        elegidas = _elegidas(respuesta) if respuesta else []
+        if elegidas and elegidas[0]['codigo'] != _exclusiva(codigo_item):
+            texto, texto_llm = _escrito(sesion, codigo_item, respuesta, elegidas[0], _comillas_inicio)
+            if texto:
+                piezas.append(_pieza(sesion, codigo, codigo, texto, None, texto_llm))
     for codigo_item, codigo in ((ITEM_DIA, 'INI-DIA'), (ITEM_FRENO, 'INI-FRENO')):
         lineas = _citable(vigentes[codigo_item]) if codigo_item in vigentes else []
         if lineas:
-            piezas.append(_pieza(codigo, _comillas(' '.join(lineas)), ORIGENES_INICIO[codigo], None))
-    mito = vigentes.get(ITEM_MITO)
-    elegidas = _elegidas(mito) if mito else []
-    if elegidas and elegidas[0]['codigo'] != EXCLUSIVAS_SIN_PIEZA[ITEM_MITO]:
-        texto = _texto_de_eleccion(sesion, ITEM_MITO, mito, elegidas[0])
-        if texto:
-            piezas.append(_pieza('INI-MITO', texto, ORIGENES_INICIO['INI-MITO'], None))
-    return piezas
+            texto = ' '.join(lineas)
+            piezas.append(_pieza(sesion, codigo, codigo, _comillas(texto), None, _comillas_inicio(texto)))
+    orden = ('INI-OPCION', 'INI-RUTA', 'INI-DIA', 'INI-FRENO', 'INI-MITO')
+    return sorted(piezas, key=lambda p: orden.index(p.codigo))
 
 
 # --- Marcadores (§2) -------------------------------------------------------------------------
@@ -470,7 +492,9 @@ def resolver_contexto(sesion, cuenta: Cuenta, codigo_item: str) -> ContextoItem:
         marcadores=marcadores, ecos_mostrar=_ecos(sesion, cuenta, item, item.ecos_mostrar, para_llm=False),
         ecos_llm=_ecos(sesion, cuenta, item, item.ecos_llm, para_llm=True), ordenada=item.eleccion_ordenada,
         permite_otra=item.permite_otra, etiqueta_otra=item.etiqueta_otra, tarjeta=item.tarjeta,
-        sin_llm=item.tarjeta is None)
+        sin_llm=item.tarjeta is None, fuente=None if item.fuente_opciones is None else item.fuente_opciones.value,
+        origen_otra_llm=(_texto_fijo(sesion, f'PIEZA_ORIGEN_{ORIGEN_OTRA[item.fuente_opciones]}_LLM')
+                         if item.fuente_opciones in ORIGEN_OTRA else None))
 
 
 def etiquetas_marcadas(contexto_item: ContextoItem, elegidas: Sequence) -> tuple[str, ...]:
@@ -481,7 +505,8 @@ def etiquetas_marcadas(contexto_item: ContextoItem, elegidas: Sequence) -> tuple
         codigo, texto = (elegida['codigo'], elegida.get('texto')) if isinstance(elegida, Mapping) else (
             elegida.codigo, elegida.texto)
         if _es_otra(codigo):
-            salida.append(texto)
+            otra = ORIGEN_OTRA.get(contexto_item.fuente)
+            salida.append(f'{texto} ({contexto_item.origen_otra_llm})' if otra else texto)
             continue
         opcion = contexto_item.opcion(codigo)
         if opcion is None:
