@@ -34,12 +34,12 @@ def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
         "ocupacion_familia",
         "lista_opciones", "opcion_lista", "item_registro", "referencia",
         "high_point", "tipo_carrera", "ubicacion", "institucion", "institucion_carrera", "grupo_ocupacional",
-        "estilo_trabajo", "ingreso_familia", "ingreso_institucion", "seccion_tarjeta", "referencia_rubro",
+        "estilo_trabajo", "ingreso_familia", "ingreso_institucion", "seccion_tarjeta", "referencia_rubro", "respaldo_paso",
         "referencia_camino", "pregunta_base_guion", "tipo_reaccion", "texto_fijo",
     }
     assert set(inspector.get_table_names()) == esperadas
     # Ajuste registros llm (lote 2): salen `criterio_completitud`, `turno_seguimiento` y `evaluacion_respuesta`.
-    assert len(esperadas) == 93
+    assert len(esperadas) == 94
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]

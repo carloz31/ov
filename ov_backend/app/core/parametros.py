@@ -142,7 +142,15 @@ NUMERO_BLOQUE_OPCION_INICIAL = 2
 MINIMO_CARACTERES_RELATO = MIN_CARACTERES_RESPALDO
 MAXIMO_LLAMADAS_SUGERENCIAS_POR_PLAN = 6
 MAXIMO_PASOS_POR_DUDA = 2
-MAXIMO_CARACTERES_PASO = 140
+# Ajuste llm-sugerencias: hasta dos pasos por complicación; el prompt pide 180 caracteres y la validación acepta hasta
+# 220 (el que pasa se descarta, no se corta).
+MAXIMO_PASOS_POR_COMPLICACION = 2
+MAXIMO_CARACTERES_PROMPT_PASO = 180
+MAXIMO_CARACTERES_PASO = 220
+# Topes propios de la llamada de pasos (todas las novedades de un guardado en una llamada). PROVISIONALES: se fijan con
+# la medición de la fase 4 del ajuste llm-sugerencias (1, 3, 5, 8 y 10 dudas).
+MAXIMO_TOKENS_SALIDA_PASOS = 6000
+TIEMPO_MAXIMO_PASOS_SEGUNDOS = 30
 
 # F06 · Catálogo: tamaño de página de los listados.
 LIMITE_PAGINA_CATALOGO = 20

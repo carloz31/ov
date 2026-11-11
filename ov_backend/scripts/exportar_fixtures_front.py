@@ -98,7 +98,7 @@ class _ClienteLLMPropio:
     son las por defecto del cliente de prueba (ajuste llm-sugerencias). Nunca llama a la red."""
     modelo = 'fixtures'
 
-    def llamar(self, sistema, mensaje, esquema):
+    def llamar(self, sistema, mensaje, esquema, **topes):
         from app.services.registro.llm import RespuestaCruda
         soporte = str(Path(__file__).resolve().parents[1] / 'tests' / 'soporte')
         if soporte not in sys.path:

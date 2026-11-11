@@ -12,7 +12,7 @@ CATALOGO = {
     'aplicacion', 'aplicacion_actividad', 'ocupacion', 'puntaje_ocupacion',
     'ocupacion_familia', 'lista_opciones', 'opcion_lista', 'item_registro',
     'referencia', 'high_point', 'tipo_carrera', 'ubicacion', 'institucion', 'institucion_carrera',
-    'grupo_ocupacional', 'estilo_trabajo', 'ingreso_familia', 'ingreso_institucion', 'seccion_tarjeta', 'referencia_rubro',
+    'grupo_ocupacional', 'estilo_trabajo', 'ingreso_familia', 'ingreso_institucion', 'seccion_tarjeta', 'referencia_rubro', 'respaldo_paso',
     'referencia_camino', 'pregunta_base_guion', 'tipo_reaccion', 'texto_fijo',
 }
 

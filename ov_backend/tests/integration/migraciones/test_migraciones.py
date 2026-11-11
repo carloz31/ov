@@ -43,7 +43,7 @@ def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
     # Ajuste registros: la tabla `texto_fijo` (0049). Ajuste registros llm (lote 2): salen tres tablas (0050).
-    assert len(Base.metadata.tables) == 93
+    assert len(Base.metadata.tables) == 94
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -131,7 +131,8 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
     # Ajuste registros: la tabla `texto_fijo` (0049). Ajuste registros llm (lote 2): 0050 rehace `respuesta_registro`.
-    assert sql.count('CREATE TABLE ') == 103
+    # Ajuste llm-sugerencias: `respaldo_paso` (0054).
+    assert sql.count('CREATE TABLE ') == 104
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -429,11 +430,13 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # ítems de registro cargados (su consigna en partes y sus tarjetas no bajan).
         with pytest.raises(RuntimeError, match='existen datos de los registros definitivos'):
             command.downgrade(configuracion, '0002')
-        # Nada baja: el esquema y los datos quedan como en 0050.
-        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
+        # Nada baja de 0050: el esquema y los datos quedan como en 0050. Ajuste llm-sugerencias: 0054, que sí bajó, se
+        # llevó la tabla de catálogo `respaldo_paso` (se vuelve a cargar al subir).
+        posteriores = {'respaldo_paso'}
+        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) - posteriores | {'alembic_version'}
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0050'
-            for tabla in Base.metadata.sorted_tables:
+            for tabla in (t for t in Base.metadata.sorted_tables if t.name not in posteriores):
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]
                 assert conexion.execute(select(*columnas).order_by(*tabla.primary_key.columns)).mappings().all() == [

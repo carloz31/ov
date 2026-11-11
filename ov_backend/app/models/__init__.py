@@ -11,6 +11,7 @@ from app.models.enums import (
     PreguntaConocimiento, RespuestaConocimiento, OrigenDuda, EstadoDuda, EstadoSugerencia, OrigenSugerencia,
     EstadoPaso, OrigenSesion, EstadoInvestigacion, OrigenPreguntaGuion, EstadoSugerenciaGuion, EstadoEntrevista,
     MotivoReporte, EstadoReporte, TipoNotificacion, FuenteOpciones, CampoLoQuePienso,
+    ClaseNovedadPlan,
 )
 
 
@@ -54,7 +55,7 @@ _MODELOS_POR_MODULO = {
         'InstitucionCarrera', 'IngresoFamilia', 'IngresoInstitucion',
     ),
     'app.models.planes': (
-        'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta',
+        'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'RespaldoPaso', 'TarjetaCarrera', 'MotivoTarjeta',
         'ConocimientoTarjeta', 'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta',
         'SugerenciaTarjeta', 'PasoTarjeta',
     ),
@@ -92,8 +93,8 @@ __all__ = [
     'IngresoFamilia', 'IngresoInstitucion',
     'TipoFavorito', 'Favorito', 'InsigniaVitrina', 'PresentacionVista', 'UsoPreguntaDiario', 'TipoRecomendacion', 'OrigenRedaccion', 'Recomendacion',
     'ContadorDiario', 'GestionInstitucion', 'FrecuenciaGasto', 'OrigenIdea', 'PreguntaConocimiento',
-    'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'EstadoPaso',
-    'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',
+    'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'ClaseNovedadPlan', 'EstadoPaso',
+    'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'RespaldoPaso', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',
     'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta', 'SugerenciaTarjeta', 'PasoTarjeta',
     'OrigenSesion', 'EstadoInvestigacion', 'OrigenPreguntaGuion', 'CampoLoQuePienso', 'EstadoSugerenciaGuion', 'EstadoEntrevista',
     'MotivoReporte', 'EstadoReporte', 'PreguntaBaseGuion', 'TipoReaccion', 'Investigacion', 'PreguntaGuion',

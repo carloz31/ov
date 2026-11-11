@@ -341,12 +341,11 @@ def _guardar_seccion(sesion: Session, entrada: GuardarSeccionEntrada) -> tuple[R
     return respuesta, novedades
 
 
-def guardar_seccion(fabrica_sesiones, entrada: GuardarSeccionEntrada, evaluador, *,
-                    tiempo_maximo_segundos: float) -> RespuestaAccion:
+def guardar_seccion(fabrica_sesiones, entrada: GuardarSeccionEntrada, cliente) -> RespuestaAccion:
     """Reemplaza la sección entera; sus efectos (dudas, cierres) ocurren solo aquí. Las dudas o complicaciones
     nuevas reciben sus pasos sugeridos después de confirmar el guardado, fuera de su transacción."""
     with fabrica_sesiones.begin() as sesion:
         respuesta, novedades = _guardar_seccion(sesion, entrada)
     if novedades is not None:
-        sugerir(fabrica_sesiones, novedades, evaluador, tiempo_maximo_segundos=tiempo_maximo_segundos)
+        sugerir(fabrica_sesiones, novedades, cliente)
     return respuesta

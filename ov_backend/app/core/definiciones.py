@@ -21,7 +21,7 @@ MODELOS_FIJOS = (
     modelos.ListaOpciones, modelos.OpcionLista, modelos.ItemRegistro,
     modelos.Referencia, modelos.Tematica, modelos.ActividadTematica, modelos.SalonInstrumento,
     modelos.SalonActividadPrioritaria, modelos.SeccionTarjeta, modelos.ReferenciaRubro, modelos.ReferenciaCamino,
-    modelos.PreguntaBaseGuion, modelos.TipoReaccion, modelos.TextoFijo,
+    modelos.RespaldoPaso, modelos.PreguntaBaseGuion, modelos.TipoReaccion, modelos.TextoFijo,
 )
 
 

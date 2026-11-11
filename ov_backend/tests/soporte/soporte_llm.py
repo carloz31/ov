@@ -79,14 +79,23 @@ class ClientePrueba:
     def __init__(self):
         self.cola = []
         self.llamadas = []
+        self.topes = []
+        # Sin cola, las llamadas de pasos del plan fallan: solo quedan los respaldos (ajuste llm-sugerencias).
+        self.fallar_pasos = False
 
     def encolar(self, *respuestas):
         self.cola.extend(respuestas)
         return self
 
-    def llamar(self, sistema, mensaje, esquema):
+    def llamar(self, sistema, mensaje, esquema, **topes):
         self.llamadas.append((sistema, mensaje, esquema))
-        respuesta = self.cola.pop(0) if self.cola else por_defecto(mensaje, esquema)
+        self.topes.append(topes)
+        if self.cola:
+            respuesta = self.cola.pop(0)
+        elif self.fallar_pasos and 'sugerencias' in esquema.get('properties', {}):
+            respuesta = fallo()
+        else:
+            respuesta = por_defecto(mensaje, esquema)
         if isinstance(respuesta, Exception):
             raise respuesta
         if isinstance(respuesta, RespuestaCruda):

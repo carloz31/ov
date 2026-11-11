@@ -1,5 +1,5 @@
 """Lo que queda del evaluador de registros v6 (Gemini): la validación de preguntas y el evaluador falso de los
-asistentes que siguen con Gemini (diario y sugerencias de pasos del plan).
+asistentes que siguen con Gemini (diario y cartas).
 
 Ajuste registros llm (lote 2): la evaluación de registros v6 (criterios, seguimiento, consolidada) salió; la del
 registro es la capa v7 de `llm/`, que el lote 3 conecta al flujo.
@@ -34,17 +34,13 @@ def pregunta_valida(pregunta) -> bool:
 
 
 class EvaluadorFalso:
-    """Determinista, para los asistentes con Gemini (diario y sugerencias de pasos); sin red."""
+    """Determinista, para los asistentes con Gemini (diario y cartas); sin red."""
 
     def __init__(self):
         # Diario (B09): `falla_diario` simula un fallo del LLM al personalizar.
         self.contextos_diario: list = []
         self.llamadas_diario = 0
         self.falla_diario = False
-        # Planes (B11): `falla_sugerencias` simula un fallo del LLM al sugerir pasos.
-        self.contextos_sugerencias: list = []
-        self.llamadas_sugerencias = 0
-        self.falla_sugerencias = False
 
     def personalizar_entrada(self, contexto) -> dict:
         """Retoma el primer dato del contexto delante de la pregunta base."""
@@ -55,34 +51,3 @@ class EvaluadorFalso:
         dato = contexto.datos[0]
         cita = (dato.texto or ', '.join(dato.opciones)).replace('?', '').strip()[:60]
         return {"pregunta": f"Sobre «{cita}»: {contexto.pregunta_base}"}
-
-    def sugerir_pasos(self, contexto) -> list:
-        """Un paso por novedad: «investigar» para una duda y «conversar» para una complicación.
-
-        Marcas en el texto de la novedad: `[falla]` lanza error; `[malformado]` devuelve algo fuera del esquema;
-        `[tipo-invalido]`, `[largo]`, `[tres]` y `[sin-pasos]` cambian sus pasos; `[ajeno]` agrega un número no
-        enviado."""
-        self.llamadas_sugerencias += 1
-        self.contextos_sugerencias.append(contexto)
-        textos = ' '.join(novedad.texto for novedad in contexto.novedades)
-        if self.falla_sugerencias or '[falla]' in textos:
-            raise RuntimeError("Fallo simulado de las sugerencias")
-        if '[malformado]' in textos:
-            return {'pasos': 'DATO DE PRUEBA'}
-        clave = 'duda' if contexto.tipo == 'DUDAS' else 'complicacion'
-        lugar = contexto.institucion.nombre if contexto.institucion is not None else contexto.carrera
-        resultado = []
-        for novedad in contexto.novedades:
-            tipo = 'investigar' if clave == 'duda' else 'conversar'
-            paso = {'tipo': tipo, 'texto': f'Busca en {lugar}: {novedad.texto}' if clave == 'duda'
-                    else f'Conversa en casa sobre: {novedad.texto}'}
-            if '[tipo-invalido]' in novedad.texto:
-                paso['tipo'] = 'nadar'
-            if '[largo]' in novedad.texto:
-                paso['texto'] = 'x' * 200
-            pasos = [paso] * 3 if '[tres]' in novedad.texto else [] if '[sin-pasos]' in novedad.texto else [paso]
-            resultado.append({clave: novedad.numero, 'pasos': pasos})
-            if '[ajeno]' in novedad.texto:
-                resultado.append({clave: 999, 'pasos': [paso]})
-        return resultado
-

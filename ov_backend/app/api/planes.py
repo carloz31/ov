@@ -32,8 +32,7 @@ def guardar_seccion(entrada: GuardarSeccionEntrada, peticion: Request):
     # No usa la dependencia de sesión: las sugerencias van entre dos transacciones, como en el registro.
     try:
         return acciones_planes.guardar_seccion(
-            peticion.app.state.fabrica_sesiones, entrada, peticion.app.state.evaluador_respuestas,
-            tiempo_maximo_segundos=peticion.app.state.configuracion_registro.timeout_segundos)
+            peticion.app.state.fabrica_sesiones, entrada, peticion.app.state.cliente_llm)
     except ErrorAccion as error:
         raise traducir_error_accion(error) from error
     except IntegrityError as error:

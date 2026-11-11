@@ -126,12 +126,12 @@ LISTAS_COMUNES = (
     ('RUTAS_DESPUES_COLEGIO', 'Rutas después del colegio',
      (('UNIVERSIDAD', 'Estudiar en una universidad'), ('INSTITUTO', 'Estudiar en un instituto'),
       ('TRABAJAR', 'Trabajar'), ('EMPRENDER', 'Emprender un negocio'), ('AUN_NO_SE', 'Aún no lo sé'))),
-    # Ajuste registros: también la de `b1-7-freno`; se le agregan cuatro opciones al final, sin quitar ninguna.
+    # Ajuste registros: también la de `b1-7-freno`. Ajuste llm-sugerencias: sale «Mi salud o la de alguien cercano»
+    # (SALUD), también del registro; cada opción tiene su paso de respaldo (RESPALDOS_PASOS).
     ('DIFICULTADES', 'Dificultades',
      (('ECONOMICAS', 'Económicas'), ('ACADEMICAS', 'Académicas'), ('FAMILIARES', 'Familiares'),
       ('INFORMACION', 'Falta de información'), ('DISTANCIA', 'Distancia'), ('NO_INGRESAR', 'No ingresar'),
-      ('CAMBIAR_OPINION', 'Cambiar de opinión'), ('TIEMPO', 'El tiempo'),
-      ('SALUD', 'Mi salud o la de alguien cercano'))),
+      ('CAMBIAR_OPINION', 'Cambiar de opinión'), ('TIEMPO', 'El tiempo'))),
     # B11 · Tarjeta de carrera. VALORES es también la lista del registro 2.3.
     ('VALORES', 'Valores',
      (('ESTABILIDAD', 'Estabilidad'), ('INGRESOS', 'Ingresos'), ('AYUDAR', 'Ayudar a otros'), ('CREAR', 'Crear'),
@@ -204,6 +204,61 @@ LISTAS_COMUNES = (
       ('INGRESO', '¿Cómo se ingresa a {carrera}?'),
       ('CONOCE_ALGUIEN', '¿A quién podría preguntarle sobre {carrera}?'))),
 )
+
+# Ajuste llm-sugerencias (§3.6): el paso de respaldo de cada duda o complicación de lista, cuando la llamada al LLM
+# falla, tarda, sale del esquema, se agotó el tope o la novedad volvió sin pasos válidos. (lista, código, tipo de
+# PASOS, texto); `{carrera}` es el nombre de la carrera y `{institucion}` el de la institución elegida. Sin institución,
+# va la variante de `_sin_institucion`. La carga exige uno por cada opción de las tres listas.
+RESPALDOS_PASOS = (
+    ('PREGUNTAS_CONOCIMIENTO', 'DIA_NORMAL', 'conversar',
+     'Preguntar en mi familia y entre conocidos si alguien estudió o trabaja en {carrera}, para preguntarle: '
+     '«¿Cómo es un día normal tuyo?»'),
+    ('PREGUNTAS_CONOCIMIENTO', 'DONDE_TRABAJAR', 'investigar',
+     'Revisar en el catálogo de la plataforma la ficha de {carrera} y anotar las ocupaciones y lugares donde trabaja '
+     'quien la estudia.'),
+    ('PREGUNTAS_CONOCIMIENTO', 'CURSOS', 'investigar',
+     'Revisar en la página de {institucion} el plan de estudios de {carrera} y anotar los cursos del primer año.'),
+    ('PREGUNTAS_CONOCIMIENTO', 'INGRESO', 'investigar',
+     'Revisar en la página de admisión de {institucion} las modalidades de ingreso a {carrera} y anotar cuál me '
+     'corresponde.'),
+    ('PREGUNTAS_CONOCIMIENTO', 'CONOCE_ALGUIEN', 'conversar',
+     'Pedir a mi orientadora o a un profesor el contacto de un egresado del colegio que estudie {carrera}.'),
+    ('DUDAS_SUGERIDAS', 'POSTULANTES', 'investigar',
+     'Revisar en la página de admisión de {institucion} si publica cuántos postularon y cuántos ingresaron a '
+     '{carrera}, y anotar los números.'),
+    ('DUDAS_SUGERIDAS', 'CURSOS_DIFICILES', 'conversar',
+     'Conseguir, por mi familia o mi orientadora, a alguien que estudie {carrera} y preguntarle: «¿Qué curso te costó '
+     'más al empezar?»'),
+    ('DUDAS_SUGERIDAS', 'SUELDO_INICIAL', 'investigar',
+     'Revisar en el catálogo de la plataforma los ingresos de quienes recién terminan {carrera} y anotar el rango.'),
+    ('DIFICULTADES', 'ECONOMICAS', 'conversar',
+     'Conversar en casa con cuánto se cuenta para mis estudios y anotar cuánto faltaría cubrir.'),
+    ('DIFICULTADES', 'ACADEMICAS', 'practicar',
+     'Buscar en la página de admisión de {institucion} un examen pasado o el temario, intentar una parte y anotar en '
+     'qué me trabé.'),
+    ('DIFICULTADES', 'FAMILIARES', 'conversar',
+     'Conversar con alguien de confianza o con mi orientadora sobre cómo esto puede afectar mi plan.'),
+    ('DIFICULTADES', 'INFORMACION', 'investigar',
+     'Anotar las tres cosas que más me falta saber sobre {carrera} y buscar cada una en su ficha del catálogo.'),
+    ('DIFICULTADES', 'DISTANCIA', 'investigar',
+     'Revisar en qué sede de {institucion} se dicta {carrera} y medir cuánto demora el viaje desde mi casa.'),
+    ('DIFICULTADES', 'NO_INGRESAR', 'investigar',
+     'Revisar en la página de admisión de {institucion} cuántas veces al año se puede postular y qué otras '
+     'modalidades de ingreso hay.'),
+    ('DIFICULTADES', 'CAMBIAR_OPINION', 'otra',
+     'Anotar qué me haría cambiar de opinión sobre {carrera} y qué haría en ese caso.'),
+    ('DIFICULTADES', 'TIEMPO', 'otra',
+     'Anotar en un cuadro mis horas de estudio, trabajo y viaje de una semana, para ver cuánto tiempo me quedaría.'),
+)
+LISTAS_CON_RESPALDO = ('PREGUNTAS_CONOCIMIENTO', 'DUDAS_SUGERIDAS', 'DIFICULTADES')
+
+
+def _sin_institucion(texto):
+    """La variante sin institución elegida (§3.6): «en qué sede de {institucion}» pasa a «dónde» y «de {institucion}»
+    a «de las instituciones que me interesan»."""
+    texto = texto.replace('en qué sede de {institucion}', 'dónde')
+    return texto.replace('de {institucion}', 'de las instituciones que me interesan')
+
 
 # B11 · Secciones de la tarjeta de carrera: (código, nombre, ¿cuenta para «listo para comparar»?). Cada ruta
 # decide con reglas SECCION_PLAN cuándo se abre cada una.
@@ -826,7 +881,33 @@ def _cargar_tarjeta(sesion, listas):
         for rubro, frecuencia, monto, cero, prepara in REFERENCIAS_RUBROS)
     sesion.add_all(modelos.ReferenciaCamino(opcion_id=opcion_id, incluye_preparacion=codigo in CAMINOS_CON_PREPARACION)
                    for (lista, codigo), opcion_id in sorted(opciones.items()) if lista == 'CAMINOS')
+    _cargar_respaldos(sesion, listas)
     return secciones
+
+
+def _cargar_respaldos(sesion, listas):
+    """Los pasos de respaldo (ajuste llm-sugerencias): exactamente uno por opción de LISTAS_CON_RESPALDO, con un tipo
+    de PASOS y sin `{institucion}` en su variante sin institución."""
+    ids = [listas[codigo].id for codigo in (*LISTAS_CON_RESPALDO, 'PASOS')]
+    opciones = {(lista, codigo): opcion_id for lista, codigo, opcion_id in sesion.execute(
+        select(modelos.ListaOpciones.codigo, modelos.OpcionLista.codigo, modelos.OpcionLista.id).join(
+            modelos.OpcionLista, modelos.OpcionLista.lista_id == modelos.ListaOpciones.id).where(
+            modelos.ListaOpciones.id.in_(ids)))}
+    esperadas = {clave for clave in opciones if clave[0] in LISTAS_CON_RESPALDO}
+    declaradas = [(lista, codigo) for lista, codigo, *_ in RESPALDOS_PASOS]
+    if len(declaradas) != len(set(declaradas)) or set(declaradas) != esperadas:
+        faltan = sorted(esperadas - set(declaradas))
+        sobran = sorted(set(declaradas) - esperadas)
+        raise ValueError(f'RESPALDOS_PASOS debe tener un paso por opción de {", ".join(LISTAS_CON_RESPALDO)} '
+                         f'(faltan {faltan}, sobran {sobran})')
+    for lista, codigo, tipo, texto in RESPALDOS_PASOS:
+        if ('PASOS', tipo) not in opciones:
+            raise ValueError(f'El respaldo de {lista}.{codigo} usa un tipo que no está en PASOS: {tipo}')
+        if '{institucion}' in _sin_institucion(texto):
+            raise ValueError(f'El respaldo de {lista}.{codigo} no tiene variante sin institución')
+    sesion.add_all(modelos.RespaldoPaso(opcion_id=opciones[lista, codigo], tipo_opcion_id=opciones['PASOS', tipo],
+                                        texto=texto, texto_sin_institucion=_sin_institucion(texto))
+                   for lista, codigo, tipo, texto in RESPALDOS_PASOS)
 
 
 def cargar(sesion: Session) -> Fijos:

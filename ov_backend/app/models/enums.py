@@ -271,6 +271,16 @@ class OrigenSugerencia(StrEnum):
     RESPALDO = "RESPALDO"
 
 
+class ClaseNovedadPlan(StrEnum):
+    """Clase que el LLM da a una duda o complicación antes de proponer pasos (ajuste llm-sugerencias, §3)."""
+    DATO = "DATO"
+    EXPERIENCIA = "EXPERIENCIA"
+    SOBRE_MI = "SOBRE_MI"
+    LO_QUE_DICEN = "LO_QUE_DICEN"
+    LISTA = "LISTA"
+    NO_APLICA = "NO_APLICA"
+
+
 class EstadoPaso(StrEnum):
     PENDIENTE = "PENDIENTE"
     HECHO = "HECHO"

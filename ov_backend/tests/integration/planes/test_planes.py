@@ -16,8 +16,8 @@ from soporte_catalogo_ruta import (
 
 @pytest.fixture
 def respaldo(aplicacion):
-    """Sin LLM: cada duda o complicación nueva recibe su paso de respaldo."""
-    aplicacion.state.evaluador_respuestas.falla_sugerencias = True
+    """Sin LLM: cada duda o complicación nueva de lista recibe su paso de respaldo (ajuste llm-sugerencias)."""
+    aplicacion.state.cliente_llm.fallar_pasos = True
 
 
 def test_hu043_hasta_tres_planes_sin_repetir_carrera(cliente):
@@ -199,10 +199,15 @@ def test_hu109_hu110_dudas_de_conocimiento_y_sugerencias_de_respaldo(cliente, re
         (2, 'PREGUNTA', '¿Qué cursos se llevan en Psicología?', 'ABIERTA'),
         (3, 'SUGERIDA', '¿Cuántos postulan y cuántos ingresan?', 'ABIERTA'),
         (4, 'PROPIA', '¿Hay trabajo?', 'ABIERTA')]
+    # Ajuste llm-sugerencias: el respaldo fijo de cada duda de lista (sin institución elegida); la propia, ninguno.
     assert [(s['numero'], s['origen']['duda'], s['tipo'], s['texto'], s['generada_por']) for s in
-            psicologia['sugerencias']][2:] == [
-        (3, 3, 'investigar', 'Averiguar: ¿Cuántos postulan y cuántos ingresan?', 'RESPALDO'),
-        (4, 4, 'investigar', 'Averiguar: ¿Hay trabajo?', 'RESPALDO')]
+            psicologia['sugerencias']] == [
+        (1, 1, 'conversar', 'Preguntar en mi familia y entre conocidos si alguien estudió o trabaja en Psicología, '
+         'para preguntarle: «¿Cómo es un día normal tuyo?»', 'RESPALDO'),
+        (2, 2, 'investigar', 'Revisar en la página de las instituciones que me interesan el plan de estudios de '
+         'Psicología y anotar los cursos del primer año.', 'RESPALDO'),
+        (3, 3, 'investigar', 'Revisar en la página de admisión de las instituciones que me interesan si publica '
+         'cuántos postularon y cuántos ingresaron a Psicología, y anotar los números.', 'RESPALDO')]
     # Volver a guardar no regenera; SI cierra la duda de su pregunta; la duda propia omitida se borra con su sugerencia.
     guardar(cliente, PSICOLOGIA, 'CONOCIMIENTO', {
         'respuestas': {'DIA_NORMAL': 'SI', 'CURSOS': 'NO', 'INGRESO': 'SI'}, 'dudas': [{'numero': 3}]})
@@ -215,7 +220,7 @@ def test_hu109_hu110_dudas_de_conocimiento_y_sugerencias_de_respaldo(cliente, re
     psicologia = plan(cliente, PSICOLOGIA)
     assert [(d['numero'], d['estado']) for d in psicologia['dudas']] == [
         (1, 'ABIERTA'), (2, 'ABIERTA'), (3, 'ABIERTA'), (5, 'ABIERTA')]
-    assert [s['numero'] for s in psicologia['sugerencias']] == [1, 2, 3, 5]
+    assert [s['numero'] for s in psicologia['sugerencias']] == [1, 2, 3]
     guardar(cliente, PSICOLOGIA, 'CONOCIMIENTO', {'dudas': [{'origen': 'SUGERIDA', 'opcion': 'POSTULANTES'},
                                                               {'numero': 3}]}, esperado=422)
 
@@ -229,14 +234,14 @@ def test_hu045_hu110_complicaciones_con_su_sugerencia_de_respaldo(cliente, respa
     psicologia = plan(cliente, PSICOLOGIA)
     assert psicologia['complicaciones'] == [{'numero': 1, 'opcion': 'ECONOMICAS', 'otro': None},
                                             {'numero': 2, 'opcion': None, 'otro': 'Mi papá quiere que trabaje con él'}]
+    # Ajuste llm-sugerencias: respaldo fijo solo para la de lista; «Otro» no recibe nada.
     assert [(s['origen'], s['tipo'], s['texto']) for s in psicologia['sugerencias']] == [
-        ({'duda': None, 'complicacion': 1, 'texto': 'Económicas'}, 'otra', 'Ver qué puedo hacer con: Económicas'),
-        ({'duda': None, 'complicacion': 2, 'texto': 'Mi papá quiere que trabaje con él'}, 'otra',
-         'Ver qué puedo hacer con: Mi papá quiere que trabaje con él')]
+        ({'duda': None, 'complicacion': 1, 'texto': 'Económicas'}, 'conversar',
+         'Conversar en casa con cuánto se cuenta para mis estudios y anotar cuánto faltaría cubrir.')]
     guardar(cliente, PSICOLOGIA, 'REALIDAD', realidad_lista(complicaciones=[{'numero': 2}]))
     psicologia = plan(cliente, PSICOLOGIA)
     assert [c['numero'] for c in psicologia['complicaciones']] == [2]
-    assert [s['origen']['complicacion'] for s in psicologia['sugerencias']] == [2]
+    assert psicologia['sugerencias'] == []
 
 
 def test_hu046_pasos_sugerencias_y_paso_hecho(cliente):
@@ -269,7 +274,7 @@ def test_hu046_pasos_sugerencias_y_paso_hecho(cliente):
     guardar(cliente, PSICOLOGIA, 'PASOS', {'pasos': [{'sugerencia': 2}]}, esperado=422)
 
 
-def test_borrar_una_duda_borra_sus_sugerencias_y_conserva_sus_pasos(cliente, sesion, respaldo):
+def test_borrar_una_duda_borra_sus_sugerencias_y_conserva_sus_pasos(cliente, sesion):
     abrir_planes(cliente)
     abrir_secciones(cliente, 'CONOCIMIENTO', 'PASOS')
     crear(cliente, PSICOLOGIA)
@@ -280,7 +285,8 @@ def test_borrar_una_duda_borra_sus_sugerencias_y_conserva_sus_pasos(cliente, ses
     psicologia = plan(cliente, PSICOLOGIA)
     assert psicologia['dudas'] == psicologia['sugerencias'] == []
     assert [(p['texto'], p['tipo'], p['estado'], p['origen']) for p in psicologia['pasos']] == [
-        ('Averiguar: Primera', 'investigar', 'PENDIENTE', {'duda': None, 'complicacion': None, 'sugerencia': None})]
+        ('Revisar en la ficha de la carrera lo de: Primera', 'investigar', 'PENDIENTE',
+         {'duda': None, 'complicacion': None, 'sugerencia': None})]
     assert sesion.scalars(select(m.SugerenciaTarjeta)).all() == []
 
 
