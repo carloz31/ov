@@ -6,11 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b3-4-necesito': {
         'filtrar_etiqueta': False,
-        'pregunta': 'Pusiste {valor 1} primero. ¿Qué tendrías que saber de la carrera que elijas para saber si te da eso?',
-        'ecos': {
-            'valores': {'nombre': 'Lo que pusiste primero', 'ordenado': False},
-        },
-        'lista_ecos': 'VALORES',
         'tarjeta': '''NÚCLEO: algo concreto que tendría que saber de una carrera o del trabajo al que lleva para
   ver si le da lo que valora: cómo son los horarios o los turnos, si hay que viajar o
   mudarse, si suele haber contrato, si se puede trabajar por cuenta propia, si se trata
@@ -61,10 +56,6 @@ REPREGUNTA
     },
     'b3-4-quien': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué sabe o vivió esa persona que te podría servir?',
-        'ecos': {
-            'necesito': {'nombre': 'Lo que necesitarías saber', 'ordenado': False},
-        },
         'tarjeta': '''NÚCLEO: una razón concreta para preguntarle a esa persona: algo que la une con lo que
   quiere saber o con una carrera o trabajo (trabaja o trabajó en eso, lo estudió, conoce a
   gente de ese rubro, vivió algo parecido, le ha contado cosas de su trabajo).
@@ -108,7 +99,6 @@ REPREGUNTA
         'por_opcion': {
             'NADIE': {
                 'filtrar_etiqueta': False,
-                'pregunta': 'Está bien. ¿Qué tipo de persona te gustaría escuchar? Por ejemplo, alguien que estudió en un instituto o que trabaja en tu ciudad.',
                 'tarjeta': '''NÚCLEO: un tipo de persona con algo concreto: dónde trabaja, qué o dónde estudió, cuánto
   tiempo lleva, o algo de su situación parecido a la suya.
 NO EXIGIR: un nombre, ni saber cómo encontrarla.

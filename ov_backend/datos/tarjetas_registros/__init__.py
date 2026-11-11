@@ -21,7 +21,8 @@ TARJETAS = {**b1_1.TARJETAS, **b1_3.TARJETAS, **b1_6.TARJETAS, **b1_7.TARJETAS, 
 
 HASHES = {
     'b1-1-gustos': '075639b4579f43577f16edfdcedfc13123c8c299f5cb093bc53073d9aa56603e',
-    'b1-1-logro': '753372a2122e445f46799d5dc9fab19d7e0a6388e85ac56b4e58713e6f83045e',
+    'b1-1-logro': '95e862a6705b4c0a7bda9991c1dcd7b272baaa8485a3219a95f539cb937fab54',
+    'b1-1-logro#NINGUNO': '134cf23a0d8fe7ada97bf15cb4736641f4de8402412c98394a1cafa130e2357c',
     'b1-1-dificultad': '1abb10ab5c4b7c3b20c1a5be1f62d29d1b4de1b054ea9169b2ca8d19ee04ecd8',
     'b1-3-voz': '30498fc7092631f7d252b8cbb7611e059ea915448f226b72ad02cb7893259122',
     'b1-3-mia': '4514b6850eec7f107fe530e1ff794c310742f4dd602b45c777e3328ae5cd2b6e',

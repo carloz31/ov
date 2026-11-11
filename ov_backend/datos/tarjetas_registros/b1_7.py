@@ -6,7 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b1-7-dia': {
         'filtrar_etiqueta': False,
-        'pregunta': 'Cuéntalo como una escena: ¿dónde estás, qué haces o qué eres?',
         'tarjeta': '''NÚCLEO: al menos un elemento concreto de ese día: un lugar (dónde vive o está), algo que
   hace en algún momento o lo que es (una profesión, un oficio, un rol).
 NO EXIGIR: el día completo, con quién está, que sea realista ni que tenga que ver con una
@@ -46,7 +45,6 @@ REPREGUNTA
         'por_opcion': {
             'CUESTA': {
                 'filtrar_etiqueta': False,
-                'pregunta': 'Está bien. Cuéntame una sola cosa que te gustaría que esté en ese día: un lugar, algo que haces o alguien con quien estás.',
                 'tarjeta': '''NÚCLEO: una sola cosa concreta que le gustaría en ese día: un lugar, algo que hace, lo
   que es o alguien con quien está.
 NO EXIGIR: una escena, que esté seguro ni que tenga que ver con estudios o trabajo.
@@ -75,7 +73,6 @@ REPREGUNTA
     },
     'b1-7-hito': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué estarás haciendo dentro de un año para acercarte a ese día? Por ejemplo: en una academia, estudiando algo, trabajando o postulando.',
         'tarjeta': '''NÚCLEO: qué estará haciendo dentro de un año, con a qué, para qué, qué o dónde: preparándose
   para algo, postulando a algo, estudiando algo o en algún lugar, trabajando en algo o en
   algún lugar, terminando el colegio.
@@ -117,7 +114,6 @@ REPREGUNTA
     },
     'b1-7-freno': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué podría frenarte en el camino a ese día? Puede ser algo de dinero, de tu familia, de los estudios o algo que no depende de ti.',
         'tarjeta': '''NÚCLEO: un freno concreto en su situación: qué podría pasar o qué le preocupa. Puede ser
   algo suyo o algo externo (la familia, el país, la economía de la casa).
 NO EXIGIR: que sea probable o grave, que diga qué haría, ni que tenga solución.

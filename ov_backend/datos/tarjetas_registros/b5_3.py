@@ -6,8 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b5-3-cambio': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué te hizo verlo distinto? Puede ser algo que viste, que supiste o que te pasó.',
-        'ecos': {'hoy': {'nombre': 'Hoy', 'ordenado': False}},
         'tarjeta': '''NÚCLEO: qué lo hizo ver distinto lo que marcó: algo que vio, supo, vivió o de lo que se dio
   cuenta. Puede ser un dato, una actividad o un resultado de la plataforma, una
   conversación, una persona, una visita, una nota, algo que pasó en su casa, o darse
@@ -88,7 +86,6 @@ SEGUIMIENTO: el conjunto es propio si la segunda respuesta nombra algo que lo hi
         'por_opcion': {
             'IGUAL': {
                 'filtrar_etiqueta': False,
-                'pregunta': '¿Qué viste o supiste que te lo confirmó?',
                 'tarjeta': '''NÚCLEO: algo que vio, supo o vivió que le confirmó lo que ya pensaba, o por qué no cambió.
   Lo que confirma puede ser un dato, una actividad o un resultado de la plataforma, una
   conversación, una persona o una experiencia, de dentro o de fuera de la plataforma. Por

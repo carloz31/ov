@@ -6,7 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b4-2-estilo': {
         'filtrar_etiqueta': False,
-        'pregunta': 'Cuenta una vez en que decidiste así: qué tenías que decidir y qué hiciste.',
         'tarjeta': '''NÚCLEO: una decisión suya que ya tomó (qué tenía que decidir) y lo que hizo, o dejó de
   hacer, al decidir, que muestra el estilo que marcó. Basta con que se entienda que esa
   vez decidió de esa forma, aunque no lo diga con todas las palabras.

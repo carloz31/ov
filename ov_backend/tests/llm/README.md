@@ -1,39 +1,20 @@
-# Validación del LLM de seguimiento
+# Validación del LLM de registros
 
-Mide cómo responde Gemini a casos escritos a mano para cada registro: si clasifica bien (`cumple`, `abierto`, `sensible`) y si sus repreguntas, `falta` y consolidadas cumplen la rúbrica. Usa el mismo mensaje, prompt, esquema, modelo y temperatura que el backend.
-
-**No es parte de la suite de pytest**: llama a Gemini real, cuesta dinero (centavos) y su resultado varía entre corridas. Ningún archivo aquí se llama `test_*.py`. Se corre a mano cuando cambia el prompt, la temperatura, el modelo o los campos de seguimiento de un ítem (`que_busca`, `texto_base`, `cumple`, `no_cumple`, `evitar`, opciones propias).
-
-## Estructura
+**No es parte de la suite de pytest**: llama al modelo real, cuesta dinero (centavos) y su resultado varía entre corridas. Ningún archivo aquí se llama `test_*.py`. Se corre a mano cuando cambian una tarjeta, el prompt o el modelo.
 
 ```
 tests/llm/
-  evaluar.py                     arma los mensajes, llama, compara y guarda
-  casos/<registro>.json          casos y lo esperado por ítem
-  resultados/<registro>/
-    <fecha>_<prompt>_t<temp>_r<nivel>[_<etiqueta>].csv   una fila por caso, corrida e ítem
-    resumen.md                   una línea por corrida (se agrega sola)
+  evaluar_tarjetas.py            runner de las tarjetas v7 sobre la capa del LLM del backend
+  casos/<registro>[-tarjetas-v7.x].json   casos y lo esperado
+  prompts/                       prompts de las rondas
+  resultados/<registro>/ y resultados/capa-llm/   CSV e informes de cada corrida (se versionan)
 ```
 
-Los CSV y los `resumen.md` **se versionan**: son la evidencia de la validación del LLM.
-
-## Uso (desde `ov_backend`)
-
-```
-uv run python tests/llm/evaluar.py b1-1 b1-3                     # todos los casos, 2 corridas
-uv run python tests/llm/evaluar.py b1-1 --solo E4 S1 --corridas 3
-uv run python tests/llm/evaluar.py b1-1 --temperaturas 0.2 1.0   # comparar temperaturas
-uv run python tests/llm/evaluar.py b1-1 --razonamiento low       # minimal|low|medium|high; sin él, NIVEL_RAZONAMIENTO_REGISTRO adaptado al modelo
-uv run python tests/llm/evaluar.py b1-1 --mostrar E4             # el mensaje exacto, sin llamar
-```
-
-El CSV guarda `razonamiento`, `tokens_entrada`, `tokens_razonamiento` y `tokens_salida`. En una entrega, latencia y tokens son de la llamada completa y se repiten en cada ítem: para promediar, cuenta una vez por caso y corrida.
-
-Requiere `GEMINI_API_KEY` (la del proyecto con facturación, Tier 1); si no está en el entorno, la toma del `.env` del backend, igual que `GEMINI_MODELO` (sin imprimirlas). Por defecto hace 8 llamadas en paralelo (`--hilos`).
+Ajuste registros llm (lote 2): sale `evaluar.py`, el runner v6 con Gemini, porque el registro v6 (criterios, seguimiento y consolidada) salió del backend y ya no podía ni importarse. Sus CSV, `resumen.md` y la tabla de abajo («Registros validados con v6.7») quedan como evidencia de esas rondas; el código con que corrieron está en el historial de git. Las secciones «Formato de un caso», «Chequeos automáticos» y «Criterio de aceptación» describen ese runner.
 
 ## Prueba de tarjetas (v7.x)
 
-`evaluar_tarjetas.py` corre los casos de las tarjetas v7 (método **B**: el LLM clasifica por `tipo` y redacta la repregunta, y un filtro decide si se usa o si va la base) **a través de la capa del LLM del backend** (`app/services/registro/llm`, ajuste registros llm, lote 1): el armado del mensaje, la llamada a `claude-haiku-5-5`, la validación (`sin_evaluar`), el filtro, el arranque y la línea del seguimiento, el estado final y el texto citable son los del backend, y las tarjetas son las de `datos/tarjetas_registros`. El runner solo resuelve cada caso (opción marcada, pregunta mostrada, ecos y marcadores), revisa el solapamiento con la tarjeta, calcula la forma de las repreguntas y escribe el CSV y el informe en `resultados/capa-llm/`. Requiere `ANTHROPIC_API_KEY` en el `.env` del backend (no como variable global de la máquina).
+`evaluar_tarjetas.py` corre los casos de las tarjetas v7 (método **B**: el LLM clasifica por `tipo` y redacta la repregunta, y un filtro decide si se usa o si va la base) **a través de la capa del LLM del backend** (`app/services/registro/llm`, ajuste registros llm, lote 1); desde el lote 2, la pregunta mostrada, los ecos al LLM y el podio salen de los ítems de `datos/contenido.py` (y de sus opciones propias), sin copia en el runner ni en las tarjetas, y un caso cuya opción o eco ya no existe en el contenido queda fuera con un aviso: el armado del mensaje, la llamada a `claude-haiku-5-5`, la validación (`sin_evaluar`), el filtro, el arranque y la línea del seguimiento, el estado final y el texto citable son los del backend, y las tarjetas son las de `datos/tarjetas_registros`. El runner solo resuelve cada caso (opción marcada, pregunta mostrada, ecos y marcadores), revisa el solapamiento con la tarjeta, calcula la forma de las repreguntas y escribe el CSV y el informe en `resultados/capa-llm/`. Requiere `ANTHROPIC_API_KEY` en el `.env` del backend (no como variable global de la máquina).
 
 ```
 uv run python tests/llm/evaluar_tarjetas.py --casos b5-3-tarjetas-v7.12c.json --revisar     # solapamiento, sin llamar

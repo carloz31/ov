@@ -6,7 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b1-6-mito': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Cómo llegó a ti esa idea? Puede ser alguien que la dice, un lugar o algo que viste.',
         'tarjeta': '''NÚCLEO: cómo le llegó esa idea: una persona o un grupo cercano (mamá, un tío, sus
   amigos, un profesor), un lugar o medio concreto (el colegio, la academia, redes,
   la tele, el barrio) o algo que vio o vivió.
@@ -46,7 +45,6 @@ REPREGUNTA
         'por_opcion': {
             'NINGUNO': {
                 'filtrar_etiqueta': False,
-                'pregunta': '¿Qué idea sobre carreras has oído mucho en tu casa o colegio?',
                 'tarjeta': '''NÚCLEO: una idea o frase sobre carreras, estudios o trabajo que ha oído.
 NO EXIGIR: dónde o a quién se la oyó, qué piensa de ella, ni que sea un mito.
 GENERAL SI: nombra un tema sin decir la idea ("de la plata", "de la universidad"), o

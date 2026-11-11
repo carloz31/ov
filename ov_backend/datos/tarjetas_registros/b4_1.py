@@ -6,8 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b4-1-respalda': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué tiene que ver eso con {carrera}?',
-        'ecos': {'plan_a': {'nombre': 'Tu Plan A', 'ordenado': False}},
         'tarjeta': '''NÚCLEO: una relación concreta entre la pieza que marcó y algo de esa carrera o del trabajo
   al que lleva: una tarea, un curso, un lugar, algo que se hace o se produce, o una
   condición de ese trabajo (que haya empleo, el horario, el contrato, las vacaciones,
@@ -99,8 +97,6 @@ REPREGUNTA
     },
     'b4-1-menos': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué de {carrera} no calza del todo con eso?',
-        'ecos': {'plan_a': {'nombre': 'Tu Plan A', 'ordenado': False}},
         'tarjeta': '''NÚCLEO: algo concreto de la carrera o de su trabajo (un curso, una tarea, una situación o una
   condición de ese trabajo) que choca con la pieza que marcó. Si la pieza es algo que le
   cuesta, basta con dónde se notaría en la carrera. Si es algo que le gusta, que valora o
@@ -159,7 +155,6 @@ REPREGUNTA
         'por_opcion': {
             'TODO': {
                 'filtrar_etiqueta': False,
-                'pregunta': 'Qué bueno que todo vaya. Aun así, ¿qué parte de {carrera} crees que te costaría más?',
                 'tarjeta': '''NÚCLEO: una parte concreta de la carrera que le costaría: un curso, una tarea, una situación
   del trabajo o un momento de la carrera.
 NO EXIGIR: por qué le costaría, que le preocupe, qué hará, ni que deje de pensar que todo va.

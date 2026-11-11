@@ -6,7 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b1-3-voz': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué espera que hagas? Con sus palabras, aunque sea una frase.',
         'tarjeta': '''NÚCLEO: qué espera esa persona que haga al terminar el colegio, con algo concreto:
   una carrera, una ruta (universidad, instituto, trabajar, prepararse), un lugar o
   un trabajo.
@@ -42,7 +41,6 @@ REPREGUNTA
     },
     'b1-3-mia': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Por qué eso? Algo tuyo: lo que te pasa, lo que te gusta.',
         'tarjeta': '''NÚCLEO: una razón con algo suyo y concreto: qué le gusta, qué hace, qué le pasa, qué
   necesita o qué quiere para su vida.
 NO EXIGIR: que la razón sea buena, que sea la única, ni que coincida con la voz.
@@ -76,7 +74,6 @@ REPREGUNTA
         'por_opcion': {
             'AUN_NO': {
                 'filtrar_etiqueta': False,
-                'pregunta': '¿Qué te hace dudar?',
                 'tarjeta': '''NÚCLEO: qué lo hace dudar: entre qué opciones, o qué le falta saber o resolver.
 NO EXIGIR: que tenga opciones claras ni que esté cerca de decidir.
 GENERAL SI: "todo", "muchas cosas", "no estoy seguro" sin decir de qué.
@@ -104,7 +101,6 @@ REPREGUNTA
     },
     'b1-3-contraste': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿En qué punto: la carrera, el lugar, el momento, el dinero?',
         'tarjeta': '''NÚCLEO: nombra el punto en que coinciden o chocan (la carrera, el lugar, el momento,
   el dinero, estudiar o trabajar, cualquier punto concreto).
 NO EXIGIR: que explique por qué, que lo resuelva, ni que lo marcado cuadre con los ecos.

@@ -6,8 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b4-5-moneda': {
         'filtrar_etiqueta': False,
-        'pregunta': 'Piensa en {plan_a}. ¿Hay algo de ella que te haría falta?',
-        'ecos': {'plan_a': {'nombre': 'Plan A', 'ordenado': False}, 'plan_b': {'nombre': 'Plan B', 'ordenado': False}},
         'tarjeta': '''NÚCLEO: algo de {plan_a} que le haría falta si estudiara {plan_b} (algo que se hace, un
   tema o un área aunque sea amplia, como las ciencias o el arte, un lugar, la gente con la
   que trabajaría o una condición del trabajo, como el sueldo o el horario), o por qué no le

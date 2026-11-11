@@ -6,7 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b2-3-valores': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Por qué te importa tanto el que pusiste primero? Puede ser algo que viviste, algo que viste en otros o una idea tuya.',
         'tarjeta': '''NÚCLEO: una razón con algo suyo para uno de sus valores (la pregunta es por el primero):
   algo que vivió o vio, lo que le daría o le evitaría, o una idea suya que dice algo de
   él o de su situación (lo que quiere, lo que teme, lo que necesita).

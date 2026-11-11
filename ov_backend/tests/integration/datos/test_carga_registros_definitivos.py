@@ -98,7 +98,7 @@ def test_tarjetas_en_su_item_u_opcion_con_sus_bases(items):
             tarjetas += 1
         # Ninguna presentación del runner queda en la tarjeta guardada.
         assert not {'pregunta', 'pregunta_por_opcion', 'ecos', 'lista_ecos', 'podio'} & set(item.tarjeta), codigo
-    assert tarjetas == len(tarjetas_registros.HASHES) == 27
+    assert tarjetas == len(tarjetas_registros.HASHES) == 28
     assert sum(1 for c in items if c not in SIN_LLM) == 21
 
 
@@ -109,7 +109,9 @@ def test_podios_y_listas(items):
     assert not podios['b2-3-valores'].permite_otra and podios['b2-4-bien'].permite_otra
     cuesta = items['b2-4-cuesta']
     assert (cuesta.fuente_opciones, cuesta.eleccion_minima, cuesta.eleccion_maxima, cuesta.eleccion_ordenada,
-            cuesta.permite_otra) == (m.FuenteOpciones.LISTA, 1, 2, False, False)
+            cuesta.permite_otra) == (m.FuenteOpciones.LISTA, 1, 2, False, True)
+    # La «Otra» múltiple (`OTRA-1`, `OTRA-2`) vale en los ítems de 1 a 2 opciones con «Otra».
+    assert items['b1-1-logro'].permite_otra and items['b1-1-logro'].eleccion_maxima == 2
     assert items['b4-2-estilo'].eleccion_maxima == 1
     assert items['b1-3-contraste'].premarcar_si == {'item': 'b1-3-voz', 'opcion': 'NADIE', 'marca': 'SIN_COMPARAR'}
     assert {c: i.fuente_opciones for c, i in items.items() if i.fuente_opciones and i.fuente_opciones.startswith(
@@ -119,6 +121,12 @@ def test_podios_y_listas(items):
         'Otra cosa mía', 'Otra cosa que cambió')
     sin_llm = {(c, o['codigo']) for c, i in items.items() for o in i.opciones_propias or () if o.get('sin_llm')}
     assert sin_llm == {('b1-3-voz', 'NADIE'), ('b1-3-contraste', 'SIN_COMPARAR'), ('b2-4-cuesta', 'NADA')}
+
+
+def test_descripciones_cortas(actividades):
+    assert actividades['b1-6'].descripcion == 'Una idea sobre carreras que te suena y cómo llegó a ti.'
+    assert actividades['b1-7'].descripcion == ('Un día a tus 23 años, lo que estarás haciendo dentro de un año y lo '
+                                              'que podría frenarte.')
 
 
 def test_lista_estilos_en_su_orden(sesion_contenido):

@@ -6,8 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b2-4-bien': {
         'filtrar_etiqueta': False,
-        'podio': True,
-        'pregunta': '¿Cómo notas que te va bien en la primera? Puede ser una nota, un trabajo o algo que te dijeron.',
         'tarjeta': '''NÚCLEO: una señal observable de que le va bien en una de las opciones de su podio (la
   pregunta es por la primera): un resultado (una nota, un concurso, un trabajo que le
   salió), lo que otros le piden o le reconocen con algo concreto, o algo que nota en sí
@@ -51,20 +49,11 @@ REPREGUNTA
     },
     'b2-4-cruce': {
         'filtrar_etiqueta': False,
-        'pregunta_por_opcion': {
-            'SI': '¿Qué es lo que te gusta de {primera}?',
-            'MAS_O_MENOS': '¿Qué parte de {primera} te gusta y qué parte no tanto?',
-            'NO_MUCHO': '¿Qué es lo que no te gusta de {primera}?',
-        },
         'general_por_opcion': {
             'SI': '¿Qué parte de eso te gusta más? Puede ser algo que haces ahí o un momento en que la pasas bien.',
             'MAS_O_MENOS': '¿Qué parte de eso te gusta y cuál no tanto? Con una basta.',
             'NO_MUCHO': '¿Qué parte de eso no te gusta? Puede ser algo que haces ahí o cómo te sientes haciéndolo.',
         },
-        'ecos': {
-            'bien': {'nombre': 'Lo que mejor te sale', 'ordenado': False},
-        },
-        'lista_ecos': 'CURSOS_ACTIVIDADES',
         'tarjeta': '''NÚCLEO: algo concreto de esa actividad (la primera de su podio) que le gusta o no le
   gusta, según la opción que marcó:
   - SI: qué le gusta de ella: una parte, un momento, algo que hace ahí;

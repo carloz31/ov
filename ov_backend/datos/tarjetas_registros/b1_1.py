@@ -6,7 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b1-1-gustos': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué te encantaba hacer de niño o niña? Puede ser un juego, algo que armabas o algo que hacías con alguien.',
         'tarjeta': '''NÚCLEO: una actividad que hacía de niño CON al menos un detalle suyo: qué hacía dentro
   de ella, con quién, dónde o cómo.
 NO EXIGIR: una escena completa ni más de un detalle.
@@ -53,7 +52,6 @@ REPREGUNTA
     },
     'b1-1-logro': {
         'filtrar_etiqueta': True,
-        'pregunta': 'Cuenta un logro tuyo: algo que pasó, no algo que eres.',
         'tarjeta': '''NÚCLEO: cuenta algo que pasó o que hizo (un hecho), por pequeño que sea: aprendió algo,
   ganó, organizó, terminó, ayudó a alguien una vez, pasó de año, armó algo.
 NO EXIGIR: que sea importante, que tenga un resultado medible, que se relacione con la
@@ -61,8 +59,8 @@ NO EXIGIR: que sea importante, que tenga un resultado medible, que se relacione 
 GENERAL SI: una cualidad u opinión sobre sí ("soy responsable", "soy bueno en mate",
   "ser buena persona"), algo que hace siempre sin una vez concreta ("siempre ayudo"),
   o logros afirmados sin nombrar ninguno ("he logrado muchas cosas").
-MATICES: la habilidad marcada NO es un hecho. Marcar "No se me ocurre ninguno", o escribir
-  que no se le ocurre, = no_sabe.
+MATICES: la habilidad marcada NO es un hecho. Escribir que no se le ocurre ninguno =
+  no_sabe.
 EJEMPLOS:
   "Saqué 17 en la exposición de ciencias" → propio (hecho)
   "Soy buena en inglés" → general (opinión)
@@ -87,10 +85,37 @@ REPREGUNTA
             'vacio': 'Puede ser algo pequeño: algo que aprendiste solo, algo que antes no te salía y ahora sí, o alguien a quien ayudaste. Cuéntame uno, aunque te parezca poca cosa.',
             'fuera_de_tema': 'Volvamos a lo que marcaste, {opción}: cuéntame algo que lograste en que se haya notado.',
         },
+        'por_opcion': {
+            'NINGUNO': {
+                'filtrar_etiqueta': False,
+                'tarjeta': '''NÚCLEO: algo que hizo (un hecho), por pequeño o cotidiano que sea: terminó algo,
+  arregló algo, ayudó a alguien, aprendió algo, se animó a algo.
+NO EXIGIR: que sea importante, que lo llame logro, cuándo fue, ni por qué lo dejó
+  contento.
+GENERAL SI: una cualidad u opinión sobre sí ("soy tranquilo"), algo que hace siempre
+  sin una vez concreta, o algo que le pasó o le dieron sin nada que él hiciera.
+MATICES: "nada" o "no he hecho nada" = no_sabe. No contradigas una autovaloración
+  negativa. Si expresa sobre todo un malestar fuerte consigo mismo = emocional.
+EJEMPLOS:
+  "Terminé de leer un libro entero" → propio
+  "Le arreglé la bici a mi hermano" → propio
+  "Soy buena gente" → general (cualidad)
+  "Me regalaron un celular" → general (no lo hizo él)
+  "Nada, la verdad" → no_sabe
+REPREGUNTA
+  general / no_sabe / vacio · QUÉ PEDIR: un hecho pequeño.
+    BASE: «Puede ser algo de esta semana: algo que terminaste, que arreglaste o en lo que ayudaste a alguien. ¿Qué fue?»
+    CÓMO ADAPTARLA: no uses la palabra "logro" ni lo apures.''',
+                'bases': {
+                    'general': 'Puede ser algo de esta semana: algo que terminaste, que arreglaste o en lo que ayudaste a alguien. ¿Qué fue?',
+                    'no_sabe': 'Puede ser algo de esta semana: algo que terminaste, que arreglaste o en lo que ayudaste a alguien. ¿Qué fue?',
+                    'vacio': 'Puede ser algo de esta semana: algo que terminaste, que arreglaste o en lo que ayudaste a alguien. ¿Qué fue?',
+                },
+            },
+        },
     },
     'b1-1-dificultad': {
         'filtrar_etiqueta': False,
-        'pregunta': 'Cuenta algo que te costó y cómo lo fuiste superando: lo que hiciste o quién te ayudó.',
         'tarjeta': '''NÚCLEO: dice cómo la atravesó: algo que hizo (verbo de acción) o una ayuda que tuvo.
 NO EXIGIR: que nombre qué fue lo difícil, que la haya superado del todo, ni que lo
   hiciera solo. Apoyarse en otros es una forma válida.

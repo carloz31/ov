@@ -49,9 +49,10 @@ def test_general_por_opcion_solo_en_contraste_y_cruce():
     assert [c for c, f in _todas() if 'general_por_opcion' in f] == ['b1-3-contraste', 'b2-4-cruce']
 
 
-def test_seis_tarjetas_de_opcion():
+def test_siete_tarjetas_de_opcion():
+    # Ajuste registros llm (lote 2): entra la de b1-1-logro#NINGUNO.
     assert sorted(c for c, _ in _todas() if '#' in c) == sorted([
-        'b1-3-mia#AUN_NO', 'b1-6-mito#NINGUNO', 'b1-7-dia#CUESTA', 'b3-4-quien#NADIE', 'b4-1-menos#TODO', 'b5-3-cambio#IGUAL'])
+        'b1-1-logro#NINGUNO', 'b1-3-mia#AUN_NO', 'b1-6-mito#NINGUNO', 'b1-7-dia#CUESTA', 'b3-4-quien#NADIE', 'b4-1-menos#TODO', 'b5-3-cambio#IGUAL'])
 
 
 def test_filtrar_etiqueta_solo_en_logro():
@@ -61,4 +62,10 @@ def test_filtrar_etiqueta_solo_en_logro():
 def test_un_hash_por_tarjeta():
     calculados = {c: hashlib.sha256(f['tarjeta'].encode('utf-8')).hexdigest() for c, f in _todas()}
     assert calculados == HASHES
-    assert len(HASHES) == 27
+    assert len(HASHES) == 28  # lote 2: b1-1-logro#NINGUNO
+
+
+def test_las_tarjetas_solo_guardan_lo_que_usa_el_llm():
+    """Lote 2: la presentación (pregunta, ecos, podio) vive en el ítem del contenido, no en la tarjeta."""
+    for clave, ficha in _todas():
+        assert set(ficha) <= {'tarjeta', 'bases', 'general_por_opcion', 'filtrar_etiqueta', 'por_opcion'}, clave

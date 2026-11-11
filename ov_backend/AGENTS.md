@@ -41,7 +41,7 @@ app/                    solo la aplicación; no lee archivos de datos
   core/                 parámetros, caché de definiciones y contexto de consultas
 datos/                  lo que llena la base: fijos.py, contenido.py, ruta.py, cargador.py, catalogo.py (CSV de archivos/catalogo/), cargar.py; tarjetas_registros/ (tarjetas del LLM v7)
 migrations/             migraciones de Alembic
-scripts/                herramientas manuales (exportador de fixtures, coherencia de `contenido` con el front, entrevistas de ejemplo, colección de evaluación de registros)
+scripts/                herramientas manuales (exportador de fixtures, coherencia de `contenido` con el front, entrevistas de ejemplo)
 tests/                  pruebas (ver «Pruebas»)
 docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, historico/
 ```
@@ -140,7 +140,7 @@ tests/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
     escenarios/contenido/  test_recorrido_contenido.py: el camino y la ruta del apoderado del conjunto `contenido`
     registros/        los registros definitivos de `contenido` recorridos con el evaluador falso (ajuste registros)
-  llm/               validación del LLM de registros contra el modelo real (`evaluar.py`, v6 con Gemini; `evaluar_tarjetas.py`, v7 sobre `app/services/registro/llm`), casos y resultados versionados; no es pytest, se corre a mano (ver su README)
+  llm/               validación del LLM de registros contra el modelo real (`evaluar_tarjetas.py`, v7 sobre `app/services/registro/llm`, con la presentación de `datos/contenido.py`), casos y resultados versionados; no es pytest, se corre a mano (ver su README)
 ```
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.

@@ -6,8 +6,6 @@ marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del te
 TARJETAS = {
     'b5-1-seguridad': {
         'filtrar_etiqueta': False,
-        'pregunta': '¿Qué te da seguridad en tu proyecto, o qué te la quita?',
-        'ecos': {'proyecto': {'nombre': 'Tu proyecto', 'ordenado': False}},
         'tarjeta': '''NÚCLEO: algo que le da o le quita seguridad en su proyecto: algo que ya hizo o averiguó, algo
   que todavía no sabe o le falta, una persona que lo apoya o que se opone, un recurso que
   tiene o que le falta (la plata, el tiempo), algo suyo (algo que le sale bien o que le
