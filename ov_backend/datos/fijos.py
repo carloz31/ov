@@ -104,13 +104,13 @@ TEXTOS_FIJOS = (
     ('PIEZA_FRASE_INT-ESP', 'Ver formas, planos y estructuras en tu cabeza'),
     ('PIEZA_FRASE_INT-CIN', 'Usas el cuerpo para expresar ideas y para resolver problemas o crear cosas'),
     ('PIEZA_FRASE_INT-MUS', 'Percibes, distingues y expresas formas musicales'),
-    ('PIEZA_FRASE_INT-INTRA', 'Entender lo que te pasa y decidir a partir de eso'),
+    ('PIEZA_FRASE_INT-INTRA', 'Entiendes lo que te pasa y decides a partir de eso'),
     ('PIEZA_FRASE_INT-INTER', 'Captas los estados de ánimo y los sentimientos de los demás'),
     ('PIEZA_FRASE_HS-ASE', 'Defiendes tus derechos y dices lo que piensas sin ofender'),
     ('PIEZA_FRASE_HS-EMP', 'Te pones en el lugar del otro y comprendes lo que siente'),
-    ('PIEZA_FRASE_HS-EXP', 'Reconocer lo que sientes y elegir el momento para decirlo'),
+    ('PIEZA_FRASE_HS-EXP', 'Reconoces lo que sientes y eliges el momento para decirlo'),
     ('PIEZA_FRASE_HS-RES', 'No quedarte tranquilo hasta resolver un problema'),
-    ('PIEZA_FRASE_HS-LID', 'Organizar a un grupo y hablar en su nombre'),
+    ('PIEZA_FRASE_HS-LID', 'Organizas a un grupo y hablas en su nombre'),
 )
 
 # Código reservado para la opción «otra»; ninguna lista puede usarlo.
