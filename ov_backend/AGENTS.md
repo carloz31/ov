@@ -10,7 +10,7 @@ Documentos vigentes (lee los que toque la tarea):
 |---|---|
 | `docs/sistema/motor.md` | Eventos, reglas, disponibilidad, acciones, progreso y diario. |
 | `docs/sistema/instrumentos.md` | Cuestionarios, cálculo de resultados, coincidencias O*NET y carreras. |
-| `docs/sistema/registro.md` | Respuestas de registro, preguntas de seguimiento, evaluador (Gemini o falso) y asistente del diario. |
+| `docs/sistema/registro.md` | Ítems e intentos de registro, contexto de un ítem (piezas, marcadores, ecos), capa del LLM v7 y asistentes con Gemini. |
 | `docs/sistema/referencias.md` | Referencias: catálogo de tipos, resolución por cuenta y elección por referencia. |
 | `docs/sistema/planes.md` | Planes de carrera: tarjeta, secciones, totales, acciones y sugerencias de pasos con LLM. |
 | `docs/sistema/investigaciones.md` | Investigaciones, guion con sugerencias del LLM, entrevistas, reacciones, reportes y Leyenda. |
@@ -35,7 +35,7 @@ app/                    solo la aplicación; no lee archivos de datos
   services/             lógica de negocio por dominio
     motor/              núcleo de desbloqueos
     instrumentos/       cálculo, consultas y resultados
-    registro/           registro con evaluador de respuestas; `llm/`: capa del LLM v7 (Claude), aún sin conectar
+    registro/           registro: intentos, entrega provisional, `contexto.py` (opciones, piezas, marcadores y ecos de un ítem) y `llm/` (capa del LLM v7, Claude), sin conectar hasta el lote 3; `evaluacion.py` y `gemini.py` quedan para los asistentes con Gemini
     planes/             planes de carrera: consultas, acciones y sugerencias
     investigaciones/    investigaciones y entrevistas: consultas, acciones, sugerencias y orientadora
   core/                 parámetros, caché de definiciones y contexto de consultas
