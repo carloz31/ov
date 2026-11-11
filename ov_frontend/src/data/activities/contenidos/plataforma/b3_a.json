@@ -35,54 +35,10 @@
       "texto": "Acuérdate de las cuatro preguntas de Alejandra: qué decidió y qué le pasó, si se parece a ti, el momento del giro, y con qué te quedas. Esto lo lee tu orientadora y va a tu informe de viaje."
     },
     {
-      "id": "b3-a-testimonio",
+      "id": "b3-a-comparo",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b3-a-testimonio",
-      "dialogo": "De las historias que desbloqueaste, una te quedó.",
-      "preguntaEleccion": "¿Cuál?",
-      "preguntaTexto": "¿Qué momento de su historia te quedó: una decisión, algo que le pasó?",
-      "entrada": "Me quedó cuando…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "El testimonio",
-        "mensajes": {
-          "inicio": "Marca el testimonio que te quedó dando vueltas.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
-    },
-    {
-      "id": "b3-a-identifico",
-      "tipo": "consigna",
-      "hablanteId": "companero",
-      "item": "b3-a-identifico",
-      "dialogo": "Ahora tú frente a esa persona.",
-      "preguntaEleccion": "¿Te identificas?",
-      "preguntaTexto": "¿En qué te pareces y en qué no?",
-      "entrada": "Me parezco en… pero…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Esa persona y tú",
-        "mensajes": {
-          "inicio": "¿Te identificas, en parte o te diferencias?",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b3-a-comparo"
     }
   ],
   "recompensa": {

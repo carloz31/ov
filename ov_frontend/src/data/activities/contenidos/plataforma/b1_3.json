@@ -104,76 +104,19 @@
       "id": "b1-3-voz",
       "tipo": "consigna",
       "hablanteId": "ivan",
-      "item": "b1-3-voz",
-      "dialogo": "Casi siempre alguien cercano tiene una idea de lo que deberías hacer al salir del colegio.",
-      "preguntaEleccion": "¿Quién te lo ha dicho con más fuerza?",
-      "preguntaTexto": "¿Qué espera que hagas? Con sus palabras, aunque sea una frase.",
-      "entrada": "Espera que yo…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Esa voz",
-        "mensajes": {
-          "inicio": "Marca a esa persona.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b1-3-voz"
     },
     {
       "id": "b1-3-mia",
       "tipo": "consigna",
       "hablanteId": "ivan",
-      "item": "b1-3-mia",
-      "dialogo": "Ahora tu voz.",
-      "preguntaEleccion": "Y tú, ¿qué quieres hacer al terminar?",
-      "preguntaTexto": "¿Por qué eso? Algo tuyo: lo que te pasa, lo que te gusta.",
-      "entrada": "Yo quiero… porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Tu ruta",
-        "mensajes": {
-          "inicio": "Marca una ruta.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b1-3-mia"
     },
     {
       "id": "b1-3-contraste",
       "tipo": "consigna",
       "hablanteId": "ivan",
-      "item": "b1-3-contraste",
-      "dialogo": "Pongamos las dos voces juntas.",
-      "preguntaEleccion": "¿Coinciden, coinciden en parte o chocan?",
-      "preguntaTexto": "¿En qué punto exactamente: la carrera, el lugar, el momento, el dinero?",
-      "entrada": "Coincidimos / chocamos en…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Las dos voces",
-        "mensajes": {
-          "inicio": "¿Coinciden, coinciden en parte o chocan?",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b1-3-contraste"
     }
   ],
   "recompensa": {
@@ -184,12 +127,5 @@
     "x": 800,
     "y": 160,
     "icono": "registro"
-  },
-  "destinos": [
-    {
-      "item": "b1-3-contraste",
-      "opcion": "CHOCAN",
-      "ruta": "familia"
-    }
-  ]
+  }
 }

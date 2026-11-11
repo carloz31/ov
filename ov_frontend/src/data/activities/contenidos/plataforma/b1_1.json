@@ -161,58 +161,19 @@
       "id": "b1-1-gustos",
       "tipo": "consigna",
       "hablanteId": "cartografa",
-      "item": "b1-1-gustos",
-      "dialogo": "Todo mapa empieza por donde uno ya estuvo.",
-      "preguntaTexto": "¿Qué te encantaba hacer de niño o niña? Una cosa concreta: a qué jugabas, qué armabas, con quién.",
-      "entrada": "De niño me encantaba…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "item": "b1-1-gustos"
     },
     {
       "id": "b1-1-logro",
       "tipo": "consigna",
       "hablanteId": "cartografa",
-      "item": "b1-1-logro",
-      "dialogo": "Hay cosas que ya lograste, aunque te parezcan pequeñas.",
-      "preguntaEleccion": "¿Qué habilidades se notan en ese logro?",
-      "preguntaTexto": "Cuenta un logro tuyo: algo que pasó, no algo que eres.",
-      "entrada": "Una vez logré…",
-      "orden": "texto-primero",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Lo que usaste",
-        "mensajes": {
-          "inicio": "Marca la habilidad que usaste.",
-          "una": "Anotado.",
-          "exclusiva": "Está bien, a veces cuesta verlos. Si se te ocurre algo pequeño —algo que aprendiste solo, en casa, en un deporte o con amigos—, puedes agregarlo arriba."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b1-1-logro"
     },
     {
       "id": "b1-1-dificultad",
       "tipo": "consigna",
       "hablanteId": "cartografa",
-      "item": "b1-1-dificultad",
-      "dialogo": "Y también hubo algo que no salió a la primera.",
-      "preguntaTexto": "Cuenta una dificultad y cómo la fuiste superando: lo que hiciste o quién te ayudó.",
-      "entrada": "Una vez se me complicó… y lo que me ayudó a salir adelante fue…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "item": "b1-1-dificultad"
     }
   ],
   "recompensa": {

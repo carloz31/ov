@@ -32,61 +32,19 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Esto lo lee tu orientadora, y vuelve al final: cuando escribas tu proyecto, en el campo de dificultades te voy a recordar qué dijiste que harías si un dato no te favorece.",
-      "eco": [
-        "b3-4-ref-plan"
-      ]
+      "texto": "Esto lo lee tu orientadora, y vuelve al final: cuando escribas tu proyecto, en el campo de dificultades te voy a recordar qué dijiste que harías si un dato no te favorece."
     },
     {
-      "id": "b3-4-dato",
+      "id": "b3-4-necesito",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b3-4-dato",
-      "dialogo": "Estos son los datos de la carrera de tu Plan A.",
-      "preguntaEleccion": "¿Qué aspecto no conocías?",
-      "preguntaTexto": "¿Qué dice ese dato? Con tus palabras basta.",
-      "entrada": "No sabía que…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "El dato",
-        "mensajes": {
-          "inicio": "Marca el aspecto que no sabías.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      },
-      "eco": "b3-4-ref-datos-carrera"
+      "item": "b3-4-necesito"
     },
     {
-      "id": "b3-4-cambia",
+      "id": "b3-4-quien",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b3-4-cambia",
-      "dialogo": "Un dato puede mover un plan o no moverlo.",
-      "preguntaEleccion": "¿Cuánto cambia lo que pensabas?",
-      "preguntaTexto": "¿Qué sería lo primero que averiguarías?",
-      "entrada": "Voy a averiguar…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Cuánto cambia",
-        "mensajes": {
-          "inicio": "Mucho, un poco o nada.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b3-4-quien"
     }
   ],
   "recompensa": {
@@ -97,17 +55,5 @@
     "x": 550,
     "y": 480,
     "icono": "registro"
-  },
-  "destinos": [
-    {
-      "item": "b3-4-cambia",
-      "opcion": "MUCHO",
-      "ruta": "plan-a-dudas"
-    },
-    {
-      "item": "b3-4-cambia",
-      "opcion": "UN_POCO",
-      "ruta": "plan-a-dudas"
-    }
-  ]
+  }
 }

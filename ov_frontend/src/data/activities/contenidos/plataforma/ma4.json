@@ -29,59 +29,13 @@
       "id": "ma4-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora. Vuelve dentro de una semana, o cuando lo hayas hecho; no antes.",
-      "eco": "ma4-ref-accion"
+      "texto": "Esto lo lee tu orientadora. Vuelve dentro de una semana, o cuando lo hayas hecho; no antes."
     },
     {
-      "id": "ma4-probe",
+      "id": "ma4-modelo",
       "tipo": "consigna",
       "hablanteId": "dora",
-      "item": "ma4-probe",
-      "dialogo": "Dijiste que ibas a practicarla. Volvamos a eso.",
-      "preguntaEleccion": "¿La probaste?",
-      "preguntaTexto": "¿Qué pasó exactamente: cómo reaccionaron, qué sentiste después?",
-      "entrada": "Pasó que…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Tu reto",
-        "mensajes": {
-          "inicio": "¿Lo hiciste, a medias o todavía no?",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      },
-      "eco": "ma4-ref-accion"
-    },
-    {
-      "id": "ma4-sigo",
-      "tipo": "consigna",
-      "hablanteId": "dora",
-      "item": "ma4-sigo",
-      "dialogo": "Una cosa más.",
-      "preguntaEleccion": "¿La sigues o la cambias?",
-      "preguntaTexto": "¿Por qué?",
-      "entrada": "Porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Tu reto",
-        "mensajes": {
-          "inicio": "¿La sigues o la cambias?",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "ma4-modelo"
     }
   ],
   "recompensa": {

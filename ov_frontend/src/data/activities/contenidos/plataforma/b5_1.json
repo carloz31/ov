@@ -159,78 +159,13 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "texto": "Esto lo lee tu orientadora y es el corazón de tu informe de viaje. Te voy a recordar tu opción inicial, tu orden de la mesa, tus valores y lo que dijiste que harías si un dato no te favorece.",
-      "eco": [
-        "b5-1-ref-inicial",
-        "b5-1-ref-planes",
-        "b5-1-ref-respalda",
-        "b5-1-ref-criterios"
-      ]
+      "eco": "b5-1-ref-planes"
     },
     {
-      "id": "b5-1-decision",
+      "id": "b5-1-seguridad",
       "tipo": "consigna",
       "hablanteId": "vigia",
-      "item": "b5-1-decision",
-      "dialogo": "Desde aquí se ve todo el camino. Es hora de decir tu decisión.",
-      "preguntaEleccion": "¿Cuál es tu proyecto hoy?",
-      "preguntaTexto": "¿Por qué? Algo de ti y algo de lo que averiguaste en el camino.",
-      "entrada": "Elijo … porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Tu plan de hoy",
-        "mensajes": {
-          "inicio": "Tu Plan A llega marcado. Cámbialo si hoy es otro.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
-    },
-    {
-      "id": "b5-1-senal",
-      "tipo": "consigna",
-      "hablanteId": "vigia",
-      "item": "b5-1-senal",
-      "dialogo": "Una decisión se revisa. Para eso sirve una señal.",
-      "preguntaTexto": "¿Qué te diría que vas bien, o que toca volver a pensarlo? Algo que puedas mirar.",
-      "entrada": "Sabré que voy bien si…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eco": "b5-1-ref-pasos"
-    },
-    {
-      "id": "b5-1-apoyo",
-      "tipo": "consigna",
-      "hablanteId": "vigia",
-      "item": "b5-1-apoyo",
-      "dialogo": "Nadie llega solo.",
-      "preguntaEleccion": "¿A quién necesitas?",
-      "preguntaTexto": "¿Apoyarte cómo: con plata, con tiempo, con no presionar, con ir contigo a averiguar?",
-      "entrada": "Necesito que…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Esa persona",
-        "mensajes": {
-          "inicio": "Marca a esa persona.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b5-1-seguridad"
     }
   ],
   "recompensa": {
@@ -241,6 +176,5 @@
     "x": 400,
     "y": 250,
     "icono": "registro"
-  },
-  "destino_por_defecto": "familia"
+  }
 }

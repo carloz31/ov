@@ -208,8 +208,8 @@ def test_reglas_con_su_condicion_nueva(sesion_contenido):
                                                                      m.TipoEventoUso.ACTUALIZA_PLAN}
 
 
-def test_coherencia_con_los_json_del_front_fuera_de_los_registros():
-    # El front de los registros se ajusta aparte (lote 2, «No entra»): sus errores quedan en pendientes-interfaz.md.
+def test_coherencia_con_los_json_del_front():
+    # Ajuste front de registros (lote 1): vuelven los 19 registros; cada `item` existe y cada ítem tiene su nodo.
     front = Path(__file__).resolve().parents[4] / 'ov_frontend'
     errores, _ = verificar_contenido_front.verificar(front)
-    assert [e for e in errores if e.split(':')[0] not in {*REQUERIDOS, *OPCIONALES}] == []
+    assert errores == []

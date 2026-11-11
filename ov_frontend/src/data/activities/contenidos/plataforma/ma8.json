@@ -33,34 +33,10 @@
       "eco": "ma8-ref-plan"
     },
     {
-      "id": "ma8-motivos",
-      "tipo": "consigna",
-      "hablanteId": "eco",
-      "item": "ma8-motivos",
-      "dialogo": "Yo soy la voz que duda. Préstamela.",
-      "preguntaTexto": "Si alguien quisiera convencerte de no elegir tu Plan A, ¿qué dos motivos distintos usaría?",
-      "entrada": "Diría que no porque… y porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
-    },
-    {
       "id": "ma8-respuesta",
       "tipo": "consigna",
       "hablanteId": "eco",
-      "item": "ma8-respuesta",
-      "dialogo": "Ahora respóndele.",
-      "preguntaTexto": "¿Qué responderías a cada motivo? Si alguno no supiste responderlo, dilo.",
-      "entrada": "A lo primero respondo… A lo segundo…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "item": "ma8-respuesta"
     }
   ],
   "recompensa": {

@@ -36,34 +36,10 @@
       ]
     },
     {
-      "id": "ma3-pasos",
+      "id": "ma3-hoy",
       "tipo": "consigna",
       "hablanteId": "guardian",
-      "item": "ma3-pasos",
-      "dialogo": "Un hito sin pasos es solo un deseo.",
-      "preguntaTexto": "Hacia tu hito de un año —o, si todavía no lo tienes claro, hacia ese día que imaginaste—, ¿cuáles serían tus primeros pasos?",
-      "entrada": "El próximo mes…; al siguiente…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
-    },
-    {
-      "id": "ma3-falta",
-      "tipo": "consigna",
-      "hablanteId": "guardian",
-      "item": "ma3-falta",
-      "dialogo": "Para dar esos pasos hace falta algo.",
-      "preguntaTexto": "¿Qué necesitas que todavía no tienes: una cosa o una persona?",
-      "entrada": "Me falta…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "item": "ma3-hoy"
     }
   ],
   "recompensa": {

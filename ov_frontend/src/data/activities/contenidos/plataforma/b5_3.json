@@ -32,63 +32,13 @@
       "id": "b5-3-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Dos preguntas, nada más. Esto lo lee tu orientadora y cierra tu informe.",
-      "eco": [
-        "b5-3-ref-inicial",
-        "b5-3-ref-dia",
-        "b5-3-ref-freno",
-        "b5-3-ref-mia",
-        "b5-3-ref-mito"
-      ]
+      "texto": "Dos preguntas, nada más. Esto lo lee tu orientadora y cierra tu informe."
     },
     {
-      "id": "b5-3-inicial",
+      "id": "b5-3-cambio",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b5-3-inicial",
-      "dialogo": "Llegaste al muelle con una idea. Mírala desde aquí.",
-      "preguntaEleccion": "¿Cómo la ves hoy?",
-      "preguntaTexto": "¿Qué sabes hoy que al llegar no sabías?",
-      "entrada": "Hoy sé que…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Cómo la ves",
-        "mensajes": {
-          "inicio": "¿La ves igual, distinta o la dejaste?",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
-    },
-    {
-      "id": "b5-3-explorar",
-      "tipo": "consigna",
-      "hablanteId": "companero",
-      "item": "b5-3-explorar",
-      "dialogo": "Te vas de la isla, pero el camino sigue.",
-      "preguntaEleccion": "¿Qué te falta explorar?",
-      "preguntaTexto": "¿Con quién, dónde o cuándo?",
-      "entrada": "Voy a…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Lo que falta",
-        "mensajes": {
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b5-3-cambio"
     }
   ],
   "recompensa": {
@@ -99,42 +49,5 @@
     "x": 210,
     "y": 160,
     "icono": "registro"
-  },
-  "destinos": [
-    {
-      "item": "b5-3-explorar",
-      "opcion": "CARRERAS",
-      "ruta": "catalogo"
-    },
-    {
-      "item": "b5-3-explorar",
-      "opcion": "PROFESIONALES",
-      "ruta": "investigaciones"
-    },
-    {
-      "item": "b5-3-explorar",
-      "opcion": "INSTITUCIONES",
-      "ruta": "catalogo-instituciones"
-    },
-    {
-      "item": "b5-3-explorar",
-      "opcion": "COSTOS_BECAS",
-      "ruta": "plan-a"
-    },
-    {
-      "item": "b5-3-explorar",
-      "opcion": "FAMILIA",
-      "ruta": "familia"
-    },
-    {
-      "item": "b5-3-explorar",
-      "opcion": "CONOCERME",
-      "ruta": "ciudad"
-    },
-    {
-      "item": "b5-3-explorar",
-      "opcion": "NADA",
-      "ruta": null
-    }
-  ]
+  }
 }

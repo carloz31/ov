@@ -48,87 +48,13 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "texto": "Esto lo lee tu orientadora y es la base de tu proyecto. Al cerrar te voy a recordar lo que justificaste en el cuadro de afinidad para el plan que quede primero, o lo que dijiste que tu perfil no resuelve.",
-      "eco": [
-        "b4-5-ref-planes",
-        "b4-5-ref-criterios",
-        "b4-5-ref-linea-roja"
-      ]
+      "eco": "b4-5-ref-planes"
     },
     {
-      "id": "b4-5-orden",
+      "id": "b4-5-moneda",
       "tipo": "consigna",
       "hablanteId": "ivan",
-      "item": "b4-5-orden",
-      "dialogo": "Este es tu orden de planes, con tus reglas al lado.",
-      "preguntaEleccion": "Frente a tus reglas, ¿lo mantienes o lo cambiarías?",
-      "preguntaTexto": "¿Qué regla tuya pesa aquí?",
-      "entrada": "Según mi regla de…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Tu orden",
-        "mensajes": {
-          "inicio": "¿Lo mantienes o lo cambiarías?",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      },
-      "eco": "b4-5-ref-respalda"
-    },
-    {
-      "id": "b4-5-debil",
-      "tipo": "consigna",
-      "hablanteId": "ivan",
-      "item": "b4-5-debil",
-      "dialogo": "Hasta un buen Plan A tiene un punto débil.",
-      "preguntaEleccion": "¿Con cuál de tus reglas cumple menos?",
-      "preguntaTexto": "¿Qué vas a ver, dónde o con quién? Una sola cosa esta semana.",
-      "entrada": "Voy a…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "La regla",
-        "mensajes": {
-          "inicio": "Marca la regla que tu Plan A cumple menos.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
-    },
-    {
-      "id": "b4-5-plan-b",
-      "tipo": "consigna",
-      "hablanteId": "ivan",
-      "item": "b4-5-plan-b",
-      "dialogo": "Y si el Plan A no se da…",
-      "preguntaEleccion": "¿Qué tan tranquilo te irías al Plan B?",
-      "preguntaTexto": "Si el Plan A no se diera, ¿qué sería lo primero que harías al día siguiente?",
-      "entrada": "Al día siguiente yo…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Tu Plan B",
-        "mensajes": {
-          "inicio": "¿El Plan B te sirve de verdad?",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b4-5-moneda"
     }
   ],
   "recompensa": {
@@ -139,22 +65,5 @@
     "x": 420,
     "y": 320,
     "icono": "registro"
-  },
-  "destinos": [
-    {
-      "item": "b4-5-orden",
-      "opcion": "LO_CAMBIARIA",
-      "ruta": "mis-planes"
-    },
-    {
-      "item": "b4-5-plan-b",
-      "opcion": "RELLENO",
-      "ruta": "catalogo"
-    },
-    {
-      "item": "b4-5-plan-b",
-      "opcion": "A_MEDIAS",
-      "ruta": "plan-b"
-    }
-  ]
+  }
 }

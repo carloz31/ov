@@ -37,54 +37,10 @@
       "eco": "h3-ref-resultado"
     },
     {
-      "id": "h3-sorprende",
+      "id": "h3-curiosidad",
       "tipo": "consigna",
       "hablanteId": "bibliotecaria",
-      "item": "h3-sorprende",
-      "dialogo": "Estas son las cinco familias que salieron de tus intereses.",
-      "preguntaEleccion": "¿Cuál no esperabas?",
-      "preguntaTexto": "¿Qué te abre o qué te llama de esa familia?",
-      "entrada": "Me sorprende porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "La familia",
-        "mensajes": {
-          "inicio": "Marca la familia que no esperabas ver.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
-    },
-    {
-      "id": "h3-descarto",
-      "tipo": "consigna",
-      "hablanteId": "bibliotecaria",
-      "item": "h3-descarto",
-      "dialogo": "No hace falta quedarse con todas.",
-      "preguntaEleccion": "¿Cuál descartarías por ahora?",
-      "preguntaTexto": "¿Por qué esa?",
-      "entrada": "La descarto porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "La que descartas",
-        "mensajes": {
-          "inicio": "Marca la que descartarías hoy.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "h3-curiosidad"
     }
   ],
   "recompensa": {
@@ -96,17 +52,5 @@
     "y": 500,
     "icono": "registro",
     "origen": "h-intereses-6"
-  },
-  "destinos": [
-    {
-      "item": "h3-sorprende",
-      "opcion": "NINGUNA",
-      "ruta": "catalogo"
-    },
-    {
-      "item": "h3-sorprende",
-      "opcion": "*",
-      "ruta": "catalogo-familia"
-    }
-  ]
+  }
 }

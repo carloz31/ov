@@ -40,51 +40,7 @@
       "id": "h2-reconozco",
       "tipo": "consigna",
       "hablanteId": "maestro",
-      "item": "h2-reconozco",
-      "dialogo": "El libro muestra formas de aprender y resolver. Algunas te sonarán.",
-      "preguntaEleccion": "¿En cuál te reconoces más?",
-      "preguntaTexto": "¿Una vez concreta en que la usaste: un problema, un juego, algo que armaste?",
-      "entrada": "Me reconozco porque una vez…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Donde te reconoces",
-        "mensajes": {
-          "inicio": "Marca la forma en que te reconoces más.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
-    },
-    {
-      "id": "h2-no-refleja",
-      "tipo": "consigna",
-      "hablanteId": "maestro",
-      "item": "h2-no-refleja",
-      "dialogo": "Ningún resultado te ve completo.",
-      "preguntaEleccion": "¿Cuál no refleja algo tuyo?",
-      "preguntaTexto": "¿Qué cosa que haces, y que te sale, no aparece ahí?",
-      "entrada": "El resultado no vio que yo…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Lo que no vio",
-        "mensajes": {
-          "inicio": "Marca la forma.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "h2-reconozco"
     }
   ],
   "recompensa": {

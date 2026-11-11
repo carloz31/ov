@@ -3,7 +3,8 @@
 Carga cada conjunto en una base temporal y comprueba, sin servicios externos:
 - en `contenido`: que cada actividad tiene su JSON (`plataforma/`, o `ruta/` para lo provisional); que cada `desafio`
   de un JSON es una batalla cargada y existe en `challenges.ts`; que cada `item` de un JSON es un ítem cargado de esa
-  actividad, del tipo de su nodo (elección si es podio), con sus campos de presentación (`errores_presentacion`); que
+  actividad y que cada ítem de un registro tiene su nodo, en el orden de los ítems; que un nodo de ítem de
+  `plataforma/` solo trae lo que el backend no entrega (`errores_presentacion`) y que ningún registro trae destinos; que
   cada referencia de un eco está cargada para esa actividad; que ningún JSON de `plataforma/` trae
   `recompensa.recursoIds`, y que cada caso lo juega exactamente una actividad;
 - en los dos conjuntos, los casos: cada actividad CASO nombra un `caso` con su JSON en `src/data/cases/plataforma/`;
@@ -58,9 +59,6 @@ def _verificar_actividades(front: Path, sesion, actividades) -> list[str]:
                               (front / 'src/data/content/challenges.ts').read_text(encoding='utf-8')))
     items = {i.codigo: i for i in sesion.scalars(select(m.ItemRegistro))}
     referencias = {(r.codigo, r.actividad_id) for r in sesion.scalars(select(m.Referencia))}
-    opciones_por_lista = {}
-    for opcion in sesion.scalars(select(m.OpcionLista)):
-        opciones_por_lista.setdefault(opcion.lista_id, set()).add(opcion.codigo)
     errores = []
     for codigo, actividad in sorted(actividades.items()):
         archivo = _json_actividad(contenidos, actividad)
@@ -79,68 +77,37 @@ def _verificar_actividades(front: Path, sesion, actividades) -> list[str]:
                 item = items.get(nodo['item'])
                 if item is None or item.actividad_id != actividad.id:
                     errores.append(f'{codigo}: el ítem {nodo["item"]} no está cargado en esta actividad')
-                elif ('podio' in nodo or 'eleccion' in nodo) != (item.fuente_opciones is not None):
-                    errores.append(f'{codigo}: el ítem {nodo["item"]} no es del tipo de su nodo')
                 elif archivo.parent.name == 'plataforma' and nodo.get('tipo') == 'consigna':
-                    errores += [f'{codigo}: {nodo["item"]} {e}' for e in errores_presentacion(nodo, item)]
+                    errores += [f'{codigo}: {nodo["item"]} {e}' for e in errores_presentacion(nodo)]
             for eco in _ecos(nodo):
                 if (eco, actividad.id) not in referencias:
                     errores.append(f'{codigo}: la referencia {eco} ({nodo["id"]}) no está cargada')
-            # Ajuste registros: las exclusivas y preguntas que nombra el JSON son opciones del ítem (lista o propias).
-            item = items.get(nodo.get('item'))
-            if item is not None and 'eleccion' in nodo:
-                nombradas = set(nodo['eleccion'].get('exclusivas', ())) | set(nodo['eleccion'].get('preguntas', {}))
-                ajenas = nombradas - _opciones_item(opciones_por_lista, item) - {'OTRA'}
-                if item.fuente_opciones != m.FuenteOpciones.REFERENCIA and ajenas:
-                    errores.append(f'{codigo}: {nodo["item"]} nombra opciones que no tiene: {sorted(ajenas)}')
-        # Ajuste registros: cada destino apunta a un ítem de la actividad y a una de sus opciones (o «*»).
-        for destino in datos.get('destinos', ()):
-            item = items.get(destino.get('item'))
-            if item is None or item.actividad_id != actividad.id:
-                errores.append(f'{codigo}: el destino nombra el ítem {destino.get("item")}, que no es de esta actividad')
-            elif destino.get('opcion') != '*' and item.fuente_opciones != m.FuenteOpciones.REFERENCIA and (
-                    destino.get('opcion') not in _opciones_item(opciones_por_lista, item)):
-                errores.append(f'{codigo}: el destino nombra la opción {destino.get("opcion")}, que {item.codigo} no tiene')
-            if destino.get('ruta') not in RUTAS_DESTINO:
-                errores.append(f'{codigo}: el destino {destino.get("ruta")} no es una ruta del front')
-        if datos.get('destino_por_defecto') not in (None, *RUTAS_DESTINO):
-            errores.append(f'{codigo}: el destino por defecto {datos["destino_por_defecto"]} no es una ruta del front')
+        # Ajuste front de registros (lote 1): cada ítem del backend tiene su nodo, en el orden de los ítems; el destino
+        # sugerido al cerrar ya no existe.
+        if actividad.tipo == m.TipoActividad.REGISTRO:
+            del_backend = [i.codigo for i in sorted(
+                (i for i in items.values() if i.actividad_id == actividad.id), key=lambda i: i.orden)]
+            del_json = [n['item'] for n in datos.get('nodos', []) if n.get('tipo') == 'consigna' and n.get('item')]
+            errores += [f'{codigo}: el ítem {c} no tiene su nodo' for c in del_backend if c not in del_json]
+            if set(del_json) == set(del_backend) and del_json != del_backend:
+                errores.append(f'{codigo}: los nodos de sus ítems no siguen el orden del backend')
+        if archivo.parent.name == 'plataforma':
+            errores += [f'{codigo}: trae {clave}' for clave in ('destinos', 'destino_por_defecto') if clave in datos]
     sobrantes = {p.stem for p in (contenidos / 'plataforma').glob('*.json')} - {
         a.contenido for a in actividades.values()}
     errores += [f'plataforma/{s}.json no corresponde a ninguna actividad' for s in sorted(sobrantes)]
     return errores
 
 
-# Las rutas que el front sabe resolver (`features/activities/lib/destinoRegistro.ts`).
-RUTAS_DESTINO = (None, 'familia', 'catalogo', 'catalogo-familia', 'catalogo-instituciones', 'plan-a', 'plan-a-dudas',
-                 'plan-b', 'mis-planes', 'investigaciones', 'ciudad')
+# Ajuste front de registros (lote 1, §8): un nodo de ítem de `plataforma/` guarda solo lo que el backend no entrega.
+CAMPOS_NODO_ITEM = {'id', 'tipo', 'hablanteId', 'expresion', 'item'}
 
 
-def errores_presentacion(nodo: dict, item) -> list[str]:
-    """Ajuste vista del ítem de registro: los campos de presentación de un nodo de ítem de `plataforma/`.
-
-    `preguntaTexto` y `entrada` siempre; `preguntaEleccion` si y solo si el ítem elige; `orden: texto-primero` solo
-    donde la elección no cambia lo que se escribe (sin podio, sin premarcado, sin retomar una referencia y sin
-    opciones propias con pregunta propia o sin criterio).
-    """
-    errores = [f'no tiene {campo}' for campo in ('preguntaTexto', 'entrada') if not nodo.get(campo)]
-    if bool(nodo.get('preguntaEleccion')) != (item.fuente_opciones is not None):
-        errores.append('lleva preguntaEleccion sin elegir' if nodo.get('preguntaEleccion') else 'no tiene preguntaEleccion')
-    orden = nodo.get('orden', 'eleccion-primero')
-    if orden not in ('eleccion-primero', 'texto-primero'):
-        errores.append(f'tiene un orden desconocido: {orden}')
-    elif orden == 'texto-primero':
-        propias = item.opciones_propias or ()
-        if item.fuente_opciones is None:
-            errores.append('es de solo texto y lleva texto-primero')
-        elif (item.eleccion_ordenada or item.premarcar_si or item.referencia_id is not None
-              or any(o.get('pregunta_propia') or ('criterio' in o and o['criterio'] is None) for o in propias)):
-            errores.append('lleva texto-primero, pero su elección cambia lo que se escribe')
-    return errores
-
-
-def _opciones_item(opciones_por_lista, item):
-    return set(opciones_por_lista.get(item.lista_id, ())) | {o['codigo'] for o in item.opciones_propias or ()}
+def errores_presentacion(nodo: dict) -> list[str]:
+    """Un nodo de ítem de `plataforma/` solo trae `id`, `tipo`, `hablanteId`, `expresion` e `item`: la consigna, la
+    elección y los ecos vienen del registro de la cuenta."""
+    sobran = sorted(set(nodo) - CAMPOS_NODO_ITEM)
+    return [f'trae {", ".join(sobran)}'] if sobran else []
 
 
 def _textos(valor, ruta=''):

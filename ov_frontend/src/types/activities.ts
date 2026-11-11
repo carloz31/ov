@@ -167,38 +167,11 @@ export interface NodoConsigna extends NodoBase {
   obligatoria: boolean
   visibilidad: Visibilidad
   slot?: string // ubicación en la plantilla: "col.fila"
-  item?: ID // en api, código del ítem de registro del servidor que responde esta consigna (F01)
-  podio?: ConfigPodio // en api, textos e íconos del podio de una elección «top N»
-  eleccion?: ConfigEleccion // en api, textos e íconos de una elección guiada sin orden
-  eco?: ID | ID[] // en api, referencias que se citan sobre esta consigna (F02: TEXTO; F03: RESULTADO, COINCIDENCIAS)
-  dialogo?: string // ajuste vista del ítem (api): lo que dice el personaje arriba, fijo
-  preguntaEleccion?: string // la pregunta sobre las opciones
-  preguntaTexto?: string // la pregunta sobre el campo
-  entrada?: string // el placeholder del campo
-  entradaPropia?: Record<string, string> // código de opción → placeholder con esa opción elegida sola
-  orden?: 'eleccion-primero' | 'texto-primero' // el orden de los bloques; por defecto, elección primero
-}
-
-// Podio de una elección ordenada «top N» (F01). Todo es opcional: sin él se usan textos genéricos.
-export interface ConfigPodio {
-  etiquetaPrimero?: string // «Lo más importante»
-  pregunta?: string // «¿Por qué «{opcion}» es lo más importante para ti?»
-  unidad?: { singular: string; plural: string } // «valor» / «valores»
-}
-
-// Elección guiada «elegir entre mínima y máxima sin orden + explicar» (F01); sin textos propios, los genéricos.
-export interface ConfigEleccion {
-  etiquetaElegida?: string // ya no se muestra (ajuste vista del ítem): el ✓ marca lo elegido
-  etiquetaAnterior?: string // F02: «La vez pasada», en lo elegido antes cuando el ítem retoma una elección
-  exclusivas?: string[] // códigos que quitan a las demás («AUN_NO_SE»)
-  mensajes?: { inicio?: string; una?: string; maximo?: string; bloqueada?: string; exclusiva?: string }
-  pregunta?: string // con {opciones}
-  preguntas?: Record<string, string> // pregunta propia de una opción elegida sola
-  preguntaExclusiva?: string
-  preguntaMantiene?: string // F02: con {opciones}, si lo elegido es lo mismo que la vez pasada
-  preguntaCambia?: string // F02: con {opciones}, si cambió
-  errorSeleccion?: string
-  errorOtra?: string
+  // En api, código del ítem de registro del servidor que responde esta consigna (F01). Ajuste front de registros
+  // (lote 1): la consigna, la elección y los ecos vienen del registro de la cuenta; el JSON solo dice quién habla.
+  item?: ID
+  expresion?: string
+  eco?: ID | ID[] // modo local y `ruta`: referencias que se citan sobre esta consigna (F02, F03)
 }
 
 export type EspecEntregable =
@@ -279,11 +252,7 @@ export interface Actividad {
   }
   siguienteSugerida?: ID
   promptDiario?: string
-  // Ajuste registros (api): destino sugerido al cerrar, por prioridad; gana la primera coincidencia.
-  destinos?: { item: ID; opcion: string; ruta: RutaDestino }[]
-  destino_por_defecto?: RutaDestino
 }
-export type RutaDestino = 'familia' | 'catalogo' | 'catalogo-familia' | 'catalogo-instituciones' | 'plan-a' | 'plan-a-dudas' | 'plan-b' | 'mis-planes' | 'investigaciones' | 'ciudad' | null
 
 export interface ContenidoActividad extends Actividad {
   mapa?: {

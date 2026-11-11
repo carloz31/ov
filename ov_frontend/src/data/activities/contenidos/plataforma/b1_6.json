@@ -46,26 +46,7 @@
       "id": "b1-6-mito",
       "tipo": "consigna",
       "hablanteId": "aurelio",
-      "item": "b1-6-mito",
-      "dialogo": "Ya cruzaste el puente. Pero algunos mitos uno los trae de casa.",
-      "preguntaEleccion": "¿Cuál de estos has escuchado o creído más?",
-      "preguntaTexto": "¿De dónde te viene y qué piensas hoy? Una frase para cada cosa.",
-      "entrada": "Lo escuché de… Hoy pienso…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "El mito",
-        "mensajes": {
-          "inicio": "Marca el mito que más has escuchado o creído.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b1-6-mito"
     }
   ],
   "recompensa": {

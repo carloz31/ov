@@ -120,3 +120,22 @@ test('los ecos se muestran como texto simple, con su nombre', () => {
   assert.equal(textoEco({ codigo: 'x', forma: 'pasos', pendientes: ['Uno'], hechos: ['Dos'] }), 'Uno · Dos')
   assert.equal(textoEco({ codigo: 'x', nombre: 'Lo tuyo', texto: 'a / b', lineas: ['a', 'b'] }), 'Lo tuyo: a · b')
 })
+
+test('los 19 registros de `plataforma/` guardan en cada consigna solo lo que el backend no entrega', async () => {
+  const { readdirSync, readFileSync } = await import('node:fs')
+  const carpeta = 'src/data/activities/contenidos/plataforma'
+  const registros = readdirSync(carpeta)
+    .map((f) => JSON.parse(readFileSync(`${carpeta}/${f}`, 'utf8')))
+    .filter((a) => a.tipo === 'registro')
+  assert.equal(registros.length, 19)
+  for (const actividad of registros) {
+    assert.ok(!('destinos' in actividad) && !('destino_por_defecto' in actividad), actividad.id)
+    const consignas = actividad.nodos.filter((n) => n.tipo === 'consigna')
+    assert.ok(consignas.length >= 1, actividad.id)
+    for (const nodo of consignas) {
+      assert.ok(nodo.item && nodo.hablanteId, `${actividad.id}/${nodo.id}`)
+      assert.deepEqual(Object.keys(nodo).filter((k) => !['id', 'tipo', 'hablanteId', 'expresion', 'item'].includes(k)),
+        [], `${actividad.id}/${nodo.id}`)
+    }
+  }
+})

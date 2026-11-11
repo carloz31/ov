@@ -37,54 +37,10 @@
       "eco": "h1-ref-resultado"
     },
     {
-      "id": "h1-habilidad",
+      "id": "h1-reto",
       "tipo": "consigna",
       "hablanteId": "dora",
-      "item": "h1-habilidad",
-      "dialogo": "Helena te mostró cómo te relacionas. Elige una para trabajarla.",
-      "preguntaEleccion": "¿Qué habilidad quieres fortalecer?",
-      "preguntaTexto": "¿Hay una situación reciente en la que te hubiera servido tenerla más?",
-      "entrada": "La elegí porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Tu habilidad",
-        "mensajes": {
-          "inicio": "Marca la habilidad que quieres fortalecer.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
-    },
-    {
-      "id": "h1-accion",
-      "tipo": "consigna",
-      "hablanteId": "dora",
-      "item": "h1-accion",
-      "dialogo": "Una habilidad se practica en un lugar y en un momento.",
-      "preguntaEleccion": "¿Dónde la vas a practicar?",
-      "preguntaTexto": "¿En qué momento, y qué harás distinto?",
-      "entrada": "Cuando… voy a…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Dónde",
-        "mensajes": {
-          "inicio": "Marca un lugar.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "h1-reto"
     }
   ],
   "recompensa": {

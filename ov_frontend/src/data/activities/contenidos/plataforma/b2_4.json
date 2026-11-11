@@ -127,64 +127,19 @@
       "id": "b2-4-bien",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b2-4-bien",
-      "dialogo": "Separemos lo que te gusta de lo que te sale.",
-      "preguntaEleccion": "¿En qué te va bien?",
-      "preguntaTexto": "¿Qué prueba tienes? Una nota, un trabajo, algo que te dijeron.",
-      "entrada": "Por ejemplo, en … yo…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Donde te va bien",
-        "mensajes": {
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b2-4-bien"
     },
     {
       "id": "b2-4-cuesta",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b2-4-cuesta",
-      "dialogo": "Y lo que cuesta también cuenta.",
-      "preguntaEleccion": "¿Qué te cuesta aunque le pongas ganas?",
-      "preguntaTexto": "¿Por qué crees que te cuesta?",
-      "entrada": "Me cuesta … porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Lo que te cuesta",
-        "mensajes": {
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b2-4-cuesta"
     },
     {
-      "id": "b2-4-antes",
+      "id": "b2-4-cruce",
       "tipo": "consigna",
       "hablanteId": "companero",
-      "item": "b2-4-antes",
-      "dialogo": "Hay cosas que hoy haces sin pensar y antes no podías.",
-      "preguntaTexto": "Cuenta una: ¿qué no te salía antes y ahora sí?",
-      "entrada": "Antes no podía… y ahora…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora"
+      "item": "b2-4-cruce"
     }
   ],
   "recompensa": {

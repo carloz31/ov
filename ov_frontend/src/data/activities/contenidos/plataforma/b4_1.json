@@ -152,12 +152,7 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "texto": "Cada fila llega con tu resultado y con lo que escribiste antes, solo para leer; tú pones las opciones, de tus favoritos o del catálogo, y la razón. Esto lo lee tu orientadora y vuelve cuando compares tus planes.",
-      "eco": [
-        "b4-1-ref-plan",
-        "b4-1-ref-intereses",
-        "b4-1-ref-inteligencias",
-        "b4-1-ref-habilidades"
-      ]
+      "eco": "b4-1-ref-plan"
     },
     {
       "id": "b4-1-principio",
@@ -169,82 +164,13 @@
       "id": "b4-1-respalda",
       "tipo": "consigna",
       "hablanteId": "helena",
-      "item": "b4-1-respalda",
-      "dialogo": "Mira tu perfil junto a tu Plan A. Nada aquí mide si puedes: muestra cómo eres.",
-      "preguntaEleccion": "¿Qué parte de tu perfil respalda más tu plan?",
-      "preguntaTexto": "¿Qué de eso se nota en ti fuera del test: algo que haces, que te sale, que buscas?",
-      "entrada": "Lo respalda porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Lo que respalda",
-        "mensajes": {
-          "inicio": "Marca una parte de tu perfil.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      },
-      "eco": [
-        "b4-1-ref-logro",
-        "b4-1-ref-valores",
-        "b4-1-ref-bien",
-        "b4-1-ref-reconozco"
-      ]
+      "item": "b4-1-respalda"
     },
     {
       "id": "b4-1-menos",
       "tipo": "consigna",
       "hablanteId": "helena",
-      "item": "b4-1-menos",
-      "dialogo": "Una parte que hoy no te respalda no decide por ti: se entrena, se comprueba o se compensa.",
-      "preguntaEleccion": "¿Qué parte lo respalda menos?",
-      "preguntaTexto": "¿Cuál es la diferencia, y qué piensas de ella?",
-      "entrada": "Lo respalda menos porque…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "Lo que respalda menos",
-        "mensajes": {
-          "inicio": "Marca una parte de tu perfil.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
-    },
-    {
-      "id": "b4-1-familia",
-      "tipo": "consigna",
-      "hablanteId": "helena",
-      "item": "b4-1-familia",
-      "dialogo": "Tus familias recomendadas siguen ahí.",
-      "preguntaEleccion": "¿Cuál mirarías con más calma?",
-      "preguntaTexto": "¿Qué te llama de ella?",
-      "entrada": "Me llama…",
-      "premisa": "",
-      "entregable": {
-        "tipo": "texto"
-      },
-      "obligatoria": true,
-      "visibilidad": "estudiante_orientadora",
-      "eleccion": {
-        "etiquetaElegida": "La familia",
-        "mensajes": {
-          "inicio": "Marca la familia que todavía no has mirado.",
-          "una": "Anotado. Ahora cuéntame."
-        },
-        "errorSeleccion": "Elige una opción para continuar.",
-        "errorOtra": "Escribe cuál es tu otra opción."
-      }
+      "item": "b4-1-menos"
     }
   ],
   "recompensa": {
@@ -254,17 +180,5 @@
     "x": 140,
     "y": 450,
     "icono": "registro"
-  },
-  "destinos": [
-    {
-      "item": "b4-1-familia",
-      "opcion": "TODAS",
-      "ruta": null
-    },
-    {
-      "item": "b4-1-familia",
-      "opcion": "*",
-      "ruta": "catalogo-familia"
-    }
-  ]
+  }
 }
