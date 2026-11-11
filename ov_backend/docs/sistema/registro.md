@@ -2,7 +2,7 @@
 
 Actividades de registro: cada ítem tiene una consigna (diálogo, pregunta de elección, pregunta del texto y arranque), una elección opcional y, si tiene tarjeta, pasa por la capa del LLM v7 (Claude, abajo). Código: `app/services/registro/` y `app/api/registro.py`.
 
-Estado actual (ajuste registros llm, lote 3): el flujo ítem por ítem con el LLM v7 está conectado (`flujo.py`): responder (también editar), seguimiento, reenvío, terminar y la regla de adecuado. El front actual no funciona contra estos contratos hasta su propio ajuste.
+Estado actual (ajuste registros llm, lote 3): el flujo ítem por ítem con el LLM v7 está conectado (`flujo.py`): responder (también editar), seguimiento, reenvío, terminar y la regla de adecuado. Desde el ajuste front de registros (lote 1), el front usa este flujo: cada ítem pasa por la pantalla de Lumi y la repregunta solo se responde en el momento (`repregunta_cerrada`).
 
 Lo que ve el estudiante (la escena, los personajes, el orden de los bloques) está en el JSON del front (`ov_frontend/docs/contenidos-actividades.md`). Las consignas y las opciones del ítem son las del backend; sus marcadores (`{carrera}`, `{valor 1}`…) los resuelve la cuenta (lote 3).
 

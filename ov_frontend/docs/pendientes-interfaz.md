@@ -682,13 +682,13 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 - **Dato:** el backend cambió los contratos de registro y el front actual no funciona contra la rama `ajuste/registros-llm` (el texto del lote 2 lo deja fuera de alcance). `items-registro` trae `dialogo`, `pregunta_eleccion`, `pregunta_texto`, `arranque`, `con_llm` y, en la elección, `etiqueta_otra` y las propias con `pregunta`, `arranque` y `sin_llm` (sale `consigna` y `sin_seguimiento`). El registro trae por ítem `estado`, `opciones_elegidas` (`{codigo, texto}`) y `texto` (salen la conversación, `items_por_ampliar` e `items_abiertos`). `entregar` lleva los ítems en el cuerpo; borrador, seguimiento, edición y continuar sin responder responden 501. Las fuentes PIEZAS_* y la «Otra» múltiple (`OTRA-1`…) son nuevas. Los fixtures de `tests/fixtures/servidor` no se regeneraron.
 - **Dónde se ve:** las vistas de registro del Camino y la Ciudad (diálogos, mensajes de cierre, diapositivas, piezas y ecos, podio con varias «Otra»), y los JSON de `contenidos/plataforma/` de los 19 registros (`scripts/verificar_contenido_front.py` reporta sus diferencias). El check-in de b5-1 llega como número («2 de 5») sin etiqueta.
-- **Estado:** pendiente del ajuste del front de registros, después del lote 3.
+- **Estado:** resuelto en lo que es contrato y flujo (ajuste front de registros, lote 1): el front usa la lectura nueva del registro y las acciones ítem por ítem, con fixtures regenerados, y los 19 JSON pasan `verificar_contenido_front.py`. Sigue pendiente, para el lote 2 del front, la presentación: las piezas como selector (hoy, lista simple con su origen), el podio y la lista con varias «Otra» y las formas de eco (hoy, texto simple); y para el lote 3, la apertura y el cierre. El check-in de b5-1 se muestra como texto simple («2 de 5»).
 
 ## 2026-11-11 · Ajuste registros llm (lote 2) · Datos nuevos en las referencias de planes
 
 - **Dato:** la consulta de referencias suma en PLANES y PLAN el campo `planes` (cada plan con `prioridad`, `codigo`, `carrera`, `institucion`, `camino`, `idea_origen`, `motivos` y `relato`), en PASOS_PLAN_A el `estado` de cada paso, y el tipo nuevo `CHECK_IN_PRIMERO` («N de 5», sin etiqueta). Son aditivos: el front actual los ignora.
 - **Dónde se vería:** los ecos de b4-1 (cabecera del Plan A), b4-5 (Plan A y B), b5-1 (proyecto, pasos y primera señal) y la columna «Hoy» de b5-3, cuando el front de registros se ajuste.
-- **Estado:** pendiente del ajuste del front de registros.
+- **Estado:** pendiente del lote 2 del front de registros (formas de eco). En el lote 1, los ecos del ítem se muestran como texto simple.
 
 ## 2026-11-11 · Ajuste registros llm (lote 3) · Flujo ítem por ítem con el LLM
 
@@ -703,11 +703,11 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
   - eco cambiado: una marca que invite a responder de nuevo;
   - mientras el backend evalúa, el front espera la respuesta;
   - el ítem en curso lo conserva el front; no hay borradores en el backend.
-- **Estado:** pendiente del ajuste del front de registros.
+- **Estado:** resuelto (ajuste front de registros, lote 1), con los cambios del texto de ese lote: la pista se ve siempre en el ítem respondido y arriba de la caja de edición; la repregunta saltada no se puede responder después (el backend la cierra con `repregunta_cerrada`); sin evaluar, el aviso «Lumi no llegó a escuchar esta respuesta.» con «Volver a enviar»; eco cambiado, un aviso sin botón (sin nombrar el dato, decisión del usuario); `disponible` y `marcador_faltante` se ignoran.
 
 ## 2026-11-11 · Ajuste registros llm (lote 3) · Piezas y ecos de dos líneas
 
 - **Dato:** cuando un ítem deja dos líneas citables (la primera respuesta y la línea del seguimiento), el backend las une con « / » en el `texto` de la pieza (GUSTO en b4-1; «tu día a los 23» y «lo que podía frenarte» en b5-3) y en el `texto` de una referencia TEXTO (ma3), y las entrega además por separado: `lineas` en cada opción de pieza del registro de la cuenta y en la referencia TEXTO de la consulta de referencias. Los ecos de un ítem anterior (b3-4-quien, b1-3-contraste) ya traen `texto` como lista.
 - **Dónde se ve:** las piezas de b4-1 y b5-3, la zona de ecos de b3-4, b1-3 y ma3.
 - **Opciones:** mostrar las líneas una debajo de la otra dentro de la misma pieza o eco (lo pedido por el usuario); mostrar el `texto` con « / » tal cual; mostrar solo la primera línea.
-- **Estado:** pendiente del ajuste del front de registros.
+- **Estado:** pendiente del lote 2 del front de registros. En el lote 1, una pieza muestra su `texto` (con « / ») y un eco sus `lineas` separadas por « · », como texto simple.
