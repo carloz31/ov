@@ -41,3 +41,8 @@ Spec: `docs/specs/ajuste-cartas-diario.md`.
     - `test_ruta_corta` y `soporte_escenarios_ruta`;
     - `test_secciones` y `test_restricciones_estado`;
     - `test_carga_registros_definitivos` y `test_conversaciones_contenido`.
+- En F1 también se adaptaron `test_semilla_ruta` (14 → 12 referencias), `test_entradas_diario`, `test_integridad_catalogos` y tres soportes que creaban recomendaciones con `origen`.
+- F2: `contenido` declara su propio `PREGUNTAS_DIARIO` (9 desbloqueables y 12 DIARIA sin dimensión) y `VARIANTES_DIARIO`. Salen `R-t-diario-fija`, `d-conv-futuro`, `d-conv-condiciones` y la fila del diario de `PROVISIONALES`. Pruebas nuevas: `test_carga_diario_contenido` y `test_diario_contenido`. Se adaptaron `test_conversaciones_contenido` y `test_recorrido_contenido`: conv-4 ya no abre una carta, y entra la prueba de conv-6.
+- F3 (front): `CartaLumi` pierde el campo `estado` en vez de quedar siempre en `'lista'`, porque ya no distingue nada. `JournalEditor` recibe `servidor` como bandera booleana.
+- F3: el cierre de una actividad en api es solo el enlace «Lumi te dejó una carta en tu diario» (`FinishJournalSection` con `pregunta` nula). En local conserva la pregunta y «Leer en el diario».
+- F3: sale el fixture `ruta-abrir-pregunta-personal`, y `ruta/` queda con 175. Se adaptaron las pruebas del front de `tests/servidor/diario/` y `servidor-cierre-diario` (autorizadas en la Fase 4).
