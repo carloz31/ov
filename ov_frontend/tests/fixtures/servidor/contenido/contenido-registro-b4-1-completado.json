@@ -1,0 +1,284 @@
+{
+  "estado": "COMPLETADA",
+  "item_actual": null,
+  "items": [
+    {
+      "codigo": "b4-1-respalda",
+      "con_llm": true,
+      "consigna": {
+        "arranque": "Va con Psicología porque…",
+        "dialogo": "Mira tu perfil junto a tu Plan A. Nada aquí mide si puedes: muestra cómo eres.",
+        "pregunta_eleccion": "¿Qué parte de ti va más con Psicología?",
+        "pregunta_texto": "¿Qué tiene que ver eso con Psicología?"
+      },
+      "disponible": true,
+      "ecos": [
+        {
+          "carrera": "Psicología",
+          "codigo": "b4-1-ref-plan",
+          "forma": "cabecera",
+          "idea_origen": "MIA",
+          "motivos": [
+            "Ayudar a otros",
+            "Me gusta explicar"
+          ],
+          "nombre": "Tu Plan A"
+        }
+      ],
+      "eleccion": {
+        "etiqueta_otra": "Otra cosa mía",
+        "maxima": 1,
+        "minima": 1,
+        "ordenada": false,
+        "permite_otra": true
+      },
+      "marcador_faltante": null,
+      "nombre": "Lo que respalda tu plan",
+      "obligatorio": true,
+      "opciones": [
+        {
+          "arranque": "Va con Psicología porque…",
+          "codigo": "INT-I",
+          "exclusiva": false,
+          "grupo": "Tu test de intereses",
+          "lineas": [],
+          "origen": "Investigativa",
+          "pregunta": "¿Qué tiene que ver eso con Psicología?",
+          "sin_llm": false,
+          "texto": "Observar, preguntar y analizar para entender cómo funcionan las cosas"
+        },
+        {
+          "arranque": "Va con Psicología porque…",
+          "codigo": "INT-R",
+          "exclusiva": false,
+          "grupo": "Tu test de intereses",
+          "lineas": [],
+          "origen": "Realista",
+          "pregunta": "¿Qué tiene que ver eso con Psicología?",
+          "sin_llm": false,
+          "texto": "Trabajar con las manos, usar herramientas o máquinas"
+        },
+        {
+          "arranque": "Va con Psicología porque…",
+          "codigo": "INT-A",
+          "exclusiva": false,
+          "grupo": "Tu test de intereses",
+          "lineas": [],
+          "origen": "Artística",
+          "pregunta": "¿Qué tiene que ver eso con Psicología?",
+          "sin_llm": false,
+          "texto": "Crear, imaginar y expresarte con libertad, sin reglas rígidas"
+        },
+        {
+          "arranque": "Va con Psicología porque…",
+          "codigo": "BIEN-1",
+          "exclusiva": false,
+          "grupo": "Lo que escribiste y elegiste antes",
+          "lineas": [],
+          "origen": "¿En qué te va mejor? (1.º)",
+          "pregunta": "¿Qué tiene que ver eso con Psicología?",
+          "sin_llm": false,
+          "texto": "Matemática"
+        },
+        {
+          "arranque": "Va con Psicología porque…",
+          "codigo": "VAL-1",
+          "exclusiva": false,
+          "grupo": "Lo que escribiste y elegiste antes",
+          "lineas": [],
+          "origen": "¿Qué valoras en un trabajo? (1.º)",
+          "pregunta": "¿Qué tiene que ver eso con Psicología?",
+          "sin_llm": false,
+          "texto": "Estabilidad"
+        },
+        {
+          "arranque": "Va con Psicología porque…",
+          "codigo": "LOGRO-HAB",
+          "exclusiva": false,
+          "grupo": "Lo que escribiste y elegiste antes",
+          "lineas": [],
+          "origen": "¿Qué habilidades tuyas se notaron ahí?",
+          "pregunta": "¿Qué tiene que ver eso con Psicología?",
+          "sin_llm": false,
+          "texto": "Organizar"
+        },
+        {
+          "arranque": "Va con Psicología porque…",
+          "codigo": "GUSTO",
+          "exclusiva": false,
+          "grupo": "Lo que escribiste y elegiste antes",
+          "lineas": [
+            "DATO DE PRUEBA: una respuesta completa."
+          ],
+          "origen": "¿Qué te encantaba hacer de niño o niña?",
+          "pregunta": "¿Qué tiene que ver eso con Psicología?",
+          "sin_llm": false,
+          "texto": "«DATO DE PRUEBA: una respuesta completa.»"
+        }
+      ],
+      "respuesta": {
+        "eco_cambiado": false,
+        "linea_seguimiento": null,
+        "opciones_elegidas": [
+          {
+            "codigo": "INT-I",
+            "texto": "Observar, preguntar y analizar para entender cómo funcionan las cosas"
+          }
+        ],
+        "pista": null,
+        "primera_respuesta": "DATO DE PRUEBA: una respuesta completa.",
+        "reenviable": false
+      }
+    },
+    {
+      "codigo": "b4-1-menos",
+      "con_llm": true,
+      "consigna": {
+        "arranque": "No calza del todo porque…",
+        "dialogo": "Una parte que hoy no te respalda no decide por ti: se entrena, se comprueba o se compensa con otra.",
+        "pregunta_eleccion": "¿Y qué parte de ti va menos con Psicología?",
+        "pregunta_texto": "¿Qué de Psicología no calza del todo con eso?"
+      },
+      "disponible": true,
+      "ecos": [
+        {
+          "carrera": "Psicología",
+          "codigo": "b4-1-ref-plan",
+          "forma": "cabecera",
+          "idea_origen": "MIA",
+          "motivos": [
+            "Ayudar a otros",
+            "Me gusta explicar"
+          ],
+          "nombre": "Tu Plan A"
+        }
+      ],
+      "eleccion": {
+        "etiqueta_otra": null,
+        "maxima": 1,
+        "minima": 1,
+        "ordenada": false,
+        "permite_otra": true
+      },
+      "marcador_faltante": null,
+      "nombre": "Lo que respalda menos",
+      "obligatorio": true,
+      "opciones": [
+        {
+          "arranque": "No calza del todo porque…",
+          "codigo": "CUESTA-MATEMATICA",
+          "exclusiva": false,
+          "grupo": "Lo que te cuesta",
+          "lineas": [],
+          "origen": "¿Qué te cuesta?",
+          "pregunta": "¿Qué de Psicología no calza del todo con eso?",
+          "sin_llm": false,
+          "texto": "Matemática"
+        },
+        {
+          "arranque": "No calza del todo porque…",
+          "codigo": "INT-I",
+          "exclusiva": false,
+          "grupo": "Tu test de intereses",
+          "lineas": [],
+          "origen": "Investigativa",
+          "pregunta": "¿Qué de Psicología no calza del todo con eso?",
+          "sin_llm": false,
+          "texto": "Observar, preguntar y analizar para entender cómo funcionan las cosas"
+        },
+        {
+          "arranque": "No calza del todo porque…",
+          "codigo": "INT-R",
+          "exclusiva": false,
+          "grupo": "Tu test de intereses",
+          "lineas": [],
+          "origen": "Realista",
+          "pregunta": "¿Qué de Psicología no calza del todo con eso?",
+          "sin_llm": false,
+          "texto": "Trabajar con las manos, usar herramientas o máquinas"
+        },
+        {
+          "arranque": "No calza del todo porque…",
+          "codigo": "INT-A",
+          "exclusiva": false,
+          "grupo": "Tu test de intereses",
+          "lineas": [],
+          "origen": "Artística",
+          "pregunta": "¿Qué de Psicología no calza del todo con eso?",
+          "sin_llm": false,
+          "texto": "Crear, imaginar y expresarte con libertad, sin reglas rígidas"
+        },
+        {
+          "arranque": "No calza del todo porque…",
+          "codigo": "BIEN-1",
+          "exclusiva": false,
+          "grupo": "Lo que escribiste y elegiste antes",
+          "lineas": [],
+          "origen": "¿En qué te va mejor? (1.º)",
+          "pregunta": "¿Qué de Psicología no calza del todo con eso?",
+          "sin_llm": false,
+          "texto": "Matemática"
+        },
+        {
+          "arranque": "No calza del todo porque…",
+          "codigo": "VAL-1",
+          "exclusiva": false,
+          "grupo": "Lo que escribiste y elegiste antes",
+          "lineas": [],
+          "origen": "¿Qué valoras en un trabajo? (1.º)",
+          "pregunta": "¿Qué de Psicología no calza del todo con eso?",
+          "sin_llm": false,
+          "texto": "Estabilidad"
+        },
+        {
+          "arranque": "No calza del todo porque…",
+          "codigo": "LOGRO-HAB",
+          "exclusiva": false,
+          "grupo": "Lo que escribiste y elegiste antes",
+          "lineas": [],
+          "origen": "¿Qué habilidades tuyas se notaron ahí?",
+          "pregunta": "¿Qué de Psicología no calza del todo con eso?",
+          "sin_llm": false,
+          "texto": "Organizar"
+        },
+        {
+          "arranque": "No calza del todo porque…",
+          "codigo": "GUSTO",
+          "exclusiva": false,
+          "grupo": "Lo que escribiste y elegiste antes",
+          "lineas": [
+            "DATO DE PRUEBA: una respuesta completa."
+          ],
+          "origen": "¿Qué te encantaba hacer de niño o niña?",
+          "pregunta": "¿Qué de Psicología no calza del todo con eso?",
+          "sin_llm": false,
+          "texto": "«DATO DE PRUEBA: una respuesta completa.»"
+        },
+        {
+          "arranque": "Lo que más me costaría es…",
+          "codigo": "TODO",
+          "exclusiva": true,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "Qué bueno que todo vaya. Aun así, ¿qué parte de Psicología crees que te costaría más?",
+          "sin_llm": false,
+          "texto": "Todo va con mi plan"
+        }
+      ],
+      "respuesta": {
+        "eco_cambiado": false,
+        "linea_seguimiento": null,
+        "opciones_elegidas": [
+          {
+            "codigo": "CUESTA-MATEMATICA",
+            "texto": "Matemática"
+          }
+        ],
+        "pista": null,
+        "primera_respuesta": "DATO DE PRUEBA: una respuesta completa.",
+        "reenviable": false
+      }
+    }
+  ]
+}

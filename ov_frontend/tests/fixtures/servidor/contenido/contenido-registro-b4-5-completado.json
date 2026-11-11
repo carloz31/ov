@@ -1,0 +1,125 @@
+{
+  "estado": "COMPLETADA",
+  "item_actual": null,
+  "items": [
+    {
+      "codigo": "b4-5-moneda",
+      "con_llm": true,
+      "consigna": {
+        "arranque": "Me haría falta… / No me haría falta nada porque…",
+        "dialogo": "Te propongo un juego. Imagina que tiro esta moneda para decidir por ti… y sale Ciencias de la Comunicación. Ya está: el próximo año estudias Ciencias de la Comunicación.",
+        "pregunta_eleccion": "Salió Ciencias de la Comunicación. ¿Qué sentiste primero?",
+        "pregunta_texto": "Piensa en Psicología. ¿Hay algo de ella que te haría falta?"
+      },
+      "disponible": true,
+      "ecos": [
+        {
+          "codigo": "b4-5-ref-planes",
+          "forma": "plan_a_b",
+          "planes": [
+            {
+              "camino": "Prepararme primero",
+              "carrera": "Psicología",
+              "codigo": "mtpe-369",
+              "idea_origen": "MIA",
+              "institucion": "Universidad Nacional Federico Villarreal",
+              "motivos": [
+                {
+                  "codigo": "AYUDAR",
+                  "estado": null,
+                  "texto": "Ayudar a otros"
+                },
+                {
+                  "codigo": "OTRA",
+                  "estado": null,
+                  "texto": "Me gusta explicar"
+                }
+              ],
+              "prioridad": 1,
+              "relato": "Cuando ayudé a mi primo con sus tareas sentí que explicar me hace feliz."
+            },
+            {
+              "camino": "Prepararme primero",
+              "carrera": "Ciencias de la Comunicación",
+              "codigo": "mtpe-291",
+              "idea_origen": "MIA",
+              "institucion": "Universidad Nacional Federico Villarreal",
+              "motivos": [
+                {
+                  "codigo": "AYUDAR",
+                  "estado": null,
+                  "texto": "Ayudar a otros"
+                },
+                {
+                  "codigo": "OTRA",
+                  "estado": null,
+                  "texto": "Me gusta explicar"
+                }
+              ],
+              "prioridad": 2,
+              "relato": "Cuando ayudé a mi primo con sus tareas sentí que explicar me hace feliz."
+            }
+          ]
+        }
+      ],
+      "eleccion": {
+        "etiqueta_otra": null,
+        "maxima": 1,
+        "minima": 1,
+        "ordenada": false,
+        "permite_otra": false
+      },
+      "marcador_faltante": null,
+      "nombre": "La moneda",
+      "obligatorio": true,
+      "opciones": [
+        {
+          "arranque": "Me haría falta… / No me haría falta nada porque…",
+          "codigo": "DESANIME",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "Piensa en Psicología. ¿Hay algo de ella que te haría falta?",
+          "sin_llm": false,
+          "texto": "Me desanimé"
+        },
+        {
+          "arranque": "Me haría falta… / No me haría falta nada porque…",
+          "codigo": "TAMBIEN",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "Piensa en Psicología. ¿Hay algo de ella que te haría falta?",
+          "sin_llm": false,
+          "texto": "También me gustaría"
+        },
+        {
+          "arranque": "Me haría falta… / No me haría falta nada porque…",
+          "codigo": "NO_SE",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "Piensa en Psicología. ¿Hay algo de ella que te haría falta?",
+          "sin_llm": false,
+          "texto": "No sé qué sentí"
+        }
+      ],
+      "respuesta": {
+        "eco_cambiado": false,
+        "linea_seguimiento": null,
+        "opciones_elegidas": [
+          {
+            "codigo": "DESANIME",
+            "texto": "Me desanimé"
+          }
+        ],
+        "pista": null,
+        "primera_respuesta": "DATO DE PRUEBA: una respuesta completa.",
+        "reenviable": false
+      }
+    }
+  ]
+}

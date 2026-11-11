@@ -3597,3 +3597,319 @@ Cierran el lote las dos suites completas en verde, con build y lint.
 
 - Lote 2: selector de piezas, varias «Otra» en lista y podio, las seis formas de eco y la lectura cuidada. Referencia: `claude/items-front-registros.md` y el lienzo de bocetos.
 - Lote 3: apertura de los 19 registros y pantalla de cierre con sus mensajes.
+
+## Ajuste · front de registros (lote 2)
+
+### Contexto
+
+El lote 1 (commits `ba5d3244`–`9aa6cdf3`) dejó el flujo de registros funcionando contra el backend, con una presentación básica: los ecos como texto plano (`textoEco`), las piezas como chips, una sola «Otra», el podio sin «Otra» y la lectura con la línea del seguimiento fuera del bloque. Este lote da a las pantallas la disposición de los bocetos y agrega el selector de piezas, las varias «Otra» y las seis formas de eco. No cambia el flujo ni el contrato. El texto de observaciones es `ajuste-front-registros-lote2.md` (11 nov) y manda en todo lo que decide.
+
+- Spec en curso: `ov_backend/docs/specs/ajuste-registros.md`. El plan aprobado se agrega al final como `## Ajuste · front de registros (lote 2)`, con el texto de observaciones como anexo.
+- Rama: se sigue en `ajuste/registros-llm`, como pide el texto (la skill diría una nueva desde `main`).
+- Bocetos: se copian los cuatro HTML a `ov_frontend/docs/bocetos-registros/`, solo como referencia (fuera del build).
+
+### Lo que el código dice distinto del texto (se reporta)
+
+1. **Ecos sin nombre.** Resuelto con tu decisión: el backend carga los nombres en `datos/contenido.py` (ver «Backend»).
+2. **`pasos` (b5-1) llega en dos listas,** `hechos` y `pendientes`, sin el orden original. El front muestra primero los hechos y luego los pendientes, como el boceto. No es pendiente: el estado de cada paso sí llega.
+3. **`idea_origen` llega como código** (`MIA`, `FAMILIA`…). Se muestra con los rótulos que ya existen en `IDEAS_ORIGEN` (`lib/servidor/adaptadoresPlanes.ts`): «La idea fue » + rótulo en minúscula («La idea fue mía», «La idea fue de mi familia»…).
+4. **ma8 (`PLAN` sin forma)** trae solo la carrera y los motivos; el relato no viene. Se muestra lo que llega, sin hueco.
+5. **No hay marca de «ítem de piezas» en el contrato.** Propuesta: un ítem usa el selector cuando alguna de sus opciones trae `origen` (solo las piezas lo traen; las propias, como la exclusiva, no).
+
+### Qué cambia (hoy → pasará a)
+
+### Backend (solo datos; sin cambio de contrato ni de modelo)
+- `datos/contenido.py`, `ITEMS_REGISTRO`:
+  - `ma3-hoy`: `_eco('REFERENCIA', 'ma3-ref-dia', 'tu día a los 23')` y `_eco('REFERENCIA', 'ma3-ref-hito', 'lo que estarás haciendo dentro de un año')`;
+  - `h1-reto`, `h2-reconozco`, `h3-curiosidad`: nombres «Tu test de habilidades», «Tu test de inteligencias», «Tu test de intereses»;
+  - `b5-3-cambio`: el eco de seguridad pasa de «Hoy» a «qué tan seguro/a te sientes de tu proyecto». El rótulo «Hoy» lo pone el front sobre el bloque.
+  - `h2-reconozco`: diálogo «El libro muestra formas de aprender y resolver. Algunas te sonarán.» y pregunta de elección «Según lo que has visto en tu página, ¿te reconoces?». Sin caso especial en el front.
+- Pruebas:
+  - una prueba nueva, por cada uno de esos ítems: el nombre llega en `ecos` de la lectura, no entra en `ecos_llm` ni en la `Entrada` del LLM, y `eco_cambiado` sigue en falso (hoy `eco_cambiado` ya ignora los ecos que solo se muestran; la prueba lo fija);
+  - se ajusta la prueba de carga que verifica los textos de h2-reconozco.
+
+### Front
+- **Ecos** (`lib/servidor/adaptadoresEcos.ts`, nuevo y puro; sale `textoEco` de `adaptadoresRegistro.ts`):
+  - `formasEco(ecos)` convierte la lista de la lectura en bloques con forma: `plan`, `planes` (dos, lado a lado), `proyecto`, `texto` (varios textos se juntan en un bloque), `eleccion`, `eleccion_texto`, `resultado` y `hoy`;
+  - tabla de qué eco va a qué forma:
+
+| Ítem | Eco que llega | Forma |
+|---|---|---|
+| b4-1-respalda, b4-1-menos | `forma: cabecera` (carrera, motivos, idea_origen) | Plan, rótulo = `nombre` («Tu Plan A») |
+| b4-5-moneda | `forma: plan_a_b` (`planes` con todo) | Dos planes, rótulos «Tu Plan A» y «Tu Plan B» por posición |
+| ma8-respuesta | `tipo: PLAN` (texto = carrera, opciones = motivos) | Plan, rótulo «Tu Plan A» |
+| b5-1-seguridad | `forma: proyecto` + `forma: pasos` | Proyecto (un solo bloque) |
+| b5-1-seguridad | `tipo: CHECK_IN_PRIMERO` («2 de 5», «Tu primera señal») | Elección |
+| b5-3-cambio | `forma: hoy` + `tipo: ELECCION` (seguridad) | «Hoy»: dos planes lado a lado (A con institución, B) y la elección debajo |
+| b1-3-contraste | `origen: ITEM` con `eleccion` y `texto` (voz y mía) | Elección con su texto (dos bloques) |
+| b3-4-quien | `origen: ITEM` con `texto` | Texto |
+| ma3-hoy | dos `tipo: TEXTO` (`texto` o `lineas`) | Texto, un bloque separado por línea fina |
+| h1-reto, h2-reconozco, h3-curiosidad | `tipo: RESULTADO` (opciones = dimensiones) | Resultado de test |
+
+  - un eco cuya forma no se reconoce cae en Texto con lo que traiga; un eco sin nombre se muestra sin origen (no debería quedar ninguno).
+- **Textos** (`features/activities/lib/textosRegistro.ts`): rótulos «Tu Plan A», «Tu Plan B», «Tu proyecto hoy» (si no viene en el nombre), «Hoy», «Por qué:», «Hecho», «Pendiente», «Camino:», «La idea fue», «ver completo», «ver los N pasos», «ver menos», «Elige una», «+ Otra», «¿Cuál?», «Cerrar», y una sola tabla `LINEA_RESULTADO` por nombre del test («Tu test de intereses» → «Tu código, en orden»; por defecto «Lo que salió más alto»).
+- **Componentes de eco** (en `features/activities/components/nodes/`, cada uno bajo 300 líneas): `EcosItem` (reparte por forma), `EcoPlan`, `EcoProyecto` (plegable a 3 pasos), `EcoTexto` (recorte con «ver completo»), `EcoEleccion` (con y sin texto) y `EcoResultado` (etiquetas, sin puntajes). Sin avatar ni burbuja. Dos planes en rejilla de dos columnas iguales que se apila en angosto.
+- **Elección:**
+  - `lib/eleccionGuiada.ts`: varias «Otra». `agregarOtra(seleccion, item)` da `OTRA` (máxima 1) o el siguiente `OTRA-n` libre; quitarla borra su texto; `conTextoOtra(seleccion, codigo, texto)` por código. «+ Otra» se apaga al llegar al máximo.
+  - `ChoiceReveal`: «+ Otra» como ficha de borde punteado al final; cada «Otra» marcada en su fila con su campo «¿Cuál?» a la derecha. La exclusiva sigue aparte, bajo una línea fina.
+  - `RegistroPodioNode` y `RankingPodium`: «+ Otra» entre las fichas; cada «Otra» (`OTRA-1..3`) ocupa el siguiente puesto libre y su campo va debajo del podio, etiquetado con su puesto («2.º · ¿Cuál?»). Al intercambiar, la etiqueta sigue al puesto; al devolver la ficha, su texto se borra. Lo enviado lleva el orden y los textos. Rótulos de los puestos: el del primero, «2.º lugar», «3.er lugar».
+  - **Selector de piezas** (nuevo): `SelectorPiezas` (el botón de ancho completo: «Elige una» o la pieza con su origen debajo y una flecha) y `VentanaPiezas` (el `Dialog` de `components/ui/Dialog.tsx`: título = pregunta de elección, «Cerrar», grupos por `grupo` en el orden en que llegan, piezas sin grupo en una sola lista sin rótulo, la elegida resaltada; elegir cierra). Debajo, «+ Otra» con `etiqueta_otra` y, bajo una línea, la exclusiva. Se marca una sola cosa. `RegistroEleccionNode` elige entre chips y selector según el punto 5 de arriba.
+  - **Cómo se ve una pieza** (`textoPieza` en `adaptadoresEcos.ts` o `adaptadoresRegistro.ts`): una elección tal cual; un texto entre «» (ya llega con comillas), recortado a ~90 caracteres con «…» y completo al tocarlo; `lineas` una debajo de otra, cada una entre «».
+- **Pantallas** (disposición de los bocetos, con los estilos de la plataforma: tokens de `styles/theme.css`, `sx-primary-button`, `sx-secondary-button`, `RegistroPersonaje`):
+  - `RegistroItemNode`: ecos → burbuja → pregunta 1 con contador a la derecha → elección → pregunta 2 y caja. Numeración solo con elección y texto. En ítems donde todas las opciones traen `pregunta` (p. ej. b1-7-dia), la pregunta 2 y su caja aparecen al marcar (`textoVisible` en `adaptadoresRegistro.ts`). En b4-1 y b5-3 los ecos van arriba de la burbuja (es la regla general).
+  - `RegistroGuiado`: el pie pasa a «Anterior»/«Cancelar» a la izquierda y la acción principal a la derecha; debajo, «Lo ven tú y tu orientadora».
+  - `RegistroLecturaNode`: ecos → burbuja → cabecera «Tu respuesta» con «Modificar» pequeño a la derecha → pregunta 1 y lo elegido (fichas sin acción; podio con `RankingPodium soloLectura` mostrando lo escrito en las «Otra»; selector como bloque de texto con su origen) → pregunta 2 y **un solo bloque** con la primera respuesta y, en otra línea, la del seguimiento → un aviso → pie.
+  - `PantallaLumi`: «Tu respuesta» como bloque gris suave con rótulo, la elección como etiqueta y el texto (3 líneas, «ver completa»); Lumi con avatar, nombre y burbuja; campo de la repregunta más bajo; pie con «Seguir sin responder» como enlace a la izquierda de «Responder».
+  - CSS en `features/activities/styles/registro-guiado.css` (y un `registro-ecos.css` si pasa de ~400 líneas).
+
+### Qué no cambia
+
+- El flujo, el hook `useRegistroServidor`, `useActivityPlayer`, los servicios, el store, los tipos del contrato y los textos del lote 1 (`textosRegistro.ts`; el aviso de eco cambiado sigue sin `{eco}`).
+- El backend fuera de esos nombres y del diálogo de h2: ni contrato, ni modelo, ni `llm/`, ni lo que va al LLM.
+- La apertura y el cierre de los registros (lote 3), la vista de la orientadora, el fondo del escenario y la barra superior.
+- El modo local, `tests/local/` y los demás tipos de nodo. `ChoiceReveal` y `RankingPodium` solo los usa el registro.
+
+### Modelo de datos
+
+Sin cambios.
+
+### Datos y fixtures
+
+- El exportador (`scripts/exportar_fixtures_front.py`, `_recorrer_registro_contenido`) suma fixtures `contenido-registro-<act>-*.json` de b4-1, b4-5, b5-1 y b5-3 (y de ma3, b1-3 y h1/h3 si `avanzar` llega sin costo), con el mismo `avanzar` y `ClientePrueba`, guardando antes las secciones de plan que piden sus reglas (como `test_camino_con_reglas_de_planes`). Se actualiza `test_exportar_fixtures_front.py`.
+- Regenerar: `uv run python scripts/exportar_fixtures_front.py --destino ../ov_frontend/tests/fixtures/servidor`.
+- Si un dato de plan no existe en `contenido`, se crea marcado `DATO DE PRUEBA`.
+
+### Fases (commit `Ajuste front registros · lote 2 F<n>: …`)
+
+1. **F1 · Backend y fixtures:** nombres de ecos, h2-reconozco, la prueba de «solo se muestran», la prueba de carga ajustada, el exportador con los registros nuevos y los fixtures regenerados. Pruebas: `tests/integration/registro`, `registros`, `datos`, `contrato`, `escenarios` y `npm run test:servidor`.
+2. **F2 · Formas de eco:** `adaptadoresEcos.ts`, los seis componentes, `EcosItem` en ítem y lectura, sale `textoEco`. Pruebas nuevas: cada forma con todos los datos y con los mínimos, dos planes, proyecto con 3 y con 5 pasos (abrir y plegar), eco que no viene. Se adaptan `servidor-registro-eco-planes` y `eco-resultado` (anotado en `decisiones.md`).
+3. **F3 · Elección:** varias «Otra» en lista y podio, selector y ventana de piezas, `textoPieza`, lectura sin nada que mover. Pruebas de §8: dos «Otra» con tope y borrado, códigos `OTRA-1`/`OTRA-2`; podio con una, dos y tres «Otra», campo que sigue al puesto, borrado al devolver y lo enviado; selector (grupos en orden, elegir cierra, la «Otra» y la exclusiva lo vacían, pieza de dos líneas, recorte, sin grupo, una sola pieza en b5-3); la exclusiva cambia la pregunta 2.
+4. **F4 · Disposición de las pantallas:** `RegistroItemNode`, `RegistroLecturaNode` (un solo bloque de respuesta), `RegistroGuiado`, `PantallaLumi`, CSS, b1-7-dia (pregunta al marcar), bocetos copiados a `docs/bocetos-registros/`. Pruebas: `tests/servidor/registro`, `tests/servidor/actividades`, `tests/local/actividades`.
+5. **F5 · Cierre:** `decisiones.md`, `registro.md` (nombres de ecos), `pendientes-interfaz.md` (cerrar lo que resuelve este lote), `ov_frontend/AGENTS.md` si cambia la lista de módulos puros; suites completas (`uv run pytest -n auto -q`, `npm test`, `build`, `lint`, `check:estructura`) y **revisión en el navegador contra las capturas**, pantalla por pantalla, con `uvicorn` sobre `contenido` (sin clave de Anthropic: los ítems con LLM quedarán sin evaluar, que también se revisa). La spec queda en curso.
+
+### Verificación
+
+- Por fase, el subagente `pruebas` corre las carpetas de impacto y `escenarios` o `test:servidor`.
+- F5: las dos suites completas en verde y la revisión en el navegador (in-app browser) de las 4 pantallas, las variantes de elección y las 6 formas de eco frente a las capturas.
+
+### Decisiones del usuario al planear
+
+1. Los ecos sin nombre se resuelven en `datos/contenido.py` con los nombres dados; «Hoy» lo pone el front; la línea del test sale de una sola tabla en `textosRegistro.ts`; una prueba confirma que no van al LLM ni disparan el eco cambiado.
+2. h2-reconozco se separa en los datos (diálogo y pregunta nuevos) y se muestra como cualquier ítem; sin caso especial en el front.
+3. Al aprobar:
+   - `EcoProyecto` muestra siempre, encima de la lista y también plegado, una línea de resumen con cuántos pasos hay hechos y cuántos pendientes («2 hechos · 3 pendientes», con singular; texto en `textosRegistro.ts`);
+   - en lectura, una «Otra» de una lista muestra lo que el estudiante escribió, igual que en el podio;
+   - la revisión en el navegador de F5 cubre también la pantalla de Lumi con repregunta y con mensaje, usando la clave de Anthropic que el usuario dejó en el entorno (el uso del LLM real lo pide el usuario).
+
+# Anexo · Observaciones del ajuste front de registros, lote 2 (texto completo)
+
+## Ajuste · front de registros: presentación de los ítems (lote 2 de 3)
+
+Observaciones para `/ajuste`, 11 nov 2026. Rama de trabajo: `ajuste/registros-llm`, sobre el lote 1 del front (commits `ba5d3244` a `9aa6cdf3`).
+
+**Estado:** por revisar por el usuario antes de pasarla a Claude Code.
+
+**Qué es.** El lote 1 dejó el flujo funcionando con una presentación básica. Este lote le da a todas las pantallas del registro el aspecto y la disposición de los bocetos, y agrega los componentes que faltan: el selector de piezas, las varias «Otra» y las formas de eco. No cambia el flujo ni el contrato.
+
+**Qué manda.**
+- Este documento manda sobre los bocetos donde choquen. Los bocetos muestran disposición y jerarquía; los textos de ejemplo que traen (respuestas, motivos, pasos) no son contenido.
+- El flujo, los textos del front y los botones son los del lote 1 (`textosRegistro.ts`). No se rediscuten.
+- Si el contrato no entrega un dato que una forma de eco necesita, se reporta al usuario y se anota en `pendientes-interfaz.md`. No se inventa.
+
+### Referencias visuales
+
+El usuario las entrega junto con este texto:
+- **Cuatro archivos HTML** con los bocetos, para dejar en `ov_frontend/docs/bocetos-registros/` solo como referencia (no entran al código ni al build):
+  1. `1-al-responder-un-item.html`: ítem por responder y la pantalla de Lumi en sus estados;
+  2. `2-item-ya-respondido.html`: lectura, avisos y edición;
+  3. `3-variantes-de-eleccion.html`: podio, lista, selector de piezas y lectura;
+  4. `4-formas-de-eco.html`: las formas de eco.
+- **Capturas** de esos cuatro tableros.
+
+**Cómo usarlos.**
+- De los bocetos se toma **la disposición:** qué bloques hay, en qué orden, qué va junto a qué, qué es principal y qué secundario.
+- **Los colores, la tipografía, los radios y los componentes son los de la plataforma,** no los del boceto. Se usan los tokens y componentes que ya existen (botones, fichas, tarjeta, avatares de personajes, burbuja de diálogo). Los valores del HTML son aproximaciones.
+- El fondo ilustrado del escenario y la barra superior de la actividad no cambian.
+
+### Alcance
+
+**Entra:**
+- la disposición de las cuatro pantallas del lote 1 (§1 a §4);
+- la elección: fichas, lista y podio con varias «Otra», la exclusiva y el selector de piezas (§5);
+- las seis formas de eco (§6);
+- los casos particulares (§7).
+
+**No entra:**
+- el flujo, el contrato y el backend;
+- la apertura de los registros y la pantalla de cierre (lote 3);
+- la vista de la orientadora.
+
+### Reglas comunes
+
+- **Una tarjeta por pantalla,** centrada, como hoy.
+- **Quién habla:** el diálogo de la consigna va en una burbuja con el avatar y el nombre del personaje del nodo. Si el ítem no trae diálogo, no hay burbuja y la tarjeta empieza en la pregunta.
+- **Los ecos van sin avatar ni burbuja:** son bloques de datos, no algo que alguien dice.
+- **Las preguntas van numeradas** (1 la elección, 2 el texto) cuando el ítem tiene las dos. A la derecha de la pregunta de elección va el contador («Elige 1», «Elige 1 a 2 · 1/2», «Ordena tus 3»).
+- **El pie tiene siempre la misma forma:** a la izquierda la acción de volver, discreta; a la derecha la acción principal. Debajo, «Lo ven tú y tu orientadora».
+- **En pantallas angostas** todo lo que va lado a lado se apila.
+
+### 1. Ítem por responder
+
+En este orden, de arriba abajo:
+1. los ecos del ítem, si los tiene (§6);
+2. la burbuja del personaje con el diálogo, si lo tiene;
+3. la pregunta de elección y la elección (§5);
+4. la pregunta de texto y la caja, con el arranque como texto de ayuda dentro de la caja;
+5. el pie: «Anterior» y «Enviar».
+
+- En los ítems de solo texto no hay paso 3 ni numeración.
+- La pregunta de texto es la de la opción marcada cuando la opción trae la suya. En los ítems donde todas las opciones tienen pregunta propia, la pregunta 2 y su caja aparecen al marcar.
+
+### 2. Pantalla de Lumi
+
+En este orden:
+1. **«Tu respuesta»:** un bloque gris suave con el rótulo, la elección como etiqueta y el texto, recortado a 3 líneas con «ver completa». Si respondió la repregunta, las dos respuestas van una debajo de la otra.
+2. **Lumi:** su avatar, su nombre y una burbuja. En la burbuja van los tres puntos animados, la repregunta, el mensaje o la frase de confirmación.
+3. **El campo de la repregunta,** solo cuando hay repregunta. Es más bajo que la caja de la respuesta inicial.
+4. **El pie:** «Continuar» a la derecha. Con repregunta, «Responder» a la derecha (apagado con el campo vacío) y, a su izquierda, «Seguir sin responder» como enlace de texto, no como botón.
+
+La pantalla es idéntica en todos los casos: sin íconos de acierto ni colores que distingan una respuesta de otra.
+
+### 3. Ítem respondido (lectura)
+
+En este orden:
+1. los ecos del ítem, si los tiene;
+2. la burbuja del personaje con el diálogo;
+3. **una cabecera «Tu respuesta»** con el botón «Modificar» a su derecha, pequeño y secundario;
+4. la pregunta de elección y lo elegido, como texto (§5, «En lectura»);
+5. la pregunta de texto y **un solo bloque de respuesta** con la primera respuesta y, debajo, en otra línea, la línea del seguimiento;
+6. el aviso, si corresponde: uno solo;
+7. el pie: «Anterior» y «Continuar».
+
+**Observación de la prueba manual:** hoy la primera respuesta va dentro del bloque y la línea del seguimiento queda fuera, suelta debajo. Las dos van dentro del mismo bloque.
+
+**Avisos.**
+- **Pista:** un bloque suave con el avatar pequeño de Lumi, el rótulo «Lumi aún quiere saber» y la pregunta. Sin botón.
+- **Sin evaluar** y **eco cambiado:** un bloque de aviso (color de advertencia suave de la plataforma) con el texto. El de sin evaluar lleva dentro el botón «Volver a enviar». El de eco cambiado no lleva botón.
+
+### 4. Ítem en edición
+
+Igual que el ítem por responder, con estas diferencias:
+- arriba de la elección va el rótulo «Modificando tu respuesta», sin botón;
+- la pista, si la hay, va **arriba de la caja de texto,** con el rótulo «Podrías contar más sobre esto»;
+- la caja viene prellenada (ya lo hace el lote 1);
+- el pie es «Cancelar» y «Enviar».
+
+### 5. Elección
+
+### Fichas (opciones propias y listas)
+
+- Las opciones van como fichas que se ajustan en varias filas. La marcada va llena, con el color principal.
+- **La exclusiva** va separada del resto por una línea fina, en su propia fila. Al marcarla se desmarcan las demás.
+
+### «Otra» en una lista
+
+- «+ Otra» es una ficha de borde punteado, al final de la lista.
+- Al tocarla aparece una fila propia: la ficha «Otra» marcada y, a su derecha, el campo «¿Cuál?».
+- **Ítems de una opción:** una sola «Otra» (código `OTRA`).
+- **Ítems de varias opciones** (b1-1-logro y b2-4-cuesta, de 1 a 2): se puede agregar más de una, cada una en su fila con su campo (códigos `OTRA-1`, `OTRA-2`…), hasta completar el máximo. Al llegar al máximo, «+ Otra» se apaga.
+- **Al desmarcar una «Otra», su texto se borra.**
+
+### Podio
+
+- Tres puestos en fila, con su número y su rótulo («Lo que mejor te sale» o el que corresponda al primero, «2.º lugar», «3.er lugar»). Debajo, las fichas disponibles. Es el podio que ya existe.
+- **Con «Otra»** (b2-4-bien): «+ Otra» está entre las fichas. Al tocarla, una ficha «Otra» ocupa el siguiente puesto libre y debajo del podio aparece su campo, etiquetado con su puesto («2.º · ¿Cuál?»). El campo no va dentro del puesto.
+- **El podio puede llenarse con tres «Otra»,** cada una con su campo. Se ordenan y se intercambian como cualquier ficha; la etiqueta del campo sigue al puesto.
+- **Al devolver una ficha «Otra», su texto se borra.**
+- Códigos: `OTRA-1`, `OTRA-2`, `OTRA-3`.
+
+### Selector de piezas
+
+Para b4-1-respalda, b4-1-menos y b5-3-cambio (fuentes de piezas).
+
+**En la pantalla del ítem:**
+- un selector de ancho completo. Vacío, dice «Elige una»; con una pieza elegida, muestra su contenido y, debajo, en pequeño, su origen, con una flecha a la derecha;
+- debajo, «+ Otra» con la etiqueta del ítem («+ Otra cosa mía», «+ Otra cosa que cambió»), que abre su campo «¿Cuál?»;
+- debajo, separada por una línea, la exclusiva, si el ítem la tiene.
+- Marcar la «Otra» o la exclusiva vacía el selector, y elegir una pieza las desmarca: se marca una sola cosa.
+
+**Al tocar el selector** se abre una ventana (el diálogo de la plataforma) con:
+- la pregunta de elección como título y «Cerrar»;
+- las piezas agrupadas por `grupo`, cada grupo con su rótulo, en el orden en que llegan;
+- cada pieza como una fila de ancho completo: su contenido y, debajo, en pequeño, su `origen`;
+- la pieza elegida, resaltada.
+
+Al elegir una pieza, la ventana se cierra.
+
+**Cómo se muestra una pieza.**
+- Una elección, con su etiqueta, tal cual.
+- Un texto que escribió el estudiante, entre «». Si pasa de unos 90 caracteres se recorta con «…» y se ve completo al tocarlo.
+- Una pieza con dos líneas (`lineas`): una debajo de la otra, cada una entre «».
+- Nunca códigos ni nombres de actividad.
+- Las piezas del inicio (b5-3) no traen grupo: van en una sola lista, sin rótulo.
+
+### En lectura
+
+Sin tocar «Modificar», nada se puede mover:
+- una lista o unas opciones muestran solo lo marcado, como fichas sin acción;
+- un podio muestra los tres puestos con su contenido (lo escrito, si era una «Otra»), sin fichas sueltas ni arrastre;
+- un selector muestra la pieza elegida y su origen como un bloque de texto, sin flecha ni ventana.
+
+### 6. Formas de eco
+
+Los ecos de un ítem (`ecos` de la lectura) se muestran con una de seis formas. Cada forma se llena con lo que el eco traiga: un dato que no viene no deja hueco.
+
+| Forma | Qué muestra | Ítems |
+|---|---|---|
+| **Plan** | Un bloque con el rótulo («Tu Plan A», «Tu Plan B»), la carrera como título y, si vienen: la institución junto a la carrera («Administración · PUCP»), «Por qué:» con los motivos separados por « · », de quién fue la idea, y el relato entre «» recortado con «ver completo» | b4-1-respalda, b4-1-menos, b4-5-moneda, b5-3-cambio, ma8-respuesta |
+| **Proyecto** | Un bloque «Tu proyecto hoy» con carrera e institución como título, el camino y la lista de pasos, cada uno con su estado («Hecho» o «Pendiente») | b5-1-seguridad |
+| **Texto** | Un bloque con el texto entre «», en una o dos líneas, recortado con «ver completo», y debajo, en pequeño, su origen | b3-4-quien, ma3-hoy |
+| **Elección** | Un bloque con el valor en negrita (una etiqueta, el puesto de un podio o un número como «2 de 5») y debajo, en pequeño, su origen | b5-1-seguridad (primera señal), b5-3-cambio (seguridad) |
+| **Elección con su texto** | La elección en negrita, debajo el texto entre «» y debajo el origen | b1-3-contraste |
+| **Resultado de test** | Un bloque con el nombre del test («Tu test de habilidades», «de inteligencias», «de intereses»), una línea («Lo que salió más alto»; en intereses, «Tu código, en orden») y las dimensiones como etiquetas. Sin puntajes ni niveles | h1-reto, h2-reconozco, h3-curiosidad |
+
+**Reglas.**
+- **Dos planes** (b4-5-moneda) van lado a lado, en dos columnas iguales; en pantallas angostas, uno debajo del otro.
+- **Proyecto, plegable:** muestra hasta tres pasos. Si hay más, un enlace «ver los N pasos» lo abre y, abierto, dice «ver menos». Con tres o menos no hay enlace.
+- **«Hoy» de b5-3-cambio:** un rótulo «Hoy» y, debajo, dos ecos de plan lado a lado (Plan A con institución y Plan B) y un eco de elección (la seguridad). No es una columna aparte de la elección: va arriba, y abajo queda el selector de piezas.
+- **Varios ecos de texto** en un ítem (ma3-hoy) van en un solo bloque, separados por una línea fina, cada uno con su origen.
+- **Un eco que no viene** (texto que no se puede citar, primera señal que no existe) no se muestra: sin hueco ni aviso.
+- **El origen de un eco** es el nombre que entrega el backend. Si un eco no trae nombre, se reporta.
+
+**Qué eco usa qué forma.** El backend marca cada eco con su `forma` (`cabecera`, `plan_a_b`, `proyecto`, `pasos`, `hoy`, `carrera`, `primera`) o con su origen (texto, elección o referencia de un resultado). El plan debe traer la tabla exacta de qué llega en cada ítem y a qué forma de estas seis va. `proyecto` y `pasos` de b5-1 se muestran juntos, en el bloque de proyecto.
+
+### 7. Casos particulares
+
+- **h2-reconozco:** el diálogo y la pregunta de elección se leen como una sola frase («Según lo que has visto en tu página…» · «¿te reconoces?»). El diálogo va en la burbuja del maestro y la pregunta justo debajo, sin número ni separación.
+- **b1-7-dia:** la elección es una escala de tres opciones; la pregunta de texto aparece al marcar.
+- **b4-1 y b5-3:** el eco de plan y el bloque «Hoy» van arriba de la burbuja del personaje, como ancla. No se eligen.
+- **b5-3-cambio con una sola pieza:** el selector funciona igual.
+
+### 8. Pruebas
+
+- Lectura: la primera respuesta y la línea del seguimiento en un mismo bloque; nada editable en lista, podio ni selector.
+- «Otra» en lista de varias: dos «Otra» con su campo, tope en el máximo, borrado del texto al desmarcar, y los códigos `OTRA-1` y `OTRA-2` en lo que se envía.
+- Podio con «Otra»: una, dos y tres; el campo sigue al puesto al intercambiar; borrado al devolver la ficha; lo que se envía lleva el orden y los textos.
+- Selector de piezas: grupos en orden, elegir cierra, la «Otra» y la exclusiva vacían el selector, pieza de dos líneas, texto recortado, piezas sin grupo.
+- La opción exclusiva cambia la pregunta de texto en los ítems de piezas.
+- Cada forma de eco con todos sus datos y con los mínimos; dos planes; proyecto con tres pasos, con cinco, abrir y plegar; eco que no viene.
+- Los casos de §7.
+
+Los fixtures de `contenido` se amplían con lo que haga falta para las piezas y los ecos (b4-1, b4-5, b5-1 y b5-3), con el mismo exportador del lote 1.
+
+Cierran el lote las suites completas en verde, con build, lint y estructura, **y una revisión en el navegador contra las capturas,** pantalla por pantalla, antes de darlo por terminado.
+
+### 9. Decisiones de esta spec
+
+1. Los bocetos dan la disposición; los estilos son los de la plataforma.
+2. Los ecos son bloques de datos sin avatar; los diálogos los dice el personaje.
+3. «Modificar» va en la cabecera «Tu respuesta»; el pie solo navega.
+4. La respuesta en lectura es un solo bloque con sus dos líneas.
+5. Las piezas se eligen con un selector que abre una ventana, en b4-1 y en b5-3.
+6. Se puede agregar más de una «Otra» en listas de varias opciones y en el podio; al quitarla, su texto se borra.
+7. Seis formas de eco; «Hoy» se arma con ellas.
+8. En lectura nada se puede mover.
+
+### 10. Después de este lote
+
+- Lote 3: apertura de los 19 registros (incluidos los diálogos que quedaron sin su eco en el lote 1) y pantalla de cierre con sus mensajes.

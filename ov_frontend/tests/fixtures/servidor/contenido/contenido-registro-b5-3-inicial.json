@@ -1,0 +1,114 @@
+{
+  "estado": null,
+  "item_actual": "b5-3-cambio",
+  "items": [
+    {
+      "codigo": "b5-3-cambio",
+      "con_llm": true,
+      "consigna": {
+        "arranque": "Lo veo distinto desde que…",
+        "dialogo": "Esto dijiste cuando recién llegabas. Míralo desde aquí.",
+        "pregunta_eleccion": "De lo que dijiste al llegar, ¿qué ves hoy distinto?",
+        "pregunta_texto": "¿Qué te hizo verlo distinto? Puede ser algo que viste, que supiste o que te pasó."
+      },
+      "disponible": true,
+      "ecos": [
+        {
+          "codigo": "b5-3-ref-planes",
+          "forma": "hoy",
+          "nombre": "Hoy",
+          "planes": [
+            {
+              "carrera": "Psicología",
+              "institucion": "Universidad Nacional Federico Villarreal"
+            },
+            {
+              "carrera": "Ciencias de la Comunicación",
+              "institucion": "Universidad Nacional Federico Villarreal"
+            }
+          ]
+        },
+        {
+          "codigo": "b5-3-ref-seguridad",
+          "nombre": "qué tan seguro/a te sientes de tu proyecto",
+          "opciones": [
+            "Bastante seguro/a"
+          ],
+          "tipo": "ELECCION"
+        }
+      ],
+      "eleccion": {
+        "etiqueta_otra": "Otra cosa que cambió",
+        "maxima": 1,
+        "minima": 1,
+        "ordenada": false,
+        "permite_otra": true
+      },
+      "marcador_faltante": null,
+      "nombre": "Lo que ves distinto",
+      "obligatorio": true,
+      "opciones": [
+        {
+          "arranque": "Lo veo distinto desde que…",
+          "codigo": "INI-RUTA",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": "la ruta que querías al terminar el colegio",
+          "pregunta": "¿Qué te hizo verlo distinto? Puede ser algo que viste, que supiste o que te pasó.",
+          "sin_llm": false,
+          "texto": "Universidad"
+        },
+        {
+          "arranque": "Lo veo distinto desde que…",
+          "codigo": "INI-DIA",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [
+            "DATO DE PRUEBA: una respuesta completa."
+          ],
+          "origen": "tu día a los 23",
+          "pregunta": "¿Qué te hizo verlo distinto? Puede ser algo que viste, que supiste o que te pasó.",
+          "sin_llm": false,
+          "texto": "«DATO DE PRUEBA: una respuesta completa.»"
+        },
+        {
+          "arranque": "Lo veo distinto desde que…",
+          "codigo": "INI-FRENO",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [
+            "DATO DE PRUEBA: una respuesta completa."
+          ],
+          "origen": "lo que dijiste que podía frenarte",
+          "pregunta": "¿Qué te hizo verlo distinto? Puede ser algo que viste, que supiste o que te pasó.",
+          "sin_llm": false,
+          "texto": "«DATO DE PRUEBA: una respuesta completa.»"
+        },
+        {
+          "arranque": "Lo veo distinto desde que…",
+          "codigo": "INI-MITO",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": "una idea que habías escuchado o creído",
+          "pregunta": "¿Qué te hizo verlo distinto? Puede ser algo que viste, que supiste o que te pasó.",
+          "sin_llm": false,
+          "texto": "Mis padres saben qué me conviene estudiar"
+        },
+        {
+          "arranque": "Me lo confirmó…",
+          "codigo": "IGUAL",
+          "exclusiva": true,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Qué viste o supiste que te lo confirmó?",
+          "sin_llm": false,
+          "texto": "Lo veo todo igual"
+        }
+      ],
+      "respuesta": null
+    }
+  ]
+}

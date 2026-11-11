@@ -700,6 +700,49 @@ def _recorrer_registro_contenido():
     return f
 
 
+# Ajuste front de registros (lote 2): los registros con piezas y ecos (b4-1, b4-5, b5-1 y b5-3), sin responder y
+# completados, para el selector de piezas y las formas de eco. DATO DE PRUEBA: el check-in de b5-1.
+REGISTROS_PIEZAS = ('b4-1', 'b4-5', 'b5-1', 'b5-3')
+
+
+def _recorrer_registros_piezas():
+    """Recorre el camino de `contenido` hasta b5-3 y guarda la lectura de cada registro de `REGISTROS_PIEZAS` antes
+    de responderlo y al completarlo. Usa el cliente del LLM de prueba (nunca la red)."""
+    soporte = str(Path(__file__).resolve().parents[1] / 'tests' / 'soporte')
+    if soporte not in sys.path:
+        sys.path.insert(0, soporte)
+    from app.main import crear_aplicacion
+    from datos.cargar import preparar_base
+    from soporte_acceso import ClienteConToken
+    from soporte_contenido import REQUERIDAS, avanzar
+    from soporte_llm import ClientePrueba
+
+    with TemporaryDirectory(prefix='ov-fixtures-piezas-') as temporal:
+        url = f'sqlite:///{(Path(temporal) / "contenido.db").as_posix()}'
+        preparar_base(url, 'contenido', crear_tablas=True)
+        aplicacion = crear_aplicacion(url)
+        aplicacion.state.cliente_llm = ClientePrueba()
+        f = {}
+        try:
+            with ClienteConToken(aplicacion) as cliente, _codigos_notificacion_fijos():
+                desde = REQUERIDAS[0]
+                for actividad in REGISTROS_PIEZAS:
+                    anterior = REQUERIDAS[REQUERIDAS.index(actividad) - 1]
+                    if REQUERIDAS.index(desde) <= REQUERIDAS.index(anterior):
+                        avanzar(cliente, desde, anterior)
+                    if actividad == 'b5-1':
+                        _pedir(cliente, 'POST', '/acciones/check-in',
+                               {'cuenta': 'est-ana', 'fecha_hora': FECHA, 'nivel_seguridad': 2})
+                    ruta = f'/cuentas/est-ana/actividades/{actividad}/registro'
+                    f[f'registro-{actividad}-inicial'] = _pedir(cliente, 'GET', ruta)
+                    avanzar(cliente, actividad, actividad)  # con lo que cada tramo pide además
+                    f[f'registro-{actividad}-completado'] = _pedir(cliente, 'GET', ruta)
+                    desde = REQUERIDAS[REQUERIDAS.index(actividad) + 1] if actividad != REQUERIDAS[-1] else None
+        finally:
+            aplicacion.state.motor_bd.dispose()
+    return f
+
+
 def exportar_fixtures(destino: Path) -> list[Path]:
     """Exporta los fixtures de `ruta` en `destino/ruta/`, con nombres `ruta-*.json`.
 
@@ -731,6 +774,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
             finally:
                 aplicacion.state.motor_bd.dispose()
         contenido = _recorrer_registro_contenido()
+        contenido.update(_recorrer_registros_piezas())
     finally:
         if evaluador_anterior is None:
             os.environ.pop('EVALUADOR', None)

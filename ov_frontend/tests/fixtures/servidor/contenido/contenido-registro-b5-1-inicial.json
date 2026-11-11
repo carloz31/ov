@@ -1,0 +1,87 @@
+{
+  "estado": null,
+  "item_actual": "b5-1-seguridad",
+  "items": [
+    {
+      "codigo": "b5-1-seguridad",
+      "con_llm": true,
+      "consigna": {
+        "arranque": "Me da seguridad… / Me quita seguridad…",
+        "dialogo": "Desde el faro se ve tu proyecto entero. No es una promesa ni una sentencia: es lo que hoy tienes delante.",
+        "pregunta_eleccion": "¿Qué tan seguro/a te sientes de tu proyecto?",
+        "pregunta_texto": "¿Qué te da seguridad en tu proyecto, o qué te la quita?"
+      },
+      "disponible": true,
+      "ecos": [
+        {
+          "camino": "Prepararme primero",
+          "carrera": "Psicología",
+          "codigo": "b5-1-ref-planes",
+          "forma": "proyecto",
+          "institucion": "Universidad Nacional Federico Villarreal",
+          "nombre": "Tu proyecto hoy"
+        },
+        {
+          "codigo": "b5-1-ref-pasos",
+          "forma": "pasos",
+          "hechos": [],
+          "pendientes": [
+            "Hablar con una psicóloga."
+          ]
+        },
+        {
+          "codigo": "b5-1-ref-check-in",
+          "nombre": "Tu primera señal",
+          "texto": "2 de 5",
+          "tipo": "CHECK_IN_PRIMERO"
+        }
+      ],
+      "eleccion": {
+        "etiqueta_otra": null,
+        "maxima": 1,
+        "minima": 1,
+        "ordenada": false,
+        "permite_otra": false
+      },
+      "marcador_faltante": null,
+      "nombre": "Qué tan seguro te sientes",
+      "obligatorio": true,
+      "opciones": [
+        {
+          "arranque": "Me da seguridad… / Me quita seguridad…",
+          "codigo": "BASTANTE",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Qué te da seguridad en tu proyecto, o qué te la quita?",
+          "sin_llm": false,
+          "texto": "Bastante seguro/a"
+        },
+        {
+          "arranque": "Me da seguridad… / Me quita seguridad…",
+          "codigo": "MAS_O_MENOS",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Qué te da seguridad en tu proyecto, o qué te la quita?",
+          "sin_llm": false,
+          "texto": "Más o menos"
+        },
+        {
+          "arranque": "Me da seguridad… / Me quita seguridad…",
+          "codigo": "POCO",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Qué te da seguridad en tu proyecto, o qué te la quita?",
+          "sin_llm": false,
+          "texto": "Poco seguro/a"
+        }
+      ],
+      "respuesta": null
+    }
+  ]
+}

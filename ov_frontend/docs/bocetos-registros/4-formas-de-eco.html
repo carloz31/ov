@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Formas de eco</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.root{font-family:Nunito,system-ui,sans-serif;color:#1F2330;background:#E6ECF2}
+.col{width:560px;display:flex;flex-direction:column;gap:14px}
+.cap{font-size:15px;font-weight:800;color:#2C3A9E;margin:0}
+.sub{font-size:13px;color:#4A5162;margin:0;min-height:36px}
+.card{background:#fff;border-radius:24px;padding:28px 32px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 10px rgba(31,35,48,.08)}
+.who{font-size:12px;font-weight:700;color:#4A5162;margin:0 0 4px 60px}
+.row{display:flex;gap:12px;align-items:flex-start}
+.av{width:48px;height:48px;border-radius:50%;background:#E3E6F6;color:#2C3A9E;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex:none}
+.bub{background:#F1F3F8;border-radius:16px;padding:12px 16px;font-size:16px;font-weight:700;line-height:1.35}
+.q{font-size:15px;font-weight:800;margin:0;display:flex;gap:8px;justify-content:space-between;align-items:baseline}
+.q b{color:#2C3A9E;margin-right:6px}
+.cnt{font-size:12px;font-weight:700;color:#4A5162;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid #C3C8D4;background:#fff;color:#1F2330}
+.chip.on{background:#4350B5;border-color:#4350B5;color:#fff;font-weight:800}
+.chip.add{border-style:dashed;color:#2C3A9E}
+.chip.dis{color:#5B6272;background:#F1F3F8;border-style:dashed}
+.hr{border:0;border-top:1px solid #D5D9E2;margin:0}
+.ta{border:1px solid #C3C8D4;border-radius:12px;padding:14px 16px;font-size:15px;min-height:84px;line-height:1.45;color:#5B6272}
+.inp{border:1px solid #4350B5;border-radius:12px;padding:10px 14px;font-size:15px;flex:1}
+.lbl{font-size:12px;font-weight:800;color:#4A5162;letter-spacing:.04em;text-transform:uppercase;margin:0}
+.hint{font-size:12px;color:#4A5162;margin:0}
+.note{font-size:12px;color:#4A5162;margin:0}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.btn{font:inherit;font-size:15px;font-weight:800;min-height:48px;padding:0 22px;border-radius:14px;border:1px solid #4350B5;background:#4350B5;color:#fff}
+.btn.sec{background:#fff;color:#2C3A9E}
+.lnk{font:inherit;font-size:13px;font-weight:700;padding:0;border:0;background:none;color:#2C3A9E;text-decoration:underline}
+.slots{display:flex;gap:10px}
+.slot{flex:1;min-height:96px;border-radius:14px;border:2px dashed #C3C8D4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;text-align:center;font-size:14px;font-weight:800}
+.slot.on{border:2px solid #4350B5;background:#EEF0FA}
+.slot i{font-style:normal;width:26px;height:26px;border-radius:50%;background:#4350B5;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}
+.slot.em i{background:#E3E6F6;color:#2C3A9E}
+.slot small{font-size:11px;font-weight:700;color:#4A5162;letter-spacing:.04em;text-transform:uppercase}
+.head{border:1px solid #D5D9E2;border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:4px;background:#FAFBFD}
+.head h3{font-size:17px;font-weight:800;margin:0}
+.head p{font-size:13px;line-height:1.45;margin:0;color:#2B3040}
+.grp{display:flex;flex-direction:column;gap:8px}
+.pz{font:inherit;text-align:left;border:1px solid #C3C8D4;border-radius:12px;background:#fff;padding:10px 14px;min-height:48px;display:flex;flex-direction:column;gap:2px;color:#1F2330}
+.pz span{font-size:14px;line-height:1.4}
+.pz small{font-size:12px;color:#4A5162}
+.pz.on{border:2px solid #4350B5;background:#EEF0FA}
+.pz.ro{background:#F6F7FB;border-color:#E1E4EC}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mark{background:#FFF1C9;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45;color:#4D3600}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:1.4}
+.steps li{display:flex;gap:8px}
+.sel{font:inherit;text-align:left;border:2px solid #4350B5;border-radius:12px;background:#EEF0FA;padding:10px 14px;min-height:52px;display:flex;justify-content:space-between;align-items:center;gap:12px;color:#1F2330;width:100%}
+.sel span{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.sel small{font-size:12px;color:#4A5162}
+.sel.em{border:1px solid #C3C8D4;background:#fff;color:#4A5162}
+.modal{border:1px solid #C3C8D4;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 8px 28px rgba(31,35,48,.18)}
+.mh{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:800}
+.lv{font-size:12px;font-weight:800;color:#2C3A9E;margin:0}
+.tag{font-size:13px;font-weight:700;background:#E3E6F6;color:#2C3A9E;border-radius:12px;padding:4px 12px}
+.nav{font:inherit;font-size:15px;font-weight:800;min-height:48px;padding:0 6px;border:0;background:none;color:#2C3A9E}
+.steps b{color:#2C3A9E;width:64px;flex:none;font-size:12px}
+</style>
+</head>
+<body>
+<div class="root" style="width: 3104px; height: 1240px; box-sizing: border-box; padding: 48px 56px; display: flex; gap: 48px; align-items: flex-start; overflow-x: auto">
+<section class="col">
+<p class="cap">Eco de plan</p>
+<p class="sub">Una sola forma, que se llena con lo que el ítem pida de cada plan. Dos planes van lado a lado; en celular, uno debajo del otro.</p>
+<div class="card">
+<p class="lv">Solo la carrera</p><div class="head"><p class="lbl">Tu Plan A</p><h3>Administración</h3></div><p class="lv">Con institución (los planes de «Hoy»)</p><div class="head"><p class="lbl">Tu Plan A</p><h3>Administración · PUCP</h3></div><p class="lv">Con motivos y de quién fue la idea</p><div class="head"><p class="lbl">Tu Plan A</p><h3>Administración</h3><p>Por qué: Me gusta lo que se hace · Tiene salida laboral</p><p>La idea fue mía</p></div><p class="lv">Dos planes, con motivos y relato</p><div class="two"><div class="head"><p class="lbl">Tu Plan A</p><h3>Administración</h3><p>Por qué: Me gusta lo que se hace · Tiene salida laboral</p><p>«Desde que ayudo en la bodega de mi tía me gusta ver cómo se mueve un negocio y pensar qué vender…» <button type="button" class="lnk">ver completo</button></p></div><div class="head"><p class="lbl">Tu Plan B</p><h3>Contabilidad</h3><p>Por qué: Soy bueno en eso</p><p>«Me va bien con los números»</p></div></div>
+</div>
+</section>
+<section class="col">
+<p class="cap">Eco de proyecto</p>
+<p class="sub">El plan con sus pasos. Muestra tres y el resto se abre; abierto, ofrece «ver menos». Con tres pasos o menos no hay enlace.</p>
+<div class="card">
+<p class="lv">Plegado</p><div class="head"><p class="lbl">Tu proyecto hoy</p><h3>Administración · PUCP</h3><p>Camino: universidad</p><ul class="steps" style="margin-top: 6px"><li><b>Hecho</b>Averiguar cuánto cuesta la pensión</li><li><b>Hecho</b>Hablar con alguien que estudió Administración</li><li><b>Pendiente</b>Revisar el temario del examen de admisión</li></ul><p><button type="button" class="lnk">ver los 5 pasos</button></p></div><p class="lv">Abierto</p><div class="head"><p class="lbl">Tu proyecto hoy</p><h3>Administración · PUCP</h3><p>Camino: universidad</p><ul class="steps" style="margin-top: 6px"><li><b>Hecho</b>Averiguar cuánto cuesta la pensión</li><li><b>Hecho</b>Hablar con alguien que estudió Administración</li><li><b>Pendiente</b>Revisar el temario del examen de admisión</li><li><b>Pendiente</b>Visitar la universidad en una feria vocacional</li><li><b>Pendiente</b>Preguntar en casa cuánto podríamos pagar al mes</li></ul><p><button type="button" class="lnk">ver menos</button></p></div>
+</div>
+</section>
+<section class="col">
+<p class="cap">Eco de texto y eco de elección</p>
+<p class="sub">Texto: entre «», una o dos líneas, recortado, con su origen. Elección: la etiqueta, el puesto de un podio o un número, con su origen. Pueden ir juntos.</p>
+<div class="card">
+<p class="lv">Texto de una línea</p><div class="head"><p>«Necesitaría saber si hay trabajo fijo al terminar»</p><p class="note">lo que necesitarías saber</p></div><p class="lv">Texto de dos líneas, recortado</p><div class="head"><p>«Me imagino como un empresario, despertándome temprano para ir a la oficina.»</p><p>«Lo que hago en la oficina: reviso las ventas de mi negocio y converso con mi equipo antes de sal…» <button type="button" class="lnk">ver completo</button></p><p class="note">tu día a los 23</p></div><p class="lv">Elección</p><div class="head"><p><b>Más o menos</b></p><p class="note">qué tan seguro/a te sientes de tu proyecto</p></div><p class="lv">Puesto de un podio</p><div class="head"><p><b>1.º Estabilidad</b></p><p class="note">lo que valoras en un trabajo</p></div><p class="lv">Número</p><div class="head"><p><b>2 de 5</b></p><p class="note">tu primera señal</p></div><p class="lv">Elección con su texto</p><div class="head"><p><b>Mi mamá</b></p><p>«quiere que estudie algo que tenga trabajo seguro»</p><p class="note">quién espera algo de ti</p></div>
+</div>
+</section>
+<section class="col">
+<p class="cap">Eco de resultado de test</p>
+<p class="sub">El nombre del test y lo que salió más alto, como etiquetas. No lleva puntajes ni niveles. Solo aparece si el resultado ya fue revelado.</p>
+<div class="card">
+<p class="lv">Habilidades sociales</p><div class="head"><p class="lbl">Tu test de habilidades</p><p>Lo que salió más alto</p><div class="chips"><span class="tag">Empatía</span><span class="tag">Liderazgo</span></div></div><p class="lv">Inteligencias</p><div class="head"><p class="lbl">Tu test de inteligencias</p><p>Lo que salió más alto</p><div class="chips"><span class="tag">Lógico-matemática</span></div></div><p class="lv">Intereses</p><div class="head"><p class="lbl">Tu test de intereses</p><p>Tu código, en orden</p><div class="chips"><span class="tag">Emprendedor</span><span class="tag">Convencional</span><span class="tag">Social</span></div></div><p class="lv">En contexto: Mi reto</p><div><p class="who">Dora</p><div class="row"><div class="av" aria-hidden="true">D</div><div class="bub">Elige una para ponerla a prueba esta semana. No tiene que ser la más baja: la que tú quieras.</div></div></div><div class="head"><p class="lbl">Tu test de habilidades</p><p>Lo que salió más alto</p><div class="chips"><span class="tag">Empatía</span><span class="tag">Liderazgo</span></div></div><p class="q"><span><b>1</b>¿Qué habilidad quieres practicar?</span><span class="cnt">Elige 1</span></p><div class="chips"><button type="button" class="chip">Asertividad</button><button type="button" class="chip">Empatía</button><button type="button" class="chip">Expresión de sentimientos</button><button type="button" class="chip">Resolución de problemas</button><button type="button" class="chip">Liderazgo</button></div>
+</div>
+</section>
+<section class="col">
+<p class="cap">En contexto: la moneda de Iván</p>
+<p class="sub">Dos ecos de plan arriba, luego el diálogo y el ítem.</p>
+<div class="card">
+<div class="two"><div class="head"><p class="lbl">Tu Plan A</p><h3>Administración</h3><p>Por qué: Me gusta lo que se hace · Tiene salida laboral</p><p>«Desde que ayudo en la bodega de mi tía me gusta ver cómo se mueve un negocio y pensar qué vender…» <button type="button" class="lnk">ver completo</button></p></div><div class="head"><p class="lbl">Tu Plan B</p><h3>Contabilidad</h3><p>Por qué: Soy bueno en eso</p><p>«Me va bien con los números»</p></div></div><div><p class="who">Iván</p><div class="row"><div class="av" aria-hidden="true">I</div><div class="bub">Te propongo un juego. Imagina que tiro esta moneda para decidir por ti… y sale Contabilidad. Ya está: el próximo año estudias Contabilidad.</div></div></div><p class="q"><span><b>1</b>Salió Contabilidad. ¿Qué sentiste primero?</span><span class="cnt">Elige 1</span></p><div class="chips"><button type="button" class="chip on">Me desanimé</button><button type="button" class="chip">También me gustaría</button><button type="button" class="chip">No sé qué sentí</button></div><p class="q"><span><b>2</b>Piensa en Administración. ¿Hay algo de ella que te haría falta?</span></p><div class="ta">Me haría falta… / No me haría falta nada porque…</div>
+<div class="foot"><span class="note">Lo ven tú y tu orientadora</span><button type="button" class="btn">Enviar</button></div>
+</div>
+</section>
+
+</div>
+</body>
+</html>

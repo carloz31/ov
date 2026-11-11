@@ -110,7 +110,10 @@ NOMBRES_CONTENIDO = {f'contenido-{nombre}.json' for nombre in (
     'registro-b1-1-inicial', 'responder-b1-1-repregunta', 'registro-b1-1-a-medias', 'seguimiento-b1-1-con-pista',
     'responder-b1-1-mensaje', 'responder-b1-1-sin-evaluar', 'registro-b1-1-sin-terminar', 'reenviar-b1-1',
     'responder-b1-1-edicion', 'seguimiento-b1-1-sin-pista', 'seguimiento-b1-1-mensaje', 'entregar-b1-1',
-    'registro-b1-1-completado')}
+    'registro-b1-1-completado')} | {
+    # Ajuste front de registros (lote 2): los registros con piezas y ecos, sin responder y completados.
+    f'contenido-registro-{actividad}-{momento}.json' for actividad in ('b4-1', 'b4-5', 'b5-1', 'b5-3')
+    for momento in ('inicial', 'completado')}
 
 
 def leer(archivos):
@@ -539,7 +542,8 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     exportador.exportar_fixtures(destino)
     assert {ruta.name: ruta.read_bytes() for ruta in archivos} == bytes_antes
     assert conservar.read_text(encoding='utf-8') == 'Conservar'
-    assert len(bases) == 4 and all(not ruta.parent.exists() for ruta in bases)
+    # Dos exportaciones, cada una con tres bases: ruta, el registro b1-1 y los registros de piezas (lote 2).
+    assert len(bases) == 6 and all(not ruta.parent.exists() for ruta in bases)
     assert ruta_ajena.read_bytes() == b'Base del usuario: conservar estos bytes'
     assert exportador.os.environ['EVALUADOR'] == 'gemini'
 
@@ -646,3 +650,25 @@ def _contrato_registro_contenido(datos):
     assert completado.estado == 'COMPLETADA'
     assert not {'tipo_final', 'primera_tipo', 'motivo', 'sensible', 'repregunta_cerrada'} & set(
         json.dumps(datos).split('"'))
+    _contrato_registros_piezas(datos)
+
+
+def _contrato_registros_piezas(datos):
+    """Ajuste front de registros (lote 2): b4-1, b4-5, b5-1 y b5-3, con sus piezas y las formas de sus ecos."""
+    def items(nombre):
+        return {i.codigo: i for i in RegistroConsultado.model_validate(datos[nombre]).items}
+
+    respalda = items('registro-b4-1-inicial')['b4-1-respalda']
+    assert [e['forma'] for e in respalda.ecos] == ['cabecera']
+    assert respalda.ecos[0]['nombre'] == 'Tu Plan A' and respalda.ecos[0]['idea_origen']
+    assert all(o.origen for o in respalda.opciones) and any(o.lineas for o in respalda.opciones)
+    assert [e['forma'] for e in items('registro-b4-5-inicial')['b4-5-moneda'].ecos] == ['plan_a_b']
+    seguridad = items('registro-b5-1-inicial')['b5-1-seguridad']
+    assert [e.get('forma') for e in seguridad.ecos] == ['proyecto', 'pasos', None]
+    assert seguridad.ecos[2]['texto'] == '2 de 5'
+    cambio = items('registro-b5-3-inicial')['b5-3-cambio']
+    assert [e.get('nombre') for e in cambio.ecos] == ['Hoy', 'qué tan seguro/a te sientes de tu proyecto']
+    assert all(o.grupo is None for o in cambio.opciones) and [o.codigo for o in cambio.opciones if o.exclusiva] == [
+        'IGUAL']
+    assert all(i.respuesta for actividad in ('b4-1', 'b4-5', 'b5-1', 'b5-3')
+               for i in items(f'registro-{actividad}-completado').values())

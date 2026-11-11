@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Variantes de elección</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.root{font-family:Nunito,system-ui,sans-serif;color:#1F2330;background:#E6ECF2}
+.col{width:560px;display:flex;flex-direction:column;gap:14px}
+.cap{font-size:15px;font-weight:800;color:#2C3A9E;margin:0}
+.sub{font-size:13px;color:#4A5162;margin:0;min-height:36px}
+.card{background:#fff;border-radius:24px;padding:28px 32px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 10px rgba(31,35,48,.08)}
+.who{font-size:12px;font-weight:700;color:#4A5162;margin:0 0 4px 60px}
+.row{display:flex;gap:12px;align-items:flex-start}
+.av{width:48px;height:48px;border-radius:50%;background:#E3E6F6;color:#2C3A9E;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex:none}
+.bub{background:#F1F3F8;border-radius:16px;padding:12px 16px;font-size:16px;font-weight:700;line-height:1.35}
+.q{font-size:15px;font-weight:800;margin:0;display:flex;gap:8px;justify-content:space-between;align-items:baseline}
+.q b{color:#2C3A9E;margin-right:6px}
+.cnt{font-size:12px;font-weight:700;color:#4A5162;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid #C3C8D4;background:#fff;color:#1F2330}
+.chip.on{background:#4350B5;border-color:#4350B5;color:#fff;font-weight:800}
+.chip.add{border-style:dashed;color:#2C3A9E}
+.chip.dis{color:#5B6272;background:#F1F3F8;border-style:dashed}
+.hr{border:0;border-top:1px solid #D5D9E2;margin:0}
+.ta{border:1px solid #C3C8D4;border-radius:12px;padding:14px 16px;font-size:15px;min-height:84px;line-height:1.45;color:#5B6272}
+.inp{border:1px solid #4350B5;border-radius:12px;padding:10px 14px;font-size:15px;flex:1}
+.lbl{font-size:12px;font-weight:800;color:#4A5162;letter-spacing:.04em;text-transform:uppercase;margin:0}
+.hint{font-size:12px;color:#4A5162;margin:0}
+.note{font-size:12px;color:#4A5162;margin:0}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.btn{font:inherit;font-size:15px;font-weight:800;min-height:48px;padding:0 22px;border-radius:14px;border:1px solid #4350B5;background:#4350B5;color:#fff}
+.btn.sec{background:#fff;color:#2C3A9E}
+.lnk{font:inherit;font-size:13px;font-weight:700;padding:0;border:0;background:none;color:#2C3A9E;text-decoration:underline}
+.slots{display:flex;gap:10px}
+.slot{flex:1;min-height:96px;border-radius:14px;border:2px dashed #C3C8D4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;text-align:center;font-size:14px;font-weight:800}
+.slot.on{border:2px solid #4350B5;background:#EEF0FA}
+.slot i{font-style:normal;width:26px;height:26px;border-radius:50%;background:#4350B5;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}
+.slot.em i{background:#E3E6F6;color:#2C3A9E}
+.slot small{font-size:11px;font-weight:700;color:#4A5162;letter-spacing:.04em;text-transform:uppercase}
+.head{border:1px solid #D5D9E2;border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:4px;background:#FAFBFD}
+.head h3{font-size:17px;font-weight:800;margin:0}
+.head p{font-size:13px;line-height:1.45;margin:0;color:#2B3040}
+.grp{display:flex;flex-direction:column;gap:8px}
+.pz{font:inherit;text-align:left;border:1px solid #C3C8D4;border-radius:12px;background:#fff;padding:10px 14px;min-height:48px;display:flex;flex-direction:column;gap:2px;color:#1F2330}
+.pz span{font-size:14px;line-height:1.4}
+.pz small{font-size:12px;color:#4A5162}
+.pz.on{border:2px solid #4350B5;background:#EEF0FA}
+.pz.ro{background:#F6F7FB;border-color:#E1E4EC}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mark{background:#FFF1C9;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45;color:#4D3600}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:1.4}
+.steps li{display:flex;gap:8px}
+.sel{font:inherit;text-align:left;border:2px solid #4350B5;border-radius:12px;background:#EEF0FA;padding:10px 14px;min-height:52px;display:flex;justify-content:space-between;align-items:center;gap:12px;color:#1F2330;width:100%}
+.sel span{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.sel small{font-size:12px;color:#4A5162}
+.sel.em{border:1px solid #C3C8D4;background:#fff;color:#4A5162}
+.modal{border:1px solid #C3C8D4;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 8px 28px rgba(31,35,48,.18)}
+.mh{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:800}
+.lv{font-size:12px;font-weight:800;color:#2C3A9E;margin:0}
+.tag{font-size:13px;font-weight:700;background:#E3E6F6;color:#2C3A9E;border-radius:12px;padding:4px 12px}
+.nav{font:inherit;font-size:15px;font-weight:800;min-height:48px;padding:0 6px;border:0;background:none;color:#2C3A9E}
+.steps b{color:#2C3A9E;width:64px;flex:none;font-size:12px}
+</style>
+</head>
+<body>
+<div class="root" style="width: 4320px; height: 1240px; box-sizing: border-box; padding: 48px 56px; display: flex; gap: 48px; align-items: flex-start; overflow-x: auto">
+<section class="col">
+<p class="cap">Podio con «Otra»</p>
+<p class="sub">Las «Otra» entran al podio como cualquier ficha, cada una con su «¿Cuál?». El podio puede llenarse con tres. Al devolver una ficha «Otra», su texto se borra.</p>
+<div class="card">
+<p class="q"><span><b>1</b>¿En qué te va mejor? Elige tres y ordénalas, de la que mejor te sale a la tercera.</span><span class="cnt">Ordena tus 3</span></p><div class="slots"><div class="slot on"><i>1</i><small>Lo que mejor te sale</small>Matemática</div><div class="slot on"><i>2</i><small>2.º lugar</small>Otra</div><div class="slot on"><i>3</i><small>3.er lugar</small>Otra</div></div><div class="row" style="align-items: center"><span class="lbl">2.º · ¿Cuál?</span><div class="inp">Arreglar celulares</div></div><div class="row" style="align-items: center"><span class="lbl">3.º · ¿Cuál?</span><div class="inp">Vender por internet</div></div><p class="hint">Toca un puesto para devolver la ficha · arrastra para intercambiar</p><div class="chips"><button type="button" class="chip">Comunicación</button><button type="button" class="chip">Ciencias</button><button type="button" class="chip">Historia y sociales</button><button type="button" class="chip">Inglés</button><button type="button" class="chip">Arte</button><button type="button" class="chip">Educación física o deporte</button><button type="button" class="chip">Computación</button><button type="button" class="chip">Trabajos en grupo</button><button type="button" class="chip">Exponer</button><button type="button" class="chip">Organizar actividades</button></div><div class="chips"><button type="button" class="chip dis" disabled>+ Otra</button></div><p class="q"><span><b>2</b>¿Cómo notas que te va bien en la primera? Puede ser una nota, un trabajo o algo que te dijeron.</span></p><div class="ta">Por ejemplo, en … yo…</div>
+<div class="foot"><span class="note">Lo ven tú y tu orientadora</span><button type="button" class="btn">Enviar</button></div>
+</div>
+</section>
+<section class="col">
+<p class="cap">Lista con varias «Otra» y opción exclusiva</p>
+<p class="sub">Cada «Otra» abre su «¿Cuál?». Al desmarcarla, su texto se borra. Al llegar al máximo, «+ Otra» se apaga. La exclusiva va separada y desmarca el resto.</p>
+<div class="card">
+<p class="q"><span><b>1</b>Piensa en un logro tuyo, aunque sea pequeño. ¿Qué habilidades tuyas se notaron ahí?</span><span class="cnt">Elige 1 a 2 · 2/2</span></p><div class="chips"><button type="button" class="chip">Organizar</button><button type="button" class="chip">Explicar o enseñar</button><button type="button" class="chip">Crear o diseñar</button><button type="button" class="chip">Resolver problemas</button><button type="button" class="chip">Persistir</button><button type="button" class="chip">Liderar</button><button type="button" class="chip">Escuchar y acompañar</button><button type="button" class="chip">Negociar o convencer</button><button type="button" class="chip">Construir o armar</button></div><div class="row" style="align-items: center"><button type="button" class="chip on">Otra</button><div class="inp">Cocinar para muchos</div></div><div class="row" style="align-items: center"><button type="button" class="chip on">Otra</button><div class="inp">Calmar a mis hermanos</div></div><div class="chips"><button type="button" class="chip dis" disabled>+ Otra</button></div><hr class="hr"><div class="chips"><button type="button" class="chip">No se me ocurre ninguno</button></div><p class="q"><span><b>2</b>Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.</span></p><div class="ta">Escribe aquí…</div>
+<div class="foot"><span class="note">Lo ven tú y tu orientadora</span><button type="button" class="btn">Enviar</button></div>
+</div>
+</section>
+<section class="col">
+<p class="cap">Piezas: la pantalla del ítem</p>
+<p class="sub">Eco del plan, lo que dice Helena, un selector con la pieza elegida, «Otra» y la exclusiva. La pregunta 2 es la de la opción elegida.</p>
+<div class="card">
+<div class="head"><p class="lbl">Tu Plan A</p><h3>Administración</h3><p>Por qué: Me gusta lo que se hace · Tiene salida laboral</p><p>La idea fue mía</p></div><div><p class="who">Helena</p><div class="row"><div class="av" aria-hidden="true">H</div><div class="bub">Una parte que hoy no te respalda no decide por ti: se entrena, se comprueba o se compensa con otra.</div></div></div><p class="q"><span><b>1</b>¿Y qué parte de ti va menos con Administración?</span><span class="cnt">Elige 1</span></p><button type="button" class="sel"><span>Matemática<small>¿Qué te cuesta?</small></span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2C3A9E" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="chips"><button type="button" class="chip add">+ Otra cosa mía</button></div><hr class="hr"><div class="chips"><button type="button" class="chip">Todo va con mi plan</button></div><p class="q"><span><b>2</b>¿Qué de Administración no calza del todo con eso?</span></p><div class="ta">No calza del todo porque…</div>
+<div class="foot"><span class="note">Lo ven tú y tu orientadora</span><button type="button" class="btn">Enviar</button></div>
+</div>
+</section>
+<section class="col">
+<p class="cap">Piezas: el selector abierto</p>
+<p class="sub">Al tocar el selector se abre una ventana con las piezas por grupo. Al elegir una se cierra. Un texto largo se recorta y se abre al tocarlo.</p>
+<div class="card"><div class="modal"><div class="mh"><span>¿Qué parte de ti va menos con Administración?</span><button type="button" class="lnk">Cerrar</button></div><div class="grp"><p class="lbl">Lo que te cuesta</p><button type="button" class="pz on"><span>Matemática</span><small>¿Qué te cuesta?</small></button><button type="button" class="pz "><span>«Hablar en público»</span><small>¿Qué te cuesta?</small></button></div><div class="grp"><p class="lbl">Tu test de intereses</p><button type="button" class="pz "><span>Liderar, convencer, organizar proyectos y tomar decisiones</span><small>Emprendedor</small></button><button type="button" class="pz "><span>Ordenar información y seguir procedimientos claros</span><small>Convencional</small></button><button type="button" class="pz "><span>Ayudar, enseñar, cuidar o acompañar a otras personas</span><small>Social</small></button></div><div class="grp"><p class="lbl">Tus otros tests</p><button type="button" class="pz "><span>Usas los números con eficacia y razonas con lógica</span><small>tu test de inteligencias</small></button><button type="button" class="pz "><span>Organizas a un grupo y hablas en su nombre</span><small>tu test de habilidades</small></button></div><div class="grp"><p class="lbl">Lo que escribiste y elegiste antes</p><button type="button" class="pz "><span>Exponer</span><small>¿En qué te va mejor? (1.º)</small></button><button type="button" class="pz "><span>Estabilidad</span><small>¿Qué valoras en un trabajo? (1.º)</small></button><button type="button" class="pz "><span>Liderar · Negociar o convencer</span><small>¿Qué habilidades tuyas se notaron ahí?</small></button><button type="button" class="pz "><span>«jugar fútbol»</span><span>«Lo que hacía en el fútbol de niño: jugaba de arquero en la canchita de mi barrio con mis pri…»</span><small>¿Qué te encantaba hacer de niño o niña?</small></button></div></div></div>
+</section>
+<section class="col">
+<p class="cap">Piezas: la opción cambia la consigna</p>
+<p class="sub">Con la exclusiva marcada, el selector vuelve a vacío y la pregunta 2 y su arranque pasan a ser los de esa opción. Lo ya escrito en la caja se conserva.</p>
+<div class="card">
+<div class="head"><p class="lbl">Tu Plan A</p><h3>Administración</h3><p>Por qué: Me gusta lo que se hace · Tiene salida laboral</p><p>La idea fue mía</p></div><div><p class="who">Helena</p><div class="row"><div class="av" aria-hidden="true">H</div><div class="bub">Una parte que hoy no te respalda no decide por ti: se entrena, se comprueba o se compensa con otra.</div></div></div><p class="q"><span><b>1</b>¿Y qué parte de ti va menos con Administración?</span><span class="cnt">Elige 1</span></p><button type="button" class="sel em"><span>Elige una parte de ti</span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2C3A9E" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="chips"><button type="button" class="chip add">+ Otra cosa mía</button></div><hr class="hr"><div class="chips"><button type="button" class="chip on">Todo va con mi plan</button></div><p class="q"><span><b>2</b>Qué bueno que todo vaya. Aun así, ¿qué parte de Administración crees que te costaría más?</span></p><div class="ta">Lo que más me costaría es…</div>
+<div class="foot"><span class="note">Lo ven tú y tu orientadora</span><button type="button" class="btn">Enviar</button></div>
+</div>
+</section>
+<section class="col">
+<p class="cap">Mirar el camino: «Hoy» con formas de eco</p>
+<p class="sub">«Hoy» se arma con dos ecos de plan y un eco de elección. Las piezas de cuando llegó usan el mismo selector que el perfil.</p>
+<div class="card">
+<div><p class="who">Lumi</p><div class="row"><div class="av" aria-hidden="true">L</div><div class="bub">Esto dijiste cuando recién llegabas. Míralo desde aquí.</div></div></div><p class="lbl">Hoy</p><div class="two"><div class="head"><p class="lbl">Tu Plan A</p><h3>Administración · PUCP</h3></div><div class="head"><p class="lbl">Tu Plan B</p><h3>Contabilidad</h3></div></div><div class="head"><p><b>Más o menos</b></p><p class="note">qué tan seguro/a te sientes de tu proyecto</p></div><p class="q"><span><b>1</b>De lo que dijiste al llegar, ¿qué ves hoy distinto?</span><span class="cnt">Elige 1</span></p><button type="button" class="sel"><span>«Me imagino como un empresario, despertándome temprano para ir a la oficina.»<small>tu día a los 23</small></span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2C3A9E" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="chips"><button type="button" class="chip add">+ Otra cosa que cambió</button></div><hr class="hr"><div class="chips"><button type="button" class="chip">Lo veo todo igual</button></div><p class="q"><span><b>2</b>¿Qué te hizo verlo distinto? Puede ser algo que viste, que supiste o que te pasó.</span></p><div class="ta">Lo veo distinto desde que…</div>
+<div class="foot"><span class="note">Lo ven tú y tu orientadora</span><button type="button" class="btn">Enviar</button></div>
+</div>
+</section>
+<section class="col">
+<p class="cap">En lectura: nada se puede mover</p>
+<p class="sub">Sin tocar «Modificar», el podio, la lista y el selector son solo texto: no hay fichas sueltas, ni arrastre, ni ventana que abrir.</p>
+<div class="card">
+<p class="q"><span><b>1</b>¿En qué te va mejor? Elige tres y ordénalas, de la que mejor te sale a la tercera.</span></p><div class="slots"><div class="slot" style="border: 1px solid #D5D9E2; background: #F6F7FB"><i>1</i>Matemática</div><div class="slot" style="border: 1px solid #D5D9E2; background: #F6F7FB"><i>2</i>Arreglar celulares</div><div class="slot" style="border: 1px solid #D5D9E2; background: #F6F7FB"><i>3</i>Vender por internet</div></div><p class="q"><span><b>2</b>¿Cómo notas que te va bien en la primera? Puede ser una nota, un trabajo o algo que te dijeron.</span></p><div class="head"><p>Por ejemplo, en Matemática yo saco las notas más altas del salón</p></div>
+<div class="foot"><button type="button" class="nav">Anterior</button><button type="button" class="btn">Continuar</button></div><p class="note">Lo ven tú y tu orientadora</p>
+</div>
+<div class="card">
+<p class="q"><span><b>1</b>¿Y qué parte de ti va menos con Administración?</span></p><div class="head"><p>Matemática</p><p class="note">¿Qué te cuesta?</p></div><p class="q"><span><b>2</b>¿Qué de Administración no calza del todo con eso?</span></p><div class="head"><p>No calza del todo porque en la carrera hay varios cursos de números</p></div>
+<div class="foot"><button type="button" class="nav">Anterior</button><button type="button" class="btn">Continuar</button></div><p class="note">Lo ven tú y tu orientadora</p>
+</div>
+</section>
+
+</div>
+</body>
+</html>
