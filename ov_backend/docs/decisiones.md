@@ -225,3 +225,11 @@
 - Las tres frases que faltaban (inteligencia intrapersonal, expresión de sentimientos, liderazgo) van en segunda persona, como la mayoría del runner (corrección del usuario).
 - F4, mini corrida §8 con Haiku real (una vez, 14 llamadas; `tests/llm/resultados/capa-llm/2026-11-11_0446_v7-haiku-arranque.2_lote2-ninguno.*`): 13/13 en la clasificación, el caso 9 con conjunto `propio`, sin `sin_evaluar` ni caídas del filtro. Las repreguntas de `NINGUNO` no usan «logro» ni contradicen al estudiante; los casos 10 a 13 (una habilidad) quedan como con la tarjeta anterior. El caso 5 abre con un comentario («suena a un buen plan»), que no contradice.
 - F4 aprobada por el usuario (13/13; la tarjeta de `NINGUNO` queda como está). Fronteras aceptadas, anotadas en el informe: «con esa chamba» en el caso 3 (el estudiante no nombró ninguna) y el arranque del caso 9, de construcción imperfecta pero legible.
+
+## Ajuste registros llm (lote 3)
+
+- Rama: se sigue en `ajuste/registros-llm`, como piden las observaciones (la skill `/ajuste` diría crear una desde `main`).
+- Modelo (migración 0051, pedida por el texto): salen `item_registro.min_caracteres` con su CHECK, `respuesta_registro.eco_cambiado` (se calcula al leer) y `progreso_actividad.posicion` (no la escribía nadie: el borrador era 501). `ruta` pierde el `min_caracteres` de `t-val-breve`.
+- `MIN_CARACTERES_RESPALDO` no sale, a diferencia de lo que decía el plan: también lo usan el guion de investigaciones (`texto_pobre`) y el relato de un plan (`MINIMO_CARACTERES_RELATO`). Solo deja de aplicarse al registro.
+- Parámetro nuevo `MAXIMO_INTENTOS_ITEM_REGISTRO = 10`. Textos nuevos `LUMI_EMOCIONAL` y `LUMI_SIN_EVALUAR`; sale `PISTA_SIN_REPREGUNTA`, que no usaba nada en `app/`.
+- `test_migracion_0002_conserva_filas_y_referencias_de_0001` compara las filas sin `progreso_actividad.posicion`, que retira la 0051.

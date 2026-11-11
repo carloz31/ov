@@ -383,7 +383,7 @@ def _cargar_registros(m, sesion, actividades, base: fijos.Fijos):
             pregunta_texto=presentacion['pregunta_texto'], arranque=presentacion.get('arranque'),
             ecos_mostrar=[dict(e) for e in presentacion.get('ecos_mostrar') or ()] or None,
             ecos_llm=[dict(e) for e in presentacion.get('ecos_llm') or ()] or None,
-            tarjeta=tarjeta, min_caracteres=propiedades.get('min_caracteres'),
+            tarjeta=tarjeta,
             obligatorio=propiedades.get('obligatorio', True),
             lista_id=None if lista is None else cargadas[lista].id,
             fuente_opciones=None if not eleccion else modelos.FuenteOpciones(eleccion['fuente']),

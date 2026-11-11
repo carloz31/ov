@@ -151,9 +151,8 @@ def test_items_listas_y_consignas_cargados(tmp_path):
             assert espera.pregunta_texto == '¿Qué esperan de ti las personas cercanas?'
             assert espera.dialogo is None and espera.tarjeta is None
             assert not any(i.tarjeta for i in sesion.scalars(select(m.ItemRegistro)))
-            espera, breve = (sesion.scalar(select(m.ItemRegistro).where(m.ItemRegistro.codigo == c))
-                             for c in ('t-exp-espera', 't-val-breve'))
-            assert espera.min_caracteres is None and breve.min_caracteres == 40
+            # Ajuste registros llm (lote 3): sale `min_caracteres`.
+            assert not hasattr(m.ItemRegistro, 'min_caracteres')
             referencias = sesion.execute(select(m.Referencia.codigo, m.Referencia.tipo, m.Actividad.codigo,
                                                 m.ItemRegistro.codigo)
                                          .join(m.Actividad, m.Actividad.id == m.Referencia.actividad_id)

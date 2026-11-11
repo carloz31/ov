@@ -108,8 +108,7 @@ def respuesta_publica(item, respuesta):
 
 def registro_publico(registro, items):
     progreso = registro.progreso
-    return dict(posicion=progreso.posicion if progreso is not None else None,
-                estado=progreso.estado if progreso is not None else None,
+    return dict(estado=progreso.estado if progreso is not None else None,
                 respuestas=[respuesta_publica(item, registro.vigentes[item.id])
                             for item in items if item.id in registro.vigentes])
 

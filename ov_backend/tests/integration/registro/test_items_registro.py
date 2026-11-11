@@ -12,9 +12,9 @@ def test_items_en_orden_con_lista_comun_propia_y_sin_eleccion(cliente):
         'permite_otra': True}
     assert ruta['opciones'][0] == {'codigo': 'UNIVERSIDAD', 'texto': 'Estudiar en una universidad'}
     assert apoyo['lista'] == 't-lista-apoyos' and not apoyo['comun'] and len(apoyo['opciones']) == 3
-    assert espera is None and items[2]['min_caracteres'] is None
+    assert espera is None and 'min_caracteres' not in items[2]
     breve = pedir(cliente, 'GET', '/actividades/t-valores/items-registro')[2]
-    assert breve['codigo'] == 't-val-breve' and breve['min_caracteres'] == 40 and breve['eleccion'] is None
+    assert breve['codigo'] == 't-val-breve' and breve['eleccion'] is None
     assert all('nucleo' not in item and 'criterios' not in item for item in items)
 
 

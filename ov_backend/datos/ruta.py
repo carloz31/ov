@@ -281,9 +281,6 @@ REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera')
                ('t-ref-refe-planes', ('ACTIVIDAD', 't-referencia'), 'PLANES', None),
                ('t-ref-refe-plan-a', ('ACTIVIDAD', 't-referencia'), 'PLAN', None))
 
-# Lo que cambia los valores por defecto de un ítem (obligatorio, sin longitud mínima).
-PROPIEDADES_ITEMS = {'t-val-breve': {'min_caracteres': 40}}
-
 # (código, título, descripción, tema, contenido, audiencia). El contenido es markdown y no repite el título
 # (ajuste mochila).
 FICHAS = (

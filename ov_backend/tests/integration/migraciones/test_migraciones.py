@@ -184,8 +184,15 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
                                   "VALUES (1, 1, 'EN_CURSO')"))
         anteriores = MetaData()
         anteriores.reflect(motor)
+        # 0051 retira `progreso_actividad.posicion`: se comparan las demás columnas.
+        retiradas = {('progreso_actividad', 'posicion')}
+
+        def sin_retiradas(tabla):
+            return select(*(c for c in tabla.columns if (tabla.name, c.name) not in retiradas)).order_by(
+                *tabla.primary_key.columns)
+
         with motor.connect() as conexion:
-            filas_antes = {nombre: conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all()
+            filas_antes = {nombre: conexion.execute(sin_retiradas(tabla)).all()
                            for nombre, tabla in anteriores.tables.items()
                            # 0005 retira actividad_item_registro; sus filas pasan a item_registro. 0016 cambia
                            # `pregunta_id` de entrada_diario por `recomendacion_id` (aquí sin filas). 0018 cambia
@@ -209,7 +216,7 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
             assert conexion.execute(text('PRAGMA foreign_key_check')).all() == []
             for nombre, antes in filas_antes.items():
                 tabla = anteriores.tables[nombre]
-                assert conexion.execute(select(tabla).order_by(*tabla.primary_key.columns)).all() == antes
+                assert conexion.execute(sin_retiradas(tabla)).all() == antes
         command.downgrade(configuracion, '0001')
         assert {'contenido', 'visibilidad'}.isdisjoint(c['name'] for c in inspect(motor).get_columns('actividad'))
         command.upgrade(configuracion, 'head')

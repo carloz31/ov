@@ -38,9 +38,9 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # B13: catálogos de investigaciones.
         'pregunta_base_guion': 3, 'tipo_reaccion': 4,
         # Ajuste registros: `t-referencia` (3 ítems y 2 referencias) y `LUMI_SENSIBLE`.
-        # LUMI_SENSIBLE y PISTA_SIN_REPREGUNTA (ajuste pruebas llm); ajuste registros llm (lote 2): los 49 textos de las
-        # piezas (4 grupos, 27 orígenes y las 18 frases de los tres tests).
-        'texto_fijo': 51}
+        # LUMI_SENSIBLE; ajuste registros llm (lote 2): los 49 textos de las piezas (4 grupos, 27 orígenes y las 18
+        # frases de los tres tests); lote 3: sale PISTA_SIN_REPREGUNTA y entran LUMI_EMOCIONAL y LUMI_SIN_EVALUAR.
+        'texto_fijo': 52}
     # Ajuste registros llm (lote 2): salen `criterio_completitud`, `turno_seguimiento` y `evaluacion_respuesta`.
     assert len(Base.metadata.tables) == 93
     for tabla in Base.metadata.sorted_tables:

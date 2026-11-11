@@ -56,7 +56,6 @@ class ItemRegistro(Base):
     __tablename__ = "item_registro"
     __table_args__ = (
         UniqueConstraint("actividad_id", "orden"),
-        CheckConstraint("min_caracteres IS NULL OR min_caracteres >= 1", name="min_caracteres_valido"),
         CheckConstraint(ELECCION_VALIDA, name="eleccion_valida"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -70,7 +69,6 @@ class ItemRegistro(Base):
     pregunta_eleccion: Mapped[str | None] = mapped_column(Text, default=None)
     pregunta_texto: Mapped[str] = mapped_column(Text)
     arranque: Mapped[str | None] = mapped_column(Text, default=None)
-    min_caracteres: Mapped[int | None]
     obligatorio: Mapped[bool]
     lista_id: Mapped[int | None] = mapped_column(ForeignKey("lista_opciones.id"))
     # Elección que retoma una anterior (F02): las opciones son las de la lista; esta referencia ELECCION solo
@@ -143,7 +141,6 @@ class RespuestaRegistro(Base):
     estado: Mapped[EstadoRespuestaRegistro] = mapped_column(enumerado(EstadoRespuestaRegistro))
     sensible: Mapped[bool] = mapped_column(default=False, server_default=false())
     seguimiento_sin_evaluar: Mapped[bool] = mapped_column(default=False, server_default=false())
-    eco_cambiado: Mapped[bool] = mapped_column(default=False, server_default=false())
     pista: Mapped[str | None] = mapped_column(Text, default=None)
     linea_registro: Mapped[str | None] = mapped_column(Text, default=None)
     # Lo que se puede citar en otras actividades: 0 a 2 líneas (`llm/estado.py`).

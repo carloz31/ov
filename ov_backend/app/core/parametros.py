@@ -40,8 +40,11 @@ OPCION_ONET_MINIMA = 1
 OPCION_ONET_MAXIMA = 5
 PUNTAJE_ONET_MINIMO = 0
 
-# Respaldo por longitud de un ítem sin `min_caracteres`. Provisional (B02).
+# Respaldo por longitud de los asistentes (guion) y del relato de un plan. Provisional (B02). Ajuste registros llm
+# (lote 3): el registro ya no tiene mínimo de caracteres.
 MIN_CARACTERES_RESPALDO = 40
+# Ajuste registros llm (lote 3): intentos guardados por ítem de registro; con este número, la edición se rechaza.
+MAXIMO_INTENTOS_ITEM_REGISTRO = 10
 # Ajuste carga-actividades: 5, lo que pide el registro más largo del contenido (b4-1).
 MAXIMO_ITEMS_REGISTRO = 5
 # Reinicios del test de intereses por cuenta y aplicación, solo con perfil plano (HU-095).

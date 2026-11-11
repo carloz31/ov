@@ -115,7 +115,6 @@ class ItemRegistroPublico(BaseModel):
     pregunta_eleccion: str | None
     pregunta_texto: str
     arranque: str | None
-    min_caracteres: int | None
     obligatorio: bool
     # El ítem tiene tarjeta (pasa por el LLM).
     con_llm: bool
@@ -134,7 +133,6 @@ class RespuestaRegistroPublica(EstadoItemRegistro):
 
 
 class RegistroConsultado(BaseModel):
-    posicion: str | None
     estado: EstadoProgreso | None
     respuestas: list[RespuestaRegistroPublica]
 

@@ -16,7 +16,6 @@ class ProgresoActividad(Base):
     cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
     actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"))
     estado: Mapped[EstadoProgreso] = mapped_column(enumerado(EstadoProgreso))
-    posicion: Mapped[str | None] = mapped_column(Text)
 
 
 class ResultadoCaso(Base):

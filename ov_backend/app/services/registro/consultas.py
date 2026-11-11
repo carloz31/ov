@@ -42,7 +42,7 @@ def consultar_items(sesion, actividad):
     _, _, items = validar_registro(sesion, actividad)
     return [ItemRegistroPublico(codigo=item.codigo, nombre=item.nombre, dialogo=item.dialogo,
                                 pregunta_eleccion=item.pregunta_eleccion, pregunta_texto=item.pregunta_texto,
-                                arranque=item.arranque, min_caracteres=item.min_caracteres,
+                                arranque=item.arranque,
                                 obligatorio=item.obligatorio, con_llm=item.tarjeta is not None,
                                 eleccion=eleccion_publica(sesion, item))
             for item in items]
