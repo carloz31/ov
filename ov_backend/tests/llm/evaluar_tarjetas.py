@@ -12,6 +12,9 @@ Uso, desde ov_backend (la clave es `ANTHROPIC_API_KEY` del `.env` del backend):
     uv run python tests/llm/evaluar_tarjetas.py --manifiesto piloto-claude-3 --repeticiones 3 --etiqueta equivalencia
     uv run python tests/llm/evaluar_tarjetas.py --seguimientos --etiqueta seguimientos      # todos los seguimientos, sin repetidos
     uv run python tests/llm/evaluar_tarjetas.py --informe <csv> [--anterior <csv>]            # rehace el informe, sin llamar
+    uv run python tests/llm/evaluar_tarjetas.py --guion --mostrar G1                          # guion: prompt y mensaje, sin llamar
+    uv run python tests/llm/evaluar_tarjetas.py --pasos --solo A                              # pasos: un caso (una llamada)
+    uv run python tests/llm/evaluar_tarjetas.py --pasos                                       # pasos: todos, con la medición
 """
 
 import argparse
@@ -543,7 +546,21 @@ def main():
     parser.add_argument('--solo', nargs='*', help='solo estos `id`')
     parser.add_argument('--mostrar', help='imprime el prompt y el mensaje de este `id` o número, sin llamar')
     parser.add_argument('--revisar', action='store_true', help='solo el chequeo de solapamiento, sin llamar')
+    # Ajuste llm-sugerencias: los dos usos fuera del registro (lógica en `sugerencias_llm.py`).
+    parser.add_argument('--guion', action='store_true', help='casos del guion de Investigaciones (guion-v4-haiku)')
+    parser.add_argument('--pasos', action='store_true', help='casos de los pasos del plan (pasos-v5-haiku)')
     args = parser.parse_args()
+
+    if args.guion or args.pasos:
+        import sugerencias_llm
+
+        def crear_cliente():
+            clave = cargar_configuracion().clave_anthropic
+            if not clave:
+                sys.exit('Falta ANTHROPIC_API_KEY en el .env del backend')
+            return ClienteClaude(clave)
+        sugerencias_llm.main(args, crear_cliente)
+        return
 
     if args.informe:
         print(escribir_informe(args.informe, args.anterior))

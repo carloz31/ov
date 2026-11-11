@@ -4,7 +4,8 @@
 
 ```
 tests/llm/
-  evaluar_tarjetas.py            runner de las tarjetas v7 sobre la capa del LLM del backend
+  evaluar_tarjetas.py            runner de las tarjetas v7 sobre la capa del LLM del backend (y modos --guion y --pasos)
+  sugerencias_llm.py             modos --guion y --pasos (ajuste llm-sugerencias)
   casos/<registro>[-tarjetas-v7.x].json   casos y lo esperado
   prompts/                       prompts de las rondas
   resultados/<registro>/ y resultados/capa-llm/   CSV e informes de cada corrida (se versionan)
@@ -25,6 +26,17 @@ uv run python tests/llm/evaluar_tarjetas.py --informe <csv> --anterior <csv>    
 ```
 
 Con `--casos` o `--manifiesto`, el runner se detiene antes de llamar si un caso coincide con los EJEMPLOS o con las frases de GENERAL SI o SEGUIMIENTO de su tarjeta (salvo `solapamiento_aceptado`); con `--seguimientos`, que junta casos que ya corrieron en su ronda, solo lo informa. El informe anota el `git hash-object` de cada archivo usado y el hash del prompt. Las corridas anteriores (v7.x con Gemini y `piloto-claude-*`, en `resultados/<registro>/` y `resultados/piloto-claude/`) quedan como evidencia: el código, el prompt, las tarjetas y el brazo Gemini con que corrieron están en el historial de git.
+
+## Guion y pasos del plan (ajuste llm-sugerencias)
+
+Los modos `--guion` y `--pasos` de `evaluar_tarjetas.py` (lógica en `sugerencias_llm.py`) corren los casos de `casos/guion-v4-haiku.json` y `casos/pasos-v5-haiku.json` con el prompt, el mensaje, el esquema, el filtro (guion) y la validación (pasos) del backend, sin base. Una llamada por caso. Escriben en `resultados/guion/` y `resultados/pasos/` el CSV y el informe: chequeos automáticos (guion: esquema, a lo más una por campo, «?» al final, un solo «¿», largo, no repite base; pasos: esquema, tipo, largo, cantidad, infinitivo, sin «tu», «te» ni «podrías», sin cifras ni direcciones web, no repite un paso actual, clase esperada) y una tabla para la lectura a ciegas. En el guion, repetir una base con otras palabras es un defecto conocido y aceptado: va en su propia línea («repite base»). El informe de pasos empieza con la medición de la llamada con 1, 3, 5, 8 y 10 dudas (casos `M01`-`M10`): tokens de razonamiento y de salida, latencia y parada.
+
+```
+uv run python tests/llm/evaluar_tarjetas.py --guion --mostrar G1      # prompt y mensaje, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --pasos --solo A          # un caso: una llamada
+uv run python tests/llm/evaluar_tarjetas.py --guion                   # todos los casos del guion
+uv run python tests/llm/evaluar_tarjetas.py --pasos                   # todos los de pasos, con la medición
+```
 
 ## Formato de un caso
 
