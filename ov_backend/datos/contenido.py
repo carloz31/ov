@@ -968,16 +968,16 @@ PREGUNTAS_DIARIO = (
     *(p for p in ruta.PREGUNTAS_DIARIO if p[0] not in ('t-diario-personal', 't-diario-tras-conversar')),
     ('d-conv-futuro', 'Lo que todavía no les he dicho',
      'Después de leer lo que tu familia imagina para ti, ¿qué te llamó la atención? ¿Hay algo que todavía no les has dicho y te gustaría conversar?',
-     'DESBLOQUEABLE', False, None),
+     'DESBLOQUEABLE', None),
     ('d-conv-fortalezas', 'Lo que vieron en mí',
      'Al leer lo que tu familia vio en ti, ¿qué te llamó la atención? ¿Te reconoces en eso?',
-     'DESBLOQUEABLE', False, None),
+     'DESBLOQUEABLE', None),
     ('d-conv-condiciones', 'Lo que sí está en mis manos',
      'Después de leer lo que tu familia puede ofrecer, ¿qué te llamó la atención? ¿Qué parte de tu plan sientes que sí está en tus manos?',
-     'DESBLOQUEABLE', False, None),
+     'DESBLOQUEABLE', None),
     ('d-conv-acompanar', 'Cómo quiero que me acompañen',
      'Después de conocer cómo tu familia quisiera acompañarte, ¿qué te llamó la atención? ¿Hay algo que te gustaría conversar con ella?',
-     'DESBLOQUEABLE', False, None),
+     'DESBLOQUEABLE', None),
 )
 
 INSIGNIAS = ruta.INSIGNIAS

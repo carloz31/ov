@@ -14,7 +14,7 @@ from app.services.registro import consultas as consultas_registro, flujo as fluj
 router = APIRouter(tags=['Registro'])
 
 # Ajuste registros llm (lote 3): responder, seguir y reenviar un ítem no usan la dependencia de sesión. La respuesta se
-# confirma antes de llamar al LLM y la evaluación se escribe en otra transacción, como el asistente del diario.
+# confirma antes de llamar al LLM y la evaluación se escribe en otra transacción, como la pregunta del día.
 
 
 def _con_llm(accion, entrada, peticion):

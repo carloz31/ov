@@ -154,13 +154,12 @@ def esperado(ruta, completo):
     if ruta == 'diario/preguntas':
         if not completo:
             return MENSAJES['DIARIO']
-        # B09: el recorrido abre las dos desbloqueables. Ajuste registros llm (lote 2): la entrega provisional no deja
-        # texto citable, así que la personalizada se desbloquea sin datos y queda redactada con su base.
+        # B09: el recorrido abre las dos desbloqueables, ya con su texto (ajuste cartas-diario).
         # B12: la de después de conversar sigue bloqueada.
-        return [{'codigo': codigo, 'nombre': nombre, 'personalizada': personalizada, 'respondida': False,
+        return [{'codigo': codigo, 'nombre': nombre, 'respondida': False,
                  **({'estado': 'BLOQUEADA', 'redactada': False} if codigo == 't-diario-tras-conversar'
                     else {'estado': 'DISPONIBLE', 'redactada': True})}
-                for codigo, nombre, _, uso, personalizada, _ in sorted(PREGUNTAS_DIARIO) if uso == 'DESBLOQUEABLE']
+                for codigo, nombre, _, uso, _ in sorted(PREGUNTAS_DIARIO) if uso == 'DESBLOQUEABLE']
     return []
 
 

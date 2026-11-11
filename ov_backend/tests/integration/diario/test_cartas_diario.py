@@ -1,12 +1,8 @@
 """Ajuste del diario (F05): campos de las cartas, archivo, remitente y cierre de la pregunta del día."""
 
-from datetime import datetime
-
 from sqlalchemy import select
 
 from app import models as m
-from app.models.enums import EstadoRespuestaRegistro
-from app.services.registro.acciones import guardar_intento
 from soporte_ruta import FECHA, avanzar, completar, pedir
 
 
@@ -44,33 +40,14 @@ def test_la_carta_recibida_trae_fecha_texto_bandeja_y_remitente(cliente):
     assert all(personal[k] is None for k in ('recibida_en', 'texto', 'entrada', 'bandeja', 'actividad'))
 
 
-def avanzar_con_dato(cliente, aplicacion):
-    """El recorrido con un texto citable en t-exp-espera (DATO DE PRUEBA, escrito directamente: la entrega provisional
-    del lote 2 no deja texto citable); completar t-expectativas desbloquea la personalizada por redactar."""
+def test_la_adaptada_llega_con_su_texto_y_se_archiva_sin_abrirla(cliente):
+    """Ajuste cartas-diario: no hay carta por redactar; sin elección en t-exp-ruta llega con su respaldo."""
     avanzar(cliente, 't-cierre-inicio')
-    texto = 'DATO DE PRUEBA: espero que me apoyen en lo que elija.'
-    with aplicacion.state.fabrica_sesiones.begin() as sesion:
-        cuenta_id = sesion.scalar(select(m.Cuenta.id).where(m.Cuenta.codigo == 'est-ana'))
-        item_id, actividad_id = sesion.execute(select(m.ItemRegistro.id, m.ItemRegistro.actividad_id).where(
-            m.ItemRegistro.codigo == 't-exp-espera')).one()
-        progreso = m.ProgresoActividad(cuenta_id=cuenta_id, actividad_id=actividad_id, estado=m.EstadoProgreso.EN_CURSO)
-        sesion.add(progreso)
-        sesion.flush()
-        guardar_intento(sesion, progreso.id, item_id, dict(
-            opciones_elegidas=[], primera_respuesta=texto, estado=EstadoRespuestaRegistro.CERRADO,
-            tipo_final='propio', texto_citable=[texto]), datetime(2026, 10, 7, 10))
     pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-expectativas'})
-
-
-def test_la_personalizada_no_trae_texto_hasta_redactarse(cliente, aplicacion):
-    avanzar_con_dato(cliente, aplicacion)
     personal = cartas(cliente)['t-diario-personal']
-    assert (personal['redactada'], personal['texto'], personal['bandeja']) == (False, None, 'PENDIENTE')
+    assert (personal['redactada'], personal['texto'], personal['bandeja']) == (
+        True, '¿Cómo te sientes con lo que esperas de este camino?', 'PENDIENTE')
     assert personal['actividad'] == {'codigo': 't-expectativas', 'titulo': 'Registro de expectativas'}
-    # Sin redactar no se archiva; una vez abierta, sí.
-    accion(cliente, 'archivar', 't-diario-personal', 409)
-    pedir(cliente, 'POST', '/acciones/diario/abrir-pregunta', {'cuenta': 'est-ana', 'codigo': 't-diario-personal'})
-    assert cartas(cliente)['t-diario-personal']['texto']
     assert accion(cliente, 'archivar', 't-diario-personal')['bandeja'] == 'ARCHIVADA'
 
 

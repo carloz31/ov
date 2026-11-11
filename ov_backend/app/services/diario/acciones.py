@@ -1,7 +1,7 @@
 """Acciones del diario y del check-in (B09).
 
 El diario es privado y va en una sola dirección: las actividades dejan preguntas (recomendaciones), pero nada lee
-las entradas. Las llamadas al LLM van fuera de transacción: se lee, se redacta y se guarda en fases separadas.
+las entradas. Ajuste cartas-diario: el diario no usa el LLM; toda carta y toda pregunta del día llegan con su texto.
 """
 
 from dataclasses import dataclass
@@ -15,19 +15,16 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import N_SIN_REPETIR_DIARIA, VIGENCIA_PREGUNTA_DIA_DIAS
 from app.exceptions import ErrorAccion
 from app.models import (
-    CheckIn, ContadorDiario, Cuenta, EntradaDiario, ItemInstrumento, OrigenEntrada, OrigenRedaccion, PreguntaDiario,
+    CheckIn, ContadorDiario, Cuenta, EntradaDiario, ItemInstrumento, OrigenEntrada, PreguntaDiario,
     Recomendacion, ResultadoDimension, ResultadoInstrumento, TipoEventoUso, TipoRecomendacion, UsoPreguntaDiario,
 )
-from app.models.enums import TipoObjetivo
 from app.schemas.acciones import (
     AbrirPreguntaEntrada, AccionCuenta, BorrarEntradaEntrada, CheckInEntrada, EditarEntradaEntrada,
     EscribirEntradaEntrada, ResponderRegistroEntrada, RespuestaAccion,
 )
-from app.schemas.diario import PreguntaAbierta, PreguntaDelDia, PreguntaDiarioEstado
-from app.services.comun import (
-    buscar_por_codigo, exigir_disponible, exigir_estudiante, fecha_accion, responder_con_eventos,
-)
-from app.services.diario.asistente import redactar, referencias_resolubles, resolver_contexto
+from app.schemas.diario import PreguntaDelDia, PreguntaDiarioEstado
+from app.services.comun import buscar_por_codigo, exigir_estudiante, fecha_accion, responder_con_eventos
+from app.services.diario.cartas import armar_carta
 from app.services.diario.consultas import estado_pregunta
 from app.services.diario.sorteo import PuntajeDimension, pesos_dimensiones, semilla, sortear
 from app.services.secciones import exigir_seccion
@@ -46,8 +43,8 @@ def responder_registro(sesion: Session, entrada: ResponderRegistroEntrada) -> Re
 
 def crear_desbloqueadas(sesion: Session, cuenta: Cuenta, preguntas_ids: list[int], fecha: datetime,
                         actividad_id: int | None = None) -> None:
-    """Deja en el diario las preguntas recién desbloqueadas, sin LLM: la fija con su texto y la personalizada con
-    el contexto de este momento (o la base, si ninguna referencia tiene dato)."""
+    """Deja en el diario las preguntas recién desbloqueadas, ya armadas (fija o adaptada, sin LLM): la carta queda
+    como se armó ahora y no cambia si después el estudiante edita el registro o mueve sus planes."""
     existentes = set(sesion.scalars(select(Recomendacion.pregunta_diario_id).where(
         Recomendacion.cuenta_id == cuenta.id, Recomendacion.tipo == TipoRecomendacion.DESBLOQUEADA,
         Recomendacion.pregunta_diario_id.in_(preguntas_ids))))
@@ -56,12 +53,10 @@ def crear_desbloqueadas(sesion: Session, cuenta: Cuenta, preguntas_ids: list[int
         if pregunta_id in existentes:
             continue
         pregunta = definiciones.obtener(PreguntaDiario, pregunta_id)
-        datos = resolver_contexto(sesion, cuenta, pregunta)
-        por_redactar = pregunta.personalizada and bool(datos)
+        texto, variante = armar_carta(sesion, cuenta, pregunta)
         sesion.add(Recomendacion(
             cuenta_id=cuenta.id, pregunta_diario_id=pregunta.id, tipo=TipoRecomendacion.DESBLOQUEADA,
-            contexto=datos if por_redactar else None, texto=None if por_redactar else pregunta.pregunta,
-            origen=None if por_redactar else OrigenRedaccion.FIJA, creada_en=fecha, actividad_id=actividad_id))
+            texto=texto, variante=variante, creada_en=fecha, actividad_id=actividad_id))
     sesion.flush()
 
 
@@ -117,8 +112,6 @@ def escribir_entrada(sesion: Session, entrada: EscribirEntradaEntrada) -> Respue
             raise ErrorAccion("No tienes una pregunta del día vigente")
         origen = OrigenEntrada.RECOMENDACION_DIA
     if recomendacion is not None:
-        if recomendacion.texto is None:
-            raise ErrorAccion("Abre la pregunta antes de responderla")
         if respondida(sesion, recomendacion):
             raise ErrorAccion("Ya respondiste esta pregunta")
         if recomendacion.archivada_en is not None:
@@ -191,10 +184,8 @@ def _carta(sesion: Session, entrada: AbrirPreguntaEntrada) -> tuple[Cuenta, Preg
 
 @usar_contexto
 def archivar_pregunta(sesion: Session, entrada: AbrirPreguntaEntrada) -> PreguntaDiarioEstado:
-    """Ajuste del diario (F05): solo una carta lista (redactada), pendiente y sin responder. Sin eventos."""
+    """Ajuste del diario (F05): solo una carta pendiente y sin responder. Sin eventos."""
     cuenta, pregunta, recomendacion = _carta(sesion, entrada)
-    if recomendacion.texto is None:
-        raise ErrorAccion("Abre la carta antes de archivarla")
     if respondida(sesion, recomendacion):
         raise ErrorAccion("Ya respondiste esta carta")
     if recomendacion.archivada_en is not None:
@@ -237,59 +228,6 @@ def registrar_check_in(sesion: Session, entrada: CheckInEntrada) -> RespuestaAcc
     return responder_con_eventos(sesion, cuenta, [(TipoEventoUso.REGISTRA_CHECK_IN, registro.id)], fecha)
 
 
-# --- Abrir una pregunta desbloqueada --------------------------------------------------------
-
-@dataclass(frozen=True, slots=True)
-class LecturaPregunta:
-    recomendacion_id: int
-    base: str
-    datos: list | None
-    texto: str | None
-    carta: bool = False
-
-
-@usar_contexto
-def _leer_desbloqueada(sesion: Session, entrada: AbrirPreguntaEntrada) -> LecturaPregunta:
-    cuenta = buscar_por_codigo(sesion, Cuenta, entrada.cuenta)
-    exigir_estudiante(cuenta)
-    exigir_seccion(sesion, cuenta, "DIARIO")
-    pregunta = buscar_por_codigo(sesion, PreguntaDiario, entrada.codigo)
-    recomendacion = recomendacion_desbloqueada(sesion, cuenta, pregunta)
-    if recomendacion is None:
-        exigir_disponible(sesion, cuenta, TipoObjetivo.PREGUNTA_DIARIO, pregunta)
-        raise ErrorAccion("Esta pregunta todavía no está en tu diario")
-    return LecturaPregunta(recomendacion.id, pregunta.pregunta, recomendacion.contexto, recomendacion.texto,
-                           carta=pregunta.personalizada)
-
-
-def _guardar_texto(sesion: Session, recomendacion_id: int, texto: str, origen: OrigenRedaccion) -> None:
-    """Solo la primera redacción queda: si otra solicitud ya la guardó, no cambia."""
-    sesion.execute(update(Recomendacion).where(Recomendacion.id == recomendacion_id, Recomendacion.texto.is_(None))
-                   .values(texto=texto, origen=origen))
-
-
-@usar_contexto
-def _pregunta_abierta(sesion: Session, recomendacion_id: int) -> PreguntaAbierta:
-    recomendacion = sesion.get(Recomendacion, recomendacion_id)
-    pregunta = contexto(sesion).definiciones.obtener(PreguntaDiario, recomendacion.pregunta_diario_id)
-    return PreguntaAbierta(codigo=pregunta.codigo, nombre=pregunta.nombre, texto=recomendacion.texto,
-                           respondida=respondida(sesion, recomendacion))
-
-
-def abrir_pregunta(fabrica_sesiones, entrada: AbrirPreguntaEntrada, evaluador, *,
-                   tiempo_maximo_segundos: float) -> PreguntaAbierta:
-    """Redacta una sola vez, con el contexto guardado al desbloquearla (no con los datos actuales)."""
-    with fabrica_sesiones.begin() as sesion:
-        lectura = _leer_desbloqueada(sesion, entrada)
-    if lectura.texto is None:
-        texto, origen = redactar(evaluador, lectura.base, lectura.datos, tiempo_maximo_segundos=tiempo_maximo_segundos,
-                                 carta=lectura.carta)
-        with fabrica_sesiones.begin() as sesion:
-            _guardar_texto(sesion, lectura.recomendacion_id, texto, origen)
-    with fabrica_sesiones.begin() as sesion:
-        return _pregunta_abierta(sesion, lectura.recomendacion_id)
-
-
 # --- Pregunta del día -----------------------------------------------------------------------
 
 @dataclass(frozen=True, slots=True)
@@ -298,8 +236,7 @@ class LecturaDia:
     hoy: date
     vigente_id: int | None
     pregunta_id: int | None = None
-    base: str | None = None
-    datos: list | None = None
+    texto: str | None = None
 
 
 def _puntajes(sesion: Session, cuenta: Cuenta, dimensiones: set[int]) -> dict[int, PuntajeDimension]:
@@ -337,14 +274,13 @@ def _leer_dia(sesion: Session, entrada: AccionCuenta) -> LecturaDia:
     recientes = set(sesion.scalars(select(Recomendacion.pregunta_diario_id).where(
         Recomendacion.cuenta_id == cuenta.id, Recomendacion.tipo == TipoRecomendacion.DIARIA).order_by(
         Recomendacion.fecha.desc()).limit(N_SIN_REPETIR_DIARIA)))
-    sin_dato = {pregunta.id for pregunta in diarias if not referencias_resolubles(sesion, cuenta, pregunta)}
     dimensiones = {pregunta.dimension_id for pregunta in diarias}
     pesos = pesos_dimensiones(dimensiones, _puntajes(sesion, cuenta, dimensiones - {None}))
-    elegida = (sortear(diarias, pesos, recientes | sin_dato, semilla(cuenta.codigo, hoy))
-               or sortear(diarias, pesos, sin_dato, semilla(cuenta.codigo, hoy)))
+    elegida = (sortear(diarias, pesos, recientes, semilla(cuenta.codigo, hoy))
+               or sortear(diarias, pesos, set(), semilla(cuenta.codigo, hoy)))
     if elegida is None:
         raise ErrorAccion("No hay preguntas del día disponibles")
-    return LecturaDia(cuenta.id, hoy, None, elegida.id, elegida.pregunta, resolver_contexto(sesion, cuenta, elegida))
+    return LecturaDia(cuenta.id, hoy, None, elegida.id, elegida.pregunta)
 
 
 @usar_contexto
@@ -356,18 +292,16 @@ def _pregunta_del_dia(sesion: Session, recomendacion_id: int) -> PreguntaDelDia:
                           cerrada=recomendacion.archivada_en is not None)
 
 
-def pregunta_del_dia(fabrica_sesiones, entrada: AccionCuenta, evaluador, *,
-                     tiempo_maximo_segundos: float) -> PreguntaDelDia:
-    """Devuelve la vigente o sortea, redacta y guarda una nueva. Sin tareas programadas: se crea al pedirla."""
+def pregunta_del_dia(fabrica_sesiones, entrada: AccionCuenta) -> PreguntaDelDia:
+    """Devuelve la vigente o sortea y guarda una nueva, con su texto fijo. Sin tareas programadas: se crea al
+    pedirla."""
     with fabrica_sesiones.begin() as sesion:
         lectura = _leer_dia(sesion, entrada)
     if lectura.vigente_id is None:
-        texto, origen = redactar(evaluador, lectura.base, lectura.datos, tiempo_maximo_segundos=tiempo_maximo_segundos)
         try:
             with fabrica_sesiones.begin() as sesion:
                 nueva = Recomendacion(cuenta_id=lectura.cuenta_id, pregunta_diario_id=lectura.pregunta_id,
-                                      tipo=TipoRecomendacion.DIARIA, contexto=lectura.datos or None, texto=texto,
-                                      origen=origen, fecha=lectura.hoy, creada_en=fecha_accion(entrada))
+                                      tipo=TipoRecomendacion.DIARIA, texto=lectura.texto, fecha=lectura.hoy, creada_en=fecha_accion(entrada))
                 sesion.add(nueva)
                 sesion.flush()
                 vigente_id = nueva.id

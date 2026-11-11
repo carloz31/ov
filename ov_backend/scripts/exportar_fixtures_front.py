@@ -234,11 +234,9 @@ def _recorrer(cliente):
     fixtures['referencias-t-eco'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     fixtures['avance-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/avance')
-    # B09: diario. t-inicio dejó la pregunta fija y t-expectativas la personalizada (sin texto citable, la base).
+    # B09: diario. t-inicio dejó la pregunta fija y t-expectativas la carta adaptada, ya armada (ajuste cartas-diario).
     diario = {'cuenta': 'est-ana', 'fecha_hora': FECHA}
     fixtures['diario-preguntas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')
-    fixtures['abrir-pregunta-personal'] = _pedir(cliente, 'POST', '/acciones/diario/abrir-pregunta',
-                                                 {**diario, 'codigo': 't-diario-personal'})
     fixtures['pregunta-del-dia'] = _pedir(cliente, 'POST', '/acciones/diario/pregunta-del-dia', diario)
     fixtures['escribir-entrada-fija'] = _pedir(cliente, 'POST', '/acciones/escribir-entrada', {
         **diario, 'pregunta': 't-diario-fija', 'texto': 'DATO DE PRUEBA: quiero descubrir qué me apasiona'})

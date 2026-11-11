@@ -1,4 +1,4 @@
-from sqlalchemy import JSON, CheckConstraint, ForeignKey, Text, column, false, text, true
+from sqlalchemy import JSON, CheckConstraint, ForeignKey, Text, column, text, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import TipoJSON
@@ -144,9 +144,10 @@ class Testimonio(Base):
 
 
 class PreguntaDiario(Base):
-    """Pregunta base del diario: DESBLOQUEABLE (la abre una regla) o DIARIA (entra al sorteo de la pregunta del día).
+    """Pregunta del diario: DESBLOQUEABLE (la abre una regla) o DIARIA (entra al sorteo de la pregunta del día).
 
-    `dimension_id` clasifica las DIARIA para el sorteo; no se muestra ni va al LLM.
+    `dimension_id` clasifica las DIARIA para el sorteo; no se muestra. `variantes` (ajuste cartas-diario): nula, carta
+    fija; si no, `{huecos, variantes}` y `pregunta` es su respaldo (ver «Diario» en `motor.md`).
     """
     __tablename__ = "pregunta_diario"
     __table_args__ = (
@@ -156,11 +157,9 @@ class PreguntaDiario(Base):
     codigo: Mapped[str] = mapped_column(unique=True)
     nombre: Mapped[str]
     pregunta: Mapped[str] = mapped_column(Text)
-    personalizada: Mapped[bool] = mapped_column(default=False, server_default=false())
     uso: Mapped[UsoPreguntaDiario] = mapped_column(enumerado(UsoPreguntaDiario))
     dimension_id: Mapped[int | None] = mapped_column(ForeignKey("dimension.id"))
-    # Ajuste registros: {item, opcion}; si la cuenta eligió esa opción en ese ítem, se usa la pregunta base sin LLM.
-    respaldo_si: Mapped[dict | None] = mapped_column(JSON(none_as_null=True), default=None)
+    variantes: Mapped[dict | None] = mapped_column(JSON(none_as_null=True), default=None)
 
 
 class Conversacion(Base):

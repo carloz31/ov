@@ -1,4 +1,4 @@
-"""Adaptador síncrono Gemini de los asistentes (diario, sugerencias de pasos y guion): una petición, sin sesiones de
+"""Adaptador síncrono Gemini de los asistentes (sugerencias de pasos y guion): una petición, sin sesiones de
 base de datos. Ajuste registros llm (lote 2): el registro ya no pasa por aquí."""
 
 import json
@@ -16,16 +16,14 @@ from pydantic import ValidationError
 
 from app.config import Configuracion, ErrorConfiguracionRegistro
 from app.core.parametros import NIVEL_RAZONAMIENTO_ASISTENTES, TEMPERATURA_ASISTENTES
-from app.services.diario.asistente import (
-    PROMPT_CARTA_V1, PROMPT_DIARIO_V1, ContextoCarta, PreguntaPersonalizada, validar_personalizacion,
-)
+
 from app.services.investigaciones.sugerencias import RespuestaGuion, prompt_guion
 from app.services.planes.sugerencias import RespuestaSugerencias, prompt_sugerencias
 from app.services.registro.evaluacion import ErrorResultadoEvaluacion
 
 
 def mensaje_evaluador(contexto) -> str:
-    """El texto que recibe Gemini: el contexto en JSON (diario, cartas, sugerencias de pasos y guion)."""
+    """El texto que recibe Gemini: el contexto en JSON (sugerencias de pasos y guion)."""
     return json.dumps(asdict(contexto), ensure_ascii=False)
 
 
@@ -93,9 +91,6 @@ class EvaluadorGemini:
             self._quitar_filtros()
             raise ErrorClienteGemini('No se pudo inicializar el cliente Gemini') from None
 
-    def personalizar_entrada(self, contexto):
-        prompt = PROMPT_CARTA_V1 if isinstance(contexto, ContextoCarta) else PROMPT_DIARIO_V1
-        return self._medir(contexto, prompt, PreguntaPersonalizada, validar_personalizacion)
 
     def sugerir_pasos(self, contexto):
         # El servicio filtra los pasos (tipos, números, longitud); aquí solo se exige el esquema.

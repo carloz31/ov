@@ -6,7 +6,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, enumerado
-from app.models.enums import EstadoProgreso, OrigenEntrada, OrigenRedaccion, TipoFavorito, TipoRecomendacion
+from app.models.enums import EstadoProgreso, OrigenEntrada, TipoFavorito, TipoRecomendacion
 
 
 class ProgresoActividad(Base):
@@ -68,7 +68,8 @@ class ColeccionOcupacion(Base):
 class Recomendacion(Base):
     """Pregunta del diario recibida por una cuenta: desbloqueada por una regla o sorteada como pregunta del día.
 
-    `contexto` son las referencias resueltas al crearla; `texto` nulo = por redactar, y una vez guardado no cambia.
+    `texto` es el texto ya armado al crearla y no cambia; `variante` (ajuste cartas-diario), el código de la variante
+    de una carta adaptada que tocó (nulo: fija o respaldo; no se expone).
     `archivada_en` (ajuste del diario de F05): una carta archivada (DESBLOQUEADA) o una pregunta del día cerrada al
     borrar su entrada (DIARIA). `actividad_id`: la actividad cuya finalización la abrió (nula si la abrió otra cosa).
     """
@@ -85,15 +86,13 @@ class Recomendacion(Base):
             postgresql_where=text("tipo = 'DIARIA'"),
         ),
         CheckConstraint("(tipo = 'DIARIA') = (fecha IS NOT NULL)", name="fecha_solo_diaria"),
-        CheckConstraint("(texto IS NULL) = (origen IS NULL)", name="texto_con_origen"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)
     cuenta_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
     pregunta_diario_id: Mapped[int] = mapped_column(ForeignKey("pregunta_diario.id"))
     tipo: Mapped[TipoRecomendacion] = mapped_column(enumerado(TipoRecomendacion))
-    contexto: Mapped[list | None] = mapped_column(JSON(none_as_null=True))
-    texto: Mapped[str | None] = mapped_column(Text)
-    origen: Mapped[OrigenRedaccion | None] = mapped_column(enumerado(OrigenRedaccion))
+    texto: Mapped[str] = mapped_column(Text)
+    variante: Mapped[str | None]
     fecha: Mapped[date | None] = mapped_column(Date)
     creada_en: Mapped[datetime] = mapped_column(DateTime)
     archivada_en: Mapped[datetime | None] = mapped_column(DateTime)

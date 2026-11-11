@@ -30,7 +30,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # Ajuste registros llm (lote 2): salen 8 listas (6 de los registros y las 2 de dimensiones), ESTILOS pasa a
         # 9 opciones y no hay criterios.
         'ocupacion_familia': 341, 'lista_opciones': 19, 'opcion_lista': 124, 'item_registro': 17,
-        'referencia': 14, 'tematica': 5,
+        'referencia': 12, 'tematica': 5,  # ajuste cartas-diario: salen las dos de preguntas del diario
         'actividad_tematica': 6, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 614, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,
         'grupo_ocupacional': 23, 'estilo_trabajo': 21, 'ingreso_familia': 716, 'ingreso_institucion': 1096,

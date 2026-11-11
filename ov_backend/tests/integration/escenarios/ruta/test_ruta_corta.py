@@ -386,17 +386,15 @@ def test_hu028_036_075_diario_check_in_y_avance(cliente):
     check_ins = pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')
     assert check_ins['dias_registrados'] == 1 and isinstance(check_ins['registrado_hoy'], bool)
     expectativas = avanzar(cliente)
-    # Ajuste registros llm (lote 2): sin texto citable no hay qué retomar; queda la pregunta base.
-    base = '¿Cómo te sientes con lo que esperas de este camino?'
-    assert [(e['codigo'], e['texto']) for e in expectativas['entradas_desbloqueadas']] == [('t-diario-personal', base)]
-    abierta = pedir(cliente, 'POST', '/acciones/diario/abrir-pregunta', {'cuenta': 'est-ana', 'codigo': 't-diario-personal'})
-    assert abierta['texto'] == base and abierta['respondida'] is False
+    # Ajuste cartas-diario: la carta adaptada llega armada (UNIVERSIDAD en t-exp-ruta); no hay que abrirla.
+    carta = 'DATO DE PRUEBA: pensaste en la universidad. ¿Cómo te sientes con eso?'
+    assert [(e['codigo'], e['texto']) for e in expectativas['entradas_desbloqueadas']] == [('t-diario-personal', carta)]
     escribir(pregunta='t-diario-personal', texto='DATO DE PRUEBA: tranquila')
     del_dia = pedir(cliente, 'POST', '/acciones/diario/pregunta-del-dia', {'cuenta': 'est-ana', 'fecha_hora': FECHA})
     escribir(del_dia=True, texto='DATO DE PRUEBA: hoy')
     entradas = pedir(cliente, 'GET', '/cuentas/est-ana/diario/entradas')
     assert sorted(e['titulo_mostrado'] for e in entradas) == sorted(
-        [abierta['texto'], del_dia['texto'], '¿Qué te gustaría descubrir de ti en este camino?', 'Entrada libre 1'])
+        [carta, del_dia['texto'], '¿Qué te gustaría descubrir de ti en este camino?', 'Entrada libre 1'])
     pedir(cliente, 'POST', '/acciones/editar-entrada', {'cuenta': 'est-ana', 'numero': 2, 'titulo': 'Mi día', 'texto': 'Editada'})
     assert pedir(cliente, 'GET', '/cuentas/est-ana/diario/amistad')['puntos'] == 3
     avance = {t['codigo']: t['completadas'] for t in pedir(cliente, 'GET', '/cuentas/est-ana/tematicas')}

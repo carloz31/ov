@@ -37,7 +37,7 @@ def test_las_reflexiones_son_desbloqueables_sin_dimension(sesion_contenido):
     preguntas = sesion_contenido.scalars(select(m.PreguntaDiario).where(m.PreguntaDiario.codigo.like('d-conv-%'))).all()
     assert len(preguntas) == 4
     for p in preguntas:
-        assert p.uso == m.UsoPreguntaDiario.DESBLOQUEABLE and not p.personalizada and p.dimension_id is None, p.codigo
+        assert p.uso == m.UsoPreguntaDiario.DESBLOQUEABLE and p.variantes is None and p.dimension_id is None, p.codigo
 
 
 def test_ninguna_cifra_vieja_en_fichas_batallas_ni_json():

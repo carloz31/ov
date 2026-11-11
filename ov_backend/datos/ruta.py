@@ -260,8 +260,7 @@ ITEMS_REGISTRO = (
     ('t-referencia', 't-refe-duda', 'Lo que aún no sabes', '¿Qué te gustaría tener claro de tu plan A?', None),
 )
 
-# Referencias: (código, (tipo de dueño, dueño), tipo, fuente). Dueño: ('ACTIVIDAD', código) o
-# ('PREGUNTA_DIARIO', código). El tipo es uno de `TipoReferencia`; ELECCION y TEXTO leen un ítem de registro
+# Referencias: (código, ('ACTIVIDAD', código del dueño), tipo, fuente). El tipo es uno de `TipoReferencia`; ELECCION y TEXTO leen un ítem de registro
 # de otra actividad; RESULTADO y COINCIDENCIAS, el resultado revelado de una aplicación, y RESPUESTA_CUESTIONARIO,
 # la respuesta a un ítem de instrumento en una aplicación: (aplicación, ítem).
 REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera'),
@@ -270,8 +269,6 @@ REFERENCIAS = (('t-ref-espera', ('ACTIVIDAD', 't-eco'), 'TEXTO', 't-exp-espera')
                ('t-ref-coincidencias', ('ACTIVIDAD', 't-contraste'), 'COINCIDENCIAS', 'APL-RIASEC'),
                ('t-ref-cuestionario', ('ACTIVIDAD', 't-lee-cuestionario'), 'RESPUESTA_CUESTIONARIO',
                 ('APL-PARTIDA', 'AUTO-01')),
-               ('t-ref-diario-espera', ('PREGUNTA_DIARIO', 't-diario-personal'), 'TEXTO', 't-exp-espera'),
-               ('t-ref-diario-favoritos', ('PREGUNTA_DIARIO', 't-dia-favoritos'), 'FAVORITOS', None),
                ('t-ref-planes', ('ACTIVIDAD', 't-comparar'), 'PLANES', None),
                ('t-ref-plan-a', ('ACTIVIDAD', 't-proyecto'), 'PLAN', None),
                ('t-ref-pasos-plan-a', ('ACTIVIDAD', 't-proyecto'), 'PASOS_PLAN_A', None),
@@ -482,25 +479,38 @@ CITAS_LUMI = {1: 'Mirar con calma también es avanzar.',
               2: 'Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.',
               3: 'Un mapa no te dice adónde ir; te muestra por dónde podrías.'}
 
-# Preguntas del diario: (código, nombre, pregunta base, uso, personalizada, dimensión). Las DESBLOQUEABLE las
-# abre una regla; las DIARIA entran al sorteo de la pregunta del día por la dimensión del cuestionario de
-# partida y llegada (o sin dimensión). Las personalizadas declaran sus referencias en `REFERENCIAS`.
+# Preguntas del diario: (código, nombre, pregunta, uso, dimensión). Las DESBLOQUEABLE las abre una regla; las DIARIA
+# entran al sorteo de la pregunta del día por la dimensión del cuestionario de partida y llegada (o sin dimensión).
+# Una carta adaptada declara sus variantes en `VARIANTES_DIARIO` y su `pregunta` es el respaldo.
 PREGUNTAS_DIARIO = (
-    ('t-diario-fija', 'Mi primer paso', '¿Qué te gustaría descubrir de ti en este camino?', 'DESBLOQUEABLE', False, None),
+    ('t-diario-fija', 'Mi primer paso', '¿Qué te gustaría descubrir de ti en este camino?', 'DESBLOQUEABLE', None),
     ('t-diario-personal', 'Lo que espero', '¿Cómo te sientes con lo que esperas de este camino?', 'DESBLOQUEABLE',
-     True, None),
+     None),
     ('t-diario-tras-conversar', 'Lo que conversamos', '¿Qué te llevas de la conversación con tu familia?',
-     'DESBLOQUEABLE', False, None),
-    ('t-dia-claridad-1', 'Lo que tengo claro', '¿Qué tienes hoy un poco más claro que ayer?', 'DIARIA', False, 'AUTO-A'),
-    ('t-dia-claridad-2', 'Una duda', '¿Qué duda te gustaría resolver esta semana?', 'DIARIA', False, 'AUTO-A'),
-    ('t-dia-mi-1', 'Algo de mí', '¿Qué hiciste hoy que disfrutaste de verdad?', 'DIARIA', False, 'AUTO-B'),
-    ('t-dia-favoritos', 'Mis favoritos', '¿Qué te atrae de lo que marcaste como favorito?', 'DIARIA', True, 'AUTO-B'),
-    ('t-dia-libre', 'Un momento', '¿Qué momento de hoy quieres recordar?', 'DIARIA', False, None),
+     'DESBLOQUEABLE', None),
+    ('t-dia-claridad-1', 'Lo que tengo claro', '¿Qué tienes hoy un poco más claro que ayer?', 'DIARIA', 'AUTO-A'),
+    ('t-dia-claridad-2', 'Una duda', '¿Qué duda te gustaría resolver esta semana?', 'DIARIA', 'AUTO-A'),
+    ('t-dia-mi-1', 'Algo de mí', '¿Qué hiciste hoy que disfrutaste de verdad?', 'DIARIA', 'AUTO-B'),
+    ('t-dia-favoritos', 'Mis favoritos', '¿Qué te atrae de lo que marcaste como favorito?', 'DIARIA', 'AUTO-B'),
+    ('t-dia-libre', 'Un momento', '¿Qué momento de hoy quieres recordar?', 'DIARIA', None),
 )
 
-# Ajuste registros (DATO DE PRUEBA): si la cuenta eligió esa opción en ese ítem, la pregunta personalizada usa su
-# base sin LLM: {pregunta: (ítem, opción)}.
-RESPALDOS_DIARIO = {'t-diario-personal': ('t-exp-ruta', 'EMPRENDER')}
+# Ajuste cartas-diario (DATO DE PRUEBA): la carta adaptada de prueba. {pregunta: {huecos, variantes}}; cada variante
+# (código, condiciones, texto) gana si se cumplen todas sus condiciones, en orden; si no, va la `pregunta`.
+VARIANTES_DIARIO = {
+    't-diario-personal': {
+        'huecos': {'ruta': {'tipo': 'OPCION', 'item': 't-exp-ruta', 'nombres': {
+            'UNIVERSIDAD': 'la universidad', 'INSTITUTO': 'el instituto', 'TRABAJAR': 'trabajar',
+            'EMPRENDER': 'emprender', 'AUN_NO_SE': 'lo que aún no sabes'}}},
+        'variantes': (
+            {'codigo': 'EMPRENDER', 'condiciones': ({'tipo': 'ELIGIO', 'item': 't-exp-ruta', 'opciones': ('EMPRENDER',)},),
+             'texto': 'DATO DE PRUEBA: quieres emprender. ¿Cómo te sientes con eso?'},
+            {'codigo': 'OTRA_RUTA',
+             'condiciones': ({'tipo': 'NO_ELIGIO', 'item': 't-exp-ruta', 'opciones': ('EMPRENDER',)},),
+             'texto': 'DATO DE PRUEBA: pensaste en {ruta}. ¿Cómo te sientes con eso?'},
+        ),
+    },
+}
 
 # (código, tipo de objetivo, objetivo, mensaje de bloqueo, condiciones); cada condición:
 # (evento, referencia, conteo, mínimo).

@@ -14,7 +14,7 @@ class ActividadRemitente(BaseModel):
 
 
 class PreguntaDiarioEstado(BaseModel):
-    """Pregunta DESBLOQUEABLE. `redactada`: la cuenta ya tiene su texto; `respondida`: tiene una entrada.
+    """Pregunta DESBLOQUEABLE. `redactada`: la cuenta ya la recibió, con su texto; `respondida`: tiene una entrada.
 
     Ajuste del diario (F05), todos nulos hasta recibirla: `recibida_en`, `texto` (solo redactada), `entrada` y
     `respondida_en` (la entrada que la responde), `bandeja` (RESPONDIDA si tiene entrada; si no, ARCHIVADA o
@@ -23,7 +23,6 @@ class PreguntaDiarioEstado(BaseModel):
     codigo: str
     nombre: str
     estado: EstadoDisponibilidad
-    personalizada: bool
     redactada: bool
     respondida: bool
     recibida_en: datetime | None = None
@@ -36,18 +35,10 @@ class PreguntaDiarioEstado(BaseModel):
 
 
 class EntradaDesbloqueada(BaseModel):
-    """Pregunta que una acción acaba de dejar en el diario; `texto` nulo si está por redactar."""
-    codigo: str
-    nombre: str
-    personalizada: bool
-    texto: str | None
-
-
-class PreguntaAbierta(BaseModel):
+    """Pregunta que una acción acaba de dejar en el diario, con su texto ya armado."""
     codigo: str
     nombre: str
     texto: str
-    respondida: bool
 
 
 class PreguntaDelDia(BaseModel):

@@ -1,14 +1,11 @@
-"""B09: sorteo de la pregunta del día y redacción con respaldo, sin base."""
+"""B09: sorteo de la pregunta del día, sin base (ajuste cartas-diario: sin redacción)."""
 
 from collections import Counter
 from dataclasses import dataclass
 from datetime import date
 
 from app.core.parametros import PESO_BASE_DIMENSION
-from app.models import OrigenRedaccion
-from app.services.diario.asistente import redactar
 from app.services.diario.sorteo import PuntajeDimension, pesos_dimensiones, semilla, sortear
-from app.services.registro.evaluacion import EvaluadorFalso
 
 
 @dataclass(frozen=True)
@@ -19,8 +16,6 @@ class Pregunta:  # DATO DE PRUEBA
 
 
 PREGUNTAS = (Pregunta(1, 'a-1', 1), Pregunta(2, 'a-2', 1), Pregunta(3, 'b-1', 2), Pregunta(4, 'libre', None))
-BASE = '¿Qué sientes hoy?'
-DATOS = [{'tipo': 'TEXTO', 'texto': 'Ser ingeniera', 'opciones': []}]
 
 
 def test_pesos_por_distancia_al_maximo_y_base_sin_dimension():
@@ -43,28 +38,3 @@ def test_dimension_sin_preguntas_disponibles_vuelve_a_sortear_entre_las_demas():
     assert elegidas == {'b-1', 'libre'}
     assert sortear(PREGUNTAS, pesos, {1, 2, 3, 4}, 's') is None
 
-
-def test_redactar_sin_datos_no_llama_al_llm():
-    evaluador = EvaluadorFalso()
-    assert redactar(evaluador, BASE, [], tiempo_maximo_segundos=8) == (BASE, OrigenRedaccion.FIJA)
-    assert redactar(evaluador, BASE, None, tiempo_maximo_segundos=8) == (BASE, OrigenRedaccion.FIJA)
-    assert evaluador.llamadas_diario == 0
-
-
-def test_redactar_usa_la_base_ante_fallo_o_salida_invalida():
-    evaluador = EvaluadorFalso()
-    texto, origen = redactar(evaluador, BASE, DATOS, tiempo_maximo_segundos=8)
-    assert origen == OrigenRedaccion.LLM and 'Ser ingeniera' in texto and texto.endswith('?')
-    evaluador.falla_diario = True
-    assert redactar(evaluador, BASE, DATOS, tiempo_maximo_segundos=8) == (BASE, OrigenRedaccion.FIJA)
-
-    class Invalido:
-        def __init__(self, salida):
-            self.salida = salida
-
-        def personalizar_entrada(self, contexto):
-            return self.salida
-
-    for salida in ({'pregunta': 'Sin signo de pregunta'}, {'pregunta': '¿Una? ¿Dos?'}, {'otra': '¿x?'},
-                   {'pregunta': '¿Tu respuesta es adecuada?'}, 'no es json'):
-        assert redactar(Invalido(salida), BASE, DATOS, tiempo_maximo_segundos=8) == (BASE, OrigenRedaccion.FIJA)

@@ -22,7 +22,7 @@ from app.services.secciones import exigir_seccion
 def _estado(sesion: Session, cuenta: Cuenta, pregunta: PreguntaDiario, recomendacion) -> PreguntaDiarioEstado:
     """`recomendacion`: la fila de la carta recibida (con su entrada), o None si aún no llegó."""
     estado = PreguntaDiarioEstado(
-        codigo=pregunta.codigo, nombre=pregunta.nombre, personalizada=pregunta.personalizada,
+        codigo=pregunta.codigo, nombre=pregunta.nombre,
         estado="DISPONIBLE" if objetivo_disponible(sesion, cuenta, TipoObjetivo.PREGUNTA_DIARIO,
                                                    pregunta.id) else "BLOQUEADA",
         redactada=recomendacion is not None and recomendacion.texto is not None,

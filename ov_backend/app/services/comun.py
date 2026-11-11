@@ -91,8 +91,7 @@ def entradas_desbloqueadas(sesion: Session, cuenta: Cuenta, codigos: list[str]) 
     textos = dict(sesion.execute(select(Recomendacion.pregunta_diario_id, Recomendacion.texto).where(
         Recomendacion.cuenta_id == cuenta.id, Recomendacion.tipo == TipoRecomendacion.DESBLOQUEADA,
         Recomendacion.pregunta_diario_id.in_(preguntas))).all())
-    return [EntradaDesbloqueada(codigo=pregunta.codigo, nombre=pregunta.nombre, personalizada=pregunta.personalizada,
-                                texto=textos.get(pregunta_id))
+    return [EntradaDesbloqueada(codigo=pregunta.codigo, nombre=pregunta.nombre, texto=textos.get(pregunta_id))
             for pregunta_id in preguntas for pregunta in (definiciones.obtener(PreguntaDiario, pregunta_id),)]
 
 

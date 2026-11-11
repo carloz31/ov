@@ -43,7 +43,7 @@ MAXIMO_CONTEXTO_TESTIMONIO = 80
 _DICCIONARIOS = frozenset({
     'PROPIEDADES', 'DESCRIPCIONES', 'CONFIGURACION_BATALLAS', 'CONFIGURACION_CASOS', 'PROPIEDADES_ITEMS',
     'TEXTOS_INSIGNIAS', 'PAGINAS_INSIGNIAS', 'PISTAS_INSIGNIAS', 'CITAS_LUMI', 'TEXTOS_CONDICIONES',
-    'EVALUADORES_REGLAS', 'CARRERAS_RUTA', 'INSTITUCIONES_RUTA', 'UBICACIONES_RUTA', 'RESPALDOS_DIARIO', 'TARJETAS',
+    'EVALUADORES_REGLAS', 'CARRERAS_RUTA', 'INSTITUCIONES_RUTA', 'UBICACIONES_RUTA', 'VARIANTES_DIARIO', 'TARJETAS',
 })
 
 
@@ -186,21 +186,81 @@ def _puntaje_maximo_caso(m, codigo, tipo, minimo):
 def _preguntas_diario(m, sesion):
     dimensiones = {d.codigo: d for d in sesion.scalars(select(modelos.Dimension))}
     preguntas = {}
-    for codigo, nombre, pregunta, uso, personalizada, dimension in m.PREGUNTAS_DIARIO:
+    for codigo, nombre, pregunta, uso, dimension in m.PREGUNTAS_DIARIO:
         if not nombre.strip():
             raise ValueError(f'La pregunta de diario {codigo} no tiene nombre')
         if dimension is not None and (uso != 'DIARIA' or dimension not in dimensiones):
             raise ValueError(f'La pregunta de diario {codigo} tiene una dimensión que no corresponde: {dimension}')
-        respaldo = m.RESPALDOS_DIARIO.get(codigo)
-        if respaldo is not None and not personalizada:
-            raise ValueError(f'La pregunta de diario {codigo} tiene respaldo_si y no es personalizada')
+        variantes = m.VARIANTES_DIARIO.get(codigo)
+        if variantes is not None and uso != 'DESBLOQUEABLE':
+            raise ValueError(f'La pregunta de diario {codigo} tiene variantes y no es DESBLOQUEABLE')
+        if marcadores_de(pregunta):
+            raise ValueError(f'La pregunta de diario {codigo} tiene huecos en su texto base: {sorted(marcadores_de(pregunta))}')
         preguntas[codigo] = modelos.PreguntaDiario(
             codigo=codigo, nombre=nombre, pregunta=pregunta, uso=modelos.UsoPreguntaDiario(uso),
-            personalizada=personalizada, dimension_id=None if dimension is None else dimensiones[dimension].id,
-            respaldo_si=None if respaldo is None else {'item': respaldo[0], 'opcion': respaldo[1]})
-    if set(m.RESPALDOS_DIARIO) - set(preguntas):
-        raise ValueError(f'Respaldos de preguntas de diario inexistentes: {sorted(set(m.RESPALDOS_DIARIO) - set(preguntas))}')
+            dimension_id=None if dimension is None else dimensiones[dimension].id,
+            variantes=None if variantes is None else _json_variantes(variantes))
+    if set(m.VARIANTES_DIARIO) - set(preguntas):
+        raise ValueError(f'Variantes de preguntas de diario inexistentes: {sorted(set(m.VARIANTES_DIARIO) - set(preguntas))}')
     return preguntas
+
+
+def _json_variantes(variantes):
+    return {'huecos': {nombre: {clave: dict(valor) if isinstance(valor, dict) else valor
+                                for clave, valor in hueco.items()} for nombre, hueco in variantes['huecos'].items()},
+            'variantes': [{'codigo': v['codigo'], 'texto': v['texto'],
+                           'condiciones': [{clave: list(valor) if isinstance(valor, tuple) else valor
+                                            for clave, valor in c.items()} for c in v['condiciones']]}
+                          for v in variantes['variantes']]}
+
+
+_CONDICIONES = {'ELIGIO': {'tipo', 'item', 'opciones'}, 'NO_ELIGIO': {'tipo', 'item', 'opciones'},
+                'OPCION_INICIAL': {'tipo', 'valor'}}
+_HUECOS = {'OPCION': ({'tipo', 'item', 'nombres'}, set()), 'MARCADOR': ({'tipo', 'item', 'marcador'}, {'origen'}),
+           'PLAN_A': ({'tipo'}, set()), 'OPCION_INICIAL': ({'tipo'}, set())}
+
+
+def _validar_variantes(m, definiciones_items, marcadores_items):
+    """Ajuste cartas-diario: cada variante nombra ítems y opciones que existen y sus huecos tienen de dónde salir.
+    `definiciones_items[c][3]`: todas las opciones del ítem; `[4]`: las de su lista (que `nombres` debe cubrir)."""
+    for codigo, variantes in m.VARIANTES_DIARIO.items():
+        def item_de(dato, clave='item'):
+            if dato.get(clave) not in definiciones_items or not definiciones_items[dato[clave]][2]:
+                raise ValueError(f'La carta {codigo} lee {dato.get(clave)}, que no es un ítem con elección')
+            return definiciones_items[dato[clave]]
+
+        huecos = variantes['huecos']
+        for nombre, hueco in huecos.items():
+            obligatorias, opcionales = _HUECOS.get(hueco.get('tipo'), (None, None))
+            if obligatorias is None or not obligatorias <= set(hueco) <= obligatorias | opcionales:
+                raise ValueError(f'El hueco {nombre} de la carta {codigo} no tiene una forma válida')
+            if hueco['tipo'] == 'OPCION':
+                *_, opciones, de_lista = item_de(hueco)
+                if not set(hueco['nombres']) <= opciones or not de_lista <= set(hueco['nombres']):
+                    raise ValueError(f'Los nombres del hueco {nombre} de {codigo} no cubren las opciones de '
+                                     f'{hueco["item"]}')
+            if hueco['tipo'] == 'MARCADOR':
+                if hueco['marcador'] not in marcadores_items.get(hueco['item'], set()):
+                    raise ValueError(f'El ítem {hueco["item"]} no responde con el marcador {hueco["marcador"]} '
+                                     f'(hueco {nombre} de {codigo})')
+                if 'origen' in hueco:
+                    item_de(hueco, 'origen')
+        if not variantes['variantes']:
+            raise ValueError(f'La carta {codigo} no tiene variantes')
+        for variante in variantes['variantes']:
+            if not variante['condiciones']:
+                raise ValueError(f'La variante {variante["codigo"]} de {codigo} no tiene condiciones')
+            for condicion in variante['condiciones']:
+                if set(condicion) != _CONDICIONES.get(condicion.get('tipo'), set()):
+                    raise ValueError(f'Una condición de la variante {variante["codigo"]} de {codigo} no es válida')
+                if condicion['tipo'] == 'OPCION_INICIAL':
+                    if condicion['valor'] not in ('MISMA', 'OTRA', 'SIN_OPCION'):
+                        raise ValueError(f'La variante {variante["codigo"]} de {codigo} compara con {condicion["valor"]}')
+                elif not set(condicion['opciones']) or not set(condicion['opciones']) <= item_de(condicion)[3]:
+                    raise ValueError(f'La variante {variante["codigo"]} de {codigo} nombra opciones inexistentes de '
+                                     f'{condicion["item"]}')
+            if faltan := marcadores_de(variante['texto']) - set(huecos):
+                raise ValueError(f'La variante {variante["codigo"]} de {codigo} usa huecos sin declarar: {sorted(faltan)}')
 
 
 def _unir_instrumentos(m, sesion, actividades, base: fijos.Fijos):
@@ -353,7 +413,7 @@ def _cargar_registros(m, sesion, actividades, base: fijos.Fijos):
     listas = {codigo: (codigo, nombre, opciones) for codigo, nombre, opciones in (*fijos.LISTAS_COMUNES, *m.LISTAS)}
     cargadas = {**base.listas, **fijos.cargar_listas(sesion, m.LISTAS, comun=False)}
     ordenes, vistos = {}, set()
-    items, definiciones_items = {}, {}
+    items, definiciones_items, marcadores_items = {}, {}, {}
     sin_item = set(m.TARJETAS) - {codigo for _, codigo, *_ in m.ITEMS_REGISTRO}
     if sin_item:
         raise ValueError(f'Tarjetas de ítems inexistentes: {sorted(sin_item)}')
@@ -375,7 +435,9 @@ def _cargar_registros(m, sesion, actividades, base: fijos.Fijos):
         codigos_base = [c for c, _ in listas[lista][2]] if lista else []
         _validar_propias(codigo, propias, codigos_base)
         tarjeta = _tarjetas(codigo, m.TARJETAS.get(codigo), propias)
-        _validar_marcadores(codigo, _textos_con_marcadores(presentacion, propias, tarjeta))
+        textos_marcadores = _textos_con_marcadores(presentacion, propias, tarjeta)
+        _validar_marcadores(codigo, textos_marcadores)
+        marcadores_items[codigo] = set().union(*(marcadores_de(t) for t in textos_marcadores))
         propiedades = m.PROPIEDADES_ITEMS.get(codigo, {})
         item = modelos.ItemRegistro(
             codigo=codigo, actividad_id=actividades[actividad].id, orden=ordenes[actividad], nombre=nombre,
@@ -393,8 +455,9 @@ def _cargar_registros(m, sesion, actividades, base: fijos.Fijos):
             etiqueta_otra=eleccion.get('etiqueta_otra'))
         items[codigo] = (item, presentacion, eleccion.get('retoma'), eleccion.get('referencia'))
         definiciones_items[codigo] = (actividad, ordenes[actividad], eleccion, set(codigos_base) | {
-            o['codigo'] for o in propias})
+            o['codigo'] for o in propias}, set(codigos_base))
     _validar_premarcar_y_ecos(items, definiciones_items)
+    _validar_variantes(m, definiciones_items, marcadores_items)
     referencias = _validar_referencias(m, sesion, actividades, items, base)
     _validar_ecos_referencia(items, referencias)
     _insertar_en_orden(sesion, items, referencias)
@@ -411,7 +474,7 @@ def _validar_premarcar_y_ecos(items, definiciones_items):
         return otro in definiciones_items and definiciones_items[otro][0] == actividad and (
             definiciones_items[otro][1] < orden)
 
-    for codigo, (actividad, _, eleccion, opciones) in definiciones_items.items():
+    for codigo, (actividad, _, eleccion, opciones, _de_lista) in definiciones_items.items():
         premarcar = (eleccion or {}).get('premarcar_si')
         if premarcar is not None:
             if set(premarcar) != {'item', 'opcion', 'marca'} or not anterior(codigo, premarcar['item']):
@@ -446,19 +509,15 @@ def _validar_referencias(m, sesion, actividades, items, base: fijos.Fijos):
     items_instrumento = {i.codigo: i for i in sesion.scalars(select(modelos.ItemInstrumento))}
     presentados = set(sesion.execute(select(modelos.AplicacionActividad.aplicacion_id, modelos.ActividadItem.item_id).join(
         modelos.ActividadItem, modelos.ActividadItem.actividad_id == modelos.AplicacionActividad.actividad_id)))
-    preguntas = {p.codigo: p for p in sesion.scalars(select(modelos.PreguntaDiario))}
     referencias = {}
     for codigo, (tipo_dueno, dueno), tipo, fuente in m.REFERENCIAS:
         if tipo not in modelos.TipoReferencia.__members__:
             raise ValueError(f'La referencia {codigo} tiene el tipo {tipo}, fuera del catálogo')
         if tipo_dueno == 'ACTIVIDAD' and dueno in actividades:
             dueno_id = dict(actividad_id=actividades[dueno].id)
-        elif tipo_dueno == 'PREGUNTA_DIARIO' and dueno in preguntas:
-            dueno_id = dict(pregunta_diario_id=preguntas[dueno].id)
         else:
             raise ValueError(f'La referencia {codigo} tiene un dueño inexistente: {tipo_dueno} {dueno}')
-        if tipo_dueno == 'PREGUNTA_DIARIO' and not preguntas[dueno].personalizada:
-            raise ValueError(f'La referencia {codigo} pertenece a {dueno}, que no es personalizada')
+
         if tipo in SIN_FUENTE:
             if fuente is not None:
                 raise ValueError(f'La referencia {codigo} es {tipo} y no lleva fuente')

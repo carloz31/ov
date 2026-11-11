@@ -29,7 +29,7 @@ def preparar_preguntas_respondidas(sesion):
     for cuenta, pregunta in [('est-ana', preguntas[0]), ('est-luis', preguntas[1])]:
         cuenta_id = buscar(sesion, m.Cuenta, cuenta).id
         recomendacion = m.Recomendacion(cuenta_id=cuenta_id, pregunta_diario_id=pregunta.id, tipo='DESBLOQUEADA',
-                                        texto='DATO DE PRUEBA', origen='FIJA', creada_en=FECHA_BD)
+                                        texto='DATO DE PRUEBA', creada_en=FECHA_BD)
         sesion.add(recomendacion)
         sesion.flush()
         sesion.add(m.EntradaDiario(cuenta_id=cuenta_id, origen='GUIADA', recomendacion_id=recomendacion.id, numero=1,

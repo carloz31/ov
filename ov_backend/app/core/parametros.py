@@ -59,9 +59,6 @@ MODELO_LLM_REGISTRO = "gemini-3.5-flash-lite"
 TEMPERATURA_ASISTENTES = 0.2
 # Razonamiento mínimo de los asistentes; si el modelo no admite el nivel, `gemini.razonamiento_para` usa su mínimo.
 NIVEL_RAZONAMIENTO_ASISTENTES = "minimal"
-# B03: validación de la pregunta redactada por el LLM; se compara en minúsculas y sin tildes.
-MAXIMO_CARACTERES_PREGUNTA = 200
-PALABRAS_EVALUATIVAS = ("adecuad", "poco desarrollad", "criterio", "incomplet", "insuficient")
 PAUSA_CASOS_GEMINI_SEGUNDOS = 5
 # Ajuste registros llm (lote 1): capa del LLM v7 (`app/services/registro/llm/`), aún sin conectar al flujo.
 MODELO_LLM_REGISTRO_V7 = "claude-haiku-5-5"
@@ -106,14 +103,15 @@ PIEZAS_CON_ORIGEN = ('INTEL', 'HAB', 'BIEN-1', 'VAL-1', 'LOGRO-HAB', 'GUSTO', 'C
 PIEZAS_SOLO_ORIGEN_LLM = ('INT', 'OTRA-PERFIL', 'OTRA-INICIO')
 GRUPOS_PIEZAS = ('INTERESES', 'TESTS', 'ANTES', 'CUESTA')
 
-# B09 · Diario. Cambiar el prompt de personalización exige subir `VERSION_PROMPT_DIARIO`.
-VERSION_PROMPT_DIARIO = "v1"
+# B09 · Diario (ajuste cartas-diario: sin LLM).
 # Días que una pregunta del día sigue vigente desde su fecha (provisional).
 VIGENCIA_PREGUNTA_DIA_DIAS = 1
 # Sorteo de la pregunta del día: peso = (máximo de la escala − promedio) + base; las DIARIA sin dimensión pesan la base.
 PESO_BASE_DIMENSION = 0.5
-# Preguntas del día recientes que no se repiten (provisional).
-N_SIN_REPETIR_DIARIA = 3
+# Preguntas del día recientes que no se repiten: con el pool de 12 de `contenido`, ninguna se repite hasta agotarlo.
+
+N_SIN_REPETIR_DIARIA = 11
+
 # Amistad con el asistente: escrituras que cuentan por día y puntos para alcanzar cada nivel (provisionales).
 TOPE_ENTRADAS_AMISTAD_DIA = 3
 UMBRALES_AMISTAD = (1, 5, 12, 25, 45)

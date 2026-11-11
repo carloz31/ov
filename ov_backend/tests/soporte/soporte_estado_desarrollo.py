@@ -58,7 +58,7 @@ def llenar_estado(aplicacion):
                                   fecha_hora=fecha),
             modelos.ContadorDiario(cuenta_id=cuenta.id, ultimo_numero=1, ultimo_libre=1),
             modelos.Recomendacion(cuenta_id=cuenta.id, pregunta_diario_id=pregunta.id, tipo='DIARIA', texto='DATO DE PRUEBA',
-                                  origen='FIJA', fecha=fecha.date(), creada_en=fecha),
+                                  fecha=fecha.date(), creada_en=fecha),
             modelos.CheckIn(cuenta_id=cuenta.id, fecha=fecha.date(), nivel_seguridad=3),
             modelos.EntrevistaAutor(entrevista_id=entrevista.id, cuenta_id=cuenta.id),
             modelos.ConversacionVinculo(vinculo_id=vinculo.id, conversacion_id=conversacion.id, conversada_en=fecha),

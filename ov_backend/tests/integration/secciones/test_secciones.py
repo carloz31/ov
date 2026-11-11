@@ -114,7 +114,7 @@ def test_leer_el_diario_bloqueado_responde_409_con_su_mensaje(cliente):
     assert respuesta.json()['detail']['mensaje'] == 'Completa el inicio para abrir tu diario.'
     assert pedir(cliente, 'GET', '/cuentas/apo-rosa/diario/preguntas') == []
     completar(cliente, 't-inicio')
-    # B09: `t-inicio` deja en el diario la pregunta fija; la personalizada sigue bloqueada.
+    # B09: `t-inicio` deja en el diario la pregunta fija; la adaptada sigue bloqueada.
     assert [(p['codigo'], p['estado'], p['redactada']) for p in pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')] == [
         ('t-diario-fija', 'DISPONIBLE', True), ('t-diario-personal', 'BLOQUEADA', False),
         ('t-diario-tras-conversar', 'BLOQUEADA', False)]

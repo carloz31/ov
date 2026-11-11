@@ -35,7 +35,7 @@ def completar_catalogos_vacios(sesion):
     sesion.flush()
     ana = buscar(sesion, m.Cuenta, 'est-ana').id
     recomendacion = m.Recomendacion(cuenta_id=ana, pregunta_diario_id=buscar(sesion, m.PreguntaDiario, 'pregunta-prueba').id,
-        tipo='DESBLOQUEADA', texto='DATO DE PRUEBA', origen='FIJA', creada_en=FECHA_BD)
+        tipo='DESBLOQUEADA', texto='DATO DE PRUEBA', creada_en=FECHA_BD)
     sesion.add(recomendacion)
     sesion.flush()
     # numero 2: `llenar_estado` ya dejó la entrada 1 de Ana.

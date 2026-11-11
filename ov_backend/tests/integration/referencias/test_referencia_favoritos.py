@@ -1,4 +1,7 @@
-"""B09: la referencia FAVORITOS lee los favoritos de la propia cuenta, del más reciente al más antiguo."""
+"""B09: la referencia FAVORITOS lee los favoritos de la propia cuenta, del más reciente al más antiguo.
+
+Ajuste cartas-diario: ningún dato usa FAVORITOS (su única referencia era de una pregunta del diario); la prueba arma
+la suya, sin guardarla (DATO DE PRUEBA)."""
 
 from sqlalchemy import select
 
@@ -11,9 +14,9 @@ from soporte_catalogo_ruta import ING_CIVIL, INST_UNI
 
 @usar_contexto
 def _resolver(sesion, cuenta):
-    referencia = sesion.scalar(select(m.Referencia).where(m.Referencia.codigo == 't-ref-diario-favoritos'))
+    referencia = m.Referencia(codigo='t-ref-favoritos', tipo=m.TipoReferencia.FAVORITOS)
     return resolver(sesion, sesion.scalar(select(m.Cuenta).where(m.Cuenta.codigo == cuenta)), [referencia])[
-        't-ref-diario-favoritos']
+        't-ref-favoritos']
 
 
 def resolver_favoritos(aplicacion, cuenta):

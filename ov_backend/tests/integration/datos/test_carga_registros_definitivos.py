@@ -194,7 +194,6 @@ def test_dialogos_y_preguntas_de_eleccion_que_venian_del_front(items):
 def test_cero_cartas_personalizadas_y_ninguna_regla_r_c(sesion_contenido):
     preguntas = {p.codigo: p for p in sesion_contenido.scalars(select(m.PreguntaDiario))}
     assert not {'C1', 'C2', 'C3', 'C4', 'C5', 'C6'} & set(preguntas)
-    assert all(p.respaldo_si is None for p in preguntas.values())
     assert not any(re.fullmatch(r'R-C[1-6]', r[0]) for r in contenido.REGLAS)
 
 

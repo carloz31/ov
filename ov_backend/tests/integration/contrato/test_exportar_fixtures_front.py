@@ -20,7 +20,7 @@ from app.schemas.acciones import (
 from app.schemas.batallas import BatallaCuenta, PreguntaIntento
 from app.schemas.casos import CasoCuenta, OcupacionColeccion
 from app.schemas.diario import (
-    AmistadAsistente, CheckInsCuenta, EntradaDiarioPublica, PreguntaAbierta, PreguntaDelDia, PreguntaDiarioEstado,
+    AmistadAsistente, CheckInsCuenta, EntradaDiarioPublica, PreguntaDelDia, PreguntaDiarioEstado,
 )
 from app.schemas.tematicas import AvanceTematica
 from app.schemas.catalogo import (
@@ -73,7 +73,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'catalogo-instituciones', 'catalogo-institucion-t-uni', 'ver-ocupacion', 'marcar-favorito', 'favoritos',
     'catalogo-familias', 'catalogo-ubicaciones', 'ver-carrera', 'catalogo-inesperada', 'catalogo-carreras-favoritos',
     'catalogo-familia', 'catalogo-ocupaciones-familia', 'catalogo-ocupacion-afin',
-    'diario-preguntas', 'abrir-pregunta-personal', 'pregunta-del-dia', 'escribir-entrada-fija', 'escribir-entrada-libre',
+    'diario-preguntas', 'pregunta-del-dia', 'escribir-entrada-fija', 'escribir-entrada-libre',
     'editar-entrada', 'diario-entradas', 'diario-amistad', 'desarchivar-pregunta', 'archivar-pregunta',
     'diario-preguntas-buzon', 'check-ins', 'tematicas',
     'crear-plan-no-favorita', 'guardar-seccion-bloqueada', 'planes-misma-familia', 'ordenar-planes', 'eliminar-plan',
@@ -346,12 +346,11 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
                                                              [INST_UNI])
     # B09: diario, check-ins y temáticas.
     preguntas = TypeAdapter(list[PreguntaDiarioEstado]).validate_python(datos['diario-preguntas'])
-    # Ajuste registros llm (lote 2): sin texto citable, la personalizada no tiene qué retomar y queda la base.
-    base = '¿Cómo te sientes con lo que esperas de este camino?'
+    # Ajuste cartas-diario: la carta adaptada llega armada (INSTITUTO en t-exp-ruta, variante OTRA_RUTA).
+    carta = 'DATO DE PRUEBA: pensaste en el instituto. ¿Cómo te sientes con eso?'
     assert [(p.codigo, p.redactada) for p in preguntas] == [('t-diario-fija', True), ('t-diario-personal', True),
                                                             ('t-diario-tras-conversar', False)]
-    assert datos['entregar-t-expectativas']['entradas_desbloqueadas'][0]['texto'] == base
-    assert PreguntaAbierta.model_validate(datos['abrir-pregunta-personal']).texto == base
+    assert datos['entregar-t-expectativas']['entradas_desbloqueadas'][0]['texto'] == carta
     PreguntaDelDia.model_validate(datos['pregunta-del-dia'])
     entradas = TypeAdapter(list[EntradaDiarioPublica]).validate_python(datos['diario-entradas'])
     assert sorted((e.numero, e.origen, e.titulo_mostrado) for e in entradas)[3] == (4, 'LIBRE', 'Mi tarde')

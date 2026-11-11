@@ -162,11 +162,6 @@ class TipoRecomendacion(StrEnum):
     DIARIA = "DIARIA"
 
 
-class OrigenRedaccion(StrEnum):
-    FIJA = "FIJA"
-    LLM = "LLM"
-
-
 class EstadoRespuestaRegistro(StrEnum):
     """Estado de un intento de un ítem (ajuste registros llm, lote 2)."""
     # Ítem u opción sin LLM: solo la elección y el texto.

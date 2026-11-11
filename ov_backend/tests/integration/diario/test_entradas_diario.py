@@ -2,8 +2,6 @@
 
 from datetime import datetime, timedelta
 
-from sqlalchemy import func, select
-
 from app import models as m
 from app.core.parametros import TOPE_ENTRADAS_AMISTAD_DIA, UMBRALES_AMISTAD
 from app.dependencies import obtener_ahora
@@ -26,11 +24,11 @@ def amistad(cliente, cuenta='est-ana'):
 def test_la_fija_llega_con_texto_en_la_respuesta_de_completar_y_se_responde_una_vez(cliente):
     respuesta = completar(cliente, 't-inicio')
     assert respuesta['entradas_desbloqueadas'] == [{
-        'codigo': 't-diario-fija', 'nombre': 'Mi primer paso', 'personalizada': False,
+        'codigo': 't-diario-fija', 'nombre': 'Mi primer paso',
         'texto': '¿Qué te gustaría descubrir de ti en este camino?'}]
     escribir(cliente, pregunta='t-diario-fija', texto='Quiero saber qué me gusta.')
     escribir(cliente, pregunta='t-diario-fija', esperado=409)
-    # La personalizada aún no está en el diario.
+    # La adaptada aún no está en el diario.
     escribir(cliente, pregunta='t-diario-personal', esperado=409)
     [entrada] = entradas(cliente)
     assert entrada == {'numero': 1, 'origen': 'GUIADA', 'titulo': None,
@@ -153,5 +151,5 @@ def test_check_in_registrado_hoy_usa_la_fecha_del_servidor(aplicacion, cliente):
 def test_ningun_tipo_de_referencia_lee_el_diario(sesion):
     assert not any('DIARIO' in tipo or 'ENTRADA' in tipo for tipo in m.TipoReferencia.__members__)
     assert {c.name for c in m.Referencia.__table__.columns}.isdisjoint({'entrada_diario_id', 'entrada_id'})
-    assert sesion.scalar(select(func.count()).select_from(m.Referencia).where(
-        m.Referencia.pregunta_diario_id.is_not(None))) == 2
+    # Ajuste cartas-diario: las preguntas del diario ya no tienen referencias (sale `pregunta_diario_id`).
+    assert 'pregunta_diario_id' not in {c.name for c in m.Referencia.__table__.columns}
