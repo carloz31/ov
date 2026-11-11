@@ -6,7 +6,6 @@ import { ChallengePlayer } from '@/features/activities/components/challenges/Cha
 import { StudentActivityPlayer } from '@/features/activities/components/StudentActivityPlayer'
 import { getCiudadPoints } from '@/features/adventure/lib/ciudadPoints'
 import { MapScreenLayout } from '@/features/adventure/components/MapScreenLayout'
-import { RegistroPorAmpliar } from '@/features/activities/components/RegistroPorAmpliar'
 import { RegistroServidorPlayer } from '@/features/activities/components/RegistroServidorPlayer'
 import { FichasBatalla } from '@/features/activities/components/FichasBatalla'
 import '@/styles/student/journey.css'
@@ -73,7 +72,6 @@ export function CiudadScreen() {
       renderCaseProgress={(adventure, actividad) => (
         <ForestFireCaseProgress adventure={adventure} actividad={actividad} />
       )}
-      renderPorAmpliar={(codigo) => <RegistroPorAmpliar codigo={codigo} />}
       renderFichasBatalla={(codigo) => <FichasBatalla codigo={codigo} />}
       renderJournal={(journal, onOpen) => (
         <JournalEntryCard

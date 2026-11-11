@@ -30,10 +30,10 @@
     "nombre": "Lo que espero",
     "personalizada": true,
     "recibida_en": "2026-10-07T10:00:00",
-    "redactada": false,
+    "redactada": true,
     "respondida": false,
     "respondida_en": null,
-    "texto": null
+    "texto": "¿Cómo te sientes con lo que esperas de este camino?"
   },
   {
     "actividad": null,

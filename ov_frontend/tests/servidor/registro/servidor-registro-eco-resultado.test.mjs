@@ -11,7 +11,6 @@ import {
   jsonServidor,
   respuestaDominio,
 } from '../../soporte/servidor-ayudas.mjs'
-import { abrir, iniciar } from '../../soporte/servidor-registro-ayudas.mjs'
 
 // F03: t-contraste cita el código de interés y las ocupaciones revelados; t-lee-cuestionario, la respuesta de
 // la partida. Sin dato (perfil plano, reinicio), la cita no se muestra y la actividad sigue igual.
@@ -46,32 +45,13 @@ test('la cita de un resultado usa las opciones del servidor; sin dato ni opcione
   assert.equal(citaReferencia(LEE.referencias[0]), `«${LEE.referencias[0].texto}»`)
   assert.deepEqual(copia(codigosEco(['a', 'b'])), ['a', 'b'])
   assert.deepEqual(copia(codigosEco('a')), ['a'])
-  assert.equal(necesitaReferencias([], [['t-ref-resultado']]), true)
-  assert.equal(necesitaReferencias([], [[]]), false)
+  // Ajuste front de registros (lote 1): solo los diálogos de la apertura piden referencias.
+  assert.equal(necesitaReferencias([['t-ref-resultado']]), true)
+  assert.equal(necesitaReferencias([[]]), false)
 })
 
-async function consignaContraste(referencias) {
-  const { app } = await iniciar({ actividad: 't-contraste', referencias })
-  const player = await abrir(app, 't-contraste')
-  elementos(player.render(), (e) => e.type?.name === 'DialogueBox')[0].props.onContinue()
-  return { app, nodo: elementos(player.render(), (e) => e.type?.name === 'RegistroConsignaNode')[0] }
-}
-
-test('t-contraste abre su consigna con las dos citas en la burbuja de Lumi', async () => {
-  const { app, nodo } = await consignaContraste(CONTRASTE.disponible)
-  assert.ok(app.requests.some((r) => r.url.endsWith('/cuentas/est-ana/actividades/t-contraste/referencias')))
-  assert.equal(nodo.props.node.item, 't-con-contraste')
-  assert.equal(nodo.props.eco.estado, 'DISPONIBLE')
-  assert.match(nodo.props.eco.cita, /^Tu código de interés: Investigativa · .+\. Ocupaciones afines: /)
-})
-
-test('con perfil plano o tras el reinicio, t-contraste se abre sin cita', async () => {
-  for (const referencias of [CONTRASTE.plano, CONTRASTE.reiniciado]) {
-    const { nodo } = await consignaContraste(referencias)
-    assert.equal(nodo.props.node.item, 't-con-contraste')
-    assert.equal(nodo.props.eco, undefined)
-  }
-})
+// Ajuste front de registros (lote 1): el eco de la consigna de t-contraste ya no sale de las referencias del front sino
+// de los `ecos` del ítem en el registro (servidor-registro-vista).
 
 async function abrirLectura(referencias, { edit, completada } = {}) {
   const app = fixtureServidor(),

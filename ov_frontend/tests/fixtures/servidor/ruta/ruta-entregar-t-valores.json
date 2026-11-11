@@ -1,0 +1,190 @@
+{
+  "estado": "COMPLETADA",
+  "eventos_registrados": [
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-valores",
+      "tipo": "COMPLETA_ACTIVIDAD"
+    },
+    {
+      "fecha_hora": "2026-10-07T10:00:00",
+      "referencia": "t-valores",
+      "tipo": "REGISTRO_ADECUADO"
+    }
+  ],
+  "item_actual": null,
+  "items": [
+    {
+      "codigo": "t-val-orden",
+      "con_llm": false,
+      "consigna": {
+        "arranque": null,
+        "dialogo": null,
+        "pregunta_eleccion": null,
+        "pregunta_texto": "Ordena los tres valores más importantes para ti y explica el primero."
+      },
+      "disponible": true,
+      "ecos": [],
+      "eleccion": {
+        "etiqueta_otra": null,
+        "maxima": 3,
+        "minima": 3,
+        "ordenada": true,
+        "permite_otra": false
+      },
+      "marcador_faltante": null,
+      "nombre": "Tus valores",
+      "obligatorio": true,
+      "opciones": [
+        {
+          "arranque": null,
+          "codigo": "SERVIR",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "Ordena los tres valores más importantes para ti y explica el primero.",
+          "sin_llm": false,
+          "texto": "Servir a otros"
+        },
+        {
+          "arranque": null,
+          "codigo": "CREAR",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "Ordena los tres valores más importantes para ti y explica el primero.",
+          "sin_llm": false,
+          "texto": "Crear cosas nuevas"
+        },
+        {
+          "arranque": null,
+          "codigo": "ESTABILIDAD",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "Ordena los tres valores más importantes para ti y explica el primero.",
+          "sin_llm": false,
+          "texto": "Tener estabilidad"
+        },
+        {
+          "arranque": null,
+          "codigo": "RECONOCIMIENTO",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "Ordena los tres valores más importantes para ti y explica el primero.",
+          "sin_llm": false,
+          "texto": "Ser reconocido"
+        },
+        {
+          "arranque": null,
+          "codigo": "LIBERTAD",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "Ordena los tres valores más importantes para ti y explica el primero.",
+          "sin_llm": false,
+          "texto": "Tener libertad"
+        }
+      ],
+      "respuesta": {
+        "eco_cambiado": false,
+        "linea_seguimiento": null,
+        "opciones_elegidas": [
+          {
+            "codigo": "CREAR",
+            "texto": "Crear cosas nuevas"
+          },
+          {
+            "codigo": "LIBERTAD",
+            "texto": "Tener libertad"
+          },
+          {
+            "codigo": "ESTABILIDAD",
+            "texto": "Tener estabilidad"
+          }
+        ],
+        "pista": null,
+        "primera_respuesta": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+        "reenviable": false
+      }
+    },
+    {
+      "codigo": "t-val-libre",
+      "con_llm": false,
+      "consigna": {
+        "arranque": null,
+        "dialogo": null,
+        "pregunta_eleccion": null,
+        "pregunta_texto": "Escribe lo que quieras sobre tus valores."
+      },
+      "disponible": true,
+      "ecos": [],
+      "eleccion": null,
+      "marcador_faltante": null,
+      "nombre": "Lo que piensas de tus valores",
+      "obligatorio": true,
+      "opciones": [],
+      "respuesta": {
+        "eco_cambiado": false,
+        "linea_seguimiento": null,
+        "opciones_elegidas": [],
+        "pista": null,
+        "primera_respuesta": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+        "reenviable": false
+      }
+    },
+    {
+      "codigo": "t-val-breve",
+      "con_llm": false,
+      "consigna": {
+        "arranque": null,
+        "dialogo": null,
+        "pregunta_eleccion": null,
+        "pregunta_texto": "Describe un momento en que actuaste según tus valores."
+      },
+      "disponible": true,
+      "ecos": [],
+      "eleccion": null,
+      "marcador_faltante": null,
+      "nombre": "Un momento con tus valores",
+      "obligatorio": true,
+      "opciones": [],
+      "respuesta": {
+        "eco_cambiado": false,
+        "linea_seguimiento": null,
+        "opciones_elegidas": [],
+        "pista": null,
+        "primera_respuesta": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+        "reenviable": false
+      }
+    }
+  ],
+  "nuevas_notificaciones": [],
+  "nuevos_desbloqueos": [
+    {
+      "condiciones": [
+        {
+          "actual": 1,
+          "cumplida": true,
+          "referencia": "t-valores",
+          "requerido": 1,
+          "texto": null,
+          "tipo_conteo": "EVENTOS",
+          "tipo_evento": "COMPLETA_ACTIVIDAD"
+        }
+      ],
+      "objetivo": {
+        "codigo": "CONOCIMIENTO",
+        "nombre": "Qué tanto la conozco"
+      },
+      "regla": "R-PLAN-CONOCIMIENTO",
+      "tipo_objetivo": "SECCION_PLAN"
+    }
+  ]
+}

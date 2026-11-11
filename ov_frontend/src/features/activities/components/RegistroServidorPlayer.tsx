@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
 import { actividadPorContenido, encuentroConEco, registroServidor } from '@/lib/servidor/contenidos'
 import { mensajeErrorServidor, obtenerEstadoServidor, useEstadoServidor } from '@/store/servidor/sesion'
-import { consultarItemsRegistro, consultarRegistro } from '@/store/servidor/registro'
+import { consultarRegistro } from '@/store/servidor/registro'
 import { consultarReferencias } from '@/store/servidor/referencias'
-import { itemsConOpciones, necesitaReferencias } from '@/lib/servidor/adaptadoresRegistro'
+import { necesitaReferencias } from '@/lib/servidor/adaptadoresRegistro'
 import type { Actividad } from '@/types/activities'
 import type { RegistroServidor } from '../hooks/useRegistroServidor'
-import { actividadConsulta, esConsulta } from '../lib/edicionRegistro'
 import { StudentActivityPlayer } from './StudentActivityPlayer'
 import { PantallaCarga } from '@/components/student/PantallaCarga'
 
-// F01: un registro del servidor se abre con sus ítems y lo guardado (borradores, posición y seguimiento).
+// F01: un registro del servidor se abre con lo de la cuenta. Ajuste front de registros (lote 1): el registro trae
+// cada ítem con su consigna, sus opciones, sus ecos y la respuesta vigente; las referencias solo se piden si los
+// diálogos de la apertura citan alguna.
 export function RegistroServidorPlayer({
   codigo,
   imageUrl,
@@ -30,38 +31,27 @@ export function RegistroServidorPlayer({
     void (async () => {
       const contenido = actividadPorContenido(obtenerEstadoServidor().actividades.datos, codigo)
       if (!contenido) return
-      const [items, registro] = await Promise.all([consultarItemsRegistro(codigo), consultarRegistro(codigo)])
+      const registro = await consultarRegistro(codigo)
       if (!vigente) return
-      if (items.tipo !== 'ok' || registro.tipo !== 'ok') {
-        setError(mensajeErrorServidor(items.tipo !== 'ok' ? items : registro.tipo !== 'ok' ? registro : null))
+      if (registro.tipo !== 'ok') {
+        setError(mensajeErrorServidor(registro))
         return
       }
-      // F02: las elecciones que retoman otra y los ecos (de consignas y, desde el ajuste carga-actividades, de
-      // diálogos) leen lo que la cuenta respondió antes.
-      const ecos = contenido.nodos.map((n) => (n.tipo === 'consigna' || n.tipo === 'dialogo' ? n.eco : undefined))
-      const referencias = necesitaReferencias(items.datos, ecos)
-        ? await consultarReferencias(codigo)
-        : undefined
+      const ecos = contenido.nodos.map((n) => (n.tipo === 'dialogo' ? n.eco : undefined))
+      const referencias = necesitaReferencias(ecos) ? await consultarReferencias(codigo) : undefined
       if (!vigente) return
       if (referencias && referencias.tipo !== 'ok') {
         setError(mensajeErrorServidor(referencias))
         return
       }
       const resueltas = referencias?.datos.referencias ?? []
-      // Ajuste registros: las opciones de cada ítem, con las de su referencia (en vivo) y las propias.
-      const conOpciones = itemsConOpciones(items.datos, resueltas)
-      const base = registroServidor(contenido, conOpciones)
-      const completo = base && encuentroConEco(base, resueltas)
-      // F02: un registro cerrado se consulta en el mismo reproductor, solo con sus consignas.
-      const activity = completo && esConsulta(registro.datos) ? actividadConsulta(completo) : completo
+      const base = registroServidor(contenido, registro.datos.items)
+      const activity = base && encuentroConEco(base, resueltas)
       if (!activity) {
         setError('Esta actividad no tiene todos sus ítems disponibles.')
         return
       }
-      setCarga({
-        activity,
-        registro: { items: conOpciones, registro: registro.datos, referencias: resueltas },
-      })
+      setCarga({ activity, registro: { registro: registro.datos, referencias: resueltas } })
       setError('')
     })()
     return () => {

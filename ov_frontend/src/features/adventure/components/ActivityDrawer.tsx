@@ -29,7 +29,6 @@ export function ActivityDrawer({
   onFallbackFocus,
   renderCaseProgress,
   renderJournal,
-  renderPorAmpliar,
   renderFichasBatalla,
 }: {
   point?: StudentMapPoint
@@ -42,8 +41,6 @@ export function ActivityDrawer({
   onFallbackFocus?: () => void
   renderCaseProgress?: (adventure: AdventureState, actividad?: string) => ReactNode
   renderJournal?: (journal: NonNullable<PointDetails['journal']>, onOpen: () => void) => ReactNode
-  // Lo que un registro completado quedó por ampliar (F01); lo decide el dominio de actividades.
-  renderPorAmpliar?: (codigo: string) => ReactNode
   // Las fichas de las que se alimenta una batalla (F04b); lo decide el dominio de actividades.
   renderFichasBatalla?: (codigo: string) => ReactNode
 }) {
@@ -146,7 +143,6 @@ export function ActivityDrawer({
                 </DrawerHeader>
                 <span className="sx-drawer-type">{details.type}</span>
                 {point.specActivityId && renderFichasBatalla?.(point.specActivityId)}
-                {point.specActivityId && renderPorAmpliar?.(point.specActivityId)}
                 {details.requirement && (
                   <p className="sx-drawer-requirement">
                     <LockKeyhole size={18} />

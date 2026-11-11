@@ -1,0 +1,205 @@
+{
+  "entradas_desbloqueadas": [],
+  "eventos_registrados": [],
+  "item": "b1-1-gustos",
+  "mensaje": null,
+  "nuevas_notificaciones": [],
+  "nuevos_desbloqueos": [],
+  "paso": "REPREGUNTA",
+  "registro": {
+    "estado": "EN_CURSO",
+    "item_actual": "b1-1-logro",
+    "items": [
+      {
+        "codigo": "b1-1-gustos",
+        "con_llm": true,
+        "consigna": {
+          "arranque": null,
+          "dialogo": "Todo mapa empieza por donde uno ya estuvo.",
+          "pregunta_eleccion": null,
+          "pregunta_texto": "¿Qué te encantaba hacer de niño o niña? Puede ser un juego, algo que armabas o algo que hacías con alguien."
+        },
+        "disponible": true,
+        "ecos": [],
+        "eleccion": null,
+        "marcador_faltante": null,
+        "nombre": "Lo que te encantaba de niño",
+        "obligatorio": true,
+        "opciones": [],
+        "respuesta": {
+          "eco_cambiado": false,
+          "linea_seguimiento": null,
+          "opciones_elegidas": [],
+          "pista": "¿Qué hacías exactamente con esos castillos?",
+          "primera_respuesta": "DATO DE PRUEBA: armaba castillos de cartón con mi primo.",
+          "reenviable": false
+        }
+      },
+      {
+        "codigo": "b1-1-logro",
+        "con_llm": true,
+        "consigna": {
+          "arranque": null,
+          "dialogo": "En todo mapa hay lugares a los que llegaste por tu cuenta.",
+          "pregunta_eleccion": "Piensa en un logro tuyo, aunque sea pequeño. ¿Qué habilidades tuyas se notaron ahí?",
+          "pregunta_texto": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres."
+        },
+        "disponible": true,
+        "ecos": [],
+        "eleccion": {
+          "etiqueta_otra": null,
+          "maxima": 2,
+          "minima": 1,
+          "ordenada": false,
+          "permite_otra": true
+        },
+        "marcador_faltante": null,
+        "nombre": "Tu logro",
+        "obligatorio": true,
+        "opciones": [
+          {
+            "arranque": null,
+            "codigo": "ORGANIZAR",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Organizar"
+          },
+          {
+            "arranque": null,
+            "codigo": "EXPLICAR",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Explicar o enseñar"
+          },
+          {
+            "arranque": null,
+            "codigo": "CREAR",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Crear o diseñar"
+          },
+          {
+            "arranque": null,
+            "codigo": "RESOLVER",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Resolver problemas"
+          },
+          {
+            "arranque": null,
+            "codigo": "PERSISTIR",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Persistir"
+          },
+          {
+            "arranque": null,
+            "codigo": "LIDERAR",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Liderar"
+          },
+          {
+            "arranque": null,
+            "codigo": "ESCUCHAR",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Escuchar y acompañar"
+          },
+          {
+            "arranque": null,
+            "codigo": "NEGOCIAR",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Negociar o convencer"
+          },
+          {
+            "arranque": null,
+            "codigo": "CONSTRUIR",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Construir o armar"
+          },
+          {
+            "arranque": null,
+            "codigo": "INVESTIGAR",
+            "exclusiva": false,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+            "sin_llm": false,
+            "texto": "Investigar"
+          },
+          {
+            "arranque": "Hace poco…",
+            "codigo": "NINGUNO",
+            "exclusiva": true,
+            "grupo": null,
+            "lineas": [],
+            "origen": null,
+            "pregunta": "Está bien, a veces cuesta llamarlo así. Cuéntame algo que hiciste hace poco y que te dejó contento o contenta, aunque sea pequeño.",
+            "sin_llm": false,
+            "texto": "No se me ocurre ninguno"
+          }
+        ],
+        "respuesta": null
+      },
+      {
+        "codigo": "b1-1-dificultad",
+        "con_llm": true,
+        "consigna": {
+          "arranque": null,
+          "dialogo": "Y también hubo algo que no salió a la primera.",
+          "pregunta_eleccion": null,
+          "pregunta_texto": "Cuenta algo que te costó y cómo lo fuiste superando: lo que hiciste o quién te ayudó."
+        },
+        "disponible": true,
+        "ecos": [],
+        "eleccion": null,
+        "marcador_faltante": null,
+        "nombre": "Lo que hiciste ante una dificultad",
+        "obligatorio": true,
+        "opciones": [],
+        "respuesta": null
+      }
+    ]
+  },
+  "repregunta": "¿Qué hacías exactamente con esos castillos?"
+}

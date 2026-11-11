@@ -76,7 +76,7 @@ test('clasifica los ocho tipos y ordena los extras independientemente del recibo
 
 test('las secciones abiertas tienen su texto en el cierre, como al cerrar t-valores (F01)', () => {
   const { resumir } = preparar()
-  const valores = jsonServidor('ruta/ruta-continuar-sin-responder-t-valores').nuevos_desbloqueos
+  const valores = jsonServidor('ruta/ruta-entregar-t-valores').nuevos_desbloqueos
   const r = resumir([
     ...valores,
     desbloqueo('SECCION', 'CATALOGO', 'Catálogo'),

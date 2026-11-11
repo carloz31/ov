@@ -1,4 +1,8 @@
-"""Exporta los fixtures `ruta-*` del contrato con el front, sin servicios externos."""
+"""Exporta los fixtures `ruta-*` del contrato con el front, sin servicios externos.
+
+Ajuste front de registros (lote 1): también unos pocos `contenido-*` del registro b1-1, que sí pasa por el LLM (los
+ítems de `ruta` no tienen tarjeta), con el cliente de prueba de `tests/soporte` en cola.
+"""
 
 import argparse
 from datetime import datetime
@@ -632,6 +636,70 @@ def _codigos_notificacion_fijos():
     return patch.object(notificaciones, 'uuid4', lambda: SimpleNamespace(hex=f'{next(numeros):032x}'))
 
 
+CARPETA_CONTENIDO, PREFIJO_CONTENIDO = 'contenido', 'contenido-'
+# DATO DE PRUEBA: respuestas del recorrido de b1-1 en `contenido` y las repreguntas que da el cliente de prueba.
+TEXTO_B1_1 = 'DATO DE PRUEBA: armaba castillos de cartón con mi primo.'
+REPREGUNTA_B1_1 = '¿Qué hacías exactamente con esos castillos?'
+
+
+def _recorrer_registro_contenido():
+    """El registro b1-1 de `contenido` con cada paso: REPREGUNTA, seguimiento con y sin pista y con MENSAJE, MENSAJE
+    sensible, sin evaluar (reenviable) y su reenvío, lectura inicial, a medias, todo respondido sin terminar y
+    completado. Usa el cliente del LLM de prueba (nunca la red) y el avance del camino de las pruebas."""
+    soporte = str(Path(__file__).resolve().parents[1] / 'tests' / 'soporte')
+    if soporte not in sys.path:
+        sys.path.insert(0, soporte)
+    from app.main import crear_aplicacion
+    from datos.cargar import preparar_base
+    from soporte_acceso import ClienteConToken
+    from soporte_contenido import REQUERIDAS, avanzar
+    from soporte_llm import ClientePrueba, fallo, salida
+
+    with TemporaryDirectory(prefix='ov-fixtures-contenido-') as temporal:
+        url = f'sqlite:///{(Path(temporal) / "contenido.db").as_posix()}'
+        preparar_base(url, 'contenido', crear_tablas=True)
+        aplicacion = crear_aplicacion(url)
+        llm = aplicacion.state.cliente_llm = ClientePrueba()
+        try:
+            with ClienteConToken(aplicacion) as cliente, _codigos_notificacion_fijos():
+                avanzar(cliente, REQUERIDAS[0], REQUERIDAS[REQUERIDAS.index('b1-1') - 1])
+                ruta = '/cuentas/est-ana/actividades/b1-1/registro'
+
+                def accion(nombre, cuerpo):
+                    return _pedir(cliente, 'POST', f'/acciones/registro/{nombre}',
+                                  {'cuenta': 'est-ana', 'actividad': 'b1-1', 'fecha_hora': FECHA, **cuerpo})
+
+                def responder(item, opciones, texto=TEXTO_B1_1):
+                    return accion('responder', {'item': item, 'opciones': opciones, 'texto': texto})
+
+                def seguir(item, texto='DATO DE PRUEBA: les ponía puentes y torres.'):
+                    return accion('responder-seguimiento', {'item': item, 'texto': texto})
+
+                logro = [{'codigo': 'ORGANIZAR'}]
+                f = {'registro-b1-1-inicial': _pedir(cliente, 'GET', ruta)}
+                llm.encolar(salida('general', REPREGUNTA_B1_1), salida('general', REPREGUNTA_B1_1))
+                f['responder-b1-1-repregunta'] = responder('b1-1-gustos', [])
+                f['registro-b1-1-a-medias'] = _pedir(cliente, 'GET', ruta)
+                f['seguimiento-b1-1-con-pista'] = seguir('b1-1-gustos')
+                llm.encolar(salida('emocional', sensible=True))
+                f['responder-b1-1-mensaje'] = responder('b1-1-logro', logro)
+                llm.encolar(fallo())
+                f['responder-b1-1-sin-evaluar'] = responder('b1-1-dificultad', [])
+                f['registro-b1-1-sin-terminar'] = _pedir(cliente, 'GET', ruta)
+                f['reenviar-b1-1'] = accion('reenviar', {'item': 'b1-1-dificultad'})
+                llm.encolar(salida('general', REPREGUNTA_B1_1), salida('propio', arranque='Lo que hacía'))
+                f['responder-b1-1-edicion'] = responder('b1-1-gustos', [], 'DATO DE PRUEBA: dibujaba mapas.')
+                f['seguimiento-b1-1-sin-pista'] = seguir('b1-1-gustos')
+                llm.encolar(salida('general', REPREGUNTA_B1_1), salida('emocional'))
+                responder('b1-1-logro', logro)
+                f['seguimiento-b1-1-mensaje'] = seguir('b1-1-logro', 'DATO DE PRUEBA: me dio pena.')
+                f['entregar-b1-1'] = accion('entregar', {})
+                f['registro-b1-1-completado'] = _pedir(cliente, 'GET', ruta)
+        finally:
+            aplicacion.state.motor_bd.dispose()
+    return f
+
+
 def exportar_fixtures(destino: Path) -> list[Path]:
     """Exporta los fixtures de `ruta` en `destino/ruta/`, con nombres `ruta-*.json`.
 
@@ -662,6 +730,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
                     fixtures.update(_recorrer_investigaciones(cliente))
             finally:
                 aplicacion.state.motor_bd.dispose()
+        contenido = _recorrer_registro_contenido()
     finally:
         if evaluador_anterior is None:
             os.environ.pop('EVALUADOR', None)
@@ -672,6 +741,13 @@ def exportar_fixtures(destino: Path) -> list[Path]:
     archivos = []
     for nombre, respuesta in fixtures.items():
         ruta = carpeta / f'{PREFIJO}{nombre}.json'
+        ruta.write_text(json.dumps(respuesta, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+                        encoding='utf-8', newline='\n')
+        archivos.append(ruta)
+    carpeta = Path(destino) / CARPETA_CONTENIDO
+    carpeta.mkdir(parents=True, exist_ok=True)
+    for nombre, respuesta in contenido.items():
+        ruta = carpeta / f'{PREFIJO_CONTENIDO}{nombre}.json'
         ruta.write_text(json.dumps(respuesta, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
                         encoding='utf-8', newline='\n')
         archivos.append(ruta)
@@ -691,7 +767,8 @@ def main() -> None:
         archivos = exportar_fixtures(opciones.destino)
     except (OSError, ValueError, RuntimeError) as error:
         argumentos.exit(1, f'No se pudieron exportar los fixtures: {error}\n')
-    print(f'Exportados {len(archivos)} fixtures en {(opciones.destino / CARPETA).resolve()}')
+    print(f'Exportados {len(archivos)} fixtures en {(opciones.destino / CARPETA).resolve()} y '
+          f'{(opciones.destino / CARPETA_CONTENIDO).resolve()}')
 
 
 if __name__ == '__main__':

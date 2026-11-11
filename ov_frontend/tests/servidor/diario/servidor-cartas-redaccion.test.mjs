@@ -11,8 +11,13 @@ import {
   respuestaDominio,
 } from '../../soporte/servidor-ayudas.mjs'
 
+// DATO DE PRUEBA (ajuste front de registros, lote 1): desde el lote 2 del backend, `ruta` no deja texto citable y la
+// carta personalizada se redacta con su base al desbloquearse; para probar la carta sellada, se vuelve a sin redactar.
+const conCartaSellada = (lista) =>
+  lista.map((p) => (p.codigo === 't-diario-personal' ? { ...p, redactada: false, texto: null } : p))
+
 // Ajuste del diario (F05): una carta personalizada se redacta solo con «Abrir» (abrir-pregunta), sin abrir el editor.
-const preguntas = jsonServidor('ruta/ruta-diario-preguntas')
+const preguntas = conCartaSellada(jsonServidor('ruta/ruta-diario-preguntas'))
 const redactada = preguntas.map((p) =>
   p.codigo === 't-diario-personal' ? { ...p, redactada: true, texto: 'Carta de prueba ya escrita' } : p,
 )

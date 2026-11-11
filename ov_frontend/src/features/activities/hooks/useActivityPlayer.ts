@@ -45,14 +45,15 @@ export function useActivityPlayer({
   const pageRef = useRef<HTMLDivElement>(null)
   const [nodeId, setNodeId] = useState(() => {
     if (modoApi && instrumentoServidor) return instrumentoServidor.nodoInicialId
-    // Registro: la pregunta pendiente se muestra sobre la última consigna; cerrado, se consulta desde la
-    // primera consigna (F02); si no, retoma en la posición guardada.
+    // Ajuste front de registros (lote 1): completado (rehacer), desde el inicio, con sus diálogos y diapositivas;
+    // a medias, en el primer ítem sin respuesta (`item_actual`); con todo respondido y sin terminar, en el último
+    // ítem, en lectura, donde «Continuar» lo termina. La primera vez, `item_actual` es el primero: desde el inicio.
     if (modoApi && registroServidor) {
       const { registro } = registroServidor
-      if (registro.respuestas.some((r) => r.estado === 'PENDIENTE_SEGUIMIENTO'))
-        return nodes.findLast((n) => n.tipo === 'consigna')?.id
-      if (registro.estado === 'COMPLETADA') return nodes[0]?.id
-      return nodes.find((n) => n.id === registro.posicion)?.id ?? nodes[0]?.id
+      const consignas = nodes.filter((n) => n.tipo === 'consigna')
+      if (registro.estado === 'COMPLETADA' || !registro.items.some((i) => i.respuesta)) return nodes[0]?.id
+      if (registro.item_actual === null) return consignas.at(-1)?.id ?? nodes[0]?.id
+      return consignas.find((n) => n.tipo === 'consigna' && n.item === registro.item_actual)?.id ?? nodes[0]?.id
     }
     if (edit || desdeInicio) return nodes[0]?.id
     if (
@@ -183,7 +184,7 @@ export function useActivityPlayer({
     // La primera pregunta de un cuestionario no vuelve al diálogo de entrada.
     !(node?.tipo === 'item' && index === nodes.findIndex((n) => n.tipo === 'item')) &&
     previo.tipo !== 'pregunta' &&
-    // Un registro del servidor ya completado se consulta (F02): sus consignas sí retroceden.
+    // Un registro del servidor ya completado se rehace: sus ítems sí retroceden (se ven en lectura).
     !(activity.tipo === 'registro' && (yaCompletada || edit) && !(modoApi && registroServidor)) &&
     // Tras la última consigna el registro ya está entregado: sus pasos posteriores no retroceden.
     !(activity.tipo === 'registro' && index > nodes.findLastIndex((n) => n.tipo === 'consigna')) &&
@@ -205,13 +206,10 @@ export function useActivityPlayer({
   }
   const registro = useRegistroServidor({
     actividad: activity.id,
-    contenido: activity,
     registroServidor: modoApi ? registroServidor : undefined,
     nodes,
     montado,
     avanzar: (siguiente) => move(siguiente),
-    anterior,
-    volver: retroceder,
     terminar: (cierre) => {
       setCierreServidor(cierre)
       updateJourney((current) => ({
@@ -306,8 +304,8 @@ export function useActivityPlayer({
     itemFijas: modoApi && respuestasFijas,
     puedeTerminarEncuentro: modoApi && !!instrumentoServidor,
     registro,
-    // En un registro del servidor «Anterior» guarda el borrador antes de volver (useRegistroServidor).
-    onAnterior: anterior ? retroceder : undefined,
+    // La pantalla de Lumi y la edición de un ítem no tienen «Anterior» (ajuste front de registros, lote 1).
+    onAnterior: anterior && registro.vista(node) !== 'lumi' ? retroceder : undefined,
     alRetroceder,
   }
 }

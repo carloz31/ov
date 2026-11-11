@@ -1,9 +1,12 @@
 [
   {
+    "arranque": null,
     "codigo": "t-val-orden",
-    "consigna": "Ordena los tres valores más importantes para ti y explica el primero.",
+    "con_llm": false,
+    "dialogo": null,
     "eleccion": {
       "comun": false,
+      "etiqueta_otra": null,
       "fuente": "LISTA",
       "lista": "t-lista-valores",
       "maxima": 3,
@@ -37,24 +40,31 @@
       "referencia": null,
       "referencia_opciones": null
     },
-    "min_caracteres": null,
     "nombre": "Tus valores",
-    "obligatorio": true
+    "obligatorio": true,
+    "pregunta_eleccion": null,
+    "pregunta_texto": "Ordena los tres valores más importantes para ti y explica el primero."
   },
   {
+    "arranque": null,
     "codigo": "t-val-libre",
-    "consigna": "Escribe lo que quieras sobre tus valores.",
+    "con_llm": false,
+    "dialogo": null,
     "eleccion": null,
-    "min_caracteres": null,
     "nombre": "Lo que piensas de tus valores",
-    "obligatorio": true
+    "obligatorio": true,
+    "pregunta_eleccion": null,
+    "pregunta_texto": "Escribe lo que quieras sobre tus valores."
   },
   {
+    "arranque": null,
     "codigo": "t-val-breve",
-    "consigna": "Describe un momento en que actuaste según tus valores.",
+    "con_llm": false,
+    "dialogo": null,
     "eleccion": null,
-    "min_caracteres": 40,
     "nombre": "Un momento con tus valores",
-    "obligatorio": true
+    "obligatorio": true,
+    "pregunta_eleccion": null,
+    "pregunta_texto": "Describe un momento en que actuaste según tus valores."
   }
 ]

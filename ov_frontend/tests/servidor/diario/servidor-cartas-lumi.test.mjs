@@ -6,6 +6,11 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router'
 import { fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
+// DATO DE PRUEBA (ajuste front de registros, lote 1): desde el lote 2 del backend, `ruta` no deja texto citable y la
+// carta personalizada se redacta con su base al desbloquearse; para probar la carta sellada, se vuelve a sin redactar.
+const conCartaSellada = (lista) =>
+  lista.map((p) => (p.codigo === 't-diario-personal' ? { ...p, redactada: false, texto: null } : p))
+
 // Ajuste del diario (F05): «Cartas de Lumi», el buzón completo con sus bandejas.
 const listo = (datos) => ({ datos, estado: 'listo', error: null })
 
@@ -34,7 +39,7 @@ test('la página tiene «Volver al diario», su título, las tres bandejas con s
 })
 
 test('por responder: tarjeta completa con fecha, remitente, la pregunta y sus botones', () => {
-  const { html } = pagina(jsonServidor('ruta/ruta-diario-preguntas'))
+  const { html } = pagina(conCartaSellada(jsonServidor('ruta/ruta-diario-preguntas')))
   assert.match(html, /Por responder · 2/)
   assert.match(html, /data-completa="true"/)
   assert.match(html, /De: Inicio de prueba/)

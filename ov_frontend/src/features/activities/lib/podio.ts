@@ -1,14 +1,13 @@
-import type { ItemRegistroPublico } from '@/types/servidor'
+import type { ItemRegistroCuenta } from '@/types/servidor'
 
 // Podio de «elegir y ordenar top N» (F01): lógica pura, sin React. Un puesto vacío es null.
 // Se usa en toda elección ordenada de lista propia o común con N fijo (mínima = máxima) y sin «otra».
-export const esTopN = (item: ItemRegistroPublico) =>
+export const esTopN = (item: ItemRegistroCuenta) =>
   !!item.eleccion &&
   item.eleccion.ordenada &&
   item.eleccion.minima === item.eleccion.maxima &&
   item.eleccion.maxima > 1 &&
-  !item.eleccion.permite_otra &&
-  !item.eleccion.referencia
+  !item.eleccion.permite_otra
 export type Puestos = (string | null)[]
 
 export function puestosDesde(seleccion: string[], n: number): Puestos {
@@ -40,17 +39,3 @@ export function intercambiar(puestos: Puestos, a: number, b: number): Puestos {
 
 const NUMEROS = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez']
 export const enPalabras = (n: number) => NUMEROS[n] ?? String(n)
-
-export type UnidadPodio = { singular: string; plural: string }
-// La reacción bajo el podio (ajuste vista del ítem): con el podio vacío no hay reacción («Ordena tus 3» ya
-// lo pide).
-export function mensajeLumi(puestos: Puestos, unidad: UnidadPodio): string | undefined {
-  const pendientes = faltan(puestos)
-  if (pendientes === puestos.length) return undefined
-  if (pendientes === 0) return '¡Tu podio está listo! Ahora cuéntame por qué elegiste tu primer lugar.'
-  return pendientes === 1
-    ? `Bien. Te falta 1 ${unidad.singular}.`
-    : `Bien. Te faltan ${pendientes} ${unidad.plural}.`
-}
-// «¿Por qué «{opcion}» es lo más importante para ti?»
-export const preguntaPrimero = (plantilla: string, opcion: string) => plantilla.replace('{opcion}', opcion)

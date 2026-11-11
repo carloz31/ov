@@ -8,8 +8,6 @@ import { FinishJournalSection } from './FinishJournalSection'
 import { FinishExtrasSection } from './FinishExtrasSection'
 import { FinishMedalsSection } from './FinishMedalsSection'
 import { VolverAlMapa } from './VolverAlMapa'
-import { IrAlDestino } from './IrAlDestino'
-import type { DestinoCierre } from '../lib/destinoRegistro'
 import '../styles/finish.css'
 
 export function FinishScreen({
@@ -19,7 +17,6 @@ export function FinishScreen({
   desbloqueosServidor,
   entradasDiario,
   salida,
-  destino,
 }: {
   activity: Actividad
   onClose?: () => void
@@ -33,8 +30,6 @@ export function FinishScreen({
     aviso?: { titulo: string; descripcion: string }
     onClick: () => void
   }
-  // Ajuste registros: el destino sugerido al cerrar un registro, junto a «Volver al mapa».
-  destino?: DestinoCierre
 }) {
   const { resumen, preguntaDiario } = useActivityFinish(
     activity,
@@ -92,10 +87,7 @@ export function FinishScreen({
               <BookOpen size={18} /> {salida.texto}
             </button>
           ) : (
-            <>
-              {destino && <IrAlDestino destino={destino} />}
-              <VolverAlMapa actividad={activity.id} onClose={onClose} />
-            </>
+            <VolverAlMapa actividad={activity.id} onClose={onClose} />
           )}
         </footer>
       </section>

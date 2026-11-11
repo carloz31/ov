@@ -1,10 +1,13 @@
 [
   {
+    "arranque": null,
     "codigo": "t-con-contraste",
-    "consigna": "¿En qué se parece tu resultado a lo que pensabas de ti? ¿En qué se diferencia?",
+    "con_llm": false,
+    "dialogo": null,
     "eleccion": null,
-    "min_caracteres": null,
     "nombre": "Contraste",
-    "obligatorio": true
+    "obligatorio": true,
+    "pregunta_eleccion": null,
+    "pregunta_texto": "¿En qué se parece tu resultado a lo que pensabas de ti? ¿En qué se diferencia?"
   }
 ]

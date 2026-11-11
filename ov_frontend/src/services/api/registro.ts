@@ -1,17 +1,11 @@
 import { enviar, obtener } from './cliente'
 import type {
-  BorradorRegistroEntrada,
-  EstadoItemRegistro,
-  ItemEdicion,
-  ItemRegistroPublico,
+  OpcionElegida,
+  PasoRegistro,
   RegistroConsultado,
   RespuestaRegistroAccion,
   RespuestaServidor,
 } from '@/types/servidor'
-
-export function obtenerItemsRegistro(actividad: string): Promise<RespuestaServidor<ItemRegistroPublico[]>> {
-  return obtener(`/actividades/${encodeURIComponent(actividad)}/items-registro`)
-}
 
 export function obtenerRegistro(
   cuenta: string,
@@ -22,15 +16,15 @@ export function obtenerRegistro(
   )
 }
 
-export function enviarBorrador(entrada: BorradorRegistroEntrada): Promise<RespuestaServidor<EstadoItemRegistro>> {
-  return enviar('/acciones/registro/guardar-borrador', entrada)
-}
-
-export function enviarEntrega(
+// Responder un ítem, la primera vez o para editarlo: un intento nuevo, evaluado; devuelve el paso siguiente.
+export function enviarRespuestaItem(
   cuenta: string,
   actividad: string,
-): Promise<RespuestaServidor<RespuestaRegistroAccion>> {
-  return enviar('/acciones/registro/entregar', { cuenta, actividad })
+  item: string,
+  opciones: OpcionElegida[],
+  texto: string,
+): Promise<RespuestaServidor<PasoRegistro>> {
+  return enviar('/acciones/registro/responder', { cuenta, actividad, item, opciones, texto })
 }
 
 export function enviarRespuestaSeguimiento(
@@ -38,22 +32,21 @@ export function enviarRespuestaSeguimiento(
   actividad: string,
   item: string,
   texto: string,
-): Promise<RespuestaServidor<RespuestaRegistroAccion>> {
+): Promise<RespuestaServidor<PasoRegistro>> {
   return enviar('/acciones/registro/responder-seguimiento', { cuenta, actividad, item, texto })
 }
 
-export function enviarContinuarSinResponder(
+export function enviarReenvio(
   cuenta: string,
   actividad: string,
   item: string,
-): Promise<RespuestaServidor<RespuestaRegistroAccion>> {
-  return enviar('/acciones/registro/continuar-sin-responder', { cuenta, actividad, item })
+): Promise<RespuestaServidor<PasoRegistro>> {
+  return enviar('/acciones/registro/reenviar', { cuenta, actividad, item })
 }
 
-export function enviarEdicion(
+export function enviarEntrega(
   cuenta: string,
   actividad: string,
-  items: ItemEdicion[],
 ): Promise<RespuestaServidor<RespuestaRegistroAccion>> {
-  return enviar('/acciones/registro/editar', { cuenta, actividad, items })
+  return enviar('/acciones/registro/entregar', { cuenta, actividad })
 }

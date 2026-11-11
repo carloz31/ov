@@ -27,7 +27,6 @@ export function MapScreenLayout({
   renderCaseProgress,
   renderJournal,
   renderAdditional,
-  renderPorAmpliar,
   renderFichasBatalla,
 }: {
   zone: StudentZone
@@ -36,7 +35,6 @@ export function MapScreenLayout({
   journey: JourneyState
   renderCaseProgress?: ComponentProps<typeof ActivityDrawer>['renderCaseProgress']
   renderJournal?: ComponentProps<typeof ActivityDrawer>['renderJournal']
-  renderPorAmpliar?: ComponentProps<typeof ActivityDrawer>['renderPorAmpliar']
   renderFichasBatalla?: ComponentProps<typeof ActivityDrawer>['renderFichasBatalla']
   renderAdditional?: (props: {
     onFrame: (ids: string[]) => void
@@ -222,7 +220,6 @@ export function MapScreenLayout({
       <ActivityDrawer
         renderCaseProgress={renderCaseProgress}
         renderJournal={renderJournal}
-        renderPorAmpliar={renderPorAmpliar}
         renderFichasBatalla={renderFichasBatalla}
         point={selected}
         details={details}

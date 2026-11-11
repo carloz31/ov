@@ -1,9 +1,12 @@
 [
   {
+    "arranque": null,
     "codigo": "t-eco-ruta",
-    "consigna": "La vez pasada elegiste una ruta. ¿Sigues pensando igual o cambiaste de idea? Cuéntame por qué.",
+    "con_llm": false,
+    "dialogo": null,
     "eleccion": {
       "comun": true,
+      "etiqueta_otra": null,
       "fuente": "LISTA",
       "lista": "RUTAS_DESPUES_COLEGIO",
       "maxima": 2,
@@ -37,16 +40,20 @@
       "referencia": "t-ref-rutas",
       "referencia_opciones": null
     },
-    "min_caracteres": null,
     "nombre": "Tu ruta, hoy",
-    "obligatorio": true
+    "obligatorio": true,
+    "pregunta_eleccion": null,
+    "pregunta_texto": "La vez pasada elegiste una ruta. ¿Sigues pensando igual o cambiaste de idea? Cuéntame por qué."
   },
   {
+    "arranque": null,
     "codigo": "t-eco-espera",
-    "consigna": "¿Qué esperan de ti las personas cercanas hoy? ¿Ha cambiado algo?",
+    "con_llm": false,
+    "dialogo": null,
     "eleccion": null,
-    "min_caracteres": null,
     "nombre": "Lo que esperan de ti, hoy",
-    "obligatorio": true
+    "obligatorio": true,
+    "pregunta_eleccion": null,
+    "pregunta_texto": "¿Qué esperan de ti las personas cercanas hoy? ¿Ha cambiado algo?"
   }
 ]

@@ -105,6 +105,14 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
 )}
 
 
+# Ajuste front de registros (lote 1): el registro b1-1 de `contenido`, con cada paso del flujo con el LLM.
+NOMBRES_CONTENIDO = {f'contenido-{nombre}.json' for nombre in (
+    'registro-b1-1-inicial', 'responder-b1-1-repregunta', 'registro-b1-1-a-medias', 'seguimiento-b1-1-con-pista',
+    'responder-b1-1-mensaje', 'responder-b1-1-sin-evaluar', 'registro-b1-1-sin-terminar', 'reenviar-b1-1',
+    'responder-b1-1-edicion', 'seguimiento-b1-1-sin-pista', 'seguimiento-b1-1-mensaje', 'entregar-b1-1',
+    'registro-b1-1-completado')}
+
+
 def leer(archivos):
     return {ruta.name.removeprefix('ruta-').removesuffix('.json'): json.loads(ruta.read_bytes())
             for ruta in archivos}
@@ -135,7 +143,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
 
     def crear_temporal(url_bd):
         ruta = Path(url_bd.removeprefix('sqlite:///'))
-        assert ruta.name == 'ruta.db' and ruta.parent.is_dir()
+        assert ruta.name in ('ruta.db', 'contenido.db') and ruta.parent.is_dir()
         assert ruta != ruta_ajena
         bases.append(ruta)
         return crear(url_bd)
@@ -152,9 +160,11 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     congelado = destino / 'actividades-inicial.json'
     congelado.write_text('congelado', encoding='utf-8')
     archivos = exportador.exportar_fixtures(destino)
-    assert {ruta.name for ruta in archivos} == NOMBRES
-    assert all(ruta.parent == destino / 'ruta' for ruta in archivos)
+    assert {ruta.name for ruta in archivos} == NOMBRES | NOMBRES_CONTENIDO
+    assert all(ruta.parent == destino / ('ruta' if ruta.name.startswith('ruta-') else 'contenido') for ruta in archivos)
     assert {ruta.name for ruta in (destino / 'ruta').iterdir()} == NOMBRES
+    assert {ruta.name for ruta in (destino / 'contenido').iterdir()} == NOMBRES_CONTENIDO
+    _contrato_registro_contenido(leer(a for a in archivos if a.name.startswith('contenido-')))
     assert congelado.read_text(encoding='utf-8') == 'congelado'
     bytes_antes = {ruta.name: ruta.read_bytes() for ruta in archivos}
     datos = leer(archivos)
@@ -529,7 +539,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     exportador.exportar_fixtures(destino)
     assert {ruta.name: ruta.read_bytes() for ruta in archivos} == bytes_antes
     assert conservar.read_text(encoding='utf-8') == 'Conservar'
-    assert len(bases) == 2 and all(not ruta.parent.exists() for ruta in bases)
+    assert len(bases) == 4 and all(not ruta.parent.exists() for ruta in bases)
     assert ruta_ajena.read_bytes() == b'Base del usuario: conservar estos bytes'
     assert exportador.os.environ['EVALUADOR'] == 'gemini'
 
@@ -586,8 +596,9 @@ def test_cli_exporta_los_fixtures_de_ruta(tmp_path):
     resultado = subprocess.run([sys.executable, str(SCRIPT), '--destino', str(destino)],
                                cwd=tmp_path, capture_output=True, text=True)
     assert resultado.returncode == 0, resultado.stderr
-    assert f'Exportados {len(NOMBRES)} fixtures' in resultado.stdout
+    assert f'Exportados {len(NOMBRES) + len(NOMBRES_CONTENIDO)} fixtures' in resultado.stdout
     assert {ruta.name for ruta in (destino / 'ruta').glob('*.json')} == NOMBRES
+    assert {ruta.name for ruta in (destino / 'contenido').glob('*.json')} == NOMBRES_CONTENIDO
     assert list(destino.glob('*.json')) == []
 
 
@@ -604,3 +615,34 @@ def test_fixtures_de_sesion(tmp_path):
         'est-ana', 'est-luis']
     assert [s.codigo for s in SesionRespuesta.model_validate(datos['sesion-orientadora']).salones] == ['5A']
     assert datos['sesion-error'] == {'detail': {'mensaje': 'Usuario o contraseña incorrectos'}}
+
+
+def _contrato_registro_contenido(datos):
+    """Los fixtures `contenido-*` del registro b1-1 (ajuste front de registros, lote 1)."""
+    datos = {n.removeprefix('contenido-'): d for n, d in datos.items()}
+    inicial = RegistroConsultado.model_validate(datos['registro-b1-1-inicial'])
+    assert inicial.item_actual == 'b1-1-gustos' and not any(i.respuesta for i in inicial.items)
+    assert inicial.items[0].consigna.dialogo == 'Todo mapa empieza por donde uno ya estuvo.'
+    pasos = {n: PasoRegistro.model_validate(d) for n, d in datos.items() if n.split('-')[0] in (
+        'responder', 'seguimiento', 'reenviar')}
+    assert {n: p.paso for n, p in pasos.items()} == {
+        'responder-b1-1-repregunta': 'REPREGUNTA', 'seguimiento-b1-1-con-pista': 'SIGUIENTE',
+        'responder-b1-1-mensaje': 'MENSAJE', 'responder-b1-1-sin-evaluar': 'MENSAJE', 'reenviar-b1-1': 'SIGUIENTE',
+        'responder-b1-1-edicion': 'REPREGUNTA', 'seguimiento-b1-1-sin-pista': 'SIGUIENTE',
+        'seguimiento-b1-1-mensaje': 'MENSAJE'}
+
+    def respuesta(paso_o_registro, item):
+        registro = getattr(paso_o_registro, 'registro', paso_o_registro)
+        return next(i for i in registro.items if i.codigo == item).respuesta
+
+    assert respuesta(pasos['seguimiento-b1-1-con-pista'], 'b1-1-gustos').pista
+    assert respuesta(pasos['seguimiento-b1-1-sin-pista'], 'b1-1-gustos').pista is None
+    assert respuesta(pasos['responder-b1-1-sin-evaluar'], 'b1-1-dificultad').reenviable
+    a_medias = RegistroConsultado.model_validate(datos['registro-b1-1-a-medias'])
+    assert a_medias.item_actual == 'b1-1-logro' and respuesta(a_medias, 'b1-1-gustos').pista
+    sin_terminar = RegistroConsultado.model_validate(datos['registro-b1-1-sin-terminar'])
+    assert (sin_terminar.item_actual, sin_terminar.estado) == (None, 'EN_CURSO')
+    completado = RegistroConsultado.model_validate(datos['registro-b1-1-completado'])
+    assert completado.estado == 'COMPLETADA'
+    assert not {'tipo_final', 'primera_tipo', 'motivo', 'sensible', 'repregunta_cerrada'} & set(
+        json.dumps(datos).split('"'))

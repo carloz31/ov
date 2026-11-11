@@ -13,6 +13,46 @@
           "texto": "Ciencias de la Comunicación"
         }
       ],
+      "planes": [
+        {
+          "camino": "Prepararme primero",
+          "carrera": "Psicología",
+          "codigo": "mtpe-369",
+          "idea_origen": "MIA",
+          "institucion": "Universidad Nacional Federico Villarreal",
+          "motivos": [
+            {
+              "codigo": "AYUDAR",
+              "texto": "Ayudar a otros"
+            },
+            {
+              "codigo": "OTRA",
+              "texto": "Me gusta explicar"
+            }
+          ],
+          "prioridad": 1,
+          "relato": "DATO DE PRUEBA: un día expliqué un tema a mi primo y sentí que era lo mío."
+        },
+        {
+          "camino": "Prepararme primero",
+          "carrera": "Ciencias de la Comunicación",
+          "codigo": "mtpe-291",
+          "idea_origen": "MIA",
+          "institucion": "Universidad Nacional Federico Villarreal",
+          "motivos": [
+            {
+              "codigo": "AYUDAR",
+              "texto": "Ayudar a otros"
+            },
+            {
+              "codigo": "OTRA",
+              "texto": "Me gusta explicar"
+            }
+          ],
+          "prioridad": 2,
+          "relato": "DATO DE PRUEBA: un día expliqué un tema a mi primo y sentí que era lo mío."
+        }
+      ],
       "tipo": "PLANES"
     }
   ]

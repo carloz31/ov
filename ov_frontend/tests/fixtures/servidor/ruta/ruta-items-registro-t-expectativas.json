@@ -1,9 +1,12 @@
 [
   {
+    "arranque": null,
     "codigo": "t-exp-ruta",
-    "consigna": "¿Qué te gustaría hacer al terminar el colegio y por qué?",
+    "con_llm": false,
+    "dialogo": null,
     "eleccion": {
       "comun": true,
+      "etiqueta_otra": null,
       "fuente": "LISTA",
       "lista": "RUTAS_DESPUES_COLEGIO",
       "maxima": 2,
@@ -37,15 +40,19 @@
       "referencia": null,
       "referencia_opciones": null
     },
-    "min_caracteres": null,
     "nombre": "Tu ruta después del colegio",
-    "obligatorio": true
+    "obligatorio": true,
+    "pregunta_eleccion": null,
+    "pregunta_texto": "¿Qué te gustaría hacer al terminar el colegio y por qué?"
   },
   {
+    "arranque": null,
     "codigo": "t-exp-apoyo",
-    "consigna": "¿Quién te apoya en esta decisión? Cuenta un ejemplo.",
+    "con_llm": false,
+    "dialogo": null,
     "eleccion": {
       "comun": false,
+      "etiqueta_otra": null,
       "fuente": "LISTA",
       "lista": "t-lista-apoyos",
       "maxima": 1,
@@ -71,16 +78,20 @@
       "referencia": null,
       "referencia_opciones": null
     },
-    "min_caracteres": null,
     "nombre": "Quién te apoya",
-    "obligatorio": true
+    "obligatorio": true,
+    "pregunta_eleccion": null,
+    "pregunta_texto": "¿Quién te apoya en esta decisión? Cuenta un ejemplo."
   },
   {
+    "arranque": null,
     "codigo": "t-exp-espera",
-    "consigna": "¿Qué esperan de ti las personas cercanas?",
+    "con_llm": false,
+    "dialogo": null,
     "eleccion": null,
-    "min_caracteres": null,
     "nombre": "Lo que esperan de ti",
-    "obligatorio": true
+    "obligatorio": true,
+    "pregunta_eleccion": null,
+    "pregunta_texto": "¿Qué esperan de ti las personas cercanas?"
   }
 ]

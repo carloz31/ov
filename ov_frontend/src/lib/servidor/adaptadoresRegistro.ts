@@ -1,79 +1,120 @@
 import type {
-  ItemRegistroPublico,
+  EcoMostrado,
+  ItemRegistroCuenta,
   OpcionElegida,
+  OpcionOfrecida,
+  PasoRegistro,
   ReferenciaResuelta,
-  RespuestaRegistroPublica,
+  RegistroConsultado,
+  RespuestaVigente,
 } from '@/types/servidor'
 
-// F02: un ítem que retoma una elección elige de su propia lista; su referencia ELECCION solo dice qué se
-// eligió la vez pasada (la «otra», con su texto). Sin dato, nada. Ajuste registros: si retoma sobre la misma
-// referencia que le da las opciones (PLANES en b5-1-decision), lo marcado es la primera: el Plan A actual.
-export function anterioresDe(item: ItemRegistroPublico, referencias: ReferenciaResuelta[]): OpcionElegida[] {
-  const codigo = item.eleccion?.referencia
-  const referencia = codigo ? referencias.find((r) => r.codigo === codigo) : undefined
-  if (referencia?.estado !== 'DISPONIBLE') return []
-  if (codigo === item.eleccion?.referencia_opciones)
-    return (referencia.opciones ?? []).slice(0, 1).map((o) => ({ codigo: o.codigo }))
-  return (referencia.opciones ?? []).map((o) =>
-    o.codigo === 'OTRA' ? { codigo: 'OTRA', texto: o.texto } : { codigo: o.codigo },
-  )
+// Ajuste front de registros (lote 1): el registro llega del servidor con la consigna de cada ítem ya resuelta, sus
+// opciones, sus ecos y la respuesta vigente. Estas funciones son puras: el hook arma el flujo con ellas.
+
+export const itemDe = (registro: RegistroConsultado | null | undefined, codigo: string | undefined) =>
+  codigo ? registro?.items.find((i) => i.codigo === codigo) : undefined
+
+// La «Otra» se envía con el código que espera el backend: OTRA en un ítem de una opción, OTRA-1 en los de varias.
+export const codigoOtra = (item: ItemRegistroCuenta) => ((item.eleccion?.maxima ?? 1) > 1 ? 'OTRA-1' : 'OTRA')
+export const esOtra = (codigo: string) => codigo === 'OTRA' || codigo.startsWith('OTRA-')
+
+// La opción marcada que trae `pregunta` y `arranque` reemplaza a los del ítem (la primera marcada que los traiga).
+export function consignaVigente(item: ItemRegistroCuenta, marcadas: OpcionElegida[]) {
+  const consigna = item.consigna
+  const propia = marcadas
+    .map((m) => item.opciones.find((o) => o.codigo === m.codigo))
+    .find((o): o is OpcionOfrecida => !!o?.pregunta)
+  return {
+    dialogo: consigna?.dialogo ?? null,
+    preguntaEleccion: consigna?.pregunta_eleccion ?? null,
+    preguntaTexto: propia?.pregunta ?? consigna?.pregunta_texto ?? '',
+    arranque: (propia ? propia.arranque : null) ?? consigna?.arranque ?? null,
+  }
 }
 
-// Las referencias que pide un registro: las de sus elecciones que retoman otra o eligen de una referencia y las
-// que citan sus consignas.
-export function necesitaReferencias(items: ItemRegistroPublico[], ecos: (string | string[] | undefined)[]) {
-  return (
-    items.some((i) => !!i.eleccion?.referencia || !!i.eleccion?.referencia_opciones) ||
-    ecos.some((eco) => codigosEco(eco).length > 0)
-  )
+// El texto se exige no vacío, salvo que la opción marcada vaya sin LLM. No hay mínimo de caracteres.
+export function requiereTexto(item: ItemRegistroCuenta, marcadas: OpcionElegida[]) {
+  const primera = marcadas[0] && item.opciones.find((o) => o.codigo === marcadas[0].codigo)
+  return !primera?.sin_llm
 }
 
-// Ajuste registros: las opciones que ofrece un ítem son las de su lista o las de su referencia (resuelta para la
-// cuenta, en vivo) más sus opciones propias. Así las vistas de elección siguen leyendo `eleccion.opciones`.
-export function itemsConOpciones(items: ItemRegistroPublico[], referencias: ReferenciaResuelta[]) {
-  return items.map((item) => {
-    const eleccion = item.eleccion
-    if (!eleccion) return item
-    const referencia = eleccion.referencia_opciones
-      ? referencias.find((r) => r.codigo === eleccion.referencia_opciones)
-      : undefined
-    const base =
-      eleccion.fuente === 'REFERENCIA'
-        ? referencia?.estado === 'DISPONIBLE'
-          ? (referencia.opciones ?? []).map((o) => ({ codigo: o.codigo, texto: o.texto }))
-          : []
-        : eleccion.opciones
-    const propias = (eleccion.opciones_propias ?? []).map((o) => ({ codigo: o.codigo, texto: o.texto }))
-    return { ...item, eleccion: { ...eleccion, opciones: [...base, ...propias] } }
-  })
+// El ítem o la opción marcada no pasan por el LLM: la pantalla de Lumi no espera.
+export function sinLlm(item: ItemRegistroCuenta, marcadas: OpcionElegida[]) {
+  const primera = marcadas[0] && item.opciones.find((o) => o.codigo === marcadas[0].codigo)
+  return !item.con_llm || !!primera?.sin_llm
 }
 
-// Exclusivas, preguntas propias y opciones que cierran el ítem sin seguimiento (texto opcional).
-export const exclusivasPropias = (item: ItemRegistroPublico) =>
-  (item.eleccion?.opciones_propias ?? []).filter((o) => o.exclusiva).map((o) => o.codigo)
-export const preguntasPropias = (item: ItemRegistroPublico): Record<string, string> =>
-  Object.fromEntries(
-    (item.eleccion?.opciones_propias ?? []).flatMap((o) => (o.pregunta_propia ? [[o.codigo, o.pregunta_propia]] : [])),
-  )
-export const cierraSinSeguimiento = (item: ItemRegistroPublico, seleccion: OpcionElegida[]) => {
-  const sin = new Set((item.eleccion?.opciones_propias ?? []).filter((o) => o.sin_seguimiento).map((o) => o.codigo))
-  return seleccion.length > 0 && seleccion.every((o) => sin.has(o.codigo))
+// Lo que se valida antes de enviar: un error de selección, o nada.
+export type ErrorSeleccion = 'eleccion' | 'otra'
+export function errorSeleccion(item: ItemRegistroCuenta, marcadas: OpcionElegida[]): ErrorSeleccion | undefined {
+  if (!item.eleccion) return undefined
+  if (marcadas.length < Math.max(1, item.eleccion.minima)) return 'eleccion'
+  if (marcadas.some((m) => esOtra(m.codigo) && !m.texto?.trim())) return 'otra'
+  return undefined
 }
 
-// Premarcado condicionado (ajuste registros): si en el ítem anterior se eligió `opcion`, este llega con `marca`.
-export function premarcadoDe(item: ItemRegistroPublico, respuestas: RespuestaRegistroPublica[]): OpcionElegida[] {
-  const regla = item.eleccion?.premarcar_si
-  if (!regla) return []
-  const anterior = respuestas.find((r) => r.item === regla.item)
-  return anterior?.opciones_elegidas.some((o) => o.codigo === regla.opcion) ? [{ codigo: regla.marca }] : []
+// La caja de edición: la primera respuesta y, en la línea siguiente, la línea del seguimiento.
+export const cajaEdicion = (respuesta: RespuestaVigente) =>
+  respuesta.linea_seguimiento
+    ? `${respuesta.primera_respuesta}\n${respuesta.linea_seguimiento}`
+    : respuesta.primera_respuesta
+
+// Lo marcado al editar: lo guardado, con el texto de la «Otra».
+export const marcadasDe = (respuesta: RespuestaVigente): OpcionElegida[] =>
+  respuesta.opciones_elegidas.map((o) => (esOtra(o.codigo) ? { codigo: o.codigo, texto: o.texto } : { codigo: o.codigo }))
+
+// Un solo aviso por ítem respondido: sin evaluar, eco cambiado o la pista, en ese orden.
+export type AvisoItem = { tipo: 'reenviable' } | { tipo: 'eco_cambiado' } | { tipo: 'pista'; texto: string }
+export function avisoDe(respuesta: RespuestaVigente | null | undefined): AvisoItem | undefined {
+  if (!respuesta) return undefined
+  if (respuesta.reenviable) return { tipo: 'reenviable' }
+  if (respuesta.eco_cambiado) return { tipo: 'eco_cambiado' }
+  return respuesta.pista ? { tipo: 'pista', texto: respuesta.pista } : undefined
 }
 
-// Una opción guardada que la referencia ya no ofrece (un plan eliminado) se muestra con su texto guardado.
-export const YA_NO_ESTA = 'ya no está en tu lista'
-export function conGuardadas<T extends { codigo: string; texto: string }>(opciones: T[], guardadas: OpcionElegida[]) {
-  const faltan = guardadas.filter((g) => g.codigo !== 'OTRA' && g.texto && !opciones.some((o) => o.codigo === g.codigo))
-  return [...opciones, ...faltan.map((g) => ({ codigo: g.codigo, texto: `${g.texto} · ${YA_NO_ESTA}` }) as T)]
+// Qué dice Lumi tras un paso. En la primera respuesta, REPREGUNTA abre el campo corto. Tras la repregunta (o al
+// reenviar el seguimiento), SIGUIENTE con pista dice que aún queda algo por preguntar. El front nunca recibe el tipo:
+// mira `respuesta.pista` del ítem en el registro que devuelve el paso.
+export type DesenlaceLumi =
+  | { tipo: 'repregunta'; texto: string }
+  | { tipo: 'mensaje'; texto: string }
+  | { tipo: 'confirmacion' }
+  | { tipo: 'con_pista' }
+export function desenlace(paso: PasoRegistro, trasRepregunta: boolean): DesenlaceLumi {
+  if (paso.paso === 'MENSAJE') return { tipo: 'mensaje', texto: paso.mensaje ?? '' }
+  if (paso.paso === 'REPREGUNTA' && !trasRepregunta) return { tipo: 'repregunta', texto: paso.repregunta ?? '' }
+  const respuesta = itemDe(paso.registro, paso.item)?.respuesta
+  return trasRepregunta && respuesta?.pista ? { tipo: 'con_pista' } : { tipo: 'confirmacion' }
 }
+
+// Los ecos que se muestran, como texto simple (el lote 2 les da sus formas): el nombre y los valores que traiga.
+export function textoEco(eco: EcoMostrado): string {
+  const valores: string[] = []
+  const agregar = (v: unknown): void => {
+    if (typeof v === 'string' && v.trim()) valores.push(v)
+    else if (Array.isArray(v)) v.forEach(agregar)
+    else if (v && typeof v === 'object')
+      agregar(
+        Object.entries(v as Record<string, unknown>)
+          .filter(([k]) => k !== 'codigo')
+          .map(([, x]) => x)
+          .filter((x) => typeof x === 'string')
+          .join(' · '),
+      )
+  }
+  // Una cita de dos líneas trae `lineas` (y `texto`, unido con « / »): se muestran las líneas.
+  const conLineas = Array.isArray(eco.lineas) && eco.lineas.length > 0
+  for (const clave of [conLineas ? 'lineas' : 'texto', 'opciones', 'carrera', 'institucion', 'camino', 'motivos', 'planes',
+    'pendientes', 'hechos'])
+    agregar(eco[clave])
+  const cuerpo = valores.join(' · ')
+  return eco.nombre ? `${eco.nombre}: ${cuerpo}` : cuerpo
+}
+
+// Las referencias que pide un registro: solo las que citan sus diálogos (la apertura).
+export const necesitaReferencias = (ecos: (string | string[] | undefined)[]) =>
+  ecos.some((eco) => codigosEco(eco).length > 0)
 
 // Ajuste registros: la frase de la zona de eco para un texto que el estudiante dejó abierto.
 export const TEXTO_ABIERTO = 'Esto lo dejaste abierto.'
@@ -147,30 +188,3 @@ export function citaDialogo(referencia: ReferenciaResuelta | undefined): string 
 // (también dentro de las comillas: «…mío.» Tus pasos…).
 export const unirCitas = (citas: string[]) =>
   citas.reduce((texto, cita) => (!texto ? cita : `${texto}${/[.!?]»?$/.test(texto) ? ' ' : '. '}${cita}`), '')
-
-// F07b: la zona de eco de las referencias que no son TEXTO, en el orden del contenido. Los motivos del plan A van
-// como chips justo tras su cita (`cita`), y lo que sigue, después de los chips (`citaTras`). Sin dato, nada.
-export function ecoDeReferencias(
-  referencias: ReferenciaResuelta[],
-  // Ajuste registros: el título de la actividad de donde sale una ELECCION.
-  origen: (referencia: ReferenciaResuelta) => string = () => '',
-) {
-  const corte = referencias.findIndex((r) => chipsReferencia(r).length > 0)
-  const citas = (lista: ReferenciaResuelta[]) =>
-    unirCitas(lista.map((r) => citaReferencia(r, origen(r))).filter((c): c is string => !!c))
-  const cita = citas(corte < 0 ? referencias : referencias.slice(0, corte + 1))
-  const citaTras = corte < 0 ? '' : citas(referencias.slice(corte + 1))
-  if (!cita && !citaTras) return undefined
-  const chips = corte < 0 ? [] : chipsReferencia(referencias[corte])
-  return {
-    cita: cita || citaTras,
-    ...(chips.length && cita ? { chips } : {}),
-    ...(citaTras && cita ? { citaTras } : {}),
-  }
-}
-
-// F07b: los motivos del plan A (referencia PLAN), que la zona de eco muestra como chips.
-export function chipsReferencia(referencia: ReferenciaResuelta | undefined): string[] {
-  if (referencia?.estado !== 'DISPONIBLE' || referencia.tipo !== 'PLAN') return []
-  return (referencia.opciones ?? []).map((o) => o.texto)
-}

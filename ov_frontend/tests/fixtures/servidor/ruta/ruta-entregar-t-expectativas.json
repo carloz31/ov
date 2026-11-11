@@ -4,7 +4,7 @@
       "codigo": "t-diario-personal",
       "nombre": "Lo que espero",
       "personalizada": true,
-      "texto": null
+      "texto": "¿Cómo te sientes con lo que esperas de este camino?"
     }
   ],
   "estado": "COMPLETADA",
@@ -25,8 +25,200 @@
       "tipo": "REGISTRO_ADECUADO"
     }
   ],
-  "items_abiertos": [],
-  "items_por_ampliar": [],
+  "item_actual": null,
+  "items": [
+    {
+      "codigo": "t-exp-ruta",
+      "con_llm": false,
+      "consigna": {
+        "arranque": null,
+        "dialogo": null,
+        "pregunta_eleccion": null,
+        "pregunta_texto": "¿Qué te gustaría hacer al terminar el colegio y por qué?"
+      },
+      "disponible": true,
+      "ecos": [],
+      "eleccion": {
+        "etiqueta_otra": null,
+        "maxima": 2,
+        "minima": 1,
+        "ordenada": false,
+        "permite_otra": true
+      },
+      "marcador_faltante": null,
+      "nombre": "Tu ruta después del colegio",
+      "obligatorio": true,
+      "opciones": [
+        {
+          "arranque": null,
+          "codigo": "UNIVERSIDAD",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Qué te gustaría hacer al terminar el colegio y por qué?",
+          "sin_llm": false,
+          "texto": "Estudiar en una universidad"
+        },
+        {
+          "arranque": null,
+          "codigo": "INSTITUTO",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Qué te gustaría hacer al terminar el colegio y por qué?",
+          "sin_llm": false,
+          "texto": "Estudiar en un instituto"
+        },
+        {
+          "arranque": null,
+          "codigo": "TRABAJAR",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Qué te gustaría hacer al terminar el colegio y por qué?",
+          "sin_llm": false,
+          "texto": "Trabajar"
+        },
+        {
+          "arranque": null,
+          "codigo": "EMPRENDER",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Qué te gustaría hacer al terminar el colegio y por qué?",
+          "sin_llm": false,
+          "texto": "Emprender un negocio"
+        },
+        {
+          "arranque": null,
+          "codigo": "AUN_NO_SE",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Qué te gustaría hacer al terminar el colegio y por qué?",
+          "sin_llm": false,
+          "texto": "Aún no lo sé"
+        }
+      ],
+      "respuesta": {
+        "eco_cambiado": false,
+        "linea_seguimiento": null,
+        "opciones_elegidas": [
+          {
+            "codigo": "INSTITUTO",
+            "texto": "Estudiar en un instituto"
+          },
+          {
+            "codigo": "OTRA-1",
+            "texto": "Viajar un año"
+          }
+        ],
+        "pista": null,
+        "primera_respuesta": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+        "reenviable": false
+      }
+    },
+    {
+      "codigo": "t-exp-apoyo",
+      "con_llm": false,
+      "consigna": {
+        "arranque": null,
+        "dialogo": null,
+        "pregunta_eleccion": null,
+        "pregunta_texto": "¿Quién te apoya en esta decisión? Cuenta un ejemplo."
+      },
+      "disponible": true,
+      "ecos": [],
+      "eleccion": {
+        "etiqueta_otra": null,
+        "maxima": 1,
+        "minima": 1,
+        "ordenada": false,
+        "permite_otra": false
+      },
+      "marcador_faltante": null,
+      "nombre": "Quién te apoya",
+      "obligatorio": true,
+      "opciones": [
+        {
+          "arranque": null,
+          "codigo": "FAMILIA",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Quién te apoya en esta decisión? Cuenta un ejemplo.",
+          "sin_llm": false,
+          "texto": "Mi familia"
+        },
+        {
+          "arranque": null,
+          "codigo": "DOCENTES",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Quién te apoya en esta decisión? Cuenta un ejemplo.",
+          "sin_llm": false,
+          "texto": "Mis docentes"
+        },
+        {
+          "arranque": null,
+          "codigo": "AMIGOS",
+          "exclusiva": false,
+          "grupo": null,
+          "lineas": [],
+          "origen": null,
+          "pregunta": "¿Quién te apoya en esta decisión? Cuenta un ejemplo.",
+          "sin_llm": false,
+          "texto": "Mis amigos"
+        }
+      ],
+      "respuesta": {
+        "eco_cambiado": false,
+        "linea_seguimiento": null,
+        "opciones_elegidas": [
+          {
+            "codigo": "FAMILIA",
+            "texto": "Mi familia"
+          }
+        ],
+        "pista": null,
+        "primera_respuesta": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+        "reenviable": false
+      }
+    },
+    {
+      "codigo": "t-exp-espera",
+      "con_llm": false,
+      "consigna": {
+        "arranque": null,
+        "dialogo": null,
+        "pregunta_eleccion": null,
+        "pregunta_texto": "¿Qué esperan de ti las personas cercanas?"
+      },
+      "disponible": true,
+      "ecos": [],
+      "eleccion": null,
+      "marcador_faltante": null,
+      "nombre": "Lo que esperan de ti",
+      "obligatorio": true,
+      "opciones": [],
+      "respuesta": {
+        "eco_cambiado": false,
+        "linea_seguimiento": null,
+        "opciones_elegidas": [],
+        "pista": null,
+        "primera_respuesta": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
+        "reenviable": false
+      }
+    }
+  ],
   "nuevas_notificaciones": [
     {
       "codigo": "NOT-00000000000000000000000000000005",
@@ -153,50 +345,6 @@
       },
       "regla": "R-t-opcional",
       "tipo_objetivo": "ACTIVIDAD"
-    }
-  ],
-  "posicion": "t-exp-ruta",
-  "respuestas": [
-    {
-      "conversacion": [
-        {
-          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
-          "tipo": "respuesta"
-        }
-      ],
-      "estado": "FINAL",
-      "item": "t-exp-ruta",
-      "opciones_elegidas": [
-        {
-          "codigo": "UNIVERSIDAD"
-        }
-      ]
-    },
-    {
-      "conversacion": [
-        {
-          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
-          "tipo": "respuesta"
-        }
-      ],
-      "estado": "FINAL",
-      "item": "t-exp-apoyo",
-      "opciones_elegidas": [
-        {
-          "codigo": "FAMILIA"
-        }
-      ]
-    },
-    {
-      "conversacion": [
-        {
-          "texto": "DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.",
-          "tipo": "respuesta"
-        }
-      ],
-      "estado": "FINAL",
-      "item": "t-exp-espera",
-      "opciones_elegidas": []
     }
   ]
 }

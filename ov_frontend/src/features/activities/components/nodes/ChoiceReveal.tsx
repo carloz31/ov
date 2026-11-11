@@ -1,12 +1,13 @@
 import { useState, type ReactNode } from 'react'
 import type { OpcionElegida } from '@/types/servidor'
+import { esOtra as codigoDeOtra } from '@/lib/servidor/adaptadoresRegistro'
 import type { ReglasEleccion } from '../../lib/eleccionGuiada'
 import '../../styles/registro-guiado.css'
 
 // Elección guiada (F01; ajuste vista del ítem): las opciones como chips que se alternan al tocarlas, en filas
 // que se acomodan; las exclusivas en una fila aparte bajo una línea fina. Con el máximo alcanzado, las demás se
-// atenúan pero siguen siendo pulsables. «+ Otra» muestra su campo debajo de las opciones. La etiqueta de lo
-// elegido la vez pasada va dentro del chip, a la derecha del texto. Debajo, `reaccion`.
+// atenúan pero siguen siendo pulsables. «+ Otra» (`OTRA` u `OTRA-1`) muestra su campo debajo de las opciones. Ajuste
+// front de registros (lote 1): el origen de una pieza va dentro del chip, a la derecha del texto (sin «la vez pasada»).
 export function ChoiceReveal({
   opciones,
   seleccion,
@@ -16,11 +17,9 @@ export function ChoiceReveal({
   onAlternar,
   onTextoOtra,
   soloLectura,
-  anteriores = [],
-  etiquetaAnterior,
   reaccion,
 }: {
-  opciones: { codigo: string; texto: string }[]
+  opciones: { codigo: string; texto: string; origen?: string | null }[]
   seleccion: OpcionElegida[]
   reglas: ReglasEleccion
   error?: string
@@ -29,26 +28,21 @@ export function ChoiceReveal({
   onTextoOtra: (texto: string) => void
   // Consulta (F02): lo elegido se ve marcado y no se cambia.
   soloLectura?: boolean
-  // F02: lo elegido la vez pasada lleva su propia etiqueta, se mantenga o no.
-  anteriores?: string[]
-  etiquetaAnterior?: string
   reaccion?: ReactNode
 }) {
   const [tocada, setTocada] = useState<string>()
   const elegidas = seleccion.filter((o) => !reglas.exclusivas.includes(o.codigo)).length
   const lleno = reglas.maxima > 1 && elegidas >= reglas.maxima
-  const otra = seleccion.find((o) => o.codigo === 'OTRA')
+  const otra = seleccion.find((o) => codigoDeOtra(o.codigo))
   function alternar(codigo: string) {
     if (soloLectura) return
     setTocada(codigo)
     onAlternar(codigo)
   }
-  function chip(o: { codigo: string; texto: string }) {
+  function chip(o: { codigo: string; texto: string; origen?: string | null }) {
     const elegida = seleccion.some((s) => s.codigo === o.codigo)
-    const esOtra = o.codigo === 'OTRA'
-    // Ajuste vista del ítem (prueba en el navegador): solo lo elegido la vez pasada lleva etiqueta; la de lo
-    // elegido agrandaba el chip y movía la fila bajo el dedo (y no encajaba en las exclusivas). El ✓ ya lo marca.
-    const etiqueta = etiquetaAnterior && anteriores.includes(o.codigo) ? etiquetaAnterior : undefined
+    const esOtra = codigoDeOtra(o.codigo)
+    const etiqueta = o.origen ?? undefined
     return (
       <div
         key={o.codigo}

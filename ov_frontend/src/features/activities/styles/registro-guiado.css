@@ -339,3 +339,56 @@
   display: block;
   margin-top: 6px;
 }
+
+/* Ajuste front de registros (lote 1): lectura, edición y pantalla de Lumi, con presentación básica. */
+.sx-root .sx-item-rotulo {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted-foreground);
+}
+.sx-root .sx-item-ecos {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+.sx-root .sx-item-eleccion-leida {
+  margin: 0;
+  font-weight: 700;
+}
+.sx-root .sx-item-respuesta {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+.sx-root .sx-item-linea-seguimiento {
+  margin: 0;
+  white-space: pre-line;
+}
+.sx-root .sx-item-pista,
+.sx-root .sx-item-aviso {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--muted);
+}
+.sx-root .sx-item-pista p,
+.sx-root .sx-item-aviso p {
+  margin: 0;
+}
+.sx-root .sx-item-pista-rotulo {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted-foreground);
+}
+.sx-root .sx-lumi-recortada {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

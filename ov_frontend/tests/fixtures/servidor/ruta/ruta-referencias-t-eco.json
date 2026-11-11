@@ -3,7 +3,7 @@
     {
       "actividad": "t-expectativas",
       "codigo": "t-ref-espera",
-      "estado": "POR_DESARROLLAR",
+      "estado": "SIN_DATO",
       "tipo": "TEXTO"
     },
     {
@@ -12,8 +12,12 @@
       "estado": "DISPONIBLE",
       "opciones": [
         {
-          "codigo": "UNIVERSIDAD",
-          "texto": "Estudiar en una universidad"
+          "codigo": "INSTITUTO",
+          "texto": "Estudiar en un instituto"
+        },
+        {
+          "codigo": "OTRA-1",
+          "texto": "Viajar un año"
         }
       ],
       "tipo": "ELECCION"

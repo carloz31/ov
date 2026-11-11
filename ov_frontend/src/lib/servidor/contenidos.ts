@@ -1,7 +1,7 @@
 import { contenidoPorClave } from '@/data/activities/contenidos.ts'
 import { configureStudentActivities } from '@/data/activities/reflectionConfig'
 import type { Actividad } from '@/types/activities'
-import type { BloqueActividades, ItemPublico, ItemRegistroPublico, ReferenciaResuelta } from '@/types/servidor'
+import type { BloqueActividades, ItemPublico, ItemRegistroCuenta, ReferenciaResuelta } from '@/types/servidor'
 import { citaDialogo, codigosEco, unirCitas } from './adaptadoresRegistro'
 import { bloquesZona } from './adaptadores'
 
@@ -79,9 +79,10 @@ export function cuestionarioServidor(contenido: Actividad, items: ItemPublico[])
   }
 }
 
-// Registro del servidor: cada consigna con `item` responde ese ítem y muestra su consigna como premisa.
-// Si un ítem no tiene consigna, o una consigna apunta a un ítem que no existe, no hay actividad que abrir.
-export function registroServidor(contenido: Actividad, items: ItemRegistroPublico[]): Actividad | undefined {
+// Registro del servidor: cada consigna del JSON nombra su ítem (`item`); la consigna, la elección y los ecos vienen
+// del registro de la cuenta. Si una consigna apunta a un ítem que no existe, o un ítem no tiene consigna, no hay
+// actividad que abrir.
+export function registroServidor(contenido: Actividad, items: ItemRegistroCuenta[]): Actividad | undefined {
   const consignas = contenido.nodos.filter((n) => n.tipo === 'consigna')
   const codigos = new Set(items.map((i) => i.codigo))
   if (
@@ -89,15 +90,7 @@ export function registroServidor(contenido: Actividad, items: ItemRegistroPublic
     items.some((i) => !consignas.some((n) => n.item === i.codigo))
   )
     return undefined
-  return {
-    ...contenido,
-    nodos: contenido.nodos.map((nodo) => {
-      const item = nodo.tipo === 'consigna' ? items.find((i) => i.codigo === nodo.item) : undefined
-      return nodo.tipo === 'consigna' && item
-        ? { ...nodo, premisa: item.consigna, obligatoria: item.obligatorio, entregable: { tipo: 'texto' as const } }
-        : nodo
-    }),
-  }
+  return contenido
 }
 
 // F03: un encuentro cuyos diálogos traen `eco` pide sus referencias antes de abrirse; cada diálogo dice su texto

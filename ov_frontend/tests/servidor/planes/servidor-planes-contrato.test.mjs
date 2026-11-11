@@ -169,7 +169,7 @@ test('un desbloqueo SECCION_PLAN (completar t-valores) vence los planes y la vis
   assert.equal(almacen.obtenerEstadoServidor().planes.estado, 'listo')
   const pedidos = () => app.requests.filter((r) => r.url.endsWith('/planes')).length
   const antes = pedidos()
-  const { nuevos_desbloqueos } = jsonServidor('ruta/ruta-continuar-sin-responder-t-valores')
+  const { nuevos_desbloqueos } = jsonServidor('ruta/ruta-entregar-t-valores')
   assert.ok(nuevos_desbloqueos.some((d) => d.tipo_objetivo === 'SECCION_PLAN'))
   assert.ok(almacen.seccionesPorDesbloqueos(nuevos_desbloqueos).includes('planes'))
   await almacen.refrescar(nuevos_desbloqueos)

@@ -10,15 +10,7 @@ import { ItemNode } from '@/features/activities/components/nodes/ItemNode'
 import { SubmissionNode } from '@/features/activities/components/nodes/SubmissionNode'
 import { MatrixNode } from '@/features/activities/components/nodes/MatrixNode'
 import { ResultNode } from '@/features/activities/components/nodes/ResultNode'
-import { RegistroConsignaNode } from '@/features/activities/components/nodes/RegistroConsignaNode'
-import { RegistroPodioNode } from '@/features/activities/components/nodes/RegistroPodioNode'
-import { RegistroEleccionNode } from '@/features/activities/components/nodes/RegistroEleccionNode'
-import { esTopN } from '@/features/activities/lib/podio'
-import { esEleccionGuiada } from '@/features/activities/lib/eleccionGuiada'
-import { turnosRegistro } from '@/features/activities/hooks/useRegistroServidor'
-import { filasPorAmpliar, textoAbiertos } from '@/features/activities/lib/porAmpliar'
-import { RegistroSeguimiento } from '@/features/activities/components/followup/RegistroSeguimiento'
-import { VolverAlMapa } from './VolverAlMapa'
+import { RegistroItemServidor } from '@/features/activities/components/nodes/RegistroItemServidor'
 export function NodeRenderer({
   model,
   activity,
@@ -71,11 +63,7 @@ export function NodeRenderer({
     onAnterior,
     alRetroceder,
   } = model
-  const itemRegistro =
-    node?.tipo === 'consigna' && registro.registroEnServidor
-      ? registro.items.find((i) => i.codigo === node.item)
-      : undefined
-  const { pendiente, cierre } = registro
+  const itemRegistro = registro.registroEnServidor ? registro.item(node) : undefined
   return reaction ? (
     <div className="sx-player-scene">
       <div className="sx-scene-space" />
@@ -88,26 +76,6 @@ export function NodeRenderer({
         onAnterior={onAnterior}
       />
     </div>
-  ) : registro.enSeguimiento ? (
-    <div className="sx-card-stage">
-      <section className="sx-glass sx-player-card sx-submission-card case-scrollbar">
-        <RegistroSeguimiento
-          key={pendiente ? `${pendiente.item}-${pendiente.conversacion.length}` : 'cierre'}
-          item={pendiente?.item}
-          hilo={pendiente && turnosRegistro(pendiente)}
-          ocupado={registro.ocupado === 'evaluando'}
-          error={registro.error}
-          porAmpliar={cierre && filasPorAmpliar(cierre.items_por_ampliar ?? [], registro.items)}
-          abiertos={cierre && textoAbiertos(cierre.items_abiertos ?? [], registro.items)}
-          aviso={registro.aviso}
-          onLeerAviso={registro.leerAviso}
-          onResponder={(texto) => void registro.responder(texto)}
-          onOmitir={() => void registro.omitir()}
-          onReintentar={() => void registro.reintentar()}
-          onContinuar={registro.continuar}
-        />
-      </section>
-    </div>
   ) : !node ? (
     <FinishScreen
       activity={activity}
@@ -115,7 +83,6 @@ export function NodeRenderer({
       desbloqueosServidor={cierreServidor?.nuevos_desbloqueos}
       entradasDiario={cierreServidor?.entradas_desbloqueadas}
       salida={salida}
-      destino={registro.destino}
     />
   ) : matrix ? (
     <MatrixNode
@@ -216,38 +183,7 @@ export function NodeRenderer({
   ) : node.tipo === 'consigna' && itemRegistro ? (
     <div className="sx-card-stage">
       <section className="sx-glass sx-player-card sx-submission-card case-scrollbar">
-        {(() => {
-          const Nodo = esTopN(itemRegistro)
-            ? RegistroPodioNode
-            : esEleccionGuiada(itemRegistro)
-              ? RegistroEleccionNode
-              : RegistroConsignaNode
-          return (
-            <Nodo
-              key={node.id}
-              node={node}
-              item={itemRegistro}
-              inicial={registro.inicialDe(itemRegistro.codigo)}
-              ultimo={registro.esUltimaConsigna(node.id)}
-              ocupado={!!registro.ocupado}
-              error={registro.error}
-              onGuardar={(texto, opciones) => void registro.guardar(node, texto, opciones)}
-              onAnterior={
-                onAnterior && ((texto, opciones) => void registro.retroceder(node, texto, opciones))
-              }
-              consulta={registro.consultaDe(itemRegistro)}
-              salida={<VolverAlMapa actividad={activity.id} />}
-              {...(Nodo === RegistroConsignaNode ? { eco: registro.ecoDe(node) } : {})}
-              {...(Nodo === RegistroEleccionNode
-                ? {
-                    anteriores: registro.anterioresDe(itemRegistro),
-                    premarcadas: registro.premarcadasDe(itemRegistro),
-                    eco: registro.ecoDe(node),
-                  }
-                : {})}
-            />
-          )
-        })()}
+        <RegistroItemServidor key={node.id} node={node} item={itemRegistro} registro={registro} onAnterior={onAnterior} />
       </section>
     </div>
   ) : node.tipo === 'consigna' ? (

@@ -1,139 +1,122 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {
-  cargarAlmacen,
-  copia,
-  escenarioRuta,
-  esConsultaDominio,
-  fixtureServidor,
-  jsonServidor,
-  respuestaDominio,
-} from '../../soporte/servidor-ayudas.mjs'
+import { copia, fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import { contenido } from '../../soporte/servidor-registro-ayudas.mjs'
 
-// F01: contrato de registros con los fixtures ruta-* de t-valores (elección ordenada y seguimiento).
-const itemsValores = jsonServidor('ruta/ruta-items-registro-t-valores')
-const entrega = jsonServidor('ruta/ruta-entregar-t-valores-seguimiento')
-const cierre = jsonServidor('ruta/ruta-continuar-sin-responder-t-valores')
+// Ajuste front de registros (lote 1): el contrato del flujo ítem por ítem (lote 3 del backend) y los adaptadores
+// puros del registro, sobre los fixtures regenerados.
+const registro = () => fixtureServidor().load('src/lib/servidor/adaptadoresRegistro.ts')
+const PASOS = ['responder-b1-1-repregunta', 'seguimiento-b1-1-con-pista', 'responder-b1-1-mensaje',
+  'responder-b1-1-sin-evaluar', 'reenviar-b1-1', 'responder-b1-1-edicion', 'seguimiento-b1-1-sin-pista',
+  'seguimiento-b1-1-mensaje']
 
-async function preparar({ fallarRefresco = false } = {}) {
-  const app = fixtureServidor(),
-    estado = escenarioRuta('t1')
-  let refrescos = 0
-  app.fetch((req) => {
-    if (esConsultaDominio(req)) {
-      if (req.url.endsWith('/actividades') && refrescos++ && fallarRefresco) return { status: 500, body: {} }
-      return respuestaDominio(req, estado)
-    }
-    if (req.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
-    if (req.url.endsWith('/items-registro')) return { body: itemsValores }
-    if (req.url.endsWith('/registro')) return { body: jsonServidor('ruta/ruta-registro-t-valores-pendiente') }
-    if (req.url.endsWith('/guardar-borrador')) return { body: { item: req.body.item, estado: 'BORRADOR' } }
-    if (req.url.endsWith('/entregar')) return { body: entrega }
-    if (req.url.endsWith('/responder-seguimiento'))
-      return { body: jsonServidor('ruta/ruta-responder-seguimiento-t-valores') }
-    if (req.url.endsWith('/continuar-sin-responder')) return { body: cierre }
-    throw Error(`Solicitud no configurada: ${req.url}`)
-  })
-  const almacen = cargarAlmacen(app)
-  almacen.publicar({ consultasHabilitadas: true })
-  await almacen.refrescar()
-  return { app, registro: app.load('src/store/servidor/registro.ts') }
-}
-
-test('las consultas de registro usan las rutas del backend y la cuenta activa', async () => {
-  const { app, registro } = await preparar()
-  const items = await registro.consultarItemsRegistro('t-valores')
-  const consultado = await registro.consultarRegistro('t-valores')
-  assert.deepEqual(copia(items), { tipo: 'ok', datos: itemsValores })
-  assert.equal(consultado.datos.respuestas[0].estado, 'PENDIENTE_SEGUIMIENTO')
-  assert.deepEqual(copia(app.requests.slice(-2).map((r) => r.url)), [
-    '/api/actividades/t-valores/items-registro',
-    '/api/cuentas/est-ana/actividades/t-valores/registro',
-  ])
-})
-
-test('el borrador envía texto, opciones en el orden elegido y la posición', async () => {
-  const { app, registro } = await preparar()
-  const opciones = [{ codigo: 'CREAR' }, { codigo: 'LIBERTAD' }, { codigo: 'ESTABILIDAD' }]
-  const respuesta = await registro.guardarBorradorRegistro(
-    't-valores',
-    't-val-orden',
-    'Texto',
-    opciones,
-    't-val-libre',
-  )
-  assert.deepEqual(copia(respuesta), { tipo: 'ok', datos: { item: 't-val-orden', estado: 'BORRADOR' } })
-  const req = app.requests.at(-1)
-  assert.equal(req.url, '/api/acciones/registro/guardar-borrador')
-  assert.deepEqual(copia(req.body), {
-    cuenta: 'est-ana',
-    actividad: 't-valores',
-    item: 't-val-orden',
-    texto: 'Texto',
-    opciones,
-    posicion: 't-val-libre',
-  })
-})
-
-test('entregar, responder y continuar sin responder refrescan el camino tras la acción', async () => {
-  const { app, registro } = await preparar()
-  const entregada = await registro.entregarRegistro('t-valores')
-  assert.equal(entregada.tipo, 'ok')
-  assert.equal(app.requests.find((r) => r.url.endsWith('/entregar')).body.actividad, 't-valores')
-  const respondida = await registro.responderSeguimiento('t-valores', 't-val-orden', 'Porque sí')
-  assert.equal(respondida.tipo, 'ok')
-  assert.deepEqual(copia(app.requests.find((r) => r.url.endsWith('/responder-seguimiento')).body), {
-    cuenta: 'est-ana',
-    actividad: 't-valores',
-    item: 't-val-orden',
-    texto: 'Porque sí',
-  })
-  const cerrada = await registro.continuarSinResponder('t-valores', 't-val-orden')
-  assert.deepEqual(copia(cerrada.datos.items_por_ampliar), cierre.items_por_ampliar)
-  const ultima = app.requests.findLastIndex((r) => r.url.endsWith('/continuar-sin-responder'))
-  assert.ok(app.requests.slice(ultima + 1).some((r) => r.url.endsWith('/actividades')))
-})
-
-test('si la acción se guardó pero el refresco falla, el reintento no repite la acción', async () => {
-  const { app, registro } = await preparar({ fallarRefresco: true })
-  const fallida = await registro.continuarSinResponder('t-valores', 't-val-orden')
-  assert.equal(fallida.tipo, 'guardado_sin_refrescar')
-  const acciones = app.requests.filter((r) => r.url.endsWith('/continuar-sin-responder')).length
-  await registro.continuarSinResponder('t-valores', 't-val-orden', fallida.datos)
-  assert.equal(app.requests.filter((r) => r.url.endsWith('/continuar-sin-responder')).length, acciones)
-})
-
-test('registroServidor une cada consigna con su ítem y rechaza contenidos incompletos', () => {
-  const { registroServidor } = fixtureServidor().load('src/lib/servidor/contenidos.ts')
-  // DATO DE PRUEBA: contenido mínimo con una consigna por ítem de t-valores.
-  const consigna = (item) => ({
-    id: item,
-    tipo: 'consigna',
-    item,
-    premisa: '',
-    entregable: { tipo: 'texto' },
-    obligatoria: false,
-    visibilidad: 'estudiante_orientadora',
-  })
-  const contenido = {
-    id: 't-valores',
-    tipo: 'registro',
-    nodos: [
-      { id: 'hola', tipo: 'dialogo', hablanteId: 'companero', texto: 'Hola' },
-      ...itemsValores.map((i) => consigna(i.codigo)),
-    ],
+test('cada paso trae `paso`, su repregunta o su mensaje y el registro completo; nunca el tipo', () => {
+  for (const nombre of PASOS) {
+    const paso = contenido(nombre)
+    assert.ok(['SIGUIENTE', 'REPREGUNTA', 'MENSAJE'].includes(paso.paso), nombre)
+    assert.equal(paso.paso === 'REPREGUNTA', !!paso.repregunta, nombre)
+    assert.equal(paso.paso === 'MENSAJE', !!paso.mensaje, nombre)
+    assert.deepEqual(Object.keys(paso.registro).sort(), ['estado', 'item_actual', 'items'])
+    const texto = JSON.stringify(paso)
+    for (const prohibido of ['"tipo_final"', '"primera_tipo"', '"motivo"', '"sensible"', '"repregunta_cerrada"'])
+      assert.ok(!texto.includes(prohibido), `${nombre} trae ${prohibido}`)
   }
-  const actividad = registroServidor(contenido, itemsValores)
-  const nodo = actividad.nodos.find((n) => n.item === 't-val-orden')
-  assert.equal(nodo.premisa, itemsValores[0].consigna)
-  assert.equal(nodo.obligatoria, itemsValores[0].obligatorio)
-  assert.equal(actividad.nodos[0].tipo, 'dialogo')
-  assert.equal(
-    registroServidor({ ...contenido, nodos: contenido.nodos.slice(0, 2) }, itemsValores),
-    undefined,
-  )
-  assert.equal(
-    registroServidor({ ...contenido, nodos: [...contenido.nodos, consigna('t-otro')] }, itemsValores),
-    undefined,
-  )
+  const ruta = jsonServidor('ruta/ruta-responder-t-exp-ruta')
+  assert.equal(ruta.paso, 'SIGUIENTE')
+})
+
+test('cada ítem de la lectura trae su consigna, elección, opciones, ecos y la respuesta vigente', () => {
+  const a = contenido('registro-b1-1-a-medias')
+  assert.equal(a.item_actual, 'b1-1-logro')
+  const [gustos, logro] = a.items
+  assert.deepEqual(Object.keys(gustos.respuesta).sort(),
+    ['eco_cambiado', 'linea_seguimiento', 'opciones_elegidas', 'pista', 'primera_respuesta', 'reenviable'])
+  assert.equal(gustos.consigna.dialogo, 'Todo mapa empieza por donde uno ya estuvo.')
+  assert.equal(logro.respuesta, null)
+  assert.ok(logro.eleccion.maxima >= 1 && logro.opciones.some((o) => o.exclusiva))
+})
+
+test('la opción marcada con pregunta y arranque reemplaza a los del ítem', () => {
+  const { consignaVigente } = registro()
+  const logro = contenido('registro-b1-1-a-medias').items[1]
+  const ninguno = logro.opciones.find((o) => o.codigo === 'NINGUNO')
+  assert.deepEqual(copia(consignaVigente(logro, [])), {
+    dialogo: logro.consigna.dialogo,
+    preguntaEleccion: logro.consigna.pregunta_eleccion,
+    preguntaTexto: logro.consigna.pregunta_texto,
+    arranque: logro.consigna.arranque,
+  })
+  const conNinguno = consignaVigente(logro, [{ codigo: 'NINGUNO' }])
+  assert.equal(conNinguno.preguntaTexto, ninguno.pregunta)
+  assert.equal(conNinguno.arranque, ninguno.arranque)
+})
+
+test('el texto se exige no vacío salvo con una opción sin LLM; sin LLM no hay espera', () => {
+  const { requiereTexto, sinLlm } = registro()
+  const logro = contenido('registro-b1-1-a-medias').items[1]
+  assert.equal(requiereTexto(logro, [{ codigo: 'ORGANIZAR' }]), true)
+  assert.equal(sinLlm(logro, [{ codigo: 'ORGANIZAR' }]), false)
+  // DATO DE PRUEBA: la exclusiva de b1-1-logro marcada como sin LLM.
+  const conSinLlm = { ...logro, opciones: logro.opciones.map((o) => (o.exclusiva ? { ...o, sin_llm: true } : o)) }
+  assert.equal(requiereTexto(conSinLlm, [{ codigo: 'NINGUNO' }]), false)
+  assert.equal(sinLlm(conSinLlm, [{ codigo: 'NINGUNO' }]), true)
+  // Un ítem de `ruta` no tiene tarjeta: va sin LLM, pero igual pide texto.
+  const ruta = jsonServidor('ruta/ruta-registro-t-expectativas-cerrado').items[0]
+  assert.equal(ruta.con_llm, false)
+  assert.equal(sinLlm(ruta, [{ codigo: 'INSTITUTO' }]), true)
+  assert.equal(requiereTexto(ruta, [{ codigo: 'INSTITUTO' }]), true)
+})
+
+test('la «Otra» va como OTRA con una opción y OTRA-1 con varias; la selección se valida', () => {
+  const { codigoOtra, errorSeleccion } = registro()
+  const ruta = jsonServidor('ruta/ruta-registro-t-expectativas-cerrado').items[0]
+  assert.ok(ruta.eleccion.maxima > 1 && ruta.eleccion.permite_otra)
+  assert.equal(codigoOtra(ruta), 'OTRA-1')
+  assert.equal(codigoOtra({ ...ruta, eleccion: { ...ruta.eleccion, maxima: 1 } }), 'OTRA')
+  assert.equal(errorSeleccion(ruta, []), 'eleccion')
+  assert.equal(errorSeleccion(ruta, [{ codigo: 'OTRA-1', texto: '  ' }]), 'otra')
+  assert.equal(errorSeleccion(ruta, [{ codigo: 'OTRA-1', texto: 'Viajar' }]), undefined)
+})
+
+test('la caja de edición lleva la primera respuesta y, en la línea siguiente, la del seguimiento', () => {
+  const { cajaEdicion, marcadasDe } = registro()
+  const gustos = contenido('registro-b1-1-completado').items[0].respuesta
+  assert.ok(gustos.linea_seguimiento)
+  assert.equal(cajaEdicion(gustos), `${gustos.primera_respuesta}\n${gustos.linea_seguimiento}`)
+  assert.equal(cajaEdicion({ ...gustos, linea_seguimiento: null }), gustos.primera_respuesta)
+  const otra = { ...gustos, opciones_elegidas: [{ codigo: 'OTRA-1', texto: 'Viajar' }, { codigo: 'A', texto: 'a' }] }
+  assert.deepEqual(copia(marcadasDe(otra)), [{ codigo: 'OTRA-1', texto: 'Viajar' }, { codigo: 'A' }])
+})
+
+test('un solo aviso por ítem: sin evaluar, luego eco cambiado, luego la pista', () => {
+  const { avisoDe } = registro()
+  const base = contenido('registro-b1-1-a-medias').items[0].respuesta
+  assert.ok(base.pista)
+  assert.deepEqual(copia(avisoDe({ ...base, reenviable: true, eco_cambiado: true })), { tipo: 'reenviable' })
+  assert.deepEqual(copia(avisoDe({ ...base, eco_cambiado: true })), { tipo: 'eco_cambiado' })
+  assert.deepEqual(copia(avisoDe(base)), { tipo: 'pista', texto: base.pista })
+  assert.equal(avisoDe({ ...base, pista: null }), undefined)
+  assert.equal(avisoDe(null), undefined)
+  assert.ok(contenido('registro-b1-1-sin-terminar').items[2].respuesta.reenviable)
+})
+
+test('el desenlace sale del paso; tras la repregunta, la pista del ítem decide', () => {
+  const { desenlace } = registro()
+  assert.deepEqual(copia(desenlace(contenido('responder-b1-1-repregunta'), false)), {
+    tipo: 'repregunta', texto: contenido('responder-b1-1-repregunta').repregunta,
+  })
+  assert.deepEqual(copia(desenlace(contenido('responder-b1-1-mensaje'), false)), {
+    tipo: 'mensaje', texto: contenido('responder-b1-1-mensaje').mensaje,
+  })
+  assert.deepEqual(copia(desenlace(contenido('seguimiento-b1-1-con-pista'), true)), { tipo: 'con_pista' })
+  assert.deepEqual(copia(desenlace(contenido('seguimiento-b1-1-sin-pista'), true)), { tipo: 'confirmacion' })
+  assert.deepEqual(copia(desenlace(contenido('reenviar-b1-1'), false)), { tipo: 'confirmacion' })
+})
+
+test('los ecos se muestran como texto simple, con su nombre', () => {
+  const { textoEco } = registro()
+  assert.equal(textoEco({ codigo: 'x', nombre: 'Tu Plan A', forma: 'carrera', carrera: 'Psicología' }),
+    'Tu Plan A: Psicología')
+  assert.equal(textoEco({ codigo: 'x', forma: 'pasos', pendientes: ['Uno'], hechos: ['Dos'] }), 'Uno · Dos')
+  assert.equal(textoEco({ codigo: 'x', nombre: 'Lo tuyo', texto: 'a / b', lineas: ['a', 'b'] }), 'Lo tuyo: a · b')
 })

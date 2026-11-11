@@ -4,8 +4,18 @@ import { copia, elementos, esperar, fixtureServidor, jsonServidor } from '../../
 import { abrir, iniciar } from '../../soporte/servidor-registro-ayudas.mjs'
 
 // Ajuste carga-actividades: las mecánicas que el contenido real necesita, probadas sobre la ruta.
+// Ajuste front de registros (lote 1): `ruta` ya no deja texto citable (sus ítems no pasan por el LLM), así que el
+// fixture del eco disponible sale; el texto de t-ref-espera es DATO DE PRUEBA sobre el fixture regenerado.
+const conTexto = (fixture) => ({
+  ...fixture,
+  referencias: fixture.referencias.map((r) =>
+    r.codigo === 't-ref-espera'
+      ? { ...r, estado: 'DISPONIBLE', texto: 'DATO DE PRUEBA: no lo sé, pero mis papás confían en mí.' }
+      : r,
+  ),
+})
 const REFERENCIAS = {
-  disponible: jsonServidor('ruta/ruta-referencias-t-eco-disponible'),
+  disponible: conTexto(jsonServidor('ruta/ruta-referencias-t-eco')),
   sinDato: jsonServidor('ruta/ruta-referencias-t-eco-sin-dato'),
 }
 const contenido = (app, clave) => app.load('src/data/activities/contenidos.ts').contenidoPorClave(clave)
@@ -40,9 +50,9 @@ test('un diálogo cita cada referencia de su lista en orden; las sin dato se omi
     encuentroConEco(eco, referencias).nodos.find((n) => n.id === 't-eco-recuerdo').texto
   const conDatos = recuerdo(REFERENCIAS.disponible.referencias)
   assert.match(conDatos, /^Esto me contaste la vez pasada\. «DATO DE PRUEBA: no lo sé/)
-  assert.ok(conDatos.indexOf('confían en mí') < conDatos.indexOf('«Estudiar en una universidad»'))
+  assert.ok(conDatos.indexOf('confían en mí') < conDatos.indexOf('«Estudiar en un instituto · Viajar un año»'))
   const soloRuta = REFERENCIAS.disponible.referencias.filter((r) => r.codigo === 't-ref-rutas')
-  assert.equal(recuerdo(soloRuta), 'Esto me contaste la vez pasada. «Estudiar en una universidad»')
+  assert.equal(recuerdo(soloRuta), 'Esto me contaste la vez pasada. «Estudiar en un instituto · Viajar un año»')
   assert.equal(recuerdo(REFERENCIAS.sinDato.referencias), 'Esto me contaste la vez pasada.')
   // Un registro no se abre como encuentro: sus diálogos se completan en su propio reproductor.
   assert.equal(conEcoEncuentro(eco), false)
@@ -54,7 +64,7 @@ test('el registro completa sus diálogos con eco con las referencias que ya pidi
   const dialogo = () => elementos(player.render(), (e) => e.type?.name === 'DialogueBox')[0]
   dialogo().props.onContinue()
   await esperar()
-  assert.match(dialogo().props.text, /«Estudiar en una universidad»$/)
+  assert.match(dialogo().props.text, /«Estudiar en un instituto · Viajar un año»$/)
   assert.equal(app.requests.filter((r) => r.url.endsWith('/actividades/t-eco/referencias')).length, 1)
   player.unmount()
 })

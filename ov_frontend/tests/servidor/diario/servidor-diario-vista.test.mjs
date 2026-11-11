@@ -6,12 +6,17 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router'
 import { fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
+// DATO DE PRUEBA (ajuste front de registros, lote 1): desde el lote 2 del backend, `ruta` no deja texto citable y la
+// carta personalizada se redacta con su base al desbloquearse; para probar la carta sellada, se vuelve a sin redactar.
+const conCartaSellada = (lista) =>
+  lista.map((p) => (p.codigo === 't-diario-personal' ? { ...p, redactada: false, texto: null } : p))
+
 // F05 y su ajuste del diario: la portada (Hoy, buzón y tarjeta de Lumi) con lo que entrega el servidor.
 const app = fixtureServidor()
 const adaptadores = app.load('src/lib/servidor/adaptadoresDiario.ts')
 const { lumiBondServidor } = app.load('src/features/journal/lib/lumiBond.ts')
 const entradas = adaptadores.entradasDiario(jsonServidor('ruta/ruta-diario-entradas'))
-const cartas = adaptadores.cartasDiario(jsonServidor('ruta/ruta-diario-preguntas'))
+const cartas = adaptadores.cartasDiario(conCartaSellada(jsonServidor('ruta/ruta-diario-preguntas')))
 const bond = lumiBondServidor(adaptadores.amistadDiario(jsonServidor('ruta/ruta-diario-amistad')))
 const ahora = new Date('2026-10-09T15:00:00')
 const render = (archivo, props) =>
