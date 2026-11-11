@@ -83,4 +83,8 @@ Primera respuesta: la repregunta mostrada; seguimiento: la pista. Cruda → most
 
 ## 7. Notas
 
-_Pendiente._
+Revisión del usuario (11 nov): aprobada, 13/13. La tarjeta de `NINGUNO` queda como está. La línea del seguimiento del caso 9 se entiende.
+
+Fronteras aceptadas:
+- Caso 3: la repregunta dice «con esa chamba», aunque el estudiante no nombró ninguna.
+- Caso 9: el arranque («Algo que terminé, arreglé o ayudé a alguien») tiene una construcción imperfecta, pero la línea es legible.
