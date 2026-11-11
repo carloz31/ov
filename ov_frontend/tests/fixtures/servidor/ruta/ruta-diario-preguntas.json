@@ -10,7 +10,6 @@
     "entrada": null,
     "estado": "DISPONIBLE",
     "nombre": "Mi primer paso",
-    "personalizada": false,
     "recibida_en": "2026-10-07T10:00:00",
     "redactada": true,
     "respondida": false,
@@ -28,12 +27,11 @@
     "entrada": null,
     "estado": "DISPONIBLE",
     "nombre": "Lo que espero",
-    "personalizada": true,
     "recibida_en": "2026-10-07T10:00:00",
     "redactada": true,
     "respondida": false,
     "respondida_en": null,
-    "texto": "¿Cómo te sientes con lo que esperas de este camino?"
+    "texto": "DATO DE PRUEBA: pensaste en el instituto. ¿Cómo te sientes con eso?"
   },
   {
     "actividad": null,
@@ -43,7 +41,6 @@
     "entrada": null,
     "estado": "BLOQUEADA",
     "nombre": "Lo que conversamos",
-    "personalizada": false,
     "recibida_en": null,
     "redactada": false,
     "respondida": false,

@@ -7,8 +7,6 @@ import { FilaCarta } from '@/features/journal/components/FilaCarta'
 
 export type AccionesCarta = {
   onResponder: (carta: CartaLumi) => void
-  // «Abrir» de una carta sellada: pide su redacción sin abrir el editor (solo api).
-  onAbrir?: (carta: CartaLumi) => void
   onArchivar?: (carta: CartaLumi) => void
 }
 
@@ -16,7 +14,6 @@ export type AccionesCarta = {
 export function BuzonLumi({
   cartas,
   ahora,
-  enRedaccion,
   acciones,
   limite,
   verTodas = false,
@@ -24,7 +21,6 @@ export function BuzonLumi({
 }: {
   cartas: CartaLumi[]
   ahora: Date
-  enRedaccion: string[]
   acciones: AccionesCarta
   limite?: number
   verTodas?: boolean
@@ -55,7 +51,6 @@ export function BuzonLumi({
               key={carta.codigo}
               carta={carta}
               ahora={ahora}
-              redactando={enRedaccion.includes(carta.codigo)}
               acciones={acciones}
             />
           ))}

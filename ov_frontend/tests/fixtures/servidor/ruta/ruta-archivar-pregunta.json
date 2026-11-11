@@ -9,10 +9,9 @@
   "entrada": null,
   "estado": "DISPONIBLE",
   "nombre": "Lo que espero",
-  "personalizada": true,
   "recibida_en": "2026-10-07T10:00:00",
   "redactada": true,
   "respondida": false,
   "respondida_en": null,
-  "texto": "¿Cómo te sientes con lo que esperas de este camino?"
+  "texto": "DATO DE PRUEBA: pensaste en el instituto. ¿Cómo te sientes con eso?"
 }

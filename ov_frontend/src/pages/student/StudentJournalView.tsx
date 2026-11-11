@@ -104,11 +104,9 @@ function StudentJournalView() {
             <BuzonLumi
               cartas={buzon.cartas}
               ahora={now}
-              enRedaccion={buzon.enRedaccion}
-              acciones={{ onResponder: buzon.responder, onAbrir: buzon.abrir, onArchivar: buzon.archivar }}
+              acciones={{ onResponder: buzon.responder, onArchivar: buzon.archivar }}
               limite={3}
               verTodas
-              actualizar={buzon.enRedaccion.length ? buzon.actualizar : undefined}
             />
           }
           lumi={
@@ -147,7 +145,7 @@ function StudentJournalView() {
           suggestedTags={usedTags.filter((tag) => !tags.includes(tag))}
           tagDraft={tagDraft}
           tags={tags}
-          servidor={diarioServidor && { escribiendo: false }}
+          servidor={!!diarioServidor}
         />
       )}
       {screen === 'detail' && selected && (

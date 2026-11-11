@@ -16,7 +16,6 @@
         {
           "codigo": "t-diario-tras-conversar",
           "nombre": "Lo que conversamos",
-          "personalizada": false,
           "texto": "¿Qué te llevas de la conversación con tu familia?"
         }
       ],

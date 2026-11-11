@@ -130,12 +130,11 @@
       "id": "b1-2-07",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Te dejé una carta en el diario: «Lo que siento al pensar en mi futuro». Si quieres contarme lo que te provocó el mirador, ahí está."
+      "texto": "Si quieres contarme lo que te provocó el mirador, tu diario está abierto."
     }
   ],
   "recompensa": {
     "mensajeFin": "Mirar con atención cambia la mirada. El futuro no se decide en un mirador."
   },
-  "promptDiario": "Lo que siento al pensar en mi futuro",
   "mapa": { "x": 720, "y": 130, "icono": "informativa" }
 }

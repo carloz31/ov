@@ -78,7 +78,7 @@ export function useMapScreen({
             completed: true,
             activityId: selected!.specActivityId!,
             title: carta.nombre,
-            prompt: carta.texto ?? 'Lumi tiene una carta para ti',
+            prompt: carta.texto,
             pregunta: carta.codigo,
             remitente: carta.remitente?.titulo,
           },

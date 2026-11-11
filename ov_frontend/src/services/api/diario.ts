@@ -3,7 +3,6 @@ import type {
   AmistadAsistente,
   CheckInsCuenta,
   EntradaDiarioPublica,
-  PreguntaAbierta,
   PreguntaDelDia,
   PreguntaDiarioEstado,
   RespuestaAccion,
@@ -50,11 +49,6 @@ export function enviarEdicionEntrada(entrada: {
 
 export function enviarBorradoEntrada(cuenta: string, numero: number): Promise<RespuestaServidor<RespuestaAccion>> {
   return enviar('/acciones/borrar-entrada', { cuenta, numero })
-}
-
-// Redacta la pregunta una sola vez (puede tardar si es personalizada) y devuelve su texto.
-export function enviarAbrirPregunta(cuenta: string, codigo: string): Promise<RespuestaServidor<PreguntaAbierta>> {
-  return enviar('/acciones/diario/abrir-pregunta', { cuenta, codigo })
 }
 
 // Ajuste del diario (F05): archivar una carta lista y devolverla a pendiente.

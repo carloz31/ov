@@ -47,13 +47,12 @@ export function entradasDiario(entradas: EntradaDiarioPublica[] | null): Entrada
   }))
 }
 
-// Ajuste del diario (F05): una carta de Lumi como la pinta el buzón. `sellada`: personalizada aún sin redactar
-// (sin pregunta: «Abrir» la redacta); `lista`: con su pregunta. Las fechas y el remitente solo existen en api.
+// Ajuste del diario (F05): una carta de Lumi como la pinta el buzón, siempre con su pregunta (ajuste cartas-diario).
+// Las fechas y el remitente solo existen en api.
 export type CartaLumi = {
   codigo: string
   nombre: string
-  texto: string | null
-  estado: 'sellada' | 'lista'
+  texto: string
   bandeja: BandejaCarta
   recibidaEn: string | null
   remitente: { codigo: string; titulo: string } | null
@@ -69,8 +68,7 @@ export function cartasDiario(preguntas: PreguntaDiarioEstado[] | null): CartaLum
     .map((p) => ({
       codigo: p.codigo,
       nombre: p.nombre,
-      texto: p.redactada ? p.texto : null,
-      estado: p.personalizada && !p.redactada ? ('sellada' as const) : ('lista' as const),
+      texto: p.texto ?? '',
       bandeja: p.bandeja!,
       recibidaEn: p.recibida_en,
       remitente: p.actividad,

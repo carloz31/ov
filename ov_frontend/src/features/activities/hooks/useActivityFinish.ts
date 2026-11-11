@@ -86,9 +86,9 @@ export function useActivityFinish(
         }
       : undefined,
   })
-  // F05: en api, la pregunta que la acción dejó en el diario (su texto, o el nombre si está por redactar).
+  // F05: en api, la carta que la acción dejó en el diario. Ajuste cartas-diario: el cierre solo enlaza a ella, sin
+  // su nombre ni su texto.
   const entrada = modoApi ? entradasDiario[0] : undefined
-  // Ajuste del diario (F05): una carta personalizada aún sin texto no muestra pregunta (ni la base) y lleva al buzón.
   const enlaceLocal = `${appPaths.student.journal}?${new URLSearchParams({
     activity: activity.id,
     title: activity.titulo,
@@ -96,7 +96,7 @@ export function useActivityFinish(
   })}`
   const preguntaDiario = entrada
     ? {
-        texto: entrada.personalizada && entrada.texto === null ? null : (entrada.texto ?? entrada.nombre),
+        texto: null,
         enlace: `${appPaths.student.journal}?${new URLSearchParams({ pregunta: entrada.codigo })}`,
       }
     : !modoApi && activity.promptDiario

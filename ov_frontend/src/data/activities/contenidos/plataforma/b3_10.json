@@ -285,12 +285,11 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "La aguja gira hacia el acantilado. En tu mochila: la ficha de los caminos que no van en línea recta y otra voz, la del cocinero. En tu diario: «Un viajero que ya pasó por aquí»."
+      "texto": "La aguja gira hacia el acantilado. En tu mochila: la ficha de los caminos que no van en línea recta y otra voz, la del cocinero."
     }
   ],
   "recompensa": {
     "mensajeFin": "Un giro a tiempo no es un fracaso: es la misma decisión, con mejor información. Se abrió una voz nueva en tu mochila y la conversación «Los caminos también cambian»."
   },
-  "promptDiario": "Un viajero que ya pasó por aquí",
   "mapa": { "x": 250, "y": 420, "icono": "informativa" }
 }

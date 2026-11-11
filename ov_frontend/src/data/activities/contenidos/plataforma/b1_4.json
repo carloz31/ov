@@ -389,6 +389,5 @@
   "recompensa": {
     "mensajeFin": "Que una frase se repita mucho no la vuelve cierta. El puente de los mitos ya está a la vista."
   },
-  "promptDiario": "Mitos que me tocaron",
   "mapa": { "x": 1000, "y": 350, "icono": "informativa" }
 }

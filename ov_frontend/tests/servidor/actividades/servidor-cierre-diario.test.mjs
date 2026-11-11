@@ -5,7 +5,8 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router'
 import { fixtureServidor, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 
-// F05 y su ajuste del diario: el cierre deja la carta en el buzón, como una fila sin botón.
+// F05 y su ajuste del diario: el cierre deja la carta en el buzón, como una fila sin botón. Ajuste cartas-diario:
+// en api, solo el enlace a la carta.
 const completar = jsonServidor('ruta/ruta-completar-t-inicio')
 const actividad = { id: 't-inicio', titulo: 'Inicio', nodos: [], promptDiario: 'Pregunta local' }
 const fila = (app, props) =>
@@ -20,7 +21,7 @@ const fila = (app, props) =>
     ),
   )
 
-test('carta fija: su pregunta, «Respóndela cuando quieras» y «Leer en el diario» con esa carta', () => {
+test('en api el cierre solo enlaza a la carta, sin su nombre ni su texto (ajuste cartas-diario)', () => {
   const app = fixtureServidor()
   const { useActivityFinish } = app.load('src/features/activities/hooks/useActivityFinish.ts')
   const cierre = useActivityFinish(
@@ -33,39 +34,28 @@ test('carta fija: su pregunta, «Respóndela cuando quieras» y «Leer en el dia
   assert.equal(cierre.resumen.diario.visible, true)
   assert.deepEqual(
     { ...cierre.preguntaDiario },
-    {
-      texto: entrada.texto,
-      enlace: `/student/journal?pregunta=${entrada.codigo}`,
-    },
+    { texto: null, enlace: `/student/journal?pregunta=${entrada.codigo}` },
   )
   const html = fila(app, { pregunta: cierre.preguntaDiario.texto, enlace: cierre.preguntaDiario.enlace })
-  assert.match(html, /Lumi te dejó una carta en tu buzón/)
-  assert.match(html, new RegExp(`“${entrada.texto.replace(/[?¿]/g, '.')}”`))
-  assert.match(html, /Respóndela cuando quieras, desde tu diario/)
-  assert.match(html, /href="\/student\/journal\?pregunta=t-diario-fija"[^>]*>Leer en el diario/)
-  // La fila: sobre con punto dorado, el texto y el enlace con flecha a la derecha, fuera del texto.
   assert.match(
     html,
-    /class="sx-finish-letter-icon"[^]*class="sx-finish-letter-dot"[^]*class="sx-finish-letter-copy"[^]*<\/div><a class="sx-finish-letter-link"/,
+    /href="\/student\/journal\?pregunta=t-diario-fija"[^>]*>Lumi te dejó una carta en tu diario<svg[^>]*lucide-arrow-right/,
   )
-  assert.match(html, /Leer en el diario<svg[^>]*lucide-arrow-right/)
-  assert.doesNotMatch(html, /<button|Nueva|Escribir en mi diario/)
+  // La fila: sobre con punto dorado y el enlace.
+  assert.match(html, /class="sx-finish-letter-icon"[^]*class="sx-finish-letter-dot"[^]*<a class="sx-finish-letter-link"/)
+  assert.doesNotMatch(html, /<button|“|Mi primer paso|Respóndela|Leer en el diario|buzón/)
+  // Una adaptada tampoco muestra su texto.
+  const adaptada = { codigo: 't-diario-personal', nombre: 'Lo que espero', texto: 'DATO DE PRUEBA: una carta' }
+  assert.equal(useActivityFinish(actividad, [], false, [adaptada]).preguntaDiario.texto, null)
 })
 
-test('carta personalizada: sin pregunta (ni la base), «Ábrela en tu diario» e «Ir al buzón»', () => {
+test('en local, la pregunta de la actividad con «Leer en el diario», como antes', () => {
   const app = fixtureServidor()
-  const { useActivityFinish } = app.load('src/features/activities/hooks/useActivityFinish.ts')
-  const personal = { codigo: 't-diario-personal', nombre: 'Lo que espero', personalizada: true, texto: null }
-  const cierre = useActivityFinish(actividad, [], false, [personal])
-  assert.equal(cierre.preguntaDiario.texto, null)
-  const html = fila(app, { pregunta: null, enlace: cierre.preguntaDiario.enlace })
+  const html = fila(app, { pregunta: 'Pregunta local', enlace: '/student/journal' })
   assert.match(html, /Lumi te dejó una carta en tu buzón/)
-  assert.match(
-    html,
-    /Ábrela en tu diario cuando quieras: Lumi la escribirá pensando en lo que le contaste aquí/,
-  )
-  assert.match(html, /href="\/student\/journal\?pregunta=t-diario-personal"[^>]*>Ir al buzón/)
-  assert.doesNotMatch(html, /Lo que espero|“/)
+  assert.match(html, /“Pregunta local”/)
+  assert.match(html, /Respóndela cuando quieras, desde tu diario/)
+  assert.match(html, />Leer en el diario<svg[^>]*lucide-arrow-right/)
 })
 
 test('sin entradas no hay carta (ni la pregunta local) y el cierre no pide redactar', () => {

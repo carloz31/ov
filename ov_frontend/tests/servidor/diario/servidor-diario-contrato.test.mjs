@@ -67,8 +67,6 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
     if (req.url.endsWith('/diario/entradas')) return { body: entradas }
     if (req.url.endsWith('/diario/amistad')) return { body: amistad }
     if (req.url.endsWith('/check-ins')) return { body: checkIns }
-    if (req.url.endsWith('/abrir-pregunta'))
-      return { body: jsonServidor('ruta/ruta-abrir-pregunta-personal') }
     if (req.url.endsWith('/pregunta-del-dia')) return { body: jsonServidor('ruta/ruta-pregunta-del-dia') }
     if (/\/(escribir|editar|borrar)-entrada$|\/check-in$/.test(req.url)) return { body: sinRespuestas }
     if (req.url.endsWith('/archivar-pregunta')) return { body: jsonServidor('ruta/ruta-archivar-pregunta') }
@@ -89,7 +87,6 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
   assert.equal((await store.escribirEntrada({ texto: 'Fija', pregunta: 't-diario-fija' })).tipo, 'ok')
   assert.equal((await store.editarEntrada(4, 'Corregida', null)).tipo, 'ok')
   assert.equal((await store.borrarEntrada(4)).tipo, 'ok')
-  assert.equal((await store.abrirPregunta('t-diario-personal')).tipo, 'ok')
   assert.equal((await store.pedirPreguntaDelDia()).tipo, 'ok')
   assert.equal((await store.registrarCheckIn(4)).tipo, 'ok')
   assert.equal((await store.archivarPregunta('t-diario-personal')).tipo, 'ok')
@@ -101,7 +98,6 @@ test('el almacén lee el diario y sus acciones usan las rutas del backend', asyn
     ['/api/acciones/escribir-entrada', { cuenta: 'est-ana', texto: 'Fija', pregunta: 't-diario-fija' }],
     ['/api/acciones/editar-entrada', { cuenta: 'est-ana', numero: 4, texto: 'Corregida', titulo: null }],
     ['/api/acciones/borrar-entrada', { cuenta: 'est-ana', numero: 4 }],
-    ['/api/acciones/diario/abrir-pregunta', { cuenta: 'est-ana', codigo: 't-diario-personal' }],
     ['/api/acciones/diario/pregunta-del-dia', { cuenta: 'est-ana' }],
     ['/api/acciones/check-in', { cuenta: 'est-ana', nivel_seguridad: 4 }],
     ['/api/acciones/diario/archivar-pregunta', { cuenta: 'est-ana', codigo: 't-diario-personal' }],

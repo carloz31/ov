@@ -70,12 +70,7 @@ function StudentLumiLettersView() {
                     key={carta.codigo}
                     carta={carta}
                     ahora={c.ahora}
-                    redactando={c.buzon.enRedaccion.includes(carta.codigo)}
-                    acciones={{
-                      onResponder: c.responder,
-                      onAbrir: c.buzon.abrir,
-                      onArchivar: c.buzon.archivar,
-                    }}
+                    acciones={{ onResponder: c.responder, onArchivar: c.buzon.archivar }}
                     completa
                   />
                 ))

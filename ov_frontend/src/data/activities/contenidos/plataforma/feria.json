@@ -243,13 +243,12 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "La guía quedó en tu mochila. Y en tu diario, por si vas a una feria de verdad: «Después de la feria»."
+      "texto": "La guía quedó en tu mochila."
     }
   ],
   "recompensa": {
     "mensajeFin": "A una feria se va a verificar, no a convencerse."
   },
-  "promptDiario": "Después de la feria",
   "mapa": {
     "x": 480,
     "y": 520,

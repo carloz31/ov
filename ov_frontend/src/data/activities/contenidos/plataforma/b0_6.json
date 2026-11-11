@@ -342,12 +342,11 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Con esto cerramos el primer tramo. Arriba está el nevado, y después de él, la ciudad. Tu diario tiene una carta nueva esperándote: «Lo que siento ante la decisión»."
+      "texto": "Con esto cerramos el primer tramo. Arriba está el nevado, y después de él, la ciudad."
     }
   ],
   "recompensa": {
     "mensajeFin": "Una duda con nombre ya es un avance. El check-in te acompaña desde hoy."
   },
-  "promptDiario": "Lo que siento ante la decisión",
   "mapa": { "x": 590, "y": 200, "icono": "informativa" }
 }

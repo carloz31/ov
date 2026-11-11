@@ -1,7 +1,6 @@
 import { ArrowLeft, LockKeyhole, X } from 'lucide-react'
 
 import { Parchment } from '@/components/student/Parchment'
-import { LumiQuestion } from '@/features/journal/components/LumiQuestion'
 
 export function JournalEditor({
   body,
@@ -38,8 +37,8 @@ export function JournalEditor({
   suggestedTags: string[]
   tagDraft: string
   tags: string[]
-  // F05, solo en api: título opcional, sin etiquetas, Lumi redactando la carta y sin el conteo de hoy.
-  servidor?: { escribiendo: boolean }
+  // F05, solo en api: título opcional, sin etiquetas y sin el conteo de hoy.
+  servidor?: boolean
 }) {
   const conTemas = !servidor
   return (
@@ -58,7 +57,6 @@ export function JournalEditor({
         </div>
       </header>
       <Parchment className="sx-j-notebook sx-j-editor">
-        {servidor?.escribiendo && <LumiQuestion prompt="Lumi está escribiendo…" />}
         {prompt && <p className="sx-j-question sx-j-prompt">Lumi: “{prompt}”</p>}
         <label className="sr-only" htmlFor="journal-title">
           Título de la entrada
@@ -143,7 +141,7 @@ export function JournalEditor({
           <button
             type="button"
             className="sx-d-action sx-d-action-gold"
-            disabled={!body.trim() || (conTemas ? !title.trim() : servidor.escribiendo)}
+            disabled={!body.trim() || (conTemas && !title.trim())}
             onClick={onSave}
           >
             Contarle a Lumi

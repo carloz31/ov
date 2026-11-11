@@ -44,12 +44,6 @@ export async function borrarEntrada(numero: number) {
   return respuesta
 }
 
-export async function abrirPregunta(codigo: string) {
-  const respuesta = await consultarCuenta((cuenta) => apiDiario.enviarAbrirPregunta(cuenta, codigo))
-  if (respuesta.tipo === 'ok') vencerSeccion('diarioPreguntas')
-  return respuesta
-}
-
 // Archivar y desarchivar no tocan entradas ni amistad: solo cambia la bandeja de la carta.
 export async function archivarPregunta(codigo: string) {
   const respuesta = await consultarCuenta((cuenta) => apiDiario.enviarArchivarPregunta(cuenta, codigo))

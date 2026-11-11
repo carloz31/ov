@@ -173,12 +173,11 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Al terminar este tramo vas a encontrar tu primera carta lista: «Cómo llego a este mundo». No hace falta que sea larga. Ahora sí, sigamos: la cabaña de Helena está cerca."
+      "texto": "Al terminar este tramo vas a encontrar tu primera carta lista: «Cómo llego». No hace falta que sea larga. Ahora sí, sigamos: la cabaña de Helena está cerca."
     }
   ],
   "recompensa": {
     "mensajeFin": "Tu diario está abierto. Lo que sientes va ahí; lo que piensas, a tus registros."
   },
-  "promptDiario": "Cómo llego a este mundo",
   "mapa": { "x": 290, "y": 120, "icono": "informativa" }
 }

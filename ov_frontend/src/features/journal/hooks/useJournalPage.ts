@@ -188,7 +188,7 @@ export function useJournalPage() {
         title: local.title,
         lockedTags: local.tags,
       })
-    if (carta.estado !== 'lista' || !carta.texto) return
+    if (!carta.texto) return
     openEditor({ prompt: carta.texto, linkedActivityId: carta.codigo, title: '', lockedTags: [] })
     setDestino({ pregunta: carta.codigo })
   }
@@ -203,14 +203,14 @@ export function useJournalPage() {
   }, [servidor.activo, servidor.entradas, entradaPedida, entradaAbierta])
   const responder = useRef(responderCarta)
   responder.current = responderCarta
-  // `?pregunta=` (cierre de una actividad o drawer): abre el editor solo si la carta está lista; sellada o en
-  // redacción, la portada muestra su estado en el buzón.
+  // `?pregunta=` (cierre de una actividad o drawer): abre el editor si la carta está por responder; si no, queda la
+  // portada con el buzón.
   useEffect(() => {
     if (!servidor.activo || !preguntaPedida || preguntaAbierta === preguntaPedida) return
     const carta = buzon.cartas.find((c) => c.codigo === preguntaPedida)
     if (!carta) return
     setPreguntaAbierta(preguntaPedida)
-    if (carta.estado === 'lista' && carta.bandeja === 'PENDIENTE') responder.current(carta)
+    if (carta.bandeja === 'PENDIENTE') responder.current(carta)
   }, [servidor.activo, buzon.cartas, preguntaPedida, preguntaAbierta])
 
   function addTag(raw = tagDraft) {
