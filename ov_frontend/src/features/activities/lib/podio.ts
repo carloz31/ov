@@ -37,8 +37,9 @@ export function intercambiar(puestos: Puestos, a: number, b: number): Puestos {
   return siguiente
 }
 
-// El rótulo de un puesto que no es el primero: «2.º lugar», «3.er lugar».
-export const rotuloPuesto = (indice: number) => (indice === 2 ? '3.er lugar' : `${indice + 1}.º lugar`)
+// El rótulo de un puesto, igual en todos los podios: «1.er lugar», «2.º lugar», «3.er lugar».
+export const rotuloPuesto = (indice: number) =>
+  indice === 0 || indice === 2 ? `${indice + 1}.er lugar` : `${indice + 1}.º lugar`
 
 const NUMEROS = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez']
 export const enPalabras = (n: number) => NUMEROS[n] ?? String(n)

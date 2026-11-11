@@ -287,3 +287,12 @@
 - F5, revisión en el navegador (base aparte con `contenido`, sin tocar `ov.db`; LLM real con la clave del entorno, pedido del usuario): b4-1 (eco de plan, selector y ventana, «Otra», exclusiva que cambia la consigna, repregunta real y su respuesta, lectura y edición), b4-5 (dos planes), b5-1 (proyecto con resumen y primera señal), b5-3 («Hoy», piezas sin grupo, mensaje emocional real) y el apilado a 375 px. El podio y la lista con varias «Otra», ma3 y h1–h3 quedan cubiertos por las pruebas, no por la revisión.
 - Arreglo encontrado en la revisión: el backend rechaza una pieza enviada sin el texto con que se ofrece («La pieza INT-I no se ofrece con ese texto»), y el front enviaba solo el código (también en el lote 1). `paraEnviar` (`adaptadoresRegistro.ts`) agrega ese texto; el hook lo usa al enviar. Además, la burbuja del personaje va en gris suave y el bloque de la pieza en lectura a ancho completo.
 - b4-1-menos lleva `etiqueta_otra` «Otra cosa mía», como b4-1-respalda (decisión del usuario), cargada en `datos/contenido.py`. `test_formatos_de_la_opcion_marcada` suma que su «Otra» va al LLM con «(otra cosa tuya)»; la comparación con el runner (`test_la_entrada_coincide_con_la_del_runner`) no cambia. Fixtures de b4-1 regenerados.
+- Tras la revisión de los cuatro casos (decisiones del usuario):
+  - podio lleno: las fichas que sobran y «+ Otra» siguen visibles, apagadas;
+  - «Enviar» queda apagado mientras alguna «Otra» marcada esté sin texto (`otraSinTexto`), en lista y en podio;
+  - rótulos de todos los podios: «1.er lugar», «2.º lugar», «3.er lugar», al responder y en lectura (sale «Lo más importante»);
+  - la pregunta 2 se ve desde el inicio con la del ítem; solo aparece al marcar cuando todas las opciones traen una pregunta propia y distinta entre sí (b2-4-cruce, h1, h2, ma3). Como el backend da a las opciones sin pregunta propia la del ítem, b1-7-dia, b1-1-logro y h3 la muestran desde el inicio. Reemplaza la regla anterior («alguna opción cambia la pregunta»);
+  - la exclusiva no se atenúa al llegar al máximo;
+  - el podio en lectura sin atenuar; en «Tu respuesta» de la pantalla de Lumi, una elección ordenada lleva su puesto (`textoElegidas`);
+  - las fichas de dos renglones conservan su margen interno;
+  - el eco arriba de la burbuja en h1 y ma3-hoy sin «Otra» quedan como están.

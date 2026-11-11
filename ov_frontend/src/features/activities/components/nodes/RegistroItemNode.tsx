@@ -3,6 +3,7 @@ import type { ItemRegistroCuenta, OpcionElegida } from '@/types/servidor'
 import {
   consignaVigente,
   errorSeleccion,
+  otraSinTexto,
   requiereTexto,
   textoVisible,
   type ErrorSeleccion,
@@ -71,7 +72,7 @@ export function RegistroItemNode({
       error={error}
       ecos={<EcosItem ecos={item.ecos} />}
       onEnviar={enviar}
-      deshabilitado={conTexto && !borrador.texto.trim()}
+      deshabilitado={(conTexto && !borrador.texto.trim()) || otraSinTexto(borrador.opciones)}
       onAnterior={edicion ? undefined : onAnterior}
       onCancelar={edicion ? onCancelar : undefined}
     >

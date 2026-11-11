@@ -106,15 +106,20 @@ test('podio con «Otra»: una, dos y tres; el campo sigue al puesto; devolver la
   assert.equal(campos()[0].rotulo, '1.º · ¿Cuál?')
 })
 
-test('RankingPodium: «+ Otra» entre las fichas y rótulos «2.º lugar» y «3.er lugar»', () => {
+test('RankingPodium: «+ Otra» entre las fichas y rótulos «1.er lugar», «2.º lugar» y «3.er lugar»', () => {
   const app = fixtureServidor()
   const { RankingPodium } = app.load(`${NODOS}/RankingPodium.tsx`)
   let elegido
   const tree = app.mount(RankingPodium, { opciones: [{ codigo: 'A', texto: 'A' }], puestos: ['A', null, null],
-    etiquetaPrimero: 'Lo más importante', onChange: (p) => (elegido = copia(p)),
+    etiquetaPrimero: '1.er lugar', onChange: (p) => (elegido = copia(p)),
     otra: { etiqueta: 'Otra', codigo: () => 'OTRA-1' } }).render()
   const texto = textos(tree)
-  assert.ok(texto.includes('2.º lugar') && texto.includes('3.er lugar'))
+  assert.ok(texto.includes('1.er lugar') && texto.includes('2.º lugar') && texto.includes('3.er lugar'))
+  const { rotuloPuesto } = app.load('src/features/activities/lib/podio.ts')
+  assert.deepEqual([0, 1, 2].map(rotuloPuesto), ['1.er lugar', '2.º lugar', '3.er lugar'])
+  // El podio del registro usa el mismo rótulo para el primero, al responder y en lectura.
+  const b = bloque('RegistroPodioNode', podio())
+  assert.equal(de(b.render(), 'RankingPodium')[0].props.etiquetaPrimero, '1.er lugar')
   const [agregar] = elementos(tree, (e) => e.type === 'button' && e.props.className?.includes('is-otra'))
   agregar.props.onClick()
   assert.deepEqual(elegido, ['A', 'OTRA-1', null])
@@ -214,19 +219,48 @@ test('ítems de piezas: la exclusiva cambia la pregunta 2 y su arranque, y conse
   }
 })
 
-test('b1-7-dia: si alguna opción cambia la pregunta, la pregunta 2 y su caja aparecen al marcar', () => {
+test('pregunta 2: desde el inicio con la del ítem; solo al marcar si todas las opciones tienen pregunta propia', () => {
   const app = fixtureServidor()
   const { textoVisible } = app.load('src/lib/servidor/adaptadoresRegistro.ts')
-  const opcion = (codigo, pregunta = null) => ({ codigo, texto: codigo, origen: null, grupo: null, exclusiva: false,
+  const opcion = (codigo, pregunta) => ({ codigo, texto: codigo, origen: null, grupo: null, exclusiva: false,
     sin_llm: false, pregunta, arranque: null })
-  // DATO DE PRUEBA: la escala de b1-7-dia, donde solo «Me cuesta imaginarlo» trae su pregunta.
-  const dia = { consigna: { pregunta_texto: '¿Qué?' }, opciones: [opcion('CLARO'), opcion('MAS_O_MENOS'),
-    opcion('CUESTA', 'Está bien. Cuéntame una sola cosa…')] }
-  assert.equal(textoVisible(dia, []), false)
-  assert.equal(textoVisible(dia, [{ codigo: 'CLARO' }]), true)
-  // Sin opciones que cambien la pregunta, la caja se ve desde el inicio.
-  assert.equal(textoVisible({ ...dia, opciones: dia.opciones.slice(0, 2) }, []), true)
+  const item = (...preguntas) => ({ consigna: { pregunta_texto: '¿Qué?' },
+    opciones: preguntas.map((p, i) => opcion(`O${i}`, p)) })
+  // DATO DE PRUEBA, con la forma que entrega el backend: a las opciones sin pregunta propia les pone la del ítem.
+  const dia = item('¿Qué?', '¿Qué?', 'Está bien. Cuéntame una sola cosa…')
+  assert.equal(textoVisible(dia, []), true, 'b1-7-dia la muestra desde el inicio')
+  const cruce = item('¿Qué?', '¿Qué parte sí y qué parte no?', '¿Qué no te gusta?')
+  assert.equal(textoVisible(cruce, []), false, 'b2-4-cruce: todas propias, aparece al marcar')
+  assert.equal(textoVisible(cruce, [{ codigo: 'O1' }]), true)
+  assert.equal(textoVisible(logro(), []), true, 'b1-1-logro la muestra desde el inicio')
   assert.equal(textoVisible({ consigna: dia.consigna, opciones: [] }, []), true)
+})
+
+test('«Enviar» apagado mientras una «Otra» marcada esté sin texto, en lista y en podio', () => {
+  const app = fixtureServidor()
+  const { RegistroItemNode } = app.load(`${NODOS}/RegistroItemNode.tsx`)
+  const props = (item, opciones) => ({ item, borrador: { opciones, texto: 'Algo' }, onBorrador: () => {},
+    ocupado: false, error: '', onEnviar: () => {} })
+  const apagado = (item, opciones) => app.mount(RegistroItemNode, props(item, opciones)).render().props.deshabilitado
+  assert.equal(apagado(logro(), [{ codigo: 'ORGANIZAR' }, { codigo: 'OTRA-1', texto: ' ' }]), true)
+  assert.equal(apagado(logro(), [{ codigo: 'ORGANIZAR' }, { codigo: 'OTRA-1', texto: 'Cocinar' }]), false)
+  const bien = { ...podio(), consigna: { dialogo: null, pregunta_eleccion: 'P', pregunta_texto: 'T', arranque: null } }
+  assert.equal(apagado(bien, [{ codigo: 'ARTE' }, { codigo: 'OTRA-1', texto: '' }, { codigo: 'CIENCIAS' }]), true)
+  assert.equal(apagado(bien, [{ codigo: 'ARTE' }, { codigo: 'OTRA-1', texto: 'Cocinar' }, { codigo: 'CIENCIAS' }]),
+    false)
+})
+
+test('podio lleno: las fichas que sobran y «+ Otra» siguen visibles, apagadas; en lectura, sin fichas', () => {
+  const app = fixtureServidor()
+  const { RankingPodium } = app.load(`${NODOS}/RankingPodium.tsx`)
+  const base = { opciones: [{ codigo: 'A', texto: 'A' }, { codigo: 'B', texto: 'B' }, { codigo: 'C', texto: 'C' },
+    { codigo: 'D', texto: 'D' }], puestos: ['A', 'B', 'C'], etiquetaPrimero: '1.er lugar', onChange: () => {} }
+  const lleno = app.mount(RankingPodium, { ...base, otra: { etiqueta: 'Otra', codigo: () => 'OTRA-1' } }).render()
+  const fichas = elementos(lleno, (e) => e.type === 'button' && e.props.className?.includes('sx-podium-chip'))
+  assert.deepEqual(fichas.map((f) => [textos(f), f.props.disabled]), [['D', true], ['+ Otra', true]])
+  const lectura = app.mount(RankingPodium, { ...base, soloLectura: true }).render()
+  assert.ok(lectura.props.className.includes('is-lectura'))
+  assert.equal(elementos(lectura, (e) => e.props?.className?.includes?.('sx-podium-chip')).length, 0)
 })
 
 test('lo que se envía: una pieza lleva el texto con que se ofrece; una «Otra», su texto sin espacios de más', () => {
@@ -236,4 +270,11 @@ test('lo que se envía: una pieza lleva el texto con que se ofrece; una «Otra»
   assert.deepEqual(copia(paraEnviar(item, [{ codigo: 'INT-I' }])), [{ codigo: 'INT-I', texto: pieza.texto }])
   assert.deepEqual(copia(paraEnviar(item, [{ codigo: 'OTRA', texto: ' Cocinar ' }])), [{ codigo: 'OTRA', texto: 'Cocinar' }])
   assert.deepEqual(copia(paraEnviar(menos(), [{ codigo: 'TODO' }])), [{ codigo: 'TODO' }])
+})
+
+test('pantalla de Lumi: en una elección ordenada, «Tu respuesta» lleva el puesto de cada una', () => {
+  const { textoElegidas } = fixtureServidor().load('src/lib/servidor/adaptadoresRegistro.ts')
+  assert.equal(textoElegidas(podio(), ['Arreglar celulares', 'Matemática', 'Vender por internet']),
+    '1.º Arreglar celulares · 2.º Matemática · 3.º Vender por internet')
+  assert.equal(textoElegidas(logro(), ['Organizar', 'Cocinar']), 'Organizar · Cocinar')
 })

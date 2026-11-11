@@ -59,7 +59,7 @@ export function RankingPodium({
     cambiar(siguiente, `Intercambiaste los puestos ${origen + 1} y ${destino + 1}.`)
   }
   return (
-    <div className="sx-podium-wrap">
+    <div className={`sx-podium-wrap ${soloLectura ? 'is-lectura' : ''}`}>
       <ol className="sx-podium" style={{ gridTemplateColumns: `1.25fr repeat(${puestos.length - 1}, 1fr)` }}>
         {puestos.map((codigo, i) => {
           const etiqueta = i === 0 ? etiquetaPrimero : rotuloPuesto(i)
@@ -109,7 +109,8 @@ export function RankingPodium({
           {error}
         </p>
       )}
-      {!lleno && (
+      {/* Lote 2: con el podio lleno, las fichas que sobran y «+ Otra» siguen visibles, apagadas. */}
+      {!soloLectura && (
         <div className="sx-podium-chips sx-chips">
           {/* Ajuste vista del ítem: el chip colocado sale de la lista y los demás se reacomodan (sin huecos). */}
           {opciones
@@ -120,6 +121,7 @@ export function RankingPodium({
                 key={o.codigo}
                 className="sx-podium-chip sx-chip"
                 aria-label={o.texto}
+                disabled={lleno}
                 onClick={() => elegir(o.codigo)}
               >
                 <span>{o.texto}</span>
@@ -129,7 +131,7 @@ export function RankingPodium({
             <button
               type="button"
               className="sx-podium-chip sx-chip is-otra"
-              disabled={!otra.codigo()}
+              disabled={lleno || !otra.codigo()}
               onClick={() => {
                 const codigo = otra.codigo()
                 if (codigo) elegir(codigo)

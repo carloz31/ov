@@ -13,6 +13,7 @@ import {
   desenlace,
   esOtra,
   paraEnviar,
+  textoElegidas,
   itemDe,
   marcadasDe,
   sinLlm,
@@ -41,10 +42,12 @@ type Lumi = { item: string; eleccion: string; texto: string; seguimiento?: strin
 
 const VACIO: BorradorItem = { opciones: [], texto: '' }
 const textoEleccion = (item: ItemRegistroCuenta, opciones: OpcionElegida[]) =>
-  opciones
-    .map((o) => (esOtra(o.codigo) ? o.texto : item.opciones.find((x) => x.codigo === o.codigo)?.texto) ?? '')
-    .filter(Boolean)
-    .join(' · ')
+  textoElegidas(
+    item,
+    opciones
+      .map((o) => (esOtra(o.codigo) ? o.texto : item.opciones.find((x) => x.codigo === o.codigo)?.texto) ?? '')
+      .filter(Boolean),
+  )
 // Un paso guardado aunque el refresco del camino haya fallado sigue siendo un paso.
 const pasoDe = (respuesta: PasoConRefresco): PasoRegistro | undefined =>
   respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar' ? respuesta.datos : undefined
@@ -164,7 +167,7 @@ export function useRegistroServidor({
     if (!actual || !vigente) return
     setLumi({
       item: actual.codigo,
-      eleccion: vigente.opciones_elegidas.map((o) => o.texto).join(' · '),
+      eleccion: textoElegidas(actual, vigente.opciones_elegidas.map((o) => o.texto)),
       texto: cajaEdicion(vigente),
       estado: { tipo: 'esperando' },
     })

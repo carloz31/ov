@@ -114,3 +114,8 @@
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
+/* Lote 2: en lectura los puestos se ven nítidos, sin el apagado de un botón deshabilitado. */
+.sx-root .sx-podium-wrap.is-lectura .sx-podium-slot:disabled {
+  opacity: 1;
+  cursor: default;
+}

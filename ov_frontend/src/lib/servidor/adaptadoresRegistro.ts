@@ -38,12 +38,23 @@ export function requiereTexto(item: ItemRegistroCuenta, marcadas: OpcionElegida[
   return !primera?.sin_llm
 }
 
-// Lote 2 (§1 y §7): cuando la pregunta de texto depende de lo que se marque (alguna opción trae una pregunta distinta
-// de la del ítem, como en b1-7-dia), la pregunta y su caja aparecen al marcar. Lo escrito se conserva igual.
+// Lote 2 (§1): la pregunta de texto se ve desde el inicio con la del ítem y cambia al marcar una opción que trae la
+// suya. Solo aparece al marcar cuando todas las opciones tienen pregunta propia, distinta entre sí (b2-4-cruce, h1-reto,
+// h2-reconozco, ma3-hoy); el backend da a las demás la del ítem, así que en b1-7-dia, b1-1-logro o h3 se repite.
 export function textoVisible(item: ItemRegistroCuenta, marcadas: OpcionElegida[]) {
-  const propia = (o: OpcionOfrecida) => !!o.pregunta && o.pregunta !== item.consigna?.pregunta_texto
-  return marcadas.length > 0 || !item.opciones.some(propia)
+  if (marcadas.length > 0 || item.opciones.length < 2) return true
+  const preguntas = item.opciones.map((o) => o.pregunta)
+  const todasPropias = preguntas.every(Boolean) && new Set(preguntas).size === preguntas.length
+  return !todasPropias
 }
+
+// Lote 2 (§3): mientras alguna «Otra» marcada esté sin texto, «Enviar» queda apagado.
+export const otraSinTexto = (marcadas: OpcionElegida[]) => marcadas.some((o) => esOtra(o.codigo) && !o.texto?.trim())
+
+// Lo marcado como se lee en «Tu respuesta» de la pantalla de Lumi: en una elección ordenada, con su puesto
+// («1.º … · 2.º … · 3.º …»).
+export const textoElegidas = (item: ItemRegistroCuenta, textos: string[]) =>
+  (item.eleccion?.ordenada ? textos.map((t, i) => `${i + 1}.º ${t}`) : textos).join(' · ')
 
 // El ítem o la opción marcada no pasan por el LLM: la pantalla de Lumi no espera.
 export function sinLlm(item: ItemRegistroCuenta, marcadas: OpcionElegida[]) {

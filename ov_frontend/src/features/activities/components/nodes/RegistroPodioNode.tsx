@@ -4,11 +4,9 @@ import { esOtra } from '@/lib/servidor/adaptadoresRegistro'
 import { RankingPodium } from './RankingPodium'
 import { RegistroBloqueEleccion } from './RegistroBloqueEleccion'
 import { codigosOtra } from '../../lib/eleccionGuiada'
-import { puestosDesde, seleccionDe, type Puestos } from '../../lib/podio'
+import { puestosDesde, rotuloPuesto, seleccionDe, type Puestos } from '../../lib/podio'
 import { indicadorEleccion } from '../../lib/presentacionItem'
 import { ELECCION, ETIQUETA_OTRA } from '../../lib/textosRegistro'
-
-const ETIQUETA_PRIMERO = 'Lo más importante'
 
 // Bloque de elección «top N» de un ítem de registro (F01; ajuste front de registros, lotes 1 y 2): el podio con las
 // opciones que ofrece el servidor. Lo marcado va en el orden del podio. Lote 2: con «Otra» (b2-4-bien), cada «Otra»
@@ -59,7 +57,7 @@ export function RegistroPodioNode({
       <RankingPodium
         opciones={opciones}
         puestos={puestos}
-        etiquetaPrimero={ETIQUETA_PRIMERO}
+        etiquetaPrimero={rotuloPuesto(0)}
         error={error}
         onChange={(siguientes) => {
           setPuestos(siguientes)

@@ -478,3 +478,8 @@
 .sx-root .sx-pantalla-lumi .sx-followup-skip {
   text-decoration: underline;
 }
+/* Lote 2: una ficha de dos renglones (en celular) conserva su margen interno. */
+.sx-root .sx-chip {
+  padding-block: 8px;
+  line-height: 1.25;
+}

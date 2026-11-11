@@ -51,6 +51,8 @@ export function ChoiceReveal({
   }
   function chip(o: { codigo: string; texto: string; origen?: string | null }) {
     const elegida = seleccion.some((s) => s.codigo === o.codigo)
+    // La exclusiva no se atenúa con el máximo: marcarla reemplaza lo demás.
+    const atenuada = lleno && !elegida && !reglas.exclusivas.includes(o.codigo)
     const etiqueta = o.origen ?? undefined
     return (
       <div
@@ -60,7 +62,7 @@ export function ChoiceReveal({
         aria-pressed={elegida}
         aria-disabled={soloLectura || undefined}
         aria-label={o.texto}
-        className={`sx-choice-card sx-chip ${elegida ? 'is-selected' : ''} ${lleno && !elegida ? 'is-dimmed' : ''} ${tocada === o.codigo ? 'is-toggled' : ''} ${etiqueta ? 'has-badge' : ''}`}
+        className={`sx-choice-card sx-chip ${elegida ? 'is-selected' : ''} ${atenuada ? 'is-dimmed' : ''} ${tocada === o.codigo ? 'is-toggled' : ''} ${etiqueta ? 'has-badge' : ''}`}
         onClick={() => alternar(o.codigo)}
         onKeyDown={(event) => {
           if (event.key !== 'Enter' && event.key !== ' ') return
