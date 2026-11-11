@@ -154,7 +154,7 @@
         }
       ],
       "eleccion": {
-        "etiqueta_otra": null,
+        "etiqueta_otra": "Otra cosa mía",
         "maxima": 1,
         "minima": 1,
         "ordenada": false,

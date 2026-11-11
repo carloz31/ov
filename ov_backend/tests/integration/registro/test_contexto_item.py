@@ -461,6 +461,11 @@ def test_formatos_de_la_opcion_marcada(ana):
     # La «Otra» de un ítem de piezas va con su origen al LLM y sin comillas (runner v7.8 y v7.12).
     assert entrada_llm(respalda, [{'codigo': 'OTRA', 'texto': 'Soy paciente con los niños'}], 'x').etiquetas == (
         'Soy paciente con los niños (otra cosa tuya)',)
+    # Ajuste front de registros (lote 2): b4-1-menos muestra «Otra cosa mía»; al LLM va igual, con su origen.
+    menos = ana.contexto('b4-1-menos')
+    assert menos.etiqueta_otra == 'Otra cosa mía'
+    assert entrada_llm(menos, [{'codigo': 'OTRA', 'texto': 'Soy paciente con los niños'}], 'x').etiquetas == (
+        'Soy paciente con los niños (otra cosa tuya)',)
     ana.intento('b1-3-mia', ('UNIVERSIDAD',))
     cambio = ana.contexto('b5-3-cambio')
     assert entrada_llm(cambio, [{'codigo': 'OTRA', 'texto': 'Las ganas'}], 'x').etiquetas == (

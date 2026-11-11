@@ -717,5 +717,5 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dato:** b4-1-respalda trae `etiqueta_otra` «Otra cosa mía» y b5-3-cambio «Otra cosa que cambió», pero b4-1-menos trae `etiqueta_otra` nula, así que su ficha dice «+ Otra». El texto de observaciones pone «+ Otra cosa mía» como etiqueta de los ítems de piezas.
 - **Dónde se ve:** el selector de piezas de b4-1-menos («¿Y qué parte de ti va menos con…?»).
 - **Opciones:** cargar «Otra cosa mía» también en b4-1-menos (`datos/contenido.py`); dejar «+ Otra»; usar otra etiqueta para ese ítem.
-- **Estado:** pendiente de decisión del usuario. El front muestra lo que llega.
+- **Estado:** resuelto (decisión del usuario): `datos/contenido.py` carga `etiqueta_otra` «Otra cosa mía» en b4-1-menos, como en b4-1-respalda. Al LLM la «Otra» sigue yendo con su origen «(otra cosa tuya)», que no depende de la etiqueta.
 

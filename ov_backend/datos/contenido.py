@@ -715,7 +715,7 @@ ITEMS_REGISTRO = (
      _piezas('PIEZAS_PERFIL_MENOS', propias=(_op(
          'TODO', 'Todo va con mi plan', exclusiva=True,
          pregunta='Qué bueno que todo vaya. Aun así, ¿qué parte de {carrera} crees que te costaría más?',
-         arranque='Lo que más me costaría es…'),))),
+         arranque='Lo que más me costaría es…'),), etiqueta_otra='Otra cosa mía')),
     # b4-2 Cómo decido
     ('b4-2', 'b4-2-estilo', 'Cómo decides',
      _c('Cuenta una vez en que decidiste así: qué tenías que decidir y qué hiciste.',
