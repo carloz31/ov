@@ -120,10 +120,6 @@ LISTAS_COMUNES = (
       ('GUSTO_GANA_POCO', 'Si estudio lo que me gusta voy a ganar poco'),
       ('CARRERA_DECIDE', 'La carrera decide toda mi vida'),
       ('TRABAJOS_GENERO', 'Hay trabajos de hombres y trabajos de mujeres'))),
-    ('AREAS_VIDA', 'Áreas de la vida',
-     (('TRABAJO', 'Trabajo'), ('ESTUDIO', 'Estudio'), ('FAMILIA', 'Familia'), ('AMIGOS', 'Amigos'),
-      ('PAREJA', 'Pareja'), ('SALUD_DEPORTE', 'Salud y deporte'), ('DINERO', 'Dinero'),
-      ('LUGAR', 'Lugar donde vivo'), ('TIEMPO_LIBRE', 'Tiempo libre'), ('AYUDAR', 'Ayudar a otros'))),
     ('RUTAS', 'Rutas',
      (('UNIVERSIDAD', 'Universidad'), ('INSTITUTO', 'Instituto técnico'), ('TRABAJAR', 'Trabajar'),
       ('TRABAJAR_ESTUDIAR', 'Trabajar y estudiar'), ('PREPARARME', 'Prepararme un año'),
@@ -133,29 +129,13 @@ LISTAS_COMUNES = (
       ('HISTORIA', 'Historia y sociales'), ('INGLES', 'Inglés'), ('ARTE', 'Arte'),
       ('DEPORTE', 'Educación física o deporte'), ('COMPUTACION', 'Computación'),
       ('TRABAJOS_GRUPO', 'Trabajos en grupo'), ('EXPONER', 'Exponer'), ('ORGANIZAR', 'Organizar actividades'))),
-    ('LUGARES', 'Lugares',
-     (('CASA', 'Casa'), ('COLEGIO', 'Colegio'), ('AMIGOS', 'Amigos'), ('DEPORTE_TALLER', 'Deporte o taller'),
-      ('REDES', 'Redes'))),
-    # Sin demanda: la plataforma no la considera.
-    ('ASPECTOS_CARRERA', 'Aspectos de una carrera',
-     (('SALARIO', 'Salario'), ('DURACION', 'Duración'), ('DIA_A_DIA', 'Qué se hace en el día a día'),
-      ('DONDE', 'Dónde se estudia'), ('COSTO', 'Costo'))),
-    ('CRITERIOS', 'Criterios para decidir',
-     (('INTERES', 'Interés'), ('CAPACIDAD', 'Capacidad'), ('VALORES', 'Valores'), ('INGRESOS', 'Ingresos'),
-      ('EMPLEO', 'Empleo'), ('COSTO', 'Costo'), ('TIEMPO', 'Tiempo'), ('CERCANIA', 'Cercanía'),
-      ('APOYO', 'Apoyo'))),
-    ('POR_EXPLORAR', 'Lo que falta explorar',
-     (('CARRERAS', 'Conocer más carreras'), ('PROFESIONALES', 'Hablar con profesionales'),
-      ('INSTITUCIONES', 'Visitar instituciones'), ('COSTOS_BECAS', 'Averiguar costos y becas'),
-      ('FAMILIA', 'Conversar con mi familia'), ('CONOCERME', 'Conocerme más'))),
-    ('DIMENSIONES_PERFIL', 'Dimensiones de mi perfil',
-     (('INTERESES', 'Lo que me interesa'), ('APRENDO', 'Cómo aprendo y resuelvo mejor'),
-      ('RELACIONO', 'Cómo me relaciono'), ('ME_SALE_BIEN', 'Lo que ya me sale bien'), ('VALORO', 'Lo que valoro'))),
+    # Ajuste registros llm (lote 2): la de b4-2-estilo, en el orden del texto; las que no cambian conservan su código.
     ('ESTILOS', 'Cómo decido',
-     (('ULTIMO_MOMENTO', 'Lo dejo para el último momento'), ('PREGUNTO', 'Pregunto a muchos'),
-      ('LO_QUE_ESPERAN', 'Hago lo que esperan de mí'), ('LO_PRIMERO', 'Me quedo con lo primero que me convence'),
-      ('CUESTA_DESCARTAR', 'Me cuesta descartar'), ('MIEDO', 'Me da miedo equivocarme'),
-      ('RAPIDO_DUDO', 'Decido rápido y después dudo'))),
+     (('CALMA', 'Lo pienso con calma y comparo'), ('ULTIMO_MOMENTO', 'Lo dejo para el último momento'),
+      ('LO_QUE_SIENTO', 'Me guío por lo que siento'), ('PREGUNTO', 'Pregunto a varias personas'),
+      ('LO_QUE_ESPERAN', 'Termino haciendo lo que otros esperan'), ('BUSCO_INFO', 'Busco información antes'),
+      ('RAPIDO_DUDO', 'Decido rápido y después dudo'), ('CUESTA_DESCARTAR', 'Me cuesta descartar opciones'),
+      ('MIEDO', 'Me da miedo equivocarme'))),
     ('DUDAS_CONOCIMIENTO', 'Dudas de las preguntas de conocimiento',
      (('DIA_NORMAL', '¿Cómo es un día normal de alguien de {carrera}?'),
       ('DONDE_TRABAJAR', '¿Dónde podría trabajar si estudio {carrera}?'),
@@ -178,14 +158,6 @@ REFERENCIAS_RUBROS = (('PREPARACION', 'UNICA', 1300, False, True), ('ADMISION', 
 
 # Caminos que incluyen prepararse antes de postular (precargan el rubro Preparación).
 CAMINOS_CON_PREPARACION = ('PREPARARME',)
-
-# Repregunta de cada tipo de criterio; el criterio la hereda si no trae la suya. Provisional (B02).
-REPREGUNTAS_CRITERIO = {
-    'EJEMPLO': '¿Podrías darme un ejemplo concreto?',
-    'RAZON': '¿Por qué lo piensas así?',
-    'ACCION': '¿Qué podrías hacer al respecto?',
-    'CONTRASTE': '¿En qué se diferencia de lo que pensabas antes?',
-}
 
 # (código, nombre, descripción). Las cinco dimensiones del cuestionario de partida y llegada (B07).
 TEMATICAS = (
@@ -614,12 +586,6 @@ HABILIDADES = DefinicionInstrumento(
     aplicacion=('APL-HABILIDADES', 'Habilidades sociales'),
 )
 INSTRUMENTOS = (INTELIGENCIAS, HABILIDADES)
-
-# Ajuste registros: las listas de `h1` y `h2` son las dimensiones de sus instrumentos.
-LISTAS_COMUNES += (
-    ('DIMENSIONES_HABILIDADES', 'Mis habilidades sociales', tuple((c, n) for c, n, *_ in HABILIDADES.dimensiones)),
-    ('DIMENSIONES_INTELIGENCIAS', 'Mis inteligencias', tuple((c, n) for c, n, *_ in INTELIGENCIAS.dimensiones)),
-)
 
 PATRON_RIASEC = 'RRIIAASSEECC'
 OPCIONES_LIKERT = ('Me disgusta mucho', 'Me disgusta', 'No estoy seguro', 'Me gusta', 'Me gusta mucho')

@@ -13,7 +13,7 @@ TABLAS_ESTADO = {
     "contador_diario", "check_in", "insignia_vitrina", "presentacion_vista",
     "entrevista", "entrevista_autor", "conversacion_vinculo", "evento_uso", "desbloqueo",
     "respuesta_item", "ritmo_aplicacion", "resultado_instrumento", "resultado_dimension", "coincidencia",
-    "respuesta_registro", "turno_seguimiento", "evaluacion_respuesta", "favorito",
+    "respuesta_registro", "favorito",
     "tarjeta_carrera", "motivo_tarjeta", "conocimiento_tarjeta", "duda_tarjeta", "gasto_tarjeta",
     "financiamiento_tarjeta", "complicacion_tarjeta", "sugerencia_tarjeta", "paso_tarjeta",
     "investigacion", "pregunta_guion", "sugerencia_guion", "reaccion", "reporte", "notificacion",
@@ -32,13 +32,14 @@ def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
         "instrumento", "dimension", "escala_respuesta", "opcion_escala", "item_instrumento",
         "actividad_item", "aplicacion", "aplicacion_actividad", "ocupacion", "puntaje_ocupacion",
         "ocupacion_familia",
-        "lista_opciones", "opcion_lista", "item_registro", "criterio_completitud", "referencia",
+        "lista_opciones", "opcion_lista", "item_registro", "referencia",
         "high_point", "tipo_carrera", "ubicacion", "institucion", "institucion_carrera", "grupo_ocupacional",
         "estilo_trabajo", "ingreso_familia", "ingreso_institucion", "seccion_tarjeta", "referencia_rubro",
         "referencia_camino", "pregunta_base_guion", "tipo_reaccion", "texto_fijo",
     }
     assert set(inspector.get_table_names()) == esperadas
-    assert len(esperadas) == 96
+    # Ajuste registros llm (lote 2): salen `criterio_completitud`, `turno_seguimiento` y `evaluacion_respuesta`.
+    assert len(esperadas) == 93
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]

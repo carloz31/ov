@@ -83,98 +83,71 @@ def test_cierre_de_t0_abre_t1_y_sube_de_nivel(cliente):
     assert siguiente(cliente) == 't-expectativas'
 
 
-def test_hu006_hu010_registro_con_eleccion_borrador_y_retomar(cliente):
+def entregar(cliente, actividad, items, cuenta='est-ana', esperado=200):
+    """Entrega provisional (ajuste registros llm, lote 2). `items`: {ítem: (texto, opciones)}."""
+    return pedir(cliente, 'POST', '/acciones/registro/entregar', {
+        'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
+        'items': [{'item': item, 'texto': texto, 'opciones': opciones} for item, (texto, opciones) in items.items()]},
+        esperado)
+
+
+OTRA_RUTA = {'codigo': 'OTRA-1', 'texto': 'DATO DE PRUEBA: aprender un oficio'}
+EXPECTATIVAS = {'t-exp-ruta': ('DATO DE PRUEBA: estudiar en un instituto porque me gusta la práctica',
+                               [{'codigo': 'INSTITUTO'}, OTRA_RUTA]),
+                't-exp-apoyo': ('DATO DE PRUEBA: mi familia, por ejemplo mi mamá', [{'codigo': 'FAMILIA'}]),
+                't-exp-espera': ('DATO DE PRUEBA: esperan que termine el colegio', [])}
+
+
+def test_hu006_hu010_registro_con_eleccion_y_entrega(cliente):
+    """Ajuste registros llm (lote 2): la entrega provisional trae todos los ítems a la vez; el borrador y retomar
+    vuelven en el lote 3."""
     escenarios.verificar_p03_cierre_de_t0(cliente)
     items = pedir(cliente, 'GET', '/actividades/t-expectativas/items-registro')
     assert [item['eleccion'] and item['eleccion']['lista'] for item in items] == [
         'RUTAS_DESPUES_COLEGIO', 't-lista-apoyos', None]
-    accion = {'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA}
-    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
-        **accion, 'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: quiero estudiar', 'posicion': 't-exp-ruta',
-        'opciones': [{'codigo': 'INSTITUTO'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]})
-    # Otra sesión: el borrador se retoma desde el servidor, con su posición y su elección.
-    retomado = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
-    assert retomado['posicion'] == 't-exp-ruta'
-    assert retomado['respuestas'][0]['opciones_elegidas'] == [
-        {'codigo': 'INSTITUTO'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]
+    assert not any(item['con_llm'] for item in items)
     completar(cliente, 't-expectativas', esperado=409)
-    textos = {'t-exp-ruta': 'DATO DE PRUEBA: estudiar en un instituto porque me gusta la práctica',
-              't-exp-apoyo': 'DATO DE PRUEBA: mi familia, por ejemplo mi mamá', 't-exp-espera': 'DATO DE PRUEBA'}
-    opciones = {'t-exp-ruta': [{'codigo': 'INSTITUTO'}], 't-exp-apoyo': [], 't-exp-espera': []}
-    for item, texto in textos.items():
-        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-              {**accion, 'item': item, 'texto': texto, 'opciones': opciones[item]})
-    # La elección mínima se exige al entregar (B03 reemplaza el envío por ítem).
-    pedir(cliente, 'POST', '/acciones/registro/entregar', accion, esperado=422)
-    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-          {**accion, 'item': 't-exp-apoyo', 'texto': textos['t-exp-apoyo'], 'opciones': [{'codigo': 'FAMILIA'}]})
-    respuesta = pedir(cliente, 'POST', '/acciones/registro/entregar', accion)
-    assert {r['estado'] for r in respuesta['respuestas']} == {'FINAL'}
+    # Falta un ítem obligatorio: 409 con los faltantes.
+    faltante = entregar(cliente, 't-expectativas', {k: v for k, v in EXPECTATIVAS.items() if k != 't-exp-espera'},
+                        esperado=409)
+    assert faltante['detail']['items_faltantes'] == ['t-exp-espera']
+    # La elección mínima se exige al entregar.
+    entregar(cliente, 't-expectativas', {**EXPECTATIVAS, 't-exp-apoyo': (EXPECTATIVAS['t-exp-apoyo'][0], [])},
+             esperado=422)
+    assert actividades(cliente)['t-expectativas'] == 'DISPONIBLE'
+    respuesta = entregar(cliente, 't-expectativas', EXPECTATIVAS)
+    assert respuesta['estado'] == 'COMPLETADA' and {r['estado'] for r in respuesta['respuestas']} == {'COMPLETADO'}
     assert ('COMPLETA_ACTIVIDAD', 't-expectativas') in [
         (e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']]
+    # Otra sesión: el registro se lee desde el servidor, con la elección tal como se mostró.
+    leido = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
+    assert leido['respuestas'][0]['opciones_elegidas'] == [
+        {'codigo': 'INSTITUTO', 'texto': 'Estudiar en un instituto'}, OTRA_RUTA]
+    assert {r['item']: r['texto'] for r in leido['respuestas']} == {k: v[0] for k, v in EXPECTATIVAS.items()}
+    entregar(cliente, 't-expectativas', EXPECTATIVAS, esperado=409)
 
 
-def test_hu007_hu016_entrega_con_seguimiento_y_mision_adicional(cliente):
-    """B03: Ana responde la pregunta y ve la misión adicional; Luis omite y no la ve."""
-    textos = {'t-exp-ruta': 'DATO DE PRUEBA: quiero estudiar [vaga]',
-              't-exp-apoyo': 'DATO DE PRUEBA: mi familia, por ejemplo mi mamá me acompaña a las ferias',
-              't-exp-espera': 'DATO DE PRUEBA: esperan que termine el colegio porque confían en mí'}
-    opciones = {'t-exp-ruta': [{'codigo': 'INSTITUTO'}], 't-exp-apoyo': [{'codigo': 'FAMILIA'}], 't-exp-espera': []}
-    for cuenta in ('est-ana', 'est-luis'):
-        avanzar(cliente, 't-cierre-inicio', cuenta)
-        accion = {'cuenta': cuenta, 'actividad': 't-expectativas', 'fecha_hora': FECHA}
-        for item, texto in textos.items():
-            pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-                  {**accion, 'item': item, 'texto': texto, 'opciones': opciones[item]})
-        entrega = pedir(cliente, 'POST', '/acciones/registro/entregar', accion)
-        assert entrega['estado'] == 'EN_CURSO'
-        ruta = next(r for r in entrega['respuestas'] if r['item'] == 't-exp-ruta')
-        assert ruta['estado'] == 'PENDIENTE_SEGUIMIENTO' and ruta['conversacion'][-1]['tipo'] == 'pregunta'
-        assert 'clasificacion' not in str(entrega)
-        if cuenta == 'est-ana':
-            cierre = pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento',
-                           {**accion, 'item': 't-exp-ruta', 'texto': 'Porque me gusta aprender haciendo'})
-            assert cierre['items_por_ampliar'] == []
-            assert ('REGISTRO_ADECUADO', 't-expectativas') in [
-                (e['tipo'], e['referencia']) for e in cierre['eventos_registrados']]
-            assert actividades(cliente)['t-adicional'] == 'DISPONIBLE'
-            assert siguiente(cliente) == INTERESES  # La misión adicional es opcional.
-            completar(cliente, 't-adicional')
-            assert actividades(cliente)['t-adicional'] == 'COMPLETADA'
-        else:
-            cierre = pedir(cliente, 'POST', '/acciones/registro/continuar-sin-responder',
-                           {**accion, 'item': 't-exp-ruta'})
-            assert [i['item'] for i in cierre['items_por_ampliar']] == ['t-exp-ruta']
-            assert actividades(cliente, cuenta)['t-expectativas'] == 'COMPLETADA'
-            assert actividades(cliente, cuenta)['t-adicional'] == 'BLOQUEADA'
-            # B04 (HU-008): Luis consulta la consolidada, edita lo que puede ampliar y responde la pregunta.
-            registro = pedir(cliente, 'GET', f'/cuentas/{cuenta}/actividades/t-expectativas/registro')
-            assert {r['item']: r['texto_consolidado'] for r in registro['respuestas']} == textos
-            assert [i['item'] for i in registro['items_por_ampliar']] == ['t-exp-ruta']
-            edicion = pedir(cliente, 'POST', '/acciones/registro/editar', {**accion, 'items': [
-                {'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: quiero estudiar en un instituto [vaga]'}]})
-            ruta = next(r for r in edicion['respuestas'] if r['item'] == 't-exp-ruta')
-            assert ruta['estado'] == 'PENDIENTE_SEGUIMIENTO'
-            cierre = pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento',
-                           {**accion, 'item': 't-exp-ruta', 'texto': 'Porque quiero trabajar pronto'})
-            assert cierre['items_por_ampliar'] == []
-            assert actividades(cliente, cuenta)['t-adicional'] == 'DISPONIBLE'
+def test_hu016_registro_adecuado_abre_la_mision_adicional(cliente):
+    """B03: con REGISTRO_ADECUADO se abre la misión adicional (opcional). Ajuste registros llm (lote 2): la entrega
+    provisional lo emite siempre; el seguimiento vuelve en el lote 3."""
+    avanzar(cliente, 't-cierre-inicio')
+    assert actividades(cliente)['t-adicional'] == 'BLOQUEADA'
+    entrega = entregar(cliente, 't-expectativas', EXPECTATIVAS)
+    assert ('REGISTRO_ADECUADO', 't-expectativas') in [
+        (e['tipo'], e['referencia']) for e in entrega['eventos_registrados']]
+    assert 'clasificacion' not in str(entrega)
+    assert actividades(cliente)['t-adicional'] == 'DISPONIBLE'
+    assert siguiente(cliente) == INTERESES  # La misión adicional es opcional.
+    completar(cliente, 't-adicional')
+    assert actividades(cliente)['t-adicional'] == 'COMPLETADA'
 
 
-def test_hu009_eco_cita_lo_desarrollado_y_elige_por_referencia(cliente):
-    """B05: t-eco retoma t-expectativas; lo poco desarrollado sale «por desarrollar» hasta que se amplía."""
+def test_hu009_eco_elige_por_referencia(cliente):
+    """B05: t-eco retoma la elección de t-expectativas. Ajuste registros llm (lote 2): la entrega provisional no deja
+    texto citable, así que el texto sale SIN_DATO."""
     avanzar(cliente, 't-cierre-inicio')
     assert actividades(cliente)['t-eco'] == 'BLOQUEADA'
-    accion = {'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA}
-    otra = {'codigo': 'OTRA', 'texto': 'DATO DE PRUEBA: aprender un oficio'}
-    for item, texto, opciones in (
-            ('t-exp-ruta', 'DATO DE PRUEBA: quiero estudiar porque me gusta crear', [{'codigo': 'INSTITUTO'}, otra]),
-            ('t-exp-apoyo', 'DATO DE PRUEBA: mi familia, por ejemplo mi tío', [{'codigo': 'FAMILIA'}]),
-            ('t-exp-espera', 'DATO DE PRUEBA: algo [vaga]', [])):
-        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-              {**accion, 'item': item, 'texto': texto, 'opciones': opciones})
-    pedir(cliente, 'POST', '/acciones/registro/entregar', accion)
-    pedir(cliente, 'POST', '/acciones/registro/continuar-sin-responder', {**accion, 'item': 't-exp-espera'})
+    entregar(cliente, 't-expectativas', EXPECTATIVAS)
     assert actividades(cliente)['t-eco'] == 'DISPONIBLE'
 
     # El front lee los ítems (F02: la lista completa y la referencia que marca lo elegido antes) y las referencias.
@@ -183,27 +156,15 @@ def test_hu009_eco_cita_lo_desarrollado_y_elige_por_referencia(cliente):
     assert ruta_eco['eleccion']['lista'] == 'RUTAS_DESPUES_COLEGIO' and ruta_eco['eleccion']['opciones']
     resueltas = {r['codigo']: r for r in pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')[
         'referencias']}
-    assert resueltas['t-ref-espera']['estado'] == 'POR_DESARROLLAR' and 'texto' not in resueltas['t-ref-espera']
-    assert resueltas['t-ref-rutas']['opciones'] == [{'codigo': 'INSTITUTO', 'texto': 'Estudiar en un instituto'}, otra]
+    assert resueltas['t-ref-espera']['estado'] == 'SIN_DATO' and 'texto' not in resueltas['t-ref-espera']
+    assert resueltas['t-ref-rutas']['opciones'] == [
+        {'codigo': 'INSTITUTO', 'texto': 'Estudiar en un instituto'}, OTRA_RUTA]
 
-    # Ampliar lo poco desarrollado (HU-008) hace que se cite literalmente.
-    ampliada = 'DATO DE PRUEBA: esperan que estudie, por ejemplo mi mamá, porque ella no pudo'
-    pedir(cliente, 'POST', '/acciones/registro/editar',
-          {**accion, 'items': [{'item': 't-exp-espera', 'texto': ampliada}]})
-    espera = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')['referencias'][0]
-    assert espera == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
-                      'texto': ampliada}
-
-    eco = {'cuenta': 'est-ana', 'actividad': 't-eco', 'fecha_hora': FECHA}
     texto = 'DATO DE PRUEBA: el oficio, porque quiero empezar a trabajar pronto'
+    espera = ('DATO DE PRUEBA: sí, lo sigo pensando', [])
     # F02: retoma la elección de t-expectativas con su lista; aquí cambia de ruta.
-    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-          {**eco, 'item': 't-eco-ruta', 'texto': texto, 'opciones': [{'codigo': 'NADA'}]}, 422)
-    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-          {**eco, 'item': 't-eco-ruta', 'texto': texto, 'opciones': [{'codigo': 'TRABAJAR'}]})
-    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-          {**eco, 'item': 't-eco-espera', 'texto': 'DATO DE PRUEBA: sí, lo sigo pensando', 'opciones': []})
-    entrega = pedir(cliente, 'POST', '/acciones/registro/entregar', eco)
+    entregar(cliente, 't-eco', {'t-eco-ruta': (texto, [{'codigo': 'NADA'}]), 't-eco-espera': espera}, esperado=422)
+    entrega = entregar(cliente, 't-eco', {'t-eco-ruta': (texto, [{'codigo': 'TRABAJAR'}]), 't-eco-espera': espera})
     assert entrega['estado'] == 'COMPLETADA'
     assert actividades(cliente)['t-eco'] == 'COMPLETADA'
 
@@ -418,9 +379,11 @@ def test_hu028_036_075_diario_check_in_y_avance(cliente):
     check_ins = pedir(cliente, 'GET', '/cuentas/est-ana/check-ins')
     assert check_ins['dias_registrados'] == 1 and isinstance(check_ins['registrado_hoy'], bool)
     expectativas = avanzar(cliente)
-    assert [(e['codigo'], e['texto']) for e in expectativas['entradas_desbloqueadas']] == [('t-diario-personal', None)]
+    # Ajuste registros llm (lote 2): sin texto citable no hay qué retomar; queda la pregunta base.
+    base = '¿Cómo te sientes con lo que esperas de este camino?'
+    assert [(e['codigo'], e['texto']) for e in expectativas['entradas_desbloqueadas']] == [('t-diario-personal', base)]
     abierta = pedir(cliente, 'POST', '/acciones/diario/abrir-pregunta', {'cuenta': 'est-ana', 'codigo': 't-diario-personal'})
-    assert abierta['texto'].startswith('Sobre «') and abierta['respondida'] is False
+    assert abierta['texto'] == base and abierta['respondida'] is False
     escribir(pregunta='t-diario-personal', texto='DATO DE PRUEBA: tranquila')
     del_dia = pedir(cliente, 'POST', '/acciones/diario/pregunta-del-dia', {'cuenta': 'est-ana', 'fecha_hora': FECHA})
     escribir(del_dia=True, texto='DATO DE PRUEBA: hoy')

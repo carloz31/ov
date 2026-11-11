@@ -42,8 +42,8 @@ def normalizar(sql):
 def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
-    # Ajuste registros: la tabla `texto_fijo` (0049).
-    assert len(Base.metadata.tables) == 96
+    # Ajuste registros: la tabla `texto_fijo` (0049). Ajuste registros llm (lote 2): salen tres tablas (0050).
+    assert len(Base.metadata.tables) == 93
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -130,8 +130,8 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     salida = StringIO()
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
-    # Ajuste registros: la tabla `texto_fijo` (0049).
-    assert sql.count('CREATE TABLE ') == 102
+    # Ajuste registros: la tabla `texto_fijo` (0049). Ajuste registros llm (lote 2): 0050 rehace `respuesta_registro`.
+    assert sql.count('CREATE TABLE ') == 103
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -142,8 +142,9 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     # B17: 15 desde que 0017 usa sa.false(); un booleano con DEFAULT 0 no se crea en PostgreSQL. B13: 16, con
     # `investigacion.sugerencias_vigentes`. Ajuste resultados-intereses: 18, con `instrumento.guia_abierta` y
     # `ocupacion.en_test`.
-    # Ajuste registros: `sensible` (respuesta y evaluación) y `requiere_atencion` (respuesta).
-    assert sql.count('BOOLEAN DEFAULT false') == 21
+    # Ajuste registros: `sensible` (respuesta y evaluación) y `requiere_atencion` (respuesta). Ajuste registros llm
+    # (lote 2): la `respuesta_registro` de 0050 suma `sensible`, `seguimiento_sin_evaluar` y `eco_cambiado`.
+    assert sql.count('BOOLEAN DEFAULT false') == 24
     assert 'BOOLEAN DEFAULT 0' not in sql and 'BOOLEAN DEFAULT 1' not in sql
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:
@@ -190,10 +191,13 @@ def test_migracion_0002_conserva_filas_y_referencias_de_0001(tmp_path, monkeypat
                            # `pregunta_id` de entrada_diario por `recomendacion_id` (aquí sin filas). 0018 cambia
                            # las columnas de las conversaciones (aquí sin filas). 0040 retira el porcentaje de
                            # resultado_dimension (aquí sin filas). 0042 retira el ajuste de coincidencia y 0043 retira carrera_ocupacion (aquí sin filas).
-                           # 0045 cambia `enlace` de testimonio por `video_id` (aquí sin filas).
+                           # 0045 cambia `enlace` de testimonio por `video_id` (aquí sin filas). 0050 retira o rehace
+                           # las tablas del registro (aquí sin filas).
                            if nombre not in {'alembic_version', 'actividad_item_registro', 'entrada_diario',
                                              'conversacion', 'conversacion_vinculo', 'resultado_dimension',
-                                             'coincidencia', 'carrera_ocupacion', 'testimonio'}}
+                                             'coincidencia', 'carrera_ocupacion', 'testimonio', 'item_registro',
+                                             'criterio_completitud', 'respuesta_registro', 'turno_seguimiento',
+                                             'evaluacion_respuesta'}}
         command.upgrade(configuracion, 'head')
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == (
@@ -413,13 +417,14 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # con ENTREVISTA_LEYENDA. Ajuste notificaciones: 0039 se detiene antes, porque `t-apo-1` le dio una
         # notificación a apo-rosa. Ajuste resultados-intereses: 0041 se detiene antes, porque `ruta` tiene el catálogo
         # curado con familias de ocupaciones. Ajuste registros: 0049 se detiene antes, porque `t-referencia` elige
-        # desde una referencia con opciones propias.
+        # desde una referencia con opciones propias. Ajuste registros llm (lote 2): 0050 se detiene antes, porque hay
+        # ítems de registro cargados (su consigna en partes y sus tarjetas no bajan).
         with pytest.raises(RuntimeError, match='existen datos de los registros definitivos'):
             command.downgrade(configuracion, '0002')
-        # Nada baja: el esquema y los datos quedan como en 0049.
+        # Nada baja: el esquema y los datos quedan como en 0050.
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
         with motor.connect() as conexion:
-            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0049'
+            assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0050'
             for tabla in Base.metadata.sorted_tables:
                 # Solo las columnas que existen en 0005: el modelo tiene columnas posteriores.
                 columnas = [tabla.c[c['name']] for c in inspect(motor).get_columns(tabla.name) if c['name'] in tabla.c]

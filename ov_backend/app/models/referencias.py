@@ -18,7 +18,8 @@ class Referencia(Base):
                         name="fuente_cuestionario"),
         CheckConstraint("tipo <> 'FAVORITOS' OR item_registro_id IS NULL", name="favoritos_sin_fuente"),
         CheckConstraint("tipo NOT IN ('PLAN', 'PLANES', 'PASOS_PLAN_A', 'OPCION_INICIAL', 'LO_QUE_PIENSO', "
-                        "'FAMILIAS_RECOMENDADAS', 'TESTIMONIOS', 'DATOS_CARRERA_PLAN_A') OR item_registro_id IS NULL",
+                        "'FAMILIAS_RECOMENDADAS', 'TESTIMONIOS', 'DATOS_CARRERA_PLAN_A', 'CHECK_IN_PRIMERO') "
+                        "OR item_registro_id IS NULL",
                         name="planes_sin_fuente"),
     )
     id: Mapped[int] = mapped_column(primary_key=True)

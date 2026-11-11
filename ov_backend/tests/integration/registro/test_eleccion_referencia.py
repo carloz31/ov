@@ -1,7 +1,8 @@
 """B05 y F02: `t-eco-ruta` retoma la elección de `t-exp-ruta`: elige de la misma lista y la referencia solo marca
 lo elegido la vez pasada, que el estudiante mantiene o cambia.
 
-Los textos son DATO DE PRUEBA; las marcas (`[vaga]`) las interpreta el evaluador falso.
+Los textos son DATO DE PRUEBA. Ajuste registros llm (lote 2): se entrega con la entrega provisional (todos los ítems a
+la vez, sin LLM); en un ítem de varias opciones la «Otra» se numera (`OTRA-1`).
 """
 
 import pytest
@@ -10,42 +11,24 @@ from soporte_ruta import FECHA, actividades, avanzar, pedir
 
 
 ADECUADO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'
-# DATO DE PRUEBA: frase que solo está en t-exp-espera, para comprobar que su cita no va al evaluador.
-FRASE_ESPERA = 'DATO DE PRUEBA frase-solo-de-expectativas [vaga]'
-OTRA = {'codigo': 'OTRA', 'texto': 'DATO DE PRUEBA: trabajar en el taller familiar'}
+OTRA = {'codigo': 'OTRA-1', 'texto': 'DATO DE PRUEBA: trabajar en el taller familiar'}
 
 
-def accion(actividad, cuenta='est-ana'):
-    return {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA}
-
-
-def evaluador(aplicacion):
-    return aplicacion.state.evaluador_respuestas
+def entregar(cliente, actividad, items, cuenta='est-ana', esperado=200):
+    return pedir(cliente, 'POST', '/acciones/registro/entregar', {
+        'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
+        'items': [{'item': item, 'texto': ADECUADO, 'opciones': opciones} for item, opciones in items]}, esperado)
 
 
 def cerrar_expectativas(cliente, cuenta='est-ana'):
-    """Entrega t-expectativas eligiendo UNIVERSIDAD y OTRA, con t-exp-espera poco desarrollada y omitida."""
+    """Entrega t-expectativas eligiendo UNIVERSIDAD y una «Otra»."""
     avanzar(cliente, 't-cierre-inicio', cuenta)
-    for item, texto, opciones in (('t-exp-ruta', ADECUADO, [{'codigo': 'UNIVERSIDAD'}, OTRA]),
-                                  ('t-exp-apoyo', ADECUADO, [{'codigo': 'FAMILIA'}]),
-                                  ('t-exp-espera', FRASE_ESPERA, [])):
-        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-              {**accion('t-expectativas', cuenta), 'item': item, 'texto': texto, 'opciones': opciones})
-    pedir(cliente, 'POST', '/acciones/registro/entregar', accion('t-expectativas', cuenta))
-    pedir(cliente, 'POST', '/acciones/registro/continuar-sin-responder',
-          {**accion('t-expectativas', cuenta), 'item': 't-exp-espera'})
+    entregar(cliente, 't-expectativas', (('t-exp-ruta', [{'codigo': 'UNIVERSIDAD'}, OTRA]),
+                                         ('t-exp-apoyo', [{'codigo': 'FAMILIA'}]), ('t-exp-espera', [])), cuenta)
 
 
-def borrador_eco(cliente, opciones, esperado=200, texto=ADECUADO):
-    return pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
-        **accion('t-eco'), 'item': 't-eco-ruta', 'texto': texto, 'opciones': opciones}, esperado)
-
-
-def entregar_eco(cliente, opciones, texto=ADECUADO, esperado=200):
-    borrador_eco(cliente, opciones, texto=texto)
-    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-          {**accion('t-eco'), 'item': 't-eco-espera', 'texto': ADECUADO, 'opciones': []})
-    return pedir(cliente, 'POST', '/acciones/registro/entregar', accion('t-eco'), esperado)
+def entregar_eco(cliente, opciones, esperado=200):
+    return entregar(cliente, 't-eco', (('t-eco-ruta', opciones), ('t-eco-espera', [])), esperado=esperado)
 
 
 def test_items_de_t_eco_publican_la_lista_y_la_referencia(cliente):
@@ -59,12 +42,12 @@ def test_items_de_t_eco_publican_la_lista_y_la_referencia(cliente):
 
 @pytest.mark.parametrize('opciones', [
     [{'codigo': 'NADA'}],
-    [{'codigo': 'OTRA'}],  # la «otra» lleva su texto, como en cualquier lista
+    [{'codigo': 'OTRA-1'}],  # la «otra» lleva su texto, como en cualquier lista
     [{'codigo': 'UNIVERSIDAD'}, {'codigo': 'INSTITUTO'}, {'codigo': 'TRABAJAR'}],  # supera la máxima
 ])
 def test_valida_contra_la_lista(cliente, opciones):
     cerrar_expectativas(cliente)
-    borrador_eco(cliente, opciones, esperado=422)
+    entregar_eco(cliente, opciones, esperado=422)
 
 
 @pytest.mark.parametrize('opciones', [
@@ -74,35 +57,25 @@ def test_valida_contra_la_lista(cliente, opciones):
 ])
 def test_mantiene_o_cambia_lo_elegido_antes(cliente, opciones):
     cerrar_expectativas(cliente)
-    borrador_eco(cliente, opciones)
+    entregar_eco(cliente, opciones)
+    lista = pedir(cliente, 'GET', '/actividades/t-eco/items-registro')[0]['eleccion']['opciones']
+    textos = {o['codigo']: o['texto'] for o in lista}
     registro = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/registro')
-    assert registro['respuestas'][0]['opciones_elegidas'] == opciones
+    # Lo guardado lleva siempre su texto: el de la lista o el escrito en la «Otra».
+    assert registro['respuestas'][0]['opciones_elegidas'] == [
+        {'codigo': o['codigo'], 'texto': o.get('texto') or textos[o['codigo']]} for o in opciones]
 
 
 def test_entrega_exige_la_minima(cliente):
     cerrar_expectativas(cliente)
-    borrador_eco(cliente, [])
-    pedir(cliente, 'POST', '/acciones/registro/guardar-borrador',
-          {**accion('t-eco'), 'item': 't-eco-espera', 'texto': ADECUADO, 'opciones': []})
-    pedir(cliente, 'POST', '/acciones/registro/entregar', accion('t-eco'), 422)
-
-
-def test_el_evaluador_recibe_los_textos_elegidos_y_ninguna_cita(cliente, aplicacion):
-    cerrar_expectativas(cliente)
-    falso = evaluador(aplicacion)
-    antes = len(falso.contextos)
-    entregar_eco(cliente, [OTRA], texto='DATO DE PRUEBA eco [vaga]')
-    pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento',
-          {**accion('t-eco'), 'item': 't-eco-ruta', 'texto': ADECUADO})
-    entrega, seguimiento = falso.contextos[antes:]
-    item, = entrega.items  # t-eco-espera no tiene criterios: no va al LLM
-    assert item.opciones_elegidas == (OTRA['texto'],)
-    assert seguimiento.opciones_elegidas == (OTRA['texto'],)
-    assert 'frase-solo-de-expectativas' not in str(falso.contextos[antes:])
+    entregar_eco(cliente, [], esperado=422)
 
 
 def test_entregar_t_eco_adecuado_no_abre_la_mision_adicional(cliente):
-    cerrar_expectativas(cliente)
+    # La entrega provisional de t-expectativas siempre emite su REGISTRO_ADECUADO (que sí abre t-adicional): t-eco se
+    # abre con el evento crudo de completarla, para ver que el REGISTRO_ADECUADO de t-eco no la abre.
+    avanzar(cliente, 't-cierre-inicio')
+    pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-expectativas'})
     assert actividades(cliente)['t-adicional'] == 'BLOQUEADA'
     entrega = entregar_eco(cliente, [{'codigo': 'UNIVERSIDAD'}])
     assert ('REGISTRO_ADECUADO', 't-eco') in [(e['tipo'], e['referencia']) for e in entrega['eventos_registrados']]

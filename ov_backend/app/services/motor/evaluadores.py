@@ -174,6 +174,16 @@ def planes_listos_para_comparar(sesion: Session, cuenta: Cuenta, secciones=None)
 
 
 @usar_contexto
+def por_que_en_planes(sesion: Session, cuenta: Cuenta) -> bool:
+    """Ajuste registros llm (lote 2): los `parametro` primeros planes (1 = el Plan A; 2 = el A y el B) tienen su «Por
+    qué» en LISTA. Con tres planes, el A y el C no bastan para 2."""
+    from app.services.planes.consultas import contar_listos_para_comparar
+    primeros = _parametro_positivo(contexto(sesion), 'el «por qué» de los primeros planes')
+    prioridades = tuple(range(1, primeros + 1))
+    return contar_listos_para_comparar(sesion, cuenta, ('POR_QUE',), prioridades) == primeros
+
+
+@usar_contexto
 def pasos_plan_a(sesion: Session, cuenta: Cuenta) -> bool:
     """B11 · `t-proyecto`: el plan A tiene al menos `parametro` pasos, en cualquier estado."""
     minimo = _parametro_positivo(contexto(sesion), 'pasos del plan A')
@@ -191,8 +201,7 @@ EVALUADORES: dict[str, Callable[[Session, Cuenta], bool]] = {
     "misiones_camino_sin_inicio": misiones_camino_sin_inicio,
     "instrumentos_prioritarios": instrumentos_prioritarios,
     "planes_listos_para_comparar": planes_listos_para_comparar,
-    # Ajuste registros: b4-1 pide el plan A con «Por qué» y b4-5, dos planes creados.
-    "planes_con_por_que": partial(planes_listos_para_comparar, secciones=('POR_QUE',)),
-    "planes_creados": partial(planes_listos_para_comparar, secciones=()),
+    # Ajuste registros llm (lote 2): b4-1 pide el «por qué» del Plan A y b4-5, el del A y el del B.
+    "por_que_en_planes": por_que_en_planes,
     "pasos_plan_a": pasos_plan_a,
 }

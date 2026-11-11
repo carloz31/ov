@@ -116,7 +116,8 @@ def _cumple_respaldo(sesion: Session, cuenta: Cuenta, respaldo_si) -> bool:
     elegidas = sesion.scalar(select(RespuestaRegistro.opciones_elegidas).join(
         ProgresoActividad, ProgresoActividad.id == RespuestaRegistro.progreso_id).join(
         ItemRegistro, ItemRegistro.id == RespuestaRegistro.item_registro_id).where(
-        ProgresoActividad.cuenta_id == cuenta.id, ItemRegistro.codigo == respaldo_si['item']))
+        ProgresoActividad.cuenta_id == cuenta.id, ItemRegistro.codigo == respaldo_si['item'],
+        RespuestaRegistro.vigente))
     return any(e.get('codigo') == respaldo_si['opcion'] for e in elegidas or ())
 
 

@@ -1,68 +1,42 @@
-from fastapi import APIRouter, HTTPException, Request
-from sqlalchemy.exc import IntegrityError, OperationalError
+from fastapi import APIRouter
 
-from app.database import es_bloqueo_temporal
 from app.dependencies import SesionBD, ejecutar_accion
-from app.exceptions import ErrorAccion, traducir_error_accion
 from app.schemas.registro import (
     AccionItemRegistroEntrada, BorradorRegistroEntrada, EditarRegistroEntrada, EntregarRegistroEntrada,
-    EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, ResponderSeguimientoEntrada, RespuestaRegistroAccion,
+    ItemRegistroPublico, RegistroConsultado, ResponderSeguimientoEntrada, RespuestaRegistroAccion,
 )
 from app.services.registro import acciones as acciones_registro, consultas as consultas_registro
 
 
 router = APIRouter(tags=['Registro'])
 
+# Ajuste registros llm (lote 2): el flujo secuencial con el LLM v7 es del lote 3. Hasta entonces, la entrega es
+# provisional y el resto responde 501 (después del guardia de acceso, como cualquier ruta).
 
 
-
-@router.post('/acciones/registro/guardar-borrador', response_model=EstadoItemRegistro)
+@router.post('/acciones/registro/guardar-borrador')
 def guardar_borrador(entrada: BorradorRegistroEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: acciones_registro.guardar_borrador(sesion, entrada))
+    return ejecutar_accion(sesion, lambda: acciones_registro.pendiente_lote_3(entrada))
 
 
 @router.post('/acciones/registro/entregar', response_model=RespuestaRegistroAccion, response_model_exclude_unset=True)
-def entregar(entrada: EntregarRegistroEntrada, peticion: Request):
-    return ejecutar_evaluacion(acciones_registro.entregar, entrada, peticion)
+def entregar(entrada: EntregarRegistroEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: acciones_registro.entregar(sesion, entrada))
 
 
-@router.post('/acciones/registro/responder-seguimiento', response_model=RespuestaRegistroAccion,
-             response_model_exclude_unset=True)
-def responder_seguimiento(entrada: ResponderSeguimientoEntrada, peticion: Request):
-    return ejecutar_evaluacion(acciones_registro.responder_seguimiento, entrada, peticion)
+@router.post('/acciones/registro/responder-seguimiento')
+def responder_seguimiento(entrada: ResponderSeguimientoEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: acciones_registro.pendiente_lote_3(entrada))
 
 
-@router.post('/acciones/registro/editar', response_model=RespuestaRegistroAccion, response_model_exclude_unset=True)
-def editar(entrada: EditarRegistroEntrada, peticion: Request):
-    return ejecutar_evaluacion(acciones_registro.editar, entrada, peticion)
+@router.post('/acciones/registro/editar')
+def editar(entrada: EditarRegistroEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: acciones_registro.pendiente_lote_3(entrada))
 
 
-def ejecutar_evaluacion(accion, entrada, peticion):
-    # No usa la dependencia de sesión: el núcleo abre y cierra cada fase por separado.
-    try:
-        configuracion = peticion.app.state.configuracion_registro
-        return accion(peticion.app.state.fabrica_sesiones, entrada, peticion.app.state.evaluador_respuestas,
-                      modelo=configuracion.modelo if configuracion.evaluador == 'gemini' else None,
-                      tiempo_maximo_segundos=configuracion.timeout_segundos)
-    except ErrorAccion as error:
-        raise traducir_error_accion(error) from error
-    except IntegrityError as error:
-        raise HTTPException(status_code=409, detail={
-            'mensaje': 'La acción entra en conflicto con el estado actual del registro',
-        }) from error
-    except OperationalError as error:
-        # SQLite puede rechazar un escritor simultáneo antes de comprobar la condición.
-        if es_bloqueo_temporal(error):
-            raise HTTPException(status_code=409, detail={
-                'mensaje': 'El registro está siendo actualizado; vuelve a intentarlo',
-            }) from error
-        raise
-
-
-@router.post('/acciones/registro/continuar-sin-responder', response_model=RespuestaRegistroAccion,
-             response_model_exclude_unset=True)
+@router.post('/acciones/registro/continuar-sin-responder')
 def continuar_sin_responder(entrada: AccionItemRegistroEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: acciones_registro.continuar_sin_responder(sesion, entrada))
+    return ejecutar_accion(sesion, lambda: acciones_registro.pendiente_lote_3(entrada))
 
 
 @router.get('/actividades/{actividad}/items-registro', response_model=list[ItemRegistroPublico])
@@ -70,7 +44,6 @@ def consultar_items(actividad: str, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: consultas_registro.consultar_items(sesion, actividad))
 
 
-@router.get('/cuentas/{cuenta}/actividades/{actividad}/registro', response_model=RegistroConsultado,
-            response_model_exclude_unset=True)
+@router.get('/cuentas/{cuenta}/actividades/{actividad}/registro', response_model=RegistroConsultado)
 def consultar_registro(cuenta: str, actividad: str, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: consultas_registro.consultar_registro(sesion, cuenta, actividad))

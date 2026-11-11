@@ -1,8 +1,8 @@
 """Resolución de referencias por cuenta (HU-009, RNF-20): solo tipos del catálogo y solo datos de la cuenta.
 
-ELECCION: disponible desde la primera entrega del ítem fuente, sea cual sea su clasificación; la elección no se
-edita y lo que puede quedar poco desarrollado es la justificación, no la decisión.
-TEXTO: según la clasificación de la última evaluación del ítem fuente; la poco desarrollada no se cita.
+ELECCION y TEXTO (ajuste registros llm, lote 2): siempre sobre el intento vigente del ítem fuente. La elección se
+cita siempre; el texto, solo si tiene texto citable (lo calcula la capa del LLM). De un ítem sensible o con tipo final
+`emocional` no se cita nada (SIN_DATO).
 RESULTADO y COINCIDENCIAS: el resultado vigente (revelado) de la aplicación fuente; con perfil plano, sin opciones.
 RESPUESTA_CUESTIONARIO: la etiqueta elegida en un ítem de la aplicación fuente, cuando su actividad está completada.
 FAVORITOS: las carreras, ocupaciones e instituciones marcadas, de la más reciente a la más antigua.
@@ -12,7 +12,6 @@ LO_QUE_PIENSO (B13): lo que el estudiante pensaba de la familia de carreras ante
 FAMILIAS_RECOMENDADAS, TESTIMONIOS y DATOS_CARRERA_PLAN_A (ajuste registros): las cinco familias del resultado de
 intereses, los testimonios desbloqueados (solo su título) y la duración, el tipo y la referencia de ingresos de la
 familia de la carrera del plan A. Se resuelven en vivo: lo guardado en una respuesta conserva su texto.
-Un TEXTO marcado sensible no se cita (SIN_DATO) y uno ABIERTA tampoco (ABIERTA); su ELECCION sí.
 """
 
 from sqlalchemy import select
@@ -22,12 +21,10 @@ from app.core.parametros import LONGITUD_CODIGO_INTERES
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, Entrevista, EstadoInvestigacion, FamiliaCarrera,
-    EstadoProgreso, EvaluacionRespuesta, IngresoFamilia, Testimonio, TipoObjetivo, Favorito, Institucion, Investigacion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
+    EstadoProgreso, IngresoFamilia, Testimonio, TipoObjetivo, Favorito, Institucion, Investigacion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
     ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol, TarjetaCarrera, TipoFavorito,
 )
-from app.models.enums import (
-    ClasificacionRespuesta, EstadoReferencia, EstadoRespuestaRegistro, TipoReferencia,
-)
+from app.models.enums import EstadoReferencia, TipoReferencia
 from app.schemas.referencias import OpcionReferida, ReferenciaResuelta, ReferenciasConsultadas
 from app.services.comun import buscar_por_codigo
 from app.services.instrumentos.consultas import cargar_representaciones, representar_resultado
@@ -37,20 +34,18 @@ CODIGO_OTRA = 'OTRA'
 
 
 def _leer_fuentes(sesion, cuenta, items_fuente):
-    """Respuesta y clasificación vigente de cada ítem fuente, solo de esta cuenta: dos lecturas en total."""
+    """El intento vigente de cada ítem fuente, solo de esta cuenta: una lectura (ajuste registros llm, lote 2)."""
     if not items_fuente:
-        return {}, {}
-    respuestas = {r.item_registro_id: r for r in sesion.scalars(select(RespuestaRegistro).join(
+        return {}
+    return {r.item_registro_id: r for r in sesion.scalars(select(RespuestaRegistro).join(
         ProgresoActividad, ProgresoActividad.id == RespuestaRegistro.progreso_id).where(
-        ProgresoActividad.cuenta_id == cuenta.id, RespuestaRegistro.item_registro_id.in_(items_fuente)))}
-    vigentes = {}
-    if respuestas:
-        for respuesta_id, clasificacion in sesion.execute(select(
-                EvaluacionRespuesta.respuesta_id, EvaluacionRespuesta.clasificacion).where(
-                EvaluacionRespuesta.respuesta_id.in_([r.id for r in respuestas.values()])).order_by(
-                EvaluacionRespuesta.numero)):
-            vigentes[respuesta_id] = clasificacion
-    return respuestas, vigentes
+        ProgresoActividad.cuenta_id == cuenta.id, RespuestaRegistro.vigente,
+        RespuestaRegistro.item_registro_id.in_(items_fuente)))}
+
+
+def referenciable(respuesta) -> bool:
+    """§3.4: de un ítem `sensible` o con tipo final `emocional` no se referencia nada, ni la elección."""
+    return respuesta is not None and not respuesta.sensible and respuesta.tipo_final != "emocional"
 
 
 def _opciones(sesion, item, elegidas):
@@ -222,7 +217,7 @@ def resolver(sesion, cuenta, referencias):
     """{código: ReferenciaResuelta} para `referencias` (filas del catálogo), con datos de `cuenta`."""
     definiciones = contexto(sesion).definiciones
     de_registro = [r for r in referencias if r.item_registro_id is not None]
-    respuestas, vigentes = _leer_fuentes(sesion, cuenta, {r.item_registro_id for r in de_registro})
+    respuestas = _leer_fuentes(sesion, cuenta, {r.item_registro_id for r in de_registro})
     de_cuestionario = [r for r in referencias if r.tipo == TipoReferencia.RESPUESTA_CUESTIONARIO]
     respuestas_cuestionario = _leer_respuestas_cuestionario(sesion, cuenta, de_cuestionario)
     resultados = _leer_resultados(sesion, cuenta, {r.aplicacion_id for r in referencias
@@ -284,29 +279,22 @@ def resolver(sesion, cuenta, referencias):
                 ReferenciaResuelta(**base, estado=EstadoReferencia.DISPONIBLE,
                                    opciones=_opciones_de_resultado(referencia.tipo, resultado)))
             continue
+        # Ajuste registros llm (lote 2), §3: siempre sobre el intento vigente. Una elección se muestra siempre; un texto,
+        # solo si es citable (la función del lote 1, guardada en `texto_citable`: un ítem sin LLM no tiene). De un ítem
+        # sensible o emocional, nada.
         respuesta = respuestas.get(referencia.item_registro_id)
-        if respuesta is None or respuesta.estado == EstadoRespuestaRegistro.BORRADOR:
+        if not referenciable(respuesta):
             resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO)
         elif referencia.tipo == TipoReferencia.ELECCION:
-            if respuesta.clasificacion_inicial is None:
-                resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO)
-            else:
-                item = definiciones.obtener(ItemRegistro, referencia.item_registro_id)
-                resueltas[referencia.codigo] = ReferenciaResuelta(
-                    **base, estado=EstadoReferencia.DISPONIBLE,
-                    opciones=_opciones(sesion, item, respuesta.opciones_elegidas))
+            item = definiciones.obtener(ItemRegistro, referencia.item_registro_id)
+            resueltas[referencia.codigo] = ReferenciaResuelta(
+                **base, estado=EstadoReferencia.DISPONIBLE,
+                opciones=_opciones(sesion, item, respuesta.opciones_elegidas))
+        elif respuesta.texto_citable:
+            resueltas[referencia.codigo] = ReferenciaResuelta(
+                **base, estado=EstadoReferencia.DISPONIBLE, texto=' '.join(respuesta.texto_citable))
         else:
-            clasificacion = vigentes.get(respuesta.id)
-            if clasificacion is None or respuesta.sensible:
-                # Sensible: no se cita en ninguna actividad (ajuste registros).
-                resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO)
-            elif clasificacion == ClasificacionRespuesta.POCO_DESARROLLADA:
-                resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.POR_DESARROLLAR)
-            elif clasificacion == ClasificacionRespuesta.ABIERTA:
-                resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.ABIERTA)
-            else:
-                resueltas[referencia.codigo] = ReferenciaResuelta(
-                    **base, estado=EstadoReferencia.DISPONIBLE, texto=respuesta.texto_consolidado)
+            resueltas[referencia.codigo] = ReferenciaResuelta(**base, estado=EstadoReferencia.SIN_DATO)
     return resueltas
 
 

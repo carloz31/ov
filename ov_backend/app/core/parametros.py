@@ -40,16 +40,8 @@ OPCION_ONET_MINIMA = 1
 OPCION_ONET_MAXIMA = 5
 PUNTAJE_ONET_MINIMO = 0
 
-# Registro §3 y §6: valores iniciales; el adaptador leerá el timeout del entorno.
-VERSION_PROMPT_REGISTRO = "v6.10"
 # Respaldo por longitud de un ítem sin `min_caracteres`. Provisional (B02).
 MIN_CARACTERES_RESPALDO = 40
-# B03: preguntas de seguimiento por intento de un registro; es el valor por defecto de `actividad.maximo_seguimientos`.
-MAXIMO_SEGUIMIENTOS_POR_REGISTRO = 2
-# Ajuste registros: repreguntas por ítem y por intento, salvo que el ítem declare `max_repreguntas`.
-MAXIMO_REPREGUNTAS_POR_ITEM = 1
-# Ajuste registros: ítems ABIERTA que un registro admite sin dejar de ser adecuado.
-MAXIMO_ABIERTOS_ADECUADO = 1
 # Ajuste carga-actividades: 5, lo que pide el registro más largo del contenido (b4-1).
 MAXIMO_ITEMS_REGISTRO = 5
 # Reinicios del test de intereses por cuenta y aplicación, solo con perfil plano (HU-095).
@@ -59,22 +51,14 @@ MAX_AVISOS_VELOCIDAD = 2
 ITEMS_ENTRE_AVISOS_VELOCIDAD = 10
 TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
 MODELO_LLM_REGISTRO = "gemini-3.5-flash-lite"
-# Ajuste pruebas llm: 1.0 en el registro (recomendación de Google para Gemini 3); los asistentes (diario, cartas,
-# sugerencias de pasos, guion) conservan 0.2. gemini-3.5-flash-lite la ignora; se conserva para los modelos que la usan.
-TEMPERATURA_REGISTRO = 1.0
+# Los asistentes con Gemini (diario, cartas, sugerencias de pasos, guion). gemini-3.5-flash-lite la ignora; se
+# conserva para los modelos que la usan.
 TEMPERATURA_ASISTENTES = 0.2
-# Ajuste pruebas llm: entrega y seguimiento van en `low` (config C de tests/llm/resultados/comparativa-razonamiento.md,
-# elegida por el usuario); los asistentes conservan el razonamiento mínimo que ya tenían. Si el modelo no admite el
-# nivel, `gemini.razonamiento_para` usa su mínimo.
-NIVEL_RAZONAMIENTO_REGISTRO = "low"
+# Razonamiento mínimo de los asistentes; si el modelo no admite el nivel, `gemini.razonamiento_para` usa su mínimo.
 NIVEL_RAZONAMIENTO_ASISTENTES = "minimal"
 # B03: validación de la pregunta redactada por el LLM; se compara en minúsculas y sin tildes.
 MAXIMO_CARACTERES_PREGUNTA = 200
 PALABRAS_EVALUATIVAS = ("adecuad", "poco desarrollad", "criterio", "incomplet", "insuficient")
-# B03: la consolidada no puede superar este factor del largo de lo escrito.
-FACTOR_MAXIMO_CONSOLIDADA = 1.5
-# Ajuste pruebas llm: margen fijo sobre el factor, en caracteres (las respuestas cortas necesitan conectores).
-MARGEN_CONSOLIDADA = 60
 PAUSA_CASOS_GEMINI_SEGUNDOS = 5
 # Ajuste registros llm (lote 1): capa del LLM v7 (`app/services/registro/llm/`), aún sin conectar al flujo.
 MODELO_LLM_REGISTRO_V7 = "claude-haiku-5-5"

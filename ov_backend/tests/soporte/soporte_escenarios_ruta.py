@@ -52,16 +52,18 @@ def verificar_p07_llegada_a_la_ciudad(cliente):
     respuesta = avanzar(cliente)
     assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [
         ('COMPLETA_ACTIVIDAD', 't-expectativas'), ('COMPLETA_BLOQUE', 'T1'),
-        # B04: todo adecuado al inicio da REGISTRO_ADECUADO, pero ninguna respuesta reflexiva.
+        # La entrega provisional (lote 2) completa el registro y emite REGISTRO_ADECUADO.
         ('REGISTRO_ADECUADO', 't-expectativas'),
     ]
     # La Ciudad se abre a mitad de T1: la opcional t-opcional sigue pendiente y no impide cerrar el bloque.
     # B05: también se abre t-eco, que retoma las respuestas de t-expectativas.
-    # B09: también deja en el diario la pregunta personalizada, por redactar.
+    # B09: también deja en el diario la pregunta personalizada. Ajuste registros llm (lote 2): la entrega
+    # provisional no deja texto citable, así que no hay datos que retomar y queda la pregunta base.
     assert reglas(respuesta) == {'R-CIUDAD', 'R-t-opcional', 'R-SEC-FAMILIA', 'R-t-adicional', 'R-t-eco',
                                  'R-t-diario-personal'}
-    assert respuesta['entradas_desbloqueadas'] == [{'codigo': 't-diario-personal', 'nombre': 'Lo que espero',
-                                                    'personalizada': True, 'texto': None}]
+    assert respuesta['entradas_desbloqueadas'] == [{
+        'codigo': 't-diario-personal', 'nombre': 'Lo que espero', 'personalizada': True,
+        'texto': '¿Cómo te sientes con lo que esperas de este camino?'}]
     assert estado(cliente)['secciones']['FAMILIA'] == 'DISPONIBLE'
     estados = actividades(cliente)
     assert estados['t-opcional'] == 'DISPONIBLE'

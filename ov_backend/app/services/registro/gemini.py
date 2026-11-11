@@ -1,4 +1,5 @@
-"""Adaptador síncrono Gemini: una petición, sin sesiones de base de datos."""
+"""Adaptador síncrono Gemini de los asistentes (diario, sugerencias de pasos y guion): una petición, sin sesiones de
+base de datos. Ajuste registros llm (lote 2): el registro ya no pasa por aquí."""
 
 import json
 import logging
@@ -14,34 +15,18 @@ from google.genai import errors, types
 from pydantic import ValidationError
 
 from app.config import Configuracion, ErrorConfiguracionRegistro
-from app.core.parametros import (
-    NIVEL_RAZONAMIENTO_ASISTENTES, NIVEL_RAZONAMIENTO_REGISTRO, TEMPERATURA_ASISTENTES, TEMPERATURA_REGISTRO,
-)
+from app.core.parametros import NIVEL_RAZONAMIENTO_ASISTENTES, TEMPERATURA_ASISTENTES
 from app.services.diario.asistente import (
     PROMPT_CARTA_V1, PROMPT_DIARIO_V1, ContextoCarta, PreguntaPersonalizada, validar_personalizacion,
 )
 from app.services.investigaciones.sugerencias import RespuestaGuion, prompt_guion
 from app.services.planes.sugerencias import RespuestaSugerencias, prompt_sugerencias
-from app.services.registro.evaluacion import (
-    ContextoEntrega, ContextoSeguimiento, ErrorResultadoEvaluacion, ResultadoEntrega, ResultadoSeguimiento,
-    validar_entrega, validar_seguimiento,
-)
-from app.services.registro.prompt import PROMPT_ENTREGA, PROMPT_SEGUIMIENTO
+from app.services.registro.evaluacion import ErrorResultadoEvaluacion
 
 
 def mensaje_evaluador(contexto) -> str:
-    """El texto que recibe Gemini: el contexto en JSON (ajuste pruebas llm).
-
-    En el registro, un ítem con guía no envía la repregunta genérica de sus criterios (`REPREGUNTAS_CRITERIO`): el
-    modelo la copiaba en vez de retomar las palabras del estudiante. Sin guía (datos de `ruta`) se conserva. Los
-    demás contextos (diario, cartas, sugerencias, guion) van tal cual."""
-    datos = asdict(contexto)
-    if isinstance(contexto, (ContextoEntrega, ContextoSeguimiento)):
-        for item in datos['items'] if isinstance(contexto, ContextoEntrega) else (datos,):
-            if item['guia'] is not None:
-                for criterio in item['criterios']:
-                    criterio.pop('repregunta', None)
-    return json.dumps(datos, ensure_ascii=False)
+    """El texto que recibe Gemini: el contexto en JSON (diario, cartas, sugerencias de pasos y guion)."""
+    return json.dumps(asdict(contexto), ensure_ascii=False)
 
 
 class ErrorClienteGemini(RuntimeError):
@@ -108,12 +93,6 @@ class EvaluadorGemini:
             self._quitar_filtros()
             raise ErrorClienteGemini('No se pudo inicializar el cliente Gemini') from None
 
-    def evaluar_entrega(self, contexto: ContextoEntrega) -> ResultadoEntrega:
-        return self._medir(contexto, PROMPT_ENTREGA, ResultadoEntrega, validar_entrega)
-
-    def evaluar_seguimiento(self, contexto: ContextoSeguimiento) -> ResultadoSeguimiento:
-        return self._medir(contexto, PROMPT_SEGUIMIENTO, ResultadoSeguimiento, validar_seguimiento)
-
     def personalizar_entrada(self, contexto):
         prompt = PROMPT_CARTA_V1 if isinstance(contexto, ContextoCarta) else PROMPT_DIARIO_V1
         return self._medir(contexto, prompt, PreguntaPersonalizada, validar_personalizacion)
@@ -139,10 +118,7 @@ class EvaluadorGemini:
         return getattr(self._metricas, 'latencia_ms', None)
 
     def _evaluar(self, contexto, instruccion, esquema, validar):
-        # La temperatura y el razonamiento del registro no se extienden a los asistentes (diario, planes, guion).
-        registro = isinstance(contexto, (ContextoEntrega, ContextoSeguimiento))
-        temperatura = TEMPERATURA_REGISTRO if registro else TEMPERATURA_ASISTENTES
-        nivel = NIVEL_RAZONAMIENTO_REGISTRO if registro else NIVEL_RAZONAMIENTO_ASISTENTES
+        temperatura, nivel = TEMPERATURA_ASISTENTES, NIVEL_RAZONAMIENTO_ASISTENTES
         try:
             respuesta = self._cliente.models.generate_content(
                 model=self.configuracion.modelo,

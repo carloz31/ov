@@ -13,12 +13,25 @@ from datos import cargar, fijos, ruta
 # DATO DE PRUEBA: variantes que el cargador debe rechazar.
 SIN_BREVE = tuple(i for i in ruta.ITEMS_REGISTRO if i[1] != 't-val-breve')
 # Ajuste carga-actividades: tantos ítems extra como hagan falta para pasar el máximo vigente (t-expectativas tiene 3).
-ITEMS_EXTRA = tuple(('t-expectativas', f't-exp-extra-{n}', 'Extra', 'Consigna extra.', None, ())
+ITEMS_EXTRA = tuple(('t-expectativas', f't-exp-extra-{n}', 'Extra', 'Consigna extra.', None)
                     for n in range(MAXIMO_ITEMS_REGISTRO - 2))
-REPETIDO = ('t-valores', 't-exp-ruta', 'Repetido', 'Consigna repetida.', None, ())
-EN_INFORMATIVA = ('t-inicio', 't-ini-item', 'Ítem', 'Consigna.', None, ())
-LISTA_INEXISTENTE = ('t-valores', 't-val-extra', 'Extra', 'Consigna.', ('t-lista-nula', 1, 1, False, False), ())
-INCOHERENTE = ('t-valores', 't-val-extra', 'Extra', 'Consigna.', ('t-lista-apoyos', 2, 1, False, False), ())
+REPETIDO = ('t-valores', 't-exp-ruta', 'Repetido', 'Consigna repetida.', None)
+EN_INFORMATIVA = ('t-inicio', 't-ini-item', 'Ítem', 'Consigna.', None)
+LISTA_INEXISTENTE = ('t-valores', 't-val-extra', 'Extra', 'Consigna.', ('t-lista-nula', 1, 1, False, False))
+INCOHERENTE = ('t-valores', 't-val-extra', 'Extra', 'Consigna.', ('t-lista-apoyos', 2, 1, False, False))
+# Ajuste registros llm (lote 2): marcadores, consigna, ecos, opciones propias y tarjetas.
+MARCADOR_DESCONOCIDO = ('t-valores', 't-val-extra', 'Extra', {'pregunta_texto': '¿Qué piensas de {carrera_b}?'}, None)
+SIN_PREGUNTA = ('t-valores', 't-val-extra', 'Extra', {'dialogo': 'Hola.'}, None)
+ECO_POSTERIOR = ('t-expectativas', 't-exp-extra', 'Extra',
+                 {'pregunta_texto': 'Consigna.', 'ecos_llm': ({'origen': 'TEXTO', 'codigo': 't-val-orden'},)}, None)
+ECO_REFERENCIA_AJENA = ('t-expectativas', 't-exp-extra', 'Extra',
+                        {'pregunta_texto': 'Consigna.', 'ecos_mostrar': ({'origen': 'REFERENCIA', 'codigo': 't-ref-rutas'},)},
+                        None)
+PROPIA_CON_CRITERIO = ('t-valores', 't-val-extra', 'Extra', 'Consigna.',
+                       {'fuente': 'PROPIAS', 'minima': 1, 'maxima': 1,
+                        'propias': ({'codigo': 'A', 'texto': 'A', 'criterio': None},)})
+PROPIA_OTRA = ('t-valores', 't-val-extra', 'Extra', 'Consigna.',
+               {'fuente': 'PROPIAS', 'minima': 1, 'maxima': 1, 'propias': ({'codigo': 'OTRA-1', 'texto': 'A'},)})
 VARIANTES = (
     ('ITEMS_REGISTRO', (*ruta.ITEMS_REGISTRO, *ITEMS_EXTRA), f'más de {MAXIMO_ITEMS_REGISTRO} ítems'),
     ('ITEMS_REGISTRO', (*ruta.ITEMS_REGISTRO, REPETIDO), 'aparece en dos actividades'),
@@ -26,13 +39,25 @@ VARIANTES = (
     ('ITEMS_REGISTRO', (*SIN_BREVE, LISTA_INEXISTENTE), 'lista inexistente'),
     ('ITEMS_REGISTRO', (*SIN_BREVE, INCOHERENTE), 'incoherente'),
     ('LISTAS', (*ruta.LISTAS, ('t-lista-otra', 'Otra', (('OTRA', 'Otra'),))), 'código reservado OTRA'),
+    ('ITEMS_REGISTRO', (*SIN_BREVE, MARCADOR_DESCONOCIDO), 'marcadores desconocidos: .*carrera_b'),
+    ('ITEMS_REGISTRO', (*SIN_BREVE, SIN_PREGUNTA), 'sin pregunta del texto'),
+    ('ITEMS_REGISTRO', (*SIN_BREVE, ECO_POSTERIOR), 'no es un ítem anterior de su actividad'),
+    ('ITEMS_REGISTRO', (*SIN_BREVE, ECO_REFERENCIA_AJENA), 'no es una referencia de su actividad'),
+    ('ITEMS_REGISTRO', (*SIN_BREVE, PROPIA_CON_CRITERIO), 'campos inválidos'),
+    ('ITEMS_REGISTRO', (*SIN_BREVE, PROPIA_OTRA), 'usa el reservado'),
+    ('TARJETAS', {'t-nada': {'tarjeta': 'T', 'bases': {}, 'filtrar_etiqueta': False}}, 'ítems inexistentes'),
+    ('TARJETAS', {'t-exp-espera': {'tarjeta': 'T', 'bases': {'general': 'B'}, 'filtrar_etiqueta': False}},
+     'una base que no está en su texto'),
+    ('TARJETAS', {'t-exp-espera': {'tarjeta': 'T', 'bases': {}, 'filtrar_etiqueta': False,
+                                   'por_opcion': {'X': {'tarjeta': 'T', 'bases': {}, 'filtrar_etiqueta': False}}}},
+     'no es una opción propia con LLM'),
 )
 
 
 def _eco(eleccion):
     """`ruta.ITEMS_REGISTRO` con otra elección en `t-eco-ruta`."""
-    return tuple((a, c, n, t, eleccion, k) if c == 't-eco-ruta' else (a, c, n, t, e, k)
-                 for a, c, n, t, e, k in ruta.ITEMS_REGISTRO)
+    return tuple((a, c, n, t, eleccion) if c == 't-eco-ruta' else (a, c, n, t, e)
+                 for a, c, n, t, e in ruta.ITEMS_REGISTRO)
 
 
 # DATO DE PRUEBA: referencias y elecciones por referencia que el cargador debe rechazar.
@@ -66,7 +91,7 @@ VARIANTES = VARIANTES + VARIANTES_REFERENCIAS
 @pytest.mark.parametrize(('atributo', 'valor', 'mensaje'), VARIANTES)
 def test_carga_rechaza_registros_invalidos_sin_dejar_filas(tmp_path, monkeypatch, atributo, valor, mensaje):
     url = f'sqlite:///{(tmp_path / "registros.db").as_posix()}'
-    monkeypatch.setattr(ruta, atributo, valor)
+    monkeypatch.setattr(ruta, atributo, valor, raising=False)
     with pytest.raises(ValueError, match=mensaje):
         cargar.preparar_base(url, 'ruta', crear_tablas=True)
     motor = crear_motor_bd(url)
@@ -90,7 +115,7 @@ def test_carga_rechaza_referencias_a_una_comparacion(tmp_path, monkeypatch):
         cargar.preparar_base(url, 'ruta', crear_tablas=True)
 
 
-def test_items_listas_y_criterios_cargados(tmp_path):
+def test_items_listas_y_consignas_cargados(tmp_path):
     url = f'sqlite:///{(tmp_path / "ruta.db").as_posix()}'
     cargar.preparar_base(url, 'ruta', crear_tablas=True)
     motor = crear_motor_bd(url)
@@ -121,11 +146,11 @@ def test_items_listas_y_criterios_cargados(tmp_path):
                 ('t-valores', 't-val-libre', 2, None, None),
                 ('t-valores', 't-val-breve', 3, None, None),
             ]
-            criterios = sesion.execute(select(m.CriterioCompletitud.tipo, m.CriterioCompletitud.repregunta)
-                                       .join(m.ItemRegistro).where(m.ItemRegistro.codigo == 't-exp-espera')
-                                       .order_by(m.CriterioCompletitud.orden)).all()
-            assert [tipo for tipo, _ in criterios] == [m.TipoCriterio.EJEMPLO, m.TipoCriterio.RAZON]
-            assert all(repregunta.strip() for _, repregunta in criterios)
+            # Ajuste registros llm (lote 2): sin criterios; ningún ítem de `ruta` tiene tarjeta (todos sin LLM).
+            espera = sesion.scalar(select(m.ItemRegistro).where(m.ItemRegistro.codigo == 't-exp-espera'))
+            assert espera.pregunta_texto == '¿Qué esperan de ti las personas cercanas?'
+            assert espera.dialogo is None and espera.tarjeta is None
+            assert not any(i.tarjeta for i in sesion.scalars(select(m.ItemRegistro)))
             espera, breve = (sesion.scalar(select(m.ItemRegistro).where(m.ItemRegistro.codigo == c))
                              for c in ('t-exp-espera', 't-val-breve'))
             assert espera.min_caracteres is None and breve.min_caracteres == 40
@@ -141,3 +166,14 @@ def test_items_listas_y_criterios_cargados(tmp_path):
             assert sesion.get(m.Referencia, eco.referencia_id).codigo == 't-ref-rutas'
     finally:
         motor.dispose()
+
+
+def test_marcadores_reconocidos_y_el_arranque_con_puntos_suspensivos():
+    """Ajuste registros llm (lote 2): `{valor 1}` (con espacio) y `{opción}` (con tilde) son marcadores; el «…» de
+    un arranque no lo es, y lo que va entre llaves sin ser conocido es un error de carga."""
+    from datos.cargador import MARCADORES, marcadores_de
+    assert marcadores_de('Pusiste {valor 1} primero.') == {'valor 1'}
+    assert marcadores_de('Volvamos a lo que marcaste, {opción}: cuéntame') == {'opción'}
+    assert marcadores_de('Puse … primero porque…') == set()
+    assert marcadores_de('Me haría falta… / No me haría falta nada porque…') == set()
+    assert {'valor 1', 'opción', 'carrera', 'plan_a', 'plan_b', 'primera', 'habilidad'} == MARCADORES

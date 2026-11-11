@@ -31,19 +31,42 @@ def test_sin_lista_solo_acepta_vacio():
 
 
 def test_no_ordenada_sigue_la_lista_y_otra_va_al_final():
-    assert validar_eleccion(item(), OPCIONES, elegidas(('OTRA', 'x'), ('C', None)), True) == [
-        {'codigo': 'C'}, {'codigo': 'OTRA', 'texto': 'x'}]
+    # Ajuste registros llm (lote 2): se guarda el texto tal como se mostró; con varias opciones, «Otra» va numerada.
+    assert validar_eleccion(item(), OPCIONES, elegidas(('OTRA-1', 'x'), ('C', None)), True) == [
+        {'codigo': 'C', 'texto': 'Opción C'}, {'codigo': 'OTRA-1', 'texto': 'x'}]
 
 
 def test_ordenada_conserva_el_orden():
     assert validar_eleccion(item(eleccion_ordenada=True), OPCIONES, elegidas(('C', None), ('A', None)), True) == [
-        {'codigo': 'C'}, {'codigo': 'A'}]
+        {'codigo': 'C', 'texto': 'Opción C'}, {'codigo': 'A', 'texto': 'Opción A'}]
+
+
+def test_varias_otra_en_un_podio_y_una_sola_otra_en_un_item_de_una_opcion():
+    podio = item(eleccion_minima=3, eleccion_maxima=3, eleccion_ordenada=True)
+    assert validar_eleccion(podio, OPCIONES, elegidas(('OTRA-2', 'y'), ('A', None), ('OTRA-1', 'x')), True) == [
+        {'codigo': 'OTRA-2', 'texto': 'y'}, {'codigo': 'A', 'texto': 'Opción A'}, {'codigo': 'OTRA-1', 'texto': 'x'}]
+    for codigo in ('OTRA', 'OTRA-4', 'OTRA-0'):
+        with pytest.raises(ErrorAccion):
+            validar_eleccion(podio, OPCIONES, elegidas((codigo, 'x')), False)
+    una = item(eleccion_maxima=1)
+    assert validar_eleccion(una, OPCIONES, elegidas(('OTRA', 'x')), True) == [{'codigo': 'OTRA', 'texto': 'x'}]
+    with pytest.raises(ErrorAccion):
+        validar_eleccion(una, OPCIONES, elegidas(('OTRA-1', 'x')), True)
+
+
+def test_piezas_validan_su_prefijo_y_su_texto():
+    piezas = item(lista_id=None, fuente_opciones='PIEZAS_PERFIL', eleccion_maxima=1)
+    assert validar_eleccion(piezas, (), elegidas(('INTEL-ESP', 'Ver formas (tu test de inteligencias)')), True) == [
+        {'codigo': 'INTEL-ESP', 'texto': 'Ver formas (tu test de inteligencias)'}]
+    for pares in ((('CUESTA-MATEMATICA', 'x'),), (('GUSTO', None),), (('INI-OPCION', 'x'),)):
+        with pytest.raises(ErrorAccion):
+            validar_eleccion(piezas, (), elegidas(*pares), True)
 
 
 @pytest.mark.parametrize(('cambios', 'pares', 'minimo'), [
     ({}, (), True), ({}, (('A', None), ('B', None), ('C', None)), False), ({}, (('Z', None),), False),
     ({}, (('A', None), ('A', None)), False), ({'permite_otra': False}, (('OTRA', 'x'),), False),
-    ({}, (('OTRA', None),), False), ({}, (('A', 'x'),), False),
+    ({}, (('OTRA-1', None),), False), ({}, (('A', 'x'),), False),
 ])
 def test_rechazos_con_422(cambios, pares, minimo):
     with pytest.raises(ErrorAccion) as error:

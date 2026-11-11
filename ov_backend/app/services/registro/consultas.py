@@ -11,8 +11,8 @@ from app.services.registro.acciones import opciones_de, publico, validar_registr
 
 
 def eleccion_publica(sesion, item):
-    """La elección del ítem sin datos de la cuenta: con fuente REFERENCIA, las opciones llegan con las referencias.
-    De las opciones propias solo sale lo que la pantalla necesita (nunca criterio, `que_busca` ni ejemplos)."""
+    """La elección del ítem sin datos de la cuenta: con fuente REFERENCIA o PIEZAS_*, las opciones las da la cuenta.
+    De las opciones propias solo sale lo que la pantalla necesita (nunca su tarjeta)."""
     if item.fuente_opciones is None:
         return None
     definiciones = contexto(sesion).definiciones
@@ -28,11 +28,11 @@ def eleccion_publica(sesion, item):
         referencia=codigo_referencia(item.referencia_id),
         referencia_opciones=codigo_referencia(item.referencia_opciones_id),
         comun=lista is not None and lista.comun, minima=item.eleccion_minima, maxima=item.eleccion_maxima,
-        ordenada=item.eleccion_ordenada, permite_otra=item.permite_otra,
+        ordenada=item.eleccion_ordenada, permite_otra=item.permite_otra, etiqueta_otra=item.etiqueta_otra,
         opciones=[OpcionListaPublica(codigo=o.codigo, texto=o.texto) for o in opciones_de(sesion, item)],
         opciones_propias=[OpcionPropiaPublica(
-            codigo=o['codigo'], texto=o['texto'], exclusiva=o.get('exclusiva', False),
-            pregunta_propia=o.get('pregunta_propia'), sin_seguimiento='criterio' in o and o['criterio'] is None)
+            codigo=o['codigo'], texto=o['texto'], exclusiva=o.get('exclusiva', False), pregunta=o.get('pregunta'),
+            arranque=o.get('arranque'), sin_llm=o.get('sin_llm', False))
             for o in item.opciones_propias or ()],
         premarcar_si=None if premarcar is None else PremarcarPublico(**premarcar))
 
@@ -40,8 +40,10 @@ def eleccion_publica(sesion, item):
 @usar_contexto
 def consultar_items(sesion, actividad):
     _, _, items = validar_registro(sesion, actividad)
-    return [ItemRegistroPublico(codigo=item.codigo, nombre=item.nombre, consigna=item.consigna,
-                                min_caracteres=item.min_caracteres, obligatorio=item.obligatorio,
+    return [ItemRegistroPublico(codigo=item.codigo, nombre=item.nombre, dialogo=item.dialogo,
+                                pregunta_eleccion=item.pregunta_eleccion, pregunta_texto=item.pregunta_texto,
+                                arranque=item.arranque, min_caracteres=item.min_caracteres,
+                                obligatorio=item.obligatorio, con_llm=item.tarjeta is not None,
                                 eleccion=eleccion_publica(sesion, item))
             for item in items]
 
@@ -49,4 +51,4 @@ def consultar_items(sesion, actividad):
 @usar_contexto
 def consultar_registro(sesion, cuenta, actividad):
     cuenta, actividad, items = validar_registro(sesion, actividad, cuenta)
-    return RegistroConsultado(**publico(sesion, cuenta, actividad, items, consolidada=True))
+    return RegistroConsultado(**publico(sesion, cuenta, actividad, items))

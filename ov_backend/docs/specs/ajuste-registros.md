@@ -1902,3 +1902,871 @@ Si un criterio falla, se ajusta el bloque del arranque o el chequeo y se repite 
 - h1: las cinco habilidades como opciones propias con su pregunta.
 - ma3: apertura si el día a los 23 quedó abierto.
 - Casos de regresión anotados (R3 y R14 de b4-1, seguimiento de b1-3, dos de b5-1 y tres de b5-3): van en la corrida corta del lote 3.
+
+## Ajuste · registros llm (lote 2)
+
+### Contexto
+El lote 1 dejó la capa del LLM v7 en `app/services/registro/llm/` sin conectar. El texto `ajuste-registros-lote2 (1).md` es la versión final, revisada el 10 nov. Pide prepararle los datos a esa capa:
+- el modelo de ítem, opción, tarjeta y respuesta, con un **histórico de intentos**;
+- la función que resuelve el contexto de un ítem (marcadores, piezas y ecos) y arma la `Entrada`;
+- el contenido nuevo de los 19 registros;
+- una tarjeta nueva más un cambio en otra;
+- retirar lo que sale.
+
+Los endpoints y el flujo quedan para el lote 3. Las propuestas de §12 valen tal cual: mensajes de reglas, duraciones, códigos `INI-…`, y b4-2 y b3-4 sin tocar.
+
+- La spec en curso es `docs/specs/ajuste-registros.md`. El plan se agrega como `## Ajuste · registros llm (lote 2)` y el texto como anexo, igual que en el lote 1.
+- Se trabaja en la rama `ajuste/registros-llm`, la misma del lote 1, que ya está activa. No se crea una rama nueva. Antes del push sigue pendiente lo de b4-1 #61, que ya se repitió tres veces y se cerró como ruido.
+- Respuestas tuyas a las preguntas:
+  - §12.1: **entrega provisional**.
+  - Check-in: **solo el número**.
+
+### Lo que el repo dice distinto del texto (se reporta y no se corrige en silencio)
+1. «Destinos al cerrar» no existen en el backend; solo aparecen en comentarios (`contenido.py:959`). No hay nada que borrar, salvo `b3-4-ref-planes`.
+2. `R-b4-1` usa `planes_con_por_que` con parámetro 1, y ese evaluador cuenta **cualquier** plan, no el Plan A (`motor/evaluadores.py:195`). Por tu decisión, se corrige: ver «Reglas».
+3. El check-in solo guarda `nivel_seguridad` (1 a 5) y no tiene etiquetas. Por tu respuesta, la referencia entrega «Tu primera señal: 2 de 5» sin etiqueta, y lo anoto en `pendientes-interfaz.md`.
+4. La exclusiva de b1-1-logro se llama hoy `NO_RECUERDO` y pasa a `NINGUNO`, como dice el texto.
+5. `R-b5-1` ya pide un solo paso: `pasos_plan_a` con parámetro 1 (`contenido.py:1424`). Solo cambia el mensaje, si corresponde.
+6. Algunos números de línea se movieron (por ejemplo, `DIMENSIONES_INTELIGENCIAS` está en `fijos.py:621`). Los ubico con Grep.
+
+### Qué cambia (hoy → pasará a)
+
+#### Modelo (decisión de diseño a aprobar; sigue `/cambio-modelo`; migración `0050`)
+- **`item_registro`**
+  - Hoy tiene `consigna`, `repregunta_generica` y `seguimiento`, y sus criterios están en `criterio_completitud`.
+  - Pasará a tener:
+    - `dialogo`, `pregunta_eleccion`, `pregunta_texto` (reemplaza a `consigna`) y `arranque`, todos de texto y nulos donde no aplican;
+    - `ecos_mostrar` y `ecos_llm` (JSON);
+    - `tarjeta` (JSON nulo; sin tarjeta, el ítem va sin LLM).
+  - Salen `repregunta_generica`, `seguimiento`, la tabla `criterio_completitud` y el enum `TipoCriterio`.
+  - Los marcadores no van en una columna: se derivan del texto.
+    - La regex es `\{([^{}\n]+)\}`, y lo capturado debe estar en el conjunto conocido: `carrera`, `plan_a`, `plan_b`, `primera`, `valor 1` (con espacio), `habilidad` y `opción` (con tilde).
+    - Cualquier otro `{…}` es un error de carga.
+    - El «…» de los arranques no lleva llaves, así que nunca se toma por marcador.
+    - La prueba del cargador cubre `{valor 1}`, `{opción}`, un marcador desconocido y un arranque con «…».
+- **`fuente_opciones`** suma `PIEZAS_PERFIL`, `PIEZAS_PERFIL_MENOS` (con «Lo que te cuesta» primero) y `PIEZAS_INICIO`.
+- **`opciones_propias`**
+  - Hoy cada opción trae `codigo`, `texto`, `exclusiva`, `pregunta_propia`, `criterio`, `que_busca`, `texto_base`, `cumple` y `no_cumple`.
+  - Pasará a traer `codigo`, `texto`, `exclusiva`, `pregunta`, `arranque`, `tarjeta` y `sin_llm`.
+  - Las exclusivas de una lista (NINGUNO, NADIE, TODO…) siguen siendo propias que se suman a la fuente.
+- **Varias «Otra»** (§5.3):
+  - Regla del motor: en un ítem de varias opciones con `permite_otra`, el estudiante puede agregar más de una «Otra», cada una con su «¿Cuál?», hasta completar el máximo. En un podio se ordenan como cualquier otra opción.
+  - Cada una se guarda con su código: `OTRA-1`, `OTRA-2`, `OTRA-3`.
+  - Los ítems de una sola opción conservan una sola «Otra», con el código `OTRA`, que sigue reservado.
+  - Hoy el cargador solo permite mínimo > 1 en podios sin otra (`_validar_eleccion`, `cargador.py:280`). La validación de la elección (`services/registro/eleccion.py`) suma los `OTRA-n`.
+  - b2-4-cuesta sigue siendo una lista de 1 a 2, sin «Otra».
+- **`actividad.maximo_seguimientos`** sale.
+- **Respuestas (§12.2: no se migran)**
+  - `respuesta_registro` se rehace.
+  - Salen `turno_seguimiento`, `evaluacion_respuesta` y los enums `ClasificacionRespuesta` y `OrigenEvaluacion`.
+  - Columnas nuevas, con una fila por progreso e ítem:
+    - `eleccion`: JSON con `codigo`, `texto`, `origen`, `grupo` y `orden`;
+    - `valores_contexto`: JSON con los marcadores y los ecos con que se respondió;
+    - `primera_respuesta`, `primera_tipo`, `primera_motivo`;
+    - `repregunta`, `segunda_respuesta`, `conjunto_tipo`, `conjunto_motivo`, `arranque`;
+    - `tipo_final` y `estado`, que pasa a valer COMPLETADO (sin LLM), CERRADO, ABIERTO o SIN_EVALUAR;
+    - las marcas `sensible`, `seguimiento_sin_evaluar`, `eco_cambiado` y `pista`;
+    - `linea_registro`, `texto_citable` (JSON, de 0 a 2 líneas) y `version_prompt`.
+  - Se conservan las dos respuestas originales. El downgrade recrea vacías las tablas anteriores.
+- **Intento vigente e histórico** (§1): una sola tabla, con una fila por intento.
+  - Cada fila lleva `intento` (1, 2, …) y `vigente`. Es única por progreso, ítem e intento.
+  - Un índice parcial único (`sqlite_where` y `postgresql_where`) permite un solo vigente por progreso e ítem.
+  - `guardar_intento(sesion, progreso, item, datos)` pasa el vigente a histórico (`vigente = false`, completo e intacto) e inserta el nuevo con `intento + 1`. Es la operación de este lote; el flujo de edición queda para el lote 3.
+  - La función de contexto, el texto citable y el estado solo leen la fila vigente.
+- **Enum `TipoReferencia`** suma `CHECK_IN_PRIMERO`.
+- `TABLAS_DE_ESTADO` (`services/desarrollo.py`) y `test_clasificacion_tablas` se ajustan.
+
+#### Corte del flujo antiguo (§12.1: entrega provisional)
+- **Salen** `services/registro/evaluacion.py`, `gemini.py` y `prompt.py`, y de `acciones.py` el avance, los seguimientos, la consolidada, por ampliar y abiertos.
+- Salen también los parámetros v6.10 y de seguimientos de `core/parametros.py` y `fijos.REPREGUNTAS_CRITERIO`.
+- La construcción del evaluador de registro sale de `config.py`. `GEMINI_*` se queda, porque lo usan planes e investigaciones.
+- **`POST /acciones/entregar-registro`**:
+  - guarda la elección y el texto en el modelo nuevo;
+  - **no** usa `resolver_contexto`, para no depender de la fase 3;
+  - valida con `services/registro/eleccion.py`: las fuentes fijas (lista, propias, referencia) contra sus opciones, y las «Otra» y `OTRA-n` con su texto;
+  - en las fuentes de piezas solo valida el prefijo del código y que traiga texto (provisional; el lote 3 valida contra el contexto);
+  - deja cada ítem COMPLETADO (sin tipo), con `guardar_intento`;
+  - completa la actividad y emite `REGISTRO_ADECUADO`.
+
+  Es provisional y está marcado `# PROVISIONAL: lote 3`.
+- `responder-seguimiento`, `continuar-sin-responder`, `editar` y `guardar-borrador` siguen tras el guardia y responden **501** con el mensaje «Pendiente de reescritura (ajuste registros, lote 3)». Así `test_cobertura_rutas` sigue en verde.
+- `GET .../registro` y `items-registro` pasan a devolver los campos nuevos. Salen `sin_seguimiento`, `items_por_ampliar` e `items_abiertos`.
+  - Es un cambio de contrato, pero el front queda fuera de alcance (lo dice el texto).
+  - No se regeneran los fixtures del front. Lo anoto en `ov_frontend/docs/pendientes-interfaz.md`.
+- **`services/referencias.py:299-309`**: la referencia TEXTO pasa de mirar la clasificación a dar el texto citable con las reglas §3.2 a §3.5 (nada si es `sensible` o `emocional`). ELECCION sigue la regla 4.
+- `diario/acciones.responder_registro` no cambia: usa un `Literal` y no la tabla.
+
+#### Función de contexto (nueva, `app/services/registro/contexto.py`)
+- **`resolver_contexto(sesion, cuenta, codigo_item) -> ContextoItem`** devuelve:
+  - las opciones (código, texto, origen y grupo);
+  - los marcadores;
+  - la consigna armada: diálogo, pregunta de elección y, por opción, pregunta de texto y arranque;
+  - los ecos a mostrar (estructurados) y las líneas de ecos al LLM.
+
+  Lee de varias fuentes, todas agrupadas por cuenta y sin consultas en bucle:
+  - las definiciones, desde la caché;
+  - las respuestas de la cuenta;
+  - las referencias, con `referencias.resolver`, que ya existe;
+  - las descripciones de dimensión, desde `Dimension.descripcion`.
+
+  Si falta el valor de un marcador, levanta `MarcadorSinValor(nombre)`.
+- **`entrada_llm(contexto, eleccion, respuesta, anterior=None) -> Entrada`** (§2):
+  - usa la tarjeta de la opción o la del ítem, con `Tarjeta.desde_datos` y `tarjeta_para` del lote 1;
+  - pasa la pregunta mostrada;
+  - arma las etiquetas en el formato §5.4, el del runner:
+    - la etiqueta;
+    - lo escrito en «¿Cuál?» **sin comillas**, en lugar de la etiqueta;
+    - en el podio, «1.º …», con cada «Otra» en su puesto;
+    - la pieza con su origen, «pieza (origen)».
+- Reglas de referencia (§3), siempre sobre el intento vigente:
+  - las **comillas** van solo en lo que escribió el estudiante dentro de una pieza (un texto citable o un «¿Cuál?»), tanto al mostrarla como al mandarla al LLM;
+  - `sensible` en cualquiera de las dos llamadas del intento manda;
+  - un intento nuevo `propio` o `general` sin marca vuelve a citarse;
+  - los marcadores se resuelven siempre, incluido el nombre corto de una «Otra»;
+  - la pieza `BIEN-1` toma la «Otra» con la regla 3: solo aparece si el ítem quedó `propio` o `general`;
+  - el marcador `{primera}` es otra cosa (regla 7): siempre lleva lo escrito en la «Otra» tal cual, sea cual sea el tipo del ítem.
+- Las piezas del perfil (§4) usan los resultados revelados (`ResultadoInstrumento` no anulado):
+  - el empate, con `calcular_dimensiones_destacadas`;
+  - RIASEC, con `codigo_interes`.
+
+#### Referencias que se amplían (§5.6)
+- `_leer_planes` (`referencias.py:129`): cada plan de PLANES suma institución, camino, motivos (`MotivoTarjeta`) y relato.
+- Reviso que PLAN y PASOS_PLAN_A traigan institución, camino y el estado de cada paso. Si no lo traen, se suma.
+- `CHECK_IN_PRIMERO` lee el primer `CheckIn` y entrega el número.
+- La columna «Hoy» de b5-3 reutiliza `b5-3-ref-planes` (PLANES ampliada) más la elección de b5-1-seguridad.
+
+#### Contenido (`datos/contenido.py`, `fijos.py`, `tarjetas_registros/`)
+- Se cargan los 19 registros tal como dicen §6 y §7: 22 ítems requeridos y 7 opcionales.
+- Cambian títulos, descripciones cortas (`DESCRIPCIONES`) y mensajes de reglas (los propuestos de §6, §7 y §12.3).
+- La lista ESTILOS se rehace y salen las de §9 que nadie más usa. VALORES y DIFICULTADES se quedan, porque las usan los planes.
+- Ítems y referencias que salen (§9):
+  - salen los ítems de §9, `b3-4-ref-planes`, las referencias de §9 y las cartas C1 a C6 con `C*-ref-*`, `R-C1` a `R-C6` y `RESPALDOS_DIARIO`;
+  - entra `b3-4-ref-valores`;
+  - `ma4-ref-accion` pasa a ser la ELECCION de h1-reto.
+- Los ecos se declaran como tuplas (origen, código, destino `MOSTRAR`/`LLM`/`AMBOS`, plantilla de línea), con la redacción de `ecos` y `lista_ecos` de las tarjetas.
+- **Reglas**:
+  - Hay un evaluador nuevo, `por_que_en_planes`, con un parámetro: la lista de prioridades exigidas. Se cumple si el «por qué» está LISTA en cada una. Por dentro usa `contar_listos_para_comparar` (`planes/consultas.py:174`) filtrado por `prioridad`.
+  - `R-b4-1` pasa de `planes_con_por_que(1)` a `por_que_en_planes([1])`: pide el Plan A, porque b4-1 usa su carrera y sus motivos.
+  - `R-b4-5` pide la batalla b4-4 y `por_que_en_planes([1, 2])`. Salen `CREA_PLAN` y `planes_creados` de esa regla.
+  - Si `planes_con_por_que` queda sin uso, sale.
+- Duraciones (§12.4): 4 minutos las opcionales, 8 b4-5 y b5-1, 5 b5-3. b4-2 y b3-4 no se tocan.
+- **Tarjetas**:
+  - de los archivos salen `pregunta`, `pregunta_por_opcion`, `ecos`, `lista_ecos` y `podio`, que pasan al ítem;
+  - cambia la tarjeta de b1-1-logro (MATICES) y entra `b1-1-logro#NINGUNO`, con sus hashes;
+  - el cargador copia en `item_registro.tarjeta` el texto, las bases, `general_por_opcion`, `filtrar_etiqueta` y `por_opcion`, y verifica las bases contra el texto.
+- **`datos/ruta.py`** (congelado: solo lo mínimo para que cargue):
+  - las tuplas de ítems pierden los criterios, sale `SEGUIMIENTOS`, y `criterio: None` pasa a `sin_llm: True`;
+  - los ítems de `t-…` quedan sin tarjeta, es decir, sin LLM y COMPLETADO al entregar.
+- **Runner** (`tests/llm/evaluar_tarjetas.py`): lee la pregunta, los ecos y el podio de `ITEMS_REGISTRO` de contenido, sin copia propia.
+
+### Qué no cambia
+- La capa `llm/` del lote 1. Su único cambio posible es un `desde_datos` que acepte la tarjeta guardada.
+- El motor y `REGISTRO_ADECUADO`, que sigue siendo un evento contado.
+- El código del diario y de las cartas (`asistente.py`).
+- Planes, investigaciones y sus sugerencias con Gemini.
+- El front y sus JSON.
+- `tests/llm/evaluar.py` (v6), que queda sin uso y no se borra.
+- Las reglas `R-b5-3`, `R-b5-4`, `R-h1/h2/h3`, `R-ma3`, `R-ma4`, `R-ma5` y `R-ma8`, salvo sus mensajes.
+
+### Pruebas
+- **Se retiran**, porque cubren el flujo que sale (autorizado por §12.1). Quedan anotadas para el lote 3 en `decisiones.md`:
+  - `unit/registro/test_evaluador_respuestas.py` y `test_evaluador_gemini.py`;
+  - en `integration/registro/`: `test_entrega_registro`, `test_edicion_registro`, `test_registro_referencia` y lo de seguimiento en `test_borradores_registro` y `test_eleccion_referencia`;
+  - `test_hu007_hu016…` de `escenarios/ruta/test_ruta_corta.py`;
+  - los fixtures de seguimiento de `contrato/test_exportar_fixtures_front.py`.
+- **Se adaptan** (§10 lo autoriza):
+  - `datos/test_carga_registros_definitivos.py`, `test_carga_contenido.py` y `test_reglas_contenido.py`;
+  - `soporte/soporte_contenido.py` (`PODIOS`, completar podio con otra, piezas, Plan B con por qué antes de b4-5);
+  - `registros/test_registros_contenido.py`, `referencias/test_referencias.py`, `migraciones/` y `soporte_estado_desarrollo.py`;
+  - `soporte_ruta.responder_registro`.
+- **Nuevas**:
+  - de carga (§10):
+    - 12 registros requeridos con 22 ítems y 7 opcionales con 7;
+    - 28 tarjetas con sus hashes;
+    - nada de §9;
+    - podios (b2-4-cuesta sigue como lista de 1 a 2);
+    - reglas, y cero `R-C*`;
+  - del modelo de respuesta (`tests/integration/registro/test_intentos_registro.py`):
+    - un podio con dos «Otra» ordenadas;
+    - el intento nuevo deja el anterior completo en el histórico, y solo el vigente se lee;
+    - un ítem sin LLM queda COMPLETADO solo con elección y texto;
+  - `tests/integration/registro/test_contexto_item.py`, con todos los casos de §10:
+    - marcadores, piezas (incluido `BIEN-1` como «Otra») e inicio;
+    - `sensible` y `emocional`, y el sensible que vuelve con un intento nuevo;
+    - ecos y formatos, con y sin «Otra» en el podio;
+    - la `Entrada` igual a la del runner, un caso por registro;
+  - de reglas:
+    - `R-b4-5` no se cumple con el «por qué» en A y C, y sí con A y B;
+    - `R-b4-1` no se cumple con el «por qué» solo en el Plan B;
+    - una opcional completada cumple `REGISTRO_ADECUADO`;
+  - del cargador: los marcadores (ver «Modelo»).
+
+### Fases (commit `Ajuste registros llm · lote 2 F<n>: …`)
+Cada fase cierra con la carga de `ruta` y de `contenido` funcionando y sus pruebas en verde.
+
+1. **Modelo, contenido y corte.** Va en un solo commit: el modelo nuevo no carga el contenido viejo, y convertirlo para tirarlo en la fase siguiente sería trabajo perdido.
+   - Modelo, migración 0050 (con `guardar_intento`) y cargador, que copia al ítem solo las claves del LLM de las tarjetas.
+   - `ruta.py` mínimo, los 19 registros de `contenido.py` y las listas, referencias y reglas, con `por_que_en_planes`.
+   - La limpieza de §9, la salida de la evaluación antigua, la entrega provisional y los 501.
+   - Pruebas: se retiran y adaptan las de arriba y entran las de carga, intentos, reglas y marcadores.
+   - Corren `datos`, `registro`, `registros`, `referencias`, `migraciones`, `unit` y `escenarios`.
+   - La tarjeta de b1-1-logro todavía no tiene `NINGUNO`, así que en esta fase se cuentan 27 tarjetas.
+2. **Tarjetas y runner.**
+   - `pregunta`, `pregunta_por_opcion`, `ecos`, `lista_ecos` y `podio` salen de `tarjetas_registros/`; ya viven en el ítem desde la fase 1.
+   - Cambia la tarjeta de b1-1-logro y entra `b1-1-logro#NINGUNO`, con sus hashes: 28 tarjetas.
+   - El runner pasa a leer la presentación del contenido.
+   - Corren `unit/registro` (`test_llm_tarjetas`) y `datos`.
+3. **Referencias y función de contexto.**
+   - PLANES ampliada, `CHECK_IN_PRIMERO`, `contexto.py` y `entrada_llm`, con sus pruebas (`test_contexto_item.py`, incluida la `Entrada` igual a la del runner).
+   - `referencias.md` al día.
+   - La entrega provisional no cambia.
+   - Corren `referencias`, `registro`, `planes` y `escenarios`.
+4. **Mini corrida §8** con Haiku real: 13 casos, unas 15 llamadas. Te confirmo antes de correr. Si algo falla, te lo reporto antes de tocar la tarjeta.
+5. **Cierre**: `decisiones.md`, `AGENTS.md` del backend (estructura de `registro/`), `pendientes-interfaz.md` y la suite completa del backend. El front no se corre: sabemos que está roto contra esta rama.
+
+### Pendiente fuera del repo
+- Pasar la tarjeta nueva y el cambio de b1-1-logro a `claude/tarjetas-registros.md` (§12.6).
+
+### Verificación
+- En cada fase, el subagente `pruebas` corre `tests/integration/datos`, `tests/integration/registro`, `tests/integration/registros`, `tests/unit/registro`, `tests/integration/migraciones` y `tests/integration/escenarios`.
+- `uv run alembic heads` debe dar un solo head. `python -m datos.cargar contenido --vaciar` debe cargar sobre una base nueva.
+- Al cierre se corre `uv run pytest -n auto -q`.
+
+# Anexo · Observaciones del ajuste registros llm, lote 2 (texto completo)
+
+## Ajuste · modelo de datos y contenido de registros (lote 2 de 3)
+
+Observaciones para `/ajuste`, 10 nov 2026. Rama de trabajo: `ajuste/registros-llm`, la misma del lote 1.
+
+**Estado:** revisado por el usuario el 10 nov, con sus observaciones ya aplicadas (varias «Otra» en el podio, histórico de intentos, comillas solo en piezas). Las propuestas de §12 valen salvo que el usuario diga otra cosa.
+
+**Qué es.** Cargar en el backend el contenido nuevo de los 19 registros (12 requeridos y 7 opcionales) y construir el modelo de datos y la función que resuelven sus dependencias: consignas con marcadores, opciones armadas con respuestas previas y ecos. El lote 1 dejó la capa del LLM lista y sin conectar; este lote le prepara los datos. Conectarla al flujo es el lote 3.
+
+**Qué manda.**
+- Este documento es autosuficiente: trae el contenido que se carga (§6 y §7). No hace falta ningún otro documento de diseño.
+- Orden de precedencia cuando algo choque: este documento → los datos de presentación que hoy guardan los archivos de `datos/tarjetas_registros/` (son los que validó el runner) → lo que hoy dice `datos/contenido.py`.
+- Lo que este documento no menciona de un ítem (por ejemplo, la pregunta de elección de un ítem que no cambia) se conserva como está en el repo.
+- Si el repo difiere de lo que aquí se describe, se reporta al usuario. No se corrige en silencio.
+- Los números de línea son de `main` al 10 nov y pueden haberse movido: sirven para ubicar, no para editar a ciegas.
+
+### Los tres lotes
+
+1. **Lote 1, capa del LLM: hecho.** `app/services/registro/llm/` y tarjetas en `datos/tarjetas_registros/`. Antes del push falta repetir tres veces el caso b4-1 v7.8e #61.
+2. **Lote 2 (este): modelo de datos y contenido.**
+3. **Lote 3: flujo y pruebas.** Endpoints secuenciales, edición, eco cambiado en funcionamiento, regla de adecuado por registro, reenvío de lo no evaluado y corrida corta de punta a punta.
+
+### Alcance del lote 2
+
+**Entra:**
+- el modelo de datos de ítem, opción, tarjeta y respuesta, con su histórico de intentos (§1);
+- la función que resuelve el contexto de un ítem para un estudiante (§2), con sus reglas de referencia (§3) y las dos listas de piezas (§4);
+- el podio con «Otra» y las demás mecánicas nuevas (§5);
+- la carga del contenido de los 19 registros (§6 y §7), con títulos, descripciones cortas y mensajes de reglas;
+- una tarjeta nueva y un cambio en la tarjeta de b1-1-logro, con su mini corrida (§8);
+- la limpieza de lo que sale (§9), incluidos los datos de las cartas C1 a C6;
+- las pruebas de carga y de la función (§10).
+
+**No entra:**
+- endpoints, flujo secuencial, edición, detección de eco cambiado, regla de adecuado por registro y reenvíos (lote 3);
+- el front: diálogos, mensajes de cierre, diapositivas, componentes y los JSON de `ov_frontend`. **El front actual deja de funcionar contra esta rama** hasta su propio ajuste; la rama no se despliega;
+- el código de las cartas del diario y su mecanismo de referencias: solo se borran datos (§9). Las cartas se redefinen en su ajuste;
+- el informe de la orientadora;
+- retirar Gemini de las sugerencias de pasos del plan y de Investigaciones.
+
+### 1. Modelo de datos
+
+Los nombres son orientativos: se adaptan a lo que ya existe en el repo.
+
+**Ítem.**
+- Forma: solo texto, elección + texto, o podio + texto.
+- Fuente de opciones: lista fija, opciones propias, referencia simple (familias, testimonios) o lista armada de piezas (§4).
+- Cuántas opciones se marcan (1, 1–2 o podio de 3), si admite «Otra» y sus opciones exclusivas.
+- Consigna: diálogo (D), pregunta de elección (E), pregunta de texto (T) y arranque del texto (⌨). Cualquiera puede llevar marcadores.
+- Marcadores que usa (§2).
+- Dos listas de ecos: los que se muestran y los que van al LLM (§5).
+- Tarjeta. Un ítem sin tarjeta es un ítem **sin LLM**.
+
+**Opción.**
+- Código y etiqueta.
+- Opcionales: pregunta de texto propia, arranque propio, tarjeta propia, o marca de «sin LLM» (la opción no se evalúa aunque el ítem tenga tarjeta).
+
+**Tarjeta.** Es un campo del ítem o de la opción, cargado desde `datos/tarjetas_registros/`:
+- el texto completo, tal cual;
+- las cuatro bases (`general`, `no_sabe`, `vacio`, `fuera_de_tema`), con la variante por opción donde aplica;
+- `filtrar_etiqueta`.
+
+La carga verifica que cada base separada aparezca tal cual dentro del texto (la verificación del lote 1).
+
+**Datos de presentación.** Los archivos de tarjetas guardan hoy `pregunta`, `pregunta_por_opcion`, `ecos`, `lista_ecos` y `podio` para el runner. Pasan a vivir en el ítem y sus opciones, dentro del contenido. Los archivos de tarjetas se quedan solo con lo que usa el LLM (texto, bases, `general_por_opcion`, `filtrar_etiqueta`, `por_opcion`). El runner lee la presentación desde las definiciones de contenido, sin copia propia.
+
+**Respuesta de un ítem.**
+- La elección: códigos marcados, con el texto de cada uno tal como se mostró (etiqueta, lo escrito en «¿Cuál?» o texto de la pieza con su origen). En un podio, con su orden.
+- Los valores de marcadores y de ecos con que se respondió. Sirven al lote 3 para detectar un eco cambiado.
+- Primera respuesta, su tipo y su `motivo`.
+- Repregunta mostrada, segunda respuesta, tipo del conjunto, su `motivo` y el `arranque`.
+- Tipo final y estado: cerrado, abierto o `sin_evaluar`.
+- Marcas: `sensible`, seguimiento sin evaluar, pista y eco cambiado.
+- En un ítem u opción sin LLM: solo la elección y el texto, con estado completado. No lleva tipo, `motivo`, repregunta ni pista.
+
+Las dos respuestas originales se conservan siempre. El tipo final, la pista y el texto citable los calculan las funciones del lote 1; este lote solo les da dónde guardarse.
+
+**Intento vigente e histórico.**
+- Un ítem tiene un intento vigente. Cuando el estudiante lo edita (lote 3), el intento anterior **pasa al histórico completo**: elección, respuestas, tipos, `motivo`, repregunta, arranque y marcas.
+- Todo lo que se cita, se muestra como pieza o eco, o cuenta para el estado del registro sale **solo del intento vigente**.
+- El estudiante ve solo el vigente. El histórico queda para la vista de la orientadora, que se construye con el informe.
+- En este lote se deja el modelo y la operación de guardar un intento nuevo; el flujo de edición es del lote 3.
+
+### 2. Resolver el contexto de un ítem
+
+**Una sola función**, que recibe un estudiante y un ítem y devuelve:
+- las opciones que se le ofrecen: código, etiqueta o texto, y en las piezas, origen y grupo;
+- los valores de los marcadores;
+- la consigna ya armada: diálogo, pregunta de elección y, por cada opción, pregunta de texto y arranque;
+- los ecos a mostrar, con su estructura;
+- los ecos al LLM, ya redactados en líneas.
+
+**Una segunda función** arma la `Entrada` de la capa del LLM a partir de ese contexto y de lo que marcó el estudiante: la tarjeta que corresponde (del ítem o de la opción), la pregunta mostrada, la opción marcada en su formato (§5), las líneas de ecos, los valores de marcadores y las respuestas.
+
+Las usarán el endpoint que sirve el ítem, la capa del LLM y la detección de eco cambiado (lote 3). En este lote se construyen y se prueban con estudiantes de prueba, sin endpoints nuevos.
+
+**Marcadores.**
+
+| Marcador | Valor | Lo usan |
+|---|---|---|
+| `{carrera}` | La carrera del Plan A, tal cual | b4-1-respalda, b4-1-menos, ma8-respuesta |
+| `{plan_a}`, `{plan_b}` | La carrera de los dos primeros planes, tal cual | b4-5-moneda |
+| `{primera}` | La primera del podio de b2-4-bien, con el formato del runner (en minúscula y sin artículo). Si es una «Otra», lo escrito en su «¿Cuál?» tal cual | b2-4-cruce |
+| `{valor 1}` | El primero del podio de b2-3-valores | b3-4-necesito |
+| `{habilidad}` | La etiqueta de la opción marcada en h1-reto | ma4-modelo |
+| `{opción}` | La etiqueta de la opción marcada en el mismo ítem (ya existe, lote 1) | bases de b1-1-logro y b1-3-mia |
+
+- Un marcador puede aparecer en el diálogo, en las dos preguntas, en el arranque y en las bases de la tarjeta.
+- El formato de cada valor es el que usa hoy el runner: se toma de ahí.
+- Si falta el valor de un marcador (por ejemplo, no hay Plan B), la función no arma el ítem y devuelve un error claro que nombra el marcador. Las reglas de desbloqueo deberían impedirlo (§6).
+
+### 3. Reglas de referencia
+
+Valen para toda pieza y todo eco, sea de la misma actividad o de otra. Siempre se aplican sobre el **intento vigente** del ítem de origen.
+
+1. **Una elección se muestra siempre.**
+2. **Un texto, solo si es citable:** lo que devuelve la función de texto citable del lote 1 (la primera respuesta si quedó `propio` o `general`, más la línea del seguimiento si mejoró el resultado). Si no hay nada citable, la pieza o el eco se omite, sin hueco ni aviso.
+3. **Lo escrito en «¿Cuál?» de una «Otra»** es texto libre: como pieza, se muestra solo si el ítem quedó `propio` o `general`.
+4. **Si el ítem quedó `sensible` o con tipo final `emocional`, no se referencia nada de él:** ni el texto ni la elección.
+   - Dentro de un mismo intento la marca `sensible` no se levanta: si salió en cualquiera de las dos llamadas, manda.
+   - Si el estudiante edita el ítem y el intento nuevo queda `propio` o `general` sin marca, el ítem vuelve a citarse con normalidad. El intento anterior queda en el histórico.
+5. **Un texto que no pasó por el LLM no se cita:** el de una opción sin LLM, el de b2-4-cuesta y el de cualquier opcional. Entre opcionales solo se pasa la elección.
+6. **Un test, solo si su resultado está revelado.**
+7. **Los marcadores son la excepción a la regla 4:** se resuelven siempre, porque sin ellos el ítem no se puede preguntar y solo llevan la etiqueta de una lista, el nombre de una carrera o el nombre corto escrito en una «Otra».
+8. **En una pieza, lo escrito por el estudiante va entre comillas** (un texto citable o lo escrito en «¿Cuál?»), tanto al mostrarla como al mandarla al LLM.
+
+### 4. Listas armadas de piezas
+
+Cada pieza lleva **código con prefijo, texto, origen y grupo**. Con la respuesta se guardan el código y el texto. El estudiante nunca ve códigos ni nombres de actividad.
+
+### Piezas del perfil (b4-1-respalda y b4-1-menos)
+
+| Grupo | Pieza | Código | Origen que se muestra |
+|---|---|---|---|
+| Tu test de intereses | Las tres dimensiones del código RIASEC, en el orden del código, con la descripción del instrumento (`TEXTOS_RIASEC`) en una línea | `INT-<letra>` | el nombre del tipo |
+| Tus otros tests | La dimensión más alta de inteligencias (todas si hay empate), con su descripción en una línea | `INTEL-<dim>` | tu test de inteligencias |
+| Tus otros tests | La dimensión más alta de habilidades sociales (todas si hay empate) | `HAB-<dim>` | tu test de habilidades |
+| Lo que escribiste y elegiste antes | El 1.º del podio de b2-4-bien | `BIEN-1` | «¿En qué te va mejor? (1.º)» |
+| Lo que escribiste y elegiste antes | El 1.º del podio de b2-3-valores | `VAL-1` | «¿Qué valoras en un trabajo? (1.º)» |
+| Lo que escribiste y elegiste antes | La habilidad o las habilidades de b1-1-logro. Ninguna si marcó «No se me ocurre ninguno» | `LOGRO-HAB` | la pregunta de b1-1-logro |
+| Lo que escribiste y elegiste antes | El texto de b1-1-gustos | `GUSTO` | la pregunta de b1-1-gustos |
+| Lo que te cuesta (solo en «menos», va primero) | Las elecciones de b2-4-cuesta, sin NADA | `CUESTA-<opción>` | «¿Qué te cuesta?» |
+
+- El origen de las piezas de registros es la pregunta del ítem en segunda persona, como en el runner.
+- Si el 1.º del podio de b2-4-bien es una «Otra», la pieza `BIEN-1` sigue la regla 3 de §3.
+- La pieza elegida en «respalda» no se desactiva en «menos».
+- Al LLM va el texto de la pieza con su origen entre paréntesis: «Ver formas, planos y estructuras en tu cabeza (tu test de inteligencias)».
+
+### Piezas del inicio (b5-3-cambio)
+
+En este orden. Los códigos son una propuesta (§12).
+
+| Pieza | Código | Contenido | Origen |
+|---|---|---|---|
+| Tu primera opción | `INI-OPCION` | La carrera de `OPCION_INICIAL`, si existe | tu primera opción |
+| La ruta que querías | `INI-RUTA` | La elección de b1-3-mia, incluida «Aún no lo sé» | la ruta que querías al terminar el colegio |
+| Tu día a los 23 | `INI-DIA` | El texto de b1-7-dia, si es citable | tu día a los 23 |
+| Lo que podía frenarte | `INI-FRENO` | El texto de b1-7-freno, si es citable | lo que dijiste que podía frenarte |
+| Una idea que habías escuchado | `INI-MITO` | Según la tabla de abajo | una idea que habías escuchado o creído |
+
+**Pieza de b1-6:**
+
+| Qué marcó en b1-6-mito | Pieza |
+|---|---|
+| Un mito de la lista | La etiqueta del mito, aunque su texto no sea citable |
+| «Otra» | Lo escrito en «¿Cuál?», entre comillas, solo si el ítem quedó `propio` o `general` |
+| «Ninguno me suena» | No hay pieza |
+
+- Quien llegó sin opción inicial puede quedar con una sola pieza (la ruta). El ítem funciona igual: la pieza, «Otra cosa que cambió» y «Lo veo todo igual».
+- Al LLM: «Medicina (tu primera opción)», «"El puntaje" (lo que dijiste que podía frenarte)»; con la «Otra» del ítem, «"{lo que escribió}" (otra cosa que cambió)».
+- Si un texto citable tiene dos líneas (primera respuesta y línea del seguimiento), la pieza las lleva las dos; al LLM van unidas con un espacio.
+
+### 5. Mecánicas
+
+Se mantienen: lista fija, opciones propias, pregunta por opción, opción sin LLM, referencia simple como opciones y «Otra» con «¿Cuál?» (lo escrito reemplaza a la etiqueta).
+
+**Nuevas:**
+
+1. **Marcadores en la consigna** (§2).
+2. **Opciones desde una lista armada** (§4).
+3. **Podio con «Otra», que se puede agregar más de una vez.**
+   - Regla del motor: donde se marcan varias opciones y el ítem admite «Otra», el estudiante puede agregar más de una, cada una con su «¿Cuál?». En un podio se ordenan como cualquier otra opción.
+   - No hay tope aparte: puede agregar hasta completar el podio.
+   - Cada «Otra» se guarda con su propio código (`OTRA-1`, `OTRA-2`, `OTRA-3`) y su texto.
+   - Hoy aplica solo a b2-4-bien. En los ítems de una sola opción sigue habiendo una «Otra».
+   - Hoy `_podio` tiene `otra: False` y las pruebas fijan `PODIOS = ('b2-3-valores', 'b4-2-criterios')` (`tests/soporte/soporte_contenido.py:18`). Cambian el motor, la carga y esas pruebas; `b4-2-criterios` además sale.
+4. **Formato de la opción marcada para el LLM**, el que validó el runner:
+   - la etiqueta de la opción;
+   - con «Otra», lo escrito en «¿Cuál?» en lugar de la etiqueta, como lo arma hoy el runner;
+   - podio con su orden: «1.º Ingresos, 2.º Estabilidad, 3.º Aprender». Una «Otra» va en su puesto con lo escrito;
+   - pieza con su origen entre paréntesis (§4).
+5. **Dos listas de ecos por ítem:** los que se muestran y los que van al LLM, cada uno con su línea redactada. La redacción de las líneas al LLM es la de `ecos` y `lista_ecos` de los archivos de tarjetas.
+
+| Ítem | Ecos que se muestran | Ecos al LLM |
+|---|---|---|
+| b1-3-contraste | Elección y texto de b1-3-voz y b1-3-mia | Los mismos |
+| b2-4-cruce | — (va en la consigna) | La primera del podio de b2-4-bien |
+| b3-4-necesito | — (va en la consigna) | Solo el primer valor: «Lo que pusiste primero: Estabilidad» |
+| b3-4-quien | El texto de b3-4-necesito | El mismo: «Lo que necesitarías saber: …» |
+| b4-1-respalda, b4-1-menos | Cabecera del Plan A: carrera, motivos del «por qué» y de quién fue la idea | Solo la carrera |
+| b4-5-moneda | Plan A y Plan B: carrera, motivos y relato. El Plan C no se muestra | Los dos planes con motivos y relato, una línea por plan |
+| b5-1-seguridad | Tu proyecto hoy (carrera, institución, camino y pasos pendientes y hechos del Plan A, sin el «por qué») y tu primera señal del check-in, si existe | Solo carrera e institución: «Tu proyecto: Enfermería · UNMSM» |
+| b5-3-cambio | Columna «Hoy»: Plan A con institución, Plan B y el nivel marcado en b5-1-seguridad. Solo lectura | Ninguno |
+| h1, h2, h3 | El resultado de su test (`h1-ref-resultado`, `h2-ref-resultado`, `h3-ref-resultado`) | — (sin LLM) |
+| ma3-hoy | Los textos de b1-7-dia y b1-7-hito, cada uno solo si es citable. Si no hay ninguno, abre sin ecos | — |
+| ma8-respuesta | Su Plan A (`ma8-ref-plan`) | — |
+
+6. **Referencias a ampliar:**
+   - `PLANES` hoy trae solo código y nombre (`_leer_planes`, `app/services/referencias.py:128`): se le suman los motivos (`MotivoTarjeta`) y el relato de cada plan. `PLAN` ya los trae, pero solo del Plan A;
+   - `PLAN` y `PASOS_PLAN_A`: revisar que traigan institución, camino y el estado de cada paso;
+   - referencia nueva de lectura simple: la primera señal del check-in («Tu primera señal: 2 de 5», con su etiqueta). El check-in no es requisito;
+   - la columna «Hoy» de b5-3: revisar si `b5-3-ref-planes` sirve o se arma una nueva.
+
+### 6. Contenido: registros requeridos
+
+12 registros, 22 ítems, 21 con LLM (b2-4-cuesta va sin LLM). De cada ítem se anota lo que cambia o es nuevo.
+
+### b1-1 · Mi historia personal
+
+- **b1-1-gustos** (texto). T: «¿Qué te encantaba hacer de niño o niña? Puede ser un juego, algo que armabas o algo que hacías con alguien.»
+- **b1-1-logro** (elección + texto). Cambia el planteamiento: la elección parte del logro.
+  - E: «Piensa en un logro tuyo, aunque sea pequeño. ¿Qué habilidades tuyas se notaron ahí?» → HABILIDADES (1–2) + exclusiva `NINGUNO` «No se me ocurre ninguno».
+  - T: «Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.»
+  - `NINGUNO` lleva **pregunta y tarjeta propias** (§8). Funciona como las demás opciones con tarjeta: su respuesta se evalúa como primera y lleva repregunta normal.
+- **b1-1-dificultad** (texto). T: «Cuenta algo que te costó y cómo lo fuiste superando: lo que hiciste o quién te ayudó.»
+
+### b1-3 · Las voces y la mía
+
+- **b1-3-voz**: PERSONAS (1) + `NADIE` sin LLM. T: «¿Qué espera que hagas? Aunque sea una frase.» (sale «Con sus palabras»; se actualiza también donde figure como pregunta de la tarjeta).
+- **b1-3-mia**: RUTAS (1) + `AUN_NO` con tarjeta propia. El respaldo de `AUN_NO` («¿Hay algo que descartarías seguro?») sale: lo reemplaza la base de su tarjeta.
+- **b1-3-contraste**: tres opciones propias + `SIN_COMPARAR` sin LLM. T: «¿En qué punto: la carrera, el lugar, el momento, el dinero?» (sale «exactamente»).
+
+### b1-6 · Mi postura frente a los mitos
+
+- **b1-6-mito**: MITOS (1) + «Otra» + exclusiva `NINGUNO` con tarjeta propia.
+  - T: «¿Cómo llegó a ti esa idea? Puede ser alguien que la dice, un lugar o algo que viste.» · ⌨ «Me llegó por…»
+  - `NINGUNO`: «¿Qué idea sobre carreras has oído mucho en tu casa o colegio?»
+  - Reemplaza a «¿De dónde te viene y qué piensas hoy?» y a «Lo escuché de… / Hoy pienso…».
+
+### b1-7 · Mi futuro
+
+- **b1-7-dia** (elección + texto). La elección AREAS_VIDA (1–3) sale; entra una escala que se marca primero.
+  - D: «Imagina un día cualquiera a tus 23 años, si todo salió bien.»
+  - E: «¿Qué tan fácil te resulta imaginarlo?» → opciones propias `CLARO` «Lo veo bastante claro» · `MAS_O_MENOS` «Más o menos» · `CUESTA` «Me cuesta imaginarlo».
+  - T (`CLARO` y `MAS_O_MENOS`): «Cuéntalo como una escena: ¿dónde estás, qué haces o qué eres?»
+  - `CUESTA`, con pregunta y tarjeta propias: «Está bien. Cuéntame una sola cosa que te gustaría que esté en ese día: un lugar, algo que haces o alguien con quien estás.»
+- **b1-7-hito** (texto).
+  - D: «Ese día está lejos. Acerquémoslo: piensa en el próximo año, aunque lo de los 23 todavía no lo tengas claro.»
+  - T: «¿Qué estarás haciendo dentro de un año para acercarte a ese día? Por ejemplo: en una academia, estudiando algo, trabajando o postulando.» · ⌨ «Dentro de un año estaré…»
+- **b1-7-freno**: pasa de elección a **texto sin lista**.
+  - D: «Casi ningún camino sale como se planeó.»
+  - T: «¿Qué podría frenarte en el camino a ese día? Puede ser algo de dinero, de tu familia, de los estudios o algo que no depende de ti.» · ⌨ «Lo que me podría frenar es…»
+  - Deja de usar `DIFICULTADES` (`datos/fijos.py:69`). La lista se queda: la usa la tarjeta de plan.
+
+### b2-3 · Lo que valoro en un trabajo
+
+- **b2-3-valores**: podio VALORES (3, ordenados, sin «Otra»).
+  - T: «¿Por qué te importa tanto el que pusiste primero? Puede ser algo que viviste, algo que viste en otros o una idea tuya.» · ⌨ «Puse … primero porque…»
+  - La consigna del contenido (`datos/contenido.py:584`) se alinea con esta.
+
+### b2-4 · Lo que me sale bien y lo que me cuesta
+
+Flujo: bien → cuesta → cruce. Sale b2-4-antes.
+
+- **Descripción corta** (`:209`): «En qué te va mejor y cómo lo notas, lo que te cuesta, y si te gusta eso que mejor te sale.»
+- **b2-4-bien**: pasa de lista (1–4) a **podio de 3 de CURSOS_ACTIVIDADES con «Otra»**, que se puede agregar más de una vez (§5).
+  - E: «¿En qué te va mejor? Elige tres y ordénalas, de la que mejor te sale a la tercera.»
+  - T: «¿Cómo notas que te va bien en la primera? Puede ser una nota, un trabajo o algo que te dijeron.» · ⌨ «Por ejemplo, en … yo…»
+- **b2-4-cuesta** (sin LLM): **se queda como lista**, CURSOS_ACTIVIDADES (1–2) + `NADA` «Nada en especial». No pasa a podio ni suma «Otra».
+  - T: «¿Qué parte te cuesta más?» · ⌨ «Me cuesta … sobre todo…»
+- **b2-4-cruce** (nuevo): la consigna se arma con un ítem anterior de la misma actividad.
+  - E: «Lo que mejor te sale es {primera}. ¿Te gusta?» → opciones propias `SI` «Sí, me gusta» · `MAS_O_MENOS` «Más o menos» · `NO_MUCHO` «No mucho».
+  - T por opción: `SI` «¿Qué es lo que te gusta de {primera}?» · `MAS_O_MENOS` «¿Qué parte de {primera} te gusta y qué parte no tanto?» · `NO_MUCHO` «¿Qué es lo que no te gusta de {primera}?»
+  - La base de `general` depende de la opción y tiene base propia de `fuera_de_tema` (ya en su tarjeta).
+
+### b3-4 · Lo que necesito saber
+
+No depende del Plan A. Salen b3-4-dato y b3-4-cambia.
+
+- **Título:** «Lo que necesito saber» (`:96` y `:232`).
+- **Descripción corta:** «Lo que tendrías que saber de una carrera según lo que valoras, y a quién le preguntarías.»
+- **b3-4-necesito** (texto).
+  - D: «Doña Cifra te mostró promedios: datos de otras personas. Ahora pensemos en lo que tú buscas.»
+  - T: «Pusiste {valor 1} primero. ¿Qué tendrías que saber de la carrera que elijas para saber si te da eso?» · ⌨ «Necesitaría saber si…»
+  - Referencia nueva `b3-4-ref-valores` (elección de b2-3-valores).
+- **b3-4-quien**: PERSONAS (1) + «Otra» + exclusiva `NADIE` «Todavía no conozco a nadie» con pregunta y tarjeta propias.
+  - E: «¿Quién te podría contar cómo es de verdad? Puede ser alguien que trabaja o estudió en algo que te interesa.»
+  - T: «¿Qué sabe o vivió esa persona que te podría servir?» · ⌨ «Le preguntaría porque…»
+  - `NADIE`: «Está bien. ¿Qué tipo de persona te gustaría escuchar? Por ejemplo, alguien que estudió en un instituto o que trabaja en tu ciudad.» · ⌨ «Me serviría hablar con…»
+
+### b4-1 · Mi perfil frente a mi Plan A
+
+Dos ítems. Sale b4-1-familia.
+
+- **Descripción corta** (`:105` y `:241`): «Qué parte de ti va con tu Plan A y cuál va menos, con tus propias palabras.»
+- **b4-1-respalda**: piezas del perfil (1) + «Otra» «Otra cosa mía».
+  - E: «¿Qué parte de ti va más con {carrera}?»
+  - T: «¿Qué tiene que ver eso con {carrera}?» · ⌨ «Va con {carrera} porque…»
+- **b4-1-menos**: piezas del perfil con «Lo que te cuesta» primero (1) + «Otra» + exclusiva `TODO` «Todo va con mi plan» con pregunta y tarjeta propias.
+  - D: «Una parte que hoy no te respalda no decide por ti: se entrena, se comprueba o se compensa con otra.»
+  - E: «¿Y qué parte de ti va menos con {carrera}?»
+  - T: «¿Qué de {carrera} no calza del todo con eso?» · ⌨ «No calza del todo porque…»
+  - `TODO`: «Qué bueno que todo vaya. Aun así, ¿qué parte de {carrera} crees que te costaría más?» · ⌨ «Lo que más me costaría es…»
+- `R-b4-1` (Plan A con el «por qué») no cambia.
+
+### b4-2 · Cómo decido
+
+Un ítem. Salen b4-2-criterios y b4-2-linea-roja.
+
+- **Título:** «Cómo decido» (`:106` y `:242`).
+- **Descripción corta:** «Tu forma principal de decidir y una vez en que se notó.»
+- **b4-2-estilo**: ESTILOS (**1**, hoy 2) + «Otra». Orden elección → texto (sale `orden: "texto-primero"`).
+  - D: «Antes de poner tus planes uno frente a otro, mira cómo sueles decidir. No hay una forma correcta: cada una tiene algo que te ayuda y algo que te puede jugar en contra.»
+  - E: «¿Cuál es tu forma principal de decidir las cosas importantes?»
+  - T: «Cuenta una vez en que decidiste así: qué tenías que decidir y qué hiciste.» · ⌨ «Una vez tuve que decidir…»
+- **Lista ESTILOS** (`datos/fijos.py:152`), en este orden:
+  1. Lo pienso con calma y comparo (`CALMA`, nueva)
+  2. Lo dejo para el último momento
+  3. Me guío por lo que siento (`LO_QUE_SIENTO`, nueva)
+  4. Pregunto a varias personas (antes «Pregunto a muchos»)
+  5. Termino haciendo lo que otros esperan (`LO_QUE_ESPERAN`, cambia la etiqueta)
+  6. Busco información antes (`BUSCO_INFO`, nueva)
+  7. Decido rápido y después dudo
+  8. Me cuesta descartar opciones
+  9. Me da miedo equivocarme
+
+  Sale `LO_PRIMERO` («Me quedo con lo primero que me convence»). Las que no cambian conservan su código.
+
+### b4-5 · Pongo a prueba mi orden
+
+Un ítem, «La moneda». Salen b4-5-orden, b4-5-debil y b4-5-plan-b.
+
+- **Descripción corta** (`:109` y `:245`): «Iván tira una moneda por ti: si te tocara tu Plan B, ¿qué te haría falta del A?»
+- **b4-5-moneda**:
+  - D (Iván): «Te propongo un juego. Imagina que tiro esta moneda para decidir por ti… y sale {plan_b}. Ya está: el próximo año estudias {plan_b}.»
+  - E: «Salió {plan_b}. ¿Qué sentiste primero?» → opciones propias `DESANIME` «Me desanimé» · `TAMBIEN` «También me gustaría» · `NO_SE` «No sé qué sentí».
+  - T, la misma para las tres: «Piensa en {plan_a}. ¿Hay algo de ella que te haría falta?» · ⌨ «Me haría falta… / No me haría falta nada porque…»
+- **`R-b4-5`** (`:1259` y `:1416`): hoy pide la batalla b4-4 y dos planes creados. Pasa a pedir la batalla b4-4 y **el «por qué» del Plan A y del Plan B**. `planes_listos_para_comparar` cuenta planes sin mirar cuáles: con tres planes se cumpliría con el A y el C. Hay que asegurar que sean los dos primeros.
+  - Mensaje: «Calla al Eco y cuenta por qué elegiste tus dos primeros planes.»
+- **`R-PLAN-PASOS`** (`:1311`), mensaje: «Pon a prueba tu orden para definir tus pasos.»
+- `R-ma8` no cambia.
+
+### b5-1 · Mi proyecto
+
+Un ítem. Salen b5-1-decision, b5-1-senal y b5-1-apoyo.
+
+- **Descripción corta:** «Tu proyecto de hoy, qué tan seguro te sientes de él y qué te da o te quita esa seguridad.»
+- **b5-1-seguridad**:
+  - D (Teresa): «Desde el faro se ve tu proyecto entero. No es una promesa ni una sentencia: es lo que hoy tienes delante.»
+  - E: «¿Qué tan seguro/a te sientes de tu proyecto?» → opciones propias `BASTANTE` «Bastante seguro/a» · `MAS_O_MENOS` «Más o menos» · `POCO` «Poco seguro/a».
+  - T, la misma para las tres: «¿Qué te da seguridad en tu proyecto, o qué te la quita?» · ⌨ «Me da seguridad… / Me quita seguridad…»
+  - No se usa la palabra «paso» en ninguna consigna del ítem.
+- **`R-b5-1`** (`:1261` y `:1417`): el bloque 4 completo y **un** paso en el Plan A. Revisar que hoy pida uno y no tres.
+
+### b5-3 · Mirar el camino
+
+Un ítem. Salen b5-3-inicial y b5-3-explorar.
+
+- **Descripción corta** (`:112`, `:159` y `:248`): «Lo que dijiste al llegar, al lado de lo que tienes hoy: qué ves distinto y qué te hizo cambiar.»
+- **b5-3-cambio**: piezas del inicio (1) + «Otra» «Otra cosa que cambió» + exclusiva `IGUAL` «Lo veo todo igual» con pregunta y tarjeta propias.
+  - D (Lumi): «Esto dijiste cuando recién llegabas. Míralo desde aquí.»
+  - E: «De lo que dijiste al llegar, ¿qué ves hoy distinto?»
+  - T: «¿Qué te hizo verlo distinto? Puede ser algo que viste, que supiste o que te pasó.» · ⌨ «Lo veo distinto desde que…»
+  - `IGUAL`: «¿Qué viste o supiste que te lo confirmó?» · ⌨ «Me lo confirmó…»
+- `R-b5-3`, `R-b5-4` no cambian. El tope `'maximo_seguimientos'` sale con la regla común (§9).
+
+### Mensajes de otras reglas
+
+Textos propuestos (§12):
+- `R-b3-5`: «Anota qué necesitas saber de una carrera y a quién le preguntarías.» (antes «Anota qué dato te sorprendió…»)
+- `R-ma7`: «Anota lo que necesitas saber antes de elegir.» (antes «Anota qué dato del mercado te sorprendió.»)
+- `R-b4-3`: «Mira cómo sueles decidir antes de poner las rutas sobre la mesa.» (antes «Escribe tus reglas…»)
+- `R-F20`: «Cuenta cómo decides en el acantilado.» (antes «Escribe tus criterios en el acantilado.»). F20 se sigue entregando al completar b4-2.
+
+### 7. Contenido: registros opcionales (sin LLM)
+
+Siete registros, un ítem cada uno. Ninguno lleva tarjeta, clasificación, repregunta, pista ni estado abierto. Ya están con `requerida: False` (`:175` a `:177` para h1, h2 y h3).
+
+**Reglas comunes.**
+- Ningún ítem se guarda vacío (regla que ya existe).
+- «Registro adecuado» equivale a completado: las reglas con `REGISTRO_ADECUADO` de una opcional (`R-ma4`, `R-ma5`) se cumplen al completarla. Una prueba lo comprueba.
+- Su texto no se cita en ningún lado. Entre opcionales solo se pasa la elección.
+
+### h1 · Mi reto
+
+- **Descripción corta** (`:90` y `:226`): «Elige una habilidad social para practicar y cuenta en qué situación tuya te serviría.»
+- **`h1-reto`** (nuevo): las cinco habilidades van como **opciones propias del ítem**, cada una con el código de su dimensión del test y su pregunta. Sin «Otra» ni exclusiva.
+  - D (Dora): «Elige una para ponerla a prueba esta semana. No tiene que ser la más baja: la que tú quieras.»
+  - E: «¿Qué habilidad quieres practicar?»
+  - ⌨ «Me serviría cuando…»
+
+| Opción | Pregunta de texto |
+|---|---|
+| Asertividad (`HS-ASE`) | Una forma de empezar: decir «no» en algo pequeño. ¿En qué situación tuya te serviría? |
+| Empatía (`HS-EMP`) | Una forma de empezar: preguntar «¿cómo te sientes?» y escuchar sin interrumpir. ¿Con quién o en qué momento te serviría? |
+| Expresión de sentimientos (`HS-EXP`) | Una forma de empezar: ponerle nombre a lo que sientes antes de decirlo. ¿En qué situación tuya te serviría? |
+| Resolución de problemas (`HS-RES`) | Una forma de empezar: pensar tres salidas antes de elegir una. ¿En qué situación tuya te serviría? |
+| Liderazgo (`HS-LID`) | Una forma de empezar: ofrecerte a coordinar algo pequeño. ¿En qué situación tuya te serviría? |
+
+- Salen h1-habilidad y h1-accion (`:595` a `:602`) y la lista LUGARES (`datos/fijos.py:134`). `R-h1` no cambia.
+
+### ma4 · Alguien que ya lo hace
+
+- **Título:** «Alguien que ya lo hace» (`:121` y `:257`; antes «El reto de la semana»).
+- **Descripción corta:** «Alguien que conoces a quien le sale bien la habilidad que elegiste, y qué hace.»
+- **`ma4-modelo`** (nuevo): PERSONAS (1) + «Otra» + exclusiva `NADIE` «No se me ocurre nadie» con pregunta propia.
+  - E: «Elegiste practicar {habilidad}. ¿A quién conoces que le salga bien?»
+  - T: «¿Qué hace esa persona cuando la usa?» · ⌨ «Lo que hace es…»
+  - `NADIE`: «¿Y alguien que no conozcas en persona: de una serie, un deportista, alguien que sigues?» · ⌨ «Me hace pensar en… porque…»
+- Salen ma4-probe y ma4-sigo (`:625` a `:633`) y `ma4-ref-accion` (`:948`), que se reemplaza por una referencia a la elección de h1-reto.
+- `R-ma4` (`:1295`) no cambia. Mensaje: «Elige con Dora la habilidad que quieres practicar.»
+
+### h2 · ¿Me reconozco?
+
+- **Descripción corta** (`:91` y `:227`): «Si te reconoces en tu resultado de inteligencias, y qué dirías tú de cómo aprendes.»
+- **`h2-reconozco`** (conserva el código): tres opciones propias con pregunta por opción.
+  - D (Bruno) y E, que se leen como una sola frase: «Según lo que has visto en tu página…» · «¿te reconoces?»
+
+| Opción | Pregunta de texto | ⌨ |
+|---|---|---|
+| `SI` «Sí, soy así» | ¿Cuándo se nota? Cuenta una vez: un problema, un juego, algo que armaste. | Se nota cuando… |
+| `EN_PARTE` «En parte» | ¿Qué parte tuya no aparece ahí? | El resultado no vio que yo… |
+| `NO_MUCHO` «No mucho» | ¿Cómo dirías tú que aprendes o resuelves mejor? | Yo aprendo mejor cuando… |
+
+- Salen h2-no-refleja y la elección de dimensión de h2-reconozco (`:604` a `:611`). Revisar si DIMENSIONES_INTELIGENCIAS (`datos/fijos.py:619`) queda sin uso antes de retirarla. `R-h2` no cambia.
+
+### h3 · Mis familias
+
+- **Descripción corta** (`:92` y `:228`): «De las cinco familias que salieron de tus intereses, la que te da más curiosidad y por qué.»
+- **`h3-curiosidad`** (nuevo): `FAMILIAS_RECOMENDADAS` (1) + exclusiva `NINGUNA` «Ninguna me llama» con pregunta propia.
+  - D (Sol): «Estas son las cinco familias que salieron de tus intereses. No hace falta quedarse con todas.»
+  - E: «¿Cuál te da más curiosidad?»
+  - T (cualquier familia): «¿Qué te llama de ella?» · ⌨ «Me llama porque…»
+  - `NINGUNA`: «¿Qué te gustaría ver que no está aquí?» · ⌨ «Me gustaría ver…»
+- Salen h3-sorprende y h3-descarto (`:614` a `:623`) y `h3-ref-inicial` (`:947`). Se queda `h3-ref-familias` como fuente de opciones.
+- `R-h3` y `R-ma5` (`:1296`) no cambian. Mensaje de `R-ma5`: «Mira con Sol las familias que salieron de tus intereses.»
+
+### ma3 · Lo que ya tengo de ese día
+
+- **Título:** «Lo que ya tengo de ese día» (`:120` y `:256`; antes «De la meta a los pasos»).
+- **Descripción corta:** «De ese día que imaginaste, lo que ya haces hoy o lo primero que te gustaría probar.»
+- **`ma3-hoy`** (nuevo): dos opciones propias con pregunta por opción.
+  - E: «De ese día que imaginaste, ¿hay algo que ya hagas hoy, aunque sea en pequeño?»
+
+| Opción | Pregunta de texto | ⌨ |
+|---|---|---|
+| `SI` «Sí, algo» | ¿Qué es? | Hoy ya… |
+| `NADA` «Todavía nada» | ¿Qué sería lo primero que te gustaría probar? | Me gustaría probar… |
+
+- Salen ma3-pasos y ma3-falta (`:575` a `:579`). `R-ma3` (`:1271`) no cambia.
+
+### b3-a · Lo que aprendí de una trayectoria
+
+- **Descripción corta** (`:103` y `:239`): «La historia que te quedó, y en qué se parece a la tuya y en qué no.»
+- **`b3-a-comparo`** (nuevo): `TESTIMONIOS` (1), los que desbloqueó.
+  - E: «De las historias que desbloqueaste, ¿cuál te quedó?»
+  - T: «¿En qué se parece su historia a la tuya, y en qué no?» · ⌨ «Me parezco en… / No me parezco porque…»
+- Salen b3-a-testimonio y b3-a-identifico (`:647` a `:653`). `R-b3-a` (`:1267`) no cambia.
+
+### ma8 · El abogado del diablo
+
+- **Descripción corta** (`:125` y `:261`): «Una objeción a tu Plan A que hayas escuchado, y qué le respondes.»
+- **`ma8-respuesta`** (conserva el código): opciones propias (1) + «Otra» + exclusiva `NINGUNA` con pregunta propia.
+  - D (Eco): le presta la voz que duda (el texto es del front).
+  - E: «Sobre estudiar {carrera}, ¿cuál de estas has escuchado, o te la has dicho tú?»
+  - Opciones: `ENTRAR` «Es muy difícil entrar» · `PLATA` «No va a alcanzar la plata» · `TRABAJO` «Con eso no se consigue trabajo» · `NO_ES_PARA_TI` «No es para ti» · `CASA` «En tu casa esperan otra cosa».
+  - T: «¿Qué le respondes?» · ⌨ «Le respondo que… / Todavía no sé qué responderle porque…»
+  - `NINGUNA` «Ninguna de estas»: «Entonces haz tú de abogado del diablo: ¿cuál sería el mejor motivo para no estudiar {carrera}?» · ⌨ «El mejor motivo sería…»
+- Sale ma8-motivos (`:703`). `R-ma8` (`:1274`) no cambia.
+
+### 8. Tarjetas: un cambio y una nueva
+
+Quedan 28 tarjetas: 21 de ítem y 7 de opción.
+
+**Cambio en la tarjeta de b1-1-logro.** La pregunta pasa a la nueva (§6) y en MATICES sale la mención a la opción exclusiva. Donde dice:
+
+```
+MATICES: la habilidad marcada NO es un hecho. Marcar "No se me ocurre ninguno", o escribir
+  que no se le ocurre, = no_sabe.
+```
+
+queda:
+
+```
+MATICES: la habilidad marcada NO es un hecho. Escribir que no se le ocurre ninguno =
+  no_sabe.
+```
+
+**Tarjeta nueva: b1-1-logro · opción `NINGUNO` «No se me ocurre ninguno».**
+Pregunta: «Está bien, a veces cuesta llamarlo así. Cuéntame algo que hiciste hace poco y que te dejó contento o contenta, aunque sea pequeño.» · ⌨ «Hace poco…»
+`filtrar_etiqueta: false`. `fuera_de_tema` usa la base de `general`.
+
+```
+NÚCLEO: algo que hizo (un hecho), por pequeño o cotidiano que sea: terminó algo,
+  arregló algo, ayudó a alguien, aprendió algo, se animó a algo.
+NO EXIGIR: que sea importante, que lo llame logro, cuándo fue, ni por qué lo dejó
+  contento.
+GENERAL SI: una cualidad u opinión sobre sí ("soy tranquilo"), algo que hace siempre
+  sin una vez concreta, o algo que le pasó o le dieron sin nada que él hiciera.
+MATICES: "nada" o "no he hecho nada" = no_sabe. No contradigas una autovaloración
+  negativa. Si expresa sobre todo un malestar fuerte consigo mismo = emocional.
+EJEMPLOS:
+  "Terminé de leer un libro entero" → propio
+  "Le arreglé la bici a mi hermano" → propio
+  "Soy buena gente" → general (cualidad)
+  "Me regalaron un celular" → general (no lo hizo él)
+  "Nada, la verdad" → no_sabe
+REPREGUNTA
+  general / no_sabe / vacio · QUÉ PEDIR: un hecho pequeño.
+    BASE: «Puede ser algo de esta semana: algo que terminaste, que arreglaste o en lo que ayudaste a alguien. ¿Qué fue?»
+    CÓMO ADAPTARLA: no uses la palabra "logro" ni lo apures.
+```
+
+**Mini corrida con Haiku real** (con el runner, una vez):
+
+| # | Opción | Respuesta | Esperado |
+|---|---|---|---|
+| 1 | NINGUNO | Ayer cociné arroz con pollo para todos en mi casa | `propio` |
+| 2 | NINGUNO | Acabé un dibujo que tenía a medias desde hace meses | `propio` |
+| 3 | NINGUNO | Soy tranquilo nomás | `general` |
+| 4 | NINGUNO | Siempre saco a pasear a mi perro | `general` |
+| 5 | NINGUNO | Mi tío me llevó al estadio | `general` |
+| 6 | NINGUNO | Nada | `no_sabe` |
+| 7 | NINGUNO | No hago nada bien | `no_sabe` |
+| 8 | NINGUNO | Me siento un inútil, todos hacen cosas menos yo y me da rabia | `emocional` |
+| 9 | NINGUNO, seguimiento | Primera: «Nada». Segunda: «bueno, le ayudé a mi mamá a cargar las bolsas del mercado» | conjunto `propio` |
+| 10 | Una habilidad | Gané un campeonato de fulbito con mi salón | `propio` |
+| 11 | Una habilidad | Soy bueno dibujando | `general` |
+| 12 | Una habilidad | No se me ocurre | `no_sabe` |
+| 13 | Una habilidad | Mañana tengo examen de inglés | `fuera_de_tema` |
+
+**Criterios:** la clasificación coincide; las repreguntas de `NINGUNO` no usan la palabra «logro» ni contradicen al estudiante; los casos 10 a 13 muestran que la pregunta nueva no movió la tarjeta de logro. Si algo falla, se reporta al usuario antes de tocar la tarjeta.
+
+### 9. Lo que sale
+
+**Del modelo (regla común):**
+- los criterios RAZON, EJEMPLO, ACCION y CONTRASTE;
+- el bloque `seguimiento` de todos los ítems;
+- `admite_abierto`;
+- el tope de repreguntas por registro (`maximo_seguimientos`);
+- la clasificación desarrollada / poco desarrollada / abierta;
+- los destinos al cerrar y las referencias que solo existían para armarlos (`b3-4-ref-planes`, `datos/contenido.py:952`).
+
+**Ítems** (con sus opciones propias y su `seguimiento`):
+- b2-4-antes;
+- b3-4-dato y b3-4-cambia;
+- b4-1-familia;
+- b4-2-criterios y b4-2-linea-roja (`:878` y `:883`);
+- b4-5-orden, b4-5-debil y b4-5-plan-b (`:685` a `:700`);
+- b5-1-decision, b5-1-senal y b5-1-apoyo (desde `:709`);
+- b5-3-inicial y b5-3-explorar (`:725` a `:738`);
+- los de las opcionales anotados en §7.
+
+**Listas** (`datos/fijos.py`), cada una solo si nadie más la usa:
+- AREAS_VIDA (`:123`). `tests/integration/datos/test_carga_registros_definitivos.py:40` exige que exista: se ajusta;
+- ASPECTOS_CARRERA (`:138`);
+- DIMENSIONES_PERFIL (`:149`);
+- CRITERIOS (`:141`). La tabla de criterios de F20 no depende de ella;
+- POR_EXPLORAR (`:145`);
+- LUGARES (`:134`).
+
+**Referencias:**
+- b3-4: `b3-4-ref-datos-carrera` y `b3-4-ref-plan`. El tipo `DATOS_CARRERA_PLAN_A` (`app/services/referencias.py:197`) queda sin uso; el código no se borra en este lote;
+- b4-1: `b4-1-ref-intereses`, `-inteligencias`, `-habilidades`, `-logro`, `-valores`, `-bien`, `-antes`, `-habilidad`, `-reconozco`, `-familias`, `-gustos` y `-no-refleja`. Su contenido entra por las piezas del perfil. Se queda `b4-1-ref-plan`;
+- b4-2: `b4-2-ref-valores`;
+- b4-5: `b4-5-ref-criterios`, `-linea-roja`, `-respalda` y `-plan` (`:972` a `:975`). Se queda `b4-5-ref-planes`;
+- b5-1: todas las de `:977` a `:982`, incluidas `b5-1-ref-criterios`, `-orden` y `-respalda`. Se quedan las que arman el eco del proyecto;
+- b5-3: `b5-3-ref-inicial`, `-dia`, `-freno`, `-mia` y `-mito` (`:983` a `:987`) como ecos de apertura. Su contenido entra por las piezas del inicio;
+- opcionales: `h3-ref-inicial` y `ma4-ref-accion`.
+
+**Cartas del diario: solo datos.**
+- Salen las cartas C1 a C6 (`:1180` a `:1197`), sus referencias `C*-ref-*` (`:990` a `:1008`), las reglas `R-C1` a `R-C6` y `RESPALDOS_DIARIO`.
+- No se toca el código de las cartas ni su llamada al LLM. Solo se comprueba que el backend arranque y cargue con cero cartas personalizadas.
+- Las fijas (`t-diario-fija`, las `d-conv-*`, las diarias) no se tocan, salvo que alguna referencie un ítem que sale: en ese caso se reporta.
+
+### 10. Pruebas
+
+**De carga:**
+- 12 registros requeridos con 22 ítems y 7 opcionales con 7 ítems;
+- 28 tarjetas, cada una en su ítem u opción, con sus bases verificadas contra el texto y su hash;
+- ningún ítem, lista ni referencia de §9 queda cargado; ninguna referencia apunta a un ítem que no existe;
+- podios: b2-3-valores sin «Otra» y b2-4-bien con «Otra»; b2-4-cuesta sigue como lista de 1–2;
+- las reglas `R-b4-5` y `R-b5-1` con su condición nueva; cero reglas `R-C*`;
+- se ajustan las pruebas que cuentan ítems, opciones, listas o referencias.
+
+**Del modelo de respuesta:**
+- un podio con dos «Otra» ordenadas se guarda con sus códigos, textos y puestos;
+- guardar un intento nuevo deja el anterior completo en el histórico, y el vigente es el único que leen la función de contexto y el texto citable;
+- un ítem u opción sin LLM se guarda solo con elección y texto, en estado completado.
+
+**De la función de contexto**, con estudiantes de prueba:
+- cada marcador, con su formato; `{primera}` cuando lo primero del podio es una «Otra»; error claro cuando falta un valor;
+- piezas del perfil: los tres grupos, el empate en un test, un test sin revelar, un texto no citable, logro con `NINGUNO`, `BIEN-1` cuando es una «Otra», y «Lo que te cuesta» primero en «menos»;
+- piezas del inicio: con y sin opción inicial; las tres filas de la tabla de b1-6; «Otra» de b1-6 con ítem `no_sabe`; estudiante que queda con una sola pieza;
+- regla de `sensible` y `emocional`: la pieza y el eco desaparecen, elección incluida, y el marcador se sigue resolviendo;
+- un ítem `sensible` cuyo intento nuevo queda `propio` vuelve a aparecer como pieza y como eco;
+- ecos: las dos listas de cada ítem de la tabla de §5; ma3 con uno, dos y ningún eco citable;
+- formatos de la opción marcada: etiqueta, «¿Cuál?», podio con orden (con y sin «Otra») y pieza con origen;
+- la `Entrada` armada para un caso de cada registro requerido coincide con la que arma hoy el runner para ese caso.
+
+**De reglas:**
+- `R-b4-5` no se cumple con el «por qué» en los planes A y C, y sí con A y B;
+- una opcional completada cumple `REGISTRO_ADECUADO`.
+
+**Mini corrida:** la de §8.
+
+### 11. Decisiones que este lote respeta
+
+Vienen del lote 1 y del 10 nov. Este lote las guarda; el lote 3 las pone en marcha.
+
+- **Adecuado:** ningún ítem `vacio`, `fuera_de_tema` ni `sin_evaluar`; `general` cuenta; un abierto vale, dos no. `emocional` y `sensible` cuentan y no se citan.
+- **Abierto:** cualquier ítem que termine en `no_sabe`.
+- **Orden del estado final:** `propio` > `general` > `emocional` > `no_sabe` > `vacio` > `fuera_de_tema`; `sensible` manda.
+- **Fallo de la llamada:** si falla la primera, `sin_evaluar`; si falla la del seguimiento, conserva el tipo de la primera con la marca de seguimiento sin evaluar.
+- **Edición:** es volver a iniciar el ítem. El intento anterior pasa al histórico; el estudiante ve solo el vigente.
+- **Eco cambiado:** la respuesta no se borra, el ítem queda marcado y la consigna se rearma con el valor nuevo.
+- **No se consolida con el LLM.**
+
+### 12. Propuestas de este documento
+
+No venían de la validación. Valen salvo que el usuario diga otra cosa.
+
+1. **El flujo actual entre el lote 2 y el 3.** Los servicios de registro de hoy dependen de lo que sale (criterios, `seguimiento`, prompt v6.10). En este lote se retira la evaluación antigua, los endpoints actuales quedan marcados como pendientes de reescritura y sus pruebas se retiran o se marcan para el lote 3. Claude Code propone en su plan el corte mínimo que deja la aplicación arrancando y las pruebas en verde.
+2. **Respuestas ya guardadas.** No se migran. No hay estudiantes reales; la base de desarrollo se recrea y se vuelve a cargar.
+3. **Mensajes de reglas** de §6 (`R-b3-5`, `R-ma7`, `R-b4-3`, `R-F20`).
+4. **Duraciones estimadas.** Bajan en las actividades que quedan con un ítem: 4 minutos las opcionales, 8 minutos b4-5 y b5-1, y 5 minutos b5-3. b4-2 y b3-4 no se tocan hasta que el usuario dé un número.
+5. **Códigos de las piezas del inicio** (`INI-…`).
+6. **Documentos de tarjetas.** La tarjeta nueva y el cambio de b1-1-logro están solo en este documento; falta pasarlos a `claude/tarjetas-registros.md`.
+
+### 13. Pendiente para el lote 3 y después
+
+- Endpoints secuenciales, edición, eco cambiado, regla de adecuado por registro y reenvíos.
+- Casos de regresión anotados: R3 y R14 de b4-1, el seguimiento de b1-3, los dos de b5-1 y los tres de b5-3.
+- Front: consignas, diálogos, mensajes de cierre (que reemplazan a los destinos), diapositivas, presentación de piezas y ecos, y podio con varias «Otra».
+- Ajuste de cartas: las adaptadas, las fijas y el pool, usando referencias.
+- Informe de la orientadora, con el histórico de intentos de cada ítem, y pasada final para la tesis.
+- Gemini en las sugerencias de pasos del plan y en Investigaciones.

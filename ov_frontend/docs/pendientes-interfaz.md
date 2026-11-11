@@ -677,3 +677,9 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Opciones:** que el backend resuelva una ELECCION de ítem ABIERTA (o de exclusiva sin hecho) como ABIERTA, y el front ya muestra `TEXTO_ABIERTO`; que una exclusiva «ninguno» se resuelva como SIN_DATO (el eco no dice nada); dejarlo como hoy.
 - **Si no se muestra:** el eco cita la exclusiva tal cual. Cambiar la regla toca `referencias.md` y `ecos_de`, fuera de este ajuste.
 - **Estado:** pendiente.
+
+## 2026-11-11 · Ajuste registros llm (lote 2) · Contratos nuevos de registro
+
+- **Dato:** el backend cambió los contratos de registro y el front actual no funciona contra la rama `ajuste/registros-llm` (el texto del lote 2 lo deja fuera de alcance). `items-registro` trae `dialogo`, `pregunta_eleccion`, `pregunta_texto`, `arranque`, `con_llm` y, en la elección, `etiqueta_otra` y las propias con `pregunta`, `arranque` y `sin_llm` (sale `consigna` y `sin_seguimiento`). El registro trae por ítem `estado`, `opciones_elegidas` (`{codigo, texto}`) y `texto` (salen la conversación, `items_por_ampliar` e `items_abiertos`). `entregar` lleva los ítems en el cuerpo; borrador, seguimiento, edición y continuar sin responder responden 501. Las fuentes PIEZAS_* y la «Otra» múltiple (`OTRA-1`…) son nuevas. Los fixtures de `tests/fixtures/servidor` no se regeneraron.
+- **Dónde se ve:** las vistas de registro del Camino y la Ciudad (diálogos, mensajes de cierre, diapositivas, piezas y ecos, podio con varias «Otra»), y los JSON de `contenidos/plataforma/` de los 19 registros (`scripts/verificar_contenido_front.py` reporta sus diferencias). El check-in de b5-1 llega como número («2 de 5») sin etiqueta.
+- **Estado:** pendiente del ajuste del front de registros, después del lote 3.

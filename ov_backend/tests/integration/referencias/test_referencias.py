@@ -1,47 +1,47 @@
 """HU-009 y RNF-20: referencias resueltas por cuenta: ELECCION y TEXTO (B05), RESULTADO y COINCIDENCIAS (B06).
 
-Los textos son DATO DE PRUEBA; las marcas (`[vaga]`, `[falla]`) las interpreta el evaluador falso.
+Los textos son DATO DE PRUEBA. Ajuste registros llm (lote 2): siempre se lee el intento vigente; la entrega provisional
+no deja texto citable, así que un TEXTO citable se escribe directamente en el intento vigente (`citar`).
 """
+
+from datetime import datetime
 
 import pytest
 from sqlalchemy import select
 
 from app import models as m
+from app.models.enums import EstadoRespuestaRegistro
+from app.services.registro.acciones import guardar_intento
 from soporte_datos_ports import agregar_ocupaciones
 from soporte_retiro import ciclo, medir, preparar_ultimo, reiniciar, resultado
-from soporte_ruta import FECHA, INTERESES_FINAL, actividades, avanzar, completar, pedir, responder_registro, revelar
+from soporte_ruta import FECHA, INTERESES_FINAL, actividades, avanzar, completar, pedir, revelar
 
 
 ADECUADO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'
 AMPLIADO = 'DATO DE PRUEBA: ahora cuento un ejemplo concreto y explico por qué lo creo.'
 OPCIONES = {'t-exp-ruta': [{'codigo': 'INSTITUTO'}], 't-exp-apoyo': [{'codigo': 'FAMILIA'}], 't-exp-espera': []}
-RUTA_ELEGIDA = [{'codigo': 'INSTITUTO', 'texto': 'Estudiar en un instituto'}]
 
 
-def accion(cuenta='est-ana', actividad='t-expectativas'):
-    return {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA}
-
-
-def guardar(cliente, cuenta='est-ana', opciones=None, **textos):
+def entregar(cliente, cuenta='est-ana', opciones=None):
     avanzar(cliente, 't-cierre-inicio', cuenta)
-    for item, elegidas in {**OPCIONES, **(opciones or {})}.items():
-        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
-            **accion(cuenta), 'item': item, 'texto': textos.get(item.replace('-', '_'), ADECUADO),
-            'opciones': elegidas})
+    return pedir(cliente, 'POST', '/acciones/registro/entregar', {
+        'cuenta': cuenta, 'actividad': 't-expectativas', 'fecha_hora': FECHA,
+        'items': [{'item': item, 'texto': ADECUADO, 'opciones': elegidas}
+                  for item, elegidas in {**OPCIONES, **(opciones or {})}.items()]})
 
 
-def entregar(cliente, cuenta='est-ana', opciones=None, **textos):
-    guardar(cliente, cuenta, opciones, **textos)
-    return pedir(cliente, 'POST', '/acciones/registro/entregar', accion(cuenta))
-
-
-def omitir(cliente, item, cuenta='est-ana'):
-    return pedir(cliente, 'POST', '/acciones/registro/continuar-sin-responder', {**accion(cuenta), 'item': item})
-
-
-def editar(cliente, cuenta='est-ana', **textos):
-    return pedir(cliente, 'POST', '/acciones/registro/editar', {
-        **accion(cuenta), 'items': [{'item': i.replace('_', '-'), 'texto': t} for i, t in textos.items()]})
+def citar(aplicacion, *lineas, cuenta='est-ana', item='t-exp-espera', **columnas):
+    """DATO DE PRUEBA: un intento vigente nuevo del ítem entregado, con texto citable, como lo dejaría el LLM."""
+    with aplicacion.state.fabrica_sesiones.begin() as sesion:
+        vigente = sesion.scalar(select(m.RespuestaRegistro).join(
+            m.ProgresoActividad, m.ProgresoActividad.id == m.RespuestaRegistro.progreso_id).join(
+            m.Cuenta, m.Cuenta.id == m.ProgresoActividad.cuenta_id).join(
+            m.ItemRegistro, m.ItemRegistro.id == m.RespuestaRegistro.item_registro_id).where(
+            m.Cuenta.codigo == cuenta, m.ItemRegistro.codigo == item, m.RespuestaRegistro.vigente))
+        guardar_intento(sesion, vigente.progreso_id, vigente.item_registro_id, dict(
+            opciones_elegidas=vigente.opciones_elegidas, primera_respuesta=' '.join(lineas),
+            estado=EstadoRespuestaRegistro.CERRADO, tipo_final='propio', texto_citable=list(lineas),
+            **columnas), datetime(2026, 10, 7, 11))
 
 
 def referencias(cliente, cuenta='est-ana', actividad='t-eco', esperado=200):
@@ -51,11 +51,6 @@ def referencias(cliente, cuenta='est-ana', actividad='t-eco', esperado=200):
 
 def estados(cliente, cuenta='est-ana'):
     return {codigo: r['estado'] for codigo, r in referencias(cliente, cuenta).items()}
-
-
-def consolidada(cliente, item, cuenta='est-ana'):
-    registro = pedir(cliente, 'GET', f'/cuentas/{cuenta}/actividades/t-expectativas/registro')
-    return next(r['texto_consolidado'] for r in registro['respuestas'] if r['item'] == item)
 
 
 def agregar_referencias(aplicacion, *filas):
@@ -69,9 +64,7 @@ def agregar_referencias(aplicacion, *filas):
 
 # --- Sin dato -------------------------------------------------------------------------------
 
-def test_sin_respuesta_o_en_borrador_no_hay_dato(cliente):
-    assert estados(cliente) == {'t-ref-espera': 'SIN_DATO', 't-ref-rutas': 'SIN_DATO'}
-    guardar(cliente)
+def test_sin_respuesta_no_hay_dato(cliente):
     resueltas = referencias(cliente)
     assert {c: r['estado'] for c, r in resueltas.items()} == {'t-ref-espera': 'SIN_DATO', 't-ref-rutas': 'SIN_DATO'}
     assert all(set(r) == {'codigo', 'tipo', 'estado', 'actividad'} for r in resueltas.values())
@@ -79,78 +72,19 @@ def test_sin_respuesta_o_en_borrador_no_hay_dato(cliente):
 
 # --- TEXTO ----------------------------------------------------------------------------------
 
-def test_se_cita_la_consolidada_tras_un_seguimiento(cliente):
-    entregar(cliente, t_exp_espera='DATO DE PRUEBA [vaga]')
-    pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento',
-          {**accion(), 'item': 't-exp-espera', 'texto': AMPLIADO})
-    espera = referencias(cliente)['t-ref-espera']
-    assert espera == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
-                      'texto': consolidada(cliente, 't-exp-espera')}
-    assert AMPLIADO in espera['texto']
-
-
-def test_poco_desarrollada_sale_por_desarrollar_y_se_cita_al_ampliarla(cliente):
-    entregar(cliente, t_exp_espera='DATO DE PRUEBA [vaga]')
-    # Mientras espera la respuesta de seguimiento, ya es poco desarrollada.
-    assert estados(cliente) == {'t-ref-espera': 'POR_DESARROLLAR', 't-ref-rutas': 'DISPONIBLE'}
-    omitir(cliente, 't-exp-espera')
-    resueltas = referencias(cliente)
-    assert resueltas['t-ref-espera'] == {'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'POR_DESARROLLAR',
-                                         'actividad': 't-expectativas'}
-    # La elección no depende de lo desarrollado de la justificación.
-    assert resueltas['t-ref-rutas']['opciones'] == RUTA_ELEGIDA
-    editar(cliente, t_exp_espera=AMPLIADO)
-    assert referencias(cliente)['t-ref-espera']['texto'] == AMPLIADO == consolidada(cliente, 't-exp-espera')
-
-
-def test_adecuada_que_al_editarse_queda_poco_desarrollada_sale_por_desarrollar(cliente):
+def test_se_cita_el_texto_citable_del_intento_vigente(cliente, aplicacion):
     entregar(cliente)
-    assert referencias(cliente)['t-ref-espera']['texto'] == ADECUADO
-    editar(cliente, t_exp_espera='DATO DE PRUEBA editado [vaga]')
-    assert estados(cliente)['t-ref-espera'] == 'POR_DESARROLLAR'
-    omitir(cliente, 't-exp-espera')
-    assert estados(cliente) == {'t-ref-espera': 'POR_DESARROLLAR', 't-ref-rutas': 'DISPONIBLE'}
-
-
-def test_edicion_con_seguimiento_pendiente_cita_lo_demas(cliente, aplicacion):
-    agregar_referencias(aplicacion, ('t-ref-apoyo-prueba', 't-exp-apoyo'))
-    entregar(cliente)
-    editar(cliente, t_exp_apoyo=AMPLIADO, t_exp_espera='DATO DE PRUEBA editado [vaga]')
-    registro = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
-    assert {r['item']: r['estado'] for r in registro['respuestas']}['t-exp-espera'] == 'PENDIENTE_SEGUIMIENTO'
-    resueltas = referencias(cliente)
-    assert resueltas['t-ref-espera']['estado'] == 'POR_DESARROLLAR'
-    assert resueltas['t-ref-apoyo-prueba']['texto'] == AMPLIADO
-    assert resueltas['t-ref-rutas']['opciones'] == RUTA_ELEGIDA
-
-
-def test_lo_que_quedo_sin_evaluar_por_un_fallo_se_cita(cliente):
-    texto = 'DATO DE PRUEBA: una respuesta larga que el evaluador no pudo leer. [falla]'
-    entregar(cliente, t_exp_ruta=texto, t_exp_apoyo=texto, t_exp_espera=texto)
-    assert referencias(cliente)['t-ref-espera'] == {'codigo': 't-ref-espera', 'tipo': 'TEXTO',
-                                                    'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
-                                                    'texto': texto}
-
-
-def test_item_sin_criterios_se_cita_y_su_extension_minima_decide(cliente, aplicacion):
-    agregar_referencias(aplicacion, ('t-ref-libre-prueba', 't-val-libre'), ('t-ref-breve-prueba', 't-val-breve'))
-    avanzar(cliente, 't-cierre-inicio')
-    for item, texto in (('t-val-orden', ADECUADO), ('t-val-libre', 'DATO DE PRUEBA breve'),
-                        ('t-val-breve', 'DATO DE PRUEBA corto')):
-        opciones = [{'codigo': c} for c in ('SERVIR', 'CREAR', 'LIBERTAD')] if item == 't-val-orden' else []
-        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
-            **accion(actividad='t-valores'), 'item': item, 'texto': texto, 'opciones': opciones})
-    pedir(cliente, 'POST', '/acciones/registro/entregar', accion(actividad='t-valores'))
-    resueltas = referencias(cliente)
-    # Sin criterios ni mínimo: adecuada sin LLM. Con mínimo no alcanzado: poco desarrollada.
-    assert resueltas['t-ref-libre-prueba']['texto'] == 'DATO DE PRUEBA breve'
-    assert resueltas['t-ref-breve-prueba']['estado'] == 'POR_DESARROLLAR'
+    citar(aplicacion, ADECUADO)
+    citar(aplicacion, AMPLIADO, 'DATO DE PRUEBA: segunda línea.')
+    assert referencias(cliente)['t-ref-espera'] == {
+        'codigo': 't-ref-espera', 'tipo': 'TEXTO', 'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
+        'texto': f'{AMPLIADO} DATO DE PRUEBA: segunda línea.'}
 
 
 # --- ELECCION -------------------------------------------------------------------------------
 
 def test_eleccion_cita_lo_elegido_con_su_texto_y_la_opcion_otra(cliente):
-    otra = {'codigo': 'OTRA', 'texto': 'DATO DE PRUEBA: trabajar en el taller familiar'}
+    otra = {'codigo': 'OTRA-1', 'texto': 'DATO DE PRUEBA: trabajar en el taller familiar'}
     entregar(cliente, opciones={'t-exp-ruta': [{'codigo': 'UNIVERSIDAD'}, otra]})
     assert referencias(cliente)['t-ref-rutas'] == {
         'codigo': 't-ref-rutas', 'tipo': 'ELECCION', 'estado': 'DISPONIBLE', 'actividad': 't-expectativas',
@@ -164,8 +98,9 @@ def test_eleccion_y_texto_nombran_su_actividad_en_todo_estado(cliente):
         return {c: r.get('actividad') for c, r in referencias(cliente).items()}
     origen = {'t-ref-espera': 't-expectativas', 't-ref-rutas': 't-expectativas'}
     assert actividades() == origen  # SIN_DATO
-    entregar(cliente, t_exp_espera='DATO DE PRUEBA [vaga]')
-    assert estados(cliente)['t-ref-espera'] == 'POR_DESARROLLAR'
+    entregar(cliente)
+    # Entregada sin texto citable: el TEXTO sigue sin dato y la ELECCION ya está disponible.
+    assert estados(cliente) == {'t-ref-espera': 'SIN_DATO', 't-ref-rutas': 'DISPONIBLE'}
     assert actividades() == origen
 
 
@@ -176,13 +111,15 @@ def test_otros_tipos_no_llevan_actividad(cliente):
 
 # --- Aislamiento ----------------------------------------------------------------------------
 
-def test_nunca_hay_datos_de_otra_cuenta(cliente):
+def test_nunca_hay_datos_de_otra_cuenta(cliente, aplicacion):
     entregar(cliente)
+    citar(aplicacion, ADECUADO)
     assert estados(cliente)['t-ref-espera'] == 'DISPONIBLE'
     for cuenta in ('est-luis', 'est-beto'):
         assert estados(cliente, cuenta) == {'t-ref-espera': 'SIN_DATO', 't-ref-rutas': 'SIN_DATO'}
-    entregar(cliente, 'est-luis', t_exp_espera='DATO DE PRUEBA de Luis [vaga]')
-    assert estados(cliente, 'est-luis')['t-ref-espera'] == 'POR_DESARROLLAR'
+    entregar(cliente, 'est-luis')
+    citar(aplicacion, 'DATO DE PRUEBA de Luis', cuenta='est-luis')
+    assert referencias(cliente, 'est-luis')['t-ref-espera']['texto'] == 'DATO DE PRUEBA de Luis'
     assert referencias(cliente)['t-ref-espera']['texto'] == ADECUADO
 
 
@@ -197,10 +134,12 @@ def test_actividad_sin_referencias_devuelve_lista_vacia(cliente):
     assert referencias(cliente, actividad='t-inicio') == {}
 
 
-def test_nunca_devuelve_la_clasificacion(cliente):
-    entregar(cliente, t_exp_espera='DATO DE PRUEBA [vaga]')
+def test_nunca_devuelve_la_clasificacion(cliente, aplicacion):
+    entregar(cliente)
+    citar(aplicacion, ADECUADO, primera_tipo='propio', conjunto_tipo='propio')
     texto = str(pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias'))
-    assert not any(clave in texto for clave in ('clasificacion', 'POCO_DESARROLLADA', 'ADECUADA', 'NO_EVALUADA'))
+    assert not any(clave in texto for clave in ('tipo_final', 'primera_tipo', 'propio', 'texto_citable', 'sensible',
+                                                'CERRADO', 'COMPLETADO'))
 
 
 # --- Presupuesto ----------------------------------------------------------------------------

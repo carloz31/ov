@@ -27,17 +27,20 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # ocupaciones, solo las curadas (sin ocultas; 10 militares sin puntajes), y sus familias.
         'ocupacion': 245, 'puntaje_ocupacion': 1410, 'familia_carrera': 89, 'carrera': 603,
         # Ajuste registros: 14 listas comunes de los registros y 4 opciones nuevas en DIFICULTADES (de `fijos`).
-        'ocupacion_familia': 341, 'lista_opciones': 27, 'opcion_lista': 174, 'item_registro': 17,
-        'criterio_completitud': 15, 'referencia': 14, 'tematica': 5,
+        # Ajuste registros llm (lote 2): salen 8 listas (6 de los registros y las 2 de dimensiones), ESTILOS pasa a
+        # 9 opciones y no hay criterios.
+        'ocupacion_familia': 341, 'lista_opciones': 19, 'opcion_lista': 124, 'item_registro': 17,
+        'referencia': 14, 'tematica': 5,
         'actividad_tematica': 6, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
         'high_point': 614, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,
         'grupo_ocupacional': 23, 'estilo_trabajo': 21, 'ingreso_familia': 716, 'ingreso_institucion': 1096,
         'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6,
         # B13: catálogos de investigaciones.
         'pregunta_base_guion': 3, 'tipo_reaccion': 4,
-        # Ajuste registros: `t-referencia` (3 ítems, 3 criterios, 2 referencias) y `LUMI_SENSIBLE`.
+        # Ajuste registros: `t-referencia` (3 ítems y 2 referencias) y `LUMI_SENSIBLE`.
         'texto_fijo': 2}  # LUMI_SENSIBLE y PISTA_SIN_REPREGUNTA (ajuste pruebas llm)
-    assert len(Base.metadata.tables) == 96
+    # Ajuste registros llm (lote 2): salen `criterio_completitud`, `turno_seguimiento` y `evaluacion_respuesta`.
+    assert len(Base.metadata.tables) == 93
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA', 'LUMI'}

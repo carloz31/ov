@@ -5,7 +5,7 @@ from importlib import import_module
 from app.models.enums import (
     Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso,
     TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
-    ClasificacionRespuesta, EstadoRespuestaRegistro, OrigenEvaluacion, TipoCriterio,
+    EstadoRespuestaRegistro,
     TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion, TipoFavorito,
     UsoPreguntaDiario, TipoRecomendacion, OrigenRedaccion, GestionInstitucion, FrecuenciaGasto, OrigenIdea,
     PreguntaConocimiento, RespuestaConocimiento, OrigenDuda, EstadoDuda, EstadoSugerencia, OrigenSugerencia,
@@ -44,8 +44,7 @@ _MODELOS_POR_MODULO = {
         'Coincidencia',
     ),
     'app.models.registro': (
-        'ListaOpciones', 'OpcionLista', 'ItemRegistro', 'CriterioCompletitud', 'RespuestaRegistro',
-        'TurnoSeguimiento', 'EvaluacionRespuesta', 'TextoFijo',
+        'ListaOpciones', 'OpcionLista', 'ItemRegistro', 'RespuestaRegistro', 'TextoFijo',
     ),
     'app.models.referencias': (
         'Referencia',
@@ -76,8 +75,8 @@ def __getattr__(nombre):
 __all__ = [
     'Base', 'Rol', 'Espacio', 'Audiencia', 'TipoActividad', 'Visibilidad', 'EstadoProgreso',
     'TipoEventoUso', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
-    'TipoConteo', 'OrigenEntrada', 'ClasificacionRespuesta', 'EstadoRespuestaRegistro',
-    'OrigenEvaluacion', 'TipoCriterio', 'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
+    'TipoConteo', 'OrigenEntrada', 'EstadoRespuestaRegistro',
+    'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
     'SalonInstrumento', 'Bloque',
     'Actividad', 'Tematica', 'ActividadTematica', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'GrupoInsignia', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
@@ -87,7 +86,7 @@ __all__ = [
     'OpcionEscala', 'ItemInstrumento', 'ActividadItem', 'Aplicacion', 'AplicacionActividad',
     'Ocupacion', 'PuntajeOcupacion', 'RespuestaItem', 'RitmoAplicacion', 'ResultadoInstrumento',
     'ResultadoDimension', 'Coincidencia', 'ListaOpciones', 'OpcionLista', 'ItemRegistro',
-    'CriterioCompletitud', 'RespuestaRegistro', 'TurnoSeguimiento', 'EvaluacionRespuesta', 'TextoFijo', 'FuenteOpciones',
+    'RespuestaRegistro', 'TextoFijo', 'FuenteOpciones',
     'TipoReferencia', 'EstadoReferencia', 'Referencia', 'ZonaDimension', 'TipoInstitucion', 'HighPoint',
     'TipoCarrera', 'OcupacionFamilia', 'GrupoOcupacional', 'EstiloTrabajo', 'Ubicacion', 'Institucion', 'InstitucionCarrera',
     'IngresoFamilia', 'IngresoInstitucion',

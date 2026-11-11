@@ -45,7 +45,7 @@ def llenar_estado(aplicacion):
         sesion.add_all([progreso, entrevista, resultado, ritmo])
         sesion.flush()
         respuesta = modelos.RespuestaRegistro(progreso_id=progreso.id, item_registro_id=item_registro.id,
-            texto_inicial='DATO DE PRUEBA', estado='PENDIENTE_SEGUIMIENTO', creada_en=fecha, actualizada_en=fecha)
+            primera_respuesta='DATO DE PRUEBA', estado='CERRADO', creada_en=fecha, actualizada_en=fecha)
         sesion.add(respuesta)
         sesion.flush()
         sesion.add_all([
@@ -67,9 +67,6 @@ def llenar_estado(aplicacion):
             modelos.RespuestaItem(progreso_id=progreso.id, item_id=item.id, opcion_id=opcion.id, creada_en=fecha, actualizada_en=fecha),
             modelos.ResultadoDimension(resultado_id=resultado.id, dimension_id=dimension.id, puntaje=1, puntaje_maximo=5),
             modelos.Coincidencia(resultado_id=resultado.id, ocupacion_id=ocupacion.id, posicion=1, correlacion=0.9),
-            modelos.TurnoSeguimiento(respuesta_id=respuesta.id, orden=1, pregunta='DATO DE PRUEBA', criterios_objetivo=['C1'], creado_en=fecha),
-            modelos.EvaluacionRespuesta(respuesta_id=respuesta.id, numero=1, origen='EXTENSION_MINIMA', clasificacion='POCO_DESARROLLADA',
-                criterios_faltantes=['C1'], texto_evaluado='DATO DE PRUEBA', fecha_hora=fecha),
             modelos.Favorito(cuenta_id=cuenta.id, tipo='OCUPACION', id_referencia=ocupacion.id, fecha_hora=fecha),
         ])
         sesion.flush()

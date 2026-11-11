@@ -8,7 +8,9 @@ import pytest
 from sqlalchemy import select
 
 from app import models as m
-from soporte_ruta import FECHA, avanzar, completar, pedir
+from app.models.enums import EstadoRespuestaRegistro
+from app.services.registro.acciones import guardar_intento
+from soporte_ruta import avanzar, completar, pedir
 from soporte_catalogo_ruta import ING_CIVIL
 
 
@@ -29,13 +31,42 @@ def del_dia(cliente, dia=7, cuenta='est-ana', esperado=200):
                  {'cuenta': cuenta, 'fecha_hora': f'2026-10-{dia:02d}T09:00:00'}, esperado)
 
 
+def citable(aplicacion, texto, cuenta='est-ana', item='t-exp-espera'):
+    """DATO DE PRUEBA: intento vigente de `item` con texto citable, como lo dejaría el LLM (lote 3). La entrega
+    provisional (lote 2) no deja texto citable, así que se escribe directamente."""
+    with aplicacion.state.fabrica_sesiones.begin() as sesion:
+        cuenta_id = sesion.scalar(select(m.Cuenta.id).where(m.Cuenta.codigo == cuenta))
+        item_id, actividad_id = sesion.execute(select(m.ItemRegistro.id, m.ItemRegistro.actividad_id).where(
+            m.ItemRegistro.codigo == item)).one()
+        progreso_id = sesion.scalar(select(m.ProgresoActividad.id).where(
+            m.ProgresoActividad.cuenta_id == cuenta_id, m.ProgresoActividad.actividad_id == actividad_id))
+        if progreso_id is None:
+            progreso = m.ProgresoActividad(cuenta_id=cuenta_id, actividad_id=actividad_id,
+                                           estado=m.EstadoProgreso.EN_CURSO)
+            sesion.add(progreso)
+            sesion.flush()
+            progreso_id = progreso.id
+        guardar_intento(sesion, progreso_id, item_id, dict(
+            opciones_elegidas=[], primera_respuesta=texto, estado=EstadoRespuestaRegistro.CERRADO,
+            tipo_final='propio', texto_citable=[texto]), datetime(2026, 10, 7, 10))
+
+
+def avanzar_con_dato(cliente, aplicacion, texto='DATO DE PRUEBA: espero que me apoyen en lo que elija.'):
+    """El recorrido con un texto citable en t-exp-espera: completar t-expectativas desbloquea la personalizada."""
+    avanzar(cliente, 't-cierre-inicio')
+    citable(aplicacion, texto)
+    return pedir(cliente, 'POST', '/eventos',
+                 {'cuenta': 'est-ana', 'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-expectativas'})
+
+
 def recomendaciones(sesion, tipo):
     sesion.expire_all()
     return sesion.scalars(select(m.Recomendacion).where(m.Recomendacion.tipo == tipo).order_by(m.Recomendacion.id)).all()
 
 
-def test_la_personalizada_guarda_el_contexto_al_desbloquearse_y_se_redacta_una_vez(cliente, sesion, asistente):
-    respuesta = avanzar(cliente)
+def test_la_personalizada_guarda_el_contexto_al_desbloquearse_y_se_redacta_una_vez(
+        cliente, sesion, asistente, aplicacion):
+    respuesta = avanzar_con_dato(cliente, aplicacion)
     assert respuesta['entradas_desbloqueadas'] == [
         {'codigo': PERSONAL, 'nombre': 'Lo que espero', 'personalizada': True, 'texto': None}]
     [recomendacion] = [r for r in recomendaciones(sesion, 'DESBLOQUEADA') if r.texto is None]
@@ -43,8 +74,7 @@ def test_la_personalizada_guarda_el_contexto_al_desbloquearse_y_se_redacta_una_v
     pedir(cliente, 'POST', '/acciones/escribir-entrada',
           {'cuenta': 'est-ana', 'pregunta': PERSONAL, 'texto': 'Aún no'}, 409)
     # El estudiante cambia su respuesta después: la pregunta usa la de ese momento.
-    pedir(cliente, 'POST', '/acciones/registro/editar', {'cuenta': 'est-ana', 'actividad': 't-expectativas',
-          'fecha_hora': FECHA, 'items': [{'item': 't-exp-espera', 'texto': 'Una respuesta nueva, distinta.'}]})
+    citable(aplicacion, 'Una respuesta nueva, distinta.')
     primera = abrir(cliente)
     assert primera == {'codigo': PERSONAL, 'nombre': 'Lo que espero', 'respondida': False,
                        'texto': f'Sobre «{viejo[:60]}»: ¿Cómo te sientes con lo que esperas de este camino?'}
@@ -57,8 +87,8 @@ def test_la_personalizada_guarda_el_contexto_al_desbloquearse_y_se_redacta_una_v
     assert abrir(cliente)['respondida'] is True
 
 
-def test_al_llm_solo_van_la_base_y_los_datos_declarados(cliente, asistente):
-    avanzar(cliente)
+def test_al_llm_solo_van_la_base_y_los_datos_declarados(cliente, asistente, aplicacion):
+    avanzar_con_dato(cliente, aplicacion)
     pedir(cliente, 'POST', '/acciones/escribir-entrada', {'cuenta': 'est-ana', 'texto': 'SECRETO DEL DIARIO'})
     abrir(cliente)
     [enviado] = asistente.contextos_diario
@@ -69,8 +99,8 @@ def test_al_llm_solo_van_la_base_y_los_datos_declarados(cliente, asistente):
         assert prohibido not in serializado
 
 
-def test_si_el_llm_falla_se_guarda_la_base(cliente, sesion, asistente):
-    avanzar(cliente)
+def test_si_el_llm_falla_se_guarda_la_base(cliente, sesion, asistente, aplicacion):
+    avanzar_con_dato(cliente, aplicacion)
     asistente.falla_diario = True
     assert abrir(cliente)['texto'] == '¿Cómo te sientes con lo que esperas de este camino?'
     assert recomendaciones(sesion, 'DESBLOQUEADA')[-1].origen == m.OrigenRedaccion.FIJA

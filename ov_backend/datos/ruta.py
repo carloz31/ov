@@ -207,85 +207,58 @@ LISTAS = (('t-lista-apoyos', 'Quién te apoya', (('FAMILIA', 'Mi familia'), ('DO
           ('t-lista-cambio', 'En tu lista', (('SUBE', 'Sube en mi lista'), ('IGUAL', 'Se queda igual'),
                                              ('BAJA', 'Baja en mi lista'))))
 
-# (actividad, código, nombre, consigna, elección, criterios). El orden es el de la tupla dentro de cada
-# actividad. Elección: None o (lista, mínima, máxima, ordenada, permite «otra»[, referencia]); la referencia
-# (F02), una ELECCION de la misma actividad sobre la misma lista, solo marca lo elegido la vez pasada. Criterio: (código, tipo,
-# descripción); la repregunta sale de `fijos.REPREGUNTAS_CRITERIO`.
+# (actividad, código, nombre, consigna, elección). El orden es el de la tupla dentro de cada actividad. La consigna
+# es la pregunta del texto (o un diccionario con sus partes, como en `contenido`). Elección: None o (lista, mínima,
+# máxima, ordenada, permite «otra»[, referencia]); la referencia (F02), una ELECCION de la misma actividad sobre la
+# misma lista, solo marca lo elegido la vez pasada. Ajuste registros llm (lote 2): sin criterios ni seguimiento;
+# ningún ítem de `ruta` tiene tarjeta, así que ninguno pasa por el LLM.
 ITEMS_REGISTRO = (
     ('t-expectativas', 't-exp-ruta', 'Tu ruta después del colegio',
      '¿Qué te gustaría hacer al terminar el colegio y por qué?',
-     ('RUTAS_DESPUES_COLEGIO', 1, 2, False, True), (('C1', 'RAZON', 'Por qué elige esa ruta'),)),
+     ('RUTAS_DESPUES_COLEGIO', 1, 2, False, True)),
     ('t-expectativas', 't-exp-apoyo', 'Quién te apoya', '¿Quién te apoya en esta decisión? Cuenta un ejemplo.',
-     ('t-lista-apoyos', 1, 1, False, False), (('C1', 'EJEMPLO', 'Un ejemplo concreto de apoyo'),)),
-    ('t-expectativas', 't-exp-espera', 'Lo que esperan de ti', '¿Qué esperan de ti las personas cercanas?', None,
-     (('C1', 'EJEMPLO', 'Una expectativa concreta'), ('C2', 'RAZON', 'Por qué cree que la tienen'))),
+     ('t-lista-apoyos', 1, 1, False, False)),
+    ('t-expectativas', 't-exp-espera', 'Lo que esperan de ti', '¿Qué esperan de ti las personas cercanas?', None),
     ('t-valores', 't-val-orden', 'Tus valores',
      'Ordena los tres valores más importantes para ti y explica el primero.',
-     ('t-lista-valores', 3, 3, True, False), (('C1', 'RAZON', 'Por qué el primero es el más importante'),)),
-    ('t-valores', 't-val-libre', 'Lo que piensas de tus valores', 'Escribe lo que quieras sobre tus valores.', None,
-     ()),
+     ('t-lista-valores', 3, 3, True, False)),
+    ('t-valores', 't-val-libre', 'Lo que piensas de tus valores', 'Escribe lo que quieras sobre tus valores.', None),
     ('t-valores', 't-val-breve', 'Un momento con tus valores',
-     'Describe un momento en que actuaste según tus valores.', None, ()),
+     'Describe un momento en que actuaste según tus valores.', None),
     ('t-eco', 't-eco-ruta', 'Tu ruta, hoy',
      'La vez pasada elegiste una ruta. ¿Sigues pensando igual o cambiaste de idea? Cuéntame por qué.',
-     ('RUTAS_DESPUES_COLEGIO', 1, 2, False, True, 't-ref-rutas'),
-     (('C1', 'RAZON', 'Por qué mantiene o cambia su ruta'),)),
+     ('RUTAS_DESPUES_COLEGIO', 1, 2, False, True, 't-ref-rutas')),
     # La consigna de un ítem con eco no supone que haya cita: funciona en cualquier estado del eco (F02).
     ('t-eco', 't-eco-espera', 'Lo que esperan de ti, hoy',
-     '¿Qué esperan de ti las personas cercanas hoy? ¿Ha cambiado algo?', None, ()),
+     '¿Qué esperan de ti las personas cercanas hoy? ¿Ha cambiado algo?', None),
     ('t-contraste', 't-con-contraste', 'Contraste',
-     '¿En qué se parece tu resultado a lo que pensabas de ti? ¿En qué se diferencia?', None,
-     (('C1', 'CONTRASTE', 'Compara el resultado con lo que pensaba antes'),)),
+     '¿En qué se parece tu resultado a lo que pensabas de ti? ¿En qué se diferencia?', None),
     ('t-explorar', 't-explorar-sorpresa', 'Lo inesperado', '¿Qué opción fuera de tu perfil te llamó la atención y por qué?',
-     None, (('C1', 'RAZON', 'Por qué le llamó la atención'),)),
+     None),
     ('t-comparar', 't-comparar-eleccion', 'Comparación', 'Compara tus planes: ¿cuál te convence más y por qué?',
-     None, (('C1', 'RAZON', 'Por qué ese plan le convence más'),)),
+     None),
     ('t-proyecto', 't-proyecto-paso', 'Mi proyecto', '¿Cuál de tus pasos vas a dar primero y qué esperas averiguar?',
-     None, (('C1', 'ACCION', 'Qué paso dará primero'),)),
+     None),
     # B13 · HU-101: contrasta lo que pensaba (LO_QUE_PIENSO) con lo que aprendió en la entrevista.
     ('t-investigador-cierre', 't-cierre-cambio', 'Lo que cambió',
-     '¿Qué cambió en lo que pensabas de la ocupación después de tu entrevista?', None,
-     (('C1', 'CONTRASTE', 'Compara lo que pensaba antes con lo que aprendió'),)),
+     '¿Qué cambió en lo que pensabas de la ocupación después de tu entrevista?', None),
     ('t-investigador-cierre', 't-cierre-lista', 'En tu lista', '¿La ocupación sube o baja en tu lista? ¿Por qué?',
-     ('t-lista-cambio', 1, 1, False, False), (('C1', 'RAZON', 'Por qué sube, baja o se queda igual'),)),
-    # Ajuste registros (DATO DE PRUEBA): elección desde PLANES con tres opciones propias (criterio informado,
-    # criterio null y una no exclusiva con texto base propio), otra que retoma sobre la misma referencia, un
-    # premarcado y un texto con seguimiento completo, abierto y ecos de una referencia y de un ítem anterior.
+     ('t-lista-cambio', 1, 1, False, False)),
+    # Ajuste registros (DATO DE PRUEBA): elección desde PLANES con tres opciones propias (una con pregunta propia,
+    # una sin LLM y una que se suma a las del plan), otra que retoma sobre la misma referencia y un premarcado.
     ('t-referencia', 't-refe-plan', 'El plan que elegiste', '¿Cuál de tus planes eliges y por qué?',
      {'fuente': 'REFERENCIA', 'referencia': 't-ref-refe-planes', 'minima': 1, 'maxima': 2,
       'propias': ({'codigo': 'NINGUNO_AUN', 'texto': 'Ninguno todavía', 'exclusiva': True,
-                   'pregunta_propia': '¿Qué te falta para elegir uno?', 'criterio': 'ACCION',
-                   'que_busca': 'Una acción concreta para poder elegir', 'texto_base': '¿Qué harías primero?',
-                   'cumple': ('Voy a hablar con mi tío esta semana',), 'no_cumple': ('Ya veré (sin acción)',)},
-                  {'codigo': 'PREFIERO_NO', 'texto': 'Prefiero no decir', 'exclusiva': True, 'criterio': None},
-                  {'codigo': 'OTRO_PLAN', 'texto': 'Uno que aún no anoto',
-                   'texto_base': '¿Qué plan es y qué te atrae de él?'})},
-     (('C1', 'RAZON', 'Por qué elige ese plan'),)),
+                   'pregunta': '¿Qué te falta para elegir uno?'},
+                  {'codigo': 'PREFIERO_NO', 'texto': 'Prefiero no decir', 'exclusiva': True, 'sin_llm': True},
+                  {'codigo': 'OTRO_PLAN', 'texto': 'Uno que aún no anoto'})}),
     ('t-referencia', 't-refe-retoma', 'Tu plan, hoy', '¿Sigues con el mismo plan? Cuéntame por qué.',
      {'fuente': 'REFERENCIA', 'referencia': 't-ref-refe-planes', 'minima': 1, 'maxima': 1,
       'retoma': 't-ref-refe-planes',
-      'propias': ({'codigo': 'SIN_PLAN', 'texto': 'Todavía no tengo uno', 'exclusiva': True, 'criterio': None},),
-      'premarcar_si': {'item': 't-refe-plan', 'opcion': 'PREFIERO_NO', 'marca': 'SIN_PLAN'}},
-     (('C1', 'RAZON', 'Por qué mantiene o cambia su plan'),)),
-    ('t-referencia', 't-refe-duda', 'Lo que aún no sabes', '¿Qué te gustaría tener claro de tu plan A?', None,
-     (('C1', 'EJEMPLO', 'Algo concreto que quiere saber'),)),
+      'propias': ({'codigo': 'SIN_PLAN', 'texto': 'Todavía no tengo uno', 'exclusiva': True, 'sin_llm': True},),
+      'premarcar_si': {'item': 't-refe-plan', 'opcion': 'PREFIERO_NO', 'marca': 'SIN_PLAN'}}),
+    ('t-referencia', 't-refe-duda', 'Lo que aún no sabes', '¿Qué te gustaría tener claro de tu plan A?', None),
 )
-
-# Ajuste registros: campos de seguimiento por ítem (solo con criterio). `ecos_llm`: (tipo, código) con tipo
-# REFERENCIA (de la actividad), TEXTO o ELECCION (de un ítem anterior de la misma actividad). DATO DE PRUEBA.
-SEGUIMIENTOS = {
-    # Dos repreguntas al mismo ítem (como b5-1-decision en `contenido`); sin guía, conserva su respaldo de ruta.
-    't-val-orden': {'max_repreguntas': 2},
-    't-refe-plan': {'que_busca': 'Un motivo propio para elegir ese plan', 'texto_base': '¿Qué te atrae de ese plan?',
-                    'cumple': ('Lo elijo porque me gusta construir cosas', 'Porque mi tía lo estudió y me contó'),
-                    'no_cumple': ('Porque sí (sin motivo)', 'Es el mejor (sin motivo propio)'),
-                    'admite_abierto': True},
-    't-refe-duda': {'que_busca': 'Algo concreto que quiere averiguar', 'texto_base': '¿Qué dato te falta?',
-                    'cumple': ('Cuánto cuesta el primer año', 'Si hay turno noche'),
-                    'no_cumple': ('Todo (nada concreto)', 'No sé (sin dato)'),
-                    'evitar': 'Sugerir qué averiguar', 'admite_abierto': True,
-                    'ecos_llm': (('REFERENCIA', 't-ref-refe-plan-a'), ('TEXTO', 't-refe-plan'))},
-}
 
 # Referencias: (código, (tipo de dueño, dueño), tipo, fuente). Dueño: ('ACTIVIDAD', código) o
 # ('PREGUNTA_DIARIO', código). El tipo es uno de `TipoReferencia`; ELECCION y TEXTO leen un ítem de registro

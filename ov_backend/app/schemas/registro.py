@@ -1,8 +1,10 @@
-"""Contratos públicos del registro."""
+"""Contratos públicos del registro.
 
-from typing import Annotated, Literal
+Ajuste registros llm (lote 2): la entrega es provisional (sin LLM) hasta el flujo secuencial del lote 3; el
+seguimiento, la edición y los borradores responden 501. El front actual no funciona contra estos contratos.
+"""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.models import EstadoProgreso
 from app.models.enums import EstadoRespuestaRegistro, FuenteOpciones
@@ -29,8 +31,15 @@ class BorradorRegistroEntrada(TextoRegistroEntrada):
     posicion: str | None = None
 
 
+class ItemEntrega(BaseModel):
+    item: str
+    texto: str
+    opciones: list[OpcionElegida] = []
+
+
 class EntregarRegistroEntrada(CompletarActividadEntrada):
-    pass
+    """PROVISIONAL (lote 3): la entrega trae todos los ítems a la vez, sin borradores."""
+    items: list[ItemEntrega]
 
 
 class ResponderSeguimientoEntrada(TextoRegistroEntrada):
@@ -40,7 +49,6 @@ class ResponderSeguimientoEntrada(TextoRegistroEntrada):
 class ItemEdicion(BaseModel):
     item: str
     texto: str
-    # F02: la elección nueva; sin ella, se conserva la de la respuesta.
     opciones: list[OpcionElegida] | None = None
 
 
@@ -55,43 +63,21 @@ class EstadoItemRegistro(BaseModel):
     estado: EstadoRespuestaRegistro
 
 
-class MensajeRespuestaRegistro(BaseModel):
-    tipo: Literal['respuesta'] = 'respuesta'
-    texto: str
-    orden: int | None = None
-    borrador: bool | None = None
-
-
-class MensajePreguntaRegistro(BaseModel):
-    tipo: Literal['pregunta'] = 'pregunta'
-    orden: int
-    texto: str
-
-
-class MensajeAvisoRegistro(BaseModel):
-    """Ajuste registros: Lumi acoge una respuesta sensible con un texto fijo y no repregunta (solo «Continuar»)."""
-    tipo: Literal['aviso'] = 'aviso'
-    texto: str
-
-
-MensajeRegistro = Annotated[MensajeRespuestaRegistro | MensajePreguntaRegistro | MensajeAvisoRegistro,
-                            Field(discriminator='tipo')]
-
-
 class OpcionListaPublica(BaseModel):
     codigo: str
     texto: str
 
 
 class OpcionPropiaPublica(BaseModel):
-    """Una opción propia del ítem, con solo lo que la pantalla necesita: nunca su criterio ni sus ejemplos."""
+    """Una opción propia del ítem, con solo lo que la pantalla necesita: nunca su tarjeta."""
     codigo: str
     texto: str
     exclusiva: bool
-    # Reemplaza la consigna del texto cuando se elige.
-    pregunta_propia: str | None
-    # Con `criterio: null`: la opción cumple sin seguimiento y el texto es opcional en la pantalla.
-    sin_seguimiento: bool
+    # Reemplazan la pregunta del texto y el arranque del ítem cuando se marca (con marcadores sin resolver).
+    pregunta: str | None
+    arranque: str | None
+    # La opción no se evalúa con el LLM.
+    sin_llm: bool
 
 
 class PremarcarPublico(BaseModel):
@@ -102,9 +88,9 @@ class PremarcarPublico(BaseModel):
 
 
 class EleccionPublica(BaseModel):
-    """`fuente` (ajuste registros): LISTA (opciones de `lista`), REFERENCIA (las de `referencia_opciones`, que se
-    leen con las referencias de la cuenta) o PROPIAS. `opciones_propias` se suman a la fuente o son la única.
-    `referencia` (F02): la que marca lo elegido la vez pasada."""
+    """`fuente`: LISTA (opciones de `lista`), REFERENCIA (las de `referencia_opciones`, que se leen con las
+    referencias de la cuenta), PROPIAS o PIEZAS_* (las arma la cuenta; lote 3). `opciones_propias` se suman a la
+    fuente o son la única. `referencia` (F02): la que marca lo elegido la vez pasada."""
     fuente: FuenteOpciones
     lista: str | None
     referencia: str | None
@@ -114,44 +100,44 @@ class EleccionPublica(BaseModel):
     maxima: int
     ordenada: bool
     permite_otra: bool
+    # La etiqueta de la «Otra» si no es la de siempre.
+    etiqueta_otra: str | None
     opciones: list[OpcionListaPublica]
     opciones_propias: list[OpcionPropiaPublica]
     premarcar_si: PremarcarPublico | None
 
 
 class ItemRegistroPublico(BaseModel):
+    """La definición del ítem, con los marcadores sin resolver (los resuelve la cuenta, lote 3)."""
     codigo: str
     nombre: str
-    consigna: str
+    dialogo: str | None
+    pregunta_eleccion: str | None
+    pregunta_texto: str
+    arranque: str | None
     min_caracteres: int | None
     obligatorio: bool
+    # El ítem tiene tarjeta (pasa por el LLM).
+    con_llm: bool
     eleccion: EleccionPublica | None
 
 
+class OpcionGuardada(BaseModel):
+    codigo: str
+    texto: str
+
+
 class RespuestaRegistroPublica(EstadoItemRegistro):
-    opciones_elegidas: list[OpcionElegida]
-    # Conversación del intento vigente: su texto base y sus turnos.
-    conversacion: list[MensajeRegistro]
-    # Solo en la consulta y con el registro cerrado: la respuesta final.
-    texto_consolidado: str | None = None
-
-
-class ItemPorAmpliar(BaseModel):
-    item: str
-    pista: str
-    # Ajuste registros: lo que le faltó según el evaluador; el front lo muestra antes que la pista o el nombre.
-    falta: str | None = None
+    """El intento vigente del ítem: la elección tal como se mostró y la primera respuesta."""
+    opciones_elegidas: list[OpcionGuardada]
+    texto: str
 
 
 class RegistroConsultado(BaseModel):
     posicion: str | None
     estado: EstadoProgreso | None
     respuestas: list[RespuestaRegistroPublica]
-    # Solo con el registro cerrado: ítems que quedaron poco desarrollados y la pregunta que los ampliaría.
-    items_por_ampliar: list[ItemPorAmpliar] | None = None
-    # Solo con el registro cerrado (ajuste registros): ítems que el estudiante dejó abiertos.
-    items_abiertos: list[str] | None = None
 
 
 class RespuestaRegistroAccion(RegistroConsultado, RespuestaAccion):
-    """Estado del registro tras entregar, responder, omitir o editar; nunca lleva clasificaciones."""
+    """Estado del registro tras entregar; nunca lleva tipos ni pistas."""

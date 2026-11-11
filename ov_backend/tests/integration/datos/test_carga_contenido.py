@@ -23,9 +23,10 @@ def base(tmp_path_factory):
 def test_carga_conteos(base):
     conteos, _ = base
     assert conteos['cuenta'] == 8
-    # Ajuste registros (adaptación autorizada para `contenido`): salen b2-6, ma6, b4-a y ma9; los 19 registros tienen 44 ítems.
+    # Ajuste registros (adaptación autorizada para `contenido`): salen b2-6, ma6, b4-a y ma9. Ajuste registros llm
+    # (lote 2): los 19 registros tienen 29 ítems (22 de los requeridos y 7 de los opcionales).
     assert conteos['actividad'] == 83 + 5  # 77 reales y los seis casos (ajuste carga-casos) + recuerdos de Lumi provisionales
-    assert conteos['item_registro'] == 44
+    assert conteos['item_registro'] == 29
 
 
 def test_actividades_bloques_y_propiedades(base):
@@ -75,16 +76,14 @@ def test_fichas_con_temas_y_sin_la_carta_anunciada(base):
 def test_podios_eligen_tres_de_su_lista(base):
     _, sesion = base
     items = {i.codigo: i for i in sesion.scalars(select(m.ItemRegistro))}
-    for codigo in ('b2-3-valores', 'b4-2-criterios'):
+    # Ajuste registros llm (lote 2): b4-2-criterios sale y b2-4-bien es un podio con «Otra».
+    for codigo, otra in (('b2-3-valores', False), ('b2-4-bien', True)):
         item = items[codigo]
         assert (item.eleccion_minima, item.eleccion_maxima, item.eleccion_ordenada, item.permite_otra) == (
-            3, 3, True, False)
-    # Ajuste registros (adaptación autorizada para `contenido`): todas las listas son comunes y cada ítem con criterio tiene sus campos de seguimiento.
+            3, 3, True, otra)
+    # Ajuste registros (adaptación autorizada para `contenido`): todas las listas son comunes.
     listas = {l.id: l for l in sesion.scalars(select(m.ListaOpciones))}
     assert all(listas[i.lista_id].comun for i in items.values() if i.lista_id is not None)
-    con_criterio = {c.item_registro_id for c in sesion.scalars(select(m.CriterioCompletitud))}
-    assert {i.id for i in items.values() if i.seguimiento} == con_criterio
-    assert len(con_criterio) == 40
 
 
 def test_referencias_de_los_json(base):
@@ -92,7 +91,8 @@ def test_referencias_de_los_json(base):
     referencias = {r.codigo: r for r in sesion.scalars(select(m.Referencia))}
     assert len(referencias) == len(contenido.REFERENCIAS)
     items = {i.id: i.codigo for i in sesion.scalars(select(m.ItemRegistro))}
-    assert items[referencias['b4-5-ref-criterios'].item_registro_id] == 'b4-2-criterios'
+    assert items[referencias['b3-4-ref-valores'].item_registro_id] == 'b2-3-valores'
+    assert items[referencias['b5-3-ref-seguridad'].item_registro_id] == 'b5-1-seguridad'
     lectura = {i.id: i.codigo for i in sesion.scalars(select(m.ItemInstrumento))}
     assert lectura[referencias['b3-8-ref-costos'].item_instrumento_id] == 'AUTO-12'
     assert 'b4-2-ref-decision' not in referencias

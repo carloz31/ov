@@ -48,13 +48,27 @@ def pedir(cliente, metodo, ruta, datos=None, esperado=200):
 
 def eleccion_minima(item, opciones_referencia=()):
     """Las primeras opciones, tantas como pide el mínimo del ítem: las de su lista o su referencia (ajuste
-    registros: resueltas para la cuenta) y luego las propias que no son exclusivas, y por último las exclusivas."""
+    registros: resueltas para la cuenta) y luego las propias que no son exclusivas, y por último las exclusivas.
+    Ajuste registros llm (lote 2): si no alcanzan (las piezas las arma la cuenta), completa con «Otra»."""
     eleccion = item['eleccion']
     if eleccion is None:
         return []
     propias = sorted(eleccion.get('opciones_propias', ()), key=lambda o: o['exclusiva'])
     disponibles = [*eleccion['opciones'], *opciones_referencia, *propias]
-    return [{'codigo': o['codigo']} for o in disponibles[:eleccion['minima']]]
+    elegidas = [{'codigo': o['codigo']} for o in disponibles[:eleccion['minima']]]
+    otras = [{'codigo': 'OTRA' if eleccion['maxima'] == 1 else f'OTRA-{n}', 'texto': 'DATO DE PRUEBA: otra'}
+             for n in range(1, eleccion['minima'] - len(elegidas) + 1)] if eleccion['permite_otra'] else []
+    return elegidas + otras
+
+
+def items_entrega(cliente, actividad, cuenta='est-ana', texto='DATO DE PRUEBA: una respuesta completa.'):
+    """Cada ítem del registro con su elección mínima y un texto, como los pide la entrega provisional (lote 2)."""
+    items = pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro')
+    referencias = opciones_de_referencias(cliente, actividad, cuenta) if any(
+        (i['eleccion'] or {}).get('referencia_opciones') for i in items) else {}
+    return [{'item': item['codigo'], 'texto': texto,
+             'opciones': eleccion_minima(item, referencias.get((item['eleccion'] or {}).get('referencia_opciones'), ()))}
+            for item in items]
 
 
 def opciones_de_referencias(cliente, actividad, cuenta='est-ana'):
@@ -64,17 +78,10 @@ def opciones_de_referencias(cliente, actividad, cuenta='est-ana'):
 
 
 def responder_registro(cliente, actividad, cuenta='est-ana'):
-    """Guarda cada ítem con un texto adecuado para el evaluador falso y entrega el registro (B03)."""
-    items = pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro')
-    referencias = opciones_de_referencias(cliente, actividad, cuenta) if any(
-        (i['eleccion'] or {}).get('referencia_opciones') for i in items) else {}
-    for item in items:
-        pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
-            'cuenta': cuenta, 'actividad': actividad, 'item': item['codigo'], 'fecha_hora': FECHA,
-            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.',
-            'opciones': eleccion_minima(item, referencias.get((item['eleccion'] or {}).get('referencia_opciones'), ()))})
+    """Entrega el registro con todos sus ítems (entrega provisional del ajuste registros llm, lote 2)."""
     return pedir(cliente, 'POST', '/acciones/registro/entregar',
-                 {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA})
+                 {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
+                  'items': items_entrega(cliente, actividad, cuenta)})
 
 
 def completar(cliente, codigo, cuenta='est-ana', esperado=200):

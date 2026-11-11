@@ -9,7 +9,7 @@ TABLAS_DE_ESTADO = (
     'contador_diario', 'check_in', 'insignia_vitrina', 'presentacion_vista',
     'entrevista', 'entrevista_autor', 'conversacion_vinculo', 'evento_uso',
     'desbloqueo', 'respuesta_item', 'ritmo_aplicacion', 'resultado_instrumento', 'resultado_dimension',
-    'coincidencia', 'respuesta_registro', 'turno_seguimiento', 'evaluacion_respuesta', 'favorito',
+    'coincidencia', 'respuesta_registro', 'favorito',
     'tarjeta_carrera', 'motivo_tarjeta', 'conocimiento_tarjeta', 'duda_tarjeta', 'gasto_tarjeta',
     'financiamiento_tarjeta', 'complicacion_tarjeta', 'sugerencia_tarjeta', 'paso_tarjeta',
     'investigacion', 'pregunta_guion', 'sugerencia_guion', 'reaccion', 'reporte', 'notificacion',

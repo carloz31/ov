@@ -1,43 +1,27 @@
-"""Evaluador Gemini (B03): entrega y seguimiento con cliente simulado, sin red."""
+"""Adaptador Gemini de los asistentes (diario, sugerencias, guion) con cliente simulado, sin red."""
 
 import json
 import logging
-from dataclasses import dataclass, replace
+from dataclasses import replace
 import httpx
 import pytest
 from google import genai
 from google.genai import errors, types
-from pydantic import BaseModel
 from app.config import Configuracion
-from app.services.registro.evaluacion import (
-    CriterioEvaluacion, ItemPorEvaluar, TurnoEvaluacion, procesar_entrega, procesar_seguimiento,
-)
-from app.services.diario.asistente import ContextoPersonalizacion, DatoPersonalizacion
-from app.services.registro.evaluacion import (
-    ContextoEntrega, ContextoSeguimiento, GuiaSeguimiento, ItemEntrega, ResultadoSeguimiento,
-)
-from app.services.registro.gemini import EvaluadorGemini, mensaje_evaluador, razonamiento_para
-from app.services.registro.prompt import PROMPT_ENTREGA, PROMPT_SEGUIMIENTO
+from app.core.parametros import NIVEL_RAZONAMIENTO_ASISTENTES, TEMPERATURA_ASISTENTES
+from app.services.diario.asistente import PROMPT_DIARIO_V1, ContextoPersonalizacion, DatoPersonalizacion
+from app.services.registro.evaluacion import ErrorResultadoEvaluacion
+from app.services.registro.gemini import ErrorClienteGemini, EvaluadorGemini, razonamiento_para
 from soporte_red import impedir_red
 
 
 CLAVE_SIMULADA = 'clave-sintetica-solo-pruebas'
 CONFIGURACION = Configuracion(evaluador='gemini', clave=CLAVE_SIMULADA)
-CRITERIOS = (CriterioEvaluacion('C1', 'ACCION', 'Acción concreta', '¿Qué podrías hacer al respecto?'),
-             CriterioEvaluacion('C2', 'EJEMPLO', 'Situación concreta', '¿Podrías darme un ejemplo concreto?'))
-ITEM = ItemPorEvaluar('I1', '¿Qué harás para practicarla?', CRITERIOS, ('Asertividad',),
-                      'En el trabajo de Comunicación del jueves voy a decir mi opinión al menos una vez.', 40,
-                      'Cuéntame más')
-# Contrato v5 (ajuste registros): `{cumple, abierto, sensible, falta, repregunta[, consolidada]}`.
-ADECUADA = {'items': [{'item': 'I1', 'cumple': True, 'abierto': False, 'emocional': False, 'sensible': False, 'falta': None,
-                       'repregunta': None}]}
-VAGA = {'items': [{'item': 'I1', 'cumple': False, 'abierto': False, 'emocional': False, 'sensible': False,
-                   'falta': 'Una situación concreta', 'repregunta': '¿En qué trabajo de Comunicación lo harías?'}]}
-SEGUIMIENTO = {'cumple': True, 'abierto': False, 'emocional': False, 'sensible': False, 'falta': None, 'repregunta': None,
-               'consolidada': 'Voy a decir mi opinión el jueves en Comunicación.'}
+CONTEXTO = ContextoPersonalizacion('¿Qué te gustó?', (DatoPersonalizacion('TEXTO', 'x', ()),))
+VALIDA = {'pregunta': '¿Qué te gustó de eso?'}
 
 
-def respuesta_sdk(datos=ADECUADA):
+def respuesta_sdk(datos=VALIDA):
     return types.GenerateContentResponse(candidates=[types.Candidate(
         content=types.Content(parts=[types.Part(text=json.dumps(datos, ensure_ascii=False))]),
         finish_reason='STOP',
@@ -65,72 +49,17 @@ class ClienteSimulado:
         self.cierres += 1
 
 
-def entregar(cliente, configuracion=CONFIGURACION, item=ITEM):
+def personalizar(cliente, configuracion=CONFIGURACION):
     adaptador = EvaluadorGemini(configuracion, cliente=cliente)
     try:
-        resultado = procesar_entrega('Mi plan', (item,), adaptador, modelo=configuracion.modelo,
-                                     tiempo_maximo_segundos=configuracion.timeout_segundos)['I1']
-        assert adaptador.latencia_ms is not None
-        return resultado
+        return adaptador.personalizar_entrada(CONTEXTO)
     finally:
+        assert adaptador.latencia_ms is not None
         adaptador.cerrar()
-
-
-def test_entrega_con_salida_estructurada_y_contexto_exclusivo():
-    cliente = ClienteSimulado()
-    resultado = entregar(cliente)
-    assert resultado.origen == 'LLM' and resultado.clasificacion == 'ADECUADA'
-    assert resultado.modelo == CONFIGURACION.modelo and resultado.version_prompt == 'v6.10'
-    llamada, = cliente.llamadas
-    datos = json.loads(llamada['contents'])
-    assert set(datos) == {'titulo_actividad', 'items'}
-    assert datos['items'][0]['opciones_elegidas'] == ['Asertividad']
-    assert datos['items'][0]['criterios'][0] == {'codigo': 'C1', 'tipo': 'ACCION', 'descripcion': 'Acción concreta',
-                                                 'repregunta': '¿Qué podrías hacer al respecto?'}
-    assert CLAVE_SIMULADA not in llamada['contents']
-    configuracion = llamada['config']
-    assert configuracion.system_instruction == PROMPT_ENTREGA
-    # Ajuste pruebas llm: 1.0 en el registro.
-    assert configuracion.temperature == 1.0 and configuracion.response_mime_type == 'application/json'
-    assert 'items' in configuracion.response_json_schema['required']
-    assert configuracion.thinking_config.thinking_level == 'LOW'
-    assert configuracion.automatic_function_calling.disable is True
-    assert cliente.cierres == 0  # El cliente inyectado pertenece al llamador.
-
-
-def test_gemini_recibe_sensible_antes_que_emocional_y_cumple():
-    cliente = ClienteSimulado()
-    entregar(cliente)
-    esquema = cliente.llamadas[0]['config'].response_json_schema
-    assert list(esquema['$defs']['ResultadoItemEntrega']['properties'])[:4] == ['item', 'sensible', 'emocional', 'cumple']
-    assert list(ResultadoSeguimiento.model_json_schema()['properties'])[:3] == ['sensible', 'emocional', 'cumple']
 
 
 def test_modelo_por_defecto_es_gemini_3_5_flash_lite():
     assert CONFIGURACION.modelo == 'gemini-3.5-flash-lite'
-
-
-def test_entrega_poco_desarrollada_usa_la_pregunta_redactada():
-    resultado = entregar(ClienteSimulado(respuesta_sdk(VAGA)))
-    assert resultado.criterios_faltantes == ('C1', 'C2') and resultado.falta == 'Una situación concreta'
-    assert resultado.pregunta == '¿En qué trabajo de Comunicación lo harías?'
-
-
-def test_seguimiento_consolida_con_su_instruccion():
-    cliente = ClienteSimulado(respuesta_sdk(SEGUIMIENTO))
-    adaptador = EvaluadorGemini(CONFIGURACION, cliente=cliente)
-    try:
-        resultado = procesar_seguimiento('Mi plan', ITEM, (TurnoEvaluacion('¿Cuándo?', 'El jueves'),), adaptador,
-                                         pregunta_generica=False)
-    finally:
-        adaptador.cerrar()
-    assert resultado.origen == 'LLM' and resultado.consolidada == SEGUIMIENTO['consolidada']
-    llamada, = cliente.llamadas
-    assert llamada['config'].system_instruction == PROMPT_SEGUIMIENTO
-    datos = json.loads(llamada['contents'])
-    assert datos['turnos'] == [{'pregunta': '¿Cuándo?', 'respuesta': 'El jueves'}]
-    assert datos['ecos'] == [] and 'otras_respuestas' not in datos
-    assert 'consolidada' in llamada['config'].response_json_schema['required']
 
 
 @pytest.mark.parametrize('modelo,nivel,campo,valor', [
@@ -153,48 +82,23 @@ def test_razonamiento_minimo_compatible(modelo, nivel, campo, valor):
     assert getattr(razonamiento_para(modelo, nivel), campo) == valor
 
 
-class SalidaAsistente(BaseModel):
-    ok: bool
-
-
-@dataclass(frozen=True)
-class ContextoAsistente:
-    texto: str
-
-
-def test_registro_en_low_y_asistentes_en_minimal():
-    configuracion = replace(CONFIGURACION, modelo='gemini-3.5-flash-lite')
-    registro, asistente = ClienteSimulado(), ClienteSimulado(respuesta_sdk({'ok': True}))
-    entregar(registro, configuracion)
-    adaptador = EvaluadorGemini(configuracion, cliente=asistente)
-    try:
-        adaptador._evaluar(ContextoAsistente('hola'), 'instrucción', SalidaAsistente, lambda resultado, _contexto: resultado)
-    finally:
-        adaptador.cerrar()
-    assert registro.llamadas[0]['config'].thinking_config.thinking_level == 'LOW'
-    assert registro.llamadas[0]['config'].temperature == 1.0
-    assert asistente.llamadas[0]['config'].thinking_config.thinking_level == 'MINIMAL'
-    assert asistente.llamadas[0]['config'].temperature == 0.2
-
-
 def test_modelo_desconocido_sin_supuestos_ni_descubrimiento():
     assert razonamiento_para('modelo-desconocido', 'low') is None
     cliente = ClienteSimulado()
-    entregar(cliente, replace(CONFIGURACION, modelo='modelo-desconocido'))
+    personalizar(cliente, replace(CONFIGURACION, modelo='modelo-desconocido'))
     assert cliente.llamadas[0]['config'].thinking_config is None
 
 
 @pytest.mark.parametrize('datos', [
-    {}, {'items': []}, {'items': [{**ADECUADA['items'][0], 'cumple': 'sí'}]},
-    {'items': [{**ADECUADA['items'][0], 'extra': CLAVE_SIMULADA}]},
-    {'items': [{**ADECUADA['items'][0], 'item': 'I2'}]},
-    {'items': [{k: v for k, v in VAGA['items'][0].items() if k != 'sensible'}]},
+    {}, {'pregunta': 1}, {'pregunta': None},
+    {**VALIDA, 'extra': CLAVE_SIMULADA},
+    {'pregunta': 'Sin signo de interrogación'},
 ])
 def test_resultados_invalidos_se_convierten_en_fallo(datos):
     cliente = ClienteSimulado(respuesta_sdk(datos))
-    resultado = entregar(cliente)
-    assert resultado.origen == 'EXTENSION_MINIMA' and resultado.clasificacion == 'NO_EVALUADA'
-    assert 'esquema' in resultado.error and CLAVE_SIMULADA not in resultado.error
+    with pytest.raises((ErrorResultadoEvaluacion, ErrorClienteGemini)) as error:
+        personalizar(cliente)
+    assert CLAVE_SIMULADA not in str(error.value)
     assert len(cliente.llamadas) == 1
 
 
@@ -203,10 +107,11 @@ def test_resultados_invalidos_se_convierten_en_fallo(datos):
     types.GenerateContentResponse(candidates=[types.Candidate()]),
     types.GenerateContentResponse(candidates=[types.Candidate(content=types.Content(parts=[types.Part(text='no JSON')]))]),
     types.GenerateContentResponse(candidates=[types.Candidate(content=types.Content(parts=[
-        types.Part(text=json.dumps(ADECUADA), thought=True)]))]),
+        types.Part(text=json.dumps(VALIDA), thought=True)]))]),
 ])
 def test_salida_ausente_bloqueada_o_malformada(respuesta):
-    assert entregar(ClienteSimulado(respuesta)).origen == 'EXTENSION_MINIMA'
+    with pytest.raises(ErrorResultadoEvaluacion):
+        personalizar(ClienteSimulado(respuesta))
 
 
 @pytest.mark.parametrize('error,timeout', [
@@ -217,10 +122,11 @@ def test_salida_ausente_bloqueada_o_malformada(respuesta):
 ])
 def test_fallos_timeout_sin_reintentar_ni_filtrar_secretos(error, timeout, caplog):
     cliente = ClienteSimulado(error=error)
-    resultado = entregar(cliente, item=replace(ITEM, texto='Corto'))
-    assert resultado.origen == 'EXTENSION_MINIMA' and resultado.pregunta == 'Cuéntame más'
-    assert ('tiempo máximo' in resultado.error) is timeout
-    assert CLAVE_SIMULADA not in resultado.error + caplog.text
+    with pytest.raises((TimeoutError, ErrorClienteGemini)) as fallo:
+        personalizar(cliente)
+    assert isinstance(fallo.value, TimeoutError) is timeout
+    assert ('tiempo máximo' in str(fallo.value)) is timeout
+    assert CLAVE_SIMULADA not in str(fallo.value) + caplog.text
     assert len(cliente.llamadas) == 1
 
 
@@ -228,7 +134,7 @@ def test_error_directo_del_adaptador_sin_causa_externa():
     adaptador = EvaluadorGemini(CONFIGURACION, cliente=ClienteSimulado(error=RuntimeError(CLAVE_SIMULADA)))
     try:
         with pytest.raises(RuntimeError) as error:
-            adaptador.evaluar_entrega(None)
+            adaptador.personalizar_entrada(CONTEXTO)
         assert error.value.__suppress_context__ is True and error.value.__cause__ is None
         assert CLAVE_SIMULADA not in str(error.value)
     finally:
@@ -241,7 +147,7 @@ def test_log_externo_con_clave_y_traceback_se_sanea(caplog):
             raise RuntimeError(CLAVE_SIMULADA)
         except RuntimeError:
             logging.getLogger('google.genai').exception('Falló %s', CLAVE_SIMULADA)
-    entregar(ClienteSimulado(observar=observar))
+    personalizar(ClienteSimulado(observar=observar))
     assert 'omitido' in caplog.text and CLAVE_SIMULADA not in caplog.text
 
 
@@ -262,9 +168,10 @@ def test_sdk_real_con_transporte_simulado_no_reintenta_429(monkeypatch):
     monkeypatch.setattr(genai, 'Client', crear)
     adaptador = EvaluadorGemini(replace(CONFIGURACION, timeout_segundos=1.25))
     try:
-        resultado = procesar_entrega('Mi plan', (ITEM,), adaptador)['I1']
-        assert resultado.origen == 'EXTENSION_MINIMA' and len(llamadas) == 1
-        assert CLAVE_SIMULADA not in resultado.error
+        with pytest.raises(ErrorClienteGemini) as error:
+            adaptador.personalizar_entrada(CONTEXTO)
+        assert len(llamadas) == 1
+        assert CLAVE_SIMULADA not in str(error.value)
     finally:
         adaptador.cerrar()
         cliente_http.close()
@@ -276,7 +183,7 @@ def test_sdk_con_transporte_simulado_envia_esquema_y_razonamiento(monkeypatch):
     def transporte(peticion):
         llamadas.append(json.loads(peticion.content))
         return httpx.Response(200, json={'candidates': [{
-            'content': {'role': 'model', 'parts': [{'text': json.dumps(VAGA)}]}, 'finishReason': 'STOP'}]})
+            'content': {'role': 'model', 'parts': [{'text': json.dumps(VALIDA)}]}, 'finishReason': 'STOP'}]})
     cliente_http = httpx.Client(transport=httpx.MockTransport(transporte))
     def crear(**argumentos):
         argumentos['http_options'].httpx_client = cliente_http
@@ -284,17 +191,19 @@ def test_sdk_con_transporte_simulado_envia_esquema_y_razonamiento(monkeypatch):
     monkeypatch.setattr(genai, 'Client', crear)
     adaptador = EvaluadorGemini(CONFIGURACION)
     try:
-        resultado = procesar_entrega('Mi plan', (ITEM,), adaptador)['I1']
+        resultado = adaptador.personalizar_entrada(CONTEXTO)
     finally:
         adaptador.cerrar()
         cliente_http.close()
-    assert resultado.origen == 'LLM' and resultado.criterios_faltantes == ('C1', 'C2')
+    assert resultado.pregunta == VALIDA['pregunta']
     configuracion = llamadas[0]['generationConfig']
-    assert configuracion['temperature'] == 1.0 and configuracion['candidateCount'] == 1
+    assert configuracion['temperature'] == TEMPERATURA_ASISTENTES and configuracion['candidateCount'] == 1
+    esquema = configuracion.get('responseJsonSchema', configuracion.get('response_json_schema'))
+    assert esquema['required'] == ['pregunta']
     pensamiento = configuracion['thinkingConfig']
     # ProtoJSON admite el nombre original y su equivalente lowerCamelCase.
-    assert pensamiento.get('thinkingLevel', pensamiento.get('thinking_level')) == 'LOW'
-    assert llamadas[0]['systemInstruction']['parts'][0]['text'] == PROMPT_ENTREGA
+    assert pensamiento.get('thinkingLevel', pensamiento.get('thinking_level')) == NIVEL_RAZONAMIENTO_ASISTENTES.upper()
+    assert llamadas[0]['systemInstruction']['parts'][0]['text'] == PROMPT_DIARIO_V1
     assert CLAVE_SIMULADA not in json.dumps(llamadas[0])
 
 
@@ -312,34 +221,11 @@ def test_cliente_propio_se_cierra_y_error_inicial_saneado(monkeypatch):
     assert CLAVE_SIMULADA not in str(error.value)
 
 
-# --- Ajuste pruebas llm ---------------------------------------------------------------------
-
-GUIA = GuiaSeguimiento('Un hecho concreto', '¿Hay un momento que lo muestre?', ('Gané el concurso',), ('Soy bueno',))
-
-
-def test_mensaje_sin_repregunta_generica_si_el_item_tiene_guia():
-    con_guia = ItemEntrega('I1', 'Consigna', CRITERIOS, GUIA, (), (), 'Texto')
-    sin_guia = ItemEntrega('I2', 'Consigna', CRITERIOS, None, (), (), 'Texto')
-    datos = json.loads(mensaje_evaluador(ContextoEntrega('Mi plan', (con_guia, sin_guia))))
-    assert all('repregunta' not in c for c in datos['items'][0]['criterios'])
-    assert [c['repregunta'] for c in datos['items'][1]['criterios']] == [c.repregunta for c in CRITERIOS]
-    assert datos['items'][0]['guia']['texto_base'] == GUIA.texto_base
-    seguimiento = ContextoSeguimiento('Mi plan', 'Consigna', CRITERIOS, GUIA, (), (), 'Texto',
-                                      (TurnoEvaluacion('¿Cuándo?', 'Ayer'),))
-    assert all('repregunta' not in c for c in json.loads(mensaje_evaluador(seguimiento))['criterios'])
-    # El adaptador envía ese mismo texto.
-    cliente = ClienteSimulado()
-    entregar(cliente, item=replace(ITEM, guia=GUIA))
-    assert cliente.llamadas[0]['contents'] == mensaje_evaluador(
-        ContextoEntrega('Mi plan', (ItemEntrega('I1', ITEM.consigna, CRITERIOS, GUIA, ITEM.opciones_elegidas, (),
-                                                ITEM.texto),)))
-
-
 def test_los_asistentes_conservan_su_temperatura():
-    cliente = ClienteSimulado(respuesta_sdk({'pregunta': '¿Qué te gustó de eso?'}))
+    cliente = ClienteSimulado(respuesta_sdk(VALIDA))
     adaptador = EvaluadorGemini(CONFIGURACION, cliente=cliente)
     try:
-        adaptador.personalizar_entrada(ContextoPersonalizacion('¿Qué te gustó?', (DatoPersonalizacion('TEXTO', 'x', ()),)))
+        adaptador.personalizar_entrada(CONTEXTO)
     finally:
         adaptador.cerrar()
     assert cliente.llamadas[0]['config'].temperature == 0.2

@@ -1,4 +1,5 @@
-"""Ayudas para recorrer el conjunto `contenido` con las peticiones del front (evaluador falso).
+"""Ayudas para recorrer el conjunto `contenido` con las peticiones del front (entrega provisional de registros,
+ajuste registros llm, lote 2).
 
 Las comparten el recorrido de punta a punta (`escenarios/contenido`) y las pruebas de los registros definitivos
 (`registros/`, ajuste registros). Los textos son DATO DE PRUEBA.
@@ -15,7 +16,7 @@ CAMINO = ('B0', 'B1', 'B2', 'B3', 'B4', 'B5')
 REQUERIDAS = tuple(c for c, b, *_ in contenido.ACTIVIDADES
                    if b in CAMINO and contenido.PROPIEDADES.get(c, {}).get('requerida', True))
 TIPOS = {c: t for c, _, _, t, *_ in contenido.ACTIVIDADES}
-PODIOS = ('b2-3-valores', 'b4-2-criterios')
+PODIOS = ('b2-3-valores', 'b2-4-bien')
 
 
 def ganar_batalla(cliente, codigo):
@@ -44,7 +45,8 @@ def completar(cliente, codigo, cuenta='est-ana'):
 
 
 def preparar_planes(cliente):
-    """Dos planes desde favoritos, con «Por qué» y «Qué tan real es» listos (REALIDAD se abre con b3-8)."""
+    """Dos planes desde favoritos, con «Por qué» y «Qué tan real es» listos (REALIDAD se abre con b3-8). PSICOLOGIA es
+    el Plan A y PERIODISMO el Plan B: R-b4-1 pide el «Por qué» del A y R-b4-5 el de los dos."""
     for carrera in (PSICOLOGIA, PERIODISMO):
         crear(cliente, carrera)
         guardar(cliente, carrera, 'POR_QUE', por_que_lista())

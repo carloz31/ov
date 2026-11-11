@@ -18,7 +18,7 @@ MODELOS_FIJOS = (
     modelos.CondicionDesbloqueo, modelos.Instrumento, modelos.Dimension,
     modelos.EscalaRespuesta, modelos.OpcionEscala, modelos.ItemInstrumento,
     modelos.ActividadItem, modelos.Aplicacion, modelos.AplicacionActividad,
-    modelos.ListaOpciones, modelos.OpcionLista, modelos.ItemRegistro, modelos.CriterioCompletitud,
+    modelos.ListaOpciones, modelos.OpcionLista, modelos.ItemRegistro,
     modelos.Referencia, modelos.Tematica, modelos.ActividadTematica, modelos.SalonInstrumento,
     modelos.SalonActividadPrioritaria, modelos.SeccionTarjeta, modelos.ReferenciaRubro, modelos.ReferenciaCamino,
     modelos.PreguntaBaseGuion, modelos.TipoReaccion, modelos.TextoFijo,
@@ -54,17 +54,13 @@ class Definiciones:
         self.ids = MappingProxyType({modelo: MappingProxyType({fila.id: fila for fila in registros if hasattr(fila, 'id')})
                                      for modelo, registros in self.tablas.items()})
         self.codigos = MappingProxyType({modelo: MappingProxyType({
-            (fila.item_registro_id, fila.codigo) if modelo is modelos.CriterioCompletitud else fila.codigo: fila
-            for fila in registros if hasattr(fila, 'codigo')})
+            fila.codigo: fila for fila in registros if hasattr(fila, 'codigo')})
                                          for modelo, registros in self.tablas.items()})
-        criterios, items_registro, opciones = {}, {}, {}
-        for criterio in sorted(self.listar(modelos.CriterioCompletitud), key=lambda fila: (fila.orden, fila.codigo)):
-            criterios.setdefault(criterio.item_registro_id, []).append(criterio)
+        items_registro, opciones = {}, {}
         for item in sorted(self.listar(modelos.ItemRegistro), key=lambda fila: (fila.orden, fila.id)):
             items_registro.setdefault(item.actividad_id, []).append(item)
         for opcion in sorted(self.listar(modelos.OpcionLista), key=lambda fila: fila.orden):
             opciones.setdefault(opcion.lista_id, []).append(opcion)
-        self.criterios_por_item_registro = MappingProxyType({clave: tuple(valor) for clave, valor in criterios.items()})
         self.items_registro_por_actividad = MappingProxyType({clave: tuple(valor) for clave, valor in items_registro.items()})
         self.opciones_por_lista = MappingProxyType({clave: tuple(valor) for clave, valor in opciones.items()})
         referencias, de_preguntas = {}, {}

@@ -6,7 +6,7 @@ from app.core.parametros import MAXIMO_REINICIOS_PERFIL_PLANO
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, Aplicacion, AplicacionActividad, Bloque, ColeccionOcupacion, Cuenta, Dimension,
-    EstadoProgreso, EstadoRespuestaRegistro, Instrumento, ItemInstrumento, Ocupacion, OpcionEscala, ProgresoActividad,
+    EstadoProgreso, Instrumento, ItemInstrumento, Ocupacion, OpcionEscala, ProgresoActividad,
     RespuestaItem, Ficha, PreguntaBatalla, RespuestaBatalla, RespuestaRegistro, ResultadoBatalla, ResultadoCaso,
     ResultadoInstrumento, RitmoAplicacion, Rol, TipoActividad, TipoEventoUso,
     TipoObjetivo, TipoResultado, Visibilidad,
@@ -203,9 +203,9 @@ def completar_actividad(sesion: Session, entrada: CompletarActividadEntrada) -> 
     obligatorios = [item for item in items_registro if item.obligatorio]
     if obligatorios:
         progreso = progreso_de_actividad(sesion, cuenta, actividad)
+        # Ajuste registros llm (lote 2): un ítem está respondido si tiene un intento vigente.
         finalizados = set() if progreso is None else set(sesion.scalars(select(RespuestaRegistro.item_registro_id).where(
-            RespuestaRegistro.progreso_id == progreso.id,
-            RespuestaRegistro.estado == EstadoRespuestaRegistro.FINAL,
+            RespuestaRegistro.progreso_id == progreso.id, RespuestaRegistro.vigente,
         )))
         faltantes = [item.codigo for item in obligatorios if item.id not in finalizados]
         if faltantes:

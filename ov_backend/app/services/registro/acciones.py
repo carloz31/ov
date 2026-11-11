@@ -1,46 +1,29 @@
-"""Registro con entrega, seguimiento y edición; lectura y escritura separadas de la evaluación.
+"""Registro: lectura del intento vigente, guardado de intentos y entrega provisional.
 
-Cada edición es un nuevo intento (B04): el mismo flujo de la entrega, con su propio tope de preguntas.
+Ajuste registros llm (lote 2): cada ítem tiene un intento vigente; guardar uno nuevo pasa el anterior, completo, al
+histórico (`guardar_intento`). La entrega es PROVISIONAL hasta el flujo secuencial del lote 3: guarda la elección y
+el texto de cada ítem sin LLM (estado COMPLETADO), completa la actividad y emite REGISTRO_ADECUADO.
 """
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import exists, insert, select, update
+from sqlalchemy import exists, func, insert, select, update
 
 from app.core.contexto import contexto, usar_contexto
-from app.core.parametros import MAXIMO_ABIERTOS_ADECUADO, MAXIMO_REPREGUNTAS_POR_ITEM
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, Bloque, Cuenta, EstadoProgreso, EvaluacionRespuesta, EventoUso, ItemRegistro, ProgresoActividad,
-    Referencia, RespuestaRegistro, Rol, TextoFijo, TipoEventoUso, TipoObjetivo, TurnoSeguimiento,
+    Actividad, Bloque, Cuenta, EstadoProgreso, EventoUso, ProgresoActividad, Referencia, RespuestaRegistro, Rol,
+    TipoEventoUso, TipoObjetivo,
 )
-from app.models.enums import (
-    ClasificacionRespuesta, EstadoReferencia, EstadoRespuestaRegistro, FuenteOpciones, OrigenEvaluacion,
-)
-from app.schemas.registro import (
-    EstadoItemRegistro, ItemPorAmpliar, MensajeAvisoRegistro, MensajePreguntaRegistro, MensajeRespuestaRegistro,
-    OpcionElegida,
-    RespuestaRegistroAccion, RespuestaRegistroPublica,
-)
+from app.models.enums import EstadoReferencia, EstadoRespuestaRegistro, FuenteOpciones
+from app.schemas.registro import OpcionGuardada, RespuestaRegistroAccion, RespuestaRegistroPublica
 from app.services.actividades import completar_progreso
-from app.services.comun import (
-    buscar_por_codigo, exigir_disponible, fecha_accion, responder_con_eventos,
-)
+from app.services.comun import buscar_por_codigo, exigir_disponible, fecha_accion, responder_con_eventos
 from app.services.referencias import resolver
 from app.services.registro.eleccion import OpcionItem, invalida, validar_eleccion
-from app.services.registro.evaluacion import (
-    CriterioEvaluacion, EcoEvaluacion, GuiaSeguimiento, ItemPorEvaluar, TurnoEvaluacion, procesar_entrega,
-    procesar_seguimiento,
-)
 
-TEXTO_SENSIBLE = 'LUMI_SENSIBLE'
-TEXTO_PISTA_SIN_REPREGUNTA = 'PISTA_SIN_REPREGUNTA'
-# Nombre del eco de una referencia sin ítem fuente (también lo usa `tests/llm/evaluar.py`); otro tipo conserva su valor.
-NOMBRES_ECO_REFERENCIA = {
-    'PLAN': 'Tu Plan A', 'PLANES': 'Tus planes', 'PASOS_PLAN_A': 'Los pasos de tu Plan A',
-    'OPCION_INICIAL': 'Tu opción inicial', 'DATOS_CARRERA_PLAN_A': 'Datos de la carrera de tu Plan A',
-}
+PENDIENTE_LOTE_3 = 'Pendiente de reescritura (ajuste registros, lote 3)'
 
 
 def validar_registro(sesion, codigo_actividad, codigo_cuenta=None, disponible=False):
@@ -59,13 +42,6 @@ def validar_registro(sesion, codigo_actividad, codigo_cuenta=None, disponible=Fa
     return cuenta, actividad, definiciones.items_registro_por_actividad.get(actividad.id, ())
 
 
-def validar_item(items, codigo):
-    item = next((item for item in items if item.codigo == codigo), None)
-    if item is None:
-        raise ErrorAccion("El ítem no pertenece a esta actividad")
-    return item
-
-
 def opciones_de(sesion, item):
     """Opciones de la lista del ítem; también en la elección que retoma una anterior (F02)."""
     return contexto(sesion).definiciones.opciones_por_lista.get(item.lista_id, ())
@@ -73,7 +49,7 @@ def opciones_de(sesion, item):
 
 def opciones_por_item(sesion, cuenta, items):
     """{id del ítem: opciones que ofrece}: las de su lista o las de su referencia resuelta en vivo para la cuenta,
-    más sus opciones propias. La referencia que retoma (F02) solo marca lo elegido antes: no cambia las opciones."""
+    más sus opciones propias. Las piezas (PIEZAS_*) no se listan aquí: las arma `contexto.py`."""
     definiciones = contexto(sesion).definiciones
     de_referencia = {item.id: definiciones.obtener(Referencia, item.referencia_opciones_id) for item in items
                      if item.fuente_opciones == FuenteOpciones.REFERENCIA}
@@ -86,265 +62,60 @@ def opciones_por_item(sesion, cuenta, items):
                     ] if resuelta.estado == EstadoReferencia.DISPONIBLE else []
         else:
             base = [OpcionItem(o.codigo, o.texto) for o in opciones_de(sesion, item)]
-        propias = [OpcionItem(o['codigo'], o['texto'], exclusiva=o.get('exclusiva', False))
+        propias = [OpcionItem(o['codigo'], o['texto'], exclusiva=o.get('exclusiva', False),
+                              sin_llm=o.get('sin_llm', False))
                    for o in item.opciones_propias or ()]
         opciones[item.id] = tuple(base + propias)
     return opciones
 
 
-def criterios_de(sesion, item):
-    return tuple(CriterioEvaluacion(c.codigo, c.tipo.value, c.descripcion, c.repregunta)
-                 for c in contexto(sesion).definiciones.criterios_por_item_registro.get(item.id, ()))
-
-
-def textos_elegidos(opciones, elegidas):
-    """Textos de las opciones elegidas, para el evaluador (RNF-13); la OTRA lleva el texto escrito."""
-    textos = {opcion.codigo: opcion.texto for opcion in opciones}
-    return tuple(e['texto'] if 'texto' in e else textos.get(e['codigo'], e['codigo']) for e in elegidas or ())
-
-
-def propia_elegida(item, elegidas):
-    """La primera opción propia elegida, si alguna: puede cambiar el criterio y el texto base del ítem."""
-    propias = {o['codigo']: o for o in item.opciones_propias or ()}
-    return next((propias[e['codigo']] for e in elegidas or () if e['codigo'] in propias), None)
-
-
-def sin_seguimiento(item, elegidas):
-    """La opción propia elegida tiene `criterio: null`: el ítem cumple sin seguimiento y su texto es opcional."""
-    propia = propia_elegida(item, elegidas)
-    return propia is not None and 'criterio' in propia and propia['criterio'] is None
-
-
-def guia_para(seguimiento, opciones_propias, criterios, elegidas):
-    """Criterios y campos de seguimiento con los que se evalúa el ítem según la opción elegida (sin base de datos;
-    también la usa `tests/llm/evaluar.py`).
-
-    `seguimiento` y `opciones_propias` son los del ítem; `criterios`, los suyos (`CriterioEvaluacion`). Opción propia
-    con `criterio: null`: sin criterio (cumple sin llamada). Con criterio informado: el de la opción, con su
-    `que_busca`, `texto_base` y ejemplos. Omitido: los del ítem, salvo el `texto_base` de la opción."""
-    seguimiento = seguimiento or {}
-    propias = {o['codigo']: o for o in opciones_propias or ()}
-    propia = next((propias[e['codigo']] for e in elegidas or () if e['codigo'] in propias), None)
-    if propia is not None and 'criterio' in propia:
-        if propia['criterio'] is None:
-            return (), None
-        criterio = CriterioEvaluacion('C1', propia['criterio'], propia['que_busca'], propia['texto_base'])
-        return (criterio,), GuiaSeguimiento(
-            propia['que_busca'], propia['texto_base'], tuple(propia.get('cumple') or seguimiento.get('cumple', ())),
-            tuple(propia.get('no_cumple') or seguimiento.get('no_cumple', ())), seguimiento.get('evitar'))
-    criterios = tuple(criterios)
-    if not seguimiento.get('que_busca') or not criterios:
-        return criterios, None
-    return criterios, GuiaSeguimiento(
-        seguimiento['que_busca'], (propia or {}).get('texto_base') or seguimiento['texto_base'],
-        tuple(seguimiento.get('cumple', ())), tuple(seguimiento.get('no_cumple', ())), seguimiento.get('evitar'))
-
-
-def criterio_y_guia(sesion, item, elegidas):
-    """Criterios y guía del ítem según la opción elegida (`guia_para`); lee los criterios solo si hacen falta."""
-    propia = propia_elegida(item, elegidas)
-    criterios = () if propia is not None and 'criterio' in propia else criterios_de(sesion, item)
-    return guia_para(item.seguimiento, item.opciones_propias, criterios, elegidas)
-
-
-def ecos_de(sesion, cuenta, item, items, textos, elecciones, opciones):
-    """Lo que el evaluador recibe además del ítem: solo `ecos_llm` (RNF-13). Una referencia de la actividad o un
-    ítem anterior de la misma actividad; un texto sensible, abierto o poco desarrollado no se envía."""
-    ecos_llm = (item.seguimiento or {}).get('ecos_llm', ())
-    if not ecos_llm:
-        return ()
-    definiciones = contexto(sesion).definiciones
-    referencias = [definiciones.por_codigo(Referencia, codigo) for tipo, codigo in ecos_llm if tipo == 'REFERENCIA']
-    resueltas = resolver(sesion, cuenta, referencias) if referencias else {}
-    filas = {referencia.codigo: referencia for referencia in referencias}
-    por_codigo = {otro.codigo: otro for otro in items}
-    ecos = []
-    for tipo, codigo in ecos_llm:
-        if tipo == 'REFERENCIA':
-            resuelta = resueltas[codigo]
-            if resuelta.estado != EstadoReferencia.DISPONIBLE:
-                continue
-            partes = [resuelta.texto] if resuelta.texto else []
-            partes += [o.texto for o in resuelta.opciones or ()]
-            if partes:
-                fuente_id = filas[codigo].item_registro_id
-                nombre = (definiciones.obtener(ItemRegistro, fuente_id).nombre if fuente_id is not None
-                          else NOMBRES_ECO_REFERENCIA.get(resuelta.tipo.value, resuelta.tipo.value))
-                ecos.append(EcoEvaluacion(nombre, ' · '.join(partes)))
-            continue
-        otro = por_codigo[codigo]
-        if tipo == 'TEXTO' and textos.get(codigo):
-            ecos.append(EcoEvaluacion(otro.nombre, textos[codigo]))
-        elif tipo == 'ELECCION' and elecciones.get(codigo):
-            ecos.append(EcoEvaluacion(otro.nombre, ', '.join(textos_elegidos(opciones.get(otro.id, ()),
-                                                                             elecciones[codigo]))))
-    return tuple(ecos)
-
-
-@dataclass(frozen=True, slots=True)
-class TurnoLeido:
-    id: int
-    intento: int
-    orden: int
-    pregunta: str
-    criterios_objetivo: tuple[str, ...]
-    respuesta: str | None
-    respondido_en: datetime | None
-
-
-@dataclass(frozen=True, slots=True)
-class EvaluacionLeida:
-    numero: int
-    origen: OrigenEvaluacion
-    clasificacion: ClasificacionRespuesta
-    criterios_faltantes: tuple[str, ...]
-    pregunta: str | None
-    falta: str | None = None
-
-
 @dataclass(frozen=True, slots=True)
 class RegistroLeido:
     progreso: ProgresoActividad | None
-    respuestas: dict[int, RespuestaRegistro]
-    turnos: dict[int, tuple[TurnoLeido, ...]]
-    evaluaciones: dict[int, tuple[EvaluacionLeida, ...]]
-
-    @property
-    def entregado(self):
-        return any(r.clasificacion_inicial is not None for r in self.respuestas.values())
-
-    @property
-    def intento_vigente(self):
-        return max((r.intento for r in self.respuestas.values()), default=1)
-
-    @property
-    def pendiente(self):
-        return any(r.estado == EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO for r in self.respuestas.values())
-
-    @property
-    def cerrado(self):
-        return (self.progreso is not None and self.progreso.estado == EstadoProgreso.COMPLETADA
-                and not self.pendiente)
-
-    def turnos_vigentes(self, respuesta):
-        """Turnos del intento en que se respondió por última vez; los anteriores no se muestran."""
-        return tuple(t for t in self.turnos.get(respuesta.id, ()) if t.intento == respuesta.intento)
-
-    def turnos_del_intento(self, intento):
-        return sum(1 for turnos in self.turnos.values() for t in turnos if t.intento == intento)
-
-    def ultima_evaluacion(self, respuesta):
-        evaluaciones = self.evaluaciones.get(respuesta.id, ())
-        return evaluaciones[-1] if evaluaciones else None
-
-    def clasificacion_vigente(self, respuesta):
-        ultima = self.ultima_evaluacion(respuesta)
-        return ultima.clasificacion if ultima is not None else None
-
-    def con_clasificacion(self, items, clasificacion):
-        return [item for item in items if item.id in self.respuestas
-                and self.clasificacion_vigente(self.respuestas[item.id]) == clasificacion]
-
-    def por_ampliar(self, items, pista_sin_repregunta=None):
-        """Ítems que quedaron poco desarrollados: la pregunta de su evaluación vigente y lo que les faltó.
-
-        Ajuste pruebas llm: en un intento con un ítem sensible, la pista es la `falta` (o el nombre): la pregunta
-        guardada puede citar lo sensible. Sin pregunta (respuesta emocional), el texto fijo `PISTA_SIN_REPREGUNTA`
-        (o, si no está cargado, el nombre del ítem)."""
-        con_sensible = {r.intento for r in self.respuestas.values() if r.sensible}
-        por_ampliar = []
-        for item in self.con_clasificacion(items, ClasificacionRespuesta.POCO_DESARROLLADA):
-            respuesta = self.respuestas[item.id]
-            ultima = self.ultima_evaluacion(respuesta)
-            if respuesta.intento in con_sensible:
-                pista = ultima.falta or item.nombre
-            else:
-                pista = ultima.pregunta or pista_sin_repregunta or item.nombre
-            por_ampliar.append(ItemPorAmpliar(item=item.codigo, pista=pista, falta=ultima.falta))
-        return por_ampliar
-
-    def abiertos(self, items):
-        return [item.codigo for item in self.con_clasificacion(items, ClasificacionRespuesta.ABIERTA)]
+    # {id del ítem: intento vigente}
+    vigentes: dict[int, RespuestaRegistro]
 
 
 def leer_registro(sesion, cuenta, actividad):
-    # Una lectura para progreso, respuestas y turnos, y otra para las evaluaciones. Relee las filas
-    # aunque ya estén en la sesión: las acciones escriben con sentencias, no con el ORM.
-    filas = sesion.execute(select(ProgresoActividad, RespuestaRegistro, TurnoSeguimiento).outerjoin(
-        RespuestaRegistro, RespuestaRegistro.progreso_id == ProgresoActividad.id).outerjoin(
-        TurnoSeguimiento, TurnoSeguimiento.respuesta_id == RespuestaRegistro.id).where(
+    """El progreso y el intento vigente de cada ítem. Relee las filas aunque ya estén en la sesión: las acciones
+    escriben con sentencias, no con el ORM."""
+    filas = sesion.execute(select(ProgresoActividad, RespuestaRegistro).outerjoin(
+        RespuestaRegistro, (RespuestaRegistro.progreso_id == ProgresoActividad.id) & RespuestaRegistro.vigente).where(
         ProgresoActividad.cuenta_id == cuenta.id, ProgresoActividad.actividad_id == actividad.id,
-    ).order_by(TurnoSeguimiento.intento, TurnoSeguimiento.orden).execution_options(populate_existing=True)).all()
-    respuestas, turnos = {}, {}
-    for _, respuesta, turno in filas:
-        if respuesta is None:
-            continue
-        respuestas[respuesta.item_registro_id] = respuesta
-        if turno is not None:
-            turnos.setdefault(respuesta.id, {})[turno.id] = TurnoLeido(
-                turno.id, turno.intento, turno.orden, turno.pregunta, tuple(turno.criterios_objetivo), turno.respuesta,
-                turno.respondido_en)
-    evaluaciones = {}
-    if respuestas:
-        for fila in sesion.execute(select(
-                EvaluacionRespuesta.respuesta_id, EvaluacionRespuesta.numero, EvaluacionRespuesta.origen,
-                EvaluacionRespuesta.clasificacion, EvaluacionRespuesta.criterios_faltantes,
-                EvaluacionRespuesta.pregunta_generada, EvaluacionRespuesta.falta).where(EvaluacionRespuesta.respuesta_id.in_(
-                    [r.id for r in respuestas.values()])).order_by(EvaluacionRespuesta.numero)):
-            evaluaciones.setdefault(fila.respuesta_id, []).append(EvaluacionLeida(
-                fila.numero, fila.origen, fila.clasificacion, tuple(fila.criterios_faltantes), fila.pregunta_generada,
-                fila.falta))
-    return RegistroLeido(filas[0][0] if filas else None, respuestas,
-                         {identificador: tuple(t.values()) for identificador, t in turnos.items()},
-                         {identificador: tuple(e) for identificador, e in evaluaciones.items()})
+    ).execution_options(populate_existing=True)).all()
+    return RegistroLeido(filas[0][0] if filas else None,
+                         {respuesta.item_registro_id: respuesta for _, respuesta in filas if respuesta is not None})
 
 
-def conversacion_publica(texto_inicial, turnos, aviso=None):
-    """El texto base y sus turnos; con `aviso` (respuesta sensible), el texto fijo de Lumi al final."""
-    mensajes = [MensajeRespuestaRegistro(tipo='respuesta', texto=texto_inicial)]
-    for turno in turnos:
-        mensajes.append(MensajePreguntaRegistro(tipo='pregunta', orden=turno.orden, texto=turno.pregunta))
-        if turno.respuesta is not None:
-            mensajes.append(MensajeRespuestaRegistro(tipo='respuesta', orden=turno.orden, texto=turno.respuesta,
-                                                     borrador=turno.respondido_en is None))
-    if aviso is not None:
-        mensajes.append(MensajeAvisoRegistro(tipo='aviso', texto=aviso))
-    return mensajes
+def guardar_intento(sesion, progreso_id, item_id, datos, fecha):
+    """Guarda un intento nuevo del ítem y devuelve su id. El vigente anterior pasa al histórico tal como está
+    (`vigente = false`): no se borra ni se modifica nada más de él. `datos` son las columnas del intento."""
+    anterior = sesion.scalar(select(func.max(RespuestaRegistro.intento)).where(
+        RespuestaRegistro.progreso_id == progreso_id, RespuestaRegistro.item_registro_id == item_id))
+    sesion.execute(update(RespuestaRegistro.__table__).where(
+        RespuestaRegistro.progreso_id == progreso_id, RespuestaRegistro.item_registro_id == item_id,
+        RespuestaRegistro.vigente).values(vigente=False, actualizada_en=marca_actualizacion()))
+    return sesion.execute(insert(RespuestaRegistro.__table__).returning(RespuestaRegistro.id), dict(
+        progreso_id=progreso_id, item_registro_id=item_id, intento=(anterior or 0) + 1, vigente=True,
+        creada_en=fecha, actualizada_en=marca_actualizacion(), **datos)).scalar_one()
 
 
-def texto_fijo(sesion, codigo):
-    fila = contexto(sesion).definiciones.por_codigo(TextoFijo, codigo)
-    return fila.texto if fila is not None else None
+def respuesta_publica(item, respuesta):
+    return RespuestaRegistroPublica(
+        item=item.codigo, estado=respuesta.estado, texto=respuesta.primera_respuesta,
+        opciones_elegidas=[OpcionGuardada(codigo=e['codigo'], texto=e['texto']) for e in respuesta.opciones_elegidas or ()])
 
 
-def texto_sensible(sesion):
-    return texto_fijo(sesion, TEXTO_SENSIBLE)
-
-
-def respuesta_publica(registro, item, consolidada, aviso=None):
-    respuesta = registro.respuestas[item.id]
-    # La consolidada es la respuesta final: solo la consulta la muestra, y con el registro cerrado.
-    final = dict(texto_consolidado=respuesta.texto_consolidado) if consolidada and registro.cerrado else {}
-    return RespuestaRegistroPublica(item=item.codigo, estado=respuesta.estado,
-        opciones_elegidas=respuesta.opciones_elegidas,
-        conversacion=conversacion_publica(respuesta.texto_inicial, registro.turnos_vigentes(respuesta),
-                                          aviso if respuesta.sensible else None), **final)
-
-
-def registro_publico(registro, items, consolidada=False, aviso=None, pista_sin_repregunta=None):
+def registro_publico(registro, items):
     progreso = registro.progreso
-    cierre = dict(items_por_ampliar=registro.por_ampliar(items, pista_sin_repregunta),
-                  items_abiertos=registro.abiertos(items)) if registro.cerrado else {}
     return dict(posicion=progreso.posicion if progreso is not None else None,
                 estado=progreso.estado if progreso is not None else None,
-                respuestas=[respuesta_publica(registro, item, consolidada, aviso)
-                            for item in items if item.id in registro.respuestas],
-                **cierre)
+                respuestas=[respuesta_publica(item, registro.vigentes[item.id])
+                            for item in items if item.id in registro.vigentes])
 
 
-def publico(sesion, cuenta, actividad, items, consolidada=False):
-    return registro_publico(leer_registro(sesion, cuenta, actividad), items, consolidada, texto_sensible(sesion),
-                            texto_fijo(sesion, TEXTO_PISTA_SIN_REPREGUNTA))
+def publico(sesion, cuenta, actividad, items):
+    return registro_publico(leer_registro(sesion, cuenta, actividad), items)
 
 
 def crear_progreso(sesion, cuenta, actividad):
@@ -360,388 +131,56 @@ def marca_actualizacion(anterior=None):
     return max(ahora, anterior + timedelta(microseconds=1)) if anterior is not None else ahora
 
 
-def comprobar_cambio(sesion, respuesta, valores):
-    resultado = sesion.execute(update(RespuestaRegistro.__table__).where(
-        RespuestaRegistro.id == respuesta.id, RespuestaRegistro.estado == respuesta.estado,
-        RespuestaRegistro.actualizada_en == respuesta.actualizada_en).values(**valores))
-    if resultado.rowcount != 1:
-        raise ErrorAccion("La respuesta cambió durante el envío; vuelve a intentarlo")
-
-
-def turno_pendiente(turnos):
-    if not turnos or turnos[-1].respondido_en is not None:
-        raise ErrorAccion("No hay una pregunta de seguimiento pendiente")
-    return turnos[-1]
-
-
-def version(registro):
-    return {item_id: (r.id, r.estado, r.actualizada_en) for item_id, r in registro.respuestas.items()}
-
-
-def exigir_sin_cambios(registro, anterior):
-    if version(registro) != anterior:
-        raise ErrorAccion("El registro cambió durante la evaluación; vuelve a intentarlo")
-
-
-def exigir_abierto(registro):
-    if registro.progreso is not None and registro.progreso.estado == EstadoProgreso.COMPLETADA:
-        raise ErrorAccion("El registro ya está cerrado")
-
-
-@usar_contexto
-def guardar_borrador(sesion, entrada):
-    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
-    item = validar_item(items, entrada.item)
-    registro = leer_registro(sesion, cuenta, actividad)
-    respuesta = registro.respuestas.get(item.id)
-    if respuesta is not None and respuesta.estado == EstadoRespuestaRegistro.FINAL:
-        raise ErrorAccion("La respuesta ya fue entregada")
-    pendiente = respuesta is not None and respuesta.estado == EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO
-    if not pendiente and registro.entregado:
-        raise ErrorAccion("El registro ya fue entregado")
-    if pendiente and entrada.opciones:
-        raise invalida("La elección se guarda con la respuesta inicial, no con el seguimiento")
-    elegidas = None if pendiente else validar_eleccion(
-        item, opciones_por_item(sesion, cuenta, (item,))[item.id], entrada.opciones, False)
-    marca = marca_actualizacion(respuesta.actualizada_en if respuesta is not None else None)
-    progreso = registro.progreso or crear_progreso(sesion, cuenta, actividad)
-    if entrada.posicion is not None:
-        sesion.execute(update(ProgresoActividad.__table__).where(ProgresoActividad.id == progreso.id)
-                       .values(posicion=entrada.posicion))
-    if respuesta is None:
-        sesion.execute(insert(RespuestaRegistro.__table__), dict(progreso_id=progreso.id, item_registro_id=item.id,
-            texto_inicial=entrada.texto, opciones_elegidas=elegidas, estado=EstadoRespuestaRegistro.BORRADOR,
-            creada_en=fecha_accion(entrada), actualizada_en=marca, ampliada=False))
-        estado = EstadoRespuestaRegistro.BORRADOR
-    else:
-        estado = respuesta.estado
-        valores = dict(actualizada_en=marca)
-        if estado == EstadoRespuestaRegistro.BORRADOR:
-            valores.update(texto_inicial=entrada.texto, opciones_elegidas=elegidas)
-        comprobar_cambio(sesion, respuesta, valores)
-        if pendiente:
-            turno = turno_pendiente(registro.turnos_vigentes(respuesta))
-            sesion.execute(update(TurnoSeguimiento.__table__).where(TurnoSeguimiento.id == turno.id)
-                           .values(respuesta=entrada.texto))
-    return EstadoItemRegistro(item=item.codigo, estado=estado)
-
-
-# --- Entregar y editar ----------------------------------------------------------------------
-
-@dataclass(frozen=True, slots=True)
-class LecturaEntrega:
-    """Lo que se evalúa en un intento: la entrega (1) o una edición (2 en adelante)."""
-    titulo: str
-    items: tuple[ItemPorEvaluar, ...]
-    elecciones: dict[str, list[dict]]
-    version: dict
-    intento: int = 1
-
-
-def item_por_evaluar(sesion, item, opciones, elegidas, texto, ecos=()):
-    criterios, guia = criterio_y_guia(sesion, item, elegidas)
-    return ItemPorEvaluar(item.codigo, item.consigna, criterios, textos_elegidos(opciones, elegidas), texto,
-                          item.min_caracteres, item.repregunta_generica, guia, ecos)
-
-
-def por_evaluar_con_ecos(sesion, cuenta, items, codigos, textos, elecciones, opciones):
-    """Los ítems de `codigos` en orden, cada uno con sus ecos para el evaluador (ítems anteriores y referencias)."""
-    return tuple(item_por_evaluar(sesion, item, opciones[item.id], elecciones[item.codigo], textos[item.codigo],
-                                  ecos_de(sesion, cuenta, item, items, textos, elecciones, opciones))
-                 for item in items if item.codigo in codigos)
-
-
-@usar_contexto
-def preparar_entrega(sesion, entrada):
-    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
-    registro = leer_registro(sesion, cuenta, actividad)
-    exigir_abierto(registro)
-    if registro.entregado:
-        raise ErrorAccion("El registro ya fue entregado")
-    con_texto = {item.id: registro.respuestas[item.id] for item in items
-                 if item.id in registro.respuestas and (registro.respuestas[item.id].texto_inicial.strip()
-                                                        or sin_seguimiento(item, registro.respuestas[item.id].opciones_elegidas))}
-    faltantes = [item.codigo for item in items if item.obligatorio and item.id not in con_texto]
-    if faltantes:
-        raise ErrorAccion("Faltan ítems por responder antes de entregar", items_faltantes=faltantes)
-    elecciones, textos = {}, {}
-    opciones = opciones_por_item(sesion, cuenta, items)
-    for item in items:
-        if item.id not in con_texto:
-            continue
-        respuesta = con_texto[item.id]
-        elecciones[item.codigo] = validar_eleccion(item, opciones[item.id],
-                                                   [OpcionElegida(**e) for e in respuesta.opciones_elegidas or ()], True)
-        textos[item.codigo] = respuesta.texto_inicial
-    return LecturaEntrega(actividad.titulo, por_evaluar_con_ecos(sesion, cuenta, items, elecciones, textos, elecciones,
-                                                                 opciones), elecciones, version(registro))
-
-
-def exigir_cerrado(registro):
-    if not registro.cerrado:
-        raise ErrorAccion("Solo se edita un registro cerrado y sin preguntas pendientes")
-
-
-@usar_contexto
-def preparar_edicion(sesion, entrada):
-    """Un nuevo intento con los ítems cuyo texto cambió. Desde F02 la elección también se edita: si cambia, el
-    texto debe cambiar con ella (la justificación se reescribe) y se evalúa con la elección nueva. Un ítem no
-    obligatorio que quedó en blanco recibe aquí su primera respuesta."""
-    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
-    if not entrada.items:
-        raise invalida("Indica al menos un ítem para editar")
-    codigos = [edicion.item for edicion in entrada.items]
-    if len(codigos) != len(set(codigos)):
-        raise invalida("Un ítem no puede editarse dos veces en la misma petición")
-    por_codigo = {item.codigo: item for item in items}
-    if any(codigo not in por_codigo for codigo in codigos):
-        raise invalida("El ítem no pertenece a esta actividad")
-    # Una opción con `criterio: null` cierra el ítem sin texto (ajuste registros).
-    if any(not edicion.texto.strip() and not sin_seguimiento(
-            por_codigo[edicion.item], [o.model_dump(exclude_none=True) for o in edicion.opciones or ()])
-           for edicion in entrada.items):
-        raise invalida("La respuesta no puede estar vacía")
-    registro = leer_registro(sesion, cuenta, actividad)
-    exigir_cerrado(registro)
-    elecciones = {}
-    opciones = opciones_por_item(sesion, cuenta, items)
-    # Los ecos de un ítem editado leen los ítems anteriores tal como quedan: editados o como estaban.
-    textos = {item.codigo: registro.respuestas[item.id].texto_consolidado for item in items
-              if item.id in registro.respuestas and registro.respuestas[item.id].texto_consolidado
-              and not registro.respuestas[item.id].sensible}
-    vigentes = {item.codigo: registro.respuestas[item.id].opciones_elegidas for item in items
-                if item.id in registro.respuestas}
-    for item in items:
-        edicion = next((e for e in entrada.items if e.item == item.codigo), None)
-        if edicion is None:
-            continue
-        respuesta = registro.respuestas.get(item.id)
-        if respuesta is None or respuesta.clasificacion_inicial is None:
-            # Primera respuesta de un ítem que quedó en blanco (sin fila o con un borrador vacío): se evalúa
-            # como en la entrega, con su elección (si la tiene, se exige la mínima).
-            elecciones[item.codigo] = validar_eleccion(item, opciones[item.id], edicion.opciones or [], True)
-            textos[item.codigo] = edicion.texto
-            continue
-        elegidas = respuesta.opciones_elegidas if edicion.opciones is None else validar_eleccion(
-            item, opciones[item.id], edicion.opciones, True)
-        cambio_eleccion = elegidas != respuesta.opciones_elegidas
-        if edicion.texto == respuesta.texto_consolidado:
-            if cambio_eleccion:
-                raise invalida("Si cambias tu elección, reescribe tu respuesta")
-            continue  # Sin cambios: no abre intento ni va al evaluador.
-        elecciones[item.codigo] = elegidas
-        textos[item.codigo] = edicion.texto
-    if not elecciones:
-        raise invalida("La edición no tiene cambios")
-    por_evaluar = por_evaluar_con_ecos(sesion, cuenta, items, elecciones, textos, {**vigentes, **elecciones}, opciones)
-    return LecturaEntrega(actividad.titulo, por_evaluar, elecciones, version(registro), registro.intento_vigente + 1)
-
-
-def insertar_evaluacion(sesion, respuesta_id, numero, evaluacion, fecha, opciones):
-    sesion.execute(insert(EvaluacionRespuesta.__table__), dict(respuesta_id=respuesta_id, numero=numero,
-        origen=evaluacion.origen, clasificacion=evaluacion.clasificacion,
-        criterios_faltantes=list(evaluacion.criterios_faltantes), pregunta_generada=evaluacion.pregunta,
-        requiere_atencion=evaluacion.sensible, sensible=evaluacion.sensible, falta=evaluacion.falta,
-        modelo=evaluacion.modelo, version_prompt=evaluacion.version_prompt,
-        latencia_ms=evaluacion.latencia_ms, error=evaluacion.error, texto_evaluado=evaluacion.texto_evaluado,
-        opciones_evaluadas=list(opciones or ()), fecha_hora=fecha))
-
-
-@usar_contexto
-def persistir_entrega(sesion, entrada, lectura, evaluaciones):
-    """Guarda el intento: el texto escrito es su base y, hasta el primer turno, la respuesta final."""
-    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
-    registro = leer_registro(sesion, cuenta, actividad)
-    exigir_sin_cambios(registro, lectura.version)
-    if lectura.intento == 1:
-        exigir_abierto(registro)
-    else:
-        exigir_cerrado(registro)
-    fecha = fecha_accion(entrada)
-    textos = {i.codigo: i.texto for i in lectura.items}
-    for item in items:
-        evaluacion = evaluaciones.get(item.codigo)
-        if evaluacion is None:
-            continue
-        respuesta = registro.respuestas.get(item.id)
-        # Sensible: la marca de atención no se borra al editar (queda también en la evaluación anterior).
-        valores = dict(estado=EstadoRespuestaRegistro.FINAL, intento=lectura.intento, texto_inicial=textos[item.codigo],
-                       texto_consolidado=textos[item.codigo], opciones_elegidas=lectura.elecciones[item.codigo],
-                       sensible=evaluacion.sensible,
-                       requiere_atencion=evaluacion.sensible or (respuesta is not None and respuesta.requiere_atencion))
-        # La primera evaluación de un ítem es su clasificación inicial: en la entrega o, para uno que quedó en
-        # blanco, en la edición que le da su primera respuesta (F02).
-        if respuesta is None or respuesta.clasificacion_inicial is None:
-            valores['clasificacion_inicial'] = evaluacion.clasificacion
-        if respuesta is None:
-            respuesta_id = sesion.execute(insert(RespuestaRegistro.__table__).returning(RespuestaRegistro.id), dict(
-                progreso_id=registro.progreso.id, item_registro_id=item.id, creada_en=fecha,
-                actualizada_en=marca_actualizacion(), ampliada=False, **valores)).scalar_one()
-        else:
-            respuesta_id = respuesta.id
-            comprobar_cambio(sesion, respuesta, dict(valores, actualizada_en=marca_actualizacion(respuesta.actualizada_en)))
-        insertar_evaluacion(sesion, respuesta_id, len(registro.evaluaciones.get(respuesta_id, ())) + 1, evaluacion,
-                            fecha, lectura.elecciones[item.codigo])
-    return avanzar(sesion, cuenta, actividad, items, fecha, intento=lectura.intento)
-
-
-def entregar(fabrica_sesiones, entrada, evaluador, preparar=preparar_entrega, **opciones_evaluacion):
-    with fabrica_sesiones.begin() as sesion:
-        lectura = preparar(sesion, entrada)
-    evaluaciones = procesar_entrega(lectura.titulo, lectura.items, evaluador, **opciones_evaluacion)
-    with fabrica_sesiones.begin() as sesion:
-        return persistir_entrega(sesion, entrada, lectura, evaluaciones)
-
-
-def editar(fabrica_sesiones, entrada, evaluador, **opciones_evaluacion):
-    """Editar es reentregar los ítems cambiados: una evaluación y luego el seguimiento del intento."""
-    return entregar(fabrica_sesiones, entrada, evaluador, preparar=preparar_edicion, **opciones_evaluacion)
-
-
-# --- Seguimiento ----------------------------------------------------------------------------
-
-def avanzar(sesion, cuenta, actividad, items, fecha, *, intento, eventos=()):
-    """Abre la siguiente pregunta del intento o cierra el registro.
-
-    Solo preguntan los ítems respondidos en este intento (en una edición, los editados). La pregunta va al
-    primero, por orden, que sigue poco desarrollado y tiene repreguntas libres: una por ítem salvo que declare
-    `max_repreguntas` (ajuste registros), hasta `actividad.maximo_seguimientos` por intento. Un ítem ADECUADA
-    (también el sensible) o ABIERTA no pregunta, y con un ítem sensible en el intento nadie más pregunta.
-    `eventos` son los ya ganados en esta acción.
-    """
-    registro = leer_registro(sesion, cuenta, actividad)
-    # Ajuste pruebas llm: si algún ítem salió sensible en este intento (entrega o seguimiento), no se abren más
-    # turnos; los demás quedan con su clasificación y su pista.
-    sensible = any(r.intento == intento and r.sensible for r in registro.respuestas.values())
-    if not sensible and registro.turnos_del_intento(intento) < actividad.maximo_seguimientos:
-        for item in items:
-            respuesta = registro.respuestas.get(item.id)
-            maximo = (item.seguimiento or {}).get('max_repreguntas', MAXIMO_REPREGUNTAS_POR_ITEM)
-            if (respuesta is None or respuesta.intento != intento
-                    or registro.clasificacion_vigente(respuesta) != ClasificacionRespuesta.POCO_DESARROLLADA
-                    or len(registro.turnos_vigentes(respuesta)) >= maximo):
-                continue
-            ultima = registro.ultima_evaluacion(respuesta)
-            if ultima.pregunta is None:
-                continue  # respuesta emocional: no se repregunta y el presupuesto pasa al siguiente
-            sesion.execute(update(RespuestaRegistro.__table__).where(RespuestaRegistro.id == respuesta.id).values(
-                estado=EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO,
-                actualizada_en=marca_actualizacion(respuesta.actualizada_en)))
-            sesion.execute(insert(TurnoSeguimiento.__table__), dict(respuesta_id=respuesta.id, intento=intento,
-                orden=len(registro.turnos_vigentes(respuesta)) + 1, pregunta=ultima.pregunta,
-                criterios_objetivo=list(ultima.criterios_faltantes), creado_en=fecha))
-            ganados = responder_con_eventos(sesion, cuenta, list(eventos), fecha)
-            return RespuestaRegistroAccion(**publico(sesion, cuenta, actividad, items), **ganados.campos())
-    return cerrar(sesion, cuenta, actividad, items, registro, fecha, intento=intento, eventos=eventos)
-
-
 def registro_adecuado_emitido(sesion, cuenta, actividad):
     return sesion.scalar(select(exists().where(
         EventoUso.cuenta_id == cuenta.id, EventoUso.tipo == TipoEventoUso.REGISTRO_ADECUADO,
         EventoUso.id_referencia == actividad.id)))
 
 
-def cerrar(sesion, cuenta, actividad, items, registro, fecha, *, intento, eventos=()):
-    """Cierra el intento. Solo la entrega completa la actividad; REGISTRO_ADECUADO, una vez por cuenta."""
-    eventos = list(eventos)
-    if intento == 1:
-        _, completa = completar_progreso(sesion, cuenta, actividad)
-        eventos = completa + eventos
-    # Adecuado: nada poco desarrollado y a lo mucho un ítem abierto; uno sensible cuenta como desarrollado.
-    if (not registro.por_ampliar(items) and len(registro.abiertos(items)) <= MAXIMO_ABIERTOS_ADECUADO
-            and not registro_adecuado_emitido(sesion, cuenta, actividad)):
-        eventos.append((TipoEventoUso.REGISTRO_ADECUADO, actividad.id))
+def sin_llm_elegida(opciones, elegidas):
+    """La opción marcada no pasa por el LLM (`sin_llm`): su texto es opcional."""
+    por_codigo = {opcion.codigo: opcion for opcion in opciones}
+    return any(por_codigo[e['codigo']].sin_llm for e in elegidas if e['codigo'] in por_codigo)
+
+
+@usar_contexto
+def entregar(sesion, entrada):
+    """PROVISIONAL (lote 3): guarda todos los ítems de una vez, sin LLM (COMPLETADO), completa la actividad y emite
+    REGISTRO_ADECUADO. Valida la elección contra las opciones fijas del ítem; de las piezas, solo el prefijo."""
+    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
+    registro = leer_registro(sesion, cuenta, actividad)
+    if registro.progreso is not None and registro.progreso.estado == EstadoProgreso.COMPLETADA:
+        raise ErrorAccion("El registro ya fue entregado")
+    por_codigo = {item.codigo: item for item in items}
+    codigos = [i.item for i in entrada.items]
+    if len(codigos) != len(set(codigos)):
+        raise invalida("Un ítem no puede entregarse dos veces en la misma petición")
+    if any(codigo not in por_codigo for codigo in codigos):
+        raise ErrorAccion("El ítem no pertenece a esta actividad")
+    faltantes = [item.codigo for item in items if item.obligatorio and item.codigo not in codigos]
+    if faltantes:
+        raise ErrorAccion("Faltan ítems por responder antes de entregar", items_faltantes=faltantes)
+    opciones = opciones_por_item(sesion, cuenta, items)
+    guardar = []
+    for entrega in entrada.items:
+        item = por_codigo[entrega.item]
+        elegidas = validar_eleccion(item, opciones[item.id], entrega.opciones, True)
+        # Ningún ítem se guarda vacío, salvo que la opción marcada vaya sin LLM.
+        if not entrega.texto.strip() and not sin_llm_elegida(opciones[item.id], elegidas):
+            raise invalida("La respuesta no puede estar vacía")
+        guardar.append((item, elegidas, entrega.texto))
+    fecha = fecha_accion(entrada)
+    progreso = registro.progreso or crear_progreso(sesion, cuenta, actividad)
+    for item, elegidas, texto in guardar:
+        guardar_intento(sesion, progreso.id, item.id, dict(
+            opciones_elegidas=elegidas, primera_respuesta=texto, estado=EstadoRespuestaRegistro.COMPLETADO), fecha)
+    _, eventos = completar_progreso(sesion, cuenta, actividad)
+    if not registro_adecuado_emitido(sesion, cuenta, actividad):
+        eventos = [*eventos, (TipoEventoUso.REGISTRO_ADECUADO, actividad.id)]
     respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
     return RespuestaRegistroAccion(**publico(sesion, cuenta, actividad, items), **respuesta.campos())
 
 
-@dataclass(frozen=True, slots=True)
-class LecturaSeguimiento:
-    titulo: str
-    item: ItemPorEvaluar
-    turnos: tuple[TurnoEvaluacion, ...]
-    pregunta_generica: bool
-    version: dict
-
-
-def pendiente_de(registro, item):
-    respuesta = registro.respuestas.get(item.id)
-    if respuesta is None or respuesta.estado != EstadoRespuestaRegistro.PENDIENTE_SEGUIMIENTO:
-        raise ErrorAccion("Este ítem no tiene una pregunta de seguimiento pendiente")
-    turnos = registro.turnos_vigentes(respuesta)
-    return respuesta, turnos, turno_pendiente(turnos)
-
-
-@usar_contexto
-def preparar_seguimiento(sesion, entrada):
-    if not entrada.texto.strip():
-        raise ErrorAccion("La respuesta no puede estar vacía", estado_http=422)
-    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
-    item = validar_item(items, entrada.item)
-    registro = leer_registro(sesion, cuenta, actividad)
-    respuesta, turnos, turno = pendiente_de(registro, item)
-    conversacion = tuple(TurnoEvaluacion(t.pregunta, entrada.texto if t.id == turno.id else t.respuesta)
-                         for t in turnos)
-    respondidas = {otro.codigo: registro.respuestas[otro.id] for otro in items if otro.id in registro.respuestas
-                   and registro.respuestas[otro.id].clasificacion_inicial is not None}
-    textos = {codigo: r.texto_consolidado for codigo, r in respondidas.items() if not r.sensible}
-    elecciones = {codigo: r.opciones_elegidas for codigo, r in respondidas.items()}
-    opciones = opciones_por_item(sesion, cuenta, items)
-    ultima = registro.ultima_evaluacion(respuesta)
-    por_evaluar = item_por_evaluar(sesion, item, opciones[item.id], respuesta.opciones_elegidas,
-                                   respuesta.texto_inicial,
-                                   ecos_de(sesion, cuenta, item, items, textos, elecciones, opciones))
-    return LecturaSeguimiento(actividad.titulo, por_evaluar, conversacion,
-        ultima is not None and ultima.origen == OrigenEvaluacion.EXTENSION_MINIMA, version(registro))
-
-
-@usar_contexto
-def persistir_seguimiento(sesion, entrada, lectura, evaluacion):
-    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
-    item = validar_item(items, entrada.item)
-    registro = leer_registro(sesion, cuenta, actividad)
-    exigir_sin_cambios(registro, lectura.version)
-    respuesta, turnos, turno = pendiente_de(registro, item)
-    fecha = fecha_accion(entrada)
-    # ABIERTA la decide el backend: el evaluador la propone y el ítem la admite tras una repregunta respondida.
-    if (evaluacion.abierto and evaluacion.clasificacion == ClasificacionRespuesta.POCO_DESARROLLADA
-            and (item.seguimiento or {}).get('admite_abierto')):
-        evaluacion = replace(evaluacion, clasificacion=ClasificacionRespuesta.ABIERTA, pregunta=None)
-    sesion.execute(update(TurnoSeguimiento.__table__).where(TurnoSeguimiento.id == turno.id)
-                   .values(respuesta=entrada.texto, respondido_en=fecha))
-    # Respuesta reflexiva: pasó de poco desarrollada a adecuada gracias a un turno; una vez por respuesta.
-    reflexiva = (not respuesta.reflexiva_registrada
-                 and registro.clasificacion_vigente(respuesta) == ClasificacionRespuesta.POCO_DESARROLLADA
-                 and evaluacion.clasificacion == ClasificacionRespuesta.ADECUADA)
-    comprobar_cambio(sesion, respuesta, dict(estado=EstadoRespuestaRegistro.FINAL, ampliada=True,
-        texto_consolidado=evaluacion.consolidada, actualizada_en=marca_actualizacion(respuesta.actualizada_en),
-        reflexiva_registrada=respuesta.reflexiva_registrada or reflexiva, sensible=evaluacion.sensible,
-        requiere_atencion=respuesta.requiere_atencion or evaluacion.sensible))
-    insertar_evaluacion(sesion, respuesta.id, len(registro.evaluaciones.get(respuesta.id, ())) + 1, evaluacion, fecha,
-                        respuesta.opciones_elegidas)
-    return avanzar(sesion, cuenta, actividad, items, fecha, intento=respuesta.intento,
-                   eventos=[(TipoEventoUso.RESPUESTA_REFLEXIVA, None)] if reflexiva else ())
-
-
-def responder_seguimiento(fabrica_sesiones, entrada, evaluador, **opciones_evaluacion):
-    with fabrica_sesiones.begin() as sesion:
-        lectura = preparar_seguimiento(sesion, entrada)
-    evaluacion = procesar_seguimiento(lectura.titulo, lectura.item, lectura.turnos, evaluador,
-                                      pregunta_generica=lectura.pregunta_generica, **opciones_evaluacion)
-    with fabrica_sesiones.begin() as sesion:
-        return persistir_seguimiento(sesion, entrada, lectura, evaluacion)
-
-
-@usar_contexto
-def continuar_sin_responder(sesion, entrada):
-    """Omitir cierra todo el registro; el turno queda sin respuesta, que es la marca de la omisión."""
-    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
-    item = validar_item(items, entrada.item)
-    registro = leer_registro(sesion, cuenta, actividad)
-    respuesta, _, turno = pendiente_de(registro, item)
-    comprobar_cambio(sesion, respuesta, dict(estado=EstadoRespuestaRegistro.FINAL,
-                                            actualizada_en=marca_actualizacion(respuesta.actualizada_en)))
-    if turno.respuesta is not None:
-        sesion.execute(update(TurnoSeguimiento.__table__).where(TurnoSeguimiento.id == turno.id).values(respuesta=None))
-    return cerrar(sesion, cuenta, actividad, items, leer_registro(sesion, cuenta, actividad), fecha_accion(entrada),
-                  intento=respuesta.intento)
+def pendiente_lote_3(*_):
+    """Seguimiento, edición, borradores y continuar sin responder: el flujo secuencial es del lote 3."""
+    raise ErrorAccion(PENDIENTE_LOTE_3, estado_http=501)

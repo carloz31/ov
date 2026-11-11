@@ -167,30 +167,15 @@ class OrigenRedaccion(StrEnum):
     LLM = "LLM"
 
 
-class ClasificacionRespuesta(StrEnum):
-    ADECUADA = "ADECUADA"
-    POCO_DESARROLLADA = "POCO_DESARROLLADA"
-    NO_EVALUADA = "NO_EVALUADA"
-    # Ajuste registros: duda sincera tras una repregunta, en un ítem que lo admite; la asigna el backend.
-    ABIERTA = "ABIERTA"
-
-
 class EstadoRespuestaRegistro(StrEnum):
-    BORRADOR = "BORRADOR"
-    PENDIENTE_SEGUIMIENTO = "PENDIENTE_SEGUIMIENTO"
-    FINAL = "FINAL"
-
-
-class OrigenEvaluacion(StrEnum):
-    LLM = "LLM"
-    EXTENSION_MINIMA = "EXTENSION_MINIMA"
-
-
-class TipoCriterio(StrEnum):
-    EJEMPLO = "EJEMPLO"
-    RAZON = "RAZON"
-    ACCION = "ACCION"
-    CONTRASTE = "CONTRASTE"
+    """Estado de un intento de un ítem (ajuste registros llm, lote 2)."""
+    # Ítem u opción sin LLM: solo la elección y el texto.
+    COMPLETADO = "COMPLETADO"
+    CERRADO = "CERRADO"
+    # Terminó en `no_sabe`.
+    ABIERTO = "ABIERTO"
+    # Falló la primera llamada al LLM.
+    SIN_EVALUAR = "SIN_EVALUAR"
 
 
 class TipoReferencia(StrEnum):
@@ -209,6 +194,8 @@ class TipoReferencia(StrEnum):
     FAMILIAS_RECOMENDADAS = "FAMILIAS_RECOMENDADAS"
     TESTIMONIOS = "TESTIMONIOS"
     DATOS_CARRERA_PLAN_A = "DATOS_CARRERA_PLAN_A"
+    # Ajuste registros llm (lote 2): el primer check-in de la cuenta, para el eco de b5-1.
+    CHECK_IN_PRIMERO = "CHECK_IN_PRIMERO"
 
 
 class EstadoReferencia(StrEnum):
@@ -224,6 +211,11 @@ class FuenteOpciones(StrEnum):
     LISTA = "LISTA"
     REFERENCIA = "REFERENCIA"
     PROPIAS = "PROPIAS"
+    # Ajuste registros llm (lote 2): listas armadas de piezas de la cuenta (§4).
+    PIEZAS_PERFIL = "PIEZAS_PERFIL"
+    # Las del perfil con «Lo que te cuesta» primero (b4-1-menos).
+    PIEZAS_PERFIL_MENOS = "PIEZAS_PERFIL_MENOS"
+    PIEZAS_INICIO = "PIEZAS_INICIO"
 
 
 # --- Planes de carrera (B11) ---------------------------------------------------------------------

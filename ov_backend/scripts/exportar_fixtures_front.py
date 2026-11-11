@@ -86,46 +86,46 @@ def _pedir(cliente, metodo, ruta, datos=None):
     return respuesta.json()
 
 
-def eleccion_minima(item):
+TEXTO_REGISTRO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'
+
+
+def eleccion_minima(item, opciones_referencia=()):
+    """Las primeras opciones, tantas como pide el mínimo: las de su lista o su referencia y luego las propias no
+    exclusivas; si no alcanzan, completa con «Otra» (ajuste registros llm, lote 2)."""
     eleccion = item['eleccion']
-    return [] if eleccion is None else [{'codigo': o['codigo']} for o in eleccion['opciones'][:eleccion['minima']]]
+    if eleccion is None:
+        return []
+    propias = sorted(eleccion.get('opciones_propias', ()), key=lambda o: o['exclusiva'])
+    disponibles = [*eleccion['opciones'], *opciones_referencia, *propias]
+    elegidas = [{'codigo': o['codigo']} for o in disponibles[:eleccion['minima']]]
+    otras = [{'codigo': 'OTRA' if eleccion['maxima'] == 1 else f'OTRA-{n}', 'texto': 'DATO DE PRUEBA: otra'}
+             for n in range(1, eleccion['minima'] - len(elegidas) + 1)] if eleccion['permite_otra'] else []
+    return elegidas + otras
 
 
-def _responder_registro(cliente, actividad, cuenta='est-ana'):
-    for item in _pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro'):
-        _pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
-            'cuenta': cuenta, 'actividad': actividad, 'item': item['codigo'], 'fecha_hora': FECHA,
-            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.',
-            'opciones': eleccion_minima(item)})
-    return _pedir(cliente, 'POST', '/acciones/registro/entregar',
-                  {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA})
+def _items_entrega(cliente, actividad, cuenta='est-ana'):
+    items = _pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro')
+    referencias = {r['codigo']: r.get('opciones') or [] for r in _pedir(
+        cliente, 'GET', f'/cuentas/{cuenta}/actividades/{actividad}/referencias')['referencias']} if any(
+        (i['eleccion'] or {}).get('referencia_opciones') for i in items) else {}
+    return [{'item': i['codigo'], 'texto': TEXTO_REGISTRO,
+             'opciones': eleccion_minima(i, referencias.get((i['eleccion'] or {}).get('referencia_opciones'), ()))}
+            for i in items]
 
 
-def _registro_con_seguimiento(cliente):
-    """F01: t-valores con elección ordenada, borradores con posición y las dos preguntas de seguimiento.
+def _responder_registro(cliente, actividad, cuenta='est-ana', items=None):
+    """Entrega provisional (ajuste registros llm, lote 2): todos los ítems en una petición, sin borradores."""
+    return _pedir(cliente, 'POST', '/acciones/registro/entregar', {
+        'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
+        'items': items if items is not None else _items_entrega(cliente, actividad, cuenta)})
 
-    `[vaga]` pide la pregunta en el evaluador falso: se responde la primera (sigue vaga) y se omite la segunda,
-    así el cierre trae `items_por_ampliar`.
-    """
-    accion = {'cuenta': 'est-ana', 'actividad': 't-valores', 'fecha_hora': FECHA}
+
+def _registro_t_valores(cliente):
+    """F01: t-valores con elección ordenada. El seguimiento y lo que queda por ampliar vuelven en el lote 3."""
     fixtures = {'items-registro-t-valores': _pedir(cliente, 'GET', '/actividades/t-valores/items-registro')}
-    fixtures['borrador-t-valores'] = _pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
-        **accion, 'item': 't-val-orden', 'texto': 'DATO DE PRUEBA: crear me importa [vaga]', 'posicion': 't-val-libre',
-        'opciones': [{'codigo': 'CREAR'}, {'codigo': 'LIBERTAD'}, {'codigo': 'ESTABILIDAD'}]})
-    for item, posicion in (('t-val-libre', 't-val-breve'), ('t-val-breve', 't-val-breve')):
-        _pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
-            **accion, 'item': item, 'posicion': posicion,
-            'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'})
-    fixtures['entregar-t-valores-seguimiento'] = _pedir(cliente, 'POST', '/acciones/registro/entregar', accion)
-    fixtures['registro-t-valores-pendiente'] = _pedir(
-        cliente, 'GET', '/cuentas/est-ana/actividades/t-valores/registro')
-    fixtures['responder-seguimiento-t-valores'] = _pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
-        **accion, 'item': 't-val-orden', 'texto': 'DATO DE PRUEBA: porque sí [vaga]'})
-    fixtures['continuar-sin-responder-t-valores'] = _pedir(
-        cliente, 'POST', '/acciones/registro/continuar-sin-responder', {**accion, 'item': 't-val-orden'})
-    # F02: la consulta del registro cerrado con un ítem por ampliar.
-    fixtures['registro-t-valores-por-ampliar'] = _pedir(
-        cliente, 'GET', '/cuentas/est-ana/actividades/t-valores/registro')
+    items = [{**i, 'opciones': [{'codigo': 'CREAR'}, {'codigo': 'LIBERTAD'}, {'codigo': 'ESTABILIDAD'}]}
+             if i['item'] == 't-val-orden' else i for i in _items_entrega(cliente, 't-valores')]
+    fixtures['entregar-t-valores'] = _responder_registro(cliente, 't-valores', items=items)
     return fixtures
 
 
@@ -203,35 +203,19 @@ def _recorrer(cliente):
     fixtures['avance-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/avance')
     fixtures['secciones-t1'] = _pedir(cliente, 'GET', '/cuentas/est-ana/secciones')
     fixtures['items-registro-t-expectativas'] = _pedir(cliente, 'GET', '/actividades/t-expectativas/items-registro')
-    fixtures['borrador-t-expectativas'] = _pedir(cliente, 'POST', '/acciones/registro/guardar-borrador', {
-        'cuenta': 'est-ana', 'actividad': 't-expectativas', 'item': 't-exp-ruta', 'fecha_hora': FECHA,
-        'texto': 'DATO DE PRUEBA: borrador a medias', 'posicion': 't-exp-ruta',
-        'opciones': [{'codigo': 'INSTITUTO'}, {'codigo': 'OTRA', 'texto': 'Viajar un año'}]})
-    fixtures['registro-t-expectativas-borrador'] = _pedir(
-        cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
     # F02: sin entregar, t-eco no tiene qué citar.
     fixtures['referencias-t-eco-sin-dato'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
-    fixtures['entregar-t-expectativas'] = _responder_registro(cliente, 't-expectativas')
+    items = [{**i, 'opciones': [{'codigo': 'INSTITUTO'}, {'codigo': 'OTRA-1', 'texto': 'Viajar un año'}]}
+             if i['item'] == 't-exp-ruta' else i for i in _items_entrega(cliente, 't-expectativas')]
+    fixtures['entregar-t-expectativas'] = _responder_registro(cliente, 't-expectativas', items=items)
     fixtures['registro-t-expectativas-cerrado'] = _pedir(
         cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
-    # B04: editar abre un intento con su pregunta de seguimiento ([vaga] la pide en el evaluador falso).
-    accion_registro = {'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA}
-    fixtures['editar-t-expectativas'] = _pedir(cliente, 'POST', '/acciones/registro/editar', {
-        **accion_registro, 'items': [{'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: ahora quiero viajar [vaga]'}]})
-    _pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
-        **accion_registro, 'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: porque quiero conocer otras culturas'})
-    # B05: con t-exp-espera poco desarrollada (edición pendiente), t-eco la ve «por desarrollar» y la elección, lista.
+    # B05: t-eco retoma la elección; el texto, sin texto citable en la entrega provisional, queda sin dato.
     fixtures['items-registro-t-eco'] = _pedir(cliente, 'GET', '/actividades/t-eco/items-registro')
-    _pedir(cliente, 'POST', '/acciones/registro/editar', {
-        **accion_registro, 'items': [{'item': 't-exp-espera', 'texto': 'DATO DE PRUEBA: no lo sé [vaga]'}]})
     fixtures['referencias-t-eco'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
-    _pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
-        **accion_registro, 'item': 't-exp-espera', 'texto': 'DATO DE PRUEBA: esperan que estudie, porque confían en mí'})
-    fixtures['referencias-t-eco-disponible'] = _pedir(
-        cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
     fixtures['avance-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/avance')
-    # B09: diario. t-inicio dejó la pregunta fija y t-expectativas la personalizada, que se redacta al abrirla.
+    # B09: diario. t-inicio dejó la pregunta fija y t-expectativas la personalizada (sin texto citable, la base).
     diario = {'cuenta': 'est-ana', 'fecha_hora': FECHA}
     fixtures['diario-preguntas'] = _pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')
     fixtures['abrir-pregunta-personal'] = _pedir(cliente, 'POST', '/acciones/diario/abrir-pregunta',
@@ -327,7 +311,7 @@ def _recorrer(cliente):
     fixtures['catalogo-carreras-favoritos'] = _pedir(cliente, 'GET', f'{catalogo}/carreras?favoritos=true')
     # B11: t-valores abre CONOCIMIENTO (dudas con sugerencias del evaluador falso) y t-explorar, REALIDAD. Con dos
     # planes listos para comparar se abre t-comparar.
-    fixtures.update(_registro_con_seguimiento(cliente))
+    fixtures.update(_registro_t_valores(cliente))
     fixtures['guardar-seccion-conocimiento'] = _guardar_seccion(cliente, PSICOLOGIA, 'CONOCIMIENTO', {
         'respuestas': {'DIA_NORMAL': 'SI', 'DONDE_TRABAJAR': 'MAS_O_MENOS', 'CURSOS': 'NO', 'INGRESO': 'SI',
                        'CONOCE_ALGUIEN': 'SI'},

@@ -58,8 +58,6 @@ class Actividad(Base):
     requerida: Mapped[bool] = mapped_column(default=True, server_default=true())
     duracion_estimada_min: Mapped[int | None]
     descripcion: Mapped[str | None] = mapped_column(Text)
-    # Ajuste registros: preguntas de seguimiento por intento de un registro (b5-3 lo baja a 1).
-    maximo_seguimientos: Mapped[int] = mapped_column(default=2, server_default=text("2"))
 
 
 class Tematica(Base):

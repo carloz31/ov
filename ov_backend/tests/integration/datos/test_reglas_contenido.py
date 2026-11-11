@@ -17,7 +17,7 @@ EXCEPCIONES_OPCIONALES = {'R-B4'}
 CAMINO = ('B0', 'B1', 'B2', 'B3', 'B4', 'B5')
 EVENTOS_DE_ACTIVIDAD = ('COMPLETA_ACTIVIDAD', 'REGISTRO_ADECUADO', 'SUPERA_BATALLA', 'SUPERA_CASO')
 # Ajuste registros (adaptación autorizada para `contenido`): b4-1 y b4-5 piden planes con evaluadores parametrizados.
-EVALUADORES_DE_PLANES = ('planes_listos_para_comparar', 'planes_con_por_que', 'planes_creados', 'pasos_plan_a')
+EVALUADORES_DE_PLANES = ('planes_listos_para_comparar', 'por_que_en_planes', 'pasos_plan_a')
 APERTURA_CONVERSACIONES = {'conv-1': 'b1-3', 'conv-2': 'b1-3', 'conv-3': 'b1-6', 'conv-4': 'b1-7', 'conv-5': 'b2-3',
                            'conv-6': 'b2-4', 'conv-7': 'b3-3', 'conv-8': 'b3-10', 'conv-9': 'b4-3', 'conv-10': 'b5-1'}
 

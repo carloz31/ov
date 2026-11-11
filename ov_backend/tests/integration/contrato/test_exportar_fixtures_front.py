@@ -48,7 +48,7 @@ from app.schemas.instrumentos import (
     AvanceInstrumento, ComparacionAutopercepcion, InstrumentoPublico, ItemPublico, RespuestasActividad,
     ResultadoHistorico, ResultadoPublico,
 )
-from app.schemas.registro import EstadoItemRegistro, ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
+from app.schemas.registro import ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
 from soporte_catalogo_ruta import ING_CIVIL, INST_UNI, PERIODISMO, PSICOLOGIA
 
 
@@ -61,11 +61,9 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'notificaciones', 'notificaciones-marcar-una', 'notificaciones-pagina-2', 'notificaciones-autora',
     'notificaciones-apoderado', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
     'secciones-inicial', 'secciones-t1', 'presentaciones-inicial', 'presentacion-vista', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
-    'items-registro-t-expectativas', 'borrador-t-expectativas', 'registro-t-expectativas-borrador',
-    'entregar-t-expectativas', 'registro-t-expectativas-cerrado', 'editar-t-expectativas',
-    'items-registro-t-valores', 'borrador-t-valores', 'entregar-t-valores-seguimiento', 'registro-t-valores-pendiente',
-    'responder-seguimiento-t-valores', 'continuar-sin-responder-t-valores', 'registro-t-valores-por-ampliar',
-    'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-eco-sin-dato', 'referencias-t-eco-disponible',
+    'items-registro-t-expectativas', 'entregar-t-expectativas', 'registro-t-expectativas-cerrado',
+    'items-registro-t-valores', 'entregar-t-valores',
+    'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-eco-sin-dato',
     'referencias-t-contraste',
     'items-t-partida', 'respuestas-t-partida', 'revelar-partida', 'resultado-partida', 'referencias-t-lee-cuestionario', 'actividades-t2',
     'comparacion-partida-llegada', 'testimonios-inicial', 'testimonios-final', 'ficha-t-ficha', 'ver-ficha', 'marcar-favorito-ficha', 'preguntas-batalla',
@@ -220,33 +218,23 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert {i.codigo for i in TypeAdapter(list[InstrumentoPublico]).validate_python(datos['instrumentos'])} >= {
         'TEST-RIASEC', 'TEST-PARTIDA-LLEGADA'}
     TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-expectativas'])
-    EstadoItemRegistro.model_validate(datos['borrador-t-expectativas'])
-    borrador = RegistroConsultado.model_validate(datos['registro-t-expectativas-borrador'])
-    assert borrador.posicion == 't-exp-ruta' and borrador.respuestas[0].estado == 'BORRADOR'
-    # B03: entregar todo adecuado cierra el registro y abre la misión adicional, sin clasificaciones.
+    # Ajuste registros llm (lote 2): la entrega provisional cierra el registro, emite REGISTRO_ADECUADO (abre la
+    # misión adicional) y guarda cada ítem COMPLETADO, sin clasificaciones. Borradores, seguimiento y edición: lote 3.
     entrega = RespuestaRegistroAccion.model_validate(datos['entregar-t-expectativas'])
-    assert entrega.estado == 'COMPLETADA' and entrega.items_por_ampliar == []
+    assert entrega.estado == 'COMPLETADA' and {r.estado for r in entrega.respuestas} == {'COMPLETADO'}
     assert 'R-t-adicional' in {d.regla for d in entrega.nuevos_desbloqueos}
     assert 'clasificacion' not in json.dumps(datos['entregar-t-expectativas'])
-    # B04: el registro cerrado trae la consolidada y lo que se puede ampliar; editar abre un intento.
     cerrado = RegistroConsultado.model_validate(datos['registro-t-expectativas-cerrado'])
-    assert cerrado.items_por_ampliar == [] and all(r.texto_consolidado for r in cerrado.respuestas)
-    edicion = RespuestaRegistroAccion.model_validate(datos['editar-t-expectativas'])
-    assert [r.estado for r in edicion.respuestas if r.item == 't-exp-ruta'] == ['PENDIENTE_SEGUIMIENTO']
-    assert 'clasificacion' not in json.dumps(datos['editar-t-expectativas'])
-    # F01: t-valores elige en orden y recibe dos preguntas; la segunda se omite y el cierre trae la pista.
+    assert cerrado.estado == 'COMPLETADA' and all(r.texto for r in cerrado.respuestas)
+    assert [(o.codigo, o.texto) for o in cerrado.respuestas[0].opciones_elegidas] == [
+        ('INSTITUTO', 'Estudiar en un instituto'), ('OTRA-1', 'Viajar un año')]
+    # F01: t-valores elige en orden.
     orden = TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-valores'])[0]
     assert orden.eleccion.ordenada and orden.eleccion.minima == orden.eleccion.maxima == 3
-    pendiente = RegistroConsultado.model_validate(datos['registro-t-valores-pendiente'])
-    assert [o.codigo for o in pendiente.respuestas[0].opciones_elegidas] == ['CREAR', 'LIBERTAD', 'ESTABILIDAD']
-    for nombre in ('entregar-t-valores-seguimiento', 'responder-seguimiento-t-valores'):
-        accion = RespuestaRegistroAccion.model_validate(datos[nombre])
-        assert accion.estado == 'EN_CURSO' and accion.respuestas[0].estado == 'PENDIENTE_SEGUIMIENTO'
-        assert accion.respuestas[0].conversacion[-1].tipo == 'pregunta'
-    cierre_valores = RespuestaRegistroAccion.model_validate(datos['continuar-sin-responder-t-valores'])
-    assert cierre_valores.estado == 'COMPLETADA' and [i.item for i in cierre_valores.items_por_ampliar] == ['t-val-orden']
-    assert 'clasificacion' not in json.dumps(datos['continuar-sin-responder-t-valores'])
-    # B05: t-eco retoma la elección y cita; con t-exp-espera poco desarrollada, sale «por desarrollar».
+    valores = RespuestaRegistroAccion.model_validate(datos['entregar-t-valores'])
+    assert valores.estado == 'COMPLETADA'
+    assert [o.codigo for o in valores.respuestas[0].opciones_elegidas] == ['CREAR', 'LIBERTAD', 'ESTABILIDAD']
+    # B05: t-eco retoma la elección; el texto queda sin dato (la entrega provisional no deja texto citable).
     ruta_eco, espera_eco = TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-eco'])
     # F02: retoma la elección de t-exp-ruta con su misma lista; la referencia solo marca lo elegido antes.
     assert ruta_eco.eleccion.referencia == 't-ref-rutas' and ruta_eco.eleccion.lista == 'RUTAS_DESPUES_COLEGIO'
@@ -254,18 +242,13 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert espera_eco.eleccion is None
     referencias = ReferenciasConsultadas.model_validate(datos['referencias-t-eco'])
     assert [(r.codigo, r.estado) for r in referencias.referencias] == [
-        ('t-ref-espera', 'POR_DESARROLLAR'), ('t-ref-rutas', 'DISPONIBLE')]
+        ('t-ref-espera', 'SIN_DATO'), ('t-ref-rutas', 'DISPONIBLE')]
     assert referencias.referencias[0].texto is None and referencias.referencias[1].opciones
     assert 'clasificacion' not in json.dumps(datos['referencias-t-eco'])
-    # F02: sin entregar, sin dato; ya ampliada, la cita; ELECCION y TEXTO nombran su actividad en todo estado.
-    for nombre, esperados in (('referencias-t-eco-sin-dato', ['SIN_DATO', 'SIN_DATO']),
-                            ('referencias-t-eco-disponible', ['DISPONIBLE', 'DISPONIBLE'])):
-        resueltas = ReferenciasConsultadas.model_validate(datos[nombre]).referencias
-        assert [r.estado for r in resueltas] == esperados
-        assert all(r.actividad == 't-expectativas' for r in resueltas)
-    assert all(r.actividad == 't-expectativas' for r in referencias.referencias)
-    por_ampliar = RegistroConsultado.model_validate(datos['registro-t-valores-por-ampliar'])
-    assert por_ampliar.estado == 'COMPLETADA' and [p.item for p in por_ampliar.items_por_ampliar] == ['t-val-orden']
+    # F02: sin entregar, sin dato; ELECCION y TEXTO nombran su actividad en todo estado.
+    sin_dato = ReferenciasConsultadas.model_validate(datos['referencias-t-eco-sin-dato']).referencias
+    assert [r.estado for r in sin_dato] == ['SIN_DATO', 'SIN_DATO']
+    assert all(r.actividad == 't-expectativas' for r in (*sin_dato, *referencias.referencias))
     contraste = ReferenciasConsultadas.model_validate(datos['referencias-t-contraste'])
     assert [(r.codigo, r.tipo, r.estado) for r in contraste.referencias] == [
         ('t-ref-coincidencias', 'COINCIDENCIAS', 'DISPONIBLE'), ('t-ref-resultado', 'RESULTADO', 'DISPONIBLE')]
@@ -348,10 +331,12 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
                                                              [INST_UNI])
     # B09: diario, check-ins y temáticas.
     preguntas = TypeAdapter(list[PreguntaDiarioEstado]).validate_python(datos['diario-preguntas'])
-    assert [(p.codigo, p.redactada) for p in preguntas] == [('t-diario-fija', True), ('t-diario-personal', False),
+    # Ajuste registros llm (lote 2): sin texto citable, la personalizada no tiene qué retomar y queda la base.
+    base = '¿Cómo te sientes con lo que esperas de este camino?'
+    assert [(p.codigo, p.redactada) for p in preguntas] == [('t-diario-fija', True), ('t-diario-personal', True),
                                                             ('t-diario-tras-conversar', False)]
-    assert datos['entregar-t-expectativas']['entradas_desbloqueadas'][0]['texto'] is None
-    assert PreguntaAbierta.model_validate(datos['abrir-pregunta-personal']).texto.startswith('Sobre «')
+    assert datos['entregar-t-expectativas']['entradas_desbloqueadas'][0]['texto'] == base
+    assert PreguntaAbierta.model_validate(datos['abrir-pregunta-personal']).texto == base
     PreguntaDelDia.model_validate(datos['pregunta-del-dia'])
     entradas = TypeAdapter(list[EntradaDiarioPublica]).validate_python(datos['diario-entradas'])
     assert sorted((e.numero, e.origen, e.titulo_mostrado) for e in entradas)[3] == (4, 'LIBRE', 'Mi tarde')
