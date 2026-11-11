@@ -29,13 +29,15 @@ def test_no_carga_lo_provisional_de_ruta(sesion_contenido):
     assert not {'t-conv-1', 't-conv-2'} & codigos
     preguntas = set(sesion_contenido.scalars(select(m.PreguntaDiario.codigo)))
     assert 't-diario-tras-conversar' not in preguntas
-    assert {'d-conv-futuro', 'd-conv-fortalezas', 'd-conv-condiciones', 'd-conv-acompanar'} <= preguntas
+    # Ajuste cartas-diario: quedan dos cartas de conversaciones; salen las de conv-4 y conv-9.
+    assert {'d-conv-fortalezas', 'd-conv-acompanar'} <= preguntas
+    assert not {'d-conv-futuro', 'd-conv-condiciones'} & preguntas
     assert not any('t-conv' in str(fila) or 'tras-conversar' in str(fila) for fila in contenido.PROVISIONALES)
 
 
 def test_las_reflexiones_son_desbloqueables_sin_dimension(sesion_contenido):
     preguntas = sesion_contenido.scalars(select(m.PreguntaDiario).where(m.PreguntaDiario.codigo.like('d-conv-%'))).all()
-    assert len(preguntas) == 4
+    assert len(preguntas) == 2
     for p in preguntas:
         assert p.uso == m.UsoPreguntaDiario.DESBLOQUEABLE and p.variantes is None and p.dimension_id is None, p.codigo
 

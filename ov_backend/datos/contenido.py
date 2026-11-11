@@ -24,7 +24,7 @@ PROVISIONALES = (
     ('Cuentas, colegios, salones, vínculos y orientadoras', 'ruta.CUENTAS, COLEGIOS, SALONES, VINCULOS, ORIENTADORAS_SALONES', 'carga de cuentas del piloto'),
     ('Configuración del salón', 'ruta.SALON_INSTRUMENTOS', 'B14'),
     ('Registro prioritario del salón', "('5A', 'b1-3')", 'B14'),
-    ('Diario: t-diario-fija y las DIARIA', 'ruta.PREGUNTAS_DIARIO, REFERENCIAS', 'ajuste de diario'),
+
     ('Recuerdos de Lumi t-lumi-1..5 y sus reglas por amistad', 'ruta.ACTIVIDADES, PROPIEDADES, REGLAS', 'contenido de Lumi'),
     ('Insignias, grupos, textos, pistas y evaluadores de vistas', 'ruta.INSIGNIAS, GRUPOS_INSIGNIA, PAGINAS_INSIGNIAS, TEXTOS_INSIGNIAS, PISTAS_INSIGNIAS, REGLAS, EVALUADORES_REGLAS, TEXTOS_CONDICIONES', 'ajuste de logros'),
     ('Niveles y citas de Lumi', 'ruta.NIVELES, CITAS_LUMI', 'ajuste de logros'),
@@ -797,8 +797,6 @@ REFERENCIAS = (
     ('b5-3-ref-planes', ('ACTIVIDAD', 'b5-3'), 'PLANES', None),
     # La columna «Hoy» de b5-3 lleva el nivel marcado en b5-1-seguridad.
     ('b5-3-ref-seguridad', ('ACTIVIDAD', 'b5-3'), 'ELECCION', 'b5-1-seguridad'),
-    # PROVISIONAL: la del diario que lee los favoritos, de `ruta`.
-    *(r for r in ruta.REFERENCIAS if r[1] == ('PREGUNTA_DIARIO', 't-dia-favoritos')),
 )
 
 # (código, título, descripción, video_id, inicio, fin, pista, persona, ocupación, contexto, cita), como en `ruta`.
@@ -911,7 +909,7 @@ CONVERSACIONES = (
       '¿Qué parte de lo que imaginan viene de lo que les gusta, y qué parte de lo que les preocupa o de lo que esperan otros?',
       'Actividad: en dos columnas, «deseos para el futuro» y «caminos para llegar». Noten que un mismo deseo puede tener varios caminos.'),
      'Puede que compartan un deseo de fondo, como la independencia o el bienestar, aunque imaginen caminos distintos para llegar. Si sus respuestas difieren, conozcan qué hay detrás de cada una antes de hablar de profesiones. Las expectativas se pueden decir como deseos y conversarse; no son compromisos que el estudiante tenga que cumplir.',
-     'En su recorrido, el estudiante separó lo que esperan de él de lo que espera él, y se imaginó a cinco años. Mientras tanto, la ruta familiar invitó a reconocer las propias expectativas y temores, y a decirlos como deseos y preocupaciones propias, no como veredictos.'),
+     'En su recorrido, el estudiante separó lo que esperan de él de lo que espera él, e imaginó un día de su vida a los 23. Mientras tanto, la ruta familiar invitó a reconocer las propias expectativas y temores, y a decirlos como deseos y preocupaciones propias, no como veredictos.'),
     ('conv-5', 5, '¿Qué significa vivir bien?', 'Valores',
      'Imagina una vida adulta con la que te sientas satisfecho. ¿Qué tres cosas te gustaría que estuvieran en ella?',
      'Hoy, ¿qué tres cosas considera importantes para sentir que lleva una buena vida? ¿Alguna ha cambiado con los años?',
@@ -959,26 +957,149 @@ CONVERSACIONES = (
       '¿Qué decisiones le corresponden al estudiante y qué aspectos prácticos conviene conversar en familia?',
       'Actividad: elijan uno de los pasos del plan y acuerden cómo lo acompañará la familia, con una fecha para revisarlo.'),
      'Si sus respuestas se parecen, conviértanlas en un acuerdo concreto. Si son distintas, eso no significa necesariamente que falte interés o cariño. Quizá cada uno entiende el apoyo de una manera diferente. Conversar sobre lo que esperan puede ayudarlos a encontrar formas de acompañarse que resulten útiles para ambos.',
-     'En su recorrido, el estudiante escribió su proyecto con tres pasos y plazos. Mientras tanto, la ruta familiar abordó la diferencia entre acompañar y presionar, y que la decisión es de su hijo o hija. Acompañar, aquí, es estar en esos pasos.'),
+     'En su recorrido, el estudiante armó su plan con sus primeros pasos y miró qué le da seguridad en su proyecto. Mientras tanto, la ruta familiar abordó la diferencia entre acompañar y presionar, y que la decisión es de su hijo o hija. Acompañar, aquí, es estar en esos pasos.'),
 )
 
-# Las de diario parten de lo que el estudiante leyó. PROVISIONAL: el resto del diario, insignias y niveles de
-# `ruta` (ver `PROVISIONALES`).
+# Ajuste cartas-diario: (código, nombre, pregunta, uso, dimensión). Las DESBLOQUEABLE son las cartas de Lumi (fijas o
+# adaptadas: `VARIANTES_DIARIO`, y su `pregunta` es el respaldo); las DIARIA, el pool de la pregunta del día, sin
+# dimensión (todas pesan igual).
 PREGUNTAS_DIARIO = (
-    *(p for p in ruta.PREGUNTAS_DIARIO if p[0] not in ('t-diario-personal', 't-diario-tras-conversar')),
-    ('d-conv-futuro', 'Lo que todavía no les he dicho',
-     'Después de leer lo que tu familia imagina para ti, ¿qué te llamó la atención? ¿Hay algo que todavía no les has dicho y te gustaría conversar?',
+    ('d-llego', 'Cómo llego',
+     'Esta es la primera carta que te dejo. Ya sabes cómo va: tú escribes, yo leo y no juzgo. Empecemos por lo más simple. Se acaba el colegio: ¿qué es lo primero que sientes cuando lo piensas?',
+     'DESBLOQUEABLE', None),
+    ('d-voces', 'Las voces',
+     'Hoy hablamos de lo que se espera de ti y de lo que tú quieres. De todo eso, ¿hay algo que sientes y que todavía no le has dicho a nadie?',
+     'DESBLOQUEABLE', None),
+    ('d-nino', 'Carta al niño que fui',
+     'Esta carta no es para mí: es para el niño o la niña que fuiste. Yo solo te presto el papel. ¿Qué le contarías de quien eres hoy?',
+     'DESBLOQUEABLE', None),
+    ('d-sale-gusta', 'Lo que me sale y lo que me gusta',
+     'Hoy vimos lo que mejor te sale y cuánto te gusta. No siempre van juntas las dos cosas. ¿Hay algo que te gusta mucho, aunque no te salga tan bien?',
+     'DESBLOQUEABLE', None),
+    ('d-no-se', 'Lo que todavía no sé',
+     'Hoy anotaste lo que necesitas saber antes de elegir. A veces no saber da curiosidad, y a veces da miedo lo que uno pueda encontrar. De eso que te falta averiguar, ¿hay algo que prefieres no saber todavía?',
+     'DESBLOQUEABLE', None),
+    ('d-moneda', 'La moneda',
+     'Hoy dejamos que una moneda decidiera por un momento. Mientras estaba en el aire, ¿hubo un lado que querías que saliera?',
+     'DESBLOQUEABLE', None),
+    ('d-antes-de-salir', 'Antes de salir',
+     'Ya casi terminas este camino. Si pudieras hablarle a quien llegó al muelle el primer día, ¿qué le dirías?',
      'DESBLOQUEABLE', None),
     ('d-conv-fortalezas', 'Lo que vieron en mí',
-     'Al leer lo que tu familia vio en ti, ¿qué te llamó la atención? ¿Te reconoces en eso?',
-     'DESBLOQUEABLE', None),
-    ('d-conv-condiciones', 'Lo que sí está en mis manos',
-     'Después de leer lo que tu familia puede ofrecer, ¿qué te llamó la atención? ¿Qué parte de tu plan sientes que sí está en tus manos?',
+     'Tu familia te contó lo que ve en ti. A veces uno se reconoce, y a veces se sorprende. ¿Qué sentiste al leerlo?',
      'DESBLOQUEABLE', None),
     ('d-conv-acompanar', 'Cómo quiero que me acompañen',
-     'Después de conocer cómo tu familia quisiera acompañarte, ¿qué te llamó la atención? ¿Hay algo que te gustaría conversar con ella?',
+     'Ya sabes cómo quisiera acompañarte tu familia. ¿Hay alguna ayuda que necesitas y que te cuesta pedir?',
      'DESBLOQUEABLE', None),
+    ('d-dia-admiraba', 'A quién admiraba',
+     'Todos admiramos a alguien de chicos. ¿A quién admirabas tú, alguien real o de una historia? Cuéntame qué era lo que admirabas.',
+     'DIARIA', None),
+    ('d-dia-historia', 'La historia del momento',
+     'Cuéntame de la serie, la película, el libro o el juego que te tiene enganchado ahora. ¿Qué personaje te gustaría ser?',
+     'DIARIA', None),
+    ('d-dia-frase', 'Mi frase',
+     'Cuando algo se me pone difícil, yo me repito una frase. ¿Cuál es la tuya? Cuéntame de dónde la sacaste.',
+     'DIARIA', None),
+    ('d-dia-curiosidad', 'Lo que me dio curiosidad',
+     'No todo lo que da curiosidad tiene que servir para algo. ¿Qué te dio curiosidad esta semana, aunque no tenga nada que ver con una carrera?',
+     'DIARIA', None),
+    ('d-dia-pude', 'Lo que no creí que podía',
+     'A veces uno hace algo y recién después se da cuenta de que pudo. ¿Qué hiciste hace poco que no te creías capaz de hacer?',
+     'DIARIA', None),
+    ('d-dia-no-planee', 'Lo que no planeé',
+     'En esta isla casi nada sale como uno lo planea, y no siempre es malo. ¿Qué cosa buena te pasó sin que la planearas? Cuéntame qué hiciste tú para que terminara bien.',
+     'DIARIA', None),
+    ('d-dia-importa', 'Lo que me importa',
+     'Hoy no te pregunto por carreras. Aparte del estudio y el trabajo, ¿qué es lo más importante para ti en este momento? Cuéntame por qué.',
+     'DIARIA', None),
+    ('d-dia-tiempo', 'El tiempo volando',
+     'Hay cosas que uno hace y el tiempo se pasa sin darse cuenta. ¿Te pasó hoy con algo?',
+     'DIARIA', None),
+    ('d-dia-pesa', 'Lo que más me pesa',
+     'Yo tengo mis propias dudas, así que no te voy a apurar. De todo lo que tienes por decidir, ¿qué es lo que más te pesa hoy?',
+     'DIARIA', None),
+    ('d-dia-lejos', 'Mirar lejos',
+     'A algunos mirar unos años adelante les da ganas, a otros les aprieta un poco el pecho, y a muchos las dos cosas. ¿A ti qué te provoca hoy?',
+     'DIARIA', None),
+    ('d-dia-rumbo', 'Cambiar de rumbo',
+     'Hay gente que cambia de rumbo y no empieza de cero. Si un día te tocara a ti, ¿qué es lo que más te costaría?',
+     'DIARIA', None),
+    ('d-dia-no-puse', 'Lo que no puse',
+     'A tu orientadora le cuentas lo que piensas. Aquí solo leo yo. ¿Hay algo que te quite seguridad y que no hayas puesto en ningún registro?',
+     'DIARIA', None),
 )
+
+
+def _eligio(item, *opciones):
+    return {'tipo': 'ELIGIO', 'item': item, 'opciones': opciones}
+
+
+def _no_eligio(item, *opciones):
+    return {'tipo': 'NO_ELIGIO', 'item': item, 'opciones': opciones}
+
+
+def _variante(codigo, condiciones, texto):
+    return {'codigo': codigo, 'condiciones': condiciones, 'texto': texto}
+
+
+# Ajuste cartas-diario: las cuatro cartas adaptadas. La primera variante que cumple todas sus condiciones gana; si
+# ninguna, falta un hueco o un ítem leído es sensible o emocional, va la `pregunta` de `PREGUNTAS_DIARIO`.
+VARIANTES_DIARIO = {
+    # Lee b1-3-voz y b1-3-mia; no usa b1-3-contraste.
+    'd-voces': {
+        'huecos': {'persona': {'tipo': 'OPCION', 'item': 'b1-3-voz', 'nombres': {
+            'MAMA': 'tu mamá', 'PAPA': 'tu papá', 'HERMANO': 'tu hermano o hermana', 'ABUELO': 'tu abuelo o abuela',
+            'OTRO_FAMILIAR': 'ese familiar', 'PROFESOR': 'tu profesor o profesora', 'AMIGO': 'tu amigo o amiga',
+            'PAREJA': 'tu pareja'}}},
+        'variantes': (
+            _variante('PERSONA_RUTA', (_no_eligio('b1-3-voz', 'NADIE'), _no_eligio('b1-3-mia', 'AUN_NO')),
+                      'Hoy me contaste lo que {persona} espera de ti y lo que tú quieres. Eso ya quedó en tu registro; aquí te pregunto otra cosa. De todo eso, ¿hay algo que sientes y que todavía no le has dicho a {persona}?'),
+            _variante('PERSONA_DUDA', (_no_eligio('b1-3-voz', 'NADIE'), _eligio('b1-3-mia', 'AUN_NO')),
+                      'Hoy me contaste lo que {persona} espera de ti, y que tú todavía no sabes qué quieres. No hay apuro. ¿Cómo llevas no saberlo todavía, sabiendo lo que {persona} espera?'),
+            _variante('NADIE_RUTA', (_eligio('b1-3-voz', 'NADIE'), _no_eligio('b1-3-mia', 'AUN_NO')),
+                      'Hoy me contaste que nadie te ha dicho claramente qué espera de ti, y que tú ya tienes una idea de lo que quieres. Decidir sin que nadie diga nada a veces alivia y a veces pesa. ¿A ti qué te pasa con eso?'),
+            _variante('NADIE_DUDA', (_eligio('b1-3-voz', 'NADIE'), _eligio('b1-3-mia', 'AUN_NO')),
+                      'Hoy me contaste que nadie te ha dicho claramente qué espera de ti, y que tú todavía no sabes qué quieres. No hay apuro: yo también tengo mis dudas. Cuando piensas que eso lo decides tú, ¿qué sientes primero?'),
+        ),
+    },
+    # Lee b2-4-cruce y, por la regla de respaldo, b2-4-bien (de donde sale {primera}).
+    'd-sale-gusta': {
+        'huecos': {'primera': {'tipo': 'MARCADOR', 'item': 'b2-4-cruce', 'marcador': 'primera', 'origen': 'b2-4-bien'}},
+        'variantes': (
+            _variante('SI', (_eligio('b2-4-cruce', 'SI'),),
+                      'Hoy vimos que lo que mejor te sale es {primera}, y me contaste que además te gusta. No siempre van juntas las dos cosas. ¿Hay algo que te gusta todavía más, aunque no te salga tan bien?'),
+            _variante('MAS_O_MENOS', (_eligio('b2-4-cruce', 'MAS_O_MENOS'),),
+                      'Hoy vimos que lo que mejor te sale es {primera}, y me contaste que te gusta más o menos. Que algo salga bien no obliga a quererlo. ¿Sientes que tendrías que seguir por ahí solo porque te sale?'),
+            _variante('NO_MUCHO', (_eligio('b2-4-cruce', 'NO_MUCHO'),),
+                      'Hoy vimos que lo que mejor te sale es {primera}, y me contaste que no te gusta mucho. Que algo salga bien no obliga a quererlo. ¿Qué es lo que sí te gusta hacer, aunque no te salga tan bien o casi nadie lo sepa?'),
+        ),
+    },
+    # Lee b4-5-moneda: los planes son los marcadores con que respondió.
+    'd-moneda': {
+        'huecos': {'plan_a': {'tipo': 'MARCADOR', 'item': 'b4-5-moneda', 'marcador': 'plan_a'},
+                   'plan_b': {'tipo': 'MARCADOR', 'item': 'b4-5-moneda', 'marcador': 'plan_b'}},
+        'variantes': (
+            _variante('DESANIME', (_eligio('b4-5-moneda', 'DESANIME'),),
+                      'Hoy la moneda cayó en {plan_b} y me contaste que te desanimaste. Aquí no hace falta explicarlo bien. ¿Qué fue lo primero que pensaste cuando la viste caer?'),
+            _variante('TAMBIEN', (_eligio('b4-5-moneda', 'TAMBIEN'),),
+                      'Hoy la moneda cayó en {plan_b} y me contaste que también te gustaría. Ahora imagina que la lanzo otra vez y sale {plan_a}. ¿Sientes lo mismo, o algo cambia?'),
+            _variante('NO_SE', (_eligio('b4-5-moneda', 'NO_SE'),),
+                      'Hoy la moneda cayó en {plan_b} y no supiste bien qué sentiste. Pasa mucho, y no hay que apurarlo. Mientras la moneda estaba en el aire, ¿hubo un lado que querías que saliera?'),
+        ),
+    },
+    # No lee ningún ítem de registro: el Plan A de hoy y la opción inicial.
+    'd-antes-de-salir': {
+        'huecos': {'plan_a': {'tipo': 'PLAN_A'}, 'primera_opcion': {'tipo': 'OPCION_INICIAL'}},
+        'variantes': (
+            _variante('MISMA', ({'tipo': 'OPCION_INICIAL', 'valor': 'MISMA'},),
+                      'Llegaste al muelle con {plan_a} en mente y hoy sigue siendo lo que tienes delante. No es lo mismo traer una idea que irse con ella después de todo este camino. Si pudieras hablarle a quien llegó ese primer día, ¿qué le dirías?'),
+            _variante('OTRA', ({'tipo': 'OPCION_INICIAL', 'valor': 'OTRA'},),
+                      'Llegaste al muelle pensando en {primera_opcion} y hoy lo que tienes delante es {plan_a}. Si pudieras hablarle a quien llegó ese primer día, ¿qué le dirías?'),
+            _variante('SIN_OPCION', ({'tipo': 'OPCION_INICIAL', 'valor': 'SIN_OPCION'},),
+                      'Llegaste al muelle sin una opción en mente y hoy lo que tienes delante es {plan_a}. Si pudieras hablarle a quien llegó ese primer día, ¿qué le dirías?'),
+        ),
+    },
+}
 
 INSIGNIAS = ruta.INSIGNIAS
 TEXTOS_INSIGNIAS = ruta.TEXTOS_INSIGNIAS
@@ -1143,22 +1264,28 @@ REGLAS = (
     # Ajuste conversaciones: cada una pide la carta y una requerida del camino (conv-1 y conv-2, la que abre Familia).
     ('R-conv-1', 'CONVERSACION', 'conv-1', 'Escribe tu carta para abrir este tema.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1))),
     ('R-conv-2', 'CONVERSACION', 'conv-2', 'Escribe tu carta para abrir este tema.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1))),
-    ('R-conv-3', 'CONVERSACION', 'conv-3', 'Se abre al tomar postura frente a los mitos, del otro lado del puente.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-6', 'EVENTOS', 1))),
-    ('R-conv-4', 'CONVERSACION', 'conv-4', 'Se abre al trazar tu línea de tiempo con el guardián.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-7', 'EVENTOS', 1))),
+    ('R-conv-3', 'CONVERSACION', 'conv-3', 'Se abre al contar de dónde te viene un mito, del otro lado del puente.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-6', 'EVENTOS', 1))),
+    ('R-conv-4', 'CONVERSACION', 'conv-4', 'Se abre al imaginar tu futuro con el guardián.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-7', 'EVENTOS', 1))),
     ('R-conv-5', 'CONVERSACION', 'conv-5', 'Se abre al ordenar lo que valoras en un trabajo, con Rosa.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b2-3', 'EVENTOS', 1))),
     ('R-conv-6', 'CONVERSACION', 'conv-6', 'Se abre al separar, con Nico, lo que se te da bien de lo que te gusta.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b2-4', 'EVENTOS', 1))),
     ('R-conv-7', 'CONVERSACION', 'conv-7', 'Se abre al escuchar a Doña Cifra en el mercado.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b3-3', 'EVENTOS', 1))),
     ('R-conv-8', 'CONVERSACION', 'conv-8', 'Se abre al escuchar a Alejandra en el malecón.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b3-10', 'EVENTOS', 1))),
     ('R-conv-9', 'CONVERSACION', 'conv-9', 'Se abre cuando Iván pone tus rutas sobre la mesa.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b4-3', 'EVENTOS', 1))),
-    ('R-conv-10', 'CONVERSACION', 'conv-10', 'Se abre al escribir tu proyecto con la vigía del faro.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b5-1', 'EVENTOS', 1))),
-    # Ajuste conversaciones: reflexiones del diario, al responder los dos.
-    # §2.6: las cartas personalizadas del diario, una por registro.
-    ('R-d-conv-futuro', 'PREGUNTA_DIARIO', 'd-conv-futuro', 'Se abre cuando tú y tu familia respondan «El futuro que imaginamos».', (('COMPLETA_CONVERSACION', 'conv-4', 'EVENTOS', 1),)),
+    ('R-conv-10', 'CONVERSACION', 'conv-10', 'Se abre al mirar tu proyecto con la vigía del faro.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b5-1', 'EVENTOS', 1))),
+    # Ajuste cartas-diario: las siete cartas del camino, al completar su actividad, y las dos de conversaciones, al
+    # responder los dos.
+    ('R-d-llego', 'PREGUNTA_DIARIO', 'd-llego', 'Lumi te abre el diario en el bosque de las voces.', (('COMPLETA_ACTIVIDAD', 'b0-2', 'EVENTOS', 1),)),
+    ('R-d-voces', 'PREGUNTA_DIARIO', 'd-voces', 'Se abre al poner frente a frente lo que esperan de ti y lo que tú quieres.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-d-nino', 'PREGUNTA_DIARIO', 'd-nino', 'Se abre con la misión de Nadia sobre el niño o la niña que fuiste.', (('COMPLETA_ACTIVIDAD', 'ma1', 'EVENTOS', 1),)),
+    ('R-d-sale-gusta', 'PREGUNTA_DIARIO', 'd-sale-gusta', 'Se abre al ver, con Nico, si te gusta lo que mejor te sale.', (('COMPLETA_ACTIVIDAD', 'b2-4', 'EVENTOS', 1),)),
+    ('R-d-no-se', 'PREGUNTA_DIARIO', 'd-no-se', 'Se abre al anotar lo que necesitas saber antes de elegir.', (('COMPLETA_ACTIVIDAD', 'b3-4', 'EVENTOS', 1),)),
+    ('R-d-moneda', 'PREGUNTA_DIARIO', 'd-moneda', 'Se abre cuando Iván tira la moneda por ti.', (('COMPLETA_ACTIVIDAD', 'b4-5', 'EVENTOS', 1),)),
+    ('R-d-antes-de-salir', 'PREGUNTA_DIARIO', 'd-antes-de-salir', 'Se abre al mirar el camino completo, antes de salir de la isla.', (('COMPLETA_ACTIVIDAD', 'b5-3', 'EVENTOS', 1),)),
     ('R-d-conv-fortalezas', 'PREGUNTA_DIARIO', 'd-conv-fortalezas', 'Se abre cuando tú y tu familia respondan «Fortalezas que quizá no vemos».', (('COMPLETA_CONVERSACION', 'conv-6', 'EVENTOS', 1),)),
-    ('R-d-conv-condiciones', 'PREGUNTA_DIARIO', 'd-conv-condiciones', 'Se abre cuando tú y tu familia respondan «Lo que hace posible un plan».', (('COMPLETA_CONVERSACION', 'conv-9', 'EVENTOS', 1),)),
+
     ('R-d-conv-acompanar', 'PREGUNTA_DIARIO', 'd-conv-acompanar', 'Se abre cuando tú y tu familia respondan «Ayúdame como lo necesito».', (('COMPLETA_CONVERSACION', 'conv-10', 'EVENTOS', 1),)),
-    # PROVISIONAL: diario, insignia de inicio y niveles.
-    ('R-t-diario-fija', 'PREGUNTA_DIARIO', 't-diario-fija', 'Lumi te abre el diario en el bosque de las voces.', (('COMPLETA_ACTIVIDAD', 'b0-2', 'EVENTOS', 1),)),
+    # PROVISIONAL: insignia de inicio y niveles.
+
     ('R-t-ins-1', 'INSIGNIA', 't-ins-1', 'Conoce a Lumi en el muelle.', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
     ('R-NIV-2', 'NIVEL', 2, 'Termina el primer tramo para subir de nivel.', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1),)),
     ('R-NIV-3', 'NIVEL', 3, 'Termina el primer tramo y mira tres carreras para subir de nivel.', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1), ('VISTA_CARRERA', None, 'REFERENCIAS_DISTINTAS', 3))),

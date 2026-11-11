@@ -152,11 +152,26 @@ def test_las_conversaciones_se_abren_con_la_carta_y_el_camino(cliente_contenido)
         responder_tema(cliente, 'apo-rosa', conversacion)
     temas = por_codigo(conversaciones(cliente))
     assert temas['conv-1']['estado'] == temas['conv-4']['estado'] == 'conversada'
-    assert temas['conv-1']['entrada_diario'] is None
-    assert temas['conv-4']['entrada_diario']['codigo'] == 'd-conv-futuro'
+    # Ajuste cartas-diario: conv-4 ya no abre una carta del diario.
+    assert temas['conv-1']['entrada_diario'] is None and temas['conv-4']['entrada_diario'] is None
     preguntas = {p['codigo']: p for p in pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')}
-    assert preguntas['d-conv-futuro']['estado'] == 'DISPONIBLE'
+    assert 'd-conv-futuro' not in preguntas
     assert preguntas['d-conv-fortalezas']['estado'] == 'BLOQUEADA'
+
+
+def test_responder_conv_6_los_dos_deja_lo_que_vieron_en_mi(cliente_contenido):
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b2-4')
+    escribir_carta(cliente, 'est-ana', 'Carta de Ana')
+    apoderado_listo(cliente)
+    responder_tema(cliente, 'est-ana', 'conv-6')
+    responder_tema(cliente, 'apo-rosa', 'conv-6')
+    tema = por_codigo(conversaciones(cliente))['conv-6']
+    assert tema['estado'] == 'conversada' and tema['entrada_diario']['codigo'] == 'd-conv-fortalezas'
+    preguntas = {p['codigo']: p for p in pedir(cliente, 'GET', '/cuentas/est-ana/diario/preguntas')}
+    fortalezas = preguntas['d-conv-fortalezas']
+    assert (fortalezas['estado'], fortalezas['actividad'], fortalezas['texto']) == (
+        'DISPONIBLE', None, 'Tu familia te contó lo que ve en ti. A veces uno se reconoce, y a veces se sorprende. ¿Qué sentiste al leerlo?')
 
 
 def test_las_cartas_se_entregan_con_las_diez_y_no_con_nueve(cliente_contenido):
