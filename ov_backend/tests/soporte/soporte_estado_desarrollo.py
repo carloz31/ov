@@ -126,7 +126,7 @@ def _llenar_investigaciones(sesion, cuenta, entrevista, fecha):
     sesion.add_all([
         modelos.PreguntaGuion(investigacion_id=investigacion.id, posicion=1, origen='PROPIA', texto='DATO DE PRUEBA'),
         modelos.SugerenciaGuion(codigo='SUG-REINICIO', investigacion_id=investigacion.id, texto='DATO DE PRUEBA',
-                                estado='DESCARTADA'),
+                                estado='DESCARTADA', campo='DUDA', motivo='DATO DE PRUEBA'),
         modelos.Reporte(codigo='REP-REINICIO', cuenta_id=cuenta.id, reaccion_id=reaccion.id, motivo='OTRO',
                         estado='PENDIENTE', fecha_hora=fecha),
     ])

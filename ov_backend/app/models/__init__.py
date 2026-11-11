@@ -10,7 +10,7 @@ from app.models.enums import (
     UsoPreguntaDiario, TipoRecomendacion, OrigenRedaccion, GestionInstitucion, FrecuenciaGasto, OrigenIdea,
     PreguntaConocimiento, RespuestaConocimiento, OrigenDuda, EstadoDuda, EstadoSugerencia, OrigenSugerencia,
     EstadoPaso, OrigenSesion, EstadoInvestigacion, OrigenPreguntaGuion, EstadoSugerenciaGuion, EstadoEntrevista,
-    MotivoReporte, EstadoReporte, TipoNotificacion, FuenteOpciones,
+    MotivoReporte, EstadoReporte, TipoNotificacion, FuenteOpciones, CampoLoQuePienso,
 )
 
 
@@ -95,7 +95,7 @@ __all__ = [
     'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'EstadoPaso',
     'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',
     'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta', 'SugerenciaTarjeta', 'PasoTarjeta',
-    'OrigenSesion', 'EstadoInvestigacion', 'OrigenPreguntaGuion', 'EstadoSugerenciaGuion', 'EstadoEntrevista',
+    'OrigenSesion', 'EstadoInvestigacion', 'OrigenPreguntaGuion', 'CampoLoQuePienso', 'EstadoSugerenciaGuion', 'EstadoEntrevista',
     'MotivoReporte', 'EstadoReporte', 'PreguntaBaseGuion', 'TipoReaccion', 'Investigacion', 'PreguntaGuion',
     'SugerenciaGuion', 'Reaccion', 'Reporte',
 ]

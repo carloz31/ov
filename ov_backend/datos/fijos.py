@@ -26,10 +26,11 @@ SECCIONES = (('CATALOGO', 'Catálogo', 'ESTUDIANTE'), ('CHECK_IN', 'Check-in', '
              ('INVESTIGACIONES', 'Investigaciones', 'ESTUDIANTE'),
              ('LIBRO_HELENA', 'El libro de Helena', 'ESTUDIANTE'))
 
-# (código, texto). Preguntas que siempre van en el guion de una entrevista (B13); las del front (`research.ts`).
+# (código, texto). Preguntas que siempre van en el guion de una entrevista (B13); ajuste llm-sugerencias: cuatro.
 PREGUNTAS_BASE_GUION = (('BASE-1', '¿Cómo es un día normal en tu trabajo?'),
                         ('BASE-2', '¿Qué estudiaste o aprendiste para llegar a donde estás?'),
-                        ('BASE-3', '¿Qué consejo le darías a alguien de mi edad que quiere dedicarse a esto?'))
+                        ('BASE-3', '¿Qué es lo que más te gusta de tu trabajo y qué lo que menos?'),
+                        ('BASE-4', '¿Qué consejo le darías a alguien de mi edad que quiere dedicarse a esto?'))
 
 # (código, nombre, descripción, pregunta, comentario obligatorio, ícono). Reacciones a una entrevista (B13); el ícono
 # es un nombre que el front traduce.

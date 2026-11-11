@@ -98,7 +98,7 @@ def guardar_guion(sesion: Session, entrada: GuardarGuionEntrada) -> RespuestaAcc
             eventos.append((TipoEventoUso.TERMINA_GUION, investigacion.familia_id))
         investigacion.estado = EstadoInvestigacion.GUIA_LISTA
     elif investigacion.estado == EstadoInvestigacion.GUIA_LISTA and not any(
-            p.origen != OrigenPreguntaGuion.SUGERIDA for p in entrada.preguntas):
+            p.origen == OrigenPreguntaGuion.PROPIA for p in entrada.preguntas):
         raise ErrorAccion('Tu guion necesita al menos una pregunta tuya', estado_http=422)
     sesion.flush()
     return responder_con_eventos(sesion, cuenta, eventos, fecha)

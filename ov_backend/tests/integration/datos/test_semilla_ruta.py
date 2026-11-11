@@ -36,7 +36,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         'grupo_ocupacional': 23, 'estilo_trabajo': 21, 'ingreso_familia': 716, 'ingreso_institucion': 1096,
         'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6,
         # B13: catálogos de investigaciones.
-        'pregunta_base_guion': 3, 'tipo_reaccion': 4,
+        'pregunta_base_guion': 4, 'tipo_reaccion': 4,
         # Ajuste registros: `t-referencia` (3 ítems y 2 referencias) y `LUMI_SENSIBLE`.
         # LUMI_SENSIBLE; ajuste registros llm (lote 2): los 49 textos de las piezas (4 grupos, 27 orígenes y las 18
         # frases de los tres tests); lote 3: sale PISTA_SIN_REPREGUNTA y entran LUMI_EMOCIONAL y LUMI_SIN_EVALUAR.

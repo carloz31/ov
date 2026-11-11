@@ -79,3 +79,7 @@ Los dos usos del LLM fuera del registro (preguntas sugeridas del guion y pasos s
 - Por fase, el subagente `pruebas` con las carpetas de impacto (`tests/unit|integration/investigaciones`, `…/planes`, `migraciones`, `datos`, `contrato`, `escenarios`); `uv run alembic heads` con un solo head.
 - Front: `npm run test:servidor`, y al cierre `npm test`, `build`, `lint`, `check:estructura`; vista con el skill `run` para Investigaciones y Mis pasos.
 - Al cierre: `uv run pytest -n auto -q`.
+
+## Indicaciones del usuario durante la implementación
+- Topes de la llamada de pasos: «primero medir», con 6000 tokens y 30 s provisionales (`llamar` acepta `maximo_tokens` y `tiempo` por llamada; los del registro y el guion no cambian). En la fase 4, medir la llamada de pasos con 1, 3, 5, 8 y 10 dudas y anotar de cada una tokens de razonamiento, tokens de salida, latencia y parada, en una tabla al inicio del informe de pasos. No fijar los valores definitivos ni cambiar el flujo del guardado: se deciden con esa tabla.
+- Front: revisar que el botón de guardar de CONOCIMIENTO y REALIDAD muestre el estado de carga durante toda la espera y no permita un segundo envío.

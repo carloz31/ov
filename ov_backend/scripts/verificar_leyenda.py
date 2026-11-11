@@ -134,7 +134,7 @@ def main():
     print(f'· FAVORITOS_LEYENDA = {pedir("GET", "/cuentas/est-ana/investigaciones", cuenta="est-ana")["favoritos_leyenda"]}')
     for cuenta in ('est-luis', 'est-ana'):
         accion('guardar-lo-que-pienso', cuenta, PIENSO)
-        accion('guardar-guion', cuenta, {'preguntas': [{'origen': 'DUDA', 'texto': PIENSO['duda']}],
+        accion('guardar-guion', cuenta, {'preguntas': [{'origen': 'PROPIA', 'texto': PIENSO['duda']}],
                                           'descartadas': [], 'terminar': True})
     publicada = accion('publicar-entrevista', 'est-ana', {**FICHA, 'coautores': ['est-luis']})
     codigo = publicada['por_cuenta']['est-ana']['eventos_registrados'][0]['referencia']

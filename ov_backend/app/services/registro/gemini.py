@@ -1,4 +1,4 @@
-"""Adaptador síncrono Gemini de los asistentes (diario, sugerencias de pasos y guion): una petición, sin sesiones de
+"""Adaptador síncrono Gemini de los asistentes (diario y sugerencias de pasos): una petición, sin sesiones de
 base de datos. Ajuste registros llm (lote 2): el registro ya no pasa por aquí."""
 
 import json
@@ -19,13 +19,12 @@ from app.core.parametros import NIVEL_RAZONAMIENTO_ASISTENTES, TEMPERATURA_ASIST
 from app.services.diario.asistente import (
     PROMPT_CARTA_V1, PROMPT_DIARIO_V1, ContextoCarta, PreguntaPersonalizada, validar_personalizacion,
 )
-from app.services.investigaciones.sugerencias import RespuestaGuion, prompt_guion
 from app.services.planes.sugerencias import RespuestaSugerencias, prompt_sugerencias
 from app.services.registro.evaluacion import ErrorResultadoEvaluacion
 
 
 def mensaje_evaluador(contexto) -> str:
-    """El texto que recibe Gemini: el contexto en JSON (diario, cartas, sugerencias de pasos y guion)."""
+    """El texto que recibe Gemini: el contexto en JSON (diario, cartas y sugerencias de pasos)."""
     return json.dumps(asdict(contexto), ensure_ascii=False)
 
 
@@ -101,10 +100,6 @@ class EvaluadorGemini:
         # El servicio filtra los pasos (tipos, números, longitud); aquí solo se exige el esquema.
         return self._medir(contexto, prompt_sugerencias(contexto), RespuestaSugerencias,
                            lambda resultado, _contexto: resultado)
-
-    def sugerir_preguntas(self, contexto):
-        # El servicio filtra las preguntas (repetidas, largas, vacías); aquí solo se exige el esquema.
-        return self._medir(contexto, prompt_guion(contexto), RespuestaGuion, lambda resultado, _contexto: resultado)
 
     def _medir(self, contexto, instruccion, esquema, validar):
         inicio = perf_counter()

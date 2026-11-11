@@ -94,13 +94,17 @@ TEXTO_REGISTRO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su raz
 
 
 class _ClienteLLMPropio:
-    """El LLM de los fixtures (lote 3): toda respuesta es `propio`; nunca llama a la red."""
+    """El LLM de los fixtures (lote 3): toda respuesta de registro es `propio`; las del guion y de los pasos del plan
+    son las por defecto del cliente de prueba (ajuste llm-sugerencias). Nunca llama a la red."""
     modelo = 'fixtures'
 
     def llamar(self, sistema, mensaje, esquema):
         from app.services.registro.llm import RespuestaCruda
-        return RespuestaCruda(texto=json.dumps({'motivo': 'm', 'tipo': 'propio', 'sensible': False,
-                                                'repregunta': None, 'arranque': None}), parada='end_turn')
+        soporte = str(Path(__file__).resolve().parents[1] / 'tests' / 'soporte')
+        if soporte not in sys.path:
+            sys.path.insert(0, soporte)
+        from soporte_llm import por_defecto
+        return RespuestaCruda(texto=por_defecto(mensaje, esquema), parada='end_turn')
 
 
 def eleccion_minima(item):
@@ -588,9 +592,9 @@ def _recorrido_investigaciones(cliente):
     fixtures['investigaciones-en-curso'] = _pedir(cliente, 'GET', '/cuentas/est-ana/investigaciones')
     sugerida = sugerencias['sugerencias'][0]
     accion('guardar-guion', {'terminar': True, 'preguntas': [
-        {'origen': 'DUDA', 'texto': pienso['duda']},
+        {'origen': 'PROPIA', 'texto': pienso['duda']},
         {'origen': 'SUGERIDA', 'texto': sugerida['texto'], 'sugerencia': sugerida['codigo']}]})
-    accion('guardar-guion', {'terminar': True, 'preguntas': [{'origen': 'DUDA', 'texto': pienso['duda']}]}, 'est-luis')
+    accion('guardar-guion', {'terminar': True, 'preguntas': [{'origen': 'PROPIA', 'texto': pienso['duda']}]}, 'est-luis')
     fixtures['investigaciones-guia-lista'] = _pedir(cliente, 'GET', '/cuentas/est-ana/investigaciones')
     publicada = fixtures['publicar-entrevista'] = accion('publicar-entrevista', {
         'titulo': 'DATO DE PRUEBA: un día con un electricista', 'profesional': 'DATO DE PRUEBA: Rosa Quispe',

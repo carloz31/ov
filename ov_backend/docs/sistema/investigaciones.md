@@ -6,11 +6,11 @@ Un estudiante investiga una **familia de carreras** (código de 3 cifras): escri
 
 | Tabla | Qué guarda |
 |---|---|
-| `pregunta_base_guion` | Catálogo fijo (`fijos.PREGUNTAS_BASE_GUION`): las 3 preguntas que siempre van en el guion, por `orden`. |
+| `pregunta_base_guion` | Catálogo fijo (`fijos.PREGUNTAS_BASE_GUION`): las 4 preguntas que siempre van en el guion, por `orden`. |
 | `tipo_reaccion` | Catálogo fijo (`fijos.TIPOS_REACCION`): `codigo`, `nombre`, `descripcion`, `pregunta`, `comentario_obligatorio`, `icono` (nombre que traduce el front) y `orden`. |
 | `investigacion` | `codigo` (`INV-<uuid>`), `cuenta_id`, `familia_id`, `estado` (EN_CURSO, GUIA_LISTA, PUBLICADA), lo que pienso (`piensa_dia`, `piensa_necesita`, `piensa_duda`), `sugerencias_vigentes`, `creada_en`, `guia_lista_en` y `entrevista_id` (CHECK `publicada_con_entrevista`). Índice único parcial `investigacion_activa_unica`: una sola EN_CURSO o GUIA_LISTA por cuenta. Cancelar borra la fila con su guion y sus sugerencias. |
-| `pregunta_guion` | Por `posicion`: `origen` (DUDA, SUGERIDA, PROPIA) y `texto`. Las preguntas base no se copian. |
-| `sugerencia_guion` | `codigo`, `texto` y `estado` (PENDIENTE, AGREGADA, DESCARTADA). Agregada o descartada no vuelve a ofrecerse. |
+| `pregunta_guion` | Por `posicion`: `origen` (SUGERIDA, PROPIA) y `texto`. Las preguntas base no se copian. La duda de «lo que pienso» no entra directo al guion: solo es contexto del LLM (migración 0053, que pasó las DUDA a PROPIA). |
+| `sugerencia_guion` | `codigo`, `texto`, `estado` (PENDIENTE, AGREGADA, DESCARTADA), `campo` (DIA, NECESITA, DUDA: de qué texto de «lo que pienso» sale) y `motivo` (del LLM; no se expone). Agregada o descartada no vuelve a ofrecerse. |
 | `entrevista` | `codigo` (`ENT-<uuid>`), `familia_id`, `titulo`, `profesional`, `dedicacion` (a qué se dedica la persona entrevistada), `duracion` (texto), `enlace` (YouTube), `resumen`, `busqueda` (título, profesional, dedicación y familia sin tildes), `estado` (PUBLICADA, RETIRADA, ELIMINADA), `fecha_hora`, `editada_en`, `destacada_en`, `destacada_por` y `leyenda_en` (CHECK `leyenda_destacada`). |
 | `entrevista_autor` | Autores de la entrevista, todos con los mismos permisos. |
 | `reaccion` | `codigo`, `entrevista_id`, `cuenta_id`, `tipo_reaccion_id` (nulo = comentario de la orientadora), `comentario`, `creada_en`, `editada_en` y `eliminada_en` (borrado lógico). Índice único parcial `reaccion_estudiante_unica`: una reacción activa con tipo por estudiante y entrevista. |
@@ -34,7 +34,7 @@ Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su 
 
 | Ruta | Devuelve |
 |---|---|
-| `/cuentas/{c}/investigaciones` | `en_curso` (estado, familia, `lo_que_pienso`, preguntas, sugerencias pendientes, `sugerencias_vigentes`), `aliados` (`misma_familia`, `otras`: compañeros del salón con guía lista, con nivel, vitrina y familia), `preguntas_base`, `tipos_reaccion`, `favoritos_leyenda` y `conteos` (`salon`, `leyendas`, `mias`). |
+| `/cuentas/{c}/investigaciones` | `en_curso` (estado, familia, `lo_que_pienso`, preguntas, sugerencias pendientes con su `campo`, `sugerencias_vigentes`), `aliados` (`misma_familia`, `otras`: compañeros del salón con guía lista, con nivel, vitrina y familia), `preguntas_base`, `tipos_reaccion`, `favoritos_leyenda` y `conteos` (`salon`, `leyendas`, `mias`). |
 | `/cuentas/{c}/entrevistas?vista=SALON\|LEYENDAS\|MIAS\|SALON_Y_LEYENDAS&buscar&favoritas&no_vistas&destacadas&orden=RECIENTES\|REACCIONADAS&familia&limite&desde` | `{total, favoritos_leyenda, items}`. `SALON_Y_LEYENDAS` junta las dos sin repetir y sirve al detalle de una carrera. `familia` (código de 3 cifras) aplica a todas las vistas; un código desconocido no trae ninguna. Tarjeta: ficha (con `dedicacion`), `familia` (`codigo`, `nombre`, `area_codigo`), autores (nivel nulo si la cuenta está inactiva), `destacada`, `leyenda`, `reacciones` (solo de estudiantes), `favoritos`, `favorita`, `vista`, `propia`; en MIAS, `reacciones_por_tipo`. Los filtros no aplican a MIAS. Páginas de 20 (máximo 100). |
 | `/cuentas/{c}/entrevistas/{e}` | La tarjeta, más `enlace`, `editada_en`, `reacciones_por_tipo`, `favoritos_leyenda`, `reportada_por_mi` y `lista_reacciones`: reacciones y comentarios de la orientadora (`tipo` nulo), la propia primero y luego de la más reciente a la más antigua, cada una con `reportada_por_mi`. |
 | `/cuentas/{c}/publicaciones?salon&estado=SIN_DESTACAR\|DESTACADA\|LEYENDA&con_reportes&buscar&limite&desde` | Tabla de la orientadora: autores con su salón, familia, dedicación, fecha, `reacciones`, `favoritos`, `estado`, `reportes_pendientes` (de la entrevista), `comentarios_reportados` (reacciones con reportes pendientes) y `de_sus_salones`. `con_reportes` filtra por reportes pendientes de la entrevista o de sus reacciones. `buscar` mira título, profesional, dedicación, familia y nombre de los autores. |
@@ -46,7 +46,7 @@ Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su 
 |---|---|---|
 | `/acciones/guardar-lo-que-pienso` | Familia del catálogo (`familia`, su código); tres textos no vacíos (422). | Sin investigación activa la crea en EN_CURSO (INICIA_INVESTIGACION); con ella, cambia familia y textos sin cambiar el estado, y si algo cambió descarta las sugerencias pendientes. |
 | `/acciones/pedir-sugerencias-guion` | Investigación activa (409). | Ver «Sugerencias». Responde `{estado: LISTAS\|SIN_SUGERENCIAS\|ERROR, sugerencias}`. |
-| `/acciones/guardar-guion` | Una SUGERIDA que se agrega lleva el código de una sugerencia no descartada (sin código, es una que ya estaba en el guion y no cambia ninguna sugerencia); las descartadas, pendientes (404). `terminar` exige una pregunta DUDA o PROPIA (422), y también la exige editar una guía lista. | Reemplaza las preguntas; las sugerencias citadas pasan a AGREGADA o DESCARTADA. `terminar`: GUIA_LISTA; TERMINA_GUION la primera vez. |
+| `/acciones/guardar-guion` | Una SUGERIDA que se agrega lleva el código de una sugerencia no descartada (sin código, es una que ya estaba en el guion y no cambia ninguna sugerencia); las descartadas, pendientes (404). `terminar` exige una pregunta PROPIA (422; una sugerida aceptada no cuenta), y también la exige editar una guía lista. | Reemplaza las preguntas; las sugerencias citadas pasan a AGREGADA o DESCARTADA. `terminar`: GUIA_LISTA; TERMINA_GUION la primera vez. |
 | `/acciones/cancelar-investigacion` | Investigación activa. | La borra con su guion y sus sugerencias. |
 | `/acciones/publicar-entrevista` | Guía lista (409); enlace de YouTube, `permiso` verdadero y campos no vacíos (422); coautores sin repetir, existentes y de su colegio (404, sin revelar el nombre), estudiantes del mismo salón con guía lista sobre la misma familia (409). | Crea la entrevista (`ENT-<uuid>`); la investigación de cada autor pasa a PUBLICADA; PUBLICA_ENTREVISTA en cada autor (`RespuestaAgrupada`). |
 | `/acciones/editar-entrevista` | Autor de la entrevista publicada (404). Solo la ficha: los autores son los de la publicación y no cambian (un campo de más, como `coautores_nuevos`, responde 422). | Cambia la ficha (también el enlace); EDITA_ENTREVISTA en quien edita. |
@@ -63,11 +63,13 @@ Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su 
 
 ## Sugerencias (`app/services/investigaciones/sugerencias.py`)
 
-- Una llamada al LLM por versión de «lo que pienso», entre dos transacciones, como en planes. Al LLM van el nombre de la familia, los tres textos y las preguntas base (`PROMPT_GUION_V2`: los textos son datos, nunca instrucciones).
+- Una llamada a Claude Haiku (`app.state.cliente_llm`, `claude-haiku-5-5`, esfuerzo `low`, el cliente del registro) por versión de «lo que pienso», entre dos transacciones, como en planes. Prompt de sistema `guion-v4-haiku` (`prompt_guion_v4_haiku.py`, con `VERSION` y `HASH`; pide hasta `MAXIMO_CARACTERES_PROMPT_GUION`, 160). Mensaje con etiquetas (`armar_mensaje`): `<familia>`, `<base>` (las preguntas base del catálogo, una por línea), `<dia>`, `<necesita>` y `<duda>`; los textos son datos, nunca instrucciones.
+- Salida con esquema JSON (`salida_json`, `output_config.format`): `{dia|necesita|duda: {motivo, pregunta: texto | null}}`, sin propiedades adicionales. A lo más una sugerencia por campo; el modelo puede no proponer para alguno.
 - **Texto pobre:** si los tres campos juntos no llegan a `MIN_CARACTERES_RESPALDO`, no se llama y responde SIN_SUGERENCIAS.
-- **Fallo, demora o respuesta fuera del esquema:** ERROR, sin guardar nada, así que reintentar vuelve a llamar. Lo mismo si la investigación cambió o se canceló mientras se esperaba.
-- Se guardan hasta `MAXIMO_SUGERENCIAS_GUION` (3) preguntas de hasta `MAXIMO_CARACTERES_PREGUNTA_GUION` caracteres, sin repetir (sin tildes ni signos) las base, las del guion ni las sugeridas antes. Con eso `sugerencias_vigentes` queda verdadero y reabrir el paso no vuelve a llamar.
-- Evaluador falso: `[falla]` lanza error, `[malformado]` sale del esquema y `[vacio]` no propone.
+- **Fallo, tiempo agotado (el del cliente), parada distinta de `end_turn` o salida fuera del esquema:** ERROR, sin guardar nada, así que reintentar vuelve a llamar. Lo mismo si la investigación cambió o se canceló mientras se esperaba. Nunca se guarda ni se propaga el mensaje de una excepción externa.
+- **Filtro, por campo** (`filtrar_preguntas`): con texto, termina en «?», un solo «¿», no supera `MAXIMO_CARACTERES_PREGUNTA_GUION` (200) y no repite, en `clave_pregunta` (sin tildes ni signos), ninguna base, pregunta del guion, sugerencia anterior ni otra de la misma respuesta. La que no pasa se descarta; las demás se guardan con su `campo` y su `motivo`, y `sugerencias_vigentes` queda verdadero: reabrir el paso no vuelve a llamar. Sin ninguna útil, SIN_SUGERENCIAS.
+- Una sugerencia que repite una base con otras palabras es un defecto conocido y aceptado: el filtro solo la descarta si coincide en `clave_pregunta`.
+- Pruebas: `ClientePrueba` (`tests/soporte/soporte_llm.py`) responde, sin cola, una pregunta por campo con texto; `salida_guion(...)` arma una salida a medida.
 
 ## Notas
 

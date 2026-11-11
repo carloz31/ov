@@ -33,7 +33,7 @@ def pensar(cliente, cuenta='est-ana', familia=FAMILIA, esperado=200, **cambios):
 
 
 def guion(cliente, preguntas=None, cuenta='est-ana', terminar=True, esperado=200, descartadas=()):
-    preguntas = [{'origen': 'DUDA', 'texto': PIENSO['duda']}] if preguntas is None else preguntas
+    preguntas = [{'origen': 'PROPIA', 'texto': PIENSO['duda']}] if preguntas is None else preguntas
     return accion(cliente, 'guardar-guion', {'preguntas': preguntas, 'descartadas': list(descartadas),
                                              'terminar': terminar}, esperado, cuenta)
 

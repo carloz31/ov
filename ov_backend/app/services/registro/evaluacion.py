@@ -1,5 +1,5 @@
 """Lo que queda del evaluador de registros v6 (Gemini): la validación de preguntas y el evaluador falso de los
-asistentes que siguen con Gemini (diario, sugerencias de pasos del plan y guion de investigaciones).
+asistentes que siguen con Gemini (diario y sugerencias de pasos del plan).
 
 Ajuste registros llm (lote 2): la evaluación de registros v6 (criterios, seguimiento, consolidada) salió; la del
 registro es la capa v7 de `llm/`, que el lote 3 conecta al flujo.
@@ -34,7 +34,7 @@ def pregunta_valida(pregunta) -> bool:
 
 
 class EvaluadorFalso:
-    """Determinista, para los asistentes con Gemini (diario, sugerencias de pasos y guion); sin red."""
+    """Determinista, para los asistentes con Gemini (diario y sugerencias de pasos); sin red."""
 
     def __init__(self):
         # Diario (B09): `falla_diario` simula un fallo del LLM al personalizar.
@@ -45,9 +45,6 @@ class EvaluadorFalso:
         self.contextos_sugerencias: list = []
         self.llamadas_sugerencias = 0
         self.falla_sugerencias = False
-        # Investigaciones (B13): sugerencias de preguntas para el guion.
-        self.contextos_guion: list = []
-        self.llamadas_guion = 0
 
     def personalizar_entrada(self, contexto) -> dict:
         """Retoma el primer dato del contexto delante de la pregunta base."""
@@ -89,20 +86,3 @@ class EvaluadorFalso:
                 resultado.append({clave: 999, 'pasos': [paso]})
         return resultado
 
-    def sugerir_preguntas(self, contexto) -> dict:
-        """Tres preguntas nuevas, distintas en cada llamada, más una que repite la primera base (el servicio la
-        filtra). Marcas en los textos: `[falla]` lanza error; `[malformado]` sale del esquema; `[vacio]` no propone."""
-        self.llamadas_guion += 1
-        self.contextos_guion.append(contexto)
-        textos = ' '.join((contexto.dia, contexto.necesita, contexto.duda))
-        if '[falla]' in textos:
-            raise RuntimeError("Fallo simulado de las sugerencias del guion")
-        if '[malformado]' in textos:
-            return {'preguntas': 'DATO DE PRUEBA'}
-        if '[vacio]' in textos:
-            return {'preguntas': []}
-        n = self.llamadas_guion
-        return {'preguntas': [contexto.preguntas_base[0],
-                              f'¿Qué te sorprendió al empezar en {contexto.familia}? ({n})',
-                              f'¿Qué parte de tu trabajo casi nadie conoce? ({n})',
-                              f'¿Qué harías distinto si empezaras hoy? ({n})']}

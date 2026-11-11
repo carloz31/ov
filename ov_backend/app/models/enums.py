@@ -284,10 +284,17 @@ class EstadoInvestigacion(StrEnum):
 
 
 class OrigenPreguntaGuion(StrEnum):
-    """Las preguntas base son catálogo y no se guardan por investigación."""
-    DUDA = "DUDA"
+    """Las preguntas base son catálogo y no se guardan por investigación. Ajuste llm-sugerencias: sale DUDA (la duda
+    ya no entra directo al guion)."""
     SUGERIDA = "SUGERIDA"
     PROPIA = "PROPIA"
+
+
+class CampoLoQuePienso(StrEnum):
+    """Campo de «lo que pienso» del que sale una sugerencia del guion (ajuste llm-sugerencias)."""
+    DIA = "DIA"
+    NECESITA = "NECESITA"
+    DUDA = "DUDA"
 
 
 class EstadoSugerenciaGuion(StrEnum):
