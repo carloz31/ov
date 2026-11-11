@@ -2025,6 +2025,9 @@ Los endpoints y el flujo quedan para el lote 3. Las propuestas de §12 valen tal
   - los marcadores se resuelven siempre, incluido el nombre corto de una «Otra»;
   - la pieza `BIEN-1` toma la «Otra» con la regla 3: solo aparece si el ítem quedó `propio` o `general`;
   - el marcador `{primera}` es otra cosa (regla 7): siempre lleva lo escrito en la «Otra» tal cual, sea cual sea el tipo del ítem.
+  - (agregado por el usuario antes de F2) un ítem `sin_evaluar` (falló la primera llamada): su texto no se cita ni aparece como eco o pieza, tampoco lo escrito en «¿Cuál?» cuando va como pieza; su elección sí se muestra y sus marcadores se resuelven;
+  - con el seguimiento sin evaluar (falló la segunda llamada) se cita la primera respuesta si quedó `propio` o `general`; de la segunda no se cita nada;
+  - un intento nuevo ya evaluado se cita según su tipo, como cualquier otro.
 - Las piezas del perfil (§4) usan los resultados revelados (`ResultadoInstrumento` no anulado):
   - el empate, con `calcular_dimensiones_destacadas`;
   - RIASEC, con `codigo_interes`.
@@ -2095,6 +2098,7 @@ Los endpoints y el flujo quedan para el lote 3. Las propuestas de §12 valen tal
     - `sensible` y `emocional`, y el sensible que vuelve con un intento nuevo;
     - ecos y formatos, con y sin «Otra» en el podio;
     - la `Entrada` igual a la del runner, un caso por registro;
+    - (agregado por el usuario) de un ítem `sin_evaluar`, la pieza de texto y el eco no aparecen, y la pieza de elección y el marcador sí; con el seguimiento sin evaluar se cita solo la primera respuesta;
   - de reglas:
     - `R-b4-5` no se cumple con el «por qué» en A y C, y sí con A y B;
     - `R-b4-1` no se cumple con el «por qué» solo en el Plan B;
