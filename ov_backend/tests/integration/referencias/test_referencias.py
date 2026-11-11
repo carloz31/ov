@@ -14,7 +14,8 @@ from app.models.enums import EstadoRespuestaRegistro
 from app.services.registro.acciones import guardar_intento
 from soporte_datos_ports import agregar_ocupaciones
 from soporte_retiro import ciclo, medir, preparar_ultimo, reiniciar, resultado
-from soporte_ruta import FECHA, INTERESES_FINAL, actividades, avanzar, completar, pedir, revelar
+from soporte_ruta import (FECHA, INTERESES_FINAL, actividades, avanzar, completar, pedir, responder_item, revelar,
+                          terminar)
 
 
 ADECUADO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'
@@ -24,10 +25,10 @@ OPCIONES = {'t-exp-ruta': [{'codigo': 'INSTITUTO'}], 't-exp-apoyo': [{'codigo': 
 
 def entregar(cliente, cuenta='est-ana', opciones=None):
     avanzar(cliente, 't-cierre-inicio', cuenta)
-    return pedir(cliente, 'POST', '/acciones/registro/entregar', {
-        'cuenta': cuenta, 'actividad': 't-expectativas', 'fecha_hora': FECHA,
-        'items': [{'item': item, 'texto': ADECUADO, 'opciones': elegidas}
-                  for item, elegidas in {**OPCIONES, **(opciones or {})}.items()]})
+    # Ajuste registros llm (lote 3): ítem por ítem y terminar.
+    for item, elegidas in {**OPCIONES, **(opciones or {})}.items():
+        responder_item(cliente, 't-expectativas', item, elegidas, ADECUADO, cuenta)
+    return terminar(cliente, 't-expectativas', cuenta)
 
 
 def citar(aplicacion, *lineas, cuenta='est-ana', item='t-exp-espera', **columnas):

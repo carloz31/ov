@@ -1,4 +1,4 @@
-"""Ajuste registros llm (lote 2), §1 y §10: el modelo de respuesta con su histórico de intentos.
+"""Ajuste registros llm (lote 2), §1 y §10: el modelo de respuesta con su histórico de intentos (lote 3: por el flujo).
 
 Un podio con varias «Otra», guardar un intento nuevo (el anterior queda completo en el histórico y solo el vigente
 se lee) y un ítem sin LLM, que se guarda solo con su elección y su texto.
@@ -14,7 +14,7 @@ from app.schemas.registro import OpcionElegida
 from app.services.referencias import resolver
 from app.services.registro.acciones import guardar_intento, leer_registro, opciones_por_item
 from app.services.registro.eleccion import validar_eleccion
-from soporte_ruta import FECHA, avanzar, pedir
+from soporte_ruta import FECHA, avanzar, pedir, responder_item, terminar
 
 
 AHORA = datetime(2026, 11, 10, 10, 0)
@@ -80,39 +80,37 @@ def test_intento_nuevo_deja_el_anterior_completo_en_el_historico(sesion_contenid
     sesion_contenido.rollback()
 
 
-def test_item_sin_llm_se_guarda_solo_con_eleccion_y_texto(cliente):
+def responder_expectativas(cliente):
+    for item, texto, opciones in (('t-exp-ruta', 'DATO DE PRUEBA: universidad', [{'codigo': 'UNIVERSIDAD'}]),
+                                  ('t-exp-apoyo', 'DATO DE PRUEBA: mi familia', [{'codigo': 'FAMILIA'}]),
+                                  ('t-exp-espera', 'DATO DE PRUEBA: que estudie', [])):
+        paso = responder_item(cliente, 't-expectativas', item, opciones, texto)
+        # Sin LLM: no hay llamada y el paso es siempre SIGUIENTE.
+        assert paso['paso'] == 'SIGUIENTE'
+    return terminar(cliente, 't-expectativas')
+
+
+def test_item_sin_llm_se_guarda_solo_con_eleccion_y_texto(cliente, aplicacion):
     avanzar(cliente, 't-cierre-inicio')
-    respuesta = pedir(cliente, 'POST', '/acciones/registro/entregar', {
-        'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA, 'items': [
-            {'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA: universidad', 'opciones': [{'codigo': 'UNIVERSIDAD'}]},
-            {'item': 't-exp-apoyo', 'texto': 'DATO DE PRUEBA: mi familia', 'opciones': [{'codigo': 'FAMILIA'}]},
-            {'item': 't-exp-espera', 'texto': 'DATO DE PRUEBA: que estudie'}]})
-    assert respuesta['estado'] == 'COMPLETADA'
-    assert {r['item']: r['estado'] for r in respuesta['respuestas']} == dict.fromkeys(
-        ('t-exp-ruta', 't-exp-apoyo', 't-exp-espera'), 'COMPLETADO')
-    assert next(r for r in respuesta['respuestas'] if r['item'] == 't-exp-ruta')['opciones_elegidas'] == [
-        {'codigo': 'UNIVERSIDAD', 'texto': 'Estudiar en una universidad'}]
+    respuesta = responder_expectativas(cliente)
+    assert respuesta['estado'] == 'COMPLETADA' and aplicacion.state.cliente_llm.llamadas == []
+    ruta = next(i for i in respuesta['items'] if i['codigo'] == 't-exp-ruta')['respuesta']
+    assert ruta['opciones_elegidas'] == [{'codigo': 'UNIVERSIDAD', 'texto': 'Estudiar en una universidad'}]
 
 
 def test_item_sin_llm_no_lleva_tipo_ni_repregunta(sesion, cliente):
     avanzar(cliente, 't-cierre-inicio')
-    pedir(cliente, 'POST', '/acciones/registro/entregar', {
-        'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA, 'items': [
-            {'item': 't-exp-ruta', 'texto': 'DATO DE PRUEBA', 'opciones': [{'codigo': 'UNIVERSIDAD'}]},
-            {'item': 't-exp-apoyo', 'texto': 'DATO DE PRUEBA', 'opciones': [{'codigo': 'FAMILIA'}]},
-            {'item': 't-exp-espera', 'texto': 'DATO DE PRUEBA'}]})
+    responder_expectativas(cliente)
     filas = sesion.scalars(select(m.RespuestaRegistro)).all()
     assert len(filas) == 3 and all(f.vigente and f.intento == 1 for f in filas)
+    assert all(f.estado == m.EstadoRespuestaRegistro.COMPLETADO for f in filas)
     assert all((f.primera_tipo, f.primera_motivo, f.repregunta, f.tipo_final, f.pista, f.texto_citable)
                == (None, None, None, None, None, []) for f in filas)
 
 
-def test_seguimiento_edicion_y_borradores_responden_501(cliente):
+def test_las_rutas_del_flujo_provisional_ya_no_existen(cliente):
+    """Lote 3: salen el borrador, la edición por lotes y continuar sin responder."""
     avanzar(cliente, 't-cierre-inicio')
     base = {'cuenta': 'est-ana', 'actividad': 't-expectativas', 'fecha_hora': FECHA}
-    for ruta, cuerpo in (('guardar-borrador', {'item': 't-exp-ruta', 'texto': 'x'}),
-                         ('responder-seguimiento', {'item': 't-exp-ruta', 'texto': 'x'}),
-                         ('continuar-sin-responder', {'item': 't-exp-ruta'}),
-                         ('editar', {'items': []})):
-        respuesta = pedir(cliente, 'POST', f'/acciones/registro/{ruta}', {**base, **cuerpo}, 501)
-        assert 'lote 3' in respuesta['detail']['mensaje']
+    for ruta in ('guardar-borrador', 'continuar-sin-responder', 'editar'):
+        pedir(cliente, 'POST', f'/acciones/registro/{ruta}', {**base, 'item': 't-exp-ruta'}, 404)

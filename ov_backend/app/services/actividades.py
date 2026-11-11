@@ -7,7 +7,7 @@ from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, Aplicacion, AplicacionActividad, Bloque, ColeccionOcupacion, Cuenta, Dimension,
     EstadoProgreso, Instrumento, ItemInstrumento, Ocupacion, OpcionEscala, ProgresoActividad,
-    RespuestaItem, Ficha, PreguntaBatalla, RespuestaBatalla, RespuestaRegistro, ResultadoBatalla, ResultadoCaso,
+    RespuestaItem, Ficha, PreguntaBatalla, RespuestaBatalla, ResultadoBatalla, ResultadoCaso,
     ResultadoInstrumento, RitmoAplicacion, Rol, TipoActividad, TipoEventoUso,
     TipoObjetivo, TipoResultado, Visibilidad,
 )
@@ -192,6 +192,9 @@ def completar_actividad(sesion: Session, entrada: CompletarActividadEntrada) -> 
         raise ErrorAccion("Los casos deben completarse mediante resolver-caso")
     if actividad.tipo == TipoActividad.BATALLA:
         raise ErrorAccion("Las batallas deben completarse mediante resolver-batalla")
+    if items_registro:
+        # Ajuste registros llm (lote 3): un registro se termina con su acción propia, que aplica la regla de adecuado.
+        raise ErrorAccion("Los registros deben terminarse mediante registro/entregar")
     if items:
         progreso = progreso_de_actividad(sesion, cuenta, actividad)
         respondidos = set() if progreso is None else set(sesion.scalars(select(RespuestaItem.item_id).where(
@@ -200,16 +203,6 @@ def completar_actividad(sesion: Session, entrada: CompletarActividadEntrada) -> 
         faltantes = [item.codigo for item in items if item.id not in respondidos]
         if faltantes:
             raise ErrorAccion("Faltan ítems por responder", items_faltantes=faltantes)
-    obligatorios = [item for item in items_registro if item.obligatorio]
-    if obligatorios:
-        progreso = progreso_de_actividad(sesion, cuenta, actividad)
-        # Ajuste registros llm (lote 2): un ítem está respondido si tiene un intento vigente.
-        finalizados = set() if progreso is None else set(sesion.scalars(select(RespuestaRegistro.item_registro_id).where(
-            RespuestaRegistro.progreso_id == progreso.id, RespuestaRegistro.vigente,
-        )))
-        faltantes = [item.codigo for item in obligatorios if item.id not in finalizados]
-        if faltantes:
-            raise ErrorAccion("Faltan ítems de registro por finalizar", items_faltantes=faltantes)
     fecha = fecha_accion(entrada)
     _, eventos = completar_progreso(sesion, cuenta, actividad)
     return responder_con_eventos(sesion, cuenta, eventos, fecha)

@@ -1,13 +1,15 @@
-"""Lecturas agrupadas del registro."""
+"""Lecturas del registro: la definición de los ítems y el registro de la cuenta (§7 del lote 3)."""
 
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import ListaOpciones, Referencia
+from app.models.enums import EstadoRespuestaRegistro
 from app.schemas.registro import (
-    EleccionPublica, ItemRegistroPublico, OpcionListaPublica, OpcionPropiaPublica, PremarcarPublico,
-    RegistroConsultado,
+    ConsignaItem, EleccionItem, EleccionPublica, ItemRegistroCuenta, ItemRegistroPublico, OpcionGuardada,
+    OpcionListaPublica, OpcionOfrecida, OpcionPropiaPublica, PremarcarPublico, RegistroConsultado, RespuestaVigente,
 )
-from app.services.registro.acciones import opciones_de, publico, validar_registro
+from app.services.registro.acciones import leer_registro, opciones_de, validar_registro
+from app.services.registro.contexto import MarcadorSinValor, eco_cambiado, resolver_contexto
 
 
 def eleccion_publica(sesion, item):
@@ -48,7 +50,49 @@ def consultar_items(sesion, actividad):
             for item in items]
 
 
+def _respuesta(item, respuesta, hoy):
+    return RespuestaVigente(
+        opciones_elegidas=[OpcionGuardada(codigo=e['codigo'], texto=e['texto']) for e in respuesta.opciones_elegidas or ()],
+        primera_respuesta=respuesta.primera_respuesta, linea_seguimiento=respuesta.linea_registro, pista=respuesta.pista,
+        reenviable=respuesta.estado == EstadoRespuestaRegistro.SIN_EVALUAR or respuesta.seguimiento_sin_evaluar,
+        eco_cambiado=eco_cambiado(item, respuesta, hoy))
+
+
+def _item_cuenta(sesion, cuenta, item, respuesta):
+    """Un ítem con su contexto de hoy (de `resolver_contexto`) y su respuesta vigente."""
+    try:
+        hoy, faltante = resolver_contexto(sesion, cuenta, item.codigo), None
+    except MarcadorSinValor as error:
+        hoy, faltante = None, error.marcador
+    eleccion = None if item.fuente_opciones is None else EleccionItem(
+        minima=item.eleccion_minima, maxima=item.eleccion_maxima, ordenada=item.eleccion_ordenada,
+        permite_otra=item.permite_otra, etiqueta_otra=item.etiqueta_otra)
+    return ItemRegistroCuenta(
+        codigo=item.codigo, nombre=item.nombre, obligatorio=item.obligatorio, con_llm=item.tarjeta is not None,
+        disponible=hoy is not None, marcador_faltante=faltante,
+        consigna=None if hoy is None else ConsignaItem(dialogo=hoy.dialogo, pregunta_eleccion=hoy.pregunta_eleccion,
+                                                       pregunta_texto=hoy.pregunta_texto, arranque=hoy.arranque),
+        eleccion=eleccion,
+        opciones=[] if hoy is None else [OpcionOfrecida(
+            codigo=o.codigo, texto=o.texto, origen=o.origen, grupo=o.grupo, exclusiva=o.exclusiva, sin_llm=o.sin_llm,
+            # Cada opción lleva su pregunta: en los ítems con pregunta por opción, se sirve siempre la de la opción.
+            pregunta=hoy.pregunta_para(o.codigo), arranque=hoy.arranque_para(o.codigo)) for o in hoy.opciones],
+        ecos=[] if hoy is None else [dict(e) for e in hoy.ecos_mostrar],
+        respuesta=None if respuesta is None else _respuesta(item, respuesta, hoy))
+
+
+def registro_cuenta(sesion, cuenta, actividad, items) -> RegistroConsultado:
+    """El registro para el estudiante: por ítem, su contexto de hoy y su respuesta vigente; el ítem en que va (el primero
+    sin intento vigente, calculado) y el estado de la actividad. Lo resuelve ítem por ítem (hasta
+    `MAXIMO_ITEMS_REGISTRO`)."""
+    registro = leer_registro(sesion, cuenta, actividad)
+    return RegistroConsultado(
+        estado=None if registro.progreso is None else registro.progreso.estado,
+        item_actual=next((item.codigo for item in items if item.id not in registro.vigentes), None),
+        items=[_item_cuenta(sesion, cuenta, item, registro.vigentes.get(item.id)) for item in items])
+
+
 @usar_contexto
 def consultar_registro(sesion, cuenta, actividad):
     cuenta, actividad, items = validar_registro(sesion, actividad, cuenta)
-    return RegistroConsultado(**publico(sesion, cuenta, actividad, items))
+    return registro_cuenta(sesion, cuenta, actividad, items)

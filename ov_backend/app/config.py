@@ -86,6 +86,12 @@ def cargar_configuracion(
                          jwt_secreto or JWT_SECRETO_DESARROLLO, clave_anthropic)
 
 
+def crear_cliente_llm(configuracion: Configuracion):
+    """El cliente del LLM de registros (lote 3): Claude con `ANTHROPIC_API_KEY`; sin clave, toda llamada falla."""
+    from app.services.registro.llm import ClienteClaude, ClienteSinClave
+    return ClienteClaude(configuracion.clave_anthropic) if configuracion.clave_anthropic else ClienteSinClave()
+
+
 def crear_evaluador_registro(configuracion: Configuracion):
     if configuracion.evaluador == 'falso':
         from app.services.registro.evaluacion import EvaluadorFalso

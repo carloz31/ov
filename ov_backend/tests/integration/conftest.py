@@ -8,6 +8,7 @@ from soporte_acceso import ClienteConToken
 from soporte_bases import copiar_plantilla
 from soporte_consultas import MedidorPeticiones
 from soporte_fixtures import contador_consultas
+from soporte_llm import ClientePrueba
 from soporte_retiro import base_aislada as abrir_base_aislada
 
 from app.main import crear_aplicacion
@@ -41,6 +42,7 @@ def plantilla_contenido(tmp_path_factory):
 @pytest.fixture
 def aplicacion_contenido(plantilla_contenido, tmp_path):
     aplicacion = crear_aplicacion(copiar_plantilla(plantilla_contenido, tmp_path / 'contenido.db'))
+    aplicacion.state.cliente_llm = ClientePrueba()
     try:
         yield aplicacion
     finally:
@@ -62,6 +64,7 @@ def sesion_contenido(aplicacion_contenido):
 @pytest.fixture
 def aplicacion(url_base_ruta):
     aplicacion = crear_aplicacion(url_base_ruta)
+    aplicacion.state.cliente_llm = ClientePrueba()
     try:
         yield aplicacion
     finally:

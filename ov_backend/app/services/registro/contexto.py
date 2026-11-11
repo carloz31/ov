@@ -13,7 +13,8 @@ Reglas de referencia (§3), siempre sobre el intento vigente del ítem de origen
 - los marcadores se resuelven siempre (§3.7);
 - en una pieza, lo escrito por el estudiante va entre comillas.
 
-Lo usarán el endpoint que sirve el ítem, la capa del LLM y la detección de eco cambiado (lote 3). No escribe nada.
+Lo usan la lectura del registro, el flujo ítem por ítem (`flujo.py`) y la detección de eco cambiado (lote 3). No escribe
+nada.
 """
 
 import re
@@ -37,7 +38,7 @@ from app.services.instrumentos.calculo import DimensionCalculada, calcular_dimen
 from app.services.instrumentos.consultas import resultado_intereses
 from app.services.referencias import _leer_planes, referenciable, resolver
 from app.services.registro.eleccion import CODIGO_OTRA
-from app.services.registro.llm import Entrada, tarjeta_para
+from app.services.registro.llm import Entrada, armar, tarjeta_para
 
 
 class MarcadorSinValor(ValueError):
@@ -77,6 +78,8 @@ class OpcionContexto:
     # Solo en las piezas: el origen al LLM y, si cambia la forma de las comillas, el texto al LLM.
     origen_llm: str | None = None
     texto_llm: str | None = None
+    # Una opción de una referencia resuelta en vivo: se guarda con su texto de hoy (lote 3).
+    de_referencia: bool = False
 
     @property
     def para_llm(self):
@@ -469,7 +472,7 @@ def _opciones(sesion, cuenta, item, marcadores):
     elif item.fuente_opciones == FuenteOpciones.PIEZAS_INICIO:
         base = piezas_inicio(sesion, cuenta)
     else:
-        base = [OpcionContexto(codigo=o.codigo, texto=o.texto)
+        base = [OpcionContexto(codigo=o.codigo, texto=o.texto, de_referencia=o.de_referencia)
                 for o in opciones_por_item(sesion, cuenta, (item,))[item.id] if o.codigo not in propias]
     return tuple(base) + tuple(OpcionContexto(
         codigo=codigo, texto=o['texto'], exclusiva=o.get('exclusiva', False), sin_llm=o.get('sin_llm', False),
@@ -534,3 +537,77 @@ def entrada_llm(contexto_item: ContextoItem, elegidas: Sequence, respuesta: str,
     return Entrada(tarjeta=tarjeta, pregunta=contexto_item.pregunta_para(codigo), respuesta=respuesta,
                    etiquetas=etiquetas, ordenada=contexto_item.ordenada, ecos=contexto_item.ecos_llm,
                    respuesta_anterior=anterior, invitacion=repregunta)
+
+
+# --- Lo que se guarda con el intento y el eco cambiado (lote 3) --------------------------------
+
+FUENTES_PIEZAS = tuple(ORIGEN_OTRA)
+
+
+def _json(valor):
+    """Una copia que se puede guardar en JSON (los ecos que se muestran traen modelos ya volcados)."""
+    if isinstance(valor, Mapping):
+        return {str(clave): _json(v) for clave, v in valor.items()}
+    if isinstance(valor, (list, tuple)):
+        return [_json(v) for v in valor]
+    return valor if valor is None or isinstance(valor, (str, int, float, bool)) else str(valor)
+
+
+def valores_guardados(contexto_item: ContextoItem, elegidas: Sequence) -> dict:
+    """`valores_contexto` del intento: todo lo necesario para volver a evaluar sin recalcular el contexto (los
+    marcadores, las líneas de ecos al LLM, los ecos mostrados, la pregunta mostrada y lo marcado en su formato para el
+    LLM)."""
+    codigo = elegidas[0]['codigo'] if elegidas else None
+    return dict(marcadores=dict(contexto_item.marcadores), ecos_llm=list(contexto_item.ecos_llm),
+                ecos_mostrar=_json(list(contexto_item.ecos_mostrar)), pregunta=contexto_item.pregunta_para(codigo),
+                etiquetas_llm=list(etiquetas_marcadas(contexto_item, elegidas)))
+
+
+def entrada_guardada(item: ItemRegistro, elegidas: Sequence, valores: Mapping, respuesta: str, *,
+                     anterior: str | None = None, repregunta: str | None = None) -> Entrada:
+    """La `Entrada` del LLM desde `valores_contexto` (también al reenviar), con la tarjeta de la opción marcada o la del
+    ítem. Valida el largo de lo que va al LLM (`EntradaInvalida`)."""
+    codigo = elegidas[0]['codigo'] if elegidas else None
+    propia = next((o for o in item.opciones_propias or () if o['codigo'] == codigo), None)
+    if propia is not None and propia.get('sin_llm'):
+        raise OpcionSinLLM(f'La opción {codigo} de {item.codigo} no pasa por el LLM')
+    ficha = (propia or {}).get('tarjeta') or item.tarjeta
+    if ficha is None:
+        raise OpcionSinLLM(f'{item.codigo} no pasa por el LLM')
+    etiquetas = tuple(valores.get('etiquetas_llm') or ())
+    entrada = Entrada(tarjeta=tarjeta_para(ficha, codigo, etiquetas, valores.get('marcadores') or {}),
+                      pregunta=valores['pregunta'], respuesta=respuesta, etiquetas=etiquetas,
+                      ordenada=item.eleccion_ordenada, ecos=tuple(valores.get('ecos_llm') or ()),
+                      respuesta_anterior=anterior, invitacion=repregunta)
+    armar(entrada)
+    return entrada
+
+
+def depende_de_otros(item: ItemRegistro) -> bool:
+    """El ítem tiene marcadores, ecos al LLM o piezas: lo único que puede dejar su eco cambiado."""
+    nombres = set().union(*(marcadores_de(t) for t in _textos_del_item(item))) - DE_LA_TARJETA
+    return bool(nombres) or bool(item.ecos_llm) or item.fuente_opciones in FUENTES_PIEZAS
+
+
+def eco_cambiado(item: ItemRegistro, respuesta, hoy: ContextoItem | None) -> bool:
+    """Se calcula al leer (§8): compara `valores_contexto` con el contexto de hoy (`None` si ya no se puede resolver).
+    Cuentan los marcadores, las líneas de ecos al LLM y la pieza elegida (ya no se ofrece o su texto es otro); nunca
+    los ecos que solo se muestran (decisión del usuario)."""
+    if not depende_de_otros(item):
+        return False
+    if hoy is None:
+        return True
+    valores = respuesta.valores_contexto or {}
+    if dict(valores.get('marcadores') or {}) != dict(hoy.marcadores):
+        return True
+    if list(valores.get('ecos_llm') or ()) != list(hoy.ecos_llm):
+        return True
+    if item.fuente_opciones in FUENTES_PIEZAS:
+        propias = {o['codigo'] for o in item.opciones_propias or ()}
+        for elegida in respuesta.opciones_elegidas or ():
+            if _es_otra(elegida['codigo']) or elegida['codigo'] in propias:
+                continue
+            ofrecida = hoy.opcion(elegida['codigo'])
+            if ofrecida is None or ofrecida.texto != elegida['texto']:
+                return True
+    return False

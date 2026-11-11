@@ -689,3 +689,18 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dato:** la consulta de referencias suma en PLANES y PLAN el campo `planes` (cada plan con `prioridad`, `codigo`, `carrera`, `institucion`, `camino`, `idea_origen`, `motivos` y `relato`), en PASOS_PLAN_A el `estado` de cada paso, y el tipo nuevo `CHECK_IN_PRIMERO` («N de 5», sin etiqueta). Son aditivos: el front actual los ignora.
 - **Dónde se vería:** los ecos de b4-1 (cabecera del Plan A), b4-5 (Plan A y B), b5-1 (proyecto, pasos y primera señal) y la columna «Hoy» de b5-3, cuando el front de registros se ajuste.
 - **Estado:** pendiente del ajuste del front de registros.
+
+## 2026-11-11 · Ajuste registros llm (lote 3) · Flujo ítem por ítem con el LLM
+
+- **Dato:** el registro ya no se entrega de una vez. Nuevas acciones: `POST /acciones/registro/responder` (`item`, `opciones`, `texto`; sirve también para editar, hasta 10 intentos por ítem), `/responder-seguimiento` (`item`, `texto`) y `/reenviar` (`item`). Las tres devuelven `PasoRegistro`: `paso` (`SIGUIENTE`, `REPREGUNTA` con `repregunta` o `MENSAJE` con el texto de Lumi), `registro` y los eventos. `entregar` ya no lleva ítems: termina el registro (y repetido sobre uno completado, devuelve el registro tal como está). Salen `guardar-borrador`, `editar` y `continuar-sin-responder`. `GET /cuentas/{c}/actividades/{a}/registro` trae `estado`, `item_actual` (el primero sin responder) e `items`: por ítem, `disponible` y `marcador_faltante`, la consigna resuelta, `eleccion`, las `opciones` que se le ofrecen a la cuenta (con `origen` y `grupo` en las piezas, y la `pregunta` y el `arranque` de cada opción), los `ecos` a mostrar y la `respuesta` vigente (`opciones_elegidas`, `primera_respuesta`, `linea_seguimiento`, `pista`, `reenviable`, `eco_cambiado`). Nunca tipo, `motivo` ni `sensible`. Sale `posicion` y, de `items-registro`, `min_caracteres`. `completar-actividad` rechaza los registros (409). La evaluación tarda hasta 12 segundos. Los fixtures de `tests/fixtures/servidor` no se regeneraron.
+- **Dónde se ve** (lo que el texto del lote 3 deja para el front):
+  - rehacer una actividad completada empieza desde el inicio, con sus diapositivas; al llegar a cada ítem aparece la respuesta previa;
+  - al reingresar a una actividad a medias se cae en `item_actual`; se puede retroceder y editar uno ya respondido;
+  - la caja de edición se arma con la primera respuesta y, debajo, la línea del seguimiento;
+  - los mensajes de Lumi vienen del backend (`mensaje`);
+  - la pista se muestra al volver a una actividad completada, en los ítems que la traen;
+  - sin evaluar: una marca junto al ítem y, al lado de editar, un botón que llama a `reenviar`;
+  - eco cambiado: una marca que invite a responder de nuevo;
+  - mientras el backend evalúa, el front espera la respuesta;
+  - el ítem en curso lo conserva el front; no hay borradores en el backend.
+- **Estado:** pendiente del ajuste del front de registros.

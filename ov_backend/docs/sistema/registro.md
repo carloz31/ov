@@ -2,7 +2,7 @@
 
 Actividades de registro: cada ítem tiene una consigna (diálogo, pregunta de elección, pregunta del texto y arranque), una elección opcional y, si tiene tarjeta, pasa por la capa del LLM v7 (Claude, abajo). Código: `app/services/registro/` y `app/api/registro.py`.
 
-Estado actual (ajuste registros llm, lote 2): el modelo de datos y el contenido de los 19 registros de `contenido` están cargados, y la capa del LLM está lista, **sin conectar**. El flujo secuencial (servir el ítem, primera respuesta, repregunta, cierre, edición, eco cambiado) es del lote 3. Mientras tanto, la entrega es **provisional** (sin LLM) y el seguimiento, la edición y los borradores responden 501. El front actual no funciona contra estos contratos hasta su propio ajuste.
+Estado actual (ajuste registros llm, lote 3): el flujo ítem por ítem con el LLM v7 está conectado (`flujo.py`): responder (también editar), seguimiento, reenvío, terminar y la regla de adecuado. El front actual no funciona contra estos contratos hasta su propio ajuste.
 
 Lo que ve el estudiante (la escena, los personajes, el orden de los bloques) está en el JSON del front (`ov_frontend/docs/contenidos-actividades.md`). Las consignas y las opciones del ítem son las del backend; sus marcadores (`{carrera}`, `{valor 1}`…) los resuelve la cuenta (lote 3).
 
@@ -10,7 +10,7 @@ Lo que ve el estudiante (la escena, los personajes, el orden de los bloques) est
 
 | Variable | Por defecto | Uso |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | — | La capa del LLM v7; opcional mientras no esté conectada. |
+| `ANTHROPIC_API_KEY` | — | La capa del LLM v7 (`app.state.cliente_llm`). Sin clave, toda llamada falla (`sin_clave`) y el ítem queda SIN_EVALUAR. Las pruebas inyectan un cliente de prueba y nunca llaman al LLM real. |
 | `EVALUADOR` | `falso` | El evaluador de los asistentes con Gemini (diario, sugerencias de pasos, guion): `gemini` usa la API real; `falso`, el determinista. Ya no evalúa registros. |
 | `GEMINI_API_KEY` | — | Obligatoria si `EVALUADOR=gemini`. |
 | `GEMINI_MODELO` | `gemini-3.5-flash-lite` (`MODELO_LLM_REGISTRO`) | Modelo de los asistentes. |
@@ -34,9 +34,17 @@ Lo que ve el estudiante (la escena, los personajes, el orden de los bloques) est
 
 **Ecos:** cada uno `{origen, codigo, nombre?, forma?}`: TEXTO o ELECCION de un ítem anterior de la misma actividad, o REFERENCIA de la actividad; `forma` dice qué parte se toma (`primera`, `carrera`, `cabecera`, `plan_a_b`, `proyecto`, `pasos`, `carrera_institucion`, `hoy`). Los que se muestran y los que van al LLM son dos listas.
 
-**Intento vigente e histórico.** Guardar un intento nuevo (`acciones.guardar_intento`) pasa el vigente al histórico (`vigente = false`) tal como está e inserta el siguiente. Lo que se cita, se muestra o cuenta para el registro sale solo del vigente; el histórico queda para la vista de la orientadora. La edición (volver a iniciar el ítem) es del lote 3.
+**Intento vigente e histórico.** Guardar un intento nuevo (`acciones.guardar_intento`) pasa el vigente al histórico (`vigente = false`) tal como está e inserta el siguiente. Lo que se cita, se muestra o cuenta para el registro sale solo del vigente; el histórico queda para la vista de la orientadora. Editar es responder de nuevo el ítem, hasta `MAXIMO_INTENTOS_ITEM_REGISTRO` (10) intentos guardados.
 
-**Estados de un intento:** COMPLETADO (ítem u opción sin LLM: solo la elección y el texto), CERRADO, ABIERTO (terminó en `no_sabe`) y SIN_EVALUAR (falló la primera llamada). La 0050 no migró las respuestas anteriores: el upgrade se niega si hay respuestas de registro guardadas.
+**Estados de un intento:** COMPLETADO (ítem u opción sin LLM: solo la elección y el texto), CERRADO, ABIERTO (terminó en `no_sabe`, salvo que sea `sensible`: un ítem sensible queda CERRADO) y SIN_EVALUAR (falló la primera llamada, o el intento se guardó y todavía no se evaluó). La 0050 no migró las respuestas anteriores: el upgrade se niega si hay respuestas de registro guardadas.
+
+## Flujo ítem por ítem (lote 3)
+
+Código: `app/services/registro/flujo.py`. Responder, seguir y reenviar no usan la sesión de la petición: la respuesta se guarda y se **confirma antes** de llamar al LLM (hasta `TIEMPO_MAXIMO_LLM_SEGUNDOS`), y la evaluación se escribe en una segunda transacción sobre el mismo intento, por su id. Si el proceso muere entre las dos, el intento queda SIN_EVALUAR y se puede reenviar. La `Entrada` del LLM se arma siempre desde `valores_contexto` (`{marcadores, ecos_llm, ecos_mostrar, pregunta, etiquetas_llm}`, lo que vio el estudiante): también al reenviar. En los registros de la aplicación solo se escribe el ítem, la etapa y la causa de un fallo, nunca el texto.
+
+**Paso siguiente** (`PasoRegistro`; el estudiante nunca recibe el tipo, el `motivo` ni `sensible`): `sensible` → MENSAJE con `LUMI_SENSIBLE` (manda sobre `emocional`); `emocional` → MENSAJE con `LUMI_EMOCIONAL`; falló la llamada → MENSAJE con `LUMI_SIN_EVALUAR`; `general`, `no_sabe`, `vacio` o `fuera_de_tema` → REPREGUNTA con la repregunta ya filtrada (solo en la primera); `propio` o sin LLM → SIGUIENTE. El ítem queda cerrado con su primera respuesta: avanzar sin responder la repregunta no se registra, y la repregunta queda como pista. No hay segunda repregunta.
+
+**Regla de adecuado** (sobre los intentos vigentes de los obligatorios): ninguno `vacio`, `fuera_de_tema` ni SIN_EVALUAR, y como máximo un abierto (`no_sabe`); `propio`, `general`, `emocional` y `sensible` cuentan, y un `sensible` nunca es abierto; con el seguimiento sin evaluar cuenta el tipo que conserva; sin LLM, si está COMPLETADO. En un registro opcional, adecuado equivale a completado. Se evalúa al terminar y, con la actividad ya completada, tras cada respuesta, seguimiento o reenvío. REGISTRO_ADECUADO se emite la primera vez que se cumple y no se revoca.
 
 ## Acciones (POST)
 
@@ -44,17 +52,23 @@ Todas exigen actividad disponible y cuenta de estudiante (apoderado u orientador
 
 | Ruta | Cuerpo | Efecto |
 |---|---|---|
-| `/acciones/registro/entregar` | `items: [{item, texto, opciones}]` | **PROVISIONAL (lote 3).** Valida la elección contra las opciones del ítem (lista, referencia en vivo, propias, «Otra»; de las piezas, solo el prefijo del código) y que ningún texto quede vacío (salvo con una opción `sin_llm`); guarda cada ítem como intento COMPLETADO, sin LLM; completa la actividad y emite REGISTRO_ADECUADO (una vez por cuenta y actividad). Faltan obligatorios: 409 con `items_faltantes`; elección inválida: 422; ya entregado: 409. Devuelve el registro (como el GET) más `eventos_registrados` y `nuevos_desbloqueos`. |
-| `/acciones/registro/guardar-borrador`, `/responder-seguimiento`, `/continuar-sin-responder`, `/editar` | los de antes | 501, «Pendiente de reescritura (ajuste registros, lote 3)», tras el guardia de acceso. |
+| `/acciones/registro/responder` | `item`, `opciones`, `texto` | Valida la elección contra lo que `resolver_contexto` ofrece a la cuenta (códigos, mínimo y máximo, podio, exclusivas, cada «Otra» con su texto; una pieza, con el texto que se le ofrece) y el texto (no vacío salvo con una opción `sin_llm`; sin mínimo; hasta 1000). Falta un marcador: 409. Diez intentos guardados: 409. Guarda un intento nuevo (el vigente pasa al histórico), lo evalúa y devuelve `PasoRegistro`: `item`, `paso`, `repregunta` o `mensaje`, `registro` (como el GET) y los eventos. Elección o texto inválidos: 422; ítem de otra actividad: 404; dos a la vez sobre el mismo ítem: 409. |
+| `/acciones/registro/responder-seguimiento` | `item`, `texto` | Solo con una repregunta mostrada, sin segunda respuesta y no SIN_EVALUAR (si no, 409). Evalúa el conjunto; si falla, el intento conserva el tipo de la primera, queda con `seguimiento_sin_evaluar` y la línea es la segunda respuesta sola. `PasoRegistro` (MENSAJE o SIGUIENTE). |
+| `/acciones/registro/reenviar` | `item` | Vuelve a evaluar el intento vigente sin crear uno nuevo: la primera si está SIN_EVALUAR (puede traer REPREGUNTA), el conjunto si tiene `seguimiento_sin_evaluar`; si no, 409. Si vuelve a fallar, queda igual (MENSAJE sin evaluar). |
+| `/acciones/registro/entregar` | — | Terminar: exige un intento vigente en cada obligatorio (409 con `items_faltantes`), completa la actividad (aunque no quede adecuado) y aplica la regla de adecuado. Ya completada: devuelve el registro tal como está y vuelve a aplicar la regla. Devuelve el registro más los eventos. |
+
+`/acciones/completar-actividad` rechaza las actividades de registro (409): se terminan con `entregar`.
 
 ## Consultas (GET)
 
 | Ruta | Devuelve |
 |---|---|
 | `/actividades/{a}/items-registro` | Ítems en orden, con su consigna (marcadores sin resolver), `obligatorio`, `con_llm` y `eleccion` (`null` o `fuente`, `lista`, `referencia`, `referencia_opciones`, `comun`, mínima, máxima, `ordenada`, `permite_otra`, `etiqueta_otra`, las opciones de la lista y las propias con `pregunta`, `arranque` y `sin_llm`, nunca su tarjeta). |
-| `/cuentas/{c}/actividades/{a}/registro` | Posición, estado del progreso y, por ítem con intento vigente, su estado, `opciones_elegidas` y el texto. |
+| `/cuentas/{c}/actividades/{a}/registro` | `estado` de la actividad, `item_actual` (el primero sin intento vigente; se calcula) e `items`: por ítem, `disponible` (falso con `marcador_faltante`), la consigna resuelta hoy, `eleccion`, las `opciones` que se le ofrecen (con `origen` y `grupo` en las piezas y la `pregunta` y el `arranque` de cada opción), los `ecos` a mostrar y `respuesta` (`opciones_elegidas`, `primera_respuesta`, `linea_seguimiento`, `pista`, `reenviable`, `eco_cambiado`). Nunca el tipo, el `motivo`, `sensible`, el estado abierto ni el histórico. |
 
-Apoderados y cuentas o actividades inexistentes: 404. Completar una actividad de registro exige un intento vigente en cada ítem obligatorio (`motor.md`).
+**Eco cambiado** (se calcula al leer, `contexto.eco_cambiado`): un ítem con intento vigente lo tiene si, frente a `valores_contexto`, hoy difiere un marcador o una línea de eco al LLM, la pieza elegida ya no se ofrece o cambió su texto, o el contexto ya no se puede resolver. Los ecos que solo se muestran no cuentan (decisión del usuario). La respuesta no se borra ni se reabre, y la marca desaparece al editar el ítem. Un ítem sin marcadores, ecos al LLM ni piezas nunca la tiene.
+
+Apoderados y cuentas o actividades inexistentes: 404.
 
 ## Contexto de un ítem (`contexto.py`, lote 2)
 
@@ -86,11 +100,11 @@ El mismo evaluador (`app.state.evaluador_respuestas`, falso o Gemini, con su `ti
 
 ## Capa del LLM v7 (ajuste registros llm, lote 1)
 
-Módulo sin base de datos ni endpoints, **todavía no conectado al flujo** (lote 3). Desde el lote 2, la tarjeta de cada ítem se carga en `item_registro.tarjeta` (y la de opción, en su opción propia). Código: `app/services/registro/llm/`. Tarjetas: `datos/tarjetas_registros/`. Lo usa hoy el runner de `tests/llm` (`evaluar_tarjetas.py`).
+Módulo sin base de datos ni endpoints; desde el lote 3 lo usa el flujo ítem por ítem (`flujo.py`). Desde el lote 2, la tarjeta de cada ítem se carga en `item_registro.tarjeta` (y la de opción, en su opción propia). Código: `app/services/registro/llm/`. Tarjetas: `datos/tarjetas_registros/`. Lo usa hoy el runner de `tests/llm` (`evaluar_tarjetas.py`).
 
 - **Tarjetas:** una por ítem o por opción (AUN_NO, NINGUNO, CUESTA, NADIE, TODO, IGUAL), con su texto, sus `bases` separadas, `filtrar_etiqueta` (solo b1-1-logro) y, en b1-3-contraste y b2-4-cruce, `general_por_opcion`. `HASHES` guarda el sha256 de cada texto. `tarjeta_para(ficha, opcion, etiquetas, marcadores)` elige la tarjeta, hereda `fuera_de_tema` de `general` y reemplaza `{carrera}`, `{plan_a}`, `{plan_b}` y `{opción}` en el texto y las bases.
 - **Entrada** (ya resuelta por quien llama): tarjeta, pregunta mostrada, etiquetas marcadas (etiqueta, «¿Cuál?» o pieza con su origen; con `ordenada`, «1.º …»), líneas de ecos, respuesta y, en el seguimiento, la primera respuesta y la repregunta que vio. Largo máximo `MAXIMO_CARACTERES_TEXTO_LLM` (1000) en respuestas y etiquetas (`EntradaInvalida`); sin caracteres de control; las etiquetas del mensaje se neutralizan (`‹ ›`). Las etiquetas vacías se omiten. Nada que identifique al estudiante.
-- **Llamada:** `ClienteClaude`, `claude-haiku-5-5` (`MODELO_LLM_REGISTRO_V7`), esfuerzo `low`, salida con esquema JSON `{motivo, tipo, sensible, repregunta, arranque}`, sin temperatura ni reintentos, `MAXIMO_TOKENS_SALIDA_LLM` (2048) y `TIEMPO_MAXIMO_LLM_SEGUNDOS` (12). Clave: `ANTHROPIC_API_KEY` en `.env` (opcional mientras no esté conectada). Prompt: `prompt_v7_haiku_arranque.py` (`VERSION_PROMPT_LLM`, `HASH_PROMPT`).
+- **Llamada:** `ClienteClaude`, `claude-haiku-5-5` (`MODELO_LLM_REGISTRO_V7`), esfuerzo `low`, salida con esquema JSON `{motivo, tipo, sensible, repregunta, arranque}`, sin temperatura ni reintentos, `MAXIMO_TOKENS_SALIDA_LLM` (2048) y `TIEMPO_MAXIMO_LLM_SEGUNDOS` (12). Clave: `ANTHROPIC_API_KEY` en `.env`. Prompt: `prompt_v7_haiku_arranque.py` (`VERSION_PROMPT_LLM`, `HASH_PROMPT`).
 - **Fallo:** error, tiempo agotado, rechazo, tope de tokens, otra parada, JSON inválido o fuera del esquema → `sin_evaluar` con su causa; no se muestra ninguna base.
 - **Coherencia y filtro:** sin repregunta en `propio`, `emocional` o `sensible`; vacía → base del tipo. Filtro: palabras prohibidas, etiqueta de la opción (no en `fuera_de_tema`), más de 30 palabras o de una pregunta, final en «?» o «.», caracteres, léxico es_ES (`lexico/`, con `spylls`; valen las palabras del estudiante y sus ecos), truncamientos, formato y enlaces, tras decodificar entidades HTML. Si cae: base del tipo en la primera y de `no_sabe` en el seguimiento. Agrega el «¿» que falta y la mayúscula inicial. El backend no impone bases por lo que diga la tarjeta.
 - **Arranque y línea** (solo seguimiento, con cualquier tipo, también sensible): sin comillas ni dos puntos finales, hasta 12 palabras, sin «es», «es que», «fue», «sería», «cuando» ni «porque» al final, sin enlaces, etiquetas ni signos de pregunta y sin dos o más palabras de contenido de las respuestas que no estén en la repregunta ni en la opción; la línea es «Arranque: segunda respuesta tal cual» o, si no pasa, la segunda respuesta sola.

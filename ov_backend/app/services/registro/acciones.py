@@ -1,8 +1,7 @@
-"""Registro: lectura del intento vigente, guardado de intentos y entrega provisional.
+"""Registro: validación de la actividad, opciones de un ítem, lectura del intento vigente y guardado de intentos.
 
 Ajuste registros llm (lote 2): cada ítem tiene un intento vigente; guardar uno nuevo pasa el anterior, completo, al
-histórico (`guardar_intento`). La entrega es PROVISIONAL hasta el flujo secuencial del lote 3: guarda la elección y
-el texto de cada ítem sin LLM (estado COMPLETADO), completa la actividad y emite REGISTRO_ADECUADO.
+histórico (`guardar_intento`). El flujo ítem por ítem con el LLM está en `flujo.py` (lote 3).
 """
 
 from dataclasses import dataclass
@@ -10,20 +9,16 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import exists, func, insert, select, update
 
-from app.core.contexto import contexto, usar_contexto
+from app.core.contexto import contexto
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, Bloque, Cuenta, EstadoProgreso, EventoUso, ProgresoActividad, Referencia, RespuestaRegistro, Rol,
     TipoEventoUso, TipoObjetivo,
 )
-from app.models.enums import EstadoReferencia, EstadoRespuestaRegistro, FuenteOpciones
-from app.schemas.registro import OpcionGuardada, RespuestaRegistroAccion, RespuestaRegistroPublica
-from app.services.actividades import completar_progreso
-from app.services.comun import buscar_por_codigo, exigir_disponible, fecha_accion, responder_con_eventos
+from app.models.enums import EstadoReferencia, FuenteOpciones
+from app.services.comun import buscar_por_codigo, exigir_disponible
 from app.services.referencias import resolver
-from app.services.registro.eleccion import OpcionItem, invalida, validar_eleccion
-
-PENDIENTE_LOTE_3 = 'Pendiente de reescritura (ajuste registros, lote 3)'
+from app.services.registro.eleccion import OpcionItem
 
 
 def validar_registro(sesion, codigo_actividad, codigo_cuenta=None, disponible=False):
@@ -100,23 +95,6 @@ def guardar_intento(sesion, progreso_id, item_id, datos, fecha):
         creada_en=fecha, actualizada_en=marca_actualizacion(), **datos)).scalar_one()
 
 
-def respuesta_publica(item, respuesta):
-    return RespuestaRegistroPublica(
-        item=item.codigo, estado=respuesta.estado, texto=respuesta.primera_respuesta,
-        opciones_elegidas=[OpcionGuardada(codigo=e['codigo'], texto=e['texto']) for e in respuesta.opciones_elegidas or ()])
-
-
-def registro_publico(registro, items):
-    progreso = registro.progreso
-    return dict(estado=progreso.estado if progreso is not None else None,
-                respuestas=[respuesta_publica(item, registro.vigentes[item.id])
-                            for item in items if item.id in registro.vigentes])
-
-
-def publico(sesion, cuenta, actividad, items):
-    return registro_publico(leer_registro(sesion, cuenta, actividad), items)
-
-
 def crear_progreso(sesion, cuenta, actividad):
     progreso = ProgresoActividad(cuenta_id=cuenta.id, actividad_id=actividad.id, estado=EstadoProgreso.EN_CURSO)
     sesion.add(progreso)
@@ -134,52 +112,3 @@ def registro_adecuado_emitido(sesion, cuenta, actividad):
     return sesion.scalar(select(exists().where(
         EventoUso.cuenta_id == cuenta.id, EventoUso.tipo == TipoEventoUso.REGISTRO_ADECUADO,
         EventoUso.id_referencia == actividad.id)))
-
-
-def sin_llm_elegida(opciones, elegidas):
-    """La opción marcada no pasa por el LLM (`sin_llm`): su texto es opcional."""
-    por_codigo = {opcion.codigo: opcion for opcion in opciones}
-    return any(por_codigo[e['codigo']].sin_llm for e in elegidas if e['codigo'] in por_codigo)
-
-
-@usar_contexto
-def entregar(sesion, entrada):
-    """PROVISIONAL (lote 3): guarda todos los ítems de una vez, sin LLM (COMPLETADO), completa la actividad y emite
-    REGISTRO_ADECUADO. Valida la elección contra las opciones fijas del ítem; de las piezas, solo el prefijo."""
-    cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
-    registro = leer_registro(sesion, cuenta, actividad)
-    if registro.progreso is not None and registro.progreso.estado == EstadoProgreso.COMPLETADA:
-        raise ErrorAccion("El registro ya fue entregado")
-    por_codigo = {item.codigo: item for item in items}
-    codigos = [i.item for i in entrada.items]
-    if len(codigos) != len(set(codigos)):
-        raise invalida("Un ítem no puede entregarse dos veces en la misma petición")
-    if any(codigo not in por_codigo for codigo in codigos):
-        raise ErrorAccion("El ítem no pertenece a esta actividad")
-    faltantes = [item.codigo for item in items if item.obligatorio and item.codigo not in codigos]
-    if faltantes:
-        raise ErrorAccion("Faltan ítems por responder antes de entregar", items_faltantes=faltantes)
-    opciones = opciones_por_item(sesion, cuenta, items)
-    guardar = []
-    for entrega in entrada.items:
-        item = por_codigo[entrega.item]
-        elegidas = validar_eleccion(item, opciones[item.id], entrega.opciones, True)
-        # Ningún ítem se guarda vacío, salvo que la opción marcada vaya sin LLM.
-        if not entrega.texto.strip() and not sin_llm_elegida(opciones[item.id], elegidas):
-            raise invalida("La respuesta no puede estar vacía")
-        guardar.append((item, elegidas, entrega.texto))
-    fecha = fecha_accion(entrada)
-    progreso = registro.progreso or crear_progreso(sesion, cuenta, actividad)
-    for item, elegidas, texto in guardar:
-        guardar_intento(sesion, progreso.id, item.id, dict(
-            opciones_elegidas=elegidas, primera_respuesta=texto, estado=EstadoRespuestaRegistro.COMPLETADO), fecha)
-    _, eventos = completar_progreso(sesion, cuenta, actividad)
-    if not registro_adecuado_emitido(sesion, cuenta, actividad):
-        eventos = [*eventos, (TipoEventoUso.REGISTRO_ADECUADO, actividad.id)]
-    respuesta = responder_con_eventos(sesion, cuenta, eventos, fecha)
-    return RespuestaRegistroAccion(**publico(sesion, cuenta, actividad, items), **respuesta.campos())
-
-
-def pendiente_lote_3(*_):
-    """Seguimiento, edición, borradores y continuar sin responder: el flujo secuencial es del lote 3."""
-    raise ErrorAccion(PENDIENTE_LOTE_3, estado_http=501)

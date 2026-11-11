@@ -46,53 +46,80 @@ def pedir(cliente, metodo, ruta, datos=None, esperado=200):
     return respuesta.json()
 
 
-def eleccion_minima(item, opciones_referencia=()):
-    """Las primeras opciones, tantas como pide el mínimo del ítem: las de su lista o su referencia (ajuste
-    registros: resueltas para la cuenta) y luego las propias que no son exclusivas, y por último las exclusivas.
-    Ajuste registros llm (lote 2): si no alcanzan (las piezas las arma la cuenta), completa con «Otra»."""
+TEXTO_REGISTRO = 'DATO DE PRUEBA: una respuesta completa.'
+
+
+def eleccion_minima(item):
+    """Las primeras opciones que se le ofrecen a la cuenta, tantas como pide el mínimo: las exclusivas al final. Una
+    pieza va con su texto; si no alcanzan, completa con «Otra». `item` es el del registro de la cuenta (lote 3)."""
     eleccion = item['eleccion']
     if eleccion is None:
         return []
-    propias = sorted(eleccion.get('opciones_propias', ()), key=lambda o: o['exclusiva'])
-    disponibles = [*eleccion['opciones'], *opciones_referencia, *propias]
-    elegidas = [{'codigo': o['codigo']} for o in disponibles[:eleccion['minima']]]
+    opciones = sorted(item['opciones'], key=lambda o: o['exclusiva'])
+    elegidas = [{'codigo': o['codigo'], **({'texto': o['texto']} if o['origen'] else {})}
+                for o in opciones[:eleccion['minima']]]
     otras = [{'codigo': 'OTRA' if eleccion['maxima'] == 1 else f'OTRA-{n}', 'texto': 'DATO DE PRUEBA: otra'}
              for n in range(1, eleccion['minima'] - len(elegidas) + 1)] if eleccion['permite_otra'] else []
     return elegidas + otras
 
 
-def items_entrega(cliente, actividad, cuenta='est-ana', texto='DATO DE PRUEBA: una respuesta completa.'):
-    """Cada ítem del registro con su elección mínima y un texto, como los pide la entrega provisional (lote 2)."""
-    items = pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro')
-    referencias = opciones_de_referencias(cliente, actividad, cuenta) if any(
-        (i['eleccion'] or {}).get('referencia_opciones') for i in items) else {}
-    return [{'item': item['codigo'], 'texto': texto,
-             'opciones': eleccion_minima(item, referencias.get((item['eleccion'] or {}).get('referencia_opciones'), ()))}
-            for item in items]
+def leer_registro(cliente, actividad, cuenta='est-ana'):
+    return pedir(cliente, 'GET', f'/cuentas/{cuenta}/actividades/{actividad}/registro')
 
 
-def opciones_de_referencias(cliente, actividad, cuenta='est-ana'):
-    """{código de referencia: opciones} de la actividad, para los ítems que eligen de una referencia."""
-    return {r['codigo']: r.get('opciones') or [] for r in pedir(
-        cliente, 'GET', f'/cuentas/{cuenta}/actividades/{actividad}/referencias')['referencias']}
+def item_de(registro, codigo):
+    return next(i for i in registro['items'] if i['codigo'] == codigo)
 
 
-def responder_registro(cliente, actividad, cuenta='est-ana'):
-    """Entrega el registro con todos sus ítems (entrega provisional del ajuste registros llm, lote 2)."""
+def responder_item(cliente, actividad, item, opciones=None, texto=TEXTO_REGISTRO, cuenta='est-ana', esperado=200):
+    """Responde (o edita) un ítem. Sin `opciones`, su elección mínima según el registro de la cuenta."""
+    if opciones is None:
+        opciones = eleccion_minima(item_de(leer_registro(cliente, actividad, cuenta), item))
+    return pedir(cliente, 'POST', '/acciones/registro/responder', {
+        'cuenta': cuenta, 'actividad': actividad, 'item': item, 'opciones': opciones, 'texto': texto,
+        'fecha_hora': FECHA}, esperado)
+
+
+def seguir(cliente, actividad, item, texto='DATO DE PRUEBA: lo cuento con un ejemplo.', cuenta='est-ana', esperado=200):
+    return pedir(cliente, 'POST', '/acciones/registro/responder-seguimiento', {
+        'cuenta': cuenta, 'actividad': actividad, 'item': item, 'texto': texto, 'fecha_hora': FECHA}, esperado)
+
+
+def reenviar(cliente, actividad, item, cuenta='est-ana', esperado=200):
+    return pedir(cliente, 'POST', '/acciones/registro/reenviar', {
+        'cuenta': cuenta, 'actividad': actividad, 'item': item, 'fecha_hora': FECHA}, esperado)
+
+
+def terminar(cliente, actividad, cuenta='est-ana', esperado=200):
     return pedir(cliente, 'POST', '/acciones/registro/entregar',
-                 {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
-                  'items': items_entrega(cliente, actividad, cuenta)})
+                 {'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA}, esperado)
+
+
+def responder_registro(cliente, actividad, cuenta='est-ana', texto=TEXTO_REGISTRO):
+    """Responde cada ítem en su orden, con su elección mínima y un texto (sin responder repreguntas), y termina el
+    registro (ajuste registros llm, lote 3: flujo ítem por ítem)."""
+    registro = leer_registro(cliente, actividad, cuenta)
+    while registro['item_actual'] is not None:
+        item = item_de(registro, registro['item_actual'])
+        registro = responder_item(cliente, actividad, item['codigo'], eleccion_minima(item), texto, cuenta)['registro']
+    return terminar(cliente, actividad, cuenta)
+
+
+def es_registro(cliente, codigo, cuenta):
+    respuesta = cliente.request('GET', f'/cuentas/{cuenta}/actividades/{codigo}/registro')
+    return respuesta.status_code == 200 and bool(respuesta.json()['items'])
 
 
 def completar(cliente, codigo, cuenta='est-ana', esperado=200):
-    """Completa una actividad; un registro se completa al entregarlo todo adecuado."""
+    """Completa una actividad; un registro se responde ítem por ítem y se termina (lote 3)."""
     if esperado == 200 and codigo in PARTIDA_LLEGADA and not pedir(
             cliente, 'GET', f'/cuentas/{cuenta}/actividades/{codigo}/respuestas')['respuestas']:
         responder(cliente, codigo, cuenta, opcion=3)
-    if esperado == 200 and codigo in REGISTROS:
-        registro = pedir(cliente, 'GET', f'/cuentas/{cuenta}/actividades/{codigo}/registro')
+    if esperado == 200 and (codigo in REGISTROS or es_registro(cliente, codigo, cuenta)):
+        registro = leer_registro(cliente, codigo, cuenta)
         if registro['estado'] != 'COMPLETADA':
             return responder_registro(cliente, codigo, cuenta)
+        return terminar(cliente, codigo, cuenta)
     return pedir(cliente, 'POST', '/acciones/completar-actividad',
                  {'cuenta': cuenta, 'actividad': codigo, 'fecha_hora': FECHA}, esperado)
 

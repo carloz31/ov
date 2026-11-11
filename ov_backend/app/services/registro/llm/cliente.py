@@ -67,6 +67,15 @@ class ClienteClaude:
             tokens_salida=uso.output_tokens - (pensar or 0), latencia_ms=latencia)
 
 
+class ClienteSinClave:
+    """Sin `ANTHROPIC_API_KEY`: toda llamada falla (`sin_clave`) y el ítem queda `sin_evaluar` (lote 3)."""
+
+    modelo = 'sin_clave'
+
+    def llamar(self, sistema: str, mensaje: str, esquema: dict) -> RespuestaCruda:
+        raise LlamadaFallida('sin_clave')
+
+
 class ClienteFalso:
     """Devuelve, en orden, las respuestas que recibe: un `RespuestaCruda`, un `str` (JSON con parada `end_turn`) o una
     excepción, que se levanta. Guarda cada llamada en `llamadas`."""

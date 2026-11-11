@@ -1,19 +1,22 @@
 """Contratos públicos del registro.
 
-Ajuste registros llm (lote 2): la entrega es provisional (sin LLM) hasta el flujo secuencial del lote 3; el
-seguimiento, la edición y los borradores responden 501. El front actual no funciona contra estos contratos.
+Ajuste registros llm (lote 3): flujo ítem por ítem (responder, seguimiento, reenviar, terminar) y lectura con el
+contexto resuelto. El front actual no funciona contra estos contratos hasta su propio ajuste.
 """
+
+from typing import Literal
 
 from pydantic import BaseModel
 
 from app.models import EstadoProgreso
-from app.models.enums import EstadoRespuestaRegistro, FuenteOpciones
+from app.models.enums import FuenteOpciones
 from app.schemas.acciones import CompletarActividadEntrada, RespuestaAccion
 
 
 
 
 class AccionItemRegistroEntrada(CompletarActividadEntrada):
+    """Reenviar un ítem (§4): sin cuerpo propio."""
     item: str
 
 
@@ -26,41 +29,13 @@ class OpcionElegida(BaseModel):
     texto: str | None = None
 
 
-class BorradorRegistroEntrada(TextoRegistroEntrada):
+class ResponderItemEntrada(TextoRegistroEntrada):
+    """Responder un ítem, la primera vez o para editarlo (§2): la elección y el texto."""
     opciones: list[OpcionElegida] = []
-    posicion: str | None = None
-
-
-class ItemEntrega(BaseModel):
-    item: str
-    texto: str
-    opciones: list[OpcionElegida] = []
-
-
-class EntregarRegistroEntrada(CompletarActividadEntrada):
-    """PROVISIONAL (lote 3): la entrega trae todos los ítems a la vez, sin borradores."""
-    items: list[ItemEntrega]
 
 
 class ResponderSeguimientoEntrada(TextoRegistroEntrada):
     pass
-
-
-class ItemEdicion(BaseModel):
-    item: str
-    texto: str
-    opciones: list[OpcionElegida] | None = None
-
-
-class EditarRegistroEntrada(CompletarActividadEntrada):
-    items: list[ItemEdicion]
-
-
-
-
-class EstadoItemRegistro(BaseModel):
-    item: str
-    estado: EstadoRespuestaRegistro
 
 
 class OpcionListaPublica(BaseModel):
@@ -89,7 +64,7 @@ class PremarcarPublico(BaseModel):
 
 class EleccionPublica(BaseModel):
     """`fuente`: LISTA (opciones de `lista`), REFERENCIA (las de `referencia_opciones`, que se leen con las
-    referencias de la cuenta), PROPIAS o PIEZAS_* (las arma la cuenta; lote 3). `opciones_propias` se suman a la
+    referencias de la cuenta), PROPIAS o PIEZAS_* (las arma la cuenta: van en el registro de la cuenta). `opciones_propias` se suman a la
     fuente o son la única. `referencia` (F02): la que marca lo elegido la vez pasada."""
     fuente: FuenteOpciones
     lista: str | None
@@ -108,7 +83,7 @@ class EleccionPublica(BaseModel):
 
 
 class ItemRegistroPublico(BaseModel):
-    """La definición del ítem, con los marcadores sin resolver (los resuelve la cuenta, lote 3)."""
+    """La definición del ítem, con los marcadores sin resolver (resueltos, en el registro de la cuenta)."""
     codigo: str
     nombre: str
     dialogo: str | None
@@ -126,16 +101,80 @@ class OpcionGuardada(BaseModel):
     texto: str
 
 
-class RespuestaRegistroPublica(EstadoItemRegistro):
-    """El intento vigente del ítem: la elección tal como se mostró y la primera respuesta."""
-    opciones_elegidas: list[OpcionGuardada]
+class ConsignaItem(BaseModel):
+    """La consigna ya armada para la cuenta (marcadores resueltos)."""
+    dialogo: str | None
+    pregunta_eleccion: str | None
+    pregunta_texto: str
+    arranque: str | None
+
+
+class EleccionItem(BaseModel):
+    minima: int
+    maxima: int
+    ordenada: bool
+    permite_otra: bool
+    etiqueta_otra: str | None
+
+
+class OpcionOfrecida(BaseModel):
+    """Una opción que se le ofrece a la cuenta. En las piezas, con su origen y su grupo; con `pregunta` o `arranque`,
+    reemplazan los del ítem al marcarla. Nunca lleva su tarjeta."""
+    codigo: str
     texto: str
+    origen: str | None
+    grupo: str | None
+    exclusiva: bool
+    sin_llm: bool
+    pregunta: str | None
+    arranque: str | None
+
+
+class RespuestaVigente(BaseModel):
+    """El intento vigente: la elección tal como se guardó, la primera respuesta y, aparte, la línea del seguimiento.
+    Nunca el tipo, el `motivo`, la marca `sensible`, el estado abierto ni el histórico."""
+    opciones_elegidas: list[OpcionGuardada]
+    primera_respuesta: str
+    linea_seguimiento: str | None
+    pista: str | None
+    # El intento quedó sin evaluar (o su seguimiento): se puede reenviar.
+    reenviable: bool
+    # Cambió algo de lo que se le mostró o fue al LLM al responder (§8; se calcula al leer).
+    eco_cambiado: bool
+
+
+class ItemRegistroCuenta(BaseModel):
+    """Un ítem con su contexto resuelto hoy y su respuesta vigente. `disponible` es falso si falta el valor de un
+    marcador (`marcador_faltante`): entonces no trae consigna, opciones ni ecos."""
+    codigo: str
+    nombre: str
+    obligatorio: bool
+    con_llm: bool
+    disponible: bool
+    marcador_faltante: str | None
+    consigna: ConsignaItem | None
+    eleccion: EleccionItem | None
+    opciones: list[OpcionOfrecida]
+    ecos: list[dict]
+    respuesta: RespuestaVigente | None
 
 
 class RegistroConsultado(BaseModel):
+    """El registro para el estudiante (§7). `item_actual`: el primer ítem sin intento vigente (None si no queda)."""
     estado: EstadoProgreso | None
-    respuestas: list[RespuestaRegistroPublica]
+    item_actual: str | None
+    items: list[ItemRegistroCuenta]
 
 
 class RespuestaRegistroAccion(RegistroConsultado, RespuestaAccion):
-    """Estado del registro tras entregar; nunca lleva tipos ni pistas."""
+    """El registro tras terminarlo, con los eventos."""
+
+
+class PasoRegistro(RespuestaAccion):
+    """El paso siguiente tras responder, seguir o reenviar un ítem: SIGUIENTE, REPREGUNTA (con la repregunta ya
+    filtrada) o MENSAJE (con el texto de Lumi). Nunca el tipo ni el `motivo`."""
+    item: str
+    paso: Literal['SIGUIENTE', 'REPREGUNTA', 'MENSAJE']
+    repregunta: str | None = None
+    mensaje: str | None = None
+    registro: RegistroConsultado

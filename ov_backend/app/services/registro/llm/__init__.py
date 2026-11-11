@@ -5,13 +5,14 @@ la tarjeta, la pregunta mostrada, la opción marcada, los ecos y las respuestas 
 `evaluar_primera`, `evaluar_seguimiento` y `estado_final` (pura).
 """
 
-from app.services.registro.llm.cliente import ClienteClaude, ClienteFalso, ClienteLLM, LlamadaFallida, RespuestaCruda
+from app.services.registro.llm.cliente import (ClienteClaude, ClienteFalso, ClienteLLM, ClienteSinClave, LlamadaFallida,
+                                              RespuestaCruda)
 from app.services.registro.llm.estado import ORDEN, EstadoItem, estado_final
 from app.services.registro.llm.evaluacion import Evaluacion, Salida, evaluar_primera, evaluar_seguimiento
 from app.services.registro.llm.mensaje import Entrada, EntradaInvalida, armar
 from app.services.registro.llm.prompt_v7_haiku_arranque import HASH_PROMPT, PROMPT, VERSION_PROMPT_LLM
 from app.services.registro.llm.tarjeta import Tarjeta, tarjeta_para
 
-__all__ = ['ClienteClaude', 'ClienteFalso', 'ClienteLLM', 'Entrada', 'EntradaInvalida', 'EstadoItem', 'Evaluacion',
+__all__ = ['ClienteClaude', 'ClienteFalso', 'ClienteLLM', 'ClienteSinClave', 'Entrada', 'EntradaInvalida', 'EstadoItem', 'Evaluacion',
            'HASH_PROMPT', 'LlamadaFallida', 'ORDEN', 'PROMPT', 'RespuestaCruda', 'Salida', 'Tarjeta', 'VERSION_PROMPT_LLM',
            'armar', 'estado_final', 'evaluar_primera', 'evaluar_seguimiento', 'tarjeta_para']

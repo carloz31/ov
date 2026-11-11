@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from sqlalchemy.orm import sessionmaker
 
 from app.api.router import crear_router
-from app.config import cargar_configuracion, crear_evaluador_registro
+from app.config import cargar_configuracion, crear_cliente_llm, crear_evaluador_registro
 from app.core.definiciones import CacheDefiniciones
 from app.database import comprobar_tablas, crear_motor_bd
 from app.services.registro.evaluacion import EvaluadorFalso
@@ -37,6 +37,8 @@ def crear_aplicacion(url_bd: str | None = None) -> FastAPI:
     aplicacion.state.configuracion = configuracion
     aplicacion.state.fabrica_sesiones = fabrica_sesiones
     aplicacion.state.evaluador_respuestas = EvaluadorFalso()
+    # Ajuste registros llm (lote 3): el cliente del LLM v7 del flujo de registros; las pruebas lo reemplazan.
+    aplicacion.state.cliente_llm = crear_cliente_llm(configuracion)
     aplicacion.include_router(crear_router(configuracion.entorno))
     return aplicacion
 

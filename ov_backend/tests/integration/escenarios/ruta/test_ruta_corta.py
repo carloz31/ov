@@ -84,11 +84,17 @@ def test_cierre_de_t0_abre_t1_y_sube_de_nivel(cliente):
 
 
 def entregar(cliente, actividad, items, cuenta='est-ana', esperado=200):
-    """Entrega provisional (ajuste registros llm, lote 2). `items`: {ítem: (texto, opciones)}."""
+    """Ajuste registros llm (lote 3): responde cada ítem y termina. `items`: {ítem: (texto, opciones)}. El primer
+    rechazo (de un ítem o del cierre) debe ser `esperado`."""
+    for item, (texto, opciones) in items.items():
+        respuesta = cliente.post('/acciones/registro/responder', json={
+            'cuenta': cuenta, 'actividad': actividad, 'item': item, 'texto': texto, 'opciones': opciones,
+            'fecha_hora': FECHA})
+        if respuesta.status_code != 200:
+            assert respuesta.status_code == esperado, respuesta.text
+            return respuesta.json()
     return pedir(cliente, 'POST', '/acciones/registro/entregar', {
-        'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
-        'items': [{'item': item, 'texto': texto, 'opciones': opciones} for item, (texto, opciones) in items.items()]},
-        esperado)
+        'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA}, esperado)
 
 
 OTRA_RUTA = {'codigo': 'OTRA-1', 'texto': 'DATO DE PRUEBA: aprender un oficio'}
@@ -99,8 +105,7 @@ EXPECTATIVAS = {'t-exp-ruta': ('DATO DE PRUEBA: estudiar en un instituto porque 
 
 
 def test_hu006_hu010_registro_con_eleccion_y_entrega(cliente):
-    """Ajuste registros llm (lote 2): la entrega provisional trae todos los ítems a la vez; el borrador y retomar
-    vuelven en el lote 3."""
+    """Ajuste registros llm (lote 3): ítem por ítem y terminar; no hay borradores."""
     escenarios.verificar_p03_cierre_de_t0(cliente)
     items = pedir(cliente, 'GET', '/actividades/t-expectativas/items-registro')
     assert [item['eleccion'] and item['eleccion']['lista'] for item in items] == [
@@ -114,22 +119,24 @@ def test_hu006_hu010_registro_con_eleccion_y_entrega(cliente):
     # La elección mínima se exige al entregar.
     entregar(cliente, 't-expectativas', {**EXPECTATIVAS, 't-exp-apoyo': (EXPECTATIVAS['t-exp-apoyo'][0], [])},
              esperado=422)
-    assert actividades(cliente)['t-expectativas'] == 'DISPONIBLE'
+    # Lote 3: cada ítem queda guardado apenas se responde; la actividad sigue en curso, sin completar.
+    assert actividades(cliente)['t-expectativas'] == 'EN_CURSO'
     respuesta = entregar(cliente, 't-expectativas', EXPECTATIVAS)
-    assert respuesta['estado'] == 'COMPLETADA' and {r['estado'] for r in respuesta['respuestas']} == {'COMPLETADO'}
+    assert respuesta['estado'] == 'COMPLETADA' and all(i['respuesta'] for i in respuesta['items'])
     assert ('COMPLETA_ACTIVIDAD', 't-expectativas') in [
         (e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']]
     # Otra sesión: el registro se lee desde el servidor, con la elección tal como se mostró.
     leido = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
-    assert leido['respuestas'][0]['opciones_elegidas'] == [
+    assert leido['items'][0]['respuesta']['opciones_elegidas'] == [
         {'codigo': 'INSTITUTO', 'texto': 'Estudiar en un instituto'}, OTRA_RUTA]
-    assert {r['item']: r['texto'] for r in leido['respuestas']} == {k: v[0] for k, v in EXPECTATIVAS.items()}
-    entregar(cliente, 't-expectativas', EXPECTATIVAS, esperado=409)
+    assert {i['codigo']: i['respuesta']['primera_respuesta'] for i in leido['items']} == {
+        k: v[0] for k, v in EXPECTATIVAS.items()}
+    assert leido['item_actual'] is None
 
 
 def test_hu016_registro_adecuado_abre_la_mision_adicional(cliente):
-    """B03: con REGISTRO_ADECUADO se abre la misión adicional (opcional). Ajuste registros llm (lote 2): la entrega
-    provisional lo emite siempre; el seguimiento vuelve en el lote 3."""
+    """B03: con REGISTRO_ADECUADO se abre la misión adicional (opcional). Ajuste registros llm (lote 3): los ítems de
+    `ruta` van sin LLM (COMPLETADO), así que el registro queda adecuado al terminarlo."""
     avanzar(cliente, 't-cierre-inicio')
     assert actividades(cliente)['t-adicional'] == 'BLOQUEADA'
     entrega = entregar(cliente, 't-expectativas', EXPECTATIVAS)
@@ -143,8 +150,8 @@ def test_hu016_registro_adecuado_abre_la_mision_adicional(cliente):
 
 
 def test_hu009_eco_elige_por_referencia(cliente):
-    """B05: t-eco retoma la elección de t-expectativas. Ajuste registros llm (lote 2): la entrega provisional no deja
-    texto citable, así que el texto sale SIN_DATO."""
+    """B05: t-eco retoma la elección de t-expectativas. Ajuste registros llm (lote 3): un ítem sin LLM no deja texto
+    citable, así que el texto sale SIN_DATO."""
     avanzar(cliente, 't-cierre-inicio')
     assert actividades(cliente)['t-eco'] == 'BLOQUEADA'
     entregar(cliente, 't-expectativas', EXPECTATIVAS)

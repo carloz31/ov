@@ -10,13 +10,7 @@ from app.models.enums import FuenteOpciones
 CODIGO_OTRA = 'OTRA'
 # Ajuste registros llm (lote 2): en un ítem de varias opciones cada «Otra» lleva su número (`OTRA-1`, `OTRA-2`…).
 _OTRA_NUMERADA = re.compile(r'OTRA-([1-9]\d*)')
-# Prefijos de los códigos de las piezas (§4). PROVISIONAL (lote 3): la entrega solo comprueba el prefijo; el flujo
-# secuencial valida la pieza contra las que arma `contexto.py` para la cuenta.
-PREFIJOS_PIEZAS = {
-    FuenteOpciones.PIEZAS_PERFIL: ('INT-', 'INTEL-', 'HAB-', 'BIEN-1', 'VAL-1', 'LOGRO-HAB', 'GUSTO'),
-    FuenteOpciones.PIEZAS_PERFIL_MENOS: ('CUESTA-', 'INT-', 'INTEL-', 'HAB-', 'BIEN-1', 'VAL-1', 'LOGRO-HAB', 'GUSTO'),
-    FuenteOpciones.PIEZAS_INICIO: ('INI-',),
-}
+FUENTES_PIEZAS = (FuenteOpciones.PIEZAS_PERFIL, FuenteOpciones.PIEZAS_PERFIL_MENOS, FuenteOpciones.PIEZAS_INICIO)
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,17 +39,18 @@ def es_otra(item, codigo):
     return numero is not None and int(numero.group(1)) <= item.eleccion_maxima
 
 
-def es_pieza(item, codigo):
-    prefijos = PREFIJOS_PIEZAS.get(item.fuente_opciones, ())
-    return any(codigo == p or (p.endswith('-') and codigo.startswith(p) and len(codigo) > len(p)) for p in prefijos)
+def es_pieza(item, opcion):
+    """Una pieza armada para la cuenta (lote 3): se valida su código y que el texto sea el que se ofrece."""
+    return item.fuente_opciones in FUENTES_PIEZAS and getattr(opcion, 'origen', None) is not None
 
 
 def validar_eleccion(item, opciones, elegidas, exigir_minimo):
     """Devuelve la elección para guardar: `[{codigo, texto}]`, con el texto tal como se mostró (la etiqueta, el de la
     referencia o la pieza, o lo escrito en «¿Cuál?»).
 
-    `opciones` son las del ítem en su orden (`OpcionItem`). Sin exigir el mínimo se valida todo lo demás. Una
-    elección no ordenada se guarda en el orden de las opciones (las «Otra» al final). Una opción exclusiva va sola.
+    `opciones` son las que el ítem le ofrece a la cuenta, en su orden: las de `resolver_contexto` (`OpcionContexto`,
+    también las piezas) u `OpcionItem`. Sin exigir el mínimo se valida todo lo demás. Una elección no ordenada se guarda
+    en el orden de las opciones (las «Otra» al final). Una opción exclusiva va sola.
     """
     if item.fuente_opciones is None:
         if elegidas:
@@ -69,22 +64,25 @@ def validar_eleccion(item, opciones, elegidas, exigir_minimo):
     textos = {}
     for elegida in elegidas:
         opcion = por_codigo.get(elegida.codigo)
-        if opcion is not None:
+        if opcion is not None and es_pieza(item, opcion):
+            if elegida.texto != opcion.texto:
+                raise invalida(f'La pieza {elegida.codigo} no se ofrece con ese texto')
+            textos[elegida.codigo] = opcion.texto
+        elif opcion is not None:
             # Una opción de referencia guarda el texto vigente; el que traiga la petición se ignora.
-            if elegida.texto is not None and not opcion.de_referencia:
+            if elegida.texto is not None and not getattr(opcion, 'de_referencia', False):
                 raise invalida('Solo la opción «otra» lleva texto')
             textos[elegida.codigo] = opcion.texto
-        elif es_otra(item, elegida.codigo) or es_pieza(item, elegida.codigo):
+        elif es_otra(item, elegida.codigo):
             if elegida.texto is None or not elegida.texto.strip():
-                raise invalida('La opción «otra» necesita un texto' if elegida.codigo.startswith(CODIGO_OTRA)
-                               else 'La pieza necesita su texto')
+                raise invalida('La opción «otra» necesita un texto')
             textos[elegida.codigo] = elegida.texto
         elif elegida.codigo.startswith(CODIGO_OTRA) and item.permite_otra:
             raise invalida('La opción «otra» no corresponde a este ítem')
         elif elegida.codigo.startswith(CODIGO_OTRA):
             raise invalida('Este ítem no admite la opción «otra»')
         else:
-            raise invalida(f'La opción {elegida.codigo} no pertenece a las opciones del ítem')
+            raise invalida(f'La opción {elegida.codigo} no se ofrece en este ítem')
     if len(elegidas) > 1 and any(por_codigo.get(c) is not None and por_codigo[c].exclusiva for c in codigos):
         raise invalida('Esa opción se elige sola')
     if len(elegidas) > item.eleccion_maxima:

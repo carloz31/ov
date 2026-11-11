@@ -1,42 +1,53 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Request
+from sqlalchemy.exc import IntegrityError
 
 from app.dependencies import SesionBD, ejecutar_accion
+from app.exceptions import ErrorAccion, traducir_error_accion
+from app.schemas.acciones import CompletarActividadEntrada
 from app.schemas.registro import (
-    AccionItemRegistroEntrada, BorradorRegistroEntrada, EditarRegistroEntrada, EntregarRegistroEntrada,
-    ItemRegistroPublico, RegistroConsultado, ResponderSeguimientoEntrada, RespuestaRegistroAccion,
+    AccionItemRegistroEntrada, ItemRegistroPublico, PasoRegistro, RegistroConsultado, ResponderItemEntrada,
+    ResponderSeguimientoEntrada, RespuestaRegistroAccion,
 )
-from app.services.registro import acciones as acciones_registro, consultas as consultas_registro
+from app.services.registro import consultas as consultas_registro, flujo as flujo_registro
 
 
 router = APIRouter(tags=['Registro'])
 
-# Ajuste registros llm (lote 2): el flujo secuencial con el LLM v7 es del lote 3. Hasta entonces, la entrega es
-# provisional y el resto responde 501 (después del guardia de acceso, como cualquier ruta).
+# Ajuste registros llm (lote 3): responder, seguir y reenviar un ítem no usan la dependencia de sesión. La respuesta se
+# confirma antes de llamar al LLM y la evaluación se escribe en otra transacción, como el asistente del diario.
 
 
-@router.post('/acciones/registro/guardar-borrador')
-def guardar_borrador(entrada: BorradorRegistroEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: acciones_registro.pendiente_lote_3(entrada))
+def _con_llm(accion, entrada, peticion):
+    try:
+        return accion(peticion.app.state.fabrica_sesiones, entrada, peticion.app.state.cliente_llm)
+    except ErrorAccion as error:
+        raise traducir_error_accion(error) from error
+    except IntegrityError as error:
+        # Dos respuestas a la vez sobre el mismo ítem: el índice de un solo intento vigente rechaza la segunda.
+        raise HTTPException(status_code=409, detail={
+            "mensaje": "Ese ítem se está guardando en otra petición; intenta de nuevo",
+        }) from error
+
+
+@router.post('/acciones/registro/responder', response_model=PasoRegistro)
+def responder(entrada: ResponderItemEntrada, peticion: Request):
+    return _con_llm(flujo_registro.responder, entrada, peticion)
+
+
+@router.post('/acciones/registro/responder-seguimiento', response_model=PasoRegistro)
+def responder_seguimiento(entrada: ResponderSeguimientoEntrada, peticion: Request):
+    return _con_llm(flujo_registro.responder_seguimiento, entrada, peticion)
+
+
+@router.post('/acciones/registro/reenviar', response_model=PasoRegistro)
+def reenviar(entrada: AccionItemRegistroEntrada, peticion: Request):
+    return _con_llm(flujo_registro.reenviar, entrada, peticion)
 
 
 @router.post('/acciones/registro/entregar', response_model=RespuestaRegistroAccion, response_model_exclude_unset=True)
-def entregar(entrada: EntregarRegistroEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: acciones_registro.entregar(sesion, entrada))
-
-
-@router.post('/acciones/registro/responder-seguimiento')
-def responder_seguimiento(entrada: ResponderSeguimientoEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: acciones_registro.pendiente_lote_3(entrada))
-
-
-@router.post('/acciones/registro/editar')
-def editar(entrada: EditarRegistroEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: acciones_registro.pendiente_lote_3(entrada))
-
-
-@router.post('/acciones/registro/continuar-sin-responder')
-def continuar_sin_responder(entrada: AccionItemRegistroEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: acciones_registro.pendiente_lote_3(entrada))
+def entregar(entrada: CompletarActividadEntrada, sesion: SesionBD):
+    """Terminar el registro (§5)."""
+    return ejecutar_accion(sesion, lambda: flujo_registro.terminar(sesion, entrada))
 
 
 @router.get('/actividades/{actividad}/items-registro', response_model=list[ItemRegistroPublico])

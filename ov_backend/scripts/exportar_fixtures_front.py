@@ -89,43 +89,56 @@ def _pedir(cliente, metodo, ruta, datos=None):
 TEXTO_REGISTRO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'
 
 
-def eleccion_minima(item, opciones_referencia=()):
-    """Las primeras opciones, tantas como pide el mínimo: las de su lista o su referencia y luego las propias no
-    exclusivas; si no alcanzan, completa con «Otra» (ajuste registros llm, lote 2)."""
+class _ClienteLLMPropio:
+    """El LLM de los fixtures (lote 3): toda respuesta es `propio`; nunca llama a la red."""
+    modelo = 'fixtures'
+
+    def llamar(self, sistema, mensaje, esquema):
+        from app.services.registro.llm import RespuestaCruda
+        return RespuestaCruda(texto=json.dumps({'motivo': 'm', 'tipo': 'propio', 'sensible': False,
+                                                'repregunta': None, 'arranque': None}), parada='end_turn')
+
+
+def eleccion_minima(item):
+    """Las primeras opciones que se le ofrecen a la cuenta, tantas como pide el mínimo (las exclusivas al final; una
+    pieza con su texto); si no alcanzan, completa con «Otra». `item` es el del registro de la cuenta (lote 3)."""
     eleccion = item['eleccion']
     if eleccion is None:
         return []
-    propias = sorted(eleccion.get('opciones_propias', ()), key=lambda o: o['exclusiva'])
-    disponibles = [*eleccion['opciones'], *opciones_referencia, *propias]
-    elegidas = [{'codigo': o['codigo']} for o in disponibles[:eleccion['minima']]]
+    opciones = sorted(item['opciones'], key=lambda o: o['exclusiva'])
+    elegidas = [{'codigo': o['codigo'], **({'texto': o['texto']} if o['origen'] else {})}
+                for o in opciones[:eleccion['minima']]]
     otras = [{'codigo': 'OTRA' if eleccion['maxima'] == 1 else f'OTRA-{n}', 'texto': 'DATO DE PRUEBA: otra'}
              for n in range(1, eleccion['minima'] - len(elegidas) + 1)] if eleccion['permite_otra'] else []
     return elegidas + otras
 
 
-def _items_entrega(cliente, actividad, cuenta='est-ana'):
-    items = _pedir(cliente, 'GET', f'/actividades/{actividad}/items-registro')
-    referencias = {r['codigo']: r.get('opciones') or [] for r in _pedir(
-        cliente, 'GET', f'/cuentas/{cuenta}/actividades/{actividad}/referencias')['referencias']} if any(
-        (i['eleccion'] or {}).get('referencia_opciones') for i in items) else {}
-    return [{'item': i['codigo'], 'texto': TEXTO_REGISTRO,
-             'opciones': eleccion_minima(i, referencias.get((i['eleccion'] or {}).get('referencia_opciones'), ()))}
-            for i in items]
+def _responder_item(cliente, actividad, item, opciones, cuenta='est-ana'):
+    return _pedir(cliente, 'POST', '/acciones/registro/responder', {
+        'cuenta': cuenta, 'actividad': actividad, 'item': item, 'opciones': opciones, 'texto': TEXTO_REGISTRO,
+        'fecha_hora': FECHA})
 
 
-def _responder_registro(cliente, actividad, cuenta='est-ana', items=None):
-    """Entrega provisional (ajuste registros llm, lote 2): todos los ítems en una petición, sin borradores."""
+def _responder_registro(cliente, actividad, cuenta='est-ana', elecciones=None, pasos=None):
+    """Lote 3: responde cada ítem en su orden (con su elección mínima o la de `elecciones`) y termina el registro.
+    Si se pasa `pasos`, guarda ahí la respuesta de cada ítem."""
+    registro = _pedir(cliente, 'GET', f'/cuentas/{cuenta}/actividades/{actividad}/registro')
+    while registro['item_actual'] is not None:
+        item = next(i for i in registro['items'] if i['codigo'] == registro['item_actual'])
+        opciones = (elecciones or {}).get(item['codigo'], eleccion_minima(item))
+        paso = _responder_item(cliente, actividad, item['codigo'], opciones, cuenta)
+        if pasos is not None:
+            pasos[item['codigo']] = paso
+        registro = paso['registro']
     return _pedir(cliente, 'POST', '/acciones/registro/entregar', {
-        'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
-        'items': items if items is not None else _items_entrega(cliente, actividad, cuenta)})
+        'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA})
 
 
 def _registro_t_valores(cliente):
-    """F01: t-valores con elección ordenada. El seguimiento y lo que queda por ampliar vuelven en el lote 3."""
+    """F01: t-valores con elección ordenada, ítem por ítem (lote 3)."""
     fixtures = {'items-registro-t-valores': _pedir(cliente, 'GET', '/actividades/t-valores/items-registro')}
-    items = [{**i, 'opciones': [{'codigo': 'CREAR'}, {'codigo': 'LIBERTAD'}, {'codigo': 'ESTABILIDAD'}]}
-             if i['item'] == 't-val-orden' else i for i in _items_entrega(cliente, 't-valores')]
-    fixtures['entregar-t-valores'] = _responder_registro(cliente, 't-valores', items=items)
+    fixtures['entregar-t-valores'] = _responder_registro(cliente, 't-valores', elecciones={
+        't-val-orden': [{'codigo': 'CREAR'}, {'codigo': 'LIBERTAD'}, {'codigo': 'ESTABILIDAD'}]})
     return fixtures
 
 
@@ -205,9 +218,11 @@ def _recorrer(cliente):
     fixtures['items-registro-t-expectativas'] = _pedir(cliente, 'GET', '/actividades/t-expectativas/items-registro')
     # F02: sin entregar, t-eco no tiene qué citar.
     fixtures['referencias-t-eco-sin-dato'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
-    items = [{**i, 'opciones': [{'codigo': 'INSTITUTO'}, {'codigo': 'OTRA-1', 'texto': 'Viajar un año'}]}
-             if i['item'] == 't-exp-ruta' else i for i in _items_entrega(cliente, 't-expectativas')]
-    fixtures['entregar-t-expectativas'] = _responder_registro(cliente, 't-expectativas', items=items)
+    pasos = {}
+    fixtures['entregar-t-expectativas'] = _responder_registro(cliente, 't-expectativas', elecciones={
+        't-exp-ruta': [{'codigo': 'INSTITUTO'}, {'codigo': 'OTRA-1', 'texto': 'Viajar un año'}]}, pasos=pasos)
+    # Lote 3: el paso siguiente tras responder un ítem.
+    fixtures['responder-t-exp-ruta'] = pasos['t-exp-ruta']
     fixtures['registro-t-expectativas-cerrado'] = _pedir(
         cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
     # B05: t-eco retoma la elección; el texto, sin texto citable en la entrega provisional, queda sin dato.
@@ -634,6 +649,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
             url = f'sqlite:///{(Path(temporal) / "ruta.db").as_posix()}'
             preparar_base(url, 'ruta', crear_tablas=True)
             aplicacion = crear_aplicacion(url)
+            aplicacion.state.cliente_llm = _ClienteLLMPropio()
             try:
                 with TestClient(aplicacion) as cliente_http, _codigos_notificacion_fijos():
                     cliente = _ClienteConSesion(cliente_http)

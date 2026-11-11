@@ -48,7 +48,7 @@ from app.schemas.instrumentos import (
     AvanceInstrumento, ComparacionAutopercepcion, InstrumentoPublico, ItemPublico, RespuestasActividad,
     ResultadoHistorico, ResultadoPublico,
 )
-from app.schemas.registro import ItemRegistroPublico, RegistroConsultado, RespuestaRegistroAccion
+from app.schemas.registro import ItemRegistroPublico, PasoRegistro, RegistroConsultado, RespuestaRegistroAccion
 from soporte_catalogo_ruta import ING_CIVIL, INST_UNI, PERIODISMO, PSICOLOGIA
 
 
@@ -61,7 +61,7 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'notificaciones', 'notificaciones-marcar-una', 'notificaciones-pagina-2', 'notificaciones-autora',
     'notificaciones-apoderado', 'apoderado-actividades-inicial', 'apoderado-actividades-final',
     'secciones-inicial', 'secciones-t1', 'presentaciones-inicial', 'presentacion-vista', 'apoderado-secciones-inicial', 'apoderado-secciones-final',
-    'items-registro-t-expectativas', 'entregar-t-expectativas', 'registro-t-expectativas-cerrado',
+    'items-registro-t-expectativas', 'responder-t-exp-ruta', 'entregar-t-expectativas', 'registro-t-expectativas-cerrado',
     'items-registro-t-valores', 'entregar-t-valores',
     'items-registro-t-eco', 'referencias-t-eco', 'referencias-t-eco-sin-dato',
     'referencias-t-contraste',
@@ -218,23 +218,25 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert {i.codigo for i in TypeAdapter(list[InstrumentoPublico]).validate_python(datos['instrumentos'])} >= {
         'TEST-RIASEC', 'TEST-PARTIDA-LLEGADA'}
     TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-expectativas'])
-    # Ajuste registros llm (lote 2): la entrega provisional cierra el registro, emite REGISTRO_ADECUADO (abre la
-    # misión adicional) y guarda cada ítem COMPLETADO, sin clasificaciones. Borradores, seguimiento y edición: lote 3.
+    # Ajuste registros llm (lote 3): ítem por ítem (sin LLM en `ruta`: SIGUIENTE) y terminar, que emite
+    # REGISTRO_ADECUADO (abre la misión adicional); nunca hay clasificaciones.
+    paso = PasoRegistro.model_validate(datos['responder-t-exp-ruta'])
+    assert (paso.item, paso.paso, paso.repregunta, paso.mensaje) == ('t-exp-ruta', 'SIGUIENTE', None, None)
     entrega = RespuestaRegistroAccion.model_validate(datos['entregar-t-expectativas'])
-    assert entrega.estado == 'COMPLETADA' and {r.estado for r in entrega.respuestas} == {'COMPLETADO'}
+    assert entrega.estado == 'COMPLETADA' and all(i.respuesta for i in entrega.items) and entrega.item_actual is None
     assert 'R-t-adicional' in {d.regla for d in entrega.nuevos_desbloqueos}
-    assert 'clasificacion' not in json.dumps(datos['entregar-t-expectativas'])
+    assert not {'clasificacion', 'tipo_final', 'motivo'} & set(json.dumps(datos['entregar-t-expectativas']).split('"'))
     cerrado = RegistroConsultado.model_validate(datos['registro-t-expectativas-cerrado'])
-    assert cerrado.estado == 'COMPLETADA' and all(r.texto for r in cerrado.respuestas)
-    assert [(o.codigo, o.texto) for o in cerrado.respuestas[0].opciones_elegidas] == [
+    assert cerrado.estado == 'COMPLETADA' and all(i.respuesta.primera_respuesta for i in cerrado.items)
+    assert [(o.codigo, o.texto) for o in cerrado.items[0].respuesta.opciones_elegidas] == [
         ('INSTITUTO', 'Estudiar en un instituto'), ('OTRA-1', 'Viajar un año')]
     # F01: t-valores elige en orden.
     orden = TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-valores'])[0]
     assert orden.eleccion.ordenada and orden.eleccion.minima == orden.eleccion.maxima == 3
     valores = RespuestaRegistroAccion.model_validate(datos['entregar-t-valores'])
     assert valores.estado == 'COMPLETADA'
-    assert [o.codigo for o in valores.respuestas[0].opciones_elegidas] == ['CREAR', 'LIBERTAD', 'ESTABILIDAD']
-    # B05: t-eco retoma la elección; el texto queda sin dato (la entrega provisional no deja texto citable).
+    assert [o.codigo for o in valores.items[0].respuesta.opciones_elegidas] == ['CREAR', 'LIBERTAD', 'ESTABILIDAD']
+    # B05: t-eco retoma la elección; el texto queda sin dato (un ítem sin LLM no deja texto citable).
     ruta_eco, espera_eco = TypeAdapter(list[ItemRegistroPublico]).validate_python(datos['items-registro-t-eco'])
     # F02: retoma la elección de t-exp-ruta con su misma lista; la referencia solo marca lo elegido antes.
     assert ruta_eco.eleccion.referencia == 't-ref-rutas' and ruta_eco.eleccion.lista == 'RUTAS_DESPUES_COLEGIO'

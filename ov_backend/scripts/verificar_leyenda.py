@@ -83,11 +83,12 @@ def completar(cuenta, actividad):
         accion('responder-items', cuenta, {'actividad': actividad,
                                            'respuestas': [{'item': i['codigo'], 'opcion': 3} for i in items]})
     if actividad in REGISTROS:
-        for item in pedir('GET', f'/actividades/{actividad}/items-registro', cuenta=cuenta):
+        # Ajuste registros llm (lote 3): ítem por ítem, con lo que el registro de la cuenta ofrece.
+        for item in pedir('GET', f'/cuentas/{cuenta}/actividades/{actividad}/registro', cuenta=cuenta)['items']:
             eleccion = item['eleccion']
             opciones = [] if eleccion is None else [{'codigo': o['codigo']}
-                                                    for o in eleccion['opciones'][:eleccion['minima']]]
-            accion('registro/guardar-borrador', cuenta, {
+                                                    for o in item['opciones'][:eleccion['minima']]]
+            accion('registro/responder', cuenta, {
                 'actividad': actividad, 'item': item['codigo'], 'opciones': opciones,
                 'texto': 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'})
         return accion('registro/entregar', cuenta, {'actividad': actividad})

@@ -1,13 +1,13 @@
 """B05 y F02: `t-eco-ruta` retoma la elección de `t-exp-ruta`: elige de la misma lista y la referencia solo marca
 lo elegido la vez pasada, que el estudiante mantiene o cambia.
 
-Los textos son DATO DE PRUEBA. Ajuste registros llm (lote 2): se entrega con la entrega provisional (todos los ítems a
-la vez, sin LLM); en un ítem de varias opciones la «Otra» se numera (`OTRA-1`).
+Los textos son DATO DE PRUEBA. Ajuste registros llm (lote 3): se responde ítem por ítem (sin LLM: los ítems de `ruta`
+no tienen tarjeta) y se termina; en un ítem de varias opciones la «Otra» se numera (`OTRA-1`).
 """
 
 import pytest
 
-from soporte_ruta import FECHA, actividades, avanzar, pedir
+from soporte_ruta import actividades, avanzar, leer_registro, pedir, responder_item, terminar
 
 
 ADECUADO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'
@@ -15,9 +15,12 @@ OTRA = {'codigo': 'OTRA-1', 'texto': 'DATO DE PRUEBA: trabajar en el taller fami
 
 
 def entregar(cliente, actividad, items, cuenta='est-ana', esperado=200):
-    return pedir(cliente, 'POST', '/acciones/registro/entregar', {
-        'cuenta': cuenta, 'actividad': actividad, 'fecha_hora': FECHA,
-        'items': [{'item': item, 'texto': ADECUADO, 'opciones': opciones} for item, opciones in items]}, esperado)
+    """Responde cada ítem (el primero con `esperado`) y, si todo pasó, termina el registro."""
+    for item, opciones in items:
+        respuesta = responder_item(cliente, actividad, item, opciones, ADECUADO, cuenta, esperado)
+        if esperado != 200:
+            return respuesta
+    return terminar(cliente, actividad, cuenta)
 
 
 def cerrar_expectativas(cliente, cuenta='est-ana'):
@@ -60,9 +63,9 @@ def test_mantiene_o_cambia_lo_elegido_antes(cliente, opciones):
     entregar_eco(cliente, opciones)
     lista = pedir(cliente, 'GET', '/actividades/t-eco/items-registro')[0]['eleccion']['opciones']
     textos = {o['codigo']: o['texto'] for o in lista}
-    registro = pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/registro')
+    registro = leer_registro(cliente, 't-eco')
     # Lo guardado lleva siempre su texto: el de la lista o el escrito en la «Otra».
-    assert registro['respuestas'][0]['opciones_elegidas'] == [
+    assert registro['items'][0]['respuesta']['opciones_elegidas'] == [
         {'codigo': o['codigo'], 'texto': o.get('texto') or textos[o['codigo']]} for o in opciones]
 
 
@@ -72,7 +75,7 @@ def test_entrega_exige_la_minima(cliente):
 
 
 def test_entregar_t_eco_adecuado_no_abre_la_mision_adicional(cliente):
-    # La entrega provisional de t-expectativas siempre emite su REGISTRO_ADECUADO (que sí abre t-adicional): t-eco se
+    # Terminar t-expectativas adecuada emite su REGISTRO_ADECUADO (que sí abre t-adicional): t-eco se
     # abre con el evento crudo de completarla, para ver que el REGISTRO_ADECUADO de t-eco no la abre.
     avanzar(cliente, 't-cierre-inicio')
     pedir(cliente, 'POST', '/eventos', {'cuenta': 'est-ana', 'tipo': 'COMPLETA_ACTIVIDAD', 'referencia': 't-expectativas'})

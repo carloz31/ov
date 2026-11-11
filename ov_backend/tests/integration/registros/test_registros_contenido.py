@@ -1,4 +1,5 @@
-"""Ajuste registros llm (lote 2): los registros definitivos de `contenido` recorridos con la entrega provisional.
+"""Ajuste registros llm (lote 2): los registros definitivos de `contenido` recorridos ítem por ítem (lote 3), con el
+cliente de prueba del LLM (sin red).
 
 Opciones propias (`sin_llm` sin texto; las demás, con texto), el podio con «Otra», un opcional completado que emite
 REGISTRO_ADECUADO y el orden de reglas de b4-1 y b4-5. El seguimiento, la clasificación, los abiertos y las cartas
@@ -8,18 +9,22 @@ del diario vuelven con el flujo secuencial (lote 3). Los textos son DATO DE PRUE
 from soporte_catalogo_ruta import PERIODISMO, PSICOLOGIA
 from soporte_contenido import REQUERIDAS, avanzar, completar, revelar_para_b4
 from soporte_planes import crear, guardar, por_que_lista
-from soporte_ruta import FECHA, items_entrega, pedir, responder, revelar
+from soporte_ruta import FECHA, pedir, responder, responder_item, revelar, terminar
 
 
 TEXTO = 'DATO DE PRUEBA: una respuesta completa con su ejemplo y su razón.'
 
 
 def entregar(cliente, actividad, items, esperado=200):
-    """`items`: {ítem: (texto, opciones)}."""
-    return pedir(cliente, 'POST', '/acciones/registro/entregar', {
-        'cuenta': 'est-ana', 'actividad': actividad, 'fecha_hora': FECHA,
-        'items': [{'item': item, 'texto': texto, 'opciones': opciones} for item, (texto, opciones) in items.items()]},
-        esperado)
+    """`items`: {ítem: (texto, opciones)}. Responde cada ítem y termina; el primer rechazo debe ser `esperado`."""
+    for item, (texto, opciones) in items.items():
+        respuesta = cliente.post('/acciones/registro/responder', json={
+            'cuenta': 'est-ana', 'actividad': actividad, 'item': item, 'texto': texto, 'opciones': opciones,
+            'fecha_hora': FECHA})
+        if respuesta.status_code != 200:
+            assert respuesta.status_code == esperado, respuesta.text
+            return respuesta.json()
+    return terminar(cliente, actividad, esperado=esperado)
 
 
 def codigos(*elegidas):
@@ -54,28 +59,28 @@ def test_b1_3_opciones_propias_sin_llm_van_sin_texto(cliente_contenido):
     cierre = entregar(cliente, 'b1-3', {**sin_texto, 'b1-3-mia': ('DATO DE PRUEBA: dudo entre diseño y enfermería',
                                                                   codigos('AUN_NO'))})
     assert cierre['estado'] == 'COMPLETADA' and adecuado(cierre, 'b1-3')
-    assert {r['item']: r['texto'] for r in cierre['respuestas']} == {
+    assert {i['codigo']: i['respuesta']['primera_respuesta'] for i in cierre['items']} == {
         'b1-3-voz': '', 'b1-3-mia': 'DATO DE PRUEBA: dudo entre diseño y enfermería', 'b1-3-contraste': ''}
 
 
 def test_b2_4_podio_ordenado_con_otra(cliente_contenido):
     cliente = cliente_contenido
     avanzar(cliente, 'b0-1', 'b2-3')
-    items = items_entrega(cliente, 'b2-4')
     bien = next(i for i in pedir(cliente, 'GET', '/actividades/b2-4/items-registro') if i['codigo'] == 'b2-4-bien')
     eleccion = bien['eleccion']
     assert (eleccion['minima'], eleccion['maxima'], eleccion['ordenada'], eleccion['permite_otra']) == (3, 3, True, True)
     primera = eleccion['opciones'][0]
     podio = [{'codigo': 'OTRA-1', 'texto': 'DATO DE PRUEBA: dibujar'}, {'codigo': primera['codigo']},
              {'codigo': 'OTRA-2', 'texto': 'DATO DE PRUEBA: cocinar'}]
-    cuerpo = {'cuenta': 'est-ana', 'actividad': 'b2-4', 'fecha_hora': FECHA}
-    con = lambda opciones: [{**i, 'opciones': opciones} if i['item'] == 'b2-4-bien' else i for i in items]
     # Un podio pide exactamente tres.
-    pedir(cliente, 'POST', '/acciones/registro/entregar', {**cuerpo, 'items': con(podio[:2])}, 422)
-    cierre = pedir(cliente, 'POST', '/acciones/registro/entregar', {**cuerpo, 'items': con(podio)})
+    responder_item(cliente, 'b2-4', 'b2-4-bien', podio[:2], TEXTO, esperado=422)
+    responder_item(cliente, 'b2-4', 'b2-4-bien', podio, TEXTO)
+    for item in ('b2-4-cuesta', 'b2-4-cruce'):
+        responder_item(cliente, 'b2-4', item, texto=TEXTO)
+    cierre = terminar(cliente, 'b2-4')
     assert cierre['estado'] == 'COMPLETADA' and adecuado(cierre, 'b2-4')
     # El podio ordenado guarda la «Otra» en el puesto en que se eligió, con lo escrito.
-    guardado, = [r['opciones_elegidas'] for r in cierre['respuestas'] if r['item'] == 'b2-4-bien']
+    guardado, = [i['respuesta']['opciones_elegidas'] for i in cierre['items'] if i['codigo'] == 'b2-4-bien']
     assert guardado == [podio[0], {'codigo': primera['codigo'], 'texto': primera['texto']}, podio[2]]
 
 
