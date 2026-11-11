@@ -467,3 +467,14 @@
 .sx-root .sx-chip.is-escrita {
   cursor: default;
 }
+/* La burbuja del personaje, gris suave sobre la tarjeta (boceto 1). */
+.sx-root .sx-guided-form .sx-item-globo {
+  background: var(--muted);
+}
+.sx-root .sx-registro-lectura > .sx-eco,
+.sx-root .sx-registro-lectura > .sx-item-respuesta {
+  align-self: stretch;
+}
+.sx-root .sx-pantalla-lumi .sx-followup-skip {
+  text-decoration: underline;
+}

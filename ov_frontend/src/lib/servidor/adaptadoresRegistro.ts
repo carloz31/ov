@@ -60,6 +60,15 @@ export function errorSeleccion(item: ItemRegistroCuenta, marcadas: OpcionElegida
   return undefined
 }
 
+// Lo marcado como se envía: una «Otra» con su texto sin espacios de más; una pieza (opción con origen) con el texto
+// con que se ofrece, que el backend exige (lote 2: antes se enviaba solo su código y el servidor la rechazaba).
+export const paraEnviar = (item: ItemRegistroCuenta, marcadas: OpcionElegida[]): OpcionElegida[] =>
+  marcadas.map((o) => {
+    if (esOtra(o.codigo)) return { codigo: o.codigo, texto: o.texto?.trim() }
+    const pieza = item.opciones.find((x) => x.codigo === o.codigo && x.origen)
+    return pieza ? { codigo: o.codigo, texto: pieza.texto } : { codigo: o.codigo }
+  })
+
 // La caja de edición: la primera respuesta y, en la línea siguiente, la línea del seguimiento.
 export const cajaEdicion = (respuesta: RespuestaVigente) =>
   respuesta.linea_seguimiento

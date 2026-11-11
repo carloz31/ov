@@ -12,6 +12,7 @@ import {
   cajaEdicion,
   desenlace,
   esOtra,
+  paraEnviar,
   itemDe,
   marcadasDe,
   sinLlm,
@@ -120,7 +121,7 @@ export function useRegistroServidor({
     const actual = item(nodo)
     if (!actual) return
     const { opciones, texto } = borradorDe(actual.codigo)
-    const limpias = opciones.map((o) => (esOtra(o.codigo) ? { codigo: o.codigo, texto: o.texto?.trim() } : o))
+    const limpias = paraEnviar(actual, opciones)
     // Ítem u opción sin LLM: la misma pantalla, sin espera, con la frase de confirmación.
     const espera: EstadoLumi = sinLlm(actual, limpias)
       ? { tipo: 'desenlace', texto: confirmacion(confirmaciones.current++) }

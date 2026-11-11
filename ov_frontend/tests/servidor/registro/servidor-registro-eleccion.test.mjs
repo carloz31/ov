@@ -228,3 +228,12 @@ test('b1-7-dia: si alguna opción cambia la pregunta, la pregunta 2 y su caja ap
   assert.equal(textoVisible({ ...dia, opciones: dia.opciones.slice(0, 2) }, []), true)
   assert.equal(textoVisible({ consigna: dia.consigna, opciones: [] }, []), true)
 })
+
+test('lo que se envía: una pieza lleva el texto con que se ofrece; una «Otra», su texto sin espacios de más', () => {
+  const { paraEnviar } = fixtureServidor().load('src/lib/servidor/adaptadoresRegistro.ts')
+  const item = respalda()
+  const pieza = item.opciones.find((o) => o.codigo === 'INT-I')
+  assert.deepEqual(copia(paraEnviar(item, [{ codigo: 'INT-I' }])), [{ codigo: 'INT-I', texto: pieza.texto }])
+  assert.deepEqual(copia(paraEnviar(item, [{ codigo: 'OTRA', texto: ' Cocinar ' }])), [{ codigo: 'OTRA', texto: 'Cocinar' }])
+  assert.deepEqual(copia(paraEnviar(menos(), [{ codigo: 'TODO' }])), [{ codigo: 'TODO' }])
+})
