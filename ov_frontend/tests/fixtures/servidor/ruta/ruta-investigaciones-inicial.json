@@ -21,6 +21,10 @@
     },
     {
       "codigo": "BASE-3",
+      "texto": "¿Qué es lo que más te gusta de tu trabajo y qué lo que menos?"
+    },
+    {
+      "codigo": "BASE-4",
       "texto": "¿Qué consejo le darías a alguien de mi edad que quiere dedicarse a esto?"
     }
   ],

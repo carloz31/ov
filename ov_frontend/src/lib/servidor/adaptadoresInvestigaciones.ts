@@ -22,7 +22,7 @@ export const MINIMO_IDEAL_PREGUNTAS = 6
 export const MAXIMO_IDEAL_PREGUNTAS = 8
 export const AVISO_PREGUNTAS = 10
 
-// Numeración continua: las base son 1–3 y las del estudiante siguen.
+// Numeración continua: las base van primero y las del estudiante siguen.
 export function numerarGuion(base: PreguntaBasePublica[], preguntas: PreguntaGuionPublica[]) {
   return {
     base: base.map((p, i) => ({ numero: i + 1, texto: p.texto })),
@@ -30,9 +30,8 @@ export function numerarGuion(base: PreguntaBasePublica[], preguntas: PreguntaGui
     total: base.length + preguntas.length,
   }
 }
-// Mínimo para terminar: las base y una del estudiante (su duda o una propia; una sugerida no basta).
-export const puedeTerminarGuion = (preguntas: PreguntaGuionPublica[]) =>
-  preguntas.some((p) => p.origen === 'DUDA' || p.origen === 'PROPIA')
+// Mínimo para terminar: las base y una propia del estudiante (una sugerida no basta; ajuste llm-sugerencias).
+export const puedeTerminarGuion = (preguntas: PreguntaGuionPublica[]) => preguntas.some((p) => p.origen === 'PROPIA')
 export const avisoMuchasPreguntas = (total: number) => total > AVISO_PREGUNTAS
 
 // Leyenda = destacada + N favoritos. El medidor promedia las dos condiciones (los favoritos hasta N).

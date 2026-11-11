@@ -35,7 +35,7 @@ app/                    solo la aplicación; no lee archivos de datos
   services/             lógica de negocio por dominio
     motor/              núcleo de desbloqueos
     instrumentos/       cálculo, consultas y resultados
-    registro/           registro: intentos (`acciones.py`), flujo ítem por ítem con el LLM (`flujo.py`), lectura (`consultas.py`), `contexto.py` (opciones, piezas, marcadores, ecos y eco cambiado de un ítem) y `llm/` (capa del LLM v7, Claude); `evaluacion.py` y `gemini.py` quedan para los asistentes con Gemini
+    registro/           registro: intentos (`acciones.py`), flujo ítem por ítem con el LLM (`flujo.py`), lectura (`consultas.py`), `contexto.py` (opciones, piezas, marcadores, ecos y eco cambiado de un ítem) y `llm/` (capa del LLM v7, Claude); `evaluacion.py` y `gemini.py` quedan para los asistentes con Gemini (diario y cartas); el cliente de `llm/` también lo usan el guion y los pasos del plan
     planes/             planes de carrera: consultas, acciones y sugerencias
     investigaciones/    investigaciones y entrevistas: consultas, acciones, sugerencias y orientadora
   core/                 parámetros, caché de definiciones y contexto de consultas

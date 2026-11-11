@@ -15,7 +15,7 @@ export function SugerenciasLumi({ p }: { p: ModeloPreguntas }) {
       )}
       {p.estadoSugerencias === 'sin_sugerencias' && (
         <div className="sx-i-sugerencia" data-estado="aviso">
-          Con lo que escribiste no pude armar preguntas nuevas, pero las tres base y tu duda ya son un buen
+          Con lo que escribiste no pude armar preguntas nuevas, pero las cuatro preguntas base ya son un buen
           comienzo. Agrega las tuyas.
         </div>
       )}
@@ -30,7 +30,14 @@ export function SugerenciasLumi({ p }: { p: ModeloPreguntas }) {
       {p.estadoSugerencias === 'listas' &&
         p.pendientes.map((s) => (
           <div className="sx-i-sugerencia" key={s.codigo}>
-            <span>{s.texto}</span>
+            <span>
+              {s.campo === 'DUDA' && (
+                <>
+                  <small className="sx-i-meta">De tu duda</small>{' '}
+                </>
+              )}
+              {s.texto}
+            </span>
             <button
               type="button"
               className="sx-i-boton"

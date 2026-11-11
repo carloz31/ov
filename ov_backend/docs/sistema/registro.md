@@ -10,8 +10,8 @@ Lo que ve el estudiante (la escena, los personajes, el orden de los bloques) est
 
 | Variable | Por defecto | Uso |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | — | La capa del LLM v7 (`app.state.cliente_llm`). Sin clave, toda llamada falla (`sin_clave`) y el ítem queda SIN_EVALUAR. Las pruebas inyectan un cliente de prueba y nunca llaman al LLM real. |
-| `EVALUADOR` | `falso` | El evaluador de los asistentes con Gemini (diario, sugerencias de pasos, guion): `gemini` usa la API real; `falso`, el determinista. Ya no evalúa registros. |
+| `ANTHROPIC_API_KEY` | — | La capa del LLM v7 (`app.state.cliente_llm`), que desde el ajuste llm-sugerencias sirve también al guion de Investigaciones y a los pasos del plan. Sin clave, toda llamada falla (`sin_clave`) y el ítem queda SIN_EVALUAR. Las pruebas inyectan un cliente de prueba y nunca llaman al LLM real. |
+| `EVALUADOR` | `falso` | El evaluador de los asistentes con Gemini (diario y cartas): `gemini` usa la API real; `falso`, el determinista. Ya no evalúa registros. |
 | `GEMINI_API_KEY` | — | Obligatoria si `EVALUADOR=gemini`. |
 | `GEMINI_MODELO` | `gemini-3.5-flash-lite` (`MODELO_LLM_REGISTRO`) | Modelo de los asistentes. |
 | `GEMINI_TIMEOUT_SEGUNDOS` | `8` | Tiempo máximo por llamada de los asistentes. |
@@ -86,11 +86,11 @@ Apoderados y cuentas o actividades inexistentes: 404.
 
 ## Asistentes con Gemini
 
-El cliente Gemini de `gemini.py` (`EvaluadorGemini`) y el evaluador falso de `evaluacion.py` (`EvaluadorFalso`) ya no evalúan registros: sirven al diario, a las cartas, a las sugerencias de pasos y al guion (`app.state.evaluador_respuestas`), con `TEMPERATURA_ASISTENTES` y `NIVEL_RAZONAMIENTO_ASISTENTES`. `pregunta_valida` (un solo «?» al final, sin códigos ni `PALABRAS_EVALUATIVAS`) valida sus preguntas.
+El cliente Gemini de `gemini.py` (`EvaluadorGemini`) y el evaluador falso de `evaluacion.py` (`EvaluadorFalso`) ya no evalúan registros: sirven al diario y a las cartas (`app.state.evaluador_respuestas`; el guion y los pasos del plan pasaron a Claude en el ajuste llm-sugerencias), con `TEMPERATURA_ASISTENTES` y `NIVEL_RAZONAMIENTO_ASISTENTES`. `pregunta_valida` (un solo «?» al final, sin códigos ni `PALABRAS_EVALUATIVAS`) valida sus preguntas.
 
 ## Asistente del diario (B09)
 
-El mismo evaluador (`app.state.evaluador_respuestas`, falso o Gemini, con su `timeout_segundos`) personaliza preguntas del diario con `personalizar_entrada`. Código: `app/services/diario/asistente.py`; el diario en sí está en `motor.md`, «Diario». También sugiere pasos para las dudas y complicaciones de los planes con `sugerir_pasos` (`planes.md`, «Sugerencias de pasos»).
+El mismo evaluador (`app.state.evaluador_respuestas`, falso o Gemini, con su `timeout_segundos`) personaliza preguntas del diario con `personalizar_entrada`. Código: `app/services/diario/asistente.py`; el diario en sí está en `motor.md`, «Diario».
 
 - **Entrada al LLM** (RNF-13, RNF-20): solo la pregunta base y los datos que la pregunta declara como referencias, resueltos (`tipo`, `texto`, `opciones`). Nunca códigos de cuenta, nombres ni texto de entradas del diario.
 - **Prompt v1** (`PROMPT_DIARIO_V1`, `VERSION_PROMPT_DIARIO`): una sola pregunta en tono de Lumi; cita los datos tal como vienen; no interpreta resultados, no evalúa, no sugiere carreras ni agrega datos ajenos. Salida `{"pregunta": ...}` validada con `pregunta_valida`.

@@ -1,6 +1,7 @@
 // app/schemas/investigaciones.py (B13; F09): investigación, guion, entrevistas, reacciones y la tabla de la orientadora.
 export type EstadoInvestigacion = 'EN_CURSO' | 'GUIA_LISTA' | 'PUBLICADA'
-export type OrigenPreguntaGuion = 'DUDA' | 'SUGERIDA' | 'PROPIA'
+export type OrigenPreguntaGuion = 'SUGERIDA' | 'PROPIA'
+export type CampoLoQuePienso = 'DIA' | 'NECESITA' | 'DUDA'
 export type MotivoReporte = 'OFENSIVO' | 'VIDEO' | 'DATOS_PRIVADOS' | 'OTRO'
 export type FamiliaBreve = { codigo: string; nombre: string; area_codigo: string }
 export type NivelBreve = { numero: number; titulo: string }
@@ -13,7 +14,8 @@ export type PersonaInvestigacion = {
 }
 export type LoQuePienso = { dia: string; necesita: string; duda: string }
 export type PreguntaGuionPublica = { origen: OrigenPreguntaGuion; texto: string }
-export type SugerenciaGuionPublica = { codigo: string; texto: string }
+// `campo`: de qué texto de «lo que pienso» sale (ajuste llm-sugerencias).
+export type SugerenciaGuionPublica = { codigo: string; texto: string; campo: CampoLoQuePienso }
 export type InvestigacionEnCurso = {
   codigo: string
   estado: EstadoInvestigacion

@@ -12,8 +12,8 @@ import { avisarRechazoInvestigacion } from './cierreInvestigacion'
 
 export type EstadoSugerencias = 'cargando' | 'listas' | 'sin_sugerencias' | 'error'
 
-// F09 (boceto 10): las preguntas del guion. La duda del paso 1 entra como pregunta (si el guion está vacío); las
-// sugerencias de Lumi se piden una vez al entrar (si no están vigentes) y nunca bloquean. Agregar o descartar una
+// F09 (boceto 10): las preguntas del guion. Ajuste llm-sugerencias: la duda del paso 1 ya no entra como pregunta;
+// solo es contexto de las sugerencias. Las sugerencias de Lumi se piden una vez al entrar (si no están vigentes) y nunca bloquean. Agregar o descartar una
 // sugerencia guarda el guion para que no vuelva; terminar lo guarda como guía lista.
 export function usePreguntasGuion(
   datos: InvestigacionesCuenta | null,
@@ -36,11 +36,7 @@ export function usePreguntasGuion(
   useEffect(() => {
     if (!activo || !enCurso || iniciado.current === enCurso.codigo) return
     iniciado.current = enCurso.codigo
-    setPreguntas(
-      enCurso.preguntas.length
-        ? enCurso.preguntas.map((p) => ({ ...p }))
-        : [{ origen: 'DUDA', texto: enCurso.lo_que_pienso.duda }],
-    )
+    setPreguntas(enCurso.preguntas.map((p) => ({ ...p })))
   }, [activo, enCurso])
   async function pedir() {
     setEstadoSugerencias('cargando')
